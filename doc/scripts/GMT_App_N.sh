@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_N.sh,v 1.4 2004-08-17 00:45:17 pwessel Exp $
+#	$Id: GMT_App_N.sh,v 1.5 2004-08-17 02:30:32 pwessel Exp $
 #
 #	Makes the insert for Appendix N(custom symbols)
 #	Note that this script also assembles App N tex
@@ -14,7 +14,7 @@ n=`cat $$.lis | wc -l`
 
 n_cols=5
 n_rows=7
-n_rows_p1=6
+n_rows_p1=5
 fs=9
 dy=0.15
 
