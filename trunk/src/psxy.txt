@@ -163,13 +163,12 @@ pe\fBn\fPtagon.  \fIsize\fP is diameter of circumscribing circle.
 .TP
 .B \-Sq
 \fBq\fPuoted line, i.e., lines with annotations such as contours.  Append [\fBd|f|n|l|x\fP]\fIinfo\fP[:\fIlabelinfo\fP].
-The required argument controls the placement of labels along the lines.  Choose among four controlling mechanisms:
-.br
 #include "explain_contlabel.txt"
-.br
+.sp
+.RS
 The optional \fIlabelinfo\fP controls the specifics of the label formatting and consists of a concatenated string
 made up of any of the following control arguments:
-.br
+.RE
 #include "explain_labelinfo.txt"
 .TP
 .B \-Sr
@@ -266,52 +265,52 @@ Freeform polygons (made up of straight line segments and arcs of circles) can be
 painted and filled with a pattern.  Other standard geometric symbols can also be used.  With the exception of the circle,
 these can only be painted, not filled with a pattern (use the freeform polygons to include a triangle that can be filled
 with a pattern).  Generate freeform polygons by starting with an anchor point:
-.br
-	\fIx0	y0\fP	\fBM\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
-.br
+.RS
+\fIx0	y0\fP	\fBM\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
+.RE
 and draw a straight line from the current point to the next point with
-.br
-	\fIx	y\fP	\fBD\fP
-.br
+.RS
+\fIx	y\fP	\fBD\fP
+.RE
 or add an arc by using
-.br
-	\fIxc	yc	r	dir1	dir2\fP	\fBA\fP
-.br
+.RS
+\fIxc	yc	r	dir1	dir2\fP	\fBA\fP
+.RE
 When a record other than the \fBD\fP or \fBA\fP is encountered, the polygon is closed and considered complete.
 The optional pen and fill setting hardwires particular values for this feature.  If not present the polygon's\"'
 characteristics are determined by the command line settings for pen and fill.  To deactivate fill or outline
 for any given polygon, give \fB\-G\-\fP or \fB\-W\-\fP.  To add other geometric shapes
 to your custom symbol, add any number of the following plot code records:
 .sp
+.RS
+star: \fIx	y	size\fP	\fBa\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
-	star: \fIx	y	size\fP	\fBa\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
+circle: \fIx	y	size\fP	\fBc\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
-	circle: \fIx	y	size\fP	\fBc\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
+cross: \fIx	y	size\fP	\fBx\fP  [ \fB\-W\fP\fIpen\fP ]
 .br
-	cross: \fIx	y	size\fP	\fBx\fP  [ \fB\-W\fP\fIpen\fP ]
+diamond: \fIx	y	size\fP	\fBd\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
-	diamond: \fIx	y	size\fP	\fBd\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
+ellipse: \fIx	y	dir	major	minor\fP	\fBe\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
-	ellipse: \fIx	y	dir	major	minor\fP	\fBe\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
+hexagon: \fIx	y	size\fP	\fBh\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
-	hexagon: \fIx	y	size\fP	\fBh\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
+invtriangle: \fIx	y	size\fP	\fBi\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
-	invtriangle: \fIx	y	size\fP	\fBi\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
+letter: \fIx	y	size	string\fP	\fBl\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
-	letter: \fIx	y	size	string\fP	\fBl\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
+octagon: \fIx	y	size\fP	\fBg\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
-	octagon: \fIx	y	size\fP	\fBg\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
+pentagon: \fIx	y	size\fP	\fBn\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
-	pentagon: \fIx	y	size\fP	\fBn\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
+rect: \fIx	y	xwidth	ywidth\fP	\fBr\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
-	rect: \fIx	y	xwidth	ywidth\fP	\fBr\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
+square: \fIx	y	size\fP	\fBs\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
-	square: \fIx	y	size\fP	\fBs\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
+triangle: \fIx	y	size\fP	\fBt\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
-	triangle: \fIx	y	size\fP	\fBt\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
-.br
-	wedge: \fIx	y	radius	dir1	dir2\fP	\fBw\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
-.br
+wedge: \fIx	y	radius	dir1	dir2\fP	\fBw\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
+.RE
 .sp
 When designing your symbol, the \fIx, y\fP and other dimensions are relative to a symbol of size 1, and all the
 dimensions will be scaled by the actual symbol size chosen at run-time.  To design a symbol, make a grid paper
