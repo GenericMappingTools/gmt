@@ -241,15 +241,15 @@ painted and filled with a pattern.  Other standard geometric symbols can also be
 these can only be painted, not filled with a pattern (use the freeform polygons to include a triangle that can be filled
 with a pattern).  Generate freeform polygons by starting with an anchor point:
 .br
-\fIx0	y0\fP	\fBM\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
+	\fIx0	y0\fP	\fBM\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
 and draw a straight line from the current point to the next point with
 .br
-\fIx	y\fP	\fBD\fP
+	\fIx	y\fP	\fBD\fP
 .br
 or add an arc by using
 .br
-\fIxc	yc	r	dir1	dir2\fP	\fBA\fP
+	\fIxc	yc	r	dir1	dir2\fP	\fBA\fP
 .br
 When a record other than the \fBD\fP or \fBA\fP is encountered, the polygon is closed and considered complete.
 The optional pen and fill setting hardwires particular values for this feature.  If not present the polygon's
@@ -271,6 +271,8 @@ to your custom symbol, add any number of the following plot code records:
 	hexagon: \fIx	y	size\fP	\fBh\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
 	invtriangle: \fIx	y	size\fP	\fBi\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
+.br
+	letter: \fIx	y	size	string\fP	\fBi\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
 	rect: \fIx	y	xwidth	ywidth\fP	\fBr\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
