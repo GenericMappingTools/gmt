@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.19 2001-04-18 22:41:24 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.20 2001-04-18 22:53:13 pwessel Exp $
 #
 #	Automatic installation of GMT version 3.4
 #	Version for the Bourne shell (or compatible)
@@ -792,7 +792,7 @@ EOF
 
 if [ $# -gt 0 ] && [ $1 = "-h" ]; then
 	cat << EOF >&2
-install_gmt 1.52 - Automatic installation of GMT ${VERSION}
+install_gmt - Automatic installation of GMT ${VERSION}
 
 GMT is installed in the background following the gathering
 of installation parameters.  These parameters are obtained
