@@ -343,8 +343,8 @@ Distance from base of axis annotations to the top of the axis label [LEN_5_SI (o
 Determines the maximum length (> 0) of individual straight line-segments when drawing arcuate lines  [TOL_SI (or TOL_US)]
 .TP
 .B MAP_SCALE_FACTOR
-Sets the central scale factor (> 0) used for the Polar Stereographic and Transverse Mercator projections.
-Typically, it is set to 0.9996 to minimize areal distortion  [0.9996].
+Changes the default map scale factor used for the Polar Stereographic [0.9996], UTM [0.9996], and Transverse Mercator [1] projections
+in order to minimize areal distortion.  Provide a new scale-factor or leave as default.
 .TP
 .B MAP_SCALE_HEIGHT
 Sets the height (> 0) on the map of the map scale bars drawn by various programs [LEN_1_SI (or LEN_1_US)].
