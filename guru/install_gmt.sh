@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.8 2001-03-19 18:15:08 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.9 2001-03-22 17:12:44 pwessel Exp $
 #
 #	Automatic installation of GMT version 3.4
 #	Version for the Bourne shell (or compatible)
@@ -107,7 +107,7 @@ cat << EOF > gmt_install.ftp_gzsizes
 EOF
 cat << EOF >&2
 ====>>>> Interactive installation of GMT <<<<====
-		  $Revision: 1.8 $
+		  $Revision: 1.9 $
 		  
 We first need a questions and answer session to
 determine how and where GMT is to be installed.
@@ -150,6 +150,18 @@ fi
 #--------------------------------------------------------------------------------
 
 GMT_make=`get_def_answer "Enter make utility to use" "make"`
+
+#--------------------------------------------------------------------------------
+#	FTP MODE
+#--------------------------------------------------------------------------------
+cat << EOF >&2
+
+If you are behind a firewall you are unlikely to have permission to initiate a
+normal ftp session (which involves the server connecting back to the client).
+If so, you may want to select passive ftp mode.
+
+EOF
+passive_ftp=`get_def_answer "Do you want passive ftp transmission (y/n)" "n"`
 
 #--------------------------------------------------------------------------------
 #	NETCDF SETUP
@@ -539,6 +551,7 @@ GMT_make=$GMT_make
 netcdf_ftp=$netcdf_ftp
 netcdf_install=$netcdf_install
 netcdf_path=$netcdf_path
+passive_ftp=$passive_ftp
 #---------------------------------------------
 #       GMT FTP SECTION
 #---------------------------------------------
@@ -860,6 +873,10 @@ if [ $netcdf_install = "y" ]; then
 #		Set-up ftp command
   
 		echo "user anonymous $USER@" > $$
+		if [ $passive_ftp = "y" ]; then
+			echo "passive" >> $$
+			echo "quote pasv" >> $$
+		fi
 		echo "cd pub/netcdf" >> $$
 		echo "binary" >> $$
 		echo "get netcdf.tar.Z" >> $$
@@ -951,6 +968,10 @@ if [ $GMT_ftp = "y" ]; then
 #	Set-up ftp command
   
 	echo "user anonymous $USER@" > install_gmt.ftp_list
+	if [ $passive_ftp = "y" ]; then
+		echo "passive" >> install_gmt.ftp_list
+		echo "quote pasv" >> install_gmt.ftp_list
+	fi
 	echo "cd $DIR" >> install_gmt.ftp_list
 	echo "binary" >> install_gmt.ftp_list
 	make_ftp_list $GMT_get_progs progs

@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+REM	$Id: gmtsuppl.bat,v 1.2 2001-03-22 17:17:36 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
@@ -19,10 +19,11 @@ REM
 REM	Contact info: www.soest.hawaii.edu/gmt
 REM --------------------------------------------------------------------
 REM This extremely lame DOS batch file will compile
-REM the GMT 3.3.6 supplemental programs under WIN32 using
+REM the GMT 3.4 supplemental programs under WIN32 using
 REM Microsoft Visual C/C++ tools.  Not yet set up for mex.
+REM Note: Optimizing all at /O2 except meca which seems unstable
 REM
-REM Author: Paul Wessel, 04-OCT-2000
+REM Author: Paul Wessel, 22-MAR-2001
 REM ----------------------------------------------------
 REM
 REM How to make and install GMT under Win95/98/NT:
@@ -50,8 +51,10 @@ REM STOP HERE - THE REST IS AUTOMATIC
 REM ----------------------------------------------------
 SET DLL_NETCDF="/DDLL_NETCDF"
 IF %DLLCDF%=="no" SET DLL_NETCDF=
-SET COPT=/I.. /DWIN32 /W3 /O1 /nologo %DLL_NETCDF% /DDLL_PSL /DDLL_GMT 
-IF %CHOICE%=="static" SET COPT=/I.. /DWIN32 /W3 /O1 /nologo %DLL_NETCDF%
+SET COPT=/I.. /DWIN32 /W3 /O2 /nologo %DLL_NETCDF% /DDLL_PSL /DDLL_GMT 
+IF %CHOICE%=="static" SET COPT=/I.. /DWIN32 /W3 /O2 /nologo %DLL_NETCDF%
+SET COPT2=/I.. /DWIN32 /W3 /nologo %DLL_NETCDF% /DDLL_PSL /DDLL_GMT 
+IF %CHOICE%=="static" SET COPT2=/I.. /DWIN32 /W3 /nologo %DLL_NETCDF%
 SET LOPT=/nologo /dll /incremental:no
 set LIBS=%LIBDIR%\gmt.lib %LIBDIR%\psl.lib netcdf.lib
 REM ----------------------------------------------------
@@ -90,11 +93,11 @@ REM ----------------------------------------------------
 ECHO STEP 4: Make meca
 REM ----------------------------------------------------
 cd meca
-CL %COPT% /c nrutil.c distaz.c utilmeca.c utilstrain.c submeca.c utilvelo.c
-CL %COPT% pscoupe.c utilmeca.obj submeca.obj distaz.obj nrutil.obj %LIBS%
-CL %COPT% psmeca.c utilmeca.obj nrutil.obj %LIBS%
-CL %COPT% pspolar.c utilmeca.obj submeca.obj distaz.obj nrutil.obj %LIBS%
-CL %COPT% psvelo.c utilvelo.obj utilstrain.obj %LIBS%
+CL %COPT2% /c nrutil.c distaz.c utilmeca.c utilstrain.c submeca.c utilvelo.c
+CL %COPT2% pscoupe.c utilmeca.obj submeca.obj distaz.obj nrutil.obj %LIBS%
+CL %COPT2% psmeca.c utilmeca.obj nrutil.obj %LIBS%
+CL %COPT2% pspolar.c utilmeca.obj submeca.obj distaz.obj nrutil.obj %LIBS%
+CL %COPT2% psvelo.c utilvelo.obj utilstrain.obj %LIBS%
 del *.obj
 move *.exe %BINDIR%
 cd ..
