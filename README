@@ -1,6 +1,6 @@
 #	Information for installing GMT 4
 #
-#		$Id: README,v 1.19 2004-05-18 17:29:09 pwessel Exp $ 
+#		$Id: README,v 1.20 2004-08-02 01:49:07 pwessel Exp $ 
 #
 #	Copyright (c) 1991-2004, P. Wessel & W. H. F. Smith
 #
@@ -168,9 +168,10 @@ the site that is closest to you to minimize transmission times:
 SOEST, U. of Hawaii			gmt.soest.hawaii.edu
 Lab for Satellite Altimetry, NOAA	falcon.grdl.noaa.gov
 IAG-USP, U. of Sao Paulo, BRAZIL	ftp.iag.usp.br
-Dep. Geology, U. in Oslo, Norway	ftp.geologi.uio.no
+Dep. Geology, U. in Oslo, NORWAY	ftp.geologi.uio.no
 ISV, Hokkaido U, Sapporo, JAPAN		ftp.eos.hokudai.ac.jp
-Charles Sturt U., Albury, Australia	life.csu.edu.au
+Charles Sturt U., Albury, AUSTRALIA	life.csu.edu.au
+GDS, Vienna U. of Techology, AUSTRIA	gd.tuwien.ac.at
 
 Extract the files and put them in the directory pointed to by
 GMTHOME (see above).
@@ -449,10 +450,10 @@ and install programs, type
 ------------------
 
 	A complete set of the example scripts used to create the
-20 example plots, including all necessary data files can be
+25 example plots, including all necessary data files can be
 found in the GMT_scripts.tar.gz (or .bz2) archive.
 Copy this to your gmt directory and install there if you would like
-these scripts.  After install, you can run all 20 examples from the
+these scripts.  After install, you can run all 25 examples from the
 src directory using
 
 	make run-examples.
