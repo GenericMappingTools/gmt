@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.17 2004-08-26 03:16:58 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.18 2004-08-26 03:50:47 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -26,28 +26,29 @@ Please send your comments to
 
 \section{What is new in \gmt\ 4?}
 
-\GMT\ 4 represents a major overhaul of the package; hence the major version increment.  There are three
-categories of changes that has been implemented:
+\GMT\ 4 represents a major overhaul of the package; hence the major version number increment.  There are four
+categories of changes that have been implemented:
 \begin{description}
 \item [Time-series support.]  \GMT\ can now read and write time-series data where
 the time coordinates are of the form {\it date}{\bf T}{\it clock}.  The formats
 used for {\it date} and {\it clock} are under the user's control.  Both Gregorian
 and ISO calendars are supported.  Frame annotation for time-series are now supported
-via the \Opt{B} option which has many new modifiers to accomodate the vast number of
+via the \Opt{B} option; there are many new modifiers reflecting the vast number of
 ways one may want to annotate time axes, including support for primary and secondary
-annotation levels and the day- and month-names in numerous languages (if your language
-is not supported, send us the info we need).  The capability to handle time (in \Opt{R},
-\Opt{J}, \Opt{B}, i/o and plotting) represents considerable changes ``under the hood'',
+annotation levels and the day- and month-names in numerous languages (send us the info
+we need if your language is not supported).  The capability to handle time (in \Opt{R},
+\Opt{J}, \Opt{B}, i/o, and plotting) required considerable changes ``under the hood'',
 including the introduction of numerous new \GMTprog{gmtdefaults} parameters to make
 time series support as ``generic'' as we need it to be.
 \item [New Tools.]  Three new tools have been added:
 \begin{enumerate}
 \item \GMTprog{gmt2rgb}: Make red, green, and blue component gridfiles from an image (to be
-used for false color images or draping).
-\item \GMTprog{grdblend}: Blend several partially over-lapping grdfiles onto one combined grid.
-\item \GMTprog{pslegend}: Plot elaborate legends on maps.
+used with new options for false color imaging or image draping by \GMTprog{grdimage} or \GMTprog{grdview}).
+\item \GMTprog{grdblend}: Blend several partially over-lapping grdfiles onto one combined grid.  Output
+grid is written one row at the time so enormous grids can be created.
+\item \GMTprog{pslegend}: Design and plot elaborate legends on maps.
 \end{enumerate}
-\item [New Program Options].  Many programs have received additional options or
+\item [New Program Options.]  Many programs have received additional options or
 features that enhances their usefulness:
 \begin{itemize}
 \item \GMTprog{blockmean}:	New option \Opt{Sw} will return weight sum while \Opt{Sz} returns
@@ -55,28 +56,29 @@ the data sums (i.e., the same as \Opt{S}).
 \item \GMTprog{filter1d}:	New filters \Opt{Fl$|$L$|$u$|$U} that return extreme values.
 \item \GMTprog{gmtconvert}:	Added new options \Opt{F}, \Opt{A},  and \Opt{I} that simulate
 \UNIX\ \progname{cut}, \progname{paste}, and \progname{tail} \Opt{r} (or \progname{tac}) capabilities.
-Otion \Opt{E} reports first and last point per segment only, \Opt{L} lists the segment headers only,
+Option \Opt{E} reports first and last point per segment only, \Opt{L} lists the segment headers only,
 while \Opt{S} lists records from segments whose header matches a given text pattern.
 \item \GMTprog{gmtmath}:	Added new operators for solving least squares problems ({\bf COL, LSQFIT}),
 finding function roots ({\bf ROOTS}), and evaluating critical values ({\bf CHICRIT, FCRIT, TCRIT, ZCRIT}).
-We added some general functions ({\bf SINC, LOG2, LRAND}) and miscellaneous operations ({\bf FLIPUD, NEQ}).
-The \Opt{S} option now takes a modifier to select first or last record only.
+We also added some general functions ({\bf SINC, LOG2, LRAND}) and miscellaneous operations ({\bf FLIPUD, NEQ}).
+The \Opt{S} option may now take a modifier to select first or last record only.
 \item \GMTprog{gmtselect}:	New option  \Opt{Z} to pass or skip based of $z$-range.
 \item \GMTprog{grd2cpt}:	New options  \Opt{Q} for logarithmic scales, \Opt{E} for equidistant color
 intervals, \Opt{R} for selecting a grid sub-region, and \Opt{N} to suppress output of B, N, F colors.
-\item \GMTprog{grd2xyz}:	New option \Opt{W} to write constant weight factor, and the ability to
-process several grid files at the same time.
-\item \GMTprog{grdcontour}:	Expanded the \Opt{G} option to handle 5 ways to place contour labels. 
-\item \GMTprog{grdedit}:	New option \Opt{N} to replaces some node values given {\it x, y, z} data
-in a table (options \Opt{H}, \Opt{b}, \Opt{f}, and \Opt{:} added for file support).
+\item \GMTprog{grd2xyz}:	New option \Opt{W} to write constant weight factor as 4th output column,
+and ability to process several grid files at the same time.
+\item \GMTprog{grdcontour}:	Expanded the \Opt{G} option to handle 5 algorithms (4 new) for the placement
+of contour labels. 
+\item \GMTprog{grdedit}:	New option \Opt{N} to replace selected node values given {\it x, y, z} data
+in table form (options \Opt{H}, \Opt{b}, \Opt{f}, and \Opt{:} added for file support).
 \item \GMTprog{grdfilter}:	New geospatial filters \Opt{Fl$|$L$|$u$|$U} that return extreme values. 
 \item \GMTprog{grdimage}:	New option for colormasking (\Opt{Q}; \PS\ Level 3 only), \PS\ image 
 interpolation (\Opt{E}{\it -dpi}), and false RGB color image (if given three grids).
 \item \GMTprog{grdinfo}:	New option to create argument for \GMTprog{makecpt} (\Opt{T}) and to round-off
 region (\Opt{I}). 
 \item \GMTprog{grdmath}:	Added new operators for critical values ({\bf CHICRIT, FCRIT, TCRIT, ZCRIT}),
-geospatial analysis ({\bf LDIST,  PDIST, INSIDE}), for calculating azimuths ({\bf CAS, SAZ}), some general
-functions ({\bf SINC, LOG2, LRAND}) and miscellaneous grid operations ({\bf FLIPLR, FLIPUD, ROTX, ROTY, NEQ,
+geospatial analysis ({\bf LDIST,  PDIST, INSIDE}) and for calculating azimuths ({\bf CAS, SAZ}).  We have
+also added some general functions ({\bf SINC, LOG2, LRAND}) and a few grid operations ({\bf FLIPLR, FLIPUD, ROTX, ROTY, NEQ,
 INRANGE}).  We may now create multiple output grids from a single command.
 \item \GMTprog{grdreformat}: Option to suppress header in raw output (\Opt{N}).
 \item \GMTprog{grdsample}:	Option to push the bilinear interpolation closer to nodes that are NaN (\Opt{Q}).
@@ -87,53 +89,53 @@ and blue component grids (\Opt{G}).  Also,  drapegrids can have higher resolutio
 \item \GMTprog{makecpt}:	New options \Opt{Q} for logarithmic scales and \Opt{N} to suppress output
 of B, N, F colors.
 \item \GMTprog{mapproject}:	New options for datum conversions (\Opt{T}, \Opt{E}, and \Opt{Q}), azimuth and
-back-azimuth (\Opt{A}) and point distance (\Opt{G}) calculations, and distances to a line (\Opt{L}.
+back-azimuth (\Opt{A}) and point distance (\Opt{G}) calculations, and to calculate distances to a line (\Opt{L}.
 \item \GMTprog{minmax}:		Added \Opt{T}{\it dz} option to produce \Opt{T} string for \GMTprog{makecpt},
-\Opt{E} for returning extreme records, and \Opt{I} was extended to handle any number of columns if \Opt{C} is used.
+\Opt{E} for returning extreme records, and the \Opt{I} option was extended to handle any number of columns if \Opt{C} is used.
 \item \GMTprog{psbasemap}:	Extended \Opt{L} to allow alternate label and justification and added \Opt{T}
 for directional rose ornament or magnetic compass directions.
 \item \GMTprog{pscoast}:	Extended \Opt{L} to allow alternate label and justification and added \Opt{T}
 for directional rose ornament or magnetic compass directions.
-\item \GMTprog{pscontour}:	Expanded the \Opt{G} option to handle 5 ways to place contour labels. 
+\item \GMTprog{pscontour}:	Expanded the \Opt{G} option to handle 5 algorithms (4 new) for the placement
+of contour labels. 
 \item \GMTprog{psimage}:	\PS\ image interpolation (\Opt{W}{\it -xlength}), and justification option
 in \Opt{C}.
-\item \GMTprog{psscale}:	Options to annotate on opposite side (\Opt{A}) and \Opt{E}[{\bf b$|$f}] to set
-back or foreground triangle only.  Also, draw discrete table with centered annotations by appending an optional
+\item \GMTprog{psscale}:	Options to annotate on opposite side (\Opt{A}) and to set back or foreground
+triangle only (\Opt{E}[{\bf b$|$f}] ).  Also, draw discrete color-key table with centered annotations by appending an optional
 {\it gap} to the \Opt{L} option. 
-\item \GMTprog{pstext}: 	Option \Opt{A} if azimuths rather than angles are given
-\item \GMTprog{psxy}: 	Line color control via \Opt{C}, offset symbols (with \Opt{D}), access custom symbols
-(\Opt{Sk}; use 30 that come with \GMT\ or design your own), many new symbols (horizontal and vertical dashes,
+\item \GMTprog{pstext}: 	New option \Opt{A} should azimuths rather than angles be given,
+\item \GMTprog{psxy}: 	Line color control (via \Opt{C}), symbol position offset (with \Opt{D}), custom symbols access 
+(with \Opt{Sk}; use any of the 30 that come with \GMT\ or design your own), many new symbols (horizontal and vertical dashes,
 pentagon, octagon, rectangle, double-header and centered vectors), and annotated (``quoted'') lines with \Opt{Sq}.
 \item \GMTprog{psxyz}: 	Same, plus vertical dash symbol.
 \item \GMTprog{xyz2grd}: 	Added \Opt{Au$|$l} for upper/lower value at each node.
 \end{itemize}
-\item [General enhancements.]  These affect most or all programs under the hood:
+\item [General enhancements.]  These affect most of the programs:
 \begin{itemize}
-\item New shorthand for the most recent projection (\Opt{J}).
-\item Options for phase-shifting the stride and supply prefix for annotations (\Opt{B}).
-\item Override \GMT\ defaults directly on the command line with {--}{--}\emph{PAR=value} options.
-\item Choose from 50 ellipsoids and 207 datums, plus add custom values.
+\item New shorthand to repeat the most recent projection (\Opt{J}).
+\item Options for phase-shifting the stride and supply a prefix for frame annotations (\Opt{B}).
+\item Override \GMT\ defaults directly on the command line with any number of {--}{--}\emph{PAR=value} options.
+\item Now choose from 50 ellipsoids and 207 datums, plus add additional custom values.
 \item Numerous new \GMT\ defaults parameters, mostly in support of time-series functionality.
 \item Shorthand for global regions (\Opt{Rg$|$d}).
-\item Full support for either RGB, HSV, or CMYK in pen/fill options or in cpt files.
-\item Support for color names.
-\item Choice of unit when specifying pen thickness (cm, inch, point)
+\item Full support for either RGB, HSV, or CMYK in pen/fill command-line options or in cpt files.
+\item Support for English color names (e.g., red, lightbrown).
+\item Choice of unit when specifying pen thickness (cm, inch, point).
 \item Easier pen specification mechanism, with predefined names for certain pen thicknesses.
-\item Centering plots on current page with \Opt{Xc}, \Opt{Yc}.
-\item More control on in/output formats (\Opt{f}, \Opt{:}[{\bf i$|$o}]).
+\item Centering of plots on current page with \Opt{Xc}, \Opt{Yc}.
+\item More control over input/output table formats (\Opt{f}, \Opt{:}[{\bf i$|$o}]).
 \item Ability to read and write NOAA/NGDC GRD98 grid format.
 \item Ability to add additional fonts.
 \item Custom paper media size (useful for posters and large maps).
-\item All text is now justified by the \PS\ interpreter itself.
+\item All text are now justified by the \PS\ interpreter.
 \item Better support for various international character encodings.
-\item New Appendix M (color tables), N (custom symbols), and O (contours and ``quoted lines'').
-\item Use \filename{.gmtdefaults4} and \filename{.gmtcommands4} to ensure peaceful coexistance with \GMT\ 3-series.
+\item New Appendices M (color tables), N (custom symbols), O (contours and ``quoted lines''), and P
+(using both \GMT\ 3 and 4).
+\item New hidden files \filename{.gmtdefaults4} and \filename{.gmtcommands4} to ensure peaceful coexistance with \GMT\ 3-series.
 \item Data files in directories pointed to by environmental parameters {\bf \$GMT\_DATADIR}, {\bf \$GMT\_GRIDDIR},
-and {\bf \$GMT\_IMGDIR} can be specified without full path.
+and {\bf \$GMT\_IMGDIR} can be specified without their full path names.
 \item We have added five new examples.
 \item Utility \progname{gmtswitch} simplifies switching between installed \GMT\ versions.
 \end{itemize}
 \end{description}
-Appendix P discusses how you can have both the \GMT\ 3.x-series and \GMT\ 4 installed and have them coexist peacefully,
-and switch back and forth between versions.
 
