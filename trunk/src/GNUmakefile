@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.20 2002-08-26 19:22:45 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.21 2003-04-05 02:32:22 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -77,6 +77,7 @@ GMT_H	= gmt.h \
 	  gmt_io.h \
 	  gmt_notposix.h \
 	  gmt_notunix.h \
+	  gmt_ellipsoids.h \
 	  pslib.h
 
 GMT_I	= gmt_init.h \
@@ -163,6 +164,10 @@ gmt_keywords.h:
 gmt_keycases.h:
 		grep -v '^#' gmt_keywords.d | awk '{printf "#define GMTCASE_%s\t%d\n", $$1, NR-1}' > gmt_keycases.h
 		
+gmt_ellipsoids.h:
+		grep -v '^#' Ellipsoids.txt | awk '{printf "\t\t{ \"%s\", %d, %s, 0.0, 1.0/%s },\n", $$1, $$2, $$3, $$4}' | sed '$$s/\},/\}/' > gmt_ellipsoids.h
+		echo "Make sure you have #define N_ELLIPSOIDS `cat gmt_ellipsoids.h | wc -l` in gmt.h"
+
 install:	all
 		if [ ! -d $(bindir) ]; then \
 			mkdir -p $(bindir); \
