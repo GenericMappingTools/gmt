@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.7 2001-08-16 23:30:53 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.8 2001-08-17 00:31:36 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -111,6 +111,14 @@ void GMT_decode_calclock_formats ();
 void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S);
 void GMT_date_C_format (char *template, struct GMT_DATE_IO *S);
 void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S);
+
+int	GMT_scanf_clock (char *s, double *val);
+int	GMT_scanf_calendar (char *s, GMT_cal_rd *rd);
+int	GMT_scanf_ISO_calendar (char *s, GMT_cal_rd *rd);
+int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd);
+int	GMT_scanf_geo (char *s, double *val);
+int	GMT_scanf_float (char *s, double *val);
+
 
 /* Table I/O routines for ascii and binary io */
 
@@ -1182,3 +1190,406 @@ int GMT_decode_coltype (char *arg)
 	}
 	return (0);
 }
+
+int	GMT_scanf_clock (char *s, double *val) {
+
+	/* On failure, return -1.  On success, set val and return 0.
+	
+	Looks for apAP, but doesn't discover a failure if called
+	with "11:13:15 Hello, Walter", because it will find an a. 
+	
+	Doesn't check whether use of a or p matches stated intent
+	to use twelve_hour_clock.
+	
+	ISO standard allows 24:00:00, so 86400 is not too big.
+	If the day of this clock might be a day with a leap second, 
+	(this routine doesn't know that) then we should also allow
+	86401.  A value exceeding 86401 is an error.
+	*/
+	
+	int	k, hh, mm, add_noon = 0;
+	int	hh_limit = 24;	/* ISO std allows 24:00:00  */
+	double	ss, x;
+	char	*p;
+	
+	if ( (p = strpbrk (s, "apAP") ) ) {
+		switch (p[0]) {
+			case 'a':
+			case 'A':
+				add_noon = 0;
+				hh_limit = 12;
+				break;
+			case 'p':
+			case 'P':
+				add_noon = 43200;
+				hh_limit = 12;
+				break;
+			default:
+				return (-1);
+				break;
+		}
+	}
+	
+	k = sscanf(s, GMT_io.clock_input.format, &hh, &mm, &ss);
+	if (k == 0) return (-1);
+	if (hh < 0 || hh > hh_limit) return (-1);
+	
+	x = add_noon + 3600*hh;	
+	if (k > 1) {
+		if (mm < 0 || mm > 59) return (-1);
+		x += 60*mm;
+	}
+	if (k > 2) {
+		x += ss;
+		if (x > 86401.0) return (-1);
+	}
+	*val = x;
+	return (0);
+}
+
+	
+	
+int	GMT_scanf_calendar (char *s, GMT_cal_rd *rd) {
+
+	/* On failure, return -1.  On success, set rd and return 0 */
+	if (GMT_io.date_input.iso_calendar) {
+		return (GMT_scanf_ISO_calendar (s, rd));
+	}
+	return (GMT_scanf_g_calendar (s, rd));
+}
+
+int	GMT_scanf_ISO_calendar (char *s, GMT_cal_rd *rd) {
+
+	/* On failure, return -1.  On success, set rd and return 0.
+	Assumes that year, week of year, day of week appear in that
+	order only, and that the format string can handle the W.
+	Assumes also that it is always OK to fill in missing bits.  */
+
+	int	k, n, ival[3];
+	
+	if ( (n = sscanf(s, GMT_io.date_input.format, &ival[0], &ival[1], &ival[2]) ) == 0) return (-1);
+	
+	/* Handle possible missing bits:  */
+	for (k = n; k < 3; k++) ival[k] = 1;
+	
+	if (ival[1] < 1 || ival[1] > 53) return (-1);
+	if (ival[2] < 1 || ival[2] > 7) return (-1);
+	if (GMT_io.date_input.Y2K_year) {
+		if (ival[0] < 0 || ival[0] > 99) return (-1);
+		ival[0] = GMT_y2_to_y4_yearfix (ival[0]);
+	}
+	*rd = GMT_rd_from_iywd (ival[0], ival[1], ival[2]);
+	return (0);
+}
+
+int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd) {
+
+	/* Return -1 on failure.  Set rd and return 0 on success.  
+	
+	For gregorian calendars.  */
+	
+	int	i, k, ival[3];
+	
+	if (GMT_io.date_input.day_of_year) {
+		/* Calendar uses year and day of year format.  */
+		if ( (k = sscanf (s, GMT_io.date_input.format,
+			&ival[GMT_io.date_input.order[0]],
+			&ival[GMT_io.date_input.order[3]]) ) == 0) return (-1);
+		if (k < 2) {
+			if (GMT_io.date_input.truncated_cal_is_ok) {
+				ival[1] = 1;	/* Set first day of year  */
+			}
+			else {
+				return (-1);
+			}
+		}
+		if (GMT_io.date_input.Y2K_year) {
+			if (ival[0] < 0 || ival[0] > 99) return (-1);
+			ival[0] = GMT_y2_to_y4_yearfix (ival[0]);
+		}
+		k = (GMT_is_gleap(ival[0])) ? 366 : 365;
+		if (ival[1] < 1 || ival[1] > k) return (-1);
+		*rd = GMT_rd_from_gymd (ival[0], 1, 1) + ival[1] - 1;
+		return (0);
+	}
+	
+	/* Get here when calendar type has months and days of months.  */
+	if ( (k = sscanf (s, GMT_io.date_input.format,
+		&ival[GMT_io.date_input.order[0]],
+		&ival[GMT_io.date_input.order[1]],
+		&ival[GMT_io.date_input.order[2]]) ) == 0) return (-1);
+	if (k < 3) {
+		if (GMT_io.date_input.truncated_cal_is_ok) {
+			ival[2] = 1;	/* Set first day of month  */
+			if (k == 1) ival[1] = 1;	/* Set first month of year */
+		}
+		else {
+			return (-1);
+		}
+	}
+	if (GMT_io.date_input.Y2K_year) {
+		if (ival[0] < 0 || ival[0] > 99) return (-1);
+		ival[0] = GMT_y2_to_y4_yearfix (ival[0]);
+	}
+	if (ival[1] < 1 || ival[1] > 12 || ival[2] < 1) return (-1);
+	if (ival[1] == 2) {
+		k = (GMT_is_gleap (ival[0]) ) ? 29 : 28;
+		if (ival[2] > k) return (-1);
+	}
+	else {
+		i = ival[1]%2;
+		if (ival[1] < 8) {
+			k = 30 + i;
+		}
+		else {
+			k = 31 - i;
+		}
+		if (ival[2] > k) return (-1);
+	}
+	*rd = GMT_rd_from_gymd (ival[0], ival[1], ival[2]);
+	return (0);
+}
+		
+
+int	GMT_scanf_geo (char *s, double *val) {
+
+	/* Try to read a character string token stored in s,
+	knowing that it should be a geographical variable.  
+	If successful, stores value in val and returns one of
+	GMT_IS_UNKNOWN, GMT_IS_GEO, GMT_IS_LAT, GMT_IS_LON, 
+	whichever can be determined from the format of s.
+	If unsuccessful, does not store anything in val and
+	returns GMT_IS_NAN.  
+	This should have essentially the same functionality
+	as GMT_scanf_old(), except that the expectation is
+	now used and returned, and this also permits a double
+	precision format in the minutes or seconds, and does
+	more error checking.  However, this is not optimized
+	for speed (yet).  WHFS, 16 Aug 2001
+	
+	note:  mismatch handling (e.g. this routine finds a lon
+	but calling routine expected a lat) is not done here.
+
+	*/
+	
+	char	scopy[64], suffix, *p, *p2;
+	double	dd, dm, ds;
+	int	retval = GMT_IS_UNKNOWN;
+	int	k, id, im, ncolons;
+	BOOLEAN	negate = FALSE;
+
+	k = strlen(s);
+	if (k == 0) return (GMT_IS_NAN);
+	if (!(isdigit ( (int)s[k-1]) ) ) {
+		suffix = s[k-1];
+		switch (suffix) {
+			case 'W':
+			case 'w':
+				negate = TRUE;
+				retval = GMT_IS_LON;
+				break;
+			case 'E':
+			case 'e':
+				retval = GMT_IS_LON;
+				break;
+			case 'S':
+			case 's':
+				negate = TRUE;
+				retval = GMT_IS_LAT;
+				break;
+			case 'N':
+			case 'n':
+				retval = GMT_IS_LAT;
+				break;
+			default:
+				return (GMT_IS_NAN);
+				break;
+		}
+		k--;
+	}
+	if (k >= 64) return (GMT_IS_NAN);
+	strncpy (scopy, s, k);	/* Copy all but the suffix  */
+	scopy[k] = 0;
+	if ( (p = strpbrk (scopy, "dD")) ) {
+		/* We found a D or d.  */
+		if (strlen(p) < 1 || (strpbrk (&p[1], "dD:") ) ){
+			/* It is at the end, or followed by a 
+				colon or another d or D.  */
+			return (GMT_IS_NAN);
+		}
+		/* Map it to an e, permitting FORTRAN Double
+			Precision formats.  */
+		p[0] = 'e';
+	}
+	p = scopy;
+	while ( (p2 = strpbrk (p, ":")) ) {
+		if (strlen(p2) < 1) {
+			/* Shouldn't end with a colon  */
+			return (GMT_IS_NAN);
+		}
+		ncolons++;
+		if (ncolons > 2) return (GMT_IS_NAN);
+		p = &p2[1];
+	}
+	
+	if (ncolons && retval == GMT_IS_UNKNOWN) retval = GMT_IS_GEO;
+	
+	switch (ncolons) {
+		case 0:
+			if ( (sscanf(scopy, "%lf", &dd) ) != 1) return (GMT_IS_NAN);
+			break;
+		case 1:
+			if ( (sscanf(scopy, "%d:%lf", &id, &dm) ) != 2) return (GMT_IS_NAN);
+			dd = (id < 0) ? id + dm * GMT_I_60 : id - dm * GMT_I_60;
+			break;
+		case 2:
+			if ( (sscanf(scopy, "%d:%d:%lf", &id, &im, &ds) ) != 3) return (GMT_IS_NAN);
+			dd = im * GMT_I_60 + ds * GMT_I_3600;
+			if (id < 0) {
+				dd = id - dd;
+			}
+			else {
+				dd = id + dd;
+			}
+			break;
+	}
+	*val = (negate) ? -dd : dd;
+	return (retval);
+}
+
+		
+int	GMT_scanf_float (char *s, double *val) {
+
+	/* Try to decode a value from s and store
+	in val.  S should not have any special format
+	(neither geographical, with suffixes or
+	separating colons, nor calendar nor clock).
+	However, D and d are permitted to map to e
+	if this would result in a success.  This
+	allows Fortran Double Precision to be readable.
+	
+	On success, return GMT_IS_UNKNOWN and store val.
+	On failure, return GMT_IS_NAN and do not touch val.
+	*/
+
+	char	scopy[64], *p;
+	double	x;
+	int	j,k;
+	
+	x = strtod (s, &p);
+	if (p[0] == 0) {
+		/* Success (non-Fortran).  */
+		*val = x;
+		return (GMT_IS_UNKNOWN);
+	}
+	if (p[0] != 'D' && p[0] != 'd') return (GMT_IS_NAN);
+	k = strlen(p);
+	if (k == 1) {
+		/* A string ending in e would be invalid  */
+		return (GMT_IS_NAN);
+	}
+	/* Make a copy of s in scopy, mapping the d or D to an e:  */
+	j = strlen(s);
+	if (j > 64) return (GMT_IS_NAN);
+	j -= k;
+	strncpy (scopy, s, (size_t)j );
+	scopy[j] = 'e';
+	strcpy (&scopy[j+1], &p[1]);
+	x = strtod(scopy, &p);
+	if (p[0] != 0) return (GMT_IS_NAN);
+	*val = x;
+	return (GMT_IS_UNKNOWN);
+}
+
+int	GMT_scanf (char *s, int expectation, double *val) {
+
+	/* Called with s pointing to a char string, expectation
+	indicating what is known/required/expected about the
+	format of the string.  Attempts to decode the string to
+	find a double value.  Upon success, loads val and 
+	returns type found.  Upon failure, does not touch val,
+	and returns GMT_IS_NAN.  Expectations permitted on call
+	are
+		GMT_IS_UNKNOWN	we expect an uncomplicated float.
+	*/
+	
+	char	calstring[64], clockstring[64], *p;
+	double	x;
+	int	callen, clocklen;
+	GMT_cal_rd rd;
+	
+	
+	if (expectation & GMT_IS_GEO) {
+		/* True if either a lat or a lon is expected  */
+		return (GMT_scanf_geo (s, val));
+	}
+	
+	if (expectation == GMT_IS_UNKNOWN) {
+		/* True if no special format is expected or allowed  */
+		return (GMT_scanf_float (s, val));
+	}
+	
+	if (expectation == GMT_IS_RELTIME) {
+		/* True if we expect to read a float with no special
+		formatting, and then convert that float to our time
+		based on user's epoch and units.  */
+		if ( ( GMT_scanf_float (s, &x) ) == GMT_IS_NAN) return (GMT_IS_NAN);
+		*val = GMT_dt_from_usert (x);
+		return (GMT_IS_ABSTIME);
+	}
+	
+	if (expectation == GMT_IS_ABSTIME) {
+		/* True when we expect to read calendar and/or
+		clock strings in user-specified formats.  If both 
+		are present, they must be in the form
+		<calendar_string>T<clock_string>.
+		If only a calendar string is present, then either
+		<calendar_string> or <calendar_string>T are valid.
+		If only a clock string is present, then it must
+		be preceded by a T:  T<clock_string>, and the time
+		will be treated as if on day one of our calendar.  */
+		
+		callen = strlen (s);
+		if (callen < 2) return (GMT_IS_NAN);	/* Maybe should be more than 2  */
+		
+		if ( (p = strchr ( s, (int)('T') ) ) == NULL) {
+			/* There is no T.  Put all of s in calstring.  */
+			clocklen = 0;
+			strcpy (calstring, s);
+		}
+		else {
+			clocklen = strlen(p);
+			callen -= clocklen;
+			strncpy (calstring, s, callen);
+			strcpy (clockstring, &p[1]);
+			clocklen--;
+		}
+		x = 0.0;
+		if (clocklen && GMT_scanf_clock (clockstring, &x) ) {
+			return (GMT_IS_NAN);
+		} 
+		rd = 1;
+		if (callen && GMT_scanf_calendar (calstring, &rd) ) {
+			return (GMT_IS_NAN);
+		}
+		*val = GMT_rdc2dt (rd, x);
+		return (GMT_IS_ABSTIME);
+	}
+	
+	if (expectation == GMT_IS_ARGTIME) {
+		return (GMT_scanf_argtime (s, val));
+	}
+	
+	fprintf (stderr, "GMT_LOGIC_BUG:  GMT_scanf() called with invalid expectation.\n");
+	return (GMT_IS_NAN);
+}
+
+int	GMT_scanf_argtime (char *s, double *val) {
+
+	/* s points to a string which may be absolute or relative
+	time, but must be interpreted as time, and must be */
+		
+	fprintf (stderr, "GMT_scanf_argtime is a dummy routine.\n");
+	return (GMT_IS_NAN);
+}
+

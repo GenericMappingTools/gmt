@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.3 2001-08-15 15:49:09 wsmith Exp $
+ *	$Id: gmt_calclock.c,v 1.4 2001-08-17 00:31:36 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -504,3 +504,28 @@ void GMT_gcal_from_rd (GMT_cal_rd date, struct GMT_gcal *gcal) {
 	gcal->iso_w = 1 + (int)floor((date - GMT_rd_from_iywd (gcal->iso_y, 1, 1))/7.0);
 	gcal->iso_d = (gcal->day_w) ? gcal->day_w : 7;
 }
+
+GMT_dtime	GMT_dt_from_usert (double x) {
+
+	/* If we are going to allow the user to have irregular times
+		(months, years) then we have to do something complicated.
+		
+		For now, just scale and offset ?
+	*/
+	
+	fprintf (stderr, "GMT_dt_from_usert is a dummy routine.\n");
+	return ( (GMT_dtime)x);
+}
+
+int	GMT_y2_to_y4_yearfix (int y2) {
+
+	/* Convert 2-digit year to 4-digit year.
+		This is deliberately slow to punish
+		people still using this, because it is written
+		in August 2001, 2 years after the Y2K bug.  */
+	
+	fprintf (stderr, "GMT_y2_to_y4_yearfix is a dummy routine.\n");
+	return (y2);
+}
+
+	
