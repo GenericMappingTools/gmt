@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.89 2003-04-20 07:35:41 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.90 2003-07-24 21:08:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -502,9 +502,10 @@ void GMT_fill_syntax (char option)
 void GMT_pen_syntax (char option)
 {
 	fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
-	fprintf (stderr, "\t-%c[<width>][/<color>][to | ta | t<texture>:<offset>][p]\n", option);
+	fprintf (stderr, "\t-%c[<width>][/<color>][to | ta | t<texture>:<offset>][cipm]\n", option);
 	fprintf (stderr, "\t  <width> >= 0, <color> = <red>/<green>/<blue> or <gray> all in the 0-255 range,\n");
 	fprintf (stderr, "\t  <c>/<m>/<y>/<k> in 0-100%% range, or <hue>/<sat>/<val> in 0-360, 0-1, 0-1 range [when COLOR_MODEL = hsv].\n");
+	fprintf (stderr, "\t  If no unit is appended, then dots-per-inch is assumed [current dpi = %d].\n", gmtdefs.dpi);
 }
 
 void GMT_rgb_syntax (char option)
@@ -2028,33 +2029,42 @@ double GMT_convert_units (char *from, int new_format)
 		if ((have_unit = isalpha (c))) from[len-1] = '\0';	/* Temporarily remove unit */
 	}
 
-	switch (c) {
-		case 'C':	/* Centimeters */
-		case 'c':
-			old_format = 0;
-			break;
-		case 'I':	/* Inches */
-		case 'i':
-			old_format = 1;
-			break;
-		case 'M':	/* meters */
-		case 'm':
-			old_format = 2;
-			break;
-		case 'P':	/* points */
-		case 'p':
-			old_format = 3;
-			break;
-		default:
-			old_format = gmtdefs.measure_unit;
-			break;
-	}
+	old_format = GMT_unit_lookup (c);
 
 	value = atof (from) * GMT_u2u[old_format][new_format];
 	if (have_unit) from[len-1] = c;	/* Put back what we took out temporarily */
 	
 	return (value);
 	
+}
+
+int GMT_unit_lookup (int c)
+{
+	int unit;
+	
+	switch (c) {
+		case 'C':	/* Centimeters */
+		case 'c':
+			unit = GMT_CM;
+			break;
+		case 'I':	/* Inches */
+		case 'i':
+			unit = GMT_INCH;
+			break;
+		case 'M':	/* Meters */
+		case 'm':
+			unit = GMT_M;
+			break;
+		case 'P':	/* Points */
+		case 'p':
+			unit = GMT_PT;
+			break;
+		default:
+			unit = gmtdefs.measure_unit;
+			break;
+	}
+
+	return (unit);
 }
 
 int GMT_hash_lookup (char *key, struct GMT_HASH *hashnode, int n)
