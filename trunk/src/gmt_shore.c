@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: gmt_shore.c,v 1.2 2001-02-21 03:52:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -471,6 +471,7 @@ int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN a
 	for (id = 0; id < c->ns; id++) if (c->seg[id].entry != 4) nseg_at_level[c->seg[id].level]++;	/* Only count segments that crosses the bin */
 	for (n = 0; n <= MAX_LEVEL; n++) if (nseg_at_level[n]) high_seg_level = n;
 	
+	if (c->ns == 0) for (n = 0; n < 4; n++) high_seg_level = MIN (c->node_level[n], high_seg_level);	/* Initialize to lowest when there are no segments */
 	for (n = high_level = 0; n < 4; n++) {
 		c->node_level[n] = MIN (c->node_level[n], high_seg_level);
 		high_level = MAX (c->node_level[n], high_level);
