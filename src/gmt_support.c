@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.45 2003-04-07 02:18:54 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.46 2003-04-10 19:40:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -161,7 +161,8 @@ int GMT_getfill (char *line, struct GMT_FILL *fill)
 				}
 				else
 					n = sscanf (&line[pos], "%d/%d/%d", &fr, &fg, &fb);
-				if (n == 3) {
+				if (n == 1 || n == 3) {
+					if (n == 1) fg = fb = fr;	/* Gave gray */
 					if (f == 'f' || f == 'F') {
 						fill->f_rgb[0] = fr;
 						fill->f_rgb[1] = fg;
