@@ -8,7 +8,7 @@
 psscale \- Create grayscale or colorscale for maps
 .SH SYNOPSIS
 \fBpsscale\fP \fB\-D\fP\fIxpos/ypos/length/width[h]\fP 
-[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIcpt_file\fP ] [ \fB\-E\fP[\fIlength\fP] ] 
+ [ \fB\-A \fP ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIcpt_file\fP ] [ \fB\-E\fP[\fIlength\fP] ] 
 [ \fB\-I\fP[\fImax_intens\fP] ] [ \fB\-K\fP ] [ \fB\-L\fP ]  [ \fB\-M\fP ] [ \fB\-N\fP\fIdpi\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
 [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-X\fP\fIx-shift\fP ] 
 [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fIzfile\fP ] [ \fB\-c\fP\fIcopies\fP ]
@@ -26,6 +26,10 @@ vertical scale) and the dimensions of the scale.  Append \fIh\fP to get a horizo
 scale [Default is vertical].
 .SH OPTIONS
 No space between the option flag and the associated arguments.
+.TP
+.B \-A
+Place annotations above (instead of below) horizontal scalebars and to the left
+(instead of the right) of vertical scalebars.
 .TP
 .B \-B
 Set annotation, tick, and gridline interval for the colorbar.  The
