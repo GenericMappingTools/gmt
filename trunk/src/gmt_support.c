@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.110 2004-06-04 04:24:27 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.111 2004-06-04 05:06:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2140,7 +2140,7 @@ void GMT_contlabel_plot (struct GMT_CONTOUR *G)
 	}
 	else {	/* Opaque text boxes */
 		GMT_contlabel_drawlines (G, 0);
-		if (G->box == 2) GMT_contlabel_plotboxes (G);
+		if (project_info.three_D) GMT_contlabel_plotboxes (G);
 		GMT_contlabel_plotlabels (G, 0);
 	}
 	
