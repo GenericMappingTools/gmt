@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.19 2004-09-29 21:23:39 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.20 2004-10-02 02:26:25 pwessel Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.19 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.20 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -318,11 +318,12 @@ separate from where the smaller files reside.  The selections below are only use
 <INPUT TYPE="checkbox" NAME="checkbox_imgsrc"  CHECKED="true"> IMGSRC: Extracting grids from global altimeter files (Sandwell/Smith)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_meca"  CHECKED="true"> MECA: Plotting special symbols in seismology and geodesy<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_mex"  CHECKED="false"> MEX: Matlab interface for reading/writing GMT grdfiles (REQUIRES MATLAB*)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_mgg"  CHECKED="true"> MGG: Programs for making, managing, and plotting MGD77 and *.gmt data<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_mgd77"  CHECKED="true"> MGD77: Programs for managing and plotting MGD77 data<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_mgg"  CHECKED="true"> MGG: Programs for making, managing, and plotting *.gmt data<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_misc"  CHECKED="true"> MISC: Make posters on laserwriters and create bit-patterns<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_segyprogs"  CHECKED="true"> SEGYPROGS: Plot SEGY seismic data files<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_spotter"  CHECKED="true"> SPOTTER: Plate tectonic backtracking and hotspotting<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_x2sys"  CHECKED="true"> X2SYS: Track intersection (crossover) tools (REQUIRES MGG)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_x2sys"  CHECKED="true"> X2SYS: Track intersection (crossover) tools (REQUIRES MGG and MGD77)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_x_system"  CHECKED="true"> X_SYSTEM: MGG-specific Track intersection (crossover) tools (REQUIRES MGG)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_xgrid"  CHECKED="false"> XGRID: X11 graphical editor for netCDF-based .grd files (REQUIRES Xlibs)<BR>
 
