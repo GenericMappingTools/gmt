@@ -5,12 +5,15 @@ grdfilter \- Filter a \fI.grd\fP file in the Time domain
 \fBgrdfilter\fP \fIinput_file.grd\fP \fB\-D\fP\fIflag\fP \fB\-F\fP\fI<type><width>\fP \fB\-G\fP\fIoutput_file.grd\fP 
 [ \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fIr\fP] ] [ \fB\-T\fP ] [ \fB\-V\fP ] 
 .SH DESCRIPTION
-\fBgrdfilter\fP will filter a \fI.grd\fP file in the time domain, using a boxcar, cosine arch, 
-gaussian, median, or mode filter, and computing distances by Cartesian or Spherical geometries.  
-The output \fI.grd\fP file can optionally be generated in a sub\fB\-R\fPegion of the input, and / or at a
-new \fB\-I\fPncrement.  In this way, one may have "extra space" in the input data so that the edges will not
-be used, and the output can be within one-half-width of the input edges; also, if the filter is low-pass, then
-the output may be needed less frequently sampled than the input.
+\fBgrdfilter\fP will filter a \fI.grd\fP file in the time domain using a
+boxcar, cosine arch, gaussian, median, or mode filter and
+computing distances using Cartesian or Spherical geometries.
+The output \fI.grd\fP file can optionally be generated as a
+sub\fB\-R\fPegion of the input and/or with a new \fB\-I\fPncrement.  In this
+way, one may have "extra space" in the input data so that the
+edges will not be used and the output can be within one-half-
+width of the input edges.  If the filter is low-pass, then the
+output may be less frequently sampled than the input.
 .TP
 \fIinput_file.grd\fP
 The file of points to be filtered.
