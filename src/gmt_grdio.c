@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.8 2002-02-23 03:39:58 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.9 2002-04-02 01:30:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -424,19 +424,28 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	/* Assumes header contents is already known.  For writing we
 	 * assume that the header has already been written.  We fill
 	 * the GRD_FILE structure with all the required information.
+	 * mode can be w or r.  Upper case W or R refers to headerless
+	 * grdraster-type files.
 	 */
 	
 	int r_w;
 	int cdf_mode[2] = { NC_NOWRITE, NC_WRITE};
-	char *bin_mode[2] = { "rb", "rb+"};
+	char *bin_mode[3] = { "rb", "rb+", "wb"};
+	BOOLEAN header = TRUE;
 	 
-	if (mode == 'r') {	/* Open file for reading */
+	if (mode == 'r' || mode == 'R') {	/* Open file for reading */
+		if (mode == 'R') header = FALSE;
 		r_w = 0;
 		G->id = GMT_grd_get_i_format (file, G->name, &G->scale, &G->offset);
 		G->check = !GMT_is_dnan (GMT_grd_in_nan_value);
 	}
 	else {
-		r_w = 1;
+		if (mode == 'w') {
+			r_w = 2;
+			header = FALSE;
+		}
+		else
+			r_w = 1;
 		G->id = GMT_grd_get_o_format (file, G->name, &G->scale, &G->offset);
 		G->check = !GMT_is_dnan (GMT_grd_out_nan_value);
 	}
@@ -447,14 +456,15 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 		G->edge[0] = G->header.nx;
 		G->start[0] = 0;
 	}
-	else {				/* Regular binary file with standard GMT header */
+	else {				/* Regular binary file with/w.o standard GMT header */
 		if ((G->fp = fopen (G->name, bin_mode[r_w])) == NULL) {
 			fprintf (stderr, "%s: Error opening file %s\n", GMT_program, G->name);
 			exit (EXIT_FAILURE);
 		}
-		fseek (G->fp, (long)HEADER_SIZE, SEEK_SET);
+		if (header) fseek (G->fp, (long)HEADER_SIZE, SEEK_SET);
 		G->is_cdf = FALSE;
 	}
+
 	switch (G->id) {
 		case 0:	/* 4-byte floats */
 		case 1:
