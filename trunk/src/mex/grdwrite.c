@@ -1,5 +1,5 @@
 /*
- *	$Id: grdwrite.c,v 1.2 2002-06-27 03:58:47 pwessel Exp $
+ *	$Id: grdwrite.c,v 1.3 2003-10-20 17:43:41 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -13,7 +13,7 @@
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU General Public License for more details.
  *
- *      Contact info: www.soest.hawaii.edu/wessel
+ *      Contact info: www.soest.hawaii.edu/pwessel
  *--------------------------------------------------------------------*/
 /* Program:	grdwrite.c
  * Purpose:	matlab callable routine to write a grd file
@@ -23,15 +23,17 @@
  *		09/15/97 Phil Sharfstein: modified to Matlab 5 API
  *		10/06/98 P Wessel, upgrade to GMT 3.1 function calls
  *		11/12/98 P Wessel, ANSI-C and calls GMT_begin()
+ *		10/20/03 P Wessel, longer path names [R Mueller]
 */
  
 #include "gmt.h"
 #include "mex.h"
+#include "matrix.h"
 
 
 int grdwrite (double z_8[], double x[], double y[], double info[], char *fileout, char *title, int nx, int ny, int pix)
 {
-/*  z_8[]	:	double array for input */
+/* z_8[]	:	double array for input */
 /* x[], y[]	:	arrays for x/y */
 /* info[]	:	array for xmin, xmax, ymin, ymax, zmin, zmax, node-offset dx dy */
 /* *fileout	:	output filename */
@@ -39,6 +41,7 @@ int grdwrite (double z_8[], double x[], double y[], double info[], char *fileout
 /* nx		:	number of x points */
 /* ny		:	number of y points */
 /* pix		:	1 if pixel reg, 0 if gridline registered */
+
 	int i, j, i2, pad[4], error = 0;
 	float *z_4;           /* real array for output */
 	struct GRD_HEADER grd; 
@@ -112,8 +115,8 @@ int grdwrite (double z_8[], double x[], double y[], double info[], char *fileout
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
 	double *z_8, *info = (double *)NULL, *x, *y;
-	char fileout[80], title[80], *argv = "grdwrite-mex";
-	int error, ns, nx, ny, k, pix = 0;	/* If no info we assume gridline reg */
+	char *fileout, title[80], *argv = "grdwrite-mex";
+	int error, ns, ssz, nx, ny, k, pix = 0;	/* If no info we assume gridline reg */
 
 	if (nrhs < 3 || nrhs > 6) {
 		mexPrintf ("usage: grdwrite(Z, D, 'filename'[, 'title']);\n");
@@ -131,11 +134,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	k = (nrhs >= 5) ? 3 : 2;
 	ns = mxGetN (prhs[k]) + 1;
+	ssz = ns * sizeof (mxChar);
+
+	if (ssz > BUFSIZ)
+		mexErrMsgTxt ("grdread: filename too long\n");
+
+	fileout = mxMalloc (ssz);
 
 	if (mxGetString (prhs[k], fileout, ns + 1) ) {
 		mexPrintf ("%s\n", fileout);
 		mexErrMsgTxt ("grdwrite: failure to decode string\n");
-		return;
 	}
 	
 	title[0] = 0;
@@ -147,7 +155,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		if (mxGetString (prhs[k], title, ns + 1) ) {
 			mexPrintf ("%s\n", title);
 			mexErrMsgTxt (" *** grdwrite  failure to decode string \n");
-			return;
 		}
 	}
 
@@ -176,6 +183,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			mexErrMsgTxt ("grdwrite: failure to write file\n");
 		else
 			mexErrMsgTxt ("grdwrite: x and/or y not equidistant\n");
-		return;
 	}
+	mxFree (fileout);
+	return;
 }
