@@ -1,4 +1,4 @@
-#	$Id: Ellipsoids.txt,v 1.1 2003-03-21 02:50:38 pwessel Exp $
+#	$Id: Ellipsoids.txt,v 1.2 2003-03-21 17:10:16 pwessel Exp $
 #
 # This is the core listing of supported ellipsoids in GMT map projections.
 # To add more ellipsoids, add record sorted by year, run make_ellipsoids.sh
@@ -9,22 +9,26 @@
 WGS-84			1984 6378137.0		298.2572235630	: World Geodetic System [Default]
 OSU91A			1991 6378136.3		298.25722	: Ohio State University
 OSU86F			1986 6378136.2		298.25722	: Ohio State University
+Engelis			1985 6378136.05		298.2566	: Goodard Earth Models
 SGS-85			1985 6378136.0		298.257		: Soviet Geodetic System
 MERIT-83		1983 6378137.0		298.257		: United States Naval Observatory
 GRS-80			1980 6378137.0		298.257222101	: International Geodetic Reference System
+Lerch			1979 6378139.0		298.257		: For geoid modelling
 ATS77			1977 6378135.0		298.257		: Average Terrestrial System, Canada Maritime provinces
 IAG-75			1975 6378140.0		298.257222	: International Association of Geodesy
 Indonesian		1974 6378160.0		298.247		: Applies to Indonesia
 WGS-72			1972 6378135.0		298.26		: World Geodetic System
-NWL-10D			1972 6378135.0		298.26		: Same as WGS-72
+NWL-10D			1972 6378135.0		298.26		: Naval Weapons Lab (Same as WGS-72)
 South-American		1969 6378160.0		298.25		: Applies to South America
 Fischer-1968		1968 6378150.0		298.3		: Used by NASA for Mercury program
 Modified-Mercury-1968	1968 6378150.0		298.3		: Same as Fischer-1968
 GRS-67			1967 6378160.0		298.247167427	: International Geodetic Reference System
 International-1967	1967 6378157.5		298.25		: Worldwide use
 WGS-66			1966 6378145.0		298.25		: World Geodetic System
-NWL-9D			1966 6378145.0		298.25		: Same as WGS-66
+NWL-9D			1966 6378145.0		298.25		: Naval Weapons Lab (Same as WGS-66)
 Australian		1965 6378160.0		298.25		: Applies to Australia
+APL4.9			1965 6378137.0		298.25		: Appl. Physics
+Kaula			1961 6378163.0		298.24		: From satellite tracking
 Hough			1960 6378270.0		297.0		: Applies to the Marshall Islands
 WGS-60			1960 6378165.0		298.3		: World Geodetic System
 Fischer-1960		1960 6378166.0		298.3		: Used by NASA for Mercury program
@@ -42,6 +46,7 @@ Clarke-1880-IGN		1880 6378249.2		293.4660213	: Modified Clarke-1880 for IGN
 Clarke-1880-Jamaica	1880 6378249.136	293.46631	: Modified Clarke-1880 for Jamaica
 Clarke-1880-Merchich	1880 6378249.2		293.46598	: Modified Clarke-1880 for Merchich
 Clarke-1880-Palestine	1880 6378300.79		293.46623	: Modified Clarke-1880 for Palestine
+Andrae			1876 6377104.43		300.0		: Applies to Denmark and Iceland
 Clarke-1866		1866 6378206.4		294.9786982	: Applies to North America, the Philippines
 Clarke-1866-Michigan	1866 6378450.047484481	294.9786982	: Modified Clarke-1866 for Michigan
 Struve			1860 6378297.0		294.73		: Friedrich Georg Wilhelm Struve
@@ -57,5 +62,8 @@ Everest-1830-Kertau	1830 6377304.063	300.8017	: Modified Everest for Kertau
 Everest-1830-Timbalai	1830 6377298.556	300.8017	: Modified Everest for Timbalai
 Walbeck			1819 6376896.0		302.78		: First least squares solution by Finnish astronomer
 Plessis			1817 6376523.0		308.64		: Old ellipsoid used in France
+Delambre		1810 6376428.0		311.5		: Applies to Belgium
+CPM 			1799 6375738.7		334.29		: Comm. des Poids et Mesures, France
+Maupertius		1738 6397300.0		191.0		: Really old ellipsoid used in France
 Sphere			1980 6371008.7714	0.0		: The mean radius in GRS-80 (for spherical/plate tectonics applications)
 #--------------------------------------------------------------------------------------------------------------------------------------
