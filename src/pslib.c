@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.42 2002-05-23 22:59:16 pwessel Exp $
+ *	$Id: pslib.c,v 1.43 2002-06-19 06:36:55 ben Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1209,14 +1209,15 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 /* xscl, yscl:	Global scaling, usually left to 1,1 */
 /* page_size:	Physical width and height of paper used in points */
 /* overlay:	FALSE means print headers and macros first */
-/* mode:	First bit 0 = Landscape, 1 = Portrait, Third bit 1 = hex image, 0 = bin image
-		Forth bit 1 = abs positions, 0 = rel positions
-		10th bit 1 = CMYK image, 0 = RGB image */
+/* mode:	 1st bit 0 = Landscape, 1 = Portrait,
+                 3rd bit 0 = bin image, 1 = hex image
+		 4th bit 0 = rel positions, 1 = abs positions
+		10th bit 0 = RGB image, 1 = CMYK image */
 /* ncopies:	Number of copies for this plot */
 /* dpi:		Plotter resolution in dots-per-inch */
 /* unit:	0 = cm, 1 = inch, 2 = meter */
 /* rgb:		array with Color of page (paper) */
-/* encoding:	FOnt encoding used */
+/* encoding:	Font encoding used */
 /* eps:		structure with Document info.  !! Fortran version (ps_plotinit_) does not have this argument !! */
 {
 	int i, manual = FALSE;
