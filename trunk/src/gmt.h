@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.17 2001-08-28 19:25:11 pwessel Exp $
+ *	$Id: gmt.h,v 1.18 2001-08-28 21:46:37 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -412,7 +412,9 @@ EXTERN_MSC char *GMT_program;		/* Name of current GMT program */
 EXTERN_MSC int GMT_no_rgb[];
 EXTERN_MSC int GMT_oldargc;
 EXTERN_MSC char *GMT_oldargv[];		/* Pointers to old common arguments */
-EXTERN_MSC char *GMT_degree_symbol[2];	/* Contains the two octal codes for small and large degree symbols */
+EXTERN_MSC char *GMT_degree_symbol[3];	/* Contains the two octal codes for small and large degree symbols */
+EXTERN_MSC char *GMT_minute_symbol;	/* Standard encoding minute symbol */
+EXTERN_MSC char *GMT_second_symbol;	/* Standard encoding second symbol */
 
 /*--------------------------------------------------------------------*/
 /*	For i/o purposes */
@@ -471,6 +473,7 @@ EXTERN_MSC PFI GMT_truncate;			/* Truncate polygons agains boundaries */
 EXTERN_MSC BOOLEAN GMT_meridian_straight;	/* TRUE if meridians plot as straight lines */
 EXTERN_MSC BOOLEAN GMT_parallel_straight;	/* TRUE if parallels plot as straight lines */
 EXTERN_MSC int GMT_3D_mode;			/* Determines if we draw fore and/or back 3-D box lines */
+EXTERN_MSC char *GMT_plot_format[3][2];		/* Keeps the 6 formats for dd:mm:ss plot output */
 
 /*--------------------------------------------------------------------*/
 /*	For projection purposes */
