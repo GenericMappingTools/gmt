@@ -3,7 +3,7 @@
 grdinfo \- Get information about the contents of a 2-D grd file
 .SH SYNOPSIS
 \fBgrdinfo\fP \fIgrdfiles\fP [ \fB\-C\fP ] [ \fB\-F\fP ] [ \fB\-L1\fP ] 
-[ \fB\-L2\fP ] [ \fB\-M\fP ] [ \fB\-V\fP ]
+[ \fB\-L2\fP ] [ \fB\-M\fP ] [ \fB\-T\fP\fIdz\fP ] [ \fB\-V\fP ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBgrdinfo\fP reads a 2-D binary grd file and reports various statistics for the (x,y,z) data in the
 grdfile.  The output information contains the minimum/maximum values for x, y, and z, where the
@@ -36,6 +36,10 @@ Report mean and standard deviation of z.
 .B \-M
 Find and report the location of min/max z-values, and count and report the number of nodes
 set to NaN, if any.
+.TP
+.B \-T
+Determine min and max z-value, round off to multiples of \fIdz\fP, and report as the text string
+\fB\-T\fP\fIzmin/zmax/dz\fP for use by \fBmakecpt\fP.
 #include "explain_-V.txt" 
 #include "explain_-f.txt"
 .SH EXAMPLES
