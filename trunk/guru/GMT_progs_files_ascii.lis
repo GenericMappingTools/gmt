@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.5 2003-04-21 17:17:04 pwessel Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.6 2003-12-28 21:05:53 pwessel Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_progs tar/zip files.  See GMT_progs_files_bin.lis for binary files
@@ -23,11 +23,13 @@ src/gmtenv.bat
 src/gmtsuppl.bat
 src/gmt.h
 src/gmt_bcr.h
+src/gmt_boundcond.h
 src/gmt_calclock.h
 src/gmt_colors.h
 src/gmt_customio.h
-src/gmt_boundcond.h
+src/gmt_datums.h
 src/gmt_defaults.h
+src/gmt_ellipsoids.h
 src/gmt_funcnames.h
 src/gmt_grd.h
 src/gmt_grdio.h
