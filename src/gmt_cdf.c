@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.5 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt_cdf.c,v 1.6 2002-02-22 19:22:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -385,6 +385,7 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	if (pad[1] > 0) width_in += pad[1];
 	
 	edge[0] = width_out;
+	complex %= 64;	/* grd Header is always written */
 	if (complex) inc = 2;
 
 	header->x_min = w;
