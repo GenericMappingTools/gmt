@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.103 2004-06-01 02:28:32 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.104 2004-06-01 09:38:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2115,11 +2115,11 @@ void GMT_contlabel_draw_old (double x[], double y[], double d[], int n, struct G
 			node[k] = G->L[k]->node;
 		}
 		if (project_info.three_D) {	/* Must place text items with GMT_text3D */
-			ps_pathtext (xp, yp, np, node, angle, txt, G->n_label, G->label_font_size, G->clearance[0], just, G->pen.rgb, G->rgb, G->curved_text + 2);
+			ps_pathtext (xp, yp, np, node, angle, txt, G->n_label, G->label_font_size, G->clearance, just, G->pen.rgb, G->rgb, G->curved_text + 2);
 			for (k = 0; k < G->n_label; k++) GMT_text3D (G->L[k]->x, G->L[k]->y, project_info.z_level, G->label_font_size, gmtdefs.annot_font[0], G->L[k]->label, G->L[k]->angle, just, 0);
 		}
 		else	/* 2-D, OK to let pathtext do the text setting */
-			ps_pathtext (xp, yp, np, node, angle, txt, G->n_label, G->label_font_size, G->clearance[0], just, G->pen.rgb, G->rgb, G->curved_text);
+			ps_pathtext (xp, yp, np, node, angle, txt, G->n_label, G->label_font_size, G->clearance, just, G->pen.rgb, G->rgb, G->curved_text);
 	}
 	else {			/* Opaque text box requested */
 		/* First lay down the contour line */
@@ -2166,19 +2166,13 @@ void GMT_contlabel_plot (struct GMT_CONTOUR *G)
 	if (G->box) {	/* Opaque text boxes */
 		GMT_contlabel_drawlines (G, 0);
 		GMT_contlabel_plotboxes (G);
-		GMT_contlabel_plotlabels (G, 1);
+		GMT_contlabel_plotlabels (G, 0);
 	}
 	else {		/* Transparent boxes */
-		if (G->curved_text) {	/* Curved text must be placed per line hence other lines may interfer later */
-			GMT_contlabel_plotlabels (G, 0);	/* No clipping since a curved textbox is not implemented */
-			GMT_contlabel_drawlines (G, 1);		/* Only draw regular lines since prev line did annotated lines */
-		}
-		else {	/* Straight labels allows for proper clipping */
-			GMT_contlabel_clippath (G, 1);		/* Lays down clippath based on ALL labels */
-			GMT_contlabel_drawlines (G, 0);		/* Safe to draw continuous lines everywhere - they will be clipped at labels */
-			GMT_contlabel_clippath (G, 0);		/* Turn off label clipping */
-			GMT_contlabel_plotlabels (G, 1);	/* Now plot labels where they go directly */
-		}
+		GMT_contlabel_clippath (G, 1);		/* Lays down clippath based on ALL labels */
+		GMT_contlabel_drawlines (G, 0);		/* Safe to draw continuous lines everywhere - they will be clipped at labels */
+		GMT_contlabel_clippath (G, 0);		/* Turn off label clipping */
+		GMT_contlabel_plotlabels (G, 0);	/* Now plot labels where they go directly */
 	}
 	
 	/* Free memory */
@@ -2216,35 +2210,41 @@ void GMT_contlabel_clippath (struct GMT_CONTOUR *G, int mode)
 	struct GMT_CONTOUR_LINE *C;
 	
 	if (mode == 1) {	/* Turn ON clipping */
-		if (G->number_placement && G->n_cont == 1)		/* Special 1-label justification check */
-			just = G->end_just[(G->number_placement+1)/2];	/* Gives index 0 or 1 */
-		else
-			just = G->just;
-		for (i = m = 0; i < G->n_segments; i++) {
-			C = G->segment[i];	/* Pointer to current segment */
-			m += C->n_labels;
+		if (G->curved_text) {		/* Do it via the labeling PSL function */
+			GMT_contlabel_plotlabels (G, 1);
+			G->box = 32;	/* Special message to just repeate the labelline call */
 		}
-		angle = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
-		xt = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
-		yt = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
-		txt = (char **) GMT_memory (VNULL, (size_t)m, sizeof (char *), GMT_program);
-		for (i = m = 0; i < G->n_segments; i++) {
-			C = G->segment[i];	/* Pointer to current segment */
-			for (k = 0; k < C->n_labels; k++, m++) {
-				angle[m] = C->L[k].angle;
-				txt[m] = C->L[k].label;
-				xt[m] = C->L[k].x;
-				yt[m] = C->L[k].y;
+		else {				/* Same PS memory by doing it this way instead via ps_textclip */
+			if (G->number_placement && G->n_cont == 1)		/* Special 1-label justification check */
+				just = G->end_just[(G->number_placement+1)/2];	/* Gives index 0 or 1 */
+			else
+				just = G->just;
+			for (i = m = 0; i < G->n_segments; i++) {
+				C = G->segment[i];	/* Pointer to current segment */
+				m += C->n_labels;
 			}
+			angle = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
+			xt = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
+			yt = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
+			txt = (char **) GMT_memory (VNULL, (size_t)m, sizeof (char *), GMT_program);
+			for (i = m = 0; i < G->n_segments; i++) {
+				C = G->segment[i];	/* Pointer to current segment */
+				for (k = 0; k < C->n_labels; k++, m++) {
+					angle[m] = C->L[k].angle;
+					txt[m] = C->L[k].label;
+					xt[m] = C->L[k].x;
+					yt[m] = C->L[k].y;
+				}
+			}
+			if (project_info.three_D) {	/* Must place text items with GMT_text3D */
+				GMT_2D_to_3D (xt, yt, G->z_level, m);
+			}
+			ps_textclip (xt, yt, m, angle, txt, G->label_font_size, G->clearance, just, 0);	/* This turns clipping ON */
+			GMT_free ((void *)angle);
+			GMT_free ((void *)xt);
+			GMT_free ((void *)yt);
+			GMT_free ((void *)txt);
 		}
-		if (project_info.three_D) {	/* Must place text items with GMT_text3D */
-			GMT_2D_to_3D (xt, yt, G->z_level, m);
-		}
-		ps_textclip (xt, yt, m, angle, txt, G->label_font_size, G->clearance, just, 0);	/* This turns clipping ON */
-		GMT_free ((void *)angle);
-		GMT_free ((void *)xt);
-		GMT_free ((void *)yt);
-		GMT_free ((void *)txt);
 	}
 	else {	/* Turn OFF Clipping */
 		ps_clipoff ();
@@ -2280,7 +2280,7 @@ void GMT_contlabel_plotboxes (struct GMT_CONTOUR *G)
 		
 void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode)
 {
-	int i, k, just, *node;
+	int i, k, just, form, highbit, *node;
 	double *angle;
 	char **txt;
 	struct GMT_CONTOUR_LINE *C;
@@ -2294,7 +2294,10 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode)
 	for (i = 0; i < G->n_segments; i++) {
 		C = G->segment[i];	/* Pointer to current segment */
 		if (!C->annot || C->n_labels == 0) continue;
-		if (mode == 0) {	/* Transparent text box requested for path tex */
+		if (G->box == 32) {	/* Repeat call for Transparent text box (already set by cli) */
+			ps_pathtext (NULL, NULL, 0, NULL, NULL, NULL, 0, 0.0, NULL, 0, NULL, NULL, 32 + G->curved_text + 4);
+		}
+		else if (G->box == 0) {	/* Transparent text box requested for path tex */
 			angle = (double *) GMT_memory (VNULL, (size_t)C->n_labels, sizeof (double), GMT_program);
 			txt = (char **) GMT_memory (VNULL, (size_t)C->n_labels, sizeof (char *), GMT_program);
 			node = (int *) GMT_memory (VNULL, (size_t)C->n_labels, sizeof (int), GMT_program);
@@ -2303,13 +2306,14 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode)
 				txt[k] = C->L[k].label;
 				node[k] = C->L[k].node;
 			}
+			form = 12 * mode + G->curved_text;	/* 12 means clip label and do not draw line */
 			if (project_info.three_D) {	/* Must place text items with GMT_text3D */
 				GMT_2D_to_3D (C->x, C->y, G->z_level, C->n);
-				ps_pathtext (C->x, C->y, C->n, node, angle, txt, C->n_labels, G->label_font_size, G->clearance[0], just, G->pen.rgb, G->rgb, G->curved_text + 2);
+				ps_pathtext (C->x, C->y, C->n, node, angle, txt, C->n_labels, G->label_font_size, G->clearance, just, G->pen.rgb, G->rgb, form + 2);
 				for (k = 0; k < G->n_label; k++) GMT_text3D (C->L[k].x, C->L[k].y, project_info.z_level, G->label_font_size, gmtdefs.annot_font[0], C->L[k].label, C->L[k].angle, just, 0);
 			}
 			else {	/* 2-D, OK to let pathtext do the text setting */
-				ps_pathtext (C->x, C->y, C->n, node, angle, txt, C->n_labels, G->label_font_size, G->clearance[0], just, G->pen.rgb, G->rgb, G->curved_text);
+				ps_pathtext (C->x, C->y, C->n, node, angle, txt, C->n_labels, G->label_font_size, G->clearance, just, G->pen.rgb, G->rgb, form);
 			}
 			GMT_free ((void *)angle);
 			GMT_free ((void *)node);

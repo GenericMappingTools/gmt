@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.22 2004-06-01 02:28:32 pwessel Exp $
+ *	$Id: pslib.h,v 1.23 2004-06-01 09:38:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -119,7 +119,7 @@ EXTERN_MSC void ps_square(double x, double y, double side, int rgb[], int outlin
 EXTERN_MSC void ps_star(double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_text(double x, double y, double pointsize, char *text, double angle, int justify, int form);
 EXTERN_MSC void ps_textbox(double x, double y, double pointsize, char *text, double angle, int justify, int outline, double dx, double dy, int rgb[]);
-EXTERN_MSC void ps_pathtext (double x[], double y[], int n, int node[], double angle[], char *label[], int m, double pointsize, double offset, int justify, int p_rgb[], int t_rgb[], int form);
+EXTERN_MSC void ps_pathtext (double x[], double y[], int n, int node[], double angle[], char *label[], int m, double pointsize, double offset[], int justify, int p_rgb[], int t_rgb[], int form);
 EXTERN_MSC void ps_textclip (double x[], double y[], int m, double angle[], char *label[], double pointsize, double offset[], int justify, int key);
 EXTERN_MSC void ps_transrotate(double x, double y, double angle);
 EXTERN_MSC void ps_triangle(double x, double y, double side, int rgb[], int outline);

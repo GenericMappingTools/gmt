@@ -1,5 +1,5 @@
 %-------------------------------------------------------------------------------------------
-%	$Id: PSL_text.ps,v 1.4 2004-06-01 02:28:31 pwessel Exp $
+%	$Id: PSL_text.ps,v 1.5 2004-06-01 09:38:44 pwessel Exp $
 %
 %	P. Wessel, version 1
 %	Text justification for paragraphs.
@@ -560,9 +560,15 @@ end
 % original PSL_x/y arrays to store the output points since it is possible that
 % we will need to reverse a path so that the text is upside-up.
 
+  PSL_clippath PSL_labeltype 1 eq and
+  {	% Clear path, save status, get current clip path and clip with label paths
+    newpath
+    gsave
+    clippath
+  } if
   /PSL_justx PSL_just 4 mod 1 sub -0.5 mul def
   /PSL_justy PSL_just 4 idiv 2 sub PSL_height mul 2 div def
-  newpath PSL_setpenrgb			% Initialize new path and set line color
+  PSL_setpenrgb				% Set line color
   /PSL_nn1 PSL_nn 1 sub def		% End index in for loop
   /n 0 def				% Toggle: o means line, 1 means text
   /k 0 def				% Index of the current text string
@@ -598,7 +604,13 @@ end
 	    } ifelse
 	  }
 	  {				% Place curved text along the path just laid down
-            PSL_placeline PSL_str k get PSL_gap_x PSL_just PSL_height PSL_pathtext
+	    PSL_clippath
+	    {
+	      PSL_curvedlabelclip
+	    }
+	    {
+              PSL_placeline PSL_str k get PSL_gap_x PSL_just PSL_height PSL_pathtext
+	    } ifelse
 	  } ifelse
 	} if
 	/n 0 def /k k 1 add def PSL_setpenrgb			% Set n back to 0, goto next label, and switch to pen color
@@ -610,16 +622,22 @@ end
     } if
   } for
   n 0 eq {PSL_drawline} {newpath} ifelse	% Finish off the last segment
-  PSL_clippath
-  {	% Clear path, save status, get current clip path and clip with label paths
-    newpath
-    gsave
-    clippath
-    PSL_placeclippath
+  PSL_clippath 
+  {
+    PSL_labeltype 0 eq
+    {				% Clear path, save status, get current clip path and clip with label paths
+      newpath
+      gsave
+      clippath
+      PSL_placeclippath
+    }
+    {
+      clip
+    } ifelse
     PSL_paintclippath		% Debug option to see the clip path
     {
       gsave
-      clippath 0.5 setgray fill
+      clippath 0.75 setgray fill
       grestore
     } if
   } if
@@ -678,6 +696,52 @@ end
     PSL_clipy PSL_clipn yp y1 add put			% Add this y to clippath		
     /PSL_clipn PSL_clipn 1 add def			% Goto next point
   } for
+} def
+
+/PSL_curvedlabelclip
+{
+  /H PSL_height 2 div PSL_gap_y add def
+  /xoff j 1 add array def
+  /yoff j 1 add array def
+  0 1 j {	% Loop over points along line to calculate angle and offsets
+    /ii exch def	% Index
+    /x PSL_x ii get def
+    /y PSL_y ii get def
+    ii 0 eq {	% Are we at the first point and hence must calculate angle using 0 and 1?
+      /x1 PSL_x 1 get def
+      /y1 PSL_y 1 get def
+      /dx x1 x sub def
+      /dy y1 y sub def
+    }
+    {
+      /i1 ii 1 sub def	% Previous point
+      /x1 PSL_x i1 get def
+      /y1 PSL_y i1 get def
+      /dx x x1 sub def
+      /dy y y1 sub def
+    } ifelse
+    dx 0.0 ne dy 0.0 ne and
+    {	% Only calculate new angle if not duplicates
+      /angle dy dx atan 90 add def
+      /s angle sin def
+      /c angle cos def
+    } if
+    xoff ii H c mul put
+    yoff ii H s mul put
+  } for
+  
+  % Lay down next clip segment
+
+  PSL_x 0 get xoff 0 get add PSL_y 0 get yoff 0 get add moveto
+  1 1 j {	% Loop over the rest of the upper line
+    /ii exch def
+    PSL_x ii get xoff ii get add PSL_y ii get yoff ii get add lineto
+  } for
+  j -1 0 {	% Loop backwards over the rest of the lower line
+    /ii exch def
+    PSL_x ii get xoff ii get sub PSL_y ii get yoff ii get sub lineto
+  } for
+  closepath
 } def
 
 /PSL_placeclippath
