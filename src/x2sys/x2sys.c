@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.12 2004-06-15 00:44:56 pwessel Exp $
+ *	$Id: x2sys.c,v 1.13 2004-07-09 00:32:09 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -657,6 +657,9 @@ int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struc
 	}
 
 	fclose (fp);
+	
+	p->ms_rec = NULL;
+	p->n_segments = 0;
 
 	*data = z;
 
@@ -724,6 +727,9 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 	p->year = gmt->first_year;
 	p->n_rows = j;
 	for (i = 0; i < 6; i++) z[i] = (double *) GMT_memory ((void *)z[i], (size_t)p->n_rows, sizeof (double), "x2sys_read_mgd77file");
+
+	p->ms_rec = NULL;
+	p->n_segments = 0;
 
 	*data = z;
 
