@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.24 2003-09-30 17:54:28 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.25 2003-10-02 17:30:15 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -86,9 +86,9 @@ if [ $key = "all" ] || [ $key = "get" ]; then
 #
 	gmtselect -R0/360/-60/72 -Jm1 -Ns/k -Dl $FILE > new_sites_land.d
 	n=`cat new_sites_land.d | wc  -l`
-	if [ $n -gt 0 ]; then
-		echo "GMT_usage_map.sh: Found $n new sites" >&2
-	fi
+#	if [ $n -gt 0 ]; then
+#		echo "GMT_usage_map.sh: Found $n new sites" >&2
+#	fi
 fi
 
 if [ $key = "all" ] || [ $key = "update" ]; then
@@ -97,14 +97,14 @@ if [ $key = "all" ] || [ $key = "update" ]; then
 #	add in the new_sites_land.d data, and runs blockmean
 #	on it again to remove duplicates
 
-	cvs update GMT_old_unique_sites.d
+	cvs -q update GMT_old_unique_sites.d
 	egrep '^#' GMT_old_unique_sites.d > $$.d
 	n_old=`grep -v '^#' GMT_old_unique_sites.d | wc -l`
 	egrep -v '^#' GMT_old_unique_sites.d > $$.add
 	awk '{print $1, $2, 1}' new_sites_land.d >> $$.add
 	blockmean -R0/360/-72/72 -I15m $$.add -S >> $$.d
 	mv -f $$.d GMT_old_unique_sites.d
-	cvs commit -m "Automatic update" -n GMT_old_unique_sites.d
+	cvs -q commit -m "Automatic update" -n GMT_old_unique_sites.d
 	rm -f $$.add new_sites_land.d
 	n_new=`grep -v '^#' GMT_old_unique_sites.d | wc -l`
 	delta=`expr $n_new - $n_old`
