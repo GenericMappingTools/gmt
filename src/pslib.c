@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.82 2004-11-04 03:07:07 pwessel Exp $
+ *	$Id: pslib.c,v 1.83 2004-12-01 01:42:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1147,6 +1147,9 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		12th bit 0 = no RLE compression, 1 = RLE compression
 		13th bit 0 = no LZW compression, 1 = LZW compression
 		14th bit 0 = be silent, 1 = be verbose
+		15-16 bits (0,1,2) sets the line cap setting
+		17-18 bits (0,1,2) sets the line miter setting
+		19-26 bits (8 bits) sets the miter limit
    ncopies:	Number of copies for this plot
    dpi:		Plotter resolution in dots-per-inch
    unit:	0 = cm, 1 = inch, 2 = meter
@@ -1158,7 +1161,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	int i, pmode, manual = FALSE;
 	time_t right_now;
 	char openmode[2], *this;
-	double scl;
+	double scl, miter;
 
 	if ((this = getenv ("GMTHOME")) == NULL) {	/* Use default GMT path */
 		PSHOME = (char *) ps_memory (VNULL, (size_t)(strlen (GMT_DEFAULT_PATH) + 1), sizeof (char));
@@ -1177,6 +1180,9 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps.compress = (mode & 12288) >> 12;
 	ps.verbose = (mode & 16384) ? TRUE : FALSE;
 	ps.absolute = (mode & 8) ? TRUE : FALSE;
+	ps.line_cap = (mode >> 14) & 3;
+	ps.line_join = (mode >> 16) & 3;
+	ps.miter_limit = (mode >> 18) & 255;
 	if (page_size[0] < 0) {		/* Want Manual Request for paper */
 		ps.p_width  = abs (page_size[0]);
 		manual = TRUE;
@@ -1346,6 +1352,10 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	}
 	init_font_encoding (eps);	/* Reencode fonts if necessary */
 
+	/* Set line-handling attributes */
+	fprintf (ps.fp, "%d setlinecap %d setlinejoin", ps.line_cap, ps.line_join);
+	miter = (ps.miter_limit == 0) ? 10.0 : 1.0 / sin (0.5 * ps.miter_limit * D2R);
+	fprintf (ps.fp, " %lg setmiterlimit\n", miter);
 	ps_setpaint (no_rgb);
 	if (!(xoff == 0.0 && yoff == 0.0)) fprintf (ps.fp, "%g %g T\n", xoff*ps.scale, yoff*ps.scale);
 

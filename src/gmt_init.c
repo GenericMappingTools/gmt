@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.162 2004-12-01 01:42:23 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.163 2004-12-01 01:45:12 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1772,7 +1772,7 @@ int GMT_setparameter (char *keyword, char *value)
 		case GMTCASE_PS_LINE_JOIN:
 			if (!strcmp (lower_value, "miter"))
 				gmtdefs.ps_line_join = 0;
-			else if (!strcmp (lower_value, "arc"))
+			else if (!strcmp (lower_value, "round"))
 				gmtdefs.ps_line_join = 1;
 			else if (!strcmp (lower_value, "bevel"))
 				gmtdefs.ps_line_join = 2;
@@ -2170,7 +2170,7 @@ int GMT_savedefaults (char *file)
 	if (gmtdefs.ps_line_join == 0)
 		fprintf (fp, "PS_LINE_JOIN		= miter\n");
 	else if (gmtdefs.ps_line_join == 1)
-		fprintf (fp, "PS_LINE_JOIN		= arc\n");
+		fprintf (fp, "PS_LINE_JOIN		= round\n");
 	else
 		fprintf (fp, "PS_LINE_JOIN		= bevel\n");
 	fprintf (fp, "PS_MITER_LIMIT		= %d\n", gmtdefs.ps_miter_limit);
