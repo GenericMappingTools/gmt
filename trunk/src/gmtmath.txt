@@ -4,7 +4,7 @@ gmtmath \- Reverse Polish Notation calculator for data tables
 .SH SYNOPSIS
 \fBgmtmath\fP [ \fB\-C\fP\fIcols\fP ] [ \fB\-H\fP\fInrec\fP ] [ \fB\-N\fP\fIn_col\fP/\fIt_col\fP ] [ \fB\-Q\fP ] 
  [ \fB\-S\fP ][ \fB\-T\fP\fIt_min/t_max/t_inc\fP|\fItfile\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
-[ \fB\-bo\fP[\fBs\fP] ] 
+[ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] 
 \fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] \fBOPERATOR\fP ... \fB=\fP [ \fIoutfile\fP ]
 .SH DESCRIPTION
 \fBgmtmath\fP will perform operations like add, subtract, multiply, and divide on one or more table data files or constants using
@@ -71,6 +71,7 @@ contains the desired t-coordinates which may be irregular.
 #include "explain_-i.txt"
 #include "explain_-n.txt"
 #include "explain_-o.txt"
+#include "explain_-n.txt"
 .SH BEWARE
 The operator \fBPLM\fP calculates the associated Legendre polynomial
 of degree L and order M, and its argument is the cosine of the colatitude

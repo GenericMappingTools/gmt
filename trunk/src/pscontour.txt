@@ -11,7 +11,7 @@ pscontour \- Contour xyz-data by direct triangulation
 [ \fB\-G\fP\fIgap\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] [ \fB\-K\fP ] 
 [ \fB\-L\fP\fIpen\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-T\fP\fIindexfile\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
 [ \fB\-V\fP ] [ \fB\-W\fP[\fB+\fP]\fIpen\fP ] [ \fB\-X\fP\fIx-shift\fP ] 
-[ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+[ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ]
 .SH DESCRIPTION
 \fBpscontour\fP reads an ASCII [or binary] xyz-file and produces a raw contour plot by triangulation.  By default, the
 optimal Delaunay triangulation is performed (using either Shewchuk's [1996]
@@ -84,6 +84,7 @@ the contour lines are colored according to the cpt file (see \fB\-C\fP).
 [Default is 3 input columns].
 Use 4-byte integer triplets for node ids (\fB\-T\fP).
 #include "explain_-o.txt"
+#include "explain_-n.txt"
 .SH EXAMPLES
 To make a raw contour plot from the file topo.xyz and drawing the contours (pen = 2)
 given in the color palette file topo.cpt on a Lambert map

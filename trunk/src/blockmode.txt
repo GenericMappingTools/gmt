@@ -4,7 +4,7 @@ blockmode \- filter to block average (x,y,z) data by mode estimation.
 .SH SYNOPSIS
 \fBblockmode\fP [ \fIxyz[w]file(s)\fP ] \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]]  
 \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-C\fP ] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-Q\fP ] [ \fB\-V\fP ] 
-[ \fB\-W\fP[\fBio\fP] ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+[ \fB\-W\fP[\fBio\fP] ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBblockmode\fP reads arbitrarily located (x,y,z) triples [or optionally weighted
 quadruples (x,y,z,w)] from standard input [or \fIxyz[w]file(s)\fP] and writes to standard output mode estimates of position and
@@ -49,6 +49,7 @@ only, \fB\-Wo\fP for weighted output only.  [Default uses unweighted i/o].
 #include "explain_-n.txt"
 [Default is 3 (or 4 if \fB\-W\fP is set) columns].
 #include "explain_-o.txt"
+#include "explain_-n.txt"
 #include "explain_-f.txt"
 .SH EXAMPLES
 To find 5 by 5 minute block mode estimates from the double precision binary data in hawaii_b.xyg and output an ASCII table, run:

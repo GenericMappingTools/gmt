@@ -5,7 +5,7 @@ filter1d \- Time domain filtering of 1-D time series
 \fBfilter1d\fP [ \fIinfile\fP ] \fB\-F\fP\fI<type><width>\fP [ \fB\-D\fP\fIincrement\fP ]  
 [ \fB\-E\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIignore_val\fP ] [ \fB\-L\fP\fIlack_width\fP ] 
 [ \fB\-N\fP\fIn_cols/t_col\fP ] [ \fB\-Q\fP\fIq_factor\fP ] [ \fB\-S\fP\fIsymmetry_factor\fP ] 
-[ \fB\-T\fP\fIstart/stop/int\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ] 
+[ \fB\-T\fP\fIstart/stop/int\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] 
 [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBfilter1d\fP is a general time domain filter for multiple column time series data.
@@ -65,6 +65,7 @@ Make evenly spaced timesteps from \fIstart\fP to \fIstop\fP by \fIint\fP [Defaul
 #include "explain_-i.txt"
 #include "explain_-n.txt"
 #include "explain_-o.txt"
+#include "explain_-n.txt"
 #include "explain_-f.txt"
 .SH EXAMPLES
 To filter the data set in the file cruise.gmtd containing evenly spaced gravity, magnetics, topography,
