@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.75 2002-08-26 17:24:57 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.76 2002-10-14 21:43:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -517,15 +517,8 @@ void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *
 			sprintf (string, "%d\0", irint (d_log10 (coord)));
 			break;
 		case POW:
-			if (project_info.xyz_projection[T->parent] == POW) {
-				if (T->parent == 0)
-					(*GMT_x_inverse) (&tmp, coord);
-				else if (T->parent == 1)
-					(*GMT_y_inverse) (&tmp, coord);
-				else
-					(*GMT_z_inverse) (&tmp, coord);
-				sprintf (string, format, tmp);
-			}
+			if (project_info.xyz_projection[T->parent] == POW)
+				sprintf (string, format, coord);
 			else
 				sprintf (string, "10@+%d@+\0", irint (d_log10 (coord)));
 			break;
