@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.52 2004-04-07 20:31:55 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.53 2004-04-13 03:07:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -576,7 +576,7 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D);
 
 void GMT_map_setup (double west, double east, double south, double north)
 {
-	int search;
+	int search, k;
 	double f;
 	
 	/* if (!project_info.region) d_swap (south, east); */  /* Got w/s/e/n, make into w/e/s/n */
@@ -811,8 +811,9 @@ void GMT_map_setup (double west, double east, double south, double north)
 	if (!project_info.x_off_supplied && gmtdefs.overlay) gmtdefs.x_origin = 0.0;
 	if (!project_info.y_off_supplied && gmtdefs.overlay) gmtdefs.y_origin = 0.0;
 	
-	if (project_info.x_off_supplied == 2) gmtdefs.x_origin = 0.5 * (fabs(gmtdefs.paper_width[0]/72.0) - GMT_map_width);		/* Want to x center plot on current page size */
-	if (project_info.y_off_supplied == 2) gmtdefs.y_origin = 0.5 * (fabs(gmtdefs.paper_width[1]/72.0) - GMT_map_height);	/* Want to y center plot on current page size */
+	k = gmtdefs.page_orientation & 1;	/* k and !k gives 0,1 or 1,0 depending on -P */
+	if (project_info.x_off_supplied == 2) gmtdefs.x_origin = 0.5 * (fabs(gmtdefs.paper_width[!k]/72.0) - GMT_map_width);		/* Want to x center plot on current page size */
+	if (project_info.y_off_supplied == 2) gmtdefs.y_origin = 0.5 * (fabs(gmtdefs.paper_width[k]/72.0) - GMT_map_height);	/* Want to y center plot on current page size */
 }
 
 void GMT_init_three_D (void) {
