@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.9 2004-01-02 22:45:12 pwessel Exp $
+ *	$Id: gmt_cdf.c,v 1.10 2005-02-15 21:15:18 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -39,6 +39,7 @@
  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
+#define GMT_WITH_NO_PS
 #include "gmt.h"
 
 char cdf_file[BUFSIZ];

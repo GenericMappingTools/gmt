@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.23 2004-10-01 20:32:53 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.24 2005-02-15 21:15:18 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -77,6 +77,7 @@
  *	GMT_nrand:	Normally distributed random numbers from N(0,1)
  */
 
+#define GMT_WITH_NO_PS
 #include "gmt.h"
 
 int GMT_inc_beta (double a, double b, double x, double *ibeta);

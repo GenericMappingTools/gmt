@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.19 2004-10-11 00:40:36 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.20 2005-02-15 21:15:18 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -46,6 +46,7 @@
  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
+#define GMT_WITH_NO_PS
 #include "gmt.h"
 
 void GMT_grd_do_scaling (float *grid, int nm, double scale, double offset);

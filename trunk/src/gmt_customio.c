@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.18 2005-02-02 03:22:44 remko Exp $
+ *	$Id: gmt_customio.c,v 1.19 2005-02-15 21:15:18 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -59,10 +59,11 @@
  *	     same function (but netCDF is one exception)
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
+#define GMT_WITH_NO_PS
 #include "gmt.h"
 
-int GMT_read_rasheader (FILE *fp, struct imageinfo *h);
-int GMT_write_rasheader (FILE *fp, struct imageinfo *h);
+int GMT_read_rasheader (FILE *fp, struct rasterfile *h);
+int GMT_write_rasheader (FILE *fp, struct rasterfile *h);
 int GMT_native_read_grd_info (char *file, struct GRD_HEADER *header);
 int GMT_native_update_grd_info (char *file, struct GRD_HEADER *header);
 int GMT_native_write_grd_info (char *file, struct GRD_HEADER *header);
@@ -346,7 +347,7 @@ int GMT_short_write_grd (char *file, struct GRD_HEADER *header, float *grid, dou
 int GMT_ras_read_grd_info (char *file, struct GRD_HEADER *header)
 {
 	FILE *fp;
-	struct imageinfo h;
+	struct rasterfile h;
 	unsigned char u;
 	int i;
 	
@@ -395,7 +396,7 @@ int GMT_ras_update_grd_info (char *file, struct GRD_HEADER *header)
 int GMT_ras_write_grd_info (char *file, struct GRD_HEADER *header)
 {
 	FILE *fp;
-	struct imageinfo h;
+	struct rasterfile h;
 	
 	if (!strcmp (file, "="))
 	{
@@ -443,7 +444,7 @@ int GMT_ras_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	FILE *fp;
 	BOOLEAN piping = FALSE, check;
 	unsigned char *tmp;
-	struct imageinfo h;
+	struct rasterfile h;
 	int *k;
 	
 	if (!strcmp (file, "=")) {
@@ -537,7 +538,7 @@ int GMT_ras_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	
 	FILE *fp;
 	
-	struct imageinfo h;
+	struct rasterfile h;
 	
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
@@ -611,7 +612,7 @@ int GMT_ras_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 
 }
 
-int GMT_read_rasheader (FILE *fp, struct imageinfo *h)
+int GMT_read_rasheader (FILE *fp, struct rasterfile *h)
 {
 	/* Reads the header of a Sun rasterfile byte by byte
 	   since the format is defined as the byte order on the
@@ -662,7 +663,7 @@ int GMT_read_rasheader (FILE *fp, struct imageinfo *h)
 	return (0);
 }
 
-int GMT_write_rasheader (FILE *fp, struct imageinfo *h)
+int GMT_write_rasheader (FILE *fp, struct rasterfile *h)
 {
 	/* Writes the header of a Sun rasterfile byte by byte
 	   since the format is defined as the byte order on the

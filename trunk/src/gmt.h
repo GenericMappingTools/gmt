@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.88 2004-12-01 01:42:23 pwessel Exp $
+ *	$Id: gmt.h,v 1.89 2005-02-15 21:15:18 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -576,7 +576,6 @@ EXTERN_MSC double DEG2KM;			/*	Scale converting degrees to km on spheroid	*/
 #include "gmt_io.h"		/* Defines structures and macros for table i/o */
 #include "gmt_colors.h"         /* Defines color/shading global structure */
 #include "gmt_grdio.h"          /* Defines function pointers for grd i/o operations */
-#include "pslib.h"		/* Defines pslib function prototypes */
 #include "gmt_shore.h"		/* Defines structures used when reading shore database */
 #include "gmt_boundcond.h"	/* Boundary conditions for grids */
 #include "gmt_bcr.h"		/* Grid resampling functions */
