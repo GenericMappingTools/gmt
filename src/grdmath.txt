@@ -11,7 +11,8 @@ Reverse Polish Notation (RPN) syntax (e.g., Hewlett-Packard calculator-style).  
 be evaluated; the final result is written to an output grd file. When two grd files are
 on the stack, each element in file A is modified by the corresponding element in file B.
 However, some operators only require one operand (see below).  If no grdfiles are used in the
-expression then options \fB\-R, \-I\fP must be set (and optionally \fB\-F\fP).
+expression then options \fB\-R, \-I\fP must be set (and optionally \fB\-F\fP).  The expression
+\fB=\fP \fIoutgrdfile\fP can occur as many times as the depth of the stack allows.
 .TP
 \fIoperand\fP
 If \fIoperand\fP can be opened as a file it will be read as a grd file.  If not a file, it is interpreted
@@ -54,7 +55,8 @@ and the (lon, lat) point are expected to be in degrees.  The operator
 order M for all positions in the grid, which is assumed to be in degrees.
 \fBYLM\fP returns two grids, the Real (cosine) and Imaginary (sine) component
 of the complex spherical harmonic.  Use the \fBPOP\fP operator (and \fBEXCH\fP) to
-get rid of one of them.  The operator \fBPLM\fP calculates the associated Legendre polynomial
+get rid of one of them, of save both by giving two consequtive = file.grd calls.
+The operator \fBPLM\fP calculates the associated Legendre polynomial
 of degree L and order M, and its argument is the cosine of the colatitude
 which must satisfy -1 <= x <= +1. Unlike \fBYLM\fP, \fBPLM\fP is not normalized.
 .br
