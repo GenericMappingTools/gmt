@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.5 2004-09-23 21:17:42 pwessel Exp $
+ *	$Id: mgd77.h,v 1.6 2005-01-12 02:52:30 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -24,13 +24,14 @@
 #define MGD77_METERS_PER_M      1609.344	/* meters per statute mile */
 #define MGD77_N_DATA_FIELDS	27
 #define MGD77_N_NUMBER_FIELDS	24
-#define MGD77_TIME		(MGD77_N_DATA_FIELDS + 0)
-#define MGD77_DISTANCE		(MGD77_N_DATA_FIELDS + 1)
-#define MGD77_HEADING		(MGD77_N_DATA_FIELDS + 2)
-#define MGD77_SPEED		(MGD77_N_DATA_FIELDS + 3)
-#define MGD77_WEIGHT		(MGD77_N_DATA_FIELDS + 4)
+#define MGD77_TIME		2
+#define MGD77_DISTANCE		3
+#define MGD77_HEADING		4
+#define MGD77_SPEED		5
+#define MGD77_WEIGHT		6
 #define MGD77_LATITUDE		7
 #define MGD77_LONGITUDE		8
+#define MGD77_DEPTH		11
 #define MGD77_ID		24
 #define MGD77_SLN		25
 #define MGD77_SSPN		26
@@ -216,6 +217,8 @@ struct MGD77_CONTROL {
 	int n_out_columns;				/* Number of output columns requested */
 	int order[32];					/* Gives the output order of each column */
 	BOOLEAN use_column[32];				/* TRUE for columns we are interested in outputting */
+	int time_format;				/* Either GMT_IS_ABSTIME or GMT_IS_RELTIME */
+	BOOLEAN flat_earth;				/* TRUE if we want quick distance calcuations */
 	unsigned int bit_pattern;			/* 27 bit flags, one for each parameter desired */
 	int n_constraints;				/* Number of constraints selected */
 	int n_exact;					/* Number of exact columns to match */
