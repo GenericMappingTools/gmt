@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.3 2001-03-29 22:30:22 pwessel Exp $
+#	 $Id: webman.sh,v 1.4 2001-09-18 01:43:10 pwessel Exp $
 #
 #	webman.csh - Automatic generation of the GMT web manual pages
 #
@@ -152,6 +152,7 @@ are grouped by function. For an alphabetical order, click <A HREF="#anchor_alpha
 </UL>
 <h3>CONVERT OR EXTRACT SUBSETS OF DATA:</h3>
 <UL>
+<LI><A HREF="doc/html/gmt2rgb.html"> gmtconvert</A> Convert Sun raster or grdfile to red, green, blue component grids</LI>
 <LI><A HREF="doc/html/gmtconvert.html"> gmtconvert</A> Convert table data from one format to another</LI>
 <LI><A HREF="doc/html/gmtmath.html"> gmtmath</A> Reverse Polish calculator for table data</LI>
 <LI><A HREF="doc/html/gmtselect.html"> gmtselect</A> Select table subsets based on multiple spatial criteria</LI>
