@@ -2,6 +2,8 @@
 	0.0,			/* ANOT_MIN_SPACING */
 	0,			/* ANOT_FONT */
 	14,			/* ANOT_FONT_SIZE */
+	0,			/* ANOT_FONT2 */
+	16,			/* ANOT_FONT2_SIZE */
 	0.075,			/* ANOT_OFFSET */
 	"WESN",			/* BASEMAP_AXES */
 	{0, 0, 0},		/* BASEMAP_FRAME_RGB */

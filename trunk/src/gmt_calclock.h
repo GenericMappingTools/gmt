@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.h,v 1.6 2001-08-22 20:52:55 wsmith Exp $
+ *	$Id: gmt_calclock.h,v 1.7 2001-09-12 04:03:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -31,6 +31,8 @@ typedef int GMT_cal_rd;	/* GMT calendar "rata die" day numbers  */
 typedef double GMT_dtime;	/* GMT internal time representation;
 	equal to seconds elapsed since Midnight on proleptic Gregorian 
 	Monday Jan 01 0001  */
+
+#define GMT_CALSTRING_LENGTH	16	/* All strings used to format date/clock output must be this length */
 
 #define GMT_GCAL_EPOCH 1	/* rata die fixed day number when
 	proleptic Gregorian calendar is at Monday, Jan 01 0001  */
@@ -98,4 +100,4 @@ EXTERN_MSC int GMT_verify_time_step (int step, char unit);	/* Check that time st
 EXTERN_MSC void GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN init); /* step a time axis by time units */
 EXTERN_MSC int GMT_gmonth_length (int year,  int month);	/* Get the number of days in a month by Gregorian leap rule */
 EXTERN_MSC void GMT_small_moment_interval (struct GMT_MOMENT_INTERVAL *p, int step_secs, BOOLEAN init); /* Aux to GMT_moment_interval */
-
+EXTERN_MSC int GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *C, GMT_dtime dt);	/* Write formatted strings for date and clock */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.20 2001-09-10 23:56:16 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.21 2001-09-12 04:03:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -498,7 +498,7 @@ int GMT_ascii_output (FILE *fp, int n, double *ptr)
 {
 	struct GMT_gcal calendar;
 	double	x;
-	int i, last, e = 0, e1, e2, wn = 0, i_sec, m_sec, ap, ival[3];
+	int i, last, e = 0, wn = 0;
 	
 	if (gmtdefs.xy_toggle) d_swap (ptr[0], ptr[1]);		/* Write lat/lon instead of lon/lat */
 	last = n - 1;						/* Last record, need to output linefeed instead of delimeter */
@@ -660,59 +660,12 @@ void GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  
 
 int GMT_write_abstime_output (FILE *fp, GMT_dtime dt)
 {
-	struct GMT_gcal calendar;
-	int e1, e2, i_sec, m_sec, ap, ival[3];
+	int e;
+	char date[GMT_CALSTRING_LENGTH], clock[GMT_CALSTRING_LENGTH];
 
-	GMT_gcal_from_dt (dt, &calendar);
-	/* Now undo Y2K fix to make a 2-digit year here */
-	if (GMT_io.date_output.day_of_year) {
-		ival[GMT_io.date_output.order[0]] = (GMT_io.date_output.Y2K_year) ? abs(calendar.year) % 100 : calendar.year;
-		ival[GMT_io.date_output.order[1]] = calendar.day_y;
-	}
-	else if (GMT_io.date_output.iso_calendar) {
-		ival[0] = (GMT_io.date_output.Y2K_year) ? abs(calendar.iso_y) % 100 : calendar.iso_y;
-		ival[1] = calendar.iso_w;
-		ival[2] = calendar.iso_d;
-	}
-	else {
-		ival[GMT_io.date_output.order[0]] = (GMT_io.date_output.Y2K_year) ? abs(calendar.year) % 100 : calendar.year;
-		ival[GMT_io.date_output.order[1]] = calendar.month;
-		ival[GMT_io.date_output.order[2]] = calendar.day_m;
-	}
-	e1 = fprintf (fp, GMT_io.date_output.format, ival[0], ival[1], ival[2]);
-	putc ('T', fp);
-	if (GMT_io.clock_output.n_sec_decimals) {
-		i_sec = (int) floor (calendar.sec);
-		m_sec = irint (GMT_io.clock_output.f_sec_to_int * (calendar.sec - i_sec));
-	}
-	else
-		i_sec = irint (calendar.sec);
-	
-	if (GMT_io.clock_output.twelwe_hr_clock) {
-		if (calendar.hour < 12) {
-			ap = 0;
-		}
-		else {
-			ap = 1;
-			calendar.hour -= 12;
-		}
-		if (calendar.hour == 0) calendar.hour = 12;
-		if (GMT_io.clock_output.n_sec_decimals) {
-			e2 = fprintf (fp, GMT_io.clock_output.format, calendar.hour, calendar.min, i_sec, m_sec, GMT_io.clock_output.ampm_suffix[ap]);
-		}
-		else {
-			e2 = fprintf (fp, GMT_io.clock_output.format, calendar.hour, calendar.min, i_sec, GMT_io.clock_output.ampm_suffix[ap]);
-		}
-	}
-	else {
-		if (GMT_io.clock_output.n_sec_decimals) {
-			e2 = fprintf (fp, GMT_io.clock_output.format, calendar.hour, calendar.min, i_sec, m_sec);
-		}
-		else {
-			e2 = fprintf (fp, GMT_io.clock_output.format, calendar.hour, calendar.min, i_sec);
-		}
-	}
-	return ((e1 < 0 || e2 < 0) ? -1 : 1);
+	GMT_format_calendar (date, clock, &GMT_io.date_output, &GMT_io.clock_output, dt);
+	e = fprintf (fp, "%sT%s", date, clock);
+	return (e);
 }
 
 int GMT_bin_double_output (FILE *fp, int n, double *ptr)
@@ -1194,6 +1147,7 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S)
 				n_d++;
 				break;
 			case 'j':	/* Day of year  */
+				S->day_of_year = TRUE;
 				if (S->order[3] < 0)		/* First time we encounter a j */
 					S->order[3] = order++;
 				else if (text[i-1] != 'j')	/* Done it before, previous char must be j */
@@ -1562,10 +1516,12 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 	}
 	else if (S->order[0] >= 0) {	/* OK, at least one item is needed */
 		k = (S->order[0] == 0 && !S->Y2K_year) ? 4 : 2;
+		if (S->order[0] == 3) k = 3;	/* Day of year */
 		(mode) ? sprintf (S->format, "%%%d.%dd\0", k, k) : sprintf (S->format, "%%%dd\0", k);
 		if (S->order[1] >= 0) {	/* Need more items */
 			if (S->delimeter[0][0]) strcat (S->format, S->delimeter[0]);
 			k = (S->order[1] == 0 && !S->Y2K_year) ? 4 : 2;
+			if (S->order[1] == 3) k = 3;	/* Day of year */
 			(mode) ? sprintf (fmt, "%%%d.%dd\0", k, k) : sprintf (fmt, "%%%dd\0", k);
 			strcat (S->format, fmt);
 			if (S->order[2] >= 0) {	/* .. and even more */

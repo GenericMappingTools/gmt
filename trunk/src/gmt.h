@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.22 2001-09-10 23:56:16 pwessel Exp $
+ *	$Id: gmt.h,v 1.23 2001-09-12 04:03:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -207,10 +207,10 @@ typedef double (*PFD) ();	/* PFD declares a pointer to a function returning a do
  *--------------------------------------------------------------------*/
 
 #define N_UNIQUE 59		/* Number of unique options */
-#define N_KEYS 77		/* Number of gmt defaults */
+#define N_KEYS 79		/* Number of gmt defaults */
 #define N_FONTS 39		/* Number of fonts in the PS_font_names.h include file */
 #define GMT_N_MEDIA 29		/* Number of standard paper formats in the GMT_media_names.h include file */
-#define HASH_SIZE 77		/* Used in get_gmtdefaults, should be ~> N_KEYS */
+#define HASH_SIZE 79		/* Used in get_gmtdefaults, should be ~> N_KEYS */
 #define GMT_N_SYSTEMS 6		/* Number of time systems in gmt_time_systems.h */
 /* This structure contains default parameters for the GMT system */
 
@@ -231,6 +231,8 @@ struct GMTDEFAULTS {
 	double anot_min_spacing;	/* If an anotation is closer that this to an older anotation, the anot is skipped [0.0] */
 	int anot_font;			/* Font for anotations [Helvetica] */
 	int anot_font_size;		/* Font size for anotations in points [14] */
+	int anot_font2;			/* Font for upper anotations on time axis  [Helvetica] */
+	int anot_font2_size;		/* Font size for upper anotations on time axis in points [16] */
 	double anot_offset;		/* Distance between anotation and tickmarks [0.075] */
 	char basemap_axes[5];		/* Which axes to draw and annotate ["WESN"]  */
 	int basemap_frame_rgb[3];	/* Frame color rgb [(0,0,0) = black] */

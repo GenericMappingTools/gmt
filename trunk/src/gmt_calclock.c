@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.13 2001-08-28 19:25:11 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.14 2001-09-12 04:03:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -756,6 +756,9 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 		GMT_dt2rdc (dt_in, &(p->rd[0]), &(p->sd[0]) );
 		GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
 		p->dt[0] = dt_in;
+		p->sd[1] = p->sd[0];
+		p->rd[1] = p->rd[0];
+		memcpy ( (void *)&(p->cc[1]), (void *)&(p->cc[0]), sizeof (struct GMT_gcal));	/* Set to same as first calendar */
 	}
 	else {
 		memcpy ( (void *)&(p->cc[0]), (void *)&(p->cc[1]), sizeof (struct GMT_gcal));
@@ -798,6 +801,7 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 					if (k) {
 						p->rd[0] -= k;	/* Floor to n'th day  */
 						GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
+						memcpy ( (void *)&(p->cc[1]), (void *)&(p->cc[0]), sizeof (struct GMT_gcal));	/* Set to same as first calendar */
 					}
 					p->sd[0] = 0.0;
 					p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
@@ -823,6 +827,7 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 					if (k) {
 						p->rd[0] -= k;	/* Floor to n'th day  */
 						GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
+						memcpy ( (void *)&(p->cc[1]), (void *)&(p->cc[0]), sizeof (struct GMT_gcal));	/* Set to same as first calendar */
 					}
 					p->sd[0] = 0.0;
 					p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
@@ -869,6 +874,7 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 				if (k) {
 					p->rd[0] -= k;	/* Floor to n'th day of the week.  */
 					GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
+					memcpy ( (void *)&(p->cc[1]), (void *)&(p->cc[0]), sizeof (struct GMT_gcal));	/* Set to same as first calendar */
 				}
 				p->sd[0] = 0.0;
 				p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
@@ -898,6 +904,7 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 				p->cc[0].iso_w = k * p->step + 1;
 				p->rd[0] = GMT_rd_from_iywd (p->cc[0].iso_y, p->cc[0].iso_w, 1);
 				GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
+				memcpy ( (void *)&(p->cc[1]), (void *)&(p->cc[0]), sizeof (struct GMT_gcal));	/* Set to same as first calendar */
 				p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
 			}
 			/* I'm not sure how to move <step> weeks ahead.
@@ -935,6 +942,7 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 				}
 				p->rd[0] = GMT_rd_from_gymd (p->cc[0].year, p->cc[0].month, p->cc[0].day_m);
 				GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
+				memcpy ( (void *)&(p->cc[1]), (void *)&(p->cc[0]), sizeof (struct GMT_gcal));	/* Set to same as first calendar */
 				p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
 			}
 			/* Now get next n'th month  */
@@ -964,6 +972,7 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 					p->rd[0] = GMT_rd_from_gymd (p->cc[0].year, 1, 1);
 				}
 				GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
+				memcpy ( (void *)&(p->cc[1]), (void *)&(p->cc[0]), sizeof (struct GMT_gcal));	/* Set to same as first calendar */
 				p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
 			}
 			/* Now step ahead step years, depending on calendar type:  */
@@ -1003,7 +1012,7 @@ void	GMT_small_moment_interval (struct GMT_MOMENT_INTERVAL *p, int step_secs, BO
 		}
 		/* Now we step to next day in rd first, and set dt from there.
 			This will work even when leap seconds are implemented.  */
-		p->rd[1] = p->rd[0];
+		p->rd[1] = p->rd[0] + 1;
 		GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
 		p->sd[1] = 0.0;
 		p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
@@ -1063,4 +1072,72 @@ int	GMT_gmonth_length (int year,  int month) {
 	
 	k = (GMT_is_gleap (year) ) ? 29 : 28;
 	return (k);
+}
+
+int GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *C, GMT_dtime dt)
+{	/* Given the internal time representation dt and the formatting information
+	 * in the D and C structure, write the calendar representation to strings date and clock,
+	 * but skip either string if it is a NULL pointer */
+	 
+	struct GMT_gcal calendar;
+	int i_sec, m_sec, ap, ival[3];
+
+	GMT_gcal_from_dt (dt, &calendar);			/* Convert dt to a complete calendar structure */
+	
+	if (date) {	/* Not NULL, want to format this string */
+		/* Now undo Y2K fix to make a 2-digit year here if necessary */
+	
+		if (D->day_of_year) {		/* Using the year and day-of-year as date entries */
+			ival[D->order[0]] = (D->Y2K_year) ? abs(calendar.year) % 100 : calendar.year;
+			ival[!D->order[0]] = calendar.day_y;
+		}
+		else if (D->iso_calendar) {	/* Using ISO year, week and day-of-week entries */
+			ival[0] = (D->Y2K_year) ? abs(calendar.iso_y) % 100 : calendar.iso_y;
+			ival[1] = calendar.iso_w;
+			ival[2] = calendar.iso_d;
+		}
+		else {				/* Gregorian calendar entries */
+			ival[D->order[0]] = (D->Y2K_year) ? abs(calendar.year) % 100 : calendar.year;
+			ival[D->order[1]] = calendar.month;
+			ival[D->order[2]] = calendar.day_m;
+		}
+		memset ((void *)date, 0, GMT_CALSTRING_LENGTH);			/* To set all to zero */
+		sprintf (date, D->format, ival[0], ival[1], ival[2]);		/* Write date in correct order for this format */
+	}
+
+	if (!clock) return;	/* Do not want a formatted clock string - return here */
+	
+	memset ((void *)clock, 0, GMT_CALSTRING_LENGTH);			/* To set all to zero */
+	if (C->n_sec_decimals) {						/* Must get sec and fractional seconds scaled up */
+		i_sec = (int) floor (calendar.sec);
+		m_sec = irint (C->f_sec_to_int * (calendar.sec - i_sec));
+	}
+	else
+		i_sec = irint (calendar.sec);
+	
+	if (C->twelwe_hr_clock) {		/* Must deal with am/pm formatting */
+		if (calendar.hour < 12)
+			ap = 0;
+		else {
+			ap = 1;
+			calendar.hour -= 12;
+		}
+		if (calendar.hour == 0) calendar.hour = 12;
+		if (C->n_sec_decimals) {	/* Have fractional seconds has smallest item */
+			sprintf (clock, C->format, calendar.hour, calendar.min, i_sec, m_sec, C->ampm_suffix[ap]);
+		}
+		else if (C->order[2] > 0) {	/* Have integer seconds as smallest item */
+			sprintf (clock, C->format, calendar.hour, calendar.min, i_sec, C->ampm_suffix[ap]);
+		}
+		else if (C->order[1] > 0) {	/* Have integer minutes as smallest item */
+			sprintf (clock, C->format, calendar.hour, calendar.min, C->ampm_suffix[ap]);
+		}
+		else {	/* Have integer hours as smallest item */
+			sprintf (clock, C->format, calendar.hour, C->ampm_suffix[ap]);
+		}
+	}
+	else {					/* 24-hour clock formatting */
+		sprintf (clock, C->format, calendar.hour, calendar.min, i_sec, m_sec);
+	}
+	return;
 }

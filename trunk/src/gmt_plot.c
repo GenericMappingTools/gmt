@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.15 2001-09-10 23:56:16 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.16 2001-09-12 04:03:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -118,8 +118,14 @@ double GMT_get_anot_offset (BOOLEAN *flip);
 int GMT_flip_justify (int justify);
 BOOLEAN GMT_anot_too_crowded (double x, double y, int side);
 BOOLEAN GMT_is_fancy_boundary (void);
-void GMT_tx_axis (double x0, double y0, double length, double val0, double val1, struct TIME_FRAME *T, int below);
-void GMT_ty_axis (double x0, double y0, double length, double val0, double val1, struct TIME_FRAME *T, int left_side);
+void GMT_tx_axis (double x0, double y0, double length, double val0, double val1, struct TIME_AXIS *A, int below, int anotate);
+void GMT_ty_axis (double x0, double y0, double length, double val0, double val1, struct TIME_AXIS *A, int left_side, int anotate);
+void GMT_time_to_x (GMT_dtime t, double *x);
+void GMT_time_to_y (GMT_dtime t, double *y);
+int GMT_time_array (double min, double max, struct TIME_AXIS_ITEM *T, BOOLEAN interval, double **array);
+void GMT_timex_grid (double w, double e, double s, double n);
+void GMT_timey_grid (double w, double e, double s, double n);
+void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, char unit, int flavor, GMT_dtime t);
 
 /* Local variables to this file */
 
@@ -142,40 +148,210 @@ void GMT_linear_map_boundary (double w, double e, double s, double n)
 	
 	if (frame_info.side[3])	{	/* West or left y-axis */
 		if (project_info.xyz_projection[1] == TIME)
-			GMT_ty_axis (x1, y1, y_length, s, n, &tframe_info, TRUE);
+			GMT_ty_axis (x1, y1, y_length, s, n, &tframe_info.axis[1], TRUE, tframe_info.side[3]-1);
 		else
 			GMT_y_axis (x1, y1, y_length, s, n, frame_info.anot_int[1], frame_info.frame_int[1],
 				frame_info.label[1], frame_info.unit[1], project_info.xyz_projection[1], frame_info.anot_type[1], TRUE, frame_info.side[3]-1);
 	}
 	if (frame_info.side[1])	{	/* East or right y-axis */
 		if (project_info.xyz_projection[1] == TIME)
-			GMT_ty_axis (x2, y1, y_length, s, n, &tframe_info, FALSE);
+			GMT_ty_axis (x2, y1, y_length, s, n, &tframe_info.axis[1], FALSE, tframe_info.side[1]-1);
 		else
 			GMT_y_axis (x2, y1, y_length, s, n, frame_info.anot_int[1], frame_info.frame_int[1],
 				frame_info.label[1], frame_info.unit[1], project_info.xyz_projection[1], frame_info.anot_type[1], FALSE, frame_info.side[1]-1);
 	}
 	if (frame_info.side[0])	{	/* South or lower x-axis */
 		if (project_info.xyz_projection[0] == TIME)
-			GMT_tx_axis (x1, y1, x_length, w, e, &tframe_info, TRUE);
+			GMT_tx_axis (x1, y1, x_length, w, e, &tframe_info.axis[0], TRUE, tframe_info.side[0]-1);
 		else
 			GMT_x_axis (x1, y1, x_length, w, e, frame_info.anot_int[0], frame_info.frame_int[0],
 				frame_info.label[0], frame_info.unit[0], project_info.xyz_projection[0], frame_info.anot_type[0], TRUE, frame_info.side[0]-1);
 	}
 	if (frame_info.side[2])	{	/* North or upper x-axis */
 		if (project_info.xyz_projection[0] == TIME)
-			GMT_tx_axis (x1, y2, x_length, w, e, &tframe_info, FALSE);
+			GMT_tx_axis (x1, y2, x_length, w, e, &tframe_info.axis[0], FALSE, tframe_info.side[2]-1);
 		else
 			GMT_x_axis (x1, y2, x_length, w, e, frame_info.anot_int[0], frame_info.frame_int[0],
 				frame_info.label[0], frame_info.unit[0], project_info.xyz_projection[0], frame_info.anot_type[0], FALSE, frame_info.side[2]-1);
 	}
 }
 
-void GMT_tx_axis (double x0, double y0, double length, double val0, double val1, struct TIME_FRAME *T, int below)
+void GMT_tx_axis (double x0, double y0, double length, double val0, double val1, struct TIME_AXIS *A, int below, int anotate)
 {
+	int k, i, nx, flip, justify, label_justify, anot_pos, font_size;
+	BOOLEAN is_interval, use_clock;
+	double t_mid, *knots, x, tick_len[5], sign, anot_off[2], label_off, len, t_use;
+	struct TIME_AXIS_ITEM *T;
+	struct GMT_MOMENT_INTERVAL I;
+	char string[GMT_CALSTRING_LENGTH];
+	
 	fprintf (stderr, "%s: GMT_tx_axis not implemented yet\n", GMT_program);
+
+	ps_setfont (gmtdefs.anot_font);
+	
+	/* Ready to draw axis */
+	
+	if (below) ps_comment ("Start of lower time x-axis"); else ps_comment ("Start of upper time x-axis");
+	ps_transrotate (x0, y0, 0.0);
+	GMT_setpen (&gmtdefs.frame_pen);
+	ps_plot (0.0, 0.0, 3);
+	ps_plot (length, 0.0, -2);
+	GMT_setpen (&gmtdefs.tick_pen);
+		
+	len = (gmtdefs.tick_length > 0.0) ? gmtdefs.tick_length : 0.0;
+	sign = (below) ? -1.0 : 1.0;
+	anot_off[0] = GMT_get_anot_offset (&flip);
+	/* anot_off[1] = anot_off[0] + (gmtdefs.anot_font_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font_height[gmtdefs.anot_font]c */
+	anot_off[1] = anot_off[0] + (gmtdefs.anot_font_size * GMT_u2u[GMT_PT][GMT_INCH]) + 0.5 * fabs (gmtdefs.anot_offset);
+	justify = label_justify = (below) ? 10 : 2;
+	if (flip) justify = GMT_flip_justify (justify);
+	label_off = sign * (((flip) ? len : anot_off[1] + (gmtdefs.anot_font2_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font_height[gmtdefs.anot_font2]) + 1.5 * fabs (gmtdefs.anot_offset));
+	anot_off[0] *= sign;
+	anot_off[1] *= sign;
+	tick_len[0] = tick_len[2] = sign * gmtdefs.tick_length;
+	tick_len[1] = tick_len[3] = 2.0 * sign * gmtdefs.tick_length;
+	tick_len[4] = 0.5 * sign * gmtdefs.tick_length;
+	
+	for (k = 0; k < 5; k++) {	/* For each one of the 5 axis items (number 6 is gridlines which is done separately) */
+		/* k = 0 means Upper tick anotation	*/
+		/* k = 1 means Lower tick anotation	*/
+		/* k = 2 means Upper interval anotation */
+		/* k = 3 means Lower interval anotation */
+		/* k = 4 means frame tick anotation	*/
+		/* k = 5 means gridline anotation	*/
+		
+		T = &A->item[k];		/* Get pointer to this item */
+		if (!T->active) continue;	/* Don't want this item plotted - goto next item */
+		
+		I.unit = T->unit;		/* Initialize MOMENT_INTERVAL structure members */
+		I.step = T->interval;
+		is_interval = (k == 2 || k == 3);
+		nx = GMT_time_array (val0, val1, &A->item[k], is_interval, &knots);	/* Get all the tick knots */
+		
+		/* First plot all the tick marks */
+		
+		for (i = 0; i < nx; i++) {
+			if (knots[i] < (val0 - GMT_CONV_LIMIT) || knots[i] > (val1 + GMT_CONV_LIMIT)) continue;
+			GMT_time_to_x (knots[i], &x);
+			ps_plot (x, 0.0, 3);
+			ps_plotr (0.0, tick_len[k], -2);
+		}
+		
+		if (k < 4 && anotate) {	/* Then do anotations */
+		
+			use_clock = (T->unit == 'h' || T->unit == 'm' || T->unit == 's');	/* Use clock if unit is hour or less, else use date format */
+			anot_pos = (k == 1 || k == 3);						/* 1 means lower anotation, 0 means upper (close to axis) */
+			font_size = (anot_pos == 1) ? gmtdefs.anot_font2_size : gmtdefs.anot_font_size;
+		
+			for (i = 0; k < 4 && i < (nx - is_interval); i++) {
+				if (is_interval) {
+					t_use = 0.5 * (MAX (val0, knots[i]) + MIN (val1, knots[i+1]));
+					if ((t_use - GMT_CONV_LIMIT) < val0 || (t_use + GMT_CONV_LIMIT) > val1) continue;
+				}
+				else if (knots[i] < (val0 - GMT_CONV_LIMIT) || knots[i] > (val1 + GMT_CONV_LIMIT))
+					continue;
+				else
+					t_use = knots[i];
+				GMT_time_to_x (t_use, &x);
+
+				GMT_get_time_label (string, &GMT_plot_calclock, T->unit, T->flavor, knots[i]);
+				ps_text (x, anot_off[anot_pos], font_size, string, 0.0, justify, 0);
+			}
+		}
+			
+		GMT_free ((void *)knots);
+	}
+	
+	/* Finally do label */
+	
+	ps_setfont (gmtdefs.label_font);
+	if (A->label[0] && anotate) ps_text (0.5 * length, label_off, gmtdefs.label_font_size, A->label, 0.0, label_justify, 0);
+	ps_rotatetrans  (-x0, -y0, 0.0);
+	ps_comment ("End of x-axis");
 }
 
-void GMT_ty_axis (double x0, double y0, double length, double val0, double val1, struct TIME_FRAME *T, int left_side)
+void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, char unit, int flavor, GMT_dtime t)
+{	/* Assemble the anotation label given the formatting options presented */
+	struct GMT_gcal calendar;
+
+	GMT_gcal_from_dt (t, &calendar);			/* Convert t to a complete calendar structure */
+
+	switch (unit) {
+		case 'Y':	/* 4-digit integer year */
+			sprintf (string, "%4.4d\0", calendar.year);
+			break;
+		case 'y':	/* 2-digit integer year */
+			sprintf (string, "%2.2d\0", calendar.year % 100);
+			break;
+		case 'O':	/* Plot via date format */
+			GMT_format_calendar (string, CNULL, &P->date, &P->clock, t);
+			break;
+		case 'o':	/* 2-digit month */
+			sprintf (string, "%2.2d\0", calendar.month);
+			break;
+		case 'U':	/* ISO year, week, day via date format */
+			GMT_format_calendar (string, CNULL, &P->date, &P->clock, t);
+			break;
+		case 'u':	/* 2-digit ISO week */		
+			sprintf (string, "%2.2d\0", calendar.iso_w);
+			break;
+		case 'K':	/* ISO year, week, day via date format */
+			GMT_format_calendar (string, CNULL, &P->date, &P->clock, t);
+			break;
+		case 'k':	/* Weekday name */
+			sprintf (string, "%s\0", GMT_time_language.day_name[calendar.iso_d-1][flavor]);
+			break;
+		case 'D':	/* Day, via date format */
+			GMT_format_calendar (string, CNULL, &P->date, &P->clock, t);
+			break;
+		case 'd':	/* 2-digit day or 3-digit day of year */
+			if (P->date.day_of_year)
+				sprintf (string, "%3.3d\0", calendar.day_y);
+			else
+				sprintf (string, "%3.3d\0", calendar.day_m);
+			break;
+		case 'H':	/* Hours via clock format */
+			GMT_format_calendar (CNULL, string, &P->date, &P->clock, t);
+			break;
+		case 'h':	/* 2-digit hour */
+			sprintf (string, "%2.2d\0", calendar.hour);
+			break;
+		case 'M':	/* Minutes via clock format */
+			GMT_format_calendar (CNULL, string, &P->date, &P->clock, t);
+			break;
+		case 'm':	/* 2-digit minutes */
+			sprintf (string, "%2.2d\0", calendar.min);
+			break;
+		case 'C':	/* Seconds via clock format */
+			GMT_format_calendar (CNULL, string, &P->date, &P->clock, t);
+			break;
+		case 'c':	/* 2-digit seconds */
+			sprintf (string, "%2.2d\0", calendar.sec);
+			break;
+		default:
+			fprintf (stderr, "ERROR: wrong unit passed to GMT_get_time_label\n");
+			exit (EXIT_FAILURE);
+			break;
+	}
+}
+		
+void GMT_time_to_x (GMT_dtime t, double *x)
+{
+	/* Convert a GMT time representation to map position in x */
+
+	(*GMT_x_forward) (t, x);
+	(*x) = (*x) * project_info.x_scale + project_info.x0;
+}
+	
+void GMT_time_to_y (GMT_dtime t, double *y)
+{
+	/* Convert a GMT time representation to map position in x */
+
+	(*GMT_y_forward) (t, y);
+	(*y) = (*y) * project_info.y_scale + project_info.y0;
+}
+	
+void GMT_ty_axis (double x0, double y0, double length, double val0, double val1, struct TIME_AXIS *A, int left_side, int anotate)
 {
 	fprintf (stderr, "%s: GMT_ty_axis not implemented yet\n", GMT_program);
 }
@@ -901,6 +1077,32 @@ int GMT_pow_array (double min, double max, double delta, int x_or_y, double **ar
 	return (n);
 }
 
+int GMT_time_array (double min, double max, struct TIME_AXIS_ITEM *T, BOOLEAN interval, double **array)
+{	/* When interval is TRUE we must return interval start/stop even if outside min/max range */
+	struct GMT_MOMENT_INTERVAL I;
+	double *val;
+	int n_alloc = GMT_SMALL_CHUNK, n = 0;
+
+	val = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_time_array");
+	I.unit = T->unit;
+	I.step = T->interval;
+	GMT_moment_interval (&I, min, TRUE);	/* First time we pass TRUE for initialization */
+	while (I.dt[0] <= max) {		/* As long as we are not gone way past the end time */
+		if (I.dt[0] >= min || interval) val[n++] = I.dt[0];		/* Was inside region */
+		GMT_moment_interval (&I, 0.0, FALSE);			/* Advance to next interval */
+		if (n == n_alloc) {					/* Allocate more space */
+			n_alloc += GMT_SMALL_CHUNK;
+			val = (double *) GMT_memory ((void *)val, (size_t)n_alloc, sizeof (double), "GMT_time_array");
+		}
+	}
+	if (interval) val[n++] = I.dt[0];	/* Must get end of interval too */
+	val = (double *) GMT_memory ((void *)val, (size_t)n, sizeof (double), "GMT_time_array");
+
+	*array = val;
+
+	return (n);
+}
+
 void GMT_linearx_grid (double w, double e, double s, double n, double dval)
 {
 	double *x;
@@ -918,6 +1120,32 @@ void GMT_lineary_grid (double w, double e, double s, double n, double dval)
 
 	ny = GMT_linear_array (s, n, dval, &y);
 	for (i = 0; i < ny; i++) GMT_map_latline (y[i], w, e);
+	if (ny) GMT_free ((char *)y);
+}
+
+void GMT_timex_grid (double w, double e, double s, double n)
+{
+	int i, nx;
+	double *x;
+		
+	nx = GMT_time_array (w, e, &tframe_info.axis[0].item[5], FALSE, &x);
+	for (i = 0; i < nx; i++) {
+		GMT_geoplot (x[i], s, 3);
+		GMT_geoplot (x[i], n, 2);
+	}
+	if (nx) GMT_free ((char *)x);
+}
+
+void GMT_timey_grid (double w, double e, double s, double n)
+{
+	int i, ny;
+	double *y;
+		
+	ny = GMT_time_array (s, n, &tframe_info.axis[1].item[5], FALSE, &y);
+	for (i = 0; i < ny; i++) {
+		GMT_geoplot (w, y[i], 3);
+		GMT_geoplot (e, y[i], 2);
+	}
 	if (ny) GMT_free ((char *)y);
 }
 
@@ -2051,14 +2279,18 @@ void GMT_map_gridlines (double w, double e, double s, double n)
 
 	GMT_setpen (&gmtdefs.grid_pen);
 
-	if (dx > 0.0 && project_info.xyz_projection[0] == LOG10)
+	if (project_info.xyz_projection[0] == TIME && tframe_info.axis[0].item[5].interval > 0.0)
+		GMT_timex_grid (w, e, s, n);
+	else if (dx > 0.0 && project_info.xyz_projection[0] == LOG10)
 		GMT_logx_grid (w, e, s, n, dx);
 	else if (dx > 0.0 && project_info.xyz_projection[0] == POW)
 		GMT_powx_grid (w, e, s, n, dx);
 	else if (dx > 0.0)	/* Draw grid lines that go E to W */
 		GMT_linearx_grid (w, e, s, n, dx);
 	
-	if (dy > 0.0 && project_info.xyz_projection[1] == LOG10)
+	if (project_info.xyz_projection[1] == TIME && tframe_info.axis[1].item[5].interval > 0.0)
+		GMT_timey_grid (w, e, s, n);
+	else if (dy > 0.0 && project_info.xyz_projection[1] == LOG10)
 		GMT_logy_grid (w, e, s, n, dy);
 	else if (dy > 0.0 && project_info.xyz_projection[1] == POW)
 		GMT_powy_grid (w, e, s, n, dy);
@@ -2087,13 +2319,17 @@ void GMT_map_gridcross (double w, double e, double s, double n)
 	
 	GMT_setpen (&gmtdefs.grid_pen);
 	
-	if (project_info.xyz_projection[0] == LOG10)
+	if (project_info.xyz_projection[0] == TIME)
+		nx = GMT_time_array (w, e, &tframe_info.axis[0].item[5], FALSE, &x);
+	else if (project_info.xyz_projection[0] == LOG10)
 		nx = GMT_log_array (w, e, dx, &x);
 	else if (project_info.xyz_projection[0] == POW)
 		nx = GMT_pow_array (w, e, dx, 0, &x);
 	else
 		nx = GMT_linear_array (w, e, dx, &x);
-	if (project_info.xyz_projection[1] == LOG10)
+	if (project_info.xyz_projection[1] == TIME)
+		ny = GMT_time_array (s, n, &tframe_info.axis[1].item[5], FALSE, &y);
+	else if (project_info.xyz_projection[1] == LOG10)
 		ny = GMT_log_array (s, n, dy, &y);
 	else if (project_info.xyz_projection[1] == POW)
 		ny = GMT_pow_array (s, n, dy, 1, &y);
