@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.10 2004-01-03 23:03:30 pwessel Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.11 2004-04-13 21:32:27 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -655,8 +655,8 @@ the top panel except that the land and sea images have changed places
 
 \index{Example!color patterns|)}
 
-\section{Custom map symbols}
-\index{Example!custom map symbols|(}
+\section{Custom plot symbols}
+\index{Example!custom plot symbols|(}
 
 One is often required to make special maps that shows the
 distribution of certain features but one would prefer to
@@ -696,13 +696,14 @@ arc segment of radius $r$ from angle $\alpha_1$ to $\alpha_2$
 We also add a few stand-alone circles (for other symbols, see \GMTprog{psxy} man page):
 
 \begin{tabbing} 
-$x_0$ $y_0$ $r$ {\bf C} [ \Opt{G}{\it fill} ] [ \Opt{W}{\it pen} ] \=Draw \kill
-$x_0$ $y_0$ $r$ {\bf C} [ \Opt{G}{\it fill} ] [ \Opt{W}{\it pen} ] \> Draw
+$x_0$ $y_0$ $r$ {\bf c} [ \Opt{G}{\it fill} ] [ \Opt{W}{\it pen} ] \=Draw \kill
+$x_0$ $y_0$ $r$ {\bf c} [ \Opt{G}{\it fill} ] [ \Opt{W}{\it pen} ] \> Draw
 single circle of radius $r$ around $x_0$, $y_0$ \\
 \end{tabbing} 
 
 The optional \Opt{G} and \Opt{W} can be used to hardwire
-the color fill and pen for segments.  By default the segments
+the color fill and pen for segments (use {\bf --} to disallow
+fill or line for any specific feature).  By default the segments
 are painted based on the values of the command line settings.
 
 Manually applying these rules to our symbol results in a
