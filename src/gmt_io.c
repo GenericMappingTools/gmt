@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.71 2004-12-02 17:20:38 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.72 2004-12-19 02:12:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2595,7 +2595,7 @@ n_tot_mem += i_alloc * sizeof (struct GMT_LINES);
 	while (n_fields >= 0 && !(GMT_io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 		while (GMT_io.status & GMT_IO_SEGMENT_HEADER && !(GMT_io.status & GMT_IO_EOF)) {
 			/* To use different line-distances for each segment, place the distance in the segment header */
-			i++;
+			if (i == -1 || e[i].np > 0) i++;	/* Only advance segment if last had any points or was the first one */
 			n_read++;
 			n = sscanf (&GMT_io.segment_header[1], "%lg", &d);
 			e[i].dist = (n == 1 && dist == 0.0) ? d : dist;
@@ -2675,9 +2675,7 @@ n_tot_mem += i_alloc * sizeof (struct GMT_LINES);
 			e = (struct GMT_LINES *) GMT_memory ((void *)e, (size_t)i_alloc, sizeof (struct GMT_LINES), GMT_program);
 n_tot_mem += GMT_CHUNK * sizeof (struct GMT_LINES);
 		}
-		fprintf (stderr, "Mem count = %d bytes\r", n_tot_mem);
 	}
-		fprintf (stderr, "Mem count = %d bytes\n", n_tot_mem);
 	GMT_fclose (fp);
 	GMT_io.multi_segments = save;
 
