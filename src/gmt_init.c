@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: gmt_init.c,v 1.2 2001-02-21 03:52:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2406,6 +2406,7 @@ int GMT_map_getproject (char *args)
 	 		}
 	 		else
 	 			error = TRUE;
+			if (project_info.got_azimuths) project_info.pars[1] = -project_info.pars[1];	/* Because azimuths go clockwise */
 	 		project = POLAR;
 	 		break;
 	 		

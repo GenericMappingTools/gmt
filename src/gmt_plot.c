@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: gmt_plot.c,v 1.2 2001-02-21 03:52:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -80,7 +80,7 @@
  *	GMT_rect_map_boundary :		Plot plain basemap for projections with rectangular boundaries
  *	GMT_basic_map_boundary :	Plot plain basemap for most projections
  *	GMT_wesn_map_boundary :		Plot plain basemap for projections with geographical boundaries
- *	GMT_theta_r_GMT_map_boundary :	Plot plain basemap for polar (cylindrical) projection
+ *	GMT_theta_r_map_boundary :	Plot plain basemap for polar (cylindrical) projection
  *	GMT_xyz_axis3D :		Draw 3-D axis
  *	GMT_polar_adjust :		Adjust label justification for polar projection
  */
@@ -105,7 +105,7 @@ int GMT_pow_array (double min, double max, double delta, int x_or_y, double **ar
 int GMT_grid_clip_path (struct GRD_HEADER *h, double **x, double **y, BOOLEAN *donut);
 void GMT_wesn_map_boundary (double w, double e, double s, double n);
 void GMT_rect_map_boundary (double x0, double y0, double x1, double y1);
-void GMT_theta_r_GMT_map_boundary (double w, double e, double s, double n);
+void GMT_theta_r_map_boundary (double w, double e, double s, double n);
 void GMT_map_latline (double lat, double west, double east);
 void GMT_map_lonline (double lon, double south, double north);
 void GMT_map_tick (double *xx, double *yy, int *sides, double *angles, int nx, int type);
@@ -1571,7 +1571,7 @@ void GMT_rect_map_boundary (double x0, double y0, double x1, double y1)
 	}
 }
 	
-void GMT_circle_GMT_map_boundary (double w, double e, double s, double n)
+void GMT_circle_map_boundary (double w, double e, double s, double n)
 {
 	int i, nr;
 	double x0, y0, a, da, S, C;
@@ -1599,10 +1599,10 @@ void GMT_circle_GMT_map_boundary (double w, double e, double s, double n)
 	ps_rotatetrans (-x0, -y0, 0.0);
 }
 	
-void GMT_theta_r_GMT_map_boundary (double w, double e, double s, double n)
+void GMT_theta_r_map_boundary (double w, double e, double s, double n)
 {
 	int i, nr;
-	double x0, y0, x, y, a, da, W, S, C;
+	double a, da;
 	double xx[2], yy[2];
 	
 	GMT_setpen (&gmtdefs.frame_pen);
@@ -1614,37 +1614,21 @@ void GMT_theta_r_GMT_map_boundary (double w, double e, double s, double n)
 	}
 	nr = gmtdefs.n_lon_nodes;
 	if (nr >= GMT_n_alloc) GMT_get_plot_array ();
-	da = D2R * fabs (project_info.e - project_info.w) / (nr - 1);
-	W = (project_info.w - project_info.p_base_angle) * D2R;
-	if (project_info.got_azimuths) {
-		W = M_PI_2 - W;         /* offset by 90 - W in radians */
-		da *= -1;               /* change direction to CW */
-	}
-	for (i = 0; i < nr; i++) {
-		a = W + i * da;
-		sincos (a, &S, &C);
-		x = project_info.r * C;
-		y = project_info.r * S;
-		GMT_xy_do_z_to_xy (x, y, project_info.z_level, &GMT_x_plot[i], &GMT_y_plot[i]);
-	}
-	GMT_geoz_to_xy (project_info.p_base_angle, project_info.pole, project_info.z_level, &x0, &y0);
-	ps_transrotate (x0, y0, 0.0);
-	ps_line (GMT_x_plot, GMT_y_plot, nr, 3, FALSE, TRUE);
-	if (frame_info.side[0]) {
-		double r;
-		GMT_geo_to_xy (project_info.p_base_angle, project_info.s, &r, &y);
-		r -= x0;
+	da = fabs (project_info.e - project_info.w) / (nr - 1);
+	if (frame_info.side[2]) {
 		for (i = 0; i < nr; i++) {
-			a = W + i * da;
-			sincos (a, &S, &C);
-			x = r * C;
-			y = r * S;
-			GMT_xy_do_z_to_xy (x, y, project_info.z_level, &GMT_x_plot[i], &GMT_y_plot[i]);
+			a = project_info.w + i * da;
+			GMT_geoz_to_xy (a, project_info.n, project_info.z_level, &GMT_x_plot[i], &GMT_y_plot[i]);
 		}
 		ps_line (GMT_x_plot, GMT_y_plot, nr, 3, FALSE, TRUE);
 	}
-	ps_rotatetrans (-x0, -y0, 0.0);
-	
+	if (frame_info.side[0]) {
+		for (i = 0; i < nr; i++) {
+			a = project_info.w + i * da;
+			GMT_geoz_to_xy (a, project_info.s, project_info.z_level, &GMT_x_plot[i], &GMT_y_plot[i]);
+		}
+		ps_line (GMT_x_plot, GMT_y_plot, nr, 3, FALSE, TRUE);
+	}	
 	if (frame_info.side[1]) {
 		GMT_geoz_to_xy (project_info.e, project_info.s, project_info.z_level, &xx[0], &yy[0]);
 		GMT_geoz_to_xy (project_info.e, project_info.n, project_info.z_level, &xx[1], &yy[1]);
@@ -2281,8 +2265,18 @@ void GMT_map_anotate (double w, double e, double s, double n)
 	}
 	
 	if (dy > 0.0) {	/* Anotate W and E boundaries */
-		do_minutes = (fabs (fmod (dy, 1.0)) > SMALL);
-		do_seconds = (fabs (60.0 * fmod (fmod (dy, 1.0) * 60.0, 1.0)) >= 1.0);
+		int lonlat;
+		
+		if (MAPPING) {
+			do_minutes = (fabs (fmod (dy, 1.0)) > SMALL);
+			do_seconds = (fabs (60.0 * fmod (fmod (dy, 1.0) * 60.0, 1.0)) >= 1.0);
+			lonlat = 1;
+		}
+		else {	/* Also, we know that gmtdefs.degree_format = 6 in this case */
+			do_minutes = do_seconds = 0;
+			lonlat = 2;
+			if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Temporary swap to trick justify machinery */
+		}
 		s1 = floor (s / dy) * dy;
 		if (fabs (s1 - s) > SMALL) s1 += frame_info.anot_int[1];
 		ny = (s1 > n) ? -1: (int)((n - s1) / dy + SMALL);
@@ -2291,9 +2285,10 @@ void GMT_map_anotate (double w, double e, double s, double n)
 			val = s1 + i * dy;
 			if (val > n) val = n;
 			if ((project_info.polar || project_info.projection == GRINTEN) && fabs (fabs (val) - 90.0) < GMT_CONV_LIMIT) continue;
-			GMT_get_anot_label (val, label, do_minutes, do_seconds, 1, GMT_world_map_save);
+			GMT_get_anot_label (val, label, do_minutes, do_seconds, lonlat, GMT_world_map_save);
 			GMT_map_symbol_ew (val, label, w, e, TRUE);
 		}
+		if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Undo the temporary swap */
 	}
 	
 	if (project_info.three_D) ps_command ("/F0 {/Helvetica Y} bind def");	/* Reset definition of F0 */
@@ -2316,7 +2311,7 @@ void GMT_map_boundary (double w, double e, double s, double n)
 				GMT_linear_map_boundary (w, e, s, n);
 			break;
 		case POLAR:
-			GMT_theta_r_GMT_map_boundary (w, e, s, n);
+			GMT_theta_r_map_boundary (w, e, s, n);
 			break;
 		case MERCATOR:
 		case CYL_EQ:
@@ -2341,7 +2336,7 @@ void GMT_map_boundary (double w, double e, double s, double n)
 			if (project_info.polar)
 				GMT_polar_map_boundary (w, e, s, n);
 			else
-				GMT_circle_GMT_map_boundary (w, e, s, n);
+				GMT_circle_map_boundary (w, e, s, n);
 			break;
 		case HAMMER:
 		case MOLLWEIDE:
@@ -2589,7 +2584,7 @@ void GMT_xyz_axis3D (int axis_no, char axis, double anotation_int, double tickma
 	do_tick = (tickmark_int > 0.0);
 	val0 = xyz[id][0];
 	val1 = xyz[id][1];
-	
+	if (val0 > val1) d_swap (val0, val1);
 	
 	/* Find number of decimals needed, if any */
 	
@@ -3258,7 +3253,7 @@ void GMT_get_anot_label (double val, char *label, int do_minutes, int do_seconds
 /* label: 	String to hold the final anotation */
 /* do_minutes:	TRUE if degree and minutes are desired, FALSE for just integer degrees */
 /* do_seconds:	TRUE if degree, minutes, and seconds are desired */
-/* lonlat:	0 = longitudes, 1 = latitudes */
+/* lonlat:	0 = longitudes, 1 = latitudes, 2 non-geographical data passed */
 /* worldmap:	T/F, whatever GMT_world_map is */
 {
 	int ival, minutes, seconds, sign, which, fmt;
@@ -3273,8 +3268,10 @@ void GMT_get_anot_label (double val, char *label, int do_minutes, int do_seconds
 		while (val < 0.0) val += 360.0;
 	}
 
-	if (fabs (val - 360.0) < GMT_CONV_LIMIT && !worldmap) val = 0.0;
-	if (fabs (val - 360.0) < GMT_CONV_LIMIT && worldmap && project_info.projection == OBLIQUE_MERC) val = 0.0;
+	if (lonlat < 2) {	/* i.e., for geographical data */
+		if (fabs (val - 360.0) < GMT_CONV_LIMIT && !worldmap) val = 0.0;
+		if (fabs (val - 360.0) < GMT_CONV_LIMIT && worldmap && project_info.projection == OBLIQUE_MERC) val = 0.0;
+	}
 
 	switch (fmt) {
 		case 0:	/* Use 0 to 360 for longitudes and -90 to +90 for latitudes */
@@ -3396,7 +3393,7 @@ int GMT_polar_adjust (int side, double angle, double x, double y)
 		top = 10;
 		bottom = 2;
 	}
-	
+	if (project_info.projection == POLAR && project_info.got_azimuths) i_swap (left, right);	/* Because with azimuths we get confused... */
 	if (side%2) {	/* W and E border */
 		if ((y - y0 + SMALL) > 0.0)
 			justify = (side == 1) ? left : right;

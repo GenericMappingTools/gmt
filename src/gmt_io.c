@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: gmt_io.c,v 1.2 2001-02-21 03:52:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -450,9 +450,12 @@ int GMT_bin_float_input (FILE *fp, int *n, double **ptr)
 }
 
 void GMT_adjust_periodic (void) {
-	while (GMT_data[0] > project_info.e) GMT_data[0] -= 360.0;
-	while (GMT_data[0] < project_info.w) GMT_data[0] += 360.0;
+	/* while (GMT_data[0] > project_info.e) GMT_data[0] -= 360.0;
+	while (GMT_data[0] < project_info.w) GMT_data[0] += 360.0; */
+	while (GMT_data[0] > project_info.e && (GMT_data[0] - 360.0) >= project_info.w) GMT_data[0] -= 360.0;
+	while (GMT_data[0] < project_info.w && (GMT_data[0] + 360.0) <= project_info.w) GMT_data[0] += 360.0;
 	/* If data is not inside the given range it will satisfy (lon > east) */
+	/* Now it will be outside the region on the same side it started out at */
 }
 	
 int GMT_ascii_output (FILE *fp, int n, double *ptr)
