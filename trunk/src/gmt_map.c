@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.36 2003-04-05 02:32:22 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.37 2003-04-05 02:38:19 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7339,6 +7339,8 @@ void GMT_azim_to_angle (double lon, double lat, double c, double azim, double *a
 	/* Convert to x,y and get angle */
 	
 	GMT_geo_to_xy (lon1, lat1, &x1, &y1);
+	
+	/* Check for wrap-around */
 	
 	dx = x1 - x0;
 	if (fabs (dx) > (width = GMT_half_map_width (y0))) {
