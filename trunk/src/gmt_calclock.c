@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.6 2001-08-17 21:34:50 wsmith Exp $
+ *	$Id: gmt_calclock.c,v 1.7 2001-08-17 23:53:49 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -33,6 +33,8 @@
 */
 
 #include "gmt.h"
+#define GMT_I_3600     (1.0 / 3600.0)  /* Convert seconds to degrees */
+#define GMT_I_60       (1.0 / 60.0)    /* Convert minutes to degrees */
 
 /* Functions to assemble/disassemble a continuous
 variable (GMT_dtime) and a calendar day (GMT_cal_rd)
@@ -505,6 +507,14 @@ void GMT_gcal_from_rd (GMT_cal_rd date, struct GMT_gcal *gcal) {
 	gcal->iso_d = (gcal->day_w) ? gcal->day_w : 7;
 }
 
+double	GMT_usert_from_dt (GMT_dtime t) {
+	double x;
+	
+	x = t - GMT_time_system[gmtdefs.time_system].epoch_t0;
+	if (GMT_time_system[gmtdefs.time_system].scale != 1.0) x /= GMT_time_system[gmtdefs.time_system].scale;
+	return (x);
+}
+
 GMT_dtime	GMT_dt_from_usert (double x) {
 
 	/* If we are going to allow the user to have irregular times
@@ -611,5 +621,24 @@ BOOLEAN	GMT_iso_ywd_is_bad (int y, int w, int d) {
 	return (FALSE);
 }
 
+void	GMT_gcal_from_dt (GMT_dtime t, struct GMT_gcal *cal) {
 
+	/* Given time in internal units, load cal and clock info
+		in cal.
+		Note: uses 0 through 23 for hours (no am/pm inside here).
+		Note: does not yet deal w/ leap seconds; modulo math here.
+	*/
+	
+	GMT_cal_rd rd;
+	double	x;
+	
+	GMT_dt2rdc (t, &rd, &x);
+	GMT_gcal_from_rd (rd, cal);
+	cal->hour = (int) floor (x * GMT_I_3600);
+	x -= 3600.0 * cal->hour;
+	cal->min  = (int) floor (x * GMT_I_60);
+	cal->sec  = x - 60.0 * cal->min;
+	return;
+}
+	
 	

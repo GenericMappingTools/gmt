@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.11 2001-04-27 20:46:05 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.12 2001-08-17 23:53:49 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -827,7 +827,7 @@ void GMT_init_three_D (void) {
 	if (project_info.z_scale < 0.0) project_info.xyz_pos[2] = FALSE;	/* User wants z to increase down */
 	if (project_info.z_level == DBL_MAX) project_info.z_level = (project_info.xyz_pos[2]) ? project_info.z_bottom : project_info.z_top;
 	
-	switch (project_info.xyz_projection[2]) {
+	switch (project_info.xyz_projection[2]%3 ) {	/* Modulo 3 so that TIME (3) maps to LINEAR (0) */
 		case LINEAR:	/* Regular scaling */
 			zmin = (project_info.xyz_pos[2]) ? project_info.z_bottom : project_info.z_top;
 			zmax = (project_info.xyz_pos[2]) ? project_info.z_top : project_info.z_bottom;
@@ -1149,7 +1149,7 @@ int GMT_map_init_linear (void) {
 	if (project_info.x_scale < 0.0) project_info.xyz_pos[0] = FALSE;	/* User wants x to increase left */
 	if (project_info.y_scale < 0.0) project_info.xyz_pos[1] = FALSE;	/* User wants y to increase down */
 			
-	switch (project_info.xyz_projection[0]) {
+	switch ( (project_info.xyz_projection[0]%3) ) {	/* Modulo 3 so that TIME (3) maps to LINEAR (0) */
 		case LINEAR:	/* Regular scaling */
 			GMT_x_forward = (PFI) ((degree) ? GMT_translind : GMT_translin);
 			GMT_x_inverse = (PFI) ((degree) ? GMT_itranslind : GMT_itranslin);
@@ -1182,7 +1182,7 @@ int GMT_map_init_linear (void) {
 			GMT_x_inverse = (PFI) GMT_itranspowx;
 			break;
 	}
-	switch (project_info.xyz_projection[1]) {
+	switch (project_info.xyz_projection[1]%3) {	/* Modulo 3 so that TIME (3) maps to LINEAR (0) */
 		case LINEAR:	/* Regular scaling */
 			ymin = (project_info.xyz_pos[1]) ? project_info.s : project_info.n;
 			ymax = (project_info.xyz_pos[1]) ? project_info.n : project_info.s;
