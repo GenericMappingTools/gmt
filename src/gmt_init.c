@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.171 2005-02-15 23:03:58 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.172 2005-02-15 23:09:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1136,7 +1136,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 int GMT_loaddefaults (char *file)
 {
 	int error = 0;
-	char line[BUFSIZ], keyword[[GMT_LONG_TEXT]], value[[GMT_LONG_TEXT]];
+	char line[BUFSIZ], keyword[GMT_LONG_TEXT], value[GMT_LONG_TEXT];
 	FILE *fp = NULL;
 
 	if ((fp = fopen (file, "r")) == NULL) return (-1);
