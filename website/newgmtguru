@@ -1,5 +1,5 @@
 #!/bin/csh
-#		$Id: newgmtguru,v 1.5 2001-03-08 00:59:19 pwessel Exp $
+#		$Id: newgmtguru,v 1.6 2001-03-08 17:18:51 pwessel Exp $
 #
 # newgmtguru is run to initiate a new guru site
 # and helps setting up the guru directory with
@@ -159,5 +159,5 @@ ghostscript (and utility scripts ps2epsi, ps2pdf)
 latex (and dvips)
 man2html
 latex2html (+ the pbm/ppm tools)
-autoconf
+autoconf and m4
 EOF
