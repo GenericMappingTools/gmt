@@ -1,9 +1,9 @@
 REM
 REM		GMT EXAMPLE 22
 REM
-REM		$Id: job22.bat,v 1.2 2004-04-25 21:23:23 pwessel Exp $
+REM		$Id: job22.bat,v 1.3 2004-04-27 22:34:33 pwessel Exp $
 REM
-REM Purpose:	Automatic map of last 7 days of worldwide seismicity
+REM Purpose:	Automatic map of last 7 days of world-wide seismicity
 REM GMT progs:	gmtset, pscoast, psxy, pslegend
 REM DOS calls:	echo, gawk, wget
 REM
@@ -37,7 +37,7 @@ echo 300	blue	10000	blue >> neis.cpt
 
 REM Start plotting. First lay down map, then plot quakes with size = magintude/50":
 
-pscoast -Rg -JK180/9i -B45g30:."Worldwide earthquake activity": -Glightbrown -Slightblue -Dc -A1000 -K -U/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > example_22.ps
+pscoast -Rg -JK180/9i -B45g30:."World-wide earthquake activity": -Glightbrown -Slightblue -Dc -A1000 -K -U/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > example_22.ps
 gawk -F, "{ print $4, $3, $6, $5*0.02}" neic_quakes.d | psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -H >> example_22.ps
 
 REM Create legend input file for NEIS quake plot

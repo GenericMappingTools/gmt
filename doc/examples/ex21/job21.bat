@@ -1,7 +1,7 @@
 REM
 REM		GMT EXAMPLE 21
 REM
-REM		$Id: job21.bat,v 1.2 2004-04-25 09:04:36 pwessel Exp $
+REM		$Id: job21.bat,v 1.3 2004-04-27 22:34:33 pwessel Exp $
 REM
 REM Purpose:	Plot a time-series
 REM GMT progs:	gmtset, gmtconvert, minmax, psbasemap, psxy
@@ -29,7 +29,7 @@ REM Lay down the basemap:
 
 psbasemap %R% -JX9iT/6i -Glightgreen -K -U"Example 21 in Cookbook" -Bpa3Of1o/50WSen:^$::."RedHat (RHAT) Stock Price Trend since IPO": -Bs1Y/0WSen > example_21.ps
 
-REM Plot main window with close price as red line over yellow envelope of low/highs
+REM Plot main window with open price as red line over yellow envelope of low/highs
 
 gmtset OUTPUT_DATE_FORMAT dd-o-yy
 gmtconvert -F0,2 -f0T -Hi RHAT_price.csv > RHAT.env
