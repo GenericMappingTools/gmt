@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.40 2003-03-03 21:09:49 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.41 2003-03-06 17:21:46 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -757,19 +757,32 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 	if (gmtdefs.color_model == GMT_HSV) {
 		sprintf(format, "%%c\t%s\t%s\t%s\n", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
 		for (k = 0; k < 3; k++) {
-			GMT_rgb_to_hsv(GMT_bfn[k].rgb, &h1, &s1, &v1);
-			fprintf (GMT_stdout, format, code[k], h1, s1, v1);
+			if (GMT_bfn[k].skip)
+				fprintf (GMT_stdout, "%c -\n", code[k]);
+			else {
+				GMT_rgb_to_hsv(GMT_bfn[k].rgb, &h1, &s1, &v1);
+				fprintf (GMT_stdout, format, code[k], h1, s1, v1);
+			}
 		}
 	}
 	else if (gmtdefs.color_model == GMT_CMYK) {
 		sprintf(format, "%%c\t%s\t%s\t%s\t%s\n", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
 		for (k = 0; k < 3; k++) {
-			GMT_rgb_to_cmyk (GMT_bfn[k].rgb, cmyk_low);
-			fprintf (GMT_stdout, format, code[k], cmyk_low[0], cmyk_low[1], cmyk_low[2], cmyk_low[3]);
+			if (GMT_bfn[k].skip)
+				fprintf (GMT_stdout, "%c -\n", code[k]);
+			else {
+				GMT_rgb_to_cmyk (GMT_bfn[k].rgb, cmyk_low);
+				fprintf (GMT_stdout, format, code[k], cmyk_low[0], cmyk_low[1], cmyk_low[2], cmyk_low[3]);
+			}
 		}
 	}
 	else {
-		for (k = 0; k < 3; k++) fprintf (GMT_stdout, "%c\t%d\t%d\t%d\n", code[k], GMT_bfn[k].rgb[0], GMT_bfn[k].rgb[1], GMT_bfn[k].rgb[2]);
+		for (k = 0; k < 3; k++) {
+			if (GMT_bfn[k].skip)
+				fprintf (GMT_stdout, "%c -\n", code[k]);
+			else
+				fprintf (GMT_stdout, "%c\t%d\t%d\t%d\n", code[k], GMT_bfn[k].rgb[0], GMT_bfn[k].rgb[1], GMT_bfn[k].rgb[2]);
+		}
 	}
 
 	GMT_free ((void *)x);

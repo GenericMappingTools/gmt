@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.82 2003-03-03 21:09:49 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.83 2003-03-06 17:21:46 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -404,6 +404,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t   Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes.\n");
 			fprintf (stderr, "\t   Append r if -R specifies the longitudes/latitudes of the lower left\n");
 			fprintf (stderr, "\t   and upper right corners of a rectangular area.\n");
+			fprintf (stderr, "\t   -Rg is accepted shorthand for -R0/360/-90/90\n");
 			break;
 			
 		case 'r':	/* Region option for 3-D */
@@ -765,6 +766,14 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			gmtdefs.page_orientation |= 1;	/* Bit arith because eurofont bit may be set */
 			break;
 		case 'R':
+			if (item[2] == 'g') {	/* Shorthand for -R0/360/-90/90 */
+				*w = project_info.w = 0.0;	*e = project_info.e = 360.0;
+				*s = project_info.s = -90.0;	*n = project_info.n = +90.0;
+				GMT_io.in_col_type[0] = GMT_IS_LON;	GMT_io.in_col_type[1] = GMT_IS_LAT;
+	 			project_info.region_supplied = TRUE;
+				break;
+			}
+			
 			p[0] = w;	p[1] = e;	p[2] = s;	p[3] = n;
 			p[4] = &project_info.z_bottom;	p[5] = &project_info.z_top;
 			col_type[0] = col_type[1] = 0;
@@ -1169,25 +1178,37 @@ int GMT_setparameter (char *keyword, char *value)
 				error = TRUE;
 			break;
 		case GMTCASE_COLOR_BACKGROUND:
-			sscanf (value, "%d/%d/%d", &rgb[0], &rgb[1],  &rgb[2]);
-			if (GMT_check_rgb (rgb))
-				error = TRUE;
-			else 
-				memcpy ((void *)gmtdefs.background_rgb, (void *)rgb, (size_t)(3 * sizeof (int)));
+			if (value[0] == '-')
+				gmtdefs.background_rgb[0] = gmtdefs.background_rgb[1] = gmtdefs.background_rgb[2] = -1;
+			else {
+				sscanf (value, "%d/%d/%d", &rgb[0], &rgb[1],  &rgb[2]);
+				if (GMT_check_rgb (rgb))
+					error = TRUE;
+				else 
+					memcpy ((void *)gmtdefs.background_rgb, (void *)rgb, (size_t)(3 * sizeof (int)));
+			}
 			break;
 		case GMTCASE_COLOR_FOREGROUND:
-			sscanf (value, "%d/%d/%d", &rgb[0], &rgb[1],  &rgb[2]);
-			if (GMT_check_rgb (rgb))
-				error = TRUE;
-			else 
-				memcpy ((void *)gmtdefs.foreground_rgb, (void *)rgb, (size_t)(3 * sizeof (int)));
+			if (value[0] == '-')
+				gmtdefs.foreground_rgb[0] = gmtdefs.foreground_rgb[1] = gmtdefs.foreground_rgb[2] = -1;
+			else {
+				sscanf (value, "%d/%d/%d", &rgb[0], &rgb[1],  &rgb[2]);
+				if (GMT_check_rgb (rgb))
+					error = TRUE;
+				else 
+					memcpy ((void *)gmtdefs.foreground_rgb, (void *)rgb, (size_t)(3 * sizeof (int)));
+			}
 			break;
 		case GMTCASE_COLOR_NAN:
-			sscanf (value, "%d/%d/%d", &rgb[0], &rgb[1],  &rgb[2]);
-			if (GMT_check_rgb (rgb))
-				error = TRUE;
-			else 
-				memcpy ((void *)gmtdefs.nan_rgb, (void *)rgb, (size_t)(3 * sizeof (int)));
+			if (value[0] == '-')
+				gmtdefs.nan_rgb[0] = gmtdefs.nan_rgb[1] = gmtdefs.nan_rgb[2] = -1;
+			else {
+				sscanf (value, "%d/%d/%d", &rgb[0], &rgb[1],  &rgb[2]);
+				if (GMT_check_rgb (rgb))
+					error = TRUE;
+				else 
+					memcpy ((void *)gmtdefs.nan_rgb, (void *)rgb, (size_t)(3 * sizeof (int)));
+			}
 			break;
 		case GMTCASE_COLOR_IMAGE:
 			if (!strcmp (lower_value, "adobe"))
@@ -1755,7 +1776,7 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "ANNOT_FONT		= %s\n", GMT_font[gmtdefs.annot_font].name);
 	(GMT_force_resize && !GMT_annot_special) ? fprintf (fp, "ANNOT_FONT_SIZE		= +%gp\n", gmtdefs.annot_font_size) :  fprintf (fp, "ANNOT_FONT_SIZE		= %gp\n", gmtdefs.annot_font_size);
 	fprintf (fp, "ANNOT_FONT2		= %s\n", GMT_font[gmtdefs.annot_font2].name);
-	(GMT_force_resize) ? fprintf (fp, "ANNOT_FONT2_SIZE		= %gp\n", save_annot_size2) : fprintf (fp, "ANNOT_FONT2_SIZE		= %gp\n", gmtdefs.annot_font2_size);
+	(GMT_force_resize) ? fprintf (fp, "ANNOT_FONT2_SIZE	= %gp\n", save_annot_size2) : fprintf (fp, "ANNOT_FONT2_SIZE	= %gp\n", gmtdefs.annot_font2_size);
 	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET		= %g%c\n", save_annot_offset * s, u) : fprintf (fp, "ANNOT_OFFSET		= %g%c\n", gmtdefs.annot_offset * s, u);
 	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET2	= %g%c\n", save_annot_offset2 * s, u) : fprintf (fp, "ANNOT_OFFSET2		= %g%c\n", gmtdefs.annot_offset2 * s, u);
 	fprintf (fp, "DEGREE_SYMBOL		= %s\n", GMT_degree_choice[gmtdefs.degree_symbol - gmt_none]);
@@ -1789,9 +1810,18 @@ int GMT_savedefaults (char *file)
 	(gmtdefs.unix_time) ? fprintf (fp, "UNIX_TIME		= TRUE\n") : fprintf (fp, "UNIX_TIME		= FALSE\n");
 	fprintf (fp, "UNIX_TIME_POS		= %g%c/%g%c\n", gmtdefs.unix_time_pos[0] * s, u, gmtdefs.unix_time_pos[1] * s, u);
 	fprintf (fp, "#-------- Color System Parameters -----------\n");
-	fprintf (fp, "COLOR_BACKGROUND	= %d/%d/%d\n", gmtdefs.background_rgb[0], gmtdefs.background_rgb[1], gmtdefs.background_rgb[2]);
-	fprintf (fp, "COLOR_FOREGROUND	= %d/%d/%d\n", gmtdefs.foreground_rgb[0], gmtdefs.foreground_rgb[1], gmtdefs.foreground_rgb[2]);
-	fprintf (fp, "COLOR_NAN		= %d/%d/%d\n", gmtdefs.nan_rgb[0], gmtdefs.nan_rgb[1], gmtdefs.nan_rgb[2]);
+	if (gmtdefs.background_rgb[0] == -1)
+		fprintf (fp, "COLOR_BACKGROUND	= -\n");
+	else
+		fprintf (fp, "COLOR_BACKGROUND	= %d/%d/%d\n", gmtdefs.background_rgb[0], gmtdefs.background_rgb[1], gmtdefs.background_rgb[2]);
+	if (gmtdefs.foreground_rgb[0] == -1)
+		fprintf (fp, "COLOR_FOREGROUND	= -\n");
+	else
+		fprintf (fp, "COLOR_FOREGROUND	= %d/%d/%d\n", gmtdefs.foreground_rgb[0], gmtdefs.foreground_rgb[1], gmtdefs.foreground_rgb[2]);
+	if (gmtdefs.nan_rgb[0] == -1)
+		fprintf (fp, "COLOR_NAN		= -\n");
+	else
+		fprintf (fp, "COLOR_NAN		= %d/%d/%d\n", gmtdefs.nan_rgb[0], gmtdefs.nan_rgb[1], gmtdefs.nan_rgb[2]);
 	fprintf (fp, "COLOR_IMAGE		= ");
 	if (gmtdefs.color_image == 0)
 		fprintf (fp, "adobe\n");
@@ -2343,6 +2373,7 @@ int GMT_begin (int argc, char **argv)
 	memcpy ((void *)GMT_bfn[GMT_FGD].rgb, (void *)gmtdefs.foreground_rgb, 3 * sizeof (int));
 	memcpy ((void *)GMT_bfn[GMT_BGD].rgb, (void *)gmtdefs.background_rgb, 3 * sizeof (int));
 	memcpy ((void *)GMT_bfn[GMT_NAN].rgb, (void *)gmtdefs.nan_rgb, 3 * sizeof (int));
+	for (k = 0; k < 3; k++) if (GMT_bfn[k].rgb[0] == -1) GMT_bfn[k].skip = TRUE;
 
 	/* Make sure -b options are parsed first in case filenames are given
 	 * before -b options on the command line.  This would only cause grief
