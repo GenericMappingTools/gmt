@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.18 2004-11-26 22:36:22 pwessel Exp $
+#	$Id: Makefile,v 1.19 2004-12-21 20:28:35 pwessel Exp $
 #
 #	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -124,7 +124,6 @@ gmtmacros:
 		if [ ! -s src/makegmt.macros ]; then \
 			echo "src/makegmt.macros is empty - you must rerun configure in the main GMT directory"; \
 			exit; \
-			ls; pwd; \
 		fi
 
 uninstall-suppl:
