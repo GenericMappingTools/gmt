@@ -1,5 +1,6 @@
-/*	$Id: utilvelo.c,v 1.3 2001-12-21 03:50:38 ben Exp $	*/
-#include "gmt.h"
+/*	$Id: utilvelo.c,v 1.4 2005-03-04 21:00:54 remko Exp $	*/
+#include "gmt.h"	/* to have gmt environment */
+#include "pslib.h"	/* to have pslib environment */
 #include <math.h>
 
 #define squared(x) ((x) * (x))

@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.8 2005-02-16 01:24:50 pwessel Exp $
+ *	$Id: mgd77.c,v 1.9 2005-03-04 21:00:54 remko Exp $
  *
  *  File:	MGD77.c
  * 
@@ -1206,6 +1206,9 @@ int MGD77_storage_bin (int constraint)
 		case MGD77_GE:
 		case MGD77_GT:
 			bin = 2;
+			break;
+		default:
+			bin = 3;
 			break;
 	}
 	

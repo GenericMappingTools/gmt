@@ -1,5 +1,6 @@
-/*	$Id: utilmeca.c,v 1.4 2001-12-21 03:50:38 ben Exp $	*/
-#include <gmt.h>
+/*	$Id: utilmeca.c,v 1.5 2005-03-04 21:00:54 remko Exp $	*/
+#include "gmt.h"	/* to have gmt environment */
+#include "pslib.h"	/* to have pslib environment */
 #include "meca.h"
 #include "nrutil.h"
 
@@ -910,7 +911,7 @@ double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,str
     double cpd, spd, cpb, spb, cpm, spm;
     double cad, sad, cab, sab, cam, sam;
     double xz, xn, xe;
-    double az, azp = 0., takeoff, r;
+    double az = 0., azp = 0., takeoff, r;
     double azi[3][2];
     double x[400], y[400], x2[400], y2[400], x3[400], y3[400];
     double xp1[800], yp1[800], xp2[400], yp2[400];
@@ -1218,7 +1219,7 @@ from nodal plane strikes, dips and rakes.
 */
 
 {
-        int im;
+        int im = 0;
         int pure_strike_slip = 0;
         double cd1, sd1, cd2, sd2;
         double cp1, sp1, cp2, sp2;
@@ -1310,7 +1311,7 @@ from nodal plane strikes, dips and rakes.
 */
 
 {
-        int im;
+        int im = 0;
         int pure_strike_slip = 0;
         double cd1, sd1, cd2, sd2;
         double cp1, sp1, cp2, sp2;
