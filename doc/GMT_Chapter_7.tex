@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.18 2004-05-27 04:29:10 pwessel Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.19 2004-06-11 03:02:58 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -189,7 +189,7 @@ signals improves dramatically for wavelengths $>$ 20 km.
 \index{Example!3-D mesh plot|(}
 
 This example will illustrate how to make a fairly complicated
-composite figure.  We need a subset of the ETOPO5 bathymetry†\footnote{
+composite figure.  We need a subset of the ETOPO5 bathymetry\footnote{
 These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).}
 and Geosat geoid data sets which we will extract from the local
 data bases using \GMTprog{grdraster}.  We would like to show a
@@ -290,7 +290,8 @@ available earthquakes in the region.  We choose to use
 magnitude/100 for the symbol-size in inches.  The digital
 fracture zone traces (\filename{fz.xy}) and isochrons (0 isochron as
 \filename{ridge.xy}, the rest as \filename{isochrons.xy}) were digitized from
-available maps†\footnote{These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).}.  We create the final location map
+available maps\footnote{These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).}.
+We create the final location map
 (Figure~\ref{fig:GMT_example_07}) with the following script:
 
 \input{scripts/GMT_example_7} 
@@ -614,7 +615,7 @@ option \Opt{Q} (Figure~\ref{fig:GMT_example_17}):
 To demonstrate potential usage of the new programs
 \GMTprog{grdvolume} and \GMTprog{gmtselect} we extract a subset
 of the Sandwell \& Smith altimetric gravity field\footnote{
-See http://topex.ucsd.edu/marine\_grav/mar\_grav.html.}†
+See http://topex.ucsd.edu/marine\_grav/mar\_grav.html.}
 for the northern Pacific and decide to isolate all seamounts that
 (1) exceed 50 mGal in amplitude and (2) are within 200 km
 of the Pratt seamount.  We do this by dumping the 50 mGal

@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_I.tex,v 1.6 2004-01-02 22:45:12 pwessel Exp $
+%	$Id: GMT_Appendix_I.tex,v 1.7 2004-06-11 03:02:58 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -32,9 +32,9 @@ coordinates of the color.  When the intensity is zero, the data
 are colored according to the cpt file.  If the intensity is
 non-zero, the data are given a starting color from the cptfile
 but this color (after conversion to HSV if necessary) is then
-changed by moving ({\it s,}{\it v}) toward HSV\_MIN\_SATURATION,
-HSV\_MIN\_VALUE if the intensity is negative, or toward
-HSV\_MAX\_SATURATION, HSV\_MAX\_VALUE if positive.  These are
+changed by moving ({\it s,}{\it v}) toward {\bf HSV\_MIN\_SATURATION},
+{\bf HSV\_MIN\_VALUE} if the intensity is negative, or toward
+{\bf HSV\_MAX\_SATURATION}, {\bf HSV\_MAX\_VALUE} if positive.  These are
 defined in the \filename{.gmtdefaults4} file and are usually
 chosen so the corresponding points are nearly black ({\it s} = 1,
 {\it v} = 0) and white ({\it s} = 0, {\it v} = 1).

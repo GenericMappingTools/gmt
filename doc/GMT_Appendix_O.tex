@@ -1,0 +1,169 @@
+%------------------------------------------
+%	$Id: GMT_Appendix_O.tex,v 1.1 2004-06-11 03:02:58 pwessel Exp $
+%
+%	The GMT Documentation Project
+%	Copyright 2000-2004.
+%	Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+\chapter{Annotation of Contours and ``Quoted Lines''}
+\thispagestyle{headings}
+
+The \GMT\ programs \GMTprog{grdcontour} (for data given as 2-dimensional grids)
+and \GMTprog{pscontour} (for {\it x,y,z} tables) allow
+for contouring of data sets, while \GMTprog{psxy} and \GMTprog{psxyz}
+can plot lines based on {\it x,y}- and {\it x,y,z}-tables, respectively.
+In both cases there may be necessary to attach labels to
+these lines.  Clever or optimal placements of labels is a very difficult
+topic, and \GMT\ provides several algorithms for this placement as well
+as complete freedom in specifying the attributes of these labels.
+Because of the richness of these choices we present this Appendix which
+summarizes the various options.
+
+\section{Label Placement}
+
+While the previous \GMT\ verions 1--3 allowed for a single algorithm that
+determined where labels would be placed, \GMT\ 4 allows for five different
+algorithms.  Futhermore, a new ``symbol'' option (\Opt{Sq} for ``quoted line'')
+has been added to \GMTprog{psxy} and \GMTprog{psxyz} and hence the new label
+placement mechanisms apply to those programs as well.  The contouring programs
+specify the algorithm with arguments to \Opt{G} while the line plotting
+programs supply the same arguments to \Opt{Sq}.  The information appended
+to these options is the same in both cases and is of the form [{\bf code}]{\it info}.
+The five algorithms correspond to the five codes below (some codes will appear in both
+upper and lower case; they share the same algorithm but differ in some other ways).
+In what follows, the phrase ``line segment'' is taken to mean either a contour or a line
+to be labelled.
+\begin{description}
+\item [d:] Full syntax is [{\bf d}]{\it dist}[{\bf c$|$i$|$m$|$p}][/{\it width}[{\it frac}]].
+Here, the code {\bf d} is optional to ensure backwards compatibility with \GMT\ 3.
+Place labels according to the distance measured along the projected line on the map.  Append the
+unit you want to measure distances in [Default is taken from {\bf MEASURE\_UNIT}].
+Starting at the beginning of a line, place labels every {\it dist} increment of
+distance along the line.  To ensure that closed lines whose total length is less
+than {\it dist} get annotated, we may append {\it frac} which will place the first
+label at the distance $d =$ {\it dist} $\times$ {\it frac} from the start of the
+line (and every {\it dist} thereafter).  If not given, {\it frac} defaults to 0.25.
+The angle of the line at the point of label placement is calculated by a least-squares
+fit to the {\it width} closest points.  If not specified, {\it width} defaults to 10.
+Note that you must specify {\it width} if you want to specify {\it frac}.
+\item [D:] Full syntax is {\bf D}{\it dist}[{\bf d$|$e$|$k$|$m$|$n}][/{\it width}[{\it frac}]].
+This option is similar to {\bf d} except the original data must be referred to geographic
+coordinates (and a map projection must have been chosen) and actual Earth\footnote{or whatever
+planet we are deaing with.} surface distances along the lines are considered.  Append the
+unit you want to measure distances in; choose among {\bf d}egree, m{\bf e}ter [Default],
+{\bf k}ilometer, statute {\bf m}iles, or {\bf n}autical miles.  Other aspecs are similar to code {\bf d}.
+\item [f:] Full syntax is {\bf f}{\it fix.d}[/{\it width}[/{\it slop}]].  Here, an ASCII file {\it fix.d} is
+given which must contain records whose first two columns contain the coordinates of points along
+the lines at which location labels should be placed.  Labels will only be placed if the coordinates
+match the line coordinates to within a distance of {\it slop} (with units taken from {\bf MEASURE\_UNIT}).
+The default {\it slop} is zero, meaning only exact coordinate matches will do.  The optional {\it width}
+for angle smoothing remains the same.
+\item [l:] Full syntax is {\bf l}{\it line1}[,{\it line2}[, ...]].  One or more straight line segments
+are specified separated by commas, and labels will be placed at the intersections of these lines and
+our line segments.  Each {\it line} specification implies a {\it start} and {\it stop} point which each
+imply a coordinate pair.  These pairs can be regular coordinate pairs with longitude/latitude separated by a slash, or they
+can be two-character codes that refer to predetermined points relative to the map region.  These codes
+are taken from \GMTprog{pstext} justification keys [{\bf L$|$C$|$R}][{\bf B$|$M$|$T}] so that the first
+character determines the $x$-coordinate and the second determines the $y$-coordinate.  For contours,
+you can also use the two codes {\bf Z+} and {\bf Z-} as shorthands for the location of the grid's global
+maximum and minimum, respectively.  For example, the {\it line} {\bf LT}/{\bf RB} is a diagonal from the
+upper left to the lower right map corner, while {\bf Z-}/135W/15S is a line from the grid minimum to the point
+(135\DS W, 15\DS S).
+\item [L:] Same as {\bf l} except we will treat the lines given as great circle start/stop coordinates and fill in
+the points between before looking for intersections.
+\item [n:] Full syntax is {\bf n}{\it number}.  Place {\it number} of labels along each line regardless of total
+line length.  The line is divided into {\it number} segments and the labels are placed at the centers of these
+segments.
+\item [N:] Full syntax is {\bf N}{\it number}.  Similar to code {\bf n} but here labels are placed at the ends of
+each segment (for {\it number} $ /geq 2$).  A special case arises for {\it number} $= 1$ when a single label will be
+placed according to the sign of {\it number}: $-1$ places one label justified at the start of the line, while $+1$ places one label
+justified at the end of the line.
+\item [x:] Full syntax is {\bf x}{\it cross.d}[/{\it width}[/{\it slop}]].  Here, an ASCII file {\it cross.d} is
+a multi-segment file whose lines will intersect out segment lines; labels will be placed at these intersections.
+\item [X:] Same as {\bf x} except we treat the lines given as great circle start/stop coordinates and fill in the
+points between.
+\end{description}
+Only one algorithm can be specified at any given time.
+
+\section{Label Attributes}
+Determining where to place labels is half the battle.  The other half is to specify exactly
+what are the attributes of the labels.  It turns out that there are quite a few possible
+attributes that we may want to control, hence understanding how to specify these attributes
+becomes important.  In the contouring programs, one or more attributes may be appended to the
+\Opt{A} option using the format +{\it code}[{\it args}] for each attribute, whereas for the line
+plotting programs these attributes are appended to the \Opt{Sq} option following a colon (:)
+that separates the label codes from the placement algorithm.  Several of the attributes do not
+apply to contours so we start off with listing those that apply universially.  The codes are:
+\begin{description}
+\item [+a:]  Controls the angle of the label relative to the angle of the line.  Append {\bf p}
+for parallel [Default], {\bf n} for normal, or a fixed {\it angle} relative to the
+horizontal.
+\item [+c:] Surrounding each label is an imaginary label ``textbox'' which defines a region in
+which no segment lines should be visible.  The initial box provides an exact fit to the enclosed
+text but clearance may be extended in both the horizontal and vertical direction (relative to the label
+baseline) by the given amounts.  If these should be different amounts please separate them by
+a slash; otherwise the single value applies to both directions.  Append the distance units of
+your choice ({\bf c$|$i$|$m$|$p}), or give \% to indicate that the clearance should be this
+fixed percentage of the label font size in use.  The default is 15\%.
+\item [+f:] Specifies the desired label font.  See \GMTprog{pstext} for font names or numbers.  The
+default font is given by {\bf ANNOT\_FONT\_PRIMARY}.
+\item [+g:] Selects opaque rather than the default transparent textboxes.  You may optionally append
+the color you want to fill the label boxes; the default is the same as {\bf PAGE\_COLOR}.
+\item [+j:] Selects the justification of the label relative to the placement points determined
+above.  Normally this is center/mid justified ({\bf CM} in \GMTprog{pstext} justification parlance) and
+this is indeed the default setting.  Override by using this option and append another justification
+key code from [{\bf L$|$C$|$R}][{\bf B$|$M$|$T}].  Note for curved text ({\bf +v}) only the vertical
+justification will take effect.
+\item [+k:] Set the color of the text labels, which otherwise defaults to that given by {\bf COLOR\_BACKGROUND}.
+\item [+o:] Request a rounded, rectangular label box shape; the default is rectangular.  This is only
+manifested if the box is filled or outlined, neither of which is implied by this option.
+\item [+p:] Selects the drawing of the label box outline; append your preferred {\it pen} unless you
+want the default \GMT\ pen [0.25p,black].
+\item [+s:] Change the fontsize of the labels, which by default is 9 points.
+\item [+u:] Append the chosen {\it unit} to the label.  Normally a space will separate the label
+and the unit.  If you want to close this gap, append a {\it unit} that begins with a hyphen (--).
+If you are contouring and you specify this option without appending a unit, the unit will be taken from the
+$z$-unit attribute of the grid header.
+\item [+v:]  Place curved labels that follow the wiggles of the line segments.  This is especially
+useful if the labels are long relative to the length-scale of the line wiggles.  The default labels
+are text set on an invisible straight line at the angle determined.
+\item [+^:]  Similar in most regards to {\bf +u} but applies instead to a label \emph{prefix} which
+you must append.
+\end{description}
+For contours, the label will be the value of the contour.  However, for quoted lines other
+options apply:
+\begin{description}
+\item [+l:] Append a fixed {\it label} that will be placed at all label locations.  If the label contains
+spaces you must place it inside matching quotes.
+\item [+L:] Append a code {\it flag} that determines what the label will contain.  Available codes are:
+\begin{description}
+\item [+Lh:]  Take the label from the current multi-segment header (hence it is assumed that the
+input line segments are given in the multi-segment file format).  We first scan the header for an embedded
+\Opt{L}{\it label} option; if none is found we instead use the first word following the segment marker [$>$].
+\item [+Ld:] Take the Cartesian plot distances along the line as the label; append {\bf c$|$i$|$m$|$p}
+as the unit [Default is {\bf MEASURE\_UNIT}].  The label will be formatted according to the {\bf D\_FORMAT}
+string.
+\item [+LD:]  Calculate actual Earth surface distances and use the distance at the label placement point as
+the label; append {\bf d$|$e$|$k$|$m$|$n} to specify the unit [If not given we default to {\bf d}egrees,
+\emph{unless} label placement was determined from map distances along the segment lines, in which case we
+use the same unit specified for that algorithm].  Requires a map projection to be used.
+\item [+Lf:]  Use text after the 2nd column in the fixed label location file {\it fix.d} as the label.
+This choice obviously requires the fixed label location algorithm (code {\bf f}) to be in effect.
+\item [+Lx:]  As {\bf h} but use the multi-segment headers in the {\it cross.d} file instead.
+This choice obviously requires the crossing segments location algorithm (code {\bf x$|$X}) to be in effect.
+\end{description}
+\end{description}
+
+\section{Label Examples}
+
+We will demonstrate the use of these options on a few simple examples.
+
+%>>>>>>..ways to do things
+
+%cross-section through the filter weights (Figure~\ref{fig:GMT_imp_res}).
+
+%\GMTfig[H]{GMT_imp_res}{Impulse responses for \gmt\ filters.}
+
+%\clearpage
+

@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.48 2004-05-07 22:07:08 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.49 2004-06-11 03:02:58 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -41,6 +41,7 @@ you always supply the desired unit explicitly.
 \index{Units|)}
 
 \section{\gmt\ defaults}
+\subsection{Overview and the \filename{.gmtdefaults4} file}
 
 \index{GMT@\GMT!defaults|(}
 \index{Default settings|(}
@@ -106,22 +107,39 @@ with micro-editing of illustrations.
 
 \end{enumerate}
 
+\subsection{Changing \gmt\ Defaults}
+
 As mentioned, \GMT\ programs will attempt to open a file named
 \filename{.gmtdefaults4}.  At times it may be desirable to override
-that default.  As an alternative, we may supply another filename using
-the \emph{+filename} syntax, i.e., on the same command line as the
-\GMT\ command we append the name of the alternate \filename{.gmtdefaults4}
-file with the plus sign as a prefix.
-A perhaps less tedious method is to start each script with making a
+that default.  There are several ways in which this can be accomplished.
+\begin{enumerate}
+\item Supply another filename using the \emph{+filename} syntax, i.e.,
+on the same command line as the \GMT\ command we append the name of
+the alternate \filename{.gmtdefaults4} file with the plus sign as a prefix.
+Because any changes only apply to that one command you would have to
+append the alternate file to every command in your script.  This is
+tedious but may be an option for web-based map-servers.
+\item A perhaps less tedious method is to start each script by making a
 copy of the current \filename{.gmtdefaults4}, then copy the desired
 \filename{.gmtdefaults4} file to the current directory, and finally
-undo the changes at the end of the script.  To change some of the
-\GMT\ parameters on the fly inside a script the gmtset utility can
-be used.  E.g., to change the annotation font to 12 point Times-Bold
-we run \\
+undo the changes at the end of the script.  Possible side effects
+include premature ending of the script due to user error or bug which
+means the final resetting does not take place unless you write your
+script very carefully.
+\item To permanently change some of the \GMT\ parameters on the fly
+inside a script the \GMTprog{gmtset} utility can be used.  E.g., to
+change the annotation font to 12 point Times-Bold we run \\
 
 \texttt{gmtset ANNOT\_FONT\_PRIMARY Times-Bold ANNOT\_FONT\_SIZE\_PRIMARY 12} \\
 
+These changes will remain in effect until they are overridden.
+\item Finally, if all you want to achieve is to change a few parameters during
+the execution of a single command but leave the environment intact, consider
+passing the parameter chances on the command line via the \-\-\emph{PAR=value}
+mechanism.  For instance, to temporarily set the output format for floating
+points to have lots of decimals, say, for map projection coordinate output,
+append \-\-{\bfD\_FORMAT}=\%.12lg to the command in question.
+\end{enumerate}
 In addition to those parameters
 that directly affect the plot there are numerous parameters than
 modify units, scales, etc.  For a complete listing, see the
@@ -219,7 +237,7 @@ The \Opt{R} option defines the map region or data domain of interest.  It may be
 in one of two ways (Figure~\ref{fig:GMT_-R}):
 \begin{enumerate}
 \item \Opt{R}{\it xmin}/{\it xmax}/{\it ymin}/{\it ymax}.  This is the standard way to specify
-data domains and regions for map projections in which meridians and parallels are rectilinear.
+Cartesian data domains and regions for map projections in which meridians and parallels are rectilinear.
 \item \Opt{R}{\it xlleft}/{\it ylleft}/{\it xuright}/{\it yuright}{\bf r}.
 This form is used with map projections that are oblique, making meridians and parallels poor
 choices for map boundaries.  Here, we instead specify the lower left corner and upper right
@@ -235,10 +253,11 @@ or in the [$\pm$]{\it ddd}[:{\it mm}[:{\it ss}[{\it .xxx}]]][{\bf W}$|${\bf E}$|
 format (e.g., 123:27:15W).  Note that \Opt{Rg} and \Opt{Rd} are shorthands for ``global domain'' \Opt{R}{\it 0}/{\it 360}/{\it -90}/{\it 90}
 and  \Opt{R}{\it -180}/{\it 180}/{\it -90}/{\it 90}, respectively.
 \item [Calendar time coordinates:]  These are absolute time coordinates referring to a Gregorian or ISO calendar.
-The general format is [{\it date}]{\bf T}[{\it clock}], where {\it date} (if present) must be in the {\it yyyy}[{\it -mm}[{\it -dd}]] (year, month, day-of-month)
+The general format is [{\it date}]{\bf T}[{\it clock}], where {\it date} must be in the {\it yyyy}[{\it -mm}[{\it -dd}]] (year, month, day-of-month)
 or {\it yyyy}[{\it -jjj}] (year and day-of-year) for Gregorian calendars and {\it yyyy}[{\it -}{\bf W}{\it ww}[{\it -d}]] (year, week, and
-day-of-week) for the ISO calendar.  Following the [optional] {\it date} string we require the {\bf T} flag.
-The optional {\it clock} string is a 24-hour clock in {\it hh}[{\it :mm}[{\it :ss}[{\it .xxx}]]] format.
+day-of-week) for the ISO calendar.  If no {\it date} is given we assume the present day.  Following the [optional] {\it date} string we require the {\bf T} flag.
+The optional {\it clock} string is a 24-hour clock in {\it hh}[{\it :mm}[{\it :ss}[{\it .xxx}]]] format.  If no {\it clock} is given
+it implies 00:00:00, i.e., the start of the specified day.
 Note that not all of the specified enteties need be present in the data.  All calendar-clock strings are internally represented as double precision seconds since
 proleptic Gregorian date Mon Jan 1 00:00:00 0001.  Proleptic means we assume that modern calendar
 can be extrapolated forward and backward; a year zero is used, and Gregory's reforms\footnote{The Gregorian Calendar
@@ -253,7 +272,7 @@ new calendars disagreed on whether 1700 was a leap year, so the Julian calendar 
 backward.  Note that this is not historical.
 \item [Other coordinates:]  These are simply anything that is neither geographic nor calendar time related and are
 expected to be simple floating point values such as [$\pm$]{\it xxx.xxx}[E$|$e$|$D$|$d[$\pm$][xx]], i.e., regular or exponential
-notations, with the enhancement to understand FORTRAN double precision output which use D instead of E for exponents.
+notations, with the enhancement to understand FORTRAN double precision output which may use D instead of E for exponents.
 These values are simply converted as they are to internal representation.  One exception is the concept
 of relative time which is read as a floating point offset from an absolute time reference point (epoch).  The unit and the
 epoch are specified with the {\bf TIME\_SYSTEM} parameter.  Relative time coordinates are expected when a coordinate transformation
@@ -269,13 +288,13 @@ involving relative time has been selected or when the \Opt{f} switch has been us
 This option selects the coordinate transformation or map projection.  The general format is
 
 \begin{itemize}
-\item {\bf --J}$\delta${\it parameters}/{\it scale}.  Here, $\delta$ is a lower-case
+\item {\bf --J}$\delta$[{\it parameters}/]{\it scale}.  Here, $\delta$ is a \emph{lower-case}
 letter of the alphabet that selects a particular map projection, the {\it parameters}
-is one or more slash-delimited projection parameter, and {\it scale} is map scale given in
+is zero or more slash-delimited projection parameter, and {\it scale} is map scale given in
 distance units per degree or as 1:xxxxx.
-\item {\bf --J}$\Delta${\it parameters}/{\it width}.  Now, $\Delta$ is an upper-case
+\item {\bf --J}$\Delta$[{\it parameters}/]{\it width}.  Here, $\Delta$ is an \emph{upper-case}
 letter of the alphabet that selects a particular map projection, the {\it parameters}
-is one or more slash-delimited projection parameter, and {\it width} is map width (map
+is zero or more slash-delimited projection parameter, and {\it width} is map width (map
 height is automatically computed from the implied map scale and region).
 \end{itemize}
 
@@ -319,7 +338,7 @@ occur at multiples of {\it stride}; you can phase-shift this by appending $\pm${
 \emph{Flag}	& \emph{Description} \\ \hline
 {\bf a}	&	Annotation tick spacing \\ \hline
 {\bf f}	&	Frame tick spacing \\ \hline
-{\bf g}	&	Frid tick spacing \\ \hline
+{\bf g}	&	Grid tick spacing \\ \hline
 \end{tabular}
 \caption{Interval type codes.}
 \label{tbl:inttype}
@@ -328,7 +347,7 @@ occur at multiples of {\it stride}; you can phase-shift this by appending $\pm${
 Note that the appearance of certain time annotations (month-, week-, and day-names) may be affected
 by the {\bf TIME\_LANGUAGE}, {\bf TIME\_FORMAT\_PRIMARY}, and {\bf TIME\_FORMAT\_SECONDARY} settings.
 
-The unit flag {\bf u} can take on one of 16 codes; these are listed in  Table~\ref{tbl:units}.
+The unit flag {\bf u} can take on one of 18 codes; these are listed in  Table~\ref{tbl:units}.
 
 \begin{table}[h]
 \centering
@@ -367,7 +386,7 @@ that is closest to the axis (this is the primary annotation), while ``secondary'
 annotation that is plotted further from the axis.  The examples below
 will clarify what is meant.  Note that the terms ``primary'' and ``secondary'' do not reflect any hierarchical
 order of units: The ``primary'' annotation interval is smaller (e.g., days) while the
-``secondary'' annotation interval is larger (e.g., months).
+``secondary'' annotation interval typically is larger (e.g., months).
 
 \subsubsection{Geographic basemaps}
 
@@ -385,7 +404,8 @@ For non-geographic axes, the {\bf BASEMAP\_TYPE} setting is implicitly set to pl
 cartesian linear axes are very similar to geographic axes.  The annotation format may be controlled with
 the {\bf D\_FORMAT} parameter.  By default, it is set to ``\%lg'', which is a C language format statement
 for floating point numbers, and with this setting the various axis routines will automatically determine
-how many decimal points should be used by inspecting the {\it stride} settings.  If {\bf D\_FORMAT} is set
+how many decimal points should be used by inspecting the {\it stride} settings\footnote{Please consult
+the man page for \emph{printf} or any book on C.}.  If {\bf D\_FORMAT} is set
 to another format it will be used directly (.e.g, ``\%.2lf'' for a fixed, two decimals format).
 Note that for these axes you may use the {\it unit} setting to
 add a unit string to each annotation (see Figure~\ref{fig:GMT_-B_linear}).
@@ -508,10 +528,13 @@ be at least half of a full interval.
 \subsection{Header data records: The \Opt{H} option}
 \index{\Opt{H}}
 \index{Header records}
-
+\label{sec:header}
 The \Opt{H}[{\bf i}][{\it n\_recs}] option lets \GMT\ know that input file(s) have
 one [Default] or more header records.  If there are more than one header
-record you must specify the number after the \Opt{H} option, e.g., \Opt{H}4.
+record you must specify the number after the \Opt{H} option, e.g., \Opt{H}4.  The
+default number of header records if \Opt{H} is used is one of the many parameters
+in the \filename{.gmtdefaults4} file ({\bf N\_HEADER\_RECS}), but can be overridden
+by \Opt{H}{\it n\_header\_recs}.
 Note that blank lines and records that be start with the character \# are
 automatically skipped.  Normally, programs that both read and write tables will
 output the header records that are found on input.  Use \Opt{Hi} to suppress the
@@ -539,8 +562,8 @@ the paper parallels the {\it y}-axis the orientation is called
 \emph{Portrait} (think of taking pictures with a camera
 and these words make sense).  The
 default Landscape orientation is obtained by translating the origin in the
-{\it x}-direction (by the width of the chosen paper PAPER\_MEDIA) and then rotating the
-coordinate system counterclockwise by 90\DS.  By default the PAPER\_MEDIA is
+{\it x}-direction (by the width of the chosen paper {\bf PAPER\_MEDIA)} and then rotating the
+coordinate system counterclockwise by 90\DS.  By default the {\bf PAPER\_MEDIA} is
 set to Letter (or A4 if SI is chosen); this value must be changed
 when using different media, such as 11" x 17" or large format plotters
 (Figure~\ref{fig:GMT_-P}).
@@ -584,9 +607,10 @@ plot the current command string (Figure~\ref{fig:GMT_-U}).
 \subsection{Verbose Feedback: The \Opt{V} option} 
 \index{\Opt{V}}
 \index{Verbose}
-
+\label{sec:verbose}
 \Opt{V} selects verbose mode, which will send progress reports to
-\emph{stderr} [Default runs ``silently''].
+\emph{stderr} [Default runs ``silently''].  The interpretation of
+this option can be toggled by changing the default {\bf VERBOSE}.
 
 \subsection{Plot positioning and layout: The \Opt{X} \Opt{Y} options}
 \index{\Opt{X}}
@@ -596,8 +620,8 @@ plot the current command string (Figure~\ref{fig:GMT_-U}).
 \GMTfig[h]{GMT_-XY}{Plot origin can be translated freely with \Opt{X} \Opt{Y}.}
 
 \Opt{X} and \Opt{Y} shift origin of plot by ({\it xoff},{\it yoff})
-inches (Default is (1,1) for new plots\footnote{ensures that
-boundary annotations do not fall off the page} and (0,0) for overlays (\Opt{O})).
+inches (Default is ({\bf X\_ORIGIN}, {\bf Y\_ORIGIN}) for new plots\footnote{Ensures that
+boundary annotations do not fall off the page.} and (0,0) for overlays (\Opt{O})).
 By default, all translations are relative to the previous origin
 (see Figure~\ref{fig:GMT_-XY}).  Supply offset as {\bf c} to center the
 plot in that direction relative to the page margin.
@@ -619,7 +643,7 @@ for overlays are ignored).
 \index{\Opt{bo} (select binary output)}
 
 All \GMT\ programs that accept table data input may read ASCII
-or binary data†.  When using binary data the user must be aware
+or binary data.  When using binary data the user must be aware
 of the fact that \GMT\ has no way of determining the actual
 number of columns in the file.  You must therefore pass that
 information to \GMT\ via the binary \Opt{bi}[{\bf s}]{\it n} option,
@@ -638,7 +662,7 @@ see Appendix B.
 \index{\Opt{fi} (set input format)}
 \index{\Opt{fo} (set output format)}
 
-As mentioned in Section~\ref{sec:io}, there are times when we must explicitly state
+As mentioned in Section~\ref{sec:io}, when map projections are not required we must explicitly state
 what kind of data each input or output column contains.  This is accomplished with
 the \Opt{f} option.  Following an optional {\bf i} (for input only) or {\bf o} (for output
 only), we append a text string with information about each column (or range of columns) separated by commas.
@@ -655,7 +679,9 @@ The shorthand \Opt{f}[{\bf i}$|${\bf o}]{\bf g} means \Opt{f}[{\bf i}$|${\bf o}]
 \index{\Opt{c}}
 \index{Number of copies}
 
-The \Opt{c} option specifies the number of plot copies. [Default is 1]
+The \Opt{c} option specifies the number of plot copies [Default is 1].  This
+value is embedded in the \PS\ file and will make a printer issue the chosen
+number of copies without respooling.
 
 \subsection{Lat/Lon or Lon/Lat?: The \Opt{:} option}
 \index{\Opt{:}}
@@ -750,14 +776,14 @@ as an instruction; if an argument begins without a hyphen,
 it tries to open this argument as a filename).
 This feature allows you to connect programs with pipes if
 you like.  If your input is ASCII and has one or more header
-records, you must use the \Opt{H} option.  The number of header
-records is one of the many parameters in the \filename{.gmtdefaults4}
-file, but can be overridden by \Opt{H}{\it n\_header\_recs}.
+records, you must use the \Opt{H} option (see Section~\ref{sec:header}).
+For binary table data no headers are allowed.
 ASCII files may in many cases also contain sub-headers
-separating data segments; see Appendix B for complete
-documentation.  For binary table data no headers are allowed.
+separating data segments.  These are called ``multi-segment files''
+and requires a special option (typically \Opt{M}); see Appendix B for complete
+documentation. 
 
-If filenames are given for reading, the programs will first look in the
+If filenames are given for reading, \GMT\ programs will first look for them in the
 current directory.  If the file is not found, the programs
 will look in three other directories pointed to by environmental
 parameters (if set).  These are {\bf GMT\_DATADIR}, {\bf GMT\_GRIDDIR}, and
@@ -772,8 +798,8 @@ current directory unless a full path has been specified.
 \index{\Opt{V} (verbose mode)}
 
 Most of the programs take an optional \Opt{V} argument
-which will run the program in the ``verbose'' mode.  Verbose
-will write to standard error information about the progress
+which will run the program in the ``verbose'' mode (see Section~\ref{sec:verbose}).
+Verbose will write to standard error information about the progress
 of the operation you are running.  Verbose reports things
 such as counts of points read, names of data files
 processed, convergence of iterative solutions, and the like.
@@ -862,14 +888,14 @@ directly into the plot file.  By default, \GMT\ will produce
 freeform \PS\ output with embedded printer directives.  To
 produce Encapsulated \PS\ (EPS) that can be imported into graphics programs such as
 \progname{IslandDraw}, \progname{CorelDraw}, \progname{Illustrator} or \progname{Freehand} for further
-embellishment, change the PAPER\_MEDIA setting in the \filename{.gmtdefaults4}
+embellishment, change the {\bf PAPER\_MEDIA} setting in the \filename{.gmtdefaults4}
 file.  See Appendix C and the \GMTprog{gmtdefaults} man page for more details.
 
 \section{Specifying pen attributes}
 
 \index{Attributes!pen}%
 \index{Pen!setting attributes}%
-
+\label{sec:pen}
 A pen in \GMT\ has three attributes: {\it width}, {\it color},
 and {\it texture}.  Most programs will accept pen attributes in
 the form of an option argument, with commas separating the
@@ -885,11 +911,11 @@ given attributes, e.g.,
 \index{Attributes!pen!width}%
 \item[$\rightarrow$]{\it Width} is by default measured in units of the
 current device resolution (i.e., the value assigned to the parameter
-DOTS\_PR\_INCH in your \filename{.gmtdefaults4} file).  Thus, if the
+{\bf DOTS\_PR\_INCH} in your \filename{.gmtdefaults4} file).  Thus, if the
 dpi is set to 300 this unit is 1/300th of an inch.  Append {\bf c},
 {\bf i}, {\bf p}, or {\bf m} to specify pen width in cm, inch, points
 (1/72 of an inch)\footnote{\PS\ definition.  In the typesetting industry
-a slighly different definition of point (1/72.27 inch) is used.}, or meters.
+a slighly different definition of point (1/72.27 inch) is used.}, or meters, respectively.
 Note that a pen thickness of 5 will be of different physical width
 depending on your dpi setting, whereas a thickness of 5{\bf p} will
 always be 5/72 of an inch.  Minimum-thickness pens can be achieved by
@@ -924,12 +950,12 @@ fat		&	12p \\ \hline
 \item Gray. Specify a {\it gray} shade in the range 0--255 (linearly going from black [0] to white [255]).
 \item RGB. Specify {\it r}/{\it g}/{\it b}, each ranging from 0--255.  Here 0/0/0 is black and 255/255/255 is white.
 \item HSV. Specify {\it hue}-{\it saturation}-{\it value}, with the former in the 0--360 degree range while the latter
-two take on the range 0--1.
+two take on the range 0--1\footnote{For an overview of color systems such as HSV, see Appendix I.}.
 \item CMYK. Specify {\it cyan}/{\it magenta}/{\it yellow}/{\it black}, each ranging from 0--100\%.
-\item Name.  Specify one of 663 valid color names as defined in the X11 color table\footnote{On most Unix-type systems
-you can find the file rgb.txt in /usr/X11R6/lib/X11 or thereabouts, or use the command showrgb.}.  A very small but
-versatile subset consists of the 29 choices {\it white}, {\it black}, and [light$|$dark]\{{\it red, orange, yellow, green,
-cyan, blue, magenta, gray, brown}\}.
+\item Name.  Specify one of 663 valid color names as defined in the X11 color table\footnote{On most \UNIX-type systems
+you can find the file \filename{rgb.txt} in /usr/X11R6/lib/X11 or thereabouts, or use the command \progname{showrgb}.}.
+A very small yet versatile subset consists of the 29 choices {\it white}, {\it black}, and [light$|$dark]\{{\it red,
+orange, yellow, green, cyan, blue, magenta, gray, brown}\}.
 \end{enumerate}
 
 \index{Pen!texture}
@@ -937,16 +963,16 @@ cyan, blue, magenta, gray, brown}\}.
 \index{Attributes!pen!texture}%
 \item[$\rightarrow$]The {\it texture} attribute controls the appearance
 of the line.  ``.'' yieds a dotted line, while a dashed pen is requested with ``-''.
-For exact specifications you may specify {\it string}:{\it offset},
+For more detailed attributes you may specify {\it string}:{\it offset},
 where {\it string} is a series of numbers separated by underscores.
 These numbers represent a pattern by indicating the length of line
 segments and the gap between segments.  The {\it offset} phase-shifts the
-pattern along the line.  For example, if you want a yellow line of width
-0.2 cm that alternates between long dashes (4 points), an 8 point gap, then
+pattern from the beginning the line.  For example, if you want a yellow line of width
+0.1 cm that alternates between long dashes (4 points), an 8 point gap, then
 a 5 point dash, then another 8 point gap, with pattern offset by 2 points
-from the origin, specify \Opt{W}0.2c,yellow,4\_8\_5\_8:2p.
+from the origin, specify \Opt{W}0.1c,yellow,4\_8\_5\_8:2p.
 In general, the texture units can be specified in dpi units, cm, inch, points,
-or meters (see width discussion). 
+or meters (see \emph{width} discussion above). 
 \end{description} 
 
 \section{Specifying area fill attributes}
@@ -962,13 +988,13 @@ or meters (see width discussion).
 \label{sec:fill}
 
 Many plotting programs will allow the user to draw filled polygons or
-symbols.  The fill may take two forms: 
+symbols.  The fill specification may take two forms: 
 
 \vspace{\baselineskip} 
 
-\par \Opt{G}{\it fill\par 
+\par \Opt{G}{\it fill}\par 
 
-}\par \Opt{Gp}{\it dpi/pattern}[:{\bf B}{\it color}[{\bf F}{\it color}]]\par 
+\par \Opt{Gp}{\it dpi/pattern}[:{\bf B}{\it color}[{\bf F}{\it color}]]\par 
 
 \vspace{\baselineskip} 
 \noindent
@@ -978,7 +1004,7 @@ In the first case we may specify a {\it gray} shade (0--255), RGB color
 ({\it r}/{\it g}/{\it b} all in the 0--255 range), HSV color ({\it hue}-{\it saturation}-{\it value}
 in the 0--360, 0--1, 0--1 range), CMYK color ({\it cyan}/{\it magenta}/{\it yellow}/{\it black},
 each ranging from 0--100\%), or a valid color name; in that respect it is similar
-to specifying the pen color settings (see pen color attribute in previous section).
+to specifying the pen color settings (see pen color discussion under Section~\ref{sec:pen}).
 \item [pattern:]
 The second form allows us to use a predefined bit-image pattern.
 {\it pattern} can either be a number in the range 1--90 or the name of a 1-,
@@ -1024,7 +1050,8 @@ color palette table (cpt-file).  These files may also be used by \GMTprog{psxy}
 and \GMTprog{psxyz} to plot color-filled symbols.
 The colors may be specified either in the RGB- (red, green, blue), CMYK- (cyan,
 magenta, yellow, black), or in the HSV-system (hue, saturation, value, and
-here the comment \# COLOR\_MODEL = HSV must be present in the cpt file).
+here the comment \# COLOR\_MODEL = HSV must be present in the cpt file since there
+are no other way to distinguish between HSV and RGB).  Color names can also be used.
 Using the RGB system\footnote{For CMYK the format obviously involves two extra columns.},
 the format of the cpt-file is: 
 
@@ -1065,6 +1092,9 @@ you prefer the HSV system, set the
 blue with hue, saturation, value.  Color palette tables that contain
 grayshades only may replace the r-g-b triplets with a single grayshade
 in the 0--255 range.  For CMYK, give four values in the 0--100 range.
+Both the min and max color specifications in one {\it z}-slice must use
+the same color system, i.e., you cannot mix ``red'' and 0/255/100 on the
+same line.
 
 A few programs (i.e., those that plot polygons such as \GMTprog{grdview},
 \GMTprog{psscale}, and \GMTprog{psxy}) can accept pattern fills instead
@@ -1337,7 +1367,7 @@ MMM\=\# suffix \=format\_id \=scale \=offset \=NaNxxx\=Comments \kill
 \end{tabbing} 
 
 These suffices can be anything that make sense to the user.  To
-activate this mechanism, set parameter GRIDFILE\_SHORTHAND to TRUE in
+activate this mechanism, set parameter {\bf GRIDFILE\_SHORTHAND} to TRUE in
 your \filename{.gmtdefaults4} file.  Then, using the filename
 \filename{stuff.i2} is equivalent to saying \filename{stuff.i2=2/1/0/32767},
 and the filename \filename{wet.mask} means wet.mask=5/1/0/0.  For a

@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_B.tex,v 1.7 2004-01-03 23:03:30 pwessel Exp $
+%	$Id: GMT_Appendix_B.tex,v 1.8 2004-06-11 03:02:58 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -23,16 +23,17 @@ binary table data.
 \subsection{ASCII tables}
 \index{Table!format!ASCII}
 \index{Table!multisegment}
-
+\subsubsection{Optional file header records}
 The first data record may be preceded by 1 or more header records.
 When using such files, make sure to use the \Opt{H} option and set
-the parameter N\_HEADER\_RECS in the \filename{.gmtdefaults4} file
+the parameter {\bf N\_HEADER\_RECS} in the \filename{.gmtdefaults4} file
 (System default is 1 header record if \Opt{H} is set; you may also
 use \Opt{H}{\it nrecs} directly).  Fields
 within a record must be separated by spaces, tabs, or commas.
 Each field can be an integer or floating-point number or a geographic
 coordinate string using the [+$|$-]dd[:mm[:ss]][W$|$S$|$N$|$E$|$w$|$s$|$n$|$e] format.
 Thus, 12:30:44.5W, 17.5S, 1:00:05, and 200:45E are all valid input strings.
+\subsubsection{Optional segment header records}
 When dealing with time- or ({\it x,y})-series it is usually
 convenient to have each profile in separate files.
 However, this may sometimes prove impractical due to large numbers
@@ -52,8 +53,8 @@ to the M option.  E.g., \Opt{MH} will look for subheaders starting
 with H, whereas \Opt{M'*'} will check for asterisks (The quotes
 are necessary since * has special meaning to \UNIX).  The subheaders
 may contain \Opt{W} and \Opt{G} options for specifying pen and
-fill attributes for individual segments.  These settings will override
-the corresponding command line options.
+fill attributes for individual segments.  These settings (and occasionally
+others) will override the corresponding command line options.
 
 \subsection{Binary tables}
 \index{Table!format!binary}
