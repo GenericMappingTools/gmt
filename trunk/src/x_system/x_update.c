@@ -1,4 +1,4 @@
-/*	$Id: x_update.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+/*	$Id: x_update.c,v 1.2 2001-04-04 00:59:32 pwessel Exp $
  *
  * XUPDATE will read a xover.d-file that contains a series of crossovers. The first
  * record contains leg1 year1 leg2 year2, and the next n records has all the
@@ -135,7 +135,7 @@ main (int argc, char *argv[])
 		fprintf(stderr,"x_update : Read error on xx_base.b\n");
 		exit (EXIT_FAILURE);
 	}
-	sscanf(header,"%D",&n_rec);
+	sscanf (header,"%d", &n_rec);
 	fseek (fxb, 0L, SEEK_END);		/* Go to end of file */
 	for (i = 0; i < REC_SIZE; i++) header[i] = ' ';
 
@@ -198,13 +198,13 @@ main (int argc, char *argv[])
 
 		/* Copy this info to xx_base.b */
 
-		sprintf (header,"%s %s %10ld\0", lega, legb, n_x);
+		sprintf (header,"%s %s %10d\0", lega, legb, n_x);
 		if (fwrite ((void *)header, REC_SIZE, (size_t)1, fxb) != (size_t)1) {
-			fprintf(stderr,"x_update : Write header error at rec %ld\n",n_rec);
+			fprintf(stderr,"x_update : Write header error at rec %d\n", n_rec);
 			exit (EXIT_FAILURE);
 		}
 		if (fwrite((void *)crossover, REC_SIZE, (size_t)n_x, fxb) != (size_t)n_x) {
-			fprintf(stderr,"x_update : Write data error at rec %ld\n",n_rec);
+			fprintf(stderr,"x_update : Write data error at rec % d\n", n_rec);
 			exit (EXIT_FAILURE);
 		}
       
@@ -261,7 +261,7 @@ main (int argc, char *argv[])
 	/* Write first rec for next time x_update is used */
 
 	fseek (fxb, 0L, SEEK_SET);
-	sprintf(header,"%10ld xx_base.b header\0",n_rec);
+	sprintf(header,"%10d xx_base.b header\0",n_rec);
 	if (fwrite((void *)header,REC_SIZE, (size_t)1, fxb) != (size_t)1) {
 		fprintf(stderr,"x_update : Write header error for n_rec = %d\n",n_rec);
 		exit (EXIT_FAILURE);

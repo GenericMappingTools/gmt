@@ -1,4 +1,4 @@
-/*	$Id: x_over.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+/*	$Id: x_over.c,v 1.2 2001-04-04 00:59:32 pwessel Exp $
  *
  * X_OVER will compute cross-overs between 2 legs (or internal cross-overs
  * if both legs are the same) and write out time,lat,lon,cross-over values,
@@ -684,7 +684,7 @@ BOOLEAN find_cross (double *xc, double *yc, double *tc, double *dc, float *hc, d
 
       if (error != 0) {	/* Oh shit, what could this mean... */
         fprintf(stderr,"x_over : Error = %d returned from intpol\n",error);
-        fprintf(stderr,"(pnt[0] = %ld, pnt[1] = %ld\n",pt[0],pt[1]);
+        fprintf(stderr,"(pnt[0] = %d, pnt[1] = %d\n", pt[0],pt[1]);
         return (FALSE);
       }
     }
