@@ -1,11 +1,11 @@
-	$Id: README.spotter,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+	$Id: README.spotter,v 1.2 2001-10-24 22:27:31 pwessel Exp $
 
 SPOTTER Supplemental Package
 
 ------------------------------------------------------
 Author:		Paul Wessel (pwessel@hawaii.edu)
 		SOEST, University of Hawaii
-Date:		December 29, 1999
+Date:		October 24, 2001
 Version:	1.1
 ------------------------------------------------------
 
@@ -15,6 +15,7 @@ README.spotter		: This document
 backtracker.c		: backtracker C program code
 hotspotter.c		: hotspotter C program code
 originator.c		: originator C program code
+rotconverter.c		: rotconverter C program code
 libspotter.c		: SPOTTER C library code
 spotter.h		: SPOTTER C include file
 makefile		: Unix makefile for SPOTTER package
@@ -25,6 +26,8 @@ hotspotter.html		: hotspotter Web documentation
 hotspotter.man		: hotspotter UNIX man file
 originator.html		: originator Web documentation
 originator.man		: originator UNIX man file
+rotconverter.html	: rotconverter Web documentation
+rotconverter.man	: rotconverter UNIX man file
 spotter.sh		: UNIX example script
 spotter.bat		: DOS example batch job
 DC85.d			: Duncan and Clague [1985] stage poles
@@ -37,13 +40,14 @@ can be downloaded from:
 
 http://www.soest.hawaii.edu/wessel/papers/1997/WL_seamounts_1997.d
 
-This package contains three programs that may be useful
+This package contains four programs that may be useful
 to people who work with Plate Tectonic Reconstructions.
-The three programs are
+The four programs are
 
-	backtracker - Move points back/forth in time
-	hotspotter  - Create CVA grids using flowline convolutions
-	originator  - Associate seamounts with hotspot point sources
+	backtracker  - Move points back/forth in time
+	hotspotter   - Create CVA grids using flowline convolutions
+	originator   - Associate seamounts with hotspot point sources
+	rotconverter - Manipulate finite and stage rotations
 
 All programs are linked with libspotter.a (spotter.lib on DOS)
 whose source code is also provided. The makefile (UNIX) and

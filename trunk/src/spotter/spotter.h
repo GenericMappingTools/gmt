@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spotter.h,v 1.2 2001-10-23 20:18:11 pwessel Exp $
+ *	$Id: spotter.h,v 1.3 2001-10-24 22:27:31 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -25,7 +25,7 @@
 
 #include "gmt.h"	/* Requires GMT to compile and link */
 
-#define SPOTTER_VERSION "1.0"
+#define SPOTTER_VERSION "1.1"
 #define EQ_RAD 6371.0087714
 #define KM_PR_DEG (EQ_RAD * M_PI / 180.0)
 #define BIG_CHUNK 50000
@@ -45,5 +45,6 @@ struct EULER {	/* Structure with info on each Euler (stage) pole */
 int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in, BOOLEAN finite_out, double *t_max);
 EXTERN_MSC int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EULER p[], int ns, double d_km, double t_zero, BOOLEAN do_time, double **c);
 EXTERN_MSC int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EULER p[], int ns, double d_km, double t_zero, BOOLEAN do_time, double **c);
-EXTERN_MSC void finite_to_stages (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates);
-EXTERN_MSC void stages_to_finite (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates);
+EXTERN_MSC void spotter_finite_to_stages (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates);
+EXTERN_MSC void spotter_stages_to_finite (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates);
+EXTERN_MSC void spotter_add_rotations (struct EULER a[], int n_a, struct EULER b[], int n_b, struct EULER *c[], int *n_c);

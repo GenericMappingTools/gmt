@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.8 2001-10-23 21:13:57 pwessel Exp $
+ *	$Id: libspotter.c,v 1.9 2001-10-24 22:27:31 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -117,8 +117,8 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	
 	n = i;
 
-	if (finite_in && !finite_out) finite_to_stages (e, n, TRUE, TRUE);	/* Convert finite poles to backward stage poles */
-	if (!finite_in && finite_out) stages_to_finite (e, n, TRUE, TRUE);	/* Convert backward stage poles to finite poles */
+	if (finite_in && !finite_out) spotter_finite_to_stages (e, n, TRUE, TRUE);	/* Convert finite poles to backward stage poles */
+	if (!finite_in && finite_out) spotter_stages_to_finite (e, n, TRUE, TRUE);	/* Convert backward stage poles to finite poles */
 	
 	/* Extend oldest stage pole back to t_max Ma */
 
@@ -524,7 +524,7 @@ void spotter_rotate_inv (double *lon, double *lat, double tlon, double tlat, str
  * Based partly on Cox and Hart, 1986
  */
 
-void finite_to_stages (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates)
+void spotter_finite_to_stages (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates)
 {
 	/* Convert finite rotations to stage rotations */
 	/* p[]		: Array of structure elements with rotation parameters
@@ -590,7 +590,7 @@ void finite_to_stages (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN st
 	}
 }
 
-void stages_to_finite (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates)
+void spotter_stages_to_finite (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates)
 {
 	/* Convert stage rotations to finite rotations */
 	/* p[]		: Array of structure elements with rotation parameters
@@ -644,6 +644,122 @@ void stages_to_finite (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN st
 	GMT_free ((void *)elon);
 	GMT_free ((void *)elat);
 	GMT_free ((void *)ew);
+}
+
+void spotter_add_rotations (struct EULER a[], int n_a, struct EULER b[], int n_b, struct EULER *c[], int *n_c)
+{
+	/* Takes two finite rotation models and adds them together.
+	 * We do this by first converting both to stage poles.  We then
+	 * determine all the time knots needed, and then resample both
+	 * stage rotation models onto the same list of knots.  This is
+	 * easy to do with stage poles since we end up using partial
+	 * stage rotations.  TO do this with finite poles would involve
+	 * computing intermediate stages anyway.  When we have the resampled
+	 * stage rotations we convert back to finite rotations and then
+	 * simply add each pair of rotations using matrix multiplication.
+	 * The final finite rotation model is returned in c. */
+	
+	struct EULER *a2, *b2, *c2;
+	double *t, t_min, t_max, Ra[3][3], Rb[3][3], Rab[3][3], lon, lat, w, sign_a, sign_b;
+	int i, j, k, n_k = 0;
+	BOOLEAN a_ok = TRUE, b_ok = TRUE;
+	
+	sign_a = (n_a > 0) ? +1.0 : -1.0;
+	sign_b = (n_b > 0) ? +1.0 : -1.0;
+	n_a = abs (n_a);
+	n_b = abs (n_b);
+	
+	/* Allocate more than we need, must likely */
+	
+	t = (double *) GMT_memory (VNULL, (size_t)(n_a + n_b), sizeof (double), GMT_program);
+	
+	/* First convert the two models to stage poles */
+	
+	spotter_finite_to_stages (a, n_a, TRUE, TRUE);		/* Return stage poles */
+	spotter_finite_to_stages (b, n_b, TRUE, TRUE);		/* Return stage poles */
+	
+	/* Find all the time knots used by the two models */
+	
+	t_max = MIN (a[0].t_start, b[0].t_start);
+	t_min = MAX (a[n_a-1].t_stop, b[n_b-1].t_stop);
+	t[n_k++] = t_max;
+	i = j = 0;
+	while (i < n_a && a[i].t_stop > t[0]) i++;
+	if (i == (n_a - 1)) a_ok = FALSE;
+	while (j < n_b && b[j].t_stop > t[0]) j++;
+	if (j == (n_b - 1)) b_ok = FALSE;
+	while (a_ok || b_ok) {
+		if (a_ok && !b_ok) {		/* Only a left */
+			t[n_k] = a[i++].t_stop;
+			if (i == (n_a - 1)) a_ok = FALSE;
+		}
+		else if (b_ok && !a_ok) {	/* Only b left */
+			t[n_k] = b[j++].t_stop;
+			if (j == (n_b - 1)) b_ok = FALSE;
+		}
+		else if (a_ok && a[i].t_stop > b[j].t_stop) {
+			t[n_k] = a[i++].t_stop;
+			if (i == (n_a - 1)) a_ok = FALSE;
+		}
+		else if (b_ok && b[j].t_stop > a[i].t_stop) {
+			t[n_k] = b[j++].t_stop;
+			if (j == (n_b - 1)) b_ok = FALSE;
+		}
+		else {	/* Same time for both */
+			t[n_k] = b[j++].t_stop;
+			i++;
+			if (i == (n_a - 1)) a_ok = FALSE;
+			if (j == (n_b - 1)) b_ok = FALSE;
+		}
+		n_k++;
+	}
+	t[n_k++] = t_min;
+	n_k--;	/* Number of structure elements is one less than number of knots */
+	
+	b2 = (struct EULER *) GMT_memory (VNULL, (size_t)n_k, sizeof (struct EULER), GMT_program);
+	a2 = (struct EULER *) GMT_memory (VNULL, (size_t)n_k, sizeof (struct EULER), GMT_program);
+	c2 = (struct EULER *) GMT_memory (VNULL, (size_t)n_k, sizeof (struct EULER), GMT_program);
+	
+	for (k = i = j = 0; k < n_k; k++) {	/* Resample the two stage pole models onto the same knots */
+		/* First resample p onto p2 */
+		while (a[i].t_stop >= t[k]) i++;				/* Wind up */
+		a2[k] = a[i];							/* First copy everything */
+		if (a2[k].t_start > t[k]) a2[k].t_start = t[k];			/* Adjust start time */
+		if (a2[k].t_stop < t[k+1]) a2[k].t_stop = t[k+1];		/* Adjust stop time */
+		a2[k].duration = a2[k].t_start - a2[k].t_stop;			/* Set the duration */
+		
+		/* Then resample a onto a2 */
+		while (b[j].t_stop >= t[k]) j++;				/* Wind up */
+		b2[k] = b[j];							/* First copy everything */
+		if (b2[k].t_start > t[k]) b2[k].t_start = t[k];			/* Adjust start time */
+		if (b2[k].t_stop < t[k+1]) b2[k].t_stop = t[k+1];		/* Adjust stop time */
+		b2[k].duration = b2[k].t_start - b2[k].t_stop;			/* Set the duration */
+	}
+	
+	GMT_free ((void *)t);
+	
+	/* Now switch to finite rotations again to do the additions */
+	
+	spotter_stages_to_finite (a2, n_k, FALSE, TRUE);	/* Return opening angles, not rates this time */
+	spotter_stages_to_finite (b2, n_k, FALSE, TRUE);
+	
+	for (i = 0; i < n_k; i++) {	/* Add each pair of rotations */
+		make_rot_matrix (a2[i].lon, a2[i].lat, sign_a * a2[i].omega, Ra);
+		make_rot_matrix (b2[i].lon, b2[i].lat, sign_b * b2[i].omega, Rb);
+		matrix_mult (Rb, Ra, Rab);	/* Rot a + Rot b = RB * Ra ! */
+		matrix_to_pole (Rab, &lon, &lat, &w);
+		c2[i].lon = lon;	
+		c2[i].lat = lat;
+		c2[i].t_start = a2[i].t_start;
+		c2[i].t_stop  = 0.0;
+		c2[i].duration = c2[i].t_start;
+		c2[i].omega = w / c2[i].duration;	/* Return rates again */
+	}
+	GMT_free ((void *)a2);
+	GMT_free ((void *)b2);
+	
+	*n_c = n_k;
+	*c = c2;
 }
 
 void make_rot_matrix (double lonp, double latp, double w, double R[3][3])
@@ -727,3 +843,4 @@ void matrix_to_pole (double T[3][3], double *plon, double *plat, double *w)
 		*w = -(*w);
 	}
 }
+
