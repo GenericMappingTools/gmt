@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.44 2003-12-28 20:38:56 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.45 2003-12-29 00:37:28 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8088,23 +8088,23 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D)
 	else if (strchr (text, ':')) {	/* Has colons, must get ellipsoid and dr separately */
 		char ellipsoid[128], dr[64];
 		if (sscanf (text, "%[^:]:%s", ellipsoid, dr) != 2) {
-			fprintf (stderr, "%s: Malformed <ellipsoid>:<dr> argument!\n");
+			fprintf (stderr, "%s: Malformed <ellipsoid>:<dr> argument!\n", GMT_program);
 			return (-1);
 		}
 		if (sscanf (dr, "%lf,%lf,%lf", &D->xyz[0], &D->xyz[1], &D->xyz[2]) != 3) {
-			fprintf (stderr, "%s: Malformed <x>,<y>,<z> argument!\n");
+			fprintf (stderr, "%s: Malformed <x>,<y>,<z> argument!\n", GMT_program);
 			return (-1);
 		}
 		if (strchr (ellipsoid, ',')) {	/* Has major, inv_f instead of name */
 			if (sscanf (ellipsoid, "%lf,%lf", &D->a, &D->f) != 2) {
-				fprintf (stderr, "%s: Malformed <a>,<1/f> argument!\n");
+				fprintf (stderr, "%s: Malformed <a>,<1/f> argument!\n", GMT_program);
 				return (-1);
 			}
 			if (D->f != 0.0) D->f = 1.0 / D->f;	/* Get f from 1/f */
 		}
 		else {	/* Get the ellipsoid # and then the parameters */
 			if ((i = GMT_get_ellipsoid (ellipsoid)) < 0) {
-				fprintf (stderr, "%s: Ellipsoid %s not recognized!\n", ellipsoid);
+				fprintf (stderr, "%s: Ellipsoid %s not recognized!\n", GMT_program, ellipsoid);
 				return (-1);
 			}
 			D->a = gmtdefs.ref_ellipsoid[i].eq_radius;
@@ -8114,15 +8114,15 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D)
 	else {		/* Gave a Datum ID tag [ 0-(N_DATUMS-1)] */
 		int k;
 		if (sscanf (text, "%d", &i) != 1) {
-			fprintf (stderr, "%s: Malformed or unrecognized <datum> argument!\n");
+			fprintf (stderr, "%s: Malformed or unrecognized <datum> argument (%s)!\n", GMT_program, text);
 			return (-1);
 		}
 		if (i < 0 || i >= N_DATUMS) {
-			fprintf (stderr, "%s: Datum ID (%d) outside valid range (0-%d)!\n", i, N_DATUMS-1);
+			fprintf (stderr, "%s: Datum ID (%d) outside valid range (0-%d)!\n", GMT_program, i, N_DATUMS-1);
 			return (-1);
 		}
 		if ((k = GMT_get_ellipsoid (gmtdefs.datum[i].ellipsoid)) < 0) {	/* This should not happen... */
-			fprintf (stderr, "%s: Ellipsoid %s not recognized!\n", gmtdefs.datum[i].ellipsoid);
+			fprintf (stderr, "%s: Ellipsoid %s not recognized!\n", GMT_program, gmtdefs.datum[i].ellipsoid);
 			return (-1);
 		}
 		D->a = gmtdefs.ref_ellipsoid[k].eq_radius;
