@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.140 2004-10-14 03:29:22 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.141 2004-10-24 21:39:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4358,8 +4358,8 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 	
 	/* There are 4 cases depending on whether the chosen region or the grid straddles Greenwich */
 	
-	region_straddle = (project_info.w < 0.0 && project_info.e > 0.0) ? TRUE : FALSE;
-	grid_straddle   = (h->x_min < 0.0 && h->x_max > 0.0) ? TRUE : FALSE;
+	region_straddle = (project_info.w < 0.0 && project_info.e >= 0.0) ? TRUE : FALSE;
+	grid_straddle   = (h->x_min < 0.0 && h->x_max >= 0.0) ? TRUE : FALSE;
 	
 	if (! (region_straddle || grid_straddle)) {	/* Case 1: Neither -R nor grid straddles Greenwich */
 		/* Here we KNOW that w/e has already been forced to be positive (0-360 range).
