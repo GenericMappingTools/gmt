@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.49 2004-10-17 08:56:16 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.50 2004-10-27 06:33:13 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -129,8 +129,10 @@ while [ ! $answer = "1" ] && [ ! $answer = "2" ]; do
 done
 if [ $answer = "1" ]; then
 	VERSION=4.0
+	N_EXAMPLES=25
 elif [ $answer = "2" ]; then
 	VERSION=3.4.5
+	N_EXAMPLES=20
 fi
 echo "You chose to install verion $VERSION" >&2
 
@@ -442,7 +444,7 @@ If this is your case you should turn file locking OFF.
 EOF
 GMT_flock=`get_def_answer "Use POSIX Advisory File Locking in GMT (y/n)" "y"`
 
-GMT_run_examples=`get_def_answer "Want to test GMT by running the 20 examples? (y/n)" "y"`
+GMT_run_examples=`get_def_answer "Want to test GMT by running the $N_EXAMPLES examples? (y/n)" "y"`
 GMT_delete=`get_def_answer "Delete all tar files after install? (y/n)" "n"`
 
 # export CONFIG_SHELL=`type sh | awk '{print $NF}'`
