@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.4 2001-03-01 22:08:26 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.5 2001-03-07 17:51:41 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2486,6 +2486,8 @@ void GMT_vtm (double lon0, double lat0)
 	lat2 = 2.0 * lat0;
 	sincos (lat2, &s2, &c2);
 	project_info.t_M0 = project_info.EQ_RAD * (project_info.t_c1 * lat0 + s2 * (project_info.t_c2 + c2 * (project_info.t_c3 + c2 * project_info.t_c4)));
+	project_info.t_r = project_info.EQ_RAD * gmtdefs.map_scale_factor;
+	project_info.t_ir = 1.0 / project_info.t_r;
 }
 
 /* Ellipsoidal TM functions */
@@ -2565,7 +2567,7 @@ void GMT_itm (double *lon, double *lat, double x, double y)
 void GMT_tm_sph (double lon, double lat, double *x, double *y)
 {
 	/* Convert lon/lat to TM x/y by spherical formula */
-	double dlon, r, b, clat, slat, clon, slon, xx, yy;
+	double dlon, b, clat, slat, clon, slon, xx, yy;
 
 	dlon = lon - project_info.central_meridian;
 	if (fabs (dlon) > 360.0) dlon += copysign (360.0, -dlon);
@@ -2589,7 +2591,7 @@ void GMT_tm_sph (double lon, double lat, double *x, double *y)
 		/* This corresponds to the transverse "pole"; the point at x = +-infinity, y = -lat0.  
 			Treat as in GMT_merc_sph(), but transversely:  */
 		*x = copysign (1.0e100, dlon);
-		*y = -project_info.EQ_RAD * gmtdefs.map_scale_factor * project_info.t_lat0;
+		*y = -project_info.t_r * project_info.t_lat0;
 		return;
 	}
 
@@ -2600,9 +2602,8 @@ void GMT_tm_sph (double lon, double lat, double *x, double *y)
 
 	yy = atan2 (slat, (clat * clon)) - project_info.t_lat0;
 	if (yy < -M_PI_2) yy += TWO_PI;
-	r = project_info.EQ_RAD * gmtdefs.map_scale_factor;
-	*x = r * xx;
-	*y = r * yy;
+	*x = project_info.t_r * xx;
+	*y = project_info.t_r * yy;
 }
 
 void GMT_itm_sph (double *lon, double *lat, double x, double y)
@@ -2611,9 +2612,8 @@ void GMT_itm_sph (double *lon, double *lat, double x, double y)
 
 	double xx, yy, sinhxx, coshxx, sind, cosd, lambda, phi, ir;
 
-	ir = 1.0 / (project_info.EQ_RAD * gmtdefs.map_scale_factor);
-	xx = x * ir;
-	yy = y * ir + project_info.t_lat0;
+	xx = x * project_info.t_ir;
+	yy = y * project_info.t_ir + project_info.t_lat0;
 
 	sinhxx = sinh (xx);
 	coshxx = cosh (xx);
@@ -2642,7 +2642,17 @@ int GMT_map_init_utm (void) {
 	GMT_vtm (lon0, 0.0);	/* Central meridian for this zone */
 	if (project_info.units_pr_degree) project_info.pars[1] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[1];
-	project_info.north_pole = (project_info.s >= 0.0);
+	switch (project_info.utm_hemisphere) {	/* Set hemisphere */
+		case -1:
+			project_info.north_pole = FALSE;
+			break;
+		case +1:
+			project_info.north_pole = TRUE;
+			break;
+		default:
+			project_info.north_pole = (project_info.s >= 0.0);
+			break;
+	}
 	if (SPHERICAL || GMT_convert_latitudes) {	/* Spherical code w/wo conformal latitudes */
 		GMT_forward = (PFI)GMT_utm_sph;
 		GMT_inverse = (PFI)GMT_iutm_sph;

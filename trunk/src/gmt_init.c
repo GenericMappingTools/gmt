@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.3 2001-03-01 22:08:26 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.4 2001-03-07 17:51:41 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -222,7 +222,7 @@ void GMT_explain_option (char option)
 				GMT_unit_names[gmtdefs.measure_unit]);
 				
 			fprintf (stderr, "	   -Ju<zone>/<scale> OR -JU<zone>/<mapwidth> (UTM)\n");
-			fprintf (stderr, "	     Give zone (negative for S hemisphere) and scale as 1:xxxx or %s/degree\n",
+			fprintf (stderr, "	     Give zone (1-60, negative for S hemisphere) and scale as 1:xxxx or %s/degree\n",
 				GMT_unit_names[gmtdefs.measure_unit]);
 				
 			fprintf (stderr, "	   -Jv<lon0>/<scale> OR -JV<lon0>/<mapwidth> (van der Grinten)\n");
@@ -2906,10 +2906,21 @@ int GMT_map_getproject (char *args)
 	 			n = sscanf (args, "%lf/%s", &project_info.pars[0], txt_b);
 				project_info.pars[1] = GMT_convert_units (txt_b, GMT_INCH);
 			}
-	 		project_info.north_pole = (project_info.pars[0] > 0.0);
+			switch (args[0]) {
+				case '-':	/* Enforce Southern hemisphere convention for y */
+	 				project_info.utm_hemisphere = -1;
+					break;
+				case '+':	/* Enforce Norther hemisphere convention for y */
+	 				project_info.utm_hemisphere = +1;
+					break;
+				default:	/* Decide in gmt_map_setup based on -R */
+	 				project_info.utm_hemisphere = 0;
+					break;
+			}
 	 		project_info.pars[0] = fabs (project_info.pars[0]);
 			error = !(n_slashes == 1 && n == 2);
 			error += (project_info.pars[1] <= 0.0 || (k >= 0 && project_info.gave_map_width));
+			error += (project_info.pars[0] < 1 || project_info.pars[0] > 60);	/* Zones must be 1-60 */
 	 		project = UTM;
 	 		break;
 	 	case 'V':	/* Van der Grinten */

@@ -63,9 +63,9 @@ Equal-Area and Conformal, respectively):
 .br
 \fB\-Ju\fP\fIzone/scale\fP or \fB\-JU\fP\fIzone/width\fP (UTM - Universal Transverse Mercator \fB[C]\fP)
 .br
-	Give the zone number and scale (1:xxxx or UNIT/degree).
+	Give the zone number (1-60) and scale (1:xxxx or UNIT/degree).
 .br
-	Use negative zone numbers for the southern hemisphere.
+	zones: prepend - or + to enforce southern or northern hemisphere conventions [northern if south > 0].
 .br
 \fB\-Jy\fP\fIlon0/lats/scale\fP or \fB\-JY\fP\fIlon0/lats/width\fP (Basic Cylindrical Projections \fB[E]\fP)
 .br
