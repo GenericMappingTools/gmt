@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.52 2002-11-10 03:13:43 lloyd Exp $
+ *	$Id: gmt_io.c,v 1.53 2003-03-05 23:14:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1267,7 +1267,7 @@ void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
 	S->delimiter[0][0] = S->delimiter[0][1] = S->delimiter[1][0] = S->delimiter[1][1] = 0;
 	sequence[0] = sequence[1] = sequence[2] = -1;
 	
-	S->range = 2;			/* -80/+180 range, may be overwritten below by + or - */
+	S->range = 2;			/* -180/+180 range, may be overwritten below by + or - */
 	S->decimal = S->wesn = S->no_sign = FALSE;
 	
 	i1 = strlen (text) - 1;
