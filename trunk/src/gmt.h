@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.58 2004-04-12 19:51:12 pwessel Exp $
+ *	$Id: gmt.h,v 1.59 2004-04-12 21:41:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -212,9 +212,9 @@ typedef double GMT_dtime;	/* GMT internal time representation */
  *--------------------------------------------------------------------*/
 
 #define N_UNIQUE 59		/* Number of unique options */
-#define N_KEYS 94		/* Number of gmt defaults */
+#define N_KEYS 111		/* Number of gmt defaults */
 #define GMT_N_MEDIA 29		/* Number of standard paper formats in the GMT_media_names.h include file */
-#define HASH_SIZE 92		/* Used in get_gmtdefaults, should be ~> N_KEYS */
+#define HASH_SIZE 111		/* Used in get_gmtdefaults, should be ~> N_KEYS */
 #define GMT_N_SYSTEMS 6		/* Number of time systems in gmt_time_systems.h */
 /* This structure contains default parameters for the GMT system */
 
@@ -240,12 +240,12 @@ struct GMT_PEN_NAME {	/* Names of pens and their thicknesses */
 struct GMTDEFAULTS {
 	double annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */
 	double annot_min_spacing;	/* If an annotation is closer that this to an older annotation, the annotation is skipped [0.0] */
-	int annot_font;			/* Font for annotations [Helvetica] */
-	double annot_font_size;		/* Font size for annotations in points [14] */
-	int annot_font2;		/* Font for upper annotations on time axis  [Helvetica] */
-	double annot_font2_size;	/* Font size for upper annotations on time axis in points [16] */
-	double annot_offset;		/* Distance between annotation and tickmarks [0.075] */
-	double annot_offset2;		/* Distance between upper and lower annotations [0.075] */
+	int annot_font_primary;		/* Font for primary annotations [Helvetica] */
+	double annot_font_size_primary;	/* Font size for primary annotations in points [14] */
+	int annot_font_secondary;	/* Font for secondary annotations on time axis  [Helvetica] */
+	double annot_font_size_secondary;	/* Font size for secondary annotations on time axis in points [16] */
+	double annot_offset_primary;	/* Distance between primary annotation and tickmarks [0.075] */
+	double annot_offset_secondary;	/* Distance between secondary and lower annotations [0.075] */
 	char basemap_axes[5];		/* Which axes to draw and annotate ["WESN"]  */
 	int basemap_frame_rgb[3];	/* Frame color rgb [(0,0,0) = black] */
 	int basemap_type;		/* Fancy (0) or plain (1) [0] */
@@ -263,8 +263,10 @@ struct GMTDEFAULTS {
 	double frame_width;		/* Thickness of fancy map frame [0.075] */
 	double global_x_scale;		/* Scaling of x just before plotting [1] */
 	double global_y_scale;		/* Scaling of y just before plotting [1] */
-	double grid_cross_size;		/* Size of gridcrosses.  0 means draw continuous gridlines */
-	struct GMT_PEN grid_pen;	/* Pen attributes for gridlines [1] */
+	double grid_cross_size_primary;	/* Size of gridcrosses.  0 means draw continuous gridlines */
+	struct GMT_PEN grid_pen_primary; /* Pen attributes for gridlines [1] */
+	double grid_cross_size_secondary;	/* Size of gridcrosses.  0 means draw continuous gridlines */
+	struct GMT_PEN grid_pen_secondary;	/* Pen attributes for gridlines [1] */
 	BOOLEAN gridfile_shorthand;	/* Use shorthand suffix notation for embedded formats [FALSE] */
 	int header_font;		/* Font for headers [Helvetica] */
 	double header_font_size;	/* Font size for headers in points [36] */
@@ -332,8 +334,8 @@ struct GMTDEFAULTS {
 	char plot_clock_format[32];	/* Controls how clocks are plotted on maps [hh:mm:ss] */
 	char plot_date_format[32];	/* Controls how dates are plotted on maps [yyyy-mm-dd] */
 	char plot_degree_format[32];	/* Controls how degrees are plotted on maps [020 = dd:mm:ss as in old DEGREE_FORMAT = 0] */
-	char time_annot_format[32];	/* Controls annotation format for Months/Weeks/Weekdays for Primary axes */
-	char time_annot_format2[32];	/* Controls annotation format for Months/Weeks/Weekdays for Secondary axes */
+	char time_format_primary[32];	/* Controls annotation format for Months/Weeks/Weekdays for Primary axes */
+	char time_format_secondary[32];	/* Controls annotation format for Months/Weeks/Weekdays for Secondary axes */
 	BOOLEAN time_is_interval;	/* Does a time given as a month (or year or day) mean the middle of the interval? */
 	BOOLEAN want_leap_seconds;	/* Do we need to worry about leap seconds? */
 	char time_epoch[32];		/* User-defined epoch for time */

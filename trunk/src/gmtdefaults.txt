@@ -69,7 +69,7 @@ range 0\-90. [20]
 If an annotation would be plotted less than this minimum distance from its closest neighbor, the
 annotation is not plotted (this may occur for certain oblique projections.) [0]
 .TP
-.B ANNOT_FONT
+.B ANNOT_FONT_PRIMARY
 Font used for upper annotations, etc. [Helvetica].  Specify either the font number or
 the font name (case sensitive!).  The 39 available fonts are:
 .br
@@ -151,22 +151,22 @@ the font name (case sensitive!).  The 39 available fonts are:
 .br
 	38 GothicBBB-Medium-EUC-V
 .TP
-.B ANNOT_FONT_SIZE
+.B ANNOT_FONT_SIZE_PRIMARY
 Font size (> 0) in points for map annotations.  [14]
 .TP
-.B ANNOT_FONT2
-Font to use for time axis lower annotations.  See \fBANNOT_FONT\fP for available fonts  [Helvetica].
+.B ANNOT_FONT_SECONDARY
+Font to use for time axis secondary annotations.  See \fBANNOT_FONT\fP for available fonts  [Helvetica].
 .TP
-.B ANNOT_FONT2_SIZE
-Font size (> 0) for time axis lower annotations in points  [16].
+.B ANNOT_FONT_SIZE_SECONDARY
+Font size (> 0) for time axis secondary annotations in points  [16].
 .TP
-.B ANNOT_OFFSET		
+.B ANNOT_OFFSET_PRIMARY	
 Distance from end of tickmark to start of annotation [LEN_1_SI (or LEN_1_US)].  A negative
 offset will place the annotation inside the map border.
 .TP
-.B ANNOT_OFFSET2		
-Distance from base of upper annotation to the top of the lower annotation [LEN_1_SI (or LEN_1_US)] (Only
-applies to time axes with both upper and lower annotations).
+.B ANNOT_OFFSET_SECONDARY		
+Distance from base of primary annotation to the top of the secondary annotation [LEN_1_SI (or LEN_1_US)] (Only
+applies to time axes with both primary and secondary annotations).
 .TP
 .B BASEMAP_AXES
 Sets which axes to draw and annotate.  Case sensitive: Upper case means both draw and annotate, lower case
@@ -250,7 +250,7 @@ This setting determines what character will separate ASCII output data columns w
 from tab, space, comma, and none [tab].
 .TP
 .B FRAME_PEN
-Thickness of pen used to draw plain map frame in dpi units or points (append p)  [5].
+Thickness of pen used to draw plain map frame in dpi units or points (append p)  [1.25p].
 .TP
 .B FRAME_WIDTH
 Width (> 0) of map borders for fancy map frame [LEN_1_SI (or LEN_1_US)].
@@ -262,12 +262,19 @@ the entire output down to fit a specific height/width  [1.0].
 .B GLOBAL_Y_SCALE
 Same, but for y-coordinates  [1.0].
 .TP
-.B GRID_CROSS_SIZE
+.B GRID_CROSS_SIZE_PRIMARY
 Size (>= 0) of grid cross at lon-lat intersections.  0 means draw continuous gridlines
 instead [0].
 .TP
-.B GRID_PEN
-Pen thickness used to draw grid lines in dpi units or points (append p) [1].
+.B GRID_PEN_PRIMARY
+Pen thickness used to draw grid lines in dpi units or points (append p) [0.25p].
+.TP
+.B GRID_CROSS_SIZE_SECONDARY
+Size (>= 0) of grid cross at secondary lon-lat intersections.  0 means draw continuous gridlines
+instead [0].
+.TP
+.B GRID_PEN_SECONDARY
+Pen thickness used to draw grid lines in dpi units or points (append p) [0.5p].
 .TP
 .B GRIDFILE_SHORTHAND
 If TRUE, all gridfile names are examined to see if they use the file extension
@@ -526,13 +533,13 @@ The length of a tickmark.  Normally, tickmarks are drawn on the outside of
 the map boundaries.  To select interior tickmarks, use a negative tick_length [LEN_1_SI (or LEN_1_US)].
 .TP
 .B TICK_PEN
-The pen thickness to be used for tickmarks in dpi units or points (append p) [2].
+The pen thickness to be used for tickmarks in dpi units or points (append p) [0.5p].
 .TP
-.B TIME_ANNOT_FORMAT
+.B TIME_FORMAT_PRIMARY
 Controls how primary month-, week-, and weekday-names are formatted.  Choose among full, abbreviated, and
 character.  If the leading f, a, or c are replaced with F, A, and C the entire annotation will be in upper case. 
 .TP
-.B TIME_ANNOT_FORMAT2
+.B TIME_FORMAT_SECONDARY
 Controls how secondary month-, week-, and weekday-names are formatted.  Choose among full, abbreviated, and
 character.  If the leading f, a, or c are replaced with F, A, and C the entire annotation will be in upper case. 
 .TP

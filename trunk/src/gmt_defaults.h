@@ -1,11 +1,11 @@
 	20.0,			/* ANNOT_MIN_ANGLE */
 	0.0,			/* ANNOT_MIN_SPACING */
-	0,			/* ANNOT_FONT */
-	14,			/* ANNOT_FONT_SIZE */
-	0,			/* ANNOT_FONT2 */
-	16,			/* ANNOT_FONT2_SIZE */
-	0.075,			/* ANNOT_OFFSET */
-	0.075,			/* ANNOT_OFFSET2 */
+	0,			/* ANNOT_FONT_PRIMARY */
+	14,			/* ANNOT_FONT_SIZE_PRIMARY */
+	0,			/* ANNOT_FONT_SECONDARY */
+	16,			/* ANNOT_FONT_SIZE_SECONDARY */
+	0.075,			/* ANNOT_OFFSET_PRIMARY */
+	0.075,			/* ANNOT_OFFSET_SECONDARY */
 	"WESN",			/* BASEMAP_AXES */
 	{0, 0, 0},		/* BASEMAP_FRAME_RGB */
 	0,			/* BASEMAP_TYPE */
@@ -22,8 +22,10 @@
 	0.075,			/* FRAME_WIDTH */
 	1.0,			/* GLOBAL_X_SCALE */
 	1.0,			/* GLOBAL_Y_SCALE */
-	0.0,			/* GRID_CROSS_SIZE */
-	{0.25, 0.0, {0, 0, 0}, ""},	/* GRID_PEN */
+	0.0,			/* GRID_CROSS_SIZE_PRIMARY */
+	{0.25, 0.0, {0, 0, 0}, ""},	/* GRID_PEN_PRIMARY */
+	0.0,			/* GRID_CROSS_SIZE_SECONDARY */
+	{0.5, 0.0, {0, 0, 0}, ""},	/* GRID_PEN_SECONDARY */
 	FALSE,			/* GRIDFILE_SHORTHAND */
 	0,			/* HEADER_FONT */
 	36,			/* HEADER_FONT_SIZE */
@@ -84,8 +86,8 @@
 	"hh:mm:ss",		/* PLOT_CLOCK_FORMAT */
 	"yyyy-mm-dd",		/* PLOT_DATE_FORMAT */
 	"+ddd:mm:ss",		/* PLOT_DEGREE_FORMAT */
-	"full",			/* TIME_ANNOT_FORMAT */
-	"full",			/* TIME_ANNOT_FORMAT2 */
+	"full",			/* TIME_FORMAT_PRIMARY */
+	"full",			/* TIME_FORMAT_SECONDARY */
 	FALSE,			/* TIME_IS_INTERVAL */
 	FALSE,			/* WANT_LEAP_SECONDS */
 	"2000-01-01T00:00:00",	/* TIME_EPOCH */

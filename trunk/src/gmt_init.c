@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.110 2004-04-12 19:51:12 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.111 2004-04-12 21:41:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -96,8 +96,8 @@ struct GMT_BACKWARD {	/* Used to ensure backwards compatibility */
 } GMT_backward;
 
 BOOLEAN GMT_force_resize = FALSE, GMT_annot_special = FALSE;
-double save_annot_size2, save_label_size, save_header_size;
-double save_annot_offset, save_annot_offset2, save_label_offset, save_header_offset, save_tick_length, save_frame_width;
+double save_annot_size_secondary, save_label_size, save_header_size;
+double save_annot_offset, save_annot_offset_secondary, save_label_offset, save_header_offset, save_tick_length, save_frame_width;
 BOOLEAN GMT_getuserpath (char *stem, char *path);
 BOOLEAN GMT_primary;
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
@@ -1097,7 +1097,8 @@ void GMT_setdefaults (int argc, char **argv)
 	if (GMT_got_frame_rgb) {	/* Must enforce change of frame, tick, and grid pen rgb */
 		memcpy ((void *)gmtdefs.frame_pen.rgb, (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
 		memcpy ((void *)gmtdefs.tick_pen.rgb,  (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
-		memcpy ((void *)gmtdefs.grid_pen.rgb,  (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
+		memcpy ((void *)gmtdefs.grid_pen_primary.rgb,   (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
+		memcpy ((void *)gmtdefs.grid_pen_secondary.rgb, (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
 	}
 	
 	if (error) fprintf (stderr, "%s:  %d conversion errors\n", GMT_program, error);
@@ -1158,14 +1159,14 @@ void GMT_backwards_compatibility () {
 	}
 	
 	if (GMT_force_resize) {	/* Adjust fonts and offsets and ticklenghts relative to ANNOT_FONT_SIZE */
-		gmtdefs.annot_font2_size = 16.0 * gmtdefs.annot_font_size / 14.0;
-		gmtdefs.label_font_size = 24.0 * gmtdefs.annot_font_size / 14.0;
-		gmtdefs.header_font_size = 36.0 * gmtdefs.annot_font_size / 14.0;
-		gmtdefs.annot_offset = gmtdefs.tick_length = 0.075 * gmtdefs.annot_font_size / 14.0;
-		gmtdefs.annot_offset2 = 0.075 * gmtdefs.annot_font2_size / 14.0;
-		gmtdefs.label_offset = 1.5 * fabs (gmtdefs.annot_offset);
-		gmtdefs.header_offset = 2.5 * fabs (gmtdefs.annot_offset);
-		gmtdefs.frame_width = 0.05 * gmtdefs.annot_font_size / 14.0;
+		gmtdefs.annot_font_size_secondary = 16.0 * gmtdefs.annot_font_size_primary / 14.0;
+		gmtdefs.label_font_size = 24.0 * gmtdefs.annot_font_size_primary / 14.0;
+		gmtdefs.header_font_size = 36.0 * gmtdefs.annot_font_size_primary / 14.0;
+		gmtdefs.annot_offset_primary = gmtdefs.tick_length = 0.075 * gmtdefs.annot_font_size_primary / 14.0;
+		gmtdefs.annot_offset_secondary = 0.075 * gmtdefs.annot_font_size_secondary / 14.0;
+		gmtdefs.label_offset = 1.5 * fabs (gmtdefs.annot_offset_primary);
+		gmtdefs.header_offset = 2.5 * fabs (gmtdefs.annot_offset_primary);
+		gmtdefs.frame_width = 0.05 * gmtdefs.annot_font_size_primary / 14.0;
 	}
 }
 
@@ -1198,6 +1199,8 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				gmtdefs.annot_min_spacing = GMT_convert_units (value, GMT_INCH);
 			break;
+		case GMTCASE_ANNOT_FONT_PRIMARY:
+		case GMTCASE_ANOT_FONT_PRIMARY:
 		case GMTCASE_ANNOT_FONT:
 		case GMTCASE_ANOT_FONT:
 			if (value[0] >= '0' && value[0] <= '9')
@@ -1207,21 +1210,25 @@ int GMT_setparameter (char *keyword, char *value)
 			if (ival < 0 || ival >= N_FONTS)
 				error = TRUE;
 			else
-				gmtdefs.annot_font = ival;
+				gmtdefs.annot_font_primary = ival;
 			break;
+		case GMTCASE_ANNOT_FONT_SIZE_PRIMARY:
+		case GMTCASE_ANOT_FONT_SIZE_PRIMARY:
 		case GMTCASE_ANNOT_FONT_SIZE:
 		case GMTCASE_ANOT_FONT_SIZE:
 			if (value[0] == '+') GMT_force_resize = TRUE;	/* Turning on autoscaling of font sizes and ticklengths */
 			if (value[0] != '+' && GMT_force_resize) GMT_annot_special = TRUE;	/* gmtset tries to turn off autoscaling - must report saved values but reset this one */
 			dval = atof (value);
 			if (dval > 0.0)
-				gmtdefs.annot_font_size = dval;
+				gmtdefs.annot_font_size_primary = dval;
 			else
 				error = TRUE;
 			break;
+		case GMTCASE_ANNOT_OFFSET_PRIMARY:
+		case GMTCASE_ANOT_OFFSET_PRIMARY:
 		case GMTCASE_ANNOT_OFFSET:
 		case GMTCASE_ANOT_OFFSET:
-			save_annot_offset = gmtdefs.annot_offset = GMT_convert_units (value, GMT_INCH);
+			save_annot_offset = gmtdefs.annot_offset_primary = GMT_convert_units (value, GMT_INCH);
 			break;
 		case GMTCASE_BASEMAP_AXES:
 			strcpy (gmtdefs.basemap_axes, value);
@@ -1378,15 +1385,20 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
+		case GMTCASE_GRID_CROSS_SIZE_PRIMARY:
 		case GMTCASE_GRID_CROSS_SIZE:
 			dval = GMT_convert_units (value, GMT_INCH);
 			if (dval >= 0.0)
-				gmtdefs.grid_cross_size = dval;
+				gmtdefs.grid_cross_size_primary = dval;
 			else
 				error = TRUE;
 			break;
+		case GMTCASE_GRID_PEN_PRIMARY:
 		case GMTCASE_GRID_PEN:
-			error = GMT_getpen (value, &gmtdefs.grid_pen);
+			error = GMT_getpen (value, &gmtdefs.grid_pen_primary);
+			break;
+		case GMTCASE_GRID_PEN_SECONDARY:
+			error = GMT_getpen (value, &gmtdefs.grid_pen_secondary);
 			break;
 		case GMTCASE_GRIDFILE_SHORTHAND:
 			error = true_false_or_error (lower_value, &gmtdefs.gridfile_shorthand);
@@ -1693,11 +1705,12 @@ int GMT_setparameter (char *keyword, char *value)
 			strncpy (gmtdefs.plot_degree_format, value, 32);
 			GMT_backward.got_new_plot_format = TRUE;
 			break;
-		case GMTCASE_TIME_ANNOT_FORMAT:
-			strncpy (gmtdefs.time_annot_format, value, 32);
+		case GMTCASE_TIME_FORMAT:
+		case GMTCASE_TIME_FORMAT_PRIMARY:
+			strncpy (gmtdefs.time_format_primary, value, 32);
 			break;
-		case GMTCASE_TIME_ANNOT_FORMAT2:
-			strncpy (gmtdefs.time_annot_format2, value, 32);
+		case GMTCASE_TIME_FORMAT_SECONDARY:
+			strncpy (gmtdefs.time_format_secondary, value, 32);
 			break;
 		case GMTCASE_TIME_IS_INTERVAL:
 			if (value[0] == '+' || value[0] == '-') {	/* OK, gave +<n>u or -<n>u, check for unit */
@@ -1784,6 +1797,8 @@ int GMT_setparameter (char *keyword, char *value)
 				error = TRUE;
 			break;
 			GMT_backward.got_new_degree_symbol = TRUE;
+		case GMTCASE_ANNOT_FONT_SECONDARY:
+		case GMTCASE_ANOT_FONT_SECONDARY:
 		case GMTCASE_ANNOT_FONT2:
 		case GMTCASE_ANOT_FONT2:
 			if (value[0] >= '0' && value[0] <= '9')
@@ -1793,20 +1808,24 @@ int GMT_setparameter (char *keyword, char *value)
 			if (ival < 0 || ival >= N_FONTS)
 				error = TRUE;
 			else
-				gmtdefs.annot_font2 = ival;
+				gmtdefs.annot_font_secondary = ival;
 			break;
+		case GMTCASE_ANNOT_FONT_SIZE_SECONDARY:
+		case GMTCASE_ANOT_FONT_SIZE_SECONDARY:
 		case GMTCASE_ANNOT_FONT2_SIZE:
 		case GMTCASE_ANOT_FONT2_SIZE:
 			dval = atof (value);
 			if (dval > 0.0)
-				save_annot_size2 = gmtdefs.annot_font2_size = dval;
+				save_annot_size_secondary = gmtdefs.annot_font_size_secondary = dval;
 			else
 				error = TRUE;
 			break;
 
+		case GMTCASE_ANNOT_OFFSET_SECONDARY:
+		case GMTCASE_ANOT_OFFSET_SECONDARY:
 		case GMTCASE_ANNOT_OFFSET2:
 		case GMTCASE_ANOT_OFFSET2:
-			save_annot_offset2 = gmtdefs.annot_offset2 = GMT_convert_units (value, GMT_INCH);
+			save_annot_offset_secondary = gmtdefs.annot_offset_secondary = GMT_convert_units (value, GMT_INCH);
 			break;
 		case GMTCASE_LABEL_OFFSET:
 			save_label_offset = gmtdefs.label_offset = GMT_convert_units (value, GMT_INCH);
@@ -1879,12 +1898,12 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "#-------- Basemap Annotation Parameters ------\n");
 	fprintf (fp, "ANNOT_MIN_ANGLE		= %g\n", gmtdefs.annot_min_angle);
 	fprintf (fp, "ANNOT_MIN_SPACING	= %g\n", gmtdefs.annot_min_spacing);
-	fprintf (fp, "ANNOT_FONT		= %s\n", GMT_font[gmtdefs.annot_font].name);
-	(GMT_force_resize && !GMT_annot_special) ? fprintf (fp, "ANNOT_FONT_SIZE		= +%gp\n", gmtdefs.annot_font_size) :  fprintf (fp, "ANNOT_FONT_SIZE		= %gp\n", gmtdefs.annot_font_size);
-	fprintf (fp, "ANNOT_FONT2		= %s\n", GMT_font[gmtdefs.annot_font2].name);
-	(GMT_force_resize) ? fprintf (fp, "ANNOT_FONT2_SIZE	= %gp\n", save_annot_size2) : fprintf (fp, "ANNOT_FONT2_SIZE	= %gp\n", gmtdefs.annot_font2_size);
-	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET		= %g%c\n", save_annot_offset * s, u) : fprintf (fp, "ANNOT_OFFSET		= %g%c\n", gmtdefs.annot_offset * s, u);
-	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET2	= %g%c\n", save_annot_offset2 * s, u) : fprintf (fp, "ANNOT_OFFSET2		= %g%c\n", gmtdefs.annot_offset2 * s, u);
+	fprintf (fp, "ANNOT_FONT_PRIMARY	= %s\n", GMT_font[gmtdefs.annot_font_primary].name);
+	(GMT_force_resize && !GMT_annot_special) ? fprintf (fp, "ANNOT_FONT_SIZE_PRIMARY	= +%gp\n", gmtdefs.annot_font_size_primary) :  fprintf (fp, "ANNOT_FONT_SIZE		= %gp\n", gmtdefs.annot_font_size_primary);
+	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET_PRIMARY	= %g%c\n", save_annot_offset * s, u) : fprintf (fp, "ANNOT_OFFSET_PRIMARY	= %g%c\n", gmtdefs.annot_offset_primary * s, u);
+	fprintf (fp, "ANNOT_FONT_SECONDARY	= %s\n", GMT_font[gmtdefs.annot_font_secondary].name);
+	(GMT_force_resize) ? fprintf (fp, "ANNOT_FONT_SIZE_SECONDARY	= %gp\n", save_annot_size_secondary) : fprintf (fp, "ANNOT_FONT_SIZE_SECONDARY	= %gp\n", gmtdefs.annot_font_size_secondary);
+	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET_SECONDARY = %g%c\n", save_annot_offset_secondary * s, u) : fprintf (fp, "ANNOT_OFFSET_SECONDARY	= %g%c\n", gmtdefs.annot_offset_secondary * s, u);
 	fprintf (fp, "DEGREE_SYMBOL		= %s\n", GMT_degree_choice[gmtdefs.degree_symbol - gmt_none]);
 	fprintf (fp, "HEADER_FONT		= %s\n", GMT_font[gmtdefs.header_font].name);
 	(GMT_force_resize) ? fprintf (fp, "HEADER_FONT_SIZE	= %gp\n", save_header_size) : fprintf (fp, "HEADER_FONT_SIZE	= %gp\n", gmtdefs.header_font_size);
@@ -1904,8 +1923,10 @@ int GMT_savedefaults (char *file)
 	(gmtdefs.basemap_type) ? fprintf (fp, "BASEMAP_TYPE		= plain\n") : fprintf (fp, "BASEMAP_TYPE		= fancy\n");
 	fprintf (fp, "FRAME_PEN		= %s\n", GMT_putpen (&gmtdefs.frame_pen));
 	(GMT_force_resize) ? fprintf (fp, "FRAME_WIDTH		= %g%c\n", save_frame_width * s, u) :  fprintf (fp, "FRAME_WIDTH		= %g%c\n", gmtdefs.frame_width * s, u);
-	fprintf (fp, "GRID_CROSS_SIZE		= %g%c\n", gmtdefs.grid_cross_size * s, u);
-	fprintf (fp, "GRID_PEN		= %s\n", GMT_putpen (&gmtdefs.grid_pen));
+	fprintf (fp, "GRID_CROSS_SIZE_PRIMARY	= %g%c\n", gmtdefs.grid_cross_size_primary * s, u);
+	fprintf (fp, "GRID_CROSS_SIZE_SECONDARY	= %g%c\n", gmtdefs.grid_cross_size_secondary * s, u);
+	fprintf (fp, "GRID_PEN_PRIMARY	= %s\n", GMT_putpen (&gmtdefs.grid_pen_primary));
+	fprintf (fp, "GRID_PEN_SECONDARY	= %s\n", GMT_putpen (&gmtdefs.grid_pen_secondary));
 	fprintf (fp, "MAP_SCALE_HEIGHT	= %g%c\n", gmtdefs.map_scale_height * s, u);
 	(GMT_force_resize) ? fprintf (fp, "TICK_LENGTH		= %g%c\n", save_tick_length * s, u) :  fprintf (fp, "TICK_LENGTH		= %g%c\n", gmtdefs.tick_length * s, u);
 	fprintf (fp, "TICK_PEN		= %s\n", GMT_putpen (&gmtdefs.tick_pen));
@@ -1984,8 +2005,8 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "MAP_SCALE_FACTOR	= %g\n", gmtdefs.map_scale_factor);
 	fprintf (fp, "MEASURE_UNIT		= %s\n", GMT_unit_names[gmtdefs.measure_unit]);
 	fprintf (fp, "#-------- Calendar/Time Parameters ----------\n");
-	fprintf (fp, "TIME_ANNOT_FORMAT		= %s\n", gmtdefs.time_annot_format);
-	fprintf (fp, "TIME_ANNOT_FORMAT2	= %s\n", gmtdefs.time_annot_format2);
+	fprintf (fp, "TIME_FORMAT_PRIMARY	= %s\n", gmtdefs.time_format_primary);
+	fprintf (fp, "TIME_FORMAT_SECONDARY	= %s\n", gmtdefs.time_format_secondary);
 	fprintf (fp, "TIME_EPOCH		= %s\n", gmtdefs.time_epoch);
 	if (gmtdefs.time_is_interval)
 		fprintf (fp, "TIME_IS_INTERVAL	= %c%d%c\n", pm[GMT_truncate_time.direction], GMT_truncate_time.T.step, GMT_truncate_time.T.unit);
@@ -3146,7 +3167,7 @@ void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit) {
 		I[i]->flavor = 0;
 		I[i]->active = n;
 		I[i]->upper_case = FALSE;
-		format = (GMT_primary) ? gmtdefs.time_annot_format : gmtdefs.time_annot_format2;
+		format = (GMT_primary) ? gmtdefs.time_format_primary : gmtdefs.time_format_secondary;
 		switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
 			case 'F':	/* Full name, upper case */
 				I[i]->upper_case = TRUE;
