@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.10 2001-12-21 03:50:38 ben Exp $
+ *	$Id: gmt_stat.c,v 1.11 2001-12-24 18:20:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -46,7 +46,6 @@
  *		09-MAY-2000 P. Wessel: Added GMT_chi2 and GMT_cumpoission
  *		18-AUG-2000 P. Wessel: Moved GMT_mode and GMT_median from gmt_support to here.
  *					Added float versions of these two functions for grd data.
- *					Added 
  *
  * PUBLIC functions:
  *
@@ -1527,6 +1526,148 @@ int	GMT_student_t_a(double t, int n, double *prob)
 	return (0);
 }
 
+double GMT_zcrit (double alpha)
+{
+	double sign;
+	/* Critical values for Normal (z) distribution */
+	
+	/* Simple since z_a = M_SQRT2 * erf^-1 (1-a) */
+	
+	if (alpha > 0.5) {	/* right tail */
+		alpha = (1.0 - alpha) * 2.0;
+		sign = 1.0;
+	}
+	else {			/* left tail */
+		alpha *= 2.0;
+		sign = -1.0;
+	}
+	
+	return (sign * M_SQRT2 * GMT_erfinv (1.0 - alpha));
+}
+
+double GMT_tcrit (double alpha, double nu)
+{
+	/* Critical values for Student t-distribution */
+
+	int i;
+	BOOLEAN done = FALSE;
+	double t_low, t_high, t_mid, p_low, p_high, p_mid, p, sign;
+	
+	if (alpha > 0.5) {	/* right tail */
+		p = 1 - (1 - alpha) * 2.0;
+		sign = 1.0;
+	}
+	else {
+		p = 1 - alpha * 2.0;
+		sign = -1.0;
+	}
+	t_low = GMT_zcrit (alpha);
+	t_high = 5.0;
+	GMT_student_t_a (t_high, nu, &p_high);
+	while (p_high < p) {	/* Must pick higher starting point */
+		t_high *= 2.0;
+		GMT_student_t_a (t_high, nu, &p_high);
+	}
+	
+	/* Now, (t_low, p_low) and (t_high, p_high) are bracketing the desired (t,p) */
+	
+	while (!done) {
+		t_mid = 0.5 * (t_low + t_high);
+		GMT_student_t_a (t_mid, nu, &p_mid);
+		if (fabs (p_mid - p) < GMT_CONV_LIMIT) {
+			done = TRUE;
+		}
+		else if (p_mid > p) {	/* Too high */
+			t_high = t_mid;
+		}
+		else { /* p_mid < p */
+			t_low = t_mid;
+		}
+	}
+	return (sign * t_mid);
+}
+
+double GMT_chi2crit (double alpha, double nu)
+{
+	/* Critical values for Chi^2-distribution */
+
+	int i;
+	BOOLEAN done = FALSE;
+	double chi2_low, chi2_high, chi2_mid, p_high, p_mid, p;
+	
+	p = 1.0 - alpha;
+	chi2_low = 0.0;
+	chi2_high = 5.0;
+	GMT_chi2 (chi2_high, nu, &p_high);
+	while (p_high > p) {	/* Must pick higher starting point */
+		chi2_high *= 2.0;
+		GMT_chi2 (chi2_high, nu, &p_high);
+	}
+	
+	/* Now, (chi2_low, p_low) and (chi2_high, p_high) are bracketing the desired (chi2,p) */
+	
+	while (!done) {
+		chi2_mid = 0.5 * (chi2_low + chi2_high);
+		GMT_chi2 (chi2_mid, nu, &p_mid);
+		if (fabs (p_mid - p) < GMT_CONV_LIMIT) {
+			done = TRUE;
+		}
+		else if (p_mid < p) {	/* Too high */
+			chi2_high = chi2_mid;
+		}
+		else { /* p_mid > p */
+			chi2_low = chi2_mid;
+		}
+	}
+	return (chi2_mid);
+}
+
+double GMT_Fcrit (double alpha, double nu1, double nu2)
+{
+	/* Critical values for F-distribution */
+
+	int i;
+	BOOLEAN done = FALSE;
+	double F_low, F_high, F_mid, p_high, p_mid, p, chisq1, chisq2;
+	void F_to_ch1_ch2 (double F, double nu1, double nu2, double *chisq1, double *chisq2);
+	
+	F_high = 5.0;
+	p = 1.0 - alpha;
+	F_low = 0.0;
+	F_to_ch1_ch2 (F_high, nu1, nu2, &chisq1, &chisq2);
+	GMT_f_q (chisq1, nu1, chisq2, nu2, &p_high);
+	while (p_high > p) {	/* Must pick higher starting point */
+		F_high *= 2.0;
+		F_to_ch1_ch2 (F_high, nu1, nu2, &chisq1, &chisq2);
+		GMT_f_q (chisq1, nu1, chisq2, nu2, &p_high);
+	}
+	
+	/* Now, (F_low, p_low) and (F_high, p_high) are bracketing the desired (F,p) */
+	
+	while (!done) {
+		F_mid = 0.5 * (F_low + F_high);
+		F_to_ch1_ch2 (F_mid, nu1, nu2, &chisq1, &chisq2);
+		GMT_f_q (chisq1, nu1, chisq2, nu2, &p_mid);
+		if (fabs (p_mid - p) < GMT_CONV_LIMIT) {
+			done = TRUE;
+		}
+		else if (p_mid < p) {	/* Too high */
+			F_high = F_mid;
+		}
+		else { /* p_mid > p */
+			F_low = F_mid;
+		}
+	}
+	return (F_mid);
+}
+
+void F_to_ch1_ch2 (double F, double nu1, double nu2, double *chisq1, double *chisq2)
+{	/* Silly routine to break F up into parts needed for GMT_f_q */
+	*chisq2 = 1.0;
+	*chisq1 = F * nu1 / nu2;
+}
+
+		
 #if HAVE_J0 == 0
 
 /* Alternative j0 coded from Numerical Recipes by Press et al */

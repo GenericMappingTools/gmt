@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.3 2001-04-13 23:29:01 pwessel Exp $
+REM	$Id: gmtsuppl.bat,v 1.4 2001-12-24 18:20:29 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
@@ -19,7 +19,7 @@ REM
 REM	Contact info: www.soest.hawaii.edu/gmt
 REM --------------------------------------------------------------------
 REM This extremely lame DOS batch file will compile
-REM the GMT 3.4 supplemental programs under WIN32 using
+REM the GMT 4 supplemental programs under WIN32 using
 REM Microsoft Visual C/C++ tools.  Not yet set up for mex.
 REM Note: Optimizing all at /O2 except meca which seems unstable
 REM
@@ -159,9 +159,10 @@ IF %CHOICE%=="dynamic" CL %COPT% %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c libspotter
 IF %CHOICE%=="dynamic" LINK %LOPT% /out:spotter.dll /implib:spotter.lib libspotter.obj %LIBS%
 IF %CHOICE%=="static"  CL %COPT% %DLL_NETCDF% /DDLL_EXPORT /c libspotter.c
 IF %CHOICE%=="static"  lib /out:spotter.lib libspotter.obj
-CL %COPT% backtracker.c spotter.lib %LIBS%
-CL %COPT% hotspotter.c  spotter.lib %LIBS%
-CL %COPT% originator.c  spotter.lib %LIBS%
+CL %COPT% backtracker.c   spotter.lib %LIBS%
+CL %COPT% hotspotter.c    spotter.lib %LIBS%
+CL %COPT% originator.c    spotter.lib %LIBS%
+CL %COPT% rotconverter.c  spotter.lib %LIBS%
 del *.obj
 IF %CHOICE%=="dynamic" move spotter.dll %BINDIR%
 IF %CHOICE%=="dynamic" move spotter.exp %LIBDIR%

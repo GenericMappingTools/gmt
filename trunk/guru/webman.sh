@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.5 2001-09-19 03:43:07 pwessel Exp $
+#	 $Id: webman.sh,v 1.6 2001-12-24 18:23:20 pwessel Exp $
 #
 #	webman.csh - Automatic generation of the GMT web manual pages
 #
@@ -180,6 +180,7 @@ are grouped by function. For an alphabetical order, click <A HREF="#anchor_alpha
 <h3>OTHER OPERATIONS ON 2-D GRIDS:</h3>
 <UL>
 <LI><A HREF="doc/html/grd2cpt.html"> grd2cpt</A> Make color palette table from grdfile</LI>
+<LI><A HREF="doc/html/grdblend.html"> grdclip</A> Blend several gridded data sets into one</LI>
 <LI><A HREF="doc/html/grdclip.html"> grdclip</A> Limit the z-range in gridded data sets</LI>
 <LI><A HREF="doc/html/grdedit.html"> grdedit</A> Modify grd header information</LI>
 <LI><A HREF="doc/html/grdfft.html"> grdfft</A> Operate on grdfiles in frequency domain</LI>

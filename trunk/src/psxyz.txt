@@ -78,7 +78,7 @@ indicate that the size information in the input data is in units of cm, inch, me
 or point, respectively. [Default is MEASURE_UNIT].
 .TP
 .B \-S-
-dash.  \fIsize\fP is the length of a short horizontal (x-dir) line segment.
+x-dash.  \fIsize\fP is the length of a short horizontal (x-dir) line segment.
 .TP
 .B \-Sa
 st\fBa\fPr.  \fIsize\fP is diameter of circumscribing circle.
@@ -169,6 +169,12 @@ must be found in columns 4 and 5.
 .B \-Sx
 (\fBx\fP)cross. \fIsize\fP is diameter of circumscribing circle.
 .br
+.TP
+.B \-Sy
+y-dash.  \fIsize\fP is the length of a short horizontal (y-dir) line segment.
+.TP
+.B \-Sz
+zdash.  \fIsize\fP is the length of a short vertical (z-dir) line segment.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP

@@ -3,7 +3,7 @@
 gmtmath \- Reverse Polish Notation calculator for data tables
 .SH SYNOPSIS
 \fBgmtmath\fP [ \fB\-C\fP\fIcols\fP ] [ \fB\-H\fP\fInrec\fP ] [ \fB\-N\fP\fIn_col\fP/\fIt_col\fP ] [ \fB\-Q\fP ] 
- [ \fB\-S\fP ][ \fB\-T\fP\fIt_min/t_max/t_inc\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
+ [ \fB\-S\fP ][ \fB\-T\fP\fIt_min/t_max/t_inc\fP|\fItfile\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
 [ \fB\-bo\fP[\fBs\fP] ] 
 \fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] \fBOPERATOR\fP ... \fB=\fP [ \fIoutfile\fP ]
 .SH DESCRIPTION
@@ -65,7 +65,8 @@ instead of numerous records with identical values.
 Required when no input files are given.  Sets the t-coordinates of the first
 and last point and the equidistant sampling interval for the "time" column (see \fB\-N\fP).
 If there is no time column (only data columns), give \fB\-T\fP with no arguments; this
-also implies \fB\-Ca\fP.
+also implies \fB\-Ca\fP.  Alternatively, give the name of a file whose first column
+contains the desired t-coordinates which may be irregular.
 #include "explain_-V.txt"
 #include "explain_-i.txt"
 #include "explain_-n.txt"
@@ -99,6 +100,11 @@ To take the 1-column data set ages.d and calculate the modal value and assign it
 	set mode_age = `gmtmath \fB\-S \-T\fP ages.d \fBMODE\fP \fB=\fP`
 .br
 .sp
+To evaluate the dilog(x) function for coordinates given in the file t.d, try
+.br
+	gmtmath \-T\fPt.d \fBT DILOG\fP \fB=\fP dilog.d
+.br
+.sp
 To use gmtmath as a RPN Hewlett-Packard calculator on scalars (i.e., no input
 files) and calculate arbitrary expressions, use the \fB\-Q\fP option.
 As an example, we will calculate the value of Kei (((1 + 1.75)/2.2) + cos (60))
@@ -106,12 +112,31 @@ and store the result in the shell variable z:
 .br
 .sp
 	set z = `gmtmath \fB\-Q\fP 1 1.75 \fBADD\fP 2.2 \fBDIV\fP 60 \fBCOSD ADD KEI =\fP`
+.br
+.sp
+To use \fBgmtmath\fP as a general least squares equation solver, imagine that the current table is the
+augmented matrix [ A | b ] and you want the least squares solution x to the matrix equation A * x = b.
+The operator \fBLSQFIT\fP does this; it is your job to populate the matrix correctly first.  The \fB\-A\fP
+option will facilitate this.  Suppose you have a 2-column file ty.d with \fIt\fP and \fIb(t)\fP and you would
+like to fit a the model y(t) = a + b*t + c*H(t-t0), where H is the Heaviside step function for a given t0 = 1.55.
+Then, you need a 4-column augmented table loaded with t in column 1 and your observed y(t) in column 3.
+The calculation becomes
+.br
+	gmtmath \fB\-N\fP4/1 \fB\-A\fPty.d -C0 1 ADD -C2 1.55 STEPT ADD -Ca LSQFIT = solution.d
+.br
+Note we use the \fB\-C\fP option to select which columns we are working on, then make active all the
+columns we need (here all of them, with \fB\-Ca\fP) before calling \fBLSQFIT\fP.  The second and forth
+columns are preloaded with t and y(t), respectively, the other columns are zero.  If you already have
+a precalculated table with the augmented matrix [ A | b ] in a file (say lsqsys.d), the least squares
+solution is simply
+.br
+	gmtmath \fB\-T\fP lsqsys.d LSQFIT = solution.d
 .SH BUGS
 Files that have the same name as some operators, e.g., ADD, SIGN, =, etc. cannot be read
 and must not be present in the current directory.  Piping of files is not allowed on input, but the output can be sent to stdout.
 The stack limit is hard-wired to 50.
 All functions expecting a positive radius (e.g., log, kei, etc.) are passed the
-absolute value of their argument.
+absolute value of their argument.  The DDT and D2DT2 functions only works on regularly spaced data.
 .SH REFERENCES
 Abramowitz, M., and I. A. Stegun, 1964, \fIHandbook of Mathematical
 Functions\fP, Applied Mathematics Series, vol. 55, Dover, New York.

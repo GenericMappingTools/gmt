@@ -92,6 +92,7 @@ echo "/opt/geo-data/gmtdata" > /opt/gmt/share/coastline.conf
 /opt/gmt/bin/gmttrack
 /opt/gmt/bin/grd2cpt
 /opt/gmt/bin/grd2xyz
+/opt/gmt/bin/grdblend
 /opt/gmt/bin/grdclip
 /opt/gmt/bin/grdcontour
 /opt/gmt/bin/grdcut
@@ -304,6 +305,7 @@ echo "/opt/geo-data/gmtdata" > /opt/gmt/share/coastline.conf
 /opt/gmt/man/manl/gmttrack.l
 /opt/gmt/man/manl/grd2cpt.l
 /opt/gmt/man/manl/grd2xyz.l
+/opt/gmt/man/manl/grdblend.l
 /opt/gmt/man/manl/grdclip.l
 /opt/gmt/man/manl/grdcontour.l
 /opt/gmt/man/manl/grdcut.l

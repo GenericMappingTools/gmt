@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.32 2001-12-21 03:50:37 ben Exp $
+ *	$Id: gmt_io.c,v 1.33 2001-12-24 18:20:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -221,6 +221,7 @@ int GMT_io_selection (char *text)
 	if (GMT_io.binary[1]) {
 		GMT_output = (GMT_io.single_precision[1]) ? GMT_bin_float_output : GMT_bin_double_output;
 		strcpy (GMT_io.w_mode, "wb");
+		strcpy (GMT_io.a_mode, "ab+");
 	}
 
 	return (error);
@@ -284,6 +285,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 #endif
 			
 		for (i = len - 1; i >= 0 && strchr (" \t,\n", (int)line[i]); i--);
+		if (line[i] == '\r') i--;	/* DOS CR/LF, replace with LF only */
 		line[++i] = '\n';	line[++i] = '\0';
  
 		bad_record = FALSE;
@@ -424,13 +426,14 @@ int GMT_ascii_output (FILE *fp, int n, double *ptr)
 	return ((e < 0) ? e : wn);
 }
 
-int GMT_ascii_output_one (FILE *fp, double x, int col)
+void GMT_ascii_format_one (char *text, double x, int type)
 {
-	int e;
-	char text[32];
 	
-	if (GMT_is_dnan (x)) return (fprintf (fp, "NaN"));
-	switch (GMT_io.out_col_type[col]) {
+	if (GMT_is_dnan (x)) {
+		sprintf (text, "NaN");
+		return;
+	}
+	switch (type) {
 		case GMT_IS_UNKNOWN:
 			sprintf (text, gmtdefs.d_format, x);
 			break;
@@ -445,8 +448,15 @@ int GMT_ascii_output_one (FILE *fp, double x, int col)
 			break;
 		case GMT_IS_ABSTIME:
 			GMT_format_abstime_output ((GMT_dtime) x, text);
-		break;
+			break;
 	}
+}
+
+int GMT_ascii_output_one (FILE *fp, double x, int col)
+{
+	char text[32];
+	
+	GMT_ascii_format_one (text, x, GMT_io.out_col_type[col]);
 	return (fprintf (fp, "%s", text));
 }
 
@@ -552,7 +562,11 @@ int GMT_bin_double_output (FILE *fp, int n, double *ptr)
 {
 	int i;
 	if (gmtdefs.xy_toggle) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
-	for (i = 0; i < n; i++) if (GMT_io.out_col_type[i] == GMT_IS_RELTIME) ptr[i] = GMT_usert_from_dt ((GMT_dtime) ptr[i]);
+	for (i = 0; i < n; i++) {
+		if (GMT_io.out_col_type[i] == GMT_IS_RELTIME) ptr[i] = GMT_usert_from_dt ((GMT_dtime) ptr[i]);
+		if (GMT_io.out_col_type[i] == GMT_IS_LON) GMT_lon_range_adjust (GMT_io.geo.range, &ptr[i]);
+	}
+
 	return (fwrite ((void *) ptr, sizeof (double), (size_t)n, fp));
 }
 	
@@ -562,7 +576,16 @@ int GMT_bin_float_output (FILE *fp, int n, double *ptr)
 	static float GMT_f[BUFSIZ];
 	
 	if (gmtdefs.xy_toggle) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
-	for (i = 0; i < n; i++) GMT_f[i] = (float)((GMT_io.out_col_type[i] == GMT_IS_RELTIME) ? GMT_usert_from_dt ((GMT_dtime) ptr[i]) : ptr[i]);
+	for (i = 0; i < n; i++) {
+		if (GMT_io.out_col_type[i] == GMT_IS_RELTIME)
+			GMT_f[i] = (float) GMT_usert_from_dt ((GMT_dtime) ptr[i]);
+		else if (GMT_io.out_col_type[i] == GMT_IS_LON) {
+			GMT_lon_range_adjust (GMT_io.geo.range, &ptr[i]);
+			GMT_f[i] = (float) ptr[i];
+		}
+		else
+			GMT_f[i] = (float) ptr[i];
+	}
 	return (fwrite ((void *) GMT_f, sizeof (float), (size_t)n, fp));
 }
 
@@ -719,6 +742,7 @@ int GMT_parse_z_io (char *txt, struct GMT_Z_IO *r, BOOLEAN input)
 	if (r->binary) {
 		strcpy (GMT_io.r_mode, "rb");
 		strcpy (GMT_io.w_mode, "wb");
+		strcpy (GMT_io.a_mode, "ab+");
 	}
 
 	return (FALSE);

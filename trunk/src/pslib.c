@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.32 2001-12-21 03:50:38 ben Exp $
+ *	$Id: pslib.c,v 1.33 2001-12-24 18:20:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -357,7 +357,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	iy = irint (y * ps.scale);
 	lx = irint (xsize * ps.scale);
 	ly = irint (ysize * ps.scale);
-	id = (ps.cmyk_image && nbits == 24) ? 2 : ((nbits == 24) ? 1 : 0);
+	id = (ps.cmyk_image && abs(nbits) == 24) ? 2 : ((abs(nbits) == 24) ? 1 : 0);
 	fprintf (ps.fp, "\n%% Start of %s Adobe %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], abs (nbits));
 	fprintf (ps.fp, "V N %d %d T %d %d scale\n", ix, iy, lx, ly);
 	if (nbits < 0) {	/* Do new PS Level 2 image with interpolation */

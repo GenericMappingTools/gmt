@@ -30,7 +30,7 @@ in km^2 or of hierarchical level that is lower than \fImin_level\fP or higher th
 will be ignored [Default is 0/4 (all features)]. See DATABASE INFORMATION in the \fBpscoast\fP man-pages for more details.
 .TP
 .B \-C
-Pass all records whose location is within \fIdist\fP km of any of the points in \fIptfile\fP.  If \fIdist\fP
+Pass all records whose location is within \fIdist\fP km of any of the points in the ascii file \fIptfile\fP.  If \fIdist\fP
 is zero then the 3rd column of \fIptfile\fP must have each point's individual radius of influence.  Prepend \fBf\fP to indicate you want approximate flat
 earth distance calculations (faster) than exact great circle calculations (slower).
 .TP
@@ -40,7 +40,7 @@ resolution drops off by ~80% between data sets. [Default is \fBl\fP].  Note that
 .TP
 .B \-F
 Pass all records whose location is within one of the closed polygons in the multiple-segment
-file \fIpolygonfile\fP.
+ascii file \fIpolygonfile\fP.
 #include "explain_-H.txt"
 .TP
 .B \-I
@@ -58,8 +58,8 @@ Reverses the sense of the test for each of the criteria specified:
 #include "explain_-j.txt"
 .TP
 .B \-L
-Pass all records whose location is within \fIdist\fP km of any of the line segments in the multiple-segment
-file \fIlinefile\fP.  If \fIdist\fP is zero then the 2nd column of each sub-header in the \fIptfile\fP must have each lines' individual distance value.
+Pass all records whose location is within \fIdist\fP km of any of the line segments in the multiple-segment ascii
+file \fIlinefile\fP.  If \fIdist\fP is zero then the 2nd column of each sub-header in the \fIptfile\fP must have each lines's individual distance value.
 If no arguments are given, it means instead that the x column contains longitudes, which may differ from the region
 in \fB\-R\fP by [multiples of] 360 degrees [Default assumes no periodicity]
 .TP

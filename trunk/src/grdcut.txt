@@ -3,7 +3,7 @@
 grdcut \- Extract a subregion out of a \fI.grd\fP file
 .SH SYNOPSIS
 \fBgrdcut\fP \fIinput_file.grd\fP \fB\-G\fP\fIoutput_file.grd\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-V\fP ]
+[ \fB\-V\fP ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBgrdcut\fP will produce a new \fIoutput_file.grd\fP file which is a subregion of \fIinput_file.grd\fP.
 The subregion is specified with \fB\-R\fP\fIwest/east/south/north\fP as in other programs; the
@@ -20,6 +20,7 @@ this is the output \fI.grd\fP format file.
 This defines the subregion to be cut out.
 .SH OPTIONS
 #include "explain_-V.txt"
+#include "explain_-f.txt"
 .SH EXAMPLES
 Suppose you have used \fBsurface\fP to grid ship gravity in the region between 148E - 162E and 8N - 32N, and you 
 do not trust the gridding near the edges, so you want to keep only the area between 150E - 160E and 10N - 30N, then: 

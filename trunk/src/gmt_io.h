@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.15 2001-12-21 03:50:38 ben Exp $
+ *	$Id: gmt_io.h,v 1.16 2001-12-24 18:20:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -59,6 +59,8 @@ EXTERN_MSC int GMT_scanf (char *p, int expectation, double *val);	/* Convert str
 EXTERN_MSC int	GMT_scanf_argtime (char *s, double *val);		/* Convert an argument token to a time  */
 EXTERN_MSC void GMT_format_abstime_output (GMT_dtime dt, char *text);	/* Generate formatted textstring for absolute calendar time */
 EXTERN_MSC void GMT_format_geo_output (BOOLEAN is_lat, double geo, char *text);	/* Generate formatted textstring for geographic coordinate */
+EXTERN_MSC int GMT_ascii_output_one (FILE *fp, double x, int col);
+EXTERN_MSC void GMT_ascii_format_one (char *text, double x, int type);
 
 struct GMT_CLOCK_IO {
 	int order[3];			/* The relative order of hour, mn, sec in input clock string */
@@ -118,8 +120,9 @@ struct GMT_IO {	/* Used to process input data records */
 	char EOF_flag;			/* Character signaling start of new segment in Ascii table */
 	char current_record[BUFSIZ];	/* Current ascii record */
 	char segment_header[BUFSIZ];	/* Current ascii segment header */
-	char r_mode[3];			/* Current file opening mode for reading (r or rb) */
-	char w_mode[3];			/* Current file opening mode for writing (w or wb) */
+	char r_mode[4];			/* Current file opening mode for reading (r or rb) */
+	char w_mode[4];			/* Current file opening mode for writing (w or wb) */
+	char a_mode[4];			/* Current file append mode for writing (a+ or ab+) */
 	BOOLEAN *skip_if_NaN;		/* TRUE if column j cannot be NaN and we must skip the record */
 	int *in_col_type;		/* Type of column on input: Time, geographic, etc, see GMT_IS_<TYPE> */
 	int *out_col_type;		/* Type of column on output: Time, geographic, etc, see GMT_IS_<TYPE> */

@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.16 2001-12-20 02:56:01 ben Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.17 2001-12-24 18:20:29 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 3.5
 #			GNU make compatible
@@ -91,7 +91,7 @@ PS_H	= pslib.h \
 	  PS_font_heights.h
 
 PROGS_C	= blockmean.c blockmedian.c blockmode.c filter1d.c fitcircle.c grdfilter.c gmtconvert.c gmtdefaults.c gmtmath.c gmtselect.c \
-	  gmtset.c gmt2rgb.c grd2cpt.c grd2xyz.c grdcontour.c grdcut.c grdclip.c grdedit.c grdfft.c \
+	  gmtset.c gmt2rgb.c grd2cpt.c grd2xyz.c grdblend.c grdcontour.c grdcut.c grdclip.c grdedit.c grdfft.c \
 	  grdgradient.c grdhisteq.c grdimage.c grdinfo.c grdlandmask.c grdmask.c grdtrack.c grdreformat.c \
 	  grdmath.c grdpaste.c grdproject.c grdsample.c grdtrend.c grdvector.c grdview.c grdvolume.c makecpt.c \
 	  mapproject.c minmax.c nearneighbor.c project.c psbasemap.c psclip.c pscoast.c pshistogram.c \

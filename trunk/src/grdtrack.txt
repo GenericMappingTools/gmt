@@ -2,7 +2,7 @@
 .SH NAME
 grdtrack \- Sampling of a 2-D grdfile along 1-D trackline (a sequence of x,y points)
 .SH SYNOPSIS
-\fBgrdtrack\fP \fIxyfile\fP \fB\-G\fP\fIgrdfile\fP [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP\fIflag\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
+\fBgrdtrack\fP \fIxyfile\fP \fB\-G\fP\fIgrdfile\fP [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP\fIflag\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP ] 
 [ \fB\-Q\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP ] [ \fB\-S\fP ] [ \fB\-V\fP ] [ \fB\-Z\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
 [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ][ \fB\-bo\fP[\fBs\fP] ]
 .SH DESCRIPTION
@@ -30,6 +30,9 @@ lon and lat).  [Default uses "natural" conditions (second partial derivative nor
 .B \-M
 Multiple segment file.  Segment separator is a record beginning with \fIflag\fP.
 [Default is '>'].
+.TP
+.B \-N
+Node value only: Return the value at the grid node closest to the point, no interpolation needed.
 .TP
 .B \-Q
 Quick mode.  Use bilinear rather than bicubic interpolation.

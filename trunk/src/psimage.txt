@@ -2,7 +2,7 @@
 .SH NAME
 psimage \- To plot SUN rasterfiles on maps
 .SH SYNOPSIS
-\fBpsimage\fP \fIrasterfile\fP [ \fB\-W\fP[-]\fIxlength[/ylength]\fP | \fB\-E\fIdpi\fP ] [ \fB\-C\fIxpos/ypos\fP ] 
+\fBpsimage\fP \fIrasterfile\fP [ \fB\-W\fP[-]\fIxlength[/ylength]\fP | \fB\-E\fIdpi\fP ] [ \fB\-C\fIxpos/ypos\fP[/\fIjustify\fP] ] 
 [ \fB\-F\fP\fIpen\fP ] [ \fB\-G\fP[\fBf|b\fP]\fIr/g/b\fP ] [ \fB\-I\fP ] [ \fB\-K\fP ] [ \fB\-M\fP ] 
 [ \fB\-N\fInxrep/nyrep\fP] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-U\fP[\fIdx/dy/\fP][\fIlabel\fP] ] 
 [ \fB\-V\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ]
@@ -20,7 +20,7 @@ mechanism offered in most GMT programs is limited to rasters smaller than 146 by
 \fIrasterfile\fP
 This must be a Sun rasterfile.  Depth can be 1, 8, 24, or 32-bit. Old-style, Standard, Run-length-encoded, and
 RGB Sun rasterfiles are supported.  Other raster formats can be converted
-to Sun format via a variety of public-domain software (e.g., imconv, xv).
+to Sun format via a variety of public-domain software (e.g., convert, xv).
 .TP
 .B \-E
 Sets the dpi of the image in dots pr inch, or use \fB\-W\fP.
@@ -36,7 +36,7 @@ Alternatively, use \fB\-E\fP.
 No space between the option flag and the associated arguments.
 .TP
 .B \-C
-Sets position of lower left corner of image [0/0].
+Sets position of lower left corner of image, and optionally append justification [0/0/LB].
 .TP
 .B \-F
 Draws a rectangular frame around the image with the given pen [no frame].

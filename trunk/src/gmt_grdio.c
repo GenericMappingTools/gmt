@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.5 2001-12-21 03:50:37 ben Exp $
+ *	$Id: gmt_grdio.c,v 1.6 2001-12-24 18:20:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -24,8 +24,8 @@
  *
  * Author:	Paul Wessel
  * Date:	9-SEP-1992
- * Modified:	27-JUN-2000
- * Version:	3.4
+ * Modified:	06-DEC-2001
+ * Version:	4
  *
  * Functions include:
  *
@@ -34,8 +34,15 @@
  *
  *	GMT_read_grd_info :	Read header from file
  *	GMT_read_grd :		Read header and data set from file
- *	GMT_write_grd_info :	Update header in existing file
+ *	GMT_update_grd_info :	Update header in existing file
+ *	GMT_write_grd_info :	Write header to new file
  *	GMT_write_grd :		Write header and data set to new file
+ *
+ *	For programs that must access on row at the time, you must use:
+ *	GMT_open_grd :		Opens the grdfile for reading or writing
+ *	GMT_read_grd_row :	Reads a single row of data from grdfile
+ *	GMT_write_grd_row :	Writes a single row of data from grdfile
+ *	GMT_close_grd :		Close the grdfile
  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
@@ -77,6 +84,20 @@ int GMT_write_grd_info (char *file, struct GRD_HEADER *header)
 	header->z_min = (header->z_min - offset) / scale;
 	header->z_max = (header->z_max - offset) / scale;
 	status = (*GMT_io_writeinfo[GMT_grd_o_format]) (fname, header);
+	return (status);
+}
+
+int GMT_update_grd_info (char *file, struct GRD_HEADER *header)
+{
+	int status;
+	char fname[BUFSIZ];
+	double scale = header->z_scale_factor, offset = header->z_add_offset;
+	
+	GMT_grd_o_format = GMT_grd_get_o_format (file, fname, &scale, &offset);
+	header->z_scale_factor = scale, header->z_add_offset = offset;
+	header->z_min = (header->z_min - offset) / scale;
+	header->z_max = (header->z_max - offset) / scale;
+	status = (*GMT_io_updateinfo[GMT_grd_o_format]) (fname, header);
 	return (status);
 }
 
@@ -346,16 +367,12 @@ int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s
 void GMT_decode_grd_h_info (char *input, struct GRD_HEADER *h) {
 
 /*	Given input string, copy elements into string portions of h.
-	Replace underscores by blanks.  Use "/" as the field separator.
-	If a field has an equals sign, skip it.
+	Use "/" as the field separator.  If a field has an equals sign, skip it.
 	This routine is usually called if -D<input> was given by user,
 	and after GMT_grd_init() has been called.
 */
 	char	*ptr;
 	int	entry;
-	
-	/* Replace blanks  */	
-	for (entry = 0; input[entry]; entry++) if (input[entry] == '_') input[entry] = ' ';
 	
 	ptr = strtok (input, "/");
 	entry = 0;
@@ -399,4 +416,217 @@ void GMT_decode_grd_h_info (char *input, struct GRD_HEADER *h) {
 		entry++;
 	}
 	return;
+}
+
+void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
+{
+	/* Assumes header contents is already known.  For writing we
+	 * assume that the header has already been written.  We fill
+	 * the GRD_FILE structure with all the required information.
+	 */
+	
+	int r_w;
+	int cdf_mode[2] = { NC_NOWRITE, NC_WRITE};
+	char *bin_mode[2] = { "rb", "rb+"};
+	size_t n_byte;
+	 
+	if (mode == 'r') {	/* Open file for reading */
+		r_w = 0;
+		G->id = GMT_grd_get_i_format (file, G->name, &G->scale, &G->offset);
+		G->check = !GMT_is_dnan (GMT_grd_in_nan_value);
+	}
+	else {
+		r_w = 1;
+		G->id = GMT_grd_get_o_format (file, G->name, &G->scale, &G->offset);
+		G->check = !GMT_is_dnan (GMT_grd_out_nan_value);
+	}
+	if (GRD_IS_CDF (G->id)) {		/* Open netCDF file */
+		check_nc_status (nc_open (G->name, cdf_mode[r_w], &G->fid));
+		check_nc_status (nc_inq_varid (G->fid, "z", &G->z_id));	/* Get variable id */
+		G->is_cdf = TRUE;
+		G->edge[0] = G->header.nx;
+		G->start[0] = 0;
+	}
+	else {				/* Regular binary file with standard GMT header */
+		if ((G->fp = fopen (G->name, bin_mode[r_w])) == NULL) {
+			fprintf (stderr, "%s: Error opening file %s\n", GMT_program, G->name);
+			exit (EXIT_FAILURE);
+		}
+		fseek (G->fp, (long)HEADER_SIZE, SEEK_SET);
+		G->is_cdf = FALSE;
+	}
+	switch (G->id) {
+		case 0:	/* 4-byte floats */
+		case 1:
+		case 6:
+			G->size = sizeof (float);
+			G->n_byte = G->header.nx * G->size;
+			G->type = GMT_NATIVE_FLOAT;
+			break;
+		case 2:	/* 2-byte shorts */
+		case 9:
+			G->size = sizeof (short int);
+			G->n_byte = G->header.nx * G->size;
+			G->type = GMT_NATIVE_SHORT;
+			break;
+		case 3:	/* Pairs of 1-byte unsigned chars */
+			G->size = sizeof (unsigned char);
+			G->n_byte = irint (ceil (G->header.nx / 2.0)) * 2 * G->size;
+			G->type = GMT_NATIVE_UCHAR;
+			break;
+		case 4:	/* 1-byte unsigned chars */
+		case 7:
+		case 8:
+			G->size = sizeof (unsigned char);
+			G->n_byte = G->header.nx * G->size;
+			G->type = GMT_NATIVE_UCHAR;
+			break;
+		case 5:	/* bit masks */
+			G->size = sizeof (unsigned int);
+			G->n_byte = irint (ceil (G->header.nx / 32.0)) * G->size;
+			G->type = GMT_NATIVE_INT;
+			break;
+		case 10:	/* 4-byte signed int */
+			G->size = sizeof (int);
+			G->n_byte = G->header.nx * G->size;
+			G->type = GMT_NATIVE_INT;
+			break;
+		case 11:	/* 8-byte double */
+			G->size = sizeof (double);
+			G->n_byte = G->header.nx * G->size;
+			G->type = GMT_NATIVE_DOUBLE;
+			break;
+		default:
+			break;
+	}
+			
+	G->v_row = (void *) GMT_memory (VNULL, G->n_byte, 1, GMT_program);
+	G->b_row = (unsigned char *)G->v_row;
+	G->c_row = (signed char *)G->v_row;
+	G->s_row = (short int *)G->v_row;
+	G->u_row = (unsigned int *)G->v_row;
+	G->i_row = (int *)G->v_row;
+	G->f_row = (float *)G->v_row;
+	G->d_row = (double *)G->v_row;
+	
+	G->row = 0;
+	G->auto_advance = TRUE;	/* Default is to read sequential rows */
+}
+
+void GMT_close_grd (struct GMT_GRDFILE *G)
+{
+	if (G->is_cdf)
+		check_nc_status (nc_close (G->fid));
+	else
+		fclose (G->fp);
+}
+
+int GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
+{	/* Reads the entire row vector form the grdfile */
+	/* If row_no is negative it is interpreted to mean that we want to
+	 * fseek to the start of the abs(row_no) record and no reading takes place.
+	 */
+	 
+	int i;
+
+	if (G->is_cdf) {	/* Get one cdf row */
+		if (row_no < 0) {	/* Special seek instruction */
+			G->row = abs (row_no);
+			G->start[0] = G->row * G->edge[0];
+			return (0);
+		}
+		switch (G->id) {
+			case 0:
+				check_nc_status (nc_get_vara_float (G->fid, G->z_id, G->start, G->edge, row));
+				break;
+			case 7:
+				check_nc_status (nc_get_vara_uchar (G->fid, G->z_id, G->start, G->edge, G->b_row));
+				for (i = 0; i < G->edge[0]; i++) row[i] = (float)G->b_row[i];
+				break;
+			case 8:
+				check_nc_status (nc_get_vara_schar (G->fid, G->z_id, G->start, G->edge, G->c_row));
+				for (i = 0; i < G->edge[0]; i++) row[i] = (float)G->c_row[i];
+				break;
+			case 9:
+				check_nc_status (nc_get_vara_short (G->fid, G->z_id, G->start, G->edge, G->s_row));
+				for (i = 0; i < G->edge[0]; i++) row[i] = (float)G->s_row[i];
+				break;
+			case 10:
+				check_nc_status (nc_get_vara_int (G->fid, G->z_id, G->start, G->edge, G->i_row));
+				for (i = 0; i < G->edge[0]; i++) row[i] = (float)G->i_row[i];
+				break;
+			case 11:
+				check_nc_status (nc_get_vara_double (G->fid, G->z_id, G->start, G->edge, G->d_row));
+				for (i = 0; i < G->edge[0]; i++) row[i] = (float)G->d_row[i];
+				break;
+			default:
+				break;
+		}
+		if (G->auto_advance) G->start[0] += G->edge[0];
+	}
+	else {			/* Get a binary row */
+		if (row_no < 0) {	/* Special seek instruction */
+			G->row = abs (row_no);
+			fseek (G->fp, (long)(HEADER_SIZE + G->row * G->n_byte), SEEK_SET);
+			return (0);
+		}
+		if (!G->auto_advance) fseek (G->fp, (long)(HEADER_SIZE + G->row * G->n_byte), SEEK_SET);
+
+		if (fread (G->v_row, G->size, (size_t)G->header.nx, G->fp) != (size_t)G->header.nx) {	/* Get one row */
+			fprintf (stderr, "%s: Read error for file %s near row %d\n", GMT_program, G->name, G->row);
+			exit (EXIT_FAILURE);
+		}
+		for (i = 0; i < G->header.nx; i++) {
+			row[i] = GMT_native_decode (G->v_row, i, G->type);	/* Convert whatever to float */
+			if (G->check && row[i] == GMT_grd_in_nan_value) row[i] = GMT_f_NaN;
+		}
+	}
+	GMT_grd_do_scaling (row, G->header.nx, G->scale, G->offset);
+	G->row++;
+	
+	return (0);
+}
+
+int GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
+{	/* Writes the entire row vector to the grdfile */
+	
+	int i;
+
+	GMT_grd_do_scaling (row, G->header.nx, G->scale, G->offset);
+	for (i = 0; i < G->header.nx; i++) if (GMT_is_fnan (row[i]) && G->check) row[i] = (float)GMT_grd_out_nan_value;
+	
+	if (G->is_cdf) {	/* Get one cdf row */
+		switch (G->id) {
+			case 0:
+				check_nc_status (nc_put_vara_float (G->fid, G->z_id, G->start, G->edge, row));
+				break;
+			case 7:
+				for (i = 0; i < G->header.nx; i++) G->b_row[i] = (unsigned char)GMT_native_encode (row[i], G->type);
+				check_nc_status (nc_put_vara_uchar (G->fid, G->z_id, G->start, G->edge, G->b_row));
+				break;
+			case 8:
+				for (i = 0; i < G->header.nx; i++) G->c_row[i] = (signed char)GMT_native_encode (row[i], G->type);
+				check_nc_status (nc_put_vara_schar (G->fid, G->z_id, G->start, G->edge, G->c_row));
+				break;
+			case 9:
+				for (i = 0; i < G->header.nx; i++) G->s_row[i] = (short int)GMT_native_encode (row[i], G->type);
+				check_nc_status (nc_put_vara_short (G->fid, G->z_id, G->start, G->edge, G->s_row));
+				break;
+			case 10:
+				for (i = 0; i < G->header.nx; i++) G->i_row[i] = (int)GMT_native_encode (row[i], G->type);
+				check_nc_status (nc_put_vara_int (G->fid, G->z_id, G->start, G->edge, G->i_row));
+				break;
+			case 11:
+				for (i = 0; i < G->header.nx; i++) G->d_row[i] = GMT_native_encode (row[i], G->type);
+				check_nc_status (nc_put_vara_double (G->fid, G->z_id, G->start, G->edge, G->d_row));
+				break;
+			default:
+				break;
+		}
+		if (G->auto_advance) G->start[0] += G->edge[0];
+	}
+	else {			/* Get a binary row */
+		if (!G->auto_advance) fseek (G->fp, (long)(HEADER_SIZE + G->row * G->n_byte), SEEK_SET);
+		for (i = 0; i < G->header.nx; i++) GMT_native_write_one (G->fp, row[i], G->type);
+	}
 }
