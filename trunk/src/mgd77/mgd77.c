@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.5 2004-08-19 21:52:40 pwessel Exp $
+ *	$Id: mgd77.c,v 1.6 2004-09-23 21:17:42 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -15,7 +15,6 @@
 #define MGD77_OLDEST_YY		39
 #define ALL_NINES		"9999999999"
 #define ALL_BLANKS "                      "	/* 32 blanks */
-#define MGD77_YYYYMMDDHHMM_BITS	(4+8+16+32+64)
 
 void MGD77_Set_Home (struct MGD77_CONTROL *F);
 void MGD77_Init_Columns (struct MGD77_CONTROL *F);
@@ -527,7 +526,7 @@ int MGD77_Read_Data_Record (FILE *fp, struct MGD77_DATA_RECORD *MGD77Record)	  /
 
 	/* Get absolute time, if all the pieces are there */
 	
-	if ((MGD77Record->bit_pattern & MGD77_YYYYMMDDHHMM_BITS) == MGD77_YYYYMMDDHHMM_BITS) {	/* Got all the time items */
+	if ((MGD77Record->bit_pattern & MGD77_TIME_BITS) == MGD77_TIME_BITS) {	/* Got all the time items */
 		yyyy = irint (MGD77Record->number[2]);
 		mm = irint (MGD77Record->number[3]);
 		dd = irint (MGD77Record->number[4]);
