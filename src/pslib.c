@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.91 2005-02-23 02:16:21 remko Exp $
+ *	$Id: pslib.c,v 1.92 2005-02-23 21:22:00 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -427,16 +427,70 @@ void ps_clipon_ (double *x, double *y, int *n, int *rgb, int *flag)
 
 void ps_colorimage (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits)
 {
-	indexed_image_t indexed_image;
+	/* Plots a 24-bit color image in Grayscale, RGB or CMYK mode.
+	 * When the number of unique colors does not exceed MAX_COLORS, the routine will index
+	 * 24-bit RGB images and then attempt to reduce the depth of the indexed image to 1, 2 or 4 bits.
+	 *
+	 * x, y		: lower left position of image in inches
+	 * xsize, ysize	: image size in inches
+	 * buffer	: contains the bytes for the image
+	 * nx, ny	: pixel dimension
+	 * nbits	: number of bits per pixel (1, 2, 4, 8, 24)
+	 *
+	 * Special cases:
+	 * nx < 0	: 24-bit image contains a color mask (first 3 bytes)
+	 * nbits < 0	: "Hardware" interpolation requested
+	 */
+	int lx, ly, id, it;
+	char *colorspace[3] = {"Gray", "RGB", "CMYK"};			/* What kind of image we are writing */
+	char *decode[3] = {"0 1", "0 1 0 1 0 1", "0 1 0 1 0 1 0 1"};	/* What kind of color decoding */
+	char *kind[2] = {"Binary", "Ascii"};				/* What encoding to use */
+	char *type[3] = {"1", "4 /Maskcolor[0]", "1 /Interpolate true"};
+	indexed_image_t image;
 
-	if ((indexed_image = ps_makecolormap (buffer, nx, ny, nbits))) {
-		ps_colorimage_cmap (x, y, xsize, ysize, indexed_image, nx, ny, nbits);
-		ps_free (indexed_image->buffer);
-		ps_free (indexed_image->colormap);
-		ps_free (indexed_image);
+	lx = irint (xsize * ps.scale);
+	ly = irint (ysize * ps.scale);
+	id = (ps.cmyk_mode && abs(nbits) == 24) ? 2 : ((abs(nbits) == 24) ? 1 : 0);
+	it = (nx < 0 && abs(nbits) == 24) ? 1 : (nbits < 0 ? 2 : 0); 	/* Colormask or interpolate */
+	nx = abs (nx);
+
+	if ((image = ps_makecolormap (buffer, nx, ny, nbits))) {
+		/* Creation of colormap was successful */
+		nbits = ps_bitreduce (image->buffer, nx, ny, image->colormap->ncolors);
+
+		fprintf (ps.fp, "\n%% Start of %s Adobe Indexed %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], nbits);
+		fprintf (ps.fp, "V N %g %g T %d %d scale ", x * ps.scale, y * ps.scale, lx, ly);
+		fprintf (ps.fp, "[/Indexed /Device%s %d <\n", colorspace[id], image->colormap->ncolors - 1);
+		ps_stream_dump (&image->colormap->colors[0][0], image->colormap->ncolors, 1, 24, 0, 2, 2);
+		fprintf (ps.fp, ">] setcolorspace\n");
+		fprintf (ps.fp, "<< /ImageType %s /Decode [0 %d] ", type[it], (1<<nbits)-1);
+		ps_stream_dump (image->buffer, nx, ny, nbits, ps.compress, ps.hex_image, 0);
+		fprintf (ps.fp, "U\n%% End of %s Adobe Indexed %s image\n", kind[ps.hex_image], colorspace[id]);
+
+		/* Clear the newly created image buffer and colormap */
+		ps_free (image->buffer);
+		ps_free (image->colormap);
+		ps_free (image);
 	}
-	else
-		ps_colorimage_rgb (x, y, xsize, ysize, buffer, nx, ny, nbits);
+	else {
+		/* Export full RGB or CMYK image */
+		nbits = abs(nbits);
+
+		fprintf (ps.fp, "\n%% Start of %s Adobe %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], nbits);
+		fprintf (ps.fp, "V N %g %g T %d %d scale ", x * ps.scale, y * ps.scale, lx, ly);
+		fprintf (ps.fp, "/Device%s setcolorspace\n", colorspace[id]);
+
+		if (it == 1) {	/* Do PS Level 3 image type 4 with colormask */
+			fprintf (ps.fp, "<< /ImageType 4 /Maskcolor[%d %d %d]", buffer[0], buffer[1], buffer[2]);
+			buffer += 3;
+		}
+		else		/* Do PS Level 2 image, optionally with interpolation */
+			fprintf (ps.fp, "<< /ImageType %s", type[it]);
+
+		fprintf (ps.fp, " /Decode [%s] ", decode[id]);
+		ps_stream_dump (buffer, nx, ny, nbits, ps.compress, ps.hex_image, 0);
+		fprintf (ps.fp, "U\n%% End of %s Adobe %s image\n", kind[ps.hex_image], colorspace[id]);
+	}
 }
 
 /* fortran interface */
@@ -446,11 +500,13 @@ void ps_colorimage_ (double *x, double *y, double *xsize, double *ysize, unsigne
 }
 
 void ps_colortiles (double x0, double y0, double xsize, double ysize, unsigned char *image, int nx, int ny)
-/* x0, y0: Lower left corner in inches */
-/* xsize, ysize: Size of image in inches */
-/* image: color image with rgb triplets per pixel */
-/* nx, ny: image size in pixels */
 {
+	/* Plots image as many colored rectangles
+	 * x0, y0	: Lower left corner in inches
+	 * xsize, ysize	: Size of image in inches
+	 * image	: color image with rgb triplets per pixel
+	 * nx, ny	: image size in pixels
+	 */
 	int i, j, k, rgb[3];
 	double x1, x2, y1, y2, dx, dy, noise, noise2;
 
@@ -3555,16 +3611,20 @@ int ps_write_rasheader (FILE *fp, struct imageinfo *h, int i0, int i1)
 	return (0);
 }
 
-/* It is important that the first RGB tuple is mapped to index 0.
- * This is used for color masked images.
- */
 indexed_image_t ps_makecolormap (unsigned char *buffer, int nx, int ny, int nbits)
 {
+	/* When image consists of less than MAX_COLORS colors, the image can be
+	 * indexed to safe a significant amount of space.
+	 * The image and colormap are returned as a struct indexed_image_t.
+	 *
+	 * It is important that the first RGB tuple is mapped to index 0.
+ 	 * This is used for color masked images.
+ 	 */
 	int i, j, npixels;
 	colormap_t colormap;
 	indexed_image_t image;
 
-	if (abs (nbits) != 24) return (NULL);		/* We only index into the RGB colorspace. */
+	if (abs(nbits) != 24) return (NULL);		/* We only index into the RGB colorspace. */
 
 	npixels = abs(nx) * ny;
 
@@ -3606,87 +3666,8 @@ indexed_image_t ps_makecolormap (unsigned char *buffer, int nx, int ny, int nbit
 		}
 		buffer += 3;
 	}
-	if (ps.verbose) fprintf (stderr, "pslib: Colormap of %d colors created.\n", colormap->ncolors);
+	if (ps.verbose) fprintf (stderr, "pslib: Colormap of %d colors created\n", colormap->ncolors);
 	return (image);
-}
-
-void ps_colorimage_cmap (double x, double y, double xsize, double ysize, indexed_image_t image, int nx, int ny, int nbits)
-{
-	/* Plots a 24 bit color bitmapped image using a color map
-	 * x, y is lower left position of image in inches
-	 * xsize, ysize is the image size in inches
-	 * buffer contains the bytes for the image
-	 * nx, ny is the pixel dimension
-	 * nbits is the number of bits per pixel (1, 4, 8, 24)
-	 */
-
-	int lx, ly, id, it, i;
-	BOOLEAN colormask, interpolate;
-	char *colorspace[3] = {"Gray", "RGB", "CMYK"};	/* What kind of image we are writing */
-	char *kind[2] = {"Binary", "Ascii"};		/* What encoding to use */
-	char *type[3] = {"1", "4 /Maskcolor[0]", "1 /Interpolate true"};
-	unsigned char cmyk[4];
-
-	lx = irint (xsize * ps.scale);
-	ly = irint (ysize * ps.scale);
-	id = (ps.cmyk_mode && abs(nbits) == 24) ? 2 : ((abs(nbits) == 24) ? 1 : 0);
-	it = (nx < 0 && abs(nbits) == 24) ? 1 : (nbits < 0 ? 2 : 0); 	/* Colormask or interpolate */
-	nx = abs (nx);
-	interpolate = (nbits < 0);
-
-	/* Reduce number of bits per pixel according to number of colors */
-	nbits = ps_bitreduce (image->buffer, nx, ny, image->colormap->ncolors);
-
-	fprintf (ps.fp, "\n%% Start of %s Adobe Indexed %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], nbits);
-	fprintf (ps.fp, "V N %g %g T %d %d scale ", x * ps.scale, y * ps.scale, lx, ly);
-	fprintf (ps.fp, "[/Indexed /Device%s %d <\n", colorspace[id], image->colormap->ncolors - 1);
-	ps_stream_dump (&image->colormap->colors[0][0], image->colormap->ncolors, 1, 24, 0, 2, 2);
-	fprintf (ps.fp, ">] setcolorspace\n");
-	fprintf (ps.fp, "<< /ImageType %s /Decode [0 %d] ", type[it], (1<<nbits)-1);
-	ps_stream_dump (image->buffer, nx, ny, nbits, ps.compress, ps.hex_image, 0);
-
-	fprintf (ps.fp, "U\n%% End of %s Adobe Indexed %s image\n", kind[ps.hex_image], colorspace[id]);
-}
-
-void ps_colorimage_rgb (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits)
-{
-	/* Plots a B/W (1), gray (2|4|8), or color (24)  bitmapped image (nbits)
-	 * x, y is lower left position of image in inches
-	 * xsize, ysize is the image size in inches
-	 * buffer contains the bytes for the image
-	 * nx, ny is the pixel dimension
-	 * nbits is the number of bits per pixel (1, 2, 4, 8, 24)
-	 */
-
-	int lx, ly, id, it;
-	char *colorspace[3] = {"Gray", "RGB", "CMYK"};			/* What kind of image we are writing */
-	char *decode[3] = {"0 1", "0 1 0 1 0 1", "0 1 0 1 0 1 0 1"};	/* What kind of color decoding */
-	char *kind[2] = {"Binary", "Ascii"};				/* What encoding to use */
-
-	lx = irint (xsize * ps.scale);
-	ly = irint (ysize * ps.scale);
-	id = (ps.cmyk_mode && abs(nbits) == 24) ? 2 : ((abs(nbits) == 24) ? 1 : 0);
-	it = (nx < 0 && abs(nbits) == 24) ? 1 : (nbits < 0 ? 2 : 0); 	/* Colormask or interpolate */
-	nx = abs (nx);
-	nbits = abs(nbits);
-
-	fprintf (ps.fp, "\n%% Start of %s Adobe %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], nbits);
-	fprintf (ps.fp, "V N %g %g T %d %d scale ", x * ps.scale, y * ps.scale, lx, ly);
-	fprintf (ps.fp, "/Device%s setcolorspace\n", colorspace[id]);
-
-	if (it == 1) {	/* Do new PS Level 3 image type 4 with colormask */
-		fprintf (ps.fp, "<< /ImageType 4 /Maskcolor[%d %d %d]", buffer[0], buffer[1], buffer[2]);
-		buffer += 3;
-	}
-	else if (it == 2) 	/* Do new PS Level 2 image with interpolation */
-		fprintf (ps.fp, "<< /ImageType 1 /Interpolate true");
-	else			/* Do new PS Level 2 image without interpolation */
-		fprintf (ps.fp, "<< /ImageType 1");
-
-	fprintf (ps.fp, " /Decode [%s] ", decode[id]);
-	ps_stream_dump (buffer, nx, ny, nbits, ps.compress, ps.hex_image, 0);
-
-	fprintf (ps.fp, "U\n%% End of %s Adobe %s image\n", kind[ps.hex_image], colorspace[id]);
 }
 
 void ps_stream_dump (unsigned char *buffer, int nx, int ny, int nbits, int compress, int encode, int mask)
@@ -3701,7 +3682,7 @@ void ps_stream_dump (unsigned char *buffer, int nx, int ny, int nbits, int compr
 	 * mask		= image (0), imagemask (1), or neither (2)
 	 */
 	int nbytes, i;
-	unsigned char quad[4], *compressed_buffer;
+	unsigned char quad[4], *buffer1, *buffer2;
 	char *kind_compress[3] = {"", "/RunLengthDecode filter", "/LZWDecode filter"};
 	char *kind_mask[2] = {"", "mask"};
 
@@ -3709,20 +3690,22 @@ void ps_stream_dump (unsigned char *buffer, int nx, int ny, int nbits, int compr
 	PSL_len = 0;
 
 	/* Transform RGB stream to CMYK stream */
-	if (ps.cmyk_mode && nbits == 24) buffer = ps_cmyk_encode (&nbytes, buffer);
+	if (ps.cmyk_mode && nbits == 24)
+		buffer1 = ps_cmyk_encode (&nbytes, buffer);
+	else
+		buffer1 = buffer;
 
 	/* Perform selected compression method */
-	if (compress == 1) {
-		if ((compressed_buffer = ps_rle_encode (&nbytes, buffer)))
-			buffer = compressed_buffer;
-		else
-			compress = 0;
-	}
-	else if (compress == 2) {
-		if ((compressed_buffer = ps_lzw_encode (&nbytes, buffer)))
-			buffer = compressed_buffer;
-		else
-			compress = 0;
+	if (compress == 1)
+		buffer2 = ps_rle_encode (&nbytes, buffer1);
+	else if (compress == 2)
+		buffer2 = ps_lzw_encode (&nbytes, buffer1);
+	else
+		buffer2 = NULL;
+
+	if (!buffer2)	{ /* If compression failed, or no compression requested */
+		compress = 0;
+		buffer2 = buffer1;
 	}
 
 	/* Output image dictionary */
@@ -3734,21 +3717,24 @@ void ps_stream_dump (unsigned char *buffer, int nx, int ny, int nbits, int compr
 	}
 	if (encode == 1) {
 		/* Write each 4-tuple as ASCII85 5-tuple */
-		for (i = 0; i < nbytes; i += 4) ps_a85_encode (&buffer[i], (int)nbytes-i);
+		for (i = 0; i < nbytes; i += 4) ps_a85_encode (&buffer2[i], nbytes-i);
 		fprintf (ps.fp, "~>\n");
 	}
 	else if (encode == 2) {
 		for (i = 0; i < nbytes; i++) {
-			fprintf (ps.fp, "%02X", buffer[i]); PSL_len++;
-			if (PSL_len > 47) { fprintf (ps.fp, "\n"); PSL_len = 0; }
+			fprintf (ps.fp, "%02X", buffer2[i]); PSL_len += 2;
+			if (PSL_len > 95) { fprintf (ps.fp, "\n"); PSL_len = 0; }
 		}
 	}
 	else {
 		/* Plain binary dump */
 		fwrite ((void *)buffer, sizeof (unsigned char), (size_t)nbytes, ps.fp);
 	}
-	if (compress || (ps.cmyk_mode && nbits == 24)) ps_free(buffer);
 	if (mask == 2) fprintf (ps.fp, "%s", kind_compress[compress]);
+
+	/* Clear newly created buffers, but maintain original */
+	if (buffer2 != buffer1) ps_free(buffer2);
+	if (buffer1 != buffer ) ps_free(buffer1);
 }
 
 void ps_a85_encode (unsigned char quad[], int nbytes)
@@ -3756,40 +3742,32 @@ void ps_a85_encode (unsigned char quad[], int nbytes)
 	/* Encode 4-byte binary to 5-byte ASCII
 	 * Special cases:	#00000000 is encoded as z
 	 *			When n < 4, output only n+1 bytes */
-	unsigned int n, j;
+	int j;
+	unsigned int n;
 	unsigned char c[5];
 
-	for (j = nbytes; j < 4; j++) quad[j] = 0;
+	if (nbytes < 1) return;		/* Ignore empty input */
+	nbytes = MIN (4, nbytes);	/* Limit to first four bytes */
+
+	for (j = nbytes; j < 4; j++) quad[j] = 0;	/* Set truncated bytes to 0 */
 
 	n = (quad[0] << 24) + (quad[1] << 16) + (quad[2] << 8) + quad[3];
 
-	if ( n == 0 && nbytes > 3) {
-		fprintf (ps.fp, "z");
-		PSL_len++;
+	if (n == 0 && nbytes == 4) {	/* Set the only output byte to "z" */
+		nbytes = 0;
+		c[4] = 122;
 	}
-	else {
+	else {				/* Determine output 5-tuple */
 		for (j = 0; j < 4; j++) { c[j] = (n % 85) + 33; n = n / 85; }
 		c[4] = n + 33 ;
-
-		switch (nbytes) {
-		case 1:
-			fprintf (ps.fp, "%c%c", c[4], c[3]);
-			PSL_len += 2;
-			break;
-		case 2:
-			fprintf (ps.fp, "%c%c%c", c[4], c[3], c[2]);
-			PSL_len += 3;
-			break;
-		case 3:
-			fprintf (ps.fp, "%c%c%c%c", c[4], c[3], c[2], c[1]);
-			PSL_len += 4;
-			break;
-		default:
-			fprintf (ps.fp, "%c%c%c%c%c", c[4], c[3], c[2], c[1], c[0]);
-			PSL_len += 5;
-		}
 	}
-	if (PSL_len > 91) { fprintf (ps.fp, "\n"); PSL_len = 0; }
+
+	/* Print 1 byte if n = 0, otherwise print nbytes+1 byte
+	 * Insert newline when line exceeds 96 characters */
+	for (j = 4; j >= 4-nbytes; j--) {
+		fprintf (ps.fp, "%c", c[j]); PSL_len++;
+		if (PSL_len > 95) { fprintf (ps.fp, "\n"); PSL_len = 0; }
+	}
 }
 
 #define ESC 128
@@ -3940,6 +3918,7 @@ unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input)
 	output->buffer = (unsigned char *)ps_memory (VNULL, (size_t)i, sizeof (*output->buffer));
 	code = (short int *)ps_memory (VNULL, (size_t)ncode, sizeof (short int));
 
+	return (NULL);
 	in = 0;
 	output->nbytes = 0;
 	output->depth = 9;
