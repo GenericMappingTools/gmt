@@ -1,0 +1,10 @@
+#	$Id: diamond.def,v 1.1 2001-09-21 03:01:12 pwessel Exp $
+#
+#	Definition file for diamond symbol.  Use in psxy
+#	as -Skdiamond/size.  Unlike -Sd, this allows for
+#	using patterns as fill
+#
+0	0.5	M
+0.5	0	D
+0	-0.5	D
+-0.5	0	D
