@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.11 2001-09-12 19:35:08 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.12 2001-09-13 18:22:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -63,6 +63,7 @@ struct GMT_CLOCK_IO {
 	int order[3];			/* The relative order of hour, mn, sec in input clock string */
 	int n_sec_decimals;		/* Number of digits in decimal seconds (0 for whole seconds) */
 	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
+	BOOLEAN compact;		/* TRUE if we do not want leading zeros in items (e.g., 03) */
 	BOOLEAN twelwe_hr_clock;	/* TRUE if we are doing am/pm on output */
 	char ampm_suffix[2][8];		/* Holds the strings to append am or pm */
 	char format[32];		/* Actual C format used to output clock */
@@ -78,6 +79,7 @@ struct GMT_DATE_IO {
 	BOOLEAN iso_calendar;		/* TRUE if we do ISO week calendar */
 	BOOLEAN day_of_year;		/* TRUE if we do day-of-year rather than month/day */
 	BOOLEAN mw_text;		/* TRUE if we must plot the month name or Week rather than a numeral */
+	BOOLEAN compact;		/* TRUE if we do not want leading zeros in items (e.g., 03) */
 	char delimeter[2][2];		/* Delimeter strings in date, e.g. "-" */
 };
 
