@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.133 2004-08-13 23:08:32 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.134 2004-08-14 00:24:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2724,7 +2724,7 @@ void GMT_vertical_axis (int mode)
 	int i, j;
 	double xp[2], yp[2], z_annot;
 	
-	if (frame_info.axis[2].item[GMT_ANNOT_UPPER].active) return;
+	if (!frame_info.axis[2].item[GMT_ANNOT_UPPER].active) return;
 	
 	z_annot = GMT_get_map_interval (2, GMT_ANNOT_UPPER);
 	fore = (mode > 1);	back = (mode % 2);
