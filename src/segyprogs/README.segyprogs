@@ -1,4 +1,4 @@
-	$Id: README.segyprogs,v 1.2 2001-04-11 19:58:09 pwessel Exp $
+	$Id: README.segyprogs,v 1.3 2002-09-27 19:15:03 pwessel Exp $
 
 pssegy: program to plot segy files in postscript.
 the code was developed following a devious route from several programs in the GMT and
@@ -23,7 +23,16 @@ number of pathological cases for variable area plotting and the code
 may well leave regions unshaded, or shade regions which should be transparent
 under those circumstances.
 
-Both codes have now been modified to cope with the variable
+segy2grd: program to convert SEGY files into GMT-compliant netCDF format.
+This is a merge of bits of pssegy with xyz2grd, and deals with two classes
+of case - one where there is already even trace spacing, and a simple
+translation is done where each cell in the netCDF file is filled with
+a corresponding sample. The other allows the gridcell spacing to differ
+from the underlying samples in the SEGY file (eg to input a file with
+traces at varying offsets) and by default averages the values
+which fall within a given grid cell.
+
+All 3 codes have now been modified to cope with the variable
 trace length "SEGY" that programs like OMEGA apparently produce.
 They have also been tested on SGI and Sun systems as being 64-bit
 safe. Byte-swapping is now incorporated for both the headers and
@@ -34,7 +43,7 @@ used for files with little-endian byte order.
 
 Authorship:
 
-The pssegy and pssegyz programs were written and are maintained by Tim Henstock,
+The pssegy, pssegyz and segy2grd programs were written and are maintained by Tim Henstock,
 then@soc.soton.ac.uk, and I'm happy (well, not exactly happy
 since I think I got most of the bugs) to have reports of unexpected behaviour.
 The routines which read the SEGY data are modified from the IRIS/PASSCAL

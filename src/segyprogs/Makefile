@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.5 2002-09-27 18:04:10 pwessel Exp $
+#	$Id: Makefile,v 1.6 2002-09-27 19:15:03 pwessel Exp $
 #
 # makefile for segyprogs directory
 #
