@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.43 2004-04-20 18:29:36 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.44 2004-04-21 20:35:52 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -299,7 +299,7 @@ selected information. The optional flag following \Opt{B} selects {\bf p}(rimary
 axes information (mostly used for time axes annotations; see examples below).
 The components {\it xinfo}, {\it yinfo} and {\it zinfo} are of the form \\
 
-\par {\it info}[:"axis label":][:^"prefix":][:,"unit label":] \\
+\par {\it info}[:"axis label":][:\^"prefix":][:,"unit label":] \\
 
 \noindent
 where {\it info} is one or more concatenated substrings of the form
@@ -731,7 +731,7 @@ programs piped together this tells you where the trouble is.
 \index{Record, header \Opt{H}}
 \index{\Opt{H} (header records)}
 \index{{\bf GMT\_DATADIR}}
-\index{{\bf GMT_GRIDDIR}}
+\index{{\bf GMT\_GRIDDIR}}
 \index{{\bf GMT\_IMGDIR}}
 
 Most of the programs which expect table data input can read
@@ -753,8 +753,8 @@ documentation.  For binary table data no headers are allowed.
 If filenames are given for reading, the programs will first look in the
 current directory.  If the file is not found, the programs
 will look in three other directories pointed to by environmental
-parameters.  These are {\bf GMT\_DATADIR}, {\bf GMT_GRIDDIR}, and
-{\bf GMT_IMGDIR} and may be set by the user to point to directories
+parameters.  These are {\bf GMT\_DATADIR}, {\bf GMT\_GRIDDIR}, and
+{\bf GMT\_IMGDIR} and may be set by the user to point to directories
 that contain data sets of general use.  Data sets that are often needed
 may be placed in these directories, thus eliminating the need to specify
 a full path to the file.  Program output is always written to the
