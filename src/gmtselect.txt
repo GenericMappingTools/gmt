@@ -15,7 +15,7 @@ gmtselect \- Select data subsets based on multiple spatial criteria
 Records can be selected based on whether or not they are 1) inside a rectangular region (\fB\-R\fP
 [and \fB\-J\fP]), 2) within \fIdist\fP km of any point in \fIptfile\fP, 3) within \fIdist\fP km of
 any line in \fIlinefile\fP, 4) inside one of the polygons in the \fIpolygonfile\fP, 5) inside
-geographical features (based on coastlines), or 6) has z-values within a given rang.
+geographical features (based on coastlines), or 6) has z-values within a given range.
 The sense of the tests can be reversed for each of these 6 criteria by using the \fB\-I\fP option.
 See option \fB\-:\fP on how to read (latitude,longitude) files.
 .br
@@ -32,18 +32,18 @@ in km^2 or of hierarchical level that is lower than \fImin_level\fP or higher th
 will be ignored [Default is 0/4 (all features)]. See DATABASE INFORMATION in the \fBpscoast\fP man-pages for more details.
 .TP
 .B \-C
-Pass all records whose location is within \fIdist\fP of any of the points in the ascii file \fIptfile\fP.  If \fIdist\fP
+Pass all records whose location is within \fIdist\fP of any of the points in the ASCII file \fIptfile\fP.  If \fIdist\fP
 is zero then the 3rd column of \fIptfile\fP must have each point's individual radius of influence.  Distances are in user units; specify
 \fB\-fg\fP or a map projection to indicate distances in km.  Prepend \fBf\fP to indicate you want approximate flat
-earth distance calculations (faster) than exact great circle calculations (slower).
+earth distance calculations (faster) rather than exact great circle calculations (slower).
 .TP
 .B \-D
 Ignored unless \fB\-N\fP is set.  Selects the resolution of the coastline data set to use ((\fBf\fP)ull, (\fBh\fP)igh, (\fBi\fP)ntermediate, (\fBl\fP)ow, or (\fBc\fP)rude).  The
-resolution drops off by ~80% between data sets. [Default is \fBl\fP].  Note that because the coastlines differ in details is not guaranteed that a point will remain inside [or outside] when a different resolution is selected.
+resolution drops off by ~80% between data sets. [Default is \fBl\fP].  Note that because the coastlines differ in details it is not guaranteed that a point will remain inside [or outside] when a different resolution is selected.
 .TP
 .B \-F
 Pass all records whose location is within one of the closed polygons in the multiple-segment
-ascii file \fIpolygonfile\fP.
+ASCII file \fIpolygonfile\fP.
 #include "explain_-H.txt"
 .TP
 .B \-I
@@ -59,7 +59,7 @@ Reverses the sense of the test for each of the criteria specified:
 .br
 	\fBs\fP  select records NOT considered inside as specified by \fB\-A, \-D, \-N\fP.
 .br
-	\fBs\fP  select records NOT within the range specified by \fB\-Z\fP.
+	\fBz\fP  select records NOT within the range specified by \fB\-Z\fP.
 #include "explain_-J_short.txt"
 .TP
 .B \-L
@@ -73,7 +73,7 @@ Multiple segment file.  Segments are separated by a record whose first character
 .TP
 .B \-N
 Pass all records whose location is inside specified geographical features.
-Specify if records should be \fBs\fPkipped or \fBk\fPkept using 1 of 2 formats:
+Specify if records should be \fBs\fPkipped or \fBk\fPept using 1 of 2 formats:
 .br
 	\fB\-N\fP\fIwet/dry\fP.
 .br
