@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_colors.h,v 1.6 2002-05-02 17:53:08 pwessel Exp $
+ *	$Id: gmt_colors.h,v 1.7 2003-03-03 21:09:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -31,9 +31,20 @@
 
 #define GMT_RGB 0
 #define GMT_HSV 1
+#define GMT_CMYK 2
+
+#define GMT_FGD 0
+#define GMT_BGD 1
+#define GMT_NAN 2
 
 /* How B/W TV's convert RGB to Gray */
 #define YIQ(rgb) irint (0.299 * (rgb[0]) + 0.587 * (rgb[1]) + 0.114 * (rgb[2]))
+
+/* Determine if a RGB combination is grayshade */
+#define GMT_is_gray(r,g,b) ((r) == (g) && (r) == (b))
+
+/* Determine if a R(=G=B) gray combination is in fact B/W */
+#define GMT_is_bw(r) ((r) == 0 || (r) == 255)
 
 /* Here is the definition of the GMT_lut structure that is used in programs
  * that deals with coloring of grids.
@@ -48,15 +59,13 @@ struct GMT_LUT {
 };
 
 struct GMT_BFN_COLOR {	/* For back-, fore-, and nan-colors */
-	int background_rgb[3];
-	int foreground_rgb[3];
-	int nan_rgb[3];
-	int skip[3];			/* (0 = fore, 1 = back, 2 = nan) */
-	struct GMT_FILL *fill[3];	/* (0 = fore, 1 = back, 2 = nan) */
+	int rgb[3];
+	int skip;
+	struct GMT_FILL *fill;
 };
 
 EXTERN_MSC struct GMT_LUT *GMT_lut;
-EXTERN_MSC struct GMT_BFN_COLOR GMT_bfn;
+EXTERN_MSC struct GMT_BFN_COLOR GMT_bfn[3];
 EXTERN_MSC int GMT_n_colors;
 EXTERN_MSC BOOLEAN GMT_gray;		/* TRUE if only grayshades are used */
 EXTERN_MSC BOOLEAN GMT_b_and_w;		/* TRUE if only black OR white is used */

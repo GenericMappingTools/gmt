@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.39 2003-02-20 19:01:21 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.40 2003-03-03 21:09:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -409,12 +409,13 @@ int GMT_getinc (char *line, double *dx, double *dy)
 
 void GMT_read_cpt (char *cpt_file)
 {
-	/* Opens and reads a color palette file in RGB or HSV of arbitrary length */
+	/* Opens and reads a color palette file in RGB, HSV, or CMYK of arbitrary length */
 	
-	int n = 0, i, j, nread, annot, n_alloc = GMT_SMALL_CHUNK, color_model;
-	double r0, r1, g0, g1, b0, b1, dz;
+	int n = 0, i, nread, annot, n_alloc = GMT_SMALL_CHUNK, color_model, id;
+	double dz;
 	BOOLEAN gap, error = FALSE;
-	char line[BUFSIZ], c, first_r[BUFSIZ], first_b[BUFSIZ];
+	char T0[64], T1[64], T2[64], T3[64], T4[64], T5[64], T6[64], T7[64], T8[64], T9[64];
+	char line[BUFSIZ], option[64], c;
 	FILE *fp = NULL;
 	
 	if (!cpt_file)
@@ -427,160 +428,135 @@ void GMT_read_cpt (char *cpt_file)
 	GMT_lut = (struct GMT_LUT *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_LUT), "GMT_read_cpt");
 	
 	GMT_b_and_w = GMT_gray = TRUE;
-	GMT_continuous = FALSE;
-	color_model = gmtdefs.color_model;
-	GMT_cpt_pattern = FALSE;
+	GMT_continuous = GMT_cpt_pattern = FALSE;
+	color_model = gmtdefs.color_model;		/* Save the original setting since it may be modified by settings in the CPT file */
 
 	while (!error && fgets (line, BUFSIZ, fp)) {
 	
-		if (strstr (line, "COLOR_MODEL")) {	/* cpt file specifies color model */
-			if (strstr (line, "RGB"))
-				color_model = GMT_RGB;
-			else if (strstr (line, "HSV"))
-				color_model = GMT_HSV;
+		if (strstr (line, "COLOR_MODEL")) {	/* cpt file overrides default color model */
+			if (strstr (line, "RGB") || strstr (line, "rgb"))
+				gmtdefs.color_model = GMT_RGB;
+			else if (strstr (line, "HSV") || strstr (line, "hsv"))
+				gmtdefs.color_model = GMT_HSV;
+			else if (strstr (line, "CMYK") || strstr (line, "cmyk"))
+				gmtdefs.color_model = GMT_CMYK;
+			else {
+				fprintf (stderr, "%s: GMT Fatal Error: unrecognized COLOR_MODEL in color palette table %s\n", GMT_program, cpt_file);
+				exit (EXIT_FAILURE);
+			}
 		}
 
-		if (line[0] == '#' || line[0] == '\n') continue;	/* Comment or blank */
+		c = line[0];
+		if (c == '#' || c == '\n') continue;	/* Comment or blank */
 		
-		if (line[0] == 'F' || line[0] == 'f') {	/* Foreground color */
-			nread = sscanf (&line[1], "%s %lf %lf", first_r, &g0, &b0);
-			if (!(nread == 1 || nread == 3)) error = TRUE;
-			if (first_r[0] == 'p' || first_r[0] == 'P') {	/* Gave pattern instead */
-				GMT_bfn.fill[0] = (struct GMT_FILL *) GMT_memory (VNULL, 1, sizeof (struct GMT_FILL), GMT_program);
-				if (GMT_getfill (first_r, GMT_bfn.fill[0])) {
-					fprintf (stderr, "%s: GMT Fatal Error: Pattern fill not understood!\n", GMT_program);
+		switch (c) {
+			case 'B':
+				id = 0;
+				break;
+			case 'F':
+				id = 1;
+				break;
+			case 'N':
+				id = 2;
+				break;
+			default:
+				id = 3;
+				break;
+		}
+				
+		if (id < 3) {	/* Foreground, background, or nan color */
+			if ((nread = sscanf (&line[1], "%s", T1)) != 1) error = TRUE;
+			if (T1[0] == 'p' || T1[0] == 'P') {	/* Gave a pattern */
+				GMT_bfn[id].fill = (struct GMT_FILL *) GMT_memory (VNULL, 1, sizeof (struct GMT_FILL), GMT_program);
+				if (GMT_getfill (T1, GMT_bfn[id].fill)) {
+					fprintf (stderr, "%s: GMT Fatal Error: CPT Pattern fill (%s) not understood!\n", GMT_program, T1);
 					exit (EXIT_FAILURE);
 				}
 				GMT_cpt_pattern = TRUE;
 			}
-			else {	/* Shades, RGB, or HSV */
-				r0 = (first_r[0] == '-') ? -1.0 : atof (first_r);
-				if (nread == 1 || color_model == GMT_RGB) {	/* Read r,g,b or gray */
-					if (nread == 1)	/* Grayshades given */
-						GMT_bfn.foreground_rgb[0] = GMT_bfn.foreground_rgb[1] = GMT_bfn.foreground_rgb[2] = irint (r0);
-					else {
-						GMT_bfn.foreground_rgb[0] = irint (r0);
-						GMT_bfn.foreground_rgb[1] = irint (g0);
-						GMT_bfn.foreground_rgb[2] = irint (b0);
-					}
-				}
-				else
-					GMT_hsv_to_rgb (GMT_bfn.foreground_rgb, r0, g0, b0);
-				GMT_bfn.skip[0] = (GMT_bfn.foreground_rgb[0] == -1);
-				if (GMT_bfn.skip[0] && nread != 1) {
-					fprintf (stderr, "%s: GMT Fatal Error: Foreground to skip not in [F -] format!\n", GMT_program);
+			else {	/* Shades, RGB, HSV, or CMYK */
+				if (T1[0] == '-')	/* Skip this slice */
+					GMT_bfn[id].skip = TRUE;
+				else if (GMT_getrgb (&line[1], GMT_bfn[id].rgb)) {
+					fprintf (stderr, "%s: GMT Fatal Error: Skip slice specification not in [%c -] format!\n", GMT_program, c);
 					exit (EXIT_FAILURE);
 				}
 			}
 			continue;
 		}
-		else if (line[0] == 'B' || line[0] == 'b') {	/* Background color */
-			nread = sscanf (&line[1], "%s %lf %lf", first_r, &g0, &b0);
-			if (!(nread == 1 || nread == 3)) error = TRUE;
-			if (first_r[0] == 'p' || first_r[0] == 'P') {	/* Gave pattern instead */
-				GMT_bfn.fill[1] = (struct GMT_FILL *) GMT_memory (VNULL, 1, sizeof (struct GMT_FILL), GMT_program);
-				if (GMT_getfill (first_r, GMT_bfn.fill[1])) {
-					fprintf (stderr, "%s: GMT Fatal Error: Pattern fill not understood!\n", GMT_program);
-					exit (EXIT_FAILURE);
-				}
-				GMT_cpt_pattern = TRUE;
-			}
-			else {	/* Shades, RGB, or HSV */
-				r0 = (first_r[0] == '-') ? -1.0 : atof (first_r);
-				if (nread == 1 || color_model == GMT_RGB) {	/* Read r,g,b  or gray*/
-					if (nread == 1)	/* Grayshades given */
-						GMT_bfn.background_rgb[0] = GMT_bfn.background_rgb[1] = GMT_bfn.background_rgb[2] = irint (r0);
-					else {
-						GMT_bfn.background_rgb[0] = irint (r0);
-						GMT_bfn.background_rgb[1] = irint (g0);
-						GMT_bfn.background_rgb[2] = irint (b0);
-					}
-				}
-				else
-					GMT_hsv_to_rgb (GMT_bfn.background_rgb, r0, g0, b0);
-				GMT_bfn.skip[1] = (GMT_bfn.background_rgb[0] == -1);
-				if (GMT_bfn.skip[1] && nread != 1) {
-					fprintf (stderr, "%s: GMT Fatal Error: Background to skip not in [B -] format!\n", GMT_program);
-					exit (EXIT_FAILURE);
-				}
-			}
-			continue;
-		}
-		else if (line[0] == 'N' || line[0] == 'n') {	/* NaN color */
-			nread = sscanf (&line[1], "%s %lf %lf", first_r, &g0, &b0);
-			if (!(nread == 1 || nread == 3)) error = TRUE;
-			if (first_r[0] == 'p' || first_r[0] == 'P') {	/* Gave pattern instead */
-				GMT_bfn.fill[2] = (struct GMT_FILL *) GMT_memory (VNULL, 1, sizeof (struct GMT_FILL), GMT_program);
-				if (GMT_getfill (first_r, GMT_bfn.fill[2])) {
-					fprintf (stderr, "%s: GMT Fatal Error: Pattern fill not understood!\n", GMT_program);
-					exit (EXIT_FAILURE);
-				}
-				GMT_cpt_pattern = TRUE;
-			}
-			else {	/* Shades, RGB, or HSV */
-				r0 = (first_r[0] == '-') ? -1.0 : atof (first_r);
-				if (nread == 1 || color_model == GMT_RGB) {	/* Read r,g,b */
-					if (nread == 1)	/* Grayshades given */
-						GMT_bfn.nan_rgb[0] = GMT_bfn.nan_rgb[1] = GMT_bfn.nan_rgb[2] = irint (r0);
-					else {
-						GMT_bfn.nan_rgb[0] = irint (r0);
-						GMT_bfn.nan_rgb[1] = irint (g0);
-						GMT_bfn.nan_rgb[2] = irint (b0);
-					}
-				}
-				else
-					GMT_hsv_to_rgb (GMT_bfn.nan_rgb, r0, g0, b0);
-				GMT_bfn.skip[2] = (GMT_bfn.nan_rgb[0] == -1);
-				if (GMT_bfn.skip[2] && nread != 1) {
-					fprintf (stderr, "%s: GMT Fatal Error: NaNs to skip not in [N -] format!\n", GMT_program);
-					exit (EXIT_FAILURE);
-				}
-			}
-			continue;
-		}
+		
+		
+		/* Here we have regular z-slices.  Allowable formats are
+		 *
+		 * z0 - z1 - [LUB]
+		 * z0 pattern z1 - [LUB]
+		 * z0 r0 z1 r1 [LUB]
+		 * z0 r0 g0 b0 z1 r1 g1 b1 [LUB]
+		 * z0 h0 s0 v0 z1 h1 s1 v1 [LUB]
+		 * z0 c0 m0 y0 k0 z1 c1 m1 y1 k1 [LUB]
+		 */
 
-		nread = sscanf (line, "%lf %s %lf %s %lf %lf %lf %lf", 
-			&GMT_lut[n].z_low, first_r, &g0, first_b, &GMT_lut[n].z_high, &r1, &g1, &b1);
-		if (nread <= 0) continue;	/* Probably a line with spaces */
-		if (!(nread == 4 || nread == 8)) error = TRUE;
+		/* Determine if psscale need to label these steps by examining for the optional L|U|B character at the end */
+
+		c = line[strlen(line)-2]; 
+		if (c == 'L')
+			GMT_lut[n].annot = 1;
+		else if (c == 'U')
+			GMT_lut[n].annot = 2;
+		else if (c == 'B')
+			GMT_lut[n].annot = 3;
+		if (GMT_lut[n].annot) line[strlen(line)-2] = '\0';	/* Chop off this information so it does not affect our column count below */
+			
+		nread = sscanf (line, "%s %s %s %s %s %s %s %s %s %s", T0, T1, T2, T3, T4, T5, T6, T7, T8, T9);	/* Hope to read 4, 8, or 10 fields */
 		
-		if (first_r[0] == 'p' || first_r[0] == 'P') {	/* Gave pattern instead */
+		if (nread <= 0) continue;								/* Probably a line with spaces - skip */
+		if (gmtdefs.color_model == GMT_CMYK && nread != 10) error = TRUE;			/* CMYK should results in 10 fields */
+		if (gmtdefs.color_model != GMT_CMYK && !(nread == 4 || nread == 8)) error = TRUE;	/* HSV or RGB should result in 8 fields, gray, patterns, or skips in 4 */
+		
+		GMT_lut[n].z_low = atof (T0);
+		GMT_lut[n].skip = FALSE;
+		if (T1[0] == '-') {				/* Skip this slice */
+			if (nread != 4) {
+				fprintf (stderr, "%s: GMT Fatal Error: z-slice to skip not in [z0 - z1 -] format!\n", GMT_program);
+				exit (EXIT_FAILURE);
+			}
+			GMT_lut[n].z_high = atof (T2);
+			GMT_lut[n].skip = TRUE;		/* Don't paint this slice if possible*/
+			for (i = 0; i < 3; i++) GMT_lut[n].rgb_low[i] = GMT_lut[n].rgb_high[i] = gmtdefs.page_rgb[i];	/* If you must, use page color */
+		}
+		else if (T1[0] == 'p' || T1[0] == 'P') {	/* Gave pattern fill */
 			GMT_lut[n].fill = (struct GMT_FILL *) GMT_memory (VNULL, 1, sizeof (struct GMT_FILL), GMT_program);
-			if (GMT_getfill (first_r, GMT_lut[n].fill)) {
-				fprintf (stderr, "%s: GMT Fatal Error: Pattern fill not understood!\n", GMT_program);
+			if (GMT_getfill (T1, GMT_lut[n].fill)) {
+				fprintf (stderr, "%s: GMT Fatal Error: CPT Pattern fill (%s) not understood!\n", GMT_program, T1);
 				exit (EXIT_FAILURE);
 			}
 			else if (nread != 4) {
 				fprintf (stderr, "%s: GMT Fatal Error: z-slice with pattern fill not in [z0 pattern z1 -] format!\n", GMT_program);
 				exit (EXIT_FAILURE);
 			}
-			GMT_lut[n].z_high = g0;
+			GMT_lut[n].z_high = atof (T2);
 			GMT_cpt_pattern = TRUE;
 		}
-		else {	/* Shades, RGB, or HSV */
-		
-			r0 = (first_r[0] == '-') ? -1.0 : atof (first_r);
-			b0 = (first_b[0] == '-') ? -1.0 : atof (first_b);
-		
-			if (nread == 4 || color_model == GMT_RGB) {	/* Read r,b,g or gray */
-				if (nread == 4)	{	/* Grayshades given */
-					GMT_lut[n].z_high = g0;
-					r1 = b0;
-					GMT_lut[n].rgb_low[0] = GMT_lut[n].rgb_low[1] = GMT_lut[n].rgb_low[2] = irint (r0);
-					GMT_lut[n].rgb_high[0] = GMT_lut[n].rgb_high[1] = GMT_lut[n].rgb_high[2] = irint (r1);
-				}
-				else {
-					GMT_lut[n].rgb_low[0] = irint (r0);
-					GMT_lut[n].rgb_low[1] = irint (g0);
-					GMT_lut[n].rgb_low[2] = irint (b0);
-					GMT_lut[n].rgb_high[0] = irint (r1);
-					GMT_lut[n].rgb_high[1] = irint (g1);
-					GMT_lut[n].rgb_high[2] = irint (b1);
-				}
+		else {							/* Shades, RGB, HSV, or CMYK */
+			if (nread == 4) {	/* gray shades */
+				GMT_lut[n].z_high = atof (T2);
+				GMT_lut[n].rgb_low[0]  = GMT_lut[n].rgb_low[1]  = GMT_lut[n].rgb_low[2]  = irint (atof (T1));
+				GMT_lut[n].rgb_high[0] = GMT_lut[n].rgb_high[1] = GMT_lut[n].rgb_high[2] = irint (atof (T3));
+				if (GMT_lut[n].rgb_low[0] < 0 || GMT_lut[n].rgb_high[0] < 0) error++;
 			}
-			else {	/* Read hue, saturation, value */
-				GMT_hsv_to_rgb (GMT_lut[n].rgb_low, r0, g0, b0);
-				GMT_hsv_to_rgb (GMT_lut[n].rgb_high, r1, g1, b1);
+			else if (gmtdefs.color_model == GMT_CMYK) {
+				GMT_lut[n].z_high = atof (T5);
+				sprintf (option, "%s/%s/%s/%s", T1, T2, T3, T4);
+				if (GMT_getrgb (option, GMT_lut[n].rgb_low)) error++;
+				sprintf (option, "%s/%s/%s/%s", T6, T7, T8, T9);
+				if (GMT_getrgb (option, GMT_lut[n].rgb_high)) error++;
+			}
+			else {			/* RGB or HSV */
+				GMT_lut[n].z_high = atof (T4);
+				sprintf (option, "%s/%s/%s", T1, T2, T3);
+				if (GMT_getrgb (option, GMT_lut[n].rgb_low)) error++;
+				sprintf (option, "%s/%s/%s", T5, T6, T7);
+				if (GMT_getrgb (option, GMT_lut[n].rgb_high)) error++;
 			}
 		
 			dz = GMT_lut[n].z_high - GMT_lut[n].z_low;
@@ -590,38 +566,14 @@ void GMT_read_cpt (char *cpt_file)
 			}
 			GMT_lut[n].i_dz = 1.0 / dz;
 
-			if (GMT_lut[n].rgb_low[0] != -1) {	/* Ok to check these colors */
-				GMT_lut[n].skip = FALSE;
-				if (!(GMT_lut[n].rgb_low[0] == GMT_lut[n].rgb_low[1] && 
-					GMT_lut[n].rgb_low[0] == GMT_lut[n].rgb_low[2])) GMT_gray = FALSE;
-				if (!(GMT_lut[n].rgb_high[0] == GMT_lut[n].rgb_high[1] && 
-				GMT_lut[n].rgb_high[0] == GMT_lut[n].rgb_high[2])) GMT_gray = FALSE;
-				if (GMT_gray && !(GMT_lut[n].rgb_low[0] == 0 || GMT_lut[n].rgb_low[0] == 255)) GMT_b_and_w = FALSE;
-				if (GMT_gray && !(GMT_lut[n].rgb_high[0] == 0 || GMT_lut[n].rgb_high[0] == 255)) GMT_b_and_w = FALSE;
-				for (i = 0; !GMT_continuous && i < 3; i++)
-					if (GMT_lut[n].rgb_low[i] != GMT_lut[n].rgb_high[i]) GMT_continuous = TRUE;
-				for (j = 0; j < 3; j++) GMT_lut[n].rgb_diff[j] = GMT_lut[n].rgb_high[j] - GMT_lut[n].rgb_low[j];	/* Used in GMT_get_rgb24 */
-
-			}
-			else {
-				GMT_lut[n].skip = TRUE;	/* Don't paint this slice */
-				if (GMT_lut[n].skip && nread != 4) {
-					fprintf (stderr, "%s: GMT Fatal Error: z-slice to skip not in [z0 - z1 -] format!\n", GMT_program);
-					exit (EXIT_FAILURE);
-				}
-				for (i = 0; i < 3; i++) GMT_lut[n].rgb_low[i] = GMT_lut[n].rgb_high[i] = gmtdefs.page_rgb[i];
-			}
+			if (!GMT_is_gray (GMT_lut[n].rgb_low[0],  GMT_lut[n].rgb_low[1],  GMT_lut[n].rgb_low[2]))  GMT_gray = FALSE;
+			if (!GMT_is_gray (GMT_lut[n].rgb_high[0], GMT_lut[n].rgb_high[1], GMT_lut[n].rgb_high[2])) GMT_gray = FALSE;
+			if (GMT_gray && !GMT_is_bw(GMT_lut[n].rgb_low[0]))  GMT_b_and_w = FALSE;
+			if (GMT_gray && !GMT_is_bw(GMT_lut[n].rgb_high[0])) GMT_b_and_w = FALSE;
+			for (i = 0; !GMT_continuous && i < 3; i++) if (GMT_lut[n].rgb_low[i] != GMT_lut[n].rgb_high[i]) GMT_continuous = TRUE;
+			for (i = 0; i < 3; i++) GMT_lut[n].rgb_diff[i] = GMT_lut[n].rgb_high[i] - GMT_lut[n].rgb_low[i];	/* Used in GMT_get_rgb24 */
 		}
 
-		/* Determine if psscale need to label these steps */
-
-		c = line[strlen(line)-2]; 
-		if (c == 'L' || c == 'l')
-			GMT_lut[n].annot = 1;
-		else if (c == 'U' || c == 'u')
-			GMT_lut[n].annot = 2;
-		else if (c == 'B' || c == 'b')
-			GMT_lut[n].annot = 3;
 		n++;
 		if (n == n_alloc) {
 			i = n_alloc;
@@ -657,13 +609,12 @@ void GMT_read_cpt (char *cpt_file)
 		for (i = 0; i < GMT_n_colors; i++) GMT_lut[i].annot = 1;
 		GMT_lut[i-1].annot = 3;
 	}
-	if (!(GMT_bfn.foreground_rgb[0] == GMT_bfn.foreground_rgb[1] && GMT_bfn.foreground_rgb[0] == GMT_bfn.foreground_rgb[2])) GMT_gray = FALSE;
-	if (GMT_gray && !(GMT_bfn.foreground_rgb[0] == 0 || GMT_bfn.foreground_rgb[0] == 255)) GMT_b_and_w = FALSE;
-	if (!(GMT_bfn.background_rgb[0] == GMT_bfn.background_rgb[1] && GMT_bfn.background_rgb[0] == GMT_bfn.background_rgb[2])) GMT_gray = FALSE;
-	if (GMT_gray && !(GMT_bfn.background_rgb[0] == 0 || GMT_bfn.background_rgb[0] == 255)) GMT_b_and_w = FALSE;
-	if (!(GMT_bfn.nan_rgb[0] == GMT_bfn.nan_rgb[1] && GMT_bfn.nan_rgb[0] == GMT_bfn.nan_rgb[2])) GMT_gray = FALSE;
-	if (GMT_gray && !(GMT_bfn.nan_rgb[0] == 0 || GMT_bfn.nan_rgb[0] == 255)) GMT_b_and_w = FALSE;
+	for (id = 0; id < 3; id++) {
+		if (!GMT_is_gray (GMT_bfn[id].rgb[0], GMT_bfn[id].rgb[1],  GMT_bfn[id].rgb[2]))  GMT_gray = FALSE;
+		if (GMT_gray && !GMT_is_bw(GMT_bfn[id].rgb[0]))  GMT_b_and_w = FALSE;
+	}
 	if (!GMT_gray) GMT_b_and_w = FALSE;
+	gmtdefs.color_model = color_model;	/* Reset to what it was before */
 }
 
 void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, int log_mode)
@@ -675,8 +626,8 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 
 	int i, j, k, nx, upper, lower, rgb_low[3], rgb_high[3];
 	BOOLEAN even = FALSE;	/* TRUE when nz is passed as negative */
-	double *x, *z_out, a, b, h1, h2, h3, v1, v2, v3, s1, s2, s3, f, x_inc;
-	char format[BUFSIZ];
+	double *x, *z_out, a, b, h1, h2, v1, v2, s1, s2, f, x_inc, cmyk_low[4], cmyk_high[4];
+	char format[BUFSIZ], code[3] = {'B', 'F', 'N'};
 	struct GMT_LUT *lut;
 
 	if (nz < 0) {	/* Called from grd2cpt which want equal area colors */
@@ -738,6 +689,8 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 
 	if (gmtdefs.color_model == GMT_HSV)
 		fprintf (GMT_stdout, "#COLOR_MODEL = HSV\n");
+	else if (gmtdefs.color_model == GMT_CMYK)
+		fprintf (GMT_stdout, "#COLOR_MODEL = CMYK\n");
 	else
 		fprintf (GMT_stdout, "#COLOR_MODEL = RGB\n");
 
@@ -745,6 +698,9 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 
 	if (gmtdefs.color_model == GMT_HSV) {
 		sprintf(format, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
+	}
+	else if (gmtdefs.color_model == GMT_CMYK) {
+		sprintf(format, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
 	}
 	else {
 		sprintf(format, "%s\t%%d\t%%d\t%%d\t%s\t%%d\t%%d\t%%d\n", gmtdefs.d_format, gmtdefs.d_format);
@@ -780,32 +736,40 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 			GMT_rgb_to_hsv(rgb_high, &h2, &s2, &v2);
 			fprintf (GMT_stdout, format, z_out[lower], h1, s1, v1, z_out[upper], h2, s2, v2);
 		}
-		else {
-			fprintf (GMT_stdout, format, z_out[lower], rgb_low[0], rgb_low[1], rgb_low[2], z_out[upper], rgb_high[0], rgb_high[1], rgb_high[2]);
+		else if (gmtdefs.color_model == GMT_CMYK) {
+			GMT_rgb_to_cmyk (rgb_low, cmyk_low);
+			GMT_rgb_to_cmyk (rgb_high, cmyk_high);
+			fprintf (GMT_stdout, format, z_out[lower], cmyk_low[0], cmyk_low[1], cmyk_low[2], cmyk_low[3],
+				z_out[upper], cmyk_high[0], cmyk_high[1], cmyk_high[2], cmyk_high[3]);
 		}
+		else
+			fprintf (GMT_stdout, format, z_out[lower], rgb_low[0], rgb_low[1], rgb_low[2], z_out[upper], rgb_high[0], rgb_high[1], rgb_high[2]);
 	}
 
 	/* Background, foreground, and nan colors */
 
 	if (reverse) {	/* Flip foreground and background colors */
-		memcpy ((void *)rgb_low, (void *)GMT_bfn.background_rgb, (size_t)(3 * sizeof (int)));
-		memcpy ((void *)GMT_bfn.background_rgb, (void *)GMT_bfn.foreground_rgb, (size_t)(3 * sizeof (int)));
-		memcpy ((void *)GMT_bfn.foreground_rgb, (void *)rgb_low, (size_t)(3 * sizeof (int)));
+		memcpy ((void *)rgb_low, (void *)GMT_bfn[GMT_BGD].rgb, (size_t)(3 * sizeof (int)));
+		memcpy ((void *)GMT_bfn[GMT_BGD].rgb, (void *)GMT_bfn[GMT_FGD].rgb, (size_t)(3 * sizeof (int)));
+		memcpy ((void *)GMT_bfn[GMT_FGD].rgb, (void *)rgb_low, (size_t)(3 * sizeof (int)));
 	}
 	
 	if (gmtdefs.color_model == GMT_HSV) {
 		sprintf(format, "%%c\t%s\t%s\t%s\n", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
-		GMT_rgb_to_hsv(GMT_bfn.background_rgb, &h1, &s1, &v1);
-		GMT_rgb_to_hsv(GMT_bfn.foreground_rgb, &h2, &s2, &v2);
-		GMT_rgb_to_hsv(GMT_bfn.nan_rgb, &h3, &s3, &v3);
-		fprintf (GMT_stdout, format, 'B', h1, s1, v1);
-		fprintf (GMT_stdout, format, 'F', h2, s2, v2);
-		fprintf (GMT_stdout, format, 'N', h3, s3, v3);
+		for (k = 0; k < 3; k++) {
+			GMT_rgb_to_hsv(GMT_bfn[k].rgb, &h1, &s1, &v1);
+			fprintf (GMT_stdout, format, code[k], h1, s1, v1);
+		}
+	}
+	else if (gmtdefs.color_model == GMT_CMYK) {
+		sprintf(format, "%%c\t%s\t%s\t%s\t%s\n", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
+		for (k = 0; k < 3; k++) {
+			GMT_rgb_to_cmyk (GMT_bfn[k].rgb, cmyk_low);
+			fprintf (GMT_stdout, format, code[k], cmyk_low[0], cmyk_low[1], cmyk_low[2], cmyk_low[3]);
+		}
 	}
 	else {
-		fprintf (GMT_stdout, "B\t%d\t%d\t%d\n", GMT_bfn.background_rgb[0], GMT_bfn.background_rgb[1], GMT_bfn.background_rgb[2]);
-		fprintf (GMT_stdout, "F\t%d\t%d\t%d\n", GMT_bfn.foreground_rgb[0], GMT_bfn.foreground_rgb[1], GMT_bfn.foreground_rgb[2]);
-		fprintf (GMT_stdout, "N\t%d\t%d\t%d\n", GMT_bfn.nan_rgb[0], GMT_bfn.nan_rgb[1], GMT_bfn.nan_rgb[2]);
+		for (k = 0; k < 3; k++) fprintf (GMT_stdout, "%c\t%d\t%d\t%d\n", code[k], GMT_bfn[k].rgb[0], GMT_bfn[k].rgb[1], GMT_bfn[k].rgb[2]);
 	}
 
 	GMT_free ((void *)x);
@@ -867,16 +831,16 @@ int GMT_get_rgb24 (double value, int *rgb)
 	index = GMT_get_index (value);
 	
 	if (index == -1) {
-		memcpy ((void *)rgb, (void *)GMT_bfn.nan_rgb, 3 * sizeof (int));
-		GMT_cpt_skip = GMT_bfn.skip[2];
+		memcpy ((void *)rgb, (void *)GMT_bfn[GMT_NAN].rgb, 3 * sizeof (int));
+		GMT_cpt_skip = GMT_bfn[GMT_NAN].skip;
 	}
 	else if (index == -2) {
-		memcpy ((void *)rgb, (void *)GMT_bfn.background_rgb, 3 * sizeof (int));
-		GMT_cpt_skip = GMT_bfn.skip[1];
+		memcpy ((void *)rgb, (void *)GMT_bfn[GMT_BGD].rgb, 3 * sizeof (int));
+		GMT_cpt_skip = GMT_bfn[GMT_BGD].skip;
 	}
 	else if (index == -3) {
-		memcpy ((void *)rgb, (void *)GMT_bfn.foreground_rgb, 3 * sizeof (int));
-		GMT_cpt_skip = GMT_bfn.skip[0];
+		memcpy ((void *)rgb, (void *)GMT_bfn[GMT_FGD].rgb, 3 * sizeof (int));
+		GMT_cpt_skip = GMT_bfn[GMT_FGD].skip;
 	}
 	else if (GMT_lut[index].skip) {		/* Set to page color for now */
 		memcpy ((void *)rgb, (void *)gmtdefs.page_rgb, 3 * sizeof (int));
@@ -967,14 +931,17 @@ void GMT_rgb_to_cmyk (int rgb[], double cmyk[])
 	
 	int i;
 	
-	/* RGB is in 0-255, CMYK will be in 0-1 range */
+	/* RGB is in integer 0-255, CMYK will be in float 0-100 range */
 	
-	for (i = 0; i < 3; i++) cmyk[i] = 1.0 - (rgb[i] / 255.0);
+	for (i = 0; i < 3; i++) cmyk[i] = 100.0 - (rgb[i] / 2.55);
 	cmyk[3] = MIN (cmyk[0], MIN (cmyk[1], cmyk[2]));	/* Default Black generation */
-	
+	if (cmyk[3] < GMT_CONV_LIMIT) cmyk[3] = 0.0;
 	/* To implement device-specific blackgeneration, supply lookup table K = BG[cmyk[3]] */
 	
-	for (i = 0; i < 3; i++) cmyk[i] -= cmyk[3];		/* Default undercolor removal */
+	for (i = 0; i < 3; i++) {
+		cmyk[i] -= cmyk[3];		/* Default undercolor removal */
+		if (cmyk[i] < GMT_CONV_LIMIT) cmyk[i] = 0.0;
+	}
 	
 	/* To implement device-specific undercolor removal, supply lookup table u = UR[cmyk[3]] */
 }
@@ -986,9 +953,9 @@ void GMT_cmyk_to_rgb (int rgb[], double cmyk[])
 	int i;
 	double frgb[3];
 	
-	/* CMYK is in 0-1, RGB will be in 0-255 range */
+	/* CMYK is in 0-100, RGB will be in 0-255 range */
 	
-	for (i = 0; i < 3; i++) rgb[i] = (int) floor ((1.0 - cmyk[i] - cmyk[3]) * 255.999);
+	for (i = 0; i < 3; i++) rgb[i] = (int) floor ((100.0 - cmyk[i] - cmyk[3]) * 2.55999);
 }
 
 void GMT_illuminate (double intensity, int rgb[])
