@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.24 2001-08-28 02:37:01 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.25 2001-08-28 19:25:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1378,7 +1378,7 @@ int GMT_setparameter (char *keyword, char *value)
 			strncpy (gmtdefs.output_date_format, value, 32);
 			break;
 		case 62:
-			strncpy (gmtdefs.output_degree_format, value, 8);
+			strncpy (gmtdefs.output_degree_format, value, 32);
 			break;
 		case 63:
 			strncpy (gmtdefs.plot_clock_format, value, 32);
@@ -1387,7 +1387,7 @@ int GMT_setparameter (char *keyword, char *value)
 			strncpy (gmtdefs.plot_date_format, value, 32);
 			break;
 		case 65:
-			strncpy (gmtdefs.plot_degree_format, value, 8);
+			strncpy (gmtdefs.plot_degree_format, value, 32);
 			break;
 		case 66:
 			error = true_false_or_error (lower_value, &gmtdefs.time_is_interval);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.16 2001-08-28 02:37:01 pwessel Exp $
+ *	$Id: gmt.h,v 1.17 2001-08-28 19:25:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -122,6 +122,31 @@
 #define GMT_INCH	1
 #define GMT_M		2
 #define GMT_PT		3
+
+#define GMT_DEG2SEC_F	3600.0
+#define GMT_DEG2SEC_I	3600
+#define GMT_SEC2DEG	(1.0 / GMT_DEG2SEC_F)
+#define GMT_DEG2MIN_F	60.0
+#define GMT_DEG2MIN_I	60
+#define GMT_MIN2DEG	(1.0 / GMT_DEG2MIN_F)
+#define GMT_MIN2SEC_F	60.0
+#define GMT_MIN2SEC_I	60
+#define GMT_SEC2MIN	(1.0 / GMT_MIN2SEC_F)
+#define GMT_DAY2HR_F	24.0
+#define GMT_DAY2HR_I	24
+#define GMT_HR2DAY	(1.0 / GMT_DAY2HR_F)
+#define GMT_DAY2MIN_F	1440.0
+#define GMT_DAY2MIN_I	1440
+#define GMT_MIN2DAY	(1.0 / GMT_DAY2MIN_F)
+#define GMT_DAY2SEC_F	86400.0
+#define GMT_DAY2SEC_I	86400
+#define GMT_SEC2DAY	(1.0 / GMT_DAY2SEC_F)
+#define GMT_HR2SEC_F	3600.0
+#define GMT_HR2SEC_I	3600
+#define GMT_SEC2HR	(1.0 / GMT_HR2SEC_F)
+#define GMT_HR2MIN_F	60.0
+#define GMT_HR2MIN_I	60
+#define GMT_MIN2HR	(1.0 / GMT_HR2MIN_F)
 
 /*--------------------------------------------------------------------
  *			GMT FUNCTION MACRO DEFINITIONS
