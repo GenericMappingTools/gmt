@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.35 2003-02-18 22:11:42 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.36 2003-02-19 02:45:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -170,7 +170,12 @@ int GMT_getfill (char *line, struct GMT_FILL *fill)
 		}
 	}
 	else {	/* Plain color or shade */
-		if ((count = slash_count (line)) == 2)
+		if ((count = slash_count (line)) == 3) {	/* c/m/y/k */
+			double cmyk[4];
+			n = sscanf (line, "%lf/%lf/%lf/%lf", &cmyk[0], &cmyk[1], &cmyk[2], &cmyk[3]);
+			GMT_cmyk_to_rgb (fill->rgb, cmyk);
+		}
+		else if (count == 2)
 			n = sscanf (line, "%d/%d/%d", &fill->rgb[0], &fill->rgb[1], &fill->rgb[2]);
 		else if (count == 0) {
 			n = sscanf (line, "%d", &fill->rgb[0]);
@@ -179,7 +184,7 @@ int GMT_getfill (char *line, struct GMT_FILL *fill)
 		else
 			n = 0;
 		fill->use_pattern = FALSE;
-		error = (n < 1 || n > 3) ? TRUE : GMT_check_rgb (fill->rgb);
+		error = (!(n == 1 || n == 3 || n == 4)) ? TRUE : GMT_check_rgb (fill->rgb);
 	}
 	return (error);
 }

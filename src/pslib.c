@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.48 2003-02-18 22:11:42 pwessel Exp $
+ *	$Id: pslib.c,v 1.49 2003-02-19 02:45:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1098,7 +1098,7 @@ void ps_pie (double x, double y, double radius, double az1, double az2, int rgb[
 	ir = irint (radius * ps.scale);
 	fprintf (ps.fp, "%d %d M ", ix, iy);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, " %d %d %d %g %g P%d\n", ix, iy, ir, az1, az2, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, " %d %d %d %lg %lg P%d\n", ix, iy, ir, az1, az2, outline + ps_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -1267,9 +1267,9 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps.xoff = xoff;
 	ps.yscl = yscl;
 	ps.yoff = yoff;
-	strcpy (ps.bw_format, "%.3g ");			/* Default format used for grayshade value */
-	strcpy (ps.rgb_format, "%.3g %.3g %.3g ");	/* Same, for color triplets */
-	strcpy (ps.cmyk_format, "%.3g %.3g %.3g %.3g ");	/* Same, for CMYK quadruples */
+	strcpy (ps.bw_format, "%.3lg ");			/* Default format used for grayshade value */
+	strcpy (ps.rgb_format, "%.3lg %.3lg %.3lg ");	/* Same, for color triplets */
+	strcpy (ps.cmyk_format, "%.3lg %.3lg %.3lg %.3lg ");	/* Same, for CMYK quadruples */
 
 	/* In case this is the last overlay, set the Bounding box coordinates to be used atend */
 
@@ -3788,12 +3788,13 @@ int ps_place_color (int rgb[])
 		if (ps.cmyk_mode) {
 			double cmyk[4];
 			ps_rgb_to_cmyk (rgb, cmyk);
-			fprintf (ps.fp, ps.cmyk_format, cmyk);
+			fprintf (ps.fp, ps.cmyk_format, cmyk[0], cmyk[1], cmyk[2], cmyk[3]);
 			pmode = 2;
 		}
-		else
+		else {
 			fprintf (ps.fp, ps.rgb_format, rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255);
 			pmode = 1;
+		}
 	}
 	else {
 		fprintf (ps.fp, ps.bw_format, rgb[0] * I_255);
