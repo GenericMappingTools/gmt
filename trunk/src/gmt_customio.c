@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.4 2001-03-22 17:12:44 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.5 2001-12-18 03:15:03 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1331,7 +1331,7 @@ int GMT_srf_read_grd_info (char *file, struct GRD_HEADER *header)
 	}
 	sprintf (id, "%.4s", h.id);
 	if (strcmp (id, "DSBB")) {
-		fprintf (stderr, "GMT Fatal Error: %s is not a valid surfer grid\n", file);
+		fprintf (stderr, "GMT Fatal Error: %s is not a valid Surfer grid\n", file);
 		exit (EXIT_FAILURE);
 	}
 
@@ -1339,7 +1339,7 @@ int GMT_srf_read_grd_info (char *file, struct GRD_HEADER *header)
 	
 	GMT_grd_init (header, 0, (char **)NULL, FALSE);
 
-	strcpy (header->title, "Grid originaly from Surfer");
+	strcpy (header->title, "Grid originally from Surfer");
 	header->nx = (int)h.nx;		 header->ny = (int)h.ny;
 	header->x_min = h.x_min;	 header->x_max = h.x_max;
 	header->y_min = h.y_min;	 header->y_max = h.y_max;
