@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.13 2002-04-05 22:18:12 pwessel Exp $
+ *	$Id: libspotter.c,v 1.14 2002-04-08 21:38:25 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -52,6 +52,9 @@ void matrix_to_pole (double T[3][3], double *plon, double *plat, double *w);
 void matrix_transpose (double At[3][3], double A[3][3]);
 void matrix_mult (double a[3][3], double b[3][3], double c[3][3]);
 void make_rot_matrix (double lonp, double latp, double w, double R[3][3]);
+void reverse_rotation_order (struct EULER *p, int n);
+void xyw_to_struct_euler (struct EULER *p, double lon[], double lat[], double w[], int n, BOOLEAN stages, BOOLEAN convert);
+void set_I_matrix (double R[3][3]);
 
 void spotter_finite_to_fwstages (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates);
 
@@ -477,7 +480,7 @@ void spotter_finite_to_fwstages (struct EULER p[], int n, BOOLEAN finite_rates, 
 	 
 	int i, j;
 	double *elon, *elat, *ew, t_old;
-	double R_new[3][3], R_old[3][3], R_stage[3][3];
+	double R_young[3][3], R_old[3][3], R_stage[3][3];
 	struct EULER e_tmp;
 
 	/* Expects total reconstruction models to have youngest poles first */
@@ -486,54 +489,34 @@ void spotter_finite_to_fwstages (struct EULER p[], int n, BOOLEAN finite_rates, 
 	elat = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
 	ew   = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
 	
-	memset ((void *)R_new, 0, (size_t)(9 * sizeof (double)));
-	R_new[0][0] = R_new[1][1] = R_new[2][2] = 1.0;
+	set_I_matrix (R_young);		/* The first time, R_young is simply I */
 	
 	/* First forward stage pole is the youngest total reconstruction pole */
 
 	t_old = 0.0;
 	for (i = 0; i < n; i++) {
-		if (finite_rates) p[i].omega *= p[i].duration;	/* Convert opening rate to opening angle */
-		make_rot_matrix (p[i].lon, p[i].lat, p[i].omega, R_old);
-		matrix_mult (R_old, R_new, R_stage);
-		matrix_to_pole (R_stage, &elon[i], &elat[i], &ew[i]);
-		if (elon[i] > 180.0) elon[i] -= 360.0;
-		matrix_transpose (R_new, R_old);
+		if (finite_rates) p[i].omega *= p[i].duration;			/* Convert opening rate to opening angle */
+		make_rot_matrix (p[i].lon, p[i].lat, -p[i].omega, R_old);	/* Make rotation matrix from rotation parameters, take transpose by passing -omega */
+		matrix_mult (R_young, R_old, R_stage);				/* This is R_stage = R_young * R_old^t */
+		matrix_to_pole (R_stage, &elon[i], &elat[i], &ew[i]);		/* Get rotation parameters from matrix */
+		if (elon[i] > 180.0) elon[i] -= 360.0;				/* Adjust lon */
+		matrix_transpose (R_young, R_old);				/* Set R_young = (R_old^t)^t = R_old */
 		p[i].t_stop = t_old;
 		t_old = p[i].t_start;
 	}
 	
-	/* Time to put back */
+	/* Repopulate the EULER structure given the rotation parameters */
 	
-	for (i = 0; i < n; i++) {
-		p[i].lon = elon[i];
-		p[i].lat = elat[i];
-		p[i].duration = p[i].t_start - p[i].t_stop;
-		p[i].omega = -ew[i];				/* Reverse direction */
-		if (stage_rates) p[i].omega /= p[i].duration;	/* Convert opening angle to opening rate */
-		p[i].omega_r = p[i].omega * D2R;
-		p[i].sin_lat = sin (p[i].lat * D2R);
-		p[i].cos_lat = cos (p[i].lat * D2R);
-		p[i].lon_r = p[i].lon * D2R;	
-		p[i].lat_r = p[i].lat * D2R;
-	}
+	xyw_to_struct_euler (p, elon, elat, ew, n, TRUE, stage_rates);
 
 	GMT_free ((void *)elon);
 	GMT_free ((void *)elat);
 	GMT_free ((void *)ew);
 	
-	/* Flip order */
+	/* Flip order since stages go from oldest to youngest */
 	
-	for (i = 0; i < n/2; i++) {
-		j = n - i - 1;
-		if (i != j) {
-			e_tmp = p[i];
-			p[i] = p[j];
-			p[j] = e_tmp;
-		}
-	}
+	reverse_rotation_order (p, n);	/* Flip order since stages go from oldest to youngest */
 }
-
 
 void spotter_finite_to_stages (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates)
 {
@@ -546,7 +529,7 @@ void spotter_finite_to_stages (struct EULER p[], int n, BOOLEAN finite_rates, BO
 	 
 	int i, j;
 	double *elon, *elat, *ew, t_old;
-	double R_new[3][3], R_old[3][3], R_stage[3][3];
+	double R_young[3][3], R_old[3][3], R_stage[3][3];
 	struct EULER e_tmp;
 
 	/* Expects total reconstruction models to have youngest poles first */
@@ -555,50 +538,29 @@ void spotter_finite_to_stages (struct EULER p[], int n, BOOLEAN finite_rates, BO
 	elat = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
 	ew   = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
 	
-	memset ((void *)R_new, 0, (size_t)(9 * sizeof (double)));
-	R_new[0][0] = R_new[1][1] = R_new[2][2] = 1.0;
+	set_I_matrix (R_young);		/* The first time, R_young is simply I */
 	
 	t_old = 0.0;
 	for (i = 0; i < n; i++) {
-		if (finite_rates) p[i].omega *= p[i].duration;	/* Convert opening rate to opening angle */
-		make_rot_matrix (p[i].lon, p[i].lat, p[i].omega, R_old);
-		matrix_mult (R_new, R_old, R_stage);
-		matrix_to_pole (R_stage, &elon[i], &elat[i], &ew[i]);
-		if (elon[i] > 180.0) elon[i] -= 360.0;
-		matrix_transpose (R_new, R_old);
+		if (finite_rates) p[i].omega *= p[i].duration;			/* Convert opening rate to opening angle */
+		make_rot_matrix (p[i].lon, p[i].lat, p[i].omega, R_old);	/* Get rotation matrix from pole and angle */
+		matrix_mult (R_young, R_old, R_stage);				/* This is R_stage = R_young^t * R_old */
+		matrix_to_pole (R_stage, &elon[i], &elat[i], &ew[i]);		/* Get rotation parameters from matrix */
+		if (elon[i] > 180.0) elon[i] -= 360.0;				/* Adjust lon */
+		matrix_transpose (R_young, R_old);				/* Sets R_young = transpose (R_old) for next round */
 		p[i].t_stop = t_old;
 		t_old = p[i].t_start;
 	}
 	
-	/* Time to put back */
+	/* Repopulate the EULER structure given the rotation parameters */
 	
-	for (i = 0; i < n; i++) {
-		p[i].lon = elon[i];
-		p[i].lat = elat[i];
-		p[i].duration = p[i].t_start - p[i].t_stop;
-		p[i].omega = ew[i];
-		if (stage_rates) p[i].omega /= p[i].duration;	/* Convert opening angle to opening rate */
-		p[i].omega_r = p[i].omega * D2R;
-		p[i].sin_lat = sin (p[i].lat * D2R);
-		p[i].cos_lat = cos (p[i].lat * D2R);
-		p[i].lon_r = p[i].lon * D2R;	
-		p[i].lat_r = p[i].lat * D2R;
-	}
+	xyw_to_struct_euler (p, elon, elat, ew, n, TRUE, stage_rates);
 
 	GMT_free ((void *)elon);
 	GMT_free ((void *)elat);
 	GMT_free ((void *)ew);
 	
-	/* Flip order */
-	
-	for (i = 0; i < n/2; i++) {
-		j = n - i - 1;
-		if (i != j) {
-			e_tmp = p[i];
-			p[i] = p[j];
-			p[j] = e_tmp;
-		}
-	}
+	reverse_rotation_order (p, n);	/* Flip order since stages go from oldest to youngest */
 }
 
 void spotter_stages_to_finite (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates)
@@ -612,46 +574,32 @@ void spotter_stages_to_finite (struct EULER p[], int n, BOOLEAN finite_rates, BO
 
 	int i, j;
 	double *elon, *elat, *ew;
-	double R_new[3][3], R_old[3][3], R_stage[3][3];
+	double R_young[3][3], R_old[3][3], R_stage[3][3];
 	struct EULER e_tmp;
 
 	/* Expects stage pole models to have oldest poles first, so we must flip order */
 	
-	for (i = 0; i < n/2; i++) {
-		j = n - i - 1;
-		if (i != j) {
-			e_tmp = p[i];
-			p[i] = p[j];
-			p[j] = e_tmp;
-		}
-	}
+	reverse_rotation_order (p, n);	/* Expects stage pole models to have oldest poles first, so we must flip order */
 	
 	elon = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
 	elat = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
 	ew   = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
 	
-	memset ((void *)R_old, 0, (size_t)(9 * sizeof (double)));
-	R_old[0][0] = R_old[1][1] = R_old[2][2] = 1.0;
+	set_I_matrix (R_old);		/* The first time, R_old is simply I */
 	
 	for (i = 0; i < n; i++) {
-		if (stage_rates) p[i].omega *= p[i].duration;	/* Convert opening rate to opening angle */
-		make_rot_matrix (p[i].lon, p[i].lat, -p[i].omega, R_stage);
-		matrix_mult (R_stage, R_old, R_new);
-		memcpy ((void *)R_old, (void *)R_new, (size_t)(9 * sizeof (double)));
-		matrix_to_pole (R_new, &elon[i], &elat[i], &ew[i]);
-		if (elon[i] > 180.0) elon[i] -= 360.0;
-		p[i].lon = elon[i];	
-		p[i].lat = elat[i];
-		p[i].duration = p[i].t_start;
-		p[i].omega = -ew[i];
-		if (finite_rates) p[i].omega /= p[i].duration;	/* Convert opening angle to opening rate */
-		p[i].omega_r = p[i].omega * D2R;
-		p[i].sin_lat = sin (p[i].lat * D2R);
-		p[i].cos_lat = cos (p[i].lat * D2R);
-		p[i].lon_r = p[i].lon * D2R;	
-		p[i].lat_r = p[i].lat * D2R;
+		if (stage_rates) p[i].omega *= p[i].duration;				/* Convert opening rate to opening angle */
+		make_rot_matrix (p[i].lon, p[i].lat, p[i].omega, R_stage);		/* Make matrix from rotation parameters */
+		matrix_mult (R_old, R_stage, R_young);					/* Set R_young = R_old * R_stage */
+		memcpy ((void *)R_old, (void *)R_young, (size_t)(9 * sizeof (double)));	/* Set R_old = R_young for next time around */
+		matrix_to_pole (R_young, &elon[i], &elat[i], &ew[i]);			/* Get rotation parameters from matrix */
+		if (elon[i] > 180.0) elon[i] -= 360.0;					/* Adjust lon */
 	}
 	
+	/* Repopulate the EULER structure given the rotation parameters */
+	
+	xyw_to_struct_euler (p, elon, elat, ew, n, FALSE, finite_rates);
+
 	GMT_free ((void *)elon);
 	GMT_free ((void *)elat);
 	GMT_free ((void *)ew);
@@ -855,3 +803,44 @@ void matrix_to_pole (double T[3][3], double *plon, double *plat, double *w)
 	}
 }
 
+void reverse_rotation_order (struct EULER *p, int n)
+{	/* Simply shuffles the array from 1:n to n:1 */
+	int i, j;
+	struct EULER p_tmp;
+	
+	for (i = 0; i < n/2; i++) {
+		j = n - i - 1;
+		if (i != j) {
+			p_tmp = p[i];
+			p[i] = p[j];
+			p[j] = p_tmp;
+		}
+	}
+}
+
+void xyw_to_struct_euler (struct EULER *p, double lon[], double lat[], double w[], int n, BOOLEAN stages, BOOLEAN convert)
+{	/* Reload the EULER structure from the lon, lat, w arrays.
+	 * stages is TRUE if we are loading stage rotations (FALSE is finite poles).
+	 * convert is TRUE if we must change angles to rates or vice versa */
+	int i;
+	
+	for (i = 0; i < n; i++) {
+		p[i].lon = lon[i];	
+		p[i].lat = lat[i];
+		p[i].duration = (stages) ? p[i].t_start - p[i].t_stop : p[i].t_start;
+		p[i].omega = w[i];
+		if (convert) p[i].omega /= p[i].duration;	/* Convert opening angle to opening rate */
+		p[i].omega_r = p[i].omega * D2R;
+		p[i].sin_lat = sin (p[i].lat * D2R);
+		p[i].cos_lat = cos (p[i].lat * D2R);
+		p[i].lon_r = p[i].lon * D2R;	
+		p[i].lat_r = p[i].lat * D2R;
+	}
+}
+
+void set_I_matrix (double R[3][3])
+{	/* Simply sets R to I, the identity matrix */
+
+	memset ((void *)R, 0, (size_t)(9 * sizeof (double)));
+	R[0][0] = R[1][1] = R[2][2] = 1.0;
+}
