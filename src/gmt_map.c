@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.46 2004-01-02 22:45:13 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.47 2004-01-10 21:59:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8206,4 +8206,25 @@ void GMT_ECEF_inverse (double in[], double out[])
 	out[1] *= R2D;
 	N = GMT_datum.from.a / sqrt (1.0 - GMT_datum.from.e_squared * sin_lat * sin_lat);
 	out[2] = (p / cos_lat) - N;
+}
+
+double GMT_az_backaz (double lonS, double latS, double lonR, double latR, BOOLEAN baz)
+{
+	/* Calculate azimuths or backazimuths.  Spherical code for now.
+	 * First point is considered source and second receiver */
+	
+	double az, sin_yS, cos_yS, sin_yR, cos_yR, sin_dlon, cos_dlon;
+	
+	if (baz) {	/* exchange point  one and two */
+		d_swap (lonS, lonR);
+		d_swap (latS, latR);
+	}
+	
+	sincos (latS * D2R, &sin_yS, &cos_yS);
+	sincos (latR * D2R, &sin_yR, &cos_yR);
+	sincos ((lonS - lonR) * D2R, &sin_dlon, &cos_dlon);
+	az = (float)(atan2 (cos_yS * sin_dlon, cos_yR * sin_yS - sin_yR * cos_yS * cos_dlon) * R2D);
+	while (az < -180.0) az += 360.0;
+	while (az > +180.0) az -= 360.0;
+	return (az);
 }

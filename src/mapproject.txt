@@ -5,8 +5,10 @@
 mapproject \- Forward and Inverse map transformation of 2-D coordinates 
 .SH SYNOPSIS
 \fBmapproject\fP \fIinfiles\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-C\fP ] [ \fB\-Dc|i|m|p\fP ] [ \fB\-E\fP[\fIdatum\fP] ] [ \fB\-F\fP[\fBk|m|n|i|c|p\fP] ] [ \fB\-G\fP[\fIx0/y0\fP][/\fIunit\fP] ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] 
-[ \fB\-M\fP[\fIflag\fP] ] [ \fB\-Q\fP[\fBd|e\fP] [ \fB\-S\fP ] [ \fB\-T\fP[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] 
+[ \fB\-A\fP[\fBb\fP]\fIlon0/lat0\fP ][ \fB\-C\fP ] [ \fB\-Dc|i|m|p\fP ] [ \fB\-E\fP[\fIdatum\fP] ] 
+[ \fB\-F\fP[\fBk|m|n|i|c|p\fP] ] [ \fB\-G\fP[\fIx0/y0\fP][/\fIunit\fP] ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] 
+[ \fB\-M\fP[\fIflag\fP] ] [ \fB\-Q\fP[\fBd|e\fP] [ \fB\-S\fP ] [ \fB\-T\fP[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] 
+[ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] 
 [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBmapproject\fP reads (longitude, latitude) positions from \fIinfiles\fP [or standard input] and
@@ -31,6 +33,10 @@ Data file(s) to be transformed.  If not given, standard input is read.
 \fIinfile(s)\fP
 input file(s) with 2 or more columns. If no file(s) is given, \fBmapproject\fP will read the standard input.
 .TP
+.B \-A
+.TP
+Calculates the azimuth from fixed point to the input points.  Use \fB\-Ab\fP to get backazimuth from
+input points to fixed point.
 .B \-C
 Set center of projected coordinates to be at map projection center [Default is lower left corner].
 .TP
