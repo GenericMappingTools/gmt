@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_O.sh,v 1.3 2004-08-18 04:53:48 pwessel Exp $
+#	$Id: GMT_App_O.sh,v 1.4 2004-11-18 17:34:19 pwessel Exp $
 #
 #	Makes the inserts for Appendix O (labeled lines)
 #	This first script just gets the data ready
@@ -42,9 +42,10 @@ y1=`echo $info | cut -f15 -d ' '`
 project -C$x0/$y0 -E$x1/$y1 -G10 -Q > $$.d
 dist=`gmtconvert -I $$.d --D_FORMAT=%.0lf | head -1 | cut -f3`
 R=`minmax -I1 $$.d`
-grdraster - 2> $$
-ID=`grep ETOPO5 $$ | awk '{print $1}'`
-grdraster $ID $R -G$$.grd
+# This is commented out to avoid dependence on databases
+#grdraster - 2> $$
+#ID=`grep ETOPO5 $$ | awk '{print $1}'`
+#grdraster $ID $R -GApp_O.grd
 echo "# Geoid Extrema Separation is $dist km" > transect.d
-grdtrack $$.d -Ggeoid.grd | grdtrack -G$$.grd >> transect.d
+grdtrack $$.d -Ggeoid.grd | grdtrack -GApp_O.grd >> transect.d
 rm -f $$*
