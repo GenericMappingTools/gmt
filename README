@@ -1,6 +1,6 @@
 #	Information for installing GMT 4
 #
-#		$Id: README,v 1.15 2002-05-17 19:10:29 pwessel Exp $ 
+#		$Id: README,v 1.16 2002-07-24 01:48:57 pwessel Exp $ 
 #
 #	Copyright (c) 1991-2002, P. Wessel & W. H. F. Smith
 #
@@ -15,7 +15,7 @@
 #	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #	GNU General Public License for more details.
 #
-#	Contact info: gmt.soest.hawaii.edu
+#	Contact info: http://gmt.soest.hawaii.edu
 
 Permission to use, copy, modify, and distribute (with no more than a
 reasonable redistribution fee) this software and its documentation
@@ -42,8 +42,8 @@ You do not need to read these instructions unless you plan to
 install and make the programs manually.
 
 [the install_gmt script is mailed to you if you send email to
-listserv@soest.hawaii.edu with the single message
-information gmtgroup
+listproc@hawaii.edu with the single message
+information gmt-group
 Or, see gmt.soest.hawaii.edu for how to get the script as well
 as filling out installation parameters via a web form]
 
@@ -489,22 +489,22 @@ availability of GMT.
 
    You haven't bought anything so you cannot expect full service.
 However, if you find a bug in any of the programs, please report
-it to us (gmt@soest.hawaii.edu) rather than trying to fix it yourself
+it to us (gmt-bugs@hawaii.edu) rather than trying to fix it yourself
 so that we, and through us, other users may benefit from your find.
 Make sure you provide us with enough information so that we can recreate
 the problem.
 	Please register via the GMT web page (gmt.soest.hawaii.edu).
-Two mailing lists of interrest to GMT users are available:
-gmtgroup@soest allows us to notify registered users in the event of bugfixes
-and/or new releases.  A separate mailing list (gmthelp@soest.hawaii.edu) exists
+Two mailing lists of interrest to GMT users are available:  gmt-group@hawaii.edu
+allows us to notify registered users in the event of bugfixes
+and/or new releases.  A separate mailing list (gmt-help@hawaii.edu) exists
 for GMT users who have questions about GMT installation and usage.  If you want
 to subscribe to one or both of these mailinglists, send a message to
-listserver@soest.hawaii.edu that contains one or both of the commands
+listproc@hawaii.edu that contains one or both of the commands
 
-subscribe gmthelp <yourname, not email address>
-subscribe gmtgroup <yourname, not email address>
+subscribe gmt-help <yourname, not email address>
+subscribe gmt-group <yourname, not email address>
 
-You may post messages to gmthelp while gmtgroup is more of a one-way street
+You may post messages to gmt-help while gmt-group is more of a one-way street
 for us to inform users of bug fixes and upgrades.  The online registration
 also lets you subscribe to the two mailinglists.
 
