@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.16 2001-08-17 19:32:58 wsmith Exp $
+ *	$Id: gmt_init.c,v 1.17 2001-08-17 19:52:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1346,18 +1346,15 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case 58:
 			strncpy (gmtdefs.input_clock_format, value, 32);
-			for (i = 0; gmtdefs.input_clock_format[i]; i++) gmtdefs.input_clock_format[i] = toupper ((int)gmtdefs.input_clock_format[i]);
 			break;
 		case 59:
 			strncpy (gmtdefs.input_date_format, value, 32);
-			for (i = 0; gmtdefs.input_date_format[i]; i++) gmtdefs.input_date_format[i] = toupper ((int)gmtdefs.input_date_format[i]);
 			break;
 		case 60:
 			strncpy (gmtdefs.output_clock_format, value, 32);
 			break;
 		case 61:
 			strncpy (gmtdefs.output_date_format, value, 32);
-			for (i = 0; gmtdefs.output_date_format[i]; i++) gmtdefs.output_date_format[i] = toupper ((int)gmtdefs.output_date_format[i]);
 			break;
 		case 62:
 			strncpy (gmtdefs.output_degree_format, value, 8);
