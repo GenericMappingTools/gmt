@@ -1,11 +1,11 @@
 #!/bin/sh
 #		GMT EXAMPLE 14
 #
-#		$Id: job14.sh,v 1.2 2002-01-30 03:40:56 ben Exp $
+#		$Id: job14.sh,v 1.3 2002-03-08 21:10:40 ben Exp $
 #
 # Purpose:	Showing simple gridding, contouring, and resampling along tracks
-# GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, minmax, project, pstext
-#		psbasemap, psxy, surface
+# GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, minmax, project,
+#		pstext, psbasemap, psxy, surface
 # Unix progs:	$AWK, rm
 #
 # First draw network and label the nodes
@@ -13,7 +13,7 @@ gmtset GRID_PEN 0.25pta
 psxy table_5.11 -R0/7/0/7 -JX3.06i/3.15i -B2f1WSNe -Sc0.05i -G0 -P -K -Y6.45i > example_14.ps
 $AWK '{printf "%g %s 6 0 0 LM %g\n", $1+0.08, $2, $3}' table_5.11 | pstext -R -JX -O -K -N >> example_14.ps
 blockmean table_5.11 -R0/7/0/7 -I1 > mean.xyz
-# Then draw blocmean cells
+# Then draw blockmean cells
 psbasemap -R0.5/7.5/0.5/7.5 -JX -O -K -B0g1 -X3.25i >> example_14.ps
 psxy -R -JX -B2f1eSNw mean.xyz -Ss0.05i -G0 -O -K >> example_14.ps
 $AWK '{printf "%g %s 6 0 0 LM %g\n", $1+0.1, $2, $3}' mean.xyz | pstext -R -JX -O -K -W255o -C0.01i/0.01i -N >> example_14.ps
