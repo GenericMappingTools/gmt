@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.25 2004-04-25 08:43:17 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.26 2004-06-22 20:00:28 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -119,6 +119,8 @@ struct GMT_IO {	/* Used to process input data records */
 
 	int ncol[2];			/* Number of expected columns of input(0) and output(1)
 					   0 means it will be determined by program */
+	int file_no;			/* Number of current file */
+	int seg_no;			/* Number of current multi-segment */
 	int rec_no;			/* Number of current records */
 	int n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
 	int n_bad_records;		/* Number of bad records encountered during i/o */

@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_O.tex,v 1.6 2004-06-13 22:30:18 pwessel Exp $
+%	$Id: GMT_Appendix_O.tex,v 1.7 2004-06-22 20:00:28 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -131,10 +131,10 @@ useful if the labels are long relative to the length-scale of the line wiggles. 
 on an invisible straight line at the angle determined.
 \item [+w:] The angle of the line at the point of label placement is calculated by a least-squares
 fit to the {\it width} closest points.  If not specified, {\it width} defaults to 10.
-\item [+\^:]  Similar in most regards to {\bf +u} but applies instead to a label \emph{prefix} which
+\item [+$\hat{ }$:]  Similar in most regards to {\bf +u} but applies instead to a label \emph{prefix} which
 you must append.
 \end{description}
-For contours, the label will be the value of the contour (possibly modified by {\bf +u} or {\bf +\^}).
+For contours, the label will be the value of the contour (possibly modified by {\bf +u} or {\bf +$\hat{ }$}).
 However, for quoted lines other options apply:
 \begin{description}
 \item [+l:] Append a fixed {\it label} that will be placed at all label locations.  If the label contains
@@ -142,17 +142,21 @@ spaces you must place it inside matching quotes.
 \item [+L:] Append a code {\it flag} that determines what the label will contain.  Available codes are:
 \begin{description}
 \item [+Lh:]  Take the label from the current multi-segment header (hence it is assumed that the
-input line segments are given in the multi-segment file format).  We first scan the header for an embedded
+input line segments are given in the multi-segment file format; if not we pick the single label
+from the files header record).  We first scan the header for an embedded
 \Opt{L}{\it label} option; if none is found we instead use the first word following the segment marker [$>$].
 \item [+Ld:] Take the Cartesian plot distances along the line as the label; append {\bf c$|$i$|$m$|$p}
 as the unit [Default is {\bf MEASURE\_UNIT}].  The label will be formatted according to the {\bf D\_FORMAT}
-string.
+string, \emph{unless} label placement was determined from map distances along the segment lines, in which
+case we determine the appropriate format from the distance value itself. 
 \item [+LD:]  Calculate actual Earth surface distances and use the distance at the label placement point as
 the label; append {\bf d$|$e$|$k$|$m$|$n} to specify the unit [If not given we default to {\bf d}egrees,
 \emph{unless} label placement was determined from map distances along the segment lines, in which case we
 use the same unit specified for that algorithm].  Requires a map projection to be used.
 \item [+Lf:]  Use all text after the 2nd column in the fixed label location file {\it fix.d} as the label.
 This choice obviously requires the fixed label location algorithm (code {\bf f}) to be in effect.
+\item [+Ln:]  Use the running number of the current multi-segment as label.
+\item [+LN:]  Use a slash-separated combination of the current file number and the current multi-segment number as label.
 \item [+Lx:]  As {\bf h} but use the multi-segment headers in the {\it cross.d} file instead.
 This choice obviously requires the crossing segments location algorithm (code {\bf x$|$X}) to be in effect.
 \end{description}
@@ -250,7 +254,7 @@ define the label placements, presented in Figure~\ref{fig:GMT_App_O_5}.
 We will now demonstrate some of the ways to play with the label attributes.  To do so we
 will use \GMTprog{psxy} on a great-circle line connecting the geoid extrema, along which
 we have sampled the ETOPO5 relief data set.  The file \filename{transect.d} thus contains
-{\it lon, lat, dist, geoid, relief} with distances in km.
+{\it lon, lat, dist, geoid, relief}, with distances in km.
 
 \subsection{Label placement by along-track distances, 1}
 
@@ -301,7 +305,8 @@ the placement is based on distances.}
 Finally, we will make a more complex composite illustration that uses several of the
 label placement and label attribute settings discussed in the previous sections.  We
 make a map showing the tsunami travel times (in hours) from a hypothetical catastrophic
-landslide in the Canary Islands.  We lay down a color map based on the travel times
+landslide in the Canary Islands\footnote{Travel times were calculated using Geoware's
+travel time calculator.}.  We lay down a color map based on the travel times
 and the shape of the seafloor, and travel time contours with curved labels as well
 as a few quoted lines.  The final script is
 

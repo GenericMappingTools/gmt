@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.21 2004-06-19 03:06:15 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.22 2004-06-22 20:00:28 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -67,6 +67,8 @@ struct GMT_CONTOUR {
 	char label[BUFSIZ];		/* Fixed label */
 	char line_name[16];		/* Name of line: contour or line */
 	char flag;			/* Char for the option key */
+	int current_file_no;		/* Number (0->) of current input data file */
+	int current_seg_no;		/* Number (0->) of current segment in current data file */
 	BOOLEAN annot;			/* TRUE if we want labels */
 	BOOLEAN spacing;		/* TRUE if we have spacing constraints to apply */
 	double label_dist_spacing;	/* Min distance between labels */

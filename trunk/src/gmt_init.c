@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.146 2004-06-13 19:58:22 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.147 2004-06-22 20:00:28 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -509,12 +509,14 @@ void GMT_label_syntax (int indent, int kind)
 	fprintf (stderr, "%s +k<color> to change color of label text [Default is black]\n", pad);
 	if (kind == 1) {
 		fprintf (stderr, "%s +l<label> Use this fixed text as the label (quote text if containing spaces).\n", pad);
-		fprintf (stderr, "%s +L<d|D|f|h|x>[<unit>] Sets the label according to the given flag:\n", pad);
-		fprintf (stderr, "%s   d for Cartesian plot distance; append desired unit c, i, m, or p.\n", pad);
-		fprintf (stderr, "%s   D for map distance; append desired unit d, e, k, m, or n.\n", pad);
-		fprintf (stderr, "%s   f label is text after 2nd column the <ffile.d> fixed label location file.\n", pad);
-		fprintf (stderr, "%s   h for multisegment header labels (either in -Lstring or first word).\n", pad);
-		fprintf (stderr, "%s   x like h, but scan headers in the <xfile.d> crossing lines instead.\n", pad);
+		fprintf (stderr, "%s +L<d|D|f|h|n|N|x>[<unit>] Sets the label according to the given flag:\n", pad);
+		fprintf (stderr, "%s   d Cartesian plot distance; append desired unit c, i, m, or p.\n", pad);
+		fprintf (stderr, "%s   D Map distance; append desired unit d, e, k, m, or n.\n", pad);
+		fprintf (stderr, "%s   f Label is text after 2nd column the <ffile.d> fixed label location file.\n", pad);
+		fprintf (stderr, "%s   h Use multisegment header labels (either in -Lstring or first word).\n", pad);
+		fprintf (stderr, "%s   n Use the current multisegment number (starting at 0).\n", pad);
+		fprintf (stderr, "%s   N Use current file number / multisegment number (starting at 0/0).\n", pad);
+		fprintf (stderr, "%s   x Like h, but scan headers in the <xfile.d> crossing lines instead.\n", pad);
 	}
 	fprintf (stderr, "%s +o to use rounded rectangular text box [Default is rectangular]\n", pad);
 	fprintf (stderr, "%s +p[<pen>] draw outline of textbox  [Default is no outline]; optionally give pen [Default is default pen]\n", pad);
