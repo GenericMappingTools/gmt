@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.47 2001-09-24 00:58:07 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.48 2001-09-25 22:46:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -583,7 +583,7 @@ void GMT_syntax (char option)
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
 				case OBLIQUE_MERC:
-					fprintf (stderr, "\t-JOa<lon0>/<lat0>/<azimuth>/<scale> OR -JOa<lon0>/<lat0>/<azimuth>/<mapwidth>\n");
+					fprintf (stderr, "\t-Joa<lon0>/<lat0>/<azimuth>/<scale> OR -JOa<lon0>/<lat0>/<azimuth>/<mapwidth>\n");
 					fprintf (stderr, "\t-Job<lon0>/<lat0>/<b_lon>/<b_lat>/<scale> OR -JOb<lon0>/<lat0>/<b_lon>/<b_lat>/<mapwidth>\n");
 					fprintf (stderr, "\t-Joc<lon0>/<lat0>/<lonp>/<latp>/<scale> OR -JOc<lon0>/<lat0>/<lonp>/<latp>/<mapwidth>\n");
 					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/oblique degree, or use <mapwidth> in %s\n",
