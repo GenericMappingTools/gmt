@@ -5,7 +5,7 @@
 #else
 #define LINETYPE quoted lines
 #endif
-Controls the placement of labels along the LINETYPE.  Choose among four controlling algorithms:
+Controls the placement of labels along the LINETYPE.  Choose among five controlling algorithms:
 .br
 \fB\-G\fP\fBd\fP\fIdist\fP[c|i|m|p][/\fIwidth\fP] or \fB\-G\fP\fBD\fP\fIdist\fP[d|e|k|m|n][/\fIwidth\fP].
 For lower case \fBd\fP, give distances between labels on the plot in your preferred measurement unit
@@ -14,6 +14,9 @@ distances in map units and append the unit; choose among \fBe\fP (m), \fBk\fP (k
 (nautical mile), or \fBd\fP (spherical degree).
 In either case, optionally append number of (x,y) values used to calculate a smooth label angle [Default is
 G_OPT_SI or G_OPT_US].  
+.br
+\fB\-Gf\fP\fIffile.d\fP reads the ascii file \fIffile.d\fP and places labels at locations in the file
+that matches locations along the LINETYPE.  Inexact mathces and points outside the region are skipped.
 .br
 \fB\-Gl|L\fP\fIline1\fP[,\fIline2\fP,...] Give \fIstart\fP and \fIstop\fP coordinates for one or
 more comma-separated straight line segments.  Labels will be placed where these lines intersect the
