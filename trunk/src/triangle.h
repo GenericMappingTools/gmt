@@ -4,16 +4,14 @@
 /*                                                                           */
 /*  Include file for programs that call Triangle.                            */
 /*                                                                           */
-/*  Accompanies Triangle Version 1.3                                         */
+/*  Accompanies Triangle Versions 1.3 and 1.4                                */
 /*  July 19, 1996                                                            */
 /*                                                                           */
 /*  Copyright 1996                                                           */
 /*  Jonathan Richard Shewchuk                                                */
-/*  School of Computer Science                                               */
-/*  Carnegie Mellon University                                               */
-/*  5000 Forbes Avenue                                                       */
-/*  Pittsburgh, Pennsylvania  15213-3891                                     */
-/*  jrs@cs.cmu.edu                                                           */
+/*  2360 Woolsey #H                                                          */
+/*  Berkeley, California  94705-1927                                         */
+/*  jrs@cs.berkeley.edu                                                      */
 /*                                                                           */
 /*****************************************************************************/
 
