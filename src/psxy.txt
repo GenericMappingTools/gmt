@@ -38,14 +38,14 @@ List one or more file-names. If no files are given, \fBpsxy\fP will read standar
 No space between the option flag and the associated arguments.
 .TP
 .B \-A
-Suppress drawing line segments as great circle Arcs.  [Default draws great circle arcs.]
+Suppress drawing line segments as great circle Arcs.  [Default draws great circle arcs].
 #include "explain_-b.txt"
 .TP
 .B \-C
 Give a color palette file.  When used with \fB\-S\fP, lets symbol fill color be determined by the z-value in the
 third column.  Additional fields are
 shifted over by one column (optional size would be 4th rather than 3rd field, etc.).
-If \fB\-S\fP is not set, psxy expects the user to supply a multisegment polygon file (requires \fB\-M\fP) and will look
+If \fB\-S\fP is not set, \fBpsxy\fP expects the user to supply a multisegment polygon file (requires \fB\-M\fP) and will look
 for \fB\-Z\fP\fIval\fP strings in each multisegment header.  The \fIval\fP will control the color
 via the cpt file.
 .TP
@@ -61,7 +61,7 @@ quartile, the 75% quartile, and the maximum (100% quartile) values.  The 25-75% 
 .B \-G
 Select filling of polygons and symbols.
 Append the shade (0\-255), color (r/g/b), or \fBP\fP|\fBp\fP\fIdpi\fP/\fIpattern\fP (polygons only) [Default is no fill].
-Note when \fB\-M\fP is chosen, \fIpsxy\fP will search for \fB\-G\fP and \fB\-W\fP strings in all the subheaders and let any found values over-ride the command line settings.
+Note when \fB\-M\fP is chosen, \fBpsxy\fP will search for \fB\-G\fP and \fB\-W\fP strings in all the subheaders and let any found values over-ride the command line settings.
 #include "explain_-H.txt"
 #include "explain_-K.txt"
 .TP
@@ -85,9 +85,9 @@ it will be read from the last column in the input data.
 Cannot be used in conjunction with \fB\-b\fP.  Optionally, append
 c, i, m, p to indicate that the size information in the
 input data is in units of cm, inch, meter, or point,
-respectively. [Default is MEASURE_UNIT.].
+respectively. [Default is MEASURE_UNIT].
 .br
-The uppercase symbols A, C, D, H, I, S, T are normalized
+The uppercase symbols \fBA\fP, \fBC\fP, \fBD\fP, \fBH\fP, \fBI\fP, \fBS\fP, \fBT\fP are normalized
 to have the same area as a circle with radius size, while
 the corresponding lowercase symbols all are circumscribed
 by the circle.  Choose between these symbol codes:
