@@ -5,8 +5,6 @@
 #else
 #define LINETYPE quoted line
 #endif
-.TP
-.B \-G
 Controls the placement of labels along the LINETYPEs.  Choose among four controlling algorithms:
 .br
 \fB\-G\fP\fBd\fP\fIdist\fP[c|i|m|p][/\fIwidth\fP] or \fB\-G\fP\fBD\fP\fIdist\fP[d|e|k|m|n][/\fIwidth\fP].
