@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.46 2002-11-10 03:13:43 lloyd Exp $
+ *	$Id: pslib.c,v 1.47 2003-01-14 17:22:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1261,7 +1261,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps.points_pr_unit = 72.0;
 	if (unit == 0) ps.points_pr_unit /= 2.54;
 	if (unit == 2) ps.points_pr_unit /= 0.0254;
-	ps.encoding = ps_memory (NULL, strlen (encoding) + 1, sizeof (char));;
+	ps.encoding = ps_memory (NULL, strlen (encoding) + 1, sizeof (char));
 	strcpy (ps.encoding, encoding);
 	mode &= 1;							/* Get rid of other flags */
 	if (plotfile == NULL || plotfile[0] == 0)
