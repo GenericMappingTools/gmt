@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.47 2003-12-24 02:43:22 pwessel Exp $
+ *	$Id: gmt.h,v 1.48 2003-12-28 00:53:46 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -313,12 +313,10 @@ struct GMTDEFAULTS {
 		double flattening;
 	} ellipse[N_ELLIPSOIDS];	/* Ellipsoid parameters */
 	struct DATUM {	/* Information about a particular datum */
-		char name[64];
-		char ellipsoid[64];
-		char region[256];
-		double x;
-		double y;
-		double z;
+		char name[64];		/* Datum name */
+		char ellipsoid[64];	/* Ellipsoid GMT ID name */
+		char region[256];	/* Region of use */
+		double xyz[3];		/* Coordinate shifts in meter for x, y, and z */
 	} datum[N_DATUMS];	/* Datum parameters */
 	char input_clock_format[32];	/* How to decode an incoming clock string [hh:mm:ss] */
 	char input_date_format[32];	/* How to decode an incoming date string [yyyy-mm-dd] */

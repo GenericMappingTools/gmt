@@ -5,7 +5,7 @@
 mapproject \- Forward and Inverse map transformation of 2-D coordinates 
 .SH SYNOPSIS
 \fBmapproject\fP \fIinfiles\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-C\fP ] [ \fB\-Dc|i|m|p\fP ] [ \fB\-F\fP[\fBk|m|n|i|c|p\fP] ] [ \fB\-G\fP[\fIx0/y0/\fP][\fIunit\fP] ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] 
+[ \fB\-C\fP ] [ \fB\-Dc|i|m|p\fP ] [ \fB\-E\fP[\fIdatum\fP] ] [ \fB\-F\fP[\fBk|m|n|i|c|p\fP] ] [ \fB\-G\fP[\fIx0/y0/\fP][\fIunit\fP] ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] 
 [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-Q\fp[\fBd|e\fP] [ \fB\-S\fP ] [ \fB\-T\fP[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] 
 [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
@@ -37,6 +37,12 @@ Set center of projected coordinates to be at map projection center [Default is l
 .B \-D
 Temporarily override MEASURE_UNIT and use \fBc\fP (cm), \fBi\fP (inch),
 \fBm\fP (meter), or \fBp\fP (points) instead.  Cannot be used with \fB\-F\fP.
+.TP
+.B \-E
+Convert from geodetic (lon, lat, height) to Earth Centered Earth Fixed (ECEF) coordinates (add \fB\-I\fP for the
+inverse conversion).  Append datum ID (see \fB\-Q\fP) or give \fIellipsoid\fP:\fIdx,dy,dz\fP
+where \fIellipsoid\fP may be an ellipsoid ID (see \fB\-Q\fP) or given as \fIa,1/f\fP.  If \fIdatum\fP is - or not
+given we assume WGS-84.
 .TP
 .B \-F
 Force 1:1 scaling, i.e., output (or input, see \fB\-I\fP) data are in actual projected meters.  To specify other units,
