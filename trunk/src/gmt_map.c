@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.49 2004-01-13 01:53:26 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.50 2004-02-20 08:39:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1313,7 +1313,8 @@ int GMT_map_init_polar (void)
 	GMT_right_edge = (PFD) GMT_right_circle;
 	GMT_forward = (PFI) GMT_polar;
 	GMT_inverse = (PFI) GMT_ipolar;
-	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
+	/* GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL); */
+	GMT_world_map = FALSE;	/* There is no wrapping around here */
 	GMT_xy_search (&xmin, &xmax, &ymin, &ymax, project_info.w, project_info.e, project_info.s, project_info.n);
 	project_info.x_scale = project_info.y_scale = project_info.pars[0];
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[0]);
