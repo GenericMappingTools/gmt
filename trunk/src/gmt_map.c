@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.38 2003-04-11 22:57:15 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.39 2003-04-20 07:35:41 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -586,24 +586,28 @@ void GMT_map_setup (double west, double east, double south, double north)
 	}
 
 	if (MAPPING) {	/* Special checks only applicable to geographic coordinates */
-		if (west < 0.0 && east < 0.0) {
-			while (west < 0.0) west += 360.0;
-			while (east < 0.0) east += 360.0;
-		}
-		else if (east < west)
-			east += 360.0;
+		if (project_info.degree[0]) {
+			if (west < 0.0 && east < 0.0) {
+				while (west < 0.0) west += 360.0;
+				while (east < 0.0) east += 360.0;
+			}
+			else if (east < west)
+				east += 360.0;
 
-		if ((fabs (east - west) - 360.0) > SMALL) {
-			fprintf (stderr, "%s: GMT Fatal Error: Region exceeds 360 degrees!\n", GMT_program);
-			exit (EXIT_FAILURE);
+			if ((fabs (east - west) - 360.0) > SMALL) {
+				fprintf (stderr, "%s: GMT Fatal Error: Region exceeds 360 degrees!\n", GMT_program);
+				exit (EXIT_FAILURE);
+			}
 		}
-		if (south < -90.0 || south > 90.0) {
-			fprintf (stderr, "%s: GMT Fatal Error: South (%g) outside +-90 degree range!\n", GMT_program, south);
-			exit (EXIT_FAILURE);
-		}
-		if (north < -90.0 || north > 90.0) {
-			fprintf (stderr, "%s: GMT Fatal Error: North (%g) outside +-90 degree range!\n", GMT_program, north);
-			exit (EXIT_FAILURE);
+		if (project_info.degree[1]) {
+			if (south < -90.0 || south > 90.0) {
+				fprintf (stderr, "%s: GMT Fatal Error: South (%g) outside +-90 degree range!\n", GMT_program, south);
+				exit (EXIT_FAILURE);
+			}
+			if (north < -90.0 || north > 90.0) {
+				fprintf (stderr, "%s: GMT Fatal Error: North (%g) outside +-90 degree range!\n", GMT_program, north);
+				exit (EXIT_FAILURE);
+			}
 		}
 	}
 
@@ -1124,15 +1128,14 @@ void GMT_project3D (double x, double y, double z, double *x_out, double *y_out, 
  */
  
 int GMT_map_init_linear (void) {
-	BOOLEAN degree, positive;
+	BOOLEAN positive;
 	double xmin, xmax, ymin, ymax;
 
 	GMT_left_edge = (PFD) GMT_left_rect;
 	GMT_right_edge = (PFD) GMT_right_rect;
 	GMT_forward = (PFI) GMT_linearxy;
 	GMT_inverse = (PFI) GMT_ilinearxy;
-	degree = (irint (project_info.pars[4]) == 1);
-	if (degree) {
+	if (project_info.degree[0]) {	/* x is longitude */
 		project_info.central_meridian = 0.5 * (project_info.w + project_info.e);
 		GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
 	}
@@ -1143,8 +1146,8 @@ int GMT_map_init_linear (void) {
 			
 	switch ( (project_info.xyz_projection[0]%3) ) {	/* Modulo 3 so that TIME (3) maps to LINEAR (0) */
 		case LINEAR:	/* Regular scaling */
-			GMT_x_forward = (PFI) ((degree) ? GMT_translind : GMT_translin);
-			GMT_x_inverse = (PFI) ((degree) ? GMT_itranslind : GMT_itranslin);
+			GMT_x_forward = (PFI) ((project_info.degree[0]) ? GMT_translind : GMT_translin);
+			GMT_x_inverse = (PFI) ((project_info.degree[0]) ? GMT_itranslind : GMT_itranslin);
 			if (project_info.xyz_pos[0]) {
 				(*GMT_x_forward) (project_info.w, &xmin);
 				(*GMT_x_forward) (project_info.e, &xmax);
@@ -7362,14 +7365,14 @@ void GMT_check_R_J (double *clon)	/* Make sure -R and -J agree for global plots;
 	if (GMT_world_map && lon0 != *clon) {
 		project_info.w = *clon - 180.0;
 		project_info.e = *clon + 180.0;
-		fprintf (stderr, "%s: GMT Warning: Central meridian set with -J (%g) implies -R%g/%g/%g/%g\n",
+		if (gmtdefs.verbose) fprintf (stderr, "%s: GMT Warning: Central meridian set with -J (%g) implies -R%g/%g/%g/%g\n",
 			GMT_program, *clon, project_info.w, project_info.e, project_info.s, project_info.n);
 	}
 	else if (!GMT_world_map) {
 		lon0 = *clon - 360.0;
 		while (lon0 < project_info.w) lon0 += 360.0;
 		if (lon0 > project_info.e) {	/* Warn user*/
-			fprintf (stderr, "%s: GMT Warning: Central meridian outside region\n", GMT_program);
+			if (gmtdefs.verbose) fprintf (stderr, "%s: GMT Warning: Central meridian outside region\n", GMT_program);
 		}
 	}	
 }

@@ -1,10 +1,10 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.9 2002-03-04 20:07:40 pwessel Exp $
+REM	$Id: gmtinstall.bat,v 1.10 2003-04-20 07:35:41 pwessel Exp $
 REM
 REM
-REM	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
+REM	Copyright (c) 1991-2003 by P. Wessel and W. H. F. Smith
 REM	See COPYING file for copying and redistribution conditions.
 REM
 REM	This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@ REM	but WITHOUT ANY WARRANTY; without even the implied warranty of
 REM	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 REM	GNU General Public License for more details.
 REM
-REM	Contact info: www.soest.hawaii.edu/gmt
+REM	Contact info: gmt.soest.hawaii.edu
 REM --------------------------------------------------------------------
 REM This extremely lame DOS batch file will compile
 REM the GMT 4 suite of programs under WIN32 using
@@ -24,7 +24,7 @@ REM Microsoft Visual C/c++ tools.  It will build GMT
 REM using DLL libraries.  To make static executables
 REM you must make some edits to the setup below.
 REM
-REM Author: Paul Wessel, 04-MAR-2002
+REM Author: Paul Wessel, 20-APR-2003
 REM ----------------------------------------------------
 REM
 REM How to make and install GMT under DOS/Win95/98:

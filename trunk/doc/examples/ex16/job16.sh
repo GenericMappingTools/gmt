@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 16
 #
-#		$Id: job16.sh,v 1.3 2003-04-11 23:49:54 pwessel Exp $
+#		$Id: job16.sh,v 1.4 2003-04-20 07:35:54 pwessel Exp $
 #
 # Purpose:	Illustrates interpolation methods using same data as Example 12.
 # GMT progs:	gmtset, grdview, grdfilter, pscontour, psscale, pstext, surface, triangulate
@@ -16,7 +16,7 @@
 #
 # Now illustrate various means of contouring, using triangulate and surface.
 #
-gmtset MEASURE_UNIT INCH ANOT_FONT_SIZE 9
+gmtset ANOT_FONT_SIZE 9
 #
 pscontour -R0/6.5/-0.2/6.5 -Jx0.45i -P -K -Y5.5i -Ba2f1WSne table_5.11 -Cex16.cpt -I > example_16.ps
 echo "3.25 7 18 0 4 CB pscontour (triangulate)" | pstext -R -Jx -O -K -N >> example_16.ps
@@ -34,6 +34,6 @@ grdfilter rawt.grd -Gfiltered.grd -D0 -Fc1
 grdview filtered.grd -R -Jx -Ba2f1WSne -Cex16.cpt -Qs -O -K -X3.5i >> example_16.ps
 echo "3.25 7 18 0 4 CB triangulate @~\256@~ grdfilter" | pstext -R -Jx -O -K -N >> example_16.ps
 echo "3.2125 7.5 32 0 4 CB Gridding of Data" | pstext -R0/10/0/10 -Jx1i -O -K -N -X-3.5i >> example_16.ps
-psscale -D3.21/0.35/5/0.25h -Cex16.cpt -O -U"Example 16 in Cookbook" -Y-0.75i >> example_16.ps
+psscale -D3.25i/0.35i/5i/0.25ih -Cex16.cpt -O -U"Example 16 in Cookbook" -Y-0.75i >> example_16.ps
 #
 rm -f *.grd .gmt*

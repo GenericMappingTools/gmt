@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.88 2003-04-12 00:22:55 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.89 2003-04-20 07:35:41 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3074,17 +3074,17 @@ int GMT_map_getproject (char *args)
 	 * project_info structure.  The function returns TRUE if an error is encountered.
 	 */
 	 
-	int i, j, k, n, slash, l_pos[2], p_pos[2], t_pos[2], id, project = -1, n_slashes = 0;
+	int i, j, k, n, slash, l_pos[2], p_pos[2], t_pos[2], d_pos[2], id, project = -1, n_slashes = 0;
 	BOOLEAN error = FALSE, skip = FALSE;
 	double o_x, o_y, b_x, b_y, c, az;
 	double GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
 	char type, args_cp[BUFSIZ], txt_a[32], txt_b[32], txt_c[32], txt_d[32], txt_e[32];
 	
-	l_pos[0] = l_pos[1] = p_pos[0] = p_pos[1] = t_pos[0] = t_pos[1] = 0;
+	l_pos[0] = l_pos[1] = p_pos[0] = p_pos[1] = t_pos[0] = t_pos[1] = d_pos[0] = d_pos[1] = 0;
 	type = args[0];
 	GMT_io.in_col_type[0] = GMT_IS_LON;	GMT_io.in_col_type[1] = GMT_IS_LAT;	/* This may be overridden in -Jx, -Jp */
 	GMT_io.out_col_type[0] = GMT_io.out_col_type[1] = GMT_IS_FLOAT;		/* This may be overridden by mapproject -I */
-
+	project_info.degree[0] = project_info.degree[1] = TRUE;			/* May be overridden if not geographic projection */
 	if (strchr ("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz", (int)type) == NULL) return (TRUE);	/* NO valid projection specified */
 	args++;
 
@@ -3113,23 +3113,20 @@ int GMT_map_getproject (char *args)
 	 		}
 	 		
 	 	case 'x':		/* Linear x/y scaling */
-	 		if (strchr (args, 'd')) {	/* TRUE if input is degrees and d is appended */
-	 			project_info.pars[4] = 1.0;
-			}
-			else {	/* Not involving geographical coordinates */
-	 			project_info.pars[4] = 0.0;
-				GMT_io.in_col_type[0] = GMT_io.in_col_type[1] = GMT_IS_FLOAT;
-			}
+			/* Default is not involving geographical coordinates */
+			GMT_io.in_col_type[0] = GMT_io.in_col_type[1] = GMT_IS_FLOAT;
+
 			error = (n_slashes > 1);
 			if (!strncmp (args, "1:", 2)) k = 1;	/* Special check for linear proj with 1:xxx scale */
 	 		
-	 		/* Find occurrences of /, l, p, or t */
+	 		/* Find occurrences of /, l, p, t, or d */
 	 		for (j = 0, slash = 0; args[j] && slash == 0; j++) if (args[j] == '/') slash = j;
 	 		for (j = id = 0; args[j]; j++) {
 	 			if (args[j] == '/') id = 1;
 	 			if (args[j] == 'L' || args[j] == 'l') l_pos[id] = j;
 	 			if (args[j] == 'P' || args[j] == 'p') p_pos[id] = j;
 	 			if (args[j] == 'T' || args[j] == 't') t_pos[id] = j;
+	 			if (args[j] == 'D' || args[j] == 'd') d_pos[id] = j;
 	 		}
 	 		
 			if (n_slashes && k >= 0) error = TRUE;	/* Cannot have 1:xxx separately for x/y */
@@ -3154,8 +3151,8 @@ int GMT_map_getproject (char *args)
 				args_cp[i] = 0;	/* Chop off log or power part */
 			else if (t_pos[0] > 0)
 				args_cp[t_pos[0]] = 0;	/* Chop off time part */
-			else if (project_info.pars[4] == 1.0 && !slash)	/* Chop of trailing 'd' */
-				args_cp[strlen(args_cp)-1] = 0;
+			else if (d_pos[0] > 0)	/* Chop of trailing 'd' */
+				args_cp[d_pos[0]] = 0;
 	 		if (!skip) {
 	 			if (k >= 0)	/* Scale entered as 1:mmmmm */
 					project_info.pars[0] = 1.0 / GMT_convert_units (&args_cp[2], GMT_INCH);
@@ -3172,6 +3169,12 @@ int GMT_map_getproject (char *args)
 	 			project_info.xyz_projection[0] = TIME;
 				GMT_io.in_col_type[0] = (args[t_pos[0]] == 'T') ?  GMT_IS_ABSTIME : GMT_IS_RELTIME;
 	 		}
+
+			if (d_pos[0] > 0)
+				GMT_io.in_col_type[0] = GMT_IS_LON;
+			else
+				project_info.degree[0] = FALSE;
+
 	 		
 	 		if (slash) {	/* Separate y-scaling desired */
 				strcpy (args_cp, &args[slash+1]);	/* Since GMT_convert_units modifies the string */
@@ -3179,8 +3182,8 @@ int GMT_map_getproject (char *args)
 					args_cp[i-slash-1] = 0;	/* Chop off log or power part */
 				else if (t_pos[1] > 0)
 					args_cp[t_pos[1]-slash-1] = 0;	/* Chop off log or power part */
-				else if (project_info.pars[4] == 1.0)
-					args_cp[strlen(args_cp)-1] = 0;	/* Chop of trailing 'd' part */
+				else if (d_pos[1] > 0)
+					args_cp[d_pos[1]-slash-1] = 0;	/* Chop of trailing 'd' part */
 	 			if (!skip) project_info.pars[1] = GMT_convert_units (args_cp, GMT_INCH);	/* y-scale */
 	 			
 	 			if (l_pos[1] > 0)
@@ -3193,12 +3196,21 @@ int GMT_map_getproject (char *args)
 	 				project_info.xyz_projection[1] = TIME;
 					GMT_io.in_col_type[1] = (args[t_pos[0]] == 'T') ?  GMT_IS_ABSTIME : GMT_IS_RELTIME;
 	 			}
+				if (d_pos[1] > 0)
+					GMT_io.in_col_type[1] = GMT_IS_LAT;
+				else
+					project_info.degree[1] = FALSE;
 	 		}
 	 		else {	/* Just copy x parameters */
 	 			project_info.xyz_projection[1] = project_info.xyz_projection[0];
 	 			if (!skip) project_info.pars[1] = project_info.pars[0];
 	 			project_info.pars[3] = project_info.pars[2];
-				GMT_io.in_col_type[1] = GMT_io.in_col_type[0];
+				if (project_info.degree[0])
+					GMT_io.in_col_type[1] = GMT_IS_LAT;
+				else {
+					GMT_io.in_col_type[1] = GMT_io.in_col_type[0];
+					project_info.degree[1] = FALSE;
+				}
 	 		}
 	 		project = LINEAR;
 	 		if (project_info.pars[0] == 0.0 || project_info.pars[1] == 0.0) error = TRUE;
