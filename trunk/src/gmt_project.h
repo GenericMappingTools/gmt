@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.26 2004-02-24 17:39:51 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.27 2004-04-14 07:28:56 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -268,6 +268,7 @@ struct PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
 	int id;				/* Id of this item (0-5) */
 	BOOLEAN active;			/* TRUE if we want to use this item */
 	double interval;		/* Distance between ticks in user units */
+	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
 	int flavor;			/* Index into month/day name abbreviation array (0-2) */
 	BOOLEAN upper_case;		/* TRUE if we want upper case text (used with flavor) */
 	char type;			/* One of a, i, A, I, f, g */
@@ -279,6 +280,7 @@ struct PLOT_AXIS {		/* Information for one time axis */
 	int type;			/* LINEAR, LOG10, POW, or TIME */
 	char label[256];		/* Label of the axis */
 	char unit[32];			/* Axis unit appended to annotations */
+	char prefix[32];		/* Axis prefix starting all annotations */
 };
 
 struct PLOT_FRAME {		/* Various parameters for plotting of time axis boundaries */
