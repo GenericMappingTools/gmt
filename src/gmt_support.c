@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.143 2004-10-31 04:50:07 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.144 2004-12-26 02:34:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6011,7 +6011,7 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_LINES *p, int 
 	if (return_mindist) *dist_min = DBL_MAX;
 	for (i = 0; i < np; i++) {	/* Loop over each line segment */
 	
-		if (p[i].np < 2) continue;	/* empty or 1-point "line"; skip */
+		if (p[i].np <= 0) continue;	/* empty; skip */
 
 		if (return_mindist) p[i].dist = 0.0;	/* Explicitly set dist to zero so the shortest distance can be found */
 
@@ -6022,6 +6022,8 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_LINES *p, int 
 			if (return_mindist && d < (*dist_min)) *dist_min = d;			/* Node inside the critical distance; we are done */
 			if (d <= p[i].dist) return (TRUE);
 		}
+
+		if (p[i].np < 2) continue;	/* 1-point "line" is a point; skip segment check */
 
 		/* If we get here we must check for intermediate points along the straight lines between segment nodes.
 		 * However, since we know all nodes are outside the circle, we first check if the pair of nodes making
@@ -6086,7 +6088,7 @@ int GMT_near_a_line_spherical (double lon, double lat, struct GMT_LINES *p, int 
 	
 	for (i = 0; i < np; i++) {	/* Loop over each line segment */
 	
-		if (p[i].np < 2) continue;	/* Empty or 1-point "line"; skip */
+		if (p[i].np <= 0) continue;	/* Empty ; skip */
 
 		/* Find nearest point on this line */
 
@@ -6097,6 +6099,8 @@ int GMT_near_a_line_spherical (double lon, double lat, struct GMT_LINES *p, int 
 			if (return_mindist && d < (*dist_min)) *dist_min = d;		/* Update minimum distance */
 			if (d <= p[i].dist) return (TRUE);				/* Node inside the critical distance; we are done */
 		}
+
+		if (p[i].np < 2) continue;	/* 1-point "line" is a point; skip segment check */
 
 		/* If we get here we must check for intermediate points along the great circle lines between segment nodes.*/
 		
