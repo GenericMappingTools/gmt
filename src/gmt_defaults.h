@@ -40,7 +40,7 @@
 	0.1125,			/* LABEL_OFFSET */
 	TRUE,			/* LAST_PAGE */
 	0.01,
-	0.9996,			/* MAP_SCALE_FACTOR */
+	-1.0,			/* MAP_SCALE_FACTOR */
 	0.075,			/* MAP_SCALE_HEIGHT */
 	1,			/* MEASURE_UNIT set to inch */
 	25,			/* MEDIA set to Letter */

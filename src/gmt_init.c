@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.155 2004-09-10 23:44:02 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.156 2004-09-14 17:16:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1595,11 +1595,15 @@ int GMT_setparameter (char *keyword, char *value)
 			}
 			break;
 		case GMTCASE_MAP_SCALE_FACTOR:
-			dval = atof (value);
-			if (dval <= 0.0)
-				error = TRUE;
-			else
-				gmtdefs.map_scale_factor = dval;
+			if (!strncmp (value, "def")) /* Default scale for chosen projection */
+				gmtdefs.map_scale_factor = -1.0;
+			else {
+				dval = atof (value);
+				if (dval <= 0.0)
+					error = TRUE;
+				else
+					gmtdefs.map_scale_factor = dval;
+			}
 			break;
 		case GMTCASE_MAP_SCALE_HEIGHT:
 			dval = GMT_convert_units (value, GMT_INCH);
@@ -2112,7 +2116,10 @@ int GMT_savedefaults (char *file)
 		fprintf (fp, "XY_TOGGLE		= OUT\n");
 	fprintf (fp, "#-------- Projection Parameters -------------\n");
 	fprintf (fp, "ELLIPSOID		= %s\n", gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].name);
-	fprintf (fp, "MAP_SCALE_FACTOR	= %g\n", gmtdefs.map_scale_factor);
+	if (gmtdefs.map_scale_factor == -1.0)
+		fprintf (fp, "MAP_SCALE_FACTOR	= default\n");
+	else
+		fprintf (fp, "MAP_SCALE_FACTOR	= %g\n", gmtdefs.map_scale_factor);
 	fprintf (fp, "MEASURE_UNIT		= %s\n", GMT_unit_names[gmtdefs.measure_unit]);
 	fprintf (fp, "#-------- Calendar/Time Parameters ----------\n");
 	fprintf (fp, "TIME_FORMAT_PRIMARY	= %s\n", gmtdefs.time_format[0]);

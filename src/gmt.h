@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.80 2004-09-02 18:15:23 pwessel Exp $
+ *	$Id: gmt.h,v 1.81 2004-09-14 17:16:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -282,7 +282,7 @@ struct GMTDEFAULTS {
 	double label_offset;		/* Distance between lowermost annotation and top of label [0.1125] */
 	BOOLEAN last_page;		/* If TRUE, terminate plot system when done [TRUE] */
 	double line_step;		/* Maximum straight linesegment length for arcuate lines */
-	double map_scale_factor;	/* Central mapscale factor, typically 0.9996 */
+	double map_scale_factor;	/* Central mapscale factor, typically 0.9996-1 (or -1 for default action) */
 	double map_scale_height;	/* Height of map scale drawn on a map [0.075] */
 	int measure_unit;		/* Choose 0 (cm), 1 (inch), 2 (m) or 3 (point) [1] */
 	int media;			/* Default paper media [25(Letter)] */
