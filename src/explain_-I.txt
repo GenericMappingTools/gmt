@@ -1,3 +1,3 @@
 .TP
-.B \-I
-\fIx_inc\fP [and optionally \fIy_inc\fP] is the grid spacing. Append \fBm\fP to indicate minutes or \fBc\fP to indicate seconds.
+.B \-bi
+Selects binary input.  Append \fBs\fP for single precision [Default is double].
