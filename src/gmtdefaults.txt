@@ -229,7 +229,7 @@ Output format to be used when annotating map boundaries.  Choose between 18 form
 	17	Same as 14, but with letters W, S, or N appended as appropriate.
 .sp
 Add 100 to these values to use the large degree symbol character (octal \217) [Default is the
-small degree symbol (octal \312)].
+small degree symbol (octal \312)].  Add 1000 for no degree symbol.
 .TP
 .B DOTS_PR_INCH
 Resolution of the plotting device (dpi).  Note that in order to be as compact as possible,
