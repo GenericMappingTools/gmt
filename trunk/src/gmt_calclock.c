@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.29 2004-01-13 02:33:04 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.30 2004-04-24 01:30:00 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1143,7 +1143,7 @@ void GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct
 			if (D->iso_calendar)
 				strcpy (text, GMT_time_language.week_name[kind]);
 			else
-				strcpy (text, GMT_time_language.month_name[ival[D->item_pos[1]]-1][kind]);
+				strcpy (text, GMT_time_language.month_name[kind][ival[D->item_pos[1]]-1]);
 			if (upper) GMT_str_toupper (text);
 			if (D->item_pos[1] == 0)		/* Month/week first */
 				sprintf (date, D->format, text, ival[1], ival[2]);

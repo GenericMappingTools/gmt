@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.62 2004-04-21 03:04:05 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.63 2004-04-24 01:30:00 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1127,7 +1127,7 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode)
 		if (S->item_order[i] < last) S->truncated_cal_is_ok = FALSE;
 		last = S->item_order[i];
 	}
-	if (S->mw_text && mode < 2) error = TRUE;
+	/* if (S->mw_text && mode < 2) error = TRUE; */
 	last = (n_y > 0) + (n_m > 0) + (n_w > 0) + (n_d > 0) + (n_j > 0);	/* This is the number of items to read */
 	error += (n_delim && (last - 1) != n_delim);				/* If there are delimiters, must be one less than the items */
 	if (S->iso_calendar) {		/* Check if ISO Week format is ok */
@@ -1849,6 +1849,7 @@ int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd)
 	For gregorian calendars.  */
 	
 	int	k, ival[3];
+	char month[16];
 	
 	if (GMT_io.date_input.day_of_year) {
 		/* Calendar uses year and day of year format.  */
@@ -1874,7 +1875,31 @@ int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd)
 	}
 	
 	/* Get here when calendar type has months and days of months.  */
-	if ( (k = sscanf (s, GMT_io.date_input.format,
+	
+	if (GMT_io.date_input.mw_text) {	/* Have month name abbreviation in data format */
+		switch (GMT_io.date_input.item_pos[1]) {	/* Order of month in data string */
+			case 0:	/* e.g., JAN-24-1987 or JAN-1987-24 */
+				k = sscanf (s, GMT_io.date_input.format, month, &ival[GMT_io.date_input.item_order[1]], &ival[GMT_io.date_input.item_order[2]]);
+				GMT_str_toupper (month);
+				ival[1] = GMT_hash_lookup (month, GMT_month_hashnode, 12) + 1;
+				break;
+			case 1:	/* e.g., 24-JAN-1987 or 1987-JAN-24 */
+				k = sscanf (s, GMT_io.date_input.format, &ival[GMT_io.date_input.item_order[0]], month, &ival[GMT_io.date_input.item_order[2]]);
+				GMT_str_toupper (month);
+				ival[1] = GMT_hash_lookup (month, GMT_month_hashnode, 12) + 1;
+				break;
+			case 2:	/* e.g., JAN-24-1987 ? */
+				k = sscanf (s, GMT_io.date_input.format, month, &ival[GMT_io.date_input.item_order[1]], &ival[GMT_io.date_input.item_order[2]]);
+				GMT_str_toupper (month);
+				ival[1] = GMT_hash_lookup (month, GMT_month_hashnode, 12) + 1;
+				break;
+			default:
+				k = 0;
+				break;
+		}
+		if (k == 0) return (-1);
+	}
+	else if ( (k = sscanf (s, GMT_io.date_input.format,
 		&ival[GMT_io.date_input.item_order[0]],
 		&ival[GMT_io.date_input.item_order[1]],
 		&ival[GMT_io.date_input.item_order[2]]) ) == 0) return (-1);
