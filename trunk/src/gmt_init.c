@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.145 2004-06-13 08:11:21 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.146 2004-06-13 19:58:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -555,6 +555,7 @@ void GMT_cont_syntax (int indent, int kind)
 	fprintf (stderr, "%sn|N<n_label> specifies the number of equidistant labels per %s.\n", pad, type[kind]);
 	fprintf (stderr, "%s   N: Starts labeling exactly at the start of %s [Default centers the labels].\n", pad, type[kind]);
 	fprintf (stderr, "%s   N-1 places one label at start, while N+1 places one label at the end of the %s.\n", pad, type[kind]);
+	fprintf (stderr, "%s   Append /<min_dist> to enfore a minimum distance between succesive labels [0]\n", pad);
 	fprintf (stderr, "%sx|X<xfile.d> reads the multi-segment file <xfile.d> and places labels at the intersections\n", pad);
 	fprintf (stderr, "%s   between the %ss and the lines in <xfile.d>.  X: Resample the lines first.\n", pad, type[kind]);
 }

@@ -32,6 +32,7 @@ GFLAG\fBL\fP will interpret the point pairs as defining great circles [Default i
 GFLAG\fBn\fP\fIn_label\fP specifies the number of equidistant labels for LINETYPE line [1].
 Upper case GFLAG\fBN\fP starts labeling exactly at the start of the line [Default centers them along the line].
 GFLAG\fBN\fP-1 places one justified label at start, while GFLAG\fBN\fP+1 places one justified label at the end of LINETYPE.
+Optionally, append /\fImin_dist\fP[c|i|m|p] to enforce that a minimum distance separation between successive labels is enforced.
 .br
 GFLAG\fBx|X\fP\fIxfile.d\fP reads the multi-segment file \fIxfile.d\fP and places labels at the intersections
 between the LINETYPE and the lines in\fIxfile.d\fP.  GFLAG\fBX\fP will resample the lines first along

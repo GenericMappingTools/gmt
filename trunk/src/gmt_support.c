@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.121 2004-06-13 06:06:07 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.122 2004-06-13 19:58:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1858,9 +1858,14 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 			if (txt[1] == '+') L->number_placement = +1, j = 1;	/* Right label if n = 1 */
 		case 'n':	/* Specify number of labels per segment */
 			L->number = TRUE;
-			L->n_cont = atoi (&txt[1+j]);
+			k = sscanf (&txt[1], "%d/%s", &L->n_cont, txt_a);
+			if (k == 2) L->min_dist = GMT_convert_units (txt_a, GMT_INCH);
 			if (L->n_cont <= 0) {
 				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c.  Number of labels must exceed zero\n", GMT_program, L->flag);
+				error++;
+			}
+			if (L->min_dist < 0.0) {
+				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c.  Minimum label separation cannot be negative\n", GMT_program, L->flag);
 				error++;
 			}
 			break;
@@ -1878,22 +1883,28 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 		case 'D':	/* Specify distances in geographic units (km, degrees, etc) */
 			L->dist_kind = 1;
 		case 'd':	/* Specify distances in plot units [cimp] */
-			j = 1;	/* Because the legacy -G option did not have a d (so j = 0) */
-		default:
+			L->spacing = TRUE;
+			if (L->dist_kind == 1) {	/* Distance units other than xy specified */
+				k = strlen (txt) - 1;
+				c = (isdigit ((int)txt[k]) || txt[k] == '.') ? 0 : txt[k];
+				L->label_dist_spacing = atof (&txt[1]);
+				error += GMT_get_dist_scale (c, &L->d_scale, &L->proj_type, &L->dist_func);
+			}
+			else
+				L->label_dist_spacing = GMT_convert_units (&txt[1], GMT_INCH);
+			if (L->label_dist_spacing <= 0.0) {
+				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c.  Spacing between labels must exceed 0.0\n", GMT_program, L->flag);
+				error++;
+			}
+			break;
+		default:	/* For the old 3.4-style -G<gap>[/<width>] option format */
 			L->spacing = TRUE;
 			k = sscanf (&txt[j], "%[^/]/%d", txt_a, &L->half_width);
 			if (k == 0) {
 				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c[d]: Give label spacing\n", GMT_program, L->flag);
 				error++;
 			}
-			if (L->dist_kind == 1) {	/* Distance units other than xy specified */
-				k = strlen (txt_a) - 1;
-				c = (isdigit ((int)txt_a[k]) || txt_a[k] == '.') ? 0 : txt_a[k];
-				L->label_dist_spacing = atof (txt_a);
-				error += GMT_get_dist_scale (c, &L->d_scale, &L->proj_type, &L->dist_func);
-			}
-			else
-				L->label_dist_spacing = GMT_convert_units (txt_a, GMT_INCH);
+			L->label_dist_spacing = GMT_convert_units (txt_a, GMT_INCH);
 			if (k == 2) L->half_width /= 2;
 			if (L->label_dist_spacing <= 0.0) {
 				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c.  Spacing between labels must exceed 0.0\n", GMT_program, L->flag);
@@ -3268,8 +3279,12 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 			}
 		}
 		if (G->number) {	/* Place prescribed number of labels evenly along contours */
-			double dist;
-			for (i = j = 0; i < G->n_cont; i++) {
+			int nc;
+			double dist, last_dist;
+			
+			last_dist = (G->n_cont > 1) ? -map_dist[nn-1] / (G->n_cont - 1) : -0.5 * map_dist[nn-1];
+			nc = (map_dist[nn-1] > G->min_dist) ? G->n_cont : 0;
+			for (i = j = 0; i < nc; i++) {
 				new_label = GMT_contlabel_new ();
 				if (G->number_placement && !closed) {
 					if (G->number_placement == -1 && G->n_cont == 1) {	/* Label justified with start of segment */
@@ -3301,25 +3316,30 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 					new_label->y = (j == 0) ? yy[0] : yy[j] - f * (yy[j] - yy[j-1]);
 					new_label->dist = (j == 0) ? 0.0 : map_dist[j] - f * (map_dist[j] - map_dist[j-1]);
 				}
-				this_dist = dist;
-				if (G->label_type == 0 && label)
-					strcpy (this_label, label);
-				else if (G->label_type == 1 || G->label_type == 2)
-					strcpy (this_label, G->label);
-				else if (G->label_type == 3) {
-					sprintf (this_label, gmtdefs.d_format, this_dist * GMT_u2u[GMT_INCH][G->dist_unit]);
+				if ((new_label->dist - last_dist) >= G->min_dist) {	/* OK to accept this label */
+					this_dist = dist;
+					if (G->label_type == 0 && label)
+						strcpy (this_label, label);
+					else if (G->label_type == 1 || G->label_type == 2)
+						strcpy (this_label, G->label);
+					else if (G->label_type == 3) {
+						sprintf (this_label, gmtdefs.d_format, this_dist * GMT_u2u[GMT_INCH][G->dist_unit]);
+					}
+					else if (G->label_type == 4) {
+						sprintf (this_label, gmtdefs.d_format, this_value_dist);
+					}
+					GMT_place_label (new_label, this_label, G);
+					new_label->node = (j == 0) ? 0 : j - 1;
+					GMT_contlabel_angle (xx, yy, new_label->node, j, cangle, nn, new_label, G);
+					G->L[G->n_label++] = new_label;
+					if (G->n_label == n_alloc) {
+						n_alloc += GMT_SMALL_CHUNK;
+						G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
+					}
+					last_dist = new_label->dist;
 				}
-				else if (G->label_type == 4) {
-					sprintf (this_label, gmtdefs.d_format, this_value_dist);
-				}
-				GMT_place_label (new_label, this_label, G);
-				new_label->node = (j == 0) ? 0 : j - 1;
-				GMT_contlabel_angle (xx, yy, new_label->node, j, cangle, nn, new_label, G);
-				G->L[G->n_label++] = new_label;
-				if (G->n_label == n_alloc) {
-					n_alloc += GMT_SMALL_CHUNK;
-					G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
-				}
+				else	/* All in vain... */
+					GMT_free ((void *)new_label);
 			}
 		}
 		if (G->crossing) {	/* Determine label positions based on crossing lines */
