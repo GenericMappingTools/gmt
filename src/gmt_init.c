@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.64 2002-01-08 20:18:59 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.65 2002-01-10 22:35:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1390,7 +1390,18 @@ int GMT_setparameter (char *keyword, char *value)
 			}
 
 			i = GMT_key_lookup (lower_value, GMT_media_name, GMT_N_MEDIA);
-			if (i < 0 || i >= GMT_N_MEDIA) {	/* Not one of the standards, try the user-specified formats, if any */
+			if (i >= 0 && i < GMT_N_MEDIA) {	/* Use the specified standard format */
+				gmtdefs.media = i;
+				gmtdefs.paper_width[0] = GMT_media[i].width;
+				gmtdefs.paper_width[1] = GMT_media[i].height;
+			}
+			else if (!strncmp (lower_value, "custom_", 7)) {	/* A custom paper size in W x H points */
+				sscanf (&lower_value[7], "%dx%d", &gmtdefs.paper_width[0], &gmtdefs.paper_width[1]);
+				if (gmtdefs.paper_width[0] <= 0) error++;
+				if (gmtdefs.paper_width[1] <= 0) error++;
+				gmtdefs.media = -USER_MEDIA_OFFSET;
+			}
+			else {	/* Not one of the standards, try the user-specified formats, if any */
 				if ((GMT_n_user_media = GMT_load_user_media ())) {	/* Got some */
 					i = GMT_key_lookup (lower_value, GMT_user_media_name, GMT_n_user_media);
 					if (i < 0 || i >= GMT_n_user_media) {	/* Not found, give error */
@@ -1405,11 +1416,6 @@ int GMT_setparameter (char *keyword, char *value)
 				else {	/* Not found, give error */
 					error = TRUE;
 				}
-			}
-			else {	/* User the specified standard format */
-				gmtdefs.media = i;
-				gmtdefs.paper_width[0] = GMT_media[i].width;
-				gmtdefs.paper_width[1] = GMT_media[i].height;
 			}
 			if (!error) {
 				if (manual) gmtdefs.paper_width[0] = -gmtdefs.paper_width[0];
@@ -1655,7 +1661,9 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "#-------- Plot Media Parameters -------------\n", GMT_VERSION);
 	fprintf (fp, "PAGE_COLOR		= %d/%d/%d\n", gmtdefs.page_rgb[0], gmtdefs.page_rgb[1], gmtdefs.page_rgb[2]);
 	(gmtdefs.page_orientation & 1) ? fprintf (fp, "PAGE_ORIENTATION	= portrait\n") : fprintf (fp, "PAGE_ORIENTATION	= landscape\n");
-	if (gmtdefs.media >= USER_MEDIA_OFFSET)
+	if (gmtdefs.media == -USER_MEDIA_OFFSET)
+		fprintf (fp, "PAPER_MEDIA		= Custom_%dx%d", gmtdefs.paper_width[0], gmtdefs.paper_width[1]);
+	else if (gmtdefs.media >= USER_MEDIA_OFFSET)
 		fprintf (fp, "PAPER_MEDIA		= %s", GMT_user_media_name[gmtdefs.media-USER_MEDIA_OFFSET]);
 	else
 		fprintf (fp, "PAPER_MEDIA		= %s", GMT_media_name[gmtdefs.media]);
