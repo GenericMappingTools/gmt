@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.30 2004-04-20 18:29:36 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.31 2004-09-14 19:07:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -317,6 +317,7 @@ struct THREE_D {
 struct GMT_DATUM {	/* Main parameter for a particular datum */
 	double a, b, f, e_squared, ep_squared;
 	double xyz[3];
+	int ellipsoid_id;	/* Ellipsoid GMT ID number */
 };
 
 struct GMT_DATUM_CONV {

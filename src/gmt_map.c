@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.67 2004-09-14 17:16:53 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.68 2004-09-14 19:07:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8367,6 +8367,7 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D)
 		memset ((void *)D->xyz, 0, (size_t)(3 * sizeof (double)));
 		D->a = 6378137.0;
 		D->f = (1.0 / 298.2572235630);
+		D->ellipsoid_id = 0;
 	}
 	else if (strchr (text, ':')) {	/* Has colons, must get ellipsoid and dr separately */
 		char ellipsoid[128], dr[64];
@@ -8384,6 +8385,7 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D)
 				return (-1);
 			}
 			if (D->f != 0.0) D->f = 1.0 / D->f;	/* Get f from 1/f */
+			D->ellipsoid_id = -1;
 		}
 		else {	/* Get the ellipsoid # and then the parameters */
 			if ((i = GMT_get_ellipsoid (ellipsoid)) < 0) {
@@ -8392,6 +8394,7 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D)
 			}
 			D->a = gmtdefs.ref_ellipsoid[i].eq_radius;
 			D->f = gmtdefs.ref_ellipsoid[i].flattening;
+			D->ellipsoid_id = i;
 		}
 	}
 	else {		/* Gave a Datum ID tag [ 0-(N_DATUMS-1)] */
@@ -8411,6 +8414,7 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D)
 		D->a = gmtdefs.ref_ellipsoid[k].eq_radius;
 		D->f = gmtdefs.ref_ellipsoid[k].flattening;
 		for (k = 0; k< 3; k++) D->xyz[k] = gmtdefs.datum[i].xyz[k];
+		D->ellipsoid_id = k;
 	}
 	D->b = D->a * (1 - D->f);
 	D->e_squared = 2 * D->f - D->f * D->f;

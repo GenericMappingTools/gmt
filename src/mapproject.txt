@@ -86,6 +86,9 @@ Coordinate conversions between datums \fIfrom\fP and \fIto\fP.  Use \fB\-Th\fP i
 height above ellipsoid [Default assumes height = 0, i.e., on the ellipsoid].  Specify datums using the
 ID (see \fB\-Qd\fP) or give \fIellipsoid\fP:\fIdx,dy,dz\fP, where \fIellipsoid\fP may be an ellipsoid
 ID (see \fB\-Qe\fP) or given as \fIa,1/f\fP.  If \fIdatum\fP is - or not given we use WGS-84.
+\fB\-T\fP may be used in conjunction with \fB\-R \-J\fP to change the datum before coordinate projection
+(add \fB\-I\fP to apply the datum conversion after the inverse projection).  Make sure that the
+\fBELLIPSOID\fP setting is correct for your case.
 #include "explain_-V.txt"
 #include "explain_-t.txt"
 #include "explain_-i_binary.txt"
