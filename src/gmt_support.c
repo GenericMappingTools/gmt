@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.74 2004-04-22 19:56:57 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.75 2004-04-23 18:07:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4070,7 +4070,7 @@ int GMT_getscale (char *text, struct MAP_SCALE *ms)
 	
 	/* Determine if we have the optional longitude component specified */
 	
-	for (n_slash = 0, i = j; text[i]; i++) if (text[i] == '/') n_slash++;
+	for (n_slash = 0, i = j; text[i] && text[i] != '+'; i++) if (text[i] == '/') n_slash++;
 	
 	/* Determine if we have the optional label/justify component specified */
 	
