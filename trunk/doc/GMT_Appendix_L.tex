@@ -1,0 +1,178 @@
+%------------------------------------------
+%	$Id: GMT_Appendix_L.tex,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+%
+%	The GMT Documentation Project
+%	Copyright 2000-2001.
+%	Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+\chapter{\gmt\ on non-\UNIX\ platforms}
+\thispagestyle{headings}
+
+\section{Introduction}
+\index{GMT@\GMT!on non-\UNIX\ platforms}
+\index{GMT@\GMT!Macs running MkLinux}
+\index{GMT@\GMT!Macs running MachTen}
+\index{GMT@\GMT!PCs running Interix}
+\index{GMT@\GMT!PCs running Linux}
+
+While \GMT\ can be ported to non-\UNIX\ systems such as
+Windows and MacOS, it is also true that one of the
+strengths of \GMT\ lies its symbiotic relationship with
+\UNIX.  We therefore recommend that \GMT\ be installed in
+a POSIX-compliant \UNIX\ PC environment such as Linux (PC)
+or MkLinux (Mac).  There are also commercial products
+for PCs (e.g., Interix [formerly OpenNT]\footnote{www.interix.com})
+and Macs (e.g., MachTen\footnote{www.tenon.com}) that will
+provide a POSIX environment
+without rebooting into \UNIX.  Installation of \GMT\ under
+Interix or Machten is no different than under other POSIX
+\UNIX systems.
+
+However, if you own a PC and need a public domain,
+no-cost solution other than Linux you have a few
+additional options.  At the time of this writing they
+include
+
+\begin{enumerate}
+
+\item Install \GMT\ under Cygwin (A GNU port to Windows). 
+
+\item Install \GMT\ under DJGPP (another GNU port to Windows/DOS).
+
+\item Install \GMT\ directly using Microsoft C/C++ or other
+compilers.
+\index{GMT@\GMT!compile with Microsoft C/C++}
+
+\end{enumerate}
+
+Unlike the first two, the latter will not provide you with any
+\UNIX\ tools so you will be limited to what you can do with
+DOS batch files.
+
+\section{Cygwin and \gmt}
+\index{GMT@\GMT!under Cygwin|(}
+\index{Cygwin|(}
+
+Because \GMT\ works best in conjugation with \UNIX\ tools we
+suggest you install \GMT\ using the Cygwin product from
+Cygnus (now assimilated by Redhat, Inc.).  Note there are two versions:
+One is commercially available and contains a few more tools,
+in particular the \progname{tcsh} shell, but is only available for
+WIndows NT or Windows 2000.  The other is the free version for any Windows version
+and it uses the Bourne Again shell \progname{bash}.  Here we will
+assume you have the free version and will be using this shell.
+You also have access to most standard GNU development tools such
+as compilers and text processing tools (\progname{awk},
+\progname{grep}, \progname{sed}, etc.).
+If you don’t mind learning \progname{bash} scripting\footnote{O'Reilly \&
+Associates, Inc has a suitable book, \emph{Learning the bash
+shell} (ISBN 1-56592-347-2).} you can write any
+type of \GMT\ scripts (The \GMT\ examples also come in
+\progname{bash} form).
+
+Follow the instructions on the Cygwin page\footnote{sources.redhat.com/cygwin} on how
+to install the executables; it takes an effort not to do this correctly.
+
+Once you are up and running under Cygwin, you may install \GMT\ 
+the same way you do under any other \UNIX\ platform by either
+running the automated install via \progname{install\_gmt} or manually
+running configure first, then type make all.
+For details see the general README file.
+After installing you should make a few
+changes to the setup:
+
+\begin{enumerate}
+
+\item In Windows/DOS, set the two environmental variables
+HOME and GMTHOME to point to your ``home'' directory while
+running Cygwin and the GMT install directory.  These two
+parameters should be defined
+in the \filename{autoexec.bat} file and could be something
+like\footnote{Please change \texttt{USER} to your actual home directory,
+and GMT to the actual GMT install directory.}
+
+\begin{itemize}
+\item \texttt{SET HOME=C:$\backslash$USER}
+\item \texttt{SET GMTHOME=C:$\backslash$GMT}
+\end{itemize}
+
+Under Windows NT or 2000 you set these environmental parameters via the
+System control panel.
+
+\item In this home directory, make the file \filename{.bashrc} where
+you place a few definitions:
+
+\begin{itemize}
+\item HOME=//C/USER
+\item GMTHOME=//C/GMT
+\end{itemize}
+
+\end{enumerate}
+
+\index{GMT@\GMT!under Cygwin|)}
+\index{Cygwin|)}
+
+\section{DJGPP and \gmt}
+\index{GMT@\GMT!under DJGPP|(}
+\index{DJGPP|(}
+
+DJGPP\footnote{See www.gnu.org for details.} is similar to Cygwin
+in that it provides precompiled \UNIX\ tools for DOS/WIN32,
+including the \progname{bash} shell.  At the time of this writing we
+have not been successful in compiling netCDF in this
+environment.  This is fully due to our limited understanding
+of the innards of the netCDF installation whose configure
+script did not work for us.  As soon as this problem is
+overcome we expect a smooth install similar to that of Cygwin.
+\index{GMT@\GMT!under DJGPP|)}
+\index{DJGPP|)}
+
+\section{WIN32 and \gmt}
+\index{GMT@\GMT!under Win32|(}
+\index{Win32 and \GMT|(}
+
+\GMT\ will compile and install using the Microsoft Visual C/C++
+compiler.  We expect other WIN32 C compilers to give similar
+results.  Since \progname{configure} cannot be run you
+must manually rename \filename{gmt\_notposix.h.in} to
+\filename{gmt\_notposix.h}.  The netCDF home page gives full
+information on how to compile and install netCDF; precompiled
+libraries are also available.  At present we simply have a lame \filename{gmtinstall.bat}
+file that compiles the entire \GMT\
+package, and \filename{gmtsuppl.bat} which compiles most of the
+supplemental programs.  If you just need to run \GMT\ and do not want to mess with compilations,
+get the precompiled binaries from the \GMT\ ftp sites.
+
+\index{GMT@\GMT!under Win32|)}
+\index{Win32 and \GMT|)}
+
+\section{OS/2 and \gmt}
+\index{GMT@\GMT!under O/S2}
+\index{O/S2 and \GMT}
+
+\GMT\ has been ported to OS/2 by \htmladdnormallinkfoot{Allen Cogbill}{mailto:ahc@lanl.gov},
+Los Alamos National Laboratory.
+One must have \htmladdnormallinkfoot{EMX}{ftp://ftp.geophysics.lanl.gov/pub/EES3/pub/gmt/emxrt.zip}
+installed in order to use the executables.  All features 
+that are present in the \UNIX\ version of \GMT\ are available in the OS/2 version.
+All executables may be obtained using links in the following
+\htmladdnormallinkfoot{document}{ftp://ees.lanl.gov/pub/EES3/pub/gmt/gmt4os2.html},
+which provides more detail on the port.
+
+\section{MacOS and \gmt}
+\index{GMT@\GMT!under MacOS}
+\index{MacOS and \GMT}
+
+\GMT\ has not been ported to the classical Macintosh platform
+(i.e. MacOS 9.x or earlier).  For that OS your only option is MachTen.
+However, \GMT\ will install directly under the MacOS X Server.
+The MacOS X Server was released in March 1999 and
+is built on a BSD \UNIX\ implementation that will allow users to
+install \GMT\ or any other \UNIX\ package.  On the other hand,
+the MacOS X client version (i.e., the version installed on new Macs
+you may purchase in the future) will not be ready until late 2000 and it
+is not clear if it will provide a command prompt (but it is considered
+likely).
+You may find out the status of these issues by checking the
+latest news at \htmladdnormallinkfoot{macUNIX}{http://macunix.com}.

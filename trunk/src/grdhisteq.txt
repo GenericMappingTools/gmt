@@ -1,0 +1,102 @@
+.TH GRDHISTEQ l DATE
+.SH NAME
+grdhisteq \- Histogram equalization for grd files 
+.SH SYNOPSIS
+\fBgrdhisteq\fP \fIin_grdfile\fP [ \fB\-G\fP\fIout_grdfile\fP ] 
+[ \fB\-C\fP\fIn_cells\fP ] [ \fB\-D\fP ] [ \fB\-N\fP[\fInorm\fP] ] [ \fB\-Q\fP ] [ \fB\-V\fP ]
+.SH DESCRIPTION
+\fBgrdhisteq\fP allows the user to find the data values which divide a given
+grdfile into patches of equal area.  One common use of \fBgrdhisteq\fP is in
+a kind of histogram equalization of an image.  In this application, the
+user might have a grdfile of flat topography with a mountain in the middle.
+Ordinary gray shading of this file (using grdimage/grdview) with a linear mapping
+from topography to graytone will result in most of the image being very
+dark gray, with the mountain being almost white.  One could use \fBgrdhisteq\fP
+to write to stdout an ASCII list of those data values which divide the
+range of the data into \fIn_cells\fP segments, each of which has an equal
+area in the image.  Using \fBawk\fP or \fBmakecpt\fP one can take this output and build a cpt
+file; using the cptfile with grdimage will result in an image with all
+levels of gray occurring equally.  Alternatively, see \fBgrd2cpt\fP.
+.br
+	The second common use of \fBgrdhisteq\fP is in writing a grdfile with statistics
+based on some kind of cumulative distribution function.  In this application,
+the output has relative highs and lows in the same (x,y) locations as the
+input file, but the values are changed to reflect their place in some
+cumulative distribution.  One example would be to find the lowest 10%
+of the data:  Take a grdfile, run \fBgrdhisteq\fP and make a grdfile using
+\fIn_cells\fP = 10, and then contour the result to trace the 1 contour.
+This will enclose the lowest 10% of the data, regardless of their original
+values.  Another example is in equalizing the output of grdgradient.
+For shading purposes it is desired that the data have a smooth distribution,
+such as a gaussian.  If you run \fBgrdhisteq\fP on output from grdgradient
+and make a grdfile output with the Gaussian option, you will have a
+grdfile whose values are distributed according to a gaussian distribution
+with zero mean and unit variance.  The locations of these values will
+correspond to the locations of the input; that is, the most negative
+output value will be in the (x,y) location of the most negative input
+value, and so on.
+.br
+	No space between the option flag and the associated arguments.  Use upper case for the
+option flags and lower case for modifiers.
+.TP
+\fIin_grdfile\fP
+2-D binary grd file to be equalized.
+.br
+.sp
+.SH OPTIONS
+.TP
+.B \-C
+Sets how many cells (or divisions) of data range to make.
+.TP
+.B \-D
+Dump level information to standard output.
+.TP
+.B \-G
+Name of output 2-D grd file.  Used with \fB\-N\fP only.
+.TP
+.B \-N
+Gaussian output.  Use with \fB\-G\fP to make an output grdfile with standard normal scores.
+Append \fInorm\fP to force the scores to fall in the <-1,+1> range [Default is standard normal scores].
+.TP
+.B \-Q
+Use quadratic intensity scaling.  [Default is linear].
+#include "explain_-V.txt"
+.SH EXAMPLES
+To find the height intervals that devide the file heights.grd into 16 divisions of
+equal area, try
+.br
+.sp
+grdhisteq heights.grd \fB\-C\fP16 \fB\-D\fP > levels.d
+.br
+.sp
+To make the poorly distributed intensities in the file raw_intens.grd suitable for use
+with \fBgrdimage\fP or \fBgrdview\fP, try
+.br
+.sp
+grdhisteq raw_intens.grd \fB\-G\fPsmooth_intens.grd \fB\-N \-V\fP
+.br
+.SH RESTRICTIONS
+If you use \fBgrdhisteq\fP to make a gaussian output for gradient shading
+in \fBgrdimage\fP or \fBgrdview\fP, you should be aware of the following:  the output will be
+in the range [-x, x], where x is based on the number of data in the input
+grdfile (nx * ny) and the cumulative gaussian distribution function F(x).
+That is, let N = nx * ny.  Then x will be adjusted so that 
+F(x) = (N - 1 + 0.5)/N.  Since about 68% of the values from a standard normal
+distribution fall within +/- 1, this will be true of the output grdfile.
+But if N is very large, it is possible for x to be greater than 4.  Therefore,
+with the \fBgrdimage\fP program clipping gradients to the range [-1, 1], you will
+get correct shading of 68% of your data, while 16% of them will be clipped
+to -1 and 16% of them clipped to +1.  If this makes too much of the image
+too light or too dark, you should take the output of \fBgrdhisteq\fP and rescale
+it using \fBgrdmath\fP and multiplying by something less than 1.0, to shrink
+the range of the values, thus bringing more than 68% of the image into the
+range [-1, 1].  Alternatively, supply a normalization factor with \fB\-N\fP.
+.SH "SEE ALSO"
+.IR gmtdefaults (l),
+.IR gmt (l),
+.IR grd2cpt (l),
+.IR grdgradient (l),
+.IR grdimage (l),
+.IR grdmath (l),
+.IR grdview (l),
+.IR makecpt (l)

@@ -1,0 +1,122 @@
+.TH XYZ2GRD l DATE
+.SH NAME
+xyz2grd \- Converting an ASCII or binary table to grd file format
+.SH SYNOPSIS
+\fBxyz2grd\fP \fIxyzfile\fP \fB\-G\fP\fIgrdfile\fP \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] 
+\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-A\fP[\fBn|z\fP] ] [ \fB\-D\fP\fIxunit/yunit/zunit/scale/offset/title/remark\fP ] 
+[ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP ] [ \fB\-N\fP\fInodata\fP ] [ \fB\-S\fP[\fIzfile\fP] ] [ \fB\-V\fP ] 
+[ \fB\-Z\fP[\fIflags\fP] ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+.SH DESCRIPTION
+\fBxyz2grd\fP reads a z or xyz table and
+creates a binary grdfile.  \fBxyz2grd\fP will report if some of the nodes are not filled in with
+data.  Such unconstrained nodes are set to a value specified by the user [Default is NaN].
+Nodes with more than one value will be set to the average value.  As an option (using \fB\-Z\fP),
+a 1-column z-table may be read assuming all nodes are present (z-tables can be in organized in a
+number of formats, see \fB\-Z\fP below.)
+.TP
+\fI[xy]zfile\fP
+ASCII [or binary] file holding z or (x,y,z) values.  xyz triplets do not
+have to be sorted (for binary triplets, see \fB\-b\fP).  1-column z tables must be sorted and the \fB\-Z\fP must be set). 
+.TP
+.B \-G
+\fIgrdfile\fP is the name of the binary output grdfile.
+#include "explain_-I.txt"
+#include "explain_-R.txt"
+.SH OPTIONS
+.sp
+.TP
+.B \-A
+Add up multiple values that belong to the same node (same as \fB\-Az\fP).
+Append \fBn\fP to simply count the number of data points that were assigned to each node.
+[Default (no \fB\-A\fp option) will calculate mean value].  Ignored if \fB\-Z\fP is given.
+.TP
+.B \-D
+Give values for \fIxunit, yunit, zunit, scale, offset, title,\fP and \fIremark\fP.
+To leave some of these values untouched, specify = as the value.
+.TP
+.B \-F
+Force pixel registration [Default is grid registration].
+#include "explain_-H.txt"
+Not used with binary data.
+.TP
+.B \-L
+Indicates that the x column contains longitudes, which may differ from the regions in \fB\-R\fP by [multiples of] 360 degrees [Default assumes no periodicity].
+.TP
+.B \-N
+No data.  Set nodes with no input xyz triplet to this value [Default is NaN].  For z-tables, this
+option is used to replace z-values that equal \fInodata\fP with NaN.
+.TP
+.B \-S
+Swap the byte-order of the input only.  No grid file is produced.  You must
+also supply the \fB\-Z\fP option.  The output is written to \fIzfile\fP (or
+stdout if not supplied).
+#include "explain_-V.txt"
+.TP
+.B \-Z
+Read a 1-column ASCII [or binary] table.  This assumes that all the nodes are
+present and sorted according to specified ordering convention contained in \fIflags\fP.
+If incoming data represents rows, make \fIflags\fP start with \fBT\fP(op) if first row is y = ymax
+or \fBB\fP(ottom) if first row is y = ymin.  Then, append \fBL\fP or \fBR\fP to indicate that first element is at left
+or right end of row.  Likewise for column formats: start with \fBL\fP or \fBR\fP to position first column,
+and then append \fBT\fP or \fBB\fP to position first element in a row.  
+For gridline registered grids:  If data are periodic in x but the
+incoming data do not contain the (redundant) column at x = xmax, append \fBx\fP.  For data periodic in y
+without redundant row at y = ymax, append \fBy\fP.  Append \fBs\fP\fIn\fP to skip the first \fIn\fP number
+of bytes (probably a header).  If the byte-order needs to be swapped, append \fBw\fP.  Select
+one of several data types (all binary except \fBa\fP):
+.br
+.sp
+	\fBa\fP  ASCII representation
+.br
+	\fBc\fP  signed 1-byte character
+.br
+	\fBu\fP  unsigned 1-byte character
+.br
+	\fBh\fP  short 2-byte integer
+.br
+	\fBi\fP  4-byte integer
+.br
+	\fBl\fP  long (4- or 8-byte) integer
+.br
+	\fBf\fP  4-byte floating point single precision
+.br
+	\fBd\fP  8-byte floating point double precision
+.br
+.sp
+Default format is scanline orientation of ASCII numbers: \fB\-ZTLa\fP.
+Note that \fB\-Z\fP only applies to 1-column input.
+#include "explain_-t.txt"
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+[Default is 3 input columns].  This option only applies to xyz input files; see \fB\-Z\fP for z tables.
+.SH EXAMPLES
+To create a grdfile from the ASCII data in hawaii_grv.xyz, try
+.br
+.sp
+xyz2grd hawaii_grv.xyz \fB\-D\fPdegree/degree/mGal/1/0/"Hawaiian Gravity"/"GRS-80 Ellipsoid used"
+\fB\-G\fPhawaii_grv_new.grd \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm \-V\fP
+.br
+.sp
+To create a grdfile from the raw binary (3-column, single-precision) scanline-oriented data raw.b, try
+.br
+.sp
+xyz2grd raw.b \fB\-D\fPm/m/m/1/0/=/= \fB\-G\fPraw.grd \fB\-R\fP0/100/0/100 \fB\-I\fP1 \fB\-V \-Z \-b\fP3
+.br
+.sp
+To make a grdfile from the raw binary USGS DEM (short integer) scanline-oriented data topo30. on the NGDC
+global relief Data CD-ROM, with values of -9999 indicate missing data, one must on some machine reverse the byte-order.  On such machines (like Sun), try
+.br
+.sp
+xyz2grd topo30. \fB\-D\fPm/m/m/1/0/=/= \fB\-G\fPustopo.grd \fB\-R\fP234/294/24/50 \fB\-I\fP30c \fB\-N\fP-9999 \fB\-V \-ZTLhw\fP
+.br
+.sp
+Say you have received a binary file with 4-byte floating points that were
+written on a machine of different byte-order than yours.  You can swap the
+byte-order with
+.br
+.sp
+xyz2grd floats.bin \fB\-S\fPnew_floats.bin \fB\-V \-Zf\fP
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grd2xyz (l),
+.IR grdedit (l)

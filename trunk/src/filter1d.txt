@@ -1,0 +1,84 @@
+.TH FILTER1D l DATE
+.SH NAME
+filter1d \- Time domain filtering of 1-D time series
+.SH SYNOPSIS
+\fBfilter1d\fP [ \fIinfile\fP ] \fB\-F\fP\fI<type><width>\fP [ \fB\-D\fP\fIincrement\fP ]  
+[ \fB\-E\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIignore_val\fP ] [ \fB\-L\fP\fIlack_width\fP ] 
+[ \fB\-N\fP\fIn_cols/t_col\fP ] [ \fB\-Q\fP\fIq_factor\fP ] [ \fB\-S\fP\fIsymmetry_factor\fP ] 
+[ \fB\-T\fP\fIstart/stop/int\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+.SH DESCRIPTION
+\fBfilter1d\fP is a general time domain filter for multiple column time series data.
+The user specifies the number of columns of input and which column is the time.
+(See \fB\-N\fP option below).  The fastest operation occurs when the input time series are
+equally spaced and have no gaps or outliers and the special options are not needed.
+\fBfilter1d\fP has options L, Q, and S for unevenly sampled data with gaps.
+.TP
+\fIinfile\fP
+Multi-column ASCII (or binary, see \fB\-b\fP) file holding data values to be filtered.
+.TP
+.B \-F
+sets Filtertype, \fItype\fP is one of \fBb\fP(oxcar), \fBc\fP(osine arch), \fBg\fP(aussian), \fBm\fP(edian),
+or \fBp\fP(maximum likelihood Probability estimator -- a mode estimator),
+and specify full filter \fIwidth\fP in same units as time column,
+OR, use \fB\-Ff\fP\fIname\fP to give the name of a one-column file of your own coefficients.
+Upper case type \fBB, C, G, M, P, F\fP will use robust filter versions:
+i.e., replace outliers (2.5 L1 scale off median) with median during filtering.
+.SH OPTIONS
+.sp
+.TP
+.B \-D
+\fIincrement\fP is used when series is NOT equidistantly sampled.
+Then \fIincrement\fP will be the abscissae resolution, i.e., all abscissae
+will be rounded off to a multiple of \fIincrement\fP.  Alternatively, resample
+data with \fBsample1d\fP.
+.TP
+.B \-E
+Include Ends of time series in output.  Default loses half the filter-width of data at each end.
+#include "explain_-H.txt"
+.TP
+.B \-I
+To ignore values; If an input value equals \fIignore_val\fP it will be set to NaN.
+.TP
+.B \-L
+Checks for Lack of data condition.  If input data has a gap exceeding
+\fIwidth\fP then no output will be given at that point [Default does not check Lack].
+.TP
+.B \-N
+Sets number of columns in input and which column contains the independent
+variable (time). The left-most column is # 0, the right-most is # (\fIn_cols\fP - 1).
+[Default is \fIn_cols\fP = 2, \fIt_col\fP = 0; i.e., file has t, f(t) pairs].
+.TP
+.B \-Q
+assess Quality of output value by checking mean weight in convolution.
+Enter \fIq_factor\fP between 0 and 1.  If mean weight < \fIq_factor\fP, output is suppressed
+at this point [Default does not check Quality].
+.TP
+.B \-S
+Checks symmetry of data about window center.  Enter a factor
+between 0 and 1.  If ( (abs(n_left - n_right)) / (n_left + n_right) ) > \fIfactor\fP,
+then no output will be given at this point [Default does not check Symmetry].
+.TP
+.B \-T
+Make evenly spaced timesteps from \fIstart\fP to \fIstop\fP by \fIint\fP [Default uses input times].
+#include "explain_-V.txt"
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+#include "explain_-o.txt"
+.SH EXAMPLES
+To filter the data set in the file cruise.gmtd containing evenly spaced gravity, magnetics, topography,
+and distance (in m) with a 10 km Gaussian filter, removing outliers, and output a filtered
+value every 2 km between 0 and 100 km, try
+.br
+.sp
+filter1d cruise.gmtd \fB\-T\fP0/1.0e5/2000 \fB\-FG\fP10000 \fB\-N\fP4/3 \fB\-V\fP > filtered_cruise.gmtd
+.br
+.sp
+Data along track often have uneven sampling and gaps which we do not want to interpolate using \fBsample1d\fP.
+To find the median depth in a 50 km window every 25 km along the track of cruise v3312, stored in v3312.dt,
+checking for gaps of 10km and asymmetry of 0.3, try
+.br
+.sp
+filter1d v3312.dt \fB\-FM\fP50 \fB\-T\fP0/100000/25 \fB\-L\fP10 \fB\-S\fP0.3 > v3312_filt.dt
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR sample1d (l)

@@ -1,0 +1,4 @@
+.TP
+.B \-:
+Toggles between (longitude,latitude) and (latitude,longitude) input/output.  [Default is (longitude,latitude)].
+Applies to geographic coordinates only.

@@ -1,0 +1,23 @@
+.TH GMTINFO l DATE
+.SH NAME
+gmtinfo \- Get information about individual cruises
+.SH SYNOPSIS
+\fBgmtinfo\fP \fIleg-ids\fP
+.SH DESCRIPTION
+gmtinfo reports the minimum/maximum coordinates, year of the cruise, leg id, number of
+records, the number of gravity, magnetics, and bathymetry points found, and the
+start/stop dates for the leg.  All the information is written to standard output on
+one line so that it is easy to use awk to add up numbers etc.
+.sp
+.TP
+\fIleg-ids\fP
+Can be one or more gmtleg-names, like c2610.  Use `cat list_of_legs` to pass all the legnames
+in the file list_of_legs. 
+.SH EXAMPLES
+To obtain information about cruises c2603 and v2819, try
+.br
+.sp
+gmtinfo  c2603 v2819 > info_file
+.SH "SEE ALSO"
+.IR gmt (l)
+#include "refs.i"

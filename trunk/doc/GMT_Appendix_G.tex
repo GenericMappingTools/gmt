@@ -1,0 +1,27 @@
+%------------------------------------------
+%	$Id: GMT_Appendix_G.tex,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+%
+%	The GMT Documentation Project
+%	Copyright 2000-2001.
+%	Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+\chapter{\PS\ fonts used by \gmt}
+\index{Font!standard}
+\thispagestyle{headings}
+
+\GMT\ uses the standard 35 fonts that come with most
+\PS\ laserwriters, as well as 4 Japanese fonts, for a total
+of 39.  If your printer does not support
+some of these fonts, it will automatically substitute the
+default font (which is usually Courier).  The following is
+a list of the \GMT\ fonts: \\ 
+
+\GMTfig[h]{GMT_App_G}{The standard 39 \PS\ fonts recognized by \gmt}
+
+For the special fonts Symbol (12) and ZapfDingbats (34), see the
+octal charts in Appendix~F.  When specifying fonts in \GMT, you can
+either give the entire font name \emph{or} just the font number listed in
+this table.  To change the fonts used in plotting basemap frames, see the man
+page for \GMTprog{gmtdefaults}.  For direct plotting of text-strings,
+see the man page for \GMTprog{pstext}.

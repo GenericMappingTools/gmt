@@ -1,0 +1,61 @@
+.TH GRDEDIT l DATE
+.SH NAME
+grdedit \- Modifying the header in a 2-D grdfile
+.SH SYNOPSIS
+\fBgrdedit\fP \fIgrdfile\fP [ \fB\-A\fP ] [ \fB\-D\fP\fIxunit/yunit/zunit/scale/offset/title/remark\fP ] 
+[ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP ] [ \fB\-V\fP ]
+.SH DESCRIPTION
+\fBgrdedit\fP reads the header information in a binary 2-D grdfile and replaces
+the information with values provided on the command line [if any].  As an option,
+global, geographical grids (with 360 degrees longitude range) can be rotated in
+the east-west direction.  \fBgrdedit\fP only operates on files containing a grdheader.
+.br
+	No space between the option flag and the associated arguments.  Use upper case for the
+option flags and lower case for modifiers.
+.TP
+\fIgrdfile\fP
+Name of the 2-D grdfile to modify
+.sp
+.SH OPTIONS
+.TP
+.B \-A
+If necessary, adjust the file's \fIx_inc, y_inc\fP to be compatible with its domain (or a new domain set with \fB\-R\fP).  Older gridfiles (i.e., created prior to GMT 3.1) often had excessive slop in
+\fIx_inc, y_inc\fP and an adjustment is necessary.  Newer files are created correctly.
+.TP
+.B \-D
+Give new values for \fIxunit, yunit, zunit, scale, offset, title,\fP and \fIremark\fP.
+To leave some of the values untouched, specify = as the new value.
+#include "explain_-R.txt"
+The new w/e/s/n values will replace those in the grid, and the \fIx_inc, y_inc\fP
+values are adjusted, if necessary.
+.TP
+.B \-S
+For global, geographical grids only.  Grid values will be shifted laterally according to
+the new borders given in \fB\-R\fP.
+#include "explain_-V.txt"
+.SH EXAMPLES
+Let us assume the file data.grd covers the area 300/310/10/30.  We want
+to change the boundaries from geodetic longitudes to geographic and put a new title in
+the header.  We accomplish this by
+.br
+.sp
+grdedit data.grd \fB\-R\fP-60/-50/10/30 \fB\-D\fP=/=/=/=/=/"Gravity Anomalies"/=
+.br
+.sp
+The grid world.grd has the limits 0/360/-72/72.  To shift the
+data so that the limits would be -180/180/-72/72, use
+.br
+.sp
+grdedit world.grd \fB\-R\fP-180/180/-72/72 \fB\-S\fP
+.br
+.sp
+The file junk.grd was created prior to GMT 3.1 with incompatible
+\fB\-R\fP and \fB\-I\fP arguments.  To reset the x- and y-increments
+we run
+.br
+.sp
+grdedit junk.grd \fB\-A\fP
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grd2xyz (l),
+.IR xyz2grd (l)

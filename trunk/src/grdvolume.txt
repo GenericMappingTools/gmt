@@ -1,0 +1,65 @@
+.TH GRDVOLUME l DATE
+.SH NAME
+grdvolume \- Calculating volume under a surface within a contour
+.SH SYNOPSIS
+\fBgrdvolume\fP \fIgrdfile\fP [ \fB\-C\fP\fIcval\fP or \fB\-C\fP\fIlow/high/delta\fP ] 
+[ \fB\-L\fP\fIbase\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP[\fBk\fP] ] [ \fB\-T\fP ] [ \fB\-V\fP[\fBl\fP] ] [ \fB\-Z\fP\fIfact\fP[/\fIdelta\fP] ]
+.SH DESCRIPTION
+\fBgrdvolume\fP reads a 2-D binary grd file and calculates the volume contained
+between the surface and the plane specified by the given contour (or zero if not given).
+Alternatively, specify a range of contours to be tried and \fBgrdvolume\fP will determine
+the volume and area inside the contour for all contour values.  The contour that produced
+the maximum mean height (volume/area) is reported as well.  This feature may be used with
+\fBgrdfilter\fP in designing an Optimal Robust Separator [\fIWessel\fP, 1998].
+.TP
+\fIgrdfile\fP
+The name of the input 2-D binary grd file.
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+.TP
+.B \-C
+find area and volume inside the \fIcval\fP contour.  Alternatively, search using
+all contours from \fIlow\fP to \fIhigh\fP in steps of \fIdelta\fP.  [Default returns
+entire area and volume of grid].
+.TP
+.B \-L
+Also add in the volume from the level of the contour down to \fIbase\fP [Default base is contour].
+.TP
+.B \-S
+Convert degrees to meters, append \fBk\fP for km [Default is Cartesian].
+.TP
+.B \-T
+Use curvature minimum rather than maximum height to find best contour value (when contour
+search is selected with \fB\-C\fP).
+#include "explain_-R.txt"
+#include "explain_-V.txt"
+Append \fBl\fP to see all the results for each contour level tested (when contour search
+has been selected).
+.TP
+.B \-Z
+Optionally subtract \fIshift\fP before scaling data by \fIfact\fP. [Default is no scaling].
+(Numbers in \fB\-C, -L\fP refer to values after this scaling has occurred).
+.SH EXAMPLES
+To determine the volume in km^3 under the surface hawaii_topo.grd (height in km), try
+.br
+.sp
+grdvolume hawaii_topo.grd \fB\-Sk\fP
+.br
+.sp
+To find the volume between the surface peaks.grd and the contour z = 250, use
+.br
+.sp
+grdvolume peaks.grd \fB\-Sk\fP \fB\-C\fP250
+.br
+.sp
+To search for the contour, between 100 and 300 in steps of 10, that maximizes the ratio of volume
+to surface area for the file peaks.grd, use
+.br
+.sp
+grdvolume peaks.grd \fB\-Sk\fP \fB\-C\fP100/300/10 > results.d
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grdfilter (l)
+.SH REFERENCES
+Wessel, P., 1998, An empirical method for optimal robust regional-residual separation of geophysical data,
+\fIMath. Geol., 30(4)\fP, 391\-408.

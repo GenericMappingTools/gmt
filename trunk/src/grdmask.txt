@@ -1,0 +1,67 @@
+.TH GRDMASK l DATE
+.SH NAME
+grdmask \- Create mask grdfiles from xy paths.
+.SH SYNOPSIS
+\fBgrdmask\fP \fIpathfiles\fP \fB\-G\fP\fImask_grd_file\fP] \fB\-I\fP\fIxinc\fP[\fBm|c\fP][/\fIyinc\fP[\fBm|c\fP]] 
+\fB\-R\fP\fIwest/east/south/north\fP[\fIr\fP] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
+[ \fB\-N\fP\fIout/edge/in\fP ] [ \fB\-S\fP[\fIradius\fP][\fBk\fP] ] [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+.SH DESCRIPTION
+\fBgrdmask\fP can operate in 2 different modes. 1. It reads one or more xy-files that each define a closed polygon.
+The nodes defined by the specified region and lattice spacing will be set equal to one of three possible values
+depending on whether the node is outside, on the polygon perimeter, or inside the polygon.  The
+resulting mask grdfile may be used in subsequent operations involving \fBgrdmath\fP to mask out
+data from polygonal areas. 2. The xy-files simply represent data point locations and the mask is set to the
+inside or outside value depending on whether a node is within a maximum distance from the nearest data point.
+If the distance specified is zero then only the nodes nearest each data point are considered "inside".
+.TP
+\fIpathfiles\fP
+The name of 1 or more ASCII [or binary, see \fB\-b\fP] files holding the polygon(s) or data points.
+.TP
+.B \-G
+Name of resulting output mask grd file.
+#include "explain_-I.txt"
+#include "explain_-R.txt"
+.SH OPTIONS
+.TP
+.B \-F
+Force pixel registration.  [Default is grid registration].
+#include "explain_-H.txt"
+.TP
+.B \-L
+Indicates that the x column contains longitudes, which may differ from the regions
+in \fB\-R\fP by [multiples of] 360 degrees [Default assumes no periodicity].
+.TP
+.B \-M
+Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP.
+[Default is '>'].
+.TP
+.B \-N
+Sets the values that will be assigned to nodes that are \fIout\fPside the polygons,
+on the \fIedge\fP, or \fIin\fPside.  Values can be any number, including the
+textstring NaN  [Default is 0/0/1].
+.TP
+.B \-S
+Set nodes depending on their distance from the nearest data point.  Nodes within \fIradius\fP [0] from
+a data point are considered inside.  Append \fBk\fP to indicate map units (e.g., \fB\-R \-I\fP in
+degrees and \fIradius\fP in km).
+#include "explain_-V.txt"
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+[Default is 2 input columns].
+.SH EXAMPLES
+To set all nodes inside and on the polygons coastline_*.xy to 0, and outside points
+to 1, do
+.sp
+grdmask coastline_*.xy \fB\-R\fP-60/-40/-40/-30 \fB\-I\fP5\fBm \-N\fP1/0/0 \fB\-G\fPland_mask.grd  \fB\-V\fP
+.br
+.sp
+To set nodes within 50 km of data points to 1 and other nodes to NaN, do
+.sp
+grdmask data.xyz \fB\-R\fP-60/-40/-40/-30 \fB\-I\fP5m \fB\-N\fPNaN/1/1 \fB\-S\fP50\fBk\fP \fB\-G\fPdata_mask.grd  \fB\-V\fP
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grdlandmask (l),
+.IR grdmath (l),
+.IR grdclip (l),
+.IR psmask (l),
+.IR psclip (l)

@@ -1,0 +1,201 @@
+.TH PSCOAST l DATE
+#define LEN_1   0.1
+#define SCALE_M1   \fB\-Jm\fP0.1\fBi\fP
+#define LEN_2   1
+#define SCALE_M2   \fB\-Jm\fP1\fBc\fP
+.SH NAME
+pscoast \- To plot land-masses, water-masses, coastlines, borders, and rivers
+.SH SYNOPSIS
+\fBpscoast \-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
+[ \fB\-A\fP\fImin_area\fP[\fImin_level//max_level\fP] ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIfill\fP ] [ \fB\-D\fP\fIresolution\fP ] 
+[ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-G\fP\fIfill\fP ] 
+[ \fB\-I\fP\fIriver\fP[/\fIpen\fP] ] [ \fB\-K\fP ] [ \fB\-L\fP[\fBf\fP][\fBx\fP]\fIlon0/lat0/slat/length\fP[\fBm|n|k\fP] ] 
+[ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP\fIborder\fP[/\fIpen\fP] ] [ \fB\-O\fP ] 
+[ \fB\-P\fP ] [ \fB\-Q\fP ] [ \fB\-S\fP\fIfill\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] 
+[ \fB\-W\fP\fIpen\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] 
+[ \fB\-c\fP\fIcopies\fP ] [ \fB\-bo\fP[\fBs\fP] ]
+.SH DESCRIPTION
+\fBpscoast\fP plots grayshaded, colored, or textured land-masses [or water-masses] on maps and [optionally]
+draws coastlines, rivers, and political boundaries.  Alternatively, it can (1) issue clip paths that will
+contain all land or all water areas, or (2) dump the data to an ASCII table.  The datafiles come in 5 different resolutions:
+(\fBf\fP)ull, (\fBh\fP)igh, (\fBi\fP)ntermediate, (\fBl\fP)ow, and (\fBc\fP)rude.  The full resolution files amount to more than 55 Mb
+of data and provide great detail; for maps of larger geographical extent it is more economical to use
+one of the other resolutions.  If the user selects to paint the land-areas and does not specify fill of
+water-areas then the latter will be transparent (i.e., earlier graphics drawn in those areas will not
+be overwritten).  Likewise, if the water-areas are painted and no land fill is set then the land-areas
+will be transparent.  The \fIPostScript\fP code is written to standard output.
+.br
+	No space between the option flag and the associated arguments.  Use upper case for the
+option flags and lower case for modifiers.
+#include "explain_-j.txt"
+#include "explain_-R.txt"
+.SH OPTIONS
+.TP
+.B \-A
+Features with an area smaller than \fImin_area\fP in km^2 or of hierarchical level that is lower than \fImin_level\fP or higher than \fImax_level\fP
+will not be plotted [Default is 0/4 (all features)]. See DATABASE INFORMATION below for more details.
+#include "explain_-b.txt"
+.TP
+.B \-C
+Set the shade (0\-255), color (r/g/b), or pattern (\fBp|P\fP\fIdpi/pattern\fP; see \fB\-G\fP) for lakes  [Default is the fill chosen for "wet" areas (\fB\-S\fP)].
+.TP
+.B \-D
+Selects the resolution of the data set to use ((\fBf\fP)ull, (\fBh\fP)igh, (\fBi\fP)ntermediate, (\fBl\fP)ow, and (\fBc\fP)rude).  The
+resolution drops off by 80% between data sets. [Default is \fBl\fP].
+.TP
+.B \-E
+Sets the viewpoint's azimuth and elevation (for perspective view) [180/90]
+.TP
+.B \-G
+Select painting or clipping of "dry" areas.  Append a shade, color, pattern, or \fBc\fP for clipping.
+#include "explain_-G.txt"
+.TP
+.B \-I
+Draw rivers.  Specify the type of rivers and [optionally] append pen attributes  [Default pen:
+width = 1, color = 0/0/0, texture = solid].  Choose from the list of river types below.
+Repeat option \fB\-I\fP as often as necessary.
+.br
+	 1 = Permanent major rivers
+.br
+	 2 = Additional major rivers
+.br
+	 3 = Additional rivers
+.br
+	 4 = Minor rivers
+.br
+	 5 = Intermittent rivers - major
+.br
+	 6 = Intermittent rivers - additional
+.br
+	 7 = Intermittent rivers - minor
+.br
+	 8 = Major canals
+.br
+	 9 = Minor canals
+.br
+	10 = Irrigation canals
+.br
+	 a = All rivers and canals (1-10)
+.br
+	 r = All permanent rivers (1-4)
+.br
+	 i = All intermittent rivers (5-7)
+.br
+	 c = All canals (8-10)
+.br
+#include "explain_-K.txt"
+.TP
+.B \-L
+Draws a simple map scale centered on \fIlon0/lat0\fP.  Use \fB\-Lx\fP to specify x/y position instead.
+Scale is calculated at latitude \fIslat\fP, \fIlength\fP is in km [miles if \fBm\fP is appended; nautical miles if \fBn\fP is appended].
+Use \fB\-Lf\fP to get a "fancy" scale [Default is plain].
+.TP
+.B \-M
+Dumps a single multisegment ASCII (or binary, see \fB\-bo\fP) file to standard output.  No plotting occurs.
+Specify any combination of \fB\-W, \-I, \-N\fP.  Optionally, you may append the
+\fIflag\fP character that is written at the start of each segment header ['>'].
+.TP
+.B \-N
+Draw political boundaries.  Specify the type of boundary and [optionally] append pen attributes  [Default pen:
+width = 1, color = 0/0/0, texture = solid].  Choose from the list of boundaries below.
+Repeat option \fB\-N\fP as often as necessary.
+.br
+	1 = National boundaries
+.br
+	2 = State boundaries within the Americas
+.br
+	3 = Marine boundaries
+.br
+	a = All boundaries (1-3)
+.br
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+.TP
+.B \-Q
+Mark end of existing clip path.  No projection information is needed.
+.TP
+.B \-S
+Select painting or clipping of "wet" areas.  Append the shade (0\-255), color (r/g/b), pattern (see \fB\-G\fP), or \fBc\fP for clipping.
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+.TP
+.B \-W
+Draw coastlines. [Default is no coastlines].  Append pen attributes  [Defaults:
+width = 1, color = 0/0/0, texture = solid].
+#include "explain_-XY.txt"
+#include "explain_-c.txt"
+#include "explain_-o.txt"
+.SH EXAMPLES
+To plot a green Africa with white outline on blue background, with permanent major rivers in thick blue pen, additional major rivers in thin blue pen, and national borders as dashed lines
+on a Mercator map at scale LEN_1 inch/degree, try
+.br
+.sp
+pscoast \fB\-R\fP-30/30/-40/40 SCALE_M1 \fB\-B\fP5 \fB\-I\fP1/1\fBp\fP/0/0/255 \fB\-I\fP2/0.25\fBp\fP/0/0/255 \fB\-N\fP1/0.25\fBtap\fP \fB\-W\fP0.25\fBp\fP/255/255/255 \fB\-G\fP0/255/0 \fB\-S\fP0/0/255 \fB\-P\fP > africa.ps
+.br
+.sp
+To plot Iceland using the lava pattern (# 28) at 100 dots per inch, on a Mercator map at scale LEN_2 cm/degree, try
+.br
+.sp
+pscoast \fB\-R\fP-30/-10/60/65 SCALE_M2 \fB\-B\fP5 \fB\-Gp\fP100/28 > iceland.ps
+.br
+.sp
+To initiate a clip path for Africa so that the subsequent colorimage of gridded topography is only
+seen over land, using a Mercator map at scale LEN_1 inch/degree, try
+.br
+.sp
+pscoast \fB\-R\fP-30/30/-40/40 SCALE_M1 \fB\-B\fP5 \fB\-Gc \-P \-K\fP > africa.ps
+.br
+grdimage SCALE_M1 etopo5.grd -Ccolors.cpt \fB\-O \-K\fP >> africa.ps
+.br
+pscoast \fB\-Q \-O\fP >> africa.ps
+.SH DATABASE INFORMATION
+The coastline database is compiled from two sources: World Vector Shorelines (WVS) and CIA World Data Bank II (WDBII).
+In particular, all level-1 polygons (ocean-land boundary) are derived from the more accurate WVS while all higher level polygons
+(level 2-4, representing land/lake, lake/island-in-lake, and island-in-lake/lake-in-island-in-lake boundaries) are
+taken from WDBII.  Much processing has taken place to convert WVS and WDBII data into usable form for \fBGMT\fP:
+assembling closed polygons from line segments, checking for duplicates, and correcting for crossings between
+polygons.  The area of each polygon has been determined so that the user
+may choose not to draw features smaller than a minimum area (see \fB\-A\fP); one may also limit the highest hierarchical level of
+polygons to be included (4 is the maximum).  The 4 lower-resolution databases were derived from the full resolution
+database using the Douglas-Peucker line-simplification algorithm.  The classification of rivers and borders follow
+that of the WDBII.  See the \fBGMT\fP Cookbook and Technical Reference Appendix K for
+further details.
+.br
+\fBpscoast\fP will first look for coastline files in directory $GMTHOME/share (where $GMTHOME is
+an environmental variable).  If the desired file is not found, it will look for the file
+coastline.conf in the same directory.  This file may contain any number of records that
+each holds the full pathname of an alternative directory.  Comment lines (#) and blank lines
+are allowed.  The desired file is then sought for in the alternate directories.
+.SH BUGS
+The options to fill (\fB\-C \-G \-S\fP) may not always work if the Azimuthal equidistant projection is
+chosen (\fB\-Je|E\fP).  If the antipole of the projection is in the oceans it will most likely work.
+If not, try to avoid using projection center coordinates that are even multiples of the coastline
+bin size (1, 2, 5, 10, and 20 degrees for \fBf, h, i, l, c\fP, respectively).  This projection is
+not supported for clipping.
+.br
+The political borders are for the most part 1970ies-style and do not reflect the recent
+border rearrangments in Europe.  We intend to update these as high-resolution data become
+avaiable to us.
+.br
+Some users of \fBpscoast\fP will not be satisfied with what they find for the
+Antarctic shoreline.  In Antarctica, the boundary between ice and 
+ocean varies seasonally and interannually.  There are some areas of 
+permanent sea ice.  In addition to these time-varying ice-ocean 
+boundaries, there are also ice grounding lines where ice goes from 
+floating on the sea to sitting on land, and lines delimiting areas 
+of rock outcrop.  For consistency's sake, we have used the World
+Vector Shoreline throughout the world in pscoast, as described in
+the GMT cookbook Appendix K. Users who need specific boundaries
+in Antarctica should get the Antarctic Digital Database, prepared
+by the British Antarctic Survey, Scott Polar Research Institute,
+World Conservation Monitoring Centre, under the auspices of the
+Scientific Committee on Antarctic Research.  This data base contains
+various kinds of limiting lines for Antarctica and is available on
+CD-ROM.  It is published by the Scientific Committee on Antarctic
+Research, Scott Polar Research Institute, Lensfield Road, Cambridge
+CB2 1ER, United Kingdom.
+.SH "SEE ALSO"
+.IR gmtdefaults (l),
+.IR gmt (l),
+.IR grdlandmask (l),
+.IR psbasemap (l)

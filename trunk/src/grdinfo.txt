@@ -1,0 +1,53 @@
+.TH GRDINFO l DATE
+.SH NAME
+grdinfo \- Get information about the contents of a 2-D grd file
+.SH SYNOPSIS
+\fBgrdinfo\fP \fIgrdfiles\fP [ \fB\-C\fP ] [ \fB\-D\fP ] [ \fB\-F\fP ] [ \fB\-L1\fP ] 
+[ \fB\-L2\fP ] [ \fB\-M\fP ] [ \fB\-V\fP ]
+.SH DESCRIPTION
+\fBgrdinfo\fP reads a 2-D binary grd file and reports various statistics for the (x,y,z) data in the
+grdfile.  The output information contains the minimum/maximum values for x, y, and z, where the
+min/max of z occur, the x- and y-increments, and the number of x and y nodes, and
+[optionally] the mean, standard deviation, and/or the median, L1 scale of z, and number of nodes set to NaN.
+.TP
+\fIgrdfile\fP
+The name of one or several 2-D grd files.
+.br
+.sp
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+.TP
+.B \-C
+Formats the report using tab-separated fields on a single line.  The output is
+\fIw e s n z0 z1 dx dy nx ny \fP[ \fIx0 y0 x1 y1\fP ] [ \fImed scale\fP ] [\fI mean std rms\fP] [\fIn_nan\fP].
+The data in brackets are output only if the corresponding options
+\fB\-M, \-L1\fP, \fB\-L2\fP, and \fB\-M are used, respectively.
+.TP
+.B \-D
+Report grid domain and x/y-increments using dd:mm:ss[.fff] notation [Default is decimal].
+Does not apply to the \fB\-C\fP option.
+.TP
+.B \-F
+Report grid domain and x/y-increments world mapping format [Default is generic].
+Does not apply to the \fB\-C\fP option.
+.TP
+.B \-L1
+Report median and L1 scale of z (L1 scale = 1.4826 * Median Absolute Deviation (MAD)).
+.TP
+.B \-L2
+Report mean and standard deviation of z.
+.TP
+.B \-M
+Find and report the location of min/max z-values, and count and report the number of nodes
+set to NaN, if any.
+#include "explain_-V.txt" 
+.SH EXAMPLES
+To obtain all the information about the data set in file hawaii_topo.grd, try
+.br
+.sp
+grdinfo \fB\-L1 \-L2 \-M\fP hawaii_topo.grd
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grd2cpt (l),
+.IR grd2xyz (l),
+.IR grdedit (l)

@@ -1,0 +1,1570 @@
+%------------------------------------------
+%	$Id: GMT_Chapter_1.tex,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+%
+%	The GMT Documentation Project
+%	Copyright 2000-2001.
+%	Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+\chapter{Prefaces} 
+\thispagestyle{headings}
+
+\section{Preface to version 3.3.6 (October--2000)} 
+Version 3.3.6 is yet another service release with
+several bug fixes.  However, there are also (once again) a few enhancements
+driven by bug reports as well as a few enhancements driven
+by the developers' research needs.  Soon, we expect
+to release the stable release series 3.4 (and subsequent releases
+3.4.x) as well as initiate a developers' release 3.5 (where new features
+will be tested before they are incorporated into a future stable release
+series 3.6).
+
+\subsection{Major bug fixes in 3.3.6}
+
+We continue to converge asymptotically toward a stable release
+as both old and new problems are brought to our attention.
+Table~\ref{tbl:3.3.5bugs} lists the most
+significant corrections; for a full description see the
+\filename{CHANGES} file in the main \GMT\ directory.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}  \hline
+\multicolumn{1}{|c|}{\emph{File}}	& \multicolumn{1}{c|}{\emph{Bug}} \\ \hline
+Makefile	&	Did not copy \filename{.gmtdefaults\_\{SI,US\}} to the alternate share directory. \\
+		&	Had a typo so reference to mex had become nex. \\ \hline
+do\_examples.*	&	Neither script set the library path correctly. \\ \hline
+gmt\_custom.c	&	Fixed read and read\_info functions for surfer grids. \\ \hline
+gmt\_map.c	&	Added special test when making graticules than include a pole. \\ \hline
+gmt\_init.c	&	When ensuring that \Opt{J} is processed first we must preserve \\
+		&	the order of the other arguments since \GMTprog{grdvector} expects \\
+		&	two grdfile names whose order may not be interchanged. \\
+		&	Because of \Opt{L}, \Opt{R} now needs to set \texttt{project\_info.w,e,s,n}. \\ \hline
+gmt\_plot.c	&	\Opt{JX}...d with negative axes would not draw frame or annotations. \\ \hline
+gmt\_support.c	&	Resized \texttt{GMT\_LUT} structures were not properly initialized. \\
+		&	Resampling of cpt files did not anticipate non-equidistant $z$-values. \\ \hline
+gmtmath.c	&	\Opt{Q} must be protected from \Opt{T}/inc check added in 3.3.5. \\
+		&	Operator {\bf D2DT2} was of by factor of 2. \\ \hline
+grd2xyz.c	&	Needed \Opt{L} so that \Opt{:} would work. \\ \hline
+grdimage.c	&	Needed polygon clip/wrap machinery for \Opt{T} as in \GMTprog{psxy}. \\ \hline
+grdview.c	&	\Opt{B}..W+ for \Opt{Jo} gave incorrect 3-D box. \\ \hline
+pslib.c		&	Bug in \texttt{ps\_clipon} gave a wedge gap in some azimuthal clip paths. \\ \hline
+psscale.c	&	Modifier \Opt{B}...{\bf s} did not work. \\ \hline
+psxyz.c		&	\Opt{Su} with size read from file failed to set $y$-size of cube. \\ \hline
+nearneighbor.c	&	Incorrectly counted the number of new points. \\ \hline
+surface.c	&	Failed if input points lie exactly on a plane. \\ \hline
+xyz2grd.c	&	Gave verbose output without \Opt{V}. \\ \hline
+\end{tabular}
+\caption{Bugs in \gmt\ version 3.3.5}
+\label{tbl:3.3.5bugs}
+\end{table}
+
+\subsection{Minor changes in 3.3.6}
+
+The install script for this version has been rewritten for the Bourne shell.
+This should allow the simplified installation process to be more portable than
+the previous C shell version.
+
+Several more binary netcdf formats have been added to \GMT.  The new formats have ids in
+the 7--11 range for netcdf files with byte, char, short, int, and double arrays which complement the
+default floats.  Our thanks goes to Masakazu Higaki, JMA for implementing this feature.
+We have added the GSHHS data extractor programs to the supplemental archive.
+This supplement (gshhs) extracts coastline polygons from the GSHHS data base which
+forms the basis for the \GMT\ coastline data.  The binary GSHHS data files
+must be obtained separately from NGDC or SOEST as before.
+%We have also added
+%one new supplemental program to the {\bf misc} package.  The program is
+%called \GMTprog{gmtdigitize} and it interfaces with a digitizing tablet via
+%a serial port.  It digitizes points from maps and applies the relevant inverse
+%map projection.  It has only been tested with a Calcomp DrawingBoard III from
+%Linux but we expect it to port easily to other configurations.
+
+A few enhancements in individual program functionality have also occured:
+
+\begin{description}
+
+\item [gmt\_support.c] Allow custom formatting of axis values via {\bf D\_FORMAT} when
+this parameter does \emph{not} contain the 'g' format type.
+
+\item [gmtmath] Added new logical operators {\bf LT, LE, EQ, GE, GT, ISNAN} and {\bf NAN}, as well as functions
+{\bf XOR, MODE, MAD, LMSSCL, TDIST, FDIST, CHIDIST, INT, SUM, UPPER} and  {\bf LOWER}.
+Added plain \Opt{T} for data with no time column, \Opt{Cr} to toggle active columns, and \Opt{S} to report
+just the first row of the results.
+
+\item [grdcontour] Added \Opt{D-} to get short DOS names that would work with WIN32 \progname{gawk}.
+
+\item [grdmath] Added the same functions as for \GMTprog{gmtmath}, with the expection of functions
+{\bf INT} and {\bf SUM}; we also added the operator {\bf EXTREMA}.
+
+\item [imgsrc/img2grd]	New Bourne script that calls \GMTprog{img2mercgrd} and optionally converts
+the Mercatorized grid to geographic using \GMTprog{grdproject}.
+
+\end{description}
+
+%------------------------------------
+
+\section{Preface to version 3.3.5 (July--2000)} 
+Version 3.3.5 is another service release with
+several bug fixes.  However, there are also (once again) a few enhancements
+driven by bug reports as well as a few enhancements driven
+by the developers' research needs.  Later this year, we expect
+to release the stable release series 3.4 (and subsequent releases
+3.4.x) as well as initiate a developers' release 3.5 (where new features
+will be tested before they are incorporated into a future stable release
+series 3.6).
+
+\subsection{Major bug fixes in 3.3.5}
+
+We continue to converge asymptotically toward a stable release
+as both old and new problems are brought to our attention.
+Table~\ref{tbl:3.3.4bugs} lists the most
+significant corrections; for a full description see the
+\filename{CHANGES} file in the main \GMT\ directory.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}  \hline
+\multicolumn{1}{|c|}{\emph{File}}	& \multicolumn{1}{c|}{\emph{Bug}} \\ \hline
+gmt\_cdf.c	&	Now reports name of grid file when netCDF has an interal error. \\ \hline
+gmt\_customio.c	&	Reading of bit-masks did not allocate enough memory. \\ \hline
+gmt\_io.c	&	Did not skip blank input lines as advertised. \\ \hline
+gmt\_map.c	&	Sped up \Opt{JN} by factor of 2+ by saving coefficients. \\
+		&	Only give warning when central meridian, as set by \Opt{J}, \\
+		&	is outside \Opt{R} (do not reset meridian). \\
+		&	Clip path for azimuthal projections when the S or N \\
+		&	pole was included in \Opt{R} did not work properly. \\
+		&	Replaced old Oblique Mercator algorithm with a general \\
+		&	rotation to oblique coordinates followed by plain \\
+		&	Mercator.  Rotation done as in \GMTprog{project} via vector \\
+		&	operations.  This also fixes \GMTprog{mapproject} errors. \\
+		&	Polygons containing the map region were rejected as being ``outside''. \\
+		&	\texttt{GMT\_grd\_inverse} had a 360 degree offset problem. \\ \hline
+gmt\_plot.c	&	\texttt{GMT\_echo\_command} used a 160-char char array which \\
+		& 	could overflow on very long \Opt{B} options. \\
+		&	\Opt{B}...:,unit: did not check for octal codes or escapes. \\
+		&	y-components of grid-crosses were not parallel to meridians. \\
+		&	\Opt{JPa} needed to change to draw counter-clockwise. \\ \hline
+gmt\_support.c	&	Checked for the wrong macro and never used Shewchuck's triangulation. \\
+		&	Had minor bug in \texttt{GMT\_grd\_setregion}. \\ \hline
+gmtmath.c	&	\Opt{T} did not stick unless {\bf T} was the first operand. \\ \hline
+gmtselect.c	&	\Opt{L} and \Opt{F} always expect a multisegment format while reading \\
+		&	line or polygon files.  Option \Opt{M} only applies to input data. \\ \hline
+grdcontour.c	&	\Opt{D} + \Opt{M} did not have linefeed at end of segment headers. \\ \hline
+grdimage.c	&	Called \texttt{ps\_image} with incorrect number of pixels for 1-bit images. \\ \hline
+grdinfo.c	&	\Opt{C} + \Opt{M} did not output the number of NaNs. \\ \hline
+grdview.c	&	Incorrect internal variable was reset -- could give SEGV. \\
+		&	Now correctly interprets \Opt{Qig} as 100 dpi monochrome image. \\
+		&	Mesh was set as default even when \Opt{T} was selected. \\ \hline
+pslib.c		&	Very large images (> 21845 pixel per scanline) would exceed the \\
+		&	implementation limits on string lengths. \\
+pscoast.c	&	\Opt{Gc} or \Opt{Sc} with no coastlines in \Opt{R} gave SEGV. \\ \hline
+pstext.c	&	\Opt{W} has no default fill; fixed man page to agree. \\ \hline
+psxy.c		&	Default resampling of lines now applied when \Opt{JX...d} is used. \\ \hline
+pswiggle.c	&	\Opt{D} scaled to meter even for non-geographical data. \\ \hline
+surface.c	&	Planar correction for points close to nodes was in error. \\ \hline
+triangulate.c	&	Did not check for grd-indeces outside region when \Opt{R} \Opt{I} \Opt{G} were used. \\ \hline
+xyz2grd.c	&	Still did 360-check even without the \Opt{L} option. \\ \hline
+\end{tabular}
+\caption{Bugs in \gmt\ version 3.3.4}
+\label{tbl:3.3.4bugs}
+\end{table}
+
+\subsection{Minor changes in 3.3.5}
+
+This version has new political border files (\filename{binned\_border\_?.cdf})
+that include the borders inside former Yugoslavia.  We have also added many
+more special characters in the reencoding of the fonts; Appendix F shows the new
+symbols.  A new defaults parameter, {\bf ANOT\_MIN\_SPACING}, has been added to
+control how close anotations may be plotted to each other.  The existing parameter
+{\bf OBLIQUE\_ANOTATION} has been extended to contain numerous bit-flags that
+give users more control over how anotations for oblique map projections are
+handled.  Furthermore, by adding 10 to the {\bf DEGREE\_FORMAT} parameter you
+can access the large degree symbol for map annotations [Default is the standard,
+ small ring symbol].  The processing of the \Opt{:} flag is now taking place inside
+the generic input routines instead of in each program module, as is the check for
+periodicity in longitudes.  This improves consistency and ensures that \Opt{:} is
+only applied to geographic coordinates.
+%We have also added
+%one new supplemental program to the {\bf misc} package.  The program is
+%called \GMTprog{gmtdigitize} and it interfaces with a digitizing tablet via
+%a serial port.  It digitizes points from maps and applies the relevant inverse
+%map projection.  It has only been tested with a Calcomp DrawingBoard III from
+%Linux but we expect it to port easily to other configurations.
+
+A few enhancements in individual program functionality have also occured:
+
+\begin{description}
+
+\item [\Opt{JS}] The stereographic projection can now take \Opt{Js}{\it lon/lat/lats/1:xxxx}
+for true scale at the specified standard parallel.
+
+\item [block*] Option \Opt{L} indicates that x is longitude and subject to 360-degree periodicities.
+
+\item [gmtmath] Renamed {\bf STEP} to {\bf STEPT} to be consistent with the naming in \GMTprog{grdmath}.
+Added new function {\bf STEP} that simply applies the Heaviside function to the stack values.
+
+\item [gmtselect] Option \Opt{L} (no arguments) indicates that x is longitude and subject to 360-degree periodicities.
+
+\item [grd2xyz] Option \Opt{Sr} suppresses all non-NaN nodes (complements \Opt{S} which suppresses all NaN nodes).
+
+\item [grdfilter] Added \Opt{T} to toggle registration as in \GMTprog{grdsample}, but
+left old \Opt{N} in there (undocumented) to ensure backward compatibility.
+
+\item [grdmath] Added new function {\bf STEP} that applies the Heaviside function to the stack values.
+
+\item [grdtrack] Added \Opt{Z} option to only write the $z$-column.  Option \Opt{L} (no arguments) indicates that
+x is longitude and subject to 360-degree periodicities.
+
+\item [nearneighbor] Option \Opt{L} (no arguments) indicates that x is longitude and subject to 360-degree periodicities.
+
+\item [pstext]	Added \Opt{Dj} to set ``smart'' offsets that go in the
+direction of the text string's justification.
+
+\item [psxy, psxyz]	\Opt{Sf} is now a general front plotter, with several types of
+fronts available.  The new option is backwards compatible with 3.3.4 and earlier versions.
+
+\item [splitxyz] Option \Opt{L} indicates that x is longitude and subject to 360-degree periodicities.
+
+\item [surface] Option \Opt{L} indicates that x is longitude and subject to 360-degree periodicities.
+
+\item [trend2d] Option \Opt{L} indicates that x is longitude (so \Opt{:} may be processed correctly).
+
+\item [triangulate] Option \Opt{L} indicates that x is longitude and subject to 360-degree periodicities.
+
+\item [xyz2grd]	Added \Opt{A}[n$|$z] option to count or add up multiple node entries.
+
+\item [dbase/grdraster.c]	Now, \Opt{G}{\it gridfile} is optional; if not given we write
+xyz triplets to stdout instead.
+
+\item [mex]	We have added a configure script to this package so that the entire install,
+including supplement, can be done in the background.
+
+\item [xgrid/xgridedit.c]	We have added a configure script to this package to deal properly
+with the required X libraries, as well as using the GMT library for reading and writing grid files.
+
+\end{description}
+
+\section{Preface to version 3.3.4 (March--2000)} 
+Version 3.3.4 is once again predominantly a service release with
+several bug fixes.  However, there are also (once again) a few enhancements
+driven by bug reports as well as a few enhancements driven
+by the developers' research needs.
+
+\subsection{Major bug fixes in 3.3.4}
+
+We continue to converge asymptotically toward a stable release
+as both old and new problems are brought to our attention.
+Table~\ref{tbl:3.3.3bugs} lists the most
+significant corrections; for a full description see the
+\filename{CHANGES} file in the main \GMT\ directory.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}  \hline
+\multicolumn{1}{|c|}{\emph{File}}	& \multicolumn{1}{c|}{\emph{Bug}} \\ \hline
+gmt\_map.c	&	The selection of correct transverse Mercator algorithm failed when \Opt{R} \\
+		&	did not straddle the central meridian. \\
+		&	Must use 3 points when drawing straight meridians to avoid \\
+		&	the disappearence of gridlines that go exactly trough corners. \\
+		&	Error in \texttt{GMT\_merc\_inverse} caused \GMTprog{grdproject} to exceed array \\
+		&	bounds for some common situations and dump core. \\
+		&	Added a better map-crossing locator for ellipsoidal borders. \\
+		&	Array bounds for boundary crossovers would sometimes be exceeded. \\
+		&	Scaling error affected \Opt{Jw}, \Opt{Jh}, \Opt{Jr}, \Opt{Jy}, and \Opt{Jv}. \\ \hline
+gmt\_plot.c	&	Anotation justification for right y-axis when using the power \\
+		&	projection and the {\bf p}-modifier to \Opt{B} was incorrect. \\
+		&	\Opt{U} now gives time in decreasing units. \\ \hline
+gmt\_stat.c	&	\texttt{erfc} function was not given the correct \texttt{GMT\_erfc} name. \\ \hline
+gmt\_support.c	&	interpolant which failed to check for duplicate input points. \\ \hline
+gmtmath.c	&	{\bf DUP} and {\bf EXCH} did not work if only constants were involved. \\ \hline
+gmtselect.c	&	\Opt{F} could not handle polygons containing the south or north pole. \\
+		&	Always treated input as geographical coordinates. \\ \hline
+grd2xyz.c	&	With \Opt{Z} it wrote one extra linefeed after each NaN. \\ \hline
+grdcontour.c	&	Did not use \Opt{Q} when \Opt{D} was set. \\ \hline
+grdmask.c	&	Could not handle polygons containing the south or north pole. \\
+		&	Did not skip points outside region when \Opt{S} was used. \\ \hline
+grdmath.c	&	{\bf DUP} and {\bf EXCH} did not work if only constants were involved. \\ \hline
+grdvector.c	&	Did not use default unit (MEASURE\_UNIT) when \Opt{S} gave a value \\
+		&	without an explicit unit appended. \\
+		&	Now skips nodes whose values are NaN. \\ \hline
+mapproject.c	&	Did not account for false northing for UTM  in the southern hemisphere. \\ \hline
+pslib.c		&	Final underlined word had no trailing space. \\
+		&	Global $x$- and $y$-scales were not used to adjust BoundingBox values. \\
+		&	\GMTprog{pstext} \Opt{M} \Opt{W} would reset box pens after first \\
+		&	paragraph since pen was set inside a local gsave/grestore block. \\
+		&	Bug in internal numbering of user-defined patterns. \\ \hline
+psmask.c	&	Contour tracing would go out of array bounds as row was set incorrectly. \\ \hline
+psscale.c	&	Failed to correctly position a timestamp set with \Opt{U}. \\ \hline
+psxy[z].c	&	The \Opt{Z} in multisegment headers now understand the value NaN. \\
+		&	No longer attempts track interpolation when \Opt{Jp} is used. \\
+		&	\Opt{Sf} now works when longitudes wrap around 360. \\ \hline
+surface.c	&	\Opt{L} failed because we did not clip node values that were directly \\
+		&	constrained by a data point. \\ \hline
+xyz2grd.c	&	\Opt{L} option did not work for some range of longitudes. \\
+		&	Never checked for too many input lines with \Opt{Z}. \\ \hline
+cps/cpsencode.c	&	One output line had missing \PS-comment. \\ \hline
+\end{tabular}
+\caption{Bugs in \gmt\ version 3.3.3}
+\label{tbl:3.3.3bugs}
+\end{table}
+
+\subsection{Minor changes in 3.3.4}
+
+Because the support for NFS under Linux in pre-2.4 versions of the kernel is
+incomplete, we have added the \-\-disable-flock option to the configure script
+which will disable history file locking.  This should only be necessary to use
+if your Linux machine is using NFS-mounted external disks from other \UNIX\
+workstations.  Also, because many 3.0 users have been utterly confused by the fact
+that \GMT\ now (since 3.1) produces freeform \PS\ output by default, we have added
+a \-\-enable-eps option so that users may change the default to Encapsulated
+\PS\ (Confused users should really read the PAPER\_MEDIA section in the \GMTprog{gmtdefaults}
+man page).  Furthermore, \progname{gmtinstall.bat} and \progname{gmtsuppl.bat} now produce Win32 executables
+that use DLL libraries.  Finally, two general changes affect almost all of the \GMT\ programs:
+
+\begin{enumerate}
+
+\item ASCII input data using the dd:mm[:ss] format are now accepted.
+These geographic coordinates, as well as regular decimal or integer
+representations, may optinally have one of W, E, S, N (or w, e, s, n) as
+a suffix to indicate the sign of the coordinate.  For example, 12:30:15W,
+33.5s, and 45:03:15.5666N are all valid input data strings (note there can
+be no spaces between the number and the suffix).  The same
+formats are also understood by any \GMT\ command-line option that
+expects coordinates (e.g., \Opt{R}, \Opt{J}, and others, except \Opt{B}
+since \GMT\ has always used the colon character (:) to 
+indicate the beginning and end of axis label and title character strings.
+
+\item The polar (cylindrical) projection has been enhanced to
+accept a modifier ({\bf a}) which makes \GMT\ expect clockwise-oriented
+azimuths (\Opt{Jpa} or \Opt{JPa}) rather than the default counter-clockwise
+directions (\Opt{Jp} or \Opt{JP}).
+
+\end{enumerate}
+
+A few enhancements in individual program functionality have also occured:
+
+\begin{description}
+
+\item  [gmtmath/grdmath] now have two more functions (RAND and NRAND) that create
+uniform deviates $(0 < x < 1)$ and normal deviates (zero mean and unit variance),
+respectively.
+
+\item [grdproject] Added option \Opt{C} as in \GMTprog{mapproject} to set origin
+independently of \Opt{M}, which now allows the units to be cm, inch, or meter.
+Also added option \Opt{A} which behaves similarly to option \Opt{F} in \GMTprog{mapproject},
+allowing for a 1:1 scaling in specified units.
+
+\item [grdimage] For \Opt{T}, cpt file can give shade as - (to skip this slice) or
+as a pattern fill.
+
+\item [grdmask] Added \Opt{L} to mean that input values are geographical coordinates subject
+to 360 degree periodicities.
+
+\item [grdview] For \Opt{Qs}, cpt file can give shade as - (to skip this slice) or
+as a pattern fill.
+
+\item [psscale] now paints polygons instead of an image when the cpt file is discrete
+and no illumination effects (\Opt{I}) have been selected.  This ensures that the
+color scale will print the expected colors on some confused color printers; it
+also reduced the size of the \PS\ output in those cases.  Finally, pattern fills
+are allowed in the cpt file.
+
+\item [psbasemap] The option \Opt{G} can now take patterns.
+
+\item [pscontour] Now paints only those pieces of a triangle that are not to be
+skipped (old version always painted each triangle).
+
+\item [psxy/psxyz] New symbol (\Opt{Sw}) added to draw pie wedges.
+
+\end{description}
+
+Finally, some changes have taken place in the supplemental packages:
+
+\begin{description}
+
+\item [cps/*.c] A new library (\progname{libuu}) provide internal \progname{uuencode}
+and \progname{uudecode} capability (and hence works under WIN32).  Because of this,
+the package now only requires \progname{bzip2} to be installed.  Added option \Opt{x} to
+\GMTprog{cpsencode} to allow it to embed executable files encountered (these are by
+default skipped).  \GMTprog{cpsdecode} now sets the file permissions correctly, and
+the special flag \#CPS: (Win32 use REM CPS: ) can take wild card notations.  Both
+programs also have new option \Opt{n} which shows what the program would do without
+actually embedding or extracting files.
+
+\item [meca/*.c] several bug fixes have been incorporated, see
+meca/ERRATA for details.
+
+\item [mgg/gmttrack.c] All \PS\ output is now written via \GMTprog{pslib} functions.
+
+\item  [spotter/backtracker] has new option \Opt{A} to limit output to certain
+times or stages, \Opt{LF} or \Opt{LB} will return stage pole id rather than the
+predicted ages, \Opt{S} to write tracks to individual files, while \Opt{C} allows
+us to read finite rotation poles instead of stage poles.
+
+\item [spotter/hotspotter] also have \Opt{C} to allow
+us to read finite rotation poles instead of stage poles.
+
+\item [spotter/originator] is a new program to the SPOTTER package which
+associates each seamount with the most likely hotspot based on flowline analysis.
+
+\item [x\_system] is the old suite of programs that \progname{x2sys} eventually
+will replace completely.  In the interim, we will provide it under the \GMT\
+supplements; all tools have been brought up to POSIX/ANSI-C standards.
+
+\end{description}
+
+\section{Preface to version 3.3.3 (December--1999)} 
+
+We released \GMT\ 3.3.3 with two objectives in mind:
+First, it fixes all bugs that were reported and temporarily
+dealt with in the Errata sheet on the web page, and second,
+it (finally) simplifies the install process by using a
+\filename{configure} script created by GNU \progname{autoconf}.
+Running \filename{configure} as part of the installation
+removes the guessing that we resorted to earlier when assembling
+\filename{gmt\_math.h}.  \filename{configure} will create the
+file \filename{gmt\_notposix.h} from \filename{gmt\_notposix.h.in}
+and this system-specific file is then included by \filename{gmt\_math.h}.
+Settings specific to non-\UNIX\ operating systems such as Microsoft
+Windows and OS/2 have been consolidated in \filename{gmt\_notunix.h}.
+Other installation parameters, however,
+remain under user control as they reflect choices that are either
+philosophical or imply additional functionality of particular
+compilers.  Users can now assemble answers to such questions from
+the install form on the main \GMT\ web page and give the resulting
+file as argument to the \progname{install\_gmt} script, resulting
+in a non-interactive, batch-type installation process.  However, the
+script can also be run interactively, as in earlier versions.  Finally,
+we have decided to rename the lib directory: from now on it will be
+called share.  There is also a new top-level Makefile that handles
+the entire installation.
+
+\subsection{Major bug fixes in 3.3.3}
+
+Since \GMT\ 3.3.2 was released in September 1999, a few 
+bugs were quickly brought to our attention by alert users.
+The most severe of these are listed in Table~\ref{tbl:3.3.2bugs} and
+have been fixed in the current release.  For a complete listing see
+the \filename{CHANGES} file in the main \GMT\ directory.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}  \hline
+\multicolumn{1}{|c|}{\emph{File}}	& \multicolumn{1}{c|}{\emph{Bug}} \\ \hline
+gmt\_init.c	&	\filename{fcntl.h} was not included under Cygwin. \\ \hline
+gmt\_map.c	&	Memory problem in \texttt{GMT\_truncate\_*} functions. \\
+		&	Power projection in the $y$-direction was incorrectly set. \\ \hline
+gmt\_stat.c	&	Backup Bessel functions \texttt{j0,j1,jn,y0,y1,yn} when not present in -lm. \\ \hline
+gmt\_support.c	&	\texttt{GMT\_sample\_cpt} still had problem, now fixed and tested! \\
+		&	Now flips back/fore-ground colors when using \GMTprog{makecpt} \Opt{I}. \\
+		&	Grid subset region to use with rectangular areas could return $w > e$. \\ \hline
+gmtdefaults.c	&	Would crash if a wrong argument was given on the command line. \\ \hline
+grdimage.c	&	Used incorrect projection box for global, azimuthal projections. \\ \hline
+grdlandmask.c	&	Mixed inches and degrees in a bad way. \\
+		&	Also assumed grid dx/dy was always less than coastline bin sizes. \\ \hline
+grdview.c	&	Implemented new image clip routine for \Opt{Qi}; \Opt{QI} now gives \Opt{Qi}. \\
+		&	Also fixed incorrect pixel loop and image wrapping. \\ \hline
+grdvolume.c	&	Set zero-values to SMALL rather than small, possibly adding round-off errors. \\ \hline
+install\_gmt	&	Now takes optional parameter file to run a batch (quiet) installation.  \\
+		&	At the end of an interactive install it will write out the parameters \\
+		&	to \filename{install.par} that may be used for batch mode later. \\ \hline
+mex/grdread.c	&	Did not fill in x,y when \texttt{[x,y,z,d] = grdread} was used. \\ \hline
+nearneighbor.c	&	\Opt{H} had somehow been dropped, now back in again. \\ \hline
+PSL\_text.ps	&	Renamed internal variables to avoid interference with \GMTprog{pslib} variables. \\
+		&	Incorrectly drew surrounding box for a single line in \Opt{M} mode. \\ \hline
+psbasemap.c	&	Option \Opt{Lx} did not decode the units of position. \\ \hline
+pscoast.c	&	Option \Opt{Lx} did not decode the units of position. \\ \hline
+pswiggle.c	&	Option \Opt{I}{\it az} implicitly changed the sign of the azimuth. \\ \hline
+psxyz.c		&	Polygons were not clipped at the map boundary. \\ \hline
+x2sys/x2sys\_cross.c	&	\Opt{A} implemented exactly opposite of what it was intended to do: \\
+			&	Skip xovers on segments that had point separation exceeding the \Opt{A} setting. \\ \hline
+\end{tabular}
+\caption{Bugs in \gmt\ version 3.3.2}
+\label{tbl:3.3.2bugs}
+\end{table}
+
+\subsection{Minor changes in 3.3.3}
+A few enhancements in functionality have also occured:
+
+\begin{description}
+
+\item  [blockmean] was given a new option \Opt{S} to report the
+sum of $z$-values inside a block rather than their average [Default].
+
+\item [grdimage] has a new option \Opt{T} which will plot an image
+without any interpolation.  This is useful for categorical data where
+interpolation is undefined.
+
+\item [grdinfo] was given a new option \Opt{F} to report the
+domain and increment in world mapping format.
+
+\item [grdview] has the same new \Opt{T} option as \GMTprog{grdimage}.
+
+\item [psimage] was given new options \Opt{E} to specify image resolution
+in dots pr inch (instead of image size), and \Opt{F} to draw a rectangular
+frame around the image.
+
+\item [psxy/psxyz] can accept an optional \%{\it font} appended to the \Opt{Sl}
+option which will select a particular font [Default is the anotation font].
+The program will now also accept the \Opt{C} option with 
+multisegment polygon files (\Opt{M}).  Then, polygon colors are assigned
+by looking for a \Opt{Z}{\it val} string in each multisegment header; this
+{\it val} is then used to select the color via cpt lookup.
+
+\end{description}
+
+Finally, four Japanese font names were added to the list of fonts that
+\GMT\ recognizes (see Appendix F).  However, like all other fonts, you need to have
+the fonts installed on your system or printer to actually use them.
+
+\section{Preface to version 3.3.2 (September--1999)} 
+
+\GMT\ 3.3.2 was released to address
+several annoying bugs that inadvertently were introduced in \GMT\ 3.3.1.
+At the same time we have made minor changes to how \GMT\ is 
+installed.  To ensure that the \GMT\ archives only contain
+files that are either in the public domain or released under the GNU Public License,
+we have reverted back to our earlier practice of letting Dave
+Watson's Delaunay triangulation routine be the default,
+while the much faster implementation of John Shewchuck can be selected
+as an option.  Shewchuck's files are also pulled out of the main \GMT\ archive
+and are now distributed as a separate archive (the updated \progname{install\_gmt} script
+are cognizant of these changes).
+
+We have also changed the way \GMT\ deals with SI and US default values.
+In previous releases, one could choose SI or US at compile time, and
+that would select what default values \GMT\ would use when the user
+had no \filename{.gmtdefaults} file.  This implies that the \GMT\ executables behave
+slightly different for SI and US.  In order to have only one set of
+executables, we have made the SI/US selection a run-time feature.
+Thus, one can switch back and forth at anytime.  The \GMT\ Default
+(SI or US) is kept in the file \filename{gmt.conf} in the lib subdirectory and
+determines what defaults are used. 
+
+\subsection{Major bug fixes in 3.3.2}
+
+Since \GMT\ 3.3.1 was released in early July 1999, a few dumb
+coding errors were caught by alert users.
+The most severe of these are listed in Table~\ref{tbl:3.3.1bugs} and
+have been fixed in the current release.  For a complete listing see
+the \filename{CHANGES} file in the main \GMT\ directory.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}  \hline
+\multicolumn{1}{|c|}{\emph{File}}	& \multicolumn{1}{c|}{\emph{Bug}} \\ \hline
+fourt.c		&	\texttt{sincos} call at line 382 had wrong arguments.  \\ \hline
+gmt\_grdio.c	&	Failed to initialize key variables, causing \Opt{R} to fail when used \\
+		&	to read a subset of a grd-file. \\ \hline
+gmt\_cdf.c	&	Same. \\ \hline
+gmt\_map.c	&	Fixed incorrect clippath for \Opt{JP} projection. \\ \hline
+gmt\_support.c	&	Incorrectly resampled cpt files when \GMTprog{makecpt} \Opt{I} was used. \\ \hline
+gmtselect.c	&	Could give segmentation violation by picking bad bin number. \\
+		&	Also got incorrect bin for \texttt{lat} = -90. \\ \hline
+grdimage.c	&	Fixed error in image scaling when \Opt{R} region exceeded grd region. \\ \hline
+grdlandmask.c	&	Incorrectly calculated which nodes to initialize. \\ \hline
+install\_gmt	&	Missing ``then'' in if-test at line 566. \\ \hline
+pslib.c		&	European font mechanism incorrectly defined variable \\
+		&	\texttt{PSL\_Euro\_encode} and had no \texttt{if} for procedure. \\ \hline
+\end{tabular}
+\caption{Bugs in \gmt\ version 3.3.1}
+\label{tbl:3.3.1bugs}
+\end{table}
+
+\subsection{Minor changes in 3.3.2}
+
+A few minor coding enhancements and simplifications have also
+been taken care of in this release.  They are summarized in
+Table~\ref{tbl:3.3.2minor}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}  \hline
+\multicolumn{1}{|c|}{\emph{File}}	& \multicolumn{1}{c|}{\emph{Bug}} \\ \hline
+gmt\_init.c	&	Now checks for \filename{gmt.conf} to initialize \GMT\ default values. \\
+		&	Binary stdin/stdout should now work under Windows. \\ \hline
+gmt\_map.c	&	Added HALF\_DBL\_MAX to avoid overflow in subtractions. \\
+		&	Added optional argument to \Opt{JP} to set baseline angle. \\
+		&	Checks more carefully that \Opt{J} and \Opt{R} are consistant. \\ \hline
+gmt\_plot.c	&	Now always resets pen dashing in \texttt{GMT\_setpen}. \\ \hline
+gmt\_stat.c	&	Added inverse error function for \GMTprog{gmtmath} and \GMTprog{grdmath}. \\ \hline
+gmt\_support.c	&	Added function to deal with optional file \filename{coastline.conf} containing \\
+		&	multiple directories in which coastline files may be stored. \\
+		&	Replaced \texttt{free} with \texttt{GMT\_free} so Win32 DLL will work. \\ \hline
+gmtdefaults.c	&	Takes \Opt{Ds} or \Opt{Du} to dump SI or US default values. \\ \hline
+gmtselect.c	&	The actions implied by \Opt{C} have been sped up by sorting. \\ \hline
+grdimage.c	&	Added the \Opt{S} option already available in \GMTprog{grdproject}. \\ \hline
+grdinfo.c	&	Added \Opt{D} to report domain using dd:mm:ss[.f] notation. \\ \hline
+psscale.c	&	Always use outside tickmarks on color scalebars. \\
+		&	Added \Opt{M} to force monochrome bars as in \GMTprog{grdimage}. \\ \hline
+pscoast.man	&	Fixed \Opt{G} syntax in man page example. \\ \hline
+spectrum1d.c	&	Expanded the \Opt{C} option to allow users to specify which output \\
+		&	spectra they want [Default remains all fields]. \\ \hline
+\end{tabular}
+\caption{Minor improvements in \gmt\ version 3.3.2}
+\label{tbl:3.3.2minor}
+\end{table}
+
+\subsection{Coastlines in 3.3.2}
+
+Node level information for the crude coastline data were found to be
+incorrect, in particular near Antarctica.  Thus, the \filename{binned\_GSHHS\_c.cdf}
+file has been updated.  This problem only seemed to affect the output of
+\GMTprog{grdlandmask} and \GMTprog{gmtselect}.  No other coastline changes have taken place.
+
+\section{Preface to version 3.3.1 (July--1999)} 
+
+Unlike \GMT\ 3.3, 3.3.1 really is a service-release taking care of
+some annoying bugs that were introduced in \GMT\ 3.2 and 3.3.
+However, it does also provide several new or improved services
+under the \GMT\ supplemental archive.
+
+\subsection{Major bug fixes in 3.3.1}
+   Since \GMT\ 3.3 was released in early June 1999, several dumb
+mistakes were caught by alert users.
+The most severe of these are listed in Table~\ref{tbl:3.3bugs}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}  \hline
+\multicolumn{1}{|c|}{\emph{File}}	& \multicolumn{1}{c|}{\emph{Bug}} \\ \hline
+gmt\_map.c	&	Mindless insistance on $|y| \leq 90$ applied even for  \\
+		&	non-geographic data in gridlines. \\
+		&	Left-right conic boundary x-value routines not implemented. \\ \hline
+gmt\_stat.c	&	PLM in \GMTprog{grdmath} and \GMTprog{gmtmath} had bug in loop over $m$. \\ \hline
+gmt\_support.c	&	CPT files with gray-value columns only did not \\
+		&	get processed correctly (e.g. example 04). \\ \hline
+grdview.c	&	\Opt{Qs} messed up Fore- and Back-ground colors. \\ \hline
+pstext.c	&	\Opt{M} with a single-line paragraph gave \PS\ error. \\ \hline
+psxy.c		&	Needed a ``stroke'' operator after drawing error bars. \\
+		&	\Opt{E} with no symbols gave SEGV.  Now, \Opt{E} with no xy \\
+		&	is taken to mean \Opt{Exy} (or \Opt{Eyx}, when \Opt{:} is set). \\ \hline
+psxy[z].c	&	\Opt{SV}[]n{\it norm} did not work, now fixed. \\
+		&	\Opt{SE} would scale axes incorrectly if MEASURE\_UNIT $\neq$ INCH. \\ \hline
+xyz2grd.c	&	When \Opt{S} was set the fopen modes were not set to \\
+		&	rb and wb and hence i/o would fail under WIN32. \\ \hline
+\Opt{Js}	&	A new implementation of the stereographic projection \\
+		&	fixes a problem with optimizing code under WIN32. \\ \hline
+\end{tabular}
+\caption{Bugs in \gmt\ version 3.3}
+\label{tbl:3.3bugs}
+\end{table}
+
+\subsection{Minor changes in 3.3.1}
+
+A few minor coding enhancements and simplifications have also
+been taken care of in this release.  They are summarized in
+Table~\ref{tbl:3.3.1minor}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}  \hline
+\multicolumn{1}{|c|}{\emph{File}}	& \multicolumn{1}{c|}{\emph{Bug}} \\ \hline
+psxy[z].man	&	Clarified that \Opt{N} does not affect the PostScript \\
+		&	BoundingBox; you may have to post-process in order \\
+		&	to get a correct BB if data is plotted outside \Opt{R}. \\ \hline
+pstext.man	&	Same. \\ \hline
+gmt\_init.c	&	Use GMT\_DEFAULT\_PATH instead of /usr/local/gmt. This \\
+		&	is set in makegmt.macros (via \progname{install\_gmt}) and makes \\
+		&	installation more flexible by removing hardwired paths. \\ \hline
+pslib.c		&	Same. \\ \hline
+gmt\_cdf.c	&	Reduced repeated code and simplified subset operations. \\ \hline
+gmt\_customio.c	&	Same. \\ \hline
+gmt\_grdio.c	&	Same.  Combined, these 3 shrank in size by 30\% \\ \hline
+pstext.c	&	Better treatment of European font reencodeing by letting \\
+		&	the \PS\ interpreter keep track of what fonts have \\
+		&	been reencoded already. \\ \hline
+gmt\_stat.c	&	Faster implementation of kei, ker, bei, ber, which now \\
+		&	can be evaluated beyond $|x| = 8$. \\ \hline
+*.c *.h		&	Added MSC support for DLL libraries (WIN32). This has \\
+		&	reduced the size of the *.zip binary archive alot. \\ \hline
+Makefile	&	Now includes support for building shared libraries \\
+		&	under \UNIX.  A few parameters have been added to \\
+		&	\filename{makegmt.macros} (values are obtained by \progname{install\_gmt}). \\ \hline
+fourt.c		&	Included \filename{sunmath.h} instead of prototype for sincos. \\ \hline
+\end{tabular}
+\caption{Minor improvements in \gmt\ version 3.3.1}
+\label{tbl:3.3.1minor}
+\end{table}
+
+\subsection{New features in 3.3.1}
+
+Only one enhancements has found its way into \GMT\ 3.3.1.  This applies to
+the \Opt{B} option.  In addition to an axis label, each axis may also set
+a unit label to be appended to each individual anotation on that axis.
+This is useful if you want anotations to be, say, 10\%, 20\%, 30\%, etc.
+The syntax is :,``unit label'': (note the comma flag).  Like for labels, the
+quotes are only needed if the unit label has spaces in it.  Normally,
+a single space is inserted between anotation value and unit.  This
+may be removed by letting the unit begin with - (the minus sign).
+The unit option is only used with non-geographic projections.
+
+\subsection{Supplemental archive in 3.3.1}
+
+The supplemental archive has undergone many significant changes:
+
+\begin{description}
+
+\item [dbase:]	Added optional final column to the \filename{grdraster.info}
+	database that can be set to L or B to indicate the endianness of the
+	binary data file.  A missing column means the data has the same
+	endianness as the machine and no swapping is needed.
+
+\item [meca:]	 The meca package comes with completely new tools for plotting
+	 symbols of importance to seismologiest and geodesists.  The
+	 package now has two new tools (\GMTprog{pscoupe} and \GMTprog{pspolar}),
+	 while the old \textbf{psvelomeca} has been separated into \GMTprog{psmeca}
+	 and \GMTprog{psvelo}.
+
+\item [mgg:]	 The MGD77 reader \GMTprog{mgd77togmt} is now aware of the new
+	Y2K-compliant MGD77 format and also will make a reasonable effort
+	 in handling older files.
+
+\item [spotter:] New package with two tools for plate tectonic reconstructions:
+	 \GMTprog{backtracker} will move geological markers forward or backward
+	 in time, while \GMTprog{hotspotter} will apply the hotspotting technique
+	 to make a CVA image of potential hotspot locations.  An announcement
+	 will shortly be published in EOS Trans. AGU.
+
+\item [x2sys:]	 A new implementation of Wessel's crossover error estimation
+	 tool, which now is POSIX, ANSI-C, and Y2K complient, as well as
+	 faster.  The package is generic and can extract data from arbitrary ASCII
+	 or binary data files with \GMTprog{x2sys\_datalist} and calculate crossovers
+	 from the same files with \GMTprog{x2sys\_cross}.
+\end{description}
+
+\subsection{Coastlines in 3.3.1}
+
+Two lake polygons have been merged into one larger lake, other
+than that, no changes have taken place.  However, we have rearranged how
+we supply the data: Now, the archives GMT\_lib.tar, GMT\_high.tar,
+and GMT\_full.tar will contain the directory lib, rather than GMT3.x/lib.
+This simplifies upgrades since these files rarely change between releases.
+The latest version of \progname{install\_gmt} knows about these changes.
+
+\section{Preface to version 3.3 (June--1999)} 
+
+\GMT\ 3.3 is for the most part a service-release taking care of some
+annoying bugs and typos, but it also provides significant new features.
+For that reason we have decided to increment the minor version number
+instead of issuing the anticipated 3.2.1 release.  We plan to
+port the archiving of \GMT\ from SCCS to CVS which will make the maintanence
+of multiple revisions more managable in the future.
+
+\subsection{Major bug fixes in 3.3}
+Since \GMT\ 3.2 was released in late March 1999, several dumb mistakes were caught
+by alert users.  The most severe of these are listed in Table~\ref{tbl:3.2bugs}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}  \hline
+\multicolumn{1}{|c|}{\emph{File}}	& \multicolumn{1}{c|}{\emph{Bug}} \\ \hline
+blockm*.c	&	Inadvertently turned \Opt{W} on if 4 cols were given. \\ \hline
+grdview.c	&	\Opt{Qsm} drew contours even though \Opt{W} not set. \\ \hline
+pscontour.c	&	Same. \\ \hline
+sample1d.c	&	Had memory allocation errors with \Opt{M}. \\ \hline
+gmt\_plot.c	&	GMT\_polar\_adjust was sensitive to round-off which \\ \hline
+		&	could affect orientation of basemap anotations. \\ \hline
+pslib.c		&	Now knows about DOS drive letters in any pattern filenames. \\
+		&	Missed final linefeed when \Opt{K} and absolute positioning \\
+		&	(\Opt{Xa}? \Opt{Ya}?) were used. (in \texttt{ps\_plotend}). \\
+		&	\texttt{ps\_command} and \texttt{ps\_colortiles} are now documented. \\
+		&	\%\%Orientation was not set correctly, and is now only issued \\
+		&	for PS files, not EPS.  \%\%Page is now used for PS files. \\ \hline
+grdimage.c	&	Inadvertently, MAPPING was replaced by !RECT\_GRATICULE. \\
+		&	Mercator grdimage plots all incorrectly rendered. \\ \hline
+psscale.c	&	Did not respond to any \Opt{X}, \Opt{Y} options \\ \hline
+psxy[z].c	&	Did not process \Opt{Sbb}{\it base} correctly (when width \\
+		&	is expected as one of the data columns) \\ \hline
+gmt\_init.c	&	Complained if one of \Opt{X}, \Opt{Y} was set as absolute \\
+		&	and the other was implicitly 0. \\ \hline
+gmt\_map.c	&	scale\_factor was set to 1 for the stereographic projection. \\
+		&	Negative exponents in power projections failed. \\ \hline
+gmt\_plot.c	&	Fancy Lambert Conic frame bad when south/dy not integer. \\ \hline
+grdcut.c	&	Did not check that output \Opt{R} was ok. \\ \hline
+grdedit.c	&	Error affected \Opt{S} operations on gridline registered files. \\ \hline
+grdfilter.c	&	Did not check that output \Opt{R}, \Opt{I} were ok. \\ \hline
+gmt\_defaults.h	&	Without any \filename{.gmtdefaults} present, paper size was 0x0. \\ \hline
+gmt\_math\_init	&	Had wrong \#define for the dummy \texttt{yn(n,x)} function. \\ \hline
+\end{tabular}
+\caption{Bugs in \gmt\ version 3.2}
+\label{tbl:3.2bugs}
+\end{table}
+
+Several WIN32-related problems affected the supplemental \GMT\ programs only,
+and are listed in Table~\ref{tbl:3.2supplebugs}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}  \hline
+\multicolumn{1}{|c|}{\emph{File}}	& \multicolumn{1}{c|}{\emph{Bug}} \\ \hline
+grdraster.c	&	Forgot to deal with DOS directory slash and drive letters. \\ \hline
+dat2gmt.c	&	Same. \\ \hline
+gmt2dat.c	&	Same. \\ \hline
+gmtinfo.c	&	Same. \\ \hline
+gmt2bin.c	&	Same. \\ \hline
+gmt\_mgg.c	&	Same. \\ \hline
+\end{tabular}
+\caption{Bugs in \gmt\ supplements, version 3.2}
+\label{tbl:3.2supplebugs}
+\end{table}
+
+\subsection{New features in 3.3}
+
+Despite what we said when releasing \GMT\ 3.2, a few enhancements have
+found their way into \GMT\ 3.3.  These are:
+
+\begin{description}
+
+\item [Projections:]	We have added three new projections: The equidistant
+conic (\Opt{JD}), Van der Grinten (\Opt{JV}), and Eckert IV (\Opt{JKf}).\footnote{The
+introduction of Eckert IV means that the existing Eckert VI 
+projection should be selected as \Opt{JKs}, although \Opt{JK} will work for
+backwards compatibility.}
+
+\item [pstext.c:]	Added typesetting of whole paragraphs (\Opt{M}).
+
+\item [gmtmath.c:]	Added the standard \Opt{H} option, and the function {\bf DILOG}.
+
+\item [grdmath.c:]	Added the function {\bf DILOG}.
+
+\item [pslib.c:]	Added \texttt{ps\_imagemask} for transparent bitmaps,
+\texttt{ps\_words} for paragraph typesetting, and
+\texttt{ps\_flush} for buffer flushing.
+
+\item [gmt\_support.c:]	Understands that fore- or background color in \Opt{Gp} can be
+-- which means transparency.
+
+\item [psimage.c:]	\Opt{Gf}-- or \Opt{Gb}-- means transparency.
+
+\item [grdimage.c:]	New \Opt{G}[{\bf f}|{\bf b}]{\it rgb} option to make transparent
+color masks from otherwise black/white 1-bit images.
+
+\item [pscontour.c:]	Added \Opt{A}-- to force deactivation of all contour labels.
+
+\item [grdcontour.c:]	Same.
+
+\item [sample1d.c:]	Handles \Opt{N} file that spans the range of
+several \Opt{M} segments.
+
+\item [grdreformat.c:]	Now skips comments in the \filename{gmtformats.d} file.
+
+\item [gmtmath.c:]	Added \Opt{Q} shorthand option for scalar math.
+
+\item [pscoast.c:]	Added \Opt{bo} option for use with \Opt{M}.
+
+\item [gmtselect.c:]	Added \Opt{Cf} for using (fast) Flat earth rather
+than (slow) great circle distance calculations.
+
+\item [xyz2grd.c:]	Added \Opt{S}[{\it file}] option to simply swap the
+byte order and write out new table.  Added H and I for unsigned short and ints.
+\Opt{L} and xyz input will now enforce grid periodicity.
+
+\item [grd2xyz.c:]	Added H and I for unsigned short and ints.
+
+\end{description}
+
+\section{Preface to version 3.2 (March--1999)} 
+
+Since the official release of \GMT\ in EOS (GMT 3.1.1) we have continued to
+fix reported bugs.  Unfortunately (or fortunately, depending on your point
+of view) a bug is sometimes a ``feature'' and to fix it we need to change \GMT\
+in such a way that it becomes incompatible with earlier versions.  Also,
+a need for a new feature arises and gets implemented by the \GMT\ developers.
+In \GMT\ 3.2, all these things have happened\footnote{As we get smarter about
+working on multiple revisions we anticipate to do a better job of separating
+bug fix upgrades from new features.}.  Because of the many changes we have
+decided to call this release 3.2.
+
+\subsection{Major bug fixes in 3.2}
+Several bugs where quickly discovered in \GMT\ 3.1.1; the most serious are
+listed in Table~\ref{tbl:3.1bugs}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}  \hline
+\multicolumn{1}{|c|}{\emph{File}}	& \multicolumn{1}{c|}{\emph{Bug}} \\ \hline
+project.c	&	Hung with \Opt{W} or \Opt{L} \\ \hline
+pslib.c		&	Incorrectly rendered 1-bit images and odd-width 24-bit images \\
+		&	Incorrectly read Sun rasterfiles made on bigendian machines \\ \hline
+img2mercgrd.c	&	\Opt{T}0 gave 0 data \\ \hline
+gmt\_customio.c	&	Incorrectly read/wrote Sun rasterfiles on bigendian machines \\ \hline
+psclip.c	&	Was unintentionally limited to only 95 files. \\
+		&	Wrote header lines to \PS file with \Opt{M} \\ \hline
+grdimage.c	&	Clip path was following \Opt{R} and not gridfile extent \\
+		&	Image was sometimes shifted incorrectly \\ \hline
+grdview.c	&	Had problems with pixel-registered files \\ \hline
+psmegaplot.c	&	Now works with \GMT\ 3 \PS\ files \\ \hline
+gmt\_plot.c	&	Fancy Lambert Conic frame bad when south/dy not integer. \\ \hline
+pstext.c	&	Now clips at border in same fashion as psxy \\ \hline
+psbasemap.c	&	\Opt{G} failed for black. \\
+		&	Negative exponents in power projections failed. \\ \hline
+grdhisteq.c	&	Failed on filename test when \Opt{G} not given. \\ \hline
+psxy[z].c	&	Symbols sizes were different when \Opt{G} had no size. \\ \hline
+\end{tabular}
+\caption{Bugs in \gmt\ version 3.1.1}
+\label{tbl:3.1bugs}
+\end{table}
+
+
+\subsection{New features in 3.2}
+
+We have added many new and significant features in this version.
+Many of these have long been anticipated by the user community:
+
+\begin{description}
+
+\item [Paper Media Selection:]
+We have added support for paper media formats in \filename{.gmtdefaults}.
+PAPER\_WIDTH have been replaced by PAPER\_MEDIA which can be set
+to one of $\sim$30 different media like A4, Letter, Legal, etc.
+Append -- for Manual Feed, and + for EPS file format.
+Usage is discussed in the \GMTprog{gmtdefaults} man and web pages.
+
+\item [Pattern Files:]
+Programs reading rasters can now read Run Length Encoded Sun rasterfiles.
+\filename{gmthex2ras.c} is obsolete since Sun rasters are supposed to be
+read/written at the 1-byte level, thus avoiding big/little endian troubles
+(this was what \filename{gmthex2ras.c} was supposed to deal with).
+
+\item [Explicit Unit Specification:]
+All options that specifies lengths or sizes can now have a unit-modifier
+appended that explicitly sets the length unit.  This allows users to write
+unit-independent \GMT\ scripts that will function correctly regardless of
+what the MEASURE\_UNIT parameter is set to.  E.g., \Opt{JM}6 can give a map that
+is 6 cm, 6 inches, or 6 meters wide depending on MEASURE\_UNIT, while
+\Opt{JM}6{\bf i} will \emph{always} give a 6 inch map.  The unit-modifiers allowed are
+{\bf c} (cm), {\bf i} (inch), {\bf m} (meter), and {\bf p} (point).
+All \GMT\ example scripts have been edited to use this mechanism.
+A related issue is that all internal \GMT\ functions expects pens to be
+in points, not dpi units.  You may still specify pens in dpi units, but
+\GMT\ will convert to points and update \filename{.gmtdefaults} using points.
+
+\item [Absolute Positioning with --X --Y:]
+By prepending ``a'' to the {\textit {x}} and {\textit {y}} offsets you can now get
+absolute rather than the [default] relative shifts of coordinate origin.
+For example, \Opt{Xa}4{\bf i} \Opt{Ya}4{\bf i} will temporarily move the origin (4,4) inches,
+then reset to (0,0) after plotting.
+[Default leaves the origin at (4,4), and subsequent \Opt{X} \Opt{Y} are now relative
+to that origin, not the original (0,0).
+
+\item [New Geospatial Filtering Option:]
+\GMTprog{gmtselect} has new switch \Opt{N} for checking if points are inside/outside
+geographical features (coastlines, so one may also set \Opt{A} \Opt{D} as in
+\GMTprog{pscoast} and \GMTprog{grdlandmask}).
+
+\item [New RPN Calculator for Table Data:]
+The new program \GMTprog{gmtmath} is a ``Reverse Polish Notation'' calculator that will
+create or operate on table data; it thus complements \GMTprog{grdmath}.
+It is much simpler and faster than \progname{awk} for calculations on tables.
+
+\item [New Operators for \GMTprog{gmtmath} (23) and \GMTprog{grdmath} (26):]
+New functions include {\bf KEI, KER, BEI, BER} (Kelvin-Bessel functions
+or order 0), {\bf LOG1P}, {\bf POP} (delete stack entry), {\bf PLM}
+(Associated Legendre polynomials), {\bf I0, I1, IN, K0, K1, KN} (modified
+Bessel functions), {\bf ERF} and {\bf ERCF} (error functions), {\bf YLM}
+(fully normalized surface spherical harmonics), and {\bf STEP} (Heaviside
+step function).  In addition, you can use the
+Bessel functions {\bf J0, J1, JN, Y0, Y1, YN} if your system supports them
+(The \progname{gmt\_math\_init} script(s) will find out and add them to \filename{gmt\_math.h}).  Finally, in \GMTprog{grdmath} we have added the
+operators {\bf DDX} ($\partial/\partial x$), {\bf DDY} ($\partial/\partial y$), {\bf D2DX2} ($\partial^2/\partial x^2$), {\bf D2DY2}
+($\partial^2/\partial y^2$), and {\bf CURV} ($\nabla^2$), and in
+\GMTprog{gmtmath} we have {\bf DDT} ($d/dt$) and {\bf D2DT2}
+($d^2/d t^2$).
+
+\item [ZapfDingbats added to \GMT\ Fonts:]
+Since it is present in most modern \PS\ laserwriters we have
+added ZapfDingbats to the list of build-in \GMT\ fonts, making
+a total of 35 fonts.  Appendix F shows the new symbols.
+
+\item [Binary i/o with \Opt{M}:]
+If the \Opt{M} and \Opt{b} options are used together, \GMT\ will look for
+multisegment headers in binary files which are defined as records where all
+fields equal NaN.  Any flags passed to \Opt{M} are ignored.
+
+\item [Improved \GMTprog{makecpt} and \GMTprog{grd2cpt}:]
+These programs now have built-in knowledge of about a dozen or so standard
+color tables that the user may choose from.  You can also use an existing
+cpt file as the starting point.  It is now simpler than ever to make
+various color tables other than the default rainbow map.
+
+\item [All Documentation in both \PS\ and HTML Format:]
+All \GMT\ documentation (including the toturial) have been rewritten in
+\LaTeX, thus facilitating translations to \PS\ and HTML
+web pages with GIF illustrations.   For the first time, the documentation
+comes with an index, and has undergone modest changes in contents.
+
+\end{description}
+
+The main enhancements to the \GMT\ command line options are listed in
+Table~\ref{tbl:3.2_new_caps}.
+
+\index{GMT@\GMT!v3.2!enhancements|(}
+
+\begin{table}[H]
+\centering
+
+\begin{tabular}{|l|l|}	\hline
+\multicolumn{1}{|c|}{\emph{Program}}	& \multicolumn{1}{c|}{\emph{Changes}} \\ \hline
+gmtselect & \Opt{–N} (and \Opt{–A}, \Opt{–D}) for geospatial search using coastlines \\ \hline
+grdcontour & Appending {\bf p} to the \Opt{–Z} option allows for periodic $z$-data \\ \hline
+mapproject & \Opt{–D} to temporarily reset MEASURE\_UNIT \\ \hline
+psscale & Will read standard input if \Opt{–C} is not set \\ \hline
+pstext & \Opt{–W} takes optional pen after {\bf o} \\ \hline
+triangulate & \Opt{–D} will take derivative in $x$- or $y$-direction \\ \hline
+\end{tabular}
+\caption{New capabilities in \gmt\ 3.2}
+\label{tbl:3.2_new_caps}
+\end{table}
+\index{GMT@\GMT!v3.2!enhancements|)}
+
+The main backward incompatibility introduced by \GMT\ 3.2 is related
+to the big improvements in \GMTprog{makecpt}.  These are outlined
+in Table~\ref{tbl:3.1_to_3.2.arrrghh}, revise any \GMT\
+shell scripts accordingly.
+
+\index{GMT@\GMT!v3.2!incompatibilities|(}
+
+\begin{table}[h]
+\centering
+
+\begin{tabular}{|l|l|}	\hline
+\multicolumn{1}{|c|}{\emph{Program}}	& \multicolumn{1}{c|}{\emph{Changes}} \\ \hline
+makecpt & \Opt{–C} now takes the name of a master color palette table. \\
+        & Old \Opt{–C}, \Opt{–M}, and \Opt{–S} have been replaced by \Opt{T}. \\ \hline
+pslib & Programmers linking their programs with {\bf pslib} should look at \\
+ & the man page and examine the small change to \texttt{ps\_plotinit}. \\ \hline
+\end{tabular} 
+\caption{Incompatibilities between \gmt\ verions 3.1 and 3.2}
+\label{tbl:3.1_to_3.2.arrrghh}
+\end{table}
+\index{GMT@\GMT!v3.2!incompatibilities|)}
+
+For more details see the \filename{CHANGES} file. 
+Because all documentation has changed completely,
+while coastlines have not, and the source code is pretty
+small anywat, there are no patch files.  You must reinstall
+the entire package, except you do not need to copy the
+*\_lib.tar file or the
+optional high and full-resolution coastlines since they
+have not changed.
+New users should simply get the latest \progname{install\_gmt}
+script which will get the most recent tar files of all the packages.
+
+\section{Preface to version 3.1 (November--1998)} 
+
+\GMT\ 3.1 is a major upgrade of the Generic Mapping Tools.
+However, most of the improvements are ``under the hood'',
+not readily visible to the user.  The primary purpose of the
+present release is to ensure complete portability of \GMT\ to
+as many hardware platforms as possible.  To accomplish that
+goal we made three fundamental changes to the \GMT\ source code: 
+
+\begin{enumerate}
+
+\item{All \GMT\ source code strictly follows the ANSI C standard.} 
+
+\item{All \GMT\ source code is POSIX compliant.} 
+
+\item{Architecture-independent files are read and written with netCDF 3.}
+
+\end{enumerate} 
+
+Since the release of \GMT\ 3.0 we have seen more 64-bit operating
+systems and a steady evolution of netCDF to accomodate such
+systems.  \GMT\ 3.0 has therefore become harder and harder to
+install and it was time for a significant upgrade.  \GMT\ 3.1 is
+now highly portable and has been installed and tested under
+Solaris, HP Unix, SGI Irix, Linux, MkLinuk, OSF, Ultrix, and
+Win32.  The \GMT\ package also is Y2K compliant.
+ 
+	Although portability has been our main concern, \GMT\ 3.1 also
+delivers several new features and programs.  Among the most
+significant offerings are: 
+\index{GMT@\GMT!v3.1!new features}
+
+\begin{enumerate}
+
+\item{Two new map projections (Gnomonic and Miller).} 
+
+\item{90 built-in bit and hachure patterns and a new mechanism
+for color patterns.  \Opt{–Gp}$|${\bf P} now accepts pattern {\it dpi}
+rather than block building {\it size}; {\it dpi} = 0 uses default dpi.} 
+
+\item{Full support for native binary table input/output for all
+programs that read tables.} 
+
+\item{Shorthand mechanism for 5 alternative 2-D grid formats via
+\filename{.gmt\_io} file.} 
+
+\item{Four new programs: \GMTprog{blockmode} for block-averaging by mode
+estimates, \GMTprog{gmtconvert} to translate between native binary and
+ASCII table formats, \GMTprog{gmtselect} to select subsets of table data
+based on multiple spatial criteria, and \GMTprog{grdvolume} for calculating
+volumes under surfaces within a specified contour.  One supplemental
+program, \GMTprog{psimage}, has been revised and incorporated into the
+main \GMT\ while another, \GMTprog{psmegaplot}, has been relegated to the
+supplemental archive.} 
+
+\item{Boundary condition options for several grid-generating or
+manipulating programs.} 
+
+\item{Improved \PS\ BoundingBox implementation.} 
+
+\item{Numerous bug fixes (see \filename{CHANGES} for deltails).} 
+
+\item{More examples (for a total of 20).} 
+
+\item{A new \GMT\ map-making tutorial book and short-course.}
+
+\end{enumerate}
+
+In addition, several programs have more functionality thanks to
+new options.  For example, \GMTprog{pscoast} can now set up clip paths
+based on the coastlines or dump an ASCII table rather than drawing
+them, and \GMTprog{psxy} and \GMTprog{psxyz} can read symbol codes from
+the input data.  The following is a summary of new capabilities:
+\index{GMT@\GMT!v3.1!enhancements|(}
+
+\begin{table}[H]
+\centering
+
+\begin{tabular}{|l|l|}	\hline
+\multicolumn{1}{|c|}{\emph{Program}}	& \multicolumn{1}{c|}{\emph{Changes}} \\ \hline
+blockmedian & \Opt{–Q} returns median {\it z} and ({\it x},{\it y}) at that value \\ \hline
+grd2xyz & \Opt{–S} suppresses nodes that equal NaN \\ 
+	& \Opt{–Z} extended to specify arbitrary binary output file formats \\ \hline
+grdcontour & \Opt{–N} sets label unit, \Opt{–Z} optionally takes an offset \\ \hline
+grdgradient & \Opt{–L} sets the boundary conditions at edges \\ \hline
+grdinfo & \Opt{–C} formats output for easy parsing \\ \hline
+grdmask & \Opt{–H} added \\ \hline
+grdsample & \Opt{–L }sets the boundary conditions at edges \\ \hline
+grdtrack & \Opt{–S} suppresses output that equal NaN, also \Opt{–L} as above \\ \hline
+grdview & \Opt{–L} sets the boundary conditions at edges \\ \hline
+makecpt & \Opt{–I} option to reverse grayramp \\ \hline
+minmax & \Opt{–C} formats output for easy parsing \\ \hline
+nearneighbor & \Opt{–L} sets the boundary conditions at edges \\ \hline
+project & \Opt{–M} multisegment option.  Also handles any number of input colums \\ \hline
+pscoast & \Opt{–M} to dump ASCII coastline file, \Opt{Gc} and \Opt{–Sc} to create clip paths \\ \hline
+pscontour & \Opt{–L} to draw network triangles \\ \hline
+pshistogram & \Opt{–L} to draw transparent histogram \\ \hline
+psmask & \Opt{–F} option for pixel registration \\ \hline
+psscale & \Opt{–E} to extend scale with fore- and back-ground colors \\ \hline
+pstext & \Opt{–D} to translate basepoint after map projection \\ \hline
+psxy[z] & \Opt{–SE} plots ellipses given axes in km (and thus replaces ellipse scripts) \\ 
+	& \Opt{–S} without symbol makes program read last column as symbol type \\ \hline
+sample1d & \Opt{–A}, \Opt{C}, and \Opt{–L} become \Opt{–Fa} \Opt{Fc} \Opt{Fl} but is backward compatible. \\ \hline
+xyz2grd & \Opt{–Z} extended to specify arbitrary binary input file formats \\ \hline
+\Opt{–JM} \Opt{–Jm} & Optional forms are \Opt{JM}{\it lon}/{\it lat}/{\it width} and \Opt{Jm}{\it lon}/{\it lat}/{\it scale} \\ \hline
+\end{tabular}
+\caption{New capabilities in \gmt\ 3.1}
+\label{tbl:3.1_new_caps}
+\end{table}
+\index{GMT@\GMT!v3.1!enhancements|)}
+
+Speaking of \GMTprog{pscoast}, the coastline and political boundaries data
+bases have undergone modest changes and will continue to do so as we
+obtain better data.  Several bugs have been fixed, and new political
+borders have been added (but not all).
+
+	While fixing inconsistencies and enhancing the \GMT\ programs we do
+occasionally get into a situation which was best resolved by renaming
+a command line option.  We do not like to do so since it introduces
+incompatibilities between versions of \GMT; however, sometimes this
+is neccesary in order to fix a bug (as in \GMTprog{grdclip} and
+\GMTprog{grdpaste} below).  This has in particular been used to ensure
+that the common command line options are unique and that some others
+have the same meaning in as many programs as possible.  Table~\ref{tbl:3.0_to_3.1.arrrghh} is a
+list of incompatibilities between \GMT\ 3.0 and 3.1, revise any \GMT\
+shell scripts accordingly.
+\index{GMT@\GMT!v3.1!incompatibilities}
+
+\begin{table}[h]
+\centering
+
+\begin{tabular}{|l|l|}	\hline
+\multicolumn{1}{|c|}{\emph{Program}}	& \multicolumn{1}{c|}{\emph{Changes}} \\ \hline
+grdclip & \Opt{–A} and \Opt{–B} have been replaced by \Opt{Sa} and \Opt{Sb}. \\
+ 	& The \Opt{B} interfered with the usual meaning of \Opt{–B}. \\ \hline
+grdpaste & Same problem; introduced \Opt{–Sa} and \Opt{Sb.} \\ \hline
+grdview & \Opt{–D} no longer an option; \Opt{M} and \Opt{W} follow grdcontour syntax; \\
+	& They are now set by \Opt{–Wc} and –\Opt{Wm}. \\ \hline
+nearneighbor & \Opt{–M} is replaced by \Opt{–S}{\it radius}{\bf k} as in psmask \\ \hline
+project & \Opt{–M} becomes the multisegment flag as usual; old \Opt{–M} replaced by \Opt{Q}. \\ \hline
+psclip & \Opt{–S} becomes \Opt{C}, and \Opt{O} must now explicitly be set. \\ \hline
+psmask & \Opt{–S} and \Opt{–C} have reversed roles to match psclip. \\
+	& \Opt{–M} is replaced by \Opt{S}{\it radius}{\bf k}. \\ \hline
+psxy[z] & {\bf -–L} only needed to close polygons;\Opt{–W}[{\it pen}] determines outlines. \\ \hline
+\end{tabular} 
+\caption{Incompatibilities between \gmt\ verions 3.0 and 3.1}
+\label{tbl:3.0_to_3.1.arrrghh}
+\end{table}
+In addition, no programs have the old option \Opt{–F} to change the
+color of the map frame.  We did this to free up this option for future
+enhancements since the effect easily can be obtained via \GMTprog{gmtset}
+BASEMAP\_FRAME\_RGB r/g/b.
+
+We have received many bug reports regarding \GMT\ 3.0 and we have
+attempted to correct as many problems as we have had time for.
+Some of you may be disappointed in finding that \GMT\ 3.1 still has
+a bug you reported to us.  Part of our difficulty lies in the fact
+that \GMT\ 3.1 has changed significantly since 3.0 so that it is not
+always easy to verify that a problem has been fixed or is still
+with us.  Thus, while not bug-free, \GMT\ 3.1 provides a more stable
+platform allowing easier verification and termination of bugs.
+We encourage you to discover (or rediscover) bugs and bring them to
+our attention.
+
+Finally, we would like to thank those of you who continue to
+contributed ideas, bug reports, and advice since version 3.0.  We
+appreciate your input, and believe version 3.1 reflects many of
+the suggestions you have provided.
+
+\section{Preface to version 3.0 (October--1995)}
+
+As of January 1995 it appears that around 5000 scientists
+and engineers worldwide are using \GMT\ in their work.  This estimate
+is based on ftp traffic over the last few years. Most users of \GMT\
+are geoscientists, but there are apparently no limits to the kind
+of applications that may benefit from \GMT:  We know \GMT\ is used
+in medical research, engineering, physics, mathematics, social
+and biological sciences, and by geographers, fisheries institutes,
+oil companies, and a wide range of government agencies.
+
+\begin{figure}
+\epsfig{figure=eps/GMT_usage_3.0.eps}
+\caption[Subset of all \gmt\ users obtained by an electronic survey
+in October 1994]{A subset of all \gmt\ users obtained by an electronic survey
+in October 1994.  The circles represent approximately 200 separate
+institutions with more than 1600 \gmt\ users combined.} 
+\end{figure}
+
+The present version 3.0 represents a significant improvement over
+earlier releases.  The most visible change is the inclusion of a
+high-resolution coastline data base which will allow the generation
+of small-scale, detailed maps of high quality and accuracy (see
+Appendix K for more details).  In addition, we have added three
+more map projections, six new programs, modified and added new
+options to others, and killed numerous bugs.  The file \filename{CHANGES} on
+the tar archive has all the details; here are some highlights: \\
+\index{GMT@\GMT!v3.0 enhancements|(}
+
+\noindent
+$\bullet$ Customizable grdfile i/o. \\
+
+\noindent
+This allows the user to supply his/her own read/write kernels,
+link these with \GMT\ during installation, and be able to use \GMT\
+programs directly with the user’s data files.  This mechanism also
+speeds up many operations by letting the user select a format that
+allows piping instead of saving the results of intermediate steps
+to temporary files (as is necessary with the netCDF format).  In
+addition to the default netCDF-based gridfile format, \GMT\ comes
+equipped with 3 additional formats:
+
+\begin{description} 
+
+\item[-]{binary 4-byte floating points with leading grdheader (See Appendix B for formats)} 
+
+\item[-]{binary 2-byte short integers with leading grdheader} 
+
+\item[-]{Sun 8-bit standard rasterfile (colormap ignored)} 
+
+\end{description} 
+
+\noindent
+The file \filename{gmt\_customio.c} contains information on
+how to add more formats.  We anticipate that formats of general
+interest will be developed by enterprising users and forwarded
+to us for possible inclusion in later \GMT\ releases. \\ 
+
+\noindent
+$\bullet$ Binary i/o option for several i/o intensive programs. \\
+
+\noindent
+Several programs typically read and/or write large amounts of
+data  These include \GMTprog{blockmean}, \GMTprog{blockmedian},
+\GMTprog{grd2xyz}, \GMTprog{nearneighbor}, \GMTprog{splitxyz}, \GMTprog{surface}, and \GMTprog{xyz2grd}.  These programs are
+often used to decimate vast quantities of data, but much of the
+processing time can be spent on the ASCII-binary conversion
+during read and write. A new \Opt{b} option allows these
+programs to do their i/o in native binary format (single or
+double precision). \\ 
+
+\noindent
+$\bullet$ 4+ new map projections. \\
+
+\noindent
+We have included the Robinson pseudo-cylindrical projection
+(adopted by the National Geographic Society), the Eckert VI
+equal area projection, the Plate Carr\'{e}e equidistant
+cylindrical projection, and a generic cylindrical equal area
+projection.  The latter accepts an arbitrary standard latitude:
+Set to 0\DS, 30\DS, 37.4\DS, or 45\DS\ you obtain the Lambert,
+Behrmann, Trystan-Edwards, and Peters (Gall) cylindrical
+projections, respectively.  Furthermore, we have generalized
+the sinusoidal projection.  The interrupted map on the cover
+page is a superposition of three sinusoidal plots that are
+offset horizontally. \\ 
+
+\noindent
+$\bullet$ 6 new programs. \\
+
+\noindent
+Programs have been added to address several important tasks:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c|}{\emph{Program}}	& \multicolumn{1}{c|}{\emph{Task}} \\ \hline
+grd2cpt		&	Creates a color palette table based on a grdfile \\ \hline
+grdlandmask	&	Creates ``wet-dry'' mask grdfile from shoreline data base \\ \hline
+grdreformat	&	Converts between various grid formats \\ \hline
+grdvector	&	Draws vector field plots for gridded files \\ \hline
+pscontour	&	Contouring of raw xyz data (by triangulation) \\ \hline
+triangulate	&	Optimal Delaunay triangulation and gridding of xyz-data \\ \hline
+\end{tabular}
+\caption{New programs in \gmt\ 3.0}
+\end{table}
+
+\vspace{\baselineskip}
+\noindent
+$\bullet$ Simpler map projection option \Opt{–J*}. \\
+
+\noindent
+All projections may now be specified with upper or lower case
+modifier {\bf *}: Lower case works as before (it expects map
+\emph{scale}), while upper case expects map \emph{width}.
+This makes it much easier to fit a plot on the page.  E.g.,
+\Opt{–Jm}5 will generate a Mercator map in which 1\DS\ of
+longitude equals 5 inches (or cm, depending on your choice of
+units), while \Opt{JM}5 will make a map that is 5 inches
+(or cm) wide regardless of region selected (in both cases,
+the height will of course depend on region).
+
+All projections now accept arbitrary regions in the \Opt{–R}
+option (in earlier versions there were some projections that
+implicitly assumed a global map \Opt{R}0/360/-90/90). \\ 
+
+\noindent
+$\bullet$ Improved syntax checking. \\
+
+\noindent
+All \GMT\ programs now have extensive syntax checking and give
+shorter and more meaningful error messages.  It is only when
+no arguments are provided that the entire usage message will
+be echoed. \\ 
+
+\noindent
+$\bullet$ Better SI support \\
+
+\noindent
+During installation of \GMT\ you may choose to use SI units as
+your default (basically, it means that plot sizes are measured
+in cm instead of inch).  This will modify the source code to
+show the SI default values and produce man pages using SI units.
+However, you can always override the defaults by modifying your
+\filename{.gmtdefaults} file. \\ 
+
+\noindent
+$\bullet$ Operational changes. \\
+
+\noindent
+A few modifications of command arguments have taken place.
+If you have developed shell-scripts with \GMT\ commands you
+may need to edit these accordingly:
+
+\begin{description}
+
+\item[-]{The \Opt{\#} option (for multiple plot copies) has
+been replaced by \Opt{c} to avoid problems in cshell scripts
+(\# is the start of a comment in cshells).} 
+
+\item[-]{The optional ‘r’ suffix in \Opt{J} has been moved to
+the \Opt{R} option.} 
+
+\item[-]{\GMTprog{grdmath} is now a general-purpose ``Reverse Polish
+Notation'' (RPN) calculator for grd-files.  Hence, the order of
+the arguments is different.} 
+
+\item[-]{The {\it +file} mechanism to read alternative
+\filename{.gmtcommands} files has been changed to apply to
+alternative \filename{.gmtdefaults} files.  This is more
+useful since one can now use this mechanism to select different
+default settings for different output devices (e.g., slidemakers,
+laserwriters, camera-ready journal formats, etc.).} 
+
+\item[-]{2-D interpolations are now done as bicubic or bilinear
+interpolation (Taylor expansion is gone).} 
+
+\item[-]{Option \Opt{T} in \GMTprog{grdview} (to smooth contours)
+has been renamed \Opt{S} to match the usage in \GMTprog{grdcontour}.} 
+
+\item[-]{\GMTprog{psxy} now clips polygons that exceed the map region correctly.} 
+
+\item[-]{The improved \Opt{–U}[/$x_0$/$y_0$/][{\it label}] option now
+allows you to specify where you want the timestamp to appear relative
+to the lower-left corner of the current plot (not page).  This would
+override the default location (-0.75, -0.75) (inches) or (-2,2 cm).} 
+
+\end{description}
+
+\noindent
+$\bullet$ Several programs have received additional options. \\
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c|}{\emph{Program}}	& \multicolumn{1}{c|}{\emph{Changes}} \\ \hline
+grdcontour	&	Added \Opt{M} to create a single multisegment file when using \Opt{–D}. \\
+		&	\Opt{–C} will accept a cpt file if the name ends in ``.cpt'' \\  \hline
+grdmath		&	Added hypot, r\_squared, min, and max operators. \\  \hline
+nearneighbor	&	Added option \Opt{–W} for weighted data input. \\  \hline
+psbasemap	&	Added option\Opt{–L} to draw map scale. \\  \hline
+pscoast		&	Added option \Opt{L} to draw map scale and \Opt{–I} to draw rivers. \\  \hline
+pshistogram	&	Added \Opt{S} to draw stair-step diagram. \\  \hline
+pstext		&	Added option \Opt{–N} to not clip text at boundaries. \\  \hline
+pswiggle	&	Added option \Opt{–S} to draw z scale. \\  \hline
+psxy		&	Added \Opt{Sl} option to plot an arbitrary letter or string \\
+		&	Added option \Opt{N} to not clip symbols at boundaries. \\  \hline
+psxyz		&	Added option \Opt{N} to not clip symbols at boundaries.  \\ \hline
+\end{tabular} 
+\caption{Program changes in \gmt\ 3.0}
+\end{table}
+
+\vspace{\baselineskip}
+\noindent
+The documentation (this book plus all manual pages) has been updated
+to reflect these changes.  Two new appendices (J, K) discussing the
+finer points of filtering and the development of the high-resolution
+coastline data base have been added.
+\index{GMT@\GMT!v3.0 enhancements|)}
+
+Finally, we would like to thank those of you who have contributed ideas,
+bug reports, and advice since version 2.1.  We continue to appreciate
+your input, and believe version 3.0 reflects many of the suggestions
+you have provided.
+
+\section{Preface to version 2.1 (October--1992)}
+
+Since \GMT\ was announced in EOS in October 1991 we have seen more than
+1000 ftp requests for the software, and received about 200 registration
+forms.  The large number of new users resulted in many discoveries of
+bugs and ``features'' in the programs.  Many of these bugs were fixed
+and the tar distribution was updated accordingly, resulting in versions
+2.0.1 and 2.0.2.  After the last release (2.0.2), enough modifications
+have taken place to warrant the update of the documentation and manual
+pages.  In addition to [hopefully] killing most of the bugs, many
+programs have been equipped with new features.  The most significant
+changes from 2.0 to 2.1 are:
+
+\begin{itemize}
+\index{GMT@\GMT!v2.1 enhancements}
+
+\item{More map projections.  We have added the Albers conic equal area,
+Cassini cylindrical, Orthographic, Azimuthal equidistant, Hammer equal
+area, Interrupted sinusoidal, and Winkler projections, bringing the
+number of map projections to 15.} 
+
+\item{3-D plotting.  Most plotting programs will now accept viewpoint
+and vertical scale information, making it possible to plot
+perspective-view versions of most plots.} 
+
+\item{Coastline data have been reformatted and are now stored using
+netCDF.  This improves the portability of \GMT\ and reduces the size
+of the distribution archive.} 
+
+\end{itemize}
+
+Specific minor enhancements to individual programs can be found in
+the manual pages.  The documentation has been augmented to include
+a detailed section on the syntax of each of the map projections,
+including examples.  An appendix (C) explaining how to convert \GMT\
+\PS\ output to a Macintosh Encapsulated \PS\
+File (EPSF) also has been added.
+
+Finally, we would like to thank those of you who have contributed
+ideas, bug reports, and advice since the first release.  \GMT\ 2.1
+is a much better product than 2.0, but there are still several
+shortcomings that we hope to address in future releases.  We are
+working on including a high-resolution coastline data base, more
+map projections, and time-series capabilities (recognizing misc.
+time formats at the data input/output stage, providing time axis
+annotation, etc.), just to name a few.  As usual, information
+about these improvements will be announced to registered users
+by electronic mail.
+
+\section{Preface to version 2.0 (October--1991)}
+
+When \GMT\ was released at Lamont-Doherty Earth Observatory in the
+summer of 1988 it quickly became the standard data manipulation
+and plotting package which Lamont-Doherty scientists used to
+massage data and generate camera-ready maps and diagrams.
+Shortly afterwards color capabilities were added, and color maps
+and illustrations could easily be viewed under {\it NeWS}
+\footnote{{\it NeWS} is a trademark of SUN Microsystems, Inc.} on
+the SUN workstations, slides could be shot off the screen, and
+screendumps sent to various color hardcopy devices.  Mostly by word
+of mouth, the number of \GMT\ users among individuals and institutions
+elsewhere grew to include major research centers both in Europe and
+the U.S.  The system proved easy to use, was general enough so that
+no matter what data you had, it could be manipulated and plotted,
+and it produced \PS\footnote{\PS\ is a
+trademark of Adobe Systems, Inc.} output which could easily be
+edited to include custom enhancements.  By keeping data files in
+the ASCII format, most trivial tasks of formatting and processing
+would be handled by \UNIX\ utilities such as \progname{awk},
+\progname{grep}, \progname{cut}, \progname{paste}, \progname{sed}, etc.
+
+\index{GMT@\GMT!v2.0 enhancements|(}
+\GMT\ has undergone several modifications since its incarnation more
+than three years ago.  The number of map projections available has
+doubled and now includes Mercator, Oblique Mercator, UTM,
+Stereographic, Lambert's conformal conic, Lambert's azimuthal
+equal-area, and Mollweide equal-area projections.  In addition,
+non-map projections like log$_{10}$(x) and x$^a$ have been added to
+the standard linear projection.
+
+The plotting library {\bf pslib} and the map drawing library
+{\bf gmtlib} have been completely rewritten, resulting in higher
+quality graphics and more control over details.  The \PS\
+macros defined in {\bf pslib} have been optimized, resulting in
+smaller output files and shorter execution times.
+
+A major new feature is the concept of the \filename{.gmtdefaults}
+file.  In this file, which will reside in the user's home directory,
+we find more than 50 parameters including the pen-thicknesses,
+font-types, and colors to use for maps, which ellipsoid to employ
+in the map projections, and what units to operate in (cm, inch, or
+meter).  All of these can be set individually by the user, thus
+customizing \GMT\ defaults to produce the desired results without
+excessive command line arguments when running individual programs
+or having to edit the \PS\ files at a later stage.
+
+In order to make the operation of \GMT\ programs more efficient, the
+notion of a command history has been implemented.  The history
+remembers the previous standardized command line arguments used
+with any \GMT\ program and allows the user to use a shorthand when
+the same argument is needed.  This information is stored in a file
+called \filename{.gmtcommands} which is maintained in the current
+directory.  Thus more than one \filename{.gmtcommands} file can
+exist at the same time.
+\index{GMT@\GMT!v2.0 enhancements|)}
+
+Finally, the format used for storing 2-D gridded data sets has been
+changed.  The new format is based on the XDR architecture-independent
+data representation as implemented in the netCDF software package
+available from NCAR (See Appendix D for how to obtain the necessary
+code).  The advantages of using this new format are many; here we
+will just mention scanline orientation and the ability to transfer
+your binary gridded data sets from one type of computer to another
+which may not have the same way of representing floating point numbers.
+
+With all these enhancements, \GMT\ now supports most accepted standards
+of today's computing environments: \UNIX, \PS, ASCII
+tables, and XDR binary file protocol.  We hope the new version 2.0 of
+\GMT\ will enhance your productivity and make data manipulation and
+presentation a little bit easier.  Should you have any suggestions to
+future enhancements and modification, we would like to hear from you.
+Please send your comments to
+\htmladdnormallink{gmt@soest.hawaii.edu}{mailto:gmt@soest.hawaii.edu}.

@@ -1,0 +1,101 @@
+.TH ORIGINATOR l DATE
+.SH NAME
+originator \- Associate seamounts with hotspot point sources 
+.SH SYNOPSIS
+\fBoriginator\fP [\fIinfile(s)\fP] \fB\-E\fP\fIstage_file\fP 
+\fB\-F\fP\fIhs_file\fP 
+[ \fB\-C\fP ] [ \fB\-D\fP\fId_km\fP ] 
+[ \fB\-H\fP[\fInrec\fP] ] [ \fB\-N\fP\fIupper_age\fP ] 
+[ \fB\-S\fP[\fIn_hs\fP] ] [ \fB\-T\fP ] [ \fB\-V\fP ]  \fB\-W\fP\fImaxdist\fP ] [ \fB\-:\fP ] 
+[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+.SH DESCRIPTION
+\fBoriginator\fP reads (longitude, latitude, height, radius, crustal_age) records from \fIinfiles\fP 
+[or standard input] and uses the given Absolute Plate Motion (APM) stage
+poles and the list of hotspot locations to determine the most likely origin (hotspot)
+for each seamount.  It does so by calculating flowlines back in time and determining
+the closest approach to all hotspots.  The output consists of the input records with
+four additional fields added for each of the \fIn_hs\fP closest hotspots.  The four fields
+are the hotspot id (e.g., HWI), the stage id of the flowline segment that came closest,
+the pseudo-age of the seamount, and the closest distance to the hotspot (in km).
+See option \fB\-:\fP on how to read (latitude, longitude,height, radius, crustal_ag) files.
+.br
+	No space between the option flag and the associated arguments.  Use upper case for the
+option flags and lower case for modifiers.
+.TP
+\fIinfile(s)\fP
+Seamount data file(s) to be analyzed.  If not given, standard input is read.
+.TP
+.B \-E
+Give file with stage poles and opening angles.  This file must contain
+one record for each stage; each record must be of the following format:
+.br
+.sp
+	lon lat tstart tstop ccw-angle
+.br
+.sp
+where time is in Ma and the rest is in degrees.  Oldest stage must be
+listed first.  tstart is the time when the stage begins (oldest age).
+Blank lines and records whose first column contains # will be ignored.
+.TP
+.B \-F
+Give file with hotspot locations.  This file must contain
+one record for each hotspot to be considered; each record must be of the
+following format:
+.br
+.sp
+	lon lat hs_id hs_name
+.br
+.sp
+E.g., for Hawaii this may look like
+.br
+.sp
+205	20	HWI	Hawaii
+.br
+.sp
+Blank lines and records whose first column contains # will be ignored.
+.SH OPTIONS
+.TP
+.B \-C
+Expect Total Reconstruction Poles (Finite Poles) rather than Backward Stage Poles [Default]
+File format is similar to the stage pole format except the youngest rotation must be listed
+first and that the tstart column is optional (assumed to be 0 Ma).
+.TP
+.B \-D
+Sets the flowline sampling interval in km.  [5].
+#include "explain_-H.txt"
+.TP
+.B \-N
+Set the maximum age to extend the oldest stage back in time [no extension].
+.TP
+.B \-S
+Set the number of closest hotspots to report [1].
+.TP
+.B \-T
+Truncate seamount ages exceeding the upper age set with -N [no truncation].
+#include "explain_-V.txt"
+.TP
+.B \-W
+Only report those seamounts whose flowlines' closest approach to any hotspot
+were less than \fImaxdist\fP [Default reports all seamounts].
+#include "explain_-t.txt"
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+[Default is 5 input columns]
+.SH EXAMPLES
+To find the likely (hotspot) origins of the seamounts represented by the (x,y,z,r,tc) points
+in the file seamounts.d, using the DC85.d Euler poles and the pac_hs.d list of possible hotspots,
+and report the 2 most likely hotspot canditates for each seamount, run
+.br
+.sp
+originator seamounts.d \fB\-S\fP2 \fB\-E\fPDC85.d \fB\-F\fPpac_hs.d > origins.d
+.br
+.sp
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR project (l),
+.IR mapproject (l),
+.IR backtracker (l)
+.IR hotspotter (l)
+.SH REFERENCES
+Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
+.br

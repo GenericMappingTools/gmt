@@ -1,0 +1,246 @@
+%------------------------------------------
+%	$Id: GMT_Quick_reference.tex,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+%
+%	The GMT Documentation Project
+%	Copyright 1998-2001.
+%	Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+\documentclass{article}
+\begin{document}
+
+\par FILTERING OF 1-D AND 2-D DATA:\par 
+
+\par 	blockmean/median/mode	L2, L1, and mode estimate ({\it x},{\it y},{\it z}) data filters/decimators\par 
+
+\par 	filter1d	Filter 1-D data (time series)\par 
+
+\par 	grdfilter	Filter 2-D data in space domain\par 
+
+\par \par 
+
+\par PLOTTING OF 1-D and 2-D DATA:\par 
+
+\par 	grdcontour	Contouring of 2-D gridded data \par 
+
+\par 	grdimage	Produce images from 2-D gridded data \par 
+
+\par 	grdvector	Plot vector fields from 2-D gridded data\par 
+
+\par 	grdview	3-D perspective imaging of 2-D gridded data \par 
+
+\par 	psbasemap	Create a basemap frame\par 
+
+\par 	psclip	Use polygon files as clipping paths\par 
+
+\par 	pscoast	Plot coastlines, filled continents, rivers, and political borders\par 
+
+\par 	pscontour	Direct contouring or imaging of {\it xyz} data by triangulation \par 
+
+\par 	pshistogram	Plot a histogram\par 
+
+\par 	psimage	Plot Sun rasterfiles on a map\par 
+
+\par 	psmask	Create overlay to mask specified regions of a map\par 
+
+\par 	psrose	Plot sector or rose diagrams\par 
+
+\par 	psscale	Plot grayscale or colorscale\par 
+
+\par 	pstext	Plot textstrings\par 
+
+\par 	pswiggle	Draw anomalies along track\par 
+
+\par 	psxy	Plot symbols, polygons, and lines in 2-D\par 
+
+\par 	psxyz	Plot symbols, polygons, and lines in 3-D\par 
+
+\par \par 
+
+\par GRIDDING OF (X,Y,Z) TABLE DATA:\par 
+
+\par 	nearneighbor	Nearest-neighbor gridding scheme\par 
+
+\par 	surface	Continuous curvature gridding algorithm\par 
+
+\par 	triangulate	Perform optimal Delauney triangulation on {\it xyz} data\par 
+
+\par \par 
+
+\par SAMPLING OF 1-D AND 2-D DATA:\par 
+
+\par 	grdsample	Resample a 2-D gridded data onto new grid\par 
+
+\par 	grdtrack	Sampling of 2-D data along 1-D track\par 
+
+\par 	sample1d	Resampling of 1-D data\par 
+
+\par \par 
+
+\par PROJECTION AND MAP-TRANSFORMATION:\par 
+
+\par 	grdproject	Transform gridded data to a new coordinate system\par 
+
+\par 	mapproject	Transform table data to a new coordinate system\par 
+
+\par 	project	Project data onto lines or great circles\par 
+
+\par \par 
+
+\par INFORMATION:\par 
+
+\par 	gmtdefaults	List the current default settings\par 
+
+\par 	gmtset	Command-line editing of parameters in the .gmtdefaults file\par 
+
+\par 	grdinfo	Get information about the content of gridded files\par 
+
+\par 	minmax	Report extreme values in table data files\par 
+
+\par \par 
+
+\par CONVERT OR EXTRACT SUBSETS OF DATA:\par 
+
+\par 	gmtconvert	Convert table data from one format to another\par 
+
+\par 	gmtselect	Select table data subsets based on multiple spatial criteria\par 
+
+\par 	grd2xyz	Convert 2-D gridded data to table data\par 
+
+\par 	grdcut	Cut a sub-region from a gridded file\par 
+
+\par 	grdpaste	Paste together gridded files along common edge\par 
+
+\par 	grdreformat	Convert from one grid format to another\par 
+
+\par 	splitxyz	Split {\it xyz} table data into several segments\par 
+
+\par 	xyz2grd	Convert table data to 2-D gridded file\par 
+
+\par \par 
+
+\par MISCELLANEOUS:\par 
+
+\par 	makecpt	Create GMT color palette tables\par 
+
+\par 	spectrum1d	Compute spectral estimates from time-series\par 
+
+\par 	triangulate	Perform optimal Delauney triangulation on xyz data\par 
+
+\par \par 
+
+\par DETERMINE TRENDS IN 1-D AND 2-D DATA:\par 
+
+\par 	fitcircle	Finds best-fitting great or small circles\par 
+
+\par 	grdtrend	Fits polynomial trends to gridded files ({\it z} = f({\it x},{\it y}))\par 
+
+\par 	trend1d	Fits polynomial or Fourier trends to {\it y} = f({\it x}) series\par 
+
+\par 	trend2d	Fits polynomial trends to {\it z} = f({\it x},{\it y}) series\par 
+
+\par \par 
+
+\par OTHER OPERATIONS ON 2-D GRIDS:\par 
+
+\par 	grd2cpt	Make color palette table from gridded file\par 
+
+\par 	grdclip	Limit the {\it z}-range in gridded data sets\par 
+
+\par 	grdedit	Modify grid header information\par 
+
+\par 	grdfft	Operate on gridded files in frequency domain\par 
+
+\par 	grdgradient	Compute directional gradients from gridded files\par 
+
+\par 	grdhisteq	Histogram equalization for gridded files\par 
+
+\par 	grdlandmask	Creates mask gridded file from coastline database\par 
+
+\par 	grdmask	Set grid nodes in/outside a clip path to constants\par 
+
+\par 	grdmath	Reverse Polish Notaton (RPN) calculator for gridded files\par 
+
+\par 	grdvolume	Calculate volume under a surface within a contour\par 
+
+\par \par 
+
+\par STANDARDIZED COMMAND LINE OPTIONS:\par 
+
+\par 本\bf B}{\it xtick}[{\it :text:}][{\it /ytick}[{\it :text:}]][{\it /ztick}[{\it :text:}]][{\it WESNZwesnz+}][{\it :.title:}]	Tickmarks\par 
+
+\par 本\bf H}{\it [n\_headers]}	Input/output ascii tables have header record[s]\par 
+
+\par 本\bf J} Map projection.  Give \underline{width} or use lower case code and specify map \underline{scale\par 
+
+}\par 	本\bf JA}{\it lon0/lat0/width}	Lambert azimuthal equal area\par 
+
+\par 	本\bf JB}{\it lon0/lat0/lat1/lat2/width}	Albers conic equal area\par 
+
+\par 	本\bf JC}{\it lon0/lat0/width}	Cassini cylindrical\par 
+
+\par 	本\bf JE}{\it lon0/lat0/width}	Azimuthal equidistant\par 
+
+\par 	本\bf JF}{\it lon0/lat0horizon/width}	Azimuthal Gnomonic\par 
+
+\par 	本\bf JG}{\it lon0/lat0/width}	Azimuthal orthographic\par 
+
+\par 	本\bf JH}{\it lon0/width}	Hammer equal area\par 
+
+\par 	本\bf JI}{\it lon0/width}	Sinusoidal equal area\par 
+
+\par 	本\bf JJ}{\it lon0/width}	Miller cylindrical\par 
+
+\par 	本\bf JK}{\it lon0/width}	Eckert IV equal area\par 
+
+\par 	本\bf JL}{\it lon0/lat0/lat1/lat2/width}	Lambert conic conformal\par 
+
+\par 	本\bf JM}{\it width }or{\it }本\bf JM}{\it lon0/lat0/width}	Mercator cylindrical\par 
+
+\par 	本\bf JN}{\it lon0/width}	Robinson\par 
+
+\par 	本\bf JOa}{\it lon0/lat0/az/width}	Oblique Mercator, 1:	origin and azimuth\par 
+
+\par 	本\bf JOb}{\it lon0/lat0/lon1/lat1/width}	Oblique Mercator, 2:	two points\par 
+
+\par 	本\bf JOc}{\it lon0/lat0/lonp/latp/width}	Oblique Mercator, 3:	origin and pole\par 
+
+\par 	本\bf JP}{\it width}	Polar ({\it q}, {\it r}) (or cylindrical)\par 
+
+\par 	本\bf JQ}{\it lon0/width}	Equidistant cylindrical (Plate Carrarr\&eacute;)\par 
+
+\par 	本\bf JR}{\it lon0/width}	Winkel Tripel\par 
+
+\par 	本\bf JS}{\it lon0/lat0/width}	General stereographic\par 
+
+\par 	本\bf JT}{\it lon0/width}	Transverse Mercator\par 
+
+\par 	本\bf JU}{\it zone/width}	Universal Transverse Mercator (UTM)\par 
+
+\par 	本\bf JW}{\it lon0/width}	Mollweide\par 
+
+\par 	本\bf JX}{\it width}[{\bf l}|{\bf p}][/{\it heigh}t[{\bf l}|{\bf p}]][{\bf d}]	Linear, log10, and xa幌b\par 
+
+\par 	本\bf JY}{\it lon0/lats/width}	General cylindrical equal area\par 
+
+\par 本\bf K}	Append more PostScript later\par 
+
+\par 本\bf O}	This is an overlay plot\par 
+
+\par 本\bf P}	Select Portrait orientation\par 
+
+\par 本\bf R}{\it west/east/south/north}[{\it /zmin/zmax}][{\bf r}]	Specify Region of interest\par 
+
+\par 本\bf U}[{\it /dx/dy}/][{\it label}]	Plot time-stamp on plot\par 
+
+\par 本\bf V}	Run in verbose mode\par 
+
+\par 本\bf X}{\it off} 本\bf Y}{\it off}	Shift lower left corner of plot [1/1]\par 
+
+\par 本\bf :}	Expect {\it y}/{\it x} input rather than {\it x}/{\it y\par 
+
+}\par 本\bf c}{\it copies}	Set number of plot copies [1]\par 
+
+
+
+\end{document}

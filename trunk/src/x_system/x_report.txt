@@ -1,0 +1,30 @@
+.TH XREPORT l DATE
+.SH NAME
+\fBXREPORT\fP \- Report Cross-Over Error Statistics for Cruises
+.SH SYNOPSIS
+\fBxreport\fP [ \fIleg\fP ] [ \fB\-X\fP\fIlegbase\fP ] [ \fB\-G \-M \-T\fP ]
+.SH DESCRIPTION
+\fBxreport\fP reads the xsystem data base file and prints out statistics for each leg. The statistics
+are the number of, means, and standard deviations of COEs for both the internal and external
+cases. One or more data types (GMT) may be specified.
+.TP
+\fIleg\fP
+Report on \fIleg\fP only. [Default is all legs].
+.TP
+.B \-X
+Specify alternate leg data base [Default is \fIxx_legs.b\fP].
+.TP
+.B \-G
+Give information for Gravity cross-overs only. [Default is G, M, and T].
+.TP
+.B \-M
+Give information for Magnetics cross-overs only. [Default is G, M, and T].
+.TP
+.B \-T
+Give information for Topography cross-overs only. [Default is G, M, and T].
+.SH SEE ALSO
+.IR gmt (l),
+.IR x_system (l)
+.SH REFERENCES
+Wessel, P. XOVER: A Cross-over Error Detector for Track Data,
+\fIComputers & Geosciences, 15\fP, 333-346.

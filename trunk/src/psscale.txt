@@ -1,0 +1,88 @@
+.TH PSSCALE l DATE
+#define LEN_1	7.5
+#define LEN_2	1.25
+#define SCALE	\fB\-D\fP6.5\fBi\fP/2\fBi\fP/7.5\fBc\fP/1.25\fBc\fP
+#define LEN_3	6
+#define LEN_4	4
+.SH NAME
+psscale \- Create grayscale or colorscale for maps
+.SH SYNOPSIS
+\fBpsscale\fP \fB\-D\fP\fIxpos/ypos/length/width[h]\fP 
+[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIcpt_file\fP ] [ \fB\-E\fP[\fIlength\fP] ] 
+[ \fB\-I\fP[\fImax_intens\fP] ] [ \fB\-K\fP ] [ \fB\-L\fP ]  [ \fB\-M\fP ] [ \fB\-N\fP\fIdpi\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
+[ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-X\fP\fIx-shift\fP ] 
+[ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fIzfile\fP ] [ \fB\-c\fP\fIcopies\fP ]
+.SH DESCRIPTION
+\fBpsscale\fP plots grayscales or colorscales on maps.  Both horizontal and vertical scales
+are supported.  For cpt_files with gradational colors (i.e., the lower and upper
+boundary of an interval have different r/g/b values) \fBpsscale\fP will interpolate to give
+a continuous scale.  Variations in intensity due to shading/illumination may be
+displayed by setting the option \fB\-I\fP.  Colors may be spaced according to a linear
+scale, all be equal size, or by providing a file with individual tile widths.
+.TP
+.B \-D
+Defines the position of the center/top (for horizontal scale) or center/left (for
+vertical scale) and the dimensions of the scale.  Append \fIh\fP to get a horizontal
+scale [Default is vertical].
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+.TP
+.B \-B
+Set anotation, tick, and gridline interval for the colorbar.  The
+xaxis label will plot beneath a horizontal bar (or vertically
+to the right of a vertical bar).  As an option, use the yaxis label to
+plot the data unit to the right of a horizontal bar (and above a vertical bar).
+If no values are provided, the default is to anotate
+every color level (which may be overridden by ULB flags in the cpt file).
+Note that since vertical labels will be plotted as a column
+of individual characters, no octal escape characters imbedded in the label are allowed.
+.TP
+.B \-C
+\fIcpt_file\fP is the color palette file to be used
+By default all color changes are anotated.  To use a subset, add an extra column to the
+cpt-file with a L, U, or B to anotate Lower, Upper, or Both color segment boundaries (but see \fB\-B\fP).
+If not given, \fBpsscale\fP will read stdin.  As for \fBgrdview\fP, \fBpsscale\fP can understand
+pattern specifications in the cpt file.
+.TP
+.B \-E
+Add sidebar triangles for back- and foreground colors.  Optionally, append
+triangle height [Default is half the barwidth].
+.TP
+.B \-I
+Add illumination effects.  Optionally, set the range of intensities from
++ to - \fImax_intens\fP.  If not specified, 1.0 is used.  [Default is no illumination]
+#include "explain_-K.txt"
+.TP
+.B \-L
+Gives equal-sized color rectangles.  Default scales rectangles according to the
+z-range in the cpt-file  (Also see \fB\-Z\fP).
+.TP
+.B \-M
+Force a monochrome graybar using the (television) YIQ transformation.
+.TP
+.B \-N
+Effective dots-per-inch for the rectangular image making up the color scale [300].
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+#include "explain_-XY.txt"
+.TP
+.B \-Z
+File with colorbar-width per color entry.  By default, width of entry is scaled
+to color range, i.e., z = 0-100 gives twice the width as z = 100-150 (Also see \fB\-L\fP).
+#include "explain_-c.txt"
+.SH EXAMPLES
+To append a vertical colorscale (LEN_1 cm long; LEN_2 cm wide) to the right of a plot that is LEN_3 inch wide and LEN_4 inch
+high, using illumination, and show back- and foreground colors, and anotating every 5 units, try
+.br
+.sp
+psscale SCALE \fB\-O \-C\fPcolors.cpt \fB\-I \-E\fP \fB\-B\fP5:BATHYMETRY:/:m: >> map.ps
+.SH NOTES
+When the cpt file is discrete and no illumination is specified, the color bar will be painted
+using polygons.  For all other cases we must paint with an image.  Some color printers may give
+slightly different colors for the two methods given identical RGB values.
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR makecpt (l),
+.IR grd2cpt (l)

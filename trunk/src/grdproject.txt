@@ -1,0 +1,89 @@
+.TH GRDPROJECT l DATE
+.SH NAME
+grdproject \- Forward and Inverse map transformation of 2-D grd files 
+.SH SYNOPSIS
+\fBgrdproject\fP \fIin_grdfile\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
+[ \fB\-A\fP[\fBk|m|n|i|c|p\fP] ] [ \fB\-C\fP ] [ \fB\-D\fP\fIdx\fP[\fBm|c\fP][/\fIdy\fP[\fBm|c\fP]] ] 
+[ \fB\-E\fP\fIdpi\fP ] [ \fB\-F\fP ] [ \fB\-G\fP\fIout_grdfile\fP ] [ \fB\-I\fP ] 
+[ \fB\-Mc|i|m|p\fP ] [ \fB\-N\fP\fInx/ny\fP ] [ \fB\-S\fP\fIsearch_radius\fP ] [ \fB\-V\fP ]
+.SH DESCRIPTION
+\fBgrdproject\fP will do one of two things depending whether \fB\-I\fP has been set.  If set, it
+will transform a gridded data set from a rectangular coordinate system onto a geographical
+system by resampling the surface at the new nodes.  If not set, it will project a geographical
+gridded data set onto a rectangular grid.  The new nodes are filled based on a simple weighted
+average of nearby points.  Aliasing is avoided by using sensible values for the \fIsearch_radius\fP.
+The new node spacing may be determined in one of several ways by specifying the grid spacing,
+number of nodes, or resolution.  Nodes not constrained by input data are set to NaN.
+.br
+	No space between the option flag and the associated arguments.  Use upper case for the
+option flags and lower case for modifiers.
+.TP
+\fIin_grdfile\fP
+2-D binary grd file to be transformed.
+#include "explain_-j.txt"
+#include "explain_-R.txt"
+.SH OPTIONS
+.TP
+.B \-A
+Force 1:1 scaling, i.e., output (or input, see \fB\-I\fP) data are in actual projected meters.  To specify other units,
+append \fBk\fP (km), \fBm\fP (mile),\fBn\fP (nautical mile), \fBi\fP (inch), \fBc\fP (cm), or \fBp\fP (points).
+Without \fB\-A\fP, the output (or input, see \fB\-I\fP) are in the units specified by MEASURE_UNIT (but see \fB\-M\fP).
+.TP
+.B \-C
+Let projected coordinates be relative to projection center [Default is relative to lower left corner].
+.TP
+.B \-D
+Set the grid spacing for the new grid.  Append \fBm\fP for minutes, \fBc\fP for seconds.
+.TP
+.B \-E
+Set the resolution for the new grid in dots pr inch.
+.TP
+.B \-F
+Toggle between pixel and gridline registration [Default is same as input].
+.TP
+.B \-G
+Specify the name of the output netCDF grd file.
+.TP
+.B \-I
+Do the Inverse transformation, from rectangular to geographical.
+.TP
+.B \-M
+Append \fBc\fP, \fBi\fP, or \fBm\fP to indicate that cm, inch, or meter should be the projected measure unit
+[Default is set by MEASURE_UNIT in .gmtdefaults].  Cannot be used with \fB\-A\fP.
+.TP
+.B \-N
+Set the number of grid nodes in the new grid.
+.TP
+.B \-S
+Set the search radius for the averaging procedure  [Default avoids aliasing].
+#include "explain_-V.txt"
+.SH EXAMPLES
+To transform the geographical grid dbdb5.grd onto a pixel Mercator grid at 300 dpi, run
+.br
+.sp
+grdproject dbdb5.grd \fB\-R\fP20/50/12/25 \fB\-Jm\fP0.25\fBi\fP \fB\-E\fP300 \fB\-F\fP
+\fB\-G\fPdbdb5_merc.grd 
+.br
+.sp
+To inversely transform the file topo_tm.grd back onto a geographical grid try
+.br
+.sp
+grdproject topo_tm.grd \fB\-R\fP-80/-70/20/40 \fB\-Jt\fP-75/1:500000 \fB\-I\fP \fB\-D\fP5\fBm \-V\fP \fB\-G\fPtopo.grd
+.br
+.sp
+This assumes, of course, that the coordinates in topo_tm.grd were created with the same projection parameters.
+.br
+To inversely transform the file topo_utm.grd (which is in UTM meters) back onto a geographical grid we
+specify a one-to-one mapping with meter as the measure unit:
+.br
+.sp
+grdproject topo_utm.grd \fB\-R\fP203/05/60/65 \fB\-Ju\fP5/1:1 \fB\-I\fP \fB\-Mm \-V \-G\fPtopo.grd
+.br
+.SH RESTRICTIONS
+The boundaries of a projected (rectangular) data set will not necessarily give rectangular
+geographical boundaries (Mercator is one exception).  In those cases some nodes may be unconstrained (set to NaN).
+To get a full grid back, your input grid may have to cover a larger area than you are interrested in.
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR gmtdefaults (l),
+.IR mapproject (l)

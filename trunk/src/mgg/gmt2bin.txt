@@ -1,0 +1,23 @@
+.TH GMT2BIN l DATE
+.SH NAME
+gmt2bin \- Create bin-index files from gmt files
+.SH SYNOPSIS
+\fBgmt2bin\fP \fIlistfile\fP [ \fB\-P\fP\fIpath\fP ] [ \fB\-V\fP ]
+.SH DESCRIPTION
+gmt2bin reads a file with a list of leg ids, opens each gmt file, and creates
+a bin-index file for each leg called <legid>.bix.  These are used by
+\fBbinlegs\fP to update the system files read by \fBgmtlegs\fP.  Normally, only
+the data archivist will need to be concerned with these operations.
+.TP
+\fIlistfile\fP
+This is a one column ASCII file with one leg id pr line.
+.SH OPTIONS
+.TP
+.B \-P
+Sets full path to directory with gmtfiles.  [Default is current directory].
+#include "explain_-V.txt"
+.SH "SEE ALSO"
+.IR binlegs (l),
+.IR dat2gmt (l),
+.IR gmt (l)
+#include "refs.i"

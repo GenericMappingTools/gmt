@@ -1,0 +1,92 @@
+.TH GRDIMAGE l DATE
+#define LEN_L   1.5
+#define SCALE1	\fB\-Jl\fP18/24/1.5\fBc\fP
+#define LEN_X   10
+#define SCALE2	\fB\-Jx\fP10\fBi\fP
+.SH NAME
+grdimage \- Create grayshaded or colored image from a 2-D netCDF grd file
+.SH SYNOPSIS
+\fBgrdimage\fP \fIgrdfile\fP \fB\-C\fP\fIcptfile\fP \fB\-J\fP\fIparameters\fP 
+[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-E\fP\fIdpi\fP ] [ \fB\-G\fP[\fBf|b\fP]\fIrgb\fP ] [ \fB\-I\fP\fIintensfile\fP] [ \fB\-K\fP ] 
+[ \fB\-M\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP\fIsearch_radius\fP ] 
+[ \fB\-T\fP[\fBs\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] 
+[ \fB\-c\fP\fIcopies\fP ]
+.SH DESCRIPTION
+\fBgrdimage\fP reads a 2-D gridded file and produces a gray-shaded (or colored) map by assigning
+each contour interval a gray-shade (or color).  Optionally, illumination may be added by providing
+a file with intensities in the (-1,+1) range.  Values outside this range will be clipped.
+Such intensity files can be created from the
+grdfile using \fBgrdgradient\fP and modified by \fBgrdmath\fP or \fBgrdhisteq\fP.  Each grid-node in the
+grdfile is represented as a shaded (or colored) rectangle centered on the grid node.  When using map projections,
+the grid is first resampled on a new rectangular grid  (This can be a time-consuming process for large grid files; but see -T).
+A 24-bit true color \fIPostScript\fP file is output.
+The region option can be used to select a map region larger or smaller than that implied by the extent of the
+grdfile.
+.TP
+\fIgrdfile\fP
+2-D gridded data set to be imaged
+.TP
+.B \-C
+name of the color palette table
+#include "explain_-j.txt"
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+#include "explain_-b.txt"
+.TP
+.B \-E
+Sets the resolution of the projected grid that will be created if
+a map projection other than Linear or Mercator was selected.  By default,
+the projected grid will be of the same size (rows and columns) as the
+input file.
+.TP
+.B \-G
+This option only applies when the resulting image otherwise would consist
+of only two colors: black (0) and white (255).  If so, this option will
+instead use the image as a transparent mask and point the mask (or its
+inverse, with \fB\-Gb\fP) with the given color combination.
+.TP
+.B \-I
+Gives the name of a grdfile with intensities in the (-1,+1) range. [Default is no illumination].
+#include "explain_-K.txt"
+.TP
+.B \-M
+Force conversion to monochrome image using the (television) YIQ transformation.
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+#include "explain_-R.txt"
+You may ask for a larger \fIw/e/s/n\fP region to have more room between the image and the axes.
+A smaller region than specified in the grdfile will result in a subset of the grid [Default is
+region given by the grdfile].
+.TP
+.B \-S
+Set the search radius for the averaging procedure  [Default avoids aliasing].
+.TP
+.B \-T
+Plot image without any interpolation.  This involves converting each node-centered
+bin into a polygon which is then painted separately.  Append \fBs\fP to skip
+nodes with z = NaN.  This option is useful for categorical data where
+interpolating between values is meaningless.
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+#include "explain_-XY.txt"
+#include "explain_-c.txt"
+.SH EXAMPLES
+To gray-shade the file hawaii_grav.grd with shades given in shades.cpt on a Lambert map
+at LEN_L cm/degree along the standard parallels 18 and 24, and using 1 degree tickmarks, try 
+.br
+.sp
+grdimage hawaii_grav.grd SCALE1 \fB\-C\fPshades.cpt \fB\-B\fP1 > hawaii_grav_image.ps
+.br
+.sp
+To create an illuminated color \fIPostScript\fP plot of the gridded data set image.grd, using the
+intensities provided by the file intens.grd, and color
+levels in the file colors.cpt, with linear scaling at LEN_X inch/x-unit, tickmarks every 5 units, try
+.br
+.sp
+grdimage image.grd SCALE2 \fB\-C\fPcolors.cpt \fB\-I\fPintens.grd \fB\-B\fP5 > image.ps
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grdcontour (l),
+.IR grdview (l),
+.IR grdgradient (l),
+.IR grdhisteq (l)

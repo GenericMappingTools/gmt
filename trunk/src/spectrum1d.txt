@@ -1,0 +1,108 @@
+.TH SPECTRUM1D l DATE
+.SH NAME
+spectrum1d \- compute auto\- [and cross\- ] spectra from one [or two] timeseries.
+.SH SYNOPSIS
+\fBspectrum1d\fP [ \fIx[y]file\fP ] \fB\-S\fP\fIsegment_size\fP] 
+[ \fB\-C\fP[\fBxycnpago\fP] ] [ \fB\-D\fP\fIdt\fP ] 
+[ \fB\-N\fP\fIname_stem\fP ] [ \fB\-V\fP ] [ \fB\-W\fP ] 
+[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+.SH DESCRIPTION
+\fBspectrum1d\fP reads X [and Y] values from the first [and second] columns on standard input 
+[or \fIx[y]file\fP].  These values are treated as timeseries X(t) [Y(t)] sampled at equal intervals 
+spaced \fIdt\fP units apart.  There may be any number of lines of input.  \fBspectrum1d\fP will create 
+file[s] containing auto\- [and cross\- ] spectral density estimates by Welch's method of ensemble 
+averaging of multiple overlapped windows, using standard error estimates from Bendat and Piersol.
+.sp
+The output files have 3 columns: f or w, p, and e.  f or w is the frequency or wavelength, p is the 
+spectral density estimate, and e is the one standard deviation error bar size.  These files are named 
+based on \fIname_stem\fP.  If the \fB\-C\fP option is used, up to eight files are created; otherwise only one 
+(xpower) is written.  The files (which are ASCII unless \fB\-bo\fP is set) are as follows:
+.TP
+\fIname_stem\fP.xpower
+Power spectral density of X(t).  Units of X * X * \fIdt\fP.
+.TP
+\fIname_stem\fP.ypower
+Power spectral density of Y(t).  Units of Y * Y * \fIdt\fP.
+.TP
+\fIname_stem\fP.cpower
+Power spectral density of the coherent output.  Units same as ypower.
+.TP
+\fIname_stem\fP.npower
+Power spectral density of the noise output.  Units same as ypower.
+.TP
+\fIname_stem\fP.gain
+Gain spectrum, or modulus of the transfer function.  Units of (Y / X).
+.TP
+\fIname_stem\fP.phase
+Phase spectrum, or phase of the transfer function.  Units are radians.
+.TP
+\fIname_stem\fP.admit
+Admittance spectrum, or real part of the transfer function.  Units of (Y / X).
+.TP
+\fIname_stem\fP.coh
+(Squared) coherency spectrum, or linear correlation coefficient as a function of frequency.  
+Dimensionless number in [0, 1].  The Signal-to-Noise-Ratio (SNR) is coh / (1 - coh).  SNR = 1 when coh = 0.5.
+.SH REQUIRED ARGUMENTS
+.sp
+.TP
+\fIx[y]file\fP
+ASCII (or binary, see \fB\-bi\fP) file holding X(t) [Y(t)] samples in the first 1 [or 2] columns.  If no file is specified, \fBspectrum1d\fP 
+will read from standard input.
+.TP
+.B \-S
+\fIsegment_size\fP is a radix-2 number of samples per window for ensemble averaging.  The smallest frequency 
+estimated is 1.0/(\fIsegment_size\fP * \fIdt\fP), while the largest is 1.0/(2 * \fIdt\fP).  One standard error 
+in power spectral density is approximately 1.0 / sqrt(\fIn_data\fP / \fIsegment_size\fP), so if \fIsegment_size\fP 
+= 256, you need 25,600 data to get a one standard error bar of 10%.  Cross-spectral error bars are larger and more 
+complicated, being a function also of the coherency. 
+.SH OPTIONS
+.sp
+.TP
+.B \-C
+Read the first two columns of input as samples of two timeseries, X(t) and Y(t).
+  Consider Y(t) to be the
+output and X(t) the input in a linear system with noise.  Estimate the optimum f
+requency response function
+by least squares, such that the noise output is minimized and the coherent outpu
+t and the noise output are
+uncorrelated.
+Optionally specify up to 8 letters from the set { \fBx y c n p a g o\fP }
+in any order to create only those output files instead of the default [all].
+\fBx\fP = xpower, \fBy\fP = ypower, \fBc\fP = cpower, \fBn\fP = npower,
+\fBp\fP = phase, \fBa\fP = admit, \fBg\fP = gain, \fBo\fP = coh.
+.TP
+.B \-D
+\fIdt\fP  Set the spacing between samples in the timeseries [Default = 1].
+.TP
+.B \-N
+\fIname_stem\fP  Supply the name stem to be used for output files [Default = "spectrum"].
+#include "explain_-V.txt"
+.TP
+.B \-W
+Write Wavelength rather than frequency in column 1 of the output file[s] [Default = frequency, (cycles / \fIdt\fP)].
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+[Default is 2 input columns].
+#include "explain_-o.txt"
+.SH EXAMPLES
+Suppose data.g is gravity data in mGal, sampled every 1.5 km.  To write its power spectrum, in mGal**2-km, 
+to the file data.xpower, try  
+.sp
+spectrum1d data.g \fB\-S\fP256 \fB\-D\fP1.5 \fB\-N\fPdata
+.sp
+Suppose in addition to data.g you have data.t, which is topography in meters sampled at the same points as 
+data.g.  To estimate various features of the transfer function, considering data.t as input and data.g as 
+output, try
+.sp
+paste data.t data.g | spectrum1d \fB\-S\fP256 \fB\-D\fP1.5 \fB\-N\fPdata \fB\-C\fP
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grdfft (l)
+.SH REFERENCES
+Bendat, J. S., and A. G. Piersol, 1986, Random Data, 2nd revised ed., John Wiley & Sons.
+.br
+Welch, P. D., 1967, "The use of Fast Fourier Transform for the estimation of power spectra:  a method 
+based on time averaging over short, modified periodograms", IEEE Transactions on Audio and Electroacoustics, 
+Vol AU-15, No 2.
+
+

@@ -1,0 +1,103 @@
+.TH SPLITXYZ l DATE
+.SH NAME
+splitxyz \- filter to divide (x,y,z[,distance,heading]) data into (x,y,z) track segments.
+.SH SYNOPSIS
+\fBsplitxyz\fP [ \fIxyz[dh]file\fP ] \fB\-C\fP\fIcourse_change\fP [ \fB\-A\fP\fIazimuth\fP/\fItolerance\fP ] 
+[ \fB\-D\fP\fIminimum_distance\fP ] [ \fB\-F\fP\fIxy_filter\fP/\fIz_filter\fP ] [ \fB\-G\fP\fIgap_distance\fP ] 
+[ \fB\-H\fP[\fInrec\fP] ] [ \fB\-M\fP ] [ \fB\-N\fP\fInamestem\fP ] [ \fB\-S\fP ] [ \fB\-V\fP ] [ \fB\-Z\fP ] [ \fB\-:\fP ] 
+[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+.SH DESCRIPTION
+\fBsplitxyz\fP reads a series of (x,y[,z]) records [or optionally (x,y,z,d,h); see \fB\-S\fP 
+option] from standard input [or \fIxyz[dh]file\fP] and splits this into separate lists 
+of (x,y[,z]) series, such that each series has a nearly constant azimuth through the x,y plane.  
+There are options to choose only those series which have a certain orientation, to set a 
+minimum length for series, and to high\- or low\-pass filter the z values and/or the x,y 
+values.  \fBsplitxyz\fP is a useful filter between data extraction and \fBpswiggle\fP plotting, 
+and can also be used to divide a large x,y,z dataset into segments.  The output is always
+in the ASCII format; input may be ASCII or binary (see \fB\-b\fP).
+.TP
+\fIxyz[dh]file(s)\fP
+3 (but see \fB\-Z\fP) [or 5] column ASCII file [or binary, see \fB\-b\fP] holding (x,y,z[,d,h]) data values.  To use (x,y,z,d,h) input, 
+sorted so that d is non-decreasing, specify the \fB\-S\fP option; default expects (x,y,z) only.  
+If no file is specified, \fBsplitxyz\fP will read from standard input.
+.TP
+.B \-C
+Terminate a segment when a course change exceeding \fIcourse_change\fP degrees of heading 
+is detected.
+.SH OPTIONS
+.TP
+.B \-A
+Write out only those segments which are within +/- \fItolerance\fP degrees of \fIazimuth\fP 
+in heading, measured clockwise from North, [0 - 360].  [Default writes all acceptable 
+segments, regardless of orientation].
+.TP
+.B \-D
+Do not write a segment out unless it is at least \fIminimum_distance\fP units long.  
+[Default = 100 distance units].
+.TP
+.B \-F
+Filter the z values and/or the x,y values, assuming these are functions of d coordinate.  
+\fIxy_filter\fP and  \fIz_filter\fP are filter widths in distance units.  If a filter width 
+is zero, the filtering is not performed.  The absolute value of the width is the 
+full width of a cosine\-arch low\-pass filter.  If the width is positive, the data are 
+low\-pass filtered; if negative, the data are high\-pass filtered by subtracting the 
+low\-pass value from the observed value.  If \fIz_filter\fP is non\-zero, 
+the entire series of input z values is filtered before any segmentation is performed, so 
+that the only edge effects in the filtering will happen at the beginning and end of the 
+complete data stream.  If \fIxy_filter\fP is non\-zero, the data is first divided into 
+segments and then the x,y values of each segment are filtered separately.  This may introduce 
+edge effects at the ends of each segment, but prevents a low\-pass x,y filter from rounding 
+off the corners of track segments.  [Default = no filtering].
+.TP
+.B \-G
+Do not let a segment  have a gap exceeding \fIgap_distance\fP; instead, split it into two 
+segments.  [Default = 10 distance units].
+#include "explain_-H.txt"
+Not used with binary data.
+.TP
+.B \-M
+Use Map units.  Then x,y are in degrees of longitude, latitude, and distances 
+in kilometers.  [Default:  distances are cartesian in same units as x,y].
+.TP
+.B \-N
+Create Named output files, writing each segment to a separate file in the working directory 
+named \fInamestem\fP.profile\fI#\fP, where \fI#\fP increases consecutively from 1.  [Default 
+writes entire output to stdout, separating segments by sub-headings that start with > marks].
+.TP
+.B \-S
+d and h is supplied.  In this case, input contains x,y,z,d,h.
+[Default expects (x,y,z) input, and d,h are computed from delta x, 
+delta y, according to \fB\-M\fP option]
+#include "explain_-V.txt"
+.TP
+.B \-Z
+Data have x,y only (no z-column).
+#include "explain_-t.txt"
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+[Default is 2, 3, or 5 input columns as set by \fB\-S, \-Z\fP].
+#include "explain_-o.txt"
+.SH EXAMPLES
+.sp
+Suppose you want to make a wiggle plot of magnetic anomalies on segments oriented 
+approximately east\-west from a cruise called cag71 in the region \-R300/315/12/20.  
+You want to use a 100km low\-pass filter to smooth the tracks and a 500km high\-pass 
+filter to detrend the magnetic anomalies.  Try this:
+.br
+.sp
+gmtlist cag71 \fB\-R\fP300/315/12/20 \fB\-F\fPxyzdh | 
+splitxyz \fB\-A\fP90/15 \fB\-F\fP100/-500 \fB\-M\fP \fB\-S\fP \fB\-V\fP | 
+pswiggle \fB\-R\fP300/315/12/20 \fB\-Jm\fP0.6 \fB\-Ba\fP5\fBf\fP1:.cag71: \fB\-T\fP1 \fB\-W\fP3 \fB\-G\fP200 \fB\-Z\fP200 > cag71_wiggles.ps
+.br
+.sp
+MGD-77 users: For this application we recommend that you extract d, h from \fBgmtlist\fP rather than
+have \fBsplitxyz\fP compute them separately.
+.br
+Suppose you have been given a binary, double-precision file containing lat, lon, gravity values from a survey, 
+and you want to split it into profiles named \fIsurvey\fP.profile\fI#\fP (when gap exceeds 100 km).  Try this:
+.sp
+splitxyz survey.bin \fB\-N\fPsurvey \fB\-V \-G\fP100 \fB\-: \-M \-bi\fP3
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR gmtlist (l),
+.IR pswiggle (l)

@@ -1,0 +1,21 @@
+.TH GMTPATH l DATE
+.SH NAME
+gmtpath \- Get full pathname for gmt files
+.SH SYNOPSIS
+\fBgmtpath\fP \fIleg-ids\fP
+.SH DESCRIPTION
+gmtpath returns the full pathname to one or more gmt-files. The pathname returned for a given
+cruise may change with time due to reshuffling of disk/subdirectories.
+.sp
+.TP
+\fIleg-ids\fP
+Can be one or more gmtleg-names, like c2610.  Use `cat list_of_legs` to pass all the legnames
+in the file list_of_legs. 
+.SH EXAMPLES
+To obtain pathnames for cruises c2603 and v2819, try
+.br
+.sp
+gmtpath c2603 v2819
+.SH "SEE ALSO"
+.IR gmt (l)
+#include "refs.i"

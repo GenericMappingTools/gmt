@@ -1,0 +1,95 @@
+%------------------------------------------
+%	$Id: GMT_Appendix_C.tex,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+%
+%	The GMT Documentation Project
+%	Copyright 2000-2001.
+%	Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+
+\chapter{Making \gmt\ Encapsulated \PS\ Files}
+\index{PostScript@\PS!encapsulated (EPS)}
+\index{EPS file}
+\thispagestyle{headings}
+
+\GMT\ can produce both freeform \PS\ files and the more
+restricted Encapsulated \PS\ files (EPS).  The former is
+intended to be sent to a printer or \PS\ previewer, while
+the latter is indended to be included in another document
+(but should also be able to print and preview).  You
+control what kind of \PS\ that \GMT\ produces by manipulating
+the PAPER\_MEDIA parameter (see the \GMTprog{gmtdefaults} man
+page for how this is accomplished).  Note that a freeform \PS\
+file may contain special operators (such as \texttt{Setpagedevice})
+that is specific to printers (e.g., selection of paper tray).
+Some previewers (among them, Sun's \progname{pageview}) do not
+understand these valid instructions and may fail to image the file.
+If this is your situation you should choose another viewer (we
+recommend \progname{ghostview}) or select EPS output instead.
+
+However, there is much confusion over what an EPS file is
+and if other programs can read it.  Much of this has to do
+with the claim by some software manufacturers that their
+programs can read and edit EPS files.  We used to get much
+mail from people asking us to let \GMT\ produce EPS files
+that can be read, e.g., by Adobe \progname{Illustrator}.
+This was a limitation of early versions of Adobe \progname{Illustrator} and
+similar programs, not \GMT!  Since then, Adobe
+\progname{Illustrator} and other programs have
+improved their abilities to parse freeform \PS\ such as that produced
+by \GMT.
+
+An EPS file that is to be placed into another application
+(such as a text document) need to have correct bounding-box
+parameters.  These are found in the \PS\ Document
+Comment \%\%BoundingBox.  Applications that generate EPS
+files should set these parameters correctly.  Because \GMT\
+makes the \PS\ files on the fly, often with several
+overlays, it is not possible to do so accurately.  However,
+\GMT\ does make an effort to ensure that the boundingbox is
+large enough to contain the entire composite plot\footnote{In contrast,
+regular \GMT\ \PS\ files simply have
+a \%\%BoundingBox that equal the size of the chosen paper.}.
+Therefore, if you need a ``tight'' boundingbox you need to post-process
+your \PS\ file.  There are several ways in which this
+can be accomplished.
+
+\begin{itemize}
+
+\item Programs such as Adobe \progname{Illustrator}, Aldus
+\progname{Freehand}, and Coral \progname{Draw} will allow you
+to edit the boundingbox graphically.
+
+\item A command-line alternative is to use freely-available
+program \progname{epstool} from the makers of Aladdin
+\progname{ghostscript}.  Running \\ 
+
+\indent \texttt{epstool –-c –-b yourplot.ps} \\ 
+
+should give a tight BoundingBox; \progname{epstool} assumes the plot
+is page size and not a huge poster.
+
+\item Another option is to use \progname{ps2epsi} which also comes
+with the \progname{ghostscript} package.  Running \\ 
+
+\indent \texttt{ps2epsi myplot.ps myplot.eps} \\
+
+should also do the trick.
+
+\end{itemize}
+
+If you do not want to modify the illustration but just
+include it in a text document: Many word processors (such
+as Microsoft \progname{Word} and Coral \progname{WordPerfect})
+will let you include
+a \PS\ file that you may place but not edit.  You won'’t
+be able to view the figure on-screen, but it will print
+correctly.  All illustrations in this \GMT\ documentation were
+\GMT-produced \PS\ files that were converted to EPS files
+using \progname{ps2epsi} and then included into a \LaTeX\ document. 
+
+These examples do not constitute endorsements of the products
+mentioned above; they only represent our limited experience
+with the problem.  For other solutions and further help,
+please post messages to
+\htmladdnormallink{gmthelp@soest.hawaii.edu}{mailto:gmthelp@soest.hawaii.edu}.

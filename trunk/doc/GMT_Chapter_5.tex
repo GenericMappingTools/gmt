@@ -1,0 +1,30 @@
+%------------------------------------------
+%	$Id: GMT_Chapter_5.tex,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+%
+%	The GMT Documentation Project
+%	Copyright 2000-2001.
+%	Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+\chapter{\gmt\ Projections}
+\thispagestyle{headings}
+
+\GMT\ programs that read position data will need to know how
+to convert the input coordinates to positions on the map.
+This is achieved by selecting one of several projections.
+The purpose of this section is to summarize the properties
+of map projections available in \GMT, what parameters define
+them, and demonstrate how they are used to create simple
+basemaps.  We will mostly be using the \GMTprog{pscoast}
+command and occasionally \GMTprog{psxy}.  (Our illustrations
+may differ from yours because of different settings in our
+\filename{.gmtdefaults} file.)  Note that while we will
+specify dimensions in inches (by appending {\bf i}), you may
+want to use cm ({\bf c}), meters ({\bf m}), or points ({\bf p})
+as unit instead (see \GMTprog{gmtdefaults} man page). 
+
+\input{GMT_Chapter_5.1}
+\input{GMT_Chapter_5.2}
+\input{GMT_Chapter_5.3}
+\input{GMT_Chapter_5.4}
+\input{GMT_Chapter_5.5}

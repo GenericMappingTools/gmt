@@ -1,0 +1,44 @@
+	$Id: README.segyprogs,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+
+pssegy: program to plot segy files in postscript.
+the code was developed following a devious route from several programs in the GMT and
+PASSCAL software releases. an explicit 1-bit depth bitmap (ie on/off) is generated
+from the seismic data including the ability to plot traces at true locations
+taken from offset, cdp, or a general byte location in the trace header.
+the postscript imagemask operator is used to display the bitmap
+rather than the more obvious image to make the bitmap transparent (ie plotting
+picks first then the seismic data will mean that the picks do not obscure the
+data, assuming this is desirable.) the code allows the shade of grey or colour
+that fills the bitmap to be specified, although note that you get a single shade
+throughout.  No current bugs are known.
+
+pssegyz: program to ploy segy files in 3-D in postscript.
+This is just an extension of pssegy which rather than plotting the seismic
+data in (x,y) space uses the GMT transformation routines to plot the
+data in (x,y,z) space, with z being the depth/time axis. 
+The code was generalized to allow plotting location to be based on any 
+(int*4) location in the SEGY trace header in both the x and y dimensions. 
+Note that as you increase the projection elevation there are an increasing
+number of pathological cases for variable area plotting and the code
+may well leave regions unshaded, or shade regions which should be transparent
+under those circumstances.
+
+Both codes have now been modified to cope with the variable
+trace length "SEGY" that programs like OMEGA apparently produce.
+These versions of the code was developed against GMT 3.3.1 headers
+and libraries, although it will probably work within a GMT 3.3 installation
+also.
+
+Authorship:
+
+The pssegy and pssegyz programs were written and are maintained by Tim Henstock,
+Timothy.J.Henstock@soc.soton.ac.uk, and I'm happy (well, not exactly happy
+since I think I got most of the bugs) to have reports of unexpected behaviour.
+The routines which read the SEGY data are modified from the IRIS/PASSCAL
+software distribution.
+
+Licensing:
+These programs are released without any warranty; they are free software
+and may be modified or redistributed under the terms of the GNU public license
+(see the file COPYING in the main GMT directory, or http://www.gnu.org)
+

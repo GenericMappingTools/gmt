@@ -1,0 +1,63 @@
+.TH BLOCKMODE l DATE
+.SH NAME
+blockmode \- filter to block average (x,y,z) data by mode estimation.
+.SH SYNOPSIS
+\fBblockmode\fP [ \fIxyz[w]file(s)\fP ] \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]]  
+\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP ] [ \fB\-N\fP ] [ \fB\-Q\fP ] [ \fB\-V\fP ] 
+[ \fB\-W\fP[\fBio\fP] ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+.SH DESCRIPTION
+\fBblockmode\fP reads arbitrarily located (x,y,z) triples [or optionally weighted
+quadruples (x,y,z,w)] from standard input [or \fIxyz[w]file(s)\fP] and writes to standard output mode estimates of position and
+value for every non-empty block in a grid region defined by the \fB\-R\fP and \fB\-I\fP arguments.
+Either \fBblockmean\fP, \fBblockmedian\fP, or \fBblockmode\fP should be used as a pre-processor before running \fBsurface\fP to avoid
+aliasing short wavelengths.  These routines are also  generally useful for decimating or averaging
+(x,y,z) data.  You can modify the
+precision of the output format by editing the D_FORMAT parameter in your .gmtdefaults file, or
+you may choose binary input and/or output using single or double precision storage.
+.TP
+\fIxyz[w]file(s)\fP
+3 [or 4] column ASCII file(s) [or binary, see \fB\-b\fP] holding (x,y,z[,w]) data values.  [w] is an optional weight for the data.
+If no file is specified, \fBblockmode\fP will read from standard input.
+#include "explain_-I.txt"
+#include "explain_-R.txt"
+.SH OPTIONS
+.sp
+#include "explain_-H.txt"
+Not used with binary data.
+.TP
+.B \-L
+Indicates that the x column contains longitudes, which may differ from the region
+in \fB\-R\fP by [multiples of] 360 degrees [Default assumes no periodicity].
+.TP
+.B \-N
+Block centers have pixel registration. [Default:  grid registration.]  (Registrations are defined in 
+GMT Cookbook Appendix B on grid file formats.)  Each block is the locus of points nearest the grid value 
+location.  For example, with \fB\-R\fP10/15/10/15 and and \fB\-I\fP1:  with the \fB\-N\fP option 10 <= 
+(x,y) < 11 is one of 25 blocks; without it 9.5 <= (x,y) < 10.5 is one of 36 blocks.
+.TP
+.B \-Q
+(Quicker) Finds mode z and mean (x, y) [Default finds mode x, mode y, mode z].
+#include "explain_-V.txt"
+.TP
+.B \-W
+Weighted modifier[s].  Unweighted input and output has 3 columns x,y,z; Weighted i/o has 4 columns x,y,z,w.
+Weights can be used in input to construct weighted modal values in blocks.  Weight sums can be reported in
+output for later combining several runs, etc.  Use \fB\-W\fP for weighted i/o, \fB\-Wi\fP for weighted input
+only, \fB\-Wo\fP for weighted output only.  [Default uses unweighted i/o]
+#include "explain_-t.txt"
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+[Default is 3 (or 4 if \fP\-W\fP is set) columns].
+#include "explain_-o.txt"
+.SH EXAMPLES
+To find 5 by 5 minute block mode estimates from the double precision binary data in hawaii_b.xyg and output an ASCII table, try
+.sp
+blockmode hawaii_b.xyg \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm \-bi\fP3 > hawaii_5x5.xyg
+.SH "SEE ALSO"
+.IR blockmean (l),
+.IR blockmedian (l),
+.IR gmt (l),
+.IR gmtdefaults (l),
+.IR nearneighbor (l),
+.IR surface (l),
+.IR triangulate (l)

@@ -1,0 +1,41 @@
+.TH BINLEGS l DATE
+.SH NAME
+binlegs \- Maintain the \fBGMT-SYSTEM\fP index files
+.SH SYNOPSIS
+\fBbinlegs \fIleglistfile\fP [ \fB\-R\fP ] [ \fB\-D\fP ] [ \fB\-P\fP\fIpath\fP ] [ \fB\-V\fP ]
+.SH DESCRIPTION
+binlegs will make changes to the \fBGMT-SYSTEM\fP files \fIgmt_legs.d\fP and \fIgmt_index.b\fP
+for the legs listed in the \fIleglistfile\fP.  Normally, only the data archivist will need to
+be concerned with these operations.
+.TP
+\fIleglistfile\fP 
+Contains the list of legs to be worked on.
+.SH OPTIONS
+No space between the option flag and the associated arguments
+.sp
+.TP
+.B \-R
+Replace the current information if a leg already is in the system.  [Default is append].
+.TP
+.B \-D
+Delete information for these legs from the system index files.
+.TP
+.B \-P
+Set the path to where the \fIgmt_legs.d\fP and \fIgmt_index.b\fP files reside.  [Default is the $GMTHOME/lib.mgg directory].
+#include "explain_-V.txt"
+.SH EXAMPLES
+To add new cruises to the system, try 
+.br
+.sp
+binlegs \fInewlegs.lis\fP \fB\-V\fR \fB\-P\fR\fI/usr/lib/gmt\fP
+.br
+.sp
+To remove bad legs from the system, try 
+.br
+.sp
+binlegs \fIbadlegs.lis\fP \fB\-D\fR \fB\-V\fR \fB\-P\fR\fI/usr/lib/gmt\fP
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR gmtlegs (l),
+.IR gmt2bin (l)
+#include "refs.i"

@@ -1,0 +1,80 @@
+.TH PSIMAGE l DATE
+.SH NAME
+psimage \- To plot SUN rasterfiles on maps
+.SH SYNOPSIS
+\fBpsimage\fP \fIrasterfile\fP [ \fB\-W\fP\fIxlength[/ylength]\fP | \fB\-E\fIdpi\fP ] [ \fB\-C\fIxpos/ypos\fP ] 
+[ \fB\-F\fP\fIpen\fP ] [ \fB\-G\fP[\fBf|b\fP]\fIr/g/b\fP ] [ \fB\-I\fP ] [ \fB\-K\fP ] [ \fB\-M\fP ] 
+[ \fB\-N\fInxrep/nyrep\fP] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-U\fP[\fIdx/dy/\fP][\fIlabel\fP] ] 
+[ \fB\-V\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ]
+.SH DESCRIPTION
+\fBpsimage\fP reads a 1, 8, 24, or 32-bit Sun rasterfile and plots it on a map.
+Image can be scaled arbitrarily, and 1-bit images can be (1) inverted, i.e.,
+black pixels (on) becomes white (off) and vice versa, or (2) colorized, by
+assigning different foreground and background colors, and (3) made transparent
+where one of back- or foreground is painted only. As an option,
+the user may choose to convert colorimages to grayscale using TV's YIQ-transformation.
+The user may also choose to replicate the image which, when preceeded by appropriate clip
+paths, may allow larger custom-designed fill patterns to be implemented (the \fB\-Gp\fP
+mechanism offered in most GMT programs is limited to rasters smaller than 146 by 146).
+.TP
+\fIrasterfile\fP
+This must be a Sun rasterfile.  Depth can be 1, 8, 24, or 32-bit. Old-style, Standard, Run-length-encoded, and
+RGB Sun rasterfiles are supported.  Other raster formats can be converted
+to Sun format via a variety of public-domain software (e.g., imconv, xv).
+.TP
+.B \-E
+Sets the dpi of the image in dots pr inch, or use \fB\-W\fP.
+.TP
+.B \-W
+Sets the size of the image.  If not given \fIylength\fP is set to \fIxlength\fP * (ny/nx).
+Alternatively, use \fB\-E\fP.
+.br
+.sp
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+.TP
+.B \-C
+Sets position of lower left corner of image [0/0].
+.TP
+.B \-F
+Draws a rectangular frame around the image with the given pen [no frame].
+.TP
+.B \-Gb
+Sets background color (replace white pixel) for 1-bit image templates.
+Use - for transparency (and set \fB\-Gf\fP to the desired color).
+.TP
+.B \-Gf
+Sets foreground color (replace black pixel) for 1-bit image templates.
+Use - for transparency (and set \fB\-Gb\fP to the desired color).
+.TP
+.B \-I
+Invert image before plotting (1-bit images only). This is what is done
+when you use \fB\-GP\fP in other GMT programs.
+#include "explain_-K.txt"
+.TP
+.B \-M
+Convert color image to monochrome grayshades using the (television) YIQ-transformation.
+.TP
+.B \-N
+Replicate the image \fInxrep\fP in x and \fInyrep\fP in y [Default is 1/1].
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+#include "explain_-XY.txt"
+#include "explain_-c.txt"
+.SH EXAMPLES
+To plot the image contained in the 8-bit rasterfile scanned_face.ras, scaling
+it to 8 by 10 cm, try
+.br
+.sp
+psimage scanned_face.ras \fB\-W\fP8\fBc\fP/10\fBc\fP > image.ps
+.br
+.sp
+To replicate the image template 1_bit.ras over a 5 by 5 inch area, colorize it, and setting
+each piece to be 1 by 1 cm, try
+.br
+.sp
+psimage 1_bit.ras \fB\-Gb\fP200/150/100 \fB\-Gf\fP100/50/30 \fB\-N\fP5\fBi\fP/5\fBi\fP \fB\-W\fP1\fBc\fP > image.ps
+.SH "SEE ALSO"
+.IR gmt (l)

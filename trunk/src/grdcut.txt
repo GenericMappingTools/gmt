@@ -1,0 +1,31 @@
+.TH GRDCUT l DATE
+.SH NAME
+grdcut \- Extract a subregion out of a \fI.grd\fP file
+.SH SYNOPSIS
+\fBgrdcut\fP \fIinput_file.grd\fP \fB\-G\fP\fIoutput_file.grd\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
+[ \fB\-V\fP ]
+.SH DESCRIPTION
+\fBgrdcut\fP will produce a new \fIoutput_file.grd\fP file which is a subregion of \fIinput_file.grd\fP.
+The subregion is specified with \fB\-R\fP\fIwest/east/south/north\fP as in other programs; the
+specified range must not exceed the range of \fIinput_file.grd\fP.  If in doubt, run \fBgrdinfo\fP
+to check range.  Complementary to \fBgrdcut\fP there is \fBgrdpaste\fP, which will join together two
+grdfiles along a common edge.
+.TP
+\fIinput_file.grd\fP
+this is the input \fI.grd\fP format file.
+.TP
+\fB\-G\fP\fIoutput_file.grd\fP
+this is the output \fI.grd\fP format file.
+#include "explain_-R.txt"
+This defines the subregion to be cut out.
+.SH OPTIONS
+#include "explain_-V.txt"
+.SH EXAMPLES
+Suppose you have used \fBsurface\fP to grid ship gravity in the region between 148E - 162E and 8N - 32N, and you 
+do not trust the gridding near the edges, so you want to keep only the area between 150E - 160E and 10N - 30N, then: 
+.sp
+grdcut grav_148_162_8_32.grd \fB\-G\fPgrav_150_160_10_30.grd \fB\-R\fP150/160/10/30 \fB\-V\fP
+.SH "SEE ALSO"
+.IR grdpaste (l),
+.IR grdinfo (l),
+.IR gmt (l)

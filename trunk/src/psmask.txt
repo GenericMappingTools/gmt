@@ -1,0 +1,94 @@
+.TH PSMASK l DATE
+.SH NAME
+psmask \- To clip or mask areas of no data on a map
+.SH SYNOPSIS
+\fBpsmask\fP [\fIxyzfile\fP] \fB\-I\fP\fIdx\fP[\fBm|c\fP][\fI/dy\fP[\fBm|c\fP]] \fB\-J\fP\fIparameters\fP 
+\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-B\fP\fItickinfo\fP ]  
+[ \fB\-D\fP\fIdumpfile\fP ] [ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-F\fP ] 
+[ \fB\-G\fP\fIfill\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-K\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP ] [ \fB\-O\fP ] 
+[ \fB\-P\fP ] [ \fB\-S\fP\fIradius\fP[\fBk\fP] ] [ \fB\-T\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
+[ \fB\-V\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ]  [ \fB\-:\fP ] 
+[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+.br
+.sp
+\fBpsmask\fP \fB\-C\fP [ \fB\-K\fP ] [ \fB\-O\fP ]
+.SH DESCRIPTION
+\fBpsmask\fP reads a (x,y,z) file [or standard input] and uses this information to find out
+which grid cells are reliable.  Only gridcells which have one or more data points are considered
+reliable.  As an option, you may specify a radius of influence. Then, all gridcells that are
+within \fIradius\fP of a data point are considered reliable.  Furthermore, an option is provided to
+reverse the sense of the test.  Having found the reliable/not reliable points, \fBpsmask\fP will
+either paint tiles to mask these nodes (with the \fB\-T\fP) switch, or use contouring to create
+polygons that will clip out regions of no interest.  When clipping is initiated, it will stay in
+effect until turned off by a second call to \fBpsmask\fP using the \fB\-C\fP option.
+.TP
+\fIxyzfile\fP
+File with (x,y,z) values (e.g., that was used to run \fBsurface\fP).  If no file
+is given, standard input is read.  For binary files, see \fB\-b\fP.
+#include "explain_-I.txt"
+#include "explain_-j.txt"
+#include "explain_-R.txt"
+.SH OPTIONS
+No space between the option flag and the associated arguments
+.sp
+#include "explain_-b.txt"
+.TP
+.B \-C
+Mark end of existing clip path.  No input file is needed.  Implicitly sets \fB\-O\fP.
+.TP
+.B \-D
+Dumps out the resulting clipping polygons to disk.  Ignored if \fB\-T\fP is set.
+If no dumpprefix is given we use mask (Files will be called mask_*.d).
+.TP
+.B \-E
+Sets the viewpoint's azimuth and elevation for perspective plots [180/90]
+.TP
+.B \-F
+Force pixel registration.  [Default is grid registration].
+.TP
+.B \-G
+Paint the clip polygons [or tiles] with selected fill [Default is no fill].
+#include "explain_-g.txt"
+#include "explain_-H.txt"
+Not used with binary data.
+#include "explain_-K.txt"
+#include "explain_-M.txt"
+.TP
+.B \-N
+Invert the sense of the test, i.e. clip regions where there is data coverage.
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+.TP
+.B \-S
+Sets radius of influence. Grid nodes within \fIradius\fP of a data point are considered reliable. [Default is 0, which
+means that only grid cells with data in them are reliable].  Append \fBk\fP to indicated km,
+also implying that \fB\-R \-I\fP are in degrees.
+.TP
+.B \-T
+Plot tiles instead of clip polygons (Only works with \fB\-Jx\fP, \fB\-Jj\fP, \fB\-Jm\fP, \fB\-Jq\fP, and \fB\-Jy\fP).
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+#include "explain_-XY.txt"
+#include "explain_-t.txt"
+#include "explain_-c.txt"
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+[Default is 2 input columns].
+.SH EXAMPLES
+To make an overlay \fIPostScript\fP file that will mask out the regions of a contour map
+where there is no control data using clip polygons, try:
+.br
+.sp
+psmask africa_grav.xyg \fB\-R\fP20/40/20/40 \fB\-I\fP5\fBm \-J\fPM10\fBi\fP \fB\-O \-K\fP > mask.ps
+.br
+.sp
+The same example but this time we use tiling:
+.br
+.sp
+psmask africa_grav.xyg \fB\-R\fP20/40/20/40 \fB\-I\fP5\fBm \-J\fPM10\fBi\fP \fB\-T \-O \-K\fP > mask.ps
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grdmask (l),
+.IR surface (l),
+.IR psbasemap (l),
+.IR psclip (l)

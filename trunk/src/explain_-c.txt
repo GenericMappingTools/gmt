@@ -1,0 +1,3 @@
+.TP
+.B \-c
+Specifies the number of plot copies. [Default is 1]
