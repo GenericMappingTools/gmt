@@ -2,7 +2,7 @@
 .SH NAME
 gmtmath \- Reverse Polish Notation calculator for data tables
 .SH SYNOPSIS
-\fBgmtmath\fP [ \fB\-C\fP\fIcols\fP ] [ \fB\-H\fP\fInrec\fP ] [ \fB\-N\fP\fIn_col\fP/\fIt_col\fP ] [ \fB\-Q\fP ] 
+\fBgmtmath\fP [ \fB\-A\fP\fIt_f(t).d\fP ] [ \fB\-C\fP\fIcols\fP ] [ \fB\-H\fP\fInrec\fP ] [ \fB\-N\fP\fIn_col\fP/\fIt_col\fP ] [ \fB\-Q\fP ] 
  [ \fB\-S\fP ][ \fB\-T\fP\fIt_min/t_max/t_inc\fP|\fItfile\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
 [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] 
 \fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] \fBOPERATOR\fP ... \fB=\fP [ \fIoutfile\fP ]
@@ -40,6 +40,11 @@ The following symbols have special meaning:
 \fBT \fP	Table with t-coordinates
 .br
 .SH OPTIONS
+.TP
+.B \-A
+Requires \fB\-N\fP and will partially initialize a table with values from the given file containing
+\fIt\fP and \fIf(t)\fP only.  The \fIt\fP is placed in column \fIt_colfP while \fIf(t)\fP goes into
+column \fIn_col\fP - 1 (see \fB\-N\fP).
 .TP
 .B \-C
 Select the columns that will be operated on until next occurrence of \fB\-C\fP.
@@ -125,7 +130,7 @@ augmented matrix [ A | b ] and you want the least squares solution x to the matr
 The operator \fBLSQFIT\fP does this; it is your job to populate the matrix correctly first.  The \fB\-A\fP
 option will facilitate this.  Suppose you have a 2-column file ty.d with \fIt\fP and \fIb(t)\fP and you would
 like to fit a the model y(t) = a + b*t + c*H(t-t0), where H is the Heaviside step function for a given t0 = 1.55.
-Then, you need a 4-column augmented table loaded with t in column 1 and your observed y(t) in column 3.
+Then, you need a 4-column augmented table loaded with t in column 0 and your observed y(t) in column 3.
 The calculation becomes
 .br
 .sp
