@@ -1,4 +1,4 @@
-/*	$Id: x_update.c,v 1.3 2005-03-04 00:48:32 pwessel Exp $
+/*	$Id: x_update.c,v 1.4 2005-03-06 16:04:00 remko Exp $
  *
  * XUPDATE will read a xover.d-file that contains a series of crossovers. The first
  * record contains leg1 year1 leg2 year2, and the next n records has all the
@@ -74,7 +74,7 @@ int main (int argc, char *argv[])
 	BOOLEAN internal;		/* TRUE if leg1 == leg2 */
 	BOOLEAN error = FALSE, ok, verbose = FALSE, warning = FALSE;
 
-	struct LEG *leg1, *leg2;
+	struct LEG *leg1, *leg2 = VNULL;
   
 	fp = NULL;
 	for (i = 1; !error && i < argc; i++) {
@@ -198,7 +198,7 @@ int main (int argc, char *argv[])
 
 		/* Copy this info to xx_base.b */
 
-		sprintf (header,"%s %s %10d\0", lega, legb, n_x);
+		sprintf (header,"%s %s %10d", lega, legb, n_x);
 		if (fwrite ((void *)header, REC_SIZE, (size_t)1, fxb) != (size_t)1) {
 			fprintf(stderr,"x_update : Write header error at rec %d\n", n_rec);
 			exit (EXIT_FAILURE);
@@ -222,7 +222,7 @@ int main (int argc, char *argv[])
 		}
 		else {	/* External */
 			for (j = 0; j < 3; j++) {
-			
+
 				/* First, get old sum and sum-of-squares for both legs */
 				tmpsum_1 = leg1->mean_gmtext[j] * leg1->n_gmtext[j];
 				tmpsum2_1 = (leg1->n_gmtext[j]-1)*leg1->st_dev_gmtext[j]*leg1->st_dev_gmtext[j] +
@@ -230,9 +230,9 @@ int main (int argc, char *argv[])
 				tmpsum_2 = leg2->mean_gmtext[j] * leg2->n_gmtext[j];
 				tmpsum2_2 = (leg2->n_gmtext[j]-1)*leg2->st_dev_gmtext[j]*leg2->st_dev_gmtext[j] +
 					leg2->mean_gmtext[j] * tmpsum_2;
-				
+
 				/* Then, recompute nxs, means, and st.devs */
-			
+
 				leg1->n_gmtext[j] += n_x_gmt[j];
 				leg2->n_gmtext[j] += n_x_gmt[j];
 				leg1->mean_gmtext[j] = (leg1->n_gmtext[j]) ?
@@ -261,7 +261,7 @@ int main (int argc, char *argv[])
 	/* Write first rec for next time x_update is used */
 
 	fseek (fxb, 0L, SEEK_SET);
-	sprintf(header,"%10d xx_base.b header\0",n_rec);
+	sprintf(header,"%10d xx_base.b header",n_rec);
 	if (fwrite((void *)header,REC_SIZE, (size_t)1, fxb) != (size_t)1) {
 		fprintf(stderr,"x_update : Write header error for n_rec = %d\n",n_rec);
 		exit (EXIT_FAILURE);

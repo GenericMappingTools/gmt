@@ -1,4 +1,4 @@
-/*	$Id: x_solve_dc_drift.c,v 1.5 2005-03-04 00:48:32 pwessel Exp $
+/*	$Id: x_solve_dc_drift.c,v 1.6 2005-03-06 16:04:00 remko Exp $
  *
  * x_solve_dc_drift reads the xx_* databases and computes the best
  * fitting drift and dc values using a least squares method.
@@ -50,13 +50,14 @@ int main (int argc, char **argv)
 	int n_x, id_1, id_2, test_area = FALSE, do_gmt[3];
 	double t_1, t_2, xover, div, drift_inc, dc_inc;
 	double west = 0.0, east = 360.0, south = -90.0, north = 90.0;
-	int west_i, east_i, south_i, north_i, lon_i, bin_on = FALSE, asc_on = FALSE, verbose = FALSE;
+	int west_i = 0, east_i = 0, south_i = 0, north_i = 0, lon_i;
+	BOOLEAN bin_on = FALSE, asc_on = FALSE, verbose = FALSE;
 	char lfile[80], file[80], header[REC_SIZE], lega[10], legb[10], string[10], filea[80], fileb[80], type[3], line[BUFSIZ];
 	FILE *fpl = NULL, *fpb = NULL, *fpi = NULL, *fpbin = NULL, *fpasc = NULL, *fpu = NULL;
-	
+
 	do_gmt[0] = do_gmt[1] = do_gmt[2] = FALSE;
 	type[0] = 'G';	type[1] = 'M';	type[2] = 'T';
-	
+
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-') {
 			switch (argv[i][1]) {
@@ -138,7 +139,7 @@ int main (int argc, char **argv)
 		north_i = (int) ceil (north * 1.0E6);
 	}
 	if (!bin_on && !asc_on) error = TRUE;
-	
+
 	if (argc == 1 || error) {
 		fprintf(stderr, "x_solve_dc_drift - Find crossover correction terms\n\n");
 		fprintf(stderr, "usage: x_solve_dc_drift [-X<xbasefile>] [-L<xlegsfile>] [-I<ignore-file>\n");
@@ -157,7 +158,7 @@ int main (int argc, char **argv)
 		fprintf(stderr, "	-A will write a ASCII output correction file\n");
 		fprintf(stderr, "	  Specify at least one of -A and -B\n");
 		fprintf(stderr, "	-V means verbose\n");
-		
+
 		exit (EXIT_FAILURE);
 	}
 	/* Read the ignore-legs file if needed */
@@ -172,7 +173,7 @@ int main (int argc, char **argv)
 		}
 		fclose (fpi);
 	}
-	
+
 	/* Read the uselegs file if needed */
 	if (fpu != NULL) {
 		while (fgets (line, BUFSIZ, fpu)) {
@@ -185,17 +186,17 @@ int main (int argc, char **argv)
 		}
 		fclose (fpu);
 	}
-	
+
 	/* Read xx_legs.b file */
 	i = 0;
 	while (fread ((void *)&leg[i], legsize, 1, fpl) == 1) i++;
 	fclose (fpl);
 	nlegs = i;
-	
+
 	/* Start the iterative least squares solution */
 	ok = TRUE;
 	if (!(do_gmt[0] || do_gmt[1] || do_gmt[2])) do_gmt[0] = do_gmt[1] = do_gmt[2] = TRUE;	/* Default is do all 3 data types */
-	
+
 	if (!reset) {	/* Use the previously found dc/drift values as startvalues */
 		for (i = 0; i < nlegs; i++) {
 			for (j = 0; j < 3; j++) {
@@ -205,7 +206,7 @@ int main (int argc, char **argv)
 			}
 		}
 	}
-	
+
 	for (i = 0; i < nlegs; i++) {	/* Initialize counters */
 		for (j = 0; j < 3; j++) {	/* For each data-type g/m/b */
 			if (!do_gmt[j]) continue;
@@ -213,9 +214,9 @@ int main (int argc, char **argv)
 			legsum_n[i][j] = 0;
 		}
 	}
-	
+
 	if (verbose) fprintf(stderr, "x_solve_dc_drift: Starts iterating\n");
-	
+
 	while (ok) {
 		iteration++;
 		for (i = 0; i < nlegs; i++) {	/* Initialize counters */
@@ -224,16 +225,16 @@ int main (int argc, char **argv)
 				legsum_x[i][j] = legsum_tx[i][j] = 0.0;
 			}
 		}
-		
+
 		for (j = 0; j < 3; j++) {	/* Initialize total counters */
 			if (!do_gmt[j]) continue;
 			n[j] = 0;
 			sum[j] = 0.0;
 			sum2[j] = 0.0;
 		}
-		
+
 		fseek (fpb, (long int)REC_SIZE, SEEK_SET);
-		
+
 		while (fread ((void *)header, REC_SIZE, 1, fpb) == 1) {
 			sscanf(header, "%s %s %d",lega, legb, &n_x);
 			if (!strcmp(lega, legb)) {	/* Internal crossovers, skip this pair */
@@ -248,8 +249,8 @@ int main (int argc, char **argv)
 				fseek (fpb, (long int)(n_x*REC_SIZE), SEEK_CUR);
 				continue;
 			}
-			
-				
+
+
 			if ((id_1 = get_id (lega)) == -1) {
 				fprintf(stderr, "xsolve_dc_shift: Leg %s not found!\n", lega);
 				exit (EXIT_FAILURE);
@@ -258,7 +259,7 @@ int main (int argc, char **argv)
 				fprintf(stderr, "xsolve_dc_shift: Leg %s not found!\n", legb);
 				exit (EXIT_FAILURE);
 			}
-			
+
 			for (j = 0; j < 3; j++) {	/* Set this pairs tmp-counters to zero */
 				if (!do_gmt[j]) continue;
 				sum_n[j]   = 0;
@@ -267,9 +268,9 @@ int main (int argc, char **argv)
 				sum_tt1[j] = sum_tt2[j] = 0.0;
 				sum_t1x[j] = sum_t2x[j] = 0.0;
 			}
-			
+
 			/* Sum up the statistics for these crossovers */
-			
+
 			for (i = 0; i < n_x; i++) {
 				fread ((void *)&crossover, REC_SIZE, 1, fpb);
 				if (test_area) { /* Must see if xover is inside the area specified */
@@ -302,7 +303,7 @@ int main (int argc, char **argv)
 					}
 				}
 			}
-			
+
 			for (j = 0; j < 3; j++) {	/* Add this info to each leg's totals */
 				if (!do_gmt[j]) continue;
 				if (iteration == 1) {
@@ -319,9 +320,9 @@ int main (int argc, char **argv)
 				legsum_tx[id_2][j] += sum_t2x[j];
 			}
 		}
-		
+
 		/* Solve for the best-fitting regression lines for each leg and datatype */
-		
+
 		for (i = 0; i < nlegs; i++) {
 			for (j = 0; j < 3; j++) {
 				if (!do_gmt[j]) continue;
@@ -337,7 +338,7 @@ int main (int argc, char **argv)
 				}
 			}
 		} 
-		
+
 		for (j = 0; j < 3; j++) {
 			if (!do_gmt[j]) continue;
 			if (n[j] > 1) {
@@ -345,13 +346,13 @@ int main (int argc, char **argv)
 				stdev[j] = sqrt((sum2[j] - mean[j]*sum[j])/(n[j]-1.));
 			}
 		}
-		
+
 		printf("Before iteration # %d we have:\n", iteration);
 		for (j = 0; j < 3; j++) {
 			if (!do_gmt[j]) continue;
-			printf("%c >>> Mean: %8.3lf St.Deviation: %8.3lf n: %6d\n", type[j], mean[j], stdev[j], n[j]);
+			printf("%c >>> Mean: %8.3f St.Deviation: %8.3f n: %6d\n", type[j], mean[j], stdev[j], n[j]);
 		}
-		
+
 		if (n_iterations == 0) {
 			printf ("One more iteration?: ");
 			fgets (string, sizeof (string), stdin);
@@ -360,11 +361,11 @@ int main (int argc, char **argv)
 		else if (iteration >= n_iterations)
 			ok = FALSE;
 	}
-	
+
 	/* Write out the new xx_legs.b file */
-	
+
 	if (verbose) fprintf (stderr, "x_solve_dc_drift: Creates new xx_legs.b file\n");
-	
+
 	for (i = 0; i < nlegs; i++) {
 		for (j = 0; j < 3; j++) {
 			if (!do_gmt[j]) continue;
@@ -373,7 +374,7 @@ int main (int argc, char **argv)
 		}
 	}
 	if (reset) {
-		sprintf(file,"%s_old\0", lfile);
+		sprintf(file,"%s_old", lfile);
 		if (rename (lfile, file))
 			fprintf (stderr, "Could not rename %s to %s. Left as is.\n", file, lfile);
 		else {
@@ -383,9 +384,9 @@ int main (int argc, char **argv)
 			fclose(fpl);
 		}
 	}
-	
+
 	/* Create correction file(s) */
-	
+
 	if (bin_on) {
 		fpbin = fopen(fileb, "wb");
 		if (verbose) fprintf (stderr, "x_solve_dc_drift: Create binary correction file %s\n", fileb);
@@ -395,7 +396,7 @@ int main (int argc, char **argv)
 		if (verbose) fprintf (stderr, "x_solve_dc_drift: Create ASCII correction file %s\n", filea);
 		fprintf (fpasc, "leg\tyear\td.c.-G\tdrift-G\td.c.-M\tdrift-M\td.c.-T\tdrift-T\n");
 	}
-	
+
 	for (i = 0; i < nlegs; i++) {
 		if (nbadlegs > 0 && findbad (leg[i].name)) continue;
 		if (nuselegs > 0 && !finduse (leg[i].name)) continue;
@@ -410,7 +411,7 @@ int main (int argc, char **argv)
 			fwrite ((void *)&bin, binsize, 1, fpbin);
 		}
 		if (asc_on) {	/* Use ASCII output format */
-			fprintf (fpasc, "%s\t%d\t%.2lf\t%lg\t%.2lf\t%lg\t%.2lf\t%lg\n",
+			fprintf (fpasc, "%s\t%d\t%.2f\t%g\t%.2f\t%g\t%.2f\t%g\n",
 				leg[i].name,
 				leg[i].year,
 				leg[i].dc_shift_gmt[0],
@@ -430,7 +431,7 @@ int main (int argc, char **argv)
 int get_id (char *name)
 {
 	int left, right, mid, cmp;
-	
+
 	left = 0;
 	right = nlegs-1;
 	while (left <= right) {
@@ -449,7 +450,7 @@ int get_id (char *name)
 int findbad (char *name)
 {
 	int left, right, mid, cmp;
-	
+
 	left = 0;
 	right = nbadlegs-1;
 	while (left <= right) {
@@ -468,7 +469,7 @@ int findbad (char *name)
 int finduse (char *name)
 {
 	int left, right, mid, cmp;
-	
+
 	left = 0;
 	right = nuselegs-1;
 	while (left <= right) {

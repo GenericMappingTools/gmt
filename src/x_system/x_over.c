@@ -1,4 +1,4 @@
-/*	$Id: x_over.c,v 1.4 2005-03-04 00:48:32 pwessel Exp $
+/*	$Id: x_over.c,v 1.5 2005-03-06 16:04:00 remko Exp $
  *
  * X_OVER will compute cross-overs between 2 legs (or internal cross-overs
  * if both legs are the same) and write out time,lat,lon,cross-over values,
@@ -103,7 +103,7 @@ int main (int argc, char *argv[])
   int arg, block, mode, i;		/* Misc. counters */
 
   BOOLEAN shift_lon = FALSE;	/* TRUE if areas cross datumline */
-  BOOLEAN internal;		/* TRUE if leg1 = leg2 */
+  BOOLEAN internal = FALSE;	/* TRUE if leg1 = leg2 */
   BOOLEAN x_flag;		/* TRUE if crossover is found */
   BOOLEAN error = FALSE;	/* TRUE for invalid arguments */
   BOOLEAN verbose = FALSE;	/* Work in silence */
@@ -217,7 +217,7 @@ int main (int argc, char *argv[])
     	strcpy (legname[0], legname[1]);
     	strcpy (legname[1], tmp);
     }
-    	
+    
   }
 
   gmtmggpath_init();
@@ -459,7 +459,7 @@ int main (int argc, char *argv[])
     	        xm[1][leg] = grid_section[1][sct[leg]][blk[leg]][leg_no[leg]];
     	        ym[0][leg] = grid_section[2][sct[leg]][blk[leg]][leg_no[leg]];
     	        ym[1][leg] = grid_section[3][sct[leg]][blk[leg]][leg_no[leg]];
-          	if (xm[0][leg] > xm[1][leg]) xm[0][leg] = xm[1][leg];	
+          	if (xm[0][leg] > xm[1][leg]) xm[0][leg] = xm[1][leg];
           	if (ym[0][leg] > ym[1][leg]) ym[0][leg] = ym[1][leg];
               }
               if (over_lap(xm,ym)) {

@@ -1,5 +1,5 @@
 /*
- *	$Id: x_list.c,v 1.3 2005-03-04 00:48:32 pwessel Exp $
+ *	$Id: x_list.c,v 1.4 2005-03-06 16:04:00 remko Exp $
  *
  * XLIST produces ASCII listings of cross-over info. The xx_base.b-file
  * contains longitude(x), latitude(y), time1(t1), time2(t2),  heading1(h),
@@ -57,14 +57,14 @@ int main (int argc, char *argv[])
 	double lat, lon , xgrv, xmag, xtop, grv, mag, top, t1, t2;
 	double west = 0., east = 360., south = -90., north = 90.;
 	FILE *fp = NULL, *fpc = NULL, *fpi = NULL;
-	
+
 	struct XOVERS crossover;
-	
+
 	error = FALSE;
 	g = m = b = FALSE;
-	
+
 	/* Check and interpret the command line arguments */
-	
+
 	for (i =1; !error && i < argc; i++) {
 		if (argv[i][0] == '-') {
 			for (j = 1; argv[i][j]; j++) {
@@ -158,9 +158,9 @@ int main (int argc, char *argv[])
 				error = TRUE;
 		}
 	}
-	
+
 	/* Check that the options selected are mutually consistent */
-	
+
 	if (east < west || south > north) error = TRUE;
 	if (west < 0.0) {
 		west += 360.0;
@@ -223,7 +223,7 @@ int main (int argc, char *argv[])
 		fclose(fpc);
 		nlegs = i;
 	}
-			
+
 	/* Read the ignore-legs file if needed */
 	if (fpi != NULL) {
 		while (fgets (line, BUFSIZ, fpi)) {
@@ -232,10 +232,10 @@ int main (int argc, char *argv[])
 		}
 		fclose(fpi);
 	}
-	
-		
+
+
 	/* Sort the  order in which the parameters appear */
-	
+
 	if (nval == 0) {		/* Nothing selected, default used */
 		g = m = b = TRUE;	/* No data was specified so default is used */
 		for (i = 0; i < 12; i++)
@@ -249,11 +249,11 @@ int main (int argc, char *argv[])
 	}
 
 	/* Read first record of file containing n_records */
-		
+
 	fread ((void *)header, REC_SIZE, (size_t)1, fp);
 	ok = fread ((void *)header, REC_SIZE, (size_t)1, fp);
-	
-		
+
+
 	if (SH_format) {
 		/* Write out header record */
 		for (i = 0; i < nval; i++) {
@@ -301,11 +301,11 @@ int main (int argc, char *argv[])
 				printf ("\n");
 		}
 	}
-	
+
 	/* Start reading data from file */
 
 	once = (inter && legchoice) || (nlegs_in == 2);
-		
+
 	while (ok) {
 		sscanf(header, "%s %s %d",lega, legb, &n_x);
 		internal = !strcmp(lega, legb);
@@ -342,9 +342,9 @@ int main (int argc, char *argv[])
 				if (strike == 3) continue;
 				lat = (double) crossover.lat*0.000001;
 				lon = (double) crossover.lon*0.000001;
-					
+
 				/* Check is lat/lon is outside specified area */
-		
+
 				if (lat < south || lat > north) continue;
 				while (lon < west) lon += 360.0;
 				if (lon > east) continue;
@@ -361,10 +361,10 @@ int main (int argc, char *argv[])
 							break;
 						case 1:	/* Print out longitude */
 							if (lon > 360.0) lon -= 360.0;
-							printf ("%.6lg", lon);
+							printf ("%.6g", lon);
 							break;
 						case 2:	/* Print out latitude */
-							printf ("%.6lg",lat);
+							printf ("%.6g",lat);
 							break;
 						case 3:	/* Print out gravity cross-over */
 							if (crossover.x_val[0] == NODATA)
@@ -374,7 +374,7 @@ int main (int argc, char *argv[])
 								if (shift_ok) xgrv -= bin[id1]->dc_shift_gmt[0] + bin[id1]->drift_rate_gmt[0] * t1 
 								- bin[id2]->dc_shift_gmt[0] - bin[id2]->drift_rate_gmt[0] * t2;
 								if (swap) xgrv = -xgrv;
-		 						printf ("%.2lg", xgrv);
+		 						printf ("%.2g", xgrv);
 		 					}
 		 					break;
 						case 4:	/* Print out magnetics cross-over */
@@ -406,7 +406,7 @@ int main (int argc, char *argv[])
 								grv = crossover.gmt[0];
 								if (shift_ok) grv -= bin[id1]->dc_shift_gmt[0] + bin[id1]->drift_rate_gmt[0] * t1 
 								- bin[id2]->dc_shift_gmt[0] - bin[id2]->drift_rate_gmt[0] * t2;
-		 						printf ("%.2lg", grv);
+		 						printf ("%.2g", grv);
 		 					}
 		 					break;
 						case 7:	/* Print out magnetics */
@@ -462,7 +462,7 @@ int main (int argc, char *argv[])
 int get_id (char *name)
 {
 	int left, right, mid, cmp;
-	
+
 	left = 0;
 	right = nlegs-1;
 	while (left <= right) {
@@ -481,7 +481,7 @@ int get_id (char *name)
 int findleg (char *name)
 {
 	int left, right, mid, cmp;
-	
+
 	left = 0;
 	right = nbadlegs-1;
 	while (left <= right) {

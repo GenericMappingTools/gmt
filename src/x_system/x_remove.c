@@ -1,4 +1,4 @@
-/*	$Id: x_remove.c,v 1.2 2005-03-04 00:48:32 pwessel Exp $
+/*	$Id: x_remove.c,v 1.3 2005-03-06 16:04:00 remko Exp $
  *
  * XREMOVE will read a list of bad legs from a file, and then remove all
  * trace of these files from the x_system data base files. New x_system files
@@ -34,10 +34,10 @@ int get_id (char *name);
 int main (int argc, char **argv)
 {
 	FILE *fpb = NULL, *fpl = NULL, *fpr = NULL, *fpl2, *fpb2;
-	int i, j, n_x, error, id1, id2, internal, ok, nrecs = 1, verbose = FALSE;
+	int i, j, n_x, error = FALSE, id1, id2, internal, ok, nrecs = 1, verbose = FALSE;
 	char header[BUFSIZ], lega[10], legb[10], line[BUFSIZ];
 	double mean;
-	
+
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-') {
 			switch (argv[i][1]) {
@@ -58,7 +58,7 @@ int main (int argc, char **argv)
 		else
 			fpr = fopen (argv[i], "r");
 	}
-	
+
 	if (fpr == NULL) error = TRUE;
 	if (argc == 1 || error) {
 		fprintf(stderr, "xremove - Remove selected info from xover database\n\n");
@@ -69,7 +69,7 @@ int main (int argc, char **argv)
 		fprintf(stderr, "	-V Verbose, report when removing a leg\n");
 		exit (EXIT_FAILURE);
 	}
-	
+
 	if (fpb == NULL && (fpb = fopen("xx_base.b","rb")) == NULL) {
 		fprintf (stderr, "Could not find xx_base.b\n");
 		exit (EXIT_FAILURE);
@@ -78,9 +78,9 @@ int main (int argc, char **argv)
 		fprintf (stderr, "Could not find xx_legs.b\n");
 		exit (EXIT_FAILURE);
 	}
-	
+
 	/* Read all the leg info into memory */
-	
+
 	nlegs = 0;
 	while (fread ((void *)(&leg[nlegs]), legsize, (size_t)1, fpl) == (size_t)1) {
 		for (j = 0; j < 3; j++) {
@@ -98,7 +98,7 @@ int main (int argc, char **argv)
 		}
 	}
 	fclose (fpl);
-	
+
 	while (fgets (line, BUFSIZ, fpr)) {
 		sscanf (line, "%s", badlegs[nbadlegs]);
 		nbadlegs++;
@@ -108,7 +108,7 @@ int main (int argc, char **argv)
 		}
 	}
 	fclose (fpr);
-	
+
 	if ((fpb2 = fopen("xx_base.b_new", "wb")) == NULL) {
 		fprintf (stderr, "Could not create xx_base.b_new\n");
 		exit (EXIT_FAILURE);
@@ -186,29 +186,29 @@ int main (int argc, char **argv)
 		ok = fread ((void*)header, REC_SIZE, (size_t)1, fpb);
 	}
 	fclose (fpb);
-	sprintf (header, "%10d xx_base.b header\0", nrecs);
+	sprintf (header, "%10d xx_base.b header", nrecs);
 	fseek (fpb2, 0L, SEEK_SET);
 	if (fwrite ((void *)header, REC_SIZE, (size_t)1, fpb2) != (size_t)1) {
 		fprintf (stderr, "xremove: Write error on xx_base.b\n");
 		exit (EXIT_FAILURE);
 	}
 	fclose (fpb2);
-	
+
 	if (verbose) fprintf (stderr, "xremove: New xx_legs.b-file created successfully\n");
-	
+
 	for (i = 0; i < nlegs; i++) {
 		if (findleg (leg[i].name)) continue;
-		
+
 		for (j = 0; j < 3; j++) {
 			/* Compute statistics for internal crossovers */
-		
+
 			mean = (leg[i].n_gmtint[j]) ? leg[i].mean_gmtint[j] / leg[i].n_gmtint[j] : 0.0;
 			leg[i].st_dev_gmtint[j] = (leg[i].n_gmtint[j] > 1) ? 
 				sqrt((leg[i].st_dev_gmtint[j]-mean*leg[i].mean_gmtint[j])/(leg[i].n_gmtint[j]-1)) : 0.0;
 			leg[i].mean_gmtint[j] = mean;
-		
+
 			/* Same for external crossovers */
-		
+
 			mean = (leg[i].n_gmtext[j]) ? leg[i].mean_gmtext[j] / leg[i].n_gmtext[j] : 0.0;
 			leg[i].st_dev_gmtext[j] = (leg[i].n_gmtext[j] > 1) ?
 				sqrt((leg[i].st_dev_gmtext[j]-mean*leg[i].mean_gmtext[j])/(leg[i].n_gmtext[j]-1)) : 0.0;
@@ -223,11 +223,11 @@ int main (int argc, char **argv)
 	if (verbose) fprintf (stderr, "xremove: New xx_legs.b-file created successfully\n");
 	exit (EXIT_SUCCESS);
 }
-          	
+          
 int findleg (char *name)
 {
 	int left, right, mid, cmp;
-	
+
 	left = 0;
 	right = nbadlegs-1;
 	while (left <= right) {
@@ -246,7 +246,7 @@ int findleg (char *name)
 int get_id (char *name)
 {
 	int left, right, mid, cmp;
-	
+
 	left = 0;
 	right = nlegs-1;
 	while (left <= right) {
