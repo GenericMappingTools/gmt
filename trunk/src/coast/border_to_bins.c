@@ -1,5 +1,5 @@
 /*
- *	$Id: border_to_bins.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: border_to_bins.c,v 1.2 2004-09-05 04:13:30 pwessel Exp $
  */
 /* border_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -10,7 +10,6 @@
 #include "wvs.h"
 
 #define BSIZE (DEGREES * 60)		/* in minutes.  Assumed to devide nicely into 60 (e.g, 60, 30, 15, ...) */
-#define MILL (1000000)
 #define BIN_NX ((360 * 60) / BSIZE)
 #define BIN_NY ((180 * 60) / BSIZE)
 #define B_WIDTH ((MILL * BSIZE) / 60)		/* Bin width in micro-degrees */
