@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.55 2001-10-16 19:29:33 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.56 2001-10-17 00:30:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -911,7 +911,7 @@ int GMT_loaddefaults (char *file)
 	GMT_backwards_compatibility ();
 	if (gmtdefs.ps_heximage % 2) gmtdefs.page_orientation += 4;
 	if (gmtdefs.ps_heximage > 1) gmtdefs.page_orientation += 512;
-	GMT_verify_encodings ();
+	if (!strstr (GMT_program, "gmtset")) GMT_verify_encodings ();
 
 	if (error) fprintf (stderr, "GMT:  %d conversion errors in file %s!\n", error, file);
 	
@@ -948,7 +948,6 @@ void GMT_setdefaults (int argc, char **argv)
 	GMT_backwards_compatibility ();
 	if (gmtdefs.ps_heximage % 2) gmtdefs.page_orientation += 4;
 	if (gmtdefs.ps_heximage > 1) gmtdefs.page_orientation += 512;
-	GMT_verify_encodings ();
 	
 	if (GMT_got_frame_rgb) {	/* Must enforce change of frame, tick, and grid pen rgb */
 		memcpy ((void *)gmtdefs.frame_pen.rgb, (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
