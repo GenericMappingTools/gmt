@@ -103,7 +103,8 @@ if \fIsize\fP is in x-units [Default is plot-distance units]. By default,
 .B \-SE
 Same as \fB\-Se\fP, except azimuth (in degrees east of north) should be given instead of direction.  The azimuth will
 be mapped into an angle based on the chosen map projection (\fB\-Se\fP leaves the directions
-unchanged.)  Furthermore, the axes lengths must be given in km instead of plot-distance units.
+unchanged.)  Furthermore, the axes lengths must be given in km instead of plot-distance units.  An exception occurs for
+a linear projection if which we assume the ellipse axes are given in the same units as \fB\-R\fP.
 .TP
 .B \-Sf
 \fBf\fPront.  \fB\-Sf\fP\fIgap/size\fP[\fIdir\fP][\fItype\fP][:\fIoffset\fP].  Supply distance gap between symbols and symbol size.
