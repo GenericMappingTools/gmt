@@ -10,8 +10,8 @@ examples/ex01/osu91a1f_16.grd
 examples/ex01/job01.csh
 examples/ex01/job01.bash
 examples/ex01/job01.bat
-examples/ex02/etopo5.grd
-examples/ex02/geosat5.grd
+examples/ex02/HI_topo2.grd
+examples/ex02/HI_geoid2.grd
 examples/ex02/job02.bash
 examples/ex02/job02.csh
 examples/ex02/job02.bat
@@ -21,9 +21,9 @@ examples/ex03/shipsat.dos
 examples/ex03/job03.csh
 examples/ex03/job03.bash
 examples/ex03/job03.bat
-examples/ex04/geoid.grd
+examples/ex04/HI_geoid4.grd
 examples/ex04/topo.cpt
-examples/ex04/topo.grd
+examples/ex04/HI_topo4.grd
 examples/ex04/geoid.cpt
 examples/ex04/job04.csh
 examples/ex04/job04.bash
@@ -46,7 +46,7 @@ examples/ex07/ridge.xy
 examples/ex07/job07.csh
 examples/ex07/job07.bash
 examples/ex07/job07.bat
-examples/ex08/topo.grd
+examples/ex08/guinea_bay.grd
 examples/ex08/job08.csh
 examples/ex08/job08.bash
 examples/ex08/job08.bat
@@ -129,12 +129,12 @@ examples/ex16/job16.bat
 examples/ex16/ex16.cpt
 examples/ex17/job17.csh
 examples/ex17/job17.bash
-examples/ex17/geoid.grd
-examples/ex17/etopo5.grd
+examples/ex17/india_geoid.grd
+examples/ex17/india_etopo.grd
 examples/ex17/job17.bat
 examples/ex18/job18.csh
 examples/ex18/job18.bash
-examples/ex18/ss_grav.grd
+examples/ex18/AK_gulf_grav.grd
 examples/ex18/job18.bat
 examples/ex19/job19.bash
 examples/ex19/job19.bat
