@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.15 2001-04-09 07:21:55 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.16 2001-04-14 00:20:12 pwessel Exp $
 #
 #	Automatic installation of GMT version 3.4
 #	Version for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	07-APR-2001
+#	18-APR-2001
 #--------------------------------------------------------------------------------
 #	FUNCTIONS
 #--------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ cat << EOF > gmt_install.ftp_bzsizes
 3.7
 8.6
 28.8
-0.34
+0.53
 3.1
 3.1
 7.3
@@ -96,7 +96,7 @@ cat << EOF > gmt_install.ftp_gzsizes
 4.0
 10.7
 47.1
-0.42
+0.60
 4.2
 4.2
 7.3

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtguru.macros.orig,v 1.4 2001-02-22 01:44:26 pwessel Exp $
+#	$Id: gmtguru.macros.orig,v 1.5 2001-04-14 00:24:40 pwessel Exp $
 #
 #	Original GMT Guru Makefile Macro for Makefile.guru
 #	Users should cp to gmtguru.macros and edit it instead!
@@ -15,7 +15,7 @@
 # in GMT/ftp.  Also, you may want to change the DATE value.
 
 VERSION		= GMT3.4
-CPFLAGS		= -I. -DDATE="\"1 Mar 2001\""
+CPFLAGS		= -I. -DDATE="\"18 Apr 2001\""
 FTPSITE		= gmt.soest.hawaii.edu	# Set this to the mirror site closest to you
 AUTOCONF	= autoconf		# GNU autoconf utility (add path if not in your search path)
 GMT_SHARED_LIBS	= --enable-shared	# --enable-shared for shared; empty for static libraries
