@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.24 2005-02-15 21:15:18 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.25 2005-03-03 20:49:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1559,7 +1559,7 @@ double GMT_tcrit (double alpha, double nu)
 	/* Critical values for Student t-distribution */
 
 	int NU;
-	BOOLEAN done = FALSE;
+	BOOLEAN done;
 	double t_low, t_high, t_mid, p_high, p_mid, p, sign;
 	
 	if (alpha > 0.5) {	/* right tail */
@@ -1581,6 +1581,7 @@ double GMT_tcrit (double alpha, double nu)
 	
 	/* Now, (t_low, p_low) and (t_high, p_high) are bracketing the desired (t,p) */
 	
+	done = FALSE;
 	while (!done) {
 		t_mid = 0.5 * (t_low + t_high);
 		GMT_student_t_a (t_mid, NU, &p_mid);
@@ -1601,7 +1602,7 @@ double GMT_chi2crit (double alpha, double nu)
 {
 	/* Critical values for Chi^2-distribution */
 
-	BOOLEAN done = FALSE;
+	BOOLEAN done;
 	double chi2_low, chi2_high, chi2_mid, p_high, p_mid, p;
 	
 	p = 1.0 - alpha;
@@ -1615,6 +1616,7 @@ double GMT_chi2crit (double alpha, double nu)
 	
 	/* Now, (chi2_low, p_low) and (chi2_high, p_high) are bracketing the desired (chi2,p) */
 	
+	done = FALSE;
 	while (!done) {
 		chi2_mid = 0.5 * (chi2_low + chi2_high);
 		GMT_chi2 (chi2_mid, nu, &p_mid);
@@ -1636,7 +1638,7 @@ double GMT_Fcrit (double alpha, double nu1, double nu2)
 	/* Critical values for F-distribution */
 
 	int NU1, NU2;
-	BOOLEAN done = FALSE;
+	BOOLEAN done;
 	double F_low, F_high, F_mid, p_high, p_mid, p, chisq1, chisq2;
 	void F_to_ch1_ch2 (double F, double nu1, double nu2, double *chisq1, double *chisq2);
 	
@@ -1655,6 +1657,7 @@ double GMT_Fcrit (double alpha, double nu1, double nu2)
 	
 	/* Now, (F_low, p_low) and (F_high, p_high) are bracketing the desired (F,p) */
 	
+	done = FALSE;
 	while (!done) {
 		F_mid = 0.5 * (F_low + F_high);
 		F_to_ch1_ch2 (F_mid, nu1, nu2, &chisq1, &chisq2);
@@ -2337,7 +2340,7 @@ int GMT_mode (double *x, int n, int j, int sort, int mode_selection, int *n_mult
 	if (sort) qsort((void *)x, (size_t)n, sizeof(double), GMT_comp_double_asc);
 
 	istop = n - j;
-	
+	multiplicity = 0;
 
 	for (i = 0; i < istop; i++) {
 		length = x[i + j] - x[i];
@@ -2390,6 +2393,7 @@ int GMT_mode_f (float *x, int n, int j, int sort, int mode_selection, int *n_mul
 	if (sort) qsort((void *)x, (size_t)n, sizeof(float), GMT_comp_float_asc);
 
 	istop = n - j;
+	multiplicity = 0;
 	
 	for (i = 0; i < istop; i++) {
 		length = x[i + j] - x[i];
@@ -2484,7 +2488,7 @@ void GMT_getmad_BROKEN (double *x, int n, double location, double *scale)
 	while (i_high < i_low) i_high++, i_low--;	/* I think this must be added in (P. Wessel, 9/29/04) */
 	
 	n_dev_stop = n / 2;
-	error = 0.0;
+	error = last_error = 0.0;
 	n_dev = 0;
 
 	while (n_dev < n_dev_stop) {
@@ -2547,7 +2551,7 @@ void GMT_getmad_f_BROKEN (float *x, int n, double location, double *scale)
 	while (i_high < i_low) i_high++, i_low--;	/* I think this must be added in (P. Wessel, 9/29/04) */
 
 	n_dev_stop = n / 2;
-	error = 0.0;
+	error = last_error = 0.0;
 	n_dev = 0;
 
 

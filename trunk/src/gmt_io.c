@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.78 2005-02-15 23:03:58 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.79 2005-03-03 20:49:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2585,7 +2585,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 	int i = -1, j = 0, n, i_alloc = GMT_CHUNK, n_read = 0, j_alloc = GMT_CHUNK;
 	int n_fields, n_expected_fields;
 	BOOLEAN poly = FALSE, check_cap, save, ascii;
-	double d, dlon, lon_sum, *in;
+	double d, dlon, lon_sum = 0.0, *in;
 	char buffer[BUFSIZ], *t, mode[4];
 	PFI psave;
 		
