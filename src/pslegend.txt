@@ -26,6 +26,11 @@ are recognized, and the syntax for each of these records are presented below:
 \fB#\fP Comment records
 Records starting with # and blank lines are skipped.
 .TP
+\fBB\fP \fIcptname offset height\fP [ \fIoptional arguments\fP ]
+.TP
+The B record will plot a horizontal color bar, \fBpsscale\fP-style in the middle, starting at \fIoffset\fP from
+the left edge, and of the given \fIheight\fP.  You may add any additional \fPpsscale\fP options from the list:
+\fB\-A \-B \-E \-I \-L \-M \-N \-S \fPand\fB \-Z\fP.
 \fBC\fP \fItextcolor\fP
 The C record specifies the color with which the remaining text is to be printed.
 \fItextcolor\fP can be in the form \fIr/g/b\fP, \fIc/m/y/k\fP, or a named color.
