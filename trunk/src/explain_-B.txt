@@ -18,7 +18,7 @@ use \fBA\fP, \fBI\fP, and \fBi\fP):
 .br
 	I: lower interval anotation stride.
 .br
-	   i or I may be immediately followed by \fImodfP which controls interval anotations:
+	   i or I may be immediately followed by \fImod\fP which controls interval anotations:
 .br
 	     f: Anotate full calendar-item name (e.g., "January").
 .br
