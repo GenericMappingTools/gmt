@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtguru.macros.orig,v 1.16 2004-08-02 02:10:56 pwessel Exp $
+#	$Id: gmtguru.macros.orig,v 1.17 2004-08-23 19:47:35 pwessel Exp $
 #
 #	Original GMT Guru Makefile Macro for Makefile.guru
 #	Users should cp to gmtguru.macros and edit it instead!
@@ -23,6 +23,7 @@ GMT_SHARED_LIBS	=# --enable-shared	# --enable-shared for shared; empty for stati
 GMT_US		= --enable-US		# --enable-US for inch; empty for cm
 GMT_TRIANGLE	= --enable-triangle	# --enable-triangle for Shewchuk's triangulation; empty for Watson's
 GMT_DEBUG	= --enable-debug	# --enable-debug will use -g; else -O with compiler
+GMT_DIST	=# --prefix=/usr/local/gmt	# Uncomment for alternate installation path
 
 #  Choose the correct preprocessing command for your system (this is for man page processing only):
 #
