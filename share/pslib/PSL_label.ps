@@ -1,5 +1,5 @@
 %-------------------------------------------------------------------------------------------
-%	$Id: PSL_label.ps,v 1.3 2004-06-02 22:52:32 pwessel Exp $
+%	$Id: PSL_label.ps,v 1.4 2004-06-04 04:24:26 pwessel Exp $
 %
 %	P. Wessel, version 1
 %
@@ -20,8 +20,8 @@
 							   
 /PSL_pathtext					% PSL_pathtext'' will place a string
   { PSL_pathtextdict begin			% of text along any path. It takes
-    /textheight exch def                          % a string and starting offset
-    /just exch def                          % a string and starting offset
+    /textheight exch def                        % a string and starting offset
+    /just exch def                              % a string and starting offset
     /offset exch def				% a string and starting offset
     /str exch def				% distance from the beginning of
 						% the path as its arguments. Note
@@ -49,8 +49,7 @@
     /setdist offset def				% Initialize the distance we have
 						% covered by setting characters.
     /charcount 0 def				% Initialize the character count.
-    /justx just 4 mod 2 sub 2 div def
-    /justy just 4 idiv 2 sub textheight mul 2 div def
+    /justy just 4 idiv textheight mul 2 div neg def
     gsave
       flattenpath				% Reduce the path to a series of
 						% straight line segments. The
@@ -186,10 +185,11 @@ end
 % PSL_m		Number of labels
 % PSL_str	Array with all the labels
 % PSL_node	Array with (x,y) node number of label position
-% PSL_setpenrgb Function that sets the pen rgb
-% PSL_settxtrgb	Function that sets the font rgb
+% PSL_setlinepen Function that sets the line pen attributes (width, texture, color)
+% PSL_setboxpen  Function that sets the text box pen attributes (width, texture, color)
+% PSL_setboxrgb  Function that sets the opaque text box color
+% PSL_settxtrgb	 Function that sets the font rgb
 %
-% We use the current pen texture and width
 
 /PSL_labelline
 {
@@ -201,11 +201,14 @@ end
   /PSL_paintclippath bits 16 and 0 gt def	% false inacative, true paints clippath for debug
   /PSL_firstcall bits 64 and 0 gt def		% true first time called, false later
   /PSL_lastcall bits 128 and 0 gt def		% true last time called, false before
+  /PSL_fillbox bits 256 and 0 gt def		% true to paint box opaque before placing text, false gives transparent box
+  /PSL_drawbox bits 512 and 0 gt def		% true to draw box outline before placing text, false gives no outline
   /PSL_n1 PSL_n 1 sub def			% one less is the upper limit in for loops
   /PSL_m1 PSL_m 1 sub def			% same
   /PSL_justx PSL_just 4 mod 1 sub -0.5 mul def
-  /PSL_justy PSL_just 4 idiv 2 sub PSL_height mul 2 div def
+  /PSL_justy PSL_just 4 idiv PSL_height mul 2 div neg def
   /PSL_paintclippath PSL_paintclippath PSL_debug not and def	% painting means no debug
+  /PSL_usebox PSL_fillbox PSL_drawbox or def	% true if we need box outline for fill or stroke or both
 
   PSL_calcwidth		% Calculate the width of each label string
   PSL_calcdist		% Calculate along-track distances
@@ -223,7 +226,7 @@ end
       clippath
     } if
   } if
-  PSL_setpenrgb				% Set line color
+  PSL_setlinepen				% Set line color
   /PSL_nn1 PSL_nn 1 sub def		% End index in for loop
   /n 0 def				% Toggle: o means line, 1 means text
   /k 0 def				% Index of the current text string
@@ -304,7 +307,7 @@ end
       } ifelse
     } ifelse
   } if
-  /n 0 def /k k 1 add def PSL_setpenrgb			% Set n back to 0, goto next label, and switch to pen color
+  /n 0 def /k k 1 add def PSL_setlinepen			% Set n back to 0, goto next label, and switch to pen color
 } def
 
 /PSL_calcwidth			% Calculate the width of each label string
@@ -431,7 +434,20 @@ end
 
 /PSL_curvedlabel
 { % Places the curved text label on current segment
-  PSL_placeline PSL_str k get PSL_gap_x PSL_just PSL_height PSL_pathtext
+  PSL_usebox		% Want to lay down box outline or fill
+  {
+    PSL_curvedlabelclip	% Box path now current path
+    PSL_fillbox		% Want to paint box
+    {
+      gsave PSL_setboxrgb fill grestore
+    } if
+    PSL_drawbox		% Want to draw outline of box
+    {
+      PSL_setboxpen stroke
+    } if
+    newpath
+  } if
+  PSL_settxtrgb PSL_placeline PSL_str k get PSL_gap_x PSL_just PSL_height PSL_pathtext
 } def
 
 /PSL_straightlabelclip
@@ -511,10 +527,10 @@ end
   % PSL_strokeline PSL_seg 0 eq and			% If we asked to draw lines...
   PSL_strokeline 			% If we asked to draw lines...
   {
-    PSL_placeline stroke				% Lay down the rest of the path and stroke it
+    PSL_placeline PSL_setlinepen stroke			% Lay down the rest of the path and stroke it
   } if
   /PSL_seg PSL_seg 1 add def				% Goto next segment number
-  /n 1 def PSL_settxtrgb				% Set n to 1, and switch to font color
+  /n 1 def						% Set n to 1
 } def
 
 /PSL_placeline
@@ -525,16 +541,20 @@ end
 
 /PSL_labelclip
 {		% This will create a total clip path for all the labels in PSL_txt
-  /flag exch def				% Single bitflag argument passed
-  /PSL_placetext flag 1 and 1 eq def		% true if we want to just place text (no clipping)
-  /PSL_paintclippath flag 4 and 4 eq def	% true if we want to debug the path with painting
+  /bits exch def				% Single bitflag argument passed
+  /PSL_placetext bits 1 and 1 eq def		% true if we want to just place text (no clipping)
+  /PSL_paintclippath bits 4 and 4 eq def	% true if we want to debug the path with painting
+  /PSL_fillbox bits 256 and 0 gt def		% true to paint box opaque before placing text, false gives transparent box
+  /PSL_drawbox bits 512 and 0 gt def		% true to draw box outline before placing text, false gives no outline
   /PSL_m1 PSL_m 1 sub def
   /PSL_justx PSL_just 4 mod 1 sub -0.5 mul def
-  /PSL_justy PSL_just 4 idiv 2 sub PSL_height mul 2 div def
+  /PSL_justy PSL_just 4 idiv PSL_height mul 2 div neg def
   /PSL_paintclippath PSL_paintclippath PSL_debug not and def	% painting means no debug
+  /PSL_usebox PSL_fillbox PSL_drawbox or def	% true if we need box outline for fill or stroke or both
   
   PSL_placetext
   {
+    PSL_usebox { PSL_placelabelclip } if
     PSL_placelabel
   }
   {
@@ -544,24 +564,25 @@ end
 
 /PSL_placelabel
 {	% Just place labels
+  PSL_settxtrgb
   0 1 PSL_m1				% Loop over all labels
   {
     /k exch def						% Current label index
     /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def					% Get text placement point
-    gsave PSL_txt_x k get PSL_txt_y k get translate		% Set origin at text point
-    PSL_angle k get rotate					% Rotate the coordinate system to follow baseline text
-    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def	% Width of current label space including clearance
-    BoxW PSL_justx mul PSL_justy PSL_gap_y sub moveto		% Goto LL point on label
-    PSL_str k get show						% Place the text
-    grestore							% Undo damage to coordinate system
+    /yp PSL_txt_y k get def				% Get text placement point
+    gsave PSL_txt_x k get PSL_txt_y k get translate	% Set origin at text point
+    PSL_angle k get rotate				% Rotate the coordinate system to follow baseline text
+    /BoxW PSL_str k get stringwidth pop def		% Width of current label space including clearance
+    BoxW PSL_justx mul PSL_justy moveto			% Goto LL point on label
+    PSL_str k get show					% Place the text
+    grestore						% Undo damage to coordinate system
   } for
 } def
 
 /PSL_placelabelclip
 {	% Create and lay down clip path
   newpath				% Start fresh
-  PSL_debug not { gsave clippath } if	% Set gsave and start clip path
+  PSL_usebox not { gsave clippath } if	% Set gsave and start clip path
   0 1 PSL_m1				% Loop over all labels
   {
     /k exch def						% Current label index
@@ -586,9 +607,17 @@ end
     } for
     closepath
   } for
-  PSL_debug
+  PSL_usebox
   {
-    gsave 0.9 0.5 0.5 setrgbcolor fill grestore stroke
+    PSL_fillbox
+    {
+      gsave PSL_setboxrgb fill grestore
+    } if
+    PSL_drawbox
+    {
+      PSL_setboxpen stroke
+    } if
+    newpath
   }
   {
     clip				% Set the new clip path
