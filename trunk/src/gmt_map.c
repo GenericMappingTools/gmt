@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.43 2003-12-28 00:53:46 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.44 2003-12-28 20:38:56 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -615,12 +615,12 @@ void GMT_map_setup (double west, double east, double south, double north)
 	project_info.w = west;	project_info.e = east;	project_info.s = south;	project_info.n = north;
 	if (project_info.gave_map_width) project_info.units_pr_degree = FALSE;
 	
-	/* Set up ellipse parameters for the selected ellipsoid */
+	/* Set up ellipsoid parameters for the selected ellipsoid */
 	
 	frame_info.check_side = frame_info.horizontal = FALSE;
-	project_info.EQ_RAD = gmtdefs.ellipse[gmtdefs.ellipsoid].eq_radius;
+	project_info.EQ_RAD = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius;
 	project_info.i_EQ_RAD = 1.0 / project_info.EQ_RAD;
-	f = gmtdefs.ellipse[gmtdefs.ellipsoid].flattening;
+	f = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening;
 	project_info.ECC2 = 2 * f - f * f;
 	project_info.ECC4 = project_info.ECC2 * project_info.ECC2;
 	project_info.ECC6 = project_info.ECC2 * project_info.ECC4;
@@ -1374,7 +1374,7 @@ int GMT_map_init_merc (void) {
 	GMT_convert_latitudes = !SPHERICAL;
 	if (GMT_convert_latitudes) {	/* Set fudge factor */
 		GMT_scale_eqrad ();
-		D = gmtdefs.ellipse[gmtdefs.ellipsoid].eq_radius / GMT_lat_swap_vals.rm;
+		D = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius / GMT_lat_swap_vals.rm;
 	}
 	if (project_info.s <= -90.0 || project_info.n >= 90.0) {
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -R option:  Cannot include south/north poles with Mercator projection!\n", GMT_program);
@@ -1696,7 +1696,7 @@ int GMT_map_init_stereo (void) {
 	if (GMT_convert_latitudes) {	/* Set fudge factors when conformal latitudes are used */
 		double e1p, e1m, s, c;
 
-		D = gmtdefs.ellipse[gmtdefs.ellipsoid].eq_radius / GMT_lat_swap_vals.rm;
+		D = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius / GMT_lat_swap_vals.rm;
 		if (project_info.polar) {
 			e1p = 1.0 + project_info.ECC;	e1m = 1.0 - project_info.ECC;
 			D /= d_sqrt (pow (e1p, e1p) * pow (e1m, e1m));
@@ -2772,7 +2772,7 @@ int GMT_map_init_lambeq (void) {
 
 	if (GMT_convert_latitudes) {
 		s = sind (latg);	c = cosd (latg);	/* Need original geographic pole coordinates */
-		D = (project_info.polar) ? 1.0 : (gmtdefs.ellipse[gmtdefs.ellipsoid].eq_radius / GMT_lat_swap_vals.ra) * c / (project_info.cosp * d_sqrt (1.0 - project_info.ECC2 * s * s));
+		D = (project_info.polar) ? 1.0 : (gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius / GMT_lat_swap_vals.ra) * c / (project_info.cosp * d_sqrt (1.0 - project_info.ECC2 * s * s));
 		project_info.Dx = D;
 		project_info.Dy = 1.0 / D;
 	}
@@ -7413,7 +7413,7 @@ void GMT_check_R_J (double *clon)	/* Make sure -R and -J agree for global plots;
 
 void GMT_set_spherical (void) {	/* Force spherical solution */
 	gmtdefs.ellipsoid = N_ELLIPSOIDS - 1;	/* Use equatorial radius */
-	project_info.EQ_RAD = gmtdefs.ellipse[gmtdefs.ellipsoid].eq_radius;
+	project_info.EQ_RAD = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius;
 	project_info.i_EQ_RAD = 1.0 / project_info.EQ_RAD;
 	project_info.M_PR_DEG = TWO_PI * project_info.EQ_RAD / 360.0;
 	project_info.ECC = project_info.ECC2 = project_info.ECC4 = project_info.ECC6 = 0.0;
@@ -7840,7 +7840,7 @@ void	GMT_lat_swap_init ()
 	geodetic, authalic, and conformal.  I have put others in here
 	for possible future convenience.
 	
-	Also, I made this depend on gmtdefs.ellipse[gmtdefs.ellipsoid]
+	Also, I made this depend on gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid]
 	rather than on project_info, so that it will be possible to 
 	call GMT_lat_swap() without having to pass -R and -J to 
 	GMT_map_setup(), so that in the future we will be able to use
@@ -7851,8 +7851,8 @@ void	GMT_lat_swap_init ()
 	double	x, xx[4], a, f, e2, e4, e6, e8;
 	int	i;
 	
-	f = gmtdefs.ellipse[gmtdefs.ellipsoid].flattening;
-	a = gmtdefs.ellipse[gmtdefs.ellipsoid].eq_radius;
+	f = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening;
+	a = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius;
 
 	if (fabs (f) < GMT_CONV_LIMIT) {
 		memset ((void *)GMT_lat_swap_vals.c, 0, (size_t)(GMT_LATSWAP_N * 4 * sizeof (double)));
@@ -8049,11 +8049,14 @@ int GMT_datum_init (char *text)
 		GMT_datum.h_given = TRUE;	/* If FALSE we set height = 0 */
 	}
 	
-	if (sscanf (&text[k], "%s/%s", from, to) == 1) {	/* to not given, set to - which means WGS-84 */
-		GMT_set_datum ("-", &GMT_datum.to);
+	if (strchr (&text[k], '/')) {	/* Gave from/to */
+		sscanf (&text[k], "%[^/]/%s", from, to);
 	}
-	else
-		if (GMT_set_datum (to, &GMT_datum.to) == -1) return (-1);
+	else {	/* to not given, set to - which means WGS-84 */
+		strcpy (to, "-");
+		strcpy (from, &text[k]);
+	}
+	if (GMT_set_datum (to,   &GMT_datum.to)   == -1) return (-1);
 	if (GMT_set_datum (from, &GMT_datum.from) == -1) return (-1);
 	
 	GMT_datum.da = GMT_datum.to.a - GMT_datum.from.a;
@@ -8084,24 +8087,46 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D)
 	}
 	else if (strchr (text, ':')) {	/* Has colons, must get ellipsoid and dr separately */
 		char ellipsoid[128], dr[64];
-		if (sscanf (text, "%s:%s", ellipsoid, dr) != 2) return (-1);
-		if (sscanf (dr, "%lf,%lf,%lf", &D->xyz[0], &D->xyz[1], &D->xyz[2]) != 3) return (-1);
-		if (strchr (ellipsoid, ',')) {	/* Has major, inv_f instead of name */
-			if (sscanf (ellipsoid, "%lf,%lf", &D->a, &D->f) != 2) return (-1);
+		if (sscanf (text, "%[^:]:%s", ellipsoid, dr) != 2) {
+			fprintf (stderr, "%s: Malformed <ellipsoid>:<dr> argument!\n");
+			return (-1);
 		}
-		else {	/* Get the ellipse # and then the parameters */
-			if ((i = GMT_get_ellipse (ellipsoid)) < 0) return (-1);
-			D->a = gmtdefs.ellipse[i].eq_radius;
-			D->f = gmtdefs.ellipse[i].flattening;
+		if (sscanf (dr, "%lf,%lf,%lf", &D->xyz[0], &D->xyz[1], &D->xyz[2]) != 3) {
+			fprintf (stderr, "%s: Malformed <x>,<y>,<z> argument!\n");
+			return (-1);
+		}
+		if (strchr (ellipsoid, ',')) {	/* Has major, inv_f instead of name */
+			if (sscanf (ellipsoid, "%lf,%lf", &D->a, &D->f) != 2) {
+				fprintf (stderr, "%s: Malformed <a>,<1/f> argument!\n");
+				return (-1);
+			}
+			if (D->f != 0.0) D->f = 1.0 / D->f;	/* Get f from 1/f */
+		}
+		else {	/* Get the ellipsoid # and then the parameters */
+			if ((i = GMT_get_ellipsoid (ellipsoid)) < 0) {
+				fprintf (stderr, "%s: Ellipsoid %s not recognized!\n", ellipsoid);
+				return (-1);
+			}
+			D->a = gmtdefs.ref_ellipsoid[i].eq_radius;
+			D->f = gmtdefs.ref_ellipsoid[i].flattening;
 		}
 	}
-	else {
+	else {		/* Gave a Datum ID tag [ 0-(N_DATUMS-1)] */
 		int k;
-		if (sscanf (text, "%d", &i) != 1) return (-1);
-		if (i < 0 || i >= N_DATUMS) return (-1);
-		if ((k = GMT_get_ellipse (gmtdefs.datum[i].ellipsoid)) < 0) return (-1);
-		D->a = gmtdefs.ellipse[k].eq_radius;
-		D->f = gmtdefs.ellipse[k].flattening;
+		if (sscanf (text, "%d", &i) != 1) {
+			fprintf (stderr, "%s: Malformed or unrecognized <datum> argument!\n");
+			return (-1);
+		}
+		if (i < 0 || i >= N_DATUMS) {
+			fprintf (stderr, "%s: Datum ID (%d) outside valid range (0-%d)!\n", i, N_DATUMS-1);
+			return (-1);
+		}
+		if ((k = GMT_get_ellipsoid (gmtdefs.datum[i].ellipsoid)) < 0) {	/* This should not happen... */
+			fprintf (stderr, "%s: Ellipsoid %s not recognized!\n", gmtdefs.datum[i].ellipsoid);
+			return (-1);
+		}
+		D->a = gmtdefs.ref_ellipsoid[k].eq_radius;
+		D->f = gmtdefs.ref_ellipsoid[k].flattening;
 		for (k = 0; k< 3; k++) D->xyz[k] = gmtdefs.datum[i].xyz[k];
 	}
 	D->b = D->a * (1 - D->f);
@@ -8116,18 +8141,19 @@ void GMT_conv_datum (double in[], double out[])
 	/* Evaluate J^-1 and B on from ellipsoid */
 	
 	double sin_lon, cos_lon, sin_lat, cos_lat, sin_lat2, M, N, h, tmp_1, tmp_2, tmp_3;
-	double delta_lat, delta_lon, delta_h;
+	double delta_lat, delta_lon, delta_h, sc_lat;
 	
 	h = (GMT_datum.h_given) ? in[2] : 0.0;
 	sincos (in[0] * D2R, &sin_lon, &cos_lon);
 	sincos (in[1] * D2R, &sin_lat, &cos_lat);
 	sin_lat2 = sin_lat * sin_lat;
+	sc_lat = sin_lat * cos_lat;
 	M = GMT_datum.from.a * (1.0 - GMT_datum.from.e_squared) / pow (1.0 - GMT_datum.from.e_squared * sin_lat2, 1.5);
 	N = GMT_datum.from.a / sqrt (1.0 - GMT_datum.from.e_squared * sin_lat2);
 	
 	tmp_1 = -GMT_datum.dxyz[0] * sin_lat * cos_lon - GMT_datum.dxyz[1] * sin_lat * sin_lon + GMT_datum.dxyz[2] * cos_lat;
-	tmp_2 = GMT_datum.da * (N * GMT_datum.from.e_squared * sin_lat * cos_lat) / GMT_datum.from.a;
-	tmp_3 = GMT_datum.df * (M / GMT_datum.one_minus_f + N * GMT_datum.one_minus_f) * sin_lat * cos_lat;
+	tmp_2 = GMT_datum.da * (N * GMT_datum.from.e_squared * sc_lat) / GMT_datum.from.a;
+	tmp_3 = GMT_datum.df * (M / GMT_datum.one_minus_f + N * GMT_datum.one_minus_f) * sc_lat;
 	delta_lat = (tmp_1 + tmp_2 + tmp_3) / (M + h);
 	
 	delta_lon = (-GMT_datum.dxyz[0] * sin_lon + GMT_datum.dxyz[1] * cos_lon) / ((N + h) * cos_lat);
