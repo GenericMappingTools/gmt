@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.67 2002-03-19 00:25:13 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.68 2002-04-01 16:28:21 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2909,7 +2909,7 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 	ps_command ("/F0 {/Helvetica Y} bind def");	/* Reset F0 */
 	ps_command ("/F12 {/Symbol Y} bind def");	/* Reset F12 */
 	
-	GMT_free ((void *)knots);
+	if (n) GMT_free ((void *)knots);
 
 	/* Now do frame tickmarks */
 	
@@ -2936,7 +2936,7 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 		GMT_xyz_to_xy (pp[0], pp[1], pp[2], &xp, &yp);
 		ps_plot (xp, yp, -2);
 	}
-	GMT_free ((void *)knots);
+	if (n) GMT_free ((void *)knots);
 
 	/* Finally do label */
 	
