@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.125 2004-05-12 20:45:51 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.126 2004-05-23 05:52:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3878,6 +3878,9 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 	double xx[4], yy[4], bx[4], by[4], base, d_base, width, half, bar_width, dx, dx_f, dx_a;
 	char txt[256], *this_label;
 	char label[3][16];
+	
+	if (!ms->plot) return;
+	
 	strcpy (label[0], "km");
 	strcpy (label[1], "miles");
 	strcpy (label[2], "nautical miles");
@@ -4051,6 +4054,8 @@ void GMT_draw_map_rose (struct MAP_ROSE *mr)
 	int i, kind, just[4] = {10, 5, 2, 7};
 	double angle, L[4], R[4], px, py, x[8], y[8], xp[8], yp[8], tx[3], ty[3], s, c, rot[4] = {0.0, 45.0, 22.5, -22.5};
 	
+	if (!mr->plot) return;
+
 	if (!MAPPING) return;	/* Only for geographic projections */
 
 	if (mr->gave_xy)	/* Also get lon/lat coordinates */
