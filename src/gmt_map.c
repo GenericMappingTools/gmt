@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.54 2004-04-17 06:29:16 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.55 2004-06-01 02:28:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6789,6 +6789,19 @@ int GMT_lon_inside (double lon, double w, double e)
 	if (lon < w) return (FALSE);
 	if (lon > e) return (FALSE);
 	return (TRUE);
+}
+
+void GMT_ngeo_to_xy (double *lon, double *lat, int n)
+{
+	/* Converts lon/lat array and returns x,y in same array */
+	int j;
+	double this_x, this_y;
+	
+	for (j = 0; j < n; j++) {
+		GMT_geo_to_xy (lon[j], lat[j], &this_x, &this_y);
+		lon[j] = this_x;
+		lat[j] = this_y;
+	}
 }
 
 int GMT_geo_to_xy_line (double *lon, double *lat, int n)

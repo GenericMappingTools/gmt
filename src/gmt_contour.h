@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.10 2004-05-27 04:05:50 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.11 2004-06-01 02:28:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -42,17 +42,26 @@ struct GMT_XSEGMENT {
 };
 
 struct GMT_LABEL {	/* Contains information on contour/lineation labels */
-	double *x, *y;		/* Either 1 point where label goes OR a path along which to place label */
-	int n;			/* Length of path or 1 */
+	double x, y;		/* Point where label goes */
 	double angle;		/* Angle of text unless curved text */
 	double line_angle;	/* Angle of line at label unless curved text */
 	double dist;
 	int node;
 	char *label;
-	struct GMT_LABEL *next_label, *prev_label;
+};
+
+struct GMT_CONTOUR_LINE {
+	double *x, *y;			/* Coordinates of the contour */
+	int n;				/* Length of the contour */
+	BOOLEAN annot;			/* TRUE if we want labels */
+	char *name;			/* Contour name */
+	struct GMT_PEN pen;		/* Pen for drawing box */
+	struct GMT_LABEL *L;		/* Pointer to array of strictures with labels */
+	int n_labels;			/* Number of labels; if 0 we just have a line segment */
 };
 
 struct GMT_CONTOUR {
+	/* Control section */
 	char option[BUFSIZ];		/* Copy of the option string */
 	char label[BUFSIZ];		/* Fixed label */
 	char flag;			/* Char for the option key */
@@ -65,7 +74,6 @@ struct GMT_CONTOUR {
 	double d_scale;			/* Scale to yield correct units */
 	int proj_type;			/* type of scaling */
 	int half_width;			/* Number of points to use in smoothing the angle [10/2] */
-	
 	BOOLEAN number;			/* TRUE if we have constraints on the number of labels to apply */
 	int number_placement;		/* How the n_cont labels are distributed */
 	int n_cont;			/* Number of labels per segment */
@@ -85,7 +93,6 @@ struct GMT_CONTOUR {
 	BOOLEAN curved_text;		/* TRUE for text to follow curved lines */
 	int rgb[3];			/* Opaque box color */
 	struct GMT_PEN pen;		/* Pen for drawing box */
-	struct GMT_LABEL *anchor, *old_label;	/* Linked list of contours */
 	struct GMT_LABEL **L;		/* Pointers to sorted list of labels */
 	int n_label;			/* Length of list */
 	char unit[32];			/* Unit for labels */
@@ -95,6 +102,12 @@ struct GMT_CONTOUR {
 	BOOLEAN no_gap;			/* Clip contour or not depends on label placement */
 	int label_type;			/* 0 = what is passed, 1 = fixed label above , 2 = multiseg header, 3 = distances */
 	double z_level;			/* When plotted in 3-D we must have z = z_level (i.e., all points have fixed z) */
+	
+	/* Contour line section */
+	
+	struct GMT_CONTOUR_LINE **segment;	/* Array of segments */
+	int n_segments;				/* The number of segments */
+	size_t n_alloc;				/* How many allocated so far */
 };
 
 EXTERN_MSC int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *G);
@@ -104,7 +117,7 @@ EXTERN_MSC int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3]);
 EXTERN_MSC void GMT_contlabel_angle (double x[], double y[], int start, int stop, double cangle, int n, struct GMT_LABEL *L, struct GMT_CONTOUR *G);
 EXTERN_MSC void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_CONTOUR *G);
 EXTERN_MSC void GMT_contlabel_plot (struct GMT_CONTOUR *G);
-EXTERN_MSC void GMT_draw_contour (double *xx, double *yy, int *pen, int nn, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G);
+EXTERN_MSC void GMT_hold_contour (double **xx, double **yy, int nn, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G);
 EXTERN_MSC int GMT_code_to_lonlat (char *code, double *lon, double *lat);
 EXTERN_MSC void GMT_x_free (struct GMT_XOVER *X);
 EXTERN_MSC struct GMT_XSEGMENT *GMT_init_track (double x[], double y[], int n);
