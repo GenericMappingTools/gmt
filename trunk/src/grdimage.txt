@@ -8,8 +8,8 @@ grdimage \- Create grayshaded or colored image from a 2-D netCDF grd file
 .SH SYNOPSIS
 \fBgrdimage\fP \fIgrd_z\fP | \fIgrd_r grd_g grd_b\fP \fB\-C\fP\fIcptfile\fP \fB\-J\fP\fIparameters\fP 
 [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-Ei\fP|\fIdpi\fP ] [ \fB\-G\fP[\fBf|b\fP]\fIrgb\fP ] [ \fB\-I\fP\fIintensfile\fP] [ \fB\-K\fP ] 
-[ \fB\-M\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP\fIsearch_radius\fP ] 
-[ \fB\-T\fP[\fBs|m\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] 
+[ \fB\-M\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-Q\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP\fIsearch_radius\fP ] 
+[ \fB\-T\fP[\fBs\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] 
 [ \fB\-c\fP\fIcopies\fP ]
 .SH DESCRIPTION
 \fBgrdimage\fP reads one 2-D gridded file and produces a gray-shaded (or colored) map by assigning
@@ -56,6 +56,10 @@ Gives the name of a grdfile with intensities in the (-1,+1) range. [Default is n
 Force conversion to monochrome image using the (television) YIQ transformation.
 #include "explain_-O.txt"
 #include "explain_-P.txt"
+.TP
+.B \-Q
+Mask out nodes with z = NaN using the colormasking feature in \fIPostScript\fP Level 3
+(the PS device must support PS Level 3).
 #include "explain_-R.txt"
 You may ask for a larger \fIw/e/s/n\fP region to have more room between the image and the axes.
 A smaller region than specified in the grdfile will result in a subset of the grid [Default is
@@ -68,9 +72,7 @@ Set the search radius for the averaging procedure  [Default avoids aliasing].
 Plot image without any interpolation.  This involves converting each node-centered
 bin into a polygon which is then painted separately.  Append \fBs\fP to skip
 nodes with z = NaN.  This option is useful for categorical data where
-interpolating between values is meaningless.  Finally, append \fBm\fP to mask out
-nodes with z = NaN using the colormasking feature in \fIPostScript\fP Level 3 (i.e., no
-tiling at all, but your PS device must support PS Level 3).
+interpolating between values is meaningless.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"

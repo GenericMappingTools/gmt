@@ -13,8 +13,8 @@ grdview \- Create 3-D perspective grayshaded/colored image or mesh from a 2-D gr
 [ \fB\-B\fP\fItickinfo\fP ] [\fB\-C\fP\fIcptfile\fP] [ \fB\-E\fP\fIview_az/view_el\fP ] 
 [ \fB\-G\fP\fIdrapefile\fP | \fB\-G\fP:\fIgrd_r\fP:\fIgrd_g\fP:\fIgrd_b\fP ] [ \fB\-I\fP\fIintensfile\fP] [ \fB\-K\fP ] 
 [ \fB\-L\fP[\fIflags\fP] ] [ \fB\-N\fP\fIlevel\fP[/\fIr/g/b\fP]] [ \fB\-O\fP ] [ \fB\-P\fP ] 
-[ \fB\-Q\fP\fItype\fP ] [ \fB\-R\fP\fIwest/east/south/north/zmin/zmax\fP[\fBr\fP] ] [ \fB\-S\fP\fIsmooth\fP ] 
-[ \fB\-T\fP[\fBs|m\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP\fItype/pen\fP ] [ \fB\-X\fP\fIx-shift\fP ]
+[ \fB\-Q\fP\fItype\fP[\fBg\fP] ] [ \fB\-R\fP\fIwest/east/south/north/zmin/zmax\fP[\fBr\fP] ] [ \fB\-S\fP\fIsmooth\fP ] 
+[ \fB\-T\fP[\fBs\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP\fItype/pen\fP ] [ \fB\-X\fP\fIx-shift\fP ]
 [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fIzlevel\fP ] [ \fB\-c\fP\fIcopies\fP ]
 .SH DESCRIPTION
 \fBgrdview\fP reads a 2-D gridded file and produces a 3-D perspective plot by 
@@ -63,9 +63,11 @@ the plane and the data perimeter is colored.
 #include "explain_-P.txt"
 .TP
 .B \-Q
-Select one of three settings: 1. Specify \fBm\fP for mesh plot [Default], and optionally append /r/g/b for a different mesh paint [white].
+Select one of four settings: 1. Specify \fBm\fP for mesh plot [Default], and optionally append /r/g/b for a different mesh paint [white].
 2. Specify \fBs\fP for surface plot, and optionally append \fBm\fP to have mesh lines drawn on top of surface.
 3. Specify \fBi\fP for image plot, and optionally append the effective dpi resolution for the rasterization [100].
+4. Specify \fBc\fP.  Same as \fB\-Qi\fP but will mask out nodes with z = NaN using the colormasking feature in \fIPostScript\fP Level 3
+(the PS device must support PS Level 3).
 For any of these choices, you may force a monochrome image by appending \fBg\fP.  Colors are then
 converted to shades of gray using the (television) YIQ transformation.
 #include "explain_-R.txt"
@@ -81,10 +83,7 @@ Smooth the contours before plotting (see \fBgrdcontour\fP) [Default is no smooth
 Plot image without any interpolation.  This involves converting each node-centered
 bin into a polygon which is then painted separately.  Append \fBs\fP to skip
 nodes with z = NaN.  This option is useful for categorical data where
-interpolating between values is meaningless.  Finally, append \fBm\fP to mask out
-nodes with z = NaN using the colormasking feature in \fIPostScript\fP Level 3 (i.e., no
-tiling at all, but your PS device must support PS Level 3).  Ignored unless \fB\-Qi\fP
-is also specified.
+interpolating between values is meaningless.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
