@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.23 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.24 2002-02-17 22:56:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6492,7 +6492,7 @@ int GMT_rect_clip (double *lon, double *lat, int n, double **x, double **y, int 
 			for (k = 0; k < nx; k++) {
 				xx[j] = xc[k];
 				yy[j++] = yc[k];
-				if (j == (n_alloc-2)) {
+				if (j >= (n_alloc-2)) {
 					n_alloc += GMT_CHUNK;
 					xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
 					yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
@@ -6501,7 +6501,7 @@ int GMT_rect_clip (double *lon, double *lat, int n, double **x, double **y, int 
 			}
 		}
 		GMT_geo_to_xy (lon[i], lat[i], &xx[j], &yy[j]);
-		if (j == (n_alloc-2)) {
+		if (j >= (n_alloc-2)) {
 			n_alloc += GMT_CHUNK;
 			xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
 			yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
@@ -6539,7 +6539,7 @@ int GMT_wesn_clip (double *lon, double *lat, int n, double **x, double **y, int 
 			for (k = 0; k < nx; k++) {
 				xx[j] = xc[k];
 				yy[j++] = yc[k];
-				if (j == n_alloc) {
+				if (j >= (n_alloc-2)) {
 					n_alloc += GMT_CHUNK;
 					xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_wesn_clip");
 					yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_wesn_clip");
@@ -6547,7 +6547,7 @@ int GMT_wesn_clip (double *lon, double *lat, int n, double **x, double **y, int 
 				(*total_nx) ++;
 			}
 		}
-		if (j == (n_alloc-2)) {
+		if (j >= (n_alloc-2)) {
 			n_alloc += GMT_CHUNK;
 			xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_wesn_clip");
 
