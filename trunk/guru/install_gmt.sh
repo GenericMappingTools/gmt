@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.40 2004-01-14 07:20:52 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.41 2004-02-16 12:29:43 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -936,7 +936,7 @@ if [ $netcdf_install = "y" ]; then
 		fi
 		echo "cd pub/netcdf" >> $$
 		echo "binary" >> $$
-		echo "get netcdf-beta.tar.Z" >> $$
+		echo "get netcdf.tar.Z" >> $$
 		echo "quit" >> $$
 		echo " " >> $$
 
