@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 22
 REM
-REM             $Id: job22.bat,v 1.6 2004-09-29 01:29:02 pwessel Exp $
+REM             $Id: job22.bat,v 1.7 2004-09-29 03:49:39 pwessel Exp $
 REM
 REM Purpose:    Automatic map of last 7 days of world-wide seismicity
 REM
@@ -31,14 +31,14 @@ REM Pull out the first and last timestamp to use in legend title
 
 REM first=`sed -n 2p neic_quakes.d | awk -F, '{printf "%s %s\n", $1, $2}'`
 REM last=`sed -n '$p' neic_quakes.d | awk -F, '{printf "%s %s\n", $1, $2}'`
-set first="04/04/19 00:04:33"
-set last="04/04/25 11:11:33"
+set first=04/04/19 00:04:33
+set last=04/04/25 11:11:33
 
 REM Assign a string that contains the current user @ the current computer node.
 REM Note that two @@ is needed to print a single @ in pstext:
 
 REM set me = "$user@@`hostname`"
-set me="GMT guru @@ GMTbox"
+set me=GMT guru @@ GMTbox
 
 REM Create standard seismicity color table
 
@@ -85,15 +85,19 @@ echo T This script can be called daily to update the latest information. >> neis
 echo G 0.4i >> neis.legend
 echo I USGS.ras 1i RT >> neis.legend
 echo G -0.3i >> neis.legend
-echo L 12 6 LB $me >> neis.legend
+echo L 12 6 LB %me% >> neis.legend
 
 REM OK, now we can actually run pslegend.  We center the legend below the map.
 REM Trial and error shows that 1.7i is a good legend height:
 
-pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -Jx1i -R0/8/0/8 -O -F neis.legend -Glightyellow >> example_22.ps
+if %master%==n echo off
+pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -Jx1i -R0/8/0/8 -O -F neis.legend -Glightyellow -S > legend.bat
+call legend.bat >> example_22.ps
+if %master%==n echo on
 
 REM Clean up after ourselves:
 
 del neis.*
 del .gmt*
+del legend.bat
 if %master%==y cd ..
