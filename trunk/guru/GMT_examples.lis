@@ -140,8 +140,6 @@ examples/ex19/job19.sh
 examples/ex19/job19.bat
 examples/ex19/job19.csh
 examples/ex20/job20.sh
-examples/ex20/make_symbol
-examples/ex20/volcano.def
 examples/ex20/bullseye.def
 examples/ex20/job20.bat
 examples/ex20/job20.csh

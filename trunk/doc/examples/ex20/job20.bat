@@ -1,21 +1,15 @@
 REM		GMT EXAMPLE 20
 REM
-REM		$Id: job20.bat,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+REM		$Id: job20.bat,v 1.2 2001-09-23 23:41:15 pwessel Exp $
 REM
 REM Purpose:	Extend GMT to plot custom symbols
-REM GMT progs:	pscoast, psxy, mapproject
-REM DOS calls:	del, echo, gawk
+REM GMT progs:	pscoast, psxy
+REM DOS calls:	del, echo
 REM
 echo GMT EXAMPLE 20
 set master=y
 if exist job20.bat set master=n
 if %master%==y cd ex20
-REM Make volcano- and bullseye-symbol awk-scripts using
-REM make_symbol on the definition files volcano.def and
-REM bullseye.def
-
-gawk -f make_s~1 volcano.def > volcano.awk
-gawk -f make_s~1 bullseye.def > bullseye.awk
 
 REM Plot a world-map with volcano symbols of different sizes
 REM on top given locations and sizes in hotspots.d
@@ -34,7 +28,7 @@ echo -153.5 -21.0 0.25 >> hotspots.d
 echo -116.7 -26.3 0.25 >> hotspots.d
 echo -16.5 64.4 0.25 >> hotspots.d
 
-mapproject -R0/360/-90/90 -JR -Di hotspots.d | gawk -f volcano.awk | psxy -R0/9/0/9 -Jx1i -O -K -M -W0.25p -G255/0/0 -L >> example_20.ps
+psxy -R -JR hotspots.d -Skvolcano -O -K -W0.25p -G255/0/0 >> example_20.ps
 
 REM Overlay a few bullseyes at NY, Cairo, and Perth
 
@@ -42,9 +36,8 @@ echo 286 40.45 0.8 > cities.d
 echo 31.15 30.03 0.8 >> cities.d
 echo 115.49 -31.58 0.8 >> cities.d
 
-mapproject -R0/360/-90/90 -JR -Di cities.d | gawk -f bullseye.awk | psxy -R0/9/0/9 -Jx -O -M >> example_20.ps
+psxy -R -JR cities.d -Skbullseye -O >> example_20.ps
 
-del *.awk
 del *.d
 del .gmt*
 if %master%==y cd ..

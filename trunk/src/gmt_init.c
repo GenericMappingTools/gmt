@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.45 2001-09-21 02:25:49 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.46 2001-09-23 23:41:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2026,13 +2026,13 @@ void GMT_get_time_language (char *name)
 	
 	sprintf (file, "%s%cshare%ctime%c%s.d\0", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, name);
 	if ((fp = fopen (file, "r")) == NULL) {
-		fprintf (stderr, "GMT Warning: Could not load %s - revert to english!\n", name);
-		sprintf (file, "%s%cshare%ctime%cenglish.d\0", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+		fprintf (stderr, "GMT Warning: Could not load %s - revert to US!\n", name);
+		sprintf (file, "%s%cshare%ctime%cus.d\0", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
 		if ((fp = fopen (file, "r")) == NULL) {
 			fprintf (stderr, "GMT Error: Could not find %s!\n", file);
 			exit (EXIT_FAILURE);
 		}
-		strcpy (gmtdefs.time_language, "english");
+		strcpy (gmtdefs.time_language, "us");
 	}
 	
 	while (fgets (line, BUFSIZ, fp)) {

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.38 2001-09-22 21:12:25 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.39 2001-09-23 23:41:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3777,7 +3777,7 @@ struct CUSTOM_SYMBOL * GMT_get_custom_symbol (char *name) {
 }
 
 struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
-	int nc, error = 0;
+	int nc, last, error = 0;
 	BOOLEAN do_fill, do_pen, first = TRUE;
 	char file[BUFSIZ], buffer[BUFSIZ], col[8][64];
 	char *fill_p, *pen_p;
@@ -3816,35 +3816,113 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 
 		do_fill = do_pen = FALSE;
 		
-		if (col[2][0] == 'M') {	/* Set new anchor point */
-			if (nc < 3 || nc > 5) error++;
-			s->action = ACTION_MOVE;
-			if (nc > 3 && col[3][0] == '-' && col[3][1] == 'G') fill_p = &col[3][2], do_fill = TRUE;
-			if (nc > 3 && col[3][0] == '-' && col[3][1] == 'W') pen_p = &col[3][2], do_pen = TRUE;
-			if (nc > 4 && col[4][0] == '-' && col[4][1] == 'G') fill_p = &col[4][2], do_fill = TRUE;
-			if (nc > 4 && col[4][0] == '-' && col[4][1] == 'W') pen_p = &col[4][2], do_pen = TRUE;
-		}
-		else if (col[2][0] == 'D') {	/* Draw to next point */
-			if (!nc == 3) error++;
-			s->action = ACTION_DRAW;
-		}
-		else if (nc > 3 && col[3][0] == 'C') {	/* Draw complete circle */
-			s->r = atof (col[2]);
-			if (nc > 4 && col[4][0] == '-' && col[4][1] == 'G') fill_p = &col[4][2], do_fill = TRUE;
-			if (nc > 4 && col[4][0] == '-' && col[4][1] == 'W') pen_p = &col[4][2], do_pen = TRUE;
-			if (nc > 5 && col[5][0] == '-' && col[5][1] == 'G') fill_p = &col[5][2], do_fill = TRUE;
-			if (nc > 5 && col[5][0] == '-' && col[5][1] == 'W') pen_p = &col[5][2], do_pen = TRUE;
-			s->action = ACTION_CIRCLE;
-		}
-		else if (nc == 6 && col[5][0] == 'A') {	/* Draw arc of a circle */
-			s->action = ACTION_ARC;
-			s->r = atof (col[2]);
-			s->dir1 = atof (col[3]) * D2R;	/* Convert to radians here */
-			s->dir2 = atof (col[4]) * D2R;
-		}
-		else
-			error++;
+		last = nc - 1;
+		if (col[last][0] == '-' && col[last][1] == 'G') fill_p = &col[last][2], do_fill = TRUE, last--;
+		if (col[last][0] == '-' && col[last][1] == 'W') pen_p = &col[3][2], do_pen = TRUE, last--;
+		if (col[last][0] == '-' && col[last][1] == 'G') fill_p = &col[last][2], do_fill = TRUE, last--;	/* Check again for -G since perhaps -G -W was given */
+		if (last < 2) error++;
+		
+		switch (col[last][0]) {
+		
+			/* M, D, and A allows for arbitrary polygons to be designed - these may be painted or filled with pattern */
 			
+			case 'M':		/* Set new anchor point */
+				if (last != 2) error++;
+				s->action = ACTION_MOVE;
+				break;
+		
+			case 'D':		/* Draw to next point */
+				if (last != 2) error++;
+				s->action = ACTION_DRAW;
+				break;
+				
+			case 'A':		/* Draw arc of a circle */
+				if (last != 5) error++;
+				s->p[0] = atof (col[2]);
+				s->p[1] = atof (col[3]) * D2R;	/* Convert to radians here */
+				s->p[2] = atof (col[4]) * D2R;
+				s->action = ACTION_ARC;
+				break;
+			
+			/* These are standard psxy-type symbols.  They can only be painted, not used with pattern fill.  Exception is circle which can take pattern */
+			
+			case 'C':		/* Draw complete circle (backards compatible) */
+			case 'c':		/* Draw complete circle */
+				if (last != 3) error++;
+				s->p[0] = atof (col[2]);
+				s->action = ACTION_CIRCLE;
+				break;
+				
+			case 'a':		/* Draw star symbol */
+				if (last != 3) error++;
+				s->p[0] = atof (col[2]);
+				s->action = ACTION_STAR;
+				break;
+				
+			case 'd':		/* Draw diamond symbol */
+				if (last != 3) error++;
+				s->p[0] = atof (col[2]);
+				s->action = ACTION_DIAMOND;
+				break;
+				
+			case 'h':		/* Draw hexagon symbol */
+				if (last != 3) error++;
+				s->p[0] = atof (col[2]);
+				s->action = ACTION_HEXAGON;
+				break;
+				
+			case 'i':		/* Draw inverted triangle symbol */
+				if (last != 3) error++;
+				s->p[0] = atof (col[2]);
+				s->action = ACTION_ITRIANGLE;
+				break;
+				
+			case 's':		/* Draw square symbol */
+				if (last != 3) error++;
+				s->p[0] = atof (col[2]);
+				s->action = ACTION_SQUARE;
+				break;
+				
+			case 't':		/* Draw triangle symbol */
+				if (last != 3) error++;
+				s->p[0] = atof (col[2]);
+				s->action = ACTION_TRIANGLE;
+				break;
+				
+			case 'x':		/* Draw cross symbol */
+				if (last != 3) error++;
+				s->p[0] = atof (col[2]);
+				s->action = ACTION_CROSS;
+				break;
+				
+			case 'r':		/* Draw rect symbol */
+				if (last != 4) error++;
+				s->p[0] = atof (col[2]);
+				s->p[1] = atof (col[3]);
+				s->action = ACTION_RECT;
+				break;
+				
+			case 'w':		/* Draw wedge (pie) symbol */
+				if (last != 5) error++;
+				s->p[0] = atof (col[2]);
+				s->p[1] = atof (col[3]);	/* Leave angles in degrees */
+				s->p[2] = atof (col[4]);
+				s->action = ACTION_PIE;
+				break;
+				
+			case 'e':		/* Draw ellipse symbol */
+				if (last != 5) error++;
+				s->p[0] = atof (col[2]);	/* Leave direction in degrees */
+				s->p[1] = atof (col[3]);
+				s->p[2] = atof (col[4]);
+				s->action = ACTION_ELLIPSE;
+				break;
+				
+			default:
+				error++;
+				break;
+		}
+				
 		if (error) {
 			fprintf (stderr, "GMT ERROR: %s : Error in parsing symbol commands in file %s\n", GMT_program, file);
 			fprintf (stderr, "GMT ERROR: %s : Offending line: %s\n", GMT_program, buffer);
@@ -3921,12 +3999,42 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				n++;
 				break;
 				
+			case ACTION_ARC:
+				flush = TRUE;
+				if (project_info.three_D) {
+					sr = 0.5 * s->p[0] * size;
+					na = MAX (irint (fabs (s->p[2] - s->p[1]) * sr / gmtdefs.line_step), 16);
+					da = (s->p[2] - s->p[1]) / na;
+					for (i = 0; i < na; i++) {
+						if (n >= n_alloc) {
+							n_alloc += GMT_SMALL_CHUNK;
+							xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), GMT_program);
+							yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), GMT_program);
+						}
+						sincos (s->p[1] + i * da, &sa, &ca);
+						xx[n] = x + sr * ca;
+						yy[n] = y + sr * sa;
+						n++;
+					}
+				}
+				else
+					ps_arc (x, y, s->p[0] * size, s->p[1], s->p[2], 0);
+				break;
+				
+			case ACTION_CROSS:
+				f = (s->fill) ? s->fill : fill;
+				p = s->pen;
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, pen, f, fill, outline, &flush);
+				if (p) GMT_setpen (p);
+				(project_info.three_D) ? GMT_cross3D (x, y, z0, s->p[0] * size) : ps_cross (x, y, s->p[0] * size);
+				break;
+
 			case ACTION_CIRCLE:
 				f = (s->fill) ? s->fill : fill;
 				p = s->pen;
 				if (f->use_pattern || project_info.three_D) {
 					if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, pen, f, fill, outline, &flush);
-					sr = 0.5 * s->r * size;
+					sr = 0.5 * s->p[0] * size;
 					na = MAX (irint (TWO_PI * sr / gmtdefs.line_step), 16);
 					da = TWO_PI / na;
 					for (i = 0; i < na; i++) {
@@ -3945,31 +4053,87 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				else {	/* Clean circle - no image fill required */
 					if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, pen, f, fill, outline, &flush);
 					if (p) GMT_setpen (p);
-					ps_circle (x, y, s->r * size, f->rgb, outline);
+					ps_circle (x, y, s->p[0] * size, f->rgb, outline);
 				}
 				break;
 				
-			case ACTION_ARC:
-				flush = TRUE;
-				if (project_info.three_D) {
-					sr = 0.5 * s->r * size;
-					na = MAX (irint (fabs (s->dir2 - s->dir1) * sr / gmtdefs.line_step), 16);
-					da = (s->dir2 - s->dir1) / na;
-					for (i = 0; i < na; i++) {
-						if (n >= n_alloc) {
-							n_alloc += GMT_SMALL_CHUNK;
-							xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), GMT_program);
-							yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), GMT_program);
-						}
-						sincos (s->dir1 + i * da, &sa, &ca);
-						xx[n] = x + sr * ca;
-						yy[n] = y + sr * sa;
-						n++;
-					}
-				}
-				else
-					ps_arc (x, y, s->r * size, s->dir1, s->dir2, 0);
+			case ACTION_SQUARE:
+				f = (s->fill) ? s->fill : fill;
+				p = s->pen;
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, pen, f, fill, outline, &flush);
+				if (p) GMT_setpen (p);
+				(project_info.three_D) ? GMT_square3D (x, y, z0, s->p[0] * size, fill->rgb, outline) : ps_square (x, y, s->p[0] * size, fill->rgb, outline);
 				break;
+
+			case ACTION_TRIANGLE:
+				f = (s->fill) ? s->fill : fill;
+				p = s->pen;
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, pen, f, fill, outline, &flush);
+				if (p) GMT_setpen (p);
+				(project_info.three_D) ? GMT_triangle3D (x, y, z0, s->p[0] * size, fill->rgb, outline) : ps_triangle (x, y, s->p[0] * size, fill->rgb, outline);
+				break;
+
+			case ACTION_DIAMOND:
+				f = (s->fill) ? s->fill : fill;
+				p = s->pen;
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, pen, f, fill, outline, &flush);
+				if (p) GMT_setpen (p);
+				(project_info.three_D) ? GMT_diamond3D (x, y, z0, s->p[0] * size, fill->rgb, outline) : ps_diamond (x, y, s->p[0] * size, fill->rgb, outline);
+				break;
+
+			case ACTION_STAR:
+				f = (s->fill) ? s->fill : fill;
+				p = s->pen;
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, pen, f, fill, outline, &flush);
+				if (p) GMT_setpen (p);
+				(project_info.three_D) ? GMT_star3D (x, y, z0, s->p[0] * size, fill->rgb, outline) : ps_star (x, y, s->p[0] * size, fill->rgb, outline);
+				break;
+
+			case ACTION_HEXAGON:
+				f = (s->fill) ? s->fill : fill;
+				p = s->pen;
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, pen, f, fill, outline, &flush);
+				if (p) GMT_setpen (p);
+				(project_info.three_D) ? GMT_hexagon3D (x, y, z0, s->p[0] * size, fill->rgb, outline) : ps_hexagon (x, y, s->p[0] * size, fill->rgb, outline);
+				break;
+
+			case ACTION_ITRIANGLE:
+				f = (s->fill) ? s->fill : fill;
+				p = s->pen;
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, pen, f, fill, outline, &flush);
+				if (p) GMT_setpen (p);
+				(project_info.three_D) ? GMT_itriangle3D (x, y, z0, s->p[0] * size, fill->rgb, outline) : ps_itriangle (x, y, s->p[0] * size, fill->rgb, outline);
+				break;
+
+			case ACTION_ELLIPSE:
+				f = (s->fill) ? s->fill : fill;
+				p = s->pen;
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, pen, f, fill, outline, &flush);
+				if (p) GMT_setpen (p);
+				(project_info.three_D) ? GMT_ellipse3D (x, y, z0, s->p[0], s->p[1] * size, s->p[1] * size, fill->rgb, outline) : ps_ellipse (x, y, s->p[0], s->p[1] * size, s->p[1] * size, fill->rgb, outline);
+				break;
+
+			case ACTION_PIE:
+				f = (s->fill) ? s->fill : fill;
+				p = s->pen;
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, pen, f, fill, outline, &flush);
+				if (p) GMT_setpen (p);
+				(project_info.three_D) ? GMT_pie3D (x, y, z0, s->p[0] * size, s->p[1], s->p[2], fill->rgb, outline) : ps_pie (x, y, s->p[0] * size, s->p[1], s->p[2], fill->rgb, outline);
+				break;
+
+			case ACTION_RECT:
+				f = (s->fill) ? s->fill : fill;
+				p = s->pen;
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, pen, f, fill, outline, &flush);
+				if (p) GMT_setpen (p);
+				(project_info.three_D) ? GMT_rect3D (x, y, z0, s->p[0] * size, s->p[1] * size, fill->rgb, outline) : ps_rect (x - 0.5 * s->p[0] * size, y - 0.5 * s->p[1] * size, x + 0.5 * s->p[0] * size, y + 0.5 * s->p[1] * size, fill->rgb, outline);
+				break;
+				
+			default:
+				fprintf (stderr, "GMT ERROR: %s : Unrecognized symbol code (%d) passed to GMT_draw_custom_symbol\n", GMT_program, s->action);
+				exit (EXIT_FAILURE);
+				break;
+
 		}
 		
 		s = s->next;
@@ -3995,5 +4159,184 @@ void GMT_flush_symbol_piece (double *x, double *y, double z, int *n, struct GMT_
 	GMT_fill (x, y, *n, this_f, draw_outline);
 	*flush = FALSE;
 	*n = 0;
+}
+
+/* Here lies all the 3-D version of psxyz symbols - used by both psxyz and the custom drawing routine GMT_draw_custom_symbol */
+
+void GMT_cross3D (double x, double y, double z, double size)
+{
+	double xp[2], yp[2], plot_x, plot_y;
+
+	size *= 0.5;	
+	xp[0] = x - size;	xp[1] = x + size;
+	yp[0] = y - size;	yp[1] = y + size;
+	GMT_xyz_to_xy (xp[0], yp[0], z, &plot_x, &plot_y);
+	ps_plot (plot_x, plot_y, 3);
+	GMT_xyz_to_xy (xp[1], yp[1], z, &plot_x, &plot_y);
+	ps_plot (plot_x, plot_y, 2);
+	GMT_xyz_to_xy (xp[1], yp[0], z, &plot_x, &plot_y);
+	ps_plot (plot_x, plot_y, 3);
+	GMT_xyz_to_xy (xp[0], yp[1], z, &plot_x, &plot_y);
+	ps_plot (plot_x, plot_y, 2);
+}
+	
+void GMT_square3D (double x, double y, double z, double size, int rgb[], int outline)
+{
+	int i;
+	double xp[4], yp[4], plot_x[4], plot_y[4];
+	
+	size *= 0.3535533906;
+	xp[0] = xp[3] = x - size;	xp[1] = xp[2] = x + size;
+	yp[0] = yp[1] = y - size;	yp[2] = yp[3] = y + size;
+	for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &plot_x[i], &plot_y[i]);
+	ps_patch (plot_x, plot_y, 4, rgb, outline);
+}
+
+void GMT_rect3D (double x, double y, double z, double xsize, double ysize, int rgb[], int outline)
+{
+	int i;
+	double xp[4], yp[4], plot_x[4], plot_y[4];
+	
+	xp[0] = xp[3] = x - xsize;	xp[1] = xp[2] = x + xsize;
+	yp[0] = yp[1] = y - ysize;	yp[2] = yp[3] = y + ysize;
+	for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &plot_x[i], &plot_y[i]);
+	ps_patch (plot_x, plot_y, 4, rgb, outline);
+}
+
+void GMT_circle3D (double x, double y, double z, double size, int rgb[], int outline)
+{
+	/* Must plot a squashed circle */
+	int i;
+	double xx, yy, a, da, s, c, plot_x[51], plot_y[51];
+	
+	da = TWO_PI / 50.0;
+	size *= 0.5;
+	for (i = 0; i <= 50; i++) {
+		a = i * da;
+		sincos (a, &s, &c);
+		xx = x + size * c;
+		yy = y + size * s;
+		GMT_xyz_to_xy (xx, yy, z, &plot_x[i], &plot_y[i]);
+	}
+	ps_polygon (plot_x, plot_y, 51, rgb, outline);
+}
+
+void GMT_ellipse3D (double x, double y, double z, double direction, double major, double minor, int rgb[], int outline)
+{
+	/* Must plot a squashed circle */
+	int i;
+	double dx, dy, a, da, s, c, sin_direction, cos_direction, x_prime, y_prime, plot_x[51], plot_y[51];
+	
+	sincos (direction * D2R, &sin_direction, &cos_direction);
+	da = TWO_PI / 50.0;
+	for (i = 0; i <= 50; i++) {
+		a = i * da;
+		sincos (a, &s, &c);
+		dx = major * c;
+		dy = minor * s;
+		x_prime = x + dx * cos_direction - dy * sin_direction;
+		y_prime = y + dx * sin_direction + dy * cos_direction;
+		GMT_xyz_to_xy (x_prime, y_prime, z, &plot_x[i], &plot_y[i]);
+	}
+	ps_polygon (plot_x, plot_y, 51, rgb, outline);
+}
+
+void GMT_pie3D (double x, double y, double z, double size, double dir1, double dir2, int rgb[], int outline)
+{
+	/* Must plot a squashed pie wedge */
+	int i, j, n;
+	double arc, xx, yy, a, da, s, c, plot_x[52], plot_y[52];
+	
+	arc = (dir2 - dir1);
+	while (arc > TWO_PI) arc -= TWO_PI;
+	da = TWO_PI / 50.0;	/* Standard step length for full circle */
+	n = irint (arc / da);	/* But we are not doing a full circle so use less than 50 points */
+	da = arc / n;		/* Step length for this pie wedge */
+	size *= 0.5;
+	GMT_xyz_to_xy (x, y, z, &plot_x[0], &plot_y[0]);	/* Start from center */
+	for (i = 0, j = 1; i <= n; i++, j++) {
+		a = dir1 + i * da;
+		sincos (a, &s, &c);
+		xx = x + size * c;
+		yy = y + size * s;
+		GMT_xyz_to_xy (xx, yy, z, &plot_x[j], &plot_y[j]);
+	}
+	ps_polygon (plot_x, plot_y, j, rgb, outline);
+}
+
+void GMT_triangle3D (double x, double y, double z, double size, int rgb[], int outline)
+{
+	int i;
+	double xp[3], yp[3], plot_x[3], plot_y[3];
+	
+	xp[0] = x - 0.433012701892*size;	yp[0] = yp[1] = y - 0.25  * size;
+	xp[1] = x + 0.433012701892*size;	xp[2] = x; 	yp[2] = y + 0.5 * size;
+	for (i = 0; i < 3; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &plot_x[i], &plot_y[i]);
+	ps_patch (plot_x, plot_y, 3, rgb, outline);
+}
+
+void GMT_itriangle3D (double x, double y, double z, double size, int rgb[], int outline)
+{
+	int i;
+	double xp[3], yp[3], plot_x[3], plot_y[3];
+	
+	xp[0] = x - 0.433012701892*size;	yp[0] = yp[1] = y + 0.25 * size;
+	xp[1] = x + 0.433012701892*size;	xp[2] = x; 	yp[2] = y - 0.5 * size;
+	for (i = 0; i < 3; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &plot_x[i], &plot_y[i]);
+	ps_patch (plot_x, plot_y, 3, rgb, outline);
+}
+
+void GMT_diamond3D (double x, double y, double z, double size, int rgb[], int outline)
+{
+	int i;
+	double xp[4], yp[4], plot_x[4], plot_y[4];
+
+	size *= 0.5;
+	xp[0] = xp[2] = x;	xp[1] = x - size;	xp[3] = x + size;
+	yp[0] = y - size;	yp[1] = yp[3] = y;	yp[2] = y + size;
+	for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &plot_x[i], &plot_y[i]);
+	ps_patch (plot_x, plot_y, 4, rgb, outline);
+}
+
+void GMT_hexagon3D (double x, double y, double z, double size, int rgb[], int outline)
+{
+	int i;
+	double xp[6], yp[6], plot_x[6], plot_y[6], sx, sy;
+	
+	size *= 0.5;
+	sx = 0.5 * size;	sy = 0.8660254038 * size;
+	xp[0] = x + size;	yp[0] = y;
+	xp[1] = x + sx;		yp[1] = y + sy;
+	xp[2] = x - sx;		yp[2] = yp[1];
+	xp[3] = x - size;	yp[3] = y;
+	xp[4] = xp[2];		yp[4] = y - sy;
+	xp[5] = xp[1];		yp[5] = yp[4];
+
+	for (i = 0; i < 6; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &plot_x[i], &plot_y[i]);
+
+	ps_patch (plot_x, plot_y, 6, rgb, outline);
+}
+
+void GMT_star3D (double x, double y, double z, double size, int rgb[], int outline)
+{
+	int i, k;
+	double xx, yy, plot_x[10], plot_y[10], a, s2;
+
+	size *= 0.5;
+	s2 = 0.38196601125 * size;
+	for (i = k = 0; i < 5; i++) {
+		a = -54.0 + i * 72.0;
+		xx = x + size * cosd (a);
+		yy = y + size * sind (a);
+		GMT_xyz_to_xy (xx, yy, z, &plot_x[k], &plot_y[k]);
+		k++;
+		a += 36.0;
+		xx = x + s2 * cosd (a);
+		yy = y + s2 * sind (a);
+		GMT_xyz_to_xy (xx, yy, z, &plot_x[k], &plot_y[k]);
+		k++;
+	}
+
+	ps_patch (plot_x, plot_y, 10, rgb, outline);
 }
 
