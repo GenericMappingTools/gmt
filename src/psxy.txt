@@ -278,7 +278,7 @@ triangle: \fIx	y	size\fP	\fBt\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
 wedge: \fIx	y	radius	dir1	dir2\fP	\fBw\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
-When designing your symbol, the \FIx, y\fP and other dimensions are relative to a symbol of size 1, and all the
+When designing your symbol, the \fIx, y\fP and other dimensions are relative to a symbol of size 1, and all the
 dimensions will be scaled by the actual symbol size chosen at run-time.  To design a symbol, make a grid paper
 with \fBpsbasemap \-R\fP-0.5/0.5/-0.5/0.5 \fB\-JX\fP4\fBi\fP \fB\-Ba\fP0.1\gBg\gP0.05 \fB\-P\fP > grid.ps and
 draw your symbol, centering it on (0,0).  For examples of symbols, see the set supplied with GMT in $GMTHOME/share/custom.

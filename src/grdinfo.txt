@@ -21,7 +21,7 @@ No space between the option flag and the associated arguments.
 Formats the report using tab-separated fields on a single line.  The output is
 \fIw e s n z0 z1 dx dy nx ny \fP[ \fIx0 y0 x1 y1\fP ] [ \fImed scale\fP ] [\fI mean std rms\fP] [\fIn_nan\fP].
 The data in brackets are output only if the corresponding options
-\fB\-M, \-L1\fP, \fB\-L2\fP, and \fB\-M are used, respectively.
+\fB\-M, \-L1\fP, \fB\-L2\fP, and \fB\-M\fP are used, respectively.
 .TP
 .B \-F
 Report grid domain and x/y-increments world mapping format [Default is generic].
