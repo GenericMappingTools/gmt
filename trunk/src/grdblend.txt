@@ -27,7 +27,7 @@ If the ASCII file is not given we will read standard input.
 .TP
 .B \-N
 No data.  Set nodes with no input grid to this value [Default is NaN].
-TP
+.TP
 .B \-Q
 Create a header-less gridfile suitable for use with grdraster.  Requires that the output gridfile
 is a native format (i.e., not netCDF).
@@ -55,8 +55,8 @@ piece_4.grd	-R<subregion_4> 1
 .sp
 Then run
 .br
-sp
-grdblend blend.job \fB\-G\fPblend.grd \fB\-R\fP<full_region> \fB\-I\fP<dx/dy> \-V\fP
+.sp
+\fBgrdblend\fP blend.job \fB\-G\fPblend.grd \fB\-R\fP<full_region> \fB\-I\fP<dx/dy> \fB-V\fP
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR grd2xyz (l),
