@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_G.sh,v 1.2 2001-04-03 16:06:39 pwessel Exp $
+#	$Id: GMT_App_G.sh,v 1.3 2002-08-26 22:03:16 pwessel Exp $
 #
 #	Makes the insert for Appendix G (fonts)
 #
@@ -7,14 +7,10 @@
 # dy is line spacing and y0 is total box height
 
 dy=-0.2222
-y0=4.744
-#../../rsccs_refresh.sh PS_font_names.h
-cp -f ../../src/PS_font_names.h .
-
-$AWK -F\" '{print $2}' PS_font_names.h > t
-
+y0=4.3
+grep -v '^#' ../../share/pslib/PS_font_info.d | $AWK '{print $1}' > t
 gmtset FRAME_PEN 0.5p
-psxy -R0/5.4/0/$y0 -Jx1i -P -K -B0 -M <<EOF> GMT_App_G.ps
+psxy -R0/5.4/0/$y0 -Jx1i -P -K -B0 -M << EOF > GMT_App_G.ps
 >
 0.3	0
 0.3	$y0
@@ -38,12 +34,12 @@ psxy -R -Jx -O -K <<EOF>> GMT_App_G.ps
 EOF
 
 i=1
-while [ $i -le 19 ]
+while [ $i -le 17 ]
 do
 	i1=`echo "$i - 1" | bc`
-	i2=`echo "$i1 + 19" | bc`
+	i2=`echo "$i1 + 17" | bc`
 	k1=$i
-	k2=`echo "$i + 19" | bc`
+	k2=`echo "$i + 17" | bc`
 
 	f1=`sed -n ${k1}p t`
 	f2=`sed -n ${k2}p t`
@@ -52,15 +48,6 @@ do
 		f1="Symbol @%0%(Symbol)@%%"
 	fi
 	fn2=$i2
-	if [ $i2 -eq "34" ]; then
-		f2="ZapfDingbats @%0%(ZapfDingbats)@%%"
-		fn2=0
-	else if [ $i2 -gt "34" ]; then
-		f2="$f2 @%0%(JPN)@%%"
-		fn2=0
-	     fi
-	fi
-
 	pstext -R -Jx -O -K -Y${dy}i <<EOF>> GMT_App_G.ps
 0.15	0.03	10	0	$i1	BC	$i1
 0.4	0.03	10	0	$i1	BL	$f1
@@ -70,12 +57,12 @@ EOF
 	i=`echo "$i + 1" | bc`
 done
 
-f1=`sed -n 39p t`
 pstext -R -Jx -O -K -Y${dy}i << EOF >> GMT_App_G.ps
-2.85	0.03	10	0	0	BC	38
-3.1	0.03	10	0	0	BL	@%38%$f1@%% (JPN)
+2.85	0.03	10	0	0	BC	34
+3.1	0.03	10	0	34	BL	ZapfDingbats @%0%(ZapfDingbats)@%%
 EOF
 
 psxy -R -Jx -O /dev/null >> GMT_App_G.ps
-\rm -f t PS_font_names.h
+\rm -f tbg
+
 gmtset FRAME_PEN 1.25p
