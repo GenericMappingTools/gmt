@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.19 2002-09-06 16:58:49 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.20 2002-09-09 17:03:27 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -43,6 +43,7 @@ GS_LIB=/usr/share/ghostscript/7.00/lib
 GMTHOME=/home/aa/pwessel/GMTdev/GMT
 PATH=$GMTHOME/bin:$PATH
 export PATH
+export GS_LIB
 MAIL=/home/aa/pwessel/nsmail/GMT.sbd/Registrations	# Where incoming registrations reside
 REGHOME=/home/aa/pwessel/GMTdev/GMT/registration	# Where to do the work
 CVSROOT=":pserver:pwessel@gmt.soest.hawaii.edu:/home/gmt/gmt/cvs"
