@@ -1,0 +1,42 @@
+.TH X2SYS_INIT GMTMANSECTION DATE VERSION VERSION
+.SH NAME
+x2sys_init \- Initialize data baes for track data files
+.SH SYNOPSIS
+\fBx2sys_init\fP \fITAG\fP [ \fB\-D\fP\fIdeffile\fP ] [ \fB\-F\fP ] 
+[ \fB\-Gd|g\fP ] [ \fB\-I\fP\fIdx\fP[\fIdy\fP] ] 
+[ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-V\fP ] [ \fB\-W\fP\fIsize\fP ]
+.SH DESCRIPTION
+\fBx2sys_init\fP initializes a set of data base that are particular to on kind
+of track data.  These data and their associated data bases are given a short-hand
+notation called a system TAG.   The TAG remembers settings such as file format,
+if the data are geographic, and the binning resolution for track indexes.  Running
+\fBx2sys_init\fP is a prerequisite to running \fBx2sys_binlist\fP which will create
+a crude representation of where data track go.
+.TP
+\fITAG\fP
+The unique name of this data type system.
+.SH OPTIONS
+No space between the option flag and the associated arguments
+.TP
+.B \-D
+Definition file for this data set. [x2sys.def]
+.TP
+.B \-G
+Selects geographical coordinates.  Append \fBd\fP for discontinuity at the
+Dateline (makes longitude go from -180 to + 180) or \fBg\fP for discontinuity
+at Greenwhich (makes longitude go from 0 to 360 [Default]).
+#include "explain_-R.txt"
+#include "explain_-V.txt"
+.TP
+.B \-W
+Sets maximum time gap (in user units) allowed between points on either
+side of a crossover [Default is Infinity].
+.SH EXAMPLES
+To initiate new track databases to be used with MGD77 data from NGDC, try
+.br
+.sp
+\fBx2sys_init\fP MGD77 \fB\-V \-D\fPmgd77 \fB\R\-R\fP0/360/-90/90 \fB\-I\fP1/1 
+.SH "SEE ALSO"
+.IR x2sys_binlist (GMTMANSECTION)
+.IR x2sys_get (GMTMANSECTION)
+.IR x2sys_put (GMTMANSECTION)
