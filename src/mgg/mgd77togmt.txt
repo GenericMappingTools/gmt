@@ -46,7 +46,7 @@ To create new gmt files from all the mgd77 files listed in \fIlist.d\fP:
 #include "refs.i"
 .br
 .sp
-MGD77 Task Group, 1977, The Marine Geophysical Data Exchange Format - 'MGD77',
+MGD77 Task Group, 1977, The Marine Geophysical Data Exchange Format - MGD77,
 Key to Geophysical Records documentation No. 10, National Geophysical and
 Solar-Terrestrial Data Center, Boulder, CO.
 .br

@@ -106,7 +106,7 @@ Multiply trace locations by scale before plotting.
 Override sample interval in reel header.
 .TP
 .B \-Z
-Don't plot traces with zero rms amplitude.
+Do not plot traces with zero rms amplitude.
 .br
 .sp
 .SH EXAMPLES

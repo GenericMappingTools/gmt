@@ -102,7 +102,7 @@ x, y, time along track #1, time along track #2, distance along track #1,
 distance along track #2, heading along track #1, and heading along track #2,
 and then pairs of (COE, average value) for each data type.  Sign convention:
 If lega and legb are passed on the command line, then the COE value is Value
-(lega) - Value (legb).  It is recommended that the Akima's spline is used
+(lega) - Value (legb).  It is recommended that the Akima spline is used
 instead of the natural cubic spline, since it is less sensitive to outliers
 that tend to introduce wild oscillations in the interpolation.
 .SH EXAMPLES

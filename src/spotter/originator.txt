@@ -75,8 +75,8 @@ Truncate seamount ages exceeding the upper age set with \fB\-N\fP [no truncation
 #include "explain_-V.txt"
 .TP
 .B \-W
-Only report those seamounts whose flowlines' closest approach to any hotspot
-were less than \fImaxdist\fP [Default reports all seamounts].
+Only report those seamounts whose flowlines came within \fImaxdist\fP to any hotspot
+[Default reports all seamounts].
 #include "explain_-t.txt"
 #include "explain_-i.txt"
 #include "explain_-n.txt"

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtguru.macros.orig,v 1.12 2003-10-27 17:19:52 pwessel Exp $
+#	$Id: gmtguru.macros.orig,v 1.13 2004-01-22 18:23:38 pwessel Exp $
 #
 #	Original GMT Guru Makefile Macro for Makefile.guru
 #	Users should cp to gmtguru.macros and edit it instead!
@@ -25,6 +25,6 @@ GMT_DEBUG	= --enable-debug	# --enable-debug will use -g; else -O with compiler
 
 #  Choose the correct preprocessing command for your system (this is for man page processing only):
 #
-TXT2MAN		= /usr/bin/cpp -P -nostdinc	# Linux
+TXT2MAN		= /usr/bin/cpp -w -P -nostdinc	# Linux
 #TXT2MAN	= /usr/ccs/lbin/cpp		# HPUX
 #TXT2MAN	= cc -E -Xs			# Solaris Workshop
