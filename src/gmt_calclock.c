@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.19 2001-09-15 02:36:01 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.20 2001-09-20 02:12:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -910,22 +910,6 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 			p->sd[1] = 0.0;
 			GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
 			p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
-			
-			if (FALSE) {	/* This was Walter's old code */
-			k = (p->cc[0].day_w - kws) + p->step;
-			if (k > 7) {
-				/* Overshot start of next week; use next kday routines
-					to find start of next week  */
-				p->rd[1] = GMT_kday_after (p->rd[0], kws);
-			}
-			else {
-				/* It is OK to add p->step days to rd[0] to get rd[1]  */
-				p->rd[1] = p->rd[0] + p->step;
-			}
-			p->sd[1] = 0.0;
-			GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
-			p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
-			}
 			break;
 		
 		case 'r':
