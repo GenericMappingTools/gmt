@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.33 2001-12-24 18:20:29 pwessel Exp $
+ *	$Id: pslib.c,v 1.34 2001-12-24 19:14:37 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1248,6 +1248,17 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 			return (-1);
 		}
 	}
+
+#ifdef WIN32
+	/* 
+	 * Diomidis Spinellis, December 2001
+	 * Set binary mode to avoid corrupting binary color images.
+	 */
+	setmode(fileno(ps.fp), O_BINARY);
+#elif __EMX__	/* PW: Same for OS/2 with EMX support */
+	_fsetmode (ps.fp, "b");
+#endif
+
 	right_now = time ((time_t *)0);
 	ps.landscape = !(overlay || mode);	/* Only rotate if not overlay and not Portrait */
 	ps.xscl = xscl;
