@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+/*	$Id: gshhs.h,v 1.2 2001-02-03 00:38:13 pwessel Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -28,6 +28,10 @@
 
 #ifndef M_PI
 #define M_PI          3.14159265358979323846
+#endif
+
+#ifndef SEEK_CUR	/* For really ancient systems */
+#define SEEK_CUR 1
 #endif
 
 /* For byte swapping if needed */
