@@ -54,7 +54,7 @@ Maximum number of points to use in the interpolation [6].
 .TP
 .B \-O
 Output results using the old XOVER format [Default is X2SYS format].
-This options should only be used with *.gmt-formatted MGD77 files.
+This option should only be used with *.gmt-formatted MGD77 files.
 #include "explain_-R.txt"
 .TP
 .B \-S
