@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.105 2004-06-02 03:11:13 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.106 2004-06-02 08:59:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2239,7 +2239,7 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode)
 		if (G->box == 32) {	/* Repeat call for Transparent text box (already set by cli) */
 			ps_pathtext (NULL, NULL, 0, NULL, NULL, NULL, 0, 0.0, NULL, 0, NULL, NULL, 32 + G->curved_text + 4);
 		}
-		else if (G->box == 0) {	/* Transparent text box requested for path tex */
+		else if (G->box == 0 && !project_info.three_D) {	/* Transparent text box requested for path tex */
 			angle = (double *) GMT_memory (VNULL, (size_t)C->n_labels, sizeof (double), GMT_program);
 			txt = (char **) GMT_memory (VNULL, (size_t)C->n_labels, sizeof (char *), GMT_program);
 			node = (int *) GMT_memory (VNULL, (size_t)C->n_labels, sizeof (int), GMT_program);
@@ -2251,19 +2251,12 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode)
 			form = 12 * mode + G->curved_text;	/* 12 means clip label and do not draw line */
 			if (i == first_i) form |= 64;		/* First of possibly several calls to ps_pathtext */
 			if (i == last_i)  form |= 128;		/* Final call to ps_pathtext */
-			if (project_info.three_D) {	/* Must place text items with GMT_text3D */
-				GMT_2D_to_3D (C->x, C->y, G->z_level, C->n);
-				ps_pathtext (C->x, C->y, C->n, node, angle, txt, C->n_labels, G->label_font_size, G->clearance, just, G->pen.rgb, G->font_rgb, form + 2);
-				for (k = 0; k < G->n_label; k++) GMT_text3D (C->L[k].x, C->L[k].y, project_info.z_level, G->label_font_size, gmtdefs.annot_font[0], C->L[k].label, C->L[k].angle, just, 0);
-			}
-			else {	/* 2-D, OK to let pathtext do the text setting */
-				ps_pathtext (C->x, C->y, C->n, node, angle, txt, C->n_labels, G->label_font_size, G->clearance, just, G->pen.rgb, G->font_rgb, form);
-			}
+			ps_pathtext (C->x, C->y, C->n, node, angle, txt, C->n_labels, G->label_font_size, G->clearance, just, G->pen.rgb, G->font_rgb, form);
 			GMT_free ((void *)angle);
 			GMT_free ((void *)node);
 			GMT_free ((void *)txt);
 		}
-		else {	/* Opaque boxes, just place individual texts */
+		else {	/* Opaque boxes or 3-D, just place individual texts */
 			for (k = 0; k < C->n_labels; k++) {
 				GMT_text3D (C->L[k].x, C->L[k].y, project_info.z_level, G->label_font_size, gmtdefs.annot_font[0], C->L[k].label, C->L[k].angle, just, 0);
 			}

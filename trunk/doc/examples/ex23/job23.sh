@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	GMT Example 23  $Id: job23.sh,v 1.4 2004-05-27 04:29:10 pwessel Exp $
+#	GMT Example 23  $Id: job23.sh,v 1.5 2004-06-02 08:59:59 pwessel Exp $
 #
 # Purpose:	Plot distances from Rome and draw shortest paths
 # GMT progs:	gmtset, grdmath, grdcontour, psxy, pstext, grdtrack
@@ -29,7 +29,7 @@ EOF
 pscoast -Rg -JH90/9i -Glightgreen -Sblue -U"Example 23 in Cookbook" -A1000 \
   -B0g30:."Distances from $name to the World": -K -Dc -Wthinnest > example_23.ps
 
-grdcontour dist.grd -A1000+T+ukm+c0.1i+gwhite -Glz-/z+ -S4 -C500 -O -K -J -Wathin,white -Wcthinnest,white,- >> example_23.ps
+grdcontour dist.grd -A1000+T+ukm+c0.1i+kwhite -Glz-/z+ -S4 -C500 -O -K -J -Wathin,white -Wcthinnest,white,- >> example_23.ps
 
 # For each of the cities, plot great circle arc to Rome with psxy
 
