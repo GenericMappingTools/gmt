@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.9 2001-05-29 21:02:40 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.10 2001-08-29 18:03:05 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1774,8 +1774,8 @@ struct EPS *GMT_epsinfo (char *program)
 		new->portrait = (gmtdefs.page_orientation & 1);
 		new->clip_level = 0;
 	}
-	if (gmtdefs.page_orientation & 16) new->clip_level++;		/* Initiated clipping that will extend beyond this process */
-	if (gmtdefs.page_orientation & 32) new->clip_level--;		/* Terminated clipping that was initiated in a prior process */
+	if (gmtdefs.page_orientation & GMT_CLIP_ON) new->clip_level++;		/* Initiated clipping that will extend beyond this process */
+	if (gmtdefs.page_orientation & GMT_CLIP_OFF) new->clip_level--;		/* Terminated clipping that was initiated in a prior process */
 
 	/* Estinates the bounding box for this overlay */
 

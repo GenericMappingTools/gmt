@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.19 2001-08-29 04:34:30 pwessel Exp $
+ *	$Id: gmt.h,v 1.20 2001-08-29 18:03:05 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -147,6 +147,8 @@
 #define GMT_HR2MIN_F	60.0
 #define GMT_HR2MIN_I	60
 #define GMT_MIN2HR	(1.0 / GMT_HR2MIN_F)
+#define GMT_CLIP_ON	1024
+#define GMT_CLIP_OFF	2048
 
 /*--------------------------------------------------------------------
  *			GMT FUNCTION MACRO DEFINITIONS
