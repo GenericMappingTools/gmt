@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.h,v 1.7 2004-01-02 22:45:12 pwessel Exp $
+ *	$Id: gmt_customio.h,v 1.8 2004-01-10 19:41:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -85,5 +85,8 @@ EXTERN_MSC int GMT_srf_write_grd (char *file, struct GRD_HEADER *header, float *
 EXTERN_MSC size_t GMT_native_write_one (FILE *fp, float z, int type);
 EXTERN_MSC float GMT_native_decode (void *vptr, int k, int type);
 EXTERN_MSC double GMT_native_encode (float z, int type);
+
+/* NOAA NGDC MGG format dealt with via includes: */
+#include "mgg_header2.h"
 
 #endif /* GMT_CUSTOMIO_H */
