@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.73 2002-06-24 20:12:16 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.74 2002-06-26 22:29:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -937,7 +937,8 @@ int GMT_log_array (double min, double max, double delta, double **array)
 	
 	v0 = d_log10 (min);
 	start_log = val[0] = pow (10.0, floor (v0));
-	i = n = 0;
+	n = 0;
+	i = 1;	/* Because val[0] is initially set to be a power or ten, hence * tvals[0], so next should be 1 */
 	while ((v0 - d_log10 (val[n])) > SMALL) {
 		if (i < nticks)
 			val[n] = start_log * tvals[i];
