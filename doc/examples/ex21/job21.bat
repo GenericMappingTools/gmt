@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 21
 REM
-REM             $Id: job21.bat,v 1.8 2004-09-29 05:22:20 pwessel Exp $
+REM             $Id: job21.bat,v 1.9 2005-03-04 03:45:01 remko Exp $
 REM
 REM Purpose:    Plot a time-series
 REM
@@ -25,7 +25,7 @@ set R=-R1999-08-11T00:00:00/2004-03-12T00:00:00/0/300
 
 REM Lay down the basemap:
 
-psbasemap %R% -JX9iT/6i -Glightgreen -K -U"Example 21 in Cookbook" -Bs1Y/0WSen -Bpa3Of1o/50WSen:=$::."RedHat (RHAT) Stock Price Trend since IPO": > example_21.ps
+psbasemap %R% -JX9iT/6i -Glightgreen -K -U"Example 21 in Cookbook" -Bs1Y/WSen -Bpa3Of1o/50WSen:=$::."RedHat (RHAT) Stock Price Trend since IPO": > example_21.ps
 
 REM Plot main window with open price as red line over yellow envelope of low/highs
 
