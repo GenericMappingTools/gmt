@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.130 2004-05-06 00:07:25 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.131 2004-05-06 17:54:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3384,11 +3384,11 @@ int GMT_map_getframe (char *in) {
 		if (A->item[GMT_ANNOT_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = annot stride */
 			memcpy ((void *)&A->item[GMT_TICK_UPPER], (void *)&A->item[GMT_ANNOT_UPPER], sizeof (struct PLOT_AXIS_ITEM));
 		else if (A->item[GMT_INTV_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = annot stride */
-			memcpy ((void *)&A->item[GMT_INTV_UPPER], (void *)&A->item[GMT_ANNOT_UPPER], sizeof (struct PLOT_AXIS_ITEM));
+			memcpy ((void *)&A->item[GMT_TICK_UPPER], (void *)&A->item[GMT_INTV_UPPER], sizeof (struct PLOT_AXIS_ITEM));
 		if (A->item[GMT_ANNOT_LOWER].active && !A->item[GMT_TICK_LOWER].active)	/* Set frame ticks = annot stride */
 			memcpy ((void *)&A->item[GMT_TICK_LOWER], (void *)&A->item[GMT_ANNOT_LOWER], sizeof (struct PLOT_AXIS_ITEM));
 		else if (A->item[GMT_INTV_LOWER].active && !A->item[GMT_TICK_LOWER].active)	/* Set frame ticks = annot stride */
-			memcpy ((void *)&A->item[GMT_INTV_LOWER], (void *)&A->item[GMT_ANNOT_LOWER], sizeof (struct PLOT_AXIS_ITEM));
+			memcpy ((void *)&A->item[GMT_TICK_LOWER], (void *)&A->item[GMT_INTV_LOWER], sizeof (struct PLOT_AXIS_ITEM));
 	}
 	
 	return (0);
