@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_O.tex,v 1.11 2004-07-14 01:59:53 pwessel Exp $
+%	$Id: GMT_Appendix_O.tex,v 1.12 2004-08-17 03:09:34 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -218,14 +218,14 @@ small circle at each of the fixed points.
 \subsection{Label placement at simple line intersections}
 
 Often, it will suffice to place contours at the imaginary intersections between the
-contour lines and a well placed straight line segment.  The \Opt{Gl} or \Opt{GL}
+contour lines and a well-placed straight line segment.  The \Opt{Gl} or \Opt{GL}
 algorithms work well in those cases:
 
 \input{scripts/GMT_App_O_4}
 
 \noindent
 The obvious choice in this example is to specify a great circle between the high and
-the low, thus place all labels between these extrema.
+the low, thus placing all labels between these extrema.
 
 \GMTfig[H]{GMT_App_O_4}{Labels are placed at the intersections between contours and the
 great circle specified in the \Opt{GL} option.}
@@ -260,7 +260,7 @@ we have sampled the ETOPO5 relief data set.  The file \filename{transect.d} thus
 \subsection{Label placement by along-track distances, 1}
 
 This example will change the orientation of labels from along-track to across-track, and
-surround the labels with an opaque, outlined textbox so that the label is more readable.  We choose
+surrounds the labels with an opaque, outlined textbox so that the label is more readable.  We choose
 the place the labels every 1000 km along the line and use that distance as the label.  The
 labels are placed normal to the line:
 

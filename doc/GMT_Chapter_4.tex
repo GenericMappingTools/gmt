@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.53 2004-08-13 00:53:31 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.54 2004-08-17 03:09:34 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -227,7 +227,7 @@ these options in order of importance (some are use a lot more than others).
 \end{table} 
 
 \subsection{Data Domain or Map Region: The \Opt{R} option}
-\index{\Opt{R}}
+\index{\Opt{R} (set region)}
 \index{Region, specifying}
 \label{sec:R}
 \GMTfig[h]{GMT_-R}{The plot region can be specified in two different ways. (a) Extreme values
@@ -283,7 +283,7 @@ refer to ``geographical'' coordinates herein we imply longitude, latitude.}
 \end{description}
 
 \subsection{Coordinate Transformations and Map Projections: The \Opt{J} option}
-\index{\Opt{J}}
+\index{\Opt{J} (set map projection)}
 \index{Map projections}
 
 \GMTfig[h]{GMT_-J}{The 25 projections available in \gmt.}
@@ -307,7 +307,7 @@ We will also show examples of every projection in the next chapter, and a quick
 summary of projection syntax was given in Chapter 3.
 
 \subsection{Map frame and axes annotations: The \Opt{B} option}
-\index{\Opt{B}}
+\index{\Opt{B} (set annotations and ticks)}
 \index{Tickmarks}
 \index{Annotations}
 \index{Gridlines}
@@ -536,8 +536,8 @@ be at least half of a full interval.
 \GMTfig[h]{GMT_-B_time7}{Cartesian time axis, example 7.}
 
 \subsection{Header data records: The \Opt{H} option}
-\index{\Opt{H}}
-\index{Header records}
+\index{\Opt{H} (header records)}
+\index{Header records \Opt{H}}
 \label{sec:header}
 The \Opt{H}[{\bf i}][{\it n\_recs}] option lets \GMT\ know that input file(s) have
 one [Default] or more header records.  If there are more than one header
@@ -583,8 +583,8 @@ when using different media, such as 11" x 17" or large format plotters
 \index{Overlay plot \Opt{O} \Opt{K}}
 \index{Plot!overlay \Opt{O} \Opt{K}}
 \index{Plot!continue \Opt{O} \Opt{K}}
-\index{\Opt{K}}
-\index{\Opt{O}}
+\index{\Opt{K} (continue plot)}
+\index{\Opt{O} (overlay plot)}
 
 \GMTfig[h]{GMT_-OK}{A final \PS\ file consists of a stack of individual pieces.}
 
@@ -604,7 +604,7 @@ program, ignore both the \Opt{O} and \Opt{K} options; they are
 only used when stacking plots. 
 
 \subsection{Timestamps on plots: The \Opt{U} option} 
-\index{\Opt{U}}
+\index{\Opt{U} (plot timestamp)}
 \index{Timestamp}
 \index{UNIX@\UNIX!timestamp}
 
@@ -615,7 +615,7 @@ plot the current command string (Figure~\ref{fig:GMT_-U}).
 \GMTfig[h]{GMT_-U}{The \Opt{U} option makes it easy to ``date'' a plot.}
 
 \subsection{Verbose Feedback: The \Opt{V} option} 
-\index{\Opt{V}}
+\index{\Opt{V} (verbose mode)}
 \index{Verbose}
 \label{sec:verbose}
 \Opt{V} selects verbose mode, which will send progress reports to
@@ -623,8 +623,8 @@ plot the current command string (Figure~\ref{fig:GMT_-U}).
 this option can be toggled by changing the default {\bf VERBOSE}.
 
 \subsection{Plot positioning and layout: The \Opt{X} \Opt{Y} options}
-\index{\Opt{X}}
-\index{\Opt{Y}}
+\index{\Opt{X} (shift plot in $x$)}
+\index{\Opt{Y} (shift plot in $y$)}
 \index{Plot!offset}
 \index{Offset, plot}
 \GMTfig[h]{GMT_-XY}{Plot origin can be translated freely with \Opt{X} \Opt{Y}.}
@@ -687,7 +687,7 @@ The shorthand \Opt{f}[{\bf i}$|${\bf o}]{\bf g} means \Opt{f}[{\bf i}$|${\bf o}]
 For more information, see Section~\ref{sec:io}.
 
 \subsection{Number of Copies: The \Opt{c} option}
-\index{\Opt{c}}
+\index{\Opt{c} (set \# of copies)}
 \index{Number of copies}
 
 The \Opt{c} option specifies the number of plot copies [Default is 1].  This
@@ -695,7 +695,7 @@ value is embedded in the \PS\ file and will make a printer issue the chosen
 number of copies without respooling.
 
 \subsection{Lat/Lon or Lon/Lat?: The \Opt{:} option}
-\index{\Opt{:}}
+\index{\Opt{:} (input and/or output is $y,x$, not $x,y$)}
 \index{lat/lon input}
 
 For geographical data, the first column is expected to contain longitudes
@@ -772,7 +772,7 @@ programs piped together this tells you where the trouble is.
 \section{Standard Input or File, header records}
 \index{Standard input}
 \index{Input!standard}
-\index{Header record \Opt{H}}
+\index{Header records \Opt{H}}
 \index{Record, header \Opt{H}}
 \index{\Opt{H} (header records)}
 \index{{\bf GMT\_DATADIR}}
@@ -961,6 +961,9 @@ fattest		&	12p \\ \hline
 
 \index{Pen!color}
 \index{Color!pen}
+\index{Color!RGB system}
+\index{Color!HSV system}
+\index{Color!CMYK system}
 \index{Attributes!pen!color}%
 \item[$\rightarrow$]The {\it color} can be specified in five different ways:
 \begin{enumerate}
@@ -1096,7 +1099,7 @@ Table~\ref{tbl:fillex} contains a few examples of fill specifications.
 \section{Color palette tables}
 
 \index{Color!palette tables|(}
-\index{cpt file|(}
+\index{cpt!file|(}
 
 Several programs, such as those which read 2-D gridded data sets and create
 colored images or shaded reliefs, need to be told what colors to use and
@@ -1182,7 +1185,7 @@ will linearly yield colors from yellow to green, depending on the actual value
 of $z$.
 
 \index{Color!palette tables|)}
-\index{cpt file|)}
+\index{cpt!file|)}
 
 \index{Artificial illumination}
 \index{Illumination, artificial}
