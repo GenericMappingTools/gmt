@@ -13,6 +13,6 @@ To convert c2104.gmt to ASCII:
 .sp
 \fBgmt2dat\fP c2104.gmt > c2104.ascii
 .SH "SEE ALSO"
-.IR dat2gmt (l),
-.IR gmt (l)
+.IR dat2gmt (GMTMANSECTION),
+.IR gmt (GMTMANSECTION)
 #include "refs.i"

@@ -85,7 +85,7 @@ segy2grd test.segy  \fB\-G\fPtest.grd \fB\-R\fP0/100/0/10 \fB\-I\fP0.5/0.2 \fB\-
 Because the grid interval is larger than the SEGY file sampling, the individual samples will be averaged
 in bins 
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grd2xyz (l),
-.IR grdedit (l),
-.IR pssegy (l)
+.IR gmt (GMTMANSECTION),
+.IR grd2xyz (GMTMANSECTION),
+.IR grdedit (GMTMANSECTION),
+.IR pssegy (GMTMANSECTION)

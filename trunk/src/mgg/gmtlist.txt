@@ -71,6 +71,6 @@ but only the data that are inside the specified area, and make output binary:
 .sp
 \fBgmtlist\fP `cat gmt.list` \fB\-F\fPxyg \fB\-R\fP-40/-30/25/35 \fB\-b\fP > allgrav.xyg
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR xsystem (l)
+.IR gmt (GMTMANSECTION),
+.IR xsystem (GMTMANSECTION)
 #include "refs.i"

@@ -56,6 +56,6 @@ we run
 .sp
 \fBgrdedit\fP junk.grd \fB\-A\fP
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grd2xyz (l),
-.IR xyz2grd (l)
+.IR gmt (GMTMANSECTION),
+.IR grd2xyz (GMTMANSECTION),
+.IR xyz2grd (GMTMANSECTION)

@@ -124,5 +124,5 @@ dealt with correctly or at all; the incidence of such cases increases
 as viewing angles become more oblique, and particularly as the
 viewing elevation increases. Wiggle-trace plotting is not affected.
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR pssegy (l)
+.IR gmt (GMTMANSECTION),
+.IR pssegy (GMTMANSECTION)

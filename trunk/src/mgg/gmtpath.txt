@@ -16,5 +16,5 @@ To obtain pathnames for cruises c2603 and v2819, run
 .sp
 \fBgmtpath\fP c2603 v2819
 .SH "SEE ALSO"
-.IR gmt (l)
+.IR gmt (GMTMANSECTION)
 #include "refs.i"

@@ -135,9 +135,9 @@ may be referenced to different datums, and unless you know which datum was
 used and convert all data to a common datum you may experience mismatches of
 tens to hundreds of meters.
 .SH "SEE ALSO"
-.IR gmtdefaults (l),
-.IR gmt (l),
-.IR project (l)
+.IR gmtdefaults (GMTMANSECTION),
+.IR gmt (GMTMANSECTION),
+.IR project (GMTMANSECTION)
 .SH REFERENCES
 Snyder, J. P., 1987, Map Projections \- A Working Manual, U.S. Geological Survey Prof. Paper 1395.
 .br

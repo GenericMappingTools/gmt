@@ -327,10 +327,10 @@ pen attributes.
 #include "explain_-t.txt"
 #include "explain_-c.txt"
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR psbasemap (l),
-.IR psmeca (l),
-.IR psxy (l)
+.IR gmt (GMTMANSECTION),
+.IR psbasemap (GMTMANSECTION),
+.IR psmeca (GMTMANSECTION),
+.IR psxy (GMTMANSECTION)
 .sp
 .SH REFERENCES
 .br

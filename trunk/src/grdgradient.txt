@@ -98,9 +98,9 @@ To find the azimuth orientations of seafloor fabric in the file topo.grd:
 .br
 .sp
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR gmtdefaults (l),
-.IR grdhisteq (l),
-.IR grdimage (l),
-.IR grdview (l),
-.IR grdvector (l)
+.IR gmt (GMTMANSECTION),
+.IR gmtdefaults (GMTMANSECTION),
+.IR grdhisteq (GMTMANSECTION),
+.IR grdimage (GMTMANSECTION),
+.IR grdview (GMTMANSECTION),
+.IR grdvector (GMTMANSECTION)

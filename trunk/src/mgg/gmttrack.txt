@@ -64,6 +64,6 @@ the boundaries every degree, and draw gridlines every 30', and send the plot to 
 .sp
 \fBgmttrack\fP c2610 v1512 \fB\-R\fP150/154/18/23 SCALE2 \fB\-B\fP1\fBg\fP30\fBm \-A\fP10 | lpr
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR psbasemap (l)
+.IR gmt (GMTMANSECTION),
+.IR psbasemap (GMTMANSECTION)
 #include "refs.i"

@@ -148,9 +148,9 @@ must thus change this value in \.gmtdefaults4 to affect the box size.
 .br
 There are too many options.
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR gmtdefaults (l),
-.IR psbasemap (l),
-.IR grdimage (l),
-.IR grdview (l),
-.IR pscontour (l)
+.IR gmt (GMTMANSECTION),
+.IR gmtdefaults (GMTMANSECTION),
+.IR psbasemap (GMTMANSECTION),
+.IR grdimage (GMTMANSECTION),
+.IR grdview (GMTMANSECTION),
+.IR pscontour (GMTMANSECTION)

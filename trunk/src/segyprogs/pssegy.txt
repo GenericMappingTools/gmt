@@ -125,5 +125,5 @@ at +-3, with bias -1 and negative variable area shaded red, use
 \fBpssegy\fP wa1.segy \fB\-JX\fP5/\-5 \fB\-R\fP0/100/0/10 \fB\-D\fP1 \fB\-C\fP3 \fB\-S\fPc \fB\-X\fP0.1 \fB\-F\fP255/0/0 \fB\-B\fP\-1 \fB\-I\fP > segy.ps
 
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR pssegyz (l)
+.IR gmt (GMTMANSECTION),
+.IR pssegyz (GMTMANSECTION)

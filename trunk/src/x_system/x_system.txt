@@ -95,7 +95,7 @@ the same recipe and go back and run \fBx_setup\fP, but this time we will use the
 pairs involving new cruises are returned. Then we would run the remaining programs exactly as
 described above.
 .SH SEE ALSO
-.IR gmt (l),
+.IR gmt (GMTMANSECTION),
 .SH AUTHOR
 Paul Wessel, Lamont-Doherty Geological Observatory, Palisades, NY 10964.
 Wessel, P. XOVER: A Cross-over Error Detector for Track Data,

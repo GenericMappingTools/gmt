@@ -107,12 +107,12 @@ grid spacing is so small that you need more decimals in the output format used b
 parameter D_FORMAT in your \.gmtdefaults4 file prior to running \fBblockm*\fP,
 or choose binary input and/or output using single or double precision storage.
 .SH "SEE ALSO"
-.IR blockmean (l),
-.IR blockmedian (l),
-.IR blockmode (l),
-.IR gmt (l),
-.IR nearneighbor (l),
-.IR triangulate (l)
+.IR blockmean (GMTMANSECTION),
+.IR blockmedian (GMTMANSECTION),
+.IR blockmode (GMTMANSECTION),
+.IR gmt (GMTMANSECTION),
+.IR nearneighbor (GMTMANSECTION),
+.IR triangulate (GMTMANSECTION)
 .SH REFERENCES
 Smith, W. H. F, and P. Wessel, 1990, Gridding with continuous curvature splines in tension, \fIGeophysics\fP,
 55, 293\-305.

@@ -54,9 +54,9 @@ To make a 1x1 degree global grid with the hierarchical levels of the nodes based
 \fBgrdlandmask\fP \fB\-R\fP0/360/-90/90 \fB\-Dl  \-I\fP1 \fB\-N\fP0/1/2/3/4 \fB\-G\fPlevels.grd \fB\-V\fP
 .br
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grdmath (l),
-.IR grdclip (l),
-.IR psmask (l),
-.IR psclip (l),
-.IR pscoast (l)
+.IR gmt (GMTMANSECTION),
+.IR grdmath (GMTMANSECTION),
+.IR grdclip (GMTMANSECTION),
+.IR psmask (GMTMANSECTION),
+.IR psclip (GMTMANSECTION),
+.IR pscoast (GMTMANSECTION)

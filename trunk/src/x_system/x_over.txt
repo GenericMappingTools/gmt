@@ -50,8 +50,8 @@ the Akima's spline is used instead of the natural cubic spline, since it is less
 outliers that tend to introduce wild oscillations in the interpolation.  A version of \fBx_over\fP
 compiled for a SUN with FPA board is provided (\fBx_over\fP).
 .SH SEE ALSO
-.IR gmt (l),
-.IR x_system (l)
+.IR gmt (GMTMANSECTION),
+.IR x_system (GMTMANSECTION)
 .SH REFERENCES
 Wessel, P. XOVER: A Cross-over Error Detector for Track Data,
 \fIComputers & Geosciences, 15\fP, 333-346.

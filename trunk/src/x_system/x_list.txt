@@ -71,8 +71,8 @@ Ignore those legs that appear in the \fIignorefile\fP.
 .B \-V
 Operate in verbose mode.
 .SH SEE ALSO
-.IR gmt (l),
-.IR x_system (l)
+.IR gmt (GMTMANSECTION),
+.IR x_system (GMTMANSECTION)
 .SH REFERENCES
 Wessel, P. XOVER: A Cross-over Error Detector for Track Data,
 \fIComputers & Geosciences, 15\fP, 333-346.

@@ -20,8 +20,8 @@ Indicates alternate legbase file [Default is \fIxx_legs.b\fP].
 .B \-V
 Means operate in verbose mode.
 .SH SEE ALSO
-.IR gmt (l),
-.IR x_system (l)
+.IR gmt (GMTMANSECTION),
+.IR x_system (GMTMANSECTION)
 .SH REFERENCES
 Wessel, P. XOVER: A Cross-over Error Detector for Track Data,
 \fIComputers & Geosciences, 15\fP, 333-346.

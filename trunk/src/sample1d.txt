@@ -62,5 +62,5 @@ for the interpolation, use
 .sp
 \fBsample1d\fP depths.dt \fB\-N\fPgrav_pos.dg \fB\-Fc\fP > new_depths.dt
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR filter1d (l)
+.IR gmt (GMTMANSECTION),
+.IR filter1d (GMTMANSECTION)

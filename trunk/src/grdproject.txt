@@ -84,6 +84,6 @@ The boundaries of a projected (rectangular) data set will not necessarily give r
 geographical boundaries (Mercator is one exception).  In those cases some nodes may be unconstrained (set to NaN).
 To get a full grid back, your input grid may have to cover a larger area than you are interrested in.
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR gmtdefaults (l),
-.IR mapproject (l)
+.IR gmt (GMTMANSECTION),
+.IR gmtdefaults (GMTMANSECTION),
+.IR mapproject (GMTMANSECTION)

@@ -96,8 +96,8 @@ output, use
 .sp
 paste data.t data.g | \fBspectrum1d\fP \fB\-S\fP256 \fB\-D\fP1.5 \fB\-N\fPdata \fB\-C\fP
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grdfft (l)
+.IR gmt (GMTMANSECTION),
+.IR grdfft (GMTMANSECTION)
 .SH REFERENCES
 Bendat, J. S., and A. G. Piersol, 1986, Random Data, 2nd revised ed., John Wiley & Sons.
 .br

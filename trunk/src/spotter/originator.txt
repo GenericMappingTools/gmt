@@ -91,11 +91,11 @@ and report the 2 most likely hotspot candidates for each seamount, run
 .br
 .sp
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR project (l),
-.IR mapproject (l),
-.IR backtracker (l)
-.IR hotspotter (l)
+.IR gmt (GMTMANSECTION),
+.IR project (GMTMANSECTION),
+.IR mapproject (GMTMANSECTION),
+.IR backtracker (GMTMANSECTION)
+.IR hotspotter (GMTMANSECTION)
 .SH REFERENCES
 Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
 .br

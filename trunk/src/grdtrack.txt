@@ -66,6 +66,6 @@ table containing longitude, latitude, and SEASAT-derived gravity, preceded by on
 .sp
 \fBgrdtrack\fP track_4.xyg \fB\-G\fPhawaii_topo.grd \fB\-H\fP > track_4.xygt
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR surface (l),
-.IR sample1d (l)
+.IR gmt (GMTMANSECTION),
+.IR surface (GMTMANSECTION),
+.IR sample1d (GMTMANSECTION)

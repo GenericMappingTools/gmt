@@ -143,7 +143,7 @@ T There is no easy way to predetermine how many lines will be required,
 T so we may need to adjust the box height to get the right size.
 .br
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR psbasemap (l),
-.IR pstext (l),
-.IR psxy (l)
+.IR gmt (GMTMANSECTION),
+.IR psbasemap (GMTMANSECTION),
+.IR pstext (GMTMANSECTION),
+.IR psxy (GMTMANSECTION)

@@ -102,6 +102,6 @@ and shown in landscape [Default] orientation with UNIX timestamp and command lin
 No default radial scale and grid settings for polar histograms.  User must run \fBpsrose \-I\fP to find max length in
 binned data set.
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR gmtdefaults (l),
-.IR pshistogram (l)
+.IR gmt (GMTMANSECTION),
+.IR gmtdefaults (GMTMANSECTION),
+.IR pshistogram (GMTMANSECTION)

@@ -68,6 +68,6 @@ hawaii_trend.grd and the weights used in hawaii_weight.grd, and reporting the pr
 \fBgrdtrend\fP hawaii_topo.grd \fB\-N\fP10\fBr\fP \fB\-T\fPhawaii_trend.grd 
 \fB\-W\fPhawaii_weight.grd \fB\-V\fP
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grdfft (l),
-.IR grdfilter (l)
+.IR gmt (GMTMANSECTION),
+.IR grdfft (GMTMANSECTION),
+.IR grdfilter (GMTMANSECTION)

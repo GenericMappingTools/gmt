@@ -115,6 +115,6 @@ byte-order with
 .sp
 \fBxyz2grd\fP floats.bin \fB\-S\fPnew_floats.bin \fB\-V \-Zf\fP
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grd2xyz (l),
-.IR grdedit (l)
+.IR gmt (GMTMANSECTION),
+.IR grd2xyz (GMTMANSECTION),
+.IR grdedit (GMTMANSECTION)

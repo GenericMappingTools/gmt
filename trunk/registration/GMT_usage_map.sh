@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.28 2003-11-02 20:08:29 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.29 2004-01-07 20:44:53 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -121,15 +121,9 @@ fi
 
 if [ $key = "all" ] || [ $key = "map" ]; then
 
-	gmtset DOTS_PR_INCH 100 FRAME_WIDTH 0.04i PAPER_MEDIA Letter+
+	gmtset DOTS_PR_INCH 100 FRAME_WIDTH 0.04i PAPER_MEDIA Letter+ ANOT_FONT_SIZE 12p
 	cvs -Q update GMT_old_unique_sites.d
-	psxy -R0/5.75/0/3 -Jx1i -P -X0.0133i -Y0.0133i -K -L -W2p << EOF > gmt_usage.ps
-0 0
-5.75 0
-5.75 3
-0 3
-EOF
-	pscoast -R-175/185/-60/72 -JM5.0i -G25/140/25 -S0/30/120 -Dc -A2000 -Ba60f30/30WSne -K -O -X0.6i -Y0.35i >> gmt_usage.ps
+	pscoast -R-175/185/-60/72 -JM5.0i -G25/140/25 -S0/30/120 -Dc -A2000 -Ba60f30/30WSne -K -P -X0.6i -Y0.35i > gmt_usage.ps
 	grep -v '^#' GMT_old_unique_sites.d | psxy -R -JM -O -K -Sc0.02 -G255/255/0 >> gmt_usage.ps
 	date +%x | awk '{print 0.1, 0.1, 10, 0, 0, "LB", $1}' | pstext -R0/5/0/5 -Jx1i -O -W255/255/255o >> gmt_usage.ps
 	echo "quit" >> gmt_usage.ps

@@ -41,8 +41,8 @@ To create new gmt files from all the mgd77 files listed in \fIlist.d\fP:
 .sp
 \fBmgd77togmt\fP \fB\-L\fPlist.d \fB\-V\fP
 .SH SEE ALSO
-.IR dat2gmt (l),
-.IR gmt (l)
+.IR dat2gmt (GMTMANSECTION),
+.IR gmt (GMTMANSECTION)
 #include "refs.i"
 .br
 .sp

@@ -79,4 +79,4 @@ each piece to be 1 by 1 cm, use
 .sp
 \fBpsimage\fP 1_bit.ras \fB\-Gb\fP200/150/100 \fB\-Gf\fP100/50/30 \fB\-N\fP5\fBi\fP/5\fBi\fP \fB\-W\fP1\fBc\fP > image.ps
 .SH "SEE ALSO"
-.IR gmt (l)
+.IR gmt (GMTMANSECTION)

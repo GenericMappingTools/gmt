@@ -36,7 +36,7 @@ To find all cruises with magnetics:
 .sp
 \fBgmtlegs\fP \fB\-R\fR0/360/-90/90 \fB\-M\fP > all_m.legs
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR gmt2bin (l),
-.IR binlegs (l)
+.IR gmt (GMTMANSECTION),
+.IR gmt2bin (GMTMANSECTION),
+.IR binlegs (GMTMANSECTION)
 #include "refs.i"

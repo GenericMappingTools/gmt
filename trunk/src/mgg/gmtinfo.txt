@@ -18,5 +18,5 @@ To obtain information about cruises c2603 and v2819, run
 .sp
 \fBgmtinfo\fP  c2603 v2819 > info_file
 .SH "SEE ALSO"
-.IR gmt (l)
+.IR gmt (GMTMANSECTION)
 #include "refs.i"
