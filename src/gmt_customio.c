@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: gmt_customio.c,v 1.2 2001-03-01 22:08:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -13,7 +13,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU General Public License for more details.
  *
- *	Contact info: www.soest.hawaii.edu/gmt
+ *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
  *
@@ -35,7 +35,7 @@
  * Author:	Paul Wessel
  * Date:	9-SEP-1992
  * Modified:	22-AUG-2000
- * Version:	3.3.6
+ * Version:	3.4
  *
  * Functions include:
  *

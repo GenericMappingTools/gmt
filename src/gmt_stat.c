@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: gmt_stat.c,v 1.2 2001-03-01 22:08:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -13,14 +13,14 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU General Public License for more details.
  *
- *	Contact info: www.soest.hawaii.edu/gmt
+ *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
  *  some stuff for significance tests.
  *
  * Author:	Walter H. F. Smith
  * Date:	12-JUN-1995
- * Version:	3.3.6
+ * Version:	3.4
  * Revised:	12-AUG-1998
  *		06-JAN-1999 P Wessel: Added GMT_ber, GMT_bei, GMT_ker, GMT_kei
  *		12-JAN-1999 P Wessel: Added GMT_plm
