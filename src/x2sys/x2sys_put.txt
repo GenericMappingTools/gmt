@@ -1,0 +1,28 @@
+.TH X2SYS_PUT GMTMANSECTION DATE VERSION VERSION
+.SH NAME
+x2sys_put \- Update track data bases
+.SH SYNOPSIS
+\fBx2sys_put\fP [ \fIinfo.tbf\fP ] [ \fB\-T\fP\fITAG\fP ] [ \fB\-V\fP ]
+.SH DESCRIPTION
+\fBx2sys_put\fP accepts an input file created by \fBx2sys_binlist\fP and
+adds this information about the data tracks to the relevant data base.
+The system \fITAG\fP must match the one encoded in the input data.  To
+inquire about the data base content, use \fBx2sys_get\fP.
+.SH OPTIONS
+No space between the option flag and the associated arguments
+.TP
+\fIinfo.tbf\fP
+Name of a single track bin file.  If not given, stdin will be read.
+.TP
+.B \-T
+Give \fITAG\fP, the unique name of this data type system.
+#include "explain_-V.txt"
+.SH EXAMPLES
+To add the information stored in the track bin file latest.tbf to the track databases
+associated with the tag MGD77, try
+.br
+.sp
+\fBx2sys_put\fP latest.tbg \fB\-V \-T\fPMGD77 
+.SH "SEE ALSO"
+.IR x2sys_binlist (GMTMANSECTION)
+.IR x2sys_get (GMTMANSECTION)
