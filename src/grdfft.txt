@@ -1,4 +1,4 @@
-.TH GRDFFT GMTMANSECTION DATE VERSION
+.TH GRDFFT GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 grdfft \- Perform mathematical operations on grdfiles in the frequency domain 
 .SH SYNOPSIS

@@ -1,4 +1,4 @@
-.TH SPECTRUM1D GMTMANSECTION DATE VERSION
+.TH SPECTRUM1D GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 spectrum1d \- compute auto\- [and cross\- ] spectra from one [or two] timeseries.
 .SH SYNOPSIS

@@ -1,4 +1,4 @@
-.TH x_system GMTMANSECTION DATE VERSION
+.TH x_system GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 \fBx_system\fP \- A Cross-Over Error Analysis Tool
 .SH INTRODUCTION

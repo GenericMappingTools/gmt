@@ -1,4 +1,4 @@
-.TH x_report GMTMANSECTION DATE VERSION
+.TH x_report GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 \fBx_report\fP \- Report Cross-Over Error Statistics for Cruises
 .SH SYNOPSIS

@@ -1,4 +1,4 @@
-.TH x_solve_dc_drift GMTMANSECTION DATE VERSION
+.TH x_solve_dc_drift GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 \fBx_solve_dc_drift\fP \- Find Best-fitting D.C.-shift and Drift Estimates
 .SH SYNOPSIS

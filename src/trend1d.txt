@@ -1,4 +1,4 @@
-.TH TREND1D GMTMANSECTION DATE VERSION
+.TH TREND1D GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 trend1d \- Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data.
 .SH SYNOPSIS

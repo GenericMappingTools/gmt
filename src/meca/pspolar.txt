@@ -1,4 +1,4 @@
-.TH PSPOLAR GMTMANSECTION DATE VERSION
+.TH PSPOLAR GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 \fBpspolar\fR\ - Plot polarities on the inferior focal half\-sphere on maps
 .SH SYNOPSIS

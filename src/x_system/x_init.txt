@@ -1,4 +1,4 @@
-.TH x_init GMTMANSECTION DATE VERSION
+.TH x_init GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 \fBx_init\fP \- Initialization of Cross-Over Data Bases.
 .SH SYNOPSIS

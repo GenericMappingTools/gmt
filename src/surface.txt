@@ -1,4 +1,4 @@
-.TH SURFACE GMTMANSECTION DATE VERSION
+.TH SURFACE GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 surface \- adjustable tension continuous curvature surface gridding algorithm
 .SH SYNOPSIS

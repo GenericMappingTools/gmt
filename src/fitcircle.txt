@@ -1,4 +1,4 @@
-.TH FITCIRCLE GMTMANSECTION DATE VERSION
+.TH FITCIRCLE GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 fitcircle \- find mean position and pole of best-fit great [or small] circle to points on a sphere.
 .SH SYNOPSIS

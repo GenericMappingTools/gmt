@@ -1,4 +1,4 @@
-.TH GRDTRACK GMTMANSECTION DATE VERSION
+.TH GRDTRACK GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 grdtrack \- Sampling of a 2-D grdfile along 1-D trackline (a sequence of x,y points)
 .SH SYNOPSIS
