@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.50 2003-02-19 22:14:40 pwessel Exp $
+ *	$Id: pslib.c,v 1.51 2003-02-20 19:00:52 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -818,7 +818,7 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 int ps_imagefill_init (int image_no, char *imagefile, int invert, int image_dpi, BOOLEAN colorize, int f_rgb[], int b_rgb[])
 {
 
-	int i, nx, ny, dx, pmode, polarity;
+	int i, nx, ny, dx, pmode, polarity, n_channels;
 	char file[BUFSIZ], name[BUFSIZ], color[64];
 	char *TF[2] = {"false", "true"};
 	unsigned char *picture;
@@ -883,6 +883,7 @@ int ps_imagefill_init (int image_no, char *imagefile, int invert, int image_dpi,
 
 	fprintf (ps.fp, "/%s <\n", name);
 	ps_hex_dump (picture, nx, ny, h.ras_depth);
+	(ps.cmyk_mode) ? ps_hex_dump_cmyk (picture, nx, ny, h.ras_depth) : ps_hex_dump (picture, nx, ny, h.ras_depth);
 	fprintf (ps.fp, "> def\n");
 
 	if (h.ras_depth == 1) {	/* 1-bit bitmap basis */
@@ -901,8 +902,10 @@ int ps_imagefill_init (int image_no, char *imagefile, int invert, int image_dpi,
 		else	/* Plain b/w image */
 			fprintf (ps.fp, "/fill%s { V T %d dup scale %d %d 1 [%d 0 0 %d 0 %d] {%s} image U} def\n", name, dx, nx, ny, nx, -ny, ny, name);
 	}
-	else
-		fprintf (ps.fp, "/fill%s { V T %d dup scale %d %d 8 [%d 0 0 %d 0 %d] {%s} false 3 colorimage U} def\n", name, dx, nx, ny, nx, -ny, ny, name);
+	else {
+		n_channels = (ps.cmyk_mode) ? 4 : 3;
+		fprintf (ps.fp, "/fill%s { V T %d dup scale %d %d 8 [%d 0 0 %d 0 %d] {%s} false %d colorimage U} def\n", name, dx, nx, ny, nx, -ny, ny, name, n_channels);
+	}
 
 	ps_free ((void *)picture);
 	
