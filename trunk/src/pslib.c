@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.80 2004-08-26 16:29:55 pwessel Exp $
+ *	$Id: pslib.c,v 1.81 2004-09-03 20:26:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1009,6 +1009,8 @@ int ps_line (double *x, double *y, int n, int type, int close, int split)
 	int i, *ix, *iy, trim = FALSE;
 	char move = 'M';
 	
+	ps.split = 0;	/* No splitting yet... */
+	
 	/* First remove unnecessary points that have zero curvature */
 	
 	ix = (int *) ps_memory (VNULL, (size_t)n, sizeof (int));
@@ -1049,6 +1051,7 @@ int ps_line (double *x, double *y, int n, int type, int close, int split)
 		if ((ps.npath + ps.clip_path_length) > MAX_L1_PATH && split) {
 			fprintf (ps.fp, "S %d %d M\n", ps.ix, ps.iy);
 			ps.npath = 1;
+			ps.split = 1;
 			close = FALSE;
 			if (trim) {	/* Restore the duplicate point since close no longer is TRUE */
 				n++;
@@ -1501,7 +1504,7 @@ void ps_polygon (double *x, double *y, int n, int rgb[], int outline)
 	ps.max_path_length = MAX ((n + ps.clip_path_length), ps.max_path_length);
 	
 	if (split) {	/* Outline only */
-		mode = 'p';
+		mode = (ps.split == 1) ? 'S' : 'p';
 		outline = 0;
 	}
 	else {

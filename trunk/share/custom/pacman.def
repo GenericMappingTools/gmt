@@ -1,0 +1,7 @@
+#	$Id: pacman.def,v 1.1 2004-09-03 20:26:45 pwessel Exp $
+#
+#	Definition file for a pacman symbol.
+#
+0	0	M
+0	0	1	30	330	A
+0	0	D
