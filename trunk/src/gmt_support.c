@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.41 2003-03-06 17:21:46 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.42 2003-03-12 17:58:52 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -980,7 +980,7 @@ void GMT_illuminate (double intensity, int rgb[])
 	if (fabs (intensity) > 1.0) intensity = copysign (1.0, intensity);
 	
 	GMT_rgb_to_hsv (rgb, &h, &s, &v);
-	if (intensity > 0) {
+	if (intensity > 0.0) {
 		di = 1.0 - intensity;
 		if (s != 0.0) s = di * s + intensity * gmtdefs.hsv_max_saturation;
 		v = di * v + intensity * gmtdefs.hsv_max_value;
