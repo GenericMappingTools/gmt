@@ -1,7 +1,7 @@
 #/bin/sh
 #		GMT EXAMPLE 03
 #
-#		$Id: job03.sh,v 1.2 2001-09-24 02:30:55 pwessel Exp $
+#		$Id: job03.sh,v 1.3 2002-01-30 03:40:55 ben Exp $
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
 # GMT progs:	filter1d, fitcircle, gmtset, minmax, project, sample1d, 
@@ -114,7 +114,7 @@ paste samp_ship.pg samp_sat.pg | cut -f2,4 | spectrum1d -S256 -D1 -W -C >& /dev/
 # For that purpose we often use -Jx1i and specify positions in inches directly:
 #
 psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3d in Cookbook" -P -K -X2.5i -Sc0.07i -G0 -Ey/2 -Y1.5i > example_03.ps
-echo "3.85 3.6 18 0.0 1 11 Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx1i -O -K >> example_03.ps
+echo "3.85 3.6 18 0.0 1 TR Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx1i -O -K >> example_03.ps
 cat << END > box.d
 2.375	3.75
 2.375	3.25
@@ -123,7 +123,7 @@ END
 psxy -R -Jx -O -K -W1.5p box.d >> example_03.ps
 psxy -St0.07i -O -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/2 >> example_03.ps
 psxy spectrum.ypower -R -JX -O -K -G0 -Sc0.07i -Ey/2 >> example_03.ps
-echo "3.9 3.6 18 0.0 1 11 Input Power" | pstext -R0/4/0/3.75 -Jx -O -K >> example_03.ps
+echo "3.9 3.6 18 0.0 1 TR Input Power" | pstext -R0/4/0/3.75 -Jx -O -K >> example_03.ps
 psxy -R -Jx -O -K -W1.5p box.d >> example_03.ps
 psxy -R -Jx -O -K -G240 -L -W1.5p << END >> example_03.ps
 0.25	0.25
@@ -132,9 +132,9 @@ psxy -R -Jx -O -K -G240 -L -W1.5p << END >> example_03.ps
 0.25	0.9
 END
 echo "0.4 0.7" | psxy -R -Jx -O -K -St0.07i -G0 >> example_03.ps
-echo "0.5 0.7 14 0.0 1 5 Ship" | pstext -R -Jx -O -K >> example_03.ps
+echo "0.5 0.7 14 0.0 1 ML Ship" | pstext -R -Jx -O -K >> example_03.ps
 echo "0.4 0.4" | psxy -R -Jx -O -K -Sc0.07i -G0 >> example_03.ps
-echo "0.5 0.4 14 0.0 1 5 Satellite" | pstext -R -Jx -O >> example_03.ps
+echo "0.5 0.4 14 0.0 1 ML Satellite" | pstext -R -Jx -O >> example_03.ps
 #
 # Now we wonder if removing that large feature at 250 km would make any difference.
 # We could throw away a section of data with $AWK or sed or head and tail, but we
@@ -170,7 +170,7 @@ psxy -R -JX -O -Sp0.03i samp2_ship.pg >> example_03e.ps
 paste samp2_ship.pg samp2_sat.pg | cut -f2,4 | spectrum1d -S256 -D1 -W -C >& /dev/null
 # 
 psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3g in Cookbook" -P -K -X2.5i -Sc0.07i -G0 -Ey/2 -Y1.5i > example_03f.ps
-echo "3.85 3.6 18 0.0 1 11 Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx -O -K >> example_03f.ps
+echo "3.85 3.6 18 0.0 1 TR Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx -O -K >> example_03f.ps
 cat << END > box.d
 2.375	3.75
 2.375	3.25
@@ -179,7 +179,7 @@ END
 psxy -R -Jx -O -K -W1.5p box.d >> example_03f.ps
 psxy -St0.07i -O -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/2 >> example_03f.ps
 psxy spectrum.ypower -R -JX -O -K -G0 -Sc0.07i -Ey/2 >> example_03f.ps
-echo "3.9 3.6 18 0.0 1 11 Input Power" | pstext -R0/4/0/3.75 -Jx -O -K >> example_03f.ps
+echo "3.9 3.6 18 0.0 1 TR Input Power" | pstext -R0/4/0/3.75 -Jx -O -K >> example_03f.ps
 psxy -R -Jx -O -K -W1.5p box.d >> example_03f.ps
 psxy -R -Jx -O -K -G240 -L -W1.5p << END >> example_03f.ps
 0.25	0.25
@@ -188,8 +188,8 @@ psxy -R -Jx -O -K -G240 -L -W1.5p << END >> example_03f.ps
 0.25	0.9
 END
 echo "0.4 0.7" | psxy -R -Jx -O -K -St0.07i -G0 >> example_03f.ps
-echo "0.5 0.7 14 0.0 1 5 Ship" | pstext -R -Jx -O -K >> example_03f.ps
+echo "0.5 0.7 14 0.0 1 ML Ship" | pstext -R -Jx -O -K >> example_03f.ps
 echo "0.4 0.4" | psxy -R -Jx -O -K -Sc0.07i -G0 >> example_03f.ps
-echo "0.5 0.4 14 0.0 1 5 Satellite" | pstext -R -Jx -O >> example_03f.ps
+echo "0.5 0.4 14 0.0 1 ML Satellite" | pstext -R -Jx -O >> example_03f.ps
 #
 \rm -f $$ box.d report samp* *.pg *.extr spectrum.* .gmtcommands .gmtdefaults

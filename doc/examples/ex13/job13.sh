@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 13
 #
-#		$Id: job13.sh,v 1.1 2001-09-14 18:55:04 pwessel Exp $
+#		$Id: job13.sh,v 1.2 2002-01-30 03:40:56 ben Exp $
 #
 # Purpose:	Illustrate vectors and contouring
 # GMT progs:	grdmath, grdcontour, pstext
@@ -15,5 +15,5 @@ grdcontour dzdy.grd -JX -B1/1WSne -C0.05 -A0.2 -O -K -G2i/10 -S4 -T0.1i/0.03i -X
 grdcontour z.grd -JX -B1/1WSne -C0.05 -A0.1 -O -K -G2i/10 -S4 -T0.1i/0.03i -X-3.45i -Y3.45i >> example_13.ps
 grdcontour z.grd -JX -B1/1WSne -C0.05 -O -K -G2i/10 -S4 -X3.45i >> example_13.ps
 grdvector dzdx.grd dzdy.grd -I0.2 -JX -O -K -Q0.03i/0.1i/0.09in0.25i -G0 -S5i >> example_13.ps
-echo "3.2 3.6 40 0 6 2 z(x,y) = x * exp(-x@+2@+-y@+2@+)" | pstext -R0/6/0/4.5 -Jx1i -O -X-3.45i >> example_13.ps
+echo "3.2 3.6 40 0 6 BC z(x,y) = x * exp(-x@+2@+-y@+2@+)" | pstext -R0/6/0/4.5 -Jx1i -O -X-3.45i >> example_13.ps
 \rm -f z.grd dzdx.grd dzdy.grd .gmtcommands

@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 07
 #
-#		$Id: job07.sh,v 1.2 2002-01-30 02:17:57 ben Exp $
+#		$Id: job07.sh,v 1.3 2002-01-30 03:40:56 ben Exp $
 #
 # Purpose:	Make a basemap with earthquakes and isochrons etc
 # GMT progs:	pscoast, pstext, psxy
@@ -25,7 +25,7 @@ psxy -R -JM -O -K -G255 -W0.5p -A << END >> example_07.ps
 -14.35	17.65
 END
 echo "-13.5 16.5" | psxy -R -JM -O -K -Sc0.08i -G255 -W0.5p >> example_07.ps
-echo "-12.5 16.5 18 0 6 5 ISC Earthquakes" | pstext -R -JM -O -K >> example_07.ps
+echo "-12.5 16.5 18 0 6 LM ISC Earthquakes" | pstext -R -JM -O -K >> example_07.ps
 pstext -R -JM -O -S0.75p -G255 << END >> example_07.ps
 -43 -5 30 0 1 CM SOUTH
 -43 -8 30 0 1 CM AMERICA
