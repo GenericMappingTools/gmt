@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.12 2001-09-13 17:30:32 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.13 2001-09-14 20:10:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3641,32 +3641,11 @@ void GMT_str_toupper (char *value)
 	}
 }
 
-double GMT_get_map_interval (int axis, char type) {
-	int item;
+double GMT_get_map_interval (int axis, int item) {
 	
-	switch (type) {
-		case 'a':
-			item = 0;
-			break;
-		case 'A':
-			item = 1;
-			break;
-		case 'i':
-			item = 2;
-			break;
-		case 'I':
-			item = 3;
-			break;
-		case 'f':
-			item = 4;
-			break;
-		case 'g':
-			item = 5;
-			break;
-		default:
-			fprintf (stderr, "GMT ERROR in GMT_get_map_interval (wrong type)\n");
-			exit (EXIT_FAILURE);
-			break;
+	if (item < GMT_ANOT_UPPER || item > GMT_GRID_UPPER) {
+		fprintf (stderr, "GMT ERROR in GMT_get_map_interval (wrong item %d)\n", item);
+		exit (EXIT_FAILURE);
 	}
 			
 	switch (tframe_info.axis[axis].item[item].unit) {

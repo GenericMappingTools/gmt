@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.40 2001-09-14 19:24:32 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.41 2001-09-14 20:10:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -113,13 +113,23 @@ void GMT_explain_option (char option)
 	
 		case 'B':	/* Tickmark option */
 		
-			fprintf (stderr, "\t-B specifies Boundary info.  <tickinfo> is a textstring made up of one or\n");
-			fprintf (stderr, "\t   more substrings of the form [t]<tick>[m|c].  The optional [t] can be\n");
-			fprintf (stderr, "\t   either: a for anotation interval, f for frame interval, or g for\n");
-			fprintf (stderr, "\t   gridline interval.  If the [t] is not given, a<tick> AND f<tick>\n");
-			fprintf (stderr, "\t   (but no g<tick>) are set.  The frame interval = anotation interval\n");
-			fprintf (stderr, "\t   if no separate f<tick> is given.  <tick> is the desired tick-interval.\n");
-			fprintf (stderr, "\t   The optional [m|s] indicates minutes or seconds.  To specify separate x and y tick-.\n");
+			fprintf (stderr, "\t-B specifies Basemap frame info.  <tickinfo> is a textstring made up of one or\n");
+			fprintf (stderr, "\t   more substrings of the form [t]<stride>[<unit>], where the (optional) [t] is the\n");
+			fprintf (stderr, "\t   axis item type, <stride> is the spacing between ticks or anotations, and the (optional)\n");
+			fprintf (stderr, "\t   <unit> specifies the <stride> unit [Default is unit implied in -R).\n");
+			fprintf (stderr, "\t   Three axis item types exist (six for time-axis, which may also use A, I, and i):\n");
+			fprintf (stderr, "\t     a: (upper) tick anotation stride (upper means anotations closest to the axis).\n");
+			fprintf (stderr, "\t     f: (upper) frame tick stride.\n");
+			fprintf (stderr, "\t     g: grid line stride.\n");
+			fprintf (stderr, "\t     A: lower tick anotation stride (lower means anotations farthest from the axis).\n");
+			fprintf (stderr, "\t     i: upper interval anotation stride (interval means anotation is centered on the interval).\n");
+			fprintf (stderr, "\t     I: lower interval anotation stride.\n");
+			fprintf (stderr, "\t   If the [t] is not given, it defaults to a (upper tick anotations). \n");
+			fprintf (stderr, "\t   The optional [<unit>] modifies the <stride> value accordlingly.  For maps, you may use\n");
+			fprintf (stderr, "\t     m: arc minutes [Default unit is degree].\n");
+			fprintf (stderr, "\t     c: arc seconds.\n");
+			fprintf (stderr, "\t   For time axis, several units are recognized:\n");
+			fprintf (stderr, "\t   The optional [<unit>] indicates minutes or seconds.  To specify separate x and y tick-.\n");
 			fprintf (stderr, "\t   info, separate the strings with a slash [/].  E.g., 5 degree ticks for\n");
 			fprintf (stderr, "\t   frame AND anotation, 30 minutes grid lines, use\n");
 			fprintf (stderr, "\t        -B5g30m.   For different y ticks try -B5g30m/2g15m\n");
@@ -2660,7 +2670,7 @@ void GMT_decode_tinfo (char *in, struct TIME_AXIS *A) {
 			error = 3;
 			continue;
 		}
-		if (s[0] && strchr ("YyOoUuKkJjDdHhMmCclp", s[0])) {	/* Appended one of the allowed units, or l or p for log10/pow */
+		if (s[0] && strchr ("YyOoUuKkJjDdHhMmCcrlp", s[0])) {	/* Appended one of the allowed units, or l or p for log10/pow */
 			unit = s[0];
 			s++;
 		}
