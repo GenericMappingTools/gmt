@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.71 2002-02-23 03:39:58 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.72 2002-07-23 20:12:05 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1984,6 +1984,18 @@ int GMT_get_ellipse (char *name)
 			if (n != 5) {
 				fprintf (stderr, "GMT: Error decoding user ellipsoid parameters (%s)\n", line);
 				exit (EXIT_FAILURE);
+			}
+			
+			if (gmtdefs.ellipse[i].pol_radius > 0.0 && gmtdefs.ellipse[i].flattening < 0.0) {
+				/* negative flattening means we must compute flattening from the polar and equatorial radii: */
+
+				gmtdefs.ellipse[i].flattening = 1.0 - (gmtdefs.ellipse[i].pol_radius / gmtdefs.ellipse[i].eq_radius);
+				fprintf (stderr, "GMT: user-supplied ellipsoid has implicit flattening of %.8lf\n", gmtdefs.ellipse[i].flattening);
+			}
+			/* else check consistency: */
+			else if (fabs(gmtdefs.ellipse[i].flattening - 1.0 + gmtdefs.ellipse[i].pol_radius/gmtdefs.ellipse[i].eq_radius) > 1.0e-11) {
+				fprintf (stderr, "GMT: Possible inconsistency in user ellipsoid parameters (%s)\n", line);
+				exit (EXIT_FAILURE);		
 			}
 		}
 	}
