@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.4 2004-08-19 21:29:22 pwessel Exp $
+ *	$Id: mgd77.c,v 1.5 2004-08-19 21:52:40 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -1200,7 +1200,7 @@ int MGD77_storage_bin (int constraint)
 	return (bin);
 }
 
-int MGD77_set_unit (char *dist, double *scale)
+void MGD77_set_unit (char *dist, double *scale)
 {
 	switch (dist[strlen(dist)-1]) {
 		case 'k':	/* km */
