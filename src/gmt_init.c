@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.29 2001-09-12 04:03:03 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.30 2001-09-12 19:35:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -63,7 +63,6 @@ int GMT_get_ellipse(char *name);
 int GMT_load_user_media (void);
 void GMT_set_home (void);
 BOOLEAN true_false_or_error (char *value, int *answer);
-void str_tolower (char *value);
 void GMT_get_history(int argc, char **argv);
 void GMT_prepare_3D(void);
 void GMT_free_plot_array(void);
@@ -1025,7 +1024,7 @@ int GMT_setparameter (char *keyword, char *value)
 	
 	if (!value) return (TRUE);		/* value argument missing */
 	strncpy (lower_value, value, BUFSIZ);	/* Get a lower case version */
-	str_tolower (lower_value);
+	GMT_str_tolower (lower_value);
 
 	case_val = GMT_hash_lookup (keyword, hashnode, HASH_SIZE);
 
@@ -1520,7 +1519,7 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case 72:
 			strncpy (gmtdefs.time_language, value, 32);
-			str_tolower (gmtdefs.time_language);
+			GMT_str_tolower (gmtdefs.time_language);
 			break;
 		case 73:
 			gmtdefs.char_encoding = GMT_key_lookup (value, GMT_char_encoding, 4);
@@ -1585,16 +1584,6 @@ int GMT_setparameter (char *keyword, char *value)
 	
 	if (error && case_val < N_KEYS) fprintf (stderr, "%s: GMT SYNTAX ERROR:  %s given illegal value (%s)!\n", GMT_program, keyword, value);
 	return (error);
-}
-
-void str_tolower (char *value)
-{
-	/* Convert entire string to lower case */
-	int i, c;
-	for (i = 0; value[i]; i++) {
-		c = (int)value[i];
-		value[i] = (char) tolower (c);
-	}
 }
 
 BOOLEAN true_false_or_error (char *value, int *answer)
@@ -1981,7 +1970,7 @@ int GMT_load_user_media (void) {	/* Load any user-specified media formats */
 
 		/* Convert string to lower case */
 
-		str_tolower (media);
+		GMT_str_tolower (media);
 
 		GMT_user_media_name[n] = (char *) GMT_memory (VNULL, (size_t)(strlen(media)+1), sizeof (char), GMT_program);
 		strcpy (GMT_user_media_name[n], media);
@@ -2838,7 +2827,7 @@ void GMT_decode_tinfo (char *in, struct TIME_AXIS *A) {
 			error = 3;
 			continue;
 		}
-		if (s[0] && strchr ("YyOoUuKkJjDdHhMmCc", s[0])) {	/* Appended one of the allowed units */
+		if (s[0] && strchr ("YyOoUuKkJjDdHhMmCclp", s[0])) {	/* Appended one of the allowed units, or l or p for log10/pow */
 			unit = s[0];
 			s++;
 		}
@@ -2911,7 +2900,20 @@ void GMT_set_titem (struct TIME_AXIS *A, double val, char flag, char unit, char 
 			exit (EXIT_FAILURE);
 			break;
 	}
-		
+	
+	switch (unit) {
+		case 'l':	/* Log10 anotation flag */
+			A->type = LOG10;
+			unit = 0;
+			break;
+		case 'p':	/* pow anotation flag */
+			A->type = POW;
+			unit = 0;
+			break;
+		default:
+			break;
+	}
+	
 	for (i = 0; i < n; i++) {
 		if (I[i]->active) {
 			fprintf (stderr, "%s: Warning: Axis sub-item %c set more than once (typo?)\n", GMT_program, item_flag[i]);
@@ -2950,10 +2952,13 @@ int GMT_map_getframe (char *in) {
 	struct TIME_AXIS *A;
 	int i, k;
 	
-	/* OK, the tframe_info.side[] may be set already */
+	/* tframe_info.side[] may be set already when parsing .gmtdefaults flags */
 	
 	info[0] = one;	info[1] = two;	info[2] = three;
-	for (i = 0; i < 3; i++) memset ((void *)&tframe_info.axis[i], 0, sizeof (struct TIME_AXIS));
+	for (i = 0; i < 3; i++) {
+		memset ((void *)&tframe_info.axis[i], 0, sizeof (struct TIME_AXIS));
+		if (project_info.xyz_projection[i] == TIME) tframe_info.axis[i].type = TIME;
+	}
 	tframe_info.header[0] = '\0';
 	tframe_info.plot = TRUE;
 	tframe_info.draw_box = FALSE;
@@ -3020,6 +3025,7 @@ void GMT_copytoframe (struct TIME_FRAME *T)
 		frame_info.frame_int[i] = val[4];
 		if (frame_info.frame_int[i] == 0.0) frame_info.frame_int[i] = frame_info.anot_int[i];
 		frame_info.grid_int[i] = val[5];
+		frame_info.anot_type[i] = T->axis[i].type;
 		strcpy (frame_info.label[i], T->axis[i].label);
 		strcpy (frame_info.unit[i], T->axis[i].unit);
 	}

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.14 2001-09-12 04:03:03 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.15 2001-09-12 19:35:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -698,8 +698,11 @@ int	GMT_verify_time_step (int step, char unit) {
 				retval = -1;
 			}
 			break;
-		case 'y':
+		case 'y':	/* No check on years */
 		case 'Y':
+			break;
+		case 'l':	/* Pass-through for log10 and pow flags (they are not units) */
+		case 'p':
 			break;
 		default:
 			fprintf (stderr, "GMT SYNTAX ERROR:  Unrecognized time axis unit.\n");
@@ -1074,13 +1077,14 @@ int	GMT_gmonth_length (int year,  int month) {
 	return (k);
 }
 
-int GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *C, GMT_dtime dt)
+int GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *C, BOOLEAN upper, int kind, GMT_dtime dt)
 {	/* Given the internal time representation dt and the formatting information
 	 * in the D and C structure, write the calendar representation to strings date and clock,
 	 * but skip either string if it is a NULL pointer */
 	 
 	struct GMT_gcal calendar;
 	int i_sec, m_sec, ap, ival[3];
+	char text[GMT_CALSTRING_LENGTH];
 
 	GMT_gcal_from_dt (dt, &calendar);			/* Convert dt to a complete calendar structure */
 	
@@ -1088,21 +1092,35 @@ int GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct 
 		/* Now undo Y2K fix to make a 2-digit year here if necessary */
 	
 		if (D->day_of_year) {		/* Using the year and day-of-year as date entries */
-			ival[D->order[0]] = (D->Y2K_year) ? abs(calendar.year) % 100 : calendar.year;
-			ival[!D->order[0]] = calendar.day_y;
+			if (D->item_pos[0] != -1) ival[D->item_pos[0]] = (D->Y2K_year) ? abs(calendar.year) % 100 : calendar.year;
+			if (D->item_pos[3] != -1) ival[D->item_pos[3]] = calendar.day_y;
 		}
-		else if (D->iso_calendar) {	/* Using ISO year, week and day-of-week entries */
+		else if (D->iso_calendar) {	/* Using ISO year, week and day-of-week entries. Order is fixed to be y-m-d */
 			ival[0] = (D->Y2K_year) ? abs(calendar.iso_y) % 100 : calendar.iso_y;
 			ival[1] = calendar.iso_w;
 			ival[2] = calendar.iso_d;
 		}
 		else {				/* Gregorian calendar entries */
-			ival[D->order[0]] = (D->Y2K_year) ? abs(calendar.year) % 100 : calendar.year;
-			ival[D->order[1]] = calendar.month;
-			ival[D->order[2]] = calendar.day_m;
+			if (D->item_pos[0] != -1) ival[D->item_pos[0]] = (D->Y2K_year) ? abs(calendar.year) % 100 : calendar.year;
+			if (D->item_pos[1] != -1) ival[D->item_pos[1]] = calendar.month;
+			if (D->item_pos[2] != -1) ival[D->item_pos[2]] = calendar.day_m;
 		}
 		memset ((void *)date, 0, GMT_CALSTRING_LENGTH);			/* To set all to zero */
-		sprintf (date, D->format, ival[0], ival[1], ival[2]);		/* Write date in correct order for this format */
+		if (D->mw_text)	{						/* Must write month or week name */
+			if (D->iso_calendar)
+				strcpy (text, GMT_time_language.week_name[kind]);
+			else
+				strcpy (text, GMT_time_language.month_name[ival[D->item_pos[1]]-1][kind]);
+			if (upper) GMT_str_toupper (text);
+			if (D->item_pos[1] == 0)		/* Month/week first */
+				sprintf (date, D->format, text, ival[1], ival[2]);
+			else if (D->item_pos[1] == 1)	/* Month/week second */
+				sprintf (date, D->format, ival[0], text, ival[2]);
+			else 				/* Month/week third */
+				sprintf (date, D->format, ival[0], ival[1], text);
+		}
+		else								/* Plain numerical filler-upper */
+			sprintf (date, D->format, ival[0], ival[1], ival[2]);	/* Write date in correct order for this format */
 	}
 
 	if (!clock) return;	/* Do not want a formatted clock string - return here */

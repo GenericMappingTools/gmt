@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.14 2001-09-10 23:56:16 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.15 2001-09-12 19:35:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -192,8 +192,8 @@ struct GMT_IO GMT_io = {
 	(BOOLEAN *)NULL,
 	(int *)NULL,
 	(int *)NULL,
-	{ {-1, -1, -1, -1}, FALSE, FALSE, "", FALSE, FALSE, { "", ""} },
-	{ {-1, -1, -1, -1}, FALSE, FALSE, "", FALSE, FALSE, { "", ""} },
+	{ {-1, -1, -1, -1}, {-1, -1, -1, -1}, FALSE, FALSE, "", FALSE, FALSE, FALSE, { "", ""} },
+	{ {-1, -1, -1, -1}, {-1, -1, -1, -1}, FALSE, FALSE, "", FALSE, FALSE, FALSE, { "", ""} },
 	{ {-1, -1, -1}, 0, 0.0, FALSE, { "am", "pm" }, "", { "", ""} },
 	{ {-1, -1, -1}, 0, 0.0, FALSE, { "am", "pm" }, "", { "", ""} },
 	{ {-1, -1, -1}, 0, FALSE, FALSE, FALSE, 0, 0.0, "", "", { "", ""} }
