@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.7 2004-06-14 23:39:00 pwessel Exp $
+ *	$Id: x2sys.h,v 1.8 2004-06-15 00:44:56 pwessel Exp $
  *
  *      Copyright (c) 1999-2004 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -241,3 +241,5 @@ EXTERN_MSC int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode);
 EXTERN_MSC void x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B);
 EXTERN_MSC int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B);
 
+EXTERN_MSC void x2sys_path_init (char *TAG);
+EXTERN_MSC int x2sys_get_data_path (char *track_path, char *track);
