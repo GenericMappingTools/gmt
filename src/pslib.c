@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.61 2004-05-26 01:29:51 pwessel Exp $
+ *	$Id: pslib.c,v 1.62 2004-05-27 04:05:50 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2451,13 +2451,16 @@ void ps_pathtext (double x[], double y[], int n, double pointsize, char *text, d
 }
 
 void ps_path (double x[], double y[], int n) {
-	int i;
+	int i, j;
 	double dx, dy;
 	fprintf (ps.fp, "%g %g M\n", x[0] * ps.scale, y[0] * ps.scale);
-	for (i = 1; i < n; i++) {
-		dx = irint ((x[i] - x[i-1]) * ps.scale);
-		dy = irint ((y[i] - y[i-1]) * ps.scale);
-		if (hypot (dx, dy) > 0.0) fprintf (ps.fp, "%g %g L\n", x[i] * ps.scale, y[i] * ps.scale);
+	for (i = 1, j = 0; i < n; i++) {
+		dx = irint ((x[i] - x[j]) * ps.scale);
+		dy = irint ((y[i] - y[j]) * ps.scale);
+		if (hypot (dx, dy) > 0.0) {
+			fprintf (ps.fp, "%g %g L\n", x[i] * ps.scale, y[i] * ps.scale);
+			j = i;
+		}
 	}
 }
 
@@ -3867,7 +3870,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 	while (fgets (buf, 128, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 		ps.font[i].name = (char *)ps_memory (VNULL, strlen (buf), sizeof (char));
-		if (sscanf (buf, "%s %lf %d", ps.font[i].name, &ps.font[i].height, &ps.font[i].encoded) != 3) {
+		if (sscanf (buf, "%s %lf %d %lf", ps.font[i].name, &ps.font[i].height, &ps.font[i].encoded, &ps.font[i].ave_width) != 4) {
 			fprintf (stderr, "PSL Fatal Error: Trouble decoding font info for font %d\n", i);
 			exit (EXIT_FAILURE);
 		}
@@ -3896,7 +3899,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 		while (fgets (buf, 128, in)) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 			ps.font[i].name = (char *)ps_memory (VNULL, strlen (buf), sizeof (char));
-			if (sscanf (buf, "%s %lf %d", ps.font[i].name, &ps.font[i].height, &ps.font[i].encoded) != 3) {
+			if (sscanf (buf, "%s %lf %d %lf ", ps.font[i].name, &ps.font[i].height, &ps.font[i].encoded, &ps.font[i].ave_width) != 4) {
 				fprintf (stderr, "PSL Fatal Error: Trouble decoding custom font info for font %d\n", i - *n_GMT_fonts);
 				exit (EXIT_FAILURE);
 			}
