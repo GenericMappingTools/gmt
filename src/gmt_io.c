@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.75 2004-12-26 23:52:44 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.76 2005-02-14 03:32:10 lloyd Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1291,9 +1291,10 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 	 * Items not encountered are left as -1.
 	 */
 
-	int i, j, order, n_delim, sequence[3], last, n_h, n_m, n_s, n_x, n_dec, off, error = 0;
+	int i, j, order, n_delim, sequence[3], last, n_h, n_m, n_s, n_x, n_dec, error = 0;
 	BOOLEAN big_to_small;
 	char *p;
+	ptrdiff_t off;
 	
 	for (i = 0; i < 3; i++) S->order[i] = -1;	/* Meaning not encountered yet */
 	sequence[0] = sequence[1] = sequence[2] = -1;
@@ -1307,25 +1308,25 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 		S->twelve_hr_clock = TRUE;
 		strcpy (S->ampm_suffix[0], "am");
 		strcpy (S->ampm_suffix[1], "pm");
-		off = (int)(p) - (int)text;
+		off = p - text;
 	}
 	else if ((p = strstr (text, "AM"))) {	/* Want 12 hour clock with AM/PM */
 		S->twelve_hr_clock = TRUE;
 		strcpy (S->ampm_suffix[0], "AM");
 		strcpy (S->ampm_suffix[1], "PM");
-		off = (int)(p) - (int)text;
+		off = p - text;
 	}
 	else if ((p = strstr (text, "a.m."))) {	/* Want 12 hour clock with a.m./p.m. */
 		S->twelve_hr_clock = TRUE;
 		strcpy (S->ampm_suffix[0], "a.m.");
 		strcpy (S->ampm_suffix[1], "p.m.");
-		off = (int)(p) - (int)text;
+		off = p - text;
 	}
 	else if ((p = strstr (text, "A.M."))) {	/* Want 12 hour clock with A.M./P.M. */
 		S->twelve_hr_clock = TRUE;
 		strcpy (S->ampm_suffix[0], "A.M.");
 		strcpy (S->ampm_suffix[1], "P.M.");
-		off = (int)(p) - (int)text;
+		off = p - text;
 	}
 	else
 		off = strlen (text);
