@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.121 2004-05-11 19:44:44 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.122 2004-05-11 21:06:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4204,7 +4204,7 @@ void GMT_draw_mag_rose (struct MAP_ROSE *mr)
 		sincos (t_angle * D2R, &s, &c);
 		x[0] = mr->x0 - 2.0 * M_VW * mr->size * s;	y[0] = mr->y0 + 2.0 * M_VW * mr->size * c;
 		ps_setpaint (gmtdefs.background_rgb);
-		if (mr->dlabel[0] == '\0' || !strcmp(mr->dlabel, "-")) GMT_get_annot_label (mr->declination, mr->dlabel, TRUE, FALSE, 0, GMT_world_map);
+		if (!strcmp(mr->dlabel, "-")) GMT_get_annot_label (mr->declination, mr->dlabel, TRUE, FALSE, 0, GMT_world_map);
 		GMT_text3D (x[0], y[0], project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, mr->dlabel, t_angle, 2, 0);
 	}
 	else {			/* Just geographic directions and a centered arrow */
