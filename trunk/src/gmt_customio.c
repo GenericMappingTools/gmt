@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.8 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.9 2002-02-22 19:22:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -501,14 +501,14 @@ int GMT_ras_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	/* grid:	array with final grid */
 	/* w,e,s,n:	Sub-region to write  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to remove on w, e, s, n of grid, respectively */
-	/* complex:	Must be FALSE for rasterfiles */
+	/* complex:	Must be FALSE for rasterfiles.    If 64 is added we write no header */
 
 	int i, i2, kk, inc = 1;
 	int j, ij, j2, width_in, width_out, height_out, n2;
 	int first_col, last_col, first_row, last_row;
 	int *k;
 	
-	BOOLEAN check;
+	BOOLEAN check, do_header = TRUE;
 	
 	unsigned char *tmp;
 	
@@ -543,6 +543,10 @@ int GMT_ras_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row);
 
+	if (complex >= 64) {	/* Want no header, adjust complex */
+		complex %= 64;
+		do_header = FALSE;
+	}
 	if (complex) inc = 2;
 
 	width_in = width_out;		/* Physical width of input array */
@@ -560,7 +564,7 @@ int GMT_ras_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	
 	/* store header information and array */
 	
-	if (GMT_write_rasheader (fp, &h)) {
+	if (do_header && GMT_write_rasheader (fp, &h)) {
 		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
@@ -868,11 +872,12 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
 	/* complex:	TRUE if array is to hold real and imaginary parts (read in real only) */
 	/*		Note: The file has only real values, we simply allow space in the array */
-	/*		for imaginary parts when processed by grdfft etc. */
+	/*		for imaginary parts when processed by grdfft etc.   If 64 is added we write no header*/
 
 	int i, i2, kk, *k;
 	int j, ij, j2, width_in, width_out, height_out, mx, word, bit, inc = 1;
-	int first_col, last_col, first_row, last_row, check = FALSE;
+	int first_col, last_col, first_row, last_row;
+	BOOLEAN check = FALSE, do_header = TRUE;
 	
 	
 	unsigned int *tmp, ival;
@@ -894,6 +899,10 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row);
 
+	if (complex >= 64) {	/* Want no header, adjust complex */
+		complex %= 64;
+		do_header = FALSE;
+	}
 	if (complex) inc = 2;
 
 	width_in = width_out;		/* Physical width of input array */
@@ -925,7 +934,7 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	
 	/* store header information and array */
 	
-	if (fwrite ((void *)header, sizeof (struct GRD_HEADER), (size_t)1, fp) != 1) {
+	if (do_header && fwrite ((void *)header, sizeof (struct GRD_HEADER), (size_t)1, fp) != 1) {
 		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
@@ -1133,7 +1142,7 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
 	/* complex:	TRUE if array is to hold real and imaginary parts (read in real only) */
 	/*		Note: The file has only real values, we simply allow space in the array */
-	/*		for imaginary parts when processed by grdfft etc. */
+	/*		for imaginary parts when processed by grdfft etc.  If 64 is added we write no header */
 	/* type:	Data type (int, short, float, etc) */
 
 	int first_col, last_col;	/* First and last column to deal with */
@@ -1146,6 +1155,7 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 	int *k;				/* Array with indices */
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
+	BOOLEAN do_header = TRUE;	/* TRUE if we should write the header first */
 	
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
@@ -1165,7 +1175,10 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[0] > 0) width_in += pad[0];
 	if (pad[1] > 0) width_in += pad[1];
-	
+	if (complex >= 64) {	/* Want no header, adjust complex */
+		complex %= 64;
+		do_header = FALSE;
+	}
 	if (complex) inc = 2;
 
 	header->x_min = w;
@@ -1195,7 +1208,7 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 	
 	/* store header information and array */
 	
-	if (fwrite ((void *)header, sizeof (struct GRD_HEADER), (size_t)1, fp) != 1) {
+	if (do_header && fwrite ((void *)header, sizeof (struct GRD_HEADER), (size_t)1, fp) != 1) {
 		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}

@@ -3,7 +3,7 @@
 grdreformat \- Converting between different grdfile formats.
 .SH SYNOPSIS
 \fBgrdreformat\fP \fIingrdfile\fP[\fI=id\fP[\fI/scale/offset\fP[\fI/NaNvalue\fP]]] \fIoutgrdfile\fP[\fI=id\fP[\fI/scale/offset\fP[\fI/NaNvalue\fP]]] 
-[ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-V\fP ]
+ [ \fB\-N\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBgrdreformat\fP reads a grdfile in one format and writes it out using another format.  As an option the
 user may select a subset of the data to be written and to specify scaling, translation, and NaN-value.
@@ -24,6 +24,10 @@ is \fIhsize\fP + \fInx\fP * \fIny\fP * \fIitem_size\fP, where \fIitem_size\fP is
 are stored using 4-byte integers, each holding 32 bits, so for these files the size equation is modified by
 using ceil (\fInx\fP / 32) * 4 instead of \fInx\fP.  For header and grid details, see Appendix B.
 .SH OPTIONS
+.TP
+.B \-N
+Suppress the writing of the GMT header structure.  This is useful when you want to write a native grid to
+be used by \fBgrdraster\fP.  It only applies to native grids and is skipped for netCDF output.
 #include "explain_-R.txt"
 #include "explain_-V.txt"
 .SH EXAMPLES
@@ -45,6 +49,12 @@ assuming the range in image.grd is 0-1 and we need 0-255, run
 .br
 .sp
 \fBgrdreformat\fP image.grd \fB\-R\fP-60/-40/-40/-30 image.ras8=3/255/0 \fB\-V\fP
+.br
+.sp
+To convert etopo2.grd to etopo2.i2 that can be used by \fBgrdraster\fP, try
+.br
+.sp
+\fBgrdreformat\fP etopo2.grd etopo2.i2=2 \fB\-N \-V\fP
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR grdmath (l)
