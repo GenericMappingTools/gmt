@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.83 2004-10-14 03:29:22 pwessel Exp $
+ *	$Id: gmt.h,v 1.84 2004-10-17 08:56:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -568,6 +568,7 @@ EXTERN_MSC double DEG2KM;			/*	Scale converting degrees to km on spheroid	*/
 #else
 #include "gmt_nan.h"		/* Machine-dependent macros for making and testing NaNs */
 #endif
+#include "gmt_version.h"        /* Only contains the current GMT version number */
 #include "gmt_project.h"        /* Define project_info and frame_info structures */
 #include "gmt_grd.h"            /* Define grd file header structure */
 #include "gmt_io.h"		/* Defines structures and macros for table i/o */
