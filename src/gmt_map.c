@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.65 2004-08-19 04:13:48 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.66 2004-09-02 18:15:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -795,7 +795,7 @@ void GMT_map_setup (double west, double east, double south, double north)
 	
 	gmtdefs.dlon = (project_info.e - project_info.w) / gmtdefs.n_lon_nodes;
 	gmtdefs.dlat = (project_info.n - project_info.s) / gmtdefs.n_lat_nodes;
-		
+	
 	if (search) {
 		GMT_wesn_search (project_info.xmin, project_info.xmax, project_info.ymin, project_info.ymax, &project_info.w, &project_info.e, &project_info.s, &project_info.n);
 		gmtdefs.dlon = (project_info.e - project_info.w) / gmtdefs.n_lon_nodes;
@@ -803,6 +803,9 @@ void GMT_map_setup (double west, double east, double south, double north)
 	}
 
 	if (AZIMUTHAL && !project_info.region) GMT_horizon_search (west, east, south, north, project_info.xmin, project_info.xmax, project_info.ymin, project_info.ymax);
+
+	if (project_info.central_meridian < project_info.w && (project_info.central_meridian + 360.0) <= project_info.e) project_info.central_meridian += 360.0;
+	if (project_info.central_meridian > project_info.e && (project_info.central_meridian - 360.0) >= project_info.w) project_info.central_meridian -= 360.0;
 
 	GMT_init_three_D ();
 	
@@ -5883,6 +5886,7 @@ int GMT_wesn_crossing (double lon0, double lat0, double lon1, double lat1, doubl
 		while (lon1 < project_info.w) lon1 += 360.0;
 		while (lon1 > project_info.e) lon1 -= 360.0;
 	}
+	
 	
 	/* Then set 'almost'-corners to corners */
 	
