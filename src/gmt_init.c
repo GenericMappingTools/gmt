@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.113 2004-04-13 03:52:26 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.114 2004-04-13 04:31:00 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3082,7 +3082,7 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 			default:
 				break;
 		}
-		if (GMT_primary && flag != '*') flag = (char) toupper ((int)flag);	/* Since this is primary axes items */
+		if (!GMT_primary && flag != '*') flag = (char) toupper ((int)flag);	/* Since this is secondary axes items */
 		if (!error) GMT_set_titem (A, val, flag, unit);				/* Store the findings for this segment */
 		t = s;									/* Make t point to start of next segment, if any */
 	}

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.67 2004-04-12 21:41:37 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.68 2004-04-13 04:31:00 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -589,6 +589,7 @@ BOOLEAN GMT_is_texture (char *word)
 		if (word[0] == '-' || word[0] == 'a' || word[0] == '.' || word[0] == 'o') return (TRUE);
 		return (FALSE);	/* No other 1-char texture patterns possible */
 	}
+	if (strchr(word,'t')) return (FALSE);	/* Got a t somewhere */
 	if (strchr(word,':')) return (TRUE);	/* Got <pattern>:<phase> */
 	while (n >= 0 && (word[n] == '-' || word[n] == '.')) n--;	/* Wind down as long as we find - or . */
 	return (n == -1);	/* TRUE if we only found -/., FALSE otherwise */
