@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.44 2001-09-20 20:10:31 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.45 2001-09-21 02:25:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -77,10 +77,9 @@ void GMT_backwards_compatibility ();
 void GMT_strip_colonitem (const char *in, const char *pattern, char *item, char *out);
 void GMT_strip_wesnz (const char *in, int side[], BOOLEAN *draw_box, char *out);
 void GMT_split_info (const char *in, char *info[]);
-void GMT_decode_tinfo (char *in, struct TIME_AXIS *A);
-void GMT_set_titem (struct TIME_AXIS *A, double val, char flag, char unit, char mod);
+void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A);
+void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit, char mod);
 int GMT_map_getframe (char *in);
-void GMT_copytoframe (struct TIME_FRAME *T);
 
 /* Local variables to gmt_init.c */
 
@@ -366,7 +365,7 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t   -Jp|P[a]<scale|mapwidth>[/<origin>] (Polar [azimuth] (theta,radius))\n");
 				
-			fprintf (stderr, "\t   -Jx|X<x-scale|mapwidth>[l|p<power>|t][/<y-scale|mapheight>[l|p<power>|t|T][d] (Linear projections)\n");
+			fprintf (stderr, "\t   -Jx|X<x-scale|mapwidth>[l|p<power>|t|T][/<y-scale|mapheight>[l|p<power>|t|T][d] (Linear projections)\n");
 			fprintf (stderr, "\t   (See psbasemap for more details on projection syntax)\n");
 			break;
 			
@@ -1076,32 +1075,32 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case 5:
 			strcpy (gmtdefs.basemap_axes, value);
-			for (i = 0; i < 4; i++) tframe_info.side[i] = 0;	/* Otherwise we cannot unset default settings */
+			for (i = 0; i < 4; i++) frame_info.side[i] = 0;	/* Otherwise we cannot unset default settings */
 			for (i = 0; value[i]; i++) {
 				switch (value[i]) {
 					case 'W':	/* Upper case: Draw axis/ticks AND anotate */
-						tframe_info.side[3] = 2;
+						frame_info.side[3] = 2;
 						break;
 					case 'w':	/* Lower case: Draw axis/ticks only */
-						tframe_info.side[3] = 1;
+						frame_info.side[3] = 1;
 						break;
 					case 'E':
-						tframe_info.side[1] = 2;
+						frame_info.side[1] = 2;
 						break;
 					case 'e':
-						tframe_info.side[1] = 1;
+						frame_info.side[1] = 1;
 						break;
 					case 'S':
-						tframe_info.side[0] = 2;
+						frame_info.side[0] = 2;
 						break;
 					case 's':
-						tframe_info.side[0] = 1;
+						frame_info.side[0] = 1;
 						break;
 					case 'N':
-						tframe_info.side[2] = 2;
+						frame_info.side[2] = 2;
 						break;
 					case 'n':
-						tframe_info.side[2] = 1;
+						frame_info.side[2] = 1;
 						break;
 					case '-':	/* None */
 						break;
@@ -1763,7 +1762,7 @@ void GMT_getdefaults (char *this_file)	/* Read user's .gmtdefaults file and init
         BOOLEAN found;
 	
 	 /* Default is to draw AND annotate all sides */
-	for (i = 0; i < 5; i++) tframe_info.side[i] = 2;
+	for (i = 0; i < 5; i++) frame_info.side[i] = 2;
 	
 	if (!this_file) {	/* Must figure out which file to use */
 	
@@ -2147,7 +2146,7 @@ int GMT_begin (int argc, char **argv)
 	GMT_make_fnan (GMT_f_NaN);
 	GMT_make_dnan (GMT_d_NaN);
 	GMT_oldargc = 0;
-	tframe_info.plot = FALSE;
+	frame_info.plot = FALSE;
 	project_info.projection = -1;
 	project_info.gave_map_width = FALSE;
 	project_info.region = TRUE;
@@ -2625,7 +2624,7 @@ void GMT_split_info (const char *in, char *info[]) {
 	}
 }
 
-void GMT_decode_tinfo (char *in, struct TIME_AXIS *A) {
+void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 	/* Decode the anot/tick segments of the clean -B string pieces */
 	
 	char *t, *s, flag, mod, unit;
@@ -2706,11 +2705,11 @@ void GMT_decode_tinfo (char *in, struct TIME_AXIS *A) {
 	}
 }
 
-void GMT_set_titem (struct TIME_AXIS *A, double val, char flag, char unit, char mod) {
-	/* Load the values into the appropriate TIME_AXIS_ITEM structure */
+void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit, char mod) {
+	/* Load the values into the appropriate PLOT_AXIS_ITEM structure */
 	
 	int i, n = 1;
-	struct TIME_AXIS_ITEM *I[2];
+	struct PLOT_AXIS_ITEM *I[2];
 	char item_flag[6] = {'a', 'A', 'i', 'I', 'f', 'g'};
 	
 	if (A->type == TIME) {	/* Strict check on time intervals */
@@ -2824,27 +2823,27 @@ int GMT_map_getframe (char *in) {
 	 */
 	char out1[BUFSIZ], out2[BUFSIZ], *info[3], xyz[3] = {'x', 'y', 'z'}, yn[2] = {'N', 'Y'};
 	char one[80], two[80], three[80];
-	struct TIME_AXIS *A;
+	struct PLOT_AXIS *A;
 	int i, j, k;
 	
-	/* tframe_info.side[] may be set already when parsing .gmtdefaults flags */
+	/* frame_info.side[] may be set already when parsing .gmtdefaults flags */
 	
 	info[0] = one;	info[1] = two;	info[2] = three;
 	for (i = 0; i < 3; i++) {
-		memset ((void *)&tframe_info.axis[i], 0, sizeof (struct TIME_AXIS));
+		memset ((void *)&frame_info.axis[i], 0, sizeof (struct PLOT_AXIS));
 		for (j = 0; j < 6; j++) {
-			tframe_info.axis[i].item[j].parent = i;
-			tframe_info.axis[i].item[j].id = j;
+			frame_info.axis[i].item[j].parent = i;
+			frame_info.axis[i].item[j].id = j;
 		}
-		if (project_info.xyz_projection[i] == TIME) tframe_info.axis[i].type = TIME;
+		if (project_info.xyz_projection[i] == TIME) frame_info.axis[i].type = TIME;
 	}
-	tframe_info.header[0] = '\0';
-	tframe_info.plot = TRUE;
-	tframe_info.draw_box = FALSE;
+	frame_info.header[0] = '\0';
+	frame_info.plot = TRUE;
+	frame_info.draw_box = FALSE;
 	
-	GMT_strip_colonitem (in, ":.", tframe_info.header, out1);			/* Extract header string, if any */
+	GMT_strip_colonitem (in, ":.", frame_info.header, out1);			/* Extract header string, if any */
 	
-	GMT_strip_wesnz (out1, tframe_info.side, &tframe_info.draw_box, out2);		/* Decode WESNZwesnz+ flags, if any */
+	GMT_strip_wesnz (out1, frame_info.side, &frame_info.draw_box, out2);		/* Decode WESNZwesnz+ flags, if any */
 	
 	GMT_split_info (out2, info);					/* Chop/copy the three axis strings */
 	
@@ -2855,13 +2854,13 @@ int GMT_map_getframe (char *in) {
 		
 		if (!info[i][0]) continue;
 		
-		GMT_strip_colonitem (info[i], ":,", tframe_info.axis[i].unit, out1);	/* Pull out anotation unit, if any */
-		GMT_strip_colonitem (out1, ":", tframe_info.axis[i].label, out2);		/* Pull out axis label, if any */
+		GMT_strip_colonitem (info[i], ":,", frame_info.axis[i].unit, out1);	/* Pull out anotation unit, if any */
+		GMT_strip_colonitem (out1, ":", frame_info.axis[i].label, out2);		/* Pull out axis label, if any */
 		
-		GMT_decode_tinfo (out2, &tframe_info.axis[i]);					/* Decode the anotation intervals */
+		GMT_decode_tinfo (out2, &frame_info.axis[i]);					/* Decode the anotation intervals */
 		
 #ifdef DEBUGT
-		A = &tframe_info.axis[i];
+		A = &frame_info.axis[i];
 		fprintf (stderr, "Unit: [%s]\n", A->unit);
 		fprintf (stderr, "Label: [%s]\n", A->label);
 		for (k = 0; k < 6; k++) {
@@ -2871,47 +2870,15 @@ int GMT_map_getframe (char *in) {
 #endif
 	}
 #ifdef DEBUGT
-	fprintf (stderr, "Title: [%s]\n", tframe_info.header);
-	if (tframe_info.draw_box)
+	fprintf (stderr, "Title: [%s]\n", frame_info.header);
+	if (frame_info.draw_box)
 		fprintf (stderr, "3-D box is TRUE  ");
 	else
 		fprintf (stderr, "3-D box is FALSE  ");
-	fprintf (stderr, "WESNZ = %d %d %d %d %d\n", tframe_info.side[0], tframe_info.side[1], tframe_info.side[2], tframe_info.side[3], tframe_info.side[4]);
+	fprintf (stderr, "WESNZ = %d %d %d %d %d\n", frame_info.side[0], frame_info.side[1], frame_info.side[2], frame_info.side[3], frame_info.side[4]);
 #endif
 	
-	/* GMT_copytoframe (&tframe_info); */
 	return (0);
-}
-
-	
-void GMT_copytoframe (struct TIME_FRAME *T)
-{	/* This routine copies axis information that was meant for non-time axes to the
-	 * frame_info structure and deals with units etc.  This will eventually go away
-	 * as we use only the new structures.
-	 */
-	 
-	int i, j;
-	double val[6];
-
-	for (i = 0; i < 3; i++) {
-		for (j = 0; j < 6; j++) {	/* Convert units directly */
-			val[j] = T->axis[i].item[j].interval;
-			if (T->axis[i].item[j].unit == 'm') val[j] /= 60.0;
-			if (T->axis[i].item[j].unit == 'c') val[j] /= 3600.0;
-			if (T->axis[i].item[j].unit == 'h') val[j] /= 24.0;
-		}
-		frame_info.anot_int[i] = val[0];
-		frame_info.frame_int[i] = val[4];
-		if (frame_info.frame_int[i] == 0.0) frame_info.frame_int[i] = frame_info.anot_int[i];
-		frame_info.grid_int[i] = val[5];
-		frame_info.anot_type[i] = T->axis[i].type;
-		strcpy (frame_info.label[i], T->axis[i].label);
-		strcpy (frame_info.unit[i], T->axis[i].unit);
-	}
-	strcpy (frame_info.header, T->header);
-	for (i = 0; i < 5; i++) frame_info.side[i] = T->side[i];
-	frame_info.draw_box = T->draw_box;
-	frame_info.plot = T->plot;
 }
 
 int GMT_map_getproject (char *args)

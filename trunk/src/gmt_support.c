@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.16 2001-09-20 20:10:31 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.17 2001-09-21 02:25:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1785,8 +1785,8 @@ struct EPS *GMT_epsinfo (char *program)
 	 
 	tick_space = (gmtdefs.tick_length > 0.0) ? irint (GMT_u2u[GMT_INCH][GMT_PT] * gmtdefs.tick_length) : 0;
 	frame_space = irint (GMT_u2u[GMT_INCH][GMT_PT] * gmtdefs.frame_width);
-	if (tframe_info.header[0]) {	/* Make space for header text */
-		move_up = (MAPPING || tframe_info.side[2] == 2);
+	if (frame_info.header[0]) {	/* Make space for header text */
+		move_up = (MAPPING || frame_info.side[2] == 2);
 		dy = ((move_up) ? (gmtdefs.anot_font_size + gmtdefs.label_font_size) * GMT_u2u[GMT_PT][GMT_INCH] : 0.0) + 2.5 * gmtdefs.anot_offset;
 		new->y1 += tick_space + irint (GMT_u2u[GMT_INCH][GMT_PT] * dy);
 	}
@@ -1797,11 +1797,11 @@ struct EPS *GMT_epsinfo (char *program)
 
 	u_dx = (gmtdefs.unix_time && gmtdefs.unix_time_pos[0] < 0.0) ? -irint (GMT_u2u[GMT_INCH][GMT_PT] * gmtdefs.unix_time_pos[0]) : 0;
 	u_dy = (gmtdefs.unix_time && gmtdefs.unix_time_pos[1] < 0.0) ? -irint (GMT_u2u[GMT_INCH][GMT_PT] * gmtdefs.unix_time_pos[1]) : 0;
-	if (tframe_info.plot && !project_info.three_D) {
-		if (tframe_info.side[3]) new->x0 -= MAX (u_dx, ((tframe_info.side[3] == 2) ? PADDING : tick_space)); else new->x0 -= MAX (u_dx, frame_space);
-		if (tframe_info.side[0]) new->y0 -= MAX (u_dy, ((tframe_info.side[0] == 2) ? PADDING : tick_space)); else new->y0 -= MAX (u_dy, frame_space);
-		if (tframe_info.side[1]) new->x1 += (tframe_info.side[1] == 2) ? PADDING : tick_space; else new->x1 += frame_space;
-		if (tframe_info.side[2]) new->y1 += (tframe_info.header[0] || tframe_info.side[2] == 2) ? PADDING : tick_space; else new->y1 += frame_space;
+	if (frame_info.plot && !project_info.three_D) {
+		if (frame_info.side[3]) new->x0 -= MAX (u_dx, ((frame_info.side[3] == 2) ? PADDING : tick_space)); else new->x0 -= MAX (u_dx, frame_space);
+		if (frame_info.side[0]) new->y0 -= MAX (u_dy, ((frame_info.side[0] == 2) ? PADDING : tick_space)); else new->y0 -= MAX (u_dy, frame_space);
+		if (frame_info.side[1]) new->x1 += (frame_info.side[1] == 2) ? PADDING : tick_space; else new->x1 += frame_space;
+		if (frame_info.side[2]) new->y1 += (frame_info.header[0] || frame_info.side[2] == 2) ? PADDING : tick_space; else new->y1 += frame_space;
 	}
 	else if (project_info.three_D) {
 		new->x0 -= MAX (u_dx, PADDING/2);
@@ -1849,9 +1849,9 @@ struct EPS *GMT_epsinfo (char *program)
 		id = 2;
 	}
 	
-	if (tframe_info.header[0]) fno[id++] = gmtdefs.header_font;
+	if (frame_info.header[0]) fno[id++] = gmtdefs.header_font;
 	
-	if (tframe_info.axis[0].label[0] || tframe_info.axis[1].label[0] || tframe_info.axis[2].label[0]) fno[id++] = gmtdefs.label_font;
+	if (frame_info.axis[0].label[0] || frame_info.axis[1].label[0] || frame_info.axis[2].label[0]) fno[id++] = gmtdefs.label_font;
 	
 	fno[id++] = gmtdefs.anot_font;
 	
@@ -3651,15 +3651,15 @@ double GMT_get_map_interval (int axis, int item) {
 		exit (EXIT_FAILURE);
 	}
 			
-	switch (tframe_info.axis[axis].item[item].unit) {
+	switch (frame_info.axis[axis].item[item].unit) {
 		case 'm':	/* arc Minutes */
-			return (tframe_info.axis[axis].item[item].interval * GMT_MIN2DEG);
+			return (frame_info.axis[axis].item[item].interval * GMT_MIN2DEG);
 			break;
 		case 'c':	/* arc Seconds */
-			return (tframe_info.axis[axis].item[item].interval * GMT_SEC2DEG);
+			return (frame_info.axis[axis].item[item].interval * GMT_SEC2DEG);
 			break;
 		default:
-			return (tframe_info.axis[axis].item[item].interval);
+			return (frame_info.axis[axis].item[item].interval);
 			break;
 	}
 }
