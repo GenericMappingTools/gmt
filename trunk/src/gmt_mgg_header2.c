@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.4 2004-09-28 19:24:13 pwessel Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.5 2005-02-18 20:24:56 pwessel Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	This is the README file:
@@ -309,7 +309,7 @@ int mgg2_read_grd (
 		tShort = (short *) tLong;
 		tChar  = (char *) tLong;
 
-		if (fread ((char *)tLong, mggHeader.numType, nm, fp) != (size_t)nm) {
+		if (fread ((void *)tLong, mggHeader.numType, nm, fp) != (size_t)nm) {
 			fprintf (stderr, "GMT Fatal Error: Error reading file %s! (%s)", file);
 			exit (-1);
 		}
@@ -340,7 +340,7 @@ int mgg2_read_grd (
 				exit(-1);
 			}
 		}
-		GMT_free ((char *)tLong);
+		GMT_free ((void *)tLong);
 		fclose(fp);
 		return (FALSE);
 	}
@@ -397,7 +397,7 @@ int mgg2_read_grd (
 		}
 		if (piping)	{ /* Skip data by reading it */
 			for (j = 0; j < first_row; j++) {
-				if (fread ((char *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
+				if (fread ((void *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
 					fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
 					exit (-1);
 				}
@@ -408,7 +408,7 @@ int mgg2_read_grd (
 		}
 		
 		for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
-			if (fread ((char *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
+			if (fread ((void *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
 				fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
 				exit (-1);
 			}
@@ -441,14 +441,14 @@ int mgg2_read_grd (
 		}
 		if (piping)	{ /* Skip data by reading it */
 			for (j = last_row + 1; j < header->ny; j++) {
-				if (fread ((char *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
+				if (fread ((void *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
 					fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
 					exit (-1);
 				}
 			}
 		}
 			
-		GMT_free ((char *)k);
+		GMT_free ((void *)k);
 	}
 	else {	/* A bit easier here */
 		tLong = (int *) GMT_memory (CNULL, header->nx, sizeof (int), "mgg_read_grd");
@@ -457,7 +457,7 @@ int mgg2_read_grd (
 
 		if (piping)	{ /* Skip data by reading it */
 			for (j = 0; j < first_row; j++) {
-				if (fread ((char *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
+				if (fread ((void *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
 					fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
 					exit (-1);
 				}
@@ -469,7 +469,7 @@ int mgg2_read_grd (
 		
 		for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 			ij = (j2 + pad[3]) * width_out + i_0_out;
-			if (fread ((char *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
+			if (fread ((void *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
 				fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
 				exit (-1);
 			}
@@ -505,7 +505,7 @@ int mgg2_read_grd (
 
 		if (piping)	{/* Skip data by reading it */
 			for (j = last_row + 1; j < header->ny; j++) {
-				if (fread ((char *) tLong, mggHeader.numType, header->nx, fp)) {
+				if (fread ((void *) tLong, mggHeader.numType, header->nx, fp)) {
 					fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
 					exit (-1);
 				}
@@ -531,7 +531,7 @@ int mgg2_read_grd (
 	}
 	if (fp != stdin) fclose (fp);
 	
-	GMT_free ((char *)tLong);
+	GMT_free ((void *)tLong);
 	return (FALSE);
 }
 
@@ -637,7 +637,7 @@ int mgg2_write_grd(
 			fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
 			exit (-1);
 		}
-		GMT_free ((char *)tLong);
+		GMT_free ((void *)tLong);
 		return (FALSE);
 	}
 
@@ -748,9 +748,9 @@ int mgg2_write_grd(
 				if (mggHeader.numType == sizeof(int)) swap_long(&tLong[i]);
 				else if (mggHeader.numType == sizeof(short)) swap_word(&tShort[i]);
 			}
-			fwrite ((char *)tLong, mggHeader.numType, width_out, fp);
+			fwrite ((void *)tLong, mggHeader.numType, width_out, fp);
 		}
-		GMT_free ((char *)k);
+		GMT_free ((void *)k);
 	}
 	else {
 		i2 = first_col + pad[0];
@@ -788,12 +788,12 @@ int mgg2_write_grd(
 				if (mggHeader.numType == sizeof(int)) swap_long(&tLong[i]);
 				else if (mggHeader.numType == sizeof(short)) swap_word(&tShort[i]);
 			}
-			fwrite ((char *)tLong, mggHeader.numType, width_out, fp);
+			fwrite ((void *)tLong, mggHeader.numType, width_out, fp);
 		}
 	}
 	if (fp != stdout) fclose (fp);
 	
-	GMT_free ((char *)tLong);
+	GMT_free ((void *)tLong);
 	
 	return (FALSE);
 }
