@@ -1,0 +1,53 @@
+	$Id: README.WIN32,v 1.1 2001-01-03 19:16:54 pwessel Exp $
+
+README file for GMT 3.3.7 Distribution for Win32
+This version contains dynamic executables with the DLL support.
+
+INSTALLATION:
+=============
+
+To use GMT on your system you must
+
+1. Install netCDF.  You can either compile from source or get
+   precompiled binaries.  See www.unidata.ucar.edu's netcdf page
+   for details and ftp links.  There is also a .zip file on the
+   GMT ftp sites.
+
+2a Win95/98:
+ . Edit SRC/GMTENV.BAT and change the values for GMTHOME, HOME, and NETCDF
+   if your setup differs from what these defaults values indicate.
+   Execute GMTENV.BAT or place it in autoexec.bat so it is run each
+   time you reboot your machine.
+
+2b WinNT/2000:
+   Add GMTHOME, HOME, and NETCDF, and modify PATH, LIB, INCLUDE in the
+   environmental parameters via the system settings.  See the gmtenv.bat
+   file for what the definitions should be.
+
+3. To test that all is well, cd into the examples directory and type
+   do_examples.  To see the finished plots, make sure gsview32 is in
+   your path (see below) and type do_view.
+
+
+ADDITIONAL MATERIAL:
+====================
+
+For complete GMT Documentation, including a Cookbook and Technical
+Reference Manual and a Tutorial and Short Course Manual in PDF
+format, get GMT_doc.zip from www.soest.hawaii.edu/gmt.
+For the HTML-only versions, get GMT_web.zip.  After installing, make
+a bookmark for the file GMT/www/gmt/gmt_sevices.html.
+
+If you want the high and/or full resolution coastlines, political borders,
+and rivers you must obtain GMT_high.zip and GMT_full.zip as well.
+unzip from the directory that contains GMT.
+
+The examples use the WIN32 version of gawk, also available from the GMT ftp
+sites.
+
+To view your GMT PostScript or EPS plots, we recommend you install gsview
+(see www.cs.wisc.edu/~ghost/gsview). It is required to run the do_view script.
+
+Paul Wessel
+Walter H. F. Smith
+09-OCT-2000
