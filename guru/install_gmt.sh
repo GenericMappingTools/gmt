@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.32 2004-01-07 20:44:53 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.33 2004-01-09 22:53:42 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -650,6 +650,7 @@ EOF
 
 echo "Session parameters written to file $file" >&2
 echo $file
+rm -f gmt_install.ftp_*
 }
 #--------------------------------------------------------------------------------
 # BACKGROUND INSTALLATION OF GMT FUNCTIONS
@@ -769,7 +770,7 @@ make_ftp_list()
 			get=1
 		fi
 		if [ $get -eq 1 ]; then
-			echo "get GMT_${file}.tar.$suffix" >> install_gmt.ftp_list
+			echo "get GMT${VERSION}_${file}.tar.$suffix" >> gmt_install.ftp_list
 		fi
 	fi
 }
@@ -786,7 +787,7 @@ make_ftp_list2()
 			get=1
 		fi
 		if [ $get -eq 1 ]; then
-			echo "get ${file}.tar.$suffix" >> install_gmt.ftp_list
+			echo "get ${file}.tar.$suffix" >> gmt_install.ftp_list
 		fi
 	fi
 }
@@ -796,7 +797,6 @@ make_ftp_list2()
 
 trap "rm -f gmt_install.ftp_*; exit" 0 2 15
 DIR=pub/gmt
-GMT=GMT
 #--------------------------------------------------------------------------------
 #	LISTING OF CURRENT FTP MIRROR SITES
 #--------------------------------------------------------------------------------
@@ -849,7 +849,7 @@ install_gmt [ -n ] [ &> logfile]	 (for interactive install)
 The option -n means do NOT install, just gather the parameters.
 Of course, there is also
 
-      install_gmt.s -h			    (to display this message)
+      install_gmt -h			    (to display this message)
      
 EOF
 	exit
@@ -1022,13 +1022,13 @@ if [ $GMT_ftp = "y" ]; then
 
 #	Set-up ftp command
   
-	echo "user anonymous $USER@" > install_gmt.ftp_list
+	echo "user anonymous $USER@" > gmt_install.ftp_list
 	if [ $passive_ftp = "y" ]; then
-		echo "passive" >> install_gmt.ftp_list
-		echo "quote pasv" >> install_gmt.ftp_list
+		echo "passive" >> gmt_install.ftp_list
+		echo "quote pasv" >> gmt_install.ftp_list
 	fi
-	echo "cd $DIR" >> install_gmt.ftp_list
-	echo "binary" >> install_gmt.ftp_list
+	echo "cd $DIR" >> gmt_install.ftp_list
+	echo "binary" >> gmt_install.ftp_list
 	make_ftp_list $GMT_get_progs progs
 	make_ftp_list $GMT_get_share share
 	make_ftp_list $GMT_get_high high
@@ -1041,17 +1041,17 @@ if [ $GMT_ftp = "y" ]; then
 	make_ftp_list $GMT_get_web web
 	make_ftp_list $GMT_get_tut tut
 	make_ftp_list2 $GMT_get_triangle triangle
-	echo "quit" >> install_gmt.ftp_list
-	echo " " >> install_gmt.ftp_list
+	echo "quit" >> gmt_install.ftp_list
+	echo " " >> gmt_install.ftp_list
 
 #	Get the files
 
 	echo "Getting GMT by anonymous ftp from $ftp_ip (be patient)..." >&2
 
 	before=`du -sk . | cut -f1`
-	ftp -dn $ftp_ip < install_gmt.ftp_list || ( echo "fpt failed - try again later >&2"; exit )
+	ftp -dn $ftp_ip < gmt_install.ftp_list || ( echo "fpt failed - try again later >&2"; exit )
 	after=`du -sk . | cut -f1`
-	rm -f install_gmt.ftp_list
+	rm -f gmt_install.ftp_list
 	newstuff=`echo $before $after | awk '{print $2 - $1}'`
 	echo "Got $newstuff kb ... done" >&2
 fi
