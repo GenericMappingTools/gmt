@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-#       $Id: gmt_form.pl,v 1.3 2001-02-02 23:13:24 pwessel Exp $
+#       $Id: gmt_form.pl,v 1.4 2001-07-10 23:43:09 pwessel Exp $
 
 $webmaster = "gmt\@soest\.hawaii\.edu";
 $registration = "gmt\@soest\.hawaii\.edu";
@@ -38,7 +38,7 @@ if ($caste ne "guru" && $caste ne "user") {
 
 # Send mail to the gmt registration service
 
-open (SENDMAIL, "| rmail -t " . $registration) || die "Cannot send to $registration";
+open (SENDMAIL, "| /usr/lib/sendmail " . $registration) || die "Cannot send to $registration";
 print SENDMAIL <<EOF;
 From: GMT-Registration-Script
 To: $registration
