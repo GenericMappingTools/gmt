@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.76 2004-06-24 02:07:50 pwessel Exp $
+ *	$Id: pslib.c,v 1.77 2004-07-03 02:13:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1779,7 +1779,7 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 	}
 	
 	rounded = (outline & 4 && dx > 0.0 && dy > 0.0);	/* Want rounded label boxes, assuming there is clearance */
-	outline |= 3;	/* Turn off the 4 */
+	outline &= 3;	/* Turn off the 4 */
 	fprintf (ps.fp, "\n%% ps_textbox begin:\nV\n");
 
 	if (justify < 0)  {	/* Strip leading and trailing blanks */
