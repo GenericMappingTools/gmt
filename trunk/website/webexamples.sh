@@ -1,6 +1,6 @@
-#!/bin/csh
+#!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.2 2001-04-19 18:12:40 pwessel Exp $
+#	 $Id: webexamples.sh,v 1.3 2001-10-12 04:02:24 pwessel Exp $
 #
 #	webexamples.csh - Automatic generation of the GMT examples pages
 #
