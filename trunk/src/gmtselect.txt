@@ -7,14 +7,16 @@ gmtselect \- Select data subsets based on multiple spatial criteria
 [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP[\fBcflrs\fP] ] [ \fB\-J\fP\fIparameters\fP ] 
 [ \fB\-L\fP\fIdist/linefile\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
 [ \fB\-N\fP\fImaskvalues\fP[\fBo\fP] ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] 
-[ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ]
-[ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+[ \fB\-V\fP ] [ \fB\-Z\fP\fImin/max\fP] ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
+[ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
-\fBgmtselect\fP is a filter that reads (longitude, latitude) positions from the first 2 columns of \fIinfiles\fP [or standard input] and
-uses a combination of 1-5 criteria to pass or reject the records.  Records can be selected based on whether or not they are
-1) inside a rectangular region (\fB\-R\fP [and \fB\-J\fP]), 2) within \fIdist\fP km of any point in \fIptfile\fP,
-3) within \fIdist\fP km of any line in \fIlinefile\fP, 4) inside one of the polygons in the \fIpolygonfile\fP, and 5) inside geographical features (based on coastlines).
-The sense of the tests can be reversed for each of these 5 criteria by using the \fB\-I\fP option.
+\fBgmtselect\fP is a filter that reads (longitude, latitude) positions from the first 2 columns of
+\fIinfiles\fP [or standard input] and uses a combination of 1-6 criteria to pass or reject the records.
+Records can be selected based on whether or not they are 1) inside a rectangular region (\fB\-R\fP
+[and \fB\-J\fP]), 2) within \fIdist\fP km of any point in \fIptfile\fP, 3) within \fIdist\fP km of
+any line in \fIlinefile\fP, 4) inside one of the polygons in the \fIpolygonfile\fP, 5) inside
+geographical features (based on coastlines), or 6) has z-values within a given rang.
+The sense of the tests can be reversed for each of these 6 criteria by using the \fB\-I\fP option.
 See option \fB\-:\fP on how to read (latitude,longitude) files.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
@@ -56,6 +58,8 @@ Reverses the sense of the test for each of the criteria specified:
 	\fBr\fP  select records NOT inside the specified rectangular region.
 .br
 	\fBs\fP  select records NOT considered inside as specified by \fB\-A, \-D, \-N\fP.
+.br
+	\fBs\fP  select records NOT within the range specified by \fB\-Z\fP.
 #include "explain_-j.txt"
 .TP
 .B \-L
@@ -76,6 +80,10 @@ Specify if records should be \fBs\fPkipped or \fBk\fPkept using 1 of 2 formats:
 	\fB\-N\fP\fIocean/land/lake/island/pond\fP.
 .br
 Append \fBo\fP to let points exactly on feature boundaries be considered outside the feature [Default is inside]. [Default is s/k/s/k/s (i.e., s/k), which passes all points on dry land].
+.TP
+.B \-Z
+Pass all records whose 3rd colum (z) lies within the given range.  Input file must have at least
+three columns.  To indicate no limit on min or max, specify a hyphen (-).
 #include "explain_-R.txt"
 If no map projection is supplied we implicitly set \fB\-Jx\fP1.
 #include "explain_-V.txt"
