@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.17 2001-09-14 22:29:11 wsmith Exp $
+ *	$Id: gmt_calclock.c,v 1.18 2001-09-15 00:39:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -891,6 +891,25 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 				p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
 			}
 			
+			k = (p->cc[0].day_w - kws + 7) % 7;	/* k will be in the 0- 6 range where 0 is the kws day (could be Wednesday or whatever) */
+			k += p->step;				/* Step forward the required number of days */
+			if (k > 6) {				/* Stepped into next week, must reset stride to start at week start */
+				int n_weeks;
+				n_weeks = p->step / 7;		/* Because the k % 7 would not count weeks */
+				k -= p->step;
+				k = 7 - k;			/* Number of days left in the week */
+				if (k == 0) k = 1;		/* Must go at least 1 day forward */
+				p->rd[1] = p->rd[0] + k + n_weeks * 7;	/* Next rd */
+			}
+			else {
+				/* It is OK to add p->step days to rd[0] to get rd[1]  */
+				p->rd[1] = p->rd[0] + p->step;
+			}
+			p->sd[1] = 0.0;
+			GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
+			p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
+			
+			if (FALSE) {	/* This was Walter's old code */
 			k = (p->cc[0].day_w - kws) + p->step;
 			if (k > 7) {
 				/* Overshot start of next week; use next kday routines
@@ -904,6 +923,7 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 			p->sd[1] = 0.0;
 			GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
 			p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
+			}
 			break;
 		
 		case 'r':
