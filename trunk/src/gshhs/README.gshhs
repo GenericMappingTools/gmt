@@ -2,6 +2,7 @@
 
 Global Self-consistant Hierarchical High-resolution Shorelines
 
+--------------------------------------------------------------
 Version 1.5 Sept 14, 2004
 
 Minor update to handle the latest GSHHS v1.3 database.  GSHHS is now
@@ -30,6 +31,14 @@ the full resolution and are simply copied to the other resolutions.
 The decimated polygons will in general have a different w/e/s/n set
 which you can find if you calculate the actual w/e/s/n values.
 
+Allthough gshhs is distributed as a GMT supplement, it makes no references
+to GMT include files or libraries.  If you need to compile gshhs without
+placing the gshhs directory under GMT/src you can run
+
+cc gshhs.c -O2 -lm -o gshhs
+cc gshhs_dp.c -O2 -lm -o gshhs_dp
+
+--------------------------------------------------------------
 Version 1.4 Sept 5, 2000
 
 Now GSHHS source code is distributed as a GMT supplement.  The data
@@ -37,19 +46,22 @@ may be obtained separately from the SOEST or NGDC web sites as before.
 The FLIP macro is no longer needed as the programs will determine if
 swab'ing is required.  Do no use dd on the data.
 
+--------------------------------------------------------------
 Version 1.3 Nov 8, 1999
 
 Now all code and data files are explicitly distributed under the
 GNU Public License, see file COPYING for more details.
 
+--------------------------------------------------------------
 Version 1.2 May 18, 1999
 
 Made programs POSIX.1 compliant and added binary open for DOS.
 
+--------------------------------------------------------------
 Version 1.1, April 30, 1996
 
-Paul Wessel, G&G, SOEST, U of Hawaii (wessel@soest.hawaii.edu)
-Walter H. F. Smith, NOAA Geosciences Lab (walter@amos.grdl.noaa.gov)
+Paul Wessel, G&G, SOEST, U of Hawaii (pwessel@hawaii.edu)
+Walter H. F. Smith, NOAA Geosciences Lab (walter@raptor.grdl.noaa.gov)
 
 Ref: Wessel, P., and W. H. F. Smith, 1996, A global self-consistent,
         hierarchical, high-resolution shoreline database, J. Geophys.
@@ -158,4 +170,4 @@ University of Reading, Reading, UK (gazza@mail.nerc-nutis.ac.uk).
 Good Luck,
 Paul Wessel and Walter. H. F. Smith
 
-GMT URL:   http://www.soest.hawaii.edu/soest/gmt.html
+GMT URL:   http://gmt.soest.hawaii.edu
