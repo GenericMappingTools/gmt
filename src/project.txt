@@ -51,7 +51,7 @@ Flat earth (Cartesian) coordinate transformations can also be made.  Set \fB\-N\
 and remember that \fIazimuth\fP is clockwise from North (the \fIy\fP axis), NOT 
 the usual cartesian theta, which is counterclockwise from the \fIx\fP axis.  \fIazimuth\fP = 90 - theta. 
 
-No assumptions are made regarding the units for \fIx, y, r, s, p, q, dist, l_min,l _max, w_min, w_max\fP.
+No assumptions are made regarding the units for \fIx, y, r, s, p, q, dist, l_min, l_max, w_min, w_max\fP.
 If \fB\-Q\fP is selected, map units are assumed and \fIx, y, r, s\fP must be in degrees and
 \fIp, q, dist, l_min, l_max, w_min, w_max\fP will be in km.
 
@@ -102,8 +102,8 @@ If \fB\-E\fP has been set, then you may use \fB\-Lw\fP to stay within the distan
 Flat earth.  Make a Cartesian coordinate transformation in the plane.  [Default uses spherical trigonometry.]
 .TP
 .B \-Q
-Map type units, i.e., project assumes \fIx, y, r, s\fP are in degrees while 
-\fIp, q, dist, l_min,l _max, w_min, w_max\fP are in km.  If \fB\-Q\fP is not set, then all these are assumed to be in the same units.
+Map type units, i.e., project assumes \fIx, y, r, s\fP are in degrees while
+\fIp, q, dist, l_min, l_max, w_min, w_max\fP are in km.  If \fB\-Q\fP is not set, then all these are assumed to be in the same units.
 .TP
 .B \-S
 Sort the output into increasing \fIp\fP order.  Useful when projecting random data into a sequential profile.
