@@ -1,5 +1,5 @@
 <HTML>
-<!--  $Id: gmt_bugs.html,v 1.5 2004-09-25 03:26:41 pwessel Exp $  -->
+<!--  $Id: gmt_bugs.html,v 1.6 2004-10-05 02:25:09 pwessel Exp $  -->
 <TITLE>GMT Bug Notes</TITLE>
 <BODY bgcolor="#ffffff">
 <CENTER><H2>GMT Bug Notes</CENTER></H2><P>
@@ -26,7 +26,9 @@ official release.
 <HR>
 <H4>Errata: Libraries and include files</H4>
 <OL>
-<LI>No changes
+<LI>[2004-10-04].  <B>gmt_io.c<\B> Bug in processing of yyyyjjj input data (year & julian day).
+See the <A HREF="errata/patch_gmt_io.c_1.66_to_1.67.txt">patch file</A>.  To update,
+cd into GMT4.0/src and run <I>patch -p0 < patch_gmt_io.c_1.66_to_1.67.txt<\I>.
 </OL>
 <HR>
 <H4>Errata: Individual programs</H4>
