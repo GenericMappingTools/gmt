@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.29 2004-01-02 22:45:12 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.30 2004-01-03 23:03:30 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -45,7 +45,7 @@ you always supply the desired unit explicitly.
 \index{GMT@\GMT!defaults|(}
 \index{Default settings|(}
 
-\GMTfig[h]{GMT_Defaults_1a}{Some \gmt\ parameters that affect plot appearance}
+\GMTfig[h]{GMT_Defaults_1a}{Some \gmt\ parameters that affect plot appearance.}
 
 There are about 80 parameters which can be adjusted individually
 to modify the appearance of plots or affect the manipulation of data.
@@ -102,7 +102,7 @@ printers.  Organizing these various scenarios into separate
 \filename{.gmtdefaults4} files will minimize headaches associated
 with micro-editing of illustrations.
 
-\GMTfig[h]{GMT_Defaults_1b}{More \gmt\ parameters that affect plot appearance}
+\GMTfig[h]{GMT_Defaults_1b}{More \gmt\ parameters that affect plot appearance.}
 
 \end{enumerate}
 
@@ -127,7 +127,7 @@ that directly affect the plot there are numerous parameters than
 modify units, scales, etc.  For a complete listing, see the
 \GMTprog{gmtdefaults} man pages.
 
-\GMTfig[h]{GMT_Defaults_1c}{Even more \gmt\ parameters that affect plot appearance}
+\GMTfig[h]{GMT_Defaults_1c}{Even more \gmt\ parameters that affect plot appearance.}
 
 At the end of the script one can then reset the specific parameters
 back to what they originally were.  We suggest that you go through
@@ -205,7 +205,7 @@ these options in order of importance (some are use alot more than others).
 \Opt{f}	&	Specifies the data format on a per column basis  \\ \hline
 \Opt{:}	&	Input geographic data are ({\it lat,lon}) rather than ({\it lon,lat})  \\ \hline
 \end{tabular}
-\caption{The 15 standardized \gmt\ command line switches}
+\caption{The 15 standardized \gmt\ command line switches.}
 \label{tbl:switches}
 \end{table} 
 
@@ -213,7 +213,7 @@ these options in order of importance (some are use alot more than others).
 \index{\Opt{R}}
 \index{Region, specifying}
 \label{sec:R}
-\GMTfig[h]{GMT_-R}{The plot region can be specified in two different ways}
+\GMTfig[h]{GMT_-R}{The plot region can be specified in two different ways.}
 
 The \Opt{R} option defines the map region or data domain of interest.  It may be specified
 in one of two ways (Figure~\ref{fig:GMT_-R}):
@@ -263,7 +263,7 @@ involving relative time has been selected or when the \Opt{f} switch has been us
 \index{\Opt{J}}
 \index{Map projections}
 
-\GMTfig[h]{GMT_-J}{The 25 projections available in \gmt}
+\GMTfig[h]{GMT_-J}{The 25 projections available in \gmt.}
 
 This option selects the coordinate transformation or map projection.  The general format is
 
@@ -320,7 +320,7 @@ it is suppressed when a 3-D view is selected.}.
 {\bf f}	&	frame tick spacing \\ \hline
 {\bf g}	&	grid tick spacing \\ \hline
 \end{tabular}
-\caption{Interval type codes}
+\caption{Interval type codes.}
 \label{tbl:inttype}
 \end{table}
 
@@ -339,7 +339,7 @@ since annotations may require the name of months and weekdays.
 {\bf a} (or {\bf A})	& Short abbreviation of interval, e.g., Jan (or JAN) \\ \hline
 {\bf c} (or {\bf C}) 	& 1-char abbreviation of interval, e.g., J (or J) \\ \hline
 \end{tabular}
-\caption{{\bf I} and {\bf i} interval annotation modifiers}
+\caption{{\bf I} and {\bf i} interval annotation modifiers.}
 \label{tbl:modifier}
 \end{table}
 
@@ -369,7 +369,7 @@ The unit flag {\bf u} can take on one of 16 codes; these are listed in  Table~\r
 {\bf C}	&	seconds &	 Format annotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
 {\bf c}	&	seconds &	 Plot as 2-digit integer (0--60) \\ \hline
 \end{tabular}
-\caption{Interval unit codes}
+\caption{Interval unit codes.}
 \label{tbl:units}
 \end{table}
 
@@ -471,7 +471,7 @@ intervals as well as the date at the start of each week:
 
 These commands result in Figure~\ref{fig:GMT_-B_time1}.  Note the leading hyphen in the {\bf PLOT\_DATE\_FORMAT}
 removes leading zeros from calender items (e.g., 02 becomes 2).
-\GMTfig[h]{GMT_-B_time1}{Cartesian time axis, example 1}
+\GMTfig[h]{GMT_-B_time1}{Cartesian time axis, example 1.}
 
 The next example shows two different ways to annotate an axis portraying 2 days in September:
 
@@ -481,7 +481,7 @@ The lower example (Figure~\ref{fig:GMT_-B_time2}) chooses to annotate the weekda
 example choses dates (by specifying {\bf If}1{\bf D}).  Note how the clock format only selects hours and minutes (no seconds) and
 the date format selects a month name, followed by one space and a two-digit day-of-month number.
 
-\GMTfig[h]{GMT_-B_time2}{Cartesian time axis, example 2}
+\GMTfig[h]{GMT_-B_time2}{Cartesian time axis, example 2.}
 
 The third example presents 2 years, annotating both the years and every 3rd month.
 
@@ -491,32 +491,32 @@ Note that while the year annotation is centered on the 1-year interval, the mont
 on the corresponding month and \emph{not} the 3-month interval.  The {\bf PLOT\_DATE\_FORMAT} selects month
 name only and {\bf ic}3{\bf O} says use the 1-character abbreviation of monthnames using the current language
 selected by {\bf TIME\_LANGUAGE}.
-\GMTfig[h]{GMT_-B_time3}{Cartesian time axis, example 3}
+\GMTfig[h]{GMT_-B_time3}{Cartesian time axis, example 3.}
 
 The fourth example (Figure~\ref{fig:GMT_-B_time4}) only shows a few hours of a day.  We select both upper and lower anotations, ask for a 12-hour
 clock, and let time go from right to left:
 
 \input{scripts/GMT_-B_time4}
-\GMTfig[h]{GMT_-B_time4}{Cartesian time axis, example 4}
+\GMTfig[h]{GMT_-B_time4}{Cartesian time axis, example 4.}
 
 The fifth example shows a few weeks of time (Figure~\ref{fig:GMT_-B_time5}).  The lower axis shows ISO weeks with week numbers and
 abbreviated names of the weekdays.   The upper uses Gregorian weeks (which start at the day chosen by {\bf TIME\_WEEK\_START}); they
 do not have numbers.
 \input{scripts/GMT_-B_time5}
-\GMTfig[h]{GMT_-B_time5}{Cartesian time axis, example 5}
+\GMTfig[h]{GMT_-B_time5}{Cartesian time axis, example 5.}
 
 Our sixth example shows the first five months of 1996, and we have annotated each month with an abbreviated, upper case
 name and 2-digit year.
 \input{scripts/GMT_-B_time6}
 
-\GMTfig[h]{GMT_-B_time6}{Cartesian time axis, example 6}
+\GMTfig[h]{GMT_-B_time6}{Cartesian time axis, example 6.}
 
 
 Our seventh and final example illustrates annotation of year-days.  Unless we specify the formatting with a leading hyphen
 in  {\bf PLOT\_DATE\_FORMAT} we get 3-digit integer days.
 \input{scripts/GMT_-B_time7}
 
-\GMTfig[h]{GMT_-B_time7}{Cartesian time axis, example 7}
+\GMTfig[h]{GMT_-B_time7}{Cartesian time axis, example 7.}
 
 \subsection{Header data records: The \Opt{H} option}
 \index{\Opt{H}}
@@ -537,7 +537,7 @@ automatically skipped.
 \index{Orientation!portrait \Opt{P}}
 \index{\Opt{P} (portrait orientation)}
 
-\GMTfig[h]{GMT_-P}{Users can specify Landscape [Default] or Portrait (\Opt{P}) orientation}
+\GMTfig[h]{GMT_-P}{Users can specify Landscape [Default] or Portrait (\Opt{P}) orientation.}
 
 \Opt{P} selects Portrait plotting mode\footnote{For historical reasons, the \GMT\
 Default is Landscape, see \GMTprog{gmtdefaults} to change this.}.  In general,
@@ -564,7 +564,7 @@ when using different media, such as 11" x 17" or large format plotters
 \index{\Opt{K}}
 \index{\Opt{O}}
 
-\GMTfig[h]{GMT_-OK}{A final \PS\ file consists of a stack of individual pieces}
+\GMTfig[h]{GMT_-OK}{A final \PS\ file consists of a stack of individual pieces.}
 
 The \Opt{K} and \Opt{O} options control the generation of \PS\ code for multiple
 overlay plots.  All \PS\ files must have a header (for initializations),
@@ -590,7 +590,7 @@ only used when stacking plots.
 text string (surrounded by double quotes), or the code {\bf c}, which will
 plot the current command string (Figure~\ref{fig:GMT_-U}).
 
-\GMTfig[h]{GMT_-U}{The \Opt{U} option makes it easy to ``date'' a plot}
+\GMTfig[h]{GMT_-U}{The \Opt{U} option makes it easy to ``date'' a plot.}
 
 \subsection{Verbose Feedback: The \Opt{V} option} 
 \index{\Opt{V}}
@@ -604,7 +604,7 @@ plot the current command string (Figure~\ref{fig:GMT_-U}).
 \index{\Opt{Y}}
 \index{Plot!offset}
 \index{Offset, plot}
-\GMTfig[h]{GMT_-XY}{Plot origin can be translated freely with \Opt{X} \Opt{Y}}
+\GMTfig[h]{GMT_-XY}{Plot origin can be translated freely with \Opt{X} \Opt{Y}.}
 
 \Opt{X} and \Opt{Y} shift origin of plot by ({\it xoff},{\it yoff})
 inches (Default is (1,1) for new plots\footnote{ensures that
@@ -631,7 +631,7 @@ for overlays are ignored).
 All \GMT\ programs that accept table data input may read ASCII
 or binary data†.  When using binary data the user must be aware
 of the fact that \GMT\ has no way of determining the actual
-number of columns in the file.  You should therefore pass that
+number of columns in the file.  You must therefore pass that
 information to \GMT\ via the binary \Opt{bi}[{\bf s}]{\it n} option,
 where {\it n} is the actual number of data columns ({\bf s}
 indicates single rather than double precision).
@@ -942,7 +942,7 @@ symbols.  The fill may take two forms:
 
 In the first case we may specify a {\it gray} shade (0--255), RGB color
 ({\it r}/{\it g}/{\it b} all in the 0--255 range), HSV color ({\it hue}/{\it saturation}/{\it value}
-in the 0--360, 0--1, 0--1 range), or CMYK color ({\it cyan}/{\it magenta}/{\it yellow}/{\it black},
+in the 0--360, 0--1, 0--1 range; to use this color system you must set {\bf COLOR\_MODEL} to HSV), or CMYK color ({\it cyan}/{\it magenta}/{\it yellow}/{\it black},
 each ranging from 0--100\%); in that respect it is similar to specifying the pen color
 settings.  The second form allows us to use a predefined bit-image pattern.
 {\it pattern} can either be a number in the range 1--90 or the name of a 1-,
@@ -983,8 +983,8 @@ colored images or shaded reliefs, need to be told what colors to use and
 over what {\it z}-range each color applies.  This is the purpose of the
 color palette table (cpt-file).  These files may also be used by \GMTprog{psxy}
 and \GMTprog{psxyz} to plot color-filled symbols.
-The colors may be specified either in the RGB (red, green, blue) system or
-in the HSV system (hue, saturation, value),
+The colors may be specified either in the RGB (red, green, blue), CMYK- (cyan,
+magenta, yellow, black), or in the HSV-system (hue, saturation, value),
 and the parameter COLOR\_MODEL in the \filename{.gmtdefaults4} file must
 be set accordingly.  Using the RGB system, the format of the cpt-file is: 
 
@@ -1024,7 +1024,7 @@ you prefer the HSV system, set the
 \filename{.gmtdefaults4} parameter accordingly and replace red, green,
 blue with hue, saturation, value.  Color palette tables that contain
 grayshades only may replace the r-g-b triplets with a single grayshade
-in the 0--255 range.
+in the 0--255 range.  For CMYK, give four values in the 0--100 range.
 
 A few programs (i.e., those that plot polygons such as \GMTprog{grdview},
 \GMTprog{psscale}, and \GMTprog{psxy}) can accept pattern fills instead
@@ -1123,7 +1123,7 @@ The escape sequences recognized in \GMT\ are listed in Table~\ref{tbl:escape}.
 @!	&	Creates one composite character of the next two characters \\ \hline 
 @@	&	Prints the @ sign itself \\ \hline 
 \end{tabular}
-\caption{\gmt\ text escape sequences}
+\caption{\gmt\ text escape sequences.}
 \label{tbl:escape}
 \end{table}
 
@@ -1143,7 +1143,7 @@ added (Table~\ref{tbl:scand}):
 @A &  \AA \\ \hline
 @a &  \aa \\ \hline
 \end{tabular}
-\caption{Shortcuts for Scandinavian characters}
+\caption{Shortcuts for Scandinavian characters.}
 \label{tbl:scand}
 \end{table}
 
