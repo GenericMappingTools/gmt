@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 21
 REM
-REM             $Id: job21.bat,v 1.6 2004-09-29 01:29:02 pwessel Exp $
+REM             $Id: job21.bat,v 1.7 2004-09-29 03:49:39 pwessel Exp $
 REM
 REM Purpose:    Plot a time-series
 REM
@@ -21,7 +21,7 @@ gmtset TIME_FORMAT_PRIMARY abbreviated CHAR_ENCODING ISOLatin1+
 
 REM Create a suitable -R string
 
-set R = -R1999-08-11T00:00:00/2004-03-12T00:00:00/0/300
+set R=-R1999-08-11T00:00:00/2004-03-12T00:00:00/0/300
 
 REM Lay down the basemap:
 
