@@ -1,129 +1,33 @@
 .TH PSPOLAR l DATE
 .SH NAME
-pspolar \fR\- Plot polarities on the inferior focal half-sphere on maps
+\fBpspolar\fR\ - Plot polarities on the inferior focal half\-sphere on maps
 .SH SYNOPSIS
 .br
-pspolar \fIfiles \fB\-J\fIparameters \fB\-R\fIwest/east/south/north
-\fR[ \fB\-D\fIlongitude/latitude\fR \fB\-Msize\fR \fB\-S\fIsymbol/size\fR
-[ \fB\-B\fItickinfo\fR ] [ \fB\-C\fIlongitude/latitude\fR [/tiret_width/pointsize\fR ] ] 
-[ \fB\-F\fIred/green/blue\fR ] [ \fB\-G\fIfill\fR ] [ \fB\-g\fIfill\fR ] [ \fB\-H\fR ]
-[ \fB\-h\fR ] [ \fB\-K\fR ] [ \fB\-L\fP ] [ \fB\-N\fR ] [ \fB\-O\fP ] [ \fB\-P\fP ]
+pspolar \fIfiles \fB\-J\fIparameters \fB\-R\fIwest/east/south/north\fR
+\fB\-D\fIlongitude/latitude\fR \fB\-M\fIsize\fR \fB\-S\fI<symbol><size>\fR
+[ \fB\-B\fItickinfo\fR ] [ \fB\-C\fIlongitude/latitude\fR[/tiret_width/pointsize\fR] ] 
+[ \fB\-F\fIred/green/blue\fR ] [ \fB\-G\fIfill\fR ] [ \fB\-g\fIfill\fR ]
+[ \fB\-H\fR ] [ \fB\-h\fR ] [ \fB\-K\fR ] [ \fB\-L\fR ] [ \fB\-N\fR ]
+[ \fB\-O\fR ] [ \fB\-P\fR ]
 [ \fB\-s\fR\fIHalf-size\fB[v[\fI[<v_width/h_length/h_width/shape>]\fB][g\fI[<r/g/b>]\fB][l\fB]
-[ \fB\-U\fP[label] ] [ \fB\-V\fP ] [ \fB\-W\fIpen\fR ] [ \fB\-X\fIx-shift\fR ] [ \fB\-Y\fIy-shift\fR ]
-[ \fB\-c\fIcopies\fR ]
+[ \fB-T\fIangle/form/justify/fontsize\fR ] [ \fB-t\fI<pen>\fR ]
+[ \fB\-U\fI[label]\fR ] [ \fB\-V\fR ] [ \fB\-W\fIpen\fR ]
+[ \fB\-X\fIx-shift\fR ] [ \fB\-Y\fIy-shift\fR ] [ \fB\-c\fIcopies\fR ]
 .SH DESCRIPTION
 .br
-pspolar \fRreads data values from \fIfiles\fP [or standard input]
-and generates \fIPostScript\fP code that will plot stations on focal mechanisms
+\fBpspolar\fR reads data values from \fIfiles\fR [or standard input]
+and generates \fIPostScript\fR code that will plot stations on focal mechanisms
 on a map.
-The \fIPostScript\fP code is written to standard output.
+The \fIPostScript\fR code is written to standard output.
 .br
 .sp
-.SH ARGUMENTS
-\fIfiles\fP
-List one or more file-names. If no files are given, pspolar will read standard input.
-#include "explain_-j.txt"
-#include "explain_-R.txt"
-\fB\-D\fIlongitude/latitude \fR
-Maps the bubble at given longitude and latitude point.
-.br
-.sp
-\fB\-M\fIsize \fR
-\fRSets the size of the beach ball to plot polarities in.
-.br
-Size is in inch (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
-.br
-.sp
-\fB\-S<symbol type>\fIsize\fRSelects symbol type and symbol size .  
-.br
-Size is in inch (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
-.br
-Choose symbol type between
-.br
-   st(a)r, (c)ircle, (d)iamond, (h)exagon, (i)nvtriangle
-.br
-(p)oint, (s)quare, (t)riangle, (x)cross
-.br
-.LP
-.SH OPTIONS
-No space between the option flag and the associated arguments.
-#include "explain_-b.txt"
-\fB\-C 
-\fROffsets focal mechanisms to the latitude and longitude specified in the last
-two columns of the input file.
-.br
-.sp
-\fB\-E\fIfill\fP
-\fRSelects filling of symbols for stations in extensive quadrants.
-Set the shade (0\-255) or color (r/g/b) [Default is 250/250/250].
-If Efill is the same as Ffill, use \fB-e\fP to outline.
-.br
-.sp
-\fB\-e\fI[<pen attributes>]\fP
-Outline symbols in extensive quadrants.
-.br
-Default pen attributes is W pen attributes.
-.br
-.sp
-\fB\-F\fP\fIfill\fP
-\fRSets background color of the beach ball. Default is no fill.
-.br
-.sp
-\fB\-f\fI[<pen attributes>]\fP
-\fROutline the beach ball. Default pen attributes is W pen attributes.
-.br
-.sp
-\fB\-G\fP\fIfill\fP
-\fRSelects filling of symbols for stations in compressional quadrants.
-Set the shade (0\-255) or color (r/g/b) [Default is 0/0/0].
-.br
-.sp
-\fB\-g\fI[<pen attributes>]\fP
-\fROutline symbols in compressional quadrants.
-Default pen attributes is W pen attributes.
-#include "explain_-H.txt"
-\fB\-h\fP
-.br
-Use special format derived from HYPO71 output
-#include "explain_-K.txt"
-\fB\-N
-\fRDoes \fBNOT \fRskip symbols that fall outside map border [Default plots points inside border only].
-#include "explain_-O.txt"
-#include "explain_-P.txt"
-\fB\-s\fIhalf-size/[V[<v_width/h_length/h_width/shape>]][G<r/g/b>][L]
-.br
-Plots S polarity azimuth.
-.br
-S polarity is in last column.
-It may be a vector (V option) or a segment. 
-Give half-size,v_width,h_length,h_width in inch
-(unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
-[L] option is for outline.
-.br
-.sp
-\fB\-T\fIangle/form/justify/fontsize in points\fP
-.br
-To write station code. Default is 0.0/0/5/12.
-.br
-.sp
-\fB\-t\fI<pen attributes>
-.br
-To write station code. Default attributes is W attributes.
-#include "explain_-U.txt"
-#include "explain_-V.txt"
-\fB\-W
-\fRSet current pen attributes 
- [Defaults: width = 1, color = 0/0/0, texture = solid].
-#include "explain_-XY.txt"
-#include "explain_-t.txt"
-#include "explain_-c.txt"
 Parameters are expected to be in the following columns
 .TP
 .B 1,2,3,4
 station_code, azimuth, take-off angle, polarity
 .br
 .sp
-polarity : 
+polarity :
 .br
 - compression can be c,C,u,U,+
 .br
@@ -131,7 +35,107 @@ polarity :
 .br
 - not defined is anything else
 .br
-
+.sp
+.SH ARGUMENTS
+\fIfiles\fR
+List one or more file-names. If no files are given, pspolar will read standard input.
+#include "explain_-j.txt"
+#include "explain_-R.txt"
+.TP
+\fB\-D\fIlongitude/latitude\fR
+Maps the bubble at given longitude and latitude point.
+.br
+.TP
+\fB\-M\fIsize\fR
+Sets the size of the beach ball to plot polarities in.  \fISize\fR is in inch
+(unless \fBc\fR, \fBi\fR, \fBm\fR, or \fBp\fR is appended).
+.br
+.TP
+\fB\-S\fI<symbol_type><size>\fR
+Selects \fIsymbol_type\fR and symbol \fIsize\fR.  
+Size is in inch (unless \fBc\fR, \fBi\fR, \fBm\fR, or \fBp\fR is appended).
+Choose symbol type from
+st(\fIa\fR)r, (\fIc\fR)ircle, (\fId\fR)iamond, (\fIh\fR)exagon,
+(\fIi\fR)nverted triangle, (\fIp\fR)oint, (\fIs\fR)quare, (\fIt\fR)riangle,
+(\fIx\fR)cross.
+.br
+.LP
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+#include "explain_-b.txt"
+.TP
+\fB\-C\fR
+Offsets focal mechanisms to the latitude and longitude specified in the last
+two columns of the input file.
+.br
+.TP
+\fB\-E\fIfill\fR
+\fRSelects filling of symbols for stations in extensive quadrants.
+Set the shade (0\-255) or color (r/g/b) [Default is 250/250/250].
+If \fB-E\fIfill\fR is the same as \fB-F\fIfill\fR, use \fB-e\fR to outline.
+.br
+.TP
+\fB\-e\fI[pen]\fR
+Outline symbols in extensive quadrants using \fIpen\fR or the default pen (see
+\fB\-W\fR).
+.br
+.TP
+\fB\-F\fR\fIfill\fR
+Sets background color of the beach ball. Default is no fill.
+.br
+.TP
+\fB\-f\fI[pen]\fR
+Outline the beach ball using \fIpen\fR or the default pen (see \fB\-W\fR).
+.br
+.TP
+\fB\-G\fR\fIfill\fR
+Selects filling of symbols for stations in compressional quadrants.
+Set the shade (0\-255) or color (r/g/b) [Default is 0/0/0].
+.br
+.TP
+\fB\-g\fI[pen]\fR
+Outline symbols in compressional quadrants using \fIpen\fR or the default pen
+(see \fB\-W\fR).
+#include "explain_-H.txt"
+.TP
+\fB\-h\fP
+Use special format derived from HYPO71 output
+#include "explain_-K.txt"
+.TP
+\fB\-N
+\fRDoes \fBNOT \fRskip symbols that fall outside map border [Default plots points inside border only].
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+.TP
+\fB\-s\fIhalf\-size/[V[<v_width/h_length/h_width/shape>]][G<r/g/b>][L]
+.br
+Plots S polarity azimuth.
+.br
+S polarity is in last column.
+It may be a vector (V option) or a segment. 
+Give half\-size,v_width,h_length,h_width in inch
+(unless \fBc\fR, \fBi\fR, \fBm\fR, or \fBp\fR is appended).
+[L] option is for outline.
+.br
+.TP
+\fB\-T\fIangle/form/justify/fontsize in points\fP
+.br
+To write station code. [Default is 0.0/0/5/12].
+.br
+.TP
+\fB\-t\fI<pen>
+Set pen color to write station code. Default uses the default pen (see
+\fB\-W\fR).
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+.TP
+\fB\-W\fR
+Set current pen attributes 
+ [Defaults: width = 1, color = 0/0/0, texture = solid].
+#include "explain_-XY.txt"
+#include "explain_-t.txt"
+#include "explain_-c.txt"
+.br
 .SH EXAMPLES
 .sp
 pspolar << END -R239/240/34/35.2 -JM8 -N -Sc0.4 -H1 -D239.5/34.5 -M5 >! test.ps

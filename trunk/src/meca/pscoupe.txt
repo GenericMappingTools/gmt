@@ -6,7 +6,7 @@ pscoupe \fR- Plot cross-sections of focal mechanisms.
 pscoupe \fIfiles\fR \fB\-J\fIparameters\fR \fB-R\fIwest/east/south/north\fR
 \fB\-A\fIparameters\fR [ \fB\-B\fItickinfo\fR ]  [ \fB\-F\fIfill\fR ]
 [ \fB\-G\fIfill\fR ] [ \fB\-H\fR ]
-[ \fB\-K\fR ] [ \fB\-L\fIpen\fR ] [\fB\-M\fR] [ \fB\-N\fR ] [ \fB\-O\fR ] 
+[ \fB\-K\fR ] [ \fB\-L\fI[pen]\fR ] [\fB\-M\fR] [ \fB\-N\fR ] [ \fB\-O\fR ] 
 [ \fB\-P\fR ] [\fB\-S\fI<symbol><scale>\fR[/d] ]
 [ \fB-s\fI<symbol><size>\fR[/d] ] [ \fB\-T\fIn\fR ] [ \fB\-U\fR[\fIlabel\fR] ]
 [ \fB\-V\fR ] [ \fB\-W\fIpen\fR ] [ \fB\-X\fIx-shift\fR ]
@@ -16,7 +16,7 @@ pscoupe \fIfiles\fR \fB\-J\fIparameters\fR \fB-R\fIwest/east/south/north\fR
 [ \fB\-t\fIpen\fR ] [ \fB\-:\fR ] [ \fB\-c\fI#copies\fR ]
 .SH DESCRIPTION
 .br
-pscoupe \fRreads data values from \fIfiles\fR [or standard input] and
+\fBpscoupe\fR reads data values from \fIfiles\fR [or standard input] and
 generates \fIPostScript\fR code that will plot symbols, lines or polygons on a cross-section.
 Focal mechanisms  may be specified and require additional columns of data.
 The \fIPostScript\fR code is written to standard output. 
@@ -40,42 +40,42 @@ A \fI file\fR  is created with extracted events.
 .sp 
 #include "explain_-j.txt"
 #include "explain_-R.txt"
-If frame is defined from cross-section parameters (see \fB-A\fP) this option is not taken into account,
+If frame is defined from cross-section parameters (see \fB-A\fR) this option is not taken into account,
 but must be present.
 .TP
-\fP\-A\fP  selects the cross-section.
+\fB\-A\fR  selects the cross-section.
 .br
-\fB\-Aa\fIlon1/lat1/lon2/lat2/dip/p_width/dmin/dmax[f]
+\fB\-Aa\fIlon1/lat1/lon2/lat2/dip/p_width/dmin/dmax[f]\fR
 .br
-lon \fRand \fPlat\fP are the longitude and latitude of points 1 and 2 limiting the length ot the cross-section.
+\fIlon\fR and \fIlat\fR are the longitude and latitude of points 1 and 2 limiting the length ot the cross-section.
 .br
-\fPdip\fP is the dip of the plane on which the cross-section is made.
+\fIdip\fR is the dip of the plane on which the cross-section is made.
 .br
-\fPp_width\fP is the width of the cross-section on each side of a vertical plane
+\fIp_width\fR is the width of the cross-section on each side of a vertical plane
 or above and under an oblique plane. 
 .br
-\fPdmin\fP and\fP dmax\fP are the distances min and max from horizontal plane, 
+\fIdmin\fR and \fIdmax\fR are the distances min and max from horizontal plane, 
 along steepest descent direction.
 .br
-Add \fBf\fP to get the frame from the cross-section parameters.
+Add \fBf\fR to get the frame from the cross-section parameters.
 .br
-\fB\-Ab\fIlon1/lat1/strike/p_length/dip/p_width/dmin/dmax[f]
+\fB\-Ab\fIlon1/lat1/strike/p_length/dip/p_width/dmin/dmax[f]\fR
 .br
-lon1 \fRand \fPlat1\fP are the longitude and latitude of the beginning of the cross-section.
+\fIlon1\fR and \fIlat1\fR are the longitude and latitude of the beginning of the cross-section.
 .br
-\fPstrike\fP is the azimut of the direction of the cross-section.
+\fIstrike\fR is the azimut of the direction of the cross-section.
 .br
-\fPp_length\fP is the length along which the cross-section is made.
+\fIp_length\fR is the length along which the cross-section is made.
 .br
-The other parameters are the same as for \fB-Aa \fPoption.
+The other parameters are the same as for \fB-Aa\fR option.
 .br
-\fP\-Ac\fIx1/y1/x2/y2/dip/p_width/dmin/dmax[f]
+\fP\-Ac\fIx1/y1/x2/y2/dip/p_width/dmin/dmax[f]\fR
 .br
-\fRThe same as \fB-Aa \fPoption with \fIx \fPand \fPy \fPcartesian coordinates.
+The same as \fB-Aa\fR option with \fIx\fR and \fIy\fR cartesian coordinates.
 .br
-\fB\-Ad\fIx1/y1/strike/p_length/dip/p_width/dmin/dmax[f]
+\fB\-Ad\fIx1/y1/strike/p_length/dip/p_width/dmin/dmax[f]\fR
 .br
-\fRThe same as \fB-Ab \fPoption with \fIx \fPand \fPy \fPcartesian coordinates.
+The same as \fB-Ab\fR option with \fIx\fR and \fIy\fR cartesian coordinates.
 .br
 .TP
 .B \-S
@@ -262,7 +262,7 @@ Appendix E for information on individual patterns.
 #include "explain_-H.txt"
 #include "explain_-K.txt"
 .TP
-\fB\-L\fR
+\fB\-L\fR[\fIpen\fR]
 \fRDraws the "beach ball" outline using current pen (see \fB\-W\fP) or sets pen attributes.
 .br
 .TP
