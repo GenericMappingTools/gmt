@@ -89,7 +89,7 @@ a leading hyphen (-) there will be no space between unit and annotation (e.g., :
 For separate x and y [and z if -Jz is used] tickinfo, separate the strings with slashes [/].
 .br
 Specify an plot title by adding a label whose first character is a period; the rest
-of the label is used as the title (e.g. :".My Plot Title":).
+of the label is used as the title (e.g. :."My Plot Title":).
 .br
 By default, all 4 boundaries are plotted (referred to as \fBW, E, S, N\fP).  To change the default,
 append the code for only those axes you want (e.g., \fBWS\fP for standard lower-left x- and y-axis system).
