@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.24 2005-03-16 02:45:50 pwessel Exp $
+ *	$Id: x2sys.c,v 1.25 2005-03-16 03:03:50 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -769,9 +769,9 @@ int x2sys_read_list (char *file, char ***list)
 
 void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, struct GMT_IO *G)
 {
-	char tag_file[BUFSIZ], line[BUFSIZ], *p, *sfile = CNULL;
+	char tag_file[BUFSIZ], line[BUFSIZ], r_arg[GMT_TEXT_LEN], i_arg[GMT_TEXT_LEN], *p, *sfile = CNULL;
 	int geodetic = 0, error = 0;
-	BOOLEAN geographic = FALSE;
+	BOOLEAN geographic = FALSE, got_r = FALSE, got_i = FALSE;
 	FILE *fp;
 
 	x2sys_set_home ();
@@ -791,13 +791,16 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 	GMT_chop (line);	/* Remove trailing CR or LF */
 
 	GMT_set_processed_option (8, FALSE);	/* In case -R has been processed before */
+	/* Note becuase the -R -I processing also use strtok we cannot call them inside the while loop */
+	
 	p = strtok (line, " \t");
 	while (p) {	/* Process the -D -I -R -G -W arguments from the header */
 		if (p[0] == '-') {
 			switch (p[1]) {
 				/* Common parameters */
 				case 'R':
-					error += GMT_get_common_args (p, &B->x_min, &B->x_max, &B->y_min, &B->y_max);
+					strcpy (r_arg, p);
+					got_r = TRUE;
 					break;
 
 				/* Supplemental parameters */
@@ -811,7 +814,8 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 					if (p[2] == 'd') geodetic = 2;
 					break;
 				case 'I':
-					if (p[2]) GMT_getinc (&p[2], &B->bin_x, &B->bin_y);
+					strcpy (i_arg, &p[2]);
+					got_i = TRUE;
 					break;
 				case 'W':
 					B->time_gap = atof (&p[2]);
@@ -826,6 +830,15 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 	}
 	x2sys_fclose (tag_file, fp);
 
+	if (got_r && GMT_get_common_args (r_arg, &B->x_min, &B->x_max, &B->y_min, &B->y_max)) {
+		fprintf (stderr, "%s: Error processing %s setting in %s!\n", X2SYS_program, r_arg, tag_file);
+		exit (EXIT_FAILURE);
+	}
+	if (get_i && GMT_getinc (i_arg, &B->bin_x, &B->bin_y)) {
+		fprintf (stderr, "%s: Error processing -I%s setting in %s!\n", X2SYS_program, i_arg, tag_file);
+		exit (EXIT_FAILURE);
+	}
+	
 	*s = x2sys_initialize (sfile, G);	/* Initialize X2SYS and info structure */
 
 	if (geographic) {
