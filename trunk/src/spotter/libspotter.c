@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.26 2004-03-12 02:35:53 pwessel Exp $
+ *	$Id: libspotter.c,v 1.27 2004-03-19 03:30:33 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -52,6 +52,7 @@
 void matrix_to_pole (double T[3][3], double *plon, double *plat, double *w);
 void matrix_transpose (double At[3][3], double A[3][3]);
 void matrix_mult (double a[3][3], double b[3][3], double c[3][3]);
+void matrix_vect_mult (double a[3][3], double b[3], double c[3]);
 void make_rot_matrix (double lonp, double latp, double w, double R[3][3]);
 void make_rot_matrix_sub (double E[3], double w, double R[3][3]);
 void reverse_rotation_order (struct EULER *p, int n);
@@ -944,6 +945,13 @@ void matrix_mult (double a[3][3], double b[3][3], double c[3][3])
 			for (k = 0; k < 3; k++) c[i][j] += a[i][k] * b[k][j];
 		}
 	}
+}
+
+void matrix_vect_mult (double a[3][3], double b[3], double c[3])
+{	/* c = A * b */
+	int i, j, k;
+	
+	for (i = 0; i < 3; i++) for (j = 0, c[i] = 0.0; j < 3; j++) c[i] += a[i][k] * b[k];
 }
 
 void matrix_transpose (double At[3][3], double A[3][3])
