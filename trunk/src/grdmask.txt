@@ -39,7 +39,7 @@ textstring NaN  [Default is 0/0/1].
 .TP
 .B \-S
 Set nodes depending on their distance from the nearest data point.  Nodes within \fIradius\fP [0] from
-a data point are considered inside.  Append \fBk\fP to indicate map units (e.g., \fB\-R\fB and \fB\-I\fP in
+a data point are considered inside.  Append \fBk\fP to indicate map units (e.g., \fB\-R\fP and \fB\-I\fP in
 degrees and \fIradius\fP in km).
 #include "explain_-V.txt"
 #include "explain_-i.txt"
