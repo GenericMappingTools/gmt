@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.12 2001-09-13 21:47:47 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.13 2001-09-14 03:08:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -240,6 +240,23 @@ struct MAP_PROJECTIONS {
 	
 };
 
+/* Define the 6 axis items that each axis can have (some are mutually exclusive: only one ANOT/INTV for upper and lower) */
+
+#define GMT_ANOT_UPPER		0	/* Tick anotations closest to the axis (the only kind in GMT3.4 or earlier) */
+#define GMT_ANOT_LOWER		1	/* Tick anotations farthest from the axis*/
+#define GMT_INTV_UPPER		2	/* Interval anotations closest to the axis */
+#define GMT_INTV_LOWER		3	/* Interval anotations farthest from the axis */
+#define GMT_TICK_UPPER		4	/* Frame tick marks closest to the axis (the only kind in GMT3.4 or earlier) */
+#define GMT_GRID_UPPER		5	/* Gridline spacing */
+
+/* SOme convenient macros for axis routines */
+
+#define GMT_interval_axis_item(k) (((k) == GMT_INTV_UPPER || (k) == GMT_INTV_LOWER) ? TRUE : FALSE)	/* TRUE for interval anotations */
+#define GMT_lower_axis_item(k) (((k) == GMT_ANOT_LOWER || (k) == GMT_INTV_LOWER) ? 1 : 0)		/* 1 if this is a lower axis anotation */
+#define GMT_upper_and_lower_items(j) (((tframe_info.axis[j].item[GMT_ANOT_UPPER].active || tframe_info.axis[j].item[GMT_INTV_UPPER].active) && \
+	(tframe_info.axis[j].item[GMT_ANOT_LOWER].active || tframe_info.axis[j].item[GMT_INTV_LOWER].active)) ? TRUE : FALSE)	/* TRUE if we have two levels of anotations (tick or interval) */
+#define GMT_two_anot_items(j) ((tframe_info.axis[j].item[GMT_ANOT_UPPER].active && tframe_info.axis[j].item[GMT_ANOT_LOWER].active) ? TRUE : FALSE)	/* TRUE if we have two levels of tick anotations */
+
 struct MAP_FRAME {		/* Various parameters for plotting of linear and map boundaries */
 	double frame_int[3];	/* Frame tick intervals, for each axis (x,y,z) */
 	double grid_int[3];	/* Gridline interval, --"-- */
@@ -267,7 +284,7 @@ struct TIME_AXIS_ITEM {		/* Information for one type of tick/anotation */
 };
 
 struct TIME_AXIS {		/* Informatino for one time axis */
-	struct TIME_AXIS_ITEM item[6];	/* 0 = upper anot, 1 = lower anot, 2 = upper tick, 3 = middle tick, 4 = lower tick, 5 = grid */
+	struct TIME_AXIS_ITEM item[6];	/* see above defines for which is which */
 	int type;			/* LINEAR, LOG10, POW, or TIME */
 	char label[256];		/* Label of the axis */
 	char unit[32];			/* Axis unit appended to annotations */
