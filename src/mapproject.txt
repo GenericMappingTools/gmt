@@ -42,6 +42,8 @@ geocentric latitudes and estimate azimuth of geodesics (assuming the current ell
 Set center of projected coordinates to be at map projection center [Default is lower left corner].
 Optionally, add offsets in the projected units to be added (or subtracted when \fB\-I\fP is set) to (from)
 the projected coordinates, such as false eastings and northings for particular projection zones [0/0].
+The unit used for the offsets is the plot distance unit in effect (see MEASURE_UNTI) unless \fB\-F\fP is used,
+in which case the offsets are in meters.
 .TP
 .B \-D
 Temporarily override MEASURE_UNIT and use \fBc\fP (cm), \fBi\fP (inch),
