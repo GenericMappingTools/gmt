@@ -1,5 +1,5 @@
 %-------------------------------------------------------------------------------------------
-%	$Id: PSL_text.ps,v 1.3 2004-05-28 08:20:29 pwessel Exp $
+%	$Id: PSL_text.ps,v 1.4 2004-06-01 02:28:31 pwessel Exp $
 %
 %	P. Wessel, version 1
 %	Text justification for paragraphs.
@@ -367,30 +367,32 @@ PSL_pathtextdict begin
     /newy exch def /newx exch def		% Get the new point.
     /dx newx oldx sub def
     /dy newy oldy sub def
-    /dist dx dup mul dy dup mul add		% Calculate the distance between
+    /dist dx dup mul dy dup mul add sqrt def	% Calculate the distance between
 						% the old and the new point.
-      sqrt def
-    /dsx dx dist div ovr mul def		% dsx and dsy are used to update
-    /dsy dy dist div ovr mul def		% the current position to be just
+    dist 0 ne
+    {
+      /dsx dx dist div ovr mul def		% dsx and dsy are used to update
+      /dsy dy dist div ovr mul def		% the current position to be just
 						% beyond the width of the previous
 						% character.
-    oldx dsx add oldy dsy add transform
-    /cpy exch def /cpx exch def			% Update the current position.
-    /pathdist pathdist dist add def		% Increment the distance we have
+      oldx dsx add oldy dsy add transform
+      /cpy exch def /cpx exch def			% Update the current position.
+      /pathdist pathdist dist add def		% Increment the distance we have
 						% travelled along the path.
-    { setdist pathdist le			% Keep setting characters along
+      { setdist pathdist le			% Keep setting characters along
 						% this path segment until we have
 						% exhausted its length.
-	{ charcount str length lt		% As long as there are still
-	    {setchar} {exit} ifelse }		% characters left in the string,
+	  { charcount str length lt		% As long as there are still
+	      {setchar} {exit} ifelse }		% characters left in the string,
 						% set them.
-	{ /ovr setdist pathdist sub def		% Keep track of how much we have
-	  exit }				% overshot the path segment by
-	ifelse					% setting the previous character.
+	  { /ovr setdist pathdist sub def		% Keep track of how much we have
+	    exit }				% overshot the path segment by
+	  ifelse					% setting the previous character.
 						% This enables us to position the
 						% origin of the following
 						% characters properly on the path.
-    } loop
+      } loop
+    } if
   } def
        
 /curvetoproc					% ``curvetoproc'' is executed when
@@ -444,6 +446,7 @@ end
 % PSL_n		Number of points in the path
 % PSL_x		(x,y) coordinates of the path
 % PSL_y
+% PSL_angle	The annotation angle
 % PSL_m		Number of labels
 % PSL_str	Array with all the labels
 % PSL_node	Array with (x,y) node number of label position
@@ -452,15 +455,29 @@ end
 %
 % We use the current pen texture and width
 
-/PSL_labelline {
-  /PSL_n1 PSL_n 1 sub def	% one less is the upper limit in for loops
-  /PSL_m1 PSL_m 1 sub def	% same
+/PSL_labelline
+{
+  /bits exch def				% 4 on/of bit settings as indicated below
+  /PSL_labeltype bits 1 and def			% 0 for straight label, 1 for curved
+  /PSL_placetext bits 2 and 0 eq def		% true to place text, false to just make space
+  /PSL_strokeline bits 4 and 0 eq def		% true draws line, false skips
+  /PSL_clippath bits 8 and 0 gt def		% false inacative, true creates clippath for labels
+  /PSL_paintclippath bits 16 and 0 gt def	% false inacative, true paints clippath for debug
+  /PSL_n1 PSL_n 1 sub def			% one less is the upper limit in for loops
+  /PSL_m1 PSL_m 1 sub def			% same
+  PSL_clippath					% Set up clip path array
+  {
+    /PSL_clipx PSL_m 5 mul array def
+    /PSL_clipy PSL_m 5 mul array def
+    /PSL_clipn 0 def
+  } if
   
   % Calculate the width of each label string
-  /PSL_width PSL_n array def	% Assign space for distance
-  0 1 PSL_m1 {
+  /PSL_width PSL_m array def	% Assign space for distance
+  0 1 PSL_m1
+  {
     /i exch def
-    PSL_width i PSL_txt i get stringwidth pop put
+    PSL_width i PSL_str i get stringwidth pop put
   } for
   
   % Calculate along-track distances
@@ -469,7 +486,8 @@ end
   /dist 0.0 def
   /PSL_dist PSL_n array def	% Assign space for distance
   PSL_dist 0 dist put		% Distances start at 0 and the 'th point
-  1 1 PSL_n1 {			% Loop over the remaining points
+  1 1 PSL_n1			% Loop over the remaining points
+  {
     /i exch def
     /PSL_oldx PSL_newx def
     /PSL_oldy PSL_newy def
@@ -492,10 +510,11 @@ end
   /PSL_nc PSL_m 2 mul 1 add def		% 2*m points + one last acting as infinity
   /PSL_cuts PSL_nc array def		% The array of distances to each cut
   /PSL_nc1 PSL_nc 1 sub def		% One less to use in for loop limits
-  0 1 PSL_m1 {				% For each of the m labels
+  0 1 PSL_m1				% For each of the m labels
+  {
     /i exch def						% Index for label distance
     /dist PSL_dist PSL_node i get get def		% Recall the distance to this label center
-    /halfwidth PSL_width i get 2 div PSL_gap add def	% Set the halfwidth + gap distance
+    /halfwidth PSL_width i get 2 div PSL_gap_x add def	% Set the halfwidth + gap distance
     PSL_cuts k dist halfwidth sub put			% Distance at beginning of label gap
     /k k 1 add def					% Was at start, now go to end distance node
     PSL_cuts k dist halfwidth add put			% Distance at the end of label gap
@@ -508,14 +527,17 @@ end
   /k 0 def				% Index for current cut distance
   /dist 0.0 def				% Current distance along track, starting at zero
   /kind PSL_nn array def		% 0 = ordinary point, 1 = added point for label gap
-  0 1 PSL_n1 {				% Loop over every original line point
+  0 1 PSL_n1				% Loop over every original line point
+  {
     /i exch def				% Index into current point on original line xy array
     /last_dist dist def			% Update distance to last point (initially zero)
     /dist PSL_dist i get def		% Distance to current point
-    k 1 PSL_nc1 {			% Loop over remaining cuts (starting with all)
+    k 1 PSL_nc1				% Loop over remaining cuts (starting with all)
+    {
       /kk exch def			% Index into current cut distance
       /this_cut PSL_cuts kk get def	% Distance to start of this label gap
-      dist this_cut gt {		% Oh, oh, we just stepped over a cut point
+      dist this_cut gt			% Oh, oh, we just stepped over a cut point
+      {
         /f dist this_cut sub dist last_dist sub div def			% Get fractional distance
         PSL_xx j PSL_x i get dup PSL_x i 1 sub get sub f mul sub put	% Calc (x,y) at label start (or stop) point
         PSL_yy j PSL_y i get dup PSL_y i 1 sub get sub f mul sub put
@@ -524,7 +546,8 @@ end
         /k k 1 add def			% Done with this cut point
       } if
     } for
-    dist PSL_cuts k get lt {		% Having dealt with the cut, we may add the regular point
+    dist PSL_cuts k get lt		% Having dealt with the cut, we may add the regular point
+    {
       PSL_xx j PSL_x i get put
       PSL_yy j PSL_y i get put
       kind j 0 put			% Ordinary (original) coordinates
@@ -537,52 +560,203 @@ end
 % original PSL_x/y arrays to store the output points since it is possible that
 % we will need to reverse a path so that the text is upside-up.
 
+  /PSL_justx PSL_just 4 mod 1 sub -0.5 mul def
+  /PSL_justy PSL_just 4 idiv 2 sub PSL_height mul 2 div def
   newpath PSL_setpenrgb			% Initialize new path and set line color
   /PSL_nn1 PSL_nn 1 sub def		% End index in for loop
   /n 0 def				% Toggle: o means line, 1 means text
   /k 0 def				% Index of the current text string
-  PSL_x PSL_xx 0 get put		% Place first point in array
-  PSL_y PSL_yy 0 get put
   /j 0 def				% Output point number counter
+  PSL_x j PSL_xx 0 get put		% Place first point in array
+  PSL_y j PSL_yy 0 get put
   1 1 PSL_nn1				% Loop over rest of points
   {
     /i exch def				% Index into PSL_xx/yy arrays
     /type kind i get def		% Check what kind of point the current point is
-    PSL_x PSL_xx i get j put		% Add this point to the path
-    PSL_y PSL_yy i get j put
     /j j 1 add def			% Update point count
+    PSL_x j PSL_xx i get put		% Add this point to the path
+    PSL_y j PSL_yy i get put
     type 1 eq				% If this is a cut point we either stroke or place text
     {
       n 0 eq				% n is 0 so this is the strokable segment
       {
-        PSL_x 0 get PSL_y 0 get moveto				% Set the anchor point of the path
-	1 1 j { /i exch def PSL_x i get PSL_y i get lineto}	% Lay down the rest of the path
-        stroke /n 1 def PSL_settxtrgb				% Stroke, set n to 1, and switch to font color
+        PSL_drawline
       }
       {					% here, n = 1 so this is the segment along which text should be placed
-        PSL_x j get PSL_x 0 get lt	% Path must first be reversed to avoid upside-down text
+	PSL_reversepath			% Reverse path if needed to place text correctly
+	% Now PSL_x/y has the correct order to give proper text angles
+	PSL_placetext			% If we want to place the text
 	{
-	  0 1 j 2 idiv			% Loop over half the path and swap left/right points
+	  PSL_labeltype 0 eq		% Place straight text at the given angle
 	  {
-	    /left exch def		% Current left point
-	    /right j left sub def	% Matching right point
-	    /tmp PSL_x left get def	% Swap left and right values for x then y
-	    PSL_x left PSL_x right get put
-	    PSL_x right tmp put
-	    /tmp PSL_y left get def
-	    PSL_y left PSL_y right get put
-	    PSL_y right tmp put
-	  } for
+	    PSL_clippath
+	    {
+	      PSL_straightlabelclip
+	    }
+	    {
+	      PSL_straightlabel
+	    } ifelse
+	  }
+	  {				% Place curved text along the path just laid down
+            PSL_placeline PSL_str k get PSL_gap_x PSL_just PSL_height PSL_pathtext
+	  } ifelse
 	} if
-	% Now PSL_x/y has the correct order to give proper text angles 
-        PSL_txt k get PSL_gap PSL_just PSL_height PSL_pathtext	% Place the text
-	/n 0 def /k k 1 add def PSL_setpenrgb			% Set n back to 0 and switch to pen color
+	/n 0 def /k k 1 add def PSL_setpenrgb			% Set n back to 0, goto next label, and switch to pen color
       } ifelse
       newpath
-      PSL_x PSL_xx i get 0 put
-      PSL_y PSL_yy i get 0 put
       /j 0 def
+      PSL_x j PSL_xx i get put		% Place new first point in array
+      PSL_y j PSL_yy i get put
     } if
   } for
-  n 0 eq {stroke} {newpath} ifelse
+  n 0 eq {PSL_drawline} {newpath} ifelse	% Finish off the last segment
+  PSL_clippath
+  {	% Clear path, save status, get current clip path and clip with label paths
+    newpath
+    gsave
+    clippath
+    PSL_placeclippath
+    PSL_paintclippath		% Debug option to see the clip path
+    {
+      gsave
+      clippath 0.5 setgray fill
+      grestore
+    } if
+  } if
+  newpath			% Clean up and return
+} def
+
+/PSL_reversepath
+{
+  PSL_labeltype 1 eq PSL_x j get PSL_x 0 get lt and	% Path must first be reversed to avoid upside-down text
+  {
+    0 1 j 2 idiv			% Loop over half the path and swap left/right points
+    {
+      /left exch def		% Current left point
+      /right j left sub def	% Matching right point
+      /tmp PSL_x left get def	% Swap left and right values for x then y
+      PSL_x left PSL_x right get put
+      PSL_x right tmp put
+      /tmp PSL_y left get def
+      PSL_y left PSL_y right get put
+      PSL_y right tmp put
+    } for
+  } if
+} def
+
+/PSL_straightlabel
+{
+  newpath				% Must clear off the invisible text path as it is not needed
+  /node PSL_node k get 1 add k 2 mul add def		% Current index into angle array of extra length
+  PSL_xx node get PSL_yy node get moveto		% Set text center point
+  gsave							% Save because we are messing with rotations
+  PSL_angle k get rotate				% Rotate the coordinate system to follow baseline text
+  PSL_width k get PSL_justx mul PSL_justy rmoveto	% Adjust for justification
+  PSL_str k get show					% Place text
+  grestore						% Restore to system prior to rotation
+} def
+
+/PSL_straightlabelclip
+{
+  newpath				% Must clear off the invisible text path as it is not needed
+  /node PSL_node k get 1 add k 2 mul add def		% Current index into angle array of extra length
+  /xp PSL_xx node get def
+  /yp PSL_yy node get def				% Get text placement point
+  /MAT PSL_angle k get matrix rotate def		% Rotate the coordinate system to follow baseline text
+  /W PSL_width k get PSL_gap_x 2 mul add def		% Width of current label space including clearance
+  /H PSL_height PSL_gap_y 2 mul add def			% Height of current label space including clearance
+  /x0 0 W PSL_justx mul add def				% (x0,y0) is the rotated and adjusted text LL point relative to xp,yp
+  /y0 0 PSL_justy add PSL_gap_y sub def			%
+  /DX 0 0 W W 0 5 array astore def			% Offsets in x from LL
+  /DY 0 H H 0 0 5 array astore def			% Offsets in y from LL
+  0 1 4
+  { % Visit all 5 points and append to clippath
+    /ii exch def
+    x0 DX ii get add y0 DY ii get add MAT transform
+    /y1 exch def /x1 exch def
+    PSL_clipx PSL_clipn xp x1 add put			% Add this x to clippath
+    PSL_clipy PSL_clipn yp y1 add put			% Add this y to clippath		
+    /PSL_clipn PSL_clipn 1 add def			% Goto next point
+  } for
+} def
+
+/PSL_placeclippath
+{
+  PSL_clippath					% Now lay down the clippath
+  {
+    0 1 PSL_m1
+    {
+      /k exch def		% Current label number
+      /i k 5 mul def		% Start of the label path
+      PSL_clipx i get PSL_clipy i get moveto
+      1 1 4
+      {
+	/j exch i add def
+	PSL_clipx j get PSL_clipy j get lineto
+      } for
+    } for
+    clip
+  } if
+} def
+
+/PSL_drawline
+{
+  PSL_strokeline					% If we asked to draw lines...
+  {
+    PSL_x 0 get PSL_y 0 get moveto				% Set the anchor point of the path
+    1 1 j { /ii exch def PSL_x ii get PSL_y ii get lineto} for	% Lay down the rest of the path
+    stroke							% Stroke this path
+  } if
+  /n 1 def PSL_settxtrgb				% Set n to 1, and switch to font color
+} def
+
+/PSL_placeline
+{
+  PSL_x 0 get PSL_y 0 get moveto				% Set the anchor point of the path
+  1 1 j { /ii exch def PSL_x ii get PSL_y ii get lineto} for	% Lay down the rest of the path
+} def
+
+/PSL_labelclip
+{		% This will create a total clip path for all the labels in PSL_txt
+  /PSL_paintclippath exch 1 eq def			% true if we want to debug the path with painting
+  /PSL_clippath true def
+  /PSL_m1 PSL_m 1 sub def
+  /PSL_justx PSL_just 4 mod 1 sub -0.5 mul def
+  /PSL_justy PSL_just 4 idiv 2 sub PSL_height mul 2 div def
+  /PSL_clipx PSL_m 5 mul array def
+  /PSL_clipy PSL_m 5 mul array def
+  /PSL_clipn 0 def
+  0 1 PSL_m1				% Loop over all labels
+  {
+    /k exch def						% Current label index
+    /xp PSL_txt_x k get def
+    /yp PSL_txt_y k get def					% Get text placement point
+    /MAT PSL_angle k get matrix rotate def			% Rotate the coordinate system to follow baseline text
+    /W PSL_str k get stringwidth pop PSL_gap_x 2 mul add def	% Width of current label space including clearance
+    /H PSL_height PSL_gap_y 2 mul add def				% Height of current label space including clearance
+    /x0 0 W PSL_justx mul add def				% (x0,y0) is the rotated and adjusted text LL point relative to xp,yp
+    /y0 0 PSL_justy add PSL_gap_y sub def
+    /DX 0 0 W W 0 5 array astore def				% Offsets in x from LL
+    /DY 0 H H 0 0 5 array astore def				% Offsets in y from LL
+    0 1 4
+    { % Visit all 5 points and append to clippath
+      /ii exch def
+      x0 DX ii get add y0 DY ii get add MAT transform
+      /y1 exch def /x1 exch def
+      PSL_clipx PSL_clipn xp x1 add put			% Add this x to clippath
+      PSL_clipy PSL_clipn yp y1 add put			% Add this y to clippath		
+      /PSL_clipn PSL_clipn 1 add def			% Goto next point
+    } for
+  } for
+  newpath				% Start fresh
+  gsave
+  clippath				% Get the existing clip path
+  PSL_placeclippath			% Lay down & clip with label paths
+  PSL_paintclippath			% Debug option to see the clip path
+  {
+    gsave
+    clippath 0.5 setgray fill
+    grestore
+  } if
+  newpath			% Clean up and return
 } def

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.63 2004-05-28 08:20:29 pwessel Exp $
+ *	$Id: pslib.c,v 1.64 2004-06-01 02:28:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -168,7 +168,11 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts);
 void ps_rgb_to_cmyk (int rgb[], double cmyk[]);
 void ps_cmyk_to_rgb (int rgb[], double cmyk[]);
 int ps_place_color (int rgb[]);
-void ps_path (double x[], double y[], int n);
+void ps_set_length_array (char *param, double *array, int n);
+void ps_set_int_array (char *param, int *array, int n);
+void ps_set_txt_array (char *param, char *array[], int n);
+void ps_set_integer (char *param, int value);
+void ps_set_real_array (char *param, double *array, int n);
 
 
 /*------------------- PUBLIC PSLIB FUNCTIONS--------------------- */
@@ -1732,265 +1736,6 @@ void ps_square_ (double *x, double *y, double *diameter, int *rgb, int *outline)
 	ps_square (*x, *y, *diameter, rgb, *outline);
 }
 
-void ps_text_old (double x, double y, int pointsize, char *text, double angle, int justify, int form)
-{
-/* x,y = location of string
- * pointsize = fontsize in points
- * text = text to be boxed in
- * angle = angle with baseline (horizontal)
- * justify indicates what x,y refers to, see fig below
- * form = 0 = normal text, 1 = outline
- *
- *
- *    9	      10      11
- *   |----------------|
- *   5  <textstring>  7
- *   |----------------|
- *   1	      2	      3
- */
-
-	char *tempstring, *piece, *piece2, *ptr, *string, op[16];
-	int dy, i = 0, j, font;
-	int sub, super, small, old_font;
-	double height, small_size, size, scap_size, ustep, dstep, y0;
-
-	if (strlen (text) >= (BUFSIZ-1)) {
-		fprintf (stderr, "pslib: text_item > %d long!\n", BUFSIZ);
-		return;
-	}
-	
-	if (justify < 0)  {	/* Strip leading and trailing blanks */
-		for (i = 0; text[i] == ' '; i++);
-		for (j = strlen (text) - 1; text[j] == ' '; j--) text[j] = 0;
-	}
-	string = ps_prepare_text (&text[i]);	/* Check for escape sequences */
-	
-	justify = abs (justify);
-  	height = pointsize / ps.points_pr_unit;
-  	
-  	/* Got to anchor point */
-  	
-  	ps.npath = 0;
-	ps.ix = irint (x*ps.scale);
-	ps.iy = irint (y*ps.scale);
-	fprintf (ps.fp, "%d %d M ", ps.ix, ps.iy);
-	
-	if (angle != 0.0) fprintf (ps.fp, "V %.3g R ", angle);
-	y0 = -0.5 * height * ps.font[ps.font_no].height * (justify/4);
-	if (y0 != 0.0) fprintf (ps.fp, "0 %d G ",(int) irint (y0 * ps.scale));
-	if (!strchr (string, '@')) {	/* Plain text string */
-		fprintf (ps.fp, "%d F%d ", (int) irint (height * ps.scale), ps.font_no);
-		fprintf (ps.fp, "(%s) ", string);
-		if ((justify %= 4) > 1) fprintf (ps.fp, "E %d div 0 G ",(justify - 4));
-		(form == 0) ? fprintf (ps.fp, "Z") : fprintf (ps.fp, "false charpath S");
-		(angle != 0.0) ? fprintf (ps.fp, " U\n") : fprintf (ps.fp, "\n");
-		ps_free ((void *)string);
-		return;
-	}
-	
-	/* Here, we have special request for Symbol font and sub/superscript
-	 * @~ toggles between Symbol font and default font
-	 * @%<fontno>% switches font number <fontno>; give @%% to reset
-	 * @- toggles between subscript and normal text
-	 * @+ toggles between superscript and normal text
-	 * @# toggles between Small caps and normal text
-	 * @! will make a composite character of next two characters
-	 * Use @@ to print a single @
-	 */
-	
-	piece  = ps_memory (VNULL, (size_t)(2 * BUFSIZ), sizeof (char));
-	piece2 = ps_memory (VNULL, (size_t)BUFSIZ, sizeof (char));
-	 
-	font = old_font = ps.font_no;
-	size = height;
-	small_size = height * 0.7;
-	scap_size = height * 0.85;
-	ustep = 0.35 * height;
-	dstep = 0.25 * height;
-	sub = super = small = FALSE;
-	
-	if ((justify %= 4 ) > 1) {
-		/* First we need to compute the justification.  The PS interpreter must do this for us */
-		tempstring = ps_memory (VNULL, (size_t)(strlen(string)+1), sizeof (char));	/* Since strtok steps on it */
-		strcpy (tempstring, string);
-		ptr = strtok (tempstring, "@");
-		fprintf (ps.fp, "0 ");	/* Initialize stringlength */
-/*
-  Modifications by J.Lillibridge: 5/18/94
-  Handle the case where string starts with "~,-,+,#,!" WITHOUT a preceding "@".
-  But, in addition, there IS an "@" escape sequence within the string (that's
-  why we're here... plain text has already been printed above & we returned).
-
-  This is a problem because "strtok" returns the first part of the string even
-  if there isn't a leading "@".  The "while(ptr)" loop below assumes each 
-  "piece" is preceded by the "@" escape character.
-*/
-		if(string[0] != '@') {
-			fprintf (ps.fp, "%d F%d (%s) stringwidth pop add ", irint (size*ps.scale), font, ptr);
-			ptr = strtok ((char *)NULL, "@");
-		}
-
-		while (ptr) {
-			if (ptr[0] == '!') {	/* Composite character */
-				ptr++;
-				if (ptr[0] == '\\')	/* Octal code */
-					ptr += 4;
-				else
-					ptr++;
-				strcpy (piece, ptr);
-			}
-			else if (ptr[0] == '~') {	/* Symbol font toggle */
-				font = (font == 12) ? ps.font_no : 12;
-				ptr++;
-				strcpy (piece, ptr);
-			}
-			else if (ptr[0] == '%') {	/* Switch font option */
-				ptr++;
-				if (ptr[0] == '%')
-					font = old_font;
-				else {
-					old_font = font;
-					font = atoi (ptr);
-				}
-				while (*ptr != '%') ptr++;
-				ptr++;
-				strcpy (piece, ptr);
-			}
-			else if (ptr[0] == '-') {	/* Subscript toggle  */
-				sub = !sub;
-				size = (sub) ? small_size : height;
-				ptr++;
-				strcpy (piece, ptr);
-			}
-			else if (ptr[0] == '+') {	/* Superscript toggle */
-				super = !super;
-				size = (super) ? small_size : height;
-				ptr++;
-				strcpy (piece, ptr);
-			}
-			else if (ptr[0] == '#') {	/* Small caps toggle */
-				small = !small;
-				size = (small) ? scap_size : height;
-				ptr++;
-				(small) ? get_uppercase (piece, ptr) : (void) strcpy (piece, ptr);
-			}
-			else	/* Not recognized or @@ for a single @ */
-				strcpy (piece, ptr);
-			if (strlen (piece) > 0) fprintf (ps.fp, "%d F%d (%s) stringwidth pop add ", irint (size*ps.scale), font, piece);
-			ptr = strtok ((char *)NULL, "@");
-		}
-		/* Now move currentpoint to reflect the justification */
-		fprintf (ps.fp, "%d div 0 G\n", justify - 4);
-		ps_free ((void *)tempstring);
-	}
-	
-	/* Now we can start printing text items */
-	
-	font = old_font = ps.font_no;
-	if (form == 0)
-		strcpy (op, "Z");
-	else
-		strcpy (op, "false charpath S");
-	sub = super = small = FALSE;
-	ptr = strtok (string, "@");
-	size = height;
-/*
-  Modifications by J.Lillibridge: 5/18/94
-  Handle the case where string starts with "~,-,+,#,!" WITHOUT a preceding "@".
-  But, in addition, there IS an "@" escape sequence within the string (that's
-  why we're here... plain text has already been printed above & we returned).
-
-  This is a problem because "strtok" returns the first part of the string even
-  if there isn't a leading "@".  The "while(ptr)" loop below assumes each 
-  "piece" is preceded by the "@" escape character.
-*/
-	if(string[0] != '@') {
-		fprintf (ps.fp, "%d F%d (%s) %s\n", irint (size*ps.scale), font, ptr, op);
-		ptr = strtok ((char *)NULL, "@");
-	}
-
-	while (ptr) {
-		if (ptr[0] == '!') {	/* Composite character */
-			ptr++;
-			if (ptr[0] == '\\') {	/* Octal code */
-				strncpy (piece, ptr, 4);
-				piece[4] = 0;
-				ptr += 4;
-			}
-			else {
-				piece[0] = ptr[0];	piece[1] = 0;
-				ptr++;
-			}
-			if (ptr[0] == '\\') {	/* Octal code again*/
-				strncpy (piece2, ptr, 4);
-				piece2[4] = 0;
-				ptr += 4;
-			}
-			else {
-				piece2[0] = ptr[0];	piece2[1] = 0;
-				ptr++;
-			}
-			fprintf (ps.fp, "%d F%d (%s) dup stringwidth pop exch %s -2 div dup 0 G\n", irint (size*ps.scale), font, piece2, op);
-			fprintf (ps.fp, "%d F%d (%s) E -2 div dup 0 G exch %s sub neg dup 0 lt {pop 0} if 0 G\n", irint (size*ps.scale), font, piece, op);
-			strcpy (piece, ptr);
-		}
-		else if (ptr[0] == '~') {	/* Symbol font */
-			font = (font == 12) ? ps.font_no : 12;
-			ptr++;
-			strcpy (piece, ptr);
-		}
-		else if (ptr[0] == '%') {	/* Switch font option */
-			ptr++;
-			if (*ptr == '%')
-				font = old_font;
-			else {
-				old_font = font;
-				font = atoi (ptr);
-			}
-			while (*ptr != '%') ptr++;
-			ptr++;
-			strcpy (piece, ptr);
-		}
-		else if (ptr[0] == '-') {	/* Subscript */
-			sub = !sub;
-			size = (sub) ? small_size : height;
-			dy = (sub) ? irint (-dstep*ps.scale) : irint (dstep*ps.scale);
-			fprintf (ps.fp, "0 %d G\n", dy);
-			ptr++;
-			strcpy (piece, ptr);
-		}
-		else if (ptr[0] == '+') {	/* Superscript */
-			super = !super;
-			size = (super) ? small_size : height;
-			dy = (super) ? irint (ustep*ps.scale) : irint (-ustep*ps.scale);
-			fprintf (ps.fp, "0 %d G\n", dy);
-			ptr++;
-			strcpy (piece, ptr);
-		}
-		else if (ptr[0] == '#') {	/* Small caps */
-			small = !small;
-			size = (small) ? scap_size : height;
-			ptr++;
-			(small) ? get_uppercase (piece, ptr) : (void) strcpy (piece, ptr);
-		}
-		else
-			strcpy (piece, ptr);
-		if (strlen (piece) > 0)
-			fprintf (ps.fp, "%d F%d (%s) %s\n", irint (size*ps.scale), font, piece, op);
-		ptr = strtok ((char *)NULL, "@");
-	}
-	if (angle != 0.0) fprintf (ps.fp, "U\n");
-	ps_free ((void *)piece);
-	ps_free ((void *)piece2);
-	ps_free ((void *)string);
-}
-
-/* fortran interface */
-void ps_text_ (double *x, double *y, double *pointsize, char *text, double *angle, int *justify, int *form, int nlen)
-{
-	ps_text (*x, *y, *pointsize, text, *angle, *justify, *form);
-}
-
 void ps_textbox (double x, double y, double pointsize, char *text, double angle, int justify, int outline, double dx, double dy, int rgb[])
 {                   
 /* x,y = location of string
@@ -2399,128 +2144,144 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	ps_free ((void *)string);
 }
 
-void ps_pathtext (double x[], double y[], int n, double pointsize, char *text, double offset, int justify, int form)
+/* fortran interface */
+void ps_text_ (double *x, double *y, double *pointsize, char *text, double *angle, int *justify, int *form, int nlen)
 {
-	int i = 0, j;
-	double height;
-	char *string;
-	
-	/* form is currently ignored */
-	
-	if (strlen (text) >= (BUFSIZ-1)) {	/* We gotta have some limit on how long a single string can be... */
-		fprintf (stderr, "pslib: text_item > %d long - text not plotted!\n", BUFSIZ);
-		return;
-	}
-	if (strchr (text, '@')) {	/* Cannot handle special tricks */
-		fprintf (stderr, "pslib: text_item contains escape code - cannot be plotted along path!\n", BUFSIZ);
-		return;
-	}
-	
-	if (PSL_first) {
-		bulkcopy ("PSL_text");
-		PSL_first = FALSE;
-	}
-
-	if (justify < 0)  {	/* Strip leading and trailing blanks */
-		for (i = 0; text[i] == ' '; i++);
-		for (j = strlen (text) - 1; text[j] == ' '; j--) text[j] = 0;
-		justify = -justify;
-	}
- 
- 	if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
- 		if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
-		ps_textdim ("PSL_dimx", "PSL_dimy", fabs (pointsize), ps.font_no, &text[i], 0);			/* Set the string dimensions in PS */
- 		if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
-	}
-	
-	string = ps_prepare_text (&text[i]);	/* Check for escape sequences */
-	
- 	height = fabs (pointsize) / ps.points_pr_unit;
-  	
- 	ps.npath = 0;
-	
-	fprintf (ps.fp, "%d F%d\n", (int) irint (height * ps.scale), ps.font_no);	/* Set font */
-	ps_path (x, y, n);					/* Lay down path for text */	
-	
-	if (justify > 1)
-		fprintf (ps.fp, "(%s) %d %d PSL_dimy PSL_pathtext\n", string, (int) irint (offset * ps.scale), justify);
-	else
-		fprintf (ps.fp, "(%s) %d 1 0 PSL_pathtext\n", string, (int) irint (offset * ps.scale));
-		
-	ps_free ((void *)string);
+	ps_text (*x, *y, *pointsize, text, *angle, *justify, *form);
 }
 
-void ps_path (double x[], double y[], int n) {
-	int i, j;
-	double dx, dy;
-	fprintf (ps.fp, "%g %g M\n", x[0] * ps.scale, y[0] * ps.scale);
-	for (i = 1, j = 0; i < n; i++) {
-		dx = irint ((x[i] - x[j]) * ps.scale);
-		dy = irint ((y[i] - y[j]) * ps.scale);
-		if (hypot (dx, dy) > 0.0) {
-			fprintf (ps.fp, "%g %g L\n", x[i] * ps.scale, y[i] * ps.scale);
-			j = i;
-		}
-	}
-}
-
-void ps_pathtext_new (double x[], double y[], int n, int nodes[], char *labels[], int m, double pointsize, double offset, int justify, int p_rgb[], int t_rgb[], int form)
+void ps_pathtext (double x[], double y[], int n, int node[], double angle[], char *label[], int m, double pointsize, double offset, int justify, int p_rgb[], int t_rgb[], int form)
 {
+	/* x,y		Array containing the label path
+	/* n		Length of label path
+	 * node		Index into x/y array of label plot positions
+	 * angle	Text angle for each label
+	 * label	Array of text labels
+	 * m		Number of labels
+	 * pointsize	Pointsize of label text
+	 * offset	Gap between labelline and start of label
+	 * just		Justification of text relative to label coordinates
+	 * p_rgb	Line color
+	 * t_rgb	Font color
+	 * form		bits: 0 = straigth text, 1 = curved text, 2 = just place gap, 4 = skip line, 8 = clip path, 16 = paint clip path
+	 */
+	 
 	int i = 0, j, k;
 	double height;
 	char *string;
 	
-	/* form is currently ignored */
+	if (m <= 0) return;	/* Nothing to do yet */
 	
 	if (PSL_first) {
 		bulkcopy ("PSL_text");
 		PSL_first = FALSE;
 	}
 
-	fprintf (ps.fp, "gsave\n");
-	fprintf (ps.fp, "/PSL_n %d def\n", n);
-	fprintf (ps.fp, "/PSL_m %d def\n", m);
-	fprintf (ps.fp, "/PSL_x\n");
-	for (i = 0; i < n; i++) fprintf (ps.fp, "%.2lf\n", x[i] * ps.scale);
-	fprintf (ps.fp, "PSL_n array astore def\n");
-	fprintf (ps.fp, "/PSL_y\n");
-	for (i = 0; i < n; i++) fprintf (ps.fp, "%.2lf\n", y[i] * ps.scale);
-	fprintf (ps.fp, "PSL_n array astore def\n");
-	fprintf (ps.fp, "/PSL_txt\n");
 	for (i = 0; i < m; i++) {
 		if (justify < 0)  {	/* Strip leading and trailing blanks */
-			for (k = 0; labels[i][k] == ' '; k++);
-			for (j = strlen (labels[i]) - 1; labels[i][j] == ' '; j--) labels[i][j] = 0;
+			for (k = 0; label[i][k] == ' '; k++);	/* Count # of leading blanks */
+			if (k > 0) {	/* Shift text to start, eliminating spaces */
+				j = 0;
+				while (label[i][k]) {
+					label[i][j] = label[i][j+k];
+					j++;
+				}
+				label[i][j] = 0;
+			}
+			/* Then strip off trailing blanks, if any */
+			for (j = strlen (label[i]) - 1; label[i][j] == ' '; j--) label[i][j] = 0;
 		}
-		fprintf (ps.fp, "(%s)\n", &labels[i][k]);
 	}
-	fprintf (ps.fp, "PSL_m array astore def\n");
-	fprintf (ps.fp, "/PSL_node\n");
-	for (i = 0; i < m; i++) fprintf (ps.fp, "%d\n", nodes[i]);
-	fprintf (ps.fp, "PSL_m array astore def\n");
-	fprintf (ps.fp, "/PSL_setpenrgb ");
-	k = ps_place_color (p_rgb);
-	fprintf (ps.fp, "%c def\n", ps_paint_code[k]);
-	fprintf (ps.fp, "/PSL_settxtrgb ");
-	k = ps_place_color (t_rgb);
-	fprintf (ps.fp, "%c def\n", ps_paint_code[k]);
-		
 	justify =  abs (justify);
- 
+
+	ps_set_integer ("PSL_n", n);
+	ps_set_integer ("PSL_m", m);
+	ps_set_length_array ("PSL_x", x, n);
+	ps_set_length_array ("PSL_y", y, n);
+	ps_set_real_array ("PSL_angle", angle, m);
+	ps_set_int_array ("PSL_node", node, m);
+	ps_set_txt_array ("PSL_str", label, m);
+	ps_set_integer ("PSL_just", justify);
+	ps_set_length ("PSL_gap_x", offset);
+	fprintf (ps.fp, "/PSL_setpenrgb { ");
+	k = ps_place_color (p_rgb);
+	fprintf (ps.fp, "%c } def\n", ps_paint_code[k]);
+	fprintf (ps.fp, "/PSL_settxtrgb { ");
+	k = ps_place_color (t_rgb);
+	fprintf (ps.fp, "%c } def\n", ps_paint_code[k]);
+		
  	if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
  		if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
-		ps_textdim ("PSL_dimx", "PSL_dimy", fabs (pointsize), ps.font_no, labels[0], 0);			/* Set the string dimensions in PS */
+		ps_textdim ("PSL_dimx", "PSL_height", fabs (pointsize), ps.font_no, label[0], 0);		/* Set the string dimensions in PS */
  		if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
 	}
 	
- 	height = fabs (pointsize) / ps.points_pr_unit;
-  	ps.npath = 0;
-	fprintf (ps.fp, "%d F%d\n", (int) irint (height * ps.scale), ps.font_no);	/* Set font */
-	fprintf (ps.fp, "PSL_just %d def\n", justify);	/* Set font */
-	fprintf (ps.fp, "/PSL_gap %d def\n", (int)irint (offset * ps.scale));
+	fprintf (ps.fp, "%d F%d\n", (int) irint ((fabs (pointsize) / ps.points_pr_unit) * ps.scale), ps.font_no);	/* Set font */
+	fprintf (ps.fp, "%d PSL_labelline\n", form);
 	
-	fprintf (ps.fp, "PSL_labelline\n");
-	fprintf (ps.fp, "grestore\n");
+  	ps.npath = 0;
+}
+
+void ps_textclip (double x[], double y[], int m, double angle[], char *label[], double pointsize, double offset[], int justify, int key)
+{
+	/* x,y		Array containing the locations where labels will go
+	 * m		Number of labels
+	 * angle	Text angle for each label
+	 * label	Array of text labels
+	 * pointsize	Pointsize of label text
+	 * offset	Gaps between text and textbox
+	 * just		Justification of text relative to label coordinates
+	 * key		bits: 0 = lay down clip path, 1 = paint clip path
+	 */
+	 
+	int i = 0, j, k;
+	double height;
+	char *string;
+	
+	if (m <= 0) return;	/* Nothing to do yet */
+	
+	if (PSL_first) {
+		bulkcopy ("PSL_text");
+		PSL_first = FALSE;
+	}
+
+	for (i = 0; i < m; i++) {
+		if (justify < 0)  {	/* Strip leading and trailing blanks */
+			for (k = 0; label[i][k] == ' '; k++);	/* Count # of leading blanks */
+			if (k > 0) {	/* Shift text to start, eliminating spaces */
+				j = 0;
+				while (label[i][k]) {
+					label[i][j] = label[i][j+k];
+					j++;
+				}
+				label[i][j] = 0;
+			}
+			/* Then strip off trailing blanks, if any */
+			for (j = strlen (label[i]) - 1; label[i][j] == ' '; j--) label[i][j] = 0;
+		}
+	}
+	justify =  abs (justify);
+
+	/* fprintf (ps.fp, "gsave\n"); */
+	ps_set_integer ("PSL_m", m);
+	ps_set_length_array ("PSL_txt_x", x, m);
+	ps_set_length_array ("PSL_txt_y", y, m);
+	ps_set_real_array ("PSL_angle", angle, m);
+	ps_set_txt_array ("PSL_str", label, m);
+	ps_set_integer ("PSL_just", justify);
+	ps_set_length ("PSL_gap_x", offset[0]);
+	ps_set_length ("PSL_gap_y", offset[1]);
+		
+ 	if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
+ 		if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
+		ps_textdim ("PSL_dimx", "PSL_height", fabs (pointsize), ps.font_no, label[0], 0);		/* Set the string dimensions in PS */
+ 		if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
+	}
+	
+	fprintf (ps.fp, "%d F%d\n", (int) irint ((fabs (pointsize) / ps.points_pr_unit) * ps.scale), ps.font_no);	/* Set font */
+	fprintf (ps.fp, "%d PSL_labelclip\n", key);
+	
+  	ps.npath = 0;
 }
 
 void ps_transrotate (double x, double y, double angle)
@@ -3835,6 +3596,43 @@ void ps_set_length (char *param, double value)
 void ps_set_height (char *param, double fontsize)
 {
 	fprintf (ps.fp, "/%s %d def\n", param, irint (fontsize * ps.scale / ps.points_pr_unit));
+}
+
+void ps_set_integer (char *param, int value)
+{
+	fprintf (ps.fp, "/%s %d def\n", param, value);
+}
+
+void ps_set_length_array (char *param, double *array, int n)
+{	/* These are scaled by psscale */
+	int i;
+	fprintf (ps.fp, "/%s\n", param);
+	for (i = 0; i < n; i++) fprintf (ps.fp, "%.2lf\n", array[i] * ps.scale);
+	fprintf (ps.fp, "%d array astore def\n", n);
+}
+
+void ps_set_real_array (char *param, double *array, int n)
+{	/* These are raw and not scaled */
+	int i;
+	fprintf (ps.fp, "/%s\n", param);
+	for (i = 0; i < n; i++) fprintf (ps.fp, "%.2lf\n", array[i]);
+	fprintf (ps.fp, "%d array astore def\n", n);
+}
+
+void ps_set_int_array (char *param, int *array, int n)
+{
+	int i;
+	fprintf (ps.fp, "/%s\n", param);
+	for (i = 0; i < n; i++) fprintf (ps.fp, "%d\n", array[i]);
+	fprintf (ps.fp, "%d array astore def\n", n);
+}
+
+void ps_set_txt_array (char *param, char *array[], int n)
+{
+	int i;
+	fprintf (ps.fp, "/%s\n", param);
+	for (i = 0; i < n; i++) fprintf (ps.fp, "(%s)\n", array[i]);
+	fprintf (ps.fp, "%d array astore def\n", n);
 }
 
 void *ps_memory (void *prev_addr, size_t nelem, size_t size)
