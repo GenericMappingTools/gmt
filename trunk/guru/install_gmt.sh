@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.11 2001-04-04 03:12:35 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.12 2001-04-04 18:53:49 pwessel Exp $
 #
 #	Automatic installation of GMT version 3.4
 #	Version for the Bourne shell (or compatible)
@@ -107,7 +107,7 @@ cat << EOF > gmt_install.ftp_gzsizes
 EOF
 cat << EOF >&2
 ====>>>> Interactive installation of GMT <<<<====
-		  $Revision: 1.11 $
+		  $Revision: 1.12 $
 		  
 We first need a questions and answer session to
 determine how and where GMT is to be installed.
@@ -654,6 +654,7 @@ install_coast()
 	dir=$3
 	here=`pwd`
 	ok=1
+	done=0
 	if [ -f GMT_${file}.tar.$suffix ]; then
 		this=GMT_${file}.tar.$suffix
 	elif [ -f GMT${VERSION}_${file}.tar.$suffix ]; then
@@ -661,7 +662,7 @@ install_coast()
 	else
 		ok=0
 	fi
-	if [ $ok -eq 1 ] && [ $get_this != "n" ]; then	# File is present
+	if [ $ok -eq 1 ] && [ $get_this != "n" ]; then	# File is present and wanted
 		if [ ! -d $dir ]; then
 			mkdir -p $dir
 		fi				
@@ -671,8 +672,25 @@ install_coast()
 			cd $dir
 			$expand $here/$this | tar xvf -
 			cd $here
+			done=1
 		fi
 	fi
+#	Special treatment for Companion CD-ROM with individual bzip2 files for high and full
+#	that facilitates cross-platform install with Win32
+	if [ -f GMT${file}c.bz2 ] && [ $get_this != "n" ] && [ $done -eq 0 ]; then	# File is present and wanted
+		if [ ! -d $dir ]; then
+			mkdir -p $dir
+		fi				
+		if [ ! -d $dir ]; then
+			echo "Could not make the directory $dir - $this not untarred"
+		else
+			t=`echo $file | awk '{print substr($1,1,1)}'`
+			$expand $here/GMT${file}c.bz2 > $dir/binned_GSHHS_${t}.cdf
+			$expand $here/GMT${file}r.bz2 > $dir/binned_river_${t}.cdf
+			$expand $here/GMT${file}b.bz2 > $dir/binned_border_${t}.cdf
+		fi
+	fi
+		
 }
 make_suppl()
 # arg1=install? arg2=package
@@ -1300,6 +1318,9 @@ fi
 
 if [ $GMT_delete = "y" ]; then
 	rm -f GMT*.tar.$suffix triangle.tar.$suffix
+	if [ -f GMTfullc.bz2 ]; then	# Special files copied from CD-ROM
+		rm -f GMTfull?.bz2 GMThigh?.bz2
+	fi
 fi
 
 dir=`echo $GMT_share | sed -e 'sB/shareBBg'`
