@@ -8,7 +8,7 @@
 psscale \- Create grayscale or colorscale for maps
 .SH SYNOPSIS
 \fBpsscale\fP \fB\-D\fP\fIxpos/ypos/length/width[h]\fP 
- [ \fB\-A \fP ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIcpt_file\fP ] [ \fB\-E\fP[\fIlength\fP] ] 
+ [ \fB\-A \fP ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIcpt_file\fP ] [ \fB\-E\fP[\fBb|f\fP][\fIlength\fP] ] 
 [ \fB\-I\fP[\fImax_intens\fP] ] [ \fB\-K\fP ] [ \fB\-L\fP ]  [ \fB\-M\fP ] [ \fB\-N\fP\fIdpi\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
 [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-X\fP\fIx-shift\fP ] 
 [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fIzfile\fP ] [ \fB\-c\fP\fIcopies\fP ]
@@ -49,7 +49,8 @@ If not given, \fBpsscale\fP will read stdin.  As for \fBgrdview\fP, \fBpsscale\f
 pattern specifications in the cpt file.
 .TP
 .B \-E
-Add sidebar triangles for back- and foreground colors.  Optionally, append
+Add sidebar triangles for \fBb\fPack- and/or \fBf\fPoreground colors.  Add \fBf\fP or \fBb\fP for
+only one sidebar triangle [Default gives both].  Optionally, append
 triangle height [Default is half the barwidth].
 .TP
 .B \-I
