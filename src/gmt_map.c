@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.29 2002-07-08 01:34:14 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.30 2002-07-19 03:21:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -388,7 +388,6 @@ void GMT_merc_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struc
 void GMT_merc_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head);
 void GMT_transx_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head);
 void GMT_transy_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head);
-
 int GMT_wrap_around_check_x(double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, int *sides, int *nx);
 int GMT_wrap_around_check_tm(double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, int *sides, int *nx);
 BOOLEAN GMT_will_it_wrap_x(double *x, double *y, int n, int *start);
@@ -7264,7 +7263,6 @@ void GMT_transy_forward (float *geo, struct GRD_HEADER *g_head, float *rect, str
 	GMT_free ((void *)value);
 	GMT_free ((void *)hold);
 }
-
 
 void GMT_2D_to_3D (double *x, double *y, double z, int n)
 {
