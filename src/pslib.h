@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.4 2001-07-16 00:49:47 pwessel Exp $
+ *	$Id: pslib.h,v 1.5 2001-08-30 19:03:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -20,8 +20,8 @@
  * This include file must be included by all programs using pslib.a
  *
  * Author:	Paul Wessel
- * Version:	3.4
- * Date:	10-OCT-2000
+ * Version:	4.0
+ * Date:	30-AUG-2001
  */
 
 #ifndef _PSLIB_INC_H	/* User calling */
@@ -88,7 +88,7 @@ EXTERN_MSC void ps_colortiles(double x0, double y0, double xsize, double ysize, 
 EXTERN_MSC void ps_command(char *text);
 EXTERN_MSC void ps_comment(char *text);
 EXTERN_MSC void ps_cross(double x, double y, double size);
-EXTERN_MSC void ps_def_euro_font(int font_no);
+EXTERN_MSC void ps_encode_font(int font_no);
 EXTERN_MSC void ps_diamond(double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_ellipse(double x, double y, double angle, double major, double minor, int rgb[], int outline);
 EXTERN_MSC void ps_flush(void);

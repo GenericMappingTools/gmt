@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.15 2001-08-29 18:03:05 pwessel Exp $
+ *	$Id: pslib.c,v 1.16 2001-08-30 19:03:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -68,6 +68,7 @@
  *	ps_cross		: Plots a + 
  *	ps_diamond		: Plots a diamond and [optionally] fills it
  *	ps_ellipse		: Plots an ellipse and [optionally] fills it
+ *	ps_encode_font		: Reencode a font with a different encoding vector
  *	ps_flush		: Flushes the output buffer
  *	ps_hexagon		: Plots a hexagon and {optionally] fills it
  *	ps_image		: Plots a 1-to-8 bit 2-D image using grayshades
@@ -109,8 +110,8 @@
  *		School of Ocean and Earth Science and Technology
  *		1680 East-West Road, Honolulu, HI 96822
  *		pwessel@hawaii.edu
- * Date:	09-MAR-2001
- * Version:	3.4
+ * Date:	30-AUG-2001
+ * Version:	4.0
  *
  * The environmental variable GMTHOME must be set to the directory that holds the subdirectory
  *   share where all the pattern Sun raster files are stored
@@ -137,13 +138,18 @@ struct GMT_WORD {
 	char *txt;
 };
 
+char *ps_encoding[3] = {
+"StandardEncoding",
+"GMTEncoding",
+"ISOLatin1Encoding"
+};
+
 int PSL_first = TRUE;
 
 /* Define support functions called inside pslib functions */
 
 char *ps_prepare_text (char *text);
-void init_euro_header (struct EPS *eps);
-void init_ISOLatin1_header (struct EPS *eps);
+void init_font_encoding (struct EPS *eps);
 void ps_colorimage_hex(double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny);
 void ps_colorimage_bin(double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny);
 void ps_image_hex(double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits);
@@ -1192,14 +1198,14 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 /* xscl, yscl:	Global scaling, usually left to 1,1 */
 /* page_size:	Physical width and height of paper used in points */
 /* overlay:	FALSE means print headers and macros first */
-/* mode:	First bit 0 = Landscape, 1 = Portrait, Second bit 1 = no Euro, Third bit 1 = hex image, 0 = bin image, Forth bit 1 = abs positions, 0 = rel positions, Fifth bit 1 = ISO, 0 not */
+/* mode:	First bit 0 = Landscape, 1 = Portrait, Second bit 1 = GMT3.4 encoding, Third bit 1 = hex image, 0 = bin image, Forth bit 1 = abs positions, 0 = rel positions, Fifth bit 1 = ISO, 0 not */
 /* ncopies:	Number of copies for this plot */
 /* dpi:		Plotter resolution in dots-per-inch */
 /* unit:	0 = cm, 1 = inch, 2 = meter */
 /* rgb:		array with Color of page (paper) */
 /* eps:		structure with Document info.  !! Fortran version (ps_plotinit_) does not have this argument !! */
 {
-	int i, euro, iso, manual = FALSE;
+	int i, gmt_encoding, iso, manual = FALSE;
 	time_t right_now;
 	char openmode[2], *this;
 	double scl;
@@ -1234,13 +1240,13 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps.points_pr_unit = 72.0;
 	if (unit == 0) ps.points_pr_unit /= 2.54;
 	if (unit == 2) ps.points_pr_unit /= 0.0254;
-	euro = ((mode & 2) == 2);	/* If 2nd bit set then European character encoding is wanted */
-	iso = ((mode & 16) == 16);	/* If 5th bit set then ISOLatin1 character encoding is wanted */
-	if (euro && iso) {
-		fprintf (stderr, "pslib: Cannot specify both Euro and ISOLatin1 encoding\n");
+	gmt_encoding = ((mode & 2) == 2);	/* If 2nd bit set then old GMT3.4 European character encoding is wanted */
+	iso = ((mode & 16) == 16);		/* If 5th bit set then ISOLatin1 character encoding is wanted */
+	if (gmt_encoding && iso) {
+		fprintf (stderr, "pslib: Cannot specify both GMT3.4 and ISOLatin1 encoding\n");
 		return (-1);
 	}
-	ps.encoding = (iso) ? 2 : ((euro) ? 1 : 0);
+	ps.encoding = (iso) ? 2 : ((gmt_encoding) ? 1 : 0);
 	mode &= 1;
 	if (plotfile == NULL || plotfile[0] == 0)
 		ps.fp = stdout;
@@ -1412,8 +1418,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		
 		for (i = 0; i < N_FONTS; i++) fprintf (ps.fp, "/F%d {/%s Y} bind def\n", i, ps_font_name[i]);
 
-		if (ps.encoding == 1) init_euro_header (eps);
-		if (ps.encoding == 2) init_ISOLatin1_header (eps);
+		init_font_encoding (eps);	/* Reencode fonts if necessary */
 
 		if (!ps.eps_format) fprintf (ps.fp, "/#copies %d def\n\n", ncopies);
 		fprintf (ps.fp, "%%%%EndProlog\n\n");
@@ -2216,190 +2221,51 @@ void get_uppercase (char *new, char *old)
 	new[i] = 0;
 }
 
-void init_euro_header (struct EPS *eps)
-               
-/*-------------- European header definition -------------------*/
+void ps_encode_font (int font_no)
 {
- 	int i;
-	
-        fprintf (ps.fp,"%% START OF EUROPEAN FONT DEFINITION\n");
-	fprintf (ps.fp, "%% Reencode standard font map to European font map\n\
-%%\n\
-/reencsmalldict 12 dict def\n\
-/ReEncodeSmall\n\
-{ reencsmalldict begin\n\
-        /newcodesandnames exch def\n\
-        /newfontname exch def\n\
-        /basefontname exch def\n\
-        /basefontdict basefontname findfont def\n\
-        /newfont basefontdict maxlength dict def\n");
-fprintf (ps.fp, "        basefontdict\n\
-        { exch dup /FID ne \n\
-            { dup /Encoding eq\n\
-                { exch dup length array copy\n\
-                    newfont 3 1 roll put }\n\
-                { exch newfont 3 1 roll put }\n\
-                ifelse\n\
-                }\n\
-                { pop pop }\n\
-                ifelse\n\
-        } forall\n");
-fprintf (ps.fp, "        newfont /FontName newfontname put\n\
-        newcodesandnames aload pop\n\
-        newcodesandnames length 2 idiv\n\
-        { newfont /Encoding get 3 1 roll put }\n\
-        repeat\n\
-        newfontname newfont definefont pop\n\
-        end\n\
-} def\n\
-\n\
-/eurovec[\n");
-fprintf (ps.fp,"8#031 /threequarters\n\
-8#032 /threesuperior\n\
-8#033 /trademark\n\
-8#034 /twosuperior\n\
-8#035 /yacute\n\
-8#036 /ydieresis\n\
-8#037 /zcaron\n\
-8#207 /Thorn\n\
-8#200 /Atilde\n\
-8#201 /Ccedilla\n\
-8#202 /Eth\n\
-8#203 /Lslash\n\
-8#204 /Ntilde\n\
-8#205 /Otilde\n\
-8#206 /Scaron\n\
-8#207 /Thorn\n\
-8#210 /Yacute\n\
-8#211 /Ydieresis\n\
-8#212 /Zcaron\n\
-8#213 /atilde\n\
-8#214 /brokenbar\n\
-8#215 /ccedilla\n\
-8#216 /copyright\n\
-8#217 /degree\n\
-8#220 /divide\n\
-8#221 /eth\n\
-8#222 /logicalnot\n\
-8#223 /lslash\n\
-8#224 /minus\n\
-8#225 /mu\n\
-8#226 /multiply\n\
-8#227 /ntilde\n\
-8#230 /onehalf\n");
-fprintf (ps.fp, "8#231 /onequarter\n\
-8#232 /onesuperior\n\
-8#233 /otilde\n\
-8#234 /plusminus\n\
-8#235 /registered\n\
-8#236 /scaron\n\
-8#237 /thorn\n\
-8#260 /Aacute\n\
-8#265 /Acircumflex\n\
-8#276 /Adieresis\n\
-8#300 /Agrave\n\
-8#311 /Eacute\n\
-8#314 /Ecircumflex\n\
-8#321 /Edieresis\n\
-8#322 /Egrave\n\
-8#323 /Iacute\n\
-8#324 /Icircumflex\n\
-8#325 /Idieresis\n\
-8#326 /Igrave\n\
-8#327 /Oacute\n\
-8#330 /Ocircumflex\n\
-8#331 /Odieresis\n\
-8#332 /Ograve\n\
-8#333 /Uacute\n");
-fprintf (ps.fp, "8#334 /Ucircumflex\n\
-8#335 /Udieresis\n\
-8#336 /Ugrave\n\
-8#337 /aacute\n\
-8#340 /acircumflex\n\
-8#342 /adieresis\n\
-8#344 /agrave\n\
-8#345 /eacute\n\
-8#346 /ecircumflex\n\
-8#347 /edieresis\n\
-8#350 /egrave\n\
-8#354 /iacute\n\
-8#355 /icircumflex\n\
-8#356 /idieresis\n\
-8#357 /igrave\n\
-8#360 /oacute\n\
-8#362 /ocircumflex\n\
-8#363 /odieresis\n\
-8#364 /ograve\n\
-8#366 /uacute\n\
-8#367 /ucircumflex\n\
-8#370 /udieresis\n\
-8#374 /ugrave\n\
-8#375 /Aring\n\
-8#376 /aring\n\
-] def\n");
-
-	/* Initialize T/F array for European font reencoding so that we only do it once
-	 * for each font that is used */
-
-	fprintf (ps.fp, "/PSL_Euro_encode ");
-	for (i = 0; i < N_FONTS; i++) fprintf (ps.fp, "0 ");
-	fprintf (ps.fp, "%d array astore def	%% Initially zero\n", N_FONTS);
-		
-	if (eps)
-		for (i = 0; eps->font[i]; i++) ps_def_euro_font (eps->fontno[i]);
-	else	/* Must output all */
-		for (i = 0; i < N_FONTS; i++) ps_def_euro_font (i);
-
-        fprintf (ps.fp,"\n%% END OF EUROPEAN FONT DEFINITION\n");
-}
-
-void ps_def_euro_font (int font_no)
-{
+	if (ps.encoding == 0) return;	/* Already have StandardEncoding by default */
 	/* Reencode fonts except for Symbol, Dingbats, and the Japanese fonts */
 	if (font_no >= PS_FIRST_JAPANESE_FONT) return;
 	if (!(strcmp (ps_font_name[font_no], "Symbol") && strcmp (ps_font_name[font_no], "ZapfDingbats"))) return;
 
-	if (ps.encoding == 2) {	/* Reencode fonts with ISOLatin1 encodings */
-		fprintf (ps.fp, "PSL_Euro_encode %d get 0 eq { %% Set this font\n", font_no);
-		fprintf (ps.fp, "\tISOLatin1Encoding /%s /%s PSL_ISOLatin1_encode\n", ps_font_name[font_no], ps_font_name[font_no]);
-		fprintf (ps.fp, "\tPSL_Euro_encode %d 1 put\n} if\n", font_no);
-	 }
-	 else if (ps.encoding == 1) {	/* Reencode fonts for European characters [e.g., GMT3.4 and earlier] */
-		fprintf (ps.fp, "PSL_Euro_encode %d get 0 eq { %% Set this font\n", font_no);
-		fprintf (ps.fp, "\t/%s /%s eurovec ReEncodeSmall\n", ps_font_name[font_no], ps_font_name[font_no]);
-		fprintf (ps.fp, "\tPSL_Euro_encode %d 1 put\n} if\n", font_no);
-	}
+	/* Reencode fonts with GMT or ISOLatin1 encodings */
+	fprintf (ps.fp, "PSL_font_encode %d get 0 eq { %% Set this font\n", font_no);
+	fprintf (ps.fp, "\t%s /%s /%s PSL_reencode\n", ps_encoding[ps.encoding], ps_font_name[font_no], ps_font_name[font_no]);
+	fprintf (ps.fp, "\tPSL_font_encode %d 1 put\n} if\n", font_no);
 }
 
-void init_ISOLatin1_header (struct EPS *eps)
+void init_font_encoding (struct EPS *eps)
 {
 	int i;
 	
-        fprintf (ps.fp,"\n%% START OF ISOLATIN1 FONT DEFINITION\n");
-	fprintf (ps.fp, "/PSL_ISOLatin1_encode {\t%% To reencode one font with the ISOLatin1 built-in vector\n");
+	fprintf (ps.fp, "/PSL_reencode {\t%% To reencode one font with the provided encoding vector\n");
 	fprintf (ps.fp, "\tfindfont dup length dict begin\n");
 	fprintf (ps.fp, "\t{1 index /FID ne {def} {pop pop} ifelse} forall\n");
 	fprintf (ps.fp, "\texch /Encoding exch def currentdict end definefont pop\n");
 	fprintf (ps.fp, "} bind def\n");
 
-	/* Initialize T/F array for European font reencoding so that we only do it once
+	fprintf (ps.fp, "\n%% Here is the complete encoding vector for GMT3.4 WANT_EURO_FONT encoding (now GMT3.4 encoding)\n");
+	fprintf (ps.fp, "\n/GMTEncoding[\n");
+	for (i = 0; i < 256; i++) fprintf (ps.fp, "%s\n", ps_gmt_encoding[i]);
+	fprintf (ps.fp, "] def\n");
+	
+	/* Initialize T/F array for font reencoding so that we only do it once
 	 * for each font that is used */
 
-	fprintf (ps.fp, "/PSL_Euro_encode ");
+	fprintf (ps.fp, "/PSL_font_encode ");
 	for (i = 0; i < N_FONTS; i++) fprintf (ps.fp, "0 ");
 	fprintf (ps.fp, "%d array astore def	%% Initially zero\n", N_FONTS);
 		
 	if (eps)
-		for (i = 0; eps->font[i]; i++) ps_def_euro_font (eps->fontno[i]);
+		for (i = 0; eps->font[i]; i++) ps_encode_font (eps->fontno[i]);
 	else	/* Must output all */
-		for (i = 0; i < N_FONTS; i++) ps_def_euro_font (i);
-        fprintf (ps.fp,"%% END OF ISOLATIN1 FONT DEFINITION\n");
+		for (i = 0; i < N_FONTS; i++) ps_encode_font (i);
 }
 
 char *ps_prepare_text (char *text)
            
 /*	Adds escapes for misc parenthesis, brackets etc.
-	Will also translate to some European characters from the @a, @e
+	Will also translate to some Norwegian characters from the @a, @e
 	etc escape sequences. Calling function must REMEMBER to free memory
 	allocated by string */
 {
