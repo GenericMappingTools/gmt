@@ -5,12 +5,12 @@ backtracker \- Forward and Backward flowlines and hotspot tracks
 \fBbacktracker\fP [\fIinfile(s)\fP] \fB\-E\fP\fIstage_file\fP 
 [ \fB\-A\fP[\fIyoung/old\fP] ] [ \fB\-C\fP ] [ \fB\-Df|b\fP ] [ \fB\-H\fP[\fInrec\fP] ] 
 [ \fB\-Lf|b\fP\fIstep\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP\fIupper_age\fP ] 
-[ \fB\-Q\fP\fIfixed_age\fP ] [ \fB\-S\fP\fIfilestem\fP ] [ \fB\-T\fP\fIzero_age\fP ] [ \fB\-V\fP ] [ \fB\-:\fP ] 
-[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+[ \fB\-Q\fP\fIfixed_age\fP ] [ \fB\-S\fP\fIfilestem\fP ] [ \fB\-T\fP\fIzero_age\fP ] [ \fB\-V\fP ] 
+[ \fB\-W\fP[\fBa|t\fP] ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
 .SH DESCRIPTION
 \fBbacktracker\fP reads (longitude, latitude, age) positions from \fIinfiles\fP 
 [or standard input] and computes projected (x,y,t) coordinates using the 
-specified stage pole (Euler) rotations.  It can either calculate the final
+specified rotation parameters.  It can either calculate final
 positions [Default] or create a sampled track between the initial and final
 positions.  The former mode allows additional data fields after the first 3
 columns which must have (longitude,latitude,age).
@@ -23,16 +23,19 @@ option flags and lower case for modifiers.
 Data file(s) to be projected.  If not given, standard input is read.
 .TP
 .B \-E
-Give file with stage poles and opening angles.  This file must contain
-one record for each stage; each record must be of the following format:
+Give file with rotation poles and opening angles.  This file must contain
+one record for each rotation; each record must be of the following format:
 .br
 .sp
-	lon lat tstart tstop ccw-angle
+	lon lat tstart [tstop] ccw-angle [k a b c d e f g]
 .br
 .sp
-where tstart and tstop are in Ma and the rest is in degrees.  The oldest stage
-must be listed first.  tstart (tstop) is the age of the old (young) end of the
-stage.  Blank lines and records whose first column contains # will be ignored.
+where tstart [and tstop] are in Ma, with lon, lat, and angle in degrees.  For
+stage rotations, the oldest stage
+must be listed first, whereas for total reconstruction rotations the youngest
+rotation is listed first.  tstart (tstop) is the age of the old (young) end of the
+stage.  A covariance matrix, if present, may be given in the given format.
+Blank lines and records whose first column contains # will be ignored.
 .SH OPTIONS
 .TP
 .B \-A
@@ -73,6 +76,14 @@ file.  Specify a \fIfilestem\fP to have each track written to \fIfilestem.#\fP, 
 .B \-T
 Set the current time [Default is 0 Ma].
 #include "explain_-V.txt"
+.TP
+.B \-W
+Rotates the given input (lon,lat,t) and calculates the confidence ellipse for the
+projected point.  The input point \fImust\fP have a time coordinate that matches
+a particular finite rotation time, otherwise the point will be skipped.  Append
+\fBt\fP or \fBa\fP to output time or angle, respectively, after the projected
+lon, lat.  After these 2-3 items, we write azimuth, major, minor (in km) for the
+95% confidence ellipse.
 #include "explain_-t.txt"
 #include "explain_-i.txt"
 #include "explain_-n.txt"

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spotter.h,v 1.8 2004-02-02 18:16:55 pwessel Exp $
+ *	$Id: spotter.h,v 1.9 2004-03-10 05:27:54 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -31,6 +31,7 @@
 #define BIG_CHUNK 50000
 #define T_2_PA	250.0
 #define PA_2_T  (1.0 / T_2_PA)
+#define SQRT_CHI2	  2.44774689322;	/* This is sqrt (Chi^2) for 95% and 2 degrees of freedom */
 
 struct EULER {	/* Structure with info on each Euler (stage) pole */
 	double lon, lat;		/* Location of Euler pole in degrees */
@@ -40,6 +41,8 @@ struct EULER {	/* Structure with info on each Euler (stage) pole */
 	double omega;			/* Rotation in Degrees/m.y. */
 	double omega_r;			/* Rotation in Radians/m.y. */
 	double sin_lat, cos_lat;	/* Sine and Cosine of pole latitude */
+	double C[3][3];			/* Covariance matrix for this rotation */
+	double k_hat;			/* k_hat uncertainty scale */
 };
 
 struct FLOWLINE {			/* Structure with the nearest nodes for a single flowline */
@@ -58,3 +61,4 @@ EXTERN_MSC void spotter_finite_to_stages (struct EULER p[], int n, BOOLEAN finit
 EXTERN_MSC void spotter_stages_to_finite (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates);
 EXTERN_MSC void spotter_add_rotations (struct EULER a[], int n_a, struct EULER b[], int n_b, struct EULER *c[], int *n_c);
 EXTERN_MSC double spotter_t2w (struct EULER a[], int n, double t);
+EXTERN_MSC int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, int np, char conf, double out[]);

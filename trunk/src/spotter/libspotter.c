@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.24 2004-03-05 18:11:58 pwessel Exp $
+ *	$Id: libspotter.c,v 1.25 2004-03-10 05:27:54 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -29,6 +29,7 @@
  * spotter_finite_to_stages	: Convert finite rotations to stage poles
  * spotter_stages_to_finite	: Convert stage poles to finite rotations
  * spotter_add_rotations	: Add to plate motion models together.
+ * spotter_conf_ellipse		: Calculate confidence ellipse for rotated point
  *
  * programs must first call spotter_init() which reads a file of
  * backward stage poles.  Given the right flag it can convert these
@@ -72,8 +73,8 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	FILE *fp;
 	struct EULER *e;
 	char  buffer[BUFSIZ];
-	int n, nf, i = 0, n_alloc = GMT_SMALL_CHUNK;
-	double last_t;
+	int n, nf, i = 0, j, k, n_alloc = GMT_SMALL_CHUNK;
+	double last_t, K[8];
 
 	e = (struct EULER *) GMT_memory (VNULL, n_alloc, sizeof (struct EULER), "libspotter");
 
@@ -88,9 +89,30 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	while (fgets (buffer, 512, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
 
-		nf = sscanf (buffer, "%lf %lf %lf %lf %lf", &e[i].lon, &e[i].lat, &e[i].t_start, &e[i].t_stop, &e[i].omega);
+		if (finite_in) {	/* The record formats is: lon lat t0 [t1] omega [covar] */
+			nf = sscanf (buffer, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+				&e[i].lon, &e[i].lat, &e[i].t_start, &e[i].t_stop, &e[i].omega, &K[0], &K[1], &K[2], &K[3], &K[4], &K[5], &K[6], &K[7]);
+			if (nf == 4 || 12) {	/* Got lon lat t0 omega [covars], must shift the K's by one */
+				for (k = 7; k > 0; k--) K[k] = K[k-1];
+				K[0] = e[i].omega;
+				e[i].omega = e[i].t_stop;
+				e[i].t_stop = 0.0;
+			}
+			if (nf > 5) { /* [K = covars] is stored as [k_hat a b c d e f g] */
+				e[i].k_hat   = K[0];
+				e[i].C[0][0] = K[1];
+				e[i].C[0][1] = e[i].C[1][0] = K[2];
+				e[i].C[0][2] = e[i].C[2][0] = K[4];
+				e[i].C[1][1] = K[3];
+				e[i].C[1][2] = e[i].C[2][1] = K[5];
+				e[i].C[2][2] = K[6];
+				for (k = 0; k < 3; k++) for (j = 0; j < 3; j++) e[i].C[k][j] *= (K[7] / K[0]);
+			}
+		}
+		else {	/* Stage rotations */
+			nf = sscanf (buffer, "%lf %lf %lf %lf %lf", &e[i].lon, &e[i].lat, &e[i].t_start, &e[i].t_stop, &e[i].omega);
+		}
 
-		if (finite_in && nf == 4) e[i].omega = e[i].t_stop, e[i].t_stop = 0.0;	/* Only got 4 columns */
 		
 		if (e[i].t_stop >= e[i].t_start) {
 			fprintf (stderr, "libspotter: ERROR: Stage rotation %d has start time younger than stop time\n", i);
@@ -146,7 +168,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 		e[0].duration = e[0].t_start - e[0].t_stop;
 	}
 	else
-		(*t_max) = e[0].t_start;
+		(*t_max) = MAX (e[0].t_start, e[n-1].t_start);
 	*p = e;
 
 	return (n);
@@ -1001,3 +1023,72 @@ void set_I_matrix (double R[3][3])
 	memset ((void *)R, 0, (size_t)(9 * sizeof (double)));
 	R[0][0] = R[1][1] = R[2][2] = 1.0;
 }
+
+int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, int np, char flag, double out[])
+{
+	/* Given time and rotation parameters, calculate uncertainty in the
+	 * reconstructed point in the form of a confidence ellipse
+	 */
+	
+	int matrix_dim = 3, i, j, k, kk = 3, nrots;
+	double R[3][3], x[3], y[3], M[3][3], MtRt[3][3], Rt[3][3], RM[3][3], tmp[3][3], C[9];
+	double z_unit_vector[3], EigenValue[3], EigenVector[9], work1[3], work2[3], x_in_plane[3], y_in_plane[3];
+	double x_comp, y_comp, w;
+	
+	/* Find the rotation in question */
+	
+	for (i = 0, k = -1; k < 0 && i < np; i++) if (fabs (p[i].t_start - t) < GMT_CONV_LIMIT) k = i;
+	if (k == -1) return (1);	/* Did not match finite rotation time */
+	
+	/* Generate R, the rotation matrix */
+	
+	w = p[k].omega * p[k].duration;
+	make_rot_matrix (p[k].lon, p[k].lat, -w, R);
+	
+	/* Make M(x), the skew-symmetric matrix needed to compute cov of rotated point */
+	
+        GMT_geo_to_cart (&lat, &lon, x, TRUE);
+	M[0][0] = M[1][1] = M[2][2] = 0.0;
+	M[0][1] = -x[2];
+	M[0][2] = x[1];
+	M[1][0] = x[2];
+	M[1][2] = -x[0];
+	M[2][0] = -x[1];
+	M[2][1] = x[0];
+
+	/* Calculate cov(y) = R * M * cov_R * M^T * R^T */
+	
+	matrix_mult (R, M, RM);			/* Calculate the R * M product */
+	matrix_transpose (MtRt, RM);		/* Get the transpose (R*M)^T = M^T * R^T */
+	matrix_mult (p[k].C, MtRt, tmp);	/* Get C * M^T * R^T */
+	matrix_mult (RM, tmp, M);		/* Finally get R * M * C * M^T * R^T, store in M */
+
+	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) C[3*i+j] = M[i][j];	/* Reformat to 1-D format for GMT_jacobi */
+	
+	/* Get projected point y = R*x */
+	
+	for (i = 0; i < 3; i++) y[i] = R[i][0] * x[0] + R[i][1] * x[1] + R[i][2] * x[2];
+        GMT_cart_to_geo (&out[1], &out[0], y, TRUE);
+	if (flag == 't')
+		out[2] = t;
+	else if (flag == 'a')
+		out[2] = w;
+	else
+		kk = 2;
+
+	if (GMT_jacobi (C, &matrix_dim, &matrix_dim, EigenValue, EigenVector, work1, work2, &nrots)) {	/* Solve eigen-system C = EigenVector * EigenValue * EigenVector^T */
+		fprintf (stderr,"libspotter: Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
+	}
+	
+	z_unit_vector[0] = z_unit_vector[1] = 0.0;	z_unit_vector[2] = 1.0;	/* z unit vector */
+	GMT_cross3v (z_unit_vector, y, x_in_plane);	/* Local x-axis in plane normal to mean pole */
+	GMT_cross3v (y, x_in_plane, y_in_plane);	/* Local y-axis in plane normal to mean pole */
+	x_comp = GMT_dot3v (EigenVector, x_in_plane);	/* x-component of major axis in tangent plane */
+	y_comp = GMT_dot3v (EigenVector, y_in_plane);	/* y-component of major axis in tangent plane */
+	out[kk] = fmod (360.0 + (90.0 - atan2 (y_comp, x_comp) * R2D), 360.0);	/* Azimuth of major axis */
+	if (out[kk] > 180.0) out[kk] -= 180.0;
+	out[++kk] = sqrt (EigenValue[0]) * EQ_RAD * SQRT_CHI2;
+	out[++kk] = sqrt (EigenValue[1]) * EQ_RAD * SQRT_CHI2;
+	return (0);
+}
+		
