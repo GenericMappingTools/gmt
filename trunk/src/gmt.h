@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.49 2003-12-28 20:38:56 pwessel Exp $
+ *	$Id: gmt.h,v 1.50 2003-12-28 20:55:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -528,6 +528,8 @@ EXTERN_MSC PFI GMT_x_forward, GMT_x_inverse;	/*	Pointers to the selected linear 
 EXTERN_MSC PFI GMT_y_forward, GMT_y_inverse;	/*	Pointers to the selected linear functions */
 EXTERN_MSC PFI GMT_z_forward, GMT_z_inverse;	/*	Pointers to the selected linear functions */
 EXTERN_MSC PFD GMT_scan_time_string;		/*	pointer to functions that converts timestring to secs */
+EXTERN_MSC double DEG2M;			/*	Scale converting degrees to meters on spheroid	*/
+EXTERN_MSC double DEG2KM;			/*	Scale converting degrees to km on spheroid	*/
 
 #include "gmt_math.h"		/* Machine-dependent macros for non-POSIX math functions */
 #ifdef WIN32

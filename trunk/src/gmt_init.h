@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.34 2003-12-24 02:43:22 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.35 2003-12-28 20:55:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -140,6 +140,8 @@ PFI GMT_forward, GMT_inverse;		/*	Pointers to the selected mapping functions */
 PFI GMT_x_forward, GMT_x_inverse;	/*	Pointers to the selected linear functions */
 PFI GMT_y_forward, GMT_y_inverse;	/*	Pointers to the selected linear functions */
 PFI GMT_z_forward, GMT_z_inverse;	/*	Pointers to the selected linear functions */
+double DEG2M;				/*	Scale converting degrees to meters on spheroid	*/
+double DEG2KM;				/*	Scale converting degrees to km on spheroid	*/
 
 /*--------------------------------------------------------------------*/
 /*	For i/o purposes */
