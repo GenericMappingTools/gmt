@@ -174,8 +174,8 @@ bin size (1, 2, 5, 10, and 20 degrees for \fBf, h, i, l, c\fP, respectively).  T
 not supported for clipping.
 .br
 The political borders are for the most part 1970ies-style and do not reflect the recent
-border rearrangments in Europe.  We intend to update these as high-resolution data become
-avaiable to us.
+border rearrangements in Europe.  We intend to update these as high-resolution data become
+available to us.
 .br
 Some users of \fBpscoast\fP will not be satisfied with what they find for the
 Antarctic shoreline.  In Antarctica, the boundary between ice and 

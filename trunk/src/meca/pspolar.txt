@@ -5,7 +5,7 @@
 .br
 pspolar \fIfiles \fB\-J\fIparameters \fB\-R\fIwest/east/south/north\fR
 \fB\-D\fIlongitude/latitude\fR \fB\-M\fIsize\fR \fB\-S\fI<symbol><size>\fR
-[ \fB\-B\fItickinfo\fR ] [ \fB\-C\fIlongitude/latitude\fR[/tiret_width/pointsize\fR] ] 
+[ \fB\-B\fItickinfo\fR ] [ \fB\-C\fIlongitude/latitude\fR[/dash_width/pointsize\fR] ] 
 [ \fB\-F\fIred/green/blue\fR ] [ \fB\-G\fIfill\fR ] [ \fB\-g\fIfill\fR ]
 [ \fB\-H\fR ] [ \fB\-h\fR ] [ \fB\-K\fR ] [ \fB\-L\fR ] [ \fB\-N\fR ]
 [ \fB\-O\fR ] [ \fB\-P\fR ]
@@ -181,7 +181,7 @@ END
 .br
 \fRBomford, G., Geodesy, 4th ed., Oxford University Press, 1980.
 .br
-Aki, K. and P. Richards, Quantitative Seismolgy, Freeman, 1980.
+Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.
 .SH AUTHORS
 \fRGenevieve Patau
 .br

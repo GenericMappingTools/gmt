@@ -84,7 +84,7 @@ were less than \fImaxdist\fP [Default reports all seamounts].
 .SH EXAMPLES
 To find the likely (hotspot) origins of the seamounts represented by the (x,y,z,r,tc) points
 in the file seamounts.d, using the DC85.d Euler poles and the pac_hs.d list of possible hotspots,
-and report the 2 most likely hotspot canditates for each seamount, run
+and report the 2 most likely hotspot candidates for each seamount, run
 .br
 .sp
 originator seamounts.d \fB\-S\fP2 \fB\-E\fPDC85.d \fB\-F\fPpac_hs.d > origins.d

@@ -1,6 +1,6 @@
 .TH PSTEXT l DATE
-#define CLEARENCE_SI 0.15\fBc\fP/0.15\fBc\fP
-#define CLEARENCE_US 0.05\fBi\fP/0.05\fBi\fP
+#define CLEARANCE_SI 0.15\fBc\fP/0.15\fBc\fP
+#define CLEARANCE_US 0.05\fBi\fP/0.05\fBi\fP
 .SH NAME
 pstext \- To plot text on maps
 .SH SYNOPSIS
@@ -37,7 +37,7 @@ If no file is given, \fBpstext\fP will read standard input.
 \fIsize\fP is text size in points, \fIangle\fP is measured in degrees counter-clockwise from horizontal, 
 \fIfontno\fP sets the font type, \fIjustify\fP sets the alignment. 
 If \fIfontno\fP is not an integer, then it is taken to be a textstring with the desired fontname.  See the \fBgmtdefaults\fP man page
-for names and numbers of avaiable fonts (or run \fBpstext \-L\fP).  The alignment refers to the
+for names and numbers of available fonts (or run \fBpstext \-L\fP).  The alignment refers to the
 part of the textstring that will be mapped onto the (\fIx,y\fP) point.  Choose a 2 character combination
 of L, C, R (for left, center, or right) and T, M, B for top, middle, or bottom. e.g., BL for lower left.
 #include "explain_-j.txt"
@@ -48,7 +48,7 @@ No space between the option flag and the associated arguments.
 #include "explain_-b.txt"
 .TP
 .B \-C
-Sets the clearance between the text and the surrounding box [CLEARENCE_SI (or CLEARENCE_US)].
+Sets the clearance between the text and the surrounding box [CLEARANCE_SI (or CLEARANCE_US)].
 Only used if \fB\-W\fP is specified.
 .TP
 .B \-D

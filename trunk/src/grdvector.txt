@@ -58,7 +58,7 @@ Do NOT clip vectors at map boundaries [Default will clip].
 .B \-Q
 Select vector plot [Default is stick-plot].  Optionally, specify \fIparameters\fP which
 are \fIarrowwidth/headlength/headwidth\fP [Default is PARAMS_SI (or PARAMS_US)].  Append n\fIsize\fP
-which will cause vectors shorter than \fIsize\fP to have their appearence scaled by length/\fIsize\fP.
+which will cause vectors shorter than \fIsize\fP to have their appearance scaled by length/\fIsize\fP.
 #include "explain_-R.txt"
 Specify a subset of the grid.
 .TP

@@ -31,7 +31,7 @@ Do not list data collected after \fIstopdate\fP (mm/dd/yyyy/hh:mm). [Default is 
 .B \-F
 Can be any combination of \fBsyxgmtdhv\fP to indicate the desired output data. The data will
 appear in the order indicated by flags. If \fBGMT\fP is substituted for \fBgmt\fP, only records that
-have that combination of data are written out. If \fBs\fP is followed by \fBc\fP (calender),
+have that combination of data are written out. If \fBs\fP is followed by \fBc\fP (calendar),
 then yyyy/mm/dd/hh/mm/ss is written out, if \fBs\fP is
 followed by \fBj\fP (julian), then yyyy/jd/hh/mm/ss is written out.  Default is seconds from start
 of year.
@@ -56,7 +56,7 @@ useful if the data are to be processed with the weighted averaging techniques of
 .TP
 .B \-b
 Selects binary output mode (in double precision) [Default is ASCII].  \fB\-H\fP is ignored if \fB\-b\fP is selected.
-Julian and calender dates are not supported for binary time output (i.e., you get seconds from start of year).
+Julian and calendar dates are not supported for binary time output (i.e., you get seconds from start of year).
 .SH EXAMPLES
 To get a (distance, heading, crossover-corrected gravity, bathymetry) listing from c2104.gmt,
 starting at June 3 1971 20:45 and ending at distance = 5000 km, use the following command:

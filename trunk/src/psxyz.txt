@@ -53,7 +53,7 @@ Note when \fB\-M\fP is chosen, \fIpsxyz\fP will search for \fB\-G\fP and
 #include "explain_-K.txt"
 .TP
 .B \-L
-Force closed polygons: will connect the endpoints of the line-sement(s) and draw polygons.
+Force closed polygons: will connect the endpoints of the line-segment(s) and draw polygons.
 .TP
 .B \-M
 Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP.

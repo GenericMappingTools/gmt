@@ -45,7 +45,7 @@ The following symbols have special meaning:
 Select the columns that will be operated on until next occurrence of \fB\-C\fP.
 List columns separated by commas; ranges like 1,3-5,7 are allowed.  [\fB\-C\fP
 (no arguments) resets the default action of using all columns except time column (see \fB\-N\fP]. 
-\fB\-Ca\fP selects all columns, inluding time column, while \fB\-Cr\fP reverses (toggles) the current
+\fB\-Ca\fP selects all columns, including time column, while \fB\-Cr\fP reverses (toggles) the current
 choices.
 #include "explain_-H.txt"
 .TP
@@ -59,7 +59,7 @@ Quick mode for scalar calculation.  Shorthand for \fB\-Ca \-N\fP1/0 \fB\-T\fP0/0
 .B \-S
 Only report the first row of the results [Default is all rows].  This is useful if
 you have computed a statistic (say the MODE) and only want to report a single number
-instead of numerous records with idendical values.
+instead of numerous records with identical values.
 .TP
 .B \-T
 Required when no input files are given.  Sets the t-coordinates of the first

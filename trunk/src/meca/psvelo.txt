@@ -192,7 +192,7 @@ patterns.
 .br
 .TP
 \fB\-N
-\fRDo \fBNOT\fR skip symbols that fall outside the frame boudary specified by \fB\-R\fR.
+\fRDo \fBNOT\fR skip symbols that fall outside the frame boundary specified by \fB\-R\fR.
  [Default plots symbols inside frame only].
 #include "explain_-O.txt"
 #include "explain_-P.txt"

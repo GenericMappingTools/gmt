@@ -20,7 +20,7 @@ can then be fine-tuned manually.
 This file contains instruction for the layout of items in the legend.  Each legend item is described by
 a unique record.  All records begin with a unique character that is common to all record of the same
 kind.  The order of the legend items is implied by the order of the records.  8 different record types
-are recognized, and the symtax for each of these records are presented below:
+are recognized, and the syntax for each of these records are presented below:
 .TP
 \fB#\fP Comment records
 Records starting with # and blank lines are skipped.
@@ -77,7 +77,7 @@ Sets the clearance between the legend frame and the internal items [CLEARENCE_SI
 #include "explain_-K.txt"
 .TP
 .B \-L
-Ssets the linespacing factor in units of the anotation font size [1.1].
+Ssets the linespacing factor in units of the annotation font size [1.1].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP

@@ -32,7 +32,7 @@ List one or more file-names. If no files are given, psvelomeca will read standar
 Selects the meaning of the columns in the data file 
 .br
 In order to use the same file to plot cross-sections, depth is in third column.
-Nevetheless, it is possible to use "old style" psvelomeca input files
+Nevertheless, it is possible to use "old style" psvelomeca input files
 without depth in third column using the \fB-o\fR option.
 .br
 .TP
@@ -315,13 +315,13 @@ END
 .br
 \fRBomford, G., Geodesy, 4th ed., Oxford University Press, 1980.
 .br
-Aki, K. and P. Richards, Quantitative Seismolgy, Freeman, 1980.
+Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.
 .br
 F. A. Dahlen and Jeoren Trom, Theoretical Seismology, Princeton, 1998, p.167.
 .br
 Cliff Frohlich, Cliff'Nodes Concerning Plotting Nodal Lines for P, Sh and Sv
 .br
-Seismological Reasearch Letters, Volume 67, Number 1, January-February, 1996
+Seismological Research Letters, Volume 67, Number 1, January-February, 1996
 .br
 Thorne Lay, Terry C. Wallace, Modern Global Seismology, Academic Press, 1995, p.384.
 .br
