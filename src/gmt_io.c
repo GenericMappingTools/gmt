@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.60 2004-04-02 01:00:09 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.61 2004-04-20 18:29:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -125,7 +125,23 @@ int	GMT_scanf_float (char *s, double *val);
 
 FILE *GMT_fopen (const char* filename, const char* mode)
 {
-        return (fopen (filename, mode));
+	FILE *fp;
+	char path[BUFSIZ];
+	if ((fp = fopen (filename, mode))) return (fp);
+	if (mode[0] != 'r') return (NULL);	/* Only look in special diretories when reading, not writing */
+	if (GMT_DATADIR) {
+		 sprintf (path, "%s%c%s", GMT_DATADIR, DIR_DELIM, filename);
+		 if ((fp = fopen (path, mode))) return (fp);
+	}
+	if (GMT_GRIDDIR) {
+		sprintf (path, "%s%c%s", GMT_GRIDDIR, DIR_DELIM, filename);
+		if ((fp = fopen (path, mode))) return (fp);
+	}
+	if (GMT_IMGDIR) {
+		sprintf (path, "%s%c%s", GMT_IMGDIR, DIR_DELIM, filename);
+		if ((fp = fopen (path, mode))) return (fp);
+	}
+	return (NULL);
 }
 
 int GMT_fclose (FILE *stream)

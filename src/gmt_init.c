@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.119 2004-04-20 03:08:59 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.120 2004-04-20 18:29:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2663,6 +2663,18 @@ void GMT_set_home (void)
 		GMTHOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
 		strcpy (GMTHOME, this);
 	}
+	if ((this = getenv ("GMT_DATADIR")) != CNULL) {	/* GMT_DATADIR was set */
+		GMT_DATADIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
+		strcpy (GMT_DATADIR, this);
+	}
+	if ((this = getenv ("GMT_GRIDDIR")) != CNULL) {	/* GMT_GRIDDIR was set */
+		GMT_GRIDDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
+		strcpy (GMT_GRIDDIR, this);
+	}
+	if ((this = getenv ("GMT_IMGDIR")) != CNULL) {	/* GMT_IMGDIR was set */
+		GMT_IMGDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
+		strcpy (GMT_IMGDIR, this);
+	}
 }
 
 void GMT_put_history (int argc, char **argv)
@@ -3210,12 +3222,12 @@ void GMT_set_titem (struct PLOT_AXIS *A, double val, double phase, char flag, ch
 			break;
 	}
 	
+	if (phase != 0.0) A->phase = phase;	/* phase must apply to entire axis */
 	for (i = 0; i < n; i++) {
 		if (I[i]->active == 1) {
 			fprintf (stderr, "%s: Warning: Axis sub-item %c set more than once (typo?)\n", GMT_program, item_flag[i]);
 		}
 		I[i]->interval = val;
-		I[i]->phase = phase;
 		I[i]->unit = unit;
 		I[i]->type = (flag == 'I' || flag == 'i') ? 'I' : 'A';
 		I[i]->flavor = 0;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.13 2004-01-12 00:37:22 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.14 2004-04-20 18:29:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -347,7 +347,7 @@ int GMT_ras_read_grd_info (char *file, struct GRD_HEADER *header)
 #endif
 		fp = GMT_stdin;
 	}
-	else if ((fp = fopen (file, "rb")) == NULL) {
+	else if ((fp = GMT_fopen (file, "rb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
@@ -363,7 +363,7 @@ int GMT_ras_read_grd_info (char *file, struct GRD_HEADER *header)
 
 	for (i = 0; i < h.ras_maplength; i++) fread ((void *)&u, sizeof (unsigned char *), (size_t)1, fp);	/* Skip colormap */
 	
-	if (fp != GMT_stdin) fclose (fp);
+	if (fp != GMT_stdin) GMT_fclose (fp);
 	
 	GMT_grd_init (header, 0, (char **)NULL, FALSE);
 
@@ -395,7 +395,7 @@ int GMT_ras_write_grd_info (char *file, struct GRD_HEADER *header)
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = fopen (file, "rb+")) == NULL && (fp = fopen (file, "wb")) == NULL) {
+	else if ((fp = GMT_fopen (file, "rb+")) == NULL && (fp = fopen (file, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
@@ -414,7 +414,7 @@ int GMT_ras_write_grd_info (char *file, struct GRD_HEADER *header)
 		exit (EXIT_FAILURE);
 	}
 
-	if (fp != GMT_stdout) fclose (fp);
+	if (fp != GMT_stdout) GMT_fclose (fp);
 	
 	return (FALSE);
 }
@@ -444,7 +444,7 @@ int GMT_ras_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 		fp = GMT_stdin;
 		piping = TRUE;
 	}
-	else if ((fp = fopen (file, "rb")) != NULL) {	/* Skip header */
+	else if ((fp = GMT_fopen (file, "rb")) != NULL) {	/* Skip header */
 		if (GMT_read_rasheader (fp, &h)) {
 			fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
 			exit (EXIT_FAILURE);
@@ -502,7 +502,7 @@ int GMT_ras_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	header->y_min = s;
 	header->y_max = n;
 
-	if (fp != GMT_stdin) fclose (fp);
+	if (fp != GMT_stdin) GMT_fclose (fp);
 	
 	GMT_free ((void *)k);
 	GMT_free ((void *)tmp);
@@ -536,7 +536,7 @@ int GMT_ras_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = fopen (file, "wb")) == NULL) {
+	else if ((fp = GMT_fopen (file, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
@@ -593,7 +593,7 @@ int GMT_ras_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 		}
 		fwrite ((void *)tmp, sizeof (unsigned char), (size_t)width_out, fp);
 	}
-	if (fp != GMT_stdout) fclose (fp);
+	if (fp != GMT_stdout) GMT_fclose (fp);
 	
 	GMT_free ((void *)k);
 	GMT_free ((void *)tmp);
@@ -809,7 +809,7 @@ int GMT_bit_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 		fp = GMT_stdin;
 		piping = TRUE;
 	}
-	else if ((fp = fopen (file, "rb")) != NULL)	/* Skip header */
+	else if ((fp = GMT_fopen (file, "rb")) != NULL)	/* Skip header */
 		fseek (fp, (long) sizeof (struct GRD_HEADER), SEEK_SET);
 	else {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", file);
@@ -871,7 +871,7 @@ int GMT_bit_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 			if ((double)grid[ij] > header->z_max) header->z_max = (double)grid[ij];
 		}
 	}
-	if (fp != GMT_stdin) fclose (fp);
+	if (fp != GMT_stdin) GMT_fclose (fp);
 	
 	GMT_free ((void *)k);
 	GMT_free ((void *)tmp);
@@ -904,7 +904,7 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = fopen (file, "wb")) == NULL) {
+	else if ((fp = GMT_fopen (file, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
@@ -971,7 +971,7 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 		fwrite ((void *)tmp, sizeof (unsigned int), (size_t)mx, fp);
 	}
 
-	if (fp != GMT_stdout) fclose (fp);
+	if (fp != GMT_stdout) GMT_fclose (fp);
 	
 	GMT_free ((void *)k);
 	GMT_free ((void *)tmp);
@@ -995,7 +995,7 @@ int GMT_native_read_grd_info (char *file, struct GRD_HEADER *header)
 #endif
 		fp = GMT_stdin;
 	}
-	else if ((fp = fopen (file, "rb")) == NULL) {
+	else if ((fp = GMT_fopen (file, "rb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
@@ -1005,7 +1005,7 @@ int GMT_native_read_grd_info (char *file, struct GRD_HEADER *header)
 		exit (EXIT_FAILURE);
 	}
 
-	if (fp != GMT_stdin) fclose (fp);
+	if (fp != GMT_stdin) GMT_fclose (fp);
 	
 	return (FALSE);
 }
@@ -1028,7 +1028,7 @@ int GMT_native_write_grd_info (char *file, struct GRD_HEADER *header)
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = fopen (file, "rb+")) == NULL && (fp = fopen (file, "wb")) == NULL) {
+	else if ((fp = GMT_fopen (file, "rb+")) == NULL && (fp = fopen (file, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
@@ -1038,7 +1038,7 @@ int GMT_native_write_grd_info (char *file, struct GRD_HEADER *header)
 		exit (EXIT_FAILURE);
 	}
 
-	if (fp != GMT_stdout) fclose (fp);
+	if (fp != GMT_stdout) GMT_fclose (fp);
 	
 	return (FALSE);
 }
@@ -1074,7 +1074,7 @@ int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, dou
 		fp = GMT_stdin;
 		piping = TRUE;
 	}
-	else if ((fp = fopen (file, "rb")) != NULL)	/* Skip header */
+	else if ((fp = GMT_fopen (file, "rb")) != NULL)	/* Skip header */
 		fseek (fp, (long) sizeof (struct GRD_HEADER), SEEK_SET);
 	else {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", file);
@@ -1140,7 +1140,7 @@ int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, dou
 			if ((double)grid[ij] > header->z_max) header->z_max = (double)grid[ij];
 		}
 	}
-	if (fp != GMT_stdin) fclose (fp);
+	if (fp != GMT_stdin) GMT_fclose (fp);
 	
 	GMT_free ((void *)k);
 	GMT_free (tmp);
@@ -1177,7 +1177,7 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = fopen (file, "wb")) == NULL) {
+	else if ((fp = GMT_fopen (file, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
@@ -1233,7 +1233,7 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 		for (i = 0; i < width_out; i++) GMT_native_write_one (fp, grid[inc*(ij+k[i])], type);
 	}
 	GMT_free ((void *)k);
-	if (fp != GMT_stdout) fclose (fp);
+	if (fp != GMT_stdout) GMT_fclose (fp);
 		
 	return (FALSE);
 
@@ -1381,7 +1381,7 @@ int GMT_srf_read_grd_info (char *file, struct GRD_HEADER *header)
 #endif
 		fp = GMT_stdin;
 	}
-	else if ((fp = fopen (file, "rb")) == NULL) {
+	else if ((fp = GMT_fopen (file, "rb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
@@ -1396,7 +1396,7 @@ int GMT_srf_read_grd_info (char *file, struct GRD_HEADER *header)
 		exit (EXIT_FAILURE);
 	}
 
-	if (fp != GMT_stdin) fclose (fp);
+	if (fp != GMT_stdin) GMT_fclose (fp);
 	
 	GMT_grd_init (header, 0, (char **)NULL, FALSE);
 
@@ -1431,7 +1431,7 @@ int GMT_srf_write_grd_info (char *file, struct GRD_HEADER *header)
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = fopen (file, "rb+")) == NULL && (fp = fopen (file, "wb")) == NULL) {
+	else if ((fp = GMT_fopen (file, "rb+")) == NULL && (fp = fopen (file, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
@@ -1447,7 +1447,7 @@ int GMT_srf_write_grd_info (char *file, struct GRD_HEADER *header)
 		exit (EXIT_FAILURE);
 	}
 
-	if (fp != GMT_stdout) fclose (fp);
+	if (fp != GMT_stdout) GMT_fclose (fp);
 	
 	return (FALSE);
 }
@@ -1498,7 +1498,7 @@ int GMT_surfer_read_grd (char *file, struct GRD_HEADER *header, float *grid, int
 		fp = GMT_stdin;
 		piping = TRUE;
 	}
-	else if ((fp = fopen (file, "rb")) != NULL)	/* Skip header */
+	else if ((fp = GMT_fopen (file, "rb")) != NULL)	/* Skip header */
 		fseek (fp, (long) sizeof (struct srf_header), SEEK_SET);
 	else {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", file);
@@ -1522,7 +1522,7 @@ int GMT_surfer_read_grd (char *file, struct GRD_HEADER *header, float *grid, int
 		}
 	}
 	
-	if (fp != GMT_stdin) fclose (fp);
+	if (fp != GMT_stdin) GMT_fclose (fp);
 	
 	GMT_free ((void *)k);
 	GMT_free (tmp);
@@ -1556,7 +1556,7 @@ int GMT_surfer_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = fopen (file, "wb")) == NULL) {
+	else if ((fp = GMT_fopen (file, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
@@ -1606,7 +1606,7 @@ int GMT_surfer_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 		for (i = 0; i < width_out; i++) GMT_native_write_one (fp, grid[(ij+k[i])], type);
 	}
 	GMT_free ((void *)k);
-	if (fp != GMT_stdout) fclose (fp);
+	if (fp != GMT_stdout) GMT_fclose (fp);
 		
 	return (FALSE);
 }
