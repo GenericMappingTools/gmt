@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.12 2001-04-26 01:12:59 pwessel Exp $
+ *	$Id: pslib.c,v 1.13 2001-07-09 23:47:28 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -285,10 +285,10 @@ void ps_clipoff_ (void) {
 }
 
 void ps_clipon (double *x, double *y, int n, int rgb[], int flag)
-{               
-      	/* x,y: path, n = Path length */
-        /* rgb: Optional paint (-1 to avoid paint) */
-        /* flag: combo of 1 | 2. 1 = Start, 2 = end */
+                
+      	/* Path length */
+            	/* Optional paint (-1 to avoid paint) */
+          {	/* combo of 1 | 2. 1 = Start, 2 = end */
 	/* Any plotting outside the path defined by x,y will be clipped.
 	   use clipoff to restore the original clipping path. */
 	
@@ -1191,8 +1191,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 /* xscl, yscl:	Global scaling, usually left to 1,1 */
 /* page_size:	Physical width and height of paper used in points */
 /* overlay:	FALSE means print headers and macros first */
-/* mode:	First bit 0 = Landscape, 1 = Portrait, Second bit 1 = no Euro, Third bit 1 = hex image, 0 = bin image, Fourth bit 1 = abs positions, 0 = rel positions */
-/*		5th bit 1 = start of open-ended clipping, 6th bit 1 = end of open-ended clipping */
+/* mode:	First bit 0 = Landscape, 1 = Portrait, Second bit 1 = no Euro, Third bit 1 = hex image, 0 = bin image, Forth bit 1 = abs positions, 0 = rel positions */
 /* ncopies:	Number of copies for this plot */
 /* dpi:		Plotter resolution in dots-per-inch */
 /* unit:	0 = cm, 1 = inch, 2 = meter */
