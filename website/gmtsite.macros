@@ -1,23 +1,15 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtsite.macros,v 1.3 2001-02-26 21:20:27 pwessel Exp $
+#	$Id: gmtsite.macros,v 1.4 2001-03-07 22:11:26 pwessel Exp $
 #
-#	Original GMT Guru Makefile Macro for Makefile.guru
-#	Users should cp to gmtguru.macros and edit it instead!
+#	Original GMT Site Makefile Macro for Makefile.site
 #-------------------------------------------------------------------------------
 #
-# The Makefile.guru file for GMT can be used by any GMT
-# Developer to do chores ranging from compiling and linking
-# and running examples, to preparing new tar archives for release.
-# Any developer may create a tar distribution locally with the
-# Makefile.guru makefile.  The only changes one need to make is
-# in this macro file.  Other than some platform-specific macros
-# for the C preprocessor and local directory structures
+# The Makefile.site file for GMT is used by the Maintainer to update
+# the official web and ftp directories on the main server.  These are
+# then mirrored by other sites
 #
-# Below, set the VERSION to be created and the DIR in which
-# to place the tar archives.  It is best not to use the actual
-# pub/ftp directory but use a temporary place and copy over later.
-# Also, you may want to change the DATE value
+# Below, indicate the FTP and WWW directories:
 
-#FTPDIR		= /data/ftp/pub/gmt
-FTPDIR		= /data/ftp/pub/wessel
+#FTPDIR		= /home/gmt2/ftp/pub/gmt
+FTPDIR		= /home/gmt2/ftp/pub/wessel
 WWWDIR		= /home/gmt/gmt/www
