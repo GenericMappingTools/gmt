@@ -145,7 +145,7 @@ Text string to appear above the beach ball (optional).
 .sp
 .LP
 \fB\-Sp\fIscale[c/i][/fontsize[/offset[u]]].\fR Focal mechanisms given with partial data on both
-palnes.  \fIscale\fP adjusts the scaling of the radius of the "beach
+planes.  \fIscale\fP adjusts the scaling of the radius of the "beach
 ball", which will be proportional to the magnitude. Scale is the size
 for magnitude = 5 in inch (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
 The color or shade of the compressive quadrants
