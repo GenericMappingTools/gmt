@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.34 2004-12-26 22:25:20 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.35 2004-12-27 02:52:07 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -25,9 +25,9 @@
 # other than your chosen install directories.  Edit these directories
 # and say "make install2"
 
-bindir2		= /home/aa/pwessel/UH/RESOURCES/SOFTWARE/sunbin
-libdir2		= /home/aa/pwessel/UH/RESOURCES/SOFTWARE/sunlib
-includedir2	= /home/aa/pwessel/UH/RESOURCES/SOFTWARE/suninclude
+bindir2		= /home/aa/pwessel/UH/RESOURCES/SOFTWARE/sun/bin
+libdir2		= /home/aa/pwessel/UH/RESOURCES/SOFTWARE/sun/lib
+includedir2	= /home/aa/pwessel/UH/RESOURCES/SOFTWARE/sun/include
 
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
