@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.12 2004-04-23 23:24:07 pwessel Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.13 2004-04-27 22:34:33 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -746,52 +746,138 @@ be used with the built-in patterns (Appendix E).  Other
 approaches are also possible, of course.
 \index{Example!custom map symbols|)}
 
-\section{New Example 1}
-\index{Example!New 1|(}
+\section{Time-series of RedHat stock price}
+\index{Example!RedHat stock price|(}
 
-Here goes the description of this example.
+As discussed in Section~\ref{sec:timeaxis}, the annotation of time-series
+is generally more complicated due to the extra degrees of freedome afforded
+by the dual annotation system.  In this example we will display the trend
+of the stock price of RedHat (RHAT) from their initial public offering until
+early 2004.  The datafile is a comma-separated table and the first two records
+look like this: \\
+\begin{verbatim}
+Date,Open,High,Low,Close,Volume,Adj.Close*
+12-Mar-04,17.74,18.49,17.67,18.02,4827500,18.02
+\end{verbatim}
+Hence, we have a single header record and various prices values in USD for each
+day of business.  We will plot the trend of the opening price as a red line superimposed on
+a yellow envelope representing the low-to-high fluctuation during each day.  We
+also indicate when and at what cost Paul Wessel bought a few shares, and zoom in
+on the developments since 2003; in the inset we label the time-axis in Finnish in honor
+of Linus Thorvalds.  Because the time coordinates are Y2K-challenged and the
+order is backwards (big units of years come \emph{after} smaller units like
+days) we must change the default input/output formats used by \GMT. Here is
+how it all comes out:
 
 \input{scripts/GMT_example_21} 
-\GMTfig[ht]{GMT_example_21}{New Example 21.}
 
-\index{Example!New 1|)}
+which produces the plot in Figure~\ref{fig:GMT_example_21}, suggesting Wessel
+better hold on to those stocks for a while longer...
 
-\section{New Example 2}
-\index{Example!New 2|(}
+\GMTfig[ht]{GMT_example_21}{Time-series of RedHat stock price since IPO.}
 
-Here goes the description of this example.
+\index{Example!RedHat stock price|)}
+
+\section{World-wide seismicity the last 7 days}
+\index{Example!World-wide seismicity|(}
+
+The next example uses the command-line tool \progname{wget} to obtain a data file
+from a specified URL.  In the example script this line is commented out so the
+example will run even if you do not have \progname{wget}; remove the comment to
+get the actual current seismicity plot using the live data.  The main purpose of
+this script is not to show how to plot a map background and a few circles, but
+rather demonstrate how a map legend may be composed using the new tool \GMTprog{pslegend}.
+SOme scripting is used to pull out information from the data file that is later
+used in the legend.  The legend will normally have the email address of the script
+owner; here that command is commented out and the user is hardwired to ``GMT guru''.
+The USGS logo, taken from their web page and converted to a Sun rasterfile, is used
+to spice up the legend.
 
 \input{scripts/GMT_example_22} 
-\GMTfig[ht]{GMT_example_22}{New Example 22.}
+\GMTfig[ht]{GMT_example_22}{World-wide seismicity the last 7 days.}
 
-\index{Example!New 2|)}
+The script produces the plot in Figure~\ref{fig:GMT_example_22}, giving the URL
+where these and similar data can be obtained.
 
-\section{New Example 3}
-\index{Example!New 3|(}
+\index{Example!World-wide seismicity|)}
 
-Here goes the description of this example.
+\section{All great-circle paths lead to Rome}
+\index{Example!Paths to Rome|(}
+
+While motorists recenty have started to question the old saying ``all roads lead to Rome'',
+aircraft pilots have known from the start that only one great-circle path connect the
+points of departure and arrival\footnote{Pedants who wish to argue about the ``other''
+arc going the long way can take a hike.}.  This provides the inspiration for our next
+example which uses \GMTProg{grdmath} to calculate distances from Rome to anywhere on
+Earth and \GMTprog{grdcontour} to contour these distances.  We pick five cities that
+we connect to Rome with great circle arcs, and label
+these cities with their names and distances (in km) from Rome, all ontop of a beautiful
+world map.
 
 \input{scripts/GMT_example_23} 
-\GMTfig[ht]{GMT_example_23}{New Example 23.}
+\GMTfig[ht]{GMT_example_23}{All great-circle paths lead to Rome.}
 
-\index{Example!New 3|)}s
+The script produces the plot in Figure~\ref{fig:GMT_example_23}; note how
+interesting the path from Seattle appears in this particular Hammer projection.
+We also note that Rome's antipode is somewhere on the Chatham plateau (antipodes
+will be revisited in Example 25).
 
-\section{New Example 4}
-\index{Example!New 4|(}
+\index{Example!Paths to Rome|)}s
 
-Here goes the description of this example.
+\section{Data selection based on geospatial criteria}
+\index{Example!Geospatial criteria|(}
+
+Allthough we are not seismologists, we have yet another example involving seismicity.
+We use seismicity data for the Australia/New Zealand region to demonstrate how we can
+extract subsets of data using geospatial criteria.  In particular, we wish to plot
+the epicenters given in the file \filename{oz\_quakes.d} as red or green circles.
+Green circles should only be used for epicenters that
+\begin{enumerate}
+\item Lies in the ocean and not on land
+\item Is within 3000 km of Hobart
+\item Is more than 1000 km away from the International Dateline
+\end{enumerate}
+All remaining earthquakes should be plotted in red.  Rather that doing the selection
+process twice we simply plot all quakes as red circles and then replot those that
+passes our criteria.  Most of the work here is done by \GMTprog{gmtselect}; the rest
+are carried out by the usual \GMTprog{pscoast} and \GMTprog{psxy} workhorses.  Note
+for our purposes the Dateline is just a line along the 180\DS\ meridian.
 
 \input{scripts/GMT_example_24} 
-\GMTfig[ht]{GMT_example_24}{New Example 24.}
 
-\index{Example!New 4|)}s
+The script produces the plot in Figure~\ref{fig:GMT_example_24}.  Note that the
+horizontal distance from the dateline seems to increase as we go south; however that
+is just the projected distance (Mercator distortion) and not the actual distance
+which remains constant at 1000 km.
 
-\section{New Example 5}
-\index{Example!New 5|(}
+\GMTfig[ht]{GMT_example_24}{Data selection based on geospatial criteria.}
 
-Here goes the description of this example.
+\index{Example!Geospatial criteria|)}s
 
-\input{scripts/GMT_example_25} 
-\GMTfig[ht]{GMT_example_25}{New Example 25.}
+\section{Global distribution of antipodes}
+\index{Example!Distribution of antipodes|(}
 
-\index{Example!New 5|)}s
+As promised in Example 23, we will study antipodes.  The antipode of a point at
+$(\phi, \lambda)$ is the point at $(-\phi, \lambda + 180)$.  We seek an answer
+to the question that has plagued so many for so long: Given the distribution of
+land and ocean, how often is the antipode of a point on land also on land? And
+what about marine antipodes?  We use \GMTprog{grdlandmask} and \GMTprog{grdmath}
+to find map these distributions and calculate the area of the Earth (in percent)
+that goes with each of the three possibilities.  To make sense of our \GMTprog{grdmath}
+equation, note that we first calculate a grid that is +1 when a point and its
+antipode is on land, -1 if both are in the ocean, and 0 elsewhere.  We then
+seek to calculate the area distribution or dry antipodes by only pulling out the nodes
+that equal +1.  As each point represent an area $\Delta \phi \times \Delta \lambda$
+and the $\Delta \lambda$ terms actual dimension depends on $\cos (\phi)$, we need
+to allow for that shrinkage and compare that to the whole area of the Earth.  Since
+the $\Delta \lambda$, $\Delta \phi$ terms appear twice they cancel out, leaving the
+intractable expressions below:
+
+\input{scripts/GMT_example_25}
+
+In the end we obtain a funny-looking map depicting the antipodal distribution as
+well as displaying in legend form the requested percentages (Figure~\ref{fig:GMT_example_25}).
+
+\GMTfig[ht]{GMT_example_25}{Global distribution of antipodes.}
+
+\index{Example!Distribution of antipodes|)}s

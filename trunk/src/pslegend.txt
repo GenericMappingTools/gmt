@@ -7,7 +7,8 @@ pslegend \- To plot a map legend
 \fBpslegend\fP \fItextfile\fP \fB\-D\fP[\fBx\fP]\fIlon/lat/width/height/just\fP \fB\-J\fP\fIparameters\fP 
 \fB\-R\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-C\fP\fIdx/dy\fP ] [ \fB\-F\fP ] 
 [ \fB\-G\fP\fIfill\fP ] [ \fB\-K\fP ] [ \fB\-L\fP\fIspacing\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
-[ \fB\-S\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ]
+[ \fB\-S\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] [ \fB\-X\fP\fIx-shift\fP ] 
+[ \fB\-Y\fP\fIy-shift\fP ]
 .SH DESCRIPTION
 \fBpslegend\fP will make legends that can be overlaid on maps.  It reads specific
 legend-related information from an input file [or stdin].  Because all the elements
@@ -103,6 +104,7 @@ Sets the linespacing factor in units of the current annotation font size [1.1].
 Instead of writing the \fIPostScript\fP plot, output the GMT script used to make the legend [Default makes the plot].
 #include "explain_-U.txt"
 #include "explain_-V.txt"
+#include "explain_-XY.txt"
 .SH EXAMPLES
 To add an example of a legend to a Mercator plot (map.ps) with the given specifications, use
 .br

@@ -158,6 +158,7 @@ examples/ex23/job23.csh
 examples/ex24/job24.sh
 examples/ex24/job24.bat
 examples/ex24/job24.csh
+examples/ex24/oz_quakes.d
 examples/ex25/job25.sh
 examples/ex25/job25.bat
 examples/ex25/job25.csh

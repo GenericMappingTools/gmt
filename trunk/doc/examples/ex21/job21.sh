@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	GMT Example 21  $Id: job21.sh,v 1.4 2004-04-25 20:01:22 pwessel Exp $
+#	GMT Example 21  $Id: job21.sh,v 1.5 2004-04-27 22:34:33 pwessel Exp $
 #
 # Purpose:	Plot a time-series
 # GMT progs:	gmtset, gmtconvert, minmax, psbasemap, psxy 
@@ -26,7 +26,7 @@ R="-R$w/$e/$s/$n"
 psbasemap $R -JX9iT/6i -Glightgreen -K -U"Example 21 in Cookbook" -Bs1Y/0WSen \
    -Bpa3Of1o/50WSen:^\$::."RedHat (RHAT) Stock Price Trend since IPO": > example_21.ps
 
-# Plot main window with close price as red line over yellow envelope of low/highs
+# Plot main window with open price as red line over yellow envelope of low/highs
 
 gmtset OUTPUT_DATE_FORMAT dd-o-yy
 gmtconvert -F0,2 -f0T -Hi RHAT_price.csv > RHAT.env
