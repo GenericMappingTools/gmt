@@ -523,12 +523,12 @@ Formatting template that indicates how an output date string is to be plotted.  
 is then used to guide the plotting of date strings in data fields.  See \fBOUTPUT_DATE_FORMAT\fP
 for details.  In addition, you may use a single o instead of mm (to plot month name) and
 u instead of W[-]ww to plot "Week ##".  Both of these text strings will be affected by
-the \fBTIME_LANGUAGE\fB setting.  [yyyy-mm-dd].
+the \fBTIME_LANGUAGE\fP setting.  [yyyy-mm-dd].
 .TP
 .B PLOT_DEGREE_FORMAT
 Formatting template that indicates how an output geographical coordinate is to be plotted.  This template
 is then used to guide the plotting of geographical coordinates in data fields.  See 
-\fBOUTPUT_DEGREE_FORMAT\fB for details.  In addition, you can append A which plots the absolute value of 
+\fBOUTPUT_DEGREE_FORMAT\fP for details.  In addition, you can append A which plots the absolute value of 
 the coordinate.  The default is +ddd:mm:ss.  Not all items may be plotted as this depends on the anotation 
 interval.
 .TP
