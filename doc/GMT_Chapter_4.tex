@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.3 2001-09-21 20:57:54 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.4 2001-09-21 21:39:22 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -270,7 +270,7 @@ ways to specify data.  In particular, there are three kinds of input data format
 \item [Geographic coordinates].  These are longitudes and latitudes
 that (presumably) will be plotted or processed using one of several map
 projections.  The coordinates can either be in decimal degrees (e.g., -123.45417)
-or they may be in the [$\pm$]{\it ddd}[:{\it mm}[:{\it ss}[\it .xxx}]]][{\bf W}$|${\bf E}$|${\bf S}$|${\bf N}]
+or they may be in the [$\pm$]{\it ddd}[:{\it mm}[:{\it ss}[{\it .xxx}]]][{\bf W}$|${\bf E}$|${\bf S}$|${\bf N}]
 format (e.g., 123:27:15W).
 \item [Calendar time coordinates].  These are absolute time coordinates referring to a Gregorian or ISO calendar.
 The general format is [{\it date}]{\bf T}[{\it clock}], where {\it date} can be specified in a wide range
@@ -310,10 +310,10 @@ In the latter case the issue of formatting becomes important.  \GMT\ provides ex
 machinery for allowing just about any imaginable format to be used on output.  Analogous to
 the processing of input data, several templates guide the formatting process.  These are
 {\bf OUTPUT\_DATE\_FORMAT} and {\bf OUTPUT\_CLOCK\_FORMAT} for calendar time coordinates,
-{\bf OUTPUT\_DEGREE\_FORMAT} for geographical coordinates, and {\bf D_FORMAT} for generic
+{\bf OUTPUT\_DEGREE\_FORMAT} for geographical coordinates, and {\bf D\_FORMAT} for generic
 floating point data.  In addition, the user have control over how columns are separated via
-the {\bf FIELD_SEPARATOR} parameter.  Thus it is possible to create FORTRAN-style card formats
-by setting {\bf D_FORMAT} to \%7.3lf and {\bf FIELD_SEPARATOR} to none.
+the {\bf FIELD\_SEPARATOR} parameter.  Thus it is possible to create FORTRAN-style card formats
+by setting {\bf D\_FORMAT} to \%7.3lf and {\bf FIELD\_SEPARATOR} to none.
 
 \section{\PS\ Features}
 \index{PostScript@\PS!features}
