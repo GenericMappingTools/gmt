@@ -4,7 +4,7 @@ nearneighbor \- A "Nearest neighbor" gridding algorithm
 .SH SYNOPSIS
 \fBnearneighbor\fP [ \fIxyzfile(s)\fP ] \fB\-G\fP\fIout_grdfile\fP \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]]  
 \fB\-N\fP\fIsectors\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] \fB\-S\fP\fIsearch_radius\fP[\fBm|c|k|K\fP] 
-[ \fB\-E\fP\fIempty\fP ] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP[\fIflag\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP ] [ \fB\-:\fP ] 
+[ \fB\-E\fP\fIempty\fP ] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP\fIflag\fP ] [ \fB\-V\fP ] [ \fB\-W\fP ] [ \fB\-:\fP ] 
 [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBnearneighbor\fP reads arbitrarily located (x,y,z[,w]) triples [quadruplets]
@@ -47,8 +47,6 @@ Not used with binary data.
 Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of 
 x or y or both set by \fB\-R\fP, or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
 lon and lat).  [Default is no boundary conditions].
-If no flag is given, it is assumed that the x column contains longitudes, which may differ from the region
-in \fB\-R\fP by [multiples of] 360 degrees [Default assumes no periodicity].
 #include "explain_-V.txt"
 #include "explain_-t.txt"
 .TP

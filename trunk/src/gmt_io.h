@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.12 2001-09-13 18:22:42 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.13 2001-09-20 20:10:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -58,6 +58,8 @@ EXTERN_MSC int GMT_scanf_old (char *p, double *val);			/* Convert text (incl dd:
 EXTERN_MSC char *GMT_fgets (char *record, int maxlength, FILE *fp);	/* Does a fscanf from inside gmt_io to keep DLLs working */
 EXTERN_MSC int GMT_scanf (char *p, int expectation, double *val);	/* Convert strings to double, handling special formats */
 EXTERN_MSC int	GMT_scanf_argtime (char *s, double *val);		/* Convert an argument token to a time  */
+EXTERN_MSC void GMT_format_abstime_output (GMT_dtime dt, char *text);	/* Generate formatted textstring for absolute calendar time */
+EXTERN_MSC void GMT_format_geo_output (BOOLEAN is_lat, double geo, char *text);	/* Generate formatted textstring for geographic coordinate */
 
 struct GMT_CLOCK_IO {
 	int order[3];			/* The relative order of hour, mn, sec in input clock string */

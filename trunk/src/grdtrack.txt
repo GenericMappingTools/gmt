@@ -2,7 +2,7 @@
 .SH NAME
 grdtrack \- Sampling of a 2-D grdfile along 1-D trackline (a sequence of x,y points)
 .SH SYNOPSIS
-\fBgrdtrack\fP \fIxyfile\fP \fB\-G\fP\fIgrdfile\fP [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP[\fIflag\fP] ] [ \fB\-M\fP[\fIflag\fP] ] 
+\fBgrdtrack\fP \fIxyfile\fP \fB\-G\fP\fIgrdfile\fP [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP\fIflag\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
 [ \fB\-Q\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP ] [ \fB\-S\fP ] [ \fB\-V\fP ] [ \fB\-Z\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
 [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ][ \fB\-bo\fP[\fBs\fP] ]
 .SH DESCRIPTION
@@ -26,8 +26,6 @@ No space between the option flag and the associated arguments.
 Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of 
 x or y or both set by \fB\-R\fP, or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
 lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero).]
-If no flag is supplied, it is assumed that the x column contains longitudes, which may differ from the region
-in \fB\-R\fP by [multiples of] 360 degrees [Default assumes no periodicity].
 .TP
 .B \-M
 Multiple segment file.  Segment separator is a record beginning with \fIflag\fP.

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.h,v 1.8 2001-09-12 19:35:08 pwessel Exp $
+ *	$Id: gmt_calclock.h,v 1.9 2001-09-20 20:10:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -28,7 +28,7 @@
 #include "gmt.h"
 
 typedef int GMT_cal_rd;	/* GMT calendar "rata die" day numbers  */
-typedef double GMT_dtime;	/* GMT internal time representation;
+/* typedef double GMT_dtime; [in gmt.h]	GMT internal time representation;
 	equal to seconds elapsed since Midnight on proleptic Gregorian 
 	Monday Jan 01 0001  */
 

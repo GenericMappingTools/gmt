@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.15 2001-09-19 03:43:07 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.16 2001-09-20 20:10:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3564,8 +3564,8 @@ int GMT_getscale (char *text, double *x0, double *y0, double *scale_lat, double 
 		*y0 = GMT_convert_units (txt_b, GMT_INCH);
 	}
 	else {	/* Read geographical coordinates */
-		*x0 = GMT_ddmmss_to_degree (txt_a);
-		*y0 = GMT_ddmmss_to_degree (txt_b);
+		error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_a, GMT_IS_LON, x0), txt_a);
+		error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_b, GMT_IS_LAT, y0), txt_b);
 		if (fabs (*y0) > 90.0) {
 			fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Position latitude is out of range\n", GMT_program);
 			error++;
@@ -3575,7 +3575,11 @@ int GMT_getscale (char *text, double *x0, double *y0, double *scale_lat, double 
 			error++;
 		}
 	}
-	*scale_lat = GMT_ddmmss_to_degree (txt_c);
+	error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_c, GMT_IS_LAT, scale_lat), txt_c);
+	if (fabs (*scale_lat) > 90.0) {
+		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Scale latitude is out of range\n", GMT_program);
+		error++;
+	}
 	*measure = text[strlen(text)-1];
 	if (k != 4) {
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Correct syntax\n", GMT_program);
@@ -3698,4 +3702,31 @@ int GMT_just_decode (char *key)
 	}
 
 	return (j + i);
+}
+
+int GMT_verify_expectations (int wanted, int got, char *item)
+{	/* Compare what we wanted with what we got and see if it is OK */
+	int error = 0;
+	
+	switch (got) {
+		case GMT_IS_NAN:
+			fprintf (stderr, "GMT ERROR:  Could not decode %s, return NaN.\n", item);
+			error++;
+			break;
+		case GMT_IS_LAT:
+			if (wanted == GMT_IS_LON) {
+				fprintf (stderr, "GMT ERROR:  Expected longitude, but %s is a latitude!\n", item);
+				error++;
+			}
+			break;
+		case GMT_IS_LON:
+			if (wanted == GMT_IS_LAT) {
+				fprintf (stderr, "GMT ERROR:  Expected latitude, but %s is a longitude!\n", item);
+				error++;
+			}
+			break;
+		default:
+			break;
+	}
+	return (error);
 }

@@ -37,8 +37,8 @@
 #define LEN_I   0.02
 #define SCALE_I \fB\-Ji\fP0/0.02\fBi\fP
 #define SCALE_N \fB\-JN\fP0/8\fBi\fP
-#define LEN_V   10
-#define SCALE_V \fB\-JV\fP180/10\fBi\fP
+#define LEN_V   7
+#define SCALE_V \fB\-JV\fP180/7\fBi\fP
 .SH NAME
 psbasemap \- To plot \fIPostScript\fP basemaps
 .SH SYNOPSIS
@@ -187,7 +187,7 @@ psbasemap \fB\-R\fP0/90/25/55 SCALE_D \fB\-B\fP10\fBg\fP10:."Equidistant conic":
 A LEN_A-cm-wide global view of the world from the vantage point -80/-30 will give the following basemap:
 .br
 .sp
-psbasemap \fB\-R\fP0/360-/-90/90 SCALE_A \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Lambert Azimuthal": > lamberta.ps
+psbasemap \fB\-R\fP0/360/-90/90 SCALE_A \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Lambert Azimuthal": > lamberta.ps
 .br
 .sp
 Follow the instructions for stereographic projection if you want to impose rectangular
@@ -196,14 +196,14 @@ boundaries on the azimuthal equal-area map but substitute \fB\-Ja\fP for \fB\-Js
 A LEN_E-cm-wide global map in which distances from the center (here 125/10) to any point is true can be obtained by:
 .br
 .sp
-psbasemap \fB\-R\fP0/360-/-90/90 SCALE_E \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Equidistant": > equi.ps
+psbasemap \fB\-R\fP0/360/-90/90 SCALE_E \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Equidistant": > equi.ps
 .br
 .SH Gnomonic
 A view of the world from the vantage point -100/40 out to a horizon of 60 degrees from the center can be made using
 the Gnomonic projection:
 .br
 .sp
-psbasemap \fB\-R\fP0/360-/-90/90 SCALE_F \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Gnomonic": > gnomonic.ps
+psbasemap \fB\-R\fP0/360/-90/90 SCALE_F \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Gnomonic": > gnomonic.ps
 .br
 .SH Orthographic
 A global perspective (from infinite distance) view of the world from the vantage point 125/10 will give
@@ -217,7 +217,7 @@ To make a Polar stereographic projection basemap with radius = LEN_S cm to \-60 
 "Salinity measurements", using 5 degrees annotation/tick interval and 1 degree gridlines, try
 .br
 .sp
-psbasemap \fB\-R\fP-45/45/-90/-60 SCALE_S1 \fB\-B\fP5\fBg\fP1:."Salinity measurements": > stereo1.ps
+psbasemap \fB\-R\fP-45/45/-90/-60 SCALE_S1 \fB\-B\fP5\fBg\fP5:."Salinity measurements": > stereo1.ps
 .br
 .sp
 To make a LEN_S-cm-wide stereographic basemap for Australia from an arbitrary view point (not the poles), and use a
@@ -240,7 +240,7 @@ psbasemap \fB\-R\fP0/360/-90/90 \fB\-Jh\fP180/1:200000000 \fB\-B\fP30\fBg\fP30/1
 To make a sinusiodal world map centered on Greenwich, with a scale along the equator of LEN_I inch/degree, try
 .br
 .sp
-psbasemap \fB\-R\fP0/360/-90/90 SCALE_I \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Sinusoidal": > sinus1.ps
+psbasemap \fB\-R\fP-180/180/-90/90 SCALE_I \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Sinusoidal": > sinus1.ps
 .br
 .sp
 To make an interrupted sinusiodal world map with breaks at 160W, 20W, and 60E, with a scale along the equator of 0.02 inch/degree, try the following sequence of commands:

@@ -3,7 +3,7 @@
 blockmedian \- filter to block average (x,y,z) data by L1 norm.
 .SH SYNOPSIS
 \fBblockmedian\fP [ \fIxyz[w]file(s)\fP ] \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]]  
-\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-C\fP ] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP ] [ \fB\-Q\fP ] [ \fB\-V\fP ] 
+\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-C\fP ] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-Q\fP ] [ \fB\-V\fP ] 
 [ \fB\-W\fP[\fBio\fP] ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBblockmedian\fP reads arbitrarily located (x,y,z) triples [or optionally weighted
@@ -34,10 +34,6 @@ location.  For example, with \fB\-R\fP10/15/10/15 and and \fB\-I\fP1:  with the 
 (x,y) < 11 is one of 25 blocks; without it 9.5 <= (x,y) < 10.5 is one of 36 blocks.
 #include "explain_-H.txt"
 Not used with binary data.
-.TP
-.B \-L
-Indicates that the x column contains longitudes, which may differ from the region
-in \fB\-R\fP by [multiples of] 360 degrees [Default assumes no periodicity].
 .TP
 .B \-Q
 (Quicker) Finds median z and (x, y) at that z [Default finds median x, median y, median z].
