@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.17 2001-09-12 19:35:08 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.18 2001-09-12 21:54:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -185,8 +185,6 @@ void GMT_tx_axis (double x0, double y0, double length, double val0, double val1,
 	struct GMT_MOMENT_INTERVAL I, Inext;
 	char string[GMT_CALSTRING_LENGTH];
 	
-	fprintf (stderr, "%s: GMT_tx_axis not implemented yet\n", GMT_program);
-
 	ps_setfont (gmtdefs.anot_font);
 	
 	/* Ready to draw axis */
@@ -304,12 +302,12 @@ void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct TIME_
 		case 'u':	/* 2-digit ISO week */		
 			sprintf (string, "%2.2d\0", calendar.iso_w);
 			break;
-		case 'K':	/* ISO year, week, day via date format */
-			GMT_format_calendar (string, CNULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
-			break;
-		case 'k':	/* Weekday name */
+		case 'K':	/*  Weekday name */
 			if (T->upper_case) GMT_str_toupper (GMT_time_language.day_name[calendar.iso_d%7][T->flavor]);
 			sprintf (string, "%s\0", GMT_time_language.day_name[calendar.iso_d%7][T->flavor]);
+			break;
+		case 'k':	/* Day of the month */
+			sprintf (string, "%2.2d\0", calendar.day_m);
 			break;
 		case 'D':	/* Day, via date format */
 			GMT_format_calendar (string, CNULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
@@ -318,7 +316,7 @@ void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct TIME_
 			if (P->date.day_of_year)
 				sprintf (string, "%3.3d\0", calendar.day_y);
 			else
-				sprintf (string, "%3.3d\0", calendar.day_m);
+				sprintf (string, "%2.2d\0", calendar.day_m);
 			break;
 		case 'H':	/* Hours via clock format */
 			GMT_format_calendar (CNULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
