@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.5 2001-03-19 18:15:08 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.6 2001-04-17 23:48:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -985,7 +985,7 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case 14:
 			ival = atoi (value);
-			if ((ival%10) >= 0 && (ival%10) <= 5)	/* Mod 10 since we may have added 10 to get big degree symbol */
+			if ((ival%100) >= 0 && (ival%100) <= 11)	/* Mod 100 since we may have added 100 to get big degree symbol */
 				gmtdefs.degree_format = ival;
 			else
 				error = TRUE;
