@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-#       $Id: gmt_form.pl,v 1.7 2002-10-01 04:30:46 pwessel Exp $
+#       $Id: gmt_form.pl,v 1.8 2003-09-23 18:47:49 pwessel Exp $
 
 $webmaster = "gmt-team\@hawaii\.edu";
 
@@ -31,7 +31,7 @@ if ($lat_dir eq "S") {
 # Write gmt registration file
 
 open (TMPFILE, ">>/tmp/gmtregistration") || die "Cannot write to tmp/gmtregistration";
-printf TMPFILE "%lg\t%lg\n", $lon_g, $lat_g;
+printf TMPFILE "%g\t%g\n", $lon_g, $lat_g;
 close (TMPFILE);
 print <<EOF;
 <HTML>
@@ -41,7 +41,7 @@ print <<EOF;
 <h2><center>Coordinates successfully received</center></h2>
 We have recorded your site coordinates as<P>
 EOF
-printf "<B>Longitude: %lg  Latitude: %lg</B><P>\n", $lon_g, $lat_g;
+printf "<B>Longitude: %g  Latitude: %g</B><P>\n", $lon_g, $lat_g;
 print <<EOF;
 The usage map is updated daily so please check back to see if your location was added to
 the map.  Thank you for participating.
