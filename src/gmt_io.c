@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.8 2001-08-17 00:31:36 wsmith Exp $
+ *	$Id: gmt_io.c,v 1.9 2001-08-17 19:52:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -109,8 +109,8 @@ int GMT_bin_float_output (FILE *fp, int n, double *ptr);	/* Write binary float o
 void GMT_adjust_periodic ();					/* Add/sub 360 as appropriate */
 void GMT_decode_calclock_formats ();
 void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S);
-void GMT_date_C_format (char *template, struct GMT_DATE_IO *S);
-void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S);
+void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode);
+void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode);
 
 int	GMT_scanf_clock (char *s, double *val);
 int	GMT_scanf_calendar (char *s, GMT_cal_rd *rd);
@@ -921,7 +921,10 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S)
 	for (i = order = 0; i < strlen (text); i++) {
 		switch (text[i]) {
 			case 'y':	/* Year */
-				if (S->order[0] < 0) S->order[0] = order++;
+				if (S->order[0] < 0)		/* First time we encounter a y */
+					S->order[0] = order++;
+				else if (text[i-1] != 'y')	/* Done it before, previous char must be y */
+					error++;
 				n_y++;
 				break;
 			case 'm':	/* Month */
@@ -957,12 +960,12 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S)
 	S->truncated_cal_is_ok = TRUE;		/* May change in the next loop */
 	for (i = 1, last = S->order[0]; S->truncated_cal_is_ok && i < 4; i++) {
 		if (S->order[i] == -1) continue;
-		if (S->order[i] > last) S->truncated_cal_is_ok = FALSE;
+		if (S->order[i] < last) S->truncated_cal_is_ok = FALSE;
 		last = S->order[i];
 	}
 	error += (S->iso_calendar && !S->truncated_cal_is_ok);
 	error += (!(n_y == 4 || n_y == 2));
-	error += (!S->iso_calendar && ((n_m == 2 && n_d == 2) || n_j == 3));
+	error += (!S->iso_calendar && !((n_m == 2 && n_d == 2) || n_j == 3));
 	error += (S->iso_calendar && n_w != 2);		/* Gotta have 2 ww */
 	error += (S->iso_calendar && n_d != 1);		/* Gotta have 2 ww */
 	error += (!S->iso_calendar && n_w != 0);	/* Should have no w if there is no W */
@@ -1009,17 +1012,18 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 
 void GMT_decode_calclock_formats ()
 {
-	GMT_date_C_format (gmtdefs.input_date_format, &GMT_io.date_input);
-	GMT_date_C_format (gmtdefs.output_date_format, &GMT_io.date_output);
-	GMT_clock_C_format (gmtdefs.input_clock_format, &GMT_io.clock_input);
-	GMT_clock_C_format (gmtdefs.output_clock_format, &GMT_io.clock_output);
+	GMT_date_C_format (gmtdefs.input_date_format, &GMT_io.date_input, 0);
+	GMT_date_C_format (gmtdefs.output_date_format, &GMT_io.date_output, 1);
+	GMT_clock_C_format (gmtdefs.input_clock_format, &GMT_io.clock_input, 0);
+	GMT_clock_C_format (gmtdefs.output_clock_format, &GMT_io.clock_output, 1);
 }
 
-void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S)
+void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
 {
 	/* Determine the order of H, M, S in input and output clock strings,
 	 * as well as the number of decimals in output seconds (if any), and
 	 * if a 12- or 24-hour clock is used.
+	 * mode is 0 for input and 1 for output format
 	 */
 	 
 	char *c;
@@ -1059,26 +1063,32 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S)
 		strcpy (S->ampm_suffix[1], "P.M.");
 	}
 	
-	/* Craft the actual C-format to use for output clock strings */
+	/* Craft the actual C-format to use for input/output clock strings */
 		
 	if (S->order[0] >= 0) {	/* OK, at least hours is needed */
 		char fmt[32];
-		sprintf (S->format, "%%2.2d\0");
+		(mode) ? sprintf (S->format, "%%2.2d\0") : sprintf (S->format, "%%2d\0");
 		if (S->order[1] >= 0) {	/* Need minutes too*/
 			if (S->delimeter[0]) strcat (S->format, S->delimeter);
-			sprintf (fmt, "%%2.2d\0");
+			(mode) ? sprintf (fmt, "%%2.2d\0") : sprintf (fmt, "%%2d\0");
 			strcat (S->format, fmt);
 			if (S->order[2] >= 0) {	/* .. and seconds */
 				if (S->delimeter[0]) strcat (S->format, S->delimeter);
-				sprintf (fmt, "%%2.2d\0");
-				strcat (S->format, fmt);
-				if (S->n_sec_decimals) {	/* even add format for fractions of second */
-					sprintf (fmt, ".%%%s.%sd\0", S->n_sec_decimals, S->n_sec_decimals);
+				if (mode) {	/* Output format */
+					sprintf (fmt, "%%2.2d\0");
+					strcat (S->format, fmt);
+					if (S->n_sec_decimals) {	/* even add format for fractions of second */
+						sprintf (fmt, ".%%%s.%sd\0", S->n_sec_decimals, S->n_sec_decimals);
+						strcat (S->format, fmt);
+					}
+				}
+				else {		/* Input format */
+					sprintf (fmt, "%%lf\0");
 					strcat (S->format, fmt);
 				}
 			}
 		}
-		if (S->twelwe_hr_clock) {	/* Finally add %s for the am, pm string */
+		if (mode && S->twelwe_hr_clock) {	/* Finally add %s for the am, pm string */
 			sprintf (fmt, "%%s\0");
 			strcat (S->format, fmt);
 		}
@@ -1087,9 +1097,10 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S)
 	fprintf (stderr, "%s\n", S->format);
 }
 
-void GMT_date_C_format (char *template, struct GMT_DATE_IO *S)
+void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 {
-	/* Determine the order of Y, M, D, J in input and output date strings,
+	/* Determine the order of Y, M, D, J in input and output date strings.
+	* mode is 0 for input and 1 for output
 	 */
 	 
 	char *c, fmt[32];
@@ -1103,11 +1114,11 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S)
 
 	if (S->order[0] >= 0 && S->iso_calendar) {	/* OK, at least ISO year is needed */
 		k = (S->Y2K_year) ? 2 : 4;
-		sprintf (S->format, "%%%d.%dd\0", k, k);
+		(mode) ? sprintf (S->format, "%%%d.%dd\0", k, k) : sprintf (S->format, "%%%dd\0", k);
 		if (S->order[1] >= 0) {	/* Need ISO week */
 			if (S->delimeter[0]) strcat (S->format, S->delimeter);
 			strcat (S->format, "W");
-			sprintf (fmt, "%%2.2d\0");
+			(mode) ? sprintf (fmt, "%%2.2d\0") : sprintf (fmt, "%%2d\0");
 			strcat (S->format, fmt);
 			if (S->order[2] >= 0) {	/* and ISO day of week */
 				if (S->delimeter[0]) strcat (S->format, S->delimeter);
@@ -1118,16 +1129,16 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S)
 	}
 	else if (S->order[0] >= 0) {	/* OK, at least one item is needed */
 		k = (S->order[0] == 0 && !S->Y2K_year) ? 4 : 2;
-		sprintf (S->format, "%%%d.%dd\0", k, k);
+		(mode) ? sprintf (S->format, "%%%d.%dd\0", k, k) : sprintf (S->format, "%%%dd\0", k);
 		if (S->order[1] >= 0) {	/* Need more items */
 			if (S->delimeter[0]) strcat (S->format, S->delimeter);
 			k = (S->order[1] == 0 && !S->Y2K_year) ? 4 : 2;
-			sprintf (fmt, "%%%d.%dd\0", k, k);
+			(mode) ? sprintf (fmt, "%%%d.%dd\0", k, k) : sprintf (fmt, "%%%dd\0", k);
 			strcat (S->format, fmt);
 			if (S->order[2] >= 0) {	/* .. and even more */
 				if (S->delimeter[0]) strcat (S->format, S->delimeter);
 				k = (S->order[2] == 0 && !S->Y2K_year) ? 4 : 2;
-				sprintf (fmt, "%%%d.%dd\0", k, k);
+				(mode) ? sprintf (fmt, "%%%d.%dd\0", k, k) : sprintf (fmt, "%%%dd\0", k);
 				strcat (S->format, fmt);
 			}
 		}
