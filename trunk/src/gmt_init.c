@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.61 2002-01-04 22:30:53 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.62 2002-01-05 00:22:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1068,9 +1068,9 @@ int GMT_setparameter (char *keyword, char *value)
 		case GMTCASE_ANOT_FONT_SIZE:
 			if (value[0] == '+') GMT_force_resize = TRUE;	/* Turning on autoscaling of font sizes and ticklengths */
 			if (value[0] != '+' && GMT_force_resize) GMT_annot_special = TRUE;	/* gmtset tries to turn off autoscaling - must report saved values but reset this one */
-			val = atof (value);
-			if (val > 0.0)
-				gmtdefs.annot_font_size = val;
+			dval = atof (value);
+			if (dval > 0.0)
+				gmtdefs.annot_font_size = dval;
 			else
 				error = TRUE;
 			break;
@@ -1243,9 +1243,9 @@ int GMT_setparameter (char *keyword, char *value)
 				gmtdefs.header_font = ival;
 			break;
 		case GMTCASE_HEADER_FONT_SIZE:
-			val = atof (value);
-			if (val > 0.0)
-				save_header_size = gmtdefs.header_font_size = val;
+			dval = atof (value);
+			if (dval > 0.0)
+				save_header_size = gmtdefs.header_font_size = dval;
 			else
 				error = TRUE;
 			break;
@@ -1308,9 +1308,9 @@ int GMT_setparameter (char *keyword, char *value)
 				gmtdefs.label_font = ival;
 			break;
 		case GMTCASE_LABEL_FONT_SIZE:
-			val = atof (value);
-			if (val > 0.0)
-				save_label_size = gmtdefs.label_font_size = val;
+			dval = atof (value);
+			if (dval > 0.0)
+				save_label_size = gmtdefs.label_font_size = dval;
 			else
 				error = TRUE;
 			break;
@@ -1586,9 +1586,9 @@ int GMT_setparameter (char *keyword, char *value)
 				gmtdefs.annot_font2 = ival;
 			break;
 		case GMTCASE_ANNOT_FONT2_SIZE:
-			val = atof (value);
-			if (val > 0.0)
-				save_annot_size2 = gmtdefs.annot_font2_size = val;
+			dval = atof (value);
+			if (dval > 0.0)
+				save_annot_size2 = gmtdefs.annot_font2_size = dval;
 			else
 				error = TRUE;
 			break;
