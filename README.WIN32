@@ -1,4 +1,4 @@
-	$Id: README.WIN32,v 1.3 2001-03-07 20:29:12 pwessel Exp $
+	$Id: README.WIN32,v 1.4 2001-03-27 22:40:08 pwessel Exp $
 
 README file for GMT 3.4 Distribution for Win32
 This version contains dynamic executables with the DLL support.
@@ -14,7 +14,7 @@ To use GMT on your system you must
    GMT ftp sites.
 
 2a Win95/98:
- . Edit SRC/GMTENV.BAT and change the values for GMTHOME, HOME, and NETCDF
+   Edit SRC/GMTENV.BAT and change the values for GMTHOME, HOME, and NETCDF
    if your setup differs from what these defaults values indicate.
    Execute GMTENV.BAT or place it in autoexec.bat so it is run each
    time you reboot your machine.
@@ -40,7 +40,7 @@ a bookmark for the file GMT/www/gmt/gmt_sevices.html.  Should you
 want to try the tutorial examples you will need GMT_tut.zip.
 PostScript version of the documentation is in GMT_ps.zip and the
 UNIX man pages are in GMT_man.zip.  Most Windows users will only
-need the HTML and PDF versions.
+need the HTML or PDF versions.
 
 If you want the high and/or full resolution coastlines, political borders,
 and rivers you must obtain GMT_high.zip and GMT_full.zip as well.
@@ -54,4 +54,4 @@ To view your GMT PostScript or EPS plots, we recommend you install gsview
 
 Paul Wessel
 Walter H. F. Smith
-07-MAR-2001
+23-MAR-2001

@@ -1,6 +1,6 @@
 #	Information for installing GMT 3.4
 #
-#		$Id: README,v 1.6 2001-03-08 00:59:19 pwessel Exp $ 
+#		$Id: README,v 1.7 2001-03-27 22:40:08 pwessel Exp $ 
 #
 #	Copyright (c) 1991-2001, P. Wessel & W. H. F. Smith
 #
@@ -115,11 +115,11 @@ taken care of by our install script:
      
 After install, place the line
 
-setenv NETCDFHOME /pathtonetcdf directory
+setenv NETCDFHOME /path_to_netcdf_directory
 
 in your .login file.  This path is usually something like
 /usr/local/netcdf-3.4 depending on where you put it.
-The GMT makefiles will use $NETCDFHOME to fine the library.
+The GMT makefiles will use $NETCDFHOME to find the library.
 
 
 2. Install support data
@@ -161,7 +161,7 @@ the site that is closest to you to minimize transmission times:
 	Site				FTP address
 --------------------------------------------------------------
 SOEST, U. of Hawaii			gmt.soest.hawaii.edu
-Lab for Satellite Altimetry, NOAA	raptor.grdl.noaa.gov
+Lab for Satellite Altimetry, NOAA	falcon.grdl.noaa.gov
 IAG-USP, U. of Sao Paulo, BRAZIL	ftp.iag.usp.br
 Dep. Geology, U. in Oslo, Norway	ftp.geologi.uio.no
 ISV, Hokkaido U, Sapporo, JAPAN		ftp.eos.hokudai.ac.jp
@@ -460,7 +460,7 @@ src directory using
 Before running programs, there are a few things you should do/know:
 
   - Read carefully the documentation for the gmt system.  This can be
-    found as both PS and HTML files in the www/gmt/doc directory.
+    found as both PS, PDF, and HTML files in the www/gmt/doc directory.
     The successful operation of gmt-programs depends directly on your
     understanding of how gmt "works", its option lists, I/O, and composite
     plot mechanisms.  Then, before running individual gmt programs, read
@@ -493,10 +493,8 @@ it to us (gmt@soest.hawaii.edu) rather than trying to fix it yourself
 so that we, and through us, other users may benefit from your find.
 Make sure you provide us with enough information so that we can recreate
 the problem.
-	Please fill out and mail us on of the registration licences which you
-can find as PostScript files in the doc directory.  Alternatively,
-pleas register via the GMT web page (gmt.soest.hawaii.edu).
-	Two mailing lists of interrest to GMT users are available:
+	Please register via the GMT web page (gmt.soest.hawaii.edu).
+Two mailing lists of interrest to GMT users are available:
 gmtgroup@soest allows us to notify registrered users in the event of bugfixes
 and/or new releases.  A separate mailing list (gmthelp@soest.hawaii.edu) exists
 for GMT users who have questions about GMT intallation and usage.  If you want
@@ -507,12 +505,11 @@ subscribe gmthelp <yourname, not email address>
 subscribe gmtgroup <yourname, not email address>
 
 You may post messages to gmthelp while gmtgroup is more of a one-way street
-for us to inform users of bug fixes and upgrades.
+for us to inform users of bug fixes and upgrades.  The online registration
+also lets you subscribe to the two mailinglists.
 
 15. Ordering the GMT package
 ----------------------------
-
-See http://gmt.soest.hawaii.edu for available ftp sites.
 
 Should you or someone you know without net-access need to obtain GMT:
 Geoware makes and distributes CD-Rs with the GMT package and many
