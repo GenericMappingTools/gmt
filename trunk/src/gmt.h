@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.61 2004-04-20 18:29:36 pwessel Exp $
+ *	$Id: gmt.h,v 1.62 2004-04-22 18:31:18 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -417,12 +417,16 @@ struct MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */
 	double scale_lon;	/* Point where scale should apply */
 	double scale_lat;	/* Point where scale should apply */
 	double length;		/* How long the scale is in measure units */
+	BOOLEAN boxdraw;	/* TRUE if we want to plot a rectangle behind the scale */
+	BOOLEAN boxfill;	/* TRUE if we want to paint/fill a rectangle behind the scale */
 	BOOLEAN plot;		/* TRUE if we want to draw the scale */
 	BOOLEAN fancy;		/* TRUE for a fancy map scale */
 	BOOLEAN gave_xy;	/* TRUE if x0, y0 was given in cartesian map coordinates and not lon/lat */
 	char measure;		/* The unit, i.e., m (miles), n (nautical miles), or k (kilometers) */
 	char justify;		/* Placement of label: t(op), b(ottom), l(eft), r(ight), u(nit) */
 	char label[64];		/* Alternative user-specified label */
+	struct GMT_FILL fill;	/* Fill to use for background rectangle */
+	struct GMT_PEN pen;	/* Pen to use for background rectangle */
 };
 
 struct GMT_FONT {		/* Information for each font */
