@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.25 2001-08-28 19:25:11 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.26 2001-08-29 04:34:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -75,6 +75,7 @@ int GMT_get_time_system (char *name);
 void GMT_get_time_language (char *name);
 void GMT_init_time_system_structure ();
 int GMT_scanf_epoch (char *s, double *t0);
+void GMT_backwards_compatibility ();
 
 /* Local variables to gmt_init.c */
 
@@ -82,6 +83,15 @@ struct GMT_HASH hashnode[HASH_SIZE];
 BOOLEAN GMT_x_abs = FALSE, GMT_y_abs = FALSE;
 BOOLEAN GMT_got_frame_rgb;
 FILE *GMT_fp_history;	/* For .gmtcommands file */
+
+struct GMT_BACKWARD {	/* Used to ensure backwards compatibility */
+	BOOLEAN got_old_plot_format;		/* TRUE if DEGREE_FORMAT was decoded */
+	BOOLEAN got_old_degree_symbol;		/* TRUE if DEGREE_FORMAT was decoded */
+	BOOLEAN got_new_plot_format;		/* TRUE if PLOT_DEGREE_FORMAT was decoded */
+	BOOLEAN got_new_degree_symbol;		/* TRUE if DEGREE_SYMBOL was decoded */
+	BOOLEAN got_old_want_euro;		/* TRUE if WANT_EURO_FONTS was decoded */
+	BOOLEAN got_new_char_encoding;		/* TRUE if CHAR_ENCODING was decoded */
+} GMT_backward;
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 	
@@ -869,7 +879,17 @@ int GMT_loaddefaults (char *file)
 	}
 	
 	fclose (fp);
-	if (gmtdefs.want_euro_font) gmtdefs.page_orientation += 2;
+	GMT_backwards_compatibility ();
+	switch (gmtdefs.char_encoding) {
+		case 1:
+			gmtdefs.page_orientation += 2;
+			break;
+		case 2:
+			gmtdefs.page_orientation += 16;
+			break;
+		default:
+			break;
+	}
 	if (gmtdefs.ps_heximage) gmtdefs.page_orientation += 4;
 
 	if (error) fprintf (stderr, "GMT:  %d conversion errors in file %s!\n", error, file);
@@ -887,7 +907,6 @@ void GMT_setdefaults (int argc, char **argv)
 
 	GMT_got_frame_rgb = FALSE;	/* "Listen" for changes to basemap_frame RGB */
 
-	/* for (j = 1; j < argc; j += 2) error += GMT_setparameter (argv[j], argv[j+1]); */
 	j = 1;
 	while (j < argc) {	/* j points to parameter, k to value */
 		k = j + 1;
@@ -905,7 +924,17 @@ void GMT_setdefaults (int argc, char **argv)
 		j = k + 1;	/* Goto next parameter */
 	}
 
-	if (gmtdefs.want_euro_font) gmtdefs.page_orientation += 2;
+	GMT_backwards_compatibility ();
+	switch (gmtdefs.char_encoding) {
+		case 1:
+			gmtdefs.page_orientation += 2;
+			break;
+		case 2:
+			gmtdefs.page_orientation += 16;
+			break;
+		default:
+			break;
+	}
 	if (gmtdefs.ps_heximage) gmtdefs.page_orientation += 4;
 	
 	if (GMT_got_frame_rgb) {	/* Must enforce change of frame, tick, and grid pen rgb */
@@ -915,6 +944,59 @@ void GMT_setdefaults (int argc, char **argv)
 	}
 	
 	if (error) fprintf (stderr, "gmtset:  %d conversion errors\n", error);
+}
+
+void GMT_backwards_compatibility () {
+	/* Convert old GMT 3.4 DEGREE_FORMAT settings to the new PLOT_DEGREE_FORMAT string and DEGREE_SYMBOL setting */
+	
+	char string[32];
+	int k;
+	
+	if (GMT_backward.got_old_plot_format && GMT_backward.got_new_plot_format) {	/* Got both old and new */
+		fprintf (stderr, "%s: WARNING: Both old-style DEGREE_FORMAT and PLOT_DEGREE_FORMAT present in .gmtdefaults\n", GMT_program);
+		fprintf (stderr, "%s: WARNING: PLOT_DEGREE_FORMAT overrides old DEGREE_FORMAT\n", GMT_program);
+	}
+	else if (GMT_backward.got_old_plot_format && !GMT_backward.got_new_plot_format) {	/* Must decode old DEGREE_FORMAT */
+		fprintf (stderr, "%s: WARNING: DEGREE_FORMAT decoded but is obsolete.  Please use PLOT_DEGREE_FORMAT\n", GMT_program);
+		memset ((void *)string, 0, 32);
+		k = gmtdefs.degree_format % 100;
+		if (k == 0 || k == 4 || k == 6 || k == 8)	/* These were 0-360 values */
+			strcpy (string, "+");
+		else if (k >= 12 && k <= 17)			/* These were -360 to 0 numbers */
+			strcpy (string, "-");
+		/* else we do nothing and get -180/+180 */
+	
+		if ((k >= 4 && k <= 7) || k == 13 || k == 16)		/* Decimal degrees using D_FORMAT */
+			strcat (string, "D");
+		else if (( k >= 8 && k <= 11) || k == 14 || k == 17)	 /* Degrees and decimal minutes - pick 1 decimal */
+			strcat (string, "ddd:mm.x");
+		else
+			strcat (string, "ddd:mm:ss");			/* Standard dd mm ss */
+		if (k == 2 || k == 10)					/* Abs value */
+			strcat (string, "A");
+		else if (k == 3 || k == 6 || k == 7 || k == 11 || (k >= 15 && k <= 17))	/* Append WESN */
+			strcat (string, "F");
+		strcpy (gmtdefs.plot_degree_format, string);
+	}
+	if (GMT_backward.got_old_degree_symbol && GMT_backward.got_new_degree_symbol) {	/* Got both old and new */
+		fprintf (stderr, "%s: WARNING: Both old-style DEGREE_FORMAT and DEGREE_SYMBOL present in .gmtdefaults\n", GMT_program);
+		fprintf (stderr, "%s: WARNING: DEGREE_SYMBOL overrides old DEGREE_FORMAT\n", GMT_program);
+	}
+	else if (GMT_backward.got_old_degree_symbol && !GMT_backward.got_new_degree_symbol) {	/* Must decode old DEGREE_FORMAT */
+		fprintf (stderr, "%s: WARNING: DEGREE_FORMAT decoded but is obsolete.  Please use DEGREE_SYMBOL\n", GMT_program);
+		if (gmtdefs.degree_format >= 1000)	/* No degree symbol */
+			gmtdefs.degree_symbol = 3;
+		else if (gmtdefs.degree_format >= 100)	/* Large degree symbol */
+			gmtdefs.degree_symbol = 1;
+	}
+	if (GMT_backward.got_old_want_euro && GMT_backward.got_new_char_encoding) {	/* Got both old and new */
+		fprintf (stderr, "%s: WARNING: Both old-style WANT_EURO_FONT and CHAR_ENCODING present in .gmtdefaults\n", GMT_program);
+		fprintf (stderr, "%s: WARNING: CHAR_ENCODING overrides old WANT_EURO_FONT\n", GMT_program);
+	}
+	else if (GMT_backward.got_old_want_euro && GMT_backward.got_new_char_encoding)  {	/* Must decode old WANT_EURO_FONT */
+		fprintf (stderr, "%s: WARNING: WANT_EURO_FONT decoded but is obsolete.  Please use CHAR_ENCODING\n", GMT_program);
+		gmtdefs.char_encoding = gmtdefs.want_euro_font;
+	}
 }
 
 int GMT_setparameter (char *keyword, char *value)
@@ -1064,6 +1146,8 @@ int GMT_setparameter (char *keyword, char *value)
 				gmtdefs.degree_format = ival;
 			else
 				error = TRUE;
+			GMT_backward.got_old_plot_format = TRUE;
+			GMT_backward.got_old_degree_symbol = (ival >= 100);
 			break;
 		case 15:
 			ival = atoi (value);
@@ -1388,6 +1472,7 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case 65:
 			strncpy (gmtdefs.plot_degree_format, value, 32);
+			GMT_backward.got_new_plot_format = TRUE;
 			break;
 		case 66:
 			error = true_false_or_error (lower_value, &gmtdefs.time_is_interval);
@@ -1445,16 +1530,17 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case 76:
 			if (value[0] == '\0' || !strcmp (value, "ring") || !strcmp (value, "RING"))	/* DEFAULT */
-				gmtdefs.degree_format = 0;
+				gmtdefs.degree_symbol = 0;
 			else if (!strcmp (value, "degree") || !strcmp (value, "DEGREE"))
-				gmtdefs.degree_format = 1;
+				gmtdefs.degree_symbol = 1;
 			else if (!strcmp (value, "colon") || !strcmp (value, "COLON"))
-				gmtdefs.degree_format = 2;
+				gmtdefs.degree_symbol = 2;
 			else if (!strcmp (value, "none") || !strcmp (value, "NONE"))
-				gmtdefs.degree_format = 3;
+				gmtdefs.degree_symbol = 3;
 			else
 				error = TRUE;
 			break;
+			GMT_backward.got_new_degree_symbol = TRUE;
 
 		default:
 			error = TRUE;
@@ -1532,7 +1618,7 @@ int GMT_savedefaults (char *file)
 		fprintf (fp, "tiles\n");
 	(gmtdefs.color_model == GMT_HSV) ? fprintf (fp, "COLOR_MODEL		= hsv\n") : fprintf (fp, "COLOR_MODEL		= rgb\n");
 	fprintf (fp, "D_FORMAT		= %s\n", gmtdefs.d_format);
-	fprintf (fp, "DEGREE_FORMAT		= %d\n", gmtdefs.degree_format);
+	/* fprintf (fp, "DEGREE_FORMAT		= %d\n", gmtdefs.degree_format); */
 	fprintf (fp, "DOTS_PR_INCH		= %d\n", gmtdefs.dpi);
 	fprintf (fp, "ELLIPSOID		= %s\n", gmtdefs.ellipse[gmtdefs.ellipsoid].name);
 	fprintf (fp, "FRAME_PEN		= %s\n", GMT_putpen (&gmtdefs.frame_pen));
@@ -1584,7 +1670,7 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "UNIX_TIME_POS		= %lg%c/%lg%c\n", gmtdefs.unix_time_pos[0] * s, u, gmtdefs.unix_time_pos[1] * s, u);
 	fprintf (fp, "VECTOR_SHAPE		= %lg\n", gmtdefs.vector_shape);
 	(gmtdefs.verbose) ? fprintf (fp, "VERBOSE			= TRUE\n") : fprintf (fp, "VERBOSE			= FALSE\n");
-	(gmtdefs.want_euro_font) ? fprintf (fp, "WANT_EURO_FONT		= TRUE\n") : fprintf (fp, "WANT_EURO_FONT		= FALSE\n");
+	/* (gmtdefs.want_euro_font) ? fprintf (fp, "WANT_EURO_FONT		= TRUE\n") : fprintf (fp, "WANT_EURO_FONT		= FALSE\n"); */
 	fprintf (fp, "X_AXIS_LENGTH		= %lg%c\n", gmtdefs.x_axis_length * s, u);
 	fprintf (fp, "Y_AXIS_LENGTH		= %lg%c\n", gmtdefs.y_axis_length * s, u);
 	fprintf (fp, "X_ORIGIN		= %lg%c\n", gmtdefs.x_origin * s, u);

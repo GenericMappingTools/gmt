@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.18 2001-08-28 21:46:37 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.19 2001-08-29 04:34:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -123,6 +123,7 @@ int	GMT_scanf_ISO_calendar (char *s, GMT_cal_rd *rd);
 int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd);
 int	GMT_scanf_geo (char *s, double *val);
 int	GMT_scanf_float (char *s, double *val);
+void GMT_lon_range_adjust (int range, double *lon);
 
 
 /* Table I/O routines for ascii and binary io */
@@ -547,20 +548,7 @@ int GMT_write_lon_output (FILE *fp, double lon)
 	BOOLEAN seconds;
 	double x;
 	
-	switch (GMT_io.geo.range) {	/* Adjust to the desired range */
-		case 0:
-			while (lon < 0.0) lon += 360.0;
-			while (lon >= 360.0) lon -= 360.0;
-			break;
-		case 1:
-			while (lon <= -360.0) lon += 360.0;
-			while (lon > 0) lon -= 360.0;
-			break;
-		default:
-			while (lon < -180.0) lon += 360.0;
-			while (lon > 180.0) lon -= 360.0;
-			break;
-	}
+	GMT_lon_range_adjust (GMT_io.geo.range, &lon);
 	if (GMT_io.geo.decimal) return (fprintf (fp, gmtdefs.d_format, lon));	/* Easy */
 	
 	if (GMT_io.geo.wesn) {	/* Trailing WESN */
@@ -584,6 +572,24 @@ int GMT_write_lon_output (FILE *fp, double lon)
 		e = fprintf (fp, GMT_io.geo.x_format, d, m, letter);
 		
 	return (e);
+}
+
+void GMT_lon_range_adjust (int range, double *lon)
+{
+	switch (range) {	/* Adjust to the desired range */
+		case 0:
+			while ((*lon) < 0.0) (*lon) += 360.0;
+			while ((*lon) >= 360.0) (*lon) -= 360.0;
+			break;
+		case 1:
+			while ((*lon) <= -360.0) (*lon) += 360.0;
+			while ((*lon) > 0) (*lon) -= 360.0;
+			break;
+		default:
+			while ((*lon) < -180.0) (*lon) += 360.0;
+			while ((*lon) > 180.0) (*lon) -= 360.0;
+			break;
+	}
 }
 
 int GMT_write_lat_output (FILE *fp, double lat)
@@ -645,7 +651,7 @@ void GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  
 		fmin = min - (double)imin;  			/* Leftover fractional minute */
 		*d = imin / GMT_DEG2MIN_I;			/* Integer degrees */
 		imin -= ((*d) * GMT_DEG2MIN_I);			/* Left-over seconds in the last degree */
-		*m = imin / GMT_DEG2MIN_I;			/* Integer minutes */
+		*m = imin;					/* Integer minutes */
 		*s = 0;						/* No seconds */
 		*ix = irint (fmin * fact);			/* Fractional minutes scaled to integer */
 	}
@@ -1632,11 +1638,16 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 			strcat (S->x_format, GMT_degree_symbol[gmtdefs.degree_symbol]);
 			strcat (S->y_format, GMT_degree_symbol[gmtdefs.degree_symbol]);
 		}
+		strcat (S->x_format, "%c\0");
+		strcat (S->y_format, "%c\0");
 	}
 	else {			/* Must cover all the 6 forms of dd[:mm[:ss]][.xxx] */
 		char fmt[32];
+		int which;
 		
 		for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) GMT_plot_format[i][j] = (char *) GMT_memory (VNULL, (size_t)32, sizeof (char), GMT_program);
+		
+		which = (gmtdefs.degree_symbol == 2) ? 1 : 0;
 		
 		/* Level 0: degrees only. index 0 is integer degrees, index 1 is [possibly] fractional degrees */
 		
@@ -1665,8 +1676,8 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 			sprintf (fmt, "%%2.2d\0");
 		strcat (GMT_plot_format[1][1], fmt);
 		if (gmtdefs.degree_symbol < 2) {	/* We want the minute symbol appended */
-			strcat (GMT_plot_format[1][0], GMT_minute_symbol);
-			strcat (GMT_plot_format[1][1], GMT_minute_symbol);
+			strcat (GMT_plot_format[1][0], GMT_minute_symbol[which]);
+			strcat (GMT_plot_format[1][1], GMT_minute_symbol[which]);
 		}
 
 		/* Level 2: degrees, minutes, and seconds. index 0 is integer seconds, index 1 is [possibly] fractional seconds  */
@@ -1679,9 +1690,9 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 		}
 		strcat (GMT_plot_format[2][0], "%2.2d");
 		strcat (GMT_plot_format[2][1], "%2.2d");
-		if (gmtdefs.degree_symbol < 2) {	/* We want the minute symbol appended */
-			strcat (GMT_plot_format[2][0], GMT_minute_symbol);
-			strcat (GMT_plot_format[2][1], GMT_minute_symbol);
+		if (gmtdefs.degree_symbol < 3) {	/* We want the minute symbol appended */
+			strcat (GMT_plot_format[2][0], GMT_minute_symbol[which]);
+			strcat (GMT_plot_format[2][1], GMT_minute_symbol[which]);
 		}
 		strcat (GMT_plot_format[2][0], "%2.2d");
 		if (S->n_sec_decimals > 0)			 /* ddd:mm:ss.xxx format */
@@ -1690,14 +1701,14 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 			sprintf (fmt, "%%2.2d\0");
 		strcat (GMT_plot_format[2][1], fmt);
 		if (gmtdefs.degree_symbol < 2) {	/* We want the second symbol appended */
-			strcat (GMT_plot_format[2][0], GMT_second_symbol);
-			strcat (GMT_plot_format[2][1], GMT_second_symbol);
+			strcat (GMT_plot_format[2][0], GMT_second_symbol[which]);
+			strcat (GMT_plot_format[2][1], GMT_second_symbol[which]);
 		}
 	}
 
 	/* Finally add %c for the W,E,S,N char (or NULL) */
 	
-	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) strcat (GMT_plot_format[i][j], "%%c\0");
+	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) strcat (GMT_plot_format[i][j], "%c\0");
 }
 
 int GMT_decode_coltype (char *arg)
@@ -1968,6 +1979,7 @@ int	GMT_scanf_geo (char *s, double *val) {
 	if (k >= 64) return (GMT_IS_NAN);
 	strncpy (scopy, s, k);	/* Copy all but the suffix  */
 	scopy[k] = 0;
+	ncolons = 0;
 	if ( (p = strpbrk (scopy, "dD")) ) {
 		/* We found a D or d.  */
 		if (strlen(p) < 1 || (strpbrk (&p[1], "dD:") ) ){
@@ -1998,7 +2010,7 @@ int	GMT_scanf_geo (char *s, double *val) {
 			break;
 		case 1:
 			if ( (sscanf(scopy, "%d:%lf", &id, &dm) ) != 2) return (GMT_IS_NAN);
-			dd = (id < 0) ? id + dm * GMT_MIN2DEG : id - dm * GMT_MIN2DEG;
+			dd = (id < 0) ? id - dm * GMT_MIN2DEG : id + dm * GMT_MIN2DEG;
 			break;
 		case 2:
 			if ( (sscanf(scopy, "%d:%d:%lf", &id, &im, &ds) ) != 3) return (GMT_IS_NAN);

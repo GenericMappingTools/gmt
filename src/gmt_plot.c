@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.13 2001-08-23 23:17:08 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.14 2001-08-29 04:34:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3290,7 +3290,7 @@ int GMT_prepare_label (double angle, int side, double x, double y, int type, dou
 	return 0;
 }
 
-void GMT_get_anot_label (double val, char *label, int do_minutes, int do_seconds, int lonlat, BOOLEAN worldmap)
+void old_GMT_get_anot_label (double val, char *label, int do_minutes, int do_seconds, int lonlat, BOOLEAN worldmap)
 /* val:		Degree value of anotation */
 /* label: 	String to hold the final anotation */
 /* do_minutes:	TRUE if degree and minutes are desired, FALSE for just integer degrees */
@@ -3472,6 +3472,92 @@ void GMT_get_anot_label (double val, char *label, int do_minutes, int do_seconds
 				sprintf (label, "%d%s\0", sign * ival, GMT_degree_symbol[which]);
 		}
 	}
+	return;
+}
+
+void GMT_get_anot_label (double val, char *label, int do_minutes, int do_seconds, int lonlat, BOOLEAN worldmap)
+/* val:		Degree value of anotation */
+/* label: 	String to hold the final anotation */
+/* do_minutes:	TRUE if degree and minutes are desired, FALSE for just integer degrees */
+/* do_seconds:	TRUE if degree, minutes, and seconds are desired */
+/* lonlat:	0 = longitudes, 1 = latitudes, 2 non-geographical data passed */
+/* worldmap:	T/F, whatever GMT_world_map is */
+{
+	int fmt, sign, d, m, s, m_sec, level, type;
+	BOOLEAN zero_fix = FALSE;
+	char letter = 0, format[64];
+	
+	if (lonlat == 0) {	/* Fix longitudes range first */
+		GMT_lon_range_adjust (GMT_plot_calclock.geo.range, &val);
+	}
+
+	if (lonlat < 2) {	/* i.e., for geographical data */
+		if (fabs (val - 360.0) < GMT_CONV_LIMIT && !worldmap) val = 0.0;
+		if (fabs (val - 360.0) < GMT_CONV_LIMIT && worldmap && project_info.projection == OBLIQUE_MERC) val = 0.0;
+	}
+
+	fmt = gmtdefs.degree_format % 100;	/* take out the optional 100 or 1000 */
+	if (GMT_plot_calclock.geo.wesn) {
+		if (lonlat == 0) {
+			switch (GMT_plot_calclock.geo.range) {
+				case 0:
+					letter = (fabs (val) < GMT_CONV_LIMIT) ? 0 : 'E';
+					break;
+				case 1:
+					letter = (fabs (val) < GMT_CONV_LIMIT) ? 0 : 'W';
+					break;
+				default:
+					letter = (fabs (val) < GMT_CONV_LIMIT || fabs (val - 180.0) < GMT_CONV_LIMIT) ? 0 : ((val < 0.0) ? 'W' : 'E');
+					break;
+			}
+		}
+		else 
+			letter = (fabs (val) < GMT_CONV_LIMIT) ? 0 : ((val < 0.0) ? 'S' : 'N');
+		val = fabs (val);
+	}
+	else
+		letter = 0;
+	if (GMT_plot_calclock.geo.no_sign) val = fabs (val);
+	sign = (val < 0.0) ? -1 : 1;
+	
+	level = do_minutes + do_seconds;		/* 0, 1, or 2 */
+	type = GMT_plot_calclock.geo.n_sec_decimals;
+	
+	if (fmt == -1 && lonlat) {	/* the r in r-theta */
+		sprintf (format, "%s\0", gmtdefs.d_format);
+		sprintf (label, format, val);
+	}
+	else if (GMT_plot_calclock.geo.decimal)
+		sprintf (label, GMT_plot_calclock.geo.x_format, val, letter);
+	else {
+		GMT_geo_to_dms (val, do_seconds, GMT_io.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
+		if (d == 0 && sign == -1) {	/* Must write out -0 degrees, do so by writing -1 and change 1 to 0 */
+			d = -1;
+			zero_fix = TRUE;
+		}
+		switch (2*level+type) {
+			case 0:
+				sprintf (label, GMT_plot_format[level][type], d, letter);
+				break;
+			case 1:
+				sprintf (label, GMT_plot_format[level][type], d, m_sec, letter);
+				break;
+			case 2:
+				sprintf (label, GMT_plot_format[level][type], d, m, letter);
+				break;
+			case 3:
+				sprintf (label, GMT_plot_format[level][type], d, m, m_sec, letter);
+				break;
+			case 4:
+				sprintf (label, GMT_plot_format[level][type], d, m, s, letter);
+				break;
+			case 5:
+				sprintf (label, GMT_plot_format[level][type], d, m, s, m_sec, letter);
+				break;
+		}
+		if (zero_fix) label[1] = '0';	/* Undo the fix above */
+	}
+	
 	return;
 }
 
