@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.78 2004-07-13 18:47:09 pwessel Exp $
+ *	$Id: pslib.c,v 1.79 2004-08-01 23:33:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1269,7 +1269,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		strcpy (PSHOME, this);
 	}
 
-	ps_init_fonts (&N_FONTS, &N_GMT_FONTS);	/* Load the available font information */
+	ps_init_fonts (&N_PS_FONTS, &N_GMT_FONTS);	/* Load the available font information */
 
 	ps.eps_format = FALSE;
 	ps.hex_image = (mode & 4) ? TRUE : FALSE;
@@ -1398,7 +1398,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		/* Define font macros (see pslib.h for details on how to add fonts) */
 		
 		
-		for (i = 0; i < N_FONTS; i++) fprintf (ps.fp, "/F%d {/%s Y} bind def\n", i, ps.font[i].name);
+		for (i = 0; i < N_PS_FONTS; i++) fprintf (ps.fp, "/F%d {/%s Y} bind def\n", i, ps.font[i].name);
 
 		if (!ps.eps_format) fprintf (ps.fp, "/#copies %d def\n\n", ncopies);
 		bulkcopy ("PSL_label");		/* Place code for label line annotations and clipping */
@@ -1660,7 +1660,7 @@ void ps_setdash_ (char *pattern, int *offset, int nlen)
 
 void ps_setfont (int font_no)
 {
-	if (font_no < 0 || font_no >= N_FONTS)
+	if (font_no < 0 || font_no >= N_PS_FONTS)
 		fprintf (stderr, "pslib: Selected font out of range (%d), ignored\n", font_no);
 	else
 		ps.font_no = font_no;
@@ -2446,7 +2446,7 @@ void init_font_encoding (struct EPS *eps)
 	if (eps)
 		for (i = 0; i < 6 && eps->fontno[i] != -1; i++) ps_encode_font (eps->fontno[i]);
 	else	/* Must output all */
-		for (i = 0; i < N_FONTS; i++) ps_encode_font (i);
+		for (i = 0; i < N_PS_FONTS; i++) ps_encode_font (i);
 }
 
 void def_font_encoding (void)
@@ -2464,8 +2464,8 @@ void def_font_encoding (void)
 	 * for each font that is used */
 
 	fprintf (ps.fp, "/PSL_font_encode ");
-	for (i = 0; i < N_FONTS; i++) fprintf (ps.fp, "0 ");
-	fprintf (ps.fp, "%d array astore def	%% Initially zero\n", N_FONTS);
+	for (i = 0; i < N_PS_FONTS; i++) fprintf (ps.fp, "0 ");
+	fprintf (ps.fp, "%d array astore def	%% Initially zero\n", N_PS_FONTS);
 }
 
 char *ps_prepare_text (char *text)
