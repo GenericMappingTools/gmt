@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.51 2004-07-14 00:46:17 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.52 2004-07-14 01:59:53 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -400,12 +400,12 @@ frame, and grid intervals.  Formatting of the annotation is controlled by
 the parameter {\bf PLOT\_DEGREE\_FORMAT} in your \filename{.gmtdefaults4}\ file.}
 
 The machinery for primary and secondary annotations introduced for time-series axes can
-also be utilized for geographic basemaps.  This is particularly useful to separate the
-degree annotations from minutes and seconds annotations.  For a more complicated basemap
+also be utilized for geographic basemaps.  This may be used to separate
+degree annotations from minutes- and seconds-annotations.  For a more complicated basemap
 example using several sets of intervals, including different intervals and pen attributes
 for grid lines and grid crosses, see Figure~\ref{fig:GMT_-B_geo_2}.
 
-\GMTfig[h]{GMT_-B_geo_2}{Geographic map border with both primary and secondary components.}
+\GMTfig[h]{GMT_-B_geo_2}{Geographic map border with both primary (P) and secondary (S) components.}
 
 
 \subsubsection{Cartesian linear axes}
@@ -679,7 +679,7 @@ only), we append a text string with information about each column (or range of c
 Each string starts with the column number (0 is first column) followed by either
 x (longitude), y (latitude), T (absolute calendar time) or t (relative time).  If
 several consecutive columns have the same format you may specify a range of columns
-rather than a single column, e.e., 0-4 for the first 5 columns.  For example, if our
+rather than a single column, i.e., 0-4 for the first 5 columns.  For example, if our
 input file has geographic coordinates (latitude, longitude) with absolute calendar
 coordinates in the columns 3 and 4, we would specify {\bf fi}0y,1x,3-4T.  All other columns
 are assumed to have the default, floating point format and need not be set individually.
@@ -999,9 +999,9 @@ Table~\ref{tbl:penex} contains additional examples of pen specifications suitabl
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|l|c|} \hline
+\begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Pen example}}	&	\multicolumn{1}{c|}{\emph{Comment}} \\ \hline
-\Opt{W}0.5p		&	Plain solid line, 0.5 point thick \\ \hline 
+\Opt{W}0.5p		&	Solid black line, 0.5 point thick \\ \hline 
 \Opt{W}thin,red,-	&	Dashed, thin red line \\ \hline 
 \Opt{W}fat,.		&	Fat dotted line [black] \\ \hline 
 \Opt{W}0.1c,120-1-1	&	Green (in h-s-v) pen, 1 mm thick \\ \hline 
@@ -1078,7 +1078,7 @@ Table~\ref{tbl:fillex} contains a few examples of fill specifications.
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|l|c|} \hline
+\begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Fill example}}	&	\multicolumn{1}{c|}{\emph{Comment}} \\ \hline
 \Opt{G}blue		&	Solid blue \\ \hline 
 \Opt{G}120/80/35	&	Kind of brown, R/G/B-style \\ \hline 
@@ -1170,7 +1170,7 @@ consider
 30 &  p200/16 &  80 & -- \\ 
 80 &  -- &  100 &  -- \\
 100 &  200 &  0  &  0  &  200 &  255 &  255  &  0 \\
-200 &  yellow &  green & -- \\ 
+200 &  yellow &  300 & green  \\ 
 \end{tabular} 
 \end{center}
 \noindent
@@ -1304,8 +1304,8 @@ Standard+ encoding:
 XXX\=\verb|2@~p@~r@+2@+h@-0@- E\363tv\363s|XXXX \== XXXX\=text \kill 
 \>\verb|2@~p@~r@+2@+h@-0@- E\363tv\363s| \> = \> 2$\pi r^2h_0$ E\"{o}tv\"{o}s \\ 
 \>\verb|10@+-3 @Angstr@om|		 \> =	\> 10$^{-3}$ \AA ngstr\o m \\ 
-\>\verb|Se\227or Gar\215on|	 \> = \> Se\~{n}or Gar\c{c}on \\ 
-\>\verb|M@!\305anoa stra\373e|	 \> = \> M\={a}noa stra\ss e \\ 
+\>\verb|Se@nor Gar@con|	 \> = \> Se\~{n}or Gar\c{c}on \\ 
+\>\verb|M@!\305anoa stra@se|	 \> = \> M\={a}noa stra\ss e \\ 
 \>\verb|A@\#cceleration@\# (ms@+-2@+)|	 \> = \> \sc{Acceleration (ms$^{-2}$)}
 \end{tabbing} 
 
