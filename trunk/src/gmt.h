@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.15 2001-08-27 18:10:39 pwessel Exp $
+ *	$Id: gmt.h,v 1.16 2001-08-28 02:37:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -179,10 +179,10 @@ typedef double (*PFD) ();	/* PFD declares a pointer to a function returning a do
  *--------------------------------------------------------------------*/
 
 #define N_UNIQUE 59		/* Number of unique options */
-#define N_KEYS 76		/* Number of gmt defaults */
+#define N_KEYS 77		/* Number of gmt defaults */
 #define N_FONTS 39		/* Number of fonts in the PS_font_names.h include file */
 #define GMT_N_MEDIA 29		/* Number of standard paper formats in the GMT_media_names.h include file */
-#define HASH_SIZE 76		/* Used in get_gmtdefaults, should be ~> N_KEYS */
+#define HASH_SIZE 77		/* Used in get_gmtdefaults, should be ~> N_KEYS */
 #define GMT_N_SYSTEMS 6		/* Number of time systems in gmt_time_systems.h */
 /* This structure contains default parameters for the GMT system */
 
@@ -277,10 +277,10 @@ struct GMTDEFAULTS {
 	char input_date_format[32];	/* How to decode an incoming date string [yyyy-mm-dd] */
 	char output_clock_format[32];	/* Controls how clocks are written on output [hh:mm:ss] */
 	char output_date_format[32];	/* Controls how dates are written on output [yyyy-mm-dd] */
-	char output_degree_format[8];	/* Controls how degrees are written on output [000 = dd.xxxx] */
+	char output_degree_format[32];	/* Controls how degrees are written on output [000 = dd.xxxx] */
 	char plot_clock_format[32];	/* Controls how clocks are plotted on maps [hh:mm:ss] */
 	char plot_date_format[32];	/* Controls how dates are plotted on maps [yyyy-mm-dd] */
-	char plot_degree_format[8];	/* Controls how degrees are plotted on maps [020 = dd:mm:ss as in old DEGREE_FORMAT = 0] */
+	char plot_degree_format[32];	/* Controls how degrees are plotted on maps [020 = dd:mm:ss as in old DEGREE_FORMAT = 0] */
 	BOOLEAN time_is_interval;	/* Does a time given as a month (or year or day) mean the middle of the interval? */
 	BOOLEAN want_leap_seconds;	/* Do we need to worry about leap seconds? */
 	char time_epoch[32];		/* User-defined epoch for time */
@@ -291,6 +291,7 @@ struct GMTDEFAULTS {
 	int char_encoding;		/* PostScript font encoding used */
 	int Y2K_offset_year;		/* Cutoff for making 4-digit years from 2-digit years (1900 vs 2000) */
 	char field_delimeter[8];	/* Separator between output ascii data columns [tab] */
+	int degree_symbol;		/* 0 = ring [Default], 1 = degree, 2 = colon, 3 = none */
 };
 
 struct GMT_HASH {	/* Used to related keywords to gmtdefaults entry */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.23 2001-08-20 19:32:57 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.24 2001-08-28 02:37:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1443,6 +1443,18 @@ int GMT_setparameter (char *keyword, char *value)
 				strncpy (gmtdefs.field_delimeter, value, 8);
 			gmtdefs.field_delimeter[7] = 0;	/* Just a precaution */
 			break;
+		case 76:
+			if (value[0] == '\0' || !strcmp (value, "ring") || !strcmp (value, "RING"))	/* DEFAULT */
+				gmtdefs.degree_format = 0;
+			else if (!strcmp (value, "degree") || !strcmp (value, "DEGREE"))
+				gmtdefs.degree_format = 1;
+			else if (!strcmp (value, "colon") || !strcmp (value, "COLON"))
+				gmtdefs.degree_format = 2;
+			else if (!strcmp (value, "none") || !strcmp (value, "NONE"))
+				gmtdefs.degree_format = 3;
+			else
+				error = TRUE;
+			break;
 
 		default:
 			error = TRUE;
@@ -1606,6 +1618,14 @@ int GMT_savedefaults (char *file)
 		fprintf (fp, "FIELD_DELIMETER		= none\n");
 	else
 		fprintf (fp, "FIELD_DELIMETER		= %s\n", gmtdefs.field_delimeter);
+	if (gmtdefs.degree_symbol == 0)
+		fprintf (fp, "DEGREE_SYMBOL		= ring\n");
+	else if (gmtdefs.degree_symbol == 1)
+		fprintf (fp, "DEGREE_SYMBOL		= degree\n");
+	else if (gmtdefs.degree_symbol == 2)
+		fprintf (fp, "DEGREE_SYMBOL		= colon\n");
+	else
+		fprintf (fp, "DEGREE_SYMBOL		= none\n");
 
 	if (fp != GMT_stdout) fclose (fp);
 	
