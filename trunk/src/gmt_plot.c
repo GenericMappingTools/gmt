@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.136 2004-08-25 04:37:32 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.137 2004-09-10 23:16:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2692,6 +2692,8 @@ void GMT_map_basemap (void) {
 		GMT_free (GMT_x_annotation[i]);
 		GMT_free (GMT_y_annotation[i]);
 	}
+
+	ps_setpaint (gmtdefs.background_rgb);
 }
 
 void GMT_basemap_3D (int mode)
