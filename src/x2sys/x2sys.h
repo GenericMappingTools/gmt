@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.2 2001-12-21 03:50:38 ben Exp $
+ *	$Id: x2sys.h,v 1.3 2004-01-13 03:08:47 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -170,10 +170,10 @@ EXTERN_MSC char *x2sys_header;
 
 EXTERN_MSC FILE *x2sys_fopen (char *fname, char *mode);
 
-EXTERN_MSC int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s);
-EXTERN_MSC int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p);
-EXTERN_MSC int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p);
-EXTERN_MSC int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p);
+EXTERN_MSC int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G);
+EXTERN_MSC int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
+EXTERN_MSC int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
+EXTERN_MSC int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
 EXTERN_MSC int x2sys_crossover (double xa[], double ya[], struct X2SYS_SEGMENT A[], int na, double xb[], double yb[], struct X2SYS_SEGMENT B[], int nb, BOOLEAN internal, struct X2SYS_XOVER *X);
 EXTERN_MSC int x2sys_xover_output (FILE *fp, int n, double out[]);
 EXTERN_MSC int x2sys_n_data_cols (struct X2SYS_INFO *s);
@@ -191,6 +191,6 @@ EXTERN_MSC void x2sys_x_free (struct X2SYS_XOVER *X);
 EXTERN_MSC void x2sys_pick_fields (char *string, struct X2SYS_INFO *s);
 EXTERN_MSC void x2sys_adjust_longitudes (double *x, BOOLEAN geodetic);
 
-EXTERN_MSC struct X2SYS_INFO *x2sys_initialize (char *fname);
+EXTERN_MSC struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G);
 EXTERN_MSC struct X2SYS_SEGMENT *x2sys_init_track (double x[], double y[], int n);
 

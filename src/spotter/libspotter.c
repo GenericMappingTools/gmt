@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.20 2004-01-13 02:04:36 pwessel Exp $
+ *	$Id: libspotter.c,v 1.21 2004-01-13 03:08:47 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -707,7 +707,7 @@ void spotter_add_rotations (struct EULER a[], int n_a, struct EULER b[], int n_b
 	
 	/* Allocate more than we need, must likely */
 	
-	t = (double *) GMT_memory (VNULL, (size_t)(n_a + n_b), sizeof (double), GMT_program);
+	t = (double *) GMT_memory (VNULL, (size_t)(n_a + n_b), sizeof (double), "libspotter");
 	
 	/* First convert the two models to stage poles */
 	
@@ -752,9 +752,9 @@ void spotter_add_rotations (struct EULER a[], int n_a, struct EULER b[], int n_b
 	t[n_k++] = t_min;
 	n_k--;	/* Number of structure elements is one less than number of knots */
 	
-	b2 = (struct EULER *) GMT_memory (VNULL, (size_t)n_k, sizeof (struct EULER), GMT_program);
-	a2 = (struct EULER *) GMT_memory (VNULL, (size_t)n_k, sizeof (struct EULER), GMT_program);
-	c2 = (struct EULER *) GMT_memory (VNULL, (size_t)n_k, sizeof (struct EULER), GMT_program);
+	b2 = (struct EULER *) GMT_memory (VNULL, (size_t)n_k, sizeof (struct EULER), "libspotter");
+	a2 = (struct EULER *) GMT_memory (VNULL, (size_t)n_k, sizeof (struct EULER), "libspotter");
+	c2 = (struct EULER *) GMT_memory (VNULL, (size_t)n_k, sizeof (struct EULER), "libspotter");
 	
 	for (k = i = j = 0; k < n_k; k++) {	/* Resample the two stage pole models onto the same knots */
 		/* First resample p onto p2 */
