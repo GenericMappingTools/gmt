@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.167 2005-01-05 03:12:39 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.168 2005-01-09 00:54:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2763,7 +2763,7 @@ int GMT_begin (int argc, char **argv)
 
 	for (i = j = 1; i < argc; i++) {
 		argv[j] = argv[i];
-		if (argv[j][0] == '+' && argv[i][1])
+		if (argv[j][0] == '+' && argv[i][1] && !access (&argv[i][1], R_OK))
 			this = &argv[i][1];
 		else
 			j++;
