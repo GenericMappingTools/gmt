@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.27 2001-09-21 18:46:49 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.28 2001-09-26 02:07:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -322,89 +322,6 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 	if (GMT_io.in_col_type[0] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
 	
 	return (col_no);
-}
-
-int GMT_scanf_old (char *p, double *val)
-{
-	/* Converts text to double if certain conditions are met:
-	   p must be of the form [+|-][0-9][.][0-9][E|e|D|e][+|-][0-9] OR [+|-][dd:mm[:ss][WESN]
-	   If it is the former we look for d or D which is FORTRASH
-	   for exponent and convert to e and then call atof.  If it
-	   is the latter we do a straight conversion.
-	*/
-	int i, k, c, colons, suffix;
-	BOOLEAN error, period, exponent, sign, flip_sign;
-	double degree, minute, second;
-
-	for (i = colons = 0; p[i]; i++) if (p[i] == ':') colons++;	/* Colons indicate dd:mm:ss format */
-	k = --i;
-	c = (int)p[k];		/* Last character in string */
-	suffix = toupper (c);	/* Last character in string, forced upper case */
-	
-	if (colons == 0) {	/* Regular ASCII representation of an integer or floating point number */
-		if (suffix == 'W' || suffix == 'S') {	/* Sign was given implicitly as -ve */
-			p[k] = 0;	/* Temporarily hide the suffix - will restore below */
-			flip_sign = TRUE;
-		}
-		else if (suffix == 'E' || suffix == 'N') {	/* Sign was given implicitly as +ve */
-			p[k] = 0;	/* Temporarily hide the suffix - will restore below */
-			flip_sign = FALSE;
-		}
-		else	/* No suffix or unrecognized suffix */
-			flip_sign = FALSE;
-			
-		i = 0;					/* Reset to 1st character */
-		while (p[i] == ' ') i++;		/* Skip leading blanks */
-		if (p[i] == '-' || p[i] == '+') i++;	/* Leading sign is OK */
-		error = period = exponent = sign = FALSE;
-		while (p[i] && !error) {
-			if (p[i] == '.') {	/* One period is OK */
-				if (period) error = TRUE;
-				period = TRUE;
-			}
-			else if (p[i] == 'D' || p[i] == 'd') {	/* Fortran Double Precision Fix */
-				p[i] = 'e';	/* 'd' is not understood outside Fortran i/o */
-				if (exponent) error = TRUE;
-				exponent = TRUE;
-			}
-			else if (p[i] == 'E' || p[i] == 'e') {	/* Normal exponentional notation */
-				if (exponent) error = TRUE;
-				exponent = TRUE;
-			}
-			else if (p[i] == '-' || p[i] == '+') {	/* One more sign only ok after exponential */
-				if (sign || !exponent) error = TRUE;
-				sign = TRUE;
-			}
-			else if (p[i] < '0' || p[i] > '9')	/* Other non-digits are not allowed */
-				error = TRUE;
-			i++;
-		}
-		if (error) return (0);	/* Failed format check */
-		*val = atof (p);	/* Safe to convert */
-		if (flip_sign) {	/* Flip sign and restore missing suffix in text string */
-			*val = -(*val);
-			p[k] = suffix;
-		}
-			
-		return (1);
-	}
-
-	/* Here we know we need to deal with dd:mm[:ss] strings */
-	
-	if (colons == 2) {	/* dd:mm:ss format */
-		sscanf (p, "%lf:%lf:%lf", &degree, &minute, &second);
-		if (suffix == 'W' || suffix == 'w' || suffix == 'S' || suffix == 's') degree = -degree;	/* Sign was given implicitly */
-		*val = degree + copysign (minute * GMT_MIN2DEG + second * GMT_SEC2DEG, degree);
-	}
-	else if (colons == 1) {	/* dd:mm format */
-		sscanf (p, "%lf:%lf", &degree, &minute);
-		if (suffix == 'W' || suffix == 'w' || suffix == 'S' || suffix == 's') degree = -degree;	/* Sign was given implicitly */
-		*val = degree + copysign (minute * GMT_MIN2DEG, degree);
-	}
-	else	/* Unrecognized */
-		return (0);
-
-	return (1);
 }
 
 char *GMT_fgets (char *record, int maxlength, FILE *fp)
@@ -1913,7 +1830,7 @@ int	GMT_scanf_geo (char *s, double *val) {
 	If unsuccessful, does not store anything in val and
 	returns GMT_IS_NAN.  
 	This should have essentially the same functionality
-	as GMT_scanf_old(), except that the expectation is
+	as the GMT3.4 GMT_scanf, except that the expectation is
 	now used and returned, and this also permits a double
 	precision format in the minutes or seconds, and does
 	more error checking.  However, this is not optimized

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.13 2001-09-20 20:10:31 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.14 2001-09-26 02:07:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -54,7 +54,6 @@ EXTERN_MSC int GMT_io_selection (char *text);				/* Decode -b option and set par
 EXTERN_MSC int GMT_decode_coltype (char *text);				/* Decode -i option and set parameters */
 EXTERN_MSC void GMT_multisegment (char *text);				/* Decode -M option */
 EXTERN_MSC void GMT_write_segmentheader (FILE *fp, int n);		/* Write multisegment header back out */
-EXTERN_MSC int GMT_scanf_old (char *p, double *val);			/* Convert text (incl dd:mm:ss) to double number */
 EXTERN_MSC char *GMT_fgets (char *record, int maxlength, FILE *fp);	/* Does a fscanf from inside gmt_io to keep DLLs working */
 EXTERN_MSC int GMT_scanf (char *p, int expectation, double *val);	/* Convert strings to double, handling special formats */
 EXTERN_MSC int	GMT_scanf_argtime (char *s, double *val);		/* Convert an argument token to a time  */
