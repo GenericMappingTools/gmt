@@ -1,4 +1,4 @@
-/*	$Id: gshhs_dp.c,v 1.4 2004-09-12 01:25:20 pwessel Exp $
+/*	$Id: gshhs_dp.c,v 1.5 2004-09-28 18:09:25 pwessel Exp $
  *
  * gshhs_dp applies the Douglas-Peucker algorithm to simplify a line
  * segment given a tolerance.  The algorithm is based on the paper
@@ -14,7 +14,7 @@
  *	    1.2 Explicit binary read for DOS.  POSIX compliance
  *	    1.3, 08-NOV-1999: Released under GNU GPL
  *	    1.4 05-SEPT-2000: Made a GMT supplement; FLIP no longer needed
- *	    1.5 11-SEPT-2004: Updated t owork with GSHHS v1.3 data format
+ *	    1.5 11-SEPT-2004: Updated to work with GSHHS v1.3 data format
  *
  *	Copyright (c) 1996-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -52,7 +52,7 @@ main (int argc, char **argv)
 	struct	POINT p;
         
 	if (argc < 2 || !(argc == 4 || argc == 5)) {
-		fprintf (stderr, "gshhs_dp v. 1.4 Line reduction using the Douglas-Peucker algorithm\n\n");
+		fprintf (stderr, "gshhs_dp v. 1.5 Line reduction using the Douglas-Peucker algorithm\n\n");
 		fprintf (stderr, "usage:  gshhs_dp input.b tolerance output.b [-v]\n");
 		fprintf (stderr, "\ttolerance is maximum mismatch in km\n");
 		fprintf (stderr, "\t-v will run in verbose mode and report shrinkage\n");
