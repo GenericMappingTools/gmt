@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.132 2004-08-06 20:36:02 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.133 2004-08-13 23:08:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -902,7 +902,7 @@ int GMT_linear_array (double min, double max, double delta, double phase, double
 	double first, small, *val;
 	int i, n;
 
-	if (delta == 0.0) return (0);
+	if (delta <= 0.0) return (0);
 	small = SMALL * delta;
 	first = floor ((min - delta - phase) / delta) * delta + phase;
 	while ((min - first) > small) first += delta;
@@ -925,7 +925,7 @@ int GMT_log_array (double min, double max, double delta, double **array)
 
 	/* Because min and max may be tiny values (e.g., 10^-20) we must do all calculations on the log10 (value) */
 	
-	if (delta == 0.0) return (0);
+	if (delta <= 0.0) return (0);
 	val = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_log_array");
 
 	test = irint (fabs (delta)) - 1;
@@ -995,7 +995,7 @@ int GMT_pow_array (double min, double max, double delta, int x_or_y, double **ar
 	double *val, tval, v0, v1, small, start_val, end_val;
 	PFI fwd, inv;
 	
-	if (delta == 0.0) return (0);
+	if (delta <= 0.0) return (0);
 	val = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_pow_array");
 
 	annottype = (frame_info.axis[x_or_y].type == 2) ? 2 : 0;
@@ -1013,18 +1013,18 @@ int GMT_pow_array (double min, double max, double delta, int x_or_y, double **ar
 		(*fwd) (min, &v0);
 		(*fwd) (max, &v1);
 
-		tval = (delta == 0.0) ? 0.0 : floor (v0 / delta) * delta;
+		tval = (delta <= 0.0) ? 0.0 : floor (v0 / delta) * delta;
 		if (fabs (tval - v0) > small) tval += delta;
 		start_val = tval;
-		tval = (delta == 0.0) ? 0.0 : ceil (v1 / delta) * delta;
+		tval = (delta <= 0.0) ? 0.0 : ceil (v1 / delta) * delta;
 		if (fabs (tval - v1) > small) tval -= delta;
 		end_val = tval;
 	}
 	else {
-		tval = (delta == 0.0) ? 0.0 : floor (min / delta) * delta;
+		tval = (delta <= 0.0) ? 0.0 : floor (min / delta) * delta;
 		if (fabs (tval - min) > small) tval += delta;
 		start_val = tval;
-		tval = (delta == 0.0) ? 0.0 : ceil (max / delta) * delta;
+		tval = (delta <= 0.0) ? 0.0 : ceil (max / delta) * delta;
 		if (fabs (tval - max) > small) tval -= delta;
 		end_val = tval;
 	}
@@ -1067,7 +1067,7 @@ int GMT_time_array (double min, double max, struct PLOT_AXIS_ITEM *T, double **a
 	int n_alloc = GMT_SMALL_CHUNK, n = 0;
 	BOOLEAN interval;
 
-	if (T->interval == 0.0) return (0);
+	if (T->interval <= 0.0) return (0);
 	val = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_time_array");
 	I.unit = T->unit;
 	I.step = (int)T->interval;
@@ -1279,7 +1279,7 @@ void GMT_fancy_frame_straightlat_checkers (double w, double e, double s, double 
 {
 	int i, k, ny, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
 	double dy, s1, val, v1, v2, x1, x2, x3, y1, y2, y3, shift_w[2], shift_e[2], scale[2];
-	BOOLEAN shade;
+	BOOLEAN shade, do_it;
 	
 	scale[0] = (secondary_too) ? 0.5 : 1.0;
 	scale[1] = 1.5;
@@ -1302,12 +1302,13 @@ void GMT_fancy_frame_straightlat_checkers (double w, double e, double s, double 
 				if (shade) {
 					v2 = val + dy;
 					if (v2 > n) v2 = n;
-					if (frame_info.side[3]) {
+					do_it = ((v2 - v1) > GMT_CONV_LIMIT);
+					if (do_it && frame_info.side[3]) {
 						GMT_geo_to_xy (w, v2, &x3, &y3);
 						ps_plot (x1-0.5*scale[k]*shift_w[0], y1-0.5*scale[k]*shift_w[1], +3);
 						ps_plot (x3-0.5*scale[k]*shift_w[0], y3-0.5*scale[k]*shift_w[1], -2);
 					}
-					if (frame_info.side[1]) {
+					if (do_it && frame_info.side[1]) {
 						GMT_geo_to_xy (e, v2, &x3, &y3);
 						ps_plot (x2+0.5*scale[k]*shift_e[0], y2+0.5*scale[k]*shift_e[1], +3);
 						ps_plot (x3+0.5*scale[k]*shift_e[0], y3+0.5*scale[k]*shift_e[1], -2);
@@ -1325,7 +1326,7 @@ void GMT_fancy_frame_straightlon_checkers (double w, double e, double s, double 
 {
 	int i, k, nx, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
 	double dx, w1, val, v1, v2, x1, x2, x3, y1, y2, y3, shift_s[2], shift_n[2], scale[2];
-	BOOLEAN shade;
+	BOOLEAN shade, do_it;
 	
 	scale[0] = (secondary_too) ? 0.5 : 1.0;
 	scale[1] = 1.5;
@@ -1346,12 +1347,13 @@ void GMT_fancy_frame_straightlon_checkers (double w, double e, double s, double 
 				if (shade) {
 					v2 = val + dx;
 					if (v2 > e) v2 = e;
-					if (frame_info.side[0]) {
+					do_it = ((v2 - v1) > GMT_CONV_LIMIT);
+					if (do_it && frame_info.side[0]) {
 						GMT_geo_to_xy (v2, s, &x3, &y3);
 						ps_plot (x1-0.5*scale[k]*shift_s[0], y1-0.5*scale[k]*shift_s[1], 3);
 						ps_plot (x3-0.5*scale[k]*shift_s[0], y3-0.5*scale[k]*shift_s[1], -2);
 					}
-					if (frame_info.side[2]) {
+					if (do_it && frame_info.side[2]) {
 						GMT_geo_to_xy (v2, n, &x3, &y3);
 						ps_plot (x2-0.5*scale[k]*shift_n[0], y2-0.5*scale[k]*shift_n[1], 3);
 						ps_plot (x3-0.5*scale[k]*shift_n[0], y3-0.5*scale[k]*shift_n[1], -2);
@@ -1368,7 +1370,7 @@ void GMT_fancy_frame_straightlon_checkers (double w, double e, double s, double 
 void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n, double radius_s, double radius_n, BOOLEAN secondary_too)
 {
 	int i, k, nx, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
-	BOOLEAN shade;
+	BOOLEAN shade, do_it;
 	double dx, w1, v1, v2, val, x1, x2, y1, y2, az1, az2, dr, scale[2];
 	
 	scale[0] = (secondary_too) ? 0.5 : 1.0;
@@ -1387,7 +1389,8 @@ void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n,
 				if (shade) {
 					v2 = val + dx;
 					if (v2 > e) v2 = e;
-					if (frame_info.side[0]) {
+					do_it = ((v2 - v1) > GMT_CONV_LIMIT);
+					if (do_it && frame_info.side[0]) {
 						GMT_geo_to_xy (v2, s, &x1, &y1);
 						GMT_geo_to_xy (v1, s, &x2, &y2);
 						az1 = d_atan2 (y1 - project_info.c_y0, x1 - project_info.c_x0) * R2D;
@@ -1401,7 +1404,7 @@ void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n,
 							ps_arc (project_info.c_x0, project_info.c_y0, radius_s-scale[k]*dr, az1, az2, 3);
 						}
 					}
-					if (frame_info.side[2]) {
+					if (do_it && frame_info.side[2]) {
 						GMT_geo_to_xy (v2, n, &x1, &y1);
 						GMT_geo_to_xy (v1, n, &x2, &y2);
 						az1 = d_atan2 (y1 - project_info.c_y0, x1 - project_info.c_x0) * R2D;
@@ -3507,7 +3510,7 @@ double GMT_get_angle (double lon1, double lat1, double lon2, double lat2)
 	GMT_geo_to_xy (lon2, lat2, &x2, &y2);
 	dx = x2 - x1;
 	dy = y2 - y1;
-	if (dy == 0.0 && dx == 0.0) {	/* Special case that only(?) occurs at N or S pole or r=0 for POLAR */
+	if (fabs (dy) <= GMT_CONV_LIMIT && fabs (dx) <= GMT_CONV_LIMIT) {	/* Special case that only(?) occurs at N or S pole or r=0 for POLAR */
 		if (fabs (fmod (lon1 - project_info.w + 360.0, 360.0)) > fabs (fmod (lon1 - project_info.e + 360.0, 360.0))) {	/* East */
 			GMT_geo_to_xy (project_info.e, project_info.s, &x1, &y1);
 			GMT_geo_to_xy (project_info.e, project_info.n, &x2, &y2);
