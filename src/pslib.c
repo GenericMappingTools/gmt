@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.71 2004-06-04 19:43:15 pwessel Exp $
+ *	$Id: pslib.c,v 1.72 2004-06-04 23:48:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2177,24 +2177,24 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 	 * pointsize	Pointsize of label text
 	 * offset	Clearences between text and textbox
 	 * just		Justification of text relative to label coordinates
-	 * form		bits: 0 = straigth text, 1 = curved text, 2 = just place gap, 4 = skip line
-	 *		      8 = clip path, 16 = paint clip path, 32 = just call labelline and reuse last set of parameters
-	 *		     64 = first time called, 128 = final time called, 256 = fill box, 512 = draw box
+	 * form		bits: 1 = clip path, 2 = just place gap, 4 = draw line,
+	 *		      8 = just call labelline and reuse last set of parameters
+	 *		      32 = first time called, 64 = final time called, 128 = fill box, 256 = draw box
 	 */
 	 
 	int i = 0, j, k, place, first;
 	double height;
 	char *string;
 	
-	if (form & 32) {		/* If 32 bit is set we already have placed the info */
-		form -= 32;		/* Knock off the 32 flag */
-		fprintf (ps.fp, "%d PSL_labelline\n", form);
+	if (form & 8) {		/* If 8 bit is set we already have placed the info */
+		form -= 8;		/* Knock off the 8 flag */
+		fprintf (ps.fp, "%d PSL_curved_text_labels\n", form);
 		return;
 	}
 
 	if (m <= 0) return;	/* Nothing to do yet */
 	
-	first = (form & 64);
+	first = (form & 32);
 	
 	for (i = 0; i < m; i++) {
 		if (justify < 0)  {	/* Strip leading and trailing blanks */
@@ -2235,7 +2235,7 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 	ps_set_int_array ("PSL_node", node, m);
 	ps_set_txt_array ("PSL_str", label, m);
 	
-	fprintf (ps.fp, "%d PSL_labelline\n", form);
+	fprintf (ps.fp, "%d PSL_curved_text_labels\n", form);
 	
   	ps.npath = 0;
 }
@@ -2255,7 +2255,8 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 	 * pointsize	Pointsize of label text
 	 * offset	Gaps between text and textbox
 	 * just		Justification of text relative to label coordinates
-	 * key		bits: 0 = lay down clip path, 1 = Just place text, 2 turn off clipping, 4 = paint clippath (debug), 8 = reuse pars, 16 = rounded box, 256 fill box, 512 draw box
+	 * key		bits: 0 = lay down clip path, 1 = Just place text, 2 turn off clipping,
+	 *		8 = reuse pars, 16 = rounded box, 128 fill box, 256 draw box
 	 */
 	 
 	int i = 0, j, k;
@@ -2267,7 +2268,7 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 		return;
 	}
 	if (key & 8) {		/* Flag to place text already define in PSL arrays */
-		fprintf (ps.fp, "%d PSL_labelclip\n", key);
+		fprintf (ps.fp, "%d PSL_straight_text_labels\n", key);
 		return;
 	}
 	
@@ -2309,7 +2310,7 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 	}
 	
 	fprintf (ps.fp, "%d F%d\n", (int) irint ((fabs (pointsize) / ps.points_pr_unit) * ps.scale), ps.font_no);	/* Set font */
-	fprintf (ps.fp, "%d PSL_labelclip\n", key);
+	fprintf (ps.fp, "%d PSL_straight_text_labels\n", key);
 	
   	ps.npath = 0;
 }
