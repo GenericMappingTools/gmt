@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.5 2004-06-09 20:23:31 pwessel Exp $
+ *	$Id: gmt_mgg.c,v 1.6 2004-06-15 00:09:14 pwessel Exp $
  *
  *    Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -141,16 +141,17 @@ struct GMTMGG_TIME *gmtmgg_init (int year1)
  
 int gmtmgg_time (int *time, int year, int month, int day, int hour, int minute, int second, struct GMTMGG_TIME *gmt_struct)
 {
-	int mon, n_days;
+	int mon, n_days, bad = 0;
 	if ((mon = (year - gmt_struct->first_year)) > 4) {
 		fprintf (stderr, "gmtmgg_time:  Year - first_year > 4\n");
 		return(-1);
 	}
-	if (month < 1 || month > 12) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Month out of range [1-12]: %d\n", month);
-	if (day < 1 || day > 31) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Day out of range [1-31]: %d\n", day);
-	if (hour < 0 || hour > 24) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Hour out of range [0-24]: %d\n", hour);
-	if (minute < 0 || minute > 60) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Minute out of range [0-60]: %d\n", minute);
-	if (second < 0 || second > 60) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Second out of range [0-60]: %d\n", second);
+	if (month < 1 || month > 12) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Month out of range [1-12]: %d\n", month), bad++;
+	if (day < 1 || day > 31) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Day out of range [1-31]: %d\n", day), bad++;
+	if (hour < 0 || hour > 24) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Hour out of range [0-24]: %d\n", hour), bad++;
+	if (minute < 0 || minute > 60) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Minute out of range [0-60]: %d\n", minute), bad++;
+	if (second < 0 || second > 60) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Second out of range [0-60]: %d\n", second), bad++;
+	if (bad) return (-1);	/* When we got garbage input */
 	mon = mon * 12 + month;
 	n_days = gmt_struct->daymon[mon] + day - 1;
 	*time = n_days * 86400 + hour * 3600 + minute * 60 + second;
