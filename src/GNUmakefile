@@ -1,4 +1,4 @@
-#----------------	$Id: GNUmakefile,v 1.7 2001-03-09 20:05:08 pwessel Exp $	--------------------
+#----------------	$Id: GNUmakefile,v 1.8 2001-03-09 21:01:13 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 3.4
 #			GNU make compatible
@@ -134,7 +134,7 @@ STATIC_LIB	= libpsl.a libgmt.a
 
 all:		init libs $(PROGS)
 
-init:		gmt_nan.h gmt_notposix.h
+init:		gmt_nan.h gmt_notposix.h gmtmath.c grdmath.c
 
 gmt_nan.h:
 		$(CC) $(CFLAGS) gmt_nan_init.c $(CDF) $(LIBS) -o gmt_nan_init
@@ -145,6 +145,14 @@ gmt_notposix.h:
 		echo "Warning: You probably should rerun configure manually instead"; \
 		cd ..; \
 		./configure
+
+# Must create g[rd|mt]math.c from g[rd|mt]math_main.c and g[rd|mt]math.func
+
+gmtmath.c:
+		(cd ..; csh -f guru/make_gmtmath.csh)
+
+grdmath.c:
+		(cd ..; csh -f guru/make_grdmath.csh)
 
 install:	all
 		if [ ! -d $(bindir) ]; then \
