@@ -360,4 +360,3 @@ Seismology Dept.
 Institut de Physique du Globe de Paris
 .br
 (patau@.ipgp.jussieu.fr)
-.br
