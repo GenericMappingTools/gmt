@@ -187,6 +187,8 @@ echo "/opt/geo-data/gmtdata" > /opt/gmt/share/coastline.conf
 /opt/gmt/share/mgg/carter.d
 /opt/gmt/share/mgg/gmtfile_paths
 /opt/gmt/share/PSL_text.ps
+/opt/gmt/share/PSL_label.ps
+/opt/gmt/share/PSL_prologue.ps
 /opt/gmt/share/pattern/ps_pattern_01.ras
 /opt/gmt/share/pattern/ps_pattern_02.ras
 /opt/gmt/share/pattern/ps_pattern_03.ras

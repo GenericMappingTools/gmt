@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.65 2004-06-01 09:38:44 pwessel Exp $
+ *	$Id: pslib.c,v 1.66 2004-06-01 19:49:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -144,7 +144,8 @@ struct GMT_WORD {
 	char *txt;
 };
 
-int PSL_first = TRUE;
+int PSL_text_first = TRUE;
+int PSL_label_first = TRUE;
 
 /* Define support functions called inside pslib functions */
 
@@ -2178,9 +2179,9 @@ void ps_pathtext (double x[], double y[], int n, int node[], double angle[], cha
 
 	if (m <= 0) return;	/* Nothing to do yet */
 	
-	if (PSL_first) {
-		bulkcopy ("PSL_text");
-		PSL_first = FALSE;
+	if (PSL_label_first) {
+		bulkcopy ("PSL_label");
+		PSL_label_first = FALSE;
 	}
 
 	for (i = 0; i < m; i++) {
@@ -2247,9 +2248,9 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 	
 	if (m <= 0) return;	/* Nothing to do yet */
 	
-	if (PSL_first) {
-		bulkcopy ("PSL_text");
-		PSL_first = FALSE;
+	if (PSL_label_first) {
+		bulkcopy ("PSL_label");
+		PSL_label_first = FALSE;
 	}
 
 	for (i = 0; i < m; i++) {
@@ -3308,9 +3309,9 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 
 	/* Load PSL_text procedures from file for now */
 
-	if (PSL_first) {
+	if (PSL_text_first) {
 		bulkcopy ("PSL_text");
-		PSL_first = FALSE;
+		PSL_text_first = FALSE;
 	}
 
 	fprintf (ps.fp, "\n%% ps_words begin:\n\ngsave\n");
