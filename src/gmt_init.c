@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.81 2003-02-20 19:12:33 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.82 2003-03-03 21:09:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1202,6 +1202,8 @@ int GMT_setparameter (char *keyword, char *value)
 				gmtdefs.color_model = GMT_HSV;
 			else if (!strcmp (lower_value, "rgb"))
 				gmtdefs.color_model = GMT_RGB;
+			else if (!strcmp (lower_value, "cmyk"))
+				gmtdefs.color_model = GMT_CMYK;
 			else
 				error = TRUE;
 			break;
@@ -1795,7 +1797,12 @@ int GMT_savedefaults (char *file)
 		fprintf (fp, "adobe\n");
 	else if (gmtdefs.color_image == 1)
 		fprintf (fp, "tiles\n");
-	(gmtdefs.color_model == GMT_HSV) ? fprintf (fp, "COLOR_MODEL		= hsv\n") : fprintf (fp, "COLOR_MODEL		= rgb\n");
+	if (gmtdefs.color_model == GMT_HSV)
+		fprintf (fp, "COLOR_MODEL		= hsv\n");
+	else if (gmtdefs.color_model == GMT_CMYK)
+		fprintf (fp, "COLOR_MODEL		= cmyk\n");
+	else
+		fprintf (fp, "COLOR_MODEL		= rgb\n");
 	fprintf (fp, "HSV_MIN_SATURATION	= %g\n", gmtdefs.hsv_min_saturation);
 	fprintf (fp, "HSV_MAX_SATURATION	= %g\n", gmtdefs.hsv_max_saturation);
 	fprintf (fp, "HSV_MIN_VALUE		= %g\n", gmtdefs.hsv_min_value);
@@ -2332,10 +2339,10 @@ int GMT_begin (int argc, char **argv)
 	
 	/* Copy various colors to GMT_BFN_COLOR structure */
 
-	memset ((void *)(&GMT_bfn), 0, sizeof (struct GMT_BFN_COLOR));
-	memcpy ((void *)GMT_bfn.foreground_rgb, (void *)gmtdefs.foreground_rgb, 3 * sizeof (int));
-	memcpy ((void *)GMT_bfn.background_rgb, (void *)gmtdefs.background_rgb, 3 * sizeof (int));
-	memcpy ((void *)GMT_bfn.nan_rgb, (void *)gmtdefs.nan_rgb, 3 * sizeof (int));
+	memset ((void *)(&GMT_bfn), 0, 3*sizeof (struct GMT_BFN_COLOR));
+	memcpy ((void *)GMT_bfn[GMT_FGD].rgb, (void *)gmtdefs.foreground_rgb, 3 * sizeof (int));
+	memcpy ((void *)GMT_bfn[GMT_BGD].rgb, (void *)gmtdefs.background_rgb, 3 * sizeof (int));
+	memcpy ((void *)GMT_bfn[GMT_NAN].rgb, (void *)gmtdefs.nan_rgb, 3 * sizeof (int));
 
 	/* Make sure -b options are parsed first in case filenames are given
 	 * before -b options on the command line.  This would only cause grief

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.31 2003-02-18 22:11:42 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.32 2003-03-03 21:09:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -120,8 +120,8 @@ char *GMT_plot_format[3][2];		/* Keeps the 6 formats for dd:mm:ss plot output */
 /*	For color lookup purposes */
 /*--------------------------------------------------------------------*/
 
-struct GMT_LUT *GMT_lut;	/* CPT lookup table read by GMT_read_cpt */
-struct GMT_BFN_COLOR GMT_bfn;	/* Structure with back/fore/nan colors */
+struct GMT_LUT *GMT_lut;		/* CPT lookup table read by GMT_read_cpt */
+struct GMT_BFN_COLOR GMT_bfn[3];	/* Structures with back/fore/nan colors */
 int GMT_n_colors = 0;
 BOOLEAN GMT_gray;		/* TRUE if only grayshades are needed */
 BOOLEAN GMT_b_and_w;		/* TRUE if only black and white are needed */
