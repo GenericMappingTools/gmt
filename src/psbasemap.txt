@@ -44,8 +44,8 @@ psbasemap \- To plot \fIPostScript\fP basemaps
 .SH SYNOPSIS
 \fBpsbasemap\fP \fB\-B\fP\fItickinfo\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
 [ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-G\fP\fIfill\fP ] [ \fB\-K\fP ] 
-[ \fB\-L\fP[\fBf\fP][\fBx\fP]\fIlon0/lat0\fP[\fI/slon\fP]\fI/slat/length\fP[\fBm|n|k\fP][:\fIlabel\fP:\fIjust\fP][\fB+p\fP\fIpen\fp][\fB+f\fP\fIfill\fp] ] [ \fB\-O\fP ] 
-[ \fB\-P\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
+[ \fB\-L\fP[\fBf\fP][\fBx\fP]\fIlon0/lat0\fP[\fI/slon\fP]\fI/slat/length\fP[\fBm|n|k\fP][:\fIlabel\fP:\fIjust\fP][\fB+p\fP\fIpen\fP][\fB+f\fP\fIfill\fP] ] 
+[ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
 [ \fB\-T\fP[\fBf|m\fP][\fBx\fP]\fIlon0/lat0/size\fP[/\fIinfo\fP][:w,e,s,n:][+\fIgint\fP[/\fImint\fP]] ] 
 [ \fB\-V\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-X\fP\fIy-level\fP ] [ \fB\-Z\fP\fIzlevel\fP ] [ \fB\-c\fP\fIcopies\fP ]
 .SH DESCRIPTION

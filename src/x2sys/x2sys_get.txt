@@ -28,7 +28,7 @@ a certain region in the south Pacific, and have at least free air anomalies
 and bathymetry, try
 .br
 .sp
-\fBx2sys_get\fP \fB\-V \-T\fPMGD77 \fB\R\-R\fP180/240/-60/-30 \fB\-F\fPfaa,top 
+\fBx2sys_get\fP \fB\-V \-T\fPMGD77 \fB\-R\fP180/240/-60/-30 \fB\-F\fPfaa,top 
 .SH "SEE ALSO"
 .IR x2sys_binlist (GMTMANSECTION)
 .IR x2sys_put (GMTMANSECTION)
