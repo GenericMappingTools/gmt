@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 17
 #
-#		$Id: job17.sh,v 1.1 2001-09-14 18:55:04 pwessel Exp $
+#		$Id: job17.sh,v 1.2 2003-04-11 23:49:54 pwessel Exp $
 #
 # Purpose:	Illustrates clipping of images using coastlines
 # GMT progs:	grd2cpt, grdgradient, grdimage, pscoast, pstext
@@ -42,4 +42,4 @@ EOF
 
 # Clean up
 
-\rm -f geoid.cpt gray.cpt *_i.grd .gmt*
+rm -f geoid.cpt gray.cpt *_i.grd .gmt*

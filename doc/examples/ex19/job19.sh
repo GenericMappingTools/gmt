@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 19
 #
-#		$Id: job19.sh,v 1.2 2002-09-05 18:40:58 pwessel Exp $
+#		$Id: job19.sh,v 1.3 2003-04-11 23:49:54 pwessel Exp $
 #
 # Purpose:	Illustrates various color pattern effects for maps
 # GMT progs:	gmtset, grdimage, grdmath, makecpt, pscoast, pstext
@@ -40,4 +40,4 @@ echo "0 20 32 0 1 CM 2ND INTERNATIONAL" | pstext -R -JI -O -K -G255/0/0 -S0.5p >
 echo "0 -10 32 0 1 CM GMT CONFERENCE" | pstext -R -JI -O -K -G255/0/0 -S0.5p >> example_19.ps
 echo "0 -30 18 0 1 CM Honolulu, Hawaii, April 1, 2004" | pstext -R -JI -O -G0/255/50 -S0.25p >> example_19.ps
 
-\rm -f l*.grd l*.cpt .gmt*
+rm -f l*.grd l*.cpt .gmt*

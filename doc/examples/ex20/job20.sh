@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 20
 #
-#		$Id: job20.sh,v 1.2 2001-09-23 23:41:15 pwessel Exp $
+#		$Id: job20.sh,v 1.3 2003-04-11 23:49:54 pwessel Exp $
 #
 # Purpose:	Extend GMT to plot custom symbols
 # GMT progs:	pscoast, psxy
@@ -38,4 +38,4 @@ EOF
 
 psxy -R -JR cities.d -Skbullseye -O >> example_20.ps
 
-rm -f hotspots.d cities.d
+rm -f hotspots.d cities.d .gmt*
