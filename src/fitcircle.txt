@@ -56,7 +56,7 @@ project this data onto a great circle and resample it in distance, in order to f
 .sp
 \fBfitcircle\fP ship.xyg \fB\-L\fP2 
 .sp
-\fBproject\fP ship.xyg \fB\-O\fP\fIox\fP/\fIoy\fP \fB\-P\fP\fIpx\fP/\fIpy\fP \fB\-S\fP \fB\-pz\fP | \fBsample1d\fP \fB\-S\fP\-100 \fB\-I\fP1 
+\fBproject\fP ship.xyg \fB\-C\fP\fIox\fP/\fIoy\fP \fB\-T\fP\fIpx\fP/\fIpy\fP \fB\-S\fP \fB\-F\fPpz | \fBsample1d\fP \fB\-S\fP\-100 \fB\-I\fP1 
 > output.pg
 .sp
 Here, \fIox\fP/\fIoy\fP is the lon/lat of the mean from \fBfitcircle\fP, and \fIpx\fP/\fIpy\fP is the lon/lat 
