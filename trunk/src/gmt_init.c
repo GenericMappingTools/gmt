@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.72 2002-07-23 20:12:05 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.73 2002-07-26 03:05:54 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1991,9 +1991,11 @@ int GMT_get_ellipse (char *name)
 
 				gmtdefs.ellipse[i].flattening = 1.0 - (gmtdefs.ellipse[i].pol_radius / gmtdefs.ellipse[i].eq_radius);
 				fprintf (stderr, "GMT: user-supplied ellipsoid has implicit flattening of %.8lf\n", gmtdefs.ellipse[i].flattening);
+				if (gmtdefs.verbose) fprintf (stderr, "GMT: user-supplied ellipsoid has flattening of %s%.8lf\n",
+					gmtdefs.ellipse[i].flattening != 0.0 ? "1/" : "", gmtdefs.ellipse[i].flattening != 0.0 ? 1./gmtdefs.ellipse[i].flattening : 0.0);
 			}
 			/* else check consistency: */
-			else if (fabs(gmtdefs.ellipse[i].flattening - 1.0 + gmtdefs.ellipse[i].pol_radius/gmtdefs.ellipse[i].eq_radius) > 1.0e-11) {
+			else if (gmtdefs.ellipse[i].pol_radius > 0.0 && fabs(gmtdefs.ellipse[i].flattening - 1.0 + (gmtdefs.ellipse[i].pol_radius/gmtdefs.ellipse[i].eq_radius)) > 1.0e-11) {
 				fprintf (stderr, "GMT: Possible inconsistency in user ellipsoid parameters (%s)\n", line);
 				exit (EXIT_FAILURE);		
 			}
