@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.21 2004-01-13 03:08:47 pwessel Exp $
+ *	$Id: libspotter.c,v 1.22 2004-02-02 18:16:55 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -796,6 +796,25 @@ void spotter_add_rotations (struct EULER a[], int n_a, struct EULER b[], int n_b
 	
 	*n_c = n_k;
 	*c = c2;
+}
+
+double spotter_t2w (struct EULER a[], int n, double t)
+{
+	/* Take time, return cumulative omega */
+	
+	int i;
+	double w = 0.0;
+	
+	i = n - 1;
+	while (i >= 0 && t > a[i].t_start) {
+		w += fabs (a[i].omega);
+		i--;
+	}
+	if (i >= 0 && t > a[i].t_stop) {
+		w += fabs (a[i].omega * (t - a[i].t_stop) / a[i].duration);
+	}
+	
+	return (w);
 }
 
 void make_rot_matrix (double lonp, double latp, double w, double R[3][3])
