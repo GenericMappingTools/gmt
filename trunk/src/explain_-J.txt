@@ -211,4 +211,5 @@ if you don't have it).
 	The ellipsoid used in the map projections is user-definable by editing the .gmtdefaults file
 in your home directory.  13 commonly used ellipsoids and a spheroid are currently
 supported, and users may also specify their own ellipsoid parameters (see man gmtdefaults for more details).
-\fBGMT\fP default is WGS-84.
+\fBGMT\fP default is WGS-84.  Several GMT parameters can affect the projection: ELLIPSOID, INTERPOLANT,
+MAP_SCALE_FACTOR, and MEASURE_UNIT; see the \fBgmtdefaults\fP man page for details.

@@ -35,3 +35,9 @@ regular annotation interval.  (2) A \fBp\fP is appended to the \fItickinfo\fP st
 the annotation interval is expected to be in transformed units, but the annotation value
 will be plotted as untransformed units.  E.g., if \fItick\fP = 1 and \fIpower\fP = 0.5 (i.e., sqrt),
 then equidistant annotations labeled 1\-4\-9... will appear.
+.br
+These GMT parameters can affect the appearance of the map boundary: ANOT_MIN_ANGLE, ANOT_MIN_SPACING,
+ANOT_FONT, ANOT_FONT_SIZE, ANOT_OFFSET, BASEMAP_AXES, BASEMAP_FRAME_RGB, BASEMAP_TYPE, DEGREE_FORMAT,
+FRAME_PEN, FRAME_WIDTH, GRID_CROSS_SIZE, GRID_PEN, HEADER_FON, HEADER_FONT_SIZE, LABEL_FONT,
+LABEL_FONT_SIZE, LINE_STEP, OBLIQUE_ANOTATION, TICK_LENGTH, TICK_PEN, and Y_AXIS_TYPE; see the
+\fBgmtdefaults\fP man page for details.

@@ -252,7 +252,7 @@ Text string to appear above the beach ball (default) or under (add u).
 .br
 If size must be read, size must be in column 4 and Text string starts in column 5.
 .br
-\fIscale\R is the symbol size 
+\fIscale\fR is the symbol size 
 in MEASURE_UNIT (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended
 to indicate that the size information is in units of cm, inch, meter, or point, respectively).
 .sp
