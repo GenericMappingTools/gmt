@@ -1,5 +1,5 @@
 #!/bin/csh
-#		$Id: newgmtguru,v 1.4 2001-03-07 18:19:18 pwessel Exp $
+#		$Id: newgmtguru,v 1.5 2001-03-08 00:59:19 pwessel Exp $
 #
 # newgmtguru is run to initiate a new guru site
 # and helps setting up the guru directory with
@@ -74,7 +74,7 @@ cd GMT/guru
 
 cat << EOF
 
-STEP 3: SET GURU- AND SITE-SPECIFIC ENVIRONMENT
+STEP 4: SET GURU- AND SITE-SPECIFIC ENVIRONMENT
 
 You must edit the guru/guruenv.csh environment to work on `uname -n`.
 Follow instructions in the file.  The modified file will be saved
@@ -97,7 +97,7 @@ endif
 source $myenv
 cat << EOF
 
-STEP 4: SET GURU- AND SITE-SPECIFIC MAKE PARAMETERS
+STEP 5: SET GURU- AND SITE-SPECIFIC MAKE PARAMETERS
 
 You must edit the guru Makefile macros to work on `uname -n`.
 Follow instructions in the file.   Hit return to start editing:
@@ -113,7 +113,7 @@ cd ..
 
 cat << EOF
 
-STEP 5: GET COASTLINE FILES VIA FTP
+STEP 6: GET COASTLINE FILES VIA FTP
 
 The GMT coastline files are NOT under CVS control since they are
 themselves created from other files and this process is not yet
@@ -132,7 +132,7 @@ endif
 
 cat << EOF
 
-STEP 6: LEARN HOW TO UPDATE THE CVS SERVER
+STEP 7: LEARN HOW TO UPDATE THE CVS SERVER
 
 If you are a gmt-team member with write privileges, you need to learn
 how to commit your changes.  This requires you to know CVS quite a bit.
@@ -150,7 +150,7 @@ You really need to look through one of these to get a feel for how the
 CVS system works.  I wont grant write-access unless you know what you
 will be doing!
 
-STEP 7: REQUIRED 3RD PARTY TOOLS
+STEP 8: REQUIRED 3RD PARTY TOOLS
 
 GMT guru script use several utilities to do their things, like converting
 man pages to html and generate gif files.  You need to make sure you have:
