@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.19 2001-08-29 04:34:30 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.20 2001-09-10 23:56:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -632,7 +632,7 @@ void GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  
 	double sec, fsec, min, fmin, step;
 	
 	minus = (val < 0.0);
-	step = 0.5 / fact;  				/* Precision desired in seconds (or minutes) */
+	step = (fact == 0.0) ? 0.0 : 0.5 / fact;  		/* Precision desired in seconds (or minutes) */
 	
 	if (seconds) {		/* Want dd:mm:ss[.xxx] format */
 		sec = GMT_DEG2SEC_F * fabs (val);		/* Convert to seconds */
@@ -1635,8 +1635,8 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 		sprintf (S->x_format, "%s\0", gmtdefs.d_format);
 		sprintf (S->y_format, "%s\0", gmtdefs.d_format);
 		if (gmtdefs.degree_symbol < 2) {	/* But we want the degree symbol appended */
-			strcat (S->x_format, GMT_degree_symbol[gmtdefs.degree_symbol]);
-			strcat (S->y_format, GMT_degree_symbol[gmtdefs.degree_symbol]);
+			strcat (S->x_format, GMT_degree_symbol[gmtdefs.char_encoding][gmtdefs.degree_symbol]);
+			strcat (S->y_format, GMT_degree_symbol[gmtdefs.char_encoding][gmtdefs.degree_symbol]);
 		}
 		strcat (S->x_format, "%c\0");
 		strcat (S->y_format, "%c\0");
@@ -1657,8 +1657,8 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 		else						/* ddd format */
 			sprintf (GMT_plot_format[0][1], "%%d\0");
 		if (gmtdefs.degree_symbol < 2) {	/* But we want the degree symbol appended */
-			strcat (GMT_plot_format[0][0], GMT_degree_symbol[gmtdefs.degree_symbol]);
-			strcat (GMT_plot_format[0][1], GMT_degree_symbol[gmtdefs.degree_symbol]);
+			strcat (GMT_plot_format[0][0], GMT_degree_symbol[gmtdefs.char_encoding][gmtdefs.degree_symbol]);
+			strcat (GMT_plot_format[0][1], GMT_degree_symbol[gmtdefs.char_encoding][gmtdefs.degree_symbol]);
 		}
 		
 		/* Level 1: degrees and minutes only. index 0 is integer minutes, index 1 is [possibly] fractional minutes  */
@@ -1666,8 +1666,8 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 		sprintf (GMT_plot_format[1][0], "%%d\0");	/* ddd */
 		sprintf (GMT_plot_format[1][1], "%%d\0");
 		if (gmtdefs.degree_symbol < 3) {	/* We want the degree symbol appended */
-			strcat (GMT_plot_format[1][0], GMT_degree_symbol[gmtdefs.degree_symbol]);
-			strcat (GMT_plot_format[1][1], GMT_degree_symbol[gmtdefs.degree_symbol]);
+			strcat (GMT_plot_format[1][0], GMT_degree_symbol[gmtdefs.char_encoding][gmtdefs.degree_symbol]);
+			strcat (GMT_plot_format[1][1], GMT_degree_symbol[gmtdefs.char_encoding][gmtdefs.degree_symbol]);
 		}
 		strcat (GMT_plot_format[1][0], "%2.2d");
 		if (S->order[2] == -1 && S->n_sec_decimals > 0) /* ddd:mm.xxx format */
@@ -1676,8 +1676,8 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 			sprintf (fmt, "%%2.2d\0");
 		strcat (GMT_plot_format[1][1], fmt);
 		if (gmtdefs.degree_symbol < 2) {	/* We want the minute symbol appended */
-			strcat (GMT_plot_format[1][0], GMT_minute_symbol[which]);
-			strcat (GMT_plot_format[1][1], GMT_minute_symbol[which]);
+			strcat (GMT_plot_format[1][0], GMT_minute_symbol[gmtdefs.char_encoding][which]);
+			strcat (GMT_plot_format[1][1], GMT_minute_symbol[gmtdefs.char_encoding][which]);
 		}
 
 		/* Level 2: degrees, minutes, and seconds. index 0 is integer seconds, index 1 is [possibly] fractional seconds  */
@@ -1685,14 +1685,14 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 		sprintf (GMT_plot_format[2][0], "%%d\0");
 		sprintf (GMT_plot_format[2][1], "%%d\0");
 		if (gmtdefs.degree_symbol < 3) {	/* We want the degree symbol appended */
-			strcat (GMT_plot_format[2][0], GMT_degree_symbol[gmtdefs.degree_symbol]);
-			strcat (GMT_plot_format[2][1], GMT_degree_symbol[gmtdefs.degree_symbol]);
+			strcat (GMT_plot_format[2][0], GMT_degree_symbol[gmtdefs.char_encoding][gmtdefs.degree_symbol]);
+			strcat (GMT_plot_format[2][1], GMT_degree_symbol[gmtdefs.char_encoding][gmtdefs.degree_symbol]);
 		}
 		strcat (GMT_plot_format[2][0], "%2.2d");
 		strcat (GMT_plot_format[2][1], "%2.2d");
 		if (gmtdefs.degree_symbol < 3) {	/* We want the minute symbol appended */
-			strcat (GMT_plot_format[2][0], GMT_minute_symbol[which]);
-			strcat (GMT_plot_format[2][1], GMT_minute_symbol[which]);
+			strcat (GMT_plot_format[2][0], GMT_minute_symbol[gmtdefs.char_encoding][which]);
+			strcat (GMT_plot_format[2][1], GMT_minute_symbol[gmtdefs.char_encoding][which]);
 		}
 		strcat (GMT_plot_format[2][0], "%2.2d");
 		if (S->n_sec_decimals > 0)			 /* ddd:mm:ss.xxx format */
@@ -1701,8 +1701,8 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 			sprintf (fmt, "%%2.2d\0");
 		strcat (GMT_plot_format[2][1], fmt);
 		if (gmtdefs.degree_symbol < 2) {	/* We want the second symbol appended */
-			strcat (GMT_plot_format[2][0], GMT_second_symbol[which]);
-			strcat (GMT_plot_format[2][1], GMT_second_symbol[which]);
+			strcat (GMT_plot_format[2][0], GMT_second_symbol[gmtdefs.char_encoding][which]);
+			strcat (GMT_plot_format[2][1], GMT_second_symbol[gmtdefs.char_encoding][which]);
 		}
 	}
 

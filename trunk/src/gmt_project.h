@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.8 2001-08-27 17:30:07 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.9 2001-09-10 23:56:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -268,6 +268,7 @@ struct TIME_AXIS {		/* Informatino for one time axis */
 	struct TIME_AXIS_ITEM item[6];	/* 0 = upper anot, 1 = lower anot, 2 = upper tick, 3 = middle tick, 4 = lower tick, 5 = grid */
 	int side;			/* 2 = draw/anot, 1 = draw, 0 = skip */
 	char label[256];		/* Label of the axis */
+	char unit[32];			/* Axis unit appended to annotations */
 };
 
 struct TIME_FRAME {		/* Various parameters for plotting of time axis boundaries */
@@ -275,6 +276,7 @@ struct TIME_FRAME {		/* Various parameters for plotting of time axis boundaries 
 	char header[256];		/* Plot title */
 	BOOLEAN plot;			/* TRUE if -B was used */
 	BOOLEAN draw_box;		/* TRUE is a 3-D Z-box is desired */
+	int side[5];			/* Which sides to plot. 2 is anot/draw, 1 is draw, 0 is not */
 };
 
 

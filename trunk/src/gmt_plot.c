@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.14 2001-08-29 04:34:30 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.15 2001-09-10 23:56:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3373,7 +3373,7 @@ void old_GMT_get_anot_label (double val, char *label, int do_minutes, int do_sec
 			sprintf (label, format, val);
 		}
 		else {
-			sprintf (format, "%s%s\0", gmtdefs.d_format, GMT_degree_symbol[which]);
+			sprintf (format, "%s%s\0", gmtdefs.d_format, GMT_degree_symbol[gmtdefs.char_encoding][which]);
 			sprintf (label, format, val);
 		}
 		return;
@@ -3383,7 +3383,7 @@ void old_GMT_get_anot_label (double val, char *label, int do_minutes, int do_sec
 		if (no_degree)
 			sprintf (format, "%s\0", gmtdefs.d_format);
 		else
-			sprintf (format, "%s%s\0", gmtdefs.d_format, GMT_degree_symbol[which]);
+			sprintf (format, "%s%s\0", gmtdefs.d_format, GMT_degree_symbol[gmtdefs.char_encoding][which]);
 		sprintf (label, format, val);
 		return;
 	}
@@ -3391,7 +3391,7 @@ void old_GMT_get_anot_label (double val, char *label, int do_minutes, int do_sec
 		if (no_degree)
 			sprintf (format, "%s%c\0", gmtdefs.d_format, letter);
 		else
-			sprintf (format, "%s%s%c\0", gmtdefs.d_format, GMT_degree_symbol[which], letter);
+			sprintf (format, "%s%s%c\0", gmtdefs.d_format, GMT_degree_symbol[gmtdefs.char_encoding][which], letter);
 		sprintf (label, format, val);
 		return;
 	}
@@ -3433,13 +3433,13 @@ void old_GMT_get_anot_label (double val, char *label, int do_minutes, int do_sec
 				if (no_degree)
 					sprintf (label, "%d %s%c\0", sign * ival, minsec, letter);
 				else
-					sprintf (label, "%d%s %s%c\0", sign * ival, GMT_degree_symbol[which], minsec, letter);
+					sprintf (label, "%d%s %s%c\0", sign * ival, GMT_degree_symbol[gmtdefs.char_encoding][which], minsec, letter);
 			}
 			else {
 				if (no_degree)
 					sprintf (label, "%d %s\0", sign * ival, minsec);
 				else
-					sprintf (label, "%d%s %s\0", sign * ival, GMT_degree_symbol[which], minsec);
+					sprintf (label, "%d%s %s\0", sign * ival, GMT_degree_symbol[gmtdefs.char_encoding][which], minsec);
 			}
 		}
 		else {
@@ -3447,13 +3447,13 @@ void old_GMT_get_anot_label (double val, char *label, int do_minutes, int do_sec
 				if (no_degree)
 					sprintf (label, "%d %.2d\\251%c\0", sign * ival, minutes, letter);
 				else
-					sprintf (label, "%d%s %.2d\\251%c\0", sign * ival, GMT_degree_symbol[which], minutes, letter);
+					sprintf (label, "%d%s %.2d\\251%c\0", sign * ival, GMT_degree_symbol[gmtdefs.char_encoding][which], minutes, letter);
 			}
 			else {
 				if (no_degree)
 					sprintf (label, "%d %.2d\\251\0", sign * ival, minutes);
 				else
-					sprintf (label, "%d%s %.2d\\251\0", sign * ival, GMT_degree_symbol[which], minutes);
+					sprintf (label, "%d%s %.2d\\251\0", sign * ival, GMT_degree_symbol[gmtdefs.char_encoding][which], minutes);
 			}
 		}
 		if (zero_fix) label[1] = '0';	/* Undo the fix above */
@@ -3463,13 +3463,13 @@ void old_GMT_get_anot_label (double val, char *label, int do_minutes, int do_sec
 			if (no_degree)
 				sprintf (label, "%d%c\0", sign * ival, letter);
 			else
-				sprintf (label, "%d%s%c\0", sign * ival, GMT_degree_symbol[which], letter);
+				sprintf (label, "%d%s%c\0", sign * ival, GMT_degree_symbol[gmtdefs.char_encoding][which], letter);
 		}
 		else {
 			if (no_degree)
 				sprintf (label, "%d\0", sign * ival);
 			else
-				sprintf (label, "%d%s\0", sign * ival, GMT_degree_symbol[which]);
+				sprintf (label, "%d%s\0", sign * ival, GMT_degree_symbol[gmtdefs.char_encoding][which]);
 		}
 	}
 	return;

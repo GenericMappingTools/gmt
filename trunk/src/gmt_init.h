@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.13 2001-08-29 18:03:05 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.14 2001-09-10 23:56:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -71,18 +71,32 @@ char *GMT_weekdays[7] = {	/* Days of the week in English */
 	"Saturday"
 };
 
-char *GMT_char_encoding[3] = {	/* PostScript character encodings */
+char *GMT_char_encoding[4] = {	/* PostScript character encodings */
 	"Standard",
-	"GMT3.4",
-	"ISOLatin1"
+	"Standard+",
+	"ISOLatin1",
+	"ISOLatin1+"
 };
 
-char *GMT_degree_symbol[3] = {		/* Ring [Default], Degree, and colon degree symbols */
-"\\312", "\\217", ":"
+char *GMT_degree_symbol[4][3] = {		/* Ring [Default], Degree, and colon degree symbols for each encoding */
+	{ "\\312", "\\217", ":"},
+	{ "\\312", "\\217", ":"},
+	{ "\\232", "\\260", ":"},
+	{ "\\232", "\\260", ":"}
 };
 
-char *GMT_minute_symbol[2] = { "\\251", ":"};	/* Standard encoding minute symbol */
-char *GMT_second_symbol[2] = { "\\042", ":"};	/* Standard encoding second symbol */
+char *GMT_minute_symbol[4][2] = {		/* minute symbol for each encoding. Tricky because ISOLatin1 does not have plain singlequote... */
+	{ "\\251", ":" },
+	{ "\\251", ":" },
+	{ "\\047", ":" },
+	{ "\\234", ":" }
+};
+char *GMT_second_symbol[4][2] = {			/* Second symbol for each encoding */
+	{ "\\042", ":" },
+	{ "\\042", ":" },
+	{ "\\042", ":" },
+	{ "\\042", ":" }
+};
 
 /*--------------------------------------------------------------------*/
 /*	For plotting purposes */
