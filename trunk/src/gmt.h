@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.28 2001-10-15 17:25:05 pwessel Exp $
+ *	$Id: gmt.h,v 1.29 2001-10-15 22:39:41 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -68,7 +68,6 @@
 #endif
 #include <stdio.h>
 #include <stdlib.h>
-#define _XOPEN_SOURCE
 #include <string.h>
 #include <time.h>
 
