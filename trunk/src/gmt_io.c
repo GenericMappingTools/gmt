@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.73 2004-12-26 21:05:17 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.74 2004-12-26 22:13:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2495,25 +2495,37 @@ int	GMT_scanf_arg (char *s, int expectation, double *val)
 
 /* Function to read a list of points and hold in memory */
 
-int GMT_points_init (char *file, double **xp, double **yp, double **dp, double dist, BOOLEAN greenwich)
+int GMT_points_init (char *file, double **xp, double **yp, double **dp, double dist, BOOLEAN greenwich, BOOLEAN use_GMT_io)
 {
 	FILE *fp;
 	double *x, *y, *d, *in;
-	int i = 0, n_alloc = GMT_CHUNK, n_fields, n_expected_fields = BUFSIZ;
+	char mode[4];
+	int i = 0, n_alloc = GMT_CHUNK, n_fields, n_expected_fields;
+	BOOLEAN ascii;
 
 	x = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
 	y = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
 	d = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
 
-	if ((fp = GMT_fopen (file, "r")) == NULL) {
+	if (use_GMT_io) {	/* Use GMT_io to determine if input is ascii/binary, else it is ascii */
+		n_expected_fields = (GMT_io.binary[GMT_IN]) ? GMT_io.ncol[GMT_IN] : BUFSIZ;
+		strcpy (mode, GMT_io.r_mode);
+		ascii = !GMT_io.binary[GMT_IN];
+	}
+	else {			/* ASCII mode */
+		n_expected_fields = BUFSIZ;
+		strcpy (mode, "r");
+		ascii = TRUE;
+	}
+	if ((fp = GMT_fopen (file, mode)) == NULL) {
 		fprintf (stderr, "%s: Cannot open file %s\n", GMT_program, file);
 		exit (EXIT_FAILURE);
 	}
 
-	while ((n_fields = GMT_input_ascii (fp, &n_expected_fields, &in)) >= 0 && ! (GMT_io.status & GMT_IO_EOF)) {	/* Not yet EOF */
+	while ((n_fields = GMT_input (fp, &n_expected_fields, &in)) >= 0 && ! (GMT_io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 
 		while (GMT_io.status & GMT_IO_SEGMENT_HEADER && !(GMT_io.status & GMT_IO_EOF)) {
-			n_fields = GMT_input_ascii (fp, &n_expected_fields, &in);
+			n_fields = GMT_input (fp, &n_expected_fields, &in);
 		}
 		if ((GMT_io.status & GMT_IO_EOF)) continue;	/* At EOF */
 
@@ -2528,7 +2540,7 @@ int GMT_points_init (char *file, double **xp, double **yp, double **dp, double d
 		}
 		
 		x[i] = in[0];	y[i] = in[1];
-		d[i] = (n_expected_fields >= 3 && dist == 0.0) ? in[2] : dist;
+		d[i] = (ascii && n_expected_fields >= 3 && dist == 0.0) ? in[2] : dist;
 		if (MAPPING) {
 			if (greenwich  && x[i] > 180.0) x[i] -= 360.0;
 			if (!greenwich && x[i] < 0.0)   x[i] += 360.0;
@@ -2560,23 +2572,33 @@ int GMT_points_init (char *file, double **xp, double **yp, double **dp, double d
 	return (i);
 }
 
-int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN greenwich)
+int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN greenwich, BOOLEAN use_GMT_io)
 {
 	FILE *fp;
 	struct GMT_LINES *e;
 	int i = -1, j = 0, n, i_alloc = GMT_CHUNK, n_read = 0, j_alloc = GMT_CHUNK;
-	int n_fields, n_expected_fields = BUFSIZ, n_tot_mem = 0;
-	BOOLEAN poly = FALSE, check_cap, save;
+	int n_fields, n_expected_fields, n_tot_mem = 0;
+	BOOLEAN poly = FALSE, check_cap, save, ascii;
 	double d, dlon, lon_sum, *in;
-	char buffer[BUFSIZ], *t;
+	char buffer[BUFSIZ], *t, mode[4];
 		
+	if (use_GMT_io) {	/* Use GMT_io to determine if input is ascii/binary, else it is ascii */
+		n_expected_fields = (GMT_io.binary[GMT_IN]) ? GMT_io.ncol[GMT_IN] : BUFSIZ;
+		strcpy (mode, GMT_io.r_mode);
+		ascii = !GMT_io.binary[GMT_IN];
+	}
+	else {			/* ASCII mode */
+		n_expected_fields = BUFSIZ;
+		strcpy (mode, "r");
+		ascii = TRUE;
+	}
 	if (fabs (dist + 9999.0) < GMT_CONV_LIMIT) poly = TRUE;	/* A polygon */
 	check_cap = (poly && MAPPING);
 	
 	e = (struct GMT_LINES *) GMT_memory (VNULL, (size_t)i_alloc, sizeof (struct GMT_LINES), GMT_program);
 
 n_tot_mem += i_alloc * sizeof (struct GMT_LINES);
-	if ((fp = GMT_fopen (file, "r")) == NULL) {
+	if ((fp = GMT_fopen (file, mode)) == NULL) {
 		fprintf (stderr, "%s: Cannot open file %s\n", GMT_program, file);
 		exit (EXIT_FAILURE);
 	}
@@ -2584,7 +2606,7 @@ n_tot_mem += i_alloc * sizeof (struct GMT_LINES);
 	save = GMT_io.multi_segments;	/* Must set this to TRUE temporarily */
 	GMT_io.multi_segments = TRUE;
 	
-	n_fields = GMT_input_ascii (fp, &n_expected_fields, &in);
+	n_fields = GMT_input (fp, &n_expected_fields, &in);
 	if (GMT_io.status & GMT_IO_EOF) {
 		fprintf (stderr, "%s: File %s is empty!\n", GMT_program, file);
 		exit (EXIT_FAILURE);
@@ -2599,20 +2621,26 @@ n_tot_mem += i_alloc * sizeof (struct GMT_LINES);
 			/* To use different line-distances for each segment, place the distance in the segment header */
 			if (i == -1 || e[i].np > 0) i++;	/* Only advance segment if last had any points or was the first one */
 			n_read++;
-			n = sscanf (&GMT_io.segment_header[1], "%lg", &d);
-			e[i].dist = (n == 1 && dist == 0.0) ? d : dist;
+			if (ascii) {	/* Only ascii files can have info stored in multi-seg header record */
+				n = sscanf (&GMT_io.segment_header[1], "%lg", &d);
+				e[i].dist = (n == 1 && dist == 0.0) ? d : dist;
+			}
+			else
+				e[i].dist = dist;
 			j_alloc = GMT_CHUNK;
 			j = 0;
 			lon_sum = 0.0;
-			n_fields = GMT_input_ascii (fp, &n_expected_fields, &in);
+			n_fields = GMT_input (fp, &n_expected_fields, &in);
 		}
 		if ((GMT_io.status & GMT_IO_EOF)) continue;	/* At EOF */
-		if ((t = strstr (GMT_io.segment_header, " -L")) || (t = strstr (GMT_io.segment_header, "	-L")))	/* Set specified label */
-			strcpy (buffer, &t[3]);
-		else
-			sscanf (&GMT_io.segment_header[1], "%s", buffer);
-		e[i].label = (char *) GMT_memory ((void *)VNULL, (size_t)(strlen(buffer)+1), sizeof (char), GMT_program);
-		strcpy (e[i].label, buffer);
+		if (ascii) {	/* Only ascii files can have info stored in multi-seg header record */
+			if ((t = strstr (GMT_io.segment_header, " -L")) || (t = strstr (GMT_io.segment_header, "	-L")))	/* Set specified label */
+				strcpy (buffer, &t[3]);
+			else
+				sscanf (&GMT_io.segment_header[1], "%s", buffer);
+			e[i].label = (char *) GMT_memory ((void *)VNULL, (size_t)(strlen(buffer)+1), sizeof (char), GMT_program);
+			strcpy (e[i].label, buffer);
+		}
 		
 		e[i].lon = (double *) GMT_memory (VNULL, (size_t)j_alloc, sizeof (double), GMT_program);
 		e[i].lat = (double *) GMT_memory (VNULL, (size_t)j_alloc, sizeof (double), GMT_program);
@@ -2646,7 +2674,7 @@ n_tot_mem += i_alloc * sizeof (struct GMT_LINES);
 				e[i].lon = (double *) GMT_memory ((void *)e[i].lon, (size_t)j_alloc, sizeof (double), GMT_program);
 				e[i].lat = (double *) GMT_memory ((void *)e[i].lat, (size_t)j_alloc, sizeof (double), GMT_program);
 			}
-			n_fields = GMT_input_ascii (fp, &n_expected_fields, &in);
+			n_fields = GMT_input (fp, &n_expected_fields, &in);
 		}
 		e[i].np = j;
 
