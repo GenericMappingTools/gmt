@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.64 2004-06-01 02:28:32 pwessel Exp $
+ *	$Id: pslib.c,v 1.65 2004-06-01 09:38:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2150,7 +2150,7 @@ void ps_text_ (double *x, double *y, double *pointsize, char *text, double *angl
 	ps_text (*x, *y, *pointsize, text, *angle, *justify, *form);
 }
 
-void ps_pathtext (double x[], double y[], int n, int node[], double angle[], char *label[], int m, double pointsize, double offset, int justify, int p_rgb[], int t_rgb[], int form)
+void ps_pathtext (double x[], double y[], int n, int node[], double angle[], char *label[], int m, double pointsize, double offset[], int justify, int p_rgb[], int t_rgb[], int form)
 {
 	/* x,y		Array containing the label path
 	/* n		Length of label path
@@ -2159,17 +2159,23 @@ void ps_pathtext (double x[], double y[], int n, int node[], double angle[], cha
 	 * label	Array of text labels
 	 * m		Number of labels
 	 * pointsize	Pointsize of label text
-	 * offset	Gap between labelline and start of label
+	 * offset	Clearences between text and textbox
 	 * just		Justification of text relative to label coordinates
 	 * p_rgb	Line color
 	 * t_rgb	Font color
-	 * form		bits: 0 = straigth text, 1 = curved text, 2 = just place gap, 4 = skip line, 8 = clip path, 16 = paint clip path
+	 * form		bits: 0 = straigth text, 1 = curved text, 2 = just place gap, 4 = skip line, 8 = clip path, 16 = paint clip path, 32 = just call labelline
 	 */
 	 
-	int i = 0, j, k;
+	int i = 0, j, k, place;
 	double height;
 	char *string;
 	
+	if (form & 32) {		/* If 32 bit is set we already have placed the info */
+		form &= 31;		/* Knock off the 32 flag */
+		fprintf (ps.fp, "%d PSL_labelline\n", form);
+		return;
+	}
+
 	if (m <= 0) return;	/* Nothing to do yet */
 	
 	if (PSL_first) {
@@ -2202,7 +2208,8 @@ void ps_pathtext (double x[], double y[], int n, int node[], double angle[], cha
 	ps_set_int_array ("PSL_node", node, m);
 	ps_set_txt_array ("PSL_str", label, m);
 	ps_set_integer ("PSL_just", justify);
-	ps_set_length ("PSL_gap_x", offset);
+	ps_set_length ("PSL_gap_x", offset[0]);
+	ps_set_length ("PSL_gap_y", offset[1]);
 	fprintf (ps.fp, "/PSL_setpenrgb { ");
 	k = ps_place_color (p_rgb);
 	fprintf (ps.fp, "%c } def\n", ps_paint_code[k]);
