@@ -1,20 +1,21 @@
 <HTML>
-<!--  $Id: gmt_registration.html,v 1.5 2004-09-24 22:59:26 pwessel Exp $  -->
+<!--  $Id: gmt_registration.html,v 1.6 2004-09-25 03:26:41 pwessel Exp $  -->
 <HEAD>
 <TITLE>GMT Registration</TITLE>
 </HEAD>
 <BODY BACKGROUND="gmt_paper.gif">
 <FORM ACTION="/cgi-bin/gmt_form.pl" METHOD="POST">
-<H1></H1>
-<H1><CENTER>GMT Registration</CENTER>
-</H1>
-<BR>
+<H1><CENTER>GMT Registration</CENTER></H1>
 <H2>Location Map:</H2>
 If you supply us with the longitude and latitude of you work-place we will
 automatically add a circle to the GMT usage map on the <A HREF="http://gmt.soest.hawaii.edu">GMT
-home page</A> (This is done once a day only). <BR>
-
-Longitude Degrees: 
+home page</A> (This is done once a day only).<P>
+<CENTER>
+<TABLE border=1 cellspacing=2 cellpadding=4 bgcolor="lightskyblue" bordercolor="black">
+  <TR>
+<TD>
+LONGITUDE:
+</TD><TD>Degrees: 
 <SELECT NAME="lon_deg">
 <OPTION SELECTED>0
 <OPTION>0
@@ -199,7 +200,8 @@ Longitude Degrees:
 <OPTION>179
 <OPTION>180
 </SELECT>
-Minutes:<SELECT NAME="lon_min">
+</TD><TD>
+Minutes: <SELECT NAME="lon_min">
 <OPTION SELECTED>0
 <OPTION>0
 <OPTION>1
@@ -262,7 +264,7 @@ Minutes:<SELECT NAME="lon_min">
 <OPTION>58
 <OPTION>59
 </SELECT>
-Seconds:<SELECT NAME="lon_sec">
+</TD><TD>Seconds: <SELECT NAME="lon_sec">
 <OPTION SELECTED>0
 <OPTION>0
 <OPTION>1
@@ -325,13 +327,15 @@ Seconds:<SELECT NAME="lon_sec">
 <OPTION>58
 <OPTION>59
 </SELECT>
-<SELECT NAME="lon_dir">
+</TD><TD><SELECT NAME="lon_dir">
 <OPTION SELECTED>W
 <OPTION>E
 </SELECT>
-<P>
-
-Latitude Degrees: 
+</TD>
+</TR>
+<TR>
+<TD>LATITUDE:
+</TD><TD>Degrees: 
 <SELECT NAME="lat_deg">
 <OPTION SELECTED>0
 <OPTION>0
@@ -426,7 +430,7 @@ Latitude Degrees:
 <OPTION>89
 <OPTION>90
 </SELECT>
-Minutes: <SELECT NAME="lat_min">
+</TD><TD>Minutes: <SELECT NAME="lat_min">
 <OPTION SELECTED>0
 <OPTION>0
 <OPTION>1
@@ -489,7 +493,7 @@ Minutes: <SELECT NAME="lat_min">
 <OPTION>58
 <OPTION>59
 </SELECT>
-Seconds:<SELECT NAME="lat_sec">
+</TD><TD>Seconds: <SELECT NAME="lat_sec">
 <OPTION SELECTED>0
 <OPTION>0
 <OPTION>1
@@ -552,13 +556,16 @@ Seconds:<SELECT NAME="lat_sec">
 <OPTION>58
 <OPTION>59
 </SELECT>
-<SELECT NAME="lat_dir">
+</TD><TD><SELECT NAME="lat_dir">
 <OPTION SELECTED>N
 <OPTION>S
 </SELECT>
-<HR>
-<P><CENTER><HR><INPUT NAME="submit" TYPE="submit" VALUE="Submit">this form.
-<INPUT NAME="name" TYPE="reset" VALUE="Reset">all fields.</CENTER>
+</TD>
+</TR>
+</TABLE>
+</CENTER>
+<P><CENTER><HR><INPUT NAME="submit" TYPE="submit" VALUE="Submit"> your coordinates.&nbsp;&nbsp;
+<INPUT NAME="name" TYPE="reset" VALUE="Reset"> all fields.</CENTER>
 </FORM>
 </BODY>
 </HTML>

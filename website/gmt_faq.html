@@ -1,8 +1,7 @@
 <HTML>
-<!--  $Id: gmt_faq.html,v 1.5 2002-02-22 19:22:57 pwessel Exp $  -->
+<!--  $Id: gmt_faq.html,v 1.6 2004-09-25 03:26:41 pwessel Exp $  -->
 <title>GMT - Frequently Asked GMT Questions</title>
 <body bgcolor="#ffffff">
-<P><img src="images/gmt_bar.gif" ALT="---------------------------------"></P>
 
 <center><h1>GMT - The Generic Mapping Tools</h1><p>
 <h2>Frequently Asked Questions</h2></center>
@@ -15,7 +14,7 @@ several revisions and major enhancements since then.  The current version is 4.
 GMT is supported by the National Science Foundation.</P></LI>
 <HR>
 <LI>	<A> Who is using GMT ? </A>
-<P>As of January 2002 it appears that around 7000 scientists and engineers worldwide are
+<P>As of October 2004 it appears that around 10,000 scientists and engineers worldwide are
 using GMT in their work.  This estimate is based on ftp traffic and returned
 registration forms over the last few
 years.  Most users of GMT are Earth scientists, but there are apparently no limits to
@@ -25,47 +24,51 @@ geographers, fisheries institutes, oil companies, and a wide range of government
 agencies.</P></LI>
 <HR>
 <LI>	<A> Is GMT Year 2000 Compliant ? </A>
-<P>Yes.  GMT is written in ANSI C and is POSIX and Y2K compliant.</P></LI>
+<P>Yes.  GMT is written in ANSI C and is POSIX and Y2K compliant.  Furthermore, it
+can read time-series data that is "Y2K-challenged" (i.e., 2-digit years only).</P></LI>
 <HR>
 <LI>	<A> What UNIX workstations does it run on ? </A>
 <P>GMT has been installed on a variety of UNIX systems, including (but not limited to)
-computers from Cray, Sun, IBM, DEC, HP, SGI, Data General, Apple, and Next, all running
+computers from Cray, Sun, IBM, DEC, HP, SGI, Data General, Apple (Mac OS X), and Next, all running
 some flavor of UNIX.  GMT has also been installed under Linux and MkLinux, which are
-open source UNIX-like operating systems for PC and Macintosh, respectively.  GMT also installs under Winows 95/98/NT/2000/XP and OS/2.
+open source UNIX-like operating systems for PC and Mac OS 9, respectively.  GMT also
+installs under Winows 95/98/NT/2000/XP and OS/2.
 GMT is very portable and should compile on almost any computer.</P></LI>
 <HR>
 <LI>	<A> Can GMT run on non-UNIX computers ? </A>
-<P>Yes.  Very many GMT users with PCs simply install Linux in
+<P>Yes.  Many GMT users with PCs simply install Linux in
 addition to Windows and boot either operating system.
 If you do not have or want to install a UNIX operating system on your
-computer, there are two ways to go:<BR><P>
+PC, there are two ways to go:<BR><P>
 <OL>
-<LI>Run a UNIX environment on top of your other operating system.  Under Windows NT/2000/XP
-you could install <A HREF="http://www.interix.com">Interix</A> (formerly OpenNT), which gives
-you a POSIX-compliant environment with the usual UNIX tools (shells, awk, grep).
-A no-cost option is to install the <A HREF="http://www.cygwin.com">Cygwin</A> 
+<LI>Run a UNIX environment on top of your other operating system.  Under Windows
+you could install <A HREF="http://www.microsoft.com/Windows/sfu">Windows Services for
+UNIX</A> (formerly Interix and OpenNT), which gives
+you a free, POSIX-compliant environment with the usual UNIX tools (shells, awk, grep).
+Another no-cost option is to install the <A HREF="http://sources.redhat.com/cygwin">Cygwin</A> 
 package which also gives you a POSIX-compliant
 UNIX environment on your PC in which GMT may be installed.
 Under MacOS 9 or earlier you could install <A HREF="http://www.tenon.com">MachTen</A> which does the same
-thing on a Machintosh.  We prefer these options since many tasks that GMT is used for depend strongly on access to
-UNIX tools such as csh, awk, grep, sed, etc.</P></LI>
-<LI>Install GMT directly in Windows 95/98/NT/2000/XP or OS/2.  You could do this from scratch if you
+thing on an older Machintosh (Mac OS X, of course, is UNIX-based).  We prefer the
+UNIX-options for Windows over DOS-style batch scripts since many tasks that GMT is used
+for depend strongly on access to UNIX tools such as csh, awk, grep, sed, etc.</P></LI>
+<LI>Install GMT directly in Windows or OS/2.  You could do this from scratch if you
 have a compiler (GMT comes with instructions for Microsoft Visual C/C++ compiler), or
 simply install the precompiled Win32 executables from the ftp sites.
-Sorry, there is no such option for MacOS 9 or earlier.  If you have MacOS X you can install GMT as on any
-UNIX workstation.</LI>
+Sorry, there is no such option for MacOS 9 or earlier.  If you have MacOS X you can
+install GMT as on any UNIX workstation.</LI>
 </OL>
 <HR>
 <LI>	<A> How much disk space and memory is required ? </A>
-	<P><B>Disk space:</B> GMT contains some 65,000 lines of code.  On a Sun
-workstation running Solaris the executables take up about 72 Mb.  In addition there are support
-data such as coastlines, rivers, and political boundaries.  The default distribution
-of these data includes intermediate, low and crude resolution versions which together
-takes up another 4.6 Mb of space.  These are sufficient
-for most map applications.  Optionally, the user may install
-the high and full resolution data sets, taking up additional 12.7 Mb and 58.2 Mb,
-respectively.  Complete PS/HTML/MAN documentation adds another 27 Mb.  Thus, a
-complete GMT installation may take up a little less than 175 Mb</P>
+	<P><B>Disk space:</B> GMT contains some 100,000 lines of code.  On a Linux
+workstationthe executables take up about 15-50 Mb depending on use of shared libraries.
+In addition there are support data such as coastlines, rivers, and political boundaries.
+The default distribution of these data includes intermediate, low and crude resolution
+versions which together takes up another 5 Mb of space.  These are sufficient
+for most regional map applications.  Optionally, the user may install
+the high and full resolution data sets, taking up additional 13 Mb and 60 Mb,
+respectively.  Complete PS/HTML/MAN documentation adds another 40 Mb.  Thus, a
+complete GMT installation may take up around 200 Mb.</P>
 <P><B>Memory:</B> All GMT modules use dynamic allocation of memory and may
 therefore run on systems with modest memory resources such as personal
 computers.  However, some operations such as gridding and manipulation
@@ -126,20 +129,18 @@ via the internet.  For Unix/Windows CD-R compilations of several Gb of Earth sci
   <P>The best reference to GMT is an article by Wessel and Smith published in EOS, the
   transactions of the American Geophysical Union, on Oct 8th 1991 (Wessel, P. and W. H. F. Smith,
 Free software helps map and display data, EOS Trans. AGU, 72, 441, 1991).
-<p>We have a news release in EOS that discusses the 3.1 version (Wessel, P. and W. H. F. Smith,
+<p>We had a news release in EOS that discussed the 3.1 version (Wessel, P. and W. H. F. Smith,
 New, improved version of the Generic Mapping Tools released, EOS Trans. AGU, 79, 579, 1998).
-Furthermore, the new electronic supplement for EOS
-  contains a more detailed article describing the
+Furthermore, the electronic supplement for EOS contains a more detailed article describing the
 <A HREF="http://www.agu.org/eos_elec/95154e.html">GMT 3.0 release</A>.</P>
-  <P>The GMT distribution also contains an 131-page Technical Reference and Cookbook with
+  <P>The GMT distribution also contains an ~150-page Technical Reference and Cookbook with
   many examples of GMT usage, in addition to separate UNIX man pages for each program.</P>
   <P>Another reference which documents one gridding algorithm used by GMT is an article
   by Smith and Wessel in Geophysics, vol. 55, pp. 293-305, 1990.</P></LI>
 </UL>
 <HR>
-<P><img src="images/gmt_bar.gif" ALT="---------------------------------"></P>
 <A HREF="http://gmt.soest.hawaii.edu">
-<IMG SRC="images/gmt_small_logo.gif" ALT="RETURN">
+<IMG SRC="gmt_small_logo.gif" ALT="RETURN">
 Return to GMT home page.
 </A>
 </HTML>
