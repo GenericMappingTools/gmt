@@ -1,7 +1,7 @@
 #/bin/sh
 #		GMT EXAMPLE 03
 #
-#		$Id: job03.sh,v 1.4 2002-04-24 23:31:22 ben Exp $
+#		$Id: job03.sh,v 1.5 2002-04-25 06:20:10 ben Exp $
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
 # GMT progs:	filter1d, fitcircle, gmtset, minmax, project, sample1d, 
@@ -106,7 +106,7 @@ psxy -R -JX -O -Sp0.03i samp_ship.pg >> example_03c.ps
 # Now to do the cross-spectra, assuming that the ship is the input and the sat is the output 
 # data, we do this:
 # 
-paste samp_ship.pg samp_sat.pg | cut -f2,4 | spectrum1d -S256 -D1 -W -C >& /dev/null
+paste samp_ship.pg samp_sat.pg | cut -f2,4 | spectrum1d -S256 -D1 -W -C > /dev/null
 # 
 # Now we want to plot the spectra.  The following commands will plot the ship and sat 
 # power in one diagram and the coherency on another diagram,  both on the same page.  
@@ -167,7 +167,7 @@ psxy -R -JX -O -Sp0.03i samp2_ship.pg >> example_03e.ps
 # the previous one (example_03d.ps) we see that throwing out the large feature has reduced
 # the power in both data sets and reduced the coherency at wavelengths between 20--60 km.
 #
-paste samp2_ship.pg samp2_sat.pg | cut -f2,4 | spectrum1d -S256 -D1 -W -C >& /dev/null
+paste samp2_ship.pg samp2_sat.pg | cut -f2,4 | spectrum1d -S256 -D1 -W -C > /dev/null
 # 
 psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3f in Cookbook" -P -K -X2.5i -Sc0.07i -G0 -Ey/2 -Y1.5i > example_03f.ps
 echo "3.85 3.6 18 0.0 1 TR Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx -O -K >> example_03f.ps
