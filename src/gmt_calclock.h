@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.h,v 1.12 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt_calclock.h,v 1.13 2002-10-30 23:21:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -67,6 +67,10 @@ struct GMT_MOMENT_INTERVAL {
 	char		unit;
 };
 
+struct GMT_TRUNCATE_TIME {		/* Used when TIME_IS_INTERVAL is not OFF */
+	struct GMT_MOMENT_INTERVAL T;
+	int direction;			/* 0 [+] to center on next interval, 1 [-] for previous interval */
+};
 
 /* Functions whose source is in gmt_calclock.c:  */
 

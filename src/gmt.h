@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.39 2002-09-27 18:04:09 pwessel Exp $
+ *	$Id: gmt.h,v 1.40 2002-10-30 23:21:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -473,6 +473,7 @@ EXTERN_MSC int GMT_pad[4];
 /*--------------------------------------------------------------------*/
 
 EXTERN_MSC struct PLOT_FRAME frame_info;	/* Boundary info for linear plots and maps */
+EXTERN_MSC struct GMT_TRUNCATE_TIME GMT_truncate_time;	/* Used to round off times to mid-interval */
 EXTERN_MSC double *GMT_x_plot;			/* Holds the x/y (inches) of a line to be plotted */
 EXTERN_MSC double *GMT_y_plot;
 EXTERN_MSC int *GMT_pen;			/* Pen (3 = up, 2 = down) for these points */
