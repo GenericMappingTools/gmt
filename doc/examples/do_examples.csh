@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-#	$Id: do_examples.csh,v 1.3 2004-04-29 04:15:26 pwessel Exp $
+#	$Id: do_examples.csh,v 1.4 2004-04-29 22:41:30 pwessel Exp $
 #
 # csh script to test all GMT examples (csh versions).
 # If one argument is passed it is assumed to be the
@@ -15,7 +15,7 @@ if ("X$LANG" == "X") then
 else
 	set OLDLANG = $LANG
 endif
-setenv LANG = C
+setenv LANG C
 
 # First find the right awk tool:
 
