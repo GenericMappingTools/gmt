@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.39 2004-04-05 22:54:24 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.40 2004-04-07 20:15:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -51,8 +51,14 @@ char *GMT_media_name[GMT_N_MEDIA] = {		/* Names of all paper formats */
 #include "gmt_media_name.h"
 };
 
-struct GMT_COLOR_NAME GMT_colorname[GMT_N_COLOR_NAMES] = {	/* Names and r/g/b of colors */
+struct GMT_HASH GMT_rgb_hashnode[GMT_N_COLOR_NAMES];/* Used to translate colornames to r/g/b */
+
+char *GMT_color_name[GMT_N_COLOR_NAMES] = {	/* Names of X11 colors */
 #include "gmt_colornames.h"
+};
+
+int GMT_color_rgb[GMT_N_COLOR_NAMES][3] = {	/* r/g/b of X11 colors */
+#include "gmt_color_rgb.h"
 };
 
 struct GMT_PEN_NAME GMT_penname[GMT_N_PEN_NAMES] = {		/* Names and widths of pens */

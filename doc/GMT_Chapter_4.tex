@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.32 2004-03-14 20:55:33 ben Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.33 2004-04-07 20:15:44 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -865,11 +865,12 @@ file.  See Appendix C and the \GMTprog{gmtdefaults} man page for more details.
 
 A pen in \GMT\ has three attributes: {\it width}, {\it color},
 and {\it texture}.  Most programs will accept pen attributes in
-the form of an option argument, e.g.,
+the form of an option argument, with commas separating the
+given attributes, e.g.,
 
 \vspace{\baselineskip} 
 
-\par \Opt{W}{\it width}[/{\it color}][{\bf t}{\it texture}][{\bf c$|$i$|$p$|$m}]\par 
+\par \Opt{W}[{\it width}[{\bf c$|$i$|$p$|$m}]],[{\it color}],[{\it texture}[{\bf c$|$i$|$p$|$m}]]\par 
 
 \begin{description}
 \index{Pen!width}
@@ -877,43 +878,66 @@ the form of an option argument, e.g.,
 \index{Attributes!pen!width}%
 \item[$\rightarrow$]{\it Width} is by default measured in units of the
 current device resolution (i.e., the value assigned to the parameter
-DOTS\_PR\_INCH in your
-\filename{.gmtdefaults4} file).  Thus, if the dpi is set to 300 this unit
-is 1/300th of an inch.  Append {\bf c}, {\bf i}, {\bf p}, or {\bf m} to specify pen width in
-cm, inch, points (1/72 of an inch)\footnote{\PS\ definition.  In the typesetting industry
+DOTS\_PR\_INCH in your \filename{.gmtdefaults4} file).  Thus, if the
+dpi is set to 300 this unit is 1/300th of an inch.  Append {\bf c},
+{\bf i}, {\bf p}, or {\bf m} to specify pen width in cm, inch, points
+(1/72 of an inch)\footnote{\PS\ definition.  In the typesetting industry
 a slighly different definition of point (1/72.27 inch) is used.}, or meters.
-Note that a pen thickness of 5 will be of different
-physical width depending on your dpi setting, whereas a thickness of
-5{\bf p} will always be 5/72 of an inch.  Minimum-thickness pens can be
-achieved by giving zero width, but the result is device-dependent. 
+Note that a pen thickness of 5 will be of different physical width
+depending on your dpi setting, whereas a thickness of 5{\bf p} will
+always be 5/72 of an inch.  Minimum-thickness pens can be achieved by
+giving zero width, but the result is device-dependent.  Finally, a few
+predefined pen names can be used: default, faint, and {thin, thick, fat}[er$|$est].
+Table~\ref{tbl:pennames} shows this list and the corresponding pen widths.
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|} \hline
+\multicolumn{1}{|c|}{\emph{Pen name}}	&	\multicolumn{1}{c|}{\emph{Width}} \\ \hline
+faint		&	0 \\ \hline 
+default		&	0.25p \\ \hline 
+thinnest	&	0.25p \\ \hline 
+thinner		&	0.50p \\ \hline 
+thin		&	0.75p \\ \hline 
+thick		&	1.0p \\ \hline 
+thicker		&	1.5p \\ \hline 
+thickest	&	2p \\ \hline 
+fat		&	3p \\ \hline 
+fatter		&	6p \\ \hline 
+fat		&	12p \\ \hline 
+\end{tabular}
+\caption{\gmt\ predefined pen widths.}
+\label{tbl:pennames}
+\end{table}
 
 \index{Pen!color}
 \index{Color!pen}
 \index{Attributes!pen!color}%
-\item[$\rightarrow$]The {\it color} can be specified in four different ways:
+\item[$\rightarrow$]The {\it color} can be specified in five different ways:
 \begin{enumerate}
 \item Gray scale. Specify a {\it gray} shade in the range 0--255 (linearly going from black [0] to white [255]).
 \item RGB. Specify {\it r}/{\it g}/{\it b}, each ranging from 0--255.  Here 0/0/0 is black and 255/255/255 is white.
-\item HSV. Specify {\it hue}/{\it saturation}/{\it value}, with the former in the 0--360 degree range while the latter
-two take on the range 0--1.  To use this color system you must also set {\bf COLOR\_MODEL} to HSV.  You probably will want
-to read Appendix I as well.
+\item HSV. Specify {\it hue}-{\it saturation}-{\it value}, with the former in the 0--360 degree range while the latter
+two take on the range 0--1.
 \item CMYK. Specify {\it cyan}/{\it magenta}/{\it yellow}/{\it black}, each ranging from 0--100\%.
+\item Name.  Specify one of 663 valid color names as defined in the X11 color table\footnote{On most Unix-type systems
+you can find the file rgb.txt in /usr/X11R6/lib/X11 or thereabouts, or use the command showrgb.}.  A very small but
+versatile subset consists of the values {\it white}, {\it black}, and [light$|$dark]{{\it red, orange, yellow, green,
+cyan, blue, magenta, gray, brown}}.
 \end{enumerate}
 
 \index{Pen!texture}
 \index{Texture, pen}
 \index{Attributes!pen!texture}%
 \item[$\rightarrow$]The {\it texture} attribute controls the appearance
-of the line.  To get a dotted line, simply append ``{\bf t}o'' after the
-width and color arguments; a dashed pen is requested with ``{\bf t}a''.
-For exact specifications you may append {\bf t}{\it string}:{\it offset},
-where {\it string} is a series of integers separated by underscores.
+of the line.  ``.'' yieds a dotted line, while a dashed pen is requested with ``-''.
+For exact specifications you may specify {\it string}:{\it offset},
+where {\it string} is a series of numbers separated by underscores.
 These numbers represent a pattern by indicating the length of line
-segments and the gap between segments.  The {\it offset} shifts the
+segments and the gap between segments.  The {\it offset} phase-shifts the
 pattern along the line.  For example, if you want a yellow line of width
-2 that alternates between long dashes (20 units), a 10 unit gap, then
-a 5 unit dash, then another 10 unit gap, with pattern offset by 10 units
-from the origin, specify \Opt{W}2/255/255/0{\bf t}20\_10\_5\_10:10.
+0.2 cm that alternates between long dashes (4 points), an 8 point gap, then
+a 5 point dash, then another 8 point gap, with pattern offset by 2 points
+from the origin, specify \Opt{W}0.2c,yellow,4\_8\_5\_8:2p.
 Here, the texture units can be specified in dpi units or points (see above). 
 \end{description} 
 
@@ -936,16 +960,16 @@ symbols.  The fill may take two forms:
 
 \par \Opt{G}{\it fill\par 
 
-}\par \Opt{Gp}{\it dpi/pattern}[:{\bf B}{\it r/g/b}[{\bf F}{\it r/g/b}]]\par 
+}\par \Opt{Gp}{\it dpi/pattern}[:{\bf B}{\it color}[{\bf F}{\it color}]]\par 
 
 \vspace{\baselineskip} 
 
 In the first case we may specify a {\it gray} shade (0--255), RGB color
-({\it r}/{\it g}/{\it b} all in the 0--255 range), HSV color ({\it hue}/{\it saturation}/{\it value}
-in the 0--360, 0--1, 0--1 range; to use this color system you must also set {\bf COLOR\_MODEL} to HSV),
-or CMYK color ({\it cyan}/{\it magenta}/{\it yellow}/{\it black},
-each ranging from 0--100\%); in that respect it is similar to specifying the pen color
-settings.  The second form allows us to use a predefined bit-image pattern.
+({\it r}/{\it g}/{\it b} all in the 0--255 range), HSV color ({\it hue}-{\it saturation}-{\it value}
+in the 0--360, 0--1, 0--1 range, CMYK color ({\it cyan}/{\it magenta}/{\it yellow}/{\it black},
+each ranging from 0--100\%), or a valid color name; in that respect it is similar
+to specifying the pen color settings (see pen color attribute in previous section).
+The second form allows us to use a predefined bit-image pattern.
 {\it pattern} can either be a number in the range 1--90 or the name of a 1-,
 8-, or 24-bit Sun raster file.  The former will result in one of the 90
 predefined 64 x 64 bit-patterns provided with \GMT\ and reproduced in Appendix E.
@@ -958,7 +982,7 @@ By specifying upper case \Opt{GP} instead of \Opt{Gp} the image will be
 bit-reversed, i.e., white and black areas will be interchanged (only applies
 to 1-bit images or predefined bit-image patterns).  For these patterns and
 other 1-bit images one may specify alternative background and foreground
-colors (by appending :{\bf B}{\it r/g/b}[{\bf F}{\it r/g/b}]) that will
+colors (by appending :{\bf B}{\it color}[{\bf F}{\it color}]) that will
 replace the default white and black pixels, respectively.  Setting one of the
 fore- or background colors to -- yields a transparent image where only the
 back- or foreground pixels will be painted.
