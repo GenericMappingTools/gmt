@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.14 2001-04-08 21:20:58 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.15 2001-04-09 07:21:55 pwessel Exp $
 #
 #	Automatic installation of GMT version 3.4
 #	Version for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	03-APR-2001
+#	07-APR-2001
 #--------------------------------------------------------------------------------
 #	FUNCTIONS
 #--------------------------------------------------------------------------------
@@ -687,15 +687,12 @@ install_coast()
 			echo "Could not make the directory $dir - $this not untarred"
 		else
 			t=`echo $file | awk '{print substr($1,1,1)}'`
-			echon "Installing $dir/binned_GSHHS_${t}.cdf..."
+			echo "share/binned_GSHHS_${t}.cdf"
 			$expand $here/GMT${file}c.bz2 > $dir/binned_GSHHS_${t}.cdf
-			echo "OK"
-			echon "Installing $dir/binned_binned_${t}.cdf..."
+			echo "share/binned_binned_${t}.cdf"
 			$expand $here/GMT${file}r.bz2 > $dir/binned_river_${t}.cdf
-			echo "OK"
-			echon "Installing $dir/binned_river_${t}.cdf..."
+			echo "share/binned_river_${t}.cdf"
 			$expand $here/GMT${file}b.bz2 > $dir/binned_border_${t}.cdf
-			echo "OK"
 		fi
 	fi
 		
