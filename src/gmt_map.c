@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.21 2002-01-13 23:14:09 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.22 2002-01-13 23:50:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5628,19 +5628,48 @@ double GMT_great_circle_dist(double lon1, double lat1, double lon2, double lat2)
  
 int GMT_wesn_outside (double lon, double lat)
 {
-	
-	if (GMT_world_map) {
-		while (lon < project_info.w) lon += 360.0;
-		while (lon > project_info.e) lon -= 360.0;
-	}
-	
-	/* The above was commented out in 3.3.6 and the following was added.  This cased
-	 * latitude anotation to dissappear for -R-180/180 and others.  I have restored
-	 * whatt I _think_ was the 3.3.5 behavior - I can no longer remember what bug I was
-	 * fixing with that fix and we will simply have to fix it again in another way */
+	/* This version ensures that any point will be considered inside if
+	 * it is off by a multiple of 360 degrees in longitude.  The following
+	 * function does not make that allowance (see comments below) */
 	 
-	/* while (lon < project_info.w && (lon + 360.0) <= project_info.e) lon += 360.0;
-	   while (lon > project_info.e && (lon - 360.0) >= project_info.w) lon -= 360.0;	*/
+	while (lon < project_info.w && (lon + 360.0) <= project_info.e) lon += 360.0;
+	while (lon > project_info.e && (lon - 360.0) >= project_info.w) lon -= 360.0;
+	
+	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < SMALL )
+		GMT_x_status_new = -1;
+	else if (GMT_on_border_is_outside && fabs (lon - project_info.e) < SMALL)
+		GMT_x_status_new = 1;
+	else if (lon < project_info.w)
+		GMT_x_status_new = -2;
+	else if (lon > project_info.e)
+		GMT_x_status_new = 2;
+	else
+		GMT_x_status_new = 0;
+		
+	if (GMT_on_border_is_outside && fabs (lat - project_info.s) < SMALL )
+		GMT_y_status_new = -1;
+	else if (GMT_on_border_is_outside && fabs (lat - project_info.n) < SMALL)
+		GMT_y_status_new = 1;
+	else if (lat < project_info.s )
+		GMT_y_status_new = -2;
+	else if (lat > project_info.n)
+		GMT_y_status_new = 2;
+	else
+		GMT_y_status_new = 0;
+		
+	return ( !(GMT_x_status_new == 0 && GMT_y_status_new == 0));
+	
+}
+
+int GMT_wesn_outside_np (double lon, double lat)
+{
+	/* This version of GMT_wesn_outside is used when we do not want to
+	 * consider the fact that longitude is periodic.  This is necessary
+	 * when we are making basemaps and may want to ensure that a point is
+	 * slightly outside the border without having it automatically flip by
+	 * 360 degrees in a test such as wesn_outside provides.  The GMT_outside
+	 * pointer will be temporarily set to point to this routine during the
+	 * construction of the basemap and then reset to GMT_wesn_outside */
 	
 	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < SMALL )
 		GMT_x_status_new = -1;
