@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.53 2004-04-13 03:07:03 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.54 2004-04-17 06:29:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -822,7 +822,7 @@ void GMT_init_three_D (void) {
 	BOOLEAN positive;
 	
 	project_info.three_D = (z_project.view_azimuth != 180.0 || z_project.view_elevation != 90.0);
-	if (project_info.three_D) gmtdefs.basemap_type = 1;	/* Only plain frame for 3-D */
+	if (project_info.three_D) gmtdefs.basemap_type = GMT_IS_PLAIN;	/* Only plain frame for 3-D */
 	
 	project_info.z_scale = project_info.z_pars[0];
 	if (project_info.z_scale < 0.0) project_info.xyz_pos[2] = FALSE;	/* User wants z to increase down */
@@ -1798,7 +1798,7 @@ int GMT_map_init_stereo (void) {
 			GMT_crossing = (PFI) GMT_radial_crossing;
 			GMT_overlap = (PFI) GMT_radial_overlap;
 			GMT_map_clip = (PFI) GMT_radial_clip;
-			gmtdefs.basemap_type = 1;
+			gmtdefs.basemap_type = GMT_IS_PLAIN;
 		}
 		search = FALSE;
 		GMT_left_edge = (PFD) GMT_left_circle;
@@ -2224,7 +2224,7 @@ int GMT_map_init_oblique (void) {
 	GMT_right_edge = (PFD) GMT_right_rect;
 			
 	GMT_world_map = (fabs (fabs (w - e) - 360.0) < SMALL);
-	gmtdefs.basemap_type = 1;
+	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	frame_info.check_side = !(gmtdefs.oblique_annotation & 1);
 	return (TRUE);
 }
@@ -2470,7 +2470,7 @@ int GMT_map_init_tm (void) {
 	frame_info.horizontal = TRUE;
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[2]);
 			
-	gmtdefs.basemap_type = 1;
+	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	
 	return (search);
 }
@@ -2706,7 +2706,7 @@ int GMT_map_init_utm (void) {
 
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 			
-	gmtdefs.basemap_type = 1;
+	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	
 	return (search);
 }
@@ -2840,7 +2840,7 @@ int GMT_map_init_lambeq (void) {
 			GMT_crossing = (PFI) GMT_radial_crossing;
 			GMT_overlap = (PFI) GMT_radial_overlap;
 			GMT_map_clip = (PFI) GMT_radial_clip;
-			gmtdefs.basemap_type = 1;
+			gmtdefs.basemap_type = GMT_IS_PLAIN;
 		}
 		search = FALSE;
 		GMT_left_edge = (PFD) GMT_left_circle;
@@ -2994,7 +2994,7 @@ int GMT_map_init_ortho (void) {
 			GMT_crossing = (PFI) GMT_radial_crossing;
 			GMT_overlap = (PFI) GMT_radial_overlap;
 			GMT_map_clip = (PFI) GMT_radial_clip;
-			gmtdefs.basemap_type = 1;
+			gmtdefs.basemap_type = GMT_IS_PLAIN;
 		}
 		search = FALSE;
 		GMT_left_edge = (PFD) GMT_left_circle;
@@ -3131,7 +3131,7 @@ int GMT_map_init_gnomonic (void) {
 			GMT_crossing = (PFI) GMT_radial_crossing;
 			GMT_overlap = (PFI) GMT_radial_overlap;
 			GMT_map_clip = (PFI) GMT_radial_clip;
-			gmtdefs.basemap_type = 1;
+			gmtdefs.basemap_type = GMT_IS_PLAIN;
 		}
 		search = FALSE;
 		GMT_left_edge = (PFD) GMT_left_circle;
@@ -3268,7 +3268,7 @@ int GMT_map_init_azeqdist (void) {
 			GMT_crossing = (PFI) GMT_eqdist_crossing;
 			GMT_overlap = (PFI) GMT_radial_overlap;
 			GMT_map_clip = (PFI) GMT_radial_clip;
-			gmtdefs.basemap_type = 1;
+			gmtdefs.basemap_type = GMT_IS_PLAIN;
 		}
 		search = FALSE;
 		GMT_left_edge = (PFD) GMT_left_circle;
@@ -3394,7 +3394,7 @@ int GMT_map_init_mollweide (void) {
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 	GMT_forward = (PFI)GMT_mollweide;		GMT_inverse = (PFI)GMT_imollweide;
-	gmtdefs.basemap_type = 1;
+	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	GMT_parallel_straight = TRUE;
 	
 	return (search);
@@ -3508,7 +3508,7 @@ int GMT_map_init_hammer (void) {
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 	GMT_forward = (PFI)GMT_hammer;		GMT_inverse = (PFI)GMT_ihammer;
-	gmtdefs.basemap_type = 1;
+	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	return (search);
 }
 
@@ -3620,7 +3620,7 @@ int GMT_map_init_grinten (void) {
  	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]); 
 	project_info.r = 0.5 * project_info.xmax;
 	GMT_forward = (PFI)GMT_grinten;		GMT_inverse = (PFI)GMT_igrinten;
-	gmtdefs.basemap_type = 1;
+	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	return (search);
 }
 
@@ -3748,7 +3748,7 @@ int GMT_map_init_winkel (void) {
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 	GMT_forward = (PFI)GMT_winkel;		GMT_inverse = (PFI)GMT_iwinkel;
-	gmtdefs.basemap_type = 1;
+	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	return (search);
 }
 
@@ -3863,7 +3863,7 @@ int GMT_map_init_eckert4 (void) {
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 	GMT_forward = (PFI)GMT_eckert4;		GMT_inverse = (PFI)GMT_ieckert4;
-	gmtdefs.basemap_type = 1;
+	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	GMT_parallel_straight = TRUE;
 	
 	return (search);
@@ -3965,7 +3965,7 @@ int GMT_map_init_eckert6 (void) {
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 	GMT_forward = (PFI)GMT_eckert6;		GMT_inverse = (PFI)GMT_ieckert6;
-	gmtdefs.basemap_type = 1;
+	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	GMT_parallel_straight = TRUE;
 	
 	return (search);
@@ -4063,7 +4063,7 @@ int GMT_map_init_robinson (void) {
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 	GMT_forward = (PFI)GMT_robinson;		GMT_inverse = (PFI)GMT_irobinson;
-	gmtdefs.basemap_type = 1;
+	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	GMT_parallel_straight = TRUE;
 	
 	return (search);
@@ -4203,7 +4203,7 @@ int GMT_map_init_sinusoidal (void) {
 	if (project_info.units_pr_degree) project_info.pars[1] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[1];
 	GMT_forward = (PFI)GMT_sinusoidal;		GMT_inverse = (PFI)GMT_isinusoidal;
-	gmtdefs.basemap_type = 1;
+	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	
 	if (project_info.region) {
 		y = (project_info.s * project_info.n <= 0.0) ? 0.0 : MIN (fabs(project_info.s), fabs(project_info.n));
@@ -4295,7 +4295,7 @@ int GMT_map_init_cassini (void) {
 	}
 	if (project_info.units_pr_degree) project_info.pars[2] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[2];
-	gmtdefs.basemap_type = 1;
+	gmtdefs.basemap_type = GMT_IS_PLAIN;
 
 	if (project_info.region) {
 		GMT_xy_search (&xmin, &xmax, &ymin, &ymax, project_info.w, project_info.e, project_info.s, project_info.n);

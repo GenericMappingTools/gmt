@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.116 2004-04-17 01:39:00 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.117 2004-04-17 06:29:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1282,9 +1282,11 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case GMTCASE_BASEMAP_TYPE:
 			if (!strcmp (lower_value, "plain"))
-				gmtdefs.basemap_type = 1;
+				gmtdefs.basemap_type = GMT_IS_PLAIN;
 			else if (!strcmp (lower_value, "fancy"))
-				gmtdefs.basemap_type = 0;
+				gmtdefs.basemap_type = GMT_IS_FANCY;
+			else if (!strcmp (lower_value, "rounded"))
+				gmtdefs.basemap_type = GMT_IS_ROUNDED;
 			else
 				error = TRUE;
 			break;
@@ -1931,7 +1933,12 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "BASEMAP_AXES		= %s\n", gmtdefs.basemap_axes);
 	fprintf (fp, "BASEMAP_FRAME_RGB	= %d/%d/%d\n", gmtdefs.basemap_frame_rgb[0],
 		gmtdefs.basemap_frame_rgb[1], gmtdefs.basemap_frame_rgb[2]);
-	(gmtdefs.basemap_type) ? fprintf (fp, "BASEMAP_TYPE		= plain\n") : fprintf (fp, "BASEMAP_TYPE		= fancy\n");
+	if (gmtdefs.basemap_type == GMT_IS_PLAIN)
+		fprintf (fp, "BASEMAP_TYPE		= plain\n");
+	else if (gmtdefs.basemap_type == GMT_IS_FANCY)
+		fprintf (fp, "BASEMAP_TYPE		= fancy\n");
+	else if (gmtdefs.basemap_type == GMT_IS_ROUNDED)
+		fprintf (fp, "BASEMAP_TYPE		= rounded\n");
 	fprintf (fp, "FRAME_PEN		= %s\n", GMT_putpen (&gmtdefs.frame_pen));
 	(GMT_force_resize) ? fprintf (fp, "FRAME_WIDTH		= %g%c\n", save_frame_width * s, u) :  fprintf (fp, "FRAME_WIDTH		= %g%c\n", gmtdefs.frame_width * s, u);
 	fprintf (fp, "GRID_CROSS_SIZE_PRIMARY	= %g%c\n", gmtdefs.grid_cross_size[0] * s, u);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.28 2004-04-17 01:39:00 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.29 2004-04-17 06:29:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -242,8 +242,9 @@ struct MAP_PROJECTIONS {
 	
 };
 
-#define GMT_IS_FANCY	0	/* Fancy baseframe */
-#define GMT_IS_PLAIN	1	/* Plain baseframe */
+#define GMT_IS_PLAIN	0	/* Plain baseframe */
+#define GMT_IS_FANCY	1	/* Fancy baseframe */
+#define GMT_IS_ROUNDED	2	/* Rounded, fancy baseframe */
 
 /* Define the 6 axis items that each axis can have (some are mutually exclusive: only one ANNOT/INTV for upper and lower) */
 
