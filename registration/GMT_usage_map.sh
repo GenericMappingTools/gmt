@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.18 2002-07-05 19:51:17 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.19 2002-09-06 16:58:49 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -39,6 +39,7 @@ help	Give a brief help message
 EOF
 	exit
 fi
+GS_LIB=/usr/share/ghostscript/7.00/lib
 GMTHOME=/home/aa/pwessel/GMTdev/GMT
 PATH=$GMTHOME/bin:$PATH
 export PATH
