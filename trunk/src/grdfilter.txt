@@ -86,6 +86,11 @@ the medians of values within a 300km radius (600km full width) of the output poi
 and 10N to 40N, and you want the output values every 0.5 degree.  Using spherical distance calculations, you need:
 .sp
 \fBgrdfilter\fP north_pacific_dbdb5.grd \fB\-G\fPfiltered_pacific.grd \fB\-Fm\fP600 \fB\-D\fP4 \fB\-R\fP150/250/10/40 \fB\-I\fP0.5 \fB\-V\fP
+.SH BUGS
+\fBgrdfilter\fP is not yet aware of boundary conditions and periodicities; hence filtering global grids will not
+necessarily give you the result you seek.  You can remedy this partly by padding the east and west sides (e.g., use
+a grid that goes from -10 to 370 in longitude) but no such solution is possibly across the poles untill we
+rewrite the program for the next major release.
 .SH "SEE ALSO"
 .IR gmt (GMTMANSECTION),
 .IR grdfft (GMTMANSECTION)
