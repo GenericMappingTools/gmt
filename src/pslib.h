@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.11 2002-01-04 21:41:34 pwessel Exp $
+ *	$Id: pslib.h,v 1.12 2002-01-04 22:30:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -79,7 +79,7 @@ struct rasterfile {
 EXTERN_MSC int ps_line(double *x, double *y, int n, int type, int close, int split);
 EXTERN_MSC int ps_plotinit(char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, int *page_width, int *rgb, const char *, struct EPS *eps);
 EXTERN_MSC void ps_arc(double x, double y, double radius, double az1, double az2, int status);
-EXTERN_MSC void ps_axis(double x, double y, double length, double val0, double val1, double annotation_int, char *label, int annotpointsize, int side);
+EXTERN_MSC void ps_axis(double x, double y, double length, double val0, double val1, double annotation_int, char *label, double annotpointsize, int side);
 EXTERN_MSC void ps_circle(double x, double y, double size, int rgb[], int outline);
 EXTERN_MSC void ps_clipoff(void);
 EXTERN_MSC void ps_clipon(double *x, double *y, int n, int rgb[], int flag);
@@ -115,18 +115,18 @@ EXTERN_MSC void ps_setline(int linewidth);
 EXTERN_MSC void ps_setpaint(int rgb[]);
 EXTERN_MSC void ps_square(double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_star(double x, double y, double side, int rgb[], int outline);
-EXTERN_MSC void ps_text(double x, double y, int pointsize, char *text, double angle, int justify, int form);
-EXTERN_MSC void ps_textbox(double x, double y, int pointsize, char *text, double angle, int justify, int outline, double dx, double dy, int rgb[]);
+EXTERN_MSC void ps_text(double x, double y, double pointsize, char *text, double angle, int justify, int form);
+EXTERN_MSC void ps_textbox(double x, double y, double pointsize, char *text, double angle, int justify, int outline, double dx, double dy, int rgb[]);
 EXTERN_MSC void ps_transrotate(double x, double y, double angle);
 EXTERN_MSC void ps_triangle(double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_vector(double xtail, double ytail, double xtip, double ytip, double tailwidth, double headlength, double headwidth, double headshape, int rgb[], int outline);
 EXTERN_MSC unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN invert, BOOLEAN monochrome, BOOLEAN colorize, int f_rgb[], int b_rgb[]);
 EXTERN_MSC void ps_words (double x, double y, char **text, int n_words, double line_space, double par_width, int par_just, int font, int font_size, double angle, int rgb[3], int justify, int draw_box, double x_off, double y_off, double x_gap, double y_gap, int boxpen_width, char *boxpen_texture, int boxpen_offset, int boxpen_rgb[], int vecpen_width, char *vecpen_texture, int vecpen_offset, int vecpen_rgb[], int boxfill_rgb[3]);
 EXTERN_MSC void ps_setline(int linewidth);
-EXTERN_MSC void ps_textdim (char *xdim, char *ydim, int pointsize, int font, char *text, int key);
+EXTERN_MSC void ps_textdim (char *xdim, char *ydim, double pointsize, int font, char *text, int key);
 
 EXTERN_MSC void ps_set_length (char *param, double value);
-EXTERN_MSC void ps_set_height (char *param, int fontsize);
+EXTERN_MSC void ps_set_height (char *param, double fontsize);
 
 /* For Encapsulated PostScript Headers:
 

@@ -2,7 +2,7 @@
 .SH NAME
 grdcontour \- contouring of 2-D gridded data sets
 .SH SYNOPSIS
-\fBgrdcontour\fP \fIgrdfile\fP \fB\-C\fP\fIcont_int\fP \fB\-J\fP\fIparameters\fP [ \fB\-A\fP[\fB-\fP][\fIanot_int\fP][\fBf\fP\fIfont_size\fP][\fBa\fP\fIangle\fP][\fI/r/g/b\fP][\fBo|t\fP]] ] 
+\fBgrdcontour\fP \fIgrdfile\fP \fB\-C\fP\fIcont_int\fP \fB\-J\fP\fIparameters\fP [ \fB\-A\fP[\fB-\fP][\fIannot_int\fP][\fBf\fP\fIfont_size\fP][\fBa\fP\fIangle\fP][\fI/r/g/b\fP][\fBo|t\fP]] ] 
 [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-D\fP\fIdumpfile\fP ] [ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-G\fP\fIgap/width\fP ] 
 [ \fB\-K\fP ] [ \fB\-L\fP\fIlow/high\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP[[-]\fIunit\fP] ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-Q\fP\fIcut\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] 
 [ \fB\-S\fP\fIsmoothfactor\fP ] [ \fB\-T\fP[\fB+|-\fP][\fIgap/length\fP][\fB:\fP\fILH\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-W\fP[\fB+\fP][\fItype\fP]\fIpen\fP ] 
@@ -44,7 +44,7 @@ then only contours marked with upper case C or A will have tickmarks.
 No space between the option flag and the associated arguments.
 .TP
 .B \-A
-\fIanot_int\fP is annotation interval in data units.  Ignored if contour levels are given in a file.
+\fIannot_int\fP is annotation interval in data units.  Ignored if contour levels are given in a file.
 [Default is no annotations].  Several options can be set to modify the form of the annotation.  Give - to disable all annotations.
 Append f\fIfont_size\fP to change font size [9], append \fI/r/g/b\fP to change color of text fill box
 [PAGE_COLOR], append a\fIangle\fP to fix annotation angle [Default follows contour], append \fBo\fP to draw the outline of the surrounding text box [Default is no outline],

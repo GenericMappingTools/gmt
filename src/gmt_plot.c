@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.56 2002-01-04 21:41:34 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.57 2002-01-04 22:30:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -563,7 +563,6 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 	int justify[2];			/* Text justification of annotations */
 	int label_justify;		/* Text justification of axis label */
 	int annot_pos;			/* Either 0 for upper annotation or 1 for lower annotation */
-	int font_size;			/* Annotation font size (ANNOT_FONT_SIZE or ANNOT_FONT2_SIZE) */
 	int primary = 0;		/* Axis item number of annotation with largest interval/unit */
 	int secondary = 0;		/* Axis item number of annotation with smallest interval/unit */
 	int axis;			/* Axis id (0 = x, 1 = y) */
@@ -574,6 +573,7 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 	double *knots, *knots_p;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
 	double tick_len[5];		/* Ticklengths for each of the 5 axis items */
 	double x, sign, len, t_use;	/* Misc. variables */
+	double font_size;			/* Annotation font size (ANNOT_FONT_SIZE or ANNOT_FONT2_SIZE) */
 	struct PLOT_AXIS_ITEM *T;	/* Pointer to the current axis item */
 	char string[GMT_CALSTRING_LENGTH];	/* Annotation string */
 	char format[32];		/* format used for non-time annotations */
@@ -3083,7 +3083,7 @@ void GMT_timestamp (int argc, char **argv)
 	/* ps_text (0.5*dim[0], dim[3], 10, "GMT", 0.0, 6, 0);
 	ps_setfont (0);
 	ps_setpaint (gmtdefs.background_rgb); */
-	ps_text (dim[0]+0.5*dim[1], dim[3], 8, label, 0.0, 6, 0);
+	ps_text (dim[0]+0.5*dim[1], dim[3], 8.0, label, 0.0, 6, 0);
 	ps_setfont (1);
 	label[0] = 0;
 	if (gmtdefs.unix_time_label[0] == 'c' && gmtdefs.unix_time_label[1] == 0) {
@@ -3101,7 +3101,7 @@ void GMT_timestamp (int argc, char **argv)
 	else if (gmtdefs.unix_time_label[0])
 		strcpy (label, gmtdefs.unix_time_label);
 		
-	if (label[0]) ps_text (dim[0]+dim[1]+dim[4], dim[3], 7, label, 0.0, 5, 0);
+	if (label[0]) ps_text (dim[0]+dim[1]+dim[4], dim[3], 7.0, label, 0.0, 5, 0);
 	ps_rotatetrans  (-x, -y, 0.0);
 	ps_comment ("End time-stamp");
 }
@@ -3219,7 +3219,7 @@ void GMT_color_image (double x0, double y0, double x_side, double y_side, unsign
 		ps_colorimage (x0, y0, x_side, y_side, image, nx, ny, depth);
 }
 
-void GMT_text3d (double x, double y, double z, int fsize, int fontno, char *text, double angle, int justify, int form)
+void GMT_text3d (double x, double y, double z, double fsize, int fontno, char *text, double angle, int justify, int form)
 {
 	double xb, yb, xt, yt, xt1, xt2, xt3, yt1, yt2, yt3, del_y;
 	double ca, sa, xshrink, yshrink, tilt, baseline_shift, size, xsize, ysize;
