@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spotter.h,v 1.3 2001-10-24 22:27:31 pwessel Exp $
+ *	$Id: spotter.h,v 1.4 2001-12-24 18:13:26 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -29,6 +29,8 @@
 #define EQ_RAD 6371.0087714
 #define KM_PR_DEG (EQ_RAD * M_PI / 180.0)
 #define BIG_CHUNK 50000
+#define T_2_PA	250.0
+#define PA_2_T  (1.0 / T_2_PA)
 
 struct EULER {	/* Structure with info on each Euler (stage) pole */
 	double lon, lat;		/* Location of Euler pole in degrees */
@@ -38,6 +40,13 @@ struct EULER {	/* Structure with info on each Euler (stage) pole */
 	double omega;			/* Rotation in Degrees/m.y. */
 	double omega_r;			/* Rotation in Radians/m.y. */
 	double sin_lat, cos_lat;	/* Sine and Cosine of pole latitude */
+};
+
+struct FLOWLINE {			/* Structure with the nearest nodes for a single flowline */
+	int n;				/* number of points in this flowline */
+	int ij;				/* Node in bathymetry grid where this flowline originated */
+	int *node;			/* Nodes in CVA grid covered by this flowline */
+	unsigned short *PA;		/* Predicted Ages along flowline (t = PI/250, to nearest 0.004 My) */
 };
 
 /* ANSI-C Function prototypes (see libspotter.c for details): */

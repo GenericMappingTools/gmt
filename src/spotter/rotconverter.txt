@@ -11,7 +11,7 @@ them in the order they were listed.  The minus sign means we should first transp
 rotation and then add it to the previous rotation.  The input files must all be of the
 same type (stage poles or finite rotations) which may differ from the desired output
 format; see \fB\-F\fP.  If a file cannot be open we will attempt to decode the file name
-as a rotation whose parameters are separated by slashes.
+as a single rotation whose parameters are separated by slashes.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
@@ -57,11 +57,10 @@ and report the result as finite reconstruction poles in the northern hemisphere,
 rotconverter DC85_stages.APM + Pac_Naz_stages.RPM \fB\-N \-Fsf\fP > Naz_HS_finite.APM
 .br
 .sp
-To add the final rotations ROT(150.1, 70.5, -20.3) and ROT (145.0, 40.0, 11.4), give dummy
-start times 1 and try
+To add the final rotations ROT(150.1, 70.5, -20.3) and ROT (145.0, 40.0, 11.4),  try
 .br
 .sp
-rotconverter 150.1/70.5/1/-20.3 + 145/40/1/11.4
+rotconverter 150.1/70.5/-20.3 + 145/40/11.4
 .sp
 .br
 which prints out 157.32, -80.44, 11.97.
