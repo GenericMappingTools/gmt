@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.79 2003-02-18 22:11:42 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.80 2003-02-19 19:10:46 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -497,14 +497,16 @@ void GMT_fill_syntax (char option)
 void GMT_pen_syntax (char option)
 {
 	fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
-	fprintf (stderr, "\t-%c[<width>][/<red>/<green>/<blue> | <gray>][to | ta | t<texture>:<offset>][p]\n", option);
-	fprintf (stderr, "\t  <width> >= 0, <red>/<green>/<blue> or <gray> all in the 0-255 range\n");
+	fprintf (stderr, "\t-%c[<width>][/<color>][to | ta | t<texture>:<offset>][p]\n", option);
+	fprintf (stderr, "\t  <width> >= 0, <color> = <red>/<green>/<blue> or <gray> all in the 0-255 range,\n");
+	fprintf (stderr, "\t  <c>/<m>/<y>/<k> in 0-100% range, or <hue>/<sat>/<val> in 0-360, 0-1, 0-1 range [when COLOR_MODEL = hsv],\n");
 }
 
 void GMT_rgb_syntax (char option)
 {
 	fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
-	fprintf (stderr, "\t-%c<red>/<green>/<blue> or -%c<gray>, all in the 0-255 range\n", option, option);
+	fprintf (stderr, "\t-%c<color>, <color> = <red>/<green>/<blue> or <gray>, all in the 0-255 range,\n", option);
+	fprintf (stderr, "\t  <c>/<m>/<y>/<k> in 0-100% range, or <hue>/<sat>/<val> in 0-360, 0-1, 0-1 range [when COLOR_MODEL = hsv],\n");
 }
 
 void GMT_syntax (char option)

@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.22 2003-02-06 18:18:57 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.23 2003-02-19 19:10:45 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2003.
@@ -882,10 +882,15 @@ achieved by giving zero width, but the result is device-dependent.
 \index{Pen!color}
 \index{Color!pen}
 \index{Attributes!pen!color}%
-\item[$\rightarrow$]The {\it color} can be specified as a {\it gray}
-shade in the range 0--255 (linearly going from black to white) or using
-the RGB system where you specify {\it r}/{\it g}/{\it b}, each ranging
-from 0--255.  Here 0/0/0 is black and 255/255/255 is white. 
+\item[$\rightarrow$]The {\it color} can be specified in four different ways:
+\begin{enumerate}
+\item Gray scale. Specify a {\it gray} shade in the range 0--255 (linearly going from black [0] to white [255]).
+\item RGB. Specify {\it r}/{\it g}/{\it b}, each ranging from 0--255.  Here 0/0/0 is black and 255/255/255 is white.
+\item HSV. Specify {\it hue}/{\it saturation}/{\it value}, with the former in the 0--360 degree range while the latter
+two take on the range 0--1.  To use this color system you must set {\bf COLOR\_MODEL} to HSV.  You probably will want
+to read Appendix I as well.
+\item CMYK. Specify {\it cyan}/{\it magenta}/{\it yellow}/{\it black}, each ranging from 0--100\%.
+\end{enumerate}
 
 \index{Pen!texture}
 \index{Texture, pen}
@@ -926,8 +931,10 @@ symbols.  The fill may take two forms:
 
 \vspace{\baselineskip} 
 
-In the first case we may specify a {\it gray} shade (0--255) or a color
-({\it r}/{\it g}/{\it b} in the 0--255 range), similar to the pen color
+In the first case we may specify a {\it gray} shade (0--255), RGB color
+({\it r}/{\it g}/{\it b} all in the 0--255 range), HSV color ({\it hue}/{\it saturation}/{\it value}
+in the 0--360, 0--1, 0--1 range), or CMYK color ({\it cyan}/{\it magenta}/{\it yellow}/{\it black},
+each ranging from 0--100\%); in that respect it is similar to specifying the pen color
 settings.  The second form allows us to use a predefined bit-image pattern.
 {\it pattern} can either be a number in the range 1--90 or the name of a 1-,
 8-, or 24-bit Sun raster file.  The former will result in one of the 90
