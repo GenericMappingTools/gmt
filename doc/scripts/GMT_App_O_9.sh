@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_O_9.sh,v 1.1 2004-06-13 22:30:18 pwessel Exp $
+#	$Id: GMT_App_O_9.sh,v 1.2 2004-06-24 02:07:50 pwessel Exp $
 #
 #	Makes Fig 9 for Appendix O (labeled lines)
 #
@@ -22,7 +22,7 @@ cat << EOF > ttt.cpt
 EOF
 grdimage ttt_atl.grd -Itopo5_int.grd -Cttt.cpt $R -JM5.5i -P -K > GMT_App_O_9.ps
 grdcontour ttt_atl.grd -R -J -O -K -C0.5 -A1+u"hour"+v+s8+f17 -GL80W/31N/17W/26N,17W/28N/17W/50N \
-	-S10 >> GMT_App_O_9.ps
+	-S2 >> GMT_App_O_9.ps
 psxy -R -J -W7p,white great_NY_Canaries.d -O -K  >> GMT_App_O_9.ps
 pscoast -R -J -B20f5:."Tsunami Travel Times from the Canaries":WSne -N1/thick -O -K -Glightgray \
 	-Wfaint -A500 >> GMT_App_O_9.ps

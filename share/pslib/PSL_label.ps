@@ -1,5 +1,5 @@
 %-------------------------------------------------------------------------------------------
-%	$Id: PSL_label.ps,v 1.8 2004-06-09 21:34:38 pwessel Exp $
+%	$Id: PSL_label.ps,v 1.9 2004-06-24 02:07:50 pwessel Exp $
 %
 %	P. Wessel, version 1
 %
@@ -426,6 +426,7 @@ end
   /H PSL_height 2 div PSL_gap_y add def
   /xoff j 1 add array def
   /yoff j 1 add array def
+  /angle 0 def	% So it is at least a defined variable
   0 1 j {	% Loop over points along line to calculate angle and offsets
     /ii exch def	% Index
     /x PSL_xp ii get def
@@ -446,10 +447,7 @@ end
     dx 0.0 ne dy 0.0 ne and
     {	% Only calculate new angle if not duplicates
       /angle dy dx atan 90 add def
-    }
-    {
-      /angle 0 def
-    } ifelse
+    } if
     /sina angle sin def
     /cosa angle cos def
     xoff ii H cosa mul put
