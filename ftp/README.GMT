@@ -1,0 +1,86 @@
+	$Id: README.GMT,v 1.1 2001-03-07 21:21:22 pwessel Exp $
+
+Dear potential GMT users-
+
+Version 3.4 of GMT has recently been released.
+GMT can be installed under Unix or Windows.
+
+For new installers of GMT under a Unix-like OS:
+------------------------------------------------
+The preferred way to obtain the necessary GMT files
+is to interact with the GMT web page install form at
+gmt.soest.hawaii.edu.  Filling out the form will
+return to you a parameter file that you may use with
+the install script that you can download from the same
+install page.  Alternatively, send mail to
+
+	listserver@soest.hawaii.edu
+	
+with the single message
+
+information gmtgroup
+
+You will then receive instructions for automatic file-retrieval
+and installation.
+
+Should you want to ftp the old-fashioned way then the files
+you will need are (both .bz2 and .gz versions are available):
+
+GMT_progs.tar.bz2	All source code
+GMT_share.tar.bz2	Support data and coastlines
+install_gmt		Bourne shell install script
+
+In addition, you may want
+
+GMT_ps.tar.bz2		PS version of documentation
+GMT_pdf.tar.bz2		PDF documentation and Unix man pages
+GMT_man.tar.bz2		Unix man pages for GMT
+GMT_web.tar.bz2		HTML versions of all documentation
+GMT_tut.tar.bz2		Tutorial data sets
+GMT_scripts.tar.bz2	Example scripts and data
+GMT_suppl.tar.bz2	Supplemental program source and docs
+GMT_high.tar.bz2	High resolution coastline files
+GMT_full.tar.bz2	Full resolution coastline files
+triangle.tar.bz2	Fast triangulation source code [Not GPL]
+
+The install_gmt Bourne script can be used after manual ftp as well.
+Place script in the same directory as the archives and run.
+
+For new installers of GMT under Windows:
+------------------------------------------------
+You need to ftp several zip files; some are optional:
+
+GMT_exe.zip	All executables
+GMT_share.zip	Support data and coastlines
+
+In addition, you may want
+
+GMT_suppl_exe.zip  Supplemental executables
+GMT_ps.zip	   PS version of documentation
+GMT_pdf.zip	   PDF documentation and Unix man pages
+GMT_man.zip	   Unix man pages for GMT
+GMT_web.zip	   HTML versions of all documentation
+GMT_tut.zip	   Tutorial data sets
+GMT_progs.zip	   All source code
+GMT_scripts.zip    Example scripts and data
+GMT_suppl.zip	   Supplemental program source and docs
+GMT_high.zip	   High resolution coastline files
+GMT_full.zip	   Full resolution coastline files
+triangle.zip	   Fast triangulation source code [Not GPL]
+
+
+There are several mirror sites available.  Use the site that
+is geographically closest to you to improve transmission
+throughput:
+
+----------------------------------------------------------------
+gmt.soest.hawaii.edu		Honolulu, Hawaii, USA [GMT HOME]
+falcon.grdl.noaa.gov		Silver Spring, Maryland, USA
+ftp.geologi.uio.no		Oslo, Norway
+ftp.iag.usp.br			Sao Paulo, Brazil
+life.csu.edu.au			Albury, Australia
+ftp.eos.hokudai.ac.jp.		Sapporo. Japan
+----------------------------------------------------------------
+
+-Paul Wessel
+-Walter H. F. Smith
