@@ -52,6 +52,8 @@ be found in the separate manual pages.
 .br
 	grd2xyz			Conversion from 2-D gridded file to table data
 .br
+	grdblend			Blend several partially over-lapping grdfiles onto one grid
+.br
 	grdclip			Limit the z-range in gridded data
 .br
 	grdcontour		Contouring of 2-D gridded data
