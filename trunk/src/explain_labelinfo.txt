@@ -38,7 +38,7 @@ only makes sense for opaque text boxes.
 .br
 \fB+p\fP[\fIpen\fP] draws the outline of text boxsets [Default is no outline]; optionally specify pen for outline [Default is width = 0.25p, color = black, texture = solid].
 .br
-\fB+r\fP\fImin_rad\fP will not place labels where the line's radius of curvature is less than \fImin_rad\fP [Default is 0].
+\fB+r\fP\fImin_rad\fP will not place labels where the line's radius of curvature is less than \fImin_rad\fP [Default is 0].\"'
 .br
 \fB+s\fP\fIsize\fP sets the desired font size in points [Default is 9].
 .br
