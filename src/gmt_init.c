@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.152 2004-08-16 18:15:31 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.153 2004-08-19 18:56:00 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4756,6 +4756,11 @@ void GMT_init_fonts (int *n_fonts)
 		*n_fonts = i;
 	}
 	GMT_font = (struct GMT_FONT *) GMT_memory ((void *)GMT_font, (size_t)(*n_fonts), sizeof (struct GMT_FONT), GMT_program);
+}
+
+void GMT_set_processed_option (int key, BOOLEAN state)
+{
+	GMT_processed_option[key] = state;
 }
 
 #ifdef WIN32
