@@ -8,5 +8,5 @@ time (relative to the selected TIME_EPOCH and in the selected TIME_UNIT; append 
 or absolute time of the form [\fIdate\fP]\fBT[\fP\fIclock\fP] (append \fBT\fP to \fB\-JX|x\fP).  At least one of \fIdate\fP and \fIclock\fP
 must be present; the \fBT\fP is always required.  The \fIdate\fP string must be of the form [-]yyyy[-mm[-dd]]
 (Gregorian calendar) or yyyy[-Www[-d]] (ISO week calendar), while the \fIclock\fP string must be of
-the form hh:mm:ss[.xxx].  The use of delimeters and their type and positions must be as indicated
+the form hh:mm:ss[.xxx].  The use of delimiters and their type and positions must be as indicated
 (however, input/output and plotting formats are flexible). 

@@ -6,29 +6,29 @@ identifies a particular axis item.  Three axis item types exist (six for time-ax
 use \fBA\fP, \fBI\fP, and \fBi\fP):
 .br
 .sp
-	\fBa\fP: (upper) tick anotation stride (upper means anotations closest to the axis)
+	\fBa\fP: (upper) tick annotation stride (upper means annotations closest to the axis)
 .br
 	\fBf\fP: (upper) frame tick stride.
 .br
 	\fBg\fP: grid line stride.
 .br
-	\fBA\fP: lower tick anotation stride (lower means anotations farthest from the axis).
+	\fBA\fP: lower tick annotation stride (lower means annotations farthest from the axis).
 .br
-	\fBi\fP: upper interval anotation stride (interval means anotation is centered on the interval).
+	\fBi\fP: upper interval annotation stride (interval means annotation is centered on the interval).
 .br
-	\fBI\fP: lower interval anotation stride.
+	\fBI\fP: lower interval annotation stride.
 .br
-	   i or I may be immediately followed by \fImod\fP which controls interval anotations:
+	   i or I may be immediately followed by \fImod\fP which controls interval annotations:
 .br
-	     f: Anotate full calendar-item name (e.g., "January").
+	     f: Annotate full calendar-item name (e.g., "January").
 .br
-	     a: Anotate abbreviated calendar-item name (e.g., "Jan").
+	     a: Annotate abbreviated calendar-item name (e.g., "Jan").
 .br
-	     c: Anotate 1-char calendar-item name (e.g., "J").
+	     c: Annotate 1-char calendar-item name (e.g., "J").
 .br
-	   Use F, A, C to force upper case anotation.
+	   Use F, A, C to force upper case annotation.
 .br
-	If \fBitem\fP is not given, it defaults to \fBa\fP (upper tick anotations).
+	If \fBitem\fP is not given, it defaults to \fBa\fP (upper tick annotations).
 .br
 	If frame tick stride is not set, it is assumed to be the same as the upper annotation stride.
 .br
@@ -45,34 +45,34 @@ use \fBA\fP, \fBI\fP, and \fBi\fP):
 .br
 	  y: year - plot only last 2 digits.
 .br
-	  O: month - format anotation according to PLOT_DATE_FORMAT.;
+	  O: month - format annotation according to PLOT_DATE_FORMAT.;
 .br
 	  o: month - plot as 2-digit integer (1-12).
 .br
-	  U: ISO week - format anotation according to PLOT_DATE_FORMAT.
+	  U: ISO week - format annotation according to PLOT_DATE_FORMAT.
 .br
 	  u: ISO week - plot as 2-digit integer (1-53).
 .br
 	  r: Gregorian week - 7-day stride from chosen start of week (Sunday).
 .br
-	  K: ISO weekday - format anotation according to PLOT_DATE_FORMAT.
+	  K: ISO weekday - format annotation according to PLOT_DATE_FORMAT.
 .br
-	  k: weekday - plot name of weekdays in selected language [english].
+	  k: weekday - plot name of weekdays in selected language [English].
 .br
-	  D: day  - format anotation according to PLOT_DATE_FORMAT, which also determines whether
+	  D: day  - format annotation according to PLOT_DATE_FORMAT, which also determines whether
 we should plot day of month (1-31) or day of year (1-366).
 .br
 	  d: day - plot as 2- (day of month) or 3- (day of year) integer.
 .br
-	  H: hour - format anotation according to PLOT_CLOCK_FORMAT.
+	  H: hour - format annotation according to PLOT_CLOCK_FORMAT.
 .br
 	  h: hour - plot as 2-digit integer (0-23).
 .br
-	  M: minute - format anotation according to PLOT_CLOCK_FORMAT.
+	  M: minute - format annotation according to PLOT_CLOCK_FORMAT.
 .br
 	  m: minute - plot as 2-digit integer (0-59).
 .br
-	  C: second - format anotation according to PLOT_CLOCK_FORMAT.
+	  C: second - format annotation according to PLOT_CLOCK_FORMAT.
 .br
 	  c: second - plot as 2-digit integer (0-59; 60-61 if leap seconds are enabled).
 .br
@@ -80,9 +80,9 @@ we should plot day of month (1-31) or day of year (1-366).
 Specify an axis label by surrounding it with colons (e.g., :"my x label":).
 Note that all labels that contain spaces must be quoted.
 .br
-To append a unit to each anotation (e.g., 5 km, 10 km ...) add a label that begins
-with a comma; the rest is used as unit anotation (e.g. :",km":). If the unit has
-a leading hyphen (-) there will be no space between unit and anotation (e.g., :,-%:).
+To append a unit to each annotation (e.g., 5 km, 10 km ...) add a label that begins
+with a comma; the rest is used as unit annotation (e.g. :",km":). If the unit has
+a leading hyphen (-) there will be no space between unit and annotation (e.g., :,-%:).
 .br
 For separate x and y [and z if -Jz is used] tickinfo, separate the strings with slashes [/].
 .br
@@ -97,9 +97,9 @@ Upper case (e.g., \fBW\fP) means draw axis/tickmarks AND annotate it, whereas lo
 of the vertical axis.  Append '+' to draw the outline of the cube defined by \fB\-R\fP.  Note
 that for 3-D views the title, if given, will be suppressed.)
 .br
-Log10 axis: Append l to anotate log10 (x) or p for 10^(log10(x)) [Default anotates x].
+Log10 axis: Append l to annotate log10 (x) or p for 10^(log10(x)) [Default annotates x].
 Power axis: append p to annotate x at equidistant pow increments [Default will yield nonlinear
-spacing between anotations due to the nonlinear projection].
+spacing between annotations due to the nonlinear projection].
 
 .br
 For non-geographical projections:
