@@ -1,11 +1,11 @@
 .TH GRD2XYZ GMTMANSECTION DATE VERSION VERSION
 .SH NAME
-grd2xyz \- Converting a grdfile to an ASCII or binary table
+grd2xyz \- Converting grdfile(s) to ASCII or binary data
 .SH SYNOPSIS
-\fBgrd2xyz\fP \fIgrdfile\fP [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
+\fBgrd2xyz\fP \fIgrdfile(s)\fP [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
 [ \fB\-S\fP[\fBr\fP ] [ \fB\-V\fP ] [ \fB\-W\fP[\fIweight\fP] ] [ \fB\-Z\fP[\fIflags\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
-\fBgrd2xyz\fP reads a binary 2-D grdfile and writes out xyz-triplets in ASCII [or binary] format to standard output.
+\fBgrd2xyz\fP reads one or more binary 2-D grdfile and writes out xyz-triplets in ASCII [or binary] format to standard output.
 Modify the
 precision of the ASCII output format by editing the D_FORMAT parameter in your \.gmtdefaults4 file, or
 choose binary output using single or double precision storage.  As an option you may output
@@ -13,11 +13,11 @@ z-values without the (x,y) in a
 number of formats, see \fB\-Z\fP below.
 .TP
 \fIgrdfile\fP
-The 2-D binary file to be converted.
+Names of 2-D binary grd files to be converted.
 .SH OPTIONS
 .TP
 .B \-H
-Output 1 header record based on information in the grdfile header.
+Output 1 header record based on information in the first grdfile header.
 Ignored if binary output is selected.  [Default is no header].
 .TP
 .B \-L
