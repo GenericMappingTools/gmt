@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.29 2002-05-02 17:53:08 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.30 2002-06-13 19:57:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2457,7 +2457,7 @@ void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift)
   does so by using project_info.w,e,s,n which have been set correctly
   by map_setup. */
 
-void GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax)
+int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax)
 {
 	int shifted;
 	
@@ -2494,10 +2494,11 @@ void GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double
 	*ymax = ceil (project_info.n / h->y_inc) * h->y_inc;
 	if (*ymax > h->y_max) *ymax = h->y_max;
 	
-	if ((*xmax) < (*xmin) || (*ymax) < (*ymin)) {	/* Sheisse! */
-		fprintf (stderr, "%s: Error setting grid region in GMT_grd_setregion.\n", GMT_program);
-		fprintf (stderr, "%s: This is possibly a bug - notify the GMT developers.\n", GMT_program);
+	if ((*xmax) < (*xmin) || (*ymax) < (*ymin)) {	/* Either error or grid outside chosen -R */
+		fprintf (stderr, "%s: Your grid appears to be outside the map region and will be skipped.\n", GMT_program);
+		return (1);
 	}
+	return (0);
 }
 
 /* code for bicubic rectangle and bilinear interpolation of grd files
