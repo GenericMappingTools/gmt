@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.31 2004-01-14 23:34:05 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.32 2004-10-02 23:02:58 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -130,5 +130,5 @@ if [ $key = "all" ] || [ $key = "map" ]; then
 	convert -density 100x100 -crop 0x0 gmt_usage.ps gmt_usage.jpg
 	gmtset DOTS_PR_INCH 300 PAPER_MEDIA Letter
 	rm -f gmt_usage.ps
-	install -m 644 gmt_usage.jpg /home/gmt/gmt/www
+	install -m 644 gmt_usage.jpg /home/gmt/gmt/www/gmt
 fi
