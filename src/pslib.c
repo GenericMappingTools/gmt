@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.38 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: pslib.c,v 1.39 2002-02-15 18:05:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -348,7 +348,8 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	 
 	int ix, iy;		/* Position of the lower left corder of the image */
 	int lx, ly;		/* x and y dimension of image in PS coordinates */
-	int mx, n_channels, id;
+	int mx, n_channels, id, nan_rgb[3];
+	BOOLEAN colormask = FALSE;
 	char *colorspace[3] = {"Gray", "RGB", "CMYK"};			/* What kind of image we are writing */
 	char *decode[3] = {"0 1", "0 1 0 1 0 1", "0 1 0 1 0 1 0 1"};	/* What kind of color decoding */
 	char *kind[2] = {"bin", "hex"};					/* What encoding to use */
@@ -359,9 +360,29 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	lx = irint (xsize * ps.scale);
 	ly = irint (ysize * ps.scale);
 	id = (ps.cmyk_image && abs(nbits) == 24) ? 2 : ((abs(nbits) == 24) ? 1 : 0);
+	if (nx < 0 && abs(nbits) == 24) {		/* Colormask requested, 24-bit only */
+		nx = abs (nx);
+		colormask = TRUE;
+		nan_rgb[0] = (int)buffer[0];
+		nan_rgb[1] = (int)buffer[1];
+		nan_rgb[2] = (int)buffer[2];
+		buffer += 3;		/* Skip to start of image */
+	}
+		
 	fprintf (ps.fp, "\n%% Start of %s Adobe %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], abs (nbits));
 	fprintf (ps.fp, "V N %d %d T %d %d scale\n", ix, iy, lx, ly);
-	if (nbits < 0) {	/* Do new PS Level 2 image with interpolation */
+	if (colormask) {	/* Do new PS Level 3 image type 4 with colormask */
+		nbits = abs (nbits);
+		fprintf (ps.fp, "/Device%s setcolorspace\n", colorspace[id]);
+		fprintf (ps.fp, "<<\t%% Start Image dictionary\n  /ImageType 4\n  /Width %d /Height %d\n", nx, ny);
+		fprintf (ps.fp, "  /BitsPerComponent %d\n", MIN (nbits, 8));
+		fprintf (ps.fp, "  /Decode [%s]\n", decode[id]);
+		fprintf (ps.fp, "  /ImageMatrix [%d 0 0 %d 0 %d]\n", nx, -ny, ny);
+		fprintf (ps.fp, "  /DataSource currentfile");
+		if (ps.hex_image) fprintf (ps.fp, " /ASCIIHexDecode filter");
+		fprintf (ps.fp, "\n  /MaskColor [%d %d %d]\n>>\nimage\n", nan_rgb[0], nan_rgb[1], nan_rgb[2]);
+	}
+	else if (nbits < 0) {	/* Do new PS Level 2 image with interpolation */
 		nbits = abs (nbits);
 		fprintf (ps.fp, "/Device%s setcolorspace\n", colorspace[id]);
 		fprintf (ps.fp, "<<\t%% Start Image dictionary\n  /ImageType 1\n  /Width %d /Height %d\n", nx, ny);
