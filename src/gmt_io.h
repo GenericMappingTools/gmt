@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.18 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.19 2002-01-18 01:03:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -37,8 +37,9 @@
 
 /* Types of possible column entries in a file: */
 
+#define GMT_IS_UNKNOWN		-1	/* Input type is not knowable without -f */
 #define GMT_IS_NAN		0	/* Returned by GMT_scanf routines when read fails */
-#define GMT_IS_UNKNOWN		1	/* Generic (double) data type, no special format */
+#define GMT_IS_FLOAT		1	/* Generic (double) data type, no special format */
 #define GMT_IS_LAT		2
 #define GMT_IS_LON		4
 #define GMT_IS_GEO		6	/* data type is either Lat or Lon */
@@ -55,7 +56,8 @@ EXTERN_MSC int GMT_decode_coltype (char *text);				/* Decode -i option and set p
 EXTERN_MSC void GMT_multisegment (char *text);				/* Decode -M option */
 EXTERN_MSC void GMT_write_segmentheader (FILE *fp, int n);		/* Write multisegment header back out */
 EXTERN_MSC char *GMT_fgets (char *record, int maxlength, FILE *fp);	/* Does a fscanf from inside gmt_io to keep DLLs working */
-EXTERN_MSC int GMT_scanf (char *p, int expectation, double *val);	/* Convert strings to double, handling special formats */
+EXTERN_MSC int GMT_scanf (char *p, int expectation, double *val);	/* Convert strings to double, handling special formats [Data records only ] */
+EXTERN_MSC int GMT_scanf_arg (char *p, int expectation, double *val);	/* Convert strings to double, handling special formats [ command line only ] */
 EXTERN_MSC int	GMT_scanf_argtime (char *s, double *val);		/* Convert an argument token to a time  */
 EXTERN_MSC void GMT_format_abstime_output (GMT_dtime dt, char *text);	/* Generate formatted textstring for absolute calendar time */
 EXTERN_MSC void GMT_format_geo_output (BOOLEAN is_lat, double geo, char *text);	/* Generate formatted textstring for geographic coordinate */
