@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.3 2001-03-01 22:08:26 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.4 2001-08-15 15:37:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -294,7 +294,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 	return (i);
 }
 
-int GMT_scanf (char *p, double *val)
+int GMT_scanf_old (char *p, double *val)
 {
 	/* Converts text to double if certain conditions are met:
 	   p must be of the form [+|-][0-9][.][0-9][E|e|D|e][+|-][0-9] OR [+|-][dd:mm[:ss][WESN]
