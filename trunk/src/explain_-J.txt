@@ -201,7 +201,7 @@ Give \fIx-scale\fP in UNIT/x-unit and \fIy-scale\fP in UNIT/y-unit.
 scale(s) to reverse the direction of an axis (e.g., to have y be positive down).
 .br
 .sp
-Append \fBd\fP if x and y are geographical coordinates in degrees.
+Append a single \fBd\fP if data are geographical coordinates in degrees.
 Default axes lengths (see gmtdefaults) can be invoked
 using \fB\-JXh\fP (for landscape); \fB\-JXv\fP (for portrait) will swap the x- and y-axes lengths.
 The \fBGMT\fP default unit for this installation is UNIT.  However, you may
