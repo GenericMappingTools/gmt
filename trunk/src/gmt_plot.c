@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.11 2001-07-12 00:00:37 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.12 2001-08-06 19:45:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2162,7 +2162,7 @@ void GMT_map_tickmarks (double w, double e, double s, double n)
 	int i, nx, ny;
 	double dx, dy, w1, s1, val;
 	
-	if (!MAPPING || gmtdefs.basemap_type == IS_FANCY) return;
+	if (!(MAPPING || project_info.projection == POLAR) || gmtdefs.basemap_type == IS_FANCY) return;		/* Tickmarks already done by linear_axis or done in fancy ways */
 	
 	dx = fabs (frame_info.frame_int[0]);
 	dy = fabs (frame_info.frame_int[1]);
@@ -3281,7 +3281,7 @@ void GMT_get_anot_label (double val, char *label, int do_minutes, int do_seconds
 	no_degree = (gmtdefs.degree_format >= 1000);	/* No, we dont want the degree symbol at all */
 	fmt = gmtdefs.degree_format % 100;	/* take out the optional 100 or 1000 */
 	
-	if (lonlat == 0) {	/* Fix longitudes to 0.0 <= lon <= 360 first */
+	if (lonlat == 0 && fmt != -1) {	/* Fix longitudes to 0.0 <= lon <= 360 first */
 		while (val > 360.0) val -= 360.0;
 		while (val < 0.0) val += 360.0;
 	}

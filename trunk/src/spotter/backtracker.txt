@@ -4,7 +4,7 @@ backtracker \- Forward and Backward flowlines and hotspot tracks
 .SH SYNOPSIS
 \fBbacktracker\fP [\fIinfile(s)\fP] \fB\-E\fP\fIstage_file\fP 
 [ \fB\-A\fP[\fIyoung/old\fP] ] [ \fB\-C\fP ] [ \fB\-Df|b\fP ] [ \fB\-H\fP[\fInrec\fP] ] 
-[ \fB\-Lf|t\fP\fIstep\fP ] [ \fB\-N\fP\fIupper_age\fP ] 
+[ \fB\-Lf|b\fP\fIstep\fP ] [ \fB\-N\fP\fIupper_age\fP ] 
 [ \fB\-S\fP\fIfilestem\fP ] [ \fB\-T\fP\fIzero_age\fP ] [ \fB\-V\fP ] [ \fB\-:\fP ] 
 [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
 .SH DESCRIPTION
@@ -47,8 +47,8 @@ File format is similar to the stage pole format except the youngest rotation mus
 first and that the tstart column is optional (assumed to be 0 Ma).
 .TP
 .B \-D
-Set the direction to go: \fB\-Df\fP will go forward in time, while
-\fB\-Db\fP will go backward in time [Default].
+Set the direction to go: \fB\-Df\fP will go forward in time (from younger to older positions), while
+\fB\-Db\fP will go backward in time (from older to younger positions) [Default].
 #include "explain_-H.txt"
 .TP
 .B \-L
