@@ -1,11 +1,11 @@
-	20.0,			/* ANOT_MIN_ANGLE */
-	0.0,			/* ANOT_MIN_SPACING */
-	0,			/* ANOT_FONT */
-	14,			/* ANOT_FONT_SIZE */
-	0,			/* ANOT_FONT2 */
-	16,			/* ANOT_FONT2_SIZE */
-	0.075,			/* ANOT_OFFSET */
-	0.075,			/* ANOT_OFFSET2 */
+	20.0,			/* ANNOT_MIN_ANGLE */
+	0.0,			/* ANNOT_MIN_SPACING */
+	0,			/* ANNOT_FONT */
+	14,			/* ANNOT_FONT_SIZE */
+	0,			/* ANNOT_FONT2 */
+	16,			/* ANNOT_FONT2_SIZE */
+	0.075,			/* ANNOT_OFFSET */
+	0.075,			/* ANNOT_OFFSET2 */
 	"WESN",			/* BASEMAP_AXES */
 	{0, 0, 0},		/* BASEMAP_FRAME_RGB */
 	0,			/* BASEMAP_TYPE */
@@ -49,7 +49,7 @@
 	50,			/* N_LON_NODES */
 	0.0,			/* --SET AT RUNTIME */
 	0.0,			/* --SET AT RUNTIME */
-	1,			/* OBLIQUE_ANOTATION */
+	1,			/* OBLIQUE_ANNOTATION */
 	FALSE,			/* OVERLAY */
 	{255, 255, 255},	/* PAGE_COLOR */	
 	0,			/* PAGE_ORIENTATION */

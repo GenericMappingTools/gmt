@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.35 2002-01-04 21:13:03 pwessel Exp $
+ *	$Id: pslib.c,v 1.36 2002-01-04 21:41:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -191,11 +191,11 @@ void ps_arc_ (double *x, double *y, double *radius, double *az1, double *az2, in
 	 ps_arc (*x, *y, *radius, *az1, *az2, *status);
 }
 	
-void ps_axis (double x, double y, double length, double val0, double val1, double annotation_int, char *label, int anotpointsize, int side)
+void ps_axis (double x, double y, double length, double val0, double val1, double annotation_int, char *label, int annotpointsize, int side)
 {
-	int anot_justify, label_justify, i, j, ndig = 0;
+	int annot_justify, label_justify, i, j, ndig = 0;
 	int left = FALSE;
-	double angle, dy, scl, val, anot_off, label_off, xx, sign;
+	double angle, dy, scl, val, annot_off, label_off, xx, sign;
 	char text[128], format[32];
 	
 	if (annotation_int < 0.0) left = TRUE;
@@ -213,8 +213,8 @@ void ps_axis (double x, double y, double length, double val0, double val1, doubl
 		
 	angle = (side%2) ? 90.0 : 0.0;
 	sign = (side < 2) ? -1.0 : 1.0;
-	anot_justify = label_justify = (side < 2) ? -10 : -2;
-	dy = sign * anotpointsize / ps.points_pr_unit;
+	annot_justify = label_justify = (side < 2) ? -10 : -2;
+	dy = sign * annotpointsize / ps.points_pr_unit;
 			
 	fprintf (ps.fp, "\nV %d %d T %lg R\n", irint (x * ps.scale), irint (y * ps.scale), angle);
 	ps_plot (0.0, 0.0, 3);
@@ -224,7 +224,7 @@ void ps_axis (double x, double y, double length, double val0, double val1, doubl
 		return;
 	}
 	scl = length / (val1 - val0);
-	anot_off = dy;
+	annot_off = dy;
 	label_off = 2.5 * dy;
 	dy *= 0.5;
 	
@@ -237,17 +237,17 @@ void ps_axis (double x, double y, double length, double val0, double val1, doubl
 		ps_plot (xx, 0.0, 3);
 		ps_plot (xx, dy, 2);
 		sprintf( text, format, val);
-		ps_text (xx, anot_off, anotpointsize, text, 0.0, anot_justify, 0);
+		ps_text (xx, annot_off, annotpointsize, text, 0.0, annot_justify, 0);
 		val = val0 + i * annotation_int;
 	}
-	ps_text (0.5*length, label_off, (int) (anotpointsize*1.5), label, 0.0, label_justify, 0);
+	ps_text (0.5*length, label_off, (int) (annotpointsize*1.5), label, 0.0, label_justify, 0);
 	fprintf (ps.fp, "U\n\n");
 }
 
 /* fortran interface */
-void ps_axis_ (double *x, double *y, double *length, double *val0, double *val1, double *annotation_int, char *label, int *anotpointsize, int *side, int nlen)
+void ps_axis_ (double *x, double *y, double *length, double *val0, double *val1, double *annotation_int, char *label, int *annotpointsize, int *side, int nlen)
 {
-	ps_axis (*x, *y, *length, *val0, *val1, *annotation_int, label, *anotpointsize, *side);
+	ps_axis (*x, *y, *length, *val0, *val1, *annotation_int, label, *annotpointsize, *side);
 }
 
 void ps_circle (double x, double y, double size, int rgb[], int outline)
