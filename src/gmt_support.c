@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.83 2004-05-11 17:08:24 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.84 2004-05-11 17:56:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4163,8 +4163,8 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 {
 	/* Pass text as &argv[i][2] */
 	
-	int j = 0, i,error = 0, colon, plus, k;
-	char txt_a[32], txt_b[32], txt_c[32], txt_d[32];
+	int j = 0, i,error = 0, colon, plus, k, order[4] = {3,1,0,2};
+	char txt_a[32], txt_b[32], txt_c[32], txt_d[32], tmpstring[256], *p;
 	
 	/* SYNTAX is -T[f|m][x]<lon0>/<lat0>/<size>[/<info>][:label:][+gint[/mint]], where <info> is
 	 * 1)  -Tf: <info> is <kind> = 1,2,3 which is the level of directions [1].
@@ -4176,6 +4176,10 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 	ms->size = 0.0;
 	ms->a_int[0] = 10.0;
 	ms->a_int[1] = 30.0;
+	strcpy (ms->label[0], "S");
+	strcpy (ms->label[1], "E");
+	strcpy (ms->label[2], "N");
+	strcpy (ms->label[3], "W");
 	
 	/* First deal with possible prefixes f and x (i.e., f, x, xf, fx( */
 	if (text[j] == 'f') ms->fancy = TRUE, j++;
@@ -4198,14 +4202,26 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 		text[plus-1] = '\0';	/* Break string so sscanf wont get confused later */
 	}
 	if (colon > 0) {	/* Get labels in string :w,e,s,n: */
-		sscanf (&text[colon], "%[^,],%[^,],%[^,],%[^:]", ms->label[3], ms->label[1], ms->label[0], ms->label[2]);
+		for (k = colon; text[k] && text[k] != ':'; k++);	/* Look for terminating colon */
+		if (text[k] != ':') { /* Ran out, missing terminating colon */
+			fprintf (stderr, "%s: GMT SYNTAX ERROR -T option: Labels must be given in format :w,e,s,n:\n", GMT_program);
+			error++;
+			return (error);
+		}
+		strncpy (tmpstring, &text[colon], k-colon);
+		tmpstring[k-colon] = '\0';
+		p = strtok (tmpstring, ",");
+		k = 0;
+		while (p && k < 4) {	/* Get the four labels */
+			if (strcmp (p, "-")) strcpy (ms->label[order[k]], p);
+			k++;
+			p = strtok (NULL, ",");
+		}
+		if (k != 4) {	/* Ran out of labels */
+			fprintf (stderr, "%s: GMT SYNTAX ERROR -T option: Labels must be given in format :w,e,s,n:\n", GMT_program);
+			error++;
+		}
 		text[colon-1] = '\0';	/* Break string so sscanf wont get confused later */
-	}
-	else {			/* Set Default */
-		strcpy (ms->label[0], "S");
-		strcpy (ms->label[1], "E");
-		strcpy (ms->label[2], "N");
-		strcpy (ms->label[3], "W");
 	}
 	
 	/* -L[f][x]<x0>/<y0>/<size>[/<kind>][:label:] OR -L[m][x]<x0>/<y0>/<size>[/<dec>/<declabel>][:label:][+gint[/mint]] */

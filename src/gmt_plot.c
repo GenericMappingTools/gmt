@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.119 2004-05-11 01:07:16 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.120 2004-05-11 17:56:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4040,6 +4040,12 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 #define F_HL	0.15
 #define F_HW	0.05
 
+#define ROSE_LENGTH_SCL1	(0.5 * M_SQRT2)
+#define ROSE_LENGTH_SCL2	0.5
+#define ROSE_WIDTH_SCL1		0.2
+#define ROSE_WIDTH_SCL2		0.2
+#define ROSE_WIDTH_SCL3		0.2
+
 void GMT_draw_map_rose (struct MAP_ROSE *mr)
 {
 	int i, kind;
@@ -4067,11 +4073,11 @@ void GMT_draw_map_rose (struct MAP_ROSE *mr)
 	if (mr->fancy) {	/* Fancy scale */
 		mr->size *= 0.5;	/* Got diameter, use radius for calculations */
 		L[0] = mr->size;
-		L[1] = 0.8 * mr->size;
-		L[2] = L[3] = 0.6 * mr->size;
-		R[0] = 0.2 * mr->size;
-		R[1] = 0.2 * mr->size;
-		R[2] = R[3] = 0.25 * mr->size;
+		L[1] = ROSE_LENGTH_SCL1 * mr->size;
+		L[2] = L[3] = ROSE_LENGTH_SCL2 * mr->size;
+		R[0] = ROSE_WIDTH_SCL1 * mr->size;
+		R[1] = ROSE_WIDTH_SCL2 * mr->size;
+		R[2] = R[3] = ROSE_WIDTH_SCL3 * mr->size;
 		mr->kind--;	/* Turn 1-3 into 0-2 */
 		if (mr->kind == 2) mr->kind = 3;	/* Trick so that we can draw 8 rather than 4 points */
 		for (kind = mr->kind; kind >= 0; kind--) {
