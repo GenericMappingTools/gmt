@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.10 2001-07-11 18:31:02 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.11 2001-07-11 18:35:14 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -17,6 +17,15 @@
 #
 #	Paul Wessel
 #	05-FEB-2001
+#
+# Related info:  The registration form on gmt.soest.hawaii.edu collects
+# information about the user, including a lon,lat location.  The form
+# is processed by gmt_form.pl in the cgi-bin directory on the gmt
+# server (currently /var/www/cgi-bin on gmt) which will email the info
+# via sendmail to gmt@soest.hawaii.edu (which is forwarded to wessel).
+# Netscape communicator has a message filter that will automatically
+# move these messages into the GMT/Registrations folder.  This script
+# then acts on these messages as described above.
 
 if [ $# = 1 ] && [ $1 = "help" ]; then
 	cat << EOF >&2
