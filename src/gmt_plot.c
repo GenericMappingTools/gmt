@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.90 2004-02-06 17:34:46 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.91 2004-02-25 18:06:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -129,6 +129,7 @@ void GMT_flush_symbol_piece (double *x, double *y, double z, int *n, struct GMT_
 struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name);
 
 void GMT_map_tickitem (double w, double e, double s, double n, int item);
+void GMT_NaN_pen_up (double x[], double y[], int pen[], int n);
 
 /* Local variables to this file */
 
@@ -3152,6 +3153,8 @@ void GMT_plot_line (double *x, double *y, int *pen, int n)
 	
 	if (n < 2) return;
 	
+	GMT_NaN_pen_up (x, y, pen, n);	/* Ensure we dont have NaNs in the coordinates */
+	
 	i = 0;
 	while (i < (n-1) && pen[i+1] == 3) i++;	/* Skip repeating pen == 3 in beginning */
 	if ((n-i) < 2) return;
@@ -4570,3 +4573,16 @@ void GMT_star3D (double x, double y, double z, double size, int rgb[], int outli
 	ps_patch (plot_x, plot_y, 10, rgb, outline);
 }
 
+void GMT_NaN_pen_up (double x[], double y[], int pen[], int n)
+{
+	/* Ensure that if there are NaNs we set pen = 3 */
+	
+	int i, n1;
+	
+	for (i = 0, n1 = n - 1; i < n; i++) {
+		if (GMT_is_dnan (x[i]) || GMT_is_dnan (y[i])) {
+			pen[i] = 3;
+			if (i < n1) pen[i+1] = 3;	/* Since the next point must become the new anchor */
+		}
+	}
+}
