@@ -3,7 +3,7 @@
 .br
 \fB+c\fP\fIdx\fP[/\fIdy\fP] sets the clearance between label and optional text box [0.05i/0.05i].
 .br
-\fB+f\fP\fIsize\fP sets the desired font size in points [Default is 9].  The font used is controlled by \fBANNOT_FONT_PRIMARY\fP.
+\fB+f\fP\fIfont\fP sets the desired font [Default \fBANNOT_FONT_PRIMARY\fP].
 .br
 \fB+g\fP\fIcolor\fP sets color of opaque text box [Default is transparent box].
 .br
@@ -12,6 +12,8 @@
 \fB+o|O\fP activates the drawing of rectangular or rounded rectangular outline of text box [Default is no outline].
 .br
 \fB+p\fP\fIpen\fP sets pen for text box [Default is width = 0.25p, color = black, texture = solid].
+.br
+\fB+s\fP\fIsize\fP sets the desired font size in points [Default is 9].
 .br
 \fB+t\fP specifies transparent text box [Default].
 .br

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.8 2004-05-25 04:59:47 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.9 2004-05-26 02:06:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -59,6 +59,7 @@ struct GMT_CONTOUR {
 	BOOLEAN annot;			/* TRUE if we want labels */
 	BOOLEAN spacing;		/* TRUE if we have spacing constraints to apply */
 	double label_dist_spacing;	/* Min distance between labels */
+	int label_font;			/* Which font */
 	int dist_kind;			/* What kind of distance [0 = xy, 1 = map ] */
 	PFD dist_func;			/* Pointer to function that calculates distances */
 	double d_scale;			/* Scale to yield correct units */
