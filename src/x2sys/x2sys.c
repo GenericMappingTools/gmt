@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.25 2005-03-16 03:03:50 pwessel Exp $
+ *	$Id: x2sys.c,v 1.26 2005-03-16 03:26:32 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -770,7 +770,7 @@ int x2sys_read_list (char *file, char ***list)
 void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, struct GMT_IO *G)
 {
 	char tag_file[BUFSIZ], line[BUFSIZ], r_arg[GMT_TEXT_LEN], i_arg[GMT_TEXT_LEN], *p, *sfile = CNULL;
-	int geodetic = 0, error = 0;
+	int geodetic = 0;
 	BOOLEAN geographic = FALSE, got_r = FALSE, got_i = FALSE;
 	FILE *fp;
 
@@ -834,7 +834,7 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 		fprintf (stderr, "%s: Error processing %s setting in %s!\n", X2SYS_program, r_arg, tag_file);
 		exit (EXIT_FAILURE);
 	}
-	if (get_i && GMT_getinc (i_arg, &B->bin_x, &B->bin_y)) {
+	if (got_i && GMT_getinc (i_arg, &B->bin_x, &B->bin_y)) {
 		fprintf (stderr, "%s: Error processing -I%s setting in %s!\n", X2SYS_program, i_arg, tag_file);
 		exit (EXIT_FAILURE);
 	}
