@@ -60,11 +60,9 @@ complicated, being a function also of the coherency.
 .TP
 .B \-C
 Read the first two columns of input as samples of two timeseries, X(t) and Y(t).
-  Consider Y(t) to be the
-output and X(t) the input in a linear system with noise.  Estimate the optimum f
-requency response function
-by least squares, such that the noise output is minimized and the coherent outpu
-t and the noise output are
+Consider Y(t) to be the output and X(t) the input in a linear system with noise.
+Estimate the optimum frequency response function by least squares, such that the
+noise output is minimized and the coherent output and the noise output are
 uncorrelated.
 Optionally specify up to 8 letters from the set { \fBx y c n p a g o\fP }
 in any order to create only those output files instead of the default [all].
