@@ -90,7 +90,7 @@ c, i, m, p to indicate that the size information in the
 input data is in units of cm, inch, meter, or point,
 respectively. [Default is MEASURE_UNIT].
 .br
-The uppercase symbols \fBA\fP, \fBC\fP, \fBD\fP, \fBH\fP, \fBI\fP, \fBS\fP, \fBT\fP are normalized
+The uppercase symbols \fBA\fP, \fBC\fP, \fBD\fP, \fBH\fP, \fBI\fP, \fBN\fP, \fBS\fP, \fBT\fP are normalized
 to have the same area as a circle with radius size, while
 the corresponding lowercase symbols all are circumscribed
 by the circle.  Choose between these symbol codes:
@@ -145,6 +145,9 @@ Users may add their own custom *.def files; see CUSTOM SYMBOLS below.
 the size is only approximate; no individual scaling
 is done for different characters.  Remember to escape special characters like *.  Optionally, you may append %\fIfont\fP
 to select a particular font [Default is ANNOT_FONT].
+.TP
+.B \-Sn
+pe\fBn\fPtagon.  \fIsize\fP is diameter of circumscribing circle.
 .TP
 .B \-Sp
 \fBp\fPoint.  No size needs to be specified (1 pixel is used).
@@ -276,6 +279,8 @@ to your custom symbol, add any number of the following plot code records:
 	invtriangle: \fIx	y	size\fP	\fBi\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
 	letter: \fIx	y	size	string\fP	\fBi\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
+.br
+	pentagon: \fIx	y	size\fP	\fBn\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
 	rect: \fIx	y	xwidth	ywidth\fP	\fBr\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br

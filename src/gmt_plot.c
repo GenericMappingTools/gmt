@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.85 2003-05-13 14:54:00 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.86 2003-12-23 01:28:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4022,6 +4022,12 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 				s->action = ACTION_TEXT;
 				break;
 				
+			case 'n':		/* Draw pentagon symbol */
+				if (last != 3) error++;
+				s->p[0] = atof (col[2]);
+				s->action = ACTION_PENTAGON;
+				break;
+				
 			case 's':		/* Draw square symbol */
 				if (last != 3) error++;
 				s->p[0] = atof (col[2]);
@@ -4283,6 +4289,14 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 					(project_info.three_D) ? GMT_text3d (x, y, z0, font_size, font_no, s->string, 0.0, 6, TRUE) : ps_text (x, y, font_size, s->string, 0.0, 6, TRUE);
 				break;
 
+			case ACTION_PENTAGON:
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+				f = (s->fill) ? s->fill : fill;
+				p = (s->pen)  ? s->pen  : pen;
+				if (p) GMT_setpen (p);
+				(project_info.three_D) ? GMT_pentagon3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_pentagon (x, y, s->p[0] * size, f->rgb, outline);
+				break;
+
 			case ACTION_ELLIPSE:
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
 				f = (s->fill) ? s->fill : fill;
@@ -4489,6 +4503,19 @@ void GMT_hexagon3D (double x, double y, double z, double size, int rgb[], int ou
 	for (i = 0; i < 6; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &plot_x[i], &plot_y[i]);
 
 	ps_patch (plot_x, plot_y, 6, rgb, outline);
+}
+
+void GMT_pentagon3D (double x, double y, double z, double size, int rgb[], int outline)
+{
+	int i;
+	double s, c, plot_x[5], plot_y[5];
+	
+	size *= 0.5;
+	for (i = 0; i < 5; i++) {
+		sincos ((90.0 + i * 72.0) * D2R, &s, &c);
+		GMT_xyz_to_xy (x + size * c, y + size * s, z, &plot_x[i], &plot_y[i]);
+	}
+	ps_patch (plot_x, plot_y, 5, rgb, outline);
 }
 
 void GMT_star3D (double x, double y, double z, double size, int rgb[], int outline)

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_symbol.h,v 1.10 2003-04-01 20:03:27 pwessel Exp $
+ *	$Id: gmt_symbol.h,v 1.11 2003-12-23 01:29:00 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,6 +43,7 @@
 #define ACTION_TEXT		14
 #define ACTION_PIE		15
 #define ACTION_RECT		17
+#define ACTION_PENTAGON		19
 
 struct CUSTOM_SYMBOL_ITEM {
 	double x, y, p[3];
