@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.2 2002-03-11 21:05:39 pwessel Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.3 2002-05-23 22:59:15 pwessel Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_progs tar/zip files.  See GMT_progs_files_bin.lis for binary files
@@ -135,6 +135,7 @@ src/xyz2grd.c
 share/GMT_CPT.lis
 share/cpt/GMT_cool.cpt
 share/cpt/GMT_copper.cpt
+share/cpt/GMT_drywet.cpt
 share/cpt/GMT_gebco.cpt
 share/cpt/GMT_globe.cpt
 share/cpt/GMT_gray.cpt
