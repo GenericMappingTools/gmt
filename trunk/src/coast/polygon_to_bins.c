@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_bins.c,v 1.2 2004-09-09 20:17:47 pwessel Exp $
+ *	$Id: polygon_to_bins.c,v 1.3 2004-09-12 09:08:45 pwessel Exp $
  */
 #include "wvs.h"
 
@@ -124,6 +124,7 @@ main (int argc, char **argv) {
 				fprintf(stderr,"polygon_dump:  ERROR  reading file.\n");
 				exit(-1);
 			}
+			if (p.x < 0) p.x += M360;
 			if (p.x == M360) p.x -= M360;
 			p.y += M90;
 			if (p.x%B_WIDTH == 0 && p.y%B_WIDTH == 0) {

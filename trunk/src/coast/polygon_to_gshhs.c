@@ -1,7 +1,6 @@
 /*
- *	$Id: polygon_to_gshhs.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
- */
-/* 
+ *	$Id: polygon_to_gshhs.c,v 1.2 2004-09-12 09:08:45 pwessel Exp $
+ * 
  *	read polygon.b format and write a GSHHS file to stdout
  */
 
@@ -23,8 +22,7 @@ main (int argc, char **argv)
 	int	k;
 	struct	LONGPAIR p;
 	struct GMT3_POLY h;
-	struct GSHHS h2;
-	char file[128];
+	struct GSHHS gshhs_header;
         
 	if (argc != 2) {
 		fprintf (stderr,"usage:  polygon_to_gshhs file_res.b > gshhs_res.b\n");
@@ -34,26 +32,26 @@ main (int argc, char **argv)
 	fp_in = fopen(argv[1], "r");
 		
 	while (pol_readheader (&h, fp_in) == 1) {
-		h2.west = rint (h.west * 1.0e6);
-		h2.east = rint (h.east * 1.0e6);
-		h2.south = rint (h.south * 1.0e6);
-		h2.north = rint (h.north * 1.0e6);
-		h2.id = h.id;
-		h2.n = h.n;
-		h2.greenwich = h.greenwich;
-		h2.level = h.level;
-		h2.source = h.source;
-		h2.area = rint (10.0 * h.area);
+		gshhs_header.west  = rint (h.west * 1.0e6);
+		gshhs_header.east  = rint (h.east * 1.0e6);
+		gshhs_header.south = rint (h.south * 1.0e6);
+		gshhs_header.north = rint (h.north * 1.0e6);
+		gshhs_header.id = h.id;
+		gshhs_header.n  = h.n;
+		gshhs_header.greenwich = h.greenwich;
+		gshhs_header.level  = h.level;
+		gshhs_header.source = h.source;
+		gshhs_header.area   = rint (10.0 * h.area);
 
-		fwrite((char *)&h2, sizeof (struct GSHHS), 1, stdout) ;
+		fwrite((char *)&gshhs_header, sizeof (struct GSHHS), 1, stdout) ;
 		for (k = 0; k < h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
-				fprintf (stderr,"polygon_to_gshhs:  ERROR  reading file.\n");
+				fprintf (stderr,"polygon_to_gshhs:  ERROR  reading file %s.\n", argv[1]);
 				exit (EXIT_FAILURE);
 			}
-			if (fwrite((void *)&p, sizeof(struct LONGPAIR), 1, stdout) != 1) {
-				fprintf (stderr,"polygon_to_gshhs:  ERROR  writing file.\n");
-				exit(EXIT_FAILURE);
+			if (pol_fwrite (&p, 1, stdout) != 1) {
+				fprintf (stderr,"polygon_to_gshhs:  ERROR  writing to stdout.\n");
+				exit (EXIT_FAILURE);
 			}
 		}
 	}
