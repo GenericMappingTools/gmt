@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.138 2004-09-23 21:17:42 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.139 2004-10-12 19:26:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4384,8 +4384,12 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 		 shift_x = (h->x_max < project_info.w) ? 360.0 : 0.0;	/* Shift to SUBTRACT from w/e ... when comparing */
 	}	
 	
-	*xmin = MAX (h->x_min, floor ((project_info.w - shift_x) / h->x_inc) * h->x_inc);
-	*xmax = MIN (h->x_max, ceil  ((project_info.e - shift_x) / h->x_inc) * h->x_inc);
+	/* *xmin = MAX (h->x_min, floor ((project_info.w - shift_x) / h->x_inc) * h->x_inc);
+	*xmax = MIN (h->x_max, ceil  ((project_info.e - shift_x) / h->x_inc) * h->x_inc); */
+	h->x_min += shift_x;
+	h->x_max += shift_x;
+	*xmin = MAX (h->x_min, floor (project_info.w / h->x_inc) * h->x_inc);
+	*xmax = MIN (h->x_max, ceil  (project_info.e / h->x_inc) * h->x_inc);
 	while (*xmin <= -360) (*xmin) += 360.0;
 	while (*xmax <= -360) (*xmax) += 360.0;
 
