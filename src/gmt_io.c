@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.6 2001-08-16 19:17:54 wsmith Exp $
+ *	$Id: gmt_io.c,v 1.7 2001-08-16 23:30:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -108,6 +108,9 @@ int GMT_bin_double_output (FILE *fp, int n, double *ptr);	/* Write binary double
 int GMT_bin_float_output (FILE *fp, int n, double *ptr);	/* Write binary float output records */
 void GMT_adjust_periodic ();					/* Add/sub 360 as appropriate */
 void GMT_decode_calclock_formats ();
+void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S);
+void GMT_date_C_format (char *template, struct GMT_DATE_IO *S);
+void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S);
 
 /* Table I/O routines for ascii and binary io */
 
@@ -131,7 +134,6 @@ void GMT_io_init (void)
 	GMT_output = GMT_ascii_output;
 
 	GMT_io.give_report = TRUE;
-	GMT_io.skip_bad_records = TRUE;
 	
 	GMT_io.skip_if_NaN = (BOOLEAN *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (BOOLEAN), GMT_program);
 	GMT_io.in_col_type  = (int *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (int), GMT_program);
@@ -220,7 +222,7 @@ void GMT_multisegment (char *text)
 int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 {
 	char line[BUFSIZ], *p;
-	int i, len, n_convert;
+	int i, col_no, len, n_convert;
 	BOOLEAN done = FALSE, bad_record;
 	double val;
 	
@@ -230,9 +232,9 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 	 * number of items read [or 0 for segment header and -1 for EOF]
 	 * If *n is passed as BUFSIZ it will be reset to the actual number of fields */
 
-	while (!done) {
+	while (!done) {	/* Done becomes TRUE when we successfully have read a data record */
 
-		/* First read until we get a non-blank, non-comment record or reach EOF */
+		/* First read until we get a non-blank, non-comment record, or reach EOF */
 
 		GMT_io.rec_no++;
 		while ((p = fgets (line, BUFSIZ, fp)) && (line[0] == '\n' || (line[0] == '#' && GMT_io.EOF_flag != '#'))) GMT_io.rec_no++;
@@ -241,12 +243,12 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 			GMT_io.status = GMT_IO_EOF;
 			if (GMT_io.give_report && GMT_io.n_bad_records) {	/* Report summary and reset */
 				fprintf (stderr, "%s: This file had %d records with invalid x and/or y values\n", GMT_program, GMT_io.n_bad_records);
-				GMT_io.n_bad_records = GMT_io.rec_no = 0;
+				GMT_io.n_bad_records = GMT_io.rec_no = GMT_io.n_clean_rec = 0;
 			}
 			return (-1);
 		}
 
-		if (GMT_io.multi_segments && line[0] == GMT_io.EOF_flag) {
+		if (GMT_io.multi_segments && line[0] == GMT_io.EOF_flag) {	/* Got a multisegment header, take action and return */
 			GMT_io.status = GMT_IO_SEGMENT_HEADER;
 			strcpy (GMT_io.segment_header, line);
 			return (0);
@@ -269,39 +271,42 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
  
 		bad_record = FALSE;
 		strcpy (GMT_io.current_record, line);
-		line[i-1] = '\0';	/* Chop off newline */
-		p = strtok(line, " \t,");
-		i = 0;
-		while (!bad_record && p && i < *n) {
-			if ((n_convert = GMT_scanf_old (p, &val)) == 1) {	/* Decoded string to a number */
-				GMT_data[i] = val;
+		line[i-1] = '\0';		/* Chop off newline at end of string */
+		p = strtok(line, " \t,");	/* Get first field and keep going until done */
+		col_no = 0;
+		while (!bad_record && p && col_no < *n) {
+			if ((n_convert = GMT_scanf (p, GMT_io.in_col_type[col_no], &val)) == GMT_IS_NAN) {	/* Got NaN or it failed to decode */
+				if (GMT_io.skip_if_NaN[col_no])	/* This field cannot be NaN so we must skip the entire record */
+					bad_record = TRUE;
+				else				/* OK to have NaN in this field, continue processing of record */
+					GMT_data[col_no] = GMT_d_NaN;
 			}
-			else {
-				GMT_data[i] = GMT_d_NaN;
-				if (i < 2) bad_record = TRUE;	/* If x and/or y is NaN then set bad */
+			else {					/* Successful decode, assign to array */
+				GMT_data[col_no] = val;
 			} 
-			p = strtok(CNULL, " \t,");
-			i++;
+			p = strtok(CNULL, " \t,");		/* Goto next field */
+			col_no++;
 		}
-		if (GMT_io.skip_bad_records && bad_record) {
+		if (bad_record) {
 			GMT_io.n_bad_records++;
 			if (GMT_io.give_report && (GMT_io.n_bad_records == 1)) {	/* Report 1st occurence */
-				fprintf (stderr, "%s: Encountered first invalid x and/or y values near record # %d\n", GMT_program, GMT_io.rec_no);
+				fprintf (stderr, "%s: Encountered first invalid record near/at line # %d\n", GMT_program, GMT_io.rec_no);
+				fprintf (stderr, "%s: Likely cause: Invalid x and/or y values or missing -: switch\n", GMT_program);
 			}
 		}
 		else
 			done = TRUE;
 	}
 	*ptr = GMT_data;
-	GMT_io.status = (i == *n || *n == BUFSIZ) ? 0 : GMT_IO_MISMATCH;
-	if (*n == BUFSIZ) *n = i;
+	GMT_io.status = (col_no == *n || *n == BUFSIZ) ? 0 : GMT_IO_MISMATCH;
+	if (*n == BUFSIZ) *n = col_no;
 
 	if (gmtdefs.xy_toggle) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
 	if (GMT_geographic_in) {
 		GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
 	}
 	
-	return (i);
+	return (col_no);
 }
 
 int GMT_scanf_old (char *p, double *val)
@@ -892,46 +897,74 @@ void GMT_row_ij (struct GMT_Z_IO *r, int ij, int *gmt_ij)
 	*gmt_ij = r->gmt_j * r->nx + r->gmt_i;
 }
 
-void GMT_get_ymdj_order (char *text, int ymdj_order[])
+void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S)
 {	/* Reads a YYYY-MM-DD or YYYYMMDD-like string and determines order.
-	 * ymdj_order[0] is the order of the year, [1] is month, etc.
+	 * order[0] is the order of the year, [1] is month, etc.
 	 * Items not encountered are left as -1.
 	 */
 
-	int i, j, order, sequence[4];
+	int i, j, order, n_y, n_m, n_d, n_j, n_w, sequence[4], delim, last, error = 0;
 	
-	/* ymdj_order is initialized to {-1, -1, -1, -1} */
+	/* S->order is initialized to {-1, -1, -1, -1} */
+	
+	n_y = n_m = n_d = n_j = n_w = 0;
+	S->delimeter[0] = S->delimeter[1] = 0;
 	
 	for (i = order = 0; i < strlen (text); i++) {
 		switch (text[i]) {
-			case 'Y':	/* Year */
-			case 'y':
-				if (ymdj_order[0] < 0) ymdj_order[0] = order++;
+			case 'y':	/* Year */
+				if (S->order[0] < 0) S->order[0] = order++;
+				n_y++;
 				break;
-			case 'M':	/* Month */
-			case 'm':
-				if (ymdj_order[1] < 0) ymdj_order[1] = order++;
+			case 'm':	/* Month */
+				if (S->order[1] < 0) S->order[1] = order++;
+				n_m++;
 				break;
-			case 'D':	/* Day of month */
-			case 'd':
-				if (ymdj_order[2] < 0) ymdj_order[2] = order++;
+			case 'W':	/* ISO Week flag */
+				S->iso_calendar = TRUE;
 				break;
-			case 'J':	/* Day of year  */
-			case 'j':
-				if (ymdj_order[3] < 0) ymdj_order[3] = order++;
+			case 'w':	/* Iso Week */
+				if (S->order[1] < 0) S->order[1] = order++;
+				n_w++;
+				break;
+			case 'd':	/* Day of month */
+				if (S->order[2] < 0) S->order[2] = order++;
+				n_d++;
+				break;
+			case 'j':	/* Day of year  */
+				if (S->order[3] < 0) S->order[3] = order++;
+				n_j++;
 				break;
 			default:	/* Delimeter of some kind */
+				S->delimeter[0] = text[i];
 				break;
 		}
 	}
 	
 	/* Then get the actual order by inverting table */
 	
-	for (i = 0; i < 4; i++) for (j = 0; j < 4; j++) if (ymdj_order[j] == i) sequence[i] = j;
-	for (i = 0; i < 4; i++) ymdj_order[i] = sequence[i];
+	for (i = 0; i < 4; i++) for (j = 0; j < 4; j++) if (S->order[j] == i) sequence[i] = j;
+	for (i = 0; i < 4; i++) S->order[i] = sequence[i];
+	S->Y2K_year = (n_y == 2);		/* Must supply the century when reading */
+	S->truncated_cal_is_ok = TRUE;		/* May change in the next loop */
+	for (i = 1, last = S->order[0]; S->truncated_cal_is_ok && i < 4; i++) {
+		if (S->order[i] == -1) continue;
+		if (S->order[i] > last) S->truncated_cal_is_ok = FALSE;
+		last = S->order[i];
+	}
+	error += (S->iso_calendar && !S->truncated_cal_is_ok);
+	error += (!(n_y == 4 || n_y == 2));
+	error += (!S->iso_calendar && ((n_m == 2 && n_d == 2) || n_j == 3));
+	error += (S->iso_calendar && n_w != 2);		/* Gotta have 2 ww */
+	error += (S->iso_calendar && n_d != 1);		/* Gotta have 2 ww */
+	error += (!S->iso_calendar && n_w != 0);	/* Should have no w if there is no W */
+	if (error) {
+		fprintf (stderr, "%s: ERROR: Incomplete date template %s\n", GMT_program, text);
+		exit (EXIT_FAILURE);
+	}
 }
 
-void GMT_get_hms_order (char *text, int hms_order[])
+void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 {	/* Reads a HH:MM:SS or HHMMSS-like string and determines order.
 	 * hms_order[0] is the order of the hour, [1] is min, etc.
 	 * Items not encountered are left as -1.
@@ -941,111 +974,158 @@ void GMT_get_hms_order (char *text, int hms_order[])
 	
 	/* hms_order is initialized to {-1, -1, -1} */
 	
+	S->delimeter[0] = S->delimeter[1] = 0;
+	
 	for (i = order = 0; i < strlen (text); i++) {
 		switch (text[i]) {
-			case 'H':	/* Hour */
-			case 'h':
-				if (hms_order[0] < 0) hms_order[0] = order++;
+			case 'h':	/* Hour */
+				if (S->order[0] < 0) S->order[0] = order++;
 				break;
-			case 'M':	/* Minute */
-			case 'm':
-				if (hms_order[1] < 0) hms_order[1] = order++;
+			case 'm':	/* Minute */
+				if (S->order[1] < 0) S->order[1] = order++;
 				break;
-			case 'S':	/* Seconds */
-			case 's':
-				if (hms_order[2] < 0) hms_order[2] = order++;
+			case 's':	/* Seconds */
+				if (S->order[2] < 0) S->order[2] = order++;
 				break;
 			default:	/* Delimeter of some kind */
+				S->delimeter[0] = text[i];
 				break;
 		}
 	}
 	
 	/* Then get the actual order by inverting table */
 	
-	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) if (hms_order[j] == i) sequence[i] = j;
-	for (i = 0; i < 3; i++) hms_order[i] = sequence[i];
+	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) if (S->order[j] == i) sequence[i] = j;
+	for (i = 0; i < 3; i++) S->order[i] = sequence[i];
 }
 
 void GMT_decode_calclock_formats ()
 {
-	/* Determine the order of Y, M, D, or J in input and output date strings,
+	GMT_date_C_format (gmtdefs.input_date_format, &GMT_io.date_input);
+	GMT_date_C_format (gmtdefs.output_date_format, &GMT_io.date_output);
+	GMT_clock_C_format (gmtdefs.input_clock_format, &GMT_io.clock_input);
+	GMT_clock_C_format (gmtdefs.output_clock_format, &GMT_io.clock_output);
+}
+
+void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S)
+{
+	/* Determine the order of H, M, S in input and output clock strings,
 	 * as well as the number of decimals in output seconds (if any), and
 	 * if a 12- or 24-hour clock is used.
 	 */
 	 
-	char *c, delimeter[2];
+	char *c;
 	
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
 	
-	GMT_get_ymdj_order (gmtdefs.input_date_format, GMT_io.ymdj_input_order);
-	GMT_get_ymdj_order (gmtdefs.output_date_format, GMT_io.ymdj_output_order);
+	GMT_get_hms_order (template, S);
 	
-	/* Determine if the clock output format has decimal seconds, and if so how many decimals */
+	/* Determine if the clock format has decimal seconds, and if so how many decimals */
 	
-	GMT_io.n_sec_decimals = 0;
-	if ((c = strchr (gmtdefs.output_clock_format, 'x'))) {	/* Specified decimal seconds for output */
-		for (GMT_io.n_sec_decimals = 1; c[GMT_io.n_sec_decimals] == 'x'; GMT_io.n_sec_decimals++);;	/* Count the number of decimals */
-		GMT_io.f_sec_to_int = rint (pow (10.0, (double)GMT_io.n_sec_decimals));	/* To scale fracional seconds to an integer form */
+	S->n_sec_decimals = 0;
+	if ((c = strchr (template, 'x'))) {	/* Specified decimal seconds for format */
+		for (S->n_sec_decimals = 1; c[S->n_sec_decimals] == 'x'; S->n_sec_decimals++);;	/* Count the number of decimals */
+		S->f_sec_to_int = rint (pow (10.0, (double)S->n_sec_decimals));			/* To scale fracional seconds to an integer form */
 	}
 	
 	/* Determine if we do 12-hour clock (and what form of am/pm suffix) or 24-hour clock */
 	
-	if (strstr (gmtdefs.output_clock_format, "am")) {	/* Want 12 hour clock with am/pm */
-		GMT_io.twelwe_hr_clock = TRUE;
-		strcpy (GMT_io.ampm_suffix[0], "am");
-		strcpy (GMT_io.ampm_suffix[1], "pm");
+	if (strstr (template, "am")) {	/* Want 12 hour clock with am/pm */
+		S->twelwe_hr_clock = TRUE;
+		strcpy (S->ampm_suffix[0], "am");
+		strcpy (S->ampm_suffix[1], "pm");
 	}
-	else if (strstr (gmtdefs.output_clock_format, "AM")) {	/* Want 12 hour clock with AM/PM */
-		GMT_io.twelwe_hr_clock = TRUE;
-		strcpy (GMT_io.ampm_suffix[0], "AM");
-		strcpy (GMT_io.ampm_suffix[1], "PM");
+	else if (strstr (template, "AM")) {	/* Want 12 hour clock with AM/PM */
+		S->twelwe_hr_clock = TRUE;
+		strcpy (S->ampm_suffix[0], "AM");
+		strcpy (S->ampm_suffix[1], "PM");
 	}
-	else if (strstr (gmtdefs.output_clock_format, "a.m.")) {	/* Want 12 hour clock with a.m./p.m. */
-		GMT_io.twelwe_hr_clock = TRUE;
-		strcpy (GMT_io.ampm_suffix[0], "a.m.");
-		strcpy (GMT_io.ampm_suffix[1], "p.m.");
+	else if (strstr (template, "a.m.")) {	/* Want 12 hour clock with a.m./p.m. */
+		S->twelwe_hr_clock = TRUE;
+		strcpy (S->ampm_suffix[0], "a.m.");
+		strcpy (S->ampm_suffix[1], "p.m.");
 	}
-	else if (strstr (gmtdefs.output_clock_format, "A.M.")) {	/* Want 12 hour clock with A.M./P.M. */
-		GMT_io.twelwe_hr_clock = TRUE;
-		strcpy (GMT_io.ampm_suffix[0], "A.M.");
-		strcpy (GMT_io.ampm_suffix[1], "P.M.");
+	else if (strstr (template, "A.M.")) {	/* Want 12 hour clock with A.M./P.M. */
+		S->twelwe_hr_clock = TRUE;
+		strcpy (S->ampm_suffix[0], "A.M.");
+		strcpy (S->ampm_suffix[1], "P.M.");
 	}
 	
 	/* Craft the actual C-format to use for output clock strings */
-	
-	GMT_get_hms_order (gmtdefs.output_clock_format, GMT_io.hms_output_order);
-	
-	if (strlen (gmtdefs.output_clock_format) > 2 && ispunct ((int)gmtdefs.output_clock_format[2])) {	/* will use a delimeter, usually : */
-		delimeter[0] = gmtdefs.output_clock_format[2];
-		delimeter[1] = 0;
-	}
-	else	/* No delimeter, pack the HHMMSS tight */
-		delimeter[0] = 0;
-
-	if (GMT_io.hms_output_order[0] >= 0) {	/* OK, at least hours is needed */
+		
+	if (S->order[0] >= 0) {	/* OK, at least hours is needed */
 		char fmt[32];
-		sprintf (GMT_io.output_clock_format, "%%2.2d\0");
-		if (GMT_io.hms_output_order[1] >= 0) {	/* Need minutes too*/
-			if (delimeter[0]) strcat (GMT_io.output_clock_format, delimeter);
+		sprintf (S->format, "%%2.2d\0");
+		if (S->order[1] >= 0) {	/* Need minutes too*/
+			if (S->delimeter[0]) strcat (S->format, S->delimeter);
 			sprintf (fmt, "%%2.2d\0");
-			strcat (GMT_io.output_clock_format, fmt);
-			if (GMT_io.hms_output_order[2] >= 0) {	/* .. and seconds */
-				if (delimeter[0]) strcat (GMT_io.output_clock_format, delimeter);
+			strcat (S->format, fmt);
+			if (S->order[2] >= 0) {	/* .. and seconds */
+				if (S->delimeter[0]) strcat (S->format, S->delimeter);
 				sprintf (fmt, "%%2.2d\0");
-				strcat (GMT_io.output_clock_format, fmt);
-				if (GMT_io.n_sec_decimals) {	/* even add format for fractions of second */
-					sprintf (fmt, ".%%%s.%sd\0", GMT_io.n_sec_decimals, GMT_io.n_sec_decimals);
-					strcat (GMT_io.output_clock_format, fmt);
+				strcat (S->format, fmt);
+				if (S->n_sec_decimals) {	/* even add format for fractions of second */
+					sprintf (fmt, ".%%%s.%sd\0", S->n_sec_decimals, S->n_sec_decimals);
+					strcat (S->format, fmt);
 				}
 			}
 		}
-		if (GMT_io.twelwe_hr_clock) {	/* Finally add %s for the am, pm string */
+		if (S->twelwe_hr_clock) {	/* Finally add %s for the am, pm string */
 			sprintf (fmt, "%%s\0");
-			strcat (GMT_io.output_clock_format, fmt);
+			strcat (S->format, fmt);
 		}
 	}
 		
-	fprintf (stderr, "%s\n", GMT_io.output_clock_format);
+	fprintf (stderr, "%s\n", S->format);
+}
+
+void GMT_date_C_format (char *template, struct GMT_DATE_IO *S)
+{
+	/* Determine the order of Y, M, D, J in input and output date strings,
+	 */
+	 
+	char *c, fmt[32];
+	int k;
+	
+	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
+	
+	GMT_get_ymdj_order (template, S);
+		
+	/* Craft the actual C-format to use for i/o date strings */
+
+	if (S->order[0] >= 0 && S->iso_calendar) {	/* OK, at least ISO year is needed */
+		k = (S->Y2K_year) ? 2 : 4;
+		sprintf (S->format, "%%%d.%dd\0", k, k);
+		if (S->order[1] >= 0) {	/* Need ISO week */
+			if (S->delimeter[0]) strcat (S->format, S->delimeter);
+			strcat (S->format, "W");
+			sprintf (fmt, "%%2.2d\0");
+			strcat (S->format, fmt);
+			if (S->order[2] >= 0) {	/* and ISO day of week */
+				if (S->delimeter[0]) strcat (S->format, S->delimeter);
+				sprintf (fmt, "%%1d\0");
+				strcat (S->format, fmt);
+			}
+		}
+	}
+	else if (S->order[0] >= 0) {	/* OK, at least one item is needed */
+		k = (S->order[0] == 0 && !S->Y2K_year) ? 4 : 2;
+		sprintf (S->format, "%%%d.%dd\0", k, k);
+		if (S->order[1] >= 0) {	/* Need more items */
+			if (S->delimeter[0]) strcat (S->format, S->delimeter);
+			k = (S->order[1] == 0 && !S->Y2K_year) ? 4 : 2;
+			sprintf (fmt, "%%%d.%dd\0", k, k);
+			strcat (S->format, fmt);
+			if (S->order[2] >= 0) {	/* .. and even more */
+				if (S->delimeter[0]) strcat (S->format, S->delimeter);
+				k = (S->order[2] == 0 && !S->Y2K_year) ? 4 : 2;
+				sprintf (fmt, "%%%d.%dd\0", k, k);
+				strcat (S->format, fmt);
+			}
+		}
+	}
+		
+	fprintf (stderr, "%s\n", S->format);
 }
 
 int GMT_decode_coltype (char *arg)

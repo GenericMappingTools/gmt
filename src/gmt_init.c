@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.14 2001-08-16 19:12:23 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.15 2001-08-16 23:30:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -759,6 +759,8 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			break;
 		case ':':	/* Toggle lon/lat - lat/lon */
 			gmtdefs.xy_toggle = TRUE;
+			i_swap (GMT_io.in_col_type[0], GMT_io.in_col_type[1]);
+			i_swap (GMT_io.out_col_type[0], GMT_io.out_col_type[1]);
 			break;
 		case 'b':	/* Binary i/o */
 			error += GMT_io_selection (&item[2]);
@@ -1380,6 +1382,9 @@ int GMT_setparameter (char *keyword, char *value)
 				gmtdefs.char_encoding = 0;
 			}
 			break;
+		case 74:
+			gmtdefs.Y2K_offset_year = atoi (value);
+			break;
 		default:
 			error = TRUE;
 			fprintf (stderr, "%s: GMT SYNTAX ERROR in GMT_setparameter:  Unrecognized keyword %s\n", 
@@ -1531,6 +1536,7 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "TIME_WEEK_START		= %s\n", GMT_weekdays[gmtdefs.time_week_start]);
 	fprintf (fp, "TIME_LANGUAGE		= %s\n", gmtdefs.time_language);
 	fprintf (fp, "CHAR_ENCODING		= %s\n", GMT_char_encoding[gmtdefs.char_encoding]);
+	fprintf (fp, "Y2K_OFFSET_YEAR		= %d\n", gmtdefs.Y2K_offset_year);
 
 	if (fp != GMT_stdout) fclose (fp);
 	

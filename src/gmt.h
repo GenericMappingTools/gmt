@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.10 2001-08-16 19:12:23 pwessel Exp $
+ *	$Id: gmt.h,v 1.11 2001-08-16 23:30:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -179,7 +179,7 @@ typedef double (*PFD) ();	/* PFD declares a pointer to a function returning a do
  *--------------------------------------------------------------------*/
 
 #define N_UNIQUE 59		/* Number of unique options */
-#define N_KEYS 74		/* Number of gmt defaults */
+#define N_KEYS 75		/* Number of gmt defaults */
 #define N_FONTS 39		/* Number of fonts in the PS_font_names.h include file */
 #define GMT_N_MEDIA 29		/* Number of standard paper formats in the GMT_media_names.h include file */
 #define HASH_SIZE 75		/* Used in get_gmtdefaults, should be ~> N_KEYS */
@@ -289,6 +289,7 @@ struct GMTDEFAULTS {
 	int time_week_start;		/* Which day (Sun = 0, Sat = 7) is start of week */
 	char time_language[32];		/* Language file for time support */
 	int char_encoding;		/* PostScript font encoding used */
+	int Y2K_offset_year;		/* Cutoff for making 4-digit years from 2-digit years (1900 vs 2000) */
 };
 
 struct GMT_HASH {	/* Used to related keywords to gmtdefaults entry */
