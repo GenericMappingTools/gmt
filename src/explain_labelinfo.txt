@@ -1,7 +1,9 @@
+#define CLEARANCE_SI 0.1\fBc\fP/0.1\fBc\fP
+#define CLEARANCE_US 0.0254\fBi\fP/0.0254\fBi\fP
 .br
 \fB+a\fP\fIangle\fP for annotations at a fixed angle, \fB+an\fP for line-normal, or \fB+ap\fP for line-parallel [Default].
 .br
-\fB+c\fP\fIdx\fP[/\fIdy\fP] sets the clearance between label and optional text box [0.05i/0.05i].
+\fB+c\fP\fIdx\fP[/\fIdy\fP] sets the clearance between label and optional text box [CLEARANCE_SI (or CLEARANCE_US)].
 .br
 \fB+f\fP\fIfont\fP sets the desired font [Default \fBANNOT_FONT_PRIMARY\fP].
 .br

@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 12
 #
-#		$Id: job12.sh,v 1.5 2004-04-10 17:19:14 pwessel Exp $
+#		$Id: job12.sh,v 1.6 2004-06-02 22:52:32 pwessel Exp $
 #
 # Purpose:	Illustrates Delaunay triangulation of points, and contouring
 # GMT progs:	makecpt, minmax, pscontour, pstext, psxy, triangulate
@@ -25,7 +25,7 @@ $AWK '{printf "%g %s 6 0 0 LM %g\n", $1, $2, $3}' table_5.11 | pstext -R -J -O -
 z0=`minmax table_5.11 -C -I25 | $AWK '{print $5}'`
 z1=`minmax table_5.11 -C -I25 | $AWK '{print $6}'`
 makecpt -Cjet -T$z0/$z1/25 > topo.cpt
-pscontour -R -J table_5.11 -B2f1WSne -W0.75p -Ctopo.cpt -L0.25pta -G1i -X-3.25i -Y-3.65i -O -K -U"Example 12 in Cookbook" >> example_12.ps
+pscontour -R -J table_5.11 -B2f1WSne -W0.75p -Ctopo.cpt -L0.25pta -G1i/0 -X-3.25i -Y-3.65i -O -K -U"Example 12 in Cookbook" >> example_12.ps
 #
 # Finally color the topography
 #
