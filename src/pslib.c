@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.31 2001-10-24 23:32:43 ben Exp $
+ *	$Id: pslib.c,v 1.32 2001-12-21 03:50:38 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -35,9 +35,9 @@
  * Updated July, 1993 by P. Wessel to include more symbols and binary image output
  * Updated August, 1993 by P. Wessel to only warn about path length problems.
  * Updated August, 1998 by P. Wessel for GMT3.1 release.
- * Updated November, 1998 by P. Wessel to add paper Media support (ps_plotinit changed argumets).
+ * Updated November, 1998 by P. Wessel to add paper Media support (ps_plotinit changed arguments).
  * Updated March 26, 1999 by P. Wessel to add ps_imagemask routine.
- * Updated April 07, 1999 by P. Wessel to allow DOS delimeters and drive letters in pattern names.
+ * Updated April 07, 1999 by P. Wessel to allow DOS delimiters and drive letters in pattern names.
  * Updated May 04, 1999 by P. Wessel to add ps_words: typesetting of paragraphs.
  * Updated June 17, 1999 by P. Wessel to remove all references to GMT functions and add ps_memory for internal use.
  * Updated June 16, 2000 by P. Wessel to add more encoded special characters.
@@ -549,7 +549,7 @@ void ps_comment_ (char *text, int nlen)
 }
 
 void ps_cross (double x, double y, double diameter)
-{	/* Fit inside circle of given diamter */
+{	/* Fit inside circle of given diameter */
 	fprintf (ps.fp, "%d %d %d X\n", (int) irint (diameter * ps.scale), (int) irint ((x - 0.5 * diameter) * ps.scale), (int ) irint (y * ps.scale));
 	ps.npath = 0;
 }
@@ -652,7 +652,7 @@ void ps_ellipse (double x, double y, double angle, double major, double minor, i
 	int ir;
 	double aspect;
 	
-	/* Feature: Pen thickness also affected by ascpect ratio */
+	/* Feature: Pen thickness also affected by aspect ratio */
 	
 	fprintf (ps.fp, "V %d %d T", (int) irint (x * ps.scale), (int) irint (y * ps.scale));
 	if (angle != 0.0) fprintf (ps.fp, " %lg R", angle);
@@ -948,7 +948,7 @@ int ps_line (double *x, double *y, int n, int type, int close, int split)
 	int i, *ix, *iy, trim = FALSE;
 	char move = 'M';
 	
-	/* First remove unneccessary points that have zero curvature */
+	/* First remove unnecessary points that have zero curvature */
 	
 	ix = (int *) ps_memory (VNULL, (size_t)n, sizeof (int));
 	iy = (int *) ps_memory (VNULL, (size_t)n, sizeof (int));
@@ -1581,7 +1581,7 @@ void ps_setdash (char *pattern, int offset)
 		fprintf (ps.fp, "] %d B\n", offset);
 	}
 	else
-		fprintf (ps.fp, "S [] 0 B\n");	/* Reset to continous line */
+		fprintf (ps.fp, "S [] 0 B\n");	/* Reset to continuous line */
 	ps.npath = 0;
 }
 
@@ -1634,7 +1634,7 @@ void ps_setline (int linewidth)
 	ps.linewidth = linewidth;
 }
 
-/* fortan interface */
+/* fortran interface */
 void ps_setline_ (int *linewidth)
 {
 	 ps_setline (*linewidth);
@@ -1940,7 +1940,7 @@ void ps_text_old (double x, double y, int pointsize, char *text, double angle, i
 	ps_free ((void *)string);
 }
 
-/* fortan interface */
+/* fortran interface */
 void ps_text_ (double *x, double *y, int *pointsize, char *text, double *angle, int *justify, int *form, int nlen)
 {
 	ps_text (*x, *y, *pointsize, text, *angle, *justify, *form);
@@ -2027,7 +2027,7 @@ void ps_textbox_ (double *x, double *y, int *pointsize, char *text, double *angl
 
 void ps_textdim (char *xdim, char *ydim, int pointsize, int in_font, char *text, int key)
 {
-	/* key = 0: Will calculate the exact dimenions (xdim, ydim) of the given text string.
+	/* key = 0: Will calculate the exact dimensions (xdim, ydim) of the given text string.
 	 * Because of possible escape sequences we need to examine the string
 	 * carefully.  The dimensions will be set in PostScript and can be
 	 * used by addressing the variables xdim and ydim.
@@ -2155,7 +2155,7 @@ void ps_text (double x, double y, int pointsize, char *text, double angle, int j
 {
 	/* General purpose text plotter for single line of text.  For paragraphs, see ps_words.
 	* ps_text positions and justifies the text string according to the parameters given.
-	* The adjustments requires knowledge of font metrix and characteristics; hence all such
+	* The adjustments requires knowledge of font metrics and characteristics; hence all such
 	* adjustments are passed on to the PostScript interpreter who will calculate the offsets.
 	* The arguments to ps_text are as follows:
 	*
@@ -2863,7 +2863,7 @@ unsigned char * ps_1bit_to_24bit (unsigned char *pattern, struct rasterfile *h, 
 			for (k = 0; k < 8; k++) {	/* Deal with each bit */
 
 				p = (128 >> k);
-				id = (((unsigned int)(pattern[m]) & p) == 0);	/* 0 = bacground, 1 = foreground */
+				id = (((unsigned int)(pattern[m]) & p) == 0);	/* 0 = background, 1 = foreground */
 				rgb[kk++] = color_choice[id][0];
 				rgb[kk++] = color_choice[id][1];
 				rgb[kk++] = color_choice[id][2];
@@ -3430,7 +3430,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	if ((i%25)) fputc ('\n', ps.fp);
 	fprintf (ps.fp, "%d array astore def\n", n_items);
 
-	fprintf (ps.fp, "\n%% Define array of word colors indeces:\n\n/PSL_color\n");
+	fprintf (ps.fp, "\n%% Define array of word colors indices:\n\n/PSL_color\n");
 	for (i = 0 ; i < (int)n_items; i++) {
 		fprintf (ps.fp, "%d", word[i]->rgb[0]);
 		(!((i+1)%25)) ? fputc ('\n', ps.fp) : fputc (' ', ps.fp);
@@ -3582,7 +3582,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	ps_free ((void *)word);
 }
 
-/* fortan interface */
+/* fortran interface */
 void ps_words_ (double *x, double *y, char **text, int *n_words, double *line_space, double *par_width, int *par_just, int* font, int *font_size, double *angle, int *rgb, int *justify, int *draw_box, double *x_off, double *y_off, double *x_gap, double *y_gap, int *boxpen_width, char *boxpen_texture, int *boxpen_offset, int *boxpen_rgb, int *vecpen_width, char *vecpen_texture, int *vecpen_offset, int *vecpen_rgb, int *boxfill_rgb, int n1, int n2, int n3) {
 
 	ps_words (*x, *y, text, *n_words, *line_space, *par_width, *par_just, *font, *font_size, *angle, rgb, *justify, *draw_box, *x_off, *y_off, *x_gap, *y_gap, *boxpen_width, boxpen_texture, *boxpen_offset, boxpen_rgb, *vecpen_width, vecpen_texture, *vecpen_offset, vecpen_rgb, boxfill_rgb);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.4 2001-09-07 22:14:10 pwessel Exp $
+ *	$Id: gmt_grd.h,v 1.5 2001-12-21 03:50:38 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -83,7 +83,7 @@ struct GRD_HEADER {
  * one source of typos and errors, and since macros are done at compilation time there is no
  * overhead.  Note GMT_x_to_i does not use nx but we included it for symmetry reasons.
  * GMT_y_to_j must first compute j', the number of rows in the increasing y-direction (to
- * match the sense of truncation used for x) then we revert to row number increaseing down
+ * match the sense of truncation used for x) then we revert to row number increasing down
  * by flipping: j = ny - 1 - j' */
 
 #define GMT_x_to_i(x,x0,idx,off,nx) ((int)floor((((x) - (x0)) * (idx)) + (off)))

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_symbol.h,v 1.7 2001-09-23 23:41:15 pwessel Exp $
+ *	$Id: gmt_symbol.h,v 1.8 2001-12-21 03:50:38 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -17,7 +17,7 @@
  *--------------------------------------------------------------------*/
  
 /*
- * Miscellaneous definitions and structures related to cystom psxy[z] symbols.
+ * Miscellaneous definitions and structures related to custom psxy[z] symbols.
  *
  * Author: Paul Wessel
  * Date:	13-SEP-2001

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.h,v 1.3 2001-03-01 22:08:26 pwessel Exp $
+ *	$Id: gmt_shore.h,v 1.4 2001-12-21 03:50:38 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -76,7 +76,7 @@ struct GMT_SHORE {
 	char title[80];		/* Title of data set */
 	char source[80];	/* Source of data set */
 
-	/* Netcdf ID variables */
+	/* netCDF ID variables */
 	
 	int cdfid;		/* File id for coastbin file */
 	
@@ -145,7 +145,7 @@ struct GMT_BR {	/* Structure for Borders and Rivers */
 	char title[80];		/* Title of data set */
 	char source[80];	/* Source of data set */
 
-	/* Netcdf ID variables */
+	/* netCDF ID variables */
 	
 	int cdfid;		/* File id for coastbin file */
 	
@@ -169,7 +169,7 @@ struct GMT_BR {	/* Structure for Borders and Rivers */
 
 struct GMT_BR_SEGMENT {
 	unsigned short n;	/* Number of points in segment */
-	unsigned short level;	/* Hierarchial level of segment */
+	unsigned short level;	/* Hierarchical level of segment */
 	short *dx;		/* Array of scaled longitudes relative to SW corner */
 	short *dy;		/* Array of scaled latitudes relative to SW corner */
 };

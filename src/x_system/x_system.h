@@ -25,10 +25,10 @@ struct LEG {	/* Structure with info about one leg */
 	int year;			/* Year the leg started */
 	int n_x_int;			/* Total number of internal cross-over points */
 	int n_x_ext;			/* Total number of external cross-over points */
-	int n_gmtint[3];		/* Number of internal gravity/magnetisc/topography crossovers */
-	int n_gmtext[3];		/* Number of external gravity/magnetisc/topography crossovers */
+	int n_gmtint[3];		/* Number of internal gravity/magnetics/topography crossovers */
+	int n_gmtext[3];		/* Number of external gravity/magnetics/topography crossovers */
 	double mean_gmtint[3];		/* Mean gravity/magnetics/topography internal xover value */
-	double mean_gmtext[3];		/* Mean gravity/magnetics/topography esternal xover value */
+	double mean_gmtext[3];		/* Mean gravity/magnetics/topography external xover value */
 	double st_dev_gmtint[3];	/* St. Dev. of the internal gravity/magnetics/topography crossovers */
 	double st_dev_gmtext[3];	/* Same for external xovers */
 	double dc_shift_gmt[3];		/* Best fitting d.c.-shift for gravity/magnetics/topography */

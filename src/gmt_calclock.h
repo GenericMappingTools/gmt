@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.h,v 1.9 2001-09-20 20:10:31 pwessel Exp $
+ *	$Id: gmt_calclock.h,v 1.10 2001-12-21 03:50:38 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -52,7 +52,7 @@ struct GMT_gcal {	/* (proleptic) Gregorian calendar  */
 };
 
 struct GMT_Y2K_FIX {	/* The issue that refuses to go away... */
-	int y2_cutoff;	/* The 2-digit offset year.  If y2 >= y2_cuttof, add y100 else add y200 */
+	int y2_cutoff;	/* The 2-digit offset year.  If y2 >= y2_cuttoff, add y100 else add y200 */
 	int y100;	/* The multiple of 100 to add to the 2-digit year if we are above the Y2K_offset_year */
 	int y200;	/* The multiple of 100 to add to the 2-digit year if we are below the Y2K_offset_year */
 };
@@ -90,7 +90,7 @@ EXTERN_MSC int GMT_gyear_from_rd (GMT_cal_rd date);
 EXTERN_MSC GMT_cal_rd GMT_rd_from_iywd (int iy, int iw, int id);
 EXTERN_MSC void GMT_gcal_from_rd ( GMT_cal_rd date, struct GMT_gcal *gcal);
 EXTERN_MSC GMT_dtime	GMT_dt_from_usert (double x);	/* Convert relative usertime to internal abs time */
-EXTERN_MSC double	GMT_usert_from_dt (GMT_dtime t); /* Converts interal abs time to relative usertime */
+EXTERN_MSC double	GMT_usert_from_dt (GMT_dtime t); /* Converts internal abs time to relative usertime */
 EXTERN_MSC int	GMT_y2_to_y4_yearfix (int y2);	/* Convert a 2-digit year to a 4-digit year */
 EXTERN_MSC BOOLEAN GMT_iso_ywd_is_bad (int y, int w, int d);	/* Check range of week and day for ISO W calendar.  */
 EXTERN_MSC BOOLEAN GMT_g_ymd_is_bad (int y, int m, int d);	/* Check range of month and day for Gregorian YMD calendar values  */

@@ -1,4 +1,4 @@
-/*	$Id: x_setup.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+/*	$Id: x_setup.c,v 1.2 2001-12-21 03:50:38 ben Exp $
  *
  * XSETUP will read the gmtindex files and create a list of
  * pairs of legs that cross the same bin. As an option, the
@@ -7,7 +7,7 @@
  * is the usual way to do things when a new batch of legs
  * have been added to the databank. !! These new legs must
  * first be run through binlegs so that xsetup can find their
- * binindeces.
+ * binindices.
  *
  * Author:	Paul Wessel
  * Date:	15-NOV-1987

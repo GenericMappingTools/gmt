@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.14 2001-09-26 02:07:39 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.15 2001-12-21 03:50:38 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -65,10 +65,10 @@ struct GMT_CLOCK_IO {
 	int n_sec_decimals;		/* Number of digits in decimal seconds (0 for whole seconds) */
 	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
 	BOOLEAN compact;		/* TRUE if we do not want leading zeros in items (e.g., 03) */
-	BOOLEAN twelwe_hr_clock;	/* TRUE if we are doing am/pm on output */
+	BOOLEAN twelve_hr_clock;	/* TRUE if we are doing am/pm on output */
 	char ampm_suffix[2][8];		/* Holds the strings to append am or pm */
 	char format[32];		/* Actual C format used to output clock */
-	char delimeter[2][2];		/* Delimeter strings in clock, e.g. ":" */
+	char delimeter[2][2];		/* Delimiter strings in clock, e.g. ":" */
 };
 
 struct GMT_DATE_IO {
@@ -81,7 +81,7 @@ struct GMT_DATE_IO {
 	BOOLEAN day_of_year;		/* TRUE if we do day-of-year rather than month/day */
 	BOOLEAN mw_text;		/* TRUE if we must plot the month name or Week rather than a numeral */
 	BOOLEAN compact;		/* TRUE if we do not want leading zeros in items (e.g., 03) */
-	char delimeter[2][2];		/* Delimeter strings in date, e.g. "-" */
+	char delimeter[2][2];		/* Delimiter strings in date, e.g. "-" */
 };
 
 struct GMT_GEO_IO {	/* For geographic output and plotting */
@@ -94,7 +94,7 @@ struct GMT_GEO_IO {	/* For geographic output and plotting */
 	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
 	char x_format[32];		/* Actual C format used to plot/output longitude */
 	char y_format[32];		/* Actual C format used to plot/output latitude */
-	char delimeter[2][2];		/* Delimeter strings in date, e.g. "-" */
+	char delimeter[2][2];		/* Delimiter strings in date, e.g. "-" */
 };
 
 struct GMT_IO {	/* Used to process input data records */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.19 2001-12-20 02:56:01 ben Exp $
+ *	$Id: gmt_support.c,v 1.20 2001-12-21 03:50:38 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -55,7 +55,7 @@
  *	GMT_getfill		Decipher and check fill argument
  *	GMT_getinc		Decipher and check increment argument
  *	GMT_getpen		Decipher and check pen argument
- *	GMT_getrgb		Dechipher and check color argument
+ *	GMT_getrgb		Decipher and check color argument
  *	GMT_init_fill		Initialize fill attributes
  *	GMT_init_pen		Initialize pen attributes
  *	GMT_grd_init :		Initialize grd header structure
@@ -564,7 +564,7 @@ void GMT_read_cpt (char *cpt_file)
 
 			}
 			else {
-				GMT_lut[n].skip = TRUE;	/* Dont paint this slice */
+				GMT_lut[n].skip = TRUE;	/* Don''t paint this slice */
 				if (GMT_lut[n].skip && nread != 4) {
 					fprintf (stderr, "%s: GMT Fatal Error: z-slice to skip not in [z0 - z1 -] format!\n", GMT_program);
 					exit (EXIT_FAILURE);
@@ -613,7 +613,7 @@ void GMT_read_cpt (char *cpt_file)
 		fprintf (stderr, "%s: GMT Fatal Error: Color palette table %s has gaps - aborts!\n", GMT_program, cpt_file);
 		exit (EXIT_FAILURE);
 	}
-	if (!anot) {	/* Must set default anotation flags */
+	if (!anot) {	/* Must set default annotation flags */
 		for (i = 0; i < GMT_n_colors; i++) GMT_lut[i].anot = 1;
 		GMT_lut[i-1].anot = 3;
 	}
@@ -954,7 +954,7 @@ int GMT_akima (double *x, double *y, int nx, double *c)
 	int i, no;
 	double t1, t2, b, rm1, rm2, rm3, rm4;
 
-	/* Assumes that n >= 4 and x is monotonically increaseing */
+	/* Assumes that n >= 4 and x is monotonically increasing */
 
 	rm3 = (y[1] - y[0])/(x[1] - x[0]);
 	t1 = rm3 - (y[1] - y[2])/(x[1] - x[2]);
@@ -1102,7 +1102,7 @@ int GMT_intpol (double *x, double *y, int n, int m, double *u, double *v, int mo
 
 	if (mode > 0) c = (double *) GMT_memory (VNULL, (size_t)(3*n), sizeof(double), "GMT_intpol");
 
-	if (mode == 1) 	/* Akimas spline */
+	if (mode == 1) 	/* Akima's spline */
 		err_flag = GMT_akima (x, y, n, c);
 	else if (mode == 2)	/* Natural cubic spline */
 		err_flag = GMT_cspline (x, y, n, c);
@@ -1224,7 +1224,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 				z[0] = grd[ij+1];
 				z[1] = grd[ij];
 				if (GMT_z_periodic) GMT_setcontjump (z, 2);
-				if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing countour */
+				if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing contour */
 					r = z[0] - z[1];
 					x0 = west + (i - z[1]/r)*dx + xinc2;
 					y0 = south + yinc2;
@@ -1250,7 +1250,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 				z[0] = grd[ij-nx];
 				z[1] = grd[ij];
 				if (GMT_z_periodic) GMT_setcontjump (z, 2);
-				if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing countour */
+				if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing contour */
 					r = z[1] - z[0];
 					x0 = east - xinc2;
 					y0 = north - (j - z[1]/r) * dy - yinc2;
@@ -1276,7 +1276,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 				z[0] = grd[ij];
 				z[1] = grd[ij+1];
 				if (GMT_z_periodic) GMT_setcontjump (z, 2);
-				if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing countour */
+				if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing contour */
 					r = z[1] - z[0];
 					x0 = west + (i - z[0]/r)*dx + xinc2;
 					y0 = north - yinc2;
@@ -1302,7 +1302,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 				z[0] = grd[ij];
 				z[1] = grd[ij-nx];
 				if (GMT_z_periodic) GMT_setcontjump (z, 2);
-				if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing countour */
+				if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing contour */
 					r = z[0] - z[1];
 					x0 = west + xinc2;
 					y0 = north - (j - z[0] / r) * dy - yinc2;
@@ -1330,7 +1330,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 					z[1] = grd[ij-nx];
 					edge_bit = ij % 32;
 					if (GMT_z_periodic) GMT_setcontjump (z, 2);
-					if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing countour */
+					if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing contour */
 						r = z[0] - z[1];
 						x0 = west + i*dx + xinc2;
 						y0 = north - (j - z[0] / r) * dy - yinc2;
@@ -1363,7 +1363,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 
 int GMT_start_trace (float first, float second, int *edge, int edge_word, int edge_bit, unsigned int *bit)
 {
-	/* First make sure we havent been here before */
+	/* First make sure we haven't been here before */
 
 	if ( (edge[edge_word] & bit[edge_bit]) ) return (FALSE);
 
@@ -1509,7 +1509,7 @@ int GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, double 
 		}
 		if (n_cuts == 0) {	/* Close interior contour and return */
 		/*	if (n_nan == 0 && (n > 0 && fabs (xx[n-1] - xx[0]) <= dx && fabs (yy[n-1] - yy[0]) <= dy)) { */
-			if (ij == ij_in) {	/* Close iterior contour */
+			if (ij == ij_in) {	/* Close interior contour */
 				xx[n] = xx[0];
 				yy[n] = yy[0];
 				n++;
@@ -1734,7 +1734,7 @@ int GMT_comp_int_asc (const void *p_1, const void *p_2)
 		return (0);
 }
 
-#define PADDING 72	/* Amount of padding room for anotations in points */
+#define PADDING 72	/* Amount of padding room for annotations in points */
 
 struct EPS *GMT_epsinfo (char *program)
 {
@@ -1776,7 +1776,7 @@ struct EPS *GMT_epsinfo (char *program)
 	if (gmtdefs.page_orientation & GMT_CLIP_ON) new->clip_level++;		/* Initiated clipping that will extend beyond this process */
 	if (gmtdefs.page_orientation & GMT_CLIP_OFF) new->clip_level--;		/* Terminated clipping that was initiated in a prior process */
 
-	/* Estinates the bounding box for this overlay */
+	/* Estimates the bounding box for this overlay */
 
 	new->x0 = irint (GMT_u2u[GMT_INCH][GMT_PT] * x0);
 	new->y0 = irint (GMT_u2u[GMT_INCH][GMT_PT] * y0);
@@ -1914,13 +1914,13 @@ int GMT_get_format (double interval, char *unit, char *format)
 			}
 			text[j] = 0;
 		}
-		if (text[0] == '-') {	/* No space between anotation and unit */
+		if (text[0] == '-') {	/* No space between annotation and unit */
 			if (ndec > 0)
 				sprintf (format, "%%.%dlf%s\0", ndec, &text[1]);
 			else
 				sprintf (format, "%s%s\0", gmtdefs.d_format, &text[1]);
 		}
-		else {			/* 1 space between anotation and unit */
+		else {			/* 1 space between annotation and unit */
 			if (ndec > 0)
 				sprintf (format, "%%.%dlf %s\0", ndec, text);
 			else
@@ -2125,9 +2125,9 @@ int	GMT_non_zero_winding(double xp, double yp, double *x, double *y, int n_path)
 
 /* GMT can either compile with its standard Delaunay triangulation routine
  * based on the work by Dave Watson, OR you may link with the triangle.o
- * module from Jonathan Shewchuk, Berkely U.  By default, the former is
+ * module from Jonathan Shewchuk, Berkeley U.  By default, the former is
  * chosen unless the compiler directive -DTRIANGLE_D is passed.  The latter
- * is much faster and will hopefullty become the standard once we sort out
+ * is much faster and will hopefully become the standard once we sort out
  * copyright issues etc.
  */
 
@@ -2187,7 +2187,7 @@ int GMT_delaunay (double *x_in, double *y_in, int n, int **link)
 	
 /*
  * GMT_delaunay performs a Delaunay triangulation on the input data
- * and returns a list of indeces of the points for each triangle
+ * and returns a list of indices of the points for each triangle
  * found.  Algorithm translated from
  * Watson, D. F., ACORD: Automatic contouring of raw data,
  *   Computers & Geosciences, 8, 97-101, 1982.
@@ -2196,7 +2196,7 @@ int GMT_delaunay (double *x_in, double *y_in, int n, int **link)
 int GMT_delaunay (double *x_in, double *y_in, int n, int **link)
               	/* Input point x coordinates */
               	/* Input point y coordinates */
-      		/* Number of input poins */
+      		/* Number of input points */
             	/* pointer to List of point ids per triangle.  Vertices for triangle no i
 		   is in link[i*3], link[i*3+1], link[i*3+2] */
 {
@@ -3315,7 +3315,7 @@ int GMT_boundcond_set (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo, int 
 			
 
 			/* Now set d[Laplacian]/dn = 0, start/end loop 1 col out,
-				use peroidicity to set 2nd out col after loop.  */
+				use periodicity to set 2nd out col after loop.  */
 			
 			for (i = iwo1; i <= ieo1; i++) {
 				a[jno2 + i] = a[jni1 + i]
@@ -3362,7 +3362,7 @@ int GMT_boundcond_set (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo, int 
 			
 
 			/* Now set d[Laplacian]/dn = 0, start/end loop 1 col out,
-				use peroidicity to set 2nd out col after loop.  */
+				use periodicity to set 2nd out col after loop.  */
 			
 			for (i = iwo1; i <= ieo1; i++) {
 				a[jso2 + i] = a[jsi1 + i]
@@ -3610,7 +3610,7 @@ int GMT_minmaxinc_verify (double min, double max, double inc, double slop)
 	   We will tolerate a fractional sloppiness <= slop.  The
 	   return values are:
 	   0 : Everything is ok
-	   1 : range is not a whole multiple of inc (within assiged slop)
+	   1 : range is not a whole multiple of inc (within assigned slop)
 	   2 : the range (max - min) is <= 0
 	   3 : inc is <= 0
 	*/
@@ -3668,7 +3668,7 @@ int GMT_just_decode (char *key)
 {
 	int i, j = 0, k;
 
-	/* Converts justification info like LL (lower left) to justification indeces */
+	/* Converts justification info like LL (lower left) to justification indices */
 
 	for (k = 0; k < (int)strlen (key); k++) {
 		switch (key[k]) {

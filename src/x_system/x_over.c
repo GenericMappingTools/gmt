@@ -1,4 +1,4 @@
-/*	$Id: x_over.c,v 1.2 2001-04-04 00:59:32 pwessel Exp $
+/*	$Id: x_over.c,v 1.3 2001-12-21 03:50:38 ben Exp $
  *
  * X_OVER will compute cross-overs between 2 legs (or internal cross-overs
  * if both legs are the same) and write out time,lat,lon,cross-over values,
@@ -19,11 +19,11 @@
  *
  * The user may choose from three interpolation schemes to calculate the value
  * at the crossover. The default type is linear interpolation, but by specifying
- * -a or -c at the command line, akimas spline or natural cubic spline will be
+ * -a or -c at the command line, akima's spline or natural cubic spline will be
  * used, respectively. To avoid computing crossovers where the time separation
  * between two consecutive points are large (i.e. at data gaps), the time "
- * must not exceed a certain value. The default value is 15 minuts, but can be
- * changed by using the option -g<minuts>. To find all crossovers regardless of
+ * must not exceed a certain value. The default value is 15 minutes, but can be
+ * changed by using the option -g<minutes>. To find all crossovers regardless of
  * data gaps, specify a large timegap, e.g. -g99999.
  *
  * Programmer:	Paul Wessel
@@ -153,7 +153,7 @@ main (int argc, char *argv[])
           break;
         case 'W':	/* Get new timegap */
           maxgap = atoi(&argv[arg][2]) * 60;
-          if (maxgap == 0) maxgap = 900;	/* 15 minuts default */
+          if (maxgap == 0) maxgap = 900;	/* 15 minutes default */
           break;
         case 'G':
           d_factor[0] = (float)atof(&argv[arg][2]);
@@ -196,7 +196,7 @@ main (int argc, char *argv[])
     fprintf(stderr,"         -A           Quasi hermite (Akima) spline interpolation\n");
     fprintf(stderr,"         -C           Natural cubic spline interpolation\n");
     fprintf(stderr,"	     -N<np>       No of points to use when interpolating. [Default = 6]\n");
-    fprintf(stderr,"         -W[minuts]   maximum timegap (in min) allowed at crossover [Default=15]\n");
+    fprintf(stderr,"         -W[minutes]   maximum timegap (in min) allowed at crossover [Default=15]\n");
     fprintf(stderr,"         -G[factor]   multiply gravity values by factor [Default = 0.1]\n");
     fprintf(stderr,"         -M[factor]   multiply magnetic values by factor [Default = 1]\n");
     fprintf(stderr,"         -T[factor]   multiply bathymetric values by factor [Default = 1]\n");
@@ -289,7 +289,7 @@ main (int argc, char *argv[])
     fclose(fp);
   }
 
-  /* Devide data into blocks and sections and find min/max corrdinates for each piece */
+  /* Divide data into blocks and sections and find min/max coordinates for each piece */
 
   rec = 0;
   for (leg = 0; leg < nlegs; leg++) {

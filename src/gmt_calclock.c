@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.21 2001-09-23 03:41:55 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.22 2001-12-21 03:50:37 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1165,7 +1165,7 @@ int GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct 
 	else
 		i_sec = irint (calendar.sec);
 	
-	if (C->twelwe_hr_clock) {		/* Must deal with am/pm formatting */
+	if (C->twelve_hr_clock) {		/* Must deal with am/pm formatting */
 		if (calendar.hour < 12)
 			ap = 0;
 		else {

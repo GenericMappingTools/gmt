@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.22 2001-10-15 17:41:49 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.23 2001-12-21 03:50:38 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -41,7 +41,7 @@ char *GMT_font_name[N_FONTS] = {	/* Name of fonts recognized by GMT */
 #include "PS_font_names.h"
 };
 
-double GMT_font_height[N_FONTS] = {	/* Relative; based on the size of A devided by fontsize */
+double GMT_font_height[N_FONTS] = {	/* Relative; based on the size of A divided by fontsize */
 #include "PS_font_heights.h"
 };
 

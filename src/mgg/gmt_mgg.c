@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: gmt_mgg.c,v 1.2 2001-12-21 03:50:38 ben Exp $
  *
  *    Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -23,7 +23,7 @@
  *	gmtmgg_date		- Convert seconds to gmt date.
  *	gmtmgg_init		- Initialize gmt time functions.
  *	gmtmgg_time		- Convert gmt date to seconds.
- *	gmtmggpath_init		- Get paths to gmtfile direcories.
+ *	gmtmggpath_init		- Get paths to gmtfile directories.
  *	gmtmggpath_func		- Return full path to a leg.
  *	gmtmgg_decode_MGD77	- Convert a MGD77 record to GMT_MGG struct
  *	carter_setup		- Initialize Carter Table lookup
@@ -352,7 +352,7 @@ int carter_setup (void)
 	/* This routine must be called once before using carter table stuff.
 	It reads the carter.d file and loads the appropriate arrays.
 	It sets carter_not_initialized = FALSE upon successful completion
-	and returns 0.  If failure occurrs, it returns -1.  */
+	and returns 0.  If failure occurs, it returns -1.  */
 
 	FILE *fp = NULL;
 	char buffer [BUFSIZ], *SHAREDIR;

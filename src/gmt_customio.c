@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.5 2001-12-18 03:15:03 ben Exp $
+ *	$Id: gmt_customio.c,v 1.6 2001-12-21 03:50:37 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -52,7 +52,7 @@
  *	     expects the filename to be "=" (the equal sign).  It is the
  *	     responsibility of the custom routines to test for "=" and
  *	     give error messages if piping is not supported for this format
- *	     (e.g., netcdf uses fseek and can therefore not use pipes; other
+ *	     (e.g., netCDF uses fseek and can therefore not use pipes; other
  *	     formats may have similar limitations)
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
@@ -104,7 +104,7 @@ char *GMT_native_name[GMT_N_NATIVE_FORMATS] = {
 void GMT_grdio_init (void) {
 	int id;
 
-	/* FORMAT # 0: Default GMT netcdf-based grdio */
+	/* FORMAT # 0: Default GMT netCDF-based grdio */
 	
 	GMT_io_readinfo[0]  = (PFI) GMT_cdf_read_grd_info;
 	GMT_io_writeinfo[0] = (PFI) GMT_cdf_write_grd_info;
@@ -298,7 +298,7 @@ int GMT_short_write_grd (char *file, struct GRD_HEADER *header, float *grid, dou
  *			e = ras_width;
  *			n = ras_height;
  *			dx = dy = 1
- *		Such files are always pixel registrered
+ *		Such files are always pixel registered
  *			
  * Functions :	GMT_ras_read_grd_info, GMT_ras_write_grd_info,
  *		GMT_ras_read_grd, GMT_ras_write_grd
@@ -339,7 +339,7 @@ int GMT_ras_read_grd_info (char *file, struct GRD_HEADER *header)
 	
 	GMT_grd_init (header, 0, (char **)NULL, FALSE);
 
-	/* Since we have no info on bounary values, just use integer size and steps = 1 */
+	/* Since we have no info on boundary values, just use integer size and steps = 1 */
 
 	header->x_min = header->y_min = 0.0;
 	header->x_max = header->nx = h.ras_width;
@@ -794,7 +794,7 @@ int GMT_bit_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	}	
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 		fread ((void *) tmp, sizeof (unsigned int), (size_t)mx, fp);	/* Get one row */
-		ij = (j2 + pad[3]) * width_out + i_0_out;	/* Already has factor of 2 in it if comlex */
+		ij = (j2 + pad[3]) * width_out + i_0_out;	/* Already has factor of 2 in it if complex */
 		for (i = 0; i < width_in; i++) {
 			kk = ij + inc * i;
 			word = k[i] / 32;
@@ -1004,7 +1004,7 @@ int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, dou
 	int height_in;			/* Number of columns in subregion */
 	int inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
 	int kk, i, j, j2, ij, i_0_out;	/* Misc. counters */
-	int *k;				/* Array with indeces */
+	int *k;				/* Array with indices */
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
@@ -1109,7 +1109,7 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 	int height_out;			/* Number of columns in subregion */
 	int inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
 	int i, j, i2, j2, ij;		/* Misc. counters */
-	int *k;				/* Array with indeces */
+	int *k;				/* Array with indices */
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	
@@ -1419,7 +1419,7 @@ int GMT_surfer_read_grd (char *file, struct GRD_HEADER *header, float *grid, int
 	/* type:	Data type (int, short, float, etc) */
 
 	int kk, i, j2, ij;         	/* Misc. counters */
-	int *k;				/* Array with indeces */
+	int *k;				/* Array with indices */
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
 	void *tmp;			/* Array pointer for reading in rows of data */
@@ -1478,7 +1478,7 @@ int GMT_surfer_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 	int width_out;			/* Width of row as return (may include padding) */
 	int height_out;			/* Number of columns in subregion */
 	int i, j, i2, j2, ij;		/* Misc. counters */
-	int *k;				/* Array with indeces */
+	int *k;				/* Array with indices */
 	FILE *fp;			/* File pointer to data or pipe */
 	struct srf_header h;
 
@@ -1553,7 +1553,7 @@ int GMT_surfer_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
  * Prefix :	GMT_cdf_*_ (byte, char, short, int, float, double)
  * Date :	21-MAY-2000
  * Author :	Masakazu Higaki (m-higaki@naps.kishou.go.jp)
- * Purpose:	Read/Write netcdf with non-float data types
+ * Purpose:	Read/Write netCDF with non-float data types
  * Functions :	GMT_cdf_*_write_grd
  *		
  *-----------------------------------------------------------*/

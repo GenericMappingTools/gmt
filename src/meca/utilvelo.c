@@ -1,4 +1,4 @@
-/*	$Id: utilvelo.c,v 1.2 2000-12-29 22:10:37 pwessel Exp $	*/
+/*	$Id: utilvelo.c,v 1.3 2001-12-21 03:50:38 ben Exp $	*/
 #include "gmt.h"
 #include <math.h>
 
@@ -156,7 +156,7 @@ void ellipse_convert (double sigx,double sigy,double rho,double conrad,double *e
      {                          
 
      /* INPUT */                                                                    
-     /*   sigx, sigy  - Sigmas in the x and y dirrections. */                      
+     /*   sigx, sigy  - Sigmas in the x and y directions. */                      
      /*   rho         - Correlation coefficient between x and y */                  
                                                                                     
      /* OUTPUT (returned) */                                                        

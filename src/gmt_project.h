@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.17 2001-09-21 02:25:49 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.18 2001-12-21 03:50:38 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -92,8 +92,8 @@ struct MAP_PROJECTIONS {
 	BOOLEAN region_supplied;	/* TRUE when -R option has been given */
 	BOOLEAN units_pr_degree;	/* TRUE if scale is given as inch (or cm)/degree.  FALSE for 1:xxxxx */
 	BOOLEAN gave_map_width;		/* TRUE if map width in inch (or cm) is given instead of scale.  FALSE for 1:xxxxx */
-	BOOLEAN region;			/* TRUE if -R gives lon/lat boundaires, FALSE if it gives lower/left upper right corners */
-	BOOLEAN north_pole;		/* TRUE if projection is on northern hermisphere, FALSE on southern */
+	BOOLEAN region;			/* TRUE if -R gives lon/lat boundaries, FALSE if it gives lower/left upper right corners */
+	BOOLEAN north_pole;		/* TRUE if projection is on northern hemisphere, FALSE on southern */
 	BOOLEAN edge[4];		/* TRUE if the edge is a map boundary */
 	BOOLEAN three_D;		/* Parameters for 3-D projections */
 
@@ -245,34 +245,34 @@ struct MAP_PROJECTIONS {
 
 /* Define the 6 axis items that each axis can have (some are mutually exclusive: only one ANOT/INTV for upper and lower) */
 
-#define GMT_ANOT_UPPER		0	/* Tick anotations closest to the axis (the only kind in GMT3.4 or earlier) */
-#define GMT_ANOT_LOWER		1	/* Tick anotations farthest from the axis*/
-#define GMT_INTV_UPPER		2	/* Interval anotations closest to the axis */
-#define GMT_INTV_LOWER		3	/* Interval anotations farthest from the axis */
+#define GMT_ANOT_UPPER		0	/* Tick annotations closest to the axis (the only kind in GMT3.4 or earlier) */
+#define GMT_ANOT_LOWER		1	/* Tick annotations farthest from the axis*/
+#define GMT_INTV_UPPER		2	/* Interval annotations closest to the axis */
+#define GMT_INTV_LOWER		3	/* Interval annotations farthest from the axis */
 #define GMT_TICK_UPPER		4	/* Frame tick marks closest to the axis (the only kind in GMT3.4 or earlier) */
 #define GMT_GRID_UPPER		5	/* Gridline spacing */
 
 /* Some convenient macros for axis routines */
 
-#define GMT_interval_axis_item(k) (((k) == GMT_INTV_UPPER || (k) == GMT_INTV_LOWER) ? TRUE : FALSE)	/* TRUE for interval anotations */
-#define GMT_lower_axis_item(k) (((k) == GMT_ANOT_LOWER || (k) == GMT_INTV_LOWER) ? 1 : 0)		/* 1 if this is a lower axis anotation */
+#define GMT_interval_axis_item(k) (((k) == GMT_INTV_UPPER || (k) == GMT_INTV_LOWER) ? TRUE : FALSE)	/* TRUE for interval annotations */
+#define GMT_lower_axis_item(k) (((k) == GMT_ANOT_LOWER || (k) == GMT_INTV_LOWER) ? 1 : 0)		/* 1 if this is a lower axis annotation */
 #define GMT_upper_and_lower_items(j) (((frame_info.axis[j].item[GMT_ANOT_UPPER].active || frame_info.axis[j].item[GMT_INTV_UPPER].active) && \
-	(frame_info.axis[j].item[GMT_ANOT_LOWER].active || frame_info.axis[j].item[GMT_INTV_LOWER].active)) ? TRUE : FALSE)	/* TRUE if we have two levels of anotations (tick or interval) */
-#define GMT_two_anot_items(j) ((frame_info.axis[j].item[GMT_ANOT_UPPER].active && frame_info.axis[j].item[GMT_ANOT_LOWER].active) ? TRUE : FALSE)	/* TRUE if we have two levels of tick anotations */
+	(frame_info.axis[j].item[GMT_ANOT_LOWER].active || frame_info.axis[j].item[GMT_INTV_LOWER].active)) ? TRUE : FALSE)	/* TRUE if we have two levels of annotations (tick or interval) */
+#define GMT_two_anot_items(j) ((frame_info.axis[j].item[GMT_ANOT_UPPER].active && frame_info.axis[j].item[GMT_ANOT_LOWER].active) ? TRUE : FALSE)	/* TRUE if we have two levels of tick annotations */
 #define GMT_uneven_interval(unit) ((unit == 'o' || unit == 'O' || unit == 'k' || unit == 'K' || unit == 'R' || unit == 'r' || unit == 'D' || unit == 'd') ? TRUE : FALSE)	/* TRUE for uneven units */
 
-struct PLOT_AXIS_ITEM {		/* Information for one type of tick/anotation */
+struct PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
 	int parent;			/* Id of axis this item belongs to (0,1,2) */
 	int id;				/* Id of this item (0-5) */
 	BOOLEAN active;			/* TRUE if we want to use this item */
-	double interval;		/* Distance bewteen ticks in user units */
+	double interval;		/* Distance between ticks in user units */
 	int flavor;			/* Index into month/day name abbreviation array (0-2) */
 	BOOLEAN upper_case;		/* TRUE if we want upper case text (used with flavor) */
 	char type;			/* One of a, i, A, I, f, g */
 	char unit;			/* User's interval unit (y, M, u, d, h, m, c) */
 };
 
-struct PLOT_AXIS {		/* Informatino for one time axis */
+struct PLOT_AXIS {		/* Information for one time axis */
 	struct PLOT_AXIS_ITEM item[6];	/* see above defines for which is which */
 	int type;			/* LINEAR, LOG10, POW, or TIME */
 	char label[256];		/* Label of the axis */
@@ -284,8 +284,8 @@ struct PLOT_FRAME {		/* Various parameters for plotting of time axis boundaries 
 	char header[256];		/* Plot title */
 	BOOLEAN plot;			/* TRUE if -B was used */
 	BOOLEAN draw_box;		/* TRUE is a 3-D Z-box is desired */
-	BOOLEAN check_side;		/* TRUE if lon and lat anotations should be on x and y axis only */
-	BOOLEAN horizontal;		/* TRUE is S/N anotations should be parallel to axes */
+	BOOLEAN check_side;		/* TRUE if lon and lat annotations should be on x and y axis only */
+	BOOLEAN horizontal;		/* TRUE is S/N annotations should be parallel to axes */
 	int side[5];			/* Which sides to plot. 2 is anot/draw, 1 is draw, 0 is not */
 };
 
@@ -300,7 +300,7 @@ struct THREE_D {
 	double yshrink[3];	/* Same for y-dir */
 	double tilt[3];		/* Slant of characters due to projection */
 	double sign[4];		/* Used to determine direction of tickmarks etc */
-	int quadrant;		/* quandrant we're looking from */
+	int quadrant;		/* quadrant we're looking from */
 	int z_axis;		/* Which z-axis to draw. */
 	int k;			/* For drawing-axis. 0 = plot in x dir, 1 in y */
 	int face[3];		/* Tells if this facet has normal in pos direction */

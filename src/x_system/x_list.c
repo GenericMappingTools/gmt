@@ -1,5 +1,5 @@
 /*
- *	$Id: x_list.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: x_list.c,v 1.2 2001-12-21 03:50:38 ben Exp $
  *
  * XLIST produces ASCII listings of cross-over info. The xx_base.b-file
  * contains longitude(x), latitude(y), time1(t1), time2(t2),  heading1(h),
@@ -13,7 +13,7 @@
  * is -txygmbGMBhl.
  * To select data inside an area, use the -W -E -S -N options:
  *	E.g. all data between 10 and 30 degree East: -W10. -E30.
- * To create a Scientist Helper Ascii Table format file, use -H.
+ * To create a Scientist Helper ASCII Table format file, use -H.
  * 2, 1, or no legnames may be passed on the command line. If two is
  * passed, the external cross-overs generated between these legs are
  * returned. If one is passed, all the external cross-overs involving
@@ -124,7 +124,7 @@ main (int argc, char *argv[])
 						while (argv[i][j]) j++;
 						j--;
 						break;
-					case 'H':		/* Output using ScientistHelper format */
+					case 'H':		/* Output using Scientist Helper format */
 						SH_format = TRUE;
 						break;
 					case 'V':
@@ -159,7 +159,7 @@ main (int argc, char *argv[])
 		}
 	}
 	
-	/* Check that the options selected are mutually consistant */
+	/* Check that the options selected are mutually consistent */
 	
 	if (east < west || south > north) error = TRUE;
 	if (west < 0.0) {

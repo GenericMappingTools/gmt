@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.31 2001-10-30 18:13:57 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.32 2001-12-21 03:50:37 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -97,10 +97,10 @@ int GMT_f_write (FILE *fp, double d);
 int GMT_d_write (FILE *fp, double d);
 void GMT_col_ij (struct GMT_Z_IO *r, int ij, int *gmt_ij);
 void GMT_row_ij (struct GMT_Z_IO *r, int ij, int *gmt_ij);
-int GMT_ascii_input (FILE *fp, int *n, double **ptr);		/* Decode Ascii input records */
+int GMT_ascii_input (FILE *fp, int *n, double **ptr);		/* Decode ASCII input records */
 int GMT_bin_double_input (FILE *fp, int *n, double **ptr);	/* Decode binary double input records */
 int GMT_bin_float_input (FILE *fp, int *n, double **ptr);	/* Decode binary float input records */
-int GMT_ascii_output (FILE *fp, int n, double *ptr);		/* Write Ascii output records */
+int GMT_ascii_output (FILE *fp, int n, double *ptr);		/* Write ASCII output records */
 int GMT_bin_double_output (FILE *fp, int n, double *ptr);	/* Write binary double output records */
 int GMT_bin_float_output (FILE *fp, int n, double *ptr);	/* Write binary float output records */
 int GMT_ascii_output_one (FILE *fp, double x, int col);		/* Writes one item to output in ascii format */
@@ -137,7 +137,7 @@ int GMT_fclose (FILE *stream)
 
 void GMT_io_init (void)
 {
-	/* No need to init the structure as this is done in gmt_init.h directoy */
+	/* No need to init the structure as this is done in gmt_init.h directory */
 
 	int i;
 	
@@ -306,7 +306,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 		}
 		if (bad_record) {
 			GMT_io.n_bad_records++;
-			if (GMT_io.give_report && (GMT_io.n_bad_records == 1)) {	/* Report 1st occurence */
+			if (GMT_io.give_report && (GMT_io.n_bad_records == 1)) {	/* Report 1st occurance */
 				fprintf (stderr, "%s: Encountered first invalid record near/at line # %d\n", GMT_program, GMT_io.rec_no);
 				fprintf (stderr, "%s: Likely cause: Invalid x and/or y values or missing -: switch\n", GMT_program);
 			}
@@ -409,7 +409,7 @@ int GMT_ascii_output (FILE *fp, int n, double *ptr)
 	int i, last, e = 0, wn = 0;
 	
 	if (gmtdefs.xy_toggle) d_swap (ptr[0], ptr[1]);		/* Write lat/lon instead of lon/lat */
-	last = n - 1;						/* Last record, need to output linefeed instead of delimeter */
+	last = n - 1;						/* Last record, need to output linefeed instead of delimiter */
 
 	for (i = 0; i < n && e >= 0; i++) {			/* Keep writing all fields unless there is a read error (e == -1) */
 		e = GMT_ascii_output_one (fp, ptr[i], i);	/* Write one item without any separator at the end */
@@ -631,7 +631,7 @@ int GMT_parse_z_io (char *txt, struct GMT_Z_IO *r, BOOLEAN input)
 				first = FALSE;
 				break;
 
-			/* Set this if file is periodic, is grid registrered, but repeating column or row is missing from input */
+			/* Set this if file is periodic, is grid registered, but repeating column or row is missing from input */
 
 			case 'x':
 				r->x_missing = 1;
@@ -1059,7 +1059,7 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode)
 					error++;
 				n_j++;
 				break;
-			default:	/* Delimeter of some kind */
+			default:	/* Delimiter of some kind */
 				if (n_delim == 2)
 					error++;
 				else
@@ -1080,7 +1080,7 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode)
 	}
 	if (S->mw_text && mode < 2) error = TRUE;
 	last = (n_y > 0) + (n_m > 0) + (n_w > 0) + (n_d > 0) + (n_j > 0);	/* This is the number of items to read */
-	error += (n_delim && (last - 1) != n_delim);				/* If there are delimeters, must be one less than the items */
+	error += (n_delim && (last - 1) != n_delim);				/* If there are delimiters, must be one less than the items */
 	if (S->iso_calendar) {		/* Check if ISO Week format is ok */
 		error += (!S->truncated_cal_is_ok);
 		error += (n_w != 2);			/* Gotta have 2 ww */
@@ -1116,25 +1116,25 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 	/* Determine if we do 12-hour clock (and what form of am/pm suffix) or 24-hour clock */
 	
 	if ((p = strstr (text, "am"))) {	/* Want 12 hour clock with am/pm */
-		S->twelwe_hr_clock = TRUE;
+		S->twelve_hr_clock = TRUE;
 		strcpy (S->ampm_suffix[0], "am");
 		strcpy (S->ampm_suffix[1], "pm");
 		off = (int)(p) - (int)text;
 	}
 	else if ((p = strstr (text, "AM"))) {	/* Want 12 hour clock with AM/PM */
-		S->twelwe_hr_clock = TRUE;
+		S->twelve_hr_clock = TRUE;
 		strcpy (S->ampm_suffix[0], "AM");
 		strcpy (S->ampm_suffix[1], "PM");
 		off = (int)(p) - (int)text;
 	}
 	else if ((p = strstr (text, "a.m."))) {	/* Want 12 hour clock with a.m./p.m. */
-		S->twelwe_hr_clock = TRUE;
+		S->twelve_hr_clock = TRUE;
 		strcpy (S->ampm_suffix[0], "a.m.");
 		strcpy (S->ampm_suffix[1], "p.m.");
 		off = (int)(p) - (int)text;
 	}
 	else if ((p = strstr (text, "A.M."))) {	/* Want 12 hour clock with A.M./P.M. */
-		S->twelwe_hr_clock = TRUE;
+		S->twelve_hr_clock = TRUE;
 		strcpy (S->ampm_suffix[0], "A.M.");
 		strcpy (S->ampm_suffix[1], "P.M.");
 		off = (int)(p) - (int)text;
@@ -1173,7 +1173,7 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 			case '.':	/* Decimal point for seconds? */
 				if (text[i+1] == 'x')
 					n_dec++;
-				else {	/* Must be a delimeter */
+				else {	/* Must be a delimiter */
 					if (n_delim == 2)
 						error++;
 					else
@@ -1185,7 +1185,7 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 					error++;
 				n_x++;
 				break;
-			default:	/* Delimeter of some kind */
+			default:	/* Delimiter of some kind */
 				if (n_delim == 2)
 					error++;
 				else
@@ -1206,14 +1206,14 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 	}
 	if (!big_to_small) error++;
 	last = (n_h > 0) + (n_m > 0) + (n_s > 0);	/* This is the number of items to read */
-	error += (n_delim && (last - 1) != n_delim);	/* If there are delimeters, must be one less than the items */
+	error += (n_delim && (last - 1) != n_delim);	/* If there are delimiters, must be one less than the items */
 	error += (!(n_h == 0 || n_h == 2) || !(n_m == 0 || n_m == 2) || !(n_s == 0 || n_s == 2));	/* h, m, s are all either 2 or 0 */
 	error += (n_s > n_m || n_m > n_h);		/* Cannot have secs without m etc */
 	error += (n_x && n_dec != 1);			/* .xxx is the proper form */
-	error += (n_x == 0 && n_dec);			/* Period by itself and not delimeter? */
+	error += (n_x == 0 && n_dec);			/* Period by itself and not delimiter? */
 	error += (n_dec > 1);				/* Only one period with xxx */
 	S->n_sec_decimals = n_x;
-	S->f_sec_to_int = rint (pow (10.0, (double)S->n_sec_decimals));			/* To scale fracional seconds to an integer form */
+	S->f_sec_to_int = rint (pow (10.0, (double)S->n_sec_decimals));			/* To scale fractional seconds to an integer form */
 	if (error) {
 		fprintf (stderr, "%s: ERROR: Unacceptable clock template %s\n", GMT_program, text);
 		exit (EXIT_FAILURE);
@@ -1287,7 +1287,7 @@ void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
 			case '.':	/* Decimal point for seconds? */
 				if (text[i+1] == 'x')
 					n_dec++;
-				else {	/* Must be a delimeter */
+				else {	/* Must be a delimiter */
 					if (n_delim == 2)
 						error++;
 					else
@@ -1299,7 +1299,7 @@ void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
 					error++;
 				n_x++;
 				break;
-			default:	/* Delimeter of some kind */
+			default:	/* Delimiter of some kind */
 				if (n_delim == 2)
 					error++;
 				else
@@ -1322,14 +1322,14 @@ void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
 	}
 	if (!big_to_small) error++;
 	last = (n_d > 0) + (n_m > 0) + (n_s > 0);	/* This is the number of items to read */
-	error += (n_delim && (last - 1) != n_delim);	/* If there are delimeters, must be one less than the items */
+	error += (n_delim && (last - 1) != n_delim);	/* If there are delimiters, must be one less than the items */
 	error += (!(n_d == 0 || n_d == 3) || !(n_m == 0 || n_m == 2) || !(n_s == 0 || n_s == 2));	/* d, m, s are all either 2(3) or 0 */
 	error += (n_s > n_m || n_m > n_d);		/* Cannot have secs without m etc */
 	error += (n_x && n_dec != 1);			/* .xxx is the proper form */
-	error += (n_x == 0 && n_dec);			/* Period by itself and not delimeter? */
+	error += (n_x == 0 && n_dec);			/* Period by itself and not delimiter? */
 	error += (n_dec > 1);				/* Only one period with xxx */
 	S->n_sec_decimals = n_x;
-	S->f_sec_to_int = rint (pow (10.0, (double)S->n_sec_decimals));			/* To scale fracional seconds to an integer form */
+	S->f_sec_to_int = rint (pow (10.0, (double)S->n_sec_decimals));			/* To scale fractional seconds to an integer form */
 	if (error) {
 		fprintf (stderr, "%s: ERROR: Unacceptable dmmss template %s\n", GMT_program, text);
 		exit (EXIT_FAILURE);
@@ -1393,7 +1393,7 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
 				}
 			}
 		}
-		if (mode && S->twelwe_hr_clock) {	/* Finally add %s for the am, pm string */
+		if (mode && S->twelve_hr_clock) {	/* Finally add %s for the am, pm string */
 			sprintf (fmt, "%%s\0");
 			strcat (S->format, fmt);
 		}
