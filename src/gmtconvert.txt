@@ -2,7 +2,7 @@
 .SH NAME
 gmtconvert \- Converts, Pastes, and/or Extracts columns from ASCII and binary 1-D tables
 .SH SYNOPSIS
-\fBgmtconvert\fP [ \fIinputfiles\fP] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-S\fP ] 
+\fBgmtconvert\fP [ \fIinputfiles\fP] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-S\fP ] 
 [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP]\fIn\fP ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBgmtconvert\fP reads its standard input [or inputfiles] and writes out
@@ -16,6 +16,10 @@ subheaders if \fB\-M\fP is selected, and ascii tables may have regular headers a
 ASCII (or binary, see \fB\-bi\fP) file(s) holding a number of data columns. 
 .SH OPTIONS
 #include "explain_-H.txt"
+.TP
+.B \-I
+Invert the order of rows, i.e., output the final records in reverse order, starting with the last and ending
+up with the first input row [Default goes forward].
 #include "explain_-M.txt"
 .TP
 .B \-S
