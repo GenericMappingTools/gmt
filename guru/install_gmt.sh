@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.23 2002-01-15 18:00:05 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.24 2002-03-14 16:52:16 pwessel Exp $
 #
 #	Automatic installation of GMT version 4
 #	Version for the Bourne shell (or compatible)
@@ -942,13 +942,7 @@ if [ $netcdf_install = "y" ]; then
 		export DEFINES
 	fi
 	rm -f config.{cache,log,status}
-	if [ $os = "Darwin" ]; then	# Get special versions of config.* for MacOS X
-		cp /usr/libexec/config.* .
-		host="--host=powerpc-apple-darwin"
-	else
-		host=
-	fi
-	./configure $host --prefix=$netcdf_path
+	./configure --prefix=$netcdf_path
 	$GMT_make || exit
 	$GMT_make test || exit
 	$GMT_make install || exit
@@ -1198,13 +1192,7 @@ if [ -f src/makegmt.macros ]; then
 	$GMT_make spotless || exit
 fi
 	
-if [ $os = "Darwin" ]; then	# Get special versions of config.* for MacOS X
-	cp /usr/libexec/config.* .
-	host="--host=powerpc-apple-darwin"
-else
-	host=
-fi
-./configure $host --prefix=$GMT_def --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
+./configure --prefix=$GMT_def --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   $enable_eps $disable_flock $enable_shared $enable_triangle --mandir=$GMT_man --enable-mansect=$GMT_mansect --enable-www=$GMT_web --datadir=$GMT_share
 
 if [ -f .gmtconfigure ]; then
