@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.69 2004-11-02 23:45:11 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.70 2004-12-02 16:19:52 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2638,7 +2638,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 				lon_sum += dlon;
 			}
 			j++;
-			if (j == (j_alloc-1)) {
+			if (j == (j_alloc-1)) {	/* -1 because we may have to close the polygon and hence need 1 more cell */
 				j_alloc += GMT_CHUNK;
 				e[i].lon = (double *) GMT_memory ((void *)e[i].lon, (size_t)j_alloc, sizeof (double), GMT_program);
 				e[i].lat = (double *) GMT_memory ((void *)e[i].lat, (size_t)j_alloc, sizeof (double), GMT_program);
@@ -2659,6 +2659,12 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 				lon_sum += dlon;
 			}
 		}
+		
+		/* Reallocate to free up some memory */
+		
+		e[i].lon = (double *) GMT_memory ((void *)e[i].lon, (size_t)e[i].np, sizeof (double), GMT_program);
+		e[i].lat = (double *) GMT_memory ((void *)e[i].lat, (size_t)e[i].np, sizeof (double), GMT_program);
+		
 		if (check_cap && fabs (fabs (lon_sum) - 360.0) < GMT_CONV_LIMIT) {	/* Contains a pole */
 			e[i].polar = (e[i].lat[0] < 0.0) ? -1 : +1;	/* S or N pole */
 		}
