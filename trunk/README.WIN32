@@ -1,4 +1,4 @@
-	$Id: README.WIN32,v 1.2 2001-02-22 01:44:26 pwessel Exp $
+	$Id: README.WIN32,v 1.3 2001-03-07 20:29:12 pwessel Exp $
 
 README file for GMT 3.4 Distribution for Win32
 This version contains dynamic executables with the DLL support.
@@ -34,9 +34,13 @@ ADDITIONAL MATERIAL:
 
 For complete GMT Documentation, including a Cookbook and Technical
 Reference Manual and a Tutorial and Short Course Manual in PDF
-format, get GMT_doc.zip from www.soest.hawaii.edu/gmt.
+format, get GMT_pdf.zip from gmt.soest.hawaii.edu.
 For the HTML-only versions, get GMT_web.zip.  After installing, make
-a bookmark for the file GMT/www/gmt/gmt_sevices.html.
+a bookmark for the file GMT/www/gmt/gmt_sevices.html.  Should you
+want to try the tutorial examples you will need GMT_tut.zip.
+PostScript version of the documentation is in GMT_ps.zip and the
+UNIX man pages are in GMT_man.zip.  Most Windows users will only
+need the HTML and PDF versions.
 
 If you want the high and/or full resolution coastlines, political borders,
 and rivers you must obtain GMT_high.zip and GMT_full.zip as well.
@@ -50,4 +54,4 @@ To view your GMT PostScript or EPS plots, we recommend you install gsview
 
 Paul Wessel
 Walter H. F. Smith
-01-MAR-2001
+07-MAR-2001

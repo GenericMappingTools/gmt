@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.3 2001-02-24 03:06:28 pwessel Exp $
+#       $Id: install_gmt_form.pl,v 1.4 2001-03-07 20:29:12 pwessel Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -28,7 +28,10 @@ $cdf_path	= $gmt_form{'netcdf_dir'};
 $site		= $gmt_form{'radio_site'};
 $get_progs	= $gmt_form{'checkbox_progs'};
 $get_libs	= $gmt_form{'checkbox_libs'};
-$get_docs	= $gmt_form{'checkbox_docs'};
+$get_ps		= $gmt_form{'checkbox_ps'};
+$get_pdf	= $gmt_form{'checkbox_pdf'};
+$get_man	= $gmt_form{'checkbox_man'};
+$get_tut	= $gmt_form{'checkbox_tot'};
 $get_web	= $gmt_form{'checkbox_web'};
 $get_scripts	= $gmt_form{'checkbox_scripts'};
 $get_suppl	= $gmt_form{'checkbox_suppl'};
@@ -177,8 +180,29 @@ if ($get_scripts eq "on") {
 else {
 	print "n\n";
 }
-print "GMT_get_doc=";
-if ($get_docs eq "on") {
+print "GMT_get_ps=";
+if ($get_ps eq "on") {
+	print "y\n";
+}
+else {
+	print "n\n";
+}
+print "GMT_get_pdf=";
+if ($get_pdf eq "on") {
+	print "y\n";
+}
+else {
+	print "n\n";
+}
+print "GMT_get_man=";
+if ($get_man eq "on") {
+	print "y\n";
+}
+else {
+	print "n\n";
+}
+print "GMT_get_tut=";
+if ($get_tut eq "on") {
 	print "y\n";
 }
 else {
