@@ -1,2 +1,5 @@
-$Id: job25.txt,v 1.1 2004-04-23 22:50:42 pwessel Exp $
-Example 25.  New example to be added.
+$Id: job25.txt,v 1.2 2004-09-21 18:58:44 pwessel Exp $
+Example 25.  We have all asked ourselves "what is exactly
+on the other side of the Earth".  That point is called an
+antipode, and here we graph the distribution of antipodes
+classified as being land-land, ocean-ocean, or mixed-type.

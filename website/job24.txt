@@ -1,2 +1,6 @@
-$Id: job24.txt,v 1.1 2004-04-23 22:50:42 pwessel Exp $
-Example 24.  New example to be added.
+$Id: job24.txt,v 1.2 2004-09-21 18:58:44 pwessel Exp $
+Example 24.  Geospatial filtering and selection can be
+done with gmtselect.  Here we see (in green) the subset
+of earthquakes with epicenter in the ocean that happen
+to fall within 3000 km of Hobart yet also being more
+than 1000 km from the Dateline.
