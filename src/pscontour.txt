@@ -6,7 +6,7 @@ pscontour \- Contour xyz-data by direct triangulation
 .SH SYNOPSIS
 \fBpscontour\fP \fIxyzfile\fP \fB\-C\fP\fIcptfile\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
 [ \fB\-A\fP[\fB-\fP][\fIlabelinfo\fP] ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-D\fP[\fIdumpfile\fP] ] [ \fB\-E\fP\fIview_az/view_el\fP ] 
-[ \fB\-G\fP[d|n|l|L|x|X]\fIinfo\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] [ \fB\-K\fP ] 
+[ \fB\-G\fP[d|f|n|l|L|x|X]\fIinfo\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] [ \fB\-K\fP ] 
 [ \fB\-L\fP\fIpen\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-T\fP\fIindexfile\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
 [ \fB\-V\fP ] [ \fB\-W\fP[\fB+\fP]\fIpen\fP ] [ \fB\-X\fP\fIx-shift\fP ] 
 [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ]

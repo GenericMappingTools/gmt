@@ -3,7 +3,7 @@
 grdcontour \- contouring of 2-D gridded data sets
 .SH SYNOPSIS
 \fBgrdcontour\fP \fIgrdfile\fP \fB\-C\fP\fIcont_int\fP \fB\-J\fP\fIparameters\fP [ \fB\-A\fP[\fB-\fP|\fIannot_int\fP][\fIlabelinfo\fP] ] 
-[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-D\fP\fIdumpfile\fP ] [ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-G\fP[d|n|l|L|x|X]\fIinfo\fP ] 
+[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-D\fP\fIdumpfile\fP ] [ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-G\fP[d|f|n|l|L|x|X]\fIinfo\fP ] 
 [ \fB\-K\fP ] [ \fB\-L\fP\fIlow/high\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-Q\fP\fIcut\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] 
 [ \fB\-S\fP\fIsmoothfactor\fP ] [ \fB\-T\fP[\fB+|-\fP][\fIgap/length\fP][\fB:\fP\fILH\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-W\fP[\fB+\fP][\fItype\fP]\fIpen\fP ] 
 [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP[\fIfactor\fP[/\fIshift\fP]][\fBp\fP] ] [ \fB\-c\fP\fIcopies\fP ] 

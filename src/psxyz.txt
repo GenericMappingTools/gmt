@@ -146,7 +146,7 @@ c(\fBo\fP)lumn (3-D) extending from \fIbase\fP to z.  \fIsize\fP sets base width
 .TP
 .B \-Sq
 \fBq\fPuoted line, i.e., lines with annotations such as contours.  It is assumed that each individual line has a
-constant \fIz\fP level (i.e., each line must lie in the \fIx-y\fP plane).  Append [\fBd|n|l|x\fP]\fIinfo\fP[:\fIlabelinfo\fP].
+constant \fIz\fP level (i.e., each line must lie in the \fIx-y\fP plane).  Append [\fBd|f|n|l|x\fP]\fIinfo\fP[:\fIlabelinfo\fP].
 The required argument controls the placement of labels along the lines.  Choose among four controlling mechanisms:
 .br
 #include "explain_contlabel.txt"
