@@ -26,7 +26,7 @@ the grid, respectively.
 #endif
 \fB\-GL\fP will interpret the point pairs as defining great circles [Default is straight line].
 .br
-\fB\-Gn\fP\fIn_cont\fP specifies the number of equidistant labels for LINETYPE line [1].
+\fB\-Gn\fP\fIn_label\fP specifies the number of equidistant labels for LINETYPE line [1].
 Upper case \fB\-GN\fP starts labeling exactly at the start of the line [Default centers them along the line].
 \fB\-GN\fP-1 places one justified label at start, while \fB\-GN\fP+1 places one justified label at the end of LINETYPE.
 .br
