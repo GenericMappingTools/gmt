@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.34 2002-01-04 20:29:48 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.35 2002-01-04 21:18:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1014,7 +1014,7 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode)
 	for (i = 0; i < 4; i++) S->item_order[i] = S->item_pos[i] = -1;	/* Meaning not encountered yet */
 	
 	n_y = n_m = n_d = n_j = n_w = n_delim = 0;
-	S->delimeter[0][0] = S->delimeter[0][1] = S->delimeter[1][0] = S->delimeter[1][1] = 0;
+	S->delimiter[0][0] = S->delimiter[0][1] = S->delimiter[1][0] = S->delimiter[1][1] = 0;
 	
 	i = 0;
 	if (text[i] == '-') {	/* Leading hyphen means use %d and not %x.xd for integer formats */
@@ -1087,7 +1087,7 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode)
 				if (n_delim == 2)
 					error++;
 				else
-					S->delimeter[n_delim++][0] = text[i];
+					S->delimiter[n_delim++][0] = text[i];
 				break;
 		}
 	}
@@ -1134,7 +1134,7 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 	for (i = 0; i < 3; i++) S->order[i] = -1;	/* Meaning not encountered yet */
 	sequence[0] = sequence[1] = sequence[2] = -1;
 	
-	S->delimeter[0][0] = S->delimeter[0][1] = S->delimeter[1][0] = S->delimeter[1][1] = 0;
+	S->delimiter[0][0] = S->delimiter[0][1] = S->delimiter[1][0] = S->delimiter[1][1] = 0;
 	n_h = n_m = n_s = n_x = n_dec = n_delim = 0;
 	
 	/* Determine if we do 12-hour clock (and what form of am/pm suffix) or 24-hour clock */
@@ -1201,7 +1201,7 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 					if (n_delim == 2)
 						error++;
 					else
-						S->delimeter[n_delim++][0] = text[i];
+						S->delimiter[n_delim++][0] = text[i];
 				}
 				break;
 			case 'x':	/* Fraction of seconds */
@@ -1213,7 +1213,7 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 				if (n_delim == 2)
 					error++;
 				else
-					S->delimeter[n_delim++][0] = text[i];
+					S->delimiter[n_delim++][0] = text[i];
 				break;
 		}
 	}
@@ -1257,7 +1257,7 @@ void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
 	for (i = 0; i < 3; i++) S->order[i] = -1;	/* Meaning not encountered yet */
 	
 	n_d = n_m = n_s = n_x = n_dec = n_delim = 0;
-	S->delimeter[0][0] = S->delimeter[0][1] = S->delimeter[1][0] = S->delimeter[1][1] = 0;
+	S->delimiter[0][0] = S->delimiter[0][1] = S->delimiter[1][0] = S->delimiter[1][1] = 0;
 	sequence[0] = sequence[1] = sequence[2] = -1;
 	
 	S->range = 2;			/* -80/+180 range, may be overwritten below by + or - */
@@ -1315,7 +1315,7 @@ void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
 					if (n_delim == 2)
 						error++;
 					else
-						S->delimeter[n_delim++][0] = text[i];
+						S->delimiter[n_delim++][0] = text[i];
 				}
 				break;
 			case 'x':	/* Fraction of seconds */
@@ -1327,7 +1327,7 @@ void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
 				if (n_delim == 2)
 					error++;
 				else
-					S->delimeter[n_delim++][0] = text[i];
+					S->delimiter[n_delim++][0] = text[i];
 				break;
 		}
 	}
@@ -1395,14 +1395,14 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
 		else
 			(mode) ? sprintf (S->format, "%%2.2d\0") : sprintf (S->format, "%%2d\0");
 		if (S->order[1] >= 0) {	/* Need minutes too*/
-			if (S->delimeter[0][0]) strcat (S->format, S->delimeter[0]);
+			if (S->delimiter[0][0]) strcat (S->format, S->delimiter[0]);
 			if (S->compact)
 				sprintf (fmt, "%%d\0");
 			else
 				(mode) ? sprintf (fmt, "%%2.2d\0") : sprintf (fmt, "%%2d\0");
 			strcat (S->format, fmt);
 			if (S->order[2] >= 0) {	/* .. and seconds */
-				if (S->delimeter[1][0]) strcat (S->format, S->delimeter[1]);
+				if (S->delimiter[1][0]) strcat (S->format, S->delimiter[1]);
 				if (mode) {	/* Output format */
 					(S->compact) ? sprintf (fmt, "%%d\0") : sprintf (fmt, "%%2.2d\0");
 					strcat (S->format, fmt);
@@ -1448,7 +1448,7 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 		else					/* Numerical formatting of week or year  */
 			(mode) ? sprintf (S->format, "%%%d.%dd\0", k, k) : sprintf (S->format, "%%%dd\0", k);
 		if (S->item_order[1] >= 0) {	/* Need another item */
-			if (S->delimeter[0][0]) strcat (S->format, S->delimeter[0]);
+			if (S->delimiter[0][0]) strcat (S->format, S->delimiter[0]);
 			if (S->mw_text && S->item_order[0] == 1) {	/* Prepare for "Week ##" format */
 				sprintf (fmt, "%%s \0");
 				strcat (S->format, fmt);
@@ -1461,7 +1461,7 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 				(mode) ? sprintf (fmt, "%%2.2d\0") : sprintf (fmt, "%%2d\0");
 			strcat (S->format, fmt);
 			if (S->item_order[2] >= 0) {	/* and ISO day of week */
-				if (S->delimeter[1][0]) strcat (S->format, S->delimeter[1]);
+				if (S->delimiter[1][0]) strcat (S->format, S->delimiter[1]);
 				sprintf (fmt, "%%1d\0");
 				strcat (S->format, fmt);
 			}
@@ -1477,7 +1477,7 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 		else					/* Numerical formatting of month or year */
 			(mode) ? sprintf (S->format, "%%%d.%dd\0", k, k) : sprintf (S->format, "%%%dd\0", k);
 		if (S->item_order[1] >= 0) {	/* Need more items */
-			if (S->delimeter[0][0]) strcat (S->format, S->delimeter[0]);
+			if (S->delimiter[0][0]) strcat (S->format, S->delimiter[0]);
 			k = (S->item_order[1] == 0 && !S->Y2K_year) ? 4 : 2;
 			if (S->item_order[1] == 3) k = 3;	/* Day of year */
 			if (S->mw_text && S->item_order[1] == 1)	/* Prepare for "Monthname" format */
@@ -1488,7 +1488,7 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 				(mode) ? sprintf (fmt, "%%%d.%dd\0", k, k) : sprintf (fmt, "%%%dd\0", k);
 			strcat (S->format, fmt);
 			if (S->item_order[2] >= 0) {	/* .. and even more */
-				if (S->delimeter[1][0]) strcat (S->format, S->delimeter[1]);
+				if (S->delimiter[1][0]) strcat (S->format, S->delimiter[1]);
 				k = (S->item_order[2] == 0 && !S->Y2K_year) ? 4 : 2;
 				if (S->mw_text && S->item_order[2] == 1)	/* Prepare for "Monthname" format */
 					sprintf (fmt, "%%s");
@@ -1522,15 +1522,15 @@ void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S)
 		sprintf (S->x_format, "%%3.3d\0");
 		sprintf (S->y_format, "%%2.2d\0");
 		if (S->order[1] >= 0) {	/* Need minutes too */
-			strcat (S->x_format, S->delimeter[0]);
-			strcat (S->y_format, S->delimeter[0]);
+			strcat (S->x_format, S->delimiter[0]);
+			strcat (S->y_format, S->delimiter[0]);
 			sprintf (fmt, "%%2.2d\0");
 			strcat (S->x_format, fmt);
 			strcat (S->y_format, fmt);
 		}
 		if (S->order[2] >= 0) {	/* .. and seconds */
-			strcat (S->x_format, S->delimeter[1]);
-			strcat (S->y_format, S->delimeter[1]);
+			strcat (S->x_format, S->delimiter[1]);
+			strcat (S->y_format, S->delimiter[1]);
 			sprintf (fmt, "%%2.2d\0");
 			strcat (S->x_format, fmt);
 			strcat (S->y_format, fmt);
