@@ -1,49 +1,49 @@
-/* $Id: segyreel.h,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $ */
+/* $Id: segyreel.h,v 1.2 2001-04-11 19:58:09 pwessel Exp $ */
 /* SEGY REEL HEADER VARIABLES */
 typedef struct SEGYReel_header {
-    long        job;
-    long        line;
-    long        reel;
+    int32_t        job;
+    int32_t        line;
+    int32_t        reel;
 
-    short       num_traces;     /* number of traces in this file */
-    short       num_aux;        /* number of auxiliary traces  */
-    short       sr;             /* sample rate (microseconds) this data */
-    short       fldsr;          /* field sample rate */
-    short       nsamp;          /* number of samples this data */
-    short       fsamp;          /* number of field samples DOES NOT APPLY FOR THIS DATA */
+    int16_t       num_traces;     /* number of traces in this file */
+    int16_t       num_aux;        /* number of auxiliary traces  */
+    uint16_t       sr;             /* sample rate (microseconds) this data */
+    int16_t       fldsr;          /* field sample rate */
+    int16_t       nsamp;          /* number of samples this data */
+    int16_t       fsamp;          /* number of field samples DOES NOT APPLY FOR THIS DATA */
 
-    short       dsfc;           /* data sample format code 1 = IBM FP (taken from segy2sierra.c) */
-    short       mfold;          /* number of CDP traces   = 0 here */
-    short       sort;           /* sort code 1=as recorded */
+    int16_t       dsfc;           /* data sample format code 1 = IBM FP (taken from segy2sierra.c) */
+    int16_t       mfold;          /* number of CDP traces   = 0 here */
+    int16_t       sort;           /* sort code 1=as recorded */
 
-    short       vcode;          /* part of STANDARD SEGY */
-    short       sweep_start;    /* part of STANDARD SEGY */
-    short       sweep_end;      /* part of STANDARD SEGY */
-    short       sweep_len;      /* part of STANDARD SEGY */
-    short       sweep_type;     /* part of STANDARD SEGY */
-    short       sweep_chan;     /* part of STANDARD SEGY */
+    int16_t       vcode;          /* part of STANDARD SEGY */
+    int16_t       sweep_start;    /* part of STANDARD SEGY */
+    int16_t       sweep_end;      /* part of STANDARD SEGY */
+    int16_t       sweep_len;      /* part of STANDARD SEGY */
+    int16_t       sweep_type;     /* part of STANDARD SEGY */
+    int16_t       sweep_chan;     /* part of STANDARD SEGY */
 
-    short       taper_start;    /* part of STANDARD SEGY */
-    short       taper_end;      /* part of STANDARD SEGY */
-    short       taper_type;     /* part of STANDARD SEGY */
-    short       correlated;     /* part of STANDARD SEGY */
-    short       bin_gain_recov; /* part of STANDARD SEGY */
-    short       amp_gain_recov; /* part of STANDARD SEGY */
+    int16_t       taper_start;    /* part of STANDARD SEGY */
+    int16_t       taper_end;      /* part of STANDARD SEGY */
+    int16_t       taper_type;     /* part of STANDARD SEGY */
+    int16_t       correlated;     /* part of STANDARD SEGY */
+    int16_t       bin_gain_recov; /* part of STANDARD SEGY */
+    int16_t       amp_gain_recov; /* part of STANDARD SEGY */
 
-    short       measure;        /* 1 = meters */
-    short       polarity;       /* 1 = reversed up=neg */
+    int16_t       measure;        /* 1 = meters */
+    int16_t       polarity;       /* 1 = reversed up=neg */
 
-    short       vibe_polarity;          /* part of STANDARD SEGY */
-    short       num_trace_per_file;     /* LDS */
-    short       mean_amp;               /* LDS */
-    short       attribute;              /* LDS */
-    short       domain;                 /* LDS */
-    short       instrument_type;        /* LDS */
+    int16_t       vibe_polarity;          /* part of STANDARD SEGY */
+    int16_t       num_trace_per_file;     /* LDS */
+    int16_t       mean_amp;               /* LDS */
+    int16_t       attribute;              /* LDS */
+    int16_t       domain;                 /* LDS */
+    int16_t       instrument_type;        /* LDS */
 
-    short       creation_year;          /* USGS */
-    short       creation_month;         /* USGS */
-    short       creation_day_of_month;  /* USGS */
-    short       dummy[162];
+    int16_t       creation_year;          /* USGS */
+    int16_t       creation_month;         /* USGS */
+    int16_t       creation_day_of_month;  /* USGS */
+    int16_t       dummy[162];
 
 
 } SEGYREEL;

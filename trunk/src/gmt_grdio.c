@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.3 2001-03-01 22:08:26 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.4 2001-04-11 19:58:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -364,27 +364,32 @@ void GMT_decode_grd_h_info (char *input, struct GRD_HEADER *h) {
 			switch (entry) {
 				case 0:
 					memset ( (void *)h->x_units, 0, (size_t)80);
-					strcpy (h->x_units, ptr);
+					if (strlen(ptr) >= GRD_UNIT_LEN) fprintf (stderr, "%s: Warning: X unit string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_UNIT_LEN);
+					strncpy (h->x_units, ptr, GRD_UNIT_LEN);
 					break;
 				case 1:
 					memset ( (void *)h->y_units, 0, (size_t)80);
-					strcpy (h->y_units, ptr);
+					if (strlen(ptr) >= GRD_UNIT_LEN) fprintf (stderr, "%s: Warning: Y unit string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_UNIT_LEN);
+					strncpy (h->y_units, ptr, GRD_UNIT_LEN);
 					break;
 				case 2:
 					memset ( (void *)h->z_units, 0, (size_t)80);
-					strcpy (h->z_units, ptr);
+					if (strlen(ptr) >= GRD_UNIT_LEN) fprintf (stderr, "%s: Warning: Z unit string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_UNIT_LEN);
+					strncpy (h->z_units, ptr, GRD_UNIT_LEN);
 					break;
 				case 3:
-					h->z_scale_factor = atof(ptr);
+					h->z_scale_factor = atof (ptr);
 					break;
 				case 4:
-					h->z_add_offset = atof(ptr);
+					h->z_add_offset = atof (ptr);
 					break;
 				case 5:
-					strcpy (h->title, ptr);
+					if (strlen(ptr) >= GRD_TITLE_LEN) fprintf (stderr, "%s: Warning: Title string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_TITLE_LEN);
+					strncpy (h->title, ptr, GRD_TITLE_LEN);
 					break;
 				case 6:
-					strcpy (h->remark, ptr);
+					if (strlen(ptr) >= GRD_REMARK_LEN) fprintf (stderr, "%s: Warning: Remark string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_REMARK_LEN);
+					strncpy (h->remark, ptr, GRD_REMARK_LEN);
 					break;
 				default:
 					break;

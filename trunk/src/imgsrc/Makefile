@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.3 2001-03-09 18:32:11 pwessel Exp $
+#	$Id: Makefile,v 1.4 2001-04-11 19:58:09 pwessel Exp $
 #
 #	makefile for imgsrc directory
 #
@@ -7,8 +7,8 @@
 include ../makegmt.macros
 
 CDF		= -L$(NETCDF)/lib -lnetcdf
-GMT		= -L.. -lgmt -lpsl
-CFLAGS		= $(CC_OPT) $(WIN32) -I.. -I$(NETCDF)/include
+GMT		= -L.. -L$(libdir) -lgmt -lpsl
+CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 
 all:		img2mercgrd
 

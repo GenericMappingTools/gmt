@@ -1,4 +1,4 @@
-	$Id: README.segyprogs,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+	$Id: README.segyprogs,v 1.2 2001-04-11 19:58:09 pwessel Exp $
 
 pssegy: program to plot segy files in postscript.
 the code was developed following a devious route from several programs in the GMT and
@@ -25,14 +25,17 @@ under those circumstances.
 
 Both codes have now been modified to cope with the variable
 trace length "SEGY" that programs like OMEGA apparently produce.
-These versions of the code was developed against GMT 3.3.1 headers
-and libraries, although it will probably work within a GMT 3.3 installation
-also.
+They have also been tested on SGI and Sun systems as being 64-bit
+safe. Byte-swapping is now incorporated for both the headers and
+the seismic data; this assumes that the byte-order in the
+data is big-endian, and by default byte-swaps on little-endian platforms.
+A new flag -A will reverse the byte-swap behaviour and should be
+used for files with little-endian byte order.
 
 Authorship:
 
 The pssegy and pssegyz programs were written and are maintained by Tim Henstock,
-Timothy.J.Henstock@soc.soton.ac.uk, and I'm happy (well, not exactly happy
+then@soc.soton.ac.uk, and I'm happy (well, not exactly happy
 since I think I got most of the bugs) to have reports of unexpected behaviour.
 The routines which read the SEGY data are modified from the IRIS/PASSCAL
 software distribution.

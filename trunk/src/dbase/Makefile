@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.3 2001-03-09 18:32:11 pwessel Exp $
+#	$Id: Makefile,v 1.4 2001-04-11 19:58:09 pwessel Exp $
 #
 #	makefile for dbase directory
 #
@@ -9,7 +9,7 @@
 include ../makegmt.macros
 
 CDF		= -L$(NETCDF)/lib -lnetcdf
-CFLAGS		= $(CC_OPT) $(WIN32) $(SWAP) -I.. -I$(NETCDF)/include
+CFLAGS		= $(CC_OPT) $(WIN32) $(SWAP) -I$(srcdir) -I$(NETCDF)/include
 
 all:		grdraster
 
@@ -20,7 +20,7 @@ uninstall:
 		\rm -f $(bindir)/grdraster$(EXE)
 
 grdraster:	grdraster.o
-		$(CC) $(CFLAGS) $(LDFLAGS) grdraster.o -L.. -lgmt -lpsl $(CDF) $(LIBS) -o grdraster
+		$(CC) $(CFLAGS) $(LDFLAGS) grdraster.o -L.. -L$(libdir) -lgmt -lpsl $(CDF) $(LIBS) -o grdraster
 
 spotless:	clean
 

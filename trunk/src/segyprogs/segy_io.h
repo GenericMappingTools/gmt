@@ -1,5 +1,5 @@
 /************************ segy_io.h *******************************/
-/*  $Id: segy_io.h,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $  */
+/*  $Id: segy_io.h,v 1.2 2001-04-11 19:58:09 pwessel Exp $  */
 /* segy_io.h:	Include file for segy_io.c, a suite of functions to */
 /* help reading and writing those annoying, redundant SEGY header */
 /* variables and for reading/writing to/from SEGY files.          */
@@ -16,6 +16,9 @@
 #define FALSE 0
 #endif
 
+#ifndef _INTTYPES_H
+#include <inttypes.h>
+#endif
 #include "segy.h"
 #include "segyreel.h"
 

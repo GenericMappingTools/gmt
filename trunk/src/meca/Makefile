@@ -1,4 +1,4 @@
-#       $Id: Makefile,v 1.5 2001-03-09 18:32:11 pwessel Exp $
+#       $Id: Makefile,v 1.6 2001-04-11 19:58:09 pwessel Exp $
 #
 #	makefile for meca directory
 #	meca must be installed in the gmt/src directory or
@@ -10,8 +10,8 @@ include ../makegmt.macros
 NETCDFLIB	= $(NETCDF)/lib
 NETCDFINC	= $(NETCDF)/include
 CDF		= -L$(NETCDFLIB) -lnetcdf
-CFLAGS		= $(CC_OPT) -I.. -I$(NETCDFINC)
-ALLLIB		= -L.. -lpsl -lgmt $(CDF) $(LIBS) $(LDFLAGS)
+CFLAGS		= $(CC_OPT) -I$(srcdir) -I$(NETCDFINC)
+ALLLIB		= -L.. -L$(libdir) -lpsl -lgmt $(CDF) $(LIBS) $(LDFLAGS)
 #
 #
 

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.3 2001-03-09 18:32:11 pwessel Exp $
+#	$Id: Makefile,v 1.4 2001-04-11 19:58:09 pwessel Exp $
 #
 # makefile for segyprogs directory
 #
@@ -7,8 +7,8 @@ include ../makegmt.macros
 
 #------------------------- stop here --------------------------
 
-CFLAGS	= $(CC_OPT) $(WIN32) -I.. -I$(NETCDF)/include -I$(GMT_DEFAULT_PATH)/src
-ALLLIB	= -L..  -L$(GMT_DEFAULT_PATH)/bin -lgmt -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)
+CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include -I$(GMT_DEFAULT_PATH)/src
+ALLLIB	= -L.. -L$(libdir) -lgmt -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)
 
 SEGYPLOT_H	= segy_io.h segy.h segyreel.h
 SEGYPLOT_C	= pssegyz.c pssegy.c
@@ -39,6 +39,9 @@ clean:
 
 spotless:		clean
 			\rm -f *.a
+
+segy_io.o:		$(SEGYPLOT_H) segy_io.c
+			$(CC) -c $(CFLAGS) segy_io.c
 
 $(SEGYPLOT):		$(SEGYPLOT_O) segy_io.o
 			$(CC) $(CFLAGS) segy_io.o $@.o -o $@ $(ALLLIB) $(LDFLAGS)

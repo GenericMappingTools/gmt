@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.3 2001-03-09 18:32:11 pwessel Exp $
+#	$Id: Makefile,v 1.4 2001-04-11 19:58:09 pwessel Exp $
 #	makefile for misc directory
 #
 
@@ -8,7 +8,7 @@ include ../makegmt.macros
 
 CDF		= -L$(NETCDF)/lib -lnetcdf
 
-CFLAGS		= $(CC_OPT) $(WIN32) -I.. -I$(NETCDF)/include 
+CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include 
 
 MISC_H		=
 
@@ -51,7 +51,7 @@ clean:
 #-------------------------------------------------------------------------------
 
 $(MISC):	$(MISC_O)
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L.. -lpsl -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L.. -L$(libdir) -lpsl -lgmt $(CDF) $(LIBS) -o $@
 
 .c.o:
 		$(CC) -c $(CFLAGS) $<
