@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.117 2004-05-10 22:28:51 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.118 2004-05-10 22:38:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4202,24 +4202,29 @@ void GMT_draw_mag_rose (struct MAP_ROSE *mr)
 void GMT_Nstar (double x0, double y0, double r)
 {	/* Draw a fancy 5-pointed North star */
 	int a;
-	double r2, x[4], y[4], dir, s, c;
+	double r2, x[4], y[4], dir, dir2, s, c;
 	
 	r2 = r * 0.3;
 	for (a = 0; a <= 360; a += 72) {	/* Azimuth of the 5 points on the star */
+		/* Solid half */
 		x[0] = x[3] = x0;	y[0] = y[3] = y0;
 		dir = 90.0 - (double)a;
 		sincos (dir * D2R, &s, &c);
 		x[1] = x0 + r * c;
 		y[1] = y0 + r * s;
-		dir -= 36.0;
-		sincos (dir * D2R, &s, &c);
+		dir2 = dir - 36.0;
+		sincos (dir2 * D2R, &s, &c);
 		x[2] = x0 + r2 * c;
 		y[2] = y0 + r2 * s;
 		GMT_2D_to_3D (x, y, project_info.z_level, 4);
 		ps_patch (x, y, 4, gmtdefs.background_rgb, TRUE);
+		/* Hollow half */
 		x[0] = x[3] = x0;	y[0] = y[3] = y0;
-		dir += 72.0;
 		sincos (dir * D2R, &s, &c);
+		x[1] = x0 + r * c;
+		y[1] = y0 + r * s;
+		dir2 = dir + 36.0;
+		sincos (dir2 * D2R, &s, &c);
 		x[2] = x0 + r2 * c;
 		y[2] = y0 + r2 * s;
 		GMT_2D_to_3D (x, y, project_info.z_level, 4);
