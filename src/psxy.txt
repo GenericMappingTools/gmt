@@ -201,7 +201,7 @@ By default arrow attributes remains invariant to the length
 of the arrow.  To have the size of the vector scale down with decreasing size,
 append \fBn\fP\fInorm\fP, where vectors shorter than \fInorm\fP will have their
 attributes scaled by length/\fInorm\fP.  To center vector on balance point, use \fB\-Svb\fP; to align point with the vector head,
-use \fB\-Svh\fP; to align point with the vector tail, use \fB\-Svt\fP [Default].  To give the head point's coordinates
+use \fB\-Svh\fP; to align point with the vector tail, use \fB\-Svt\fP [Default].  To give the head point's coordinates\"'
 instead of direction and length, use \fB\-Svs\fP.  Upper case \fBB, H, T, S\fP will draw a double-headed vector [Default is single head].
 .TP
 .B \-SV
@@ -291,7 +291,7 @@ or add an arc by using
 	\fIxc	yc	r	dir1	dir2\fP	\fBA\fP
 .br
 When a record other than the \fBD\fP or \fBA\fP is encountered, the polygon is closed and considered complete.
-The optional pen and fill setting hardwires particular values for this feature.  If not present the polygon's
+The optional pen and fill setting hardwires particular values for this feature.  If not present the polygon's\"'
 characteristics are determined by the command line settings for pen and fill.  To deactivate fill or outline
 for any given polygon, give \fB\-G\-\fP or \fB\-W\-\fP.  To add other geometric shapes
 to your custom symbol, add any number of the following plot code records:

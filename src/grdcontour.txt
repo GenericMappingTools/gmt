@@ -62,7 +62,7 @@ However, when \fB\-M\fP
 is used in conjunction with \fB\-D\fP a single multisegment file is created instead.
 .TP
 .B \-E
-Sets the viewpoint's azimuth and elevation for perspective view [180/90].
+Sets the viewpoint's azimuth and elevation for perspective view [180/90].\"'
 #include "explain_contlabel.txt"
 #include "explain_-K.txt"
 .TP

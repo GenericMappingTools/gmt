@@ -12,8 +12,8 @@ pscontour \- Contour xyz-data by direct triangulation
 [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ]
 .SH DESCRIPTION
 \fBpscontour\fP reads an ASCII [or binary] xyz-file and produces a raw contour plot by triangulation.  By default, the
-optimal Delaunay triangulation is performed (using either Shewchuk's [1996]
-or Watson's [1982] method as selected during \fBGMT\fP installation), but the user
+optimal Delaunay triangulation is performed (using either Shewchuk's [1996]\"'
+or Watson's [1982] method as selected during \fBGMT\fP installation), but the user\"'
 may optionally provide a second file with
 network information, such as a triangular mesh used for finite element modeling.  In addition to contours, the area between contours may be painted according to
 the color palette file.

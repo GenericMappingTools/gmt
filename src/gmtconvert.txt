@@ -29,7 +29,7 @@ Only extract the first and last record for each segment of interest [Default ext
 all records].
 .TP
 .B \-F
-Give a comma-separated list of desired columns or ranges (0 is first column) [Default outputs all columns]\n");
+Give a comma-separated list of desired columns or ranges (0 is first column) [Default outputs all columns].
 #include "explain_-H.txt"
 .TP
 .B \-I

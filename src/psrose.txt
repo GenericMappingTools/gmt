@@ -37,7 +37,7 @@ Plot vectors showing the principal directions given in the \fImodes\fP file.  If
 given, compute and plot mean direction.
 .TP
 .B \-E
-Sets the viewpoint's azimuth and elevation [180/90]
+Sets the viewpoint's azimuth and elevation [180/90]\"'
 .TP
 .B \-G
 Selects shade or color for sector infill [Default is no fill].

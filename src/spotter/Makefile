@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.7 2002-01-10 18:36:27 pwessel Exp $
+#	$Id: Makefile,v 1.8 2004-05-24 18:39:31 pwessel Exp $
 #
 #		Makefile for GMT spotter supplements
 #
@@ -73,7 +73,7 @@ libspotter.o:	$(SPOT_H)
 #-------------------------------------------------------------------------------
 
 $(SPOT):	libspotter.a $(SPOT_O)
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lspotter -L.. -L$(libdir) -lpsl -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lspotter -L.. -L$(libdir) -lgmt -lpsl $(CDF) $(LIBS) -o $@
 
 .c.o:
 		$(CC) -c $(CFLAGS) $<

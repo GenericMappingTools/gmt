@@ -41,10 +41,10 @@ Subtract \fIcenter\fP from the data set before plotting [0].
 .B \-D
 Means there is a data gap if 2 consecutive points are more than \fIgap\fP distance
 units apart.  For longitude/latitude data \fIgap\fP is in km, else it is in the
-user's units.
+user's units.\"'
 .TP
 .B \-E
-Sets the viewpoint's azimuth and elevation [180/90].
+Sets the viewpoint's azimuth and elevation [180/90].\"'
 .TP
 .B \-G
 Set fill of positive wiggles. [Default is black]

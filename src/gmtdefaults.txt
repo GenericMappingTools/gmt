@@ -33,14 +33,14 @@ by specifying one or more \fB\-\-PARAMETER=VALUE\fP statements on the commandlin
 first two options are permanent changes until explicitly changed back, while the last option is emphemeral
 and only applies to the single \fBGMT\fP command that received the override.
 \fBGMT\fP can provide default values in US or SI units.  This choice is determined by the contents of the
-gmt.conf file in \fBGMT\fP's share directory.
+gmt.conf file in \fBGMT\fP's share directory.\"'
 .TP
 .B \-D
 Print the system \fBGMT\fP defaults to standard output.  Append \fBu\fP for US
 defaults or \fBs\fP for SI defaults. [\fB\-D\fP alone gives current choice in gmt.conf].
 .TP
 .B \-L
-Print the user's currently active defaults to standard output.
+Print the user's currently active defaults to standard output.\"'
 .br
 .sp
 Your currently active defaults come from the \.gmtdefaults4 file in the 
@@ -202,7 +202,7 @@ lack of the colorimage operator in some \fIPostScript\fP implementations, \fBGMT
 options:
 .br
 .sp
-	adobe (Adobe's colorimage definition)  [Default].
+	adobe (Adobe's colorimage definition)  [Default].\"'
 .br
 	tiles (Plot image as many individual rectangles).
 .br
@@ -317,11 +317,11 @@ for abbreviated month name in the current time language),
 and dd, with or without delimiters.  For day-of-year data, use jjj instead of mm and/or dd.
 Examples can be ddmmyyyy, yy-mm-dd, dd-o-yyyy, yyyy/dd/mm, yyyy-jjj, etc.
 ISO Calendar:  Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
-day.  Either template must be consistent, e.g., you cannot specify months if you don't specify
+day.  Either template must be consistent, e.g., you cannot specify months if you don't specify\"'
 years.  Examples are yyyyWwwd, yyyy-Www, etc. [yyyy-mm-dd].
 .TP
 .B INTERPOLANT
-Determines if linear (linear), Akima's spline (akima), or natural cubic spline (cubic) should
+Determines if linear (linear), Akima's spline (akima), or natural cubic spline (cubic) should\"'
 be used for 1-D interpolations in various programs [akima].
 .TP
 .B IO_HEADER * (\-H)
@@ -387,7 +387,7 @@ abbreviated month name in the current time language),
 and dd, with or without delimiters.  For day-of-year data, use jjj instead of mm and/or dd.
 As examples, try yy/mm/dd, yyyy=jjj, dd-o-yyyy, dd-mm-yy, yy-mm, etc.
 ISO Calendar:  Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
-day.  Either template must be consistant, e.g., you cannot specify months if you don't specify
+day.  Either template must be consistant, e.g., you cannot specify months if you don't specify\"'
 years.  As examples, try yyyyWww, yy-W-ww-d, etc. If your template starts with a leading hyphen (-) then each integer item (y,m,d) will be
 printed without leading zeros (default uses fixed width formats) [yyyy-mm-dd].
 .TP
@@ -498,7 +498,7 @@ the gmtmedia.d file in $GMTHOME/share; see that file for details):
 For a completely custom format (e.g., for large format plotters) you may also
 specify Custom_WxH, where W and H are in points.
 To force the printer to request a manual paper feed, append '-' to the media
-name, e.g., A3- will require the user to insert a A3 paper into the printer's
+name, e.g., A3- will require the user to insert a A3 paper into the printer's\"'
 manual feed slot.  To indicate you are making an EPS file, append '+' to the
 media name.  Then, \fBGMT\fP will attempt to issue a tight bounding box [Default 
 Bounding Box is the paper dimension].

@@ -51,5 +51,5 @@ Key to Geophysical Records documentation No. 10, National Geophysical and
 Solar-Terrestrial Data Center, Boulder, CO.
 .br
 .sp
-Carter, D. J. T., \fIEcho Sounding Correction Tables: Formerly Matthews' Tables\fP,
+Carter, D. J. T., \fIEcho Sounding Correction Tables: Formerly Matthews' Tables\fP,\"'
 150 pp, Hydrographic Department, Ministry of Defense, Taunton, Somerset, England, 1980.

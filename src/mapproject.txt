@@ -61,7 +61,7 @@ Calculate distances along track OR to the optional point set with \fB\-G\fP\fIx0
 choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile), \fBn\fP (nautical mile), \fBd\fP (spherical degree),
 \fBc\fP (Cartesian distance using input coordinates) or \fBC\fP (Cartesian distance using projected coordinates).  The
 last unit requires \fB\-R\fP and \fB\-J\fP to be set.  Upper case  \fBE\fP, \fBK\fP, \fBM\fP, \fBN\fP, or \fBD\fP
-will use exact methods for geodesic distances (Rudoe's method for distances in length units and emplying geocentric
+will use exact methods for geodesic distances (Rudoe's method for distances in length units and emplying geocentric\"'
 latitudes in degree calculations, assuming the current ellipsoid is not a sphere).
 #include "explain_-H.txt"
 .TP
@@ -143,7 +143,7 @@ you are trying to match some historical data (e.g., coordinates obtained with
 a certain projection and a certain reference ellipsoid) you may find that \fBGMT\fP
 gives results that are slightly different.  One likely source of this mismatch
 is that older calculations often used less significant digits.  For instance,
-Snyder's examples often use the Clarke 1866 ellipsoid (defined by him as
+Snyder's examples often use the Clarke 1866 ellipsoid (defined by him as\"'
 having a flattening f = 1/294.98).  From f we get the eccentricity squared to
 be 0.00676862818 (this is what \fBGMT\fP uses), while Snyder rounds off and uses
 0.00676866.  This difference can give discrepancies of several tens of cm.

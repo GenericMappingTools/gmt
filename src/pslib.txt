@@ -230,7 +230,7 @@ void \fBps_imagefill\fR (\fIx, y, n, image, imagefile, invert, imagedpi, outline
 Similar to \fBps_polygon\fP, but fills the area with an image pattern rather than a color
 or grayshade.  \fIx\fP and \fIy\fP hold the arrays of \fIn\fP points.  90 predefined
 patterns are available  (See GMT Appendix E).  \fIimage\fP gives the image number (1-90).  If set to 0,
-\fIimagefile\fP must be the name to the user's image, which must be stored as a
+\fIimagefile\fP must be the name to the user's image, which must be stored as a\"'
 SUN 1-, 8-, or 24-bit rasterfile.  1-bit images only: (i) If \fIinvert\fP is TRUE (1), the black and
 white pixels are interchanged before plotting.  (ii) If template is TRUE (1), the set
 pixels are colored using the RGB combination in \fIf_rgb\fP, while the unset are painted

@@ -70,7 +70,7 @@ not given.
 Name of output grdfile with scalar magnitudes of gradient vectors.  Requires \fB\-D\fP.
 #include "explain_-V.txt"
 .SH HINTS
-If you don't know what \fB\-N\fP options to use to make an intensity file for 
+If you don't know what \fB\-N\fP options to use to make an intensity file for\"'
 \fBgrdimage\fP or \fBgrdview\fP, a good first try is \fB\-Ne\fP0.6.
 .br
 .sp

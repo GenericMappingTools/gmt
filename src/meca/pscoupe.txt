@@ -341,7 +341,7 @@ Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.
 F. A. Dahlen and Jeoren Trom, Theoretical Seismology, Princeton, 1998, p.167.
 Definition of scalar moment.
 .br
-Cliff Frohlich, Cliff's Nodes Concerning Plotting Nodal Lines for P, Sh and Sv
+Cliff Frohlich, Cliff's Nodes Concerning Plotting Nodal Lines for P, Sh and Sv\"'
 .br
 Seismological Research Letters, Volume 67, Number 1, January-February, 1996
 .br

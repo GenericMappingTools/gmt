@@ -45,7 +45,7 @@ where each segment header contains a \fB\-Z\fP\fIval\fP string.  The \fIval\fP
 will control the color of the line or polygon (use \fB\-L\fP) via the cpt file.
 .TP
 .B \-E
-Sets the viewpoint's azimuth and elevation [180/90].
+Sets the viewpoint's azimuth and elevation [180/90].\"'
 .TP
 .B \-G
 Select filling of polygons and symbols.
@@ -193,7 +193,7 @@ By default arrow attributes remains invariant to the length
 of the arrow.  To have the size of the vector scale down with decreasing size,
 append \fBn\fP\fInorm\fP, where vectors shorter than \fInorm\fP will have their
 attributes scaled by length/\fInorm\fP.  To center vector on balance point, use \fB\-Svb\fP; to align point with the vector head,
-use \fB\-Svh\fP; to align point with the vector tail, use \fB\-Svt\fP [Default]. To give the head point's coordinates
+use \fB\-Svh\fP; to align point with the vector tail, use \fB\-Svt\fP [Default]. To give the head point's coordinates\"'
 instead of direction and length, use \fB\-Svs\fP.  Upper case \fBB, H, T, S\fP will draw a double-headed vector [Default is single head].
 .TP
 .B \-SV

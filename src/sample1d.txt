@@ -50,7 +50,7 @@ Sets the column number of the independent variable [Default is 0 (first)].
 #include "explain_-f.txt"
 .SH EXAMPLES
 To resample the file profiles.tdgmb, which contains (time,distance,gravity,magnetics,bathymetry) records,
-at 1km equidistant intervals using Akima's spline, use
+at 1km equidistant intervals using Akima's spline, use\"'
 .br
 .sp
 \fBsample1d\fP profiles.tdgmb \fB\-I\fP1 \fB\-Fa\fP \fB\-T\fP1 > profiles_equi_d.tdgmb

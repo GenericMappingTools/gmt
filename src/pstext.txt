@@ -53,13 +53,13 @@ Only used if \fB\-W\fP is specified.
 .TP
 .B \-D
 Offsets the text from the projected (\fIx,y\fP) point by \fIdx,dy\fP [0/0].
-Use \fB-Dj\fP to offset the text away from the point instead (i.e. the text's justification
+Use \fB-Dj\fP to offset the text away from the point instead (i.e. the text's justification\"'
 will determine the direction of the shift).  In paragraph mode
 (\fB\-M\fP), one may append \fBv\fP which will draw a line from the original point to the shifted point.
 Optionally append a \fIpen\fP for this line.
 .TP
 .B \-E
-Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].
+Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
 (Not implemented for paragraph mode).
 .TP
 .B \-G

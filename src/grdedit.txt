@@ -19,7 +19,9 @@ Name of the 2-D grdfile to modify
 .SH OPTIONS
 .TP
 .B \-A
-If necessary, adjust the file's \fIx_inc, y_inc\fP to be compatible with its domain (or a new domain set with \fB\-R\fP).  Older gridfiles (i.e., created prior to GMT 3.1) often had excessive slop in
+If necessary, adjust the file's \fIx_inc, y_inc\fP to be compatible with\"'
+its domain (or a new domain set with \fB\-R\fP).  Older gridfiles (i.e., created
+prior to GMT 3.1) often had excessive slop in
 \fIx_inc, y_inc\fP and an adjustment is necessary.  Newer files are created correctly.
 .TP
 .B \-D

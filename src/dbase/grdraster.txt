@@ -16,7 +16,7 @@ By default the grid spacing equals the raster spacing.  The \fB\-I\fP option
 may be used to sub-sample the raster data.  No filtering or interpolating is
 done, however; the \fIx_inc\fP and \fIy_inc\fP of the grd file must be
 multiples of the increments of the raster file and \fBgrdraster\fP simply 
-takes every n'th point.  The output of \fBgrdraster\fP is either grid or
+takes every n'th point.  The output of \fBgrdraster\fP is either grid or\"'
 pixel registered depending on the registration of the raster used.  It is up
 to the \fBGMT\fP system person to maintain the \fIgrdraster.info\fP file in
 accordance with the available rasters at each site.  Raster data sets are
