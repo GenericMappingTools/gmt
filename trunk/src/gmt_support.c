@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.85 2004-05-11 19:44:44 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.86 2004-05-12 00:05:00 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -146,6 +146,8 @@ int GMT_getfill (char *line, struct GMT_FILL *fill)
 	/* Syntax:   -G<gray>, -G<rgb>, -G<cmyk>, -G<hsv> or -Gp|P<dpi>/<image>[:F<rgb>B<rgb>]   */
 	/* Note, <rgb> can be r/g/b, gray, or - for masks */
 
+	GMT_chop (line);	/* Remove trailing CR, LF and propoerly NULL-terminate the string */
+	
 	if ((line[0] == 'p' || line[0] == 'P') && isdigit((int)line[1])) {	/* Image specified */
 		n = sscanf (&line[1], "%d/%s", &fill->dpi, fill->pattern);
 		if (n != 2) error = 1;
@@ -505,7 +507,8 @@ int GMT_getpen (char *buffer, struct GMT_PEN *P)
 	double pen_scale = 1.0;
 	char pen[128], color[128], texture[256], line[BUFSIZ];
 	
-	strcpy (line, buffer);	/* Work on a copy ofthe arguments */
+	strcpy (line, buffer);	/* Work on a copy of the arguments */
+	GMT_chop (line);	/* Remove trailing CR, LF and propoerly NULL-terminate the string */
 	if (!strchr (line, ',')) {	/* Most likely old-style pen specification.  Translate */
 		GMT_old2newpen (line);
 	}
@@ -4330,6 +4333,17 @@ void GMT_str_toupper (char *value)
 		c = (int)value[i];
 		value[i] = (char) toupper (c);
 	}
+}
+
+void GMT_chop (char *string)
+{
+	/* Chops off any CR or LF at end of string and ensures it is null-terminated */
+	int i, n;
+	if (!string) return;	/* NULL pointer */
+	if ((n = strlen (string)) == 0) return;	/* Empty string */
+	for (i = n - 1; i >= 0 && (string[i] == '\n' || string[i] == '\r'); i--);
+	i++;
+	if (i >= 0) string[i] = '\0';	/* Terminate string */
 }
 
 double GMT_get_map_interval (int axis, int item) {
