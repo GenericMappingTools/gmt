@@ -1,8 +1,8 @@
-	$Id: README.GMT,v 1.4 2004-01-09 22:53:42 pwessel Exp $
+	$Id: README.GMT,v 1.5 2004-10-02 02:04:22 pwessel Exp $
 
 Dear potential GMT users-
 
-Version 4b of GMT has recently been released.
+Version 4.0 of GMT has recently been released.
 GMT can be installed under Unix or Windows.
 
 For new installers of GMT under a Unix-like OS:
@@ -77,7 +77,9 @@ throughput:
 ----------------------------------------------------------------
 gmt.soest.hawaii.edu		Honolulu, Hawaii, USA [GMT HOME]
 falcon.grdl.noaa.gov		Silver Spring, Maryland, USA
+ftp.iris.washington.edu		IRIS, Seattle, Washington, USA
 ftp.geologi.uio.no		Oslo, Norway
+gd.tuwien.ac.at			Vienna U of Techology, AUSTRIA
 ftp.iag.usp.br			Sao Paulo, Brazil
 life.csu.edu.au			Albury, Australia
 ftp.eos.hokudai.ac.jp.		Sapporo. Japan
