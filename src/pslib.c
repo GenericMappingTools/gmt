@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.79 2004-08-01 23:33:53 pwessel Exp $
+ *	$Id: pslib.c,v 1.80 2004-08-26 16:29:55 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -795,15 +795,17 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 	/* f_rgb:	Foreground color */
 	/* b_rgb:	Background color */
 
-	BOOLEAN found;
+	BOOLEAN found, refresh;
 	int i, j, ix, iy, nx, ny, n_times = 0;
 	char op[15];
 	double xx, yy, xmin, xmax, ymin, ymax, image_size_x, image_size_y;
 	
-	if ((image_no >= 0 && image_no < N_PATTERNS) && !ps_pattern_status[image_no][invert]) {	/* Unused predefined */
+	refresh = (colorize || f_rgb[0] < 0 || b_rgb[0] < 0);
+	if (refresh || ((image_no >= 0 && image_no < N_PATTERNS) && !ps_pattern_status[image_no][invert])) {	/* Unused predefined */
 		image_no = ps_imagefill_init (image_no, imagefile, invert, image_dpi, colorize, f_rgb, b_rgb);
 		nx = ps_pattern_nx[image_no][invert];
 		ny = ps_pattern_ny[image_no][invert];
+		if (refresh) ps_pattern_status[image_no][invert] = FALSE;	/* Since color may change next time */
 	}
 	else if (image_no < 0) {	/* User image, check if already used */
 		for (i = 0, found = FALSE; !found && i < ps_n_userimages; i++) found = !strcmp (ps_user_image[i].name, imagefile);
