@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.84 2004-05-11 17:56:43 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.85 2004-05-11 19:44:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4163,7 +4163,7 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 {
 	/* Pass text as &argv[i][2] */
 	
-	int j = 0, i,error = 0, colon, plus, k, order[4] = {3,1,0,2};
+	int j = 0, i,error = 0, colon, plus, slash, k, order[4] = {3,1,0,2};
 	char txt_a[32], txt_b[32], txt_c[32], txt_d[32], tmpstring[256], *p;
 	
 	/* SYNTAX is -T[f|m][x]<lon0>/<lat0>/<size>[/<info>][:label:][+gint[/mint]], where <info> is
@@ -4181,7 +4181,7 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 	strcpy (ms->label[2], "N");
 	strcpy (ms->label[3], "W");
 	
-	/* First deal with possible prefixes f and x (i.e., f, x, xf, fx( */
+	/* First deal with possible prefixes f and x (i.e., f|m, x, xf|m, f|mx) */
 	if (text[j] == 'f') ms->fancy = TRUE, j++;
 	if (text[j] == 'm') ms->fancy = 2, j++;
 	if (text[j] == 'x') ms->gave_xy = TRUE, j++;
@@ -4190,8 +4190,15 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 	
 	/* Determine if we have the optional label components specified */
 	
-	for (colon = -1, i = j; text[i] && colon < 0; i++) if (text[i] == ':') colon = i+1;
-	for (plus = -1, i = j; text[i] && plus < 0; i++) if (text[i] == '+') plus = i+1;
+	for (i = j; text[i] && slash < 2; i++) if (text[i] == '/') slash++;	/* Move i until the 2nd slash is reached */
+	for (k = strlen(text) - 1, colon = 0; text[k] && k > i && colon < 2; k--) if (text[k] == ':') colon++;	/* Move k to starting colon of :label: */
+	if (colon == 2 && k > i) {
+		colon = k + 2;	/* Beginning of label */
+	}
+	else
+		colon = 0;	/* No labels given */
+		
+	for (plus = -1, i = slash; text[i] && plus < 0; i++) if (text[i] == '+') plus = i+1;	/* Find location of + */
 	if (plus > 0) {		/* Get annotation interval(s) */
 		k = sscanf (&text[plus], "%lf/%lf", &ms->a_int[1], &ms->a_int[0]);
 		if (k < 1) {
@@ -4238,7 +4245,7 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 			ms->dlabel[0] = '\0';
 		}
 		else {
-			ms->declination = atof (txt_d);
+			error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_d, GMT_IS_LON, &ms->declination), txt_d);
 			ms->kind = 2;
 		}
 	}
