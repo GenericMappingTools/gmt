@@ -590,6 +590,8 @@ Language to use when plotting calendar items such as months and days.  Select fr
 .br
 	HU	Hungarian
 .br
+	IE	Irish
+.br
 	IL	Hebrew
 .br
 	IT	Italian
