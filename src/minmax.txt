@@ -3,16 +3,18 @@
 minmax \- Find extreme values in data tables
 .SH SYNOPSIS
 \fBminmax\fP [ \fIfiles\fP] [ \fB\-C\fP ] [ \fB\-D\fP ] [ \fB\-EL|l|H|h\fP\fIcol\fP ] 
-[ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIdx\fP[/\fIdy\fP] ] 
+[ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIdx\fP[/\fIdy\fP[/\fIdz\fP...] ] 
 [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-T\fP\fIdz\fP ] 
 [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBminmax\fP reads its standard input [or from files] and finds the
 extreme values in each of the columns.  It recognizes NaNs and
 will print warnings if the number of columns vary from record to record.
-As an option, \fBminmax\fP will find the extent of the first two columns rounded
-up and down to the nearest multiple of dx/dy.  This output will be in the form
-\fB\-R\fP\fIw/e/s/n\fP which can be used directly in the command line for other programs, or simply in column form.
+As an option, \fBminmax\fP will find the extent of the first \fIn\fP columns rounded
+up and down to the nearest multiple of the supplied increments.  By default, this output
+will be in the form \fB\-R\fP\fIw/e/s/n\fP which can be used directly in the command line
+for other programs (hence only \fIdx\fP and \fIdy\fP are neede), or the output will be in
+column form for as many columns as there are increments provided.
 A similar option (\fB\-T\fP) will provide a \fB\-T\fP\fIzmin/zmax/dz\fP string for makecpt.
 .TP
 \fIxyzfile\fP
@@ -33,8 +35,10 @@ matches, only the first record is returned.
 #include "explain_-H.txt"
 .TP
 .B \-I
-Report the min/max of the first two columns to the nearest multiple of \fIdx\fP and \fIdy\fP,
-and output this in the form \fB\-R\fP\fIw/e/s/n\fP (unless \fB\-C\fP is set).
+Report the min/max of the first \fIn\fP columns to the nearest multiple of the provided
+increments (separate the \fIn\fP increments by slashes), and output results in the form \fB\-R\fP\fIw/e/s/n\fP
+(unless \fB\-C\fP is set).  If only one increment is given we also use it for the second
+column (for backwards compatibility).  To override this behaviour, use \fB\-Ip\fB\fIdx\fP.
 #include "explain_-M.txt"
 .TP
 .B \-T
@@ -66,9 +70,9 @@ region to draw a line using psxy, run
 \fBpsxy\fP `\fBminmax\fP \fB\-I\fP5 track.xy` track.xy \fB\-Jx\fP1 \fB\-B\fP5 \fB\-P\fP > track.ps
 .br
 .sp
-To find the min and max values for each column, but rounded to integers, use
+To find the min and max values for each of the first 4 columns, but rounded to integers, use
 .br
 .sp
-\fBminmax\fP junkfile \fB\-C \-I\fP1
+\fBminmax\fP junkfile \fB\-C \-I\fP1/1/1/1
 .SH "SEE ALSO"
 .IR gmt (GMTMANSECTION)

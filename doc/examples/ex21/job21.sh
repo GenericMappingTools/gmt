@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	GMT Example 21  $Id: job21.sh,v 1.6 2004-06-24 06:33:22 pwessel Exp $
+#	GMT Example 21  $Id: job21.sh,v 1.7 2004-06-25 22:39:01 pwessel Exp $
 #
 # Purpose:	Plot a time-series
 # GMT progs:	gmtset, gmtconvert, minmax, psbasemap, psxy 
@@ -9,7 +9,7 @@
 
 # File has time stored as dd-Mon-yy so set input format to match it
 
-gmtset INPUT_DATE_FORMAT dd-o-yy PLOT_DATE_FORMAT o ANNOT_FONT_SIZE +10p
+gmtset INPUT_DATE_FORMAT dd-o-yy PLOT_DATE_FORMAT o ANNOT_FONT_SIZE_PRIMARY +10p
 gmtset TIME_FORMAT_PRIMARY abbreviated CHAR_ENCODING ISOLatin1+
 
 # Pull out a suitable region string in yyy-mm-dd format

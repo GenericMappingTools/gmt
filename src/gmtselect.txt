@@ -108,8 +108,8 @@ Here, you must specify a map projection so that knows you are giving it geograph
 300 would be interpreted as Cartesian distance in x-y units instead of km).
 .br
 .sp
-To keep all points in data.d except those on land, as determined by the high-resolution
-coastlines, use
+To keep all points in data.d within the specified region, except the points on land (as determined by the high-resolution
+coastlines), use
 .br
 .sp
 \fBgmtselect\fP data.d \fB\-R\fP120/121/22/24 \fB\-Dh\fP \fB\-Ns\fP/\fBk\fP > subset
