@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.39 2001-09-14 18:30:17 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.40 2001-09-14 19:24:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -882,7 +882,7 @@ int GMT_loaddefaults (char *file)
 		if (line[0] == '\n') continue;	/* Skip Blank lines */
 
 		keyword[0] = value[0] = '\0';	/* Initialize */
-		sscanf (line, "%s = %s", keyword, value);
+		sscanf (line, "%s = %[^\n]", keyword, value);
 		
 		error += GMT_setparameter (keyword, value);
 	}
