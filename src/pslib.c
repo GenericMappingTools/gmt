@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.9 2001-04-25 03:34:58 pwessel Exp $
+ *	$Id: pslib.c,v 1.10 2001-04-25 22:39:55 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
