@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.4 2004-09-09 20:17:47 pwessel Exp $
+#	$Id: Makefile,v 1.5 2004-09-10 23:24:48 pwessel Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -26,7 +26,6 @@ include ../makegmt.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf
-DEGREES = 1
 VERSION = v4.0
 
 COAST_H	= shore.h wvs.h
@@ -108,22 +107,22 @@ bin_f:
 		rm res_f/binned_GSHHS_f.bin res_f/binned_GSHHS_f.seg res_f/binned_GSHHS_f.pt
 
 bin_h:
-		polygon_to_bins res_h/${VERSION}_final_dbase_0.2km.b res_h/${VERSION}_final_nodes_0.2km.grd res_h/binned_GSHHS_h
+		polygon_to_bins res_h/${VERSION}_final_dbase_0.2km.b 2 res_h/${VERSION}_final_nodes_0.2km.grd res_h/binned_GSHHS_h
 		shoremaker res_h/binned_GSHHS_h
 		rm res_h/binned_GSHHS_h.bin res_h/binned_GSHHS_h.seg res_h/binned_GSHHS_h.pt
 
 bin_i:
-		polygon_to_bins res_i/${VERSION}_final_dbase_1km.b res_i/${VERSION}_final_nodes_1km.grd res_i/binned_GSHHS_i
+		polygon_to_bins res_i/${VERSION}_final_dbase_1km.b 5 res_i/${VERSION}_final_nodes_1km.grd res_i/binned_GSHHS_i
 		shoremaker res_i/binned_GSHHS_i
 		rm res_i/binned_GSHHS_i.bin res_i/binned_GSHHS_i.seg res_i/binned_GSHHS_i.pt
 
 bin_l:
-		polygon_to_bins res_l/${VERSION}_final_dbase_5km.b res_l/${VERSION}_final_nodes_5km.grd res_l/binned_GSHHS_l
+		polygon_to_bins res_l/${VERSION}_final_dbase_5km.b 10 res_l/${VERSION}_final_nodes_5km.grd res_l/binned_GSHHS_l
 		shoremaker res_l/binned_GSHHS_l
 		rm res_l/binned_GSHHS_l.bin res_l/binned_GSHHS_l.seg res_l/binned_GSHHS_l.pt
 
 bin_c:
-		polygon_to_bins res_c/${VERSION}_final_dbase_25km.b res_c/${VERSION}_final_nodes_25km.grd res_c/binned_GSHHS_c
+		polygon_to_bins res_c/${VERSION}_final_dbase_25km.b 20 res_c/${VERSION}_final_nodes_25km.grd res_c/binned_GSHHS_c
 		shoremaker res_c/binned_GSHHS_c
 		rm res_c/binned_GSHHS_c.bin res_c/binned_GSHHS_c.seg res_c/binned_GSHHS_c.pt
 
@@ -169,4 +168,4 @@ $(COAST):	libcoast.a $(COAST_O)
 		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lcoast -L.. -L$(libdir) -lgmt -lpsl $(CDF) $(LIBS) -o $@
 
 .c.o:
-		$(CC) -c $(CFLAGS) -DDEGREES=${DEGREES} $<
+		$(CC) -c $(CFLAGS) $<

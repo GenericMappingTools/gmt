@@ -1,5 +1,5 @@
 /*
- *	$Id: border_to_bins.c,v 1.2 2004-09-05 04:13:30 pwessel Exp $
+ *	$Id: border_to_bins.c,v 1.3 2004-09-10 23:24:48 pwessel Exp $
  */
 /* border_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -9,12 +9,7 @@
  
 #include "wvs.h"
 
-#define BSIZE (DEGREES * 60)		/* in minutes.  Assumed to devide nicely into 60 (e.g, 60, 30, 15, ...) */
-#define BIN_NX ((360 * 60) / BSIZE)
-#define BIN_NY ((180 * 60) / BSIZE)
-#define B_WIDTH ((MILL * BSIZE) / 60)		/* Bin width in micro-degrees */
-#define MAX_DELTA 65535				/* Largest value to store in a ushort, used as largest dx or dy in bin  */
-#define SHORT_FACTOR (65535.0 / (double)B_WIDTH)	/* This must be a double.  converts microdegrees to short units  */ 
+#define MAX_DELTA 65535		/* Largest value to store in a ushort, used as largest dx or dy in bin  */
 
 struct GMT3_POLY h;
 
@@ -67,24 +62,33 @@ char **argv; {
 	int n_final = 0, n_init = 0, dx_1, dx_2, dx, dy, i_x_1mod, i_y_1mod, last_i, i_x_2mod, i_y_2mod, new = 0;
 	int x_x_c, x_y_c, y_x_c, y_y_c, last_x_bin, x_x_index, i_x_3, i_y_3, x_origin, y_origin;
 	int noise, n, n_id = 0, n_corner = 0, nx, ny, jump = 0, n_seg = 0, add = 0, n_int, ns = 0;
-	int this_level = 2;
+	int this_level = 2, BSIZE, BIN_NX, BIN_NY, B_WIDTH;
 	char file[512];
 	
-	double rx, ry, dxr, dyr;
+	double rx, ry, dxr, dyr, SHORT_FACTOR;
 	
 	FILE *fp_in, *fp_pt, *fp_bin, *fp_seg;
 	
 	struct SEGMENT *s, *next;
 	struct	LONGPAIR p;
 		
-	if (argc == 1) {
-		fprintf (stderr, "usage: border_to_bins lines.b binned_prefix rank\n");
-		fprintf (stderr, "Bin_size is currently %d minutes.  Recompile to change this\n", BSIZE);
+	if (argc != 5) {
+		fprintf (stderr, "usage: border_to_bins lines.b bsize binned_prefix rank\n");
+		fprintf (stderr, "bsize must be 1, 2, 5, 10, or 20 degrees\n");
 		exit (-1);
 	}
-	this_level = atoi (argv[3]);
+	BSIZE = atoi (argv[2]);
+	this_level = atoi (argv[4]);
+	if (! (BSIZE == 1 || BSIZE == 2 || BSIZE == 5 || BSIZE == 10 || BSIZE == 20)) {
+		fprintf (stderr, "border_to_bins: Bin_size must be 1, 2, 5, 10, or 20\n");
+		exit (-1);
+	}
+	BSIZE *= 60;	/* Now in minutes */
+	BIN_NX = (360 * 60) / BSIZE;
+	BIN_NY = (180 * 60) / BSIZE;
+	B_WIDTH = (MILL * BSIZE) / 60;			/* Bin width in micro-degrees */
+	SHORT_FACTOR = (65535.0 / (double)B_WIDTH);	/* This must be a double.  converts microdegrees to short units  */ 
 	
-	fprintf (stderr, "border_to_bins: Bin_size is currently %d minutes.  Recompile to change this\n", BSIZE);
 	fprintf (stderr, "border_to_bins: Getting rank %d\n", this_level);
 
 	GMT_begin (argc, argv);
@@ -459,7 +463,7 @@ char **argv; {
 		file_head.n_segments += bin_head[b].n_segments;
 	}
 	
-	fprintf (stderr, "border_to_bins: Start writing file %s\n", argv[2]);
+	fprintf (stderr, "border_to_bins: Start writing file %s\n", argv[3]);
 
 	file_head.n_bins = nbins;
 	file_head.n_points = n_final + add;
@@ -467,11 +471,11 @@ char **argv; {
 	file_head.nx_bins = BIN_NX;
 	file_head.ny_bins = BIN_NY;
 	
-	sprintf (file, "%s.bin\0", argv[2]);
+	sprintf (file, "%s.bin\0", argv[3]);
 	fp_bin = fopen (file, "w");
-	sprintf (file, "%s.seg\0", argv[2]);
+	sprintf (file, "%s.seg\0", argv[3]);
 	fp_seg = fopen (file, "w");
-	sprintf (file, "%s.pt\0", argv[2]);
+	sprintf (file, "%s.pt\0", argv[3]);
 	fp_pt = fopen (file, "w");
 	
 	if (fwrite ((char *)&file_head, sizeof (struct GMT3_FILE_HEADER), 1, fp_bin) != 1) {
