@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.18 2001-10-24 23:28:30 ben Exp $
+ *	$Id: gmt_support.c,v 1.19 2001-12-20 02:56:01 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2125,7 +2125,7 @@ int	GMT_non_zero_winding(double xp, double yp, double *x, double *y, int n_path)
 
 /* GMT can either compile with its standard Delaunay triangulation routine
  * based on the work by Dave Watson, OR you may link with the triangle.o
- * module from Jonathan Shewchuck, Berkely U.  By default, the former is
+ * module from Jonathan Shewchuk, Berkely U.  By default, the former is
  * chosen unless the compiler directive -DTRIANGLE_D is passed.  The latter
  * is much faster and will hopefullty become the standard once we sort out
  * copyright issues etc.

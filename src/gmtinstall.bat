@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.4 2001-04-13 23:29:01 pwessel Exp $
+REM	$Id: gmtinstall.bat,v 1.5 2001-12-20 02:56:01 ben Exp $
 REM
 REM
 REM	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
@@ -58,7 +58,7 @@ SET BINDIR="..\bin"
 SET LIBDIR="..\lib"
 SET GMT_PATH="\"C:\\gmt\""
 REM
-REM STEP e: If you WANT TO  use Shewchuck's triangulation
+REM STEP e: If you WANT TO  use Shewchuk's triangulation
 REM	    routine, you must set TRIANGLE to yes:
 REM
 SET TRIANGLE=no
