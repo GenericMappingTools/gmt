@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.30 2002-07-19 03:21:04 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.31 2002-09-05 20:05:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7180,7 +7180,7 @@ void GMT_merc_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struc
 void GMT_transx_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head)
 {	/* Forward projection from linear in x to log10 or pow */
 	int i, ii, j, g_last, r_last;
-	double dx, x, dummy, *x_in, *x_out, *hold, *value;
+	double dx, x, *x_in, *x_out, *hold, *value;
 	
 
 	x_in  = (double *) GMT_memory (VNULL, (size_t)g_head->nx, sizeof (double), "GMT_transx_forward");
@@ -7224,7 +7224,7 @@ void GMT_transx_forward (float *geo, struct GRD_HEADER *g_head, float *rect, str
 void GMT_transy_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head)
 {	/* Forward projection from linear in y to log10 or pow */
 	int i, j, jj, g_last, r_last;
-	double dy, y, dummy, *y_in, *y_out, *hold, *value;
+	double dy, y, *y_in, *y_out, *hold, *value;
 	
 
 	y_in  = (double *) GMT_memory (VNULL, (size_t)g_head->ny, sizeof (double), "GMT_transy_forward");
