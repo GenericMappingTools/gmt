@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.97 2005-03-04 19:28:21 remko Exp $
+ *	$Id: pslib.c,v 1.98 2005-03-05 17:22:58 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -985,7 +985,7 @@ void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char 
 
 	 fprintf (ps.fp, "V N %g %g T %g %g scale\n", x * ps.scale, y * ps.scale, xsize * ps.scale / nx, ysize * ps.scale / ny);
 	 fprintf (ps.fp, "%d %d T\n", -ox, -oy);
-	 fprintf (ps.fp, "N %d %d m %d %d L %d %d L %d %d L P clip N\n", ox, oy, ox+nx, oy, ox+ny, oy+ny, ox, oy+ny);
+	 fprintf (ps.fp, "N %d %d m %d %d L %d %d L %d %d L P clip N\n", ox, oy, ox+nx, oy, ox+nx, oy+ny, ox, oy+ny);
 	 fprintf (ps.fp, "countdictstack\nmark\n/showpage {} def\n%% Start of imported EPS file\n");
 	 fwrite (buffer, (size_t)1, (size_t)size, ps.fp);
 	 fprintf (ps.fp, "%% End of imported EPS file\ncleartomark\ncountdictstack exch sub { end } repeat\nU\n");
