@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.18 2001-12-21 03:50:38 ben Exp $
+ *	$Id: gmt_project.h,v 1.19 2002-01-04 21:41:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -243,10 +243,10 @@ struct MAP_PROJECTIONS {
 #define GMT_IS_FANCY	0	/* Fancy baseframe */
 #define GMT_IS_PLAIN	1	/* Plain baseframe */
 
-/* Define the 6 axis items that each axis can have (some are mutually exclusive: only one ANOT/INTV for upper and lower) */
+/* Define the 6 axis items that each axis can have (some are mutually exclusive: only one ANNOT/INTV for upper and lower) */
 
-#define GMT_ANOT_UPPER		0	/* Tick annotations closest to the axis (the only kind in GMT3.4 or earlier) */
-#define GMT_ANOT_LOWER		1	/* Tick annotations farthest from the axis*/
+#define GMT_ANNOT_UPPER		0	/* Tick annotations closest to the axis (the only kind in GMT3.4 or earlier) */
+#define GMT_ANNOT_LOWER		1	/* Tick annotations farthest from the axis*/
 #define GMT_INTV_UPPER		2	/* Interval annotations closest to the axis */
 #define GMT_INTV_LOWER		3	/* Interval annotations farthest from the axis */
 #define GMT_TICK_UPPER		4	/* Frame tick marks closest to the axis (the only kind in GMT3.4 or earlier) */
@@ -255,10 +255,10 @@ struct MAP_PROJECTIONS {
 /* Some convenient macros for axis routines */
 
 #define GMT_interval_axis_item(k) (((k) == GMT_INTV_UPPER || (k) == GMT_INTV_LOWER) ? TRUE : FALSE)	/* TRUE for interval annotations */
-#define GMT_lower_axis_item(k) (((k) == GMT_ANOT_LOWER || (k) == GMT_INTV_LOWER) ? 1 : 0)		/* 1 if this is a lower axis annotation */
-#define GMT_upper_and_lower_items(j) (((frame_info.axis[j].item[GMT_ANOT_UPPER].active || frame_info.axis[j].item[GMT_INTV_UPPER].active) && \
-	(frame_info.axis[j].item[GMT_ANOT_LOWER].active || frame_info.axis[j].item[GMT_INTV_LOWER].active)) ? TRUE : FALSE)	/* TRUE if we have two levels of annotations (tick or interval) */
-#define GMT_two_anot_items(j) ((frame_info.axis[j].item[GMT_ANOT_UPPER].active && frame_info.axis[j].item[GMT_ANOT_LOWER].active) ? TRUE : FALSE)	/* TRUE if we have two levels of tick annotations */
+#define GMT_lower_axis_item(k) (((k) == GMT_ANNOT_LOWER || (k) == GMT_INTV_LOWER) ? 1 : 0)		/* 1 if this is a lower axis annotation */
+#define GMT_upper_and_lower_items(j) (((frame_info.axis[j].item[GMT_ANNOT_UPPER].active || frame_info.axis[j].item[GMT_INTV_UPPER].active) && \
+	(frame_info.axis[j].item[GMT_ANNOT_LOWER].active || frame_info.axis[j].item[GMT_INTV_LOWER].active)) ? TRUE : FALSE)	/* TRUE if we have two levels of annotations (tick or interval) */
+#define GMT_two_annot_items(j) ((frame_info.axis[j].item[GMT_ANNOT_UPPER].active && frame_info.axis[j].item[GMT_ANNOT_LOWER].active) ? TRUE : FALSE)	/* TRUE if we have two levels of tick annotations */
 #define GMT_uneven_interval(unit) ((unit == 'o' || unit == 'O' || unit == 'k' || unit == 'K' || unit == 'R' || unit == 'r' || unit == 'D' || unit == 'd') ? TRUE : FALSE)	/* TRUE for uneven units */
 
 struct PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
@@ -286,7 +286,7 @@ struct PLOT_FRAME {		/* Various parameters for plotting of time axis boundaries 
 	BOOLEAN draw_box;		/* TRUE is a 3-D Z-box is desired */
 	BOOLEAN check_side;		/* TRUE if lon and lat annotations should be on x and y axis only */
 	BOOLEAN horizontal;		/* TRUE is S/N annotations should be parallel to axes */
-	int side[5];			/* Which sides to plot. 2 is anot/draw, 1 is draw, 0 is not */
+	int side[5];			/* Which sides to plot. 2 is annot/draw, 1 is draw, 0 is not */
 };
 
 

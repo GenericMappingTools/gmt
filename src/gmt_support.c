@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.22 2002-01-04 21:13:03 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.23 2002-01-04 21:41:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -371,7 +371,7 @@ void GMT_read_cpt (char *cpt_file)
 {
 	/* Opens and reads a color palette file in RGB or HSV of arbitrary length */
 	
-	int n = 0, i, j, nread, anot, n_alloc = GMT_SMALL_CHUNK, color_model;
+	int n = 0, i, j, nread, annot, n_alloc = GMT_SMALL_CHUNK, color_model;
 	double r0, r1, g0, g1, b0, b1, dz;
 	BOOLEAN gap, error = FALSE;
 	char line[BUFSIZ], c, first_r[BUFSIZ], first_b[BUFSIZ];
@@ -577,11 +577,11 @@ void GMT_read_cpt (char *cpt_file)
 
 		c = line[strlen(line)-2]; 
 		if (c == 'L' || c == 'l')
-			GMT_lut[n].anot = 1;
+			GMT_lut[n].annot = 1;
 		else if (c == 'U' || c == 'u')
-			GMT_lut[n].anot = 2;
+			GMT_lut[n].annot = 2;
 		else if (c == 'B' || c == 'b')
-			GMT_lut[n].anot = 3;
+			GMT_lut[n].annot = 3;
 		n++;
 		if (n == n_alloc) {
 			i = n_alloc;
@@ -604,18 +604,18 @@ void GMT_read_cpt (char *cpt_file)
 		
 	GMT_lut = (struct GMT_LUT *) GMT_memory ((void *)GMT_lut, (size_t)n, sizeof (struct GMT_LUT), "GMT_read_cpt");
 	GMT_n_colors = n;
-	for (i = anot = 0, gap = FALSE; i < GMT_n_colors - 1; i++) {
+	for (i = annot = 0, gap = FALSE; i < GMT_n_colors - 1; i++) {
 		if (GMT_lut[i].z_high != GMT_lut[i+1].z_low) gap = TRUE;
-		anot += GMT_lut[i].anot;
+		annot += GMT_lut[i].annot;
 	}
-	anot += GMT_lut[i].anot;
+	annot += GMT_lut[i].annot;
 	if (gap) {
 		fprintf (stderr, "%s: GMT Fatal Error: Color palette table %s has gaps - aborts!\n", GMT_program, cpt_file);
 		exit (EXIT_FAILURE);
 	}
-	if (!anot) {	/* Must set default annotation flags */
-		for (i = 0; i < GMT_n_colors; i++) GMT_lut[i].anot = 1;
-		GMT_lut[i-1].anot = 3;
+	if (!annot) {	/* Must set default annotation flags */
+		for (i = 0; i < GMT_n_colors; i++) GMT_lut[i].annot = 1;
+		GMT_lut[i-1].annot = 3;
 	}
 	if (!(GMT_bfn.foreground_rgb[0] == GMT_bfn.foreground_rgb[1] && GMT_bfn.foreground_rgb[0] == GMT_bfn.foreground_rgb[2])) GMT_gray = FALSE;
 	if (GMT_gray && !(GMT_bfn.foreground_rgb[0] == 0 || GMT_bfn.foreground_rgb[0] == 255)) GMT_b_and_w = FALSE;
@@ -3647,7 +3647,7 @@ void GMT_str_toupper (char *value)
 
 double GMT_get_map_interval (int axis, int item) {
 	
-	if (item < GMT_ANOT_UPPER || item > GMT_GRID_UPPER) {
+	if (item < GMT_ANNOT_UPPER || item > GMT_GRID_UPPER) {
 		fprintf (stderr, "GMT ERROR in GMT_get_map_interval (wrong item %d)\n", item);
 		exit (EXIT_FAILURE);
 	}

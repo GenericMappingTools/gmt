@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.59 2002-01-04 21:13:03 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.60 2002-01-04 21:41:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -99,9 +99,9 @@ struct GMT_BACKWARD {	/* Used to ensure backwards compatibility */
 	BOOLEAN got_new_char_encoding;		/* TRUE if CHAR_ENCODING was decoded */
 } GMT_backward;
 
-BOOLEAN GMT_force_resize = FALSE, GMT_anot_special = FALSE;
-int save_anot_size2, save_label_size, save_header_size;
-double save_anot_offset, save_anot_offset2, save_label_offset, save_header_offset, save_tick_length, save_frame_width;
+BOOLEAN GMT_force_resize = FALSE, GMT_annot_special = FALSE;
+int save_annot_size2, save_label_size, save_header_size;
+double save_annot_offset, save_annot_offset2, save_label_offset, save_header_offset, save_tick_length, save_frame_width;
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 	
@@ -891,7 +891,7 @@ int GMT_loaddefaults (char *file)
 	
 	if ((fp = fopen (file, "r")) == NULL) return (-1);
 	
-	GMT_force_resize = FALSE;	/* "Listen" for +<size> for ANOT_FONT */
+	GMT_force_resize = FALSE;	/* "Listen" for +<size> for ANNOT_FONT */
 	
 	/* Set up hash table */
 	
@@ -960,7 +960,7 @@ void GMT_setdefaults (int argc, char **argv)
 
 void GMT_backwards_compatibility () {
 	/* Convert old GMT 3.4 DEGREE_FORMAT settings to the new PLOT_DEGREE_FORMAT string and DEGREE_SYMBOL setting */
-	/* Also to automatic scaling of font sizes relative to ANOT_FONT_SIZE if given with leading + */
+	/* Also to automatic scaling of font sizes relative to ANNOT_FONT_SIZE if given with leading + */
 	
 	char string[32];
 	int k;
@@ -1012,7 +1012,7 @@ void GMT_backwards_compatibility () {
 		load_encoding (&gmtdefs.encoding);
 	}
 	
-	if (GMT_force_resize) {	/* Adjust fonts and offsets and ticklenghts relative to ANOT_FONT_SIZE */
+	if (GMT_force_resize) {	/* Adjust fonts and offsets and ticklenghts relative to ANNOT_FONT_SIZE */
 		gmtdefs.annot_font2_size = irint (16.0 * gmtdefs.annot_font_size / 14.0);
 		gmtdefs.label_font_size = irint (24.0 * gmtdefs.annot_font_size / 14.0);
 		gmtdefs.header_font_size = irint (36.0 * gmtdefs.annot_font_size / 14.0);
@@ -1067,7 +1067,7 @@ int GMT_setparameter (char *keyword, char *value)
 		case GMTCASE_ANNOT_FONT_SIZE:
 		case GMTCASE_ANOT_FONT_SIZE:
 			if (value[0] == '+') GMT_force_resize = TRUE;	/* Turning on autoscaling of font sizes and ticklengths */
-			if (value[0] != '+' && GMT_force_resize) GMT_anot_special = TRUE;	/* gmtset tries to turn off autoscaling - must report saved values but reset this one */
+			if (value[0] != '+' && GMT_force_resize) GMT_annot_special = TRUE;	/* gmtset tries to turn off autoscaling - must report saved values but reset this one */
 			ival = atoi (value);
 			if (ival > 0)
 				gmtdefs.annot_font_size = ival;
@@ -1076,7 +1076,7 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case GMTCASE_ANNOT_OFFSET:
 		case GMTCASE_ANOT_OFFSET:
-			save_anot_offset = gmtdefs.annot_offset = GMT_convert_units (value, GMT_INCH);
+			save_annot_offset = gmtdefs.annot_offset = GMT_convert_units (value, GMT_INCH);
 			break;
 		case GMTCASE_BASEMAP_AXES:
 			strcpy (gmtdefs.basemap_axes, value);
@@ -1588,13 +1588,13 @@ int GMT_setparameter (char *keyword, char *value)
 		case GMTCASE_ANNOT_FONT2_SIZE:
 			ival = atoi (value);
 			if (ival > 0)
-				save_anot_size2 = gmtdefs.annot_font2_size = ival;
+				save_annot_size2 = gmtdefs.annot_font2_size = ival;
 			else
 				error = TRUE;
 			break;
 
 		case GMTCASE_ANNOT_OFFSET2:
-			save_anot_offset2 = gmtdefs.annot_offset2 = GMT_convert_units (value, GMT_INCH);
+			save_annot_offset2 = gmtdefs.annot_offset2 = GMT_convert_units (value, GMT_INCH);
 			break;
 		case GMTCASE_LABEL_OFFSET:
 			save_label_offset = gmtdefs.label_offset = GMT_convert_units (value, GMT_INCH);
@@ -1666,11 +1666,11 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "ANNOT_MIN_ANGLE		= %lg\n", gmtdefs.annot_min_angle);
 	fprintf (fp, "ANNOT_MIN_SPACING	= %lg\n", gmtdefs.annot_min_spacing);
 	fprintf (fp, "ANNOT_FONT		= %s\n", GMT_font_name[gmtdefs.annot_font]);
-	(GMT_force_resize && !GMT_anot_special) ? fprintf (fp, "ANNOT_FONT_SIZE		= +%dp\n", gmtdefs.annot_font_size) :  fprintf (fp, "ANNOT_FONT_SIZE		= %dp\n", gmtdefs.annot_font_size);
+	(GMT_force_resize && !GMT_annot_special) ? fprintf (fp, "ANNOT_FONT_SIZE		= +%dp\n", gmtdefs.annot_font_size) :  fprintf (fp, "ANNOT_FONT_SIZE		= %dp\n", gmtdefs.annot_font_size);
 	fprintf (fp, "ANNOT_FONT2		= %s\n", GMT_font_name[gmtdefs.annot_font2]);
-	(GMT_force_resize) ? fprintf (fp, "ANNOT_FONT2_SIZE		= %dp\n", save_anot_size2) : fprintf (fp, "ANNOT_FONT2_SIZE		= %dp\n", gmtdefs.annot_font2_size);
-	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET		= %lg%c\n", save_anot_offset * s, u) : fprintf (fp, "ANNOT_OFFSET		= %lg%c\n", gmtdefs.annot_offset * s, u);
-	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET2	= %lg%c\n", save_anot_offset2 * s, u) : fprintf (fp, "ANNOT_OFFSET2		= %lg%c\n", gmtdefs.annot_offset2 * s, u);
+	(GMT_force_resize) ? fprintf (fp, "ANNOT_FONT2_SIZE		= %dp\n", save_annot_size2) : fprintf (fp, "ANNOT_FONT2_SIZE		= %dp\n", gmtdefs.annot_font2_size);
+	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET		= %lg%c\n", save_annot_offset * s, u) : fprintf (fp, "ANNOT_OFFSET		= %lg%c\n", gmtdefs.annot_offset * s, u);
+	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET2	= %lg%c\n", save_annot_offset2 * s, u) : fprintf (fp, "ANNOT_OFFSET2		= %lg%c\n", gmtdefs.annot_offset2 * s, u);
 	fprintf (fp, "DEGREE_SYMBOL		= %s\n", GMT_degree_choice[gmtdefs.degree_symbol - gmt_none]);
 	fprintf (fp, "HEADER_FONT		= %s\n", GMT_font_name[gmtdefs.header_font]);
 	(GMT_force_resize) ? fprintf (fp, "HEADER_FONT_SIZE	= %dp\n", save_header_size) : fprintf (fp, "HEADER_FONT_SIZE	= %dp\n", gmtdefs.header_font_size);
@@ -2644,7 +2644,7 @@ void GMT_split_info (const char *in, char *info[]) {
 }
 
 void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
-	/* Decode the anot/tick segments of the clean -B string pieces */
+	/* Decode the annot/tick segments of the clean -B string pieces */
 	
 	char *t, *s, flag, mod, unit;
 	int error = 0;
@@ -2835,7 +2835,7 @@ int GMT_map_getframe (char *in) {
 	 * also will be annotated. Default is all 4 axes drawn/annotated.
 	 * For logscale plots:  l will cause log10(x) to be plotted
 	 *			p will cause 10 ^ log10(x) to be plotted
-	 *	anot/tick/grid interval can here be either:
+	 *	annot/tick/grid interval can here be either:
 	 *		1.0	-> Only powers of 10 are annotated
 	 *		2.0	-> powers of 10 times (1, 2, 5) are annotated
 	 *		3.0	-> powers of 10 times (1,2,3,..9) are annotated
@@ -2880,10 +2880,10 @@ int GMT_map_getframe (char *in) {
 		
 		/* Make sure we have ticks to match annotation stride */
 		A = &frame_info.axis[i];
-		if (A->item[GMT_ANOT_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = annot stride */
-			memcpy ((void *)&A->item[GMT_TICK_UPPER], (void *)&A->item[GMT_ANOT_UPPER], sizeof (struct PLOT_AXIS_ITEM));
+		if (A->item[GMT_ANNOT_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = annot stride */
+			memcpy ((void *)&A->item[GMT_TICK_UPPER], (void *)&A->item[GMT_ANNOT_UPPER], sizeof (struct PLOT_AXIS_ITEM));
 		else if (A->item[GMT_INTV_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = annot stride */
-			memcpy ((void *)&A->item[GMT_INTV_UPPER], (void *)&A->item[GMT_ANOT_UPPER], sizeof (struct PLOT_AXIS_ITEM));
+			memcpy ((void *)&A->item[GMT_INTV_UPPER], (void *)&A->item[GMT_ANNOT_UPPER], sizeof (struct PLOT_AXIS_ITEM));
 #ifdef DEBUGT
 		fprintf (stderr, "Unit: [%s]\n", A->unit);
 		fprintf (stderr, "Label: [%s]\n", A->label);
