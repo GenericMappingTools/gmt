@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.1 2001-08-14 15:54:49 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.2 2001-08-14 15:57:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -26,8 +26,6 @@
 */
 
 #include "gmt.h"
-#include "gmt_calclock.h"
-
 
 /* Functions to assemble/disassemble a continuous
 variable (GMT_dtime) and a calendar day (GMT_cal_rd)
