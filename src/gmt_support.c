@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.149 2005-02-04 03:28:16 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.150 2005-02-04 03:29:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6011,7 +6011,7 @@ double GMT_great_circle_dist_km (double x0, double y0, double x1, double y1)
 int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_LINES *p, int np, BOOLEAN return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	int i, j0, j1;
-	double edge, dx, dy, xc, yc, s, s_inv, d;
+	double edge, dx, dy, xc, yc, s, s_inv, d, dist_AB, fraction;
 
 	if (return_mindist) *dist_min = DBL_MAX;
 	for (i = 0; i < np; i++) {	/* Loop over each line segment */
