@@ -1,0 +1,50 @@
+#	$Id: Makefile,v 1.1 2001-03-02 05:54:44 pwessel Exp $
+#
+# makefile for x2sys directory
+#
+include ../makegmt.macros
+
+#------------------------- stop here --------------------------
+
+CFLAGS	= $(CC_OPT) $(WIN32) -I.. -I../mgg -I$(NETCDF)/include
+ALLLIB	= -L.. -lgmt -L../mgg -lgmt_mgg -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)
+
+XSYSTEM_H	= x2sys.h
+XSYSTEM_C	= x2sys_datalist.c x2sys_cross.c
+
+XSYSTEM_O	= ${XSYSTEM_C:.c=.o}
+
+XSYSTEM		= ${XSYSTEM_C:.c=}
+
+#---------------------------------------------------------------
+
+libx2sys.a:		x2sys.o
+			$(AR) cvr libx2sys.a $?
+			$(RANLIB) libx2sys.a
+
+all:			$(XSYSTEM) libx2sys.a
+
+install:		all
+			for i in $(XSYSTEM); do \
+				$(INSTALL) $$i$(EXE) $(bindir); \
+			done
+
+uninstall:	
+			for i in $(XSYSTEM); do \
+				\rm -f $(bindir)/$$i$(EXE); \
+			done
+
+clean:
+			\rm -f *.o
+			for i in $(XSYSTEM); do \
+				\rm -f $$i$(EXE); \
+			done
+
+spotless:		clean
+			\rm -f *.a
+
+$(XSYSTEM):		$(XSYSTEM_O) libx2sys.a
+			$(CC) $(CFLAGS) $@.o -o $@ -L. -lx2sys $(ALLLIB) $(LDFLAGS)
+
+.c.o:
+			$(CC) -c $(CFLAGS) $<
