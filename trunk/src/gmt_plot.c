@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.101 2004-04-17 06:29:16 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.102 2004-04-17 06:54:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1476,7 +1476,7 @@ void GMT_polar_map_boundary (double w, double e, double s, double n)
 		}
 	}
 	
-	/* Annotate S-N axes */
+	/* Tick S-N axes */
 	
 	ps_setline (fat_pen);
 	if ((dy = GMT_get_map_interval (1, GMT_TICK_UPPER)) != 0.0) {
@@ -1508,7 +1508,7 @@ void GMT_polar_map_boundary (double w, double e, double s, double n)
 		}
 	}
 
-	/* Annotate W-E axes */
+	/* Tick W-E axes */
 	
 	if ((dx = GMT_get_map_interval (0, GMT_TICK_UPPER)) != 0.0) {
 		shade = ((int)floor (w / dx) + 1) % 2;

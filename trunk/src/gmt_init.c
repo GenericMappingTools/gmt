@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.117 2004-04-17 06:29:16 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.118 2004-04-17 06:54:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3028,7 +3028,7 @@ void GMT_split_info (const char *in, char *info[]) {
 void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 	/* Decode the annot/tick segments of the clean -B string pieces */
 	
-	char *t, *s, flag, unit;
+	char *t, *s, flag, orig_flag, unit;
 	int error = 0;
 	double val, phase = 0.0;
 	
@@ -3040,7 +3040,7 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 			flag = '*';
 		else {
 			flag = t[0];	/* Set flag */
-			if (!strchr ("afg*", flag)) {	/* Illegal flag given */
+			if (!strchr ("afg", flag)) {	/* Illegal flag given */
 				error = 1;
 				continue;
 			}
@@ -3097,7 +3097,13 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 			default:
 				break;
 		}
-		if (!GMT_primary && flag != '*') flag = (char) toupper ((int)flag);	/* Since this is secondary axes items */
+		orig_flag = flag;
+		if (!GMT_primary) {	/* Since this is secondary axes items */
+			if (flag == '*')
+			 	flag = '^';
+			else
+			 	flag = (char) toupper ((int)flag);
+		}
 		if (!error) GMT_set_titem (A, val, phase, flag, unit);				/* Store the findings for this segment */
 		t = s;									/* Make t point to start of next segment, if any */
 	}
@@ -3105,7 +3111,7 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 	if (error) {
 		switch (error) {
 			case 1:
-				fprintf (stderr, "%s: ERROR: Unrecognized axis item or unit %c in -B string component %s\n", GMT_program, flag, in);
+				fprintf (stderr, "%s: ERROR: Unrecognized axis item or unit %c in -B string component %s\n", GMT_program, orig_flag, in);
 				break;
 			case 2:
 				fprintf (stderr, "%s: ERROR: Interval missing from -B string component %s\n", GMT_program, in);
@@ -3163,6 +3169,11 @@ void GMT_set_titem (struct PLOT_AXIS *A, double val, double phase, char flag, ch
 		case '*':	/* Both a and f */
 			I[0] = &A->item[0];
 			I[1] = &A->item[4];
+			n = 2;
+			break;
+		case '^':	/* Both A and F */
+			I[0] = &A->item[1];
+			I[1] = &A->item[5];
 			n = 2;
 			break;
 		default:	/* Bad flag should never get here */
@@ -3305,6 +3316,10 @@ int GMT_map_getframe (char *in) {
 			memcpy ((void *)&A->item[GMT_TICK_UPPER], (void *)&A->item[GMT_ANNOT_UPPER], sizeof (struct PLOT_AXIS_ITEM));
 		else if (A->item[GMT_INTV_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = annot stride */
 			memcpy ((void *)&A->item[GMT_INTV_UPPER], (void *)&A->item[GMT_ANNOT_UPPER], sizeof (struct PLOT_AXIS_ITEM));
+		if (A->item[GMT_ANNOT_LOWER].active && !A->item[GMT_TICK_LOWER].active)	/* Set frame ticks = annot stride */
+			memcpy ((void *)&A->item[GMT_TICK_LOWER], (void *)&A->item[GMT_ANNOT_LOWER], sizeof (struct PLOT_AXIS_ITEM));
+		else if (A->item[GMT_INTV_LOWER].active && !A->item[GMT_TICK_LOWER].active)	/* Set frame ticks = annot stride */
+			memcpy ((void *)&A->item[GMT_INTV_LOWER], (void *)&A->item[GMT_ANNOT_LOWER], sizeof (struct PLOT_AXIS_ITEM));
 	}
 	
 	return (0);
