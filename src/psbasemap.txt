@@ -127,10 +127,10 @@ A Mercator map with scale LEN_M inch/degree along equator, and showing the lengt
 .sp
 \fBpsbasemap\fP \fB\-R\fP90/180/-50/50 SCALE_M \fB\-B\fP30\fBg\fP30:.Mercator: MAP_M > mercator.ps
 .SH Miller
-A global Miller cylindrical map with scale 1:200,000,000, may be plotted as
+A global Miller cylindrical map with scale 1:200,000,000 may be plotted as
 .br
 .sp
-\fBpsbasemap\fP \fB\-R\fP0/360/-90/90 \fB\-Jj\fP1:200000000 \fB\-B\fP30\fBg\fP30:.Miller: > miller.ps
+\fBpsbasemap\fP \fB\-R\fP0/360/-90/90 \fB\-Jj\fP180/1:200000000 \fB\-B\fP30\fBg\fP30:.Miller: > miller.ps
 .SH Oblique Mercator [conformal]
 To create a page-size global oblique Mercator basemap for a pole at (90,30) with gridlines every 30 degrees, run
 .br
@@ -210,7 +210,7 @@ A global perspective (from infinite distance) view of the world from the vantage
 the following LEN_G-inch-wide basemap:
 .br
 .sp
-\fBpsbasemap\fP \fB\-R\fP0/360-/-90/90 SCALE_G \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Orthographic": > ortho.ps
+\fBpsbasemap\fP \fB\-R\fP0/360/-90/90 SCALE_G \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Orthographic": > ortho.ps
 .br
 .SH Stereographic [conformal]
 To make a Polar stereographic projection basemap with radius = LEN_S cm to \-60 degree latitude, with plot title
