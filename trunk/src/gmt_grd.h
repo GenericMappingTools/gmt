@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: gmt_grd.h,v 1.2 2001-02-20 17:48:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -28,6 +28,9 @@
  * Version:	3.3.6
  */
  
+#ifndef _GMT_GRD_H
+#define _GMT_GRD_H
+
 #include "netcdf.h"
 
 /* Nodes that are unconstrained are assumed to be set to NaN */
@@ -75,3 +78,5 @@ struct GRD_HEADER {
 		    and represents the surface value in a box with dimensions (1,1)
 		    centered on the node.
 -------------------------------------------------------------------------------------------*/
+
+#endif /* _GMT_GRD_H */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: gmt_support.c,v 1.2 2001-02-20 17:48:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -76,8 +76,6 @@
  */
  
 #include "gmt.h"
-#include "gmt_boundcond.h"
-#include "gmt_bcr.h"
 
 #define I_255	(1.0 / 255.0)
 
