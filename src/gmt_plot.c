@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.142 2005-02-15 23:03:58 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.143 2005-03-02 00:56:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -81,14 +81,10 @@
  *	GMT_wesn_map_boundary :		Plot plain basemap for projections with geographical boundaries
  *	GMT_theta_r_map_boundary :	Plot plain basemap for polar (cylindrical) projection
  *	GMT_xyz_axis3D :		Draw 3-D axis
- *	GMT_polar_adjust :		Adjust label justification for polar projection
  */
  
 #include "gmt.h"
 #include "pslib.h"
-
-int GMT_get_label_parameters(int side, double line_angle, int type, double *text_angle, int *justify);
-int GMT_polar_adjust(int side, double angle, double x, double y);
 
 void GMT_map_symbol(double *xx, double *yy, int *sides, double *line_angles, char *label, int nx, int type, BOOLEAN annotate, int level);
 void GMT_map_symbol_ew(double lat, char *label, double west, double east, BOOLEAN annotate, int level);
@@ -118,7 +114,6 @@ void GMT_coordinate_to_y (double coord, double *y);
 int GMT_time_array (double min, double max, struct PLOT_AXIS_ITEM *T, double **array);
 void GMT_timex_grid (double w, double e, double s, double n, int item);
 void GMT_timey_grid (double w, double e, double s, double n, int item);
-void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct PLOT_AXIS_ITEM *T, GMT_dtime t);
 void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct PLOT_AXIS_ITEM *T, double coord);
 void GMT_get_primary_annot (struct PLOT_AXIS *A, int *primary, int *secondary);
 BOOLEAN GMT_skip_second_annot (int item, double x, double x2[], int n, int primary, int secondary);

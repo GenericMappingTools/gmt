@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.5 2005-02-18 20:24:56 pwessel Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.6 2005-03-02 00:56:14 pwessel Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	This is the README file:
@@ -221,7 +221,7 @@ int mgg2_read_grd_info(char *file, struct GRD_HEADER *header)
 	}
 
 	if (mggHeader.length != sizeof(MGG_GRID_HEADER_2)) {
-		fprintf(stderr, "GMT Fatal Error: Invalid grid header size, expected %d, found %d\n", sizeof(MGG_GRID_HEADER_2), mggHeader.length);
+		fprintf(stderr, "GMT Fatal Error: Invalid grid header size, expected %d, found %d\n", (int)sizeof(MGG_GRID_HEADER_2), mggHeader.length);
 		exit (-1);
 	}
 
@@ -299,7 +299,7 @@ int mgg2_read_grd (
 	}
 
 	else {
-		fprintf (stderr, "GMT Fatal Error: Could not open file %s! (%s)", file);
+		fprintf (stderr, "GMT Fatal Error: Could not open file! (%s)", file);
 		exit (-1);
 	}
 	
@@ -310,7 +310,7 @@ int mgg2_read_grd (
 		tChar  = (char *) tLong;
 
 		if (fread ((void *)tLong, mggHeader.numType, nm, fp) != (size_t)nm) {
-			fprintf (stderr, "GMT Fatal Error: Error reading file %s! (%s)", file);
+			fprintf (stderr, "GMT Fatal Error: Error reading file! (%s)", file);
 			exit (-1);
 		}
 		for (i = 0; i < nm; i++) {

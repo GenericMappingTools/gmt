@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.10 2005-02-15 21:15:18 pwessel Exp $
+ *	$Id: gmt_cdf.c,v 1.11 2005-03-02 00:56:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -371,6 +371,10 @@ int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 				check_nc_status (nc_get_vara_double (cdfid, z_id, start, edge, tmp_d));
 				for (i = 0; i < width_in; i++) grid[ij+i*inc] = (float)tmp_d[k[i]];
 				break;
+			default:
+				fprintf (stderr, "%s: netCDF data type not supported: %d\n", GMT_program, nc_type);
+				exit (EXIT_FAILURE);
+				break;
 		}
 		for (i = 0; i < width_in; i++) {	/* Check for and handle NaN proxies */
 			kk = ij+i*inc;
@@ -410,6 +414,10 @@ int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 			break;
 		case NC_DOUBLE:
 			GMT_free ((void *)tmp_d);
+			break;
+		default:
+			fprintf (stderr, "%s: netCDF data type not supported: %d\n", GMT_program, nc_type);
+			exit (EXIT_FAILURE);
 			break;
 	}	
 
@@ -603,6 +611,10 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 				for (i = 0; i < width_out; i++) tmp_d[i] = (double)grid[inc * (ij+k[i])];
 				check_nc_status (nc_put_vara_double (cdfid, z_id, start, edge, tmp_d));
 				break;
+			default:
+				fprintf (stderr, "%s: netCDF data type not supported: %d\n", GMT_program, nc_type);
+				exit (EXIT_FAILURE);
+				break;
 		}
 				
 	}
@@ -628,6 +640,10 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 			break;
 		case NC_DOUBLE:
 			GMT_free ((void *)tmp_d);
+			break;
+		default:
+			fprintf (stderr, "%s: netCDF data type not supported: %d\n", GMT_program, nc_type);
+			exit (EXIT_FAILURE);
 			break;
 	}	
 	return (0);

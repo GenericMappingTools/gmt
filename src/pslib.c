@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.92 2005-02-23 21:22:00 remko Exp $
+ *	$Id: pslib.c,v 1.93 2005-03-02 00:56:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -321,7 +321,7 @@ void ps_bitimage (double x, double y, double xsize, double ysize, unsigned char 
 	 * f_rgb:	Foreground color for unset bits (if f_rgb[0] < 0, make transparent)
 	 * b_rgb:	Background color for set bits (if b_rgb[0] < 0, make transparent)
 	 */
-	int lx, ly, j, inv;
+	int lx, ly, inv;
 	char *kind[2] = {"Binary", "Ascii"};
 
 	lx = irint (xsize * ps.scale);
@@ -1259,7 +1259,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	int i, pmode, manual = FALSE;
 	time_t right_now;
 	char openmode[2], *this;
-	double scl, miter;
+	double scl;
 
 	if ((this = getenv ("GMTHOME")) == NULL) {	/* Use default GMT path */
 		PSHOME = (char *) ps_memory (VNULL, (size_t)(strlen (GMT_DEFAULT_PATH) + 1), sizeof (char));
@@ -3266,9 +3266,8 @@ unsigned char *ps_load_eps (FILE *fp, struct imageinfo *h)
 {
 	/* ps_load_eps reads an Encapsulated PostScript file */
 
-	int k, n, p, llx, lly, trx, try, BLOCKSIZE=4096;
+	int n, p, llx, lly, trx, try, BLOCKSIZE=4096;
 	unsigned char *buffer;
-	char line[BUFSIZ];
 
 	n=0;
 	llx=0; lly=0; trx=720; try=720;
@@ -3310,7 +3309,7 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
 	/* ps_load_raster reads a Sun standard rasterfile of depth 1, 8, 24, or 32 into memory */
 
 	int mx_in, mx, j, k, i, ij, n = 0, ny, get, odd, oddlength, r_off, b_off;
-	unsigned char *buffer, *entry, *red, *green, *blue, *tmp, rgb[3];
+	unsigned char *buffer, *entry, *red, *green, *blue;
 
 	if (ps_read_rasheader (fp, header, 0, 7)) {
 		fprintf (stderr, "pslib: Trouble reading Sun rasterfile header!\n");
@@ -3682,7 +3681,7 @@ void ps_stream_dump (unsigned char *buffer, int nx, int ny, int nbits, int compr
 	 * mask		= image (0), imagemask (1), or neither (2)
 	 */
 	int nbytes, i;
-	unsigned char quad[4], *buffer1, *buffer2;
+	unsigned char *buffer1, *buffer2;
 	char *kind_compress[3] = {"", "/RunLengthDecode filter", "/LZWDecode filter"};
 	char *kind_mask[2] = {"", "mask"};
 
@@ -3875,7 +3874,7 @@ unsigned char *ps_rle_encode (int *nbytes, unsigned char *input)
 		pixel = input[in++];
 		while (in < *nbytes && in - count < 127 && input[in] == pixel) in++;
 		if (in - count == 1) {	/* No more duplicates. How many non-duplicates were there? */
-			while (in < *nbytes && in - count < 127 && (input[in] != input[in-1] || in > 1 && input[in] != input[in-2])) in++;
+			while (in < *nbytes && (in - count) < 127 && ((input[in] != input[in-1] || in > 1) && input[in] != input[in-2])) in++;
 			while (in < *nbytes && input[in] == input[in-1]) in--;
 			output[out++] = (unsigned char)(in - count - 1);
 			for (i = count; i < in; i++) output[out++] = input[i];
