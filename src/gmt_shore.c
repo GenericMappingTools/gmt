@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.5 2001-12-21 03:50:38 ben Exp $
+ *	$Id: gmt_shore.c,v 1.6 2001-12-27 19:39:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -304,7 +304,7 @@ int GMT_init_br (char which, char res, struct GMT_BR *c, double w, double e, dou
         check_nc_status (nc_inq_varid (c->cdfid, "N_segments_in_a_bin", &c->bin_nseg_id));
          
         check_nc_status (nc_inq_varid (c->cdfid, "N_points_for_a_segment", &c->seg_n_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "Hierarchical_level_of_a_segment", &c->seg_level_id));
+        check_nc_status (nc_inq_varid (c->cdfid, "Hierarchial_level_of_a_segment", &c->seg_level_id));
         check_nc_status (nc_inq_varid (c->cdfid, "Id_of_first_point_in_a_segment", &c->seg_start_id));
  
         check_nc_status (nc_inq_varid (c->cdfid, "Relative_longitude_from_SW_corner_of_bin", &c->pt_dx_id));
