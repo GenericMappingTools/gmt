@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.35 2004-01-10 19:55:37 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.36 2004-01-12 00:37:22 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -116,23 +116,21 @@ we will run the installation (unless you chose
 
 Choose among these GMT versions:
 
-1. GMT 4.0beta [Default]
-2. GMT 3.4.4
-3. GMT 3.4.3
+1. GMT 3.4.4 [Default]
+2. GMT 4.0beta
 
 EOF
-answer=`get_def_answer "Enter GMT version to install (1-3)" "1"`
-while [ $answer -lt 0 ] || [ $answer gt 3 ]; do
-	echo "Please enter a number from 1 to 3 [or hit return for the default]" >&2
-	answer=`get_def_answer "Enter GMT version to install (1-3)" "1"`
+answer=`get_def_answer "Enter GMT version to install (1-2)" "1"`
+while [ ! $answer = "1" ] && [ ! $answer = "2" ]; do
+	echo "Please enter a number from 1 to 2 [or hit return for the default]" >&2
+	answer=`get_def_answer "Enter GMT version to install (1-2)" "1"`
 done
-if [ $answer -eq 1 ]; then
-	VERSION=4.0b
-elif [ $answer -eq 2 ]; then
+if [ $answer = "1" ]; then
 	VERSION=3.4.4
-else
-	VERSION=3.4.3
+elif [ $answer = "2" ]; then
+	VERSION=4.0b
 fi
+echo "You chose to install verion $VERSION" >&2
 
 topdir=`pwd`
 os=`uname -s`
@@ -649,7 +647,6 @@ EOF
 
 echo "Session parameters written to file $file" >&2
 echo $file
-rm -f gmt_install.ftp_*
 }
 #--------------------------------------------------------------------------------
 # BACKGROUND INSTALLATION OF GMT FUNCTIONS
@@ -1386,3 +1383,4 @@ if [ ! x"$GMT_web" = x ]; then
 	echo "Add $GMT_web/gmt/gmt_services.html as browser bookmark" >&2
 fi
 echo "-----------------------------------------------------------------------" >&2
+rm -f gmt_install.ftp_*
