@@ -1,5 +1,5 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.5 2001-03-23 01:15:39 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.6 2001-04-04 03:12:35 pwessel Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
@@ -7,7 +7,7 @@
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD=
 "POST">
 <INPUT TYPE="hidden" VALUE="3.4" NAME="gmt_version">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.5 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.6 $" NAME="form_version">
 
 <H1></H1>
 <H1><CENTER><STRONG>GMT Installation Helper</CENTER></STRONG>
@@ -154,15 +154,15 @@ are behind a firewall.  In that case you may want to select passive ftp mode.</I
 
 <HR><B>3. Select the components you want (gzip/bzip2 sizes indicated):</B><BR>
 
-<INPUT TYPE="checkbox" NAME="checkbox_progs" CHECKED="true"> GMT source code (0.6/0.5 Mb, the main GMT programs, required for minimal install)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_progs" CHECKED="true"> GMT source code (0.7/0.6 Mb, the main GMT programs, required for minimal install)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_libs" CHECKED="true"> GMT support data (4.0/3.7 Mb, Crude-, low-, and intermediate-resolution coastlines)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_ps" CHECKED="true"> GMT Documentation 1 (5.6/3.1 Mb, PS versions of Cookbook and Tutorial)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_ps" CHECKED="true"> GMT Documentation 1 (4.2/3.1 Mb, PS versions of Cookbook and Tutorial)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_pdf" CHECKED="false"> GMT Documentation 2 (7.3/7.3 Mb, PDF versions of Cookbook and Tutorial)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_man" CHECKED="true"> GMT Documentation 3 (0.11/0.09 Mb, UNIX man pages)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_man" CHECKED="true"> GMT Documentation 3 (0.12/0.09 Mb, UNIX man pages)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_web" CHECKED="true"> GMT Web Docs (1.6/1.6 Mb, HTML versions of all GMT Documentation)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_tut" CHECKED="true"> GMT Tutorial (1.4/1.0 Mb, Tutorial data sets)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_scripts" CHECKED= "true"> GMT Example Scripts &amp; Data (4.2/3.1 Mb, required to run test examples)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_suppl" CHECKED="true"> GMT Supplemental Archive (0.37/0.30 Mb, see section C.10 below for details)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_suppl" CHECKED="true"> GMT Supplemental Archive (0.42/0.34 Mb, see section C.10 below for details)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_high"> GMT High-resolution coastlines (10.7/8.6 Mb)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_full"> GMT full-resolution coastlines (47.1/28.8 Mb)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_triangle"> J. Shewchuck's fast triangulation routine (0.11/0.09 Mb, faster, but not covered by GNU License)<BR>
