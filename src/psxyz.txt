@@ -40,7 +40,7 @@ fields are shifted over by one column (optional size would be in 5th rather than
 4th field, etc.).
 If \fB\-S\fP is not set, then psxyz expects a multisegment line or polygon file (requires \fB\-M\fP)
 where each segment header contains a \fB\-Z\fP\fIval\fP string.  The \fIval\fP
-will control the color of the line or polygon (use \fB\-L\fp) via the cpt file.
+will control the color of the line or polygon (use \fB\-L\fP) via the cpt file.
 .TP
 .B \-E
 Sets the viewpoint's azimuth and elevation [180/90].
