@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.13 2004-01-13 02:33:04 pwessel Exp $
+REM	$Id: gmtinstall.bat,v 1.14 2004-10-01 20:32:53 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
@@ -61,9 +61,9 @@ SET LIBDIR="..\lib"
 SET GMT_PATH="\"C:\\gmt\""
 REM
 REM STEP e: If you WANT TO  use Shewchuk's triangulation
-REM	    routine, you must set TRIANGLE to yes:
+REM	    routine, you must set TRIANGLE to "yes" :
 REM
-SET TRIANGLE=no
+SET TRIANGLE="no"
 REM
 REM STEP f: By default, GMT will be built dynamically  If
 REM	    you do NOT want to use Dynamic link libraries

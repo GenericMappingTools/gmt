@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.22 2004-09-30 18:22:06 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.23 2004-10-01 20:32:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2454,7 +2454,7 @@ void GMT_getmad_f (float *x, int n, double location, double *scale)
 	double med;
 	
 	dev = (float *) GMT_memory (VNULL, (size_t)n, sizeof(float), GMT_program);
-	for (i = 0; i < n; i++) dev[i] = fabs ((double)(x[i] - location));
+	for (i = 0; i < n; i++) dev[i] = (float) fabs ((double)(x[i] - location));
 	qsort ((void *)dev, (size_t)n, sizeof (float), GMT_comp_float_asc);
 	for (i = n; GMT_is_fnan (dev[i-1]) && i > 1; i--);
 	if (i)
