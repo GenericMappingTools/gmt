@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.18 2005-01-04 01:52:23 pwessel Exp $
+ *	$Id: x2sys.c,v 1.19 2005-01-04 01:59:44 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -949,9 +949,17 @@ int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B)
 	int index;
 	
 	*j = (y == B->y_max) ? B->ny_bin - 1 : (int)floor ((y - B->y_min) * B->i_bin_y);
+	if ((*j) < 0 || (*j) >= B->ny_bin) {
+		fprintf (stderr, "x2sys_binlist: j (%d) outside range implied by -R -I! [0-%d>\n", index, B->ny_bin);
+		exit (EXIT_FAILURE);
+	}
 	*i = (x == B->x_max) ? B->nx_bin - 1 : (int)floor ((x - B->x_min)  * B->i_bin_x);
+	if ((*i) < 0 || (*i) >= B->nx_bin) {
+		fprintf (stderr, "x2sys_binlist: i (%d) outside range implied by -R -I! [0-%d>\n", index, B->nx_bin);
+		exit (EXIT_FAILURE);
+	}
 	index = (*j) * B->nx_bin + (*i);
-	if (index >= B->nm_bin) {
+	if (index < 0 || index >= B->nm_bin) {
 		fprintf (stderr, "x2sys_binlist: Index (%d) outside range implied by -R -I! [0-%d>\n", index, B->nm_bin);
 		exit (EXIT_FAILURE);
 	}
