@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.81 2003-04-01 20:03:27 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.82 2003-04-10 19:40:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3120,15 +3120,16 @@ void GMT_echo_command (int argc, char **argv)
 	char outstring[BUFSIZ];
 	
 	ps_comment ("PostScript produced by:");
-	strcpy (outstring, "%% ");
+	strcpy (outstring, "%%GMT:  ");
 	for (i = 0; i < argc; i++) {
 		strcat (outstring, argv[i]);
 		strcat (outstring, " ");
 		length += (strlen (argv[i]) + 1);
-		if (length >= 80) {
+		if (length >= 120) {
+			strcat (outstring, " \\");
 			ps_command (outstring);
 			length = 0;
-			strcpy (outstring, "%% ");
+			strcpy (outstring, "%%GMT:+ ");
 		}
 	}
 	if (length > 0) ps_command (outstring);
