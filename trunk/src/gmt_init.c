@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.151 2004-08-06 20:36:02 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.152 2004-08-16 18:15:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3468,6 +3468,20 @@ int GMT_map_getframe (char *in) {
 			memcpy ((void *)&A->item[GMT_TICK_LOWER], (void *)&A->item[GMT_ANNOT_LOWER], sizeof (struct PLOT_AXIS_ITEM));
 		else if (A->item[GMT_INTV_LOWER].active && !A->item[GMT_TICK_LOWER].active)	/* Set frame ticks = annot stride */
 			memcpy ((void *)&A->item[GMT_TICK_LOWER], (void *)&A->item[GMT_INTV_LOWER], sizeof (struct PLOT_AXIS_ITEM));
+	}
+	
+	/* Check if we asked for linear projections of geographic coordinates and did not specify a unit - is so set degree symbol as unit */
+	if (project_info.projection == LINEAR && gmtdefs.degree_symbol != gmt_none) {
+		if (project_info.degree[0] && GMT_io.in_col_type[0] == GMT_IS_LON && frame_info.axis[0].unit[0] == 0) {
+			frame_info.axis[0].unit[0] = '-';
+			frame_info.axis[0].unit[1] = gmtdefs.encoding.code[gmtdefs.degree_symbol];
+			frame_info.axis[0].unit[2] = '\0';
+		}
+		if (project_info.degree[1] && GMT_io.in_col_type[1] == GMT_IS_LAT && frame_info.axis[1].unit[0] == 0) {
+			frame_info.axis[1].unit[0] = '-';
+			frame_info.axis[1].unit[1] = gmtdefs.encoding.code[gmtdefs.degree_symbol];
+			frame_info.axis[1].unit[2] = '\0';
+		}
 	}
 	
 	return (0);
