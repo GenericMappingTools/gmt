@@ -1,5 +1,5 @@
 %-------------------------------------------------------------------------------------------
-%	$Id: PSL_label.ps,v 1.6 2004-06-04 23:48:23 pwessel Exp $
+%	$Id: PSL_label.ps,v 1.7 2004-06-09 06:55:22 pwessel Exp $
 %
 %	P. Wessel, version 1
 %
@@ -239,8 +239,8 @@ end
   /k 0 def				% Index of the current text string
   /j 0 def				% Output point number counter
   /PSL_seg 0 def			% Line segment number
-  /PSL_xp PSL_n array def
-  /PSL_yp PSL_n array def
+  /PSL_xp PSL_nn array def
+  /PSL_yp PSL_nn array def
   PSL_xp 0 PSL_xx 0 get put		% Place first point in array
   PSL_yp 0 PSL_yy 0 get put
   1 1 PSL_nn1				% Loop over rest of points
