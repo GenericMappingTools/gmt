@@ -21,8 +21,9 @@ gmtdefaults \- To list current \fBGMT\fP defaults
 .SH DESCRIPTION
 \fBgmtdefaults\fP lists the 
 \fBGMT\fP parameter defaults if the option \fB\-D\fP is used.  To change some of the settings,
-use any texteditor to edit the file .gmtdefaults in your home or current directory.  If you do not have
-this file in your home or current directory, run \fBgmtdefaults\fP -D > ~/.gmtdefaults to get the system settings.
+use the command \fBgmtset\fP or use any texteditor to edit the file .gmtdefaults in your home
+or current directory.  If you do not have this file in your home or current directory, run 
+\fBgmtdefaults\fP -D > ~/.gmtdefaults to get the system settings.
 \fBGMT\fP can provide default values in US or SI units.  This choice is determined by the contents of the
 gmt.conf file in GMT's share directory.
 .TP
@@ -32,6 +33,11 @@ defaults or \fBs\fP for SI defaults. [\fB\-D\fP alone gives current choice in gm
 .TP
 .B \-L
 Print the user's currently active defaults to standard output.
+.SH
+Your currently active defaults come from the .gmtdefaults file in the 
+current working directory, if present; else from the .gmtdefaults file 
+in your home directory, if present; else from the
+system defaults set at the time \fBGMT\fP was compiled.
 .SH \fBGMT\fP PARAMETERS
 The following is a list of the 77 parameters that are user-definable in \fBGMT\fP.  The
 parameter names are always given in UPPER CASE.  The parameter values are
@@ -189,14 +195,14 @@ options:
 .TP
 .B COLOR_MODEL
 Selects if color palette files contain rgb values (r,g,b in 0-255 range) or HSV values
-(h = 0-360, s,v in 0-1 range)  [rgb].
+(h in 0-360, s,v in 0-1 range)  [rgb].
 .TP
 .B COLOR_NAN
 Color used for the non-defined areas of images (i.e., where z == NaN).
 Give a red/green/blue triplet, with each element in the 0\-255 range. [128/128/128] (gray)
 .TP
 .B D_FORMAT
-Output format (C language syntax) to be used when printing double precision floating point numbers.
+Output format (C language printf syntax) to be used when printing double precision floating point numbers.
 For geographic coordinates, see \fBOUTPUT_DEGREE_FORMAT\fP. [%lg].
 .TP
 .B DEGREE_SYMBOL
@@ -309,8 +315,8 @@ Gregorian calendar format or ISO week calendar format.  Gregorian calendar: Use 
 combination of yyyy (or yy for 2-digit years; if so see \fBY2K_OFFSET_YEAR\fP), mm,
 and dd, with or without delimeters.  For day-of-year data, use jjj instead of mm and/or dd.
 ISO Calendar:  Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
-day.  Either template must be consistant, e.g., you cannot specify months you dont specify
-year.  [yyyy-mm-dd].
+day.  Either template must be consistant, e.g., you cannot specify months if you don't specify
+years.  [yyyy-mm-dd].
 .TP
 .B INTERPOLANT
 Determines if linear (linear), Akima's spline (akima), or natural cubic spline (cubic) should
@@ -336,7 +342,7 @@ Sets the central scale factor (> 0) used for the Polar Stereographic and Transve
 Typically, it is set to 0.9996 to minimize areal distortion  [0.9996].
 .TP
 .B MAP_SCALE_HEIGHT
-Sets the height (> 0) on the map of the map scalebars drawn by various programs [LEN_1_SI (or LEN_1_US)].
+Sets the height (> 0) on the map of the map scale bars drawn by various programs [LEN_1_SI (or LEN_1_US)].
 .TP
 .B MEASURE_UNIT
 Sets the unit length.  Choose between cm, inch, m, and point.  [cm].  Note
@@ -373,8 +379,8 @@ Gregorian calendar format or ISO week calendar format.  Gregorian calendar: Use 
 combination of yyyy (or yy for 2-digit years; if so see \fBY2K_OFFSET_YEAR\fP), mm,
 and dd, with or without delimeters.  For day-of-year data, use jjj instead of mm and/or dd.
 ISO Calendar:  Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
-day.  Either template must be consistant, e.g., you cannot specify months you dont specify
-year.  If your template starts with a leading hyphen (-) then each integer item (y,m,d) will be
+day.  Either template must be consistant, e.g., you cannot specify months if you don't specify
+years.  If your template starts with a leading hyphen (-) then each integer item (y,m,d) will be
 printed without leading zeros (default uses fixed width formats) [yyyy-mm-dd].
 .TP
 .B OUTPUT_DEGREE_FORMAT
@@ -484,12 +490,12 @@ the gmtmedia.d file in $GMTHOME/share; see that file for details):
 To force the printer to request a manual paper feed, append '-' to the media
 name, e.g., A3- will require the user to insert a A3 paper into the printer's
 manual feed slot.  To indicate you are making an EPS file, append '+' to the
-media name.  Then, GMT will attempt to issue a tight bounding box [Default is
-the paper dimension].
+media name.  Then, GMT will attempt to issue a tight bounding box [Default 
+Bounding Box is the paper dimension].
 .TP
 .B PLOT_CLOCK_FORMAT
 Formatting template that indicates how an output clock string is to be plotted.  This template
-is then used to guide the plotting of clock strings in data fields.  See \fBOUTPUT_CLOCK_FORMAT\fP
+is then used to guide the formatting of clock strings in plot annotations.  See \fBOUTPUT_CLOCK_FORMAT\fP
 for details. [hh:mm:ss].
 .TP
 .B PLOT_DATE_FORMAT
@@ -501,9 +507,10 @@ the \fBTIME_LANGUAGE\fB setting.  [yyyy-mm-dd].
 .TP
 .B PLOT_DEGREE_FORMAT
 Formatting template that indicates how an output geographical coordinate is to be plotted.  This template
-is then used to guide the plotting of geographical coordinates in data fields.  See \fBOUTPUT_DEGREE_FORMAT\fB
-for details.  In addition, you can append A which plots the absolute value of the coordinate.
-The default is +ddd:mm:ss.  Not all items may be plotted as this depends on the anotation interval.
+is then used to guide the plotting of geographical coordinates in data fields.  See 
+\fBOUTPUT_DEGREE_FORMAT\fB for details.  In addition, you can append A which plots the absolute value of 
+the coordinate.  The default is +ddd:mm:ss.  Not all items may be plotted as this depends on the anotation 
+interval.
 .TP
 .B PSIMAGE_FORMAT
 Determines whether images created in PostScript should use hexadecimal (i.e., ascii)
@@ -518,8 +525,9 @@ the map boundaries.  To select interior tickmarks, use a negative tick_length [L
 The pen thickness to be used for tickmarks in dpi units or points (append p) [2].
 .TP
 .B TIME_EPOCH
-Calendar string that indicates the logical "zero" time for relative time coordinates.  It is
-only consulted if \fBTIME_SYSTEM\fP is set to OTHER.
+This parameter is active only when \fBTIME_SYSTEM\fP is set to OTHER.  It is a string
+of the form yyyy-mm-ddThh:mm:ss (Gregorian) or yyyy-Www-ddThh:mm:ss (ISO) indicating
+the value of the calendar and clock at the origin (zero point) of relative time units.
 .TP
 .B TIME_IS_INTERVAL
 Used when input calendar data without a clock (e.g., 1999-05T) should be placed in the middle of the
@@ -546,10 +554,13 @@ Determines what the time epoch relative time refers to and what the units are.  
 or specify OTHER and supply your own \fBTIME_EPOCH\fP and \fBTIME_UNIT\fP settings [J2000].
 .TP
 .B TIME_UNIT
-Unit used for relative time coordinates.    It is
-only consulted if \fBTIME_SYSTEM\fP is set to OTHER.  Choose y (year), d (day), h (hour), m (minute), or c (second).
-.TIME_WEEK_START
-Determines the first day of the logical week for Gregorian calendars (For ISO it is always Monday) [Monday (or Sunday)].
+This parameter is active only when \fBTIME_SYSTEM\fP is set to OTHER, and specifies the
+units of relative time data.  Choose y (year), d (day), h (hour), m (minute), or c (second).
+.TP
+.B .TIME_WEEK_START
+When weeks are indicated on time axes, this parameter determines the first day of the week
+for Gregorian calendars.  (The ISO weekly calendar always begins weeks with Monday.)
+[Monday (or Sunday)]
 .TP
 .B UNIX_TIME * (\-U)
 Specifies if a UNIX system time stamp should be plotted
@@ -567,7 +578,7 @@ settings gives something in between  [0].
 Determines if \fBGMT\fP programs should display run-time information or run silently  [FALSE].
 .TP
 .B WANT_LEAP_SECONDS
-Set to true if your calculations require the increased complexity of keeping track of leap seconds [FALSE].
+Set to true if your time coordinate values require the increased complexity of keeping track of leap seconds [FALSE].
 .TP
 .B X_AXIS_LENGTH
 Sets the default length (> 0) of the x-axis [LEN_3_SI (or LEN_3_US)].
@@ -584,9 +595,10 @@ Sets the y-coordinate of the origin on the paper for a new plot [DEF_XY_SI (or D
 For an overlay, the default offset is 0.
 .TP
 .B Y2K_OFFSET_YEAR
-To process 2-digit years we need to make a decision which century to add.  If incoming 2-digit years
-are greater than or equal to the 2-digit value implied by this 4-digit setting then we add the implied century,
-else we add the next century [1950]
+When 2-digit years are used to represent 4-digit years (see various DATE_FORMATs), Y2K_OFFSET_YEAR 
+gives the first year in a 100-year sequence.  For example, if Y2K_OFFSET_YEAR is 1729, then numbers 
+29 through 99 correspond to 1729 through 1799, while numbers 00 through 28 correspond to 1800 through 
+1828. [1950]
 .TP
 .B XY_TOGGLE * (\-:)
 Set if the first two columns of input files contain (latitude,longitude) or (y,x) rather than the expected
