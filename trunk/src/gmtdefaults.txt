@@ -582,9 +582,12 @@ settings gives something in between  [0].
 .TP
 .B VERBOSE * (\-V)
 Determines if \fBGMT\fP programs should display run-time information or run silently  [FALSE].
+/*
+* Commented out for now.
 .TP
 .B WANT_LEAP_SECONDS
 Set to true if your time coordinate values require the increased complexity of keeping track of leap seconds [FALSE].
+*/
 .TP
 .B X_AXIS_LENGTH
 Sets the default length (> 0) of the x-axis [LEN_3_SI (or LEN_3_US)].

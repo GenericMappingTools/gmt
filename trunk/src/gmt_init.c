@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.85 2003-03-11 19:47:20 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.86 2003-04-03 20:42:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1888,7 +1888,11 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "TIME_SYSTEM		= %s\n", GMT_time_system[gmtdefs.time_system].name);
 	fprintf (fp, "TIME_UNIT		= %c\n", gmtdefs.time_unit);
 	fprintf (fp, "TIME_WEEK_START		= %s\n", GMT_weekdays[gmtdefs.time_week_start]);
+	/*
+	 * PW 4/2/03: LEAP_SECONDS is commented out for output until we actually want to implement this feature.  We still process on input to avoid error messages.
 	(gmtdefs.want_leap_seconds) ? fprintf (fp, "WANT_LEAP_SECONDS	= TRUE\n") : fprintf (fp, "WANT_LEAP_SECONDS	= FALSE\n");
+	 *
+	 */
 	fprintf (fp, "Y2K_OFFSET_YEAR		= %d\n", gmtdefs.Y2K_offset_year);
 	fprintf (fp, "#-------- Miscellaneous Parameters ----------\n");
 	fprintf (fp, "INTERPOLANT		= ");
