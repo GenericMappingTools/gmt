@@ -145,6 +145,9 @@ to select a particular font [Default is ANOT_FONT].
 .B \-Sp
 \fBp\fPoint.  No size needs to be specified (1 pixel is used).
 .TP
+.B \-Sr
+\fBr\fPectangle.  No size needs to be specified, but the x- and y-dimensions must be found in columns 3 and 4.
+.TP
 .B \-Ss
 \fBs\fPquare.  \fIsize\fP is diameter of circumscribing circle.
 .TP

@@ -77,6 +77,9 @@ conjunction with \fB\-b\fP.  Optionally, append \fBc\fP, \fBi\fP, \fBm\fP, \fBp\
 indicate that the size information in the input data is in units of cm, inch, meter,
 or point, respectively. [Default is MEASURE_UNIT].
 .TP
+.B \-S-
+dash.  \fIsize\fP is the length of a short horizontal (x-dir) line segment.
+.TP
 .B \-Sa
 st\fBa\fPr.  \fIsize\fP is diameter of circumscribing circle.
 .TP
@@ -124,6 +127,9 @@ c(\fBo\fP)lumn (3-D) extending from \fIbase\fP to z.  \fIsize\fP sets base width
 .TP
 .B \-Sp
 (\fBp\fP)oint.  No size needs to be specified.
+.TP
+.B \-Sr
+\fBr\fPectangle.  No size needs to be specified, but the x- and y-dimensions must be found in columns 4 and 5.
 .TP
 .B \-Ss
 (\fBs\fP)quare.  \fIsize\fP is diameter of circumscribing circle.
