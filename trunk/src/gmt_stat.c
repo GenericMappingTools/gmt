@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.17 2004-03-05 18:11:58 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.18 2004-05-27 23:35:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2510,4 +2510,31 @@ void GMT_getmad_f (float *x, int n, double location, double *scale)
 	}
 	
 	*scale = (n%2) ? (1.4826 * error) : (0.7413 * (error + last_error));
+}
+
+double GMT_extreme (double x[], int n, double x_default, int kind, int way)
+{
+	/* Returns the extreme value in the x array according to:
+	*  kind: -1 means only consider negative values.
+	*  kind:  0 means consider all values.
+	*  kind: +1 means only consider positive values.
+	*  way:  -1 means look for mimimum.
+	*  way:  +1 means look for maximum.
+	* If kind is non-zero we assign x_default is no values are found.
+	* If kind == 0 we expect x_default to be set so that x[0] will reset x_select.
+	*/
+	
+	int i, k;
+	double x_select;
+	
+	for (i = k = 0; i < n; i++) {
+		if (kind == -1 && x[i] > 0.0) continue;
+		if (kind == +1 && x[i] < 0.0) continue;
+		if (k == 0) x_select = x[i];
+		if (way == -1 && x[i] < x_select) x_select = x[i];
+		if (way == +1 && x[i] > x_select) x_select = x[i];
+		k++;
+	}	
+	
+	return ((k) ? x_select : x_default);
 }
