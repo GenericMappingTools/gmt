@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.155 2005-03-03 22:40:04 remko Exp $
+ *	$Id: gmt_support.c,v 1.156 2005-03-07 16:59:12 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6414,7 +6414,7 @@ int GMT_coordinate_array (double min, double max, struct PLOT_AXIS_ITEM *T, doub
 }
 
 void GMT_get_primary_annot (struct PLOT_AXIS *A, int *primary, int *secondary)
-{	/* Return the primary and secondary annotation item numbers */
+{	/* Return the primary and secondary annotation item numbers [== 1 if there are no unit set ]*/
 
 	int i, no[2] = {GMT_ANNOT_UPPER, GMT_ANNOT_LOWER};
 	double val[2], s;
@@ -6452,8 +6452,8 @@ void GMT_get_primary_annot (struct PLOT_AXIS *A, int *primary, int *secondary)
 				s = 1.0;
 				break;
 			default:
-				fprintf (stderr, "%s: Wrong unit in GMT_get_primary_annot (%c)\n", GMT_program, A->item[no[i]].unit);
-				s = GMT_d_NaN;
+				/* No unit specified - probably not a time axis */
+				s = 1.0;
 				break;
 		}
 		val[i] = A->item[no[i]].interval * s;
