@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.17 2004-08-20 20:43:38 pwessel Exp $
+ *	$Id: x2sys.c,v 1.18 2005-01-04 01:52:23 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -341,7 +341,7 @@ struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G)
 	else if (!strcmp (fname, "mgd77")) {
 		X->read_file = (PFI) x2sys_read_mgd77file;
 		X->geographic = TRUE;
-		X->geodetic = 1;
+		X->geodetic = 0;
 		MGD77_Init (&M, TRUE);			/* Initialize MGD77 Machinery */
 	}
 	else
@@ -705,6 +705,7 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 	j = 0;
 	while (MGD77_Read_Data_Record (fp, &D)) {		/* While able to read a data record */
 		z[0][j] = D.time;
+		GMT_lon_range_adjust (s->geodetic, &D.number[MGD77_LONGITUDE]);
 		for (i = 1; i < MGD77_DATA_COLS; i++) z[i][j] = D.number[MGD77_items[i]];
 
 		j++;
@@ -818,6 +819,14 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 	*s = x2sys_initialize (sfile, G);	/* Initialize X2SYS and info structure */
 
 	if (geographic) {
+		if (geodetic == 0 && (B->x_min < 0 || B->x_max < 0)) {
+			fprintf (stderr, "%s: Your -R and -G settings are contradicting each other!\n", X2SYS_program);
+			exit (EXIT_FAILURE);
+		}
+		else if  (geodetic == 2 && (B->x_min > 0 && B->x_max > 0)) {
+			fprintf (stderr, "%s: Your -R and -G settings are contradicting each other!\n", X2SYS_program);
+			exit (EXIT_FAILURE);
+		}
 		(*s)->geographic = TRUE;
 		(*s)->geodetic = geodetic;	/* Override setting */
 	}
