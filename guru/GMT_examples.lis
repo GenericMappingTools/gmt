@@ -130,7 +130,7 @@ examples/ex16/ex16.cpt
 examples/ex17/job17.csh
 examples/ex17/job17.bash
 examples/ex17/india_geoid.grd
-examples/ex17/india_etopo.grd
+examples/ex17/india_topo.grd
 examples/ex17/job17.bat
 examples/ex18/job18.csh
 examples/ex18/job18.bash
