@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.42 2001-09-14 22:37:08 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.43 2001-09-20 02:12:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3086,6 +3086,7 @@ int GMT_map_getproject (char *args)
 	 			project_info.xyz_projection[1] = project_info.xyz_projection[0];
 	 			if (!skip) project_info.pars[1] = project_info.pars[0];
 	 			project_info.pars[3] = project_info.pars[2];
+				GMT_io.in_col_type[1] = GMT_io.in_col_type[0];
 	 		}
 	 		project = LINEAR;
 	 		if (project_info.pars[0] == 0.0 || project_info.pars[1] == 0.0) error = TRUE;
