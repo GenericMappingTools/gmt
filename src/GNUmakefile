@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.30 2004-05-18 21:40:51 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.31 2004-05-26 03:25:22 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -273,7 +273,7 @@ uninstall2-suppl:
 examples:
 		if [ -d ../examples ]; then \
 			cd ../examples; \
-			$(CSH) do_examples.$(CSH); \
+			sh do_examples.sh; \
 			cd ../src; \
 		else \
 			echo "examples directory not installed"; \
