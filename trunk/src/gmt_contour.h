@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.16 2004-06-09 06:23:28 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.17 2004-06-11 03:02:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -94,6 +94,7 @@ struct GMT_CONTOUR {
 	struct GMT_XOVER XC;		/* Structure with resulting crossovers */
 	int nx;				/* Number of crossovers at any time */
 	BOOLEAN fixed;			/* TRUE if we chose fixed positions */
+	double slop;			/* slop distance in being close to points */
 	double *f_xy[2];		/* Array for fixed points */
 	char **f_label;			/* Array for fixed labels */
 	int f_n;			/* Number of such points */

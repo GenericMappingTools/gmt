@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Tutorial.tex,v 1.22 2004-04-27 23:51:52 pwessel Exp $
+%	$Id: GMT_Tutorial.tex,v 1.23 2004-06-11 03:02:58 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -584,7 +584,7 @@ pscoast -R-90/-70/0/20 -JM6i -P -B5g5 -G180/120/60 >! map.ps
 
 \item Try \Opt{R}270/290/0/20 instead.  What happens to the annotations?
 
-\item Edit your \filename{.gmtdefaults4} file, change PLOT\_DEGREE\_FORMAT
+\item Edit your \filename{.gmtdefaults4} file, change {\bf PLOT\_DEGREE\_FORMAT}
 to another setting (see the \GMTprog{gmtdefaults} man page), and plot again.
 
 \item Pick another region and change land color.
@@ -622,7 +622,7 @@ pscoast -R-130/-70/24/52 -JB-100/35/33/45/6i -B10g5:."Conic Projection": \
 
 \begin{enumerate}
 
-\item Change the parameter GRID\_CROSS\_SIZE to make grid crosses instead of gridlines.
+\item Change the parameter {\bf GRID\_CROSS\_SIZE\_PRIMARY} to make grid crosses instead of gridlines.
 
 \item Change \Opt{R} to a rectangular box specification instead of
 minimum and maximum values.
@@ -793,6 +793,7 @@ us are shown in Table~\ref{tbl:psxysymbols}.
  & are read from the input file \\ \hline
 \Opt{SE} & {\bf e}llipse; {\it azimuth} (CW from vertical), {\it major}, and {\it minor} axes in kilometers \\
  & are read from the input file\\ \hline
+\Opt{Sg}{\it size} & octa{\bf g}on; {\it size} is its side \\ \hline
 \Opt{Sh}{\it size} & {\bf h}exagon; {\it size} is its side \\ \hline
 \Opt{Si}{\it size} & {\bf i}nverted triangle; {\it size} is its side \\ \hline
 \Opt{Sk}{\it symbol}/{\it size} & {\bf k}ustom symbol; {\it size} is its side \\ \hline
@@ -812,8 +813,8 @@ us are shown in Table~\ref{tbl:psxysymbols}.
 \Opt{Sx}{\it size} & cross; {\it size} is length of crossing lines \\ \hline
 \Opt{Sy}{\it size} & vertical dash; {\it size} is length of dash \\ \hline
 \end{tabular}
-\caption{The symbol option in \GMTprog{psxy}.  Lower case symbols ({\bf a, c, d, h, i, n, s, t, x})
-will fit inside a circle of given diameter.  Upper case symbols ({\bf A, C, D, H, I, N, S, T, X}) will have area equal to that of a circle of given diameter.}
+\caption{The symbol option in \GMTprog{psxy}.  Lower case symbols ({\bf a, c, d, g, h, i, n, s, t, x})
+will fit inside a circle of given diameter.  Upper case symbols ({\bf A, C, D, G, H, I, N, S, T, X}) will have area equal to that of a circle of given diameter.}
 \label{tbl:psxysymbols}
 \end{table} 
 
@@ -861,118 +862,10 @@ lengths in km).
 
 \end{enumerate}
 
-Before we try some examples we need to discuss two key switches; they
-specify pen attributes and symbol or polygon fill.
-
-\subsection{Specifying pen attributes}
-
-\index{Attributes!pen}%
-\index{Pen!setting attributes}%
-
-A pen in \GMT\ has three attributes: {\it width}, {\it color},
-and {\it texture}.  Most programs will accept pen attributes in
-the form of an option argument, e.g.,
-
-\vspace{\baselineskip} 
-
-\par \Opt{W}{\it width}[/{\it color}][{\bf t}{\it texture}][{\bf p}]\par 
-
-\begin{description}
-\index{Pen!width}
-\index{Width, pen}
-\index{Attributes!pen!width}%
-\item[$\rightarrow$]{\it Width} is by default measured in units of thecurrent device resolution (i.e., the value assigned to the parameterDOTS\_PR\_INCH in your\filename{.gmtdefaults4} file).  Thus, if the dpi is set to 300 this unitis 1/300th of an inch.  Append {\bf c}, {\bf i}, {\bf p}, or {\bf m} to specify pen width in
-cm, inch, points (1/72 of an inch)\footnote{\PS\ definition.  In the typesetting industry
-a slighly different definition of point (1/72.27 inch) is used.}, or meters.
-Note that a pen thickness of 5 will be of different
-physical width depending on your dpi setting, whereas a thickness of
-5{\bf p} will always be 5/72 of an inch.  Minimum-thickness pens can be
-achieved by giving zero width, but the result is device-dependent.
-
-\index{Pen!color}
-\index{Color!pen}
-\index{Attributes!pen!color}%
-\item[$\rightarrow$]The {\it color} can be specified in four different ways:
-\begin{enumerate}
-\item Gray scale. Specify a {\it gray} shade in the range 0--255 (linearly going from black [0] to white [255]).
-\item RGB. Specify {\it r}/{\it g}/{\it b}, each ranging from 0--255.  Here 0/0/0 is black and 255/255/255 is white.
-\item HSV. Specify {\it hue}/{\it saturation}/{\it value}, with the former in the 0--360 degree range while the latter
-two take on the range 0--1.  To use this color system you must also set {\bf COLOR\_MODEL} to HSV.  You probably will want
-to read Appendix I as well.
-\item CMYK. Specify {\it cyan}/{\it magenta}/{\it yellow}/{\it black}, each ranging from 0--100\%.
-\end{enumerate}
-
-\index{Pen!texture}
-\index{Texture, pen}
-\index{Attributes!pen!texture}%
-\item[$\rightarrow$]The {\it texture} attribute controls the appearance
-of the line.  To get a dotted line, simply append ``{\bf t}o'' after the
-width and color arguments; a dashed pen is requested with ``{\bf t}a''.
-For exact specifications you may append ``{\bf t}{\it string}:{\it offset}'',
-where {\it string} is a series of numbers separated by underscores.
-These numbers represent a pattern by indicating the length of line
-segments and the gap between segments.  The {\it offset} phase-shifts the
-pattern along the line.  For example, if you want a yellow line of width
-2 that alternates between long dashes (20 units), a 10 unit gap, then
-a 5 unit dash, then another 10 unit gap, with pattern offset by 10 units
-from the origin, specify \Opt{W}2/255/255/0{\bf t}20\_10\_5\_10:10.
-Here, the texture units can be specified in dpi units or points (see above). 
-\end{description} 
-
-\subsection{Specifying fill attributes}
-
-\index{Attributes!fill!color}%
-\index{Attributes!fill!pattern}%
-\index{Fill!attributes!color}%
-\index{Fill!attributes!pattern}%
-\index{Color!fill}%
-\index{Pattern!fill}%
-\index{Pattern!color}%
-\index{\Opt{GP} \Opt{Gp}}
-
-Many plotting programs will allow the user to draw filled polygons or
-symbols.  The fill may take two forms: 
-
-\vspace{\baselineskip} 
-
-\par \Opt{G}{\it fill\par 
-
-}\par \Opt{Gp}{\it dpi/pattern}[:{\bf B}{\it r/g/b}[{\bf F}{\it r/g/b}]]\par 
-
-\vspace{\baselineskip} 
-
-\noindent
-In the first case we may specify a {\it gray} shade (0--255) or a color
-({\it r}/{\it g}/{\it b}, {\it h}/{\it s}/{\it v}, or {\it c}/{\it m}/{\it y}/{\it k}), similar to the pen color
-settings.  The second form allows us to use a predefined bit-image pattern.
-The {\it pattern} can either be a number in the range 1--90 or the name of a 1-,
-8-, or 24-bit Sun raster file.  The former will result in one of the 90
-predefined 64 x 64 bit-patterns provided with \GMT\ and reproduced in Appendix E in the Technical Reference.
-The latter allows the user to create customized, repeating images using
-standard Sun rasterfiles.  The {\it dpi} parameter sets the resolution of
-this image on the page;  the area fill is thus made up of a series of these
-``tiles''.  Specifying {\it dpi} as 0 will result in highest resolution
-obtainable given the present dpi setting in \filename{.gmtdefaults4}.
-By specifying upper case \Opt{GP} instead of \Opt{Gp} the image will be
-bit-reversed, i.e., white and black areas will be interchanged (only applies
-to 1-bit images or predefined bit-image patterns).  For these patterns and
-other 1-bit images one may specify alternative background and foreground
-colors (by appending :{\bf B}{\it r/g/b}[{\bf F}{\it r/g/b}]) that will
-replace the default white and black pixels, respectively.  Setting one of the
-fore- or background colors to -- yields a transparent image where only the
-back- or foreground pixels will be painted.
-Due to \PS\ implementation limitations the rasterimages used with
-\Opt{G} must be less than 146 x 146 pixels in size; for larger images see
-\GMTprog{psimage}.  The format of Sun raster files is outlined in Appendix B
-in the Technical Reference.
-Note that under \PS\ Level 1 the patterns are filled by using
-the polygon as a \emph{clip path}.  Complex clip paths may require
-more memory than the \PS\ interpreter has been assigned.
-There is therefore the possibility that some \PS\ interpreters
-(especially those supplied with older laser printers) will run out of memory
-and abort.  Should that occur we recommend that you use a regular grayshade
-fill instead of the patterns.  Installing more memory in your printer
-\emph{may} or \emph{may not} solve the problem! 
+Before we try some examples we need to review two key switches; they
+specify pen attributes and symbol or polygon fill.  Please consult
+Chapter 4 in the \GMT\ Technical Reference and Cookbook before experimenting
+with the examples below.
 
 \subsection{Examples}
 \index{Examples|(}
@@ -1032,7 +925,7 @@ A common question is : ``How can I plot symbols connected by a line
 with psxy?''.  The surprising answer is that we must call \GMTprog{psxy} twice.
 While this sounds cumbersome there is a reason for this:  Basically,
 polygons need to be kept in memory since they may need to be clipped,
-hence computer RAM places a limit on how large polygons we may plot.
+hence computer memory places a limit on how large polygons we may plot.
 Symbols, on the other hand, can be plotted one at the time so there
 is no limit to how many symbols one may plot.  Therefore, to connect
 symbols with a line we must use the overlay approach:
@@ -1202,7 +1095,7 @@ Note that these escape sequences (as well as octal codes) can be
 used anywhere in \GMT\, including in arguments to the \Opt{B} option.
 A chart of octal codes can be found in Appendix F in the \GMT\
 technical reference book.  For accented European characters you must
-set CHAR\_ENCODING to ISOLatin1 in your \filename{.gmtdefaults4} file.
+set {\bf CHAR\_ENCODING} to ISOLatin1 in your \filename{.gmtdefaults4} file.
 
 We will demonstrate \GMTprog{pstext} with the following script:
 
@@ -1564,31 +1457,13 @@ that must be understood.  These are
 
 \end{enumerate}
 
-\section{The cpt file format}
+\section{Cpt files}
 \index{Color!tables}
 
-The cpt file has already been briefly mentioned in connection
-with our seismicity plot in session 2.  Here we will treat the
-issue in more detail.  The general format of cpt files is
+The cpt file is discussed in detail in the \GMT\ Technical Reference
+and COokbook, Chapter 4.  Please review the format before experimenting
+further.
 
-\begin{center}
-\begin{tabular}{lllllllll}
-z$_0$ &  R$_{min}$ &  G$_{min}$ &  B$_{min}$ &  z$_1$ & R$_{max}$ &  G$_{max}$ &  B$_{max}$ &  [{\bf A}] \\ 
-\ldots & & & & & & & & \\ 
-z$_{n-2}$ &  R$_{min}$ &  G$_{min}$ &  B$_{min}$ &  z$_{n-1}$ &  R$_{max}$ &  G$_{max}$ &  B$_{max}$ &  [{\bf A}] \\
-\end{tabular} 
-\end{center}
-
-\noindent
-Since a cpt file may contain only shades of gray (here listed as
-the red component), the green and blue columns are optional and
-only used for color tables.  An optional final column may be used
-to affect annotation of color bars (created by \GMTprog{psscale}).
-The {\bf U}, {\bf L}, and {\bf B} flags (position {\bf A}) indicate
-we want to annotate
-the upper, lower, and both color boundaries, respectively.
-Alternatively, you can use the \GMTprog{psscale} \Opt{B} option in
-the same way you use it in, say, \GMTprog{psbasemap}.
 
 Cpt files can be created in any number of ways.  \GMT\ provides
 two mechanisms:\
@@ -1707,7 +1582,7 @@ The RGB system is a Cartesian coordinate system and produces a color cube.
 For reasons better explained in Appendix I in the Reference book it is
 difficult to darken and brighten a color based on its RGB values and an
 alternative coordinate system is used instead; here we use the HSV system.
-If you hold the color cube† so that the black and white corners are along
+If you hold the color cube so that the black and white corners are along
 a vertical axis, then the other 6 corners project onto the horizontal plane to
 form a hexagon; the corners of this hexagon are the primary colors Red,
 Yellow, Green, Cyan, Blue, and Magenta.

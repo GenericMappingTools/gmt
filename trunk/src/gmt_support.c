@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.118 2004-06-10 02:57:43 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.119 2004-06-11 03:02:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1851,7 +1851,8 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 			break;
 		case 'f':	/* fixed points file */
 			L->fixed = TRUE;
-			strcpy (L->file, &txt[1]);
+			k = sscanf (&txt[1], "%[^/]/%lf", L->file, &L->slop);
+			if (k == 1) L->slop = GMT_CONV_LIMIT;
 			break;
 		case 'X':	/* Crossing complicated curve */
 			L->do_interpolate = TRUE;
@@ -3304,37 +3305,43 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 			GMT_free ((void *)G->ylist);
 		}
 		if (G->fixed) {	/* Prescribed point locations for labels that match points in input records */
+			double dist, min_dist;
 			for (j = 0; j < G->f_n; j++) {	/* Loop over fixed point list */
-				for (i = 1; i < nn; i++) {	/* Loop over input line/contour */
-					if (hypot (xx[i] - G->f_xy[0][j], yy[i] - G->f_xy[1][j]) < GMT_CONV_LIMIT) {	/* Match */
-						new_label = GMT_contlabel_new ();
-						new_label->x = G->f_xy[0][j];
-						new_label->y = G->f_xy[1][j];
-						new_label->node = i;
-						new_label->dist = track_dist[i];
-						this_dist = track_dist[i];
-						new_label->dist = map_dist[i];
-						this_value_dist = value_dist[i];
-						if (G->label_type == 0 && label)
-							strcpy (this_label, label);
-						else if (G->label_type == 1 || G->label_type == 2)
-							strcpy (this_label, G->label);
-						else if (G->label_type == 3) {
-							sprintf (this_label, gmtdefs.d_format, this_dist * GMT_u2u[GMT_INCH][G->dist_unit]);
-						}
-						else if (G->label_type == 4) {
-							sprintf (this_label, gmtdefs.d_format, this_value_dist);
-						}
-						else if (G->label_type == 5) {
-							strcpy (this_label, G->f_label[j]);
-						}
-						GMT_place_label (new_label, this_label, G);
-						GMT_contlabel_angle (xx, yy, i, i, cangle, nn, new_label, G);
-						G->L[G->n_label++] = new_label;
-						if (G->n_label == n_alloc) {
-							n_alloc += GMT_SMALL_CHUNK;
-							G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
-						}
+				min_dist = DBL_MAX;
+				for (i = 0; i < nn; i++) {	/* Loop over input line/contour */
+					if ((dist = hypot (xx[i] - G->f_xy[0][j], yy[i] - G->f_xy[1][j])) < min_dist) {	/* Better fit */
+						min_dist = dist;
+						start = i;
+					}
+				}
+				if (dist < G->slop) {	/* Closest point within tolerance */	
+					new_label = GMT_contlabel_new ();
+					new_label->x = xx[start];
+					new_label->y = yy[start];
+					new_label->node = start;
+					new_label->dist = track_dist[start];
+					this_dist = track_dist[start];
+					new_label->dist = map_dist[start];
+					this_value_dist = value_dist[start];
+					if (G->label_type == 0 && label)
+						strcpy (this_label, label);
+					else if (G->label_type == 1 || G->label_type == 2)
+						strcpy (this_label, G->label);
+					else if (G->label_type == 3) {
+						sprintf (this_label, gmtdefs.d_format, this_dist * GMT_u2u[GMT_INCH][G->dist_unit]);
+					}
+					else if (G->label_type == 4) {
+						sprintf (this_label, gmtdefs.d_format, this_value_dist);
+					}
+					else if (G->label_type == 5) {
+						strcpy (this_label, G->f_label[j]);
+					}
+					GMT_place_label (new_label, this_label, G);
+					GMT_contlabel_angle (xx, yy, start, start, cangle, nn, new_label, G);
+					G->L[G->n_label++] = new_label;
+					if (G->n_label == n_alloc) {
+						n_alloc += GMT_SMALL_CHUNK;
+						G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 					}
 				}
 			}
