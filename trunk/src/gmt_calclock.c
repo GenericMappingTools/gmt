@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.11 2001-08-27 18:34:02 wsmith Exp $
+ *	$Id: gmt_calclock.c,v 1.12 2001-08-27 20:51:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -863,7 +863,7 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 			base, base+n, base+2n, etc. until base+kn would equal day 7 
 			or more. When that happens, we truncate to start of next week.
 			*/
-			kws = (GMT__plot_calclock.date.iso_calendar) ? 1 : gmtdefs.time_week_start;
+			kws = (GMT_plot_calclock.date.iso_calendar) ? 1 : gmtdefs.time_week_start;
 			if (init) {
 				/* Floor to the n'th day of the week from the week start:  */
 				/* a simple mod will work here since both are positive ints  */
@@ -955,7 +955,7 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 		case 'Y':
 			if (init) {
 				/* Floor to the step'th year, either ISO or Gregorian, depending on... */
-				if (GMT__plot_calclock.date.iso_calendar) {
+				if (GMT_plot_calclock.date.iso_calendar) {
 					p->sd[0] = 0.0;
 					if (p->step > 1) p->cc[0].iso_y -= GMT_cal_imod (p->cc[0].iso_y, p->step);
 					p->rd[0] = GMT_rd_from_iywd (p->cc[0].iso_y, 1, 1);
@@ -969,7 +969,7 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 				p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
 			}
 			/* Now step ahead step years, depending on calendar type:  */
-			if (GMT__plot_calclock.date.iso_calendar) {
+			if (GMT_plot_calclock.date.iso_calendar) {
 				p->cc[1].iso_y = p->cc[0].iso_y + p->step;
 				p->rd[1] = GMT_rd_from_iywd (p->cc[1].iso_y, 1, 1);
 			}
