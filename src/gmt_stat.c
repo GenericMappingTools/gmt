@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.2 2001-03-01 22:08:26 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.3 2001-07-09 22:49:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1833,6 +1833,19 @@ int GMT_median (double *x, int n, double xmin, double xmax, double m_initial, do
 	int	finished = FALSE;
 	int	iteration = 0;
 	
+	if (n == 0) {
+		*med = m_initial;
+		return (1);
+	}
+	if (n == 1) {
+		*med = x[0];
+		return (1);
+	}
+	if (n == 2) {
+		*med = 0.5 * (x[0] + x[1]);
+		return (1);
+	}
+	
 	m_guess = m_initial;
 	lower_bound = xmin;
 	upper_bound = xmax;
@@ -1933,6 +1946,19 @@ int GMT_median_f (float *x, int n, double xmin, double xmax, double m_initial, d
 	int	finished = FALSE;
 	int	iteration = 0;
 	
+	if (n == 0) {
+		*med = m_initial;
+		return (1);
+	}
+	if (n == 1) {
+		*med = x[0];
+		return (1);
+	}
+	if (n == 2) {
+		*med = 0.5 * (x[0] + x[1]);
+		return (1);
+	}
+	
 	m_guess = m_initial;
 	lower_bound = xmin;
 	upper_bound = xmax;
@@ -2030,6 +2056,12 @@ int GMT_mode (double *x, int n, int j, int sort, double *mode_est)
 	int	i, istop, multiplicity = 0;
 	double	mid_point_sum = 0.0, length, short_length = 1.0e+30;
 
+	if (n == 0) return (0);
+	if (n == 1) {
+		*mode_est = x[0];
+		return (0);
+	}
+	
 	if (sort) qsort((void *)x, (size_t)n, sizeof(double), GMT_comp_double_asc);
 
 	istop = n - j;
@@ -2062,6 +2094,11 @@ int GMT_mode_f (float *x, int n, int j, int sort, double *mode_est)
 	int	i, istop, multiplicity = 0;
 	double	mid_point_sum = 0.0, length, short_length = 1.0e+30;
 
+	if (n == 0) return (0);
+	if (n == 1) {
+		*mode_est = x[0];
+		return (0);
+	}
 	if (sort) qsort((void *)x, (size_t)n, sizeof(float), GMT_comp_float_asc);
 
 	istop = n - j;
