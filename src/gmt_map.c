@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.13 2001-09-13 17:30:32 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.14 2001-09-20 20:10:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -803,8 +803,6 @@ void GMT_map_setup (double west, double east, double south, double north)
 	
 	if (!project_info.x_off_supplied && gmtdefs.overlay) gmtdefs.x_origin = 0.0;
 	if (!project_info.y_off_supplied && gmtdefs.overlay) gmtdefs.y_origin = 0.0;
-	
-	GMT_geographic_in = GMT_geographic_out = MAPPING;	/* Default condition for 360-wrap problem */
 }
 
 void GMT_init_three_D (void) {

@@ -3,7 +3,7 @@
 grdmask \- Create mask grdfiles from xy paths.
 .SH SYNOPSIS
 \fBgrdmask\fP \fIpathfiles\fP \fB\-G\fP\fImask_grd_file\fP] \fB\-I\fP\fIxinc\fP[\fBm|c\fP][/\fIyinc\fP[\fBm|c\fP]] 
-\fB\-R\fP\fIwest/east/south/north\fP[\fIr\fP] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
+\fB\-R\fP\fIwest/east/south/north\fP[\fIr\fP] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-M\fP[\fIflag\fP] ] 
 [ \fB\-N\fP\fIout/edge/in\fP ] [ \fB\-S\fP[\fIradius\fP][\fBk\fP] ] [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
 [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
@@ -27,10 +27,6 @@ Name of resulting output mask grd file.
 .B \-F
 Force pixel registration.  [Default is grid registration].
 #include "explain_-H.txt"
-.TP
-.B \-L
-Indicates that the x column contains longitudes, which may differ from the regions
-in \fB\-R\fP by [multiples of] 360 degrees [Default assumes no periodicity].
 .TP
 .B \-M
 Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP.

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.24 2001-09-13 18:22:42 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.25 2001-09-20 20:10:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -112,10 +112,7 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode);
 void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S);
 void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S);
 void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S);
-int GMT_write_abstime_output (FILE *fp, GMT_dtime dt);		/* Format and write one ABSTIME item to output */
 void GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  int *s,  int *ix);
-int GMT_write_lon_output (FILE *fp, double lon);
-int GMT_write_lat_output (FILE *fp, double lat);
 
 int	GMT_scanf_clock (char *s, double *val);
 int	GMT_scanf_calendar (char *s, GMT_cal_rd *rd);
@@ -322,9 +319,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 	if (*n == BUFSIZ) *n = col_no;
 
 	if (gmtdefs.xy_toggle) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
-	if (GMT_geographic_in) {
-		GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
-	}
+	if (GMT_io.in_col_type[0] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
 	
 	return (col_no);
 }
@@ -443,9 +438,7 @@ int GMT_bin_double_input (FILE *fp, int *n, double **ptr)
 		}
 	}
 	if (gmtdefs.xy_toggle) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
-	if (GMT_geographic_in) {
-		GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
-	}
+	if (GMT_io.in_col_type[0] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
 
 	return (n_read);
 }
@@ -478,9 +471,7 @@ int GMT_bin_float_input (FILE *fp, int *n, double **ptr)
 		}
 	}
 	if (gmtdefs.xy_toggle) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
-	if (GMT_geographic_in) {
-		GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
-	}
+	if (MT_io.in_col_type[0] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
 
 	return (n_read);
 }
@@ -519,59 +510,27 @@ int GMT_ascii_output (FILE *fp, int n, double *ptr)
 int GMT_ascii_output_one (FILE *fp, double x, int col)
 {
 	int e;
+	char text[32];
 	
-	if (GMT_is_dnan (x)) {
-		e = fprintf (fp, "NaN");
+	if (GMT_is_dnan (x)) return (fprintf (fp, "NaN"));
+	switch (GMT_io.out_col_type[col]) {
+		case GMT_IS_UNKNOWN:
+			sprintf (text, gmtdefs.d_format, x);
+			break;
+		case GMT_IS_LON:
+			GMT_format_geo_output (FALSE, x, text);
+			break;
+		case GMT_IS_LAT:
+			GMT_format_geo_output (TRUE, x, text);
+			break;
+		case GMT_IS_RELTIME:
+			sprintf (text, gmtdefs.d_format, GMT_usert_from_dt ( (GMT_dtime) x));
+			break;
+		case GMT_IS_ABSTIME:
+			GMT_format_abstime_output ((GMT_dtime) x, text);
+		break;
 	}
-	else if (GMT_io.out_col_type[col] == GMT_IS_UNKNOWN) {
-		e = fprintf (fp, gmtdefs.d_format, x);
-	}
-	else if (GMT_io.out_col_type[col] == GMT_IS_LON) {	/* Later add a user-defined geographical format here */
-		e = GMT_write_lon_output (fp, x);
-	}
-	else if (GMT_io.out_col_type[col] == GMT_IS_LAT) {	/* Later add a user-defined geographical format here */
-		e = GMT_write_lat_output (fp, x);
-	}
-	else if (GMT_io.out_col_type[col] == GMT_IS_RELTIME) {
-		e = fprintf (fp, gmtdefs.d_format, GMT_usert_from_dt ( (GMT_dtime) x));
-	}
-	else {	/* Then it must be ABSTIME */
-		e = GMT_write_abstime_output (fp, (GMT_dtime) x);
-	}
-	return (e);
-}
-
-int GMT_write_lon_output (FILE *fp, double lon)
-{
-	int e, d, m, s, m_sec;
-	char letter;
-	BOOLEAN seconds;
-	double x;
-	
-	GMT_lon_range_adjust (GMT_io.geo.range, &lon);
-	if (GMT_io.geo.decimal) return (fprintf (fp, gmtdefs.d_format, lon));	/* Easy */
-	
-	if (GMT_io.geo.wesn) {	/* Trailing WESN */
-		letter = (fabs (lon) < GMT_CONV_LIMIT || fabs (lon - 180.0) < GMT_CONV_LIMIT) ? 0 : ((lon < 0.0) ? 'W' : 'E');
-		lon = fabs (lon);
-	}
-	else	/* No letter means we print the NULL character */
-		letter = 0;
-		
-	seconds = (GMT_io.geo.order[2] > 0);		/* Are we doing dd:mm:ss */
-	GMT_geo_to_dms (lon, seconds, GMT_io.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
-	if (GMT_io.geo.n_sec_decimals) {		/* Wanted fraction printed */
-		if (seconds)
-			e = fprintf (fp, GMT_io.geo.x_format, d, m, s, m_sec, letter);
-		else
-			e = fprintf (fp, GMT_io.geo.x_format, d, m, m_sec, letter);
-	}
-	else if (seconds)
-		e = fprintf (fp, GMT_io.geo.x_format, d, m, s, letter);
-	else
-		e = fprintf (fp, GMT_io.geo.x_format, d, m, letter);
-		
-	return (e);
+	return (fprintf (fp, "%s", text));
 }
 
 void GMT_lon_range_adjust (int range, double *lon)
@@ -592,36 +551,41 @@ void GMT_lon_range_adjust (int range, double *lon)
 	}
 }
 
-int GMT_write_lat_output (FILE *fp, double lat)
+void GMT_format_geo_output (BOOLEAN is_lat, double geo, char *text)
 {
 	int e, d, m, s, m_sec;
 	char letter;
 	BOOLEAN seconds;
 	double x;
 	
-	if (GMT_io.geo.decimal) return (fprintf (fp, gmtdefs.d_format, lat));	/* Easy */
+	if (!is_lat) GMT_lon_range_adjust (GMT_io.geo.range, &geo);
+	if (GMT_io.geo.decimal) {	/* Easy */
+		sprintf (text, gmtdefs.d_format, geo);
+		return;
+	}
 	
 	if (GMT_io.geo.wesn) {	/* Trailing WESN */
-		letter = (fabs (lat) < GMT_CONV_LIMIT) ? 0 : ((lat < 0.0) ? 'S' : 'N');
-		lat = fabs (lat);
+		if (is_lat)
+			letter = (fabs (geo) < GMT_CONV_LIMIT) ? 0 : ((geo < 0.0) ? 'S' : 'N');
+		else
+			letter = (fabs (geo) < GMT_CONV_LIMIT || fabs (geo - 180.0) < GMT_CONV_LIMIT) ? 0 : ((geo < 0.0) ? 'W' : 'E');
+		geo = fabs (geo);
 	}
 	else	/* No letter means we print the NULL character */
 		letter = 0;
 		
 	seconds = (GMT_io.geo.order[2] > 0);		/* Are we doing dd:mm:ss */
-	GMT_geo_to_dms (lat, seconds, GMT_io.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
+	GMT_geo_to_dms (geo, seconds, GMT_io.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
 	if (GMT_io.geo.n_sec_decimals) {		/* Wanted fraction printed */
 		if (seconds)
-			e = fprintf (fp, GMT_io.geo.y_format, d, m, s, m_sec, letter);
+			sprintf (text, GMT_io.geo.y_format, d, m, s, m_sec, letter);
 		else
-			e = fprintf (fp, GMT_io.geo.y_format, d, m, m_sec, letter);
+			sprintf (text, GMT_io.geo.y_format, d, m, m_sec, letter);
 	}
 	else if (seconds)
-		e = fprintf (fp, GMT_io.geo.y_format, d, m, s, letter);
+		sprintf (text, GMT_io.geo.y_format, d, m, s, letter);
 	else
-		e = fprintf (fp, GMT_io.geo.y_format, d, m, letter);
-		
-	return (e);
+		sprintf (text, GMT_io.geo.y_format, d, m, letter);
 }
 
 void GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  int *s,  int *ix)
@@ -658,14 +622,13 @@ void GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  
 	if (minus) *d = -(*d);
 }
 
-int GMT_write_abstime_output (FILE *fp, GMT_dtime dt)
+void GMT_format_abstime_output (GMT_dtime dt, char *text)
 {
 	int e;
 	char date[GMT_CALSTRING_LENGTH], clock[GMT_CALSTRING_LENGTH];
 
 	GMT_format_calendar (date, clock, &GMT_io.date_output, &GMT_io.clock_output, FALSE, 0, dt);
-	e = fprintf (fp, "%sT%s", date, clock);
-	return (e);
+	sprintf (text, "%sT%s\0", date, clock);
 }
 
 int GMT_bin_double_output (FILE *fp, int n, double *ptr)

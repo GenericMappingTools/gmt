@@ -2,7 +2,7 @@
 .SH NAME
 minmax \- Find extreme values in data tables
 .SH SYNOPSIS
-\fBminmax\fP [ \fIfiles\fP] [ \fB\-C\fP ] [ \fB\-D\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIdx\fP[/\fIdy\fP] ] [ \fB\-L\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
+\fBminmax\fP [ \fIfiles\fP] [ \fB\-C\fP ] [ \fB\-D\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIdx\fP[/\fIdy\fP] ] [ \fB\-M\fP[\fIflag\fP] ] 
 [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBminmax\fP reads its standard input [or from files] and finds the
@@ -27,9 +27,6 @@ Requires \fB\-L\fP.
 .B \-I
 Report the min/max of the first two columns to the nearest multiple of dx and dy,
 and output this in the form -Rw/e/s/n (unless \fB\-C\fP is set).
-.TP
-.B \-L
-Indicates that the x column contains longitudes, which may be periodic in 360 degrees [Default assumes no periodicity].
 #include "explain_-M.txt"
 #include "explain_-t.txt"
 Only works when \fB\-I\fP is selected.

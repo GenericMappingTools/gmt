@@ -6,7 +6,7 @@ triangulate \- Perform optimal Delauney triangulation and gridding
 .SH SYNOPSIS
 \fBtriangulate\fP \fIinfiles\fP [ \fB\-Dx|y\fP ] [ \fB\-E\fP\fIempty\fP ] [ \fB\-G\fP\fIgrdfile\fP ] 
 [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] ] [ \fB\-J\fP\fIparameters\fP ] 
-[ \fB\-L\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
+[ \fB\-M\fP[\fIflag\fP] ] 
 [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-V\fP ] [ \fB\-Z\fP ] [ \fB\-:\fP ] 
 [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
@@ -45,10 +45,6 @@ triangulate (this is true of all gridding routines).
 \fIx_inc\fP [and optionally \fIy_inc\fP] sets the grid  size for optional grid output (see \fB\-G\fP).
 Append \fBm\fP to indicate minutes or \fBc\fP to indicate seconds.
 #include "explain_-j.txt"
-.TP
-.B \-L
-Indicates that the x column contains longitudes, which may differ from the region
-in \fB\-R\fP by [multiples of] 360 degrees [Default assumes no periodicity].
 .TP
 .B \-M
 Output triangulation network as multiple line segments separated by a record whose first

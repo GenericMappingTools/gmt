@@ -47,7 +47,6 @@ to 0.1 percent of typical gradient in input data.]
 Not used with binary data.
 .TP
 .B \-L
-Without any modifier, this option indicates that x is longitude and may be periodic in 360 degrees.
 With optional arguments it will instead
 impose limits on the output solution.  \fBl\fP\fIlower\fP sets the lower bound.  \fIlower\fP can be the name of a
 grdfile with lower bound values, a fixed value, \fBd\fP to set to minimum input value, or \fBu\fP for unconstrained [Default].
