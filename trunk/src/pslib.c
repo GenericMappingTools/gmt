@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.13 2001-07-09 23:47:28 pwessel Exp $
+ *	$Id: pslib.c,v 1.14 2001-08-29 04:34:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -143,6 +143,7 @@ int PSL_first = TRUE;
 
 char *ps_prepare_text (char *text);
 void init_euro_header (struct EPS *eps);
+void init_ISOLatin1_header (struct EPS *eps);
 void ps_colorimage_hex(double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny);
 void ps_colorimage_bin(double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny);
 void ps_image_hex(double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits);
@@ -1191,7 +1192,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 /* xscl, yscl:	Global scaling, usually left to 1,1 */
 /* page_size:	Physical width and height of paper used in points */
 /* overlay:	FALSE means print headers and macros first */
-/* mode:	First bit 0 = Landscape, 1 = Portrait, Second bit 1 = no Euro, Third bit 1 = hex image, 0 = bin image, Forth bit 1 = abs positions, 0 = rel positions */
+/* mode:	First bit 0 = Landscape, 1 = Portrait, Second bit 1 = no Euro, Third bit 1 = hex image, 0 = bin image, Forth bit 1 = abs positions, 0 = rel positions, Fifth bit 1 = ISO, 0 not */
 /* ncopies:	Number of copies for this plot */
 /* dpi:		Plotter resolution in dots-per-inch */
 /* unit:	0 = cm, 1 = inch, 2 = meter */
@@ -1234,6 +1235,11 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	if (unit == 0) ps.points_pr_unit /= 2.54;
 	if (unit == 2) ps.points_pr_unit /= 0.0254;
 	euro = (mode & 2);	/* If 2nd bit set then European character encoding is wanted */
+	ps.iso = (mode & 16);	/* If 5th bit set then ISOLatin1 character encoding is wanted */
+	if (euro && ps.iso) {
+		fprintf (stderr, "pslib: Cannot specify both Euro and ISOLatin1 encoding\n");
+		return (-1);
+	}
 	mode &= 1;
 	if (plotfile == NULL || plotfile[0] == 0)
 		ps.fp = stdout;
@@ -1406,6 +1412,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		for (i = 0; i < N_FONTS; i++) fprintf (ps.fp, "/F%d {/%s Y} bind def\n", i, ps_font_name[i]);
 
 		if (euro) init_euro_header (eps);
+		if (ps.iso) init_ISOLatin1_header (eps);
 
 		if (!ps.eps_format) fprintf (ps.fp, "/#copies %d def\n\n", ncopies);
 		fprintf (ps.fp, "%%%%EndProlog\n\n");
@@ -2347,14 +2354,31 @@ fprintf (ps.fp, "8#334 /Ucircumflex\n\
 
 void ps_def_euro_font (int font_no)
 {
-	/* Reencode fonts for European characters except for Symbol, Dingbats, and the Japanese fonts */
-	
+	/* Reencode fonts except for Symbol, Dingbats, and the Japanese fonts */
 	if (font_no >= PS_FIRST_JAPANESE_FONT) return;
 	if (!(strcmp (ps_font_name[font_no], "Symbol") && strcmp (ps_font_name[font_no], "ZapfDingbats"))) return;
 
-	fprintf (ps.fp, "PSL_Euro_encode %d get 0 eq { %% Set this font\n", font_no);
-	fprintf (ps.fp, "  /%s /%s eurovec ReEncodeSmall\n", ps_font_name[font_no], ps_font_name[font_no]);
-        fprintf (ps.fp, "  PSL_Euro_encode %d 1 put\n} if\n", font_no);
+	if (ps.iso) {	/* Reencode fonts with ISOLatin1 encodings */
+		fprintf (ps.fp, "PSL_Euro_encode %d get 0 eq { %% Set this font\n", font_no);
+		fprintf (ps.fp, "\tISOLatin1Encoding /%s /%s PSL_ISOLatin1_encode\n", ps_font_name[font_no], ps_font_name[font_no]);
+		fprintf (ps.fp, "\tPSL_Euro_encode %d 1 put\n} if\n", font_no);
+	 }
+	 else {	/* Reencode fonts for European characters [e.g., GMT3.4 and earlier] */
+		fprintf (ps.fp, "PSL_Euro_encode %d get 0 eq { %% Set this font\n", font_no);
+		fprintf (ps.fp, "\t/%s /%s eurovec ReEncodeSmall\n", ps_font_name[font_no], ps_font_name[font_no]);
+		fprintf (ps.fp, "\tPSL_Euro_encode %d 1 put\n} if\n", font_no);
+	}
+}
+
+void init_ISOLatin1_header (struct EPS *eps)
+{
+        fprintf (ps.fp,"\n%% START OF ISOLATIN1 FONT DEFINITION\n");
+	fprintf (ps.fp, "/PSL_ISOLatin1_encode {\t%% To reencode one font with the ISOLatin1 built-in vector\n");
+	fprintf (ps.fp, "\tfindfont dup length dict begin\n");
+	fprintf (ps.fp, "\t{1 index /FID ne {def} {pop pop} ifelse} forall\n");
+	fprintf (ps.fp, "\texch /Encoding exch def currentdict end definefont pop\n");
+	fprintf (ps.fp, "} bind def\n");
+        fprintf (ps.fp,"%% END OF ISOLATIN1 FONT DEFINITION\n");
 }
 
 char *ps_prepare_text (char *text)
@@ -2373,22 +2397,22 @@ char *ps_prepare_text (char *text)
 			i++;
 			switch (text[i]) {
 				case 'A':
-					strcat (string, "\\375"); j += 4; i++;
+					strcat (string, ps_scandcodes[0][ps.iso]); j += 4; i++;
 					break;
 				case 'E':
-					strcat (string, "\\341"); j += 4; i++;
+					strcat (string, ps_scandcodes[1][ps.iso]); j += 4; i++;
 					break;
 				case 'O':
-					strcat (string, "\\351"); j += 4; i++;
+					strcat (string, ps_scandcodes[2][ps.iso]); j += 4; i++;
 					break;
 				case 'a':
-					strcat (string, "\\376"); j += 4; i++;
+					strcat (string, ps_scandcodes[3][ps.iso]); j += 4; i++;
 					break;
 				case 'e':
-					strcat (string, "\\372"); j += 4; i++;
+					strcat (string, ps_scandcodes[4][ps.iso]); j += 4; i++;
 					break;
 				case 'o':
-					strcat (string, "\\371"); j += 4; i++;
+					strcat (string, ps_scandcodes[5][ps.iso]); j += 4; i++;
 					break;
 				case '@':
 /*    Also now converts "@@" to the octal code for "@" = "\100".

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.11 2001-08-28 21:46:37 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.12 2001-08-29 04:34:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -81,8 +81,8 @@ char *GMT_degree_symbol[3] = {		/* Ring [Default], Degree, and colon degree symb
 "\\312", "\\217", ":"
 };
 
-char *GMT_minute_symbol = "\\251";	/* Standard encoding minute symbol */
-char *GMT_second_symbol = "\\042";	/* Standard encoding second symbol */
+char *GMT_minute_symbol[2] = { "\\251", ":"};	/* Standard encoding minute symbol */
+char *GMT_second_symbol[2] = { "\\042", ":"};	/* Standard encoding second symbol */
 
 /*--------------------------------------------------------------------*/
 /*	For plotting purposes */
