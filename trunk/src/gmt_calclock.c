@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.8 2001-08-20 01:53:39 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.9 2001-08-22 20:52:55 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -35,6 +35,8 @@
 #include "gmt.h"
 #define GMT_I_3600     (1.0 / 3600.0)  /* Convert seconds to degrees */
 #define GMT_I_60       (1.0 / 60.0)    /* Convert minutes to degrees */
+
+BOOLEAN want_iso = FALSE;	/* Temporary to test compilation.  Delete this.  */
 
 /* Functions to assemble/disassemble a continuous
 variable (GMT_dtime) and a calendar day (GMT_cal_rd)
@@ -573,17 +575,11 @@ BOOLEAN	GMT_g_ymd_is_bad (int y, int m, int d) {
 		values.  Returns FALSE if this looks like
 		a valid calendar date.  */
 	
-	int	j, k;
+	int	k;
 	
 	if (m < 1 || m > 12 || d < 1) return (TRUE);
 	
-	if (m != 2) {
-		j = m%2;
-		k = (m < 8) ? 30 + j : 31 - j;
-	}
-	else {
-		k = (GMT_is_gleap (y) ) ? 29 : 28;
-	}
+	k = GMT_gmonth_length (y, m);
 	
 	if (d > k) return (TRUE);
 	
@@ -632,3 +628,449 @@ void	GMT_gcal_from_dt (GMT_dtime t, struct GMT_gcal *cal) {
 }
 	
 	
+
+int	GMT_verify_time_step (int step, char unit) {
+
+	/* Return -1 if time step and/or unit look bad, 0 if OK.  */
+	
+	int	retval = 0;
+	
+	if (step <= 0) {
+		fprintf (stderr, "GMT SYNTAX ERROR:  time steps must be positive.\n");
+		return (-1);
+	}
+
+	switch (unit) {
+		case 'c':
+		case 'C':
+			if (step > 60) {
+				fprintf (stderr, "GMT SYNTAX ERROR:  time steps in seconds must be <= 60\n");
+				retval = -1;
+			}
+			break;
+		case 'm':
+		case 'M':
+			if (step > 60) {
+				fprintf (stderr, "GMT SYNTAX ERROR:  time steps in minutes must be <= 60\n");
+				retval = -1;
+			}
+			break;
+		case 'h':
+		case 'H':
+			if (step > 24) {
+				fprintf (stderr, "GMT SYNTAX ERROR:  time steps in hours must be <= 24\n");
+				retval = -1;
+			}
+			break;
+		case 'd':
+		case 'D':
+			/* If step is longer than 31 it is probably an error. */
+			if (step > 31) {
+				fprintf (stderr, "GMT SYNTAX ERROR:  time steps in days of the month must be <= 31\n");
+				retval = -1;
+			}
+			break;
+		case 'j':
+		case 'J':
+			/* If step is longer than 365 it is probably an error. */
+			if (step > 365) {
+				fprintf (stderr, "GMT SYNTAX ERROR:  time steps in year days must be <= 365\n");
+				retval = -1;
+			}
+			break;
+		case 'k':
+		case 'K':
+			if (step > 7) {
+				fprintf (stderr, "GMT SYNTAX ERROR:  time steps in weekdays must be <= 7\n");
+				retval = -1;
+			}
+			break;
+		case 'u':
+		case 'U':
+			if (step > 52) {
+				fprintf (stderr, "GMT SYNTAX ERROR:  time steps in weeks must be <= 52\n");
+				retval = -1;
+			}
+			break;
+		case 'o':
+		case 'O':
+			if (step > 12) {
+				fprintf (stderr, "GMT SYNTAX ERROR:  time steps in months must be <= 12\n");
+				retval = -1;
+			}
+			break;
+		case 'y':
+		case 'Y':
+			break;
+		default:
+			fprintf (stderr, "GMT SYNTAX ERROR:  Unrecognized time axis unit.\n");
+			retval = -1;
+			break;
+	}
+	return (retval);
+}
+
+
+void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN init) {
+
+	/*   
+	
+	Unchanged by this routine:
+		p->step is a positive interval width;
+		p->unit is set to a time axis unit;
+		These must be in valid ranges tested by GMT_verify_time_step().
+		p->init sets action to take; see below.
+	
+	Let a and b be points in time, both exactly on the start of intervals
+		defined by p->step and p->unit (e.g. 6 hours, 3 months), and
+		such that b > a and b is the start of the next interval after a.
+	
+	Let cc[0], dt[0], sd[0], rd[0] contain representations of time a.
+	Let cc[1], dt[1], sd[1], rd[1] contain representations of time b.
+	
+	if (init) {
+		dt_in must contain a GMT interval time;
+		a and b will be found and set such that a <= dt_in < b;
+	}
+	else {
+		dt_in is not used;
+		b is copied to a;
+		the next b is found;
+	}
+	
+	Warning:  Current operation of GMT_gcal_from_rd() only sets the
+	calendar components of struct GMT_gcal.  That's OK for this
+	routine, as clock components are not used here.  However, before
+	plotting the clock corresponding to a particular time, one should
+	call a routine to break dt or sd down into a clock string, or call
+	a routine to set the clock components of struct GMT_gcal.
+		
+	*/
+	
+	int	k, kws, kml, kyd;
+
+
+	if (init) {
+		/* Temporarily store a breakdown of dt_in in p->stuff[0].
+			Below we will take floor of this to get time a,
+			and reload stuff[0] with time a.  */
+		GMT_dt2rdc (dt_in, &(p->rd[0]), &(p->sd[0]) );
+		GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
+		p->dt[0] = dt_in;
+	}
+	else {
+		memcpy ( (void *)&(p->cc[0]), (void *)&(p->cc[1]), sizeof (struct GMT_gcal));
+		p->dt[0] = p->dt[1];
+		p->sd[0] = p->sd[1];
+		p->rd[0] = p->rd[1];
+	}
+	
+	
+	
+	switch (p->unit) {
+		case 'c':
+		case 'C':
+			k = p->step;
+			GMT_small_moment_interval (p, k, init);
+			break;
+		case 'm':
+		case 'M':
+			k = 60 * p->step;
+			GMT_small_moment_interval (p, k, init);
+			break;
+		case 'h':
+		case 'H':
+			k = 3600 * p->step;
+			GMT_small_moment_interval (p, k, init);
+			break;
+		case 'd':
+		case 'D':
+			if (p->step == 1) {
+				/* Here we want every day (of the Gregorian month)
+					so the stepping is easy.  */
+				k = 86400;
+				GMT_small_moment_interval (p, k, init);
+			}
+			else {
+				/* Here we have code to select every n'th day of 
+					the Gregorian months  */
+				if (init) {
+					/* Simple mod works on positive ints  */
+					k = (p->cc[0].day_m - 1)%(p->step);
+					if (k) {
+						p->rd[0] -= k;	/* Floor to n'th day  */
+						GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
+					}
+					if (p->sd[0] > 0.0) {
+						p->sd[0] = 0.0;
+						p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
+					}
+				}
+				
+				kml = GMT_gmonth_length (p->cc[0].year, p->cc[0].month);
+				if (p->cc[0].day_m + p->step > kml) {
+					/* Truncate to 1st of next month  */
+					if (p->cc[0].month == 12) {
+						p->cc[1].year = p->cc[0].year + 1;
+						p->cc[1].month = 1;
+					}
+					else {
+						p->cc[1].month = p->cc[0].month + 1;
+					}
+					p->rd[1] = GMT_rd_from_gymd (p->cc[1].year, p->cc[1].month, 1);
+				}
+				else {
+					/* Adding step days will stay in current month.  */
+					p->rd[1] = p->rd[0] + p->step;
+				}
+				p->sd[1] = 0.0;
+				GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
+				p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
+			}
+			break;
+		
+		case 'j':
+		case 'J':
+			/* Use n'th day of the year.  */
+			if (init) {
+				/* Simple mod works on positive ints  */
+				k = (p->cc[0].day_y - 1)%(p->step);
+				if (k) {
+					p->rd[0] -= k;	/* Floor to n'th day  */
+					GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
+				}
+				if (p->sd[0] > 0.0) {
+					p->sd[0] = 0.0;
+					p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
+				}
+			}
+			kyd = (GMT_is_gleap (p->cc[0].year)) ? 366 : 365;
+			k = p->cc[0].day_y + p->step;
+			if (k > kyd) {
+				/* Go to 1st day of next year:  */
+				p->rd[1] = GMT_rd_from_gymd (p->cc[0].year+1, 1, 1);
+			}
+			else {
+				p->rd[1] = p->rd[0] + p->step;
+			}
+			GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
+			p->sd[1] = 0.0;
+			p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
+			break;
+			
+		case 'k':
+		case 'K':
+			/* Here we need to know: how do you define the n'th day 
+			of the week?  I answered this question (for now) numbering
+			days as 0=Sun through 6=Sat, (this matches kday routines)
+			assuming this numbering applies to gmtdefs.time_week_start, 
+			and placing the base day at either 1=Monday for ISO calendar, 
+			or time_week_start for Gregorian calendar.  User can then have 
+			base, base+n, base+2n, etc. until base+kn would equal day 7 
+			or more. When that happens, we truncate to start of next week.
+			*/
+			kws = (want_iso) ? 1 : gmtdefs.time_week_start;
+			if (init) {
+				/* Floor to the n'th day of the week from the week start:  */
+				/* a simple mod will work here since both are positive ints  */
+				k = (p->cc[0].day_w - kws)%(p->step);
+				if (k) {
+					p->rd[0] -= k;	/* Floor to n'th day of the week.  */
+					GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
+				}
+				if (p->sd[0] > 0.0) {
+					p->sd[0] = 0.0;
+					p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
+				}
+			}
+			
+			k = (p->cc[0].day_w - kws) + p->step;
+			if (k > 7) {
+				/* Overshot start of next week; use next kday routines
+					to find start of next week  */
+				p->rd[1] = GMT_kday_after (p->rd[0], kws);
+			}
+			else {
+				/* It is OK to add p->step days to rd[0] to get rd[1]  */
+				p->rd[1] = p->rd[0] + p->step;
+			}
+			p->sd[1] = 0.0;
+			GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
+			p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
+			break;
+
+		case 'u':
+		case 'U':
+			if (init) {
+				/* Floor to the n'th iso week of the year:  */
+				p->sd[0] = 0.0;
+				k = (p->cc[0].iso_w - 1)/p->step;
+				p->cc[0].iso_w = k * p->step + 1;
+				p->rd[0] = GMT_rd_from_iywd (p->cc[0].iso_y, p->cc[0].iso_w, 1);
+				GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
+				p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
+			}
+			/* I'm not sure how to move <step> weeks ahead.
+				I have implemented it this way:
+				add 7*step days.  If this puts you in
+				a new ISO year, then truncate back to
+				the start of the new ISO year.  But just
+				in case that somehow returns you to where
+				you were (I think it can't), then go ahead
+				step weeks from where you were.  */
+			p->rd[1] = p->rd[0] + p->step * 7;
+			GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
+			if (p->cc[1].iso_y != p->cc[0].iso_y) {
+				k = p->cc[1].iso_y;
+				p->rd[1] = GMT_rd_from_iywd (k, 1, 1);
+				if (p->rd[1] == p->rd[0]) p->rd[1] += p->step * 7; /* Just in case */
+				GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
+			}
+			p->sd[1] = 0.0;
+			p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
+			break;
+			
+		case 'o':
+		case 'O':
+			/* Get the n'th month of the Gregorian year  */
+			if (init) {
+				/* floor to the step'th month:  */
+				p->sd[0] = 0.0;
+				p->cc[0].day_m = 1;
+				k = (p->cc[0].month-1)/p->step;
+				p->cc[0].month = k * p->step + 1;
+				if (GMT_g_ymd_is_bad (p->cc[0].year, p->cc[0].month, p->cc[0].day_m) ) {
+					fprintf (stderr, "GMT_LOGIC_BUG:  bad ymd on floor (month) in GMT_init_moment_interval()\n");
+					return;
+				}
+				p->rd[0] = GMT_rd_from_gymd (p->cc[0].year, p->cc[0].month, p->cc[0].day_m);
+				GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
+				p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
+			}
+			/* Now get next n'th month  */
+			p->cc[1].month = p->cc[0].month + p->step;
+			if (p->cc[1].month > 12) {
+				p->cc[1].month = 1;
+				p->cc[1].year++;
+			}
+			p->rd[1] = GMT_rd_from_gymd (p->cc[1].year, p->cc[1].month, p->cc[1].day_m);
+			GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
+			p->sd[1] = 0.0;
+			p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
+			break;
+
+		case 'y':
+		case 'Y':
+			if (init) {
+				/* Floor to the step'th year, either ISO or Gregorian, depending on... */
+				if (want_iso) {
+					p->sd[0] = 0.0;
+					if (p->step > 1) p->cc[0].iso_y -= GMT_cal_imod (p->cc[0].iso_y, p->step);
+					p->rd[0] = GMT_rd_from_iywd (p->cc[0].iso_y, 1, 1);
+				}
+				else {
+					p->sd[0] = 0.0;
+					if (p->step > 1) p->cc[0].year -= GMT_cal_imod (p->cc[0].year, p->step);
+					p->rd[0] = GMT_rd_from_gymd (p->cc[0].year, 1, 1);
+				}
+				GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
+				p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
+			}
+			/* Now step ahead step years, depending on calendar type:  */
+			if (want_iso) {
+				p->cc[1].iso_y = p->cc[0].iso_y + p->step;
+				p->rd[1] = GMT_rd_from_iywd (p->cc[1].iso_y, 1, 1);
+			}
+			else {
+				p->cc[1].year = p->cc[0].year + p->step;
+				p->rd[1] = GMT_rd_from_gymd (p->cc[1].year, 1, 1);
+			}
+			p->sd[1] = 0.0;
+			p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
+			GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
+			break;
+		default:
+			/* Should never get here because unit should already have been verified.  */
+			fprintf (stderr, "GMT_LOGIC_BUG:  Bad unit in GMT_init_moment_interval()\n");
+			break;
+	}
+}		
+
+
+
+void	GMT_small_moment_interval (struct GMT_MOMENT_INTERVAL *p, int step_secs, BOOLEAN init) {
+
+	/* Called by GMT_moment_interval ().  Get here when p->stuff[0] is initialized and
+		0 < step_secs <= 86400.  If init, stuff[0] may need to be truncated.  */
+	
+	double	x;
+	
+	if (step_secs == 86400) {
+		/* Special case of a 1-day step.  */
+		if (p->sd[0] != 0.0) {	/* Floor it to start of day.  */
+			p->dt[0] -= p->sd[0];
+			p->sd[0] = 0.0;
+		}
+		/* Now we step to next day in rd first, and set dt from there.
+			This will work even when leap seconds are implemented.  */
+		p->rd[1] = p->rd[0];
+		GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
+		p->sd[1] = 0.0;
+		p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
+	}
+	else {
+		if (init) {
+			x = step_secs * floor (p->sd[0] / step_secs);
+			if (x != p->sd[0]) {
+				p->dt[0] -= (p->sd[0] - x);
+				x = p->sd[0];
+			}
+		}
+		/* Step to next interval time.  If this would put 86400 secs
+		in today, go to next day at zero.  This will work even when
+		leap seconds are implemented and today is a leap second say,
+		unless also step_secs == 1.  That special action will have to
+		be taken and will be coded later when leap seconds are put in.
+		*/
+		x = p->sd[0] + step_secs;
+		if (x >= 86400.0) {	/* Should not be greater than  */
+			p->sd[1] = 0.0;
+			p->rd[1] = p->rd[0] + 1;
+			GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
+			p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
+		}
+		else {
+			p->sd[1] = x;
+			p->dt[1] = p->dt[0] + step_secs;
+			/* No call here to reset cc[1] struct, as rd hasn't changed.
+				Later, if it is desired to reset struct for clock
+				changes on same day, add a call here.  */
+		}
+	}
+}
+
+
+		
+int	GMT_gmonth_length (int year,  int month) {
+
+	/* Return the number of days in a month,
+		using the gregorian leap year rule.
+	Months are numbered from 1 to 12.  */
+	
+	int	k;
+	
+	if (month < 1 || month > 12) return 0;
+	
+	if (month != 2) {
+		k = month%2;
+		if (month < 8) {
+			return (30 + k);
+		}
+		else {
+			return (31 - k);
+		}
+	}
+	
+	k = (GMT_is_gleap (year) ) ? 29 : 28;
+	return (k);
+}
