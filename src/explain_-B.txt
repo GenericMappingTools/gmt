@@ -116,9 +116,9 @@ the annotation interval is expected to be in transformed units, but the annotati
 will be plotted as untransformed units.  E.g., if \fIstride\fP = 1 and \fIpower\fP = 0.5 (i.e., sqrt),
 then equidistant annotations labeled 1\-4\-9... will appear.
 .br
-These GMT parameters can affect the appearance of the map boundary: ANOT_MIN_ANGLE, ANOT_MIN_SPACING,
-ANOT_FONT, ANOT_FONT_SIZE, ANOT_OFFSET, BASEMAP_AXES, BASEMAP_FRAME_RGB, BASEMAP_TYPE, DEGREE_SYMBOL,
+These GMT parameters can affect the appearance of the map boundary: ANNOT_MIN_ANGLE, ANNOT_MIN_SPACING,
+ANNOT_FONT, ANNOT_FONT_SIZE, ANNOT_OFFSET, BASEMAP_AXES, BASEMAP_FRAME_RGB, BASEMAP_TYPE, DEGREE_SYMBOL,
 FRAME_PEN, FRAME_WIDTH, GRID_CROSS_SIZE, GRID_PEN, HEADER_FON, HEADER_FONT_SIZE, LABEL_FONT,
-LABEL_FONT_SIZE, LINE_STEP, OBLIQUE_ANOTATION, PLOT_DEGREE_FORMAT, TICK_LENGTH, TICK_PEN, and Y_AXIS_TYPE.  In addition,
-time axes can also be affected by:  ANOT_FONT2, ANOT_FONT2_SIZE, PLOT_CLOCK_FORMAT, PLOT_DATE_FORMAT,
+LABEL_FONT_SIZE, LINE_STEP, OBLIQUE_ANNOTATION, PLOT_DEGREE_FORMAT, TICK_LENGTH, TICK_PEN, and Y_AXIS_TYPE.  In addition,
+time axes can also be affected by:  ANNOT_FONT2, ANNOT_FONT2_SIZE, PLOT_CLOCK_FORMAT, PLOT_DATE_FORMAT,
 TIME_LANGUAGE, and TIME_WEEK_START; see the \fBgmtdefaults\fP man page for details.

@@ -125,7 +125,7 @@ Users may add their own custom *.def files; see CUSTOM SYMBOLS in the \fBpsxy\fP
 .B \-Sl
 \fBl\fPetter or text string (less than 64 characters).  Give size, and append /\fIstring\fP after the size.  Note that the size is only approximate; no individual scaling
 is done for different characters.  Remember to escape special characters like *.  Optionally, you may append %\fIfont\fP
-to select a particular font [Default is ANOT_FONT].
+to select a particular font [Default is ANNOT_FONT].
 .TP
 .B \-So
 c(\fBo\fP)lumn (3-D) extending from \fIbase\fP to z.  \fIsize\fP sets base width (Use \fIxsize/ysize\fP if not the same).  Append \fBu\fP if \fIsize\fP is in x-units

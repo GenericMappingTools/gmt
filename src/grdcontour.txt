@@ -142,7 +142,7 @@ The labeling of local highs and lows may plot outside the innermost contour sinc
 of the contour coordinates is used to position the label.
 .br
 The size of the white box beneath contour annotations is augmented by \fIdx\fP and \fIdy\fP
-which are set to 50% and 5% of ANOT_OFFSET, respectively.  You
+which are set to 50% and 5% of ANNOT_OFFSET, respectively.  You
 must thus change this value in .gmtdefaults to affect the box size.
 .br
 There are too many options.

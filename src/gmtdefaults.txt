@@ -55,16 +55,16 @@ When no unit is indicated the value will be assumed to be in the unit set by \fB
 Note that the printer resolution DOTS_PR_INCH is always the number of dots or pixels per inch.
 Several parameters take only TRUE or FALSE.
 .TP
-.B ANOT_MIN_ANGLE
+.B ANNOT_MIN_ANGLE
 If the angle between the map boundary and the annotation baseline is less than this minimum value (in degrees), the
 annotation is not plotted (this may occur for certain oblique projections.)  Give a value in the
 range 0\-90. [20]
 .TP
-.B ANOT_MIN_SPACING
+.B ANNOT_MIN_SPACING
 If an annotation would be plotted less than this minimum distance from its closest neighbor, the
 annotation is not plotted (this may occur for certain oblique projections.) [0]
 .TP
-.B ANOT_FONT
+.B ANNOT_FONT
 Font used for upper annotations etc [Helvetica].  Specify either the font number or
 the font name (case sensitive!).  The 39 available fonts are:
 .br
@@ -146,20 +146,20 @@ the font name (case sensitive!).  The 39 available fonts are:
 .br
 	38 GothicBBB-Medium-EUC-V
 .TP
-.B ANOT_FONT_SIZE
+.B ANNOT_FONT_SIZE
 Font size (> 0) in points for map annotations.  [14]
 .TP
-.B ANOT_FONT2
-Font to use for time axis lower annotations.  See ANOT_FONT for available fonts  [Helvetica].
+.B ANNOT_FONT2
+Font to use for time axis lower annotations.  See ANNOT_FONT for available fonts  [Helvetica].
 .TP
-.B ANOT_FONT2_SIZE
+.B ANNOT_FONT2_SIZE
 Font size (> 0) for time axis lower annotations in points  [16].
 .TP
-.B ANOT_OFFSET		
+.B ANNOT_OFFSET		
 Distance from end of tickmark to start of annotation [LEN_1_SI (or LEN_1_US)].  A negative
 offset will place the annotation inside the map border.
 .TP
-.B ANOT2_OFFSET		
+.B ANNOT_OFFSET2		
 Distance from base of upper annotation to the top of the lower annotation [LEN_1_SI (or LEN_1_US)] (Only
 applies to time axes with both upper and lower annotations).
 .TP
@@ -296,7 +296,7 @@ shorthand discussed in Section 4.17 of the GMT Technical Reference and Cookbook.
 If FALSE, no filename expansion is done [FALSE].
 .TP
 .B HEADER_FONT
-Font to use when plotting headers.  See ANOT_FONT for available fonts  [Helvetica].
+Font to use when plotting headers.  See ANNOT_FONT for available fonts  [Helvetica].
 .TP
 .B HEADER_FONT_SIZE
 Font size (> 0) for header in points  [36].
@@ -344,7 +344,7 @@ Specifies whether input/output ASCII files have header record(s) or not  [FALSE]
 Specifies how many header records to expect if \fB\-H\fP is turned on  [1].
 .TP
 .B LABEL_FONT
-Font to use when plotting labels below axes.  See ANOT_FONT for available fonts  [Helvetica].
+Font to use when plotting labels below axes.  See ANNOT_FONT for available fonts  [Helvetica].
 .TP
 .B LABEL_FONT_SIZE
 Font size (> 0) for labels in points  [24].
@@ -371,7 +371,7 @@ universal definition.
 .B N_COPIES * (\-c)
 Number of plot copies to make  [1].
 .TP
-.B OBLIQUE_ANOTATION
+.B OBLIQUE_ANNOTATION
 This integer is a sum of 5 bit flags (most of which only are relevant for oblique projections):
 If bit 1 is set (1), annotations will occur wherever a gridline crosses the
 map boundaries, else longitudes will be annotated on the lower and upper boundaries only, and latitudes will be
