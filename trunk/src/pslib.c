@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.72 2004-06-04 23:48:23 pwessel Exp $
+ *	$Id: pslib.c,v 1.73 2004-06-09 21:34:38 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3762,8 +3762,8 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 {
 	FILE *in;
 	int i = 0, n_alloc = 50;
-	char buf[128];
-	char fullname[128];
+	char buf[BUFSIZ];
+	char fullname[BUFSIZ];
 
 	/* Loads the available fonts for this installation */
 	
@@ -3782,11 +3782,12 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 	
 	while (fgets (buf, 128, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-		ps.font[i].name = (char *)ps_memory (VNULL, strlen (buf), sizeof (char));
-		if (sscanf (buf, "%s %lf %d %lf", ps.font[i].name, &ps.font[i].height, &ps.font[i].encoded, &ps.font[i].ave_width) != 4) {
+		if (sscanf (buf, "%s %lf %d %lf", fullname, &ps.font[i].height, &ps.font[i].encoded, &ps.font[i].ave_width) != 4) {
 			fprintf (stderr, "PSL Fatal Error: Trouble decoding font info for font %d\n", i);
 			exit (EXIT_FAILURE);
 		}
+		ps.font[i].name = (char *)ps_memory (VNULL, (size_t)(strlen (fullname)+1), sizeof (char));
+		strcpy (ps.font[i].name, fullname);
 		i++;
 		if (i == n_alloc) {
 			n_alloc += 50;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.116 2004-06-09 06:23:28 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.117 2004-06-09 21:34:38 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1659,7 +1659,7 @@ int GMT_contlabel_init (struct GMT_CONTOUR *G)
 int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 {
 	int k, bad = 0;
-	BOOLEAN g_set = FALSE, percentage = FALSE;
+	BOOLEAN g_set = FALSE;
 	char txt_cpy[BUFSIZ], txt_a[32], txt_b[32], c, *p;
 	
 	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+o|O|t|v][+s<size>][+p[<pen>]][+u<unit>][+^<prefix>] strings */
@@ -1792,10 +1792,6 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 				
 		p = strtok (NULL, "+");
 	}
-	if (G->clearance_flag) {	/* Gave a percentage of fontsize as clearance */
-		G->clearance[0] = G->clearance[0] * G->label_font_size / 72.0;				
-		G->clearance[1] = G->clearance[1] * G->label_font_size / 72.0;
-	}
 				
 	return (bad);
 }
@@ -1914,6 +1910,10 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 	double x, y;
 	char buffer[BUFSIZ], txt_a[128], txt_b[128], txt_c[128], txt_d[128], *p;
 	
+	if (G->clearance_flag) {	/* Gave a percentage of fontsize as clearance */
+		G->clearance[0] = 0.01 * G->clearance[0] * G->label_font_size / 72.0;				
+		G->clearance[1] = 0.01 * G->clearance[1] * G->label_font_size / 72.0;
+	}
 	if (G->label_type == 5 && !G->fixed) {	/* Requires fixed file */
 		error++;
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -%c:  Labeling option +Lf requires the fixed label location setting\n", GMT_program, G->flag);

@@ -1,5 +1,5 @@
 %-------------------------------------------------------------------------------------------
-%	$Id: PSL_label.ps,v 1.7 2004-06-09 06:55:22 pwessel Exp $
+%	$Id: PSL_label.ps,v 1.8 2004-06-09 21:34:38 pwessel Exp $
 %
 %	P. Wessel, version 1
 %
@@ -246,11 +246,11 @@ end
   1 1 PSL_nn1				% Loop over rest of points
   {
     /i exch def				% Index into PSL_xx/yy arrays
-    /type PSL_kind i get def		% Check what kind of point the current point is
+    /node_type PSL_kind i get def	% Check what kind of point the current point is
     /j j 1 add def			% Update point count
     PSL_xp j PSL_xx i get put		% Add this point to the path
     PSL_yp j PSL_yy i get put
-    type 1 eq				% If this is a cut point we either stroke or place text
+    node_type 1 eq			% If this is a cut point we either stroke or place text
     {
       n 0 eq				% n is 0 so this is the strokable segment
       {
@@ -446,11 +446,14 @@ end
     dx 0.0 ne dy 0.0 ne and
     {	% Only calculate new angle if not duplicates
       /angle dy dx atan 90 add def
-      /s angle sin def
-      /c angle cos def
-    } if
-    xoff ii H c mul put
-    yoff ii H s mul put
+    }
+    {
+      /angle 0 def
+    } ifelse
+    /sina angle sin def
+    /cosa angle cos def
+    xoff ii H cosa mul put
+    yoff ii H sina mul put
   } for
   
   % Lay down next clip segment
