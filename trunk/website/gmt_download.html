@@ -1,0 +1,94 @@
+<HTML>
+<!--    $Id: gmt_download.html,v 1.2 2004-09-24 21:31:18 pwessel Exp $      -->
+<HEAD>
+<TITLE>GMT - The Generic Mapping Tools</TITLE>
+</HEAD>
+<BODY bgcolor="#ffffff">
+<CENTER><H2>Availability of GMT source code</H2></CENTER>
+
+GMT is available via anonymous ftp from several ftp servers; they
+all contain the same files as the main server in Hawaii. Because of file
+sizes you are strongly encouraged to use the server closest to you.
+We distribute a Bourne shell script (install_gmt) that automatically will
+get the required archives from the ftp site you choose.  For users
+with a slow Internet-connection, Windows users preferring an InstallShield-based
+solution, and users who desire large amounts
+of supplemental data sets ready to be used with GMT: See the <B>GMT Companion CD-ROM</B>
+products distributed by <A HREF="http://www.geoware-online.com"><B>Geoware</B></A>.
+<HR>
+<CENTER><H2>Fast-track for (repeat) UNIX/Linux users</H2></CENTER>
+Take me directly to the <A HREF="gmt_install_form.html">INSTALL FORM</A>.</B>
+<HR>
+<CENTER><H2>Obtaining and Installing GMT</H2></CENTER>
+
+<OL>
+<LI> <B>UNIX or LINUX:</B>
+Because of the size of the archives we suggest you verify that you have
+<A HREF="http://sourceware.cygnus.com/bzip2/index.html">bzip2</A> on your system.
+If not, it is worth installing (executables for most platforms are available)
+since *.bz2 files are much smaller than *.gz files.  For instance, the
+entire GMT package is ~50 Mb with bzip2 and 75 Mb with gzip.
+<P>
+<OL>
+<LI><I>Automated install [Recommended]</I>.
+Obtain and install GMT by interacting with the <A HREF="gmt_install_form.html">INSTALL FORM</A>.
+Follow instructions there to obtain the Bourne shell install-script <I>and</I> a customized install
+parameter file.  The automated install will also install netCDF if needed.
+<LI><I>Manual install</I>.
+If you prefer, you can also do the typical manual install by ftping the files, untar,
+run configure, make etc.  Read the README file for the required steps.
+For manual install you must also manually get and install the <A HREF="ftp://unidata.ucar.edu/pub/netcdf/netcdf.tar.Z">Unidata
+netCDF library</A>, version 3.4 or higher, which GMT requries.
+For your convenience, the source code is available from the GMT ftp sites.
+</OL>
+<P>
+
+<LI> <B>WINDOWS:</B>
+<OL>
+<LI><I>DOS batch files rule</I>.
+All the archives are also available as *.zip files.  In addition, two extra files can be found:
+GMT_exe.zip contains main GMT executables, and GMT_suppl_exe.zip contains executables for the supplements.
+Note that many of the DOS example scripts utilize GNU awk; the WIN32 executable
+<A HREF="ftp://gmt.soest.hawaii.edu/pub/gmt/gawk303x.zip">gawk</A>
+has therefore been placed on all ftp sites.
+A precompiled <A HREF="ftp://gmt.soest.hawaii.edu/pub/gmt/netcdf-3.5.0_win32bin.zip">netCDF</A>
+DLL library for Windows is also available, and needed for GMT to compile and run (even if you only get the executables).
+
+<LI><I>DOS batch files suck, part I</I>.
+Because you cannot get much done with DOS batch jobs, we strongly recommend that you install
+<A HREF="http://www.cygwin.com">Cygwin</A>, a free UNIX emulation package for Windows.
+Cygwin lets you open shell windows and access
+standard UNIX tools such as tcsh, gcc, etc.  You would then install GMT as described above for UNIX/Linux.
+<LI><I>DOS batch files suck, part II</I>.
+If you run Windows NT/2000/XP, you can get access to csh command windows by installing the commercial
+product <A HREF="http://www.interix.com">Interix</A>, a UNIX environment for Windows.
+Interix lets you install GMT as described for UNIX/Linux above.  Recently, Interix was
+gobbled up by Microsoft and is now part of their Services for UNIX product.
+<LI><I>DOS batch files suck, part III</I>.
+Finally, you may consider the option of purchasing and installing <A HREF="http://www.vmware.com">VMWare</A>, a virtual
+computer which allows you to install numerous operating systems (such as Linux) and then pursue the
+general Linux/UNIX install option above within your virtual machine.
+</OL>
+<P>
+
+<LI> <B>OS/2: </B>
+GMT has been ported to OS/2.  For information and precompiled executables, see Allen Cogbill's
+<A HREF="http://internet.cybermesa.com/~acogbill/gmt/gmt4os2.html">GMT OS/2 page</A>.
+<P>
+
+<LI> <B>MacIntosh: </B>
+<OL>
+<LI><I>Running Linux</I>.
+If you run Linux (MkLinux, Yellowdog, etc) on your (old) Mac, follow the steps above for
+automatic install under UNIX or LINUX (1.1).
+<LI><I>Running MacOS X or MacOS X Server</I>.
+GMT installs and runs under MacOS X which is UNIX-based (follow instructions for
+UNIX/Linux in 1.1).  User-friendly packages are also available via <A HREF="http://fink.sourceforge.org">Fink</A>.
+<LI><I>Running MacOS 9</I>.
+GMT does not run directly under MacOS 9 or earlier.  However, you can run GMT
+using the commercial <A HREF="http://www.tenon.com/products/machten">Machten</A> UNIX emulation package.  When
+Machten is installed, GMT can be installed as under 1.1 above.
+</OL>
+</OL>
+</BODY>
+</HTML>
