@@ -14,7 +14,7 @@ pscontour \- Contour xyz-data by direct triangulation
 [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
 .SH DESCRIPTION
 \fBpscontour\fP reads an ASCII [or binary] xyz-file and produces a raw contour plot by triangulation.  By default, the
-optimal Delaunay triangulation is performed (using either Shewhuck's [1996]
+optimal Delaunay triangulation is performed (using either Shewchuk's [1996]
 or Watson's [1982] method as selected during GMT installation), but the user
 may optionally provide a second file with
 network information, such as a triangular mesh used for finite element modeling.  In addition to contours, the area between contours may be painted according to
@@ -115,7 +115,7 @@ DOTS_PR_INCH in the .gmtdefaults file.
 .SH REFERENCES
 Watson, D. F., 1982, Acord: Automatic contouring of raw data, \fIComp. & Geosci., 8\fP, 97\-101.
 .br
-Shewchuck, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
+Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
 and Delaunay Triangulator, First Workshop on Applied Computational Geometry
 (Philadelphia, PA), 124-133, ACM, May 1996.
 .br

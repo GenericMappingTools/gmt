@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.21 2001-05-18 17:32:02 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.22 2001-12-20 02:56:01 ben Exp $
 #
 #	Automatic installation of GMT version 3.4
 #	Version for the Bourne shell (or compatible)
@@ -296,13 +296,13 @@ EOF
 	echo " " >&2
 	echo "GMT can use two different algorithms for Delauney triangulation." >&2
 	echo " " >&2
-	echo "   Shewchuck [1996]: Modern and very fast, copyrighted." >&2
+	echo "   Shewchuk [1996]: Modern and very fast, copyrighted." >&2
 	echo "   Watson [1982]   : Older and slower, public domain." >&2
 	echo " " >&2
 	echo "Because of the copyright, GMT uses Watson's routine by default." >&2
 	echo " " >&2
 	size=`sed -n 12p $sizes`
-	GMT_triangle=`get_def_answer "Want optional Shewchuck's triangulation routine [$size Mb] (y/n)?" "n"`
+	GMT_triangle=`get_def_answer "Want optional Shewchuk's triangulation routine [$size Mb] (y/n)?" "n"`
 	GMT_get_triangle=$GMT_triangle
 else
 	echo " " >&2

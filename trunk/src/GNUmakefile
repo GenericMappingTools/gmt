@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.15 2001-10-15 17:25:05 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.16 2001-12-20 02:56:01 ben Exp $	--------------------
 #
 #		Makefile for GMT Version 3.5
 #			GNU make compatible
@@ -118,7 +118,7 @@ $(LIB_O):	%.o:	%.c $(GMT_H) $(GMT_I)
 
 $(PROGS_O):	$(GMT_H)
 
-# Jonathan Shewchuck's triangulation model
+# Jonathan Shewchuk's triangulation model
 # Only used if TRIANGLE_D and TRIANGLE_O are set in makegmt.macros
 
 triangle.o:	triangle.c

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtguru.macros.orig,v 1.6 2001-09-18 02:02:28 pwessel Exp $
+#	$Id: gmtguru.macros.orig,v 1.7 2001-12-20 02:56:01 ben Exp $
 #
 #	Original GMT Guru Makefile Macro for Makefile.guru
 #	Users should cp to gmtguru.macros and edit it instead!
@@ -20,7 +20,7 @@ FTPSITE		= gmt.soest.hawaii.edu	# Set this to the mirror site closest to you
 AUTOCONF	= autoconf		# GNU autoconf utility (add path if not in your search path)
 GMT_SHARED_LIBS	= --enable-shared	# --enable-shared for shared; empty for static libraries
 GMT_US		= --enable-US		# --enable-US for inch; empty for cm
-GMT_TRIANGLE	= --enable-triangle	# --enable-triangle for Shewchuck's triangulation; empty for Watson's
+GMT_TRIANGLE	= --enable-triangle	# --enable-triangle for Shewchuk's triangulation; empty for Watson's
 GMT_DEBUG	= --enable-debug	# --enable-debug will use -g; else -O with compiler
 
 #  Choose the correct preprocessing command for your system (this is for man page processing only):

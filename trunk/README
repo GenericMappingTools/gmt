@@ -1,6 +1,6 @@
 #	Information for installing GMT 3.4
 #
-#		$Id: README,v 1.9 2001-04-05 00:53:17 pwessel Exp $ 
+#		$Id: README,v 1.10 2001-12-20 02:56:01 ben Exp $ 
 #
 #	Copyright (c) 1991-2001, P. Wessel & W. H. F. Smith
 #
@@ -74,11 +74,11 @@ Note there are several GMT tar archives available:
 
 and optionally
 
-12. triangle.tar.gz		: Jonathan Shewchuck's Delauney triangulation
+12. triangle.tar.gz		: Jonathan Shewchuk's Delauney triangulation
 
-The latter is copyrighted by Shewchuck and is not covered by the GNU Public
+The latter is copyrighted by Shewchuk and is not covered by the GNU Public
 License.  Installing it is optional; by default, GMT will use Dave Watson's
-routine which is much slower than Shewchucks routine.  Note that triangle.tar.gz
+routine which is much slower than Shewchuks routine.  Note that triangle.tar.gz
 must be moved into the main GMT directory before you uncompress/extract the
 files (see GMT_full and GMT_high for a similar situation)
 
@@ -182,7 +182,7 @@ You must first create the two files src/makegmt.macros and src/gmt_math.h
 by running the configure script.  If you have several C compilers on your
 system, or using one that is not called cc or gcc, you should first do a
 
-setenv CC <compilername, including path if unusal>
+setenv CC <compilername, including path if unusual>
 
 (this is in csh, other shells have different syntax).
 
@@ -225,7 +225,7 @@ in the main GMT directory.
 There are a few GMT-specific options in configure.  They are
 
 	--enable-shared		To make shared (dynamic) libraries
-	--enable-triangle	To use J. Shewchuck's fast triangulation
+	--enable-triangle	To use J. Shewchuk's fast triangulation
 	--enable-US		To use US (inch) instead of SI (cm) units
 	--enable-www=www-dir	Set www directory [PREFIX/www]
 	--enable-eps		Make Encapsulated PostScript by default [Freeform PS]
@@ -237,9 +237,9 @@ supports shared (dynamic) libraries you can select the option
 
 By default, GMT will use Dave Watson's Delauney triangulation
 routine.  However, a much faster alternative is available from
-Jonathan Shewchuck, but his routine is not distributed under the GNU
+Jonathan Shewchuk, but his routine is not distributed under the GNU
 Public License.  If you work for a for-profit organization you should read
-Shewchuck's copyright statement (in src/README.TRIANGLE) first.  If you can
+Shewchuk's copyright statement (in src/README.TRIANGLE) first.  If you can
 use his routine you should append --enable-triangle.
 
 At run-time, GMT will initialize all default variables by reading
@@ -263,7 +263,7 @@ simultaneously (thereby corrupting it), GMT implements the POSIX
 advisory file locking scheme and sets and releases locks on these
 files.  Under GNU/Linux, this does not work when the files reside
 in directories mounted with NFS.  Since it works with NFS under
-other UNIX systems we suspect this is a [temporary] limination of GNU
+other UNIX systems we suspect this is a [temporary] limitation of GNU
 NSF.  If the file locking gives you trouble you may disable it by
 supplying the --disable-flock flag to configure (or manually add
 -DNO_LOCK to CC_OPT in the src/makegmt.macros file)
@@ -328,7 +328,7 @@ GMT directory), type
 
 	make	(or make all)
 	
-which will compile/link all the programs.  After a succesful
+which will compile/link all the programs.  After a successful
 compilation you may install the executables in the designated
 bin directory with the command
 
@@ -344,7 +344,7 @@ the GMT wrapper script and its man page by saying
 
 	make install-wrapper
 	
-After a successfull install you can have *.o files and the local
+After a successful install you can have *.o files and the local
 executables removed by saying
 
 	make clean
@@ -411,7 +411,7 @@ GMT or simply perform data manipulation.  In addition, misc.
 code developed by us depend on GMT libraries.  Such code is available
 in the file GMT_suppl.tar.gz (or .bz2).  Note that these programs
 are not part of the official GMT package and were not all developed by
-us.  Please DO NOT send us bug reports or other inquieries
+us.  Please DO NOT send us bug reports or other inquiries
 regarding these programs.  The README files in the tar archive
 indicate where to direct such requests (if applicable).
 Currently, the supplemental archive include the directories:
@@ -497,9 +497,9 @@ Make sure you provide us with enough information so that we can recreate
 the problem.
 	Please register via the GMT web page (gmt.soest.hawaii.edu).
 Two mailing lists of interrest to GMT users are available:
-gmtgroup@soest allows us to notify registrered users in the event of bugfixes
+gmtgroup@soest allows us to notify registered users in the event of bugfixes
 and/or new releases.  A separate mailing list (gmthelp@soest.hawaii.edu) exists
-for GMT users who have questions about GMT intallation and usage.  If you want
+for GMT users who have questions about GMT installation and usage.  If you want
 to subscribe to one or both of these mailinglists, send a message to
 listserver@soest.hawaii.edu that contains one or both of the commands
 

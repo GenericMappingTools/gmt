@@ -1,5 +1,5 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.9 2001-04-18 23:14:02 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.10 2001-12-20 02:56:01 ben Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
@@ -7,7 +7,7 @@
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD=
 "POST">
 <INPUT TYPE="hidden" VALUE="3.4" NAME="gmt_version">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.9 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.10 $" NAME="form_version">
 
 <H1></H1>
 <H1><CENTER><STRONG>GMT 3.4 Installation Helper</CENTER></STRONG>
@@ -165,7 +165,7 @@ are behind a firewall.  In that case you may want to select passive ftp mode.</I
 <INPUT TYPE="checkbox" NAME="checkbox_suppl" CHECKED="true"> GMT Supplemental Archive (0.6/0.5 Mb, see section C.10 below for details)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_high"> GMT High-resolution coastlines (10.7/8.6 Mb)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_full"> GMT full-resolution coastlines (47.1/28.8 Mb)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_triangle"> J. Shewchuck's fast triangulation routine (0.11/0.09 Mb, faster, but not covered by GNU License)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_triangle"> J. Shewchuk's fast triangulation routine (0.11/0.09 Mb, faster, but not covered by GNU License)<BR>
 
 <P>
 <I>Note: The first two are required for a simple GMT install (in order to run all the examples in the cookbook).
@@ -173,7 +173,7 @@ Many users will also prefer to get the higher resolution coastline files for map
 example scripts are required if you want to run the test suite.  The tutorial component is needed to run
 the tutorial examples.  Finally, you may want to get the optional
 but faster triangulation routine although it is not distributed under the GNU Public License.  For-profit
-organizations should first inspect <A HREF="README.TRIANGLE">Shewchuck's license</A>.  Make sure you remove
+organizations should first inspect <A HREF="README.TRIANGLE">Shewchuk's license</A>.  Make sure you remove
 old GMT *.bz2 or *.gz archives from the working directory before you run the script; otherwise the script
 may decide that it does not need to ftp new versions of those archives.</I>
 

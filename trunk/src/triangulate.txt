@@ -19,7 +19,7 @@ The id numbers refer to the points position in the input file.
 As an option, you may choose to create a multiple segment file that can be piped through
 \fBpsxy\fP to draw the triangulation network.  If \fB\-G \-I\fP are set a grid will be calculated based
 on the surface defined by the planar triangles.  The actual algorithm used
-in the triangulations is either that of Watson [1982] [Default] or Shewchuck [1996] (if installed).
+in the triangulations is either that of Watson [1982] [Default] or Shewchuk [1996] (if installed).
 This choice is made during the GMT installation.
 .TP
 \fIinfiles\fP
@@ -82,7 +82,7 @@ triangulate samples.xyz \fB\-M \-R\fP-100/-90/30/34 SCALE | psxy \fB\-M \-R\fP-1
 .SH REFERENCES
 Watson, D. F., 1982, Acord: Automatic contouring of raw data, \fIComp. & Geosci., 8\fP, 97\-101.
 .br
-Shewchuck, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
+Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
 and Delaunay Triangulator, First Workshop on Applied Computational Geometry
 (Philadelphia, PA), 124-133, ACM, May 1996.
 .br
