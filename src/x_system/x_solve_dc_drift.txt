@@ -39,7 +39,7 @@ Solve for corrections involving COEs from legs in the \fIuselegsfile\fP only.
 Create a binary correction file (which can be read by \fBxlist\fP and \fBgmtlist\fP).
 .TP
 .B \-A
-Create an ASCII correction table. At least one of \-A and \-B must be specified.
+Create an ASCII correction table. At least one of \fB\-A\fP and \fB\-B\fP must be specified.
 .TP
 .B \-V
 Operate in verbose mode.
