@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.31 2004-05-26 03:25:22 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.32 2004-08-24 21:18:11 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -182,6 +182,7 @@ install:	all
 			mkdir -p $(libdir); \
 		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
+			rm -f $(libdir)/libpsl.* $(libdir)/libgmt.*; \
 			$(INSTALL) -m 444 libpsl.a $(libdir); \
 			$(INSTALL) -m 444 libgmt.a $(libdir); \
 			if [ -f libpsl.$(SL) ]; then \
