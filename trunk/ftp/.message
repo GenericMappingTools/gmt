@@ -1,11 +1,13 @@
-This server is one of six mirror sites for the Generic Mapping Tools (GMT).
-		Current version is 4.0beta
+This server is one of 8 mirror sites for the Generic Mapping Tools (GMT).
+		Current version is 4.0
 
 The mirror sites are:
 
 gmt.soest.hawaii.edu	 : SOEST [GMT Website], Honolulu, Hawaii, USA
 falcon.grdl.noaa.gov	 : NOAA, Silver Spring, Maryland, USA
-ftp.geologi.uio.no	 : IFG, Institute for Geology, Oslo, Norway
+ftp.iris.edu		 : IRIS, Seattle, Washington, USA
+ftp.geologi.uio.no	 : IFG, Institute for Geology, Oslo, NORWAY
+gd.tuwien.ac.at		 : GDS, Vienna U of Techology, AUSTRIA
 ftp.iag.usp.br		 : IAG-USP, Sao Paulo, BRAZIL
 ftp.eos.hokudai.ac.jp	 : ISV, Hokkaido U, Sapporo, JAPAN
 life.csu.edu.au:	 : Charles Sturt U, Albury, AUSTRALIA
