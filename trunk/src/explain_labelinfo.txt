@@ -1,0 +1,21 @@
+.br
+\fB+a\fP\fIangle\fP for annotations at a fixed angle, \fB+an\fP for line-normal, or \fB+ap\fP for line-parallel [Default].
+.br
+\fB+c\fP\fIdx\fP[/\fIdy\fP] sets the clearance between label and optional text box [0.05i/0.05i].
+.br
+\fB+f\fP\fIsize\fP sets the desired font size in points [Default is 9].  The font used is controlled by \fBANNOT_FONT_PRIMARY\fP.
+.br
+\fB+g\fP\fIcolor\fP sets color of opaque text box [Default is transparent box].
+.br
+\fB+j\fP\fIjust\fP sets label justification [Default is CM].
+.br
+\fB+o|O\fP activates the drawing of rectangular or rounded rectangular outline of text box [Default is no outline].
+.br
+\fB+p\fP\fIpen\fP sets pen for text box [Default is width = 0.25p, color = black, texture = solid].
+.br
+\fB+t\fP specifies transparent text box [Default].
+.br
+\fB+T\fP specifies transparent text box and places text along the curved path.
+.br
+\fB+u\fP\fIunit\fP appends \fIunit\fP to all contour labels. If \fIunit\fP starts with a leading hypen (-) then there will be no space
+between label value and the unit. [Default is no unit].
