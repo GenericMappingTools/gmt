@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.17 2004-04-20 18:29:36 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.18 2004-10-11 00:34:48 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -434,6 +434,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	if (mode == 'r' || mode == 'R') {	/* Open file for reading */
 		if (mode == 'R') header = FALSE;
 		r_w = 0;
+		G->scale = GMT_d_NaN;
 		G->id = GMT_grd_get_i_format (file, G->name, &G->scale, &G->offset);
 		G->check = !GMT_is_dnan (GMT_grd_in_nan_value);
 	}
@@ -447,6 +448,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 		G->id = GMT_grd_get_o_format (file, G->name, &G->scale, &G->offset);
 		G->check = !GMT_is_dnan (GMT_grd_out_nan_value);
 	}
+	G->scale = G->header.z_scale_factor;	G->offset = G->header.z_add_offset;
 	if (GRD_IS_CDF (G->id)) {		/* Open netCDF file */
 		check_nc_status (nc_open (G->name, cdf_mode[r_w], &G->fid));
 		check_nc_status (nc_inq_varid (G->fid, "z", &G->z_id));	/* Get variable id */

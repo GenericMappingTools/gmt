@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.10 2004-01-13 01:53:26 pwessel Exp $
+ *	$Id: gmt_grdio.h,v 1.11 2004-10-11 00:34:48 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -76,7 +76,7 @@ struct GMT_GRDFILE {
 	BOOLEAN auto_advance;	/* TRUE if we want to read file sequentially */
 	
 	double scale;		/* scale to use for i/o */
-	double offset;		/* offset to use for i/i */
+	double offset;		/* offset to use for i/o */
 	
 	FILE *fp;		/* File pointer for native files */
 	
