@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.73 2004-06-09 21:34:38 pwessel Exp $
+ *	$Id: pslib.c,v 1.74 2004-06-09 21:54:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3782,7 +3782,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 	
 	while (fgets (buf, 128, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-		if (sscanf (buf, "%s %lf %d %lf", fullname, &ps.font[i].height, &ps.font[i].encoded, &ps.font[i].ave_width) != 4) {
+		if (sscanf (buf, "%s %lf %d", fullname, &ps.font[i].height, &ps.font[i].encoded) != 3) {
 			fprintf (stderr, "PSL Fatal Error: Trouble decoding font info for font %d\n", i);
 			exit (EXIT_FAILURE);
 		}
@@ -3813,7 +3813,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 		while (fgets (buf, 128, in)) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 			ps.font[i].name = (char *)ps_memory (VNULL, strlen (buf), sizeof (char));
-			if (sscanf (buf, "%s %lf %d %lf ", ps.font[i].name, &ps.font[i].height, &ps.font[i].encoded, &ps.font[i].ave_width) != 4) {
+			if (sscanf (buf, "%s %lf %d", ps.font[i].name, &ps.font[i].height, &ps.font[i].encoded) != 3) {
 				fprintf (stderr, "PSL Fatal Error: Trouble decoding custom font info for font %d\n", i - *n_GMT_fonts);
 				exit (EXIT_FAILURE);
 			}

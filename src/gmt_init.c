@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.140 2004-06-09 21:34:38 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.141 2004-06-09 21:54:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4691,7 +4691,7 @@ void GMT_init_fonts (int *n_fonts)
 	
 	while (fgets (buf, 128, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-		if (sscanf (buf, "%s %lf %*d %lf", fullname, &GMT_font[i].height, &GMT_font[i].ave_width) != 3) {
+		if (sscanf (buf, "%s %lf %*d", fullname, &GMT_font[i].height) != 2) {
 			fprintf (stderr, "GMT Fatal Error: Trouble decoding font info for font %d\n", i);
 			exit (EXIT_FAILURE);
 		}
@@ -4722,7 +4722,7 @@ void GMT_init_fonts (int *n_fonts)
 		while (fgets (buf, 128, in)) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 			GMT_font[i].name = (char *)GMT_memory (VNULL, strlen (buf), sizeof (char), GMT_program);
-			if (sscanf (buf, "%s %lf %*d %lf", GMT_font[i].name, &GMT_font[i].height, &GMT_font[i].ave_width) != 3) {
+			if (sscanf (buf, "%s %lf %*d", GMT_font[i].name, &GMT_font[i].height) != 2) {
 				fprintf (stderr, "GMT Fatal Error: Trouble decoding custom font info for font %d\n", i - n_GMT_fonts);
 				exit (EXIT_FAILURE);
 			}
