@@ -624,8 +624,9 @@ gives the first year in a 100-year sequence.  For example, if \fBY2K_OFFSET_YEAR
 1828. [1950].
 .TP
 .B XY_TOGGLE * (\-:)
-Set if the first two columns of input files contain (latitude,longitude) or (y,x) rather than the expected
-(longitude,latitude) or (x,y)  [FALSE].
+Set if the first two columns of input and output files contain (latitude,longitude) or (y,x) rather than the expected
+(longitude,latitude) or (x,y).  FALSE means we have (x,y) both on input and output.  TRUE means both input and output
+should be (y,x).  IN means only input has (y,x), while OUT means only output should be (y,x).  [FALSE].
 .TP
 .B Y_AXIS_TYPE
 Determines if the annotations for a y-axis (for linear projections) should be plotted horizontally (hor_text)

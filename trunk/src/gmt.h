@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.38 2002-08-26 17:24:57 pwessel Exp $
+ *	$Id: gmt.h,v 1.39 2002-09-27 18:04:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -300,7 +300,7 @@ struct GMTDEFAULTS {
 	double y_axis_length;		/* Length of y-axis if no scale is given [5] */
 	double x_origin;		/* x-origin of plot, i.e. where lower left corner plots on paper [1] */
 	double y_origin;		/* y-origin of plot, i.e. where lower left corner plots on paper [1] */
-	BOOLEAN xy_toggle;		/* TRUE means read/write I/O as lat/lon instead of lon/lat [FALSE] */
+	BOOLEAN xy_toggle[2];		/* TRUE means read/write I/O as lat/lon instead of lon/lat [FALSE,FALSE] */
 	int y_axis_type;		/* Select y-axis with horizontal (0) or vertical (1) annotations  [0] */
 	struct ELLIPSOID {	/* Information about a particular ellipsoid */
 		/* Table taken from Snyder "Map projection - a working manual", p 12 Table 1 */
