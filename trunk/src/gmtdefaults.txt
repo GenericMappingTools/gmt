@@ -540,7 +540,7 @@ implied interval (here the point should be plotted in the middle of May, not at 
 .TP
 .B TIME_LANGUAGE
 Language to use when plotting calendar items such as months and days.  Look in the $GMTHOME/share/time
-directory for available language files [english].
+directory for available language files [US].
 .TP
 .B TIME_SYSTEM
 Determines what the time epoch relative time refers to and what the units are.  Choose from one of the preset systems below
