@@ -2,6 +2,18 @@
 
 Global Self-consistant Hierarchical High-resolution Shorelines
 
+Version 1.5 Sept 11, 2004
+
+Minor update to handle the latest GSHHS v1.3 database.  GSHHS is now
+[finally] self-consistent: There are no longer any lingering cross-
+overs (internal or external), all polygons are explicitly closed,
+and there are no duplicate points along the lines.  The GSHHS header
+record has been expanded by one 4-byte element (called version and
+set to 3 for all polygons) so that the size of the entire header
+structure is a multiple of 8 bytes (now 40 bytes).  The old structure
+was not as portable because padding of structures are architecture-
+dependent.
+
 Version 1.4 Sept 5, 2000
 
 Now GSHHS source code is distributed as a GMT supplement.  The data
