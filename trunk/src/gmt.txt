@@ -34,6 +34,8 @@ be found in the separate manual pages.
 .br
 	fitcircle			Finds the best-fitting great circle to a set of points
 .br
+	gmt2rgb			Convert Sun rasterfile or grid to r, g, b grids
+.br
 	gmtconvert		Convert between ASCII and binary 1-D tables
 .br
 	gmtdefaults		List the current default settings
@@ -113,6 +115,8 @@ be found in the separate manual pages.
 	pshistogram		Plot a histogram
 .br
 	psimage			Plot images (Sun rasterfiles) on maps
+.br
+	pslegend		Plot legend on maps
 .br
 	psmask			Create overlay to mask out regions on maps
 .br
