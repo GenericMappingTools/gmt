@@ -67,12 +67,12 @@ using the DC85.d Euler poles, run
 .sp
 This file can then be plotted with \fBgrdimage\fP.
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grdimage (l),
-.IR project (l),
-.IR mapproject (l),
-.IR backtracker (l),
-.IR originator (l)
+.IR gmt (GMTMANSECTION),
+.IR grdimage (GMTMANSECTION),
+.IR project (GMTMANSECTION),
+.IR mapproject (GMTMANSECTION),
+.IR backtracker (GMTMANSECTION),
+.IR originator (GMTMANSECTION)
 .SH REFERENCES
 Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
 .br

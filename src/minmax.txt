@@ -65,4 +65,4 @@ To find the min and max values for each column, but rounded to integers, use
 .sp
 \fBminmax\fP junkfile \fB\-C \-I\fP1
 .SH "SEE ALSO"
-.IR gmt (l)
+.IR gmt (GMTMANSECTION)

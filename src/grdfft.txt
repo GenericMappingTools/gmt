@@ -125,7 +125,7 @@ be 4 km beneath the observation level can be computed as
 where 0.022 is the scale needed for the first term in Parker's expansion for 
 computing gravity from topography (= 2 * PI * G * (rhom - rhol)).
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grdedit (l),
-.IR grdmath (l),
-.IR grdproject (l)
+.IR gmt (GMTMANSECTION),
+.IR grdedit (GMTMANSECTION),
+.IR grdmath (GMTMANSECTION),
+.IR grdproject (GMTMANSECTION)

@@ -158,9 +158,9 @@ Functions\fP, Applied Mathematics Series, vol. 55, Dover, New York.
 Press, W. H.,  S. A. Teukolsky, W. T. Vetterling, B. P. Flannery, 1992, 
 \fINumerical Recipes\fP, 2nd edition, Cambridge Univ., New York.
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grd2xyz (l),
-.IR grdedit (l),
-.IR grdinfo (l),
-.IR grdmath (l),
-.IR xyz2grd (l)
+.IR gmt (GMTMANSECTION),
+.IR grd2xyz (GMTMANSECTION),
+.IR grdedit (GMTMANSECTION),
+.IR grdinfo (GMTMANSECTION),
+.IR grdmath (GMTMANSECTION),
+.IR xyz2grd (GMTMANSECTION)

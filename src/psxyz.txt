@@ -218,6 +218,6 @@ The \fB\-N\fP option does not adjust the BoundingBox information so you may
 have to post-process the PostScript outout with epstool or ps2epsi to obtain
 a correct BoundingBox.
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR psbasemap (l),
-.IR psxy (l)
+.IR gmt (GMTMANSECTION),
+.IR psbasemap (GMTMANSECTION),
+.IR psxy (GMTMANSECTION)

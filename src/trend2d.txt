@@ -101,9 +101,9 @@ To find out how many terms (up to 10) in a robust interpolant are significant in
 .sp
 \fBtrend2d\fP data.xyz \fB\-N\fP10\fBr \-I\fP \fB\-V\fP
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grdtrend (l),
-.IR trend1d (l)
+.IR gmt (GMTMANSECTION),
+.IR grdtrend (GMTMANSECTION),
+.IR trend1d (GMTMANSECTION)
 .SH REFERENCES
 Huber, P. J., 1964, Robust estimation of a location parameter, \fIAnn. Math. Stat., 35,\fP 73-101.
 .br

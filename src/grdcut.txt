@@ -27,6 +27,6 @@ do not trust the gridding near the edges, so you want to keep only the area betw
 .sp
 \fBgrdcut\fP grav_148_162_8_32.grd \fB\-G\fPgrav_150_160_10_30.grd \fB\-R\fP150/160/10/30 \fB\-V\fP
 .SH "SEE ALSO"
-.IR grdpaste (l),
-.IR grdinfo (l),
-.IR gmt (l)
+.IR grdpaste (GMTMANSECTION),
+.IR grdinfo (GMTMANSECTION),
+.IR gmt (GMTMANSECTION)

@@ -1,6 +1,6 @@
-#	$Id: Makefile,v 1.9 2002-05-17 19:10:29 pwessel Exp $
+#	$Id: Makefile,v 1.10 2004-01-07 20:44:53 pwessel Exp $
 #
-#	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
+#	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -14,7 +14,7 @@
 #
 #	Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
-#		Makefile for GMT Version 4
+#		Makefile for GMT Version 4.x
 #		GNU, Sys V, and BSD Compatible
 #
 #	Follow the instructions in this makefile to customize your setup.
@@ -50,7 +50,7 @@
 #	Authors:	Paul Wessel, SOEST, U. of Hawaii
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
 #
-#	Date:		18-MAY-2002
+#	Date:		06-JAN-2004
 #-------------------------------------------------------------------------------
 #	Get Default Macros
 #-------------------------------------------------------------------------------
@@ -150,6 +150,7 @@ uninstall-data:
 
 
 install-man:
+#		First create suppl *.l from *.man in the local installation tree (regular gmt *.l is already there)
 		\rm -f manjob.sh
 		for d in $(SUPPL_M); do \
 			if [ -d src/$$d ] ; then \
@@ -164,24 +165,31 @@ install-man:
 		if [ -f manjob.sh ]; then \
 			cd man/manl; \
 			$(SHELL) $(rootdir)/manjob.sh; \
-			\rm -f $(rootdir)/manjob.sh; \
+			rm -f $(rootdir)/manjob.sh; \
 		fi
 		if [ -f manuninstall.sh ]; then \
-			\rm -f $(rootdir)/manuninstall.sh; \
+			rm -f $(rootdir)/manuninstall.sh; \
 		fi
+#		If the install man/manl dir is not where we want things (or it is the wrong section), move/rename files
 		if [ ! $(rootdir)/man/manl = $(mandir)/man$(mansection) ]; then \
 			mkdir -p $(mandir)/man$(mansection); \
-			\cp man/manl/*.l $(mandir)/man$(mansection); \
+			cp man/manl/*.l $(mandir)/man$(mansection); \
 			cd $(mandir)/man$(mansection); \
 			for f in *.l; do \
-				echo "\\mv $$f $$f" | sed -e 's/.l$$/.$(mansection)/g' >> $(rootdir)/manjob.sh; \
+				echo "sed -e 's/(GMTMANSECTION)/($(mansection))/g' $$f.l > $$f.$(mansection)" >> $(rootdir)/manjob.sh; \
 				echo "\\rm -f $$f"  | sed -e 's/.l$$/.$(mansection)/g' >> $(rootdir)/manuninstall.sh; \
 			done; \
 			$(SHELL) $(rootdir)/manjob.sh; \
-			\rm -f $(rootdir)/manjob.sh; \
+			rm -f $(rootdir)/manjob.sh; \
 			cd $(rootdir); \
 		else \
-			echo "Install man directory the same as distribution man directory - nothing copied"; \
+			echo "Install man directory the same as distribution man directory - man section ID updated"; \
+			cd man/manl; \
+			for f in *.l; do \
+				echo "sed -e 's/(GMTMANSECTION)/(l)/g' $$f.l > $$f.new" >> $(rootdir)/manjob.sh; \
+				echo "mv -f $$f.new $$f.l" >> $(rootdir)/manjob.sh; \
+			done; \
+			
 		fi
 
 
@@ -189,7 +197,7 @@ uninstall-man:
 		if [ ! $(rootdir)/man/manl = $(mandir)/man$(mansection) ]; then \
 			cd $(mandir)/man$(mansection); \
 			$(SHELL) $(rootdir)/manuninstall.sh; \
-			\rm -f $(rootdir)/manuninstall.sh; \
+			rm -f $(rootdir)/manuninstall.sh; \
 			cd $(rootdir); \
 		else \
 			echo "Install man directory the same as distribution man directory - nothing deleted"; \
@@ -199,19 +207,19 @@ uninstall-man:
 install-www:
 		for d in $(SUPPL_M); do \
 			if [ -d src/$$d ] ; then \
-				\cp src/$$d/*.html $(rootdir)/www/gmt/doc/html; \
+				cp src/$$d/*.html $(rootdir)/www/gmt/doc/html; \
 			fi; \
 		done
 		if [ ! $(rootdir)/www = $(wwwdir) ]; then \
 			mkdir -p $(wwwdir); \
-			\cp -r www/gmt $(wwwdir); \
+			cp -r www/gmt $(wwwdir); \
 		else \
 			echo "Install www directory the same as distribution www directory - nothing copied"; \
 		fi
 
 uninstall-www:
 		if [ ! $(rootdir)/www = $(wwwdir) ]; then \
-			\rm -r -f $(wwwdir)/gmt; \
+			rm -r -f $(wwwdir)/gmt; \
 		else \
 			echo "Install www directory the same as distribution www directory - nothing deleted"; \
 		fi
@@ -223,7 +231,7 @@ install-wrapper:
 			echo "Install wrapper bin directory the same as distribution bin directory - nothing installed"; \
 		fi
 		if [ ! $(rootdir)/man = $(wrapmandir) ]; then \
-			\cp man/manl/GMT.l $(wrapmandir)/man$(mansection); \
+			cp man/manl/GMT.l $(wrapmandir)/man$(mansection); \
 		else \
 			echo "Install wrapper man directory the same as distribution man directory - nothing installed"; \
 		fi

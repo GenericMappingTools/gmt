@@ -72,9 +72,9 @@ a 200 km search radius, spherical distances, using an quadrant search, and set e
 \fBnearneighbor\fP geoid.xyz \fB\-R\fP0/360/-90/90 \fB\-I\fP1 \fB\-L\fPg \fB\-G\fPgeoid.grd
 \fB\-S\fP20K \fB\-N\fP4
 .SH "SEE ALSO"
-.IR blockmean (l),
-.IR blockmedian (l),
-.IR blockmode (l),
-.IR gmt (l),
-.IR surface (l),
-.IR triangulate (l)
+.IR blockmean (GMTMANSECTION),
+.IR blockmedian (GMTMANSECTION),
+.IR blockmode (GMTMANSECTION),
+.IR gmt (GMTMANSECTION),
+.IR surface (GMTMANSECTION),
+.IR triangulate (GMTMANSECTION)

@@ -105,7 +105,7 @@ coastlines, use
 \fBgmtselect\fP data.d \fB\-R\fP120/121/22/24 \fB\-Dh\fP \fB\-Ns\fP/\fBk\fP > subset
 .br
 .SH "SEE ALSO"
-.IR gmtdefaults (l),
-.IR gmt (l),
-.IR grdlandmask (l),
-.IR pscoast (l)
+.IR gmtdefaults (GMTMANSECTION),
+.IR gmt (GMTMANSECTION),
+.IR grdlandmask (GMTMANSECTION),
+.IR pscoast (GMTMANSECTION)

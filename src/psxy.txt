@@ -76,7 +76,8 @@ Multiple segment file.  Segments are separated by a record whose first character
 [Default is '>'].
 .TP
 .B \-N
-Do NOT skip symbols that fall outside map border [Default plots points inside border only].
+Do NOT skip symbols that fall outside map border [Default plots points inside border only].  The
+option does not apply to lines and polygons which are always clipped to the map region.
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
@@ -296,6 +297,6 @@ dimensions will be scaled by the actual symbol size chosen at run-time.  To desi
 with \fBpsbasemap \-R\fP-0.5/0.5/-0.5/0.5 \fB\-JX\fP4\fBi\fP \fB\-Ba\fP0.1\gBg\gP0.05 \fB\-P\fP > grid.ps and
 draw your symbol, centering it on (0,0).  For examples of symbols, see the set supplied with GMT in $GMTHOME/share/custom.
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR psbasemap (l),
-.IR psxyz (l)
+.IR gmt (GMTMANSECTION),
+.IR psbasemap (GMTMANSECTION),
+.IR psxyz (GMTMANSECTION)

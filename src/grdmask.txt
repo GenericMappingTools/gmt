@@ -61,9 +61,9 @@ To set nodes within 50 km of data points to 1 and other nodes to NaN, do
 .sp
 \fBgrdmask\fP data.xyz \fB\-R\fP-60/-40/-40/-30 \fB\-I\fP5m \fB\-N\fPNaN/1/1 \fB\-S\fP50\fBk\fP \fB\-G\fPdata_mask.grd  \fB\-V\fP
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grdlandmask (l),
-.IR grdmath (l),
-.IR grdclip (l),
-.IR psmask (l),
-.IR psclip (l)
+.IR gmt (GMTMANSECTION),
+.IR grdlandmask (GMTMANSECTION),
+.IR grdmath (GMTMANSECTION),
+.IR grdclip (GMTMANSECTION),
+.IR psmask (GMTMANSECTION),
+.IR psclip (GMTMANSECTION)

@@ -58,6 +58,6 @@ Then run
 .sp
 \fBgrdblend\fP blend.job \fB\-G\fPblend.grd \fB\-R\fP<full_region> \fB\-I\fP<dx/dy> \fB-V\fP
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grd2xyz (l),
-.IR grdedit (l)
+.IR gmt (GMTMANSECTION),
+.IR grd2xyz (GMTMANSECTION),
+.IR grdedit (GMTMANSECTION)

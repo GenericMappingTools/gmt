@@ -88,5 +88,5 @@ the Mercator gridding:
 .sp
 Without the \fB\-M\fP option the same command will yield a geographic grid.
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR img2mercgrd (l)
+.IR gmt (GMTMANSECTION),
+.IR img2mercgrd (GMTMANSECTION)

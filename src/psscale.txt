@@ -89,6 +89,6 @@ When the cpt file is discrete and no illumination is specified, the color bar wi
 using polygons.  For all other cases we must paint with an image.  Some color printers may give
 slightly different colors for the two methods given identical RGB values.
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR makecpt (l),
-.IR grd2cpt (l)
+.IR gmt (GMTMANSECTION),
+.IR makecpt (GMTMANSECTION),
+.IR grd2cpt (GMTMANSECTION)

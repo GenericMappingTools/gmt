@@ -31,8 +31,8 @@ already in the database need to be re-examined, then run \fBx_remove\fP which wi
 traces of the specified cruises from the x_system data base files. Now we can pass the pairs that
 need to be redone through \fBx_over/x_update\fP again.
 .SH SEE ALSO
-.IR gmt (l),
-.IR x_system (l)
+.IR gmt (GMTMANSECTION),
+.IR x_system (GMTMANSECTION)
 .SH REFERENCES
 Wessel, P. XOVER: A Cross-over Error Detector for Track Data,
 \fIComputers & Geosciences, 15\fP, 333-346.

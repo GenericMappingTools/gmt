@@ -1,4 +1,4 @@
-# $Id: Datums.txt,v 1.2 2003-12-23 22:55:27 pwessel Exp $
+# $Id: Datums.txt,v 1.3 2004-01-07 20:44:53 pwessel Exp $
 #
 # List of Datums available in GMT
 # The (Dx,Dy,Dz) values are in meters relative to WGS-84
@@ -93,7 +93,7 @@ Indian	Everest-1830-Kalianpur	295	736	257	India; Nepal
 Indian	Everest-1830-Pakistan	283	682	231	Pakistan
 Indian 1954	Everest-1830	217	823	299	Thailand
 Indian 1960	Everest-1830	182	915	344	Vietnam (Con Son Island)
-Indian 1960	Everest-1830	198	881	317	Vietnam (Near 16øN)
+Indian 1960	Everest-1830	198	881	317	Vietnam (Near 16N)
 Indian 1975	Everest-1830	210	814	289	Thailand
 Indonesian	Indonesian	-24	-15	5	Indonesia
 Ireland 1965	Modified-Airy	506	-122	611	Ireland
@@ -123,8 +123,8 @@ Nahrwan	Clarke-1880	-243	-192	477	Saudi Arabia
 Nahrwan	Clarke-1880	-249	-156	381	United Arab Emirates
 Naparima BWI	International-1924	-10	375	165	Trinidad & Tobago
 North American 1927	Clarke-1866	-5	135	172	Alaska (Excluding Aleutian Ids)
-North American 1927	Clarke-1866	-2	152	149	Alaska (Aleutian Ids East of 180øW)
-North American 1927	Clarke-1866	2	204	105	Alaska (Aleutian Ids West of 180øW)
+North American 1927	Clarke-1866	-2	152	149	Alaska (Aleutian Ids East of 180W)
+North American 1927	Clarke-1866	2	204	105	Alaska (Aleutian Ids West of 180W)
 North American 1927	Clarke-1866	-4	154	178	Bahamas (Except San Salvador Id)
 North American 1927	Clarke-1866	1	140	165	Bahamas (San Salvador Island)
 North American 1927	Clarke-1866	-7	162	188	Canada (Alberta; British Columbia)
@@ -168,15 +168,15 @@ Point 58	Clarke-1880	-106	-129	165	MEAN FOR Burkina Faso & Niger
 Pointe Noire 1948	Clarke-1880	-148	51	-291	Congo
 Porto Santo 1936	International-1924	-499	-249	314	Porto Santo; Madeira Islands
 Provisional South American 1956	International-1924	-270	188	-388	Bolivia
-Provisional South American 1956	International-1924	-270	183	-390	Chile (Northern; Near 19øS)
-Provisional South American 1956	International-1924	-305	243	-442	Chile (Southern; Near 43øS)
+Provisional South American 1956	International-1924	-270	183	-390	Chile (Northern; Near 19S)
+Provisional South American 1956	International-1924	-305	243	-442	Chile (Southern; Near 43S)
 Provisional South American 1956	International-1924	-282	169	-371	Colombia
 Provisional South American 1956	International-1924	-278	171	-367	Ecuador
 Provisional South American 1956	International-1924	-298	159	-369	Guyana
 Provisional South American 1956	International-1924	-288	175	-376	MEAN FOR Bolivia; Chile; Colombia; Ecuador; Guyana; Peru; Venezuela
 Provisional South American 1956	International-1924	-279	175	-379	Peru
 Provisional South American 1956	International-1924	-295	173	-371	Venezuela
-Provisional South Chilean 1963	International-1924	16	196	93	Chile (Near 53øS) (Hito XVIII)
+Provisional South Chilean 1963	International-1924	16	196	93	Chile (Near 53S) (Hito XVIII)
 Puerto Rico	Clarke-1866	11	72	-101	Puerto Rico; Virgin Islands
 Pulkovo 1942	Krassovsky	28	-130	-95	Russia
 Qatar National	International-1924	-128	-283	22	Qatar

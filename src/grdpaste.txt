@@ -25,7 +25,7 @@ make outfile.grd which will be 150 - 180 and -30S - 30N by:
 .sp
 \fBgrdpaste\fP file_a.grd file_b.grd \fB\-G\fPoutfile.grd \fB\-V\fP
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grdcut (l),
-.IR grdinfo (l),
-.IR grdsample (l)
+.IR gmt (GMTMANSECTION),
+.IR grdcut (GMTMANSECTION),
+.IR grdinfo (GMTMANSECTION),
+.IR grdsample (GMTMANSECTION)

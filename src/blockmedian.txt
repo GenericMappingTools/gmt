@@ -56,10 +56,10 @@ To find 5 by 5 minute block medians from the double precision binary data in haw
 .sp
 \fBblockmedian\fP hawaii_b.xyg \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm \-bi\fP3 > hawaii_5x5.xyg
 .SH "SEE ALSO"
-.IR blockmean (l),
-.IR blockmode (l),
-.IR gmt (l),
-.IR gmtdefaults (l),
-.IR nearneighbor (l),
-.IR surface (l),
-.IR triangulate (l)
+.IR blockmean (GMTMANSECTION),
+.IR blockmode (GMTMANSECTION),
+.IR gmt (GMTMANSECTION),
+.IR gmtdefaults (GMTMANSECTION),
+.IR nearneighbor (GMTMANSECTION),
+.IR surface (GMTMANSECTION),
+.IR triangulate (GMTMANSECTION)

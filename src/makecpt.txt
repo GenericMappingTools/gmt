@@ -58,5 +58,5 @@ Since \fBmakecpt\fP will also interpolate from any existing .cpt file you
 may have in your directory, you cannot use one of the listed cpt names
 as an output filename; hence the my_gebco.cpt in the example.
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grd2cpt (l)
+.IR gmt (GMTMANSECTION),
+.IR grd2cpt (GMTMANSECTION)

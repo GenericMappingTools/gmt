@@ -34,5 +34,5 @@ To convert the multiple segment ASCII table test.d to a double precision binary 
 .sp
 \fBgmtconvert\fP test.d \fB\-M \-bo\fP > test.b
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR minmax (l)
+.IR gmt (GMTMANSECTION),
+.IR minmax (GMTMANSECTION)

@@ -41,7 +41,7 @@ area, and make output binary, run
 .sp
 \fBx2sys_datalist\fP `cat tracks.lis` \fB\-F\fPx,y,topo \fB\-R\fP-40/-30/25/35 \fB\-bo\fP > alltopo.xyz
 .SH "SEE ALSO"
-.IR blockmean (l),
-.IR gmt (l),
-.IR surface (l),
-.IR x2sys_cross (l)
+.IR blockmean (GMTMANSECTION),
+.IR gmt (GMTMANSECTION),
+.IR surface (GMTMANSECTION),
+.IR x2sys_cross (GMTMANSECTION)

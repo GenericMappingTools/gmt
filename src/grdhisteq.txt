@@ -92,11 +92,11 @@ it using \fBgrdmath\fP and multiplying by something less than 1.0, to shrink
 the range of the values, thus bringing more than 68% of the image into the
 range [-1, 1].  Alternatively, supply a normalization factor with \fB\-N\fP.
 .SH "SEE ALSO"
-.IR gmtdefaults (l),
-.IR gmt (l),
-.IR grd2cpt (l),
-.IR grdgradient (l),
-.IR grdimage (l),
-.IR grdmath (l),
-.IR grdview (l),
-.IR makecpt (l)
+.IR gmtdefaults (GMTMANSECTION),
+.IR gmt (GMTMANSECTION),
+.IR grd2cpt (GMTMANSECTION),
+.IR grdgradient (GMTMANSECTION),
+.IR grdimage (GMTMANSECTION),
+.IR grdmath (GMTMANSECTION),
+.IR grdview (GMTMANSECTION),
+.IR makecpt (GMTMANSECTION)

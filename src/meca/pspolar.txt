@@ -174,9 +174,9 @@ END
 .br
 .sp
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR psbasemap (l),
-.IR psxy (l)
+.IR gmt (GMTMANSECTION),
+.IR psbasemap (GMTMANSECTION),
+.IR psxy (GMTMANSECTION)
 .SH REFERENCES
 .br
 \fRBomford, G., Geodesy, 4th ed., Oxford University Press, 1980.

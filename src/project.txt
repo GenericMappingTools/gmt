@@ -162,7 +162,7 @@ a file with two records: the north pole (0/90) and the origin (0/0), and find wh
 rotation pole.  Now, use the projected North pole and origin coordinates as the rotation pole and center, respectively,
 and project your file as in the pacific example above.  This gives coordinates for an oblique small circle.
 .SH "SEE ALSO"
-.IR fitcircle (l),
-.IR gmt (l),
-.IR mapproject (l),
-.IR grdproject (l)
+.IR fitcircle (GMTMANSECTION),
+.IR gmt (GMTMANSECTION),
+.IR mapproject (GMTMANSECTION),
+.IR grdproject (GMTMANSECTION)

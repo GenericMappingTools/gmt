@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.31 2004-01-02 22:45:12 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.32 2004-01-07 20:44:53 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -547,7 +547,7 @@ EOF
 	fi
 fi
 
-file=`get_def_answer "Enter name of the parameter file that will now be created" "GMT${VERSION}.par"`
+file=`get_def_answer "Enter name of the parameter file that will now be created" "GMTparam.txt"`
 
 #--------------------------------------------------------------------------------
 # SAVE SESSION SETTINGS TO INSTALL.PAR
@@ -569,6 +569,10 @@ cat << EOF >> $file
 #
 # Do NOT add any spaces around the = signs.  The
 # file MUST conform to Bourne shell syntax
+#---------------------------------------------
+#       GMT VERSION TO INSTALL
+#---------------------------------------------
+VERSION=$VERSION
 #---------------------------------------------
 #       SYSTEM UTILITIES
 #---------------------------------------------
@@ -1348,6 +1352,7 @@ if [ $write_web = 0 ]; then
 	echo "make install-www" >&2
 fi
 
+cd $topdir
 if [ $GMT_delete = "y" ]; then
 	rm -f GMT*.tar.$suffix triangle.tar.$suffix
 	if [ -f GMTfullc.bz2 ]; then	# Special files copied from CD-ROM
@@ -1375,4 +1380,3 @@ if [ ! x"$GMT_web" = x ]; then
 	echo "Add $GMT_web/gmt/gmt_services.html as browser bookmark" >&2
 fi
 echo "-----------------------------------------------------------------------" >&2
-cd $topdir

@@ -90,6 +90,6 @@ equal 1 inch, run
 .br
 .sp
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grdcontour (l),
-.IR psxy (l)
+.IR gmt (GMTMANSECTION),
+.IR grdcontour (GMTMANSECTION),
+.IR psxy (GMTMANSECTION)

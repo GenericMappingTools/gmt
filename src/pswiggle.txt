@@ -110,7 +110,7 @@ awk '{ print NR, $0 }' yourdata.xyz | \fBfilter1d\fP \fB\-Fb\fP5 \fB\-N\fP4/0 > 
 .sp
 and plot this data set instead.
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR filter1d (l),
-.IR psbasemap (l),
-.IR splitxyz (l)
+.IR gmt (GMTMANSECTION),
+.IR filter1d (GMTMANSECTION),
+.IR psbasemap (GMTMANSECTION),
+.IR splitxyz (GMTMANSECTION)

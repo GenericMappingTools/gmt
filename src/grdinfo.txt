@@ -48,7 +48,7 @@ To obtain all the information about the data set in file hawaii_topo.grd:
 .sp
 \fBgrdinfo\fP \fB\-L1 \-L2 \-M\fP hawaii_topo.grd
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grd2cpt (l),
-.IR grd2xyz (l),
-.IR grdedit (l)
+.IR gmt (GMTMANSECTION),
+.IR grd2cpt (GMTMANSECTION),
+.IR grd2xyz (GMTMANSECTION),
+.IR grdedit (GMTMANSECTION)

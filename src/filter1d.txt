@@ -83,5 +83,5 @@ checking for gaps of 10km and asymmetry of 0.3:
 .sp
 \fBfilter1d\fP v3312.dt \fB\-FM\fP50 \fB\-T\fP0/100000/25 \fB\-L\fP10 \fB\-S\fP0.3 > v3312_filt.dt
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR sample1d (l)
+.IR gmt (GMTMANSECTION),
+.IR sample1d (GMTMANSECTION)

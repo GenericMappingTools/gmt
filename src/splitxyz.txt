@@ -101,6 +101,6 @@ and you want to split it into profiles named \fIsurvey\fP.profile\fI#\fP (when g
 .sp
 \fBsplitxyz\fP survey.bin \fB\-N\fPsurvey \fB\-V \-G\fP100 \fB\-: \-M \-bi\fP3
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR gmtlist (l),
-.IR pswiggle (l)
+.IR gmt (GMTMANSECTION),
+.IR gmtlist (GMTMANSECTION),
+.IR pswiggle (GMTMANSECTION)

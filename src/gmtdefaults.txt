@@ -630,5 +630,5 @@ use \fBgmtset\fP to change specified parameters on the command line.
 If you have typographical errors in your \.gmtdefaults4 file(s), a warning message will be
 issued, and the \fBGMT\fP defaults for the affected parameters will be used.
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR gmtset (l)
+.IR gmt (GMTMANSECTION),
+.IR gmtset (GMTMANSECTION)

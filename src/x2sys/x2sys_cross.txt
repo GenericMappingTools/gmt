@@ -119,6 +119,6 @@ files A13232.mgd77 and A99938.mgd77, try
 .sp
 \fBx2sys_cross\fP A13232.mgd77 A99938.mgd77 \fB\-Xe \-D\fPmgd77 \fB\-F\fPlon,lat,top > crossovers.d
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR x2sys_datalist (l)
+.IR gmt (GMTMANSECTION),
+.IR x2sys_datalist (GMTMANSECTION)
 

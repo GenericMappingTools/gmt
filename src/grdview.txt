@@ -145,12 +145,12 @@ use a finer grid size when running gridding programs like \fBsurface\fP or \fBne
 this produces huge \fIPostScript\fP files.  The alternative is to use the \fB\-Qi\fP option, which
 computes bilinear or bicubic continuous color variations within polygons by using scanline conversion to image the polygons.
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR gmt2rgb (l),
-.IR grdcontour (l),
-.IR grdimage (l),
-.IR nearneighbor (l),
-.IR psbasemap (l),
-.IR pscontour (l),
-.IR pstext (l),
-.IR surface (l)
+.IR gmt (GMTMANSECTION),
+.IR gmt2rgb (GMTMANSECTION),
+.IR grdcontour (GMTMANSECTION),
+.IR grdimage (GMTMANSECTION),
+.IR nearneighbor (GMTMANSECTION),
+.IR psbasemap (GMTMANSECTION),
+.IR pscontour (GMTMANSECTION),
+.IR pstext (GMTMANSECTION),
+.IR surface (GMTMANSECTION)

@@ -60,5 +60,5 @@ and 10N to 40N, and you want the output values every 0.5 degree.  Using spherica
 .sp
 \fBgrdfilter\fP north_pacific_dbdb5.grd \fB\-G\fPfiltered_pacific.grd \fB\-Fm\fP600 \fB\-D\fP4 \fB\-R\fP150/250/10/40 \fB\-I\fP0.5 \fB\-V\fP
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grdfft (l)
+.IR gmt (GMTMANSECTION),
+.IR grdfft (GMTMANSECTION)

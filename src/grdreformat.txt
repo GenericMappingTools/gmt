@@ -56,5 +56,5 @@ To convert etopo2.grd to etopo2.i2 that can be used by \fBgrdraster\fP, try
 .sp
 \fBgrdreformat\fP etopo2.grd etopo2.i2=2 \fB\-N \-V\fP
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grdmath (l)
+.IR gmt (GMTMANSECTION),
+.IR grdmath (GMTMANSECTION)

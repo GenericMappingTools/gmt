@@ -73,7 +73,7 @@ To deactivate the clipping in an existing plotfile, run:
 you should split them into two and make each explicitly contain the polar point.  The two
 clip polygons will combine to give the desired effect.
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR grdmask (l),
-.IR psbasemap (l),
-.IR psmask (l)
+.IR gmt (GMTMANSECTION),
+.IR grdmask (GMTMANSECTION),
+.IR psbasemap (GMTMANSECTION),
+.IR psmask (GMTMANSECTION)

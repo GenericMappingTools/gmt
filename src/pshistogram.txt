@@ -95,7 +95,7 @@ cut -f2 errors.xy | \fBpshistogram\fP \fB\-W\fP1 \fB\-R\fP-10/10/0/0 SCALE
 .sp
 Since no y-range was specified, pshistogram will calculate ymax in even increments of 100.
 .SH "SEE ALSO"
-.IR gmt (l),
-.IR psbasemap (l),
-.IR psrose (l),
-.IR psxy (l)
+.IR gmt (GMTMANSECTION),
+.IR psbasemap (GMTMANSECTION),
+.IR psrose (GMTMANSECTION),
+.IR psxy (GMTMANSECTION)

@@ -23,8 +23,8 @@ Give information for Magnetics cross-overs only. [Default is G, M, and T].
 .B \-T
 Give information for Topography cross-overs only. [Default is G, M, and T].
 .SH SEE ALSO
-.IR gmt (l),
-.IR x_system (l)
+.IR gmt (GMTMANSECTION),
+.IR x_system (GMTMANSECTION)
 .SH REFERENCES
 Wessel, P. XOVER: A Cross-over Error Detector for Track Data,
 \fIComputers & Geosciences, 15\fP, 333-346.

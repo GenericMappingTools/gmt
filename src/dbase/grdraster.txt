@@ -69,8 +69,8 @@ standard output:
 .br
 .sp
 .SH "SEE ALSO"
-.IR gmtdefaults (l),
-.IR gmt (l),
-.IR grdsample (l),
-.IR grdfilter (l)
+.IR gmtdefaults (GMTMANSECTION),
+.IR gmt (GMTMANSECTION),
+.IR grdsample (GMTMANSECTION),
+.IR grdfilter (GMTMANSECTION)
 #include "refs.i"
