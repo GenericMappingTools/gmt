@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.152 2005-02-15 23:03:58 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.153 2005-03-02 00:56:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -73,6 +73,7 @@
  *	GMT_smooth_contour	Use Akima's spline to smooth contour
  *	GMT_start_trace		Subfunction used by GMT_trace_contour
  *	GMT_trace_contour	Function that trace the contours in GMT_contours
+ *	GMT_polar_adjust :		Adjust label justification for polar projection
  */
  
 #define GMT_WITH_NO_PS
@@ -82,6 +83,7 @@
 #define DEG_TO_KM (6371.0087714 * D2R)
 #define KM_TO_DEG (1.0 / DEG_TO_KM)
 
+int GMT_polar_adjust(int side, double angle, double x, double y);
 int GMT_start_trace(float first, float second, int *edge, int edge_word, int edge_bit, unsigned int *bit);
 int GMT_trace_contour(float *grd, struct GRD_HEADER *header, double x0, double y0, int *edge, double **x_array, double **y_array, int i, int j, int kk, int offset, int *i_off, int *j_off, int *k_off, int *p, unsigned int *bit, int *nan_flag);
 int GMT_smooth_contour(double **x_in, double **y_in, int n, int sfactor, int stype);
@@ -119,6 +121,7 @@ void GMT_get_radii_of_curvature (double x[], double y[], int n, double r[]);
 int GMT_label_is_OK (char *this_label, char *label, double this_dist, double this_value_dist, int xl, int fj, struct GMT_CONTOUR *G);
 int GMT_contlabel_specs_old (char *txt, struct GMT_CONTOUR *G);
 struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name);
+int GMT_get_label_parameters(int side, double line_angle, int type, double *text_angle, int *justify);
 
 double *GMT_x2sys_Y;
 
@@ -5206,7 +5209,7 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 	
 	/* -L[f][x]<x0>/<y0>/<size>[/<kind>][:label:] OR -L[m][x]<x0>/<y0>/<size>[/<dec>/<declabel>][:label:][+gint[/mint]] */
 	if (ms->fancy == 2) {	/* Magnetic rose */
-		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", txt_a, txt_b, txt_c, txt_d, &ms->dlabel);
+		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", txt_a, txt_b, txt_c, txt_d, ms->dlabel);
 		if (! (k == 3 || k == 5)) {	/* Wrong number of parameters */
 			fprintf (stderr, "%s: GMT SYNTAX ERROR -T option:  Correct syntax\n", GMT_program);
 			fprintf (stderr, "\t-T[f|m][x]<x0>/<y0>/<size>[/<info>][:wesnlabels:][+<gint>[/<mint>]]\n");
