@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.129 2004-06-19 03:06:15 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.130 2004-07-12 22:08:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1226,7 +1226,8 @@ void GMT_fancy_map_boundary (double w, double e, double s, double n)
 	ps_setpaint (gmtdefs.basemap_frame_rgb);
 
 	fwidth = fabs (gmtdefs.frame_width);
-	if (GMT_get_map_interval (1, GMT_TICK_LOWER) != 0.0) {	/* Need two-layer frame */
+	/* if (GMT_get_map_interval (1, GMT_TICK_LOWER) != 0.0) { */	/* Need two-layer frame */
+	if (frame_info.axis[1].item[GMT_TICK_LOWER].active) {	/* Need two-layer frame */
 		fwidth *= 0.5;
 		dual = TRUE;
 	}
@@ -1289,7 +1290,9 @@ void GMT_fancy_frame_straightlat_checkers (double w, double e, double s, double 
 	/* Tick S-N axes */
 	
 	for (k = 0; k < 1 + secondary_too; k++) {
-		if ((dy = GMT_get_map_interval (1, item[k])) != 0.0) {
+		/* if ((dy = GMT_get_map_interval (1, item[k])) != 0.0) { */
+		if (frame_info.axis[1].item[item[k]].active) {
+			dy = GMT_get_map_interval (1, item[k]);
 			shade = ((int)floor ((s - frame_info.axis[1].phase) / dy) + 1) % 2;
 			s1 = floor((s - frame_info.axis[1].phase)/dy) * dy + frame_info.axis[1].phase;
 			ny = (s1 > n) ? -1 : (int)((n-s1) / dy + SMALL);
@@ -1332,7 +1335,8 @@ void GMT_fancy_frame_straightlon_checkers (double w, double e, double s, double 
 	GMT_fancy_frame_offset (angle_n, shift_n);
 	
 	for (k = 0; k < 1 + secondary_too; k++) {
-		if ((dx = GMT_get_map_interval (0, item[k])) != 0.0) {
+		if (frame_info.axis[0].item[item[k]].active) {
+			dx = GMT_get_map_interval (0, item[k]);
 			shade = ((int)floor ((w - frame_info.axis[0].phase)/ dx) + 1) % 2;
 			w1 = floor ((w - frame_info.axis[0].phase)/ dx) * dx + frame_info.axis[0].phase;
 			nx = (w1 > e) ? -1 : (int)((e - w1) / dx + SMALL);
@@ -1374,7 +1378,8 @@ void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n,
 	dr = 0.5 * gmtdefs.frame_width;
 	
 	for (k = 0; k < 1 + secondary_too; k++) {
-		if ((dx = GMT_get_map_interval (0, item[k])) != 0.0) {
+		if (frame_info.axis[0].item[item[k]].active) {
+			dx = GMT_get_map_interval (0, item[k]);
 			shade = ((int)floor ((w - frame_info.axis[0].phase) / dx) + 1) % 2;
 			w1 = floor((w - frame_info.axis[0].phase)/dx) * dx + frame_info.axis[0].phase;
 			nx = (w1 > e) ? -1 : (int)((e-w1) / dx + SMALL);
@@ -1551,7 +1556,8 @@ void GMT_polar_map_boundary (double w, double e, double s, double n)
 	/* Here draw fancy map boundary */
 	
 	fwidth = fabs (gmtdefs.frame_width);
-	if (GMT_get_map_interval (1, GMT_TICK_LOWER) != 0.0) {	/* Need two-layer frame */
+	/* if (GMT_get_map_interval (1, GMT_TICK_LOWER) != 0.0) { */	/* Need two-layer frame */
+	if (frame_info.axis[1].item[GMT_TICK_LOWER].active) {
 		fwidth *= 0.5;
 		dual = TRUE;
 	}
@@ -1608,7 +1614,8 @@ void GMT_conic_map_boundary (double w, double e, double s, double n)
 	/* Here draw fancy map boundary */
 	
 	fwidth = fabs (gmtdefs.frame_width);
-	if (GMT_get_map_interval (1, GMT_TICK_LOWER) != 0.0) {	/* Need two-layer frame */
+	/* if (GMT_get_map_interval (1, GMT_TICK_LOWER) != 0.0) { */	/* Need two-layer frame */
+	if (frame_info.axis[1].item[GMT_TICK_LOWER].active) {
 		fwidth *= 0.5;
 		dual = TRUE;
 	}
@@ -1744,7 +1751,8 @@ void GMT_conic_map_boundary_old (double w, double e, double s, double n)
 	/* Frame tick S-N axes */
 	
 	ps_setline (fat_pen);
-	if ((y_inc = GMT_get_map_interval (1, GMT_TICK_UPPER)) != 0.0) {
+	if (frame_info.axis[1].item[GMT_TICK_UPPER].active) {
+		y_inc = GMT_get_map_interval (1, GMT_TICK_UPPER);
 		shade = ((int)floor (s / y_inc) + 1) % 2;
 		s1 = floor(s/y_inc) * y_inc;
 		ny = (s1 > n) ? -1 : (int)((n-s1) / y_inc + SMALL);
@@ -1775,7 +1783,8 @@ void GMT_conic_map_boundary_old (double w, double e, double s, double n)
 
 	/* Frame tick W-E axes */
 	
-	if ((x_inc = GMT_get_map_interval (0, GMT_TICK_UPPER)) != 0.0) {
+	if (frame_info.axis[0].item[GMT_TICK_UPPER].active) {
+		x_inc = GMT_get_map_interval (0, GMT_TICK_UPPER);
 		shade = ((int)floor (w / x_inc) + 1) % 2;
 		w1 = floor(w / x_inc) * x_inc;
 		nx = (w1 > e) ? -1 : (int)((e-w1) / x_inc + SMALL);
@@ -2365,7 +2374,8 @@ void GMT_map_gridlines (double w, double e, double s, double n)
 		dx = GMT_get_map_interval (0, item[k]);
 		dy = GMT_get_map_interval (1, item[k]);
 	
-		if (dx <= 0.0 && dy <= 0.0) continue;
+		if (! (frame_info.axis[0].item[item[k]].active || frame_info.axis[1].item[item[k]].active)) continue;
+		/* if (dx <= 0.0 && dy <= 0.0) continue; */
 
 		ps_comment (comment[k]);
 
@@ -2523,6 +2533,8 @@ void GMT_map_tickitem (double w, double e, double s, double n, int item)
 	int i, nx, ny;
 	double dx, dy, *val, len;
 	BOOLEAN do_x, do_y;
+	
+	if (! (frame_info.axis[0].item[item].active || frame_info.axis[1].item[item].active)) return;
 	
 	dx = GMT_get_map_interval (0, item);
 	dy = GMT_get_map_interval (1, item);
