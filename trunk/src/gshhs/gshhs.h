@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.5 2004-09-12 01:39:20 pwessel Exp $
+/*	$Id: gshhs.h,v 1.6 2004-09-14 19:27:30 pwessel Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -18,10 +18,12 @@
  *
  *	Contact info: www.soest.hawaii.edu/pwessel
  *
- *	11-SEP-2004.  PW: Version 1.3.  Header is now n * 8 bytes (n = 5)
+ *	14-SEP-2004.  PW: Version 1.3.  Header is now n * 8 bytes (n = 5)
  *			  For use with version 1.3 of GSHHS
  */
 
+#ifndef _GSHHS
+#define _GSHHS
 #define _POSIX_SOURCE 1		/* GSHHS code is POSIX compliant */
 
 #include <stdio.h>
@@ -56,3 +58,4 @@ struct	POINT {	/* Each lon, lat pair is stored in micro-degrees in 4-byte intege
 	int	x;
 	int	y;
 };
+#endif	/* _GSHHS */

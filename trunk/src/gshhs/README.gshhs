@@ -2,7 +2,7 @@
 
 Global Self-consistant Hierarchical High-resolution Shorelines
 
-Version 1.5 Sept 11, 2004
+Version 1.5 Sept 14, 2004
 
 Minor update to handle the latest GSHHS v1.3 database.  GSHHS is now
 [finally] self-consistent: There are no longer any lingering cross-
@@ -11,8 +11,24 @@ and there are no duplicate points along the lines.  The GSHHS header
 record has been expanded by one 4-byte element (called version and
 set to 3 for all polygons) so that the size of the entire header
 structure is a multiple of 8 bytes (now 40 bytes).  The old structure
-was not as portable because padding of structures are architecture-
-dependent.
+was not as portable because padding of structures is architecture-
+dependent.  To be explicit, each header in v1.3 now consist of the
+following variables:
+
+int id;				/* Unique polygon id number, starting at 0 */
+int n;				/* Number of points in this polygon */
+int level;			/* 1 land, 2 lake, 3 island_in_lake, 4 pond_in_island_in_lake */
+int west, east, south, north;	/* min/max extent in micro-degrees */
+int area;			/* Area of polygon in 1/10 km^2 */
+int version;			/* Polygon version, set to 3
+short int greenwich;		/* Greenwich is 1 if Greenwich is crossed */
+short int source;		/* 0 = CIA WDBII, 1 = WVS */
+
+We remind users that the polygon is sorted by polygon length (not
+area), and that the w/e/s/n values for each polygon are based on
+the full resolution and are simply copied to the other resolutions;
+however, the decimated polygons will in general have a different
+w/e/s/n set.
 
 Version 1.4 Sept 5, 2000
 
