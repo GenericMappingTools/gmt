@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.176 2005-03-02 19:16:34 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.177 2005-03-03 20:49:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3269,7 +3269,7 @@ void GMT_split_info (const char *in, char *info[]) {
 void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 	/* Decode the annot/tick segments of the clean -B string pieces */
 
-	char *t, *s, flag, orig_flag, unit;
+	char *t, *s, flag, orig_flag = 0, unit;
 	int error = 0;
 	BOOLEAN time_interval_unit;
 	double val, phase = 0.0;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.153 2005-03-02 00:56:14 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.154 2005-03-03 20:49:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6450,6 +6450,7 @@ void GMT_get_primary_annot (struct PLOT_AXIS *A, int *primary, int *secondary)
 				s = 1.0;
 				break;
 			default:
+				fprintf (stderr, "%s: Wrong unit in GMT_get_primary_annot (%c)\n", GMT_program, A->item[no[i]].unit);
 				break;
 		}
 		val[i] = A->item[no[i]].interval * s;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.84 2005-02-15 23:03:58 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.85 2005-03-03 20:49:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2391,7 +2391,7 @@ void GMT_get_origin (double lon1, double lat1, double lon_p, double lat_p, doubl
  */
 
 int GMT_map_init_tm (void) {
-	BOOLEAN search;
+	BOOLEAN search = FALSE;
 	double xmin, xmax, ymin, ymax, w, e, dummy;
 
 	/* Wrap and truncations are in y, not x for TM */
@@ -4173,7 +4173,7 @@ double GMT_robinson_spline (double xp, double *x, double *y, double *c) {
 	if (j > 0) j--;
 
 	dx = xp - x[j];
-	switch (gmtdefs.interpolant) {
+	switch (gmtdefs.interpolant) {	/* GMT_vrobinson would not allow case 0 so only 1 | 2 is possible */
 		case 1:
 			yp = ((c[3*j+2]*dx + c[3*j+1])*dx + c[3*j])*dx + y[j];
 			break;
@@ -6637,6 +6637,7 @@ int GMT_rect_clip (double *lon, double *lat, int n, double **x, double **y, int 
 	/* for (i = j = 1; i < n; i++) { */
 	for (i = 1; i < n; i++) {
 		(void) GMT_map_outside (lon[i], lat[i]);
+		nx = 0;
 		if (GMT_break_through (lon[i-1], lat[i-1], lon[i], lat[i])) {
 			nx = GMT_map_crossing (lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
 			for (k = 0; k < nx; k++) {
@@ -6685,6 +6686,7 @@ int GMT_wesn_clip (double *lon, double *lat, int n, double **x, double **y, int 
 	
 	for (i = 1; i < n; i++) {
 		(void) GMT_map_outside (lon[i], lat[i]);
+		nx = 0;
 		if (GMT_break_through (lon[i-1], lat[i-1], lon[i], lat[i])) {
 			nx = GMT_map_crossing (lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
 			for (k = 0; k < nx; k++) {
@@ -7807,6 +7809,10 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 			case UTM:
 			case CASSINI:
 				np = 2 * (gmtdefs.n_lon_nodes + gmtdefs.n_lat_nodes);
+				break;
+			default:
+				fprintf (stderr, "%s: Bad case in GMT_map_clip_path (%d)\n", GMT_program, project_info.projection);
+				np = 0;
 				break;
 		}
 	}
