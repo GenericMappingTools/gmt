@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.16 2004-09-26 07:19:44 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.17 2004-09-26 07:26:01 pwessel Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.16 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.17 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -65,7 +65,7 @@ new Appendix P for details.</I><BR>
 <P>
 <I>Note: The *.bz2 files made by bzip2 are generally much smaller than the corresponding *.gz files.
 Type bzip2 -h to determine if you have bzip2 installed.  Source code and executables for bzip2 are
-available from the <A HREF="http://sourceware.cygnus.com/bzip2/index.html">bzip2</A> site.  The default option will
+available from the <A HREF="http://sources.redhat.com/bzip2">bzip2</A> site.  The default option will
 determine if you have bzip2 or gzip and pick bzip2 if possible.</I><BR>
 <HR>
 
@@ -350,7 +350,8 @@ directory</I>.
 <INPUT NAME="name" TYPE="submit" VALUE="GET PARAMETERS">&nbsp; &nbsp;
 <INPUT NAME="name" TYPE="reset" VALUE="RESET FORM"></CENTER>
 <P>
-Once received, use your browser's File->Save As option to save the GMTparam.txt file.
+Once received, use your browser's File->Save As option to save the GMTparam.txt.
+file.
 </FORM>
 </BODY>
 </HTML>
