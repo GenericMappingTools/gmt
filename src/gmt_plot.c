@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.112 2004-04-28 07:08:15 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.113 2004-04-30 17:44:18 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -403,6 +403,7 @@ BOOLEAN GMT_skip_second_annot (int item, double x, double x2[], int n, int prima
 	
 	if (primary == secondary) return (FALSE);	/* Not set, no need to skip */
 	if (secondary != item) return (FALSE);		/* Not working on secondary annotation */
+	if (!x2) return (FALSE);			/* None given */
 	
 	small = (x2[1] - x2[0]) * GMT_CONV_LIMIT;
 	for (i = 0, found = FALSE; !found && i < n; i++) found = (fabs (x2[i] - x) < small);
