@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.8 2001-08-17 20:22:06 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.9 2001-08-27 18:10:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -111,8 +111,6 @@ struct GMT_IO {	/* Used to process input data records */
 	struct GMT_CLOCK_IO clock_output;	/* Has all info on how to write output clocks */
 };
 
-EXTERN_MSC struct GMT_IO GMT_io;
-
 struct GMT_Z_IO {	/* Used when processing z(x,y) table input when (x,y) is implicit */
 	int binary;	/* TRUE if we are reading/writing binary data */
 	int input;	/* TRUE if we are reading, FALSE if we are writing */
@@ -135,6 +133,14 @@ struct GMT_Z_IO {	/* Used when processing z(x,y) table input when (x,y) is impli
 	PFI write_item;	/* Pointer to function that will write 1 data point from file */
 	PFV get_gmt_ij;	/* Pointer to function that converts running number to GMT ij */
 };
+
+struct GMT_PLOT_CALCLOCK {
+	struct GMT_DATE_IO date;
+	struct GMT_CLOCK_IO clock;
+};
+
+EXTERN_MSC struct GMT_IO GMT_io;
+EXTERN_MSC struct GMT_PLOT_CALCLOCK GMT_plot_calclock;	/* Formatting information for time axis plotting */
 
 EXTERN_MSC void GMT_init_z_io (struct GMT_Z_IO *r, BOOLEAN input);
 EXTERN_MSC int GMT_parse_z_io (char *txt, struct GMT_Z_IO *r, BOOLEAN input);

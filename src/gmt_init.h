@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.8 2001-08-23 23:17:08 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.9 2001-08-27 18:10:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -87,6 +87,7 @@ char *GMT_degree_symbol[2] = {		/* Small [Default] and large degree symbols */
 
 struct MAP_FRAME frame_info;
 struct TIME_FRAME tframe_info;
+struct GMT_PLOT_CALCLOCK GMT_plot_calclock;
 double *GMT_x_plot = 0;		/* Holds the x/y (inches) of a line to be plotted */
 double *GMT_y_plot = 0;
 int *GMT_pen = 0;		/* Pen (3 = up, 2 = down) for these points */

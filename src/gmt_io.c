@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.14 2001-08-20 01:53:39 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.15 2001-08-27 18:10:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1239,8 +1239,10 @@ void GMT_decode_calclock_formats ()
 {
 	GMT_date_C_format (gmtdefs.input_date_format, &GMT_io.date_input, 0);
 	GMT_date_C_format (gmtdefs.output_date_format, &GMT_io.date_output, 1);
+	GMT_date_C_format (gmtdefs.plot_date_format, &GMT_plot_calclock.date, 1);
 	GMT_clock_C_format (gmtdefs.input_clock_format, &GMT_io.clock_input, 0);
 	GMT_clock_C_format (gmtdefs.output_clock_format, &GMT_io.clock_output, 1);
+	GMT_clock_C_format (gmtdefs.plot_clock_format, &GMT_plot_calclock.clock, 1);
 }
 
 void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
