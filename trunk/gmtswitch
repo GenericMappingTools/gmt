@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: gmtswitch,v 1.4 2003-03-12 17:58:52 pwessel Exp $
+#	$Id: gmtswitch,v 1.5 2003-04-11 01:21:35 pwessel Exp $
 #
 #	gmtswitch - switch between several GMT versions
 #
@@ -48,7 +48,7 @@ home=`pwd`
 if [ ! -f $home/.gmtversions ]; then	# No .gmtversions exists yet, first do that part
 	cat << EOF >&2
 
-	GMTSWITCH $Revision: 1.4 $
+	GMTSWITCH $Revision: 1.5 $
 	
 gmtswitch helps you modify your environment to allow for the switching back
 and forth between several GMT versions, in particular GMT4b and previous GMT 3
@@ -62,7 +62,7 @@ EOF
 	read s
 
 	echon "--> Searching..." >&2
-	( find / -type d -name 'GMT[34].*' -print > $home/.gmtversions ) >2 /dev/null
+	( find / -type d -name 'GMT[34].*' -print > $home/.gmtversions ) 2> /dev/null
 	n=`cat $home/.gmtversions | wc -l | awk '{print $1}'`
 	cat << EOF >&2
 	
