@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.62 2004-04-05 18:50:19 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.63 2004-04-05 22:54:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -97,6 +97,9 @@ void GMT_get_bcr_nodal_values(float *z, int ii, int jj);
 int GMT_check_hsv (double h, double s, double v);
 int GMT_check_cmyk (double cmyk[]);
 int GMT_slash_count (char *txt);
+int GMT_name2rgb (char *name);
+int GMT_name2pen (char *name);
+int GMT_getpen2 (char *line, struct GMT_PEN *pen);
 
 int GMT_check_rgb (int rgb[])
 {
@@ -203,7 +206,7 @@ int GMT_slash_count (char *txt)
 
 int GMT_getrgb (char *line, int rgb[])
 {
-	int n, count;
+	int n, i, count;
 	
 	count = GMT_slash_count (line);
 	
@@ -230,10 +233,16 @@ int GMT_getrgb (char *line, int rgb[])
 		return (FALSE);
 	}
 	
-	if (count == 0) {				/* gray */
-		n = sscanf (line, "%d", &rgb[0]);
-		rgb[1] = rgb[2] = rgb[0];
-		if (n != 1 || GMT_check_rgb (rgb)) return (TRUE);
+	if (count == 0) {				/* gray or colorname */
+		if (isdigit((int)line[0])) {
+			n = sscanf (line, "%d", &rgb[0]);
+			rgb[1] = rgb[2] = rgb[0];
+			if (n != 1 || GMT_check_rgb (rgb)) return (TRUE);
+		}
+		else {
+			n = GMT_name2rgb (line);	/* This will exit if there is an error */
+			for (i = 0; i < 3; i++) rgb[i] = GMT_colorname[n].rgb[i];
+		}
 		return (FALSE);
 	}
 
@@ -242,6 +251,42 @@ int GMT_getrgb (char *line, int rgb[])
 	return (TRUE);
 }
 
+int GMT_name2rgb (char *name)
+{
+	/* Return index into structure with colornames and r/g/b */
+	
+	int i, k;
+	char Lname[16];
+
+	strcpy (Lname, name);
+	GMT_str_tolower (Lname);
+	for (i = 0, k = -1; k < 0 && i < GMT_N_COLOR_NAMES; i++) if (!strcmp (Lname, GMT_colorname[i].name)) k = i;
+	
+	if (k < 0) {
+		fprintf (stderr, "%s: Colorname %s not recognized!\n", GMT_program, name);
+		exit (EXIT_FAILURE);
+	}
+	return (k);
+}
+	
+int GMT_name2pen (char *name)
+{
+	/* Return index into structure with pennames and width */
+	
+	int i, k;
+	char Lname[16];
+
+	strcpy (Lname, name);
+	GMT_str_tolower (Lname);
+	for (i = 0, k = -1; k < 0 && i < GMT_N_PEN_NAMES; i++) if (!strcmp (Lname, GMT_penname[i].name)) k = i;
+	
+	if (k < 0) {
+		fprintf (stderr, "%s: Pen name %s not recognized!\n", GMT_program, name);
+		exit (EXIT_FAILURE);
+	}
+	return (k);
+}
+	
 void GMT_init_pen (struct GMT_PEN *pen, double width)
 {
 	/* Sets default black solid pen of given width in points */
@@ -261,8 +306,14 @@ int GMT_getpen (char *line, struct GMT_PEN *pen)
 	double val = 0.0, width, dpi_to_inch = 1.0;
 	char tmp[32], string[BUFSIZ], *ptr;
 	
+	if (line[0] == ':') return (GMT_getpen2 (line, pen));	/* Goto this routine to process :pen:color:texture strings */
+	
 	GMT_init_pen (pen, GMT_PENWIDTH);	/* Default pen */
 
+	/* Syntax 1:	[<width][/<color>][t<texture>][p]	p can be anywhere
+	 * Syntax 2:	[<width[p]][/<color>][/<texture>]	when pen, color, or texture are v4 format
+	 */
+	 
 	/* Check for p which means pen thickness is given in points */
 	
 	if (strchr (line, 'p'))
@@ -278,7 +329,7 @@ int GMT_getpen (char *line, struct GMT_PEN *pen)
 		dpi_to_inch = 1.0 / gmtdefs.dpi;
 	}
 		
-	/* First check if a pen thickness has been entered */
+	/* First check if a pen thickness has been entered as a number */
 	
 	get_pen = ((line[0] == '.' && (line[1] >= '0' && line[1] <= '9')) || (line[0] >= '0' && line[0] <= '9'));
 	
@@ -353,6 +404,12 @@ int GMT_getpen (char *line, struct GMT_PEN *pen)
 			pen->offset *= GMT_u2u[pen_unit][GMT_PT] * dpi_to_inch;
 		}
 	}
+	return (pen->width < 0.0 || GMT_check_rgb (pen->rgb));
+}
+
+int GMT_getpen2 (char *line, struct GMT_PEN *pen)
+{
+	/* Processes new pen specifications given as :pen:color:texture */
 	return (pen->width < 0.0 || GMT_check_rgb (pen->rgb));
 }
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.38 2004-04-01 17:05:08 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.39 2004-04-05 22:54:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -51,7 +51,15 @@ char *GMT_media_name[GMT_N_MEDIA] = {		/* Names of all paper formats */
 #include "gmt_media_name.h"
 };
 
-struct GMT_MEDIA GMT_media[GMT_N_MEDIA] = {		/* Sizes in points of all paper formats */
+struct GMT_COLOR_NAME GMT_colorname[GMT_N_COLOR_NAMES] = {	/* Names and r/g/b of colors */
+#include "gmt_colornames.h"
+};
+
+struct GMT_PEN_NAME GMT_penname[GMT_N_PEN_NAMES] = {		/* Names and widths of pens */
+#include "gmt_pennames.h"
+};
+
+struct GMT_MEDIA GMT_media[GMT_N_MEDIA] = {			/* Sizes in points of all paper formats */
 #include "gmt_media_size.h"
 };
 
@@ -121,6 +129,7 @@ char *GMT_plot_format[3][2];		/* Keeps the 6 formats for dd:mm:ss plot output */
 /*	For color lookup purposes */
 /*--------------------------------------------------------------------*/
 
+struct GMT_LUT *GMT_COLOR_NAME;		/* Structure with color names and r/g/b values */
 struct GMT_LUT *GMT_lut;		/* CPT lookup table read by GMT_read_cpt */
 struct GMT_BFN_COLOR GMT_bfn[3];	/* Structures with back/fore/nan colors */
 int GMT_n_colors = 0;
