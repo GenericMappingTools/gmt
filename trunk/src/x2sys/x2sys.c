@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.9 2004-05-18 21:40:51 pwessel Exp $
+ *	$Id: x2sys.c,v 1.10 2004-06-09 17:45:21 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -207,6 +207,7 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 		else if (s->info[i].do_scale)
 			data[i] = data[i] * s->info[i].scale + s->info[i].offset;
 		if (GMT_is_dnan (data[i])) s->info[i].has_nans = TRUE;
+		if (i == s->x_col && s->geographic) GMT_lon_range_adjust (s->geodetic, &data[i]);
 	}
 
 	return ((error || n_read != s->n_fields) ? -1 : 0);
@@ -285,10 +286,16 @@ struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G)
 
 	fp = x2sys_fopen (line, "r");
 
-	if (!strcmp (fname, "gmt"))
+	if (!strcmp (fname, "gmt")) {
 		X->read_file = (PFI) x2sys_read_gmtfile;
-	else if (!strcmp (fname, "mgd77"))
+		X->geographic = TRUE;
+		X->geodetic = 0;
+	}
+	else if (!strcmp (fname, "mgd77")) {
 		X->read_file = (PFI) x2sys_read_mgd77file;
+		X->geographic = TRUE;
+		X->geodetic = 1;
+	}
 	else
 		X->read_file = (PFI) x2sys_read_file;
 
@@ -297,6 +304,7 @@ struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G)
 		if (line[0] == '#') {
 			if (!strncmp (line, "#SKIP ", 6)) X->skip = atoi (&line[6]);
 			if (!strncmp (line, "#BINARY ", 7)) X->ascii_in = FALSE;
+			if (!strncmp (line, "#GEO ", 3)) X->geographic = TRUE;
 			if (!strncmp (line, "#MULTISEG ", 9)) {
 				X->multi_segment = TRUE;
 				sscanf (line, "%*s %c", &X->ms_flag);

@@ -1,4 +1,4 @@
-	$Id: README.x2sys,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+	$Id: README.x2sys,v 1.2 2004-06-09 17:49:41 pwessel Exp $
 
 README file for GMT supplemental x2sys programs
 
@@ -6,6 +6,11 @@ AUTHOR:		Paul Wessel
 DATE:		25-JUN-1999
 INSTALL INFO:	The x2sys directory should install under GMT/src
 
+1.1 UPDATE
+Added x2sys_binlist.c which replicates the purpose of the old gmt2bin.c
+program, but this version is data-format independent.
+
+1.0 INFORMATION
 
 X2SYS is a set of tools for the calculation of track crossovers.
 Crossovers occur when spatial timeseries tracks intersect themselves or
