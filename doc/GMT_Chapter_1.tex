@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.2 2001-02-03 00:38:13 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -9,6 +9,83 @@
 \chapter{Prefaces} 
 \thispagestyle{headings}
 
+\section{Preface to version 3.3.7 (February--2001)} 
+Version 3.3.7 is yet another service release with
+several bug fixes.  However, there are also (once again) a few enhancements
+driven by bug reports as well as a few enhancements driven
+by the developers' research needs.  Soon, we expect
+to release the stable release series 3.4 (and subsequent releases
+3.4.x) as well as initiate a developers' release 3.5 (where new features
+will be tested before they are incorporated into a future stable release
+series 3.6).  This release marks the first release that is under CVS control as
+previously the GMT project was maintained using SCCS on a Sun workstation.
+
+\subsection{Major bug fixes in 3.3.7}
+
+We continue to converge asymptotically toward a stable release
+as both old and new problems are brought to our attention.
+Table~\ref{tbl:3.3.6bugs} lists the most
+significant corrections; for a full description see the
+\filename{CHANGES} file in the main \GMT\ directory.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}  \hline
+\multicolumn{1}{|c|}{\emph{File}}	& \multicolumn{1}{c|}{\emph{Bug}} \\ \hline
+gmt\_map.c	&	Only had forward, but not inverse projection of linear \\
+		&	geographic data.  Messed up the \Opt{JX}<width>d inverse. \\
+		&	No Gnomonic annotations except for rectangular box. \\
+		&	Ensure that if BOTH west/east are < 0, add 360. \\
+		&	Really densely sampled lines could fail to generate \\
+		&	a crossing at map boundary due to imposed round-off. \\
+		&	Now enforce that all lines start with "pen down". \\ \hline
+gmt\_plot.c	&	No longer overrides \texttt{GMT\_set\_format} for anotations. \\ \hline
+gmt\_shore.c	&	Needed to reset node-levels when some polygons are skipped with \Opt{A}. \\ \hline
+gmt\_support.c	&	Had error in verifying xinc for boundary condition prep. \\
+		&	\texttt{GMT\_set\_format} now always checks if units should be added. \\
+		&	Now use fast, binary search to get the rgb index. \\
+		&	\texttt{GMT\_getinc} would remove the trailing m or c while \\
+		&	processing the increments; this only affected titles \\
+		&	or remarks in output gridfiles. \\ \hline
+gmtselect.c	&	Distance calculations to nearest line were in error. \\ \hline
+mapproject.c	&	Wrong units used when reporting xmin/xmax/ymin/ymax. \\ \hline
+project.c	&	Distances along small circles were incorrect. \\ \hline
+pscoast.c	&	Had \texttt{GMT\_world\_map} = TRUE for Gnomonic, which is not correct \\
+		&	and led to criss-crossing of lines \\ \hline
+psscale.c	&	\Opt{B}0 will now skip the anotations, like \GMTprog{psbasemap}. \\ \hline
+psxy.c		&	Ellipses drawn with \Opt{SE} \Opt{N} should not be skipped if their \\
+		&	center is outside as parts of the perimiter may plot inside. \\ \hline
+pswiggle.c	&	\Opt{Z} did not use the default measure unit but instead used \\
+		&	inches in the absence of a modifier. \\
+		&	Still did not get the azimuths correct.  Now positive wiggles \\
+		&	should go in the preferred direction [north]. \\ \hline
+mgg/gmttrack.c	&	\Opt{Sa}b was not converted to meters internally, and distances \\
+		&	were initialized to zero more than once. \\ \hline
+*.c		&	Retreat: Now \Opt{:} works as before regardless of \Opt{L}. \\ \hline
+\end{tabular}
+\caption{Bugs in \gmt\ version 3.3.5}
+\label{tbl:3.3.5bugs}
+\end{table}
+
+\subsection{Minor changes in 3.3.6}
+
+%We have also added
+%one new supplemental program to the {\bf misc} package.  The program is
+%called \GMTprog{gmtdigitize} and it interfaces with a digitizing tablet via
+%a serial port.  It digitizes points from maps and applies the relevant inverse
+%map projection.  It has only been tested with a Calcomp DrawingBoard III from
+%Linux but we expect it to port easily to other configurations.
+
+There were some bad links in the \filename{gmt\_man.html} module that have been fixed.
+A few enhancements in individual program functionality have also occured:
+
+\begin{description}
+
+\item [grdvector.c] \Opt{Sf} now sets fixed length vectors.
+
+\end{description}
+
+%------------------------------------
 \section{Preface to version 3.3.6 (October--2000)} 
 Version 3.3.6 is yet another service release with
 several bug fixes.  However, there are also (once again) a few enhancements
