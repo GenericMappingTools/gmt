@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.20 2001-08-29 18:03:05 pwessel Exp $
+ *	$Id: gmt.h,v 1.21 2001-09-05 21:09:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -115,7 +115,8 @@
 #define GMT_CHUNK	2000
 #define GMT_SMALL_CHUNK	50
 #define GMT_TINY_CHUNK	5
-#define GMT_VERSION	"3.5b"
+#define GMT_VERSION	"4b"
+#define GMT_LEVEL	4
 #define CNULL		((char *)NULL)
 #define VNULL		((void *)NULL)
 #define GMT_CM		0
