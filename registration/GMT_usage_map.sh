@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.1 2001-02-07 05:14:04 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.2 2001-02-08 18:20:12 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -20,7 +20,7 @@
 
 if [ $# = 1 ] && [ $1 = "help" ]; then
 	cat << EOF >&2
-usage: GMT_usage_map.x [all | get | update | map | help]
+usage: GMT_usage_map.sh [all | get | update | map | help]
 
 get	Get fresh registrations and compile locations
 update	Update the CVS version of the complete list
@@ -32,7 +32,7 @@ EOF
 fi
 
 #DIR=/home/gmt/gmt/www/gmt/images			# Where to place the updated image
-DIR=/home/koolina/wessel			# Where to place the updated image
+#DIR=/home/koolina/wessel			# Where to place the updated image
 MAIL=/home/aa1/wessel/nsmail/GMT.sbd/Registrations	# Where incoming registrations reside
 REGHOME=/home/koolina/wessel/GMTdev/GMT/registration	# Where to do the work
 
@@ -48,12 +48,11 @@ if [ ! -d RegArchive/$yr ]; then
 	mkdir -p RegArchive/$yr
 fi
 
-if [ $#argv = 1 ]; then	# Only wanted some tasks done
+if [ $# = 1 ]; then	# Only wanted some tasks done
 	key=$1
 else				# Default is all tasks
 	key="all"
 fi
-
 if [ $key = "all" ] || [ $key = "get" ]; then
 #	Extracts new sites from my mail folder and only returns
 #	those over land.  To be run from the GMT/registration
@@ -120,8 +119,6 @@ if [ $key = "all" ] || [ $key = "update" ]; then
 fi
 
 if [ $key = "all" ] || [ $key = "map" ]; then
-	export TMPDIR=/tmp
-	export ALCHEMYPS /opt/alchemy/ps
 
 	gmtset DOTS_PR_INCH 100 FRAME_WIDTH 0.04i PAPER_MEDIA Letter+
 	cvs update GMT_old_unique_sites.d
@@ -134,10 +131,9 @@ EOF
 	pscoast -R-175/185/-60/72 -JM5.0i -G25/140/25 -S0/30/120 -Dc -A2000 -Ba60f30/30WSne -K -O -X0.6i -Y0.35i >> gmt_usage.ps
 	grep -v '^#' GMT_old_unique_sites.d | psxy -R -JM -O -K -Sc0.02 -G255/255/0 >> gmt_usage.ps
 	date +%x | awk '{print 0.1, 0.1, 10, 0, 0, "LB", $1}' | pstext -R0/5/0/5 -Jx1i -O -W255/255/255o >> gmt_usage.ps
-#	/home/aa1/wessel/bin/ps2jpeg -w 5.77 -h 3.01 -l 100 -d 24 -r 100 gmt_usage.ps gmt_usage.jpg >& /dev/null
-	/opt/alchemy/alchemy gmt_usage.ps -o -Zi 5.77 3.01 -Zd 100 100 -Zm 2 -24 -j100 gmt_usage.jpg >& /dev/null
-	mv -f gmt_usage.jpg $DIR
+	convert -density 100x100 -crop 0x0 gmt_usage.ps gmt_usage.jpg
+#	mv -f gmt_usage.jpg $DIR
 	gmtset DOTS_PR_INCH 300 PAPER_MEDIA Letter
-	rm -f gmt_usage.ps GMT_old_unique_sites.d
+	rm -f gmt_usage.ps
 	echo "GMT_usage_map.x: Placed new map (gmt_usage.jpg) in $DIR" >&2
 fi
