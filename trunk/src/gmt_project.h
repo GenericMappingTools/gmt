@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.21 2003-04-20 07:35:41 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.22 2003-12-24 02:43:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -306,6 +306,21 @@ struct THREE_D {
 	int k;			/* For drawing-axis. 0 = plot in x dir, 1 in y */
 	int face[3];		/* Tells if this facet has normal in pos direction */
 	int draw[4];		/* axes to draw */
+};
+
+struct GMT_DATUM {	/* Main parameter for a particular datum */
+	double a, f, e_squared;
+	double x, y, z;
+};
+
+struct GMT_DATUM_CONV {
+	BOOLEAN h_given;	/* TRUE if we have incoming height data [h = 0] */
+	double da;		/* Major semi-axis in meters */
+	double df;		/* Flattening */
+	double e_squared;	/* Eccentricity squared (e^2 = 2*f - f*f) */
+	double one_minus_f;	/* 1 - f */
+	double dx, dy, dz;	/* Ellipsoids offset in meter from Earth's center of mass */
+	struct GMT_DATUM from, to;	/* The old and new datums */
 };
 
 #endif /* _GMT_PROJECT_H */

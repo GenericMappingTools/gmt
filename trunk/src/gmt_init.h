@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.33 2003-04-11 22:57:15 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.34 2003-12-24 02:43:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -135,6 +135,7 @@ BOOLEAN GMT_cpt_skip = FALSE;	/* TRUE if current z-slice is to be skipped */
 
 struct MAP_PROJECTIONS project_info;
 struct THREE_D z_project;
+struct GMT_DATUM_CONV GMT_datum;	/* 	For datum conversions */
 PFI GMT_forward, GMT_inverse;		/*	Pointers to the selected mapping functions */
 PFI GMT_x_forward, GMT_x_inverse;	/*	Pointers to the selected linear functions */
 PFI GMT_y_forward, GMT_y_inverse;	/*	Pointers to the selected linear functions */

@@ -71,7 +71,10 @@
 	{FALSE,	FALSE},		/* XY_TOGGLE */
 	0,			/* Y_AXIS_TYPE */
 	{	/* Ellipsoid structure and its members */
-#include "gmt_ellipsoids.h"	/* This is created by make_def.sh in guru directory - do not edit it manually */
+#include "gmt_ellipsoids.h"	/* This is created by Makefile.guru - do not edit it manually */
+	},
+	{	/* Datum structure and its members */
+#include "gmt_datums.h"		/* This is created by Makefile.guru - do not edit it manually */
 	},
 	"hh:mm:ss",		/* INPUT_CLOCK_FORMAT */
 	"yyyy-mm-dd",		/* INPUT_DATE_FORMAT */

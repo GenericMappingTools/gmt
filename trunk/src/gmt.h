@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.46 2003-12-23 22:55:27 pwessel Exp $
+ *	$Id: gmt.h,v 1.47 2003-12-24 02:43:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -218,7 +218,8 @@ typedef double GMT_dtime;	/* GMT internal time representation */
 #define GMT_N_SYSTEMS 6		/* Number of time systems in gmt_time_systems.h */
 /* This structure contains default parameters for the GMT system */
 
-#define N_ELLIPSOIDS 63
+#define N_ELLIPSOIDS	63
+#define N_DATUMS	219
 
 #define GMT_PEN_LEN	128
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
@@ -305,12 +306,20 @@ struct GMTDEFAULTS {
 	int y_axis_type;		/* Select y-axis with horizontal (0) or vertical (1) annotations  [0] */
 	struct ELLIPSOID {	/* Information about a particular ellipsoid */
 		/* Table taken from Snyder "Map projection - a working manual", p 12 Table 1 */
-		char name[32];
+		char name[64];
 		int date;
 		double eq_radius;
 		double pol_radius;
 		double flattening;
 	} ellipse[N_ELLIPSOIDS];	/* Ellipsoid parameters */
+	struct DATUM {	/* Information about a particular datum */
+		char name[64];
+		char ellipsoid[64];
+		char region[256];
+		double x;
+		double y;
+		double z;
+	} datum[N_DATUMS];	/* Datum parameters */
 	char input_clock_format[32];	/* How to decode an incoming clock string [hh:mm:ss] */
 	char input_date_format[32];	/* How to decode an incoming date string [yyyy-mm-dd] */
 	char output_clock_format[32];	/* Controls how clocks are written on output [hh:mm:ss] */
@@ -515,6 +524,7 @@ EXTERN_MSC char *GMT_plot_format[3][2];		/* Keeps the 6 formats for dd:mm:ss plo
 
 EXTERN_MSC struct MAP_PROJECTIONS project_info;
 EXTERN_MSC struct THREE_D z_project;
+EXTERN_MSC struct GMT_DATUM_CONV GMT_datum;	/*	For datum conversions */
 EXTERN_MSC PFI GMT_forward, GMT_inverse;	/*	Pointers to the selected mapping functions */
 EXTERN_MSC PFI GMT_x_forward, GMT_x_inverse;	/*	Pointers to the selected linear functions */
 EXTERN_MSC PFI GMT_y_forward, GMT_y_inverse;	/*	Pointers to the selected linear functions */
