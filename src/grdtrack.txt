@@ -4,7 +4,7 @@ grdtrack \- Sampling of a 2-D grdfile along 1-D trackline (a sequence of x,y poi
 .SH SYNOPSIS
 \fBgrdtrack\fP \fIxyfile\fP \fB\-G\fP\fIgrdfile\fP [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP\fIflag\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP ] 
 [ \fB\-Q\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP ] [ \fB\-S\fP ] [ \fB\-V\fP ] [ \fB\-Z\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
-[ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ][ \fB\-bo\fP[\fBs\fP] ]
+[ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ][ \fB\-bo\fP[\fBs\fP][\fIn\fP] ]
 .SH DESCRIPTION
 \fBgrdtrack\fP reads a grdfile and a table (from file or standard input) with (x,y) positions 
 in the first two columns (more columns may be present). It interpolates the grid at the positions 
@@ -51,6 +51,7 @@ Toggles between (longitude,latitude) and (latitude,longitude) input/output.  [De
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-o.txt"
+#include "explain_-n.txt"
 #include "explain_-f.txt"
 .SH HINTS
 If an interpolation point is not on a node of the input grid, then a NaN at any node in the neighborhood 

@@ -4,7 +4,7 @@ trend2d \- Fit a [weighted] [robust] polynomial model for z = f(x,y) to xyz[w] d
 .SH SYNOPSIS
 \fBtrend2d\fP \fB\-F\fP\fI<xyzmrw>\fP \fB\-N\fP\fIn_model\fP[\fBr\fP] [ \fIxyz[w]file\fP ] 
 [ \fB\-C\fP\fIcondition_#\fP ] [ \fB\-H\fP[\fInrec\fP] ][ \fB\-I\fP[\fIconfidence_level\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP ] 
-[ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+[ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBtrend2d\fP reads x,y,z [and w] values from the first three [four] columns on standard input 
 [or \fIxyz[w]file\fP] and fits a regression model z = f(x,y) + e by [weighted] least squares.  The
@@ -58,6 +58,7 @@ when doing the iterative robust fit].  [Default reads only the first 3 columns.]
 #include "explain_-n.txt"
 [Default is 3 (or 4 if \fB\-W\fP is set) input columns].
 #include "explain_-o.txt"
+#include "explain_-n.txt"
 #include "explain_-f.txt"
 .SH REMARKS
 The domain of x and y will be shifted and scaled to [-1, 1] and the basis functions are built from 

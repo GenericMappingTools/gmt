@@ -13,7 +13,7 @@ pscoast \- To plot land-masses, water-masses, coastlines, borders, and rivers
 [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP\fIborder\fP[/\fIpen\fP] ] [ \fB\-O\fP ] 
 [ \fB\-P\fP ] [ \fB\-Q\fP ] [ \fB\-S\fP\fIfill\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] 
 [ \fB\-W\fP\fIpen\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] 
-[ \fB\-c\fP\fIcopies\fP ] [ \fB\-bo\fP[\fBs\fP] ]
+[ \fB\-c\fP\fIcopies\fP ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ]
 .SH DESCRIPTION
 \fBpscoast\fP plots grayshaded, colored, or textured land-masses [or water-masses] on maps and [optionally]
 draws coastlines, rivers, and political boundaries.  Alternatively, it can (1) issue clip paths that will
@@ -125,6 +125,7 @@ width = 1, color = 0/0/0, texture = solid].
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
 #include "explain_-o.txt"
+#include "explain_-n.txt"
 .SH EXAMPLES
 To plot a green Africa with white outline on blue background, with permanent major rivers in thick blue pen, additional major rivers in thin blue pen, and national borders as dashed lines
 on a Mercator map at scale LEN_1 inch/degree, use

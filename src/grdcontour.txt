@@ -7,7 +7,7 @@ grdcontour \- contouring of 2-D gridded data sets
 [ \fB\-K\fP ] [ \fB\-L\fP\fIlow/high\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP[[-]\fIunit\fP] ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-Q\fP\fIcut\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] 
 [ \fB\-S\fP\fIsmoothfactor\fP ] [ \fB\-T\fP[\fB+|-\fP][\fIgap/length\fP][\fB:\fP\fILH\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-W\fP[\fB+\fP][\fItype\fP]\fIpen\fP ] 
 [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP[\fIfactor\fP[/\fIshift\fP]][\fBp\fP] ] [ \fB\-c\fP\fIcopies\fP ] 
-[ \fB\-bo\fP[\fBs\fP] ]
+[ \fB\-bo\fP[\fBs\fP][\fIn\fP] ]
 .SH DESCRIPTION
 \fBgrdcontour\fP reads a 2-D gridded file and produces a contour map by tracing
 each contour through the grid.  As an option, the x/y/z positions of the contour lines may be dumped to
@@ -119,6 +119,7 @@ phase data, angular distributions) and that
 special precautions must be taken when determining 0-contours.
 #include "explain_-c.txt"
 #include "explain_-o.txt"
+#include "explain_-n.txt"
 .SH EXAMPLES
 To contour the file hawaii_grav.grd every 25 mGal on a Mercator map at 0.5 inch/degree, annotate
 every 50 mGal (using fontsize = 10), using 1 degree tickmarks, and draw 30 minute gridlines:
