@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.73 2004-04-22 18:31:18 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.74 2004-04-22 19:56:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -394,7 +394,10 @@ void GMT_old2newpen (char *line)
 	
 	if (t_pos >= 0) {	/* Texture was specified */
 		t_pos++;	/* Step over the leading 't' */
-		strcpy (ptexture, &line[t_pos]);
+		if (s_pos > t_pos)	/* User specified color AFTER texture */
+			strncpy (ptexture, &line[t_pos], s_pos - t_pos);
+		else
+			strcpy (ptexture, &line[t_pos]);
 		if (strchr ("cimp", ptexture[strlen(ptexture)-1])) {	/* c|i|m|p given after texture */
 			set_points = ptexture[strlen(ptexture)-1];
 			texture_unit = GMT_penunit (set_points, &texture_scale);
@@ -405,7 +408,7 @@ void GMT_old2newpen (char *line)
 		
 	if (s_pos >= 0) {	/* Got color of pen */
 		s_pos++;	/* Step over the leading '/' */
-		if (t_pos >= 0)	/* color ends with a texture specification at t_pos */
+		if (t_pos >= 0 && t_pos > s_pos)	/* color ends with a texture specification at t_pos */
 			strncpy (pcolor, &line[s_pos], t_pos - s_pos - 1);
 		else		/* Nothing follows the color */
 			strcpy (pcolor, &line[s_pos]);
