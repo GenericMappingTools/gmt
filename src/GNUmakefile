@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.32 2004-08-24 21:18:11 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.33 2004-10-17 09:18:49 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -79,6 +79,7 @@ GMT_H	= gmt.h \
 	  gmt_io.h \
 	  gmt_notposix.h \
 	  gmt_notunix.h \
+	  gmt_version.h \
 	  gmt_ellipsoids.h \
 	  gmt_datums.h \
 	  pslib.h
