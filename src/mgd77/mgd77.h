@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.2 2004-08-19 21:29:22 pwessel Exp $
+ *	$Id: mgd77.h,v 1.3 2004-08-19 21:52:40 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -228,7 +228,7 @@ EXTERN_MSC int  MGD77_Convert_To_New_Format(char *oldFormatLine, char *newFormat
 EXTERN_MSC int  MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F);	/* Returns full path to cruise */
 EXTERN_MSC void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F);		/* Decode the -F option */
 EXTERN_MSC BOOLEAN MGD77_pass_record (struct MGD77_DATA_RECORD *H, struct MGD77_CONTROL *F);	/* Compare record to specified constraints */
-EXTERN_MSC int MGD77_set_unit (char *dist, double *scale);
+EXTERN_MSC void MGD77_set_unit (char *dist, double *scale);
 
 EXTERN_MSC struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_FIELDS];
 
