@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.37 2004-01-09 00:31:09 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.38 2004-04-01 17:05:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -104,6 +104,7 @@ PFI GMT_crossing;			/*	pointer to functions returning crossover point at boundar
 PFI GMT_overlap;			/*	pointer to function checking for overlap between 2 regions */
 PFI GMT_map_clip;			/*	pointer to functions that clip a polygon to fit inside map */
 PFD GMT_left_edge, GMT_right_edge;	/*	pointers to functions that return left/right edge of map */
+PFD GMT_distance_func;			/*	pointer to function returning distance between two points points */
 BOOLEAN GMT_z_periodic = FALSE;			/* TRUE if grid values are 0-360 degrees (phases etc) */
 PFI GMT_wrap_around_check;	/* Does x or y wrap checks */
 PFI GMT_map_jump;		/* TRUE if we jump in x or y */

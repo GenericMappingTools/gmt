@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.60 2004-03-05 18:57:32 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.61 2004-04-01 17:05:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -78,6 +78,8 @@
 #include "gmt.h"
 
 #define I_255	(1.0 / 255.0)
+#define DEG_TO_KM (6371.0087714 * D2R)
+#define KM_TO_DEG (1.0 / DEG_TO_KM)
 
 int GMT_start_trace(float first, float second, int *edge, int edge_word, int edge_bit, unsigned int *bit);
 int GMT_trace_contour(float *grd, struct GRD_HEADER *header, double x0, double y0, int *edge, double **x_array, double **y_array, int i, int j, int kk, int offset, int *i_off, int *j_off, int *k_off, int *p, unsigned int *bit, int *nan_flag);
@@ -3988,4 +3990,192 @@ void GMT_list_custom_symbols (void)
 	while (fgets (buffer, BUFSIZ, fp)) if (!(buffer[0] == '#' || buffer[0] == 0)) fprintf (stderr, "\t   %s", buffer);
 	fclose (fp);
 	fprintf (stderr, "\t   ---------------------------------------------------------\n");
+}
+
+/* Functions dealing with distance between points */
+
+double GMT_dist_to_point (double lon, double lat, double *xp, double *yp, int np, int *id)
+{
+	int i;
+	double d, d_min;
+
+	d_min = DBL_MAX;
+	for (i = 0; i < np; i++) {
+		d = (*GMT_distance_func) (lon, lat, xp[i], yp[i]);
+		if (d < d_min) {
+			d_min = d;
+			*id = i;
+		}
+	}
+	return (d_min);
+}
+
+int GMT_near_a_point (double x, double y, double *xp, double *yp, double *dp, int np)
+{
+	int i = 0, inside = FALSE;
+	double d;
+
+	while (i < np && !inside) {
+		d = (*GMT_distance_func) (x, y, xp[i], yp[i]);
+		inside = (d <= dp[i]);
+		i++;
+	}
+	return (inside);
+}
+
+int GMT_near_a_point_cart (double x, double y, double *xp, double *yp, double *dp, int np)
+{
+	int i = 0, inside = FALSE;
+	double d;
+
+	if ((x < (xp[0] - dp[0])) || (x > (xp[np-1]) + dp[np-1])) return (inside);
+	while (i < np && !inside) {
+		if (fabs (x - xp[i]) <= dp[i])
+			if (fabs (y - yp[i]) <= dp[i]) {
+				d = (*GMT_distance_func) (x, y, xp[i], yp[i]);
+				inside = (d <= dp[i]);
+			}
+		i++;
+	}
+	return (inside);
+}
+
+double GMT_cartesian_dist (double x0, double y0, double x1, double y1)
+{
+	/* Calculates the good-old straight line distance in users units */
+
+	return (hypot ( (x1 - x0), (y1 - y0)));
+}
+
+double GMT_flatearth_dist (double x0, double y0, double x1, double y1)
+{
+	/* Calculates the approximate flat earth distance in km */
+
+	return (hypot ( (x1 - x0) * cosd (0.5 * (y1 + y0)), (y1 - y0)) * DEG_TO_KM);
+}
+
+double GMT_km_dist (double x0, double y0, double x1, double y1)
+{
+	/* Calculates the grdat circle distance in km */
+
+	return (GMT_great_circle_dist (x0, y0, x1, y1) * DEG_TO_KM);
+}
+
+/* Functions involving distance from arbitrary points to a line */
+
+int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_LINES *p, int np, BOOLEAN return_mindist, double *dist_min)
+{
+	int i, j0, j1;
+	double edge, dx, dy, xc, yc, s, s_inv, d;
+
+	if (return_mindist) *dist_min = DBL_MAX;
+	for (i = 0; i < np; i++) {	/* Loop over each line segment */
+	
+		if (p[i].np < 2) continue;	/* empty or 1-point "line"; skip */
+
+		if (return_mindist) p[i].dist = 0.0;	/* Explicitly set dist to zero so the shortest distance can be found */
+
+		/* Find nearest point on this line */
+
+		for (j0 = 0; j0 < p[i].np; j0++) {	/* loop over nodes on current line */
+			d = (*GMT_distance_func) (lon, lat, p[i].lon[j0], p[i].lat[j0]);	/* Distance between our point and j'th node on i'th line */
+			if (return_mindist && d < (*dist_min)) *dist_min = d;			/* Node inside the critical distance; we are done */
+			if (d <= p[i].dist) return (TRUE);
+		}
+
+		/* If we get here we must check for intermediate points along the straight lines between segment nodes.
+		 * However, since we know all nodes are outside the circle, we first check if the pair of nodes making
+		 * up the next line segment are outside of the circumscribing square before we need to solve for the
+		 * intersection between the line segment and the normal from our point. */
+		
+		for (j0 = 0, j1 = 1; j1 < p[i].np; j0++, j1++) {	/* loop over straight segments on current line */
+			edge = lon - p[i].dist;
+			if (p[i].lon[j0] < edge && p[i].lon[j1] < edge) continue;	/* Left of square */
+			edge = lon + p[i].dist;
+			if (p[i].lon[j0] > edge && p[i].lon[j1] > edge) continue;	/* Right of square */
+			edge = lat - p[i].dist;
+			if (p[i].lat[j0] < edge && p[i].lat[j1] < edge) continue;	/* Below square */
+			edge = lat + p[i].dist;
+			if (p[i].lat[j0] > edge && p[i].lat[j1] > edge) continue;	/* Above square */
+			
+			/* Here there is potential for the line segment crossing inside the circle */
+			
+			dx = p[i].lon[j1] - p[i].lon[j0];
+			dy = p[i].lat[j1] - p[i].lat[j0];
+			if (dx == 0.0) {		/* Line segment is vertical, our normal is thus horizontal */
+				if (dy == 0.0) continue;	/* Dummy segment with no length */
+				xc = p[i].lon[j0];
+				yc = lat;
+			}
+			else {	/* Line segment is not vertical */
+				if (dy == 0.0) {	/* Line segment is horizontal, our normal is thus vertical */
+					xc = lon;
+					yc = p[i].lat[j0];
+				}
+				else {	/* General case of oblique line */
+					s = dy / dx;
+					s_inv = -1.0 / s;
+					xc = (lat - p[i].lat[j0] + s * p[i].lon[j0] - s_inv * lon ) / (s - s_inv);
+					yc = p[i].lat[j0] + s * (xc - p[i].lon[j0]);
+				}
+			}
+			
+			/* To be inside, (xc, yc) must (1) be on the line segment and not its extension and (2) be within dist of our point */
+			
+			if (p[i].lon[j0] <= xc && p[i].lon[j1] <= xc ) continue;	/* Cross point is on extension */
+			if (p[i].lon[j0] >= xc && p[i].lon[j1] >= xc ) continue;	/* Cross point is on extension */
+			
+			/* OK, here we must check how close the point is */
+			
+			d = (*GMT_distance_func) (lon, lat, xc, yc);			/* Distance between our point and intersection */
+			if (return_mindist && d < (*dist_min)) *dist_min = d;				/* Node inside the critical distance; we are done */
+			if (d <= p[i].dist) return (TRUE);
+		}
+	}
+	return (FALSE);	/* All tests failed, we are not close to the line(s) */
+}
+
+int GMT_near_a_line_spherical (double lon, double lat, struct GMT_LINES *p, int np, BOOLEAN return_mindist, double *dist_min)
+{
+	int i, j;
+	double d, A[3], B[3], C[3], X[3], plon, plat, xlon, xlat, cx_dist, cos_dist;
+
+	plon = lon;	plat = lat;
+	GMT_geo_to_cart (&plat, &plon, C, TRUE);	/* Our point to test is now C */
+	if (return_mindist) *dist_min = DBL_MAX;
+	
+	for (i = 0; i < np; i++) {	/* Loop over each line segment */
+	
+		if (p[i].np < 2) continue;	/* Empty or 1-point "line"; skip */
+
+		/* Find nearest point on this line */
+
+		if (return_mindist) p[i].dist = 0.0;	/* Explicitly set dist to zero so the shortest distance can be found */
+
+		for (j = 0; j < p[i].np; j++) {	/* loop over nodes on current line */
+			d = (*GMT_distance_func) (lon, lat, p[i].lon[j], p[i].lat[j]);	/* Distance between our point and j'th node on i'th line */
+			if (return_mindist && d < (*dist_min)) *dist_min = d;		/* Update minimum distance */
+			if (d <= p[i].dist) return (TRUE);				/* Node inside the critical distance; we are done */
+		}
+
+		/* If we get here we must check for intermediate points along the great circle lines between segment nodes.*/
+		
+		cos_dist = cosd (p[i].dist * KM_TO_DEG);		/* Cosine of the great circle distance we are checking for */
+		plon = p[i].lon[0];	plat = p[i].lat[0];
+		GMT_geo_to_cart (&plat, &plon, B, TRUE);		/* 3-D vector of end of last segment */
+		
+		for (j = 1; j < p[i].np; j++) {				/* loop over great circle segments on current line */
+			memcpy ((void *)A, (void *)B, (size_t)(3 * sizeof (double)));	/* End of last segment is start of new segment */
+			plon = p[i].lon[j];	plat = p[i].lat[j];
+			GMT_geo_to_cart (&plat, &plon, B, TRUE);	/* 3-D vector of end of this segment */
+			if (GMT_great_circle_intersection (A, B, C, X, &cx_dist)) continue;	/* X not between A and B */
+			if (return_mindist) {		/* Get lon, lat of X, calculate distance, and update min_dist if needed */
+				GMT_cart_to_geo (&xlat, &xlon, X, TRUE);
+				d = (*GMT_distance_func) (xlon, xlat, lon, lat);	/* Distance between our point and j'th node on i'th line */
+				if (d < (*dist_min)) *dist_min = d;				/* Node inside the critical distance; we are done */
+			}
+			if (cx_dist > cos_dist) return (TRUE);	/* X is on the A-B extension AND within specified distance */
+		}
+	}
+	return (FALSE);	/* All tests failed, we are not close to the line(s) */
 }
