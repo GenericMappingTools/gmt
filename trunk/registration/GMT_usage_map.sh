@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.7 2001-07-10 21:04:03 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.8 2001-07-11 00:18:18 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -134,4 +134,6 @@ EOF
 	gmtset DOTS_PR_INCH 300 PAPER_MEDIA Letter
 	rm -f gmt_usage.ps
 	echo "GMT_usage_map.x: Created new map (gmt_usage.jpg)" >&2
+	install -m 644 gmt_usage.jpg /home/gmt/gmt/www/gmt/images
 fi
+echo "I have finished this script" | mail stahl@soest 
