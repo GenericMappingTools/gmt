@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.124 2004-05-12 19:42:14 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.125 2004-05-12 20:45:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4126,7 +4126,7 @@ void GMT_draw_map_rose (struct MAP_ROSE *mr)
 void GMT_draw_mag_rose (struct MAP_ROSE *mr)
 {	/* Magnetic compass rose */
 	int i, k, level, just, ljust[4] = {10, 5, 2, 7}, n_tick;
-	double ew_angle, angle, R[2], tlen[3], s, c, x[5], y[5], xp[5], yp[5], offset, t_angle, scale[2], base, *val;
+	double ew_angle, angle, R[2], tlen[3], L, s, c, x[5], y[5], xp[5], yp[5], offset, t_angle, scale[2], base, *val;
 	char label[16];
 	
 	GMT_azim_to_angle (mr->lon, mr->lat, 0.1, 90.0, &ew_angle);	/* Get angle of E-W direction at this location */
@@ -4181,6 +4181,7 @@ void GMT_draw_mag_rose (struct MAP_ROSE *mr)
 		x[1] = mr->x0 + (R[1] + tlen[0]) * c;	y[1] = mr->y0 + (R[1] + tlen[0]) * s;
 		GMT_2D_to_3D (x, y, project_info.z_level, 2);
 		ps_segment (x[0], y[0], x[1], y[1]);
+		if (!mr->label[k][0]) continue;	/* No label desired */
 		x[0] = mr->x0 + base * c;	y[0] = mr->y0 + base * s;
 		x[1] = mr->x0 + (base + 2.0 * tlen[2]) * c;	y[1] = mr->y0 + (base + 2.0 * tlen[2]) * s;
 		GMT_2D_to_3D (x, y, project_info.z_level, 2);
@@ -4200,8 +4201,9 @@ void GMT_draw_mag_rose (struct MAP_ROSE *mr)
 	
 	if (mr->kind == 2) {	/* Compass needle and label */
 		sincos ((ew_angle + (90.0 - mr->declination)) * D2R, &s, &c);
-		x[0] = mr->x0 - 0.85 * R[0] * c;	y[0] = mr->y0 - 0.85 * R[0] * s;
-		x[1] = mr->x0 + 0.85 * R[0] * c;	y[1] = mr->y0 + 0.85 * R[0] * s;
+		L = R[0] - 2.0 * tlen[2];
+		x[0] = mr->x0 - L * c;	y[0] = mr->y0 - L * s;
+		x[1] = mr->x0 + L * c;	y[1] = mr->y0 + L * s;
 		GMT_vector3D (x[0], y[0], x[1], y[1], project_info.z_level, M_VW * mr->size, M_HL * mr->size, M_HW * mr->size, gmtdefs.vector_shape, gmtdefs.background_rgb, TRUE);
 		t_angle = fmod (ew_angle + 90.0 - mr->declination + 360.0, 360.0);	/* Now in 0-360 range */
 		if (fabs (t_angle) > 90.0) t_angle -= copysign (180.0, t_angle);
@@ -4212,8 +4214,9 @@ void GMT_draw_mag_rose (struct MAP_ROSE *mr)
 		GMT_text3D (x[0], y[0], project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, mr->dlabel, t_angle, 2, 0);
 	}
 	else {			/* Just geographic directions and a centered arrow */
+		L = mr->size - 4.0*tlen[2];
 		x[0] = x[1] = x[4] = 0.0;	x[2] = -0.25 * mr->size;	x[3] = -x[2];
-		y[0] = -0.45 * mr->size;	y[1] = -y[0];	 y[2] = y[3] = 0.0; y[4] = y[1] + gmtdefs.annot_offset[0];
+		y[0] = -0.5 * L;		y[1] = -y[0];	 y[2] = y[3] = 0.0; y[4] = y[1] + gmtdefs.annot_offset[0];
 		GMT_rotate2D (x, y, 5, mr->x0, mr->y0, ew_angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
 		GMT_vector3D (xp[0], yp[0], xp[1], yp[1], project_info.z_level, F_VW * mr->size, F_HL * mr->size, F_HW * mr->size, gmtdefs.vector_shape, gmtdefs.background_rgb, TRUE);
 		GMT_circle3D (mr->x0, mr->y0, project_info.z_level, 0.25 * mr->size, GMT_no_rgb, TRUE);
