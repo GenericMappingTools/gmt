@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.126 2004-06-21 22:00:16 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.127 2004-06-21 22:03:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -122,7 +122,7 @@ void GMT_textpath_init (struct GMT_PEN *LP, int Brgb[], struct GMT_PEN *BP, int 
 void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G);
 void GMT_contlabel_debug (struct GMT_CONTOUR *G);
 void GMT_get_radii_of_curvature (double x[], double y[], int n, double r[]);
-int GMT_label_selection (char *this_label, char *label, double this_dist, double this_value_dist, int xl, int fj, struct GMT_CONTOUR *G);
+int GMT_label_is_OK (char *this_label, char *label, double this_dist, double this_value_dist, int xl, int fj, struct GMT_CONTOUR *G);
 
 double *GMT_x2sys_Y;
 
@@ -3262,7 +3262,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 						this_value_dist = value_dist[i-1] + f * (value_dist[i] - value_dist[i-1]);
 					}
 					this_dist = G->label_dist_spacing - dist_offset + last_label_dist;
-					if (GMT_label_selection (this_label, label, this_dist, this_value_dist, -1, -1, G)) {
+					if (GMT_label_is_OK (this_label, label, this_dist, this_value_dist, -1, -1, G)) {
 						GMT_place_label (new_label, this_label, G, G->label_type != 3);
 						new_label->node = i - 1;
 						GMT_contlabel_angle (xx, yy, i - 1, i, cangle, nn, new_label, G);
@@ -3317,7 +3317,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 				}
 				if ((new_label->dist - last_dist) >= G->min_dist) {	/* OK to accept this label */
 					this_dist = dist;
-					if (GMT_label_selection (this_label, label, this_dist, this_value_dist, -1, -1, G)) {
+					if (GMT_label_is_OK (this_label, label, this_dist, this_value_dist, -1, -1, G)) {
 						GMT_place_label (new_label, this_label, G, TRUE);
 						new_label->node = (j == 0) ? 0 : j - 1;
 						GMT_contlabel_angle (xx, yy, new_label->node, j, cangle, nn, new_label, G);
@@ -3364,7 +3364,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 						new_label->dist = map_dist[right] - f * (map_dist[right] - map_dist[left]);
 						this_value_dist = value_dist[right] - f * (value_dist[right] - value_dist[left]);
 					}
-					if (GMT_label_selection (this_label, label, this_dist, this_value_dist, line_no, -1, G)) {
+					if (GMT_label_is_OK (this_label, label, this_dist, this_value_dist, line_no, -1, G)) {
 						GMT_place_label (new_label, this_label, G, TRUE);
 						GMT_contlabel_angle (xx, yy, left, right, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
@@ -3397,7 +3397,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 					this_dist = track_dist[start];
 					new_label->dist = map_dist[start];
 					this_value_dist = value_dist[start];
-					if (GMT_label_selection (this_label, label, this_dist, this_value_dist, -1, j, G)) {
+					if (GMT_label_is_OK (this_label, label, this_dist, this_value_dist, -1, j, G)) {
 						GMT_place_label (new_label, this_label, G, TRUE);
 						GMT_contlabel_angle (xx, yy, start, start, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
@@ -3453,9 +3453,9 @@ void GMT_place_label (struct GMT_LABEL *L, char *txt, struct GMT_CONTOUR *G, BOO
 	}
 }
 
-int GMT_label_selection (char *this_label, char *label, double this_dist, double this_value_dist, int xl, int fj, struct GMT_CONTOUR *G)
+int GMT_label_is_OK (char *this_label, char *label, double this_dist, double this_value_dist, int xl, int fj, struct GMT_CONTOUR *G)
 {
-	int no_label = FALSE;
+	int label_OK = TRUE;
 	char format[128];
 	
 	switch (G->label_type) {
@@ -3463,7 +3463,7 @@ int GMT_label_selection (char *this_label, char *label, double this_dist, double
 			if (label && label[0])
 				strcpy (this_label, label);
 			else
-				no_label = TRUE;
+				label_OK = FALSE;
 			break;
 			
 		case 1:
@@ -3471,7 +3471,7 @@ int GMT_label_selection (char *this_label, char *label, double this_dist, double
 			if (G->label && G->label[0])
 				strcpy (this_label, G->label);
 			else
-				no_label = TRUE;
+				label_OK = FALSE;
 			break;
 
 		case 3:
@@ -3492,23 +3492,23 @@ int GMT_label_selection (char *this_label, char *label, double this_dist, double
 			if (G->f_label[fj] && G->f_label[fj][0])
 				strcpy (this_label, G->f_label[fj]);
 			else
-				no_label = TRUE;
+				label_OK = FALSE;
 			break;
 			
 		case 6:
 			if (G->xp[xl].label && G->xp[xl].label[0])
 				strcpy (this_label, G->xp[xl].label);
 			else
-				no_label = TRUE;
+				label_OK = FALSE;
 			break;
 		
 		default:	/* Should not happen... */
-			fprintf (stderr, "%s: ERROR in GMT_label_selection. Notify gmt-team@hawaii.edu\n", GMT_program);
+			fprintf (stderr, "%s: ERROR in GMT_label_is_OK. Notify gmt-team@hawaii.edu\n", GMT_program);
 			exit (EXIT_FAILURE);
 			break;
 	}
 	
-	return (no_label);
+	return (label_OK);
 }
 
 void GMT_get_plot_array (void) {      /* Allocate more space for plot arrays */
