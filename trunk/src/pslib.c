@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.57 2004-03-25 18:11:08 pwessel Exp $
+ *	$Id: pslib.c,v 1.58 2004-04-06 19:28:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1586,10 +1586,13 @@ void ps_rotatetrans (double x, double y, double angle)
 	int go = FALSE;
 	
 	if (angle != 0.0) {
+		if (fabs(angle) < 1e-9) angle = 0.0;
 		fprintf (ps.fp, "%g R", angle);
 		go = TRUE;
 	}
 	if (x != 0.0 || y != 0.0) {
+		if (fabs(x) < 1e-9) x = 0.0;
+		if (fabs(y) < 1e-9) y = 0.0;
 		if (go) fputc (' ', ps.fp);
 		fprintf (ps.fp, "%g %g T", x * ps.scale, y * ps.scale);
 	}
@@ -2382,10 +2385,13 @@ void ps_transrotate (double x, double y, double angle)
 	int go = FALSE;
 	
 	if (x != 0.0 || y != 0.0) {
+		if (fabs(x) < 1e-9) x = 0.0;
+		if (fabs(y) < 1e-9) y = 0.0;
 		fprintf (ps.fp, "%g %g T", x * ps.scale, y * ps.scale);
 		go = TRUE;
 	}
 	if (angle != 0.0) {
+		if (fabs(angle) < 1e-9) angle = 0.0;
 		if (go) fputc (' ', ps.fp);
 		fprintf (ps.fp, "%g R", angle);
 	}

@@ -143,6 +143,10 @@ V 0 1p
 .br
 D 0.2i 1p
 .br
+M 5 5 500:km:u f
+.br
+I SOEST_logo.ras 3 CT
+.br
 L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
 .br
 G 0.15i

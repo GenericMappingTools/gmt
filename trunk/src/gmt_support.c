@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.63 2004-04-05 22:54:24 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.64 2004-04-06 19:28:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -100,6 +100,10 @@ int GMT_slash_count (char *txt);
 int GMT_name2rgb (char *name);
 int GMT_name2pen (char *name);
 int GMT_getpen2 (char *line, struct GMT_PEN *pen);
+void GMT_gettexture (char *line, int unit, double scale, struct GMT_PEN *P);
+void GMT_getpenwidth (char *line, int *pen_unit, double *pen_scale, struct GMT_PEN *P);
+int GMT_penunit (char c, double *pen_scale);
+void GMT_old2newpen (char *line);
 
 int GMT_check_rgb (int rgb[])
 {
@@ -208,6 +212,8 @@ int GMT_getrgb (char *line, int rgb[])
 {
 	int n, i, count;
 	
+	if (!line[0]) return (FALSE);	/* Nothing to do - accept default action */
+	
 	count = GMT_slash_count (line);
 	
 	if (count == 3) {	/* c/m/y/k */
@@ -299,118 +305,295 @@ void GMT_init_pen (struct GMT_PEN *pen, double width)
 	pen->offset = 0.0;
 }
 
-int GMT_getpen (char *line, struct GMT_PEN *pen)
+void GMT_old2newpen (char *line)
 {
-	int i, n_slash, t_pos, c_pos, s_pos, pen_unit;
-	BOOLEAN get_pen;
-	double val = 0.0, width, dpi_to_inch = 1.0;
-	char tmp[32], string[BUFSIZ], *ptr;
+	int i, j, k, n_slash, t_pos, s_pos, pen_unit, texture_unit;
+	BOOLEAN got_pen = FALSE;
+	double pen_scale = 1.0, texture_scale = 1.0, width;
+	char pstring[128], pcolor[128], ptexture[256], buffer[BUFSIZ], saved[BUFSIZ], tmp[2], set_points = 0;
 	
-	if (line[0] == ':') return (GMT_getpen2 (line, pen));	/* Goto this routine to process :pen:color:texture strings */
-	
-	GMT_init_pen (pen, GMT_PENWIDTH);	/* Default pen */
-
-	/* Syntax 1:	[<width][/<color>][t<texture>][p]	p can be anywhere
-	 * Syntax 2:	[<width[p]][/<color>][/<texture>]	when pen, color, or texture are v4 format
-	 */
+	/* Old Syntax:	[<width][/<color>][t<texture>][p]	p can be anywhere but oughto go just after width */
 	 
-	/* Check for p which means pen thickness is given in points */
+	/* We will translate the old v3 pen format into the ew format:
+	 *
+	 *	[<width>[<punit>][,<color>[,<texture><[<tunit>]]]
+	 *
+	 * We do this by separating out the three strings pstring, pcolor, and ptexture
+	 */
 	
-	if (strchr (line, 'p'))
-		pen_unit = GMT_PT;
-	else if (strchr (line, 'i'))
-		pen_unit = GMT_INCH;
-	else if (strchr (line, 'c'))
-		pen_unit = GMT_CM;
-	else if (strchr (line, 'm'))
-		pen_unit = GMT_M;
-	else {	/* For pens, the default unit is dpi, must apply scaling to get inch first*/
-		pen_unit = GMT_INCH;
-		dpi_to_inch = 1.0 / gmtdefs.dpi;
+	strcpy (saved, line);	/* Save original string */
+	s_pos = t_pos = -1;
+	i = 0;
+	tmp[1] = '\0';
+	memset ((void *)pstring,  0, (size_t)(128*sizeof(char)));
+	memset ((void *)pcolor,   0, (size_t)(128*sizeof(char)));
+	memset ((void *)ptexture, 0, (size_t)(256*sizeof(char)));
+	while (line[i] && line[i] == '.' || isdigit ((int)line[i])) i++;
+	
+	if (i) {	/* Case 1: i > 0 which means a numerical width was specified) */
+		if (strchr ("cimp", line[i])) i++;	/* Got a trailing c|i|m|p for pen width unit */
+		strncpy (pstring, line, i);
+		got_pen = TRUE;
+		j = i;
 	}
+	else {	/* Here, i == 0 and line[0] == '/' or 't' or first letter of a pen name (f|t) [faint|thin|thick|fat] */
+		if (line[0] == '/') {	/* No pen given, / is just the start of /<color> */
+			pstring[0] = 0;
+			s_pos = j = 0;
+		}
+		else if (line[0] == 't' && (line[1] == 'a' || line[1] == 'o' || isdigit((int)line[1]))) {	/* This is t<texture> so no pen given */
+			pstring[0] = 0;
+			t_pos = j = 0;
+		}
+		else {	/* Must be pen name.  Determine end of it; tricky because of the t<texture> format */
+			for (j = i + 1, n_slash = 0; line[j] && n_slash == 0; j++) if (line[j] == '/') n_slash = j;
+			if (n_slash) {	/* Reached /<color> which means we can find the end of the pen width string */
+				s_pos = n_slash;
+				strncpy (pstring, line, s_pos);
+			}
+			else {	/* Either line ends in a t<texture> or nothing. j is now strlen (line) */
+				j--;	/* Position of last character in line */
+				if (strchr ("cimp", line[j])) {	/* Got a trailing c|i|m|p for unit appended to texture */
+					texture_unit = GMT_penunit (line[j], &texture_scale);
+					set_points = line[j];
+					j--;
+				}
+				if (line[j-1] == 't' && (line[j] == 'a' || line[j] == 'o')) {	/* Trailing ta|to[p] */
+					t_pos = j - 1;
+					strncpy (pstring, line, t_pos);
+				}
+				else if (strchr (line, ':')) {	/* Trailing t<pattern>:<offset>[p], rewind to 't' */
+					while (line[j] && line[j] != 't') j--;
+					t_pos = j;
+					strncpy (pstring, line, t_pos);
+				}
+				else	/* Nothing; all we were given was a pen name */
+					strcpy (pstring, line);
+			}
+		}
+	}
+	
+	i = j;	/* First character position AFTER the pen width (if any) */
 		
-	/* First check if a pen thickness has been entered as a number */
-	
-	get_pen = ((line[0] == '.' && (line[1] >= '0' && line[1] <= '9')) || (line[0] >= '0' && line[0] <= '9'));
-	
 	/* Then look for slash which indicate start of color information */
 	
-	for (i = n_slash = 0, s_pos = -1; line[i]; i++) if (line[i] == '/') {
-		n_slash++;
-		if (s_pos < 0) s_pos = i;	/* First slash position */
+	if (s_pos == -1) { /* We have not yet searched for start of /<color>, if present */
+		for (j = i, n_slash = 0; line[j]; j++) if (line[j] == '/') {
+			n_slash++;
+			if (s_pos < 0) s_pos = j;	/* First slash position (but keep counting the slashes) */
+		}
 	}
 	
 	/* Finally see if a texture is given */
 	
-	for (i = 0, t_pos = -1; line[i] && t_pos == -1; i++) if (line[i] == 't') t_pos = i;
-	
-	/* Now decode values */
-	
-	if (get_pen) {	/* Decode pen width */
-		pen->width = atof (line) * GMT_u2u[pen_unit][GMT_PT] * dpi_to_inch;
-	}
-	if (s_pos >= 0) {	/* Get color of pen */
-		s_pos++;
-		if (n_slash == 1) {	/* Gray shade is given */
-			sscanf (&line[s_pos], "%d", &pen->rgb[0]);
-			pen->rgb[1] = pen->rgb[2] = pen->rgb[0];
-		}
-		else if (n_slash == 3)	/* r/g/b color is given */
-			sscanf (&line[s_pos], "%d/%d/%d", &pen->rgb[0], &pen->rgb[1], &pen->rgb[2]);
-		else if (n_slash == 4) {	/* c/m/y/k color is given */
-			double cmyk[4];
-			sscanf (&line[s_pos], "%lf/%lf/%lf/%lf", &cmyk[0], &cmyk[1], &cmyk[2], &cmyk[3]);
-			GMT_cmyk_to_rgb (pen->rgb, cmyk);
-		}
+	if (t_pos == -1) { /* Not yet found start of t<texture>, if present */
+		for (j = i; line[j] && t_pos == -1; j++) if (line[j] == 't') t_pos = j;
 	}
 	
-	/* here, the pen width is now in points */
-	
-	if (t_pos >= 0) {	/* Get texture */
-		t_pos++;
-		if (line[t_pos] == 'o') {	/* Default Dotted */
-			width = (pen->width < SMALL) ? GMT_PENWIDTH : pen->width;
-			sprintf (pen->texture, "%g %g", width, 4.0 * width);
-			pen->offset = 0.0;
-		}
-		else if (line[t_pos] == 'a') {	/* Default Dashed */
-			width = (pen->width < SMALL) ? GMT_PENWIDTH : pen->width;
-			sprintf (pen->texture, "%g %g", 8.0 * width, 8.0 * width);
-			pen->offset = 4.0 * width;
-		}
-		else {	/* Specified pattern */
-			for (i = t_pos+1, c_pos = 0; line[i] && c_pos == 0; i++) if (line[i] == ':') c_pos = i;
-			if (c_pos == 0) return (pen->width < 0.0 || GMT_check_rgb (pen->rgb));
-			line[c_pos] = ' ';
-			sscanf (&line[t_pos], "%s %lf", pen->texture, &pen->offset);
-			line[c_pos] = ':';
-			for (i = 0; pen->texture[i]; i++) if (pen->texture[i] == '_') pen->texture[i] = ' ';
-			
-			/* Must convert given units to points */
-				
-			ptr = strtok (pen->texture, " ");
-			memset ((void *)string, 0, (size_t)BUFSIZ);
-			while (ptr) {
-				sprintf (tmp, "%g ", (atof (ptr) * GMT_u2u[pen_unit][GMT_PT] * dpi_to_inch));
-				strcat (string, tmp);
-				ptr = strtok (CNULL, " ");
-			}
-			string[strlen (string) - 1] = 0;
-			if (strlen (string) >= GMT_PEN_LEN) {
-				fprintf (stderr, "%s: GMT Error: Pen attributes too long!\n", GMT_program);
-				exit (EXIT_FAILURE);
-			}
-			strcpy (pen->texture, string);
-			pen->offset *= GMT_u2u[pen_unit][GMT_PT] * dpi_to_inch;
+	if (t_pos >= 0) {	/* Texture was specified */
+		t_pos++;	/* Step over the leading 't' */
+		strcpy (ptexture, &line[t_pos]);
+		if (strchr ("cimp", ptexture[strlen(ptexture)-1])) {	/* c|i|m|p given after texture */
+			set_points = ptexture[strlen(ptexture)-1];
+			texture_unit = GMT_penunit (set_points, &texture_scale);
 		}
 	}
-	return (pen->width < 0.0 || GMT_check_rgb (pen->rgb));
+	else
+		ptexture[0] = '\0';
+		
+	if (s_pos >= 0) {	/* Got color of pen */
+		s_pos++;	/* Step over the leading '/' */
+		if (t_pos >= 0)	/* color ends with a texture specification at t_pos */
+			strncpy (pcolor, &line[s_pos], t_pos - s_pos - 1);
+		else		/* Nothing follows the color */
+			strcpy (pcolor, &line[s_pos]);
+	}
+	
+	if (got_pen && set_points) {	/* The pattern string said values are in given units; use for width if not set */
+		if (!pstring[0]) {	/* No width given, set default width and indicate the texture unit as width unit */
+			width = GMT_PENWIDTH / (GMT_u2u[texture_unit][GMT_PT] * texture_scale);
+			sprintf (pstring, "%g%c", width, set_points);
+		}
+		else if (!strchr ("cimp", pstring[strlen(pstring)-1])) {	/* No c|i|m|p given after pen width */
+			tmp[0] = set_points;
+			strcat (pstring, tmp);	/* Append unit used for texture */
+		}
+	}
+	
+	/* Build newstyle pen specification string */
+	
+	sprintf (buffer, "%s,", pstring);
+	strcat (buffer, pcolor);
+	strcat (buffer, ",");
+	strcat (buffer, ptexture);
+	for (i = strlen(buffer)-1; buffer[i] && buffer[i] == ','; i--);	/* Get rid of trailing commas, if any */
+	buffer[++i] = '\0';
+	if (gmtdefs.verbose) fprintf (stderr, "%s: Old-style pen %s translated to %s\n", GMT_program, saved, buffer); 
+	strcpy (line, buffer);
 }
 
-int GMT_getpen2 (char *line, struct GMT_PEN *pen)
+void GMT_getpenwidth (char *line, int *pen_unit, double *pen_scale, struct GMT_PEN *P) {
+	int n;
+	
+	/* SYNTAX for pen width:  <floatingpoint>[p] or <name> [fat, thin, etc] */
+	
+	if (!line[0]) {	/* Nothing given, set default pen width and units/scale */
+		P->width = GMT_PENWIDTH;
+		*pen_unit = GMT_INCH;
+		*pen_scale = 1.0 / gmtdefs.dpi;
+		return;
+	}
+	
+	if ((line[0] == '.' && (line[1] >= '0' && line[1] <= '9')) || (line[0] >= '0' && line[0] <= '9')) { /* <floatingpoint>[<unit>] */
+		/* Check for pen thickness unit at end */
+		n = strlen (line) - 1;	/* Position of last character in string */
+		*pen_unit = GMT_penunit (line[n], pen_scale);
+		P->width = atof (line) * GMT_u2u[*pen_unit][GMT_PT] * (*pen_scale);
+	}
+	else {	/* Pen name was given - these refer to fixed widths in points */
+		P->width = GMT_penname[GMT_name2pen (line)].width;	/* This will also exit if there is an error in pen name */
+		*pen_unit = GMT_PT;
+		*pen_scale = 1.0;	/* Default scale */
+	}
+}	
+
+int GMT_penunit (char c, double *pen_scale)
 {
-	/* Processes new pen specifications given as :pen:color:texture */
-	return (pen->width < 0.0 || GMT_check_rgb (pen->rgb));
+	int unit;
+	*pen_scale = 1.0;
+	if (c == 'p')
+		unit = GMT_PT;
+	else if (c == 'i')
+		unit = GMT_INCH;
+	else if (c == 'c')
+		unit = GMT_CM;
+	else if (c == 'm')
+		unit = GMT_M;
+	else {	/* For pens, the default unit is dpi; must apply scaling to get inch first */
+		unit = GMT_INCH;
+		(*pen_scale) = 1.0 / gmtdefs.dpi;
+	}
+	return (unit);
+}
+
+int GMT_getpen (char *buffer, struct GMT_PEN *P)
+{
+	int i, n, pen_unit = GMT_PT;
+	double pen_scale = 1.0;
+	char pen[128], color[128], texture[256], line[BUFSIZ];
+	
+	strcpy (line, buffer);	/* Work on a copy ofthe arguments */
+	if (!strchr (line, ',')) {	/* Most likely old-style pen specification.  Translate */
+		GMT_old2newpen (line);
+	}
+	
+	/* Processes new pen specifications now given as [pen[<punit>][,color[,texture[<tunit>]]] */
+	
+	memset ((void *)pen, 0, (size_t)(128*sizeof(char)));
+	memset ((void *)color, 0, (size_t)(128*sizeof(char)));
+	memset ((void *)texture, 0, (size_t)(256*sizeof(char)));
+	for (i = 0; line[i]; i++) if (line[i] == ',') line[i] = ' ';	/* Replace , with space */
+	n = sscanf (line, "%s %s %s", pen, color, texture);
+	for (i = 0; line[i]; i++) if (line[i] == ' ') line[i] = ',';	/* Replace space with , */
+	if (n == 2) {	/* Could be pen,color  pen,,texture, or  ,color,texture */
+		if (line[0] == ',') {	/* Got ,color,texture which got stored in pen, color */
+			strcpy (texture, color);
+			strcpy (color, pen);
+			pen[0] = '\0';
+		}
+		else if (strstr(line, ",,")) {	/* Got pen,,texture so texture got stored in color */
+			strcpy (texture, color);
+			color[0] = '\0';
+		}
+	}
+	else if (n == 1) {	/* Could be pen  ,color or ,,texture */
+		if (strstr (line, ",,")) {	/* Got ,,texture so texture got stored in pen */
+			strcpy (texture, pen);
+			pen[0] = color[0] = '\0';
+		}
+		else if (line[0] == ',') {	/* Got ,color so color got stored in pen */
+			strcpy (color, pen);
+			pen[0] = '\0';
+		}
+	}
+	
+	GMT_init_pen (P, GMT_PENWIDTH);	/* Default pen */
+
+	GMT_getpenwidth (pen, &pen_unit, &pen_scale, P);	/* Assign pen width if given */
+	GMT_getrgb (color, P->rgb);				/* Assign color if given */
+	GMT_gettexture (texture, pen_unit, pen_scale, P);	/* Get texture, if given */
+	
+	return (P->width < 0.0 || GMT_check_rgb (P->rgb));
+}
+
+void GMT_gettexture (char *line, int unit, double scale, struct GMT_PEN *P) {
+	int i, n;
+	double width, pen_scale;
+	char tmp[32], string[BUFSIZ], *ptr;
+	
+	if (!line[0]) return;	/* Nothing to do */
+	pen_scale = scale;
+	n = strlen (line) - 1;
+	if (strchr ("cimp", line[n])) {	/* Separate unit given to texture string */
+		unit = GMT_penunit (line[n], &pen_scale);
+	}
+	
+	width = (P->width < SMALL) ? GMT_PENWIDTH : P->width;
+	if (line[0] == 'o') {	/* Default Dotted */
+		sprintf (P->texture, "%g %g", width, 4.0 * width);
+		P->offset = 0.0;
+	}
+	else if (line[0] == 'a') {	/* Default Dashed */
+		sprintf (P->texture, "%g %g", 8.0 * width, 4.0 * width);
+		P->offset = 4.0 * width;
+	}
+	else if (isdigit ((int)line[0])) {	/* Specified numeric pattern will start with an integer*/
+		int c_pos;
+		
+		for (i = 1, c_pos = 0; line[i] && c_pos == 0; i++) if (line[i] == ':') c_pos = i;
+		if (c_pos == 0) {
+			fprintf (stderr, "%s: Warning: Pen texture %s do not follow format <pattern>:<phase>. <phase> set to 0\n", GMT_program, line);
+			P->offset = 0.0;
+		}
+		else {
+			line[c_pos] = ' ';
+			sscanf (line, "%s %lf", P->texture, &P->offset);
+			line[c_pos] = ':';
+		}
+		for (i = 0; P->texture[i]; i++) if (P->texture[i] == '_') P->texture[i] = ' ';
+
+		/* Must convert given units to points */
+	
+		ptr = strtok (P->texture, " ");
+		memset ((void *)string, 0, (size_t)BUFSIZ);
+		while (ptr) {
+			sprintf (tmp, "%g ", (atof (ptr) * GMT_u2u[unit][GMT_PT] * scale));
+			strcat (string, tmp);
+			ptr = strtok (CNULL, " ");
+		}
+		string[strlen (string) - 1] = 0;
+		if (strlen (string) >= GMT_PEN_LEN) {
+			fprintf (stderr, "%s: GMT Error: Pen attributes too long!\n", GMT_program);
+			exit (EXIT_FAILURE);
+		}
+		strcpy (P->texture, string);
+		P->offset *= GMT_u2u[unit][GMT_PT] * scale;
+	}
+	else  {	/* New way of building it up with - and . */
+		P->texture[0] = '\0';
+		P->offset = 0.0;
+		for (i = 0; line[i]; i++) {
+			if (line[i] == '-') { /* Dash */
+				sprintf (tmp, "%g %g ", 8.0 * width, 4.0 * width);
+				strcat (P->texture, tmp);
+			}
+			else if (line[i] == '.') { /* Dot */
+				sprintf (tmp, "%g %g ", width, 4.0 * width);
+				strcat (P->texture, tmp);
+			}
+		}
+		P->texture[strlen(P->texture)-1] = '\0';	/* Chop off trailing space */
+	}
 }
 
 int GMT_getinc (char *line, double *dx, double *dy)
