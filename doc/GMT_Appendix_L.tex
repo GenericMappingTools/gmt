@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_L.tex,v 1.3 2002-01-17 22:57:17 pwessel Exp $
+%	$Id: GMT_Appendix_L.tex,v 1.4 2002-02-27 23:15:24 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2002.
@@ -56,59 +56,20 @@ DOS batch files.
 
 Because \GMT\ works best in conjugation with \UNIX\ tools we
 suggest you install \GMT\ using the Cygwin product from
-Cygnus (now assimilated by Redhat, Inc.).  Note there are two versions:
-One is commercially available and contains a few more tools,
-in particular the \progname{tcsh} shell, but is only available for
-WIndows NT or Windows 2000.  The other is the free version for any Windows version
-and it uses the Bourne Again shell \progname{bash}.  Here we will
-assume you have the free version and will be using this shell.
+Cygnus (now assimilated by Redhat, Inc.).  This free version works on any Windows version
+and it comes with both the Bourne Again shell \progname{bash} and the \progname{tcsh}.
 You also have access to most standard GNU development tools such
 as compilers and text processing tools (\progname{awk},
 \progname{grep}, \progname{sed}, etc.).
-If you don’t mind learning \progname{bash} scripting\footnote{O'Reilly \&
-Associates, Inc has a suitable book, \emph{Learning the bash
-shell} (ISBN 1-56592-347-2).} you can write any
-type of \GMT\ scripts (The \GMT\ examples also come in
-\progname{bash} form).
 
 Follow the instructions on the Cygwin page\footnote{sources.redhat.com/cygwin} on how
-to install the executables; it takes an effort not to do this correctly.
-
+to install the package; note you must explicitly add all the development tool
+packages (e.g., \progname{gcc} etc) as the basic installation does not include them by default.
 Once you are up and running under Cygwin, you may install \GMT\ 
 the same way you do under any other \UNIX\ platform by either
 running the automated install via \progname{install\_gmt} or manually
 running configure first, then type make all.
 For details see the general README file.
-After installing you should make a few
-changes to the setup:
-
-\begin{enumerate}
-
-\item In Windows/DOS, set the two environmental variables
-HOME and GMTHOME to point to your ``home'' directory while
-running Cygwin and the GMT install directory.  These two
-parameters should be defined
-in the \filename{autoexec.bat} file and could be something
-like\footnote{Please change \texttt{USER} to your actual home directory,
-and GMT to the actual GMT install directory.}
-
-\begin{itemize}
-\item \texttt{SET HOME=C:$\backslash$USER}
-\item \texttt{SET GMTHOME=C:$\backslash$GMT}
-\end{itemize}
-
-Under Windows NT or 2000 you set these environmental parameters via the
-System control panel.
-
-\item In this home directory, make the file \filename{.bashrc} where
-you place a few definitions:
-
-\begin{itemize}
-\item HOME=//C/USER
-\item GMTHOME=//C/GMT
-\end{itemize}
-
-\end{enumerate}
 
 \index{GMT@\GMT!under Cygwin|)}
 \index{Cygwin|)}
