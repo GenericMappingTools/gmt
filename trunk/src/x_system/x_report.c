@@ -1,4 +1,4 @@
-/*	$Id: x_report.c,v 1.3 2005-03-04 00:48:32 pwessel Exp $
+/*	$Id: x_report.c,v 1.4 2005-03-06 16:04:00 remko Exp $
  *
  * XREPORT reads the xx_legs.b file and reports statistics for one or
  * all or the legs. The information reported are legname, year-of-cruise,
@@ -21,12 +21,12 @@ int main (int argc, char *argv[])
 	char leg[10], gmt[3], datatype[3];
 	FILE *fp = NULL;
 	struct LEG thisleg;
-	
+
 	gmt[0] = gmt[1] = gmt[2] = FALSE;
 	datatype[0] = 'G';
 	datatype[1] = 'M';
 	datatype[2] = 'T';
-	
+
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-') {
 			switch (argv[i][1]) {
@@ -66,9 +66,9 @@ int main (int argc, char *argv[])
 	}
   
   	/* If none selected, the default is all 3 data types */
-  	
+  
   	if (gmt[0] == FALSE && gmt[1] == FALSE && gmt[2] == FALSE) gmt[0] = gmt[1] = gmt[2] = TRUE;
-  	
+  
   	printf ("leg\tyear\tagency\tdata\tnx_I\tmean_I\tstdev_I\tnx_E\tmean_E\tstdev_E\n");
 	while (!end && fread((void *)&thisleg, legsize, 1, fp) == 1) {
 		if (all_legs || !strcmp(thisleg.name, leg)) {
@@ -78,7 +78,7 @@ int main (int argc, char *argv[])
 					thisleg.name,
 					thisleg.year,
 					thisleg.agency);
-				printf("%c\t%d\t%8.2lf\t%7.2lf\t%6d\t%8.2lf\t%7.2lf\n",
+				printf("%c\t%d\t%8.2f\t%7.2f\t%6d\t%8.2f\t%7.2f\n",
 					datatype[i],
 					thisleg.n_gmtint[i],
 					thisleg.mean_gmtint[i],

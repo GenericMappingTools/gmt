@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.29 2005-02-04 02:48:38 pwessel Exp $
+ *	$Id: libspotter.c,v 1.30 2005-03-06 16:04:00 remko Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -85,7 +85,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	}
 
 	if (flowline) finite_out = TRUE;	/* Override so we get finite poles for conversion to forward stage poles at the end */
-	
+
 	last_t = (finite_in) ? 0.0 : DBL_MAX;
 	while (fgets (buffer, 512, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
@@ -114,7 +114,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 			nf = sscanf (buffer, "%lf %lf %lf %lf %lf", &e[i].lon, &e[i].lat, &e[i].t_start, &e[i].t_stop, &e[i].omega);
 		}
 
-		
+
 		if (e[i].t_stop >= e[i].t_start) {
 			fprintf (stderr, "libspotter: ERROR: Stage rotation %d has start time younger than stop time\n", i);
 			exit (EXIT_FAILURE);
@@ -135,7 +135,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 			last_t = e[i].t_stop;
 		}
 		e[i].omega /= e[i].duration;	/* Convert to opening rate */
-		
+
 		e[i].omega_r = e[i].omega * D2R;
 		sincos (e[i].lat * D2R, &e[i].sin_lat, &e[i].cos_lat);
 		e[i].lon_r = e[i].lon * D2R;
@@ -147,12 +147,12 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 		}
 	}
 	fclose (fp);
-	
+
 	n = i;
 
 	if (finite_in && !finite_out) spotter_finite_to_stages (e, n, TRUE, TRUE);	/* Convert finite poles to backward stage poles */
 	if (!finite_in && finite_out) spotter_stages_to_finite (e, n, TRUE, TRUE);	/* Convert backward stage poles to finite poles */
-	
+
 
 	e = (struct EULER *) GMT_memory ((void *)e, n, sizeof (struct EULER), "libspotter");
 
@@ -192,10 +192,10 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 /* wesn:	if do_time >= 10, only to track within the given box */
 /* **c;		Pointer to return track vector */
 {
-	int i, j, k, kk = 0, start_k, nd = 1, nn, n_alloc = 2 * GMT_CHUNK, sideA[2], sideB[2];
-	BOOLEAN path, bend, go, box_check;
-	double t, tt, dt, d_lon, tlon, dd, i_km, xnew, xx, yy, *track, next_x, next_y;
-	double s_lat, c_lat, s_lon, c_lon, cc, ss, cs, i_nd;
+	int i, j = 0, k, kk = 0, start_k = 0, nd = 1, nn, n_alloc = 2 * GMT_CHUNK, sideA[2], sideB[2];
+	BOOLEAN path, bend, go = FALSE, box_check;
+	double t, tt = 0.0, dt, d_lon, tlon, dd = 0.0, i_km = 0.0, xnew, xx, yy, next_x, next_y;
+	double s_lat, c_lat, s_lon, c_lon, cc, ss, cs, i_nd, *track = VNULL;
 
 	bend = (d_km <= (SMALL - 1.0));
 	path = (bend || d_km > SMALL);
@@ -214,7 +214,7 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 	}
 
 	if (p[ns-1].t_stop > t_zero) t_zero = p[ns-1].t_stop;	/* In case we don't go all the way to zero */
-	
+
 	for (i = 0; i < np; i++) {
 
 		if (path) {
@@ -225,7 +225,7 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 			}
 		}
 		nn = 0;
-			
+
 		t = tp[i];
 
 		if (box_check) set_inout_sides (xp[i], yp[i], wesn, sideB);
@@ -374,7 +374,7 @@ void set_inout_sides (double x, double y, double wesn[], int sideXY[2]) {
 		sideXY[0] = +1;
 	else
 		sideXY[0] = 0;
-}	
+}
 
 BOOLEAN must_do_track (int sideA[], int sideB[]) {
 	int dx, dy;
@@ -406,9 +406,9 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 /* wesn:	if do_time >= 10, only to track within the given box */
 /* c;		Pointer to return track vector */
 {
-	int i, j, k, kk = 0, start_k, nd = 1, nn, n_alloc = 2 * GMT_CHUNK, sideA[2], sideB[2];
-	BOOLEAN path, bend, go, box_check;
-	double t, tt, dt, d_lon, tlon, dd, i_km, xnew, xx, yy, *track;
+	int i, j = 0, k, kk = 0, start_k = 0, nd = 1, nn, n_alloc = 2 * GMT_CHUNK, sideA[2], sideB[2];
+	BOOLEAN path, bend, go = FALSE, box_check;
+	double t, tt = 0.0, dt, d_lon, tlon, dd = 0.0, i_km = 0.0, xnew, xx, yy, *track = VNULL;
 	double s_lat, c_lat, s_lon, c_lon, cc, ss, cs, i_nd, next_x, next_y;
 
 	bend = (d_km <= (SMALL - 1.0));
@@ -441,7 +441,7 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 		nn = 0;
 
 		t = t_zero;
-		
+
 		if (box_check) set_inout_sides (xp[i], yp[i], wesn, sideB);
 		while (t < tp[i]) {	/* As long as we're not back at zero age */
 			if (box_check) sideA[0] = sideB[0], sideA[1] = sideB[1];
@@ -587,13 +587,13 @@ void spotter_finite_to_fwstages (struct EULER p[], int n, BOOLEAN finite_rates, 
 	double R_young[3][3], R_old[3][3], R_stage[3][3];
 
 	/* Expects total reconstruction models to have youngest poles first */
-	
+
 	elon = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
 	elat = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
 	ew   = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
-	
+
 	set_I_matrix (R_young);		/* The first time, R_young is simply I */
-	
+
 	/* First forward stage pole is the youngest total reconstruction pole */
 
 	t_old = 0.0;
@@ -607,17 +607,17 @@ void spotter_finite_to_fwstages (struct EULER p[], int n, BOOLEAN finite_rates, 
 		p[i].t_stop = t_old;
 		t_old = p[i].t_start;
 	}
-	
+
 	/* Repopulate the EULER structure given the rotation parameters */
-	
+
 	xyw_to_struct_euler (p, elon, elat, ew, n, TRUE, stage_rates);
 
 	GMT_free ((void *)elon);
 	GMT_free ((void *)elat);
 	GMT_free ((void *)ew);
-	
+
 	/* Flip order since stages go from oldest to youngest */
-	
+
 	reverse_rotation_order (p, n);	/* Flip order since stages go from oldest to youngest */
 }
 
@@ -635,13 +635,13 @@ void spotter_finite_to_stages (struct EULER p[], int n, BOOLEAN finite_rates, BO
 	double R_young[3][3], R_old[3][3], R_stage[3][3];
 
 	/* Expects total reconstruction models to have youngest poles first */
-	
+
 	elon = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
 	elat = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
 	ew   = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
-	
+
 	set_I_matrix (R_young);		/* The first time, R_young is simply I */
-	
+
 	t_old = 0.0;
 	for (i = 0; i < n; i++) {
 		if (finite_rates) p[i].omega *= p[i].duration;			/* Convert opening rate to opening angle */
@@ -653,15 +653,15 @@ void spotter_finite_to_stages (struct EULER p[], int n, BOOLEAN finite_rates, BO
 		p[i].t_stop = t_old;
 		t_old = p[i].t_start;
 	}
-	
+
 	/* Repopulate the EULER structure given the rotation parameters */
-	
+
 	xyw_to_struct_euler (p, elon, elat, ew, n, TRUE, stage_rates);
 
 	GMT_free ((void *)elon);
 	GMT_free ((void *)elat);
 	GMT_free ((void *)ew);
-	
+
 	reverse_rotation_order (p, n);	/* Flip order since stages go from oldest to youngest */
 }
 
@@ -679,15 +679,15 @@ void spotter_stages_to_finite (struct EULER p[], int n, BOOLEAN finite_rates, BO
 	double R_young[3][3], R_old[3][3], R_stage[3][3];
 
 	/* Expects stage pole models to have oldest poles first, so we must flip order */
-	
+
 	reverse_rotation_order (p, n);	/* Expects stage pole models to have oldest poles first, so we must flip order */
-	
+
 	elon = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
 	elat = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
 	ew   = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
-	
+
 	set_I_matrix (R_old);		/* The first time, R_old is simply I */
-	
+
 	for (i = 0; i < n; i++) {
 		if (stage_rates) p[i].omega *= p[i].duration;				/* Convert opening rate to opening angle */
 		make_rot_matrix (p[i].lon, p[i].lat, p[i].omega, R_stage);		/* Make matrix from rotation parameters */
@@ -696,9 +696,9 @@ void spotter_stages_to_finite (struct EULER p[], int n, BOOLEAN finite_rates, BO
 		matrix_to_pole (R_young, &elon[i], &elat[i], &ew[i]);			/* Get rotation parameters from matrix */
 		if (elon[i] > 180.0) elon[i] -= 360.0;					/* Adjust lon */
 	}
-	
+
 	/* Repopulate the EULER structure given the rotation parameters */
-	
+
 	xyw_to_struct_euler (p, elon, elat, ew, n, FALSE, finite_rates);
 
 	GMT_free ((void *)elon);
@@ -718,28 +718,28 @@ void spotter_add_rotations (struct EULER a[], int n_a, struct EULER b[], int n_b
 	 * stage rotations we convert back to finite rotations and then
 	 * simply add each pair of rotations using matrix multiplication.
 	 * The final finite rotation model is returned in c. */
-	
+
 	struct EULER *a2, *b2, *c2;
 	double *t, t_min, t_max, Ra[3][3], Rb[3][3], Rab[3][3], lon, lat, w, sign_a, sign_b;
 	int i, j, k, n_k = 0;
 	BOOLEAN a_ok = TRUE, b_ok = TRUE;
-	
+
 	sign_a = (n_a > 0) ? +1.0 : -1.0;
 	sign_b = (n_b > 0) ? +1.0 : -1.0;
 	n_a = abs (n_a);
 	n_b = abs (n_b);
-	
+
 	/* Allocate more than we need, must likely */
-	
+
 	t = (double *) GMT_memory (VNULL, (size_t)(n_a + n_b), sizeof (double), "libspotter");
-	
+
 	/* First convert the two models to stage poles */
-	
+
 	spotter_finite_to_stages (a, n_a, TRUE, TRUE);		/* Return stage poles */
 	spotter_finite_to_stages (b, n_b, TRUE, TRUE);		/* Return stage poles */
-	
+
 	/* Find all the time knots used by the two models */
-	
+
 	t_max = MIN (a[0].t_start, b[0].t_start);
 	t_min = MAX (a[n_a-1].t_stop, b[n_b-1].t_stop);
 	t[n_k++] = t_max;
@@ -775,11 +775,11 @@ void spotter_add_rotations (struct EULER a[], int n_a, struct EULER b[], int n_b
 	}
 	t[n_k++] = t_min;
 	n_k--;	/* Number of structure elements is one less than number of knots */
-	
+
 	b2 = (struct EULER *) GMT_memory (VNULL, (size_t)n_k, sizeof (struct EULER), "libspotter");
 	a2 = (struct EULER *) GMT_memory (VNULL, (size_t)n_k, sizeof (struct EULER), "libspotter");
 	c2 = (struct EULER *) GMT_memory (VNULL, (size_t)n_k, sizeof (struct EULER), "libspotter");
-	
+
 	for (k = i = j = 0; k < n_k; k++) {	/* Resample the two stage pole models onto the same knots */
 		/* First resample p onto p2 */
 		while (a[i].t_stop >= t[k]) i++;				/* Wind up */
@@ -787,7 +787,7 @@ void spotter_add_rotations (struct EULER a[], int n_a, struct EULER b[], int n_b
 		if (a2[k].t_start > t[k]) a2[k].t_start = t[k];			/* Adjust start time */
 		if (a2[k].t_stop < t[k+1]) a2[k].t_stop = t[k+1];		/* Adjust stop time */
 		a2[k].duration = a2[k].t_start - a2[k].t_stop;			/* Set the duration */
-		
+
 		/* Then resample a onto a2 */
 		while (b[j].t_stop >= t[k]) j++;				/* Wind up */
 		b2[k] = b[j];							/* First copy everything */
@@ -795,20 +795,20 @@ void spotter_add_rotations (struct EULER a[], int n_a, struct EULER b[], int n_b
 		if (b2[k].t_stop < t[k+1]) b2[k].t_stop = t[k+1];		/* Adjust stop time */
 		b2[k].duration = b2[k].t_start - b2[k].t_stop;			/* Set the duration */
 	}
-	
+
 	GMT_free ((void *)t);
-	
+
 	/* Now switch to finite rotations again to do the additions */
-	
+
 	spotter_stages_to_finite (a2, n_k, FALSE, TRUE);	/* Return opening angles, not rates this time */
 	spotter_stages_to_finite (b2, n_k, FALSE, TRUE);
-	
+
 	for (i = 0; i < n_k; i++) {	/* Add each pair of rotations */
 		make_rot_matrix (a2[i].lon, a2[i].lat, sign_a * a2[i].omega, Ra);
 		make_rot_matrix (b2[i].lon, b2[i].lat, sign_b * b2[i].omega, Rb);
 		matrix_mult (Rb, Ra, Rab);	/* Rot a + Rot b = RB * Ra ! */
 		matrix_to_pole (Rab, &lon, &lat, &w);
-		c2[i].lon = lon;	
+		c2[i].lon = lon;
 		c2[i].lat = lat;
 		c2[i].t_start = a2[i].t_start;
 		c2[i].t_stop  = 0.0;
@@ -817,7 +817,7 @@ void spotter_add_rotations (struct EULER a[], int n_a, struct EULER b[], int n_b
 	}
 	GMT_free ((void *)a2);
 	GMT_free ((void *)b2);
-	
+
 	*n_c = n_k;
 	*c = c2;
 }
@@ -825,10 +825,10 @@ void spotter_add_rotations (struct EULER a[], int n_a, struct EULER b[], int n_b
 double spotter_t2w (struct EULER a[], int n, double t)
 {
 	/* Take time, return cumulative omega */
-	
+
 	int i;
 	double w = 0.0;
-	
+
 	i = n - 1;
 	while (i >= 0 && t > a[i].t_start) {
 		w += fabs (a[i].omega * a[i].duration);
@@ -837,7 +837,7 @@ double spotter_t2w (struct EULER a[], int n, double t)
 	if (i >= 0 && t > a[i].t_stop) {
 		w += fabs (a[i].omega * (t - a[i].t_stop));
 	}
-	
+
 	return (w);
 }
 
@@ -850,7 +850,7 @@ void make_rot_matrix (double lonp, double latp, double w, double R[3][3])
  */
 
 	double E[3];
-	
+
         GMT_geo_to_cart (&latp, &lonp, E, TRUE);
 	make_rot_matrix_sub (E, w, R);
 }
@@ -864,7 +864,7 @@ void make_rot_matrix_sub (double E[3], double w, double R[3][3])
  */
 
 	double sin_w, cos_w, c, E_x, E_y, E_z, E_12c, E_13c, E_23c;
-	
+
 	sincos (w * D2R, &sin_w, &cos_w);
 	c = 1 - cos_w;
 
@@ -914,7 +914,7 @@ void make_rot0_matrix (double lonp, double latp, double R[3][3], double E[])
 void set_rot_angle (double w, double R[3][3], double E[])
 {	/* Sets R using R(no_omega) and the given rotation angle w in radians */
 	double sin_w, cos_w, c, E_x, E_y, E_z;
-	
+
 	sincos (w, &sin_w, &cos_w);
 	c = 1 - cos_w;
 
@@ -938,7 +938,7 @@ void set_rot_angle (double w, double R[3][3], double E[])
 void matrix_mult (double a[3][3], double b[3][3], double c[3][3])
 {	/* C = A * B */
 	int i, j, k;
-	
+
 	for (i = 0; i < 3; i++) {
 		for (j = 0; j < 3; j++) {
 			c[i][j] = 0.0;
@@ -950,7 +950,7 @@ void matrix_mult (double a[3][3], double b[3][3], double c[3][3])
 void matrix_vect_mult (double a[3][3], double b[3], double c[3])
 {	/* c = A * b */
 	int i, j;
-	
+
 	for (i = 0; i < 3; i++) for (j = 0, c[i] = 0.0; j < 3; j++) c[i] += a[i][j] * b[j];
 }
 
@@ -969,7 +969,7 @@ void matrix_transpose (double At[3][3], double A[3][3])
 void matrix_to_pole (double T[3][3], double *plon, double *plat, double *w)
 {
 	double T13_m_T31, T32_m_T23, T21_m_T12, L, H, tr;
-	
+
 	T13_m_T31 = T[0][2] - T[2][0];
 	T32_m_T23 = T[2][1] - T[1][2];
 	T21_m_T12 = T[1][0] - T[0][1];
@@ -994,7 +994,7 @@ void reverse_rotation_order (struct EULER *p, int n)
 {	/* Simply shuffles the array from 1:n to n:1 */
 	int i, j;
 	struct EULER p_tmp;
-	
+
 	for (i = 0; i < n/2; i++) {
 		j = n - i - 1;
 		if (i != j) {
@@ -1010,9 +1010,9 @@ void xyw_to_struct_euler (struct EULER *p, double lon[], double lat[], double w[
 	 * stages is TRUE if we are loading stage rotations (FALSE is finite poles).
 	 * convert is TRUE if we must change angles to rates or vice versa */
 	int i;
-	
+
 	for (i = 0; i < n; i++) {
-		p[i].lon = lon[i];	
+		p[i].lon = lon[i];
 		p[i].lat = lat[i];
 		p[i].duration = (stages) ? p[i].t_start - p[i].t_stop : p[i].t_start;
 		p[i].omega = w[i];
@@ -1020,7 +1020,7 @@ void xyw_to_struct_euler (struct EULER *p, double lon[], double lat[], double w[
 		p[i].omega_r = p[i].omega * D2R;
 		p[i].sin_lat = sin (p[i].lat * D2R);
 		p[i].cos_lat = cos (p[i].lat * D2R);
-		p[i].lon_r = p[i].lon * D2R;	
+		p[i].lon_r = p[i].lon * D2R;
 		p[i].lat_r = p[i].lat * D2R;
 	}
 }
@@ -1043,24 +1043,24 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, int
 	 * actually using the inverse rotation R^t (negative opening angle).  For
 	 * that rotation, the covariance matrix is R * cov(r) * R^t.
 	 */
-	
+
 	int matrix_dim = 3, i, j, k, kk = 3, nrots;
 	double R[3][3], x[3], y[3], M[3][3], MtRt[3][3], Rt[3][3], RM[3][3], cov[3][3], tmp[3][3], C[9];
 	double z_unit_vector[3], EigenValue[3], EigenVector[9], work1[3], work2[3], x_in_plane[3], y_in_plane[3];
 	double x_comp, y_comp, w;
-	
+
 	/* Find the unique rotation in question */
-	
+
 	for (i = 0, k = -1; k < 0 && i < np; i++) if (fabs (p[i].t_start - t) < GMT_CONV_LIMIT) k = i;
 	if (k == -1) return (1);	/* Did not match finite rotation time */
-	
+
 	/* Generate R, the rotation matrix.  This is actually R^t since w is -ve */
-	
+
 	w = p[k].omega * p[k].duration;
 	make_rot_matrix (p[k].lon, p[k].lat, -w, R);
-	
+
 	/* Make M(x), the skew-symmetric matrix needed to compute cov of rotated point */
-	
+
         GMT_geo_to_cart (&lat, &lon, x, TRUE);
 	M[0][0] = M[1][1] = M[2][2] = 0.0;
 	M[0][1] = -x[2];
@@ -1072,22 +1072,22 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, int
 
 	/* Since we are using the inverse rotation (-ve w) we must rotate the covariance: cov(r^t) = R cov(r) R^t.
 	   Here, R actually contains R^t so we need the original R (which we will call R^t) as well. */
-	
+
 	matrix_mult (p[k].C, R, tmp);			/* Calculate the cov(r) *R^t product */
 	matrix_transpose (Rt, R);			/* Get the transpose of R^t which is R*/
 	matrix_mult (Rt, tmp, cov);			/* cov(r^t) = R^t cov(r) R */
 
 	/* Calculate cov(y) = (R * M) * cov_R * (R * M)^T */
-	
+
 	matrix_mult (R, M, RM);			/* Calculate the R * M product */
 	matrix_transpose (MtRt, RM);		/* Get the transpose (R*M)^T = M^T * R^T */
 	matrix_mult (cov, MtRt, tmp);		/* Get C * M^T * R^T */
 	matrix_mult (RM, tmp, M);		/* Finally get R * M * C * M^T * R^T, store in M */
 
 	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) C[3*i+j] = M[i][j];	/* Reformat to 1-D format for GMT_jacobi */
-	
+
 	/* Get projected point y = R*x */
-	
+
 	for (i = 0; i < 3; i++) y[i] = R[i][0] * x[0] + R[i][1] * x[1] + R[i][2] * x[2];
         GMT_cart_to_geo (&out[1], &out[0], y, TRUE);
 	if (flag == 't')
@@ -1100,7 +1100,7 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, int
 	if (GMT_jacobi (C, &matrix_dim, &matrix_dim, EigenValue, EigenVector, work1, work2, &nrots)) {	/* Solve eigen-system C = EigenVector * EigenValue * EigenVector^T */
 		fprintf (stderr,"libspotter: Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
 	}
-	
+
 	z_unit_vector[0] = z_unit_vector[1] = 0.0;	z_unit_vector[2] = 1.0;	/* z unit vector */
 	GMT_cross3v (z_unit_vector, y, x_in_plane);	/* Local x-axis in plane normal to mean pole */
 	GMT_cross3v (y, x_in_plane, y_in_plane);	/* Local y-axis in plane normal to mean pole */
@@ -1110,7 +1110,7 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, int
 	if (out[kk] > 180.0) out[kk] -= 180.0;
 	out[++kk] = sqrt (EigenValue[0]) * EQ_RAD * SQRT_CHI2;
 	out[++kk] = sqrt (EigenValue[1]) * EQ_RAD * SQRT_CHI2;
-	
+
 	return (0);
 }
-		
+

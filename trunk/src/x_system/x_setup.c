@@ -1,4 +1,4 @@
-/*	$Id: x_setup.c,v 1.3 2005-03-04 00:48:32 pwessel Exp $
+/*	$Id: x_setup.c,v 1.4 2005-03-06 16:04:00 remko Exp $
  *
  * XSETUP will read the gmtindex files and create a list of
  * pairs of legs that cross the same bin. As an option, the
@@ -58,7 +58,7 @@ int main (int argc, char *argv[])
 	unsigned char turn_on[8];
 	FILE *fleg, *fbin, *fpl = NULL;
 	BOOLEAN error = FALSE, skip;
-	
+
 	for (i = 1; i < argc; i++) {
   		if (argv[i][0] == '-') {
   			switch(argv[i][1]) {
@@ -89,23 +89,23 @@ int main (int argc, char *argv[])
   		fprintf(stderr, "	-R defines the region of interest. [Default is world]\n");
   		exit (EXIT_FAILURE);
   	}
-  	
+  
 	if ((LIBDIR = getenv ("GMTHOME")) == (char *)NULL) {
 		fprintf (stderr, "x_setup: Environment variable GMTHOME not set!\n");
 		exit (EXIT_FAILURE);
 	}
 
-   	sprintf (line, "%s%cshare%cmgg%cgmt_legs.d\0", LIBDIR, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+   	sprintf (line, "%s%cshare%cmgg%cgmt_legs.d", LIBDIR, DIR_DELIM, DIR_DELIM, DIR_DELIM);
  	if ((fleg = fopen (line, "r")) == NULL) {
 		fprintf(stderr,"Could not open %s\n", line);
 		exit (EXIT_FAILURE);
 	}
-   	sprintf (line, "%s%cshare%cmgg%cgmt_index.b\0", LIBDIR, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+   	sprintf (line, "%s%cshare%cmgg%cgmt_index.b", LIBDIR, DIR_DELIM, DIR_DELIM, DIR_DELIM);
 	if ((fbin = fopen (line, "rb")) == NULL) {
 		fprintf(stderr,"Could not open %sb\n", line);
 		exit (EXIT_FAILURE);
 	}
-	
+
 	if (fpl != NULL) {
 		while (fgets (line, BUFSIZ, fpl)) {
 			sscanf(line, "%s", leg_used[nlegs_used]);
@@ -117,9 +117,9 @@ int main (int argc, char *argv[])
 		}
 		fclose(fpl);
 	}
-	
+
 	/* Read info about each leg */
-	
+
 	i = 0;
 	while (fgets (line, BUFSIZ,fleg)) {
 		sscanf(line,"%s %d",lname, &no);
@@ -144,7 +144,7 @@ int main (int argc, char *argv[])
 				ptr[i]->leglist[j] = 0;
 		}
 	}
-	
+
 	turn_on[0] = 1;
 	for (i = 1; i < 8; i++)
 		turn_on[i] = turn_on[i-1]*2;
@@ -153,7 +153,7 @@ int main (int argc, char *argv[])
 	/* Start reading the index-file and write out every pair of legs that
 	 * occupy the same bin
 	 */
-	
+
 	while (fread ((void *)&bin, 4, 1,fbin) != 0) {
 		skip = FALSE;
 		lat = (bin / 360) - 90;
@@ -187,7 +187,7 @@ int main (int argc, char *argv[])
 		}
 	}
 	fclose(fbin);
-	
+
 	for (i = 0; i < MAXLEGS; i++) {
 		if (ptr[i] && ptr[i]->use) {
 			for (j = 0; j < n_tot_legs; j++) {
@@ -199,7 +199,8 @@ int main (int argc, char *argv[])
 			}
 		}
 	}
-					
+
+	exit (EXIT_SUCCESS);
 }
 
 struct INFO *make_info (char *name, int id_no)
@@ -219,7 +220,7 @@ struct INFO *make_info (char *name, int id_no)
 int findleg (char *name)
 {
 	int left, right, mid, cmp;
-	
+
 	left = 0;
 	right = nlegs_used-1;
 	while (left <= right) {

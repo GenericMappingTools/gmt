@@ -1,4 +1,4 @@
-/* $Id: x_edit.c,v 1.2 2005-03-04 00:48:32 pwessel Exp $
+/* $Id: x_edit.c,v 1.3 2005-03-06 16:04:00 remko Exp $
  *
  * X E D I T  will allow you to convert crossover tables ascii <--> binary
  *
@@ -50,7 +50,7 @@ int main (int argc, char **argv)
 #endif
 		}
 	}
-	
+
 	if (fp == NULL) {
 		fp = stdin;
 		if (!ascii) {
@@ -61,7 +61,7 @@ int main (int argc, char **argv)
 #endif
 		}
 	}
-	
+
 	if (argc == 1 || error) {
 		fprintf (stderr, "x_edit - convert between binary and ASCCI xocer correction tables\n");
 		fprintf (stderr, "usage: x_edit [-Xbinfile -Aasciifile -Ooutfile]\n");

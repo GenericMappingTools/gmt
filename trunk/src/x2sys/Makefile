@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.13 2004-08-24 21:18:11 pwessel Exp $
+#	$Id: Makefile,v 1.14 2005-03-06 16:04:00 remko Exp $
 #
 # makefile for x2sys directory
 #
@@ -18,11 +18,11 @@ XSYSTEM		= ${XSYSTEM_C:.c=}
 
 #---------------------------------------------------------------
 
+all:			$(XSYSTEM) libx2sys.a
+
 libx2sys.a:		x2sys.o
 			$(AR) cvr libx2sys.a $?
 			$(RANLIB) libx2sys.a
-
-all:			$(XSYSTEM) libx2sys.a
 
 install:		all
 			for i in $(XSYSTEM); do \
