@@ -3,7 +3,7 @@
 grdproject \- Forward and Inverse map transformation of 2-D grd files 
 .SH SYNOPSIS
 \fBgrdproject\fP \fIin_grdfile\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-A\fP[\fBk|m|n|i|c|p\fP] ] [ \fB\-C\fP ] [ \fB\-D\fP\fIdx\fP[\fBm|c\fP][/\fIdy\fP[\fBm|c\fP]] ] 
+[ \fB\-A\fP[\fBk|m|n|i|c|p\fP] ] [ \fB\-C\fP[\fIdx/dy\fP] ] [ \fB\-D\fP\fIdx\fP[\fBm|c\fP][/\fIdy\fP[\fBm|c\fP]] ] 
 [ \fB\-E\fP\fIdpi\fP ] [ \fB\-F\fP ] [ \fB\-G\fP\fIout_grdfile\fP ] [ \fB\-I\fP ] 
 [ \fB\-Mc|i|m|p\fP ] [ \fB\-N\fP\fInx/ny\fP ] [ \fB\-S\fP\fIsearch_radius\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
@@ -31,6 +31,8 @@ Without \fB\-A\fP, the output (or input, see \fB\-I\fP) are in the units specifi
 .TP
 .B \-C
 Let projected coordinates be relative to projection center [Default is relative to lower left corner].
+Optionally, add offsets in the projected units to be added (or subtracted when \fB\-I\fP is set) to (from)
+the projected coordinates, such as false eastings and northings for particular projection zones [0/0].
 .TP
 .B \-D
 Set the grid spacing for the new grid.  Append \fBm\fP for minutes, \fBc\fP for seconds.
