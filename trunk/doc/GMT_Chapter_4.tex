@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.44 2004-04-21 20:35:52 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.45 2004-04-25 20:00:11 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -190,7 +190,7 @@ these options in order of importance (some are use alot more than others).
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}}	&	\multicolumn{1}{c|}{\emph{Meaning}} \\ \hline
 \Opt{B}	&	Defines tickmarks, annotations, and labels for basemaps and axes  \\ \hline
-\Opt{H}	&	Specifies that input tables have header record(s)  \\ \hline
+\Opt{H}	&	Specifies that input/output tables have header record(s)  \\ \hline
 \Opt{J}	&	Selects a map projection or one of several non-map projections  \\ \hline
 \Opt{K}	&	Allows more plot code to be appended to this plot later \\ \hline
 \Opt{O}	&	Allows this plot code to be appended to an existing plot \\ \hline
@@ -506,11 +506,13 @@ in  {\bf PLOT\_DATE\_FORMAT} we get 3-digit integer days.
 \index{\Opt{H}}
 \index{Header records}
 
-The \Opt{H}[{\it n\_recs}] option lets \GMT\ know that input file(s) have
+The \Opt{H}[{\bf i}][{\it n\_recs}] option lets \GMT\ know that input file(s) have
 one [Default] or more header records.  If there are more than one header
 record you must specify the number after the \Opt{H} option, e.g., \Opt{H}4.
 Note that blank lines and records that be start with the character \# are
-automatically skipped.
+automatically skipped.  Normally, programs that both read and write tables will
+output the header records that are found on input.  Use \Opt{Hi} to suppress the
+writing of header records.
 
 \subsection{Portrait plot orientation: The \Opt{P} option} 
 \index{Orientation!of plot}
