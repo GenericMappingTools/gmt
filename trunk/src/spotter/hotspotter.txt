@@ -4,7 +4,7 @@ hotspotter \- Create CVA image from seamount flowlines
 .SH SYNOPSIS
 \fBhotspotter\fP [\fIinfile(s)\fP] \fB\-E\fP\fIstage_file\fP 
 \fB\-G\fP\fICVAgrid\fP \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] 
-\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-C\fP ] [ \fB\-F\fP ] 
+\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-C\fP ] [ \fB\-D\fP\fIfactor\fP ] [ \fB\-F\fP ] 
 [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-N\fP\fIupper_age\fP ] 
 [ \fB\-T\fP ] [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
 .SH DESCRIPTION
@@ -38,6 +38,10 @@ stage.  Blank lines and records whose first column contains # will be ignored.
 Expect Total Reconstruction Poles (Finite Poles) rather than Backward Stage Poles [Default]
 File format is similar to the stage pole format except the youngest rotation must be listed
 first and that the tstart column is optional (assumed to be 0 Ma).
+.TP
+.B \-D
+Modify the sampling interval along flowlines.  Default [0.5] gives approximately 2 points within
+each grid box.  Smaller factors gives higher resolutions at the expense of longer processing time.
 .TP
 .B \-F
 Force pixel registration [Default is grid registration].
