@@ -1,10 +1,10 @@
-#	$Id: Makefile,v 1.2 2001-03-05 15:51:15 pwessel Exp $
+#	$Id: Makefile,v 1.3 2001-03-09 18:32:11 pwessel Exp $
 #	makefile for misc directory
 #
 
 #----------------- stop here - nothing to edit--------------------
 
--include ../makegmt.macros
+include ../makegmt.macros
 
 CDF		= -L$(NETCDF)/lib -lnetcdf
 

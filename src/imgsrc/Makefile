@@ -1,10 +1,10 @@
-#	$Id: Makefile,v 1.2 2001-03-05 15:50:44 pwessel Exp $
+#	$Id: Makefile,v 1.3 2001-03-09 18:32:11 pwessel Exp $
 #
 #	makefile for imgsrc directory
 #
 #----------------- stop here - nothing more to edit -------------------
 
--include ../makegmt.macros
+include ../makegmt.macros
 
 CDF		= -L$(NETCDF)/lib -lnetcdf
 GMT		= -L.. -lgmt -lpsl
