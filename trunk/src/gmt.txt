@@ -136,8 +136,8 @@ be found in the separate manual pages.
 	xyz2grd			Convert equidistant xyz data to a 2-D grd file
 .br
 .SH "SEE ALSO"
-.Look up the individual man pages for details.
-Information is also avaiable on the GMT World Wide Web home page
-.br
-(http://www.soest.hawaii.edu/gmt)
+Look up the individual man pages for details.  By default, these pages are
+in $GMTHOME/man/manl, depending on your installation settings.
+Information is also available on the GMT home page gmt.soest.hawaii.edu
+or locally under $GMTHOME/www/gmt/gmt_services.html
 #include "refs.i"
