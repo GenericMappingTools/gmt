@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.46 2004-09-28 20:32:19 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.47 2004-09-29 21:24:50 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -70,11 +70,12 @@ prep_gmt()
 cat << EOF > gmt_install.ftp_site
 1. SOEST, U of Hawaii [GMT Home], Honolulu, Hawaii, USA
 2. NOAA, Lab for Satellite Altimetry, Silver Spring, Maryland, USA
-3. IAG-USP, Dept of Geophysics, U. of Sao Paulo, BRAZIL
-4. Inst for Geologi, U of Oslo, NORWAY
-5. Goodie Domain Service, Vienna U of Techology, AUSTRIA
-6. ISV, Hokkaido U, Sapporo, JAPAN
-7. Charles Sturt U, Albury, AUSTRALIA
+3. IRIS, Incorporated Research Institutions for Seismology, Seattle, Washington, USA
+4. IAG-USP, Dept of Geophysics, U. of Sao Paulo, BRAZIL
+5. Inst for Geologi, U of Oslo, NORWAY
+6. Goodie Domain Service, Vienna U of Techology, AUSTRIA
+7. ISV, Hokkaido U, Sapporo, JAPAN
+8. Charles Sturt U, Albury, AUSTRALIA
 EOF
 # Order (1-12) is 1:progs, 2:share, 3:high, 4:full, 5:suppl, 6:scripts
 #		  7:ps, 8:pdf, 9:man, 10:web, 11:tut, 12:triangle
@@ -807,10 +808,11 @@ DIR=pub/gmt
 #	LISTING OF CURRENT FTP MIRROR SITES
 #--------------------------------------------------------------------------------
 
-N_FTP_SITES=7
+N_FTP_SITES=8
 cat << EOF > gmt_install.ftp_ip
 gmt.soest.hawaii.edu
 falcon.grdl.noaa.gov
+ftp.iris.washington.edu
 ftp.iag.usp.br
 ftp.geologi.uio.no
 gd.tuwien.ac.at
@@ -821,6 +823,7 @@ EOF
 cat << EOF > gmt_install.ftp_dns
 1
 1
+0
 0
 0
 0
