@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spotter.h,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: spotter.h,v 1.2 2001-10-23 20:18:11 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -42,6 +42,8 @@ struct EULER {	/* Structure with info on each Euler (stage) pole */
 
 /* ANSI-C Function prototypes (see libspotter.c for details): */
 
-EXTERN_MSC int spotter_init (char *file, struct EULER **p, int locus, int finite, double *t_max);
+int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in, BOOLEAN finite_out, double *t_max);
 EXTERN_MSC int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EULER p[], int ns, double d_km, double t_zero, BOOLEAN do_time, double **c);
 EXTERN_MSC int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EULER p[], int ns, double d_km, double t_zero, BOOLEAN do_time, double **c);
+EXTERN_MSC void finite_to_stages (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates);
+EXTERN_MSC void stages_to_finite (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.6 2001-10-23 20:18:11 pwessel Exp $
+ *	$Id: libspotter.c,v 1.7 2001-10-23 20:18:56 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -74,7 +74,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 		exit (EXIT_FAILURE);
 	}
 
-	last_t = (finite) ? 0.0 : DBL_MAX;
+	last_t = (finite_in) ? 0.0 : DBL_MAX;
 	while (fgets (buffer, 512, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
 
