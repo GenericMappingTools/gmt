@@ -59,7 +59,8 @@ Add illumination effects.  Optionally, set the range of intensities from
 .TP
 .B \-L
 Gives equal-sized color rectangles.  Default scales rectangles according to the
-z-range in the cpt-file  (Also see \fB\-Z\fP).
+z-range in the cpt-file  (Also see \fB\-Z\fP).  If set, any equal interval annotation
+set with \fB\-B\fP will be ignored.
 .TP
 .B \-M
 Force a monochrome graybar using the (television) YIQ transformation.
