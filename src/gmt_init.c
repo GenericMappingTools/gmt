@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.92 2003-12-18 17:16:28 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.93 2003-12-18 17:28:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2552,7 +2552,7 @@ void GMT_put_history (int argc, char **argv)
 	 * file and write out the common parameters.
 	 */
        
-	int i, j, k, found_new, found_old;
+	int i, j, k, found_new, found_old, old_k = -1;
 	BOOLEAN no_new_j = TRUE;
 #ifndef NO_LOCK
 	struct flock lock;
@@ -2598,8 +2598,8 @@ void GMT_put_history (int argc, char **argv)
 		else  {	 	/* Need to find and store the old value if any */
 			for (k = 0, found_old = FALSE; !found_old && k < GMT_oldargc; k++) {
 				if (GMT_oldargv[k][0] != '-') continue;
-				if (no_new_j && GMT_oldargv[k][1] == 'j') /* Old -j option*/
-					found_old = TRUE;
+				if (no_new_j && GMT_oldargv[k][1] == 'j')	/* Old -j option*/
+					old_k = k;
 				else if (GMT_unique_option[i][0] == 'J') /* Range of -J? options */
 					found_old = !strncmp (&GMT_oldargv[k][1], GMT_unique_option[i], 2);
 				else
@@ -2610,6 +2610,7 @@ void GMT_put_history (int argc, char **argv)
 				fprintf (GMT_fp_history, "%s\n", GMT_oldargv[k-1]);
 		}
 	}
+	if (no_new_j && old_k >= 0) fprintf (GMT_fp_history, "%s\n", GMT_oldargv[k]);	/* Write out old -j */
 	fprintf (GMT_fp_history, "EOF\n");	/* Logical end of file marker (since old file may be longer) */
 	fflush (GMT_fp_history);		/* To ensure all is written when lock is released */
 
