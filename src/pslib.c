@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.29 2001-10-17 00:30:23 pwessel Exp $
+ *	$Id: pslib.c,v 1.30 2001-10-17 01:04:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1318,7 +1318,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		}
 		fprintf (ps.fp, "%%%%EndComments\n\n");
 
-		bulkcopy ("prologue");
+		bulkcopy ("PSL_prologue");
 		bulkcopy (ps.encoding);
 		
 		/* XXX This should be done by code in the prologue */
