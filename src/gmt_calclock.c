@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.12 2001-08-27 20:51:44 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.13 2001-08-28 19:25:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -33,8 +33,6 @@
 */
 
 #include "gmt.h"
-#define GMT_I_3600     (1.0 / 3600.0)  /* Convert seconds to degrees */
-#define GMT_I_60       (1.0 / 60.0)    /* Convert minutes to degrees */
 
 BOOLEAN want_iso = FALSE;	/* Temporary to test compilation.  Delete this.  */
 
@@ -47,7 +45,7 @@ GMT_dtime GMT_rdc2dt (GMT_cal_rd rd, double secs) {
 /*	Given rata die rd and double seconds, return 
 	GMT_dtime value of time  */
 	
-	return ((GMT_dtime)(86400.0*(rd-GMT_GCAL_EPOCH) + secs));
+	return ((GMT_dtime)(GMT_DAY2SEC_F*(rd-GMT_GCAL_EPOCH) + secs));
 }
 
 void	GMT_dt2rdc (GMT_dtime t, GMT_cal_rd *rd, double *s) {
@@ -57,8 +55,8 @@ void	GMT_dt2rdc (GMT_dtime t, GMT_cal_rd *rd, double *s) {
 
 	double	x;
 	
-	x = floor(t/86400.0);
-	*s = t - 86400 * x;
+	x = floor(t * GMT_SEC2DAY);
+	*s = t - GMT_DAY2SEC_F * x;
 	*rd = (GMT_cal_rd)(x+GMT_GCAL_EPOCH);
 }
 
@@ -173,7 +171,7 @@ int	GMT_read_clock (char *s, double *t) {
 	}
 	if ( (sscanf(s, "%d", &k)) != 1) return (-1);
 	if (k < 0 || k > 24) return (-1);
-	tau = 3600 * k;
+	tau = GMT_HR2SEC_I * k;
 	
 	if (!(cm)) return (0);	/* This allows colon-terminated
 		strings to be treated as OK.  */
@@ -186,7 +184,7 @@ int	GMT_read_clock (char *s, double *t) {
 	}
 	if ( (sscanf(cm, "%d", &k)) != 1) return (-1);
 	if (k < 0 || k > 59) return (-1);
-	tau += 60 * k;
+	tau += GMT_MIN2SEC_I * k;
 	
 	if (!(cs)) return (0);
 	if ( (sscanf(cs, "%lf", &dsec)) != 1) return (-1);
@@ -620,10 +618,10 @@ void	GMT_gcal_from_dt (GMT_dtime t, struct GMT_gcal *cal) {
 	
 	GMT_dt2rdc (t, &rd, &x);
 	GMT_gcal_from_rd (rd, cal);
-	cal->hour = (int) floor (x * GMT_I_3600);
-	x -= 3600.0 * cal->hour;
-	cal->min  = (int) floor (x * GMT_I_60);
-	cal->sec  = x - 60.0 * cal->min;
+	cal->hour = (int) floor (x * GMT_SEC2HR);
+	x -= GMT_HR2SEC_F * cal->hour;
+	cal->min  = (int) floor (x * GMT_SEC2MIN);
+	cal->sec  = x - GMT_MIN2SEC_F * cal->min;
 	return;
 }
 	
@@ -776,12 +774,12 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 			break;
 		case 'm':
 		case 'M':
-			k = 60 * p->step;
+			k = GMT_MIN2SEC_I * p->step;
 			GMT_small_moment_interval (p, k, init);
 			break;
 		case 'h':
 		case 'H':
-			k = 3600 * p->step;
+			k = GMT_HR2SEC_I * p->step;
 			GMT_small_moment_interval (p, k, init);
 			break;
 		case 'd':
@@ -789,7 +787,7 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 			if (p->step == 1) {
 				/* Here we want every day (of the Gregorian month or year)
 					so the stepping is easy.  */
-				k = 86400;
+				k = GMT_DAY2SEC_I;
 				GMT_small_moment_interval (p, k, init);
 			}
 			else if (GMT_plot_calclock.date.day_of_year) {
@@ -993,11 +991,11 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 void	GMT_small_moment_interval (struct GMT_MOMENT_INTERVAL *p, int step_secs, BOOLEAN init) {
 
 	/* Called by GMT_moment_interval ().  Get here when p->stuff[0] is initialized and
-		0 < step_secs <= 86400.  If init, stuff[0] may need to be truncated.  */
+		0 < step_secs <= GMT_DAY2SEC_I.  If init, stuff[0] may need to be truncated.  */
 	
 	double	x;
 	
-	if (step_secs == 86400) {
+	if (step_secs == GMT_DAY2SEC_I) {
 		/* Special case of a 1-day step.  */
 		if (p->sd[0] != 0.0) {	/* Floor it to start of day.  */
 			p->dt[0] -= p->sd[0];
@@ -1018,14 +1016,14 @@ void	GMT_small_moment_interval (struct GMT_MOMENT_INTERVAL *p, int step_secs, BO
 				x = p->sd[0];
 			}
 		}
-		/* Step to next interval time.  If this would put 86400 secs
+		/* Step to next interval time.  If this would put GMT_DAY2SEC_I secs
 		in today, go to next day at zero.  This will work even when
 		leap seconds are implemented and today is a leap second say,
 		unless also step_secs == 1.  That special action will have to
 		be taken and will be coded later when leap seconds are put in.
 		*/
 		x = p->sd[0] + step_secs;
-		if (x >= 86400.0) {	/* Should not be greater than  */
+		if (x >= GMT_DAY2SEC_F) {	/* Should not be greater than  */
 			p->sd[1] = 0.0;
 			p->rd[1] = p->rd[0] + 1;
 			GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.16 2001-08-28 02:37:01 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.17 2001-08-28 19:25:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -73,9 +73,6 @@
  
 #include "gmt.h"
 
-#define GMT_I_60	(1.0 / 60.0)	/* Convert minutes to degrees */
-#define GMT_I_3600	(1.0 / 3600.0)	/* Convert seconds to degrees */
-
 BOOLEAN GMT_do_swab = FALSE;	/* Used to indicate swab'ing during binary read */
 
 int GMT_a_read (FILE *fp, double *d);
@@ -115,7 +112,9 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode);
 void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S, int plot);
 void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S);
 int GMT_write_abstime_output (FILE *fp, GMT_dtime dt);		/* Format and write one ABSTIME item to output */
-void GMT_geo_to_dms (double lon, BOOLEAN seconds, int *d, int *m,  int *s,  double *x);
+void GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  int *s,  int *ix);
+int GMT_write_lon_output (FILE *fp, double lon);
+int GMT_write_lat_output (FILE *fp, double lat);
 
 int	GMT_scanf_clock (char *s, double *val);
 int	GMT_scanf_calendar (char *s, GMT_cal_rd *rd);
@@ -398,12 +397,12 @@ int GMT_scanf_old (char *p, double *val)
 	if (colons == 2) {	/* dd:mm:ss format */
 		sscanf (p, "%lf:%lf:%lf", &degree, &minute, &second);
 		if (suffix == 'W' || suffix == 'w' || suffix == 'S' || suffix == 's') degree = -degree;	/* Sign was given implicitly */
-		*val = degree + copysign (minute * GMT_I_60 + second * GMT_I_3600, degree);
+		*val = degree + copysign (minute * GMT_MIN2DEG + second * GMT_SEC2DEG, degree);
 	}
 	else if (colons == 1) {	/* dd:mm format */
 		sscanf (p, "%lf:%lf", &degree, &minute);
 		if (suffix == 'W' || suffix == 'w' || suffix == 'S' || suffix == 's') degree = -degree;	/* Sign was given implicitly */
-		*val = degree + copysign (minute * GMT_I_60, degree);
+		*val = degree + copysign (minute * GMT_MIN2DEG, degree);
 	}
 	else	/* Unrecognized */
 		return (0);
@@ -526,10 +525,10 @@ int GMT_ascii_output_one (FILE *fp, double x, int col)
 		e = fprintf (fp, gmtdefs.d_format, x);
 	}
 	else if (GMT_io.out_col_type[col] == GMT_IS_LON) {	/* Later add a user-defined geographical format here */
-		e = fprintf (fp, gmtdefs.d_format, x);
+		e = GMT_write_lon_output (fp, x);
 	}
 	else if (GMT_io.out_col_type[col] == GMT_IS_LAT) {	/* Later add a user-defined geographical format here */
-		e = fprintf (fp, gmtdefs.d_format, x);
+		e = GMT_write_lat_output (fp, x);
 	}
 	else if (GMT_io.out_col_type[col] == GMT_IS_RELTIME) {
 		e = fprintf (fp, gmtdefs.d_format, GMT_usert_from_dt ( (GMT_dtime) x));
@@ -540,7 +539,7 @@ int GMT_ascii_output_one (FILE *fp, double x, int col)
 	return (e);
 }
 
-int _GMT_write_lon_output (FILE *fp, double lon)
+int GMT_write_lon_output (FILE *fp, double lon)
 {
 	int e, d, m, s, m_sec;
 	char letter;
@@ -571,9 +570,8 @@ int _GMT_write_lon_output (FILE *fp, double lon)
 		letter = 0;
 		
 	seconds = (GMT_io.geo.order[2] > 0);		/* Are we doing dd:mm:ss */
-	GMT_geo_to_dms (lon, seconds, &d, &m, &s, &x);	/* Break up into d, m, s, and remainder */
+	GMT_geo_to_dms (lon, seconds, GMT_io.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
 	if (GMT_io.geo.n_sec_decimals) {		/* Wanted fraction printed */
-		m_sec = irint (GMT_io.geo.f_sec_to_int * x);
 		if (seconds)
 			e = fprintf (fp, GMT_io.geo.x_format, d, m, s, m_sec, letter);
 		else
@@ -587,24 +585,68 @@ int _GMT_write_lon_output (FILE *fp, double lon)
 	return (e);
 }
 
-void GMT_geo_to_dms (double lon, BOOLEAN seconds, int *d, int *m,  int *s,  double *x)
+int GMT_write_lat_output (FILE *fp, double lat)
+{
+	int e, d, m, s, m_sec;
+	char letter;
+	BOOLEAN seconds;
+	double x;
+	
+	if (GMT_io.geo.decimal) return (fprintf (fp, gmtdefs.d_format, lat));	/* Easy */
+	
+	if (GMT_io.geo.wesn) {	/* Trailing WESN */
+		letter = (fabs (lat) < GMT_CONV_LIMIT) ? 0 : ((lat < 0.0) ? 'S' : 'N');
+		lat = fabs (lat);
+	}
+	else	/* No letter means we print the NULL character */
+		letter = 0;
+		
+	seconds = (GMT_io.geo.order[2] > 0);		/* Are we doing dd:mm:ss */
+	GMT_geo_to_dms (lat, seconds, GMT_io.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
+	if (GMT_io.geo.n_sec_decimals) {		/* Wanted fraction printed */
+		if (seconds)
+			e = fprintf (fp, GMT_io.geo.y_format, d, m, s, m_sec, letter);
+		else
+			e = fprintf (fp, GMT_io.geo.y_format, d, m, m_sec, letter);
+	}
+	else if (seconds)
+		e = fprintf (fp, GMT_io.geo.y_format, d, m, s, letter);
+	else
+		e = fprintf (fp, GMT_io.geo.y_format, d, m, letter);
+		
+	return (e);
+}
+
+void GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  int *s,  int *ix)
 {
 	/* Convert floating point degrees to dd:mm[:ss][.xxx] */
 	BOOLEAN minus;
+	int isec, imin;
+	double sec, fsec, min, fmin, step;
 	
-	minus = (lon < 0.0);
-	lon = fabs (lon);
+	minus = (val < 0.0);
+	step = 0.5 / fact;  				/* Precision desired in seconds (or minutes) */
 	
-	*d = (int) floor (lon);			/* Integer degrees */
-	lon = (lon - (double)(*d)) * 60.0;	/* floating point minutes */
-	*m = (int) floor (lon);			/* Integer minutes */
-	if (seconds) {				/* Want dd:mm:ss[.xxx] format */
-		lon = (lon - (double)(*m)) * 60.0;		/* floating point seconds */
-		*s = (int) floor (lon);			/* Integer seconds */
-		*x = lon - (double) (*s);		/* fractional seconds */
+	if (seconds) {		/* Want dd:mm:ss[.xxx] format */
+		sec = GMT_DEG2SEC_F * fabs (val);		/* Convert to seconds */
+		isec = (int)floor (sec + step);			/* Integer seconds */
+		fsec = sec - (double)isec;  			/* Leftover fractional second */
+		*d = isec / GMT_DEG2SEC_I;			/* Integer degrees */
+		isec -= ((*d) * GMT_DEG2SEC_I);			/* Left-over seconds in the last degree */
+		*m = isec / GMT_MIN2SEC_I;			/* Integer minutes */
+		isec -= ((*m) * GMT_MIN2SEC_I);			/* Leftover seconds in the last minute */
+		*s = isec;					/* Integer seconds */
+		*ix = irint (fsec * fact);			/* fractional seconds scaled to integer */
 	}
-	else {					/* Want dd:mm[.xx] format */
-		*x = lon - (double) (*m);	/* Fractional minutes */
+	else {		/* Want dd:mm[.xx] format */
+		min = GMT_DEG2MIN_F * fabs (val);		/* Convert to minutes */
+		imin = (int)floor (min + step);			/* Integer minutes */
+		fmin = min - (double)imin;  			/* Leftover fractional minute */
+		*d = imin / GMT_DEG2MIN_I;			/* Integer degrees */
+		imin -= ((*d) * GMT_DEG2MIN_I);			/* Left-over seconds in the last degree */
+		*m = imin / GMT_DEG2MIN_I;			/* Integer minutes */
+		*s = 0;						/* No seconds */
+		*ix = irint (fmin * fact);			/* Fractional minutes scaled to integer */
 	}
 	if (minus) *d = -(*d);
 }
@@ -1103,7 +1145,7 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S)
 
 	int i, j, order, n_y, n_m, n_d, n_j, n_w, sequence[4], n_delim, last, error = 0;
 	
-	/* S->order is initialized to {-1, -1, -1, -1} */
+	for (i = 0; i < 4; i++) S->order[i] = -1;	/* Meaning not encountered yet */
 	
 	n_y = n_m = n_d = n_j = n_w = n_delim = 0;
 	S->delimeter[0][0] = S->delimeter[0][1] = S->delimeter[1][0] = S->delimeter[1][1] = 0;
@@ -1199,7 +1241,7 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 	BOOLEAN big_to_small;
 	char *p;
 	
-	/* hms_order is initialized to {-1, -1, -1} */
+	for (i = 0; i < 3; i++) S->order[i] = -1;	/* Meaning not encountered yet */
 	sequence[0] = sequence[1] = sequence[2] = -1;
 	
 	S->delimeter[0][0] = S->delimeter[0][1] = S->delimeter[1][0] = S->delimeter[1][1] = 0;
@@ -1317,7 +1359,7 @@ void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
 	int i1, i, j, order, n_d, n_m, n_s, n_x, n_dec, sequence[3], n_delim, last, error = 0;
 	BOOLEAN big_to_small;
 	
-	/* S->order is initialized to {-1, -1, -1} */
+	for (i = 0; i < 3; i++) S->order[i] = -1;	/* Meaning not encountered yet */
 	
 	n_d = n_m = n_s = n_x = n_dec = n_delim = 0;
 	S->delimeter[0][0] = S->delimeter[0][1] = S->delimeter[1][0] = S->delimeter[1][1] = 0;
@@ -1364,8 +1406,8 @@ void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
 				n_m++;
 				break;
 			case 's':	/* Seconds */
-				if (S->order[1] < 0) {		/* First time we encounter a s */
-					S->order[1] = order++;
+				if (S->order[2] < 0) {		/* First time we encounter a s */
+					S->order[2] = order++;
 				}
 				else if (text[i-1] != 's')	/* Done it before, previous char must be s */
 					error++;
@@ -1573,7 +1615,7 @@ void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S, int plot)
 			sprintf (fmt, "%%2.2d\0");
 			strcat (S->x_format, fmt);
 			strcat (S->y_format, fmt);
-			if (!(S->n_sec_decimals && S->order[2] == -1) && gmtdefs.degree_symbol < 2) {
+			if (plot && !(S->n_sec_decimals && S->order[2] == -1) && gmtdefs.degree_symbol < 2) {
 				strcat (S->x_format, "\251");
 				strcat (S->y_format, "\251");
 			}
@@ -1592,11 +1634,10 @@ void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S, int plot)
 			strcat (S->x_format, fmt);
 			strcat (S->y_format, fmt);
 		}
-		if (S->wesn) {	/* Finally add %c for the W,E,S,N char */
-			sprintf (fmt, "%%c\0");
-			strcat (S->x_format, fmt);
-			strcat (S->y_format, fmt);
-		}
+		/* Finally add %c for the W,E,S,N char (or NULL) */
+		sprintf (fmt, "%%c\0");
+		strcat (S->x_format, fmt);
+		strcat (S->y_format, fmt);
 	}
 }
 
@@ -1633,6 +1674,12 @@ int GMT_decode_coltype (char *arg)
 				break;
 			case 't':	/* Relative calendar time (need epoch) */
 				code = GMT_IS_RELTIME;
+				break;
+			case 'x':	/* Longitude coordinates */
+				code = GMT_IS_LON;
+				break;
+			case 'y':	/* Latitude coordinates */
+				code = GMT_IS_LAT;
 				break;
 			case 'g':	/* Geographical coordinates */
 				code = GMT_IS_GEO;
@@ -1892,11 +1939,11 @@ int	GMT_scanf_geo (char *s, double *val) {
 			break;
 		case 1:
 			if ( (sscanf(scopy, "%d:%lf", &id, &dm) ) != 2) return (GMT_IS_NAN);
-			dd = (id < 0) ? id + dm * GMT_I_60 : id - dm * GMT_I_60;
+			dd = (id < 0) ? id + dm * GMT_MIN2DEG : id - dm * GMT_MIN2DEG;
 			break;
 		case 2:
 			if ( (sscanf(scopy, "%d:%d:%lf", &id, &im, &ds) ) != 3) return (GMT_IS_NAN);
-			dd = im * GMT_I_60 + ds * GMT_I_3600;
+			dd = im * GMT_MIN2DEG + ds * GMT_SEC2DEG;
 			if (id < 0) {
 				dd = id - dd;
 			}
@@ -2105,10 +2152,10 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t) {
 		k = sscanf (&pt[1], "%2d:%2d:%lf", &hh, &mm, &ss);
 		if (k == 0) return (GMT_IS_NAN);
 		if (hh < 0 || hh >= 24) return (GMT_IS_NAN);
-		x = 3600.0 * hh;
+		x = GMT_HR2SEC_F * hh;
 		if (k > 1) {
 			if (mm < 0 || mm > 59) return (GMT_IS_NAN);
-			x += 60.0*mm;
+			x += GMT_MIN2SEC_F * mm;
 		}
 		if (k > 2) {
 			if (ss < 0.0 || ss >= 61.0) return (GMT_IS_NAN);
