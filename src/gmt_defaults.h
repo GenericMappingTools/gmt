@@ -100,7 +100,8 @@
 	0,			/* TIME_SYSTEM */
 	0,			/* TIME_WEEK_START */
 	"us",			/* TIME_LANGUAGE */
-	0,			/* CHAR_ENCODING */
 	1950,			/* Y2K_OFFSET_YEAR */
 	"\t",			/* FIELD_DELIMETER */
-	0			/* DEGREE_SYMBOL */
+	gmt_ring,		/* DEGREE_SYMBOL */
+	{ "Standard", 		/* CHAR_ENCODING */
+	  { 0312, 0312, ':', 0251, '"' } } /* PostScript codes */

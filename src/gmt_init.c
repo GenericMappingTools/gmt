@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.52 2001-10-05 03:51:39 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.53 2001-10-15 17:25:05 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -80,6 +80,7 @@ void GMT_split_info (const char *in, char *info[]);
 void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A);
 void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit, char mod);
 int GMT_map_getframe (char *in);
+static void load_encoding (struct gmt_encoding *);
 
 /* Local variables to gmt_init.c */
 
@@ -907,19 +908,6 @@ int GMT_loaddefaults (char *file)
 	
 	fclose (fp);
 	GMT_backwards_compatibility ();
-	switch (gmtdefs.char_encoding) {
-		case 1:
-			gmtdefs.page_orientation += 2;
-			break;
-		case 2:
-			gmtdefs.page_orientation += 16;
-			break;
-		case 3:
-			gmtdefs.page_orientation += 32;
-			break;
-		default:
-			break;
-	}
 	if (gmtdefs.ps_heximage % 2) gmtdefs.page_orientation += 4;
 	if (gmtdefs.ps_heximage > 1) gmtdefs.page_orientation += 512;
 
@@ -956,19 +944,6 @@ void GMT_setdefaults (int argc, char **argv)
 	}
 
 	GMT_backwards_compatibility ();
-	switch (gmtdefs.char_encoding) {
-		case 1:
-			gmtdefs.page_orientation += 2;
-			break;
-		case 2:
-			gmtdefs.page_orientation += 16;
-			break;
-		case 3:
-			gmtdefs.page_orientation += 32;
-			break;
-		default:
-			break;
-	}
 	if (gmtdefs.ps_heximage % 2) gmtdefs.page_orientation += 4;
 	if (gmtdefs.ps_heximage > 1) gmtdefs.page_orientation += 512;
 	
@@ -1031,7 +1006,8 @@ void GMT_backwards_compatibility () {
 	}
 	else if (GMT_backward.got_old_want_euro && GMT_backward.got_new_char_encoding)  {	/* Must decode old WANT_EURO_FONT */
 		fprintf (stderr, "%s: WARNING: WANT_EURO_FONT decoded but is obsolete.  Please use CHAR_ENCODING\n", GMT_program);
-		gmtdefs.char_encoding = gmtdefs.want_euro_font;
+		gmtdefs.encoding.name = strdup ("Standard+");
+		load_encoding (&gmtdefs.encoding);
 	}
 	
 	if (GMT_force_resize) {	/* Adjust fonts and offsets and ticklenghts relative to ANOT_FONT_SIZE */
@@ -1559,11 +1535,8 @@ int GMT_setparameter (char *keyword, char *value)
 			GMT_str_tolower (gmtdefs.time_language);
 			break;
 		case 73:
-			gmtdefs.char_encoding = GMT_key_lookup (value, GMT_char_encoding, 4);
-			if (gmtdefs.char_encoding < 0 || gmtdefs.char_encoding >= 4) {
-				error = TRUE;
-				gmtdefs.char_encoding = 0;
-			}
+			gmtdefs.encoding.name = strdup (value);
+			load_encoding (&gmtdefs.encoding);
 			break;
 		case 74:
 			if ((gmtdefs.Y2K_offset_year = atoi (value)) < 0) error = TRUE;
@@ -1690,7 +1663,7 @@ int GMT_savedefaults (char *file)
 	(GMT_force_resize) ? fprintf (fp, "ANOT_FONT2_SIZE		= %dp\n", save_anot2_size) : fprintf (fp, "ANOT_FONT2_SIZE		= %dp\n", gmtdefs.anot_font2_size);
 	(GMT_force_resize) ? fprintf (fp, "ANOT_OFFSET		= %lg%c\n", save_anot_offset * s, u) : fprintf (fp, "ANOT_OFFSET		= %lg%c\n", gmtdefs.anot_offset * s, u);
 	(GMT_force_resize) ? fprintf (fp, "ANOT2_OFFSET		= %lg%c\n", save_anot2_offset * s, u) : fprintf (fp, "ANOT2_OFFSET		= %lg%c\n", gmtdefs.anot2_offset * s, u);
-	fprintf (fp, "DEGREE_SYMBOL		= %s\n", GMT_degree_choice[gmtdefs.degree_symbol]);
+	fprintf (fp, "DEGREE_SYMBOL		= %s\n", GMT_degree_choice[gmtdefs.degree_symbol - gmt_none]);
 	fprintf (fp, "HEADER_FONT		= %s\n", GMT_font_name[gmtdefs.header_font]);
 	(GMT_force_resize) ? fprintf (fp, "HEADER_FONT_SIZE	= %dp\n", save_header_size) : fprintf (fp, "HEADER_FONT_SIZE	= %dp\n", gmtdefs.header_font_size);
 	(GMT_force_resize) ? fprintf (fp, "HEADER_OFFSET			= %lg%cp\n", save_header_offset * s, u) : fprintf (fp, "HEADER_OFFSET		= %lg%c\n", gmtdefs.header_offset * s, u);
@@ -1735,7 +1708,7 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "HSV_MIN_VALUE		= %lg\n", gmtdefs.hsv_min_value);
 	fprintf (fp, "HSV_MAX_VALUE		= %lg\n", gmtdefs.hsv_max_value);
 	fprintf (fp, "#-------- PostScript Parameters -------------\n", GMT_VERSION);
-	fprintf (fp, "CHAR_ENCODING		= %s\n", GMT_char_encoding[gmtdefs.char_encoding]);
+	fprintf (fp, "CHAR_ENCODING		= %s\n", gmtdefs.encoding.name);
 	fprintf (fp, "DOTS_PR_INCH		= %d\n", gmtdefs.dpi);
 	fprintf (fp, "N_COPIES		= %d\n", gmtdefs.n_copies);
 	fprintf (fp, "PSIMAGE_FORMAT		= %s\n", psimform[gmtdefs.ps_heximage]);
@@ -4019,8 +3992,48 @@ int	GMT_scanf_epoch (char *s, double *t0) {
 	return (0);
 }
 
-		
 
+/* Load a PostScript encoding from a file, given the filename. 
+ * Use Brute Force and Ignorance.
+ */
+static void load_encoding (struct gmt_encoding *enc)
+{
+	char line[80];
+	char *symbol;
+	int i;
+	int code = -1;
+	FILE *in;
+
+	sprintf (line, "%s%cshare%cpslib%c%s.ps", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, enc->name);
+	in = GMT_fopen (line, "r");
+
+	if (!in)
+	{
+		perror (line);
+		exit (EXIT_FAILURE);
+	}
+
+	while (fgets (line, sizeof line, in))
+	{
+		for (symbol = strtok (line, "[ /\t"); symbol; symbol = strtok (NULL, "[ /\t"))
+		{
+			code++;
+			if (strcmp (symbol, "degree") == 0)
+				enc->code[gmt_degree] = code;
+			else if (strcmp (symbol, "ring") == 0)
+				enc->code[gmt_ring] = code;
+			else if (strcmp (symbol, "quotedbl") == 0)
+				enc->code[gmt_dquote] = code;
+			else if (strcmp (symbol, "quotesingle") == 0)
+				enc->code[gmt_squote] = code;
+			else if (strcmp (symbol, "colon") == 0)
+				enc->code[gmt_colon] = code;
+		}
+	}
+
+	GMT_fclose (in);
+}
+ 
 #ifdef WIN32
 
 /* Make dummy functions so GMT will link under WIN32 */
