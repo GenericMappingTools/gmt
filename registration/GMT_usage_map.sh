@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.9 2001-07-11 18:18:25 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.10 2001-07-11 18:31:02 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -92,7 +92,9 @@ if [ $key = "all" ] || [ $key = "get" ]; then
 #
 	awk '{if (NF == 4) print $0}' $$.new | gmtselect -R0/360/-60/72 -Jx1d -Ns/k -Dl > new_sites_land.d
 	n=`cat new_sites_land.d | wc  -l`
-	echo "GMT_usage_map.x: Found $n new sites" >&2
+	if ($n > 0) then
+		echo "GMT_usage_map.x: Found $n new sites" >&2
+	endif
 
 	rm -f $$.*
 fi
@@ -114,7 +116,9 @@ if [ $key = "all" ] || [ $key = "update" ]; then
 	rm -f $$.add new_sites_land.d
 	n_new=`grep -v '^#' GMT_old_unique_sites.d | wc -l`
 	delta=`expr $n_new - $n_old`
-	echo "GMT_usage_map.x: Added $delta new sites" >&2
+	if ($delta > 0) then
+		echo "GMT_usage_map.x: Added $delta new sites" >&2
+	endif
 fi
 
 if [ $key = "all" ] || [ $key = "map" ]; then
@@ -133,6 +137,5 @@ EOF
 	/usr/X11R6/bin/convert -density 100x100 -crop 0x0 gmt_usage.ps gmt_usage.jpg
 	gmtset DOTS_PR_INCH 300 PAPER_MEDIA Letter
 	rm -f gmt_usage.ps
-	echo "GMT_usage_map.x: Created new map (gmt_usage.jpg)" >&2
 	install -m 644 gmt_usage.jpg /home/gmt/gmt/www/gmt/images
 fi
