@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.9 2001-05-04 19:53:09 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.10 2001-05-29 21:02:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -794,6 +794,7 @@ int GMT_loaddefaults (char *file)
 		if (line[0] == '#') continue;	/* Skip comments */
 		if (line[0] == '\n') continue;	/* Skip Blank lines */
 
+		keyword[0] = value[0] = '\0';	/* Initialize */
 		sscanf (line, "%s = %s", keyword, value);
 		
 		error += GMT_setparameter (keyword, value);
@@ -897,6 +898,7 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case 5:
 			strcpy (gmtdefs.basemap_axes, value);
+			for (i = 0; i < 4; i++) frame_info.side[i] = 0;	/* Otherwise we cannot unset default settings */
 			for (i = 0; value[i]; i++) {
 				switch (value[i]) {
 					case 'W':	/* Upper case: Draw axis/ticks AND anotate */
@@ -1746,7 +1748,7 @@ int GMT_begin (int argc, char **argv)
 	 * usual .gmtdefaults file and this argument is chopped from argv
 	 */
        
-	int i, j;
+	int i, j, k, n;
 	char *this;
 
 #ifdef __FreeBSD__
@@ -1814,17 +1816,27 @@ int GMT_begin (int argc, char **argv)
 
 	/* Make sure -b options are parsed first in case filenames are given
 	 * before -b options on the command line.  This would only cause grief
-	 * under WIN32. */
+	 * under WIN32. Also make -J come first and -R before -I, if present */
 
-	for (i = 1, j = 0; i < argc; i++) {
+	for (i = 1, j = k = n = 0; i < argc; i++) {
 		if (!strncmp (argv[i], "-b", 2)) GMT_io_selection (&argv[i][2]);
 		if (!strncmp (argv[i], "-J", 2)) j = i;
+		if (!strncmp (argv[i], "-R", 2)) k = i;
+		if (!strncmp (argv[i], "-I", 2)) n = i;
 	}
 	if (j > 1) {	/* rotate arguments to ensure that the -J option is processed before -B -R */
 		char *p;
 		p = argv[j];
 		for (i = j; i > 1; i --) argv[i] = argv[i-1];
 		argv[1] = p;
+		if (k > 0 && k < j) k++;	/* Because this arg was shifted */
+		if (n > 0 && n < j) n++;	/* Because this arg was shifted */
+	}
+	if (k > 0 && n > 0 && (n < k)) {	/* Both -R and -I, but -I came first.  Switch order */
+		char *p;
+		p = argv[k];
+		argv[k] = argv[n];
+		argv[n] = p;
 	}
 	return (argc);
 }
