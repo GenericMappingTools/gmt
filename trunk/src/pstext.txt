@@ -25,8 +25,8 @@ Scandinavian characters.  Composite characters (overstrike) may be indicated wit
 the @!<char1><char2> sequence, which will print the two characters on top of
 each other.  To learn the octal codes for symbols not available on the keyboard
 and some accented European characters, see Section 4.16 and Appendix F in the
-\fBGMT\fP Technical Reference and Cookbook.  Note that WANT_EURO_FONT must be
-set to TRUE in your .gmtdefaults file in order to use the accented characters.
+\fBGMT\fP Technical Reference and Cookbook.  Note that CHAR_ENCODING must be
+set to and extended character set in your \.gmtdefaults4 file in order to use the accented characters.
 Using the \fB\-W\fP option, a colored rectangle underlying the text may
 be plotted  (Does not work for strings with sub/super scripts, symbols, or composite
 characters, except in paragraph mode (\fB\-M\fP)).

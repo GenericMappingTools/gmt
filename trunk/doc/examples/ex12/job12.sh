@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 12
 #
-#		$Id: job12.sh,v 1.2 2002-01-30 03:40:56 ben Exp $
+#		$Id: job12.sh,v 1.3 2003-04-11 22:57:15 pwessel Exp $
 #
 # Purpose:	Illustrates Delaunay triangulation of points, and contouring
 # GMT progs:	makecpt, minmax, pscontour, pstext, psxy, triangulate
@@ -32,4 +32,4 @@ pscontour -R -JX table_5.11 -B2f1WSne -W0.75p -Ctopo.cpt -L0.25pta -G1i -X-3.25i
 pscontour -R -JX table_5.11 -B2f1eSnw -Ctopo.cpt -I -X3.25i -O -K >> example_12.ps
 echo "3.16 8 30 0 1 BC Delaunay Triangulation" | pstext -R0/8/0/11 -Jx1i -O -X-3.25i >> example_12.ps
 #
-\rm net.xy topo.cpt .gmtcommands
+rm net.xy topo.cpt .gmt*

@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 03
 #
-#		$Id: job03.sh,v 1.6 2002-04-25 23:26:32 ben Exp $
+#		$Id: job03.sh,v 1.7 2003-04-11 22:57:15 pwessel Exp $
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
 # GMT progs:	filter1d, fitcircle, gmtset, minmax, project, sample1d, 
@@ -192,4 +192,4 @@ echo "0.5 0.7 14 0.0 1 ML Ship" | pstext -R -Jx -O -K >> example_03f.ps
 echo "0.4 0.4" | psxy -R -Jx -O -K -Sc0.07i -G0 >> example_03f.ps
 echo "0.5 0.4 14 0.0 1 ML Satellite" | pstext -R -Jx -O >> example_03f.ps
 #
-\rm -f $$ box.d report samp* *.pg *.extr spectrum.* .gmtcommands .gmtdefaults
+rm -f $$ box.d report samp* *.pg *.extr spectrum.* .gmtcommands4 .gmtdefaults4

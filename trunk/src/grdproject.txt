@@ -49,7 +49,7 @@ Do the Inverse transformation, from rectangular to geographical.
 .TP
 .B \-M
 Append \fBc\fP, \fBi\fP, or \fBm\fP to indicate that cm, inch, or meter should be the projected measure unit
-[Default is set by MEASURE_UNIT in .gmtdefaults].  Cannot be used with \fB\-A\fP.
+[Default is set by MEASURE_UNIT in \.gmtdefaults4].  Cannot be used with \fB\-A\fP.
 .TP
 .B \-N
 Set the number of grid nodes in the new grid.

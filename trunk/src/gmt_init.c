@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.86 2003-04-03 20:42:29 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.87 2003-04-11 22:57:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -20,7 +20,7 @@
  *
  * Author:	Paul Wessel
  * Date:	15-FEB-2000
- * Version:	3.4
+ * Version:	4
  *
  *
  * The PUBLIC functions are:
@@ -30,20 +30,20 @@
  *	GMT_getdefaults ()	:	Initializes the GMT global parameters
  *	GMT_free_plot_array	:	Free plot memory
  *	GMT_key_lookup ()	:	Linear Key - id lookup function
- *	GMT_savedefaults ()	:	Writes the GMT global parameters to .gmtdefaults
+ *	GMT_savedefaults ()	:	Writes the GMT global parameters to .gmtdefaults4
  *	GMT_hash_init ()	: 	Initializes a hash
  *	GMT_hash_lookup ()	:	Key - id lookup using hashing
  *	GMT_hash ()		:	Key - id lookup using hashing
  *	GMT_begin ()		:	Gets history and init parameters
  *	GMT_end ()		:	Cleans up and exits
- *	GMT_get_history ()	:	Read the .gmtcommands file
+ *	GMT_get_history ()	:	Read the .gmtcommands4 file
  *	GMT_putpen		:	Encode pen argument into textstring
  *	GMT_put_history ()	:	Writes updates to the .gmtcommands file
  *	GMT_map_getproject ()	:	Scans the -Jstring to set projection
  *
  * The INTERNAL functions are:
  *
- *	GMT_loaddefaults ()	:	Reads the GMT global parameters from .gmtdefaults
+ *	GMT_loaddefaults ()	:	Reads the GMT global parameters from .gmtdefaults4
  *	GMT_map_getframe ()	:	Scans the -Bstring to set tickinfo
  *	GMT_setparameter ()	:	Sets a default value given keyword,value-pair
  *	GMT_setshorthand ()	:	Reads and initializes the suffix shorthands
@@ -86,7 +86,7 @@ void GMT_verify_encodings ();
 struct GMT_HASH hashnode[HASH_SIZE];
 BOOLEAN GMT_x_abs = FALSE, GMT_y_abs = FALSE;
 BOOLEAN GMT_got_frame_rgb;
-FILE *GMT_fp_history;	/* For .gmtcommands file */
+FILE *GMT_fp_history;	/* For .gmtcommands4 file */
 
 struct GMT_BACKWARD {	/* Used to ensure backwards compatibility */
 	BOOLEAN got_old_plot_format;		/* TRUE if DEGREE_FORMAT was decoded */
@@ -100,6 +100,7 @@ struct GMT_BACKWARD {	/* Used to ensure backwards compatibility */
 BOOLEAN GMT_force_resize = FALSE, GMT_annot_special = FALSE;
 double save_annot_size2, save_label_size, save_header_size;
 double save_annot_offset, save_annot_offset2, save_label_offset, save_header_offset, save_tick_length, save_frame_width;
+BOOLEAN GMT_getuserpath (char *stem, *path);
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 	
@@ -150,6 +151,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t     D: day  - format annotation according to PLOT_DATE_FORMAT, which also determines whether\n");
 			fprintf (stderr, "\t               we should plot day of month (1-31) or day of year (1-366).\n");
 			fprintf (stderr, "\t     d: day - plot as 2- (day of month) or 3- (day of year) integer.\n");
+			fprintf (stderr, "\t     R: Same as d but annotates from start of Gregorian week.\n");
 			fprintf (stderr, "\t     H: hour - format annotation according to PLOT_CLOCK_FORMAT.\n");
 			fprintf (stderr, "\t     h: hour - plot as 2-digit integer (0-23).\n");
 			fprintf (stderr, "\t     M: minute - format annotation according to PLOT_CLOCK_FORMAT.\n");
@@ -1911,44 +1913,22 @@ int GMT_savedefaults (char *file)
 	return (0);
 }
 
-void GMT_getdefaults (char *this_file)	/* Read user's .gmtdefaults file and initialize parameters */
+void GMT_getdefaults (char *this_file)	/* Read user's .gmtdefaults4 file and initialize parameters */
 {
 	int i;
-	char file[BUFSIZ], *homedir;
-        static char home [] = "HOME";
-        BOOLEAN found;
+	char file[BUFSIZ];
 	
 	 /* Default is to draw AND annotate all sides */
 	for (i = 0; i < 5; i++) frame_info.side[i] = 2;
 	
-	if (!this_file) {	/* Must figure out which file to use */
+	if (!this_file) {	/* Must figure out if there is a .gmtdefaults[4] file to use */
 	
-		/* First see if a .gmtdefaults[4] file is present in the current directory */
-	
-		if (!access (".gmtdefaults4", R_OK)) /* Use cwd */
-			strcpy (file, ".gmtdefaults4");
-		else if (!access (".gmtdefaults", R_OK)) /* Use cwd */
-			strcpy (file, ".gmtdefaults");
-		else {	/* Not found, try home dir first */
-			found = FALSE;
-			if ((homedir = getenv (home)) == NULL) {
-				fprintf (stderr, "GMT Warning: Could not determine home directory!\n");
-			}
-			else {	/* Ok, see if a file is present in the home dir */
-				sprintf (file, "%s%c.gmtdefaults4", homedir, DIR_DELIM);
-				if (!access (file, R_OK))
-					found = TRUE;	/* Use the one in HOME */
-				else {
-					sprintf (file, "%s%c.gmtdefaults", homedir, DIR_DELIM);
-					if (!access (file, R_OK)) found = TRUE;	/* Use the one in HOME */
-				}
-			}
-			if (!found) {	/* Must use GMT system defaults */
-				char *path;
-				path = GMT_getdefpath (0);
-				strcpy (file, path);
-				GMT_free ((void *)path);
-			}
+		if (! (GMT_getuserpath (".gmtdefaults4", file) || GMT_getuserpath (".gmtdefaults", file))) {
+			/* No .gmtdefaults[4] files in sight; Must use GMT system defaults */
+			char *path;
+			path = GMT_getdefpath (0);
+			strcpy (file, path);
+			GMT_free ((void *)path);
 		}
 	}
 	else
@@ -1958,9 +1938,40 @@ void GMT_getdefaults (char *this_file)	/* Read user's .gmtdefaults file and init
 	
 }
 
+BOOLEAN GMT_getuserpath (char *stem, *path)
+{
+	/* Stem is the name of the file, e.g., .gmtdefaults4 or .gmtdefaults */
+	/* path is the full path to the file in question */
+	/* Returns TRUE if a workable path was found (sets path as well) */
+	
+	char *homedir;
+        static char home [] = "HOME";
+	
+	/* First look in the current working directory */
+	
+	if (!access (stem, R_OK)) {	/* Yes, found it */
+		strcpy (path, stem);
+		return (TRUE);
+	}
+	
+	/* Not found, see if there is a file in the user's home directory */
+
+	if ((homedir = getenv (home)) == NULL) {	/* Oh well, probably a CGI script... */
+		fprintf (stderr, "GMT Warning: Could not determine home directory!\n");
+		return (FALSE);
+	}
+	
+	/* See if the file is present in the home dir */
+	
+	sprintf (path, "%s%c%s", homedir, DIR_DELIM, stem);
+	if (!access (path, R_OK)) return (TRUE);	/* Yes, use the file in HOME */
+
+	return (FALSE);	/* No file found, give up */
+}
+
 char *GMT_getdefpath (int get)
 {
-	/* Return the full path to the chosen .gmtdefaults system file
+	/* Return the full path to the chosen .gmtdefaults4 system file
 	 * depending on the value of get:
 	 * get = 0:	Use gmt.conf to set get to 1 or 2.
 	 * get = 1:	Use the SI settings.
@@ -2303,14 +2314,14 @@ int GMT_begin (int argc, char **argv)
 	 * that were used the last time this program was called (if any).  This
 	 * way one only has to give -R -J to repeat previous map projection
 	 * instead of spelling out the -R and projection parameters every time.
-	 * The information is stored in the first line of the file .gmtcommands
+	 * The information is stored in the first line of the file .gmtcommands4
 	 * in the current directory [or optionally a provided filename] and will
 	 * contain the last arguments to the common parameters like
 	 * -B, -H, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -c
 	 * Since the meaning of -X/-Y depends on whether we have an overlay,
 	 * we maintain -X -Y for absolute shifts and -x -y for relative shifts.
 	 * If the argument +file is encountered then file is used in lieu of the
-	 * usual .gmtdefaults file and this argument is chopped from argv
+	 * usual .gmtdefaults4 file and this argument is chopped from argv
 	 */
        
 	int i, j, k, n;
@@ -2353,7 +2364,7 @@ int GMT_begin (int argc, char **argv)
 	GMT_program = &argv[0][i+1];
 	GMT_grd_in_nan_value = GMT_grd_out_nan_value = GMT_d_NaN;
 	
-	/* Set the gmtdefault parameters from the $HOME/.gmtdefaults (if any) */
+	/* Set the gmtdefault parameters from the $HOME/.gmtdefaults4 (if any) */
 	
         /* See if user specified +optional_defaults_file */
         
@@ -2454,7 +2465,7 @@ void GMT_set_home (void)
 
 void GMT_put_history (int argc, char **argv)
 {
-	/* GMT_put_history will update the .gmtcommands
+	/* GMT_put_history will update the .gmtcommands4
 	 * file and write out the common parameters.
 	 */
        
@@ -2534,13 +2545,13 @@ void GMT_get_history (int argc, char ** argv)
 	struct flock lock;
 #endif
 
-	/* Open .gmtcommands file and retrive old argv (if any)
+	/* Open .gmtcommands4 file and retrive old argv (if any)
 	 * This is tricky since GMT programs are often hooked together
 	 * with pipes so it actually has happened that the first program
-	 * is updating the .gmtdefaults file while the second tries to
+	 * is updating the .gmtdefaults4 file while the second tries to
 	 * read.  The result is that the second program often cannot expand
 	 * the shorthand and fails with error message.  In GMT 3.1 we introduced
-	 * Advisory File Locking and also update the .gmtcommands file as soon
+	 * Advisory File Locking and also update the .gmtcommands4 file as soon
 	 * as possible so that commands down the pipe will see the new options
 	 * already have taken effect.
 	 */
@@ -2549,17 +2560,17 @@ void GMT_get_history (int argc, char ** argv)
 	
 	(void) getcwd (cwd, BUFSIZ);
 	if (!access (cwd, W_OK)) {	/* Current directory is writable */
-		sprintf (hfile, ".gmtcommands");
+		sprintf (hfile, ".gmtcommands4");
 	}
 	else {	/* Try home directory instead */
 		if ((homedir = getenv (home)) == NULL) {
 			fprintf (stderr, "GMT Warning: Could not determine home directory nor write in current directory!\n");
 			return;
 		}
-		sprintf (hfile, "%s%c.gmtcommands", homedir, DIR_DELIM);
+		sprintf (hfile, "%s%c.gmtcommands4", homedir, DIR_DELIM);
 	}				
 		
-	if (access (hfile, R_OK)) {    /* No .gmtcommands file in chosen directory, try to make one */
+	if (access (hfile, R_OK)) {    /* No .gmtcommands4 file in chosen directory, try to make one */
 		if ((GMT_fp_history = fopen (hfile, "w")) == NULL) {
 			fprintf (stderr, "GMT Warning: Could not create %s [permission problem?]\n", hfile);
 			return;
@@ -2598,11 +2609,11 @@ void GMT_get_history (int argc, char ** argv)
 	while (!done && fgets (line, BUFSIZ, GMT_fp_history)) {
 
 		if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments or blank lines */
-		if (!strncmp (line, "EOF", 3)) {	/* Logical end of .gmtcommands file */
+		if (!strncmp (line, "EOF", 3)) {	/* Logical end of .gmtcommands4 file */
 			done = TRUE;
 			continue;
 		}
-		if (line[0] != '-') continue;	/* Possibly reading old .gmtcommands format or junk */
+		if (line[0] != '-') continue;	/* Possibly reading old .gmtcommands4 format or junk */
 		line[strlen(line)-1] = 0;
 		GMT_oldargv[GMT_oldargc] = (char *) GMT_memory (VNULL, (size_t)(strlen (line) + 1), 1, "GMT");
 		strcpy (GMT_oldargv[GMT_oldargc], line);
@@ -2861,7 +2872,7 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 			error = 3;
 			continue;
 		}
-		if (s[0] && strchr ("YyOoUuKkJjDdHhMmCcrlp", s[0])) {	/* Appended one of the allowed units, or l or p for log10/pow */
+		if (s[0] && strchr ("YyOoUuKkJjDdHhMmCcrRlp", s[0])) {	/* Appended one of the allowed units, or l or p for log10/pow */
 			unit = s[0];
 			s++;
 		}
@@ -3015,7 +3026,7 @@ int GMT_map_getframe (char *in) {
 	struct PLOT_AXIS *A;
 	int i, j;
 	
-	/* frame_info.side[] may be set already when parsing .gmtdefaults flags */
+	/* frame_info.side[] may be set already when parsing .gmtdefaults4 flags */
 	
 	info[0] = one;	info[1] = two;	info[2] = three;
 	for (i = 0; i < 3; i++) {

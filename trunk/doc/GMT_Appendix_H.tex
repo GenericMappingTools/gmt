@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_H.tex,v 1.4 2003-01-14 02:38:03 pwessel Exp $
+%	$Id: GMT_Appendix_H.tex,v 1.5 2003-04-11 22:57:15 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2003.
@@ -166,7 +166,7 @@ a different film.
 \index{PostScript@\PS!resolution and dpi}
 
 The parameter DOTS\_PR\_INCH can be set by the user through
-the \filename{.gmtdefaults} file or \GMTprog{gmtset}.  By default
+the \filename{.gmtdefaults4} file or \GMTprog{gmtset}.  By default
 it is equal to the value in the \filename{gmt\_defaults.h}
 file, which is supplied with 300 when you get \GMT\ from us.
 This seems a good size for most applications, but should ideally
@@ -228,7 +228,7 @@ $<$bunch of definitions$>$ \\
 Now try \progname{pageview} on the edited version.  If it now comes
 up, you have a limited subset of OpenWindows installed.  If
 you discover that these fonts cause you trouble, then you can
-edit your \filename{.gmtdefaults} file to set WANT\_EURO\_FONT = FALSE,
+edit your \filename{.gmtdefaults4} file to set WANT\_EURO\_FONT = FALSE,
 which will suppress the printing of this definition in the
 \GMT\ \PS\ header.  With this set to FALSE, you can
 make output which will be viewable in \progname{pageview} without
@@ -262,5 +262,5 @@ problem:  Set your COLOR\_MODEL to HSV using \GMTprog{gmtset}.  Use
 \GMTprog{makecpt} or \GMTprog{grd2cpt} to make a continuous color
 palette spanning the range of your data.  Use the \Opt{Nt}
 option on \GMTprog{grdgradient}.  Try the result, and then play with
-the tuning of the \filename{.gmtdefaults}, the cpt file, and
+the tuning of the \filename{.gmtdefaults4}, the cpt file, and
 the gradient file.

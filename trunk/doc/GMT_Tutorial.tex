@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Tutorial.tex,v 1.13 2003-04-11 01:21:35 pwessel Exp $
+%	$Id: GMT_Tutorial.tex,v 1.14 2003-04-11 22:57:15 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2003.
@@ -333,11 +333,11 @@ We will discuss these later.
 \item Supplied command line options/switches or program defaults.
 
 \item Short-hand notation to select previously used option arguments
-(stored in \filename{.gmtcommands}).
-\index{.gmtdefaults@\filename{.gmtdefaults}}
+(stored in \filename{.gmtcommands4}).
+\index{.gmtdefaults4@\filename{.gmtdefaults4}}
 
 \item Implicitly using \GMT\ defaults for a variety of parameters
-(stored in \filename{.gmtdefaults}).
+(stored in \filename{.gmtdefaults4}).
 
 \item May use hidden support data like coastlines or \PS\ patterns.
 
@@ -580,7 +580,7 @@ pscoast -R-90/-70/0/20 -JM6i -P -B5g5 -G180/120/60 >! map.ps
 
 \item Try \Opt{R}270/290/0/20 instead.  What happens to the annotations?
 
-\item Edit your \filename{.gmtdefaults} file and change PLOT\_DEGREE\_FORMAT
+\item Edit your \filename{.gmtdefaults4} file and change PLOT\_DEGREE\_FORMAT
 to another setting (see the \GMTprog{gmtdefaults} man page).
 
 \item Pick another region and change land color.
@@ -872,7 +872,7 @@ the form of an option argument, e.g.,
 \index{Attributes!pen!width}%
 \item[$\rightarrow$]{\it Width} is normally measured in units of the
 current device resolution (i.e., DOTS\_PR\_INCH in your
-\filename{.gmtdefaults} file).  Thus, if the dpi is set to 300 this unit
+\filename{.gmtdefaults4} file).  Thus, if the dpi is set to 300 this unit
 is 1/300th of an inch.  Append {\bf p} to specify pen width in points
 (1/72 of an inch)\footnote{\PS\ definition.  In the typesetting industry
 a slighly different definition of point (1/72.27 inch) is used.}.
@@ -938,7 +938,7 @@ The latter allows the user to create customized, repeating images using
 standard Sun rasterfiles.  The {\it dpi} parameter sets the resolution of
 this image on the page;  the area fill is thus made up of a series of these
 ``tiles''.  Specifying {\it dpi} as 0 will result in highest resolution
-obtainable given the present dpi setting in \filename{.gmtdefaults}.
+obtainable given the present dpi setting in \filename{.gmtdefaults4}.
 By specifying upper case \Opt{GP} instead of \Opt{Gp} the image will be
 bit-reversed, i.e., white and black areas will be interchanged (only applies
 to 1-bit images or predefined bit-image patterns).  For these patterns and
@@ -1183,7 +1183,7 @@ Note that these escape sequences (as well as octal codes) can be
 used anywhere in \GMT\, including as arguments to the \Opt{B} option.
 A chart of octal codes can be found in Appendix F in the \GMT\
 technical reference book.  For accented European characters you must
-set CHAR\_ENCODING to ISOLatin1 in your \filename{.gmtdefaults} file.
+set CHAR\_ENCODING to ISOLatin1 in your \filename{.gmtdefaults4} file.
 
 We will demonstrate pstext with the following script:
 

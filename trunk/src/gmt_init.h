@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.32 2003-03-03 21:09:49 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.33 2003-04-11 22:57:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -22,7 +22,7 @@
  * Author:	Paul Wessel
  * Date:	21-AUG-1995
  * Revised:	25-FEB-2000
- * Version:	3.4
+ * Version:	4
  *
  */
 
@@ -43,7 +43,7 @@ char *GMT_unique_option[N_UNIQUE] = {	/* The common GMT commandline options */
 struct GMT_FONT *GMT_font;		/* Name and height of fonts recognized by GMT */
 int N_FONTS;				/* Total number of fonts returned by GMT_init_fonts */
 
-char *GMT_keywords[N_KEYS] = {		/* Names of all parameters in .gmtdefaults */
+char *GMT_keywords[N_KEYS] = {		/* Names of all parameters in .gmtdefaults4 */
 #include "gmt_keywords.h"
 };
 
@@ -190,7 +190,7 @@ double GMT_grd_in_nan_value, GMT_grd_out_nan_value;
 double *GMT_file_scale, *GMT_file_offset, *GMT_file_nan;
 int *GMT_file_id;
 char **GMT_file_suffix;
-int GMT_fd_history = 0;	/* File descriptor for .gmtcommands */
+int GMT_fd_history = 0;	/* File descriptor for .gmtcommands4 */
 #ifdef NO_LOCK
 BOOLEAN GMT_lock = FALSE;
 #else

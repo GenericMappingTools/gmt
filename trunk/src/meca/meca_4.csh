@@ -1,7 +1,7 @@
 #!/bin/csh -xe
-#	$Id: meca_4.csh,v 1.2 2000-12-29 22:10:37 pwessel Exp $
+#	$Id: meca_4.csh,v 1.3 2003-04-11 22:57:16 pwessel Exp $
 
-\rm -f .gmtdefaults
+\rm -f .gmtdefaults4
 gmtset MEASURE_UNIT inch TICK_LENGTH 0.075i FRAME_WIDTH 0.1i \
     X_ORIGIN 2.5c Y_ORIGIN 1.3i PAPER_MEDIA  A4 DEGREE_FORMAT 3
 
@@ -68,3 +68,4 @@ psvelo -H2 -Se0.2/0.39/18 -R-10/10/-10/10 -Jx0.2i/0.2i \
    5.     0.    -6.0    4.0     6.0    4.0 -0.300  -6x4
    0.    -5.     6.0   -4.0     6.0    4.0 -0.500  6x-4
 EOF
+\rm -f .gmtdefaults4

@@ -104,7 +104,7 @@ any node and suggest that you run \fBblockmean\fP, \fBblockmedian\fP, or \fBbloc
 did run \fBblockm*\fP and still get this message it usually means that your
 grid spacing is so small that you need more decimals in the output format used by
 \fBblockm*\fP.  You may specify more decimal places by editing the
-parameter D_FORMAT in your .gmtdefaults file prior to running \fBblockm*\fP,
+parameter D_FORMAT in your \.gmtdefaults4 file prior to running \fBblockm*\fP,
 or choose binary input and/or output using single or double precision storage.
 .SH "SEE ALSO"
 .IR blockmean (l),

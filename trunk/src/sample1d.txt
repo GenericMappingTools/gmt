@@ -21,7 +21,7 @@ No space between the option flag and the associated arguments.
 .TP
 .B \-F
 Choose from \fBl\fP (Linear), \fBa\fP (Akima spline), and \fBc\fP (natural cubic spline) [Default is \fB\-Fa\fP].
-You may change the default interpolant; see INTERPOLANT in your .gmtdefaults file.
+You may change the default interpolant; see INTERPOLANT in your \.gmtdefaults4 file.
 #include "explain_-H.txt"
 .TP
 .B \-I

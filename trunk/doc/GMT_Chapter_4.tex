@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.23 2003-02-19 19:10:45 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.24 2003-04-11 22:57:15 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2003.
@@ -47,13 +47,15 @@ you always supply the desired unit explicitly.
 
 \GMTfig[h]{GMT_Defaults_1a}{Some \gmt\ parameters that affect plot appearance}
 
-There are more than 75 parameters which can be adjusted individually
+There are about 80 parameters which can be adjusted individually
 to modify the appearance of plots or affect the manipulation of data.
 When a program is run, it initializes all parameters to the \GMT\
 defaults\footnote{Choose between SI and US default units by modifying
 \filename{gmt.conf} in the \GMT\ share directory},
-then tries to open the file \filename{.gmtdefaults}
-in the current directory.  If not found, it will look for that file
+then tries to open the file \filename{.gmtdefaults4}
+in the current directory\footnote{To remain backwards compatible with \GMT\ 3.4.x
+we will also look for \filename{.gmtdefaults} but only if \filename{.gmtdefaults4}
+cannot be found}.  If not found, it will look for that file
 in your home directory.  If successful, the program will read the
 contents and set the default values to those provided in the file.
 By editing this file you can affect features such as pen thicknesses
@@ -64,7 +66,7 @@ what type of spline interpolant to use, and many other choices
 be found in the \GMTprog{gmtdefaults} manual pages).  Figures
 \ref{fig:GMT_Defaults_1a}, \ref{fig:GMT_Defaults_1b},
 and \ref{fig:GMT_Defaults_1c} show the parameters that affect plots). You may create
-your own \filename{.gmtdefaults} files by running \GMTprog{gmtdefaults}
+your own \filename{.gmtdefaults4} files by running \GMTprog{gmtdefaults}
 and then modify those parameters you want to change.  If you want
 to use the parameter settings in another file you can do so by
 specifying \texttt{+<defaultfile>} on the command line.
@@ -73,7 +75,7 @@ corresponding perhaps to the unique styles required by different
 journals or simply reflecting font changes necessary to make
 readable overheads and slides.  Note that any arguments given on
 the command line (see below) will take precedent over the default
-values.  E.g., if your \filename{.gmtdefaults} file has {\it x}
+values.  E.g., if your \filename{.gmtdefaults4} file has {\it x}
 offset = 1{\bf i} as default, the \Opt{X}1.5{\bf i} option will override the
 default and set the offset to 1.5 inches.  Default values
 may also be changed from the command line with the utility \GMTprog{gmtset}. 
@@ -87,17 +89,17 @@ are placed in a separate parameter file:
 covering so many options, many of which are rarely or never
 changed (such as the ellipsoid used for map projections).
 
-\item It is convenient to keep separate \filename{.gmtdefaults}
+\item It is convenient to keep separate \filename{.gmtdefaults4}
 files for specific projects, so that one may achieve a special
 effect simply by running \GMT\ commands in a sub-directory whose
-\filename{.gmtdefaults} file has the desired settings.  For example,
+\filename{.gmtdefaults4} file has the desired settings.  For example,
 when making final illustrations for a journal article one must often
 standardize on font sizes and font types, etc.  Keeping all those
-settings in a separate \filename{.gmtdefaults} file simplifies this
+settings in a separate \filename{.gmtdefaults4} file simplifies this
 process.  Likewise, \GMT\ scripts that make slides often use a
 different color scheme and font size than output intended for laser
 printers.  Organizing these various scenarios into separate
-\filename{.gmtdefaults} files will minimize headaches associated
+\filename{.gmtdefaults4} files will minimize headaches associated
 with micro-editing of illustrations.
 
 \GMTfig[h]{GMT_Defaults_1b}{More \gmt\ parameters that affect plot appearance}
@@ -105,14 +107,14 @@ with micro-editing of illustrations.
 \end{enumerate}
 
 As mentioned, \GMT\ programs will attempt to open a file named
-\filename{.gmtdefaults}.  At times it may be desirable to override
+\filename{.gmtdefaults4}.  At times it may be desirable to override
 that default.  As an alternative, we may supply another filename using
 the \emph{+filename} syntax, i.e., on the same command line as the
-\GMT\ command we append the name of the alternate \filename{.gmtdefaults}
+\GMT\ command we append the name of the alternate \filename{.gmtdefaults4}
 file with the plus sign as a prefix.
 A perhaps less tedious method is to start each script with making a
-copy of the current \filename{.gmtdefaults}, then copy the desired
-\filename{.gmtdefaults} file to the current directory, and finally
+copy of the current \filename{.gmtdefaults4}, then copy the desired
+\filename{.gmtdefaults4} file to the current directory, and finally
 undo the changes at the end of the script.  To change some of the
 \GMT\ parameters on the fly inside a script the gmtset utility can
 be used.  E.g., to change the annotation font to 12 point Times-Bold
@@ -228,7 +230,7 @@ formats:
 \begin{description}
 \item [Geographic coordinates:]  These are longitudes and latitudes and may be given in decimal degrees (e.g., -123.45417)
 or in the [$\pm$]{\it ddd}[:{\it mm}[:{\it ss}[{\it .xxx}]]][{\bf W}$|${\bf E}$|${\bf S}$|${\bf N}]
-format (e.g., 123:27:15W).
+format (e.g., 123:27:15W).  Note that \Opt{Rg} is a shorthand for ``global domain'' \Opt{R}{\it 0}/{\it 360}/{\it -90}/{\it 90}.
 \item [Calendar time coordinates:]  These are absolute time coordinates referring to a Gregorian or ISO calendar.
 The general format is [{\it date}]{\bf T}[{\it clock}], where {\it date} (if present) must be in the {\it yyyy}[{\it -mm}[{\it -dd}]] (year, month, day-of-month)
 or {\it yyyy}[{\it -jjj}] (year and day-of-year) for Gregorian calendars and {\it yyyy}[{\it -}{\bf W}{\it ww}[{\it -d}]] (year, week, and
@@ -357,6 +359,7 @@ The unit flag {\bf u} can take on one of 16 codes; these are listed in  Table~\r
 {\bf k}	&	weekday & Plot number of day in the week (1-7)  {see \bf TIME\_WEEK\_START}\\ \hline
 {\bf D}	&	date & Format anotation using {\bf PLOT\_DATE\_FORMAT} \\
 {\bf d}	&	day & Plot day of month (1--31) or day of year (1--366) {see \bf PLOT\_DATE\_FORMAT} \\
+{\bf R}	&	day & Same as {\bf d}; annotations aligned with week ({\bf TIME\_WEEK\_START})\\
 {\bf H}	&	hour &	 Format anotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
 {\bf h}	&	hour &	 Plot as 2-digit integer (0--24) \\ \hline
 {\bf M}	&	minute &	 Format anotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
@@ -386,7 +389,7 @@ the {\bf PLOT\_DEGREE\_FORMAT} template and {\bf DEGREE\_SYMBOL} setting.  An ex
 
 \GMTfig[h]{GMT_-B_geo}{Geographic map border using separate selections for anotation,
 frame, and grid intervals.  Formatting of the anotation is controlled by
-the parameter {\bf PLOT\_DEGREE\_FORMAT} in your \filename{.gmtdefaults} file.}
+the parameter {\bf PLOT\_DEGREE\_FORMAT} in your \filename{.gmtdefaults4} file.}
 
 \subsubsection{Cartesian linear axes}
 
@@ -654,6 +657,8 @@ rather than a single column, e.e., 0-4 for the first 5 columns.  For example, if
 input file has geographic coordinates (latitude, longitude) with absolute calendar
 coordinates in the columns 3 and 4, we would specify {\bf fi}0y,1x,3-4T.  All other columns
 as assumed to have the default, floating point format and need not be set individually.
+The shorthand \Opt{f}[{\bf i}$|${\bf o}]{\bf g} means \Opt{f}[{\bf i}$|${\bf o}]0x,1y (geographic coordinates).
+
 \subsection{Number of Copies: The \Opt{c} option}
 \index{\Opt{c}}
 \index{Number of copies}
@@ -686,17 +691,17 @@ projection, specified as
 
 then a subsequent \GMTprog{psxy} command to plot symbols only needs
 to state \Opt{J}o in order to activate the same projection.
-Previous commands are maintained in the file \filename{.gmtcommands},
+Previous commands are maintained in the file \filename{.gmtcommands4},
 of which there will be one in each directory you run the programs
 from.  This is handy if you create separate directories for
 separate projects since chances are that data manipulations
 and plotting for each project will share many of the same options.
 Note that an option spelled out on the command line will always
-override the last entry in the \filename{.gmtcommands} file and,
+override the last entry in the \filename{.gmtcommands4} file and,
 if execution is successful, will replace this entry as the
-previous option argument in the \filename{.gmtcommands} file.
+previous option argument in the \filename{.gmtcommands4} file.
 If you call several \GMT\ modules piped together then \GMT\ cannot
-guarantee that the \filename{.gmtcommands} file is processed
+guarantee that the \filename{.gmtcommands4} file is processed
 in the intended order from left to right.  The only guarantee
 is that the file will not be clobbered since \GMT\ now uses advisory
 file locking.  The uncertainty in processing order makes the use
@@ -747,7 +752,7 @@ it tries to open this argument as a filename).
 This feature allows you to connect programs with pipes if
 you like.  If your input is ASCII and has one or more header
 records, you must use the \Opt{H} option.  The number of header
-records is one of the many parameters in the \filename{.gmtdefaults}
+records is one of the many parameters in the \filename{.gmtdefaults4}
 file, but can be overridden by \Opt{H}{\it n\_header\_recs}.
 ASCII files may in many cases also contain sub-headers
 separating data segments; see Appendix B for complete
@@ -795,7 +800,7 @@ with the following additional flexibility for calendar data:
 
 Because of the widespread use of incompatible and ambiguous formats, the processing of input
 date components is guided by the template {\bf INPUT\_DATE\_FORMAT} in your
-\filename{.gmtdefaults} file which by default is set to {\it yyyy-mm-dd}.  Y2K-challenged input data such as 29/05/89 can be processed by setting {\bf INPUT\_DATE\_FORMAT}
+\filename{.gmtdefaults4} file which by default is set to {\it yyyy-mm-dd}.  Y2K-challenged input data such as 29/05/89 can be processed by setting {\bf INPUT\_DATE\_FORMAT}
 to dd/mm/yy.  A complete discription of possible formats is given in the \GMTprog{gmtdefaults}
 man page.  The {\it clock} string is more standardized but issues like 12- or 24-hour clocks complicate matters
 as well as the presence or absence of delimiters between fields.  Thus, the processing of input
@@ -847,7 +852,7 @@ directly into the plot file.  By default, \GMT\ will produce
 freeform \PS\ output with embedded printer directives.  To
 produce Encapsulated \PS\ (EPS) that can be imported into graphics programs such as
 \progname{IslandDraw} and Adobe \progname{Illustrator} for further
-embellishment, change the PAPER\_MEDIA setting in the \filename{.gmtdefaults}
+embellishment, change the PAPER\_MEDIA setting in the \filename{.gmtdefaults4}
 file.  See Appendix C and the \GMTprog{gmtdefaults} man page for more details.
 
 \section{Specifying pen attributes}
@@ -870,7 +875,7 @@ the form of an option argument, e.g.,
 \item[$\rightarrow$]{\it Width} is normally measured in units of the
 current device resolution (i.e., the value assigned to the parameter
 DOTS\_PR\_INCH in your
-\filename{.gmtdefaults} file).  Thus, if the dpi is set to 300 this unit
+\filename{.gmtdefaults4} file).  Thus, if the dpi is set to 300 this unit
 is 1/300th of an inch.  Append {\bf p} to specify pen width in points
 (1/72 of an inch)\footnote{\PS\ definition.  In the typesetting industry
 a slighly different definition of point (1/72.27 inch) is used.}.
@@ -943,7 +948,7 @@ The latter allows the user to create customized, repeating images using
 standard Sun rasterfiles.  The {\it dpi} parameter sets the resolution of
 this image on the page;  the area fill is thus made up of a series of these
 ``tiles''.  Specifying {\it dpi} as 0 will result in highest resolution
-obtainable given the present dpi setting in \filename{.gmtdefaults}.
+obtainable given the present dpi setting in \filename{.gmtdefaults4}.
 By specifying upper case \Opt{GP} instead of \Opt{Gp} the image will be
 bit-reversed, i.e., white and black areas will be interchanged (only applies
 to 1-bit images or predefined bit-image patterns).  For these patterns and
@@ -976,7 +981,7 @@ color palette table (cpt-file).  These files may also be used by \GMTprog{psxy}
 and \GMTprog{psxyz} to plot color-filled symbols.
 The colors may be specified either in the RGB (red, green, blue) system or
 in the HSV system (hue, saturation, value),
-and the parameter COLOR\_MODEL in the \filename{.gmtdefaults} file must
+and the parameter COLOR\_MODEL in the \filename{.gmtdefaults4} file must
 be set accordingly.  Using the RGB system, the format of the cpt-file is: 
 
 \begin{center}
@@ -997,7 +1002,7 @@ of the particular $z$-slice.  However, the standard \Opt{B} option can be used
 by \GMTprog{psscale} to affect anotation and ticking of colorscales.  The
 background color (for {\it z}-values $<$ {\it z$_0$}), foreground color
 (for {\it z}-values $>$ {\it z$_{n-1}$}), and not-a-number (NaN) color (for
-{\it z}-values = NaN) are all defined in the \filename{.gmtdefaults}
+{\it z}-values = NaN) are all defined in the \filename{.gmtdefaults4}
 file, but can be overridden by the statements
 
 \begin{center}
@@ -1012,7 +1017,7 @@ N &  R$_{nan}$ &  G$_{nan}$ &  B$_{nan}$ \\
 \noindent
 which can be inserted into the beginning or end of the cpt-file.  If
 you prefer the HSV system, set the
-\filename{.gmtdefaults} parameter accordingly and replace red, green,
+\filename{.gmtdefaults4} parameter accordingly and replace red, green,
 blue with hue, saturation, value.  Color palette tables that contain
 grayshades only may replace the r-g-b triplets with a single grayshade
 in the 0--255 range.
@@ -1289,7 +1294,7 @@ MMM\=\# suffix \=format\_id \=scale \=offset \=NaNxxx\=Comments \kill
 
 These suffices can be anything that make sense to the user.  To
 activate this mechanism, set parameter GRIDFILE\_SHORTHAND to TRUE in
-your \filename{.gmtdefaults} file.  Then, using the filename
+your \filename{.gmtdefaults4} file.  Then, using the filename
 \filename{stuff.i2} is equivalent to saying \filename{stuff.i2=2/1/0/32767},
 and the filename \filename{wet.mask} means wet.mask=5/1/0/0.  For a
 file intended for masking, i.e., the nodes are either 1 or NaN,
@@ -1314,7 +1319,7 @@ In particular, a library function called \texttt{isnan} is used to test if a flo
 is a NaN.  \GMT\ uses these tests extensively to determine if a value is suitable for plotting
 or processing (if a NaN is used in a calculation the result becomes NaN as well).  Data points
 whose value is NaN are not normally plotted (or plotted with the special NaN color given in
-\filename{.gmtdefaults}).  Several tools such as \GMTprog{xyz2grd}, \GMTprog{gmtmath}, and
+\filename{.gmtdefaults4}).  Several tools such as \GMTprog{xyz2grd}, \GMTprog{gmtmath}, and
 \GMTprog{grdmath} can convert user data to NaN and vice versa, thus facilitating arbitrary
 masking and clipping of data sets.  Note that a few computers do not have native IEEE hardware
 support.  At this point, this applies to some of the Cray super-computers.  Users on such

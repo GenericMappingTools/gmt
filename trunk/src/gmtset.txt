@@ -4,7 +4,7 @@ gmtset \- To change individual \fBGMT\fP default parameters
 .SH SYNOPSIS
 \fBgmtset\fP [ \fB\-GfP\fIdefaultsfile\fP ] PARAMETER1 [=] \fIvalue1\fP PARAMETER2 [=] \fIvalue2\fP PARAMETER3 [=] \fIvalue3\fP ...
 .SH DESCRIPTION
-\fBgmtset\fP will adjust individual \fBGMT\fP defaults settings in the current directory's .gmtdefaults
+\fBgmtset\fP will adjust individual \fBGMT\fP defaults settings in the current directory's \.gmtdefaults4
 file.  If no such file exists one will be created.  The main purpose of \fBgmtset\fP is
 temporarily to change certain parameters inside a shell script, e.g., set the dots-per-inch
 to 600, run the script, and reset to 300 dpi.
@@ -15,7 +15,7 @@ complete listing of available parameters and their meaning, see the \fBgmtdefaul
 .SH OPTIONS
 .TP
 .B \-G
-Name of specific .gmtdefaults file to modify [Default looks first in current directory, then in your
+Name of specific \.gmtdefaults4 file to modify [Default looks first in current directory, then in your
 home directory, and finally in the system defaults].
 .SH EXAMPLES
 To change the dpi to 600, set annotation font to Helvetica, and select grid-crosses of size 0.1 inch,

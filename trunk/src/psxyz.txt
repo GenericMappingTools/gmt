@@ -65,7 +65,7 @@ Do NOT skip symbols that fall outside map border [Default plots points inside bo
 #include "explain_-P.txt"
 .TP
 .B \-S
-Plot symbols.  \fIsize\fP is symbol size in the unit set in .gmtdefaults
+Plot symbols.  \fIsize\fP is symbol size in the unit set in \.gmtdefaults4
 (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).   The uppercase symbols
 \fBA, C, D, H, I, S, T\fP are normalized to have the same area as a circle of given size,
 while the corresponding lowercase symbols are circumscribed by the circle.
