@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spotter.h,v 1.7 2004-01-13 02:33:04 pwessel Exp $
+ *	$Id: spotter.h,v 1.8 2004-02-02 18:16:55 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -57,3 +57,4 @@ EXTERN_MSC int spotter_forthtrack (double xp[], double yp[], double tp[], int np
 EXTERN_MSC void spotter_finite_to_stages (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates);
 EXTERN_MSC void spotter_stages_to_finite (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates);
 EXTERN_MSC void spotter_add_rotations (struct EULER a[], int n_a, struct EULER b[], int n_b, struct EULER *c[], int *n_c);
+EXTERN_MSC double spotter_t2w (struct EULER a[], int n, double t);
