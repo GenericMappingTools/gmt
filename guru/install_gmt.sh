@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.25 2002-03-15 18:34:09 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.26 2002-03-15 18:39:43 pwessel Exp $
 #
 #	Automatic installation of GMT version 4
 #	Version for the Bourne shell (or compatible)
@@ -712,7 +712,7 @@ make_suppl()
 		if [ $pkg = "mex" ] || [ $pkg = "xgrid" ]; then # Restore makefiles
 			\mv -f makefile.copy makefile
 		fi
-		$GMT_make all || exit
+		$GMT_make all || ( echo "Problems during make all for $pgk - check manually later" )
 		if [ $write_bin -eq 1 ]; then
 			$GMT_make install || ( echo "Problems during make install for $pgk - check manually later" )
 			$GMT_make clean
