@@ -1,6 +1,6 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 
-#       $Id: gmt_form.pl,v 1.2 2001-02-01 19:17:41 pwessel Exp $
+#       $Id: gmt_form.pl,v 1.3 2001-02-02 23:13:24 pwessel Exp $
 
 $webmaster = "gmt\@soest\.hawaii\.edu";
 $registration = "gmt\@soest\.hawaii\.edu";
