@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.50 2004-10-27 06:33:13 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.51 2004-11-07 20:42:48 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -174,54 +174,61 @@ GMT_make=`get_def_answer "Enter make utility to use" "make"`
 #--------------------------------------------------------------------------------
 #	FTP MODE
 #--------------------------------------------------------------------------------
-cat << EOF >&2
+passive_ftp=n
+if [ $do_ftp_qa -eq 1 ]; then
+	cat << EOF >&2
 
 If you are behind a firewall you are unlikely to have permission to initiate a
 normal ftp session (which involves the server connecting back to the client).
 If so, you may want to select passive ftp mode.
 
 EOF
-passive_ftp=`get_def_answer "Do you want passive ftp transmission (y/n)" "n"`
+	passive_ftp=`get_def_answer "Do you want passive ftp transmission (y/n)" "n"`
+fi
 
 #--------------------------------------------------------------------------------
 #	NETCDF SETUP
 #--------------------------------------------------------------------------------
 
 answer=`get_def_answer "Have you installed netcdf (version 3.4 or later)? (y/n)" "y"`
-if [ $answer = "n" ]; then
+if [ $answer = "n" ]; then	# Must install netcdf one way or the other
 	netcdf_path=""
-	answer=`get_def_answer "Do you want me to ftp it for you? (y/n)" "y"`
-	if [ $answer = "n" ]; then
-		answer=`get_def_answer "Do you have netcdf-beta.tar.Z or netcdf.tar.{Z,bz2,gz} in $topdir? (y/n)" "y"`
+	if [ $do_ftp_qa -eq 1 ]; then
+		answer=`get_def_answer "Do you want me to ftp it for you? (y/n)" "y"`
 		if [ $answer = "n" ]; then
-			echo "Please ftp or install netcdf and then rerun install_gmt" >&2
-			exit
-		else
-			netcdf_ftp=n
-			ok=0
-			if [ -f netcdf-beta.tar.Z ]; then
-				ok=1
-			elif [ -f netcdf.tar.Z ]; then
-				ok=1
-			elif [ -f netcdf-beta.tar.bz2 ] && [ $GMT_expand = "bzip2" ]; then
-				ok=1
-			elif [ -f netcdf-beta.tar.gz ] && [ $GMT_expand = "gzip" ]; then
-				ok=1
-			elif [ -f netcdf.tar.bz2 ] && [ $GMT_expand = "bzip2" ]; then
-				ok=1
-			elif [ -f netcdf.tar.gz ] && [ $GMT_expand = "gzip" ]; then
-				ok=1
-			fi
-			if [ $ok -eq 0 ]; then
-				echo "netcdf-beta.tar.{Z,bz2,gz} or netcdf.tar.{Z,bz2,gz} not in $topdir" >&2
-				echo "Please ftp netcdf or have me do it" >&2
+			answer=`get_def_answer "Do you have netcdf-beta.tar.Z or netcdf.tar.{Z,bz2,gz} in $topdir? (y/n)" "y"`
+			if [ $answer = "n" ]; then
+				echo "Please ftp or install netcdf and then rerun install_gmt" >&2
 				exit
 			fi
+		else
+			netcdf_ftp=y
 		fi
 	else
-		netcdf_ftp=y
+		netcdf_ftp=n
 	fi
 	netcdf_install=y
+	if [ $netcdf_ftp = "n" ]; then	# Check that the files are actually there
+		ok=0
+		if [ -f netcdf-beta.tar.Z ]; then
+			ok=1
+		elif [ -f netcdf.tar.Z ]; then
+			ok=1
+		elif [ -f netcdf-beta.tar.bz2 ] && [ $GMT_expand = "bzip2" ]; then
+			ok=1
+		elif [ -f netcdf-beta.tar.gz ] && [ $GMT_expand = "gzip" ]; then
+			ok=1
+		elif [ -f netcdf.tar.bz2 ] && [ $GMT_expand = "bzip2" ]; then
+			ok=1
+		elif [ -f netcdf.tar.gz ] && [ $GMT_expand = "gzip" ]; then
+			ok=1
+		fi
+		if [ $ok -eq 0 ]; then
+			echo "netcdf-beta.tar.{Z,bz2,gz} or netcdf.tar.{Z,bz2,gz} not in $topdir" >&2
+			echo "Please ftp netcdf or have me do it" >&2
+			exit
+		fi
+	fi
 else
 	def=${NETCDFHOME:-/usr/local/netcdf-3.5.1}
 	netcdf_path=`get_def_answer "Enter directory with netcdf lib and include" "$def"`
@@ -247,7 +254,10 @@ GMT_get_full=d
 GMT_get_triangle=d
 GMT_triangle=n
 GMT_ftpsite=1
-GMT_ftp=`get_def_answer "Get any of the GMT version $VERSION archives via ftp? (y/n)" "y"`
+GMT_ftp=n
+if [ $do_ftp_qa -eq 1 ]; then
+	GMT_ftp=`get_def_answer "Get any of the GMT version $VERSION archives via ftp? (y/n)" "y"`
+fi
 if [ $GMT_ftp = "y" ]; then
 	cat << EOF >&2
 
@@ -848,7 +858,7 @@ in one of two ways:
     of your request to a parameter file on your hard disk.
 2)  Interactively: You may direct this script to start an
     interactive session which gathers information from you
-    via a question-and-answer exchange and then saves your
+    via a question-and-answer dialog and then saves your
     answers to a parameter file on your hard disk.
     
 The parameter file is then passed on to the next stage which
@@ -856,10 +866,12 @@ carries out the installation without further interruptions.
 
 Thus, two forms of the command are recognized:
 
-install_gmt parameterfile [ &> logfile]  (for background install)
-install_gmt [ -n ] [ &> logfile]	 (for interactive install)
+install_gmt [ -c ] parameterfile [ &> logfile]  (for background install)
+install_gmt [ -c ] [ -n ] [ &> logfile]	 (for interactive install)
 
 The option -n means do NOT install, just gather the parameters.
+The option -c means all tar archices are already in current directory
+    and there is no need to ask questions regarding ftp transfers.
 Of course, there is also
 
       install_gmt -h			    (to display this message)
@@ -869,8 +881,13 @@ EOF
 fi
 
 do_install=1
-if [ $# -eq 1 ] && [ $1 = "-n" ]; then	# Don not want to install yet
+do_ftp_qa=1
+if [ $# -ge 1 ] && [ $1 = "-n" ]; then	# Do not want to install yet
 	do_install=0
+	shift
+fi
+if [ $# -ge 1 ] && [ $1 = "-c" ]; then	# Local install from cwd - turn off ftp questions
+	do_ftp_qa=0
 	shift
 fi
 
