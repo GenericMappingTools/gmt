@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.7 2001-08-23 02:18:18 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.8 2001-08-29 16:22:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1143,12 +1143,12 @@ double	GMT_strtod (const char *s, char **ends) {
 	int	i, nsign[2], nradix[2], nexp, ndigits, error;
 	BOOLEAN inside = FALSE;
 	
-	t = s;
+	t = (char *)s;
 	i = 0;
 	ndigits = 0;
 	while (t[i] && isspace( (int)t[i]) ) i++;
 	if (t[i] == 0 || isalpha ( (int)t[i]) ) {
-		if (ends != (char **)NULL) *ends = s;
+		if (ends != (char **)NULL) *ends = (char *)s;
 		return (x);
 	}
 	nsign[0] = nsign[1] = nradix[0] = nradix[1] = nexp = error = 0;
@@ -1178,7 +1178,7 @@ double	GMT_strtod (const char *s, char **ends) {
 			if (nexp > 1 || nradix[nexp] > 1 || nsign[nexp] > 1) error++;
 			if (error) {
 				if (ndigits == 0) {
-					if (ends != (char **)NULL) *ends = s;
+					if (ends != (char **)NULL) *ends = (char *)s;
 					return (0.0);
 				}
 				savechar = t[i];
@@ -1196,7 +1196,7 @@ double	GMT_strtod (const char *s, char **ends) {
 		i++;
 	}
 	if (ndigits == 0) {
-		if (ends != (char **)NULL) *ends = s;
+		if (ends != (char **)NULL) *ends = (char *)s;
 		return (0.0);
 	}
 	x = atof(t);
