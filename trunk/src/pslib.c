@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.93 2005-03-02 00:56:14 pwessel Exp $
+ *	$Id: pslib.c,v 1.94 2005-03-02 14:24:25 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3590,7 +3590,7 @@ int ps_write_rasheader (FILE *fp, struct imageinfo *h, int i0, int i1)
 			case 6:
 				value = h->maptype;
 				break;
-			case 7:
+			default:
 				value = h->maplength;
 				break;
 		}
@@ -3862,7 +3862,7 @@ unsigned char *ps_rle_encode (int *nbytes, unsigned char *input)
 {
 	/* Run Length Encode a buffer of nbytes. */
 
-	int count = 0, out = 0, in, i;
+	int count = 0, out = 0, in = 0, i;
 	unsigned char pixel, *output;
 
 	i = MAX (512, *nbytes) + 8;	/* Maximum output length */
