@@ -1,5 +1,5 @@
 /*
- *	$Id: man_fix2.c,v 1.2 2004-09-05 04:05:24 pwessel Exp $
+ *	$Id: man_fix2.c,v 1.3 2004-09-05 04:13:30 pwessel Exp $
  */
 #include "wvs.h"
 
@@ -69,7 +69,7 @@ char **argv; {
 		system (cmd);
 		printf ("(d)elete, (s)witch level to 2, (e)dit polygon %d (q = quit) [d]? ", go[0]);
 		ss[0] = 0;
-		gets (ss);
+		fgets (ss, 80, stdin);
 		if (ss[0] == '\0' || ss[0] == 'd') {	/* Remove from x.lis */
 			fprintf (fp_bad, "%d\n", go[0]);
 			fflush (fp_bad);

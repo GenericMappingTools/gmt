@@ -1,5 +1,5 @@
 /*
- *	$Id: read_wvs.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: read_wvs.c,v 1.2 2004-09-05 04:13:30 pwessel Exp $
  */
 /***************************************************************************/
 /*WDBPLTC.C-reads and plots compressed coastlines                          */
@@ -121,7 +121,6 @@
 #define SEEK_SET 0
 
 #define SIGN_OF(x) ((x)<0.0 ? -1 : 1)
-#define irint(x) ((int)((x) < 0.0 ? (x) - 0.5 : (x) + 0.5))
 
 void wdbpltc_free(); /* frees all buffers */
 
