@@ -1,0 +1,5 @@
+#	$Id: gray.cpt,v 1.1 2001-09-23 23:11:20 pwessel Exp $
+#
+# Plain linear gray colormap
+# COLOR_MODEL = RGB
+0	0	0	0	1	255	255	255
