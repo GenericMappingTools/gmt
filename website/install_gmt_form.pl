@@ -1,6 +1,6 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.1 2001-02-01 18:05:38 pwessel Exp $
+#       $Id: install_gmt_form.pl,v 1.2 2001-02-02 23:13:24 pwessel Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
