@@ -10,7 +10,7 @@ pscoast \- To plot land-masses, water-masses, coastlines, borders, and rivers
 [ \fB\-A\fP\fImin_area\fP[\fI/min_level/max_level\fP] ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIfill\fP ] [ \fB\-D\fP\fIresolution\fP ] 
 [ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-G\fP\fIfill\fP ] 
 [ \fB\-I\fP\fIriver\fP[/\fIpen\fP] ] [ \fB\-K\fP ] 
-[ \fB\-L\fP[\fBf\fP][\fBx\fP]\fIlon0/lat0\fP[\fI/slon\fP]\fI/slat/length\fP[\fBm|n|k\fP][:\fIlabel\fP:\fIjust\fP][\fB+p\fP\fIpen\fp][\fB+f\fP\fIfill\fp] ] 
+[ \fB\-L\fP[\fBf\fP][\fBx\fP]\fIlon0/lat0\fP[\fI/slon\fP]\fI/slat/length\fP[\fBm|n|k\fP][:\fIlabel\fP:\fIjust\fP][\fB+p\fP\fIpen\fP][\fB+f\fP\fIfill\fP] ] 
 [ \fB\-O\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP\fIborder\fP[/\fIpen\fP] ] [ \fB\-O\fP ] 
 [ \fB\-P\fP ] [ \fB\-Q\fP ] [ \fB\-S\fP\fIfill\fP ] 
 [ \fB\-T\fP[\fBf|m\fP][\fBx\fP]\fIlon0/lat0/size\fP[/\fIinfo\fP][:w,e,s,n:][+\fIgint\fP[/\fImint\fP]] ] 
