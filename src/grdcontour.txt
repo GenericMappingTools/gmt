@@ -48,7 +48,8 @@ No space between the option flag and the associated arguments.
 [Default is no annotations].  Several options can be set to modify the form of the annotation.  Give \fB-\fP to disable all annotations.
 Append f\fIfont_size\fP to change font size [9], append \fI/r/g/b\fP to change color of text fill box
 [PAGE_COLOR], append a\fIangle\fP to fix annotation angle [Default follows contour], append \fBo\fP to draw the outline of the surrounding text box [Default is no outline],
-or append \fBt\fP to use a transparent label box [Default is opaque].
+or append \fBt\fP to use a transparent label box [Default is opaque].  The font used is controlled by the
+ANNOT_FONT_PRIMARY setting.
 #include "explain_-B_short.txt"
 .TP
 .B \-D
