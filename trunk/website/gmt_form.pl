@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-#       $Id: gmt_form.pl,v 1.6 2002-09-29 22:27:24 pwessel Exp $
+#       $Id: gmt_form.pl,v 1.7 2002-10-01 04:30:46 pwessel Exp $
 
 $webmaster = "gmt-team\@hawaii\.edu";
 
@@ -10,103 +10,41 @@ print "Content-type: text/html", "\n";
 print "Status: 200 OK", "\n\n";
 &parse_form_data (*gmt_form);
 
-$lon   = $gmt_form{'lon'};
-$lat   = $gmt_form{'lat'};
-$g_lon = &get_degrees ($lon);
-$g_lat = &get_degrees ($lat);
-$caste = $gmt_form{'radio_status'};
-$group = $gmt_form{'checkbox_group'};
-$help  = $gmt_form{'checkbox_help'};
+$lon_deg   = $gmt_form{'lon_deg'};
+$lon_min   = $gmt_form{'lon_min'};
+$lon_sec   = $gmt_form{'lon_sec'};
+$lon_dir   = $gmt_form{'lon_dir'};
+$lat_deg   = $gmt_form{'lat_deg'};
+$lat_min   = $gmt_form{'lat_min'};
+$lat_sec   = $gmt_form{'lat_sec'};
+$lat_dir   = $gmt_form{'lat_dir'};
 
-$First_Name  = $gmt_form{'first_name'};
-$Last_Name   = $gmt_form{'last_name'};
-$Institution = $gmt_form{'institution'};
-$City        = $gmt_form{'city'};
-$State       = $gmt_form{'state'};
-$Country     = $gmt_form{'country'};
-$Field       = $gmt_form{'field'};
-$users       = $gmt_form{'n_users'};
-$Machine     = $gmt_form{'machine'};
-$OS          = $gmt_form{'os'};
-$Comments    = $gmt_form{'comments'};
-$Email       = $gmt_form{'email'};
-
-if ($caste ne "guru" && $caste ne "user") {
-	$caste = "admin";
+$lon_g = $lon_deg + $lon_min / 60.0 + $lon_sec / 3600.0;
+if ($lon_dir eq "W") {
+	$lon_g = -$lon_g;
+}
+$lat_g = $lat_deg + $lat_min / 60.0 + $lat_sec / 3600.0;
+if ($lat_dir eq "S") {
+	$lat_g = -$lat_g;
 }
 
-# Send mail to the gmt registration service
+# Write gmt registration file
 
 open (TMPFILE, ">>/tmp/gmtregistration") || die "Cannot write to tmp/gmtregistration";
-print TMPFILE <<EOF;
-
-First_Name  : $First_Name
-Last_Name   : $Last_Name
-Institution : $Institution
-City        : $City
-State       : $State
-Country     : $Country
-Longitude   : $g_lon
-Latitude    : $g_lat
-# of users  : $users
-Field       : $Field
-Machine(s)  : $Machine
-OS(s)       : $OS
-E-mail      : $Email
-Class       : $caste
-EOF
-if ($group eq "yes") {
-	print TMPFILE "Subscribe gmtgroup\n";
-}
-if ($help eq "yes") {
-	print TMPFILE "Subscribe gmthelp\n";
-}
-print TMPFILE "#-- Comments --\n";
-print TMPFILE $Comments, "\n";
-
+printf TMPFILE "%lg\t%lg\n", $lon_g, $lat_g;
 close (TMPFILE);
-
 print <<EOF;
 <HTML>
 <HEAD>
 </HEAD>
 <BODY>
-<h2><center>GMT Registration successfully received</center></h2>
-Your GMT registration has been processed and accepted.  The usage map is
-updated daily so please check back to see if your location was added to
-the map.  Also, you will be added to the mailinglist(s) within 1 day (if
-you choose to sign up for one of them).  Thank you for registrating with us.
-The following is the information we received:
-<HR>
-<h3>
-First_Name  : $First_Name<br>
-Last_Name   : $Last_Name<br>
-Institution : $Institution<br>
-City        : $City<br>
-State       : $State<br>
-Country     : $Country<br>
-Longitude   : $g_lon<br>
-Latitude    : $g_lat<br>
-Status      : $caste<br>
-# of users  : $users<br>
-Field       : $Field<br>
-Machine(s)  : $Machine<br>
-OS(s)       : $OS<br>
-Lon         : $g_lon<br>
-Lat         : $g_lat<br>
+<h2><center>Coordinates successfully received</center></h2>
+We have recorded your site coordinates as<P>
 EOF
-if ($group eq "yes") {
-	print "Subscribe : gmtgroup<br>\n";
-}
-if ($help eq "yes") {
-	print "Subscribe : gmthelp<br>\n";
-}
-if ($Comments) {
-	print "Comments :<br>\n";
-	print $Comments, "<br>\n";
-}
+printf "<B>Longitude: %lg  Latitude: %lg</B><P>\n", $lon_g, $lat_g;
 print <<EOF;
-</h3>
+The usage map is updated daily so please check back to see if your location was added to
+the map.  Thank you for participating.
 <HR>
 <A HREF="http://gmt.soest.hawaii.edu">
 <IMG SRC="/gmt/gmt/images/gmt_small_logo.gif" ALT="RETURN">
@@ -149,33 +87,6 @@ sub parse_form_data
 		}
 	}
 }
-
-sub get_degrees
-{
-
-	local ($lon) = @_;
-
-#	 Process the longitude string
-
-	$lon =~ tr/a-z/A-Z/;
-	$lon =~ s/ //;		# Take out spaces
-	$i = index ($lon, "W");
-	$j = index ($lon, "S");
-	if ($i > 0 || $j > 0) {
-		$sign_lon = -1.0;
-	} else {
-		$sign_lon = 1.0;
-	}
-	@fields = split (/:/, $lon);
-	$factor = 1.0;
-	$geodetic_lon = 0.0;
-	foreach $x (@fields) {
-		$geodetic_lon += ($x * $factor);
-		$factor /= 60.0;
-	}
-	$geodetic_lon *= $sign_lon;
-}
-
 
 sub return_error
 {
