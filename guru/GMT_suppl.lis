@@ -147,6 +147,9 @@ src/spotter/hotspotter.c
 src/spotter/hotspotter.man
 src/spotter/hotspotter.html
 src/spotter/originator.c
+src/spotter/rotconverter.man
+src/spotter/rotconverter.html
+src/spotter/rotconverter.c
 src/spotter/originator.man
 src/spotter/originator.html
 src/spotter/libspotter.c

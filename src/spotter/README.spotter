@@ -1,4 +1,4 @@
-	$Id: README.spotter,v 1.3 2001-12-24 18:13:26 pwessel Exp $
+	$Id: README.spotter,v 1.4 2002-01-10 18:36:27 pwessel Exp $
 
 SPOTTER Supplemental Package
 
@@ -13,7 +13,6 @@ This directory contains:
 
 README.spotter		: This document
 backtracker.c		: backtracker C program code
-grdspotter.c		: grdspotter C program code
 hotspotter.c		: hotspotter C program code
 originator.c		: originator C program code
 rotconverter.c		: rotconverter C program code
@@ -23,8 +22,6 @@ makefile		: Unix makefile for SPOTTER package
 makespotter.bat		: DOS batch file for compiling SPOTTER
 backtracker.html	: backtracker Web documentation
 backtracker.man		: backtracker UNIX man file
-grdspotter.html		: grdspotter Web documentation
-grdspotter.man		: grdspotter UNIX man file
 hotspotter.html		: hotspotter Web documentation
 hotspotter.man		: hotspotter UNIX man file
 originator.html		: originator Web documentation
@@ -43,12 +40,11 @@ can be downloaded from:
 
 http://www.soest.hawaii.edu/wessel/papers/1997/WL_seamounts_1997.d
 
-This package contains five programs that may be useful
+This package contains four programs that may be useful
 to people who work with Plate Tectonic Reconstructions.
-The five programs are
+The four programs are
 
 	backtracker  - Move points back/forth in time
-	grdspotter   - Create CVA grids using topo or grav grids
 	hotspotter   - Create CVA grids using seamount locations
 	originator   - Associate seamounts with hotspot point sources
 	rotconverter - Manipulate finite and stage rotations
