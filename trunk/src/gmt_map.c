@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.19 2002-01-04 21:13:03 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.20 2002-01-09 21:37:34 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -880,7 +880,7 @@ void GMT_init_three_D (void) {
 	/* Determine min/max y of plot */
 	
 	/* easy = TRUE means we can use 4 corner points to find min x and y, FALSE
-	   measn we must search along wesn perimeter the hard way */
+	   means we must search along wesn perimeter the hard way */
 	   
 	switch (project_info.projection) {
 		case LINEAR:
