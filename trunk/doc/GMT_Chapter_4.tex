@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.13 2001-09-26 04:34:47 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.14 2001-10-01 23:26:08 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -206,7 +206,7 @@ these options in order of importance (some are use alot more than others).
 \label{tbl:switches}
 \end{table} 
 
-\subsection{Data domain -- The \Opt{R} option}
+\subsection{Data domain: The \Opt{R} option}
 \index{\Opt{R}}
 \index{Region, specifying}
 \GMTfig[h]{GMT_-R}{The plot region can be specified in two different ways}
@@ -255,7 +255,7 @@ epoch are specified with the {\bf TIME\_SYSTEM} parameter.  Relative time coordi
 involving relative time has been selected or when the \Opt{f} switch has been used to indicate relative time coordinates.
 \end{description}
 
-\subsection{Projections -- The \Opt{J} option}
+\subsection{Coordinate Transformations and Map Projections: The \Opt{J} option}
 \index{\Opt{J}}
 \index{Map projections}
 
@@ -279,7 +279,7 @@ For details on all \GMT\ projections and the required parameters, see the \GMTpr
 We will also show examples of every projection in the next chapter, and a quick
 summary of projection syntax was given in Chapter 3.
 
-\subsection{Map frame and axes -- The \Opt{B} option}
+\subsection{Map frame and axes anotations: The \Opt{B} option}
 \index{\Opt{B}}
 \index{Tickmarks}
 \index{Anotations}
@@ -513,7 +513,7 @@ in  {\bf PLOT\_DATE\_FORMAT} we get 3-digit integer days.
 
 \GMTfig[h]{GMT_-B_time7}{Cartesian time axis, example 7}
 
-\subsection{Header records -- The \Opt{H} option}
+\subsection{Header data records: The \Opt{H} option}
 \index{\Opt{H}}
 \index{Header records}
 
@@ -523,7 +523,7 @@ record you must specify the number after the \Opt{H} option, e.g., \Opt{H}4.
 Note that blank lines and records that be start with the character \# are
 automatically skipped.
 
-\subsection{Portrait orientation -- The \Opt{P} option} 
+\subsection{Portrait plot orientation: The \Opt{P} option} 
 \index{Orientation!of plot}
 \index{Plot!orientation}
 \index{Landscape orientation}
@@ -552,7 +552,7 @@ when using different media, such as 11" x 17" or large format plotters
 (Figure~\ref{fig:GMT_-P}).
 
 
-\subsection{Plot Overlays -- The \Opt{K} \Opt{O} options}
+\subsection{Plot Overlays: The \Opt{K} \Opt{O} options}
 \index{Overlay plot \Opt{O} \Opt{K}}
 \index{Plot!overlay \Opt{O} \Opt{K}}
 \index{Plot!continue \Opt{O} \Opt{K}}
@@ -576,7 +576,7 @@ incorrect use of these options.  If you run only one plot
 program, ignore both the \Opt{O} and \Opt{K} options; they are
 only used when stacking plots. 
 
-\subsection{Timestamps -- The \Opt{U} option} 
+\subsection{Timestamps on plots: The \Opt{U} option} 
 \index{\Opt{U}}
 \index{Timestamp}
 \index{UNIX@\UNIX!timestamp}
@@ -587,14 +587,14 @@ plot the current command string (Figure~\ref{fig:GMT_-U}).
 
 \GMTfig[h]{GMT_-U}{The \Opt{U} option makes it easy to ``date'' a plot}
 
-\subsection{Verbose Feedback -- The \Opt{V} option} 
+\subsection{Verbose Feedback: The \Opt{V} option} 
 \index{\Opt{V}}
 \index{Verbose}
 
 \Opt{V} selects verbose mode, which will send progress reports to
 \emph{stderr} [Default runs ``silently''].
 
-\subsection{Plot positioning -- The \Opt{X} \Opt{Y} options}
+\subsection{Plot positioning and layout: The \Opt{X} \Opt{Y} options}
 \index{\Opt{X}}
 \index{\Opt{Y}}
 \index{Plot!offset}
@@ -615,7 +615,7 @@ be rotated using the initial \Opt{P} option; subsequent \Opt{P} options
 for overlays are ignored).
 
 
-\subsection{Binary table i/o -- The \Opt{b} option}
+\subsection{Binary table i/o: The \Opt{b} option}
 \index{Table!binary}
 \index{Binary tables}
 \index{Input!binary \Opt{bi}}
@@ -636,7 +636,7 @@ columns that the \GMT\ program requires to do its task.  If
 {\it n} $<$ {\it m} an error is generated.  For more information,
 see Appendix B.
 
-\subsection{Data type selection -- The \Opt{f} option}
+\subsection{Data type selection: The \Opt{f} option}
 \index{Table!format}
 \index{Input!format \Opt{fi}}
 \index{Output!format \Opt{fo}}
@@ -654,13 +654,13 @@ rather than a single column, e.e., 0-4 for the first 5 columns.  For example, if
 input file has geographic coordinates (latitude, longitude) with absolute calendar
 coordinates in the columns 3 and 4, we would specify {\bf fi}0y,1x,3-4T.  All other columns
 as assumed to have the default, floating point format and need not be set individually.
-\subsection{Number of Copies -- The \Opt{c} option}
+\subsection{Number of Copies: The \Opt{c} option}
 \index{\Opt{c}}
 \index{Number of copies}
 
 The \Opt{c} option specifies the number of plot copies. [Default is 1]
 
-\subsection{lat and Lon -- The \Opt{:} option}
+\subsection{Lat/Lon or Lon/Lat?: The \Opt{:} option}
 \index{\Opt{:}}
 \index{lat/lon input}
 

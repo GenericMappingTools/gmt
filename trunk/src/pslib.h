@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.7 2001-09-27 10:56:24 pwessel Exp $
+ *	$Id: pslib.h,v 1.8 2001-10-01 23:26:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -122,9 +122,10 @@ EXTERN_MSC void ps_triangle(double x, double y, double side, int rgb[], int outl
 EXTERN_MSC void ps_vector(double xtail, double ytail, double xtip, double ytip, double tailwidth, double headlength, double headwidth, double headshape, int rgb[], int outline);
 EXTERN_MSC unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN invert, BOOLEAN monochrome, BOOLEAN colorize, int f_rgb[], int b_rgb[]);
 EXTERN_MSC void ps_words (double x, double y, char **text, int n_words, double line_space, double par_width, int par_just, int font, int font_size, double angle, int rgb[3], int justify, int draw_box, double x_off, double y_off, double x_gap, double y_gap, int boxpen_width, char *boxpen_texture, int boxpen_offset, int boxpen_rgb[], int vecpen_width, char *vecpen_texture, int vecpen_offset, int vecpen_rgb[], int boxfill_rgb[3]);
+EXTERN_MSC void ps_setline(int linewidth);
 
-EXTERN_MSC int ps_read_rasheader (FILE *fp, struct rasterfile *h);
-EXTERN_MSC int ps_write_rasheader (FILE *fp, struct rasterfile *h);
+EXTERN_MSC void ps_set_length (char *param, double value);
+EXTERN_MSC void ps_set_height (char *param, int fontsize);
 
 /* For Encapsulated PostScript Headers:
 

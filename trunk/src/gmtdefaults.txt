@@ -3,6 +3,8 @@
 #define LEN_1_SI	0.2\fBc\fP
 #define LEN_3_SI	25\fBc\fP
 #define LEN_4_SI	15\fBc\fP
+#define LEN_5_SI	0.3\fBc\fP
+#define LEN_6_SI	0.5\fBc\fP
 #define DEF_XY_SI	2.5\fBc\fP
 #define POS_SI -2\fBc\fP/-2\fBc\fP
 #define CODE_SI ISOLatin1+
@@ -12,6 +14,8 @@
 #define LEN_1_US	0.075\fBi\fP
 #define LEN_3_US	9\fBi\fP
 #define LEN_4_US	6\fBi\fP
+#define LEN_5_US	0.1125\fBi\fP
+#define LEN_6_US	0.1875\fBi\fP
 #define DEF_XY_US	1\fBi\fP
 #define POS_US -0.75\fBi\fP/-0.75\fBi\fP
 .SH NAME
@@ -39,7 +43,7 @@ current working directory, if present; else from the .gmtdefaults file
 in your home directory, if present; else from the
 system defaults set at the time \fBGMT\fP was compiled.
 .SH \fBGMT\fP PARAMETERS
-The following is a list of the 77 parameters that are user-definable in \fBGMT\fP.  The
+The following is a list of the parameters that are user-definable in \fBGMT\fP.  The
 parameter names are always given in UPPER CASE.  The parameter values are
 case-insensitive unless otherwise noted.  The
 system defaults are given in brackets [ for SI (and US) ].  Those marked \fB*\fP can be set on the command
@@ -154,6 +158,10 @@ Font size (> 0) for time axis lower anotations in points  [16].
 .B ANOT_OFFSET		
 Distance from end of tickmark to start of annotation [LEN_1_SI (or LEN_1_US)].  A negative
 offset will place the anotation inside the map border.
+.TP
+.B ANOT2_OFFSET		
+Distance from base of upper annotation to the top of the lower anotation [LEN_1_SI (or LEN_1_US)] (Only
+applies to time axes with both upper and lower anotations).
 .TP
 .B BASEMAP_AXES
 Sets which axes to draw and annotate.  Case sensitive: Upper case means both draw and annotate, lower case
@@ -292,6 +300,9 @@ Font to use when plotting headers.  See ANOT_FONT for available fonts  [Helvetic
 .B HEADER_FONT_SIZE
 Font size (> 0) for header in points  [36].
 .TP
+.B HEADER_OFFSET		
+Distance from top of axis annotations (or axis label, if present) to base of plot header [LEN_6_SI (or LEN_6_US)].
+.TP
 .B HSV_MIN_SATURATION
 Minimum saturation (0\-1) assigned for most negative intensity value [1.0].
 .TP
@@ -336,6 +347,9 @@ Font to use when plotting labels below axes.  See ANOT_FONT for available fonts 
 .TP
 .B LABEL_FONT_SIZE
 Font size (> 0) for labels in points  [24].
+.TP
+.B LABEL_OFFSET		
+Distance from base of axis annotations to the top of the axis label [LEN_5_SI (or LEN_5_US)].
 .TP
 .B LINE_STEP
 Determines the maximum length (> 0) of individual straight line-segments when drawing arcuate lines  [TOL_SI (or TOL_US)]
