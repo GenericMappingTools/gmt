@@ -1,0 +1,6 @@
+#	$Id: polar.cpt,v 1.1 2001-09-23 23:11:20 pwessel Exp $
+#
+# Simulates the POLAR colormap in Matlab
+# COLOR_MODEL = RGB
+-1	0	0	255	0	255	255	255
+0	255	255	255	1	255	0	0
