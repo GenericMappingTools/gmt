@@ -1,0 +1,297 @@
+.TH PSVELO l DATE
+.SH NAME
+psvelo \fR\- Plot velocity vectors, crosses, and wedges on maps
+.SH SYNOPSIS
+.br
+psvelo \fIfiles \fB\-J\fIparameters \fB\-R\fIwest/east/south/north
+\fR[ \fB\-B\fItickinfo\fR ]
+[ \fB\-D\fIsigma_scale\fR ]
+[ \fB\-F\fIred/green/blue\fR ]
+[ \fB\-E\fIred/green/blue\fR ] [ \fB\-G\fIfill\fR ] [ \fB\-H\fR ] [ \fB\-K\fR ] [ \fB\-L\fP ] [ \fB\-N\fP ] 
+[ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-S\fIsymbol/scale/conf/font_size\fR ] [ \fB\-U\fP[\fI/dx/dy/\fP][label] ]
+[ \fB\-V\fP ] [ \fB\-W\fIpen\fR ]
+[ \fB\-X\fIx-shift\fR ] [ \fB\-Y\fIy-shift\fR ] [ \fB\-:\fP ] [ \fB\-c\fIcopies\fR ]
+.SH DESCRIPTION
+.br
+psvelo \fRreads data values from \fIfiles\fP [or standard input]
+and generates \fIPostScript\fP code that will plot 
+velocity arrows on a map.  Most options are the same as for psxy,
+except \fB\-S\fP The \fIPostScript\fP code is written to standard
+output. The previous version (\fBpsvelomeca\fP) is now obsolete. It has
+been replaced by \fBpsvelo\fP and \fBpsmeca\fP.
+.br
+.sp
+.SH ARGUMENTS
+\fIfiles\fP
+List one or more file-names. If no files are given, psvelo will read standard input.
+#include "explain_-j.txt"
+#include "explain_-R.txt"
+\fB\-S\fRSelects the meaning of the columns in the data file and the
+figure to be plotted.
+.br
+.sp
+.LP
+\fB\-Se\fP\fIvelscale/confidence/fontsize. \fP Velocity ellipses in
+(N,E) convention.  \fIVscale\fP sets the scaling of the velocity arrows.
+This scaling gives inches (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
+  \fIConfidence\fP sets the 2-dimensional confidence limit for
+the ellipse, e.g., 0.95 for 95% confidence ellipse.  \fIFontsize\fP
+sets the size of the text in points.  The ellipse will be filled with
+the color or shade specified by the \fB-G\fP option [default
+transparent].  The arrow and the circumference of the ellipse will be
+drawn with the pen attributes specified by the \fB-W\fP option.
+Parameters are expected to be in the following columns:
+.TP
+.B 1,2
+longitude, latitude of station (-: option interchanges order)
+.TP
+.B 3,4
+eastward, northward velocity (\fB-:\fR option interchanges order)
+.TP
+.B 5,6
+uncertainty of eastward, northward velocities (1-sigma) (\fB-:\fR
+option interchanges order)
+.TP
+.B 7
+correlation between eastward and northward components
+.TP
+.B 8
+name of station (optional). The bug which previously wrote a garbage
+string if this argument was omitted has been fixed.
+.br
+.sp
+.LP
+\fB\-Sn\fIbarscale.\fR
+Anisotropy bars.  \fIBarscale\fP sets the scaling of the bars
+This scaling gives inches (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
+Parameters are expected to be in the following columns:
+.TP
+.B 1,2
+longitude, latitude of station (\fB-:\fR option interchanges order)
+.TP
+.B 3,4
+eastward, northward components of anisotropy vector (\fB-:\fR option interchanges order)
+.br
+.br
+.sp
+.LP
+\fB\-Sr\fIvelscale/confidence/fontsize. \fR Velocity ellipses in
+rotated convention.  \fIVscale\fP sets the scaling of the velocity
+arrows. This scaling gives inches (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
+ \fIConfidence\fP sets the 2-dimensional confidence limit for
+the ellipse, e.g., 0.95 for 95% confidence ellipse.  \fIFontsize\fP
+sets the size of the text in points.
+The ellipse will be filled with the color or shade specified by the \fB-G\fP option
+[default transparent].  The arrow and the circumference of the ellipse will
+be drawn with the pen attributes specified by the \fB-W\fP option.
+Parameters are expected to be in
+the following columns:
+.TP
+.B 1,2
+longitude, latitude, of station (\fB-:\fR option interchanges order)
+.TP
+.B 3,4
+eastward, northward velocity (\fB-:\fR option interchanges order)
+.TP
+.B 5,6
+semi-major, semi-minor axes
+.TP
+.B 7
+counter-clockwise angle, in degrees, from horizontal axis to major axis of ellipse.
+.TP
+.B 8
+name of station (optional)
+.br
+.sp
+.LP
+\fB\-Sw\fIwedge_scale/wedge_mag. \fRRotational wedges.
+\fIWedge_scale\fP sets the size of the wedges in inches
+(unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).  Values are
+multiplied by \fIWedge_mag\fP before plotting.  For example, setting
+\fIWedge_mag\fP to 1.e7 works well for rotations of the order of 100
+nanoradians/yr.  Use \fB\-G\fP to set the fill color or shade for the
+wedge, and \fB\-E\fP to set the color or shade for the uncertainty.
+Parameters are expected to be in the following columns:
+.TP
+.B 1,2
+longitude, latitude, of station (\fB-:\fR option interchanges order)
+.TP
+.B 3
+rotation in radians
+.TP
+.B 4
+rotation uncertainty in radians
+.br
+.sp
+.LP
+\fB\-Sx\fIcross_scale \fR Strain crosses.  \fICross_scale\fP sets the
+size of the cross in inches (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP 
+is appended).  Parameters are expected to be in the
+following columns:
+.TP
+.B 1,2
+longitude, latitude, of station (\fB-:\fR option interchanges order)
+.TP
+.B 3
+eps1, the most extensional eigenvalue of strain tensor, with extension taken positive.
+.TP
+.B 4
+eps2, the most compressional eigenvalue of strain tensor, with extension taken positive.
+.TP
+.B 5
+azimuth of eps2 in degrees CW from North.
+.br
+.sp
+.LP
+\fB\-R
+\fIwest, east, south,\fR and \fInorth\fP specify the region of interest.
+  To specify your boundaries
+in degrees and minutes, use the dd:mm format by appending 'm'.
+.br
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+.br
+.sp
+\fB\-A
+\fIArrow_width/Head_length/Head_width \fR
+Size of arrow in inches.  [Default is 0.03/0.12/0.09].
+#include "explain_-b.txt"
+\fB\-C
+\fROffset focal mechanisms to the latitude and longitude specified in the last
+two columns of the input file.
+.br
+.sp
+\fB\-D
+\fISigma_scale \fR
+can be used to rescale the uncertainties of velocities (\fB\-Se\fP and
+\fB\-Sr\fP) and rotations (\fB\-Sw\fP).  Can be combined with the
+\fIconfidence \fP variable.
+.br
+.sp
+\fB\-F\fP\fIfill\fP
+\fRSets the color or shade used for frame and annotation. [Default is 0/0/0 (black)]
+.br
+.sp
+\fB\-E\fP\fIfill\fP
+\fRSets the color or shade used for filling uncertainty wedges (-Sw)
+or velocity error ellipses (-Se or -Sr).  [If -E is not specified, the
+uncertainty regions will be transparent.]
+.br
+.sp
+\fB\-G\fP\fIfill\fP
+\fRSelect filling of ellipses, wedges, and focal mechanisms.  By
+convention, the compressional quadrants of the focal mechanism beach
+balls are shaded.  Set the shade (0\-255) or color (r/g/b) [Default is
+0/0/0].  Optionally, specify \fB\-Gp\fP\fIicon_size/pattern\fP, where
+\fIpattern\fP gives the number of the image pattern (1-32) OR the name
+of a icon-format file.  \fIicon_size\fP sets the unit size in inches.
+To invert black and white pixels, use \fB\-GP\fP instead of
+\fB\-Gp\fP.  See \fBpspatterns\fP for information on individual
+patterns.
+#include "explain_-H.txt"
+#include "explain_-K.txt"
+\fB\-L
+\fRDraw lines.  Ellipses and fault planes will have their outlines drawn using current pen (see \fB\-W\fP).
+.br
+.sp
+\fB\-N
+\fRDo \fBNOT\fR skip symbols that fall outside the frame boudary specified by \fB\-R\fR.
+ [Default plots symbols inside frame only].
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+\fB\-W
+\fRSet pen attributes for velocity arrows, ellipse circumference and fault plane edges.
+ [Defaults: width = 1, color = 0/0/0, texture = solid].
+#include "explain_-XY.txt"
+#include "explain_-t.txt"
+#include "explain_-c.txt"
+.SH EXAMPLES
+.sp
+The following should make big red arrows with green ellipses, outlined
+in red.  Note that the 39% confidence scaling will give an ellipse which
+fits inside a rectangle of dimension Esig by Nsig.
+.br
+.sp
+psvelo << END -H2 -R-10/10/-10/10 -W1/255/0/0 \\
+.br
+-G0/255/0 -L -Se0.2/0.39/18 -B1g1 -Jx0.4/0.4 \\
+.br
+-A0.1/0.3/0.3 -P -V  >! test.ps
+.br
+  Long.   Lat.   Evel   Nvel   Esig   Nsig  CorEN SITE
+.br
+  (deg)  (deg)    (mm/yr)        (mm/yr)
+.br
+   0.    -8.     0.0    0.0     4.0    6.0  0.500  4x6
+.br
+  -8.     5.     3.0    3.0     0.0    0.0  0.500  3x3
+.br
+   0.     0.     4.0    6.0     4.0    6.0  0.500
+.br
+  -5.    -5.     6.0    4.0     6.0    4.0  0.500  6x4
+.br
+   5.     0.    -6.0    4.0     6.0    4.0 -0.500  -6x4
+.br
+   0.    -5.     6.0   -4.0     6.0    4.0 -0.500  6x-4
+.br
+END
+.br
+The example should plot some residual rates of rotation in the
+Western Transverse Ranges, California.  The wedges will be
+dark gray, with light gray wedges to represent the 2-sigma
+uncertainties.
+.br
+.sp
+psvelo <<END -Sw0.4/1.e7 -W3 -G60 -E210 -H1 -D2 -Jm2.2 \\
+.br
+-R240./243./32.5/34.75 -Bf10ma60m/WeSn -P >! test.ps
+.br
+ lon     lat    spin(rad/yr) spin_sigma (rad/yr)
+.br
+241.4806 34.2073  5.65E-08 1.17E-08
+.br
+241.6024 34.4468 -4.85E-08 1.85E-08
+.br
+241.0952 34.4079  4.46E-09 3.07E-08
+.br
+241.2542 34.2581  1.28E-07 1.59E-08
+.br
+242.0593 34.0773 -6.62E-08 1.74E-08
+.br
+241.0553 34.5369 -2.38E-07 4.27E-08
+.br
+241.1993 33.1894 -2.99E-10 7.64E-09
+.br
+241.1084 34.2565  2.17E-08 3.53E-08
+.br
+END
+.br
+.sp
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR psbasemap (l)
+.IR psxy (l)
+.SH REFERENCES
+.br
+\fRBomford, G., Geodesy, 4th ed., Oxford University Press, 1980.
+.SH AUTHORS
+Kurt Feigl
+.br
+CNRS UMR 5562
+.br
+Toulouse, France
+.br
+(Kurt.Feigl@.cnes.fr)
+.br
+.br
+Genevieve Patau
+.br
+CNRS UMR 7580
+.br
+Seismology Dept.
+.br
+Institut de Physique du Globe de Paris
+.br
+(patau@ipgp.jussieu.fr)
