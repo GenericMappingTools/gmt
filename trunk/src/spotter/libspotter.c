@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.5 2001-10-22 17:36:00 pwessel Exp $
+ *	$Id: libspotter.c,v 1.6 2001-10-23 20:18:11 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -52,15 +52,14 @@ void matrix_to_pole (double T[3][3], double *plon, double *plat, double *w);
 void matrix_transpose (double At[3][3], double A[3][3]);
 void matrix_mult (double a[3][3], double b[3][3], double c[3][3]);
 void make_rot_matrix (double lonp, double latp, double w, double R[3][3]);
-void finite_to_stages (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates);
-void stages_to_finite (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates);
 
-int spotter_init (char *file, struct EULER **p, int flowline, int finite, double *t_max)
+int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in, BOOLEAN finite_out, double *t_max)
 {
 	/* file;	Name of file with backward stage poles */
 	/* p;		Pointer to stage pole array */
 	/* flowline;	TRUE if flowlines rather than hotspot-tracks are needed */
-	/* finite;	TRUE for finite (total construction poles) files [Default is stage poles] */
+	/* finite_in;	TRUE for finite (total construction poles) files [alternative is stage poles] */
+	/* finite_out;	TRUE if we want to return finite (total construction poles) [alternative is stage poles]*/
 	/* t_max;	Extend earliest stage pole back to this age */
 	FILE *fp;
 	struct EULER *e;
@@ -81,14 +80,14 @@ int spotter_init (char *file, struct EULER **p, int flowline, int finite, double
 
 		nf = sscanf (buffer, "%lf %lf %lf %lf %lf", &e[i].lon, &e[i].lat, &e[i].t_start, &e[i].t_stop, &e[i].omega);
 
-		if (finite && nf == 4) e[i].omega = e[i].t_stop, e[i].t_stop = 0.0;	/* Only got 4 columns */
+		if (finite_in && nf == 4) e[i].omega = e[i].t_stop, e[i].t_stop = 0.0;	/* Only got 4 columns */
 		
 		if (e[i].t_stop >= e[i].t_start) {
 			fprintf (stderr, "libspotter: ERROR: Stage rotation %d has start time younger than stop time\n", i);
 			exit (EXIT_FAILURE);
 		}
 		e[i].duration = e[i].t_start - e[i].t_stop;
-		if (finite) {
+		if (finite_in) {
 			if (e[i].t_start < last_t) {
 				fprintf (stderr, "libspotter: ERROR: Finite rotations must go from youngest to oldest\n");
 				exit (EXIT_FAILURE);
@@ -118,7 +117,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, int finite, double
 	
 	n = i;
 
-	if (finite) finite_to_stages (e, n, TRUE, TRUE);	/* Convert finite poles to backward stage poles */
+	if (finite_in && !finite_out) finite_to_stages (e, n, TRUE, TRUE);	/* Convert finite poles to backward stage poles */
 	
 	/* Extend oldest stage pole back to t_max Ma */
 
