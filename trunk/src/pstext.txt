@@ -98,7 +98,7 @@ Draw text outline. Append pen attributes.
 .B \-W
 Paint a rectangle beneath the text string.  Set color [Default is no fill].
 Append \fBo\fP to draw rectangle outline, add a \fIpen\fP to specify pen attributes [1/0/0/0].
-Choose upper case \fBO\fP to get a rounded rectangle (only in paragraph mode).
+Choose upper case \fBO\fP to get a rounded rectangle.
 Choose lower case \fBc\fP to get a concave rectangle (only in paragraph mode).
 Choose upper case \fBC\fP to get a convex rectangle (only in paragraph mode).
 #include "explain_-XY.txt"

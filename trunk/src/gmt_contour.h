@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.6 2004-05-22 00:01:47 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.7 2004-05-23 02:41:37 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -91,6 +91,7 @@ struct GMT_CONTOUR {
 	int angle_type;			/* 0 = contour-parallel, 1 = contour-normal, 2 = fixed angle */
 	BOOLEAN no_gap;			/* Clip contour or not depends on label placement */
 	int label_type;			/* 0 = what is passed, 1 = fixed label above , 2 = multiseg header, 3 = distances */
+	double z_level;			/* When plotted in 3-D we must have z = z_level (i.e., all points have fixed z) */
 };
 
 EXTERN_MSC int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *G);

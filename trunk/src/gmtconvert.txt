@@ -2,30 +2,46 @@
 .SH NAME
 gmtconvert \- Converts, Pastes, and/or Extracts columns from ASCII and binary 1-D tables
 .SH SYNOPSIS
-\fBgmtconvert\fP [ \fIinputfiles\fP] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-S\fP ] 
-[ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP]\fIn\fP ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBgmtconvert\fP [ \fIinputfiles\fP] [ \fB\-A\fP ] [ \fB\-E\fP ] [\fB\-FfIcolsfP ] [ \fB\-H\fP[\fInrec\fP] ] 
+[ \fB\-L\fP ] [ \fB\-I\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-S\fP\f"search string"\fP ] [ \fB\-V\fP ] 
+[ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP]\fIn\fP ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBgmtconvert\fP reads its standard input [or inputfiles] and writes out
 the desired information to standard output.  It can do a combination of
 three things: (1) convert between binary and ASCII data tables, (2) paste
-corresponding records from multiple files into a single file, and (3)
-extract a subset of the columns.  Input (and hence output) may have multiple
+corresponding records from multiple files into a single file, (3)
+extract a subset of the columns, (4) only extract segments whose header
+matches a text pattern search, (5) just list all multisegment headers and no data
+records, and (6) extract first and last data record for each segment.  Input (and hence output) may have multiple
 subheaders if \fB\-M\fP is selected, and ascii tables may have regular headers as well.
 .TP
 \fIdatafile(s)\fP
 ASCII (or binary, see \fB\-bi\fP) file(s) holding a number of data columns. 
 .SH OPTIONS
+.TP
+.B \-A
+The records from the input files should be paSted horizontally, not appended vertically.  [Default
+processes one file at the time].  Note for binary input, all the files you want to paste must
+have the same number of columns (as set with -bi).
+TP
+.B \-E
+Only extract the first and last record for each segment of interest [Default extracts
+all records].
+.TP
+.B \-F
+Give a comma-separated list of desired columns or ranges (0 is first column) [Default outputs all columns]\n");
 #include "explain_-H.txt"
 .TP
 .B \-I
 Invert the order of rows, i.e., output the final records in reverse order, starting with the last and ending
 up with the first input row [Default goes forward].
+.TP
+.B \-L
+Only output a listing of all multisegment header records and no data records (requires \fB\-M\fP and ascii data).
 #include "explain_-M.txt"
 .TP
 .B \-S
-The records from the input files should be paSted horizontally, not appended vertically.  [Default
-processes one file at the time].  Note for binary input, all the files you want to paste must
-have the same number of columns (as set with -bi).
+Only output those segments whose header record contains the specified text string [Default output all segments].
 #include "explain_-V.txt"
 #include "explain_-t.txt"
 #include "explain_-i_binary.txt"
@@ -63,6 +79,12 @@ You want to plot the 2nd column of the file left.d versus the first column of fi
 .br
 .sp
 \fBgmtconvert\fP left.d right.d \fB\-S \-F\fP1,2 | psxy ...
+.br
+To extract all segments in the file big_file.d whose headers contain the string "RIDGE AXIS", try
+.br
+.sp
+\fBgmtconvert\fP big_file.d \-S\fP"RIDGE AXIS" > subset.d
+.br
 .SH "SEE ALSO"
 .IR gmt (GMTMANSECTION),
 .IR minmax (GMTMANSECTION)
