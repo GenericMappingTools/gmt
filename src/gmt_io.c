@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.12 2001-08-17 21:40:58 wsmith Exp $
+ *	$Id: gmt_io.c,v 1.13 2001-08-17 23:53:49 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -483,16 +483,82 @@ void GMT_adjust_periodic (void) {
 	
 int GMT_ascii_output (FILE *fp, int n, double *ptr)
 {
-	int i, e = 0, wn = 0;
+	struct GMT_gcal calendar;
+	double	x;
+	int i, e = 0, wn = 0, i_sec, m_sec, ap, ival[3];
+	char	ofs = '\t';	/* For now; later let user set ofs = output field separator */
 	
 	if (gmtdefs.xy_toggle) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
-	n--;
+
 	for (i = 0; i < n && e >= 0; i++) {
-		(GMT_is_dnan (ptr[i])) ? (e = fprintf (fp, "NaN\t")) : (e = fprintf (fp, gmtdefs.d_format, ptr[i]), putc ('\t', fp));
+		if (i == (n - 1)) ofs = '\n';
+		if (GMT_is_dnan (ptr[i])) {
+			e = fprintf (fp, "NaN%c", ofs);
+		}
+		else if (GMT_io.out_col_type[i] == GMT_IS_UNKNOWN) {
+			e = fprintf (fp, gmtdefs.d_format, ptr[i]);
+			putc (ofs, fp);
+		}
+		/* Later add a user-defined geographical format here */
+		else if (GMT_io.out_col_type[i] == GMT_IS_RELTIME) {
+			x = GMT_usert_from_dt ( (GMT_dtime) ptr[i]);
+			e = fprintf (fp, gmtdefs.d_format, ptr[i]);
+			putc (ofs, fp);
+		}
+		else {	/* Then it must be ABSTIME */
+			GMT_gcal_from_dt ( (GMT_dtime) ptr[i], &calendar);
+			/* Now undo Y2K fix to make a 2-digit year here */
+			if (GMT_io.date_output.day_of_year) {
+				ival[GMT_io.date_output.order[0]] = calendar.year;
+				ival[GMT_io.date_output.order[1]] = calendar.day_y;
+			}
+			else if (GMT_io.date_output.iso_calendar) {
+				ival[0] = calendar.iso_y;
+				ival[1] = calendar.iso_w;
+				ival[2] = calendar.iso_d;
+			}
+			else {
+				ival[GMT_io.date_output.order[0]] = calendar.year;
+				ival[GMT_io.date_output.order[1]] = calendar.month;
+				ival[GMT_io.date_output.order[2]] = calendar.day_m;
+			}
+			fprintf (fp, GMT_io.date_output.format, ival[0], ival[1], ival[2]);
+			putc ('T', fp);
+			if (GMT_io.clock_output.n_sec_decimals) {
+				i_sec = (int) floor (calendar.sec);
+				m_sec = irint (GMT_io.clock_output.f_sec_to_int * (calendar.sec - i_sec));
+			}
+			else
+				i_sec = irint (calendar.sec);
+				
+			if (GMT_io.clock_output.twelwe_hr_clock) {
+				if (calendar.hour < 12) {
+					ap = 0;
+				}
+				else {
+					ap = 1;
+					calendar.hour -= 12;
+				}
+				if (calendar.hour == 0) calendar.hour = 12;
+				if (GMT_io.clock_output.n_sec_decimals) {
+					fprintf (fp, GMT_io.clock_output.format, calendar.hour, calendar.min, i_sec, m_sec, GMT_io.clock_output.ampm_suffix[ap]);
+				}
+				else {
+					fprintf (fp, GMT_io.clock_output.format, calendar.hour, calendar.min, i_sec, GMT_io.clock_output.ampm_suffix[ap]);
+				}
+			}
+			else {
+				if (GMT_io.clock_output.n_sec_decimals) {
+					fprintf (fp, GMT_io.clock_output.format, calendar.hour, calendar.min, i_sec, m_sec);
+				}
+				else {
+					fprintf (fp, GMT_io.clock_output.format, calendar.hour, calendar.min, i_sec);
+				}
+			}
+			putc(ofs, fp);
+		}
 		wn += e;
 	}
-	(GMT_is_dnan (ptr[n])) ? (e = fprintf (fp, "NaN\n")) : (e = fprintf (fp, gmtdefs.d_format, ptr[n]), putc ('\n', fp));
-	wn += e;
 	return ((e < 0) ? e : wn);
 }
 

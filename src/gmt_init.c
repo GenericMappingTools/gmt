@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.19 2001-08-17 20:13:00 wsmith Exp $
+ *	$Id: gmt_init.c,v 1.20 2001-08-17 23:53:49 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -713,6 +713,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				else {
 					icol = i/2;
 				}
+				if (icol < 2 && gmtdefs.xy_toggle) icol = 1 - icol;	/* col_types were swapped */
 				/* If column is either RELTIME or ABSTIME, use ARGTIME */
 				expect_to_read = (GMT_io.in_col_type[icol] & GMT_IS_RATIME) ? GMT_IS_ARGTIME : GMT_io.in_col_type[icol];
 				j = GMT_scanf (text, expect_to_read, p[i]);
@@ -1943,7 +1944,7 @@ int GMT_begin (int argc, char **argv)
 	 * in the current directory [or optionally a provided filename] and will
 	 * contain the last arguments to the common parameters like
 	 * -B, -H, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -c
-	 * Since the meaning of -X/-Y depends on weather we have an overlay or not
+	 * Since the meaning of -X/-Y depends on whether we have an overlay or not
 	 * we maintain -X -Y for absolute shifts and -x -y for relative shifts.
 	 * If the argument +file is encountered then file is used in lieu of the
 	 * usual .gmtdefaults file and this argument is chopped from argv
