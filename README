@@ -1,6 +1,6 @@
 #	Information for installing GMT 4
 #
-#		$Id: README,v 1.13 2002-02-26 22:26:14 pwessel Exp $ 
+#		$Id: README,v 1.14 2002-04-15 20:49:19 ben Exp $ 
 #
 #	Copyright (c) 1991-2002, P. Wessel & W. H. F. Smith
 #
@@ -197,7 +197,7 @@ setenv CONFIG_SHELL <path_to_your_shell>
 Finally, if you plan to install the Matlab extensions you
 need to
 setenv MATLAB <path to Matlab dir>
-unless it is /usr/local/matlab [the deafult].
+unless it is /usr/local/matlab [the default].
 
 For a summary of configure options, type configure --help.
 
@@ -274,7 +274,7 @@ in another document).  True PS files will use the setpagedevice
 PostScript command to manipulate paper trays and manual feeds
 on selected printers.  Some PostScript previewers (such as Sun's 
 old pageview) do not understand these commands and will abort; this
-is also true of some PS to raster conversion utilities.  Oh the other
+is also true of some PS to raster conversion utilities.  On the other
 hand, EPS files are intended to be included in another document and
 are not allowed to use setpagedevice.  To simplify printing, EPS files
 are allowed to contain a showpage operator which means EPS files will
@@ -282,7 +282,7 @@ print if sent to a printer.  The PAPER_MEDIA setting in .gmtdefaults
 can be set to one or the other format (see man gmtdefaults).  By
 default GMT will produce PS files.  If you do not need to take
 advantage of paper tray manipulations or expect to make mostly EPS
-files you may want to use --enable-eps to make EPS the default.  Nte
+files you may want to use --enable-eps to make EPS the default.  Note
 that this can be changed at any time via the PAPER_MEDIA parameter.
 
 
