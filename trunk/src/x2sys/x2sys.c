@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.20 2005-01-18 19:55:24 pwessel Exp $
+ *	$Id: x2sys.c,v 1.21 2005-02-16 01:24:50 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -151,7 +151,7 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 {
 	int j, k, i, n_read = 0;
 	BOOLEAN error = FALSE;
-	char line[BUFSIZ], buffer[64], *p, c;
+	char line[BUFSIZ], buffer[GMT_TEXT_LEN], *p, c;
 	unsigned char u;
 	short int h;
 	float f;
@@ -741,7 +741,7 @@ int x2sys_xover_output (FILE *fp, int n, double out[])
 int x2sys_read_list (char *file, char ***list)
 {
 	int n_alloc = GMT_CHUNK, n = 0;
-	char **p, line[BUFSIZ], name[64];
+	char **p, line[BUFSIZ], name[GMT_TEXT_LEN];
 	FILE *fp;
 
 	fp = x2sys_fopen (file, "r");
