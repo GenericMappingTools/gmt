@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.18 2001-09-12 21:54:08 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.19 2001-09-12 22:21:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -239,8 +239,8 @@ void GMT_tx_axis (double x0, double y0, double length, double val0, double val1,
 		
 			anot_pos = (k == 1 || k == 3);						/* 1 means lower anotation, 0 means upper (close to axis) */
 			font_size = (anot_pos == 1) ? gmtdefs.anot_font2_size : gmtdefs.anot_font_size;
-			special = (is_interval && (I.unit == 'o' || I.unit == 'O') && I.step != 1);	/* Must find next month to get month centered correctly */
-			if (special) {	/* Must find next month to get month centered correctly */
+			special = (is_interval && (I.unit == 'o' || I.unit == 'O' || I.unit == 'k' || I.unit == 'K') && I.step != 1);	/* Must find next day/month to get day/month centered correctly */
+			if (special) {
 				Inext.unit = T->unit;		/* Initialize MOMENT_INTERVAL structure members */
 				Inext.step = 1;
 			}
