@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.14 2002-04-08 21:38:25 pwessel Exp $
+ *	$Id: libspotter.c,v 1.15 2002-04-11 20:37:40 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -352,8 +352,9 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 		t = t_zero;
 		while (t < tp[i]) {	/* As long as we're not back at zero age */
 
-			j = 0;
-			while (j < ns && (t + GMT_CONV_LIMIT) < p[j].t_stop) j++;	/* Find first applicable stage pole */
+			j = ns - 1;
+			while (j && (t + GMT_CONV_LIMIT) > p[j].t_start) j--;
+			/* while (j < ns && (t + GMT_CONV_LIMIT) < p[j].t_stop) j++; */	/* Find first applicable stage pole */
 			if (j == ns) {
 				fprintf (stderr, "libspotter: (spotter_forthtrack) Ran out of stage poles for t = %lg\n", t);
 				exit (EXIT_FAILURE);
@@ -753,6 +754,53 @@ void make_rot_matrix (double lonp, double latp, double w, double R[3][3])
 	R[2][0] = E_13c - E_y;
 	R[2][1] = E_23c + E_x;
 	R[2][2] = E[2] * E[2] * c + cos_w;
+}
+
+void make_rot0_matrix (double lonp, double latp, double R[3][3], double E[])
+{	/* This starts setting up the matrix without knowing the angle of rotation
+	 * Call set_rot_angle wiht R, E, and omega to complete the matrix
+	 * lonp, latp	Euler pole in degrees
+	 *
+	 *	R		the rotation matrix without terms depending on omega
+	 */
+
+        GMT_geo_to_cart (&latp, &lonp, E, TRUE);
+
+	R[0][0] = E[0] * E[0];
+	R[0][1] = E[0] * E[1];
+	R[0][2] = E[0] * E[2];
+
+	R[1][0] = E[0] * E[1];
+	R[1][1] = E[1] * E[1];
+	R[1][2] = E[1] * E[2];
+
+	R[2][0] = E[0] * E[2];
+	R[2][1] = E[1] * E[2];
+	R[2][2] = E[2] * E[2];
+}
+
+void set_rot_angle (double w, double R[3][3], double E[])
+{	/* Sets R using R(no_omega) and the given rotation angle w in radians */
+	double sin_w, cos_w, c, E_x, E_y, E_z;
+	
+	sincos (w, &sin_w, &cos_w);
+	c = 1 - cos_w;
+
+	E_x = E[0] * sin_w;
+	E_y = E[1] * sin_w;
+	E_z = E[2] * sin_w;
+
+	R[0][0] = R[0][0] * c + cos_w;
+	R[0][1] = R[0][1] * c - E_z;
+	R[0][2] = R[0][2] * c + E_y;
+
+	R[1][0] = R[1][0] * c + E_z;
+	R[1][1] = R[1][1] * c + cos_w;
+	R[1][2] = R[1][2] * c - E_x;
+
+	R[2][0] = R[2][0] * c - E_y;
+	R[2][1] = R[2][1] * c + E_x;
+	R[2][2] = R[2][2] * c + cos_w;
 }
 
 void matrix_mult (double a[3][3], double b[3][3], double c[3][3])

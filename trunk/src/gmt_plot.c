@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.68 2002-04-01 16:28:21 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.69 2002-04-11 20:37:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3448,7 +3448,7 @@ void GMT_get_annot_label (double val, char *label, int do_minutes, int do_second
 	else if (GMT_plot_calclock.geo.decimal)
 		sprintf (label, GMT_plot_calclock.geo.x_format, val, letter);
 	else {
-		GMT_geo_to_dms (val, do_seconds, GMT_io.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
+		(void) GMT_geo_to_dms (val, do_seconds, GMT_io.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
 		if (d == 0 && sign == -1) {	/* Must write out -0 degrees, do so by writing -1 and change 1 to 0 */
 			d = -1;
 			zero_fix = TRUE;
