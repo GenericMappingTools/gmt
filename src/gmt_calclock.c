@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.16 2001-09-14 20:10:11 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.17 2001-09-14 22:29:11 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -684,9 +684,16 @@ int	GMT_verify_time_step (int step, char unit) {
 				retval = -1;
 			}
 			break;
+		case 'r':	/* Gregorian week.  Special case:  since weeks aren't numbered on Gregorian
+					calendar, we only allow step size = 1 here, for ticking each week start. */
+		case 'R':
+			if (step != 1) {
+				fprintf (stderr, "GMT SYNTAX ERROR:  time step must be 1 for Gregorian weeks\n");
+				retval = -1;
+			}
+			break;
 		case 'u':	/* ISO week */
 		case 'U':
-		case 'r':	/* Gregorian week */
 			if (step > 52) {
 				fprintf (stderr, "GMT SYNTAX ERROR:  time steps in weeks must be <= 52\n");
 				retval = -1;
@@ -896,6 +903,24 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 			}
 			p->sd[1] = 0.0;
 			GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
+			p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
+			break;
+		
+		case 'r':
+		case 'R':	/* Gregorian weeks.  Step size is 1.  */
+			if (init) {
+				/* Floor to the first day of the week start.  */
+				k = p->cc[0].day_w - gmtdefs.time_week_start;
+				if (k) {
+					p->rd[0] -= GMT_cal_imod(k, 7);
+ 					GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
+ 				}
+				p->sd[0] = 0.0;
+ 				p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
+ 			}
+ 			p->rd[1] = p->rd[0] + 7;	/* We know step size is 1; other wise, use 7 * step  */
+ 			p->sd[1] = 0.0;
+ 			GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
 			p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
 			break;
 
