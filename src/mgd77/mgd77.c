@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.2 2004-08-19 04:07:36 pwessel Exp $
+ *	$Id: mgd77.c,v 1.3 2004-08-19 04:34:25 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -298,6 +298,7 @@ int MGD77_Write_Header_Record_Orig (FILE *fp, struct MGD77_HEADER_RECORD *H)  /*
 	int i;
 	
 	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) fprintf (fp, "%s", H->record[i]);
+	return (TRUE);	/* Success is guaranteed */
 }
 
 int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will write the entire 24-section header structure */
@@ -562,9 +563,9 @@ int MGD77_Write_Data_Record (FILE *fp, struct MGD77_DATA_RECORD *MGD77Record)	/*
 
 int MGD77_View_Line (FILE *fp, char *MGD77line)	/* View a single MGD77 string */
 {
-	char line[MGD77_RECORD_LENGTH];
+/*	char line[MGD77_RECORD_LENGTH];
+	strcpy (MGD77line,line); */
 	if (!(fgets (MGD77line, BUFSIZ, fp))) return FALSE;	/* Read one line from the file */
-/*	strcpy (MGD77line,line);*/
 	if (!(fputs (MGD77line, fp))) return FALSE;		/* Put the line back on the stream */
 	return TRUE;
 }
@@ -577,17 +578,17 @@ int MGD77_View_Line (FILE *fp, char *MGD77line)	/* View a single MGD77 string */
  */
 int MGD77_Convert_To_New_Format(char *oldFormatLine, char *newFormatLine)
 {
-	double tz; int yy; char *legid, *s_tz, *s_year;
+	double tz; int yy; char legid[9], s_tz[6], s_year[5];
 	
 	if (oldFormatLine[0] != '3') return FALSE;
-	strncpy (legid,&oldFormatLine[mgd77defs[1].start-1],mgd77defs[1].length);
-	tz = atoi (strncpy(s_tz,&oldFormatLine[mgd77defs[2].start-1],mgd77defs[2].length+2)) / 100.0;
-	yy = atoi (strncpy(s_year,&oldFormatLine[mgd77defs[3].start-1],mgd77defs[3].length-2));
+	strncpy (legid, &oldFormatLine[mgd77defs[1].start-1], mgd77defs[1].length);
+	tz = atoi (strncpy(s_tz, &oldFormatLine[mgd77defs[2].start-1], mgd77defs[2].length+2)) / 100.0;
+	yy = atoi (strncpy(s_year, &oldFormatLine[mgd77defs[3].start-1], mgd77defs[3].length-2));
 	if (yy < MGD77_OLDEST_YY)   /* Paul Wessel's "Y2K Kludge Fix" */
 		yy += 2000;
 	else
 		yy += 1900;
-	sprintf (newFormatLine,"5%s%+03d%4d%s",legid,tz,yy,*(oldFormatLine + mgd77defs[4].start-1));
+	sprintf (newFormatLine,"5%s%+03d%4d%s", legid, tz, yy, *(oldFormatLine + mgd77defs[4].start-1));
 	return TRUE;
 }
 
@@ -599,15 +600,15 @@ int MGD77_Convert_To_New_Format(char *oldFormatLine, char *newFormatLine)
  */
 int MGD77_Convert_To_Old_Format(char *newFormatLine, char *oldFormatLine)
 {
-	int tz; char *legid, *s_tz, *s_year;
+	int tz; char legid[9], s_tz[6], s_year[5];
 	
 	if (newFormatLine[0] != '5') return FALSE;
-	strncpy (legid,&oldFormatLine[mgd77defs[1].start-1],mgd77defs[1].length);
-	tz = atoi (strncpy(s_tz,&newFormatLine[mgd77defs[2].start-1],mgd77defs[2].length));
-	strncpy(s_year,&newFormatLine[mgd77defs[3].start-1],mgd77defs[3].length);
+	strncpy (legid, &oldFormatLine[mgd77defs[1].start-1], mgd77defs[1].length);
+	tz = atoi (strncpy(s_tz, &newFormatLine[mgd77defs[2].start-1], mgd77defs[2].length));
+	strncpy(s_year, &newFormatLine[mgd77defs[3].start-1], mgd77defs[3].length);
 	if (tz == 99) tz = 9999;  /* Handle the empty case */
 	else tz *= 100;
-	sprintf (oldFormatLine,"3%s%+05d%2d%s",legid,tz,*(s_year + 2),*(newFormatLine + mgd77defs[4].start-1));
+	sprintf (oldFormatLine,"3%s%+05d%2d%s", legid, tz, *(s_year + 2), *(newFormatLine + mgd77defs[4].start-1));
 	return TRUE;
 }
 
@@ -960,9 +961,15 @@ void MGD77_Set_Home (struct MGD77_CONTROL *F)
 	if (F->MGD77_HOME) return;	/* Already set elsewhere */
 
 	if ((this = getenv ("MGD77_HOME")) == CNULL) {
-		fprintf (stderr, "%s: Warning: MGD77_HOME not defined, assumed to be $GMTHOME/share/mgd77\n", GMT_program);
-		F->MGD77_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (GMTHOME) + 13), 1, "MGD77_Set_Home");
-		sprintf (F->MGD77_HOME, "%s/share/mgd77", GMTHOME);
+		if ((this = getenv ("GMTHOME")) != CNULL) {
+			fprintf (stderr, "mgd77: Warning: MGD77_HOME not defined, set to $GMTHOME/share/mgd77\n");
+			F->MGD77_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 13), 1, "MGD77_Set_Home");
+			sprintf (F->MGD77_HOME, "%s/share/mgd77", this);
+		}
+		else {
+			fprintf (stderr, "mgd77: ERROR: Neither MGD77_HOME or GMTHOME defined - give up\n");
+			exit (EXIT_FAILURE);
+		}
 	}
 	else {	/* Set default path */
 		F->MGD77_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), 1, "MGD77_Set_Home");
@@ -984,8 +991,8 @@ void MGD77_Path_Init (struct MGD77_CONTROL *F)
 	F->n_MGD77_paths = 0;
 
 	if ((fp = fopen (file, "r")) == NULL) {
-		fprintf (stderr, "%s: Warning: path file %s for MGD77 files not found\n", GMT_program, file);
-		fprintf (stderr, "%s: (Will only look in current directory for such files)\n", GMT_program);
+		fprintf (stderr, "mgd77: Warning: path file %s for MGD77 files not found\n", file);
+		fprintf (stderr, "mgd77: (Will only look in current directory for such files)\n");
 		return;
 	}
 	

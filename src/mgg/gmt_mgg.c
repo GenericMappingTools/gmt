@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.6 2004-06-15 00:09:14 pwessel Exp $
+ *	$Id: gmt_mgg.c,v 1.7 2004-08-19 04:34:25 pwessel Exp $
  *
  *    Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -293,7 +293,7 @@ int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, str
 
 		if (!(*gmt)) {	/* If not set, now is the time */
 			*gmt = gmtmgg_init (year);
-			if (gmtdefs.verbose) fprintf (stderr, "GMT ERROR: in gmtmgg_decode_MGD77:  : No start year set, using year = %d from 1st data record\n", year);
+			fprintf (stderr, "GMT ERROR: in gmtmgg_decode_MGD77:  : No start year set, using year = %d from 1st data record\n", year);
 		}
 		test = gmtmgg_time (&(record->time), year, month, day, hour, min, sec, *gmt);
 		if (test < 0) return (1);
