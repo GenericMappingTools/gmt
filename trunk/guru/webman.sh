@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.14 2004-08-18 23:19:44 pwessel Exp $
+#	 $Id: webman.sh,v 1.15 2004-08-19 03:44:48 pwessel Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -74,6 +74,7 @@ for package in dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
 		fi
 		nroff -man $f | $MAN2HTML -topm 4 | sed -f ../$$.w1.sed | sed -f ../$$.w2.sed | sed -f ../$$.w3.sed > $package/${prog}.html
 		echo '<BODY bgcolor="#ffffff">' >> $package/${prog}.html
+		cp -f $package/${prog}.html ../www/gmt/doc/html
 	done
 done
 cd ..
@@ -248,7 +249,8 @@ packages actually installed on your system will be accessible.
 <HR>
 <H3>The MGD77 package</H3>
 <UL>
-<LI><A HREF="doc/html/mgd77list.html"> gmtlist</A> Extract data from .mgd77 files
+<LI><A HREF="doc/html/mgd77list.html"> mgd77list</A> Extract data from .mgd77 files
+</UL>
 <HR>
 <H3>The MGG package</H3>
 <UL>
