@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.h,v 1.9 2004-01-12 00:37:22 pwessel Exp $
+ *	$Id: gmt_customio.h,v 1.10 2005-01-02 05:13:19 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -71,6 +71,13 @@ EXTERN_MSC int GMT_srf_update_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_srf_write_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_srf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 EXTERN_MSC int GMT_srf_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
+
+/* Format # 13 */
+EXTERN_MSC int GMT_int_read_grd_info (char *file, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_int_update_grd_info (char *file, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_int_write_grd_info (char *file, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_int_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
+EXTERN_MSC int GMT_int_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 
 #define HEADER_SIZE	892
 #define GMT_N_NATIVE_FORMATS	6

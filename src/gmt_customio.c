@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.16 2004-11-24 00:36:08 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.17 2005-01-02 05:13:19 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -23,13 +23,13 @@
  * industrious user may supply his/her own code to read specific data
  * formats.  Five functions must be supplied, and they must conform
  * to the GMT standard and return the same arguments as the generic
- * GMT grdio functions.  See GMT_cdf.c for details.
+ * GMT grdio functions.  See gmt_cdf.c for details.
  *
  * To add another data format:
  *
  *	1. Write the five required routines (see below).
- *	2. increment parameter N_GRD_FORMATS in file GMT_grdio.h
- *	3. Append another entry in the GMT_customio.h file.
+ *	2. increment parameter N_GRD_FORMATS in file gmt_grdio.h
+ *	3. Append another entry in the gmt_customio.h file.
  *	4. Provide another entry in the share/gmtformats.d file
  *
  * Author:	Paul Wessel
@@ -217,6 +217,15 @@ void GMT_grdio_init (void) {
 	GMT_io_readgrd[id]   = (PFI) mgg2_read_grd;
 	GMT_io_writegrd[id]  = (PFI) mgg2_write_grd;
 	
+	/* FORMAT # 13: GMT native binary (int) grdio */
+	
+	id = 13;
+	GMT_io_readinfo[id]   = (PFI) GMT_int_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_int_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_int_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_int_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_int_write_grd;
+
 	/*
 	 * ----------------------------------------------
 	 * ADD CUSTOM FORMATS BELOW AS THEY ARE NEEDED */
@@ -1740,3 +1749,47 @@ int GMT_cdf_double_write_grd (char *file, struct GRD_HEADER *header, float *grid
 
 /* 12: NOAA NGDC MGG Format */
 #include "gmt_mgg_header2.c"
+
+/*-----------------------------------------------------------
+ * Format # :	13
+ * Type :	Native binary (int) C file
+ * Prefix :	GMT_int_
+ * Author :	Paul Wessel, SOEST
+ * Date :	1-JAN-2005
+ * Purpose:	The native binary output format is used
+ *		primarily for piped i/o between programs
+ *		that otherwise would use temporary, large
+ *		intermediate grdfiles.  Note that not all
+ *		programs can support piping (they may have
+ *		to re-read the file or accept more than one
+ *		grdfile).  Datasets with limited range may
+ *		be stored using 4-byte integers which will
+ *		reduce storage space and improve throughput.
+ * Functions :	GMT_int_read_grd_info, GMT_int_update_grd_info,
+ *		GMT_int_write_grd_info, GMT_int_read_grd, GMT_int_write_grd
+ *-----------------------------------------------------------*/
+ 
+int GMT_int_read_grd_info (char *file, struct GRD_HEADER *header)
+{	
+	return (GMT_native_read_grd_info (file, header));
+}
+
+int GMT_int_update_grd_info (char *file, struct GRD_HEADER *header)
+{
+	return (GMT_native_update_grd_info (file, header));
+}
+
+int GMT_int_write_grd_info (char *file, struct GRD_HEADER *header)
+{
+	return (GMT_native_write_grd_info (file, header));
+}
+
+int GMT_int_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+{
+	return (GMT_native_read_grd (file, header, grid, w, e, s, n, pad, complex, GMT_NATIVE_INT));
+}
+
+int GMT_int_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+{
+	return (GMT_native_write_grd (file, header, grid, w, e, s, n, pad, complex, GMT_NATIVE_INT));
+}
