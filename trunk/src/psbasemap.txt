@@ -46,7 +46,7 @@ psbasemap \- To plot \fIPostScript\fP basemaps
 [ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-G\fP\fIfill\fP ] [ \fB\-K\fP ] 
 [ \fB\-L\fP[\fBf\fP][\fBx\fP]\fIlon0/lat0\fP[\fI/slon\fP]\fI/slat/length\fP[\fBm|n|k\fP][:\fIlabel\fP:\fIjust\fP][\fB+p\fP\fIpen\fp][\fB+f\fP\fIfill\fp] ] [ \fB\-O\fP ] 
 [ \fB\-P\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
-[ \fB\-T\fP[\fBf|m\fP][\fBx\fP]\fIlon0/lat0/size\fP[/\fIinfo\fP][:w,e,s,n] ] 
+[ \fB\-T\fP[\fBf|m\fP][\fBx\fP]\fIlon0/lat0/size\fP[/\fIinfo\fP][:w,e,s,n:][+\fIgint\fP[/\fImint\fP]] ] 
 [ \fB\-V\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-X\fP\fIy-level\fP ] [ \fB\-Z\fP\fIzlevel\fP ] [ \fB\-c\fP\fIcopies\fP ]
 .SH DESCRIPTION
 \fBpsbasemap\fP creates PostScript code that will produce a basemap.  Several map projections
@@ -68,31 +68,10 @@ Paint inside of basemap. [Default is no fill].
 #include "explain_-G_nopattern.txt"
 #include "explain_-Jz.txt"
 #include "explain_-K.txt"
-.TP
-.B \-L
-Draws a simple map scale centered on \fIlon0/lat0\fP.  Use \fB\-Lx\fP to specify x/y position instead.
-Scale is calculated at latitude \fIslat\fP (optionally supply longitude \fIslon\fP for oblique projections
-[Default is central meridian]), \fIlength\fP is in km [miles if \fBm\fP is appended; nautical miles
-if \fBn\fP is appended]. Use \fB\-Lf\fP to get a "fancy" scale [Default is plain]. The default label equals the
-distance unit (km, miles, nautical miles) and is justified on top of the scale [t].  Change this by giving your
-own label (or - to keep the default) and justification (l(eft), r(ight), t(op), b(ottom), and u(unit) - using
-the label as a unit appended to all distance annotations along the scale).  If you want to place a rectangle
-behind the scale, specify pen and/or fill parameters with the \fB+p\fP and \fB+f\fP modifiers.
+#include "explain_-L_scale.txt"
 #include "explain_-O.txt"
 #include "explain_-P.txt"
-.TP
-.B \-T
-Draws a simple map directional rose centered on \fIlon0/lat0\fP.  Use \fB\-Lx\fP to specify x/y position instead.
-The \fIsize\fP is the diameter of the rose, and the optional label information can be specified to override
-the default values of W, E, S, and N.  Use \fB\-Tf\fP to get a "fancy" rose [Default is plain], and specify what
-\fIkind\fP of rose you want drawn.  The default [1] draws the two principal E-W, N-S orientations, and 2 adds the
-two intermediate NW-SE and NE-SW orientations, while 3 adds the eight minor orientations WNW-ESE, NNW-SSE, NNE-SSW,
-and ENE-WSW.  For Magnetic compass rose, specify \fB\-Tm\fP.  If given, \fIinfo\fP must be the two paramters
-\fIdec/dlabel\fP, where \fIdec\fP is the magnetic declination and \fIdlabel\fP is a label for the magnetic compass
-needle.  Then, both directions to geographic and magnetic north are plotted [Default is geographic only].  If the
-north label = * then a north star is plotted instead of the north label.
-Color and pen attributes are taken from COLOR_BACKGROUND and TICK_PEN, respectively, while label fonts and sizes
-are the usual annotation, label, and header font settings.
+#include "explain_-T_rose.txt"
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"

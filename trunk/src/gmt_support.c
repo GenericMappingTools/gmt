@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.81 2004-05-10 22:16:11 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.82 2004-05-11 01:07:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4166,8 +4166,16 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 	int j = 0, i,error = 0, colon, plus, k;
 	char txt_a[32], txt_b[32], txt_c[32], txt_d[32];
 	
+	/* SYNTAX is -T[f|m][x]<lon0>/<lat0>/<size>[/<info>][:label:][+gint[/mint]], where <info> is
+	 * 1)  -Tf: <info> is <kind> = 1,2,3 which is the level of directions [1].
+	 * 2)  -Tm: <info> is <dec>/<dlabel>, where <Dec> is magnetic declination and dlabel its label [no mag].
+	 * If -Tm, optionally set annotation interval with +
+	 */
+	 
 	ms->fancy = ms->gave_xy = FALSE;
 	ms->size = 0.0;
+	ms->a_int[0] = 10.0;
+	ms->a_int[1] = 30.0;
 	
 	/* First deal with possible prefixes f and x (i.e., f, x, xf, fx( */
 	if (text[j] == 'f') ms->fancy = TRUE, j++;
@@ -4176,12 +4184,21 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 	if (text[j] == 'f') ms->fancy = TRUE, j++;	/* in case we got xf instead of fx */
 	if (text[j] == 'm') ms->fancy = 2, j++;		/* in case we got xm instead of mx */
 	
-	
 	/* Determine if we have the optional label components specified */
 	
 	for (colon = -1, i = j; text[i] && colon < 0; i++) if (text[i] == ':') colon = i+1;
-	if (colon > 0) {	/* Get labels */
-		sscanf (&text[colon], "%[^,],%[^,],%[^,],%[^,]", ms->label[3], ms->label[1], ms->label[0], ms->label[2]);
+	for (plus = -1, i = j; text[i] && plus < 0; i++) if (text[i] == '+') plus = i+1;
+	if (plus > 0) {		/* Get annotation interval(s) */
+		k = sscanf (&text[plus], "%lf/%lf", &ms->a_int[1], &ms->a_int[0]);
+		if (k < 1) {
+			fprintf (stderr, "%s: GMT SYNTAX ERROR -T option:  Give annotation interval(s)\n", GMT_program);
+			error++;
+		}
+		if (k == 1) ms->a_int[0] = ms->a_int[1];
+		text[plus-1] = '\0';	/* Break string so sscanf wont get confused later */
+	}
+	if (colon > 0) {	/* Get labels in string :w,e,s,n: */
+		sscanf (&text[colon], "%[^,],%[^,],%[^,],%[^:]", ms->label[3], ms->label[1], ms->label[0], ms->label[2]);
 		text[colon-1] = '\0';	/* Break string so sscanf wont get confused later */
 	}
 	else {			/* Set Default */
@@ -4191,7 +4208,7 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 		strcpy (ms->label[3], "W");
 	}
 	
-	/* -L[f][x]<x0>/<y0>/<size>[/<kind>][:label:] OR -L[m][x]<x0>/<y0>/<size>[/<dec>/<declabel>][:label:] */
+	/* -L[f][x]<x0>/<y0>/<size>[/<kind>][:label:] OR -L[m][x]<x0>/<y0>/<size>[/<dec>/<declabel>][:label:][+gint[/mint]] */
 	if (ms->fancy == 2) {	/* Magnetic rose */
 		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", txt_a, txt_b, txt_c, txt_d, &ms->dlabel);
 		if (! (k == 3 || k == 5)) {	/* Wrong number of parameters */
@@ -4219,6 +4236,7 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 		}
 	}
 	if (colon > 0) text[colon-1] = ':';	/* Put it back */
+	if (plus > 0) text[plus-1] = '+';	/* Put it back */
 	if (ms->gave_xy) {	/* Convert user's x/y to inches */
 		ms->x0 = GMT_convert_units (txt_a, GMT_INCH);
 		ms->y0 = GMT_convert_units (txt_b, GMT_INCH);

@@ -1,0 +1,10 @@
+.TP
+.B \-L
+Draws a simple map scale centered on \fIlon0/lat0\fP.  Use \fB\-Lx\fP to specify x/y position instead.
+Scale is calculated at latitude \fIslat\fP (optionally supply longitude \fIslon\fP for oblique projections
+[Default is central meridian]), \fIlength\fP is in km [miles if \fBm\fP is appended; nautical miles
+if \fBn\fP is appended]. Use \fB\-Lf\fP to get a "fancy" scale [Default is plain]. The default label equals the
+distance unit (km, miles, nautical miles) and is justified on top of the scale [t].  Change this by giving your
+own label (or - to keep the default) and justification (l(eft), r(ight), t(op), b(ottom), and u(unit) - using
+the label as a unit appended to all distance annotations along the scale).  If you want to place a rectangle
+behind the scale, specify pen and/or fill parameters with the \fB+p\fP and \fB+f\fP modifiers.
