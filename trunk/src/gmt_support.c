@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.123 2004-06-13 22:30:18 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.124 2004-06-16 03:02:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2107,7 +2107,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 void GMT_contlabel_angle (double x[], double y[], int start, int stop, double cangle, int n, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
 {
 	int j;
-	double sum_x2 = 0.0, sum_xy = 0.0, dx, dy;
+	double sum_x2 = 0.0, sum_xy = 0.0, sum_y2 = 0.0, dx, dy;
 	
 	if (start == stop) {	/* Can happen if we want no smoothing but landed exactly on a knot point */
 		if (start > 0)
@@ -2120,9 +2120,15 @@ void GMT_contlabel_angle (double x[], double y[], int start, int stop, double ca
 		dx = x[j] - L->x;
 		dy = y[j] - L->y;
 		sum_x2 += dx * dx;
+		sum_y2 += dy * dy;
 		sum_xy += dx * dy;
 	}
-	L->line_angle = (fabs(sum_xy) < GMT_CONV_LIMIT) ? 90.0 : d_atan2 (sum_xy, sum_x2) * R2D;
+	if (sum_y2 < GMT_CONV_LIMIT)	/* Line is horizontal */
+		L->line_angle = 0.0;
+	else if (sum_x2 < GMT_CONV_LIMIT)	/* Line is vertical */
+		L->line_angle = 90.0;
+	else
+		L->line_angle = (fabs(sum_xy) < GMT_CONV_LIMIT) ? 90.0 : d_atan2 (sum_xy, sum_x2) * R2D;
 	if (G->angle_type == 2) { 	/* Just returned the fixed angle given */
 		L->angle = cangle;
 	}
