@@ -1,5 +1,5 @@
 /*
- *	$Id: man_fix.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: man_fix.c,v 1.2 2004-09-05 04:13:30 pwessel Exp $
  */
 #include "wvs.h"
 
@@ -129,7 +129,7 @@ char **argv; {
 		system (cmd);
 		printf ("Delete polygon %d [y]? ", go[1]);
 		s[0] = 0;
-		gets (s);
+		fgets (s, 80, stdin);
 		if (s[0] == '\0') {	/* Remove from x.lis */
 			fprintf (fp_bad, "%d\n", go[1]);
 			fflush (fp_bad);
