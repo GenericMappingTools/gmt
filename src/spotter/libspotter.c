@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.16 2002-04-12 21:01:29 pwessel Exp $
+ *	$Id: libspotter.c,v 1.17 2002-04-18 20:44:05 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -58,7 +58,7 @@ void set_I_matrix (double R[3][3]);
 
 void spotter_finite_to_fwstages (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates);
 
-int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in, BOOLEAN finite_out, double *t_max)
+int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in, BOOLEAN finite_out, double *t_max, BOOLEAN verbose)
 {
 	/* file;	Name of file with backward stage poles */
 	/* p;		Pointer to stage pole array */
@@ -75,7 +75,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	e = (struct EULER *) GMT_memory (VNULL, n_alloc, sizeof (struct EULER), "libspotter");
 
 	if ((fp = fopen (file, "r")) == NULL) {
-		fprintf (stderr, "libspotter: Cannot open stage pole file: %s\n", file);
+		fprintf (stderr, "libspotter: ERROR: Cannot open stage pole file: %s\n", file);
 		exit (EXIT_FAILURE);
 	}
 
@@ -137,7 +137,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	/* Extend oldest stage pole back to t_max Ma */
 
 	if ((*t_max) > 0.0 && e[0].t_start < (*t_max)) {
-		fprintf (stderr, "litspotter: Extending oldest stage pole back to %lg Ma\n", (*t_max));
+		if (verbose) fprintf (stderr, "libspotter: Extending oldest stage pole back to %lg Ma\n", (*t_max));
 
 		e[0].t_start = (*t_max);
 		e[0].duration = e[0].t_start - e[0].t_stop;
