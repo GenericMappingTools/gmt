@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.131 2004-06-25 22:39:01 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.132 2004-07-15 20:09:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4386,7 +4386,7 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 */
 
 
-void	GMT_bcr_init(struct GRD_HEADER *grd, int *pad, int bilinear, struct GMT_BCR *bcr)
+void	GMT_bcr_init(struct GRD_HEADER *grd, int *pad, int bilinear, double threshold, struct GMT_BCR *bcr)
                        
    	      	/* padding on grid, as given to read_grd2 */
    	         	/* T/F we only want bilinear  */
@@ -4397,6 +4397,7 @@ void	GMT_bcr_init(struct GRD_HEADER *grd, int *pad, int bilinear, struct GMT_BCR
 
 	/* Initialize bilinear:  */
 	bcr->bilinear = bilinear;
+	bcr->threshold = threshold;
 
 	/* Initialize ioff, joff, mx, my according to grd and pad:  */
 	bcr->ioff = pad[0];
@@ -4692,7 +4693,7 @@ double	GMT_get_bcr_z(struct GRD_HEADER *grd, double xx, double yy, float *data, 
 	   or bicubic) at xx, yy.  */
 
 	int	i, j, vertex, value;
-	double	x, y, retval;
+	double	x, y, retval, wsum;
 	
 	if (xx < grd->x_min || xx > grd->x_max) return(GMT_d_NaN);
 	if (yy < grd->y_min || yy > grd->y_max) return(GMT_d_NaN);
@@ -4723,17 +4724,23 @@ double	GMT_get_bcr_z(struct GRD_HEADER *grd, double xx, double yy, float *data, 
 			return(bcr->nodal_value[3][0]);
 	}
 
-	if (bcr->nan_condition) return(GMT_d_NaN);
-
 	GMT_get_bcr_cardinals(x, y, bcr);
 
-	retval = 0.0;
+	retval = wsum = 0.0;
 	if (bcr->bilinear) {
 		for (vertex = 0; vertex < 4; vertex++) {
-			retval += (bcr->nodal_value[vertex][0] * bcr->bl_basis[vertex]);
+			if (!GMT_is_dnan (bcr->nodal_value[vertex][0])) {
+				retval += (bcr->nodal_value[vertex][0] * bcr->bl_basis[vertex]);
+				wsum += bcr->bl_basis[vertex];
+			}
 		}
-		return(retval);
+		return ( (wsum >= bcr->threshold) ? retval : GMT_d_NaN);
 	}
+	
+	/* Only get here for bicubic interpolation */
+	
+	if (bcr->nan_condition) return(GMT_d_NaN);
+
 	for (vertex = 0; vertex < 4; vertex++) {
 		for (value = 0; value < 4; value++) {
 			retval += (bcr->nodal_value[vertex][value]*bcr->bcr_basis[vertex][value]);

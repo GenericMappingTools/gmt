@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.h,v 1.6 2004-05-04 20:33:34 pwessel Exp $
+ *	$Id: gmt_bcr.h,v 1.7 2004-07-15 20:09:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -42,6 +42,7 @@ struct GMT_BCR {	/* Used mostly in gmt_support.c */
 	double	rx_inc;			/* 1.0 / grd.x_inc  */
 	double	ry_inc;			/* 1.0 / grd.y_inc  */
 	double	offset;			/* 0 or 0.5 for grid or pixel registration  */
+	double	threshold;		/* sum of cardinals must >= threshold in bilinear; else NaN */
 /* If we later want to estimate of dz/dx or dz/dy, we will need [4][4] basis for these  */
 	int	ij_move[4];		/* add to ij of zero vertex to get other vertex ij  */
 	int	i;			/* Location of current nodal_values  */
@@ -54,7 +55,7 @@ struct GMT_BCR {	/* Used mostly in gmt_support.c */
 	int	my;			/* Ditto  */
 };
 
-EXTERN_MSC void GMT_bcr_init (struct GRD_HEADER *grd, int *pad, int bilinear, struct GMT_BCR *bcr);
+EXTERN_MSC void GMT_bcr_init (struct GRD_HEADER *grd, int *pad, int bilinear, double threshold, struct GMT_BCR *bcr);
 EXTERN_MSC double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data,  struct GMT_EDGEINFO *edgeinfo, struct GMT_BCR *bcr);		/* Compute z(x,y) from bcr structure  */
 
 /*----------------------------------------------------------------
