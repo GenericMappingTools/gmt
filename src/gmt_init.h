@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.41 2004-04-20 18:29:36 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.42 2004-04-24 01:30:00 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -52,6 +52,8 @@ char *GMT_media_name[GMT_N_MEDIA] = {		/* Names of all paper formats */
 };
 
 struct GMT_HASH GMT_rgb_hashnode[GMT_N_COLOR_NAMES];/* Used to translate colornames to r/g/b */
+
+struct GMT_HASH GMT_month_hashnode[12];		/* Used to translate months to 1-12 */
 
 char *GMT_color_name[GMT_N_COLOR_NAMES] = {	/* Names of X11 colors */
 #include "gmt_colornames.h"

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.62 2004-04-22 18:31:18 pwessel Exp $
+ *	$Id: gmt.h,v 1.63 2004-04-24 01:29:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -363,8 +363,8 @@ struct GMT_TIME_SYSTEM {
 };
 
 struct GMT_TIME_LANGUAGE {	/* Language-specific text strings for calendars */
-	char month_name[12][3][16];	/* Full, short, and 1-char month names */
-	char day_name[7][3][16];	/* Full, short, and 1-char weekday names */
+	char month_name[3][12][16];	/* Full, short, and 1-char month names */
+	char day_name[3][7][16];	/* Full, short, and 1-char weekday names */
 	char week_name[3][16];		/* Full, short, and 1-char versions of the word Week */
 };
 	
@@ -464,6 +464,7 @@ EXTERN_MSC char **GMT_user_media_name;
 EXTERN_MSC struct GMT_MEDIA *GMT_user_media;
 EXTERN_MSC int GMT_n_user_media;
 EXTERN_MSC char *GMT_weekdays[];
+EXTERN_MSC struct GMT_HASH GMT_month_hashnode[12];
 EXTERN_MSC struct GMT_TIME_SYSTEM GMT_time_system[];
 EXTERN_MSC struct GMT_TIME_LANGUAGE GMT_time_language;
 EXTERN_MSC struct GMT_PEN_NAME GMT_penname[];

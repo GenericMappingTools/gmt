@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.122 2004-04-23 01:45:42 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.123 2004-04-24 01:30:00 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -100,6 +100,8 @@ double save_annot_size[2], save_label_size, save_header_size;
 double save_annot_offset[2], save_label_offset, save_header_offset, save_tick_length, save_frame_width;
 BOOLEAN GMT_getuserpath (char *stem, char *path);
 BOOLEAN GMT_primary;
+char month_names[12][16];
+
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 	
 void GMT_explain_option (char option)
@@ -2416,15 +2418,15 @@ void GMT_get_time_language (char *name)
 		if (line[0] == '#' || line[0] == '\n') continue;
 		sscanf (line, "%c %d %s %s %s", &dwu, &i, full, abbrev, c);
 		if (dwu == 'M') {	/* Month record */
-			strncpy (GMT_time_language.month_name[i-1][0], full, 16);
-			strncpy (GMT_time_language.month_name[i-1][1], abbrev, 16);
-			strncpy (GMT_time_language.month_name[i-1][2], c, 16);
+			strncpy (GMT_time_language.month_name[0][i-1], full, 16);
+			strncpy (GMT_time_language.month_name[1][i-1], abbrev, 16);
+			strncpy (GMT_time_language.month_name[2][i-1], c, 16);
 			nm += i;
 		}
 		else if (dwu == 'W') {	/* Weekday record */
-			strncpy (GMT_time_language.day_name[i-1][0], full, 16);
-			strncpy (GMT_time_language.day_name[i-1][1], abbrev, 16);
-			strncpy (GMT_time_language.day_name[i-1][2], c, 16);
+			strncpy (GMT_time_language.day_name[0][i-1], full, 16);
+			strncpy (GMT_time_language.day_name[1][i-1], abbrev, 16);
+			strncpy (GMT_time_language.day_name[2][i-1], c, 16);
 			nw += i;
 		}
 		else {			/* Week name record */
@@ -2439,6 +2441,12 @@ void GMT_get_time_language (char *name)
 		fprintf (stderr, "GMT Error: Mismatch between expected and actual contents in %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
+	
+	for (i = 0; i < 12; i++) {	/* Get upper-case abbreviated month names for i/o */
+		strcpy (month_names[i], GMT_time_language.month_name[1][i]);
+		GMT_str_toupper (month_names[i]);
+	}
+	GMT_hash_init (GMT_month_hashnode, (char **)month_names, 12, 12);
 }
 	
 void GMT_setshorthand (void) {/* Read user's .gmt_io file and initialize shorthand notation */
