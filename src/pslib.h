@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.8 2001-10-01 23:26:08 pwessel Exp $
+ *	$Id: pslib.h,v 1.9 2001-10-02 21:32:52 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -123,6 +123,7 @@ EXTERN_MSC void ps_vector(double xtail, double ytail, double xtip, double ytip, 
 EXTERN_MSC unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN invert, BOOLEAN monochrome, BOOLEAN colorize, int f_rgb[], int b_rgb[]);
 EXTERN_MSC void ps_words (double x, double y, char **text, int n_words, double line_space, double par_width, int par_just, int font, int font_size, double angle, int rgb[3], int justify, int draw_box, double x_off, double y_off, double x_gap, double y_gap, int boxpen_width, char *boxpen_texture, int boxpen_offset, int boxpen_rgb[], int vecpen_width, char *vecpen_texture, int vecpen_offset, int vecpen_rgb[], int boxfill_rgb[3]);
 EXTERN_MSC void ps_setline(int linewidth);
+EXTERN_MSC void ps_textdim (char *xdim, char *ydim, int pointsize, int font, char *text, int key);
 
 EXTERN_MSC void ps_set_length (char *param, double value);
 EXTERN_MSC void ps_set_height (char *param, int fontsize);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.24 2001-10-02 21:32:52 pwessel Exp $
+ *	$Id: pslib.c,v 1.25 2001-10-02 21:34:41 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1420,7 +1420,6 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		fprintf (ps.fp, "/c {P V C F U N} def\n");
 		fprintf (ps.fp, "/d {P V C F U S} def\n");
 		fprintf (ps.fp, "/p {P S} def\n");
-		fprintf (ps.fp, "/PSL_get_stringdim {0 0 M true charpath flattenpath pathbbox N exch 2 {3 1 roll sub abs} repeat} def\n");	/* Leaves xdim, ydim on stack */
 	
 		/* Define font macros (see pslib.h for details on how to add fonts) */
 		

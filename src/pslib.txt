@@ -539,7 +539,9 @@ meaning to ps_text. @~ toggles between current font and the Mathematical Symbols
 @- turns subscript on/off, @+ turns superscript on/off, @# turns small caps
 on/off, and @\\ will make a composite character of the following two character.
 Give fontsize in points (72 points = 1 inch).  Normally, the text is typed using solid characters.
-To draw outline characters, set \fIform\fP == 1.
+To draw outline characters, set \fIform\fP == 1.  If \fIpointsize\fP is negative it means
+that the current point has already been set before \fBps_text\fP was called and that
+(\fIx,y\fP) should be ignored.
 .RE
 .IP
 void \fBps_textbox\fR (\fIx, y, pointsize, text, angle, justify, outline, dx, dy, rgb\fP)
