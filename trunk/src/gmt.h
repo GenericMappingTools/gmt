@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.14 2001-08-23 23:17:08 pwessel Exp $
+ *	$Id: gmt.h,v 1.15 2001-08-27 18:10:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -356,7 +356,6 @@ struct BCR {	/* Used mostly in gmt_support.c */
 	int	mx;			/* Padded array dimension  */
 	int	my;			/* Ditto  */
 };
-
 
 /*--------------------------------------------------------------------*/
 /*	External variables for misc purposes */
