@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.9 2004-06-14 23:39:00 pwessel Exp $
+#	$Id: Makefile,v 1.10 2004-06-14 23:39:26 pwessel Exp $
 #
 # makefile for x2sys directory
 #
@@ -10,7 +10,7 @@ CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I../mgg -I$(NETCDF)/include
 ALLLIB	= -L../mgg -lgmt_mgg -L.. -L$(libdir) -lgmt -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)
 
 XSYSTEM_H	= x2sys.h
-XSYSTEM_C	= x2sys_init.c x2sys_bin.c x2sys_get.c x2sys_binlist.c x2sys_datalist.c x2sys_cross.c
+XSYSTEM_C	= x2sys_init.c x2sys_put.c x2sys_get.c x2sys_binlist.c x2sys_datalist.c x2sys_cross.c
 
 XSYSTEM_O	= ${XSYSTEM_C:.c=.o}
 

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.10 2004-06-09 17:45:21 pwessel Exp $
+ *	$Id: x2sys.c,v 1.11 2004-06-14 23:39:00 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -13,7 +13,7 @@
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU General Public License for more details.
  *
- *      Contact info: www.soest.hawaii.edu/wessel
+ *      Contact info: www.soest.hawaii.edu/pwessel
  *--------------------------------------------------------------------*/
 /* x2sys.c contains the source code for the X2SYS crossover library
  * libx2sys.a.  The code is copylefted under the GNU Public Library
@@ -71,15 +71,47 @@ char *x2sys_header = "> %s %d %s %d\n";
 void x2sys_set_home (void);
 int x2sys_record_length (struct X2SYS_INFO *s);
 
+void x2sys_path (char *fname, char *path)
+{
+	FILE *fp;
+	char file[BUFSIZ];
+
+	sprintf (path, "%s%c%s", X2SYS_HOME, DIR_DELIM, fname);
+}
+
 FILE *x2sys_fopen (char *fname, char *mode)
 {
 	FILE *fp;
+	char file[BUFSIZ];
 
-	if ((fp = fopen (fname, mode)) == NULL) {
-		fprintf (stderr, "x2sys: Error from fopen on %s using mode %s\n", fname, mode);
-		exit (EXIT_FAILURE);
+	if (mode[0] == 'w') {	/* Writing: Do this in X2SYS_HOME */
+		x2sys_path (fname, file);
+		if ((fp = fopen (file, mode)) == NULL) {	/* Not in X2SYS_HOME directory either */
+			fprintf (stderr, "x2sys: Error from fopen on %s using mode %s\n", file, mode);
+			exit (EXIT_FAILURE);
+		}
+	}
+	else {			/* Reading: Try both current directory and X2SYS_HOME */
+		if ((fp = fopen (fname, mode)) == NULL) {	/* Not in current directory */
+			x2sys_path (fname, file);
+			if ((fp = fopen (file, mode)) == NULL) {	/* Not in X2SYS_HOME directory either */
+				fprintf (stderr, "x2sys: Error from fopen on %s using mode %s\n", fname, mode);
+				exit (EXIT_FAILURE);
+			}
+		}
 	}
 	return (fp);
+}
+
+int x2sys_access (char *fname,  int mode)
+{
+	int k;
+	char file[BUFSIZ];
+	x2sys_path (fname, file);
+	if ((k = access (file, mode))) {	/* Not in X2SYS_HOME directory */
+		k = access (fname, mode);	/* Try in current directory */
+	}
+	return (k);
 }
 
 void x2sys_fclose (char *fname, FILE *fp)
@@ -459,8 +491,8 @@ void x2sys_set_home (void)
 		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), 1, "x2sys_set_home");
 		strcpy (X2SYS_HOME, this);
 	}
-	else if ((this = getenv ("GMTHOME")) != CNULL) {	/* Use GMT path */
-		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 11), 1, "x2sys_set_home");
+	else if ((this = getenv ("GMTHOME")) != CNULL) {	/* Assume GMT path */
+		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 13), 1, "x2sys_set_home");
 		sprintf (X2SYS_HOME, "%s%cshare%cx2sys\0", this, DIR_DELIM, DIR_DELIM);
 	}
 	else {	/* Set default path */
@@ -711,3 +743,185 @@ int x2sys_read_list (char *file, char ***list)
 
 	return (n);
 }
+
+int x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B)
+{
+	char tag_file[BUFSIZ], line[BUFSIZ], *p, *sfile;
+	int i, geodetic, error = 0;
+	BOOLEAN geographic = FALSE;
+	FILE *fp;
+	
+	memset ((void *)B, 0, sizeof (struct X2SYS_BIX));
+	B->bin_x = B->bin_y = 1.0;
+	B->x_min = 0.0;	B->x_max = 360.0;	B->y_min = -90.0;	B->y_max = +90.0;
+	
+	sprintf (tag_file, "%s.tag", TAG);
+	if ((fp = x2sys_fopen (tag_file, "r")) == NULL) {
+		fprintf (stderr,"%s: Could not open file %s\n", GMT_program, tag_file);
+		exit (EXIT_FAILURE);
+	}
+	while (fgets (line, BUFSIZ, fp) && line[0] == '#');	/* Skip comment records */
+	
+	GMT_processed_option[8] = FALSE;	/* In case -R has been processed before */
+	p = strtok (line, " \t");
+	while (p) {	/* Process the -D -I -R -G arguments from the header */
+		if (p[0] == '-') {
+			switch (p[1]) {
+				/* Common parameters */
+				case 'R':
+					error += GMT_get_common_args (p, &B->x_min, &B->x_max, &B->y_min, &B->y_max);
+					break;
+				
+				/* Supplemental parameters */
+				
+				case 'D':
+					sfile = &p[2];
+					break;
+				case 'G':	/* Geographical coordinates, set discontinuity */
+					geographic = TRUE;
+					geodetic = 0;
+					if (p[2] == 'd') geodetic = 2;
+					break;
+				case 'I':
+					if (p[2]) GMT_getinc (&p[2], &B->bin_x, &B->bin_y);
+					break;
+			}
+		}
+		p = strtok (NULL, " \t");
+	}
+	x2sys_fclose (tag_file, fp);
+
+	*s = x2sys_initialize (sfile, &GMT_io);	/* Initialize X2SYS and info structure */
+
+	if (geographic) {
+		(*s)->geographic = TRUE;
+		(*s)->geodetic = geodetic;	/* Override setting */
+	}
+}
+
+void x2sys_bix_init (struct X2SYS_BIX *B, BOOLEAN alloc)
+{
+	B->i_bin_x = 1.0 / B->bin_x;
+	B->i_bin_y = 1.0 / B->bin_y;
+	B->nx_bin = irint ((B->x_max - B->x_min) * B->i_bin_x);
+	B->ny_bin = irint ((B->y_max - B->y_min) * B->i_bin_y);
+	B->nm_bin = B->nx_bin * B->ny_bin;
+	if (alloc) B->binflag = (unsigned int *) GMT_memory (VNULL, (size_t)B->nm_bin, sizeof (unsigned int), GMT_program);
+}		
+
+struct X2SYS_BIX_TRACK_INFO *x2sys_bix_make_entry (char *name, int id_no, int flag)
+{
+	struct X2SYS_BIX_TRACK_INFO *I;
+	I = (struct X2SYS_BIX_TRACK_INFO *) GMT_memory (VNULL, (size_t)1, sizeof (struct X2SYS_BIX_TRACK_INFO), GMT_program);
+	I->trackname = (char *) GMT_memory (VNULL, (size_t)(strlen(name)+1), sizeof (char), GMT_program);
+	strcpy (I->trackname, name);
+	I->track_id = id_no;
+	I->flag = flag;
+	I->next_info = NULL;
+	return (I);
+}
+
+struct X2SYS_BIX_TRACK *x2sys_bix_make_track (int id, int flag)
+{
+	struct X2SYS_BIX_TRACK *T;
+	T = (struct X2SYS_BIX_TRACK *) GMT_memory (VNULL, (size_t)1, sizeof (struct X2SYS_BIX_TRACK), GMT_program);
+	T->track_id = id;
+	T->track_flag = flag;
+	T->next_track = NULL;
+	return (T);
+}
+
+int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode)
+{
+	/* mode = 0 gives linked list, mode = 1 gives fixed array */
+	int id, flag, last_id = -1;
+	size_t n_alloc = GMT_CHUNK;
+	char track_file[BUFSIZ], track_path[BUFSIZ], line[BUFSIZ], name[BUFSIZ];
+	FILE *ftrack;
+	struct X2SYS_BIX_TRACK_INFO *this_info;
+	
+	sprintf (track_file, "%s_tracks.d", TAG);
+	x2sys_path (track_file, track_path);
+
+	if ((ftrack = GMT_fopen (track_path, "r")) == NULL) {
+		fprintf (stderr, "%s: Could not find %s\n", GMT_program, track_file);
+		exit (EXIT_FAILURE);
+	}
+
+	
+	if (mode == 1)
+		B->head = (struct X2SYS_BIX_TRACK_INFO *) GMT_memory (VNULL, n_alloc, sizeof (struct X2SYS_BIX_TRACK_INFO), GMT_program);
+	else
+		B->head = this_info = x2sys_bix_make_entry ("-", 0, 0);
+		
+	fgets (line, BUFSIZ, ftrack);	/* Skip header record */
+	while (fgets (line, BUFSIZ, ftrack)) {
+		sscanf (line, "%s %d %d", name, &id, &flag);
+		if (mode == 1) {
+			if (id >= n_alloc) {
+				n_alloc += GMT_CHUNK;
+				B->head = (struct X2SYS_BIX_TRACK_INFO *) GMT_memory ((void *)B->head, n_alloc, sizeof (struct X2SYS_BIX_TRACK_INFO), GMT_program);
+			}
+			B->head[id].track_id = id;
+			B->head[id].flag = flag;
+			B->head[id].trackname = (char *) GMT_memory (VNULL, (size_t)(strlen(name)+1), sizeof (char), GMT_program);
+			strcpy (B->head[id].trackname, name);
+		}
+		else {
+			this_info->next_info = x2sys_bix_make_entry (name, id, flag);
+			this_info = this_info->next_info;
+		}
+		if (id > last_id) last_id = id;
+	}
+	GMT_fclose (ftrack);
+	last_id++;
+	if (mode == 1) B->head = (struct X2SYS_BIX_TRACK_INFO *) GMT_memory ((void *)B->head, (size_t)last_id, sizeof (struct X2SYS_BIX_TRACK_INFO), GMT_program);
+
+	return (last_id);
+}
+
+void x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B)
+{
+	char index_file[BUFSIZ], index_path[BUFSIZ];
+	FILE *fbin;
+	int index, no_of_tracks, i, id, flag;
+	
+	sprintf (index_file, "%s_index.b",  TAG);
+	x2sys_path (index_file, index_path);
+	
+	if ((fbin = GMT_fopen (index_path, "rb")) == NULL) {
+		fprintf (stderr,"%s: Could not open %s\n", GMT_program, index_path);
+		exit (EXIT_FAILURE);
+	}
+
+	B->base = (struct X2SYS_BIX_DATABASE *) GMT_memory (VNULL, (size_t)B->nm_bin, sizeof (struct X2SYS_BIX_DATABASE), GMT_program);
+
+	while ((fread ((void *)(&index), sizeof (int), (size_t)1, fbin)) == 1) {
+		fread ((void *)(&no_of_tracks), sizeof (int), (size_t)1, fbin);
+		B->base[index].first_track = B->base[index].last_track = x2sys_bix_make_track (0, 0);
+		for (i = 0; i < no_of_tracks; i++) {
+			fread ((void *)(&id), sizeof (int), (size_t)1, fbin);
+			fread ((void *)(&flag), sizeof (int), (size_t)1, fbin);
+			B->base[index].last_track->next_track = x2sys_bix_make_track (id, flag);
+			B->base[index].last_track = B->base[index].last_track->next_track;
+			B->base[index].n_tracks++;
+		}
+	}
+	GMT_fclose (fbin);
+}
+
+int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B)
+{
+	int index;
+	
+	*j = (int)floor ((y - B->y_min) * B->i_bin_y);
+	*i = (int)floor ((x - B->x_min)  * B->i_bin_x);
+	index = (*j) * B->nx_bin + (*i);
+	if (index >= B->nm_bin) {
+		fprintf (stderr, "x2sys_binlist: Index (%d) outside range implied by -R -I! [0-%d>\n", index, B->nm_bin);
+		exit (EXIT_FAILURE);
+	}
+	
+	return (index);
+}
+

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.6 2004-06-09 17:45:21 pwessel Exp $
+ *	$Id: x2sys.h,v 1.7 2004-06-14 23:39:00 pwessel Exp $
  *
  *      Copyright (c) 1999-2004 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -13,7 +13,7 @@
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU General Public License for more details.
  *
- *      Contact info: www.soest.hawaii.edu/wessel
+ *      Contact info: www.soest.hawaii.edu/pwessel
  *--------------------------------------------------------------------*/
 /* x2sys.h contains the declaration for the X2SYS and XOVER structures
  * used in the XSYSTEM programs
@@ -63,6 +63,15 @@
 
 #include "gmt.h"
 #include "gmt_mgg.h"
+
+#ifdef WIN32
+#define _chmod(path,mode) chmod(path,mode)
+extern int _chmod (const char *path, int mode);
+#else
+#include <sys/stat.h>
+#endif
+
+#define S_RDONLY 0000444
 
 #define X2SYS_VERSION "1.1"
 
@@ -154,6 +163,42 @@ struct X2SYS_FILE_INFO {
 	char name[32];		/* Name of cruise or agency */
 };
 
+struct X2SYS_BIX {
+	/* Information for the track binindex setup */
+	double x_min, x_max;	/* Left/Right edge of region */
+	double y_min, y_max;	/* Bottom/Top edge of region */
+	double bin_x;		/* Spacing between x bins */
+	double bin_y;		/* Spacing between y bins */
+	double i_bin_x;		/* 1/dx */
+	double i_bin_y;		/* 1/dy */
+	int nx_bin;		/* Number of x bins */
+	int ny_bin;		/* Number of y bins */
+	int nm_bin;		/* Total number of bins */
+	unsigned int *binflag;	/* The bin array */
+	struct X2SYS_BIX_DATABASE *base;
+	struct X2SYS_BIX_TRACK_INFO *head;
+};
+
+struct X2SYS_BIX_DATABASE {
+	int bix;
+	int n_tracks;
+	struct X2SYS_BIX_TRACK *first_track, *last_track;
+};
+
+struct X2SYS_BIX_TRACK {
+	int track_id;
+	int track_flag;
+	struct X2SYS_BIX_TRACK *next_track;
+};
+	
+struct X2SYS_BIX_TRACK_INFO {
+	char *trackname;
+	int track_id;
+	int flag;
+	struct X2SYS_BIX_TRACK_INFO *next_info;
+};
+
+
 /* Global variables used by x2sys functions */
 
 EXTERN_MSC char *X2SYS_HOME;
@@ -165,6 +210,8 @@ EXTERN_MSC char *x2sys_header;
 /* Function prototypes.  These can be accessed in user programs */
 
 EXTERN_MSC FILE *x2sys_fopen (char *fname, char *mode);
+EXTERN_MSC int x2sys_access (char *fname, int mode);
+EXTERN_MSC void x2sys_path (char *fname, char *path);
 
 EXTERN_MSC int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G);
 EXTERN_MSC int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
@@ -185,4 +232,12 @@ EXTERN_MSC void x2sys_free_data (double **data, int n);
 EXTERN_MSC void x2sys_pick_fields (char *string, struct X2SYS_INFO *s);
 
 EXTERN_MSC struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G);
+
+EXTERN_MSC int x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B);
+EXTERN_MSC void x2sys_bix_init (struct X2SYS_BIX *B, BOOLEAN alloc);
+EXTERN_MSC struct X2SYS_BIX_TRACK_INFO *x2sys_bix_make_entry (char *name, int id_no, int flag);
+EXTERN_MSC struct X2SYS_BIX_TRACK *x2sys_bix_make_track (int id, int flag);
+EXTERN_MSC int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode);
+EXTERN_MSC void x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B);
+EXTERN_MSC int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B);
 
