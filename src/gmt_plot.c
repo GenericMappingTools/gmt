@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.109 2004-04-20 19:01:23 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.110 2004-04-22 18:31:18 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3872,7 +3872,7 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 {
 	int i, j, jj, k, *rgb, n_a_ticks[9], n_f_ticks[9], unit;
 	double dlon, x1, x2, dummy, a, b, tx, ty, off, f_len, a_len, x_left, bar_length, x_label, y_label;
-	double xx[4], yy[4], bx[4], by[4], base, d_base, width, half, bar_width, dx_f, dx_a;
+	double xx[4], yy[4], bx[4], by[4], base, d_base, width, half, bar_width, dx, dx_f, dx_a;
 	char txt[256], *this_label;
 	char label[3][16];
 	strcpy (label[0], "km");
@@ -3918,8 +3918,8 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 	half = 0.5 * width;
 	a_len = fabs (gmtdefs.map_scale_height);
 	off = a_len + 0.75 * gmtdefs.annot_offset[0];
+	x_left = ms->x0 - half;
 	
-	GMT_setpen (&gmtdefs.tick_pen);
 	if (ms->fancy) {	/* Fancy scale */
 		n_f_ticks[8] = 3;
 		n_f_ticks[1] = n_f_ticks[3] = n_f_ticks[7] = 4;
@@ -3936,9 +3936,20 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 		dx_a = width / n_a_ticks[i];
 		bar_width = 0.5 * fabs (gmtdefs.map_scale_height);
 		f_len = 0.75 * fabs (gmtdefs.map_scale_height);
+		if (ms->boxdraw || ms->boxfill) {	/* Draw a rectangle beneath the scale */
+			dx = 0.5 * irint (floor (d_log10 (ms->length))) * 0.4 * (gmtdefs.annot_font_size[0] / 72.0);
+			if (dx < 0.0) dx = 0.0;
+			xx[0] = xx[3] = x_left - 2.0 * gmtdefs.annot_offset[0] - dx;
+			xx[1] = xx[2] = x_left + width + 2.0 * gmtdefs.annot_offset[0] + dx;
+			yy[0] = yy[1] = ms->y0 - 1.5 * a_len - gmtdefs.annot_font_size[0] / 72.0 - ((ms->justify == 'b') ? fabs(gmtdefs.label_offset) + 0.85 * gmtdefs.label_font_size / 72.0: 0.0);
+			yy[2] = yy[3] = ms->y0 + 1.5 * a_len + ((ms->justify == 't') ? fabs(gmtdefs.label_offset) + gmtdefs.annot_font_size[0] / 72.0: 0.0);
+			GMT_2D_to_3D (xx, yy, project_info.z_level, 4);
+			if (ms->boxdraw) GMT_setpen (&ms->pen);
+			GMT_fill (xx, yy, 4, &ms->fill, ms->boxdraw);
+		}
+		GMT_setpen (&gmtdefs.tick_pen);
 		yy[2] = yy[3] = ms->y0;
 		yy[0] = yy[1] = ms->y0 - bar_width;
-		x_left = ms->x0 - half;
 		GMT_xyz_to_xy (x_left, ms->y0 - f_len, project_info.z_level, &a, &b);
 		ps_plot (a, b, 3);
 		GMT_xyz_to_xy (x_left, ms->y0, project_info.z_level, &a, &b);
@@ -3995,6 +4006,18 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 	}
 	else {	/* Simple scale */
 	
+		if (ms->boxdraw || ms->boxfill) {	/* Draw a rectangle beneath the scale */
+			dx = 0.5 * irint (floor (d_log10 (ms->length))) * 0.4 * (gmtdefs.annot_font_size[0] / 72.0);
+			if (dx < 0.0) dx = 0.0;
+			xx[0] = xx[3] = x_left - 2.0 * gmtdefs.annot_offset[0] - dx;
+			xx[1] = xx[2] = x_left + width + 2.0 * gmtdefs.annot_offset[0] + dx;
+			yy[0] = yy[1] = ms->y0 - 1.5 * a_len - gmtdefs.annot_font_size[0] / 72.0;
+			yy[2] = yy[3] = ms->y0 + 1.5 * a_len;
+			GMT_2D_to_3D (xx, yy, project_info.z_level, 4);
+			if (ms->boxdraw) GMT_setpen (&ms->pen);
+			GMT_fill (xx, yy, 4, &ms->fill, ms->boxdraw);
+		}
+		GMT_setpen (&gmtdefs.tick_pen);
 		sprintf (txt, "%g %s", ms->length, label[unit]);
 		GMT_xyz_to_xy (ms->x0 - half, ms->y0 - gmtdefs.map_scale_height, project_info.z_level, &a, &b);
 		ps_plot (a, b, 3);

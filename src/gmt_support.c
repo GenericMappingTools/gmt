@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.72 2004-04-20 19:01:23 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.73 2004-04-22 18:31:18 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4050,13 +4050,15 @@ int GMT_getscale (char *text, struct MAP_SCALE *ms)
 {
 	/* Pass text as &argv[i][2] */
 	
-	int j = 0, i, n_slash, error = 0, colon, k;
-	char txt_a[32], txt_b[32], txt_sx[32], txt_sy[32];
+	int j = 0, i, ns, n_slash, error = 0, colon, plus, k;
+	char txt_a[32], txt_b[32], txt_sx[32], txt_sy[32], txt_pf[2][128];
 	
 	ms->fancy = ms->gave_xy = FALSE;
 	ms->measure = ms->label[0] = '\0';
 	ms->length = 0.0;
 	ms->justify = 't';
+	ms->boxdraw = ms->boxfill = FALSE;
+	memcpy ((void *)ms->fill.rgb, (void *)GMT_no_rgb, 3 * sizeof (int));
 	
 	/* First deal with possible prefixes f and x (i.e., f, x, xf, fx( */
 	if (text[j] == 'f') ms->fancy = TRUE, j++;
@@ -4070,11 +4072,12 @@ int GMT_getscale (char *text, struct MAP_SCALE *ms)
 	/* Determine if we have the optional label/justify component specified */
 	
 	for (colon = -1, i = j; text[i] && colon < 0; i++) if (text[i] == ':') colon = i+1;
+	for (plus = -1, i = j; text[i] && plus < 0; i++) if (text[i] == '+') plus = i+1;
 	
-	if (n_slash == 4) {		/* -L[f][x]<x0>/<y0>/<lon>/<lat>/<length>[m|n|k][:label:<just>] */
+	if (n_slash == 4) {		/* -L[f][x]<x0>/<y0>/<lon>/<lat>/<length>[m|n|k][:label:<just>][+p<pen>]+[f<fill>] */
 		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%[^/]/%lf", txt_a, txt_b, txt_sx, txt_sy, &ms->length);
 	}
-	else if (n_slash == 3) {	/* -L[f][x]<x0>/<y0>/<lat>/<length>[m|n|k][:label:<just>] */
+	else if (n_slash == 3) {	/* -L[f][x]<x0>/<y0>/<lat>/<length>[m|n|k][:label:<just>][+p<pen>]+[f<fill>] */
 		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%lf", txt_a, txt_b, txt_sy, &ms->length);
 	}
 	else {	/* Wrong number of slashes */
@@ -4086,8 +4089,21 @@ int GMT_getscale (char *text, struct MAP_SCALE *ms)
 		sscanf (&text[colon], "%[^:]:%c", ms->label, &ms->justify);
 		ms->measure = text[colon-2];
 	}
-	else
-		ms->measure = text[strlen(text)-1];
+	if (plus > 0) {	/* Get pen/fill for bacground rectangle */
+		ns = sscanf (&text[plus], "%[^+]+%s", txt_pf[0], txt_pf[1]);
+		if (colon <= 0) ms->measure = text[plus-2];
+		for (i = 0; i < ns; i++) {
+			if (txt_pf[i][0] == 'p') {	/* Pen specification */
+				error += GMT_getpen (&txt_pf[i][1], &ms->pen);
+				ms->boxdraw = TRUE;
+			}
+			else if (txt_pf[i][0] == 'f') {	/* Fill specification */
+				error += GMT_getfill (&txt_pf[i][1], &ms->fill);
+				ms->boxfill = TRUE;
+			}
+		}
+	}
+	if (!(colon > 0 || plus > 0)) ms->measure = text[strlen(text)-1];
 	if (ms->gave_xy) {	/* Convert user's x/y to inches */
 		ms->x0 = GMT_convert_units (txt_a, GMT_INCH);
 		ms->y0 = GMT_convert_units (txt_b, GMT_INCH);
