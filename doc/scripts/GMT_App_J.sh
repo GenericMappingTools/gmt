@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_J.sh,v 1.2 2001-04-03 16:06:39 pwessel Exp $
+#	$Id: GMT_App_J.sh,v 1.3 2004-01-10 02:34:54 pwessel Exp $
 #
 # Script to draw the impulse responses and transfer functions
 # for GMT cookbook Appendix_J.
@@ -591,7 +591,7 @@ $AWK '{ print $1, 0.5 * (1.0 + cos(6.283185307 * $1)) }' temp > tempc
 #
 $AWK '{ print $1, exp(-18.0 * $1 * $1) }' temp > tempg
 #
-gmtset ANOT_FONT Times-Roman ANOT_FONT_SIZE 10 HEADER_FONT Times-Roman HEADER_FONT_SIZE 14 LABEL_FONT Times-Roman LABEL_FONT_SIZE 12
+gmtset ANNOT_FONT Times-Roman ANNOT_FONT_SIZE 10 HEADER_FONT Times-Roman HEADER_FONT_SIZE 14 LABEL_FONT Times-Roman LABEL_FONT_SIZE 12
 psxy tempb -R-0.6/0.6/-0.1/1.1 -JX4i/2i -P -Ba0.5f0.1:"Distance (units of filter width)":/a0.2f0.1g1:"Relative amplitude":WeSn -K -W1p > GMT_imp_res.ps
 psxy tempc -R -JX -O -K -W1tap >> GMT_imp_res.ps
 psxy tempg -R -JX -O -K -W1top >> GMT_imp_res.ps

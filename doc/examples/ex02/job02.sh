@@ -1,13 +1,13 @@
 #!/bin/sh
 #		GMT EXAMPLE 02
 #
-#		$Id: job02.sh,v 1.5 2003-12-18 02:27:21 pwessel Exp $
+#		$Id: job02.sh,v 1.6 2004-01-10 02:34:54 pwessel Exp $
 #
 # Purpose:	Make two color images based gridded data
 # GMT progs:	gmtset grd2cpt grdgradient grdimage makecpt psscale pstext
 # Unix progs:	cat rm
 #
-gmtset HEADER_FONT_SIZE 30 OBLIQUE_ANOTATION 0
+gmtset HEADER_FONT_SIZE 30 OBLIQUE_ANNOTATION 0
 #get gridded data using GMT supplemental program grdraster
 #grdraster 1 -R160/20/220/30r -JOc190/25.5/292/69/4.5i -GHI_topo2.grd=0/0.001/0
 #grdraster 4 -R -JO -GHI_geoid2.grd

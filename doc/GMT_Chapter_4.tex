@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.30 2004-01-03 23:03:30 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.31 2004-01-10 02:34:54 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -120,7 +120,7 @@ undo the changes at the end of the script.  To change some of the
 be used.  E.g., to change the annotation font to 12 point Times-Bold
 we run \\
 
-\texttt{gmtset ANNOT\_FONT Times-Bold ANOT\_FONT\_SIZE 12} \\
+\texttt{gmtset ANNOT\_FONT Times-Bold ANNOT\_FONT\_SIZE 12} \\
 
 In addition to those parameters
 that directly affect the plot there are numerous parameters than
@@ -163,7 +163,7 @@ sometimes a number or character string immediately after the letter.
 Most of the programs take many of the same arguments like those
 related to setting the data region, the map projection, etc.
 The 15 switches in Table~\ref{tbl:switches} have the same meaning
-in all the programs (Some programs may not use all of them).
+in all the programs (allthough some programs may not use all of them).
 These options will be described here as well as in the manual pages,
 as is vital that you understand how to use these options.  We will present
 these options in order of importance (some are use alot more than others).
@@ -250,10 +250,10 @@ where papal authority was neither recognized not appreciated, adoption came more
 England finally adopted the new calendar in 1752, with eleven days removed from September. The additional day came because the old and
 new calendars disagreed on whether 1700 was a leap year, so the Julian calendar had to be adjusted by one more day.} are extrapolated
 backward.  Note that this is not historical.
-\item [Other coordinates:]  These are simply anything that is not geographic or calendar time related and are
+\item [Other coordinates:]  These are simply anything that is neither geographic nor calendar time related and are
 expected to be simple floating point values such as [$\pm$]{\it xxx.xxx}[E$|$e$|$D$|$d[$\pm$][xx]], i.e., regular or exponential
 notations, with the enhancement to understand FORTRAN double precision output which use D instead of E for exponents.
-These values are simple converted as they are to internal representation.  One exception is the concept
+These values are simply converted as they are to internal representation.  One exception is the concept
 of relative time which is read as a floating point offset from an absolute time reference point (epoch).  The unit and the
 epoch are specified with the {\bf TIME\_SYSTEM} parameter.  Relative time coordinates are expected when a coordinate transformation
 involving relative time has been selected or when the \Opt{f} switch has been used to indicate relative time coordinates.
@@ -360,7 +360,7 @@ The unit flag {\bf u} can take on one of 16 codes; these are listed in  Table~\r
 {\bf K}	&	ISO weekday & Plot name of weekday in selected language \\ \hline
 {\bf k}	&	weekday & Plot number of day in the week (1-7)  {see \bf TIME\_WEEK\_START}\\ \hline
 {\bf D}	&	date & Format annotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
-{\bf d}	&	day & Plot day of month (1--31) or day of year (1--366) {see \bf PLOT\_DATE\_FORMAT} \\
+{\bf d}	&	day & Plot day of month (1--31) or day of year (1--366) {see \bf PLOT\_DATE\_FORMAT} \\ \hline
 {\bf R}	&	day & Same as {\bf d}; annotations aligned with week ({\bf TIME\_WEEK\_START})\\ \hline
 {\bf H}	&	hour &	 Format annotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
 {\bf h}	&	hour &	 Plot as 2-digit integer (0--24) \\ \hline
@@ -483,7 +483,7 @@ the date format selects a month name, followed by one space and a two-digit day-
 
 \GMTfig[h]{GMT_-B_time2}{Cartesian time axis, example 2.}
 
-The third example presents 2 years, annotating both the years and every 3rd month.
+The third example presents two years, annotating both the years and every 3rd month.
 
 \input{scripts/GMT_-B_time3}
 
@@ -493,7 +493,7 @@ name only and {\bf ic}3{\bf O} says use the 1-character abbreviation of monthnam
 selected by {\bf TIME\_LANGUAGE}.
 \GMTfig[h]{GMT_-B_time3}{Cartesian time axis, example 3.}
 
-The fourth example (Figure~\ref{fig:GMT_-B_time4}) only shows a few hours of a day.  We select both upper and lower anotations, ask for a 12-hour
+The fourth example (Figure~\ref{fig:GMT_-B_time4}) only shows a few hours of a day.  We select both upper and lower annotations, ask for a 12-hour
 clock, and let time go from right to left:
 
 \input{scripts/GMT_-B_time4}
@@ -658,7 +658,7 @@ several consecutive columns have the same format you may specify a range of colu
 rather than a single column, e.e., 0-4 for the first 5 columns.  For example, if our
 input file has geographic coordinates (latitude, longitude) with absolute calendar
 coordinates in the columns 3 and 4, we would specify {\bf fi}0y,1x,3-4T.  All other columns
-as assumed to have the default, floating point format and need not be set individually.
+are assumed to have the default, floating point format and need not be set individually.
 The shorthand \Opt{f}[{\bf i}$|${\bf o}]{\bf g} means \Opt{f}[{\bf i}$|${\bf o}]0x,1y (geographic coordinates).
 
 \subsection{Number of Copies: The \Opt{c} option}
@@ -690,7 +690,7 @@ projection, specified as
 \vspace{\baselineskip} 
 
 \texttt{-Joc170W/25:30S/33W/56:20N/1:500000} \\ 
-
+\noindent
 then a subsequent \GMTprog{psxy} command to plot symbols only needs
 to state \Opt{J}o in order to activate the same projection.  In
 contrast, note that \Opt{J} by itself will pick the most recently used projection.
@@ -797,13 +797,13 @@ Most of the time, \GMT\ will know what kind of $x$ and $y$ coordinates it is rea
 a particular coordinate transformation or map projection.  However,
 there may be times when you must explicitly specify what you are
 providing as input using the \Opt{f} switch (see below). When binary data are expected (\Opt{b}) they must all
-be floating point numbers, however for ascii input there are numerous
+be floating point numbers, however for ASCII input there are numerous
 ways to encode data coordinates.  Valid input data are generally of the same form as the arguments to the \Opt{R} option (see Section~\ref{sec:R}),
 with the following additional flexibility for calendar data:
 
 Because of the widespread use of incompatible and ambiguous formats, the processing of input
 date components is guided by the template {\bf INPUT\_DATE\_FORMAT} in your
-\filename{.gmtdefaults4} file which by default is set to {\it yyyy-mm-dd}.  Y2K-challenged input data such as 29/05/89 can be processed by setting {\bf INPUT\_DATE\_FORMAT}
+\filename{.gmtdefaults4} file and by default set to {\it yyyy-mm-dd}.  Y2K-challenged input data such as 29/05/89 can be processed by setting {\bf INPUT\_DATE\_FORMAT}
 to dd/mm/yy.  A complete discription of possible formats is given in the \GMTprog{gmtdefaults}
 man page.  The {\it clock} string is more standardized but issues like 12- or 24-hour clocks complicate matters
 as well as the presence or absence of delimiters between fields.  Thus, the processing of input
@@ -815,7 +815,7 @@ values or just do a reformatting of the data will in general not know what to ex
 no way for the programs to know what kind of data other columns (beyond the leading $x$ and $y$ columns) contain.
 In such instances we must
 explicitly tell \GMT\ that we are feeding it data in the specific geographic or calendar formats (floating point
-data is assumed by default).  We specify the data type via the \Opt{f} option (which sets both input and output
+data are assumed by default).  We specify the data type via the \Opt{f} option (which sets both input and output
 formats; use \Opt{fi} and \Opt{fo} to set input and output separately).  For instance, to specify that the
 the first two columns are longitude and latitude, and that the third column (e.g., $z$) is absolute calendar time, we add
 \Opt{fi}0x,1y,2T to the command line.  For more details, see the man page for the program you need to use.
@@ -823,7 +823,7 @@ the first two columns are longitude and latitude, and that the third column (e.g
 \section{Output Data Formats}
 \index{Output!format}
 
-The numerical output from \GMT\ programs can be binary (when \Opt{bo} is used) or ascii [Default].
+The numerical output from \GMT\ programs can be binary (when \Opt{bo} is used) or ASCII [Default].
 In the latter case the issue of formatting becomes important.  \GMT\ provides extensive
 machinery for allowing just about any imaginable format to be used on output.  Analogous to
 the processing of input data, several templates guide the formatting process.  These are
@@ -854,7 +854,7 @@ cases not covered by these programs.  Some knowledge of
 directly into the plot file.  By default, \GMT\ will produce
 freeform \PS\ output with embedded printer directives.  To
 produce Encapsulated \PS\ (EPS) that can be imported into graphics programs such as
-\progname{IslandDraw} and Adobe \progname{Illustrator} for further
+\progname{IslandDraw}, \progname{CorelDraw}, \progname{Illustrator} or \progname{Freehand} for further
 embellishment, change the PAPER\_MEDIA setting in the \filename{.gmtdefaults4}
 file.  See Appendix C and the \GMTprog{gmtdefaults} man page for more details.
 
@@ -895,7 +895,7 @@ achieved by giving zero width, but the result is device-dependent.
 \item Gray scale. Specify a {\it gray} shade in the range 0--255 (linearly going from black [0] to white [255]).
 \item RGB. Specify {\it r}/{\it g}/{\it b}, each ranging from 0--255.  Here 0/0/0 is black and 255/255/255 is white.
 \item HSV. Specify {\it hue}/{\it saturation}/{\it value}, with the former in the 0--360 degree range while the latter
-two take on the range 0--1.  To use this color system you must set {\bf COLOR\_MODEL} to HSV.  You probably will want
+two take on the range 0--1.  To use this color system you must also set {\bf COLOR\_MODEL} to HSV.  You probably will want
 to read Appendix I as well.
 \item CMYK. Specify {\it cyan}/{\it magenta}/{\it yellow}/{\it black}, each ranging from 0--100\%.
 \end{enumerate}
@@ -942,7 +942,8 @@ symbols.  The fill may take two forms:
 
 In the first case we may specify a {\it gray} shade (0--255), RGB color
 ({\it r}/{\it g}/{\it b} all in the 0--255 range), HSV color ({\it hue}/{\it saturation}/{\it value}
-in the 0--360, 0--1, 0--1 range; to use this color system you must set {\bf COLOR\_MODEL} to HSV), or CMYK color ({\it cyan}/{\it magenta}/{\it yellow}/{\it black},
+in the 0--360, 0--1, 0--1 range; to use this color system you must also set {\bf COLOR\_MODEL} to HSV),
+or CMYK color ({\it cyan}/{\it magenta}/{\it yellow}/{\it black},
 each ranging from 0--100\%); in that respect it is similar to specifying the pen color
 settings.  The second form allows us to use a predefined bit-image pattern.
 {\it pattern} can either be a number in the range 1--90 or the name of a 1-,
@@ -983,7 +984,7 @@ colored images or shaded reliefs, need to be told what colors to use and
 over what {\it z}-range each color applies.  This is the purpose of the
 color palette table (cpt-file).  These files may also be used by \GMTprog{psxy}
 and \GMTprog{psxyz} to plot color-filled symbols.
-The colors may be specified either in the RGB (red, green, blue), CMYK- (cyan,
+The colors may be specified either in the RGB- (red, green, blue), CMYK- (cyan,
 magenta, yellow, black), or in the HSV-system (hue, saturation, value),
 and the parameter COLOR\_MODEL in the \filename{.gmtdefaults4} file must
 be set accordingly.  Using the RGB system, the format of the cpt-file is: 
@@ -1042,7 +1043,7 @@ consider
 100 &  255 &  0  &  0  &  200 &  255 &  255  &  0 \\
 \end{tabular} 
 \end{center}
-
+\noindent
 where slice $30 < z < 80$ is painted with pattern \# 16 at 200 dpi,
 slice $80 < z < 100$ is skipped, while slice $100 < z < 200$ is
 painted in a range of red to yellow, depending on the actual value

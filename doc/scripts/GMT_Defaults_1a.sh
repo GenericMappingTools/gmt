@@ -1,11 +1,11 @@
 #!/bin/sh
-#	$Id: GMT_Defaults_1a.sh,v 1.5 2003-04-14 21:56:56 pwessel Exp $
+#	$Id: GMT_Defaults_1a.sh,v 1.6 2004-01-10 02:34:54 pwessel Exp $
 #
-gmtset BASEMAP_TYPE fancy PLOT_DEGREE_FORMAT ddd:mm:ssF GRID_CROSS_SIZE 0.1i ANOT_FONT_SIZE +8p
+gmtset BASEMAP_TYPE fancy PLOT_DEGREE_FORMAT ddd:mm:ssF GRID_CROSS_SIZE 0.1i ANNOT_FONT_SIZE +8p
 psbasemap -R-60/-30/-10/10 -JM2.25i -Ba10f5g5WSne:."Plot Title": -P -K > GMT_Defaults_1a.ps
 pstext -R -JM -O -K -N << EOF >> GMT_Defaults_1a.ps
 -57.5 -14 7 0 1 RT BASEMAP_TYPE
--40 -14 7 0 1 RT ANOT_OFFSET
+-40 -14 7 0 1 RT ANNOT_OFFSET
 -62 -3 7 0 1 RT TICK_LENGTH
 -62 4 7 0 1 RB TICK_PEN
 -59 13 7 0 1 RB FRAME_WIDTH
