@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.2 2001-02-08 18:20:12 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.3 2001-02-09 00:44:10 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -31,8 +31,6 @@ EOF
 	exit
 fi
 
-#DIR=/home/gmt/gmt/www/gmt/images			# Where to place the updated image
-#DIR=/home/koolina/wessel			# Where to place the updated image
 MAIL=/home/aa1/wessel/nsmail/GMT.sbd/Registrations	# Where incoming registrations reside
 REGHOME=/home/koolina/wessel/GMTdev/GMT/registration	# Where to do the work
 
@@ -132,8 +130,7 @@ EOF
 	grep -v '^#' GMT_old_unique_sites.d | psxy -R -JM -O -K -Sc0.02 -G255/255/0 >> gmt_usage.ps
 	date +%x | awk '{print 0.1, 0.1, 10, 0, 0, "LB", $1}' | pstext -R0/5/0/5 -Jx1i -O -W255/255/255o >> gmt_usage.ps
 	convert -density 100x100 -crop 0x0 gmt_usage.ps gmt_usage.jpg
-#	mv -f gmt_usage.jpg $DIR
 	gmtset DOTS_PR_INCH 300 PAPER_MEDIA Letter
 	rm -f gmt_usage.ps
-	echo "GMT_usage_map.x: Placed new map (gmt_usage.jpg) in $DIR" >&2
+	echo "GMT_usage_map.x: Created new map (gmt_usage.jpg)" >&2
 fi
