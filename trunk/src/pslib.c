@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.36 2002-01-04 21:41:34 pwessel Exp $
+ *	$Id: pslib.c,v 1.37 2002-01-04 22:30:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,6 +43,7 @@
  * Updated June 16, 2000 by P. Wessel to add more encoded special characters.
  * Updated July 5, 2000 by P. Wessel to ensure that implementation limit on string length in images is not exceeded.
  * Updated April 24, 2001 by P. Wessel to ensure setpagedevice is only used with PS Level 2 or higher.
+ * Updated January 4, 2002 by P. Wessel to make all font size variables double instead of int.
  *
  * FORTRAN considerations:
  *	All floating point data are assumed to be DOUBLE PRECISION
@@ -191,7 +192,7 @@ void ps_arc_ (double *x, double *y, double *radius, double *az1, double *az2, in
 	 ps_arc (*x, *y, *radius, *az1, *az2, *status);
 }
 	
-void ps_axis (double x, double y, double length, double val0, double val1, double annotation_int, char *label, int annotpointsize, int side)
+void ps_axis (double x, double y, double length, double val0, double val1, double annotation_int, char *label, double annotpointsize, int side)
 {
 	int annot_justify, label_justify, i, j, ndig = 0;
 	int left = FALSE;
@@ -240,12 +241,12 @@ void ps_axis (double x, double y, double length, double val0, double val1, doubl
 		ps_text (xx, annot_off, annotpointsize, text, 0.0, annot_justify, 0);
 		val = val0 + i * annotation_int;
 	}
-	ps_text (0.5*length, label_off, (int) (annotpointsize*1.5), label, 0.0, label_justify, 0);
+	ps_text (0.5*length, label_off, annotpointsize*1.5, label, 0.0, label_justify, 0);
 	fprintf (ps.fp, "U\n\n");
 }
 
 /* fortran interface */
-void ps_axis_ (double *x, double *y, double *length, double *val0, double *val1, double *annotation_int, char *label, int *annotpointsize, int *side, int nlen)
+void ps_axis_ (double *x, double *y, double *length, double *val0, double *val1, double *annotation_int, char *label, double *annotpointsize, int *side, int nlen)
 {
 	ps_axis (*x, *y, *length, *val0, *val1, *annotation_int, label, *annotpointsize, *side);
 }
@@ -1952,12 +1953,12 @@ void ps_text_old (double x, double y, int pointsize, char *text, double angle, i
 }
 
 /* fortran interface */
-void ps_text_ (double *x, double *y, int *pointsize, char *text, double *angle, int *justify, int *form, int nlen)
+void ps_text_ (double *x, double *y, double *pointsize, char *text, double *angle, int *justify, int *form, int nlen)
 {
 	ps_text (*x, *y, *pointsize, text, *angle, *justify, *form);
 }
 
-void ps_textbox (double x, double y, int pointsize, char *text, double angle, int justify, int outline, double dx, double dy, int rgb[])
+void ps_textbox (double x, double y, double pointsize, char *text, double angle, int justify, int outline, double dx, double dy, int rgb[])
 {                   
 /* x,y = location of string
  * pointsize = fontsize in points
@@ -1992,16 +1993,16 @@ void ps_textbox (double x, double y, int pointsize, char *text, double angle, in
  		justify = -justify;
 	}
 	
- 	if (pointsize < 0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
-	ps_textdim ("PSL_dimx", "PSL_dimy", abs (pointsize), ps.font_no, &text[i], 1);			/* Set the string BB dimensions in PS */
- 	if (pointsize < 0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
+ 	if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
+	ps_textdim ("PSL_dimx", "PSL_dimy", fabs (pointsize), ps.font_no, &text[i], 1);			/* Set the string BB dimensions in PS */
+ 	if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
 	ps_set_length ("PSL_dx", dx);
 	ps_set_length ("PSL_dy", dy);
 	string = ps_prepare_text (&text[i]);	/* Check for escape sequences */
 	
   	/* Got to anchor point */
   	
-	if (pointsize > 0) {	/* Set a new anchor point */
+	if (pointsize > 0.0) {	/* Set a new anchor point */
 		ps.ix = irint (x * ps.scale);
 		ps.iy = irint (y * ps.scale);
 		fprintf (ps.fp, "V %d %d T ", ps.ix, ps.iy);
@@ -2031,12 +2032,12 @@ void ps_textbox (double x, double y, int pointsize, char *text, double angle, in
 }
 
 /* fortran interface */
-void ps_textbox_ (double *x, double *y, int *pointsize, char *text, double *angle, int *justify, int *outline, double *dx, double *dy, int *rgb, int nlen)
+void ps_textbox_ (double *x, double *y, double *pointsize, char *text, double *angle, int *justify, int *outline, double *dx, double *dy, int *rgb, int nlen)
 {
 	 ps_textbox (*x, *y, *pointsize, text, *angle, *justify, *outline, *dx, *dy, rgb);
 }
 
-void ps_textdim (char *xdim, char *ydim, int pointsize, int in_font, char *text, int key)
+void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *text, int key)
 {
 	/* key = 0: Will calculate the exact dimensions (xdim, ydim) of the given text string.
 	 * Because of possible escape sequences we need to examine the string
@@ -2162,7 +2163,7 @@ void ps_textdim (char *xdim, char *ydim, int pointsize, int in_font, char *text,
 	ps_free ((void *)string);
 }
 
-void ps_text (double x, double y, int pointsize, char *text, double angle, int justify, int form)
+void ps_text (double x, double y, double pointsize, char *text, double angle, int justify, int form)
 {
 	/* General purpose text plotter for single line of text.  For paragraphs, see ps_words.
 	* ps_text positions and justifies the text string according to the parameters given.
@@ -2204,18 +2205,18 @@ void ps_text (double x, double y, int pointsize, char *text, double angle, int j
 	}
  
  	if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
- 		if (pointsize < 0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
-		ps_textdim ("PSL_dimx", "PSL_dimy", abs (pointsize), ps.font_no, &text[i], 0);			/* Set the string dimensions in PS */
- 		if (pointsize < 0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
+ 		if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
+		ps_textdim ("PSL_dimx", "PSL_dimy", fabs (pointsize), ps.font_no, &text[i], 0);			/* Set the string dimensions in PS */
+ 		if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
 	}
 	
 	string = ps_prepare_text (&text[i]);	/* Check for escape sequences */
 	
- 	height = abs (pointsize) / ps.points_pr_unit;
+ 	height = fabs (pointsize) / ps.points_pr_unit;
   	
  	ps.npath = 0;
 	
-	if (pointsize > 0) {	/* Set a new anchor point */
+	if (pointsize > 0.0) {	/* Set a new anchor point */
 		ps.ix = irint (x * ps.scale);
 		ps.iy = irint (y * ps.scale);
 		fprintf (ps.fp, "%d %d M ", ps.ix, ps.iy);
@@ -3079,17 +3080,18 @@ int ps_write_rasheader (FILE *fp, struct rasterfile *h)
 	return (0);
 }
 
-void ps_words (double x, double y, char **text, int n_words, double line_space, double par_width, int par_just, int font, int font_size, double angle, int rgb[3], int justify, int draw_box, double x_off, double y_off, double x_gap, double y_gap, int boxpen_width, char *boxpen_texture, int boxpen_offset, int boxpen_rgb[], int vecpen_width, char *vecpen_texture, int vecpen_offset, int vecpen_rgb[], int boxfill_rgb[3])
+void ps_words (double x, double y, char **text, int n_words, double line_space, double par_width, int par_just, int font, double font_size, double angle, int rgb[3], int justify, int draw_box, double x_off, double y_off, double x_gap, double y_gap, int boxpen_width, char *boxpen_texture, int boxpen_offset, int boxpen_rgb[], int vecpen_width, char *vecpen_texture, int vecpen_offset, int vecpen_rgb[], int boxfill_rgb[3])
 {
-	int i, i1, i0, j, k, n, pj, error = 0, last_font, last_size, last_rgb[3];
+	int i, i1, i0, j, k, n, pj, error = 0, last_font, last_rgb[3];
 	int n_scan, after, color, found, last_k = -1;
 	int *rgb_list, *rgb_unique, n_rgb_unique;
 	int *font_list, *font_unique, n_font_unique;
 	size_t n_alloc, n_items;
 	BOOLEAN sub, super, small, plain_word = FALSE, under, escape;
 	char *c, line[BUFSIZ], *clean, test_char;
+	double last_size;
 	struct GMT_WORD **word;
-	struct GMT_WORD *add_word_part (char *word, int length, int fontno, int font_size, BOOLEAN sub, BOOLEAN super, BOOLEAN small, BOOLEAN under, int space, int rgb[]);
+	struct GMT_WORD *add_word_part (char *word, int length, int fontno, double font_size, BOOLEAN sub, BOOLEAN super, BOOLEAN small, BOOLEAN under, int space, int rgb[]);
 	FILE *fp;
 
 	sub = super = small = under = FALSE;
@@ -3204,7 +3206,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 							i1++;
 						}
 						else {
-							font_size = atoi (&clean[i1]);
+							font_size = atof (&clean[i1]);
 							while (clean[i1] != ':') i1++;
 							i1++;
 						}
@@ -3419,7 +3421,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 
 	fprintf (ps.fp, "\n%% Define array of word fontsizes:\n\n/PSL_size\n");
 	for (i = 0 ; i < (int)n_items; i++) {
-		fprintf (ps.fp, "%.1lf", word[i]->font_size);
+		fprintf (ps.fp, "%.2lf", word[i]->font_size);
 		(!((i+1)%20)) ? fputc ('\n', ps.fp) : fputc (' ', ps.fp);
 	}
 	if ((i%20)) fputc ('\n', ps.fp);
@@ -3594,13 +3596,13 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 }
 
 /* fortran interface */
-void ps_words_ (double *x, double *y, char **text, int *n_words, double *line_space, double *par_width, int *par_just, int* font, int *font_size, double *angle, int *rgb, int *justify, int *draw_box, double *x_off, double *y_off, double *x_gap, double *y_gap, int *boxpen_width, char *boxpen_texture, int *boxpen_offset, int *boxpen_rgb, int *vecpen_width, char *vecpen_texture, int *vecpen_offset, int *vecpen_rgb, int *boxfill_rgb, int n1, int n2, int n3) {
+void ps_words_ (double *x, double *y, char **text, int *n_words, double *line_space, double *par_width, int *par_just, int* font, double *font_size, double *angle, int *rgb, int *justify, int *draw_box, double *x_off, double *y_off, double *x_gap, double *y_gap, int *boxpen_width, char *boxpen_texture, int *boxpen_offset, int *boxpen_rgb, int *vecpen_width, char *vecpen_texture, int *vecpen_offset, int *vecpen_rgb, int *boxfill_rgb, int n1, int n2, int n3) {
 
 	ps_words (*x, *y, text, *n_words, *line_space, *par_width, *par_just, *font, *font_size, *angle, rgb, *justify, *draw_box, *x_off, *y_off, *x_gap, *y_gap, *boxpen_width, boxpen_texture, *boxpen_offset, boxpen_rgb, *vecpen_width, vecpen_texture, *vecpen_offset, vecpen_rgb, boxfill_rgb);
 
 }
 
-struct GMT_WORD *add_word_part (char *word, int length, int fontno, int font_size, BOOLEAN sub, BOOLEAN super, BOOLEAN small, BOOLEAN under, int space, int rgb[])
+struct GMT_WORD *add_word_part (char *word, int length, int fontno, double font_size, BOOLEAN sub, BOOLEAN super, BOOLEAN small, BOOLEAN under, int space, int rgb[])
 {
 	/* For flag: bits 1 and 2 give number of spaces to follow (0, 1, or 2)
 	 * bit 3 == 1 means leading TAB
@@ -3658,7 +3660,7 @@ void ps_set_length (char *param, double value)
 	fprintf (ps.fp, "/%s %d def\n", param, irint (value * ps.scale));
 }
 
-void ps_set_height (char *param, int fontsize)
+void ps_set_height (char *param, double fontsize)
 {
 	fprintf (ps.fp, "/%s %d def\n", param, irint (fontsize * ps.scale / ps.points_pr_unit));
 }

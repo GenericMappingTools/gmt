@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.32 2002-01-04 21:13:03 pwessel Exp $
+ *	$Id: gmt.h,v 1.33 2002-01-04 22:30:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -231,9 +231,9 @@ struct GMTDEFAULTS {
 	double annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */
 	double annot_min_spacing;	/* If an annotation is closer that this to an older annotation, the annotation is skipped [0.0] */
 	int annot_font;			/* Font for annotations [Helvetica] */
-	int annot_font_size;		/* Font size for annotations in points [14] */
+	double annot_font_size;		/* Font size for annotations in points [14] */
 	int annot_font2;		/* Font for upper annotations on time axis  [Helvetica] */
-	int annot_font2_size;		/* Font size for upper annotations on time axis in points [16] */
+	double annot_font2_size;	/* Font size for upper annotations on time axis in points [16] */
 	double annot_offset;		/* Distance between annotation and tickmarks [0.075] */
 	double annot_offset2;		/* Distance between upper and lower annotations [0.075] */
 	char basemap_axes[5];		/* Which axes to draw and annotate ["WESN"]  */
@@ -257,7 +257,7 @@ struct GMTDEFAULTS {
 	struct GMT_PEN grid_pen;	/* Pen attributes for gridlines [1] */
 	BOOLEAN gridfile_shorthand;	/* Use shorthand suffix notation for embedded formats [FALSE] */
 	int header_font;		/* Font for headers [Helvetica] */
-	int header_font_size;		/* Font size for headers in points [36] */
+	double header_font_size;	/* Font size for headers in points [36] */
 	double header_offset;		/* Distance between lowermost annotation (or label) and base of plot title [0.1875] */
 	double hsv_min_saturation;	/* For smallest or most negative intensity [1.0] */
 	double hsv_max_saturation;	/* For largest or most positive intensity [0.1] */
@@ -267,7 +267,7 @@ struct GMTDEFAULTS {
 	BOOLEAN io_header;		/* Input data has header records [FALSE] */
 	int n_header_recs;		/* number of header records [0] */
 	int label_font;			/* Font for labels [Helvetica] */
-	int label_font_size;		/* Font size for labels in points [24] */
+	double label_font_size;		/* Font size for labels in points [24] */
 	double label_offset;		/* Distance between lowermost annotation and top of label [0.1125] */
 	BOOLEAN last_page;		/* If TRUE, terminate plot system when done [TRUE] */
 	double line_step;		/* Maximum straight linesegment length for arcuate lines */

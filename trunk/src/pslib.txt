@@ -60,18 +60,18 @@ drawn.  \fIstatus\fP is a value from 0 through 3.  1 means set new anchor point,
 stroke the circle, 3 means both, 0 means none of the above.
 .RE
 .IP
-void \fBps_axis\fR (\fIxpos, ypos, length, startval, stopval, tickval, label, anotpointsize, side\fP)
+void \fBps_axis\fR (\fIxpos, ypos, length, startval, stopval, tickval, label, annotpointsize, side\fP)
 .br
 \fBdouble\fR \fIxpos, ypos, length, startval, stopval, tickval\fP;
 .br
-\fBint\fR \fIanotpointsize, side\fP;
+\fBdouble\fR \fIannotpointsize, side\fP;
 .br
 \fBchar\fR \fI*label\fP;
 .RS 10
 Plots an axis with tickmarks, annotation, and label.  \fIxpos, ypos\fP, and \fIlength\fP
-are in inches (or cm or meters), \fIanotpointsize\fP in points (72 points = 1 inch), else
+are in inches (or cm or meters), \fIannotpointsize\fP in points (72 points = 1 inch), else
 data units are used.  \fIside\fP can be 0, 1, 2, or 3, which selects lower x-axis, right y-axis,
-upper x-axis, or left y-axis, respectively.  labelpointsize = 1.5 * \fIanotpointsize\fP.
+upper x-axis, or left y-axis, respectively.  labelpointsize = 1.5 * \fIannotpointsize\fP.
 A negative \fItickval\fP will reverse the sense of positive direction, e.g., to have the
 y-axis be positive down.
 .RE
@@ -512,11 +512,11 @@ The symbol will fit inside a circle of given diameter.
 .IP
 void \fBps_text\fR (\fIx, y, pointsize, text, angle, justify, form\fP)
 .br
-\fBdouble\fR \fIx, y, angle\fP;
+\fBdouble\fR \fIx, y, pointsize, angle\fP;
 .br
 \fBchar\fR \fI*text\fP;
 .br
-\fBint\fR \fIpointsize, justify, form\fP;
+\fBint\fR \fIjustify, form\fP;
 .RS 10
 The \fItext\fP is plotted starting at (\fIx,y\fP), and will make an \fIangle\fP with the horizontal.  The
 point (\fIx,y\fP) maps onto different points of the textstring by giving various values for
@@ -548,11 +548,11 @@ that the current point has already been set before \fBps_text\fP was called and 
 .IP
 void \fBps_textbox\fR (\fIx, y, pointsize, text, angle, justify, outline, dx, dy, rgb\fP)
 .br
-\fBdouble\fR \fIx, y, angle, dx, dy\fP;
+\fBdouble\fR \fIx, y, angle, pointsize, dx, dy\fP;
 .br
 \fBchar\fR \fI*text\fP;
 .br
-\fBint\fR \fIpointsize, justify, outline, rgb[3]\fP;
+\fBint\fR \fIjustify, outline, rgb[3]\fP;
 .RS 10
 This function is used in conjugation with \fBps_text\fP when a box surrounding the
 text string is desired.  Taking most of the arguments of \fBps_text\fP, the user must

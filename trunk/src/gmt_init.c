@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.60 2002-01-04 21:41:34 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.61 2002-01-04 22:30:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1013,9 +1013,9 @@ void GMT_backwards_compatibility () {
 	}
 	
 	if (GMT_force_resize) {	/* Adjust fonts and offsets and ticklenghts relative to ANNOT_FONT_SIZE */
-		gmtdefs.annot_font2_size = irint (16.0 * gmtdefs.annot_font_size / 14.0);
-		gmtdefs.label_font_size = irint (24.0 * gmtdefs.annot_font_size / 14.0);
-		gmtdefs.header_font_size = irint (36.0 * gmtdefs.annot_font_size / 14.0);
+		gmtdefs.annot_font2_size = 16.0 * gmtdefs.annot_font_size / 14.0;
+		gmtdefs.label_font_size = 24.0 * gmtdefs.annot_font_size / 14.0;
+		gmtdefs.header_font_size = 36.0 * gmtdefs.annot_font_size / 14.0;
 		gmtdefs.annot_offset = gmtdefs.tick_length = 0.075 * gmtdefs.annot_font_size / 14.0;
 		gmtdefs.annot_offset2 = 0.075 * gmtdefs.annot_font2_size / 14.0;
 		gmtdefs.label_offset = 1.5 * fabs (gmtdefs.annot_offset);
@@ -1068,9 +1068,9 @@ int GMT_setparameter (char *keyword, char *value)
 		case GMTCASE_ANOT_FONT_SIZE:
 			if (value[0] == '+') GMT_force_resize = TRUE;	/* Turning on autoscaling of font sizes and ticklengths */
 			if (value[0] != '+' && GMT_force_resize) GMT_annot_special = TRUE;	/* gmtset tries to turn off autoscaling - must report saved values but reset this one */
-			ival = atoi (value);
-			if (ival > 0)
-				gmtdefs.annot_font_size = ival;
+			val = atof (value);
+			if (val > 0.0)
+				gmtdefs.annot_font_size = val;
 			else
 				error = TRUE;
 			break;
@@ -1243,9 +1243,9 @@ int GMT_setparameter (char *keyword, char *value)
 				gmtdefs.header_font = ival;
 			break;
 		case GMTCASE_HEADER_FONT_SIZE:
-			ival = atoi (value);
-			if (ival > 0)
-				save_header_size = gmtdefs.header_font_size = ival;
+			val = atof (value);
+			if (val > 0.0)
+				save_header_size = gmtdefs.header_font_size = val;
 			else
 				error = TRUE;
 			break;
@@ -1308,9 +1308,9 @@ int GMT_setparameter (char *keyword, char *value)
 				gmtdefs.label_font = ival;
 			break;
 		case GMTCASE_LABEL_FONT_SIZE:
-			ival = atoi (value);
-			if (ival > 0)
-				save_label_size = gmtdefs.label_font_size = ival;
+			val = atof (value);
+			if (val > 0.0)
+				save_label_size = gmtdefs.label_font_size = val;
 			else
 				error = TRUE;
 			break;
@@ -1586,9 +1586,9 @@ int GMT_setparameter (char *keyword, char *value)
 				gmtdefs.annot_font2 = ival;
 			break;
 		case GMTCASE_ANNOT_FONT2_SIZE:
-			ival = atoi (value);
-			if (ival > 0)
-				save_annot_size2 = gmtdefs.annot_font2_size = ival;
+			val = atof (value);
+			if (val > 0.0)
+				save_annot_size2 = gmtdefs.annot_font2_size = val;
 			else
 				error = TRUE;
 			break;
@@ -1666,17 +1666,17 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "ANNOT_MIN_ANGLE		= %lg\n", gmtdefs.annot_min_angle);
 	fprintf (fp, "ANNOT_MIN_SPACING	= %lg\n", gmtdefs.annot_min_spacing);
 	fprintf (fp, "ANNOT_FONT		= %s\n", GMT_font_name[gmtdefs.annot_font]);
-	(GMT_force_resize && !GMT_annot_special) ? fprintf (fp, "ANNOT_FONT_SIZE		= +%dp\n", gmtdefs.annot_font_size) :  fprintf (fp, "ANNOT_FONT_SIZE		= %dp\n", gmtdefs.annot_font_size);
+	(GMT_force_resize && !GMT_annot_special) ? fprintf (fp, "ANNOT_FONT_SIZE		= +%lgp\n", gmtdefs.annot_font_size) :  fprintf (fp, "ANNOT_FONT_SIZE		= %lgp\n", gmtdefs.annot_font_size);
 	fprintf (fp, "ANNOT_FONT2		= %s\n", GMT_font_name[gmtdefs.annot_font2]);
-	(GMT_force_resize) ? fprintf (fp, "ANNOT_FONT2_SIZE		= %dp\n", save_annot_size2) : fprintf (fp, "ANNOT_FONT2_SIZE		= %dp\n", gmtdefs.annot_font2_size);
+	(GMT_force_resize) ? fprintf (fp, "ANNOT_FONT2_SIZE		= %lgp\n", save_annot_size2) : fprintf (fp, "ANNOT_FONT2_SIZE		= %lgp\n", gmtdefs.annot_font2_size);
 	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET		= %lg%c\n", save_annot_offset * s, u) : fprintf (fp, "ANNOT_OFFSET		= %lg%c\n", gmtdefs.annot_offset * s, u);
 	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET2	= %lg%c\n", save_annot_offset2 * s, u) : fprintf (fp, "ANNOT_OFFSET2		= %lg%c\n", gmtdefs.annot_offset2 * s, u);
 	fprintf (fp, "DEGREE_SYMBOL		= %s\n", GMT_degree_choice[gmtdefs.degree_symbol - gmt_none]);
 	fprintf (fp, "HEADER_FONT		= %s\n", GMT_font_name[gmtdefs.header_font]);
-	(GMT_force_resize) ? fprintf (fp, "HEADER_FONT_SIZE	= %dp\n", save_header_size) : fprintf (fp, "HEADER_FONT_SIZE	= %dp\n", gmtdefs.header_font_size);
+	(GMT_force_resize) ? fprintf (fp, "HEADER_FONT_SIZE	= %lgp\n", save_header_size) : fprintf (fp, "HEADER_FONT_SIZE	= %lgp\n", gmtdefs.header_font_size);
 	(GMT_force_resize) ? fprintf (fp, "HEADER_OFFSET			= %lg%cp\n", save_header_offset * s, u) : fprintf (fp, "HEADER_OFFSET		= %lg%c\n", gmtdefs.header_offset * s, u);
 	fprintf (fp, "LABEL_FONT		= %s\n", GMT_font_name[gmtdefs.label_font]);
-	(GMT_force_resize) ? fprintf (fp, "LABEL_FONT_SIZE		= %dp\n", save_label_size) : fprintf (fp, "LABEL_FONT_SIZE		= %dp\n", gmtdefs.label_font_size);
+	(GMT_force_resize) ? fprintf (fp, "LABEL_FONT_SIZE		= %lgp\n", save_label_size) : fprintf (fp, "LABEL_FONT_SIZE		= %lgp\n", gmtdefs.label_font_size);
 	(GMT_force_resize) ? fprintf (fp, "LABEL_OFFSET			= %lg%cp\n", save_label_offset * s, u) : fprintf (fp, "LABEL_OFFSET		= %lg%c\n", gmtdefs.label_offset * s, u);
 	fprintf (fp, "OBLIQUE_ANNOTATION	= %d\n", gmtdefs.oblique_annotation);
 	fprintf (fp, "PLOT_CLOCK_FORMAT	= %s\n", gmtdefs.plot_clock_format);
