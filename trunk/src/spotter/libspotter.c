@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.23 2004-02-04 00:55:15 pwessel Exp $
+ *	$Id: libspotter.c,v 1.24 2004-03-05 18:11:58 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -52,6 +52,7 @@ void matrix_to_pole (double T[3][3], double *plon, double *plat, double *w);
 void matrix_transpose (double At[3][3], double A[3][3]);
 void matrix_mult (double a[3][3], double b[3][3], double c[3][3]);
 void make_rot_matrix (double lonp, double latp, double w, double R[3][3]);
+void make_rot_matrix_sub (double E[3], double w, double R[3][3]);
 void reverse_rotation_order (struct EULER *p, int n);
 void xyw_to_struct_euler (struct EULER *p, double lon[], double lat[], double w[], int n, BOOLEAN stages, BOOLEAN convert);
 void set_I_matrix (double R[3][3]);
@@ -825,10 +826,23 @@ void make_rot_matrix (double lonp, double latp, double w, double R[3][3])
  *	R		the rotation matrix
  */
 
-	double E[3], sin_w, cos_w, c, E_x, E_y, E_z, E_12c, E_13c, E_23c;
+	double E[3];
+	
+        GMT_geo_to_cart (&latp, &lonp, E, TRUE);
+	make_rot_matrix_sub (E, w, R);
+}
+
+void make_rot_matrix_sub (double E[3], double w, double R[3][3])
+{
+/*	E	Euler pole in in cartesian coordinates
+ *	w	angular rotation in degrees
+ *
+ *	R	the rotation matrix
+ */
+
+	double sin_w, cos_w, c, E_x, E_y, E_z, E_12c, E_13c, E_23c;
 	
 	sincos (w * D2R, &sin_w, &cos_w);
-        GMT_geo_to_cart (&latp, &lonp, E, TRUE);
 	c = 1 - cos_w;
 
 	E_x = E[0] * sin_w;
