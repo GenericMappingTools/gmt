@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.84 2004-12-20 16:07:58 pwessel Exp $
+ *	$Id: pslib.c,v 1.85 2005-01-05 20:15:41 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -508,7 +508,19 @@ void ps_cross (double x, double y, double diameter)
 /* fortran interface */
 void ps_cross_ (double *x, double *y, double *diameter)
 {
-	 ps_cross (*x, *y, *diameter);
+	ps_cross (*x, *y, *diameter);
+}
+
+void ps_point (double x, double y, double diameter)
+{     /* Fit inside circle of given diameter; draw using current color */
+	fprintf (ps.fp, "%d %d %d O\n", (int) irint (diameter * ps.scale), (int) irint (x * ps.scale), (int) irint (y * ps.scale));
+	ps.npath = 0;
+}
+
+/* fortran interface */
+void ps_point_ (double *x, double *y, double *diameter)
+{
+	ps_point (*x, *y, *diameter);
 }
 
 void ps_diamond (double x, double y, double diameter, int rgb[], int outline)
@@ -1352,9 +1364,9 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	init_font_encoding (eps);	/* Reencode fonts if necessary */
 
 	/* Set line-handling attributes */
-	fprintf (ps.fp, "%d setlinecap %d setlinejoin", ps.line_cap, ps.line_join);
-	miter = (ps.miter_limit == 0) ? 10.0 : 1.0 / sin (0.5 * ps.miter_limit * D2R);
-	fprintf (ps.fp, " %lg setmiterlimit\n", miter);
+	ps_setlinecap (ps.line_cap);
+	ps_setlinejoin (ps.line_join);
+	ps_setmiterlimit (ps.miter_limit);
 	ps_setpaint (no_rgb);
 	if (!(xoff == 0.0 && yoff == 0.0)) fprintf (ps.fp, "%g %g T\n", xoff*ps.scale, yoff*ps.scale);
 
@@ -1370,6 +1382,41 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 void ps_plotinit_ (char *plotfile, int *overlay, int *mode, double *xoff, double *yoff, double *xscl, double *yscl, int *ncopies, int *dpi, int *unit, int *page_size, int *rgb, const char *encoding, int nlen1, int nlen2)
 {
 	 ps_plotinit (plotfile, *overlay, *mode, *xoff, *yoff, *xscl, *yscl, *ncopies, *dpi, *unit, page_size, rgb, encoding, (struct EPS *)NULL);
+}
+
+void ps_setlinecap (int cap)
+{
+	fprintf (ps.fp, "%d setlinecap\n", cap);
+}
+
+/* fortran interface */
+void ps_setlinecap_ (int *cap)
+{
+	ps_setlinecap (*cap);
+}
+
+void ps_setlinejoin (int join)
+{
+	fprintf (ps.fp, "%d setlinejoin\n", join);
+}
+
+/* fortran interface */
+void ps_setlinejoin_ (int *join)
+{
+	ps_setlinejoin (*join);
+}
+
+void ps_setmiterlimit (int limit)
+{
+	double miter;
+	miter = (limit == 0) ? 10.0 : 1.0 / sin (0.5 * limit * D2R);
+	fprintf (ps.fp, "%lg setmiterlimit\n", miter);
+}
+
+/* fortran interface */
+void ps_setmiterlimit_ (int *limit)
+{
+	ps_setmiterlimit (*limit);
 }
 
 void ps_plotr (double x, double y, int pen)

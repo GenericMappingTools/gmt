@@ -413,6 +413,14 @@ Move (\fIkpen\fP = 3) or draw (\fIkpen\fP = 2) relative to current point (see \f
 Use (\fIkpen=\fP-2) to make sure the line is stroked.
 .RE
 .IP
+void \fBps_point\fR (\fIxcenter, ycenter, diameter\fP)
+.br
+\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
+.RS 10
+Plots a point using current pen with given diameter.
+Note the linecap setting must first be set to 1 for this function to work.
+.RE
+.IP
 void \fBps_polygon\fR (\fIxarray, yarray, npoints, rgb, outline\fP)
 .br
 \fBdouble\fR \fIxarray[], yarray[]\fP;
@@ -506,6 +514,28 @@ void \fBps_setline\fR (\fIlinewidth\fP)
 .RS 10
 Changes the current linewidth in DPI units.  0 gives thinnest line, but the use of
 0 is implementation-dependent (Works fine on most laserwriters).
+.RE
+.IP
+void \fBps_setlinecap\fR (\fIcap\fP)
+.br
+\fBint\fR \fIcap\fP;
+.RS 10
+Changes the current linecap.  0 gives butt cap [Default], 1 gives round, and 2 gives square.
+.RE
+.IP
+void \fBps_setlinejoin\fR (\fIjoin\fP)
+.br
+\fBint\fR \fIjoin\fP;
+.RS 10
+Changes the current linejoin.  0 gives mitered [Default], 1 gives round, and 2 gives bevel joins.
+.RE
+.IP
+void \fBps_setmiterlimit\fR (\fIlimit\fP)
+.br
+\fBint\fR \fIlimit\fP;
+.RS 10
+Changes the current miter limit.  0 gives default miter, other values are the cutoff-, acute- angle
+when mitering takes place.
 .RE
 .IP
 void \fBps_setpaint\fR (\fIrgb\fP)

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.26 2004-11-04 03:07:07 pwessel Exp $
+ *	$Id: pslib.h,v 1.27 2005-01-05 20:15:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -105,6 +105,7 @@ EXTERN_MSC void ps_pie(double x, double y, double radius, double az1, double az2
 EXTERN_MSC void ps_plot(double x, double y, int pen);
 EXTERN_MSC void ps_plotend(int lastpage);
 EXTERN_MSC void ps_plotr(double x, double y, int pen);
+EXTERN_MSC void ps_point (double x, double y, double diameter);
 EXTERN_MSC void ps_polygon(double *x, double *y, int n, int rgb[], int outline);
 EXTERN_MSC void ps_rect(double x1, double y1, double x2, double y2, int rgb[], int outline);
 EXTERN_MSC void ps_patch(double *x, double *y, int np, int rgb[], int outline);
@@ -114,6 +115,9 @@ EXTERN_MSC void ps_setdash(char *pattern, int offset);
 EXTERN_MSC void ps_setfont(int font_no);
 EXTERN_MSC void ps_setformat(int n_decimals);
 EXTERN_MSC void ps_setline(int linewidth);
+EXTERN_MSC void ps_setlinecap (int cap);
+EXTERN_MSC void ps_setlinejoin (int join);
+EXTERN_MSC void ps_setmiterlimit (int limit);
 EXTERN_MSC void ps_setpaint(int rgb[]);
 EXTERN_MSC void ps_square(double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_star(double x, double y, double side, int rgb[], int outline);
