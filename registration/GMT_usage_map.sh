@@ -1,6 +1,6 @@
-#!/bin/sh -xv
+#!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.15 2002-05-13 19:31:54 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.16 2002-05-14 16:59:27 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
