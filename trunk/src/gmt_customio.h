@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.h,v 1.5 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt_customio.h,v 1.6 2002-02-23 00:53:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -72,7 +72,6 @@ EXTERN_MSC int GMT_srf_write_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_srf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 EXTERN_MSC int GMT_srf_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 
-#define GRD_IS_CDF(id) ((id) == 0 || ((id) >= 6 && (id) <= 11))
 #define HEADER_SIZE	892
 #define GMT_N_NATIVE_FORMATS	6
 
