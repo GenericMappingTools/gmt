@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.49 2003-02-19 02:45:43 pwessel Exp $
+ *	$Id: pslib.c,v 1.50 2003-02-19 22:14:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -267,7 +267,7 @@ void ps_circle (double x, double y, double size, int rgb[], int outline)
 	ir = irint (0.5 * size * ps.scale);
 	fprintf (ps.fp, "N ");
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, " %d %d %d C%d\n", ix, iy, ir, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d C%d\n", ix, iy, ir, outline + ps_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -323,7 +323,7 @@ void ps_clipon (double *x, double *y, int n, int rgb[], int flag)
 		if (rgb[0] >= 0) {	/* fill is desired */
 			fprintf (ps.fp, "V ");
 			pmode = ps_place_color (rgb);
-			fprintf (ps.fp, " %c eofill U ", ps_paint_code[pmode]);
+			fprintf (ps.fp, "%c eofill U ", ps_paint_code[pmode]);
 		}
 		if (flag & 4)
 			fprintf (ps.fp, "eoclip\n%% End of clip path.  Clipping is currently ON\n");
@@ -592,7 +592,7 @@ void ps_diamond (double x, double y, double diameter, int rgb[], int outline)
 	iy = irint ((y - diameter) * ps.scale);
 	
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, " %d %d %d D%d\n", ds, ix, iy, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d D%d\n", ds, ix, iy, outline + ps_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -629,7 +629,7 @@ void ps_star (double x, double y, double diameter, int rgb[], int outline)
 	ix = irint (x * ps.scale);
 	iy = irint (y * ps.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, " %d %d %d E%d\n", ds, ix, iy, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d E%d\n", ds, ix, iy, outline + ps_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -648,7 +648,7 @@ void ps_hexagon (double x, double y, double diameter, int rgb[], int outline)
 	ix = irint (x * ps.scale);
 	iy = irint (y * ps.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, " %d %d %d H%d\n", ds, ix, iy, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d H%d\n", ds, ix, iy, outline + ps_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -674,7 +674,7 @@ void ps_ellipse (double x, double y, double angle, double major, double minor, i
 	ir = irint (major * ps.scale);
 
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, " 0 0 %d C%d U\n", ir, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "0 0 %d C%d U\n", ir, outline + ps_outline_offset[pmode]);
 }
 
 /* fortran interface */
@@ -896,7 +896,7 @@ int ps_imagefill_init (int image_no, char *imagefile, int invert, int image_dpi,
 				polarity = 0;
 				pmode = ps_place_color (f_rgb);
 			}
-			fprintf (ps.fp, " %c %d dup scale %d %d %s [%d 0 0 %d 0 %d] {%s} imagemask U} def\n", ps_paint_code[pmode], dx, nx, ny, TF[polarity], nx, -ny, ny, name);
+			fprintf (ps.fp, "%c %d dup scale %d %d %s [%d 0 0 %d 0 %d] {%s} imagemask U} def\n", ps_paint_code[pmode], dx, nx, ny, TF[polarity], nx, -ny, ny, name);
 		}
 		else	/* Plain b/w image */
 			fprintf (ps.fp, "/fill%s { V T %d dup scale %d %d 1 [%d 0 0 %d 0 %d] {%s} image U} def\n", name, dx, nx, ny, nx, -ny, ny, name);
@@ -1098,7 +1098,7 @@ void ps_pie (double x, double y, double radius, double az1, double az2, int rgb[
 	ir = irint (radius * ps.scale);
 	fprintf (ps.fp, "%d %d M ", ix, iy);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, " %d %d %d %lg %lg P%d\n", ix, iy, ir, az1, az2, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d %lg %lg P%d\n", ix, iy, ir, az1, az2, outline + ps_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -1382,7 +1382,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		if (!(rgb[0] == rgb[1] && rgb[1] == rgb[2] && rgb[0] == 255)) {	/* Change background color */
 			fprintf (ps.fp, "clippath ");
 			pmode = ps_place_color (rgb);
-			fprintf (ps.fp, " %c F N\n", ps_paint_code[pmode]);
+			fprintf (ps.fp, "%c F N\n", ps_paint_code[pmode]);
 		}
 	}
 	init_font_encoding (eps);	/* Reencode fonts if necessary */
@@ -1524,7 +1524,7 @@ void ps_rect (double x1, double y1, double x2, double y2, int rgb[], int outline
 	idx = irint (x2 * ps.scale) - ix;
 	idy = irint (y2 * ps.scale) - iy;
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, " %d %d %d %d R%d\n", idy, idx, ix, iy, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d %d R%d\n", idy, idx, ix, iy, outline + ps_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -1646,7 +1646,7 @@ void ps_setpaint (int rgb[])
 
 	fprintf (ps.fp, "S ");
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, " %c\n", ps_paint_code[pmode]);
+	fprintf (ps.fp, "%c\n", ps_paint_code[pmode]);
 
 	/* Update the current color information */
 
@@ -1671,7 +1671,7 @@ void ps_square (double x, double y, double diameter, int rgb[], int outline)
 	ix = irint ((x - diameter) * ps.scale);
 	iy = irint ((y - diameter) * ps.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, " %d %d %d S%d\n", ds, ix, iy, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d S%d\n", ds, ix, iy, outline + ps_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -2005,7 +2005,7 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 	if (rgb[0] >= 0) {	/* Paint the textbox */
 		fprintf (ps.fp, "V ");
 		pmode = ps_place_color (rgb);
-		fprintf (ps.fp, " %c F U ", ps_paint_code[pmode]);
+		fprintf (ps.fp, "%c F U ", ps_paint_code[pmode]);
 	}
 	(outline) ? fprintf (ps.fp, "S U\n") : fprintf (ps.fp, "N U\n");
 	fprintf (ps.fp, "U\n%% ps_textbox end:\n\n");
@@ -2359,7 +2359,7 @@ void ps_triangle (double x, double y, double diameter, int rgb[], int outline)
 	iy = irint ((y-0.25*diameter) * ps.scale);
 	is = irint (0.866025403784 * diameter * ps.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, " %d %d %d T%d\n", is, ix, iy, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d T%d\n", is, ix, iy, outline + ps_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -2377,7 +2377,7 @@ void ps_itriangle (double x, double y, double diameter, int rgb[], int outline)	
 	iy = irint ((y+0.25*diameter) * ps.scale);
 	is = irint (0.866025403784 * diameter * ps.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, " %d %d %d I%d\n", is, ix, iy, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d I%d\n", is, ix, iy, outline + ps_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -2409,13 +2409,13 @@ void ps_vector (double xtail, double ytail, double xtip, double ytip, double tai
 		outline -= 8;	/* Remove the flag */
 		l2 = length - 2 * hl + 2 * hl2;							/* Inside length between start of heads */
 		pmode = ps_place_color (rgb);
-		fprintf (ps.fp, " %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d a%d U\n",
+		fprintf (ps.fp, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d a%d U\n",
 				hl2, hw2, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -hl2, hw2, hl, -hw, outline+ps_outline_offset[pmode]);
 	}
 	else {			/* Single-headed vector */
 		l2 = length - hl + hl2;								/* Length from tail to start of slanted head */
 		pmode = ps_place_color (rgb);
-		fprintf (ps.fp, " %d %d %d %d %d %d %d %d %d %d %d A%d U\n",
+		fprintf (ps.fp, "%d %d %d %d %d %d %d %d %d %d %d A%d U\n",
 			-l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2, outline+ps_outline_offset[pmode]);
 	}
 }
@@ -3547,11 +3547,11 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 		if (draw_box & 2) {	/* Fill */
 			fprintf (ps.fp, "V ");
 			pmode = ps_place_color (boxfill_rgb);
-			fprintf (ps.fp, " %c F U ", ps_paint_code[pmode]);
+			fprintf (ps.fp, "%c F U ", ps_paint_code[pmode]);
 		}
 		if (draw_box & 1) {	/* Stroke */
 			pmode = ps_place_color (boxpen_rgb);
-			fprintf (ps.fp, " %c ", ps_paint_code[pmode]);
+			fprintf (ps.fp, "%c ", ps_paint_code[pmode]);
 			fprintf (ps.fp, "S\n");
 		}
 		else 
