@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.19 2004-01-02 22:45:13 pwessel Exp $
+ *	$Id: pslib.h,v 1.20 2004-01-12 18:57:37 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -99,6 +99,7 @@ EXTERN_MSC void ps_imagefill(double *x, double *y, int n, int image_no, char *im
 EXTERN_MSC int ps_imagefill_init(int image_no, char *imagefile, int invert, int image_dpi, BOOLEAN colorize, int f_rgb[], int b_rgb[]);
 EXTERN_MSC void ps_imagemask (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int polarity, int rgb[]);
 EXTERN_MSC void ps_itriangle(double x, double y, double side, int rgb[], int outline);
+EXTERN_MSC void ps_octagon(double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_pentagon(double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_pie(double x, double y, double radius, double az1, double az2, int rgb[], int outline);
 EXTERN_MSC void ps_plot(double x, double y, int pen);

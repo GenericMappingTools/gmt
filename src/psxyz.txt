@@ -111,6 +111,9 @@ to plot: \fBb\fPox, \fBc\fPircle, \fBf\fPault, \fBs\fPlip, or \fBt\fPriangle.  [
 Slip means left-lateral or right-lateral strike-slip arrows (centered is not an option).  Append :\fIoffset\fP to offset
 the first symbol from the beginning of the front by that amount [0].
 .TP
+.B \-Sg
+octa\fBg\fPon.  \fIsize\fP is diameter of circumscribing circle.
+.TP
 .B \-Sh
 \fBh\fPexagon.  \fIsize\fP is diameter of circumscribing circle.
 .TP

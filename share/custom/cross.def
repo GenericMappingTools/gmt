@@ -1,0 +1,16 @@
+#	$Id: cross.def,v 1.1 2004-01-12 18:57:37 pwessel Exp $
+#
+#	Definition file a straight 4-pointed cross symbol.
+#
+0.5	0.1	M
+0.1	0.1	D
+0.1	0.5	D
+-0.1	0.5	D
+-0.1	0.1	D
+-0.5	0.1	D
+-0.5	-0.1	D
+-0.1	-0.1	D
+-0.1	-0.5	D
+0.1	-0.5	D
+0.1	-0.1	D
+0.5	-0.1	D
