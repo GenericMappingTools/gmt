@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.27 2002-03-22 23:17:18 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.28 2002-05-07 01:00:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7168,6 +7168,15 @@ void GMT_2D_to_3D (double *x, double *y, double z, int n)
 	/* Convert from two-D to three-D coordinates */
 	
 	for (i = 0; i < n; i++) GMT_xy_do_z_to_xy (x[i], y[i], z, &x[i], &y[i]);
+}
+
+void GMT_2Dz_to_3D (double *x, double *y, double z, int n)
+{
+	int i;
+	
+	/* Convert from two-D to three-D coordinates */
+	
+	for (i = 0; i < n; i++) GMT_xyz_to_xy (x[i], y[i], z, &x[i], &y[i]);
 }
 
 void GMT_azim_to_angle (double lon, double lat, double c, double azim, double *angle)
