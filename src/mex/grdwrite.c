@@ -1,5 +1,5 @@
 /*
- *	$Id: grdwrite.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: grdwrite.c,v 1.2 2002-06-27 03:58:47 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -113,7 +113,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
 	double *z_8, *info = (double *)NULL, *x, *y;
 	char fileout[80], title[80], *argv = "grdwrite-mex";
-	int error, ns, nx, ny, k, pix;
+	int error, ns, nx, ny, k, pix = 0;	/* If no info we assume gridline reg */
 
 	if (nrhs < 3 || nrhs > 6) {
 		mexPrintf ("usage: grdwrite(Z, D, 'filename'[, 'title']);\n");
