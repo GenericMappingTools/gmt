@@ -10,9 +10,9 @@ backtracker \- Forward and Backward flowlines and hotspot tracks
 .SH DESCRIPTION
 \fBbacktracker\fP reads (longitude, latitude, age) positions from \fIinfiles\fP 
 [or standard input] and computes projected (x,y,t) coordinates using the 
-specified stage pole (Euler) rotations.  You can either calculate just final
-positions [Default] or create a sampled track between initial and final
-position.  The former mode allows additional data fields after the first 3
+specified stage pole (Euler) rotations.  It can either calculate the final
+positions [Default] or create a sampled track between the initial and final
+positions.  The former mode allows additional data fields after the first 3
 columns which must have (longitude,latitude,age).
 See option \fB\-:\fP on how to read (latitude,longitude,age) files.
 .br
@@ -30,9 +30,9 @@ one record for each stage; each record must be of the following format:
 	lon lat tstart tstop ccw-angle
 .br
 .sp
-where time is in Ma and the rest is in degrees.  Oldest stage must be
-listed first.  tstart is the time when the stage begins (oldest age).
-Blank lines and records whose first column contains # will be ignored.
+where tstart and tstop are in Ma and the rest is in degrees.  The oldest stage
+must be listed first.  tstart (tstop) is the age of the old (young) end of the
+stage.  Blank lines and records whose first column contains # will be ignored.
 .SH OPTIONS
 .TP
 .B \-A
@@ -42,7 +42,7 @@ is used instead then the limits apply to the stage ids.  If no limits are suppli
 then individual limits for each seamount are expected in columns 4 and 5 of the input file.
 .TP
 .B \-C
-Expect Total Reconstruction Poles (Finite Poles) rather than Backward Stage Poles [Default]
+Expect Total Reconstruction Poles (Finite Poles) rather than Backward Stage Poles [Default].
 File format is similar to the stage pole format except the youngest rotation must be listed
 first and that the tstart column is optional (assumed to be 0 Ma).
 .TP
@@ -62,7 +62,7 @@ along-track ages].
 Set the maximum age to extend the oldest stage back in time [Default is no extension].
 .TP
 .B \-S
-When \fP\-L\fP is set, the tracks are normally written to stdout as a multisegment
+When \fB\-L\fP is set, the tracks are normally written to stdout as a multisegment
 file.  Specify a \fIfilestem\fP to have each track written to \fIfilestem.#\fP, where
 \fI#\fP is the track number.  The track number is also copied to the 4th output column.
 .TP

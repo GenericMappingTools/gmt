@@ -15,7 +15,7 @@ gmttrack \- A shiptrack plotting program
 [ \fB\-P\fP ] [ \fB\-O\fP ] [ \fB\-K\fP ]  [ \fB\-U\fP[\fIdx/dy/\fP][\fIlabel\fP] ] [ \fB\-X\fP\fIx-shift\fP ] 
 [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-V \fP ]
 .SH DESCRIPTION
-gmttrack reads gmt cruises and creates PostScript code that will plot one or more ship tracks on a
+\fBgmttrack\fP reads gmt cruises and creates PostScript code that will plot one or more ship tracks on a
 map using the specified projection.  The PostScript code is written to standard output.
 .TP
 \fIleg-ids\fP
