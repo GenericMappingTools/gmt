@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.5 2004-05-18 21:40:51 pwessel Exp $
+ *	$Id: x2sys.h,v 1.6 2004-06-09 17:45:21 pwessel Exp $
  *
  *      Copyright (c) 1999-2004 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -119,10 +119,12 @@ struct X2SYS_INFO {
 	int flags;			/* Various processing flags for internal use */
 	int *out_order;			/* Array with column number in the order for output */
 	int *use_column;		/* Array of T/F for which columns to use */
+	int geodetic;			/* How longitudes should be stored: 0: (0-360), 1: (-360,0), 2 (-180/+180) */
 	PFI read_file;			/* Pointer to function that reads this file */
 	BOOLEAN ascii_in;		/* TRUE if input is in ascii */
 	BOOLEAN ascii_out;		/* TRUE if output should be in ascii */
 	BOOLEAN multi_segment;		/* TRUE if there are multiple segments in this file */
+	BOOLEAN geographic;		/* TRUE if x/y data are lon/lat */
 	BOOLEAN ms_next;		/* TRUE if we just read 1st record in a new segments in this file */
 	char ms_flag;			/* Multi-segment header flag */
 	struct X2SYS_DATA_INFO *info;	/* Array of info for each data field */
