@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.21 2001-09-05 21:09:20 pwessel Exp $
+ *	$Id: gmt.h,v 1.22 2001-09-10 23:56:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -22,7 +22,7 @@
  * Author:	Paul Wessel
  * Date:	01-MAR-1991
  * Revised:	15-JUL-2001
- * Version:	3.5
+ * Version:	4.0
  */
  
 #ifndef _GMT_H
@@ -415,9 +415,9 @@ EXTERN_MSC char *GMT_program;		/* Name of current GMT program */
 EXTERN_MSC int GMT_no_rgb[];
 EXTERN_MSC int GMT_oldargc;
 EXTERN_MSC char *GMT_oldargv[];		/* Pointers to old common arguments */
-EXTERN_MSC char *GMT_degree_symbol[3];	/* Contains the two octal codes for small and large degree symbols */
-EXTERN_MSC char *GMT_minute_symbol[2];	/* Standard encoding minute symbol */
-EXTERN_MSC char *GMT_second_symbol[2];	/* Standard encoding second symbol */
+EXTERN_MSC char *GMT_degree_symbol[4][3];	/* Contains the two octal codes for small and large degree symbols, for each char encoding */
+EXTERN_MSC char *GMT_minute_symbol[4][2];	/* Standard encoding minute symbol */
+EXTERN_MSC char *GMT_second_symbol[4][2];	/* Standard encoding second symbol */
 
 /*--------------------------------------------------------------------*/
 /*	For i/o purposes */

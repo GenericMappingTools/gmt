@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.16 2001-08-30 19:03:13 pwessel Exp $
+ *	$Id: pslib.c,v 1.17 2001-09-10 23:56:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -138,10 +138,11 @@ struct GMT_WORD {
 	char *txt;
 };
 
-char *ps_encoding[3] = {
+char *ps_encoding[4] = {
 "StandardEncoding",
-"GMTEncoding",
-"ISOLatin1Encoding"
+"StandardPlusEncoding",
+"ISOLatin1Encoding",
+"ISOLatin1PlusEncoding"
 };
 
 int PSL_first = TRUE;
@@ -1198,14 +1199,15 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 /* xscl, yscl:	Global scaling, usually left to 1,1 */
 /* page_size:	Physical width and height of paper used in points */
 /* overlay:	FALSE means print headers and macros first */
-/* mode:	First bit 0 = Landscape, 1 = Portrait, Second bit 1 = GMT3.4 encoding, Third bit 1 = hex image, 0 = bin image, Forth bit 1 = abs positions, 0 = rel positions, Fifth bit 1 = ISO, 0 not */
+/* mode:	First bit 0 = Landscape, 1 = Portrait, Second bit 1 = Standard+ encoding, Third bit 1 = hex image, 0 = bin image
+		Forth bit 1 = abs positions, 0 = rel positions, Fifth bit 1 = ISOLatin1, 0 not, Sixth bit 1 = ISOLatin1+, 0 not */
 /* ncopies:	Number of copies for this plot */
 /* dpi:		Plotter resolution in dots-per-inch */
 /* unit:	0 = cm, 1 = inch, 2 = meter */
 /* rgb:		array with Color of page (paper) */
 /* eps:		structure with Document info.  !! Fortran version (ps_plotinit_) does not have this argument !! */
 {
-	int i, gmt_encoding, iso, manual = FALSE;
+	int i, gmt_encoding, iso = 0, manual = FALSE;
 	time_t right_now;
 	char openmode[2], *this;
 	double scl;
@@ -1240,14 +1242,15 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps.points_pr_unit = 72.0;
 	if (unit == 0) ps.points_pr_unit /= 2.54;
 	if (unit == 2) ps.points_pr_unit /= 0.0254;
-	gmt_encoding = ((mode & 2) == 2);	/* If 2nd bit set then old GMT3.4 European character encoding is wanted */
-	iso = ((mode & 16) == 16);		/* If 5th bit set then ISOLatin1 character encoding is wanted */
+	gmt_encoding = ((mode & 2) == 2);	/* If 2nd bit set then old GMT3.4 European character encoding (Standard+) is wanted */
+	if ((mode & 16) == 16) iso = 1;		/* If 5th bit set then ISOLatin1 character encoding is wanted */
+	if ((mode & 32) == 32) iso = 2;		/* If 6th bit set then ISOLatin1+ character encoding is wanted */
 	if (gmt_encoding && iso) {
-		fprintf (stderr, "pslib: Cannot specify both GMT3.4 and ISOLatin1 encoding\n");
+		fprintf (stderr, "pslib: Cannot specify both Standard+ and ISOLatin1 encodings\n");
 		return (-1);
 	}
-	ps.encoding = (iso) ? 2 : ((gmt_encoding) ? 1 : 0);
-	mode &= 1;
+	ps.encoding = (iso) ? iso + 1 : ((gmt_encoding) ? 1 : 0);	/* Should give 0-3 range */
+	mode &= 1;							/* Get rid of other flags */
 	if (plotfile == NULL || plotfile[0] == 0)
 		ps.fp = stdout;
 	else {
@@ -2228,7 +2231,7 @@ void ps_encode_font (int font_no)
 	if (font_no >= PS_FIRST_JAPANESE_FONT) return;
 	if (!(strcmp (ps_font_name[font_no], "Symbol") && strcmp (ps_font_name[font_no], "ZapfDingbats"))) return;
 
-	/* Reencode fonts with GMT or ISOLatin1 encodings */
+	/* Reencode fonts with Standard+ or ISOLatin1[+] encodings */
 	fprintf (ps.fp, "PSL_font_encode %d get 0 eq { %% Set this font\n", font_no);
 	fprintf (ps.fp, "\t%s /%s /%s PSL_reencode\n", ps_encoding[ps.encoding], ps_font_name[font_no], ps_font_name[font_no]);
 	fprintf (ps.fp, "\tPSL_font_encode %d 1 put\n} if\n", font_no);
@@ -2244,9 +2247,13 @@ void init_font_encoding (struct EPS *eps)
 	fprintf (ps.fp, "\texch /Encoding exch def currentdict end definefont pop\n");
 	fprintf (ps.fp, "} bind def\n");
 
-	fprintf (ps.fp, "\n%% Here is the complete encoding vector for GMT3.4 WANT_EURO_FONT encoding (now GMT3.4 encoding)\n");
-	fprintf (ps.fp, "\n/GMTEncoding[\n");
-	for (i = 0; i < 256; i++) fprintf (ps.fp, "%s\n", ps_gmt_encoding[i]);
+	fprintf (ps.fp, "\n%% Here is the complete encoding vector for Standard+ encoding (GMT3.4 WANT_EURO_FONT encoding)\n");
+	fprintf (ps.fp, "\n/%s[\n", ps_encoding[1]);
+	for (i = 0; i < 256; i++) fprintf (ps.fp, "%s\n", ps_StandardPlusEncoding[i]);
+	fprintf (ps.fp, "] def\n");
+	fprintf (ps.fp, "\n%% Here is the complete encoding vector for ISOLatin1+ encoding (ISOLatin1 plus GMT 4.0 extentions)\n");
+	fprintf (ps.fp, "\n/%s[\n", ps_encoding[3]);
+	for (i = 0; i < 256; i++) fprintf (ps.fp, "%s\n", ps_ISOLatin1PlusEncoding[i]);
 	fprintf (ps.fp, "] def\n");
 	
 	/* Initialize T/F array for font reencoding so that we only do it once

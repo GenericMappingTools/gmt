@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.27 2001-09-05 19:23:21 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.28 2001-09-10 23:56:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -67,7 +67,7 @@ void str_tolower (char *value);
 void GMT_get_history(int argc, char **argv);
 void GMT_prepare_3D(void);
 void GMT_free_plot_array(void);
-int GMT_map_getframe(char *args);
+int GMT_map_getframe_old(char *args);
 char *GMT_putpen (struct GMT_PEN *pen);
 int GMT_check_region (double w, double e, double s, double n);
 char *GMT_getdefpath (int get);
@@ -76,6 +76,13 @@ void GMT_get_time_language (char *name);
 void GMT_init_time_system_structure ();
 int GMT_scanf_epoch (char *s, double *t0);
 void GMT_backwards_compatibility ();
+void GMT_strip_colonitem (const char *in, const char *pattern, char *item, char *out);
+void GMT_strip_wesnz (const char *in, int side[], BOOLEAN *draw_box, char *out);
+void GMT_split_info (const char *in, char *info[]);
+void GMT_decode_tinfo (char *in, struct TIME_AXIS *A);
+void GMT_set_titem (struct TIME_AXIS *A, double val, char flag, char unit, char mod);
+int GMT_map_getframe (char *in);
+void GMT_copytoframe (struct TIME_FRAME *T);
 
 /* Local variables to gmt_init.c */
 
@@ -891,6 +898,9 @@ int GMT_loaddefaults (char *file)
 		case 2:
 			gmtdefs.page_orientation += 16;
 			break;
+		case 3:
+			gmtdefs.page_orientation += 32;
+			break;
 		default:
 			break;
 	}
@@ -935,6 +945,9 @@ void GMT_setdefaults (int argc, char **argv)
 			break;
 		case 2:
 			gmtdefs.page_orientation += 16;
+			break;
+		case 3:
+			gmtdefs.page_orientation += 32;
 			break;
 		default:
 			break;
@@ -1052,32 +1065,32 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case 5:
 			strcpy (gmtdefs.basemap_axes, value);
-			for (i = 0; i < 4; i++) frame_info.side[i] = 0;	/* Otherwise we cannot unset default settings */
+			for (i = 0; i < 4; i++) tframe_info.side[i] = 0;	/* Otherwise we cannot unset default settings */
 			for (i = 0; value[i]; i++) {
 				switch (value[i]) {
 					case 'W':	/* Upper case: Draw axis/ticks AND anotate */
-						frame_info.side[3] = 2;
+						tframe_info.side[3] = 2;
 						break;
 					case 'w':	/* Lower case: Draw axis/ticks only */
-						frame_info.side[3] = 1;
+						tframe_info.side[3] = 1;
 						break;
 					case 'E':
-						frame_info.side[1] = 2;
+						tframe_info.side[1] = 2;
 						break;
 					case 'e':
-						frame_info.side[1] = 1;
+						tframe_info.side[1] = 1;
 						break;
 					case 'S':
-						frame_info.side[0] = 2;
+						tframe_info.side[0] = 2;
 						break;
 					case 's':
-						frame_info.side[0] = 1;
+						tframe_info.side[0] = 1;
 						break;
 					case 'N':
-						frame_info.side[2] = 2;
+						tframe_info.side[2] = 2;
 						break;
 					case 'n':
-						frame_info.side[2] = 1;
+						tframe_info.side[2] = 1;
 						break;
 					case '-':	/* None */
 						break;
@@ -1510,8 +1523,8 @@ int GMT_setparameter (char *keyword, char *value)
 			str_tolower (gmtdefs.time_language);
 			break;
 		case 73:
-			gmtdefs.char_encoding = GMT_key_lookup (value, GMT_char_encoding, 3);
-			if (gmtdefs.char_encoding < 0 || gmtdefs.char_encoding >= 3) {
+			gmtdefs.char_encoding = GMT_key_lookup (value, GMT_char_encoding, 4);
+			if (gmtdefs.char_encoding < 0 || gmtdefs.char_encoding >= 4) {
 				error = TRUE;
 				gmtdefs.char_encoding = 0;
 			}
@@ -1730,7 +1743,7 @@ void GMT_getdefaults (char *this_file)	/* Read user's .gmtdefaults file and init
         BOOLEAN found;
 	
 	 /* Default is to draw AND annotate all sides */
-	for (i = 0; i < 5; i++) frame_info.side[i] = 2;
+	for (i = 0; i < 5; i++) tframe_info.side[i] = 2;
 	
 	if (!this_file) {	/* Must figure out which file to use */
 	
@@ -2114,7 +2127,7 @@ int GMT_begin (int argc, char **argv)
 	GMT_make_fnan (GMT_f_NaN);
 	GMT_make_dnan (GMT_d_NaN);
 	GMT_oldargc = 0;
-	frame_info.plot = FALSE;
+	tframe_info.plot = FALSE;
 	project_info.projection = -1;
 	project_info.gave_map_width = FALSE;
 	project_info.region = TRUE;
@@ -2446,7 +2459,7 @@ void GMT_get_history (int argc, char ** argv)
 	}
 }
 
-int GMT_map_getframe (char *args)
+int GMT_map_getframe_old (char *args)
 {
 	/* GMT_map_getframe scans an argument string and extract parameters that
 	 * set the interval for  tickmars and anotations on the boundary.
@@ -2610,6 +2623,419 @@ int GMT_map_getframe (char *args)
 	
 	return (error);
 }
+
+/* Here is the new -B parser with all its sub-functions */
+
+void GMT_strip_colonitem (const char *in, const char *pattern, char *item, char *out) {
+	/* Removes the searched-for item from in, returns it in item, with the rest in out.
+	 * pattern is usually ":." for title, ":," for unit, and ":" for label.
+	 * ASSUMPTION: Only pass ":" after first removing titles and units
+	 */
+	 
+	char *s;
+	BOOLEAN error = FALSE;
+	 
+	if ((s = strstr (in, pattern))) {		/* OK, found what we are looking for */
+		int i, j, k;
+		k = (int)(s - in);			/* Start index of item */
+		strncpy (out, in, k);			/* Copy everything up to the pattern */
+		i = k + strlen (pattern);		/* Now go to beginning of item */
+		j = 0;
+		while (in[i] && in[i] != ':') item[j++] = in[i++];	/* Copy the item... */
+		item[j] = '\0';				/* ...and terminate the string */
+		if (in[i] != ':') error = TRUE;		/* Error: Missing terminating colon */
+		i++;					/* Skip the ending colon */
+		while (in[i]) out[k++] = in[i++];	/* Copy rest to out... */
+		out[k] = '\0';				/* .. and terminate */
+	}
+	else {	/* No such item */
+		strcpy (out, in);
+		item[0] = '\0';
+	}
+	
+	if (error) {	/* Problems with decoding */
+		fprintf (stderr, "%s: ERROR: Missing terminating colon in -B string %s\n", GMT_program, in);
+		exit (EXIT_FAILURE);
+	}
+	if (strstr (out, pattern) && !strcmp (pattern, ":.")) {	/* Problems with decoding title */
+		fprintf (stderr, "%s: ERROR: More than one title in  -B string %s\n", GMT_program, in);
+		exit (EXIT_FAILURE);
+	}
+	if (strstr (out, pattern) && !strcmp (pattern, ":,")) {	/* Problems with decoding unit */
+		fprintf (stderr, "%s: ERROR: More than one unit string in  -B component %s\n", GMT_program, in);
+		exit (EXIT_FAILURE);
+	}
+	if (strstr (out, pattern)) {	/* Problems with decoding label */
+		fprintf (stderr, "%s: ERROR: More than one label string in  -B component %s\n", GMT_program, in);
+		exit (EXIT_FAILURE);
+	}
+}
+
+void GMT_strip_wesnz (const char *in, int t_side[], BOOLEAN *draw_box, char *out) {
+	/* Removes the WESNZwesnz+ flags and sets the side/drawbox parameters
+	 * and return the resulting stripped string
+	 */
+	 
+	BOOLEAN set_sides = FALSE, mute = FALSE;
+	int i, k, set, side[5] = {0, 0, 0, 0, 0};
+	
+	for (i = k = 0; in[i]; i++) {
+		if (in[i] == ':') mute = !mute;	/* Toggle so that mute is TRUE when we are within a :<stuff>: string */
+		if (mute) {	/* Dont look for WEST inside a label */
+			out[k++] = in[i];
+			continue;
+		}
+		set = 0;
+		switch (in[i]) {
+			case 'W':	/* Draw AND Anotate */
+				set++;
+			case 'w':	/* Just Draw */
+				side[0] = ++set;
+				set_sides = TRUE;
+				break;
+			case 'E':	/* Draw AND Anotate */
+				set++;
+			case 'e':	/* Just Draw */
+				if (i > 0 && (in[i-1] == '.' || isdigit (in[i-1])) && (in[i+1] && (isdigit (in[i+1]) || in[i+1] == '-' || in[i+1] == '+')))	/* Exponential notation */
+					out[k++] = in[i];
+				else {
+					side[1] = ++set;
+					set_sides = TRUE;
+				}
+				break;
+			case 'S':	/* Draw AND Anotate */
+				set++;
+			case 's':	/* Just Draw */
+				side[2] = ++set;
+				set_sides = TRUE;
+				break;
+			case 'N':	/* Draw AND Anotate */
+				set++;
+			case 'n':	/* Just Draw */
+				side[3] = ++set;
+				set_sides = TRUE;
+				break;
+			case 'Z':	/* Draw AND Anotate */
+				set++;
+			case 'z':	/* Just Draw */
+				side[4] = ++set;
+				set_sides = TRUE;
+				if (in[i+1] == '+') *draw_box = TRUE, i++;
+				break;
+			default:	/* Anything else is copy */
+				out[k++] = in[i];
+				break;
+		}
+	}
+	out[k] = '\0';	/* Terminate string */
+	
+	if (set_sides) for (i = 0; i < 5; i++) t_side[i] = side[i];	/* Only changes these if WESN was provided */
+}
+
+void GMT_split_info (const char *in, char *info[]) {
+	/* Take the -B string (minus the leading -B) and chop into 3 strings for x, y, and z */
+	
+	BOOLEAN mute = FALSE;
+	
+	int i, n_slash, s_pos[2];
+	
+	for (i = n_slash = 0; in[i] && n_slash < 3; i++) {
+		if (in[i] == ':') mute = !mute;
+		if (in[i] == '/' && !mute) {	/* Axis-separating slash, not a slash in a label */
+			s_pos[n_slash++] = i;
+		}
+	}
+	
+	if (n_slash == 3) {
+		fprintf (stderr, "%s: Error splitting -B string %s\n", GMT_program, in);
+		exit (EXIT_FAILURE);
+	}
+	
+	if (n_slash == 2) {	/* Got x/y/z */
+		i = strlen (in);
+		strncpy (info[0], in, s_pos[0]);				info[0][s_pos[0]] = '\0';
+		strncpy (info[1], &in[s_pos[0]+1], s_pos[1] - s_pos[0] - 1);	info[1][s_pos[1] - s_pos[0] - 1] = '\0';
+		strncpy (info[2], &in[s_pos[1]+1], i - s_pos[1] - 1);		info[2][i - s_pos[1] - 1] = '\0';
+	}
+	else if (n_slash == 1) {	/* Got x/y */
+		i = strlen (in);
+		strncpy (info[0], in, s_pos[0]);				info[0][s_pos[0]] = '\0';
+		strncpy (info[1], &in[s_pos[0]+1], i - s_pos[0] - 1);		info[1][i - s_pos[0] - 1] = '\0';
+		info[2][0] = '\0';			/* Zero out the z info */
+	}
+	else {	/* Got x with implicit copy to y */
+		strcpy (info[0], in);
+		strcpy (info[1], in);
+		info[2][0] = '\0';			/* Zero out the z info */
+	}
+}
+
+void GMT_decode_tinfo (char *in, struct TIME_AXIS *A) {
+	/* Decode the anot/tick segments of the clean -B string pieces */
+	
+	char *t, *s, flag, mod, unit;
+	int error = 0;
+	double val;
+	
+	if (!in) return;	/* NULL pointer passed */
+	
+	t = in;
+	while (t[0] && !error) {	/* As long as there are more segments to decode and no trouble so far */
+		if (isdigit (t[0]))	/* No segment type given, set to * which means a + f */
+			flag = '*';
+		else {
+			flag = t[0];	/* Set flag */
+			if (!strchr ("AaIifg*", flag)) {	/* Illegal flag given */
+				error = 1;
+				continue;
+			}
+			t++;		/* Skip to next */
+			if (!t[0]) {
+				error = 2;
+				continue;
+			}
+		}
+		if (flag == 'i' || flag == 'I') {	/* Interval anotations may have modifier flag */
+			if (strchr ("FACfac", t[0])) {	/* One of the allowed list of modifiers? */
+				mod = t[0];
+				t++;			/* Skip to next */
+				if (!t[0]) {		/* If nothing follows modifier we have a problem */
+					error = 2;
+					continue;
+				}
+			}
+		}
+		else
+			mod = 0;			/* No mod for Aafg flags */
+		
+		/* Here, t must point to a valid number.  If t[0] is not +,-,. or a digit we have an error */
+		
+		if (!(isdigit (t[0]) || t[0] == '-' || t[0] == '+' || t[0] == '.')) {
+			error = 2;
+			continue;
+		}
+		/* Decode interval, get pointer to next segment */
+		if ((val = strtod (t, &s)) < 0.0) {			/* Interval must be >= 0 */
+			error = 3;
+			continue;
+		}
+		if (s[0] && strchr ("YyOoUuKkJjDdHhMmCc", s[0])) {	/* Appended one of the allowed units */
+			unit = s[0];
+			s++;
+		}
+		else							/* Default unit implied */
+			unit = GMT_time_system[gmtdefs.time_system].unit;
+			
+		/* else s is either 0 or points to the next segment */
+		
+		if (!error) GMT_set_titem (A, val, flag, unit, mod);	/* Store the findings for this segment */
+		t = s;							/* Make t point to start of next segment, if any */
+	}
+	
+	if (error) {
+		switch (error) {
+			case 1:
+				fprintf (stderr, "%s: ERROR: Unrecognized axis item or unit %c in -B string component %s\n", GMT_program, flag, in);
+				break;
+			case 2:
+				fprintf (stderr, "%s: ERROR: Interval missing from -B string component %s\n", GMT_program, in);
+				break;
+			case 3:
+				fprintf (stderr, "%s: ERROR: Negative intervaln -B string component %s\n", GMT_program, in);
+				break;
+			default:
+				break;
+		}
+		exit (EXIT_FAILURE);
+	}
+}
+
+void GMT_set_titem (struct TIME_AXIS *A, double val, char flag, char unit, char mod) {
+	/* Load the values into the appropriate TIME_AXIS_ITEM structure */
+	
+	int i, n = 1;
+	struct TIME_AXIS_ITEM *I[2];
+	char item_flag[6] = {'a', 'A', 'i', 'I', 'f', 'g'};
+	
+	if (GMT_verify_time_step (irint (val), unit)) exit (EXIT_FAILURE);
+	if ((fmod (val, 1.0) > GMT_CONV_LIMIT)) {
+		fprintf (stderr, "%s: ERROR: Time step interval (%lg) must be an integer\n", GMT_program, val);
+		exit (EXIT_FAILURE);
+	}
+	
+	switch (flag) {
+		case 'a':	/* Upper tick anotation */
+			I[0] = &A->item[0];
+			break;
+		case 'A':	/* Lower tick anotation */
+			I[0] = &A->item[1];
+			break;
+		case 'i':	/* Upper interval anotation */
+			I[0] = &A->item[2];
+			break;
+		case 'I':	/* Lower interval anotation */
+			I[0] = &A->item[3];
+			break;
+		case 'f':	/* Frame tick interval */
+			I[0] = &A->item[4];
+			break;
+		case 'g':	/* Gridline interval */
+			I[0] = &A->item[5];
+			break;
+		case '*':	/* Both a and f */
+			I[0] = &A->item[0];
+			I[1] = &A->item[4];
+			n = 2;
+			break;
+		default:	/* Bad flag should never get here */
+			fprintf (stderr, "%s: Bad flag passed to GMT_set_titem\n", GMT_program);
+			exit (EXIT_FAILURE);
+			break;
+	}
+		
+	for (i = 0; i < n; i++) {
+		if (I[i]->active) {
+			fprintf (stderr, "%s: Warning: Axis sub-item %c set more than once (typo?)\n", GMT_program, item_flag[i]);
+		}
+		I[i]->interval = val;
+		I[i]->unit = unit;
+		I[i]->type = (flag == 'I' || flag == 'i') ? 'I' : 'A';
+		I[i]->flavor = 0;
+		I[i]->active = TRUE;
+		I[i]->upper_case = FALSE;
+		switch (mod) {	/* This parameter controls which version of month/day textstrings we use for plotting */
+			case 'F':	/* Full name, upper case */
+				I[i]->upper_case = TRUE;
+			case 'f':	/* Full name, lower case */
+				I[i]->flavor = 0;
+				break;
+			case 'A':	/* Abbreviated name, upper case */
+				I[i]->upper_case = TRUE;
+			case 'a':	/* Abbreviated name, lower case */
+				I[i]->flavor = 1;
+				break;
+			case 'C':	/* 1-char name, upper case */
+				I[i]->upper_case = TRUE;
+			case 'c':	/* 1-char name, lower case */
+				I[i]->flavor = 2;
+				break;
+			default:
+				break;
+		}
+	}
+}
+
+int GMT_map_getframe (char *in) {
+	char out1[BUFSIZ], out2[BUFSIZ], *info[3], xyz[3] = {'x', 'y', 'z'}, yn[2] = {'N', 'Y'};
+	char one[80], two[80], three[80];
+	struct TIME_AXIS *A;
+	int i, k;
+	
+	/* OK, the tframe_info.side[] may be set already */
+	
+	info[0] = one;	info[1] = two;	info[2] = three;
+	for (i = 0; i < 3; i++) memset ((void *)&tframe_info.axis[i], 0, sizeof (struct TIME_AXIS));
+	tframe_info.header[0] = '\0';
+	tframe_info.plot = TRUE;
+	tframe_info.draw_box = FALSE;
+	
+	GMT_strip_colonitem (in, ":.", tframe_info.header, out1);			/* Extract header string, if any */
+	
+	GMT_strip_wesnz (out1, tframe_info.side, &tframe_info.draw_box, out2);		/* Decode WESNZwesnz+ flags, if any */
+	
+	GMT_split_info (out2, info);					/* Chop/copy the three axis strings */
+	
+	for (i = 0; i < 3; i++) {					/* Process each axis separately */
+#ifdef DEBUG
+		fprintf (stderr, "String %c: [%s]\n", xyz[i], info[i]);
+#endif
+		
+		if (!info[i][0]) continue;
+		
+		GMT_strip_colonitem (info[i], ":,", tframe_info.axis[i].unit, out1);	/* Pull out anotation unit, if any */
+		GMT_strip_colonitem (out1, ":", tframe_info.axis[i].label, out2);		/* Pull out axis label, if any */
+		
+		GMT_decode_tinfo (out2, &tframe_info.axis[i]);					/* Decode the anotation intervals */
+		
+#ifdef DEBUG
+		A = &tframe_info.axis[i];
+		fprintf (stderr, "Unit: [%s]\n", A->unit);
+		fprintf (stderr, "Label: [%s]\n", A->label);
+		for (k = 0; k < 6; k++) {
+			if (!A->item[k].active) continue;
+			fprintf (stderr, "Axis %c, item %d: Active = %c val = %lg Unit = %c flavor = %d, upper_case = %c\n", xyz[i], k, yn[A->item[k].active], A->item[k].interval, A->item[k].unit, A->item[k].flavor, yn[A->item[k].upper_case]);
+		}
+#endif
+	}
+#ifdef DEBUG
+	fprintf (stderr, "Title: [%s]\n", tframe_info.header);
+	if (tframe_info.draw_box)
+		fprintf (stderr, "3-D box is TRUE  ");
+	else
+		fprintf (stderr, "3-D box is FALSE  ");
+	fprintf (stderr, "WESNZ = %d %d %d %d %d\n", tframe_info.side[0], tframe_info.side[1], tframe_info.side[2], tframe_info.side[3], tframe_info.side[4]);
+#endif
+	
+	GMT_copytoframe (&tframe_info);
+	return (0);
+}
+
+	
+void GMT_copytoframe (struct TIME_FRAME *T)
+{	/* This routine copies axis information that was meant for non-time axes to the
+	 * frame_info structure and deals with units etc.  This will eventually go away
+	 * as we use only the new structures.
+	 */
+	 
+	int i, j;
+	for (i = 0; i < 4; i++) T->side[i] = 2;
+	T->side[4] = 0;
+	for (i = 0; i < 3; i++) {
+		for (j = 0; j < 6; j++) {	/* Convert units directly */
+			if (T->axis[i].item[j].unit == 'm') T->axis[i].item[j].interval /= 60.0;
+			if (T->axis[i].item[j].unit == 'c') T->axis[i].item[j].interval /= 3600.0;
+			if (T->axis[i].item[j].unit == 'h') T->axis[i].item[j].interval /= 24.0;
+		}
+		frame_info.anot_int[i] = T->axis[i].item[0].interval;
+		frame_info.frame_int[i] = T->axis[i].item[4].interval;
+		if (frame_info.frame_int[i] == 0.0) frame_info.frame_int[i] = frame_info.anot_int[i];
+		frame_info.grid_int[i] = T->axis[i].item[5].interval;
+		strcpy (frame_info.label[i], T->axis[i].label);
+		strcpy (frame_info.unit[i], T->axis[i].unit);
+	}
+	strcpy (frame_info.header, T->header);
+	for (i = 0; i < 5; i++) frame_info.side[i] = T->side[i];
+	frame_info.draw_box = T->draw_box;
+	frame_info.plot = T->plot;
+/*
+	printf ("\n\na%lgf%lgg%lg:,%s::%s:/a%lgf%lgg%lg:,%s::%s:/a%lgf%lgg%lg:,%s::%s::.%s:", frame_info.anot_int[0], frame_info.frame_int[0], frame_info.grid_int[0], frame_info.unit[0], frame_info.label[0],
+	frame_info.anot_int[1], frame_info.frame_int[1], frame_info.grid_int[1], frame_info.unit[1], frame_info.label[1],
+	frame_info.anot_int[2], frame_info.frame_int[2], frame_info.grid_int[2], frame_info.unit[2], frame_info.label[2], frame_info.header);
+	if (T->side[0] == 2)
+		printf ("W");
+	else if (T->side[0] == 1)
+		printf ("w");
+	if (T->side[1] == 2)
+		printf ("E");
+	else if (T->side[1] == 1)
+		printf ("e");
+	if (T->side[2] == 2)
+		printf ("S");
+	else if (T->side[2] == 1)
+		printf ("s");
+	if (T->side[3] == 2)
+		printf ("N");
+	else if (T->side[3] == 1)
+		printf ("n");
+	if (T->side[4] == 2)
+		printf ("Z");
+	else if (T->side[4] == 1)
+		printf ("z");
+	if (T->draw_box) printf ("+");
+	printf ("\n");	*/
+}
+
+		
 
 int GMT_map_getproject (char *args)
 {
