@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.20 2004-01-12 18:57:37 pwessel Exp $
+ *	$Id: pslib.h,v 1.21 2004-05-25 04:59:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -119,6 +119,7 @@ EXTERN_MSC void ps_square(double x, double y, double side, int rgb[], int outlin
 EXTERN_MSC void ps_star(double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_text(double x, double y, double pointsize, char *text, double angle, int justify, int form);
 EXTERN_MSC void ps_textbox(double x, double y, double pointsize, char *text, double angle, int justify, int outline, double dx, double dy, int rgb[]);
+EXTERN_MSC void ps_pathtext (double x[], double y[], int n, double pointsize, char *text, double offset, int justify, int form);
 EXTERN_MSC void ps_transrotate(double x, double y, double angle);
 EXTERN_MSC void ps_triangle(double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_vector(double xtail, double ytail, double xtip, double ytip, double tailwidth, double headlength, double headwidth, double headshape, int rgb[], int outline);
