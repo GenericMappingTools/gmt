@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.49 2004-06-11 03:02:58 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.50 2004-07-13 18:47:09 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -20,7 +20,9 @@ the cook-book section where we present actual examples of their use.
 \index{Units|(}
 
 \GMT\ programs can accept dimensional quantities in {\bf c}m, {\bf i}nch,
-{\bf m}eter, or {\bf p}oint.  There are two ways to ensure that \GMT\ understands
+{\bf m}eter, or {\bf p}oint (1/72 of an inch)\footnote{\PS\ definition.
+In the typesetting industry a slighly different definition of point
+(1/72.27 inch) is used.}.  There are two ways to ensure that \GMT\ understands
 which unit you intend to use.
 
 \begin{enumerate}
@@ -28,7 +30,7 @@ which unit you intend to use.
 way is explicit and clearly communicates what you intend, e.g.,
 \Opt{X}4{\bf c} means 4 cm.
 
-\item Set the parameter MEASURE\_UNIT to the desired unit.  Then, all
+\item Set the parameter {\bf MEASURE\_UNIT} to the desired unit.  Then, all
 dimensions without explicit unit will be interpreted accordingly.
 
 \end{enumerate}
@@ -41,22 +43,22 @@ you always supply the desired unit explicitly.
 \index{Units|)}
 
 \section{\gmt\ defaults}
-\subsection{Overview and the \filename{.gmtdefaults4} file}
+\subsection{Overview and the \filename{.gmtdefaults4}\ file}
 
 \index{GMT@\GMT!defaults|(}
 \index{Default settings|(}
 
 \GMTfig[h]{GMT_Defaults_1a}{Some \gmt\ parameters that affect plot appearance.}
 
-There are about 80 parameters which can be adjusted individually
+There are about 100 parameters which can be adjusted individually
 to modify the appearance of plots or affect the manipulation of data.
 When a program is run, it initializes all parameters to the \GMT\
 defaults\footnote{Choose between SI and US default units by modifying
-\filename{gmt.conf} in the \GMT\ share directory},
+\filename{gmt.conf} in the \GMT\ share directory.},
 then tries to open the file \filename{.gmtdefaults4}
 in the current directory\footnote{To remain backwards compatible with \GMT\ 3.4.x
 we will also look for \filename{.gmtdefaults} but only if \filename{.gmtdefaults4}
-cannot be found}.  If not found, it will look for that file
+cannot be found.}.  If not found, it will look for that file
 in your home directory.  If successful, the program will read the
 contents and set the default values to those provided in the file.
 By editing this file you can affect features such as pen thicknesses
@@ -78,8 +80,7 @@ readable overheads and slides.  Note that any arguments given on
 the command line (see below) will take precedent over the default
 values.  E.g., if your \filename{.gmtdefaults4} file has {\it x}
 offset = 1{\bf i} as default, the \Opt{X}1.5{\bf i} option will override the
-default and set the offset to 1.5 inches.  Default values
-may also be changed from the command line with the utility \GMTprog{gmtset}. 
+default and set the offset to 1.5 inches. 
 
 There are at least two good reasons why the \GMT\ default options
 are placed in a separate parameter file:
@@ -97,11 +98,11 @@ effect simply by running \GMT\ commands in a sub-directory whose
 when making final illustrations for a journal article one must often
 standardize on font sizes and font types, etc.  Keeping all those
 settings in a separate \filename{.gmtdefaults4} file simplifies this
-process.  Likewise, \GMT\ scripts that make slides often use a
-different color scheme and font size than output intended for laser
-printers.  Organizing these various scenarios into separate
-\filename{.gmtdefaults4} files will minimize headaches associated
-with micro-editing of illustrations.
+process.  Likewise, \GMT\ scripts that make figures for PowerPoint
+presentations often use a different color scheme and font size than
+output intended for laser printers.  Organizing these various scenarios
+into separate \filename{.gmtdefaults4} files will minimize headaches
+associated with micro-editing of illustrations.
 
 \GMTfig[h]{GMT_Defaults_1b}{More \gmt\ parameters that affect plot appearance.}
 
@@ -123,34 +124,32 @@ tedious but may be an option for web-based map-servers.
 copy of the current \filename{.gmtdefaults4}, then copy the desired
 \filename{.gmtdefaults4} file to the current directory, and finally
 undo the changes at the end of the script.  Possible side effects
-include premature ending of the script due to user error or bug which
-means the final resetting does not take place unless you write your
-script very carefully.
+include premature ending of the script due to user error or bugs which
+means the final resetting does not take place (unless you write your
+script very carefully.)
 \item To permanently change some of the \GMT\ parameters on the fly
 inside a script the \GMTprog{gmtset} utility can be used.  E.g., to
-change the annotation font to 12 point Times-Bold we run \\
+change the primary annotation font to 12 point Times-Bold we run \\
 
 \texttt{gmtset ANNOT\_FONT\_PRIMARY Times-Bold ANNOT\_FONT\_SIZE\_PRIMARY 12} \\
 
 These changes will remain in effect until they are overridden.
 \item Finally, if all you want to achieve is to change a few parameters during
-the execution of a single command but leave the environment intact, consider
-passing the parameter chances on the command line via the \-\-\emph{PAR=value}
+the execution of a single command but otherwise leave the environment intact, consider
+passing the parameter chances on the command line via the {--}{--}\emph{PAR=value}
 mechanism.  For instance, to temporarily set the output format for floating
 points to have lots of decimals, say, for map projection coordinate output,
-append \-\-{\bfD\_FORMAT}=\%.12lg to the command in question.
+append {--}{--}{\bf D\_FORMAT}=\%.12lg to the command in question.
 \end{enumerate}
 In addition to those parameters
 that directly affect the plot there are numerous parameters than
 modify units, scales, etc.  For a complete listing, see the
-\GMTprog{gmtdefaults} man pages.
+\GMTprog{gmtdefaults} man pages.  We suggest that you go through
+all the available parameters at least once so that you know what is
+available to change via one of the described mechanisms.
 
 \GMTfig[h]{GMT_Defaults_1c}{Even more \gmt\ parameters that affect plot appearance.}
 
-At the end of the script one can then reset the specific parameters
-back to what they originally were.  We suggest that you go through
-all the available parameters at least once so that you know what is
-available to change via one of the proposed mechanisms.
 \index{GMT@\GMT!defaults|)}
 \index{Default settings|)}
 
@@ -184,7 +183,7 @@ The 15 switches in Table~\ref{tbl:switches} have the same meaning
 in all the programs (allthough some programs may not use all of them).
 These options will be described here as well as in the manual pages,
 as is vital that you understand how to use these options.  We will present
-these options in order of importance (some are use alot more than others).
+these options in order of importance (some are use a lot more than others).
 
 \begin{table}
 \centering
@@ -209,39 +208,41 @@ these options in order of importance (some are use alot more than others).
 \multicolumn{1}{|c|}{\emph{Option}}	&	\multicolumn{1}{c|}{\emph{Meaning}} \\ \hline
 \Opt{B}	&	Defines tickmarks, annotations, and labels for basemaps and axes  \\ \hline
 \Opt{H}	&	Specifies that input/output tables have header record(s)  \\ \hline
-\Opt{J}	&	Selects a map projection or one of several non-map projections  \\ \hline
+\Opt{J}	&	Selects a map projection or coordinate transformation  \\ \hline
 \Opt{K}	&	Allows more plot code to be appended to this plot later \\ \hline
 \Opt{O}	&	Allows this plot code to be appended to an existing plot \\ \hline
 \Opt{P}	&	Selects Portrait plot orientation [Default is landscape] \\ \hline
-\Opt{R}	&	Defines the min. and max. coordinates of the map/plot region \\ \hline
+\Opt{R}	&	Defines the extent of the map/plot region \\ \hline
 \Opt{U}	&	Plots a time-stamp, by default in the lower left corner of page  \\ \hline
-\Opt{V}	&	Verbose operation  \\ \hline
+\Opt{V}	&	Selects verbose operation; reporting on progress  \\ \hline
 \Opt{X}	&	Sets the {\it x}-coordinate for the plot origin on the page  \\ \hline
 \Opt{Y}	&	Sets the {\it y}-coordinate for the plot origin on the page  \\ \hline
-\Opt{b}	&	Selects binary input or output  \\ \hline
+\Opt{b}	&	Selects binary input and/or output  \\ \hline
 \Opt{c}	&	Specifies the number of plot copies  \\ \hline
 \Opt{f}	&	Specifies the data format on a per column basis  \\ \hline
-\Opt{:}	&	Input geographic data are ({\it lat,lon}) rather than ({\it lon,lat})  \\ \hline
+\Opt{:}	&	Assumes input geographic data are ({\it lat,lon}) and not ({\it lon,lat})  \\ \hline
 \end{tabular}
 \caption{The 15 standardized \gmt\ command line switches.}
 \label{tbl:switches}
 \end{table} 
 
-\subsection{Data domain: The \Opt{R} option}
+\subsection{Data Domain or Map Region: The \Opt{R} option}
 \index{\Opt{R}}
 \index{Region, specifying}
 \label{sec:R}
-\GMTfig[h]{GMT_-R}{The plot region can be specified in two different ways.}
+\GMTfig[h]{GMT_-R}{The plot region can be specified in two different ways. (a) Extreme values
+for each dimension, or (b) coordinates of lower left and upper right corners.}
 
 The \Opt{R} option defines the map region or data domain of interest.  It may be specified
 in one of two ways (Figure~\ref{fig:GMT_-R}):
 \begin{enumerate}
 \item \Opt{R}{\it xmin}/{\it xmax}/{\it ymin}/{\it ymax}.  This is the standard way to specify
-Cartesian data domains and regions for map projections in which meridians and parallels are rectilinear.
+Cartesian data domains and geographical regions when using map projections where meridians and
+parallels are rectilinear.
 \item \Opt{R}{\it xlleft}/{\it ylleft}/{\it xuright}/{\it yuright}{\bf r}.
 This form is used with map projections that are oblique, making meridians and parallels poor
 choices for map boundaries.  Here, we instead specify the lower left corner and upper right
-corner geographic coordinates. 
+corner geographic coordinates, followed by the suffix {\bf r}.
 \end{enumerate}
 For rectilinear projections the two forms give identical results.  Depending on the selected map
 projection (or the kind of expected input data), the boundary coordinates may take on three different
@@ -258,8 +259,8 @@ or {\it yyyy}[{\it -jjj}] (year and day-of-year) for Gregorian calendars and {\i
 day-of-week) for the ISO calendar.  If no {\it date} is given we assume the present day.  Following the [optional] {\it date} string we require the {\bf T} flag.
 The optional {\it clock} string is a 24-hour clock in {\it hh}[{\it :mm}[{\it :ss}[{\it .xxx}]]] format.  If no {\it clock} is given
 it implies 00:00:00, i.e., the start of the specified day.
-Note that not all of the specified enteties need be present in the data.  All calendar-clock strings are internally represented as double precision seconds since
-proleptic Gregorian date Mon Jan 1 00:00:00 0001.  Proleptic means we assume that modern calendar
+Note that not all of the specified enteties need be present in the data.  All calendar date-clock strings are internally represented as double precision seconds since
+proleptic Gregorian date Mon Jan 1 00:00:00 0001.  Proleptic means we assume that the modern calendar
 can be extrapolated forward and backward; a year zero is used, and Gregory's reforms\footnote{The Gregorian Calendar
 is a revision of the Julian Calendar which was instituted in a papal bull by Pope Gregory XIII in 1582. The reason for the calendar
 change was to correct for drift in the dates of signifigant religious observations (primarily Easter) and to prevent further drift
@@ -276,7 +277,9 @@ notations, with the enhancement to understand FORTRAN double precision output wh
 These values are simply converted as they are to internal representation.  One exception is the concept
 of relative time which is read as a floating point offset from an absolute time reference point (epoch).  The unit and the
 epoch are specified with the {\bf TIME\_SYSTEM} parameter.  Relative time coordinates are expected when a coordinate transformation
-involving relative time has been selected or when the \Opt{f} switch has been used to indicate relative time coordinates.
+involving relative time has been selected or when the \Opt{f} switch has been used to indicate relative time coordinates.\footnote{While
+UTM coordinates clearly refer to points on the Earth, in this context they are considered ``other''.  Thus, when we
+refer to ``geographical'' coordinates herein we imply longitude, latitude.}
 \end{description}
 
 \subsection{Coordinate Transformations and Map Projections: The \Opt{J} option}
@@ -319,7 +322,7 @@ selected information. The optional flag following \Opt{B} selects {\bf p}(rimary
 axes information (mostly used for time axes annotations; see examples below).
 The components {\it xinfo}, {\it yinfo} and {\it zinfo} are of the form \\
 
-\par {\it info}[:"axis label":][:\verb+^+"prefix":][:,"unit label":] \\
+\par {\it info}[:"axis label":][:="prefix":][:,"unit label":] \\
 
 \noindent
 where {\it info} is one or more concatenated substrings of the form
@@ -348,6 +351,8 @@ Note that the appearance of certain time annotations (month-, week-, and day-nam
 by the {\bf TIME\_LANGUAGE}, {\bf TIME\_FORMAT\_PRIMARY}, and {\bf TIME\_FORMAT\_SECONDARY} settings.
 
 The unit flag {\bf u} can take on one of 18 codes; these are listed in  Table~\ref{tbl:units}.
+Almost all of these units are time-axis specific.  However, the {\bf m} and {\bf c} units will be
+interpreted as arc minutes and arc seconds, respectively, when a map projection is in effect.
 
 \begin{table}[h]
 \centering
@@ -375,11 +380,6 @@ The unit flag {\bf u} can take on one of 18 codes; these are listed in  Table~\r
 \caption{Interval unit codes.}
 \label{tbl:units}
 \end{table}
-
-\noindent
-
-Almost all of these units are time-axis specific.  However, the {\bf m} and {\bf c} units will be
-interpreted as arc minutes and arc seconds, respectively, when a map projection is in effect.
 
 There may be two levels of annotations.  Here, ``primary'' refers to the annotation
 that is closest to the axis (this is the primary annotation), while ``secondary'' refers to the secondary
@@ -419,7 +419,7 @@ optional.  We used \Opt{R}0/12/0/1 \Opt{JX}3/0.4
 \index{log$_{10}$ axes}
 \index{Logarithmic axes}
 
-Due to the logarithmic nature of annotation spacings, the {\it stride} parameter take on specific
+Due to the logarithmic nature of annotation spacings, the {\it stride} parameter takes on specific
 meanings.  The following concerns are specific to log axes:
 
 \begin{enumerate}
@@ -495,7 +495,7 @@ The third example presents two years, annotating both the years and every 3rd mo
 
 Note that while the year annotation is centered on the 1-year interval, the month annotations must be centered
 on the corresponding month and \emph{not} the 3-month interval.  The {\bf PLOT\_DATE\_FORMAT} selects month
-name only and {\bf PLOT\_FORMAT\_PRIMARY} selects the 1-character, upper case abbreviation of monthnames using
+name only and {\bf PLOT\_FORMAT\_PRIMARY} selects the 1-character, upper case abbreviation of month names using
 the current language (selected by {\bf TIME\_LANGUAGE}).
 \GMTfig[h]{GMT_-B_time3}{Cartesian time axis, example 3.}
 
@@ -662,7 +662,7 @@ see Appendix B.
 \index{\Opt{fi} (set input format)}
 \index{\Opt{fo} (set output format)}
 
-As mentioned in Section~\ref{sec:io}, when map projections are not required we must explicitly state
+When map projections are not required we must explicitly state
 what kind of data each input or output column contains.  This is accomplished with
 the \Opt{f} option.  Following an optional {\bf i} (for input only) or {\bf o} (for output
 only), we append a text string with information about each column (or range of columns) separated by commas.
@@ -674,6 +674,7 @@ input file has geographic coordinates (latitude, longitude) with absolute calend
 coordinates in the columns 3 and 4, we would specify {\bf fi}0y,1x,3-4T.  All other columns
 are assumed to have the default, floating point format and need not be set individually.
 The shorthand \Opt{f}[{\bf i}$|${\bf o}]{\bf g} means \Opt{f}[{\bf i}$|${\bf o}]0x,1y (geographic coordinates).
+For more information, see Section~\ref{sec:io}.
 
 \subsection{Number of Copies: The \Opt{c} option}
 \index{\Opt{c}}
@@ -708,6 +709,7 @@ projection, specified as
 \vspace{\baselineskip} 
 
 \texttt{-Joc170W/25:30S/33W/56:20N/1:500000} \\ 
+
 \vspace{\baselineskip} 
 \noindent
 then a subsequent \GMTprog{psxy} command to plot symbols only needs
@@ -725,7 +727,7 @@ previous option argument in the \filename{.gmtcommands4} file.
 If you call several \GMT\ modules piped together then \GMT\ cannot
 guarantee that the \filename{.gmtcommands4} file is processed
 in the intended order from left to right.  The only guarantee
-is that the file will not be clobbered since \GMT\ now uses advisory
+is that the file will not be clobbered since \GMT\ uses advisory
 file locking.  The uncertainty in processing order makes the use
 of shorthands in pipes unreliable.  We therefore recommend that you
 only use shorthands in single process command lines, and spell out
@@ -828,7 +830,7 @@ if you want to create a log file of what you are doing.
 Most of the time, \GMT\ will know what kind of $x$ and $y$ coordinates it is reading because you have selected
 a particular coordinate transformation or map projection.  However,
 there may be times when you must explicitly specify what you are
-providing as input using the \Opt{f} switch (see below). When binary data are expected (\Opt{b}) they must all
+providing as input using the \Opt{f} switch. When binary data are expected (\Opt{b}) they must all
 be floating point numbers, however for ASCII input there are numerous
 ways to encode data coordinates (which may be separated by white-space or commas).  Valid input data are generally
 of the same form as the arguments to the \Opt{R} option (see Section~\ref{sec:R}), with the following additional
@@ -914,8 +916,7 @@ current device resolution (i.e., the value assigned to the parameter
 {\bf DOTS\_PR\_INCH} in your \filename{.gmtdefaults4} file).  Thus, if the
 dpi is set to 300 this unit is 1/300th of an inch.  Append {\bf c},
 {\bf i}, {\bf p}, or {\bf m} to specify pen width in cm, inch, points
-(1/72 of an inch)\footnote{\PS\ definition.  In the typesetting industry
-a slighly different definition of point (1/72.27 inch) is used.}, or meters, respectively.
+(1/72 of an inch), or meters, respectively.
 Note that a pen thickness of 5 will be of different physical width
 depending on your dpi setting, whereas a thickness of 5{\bf p} will
 always be 5/72 of an inch.  Minimum-thickness pens can be achieved by
@@ -936,7 +937,7 @@ thicker		&	1.5p \\ \hline
 thickest	&	2p \\ \hline 
 fat		&	3p \\ \hline 
 fatter		&	6p \\ \hline 
-fat		&	12p \\ \hline 
+fattest		&	12p \\ \hline 
 \end{tabular}
 \caption{\gmt\ predefined pen widths.}
 \label{tbl:pennames}
@@ -948,7 +949,8 @@ fat		&	12p \\ \hline
 \item[$\rightarrow$]The {\it color} can be specified in five different ways:
 \begin{enumerate}
 \item Gray. Specify a {\it gray} shade in the range 0--255 (linearly going from black [0] to white [255]).
-\item RGB. Specify {\it r}/{\it g}/{\it b}, each ranging from 0--255.  Here 0/0/0 is black and 255/255/255 is white.
+\item RGB. Specify {\it r}/{\it g}/{\it b}, each ranging from 0--255.  Here 0/0/0 is black, 255/255/255 is white,
+255/0/0 is red, etc.
 \item HSV. Specify {\it hue}-{\it saturation}-{\it value}, with the former in the 0--360 degree range while the latter
 two take on the range 0--1\footnote{For an overview of color systems such as HSV, see Appendix I.}.
 \item CMYK. Specify {\it cyan}/{\it magenta}/{\it yellow}/{\it black}, each ranging from 0--100\%.
@@ -963,7 +965,8 @@ orange, yellow, green, cyan, blue, magenta, gray, brown}\}.
 \index{Attributes!pen!texture}%
 \item[$\rightarrow$]The {\it texture} attribute controls the appearance
 of the line.  ``.'' yieds a dotted line, while a dashed pen is requested with ``-''.
-For more detailed attributes you may specify {\it string}:{\it offset},
+The lengths of dots and dashes are scaled relative to the pen width.
+For more detailed attributes including exact dimensions you may specify {\it string}:{\it offset},
 where {\it string} is a series of numbers separated by underscores.
 These numbers represent a pattern by indicating the length of line
 segments and the gap between segments.  The {\it offset} phase-shifts the
@@ -1090,7 +1093,7 @@ which can be inserted into the beginning or end of the cpt-file.  If
 you prefer the HSV system, set the
 \filename{.gmtdefaults4} parameter accordingly and replace red, green,
 blue with hue, saturation, value.  Color palette tables that contain
-grayshades only may replace the r-g-b triplets with a single grayshade
+grayshades only may replace the r/g/b triplets with a single grayshade
 in the 0--255 range.  For CMYK, give four values in the 0--100 range.
 Both the min and max color specifications in one {\it z}-slice must use
 the same color system, i.e., you cannot mix ``red'' and 0/255/100 on the
@@ -1177,7 +1180,7 @@ topography by using the former for colors and the latter for shading.
 For annotation labels or textstrings plotted with \GMTprog{pstext},
 \GMT\ provides several escape sequences that allow the user to
 temporarily switch to the symbol font, turn on sub- or superscript,
-etc. within words.  These conditions are toggled on/off by the
+etc., within words.  These conditions are toggled on/off by the
 escape sequence @{\bf x}, where {\bf x} can be one of several types.
 The escape sequences recognized in \GMT\ are listed in Table~\ref{tbl:escape}. 
 
@@ -1197,10 +1200,10 @@ The escape sequences recognized in \GMT\ are listed in Table~\ref{tbl:escape}.
 \label{tbl:escape}
 \end{table}
 
-Shorthand notation for a few special Scandinavian characters has also been
+Shorthand notation for a few special European characters has also been
 added (Table~\ref{tbl:scand}):
-\index{Characters!escape sequences!Scandinavian}
-\index{Scandinavian characters}
+\index{Characters!escape sequences!European}
+\index{European characters}
 
 \begin{table}[H]
 \centering
@@ -1212,15 +1215,22 @@ added (Table~\ref{tbl:scand}):
 @o &  \o \\  \hline
 @A &  \AA \\ \hline
 @a &  \aa \\ \hline
+@C &  \c{C} \\ \hline
+@N &  \~{N} \\ \hline
+@U &  \"{U} \\ \hline
+@c &  \c{c} \\ \hline
+@n &  \~{n} \\ \hline
+@s &  \ss \\ \hline
+@u &  \"{u} \\ \hline
 \end{tabular}
-\caption{Shortcuts for Scandinavian characters.}
+\caption{Shortcuts for some European characters.}
 \label{tbl:scand}
 \end{table}
 
 \PS\ fonts used in \GMT\ may be re-encoded to include
 several accented characters used in many European languages.  To
 access these, you must specify the full octal code $\backslash$xxx
-(See Appendix F) allowed for your choice of character encodings
+allowed for your choice of character encodings
 determined by the {\bf CHAR\_ENCODING} setting described
 in the \GMTprog{gmtdefaults} man page.  Only the special characters
 belonging to a particular encoding will
@@ -1276,7 +1286,7 @@ formats.  These are
 \end{description} 
 
 In addition, users with some C-programming experience may add
-their own read/write kernels and link them with the \GMT\ library
+their own read/write functions and link them with the \GMT\ library
 to extend the number of predefined formats.  Technical information
 on this topic can be found in the source file \filename{gmt\_customio.c}. 
 
@@ -1372,7 +1382,7 @@ your \filename{.gmtdefaults4} file.  Then, using the filename
 \filename{stuff.i2} is equivalent to saying \filename{stuff.i2=2/1/0/32767},
 and the filename \filename{wet.mask} means wet.mask=5/1/0/0.  For a
 file intended for masking, i.e., the nodes are either 1 or NaN,
-the bit or mask format file may be down to 1/32 the size of the
+the bit or mask format file may as small as 1/32 the size of the
 corresponding grd format file. 
 \index{grdfile!embedded format|)}
 
@@ -1391,7 +1401,7 @@ mathematical operation like $0/0$.  This value is stored with a particular bit p
 defined by IEEE so that special action can be taken when it is encountered by programs.
 In particular, a library function called \texttt{isnan} is used to test if a floating point
 is a NaN.  \GMT\ uses these tests extensively to determine if a value is suitable for plotting
-or processing (if a NaN is used in a calculation the result becomes NaN as well).  Data points
+or processing (if a NaN is used in a calculation the result would become NaN as well).  Data points
 whose value is NaN are not normally plotted (or plotted with the special NaN color given in
 \filename{.gmtdefaults4}).  Several tools such as \GMTprog{xyz2grd}, \GMTprog{gmtmath}, and
 \GMTprog{grdmath} can convert user data to NaN and vice versa, thus facilitating arbitrary

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.77 2004-07-03 02:13:31 pwessel Exp $
+ *	$Id: pslib.c,v 1.78 2004-07-13 18:47:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2516,8 +2516,36 @@ char *ps_prepare_text (char *text)
 					strcat (string, ps_scandcodes[5][he-1]);
 					j += strlen(ps_scandcodes[5][he-1]); i++;
 					break;
+				case 'C':
+					strcat (string, ps_scandcodes[6][he-1]);
+					j += strlen(ps_scandcodes[6][he-1]); i++;
+					break;
+				case 'N':
+					strcat (string, ps_scandcodes[7][he-1]);
+					j += strlen(ps_scandcodes[7][he-1]); i++;
+					break;
+				case 'U':
+					strcat (string, ps_scandcodes[8][he-1]);
+					j += strlen(ps_scandcodes[8][he-1]); i++;
+					break;
+				case 'c':
+					strcat (string, ps_scandcodes[9][he-1]);
+					j += strlen(ps_scandcodes[9][he-1]); i++;
+					break;
+				case 'n':
+					strcat (string, ps_scandcodes[10][he-1]);
+					j += strlen(ps_scandcodes[10][he-1]); i++;
+					break;
+				case 's':
+					strcat (string, ps_scandcodes[11][he-1]);
+					j += strlen(ps_scandcodes[1][he-1]); i++;
+					break;
+				case 'u':
+					strcat (string, ps_scandcodes[12][he-1]);
+					j += strlen(ps_scandcodes[12][he-1]); i++;
+					break;
 				case '@':
-/*    Also now converts "@@" to the octal code for "@" = "\100".
+/*    Also now converts "@@" to the octal code for "@" = "\100" in both std and ISO.
        This was necessary since the system routine "strtok" gobbles up
        multiple @'s when parsing the string inside "ps_text", and thus
        didn't properly output a single "@" sign when encountering "@@".
