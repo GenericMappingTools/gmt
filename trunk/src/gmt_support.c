@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.31 2002-06-19 17:53:38 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.32 2002-08-23 00:59:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1159,18 +1159,32 @@ int GMT_intpol (double *x, double *y, int n, int m, double *u, double *v, int mo
 void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname)
 {
 	void *tmp;
+	static char *m_unit[4] = {"bytes", "kb", "Mb", "Gb"};
+	double mem;
+	int k;
 
 	if (nelem == 0) return(VNULL); /* Take care of n = 0 */
 	
+	if (nelem < 0) { /* This is illegal and caused by upstream bugs in GMT */
+		fprintf (stderr, "GMT Fatal Error: %s requesting memory for a negative number of items [n_items = %d]\n", progname, nelem);
+		exit (EXIT_FAILURE);
+	}
+	
 	if (prev_addr) {
 		if ((tmp = realloc ((void *) prev_addr, (size_t)(nelem * size))) == VNULL) {
-			fprintf (stderr, "GMT Fatal Error: %s could not reallocate more memory, n = %d\n", progname, nelem);
+			mem = (double)(nelem * size);
+			k = 0;
+			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
+			fprintf (stderr, "GMT Fatal Error: %s could not reallocate memory [%.2lf %s, n_items = %d]\n", progname, mem, m_unit[k], nelem);
 			exit (EXIT_FAILURE);
 		}
 	}
 	else {
 		if ((tmp = calloc ((size_t) nelem, (unsigned) size)) == VNULL) {
-			fprintf (stderr, "GMT Fatal Error: %s could not allocate memory, n = %d\n", progname, nelem);
+			mem = (double)(nelem * size);
+			k = 0;
+			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
+			fprintf (stderr, "GMT Fatal Error: %s could not allocate memory [%.2lf %s, n_items = %d]\n", progname, mem, m_unit[k], nelem);
 			exit (EXIT_FAILURE);
 		}
 	}
