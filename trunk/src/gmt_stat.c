@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.21 2004-09-30 03:39:15 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.22 2004-09-30 18:22:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2428,8 +2428,44 @@ int GMT_mode_f (float *x, int n, int j, int sort, int mode_selection, int *n_mul
 	return (0);
 }
 
+/* Replacement slower functions until we figure out the problem with the algorithm */
 
 void GMT_getmad (double *x, int n, double location, double *scale)
+{
+	int i;
+	double *dev, med;
+	
+	dev = (double *) GMT_memory (VNULL, (size_t)n, sizeof(double), GMT_program);
+	for (i = 0; i < n; i++) dev[i] = fabs (x[i] - location);
+	qsort ((void *)dev, (size_t)n, sizeof (double), GMT_comp_double_asc);
+	for (i = n; GMT_is_dnan (dev[i-1]) && i > 1; i--);
+	if (i)
+		med = (i%2) ? dev[i/2] : 0.5 * (dev[(i-1)/2] + dev[i/2]);
+	else
+		med = GMT_d_NaN;
+	GMT_free ((void *)dev);
+	*scale = 1.4826 * med;
+}
+
+void GMT_getmad_f (float *x, int n, double location, double *scale)
+{
+	int i;
+	float *dev;
+	double med;
+	
+	dev = (float *) GMT_memory (VNULL, (size_t)n, sizeof(float), GMT_program);
+	for (i = 0; i < n; i++) dev[i] = fabs ((double)(x[i] - location));
+	qsort ((void *)dev, (size_t)n, sizeof (float), GMT_comp_float_asc);
+	for (i = n; GMT_is_fnan (dev[i-1]) && i > 1; i--);
+	if (i)
+		med = (i%2) ? dev[i/2] : 0.5 * (dev[(i-1)/2] + dev[i/2]);
+	else
+		med = GMT_d_NaN;
+	GMT_free ((void *)dev);
+	*scale = 1.4826 * med;
+}
+
+void GMT_getmad_BROKEN (double *x, int n, double location, double *scale)
 {
 	/* Compute MAD (Median Absolute Deviation) for a double data set */
 	
@@ -2492,7 +2528,7 @@ void GMT_getmad (double *x, int n, double location, double *scale)
 	*scale = (n%2) ? (1.4826 * error) : (0.7413 * (error + last_error));
 }
 
-void GMT_getmad_f (float *x, int n, double location, double *scale)
+void GMT_getmad_f_BROKEN (float *x, int n, double location, double *scale)
 {
 	/* Compute MAD (Median Absolute Deviation) for a float data set */
 	
