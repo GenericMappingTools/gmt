@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.19 2001-09-23 23:41:15 pwessel Exp $
+ *	$Id: pslib.c,v 1.20 2001-09-25 20:29:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1385,6 +1385,11 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		fprintf (ps.fp, "/X {M dup 0 D dup -0.5 mul dup G 0 exch D S} bind def\n");
 		fprintf (ps.fp, "/Y {findfont exch scalefont setfont} bind def\n");
 		fprintf (ps.fp, "/Z /show load def\n");
+		fprintf (ps.fp, "/a0 {0 0 M D D 0 D D D D D 0 D D P V A F U N} bind def\n");
+		fprintf (ps.fp, "/a1 {0 0 M D D 0 D D D D D 0 D D P V A F U S} bind def\n");
+		fprintf (ps.fp, "/a2 {0 0 M D D 0 D D D D D 0 D D P V C F U N} bind def\n");
+		fprintf (ps.fp, "/a3 {0 0 M D D 0 D D D D D 0 D D P V C F U S} bind def\n");
+		fprintf (ps.fp, "/a4 {0 0 M D D 0 D D D D D 0 D D P S} bind def\n");
 		fprintf (ps.fp, "/A0 {0 exch M 0 D D D D D 0 D P V A F U N} bind def\n");
 		fprintf (ps.fp, "/A1 {0 exch M 0 D D D D D 0 D P V A F U S} bind def\n");
 		fprintf (ps.fp, "/A2 {0 exch M 0 D D D D D 0 D P V C F U N} bind def\n");
@@ -2207,27 +2212,42 @@ void ps_vector (double xtail, double ytail, double xtip, double ytip, double tai
 	double angle;
 	int w2, length, hw, hl, hl2, hw2, l2;
 	
-	length = irint (hypot ((xtail-xtip), (ytail-ytip)) * ps.scale);
-	if (length == 0) return;
+	length = irint (hypot ((xtail-xtip), (ytail-ytip)) * ps.scale);	/* Vector length in PS units */
+	if (length == 0) return;					/* NULL vector */
 
-	angle = atan2 ((ytip-ytail),(xtip-xtail)) * R2D;
-	fprintf (ps.fp, "V %d %d T", irint (xtail * ps.scale), irint (ytail * ps.scale));
-	if (angle != 0.0) fprintf (ps.fp, " %lg R", angle);
-	w2 = irint (0.5 * tailwidth * ps.scale);	if (w2 == 0) w2 = 1;
-	hw = irint (headwidth * ps.scale);	if (hw == 0) hw = 1;
-	hl = irint (headlength * ps.scale);
-	hl2 = irint (0.5 * headshape * headlength * ps.scale);
-	hw2 = hw - w2;
-	l2 = length - hl + hl2;
-	if (rgb[0] < 0) /* Outline only */
-		fprintf (ps.fp, " %d %d %d %d %d %d %d %d %d %d %d A4 U\n",
-			-l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2);
-	else if (iscolor (rgb)) /* color */
-		fprintf (ps.fp, " %.3lg %.3lg %.3lg %d %d %d %d %d %d %d %d %d %d %d A%d U\n",
-			rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2, outline+2);
-	else /* grayshade */
-		fprintf (ps.fp, " %.3lg %d %d %d %d %d %d %d %d %d %d %d A%d U\n",
-			rgb[0] * I_255, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2, outline);
+	angle = atan2 ((ytip-ytail),(xtip-xtail)) * R2D;					/* Angle vector makes with horizontal, in radians */
+	fprintf (ps.fp, "V %d %d T", irint (xtail * ps.scale), irint (ytail * ps.scale));	/* Temporarily set tail point the local origin (0, 0) */
+	if (angle != 0.0) fprintf (ps.fp, " %lg R", angle);					/* Rotate so vector is horizontal in local coordinate system */
+	w2 = irint (0.5 * tailwidth * ps.scale);	if (w2 == 0) w2 = 1;			/* Half-width of vector tail */
+	hw = irint (headwidth * ps.scale);	if (hw == 0) hw = 1;				/* Width of vector head */
+	hl = irint (headlength * ps.scale);							/* Length of vector head */
+	hl2 = irint (0.5 * headshape * headlength * ps.scale);					/* Cut-in distance due to slanted back-side of arrow head */
+	hw2 = hw - w2;										/* Distance from tail side to head side (vertically) */
+	if (outline & 8) {	/* Double-headed vector */
+		outline -= 8;	/* Remove the flag */
+		l2 = length - 2 * hl + 2 * hl2;							/* Inside length between start of heads */
+		if (rgb[0] < 0) /* Outline only */
+			fprintf (ps.fp, " %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %Da4 U\n",
+				hl2, hw2, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -hl2, hw2, hl, -hw);
+		else if (iscolor (rgb)) /* color */
+			fprintf (ps.fp, " %.3lg %.3lg %.3lg %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d a%d U\n",
+				rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, hl2, hw2, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -hl2, hw2, hl, -hw, outline+2);
+		else /* grayshade */
+			fprintf (ps.fp, " %.3lg %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d a%d U\n",
+				rgb[0] * I_255, hl2, hw2, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -hl2, hw2, hl, -hw, outline);
+	}
+	else {			/* Single-headed vector */
+		l2 = length - hl + hl2;								/* Length from tail to start of slanted head */
+		if (rgb[0] < 0) /* Outline only */
+			fprintf (ps.fp, " %d %d %d %d %d %d %d %d %d %d %d A4 U\n",
+				-l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2);
+		else if (iscolor (rgb)) /* color */
+			fprintf (ps.fp, " %.3lg %.3lg %.3lg %d %d %d %d %d %d %d %d %d %d %d A%d U\n",
+				rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2, outline+2);
+		else /* grayshade */
+			fprintf (ps.fp, " %.3lg %d %d %d %d %d %d %d %d %d %d %d A%d U\n",
+				rgb[0] * I_255, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2, outline);
+	}
 }
 
 /* fortran interface */
