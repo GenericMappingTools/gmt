@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.75 2004-04-23 18:07:44 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.76 2004-04-24 02:25:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -275,7 +275,7 @@ int GMT_name2rgb (char *name)
 
 	strcpy (Lname, name);
 	GMT_str_tolower (Lname);
-	k = GMT_hash_lookup (Lname, GMT_rgb_hashnode, GMT_N_COLOR_NAMES);
+	k = GMT_hash_lookup (Lname, GMT_rgb_hashnode, GMT_N_COLOR_NAMES, GMT_N_COLOR_NAMES);
 	
 	return (k);
 }

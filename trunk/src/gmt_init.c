@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.123 2004-04-24 01:30:00 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.124 2004-04-24 02:25:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -100,7 +100,7 @@ double save_annot_size[2], save_label_size, save_header_size;
 double save_annot_offset[2], save_label_offset, save_header_offset, save_tick_length, save_frame_width;
 BOOLEAN GMT_getuserpath (char *stem, char *path);
 BOOLEAN GMT_primary;
-char month_names[12][16];
+char month_names[12][16], *months[12];
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 	
@@ -1187,7 +1187,7 @@ int GMT_setparameter (char *keyword, char *value)
 	strncpy (lower_value, value, BUFSIZ);	/* Get a lower case version */
 	GMT_str_tolower (lower_value);
 
-	case_val = GMT_hash_lookup (keyword, hashnode, HASH_SIZE);
+	case_val = GMT_hash_lookup (keyword, hashnode, HASH_SIZE, HASH_SIZE);
 
 	switch (case_val) {
 		case GMTCASE_ANNOT_MIN_ANGLE:
@@ -2216,12 +2216,12 @@ int GMT_unit_lookup (int c)
 	return (unit);
 }
 
-int GMT_hash_lookup (char *key, struct GMT_HASH *hashnode, int n)
+int GMT_hash_lookup (char *key, struct GMT_HASH *hashnode, int n, int n_hash)
 {
 	int i;
 	struct GMT_HASH *this;
 	
-	i = GMT_hash (key);
+	i = GMT_hash (key, n_hash);
 	
 	if (i >= n || i < 0 || !hashnode[i].next) return (-1);	/* Bad key */
 	this = hashnode[i].next;
@@ -2239,7 +2239,7 @@ void GMT_hash_init (struct GMT_HASH *hashnode, char **keys, int n_hash, int n_ke
 	
 	for (i = 0; i < n_hash; i++) hashnode[i].next = (struct GMT_HASH *)0;
 	for (i = 0; i < n_keys; i++) {
-		entry = GMT_hash (keys[i]);
+		entry = GMT_hash (keys[i], n_hash);
 		this = &hashnode[entry];
 		while (this->next) this = this->next;
 		this->next = (struct GMT_HASH *)GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_HASH), GMT_program);
@@ -2248,10 +2248,10 @@ void GMT_hash_init (struct GMT_HASH *hashnode, char **keys, int n_hash, int n_ke
 	}
 }
 
-int GMT_hash (char *v)
+int GMT_hash (char *v, int n_hash)
 {
         int h;
-        for (h = 0; *v != '\0'; v++) h = (64 * h + (*v)) % HASH_SIZE;
+        for (h = 0; *v != '\0'; v++) h = (64 * h + (*v)) % n_hash;
         return (h);
 }
 
@@ -2445,8 +2445,9 @@ void GMT_get_time_language (char *name)
 	for (i = 0; i < 12; i++) {	/* Get upper-case abbreviated month names for i/o */
 		strcpy (month_names[i], GMT_time_language.month_name[1][i]);
 		GMT_str_toupper (month_names[i]);
+		months[i] = month_names[i];
 	}
-	GMT_hash_init (GMT_month_hashnode, (char **)month_names, 12, 12);
+	GMT_hash_init (GMT_month_hashnode, months, 12, 12);
 }
 	
 void GMT_setshorthand (void) {/* Read user's .gmt_io file and initialize shorthand notation */

@@ -312,9 +312,10 @@ try hh:mm, hh:mm:ssAM, etc. [hh:mm:ss].
 Formatting template that indicates how an input date string is formatted.  This template
 is then used to guide the reading of date strings in data fields.  You may specify either
 Gregorian calendar format or ISO week calendar format.  Gregorian calendar: Use any
-combination of yyyy (or yy for 2-digit years; if so see \fBY2K_OFFSET_YEAR\fP), mm,
+combination of yyyy (or yy for 2-digit years; if so see \fBY2K_OFFSET_YEAR\fP), mm (or o
+for abbreviated month name in the current time language),
 and dd, with or without delimiters.  For day-of-year data, use jjj instead of mm and/or dd.
-Examples can be ddmmyyyy, yy-mm-dd, yyyy/dd/mm, yyyy-jjj, etc.
+Examples can be ddmmyyyy, yy-mm-dd, dd-o-yyyy, yyyy/dd/mm, yyyy-jjj, etc.
 ISO Calendar:  Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
 day.  Either template must be consistent, e.g., you cannot specify months if you don't specify
 years.  Examples are yyyyWwwd, yyyy-Www, etc. [yyyy-mm-dd].
@@ -381,9 +382,10 @@ hh:mm, hh.mm.ss, hh:mm:ss.xxxx, hha.m., etc. [hh:mm:ss].
 Formatting template that indicates how an output date string is to be formatted.  This template
 is then used to guide the writing of date strings in data fields.  You may specify either
 Gregorian calendar format or ISO week calendar format.  Gregorian calendar: Use any
-combination of yyyy (or yy for 2-digit years; if so see \fBY2K_OFFSET_YEAR\fP), mm,
+combination of yyyy (or yy for 2-digit years; if so see \fBY2K_OFFSET_YEAR\fP), mm (or o for
+abbreviated month name in the current time language),
 and dd, with or without delimiters.  For day-of-year data, use jjj instead of mm and/or dd.
-As examples, try yy/mm/dd, yyyy=jjj, dd-mm-yy, yy-mm, etc.
+As examples, try yy/mm/dd, yyyy=jjj, dd-o-yyyy, dd-mm-yy, yy-mm, etc.
 ISO Calendar:  Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
 day.  Either template must be consistant, e.g., you cannot specify months if you don't specify
 years.  As examples, try yyyyWww, yy-W-ww-d, etc. If your template starts with a leading hyphen (-) then each integer item (y,m,d) will be
