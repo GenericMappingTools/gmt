@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.80 2005-01-11 18:52:37 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.81 2005-01-12 03:32:28 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8496,6 +8496,29 @@ void GMT_ECEF_inverse (double in[], double out[])
 	out[2] = (p / cos_lat) - N;
 }
 
+double GMT_az_backaz_flatearth (double lonE, double latE, double lonS, double latS, BOOLEAN baz)
+{
+	/* Calculate azimuths or backazimuths.  Flat earth code.
+	 * First point is considered "Event" and second "Station". */
+	
+	double az, sin_yS, cos_yS, sin_yE, cos_yE, sin_dlon, cos_dlon;
+	
+	latE *= D2R;	lonE *= D2R;
+        latS *= D2R;	lonS *= D2R;
+	
+	if (baz) {	/* exchange point one and two */
+		d_swap (lonS, lonE);
+		d_swap (latS, latE);
+	}
+	dlon = lonE - lonS;
+	if (fabs (dlon) > 180.0) dlon = copysign ((360.0 - fabs (dlon)), dlon);
+	dx = dlon * cosd (0.5 * (latE + latS));
+	dy = latE - latS;
+	az = (dx == 0.0 && dy == 0.0) ? GMT_d_NaN : 90.0 - R2D * atan2 (dy, dx);
+	if (az < 0.0) az += 360.0;
+	return (az);
+}
+
 double GMT_az_backaz_sphere (double lonE, double latE, double lonS, double latS, BOOLEAN baz)
 {
 	/* Calculate azimuths or backazimuths.  Spherical code.
@@ -8513,7 +8536,7 @@ double GMT_az_backaz_sphere (double lonE, double latE, double lonS, double latS,
 	sincos (latS, &sin_yS, &cos_yS);
 	sincos (latE, &sin_yE, &cos_yE);
 	sincos (lonS - lonE, &sin_dlon, &cos_dlon);
-	az = (float)(atan2 (cos_yS * sin_dlon, cos_yE * sin_yS - sin_yE * cos_yS * cos_dlon) * R2D);
+	az = (atan2 (cos_yS * sin_dlon, cos_yE * sin_yS - sin_yE * cos_yS * cos_dlon) * R2D);
 	if (az < 0.0) az += 360.0;
 	return (az);
 }
