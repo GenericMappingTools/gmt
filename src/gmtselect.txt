@@ -36,7 +36,8 @@ Pass all records whose location is within \fIdist\fP of any of the points in the
 is zero then the 3rd column of \fIptfile\fP must have each point's\"'
 individual radius of influence.  Distances are in user units; specify
 \fB\-fg\fP or a map projection to indicate distances in km.  Prepend \fBf\fP to indicate you want approximate flat
-earth distance calculations (faster) rather than exact great circle calculations (slower).
+earth distance calculations (faster) rather than exact geodesic distances (slower).  However, if the current ELLIPSOID
+is set the Sphere the spherical great circle calculations are used.
 .TP
 .B \-D
 Ignored unless \fB\-N\fP is set.  Selects the resolution of the coastline data set to use ((\fBf\fP)ull, (\fBh\fP)igh, (\fBi\fP)ntermediate, (\fBl\fP)ow, or (\fBc\fP)rude).  The
@@ -67,7 +68,7 @@ Reverses the sense of the test for each of the criteria specified:
 Pass all records whose location is within \fIdist\fP of any of the line segments in the multiple-segment ascii
 file \fIlinefile\fP.  If \fIdist\fP is zero then the 2nd column of each
 sub-header in the \fIptfile\fP must have each lines's individual distance value.\"'
-Distances are in user units; specify \fB\-fg\fP or a map projection to indicate distances in km. 
+Distances are in user units; specify \fB\-fg\fP or a map projection to indicate distances in km.
 .TP
 .B \-M
 Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP.
