@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.7 2001-03-07 22:11:26 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.8 2001-03-19 18:15:08 pwessel Exp $
 #
 #	Automatic installation of GMT version 3.4
 #	Version for the Bourne shell (or compatible)
@@ -107,7 +107,7 @@ cat << EOF > gmt_install.ftp_gzsizes
 EOF
 cat << EOF >&2
 ====>>>> Interactive installation of GMT <<<<====
-		  $Revision: 1.7 $
+		  $Revision: 1.8 $
 		  
 We first need a questions and answer session to
 determine how and where GMT is to be installed.
@@ -869,9 +869,12 @@ if [ $netcdf_install = "y" ]; then
 #		Get the file
 
 		echo "Getting netcdf by anonymous ftp (be patient)..." >&2
+		before=`du -sk . | cut -f1`
 		ftp -dn unidata.ucar.edu < $$ || ( echo "ftp failed - try again later" >&2; exit )
+		after=`du -sk . | cut -f1`
+		newstuff=`echo $before $after | awk '{print $2 - $1}'`
+		echo "Got $newstuff kb ... done" >&2
 		rm -f $$
-		echo "done"
 	fi
 
 	if [ -f netcdf.tar.Z ]; then
@@ -969,9 +972,12 @@ if [ $GMT_ftp = "y" ]; then
 
 	echo "Getting GMT by anonymous ftp from $ftp_ip (be patient)..." >&2
 
+	before=`du -sk . | cut -f1`
 	ftp -dn $ftp_ip < install_gmt.ftp_list || ( echo "fpt failed - try again later >&2"; exit )
+	after=`du -sk . | cut -f1`
 	rm -f install_gmt.ftp_list
-	echo "done"
+	newstuff=`echo $before $after | awk '{print $2 - $1}'`
+	echo "Got $newstuff kb ... done" >&2
 fi
 
 #--------------------------------------------------------------------------------

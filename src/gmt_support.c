@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.4 2001-03-02 19:54:09 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.5 2001-03-19 18:15:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3570,7 +3570,7 @@ int GMT_getscale (char *text, double *x0, double *y0, double *scale_lat, double 
 	*measure = text[strlen(text)-1];
 	if (k != 4) {
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Correct syntax\n", GMT_program);
-		fprintf (stderr, "	-L[f][x]<x0>/<y0>/<lat>/<length>[m|n|k], append m, n, or k for miles, nautical miles, or km [Default]\n");
+		fprintf (stderr, "\t-L[f][x]<x0>/<y0>/<lat>/<length>[m|n|k], append m, n, or k for miles, nautical miles, or km [Default]\n");
 		error++;
 	}
 	if ((*length) <= 0.0) {
