@@ -4,9 +4,9 @@
 .SH SYNOPSIS
 \fBx2sys_cross\fP \fIfile(s)\fP OR \fB\-L\fP\fIflist\fP [ \fB\-A\fP\fIgap\fP ] 
 [ \fB\-Cc|f|g\fP ] [ \fB\-D\fP\fIdeffile\fP ] [ \fB\-F\fP\fIflags\fP ] 
-[ \fB\-Gd|g\fP ] [ \fB\-J\fP\fIparams\fP ] [\fB\-K\fP\fIcombi.lis\fP] [ \fB\-M\fP[\fIflag\fP] 
+[ \fB\-Gd|g\fP ] [ \fB\-Il|a|c\fP ] [ \fB\-J\fP\fIparams\fP ] [\fB\-K\fP\fIcombi.lis\fP] [ \fB\-M\fP[\fIflag\fP] 
 [ \fB\-N\fP\fIwindow\fP ] [ \fB\-O\fP ] [ \fB\-Sl|u\fP\fIspeed\fP ] 
-[ \fB\-Tl|a|c\fP ] [ \fB\-W\fP\fIsize\fP ] [ \fB\-V\fP ] [ \fB\-Xe|i\fP ] 
+[ \fB\-T\fP\fITAG\fP ] [ \fB\-W\fP\fIsize\fP ] [ \fB\-V\fP ] [ \fB\-Xe|i\fP ] 
 [ \fB\-2\fP ] [ \fB\-bo\fP[\fBs\fP] ]
 .SH DESCRIPTION
 \fBx2sys_cross\fP is used to determine all intersections between or within
@@ -42,6 +42,16 @@ is all columns].
 Selects geographical coordinates.  Append \fBd\fP for discontinuity at the
 Dateline (makes longitude go from -180 to + 180) or \fBg\fP for discontinuity
 at Greenwhich (makes longitude go from 0 to 360 [Default]).
+.TP
+.B \-I
+Sets the interpolation mode. Choose among:
+.br
+	\fBl\fP Linear interpolation [Default].
+.br
+	\fBa\fP Akima spline interpolation.
+.br
+	\fBc\fP Cubic spline interpolation.
+.br
 #include "explain_-J_short.txt"
 .TP
 .B \-K
@@ -67,14 +77,7 @@ Defines window of track speed within which to calculate crossovers.
 .br
 .TP
 .B \-T
-Sets the interpolation mode. Choose among:
-.br
-	\fBl\fP Linear interpolation [Default].
-.br
-	\fBa\fP Akima spline interpolation.
-.br
-	\fBc\fP Cubic spline interpolation.
-.br
+Sets the data set \fITAG\fP which among other things sets the definition file.
 #include "explain_-V.txt"
 .TP
 .B \-W
