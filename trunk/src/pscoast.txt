@@ -10,7 +10,7 @@ pscoast \- To plot land-masses, water-masses, coastlines, borders, and rivers
 [ \fB\-A\fP\fImin_area\fP[\fI/min_level/max_level\fP] ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIfill\fP ] [ \fB\-D\fP\fIresolution\fP ] 
 [ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-G\fP\fIfill\fP ] 
 [ \fB\-I\fP\fIriver\fP[/\fIpen\fP] ] [ \fB\-K\fP ] 
-[ \fB\-L\fP[\fBf\fP][\fBx\fP]\fIlon0/lat0/slat/length\fP[\fBm|n|k\fP][:\fIlabel\fP:\fIjust\fP][\fB+p\fP\fIpen\fp][\fB+f\fP\fIfill\fp] ] 
+[ \fB\-L\fP[\fBf\fP][\fBx\fP]\fIlon0/lat0\fP[\fI/slon\fP]\fI/slat/length\fP[\fBm|n|k\fP][:\fIlabel\fP:\fIjust\fP][\fB+p\fP\fIpen\fp][\fB+f\fP\fIfill\fp] ] 
 [ \fB\-O\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP\fIborder\fP[/\fIpen\fP] ] [ \fB\-O\fP ] 
 [ \fB\-P\fP ] [ \fB\-Q\fP ] [ \fB\-S\fP\fIfill\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] 
 [ \fB\-W\fP\fIpen\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] 
@@ -88,7 +88,8 @@ Repeat option \fB\-I\fP as often as necessary.
 .TP
 .B \-L
 Draws a simple map scale centered on \fIlon0/lat0\fP.  Use \fB\-Lx\fP to specify x/y position instead.
-Scale is calculated at latitude \fIslat\fP, \fIlength\fP is in km [miles if \fBm\fP is appended; nautical miles
+Scale is calculated at latitude \fIslat\fP (optionally supply longitude \fIslon\fP for oblique projections
+[Default is central meridian]), \fIlength\fP is in km [miles if \fBm\fP is appended; nautical miles
 if \fBn\fP is appended]. Use \fB\-Lf\fP to get a "fancy" scale [Default is plain]. The default label equals the
 distance unit (km, miles, nautical miles) and is justified on top of the scale [t].  Change this by giving your
 own label (or - to keep the default) and justification (l(eft), r(ight), t(op), b(ottom), and u(unit) - using
