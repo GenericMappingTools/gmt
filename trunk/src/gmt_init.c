@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.128 2004-04-26 21:29:40 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.129 2004-05-04 17:14:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4233,16 +4233,16 @@ char *GMT_putpen (struct GMT_PEN *pen)
 	if (pen->texture[0]) {
 
 		if (pen->rgb[0] == 0 && pen->rgb[0] == pen->rgb[1] && pen->rgb[1] == pen->rgb[2]) /* Default black pen */
-			sprintf (text, "%.5gt%s:%.5gp", pen->width, pen->texture, pen->offset);
+			sprintf (text, "%.5gp,,%s:%.5g", pen->width, pen->texture, pen->offset);
 		else
-			sprintf (text, "%.5g/%d/%d/%dt%s:%.5gp", pen->width, pen->rgb[0], pen->rgb[1], pen->rgb[2], pen->texture, pen->offset);
+			sprintf (text, "%.5gp,%d/%d/%d,%s:%.5g", pen->width, pen->rgb[0], pen->rgb[1], pen->rgb[2], pen->texture, pen->offset);
 		for (i = 0; text[i]; i++) if (text[i] == ' ') text[i] = '_';
 	}
 	else {
 		if (pen->rgb[0] == 0 && pen->rgb[0] == pen->rgb[1] && pen->rgb[1] == pen->rgb[2]) /* Default black pen */
 			sprintf (text, "%.5gp", pen->width);
 		else
-			sprintf (text, "%.5g/%d/%d/%dp", pen->width, pen->rgb[0], pen->rgb[1], pen->rgb[2]);
+			sprintf (text, "%.5gp,%d/%d/%d", pen->width, pen->rgb[0], pen->rgb[1], pen->rgb[2]);
 	}
 
 	return (text);
