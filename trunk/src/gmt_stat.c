@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.18 2004-05-27 23:35:15 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.19 2004-07-01 21:00:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1947,13 +1947,12 @@ double GMT_rand ()
 double GMT_nrand (void) {
 	/* Gaussian random number generator based on gasdev of
 	 * Press et al, Numerical Recipes, 2nd edition.  Will
-	 * return values that zero mean and unit variance.
+	 * return values that have zero mean and unit variance.
 	 */
 	 
 	static int iset = 0;
 	static double gset;
 	double fac, r, v1, v2;
-	double GMT_rand ();
 
 	if (iset == 0) {	/* We don't have an extra deviate handy, so */
 		do {
@@ -1975,6 +1974,17 @@ double GMT_nrand (void) {
 		iset = 0;	/* Take old value, reset flag */
 		return (gset);
 	}
+}
+
+double GMT_lrand (void) {
+	/* Laplace random number generator.  As nrand, it will
+	 * return values that have zero mean and unit variance.
+	 */
+	 
+	double rand_0_to_1;
+	
+	rand_0_to_1 = GMT_rand ();	/* Gives uniformly distributed random values in 0-1 range */
+	return ( ((rand_0_to_1 <= 0.5) ? log (2.0 * rand_0_to_1) : -log (2.0 * (1.0 - rand_0_to_1))) / M_SQRT2);
 }
 
 void GMT_chi2 (double chi2, double nu, double *prob) {

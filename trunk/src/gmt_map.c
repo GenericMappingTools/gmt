@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.60 2004-07-01 18:08:27 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.61 2004-07-01 21:00:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7263,7 +7263,7 @@ void GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 	if (gmtdefs.verbose && not_used) fprintf (stderr, "%s: Some geographical nodes not loaded (%d)\n", GMT_program, not_used);
 }
 
-int GMT_grd_forward_new (char *infile, float *z_out, double west, double east, double south, double north, struct GRD_HEADER *O, struct GMT_EDGEINFO *edgeinfo)
+int GMT_grd_forward_new (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD_HEADER *O, struct GMT_EDGEINFO *edgeinfo, BOOLEAN bilinear)
 {
 
 	/* Generalized forward grid projection that deals with both interpolation and averaging effects.
@@ -7273,77 +7273,58 @@ int GMT_grd_forward_new (char *infile, float *z_out, double west, double east, d
 	
 	int i_in, j_in, ij_in, i_out, j_out, ij_out, mx, my;
 	short int *nz;
-	float *z_in;
-	double x_proj, y_proj, I_off, O_off, z_int, inv_nz, *x_in, *y_in, *x_in_proj, *y_in_proj, *x_out, *y_out, *x_out_proj, *y_out_proj;
+	double x_proj, y_proj, I_off, O_off, D_off, z_int, inv_nz, O_idx, O_idy;
+	double *x_in, *y_in, *x_in_proj, *y_in_proj, *x_out, *y_out, *x_out_proj, *y_out_proj;
 	struct GMT_BCR bcr;
-	struct GRD_HEADER I;
-	BOOLEAN bilinear;
 	
-	if (GMT_read_grd_info (infile, &I)) {
-		fprintf (stderr, "%s: Error opening file %s\n", GMT_program, infile);
-		exit (EXIT_FAILURE);
-	}
-	
-	if (west == east) {	/* No subset asked for */
-		west  = I.x_min;
-		east  = I.x_max;
-		south = I.y_min;
-		north = I.y_max;
-	}
-	if (GMT_grd_setregion (&I, &west, &east, &south, &north)) {	/* No grid to plot; just do empty map and exit */
-		fprintf (stderr, "%s: Warning: No data to read inside given region for file %s\n", GMT_program, infile);
-		return TRUE;
-	}
-	GMT_pad[0] = GMT_pad[1] = GMT_pad[2] = GMT_pad[3] = 2;
-	mx = I.nx + 4;
-	my = I.ny + 4;
+	mx = I->nx + 4;
+	my = I->ny + 4;
 
-	z_in = (float *) GMT_memory (VNULL, (size_t)(mx * my), sizeof (float), GMT_program);
-	if (GMT_read_grd (infile, &I, z_in, west, east, south, north, GMT_pad, FALSE)) {
-		fprintf (stderr, "%s: Error reading file %s\n", GMT_program, infile);
-		exit (EXIT_FAILURE);
-	}
-	
-	GMT_boundcond_param_prep (&I, edgeinfo);
+	GMT_boundcond_param_prep (I, edgeinfo);
 
 	/* Initialize bcr structure:  */
 
-	GMT_bcr_init (&I, GMT_pad, bilinear, &bcr);
+	GMT_bcr_init (I, GMT_pad, bilinear, &bcr);
 
 	/* Set boundary conditions  */
 	
-	GMT_boundcond_set (&I, edgeinfo, GMT_pad, z_in);
+	GMT_boundcond_set (I, edgeinfo, GMT_pad, z_in);
 
 	nz = (short int *) GMT_memory (VNULL, (size_t)(O->nx * O->ny), sizeof (short int), "GMT_grd_forward");
-	x_in = (double *) GMT_memory (VNULL, (size_t)I.nx, sizeof (double), "GMT_grd_forward");
-	y_in = (double *) GMT_memory (VNULL, (size_t)I.ny, sizeof (double), "GMT_grd_forward");
+	x_in = (double *) GMT_memory (VNULL, (size_t)I->nx, sizeof (double), "GMT_grd_forward");
+	y_in = (double *) GMT_memory (VNULL, (size_t)I->ny, sizeof (double), "GMT_grd_forward");
+	x_out = (double *) GMT_memory (VNULL, (size_t)O->nx, sizeof (double), "GMT_grd_forward");
+	y_out = (double *) GMT_memory (VNULL, (size_t)O->ny, sizeof (double), "GMT_grd_forward");
 	
-	I_off = (I.node_offset)  ? 0.5 : 0.0;
+	I_off = (I->node_offset)  ? 0.5 : 0.0;
 	O_off = (O->node_offset) ? 0.5 : 0.0;
+	D_off = (!O->node_offset)  ? 0.5 : 0.0;
+	O_idx = 1.0 / O->x_inc;
+	O_idy = 1.0 / O->y_inc;
 	
 	/* Precalculate grid coordinates */
 	
-	for (i_in = 0; i_in < I.nx; i_in++) x_in[i_in] = GMT_i_to_x (i_in, I.x_min, I.x_max, I.x_inc, I_off, I.nx);
-	for (j_in = 0; j_in < I.ny; j_in++) y_in[j_in] = GMT_j_to_y (j_in, I.y_min, I.y_max, I.y_inc, I_off, I.ny);
+	for (i_in = 0; i_in < I->nx; i_in++) x_in[i_in] = GMT_i_to_x (i_in, I->x_min, I->x_max, I->x_inc, I_off, I->nx);
+	for (j_in = 0; j_in < I->ny; j_in++) y_in[j_in] = GMT_j_to_y (j_in, I->y_min, I->y_max, I->y_inc, I_off, I->ny);
 	for (i_out = 0; i_out < O->nx; i_out++) x_out[i_out] = GMT_i_to_x (i_out, O->x_min, O->x_max, O->x_inc, O_off, O->nx);
 	for (j_out = 0; j_out < O->ny; j_out++) y_out[j_out] = GMT_j_to_y (j_out, O->y_min, O->y_max, O->y_inc, O_off, O->ny);
 	
 	if (RECT_GRATICULE) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
-		x_in_proj = (double *) GMT_memory (VNULL, (size_t)I.nx, sizeof (double), "GMT_grd_forward");
-		y_in_proj = (double *) GMT_memory (VNULL, (size_t)I.ny, sizeof (double), "GMT_grd_forward");
-		for (i_in = 0; i_in < I.nx; i_in++) GMT_geo_to_xy (x_in[i_in], I.y_min, &x_in_proj[i_in], &y_proj);
-		for (j_in = 0; j_in < I.ny; j_in++) GMT_geo_to_xy (I.x_min, y_in[j_in], &x_proj, &y_in_proj[j_in]);
+		x_in_proj = (double *) GMT_memory (VNULL, (size_t)I->nx, sizeof (double), "GMT_grd_forward");
+		y_in_proj = (double *) GMT_memory (VNULL, (size_t)I->ny, sizeof (double), "GMT_grd_forward");
+		for (i_in = 0; i_in < I->nx; i_in++) GMT_geo_to_xy (x_in[i_in], I->y_min, &x_in_proj[i_in], &y_proj);
+		for (j_in = 0; j_in < I->ny; j_in++) GMT_geo_to_xy (I->x_min, y_in[j_in], &x_proj, &y_in_proj[j_in]);
 		x_out_proj = (double *) GMT_memory (VNULL, (size_t)O->nx, sizeof (double), "GMT_grd_forward");
 		y_out_proj = (double *) GMT_memory (VNULL, (size_t)O->ny, sizeof (double), "GMT_grd_forward");
-		for (i_out = 0; i_out < O->nx; i_out++) GMT_xy_to_geo (&x_out_proj[i_out], &y_proj, x_out[i_out], I.y_min);
-		for (j_out = 0; j_out < O->ny; j_out++) GMT_xy_to_geo (&x_proj, &y_out_proj[j_out], I.y_min, y_out[j_out]);
+		for (i_out = 0; i_out < O->nx; i_out++) GMT_xy_to_geo (&x_out_proj[i_out], &y_proj, x_out[i_out], I->y_min);
+		for (j_out = 0; j_out < O->ny; j_out++) GMT_xy_to_geo (&x_proj, &y_out_proj[j_out], I->y_min, y_out[j_out]);
 	}
 	
 	/* PART 1: Project input grid points and do a blockmean operation */
 	
-	for (j_in = 0; j_in < I.ny; j_in++) {	/* Loop over the input grid coordinates */
+	for (j_in = 0; j_in < I->ny; j_in++) {	/* Loop over the input grid coordinates */
 		if (RECT_GRATICULE) y_proj = y_in_proj[j_in];
-		for (i_in = 0; i_in < I.nx; i_in++) {
+		for (i_in = 0; i_in < I->nx; i_in++) {
 			if (RECT_GRATICULE)
 				x_proj = x_in_proj[i_in];
 			else
@@ -7351,9 +7332,9 @@ int GMT_grd_forward_new (char *infile, float *z_out, double west, double east, d
 				
 			/* Here, (x_proj, y_proj) is the projected grid point.  Now find nearest node on the output grid */
 			
-			j_out = GMT_y_to_j (y_proj, O->y_min, O->y_inc, O_off, O->ny);
+			j_out = GMT_y_to_j (y_proj, O->y_min, O_idy, D_off, O->ny);
 			if (j_out < 0 || j_out >= O->ny) continue;	/* Outside our grid region */
-			i_out = GMT_x_to_i (x_proj, O->x_min, O->x_inc, O_off, O->nx);
+			i_out = GMT_x_to_i (x_proj, O->x_min, O_idx, D_off, O->nx);
 			if (i_out < 0 || i_out >= O->nx) continue;	/* Outside our grid region */
 
 			/* OK, this projected point falls inside the projected grid's rectangular domain */
@@ -7375,15 +7356,23 @@ int GMT_grd_forward_new (char *infile, float *z_out, double west, double east, d
 	
 	for (j_out = ij_out = 0; j_out < O->ny; j_out++) {	/* Loop over the output grid coordinates */
 		if (RECT_GRATICULE) y_proj = y_out_proj[j_out];
-		for (i_out = 0; i_out < I.nx; i_out++, ij_out++) {
+		for (i_out = 0; i_out < O->nx; i_out++, ij_out++) {
 			if (RECT_GRATICULE)
 				x_proj = x_out_proj[i_out];
 			else
 				GMT_xy_to_geo (&x_proj, &y_proj, x_out[i_out], y_out[j_out]);
+			
+			if (GMT_io.in_col_type[0] == GMT_IS_LON) {
+				if (x_proj < I->x_min) x_proj += 360.0;
+				if (x_proj > I->x_max) x_proj -= 360.0;
+			}
+			
+			if (i_out == (O->nx - 1))
+				i_in = 1;
 				
 			/* Here, (x_proj, y_proj) is the inversely projected grid point.  Now find nearest node on the input grid */
 			
-			z_int = GMT_get_bcr_z (&I, x_proj, y_proj, z_in, edgeinfo, &bcr);
+			z_int = GMT_get_bcr_z (I, x_proj, y_proj, z_in, edgeinfo, &bcr);
 			
 			if (nz[ij_out] == 0)
 				z_out[ij_out] = z_int;
@@ -7392,7 +7381,7 @@ int GMT_grd_forward_new (char *infile, float *z_out, double west, double east, d
 					z_out[ij_out] /= nz[ij_out];		/* Plain average */
 				else {						/* Weighted average */
 					inv_nz = 1.0 / nz[ij_out];
-					z_out[ij_out] = (z_out[ij_out] * z_int * inv_nz) / (nz[ij_out] + inv_nz);
+					z_out[ij_out] = (z_out[ij_out] + z_int * inv_nz) / (nz[ij_out] + inv_nz);
 				}
 			}
 		}
@@ -7400,7 +7389,6 @@ int GMT_grd_forward_new (char *infile, float *z_out, double west, double east, d
 	
 	/* Time to clean up our mess */
 	
-	GMT_free ((void *)z_in);		
 	GMT_free ((void *)nz);		
 	GMT_free ((void *)x_in);		
 	GMT_free ((void *)y_in);		
