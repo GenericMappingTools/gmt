@@ -16,10 +16,22 @@
 .br
 \fB+l\fP\fIlabel\fP sets the constant label text.
 .br
-\fB+L\fP\fIlflag\fP sets a computed label text.  If the \fIflag\fP is \fBh\fP we take the label from the current multisegment
-header (first we scan for an embedded \fB\-\fPlabel\fP option, if not we use the first word following the segment flag).
-If \fBdfP we take the Cartesian plot distances along the line as the label; append \fBc|i|m|p\fP as the unit. If \fBD\fP we
-calculate actual map distances instead; append \fBd|e|k|m|n\fB as the unit.
+\fB+L\fP\fIlflag\fP sets the label text according to the specified flag:
+.br
+\fIflag\fP is \fBh\fP:  Take the label from the current multisegment header (first scan for an embedded
+\fB\-\fPlabel\fP option, if not use the first word following the segment flag).
+.br
+fIflag\fP is \fBd\fP:  Take the Cartesian plot distances along the line as the label; append \fBc|i|m|p\fP
+as the unit [Default is \fBMEASURE_UNIT\fP].
+.br
+fIflag\fP is \fBD\fP:  Calculate actual map distances; append \fBd|e|k|m|n\fB as the unit [Default is \fBd\fP(egrees),
+unless label placement was based on map distances along the lines in which case we use the same unit specified for that algorithm].
+Requires a map projection to be used.
+.br
+fIflag\fP is \fBf\fP:  Use text after the 2nd column in the fixed label location file as the label.  Requires the fixed label
+location setting.
+.br
+fIflag\fP is \fBx\fP:  As \fBh\fP but use the headers in the \fIxfile.d\fP instead.  Requires the crossing file option.
 #endif
 .br
 \fB+o\fP selects rounded rectangular text box [Default is rectangular].  Not applicable for curved text (\fB+v\fP).

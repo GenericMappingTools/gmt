@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.112 2004-06-04 19:43:15 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.113 2004-06-04 20:47:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1727,10 +1727,14 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 						break;
 					case 'D':	/* Use current map distance in chosen units */
 						G->label_type = 4;
-						k = strlen (p) - 1;
-						c = (isdigit ((int)p[k]) || p[k] == '.') ? 0 : p[k];
-						G->dist_unit = (int)c;
+						if (p[2] && strchr ("dekmn", (int)p[2])) {	/* Found a valid unit */
+							c = p[2];
+							bad += GMT_get_dist_scale (c, &G->L_d_scale, &G->L_proj_type, &G->L_dist_func);
+						}
+						else
+							c = 0;	/* Meaning "not set" */
 						bad += GMT_get_dist_scale (c, &G->L_d_scale, &G->L_proj_type, &G->L_dist_func);
+						G->dist_unit = (int)c;
 						break;
 					case 'f':	/* Take the 3rd column in fixed contour location file */
 						G->label_type = 5;
