@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.80 2003-02-19 02:45:43 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.81 2003-04-01 20:03:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3947,7 +3947,7 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 		
 		last = nc - 1;
 		if (col[last][0] == '-' && col[last][1] == 'G') fill_p = &col[last][2], do_fill = TRUE, last--;
-		if (col[last][0] == '-' && col[last][1] == 'W') pen_p = &col[3][2], do_pen = TRUE, last--;
+		if (col[last][0] == '-' && col[last][1] == 'W') pen_p = &col[last][2], do_pen = TRUE, last--;
 		if (col[last][0] == '-' && col[last][1] == 'G') fill_p = &col[last][2], do_fill = TRUE, last--;	/* Check again for -G since perhaps -G -W was given */
 		if (last < 2) error++;
 		
@@ -4004,6 +4004,14 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 				if (last != 3) error++;
 				s->p[0] = atof (col[2]);
 				s->action = ACTION_ITRIANGLE;
+				break;
+				
+			case 'l':		/* Draw letter/text symbol */
+				if (last != 4) error++;
+				s->p[0] = atof (col[2]);
+				s->string = (char *)GMT_memory (VNULL, (size_t)(strlen (col[3]) + 1), sizeof (char), GMT_program);
+				strcpy (s->string, col[3]);
+				s->action = ACTION_TEXT;
 				break;
 				
 			case 's':		/* Draw square symbol */
@@ -4094,10 +4102,10 @@ BOOLEAN GMT_fill_is_image (char *fill) {
 }
 
 void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struct CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, BOOLEAN outline) {
-	int n = 0, n_alloc = GMT_SMALL_CHUNK, na, i;
+	int n = 0, n_alloc = GMT_SMALL_CHUNK, na, i, font_no = gmtdefs.annot_font;
 	BOOLEAN flush = FALSE;
-	double x, y, da, sr, sa, ca, *xx, *yy;
-	char cmd[64];
+	double x, y, da, sr, sa, ca, *xx, *yy, font_size;
+	char cmd[64], *c;
 	struct CUSTOM_SYMBOL_ITEM *s;
 	struct GMT_FILL *f;
 	struct GMT_PEN *p;
@@ -4233,6 +4241,38 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				p = (s->pen)  ? s->pen  : pen;
 				if (p) GMT_setpen (p);
 				(project_info.three_D) ? GMT_itriangle3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_itriangle (x, y, s->p[0] * size, f->rgb, outline);
+				break;
+
+			case ACTION_TEXT:
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+				f = (s->fill) ? s->fill : fill;
+				p = (s->pen)  ? s->pen  : pen;
+				if (p) GMT_setpen (p);
+
+				if ((c = strchr (s->string, '%'))) {	/* Gave font name or number, too */
+					*c = 0;		/* Replace % with the end of string NUL indicator */
+					c++;		/* Go to next character */
+					if (c[0] >= '0' && c[0] <= '9')	/* Gave a font # */
+						font_no = atoi (c);
+					else
+						font_no = GMT_font_lookup (c, GMT_font, N_FONTS);
+					if (font_no >= N_FONTS) {
+						fprintf (stderr, "%s: custom symbol subcommand l contains bad font (set to %s (0))\n", GMT_program, GMT_font[gmtdefs.annot_font].name);
+						font_no = gmtdefs.annot_font;
+					}
+					ps_setfont (font_no);			/* Set the required font */
+				}
+				font_size = s->p[0] * size * 72.0;
+				if (outline && f) {
+					ps_setpaint (f->rgb);
+					(project_info.three_D) ? GMT_text3d (x, y, z0, font_size, font_no, s->string, 0.0, 6, FALSE) : ps_text (x, y, font_size, s->string, 0.0, 6, FALSE);
+					ps_setpaint (p->rgb);
+					(project_info.three_D) ? GMT_text3d (x, y, z0, font_size, font_no, s->string, 0.0, 6, TRUE) : ps_text (x, y, font_size, s->string, 0.0, 6, TRUE);
+				}
+				else if (f)
+					(project_info.three_D) ? GMT_text3d (x, y, z0, font_size, font_no, s->string, 0.0, 6, FALSE) : ps_text (x, y, font_size, s->string, 0.0, 6, FALSE);
+				else
+					(project_info.three_D) ? GMT_text3d (x, y, z0, font_size, font_no, s->string, 0.0, 6, TRUE) : ps_text (x, y, font_size, s->string, 0.0, 6, TRUE);
 				break;
 
 			case ACTION_ELLIPSE:

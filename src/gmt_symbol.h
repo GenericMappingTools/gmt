@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_symbol.h,v 1.9 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt_symbol.h,v 1.10 2003-04-01 20:03:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -40,6 +40,7 @@
 #define ACTION_HEXAGON		9
 #define ACTION_ITRIANGLE	10
 #define ACTION_ELLIPSE		11
+#define ACTION_TEXT		14
 #define ACTION_PIE		15
 #define ACTION_RECT		17
 
@@ -49,6 +50,7 @@ struct CUSTOM_SYMBOL_ITEM {
 	struct GMT_FILL *fill;
 	struct GMT_PEN *pen;
 	struct CUSTOM_SYMBOL_ITEM *next;
+	char *string;
 };
 
 struct CUSTOM_SYMBOL {
