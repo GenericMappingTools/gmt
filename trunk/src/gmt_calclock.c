@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.18 2001-09-15 00:39:14 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.19 2001-09-15 02:36:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -808,7 +808,8 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 				/* Select every n'th day of the Gregorian year  */
 				if (init) {
 					/* Simple mod works on positive ints  */
-					k = (p->cc[0].day_y - 1)%(p->step);
+					/* k = (p->cc[0].day_y - 1)%(p->step); */
+					k = (p->cc[0].day_y)%(p->step);		/* Want to start on a multiple of step */
 					if (k) {
 						p->rd[0] -= k;	/* Floor to n'th day  */
 						GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
@@ -821,7 +822,8 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 				k = p->cc[0].day_y + p->step;
 				if (k > kyd) {
 					/* Go to 1st day of next year:  */
-					p->rd[1] = GMT_rd_from_gymd (p->cc[0].year+1, 1, 1);
+					/* p->rd[1] = GMT_rd_from_gymd (p->cc[0].year+1, 1, 1); */
+					p->rd[1] = GMT_rd_from_gymd (p->cc[0].year+1, 1, 1) - 1 + p->step;	/* So jjj will be multiples of step */
 				}
 				else {
 					p->rd[1] = p->rd[0] + p->step;
@@ -891,14 +893,14 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 				p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
 			}
 			
-			k = (p->cc[0].day_w - kws + 7) % 7;	/* k will be in the 0- 6 range where 0 is the kws day (could be Wednesday or whatever) */
-			k += p->step;				/* Step forward the required number of days */
-			if (k > 6) {				/* Stepped into next week, must reset stride to start at week start */
+			k = (p->cc[0].day_w - kws + 7) % 7;		/* k will be in the 0- 6 range where 0 is the kws day (could be Wednesday or whatever) */
+			k += p->step;					/* Step forward the required number of days */
+			if (k > 6) {					/* Stepped into next week, must reset stride to start at week start */
 				int n_weeks;
-				n_weeks = p->step / 7;		/* Because the k % 7 would not count weeks */
+				n_weeks = p->step / 7;			/* Because the k % 7 would not count weeks */
 				k -= p->step;
-				k = 7 - k;			/* Number of days left in the week */
-				if (k == 0) k = 1;		/* Must go at least 1 day forward */
+				k = (7 - k) % 7;			/* Number of days left in the week */
+				if (k == 0 && n_weeks == 0) k = 1;	/* Must go at least 1 day forward */
 				p->rd[1] = p->rd[0] + k + n_weeks * 7;	/* Next rd */
 			}
 			else {
