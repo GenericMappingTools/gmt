@@ -41,8 +41,9 @@ output format is controlled by \fBD_FORMAT\fP. The available abbreviations are:
 The 8-character cruise ID string
 .TP
 .B time
-Absolute calendar time in the format dictated by the GMT default settings  \fBOUTPUT_DATE_FORMAT\fP
-and \fBOUTPUT_CLOCK_FORMAT\fP.
+Choose between Absolute calendar time (\fBataim\fP, the default) in the format dictated by the GMT default settings  \fBOUTPUT_DATE_FORMAT\fP
+and \fBOUTPUT_CLOCK_FORMAT\fP, or Relative time (\fBrtime\fP) in the format dictated by the GMT default settings  \fBD_FORMAT\fP
+and \fBTIME_SYSTEM\fP (or fBTIME_EPOCH\fPand fBTIME_UNIT\fP).
 .TP
 .B lon
 Longitude in the format dictated by the GMT default \fBOUTPUT_DEGREE_FORMAT\fP.
@@ -51,7 +52,8 @@ Longitude in the format dictated by the GMT default \fBOUTPUT_DEGREE_FORMAT\fP.
 Longitude in the format dictated by the GMT default \fBOUTPUT_DEGREE_FORMAT\fP.
 .TP
 .B dist
-Along-track distance in km or nautical miles (see \fB\-N\fP).
+Choose between ellipsoidal, along-track distances (\fBedist\fP, the default) or quick, flat-earth approximate along-track distances (\fBfdist\fP).
+Distances are reported in km (or nautical miles; see \fB\-N\fP).
 .TP
 .B az
 Ship azimuth (heading) in degrees.
@@ -150,6 +152,9 @@ track from port of departure. [Default is length of track].
 Set the weight for these data.  Weight output option must be set in \fB\-F\fP.  This is
 useful if the data are to be processed with the weighted averaging techniques offered by
 \fBblockmean\fP, \fBblockmedian\fP, and \fBblockmode\fP.
+.TP
+.B \-Z
+Append the sign you want for depth values (\fB\-Z-\fP gives negative bathymetry).
 .TP
 .B \-bo
 Selects binary output mode (single precision; append \fBd\fP for double precision) [Default is ASCII].
