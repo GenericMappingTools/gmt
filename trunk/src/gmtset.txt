@@ -2,7 +2,7 @@
 .SH NAME
 gmtset \- To change individual \fBGMT\fP default parameters
 .SH SYNOPSIS
-\fBgmtset\fP [ \fB\-GfP\fIdefaultsfile\fP ] PARAMETER1 [=] \fIvalue1\fP PARAMETER2 [=] \fIvalue2\fP PARAMETER3 [=] \fIvalue3\fP ...
+\fBgmtset\fP [ \fB\-G\fP\fIdefaultsfile\fP ] PARAMETER1 [=] \fIvalue1\fP PARAMETER2 [=] \fIvalue2\fP PARAMETER3 [=] \fIvalue3\fP ...
 .SH DESCRIPTION
 \fBgmtset\fP will adjust individual \fBGMT\fP defaults settings in the current directory's \.gmtdefaults4
 file.  If no such file exists one will be created.  The main purpose of \fBgmtset\fP is
