@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.78 2004-07-03 01:41:58 pwessel Exp $
+ *	$Id: gmt.h,v 1.79 2004-07-17 00:04:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -109,6 +109,9 @@
 #endif
 #ifndef M_SQRT2
 #define	M_SQRT2		1.41421356237309504880
+#endif
+#ifndef M_LN2_INV
+#define	M_LN2_INV	(1.0 / 0.69314718055994530942)
 #endif
 
 #define GMT_CONV_LIMIT	1.0e-8	/* Fairly tight convergence limit or "close to zero" limit */
