@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.172 2005-02-15 23:09:06 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.173 2005-02-17 05:29:49 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1854,36 +1854,36 @@ int GMT_setparameter (char *keyword, char *value)
 				error = TRUE;
 			break;
 		case GMTCASE_INPUT_CLOCK_FORMAT:
-			strncpy (gmtdefs.input_clock_format, value, 32);
+			strncpy (gmtdefs.input_clock_format, value, GMT_TEXT_LEN);
 			break;
 		case GMTCASE_INPUT_DATE_FORMAT:
-			strncpy (gmtdefs.input_date_format, value, 32);
+			strncpy (gmtdefs.input_date_format, value, GMT_TEXT_LEN);
 			break;
 		case GMTCASE_OUTPUT_CLOCK_FORMAT:
-			strncpy (gmtdefs.output_clock_format, value, 32);
+			strncpy (gmtdefs.output_clock_format, value, GMT_TEXT_LEN);
 			break;
 		case GMTCASE_OUTPUT_DATE_FORMAT:
-			strncpy (gmtdefs.output_date_format, value, 32);
+			strncpy (gmtdefs.output_date_format, value, GMT_TEXT_LEN);
 			break;
 		case GMTCASE_OUTPUT_DEGREE_FORMAT:
-			strncpy (gmtdefs.output_degree_format, value, 32);
+			strncpy (gmtdefs.output_degree_format, value, GMT_TEXT_LEN);
 			break;
 		case GMTCASE_PLOT_CLOCK_FORMAT:
-			strncpy (gmtdefs.plot_clock_format, value, 32);
+			strncpy (gmtdefs.plot_clock_format, value, GMT_TEXT_LEN);
 			break;
 		case GMTCASE_PLOT_DATE_FORMAT:
-			strncpy (gmtdefs.plot_date_format, value, 32);
+			strncpy (gmtdefs.plot_date_format, value, GMT_TEXT_LEN);
 			break;
 		case GMTCASE_PLOT_DEGREE_FORMAT:
-			strncpy (gmtdefs.plot_degree_format, value, 32);
+			strncpy (gmtdefs.plot_degree_format, value, GMT_TEXT_LEN);
 			GMT_backward.got_new_plot_format = TRUE;
 			break;
 		case GMTCASE_TIME_FORMAT:
 		case GMTCASE_TIME_FORMAT_PRIMARY:
-			strncpy (gmtdefs.time_format[0], value, 32);
+			strncpy (gmtdefs.time_format[0], value, GMT_TEXT_LEN);
 			break;
 		case GMTCASE_TIME_FORMAT_SECONDARY:
-			strncpy (gmtdefs.time_format[1], value, 32);
+			strncpy (gmtdefs.time_format[1], value, GMT_TEXT_LEN);
 			break;
 		case GMTCASE_TIME_IS_INTERVAL:
 			if (value[0] == '+' || value[0] == '-') {	/* OK, gave +<n>u or -<n>u, check for unit */
@@ -1916,8 +1916,8 @@ int GMT_setparameter (char *keyword, char *value)
 			error = true_false_or_error (lower_value, &gmtdefs.want_leap_seconds);
 			break;
 		case GMTCASE_TIME_EPOCH:
-			strncpy (gmtdefs.time_epoch, value, 32);
-			strncpy (GMT_time_system[GMT_N_SYSTEMS-1].epoch, value, 32);
+			strncpy (gmtdefs.time_epoch, value, GMT_TEXT_LEN);
+			strncpy (GMT_time_system[GMT_N_SYSTEMS-1].epoch, value, GMT_TEXT_LEN);
 			break;
 		case GMTCASE_TIME_UNIT:
 			gmtdefs.time_unit = GMT_time_system[GMT_N_SYSTEMS-1].unit = value[0];
@@ -1937,7 +1937,7 @@ int GMT_setparameter (char *keyword, char *value)
 			}
 			break;
 		case GMTCASE_TIME_LANGUAGE:
-			strncpy (gmtdefs.time_language, value, 32);
+			strncpy (gmtdefs.time_language, value, GMT_TEXT_LEN);
 			GMT_str_tolower (gmtdefs.time_language);
 			break;
 		case GMTCASE_CHAR_ENCODING:
