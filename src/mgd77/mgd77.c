@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.7 2005-01-12 02:52:30 pwessel Exp $
+ *	$Id: mgd77.c,v 1.8 2005-02-16 01:24:50 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -837,7 +837,7 @@ void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F)
 	 * order as in the input records.
 	 */
 
-	char line[BUFSIZ], *p, word[128], value[128];
+	char line[BUFSIZ], *p, word[GMT_LONG_TEXT], value[GMT_LONG_TEXT];
 	int i, j, k, constraint, n, ne_alloc = 0, nc_alloc = 0;
 	BOOLEAN exact;
 
