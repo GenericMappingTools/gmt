@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.15 2004-04-25 09:10:45 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.16 2004-11-24 00:36:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1454,8 +1454,8 @@ int GMT_srf_write_grd_info (char *file, struct GRD_HEADER *header)
 
 int GMT_srf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
 {
-	int GMT_surfer_read_grd (char *file, struct GRD_HEADER *header, float *grid, int type);
-	return (GMT_surfer_read_grd (file, header, grid, GMT_NATIVE_FLOAT));
+	int GMT_surfer_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, int type);
+	return (GMT_surfer_read_grd (file, header, grid, w, e, s, n, pad, GMT_NATIVE_FLOAT));
 }
 
 int GMT_srf_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
@@ -1478,13 +1478,18 @@ int GMT_write_srfheader (FILE *fp, struct srf_header *h)
 	return (0);
 }
 
-int GMT_surfer_read_grd (char *file, struct GRD_HEADER *header, float *grid, int type)
+int GMT_surfer_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, int type)
 {	/* file:	File name	*/
 	/* header:     	grid structure header */
 	/* grid:	array with final grid */
 	/* type:	Data type (int, short, float, etc) */
 
-	int kk, i, j2, ij;         	/* Misc. counters */
+	int first_col, last_col;	/* First and last column to deal with */
+	int first_row, last_row;	/* First and last row to deal with */
+	int width_in;			/* Number of items in one row of the subregion */
+	int width_out;			/* Width of row as return (may include padding) */
+	int height_in;			/* Number of columns in subregion */
+	int kk, i, j, j2, ij, i_0_out; 	/* Misc. counters */
 	int *k;				/* Array with indices */
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
@@ -1505,20 +1510,57 @@ int GMT_surfer_read_grd (char *file, struct GRD_HEADER *header, float *grid, int
 		exit (EXIT_FAILURE);
 	}
 	
-	k = (int *) GMT_memory (VNULL, (size_t)header->nx, sizeof (int), "GMT_surfer_read_grd");
-	for (i = 0; i < header->nx; i++) k[i] = i;
+	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row);
+
+	width_out = width_in;		/* Width of output array */
+	if (pad[0] > 0) width_out += pad[0];
+	if (pad[1] > 0) width_out += pad[1];
+	
+	i_0_out = pad[0];		/* Edge offset in output */
+
 
 	/* Allocate memory for one row of data (for reading purposes) */
 
-	tmp = (void *) GMT_memory (VNULL, (size_t)header->nx, GMT_native_size[type], "GMT_native_read");
+	tmp = (void *) GMT_memory (VNULL, (size_t)header->nx, GMT_native_size[type], "GMT_surfer_read_grd");
 
-	for (j2 = (header->ny - 1); j2 >= 0; j2--) {
+	/* Now deal with skipping */
+
+	if (piping) {	/* Skip data by reading it */
+		for (j = 0; j < first_row; j++) fread (tmp, GMT_native_size[type], (size_t)header->nx, fp);
+	}
+	else {		/* Simply seek over it */
+		fseek (fp, (long) (first_row * header->nx * GMT_native_size[type]), SEEK_CUR);
+	}
+
+	for (j = first_row, j2 = height_in-1; j <= last_row; j++, j2--) {
 		fread (tmp, GMT_native_size[type], (size_t)header->nx, fp);	/* Get one row */
-		ij = j2 * header->nx;
-		for (i = 0; i < header->nx; i++) {
+		ij = (j2 + pad[3]) * width_out + i_0_out;
+		for (i = 0; i < width_in; i++) {
 			kk = ij + i;
 			grid[kk] = GMT_native_decode (tmp, k[i], type);	/* Convert whatever to float */
 			if (grid[kk] >= GMT_grd_in_nan_value) grid[kk] = GMT_f_NaN;
+		}
+	}
+	if (piping) {	/* Skip remaining data by reading it */
+		for (j = last_row + 1; j < header->ny; j++) fread (tmp, GMT_native_size[type], (size_t)header->nx, fp);
+	}
+	
+	header->nx = width_in;
+	header->ny = height_in;
+	header->x_min = w;
+	header->x_max = e;
+	header->y_min = s;
+	header->y_max = n;
+
+	/* Update zmin, zmaz */
+
+	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
+	for (j = 0; j < header->ny; j++) {
+		for (i = 0; i < header->nx; i++) {
+			ij = (j + pad[3]) * width_out + i + pad[0];
+			if (GMT_is_fnan (grid[ij])) continue;
+			if ((double)grid[ij] < header->z_min) header->z_min = (double)grid[ij];
+			if ((double)grid[ij] > header->z_max) header->z_max = (double)grid[ij];
 		}
 	}
 	
