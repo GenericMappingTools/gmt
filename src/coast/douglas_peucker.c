@@ -1,5 +1,5 @@
 /*
- *	$Id: douglas_peucker.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: douglas_peucker.c,v 1.2 2004-09-05 04:08:18 pwessel Exp $
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +8,9 @@
 #define sqr(x) ((x)*(x))
 #define D2R (M_PI/180.0)
 #define F (D2R * 0.5 * 1.0e-6)
+#ifndef M_PI
+#define M_PI          3.14159265358979323846
+#endif
 
 extern void *GMT_memory();
 int Douglas_Peucker (double x_source[], double y_source[], int n_source, double band, int index[]);

@@ -1,12 +1,7 @@
 /*
- *	$Id: man_fix2.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: man_fix2.c,v 1.2 2004-09-05 04:05:24 pwessel Exp $
  */
 #include "wvs.h"
-
-#define N_MAX_LEN	1450000		/* 1435084 to be exact */
-#define N_POLY		189000		/* 188281 to be exact */
-#define M360		360000000
-#define MILL		1000000
 
 struct CHECK {
 	int pos;
