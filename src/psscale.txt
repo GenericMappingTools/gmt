@@ -9,7 +9,7 @@ psscale \- Create grayscale or colorscale for maps
 .SH SYNOPSIS
 \fBpsscale\fP \fB\-D\fP\fIxpos/ypos/length/width[h]\fP 
  [ \fB\-A \fP ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIcpt_file\fP ] [ \fB\-E\fP[\fBb|f\fP][\fIlength\fP] ] 
-[ \fB\-I\fP[\fImax_intens\fP] ] [ \fB\-K\fP ] [ \fB\-L\fP[\fIgap\fP] ]  [ \fB\-M\fP ] [ \fB\-N\fP\fIdpi\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
+[ \fB\-I\fP[\fImax_intens\fP] ] [ \fB\-K\fP ] [ \fB\-L\fP[\fBi\fP][\fIgap\fP] ]  [ \fB\-M\fP ] [ \fB\-N\fP\fIdpi\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
 [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-X\fP\fIx-shift\fP ] 
 [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fIzfile\fP ] [ \fB\-c\fP\fIcopies\fP ]
 .SH DESCRIPTION
@@ -63,7 +63,7 @@ Gives equal-sized color rectangles.  Default scales rectangles according to the
 z-range in the cpt-file  (Also see \fB\-Z\fP).  If set, any equal interval annotation
 set with \fB\-B\fP will be ignored.  If \fIgap\fP is appended and the cpt table is
 discrete we will center each annotation on each rectangle, using the lower boundary
-z-value for the annotation.
+z-value for the annotation.  If \fPi\fP is prepended we annotate the interval range instead.
 .TP
 .B \-M
 Force a monochrome graybar using the (television) YIQ transformation.
