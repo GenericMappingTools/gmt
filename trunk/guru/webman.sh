@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.9 2002-03-08 17:09:07 pwessel Exp $
+#	 $Id: webman.sh,v 1.10 2002-03-11 21:05:39 pwessel Exp $
 #
 #	webman.csh - Automatic generation of the GMT web manual pages
 #
@@ -52,7 +52,7 @@ for prog in `cat programs.lis`; do
 	grep -v ${prog} webman1.sed > this1.sed
 	grep -v ${prog} webman2.sed > this2.sed
 	grep -v ${prog} webman3.sed > this3.sed
-	nroff -man man/manl/${prog}.l | $MAN2HTML -title $prog -pgsize 5000 | sed -f this1.sed | sed -f this2.sed | sed -f this3.sed > www/gmt/doc/html/${prog}.html
+	nroff -man man/manl/${prog}.l | $MAN2HTML -topm 4 -pgsize 5000 | sed -f this1.sed | sed -f this2.sed | sed -f this3.sed > www/gmt/doc/html/${prog}.html
 	echo '<body bgcolor="#ffffff">' >> www/gmt/doc/html/${prog}.html
 done
 
@@ -70,7 +70,7 @@ for package in cps dbase imgsrc meca mgg misc segyprogs spotter x2sys x_system $
 		if [ $gush = 1 ]; then
 			echo "Making ${prog}.html"
 		fi
-		nroff -man $f | $MAN2HTML -title $prog | sed -f ../webman1.sed | sed -f ../webman2.sed | sed -f ../webman3.sed > $package/${prog}.html
+		nroff -man $f | $MAN2HTML -topm 4 | sed -f ../webman1.sed | sed -f ../webman2.sed | sed -f ../webman3.sed > $package/${prog}.html
 		echo '<body bgcolor="#ffffff">' >> $package/${prog}.html
 	done
 done
