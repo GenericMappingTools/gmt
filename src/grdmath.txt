@@ -95,7 +95,7 @@ To extract the locations of local maxima that exceed 100 mGal in the file faa.gr
 .br
 \fBgrd2xyz\fP z.grd \fB\-S\fP > max.xyz
 .SH BUGS
-Files that has the same name as some operators, e.g., ADD, SIGN, =, etc. cannot be read
+Files that has the same name as some operators, e.g., \fBADD\fP, \fBSIGN\fP, \fB=\fP, etc. cannot be read
 and must not be present in the current directory.  Piping of files are not allowed.
 The stack limit is hard-wired to 50.
 All functions expecting a positive radius (e.g., \fBLOG\fP, \fBKEI\fP, etc.) are passed the
