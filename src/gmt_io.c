@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.13 2001-08-17 23:53:49 wsmith Exp $
+ *	$Id: gmt_io.c,v 1.14 2001-08-20 01:53:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -106,11 +106,13 @@ int GMT_bin_float_input (FILE *fp, int *n, double **ptr);	/* Decode binary float
 int GMT_ascii_output (FILE *fp, int n, double *ptr);		/* Write Ascii output records */
 int GMT_bin_double_output (FILE *fp, int n, double *ptr);	/* Write binary double output records */
 int GMT_bin_float_output (FILE *fp, int n, double *ptr);	/* Write binary float output records */
+int GMT_ascii_output_one (FILE *fp, double x, int col);		/* Writes one item to output in ascii format */
 void GMT_adjust_periodic ();					/* Add/sub 360 as appropriate */
 void GMT_decode_calclock_formats ();
 void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S);
 void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode);
 void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode);
+int GMT_write_abstime_output (FILE *fp, GMT_dtime dt);		/* Format and write one ABSTIME item to output */
 
 int	GMT_scanf_clock (char *s, double *val);
 int	GMT_scanf_calendar (char *s, GMT_cal_rd *rd);
@@ -147,6 +149,12 @@ void GMT_io_init (void)
 	GMT_io.in_col_type  = (int *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (int), GMT_program);
 	GMT_io.out_col_type = (int *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (int), GMT_program);
 	for (i = 0; i < BUFSIZ; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = GMT_IS_UNKNOWN;
+
+	/* Set the Y2K conversion parameters once */
+	
+	GMT_Y2K_fix.y2_cutoff = abs (gmtdefs.Y2K_offset_year) % 100;
+	GMT_Y2K_fix.y100 = gmtdefs.Y2K_offset_year - GMT_Y2K_fix.y2_cutoff;
+	GMT_Y2K_fix.y200 = GMT_Y2K_fix.y100 + 100;
 
 	GMT_decode_calclock_formats ();
 }
@@ -408,13 +416,14 @@ char *GMT_fgets (char *record, int maxlength, FILE *fp)
 
 int GMT_bin_double_input (FILE *fp, int *n, double **ptr)
 {
-	int n_read;
+	int n_read, i;
 
 	GMT_io.status = 0;
 	if ((n_read = fread ((void *) GMT_data, sizeof (double), (size_t)(*n), fp)) != (*n)) {
 		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
 	}
 
+	for (i = 0; i < (*n); i++) if (GMT_io.in_col_type[i] == GMT_IS_RELTIME) GMT_data[i] = GMT_dt_from_usert (GMT_data[i]);
 	*ptr = GMT_data;
 
 	/* Read ok, how about multisegment? */
@@ -448,7 +457,7 @@ int GMT_bin_float_input (FILE *fp, int *n, double **ptr)
 		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
 	}
 	else {
-		for (i = 0; i < n_read; i++) GMT_data[i] = (double)GMT_f[i];
+		for (i = 0; i < n_read; i++) GMT_data[i] = (double)((GMT_io.in_col_type[i] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double)GMT_f[i]) : GMT_f[i]);
 	}
 
 	*ptr = GMT_data;
@@ -485,86 +494,111 @@ int GMT_ascii_output (FILE *fp, int n, double *ptr)
 {
 	struct GMT_gcal calendar;
 	double	x;
-	int i, e = 0, wn = 0, i_sec, m_sec, ap, ival[3];
-	char	ofs = '\t';	/* For now; later let user set ofs = output field separator */
+	int i, last, e = 0, e1, e2, wn = 0, i_sec, m_sec, ap, ival[3];
 	
-	if (gmtdefs.xy_toggle) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
+	if (gmtdefs.xy_toggle) d_swap (ptr[0], ptr[1]);		/* Write lat/lon instead of lon/lat */
+	last = n - 1;						/* Last record, need to output linefeed instead of delimeter */
 
-	for (i = 0; i < n && e >= 0; i++) {
-		if (i == (n - 1)) ofs = '\n';
-		if (GMT_is_dnan (ptr[i])) {
-			e = fprintf (fp, "NaN%c", ofs);
-		}
-		else if (GMT_io.out_col_type[i] == GMT_IS_UNKNOWN) {
-			e = fprintf (fp, gmtdefs.d_format, ptr[i]);
-			putc (ofs, fp);
-		}
-		/* Later add a user-defined geographical format here */
-		else if (GMT_io.out_col_type[i] == GMT_IS_RELTIME) {
-			x = GMT_usert_from_dt ( (GMT_dtime) ptr[i]);
-			e = fprintf (fp, gmtdefs.d_format, ptr[i]);
-			putc (ofs, fp);
-		}
-		else {	/* Then it must be ABSTIME */
-			GMT_gcal_from_dt ( (GMT_dtime) ptr[i], &calendar);
-			/* Now undo Y2K fix to make a 2-digit year here */
-			if (GMT_io.date_output.day_of_year) {
-				ival[GMT_io.date_output.order[0]] = calendar.year;
-				ival[GMT_io.date_output.order[1]] = calendar.day_y;
-			}
-			else if (GMT_io.date_output.iso_calendar) {
-				ival[0] = calendar.iso_y;
-				ival[1] = calendar.iso_w;
-				ival[2] = calendar.iso_d;
-			}
-			else {
-				ival[GMT_io.date_output.order[0]] = calendar.year;
-				ival[GMT_io.date_output.order[1]] = calendar.month;
-				ival[GMT_io.date_output.order[2]] = calendar.day_m;
-			}
-			fprintf (fp, GMT_io.date_output.format, ival[0], ival[1], ival[2]);
-			putc ('T', fp);
-			if (GMT_io.clock_output.n_sec_decimals) {
-				i_sec = (int) floor (calendar.sec);
-				m_sec = irint (GMT_io.clock_output.f_sec_to_int * (calendar.sec - i_sec));
-			}
-			else
-				i_sec = irint (calendar.sec);
-				
-			if (GMT_io.clock_output.twelwe_hr_clock) {
-				if (calendar.hour < 12) {
-					ap = 0;
-				}
-				else {
-					ap = 1;
-					calendar.hour -= 12;
-				}
-				if (calendar.hour == 0) calendar.hour = 12;
-				if (GMT_io.clock_output.n_sec_decimals) {
-					fprintf (fp, GMT_io.clock_output.format, calendar.hour, calendar.min, i_sec, m_sec, GMT_io.clock_output.ampm_suffix[ap]);
-				}
-				else {
-					fprintf (fp, GMT_io.clock_output.format, calendar.hour, calendar.min, i_sec, GMT_io.clock_output.ampm_suffix[ap]);
-				}
-			}
-			else {
-				if (GMT_io.clock_output.n_sec_decimals) {
-					fprintf (fp, GMT_io.clock_output.format, calendar.hour, calendar.min, i_sec, m_sec);
-				}
-				else {
-					fprintf (fp, GMT_io.clock_output.format, calendar.hour, calendar.min, i_sec);
-				}
-			}
-			putc(ofs, fp);
-		}
+	for (i = 0; i < n && e >= 0; i++) {			/* Keep writing all fields unless there is a read error (e == -1) */
+		e = GMT_ascii_output_one (fp, ptr[i], i);	/* Write one item without any separator at the end */
+
+		if (i == last)					/* This is the last field, must add newline */
+			putc ('\n', fp);
+		else if (gmtdefs.field_delimeter[0])		/* Not last field, and a separator is required */
+			fprintf (fp, "%s", gmtdefs.field_delimeter);
+			
 		wn += e;
 	}
 	return ((e < 0) ? e : wn);
 }
 
+int GMT_ascii_output_one (FILE *fp, double x, int col)
+{
+	int e;
+	
+	if (GMT_is_dnan (x)) {
+		e = fprintf (fp, "NaN");
+	}
+	else if (GMT_io.out_col_type[col] == GMT_IS_UNKNOWN) {
+		e = fprintf (fp, gmtdefs.d_format, x);
+	}
+	else if (GMT_io.out_col_type[col] == GMT_IS_LON) {	/* Later add a user-defined geographical format here */
+		e = fprintf (fp, gmtdefs.d_format, x);
+	}
+	else if (GMT_io.out_col_type[col] == GMT_IS_LAT) {	/* Later add a user-defined geographical format here */
+		e = fprintf (fp, gmtdefs.d_format, x);
+	}
+	else if (GMT_io.out_col_type[col] == GMT_IS_RELTIME) {
+		e = fprintf (fp, gmtdefs.d_format, GMT_usert_from_dt ( (GMT_dtime) x));
+	}
+	else {	/* Then it must be ABSTIME */
+		e = GMT_write_abstime_output (fp, (GMT_dtime) x);
+	}
+	return (e);
+}
+
+int GMT_write_abstime_output (FILE *fp, GMT_dtime dt)
+{
+	struct GMT_gcal calendar;
+	int e1, e2, i_sec, m_sec, ap, ival[3];
+
+	GMT_gcal_from_dt (dt, &calendar);
+	/* Now undo Y2K fix to make a 2-digit year here */
+	if (GMT_io.date_output.day_of_year) {
+		ival[GMT_io.date_output.order[0]] = (GMT_io.date_output.Y2K_year) ? abs(calendar.year) % 100 : calendar.year;
+		ival[GMT_io.date_output.order[1]] = calendar.day_y;
+	}
+	else if (GMT_io.date_output.iso_calendar) {
+		ival[0] = (GMT_io.date_output.Y2K_year) ? abs(calendar.iso_y) % 100 : calendar.iso_y;
+		ival[1] = calendar.iso_w;
+		ival[2] = calendar.iso_d;
+	}
+	else {
+		ival[GMT_io.date_output.order[0]] = (GMT_io.date_output.Y2K_year) ? abs(calendar.year) % 100 : calendar.year;
+		ival[GMT_io.date_output.order[1]] = calendar.month;
+		ival[GMT_io.date_output.order[2]] = calendar.day_m;
+	}
+	e1 = fprintf (fp, GMT_io.date_output.format, ival[0], ival[1], ival[2]);
+	putc ('T', fp);
+	if (GMT_io.clock_output.n_sec_decimals) {
+		i_sec = (int) floor (calendar.sec);
+		m_sec = irint (GMT_io.clock_output.f_sec_to_int * (calendar.sec - i_sec));
+	}
+	else
+		i_sec = irint (calendar.sec);
+	
+	if (GMT_io.clock_output.twelwe_hr_clock) {
+		if (calendar.hour < 12) {
+			ap = 0;
+		}
+		else {
+			ap = 1;
+			calendar.hour -= 12;
+		}
+		if (calendar.hour == 0) calendar.hour = 12;
+		if (GMT_io.clock_output.n_sec_decimals) {
+			e2 = fprintf (fp, GMT_io.clock_output.format, calendar.hour, calendar.min, i_sec, m_sec, GMT_io.clock_output.ampm_suffix[ap]);
+		}
+		else {
+			e2 = fprintf (fp, GMT_io.clock_output.format, calendar.hour, calendar.min, i_sec, GMT_io.clock_output.ampm_suffix[ap]);
+		}
+	}
+	else {
+		if (GMT_io.clock_output.n_sec_decimals) {
+			e2 = fprintf (fp, GMT_io.clock_output.format, calendar.hour, calendar.min, i_sec, m_sec);
+		}
+		else {
+			e2 = fprintf (fp, GMT_io.clock_output.format, calendar.hour, calendar.min, i_sec);
+		}
+	}
+	return ((e1 < 0 || e2 < 0) ? -1 : 1);
+}
+
 int GMT_bin_double_output (FILE *fp, int n, double *ptr)
 {
+	int i;
 	if (gmtdefs.xy_toggle) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
+	for (i = 0; i < n; i++) if (GMT_io.out_col_type[i] == GMT_IS_RELTIME) ptr[i] = GMT_usert_from_dt ((GMT_dtime) ptr[i]);
 	return (fwrite ((void *) ptr, sizeof (double), (size_t)n, fp));
 }
 	
@@ -574,7 +608,7 @@ int GMT_bin_float_output (FILE *fp, int n, double *ptr)
 	static float GMT_f[BUFSIZ];
 	
 	if (gmtdefs.xy_toggle) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
-	for (i = 0; i < n; i++) GMT_f[i] = (float)ptr[i];
+	for (i = 0; i < n; i++) GMT_f[i] = (float)((GMT_io.out_col_type[i] == GMT_IS_RELTIME) ? GMT_usert_from_dt ((GMT_dtime) ptr[i]) : ptr[i]);
 	return (fwrite ((void *) GMT_f, sizeof (float), (size_t)n, fp));
 }
 
@@ -764,21 +798,27 @@ void GMT_check_z_io (struct GMT_Z_IO *r, float *a)
 	if (r->y_missing) for (i = 0, k = (r->ny-1)*r->nx; i < r->nx; i++) a[i] = a[k+i];
 }
 
+/* NOTE: In the following we check GMT_io.in_col_type[2] and GMT_io.out_col_type[2] for formatting help for the first column.
+ * We use column 3 ([2]) instead of the first ([0]) since we really are dealing with the z in z (x,y) here
+ * and the x,y are implicit from the -R -I arguments.
+ */
+ 
 int GMT_a_read (FILE *fp, double *d)
 {
 	char line[64];
-	if (fgets (line, 64, fp)) {
-		*d = (line[0] == 'N' || line[0] == 'n') ? GMT_d_NaN : atof (line);
+	if (fgets (line, 64, fp)) {	/* Read was successful */
+		line[strlen(line)-1] = '\0';	/* Chop off the '\n' at end of line */
+		GMT_scanf (line, GMT_io.in_col_type[2], d);	/* Convert whatever it is to double */
 		return (1);
 	}
-	return (0);
+	return (0);	/* Upon failure to read the line */
 }
 
 int GMT_c_read (FILE *fp, double *d)
 {
 	char c;
 	if (fread ((void *)&c, sizeof (char), 1, fp)) {
-		*d = (double) c;
+		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) c) : (double) c;
 		return (1);
 	}
 	return (0);
@@ -788,7 +828,7 @@ int GMT_u_read (FILE *fp, double *d)
 {
 	unsigned char u;
 	if (fread ((void *)&u, sizeof (unsigned char), 1, fp)) {
-		*d = (double) u;
+		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) u) : (double) u;
 		return (1);
 	}
 	return (0);
@@ -799,7 +839,7 @@ int GMT_h_read (FILE *fp, double *d)
 	short int h;
 	if (fread ((void *)&h, sizeof (short int), 1, fp)) {
 		if (GMT_do_swab) h = GMT_swab2 (h);
-		*d = (double) h;
+		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) h) : (double) h;
 		return (1);
 	}
 	return (0);
@@ -809,7 +849,8 @@ int GMT_H_read (FILE *fp, double *d)
 {
 	unsigned short int h;
 	if (fread ((void *)&h, sizeof (unsigned short int), 1, fp)) {
-		*d = (double) ((GMT_do_swab) ? GMT_swab2 (h) : h);
+		if (GMT_do_swab) h = GMT_swab2 (h);
+		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) h) : (double) h;
 		return (1);
 	}
 	return (0);
@@ -820,7 +861,7 @@ int GMT_i_read (FILE *fp, double *d)
 	int i;
 	if (fread ((void *)&i, sizeof (int), 1, fp)) {
 		if (GMT_do_swab) i = GMT_swab4 (i);
-		*d = (double) i;
+		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) i) : (double) i;
 		return (1);
 	}
 	return (0);
@@ -830,7 +871,8 @@ int GMT_I_read (FILE *fp, double *d)
 {
 	unsigned int i;
 	if (fread ((void *)&i, sizeof (unsigned int), 1, fp)) {
-		*d = (double) ((GMT_do_swab) ? GMT_swab4 (i) : i);
+		if (GMT_do_swab) i = GMT_swab4 (i);
+		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) i) : (double) i;
 		return (1);
 	}
 	return (0);
@@ -845,7 +887,7 @@ int GMT_l_read (FILE *fp, double *d)
 			i = (unsigned int *)&l;
 			for (k = 0; k < sizeof (long int)/4; k++) i[k] = GMT_swab4 (i[k]);
 		}
-		*d = (double) l;
+		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) l) : (double) l;
 		return (1);
 	}
 	return (0);
@@ -860,7 +902,7 @@ int GMT_f_read (FILE *fp, double *d)
 			i = (unsigned int *)&f;
 			*i = GMT_swab4 (*i);
 		}
-		*d = (double) f;
+		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) f) : (double) f;
 		return (1);
 	}
 	return (0);
@@ -876,6 +918,7 @@ int GMT_d_read (FILE *fp, double *d)
 			i[0] = GMT_swab4 (i[1]);
 			i[1] = j;
 		}
+		if (GMT_io.in_col_type[2] == GMT_IS_RELTIME) *d = GMT_dt_from_usert (*d);
 		return (1);
 	}
 	return (0);
@@ -884,7 +927,7 @@ int GMT_d_read (FILE *fp, double *d)
 int GMT_a_write (FILE *fp, double d)
 {
 	int n = 0;
-	n = (GMT_is_dnan (d)) ? fprintf (fp, "NaN") : fprintf (fp, gmtdefs.d_format, d);
+	n = GMT_ascii_output_one (fp, d, 2);
 	fprintf (fp, "\n"); 
 	return (n);
 }
@@ -892,6 +935,7 @@ int GMT_a_write (FILE *fp, double d)
 int GMT_c_write (FILE *fp, double d)
 {
 	char c;
+	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	c = (char) d;
 	return (fwrite ((void *)&c, sizeof (char), (size_t)1, fp));
 }
@@ -899,6 +943,7 @@ int GMT_c_write (FILE *fp, double d)
 int GMT_u_write (FILE *fp, double d)
 {
 	unsigned char u;
+	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	u = (unsigned char) d;
 	return (fwrite ((void *)&u, sizeof (unsigned char), (size_t)1, fp));
 }
@@ -906,6 +951,7 @@ int GMT_u_write (FILE *fp, double d)
 int GMT_h_write (FILE *fp, double d)
 {
 	short int h;
+	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	h = (short int) d;
 	return (fwrite ((void *)&h, sizeof (short int), (size_t)1, fp));
 }
@@ -913,6 +959,7 @@ int GMT_h_write (FILE *fp, double d)
 int GMT_H_write (FILE *fp, double d)
 {
 	unsigned short int h;
+	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	h = (unsigned short int) d;
 	return (fwrite ((void *)&h, sizeof (unsigned short int), (size_t)1, fp));
 }
@@ -920,6 +967,7 @@ int GMT_H_write (FILE *fp, double d)
 int GMT_i_write (FILE *fp, double d)
 {
 	int i;
+	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	i = (int) d;
 	return (fwrite ((void *)&i, sizeof (int), (size_t)1, fp));
 }
@@ -927,6 +975,7 @@ int GMT_i_write (FILE *fp, double d)
 int GMT_I_write (FILE *fp, double d)
 {
 	unsigned int i;
+	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	i = (unsigned int) d;
 	return (fwrite ((void *)&i, sizeof (unsigned int), (size_t)1, fp));
 }
@@ -934,6 +983,7 @@ int GMT_I_write (FILE *fp, double d)
 int GMT_l_write (FILE *fp, double d)
 {
 	long int l;
+	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	l = (long int) d;
 	return (fwrite ((void *)&l, sizeof (long int), (size_t)1, fp));
 }
@@ -941,12 +991,14 @@ int GMT_l_write (FILE *fp, double d)
 int GMT_f_write (FILE *fp, double d)
 {
 	float f;
+	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	f = (float) d;
 	return (fwrite ((void *)&f, sizeof (float), (size_t)1, fp));
 }
 
 int GMT_d_write (FILE *fp, double d)
 {
+	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	return (fwrite ((void *)&d, sizeof (double), (size_t)1, fp));
 }
 

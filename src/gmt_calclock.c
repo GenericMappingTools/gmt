@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.7 2001-08-17 23:53:49 wsmith Exp $
+ *	$Id: gmt_calclock.c,v 1.8 2001-08-20 01:53:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -207,7 +207,7 @@ int	GMT_read_cal (char *s, GMT_cal_rd *rd) {
 	gregorian) year, month, day of month.  */
 
 	int	i, j, k, itemp1, itemp2=1, itemp3=1, is_iso=0;
-	char	*cj, *ck = NULL;
+	char	*cj, *ck = CNULL;
 	
 	/* A period or comma would be wrong for this format:  */
 	if ( (strpbrk (s, ".") ) || (strpbrk (s, ",") ) ) return (-1);
@@ -218,10 +218,10 @@ int	GMT_read_cal (char *s, GMT_cal_rd *rd) {
 	i = 0;
 	while (s[i] && s[i] == ' ') i++;
 	if (s[i] == '-') i++;
-	if (s[i] == NULL) return (-1);
+	if (s[i] == '\0') return (-1);
 	
 	cj = strpbrk (&s[i], "-");
-	if (cj != NULL) {
+	if (cj != CNULL) {
 		j = strlen (cj);
 		k = strlen (s);
 		s[k-(i+j)] = '\0';
@@ -245,7 +245,7 @@ int	GMT_read_cal (char *s, GMT_cal_rd *rd) {
 			cj = &cj[1];
 		}
 		ck = strpbrk (cj, "-");
-		if (ck != NULL) {
+		if (ck != CNULL) {
 			j = strlen (ck);
 			k = strlen (cj);
 			cj[k-j] = '\0';
@@ -511,7 +511,7 @@ double	GMT_usert_from_dt (GMT_dtime t) {
 	double x;
 	
 	x = t - GMT_time_system[gmtdefs.time_system].epoch_t0;
-	if (GMT_time_system[gmtdefs.time_system].scale != 1.0) x /= GMT_time_system[gmtdefs.time_system].scale;
+	if (GMT_time_system[gmtdefs.time_system].i_scale != 1.0) x *= GMT_time_system[gmtdefs.time_system].i_scale;
 	return (x);
 }
 
@@ -558,20 +558,10 @@ int	GMT_y2_to_y4_yearfix (int y2) {
 		haven't fixed their Y2K bug data by now will
 		be punished.
 		*/
-	
-	int	y100, y200, fraction;
-	int	retval;
-	
-	/* This is all prep and could be done only once:  */
-	
-	fraction = abs(gmtdefs.Y2K_offset_year) % 100;
-	y100 = gmtdefs.Y2K_offset_year - fraction;
-	y200 = y100 + 100;
-	
-	/* This has to be done each time:  */
-	
-	retval = (y2 >= fraction) ? y2 + y100 : y2 + y200;
-	return (retval);
+
+	/* The GMT_Y2K_fix structure is initialized in GMT_io_init once  */
+		
+	return (y2 + ((y2 >= GMT_Y2K_fix.y2_cutoff) ? GMT_Y2K_fix.y100 : GMT_Y2K_fix.y200));
 }
 
 BOOLEAN	GMT_g_ymd_is_bad (int y, int m, int d) {

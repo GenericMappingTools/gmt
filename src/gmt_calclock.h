@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.h,v 1.4 2001-08-17 23:53:49 wsmith Exp $
+ *	$Id: gmt_calclock.h,v 1.5 2001-08-20 01:53:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -49,6 +49,11 @@ struct GMT_gcal {	/* (proleptic) Gregorian calendar  */
 	double	sec;	/* 00 through 59.xxxx; leap not yet handled  */
 };
 
+struct GMT_Y2K_FIX {	/* The issue that refuses to go away... */
+	int y2_cutoff;	/* The 2-digit offset year.  If y2 >= y2_cuttof, add y100 else add y200 */
+	int y100;	/* The multiple of 100 to add to the 2-digit year if we are above the Y2K_offset_year */
+	int y200;	/* The multiple of 100 to add to the 2-digit year if we are below the Y2K_offset_year */
+};
 
 /* Functions whose source is in gmt_calclock.c:  */
 
@@ -77,3 +82,4 @@ EXTERN_MSC int	GMT_y2_to_y4_yearfix (int y2);	/* Convert a 2-digit year to a 4-d
 EXTERN_MSC BOOLEAN GMT_iso_ywd_is_bad (int y, int w, int d);	/* Check range of week and day for ISO W calendar.  */
 EXTERN_MSC BOOLEAN GMT_g_ymd_is_bad (int y, int m, int d);	/* Check range of month and day for Gregorian YMD calendar values  */
 EXTERN_MSC void	GMT_gcal_from_dt (GMT_dtime t, struct GMT_gcal *cal);	/* Break internal time into calendar and clock struct info  */
+EXTERN_MSC struct GMT_Y2K_FIX GMT_Y2K_fix;	/* Structure holding Y2K parameters */
