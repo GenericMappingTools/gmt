@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.68 2004-09-14 19:07:07 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.69 2004-09-14 21:59:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8413,8 +8413,8 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D)
 		}
 		D->a = gmtdefs.ref_ellipsoid[k].eq_radius;
 		D->f = gmtdefs.ref_ellipsoid[k].flattening;
-		for (k = 0; k< 3; k++) D->xyz[k] = gmtdefs.datum[i].xyz[k];
 		D->ellipsoid_id = k;
+		for (k = 0; k< 3; k++) D->xyz[k] = gmtdefs.datum[i].xyz[k];
 	}
 	D->b = D->a * (1 - D->f);
 	D->e_squared = 2 * D->f - D->f * D->f;

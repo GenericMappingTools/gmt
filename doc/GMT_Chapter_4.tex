@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.55 2004-08-25 17:07:04 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.56 2004-09-14 21:59:35 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -119,7 +119,8 @@ on the same command line as the \GMT\ command we append the name of
 the alternate \filename{.gmtdefaults4} file with the plus sign as a prefix.
 Because any changes only apply to that one command you would have to
 append the alternate file to every command in your script.  This is
-tedious but may be an option for web-based map-servers.
+tedious but may be an option for situations when you cannot write in
+the current directory.
 \item A perhaps less tedious method is to start each script by making a
 copy of the current \filename{.gmtdefaults4}, then copy the desired
 \filename{.gmtdefaults4} file to the current directory, and finally
@@ -136,7 +137,7 @@ change the primary annotation font to 12 point Times-Bold we run \\
 These changes will remain in effect until they are overridden.
 \item Finally, if all you want to achieve is to change a few parameters during
 the execution of a single command but otherwise leave the environment intact, consider
-passing the parameter chances on the command line via the {--}{--}\emph{PAR=value}
+passing the parameter changes on the command line via the {--}{--}\emph{PAR=value}
 mechanism.  For instance, to temporarily set the output format for floating
 points to have lots of decimals, say, for map projection coordinate output,
 append {--}{--}{\bf D\_FORMAT}=\%.12lg to the command in question.
@@ -170,7 +171,7 @@ sometimes a number or character string immediately after the letter.
 
 \vspace{\baselineskip} 
 
-\texttt{pscoast -R0/20/0/20 -Ggray -JM6i -W0.25p -B5 -V -P $>$ map.ps}
+\texttt{pscoast -R0/20/0/20 -Ggray -JM6i -Wthin -B5 -V -P $>$ map.ps}
 
 \section{Standardized command line options} 
 \index{Standardized command line options}%
@@ -286,7 +287,7 @@ refer to ``geographical'' coordinates herein we imply longitude, latitude.}
 \index{\Opt{J} (set map projection)}
 \index{Map projections}
 
-\GMTfig[h]{GMT_-J}{The 25 projections available in \gmt.}
+\GMTfig[h]{GMT_-J}{The 29 projections available in \gmt.}
 
 This option selects the coordinate transformation or map projection.  The general format is
 
@@ -415,9 +416,9 @@ for grid lines and grid crosses, see Figure~\ref{fig:GMT_-B_geo_2}.
 For non-geographic axes, the {\bf BASEMAP\_TYPE} setting is implicitly set to plain.  Other than that,
 cartesian linear axes are very similar to geographic axes.  The annotation format may be controlled with
 the {\bf D\_FORMAT} parameter.  By default, it is set to ``\%lg'', which is a C language format statement
-for floating point numbers, and with this setting the various axis routines will automatically determine
-how many decimal points should be used by inspecting the {\it stride} settings\footnote{Please consult
-the man page for \emph{printf} or any book on C.}.  If {\bf D\_FORMAT} is set
+for floating point numbers\footnote{Please consult the man page for \emph{printf} or any book on C.},
+and with this setting the various axis routines will automatically determine
+how many decimal points should be used by inspecting the {\it stride} settings.  If {\bf D\_FORMAT} is set
 to another format it will be used directly (.e.g, ``\%.2lf'' for a fixed, two decimals format).
 Note that for these axes you may use the {\it unit} setting to
 add a unit string to each annotation (see Figure~\ref{fig:GMT_-B_linear}).
@@ -707,7 +708,8 @@ number of copies without respooling.
 
 For geographical data, the first column is expected to contain longitudes
 and the second to contain latitudes.  To reverse this expectation you must
-apply the \Opt{:} option.  Note that command line arguments that may take
+apply the \Opt{:} option.  Optionally, append {\bf i} or {\bf o} to restrict
+the effect to input or output only.  Note that command line arguments that may take
 geographic coordinates (e.g., \Opt{R}) \emph{always} expect longitude before
 latitude.
 
