@@ -39,7 +39,7 @@ Blank lines and records whose first column contains # will be ignored.
 Used in conjunction with \fB\-Lb|f\fP to limit the track output to those sections
 whose predicted ages fit between the \fIyoung\fP and \fIold\fP limits.  If \fB\-LB|F\fP
 is used instead then the limits apply to the stage ids.  If no limits are supplied
-then individual limits for each seamount are expected in the input file's columns 4 and 5.
+then individual limits for each seamount are expected in columns 4 and 5 of the input file.
 .TP
 .B \-C
 Expect Total Reconstruction Poles (Finite Poles) rather than Backward Stage Poles [Default]
