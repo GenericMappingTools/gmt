@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.98 2004-05-25 04:59:47 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.99 2004-05-26 02:06:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1626,6 +1626,7 @@ int GMT_contlabel_init (struct GMT_CONTOUR *G)
 	if (gmtdefs.measure_unit == GMT_CM) G->label_dist_spacing = 10.0 / 2.54;
 	G->clearance[0] = G->clearance[1] = 0.05;
 	G->just = 6;	/* CM */
+	G->label_font = gmtdefs.annot_font[0];	/* ANNOT_FONT_PRIMARY */
 	GMT_init_pen (&G->pen, GMT_PENWIDTH);
 	memcpy ((void *)G->rgb, (void *)gmtdefs.page_rgb, (size_t)(3 * sizeof (int)));	/* Default box color is page color */
 }
@@ -1635,7 +1636,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 	int k, bad = 0;
 	char txt_cpy[BUFSIZ], txt_a[32], txt_b[32], *p;
 	
-	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<size>][+g<fill>][+j<just>][+l<label>][+o|O|t|T][+p<pen>][+u<unit>] strings */
+	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+l<label>][+o|O|t|T][+s<size>][+p<pen>][+u<unit>] strings */
 	
 	for (k = 0; txt[k] && txt[k] != '+'; k++);
 	if (!txt[k]) return (GMT_contlabel_specs_old (txt, G));	/* Old-style info strings */
@@ -1666,9 +1667,15 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 				if (k == 0) bad++;
 				break;
 				
-			case 'f':	/* Font size specification */
-				G->label_font_size = atof (&p[1]);
-				if (G->label_font_size <= 0.0) bad++;
+			case 'f':	/* Font specification */
+				if (p[1] >= '0' && p[1] <= '9')
+					k = atoi (&p[1]);
+				else
+					k = GMT_font_lookup (&p[1], GMT_font, N_FONTS);
+				if (k < 0 || k >= N_FONTS)
+					bad++;
+				else
+					G->label_font = k;
 				break;
 				
 			case 'g':	/* Fill specification */
@@ -1701,6 +1708,11 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 
 			case 'p':	/* Testbox pen specification */
 				if (GMT_getpen (&p[1], &G->pen)) bad++;
+				break;
+				
+			case 's':	/* Font size specification */
+				G->label_font_size = atof (&p[1]);
+				if (G->label_font_size <= 0.0) bad++;
 				break;
 				
 			case 'T':	/* Curved text */
@@ -1940,6 +1952,8 @@ struct GMT_LABEL * GMT_contlabel_new (void *prev, int np)
 	return (L);
 }
 
+#define TXT_SCL 0.4
+
 void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_CONTOUR *G)
 {
 	/* Sort lables based on distance along contour */
@@ -1965,7 +1979,7 @@ void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_C
 	x_last = x[0];	y_last = y[0];
 	for (k = 0; k < G->n_label && stop < n; k++) {
 		if (G->angle_type == 0)
-			label_width = G->clearance[0] + 0.5 * label_height * strlen(G->L[k]->label);
+			label_width = G->clearance[0] + TXT_SCL * label_height * strlen(G->L[k]->label);
 		else
 			label_width = G->clearance[1] + 0.5 * label_height;
 		start = stop;
@@ -2064,6 +2078,7 @@ void GMT_contlabel_plot (struct GMT_CONTOUR *G)
 		
 	ps_setpaint (gmtdefs.basemap_frame_rgb);
 	GMT_setpen (&G->pen);
+	ps_setfont (G->label_font);
 	
 	for (old = G->anchor; box >= 0 && !G->curved_text && old->next_label; old = old->next_label) {	/* First draw boxes if not 3-D*/
 		this = old->next_label;
