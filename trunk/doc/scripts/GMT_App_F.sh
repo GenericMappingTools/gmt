@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_F.sh,v 1.2 2001-04-03 16:06:39 pwessel Exp $
+#	$Id: GMT_App_F.sh,v 1.3 2001-08-31 23:44:36 pwessel Exp $
 #
 #	Makes the octal code chart in Appendix F
 
@@ -7,7 +7,7 @@
 # Use the row, col values to generate the octal code needed and
 # plot it with pstext, including the header row and left column
 
-gmtset WANT_EURO_FONT TRUE FRAME_PEN 1p
+gmtset CHAR_ENCODING GMT3.4 FRAME_PEN 1p
 
 # First chart for standard font
 
@@ -67,6 +67,7 @@ BEGIN {
 EOF
 
 $AWK -f f.awk chart.d > t
+cp t t.d
 psxy -R0/9/2/32 -Jx0.345/-0.21 -B0g1 -P -K -M -G200 -Y0.0 << EOF > GMT_App_F_1.ps
 >
 1	4
@@ -91,6 +92,40 @@ psxy -R0/9/2/32 -Jx0.345/-0.21 -B0g1 -P -K -M -G200 -Y0.0 << EOF > GMT_App_F_1.p
 EOF
 pstext t -R -Jx -O -K >> GMT_App_F_1.ps
 psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_1.ps
+>
+0	3
+9	3
+>
+1	2
+1	32
+EOF
+
+gmtset CHAR_ENCODING ISOLatin1
+# Then for ISOLatin1Encoding
+psxy -R0/9/2/32 -Jx0.345/-0.21 -B0g1 -P -K -M -G200 -Y0.0 << EOF > GMT_App_F_1a.ps
+>
+1	4
+2	4
+2	3
+1	3
+>
+8	16
+9	16
+9	15
+8	15
+>
+1	21
+2	21
+2	20
+1	20
+>
+8	32
+9	32
+9	31
+8	31
+EOF
+pstext t -R -Jx -O -K >> GMT_App_F_1a.ps
+psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_1a.ps
 >
 0	3
 9	3
