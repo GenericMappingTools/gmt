@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.2 2001-02-01 19:17:41 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.3 2001-02-22 01:44:26 pwessel Exp $
 #
-#	Automatic installation of GMT version 3.3.7
+#	Automatic installation of GMT version 3.4
 #	Version for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	18-NOV-2000
+#	18-FEB-2001
 #--------------------------------------------------------------------------------
 #	FUNCTIONS
 #--------------------------------------------------------------------------------
@@ -708,7 +708,7 @@ make_ftp_list2()
 
 trap "rm -f gmt_install.ftp_*; exit" 0 2 15
 DIR=pub/gmt
-VERSION=3.3.7
+VERSION=3.4
 GMT=GMT
 #--------------------------------------------------------------------------------
 #	LISTING OF CURRENT FTP MIRROR SITES

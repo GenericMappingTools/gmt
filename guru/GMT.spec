@@ -1,19 +1,19 @@
 #
 # This the rpm spec file for the Generic Mapping Tools (GMT)
 %define PACKAGE_NAME GMT
-%define PACKAGE_VERSION 3.3.5
+%define PACKAGE_VERSION 3.4
 %define PACKAGE_URL http://gmt.soest.hawaii.edu/
 
 Summary: Generic Mapping Tools
 Name: %PACKAGE_NAME
 Version: %PACKAGE_VERSION
 Release: 1
-Source0: GMT3.3.5_progs.tar.bz2
-Source1: GMT3.3.5_doc.tar.bz2
-Source2: GMT3.3.5_web.tar.bz2
-Source3: GMT3.3.5_suppl.tar.bz2
+Source0: GMT3.4_progs.tar.bz2
+Source1: GMT3.4_doc.tar.bz2
+Source2: GMT3.4_web.tar.bz2
+Source3: GMT3.4_suppl.tar.bz2
 #Patch:
-Copyright: GPL; Copyright (c) 1991-2000, P. Wessel & W. H. F. Smith
+Copyright: GPL; Copyright (c) 1991-2001, P. Wessel & W. H. F. Smith
 Group: Applications/GIS
 #URL: %PACKAGE_URL
 Packager: Paul Wessel <pwessel@hawaii.edu>
@@ -38,7 +38,7 @@ such as coastlines, rivers, and political boundaries.
 
 %prep
 #set
-%setup -D -b 1 -b 2 -b 3 -n GMT3.3.5
+%setup -D -b 1 -b 2 -b 3 -n GMT3.4
 #%patch -p1
 ./configure --prefix=/opt/gmt --libdir=/usr/local/lib --includedir=/usr/local/include --mandir=/usr/local/man --enable-shared --disable-flock
 # Leave xgrid off until kosher again:

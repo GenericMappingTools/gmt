@@ -1,6 +1,6 @@
 .SH REFERENCES
-Wessel, P., and W. H. F. Smith, 1999, The Generic Mapping Tools (GMT) version
-3.2 Technical Reference & Cookbook, SOEST/NOAA.
+Wessel, P., and W. H. F. Smith, 2001, The Generic Mapping Tools (GMT) version
+3.4 Technical Reference & Cookbook, SOEST/NOAA.
 .br
 Wessel, P., and W. H. F. Smith, 1998, New, Improved Version of Generic Mapping
 Tools Released, EOS Trans., AGU, 79 (47), p. 579.
