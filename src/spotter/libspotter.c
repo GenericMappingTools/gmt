@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.7 2001-10-23 20:18:56 pwessel Exp $
+ *	$Id: libspotter.c,v 1.8 2001-10-23 21:13:57 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -118,6 +118,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	n = i;
 
 	if (finite_in && !finite_out) finite_to_stages (e, n, TRUE, TRUE);	/* Convert finite poles to backward stage poles */
+	if (!finite_in && finite_out) stages_to_finite (e, n, TRUE, TRUE);	/* Convert backward stage poles to finite poles */
 	
 	/* Extend oldest stage pole back to t_max Ma */
 
