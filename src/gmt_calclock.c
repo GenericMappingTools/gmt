@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.5 2001-08-17 19:32:58 wsmith Exp $
+ *	$Id: gmt_calclock.c,v 1.6 2001-08-17 21:34:50 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -563,5 +563,53 @@ int	GMT_y2_to_y4_yearfix (int y2) {
 	retval = (y2 >= fraction) ? y2 + y100 : y2 + y200;
 	return (retval);
 }
+
+BOOLEAN	GMT_g_ymd_is_bad (int y, int m, int d) {
+
+	/* Check year, month, day values to see if they
+		are an appropriate date in the proleptic
+		Gregorian calendar.  Returns TRUE if it
+		thinks the month and/or day have bad
+		values.  Returns FALSE if this looks like
+		a valid calendar date.  */
+	
+	int	j, k;
+	
+	if (m < 1 || m > 12 || d < 1) return (TRUE);
+	
+	if (m != 2) {
+		j = m%2;
+		k = (m < 8) ? 30 + j : 31 - j;
+	}
+	else {
+		k = (GMT_is_gleap (y) ) ? 29 : 28;
+	}
+	
+	if (d > k) return (TRUE);
+	
+	return (FALSE);
+}
+
+
+BOOLEAN	GMT_iso_ywd_is_bad (int y, int w, int d) {
+
+	/* Check ISO_year, ISO_week_of_year, ISO_day_of_week
+		values to see if they form a probably
+		appropriate date in the ISO calendar based
+		on weeks.  This is only a gross error check;
+		I don't verify that a particular date actually
+		exists on the ISO calendar.
+		Returns TRUE if it appears something is out
+		of range.
+		Returns FALSE if it looks like things are OK.
+	*/
+	
+	if (w < 1 || w > 53 || d < 1 || d > 7) return (TRUE);
+	
+	/* Later, insert something smarter here.  */
+	
+	return (FALSE);
+}
+
 
 	

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.h,v 1.2 2001-08-17 00:31:36 wsmith Exp $
+ *	$Id: gmt_calclock.h,v 1.3 2001-08-17 21:34:50 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -73,3 +73,5 @@ EXTERN_MSC GMT_cal_rd GMT_rd_from_iywd (int iy, int iw, int id);
 EXTERN_MSC void GMT_gcal_from_rd ( GMT_cal_rd date, struct GMT_gcal *gcal);
 EXTERN_MSC GMT_dtime	GMT_dt_from_usert (double x);	/* Convert relative usertime to internal abs time */
 EXTERN_MSC int	GMT_y2_to_y4_yearfix (int y2);	/* Convert a 2-digit year to a 4-digit year */
+EXTERN_MSC BOOLEAN GMT_iso_ywd_is_bad (int y, int w, int d);	/* Check range of week and day for ISO W calendar.  */
+BOOLEAN GMT_g_ymd_is_bad (int y, int m, int d);	/* Check range of month and day for Gregorian YMD calendar values  */
