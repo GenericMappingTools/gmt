@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.12 2002-04-05 22:12:01 pwessel Exp $
+ *	$Id: libspotter.c,v 1.13 2002-04-05 22:18:12 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -76,6 +76,8 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 		exit (EXIT_FAILURE);
 	}
 
+	if (flowline) finite_out = TRUE;	/* Override so we get finite poles for conversion to forward stage poles at the end */
+	
 	last_t = (finite_in) ? 0.0 : DBL_MAX;
 	while (fgets (buffer, 512, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
@@ -122,6 +124,13 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	if (finite_in && !finite_out) spotter_finite_to_stages (e, n, TRUE, TRUE);	/* Convert finite poles to backward stage poles */
 	if (!finite_in && finite_out) spotter_stages_to_finite (e, n, TRUE, TRUE);	/* Convert backward stage poles to finite poles */
 	
+
+	e = (struct EULER *) GMT_memory ((void *)e, n, sizeof (struct EULER), "libspotter");
+
+	if (flowline) {	/* Get the forward stage poles from the total reconstruction poles */
+		spotter_finite_to_fwstages (e, n, TRUE, TRUE);
+	}
+
 	/* Extend oldest stage pole back to t_max Ma */
 
 	if ((*t_max) > 0.0 && e[0].t_start < (*t_max)) {
@@ -132,14 +141,6 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	}
 	else
 		(*t_max) = e[0].t_start;
-
-	e = (struct EULER *) GMT_memory ((void *)e, n, sizeof (struct EULER), "libspotter");
-
-	if (flowline) {
-		spotter_finite_to_fwstages (e, n, TRUE, TRUE);
-		(*t_max) = e[0].t_start;
-	}
-
 	*p = e;
 
 	return (n);
