@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 11
 #
-#		$Id: job11.sh,v 1.1 2001-09-14 18:55:04 pwessel Exp $
+#		$Id: job11.sh,v 1.2 2001-09-21 04:11:10 pwessel Exp $
 #
 # Purpose:	Create a 3-D RGB Cube
 # GMT progs:	gmtset, grdimage, grdmath, pstext, psxy
@@ -67,7 +67,7 @@ $AWK -f rgb_cube.awk r=x g=0 b=y < /dev/null > rgb_cube.cpt
 grdimage rgb_cube.grd -Crgb_cube.cpt -JX -K -O -X2.5i -Y-2.5i -B256wesn >> example_11.ps
 
 pstext -JX -R -G255 -K -O << END >> example_11.ps
-10 10 14 0 -Times-BoldItalic 1 GMT 3
+10 10 14 0 Times-BoldItalic 1 GMT 4
 END
 
 psxy -W0.25pto -JX -R -K -O -X2.5i << END >> example_11.ps

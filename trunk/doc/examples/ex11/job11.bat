@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 11
 REM
-REM		$Id: job11.bat,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+REM		$Id: job11.bat,v 1.2 2001-09-21 04:11:10 pwessel Exp $
 REM
 REM Purpose:	Create a 3-D RGB Cube
 REM GMT progs:	gmtset, grdimage, grdmath, pstext, psxy
@@ -62,7 +62,7 @@ grdimage rgb_cube.grd -Crgb_cube.cpt -JX -K -O -Y-2.5i -B256wesn >> example_11.p
 gawk -f rgb_cube.awk r=x g=0 b=y < NUL > rgb_cube.cpt
 grdimage rgb_cube.grd -Crgb_cube.cpt -JX -K -O -X2.5i -Y-2.5i -B256wesn >> example_11.ps
 
-echo 10 10 14 0 -Times-BoldItalic 1 GMT 3 | pstext -JX -R -G255 -K -O >> example_11.ps
+echo 10 10 14 0 Times-BoldItalic 1 GMT 4 | pstext -JX -R -G255 -K -O >> example_11.ps
 
 psxy -W0.25pto -JX -R -K -O -X2.5i ex11_1.d >> example_11.ps
 psxy -W0.25pto -JX -R -K -O -X-5i ex11_3.d >> example_11.ps
