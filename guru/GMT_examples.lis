@@ -146,6 +146,7 @@ examples/ex20/job20.csh
 examples/ex21/job21.sh
 examples/ex21/job21.bat
 examples/ex21/job21.csh
+examples/ex21/RHAT_price.csv
 examples/ex22/job22.sh
 examples/ex22/job22.bat
 examples/ex22/job22.csh
