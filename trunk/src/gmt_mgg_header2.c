@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.2 2004-01-13 01:53:26 pwessel Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.3 2004-01-13 02:04:36 pwessel Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	This is the README file:
@@ -57,8 +57,6 @@ static double dms2degrees(long deg, long min, long sec)
 
 static void degrees2dms(double degrees, long *deg, long *min, long *sec)
 {
-    double  ip;
-
 	/* Round off to the nearest half second */
 	if (degrees < 0) degrees -= (0.5 / SEC_PER_DEG);
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.19 2002-11-10 03:13:43 lloyd Exp $
+ *	$Id: libspotter.c,v 1.20 2004-01-13 02:04:36 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -72,7 +72,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	struct EULER *e;
 	char  buffer[BUFSIZ];
 	int n, nf, i = 0, n_alloc = GMT_SMALL_CHUNK;
-	double x, y, last_t;
+	double last_t;
 
 	e = (struct EULER *) GMT_memory (VNULL, n_alloc, sizeof (struct EULER), "libspotter");
 
@@ -558,10 +558,9 @@ void spotter_finite_to_fwstages (struct EULER p[], int n, BOOLEAN finite_rates, 
 	 * stage_rates	: TRUE if stage rotations should be returned in degree/my [else we return opening angle]
 	 */
 	 
-	int i, j;
+	int i;
 	double *elon, *elat, *ew, t_old;
 	double R_young[3][3], R_old[3][3], R_stage[3][3];
-	struct EULER e_tmp;
 
 	/* Expects total reconstruction models to have youngest poles first */
 	
@@ -607,10 +606,9 @@ void spotter_finite_to_stages (struct EULER p[], int n, BOOLEAN finite_rates, BO
 	 * stage_rates	: TRUE if stage rotations should be returned in degree/my [else we return opening angle]
 	 */
 	 
-	int i, j;
+	int i;
 	double *elon, *elat, *ew, t_old;
 	double R_young[3][3], R_old[3][3], R_stage[3][3];
-	struct EULER e_tmp;
 
 	/* Expects total reconstruction models to have youngest poles first */
 	
@@ -652,10 +650,9 @@ void spotter_stages_to_finite (struct EULER p[], int n, BOOLEAN finite_rates, BO
 	 * stage_rates	: TRUE if stage rotations given in degree/my [else we have opening angle]
 	 */
 
-	int i, j;
+	int i;
 	double *elon, *elat, *ew;
 	double R_young[3][3], R_old[3][3], R_stage[3][3];
-	struct EULER e_tmp;
 
 	/* Expects stage pole models to have oldest poles first, so we must flip order */
 	
