@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.3 2004-09-06 05:42:12 pwessel Exp $
+ *	$Id: polygon_xover.c,v 1.4 2004-09-06 23:19:32 pwessel Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -56,16 +56,16 @@ main (int argc, char **argv)
 	fclose(fp);
 
 	if (verbose) fprintf (stderr, "polygon_xover: Found %d polygons\n", n_id);
+	
 	/* Now do double do-loop to find all xovers */
 	
 	full = (P[0].h.n > 1000000);	/* Only the full resolution has more than 1 mill points for EUR-AFR polygon */
 	
 	nx_tot = 0;
-	/* for (id1 = 0; id1 < n_id; id1++) { */
-	for (id1 = 28000; id1 < n_id; id1++) {
+	for (id1 = 0; id1 < n_id; id1++) {
 		if (id1 == ANTARCTICA) continue;	/* Skip Antarctica */
 		ylist1 = GMT_init_track (P[id1].lon, P[id1].lat, P[id1].h.n);
-		if (full && id1 == 0) {	/* Euraafrica */
+		if (full && id1 == 0) {	/* Eurafrica */
 			for (i = 0; i < N_EUR_O; i++) lon_o[i] = ieur_o[0][i] - 360.0;
 			for (i = 0; i < N_EUR_O; i++) lat_o[i] = ieur_o[1][i];
 			np_o = N_EUR_O;
@@ -98,7 +98,8 @@ main (int argc, char **argv)
 		}
 		else
 			np_o = np_i1 = np_i2 = 0;
-		for (id2 = MAX (4,id1 + 1); id2 < n_id; id2++) {
+			
+		for (id2 = MAX (4, id1 + 1); id2 < n_id; id2++) {	/* Dont start earlier than 4 since no point comparing Eur to Americas */
 			if (id2 == ANTARCTICA) continue;	/* Skip Antarctica */
 		
 			if (nothing_in_common (&P[id1].h, &P[id2].h, &x_shift)) continue;	/* No area in common */
