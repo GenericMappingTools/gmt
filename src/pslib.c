@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.8 2001-04-21 03:13:33 pwessel Exp $
+ *	$Id: pslib.c,v 1.9 2001-04-25 03:34:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1190,7 +1190,8 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 /* xscl, yscl:	Global scaling, usually left to 1,1 */
 /* page_size:	Physical width and height of paper used in points */
 /* overlay:	FALSE means print headers and macros first */
-/* mode:	First bit 0 = Landscape, 1 = Portrait, Second bit 1 = no Euro, Third bit 1 = hex image, 0 = bin image, Forth bit 1 = abs positions, 0 = rel positions */
+/* mode:	First bit 0 = Landscape, 1 = Portrait, Second bit 1 = no Euro, Third bit 1 = hex image, 0 = bin image, Fourth bit 1 = abs positions, 0 = rel positions */
+/*		5th bit 1 = start of open-ended clipping, 6th bit 1 = end of open-ended clipping */
 /* ncopies:	Number of copies for this plot */
 /* dpi:		Plotter resolution in dots-per-inch */
 /* unit:	0 = cm, 1 = inch, 2 = meter */

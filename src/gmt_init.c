@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.6 2001-04-17 23:48:36 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.7 2001-04-25 03:34:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3080,7 +3080,7 @@ void GMT_init_scales (int unit, double *fwd_scale, double *inv_scale, double *in
 	
 	double scales[7];
 	
-	/* These scales are used 1 to 1 scaling is chosen */
+	/* These scales are used if 1 to 1 scaling is chosen */
 
 	scales[0] = 1.0;		/* m in m */
 	scales[1] = 1000.0;		/* m in km */
