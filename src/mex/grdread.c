@@ -1,5 +1,5 @@
 /*
- *	$Id: grdread.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: grdread.c,v 1.2 2003-10-20 17:43:41 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -24,10 +24,12 @@
  *		10/06/98 P Wessel, upgrade to GMT 3.1 function calls
  *		11/12/98 P Wessel, ANSI-C and calls GMT_begin()
  *		10/07/99 P Wessel, Did not set x,y if [x,y,z,d] was used
+ *		10/20/03 P Wessel, longer path names [R Mueller]
  */
  
 #include "gmt.h"
 #include "mex.h"
+#include "matrix.h"
 
 int grdread (double z_8[], double info[], char *filein, struct GRD_HEADER *grd)
 {
@@ -84,8 +86,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
 	struct GRD_HEADER grd;
 	double *z_8, *info = (double *)NULL, *x, *y, off;
-	char filein[80], *argv = "grdread-mex";
-	int error, ns, pz, i;
+	char *filein, *argv = "grdread-mex";
+	int error, ns, ssz, pz, i;
  
 	GMT_lock = FALSE;       /* Override since Matlab would own the lock */
 
@@ -104,19 +106,22 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	/* Load the file name into a char string */
 
 	ns = mxGetN (prhs[0]) + 1;
+	ssz = ns * sizeof (mxChar);
+
+	if (ssz > BUFSIZ)
+		mexErrMsgTxt ("grdread: filename too long\n");
+
+	filein = mxMalloc (ssz);
 
 	if (mxGetString (prhs[0], filein, ns + 1)) {
 		mexPrintf ("%s\n", filein);
 		mexErrMsgTxt ("grdread: failure to decode string \n");
-		return;
 	}
 
 	/* Read the header */
  
-	if (GMT_read_grd_info (filein, &grd)) {
+	if (GMT_read_grd_info (filein, &grd))
 		mexErrMsgTxt ("grdread: failure to read header\n");
-		return;
-	}
 
 	/* Create a matrix for the return array */
 
@@ -150,12 +155,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			mexErrMsgTxt ("grdread: failure to allocate memory\n");
 		else
 			mexErrMsgTxt ("grdread: failure to read file\n");
-		return;
 	}
 	if (nlhs >= 3) {	/* Fill in the x and y arrayx */
 		off = (grd.node_offset) ? 0.5 : 0.0;
 		for (i = 0; i < grd.nx; i++) x[i] = grd.x_min + (i + off) * grd.x_inc;
 		for (i = 0; i < grd.ny; i++) y[i] = grd.y_min + (i + off) * grd.y_inc;
 	}
+	mxFree (filein);
+	return;
 }
 
