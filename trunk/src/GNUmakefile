@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.27 2004-04-07 20:15:45 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.28 2004-04-21 03:04:05 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -92,7 +92,7 @@ GMT_I	= gmt_init.h \
 PS_H	= pslib.h \
 	  pslib_inc.h
 
-PROGS_C	= blockmean.c blockmedian.c blockmode.c filter1d.c fitcircle.c grdfilter.c gmtconvert.c gmtdefaults.c gmtmath.c gmtselect.c \
+PROGS_C	= blockmean.c blockmedian.c blockmode.c filter1d.c fitcircle.c grdfilter.c gmtconvert.c gmtcut.c gmtdefaults.c gmtmath.c gmtselect.c \
 	  gmtset.c gmt2rgb.c grd2cpt.c grd2xyz.c grdblend.c grdcontour.c grdcut.c grdclip.c grdedit.c grdfft.c \
 	  grdgradient.c grdhisteq.c grdimage.c grdinfo.c grdlandmask.c grdmask.c grdtrack.c grdreformat.c \
 	  grdmath.c grdpaste.c grdproject.c grdsample.c grdtrend.c grdvector.c grdview.c grdvolume.c makecpt.c \

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.61 2004-04-20 18:29:36 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.62 2004-04-21 03:04:05 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1419,15 +1419,12 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
 			(mode) ? sprintf (S->format, "%%2.2d") : sprintf (S->format, "%%2d");
 		if (S->order[1] >= 0) {	/* Need minutes too*/
 			if (S->delimiter[0][0]) strcat (S->format, S->delimiter[0]);
-			if (S->compact)
-				sprintf (fmt, "%%d");
-			else
-				(mode) ? sprintf (fmt, "%%2.2d") : sprintf (fmt, "%%2d");
+			(mode) ? sprintf (fmt, "%%2.2d") : sprintf (fmt, "%%2d");
 			strcat (S->format, fmt);
 			if (S->order[2] >= 0) {	/* .. and seconds */
 				if (S->delimiter[1][0]) strcat (S->format, S->delimiter[1]);
 				if (mode) {	/* Output format */
-					(S->compact) ? sprintf (fmt, "%%d") : sprintf (fmt, "%%2.2d");
+					sprintf (fmt, "%%2.2d");
 					strcat (S->format, fmt);
 					if (S->n_sec_decimals) {	/* even add format for fractions of second */
 						sprintf (fmt, ".%%%d.%dd", S->n_sec_decimals, S->n_sec_decimals);
@@ -1505,7 +1502,7 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 			if (S->item_order[1] == 3) k = 3;	/* Day of year */
 			if (S->mw_text && S->item_order[1] == 1)	/* Prepare for "Monthname" format */
 				sprintf (fmt, "%%s");
-			else if (S->compact)			/* Numerical formatting of month or year w/o leading zeros */
+			else if (S->compact && !S->Y2K_year)		/* Numerical formatting of month or 4-digit year w/o leading zeros */
 				sprintf (fmt, "%%d");
 			else
 				(mode) ? sprintf (fmt, "%%%d.%dd", k, k) : sprintf (fmt, "%%%dd", k);
