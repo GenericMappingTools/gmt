@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.3 2001-07-09 22:49:22 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.4 2001-08-17 19:32:58 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1763,6 +1763,9 @@ double	GMT_hypot (double x, double y) {
 	if (a < b) {
 		c = b;
 		d = a/b;
+	}
+	else if (a == b) {
+		return (a * M_SQRT2);	/* Added 17 Aug 2001  */
 	}
 	else {
 		c = a;
