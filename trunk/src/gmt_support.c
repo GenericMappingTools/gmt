@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.34 2002-11-10 03:13:43 lloyd Exp $
+ *	$Id: gmt_support.c,v 1.35 2003-02-18 22:11:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -86,6 +86,8 @@ int GMT_splice_contour(double **x, double **y, int n, double **x2, double **y2, 
 void GMT_setcontjump (float *z, int nz);
 void GMT_rgb_to_hsv(int rgb[], double *h, double *s, double *v);
 void GMT_hsv_to_rgb(int rgb[], double h, double s, double v);
+void GMT_rgb_to_cmyk (int rgb[], double cmyk[]);
+void GMT_cmyk_to_rgb (int rgb[], double cmyk[]);
 void GMT_get_bcr_cardinals (double x, double y);
 void GMT_get_bcr_ij (struct GRD_HEADER *grd, double xx, double yy, int *ii, int *jj, struct GMT_EDGEINFO *edgeinfo);
 void GMT_get_bcr_xy(struct GRD_HEADER *grd, double xx, double yy, double *x, double *y);
@@ -193,15 +195,20 @@ int GMT_getrgb (char *line, int rgb[])
 {
 	int n, count, slash_count(char *txt);
 	
-	if ((count = slash_count (line)) == 2)
+	if ((count = slash_count (line)) == 3) {	/* c/m/y/k */
+		double cmyk[4];
+		n = sscanf (line, "%lf/%lf/%lf/%lf", &cmyk[0], &cmyk[1], &cmyk[2], &cmyk[3]);
+		GMT_cmyk_to_rgb (rgb, cmyk);
+	}
+	else if ((count = slash_count (line)) == 2)	/* r/g/b */
 		n = sscanf (line, "%d/%d/%d", &rgb[0], &rgb[1], &rgb[2]);
-	else if (count == 0) {
+	else if (count == 0) {				/* gray */
 		n = sscanf (line, "%d", &rgb[0]);
 		rgb[1] = rgb[2] = rgb[0];
 	}
 	else
 		n = 0;
-	return (n < 1 || n > 3 || GMT_check_rgb (rgb));
+	return (!(n == 1 || n == 3 || n == 4) || GMT_check_rgb (rgb));
 }
 
 void GMT_init_pen (struct GMT_PEN *pen, double width)
@@ -257,8 +264,13 @@ int GMT_getpen (char *line, struct GMT_PEN *pen)
 			sscanf (&line[s_pos], "%d", &pen->rgb[0]);
 			pen->rgb[1] = pen->rgb[2] = pen->rgb[0];
 		}
-		else if (n_slash == 3)	/* Color is given */
+		else if (n_slash == 3)	/* r/g/b color is given */
 			sscanf (&line[s_pos], "%d/%d/%d", &pen->rgb[0], &pen->rgb[1], &pen->rgb[2]);
+		else if (n_slash == 4) {	/* c/m/y/k color is given */
+			double cmyk[4];
+			sscanf (&line[s_pos], "%lf/%lf/%lf/%lf", &cmyk[0], &cmyk[1], &cmyk[2], &cmyk[3]);
+			GMT_cmyk_to_rgb (pen->rgb, cmyk);
+		}
 	}
 	
 	if (t_pos >= 0) {	/* Get texture */
@@ -919,6 +931,31 @@ void GMT_hsv_to_rgb (int rgb[], double h, double s, double v)
 		rgb[1] = (gg < 0.0) ? 0 : (int) floor (gg * 255.999);
 		rgb[2] = (bb < 0.0) ? 0 : (int) floor (bb * 255.999);
 	}
+}
+
+void GMT_rgb_to_cmyk (int rgb[], double cmyk[])
+{
+	/* Plain conversion; no undercolor removal or blackgeneration */
+	
+	int i;
+	
+	/* RGB is in 0-255, CMYK will be in 0-1 range */
+	
+	for (i = 0; i < 3; i++) cmyk[i] = 1.0 - (rgb[i] / 255.0);
+	cmyk[3] = MIN (cmyk[0], MIN (cmyk[1], cmyk[2]));	/* Black */
+	for (i = 0; i < 3; i++) cmyk[i] -= cmyk[3];
+}
+
+void GMT_cmyk_to_rgb (int rgb[], double cmyk[])
+{
+	/* Plain conversion; no undercolor removal or blackgeneration */
+	
+	int i;
+	double frgb[3];
+	
+	/* CMYK is in 0-1, RGB will be in 0-255 range */
+	
+	for (i = 0; i < 3; i++) rgb[i] = (int) floor ((1.0 - cmyk[i] - cmyk[3]) * 255.999);
 }
 
 void GMT_illuminate (double intensity, int rgb[])

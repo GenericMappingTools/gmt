@@ -535,10 +535,13 @@ is then used to guide the plotting of geographical coordinates in data fields.  
 the coordinate.  The default is +ddd:mm:ss.  Not all items may be plotted as this depends on the annotation 
 interval.
 .TP
+.B PS_COLOR
+Determines whether PostScript output should use RGB or CMYK when specifying color.  Select from rgb or cmyk [rgb].
+.TP
 .B PSIMAGE_FORMAT
-Determines whether images written in PostScript should use hexadecimal (i.e., ascii)
-or binary format, and whether RGB or CMYK encoding is used.  Binary takes up only half as much space and executes faster but may choke
-some printers, especially those off serial ports.  Select among hexrgb, binrgb, hexcmyk, bincmyk [hexrgb].
+Determines whether images created in PostScript should use hexadecimal (i.e., ascii)
+or binary format.  The latter takes up only half as much space and executes faster but may choke
+some printers, especially those off serial ports.  Select hex or bin [hex].
 .TP
 .B TICK_LENGTH
 The length of a tickmark.  Normally, tickmarks are drawn on the outside of

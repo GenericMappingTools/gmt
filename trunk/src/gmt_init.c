@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.78 2002-11-10 03:13:43 lloyd Exp $
+ *	$Id: gmt_init.c,v 1.79 2003-02-18 22:11:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -942,8 +942,8 @@ int GMT_loaddefaults (char *file)
 	
 	fclose (fp);
 	GMT_backwards_compatibility ();
-	if (gmtdefs.ps_heximage % 2) gmtdefs.page_orientation += 4;
-	if (gmtdefs.ps_heximage > 1) gmtdefs.page_orientation += 512;
+	if (gmtdefs.ps_heximage) gmtdefs.page_orientation += 4;
+	if (gmtdefs.ps_cmykmode) gmtdefs.page_orientation += 512;
 	if (!strstr (GMT_program, "gmtset")) GMT_verify_encodings ();
 
 	if (error) fprintf (stderr, "GMT:  %d conversion errors in file %s!\n", error, file);
@@ -979,8 +979,8 @@ void GMT_setdefaults (int argc, char **argv)
 	}
 
 	GMT_backwards_compatibility ();
-	if (gmtdefs.ps_heximage % 2) gmtdefs.page_orientation += 4;
-	if (gmtdefs.ps_heximage > 1) gmtdefs.page_orientation += 512;
+	if (gmtdefs.ps_heximage) gmtdefs.page_orientation += 4;
+	if (gmtdefs.ps_cmykmode) gmtdefs.page_orientation += 512;
 	
 	if (GMT_got_frame_rgb) {	/* Must enforce change of frame, tick, and grid pen rgb */
 		memcpy ((void *)gmtdefs.frame_pen.rgb, (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
@@ -1455,15 +1455,19 @@ int GMT_setparameter (char *keyword, char *value)
 				if (eps) gmtdefs.paper_width[1] = -gmtdefs.paper_width[1];
 			}
 			break;
+		case GMTCASE_PS_COLOR:
+			if (!strcmp (lower_value, "rgb"))
+				gmtdefs.ps_cmykmode = 0;
+			else if (!strcmp (lower_value, "cmyk"))
+				gmtdefs.ps_cmykmode = 1;
+			else
+				error = TRUE;
+			break;
 		case GMTCASE_PSIMAGE_FORMAT:
-			if (!strcmp (lower_value, "hex") || !strcmp (lower_value, "hexrgb"))
+			if (!strcmp (lower_value, "hex"))
 				gmtdefs.ps_heximage = 1;
-			else if (!strcmp (lower_value, "bin") || !strcmp (lower_value, "binrgb"))
+			else if (!strcmp (lower_value, "bin"))
 				gmtdefs.ps_heximage = 0;
-			else if (!strcmp (lower_value, "hexcmyk"))
-				gmtdefs.ps_heximage = 3;
-			else if (!strcmp (lower_value, "bincmyk"))
-				gmtdefs.ps_heximage = 2;
 			else
 				error = TRUE;
 			break;
@@ -1711,7 +1715,7 @@ BOOLEAN true_false_or_error (char *value, int *answer)
 int GMT_savedefaults (char *file)
 {
 	FILE *fp;
-	char u, abbrev[4] = {'c', 'i', 'm', 'p'}, *psimform[4] = {"binrgb", "hexrgb", "bincmyk", "hexcmyk"}, pm[2] = {'+', '-'};
+	char u, abbrev[4] = {'c', 'i', 'm', 'p'}, pm[2] = {'+', '-'};
 	double s;
 	
 	if (!file)
@@ -1797,7 +1801,8 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "CHAR_ENCODING		= %s\n", gmtdefs.encoding.name);
 	fprintf (fp, "DOTS_PR_INCH		= %d\n", gmtdefs.dpi);
 	fprintf (fp, "N_COPIES		= %d\n", gmtdefs.n_copies);
-	fprintf (fp, "PSIMAGE_FORMAT		= %s\n", psimform[gmtdefs.ps_heximage]);
+	(gmtdefs.ps_cmykmode) ? fprintf (fp, "PS_COLOR		= cmyk\n") : fprintf (fp, "PS_COLOR		= rgb\n");
+	(gmtdefs.ps_heximage) ? fprintf (fp, "PSIMAGE_FORMAT		= hex\n") : fprintf (fp, "PSIMAGE_FORMAT		= bin\n");
 	fprintf (fp, "GLOBAL_X_SCALE		= %g\n", gmtdefs.global_x_scale);
 	fprintf (fp, "GLOBAL_Y_SCALE		= %g\n", gmtdefs.global_y_scale);
 	fprintf (fp, "#-------- I/O Format Parameters -------------\n");

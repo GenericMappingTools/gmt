@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.30 2002-10-30 23:21:40 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.31 2003-02-18 22:11:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -16,7 +16,8 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- *  This include file contains initializations for the GMT system
+ *  This include file contains initializations for the GMT system.
+ *  MUST BE INCUDED AFTER gmt.h
  *
  * Author:	Paul Wessel
  * Date:	21-AUG-1995

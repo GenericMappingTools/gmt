@@ -10,16 +10,12 @@
 /E {dup stringwidth pop} bind def
 /F /fill load def
 /G /rmoveto load def
+/K /setcmykcolor load def
 /L /lineto load def 
 /M {stroke moveto} bind def
 /m {moveto} bind def
 /N /newpath load def
-/O {M {D} repeat P V C F U S} def
-/o {M {D} repeat P V A F U S} def
 /P /closepath load def
-/Q {M {D} repeat P V C F U N} def
-/q {M {D} repeat P V A F U N} def
-/t {M {D} repeat P S} def
 /R /rotate load def
 /S /stroke load def
 /T /translate load def
@@ -34,61 +30,92 @@
 /a2 {0 0 M D D 0 D D D D D 0 D D P V C F U N} bind def
 /a3 {0 0 M D D 0 D D D D D 0 D D P V C F U S} bind def
 /a4 {0 0 M D D 0 D D D D D 0 D D P S} bind def
+/a5 {0 0 M D D 0 D D D D D 0 D D P V K F U N} bind def
+/a6 {0 0 M D D 0 D D D D D 0 D D P V K F U S} bind def
 /A0 {0 exch M 0 D D D D D 0 D P V A F U N} bind def
 /A1 {0 exch M 0 D D D D D 0 D P V A F U S} bind def
 /A2 {0 exch M 0 D D D D D 0 D P V C F U N} bind def
 /A3 {0 exch M 0 D D D D D 0 D P V C F U S} bind def
 /A4 {0 exch M 0 D D D D D 0 D P S} bind def
+/A5 {0 exch M 0 D D D D D 0 D P V K F U N} bind def
+/A6 {0 exch M 0 D D D D D 0 D P V K F U S} bind def
 /C0 {0 360 arc V A F U N} bind def
 /C1 {0 360 arc V A F U S} bind def
 /C2 {0 360 arc V C F U N} bind def
 /C3 {0 360 arc V C F U S} bind def
 /C4 {0 360 arc S} bind def
+/C5 {0 360 arc V K F U N} bind def
+/C6 {0 360 arc V K F U S} bind def
 /D0 {M 5 {dup} repeat D neg exch D neg exch neg D P V A F U N} bind def
 /D1 {M 5 {dup} repeat D neg exch D neg exch neg D P V A F U S} bind def
 /D2 {M 5 {dup} repeat D neg exch D neg exch neg D P V C F U N} bind def
 /D3 {M 5 {dup} repeat D neg exch D neg exch neg D P V C F U S} bind def
 /D4 {M 5 {dup} repeat D neg exch D neg exch neg D P S} bind def
+/D5 {M 5 {dup} repeat D neg exch D neg exch neg D P V K F U N} bind def
+/D6 {M 5 {dup} repeat D neg exch D neg exch neg D P V K F U S} bind def
 /R0 {M dup 0 D exch 0 exch D neg 0 D P V A F U N} bind def
 /R1 {M dup 0 D exch 0 exch D neg 0 D P V A F U S} bind def
 /R2 {M dup 0 D exch 0 exch D neg 0 D P V C F U N} bind def
 /R3 {M dup 0 D exch 0 exch D neg 0 D P V C F U S} bind def
 /R4 {M dup 0 D exch 0 exch D neg 0 D P S} bind def
+/R5 {M dup 0 D exch 0 exch D neg 0 D P V K F U N} bind def
+/R6 {M dup 0 D exch 0 exch D neg 0 D P V K F U S} bind def
 /S0 {M dup dup 0 D 0 exch D neg 0 D P V A F U N} bind def
 /S1 {M dup dup 0 D 0 exch D neg 0 D P V A F U S} bind def
 /S2 {M dup dup 0 D 0 exch D neg 0 D P V C F U N} bind def
 /S3 {M dup dup 0 D 0 exch D neg 0 D P V C F U S} bind def
 /S4 {M dup dup 0 D 0 exch D neg 0 D P S} bind def
+/S5 {M dup dup 0 D 0 exch D neg 0 D P V K F U N} bind def
+/S6 {M dup dup 0 D 0 exch D neg 0 D P V K F U S} bind def
 /T0 {M dup 0 D dup -0.5 mul exch 0.866025 mul D P V A F U N} bind def
 /T1 {M dup 0 D dup -0.5 mul exch 0.866025 mul D P V A F U S} bind def
 /T2 {M dup 0 D dup -0.5 mul exch 0.866025 mul D P V C F U N} bind def
 /T3 {M dup 0 D dup -0.5 mul exch 0.866025 mul D P V C F U S} bind def
 /T4 {M dup 0 D dup -0.5 mul exch 0.866025 mul D P S} bind def
+/T5 {M dup 0 D dup -0.5 mul exch 0.866025 mul D P V K F U N} bind def
+/T6 {M dup 0 D dup -0.5 mul exch 0.866025 mul D P V K F U S} bind def
 /I0 {M dup 0 D dup -0.5 mul exch -0.866025 mul D P V A F U N} bind def
 /I1 {M dup 0 D dup -0.5 mul exch -0.866025 mul D P V A F U S} bind def
 /I2 {M dup 0 D dup -0.5 mul exch -0.866025 mul D P V C F U N} bind def
 /I3 {M dup 0 D dup -0.5 mul exch -0.866025 mul D P V C F U S} bind def
 /I4 {M dup 0 D dup -0.5 mul exch -0.866025 mul D P S} bind def
+/I5 {M dup 0 D dup -0.5 mul exch -0.866025 mul D P V K F U N} bind def
+/I6 {M dup 0 D dup -0.5 mul exch -0.866025 mul D P V K F U S} bind def
 /E0 {V T dup 0 exch M 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop P V A F U N U} bind def
 /E1 {V T dup 0 exch M 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop P V A F U S U} bind def
 /E2 {V T dup 0 exch M 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop P V C F U N U} bind def
 /E3 {V T dup 0 exch M 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop P V C F U S U} bind def
 /E4 {V T dup 0 exch M 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop P S U} bind def
+/E5 {V T dup 0 exch M 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop P V K F U N U} bind def
+/E6 {V T dup 0 exch M 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop P V K F U S U} bind def
 /H0 {V T dup dup 0.5 mul exch 0.866025404 mul M 5 {-60 R dup 0 D} repeat pop P V A F U N U} bind def
 /H1 {V T dup dup 0.5 mul exch 0.866025404 mul M 5 {-60 R dup 0 D} repeat pop P V A F U S U} bind def
 /H2 {V T dup dup 0.5 mul exch 0.866025404 mul M 5 {-60 R dup 0 D} repeat pop P V C F U N U} bind def
 /H3 {V T dup dup 0.5 mul exch 0.866025404 mul M 5 {-60 R dup 0 D} repeat pop P V C F U S U} bind def
 /H4 {V T dup dup 0.5 mul exch 0.866025404 mul M 5 {-60 R dup 0 D} repeat pop P S U} bind def
+/H5 {V T dup dup 0.5 mul exch 0.866025404 mul M 5 {-60 R dup 0 D} repeat pop P V K F U N U} bind def
+/H6 {V T dup dup 0.5 mul exch 0.866025404 mul M 5 {-60 R dup 0 D} repeat pop P V K F U S U} bind def
 /P0 {arc P V A F U N} bind def
 /P1 {arc P V A F U S} bind def
 /P2 {arc P V C F U N} bind def
 /P3 {arc P V C F U S} bind def
 /P4 {arc P S} bind def
+/P5 {arc P V K F U N} bind def
+/P6 {arc P V K F U S} bind def
 /a {P V A F U N} def
 /b {P V A F U S} def
 /c {P V C F U N} def
 /d {P V C F U S} def
+/k {P V K F U N} def
+/l {P V K F U S} def
 /p {P S} def
+/q {M {D} repeat P V A F U N} def
+/r {M {D} repeat P V A F U S} def
+/s {M {D} repeat P V C F U N} def
+/t {M {D} repeat P V C F U S} def
+/u {M {D} repeat P V K F U N} def
+/v {M {D} repeat P V K F U S} def
+/w {M {D} repeat P S} def
 /PSL_get_stringwidth {0 0 M true charpath flattenpath pathbbox N pop exch pop sub abs} def
 /PSL_get_stringheight {0 0 M true charpath flattenpath pathbbox N exch pop sub abs exch pop} def
 
