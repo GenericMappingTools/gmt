@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.109 2004-06-03 07:31:42 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.110 2004-06-04 04:24:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -118,6 +118,7 @@ void GMT_contlabel_drawlines (struct GMT_CONTOUR *G, int mode);
 void GMT_contlabel_plotboxes (struct GMT_CONTOUR *G);
 void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode);
 void GMT_contlabel_clippath (struct GMT_CONTOUR *G, int mode);
+void GMT_textpath_init (struct GMT_PEN *LP, int Brgb[], struct GMT_PEN *BP, int Frgb[]);
 
 double *GMT_x2sys_Y;
 
@@ -1629,14 +1630,17 @@ int GMT_contlabel_init (struct GMT_CONTOUR *G)
 {	/* Assign default values to structure */
 	memset ((void *)G, 0, sizeof (struct GMT_CONTOUR));	/* Sets all to 0 */
 	(strstr (GMT_program, "contour")) ? strcpy (G->line_type, "Contour") : strcpy (G->line_type, "Line");
+	G->transparent = TRUE;
 	G->spacing = TRUE;
 	G->half_width = 5;
 	G->label_font_size = 9.0;
 	G->label_dist_spacing = 4.0;	/* Inches */
+	G->box = 2;			/* Rect box shape is Default */
 	if (gmtdefs.measure_unit == GMT_CM) G->label_dist_spacing = 10.0 / 2.54;
 	G->clearance[0] = G->clearance[1] = 0.0254;	/* 1 mm */
 	G->just = 6;	/* CM */
 	G->label_font = gmtdefs.annot_font[0];	/* ANNOT_FONT_PRIMARY */
+	G->dist_unit = gmtdefs.measure_unit;
 	GMT_init_pen (&G->pen, GMT_PENWIDTH);
 	GMT_init_pen (&G->line_pen, GMT_PENWIDTH);
 	memcpy ((void *)G->rgb, (void *)gmtdefs.page_rgb, (size_t)(3 * sizeof (int)));			/* Default box color is page color [nominally white] */
@@ -1647,9 +1651,9 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 {
 	int k, bad = 0;
 	BOOLEAN g_set = FALSE;
-	char txt_cpy[BUFSIZ], txt_a[32], txt_b[32], *p;
+	char txt_cpy[BUFSIZ], txt_a[32], txt_b[32], c, *p;
 	
-	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+o|O|t|T][+s<size>][+p[<pen>]][+u<unit>][+^<prefix>] strings */
+	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+o|O|t|v][+s<size>][+p[<pen>]][+u<unit>][+^<prefix>] strings */
 	
 	for (k = 0; txt[k] && txt[k] != '+'; k++);
 	if (!txt[k]) return (GMT_contlabel_specs_old (txt, G));	/* Old-style info strings */
@@ -1691,14 +1695,15 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 					G->label_font = k;
 				break;
 				
-			case 'g':	/* Fill specification */
+			case 'g':	/* Box Fill specification */
 				if (GMT_getrgb (&p[1], G->rgb)) bad++;
+				G->transparent = FALSE;
 				g_set = TRUE;
 				break;
 				
 			case 'j':	/* Justification specification */
 				txt_a[0] = p[1];	txt_a[1] = p[2];	txt_a[2] = '\0';
-				G->just = GMT_just_decode (txt_a);
+				G->just = GMT_just_decode (txt_a, 2, 4);
 				break;
 				
 			case 'k':	/* Font color specification */
@@ -1706,23 +1711,40 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 				G->got_font_rgb = TRUE;
 				break;
 				
-			case 'l':	/* Label specification */
-				if (p[1] == 'h' && !p[2])	/* Take the first string in multisegment headers */
-					G->label_type = 2;
-				else if (p[1] == 'd' && !p[2])	/* Use the current distance */
-					G->label_type = 3;
-				else {	/* Hardwired fixed label for all lines */
-					strcpy (G->label, &p[1]);
-					G->label_type = 1;
+			case 'l':	/* Exact Label specification */
+				strcpy (G->label, &p[1]);
+				G->label_type = 1;
+				break;
+				
+			case 'L':	/* Label code specification */
+				switch (p[1]) {
+					case 'h':	/* Take the first string in multisegment headers */
+						G->label_type = 2;
+						break;
+					case 'd':	/* Use the current plot distance in chosen units */
+						G->label_type = 3;
+						G->dist_unit = GMT_unit_lookup (p[2]);
+						break;
+					case 'D':	/* Use current map distance in chosen units */
+						G->label_type = 4;
+						k = strlen (p) - 1;
+						c = (isdigit ((int)p[k]) || p[k] == '.') ? 0 : p[k];
+						G->dist_unit = (int)c;
+						bad += GMT_get_dist_scale (c, &G->L_d_scale, &G->L_proj_type, &G->L_dist_func);
+						break;
+					default:	/* Probably meant lower case l */
+						strcpy (G->label, &p[1]);
+						G->label_type = 1;
+						break;
 				}
 				break;
 				
-			case 'o':	/* Use rectangular opaque textbox */
-				G->box |= 2;
+			case 'o':	/* Use rectangular textbox shape */
+				G->box = 2 + (G->box & 1);
 				break;
 				
-			case 'O':	/* Use rounded rectangle opaque textbox */
-				G->box |= 4;
+			case 'O':	/* Use rounded rectangle textbox shape */
+				G->box = 4 + (G->box & 1);
 				break;
 
 			case 'p':	/* Draw text box outline [with optional textbox pen specification] */
@@ -1735,14 +1757,12 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 				if (G->label_font_size <= 0.0) bad++;
 				break;
 				
-			case 'T':	/* Curved text */
-				G->curved_text = TRUE;
-			case 't':	/* Transparency is default, but just in case */
-				G->box = 0;
-				break;
-
 			case 'u':	/* Label Unit specification */
 				if (p[1]) strcpy (G->unit, &p[1]);
+				break;
+
+			case 'v':	/* Curved text [Default is straight] */
+				G->curved_text = TRUE;
 				break;
 
 			case '^':	/* Label Prefix specification */
@@ -1756,9 +1776,6 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 				
 		p = strtok (NULL, "+");
 	}
-	if (G->box == 0) {	/* Transparent text boxes */
-		if (g_set && gmtdefs.verbose) fprintf (stderr, "%s: +g<color> ignored for transparent textboxes\n", GMT_program);
-	}
 						
 	return (bad);
 }
@@ -1768,6 +1785,7 @@ int GMT_contlabel_specs_old (char *txt, struct GMT_CONTOUR *G)
 	int j, k, bad;
 	char txt_a[32], txt_b[32];
 	
+	G->transparent = FALSE;
 	for (j = 0, bad = 0; txt[j] && txt[j] != 'f'; j++);
 	if (txt[j])	{ /* Found font size option */
 		G->label_font_size = atof (&txt[j+1]);
@@ -1783,8 +1801,7 @@ int GMT_contlabel_specs_old (char *txt, struct GMT_CONTOUR *G)
 
 	for (j = 0; txt[j] && txt[j] != '/'; j++);
 	if (txt[j] && GMT_getrgb (&txt[j+1], G->rgb)) bad++;
-	if (strchr (txt, 'o')) G->box |= 2;
-	if (strchr (txt, 't')) G->box = 0;	/* transparent box must be rectangular */
+	if (strchr (txt, 't')) G->transparent = TRUE;	/* transparent box must be rectangular */
 	
 	return (bad);
 }
@@ -1856,20 +1873,42 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 	return (error);
 }
 
-int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
+int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 {
+	/* G is pointer to the LABELED CONTOUR structure
+	 * xyz, if not NULL, have the (x,y,z) min and max values for a grid
+	 * mode is a bit flag composed of these items:
+	 *  Bit 1:	On if contours, Off if lines
+	 *  Bit 2:	On if xyz is set and there thus is a grid.
+	 */
+	 
 	/* Prepares contour labeling machinery as needed */
+	
 	int i, k, n, error = 0;
 	size_t n_alloc;
 	BOOLEAN greenwich;
 	double x, y;
 	char buffer[BUFSIZ], txt_a[128], txt_b[128], txt_c[128], txt_d[128], *p;
 	
+	if (G->label_type == 5 && (mode & 4) == 0) {	/* Only psxy[z] with data column can do this */
+		error++;
+		fprintf (stderr, "%s: GMT SYNTAX ERROR -%c:  Labeling option +Lz requires optional data column\n", GMT_program, G->flag);
+	}
+	if (G->spacing && G->dist_kind == 1 && G->label_type == 4 && G->dist_unit == 0) {	/* Did not specify unit - use same as in -G */
+		G->L_d_scale = G->d_scale;
+		G->L_proj_type = G->proj_type;
+		G->L_dist_func = G->dist_func;
+	}
+	if ((G->dist_kind == 1 || G->label_type == 4) && !MAPPING) {
+		fprintf (stderr, "%s: GMT SYNTAX ERROR -%c:  Map distance options requires a map projection.\n", GMT_program, G->flag);
+		error++;
+	}
 	if (G->angle_type == 0)
 		G->no_gap = (G->just < 5 || G->just > 7);	/* Don't clip contour if label is not in the way */
 	else if (G->angle_type == 1)
 		G->no_gap = ((G->just + 2)%4);	/* Don't clip contour if label is not in the way */
 
+	
 	greenwich = (project_info.w < 0.0 && project_info.e > 0.0);
 
 	if (G->crossing == GMT_CONTOUR_XLINE) {
@@ -2093,16 +2132,16 @@ void GMT_contlabel_plot (struct GMT_CONTOUR *G)
 	int i;
 	struct GMT_CONTOUR_LINE *C;
 	
-	if (G->box) {	/* Opaque text boxes */
-		GMT_contlabel_drawlines (G, 0);
-		GMT_contlabel_plotboxes (G);
-		GMT_contlabel_plotlabels (G, 0);
-	}
-	else {		/* Transparent boxes */
+	if (G->transparent) {		/* Transparent boxes */
 		GMT_contlabel_clippath (G, 1);		/* Lays down clippath based on ALL labels */
 		GMT_contlabel_drawlines (G, 0);		/* Safe to draw continuous lines everywhere - they will be clipped at labels */
 		GMT_contlabel_clippath (G, 0);		/* Turn off label clipping so no need for GMT_map_clip_off */
 		GMT_contlabel_plotlabels (G, 0);	/* Now plot labels where they go directly */
+	}
+	else {	/* Opaque text boxes */
+		GMT_contlabel_drawlines (G, 0);
+		if (G->box == 2) GMT_contlabel_plotboxes (G);
+		GMT_contlabel_plotlabels (G, 0);
 	}
 	
 	/* Free memory */
@@ -2155,7 +2194,7 @@ void GMT_contlabel_clippath (struct GMT_CONTOUR *G, int mode)
 	if (mode == 1) {	/* Turn ON clipping */
 		if (G->curved_text) {		/* Do it via the labeling PSL function */
 			GMT_contlabel_plotlabels (G, 1);
-			if (nseg == 1) G->box = 32;	/* Special message to just repeate the labelline call */
+			if (nseg == 1) G->box |= 32;	/* Special message to just repeate the labelline call */
 		}
 		else {				/* Same PS memory by doing it this way instead via ps_textclip */
 			if (G->number_placement && G->n_cont == 1)		/* Special 1-label justification check */
@@ -2179,6 +2218,8 @@ void GMT_contlabel_clippath (struct GMT_CONTOUR *G, int mode)
 			if (project_info.three_D) {	/* Must place text items with GMT_text3D */
 				GMT_2D_to_3D (xt, yt, G->z_level, m);
 			}
+			/* Note this uses the last segments pen/fontrgb on behalf of all */
+			GMT_textpath_init (&C->pen, G->rgb, &G->pen, C->font_rgb);
 			ps_textclip (xt, yt, m, angle, txt, G->label_font_size, G->clearance, just, 0);	/* This turns clipping ON */
 			GMT_free ((void *)angle);
 			GMT_free ((void *)xt);
@@ -2198,7 +2239,7 @@ void GMT_contlabel_plotboxes (struct GMT_CONTOUR *G)
 	double x, y;
 	struct GMT_CONTOUR_LINE *C;
 
-	if (G->box == 0) return;	/* Transparent boxes */
+	if (G->transparent) return;	/* Transparent boxes */
 	
 	ps_setfont (G->label_font);
 	outline = (G->box & 4) + (G->box & 1);		/* This will give outline as (4|0) + (1|0) = {0, 1, 4, or 5} */
@@ -2220,14 +2261,16 @@ void GMT_contlabel_plotboxes (struct GMT_CONTOUR *G)
 }
 		
 void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode)
-{
+{	/* mode = 1 when clipping is in effect */
 	int i, k, m, just, form, first_i, last_i, *node;
 	double *angle, *xt, *yt;
 	char **txt;
 	struct GMT_CONTOUR_LINE *C;
 
-	if (G->box == 32) {	/* Repeat call for Transparent text box (already set by clip) */
-		ps_textpath (NULL, NULL, 0, NULL, NULL, NULL, 0, 0.0, NULL, 0, NULL, NULL, 32 + G->curved_text + 4);
+	if (G->box & 32) {	/* Repeat call for Transparent text box (already set by clip) */
+		form = 32 + G->curved_text + 4;
+		if (G->box & 1) form |= 512;		/* Transparent box with outline */
+		ps_textpath (NULL, NULL, 0, NULL, NULL, NULL, 0, 0.0, NULL, 0, form);
 		return;
 	}
 	
@@ -2249,7 +2292,7 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode)
 	
 	if (m == 0) return;	/* There are no labels */
 	
-	if (project_info.three_D || G->box) {	/* 3-D or opaque: text will be placed with GMT_text3D */
+	if (project_info.three_D) {	/* 3-D or opaque straight text: text will be placed with GMT_text3D */
 		for (i = 0; i < G->n_segments; i++) {
 			C = G->segment[i];	/* Pointer to current segment */
 			for (k = 0; k < C->n_labels; k++) {
@@ -2257,7 +2300,7 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode)
 			}
 		}
 	}
-	else if (G->curved_text) {	/* Curved labels in 2D with transparent textbox: use ps_textpath */
+	else if (G->curved_text) {	/* Curved labels in 2D with transparent or opaque textbox: use ps_textpath */
 		for (i = 0; i < G->n_segments; i++) {
 			C = G->segment[i];	/* Pointer to current segment */
 			if (!C->annot || C->n_labels == 0) continue;
@@ -2269,19 +2312,72 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode)
 				txt[k] = C->L[k].label;
 				node[k] = C->L[k].node;
 			}
+			
 			form = 8 * mode + G->curved_text + 4;	/* 8 means clip label and 4 means do not draw line */
 			if (i == first_i) form |= 64;		/* First of possibly several calls to ps_textpath */
 			if (i == last_i)  form |= 128;		/* Final call to ps_textpath */
-			ps_textpath (C->x, C->y, C->n, node, angle, txt, C->n_labels, G->label_font_size, G->clearance, just, C->pen.rgb, C->font_rgb, form);
+			if (!G->transparent) form |= 256;	/* Want the box filled */
+			if (G->box & 1) form |= 512;		/* Want box outline */
+			GMT_textpath_init (&C->pen, G->rgb, &G->pen, C->font_rgb);
+			ps_textpath (C->x, C->y, C->n, node, angle, txt, C->n_labels, G->label_font_size, G->clearance, just, form);
 			GMT_free ((void *)angle);
 			GMT_free ((void *)node);
 			GMT_free ((void *)txt);
 		}
 	}
-	else {	/* 2-D Straight transparent text labels: repeat call to ps_textclip */
-		ps_textclip (NULL, NULL, 0, NULL, NULL, 0.0, NULL, 0, 1);	/* Now place the text using PSL variables already declared */
+	else {	/* 2-D Straight transparent or opaque text labels: repeat call to ps_textclip */
+		form = 1;
+		if (!G->transparent) form |= 256;	/* Want the box filled */
+		if (G->box & 1) form |= 512;		/* Want box outline */
+
+		if (mode == 0) {	/* Opaque so ps_textclip is called for 1st time here */
+			/* Allocate temp space for everything that must be passed to ps_textclip */
+			angle = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
+			xt = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
+			yt = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
+			txt = (char **) GMT_memory (VNULL, (size_t)m, sizeof (char *), GMT_program);
+			for (i = m = 0; i < G->n_segments; i++) {
+				C = G->segment[i];	/* Pointer to current segment */
+				for (k = 0; k < C->n_labels; k++, m++) {
+					angle[m] = C->L[k].angle;
+					txt[m] = C->L[k].label;
+					xt[m] = C->L[k].x;
+					yt[m] = C->L[k].y;
+				}
+			}
+			if (project_info.three_D) {	/* Must place text items with GMT_text3D */
+				GMT_2D_to_3D (xt, yt, G->z_level, m);
+			}
+			/* Note this uses the last segments pen/fontrgb on behalf of all */
+			GMT_textpath_init (&C->pen, G->rgb, &G->pen, C->font_rgb);
+			ps_textclip (xt, yt, m, angle, txt, G->label_font_size, G->clearance, just, form);	/* This turns clipping ON */
+			GMT_free ((void *)angle);
+			GMT_free ((void *)xt);
+			GMT_free ((void *)yt);
+			GMT_free ((void *)txt);
+		}
+		else {	/* 2nd time called, just pass form */
+			form |= 8;
+			ps_textclip (NULL, NULL, 0, NULL, NULL, 0.0, NULL, 0, form);	/* Now place the text using PSL variables already declared */
+		}
 	}
 }	
+
+void GMT_textpath_init (struct GMT_PEN *LP, int Brgb[], struct GMT_PEN *BP, int Frgb[])
+{
+	char *texture;
+	int width, offset, rgb[3];
+	
+	texture = GMT_convertpen (LP, &width, &offset, rgb);
+	ps_define_pen ("PSL_setlinepen", width, texture, offset, rgb);
+	if (texture) GMT_free ((void *)texture);
+	texture = GMT_convertpen (BP, &width, &offset, rgb);
+	ps_define_pen ("PSL_setboxpen", width, texture, offset, rgb);
+	if (texture) GMT_free ((void *)texture);
+	ps_define_rgb ("PSL_setboxrgb", Brgb);
+	ps_define_rgb ("PSL_settxtrgb", Frgb);
+}
+
 
 int GMT_code_to_lonlat (char *code, double *lon, double *lat)
 {
@@ -2873,8 +2969,8 @@ void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char cty
 {	/* The xx, yy are expected to be projected x/y inches */
 	int i, j, start = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
-	double angle, dx, dy, width, sum_x2, sum_xy, one = 1.0, f, this_dist, step, *track_dist, *map_dist;
-	double x, y, lon[2], lat[2], *xx, *yy;
+	double angle, dx, dy, width, sum_x2, sum_xy, one = 1.0, f, this_dist, step, stept, *track_dist, *map_dist, *value_dist;
+	double x, y, this_value_dist, lon[2], lat[2], *xx, *yy;
 	struct GMT_LABEL *new_label;
 	char format[128], this_label[BUFSIZ];
 	
@@ -2892,7 +2988,8 @@ void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char cty
 		if (G->dist_kind == 1) GMT_xy_to_geo (&lon[1], &lat[1], xx[0], yy[0]);
 		map_dist = (double *) GMT_memory (VNULL, (size_t)nn, sizeof (double), GMT_program);	/* Distances on map in inches */
 		track_dist = (double *) GMT_memory (VNULL, (size_t)nn, sizeof (double), GMT_program);	/* May be km ,degrees or whatever */
-		map_dist[0] = track_dist[0] = 0.0;	/* Unnecessary, just so we understand the logic */
+		value_dist = (double *) GMT_memory (VNULL, (size_t)nn, sizeof (double), GMT_program);	/* May be km ,degrees or whatever */
+		map_dist[0] = track_dist[0] = value_dist[0] = 0.0;	/* Unnecessary, just so we understand the logic */
 		for (i = 1; i < nn; i++) {
 			/* Distance from xy */
 			dx = xx[i] - xx[i-1];
@@ -2905,14 +3002,16 @@ void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char cty
 					xx[i-1] += width;
 			}
 			dy = yy[i] - yy[i-1];
-			step = hypot (dx, dy);
+			step = stept = hypot (dx, dy);
 			map_dist[i] = map_dist[i-1] + step;
-			if (G->dist_kind == 1) {
+			if (G->dist_kind == 1 || G->label_type == 4) {
 				lon[0] = lon[1];	lat[0] = lat[1];
 				GMT_xy_to_geo (&lon[1], &lat[1], xx[i], yy[i]);
-				step = G->d_scale * (G->dist_func) (lon[0], lat[0], lon[1], lat[1]);
+				if (G->dist_kind == 1) step = G->d_scale * (G->dist_func) (lon[0], lat[0], lon[1], lat[1]);
+				if (G->label_type == 4) stept = G->L_d_scale * (G->L_dist_func) (lon[0], lat[0], lon[1], lat[1]);
 			}
 			track_dist[i] = track_dist[i-1] + step;
+			value_dist[i] = value_dist[i-1] + stept;
 		}
 		
 		/* G->L array is only used so we can later sort labels based on distance along track.  Once
@@ -2936,21 +3035,26 @@ void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char cty
 						new_label->x = xx[i] - f * (xx[i] - xx[i-1]);
 						new_label->y = yy[i] - f * (yy[i] - yy[i-1]);
 						new_label->dist = map_dist[i] - f * (map_dist[i] - map_dist[i-1]);
+						this_value_dist = value_dist[i] - f * (value_dist[i] - value_dist[i-1]);
 					}
 					else {
 						f = 1.0 - f;
 						new_label->x = xx[i-1] + f * (xx[i] - xx[i-1]);
 						new_label->y = yy[i-1] + f * (yy[i] - yy[i-1]);
 						new_label->dist = map_dist[i-1] + f * (map_dist[i] - map_dist[i-1]);
+						this_value_dist = value_dist[i-1] + f * (value_dist[i] - value_dist[i-1]);
 					}
 					this_dist = G->label_dist_spacing - dist_offset + last_label_dist;
 					if (G->label_type == 0 && label)
 						strcpy (this_label, label);
 					else if (G->label_type == 1 || G->label_type == 2)
 						strcpy (this_label, G->label);
-					else {
-						GMT_get_format (this_dist, G->unit, CNULL, format);
-						sprintf (this_label, format, this_dist);
+					else if (G->label_type == 3) {	/* Use this formatting because the numbers are even */
+						GMT_get_format (this_dist * GMT_u2u[GMT_INCH][G->dist_unit], G->unit, CNULL, format);
+						sprintf (this_label, format, this_dist * GMT_u2u[GMT_INCH][G->dist_unit]);
+					}
+					else if (G->label_type == 4) {
+						sprintf (this_label, gmtdefs.d_format, this_value_dist);
 					}
 					GMT_place_label (new_label, this_label, G);
 					new_label->node = i - 1;
@@ -2979,9 +3083,12 @@ void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char cty
 						G->end_just[1] = (f >= 90.0 && f <= 270) ? 7 : 5;
 					}
 					dist = (G->n_cont > 1) ? i * track_dist[nn-1] / (G->n_cont - 1) : 0.5 * (G->number_placement + 1.0) * track_dist[nn-1];
+					this_value_dist = (G->n_cont > 1) ? i * value_dist[nn-1] / (G->n_cont - 1) : 0.5 * (G->number_placement + 1.0) * value_dist[nn-1];
 				}
-				else
+				else {
 					dist = (i + 1 - 0.5 * closed) * track_dist[nn-1] / (G->n_cont + 1 - closed);
+					this_value_dist = (i + 1 - 0.5 * closed) * value_dist[nn-1] / (G->n_cont + 1 - closed);
+				}
 				while (j < nn && track_dist[j] < dist) j++;
 				if (j == nn) j--;	/* Safety precaution */
 				f = ((j == 0) ? 1.0 : (dist - track_dist[j-1]) / (track_dist[j] - track_dist[j-1]));
@@ -3001,8 +3108,11 @@ void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char cty
 					strcpy (this_label, label);
 				else if (G->label_type == 1 || G->label_type == 2)
 					strcpy (this_label, G->label);
-				else {
-					sprintf (this_label, gmtdefs.d_format, this_dist);
+				else if (G->label_type == 3) {
+					sprintf (this_label, gmtdefs.d_format, this_dist * GMT_u2u[GMT_INCH][G->dist_unit]);
+				}
+				else if (G->label_type == 4) {
+					sprintf (this_label, gmtdefs.d_format, this_value_dist);
 				}
 				GMT_place_label (new_label, this_label, G);
 				new_label->node = (j == 0) ? 0 : j - 1;
@@ -3037,18 +3147,23 @@ void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char cty
 					if (f < 0.5) {
 						this_dist = track_dist[left] + f * (track_dist[right] - track_dist[left]);
 						new_label->dist = map_dist[left] + f * (map_dist[right] - map_dist[left]);
+						this_value_dist = value_dist[left] + f * (value_dist[right] - value_dist[left]);
 					}
 					else {
 						f = 1.0 - f;
 						this_dist = track_dist[right] - f * (track_dist[right] - track_dist[left]);
 						new_label->dist = map_dist[right] - f * (map_dist[right] - map_dist[left]);
+						this_value_dist = value_dist[right] - f * (value_dist[right] - value_dist[left]);
 					}
 					if (G->label_type == 0 && label)
 						strcpy (this_label, label);
 					else if (G->label_type == 1 || G->label_type == 2)
 						strcpy (this_label, G->label);
-					else {
-						sprintf (this_label, gmtdefs.d_format, this_dist);
+					else if (G->label_type == 3) {
+						sprintf (this_label, gmtdefs.d_format, this_dist * GMT_u2u[GMT_INCH][G->dist_unit]);
+					}
+					else if (G->label_type == 4) {
+						sprintf (this_label, gmtdefs.d_format, this_value_dist);
 					}
 					GMT_place_label (new_label, this_label, G);
 					GMT_contlabel_angle (xx, yy, left, right, cangle, nn, new_label, G);
@@ -3067,6 +3182,7 @@ void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char cty
 
 		GMT_free ((void *)track_dist);
 		GMT_free ((void *)map_dist);
+		GMT_free ((void *)value_dist);
 		GMT_free ((void *)G->L);
 	}
 	else {   /* just one line, no holes for labels */
@@ -5332,10 +5448,11 @@ double GMT_get_map_interval (int axis, int item) {
 	}
 }
 
-int GMT_just_decode (char *key)
+int GMT_just_decode (char *key, int i, int j)
 {
-	int i = -1, j = -1, k;
-
+	int k;
+	/* i and j holds the default values - give -1 if they must be overridden */
+	
 	/* Converts justification info like LL (lower left) to justification indices */
 
 	for (k = 0; k < (int)strlen (key); k++) {

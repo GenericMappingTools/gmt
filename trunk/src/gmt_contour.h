@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.13 2004-06-03 03:45:04 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.14 2004-06-04 04:24:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -72,9 +72,13 @@ struct GMT_CONTOUR {
 	double label_dist_spacing;	/* Min distance between labels */
 	int label_font;			/* Which font */
 	int dist_kind;			/* What kind of distance [0 = xy, 1 = map ] */
+	int dist_unit;			/* Units for labelled distances along tracks [cimp] */
 	PFD dist_func;			/* Pointer to function that calculates distances */
 	double d_scale;			/* Scale to yield correct units */
 	int proj_type;			/* type of scaling */
+	PFD L_dist_func;		/* Pointer to function that calculates distances for label content only */
+	double L_d_scale;		/* Scale to yield correct units for label content only*/
+	int L_proj_type;		/* type of scaling for label content only */
 	int half_width;			/* Number of points to use in smoothing the angle [10/2] */
 	BOOLEAN number;			/* TRUE if we have constraints on the number of labels to apply */
 	int number_placement;		/* How the n_cont labels are distributed */
@@ -91,7 +95,8 @@ struct GMT_CONTOUR {
 	double label_font_size;		/* Font size for labels */
 	double label_angle;		/* For fixed-angle labels only */
 	double clearance[2];		/* Spacing between text and textbox */
-	int box;			/* Textbox bits [0 = transparent, 1 = outline, 2 = rect, 4 = rounded rect] */
+	BOOLEAN transparent;		/* TRUE for transparent textbox, FALSE for opaque */
+	int box;			/* Textbox bits [1 = outline, 2 = rect box shape, 4 = rounded rect shape] */
 	BOOLEAN curved_text;		/* TRUE for text to follow curved lines */
 	int rgb[3];			/* Opaque box color */
 	int font_rgb[3];		/* Font color */
@@ -108,7 +113,7 @@ struct GMT_CONTOUR {
 	BOOLEAN no_gap;			/* Clip contour or not depends on label placement */
 	int label_type;			/* 0 = what is passed, 1 = fixed label above , 2 = multiseg header, 3 = distances */
 	double z_level;			/* When plotted in 3-D we must have z = z_level (i.e., all points have fixed z) */
-	
+	BOOLEAN data_col;		/* TRUE if there is data in the zz arrays passed, FALSE if they are NULL */
 	/* Contour line section */
 	
 	struct GMT_CONTOUR_LINE **segment;	/* Array of segments */
@@ -119,7 +124,7 @@ struct GMT_CONTOUR {
 EXTERN_MSC int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *G);
 EXTERN_MSC int GMT_contlabel_init (struct GMT_CONTOUR *G);
 EXTERN_MSC int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G);
-EXTERN_MSC int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3]);
+EXTERN_MSC int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode);
 EXTERN_MSC void GMT_contlabel_angle (double x[], double y[], int start, int stop, double cangle, int n, struct GMT_LABEL *L, struct GMT_CONTOUR *G);
 EXTERN_MSC void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_CONTOUR *G);
 EXTERN_MSC void GMT_contlabel_plot (struct GMT_CONTOUR *G);

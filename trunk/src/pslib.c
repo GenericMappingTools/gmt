@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.69 2004-06-03 03:45:04 pwessel Exp $
+ *	$Id: pslib.c,v 1.70 2004-06-04 04:24:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -171,6 +171,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts);
 void ps_rgb_to_cmyk (int rgb[], double cmyk[]);
 void ps_cmyk_to_rgb (int rgb[], double cmyk[]);
 int ps_place_color (int rgb[]);
+void ps_place_setdash (char *pattern, int offset);
 void ps_set_length_array (char *param, double *array, int n);
 void ps_set_int_array (char *param, int *array, int n);
 void ps_set_txt_array (char *param, char *array[], int n);
@@ -1625,9 +1626,18 @@ void ps_setdash (char *pattern, int offset)
 	 *   5 units line, 3 units space, 1 unit line, 3 units space, start
 	 *    2 units from curr. point.
 	 */
+
+	fputs ("S ", ps.fp);
+	ps_place_setdash (pattern, offset);
+	fputs ("\n", ps.fp);
+	ps.npath = 0;
+}
+
+void ps_place_setdash (char *pattern, int offset)
+{
 	int place_space;
 	if (pattern) {
-		fputs ("S [", ps.fp);
+		fputs ("[", ps.fp);
 		place_space = 0;
 		while (*pattern) {
 			if (place_space) fputc (' ', ps.fp);
@@ -1636,11 +1646,10 @@ void ps_setdash (char *pattern, int offset)
 			while (*pattern && *pattern == ' ') pattern++;
 			place_space = 1;
 		}		    		
-		fprintf (ps.fp, "] %d B\n", offset);
+		fprintf (ps.fp, "] %d B", offset);
 	}
 	else
-		fprintf (ps.fp, "S [] 0 B\n");	/* Reset to continuous line */
-	ps.npath = 0;
+		fprintf (ps.fp, "[] 0 B");	/* Reset to continuous line */
 }
 
 /* fortran interface */
@@ -2157,7 +2166,7 @@ void ps_text_ (double *x, double *y, double *pointsize, char *text, double *angl
 	ps_text (*x, *y, *pointsize, text, *angle, *justify, *form);
 }
 
-void ps_textpath (double x[], double y[], int n, int node[], double angle[], char *label[], int m, double pointsize, double offset[], int justify, int p_rgb[], int t_rgb[], int form)
+void ps_textpath (double x[], double y[], int n, int node[], double angle[], char *label[], int m, double pointsize, double offset[], int justify, int form)
 {
 	/* x,y		Array containing the label path
 	/* n		Length of label path
@@ -2168,11 +2177,9 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 	 * pointsize	Pointsize of label text
 	 * offset	Clearences between text and textbox
 	 * just		Justification of text relative to label coordinates
-	 * p_rgb	Line color
-	 * t_rgb	Font color
 	 * form		bits: 0 = straigth text, 1 = curved text, 2 = just place gap, 4 = skip line
 	 *		      8 = clip path, 16 = paint clip path, 32 = just call labelline and reuse last set of parameters
-	 *		     64 = first time called, 128 = final time called
+	 *		     64 = first time called, 128 = final time called, 256 = fill box, 512 = draw box
 	 */
 	 
 	int i = 0, j, k, place, first;
@@ -2180,7 +2187,7 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 	char *string;
 	
 	if (form & 32) {		/* If 32 bit is set we already have placed the info */
-		form &= 31;		/* Knock off the 32 flag */
+		form -= 32;		/* Knock off the 32 flag */
 		fprintf (ps.fp, "%d PSL_labelline\n", form);
 		return;
 	}
@@ -2220,12 +2227,6 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 	
 	/* Set these each time */
 	
-	fprintf (ps.fp, "/PSL_setpenrgb { ");
-	k = ps_place_color (p_rgb);
-	fprintf (ps.fp, "%c } def\n", ps_paint_code[k]);
-	fprintf (ps.fp, "/PSL_settxtrgb { ");
-	k = ps_place_color (t_rgb);
-	fprintf (ps.fp, "%c } def\n", ps_paint_code[k]);
  	ps_set_integer ("PSL_n", n);
 	ps_set_integer ("PSL_m", m);
 	ps_set_length_array ("PSL_x", x, n);
@@ -2240,9 +2241,9 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 }
 
 /* fortran interface */
-void ps_textpath_ (double x[], double y[], int *n, int node[], double angle[], char *label[], int *m, double *pointsize, double offset[], int *justify, int p_rgb[], int t_rgb[], int *form, int len)
+void ps_textpath_ (double x[], double y[], int *n, int node[], double angle[], char *label[], int *m, double *pointsize, double offset[], int *justify, int *form, int len)
 {
-	ps_textpath (x, y, *n, node, angle, label, *m, *pointsize, offset, *justify, p_rgb, t_rgb, *form);
+	ps_textpath (x, y, *n, node, angle, label, *m, *pointsize, offset, *justify, *form);
 }
 
 void ps_textclip (double x[], double y[], int m, double angle[], char *label[], double pointsize, double offset[], int justify, int key)
@@ -2254,7 +2255,7 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 	 * pointsize	Pointsize of label text
 	 * offset	Gaps between text and textbox
 	 * just		Justification of text relative to label coordinates
-	 * key		bits: 0 = lay down clip path, 1 = Just place text, 2 turn off clipping, 4 = paint clippath (debug)
+	 * key		bits: 0 = lay down clip path, 1 = Just place text, 2 turn off clipping, 4 = paint clippath (debug), 8 = reuse pars, 256 fill box, 512 draw box
 	 */
 	 
 	int i = 0, j, k;
@@ -2265,8 +2266,8 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 		fprintf (ps.fp, "PSL_clip_on\t\t%% If clipping is active, terminate it\n{\n  grestore\n  /PSL_clip_on false def\n} if\n");
 		return;
 	}
-	if (key & 1) {		/* Flag to place text already define in PSL arrays */
-		fprintf (ps.fp, "1 PSL_labelclip\n", key);
+	if (key & 8) {		/* Flag to place text already define in PSL arrays */
+		fprintf (ps.fp, "%d PSL_labelclip\n", key);
 		return;
 	}
 	
@@ -3636,6 +3637,25 @@ void ps_set_height (char *param, double fontsize)
 void ps_set_integer (char *param, int value)
 {
 	fprintf (ps.fp, "/%s %d def\n", param, value);
+}
+
+void ps_define_pen (char *param, int width, char *texture, int offset, int rgb[])
+{
+	int k;
+	/* Function to set line pen attributes */
+	fprintf (ps.fp, "/%s { ", param);
+	k = ps_place_color (rgb);
+	fprintf (ps.fp, "%c %d W ", ps_paint_code[k], width);
+	ps_place_setdash (texture, offset);
+	fprintf (ps.fp, " } def\n");
+}
+
+void ps_define_rgb (char *param, int rgb[])
+{
+	int k;
+	fprintf (ps.fp, "/%s { ", param);
+	k = ps_place_color (rgb);
+	fprintf (ps.fp, "%c } def\n", ps_paint_code[k]);
 }
 
 void ps_set_length_array (char *param, double *array, int n)

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.136 2004-06-03 03:45:04 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.137 2004-06-04 04:24:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -504,17 +504,21 @@ void GMT_label_syntax (int indent, int kind)
 	fprintf (stderr, "%s +a<angle> for annotations at a fixed angle, +an for line-normal, or +ap for line-parallel [Default]\n", pad);
 	fprintf (stderr, "%s +c<dx>[/<dy>] to change the clearance between label and text box [0.0254i or 0.1c]\n", pad);
 	fprintf (stderr, "%s +f followed by desired label font [Default is %d].\n", pad, gmtdefs.annot_font[0]);
-	fprintf (stderr, "%s +g<color> to set color of opaque text box [Default is white]\n", pad);
+	fprintf (stderr, "%s +g[<color>] for opaque text box [Default is transparent]; optionally give color [white]\n", pad);
 	fprintf (stderr, "%s +j<just> to set label justification [Default is CM]\n", pad);
-	fprintf (stderr, "%s +k<color> to set color of label text [Default is black]\n", pad);
-	fprintf (stderr, "%s +o|O to draw opaque rectangular or rounded rectangular text box [Default is transparent]\n", pad);
-	fprintf (stderr, "%s +p[<pen>] to change pen for text box and draw outline [Default is no outline]\n", pad);
-	fprintf (stderr, "%s +s followed by desired font size in points [Default is 9].\n", pad);
-	fprintf (stderr, "%s +t for transparent rectangular text box and straight labels[Default]\n", pad);
-	fprintf (stderr, "%s +T for transparent text box and text curved along path\n", pad);
-	fprintf (stderr, "%s +u<unit> to give units to labels; Start with hyphen (-) for no space between annotation and unit.\n", pad);
+	fprintf (stderr, "%s +k<color> to change color of label text [Default is black]\n", pad);
+	if (kind == 0) {
+		fprintf (stderr, "%s +l<label> Use this fixed text as the label\n", pad);
+		fprintf (stderr, "%s +L<labelflag> Choose h for multisegment header labels, d[unit] for Cartesian plot distance\n", pad);
+		fprintf (stderr, "%s   with unit in {c|i|m|p}, or D[<unit>] for map distance with the unit in {d|e|l|m|n}.\n", pad);
+	}
+	fprintf (stderr, "%s +o to use rounded rectangular text box [Default is rectangular]\n", pad);
+	fprintf (stderr, "%s +p[<pen>] draw outline of textbox  [Default is no outline]; optionally give pen [Default is default pen]\n", pad);
+	fprintf (stderr, "%s +s followed by desired font size in points [Default is 9 point].\n", pad);
+	fprintf (stderr, "%s +u<unit> to append unit to labels; Start with - for no space between annotation and unit.\n", pad);
 	if (kind == 0) fprintf (stderr, "%s  If no unit appended, use z-unit from grdfile. [Default is no unit]\n", pad);
-	fprintf (stderr, "%s +^<prefix> to give labels a prefix; Start with hyphen (-) for no space between annotation and prefix.\n", pad);
+	fprintf (stderr, "%s +v for placing curved text along path [Default is straight]\n", pad);
+	fprintf (stderr, "%s +^<prefix> to give labels a prefix; Start with - for no space between annotation and prefix.\n", pad);
 }
 
 void GMT_cont_syntax (int indent, int kind)
