@@ -1,0 +1,36 @@
+#-------------------------------------------------------------------------------
+#	$Id: gmtsite.macros,v 1.1 2001-02-01 18:05:38 pwessel Exp $
+#
+#	Original GMT Guru Makefile Macro for Makefile.guru
+#	Users should cp to gmtguru.macros and edit it instead!
+#-------------------------------------------------------------------------------
+#
+# The Makefile.guru file for GMT can be used by any GMT
+# Developer to do chores ranging from compiling and linking
+# and running examples, to preparing new tar archives for release.
+# Any developer may create a tar distribution locally with the
+# Makefile.guru makefile.  The only changes one need to make is
+# in this macro file.  Other than some platform-specific macros
+# for the C preprocessor and local directory structures
+#
+# Below, set the VERSION to be created and the DIR in which
+# to place the tar archives.  It is best not to use the actual
+# pub/ftp directory but use a temporary place and copy over later.
+# Also, you may want to change the DATE value
+
+VERSION		= GMT3.3.7
+DIR		= /home/wessel/ftp
+FTPDIR		= /data/ftp/pub/gmt
+WWWDIR		= /home/gmt/gmt/www
+CPFLAGS		= -I. -DDATE="\"1 Feb 2001\""
+AUTOCONF	= autoconf
+
+#  LINUX:
+TXT2MAN	= /usr/bin/cpp -P -nostdinc
+
+# HP-UX:
+#TXT2MAN	= /usr/ccs/lbin/cpp
+
+# SOLARIS:
+#TXT2MAN	= cc -E -Xs
+

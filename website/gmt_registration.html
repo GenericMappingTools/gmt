@@ -1,0 +1,122 @@
+<HTML>
+<!--  $Id: gmt_registration.html,v 1.1 2001-02-01 18:05:38 pwessel Exp $  -->
+<HEAD>
+<TITLE>GMT Registration</TITLE>
+</HEAD>
+<BODY BACKGROUND="gmt_paper.gif" TEXT="#ff0000">
+<FORM ACTION="/cgi-bin/gmt_form.pl" METHOD="POST">
+<H1></H1>
+<H1><CENTER>GMT Registration</CENTER>
+</H1>
+<BR>
+We ask that you fill out this form. The information is used for statistical
+purposes which allow us to better serve the GMT user community. Both GMT
+installers and end users may register; please select the appropriate button
+below.<BR>
+<HR>
+<H2>Information about you:</H2>
+First Name:<INPUT NAME="first_name" TYPE="text" SIZE="30"> 
+Last Name:<INPUT NAME="last_name" TYPE="text" SIZE="30"><BR>
+Institution: <INPUT NAME="institution" TYPE="text" SIZE="28"><BR>
+City: <INPUT NAME="city" TYPE="text" SIZE="25">State:<INPUT NAME="state"
+TYPE="text" SIZE="7"> Country: <INPUT NAME="country" TYPE="text" SIZE="22"><BR>
+<BR>
+Your or your institution's field of expertise: <SELECT NAME="field">
+<OPTION SELECTED>Atmospheric Science
+<OPTION>Earth Science
+<OPTION>Ocean Science
+<OPTION>Biological Science
+<OPTION>Physics
+<OPTION>Engineering
+<OPTION>Mathematics
+<OPTION>Social Sciences
+<OPTION>Other
+</SELECT><BR>
+You are: <INPUT TYPE="radio" VALUE="guru" NAME="radio_status">Responsable
+for GMT installation at this site <INPUT TYPE="radio" VALUE="user" NAME=
+"radio_status">End user <INPUT TYPE="radio" VALUE="both" NAME="radio_status"
+CHECKED="true">Both<BR>
+Approximate number of individuals served by your GMT site installation:<INPUT
+NAME="n_users" TYPE="text" SIZE="6"><BR>
+<HR>
+<H2>Installation Information:</H2>
+GMT was installed on: <SELECT NAME="machine" MULTIPLE SIZE="15">
+<OPTION>Apple
+<OPTION>Convex
+<OPTION>Cray
+<OPTION>Data General
+<OPTION>DEC
+<OPTION>HP
+<OPTION>IBM Risc
+<OPTION>Masscomp
+<OPTION>Next
+<OPTION>PC Desktop
+<OPTION>PC Laptop
+<OPTION>SGI
+<OPTION>Sony
+<OPTION>Sun
+<OPTION>Other
+</SELECT>Operating system: <SELECT NAME="os" MULTIPLE SIZE="16">
+<OPTION>AIX
+<OPTION>A-UX
+<OPTION>DOS
+<OPTION>UNICOS
+<OPTION>HPUX
+<OPTION>IRIX
+<OPTION>Linux
+<OPTION>Mach
+<OPTION>Machten
+<OPTION>OS-2
+<OPTION>Solaris
+<OPTION>SunOS
+<OPTION>Ultrix
+<OPTION>VMS
+<OPTION>Windows NT
+<OPTION>Other
+</SELECT><BR>
+<BR>
+Any specific comments regarding installation can be entered here:<TEXTAREA
+NAME="comments" ROWS="8" COLS="72"
+></TEXTAREA><BR>
+<HR>
+<H2>Location Map:</H2>
+If you supply us with the longitude and latitude of you work-place we will
+automatically add a circle to the GMT usage map on the <A HREF="http://www.soest.hawaii.edu/gmt">GMT
+home page</A> (This is done once a day only). You can use the format of
+your choice. These longitudes are all eqivivalent: 70.7W, -70.7, 70:42 W,
+-70:42.<BR>
+Same goes for latitudes: 33.333 S, -33.333, 33:20 S, -33:20. You can also
+add :ss for arc seconds,<BR>
+e.g., 33:20:15W<BR>
+Geographical location of your institution: Longitude: <INPUT NAME="lon"
+TYPE="text" SIZE="12">Latitude:<INPUT NAME="lat" TYPE="text" SIZE="12"><BR>
+<HR>
+<H2>Online Help and Information:</H2>
+<BR>
+Two electronic mailing lists are available for users to subscribe to. The
+first is called gmtgroup@soest.hawaii.edu and is primarily a 1-way street
+for us to notify the users when bugs have been fixed or when new updates
+have been installed in the ftp directory.<BR>
+We also maintain another list (gmthelp@soest.hawaii.edu) which interested
+users may subscribe to. It basically provides a forum for GMT users to exchange
+ideas and ask questions about GMT usage, installation and portability, etc.
+Please use this utility rather than sending questions directly to us. We
+hope you appreciate that we simply do not have time to be everybody's personal
+GMT tutor.<BR>
+<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_group" VALUE="yes">Add me to
+the GMT Group 1-way mailing list<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_help" VALUE="yes">Add me to the GMT Help
+2-way mailing list<BR>
+E-mail address: <INPUT NAME="email" TYPE="text" SIZE="30"><BR>
+<BR>
+To remove yourself from these mailinglists simply send mail to listserver@soest.hawaii.edu
+with the message(s):<BR>
+<BR>
+unsubscribe gmthelp<BR>
+unsubscribe gmtgroup<BR>
+<P><CENTER><HR><INPUT NAME="submit" TYPE="submit" VALUE="Submit">this form.
+<INPUT NAME="name" TYPE="reset" VALUE="Reset">all fields.</CENTER>
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,134 @@
+<HTML>
+<!--  $Id: gmt_arrrghh.html,v 1.1 2001-02-01 18:05:38 pwessel Exp $  -->
+<title>GMT Incompatibilities Notes</title>
+<body bgcolor="#ffffff">
+<center><h1>GMT Incompatibilities Notes</center></h1><p>
+<HR>
+<h3><center>17-OCT-2000: GMT Version 3.3.6 Released</h3></center>
+3.3.6 scripts should be backward compatible with 3.3.5
+<HR>
+<h3><center>21-JUL-2000: GMT Version 3.3.5 Released</h3></center>
+<HR><P>
+3.3.5 scripts should be backward compatible with 3.3.4, with the
+following potential exceptions:
+<UL>
+<LI>The function <B>STEP</b> in gmtmath has been renamed <B>STEPT</b>
+to be compatible in function to <b>STEPX</b> and <b>STEPY</b> in grdmath.
+A new function <b>STEP</b> has been added to gmtmath (and grdmath) that
+simply takes the Heaviside function of the current stack entries.</LI>
+<LI>The common option -: is now processed in the generic i/o functions
+and not in individual programs.  The fact that -: was only intended to
+apply to geographical data is now enforced.  Thus, if you used -: in
+imaginative ways on non-geographic data you will have to consider
+changes to those scripts.</LI>
+</UL>
+<HR><h3><center>20-MAR-2000: GMT Version 3.3.4 Released</h3></center>
+<HR><P>
+3.3.4 scripts should be backward compatible with 3.3.3
+<HR>
+<HR>
+<h3><center>03-DEC-1999: GMT Version 3.3.3 Released</h3></center>
+<HR><P>
+3.3.3 scripts should be backward compatible with 3.3.2
+<HR>
+<HR>
+<h3><center>24-SEPT-1999: GMT Version 3.3.2 Released</h3></center>
+<HR><P>
+3.3.2 scripts should be backward compatible with 3.3.1
+<HR>
+<h3><center>01-JULY-1999: GMT Version 3.3.1 Released</h3></center>
+<HR><P>
+3.3.1 scripts should be backward compatible with 3.3
+<HR>
+<h3><center>09-JUNE-1999: GMT Version 3.3 Released</h3></center>
+<HR><P>
+Going from GMT version 3.2 to 3.3 there were several minor syntax
+changes that renders GMT 3.3 slightly incompatible with 3.2.
+The following is a list of known incompatibilies (please report
+others if you find any; we may have missed some):
+<OL>
+<LI>grdproject.c: The -F option now toggles the node registration
+of the output file.  This change was necessary since the old
+version would write out a node-registred grid regardless what
+the input grid was, unless -F was set.  The new policy will
+use the same registration as the input unless -F is set.</LI>
+</OL>
+<HR>
+<h3><center>19-MAR-1999: GMT Version 3.2 Released</h3></center>
+<HR><P>
+Going from GMT version 3.1 to 3.2 there were several minor syntax
+changes that renders GMT 3.2 slightly imcompatible with 3.1.
+The following is a list of known incompatibilies (please report
+others if you find any; we may have missed some):
+<OL>
+<LI>makecpt.c: Due to the much more flexible version in 3.2 (with
+many choices of different cpt master tables there are several
+changes.  The old options -C, -M, -S have been replaced by
+-Tz0/z1/dz. and -I (reversing the colors) have been added.</LI>
+
+<LI>pslib.c: This change only affects programmers that link their
+own code with -lpsl.  The arguments to ps_plotinit has changed
+so that instead of passing paper_width as a double we pass a
+2-element integer array with paper width and height in points.
+See the pslib man page for details.</LI>
+</OL>
+<HR>
+<h3><center>25-NOV-1998: GMT Version 3.1.1 Released</h3></center>
+<HR><P>
+3.1.1 scripts should be backward compatible with 3.1
+<HR>
+<h3><center>08-NOV-1998: GMT Version 3.1 Released</h3></center>
+<HR><P>
+Going from GMT version 3.0 to 3.1 there were several minor syntax
+changes that renders GMT 3.1 slightly imcompatible with 3.0.
+The following is a list of known incompatibilies:
+<OL>
+<LI>grdclip.c: -A and -B have been replaced by -Sa and -Sb; the -B
+    interferred with the usual meaning of -B.</LI>
+
+<LI>grdpaste.c: Same problem; introduced -Sa and -Sb.</LI>
+
+<LI>grdview.c: -D no longer an option; -M and -W follow grdcontour
+    syntax and are set by -Wc and -Wm instead.</LI>
+
+<LI>nearneighbor.c: -M is replaced by -Sradius[k] as in psmask.</LI>
+
+<LI>psmask.c: -S and -C have reversed roles to match psclip; -M is
+    replaced by -Sradius[k] as in nearneighbor.</LI>
+
+<LI>project.c: -M becomes the multisegment flag as usual; old -M is
+    replaced by -Q.</LI>
+
+<LI>psclip.c: -S becomes -C, and -O must now explicitly be set.</LI>
+
+<LI>psxy[z].c: -L only needed to close polygons; -W[pen] determines
+    symbol outlines.</LI>
+
+<LI>No programs have the old option -F to change the color of the map
+    frame.  This is now done via gmtset BASEMAP_FRAME_RGB r/g/b.</LI>
+    
+<LI>-GP|p now takes pattern dpi, not building block size.  A dpi setting
+    of 0 still gives the resolution implied by DOTS_PR_INCH.</LI>
+
+<LI>psscale now uses the machinery of the common -B option for anotations.
+    This means that the x-label goes beneath the scale and the y-label can
+    be used as a unit label.  The title string :.title: is no longer used.</LI>
+
+<LI>grd2xyz.c and xyz2grd.c.  Please note that -Z and -b are incompatible
+    and are NOT to be used at the same time (your i/o cannot both have 1
+    and 3 columns...).</LI>
+
+<LI>pscoast.c.  -A changed from -A<area>/<maxlevel> (with <min_level> implicitly
+set to 0) to -A<area>/<min_level>/<maxlevel>.  If you used -A to exclude
+higher levels you need to explicitly include the 0 for min_level</LI>
+
+</OL>
+In addition, there are changes that ARE backward compatible but you are 
+encouraged to change your script to follow the new syntax:
+<OL>
+<LI>sample1d.c:  Old options -A, -C, -L are now set via -Fa, -Fc, -Fl,
+    but the old options are still silently recognized.  As these may go
+    away in the future we suggest you adopt to the new order.</LI>
+</OL>
+
+</HTML>
