@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.4 2004-09-12 01:25:20 pwessel Exp $
+/*	$Id: gshhs.h,v 1.5 2004-09-12 01:39:20 pwessel Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -36,7 +36,7 @@
 #define SEEK_CUR 1
 #endif
 
-/* For byte swapping if needed */
+/* For byte swapping on little-endian systems (GSHHS is bigendian) */
 
 #define swabi2(i2) (((i2) >> 8) + (((i2) & 255) << 8))
 #define swabi4(i4) (((i4) >> 24) + (((i4) >> 8) & 65280) + (((i4) & 65280) << 8) + (((i4) & 255) << 24))
