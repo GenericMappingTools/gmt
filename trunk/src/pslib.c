@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.83 2004-12-01 01:42:23 pwessel Exp $
+ *	$Id: pslib.c,v 1.84 2004-12-20 16:07:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1140,16 +1140,15 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
    xscl, yscl:	Global scaling, usually left to 1,1
    page_size:	Physical width and height of paper used in points
    overlay:	FALSE means print headers and macros first
-   mode:	 0st bit 0 = Landscape, 1 = Portrait,
-		 2nd bit 0 = bin image, 1 = hex image
-		 3rd bit 0 = rel positions, 1 = abs positions
-		 9th bit 0 = RGB image, 1 = CMYK image
-		12th bit 0 = no RLE compression, 1 = RLE compression
-		13th bit 0 = no LZW compression, 1 = LZW compression
-		14th bit 0 = be silent, 1 = be verbose
-		15-16 bits (0,1,2) sets the line cap setting
-		17-18 bits (0,1,2) sets the line miter setting
-		19-26 bits (8 bits) sets the miter limit
+   mode:	     bit 0 : 0 = Landscape, 1 = Portrait,
+		     bit 1 : 0 = be silent, 1 = be verbose
+		     bit 2 : 0 = bin image, 1 = hex image
+		     bit 3 : 0 = rel positions, 1 = abs positions
+		     bit 9 : 0 = RGB image, 1 = CMYK image
+		bits 12-13 : 0 = no compression, 1 = RLE compression, 2 = LZW compression
+		bits 14-15 : (0,1,2) sets the line cap setting
+		bits 16-17 : (0,1,2) sets the line miter setting
+		bits 18-25 : (8 bits) sets the miter limit
    ncopies:	Number of copies for this plot
    dpi:		Plotter resolution in dots-per-inch
    unit:	0 = cm, 1 = inch, 2 = meter
@@ -1175,10 +1174,10 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps_init_fonts (&N_PS_FONTS, &N_GMT_FONTS);	/* Load the available font information */
 
 	ps.eps_format = FALSE;
+	ps.verbose = (mode & 2) ? TRUE : FALSE;
 	ps.hex_image = (mode & 4) ? TRUE : FALSE;
 	ps.cmyk_mode = (mode & 512) ? TRUE : FALSE;
-	ps.compress = (mode & 12288) >> 12;
-	ps.verbose = (mode & 16384) ? TRUE : FALSE;
+	ps.compress = (mode >> 12) & 3;
 	ps.absolute = (mode & 8) ? TRUE : FALSE;
 	ps.line_cap = (mode >> 14) & 3;
 	ps.line_join = (mode >> 16) & 3;
@@ -3714,10 +3713,11 @@ unsigned char *ps_rle_encode (int *nbytes, unsigned char *input)
 	int count = 0, out = 0, in, i;
 	unsigned char pixel, *output;
 
-	i = MAX (512, *nbytes) + 2;	/* Maximum output length */
+	i = MAX (512, *nbytes) + 8;	/* Maximum output length */
 	output = (unsigned char *)ps_memory (VNULL, (size_t)i, sizeof (unsigned char));
 
-	while (count < *nbytes) {
+	/* Loop scanning all input bytes. Abort when inflating after processing at least 512 bytes */
+	while (count < *nbytes && (out < in || out < 512)) {
 		in = count;
 		pixel = input[in++];
 		while (in < *nbytes && in - count < 127 && input[in] == pixel) in++;
@@ -3731,14 +3731,20 @@ unsigned char *ps_rle_encode (int *nbytes, unsigned char *input)
 			output[out++] = (unsigned char)(count - in + 1);
 			output[out++] = pixel;
 		}
-		count=in;
-		if (in > 512 && out > in) {
-			if (ps.verbose) fprintf (stderr, "pslib: RLE compression aborted after byte %d\n", in);
-			ps_free (output);
-			return (NULL);
-		}
+		count = in;
 	}
+
+	/* Write end of data marker */
 	output[out++] = 128;
+
+	/* Drop the compression when end result is bigger than original */
+	if (out > in) {
+		if (ps.verbose) fprintf (stderr, "pslib: RLE inflated %d to %d bytes (aborted)\n", in, out);
+		ps_free (output);
+		return (NULL);
+	}
+
+	/* Return number of output bytes and output buffer */
 	if (ps.verbose) fprintf (stderr, "pslib: RLE compressed %d to %d bytes\n", in, out);
 	*nbytes = out;
 	return (output);
@@ -3754,7 +3760,7 @@ unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input)
 	short int table, bmax, pre, oldpre, ext, *code;
 	byte_stream_t output;
 
-	i = MAX (512, *nbytes) + 2;	/* Maximum output length */
+	i = MAX (512, *nbytes) + 8;	/* Maximum output length */
 	output = (byte_stream_t)ps_memory (NULL, 1, sizeof (*output));
 	output->buffer = (unsigned char *)ps_memory (NULL, i, sizeof (*output->buffer));
 	code = (short int *)ps_memory (NULL, ncode, sizeof (short int));
@@ -3764,8 +3770,8 @@ unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input)
 	table = 4095;		/* Initial value forces clearing of table on first byte */
 	pre = input[in++];
 
-	/* Loop scanning all input bytes */
-	while (in < *nbytes) {
+	/* Loop scanning all input bytes. Abort when inflating after processing at least 512 bytes */
+	while (in < *nbytes && (output->nbytes < in || output->nbytes < 512)) {
 		if (table >= 4095) {	/* Refresh code table */
 			output = ps_lzw_putcode (output, clear);
 			for (i = 0; i < ncode; i++) code[i]=0;
@@ -3789,17 +3795,19 @@ unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input)
 				output->depth++;
 			}
 		}
-		if (in > 512 && output->nbytes > in) {
-			if (ps.verbose) fprintf (stderr, "pslib: LZW compression aborted after byte %d\n", in);
-			ps_free (code);
-			ps_free (output);
-			return (NULL);
-		}
 	}
 
 	/* Output last byte and End-of-Data */
 	output = ps_lzw_putcode (output, pre);
 	output = ps_lzw_putcode (output, eod);
+
+	/* Drop the compression when end result is bigger than original */
+	if (output->nbytes > in) {
+		if (ps.verbose) fprintf (stderr, "pslib: LZW inflated %d to %d bytes (aborted)\n", in, output->nbytes);
+		ps_free (code);
+		ps_free (output);
+		return (NULL);
+	}
 
 	/* Return number of output bytes and output buffer; release code table */
 	if (ps.verbose) fprintf (stderr, "pslib: LZW compressed %d to %d bytes\n", in, output->nbytes);

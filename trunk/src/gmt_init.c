@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.164 2004-12-19 02:12:33 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.165 2004-12-20 16:07:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1016,7 +1016,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			if (GMT_processed_option[10]) fprintf (stderr, "%s: Warning: Option -V given more than once\n", GMT_program);
 			GMT_processed_option[10] = TRUE;
 			gmtdefs.verbose = (item[2] == 'l') ? 2 : TRUE;	/* -Vl is long verbose */
-			gmtdefs.page_orientation |= 16384;
+			gmtdefs.page_orientation |= 2;
 			break;
 		case 'X':
 		case 'x':
@@ -1161,28 +1161,13 @@ void GMT_prep_PS_bits ()
 	/* Because some defaults may be set more than once - like overridden with --PAR
 	 * we must be careful to set or unset the selections */
 	 
-	if (gmtdefs.ps_heximage)	/* Turn 4th bit ON */
-		gmtdefs.page_orientation |= 4;
-	else				/* Turn 4th bit OFF */
-		gmtdefs.page_orientation &= ~4;	
-	if (gmtdefs.ps_cmykmode)	/* Turn 10th bit ON */
-		gmtdefs.page_orientation |= 512;
-	else				/* Turn 10th bit OFF */
-		gmtdefs.page_orientation &= ~512;
-	
-	if (gmtdefs.ps_compress)	/* Turn 12th bit ON */
-		gmtdefs.page_orientation |= (1 << 12);
-	else				/* Turn 12th bit OFF */
-		gmtdefs.page_orientation &= ~(1 << 12);
-	if (gmtdefs.verbose)	/* Turn 16th bit ON */
-		gmtdefs.page_orientation |= 16384;
-	else			/* Turn 16th bit OFF */
-		gmtdefs.page_orientation &= ~16384;
-	gmtdefs.page_orientation &= ~(3 << 14);
+	gmtdefs.page_orientation &= 1;	/* Unset all but bit 0 */
+	if (gmtdefs.verbose) gmtdefs.page_orientation |= 2;
+	if (gmtdefs.ps_heximage) gmtdefs.page_orientation |= 4;
+	if (gmtdefs.ps_cmykmode) gmtdefs.page_orientation |= 512;
+	if (gmtdefs.ps_compress) gmtdefs.page_orientation |= (gmtdefs.ps_compress << 12);
 	if (gmtdefs.ps_line_cap) gmtdefs.page_orientation |= (gmtdefs.ps_line_cap << 14);
-	gmtdefs.page_orientation &= ~(3 << 16);
 	if (gmtdefs.ps_line_join) gmtdefs.page_orientation |= (gmtdefs.ps_line_join << 16);
-	gmtdefs.page_orientation &= ~(255 << 18);
 	if (gmtdefs.ps_miter_limit) gmtdefs.page_orientation |= (gmtdefs.ps_miter_limit << 18);
 }
 
@@ -2823,7 +2808,7 @@ int GMT_begin (int argc, char **argv)
 		argv[k] = argv[n];
 		argv[n] = p;
 	}
-	if (gmtdefs.verbose) gmtdefs.page_orientation |= 16384;
+	if (gmtdefs.verbose) gmtdefs.page_orientation |= 2;
 	return (argc);
 }
 
