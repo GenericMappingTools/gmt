@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.17 2004-06-11 03:02:58 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.18 2004-06-12 08:15:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -121,6 +121,7 @@ struct GMT_CONTOUR {
 	int label_type;			/* 0 = what is passed, 1 = fixed label above , 2 = multiseg header, 3 = distances */
 	double z_level;			/* When plotted in 3-D we must have z = z_level (i.e., all points have fixed z) */
 	BOOLEAN data_col;		/* TRUE if there is data in the zz arrays passed, FALSE if they are NULL */
+	BOOLEAN debug;			/* TRUE of we want to draw helper lines/points */
 	/* Contour line section */
 	
 	struct GMT_CONTOUR_LINE **segment;	/* Array of segments */

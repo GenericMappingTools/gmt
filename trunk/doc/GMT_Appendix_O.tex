@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_O.tex,v 1.1 2004-06-11 03:02:58 pwessel Exp $
+%	$Id: GMT_Appendix_O.tex,v 1.2 2004-06-12 08:15:27 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -47,7 +47,7 @@ line (and every {\it dist} thereafter).  If not given, {\it frac} defaults to 0.
 The angle of the line at the point of label placement is calculated by a least-squares
 fit to the {\it width} closest points.  If not specified, {\it width} defaults to 10.
 Note that you must specify {\it width} if you want to specify {\it frac}.
-\item [D:] Full syntax is {\bf D}{\it dist}[{\bf d$|$e$|$k$|$m$|$n}][/{\it width}[{\it frac}]].
+\item [D:] Full syntax is {\bf D}{\it dist}[{\bf d$|$e$|$k$|$m$|$n}][/{\it width}[/{\it frac}]].
 This option is similar to {\bf d} except the original data must be referred to geographic
 coordinates (and a map projection must have been chosen) and actual Earth\footnote{or whatever
 planet we are deaing with.} surface distances along the lines are considered.  Append the
@@ -72,13 +72,14 @@ upper left to the lower right map corner, while {\bf Z-}/135W/15S is a line from
 (135\DS W, 15\DS S).
 \item [L:] Same as {\bf l} except we will treat the lines given as great circle start/stop coordinates and fill in
 the points between before looking for intersections.
-\item [n:] Full syntax is {\bf n}{\it number}.  Place {\it number} of labels along each line regardless of total
-line length.  The line is divided into {\it number} segments and the labels are placed at the centers of these
-segments.
-\item [N:] Full syntax is {\bf N}{\it number}.  Similar to code {\bf n} but here labels are placed at the ends of
-each segment (for {\it number} $ /geq 2$).  A special case arises for {\it number} $= 1$ when a single label will be
-placed according to the sign of {\it number}: $-1$ places one label justified at the start of the line, while $+1$ places one label
-justified at the end of the line.
+\item [n:] Full syntax is {\bf n}{\it number}[/{\it width}[/{\it minlength}[{\bf c$|$i$|$m$|$p}]]].  Place
+{\it number} of labels along each line regardless of total line length.  The line is divided into {\it number}
+segments and the labels are placed at the centers of these segments.  Optionally, you may give a {\it minlength}
+distance to exclude contour segments of shorted length.
+\item [N:] Full syntax is {\bf N}{\it number}[/{\it width}[/{\it minlength}[{\bf c$|$i$|$m$|$p}]]].  Similar to
+code {\bf n} but here labels are placed at the ends of each segment (for {\it number} $ /geq 2$).  A special
+case arises for {\it number} $= 1$ when a single label will be placed according to the sign of {\it number}:
+$-1$ places one label justified at the start of the line, while $+1$ places one label justified at the end of the line.
 \item [x:] Full syntax is {\bf x}{\it cross.d}[/{\it width}[/{\it slop}]].  Here, an ASCII file {\it cross.d} is
 a multi-segment file whose lines will intersect out segment lines; labels will be placed at these intersections.
 \item [X:] Same as {\bf x} except we treat the lines given as great circle start/stop coordinates and fill in the
@@ -106,6 +107,8 @@ baseline) by the given amounts.  If these should be different amounts please sep
 a slash; otherwise the single value applies to both directions.  Append the distance units of
 your choice ({\bf c$|$i$|$m$|$p}), or give \% to indicate that the clearance should be this
 fixed percentage of the label font size in use.  The default is 15\%.
+\item [+d:] Debug mode.  This is useful when testing contour placement as it will draw the normally
+invisible helper lines and points in the label placement algorithms above.
 \item [+f:] Specifies the desired label font.  See \GMTprog{pstext} for font names or numbers.  The
 default font is given by {\bf ANNOT\_FONT\_PRIMARY}.
 \item [+g:] Selects opaque rather than the default transparent textboxes.  You may optionally append
@@ -155,15 +158,98 @@ This choice obviously requires the crossing segments location algorithm (code {\
 \end{description}
 \end{description}
 
-\section{Label Examples}
+\section{Examples of Contour Label Placement}
 
-We will demonstrate the use of these options on a few simple examples.
+We will demonstrate the use of these options with a few simple examples.
+First, we will contour a subset of the global geoid data used in \GMT\ Example 01;
+the region selected encompasses the world's strongest ``geoid dipole'': the Indian Low
+and the New Guinea High.
 
-%>>>>>>..ways to do things
+\subsection{Equidistant labels}
 
-%cross-section through the filter weights (Figure~\ref{fig:GMT_imp_res}).
+Our first example uses the default placement algorithm.  However, because of the size
+of the map we request contour labels every 1.5 inches along the lines:
 
-%\GMTfig[H]{GMT_imp_res}{Impulse responses for \gmt\ filters.}
+\input{scripts/GMT_App_O_1}
 
-%\clearpage
+As seen in Figure~\ref{fig:GMT_App_O_1}, the contours are placed rather arbitrary.
+The string of countours for $-20$ to $60$ align well but that is a fortuitous 
+consequence of reaching the 1.5 inch distance from the start at the bottom of the map.
+
+\GMTfig[H]{GMT_App_O_1}{Equidistant contour label placement with \Opt{Gd}.}
+
+\subsection{Fixed number of labels}
+
+We now exercise the option for specifying exactly how many labels each contour line
+should have.
+
+\input{scripts/GMT_App_O_2}
+
+By selecting only one label per contour and requiring that labels only be placed on
+contour lines that exceed 1i, we achieve the effect shown in Figure~\ref{fig:GMT_App_O_2}.
+
+\GMTfig[H]{GMT_App_O_2}{Placing one label per contour that exceed 1 inch in length,
+centered on the segment with \Opt{Gn}.}
+
+\subsection{Prescribed label placements}
+
+Here, we specify four points where we would like contour labels to be placed.  Our points
+are not exactly on the contour lines so we give a nonzero ``slop'' to be used in the
+distance calculations: The point on the contour closest to our fixed points and within
+the given maximum distance will host the label.
+
+\input{scripts/GMT_App_O_3}
+
+The angle of the label is evaluated from the contour line geometry, and the final result
+is shown in Figure~\ref{fig:GMT_App_O_3}.
+\GMTfig[H]{GMT_App_O_3}{Four labels are positioned on the points along the contours that
+are closest to the locations given in the file \filename{fix.d} in the \Opt{Gf} option.}
+To aid in understanding the algorithm we chose to specify ``debug'' mode which placed a
+small circle at each of the fixed points.
+
+\subsection{Label placement at simple line intersections}
+
+Often, it will suffice to place contours at the imaginary intersections between the
+contour lines and a well placed straight line segment.  The \Opt{Gl} or \Opt{GL}
+algorithms work well in those cases.
+
+\input{scripts/GMT_App_O_4}
+
+The obvious choice in this example is to specify a great circle between the high and
+the low, thus place all labels between these extrema.
+
+\GMTfig[H]{GMT_App_O_4}{Labels are placed at the intersections between contours and the
+great circle specified in the \Opt{GL} option.}
+The thin debug line in Figure~\ref{fig:GMT_App_O_4} shows the great circle and the
+intersections where labels are plotted.  Note that any number of such lines could be specified;
+here we are content with just one.
+
+\subsection{Label placement at general line intersections}
+
+If the number of intersecting straight line segments needed to pick the desired label
+positions becomes too large to conveniently be given on the command line, or we have
+another data set or lines whose intersections we wish to use, the general crossing
+algorithm makes more sense.
+
+\input{scripts/GMT_App_O_5}
+
+In this case, we have created three strands of lines whose intersections with the contours
+define the label placements, presented in Figure~\ref{fig:GMT_App_O_5}.
+
+\section{Examples of Label Attributes}
+
+We will now demonstrate some of the ways to play with the label attributes.  To do so we
+will use \GMTProg{psxy} on a great-circle line connecting the geoid extrema, along which
+we have sampled the ETOPO5 relief data set.  The file \filename{transect.d} thus contains
+{\it lon, lat, dist, geoid, relief} with distances in km.
+
+\subsection{Label placement by along-track distances}
+
+This example will change the orientation of labels from along-track to across-track, and
+surround the labels with an opaque textbox so that the label is more readable.  We choose
+the place the labels every 1000 km along the line and use that distance as the label:
+
+\input{scripts/GMT_App_O_6}
+
+The composite illustration in Figure~\ref{fig:GMT_App_O_6} shows the new effects.
 
