@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.16 2004-08-18 23:19:44 pwessel Exp $
+#	$Id: Makefile,v 1.17 2004-10-17 08:56:29 pwessel Exp $
 #
 #	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -69,6 +69,9 @@ all:		gmt suppl
 
 install-all:	install install-suppl install-data install-man install-www
 uninstall-all:	uninstall uninstall-suppl uninstall-data uninstall-man uninstall-www
+
+update:
+		bin/gmtpatch.sh 4
 
 gmt:		gmtmacros
 		cd src; \

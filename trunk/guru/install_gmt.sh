@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.48 2004-10-12 04:07:44 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.49 2004-10-17 08:56:16 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	25-SEPT-2004
+#	16-OCT-2004
 #--------------------------------------------------------------------------------
 #	FUNCTIONS
 #--------------------------------------------------------------------------------
@@ -1021,12 +1021,7 @@ if [ x"$netcdf_path" = x ]; then	# Not explicitly set, must assign it
                 	echo "install_gmt: No path for netcdf provided - default is /usr/local/netcdf" >&2
      			netcdf_path="/usr/local/netcdf"
 		fi
-                NETCDFHOME=$netcdf_path
-                export NETCDFHOME
         fi
-else
-        NETCDFHOME=$netcdf_path
-        export NETCDFHOME
 fi
 
 #--------------------------------------------------------------------------------
@@ -1225,8 +1220,9 @@ else
 fi
 
 if [ ! x"$MATDIR" = x ]; then	# MATDIR is set
-	MATLAB=$MATDIR
-	export MATLAB
+	enable_matlab=--enable_matlab=$MATDIR
+else
+	enable_matlab=
 fi
 
 #--------------------------------------------------------------------------------
@@ -1253,7 +1249,8 @@ if [ -f src/makegmt.macros ]; then
 fi
 	
 ./configure --prefix=$GMT_def --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
-  $enable_eps $disable_flock $enable_shared $enable_triangle --mandir=$GMT_man --enable-mansect=$GMT_mansect --enable-www=$GMT_web --datadir=$GMT_share
+  --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle \
+  --mandir=$GMT_man --enable-mansect=$GMT_mansect --enable-www=$GMT_web --datadir=$GMT_share --enable-update=$ftp_ip
 
 if [ -f .gmtconfigure ]; then
 	cat .gmtconfigure
