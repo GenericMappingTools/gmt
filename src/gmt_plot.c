@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.77 2002-11-10 03:13:43 lloyd Exp $
+ *	$Id: gmt_plot.c,v 1.78 2003-02-05 17:09:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -960,6 +960,7 @@ int GMT_log_array (double min, double max, double delta, double **array)
 			i = 0;
 		}
 	}
+	while (n && val[n] > end_val) n--;	/* In case of over-run */
 	n++;
 	val = (double *) GMT_memory ((void *)val, (size_t)n, sizeof (double), "GMT_log_array");
 
