@@ -1,4 +1,4 @@
-#----------------	$Id: GNUmakefile,v 1.3 2001-01-03 23:39:55 pwessel Exp $	--------------------
+#----------------	$Id: GNUmakefile,v 1.4 2001-03-02 05:40:57 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 3.3.7
 #			GNU make compatible
@@ -157,6 +157,7 @@ install:	all
 		for i in $(PROGS); do \
 			$(INSTALL) $$i$(EXE) $(bindir); \
 		done
+		$(INSTALL) GMT $(bindir)
 		if [ ! -d $(libdir) ]; then \
 			mkdir -p $(libdir); \
 		fi
@@ -181,6 +182,7 @@ uninstall:
 		for i in $(PROGS); do \
 			\rm -f $(bindir)/$$i$(EXE); \
 		done
+		\rm -f $(bindir)/GMT
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			\rm -f $(libdir)/libgmt.a $(libdir)/libpsl.a; \
 			if [ -f libpsl.$(SL) ]; then \

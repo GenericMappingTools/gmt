@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.1 2001-03-01 22:08:26 pwessel Exp $
+#	$Id: Makefile,v 1.2 2001-03-02 05:40:57 pwessel Exp $
 #
 #	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -12,7 +12,7 @@
 #	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #	GNU General Public License for more details.
 #
-#	Contact info: www.soest.hawaii.edu/gmt
+#	Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 #		Makefile for GMT Version 3.4
 #		GNU, Sys V, and BSD Compatible
@@ -50,7 +50,7 @@
 #	Authors:	Paul Wessel, SOEST, U. of Hawaii
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
 #
-#	Date:		01-JUL-2000
+#	Date:		01-MAR-2001
 #-------------------------------------------------------------------------------
 #	Get Default Macros
 #-------------------------------------------------------------------------------
@@ -210,6 +210,18 @@ uninstall-www:
 			echo "Install www directory the same as distribution www directory - nothing deleted"; \
 		fi
 
+install-wrapper:
+		if [ ! $(rootdir)/bin = $(wrapbindir) ]; then \
+			$(INSTALL) src/GMT $(wrapbindir); \
+		else \
+			echo "Install wrapper bin directory the same as distribution bin directory - nothing installed"; \
+		fi
+		if [ ! $(rootdir)/man = $(wrapmandir) ]; then \
+			\cp man/manl/GMT.l $(wrapmandir)/man$(mansection); \
+		else \
+			echo "Install wrapper man directory the same as distribution man directory - nothing installed"; \
+		fi
+		
 run-examples:
 		if [ -d examples ]; then \
 			cd examples; \
