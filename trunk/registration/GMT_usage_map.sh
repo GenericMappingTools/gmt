@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.21 2002-10-01 04:30:46 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.22 2003-09-23 18:21:37 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -46,7 +46,7 @@ help	Give a brief help message
 EOF
 	exit
 fi
-GS_LIB=/usr/share/ghostscript/7.00/lib
+GS_LIB=/usr/share/ghostscript/7.05/lib
 GMTHOME=/home/aa/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT
 PATH=$GMTHOME/bin:$PATH
 export PATH
@@ -129,7 +129,7 @@ EOF
 	grep -v '^#' GMT_old_unique_sites.d | psxy -R -JM -O -K -Sc0.02 -G255/255/0 >> gmt_usage.ps
 	date +%x | awk '{print 0.1, 0.1, 10, 0, 0, "LB", $1}' | pstext -R0/5/0/5 -Jx1i -O -W255/255/255o >> gmt_usage.ps
 	echo "quit" >> gmt_usage.ps
-	/usr/X11R6/bin/convert -density 100x100 -crop 0x0 gmt_usage.ps gmt_usage.jpg
+	convert -density 100x100 -crop 0x0 gmt_usage.ps gmt_usage.jpg
 	gmtset DOTS_PR_INCH 300 PAPER_MEDIA Letter
 	rm -f gmt_usage.ps
 	install -m 644 gmt_usage.jpg /home/gmt/gmt/www/gmt/images
