@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.20 2004-09-14 21:59:35 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.21 2004-09-15 00:40:14 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -83,6 +83,7 @@ region boundary coordinates (\Opt{I}).
 geospatial analysis ({\bf LDIST,  PDIST, INSIDE}) and for calculating azimuths ({\bf CAS, SAZ}).  We have
 also added some general functions ({\bf SINC, LOG2, LRAND}) and a few grid operations ({\bf FLIPLR, FLIPUD, ROTX, ROTY, NEQ,
 INRANGE}).  We may now create multiple output grids from a single command.
+\item \GMTprog{grdproject}: Option to supply false easting/northing or other offsets from the origin(\Opt{C}).
 \item \GMTprog{grdreformat}: Option to suppress header in raw output (\Opt{N}).
 \item \GMTprog{grdsample}:	Option to push the bilinear interpolation closer to nodes that are NaN (\Opt{Q}).
 \item \GMTprog{grdtrack}:	Options to retrieve nearest node value (\Opt{N}, no interpolation) and to push
@@ -92,7 +93,7 @@ and blue component grids (\Opt{G}).  Also,  drapegrids can have higher resolutio
 \item \GMTprog{makecpt}:	New options \Opt{Q} for logarithmic scales and \Opt{N} to suppress output
 of B, F, N colors.
 \item \GMTprog{mapproject}:	New options for datum conversions (\Opt{T}, \Opt{E}, and \Opt{Q}), azimuth and
-back-azimuth (\Opt{A}), distance to point (\Opt{G}) calculations, and to calculate distances to a line (\Opt{L}).
+back-azimuth (\Opt{A}), distance to point (\Opt{G}) and line  (\Opt{L})calculations, and optional false easting/northing (\Opt{C}).
 \item \GMTprog{minmax}:		Added \Opt{T}{\it dz} option to produce \Opt{T} string for \GMTprog{makecpt},
 \Opt{E} for returning extreme records, and the \Opt{I} option was extended to handle any number of columns when \Opt{C} is used.
 \item \GMTprog{psbasemap}:	Extended \Opt{L} to allow alternate label and justification, and added \Opt{T}
