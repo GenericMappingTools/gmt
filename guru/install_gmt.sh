@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.45 2004-08-18 23:19:44 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.46 2004-09-28 20:32:19 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	22-JUL-2004
+#	25-SEPT-2004
 #--------------------------------------------------------------------------------
 #	FUNCTIONS
 #--------------------------------------------------------------------------------
@@ -72,9 +72,9 @@ cat << EOF > gmt_install.ftp_site
 2. NOAA, Lab for Satellite Altimetry, Silver Spring, Maryland, USA
 3. IAG-USP, Dept of Geophysics, U. of Sao Paulo, BRAZIL
 4. Inst for Geologi, U of Oslo, NORWAY
-5. ISV, Hokkaido U, Sapporo, JAPAN
-6. Charles Sturt U, Albury, AUSTRALIA
-7. Goodie Domain Service, Vienna U of Techology, AUSTRIA
+5. Goodie Domain Service, Vienna U of Techology, AUSTRIA
+6. ISV, Hokkaido U, Sapporo, JAPAN
+7. Charles Sturt U, Albury, AUSTRALIA
 EOF
 # Order (1-12) is 1:progs, 2:share, 3:high, 4:full, 5:suppl, 6:scripts
 #		  7:ps, 8:pdf, 9:man, 10:web, 11:tut, 12:triangle
@@ -117,8 +117,8 @@ we will run the installation (unless you chose
 
 Choose among these GMT versions:
 
-1. GMT 3.4.4 [Default]
-2. GMT 4.0beta
+1. GMT 4.0 [Default]
+2. GMT 3.4.5
 
 EOF
 answer=`get_def_answer "Enter GMT version to install (1-2)" "1"`
@@ -127,9 +127,9 @@ while [ ! $answer = "1" ] && [ ! $answer = "2" ]; do
 	answer=`get_def_answer "Enter GMT version to install (1-2)" "1"`
 done
 if [ $answer = "1" ]; then
-	VERSION=3.4.4
+	VERSION=4.0
 elif [ $answer = "2" ]; then
-	VERSION=4.0b
+	VERSION=3.4.5
 fi
 echo "You chose to install verion $VERSION" >&2
 
@@ -220,7 +220,7 @@ if [ $answer = "n" ]; then
 	fi
 	netcdf_install=y
 else
-	def=${NETCDFHOME:-/usr/local/netcdf-3.5.0}
+	def=${NETCDFHOME:-/usr/local/netcdf-3.5.1}
 	netcdf_path=`get_def_answer "Enter directory with netcdf lib and include" "$def"`
 	netcdf_ftp=n
 	netcdf_install=n
@@ -813,9 +813,9 @@ gmt.soest.hawaii.edu
 falcon.grdl.noaa.gov
 ftp.iag.usp.br
 ftp.geologi.uio.no
+gd.tuwien.ac.at
 ftp.eos.hokudai.ac.jp
 life.csu.edu.au
-gd.tuwien.ac.at
 EOF
 
 cat << EOF > gmt_install.ftp_dns
@@ -823,8 +823,8 @@ cat << EOF > gmt_install.ftp_dns
 1
 0
 0
-1
 0
+1
 0
 EOF
 #--------------------------------------------------------------------------------
