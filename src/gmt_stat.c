@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.16 2004-01-28 00:55:04 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.17 2004-03-05 18:11:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -99,7 +99,6 @@ double GMT_k0 (double x);
 double GMT_k1 (double x);
 double GMT_kn (int n, double x);
 double GMT_dilog (double x);
-double GMT_mag3v (double *a);		/*	Returns magnitude of 3-D vector	*/
 double GMT_ln_gamma (double xx);		/*	Computes natural log of the gamma function	*/
 double GMT_erfinv (double y);
 double GMT_gammq (double a, double x);
