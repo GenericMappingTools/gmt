@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.24 2001-12-24 18:20:29 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.25 2002-01-04 21:13:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -28,6 +28,8 @@
 /*--------------------------------------------------------------------*/
 /* Load parameters from include files */
 /*--------------------------------------------------------------------*/
+
+#include "gmt_keycases.h"		/* Get all the default case values */
 
 struct GMTDEFAULTS gmtdefs = {		/* Initial default values */
 #include "gmt_defaults.h"

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.31 2002-01-04 20:29:48 pwessel Exp $
+ *	$Id: gmt.h,v 1.32 2002-01-04 21:13:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -208,7 +208,7 @@ typedef double GMT_dtime;	/* GMT internal time representation */
  *--------------------------------------------------------------------*/
 
 #define N_UNIQUE 59		/* Number of unique options */
-#define N_KEYS 82		/* Number of gmt defaults */
+#define N_KEYS 88		/* Number of gmt defaults */
 #define N_FONTS 39		/* Number of fonts in the PS_font_names.h include file */
 #define GMT_N_MEDIA 29		/* Number of standard paper formats in the GMT_media_names.h include file */
 #define HASH_SIZE 82		/* Used in get_gmtdefaults, should be ~> N_KEYS */
@@ -228,14 +228,14 @@ struct GMT_PEN {	/* Holds pen attributes */
 };
 
 struct GMTDEFAULTS {
-	double anot_min_angle;		/* If angle between map boundary and annotation is less, no anot is drawn [20] */
-	double anot_min_spacing;	/* If an annotation is closer that this to an older annotation, the anot is skipped [0.0] */
-	int anot_font;			/* Font for annotations [Helvetica] */
-	int anot_font_size;		/* Font size for annotations in points [14] */
-	int anot_font2;			/* Font for upper annotations on time axis  [Helvetica] */
-	int anot_font2_size;		/* Font size for upper annotations on time axis in points [16] */
-	double anot_offset;		/* Distance between annotation and tickmarks [0.075] */
-	double anot_offset2;		/* Distance between upper and lower annotations [0.075] */
+	double annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */
+	double annot_min_spacing;	/* If an annotation is closer that this to an older annotation, the annotation is skipped [0.0] */
+	int annot_font;			/* Font for annotations [Helvetica] */
+	int annot_font_size;		/* Font size for annotations in points [14] */
+	int annot_font2;		/* Font for upper annotations on time axis  [Helvetica] */
+	int annot_font2_size;		/* Font size for upper annotations on time axis in points [16] */
+	double annot_offset;		/* Distance between annotation and tickmarks [0.075] */
+	double annot_offset2;		/* Distance between upper and lower annotations [0.075] */
 	char basemap_axes[5];		/* Which axes to draw and annotate ["WESN"]  */
 	int basemap_frame_rgb[3];	/* Frame color rgb [(0,0,0) = black] */
 	int basemap_type;		/* Fancy (0) or plain (1) [0] */
@@ -279,7 +279,7 @@ struct GMTDEFAULTS {
 	int n_lat_nodes;		/* No of points to use for drawing a latitudinal line [50] */
 	int n_lon_nodes;		/* No of points to use for drawing a longitudinal line [50] */
 	double dlon, dlat;		/* Corresponding increment in lon/lat */
-	int oblique_anotation;		/* Controls annotations and tick angles etc. [0] */
+	int oblique_annotation;		/* Controls annotations and tick angles etc. [0] */
 	BOOLEAN overlay;		/* Make plot in overlay mode [FALSE] */
 	int page_rgb[3];		/* Color of the page [255/255/255 white] */
 	int page_orientation;		/* Orientation of page [0 = Landscape, 1 = Portrait] */
@@ -323,7 +323,7 @@ struct GMTDEFAULTS {
 	int time_week_start;		/* Which day (Sun = 0, Sat = 7) is start of week */
 	char time_language[32];		/* Language file for time support */
 	int Y2K_offset_year;		/* Cutoff for making 4-digit years from 2-digit years (1900 vs 2000) */
-	char field_delimeter[8];	/* Separator between output ascii data columns [tab] */
+	char field_delimiter[8];	/* Separator between output ascii data columns [tab] */
 	enum gmt_symbol { gmt_none = -1, gmt_ring, gmt_degree, gmt_colon, gmt_squote, gmt_dquote, gmt_lastsym } degree_symbol;
 	struct gmt_encoding
 	{

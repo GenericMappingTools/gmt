@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.34 2001-12-24 19:14:37 pwessel Exp $
+ *	$Id: pslib.c,v 1.35 2002-01-04 21:13:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -191,16 +191,16 @@ void ps_arc_ (double *x, double *y, double *radius, double *az1, double *az2, in
 	 ps_arc (*x, *y, *radius, *az1, *az2, *status);
 }
 	
-void ps_axis (double x, double y, double length, double val0, double val1, double anotation_int, char *label, int anotpointsize, int side)
+void ps_axis (double x, double y, double length, double val0, double val1, double annotation_int, char *label, int anotpointsize, int side)
 {
 	int anot_justify, label_justify, i, j, ndig = 0;
 	int left = FALSE;
 	double angle, dy, scl, val, anot_off, label_off, xx, sign;
 	char text[128], format[32];
 	
-	if (anotation_int < 0.0) left = TRUE;
-	anotation_int = fabs (anotation_int);
-	sprintf (text, "%lg\0", anotation_int);
+	if (annotation_int < 0.0) left = TRUE;
+	annotation_int = fabs (annotation_int);
+	sprintf (text, "%lg\0", annotation_int);
 	for (i = 0; text[i] && text[i] != '.'; i++);
 	if (text[i]) {	/* Found a decimal point */
 		for (j = i + 1; text[j]; j++);
@@ -238,16 +238,16 @@ void ps_axis (double x, double y, double length, double val0, double val1, doubl
 		ps_plot (xx, dy, 2);
 		sprintf( text, format, val);
 		ps_text (xx, anot_off, anotpointsize, text, 0.0, anot_justify, 0);
-		val = val0 + i * anotation_int;
+		val = val0 + i * annotation_int;
 	}
 	ps_text (0.5*length, label_off, (int) (anotpointsize*1.5), label, 0.0, label_justify, 0);
 	fprintf (ps.fp, "U\n\n");
 }
 
 /* fortran interface */
-void ps_axis_ (double *x, double *y, double *length, double *val0, double *val1, double *anotation_int, char *label, int *anotpointsize, int *side, int nlen)
+void ps_axis_ (double *x, double *y, double *length, double *val0, double *val1, double *annotation_int, char *label, int *anotpointsize, int *side, int nlen)
 {
-	ps_axis (*x, *y, *length, *val0, *val1, *anotation_int, label, *anotpointsize, *side);
+	ps_axis (*x, *y, *length, *val0, *val1, *annotation_int, label, *anotpointsize, *side);
 }
 
 void ps_circle (double x, double y, double size, int rgb[], int outline)

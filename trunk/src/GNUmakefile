@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.18 2002-01-04 20:29:48 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.19 2002-01-04 21:13:03 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -73,6 +73,7 @@ GMT_H	= gmt.h \
 	  gmt_symbol.h \
 	  gmt_unique.h \
 	  gmt_keywords.h \
+	  gmt_keycases.h \
 	  gmt_io.h \
 	  gmt_notposix.h \
 	  gmt_notunix.h \
@@ -160,9 +161,11 @@ grdmath.c:
 
 gmt_keywords.h:
 		grep -v '^#' gmt_keywords.d | awk '{printf "\"%s\",\n", $$1}' > gmt_keywords.h
+		grep '#define N_KEYS ' gmt.h
+		echo -n "Make sure N_KEYS in gmt.h is set to "; grep -v '^#' gmt_keywords.d | wc -l
 
 gmt_keycases.h:
-		grep -v '^#' gmt_keywords.d | awk '{printf "#define GMTCASE_%s\t%d\n", $$1, $$2}' > gmt_keycases.h
+		grep -v '^#' gmt_keywords.d | awk '{printf "#define GMTCASE_%s\t%d\n", $$1, NR-1}' > gmt_keycases.h
 		
 install:	all
 		if [ ! -d $(bindir) ]; then \

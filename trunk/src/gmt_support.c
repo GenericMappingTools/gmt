@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.21 2001-12-24 18:20:29 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.22 2002-01-04 21:13:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1787,7 +1787,7 @@ struct EPS *GMT_epsinfo (char *program)
 	frame_space = irint (GMT_u2u[GMT_INCH][GMT_PT] * gmtdefs.frame_width);
 	if (frame_info.header[0]) {	/* Make space for header text */
 		move_up = (MAPPING || frame_info.side[2] == 2);
-		dy = ((move_up) ? (gmtdefs.anot_font_size + gmtdefs.label_font_size) * GMT_u2u[GMT_PT][GMT_INCH] : 0.0) + 2.5 * gmtdefs.anot_offset;
+		dy = ((move_up) ? (gmtdefs.annot_font_size + gmtdefs.label_font_size) * GMT_u2u[GMT_PT][GMT_INCH] : 0.0) + 2.5 * gmtdefs.annot_offset;
 		new->y1 += tick_space + irint (GMT_u2u[GMT_INCH][GMT_PT] * dy);
 	}
 	
@@ -1853,7 +1853,7 @@ struct EPS *GMT_epsinfo (char *program)
 	
 	if (frame_info.axis[0].label[0] || frame_info.axis[1].label[0] || frame_info.axis[2].label[0]) fno[id++] = gmtdefs.label_font;
 	
-	fno[id++] = gmtdefs.anot_font;
+	fno[id++] = gmtdefs.annot_font;
 	
 	qsort ((void *)fno, (size_t)id, sizeof (int), GMT_comp_int_asc);
 	
