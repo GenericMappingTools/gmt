@@ -29,8 +29,9 @@ write xyz-triplets to stdout if no output gridfile name is given
 An integer matching one of the files listed in the grdraster.info file.
 .sp
 #include "explain_-R.txt"
-If \fBr\fP is appended, you must also specify a map projection to define the shape of
-your region.
+If \fBr\fP is appended, you may also specify a map projection to define the shape of
+your region.  The output region will be rounded off to the nearest whole grid-step
+in both dimensions.
 .SH OPTIONS
 .TP
 .B \-G
