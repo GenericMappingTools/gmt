@@ -66,7 +66,8 @@ src/mgd77/mgd77.c
 src/mgd77/mgd77defaults.h
 src/mgd77/mgd77.h
 src/mgd77/mgd77list.c
-src/mgd77/mgd77list.txt
+src/mgd77/mgd77list.man
+src/mgd77/mgd77list.html
 share/mgd77/mgd77_paths.txt
 src/mgg/README.mgg
 src/mgg/binlegs.c
