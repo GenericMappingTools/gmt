@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.18 2004-09-26 07:28:46 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.19 2004-09-29 21:23:39 pwessel Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.18 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.19 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -142,12 +142,13 @@ You can leave it blank if you have defined $NETCDFHOME to be the directory where
 
 <INPUT TYPE="radio" VALUE="1" NAME="radio_site" CHECKED="true"> Pacific (SOEST, University of Hawaii [GMT Home], Honolulu, Hawaii, USA)<BR>
 <INPUT TYPE="radio" VALUE="2" NAME="radio_site"> North America (NOAA, Lab for Satellite Altimetry, Silver Springs, Maryland, USA<BR>
-<INPUT TYPE="radio" VALUE="3" NAME="radio_site"> South America (IAG-USP, Dept of Geophysics, University of Sao Paulo, Brazil)<BR>
-<INPUT TYPE="radio" VALUE="4" NAME="radio_site"> Europe (Inst for Geologi, University of Oslo, Norway)<BR>
-<INPUT TYPE="radio" VALUE="5" NAME="radio_site"> Europe (Goodie Domain Service, Vienna U of Techology, Austria)<BR>
-<INPUT TYPE="radio" VALUE="6" NAME="radio_site"> Asia (ISV, Hokkaido University, Sapporo, Japan)<BR>
-<INPUT TYPE="radio" VALUE="7" NAME="radio_site"> Australia (Charles Sturt University, Aubury, Australia)<BR>
-<INPUT TYPE="radio" VALUE="8" NAME="radio_site"> No FTP, archives already obtained<BR>
+<INPUT TYPE="radio" VALUE="3" NAME="radio_site"> North America (Incorporated Research Institutions for Seismology, Seattle, Washington, USA)<BR>
+<INPUT TYPE="radio" VALUE="4" NAME="radio_site"> South America (IAG-USP, Dept of Geophysics, University of Sao Paulo, Brazil)<BR>
+<INPUT TYPE="radio" VALUE="5" NAME="radio_site"> Europe (Inst for Geologi, University of Oslo, Norway)<BR>
+<INPUT TYPE="radio" VALUE="6" NAME="radio_site"> Europe (Goodie Domain Service, Vienna U of Techology, Austria)<BR>
+<INPUT TYPE="radio" VALUE="7" NAME="radio_site"> Asia (ISV, Hokkaido University, Sapporo, Japan)<BR>
+<INPUT TYPE="radio" VALUE="8" NAME="radio_site"> Australia (Charles Sturt University, Aubury, Australia)<BR>
+<INPUT TYPE="radio" VALUE="9" NAME="radio_site"> No FTP, archives already obtained<BR>
 
 <P>
 <I>Note: Download times are shorter when you pick a site that is physically closer to you.  If you already

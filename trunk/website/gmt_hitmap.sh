@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: gmt_hitmap.sh,v 1.1 2004-09-24 23:00:31 pwessel Exp $
+#	$Id: gmt_hitmap.sh,v 1.2 2004-09-29 21:23:39 pwessel Exp $
 #
 # Make the GMT ftpsite hitmap PNG image and the hitmap that goes with it.
 # The files created are gmt_hitmap.png and gmt_hitmap.map
@@ -17,7 +17,7 @@ cat << EOF > mirrors.d
 -77:0	38:52	ftp://falcon.grdl.noaa.gov/pub/gmt	CT	SILVER SPRING - USA
 -46:40	-23:32	ftp://ftp.iag.usp.br/pub/gmt	CT	S\303O PAULO - BRAZIL
 16:22	48:12	ftp://gd.tuwien.ac.at	CT	VIENNA - AUSTRIA
--122:22	47:40	ftp://ftp.iris.edu	CB	SEATTLE - USA
+-122:22	47:40	ftp://ftp.iris.washington.edu	CB	SEATTLE - USA
 EOF
 echo "-157:59	21:55	ftp://gmt.soest.hawaii.edu/pub/gmt	CT	HONOLULU - USA" > master.d
 #-------------------------------------------------------------------------------------------------

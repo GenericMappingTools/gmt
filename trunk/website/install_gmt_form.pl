@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.11 2004-09-24 21:31:19 pwessel Exp $
+#       $Id: install_gmt_form.pl,v 1.12 2004-09-29 21:23:39 pwessel Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -101,7 +101,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.11 $,  on
+# Processed by install_gmt_form.pl $Revision: 1.12 $,  on
 #
 #	$now
 #
@@ -153,7 +153,7 @@ else {
 print FILE "#---------------------------------------------\n";
 print FILE "#	GMT FTP SECTION\n";
 print FILE "#---------------------------------------------\n";
-if ($site eq "7") {
+if ($site eq "9") {
 	print FILE "GMT_ftp=n\n";
 }
 else {
