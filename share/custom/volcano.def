@@ -1,4 +1,4 @@
-#	@(#)volcano.def	1.1  12/28/98
+#	$Id: volcano.def,v 1.4 2003-03-23 21:19:41 pwessel Exp $
 #
 #	Definition file for a volcano symbol
 #	To be used with psxy as -Skvolcano/<size>.
