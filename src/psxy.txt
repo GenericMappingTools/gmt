@@ -282,7 +282,7 @@ to your custom symbol, add any number of the following plot code records:
 .br
 	invtriangle: \fIx	y	size\fP	\fBi\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
-	letter: \fIx	y	size	string\fP	\fBi\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
+	letter: \fIx	y	size	string\fP	\fBl\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
 	octagon: \fIx	y	size\fP	\fBg\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
