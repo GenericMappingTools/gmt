@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.h,v 1.1 2001-08-14 15:54:49 pwessel Exp $
+ *	$Id: gmt_calclock.h,v 1.2 2001-08-17 00:31:36 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -52,41 +52,24 @@ struct GMT_gcal {	/* (proleptic) Gregorian calendar  */
 
 /* Functions whose source is in gmt_calclock.c:  */
 
-GMT_dtime GMT_rdc2dt (GMT_cal_rd rd, double secs);
-
-void    GMT_dt2rdc (GMT_dtime t, GMT_cal_rd *rd, double *s);
- 
-int     GMT_atoft (char *s, double *t);
-
-int     GMT_read_clock (char *s, double *t);
-
-int     GMT_read_cal (char *s, GMT_cal_rd *rd);
-
-double	GMT_cal_dmod (double x, double y);
-
-int	GMT_cal_imod (int x, int y);
-
-GMT_cal_rd GMT_kday_on_or_before (GMT_cal_rd date, int kday);
-
-GMT_cal_rd GMT_kday_on_or_after (GMT_cal_rd date, int kday);
-
-GMT_cal_rd GMT_kday_after (GMT_cal_rd date, int kday);
-
-GMT_cal_rd GMT_kday_before (GMT_cal_rd date, int kday);
-
-GMT_cal_rd GMT_kday_nearest (GMT_cal_rd date, int kday);
-
-GMT_cal_rd GMT_nth_kday (int n, int kday, GMT_cal_rd date);
-
-BOOLEAN	GMT_is_gleap (int gyear);
-
-
-double GMT_cal_mod (double x, double y);
-
-GMT_cal_rd GMT_rd_from_gymd (int gy, int gm, int gd);
-
-int GMT_gyear_from_rd (GMT_cal_rd date);
-
-GMT_cal_rd GMT_rd_from_iywd (int iy, int iw, int id);
-
-void GMT_gcal_from_rd ( GMT_cal_rd date, struct GMT_gcal *gcal);
+EXTERN_MSC GMT_dtime GMT_rdc2dt (GMT_cal_rd rd, double secs);
+EXTERN_MSC void    GMT_dt2rdc (GMT_dtime t, GMT_cal_rd *rd, double *s);
+EXTERN_MSC int     GMT_atoft (char *s, double *t);
+EXTERN_MSC int     GMT_read_clock (char *s, double *t);
+EXTERN_MSC int     GMT_read_cal (char *s, GMT_cal_rd *rd);
+EXTERN_MSC double	GMT_cal_dmod (double x, double y);
+EXTERN_MSC int	GMT_cal_imod (int x, int y);
+EXTERN_MSC GMT_cal_rd GMT_kday_on_or_before (GMT_cal_rd date, int kday);
+EXTERN_MSC GMT_cal_rd GMT_kday_on_or_after (GMT_cal_rd date, int kday);
+EXTERN_MSC GMT_cal_rd GMT_kday_after (GMT_cal_rd date, int kday);
+EXTERN_MSC GMT_cal_rd GMT_kday_before (GMT_cal_rd date, int kday);
+EXTERN_MSC GMT_cal_rd GMT_kday_nearest (GMT_cal_rd date, int kday);
+EXTERN_MSC GMT_cal_rd GMT_nth_kday (int n, int kday, GMT_cal_rd date);
+EXTERN_MSC BOOLEAN	GMT_is_gleap (int gyear);
+EXTERN_MSC double GMT_cal_mod (double x, double y);
+EXTERN_MSC GMT_cal_rd GMT_rd_from_gymd (int gy, int gm, int gd);
+EXTERN_MSC int GMT_gyear_from_rd (GMT_cal_rd date);
+EXTERN_MSC GMT_cal_rd GMT_rd_from_iywd (int iy, int iw, int id);
+EXTERN_MSC void GMT_gcal_from_rd ( GMT_cal_rd date, struct GMT_gcal *gcal);
+EXTERN_MSC GMT_dtime	GMT_dt_from_usert (double x);	/* Convert relative usertime to internal abs time */
+EXTERN_MSC int	GMT_y2_to_y4_yearfix (int y2);	/* Convert a 2-digit year to a 4-digit year */

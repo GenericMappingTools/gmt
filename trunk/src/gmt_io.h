@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.5 2001-08-16 23:30:53 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.6 2001-08-17 00:31:36 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -44,7 +44,8 @@
 #define GMT_IS_GEO		6
 #define GMT_IS_RELTIME		8
 #define GMT_IS_ABSTIME		16
-#define GMT_IS_TIME		24
+#define GMT_IS_TIME		24	/* 56 ? */
+#define GMT_IS_ARGTIME		32
 
 EXTERN_MSC FILE *GMT_fopen (const char* filename, const char* mode);	/* fopen wrapper */
 EXTERN_MSC int GMT_fclose (FILE *stream);				/* fclose wrapper */
@@ -55,6 +56,8 @@ EXTERN_MSC void GMT_multisegment (char *text);				/* Decode -M option */
 EXTERN_MSC void GMT_write_segmentheader (FILE *fp, int n);		/* Write multisegment header back out */
 EXTERN_MSC int GMT_scanf_old (char *p, double *val);			/* Convert text (incl dd:mm:ss) to double number */
 EXTERN_MSC char *GMT_fgets (char *record, int maxlength, FILE *fp);	/* Does a fscanf from inside gmt_io to keep DLLs working */
+EXTERN_MSC int GMT_scanf (char *p, int expectation, double *val);	/* Convert strings to double, handling special formats */
+EXTERN_MSC int	GMT_scanf_argtime (char *s, double *val);		/* Convert an argument token to a time  */
 
 struct GMT_CLOCK_IO {
 	int order[3];			/* The relative order of hour, mn, sec in input clock string */
