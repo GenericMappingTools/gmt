@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_O.tex,v 1.4 2004-06-13 08:11:21 pwessel Exp $
+%	$Id: GMT_Appendix_O.tex,v 1.5 2004-06-13 20:51:22 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -35,7 +35,7 @@ upper and lower case; they share the same algorithm but differ in some other way
 In what follows, the phrase ``line segment'' is taken to mean either a contour or a line
 to be labelled.
 \begin{description}
-\item [d:] Full syntax is [{\bf d}]{\it dist}[{\bf c$|$i$|$m$|$p}][{\it frac}].
+\item [d:] Full syntax is [{\bf d}]{\it dist}[{\bf c$|$i$|$m$|$p}][/{\it frac}].
 Here, the code {\bf d} is optional to ensure backwards compatibility with \GMT\ 3.
 Place labels according to the distance measured along the projected line on the map.  Append the
 unit you want to measure distances in [Default is taken from {\bf MEASURE\_UNIT}].
@@ -68,11 +68,11 @@ upper left to the lower right map corner, while {\bf Z-}/135W/15S is a line from
 (135\DS W, 15\DS S).
 \item [L:] Same as {\bf l} except we will treat the lines given as great circle start/stop coordinates and fill in
 the points between before looking for intersections.
-\item [n:] Full syntax is {\bf n}{\it number}[{\it minlength}[{\bf c$|$i$|$m$|$p}]].  Place
+\item [n:] Full syntax is {\bf n}{\it number}[/{\it minlength}[{\bf c$|$i$|$m$|$p}]].  Place
 {\it number} of labels along each line regardless of total line length.  The line is divided into {\it number}
 segments and the labels are placed at the centers of these segments.  Optionally, you may give a {\it minlength}
 distance to exclude contour segments of shorted length.
-\item [N:] Full syntax is {\bf N}{\it number}[{\it minlength}[{\bf c$|$i$|$m$|$p}]].  Similar to
+\item [N:] Full syntax is {\bf N}{\it number}[/{\it minlength}[{\bf c$|$i$|$m$|$p}]].  Similar to
 code {\bf n} but here labels are placed at the ends of each segment (for {\it number} $ /geq 2$).  A special
 case arises for {\it number} $= 1$ when a single label will be placed according to the sign of {\it number}:
 $-1$ places one label justified at the start of the line, while $+1$ places one label justified at the end of the line.
@@ -120,7 +120,7 @@ manifested if the box is filled or outlined, neither of which is implied by this
 \item [+p:] Selects the drawing of the label box outline; append your preferred {\it pen} unless you
 want the default \GMT\ pen [0.25p,black].
 \item [+r:] Do not place labels at points along the line whose local radius of curvature falls below
-the given threshold value [Default is 0]..
+the given threshold value [Default is 0].
 \item [+s:] Change the fontsize of the labels, which by default is 9 points.
 \item [+u:] Append the chosen {\it unit} to the label.  Normally a space will separate the label
 and the unit.  If you want to close this gap, append a {\it unit} that begins with a hyphen (--).
@@ -233,6 +233,9 @@ algorithm makes more sense.
 
 \input{scripts/GMT_App_O_5}
 
+\GMTfig[H]{GMT_App_O_5}{Labels are placed at the intersections between contours and the
+multi-segment lines specified in the \Opt{GX} option.}
+
 In this case, we have created three strands of lines whose intersections with the contours
 define the label placements, presented in Figure~\ref{fig:GMT_App_O_5}.
 
@@ -252,6 +255,8 @@ labels are placed normal to the line:
 
 \input{scripts/GMT_App_O_6}
 
+\GMTfig[H]{GMT_App_O_6}{Labels attributes are controlled with the arguments to the \Opt{Sq} option.}
+
 The composite illustration in Figure~\ref{fig:GMT_App_O_6} shows the new effects.
 A small variation on this theme is to place the labels parallel to the line, use
 spherical degrees for placement, append the degree symbol as a unit for the
@@ -259,7 +264,9 @@ labels, choose a rounded rectangular textbox, and inverse-video the label:
 
 \input{scripts/GMT_App_O_7}
 
-The ouput is presented as Figure~\ref{fig:GMT_App_O_7}.
+The output is presented as Figure~\ref{fig:GMT_App_O_7}.
+
+\GMTfig[H]{GMT_App_O_7}{Another label attribute example.}
 
 \section{Putting it all together}
 
@@ -271,3 +278,7 @@ The final script is
 \input{scripts/GMT_App_O_8}
 
 with the complete illustration presented as Figure~\ref{fig:GMT_App_O_8}.
+\GMTfig[H]{GMT_App_O_8}{Tsunami travel times from the Canary Islands to places
+in the Atlantic, in particular New York.  Should a catastrophic landslide occur
+it is possible that New York will experience a large tsunami about 8 hours after
+the event.}

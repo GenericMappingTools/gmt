@@ -18,11 +18,14 @@ cat << EOF > ttt.cpt
 6	lightgreen	100	lightgreen
 EOF
 grdimage ttt_atl.grd -Itopo5_int.grd -Cttt.cpt $R -JM6i -P -K > $PS.ps
-grdcontour ttt_atl.grd -R -J -O -K -C0.5 -A1+u"hour"+v+s8+f17 -S10 -GL80W/31N/17W/26N,17W/28N/17W/50N >> $PS.ps
+grdcontour ttt_atl.grd -R -J -O -K -C0.5 -A1+u"hour"+v+s8+f17 -GL80W/31N/17W/26N,17W/28N/17W/50N \
+	-S10 >> $PS.ps
 psxy -R -J -W7p,white great_NY_Canaries.d -O -K  >> $PS.ps
-pscoast -R -J -B20f5:."Tsunami Travel Times from the Canaries":WSne -N1/thick -O -K -Glightgray -Wfaint -A500 >> $PS.ps
+pscoast -R -J -B20f5:."Tsunami Travel Times from the Canaries":WSne -N1/thick -O -K -Glightgray \
+	-Wfaint -A500 >> $PS.ps
 gmtconvert great_NY_*.d -E | psxy -R -J -O -K -Sa0.15i -Gred -Wthin >> $PS.ps
-psxy -R -J -W1p great_NY_Canaries.d -O -K -Sqn1:+f6+s8+l"Distance Canaries to New York = $km km"+ap+v -W2p >> $PS.ps
+psxy -R -J -W1p great_NY_Canaries.d -O -K -W2p \
+	-Sqn1:+f6+s8+l"Distance Canaries to New York = $km km"+ap+v >> $PS.ps
 psxy -R -J great_NY_Paris.d -O -K -Sc0.08c -Gblack >> $PS.ps
 psxy -R -J -W0.5p great_NY_Paris.d -O -K -SqD1000k:+an+o+gblue+kwhite+LDk+s7+f1 >> $PS.ps
 cat << EOF | pstext -R -J -O -K -WwhiteOthin -Dj0.1i/0.1i >> $PS.ps
