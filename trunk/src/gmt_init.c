@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.138 2004-06-04 20:47:22 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.139 2004-06-05 02:05:54 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1248,7 +1248,8 @@ void GMT_backwards_compatibility () {
 		gmtdefs.annot_font_size[1] = 16.0 * gmtdefs.annot_font_size[0] / 14.0;
 		gmtdefs.label_font_size = 24.0 * gmtdefs.annot_font_size[0] / 14.0;
 		gmtdefs.header_font_size = 36.0 * gmtdefs.annot_font_size[0] / 14.0;
-		gmtdefs.annot_offset[0] = gmtdefs.tick_length = 0.075 * gmtdefs.annot_font_size[0] / 14.0;
+		gmtdefs.annot_offset[0] = 0.075 * gmtdefs.annot_font_size[0] / 14.0;
+		gmtdefs.tick_length = 0.075 * gmtdefs.annot_font_size[0] * copysign (1.0, gmtdefs.tick_length) / 14.0;
 		gmtdefs.annot_offset[1] = 0.075 * gmtdefs.annot_font_size[1] / 14.0;
 		gmtdefs.label_offset = 1.5 * fabs (gmtdefs.annot_offset[0]);
 		gmtdefs.header_offset = 2.5 * fabs (gmtdefs.annot_offset[0]);
