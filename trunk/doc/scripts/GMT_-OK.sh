@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_-OK.sh,v 1.1 2001-03-21 04:10:21 pwessel Exp $
+#	$Id: GMT_-OK.sh,v 1.2 2003-02-06 18:18:57 pwessel Exp $
 #
 
 pstext -R0/2.7/0/2 -Jx1 -P -K -N << EOF > GMT_-OK.ps
@@ -8,7 +8,7 @@ pstext -R0/2.7/0/2 -Jx1 -P -K -N << EOF > GMT_-OK.ps
 0.5	0.55	10	0	1	CM	BODY@-n@-
 0.5	0.1	10	0	1	CM	TRAILER
 1.15	1.8	9	0	0	LM	@%1%\261O@%% ommits the header.
-1.15	1.025	9	0	0	LM	2nd trough n-1'th overlays
+1.15	1.025	9	0	0	LM	2nd through n-1'th overlays
 1.15	0.875	9	0	0	LM	require both @%1%\261O@%% and @%1%\261K@%%.
 1.15	0.1	9	0	0	LM	@%1%\261K@%% ommits the trailer.
 EOF

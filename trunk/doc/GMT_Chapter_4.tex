@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.21 2003-01-14 02:38:03 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.22 2003-02-06 18:18:57 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2003.
@@ -353,10 +353,10 @@ The unit flag {\bf u} can take on one of 16 codes; these are listed in  Table~\r
 {\bf U}	&	ISO week & Format anotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
 {\bf u}	&	ISO week & Plot as 2-digit integer (1--53) \\ \hline
 {\bf r}	&	Gregorian week & 7-day stride from start of week ({\bf TIME\_WEEK\_START}) \\ \hline
-{\bf K}	&	ISO weekday & Format anotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
-{\bf k}	&	weekday & Plot name of weekday in selected language \\ \hline
-{\bf D}	&	day & Format anotation using {\bf PLOT\_DATE\_FORMAT} which \\
-	&		& also selects day of month (1--31) or day of year (1--366) \\ \hline
+{\bf K}	&	ISO weekday & Plot name of weekday in selected language \\ \hline
+{\bf k}	&	weekday & Plot number of day in the week (1-7)  {see \bf TIME\_WEEK\_START}\\ \hline
+{\bf D}	&	date & Format anotation using {\bf PLOT\_DATE\_FORMAT} \\
+{\bf d}	&	day & Plot day of month (1--31) or day of year (1--366) {see \bf PLOT\_DATE\_FORMAT} \\
 {\bf H}	&	hour &	 Format anotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
 {\bf h}	&	hour &	 Plot as 2-digit integer (0--24) \\ \hline
 {\bf M}	&	minute &	 Format anotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
