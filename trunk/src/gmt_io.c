@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.41 2002-01-22 01:00:41 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.42 2002-01-30 06:49:07 ben Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -312,9 +312,11 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 			GMT_io.n_bad_records++;
 			if (GMT_io.give_report && (GMT_io.n_bad_records == 1)) {	/* Report 1st occurance */
 				fprintf (stderr, "%s: Encountered first invalid record near/at line # %d\n", GMT_program, GMT_io.rec_no);
-				fprintf (stderr, "%s: Likely causes: (1) Invalid x and/or y values, i.e. NaNs or garbage in text strings.\n", GMT_program);
-				fprintf (stderr, "%s:                (2) Incorrect data type assumed if -J, -f are not set or set incorrectly.\n", GMT_program);
-				fprintf (stderr, "%s:                (3) The -: switch is implied but not set.\n", GMT_program);
+				fprintf (stderr, "%s: Likely causes:\n", GMT_program);
+				fprintf (stderr, "%s: (1) Invalid x and/or y values, i.e. NaNs or garbage in text strings.\n", GMT_program);
+				fprintf (stderr, "%s: (2) Incorrect data type assumed if -J, -f are not set or set incorrectly.\n", GMT_program);
+				fprintf (stderr, "%s: (3) The -: switch is implied but not set.\n", GMT_program);
+				fprintf (stderr, "%s: (4) Input file in multiple segment format but the -M switch is not set.\n", GMT_program);
 			}
 		}
 		else
