@@ -1,5 +1,5 @@
 #!/bin/csh
-#		$Id: newgmtguru,v 1.7 2001-03-08 20:42:41 pwessel Exp $
+#		$Id: newgmtguru,v 1.8 2001-03-21 01:27:16 pwessel Exp $
 #
 # newgmtguru is run to initiate a new guru site
 # and helps setting up the guru directory with
@@ -157,7 +157,7 @@ man pages to html and generate gif files.  You need to make sure you have:
 
 ghostscript (and utility scripts ps2epsi, ps2pdf)
 latex (and dvips)
-man2html
+man2html (v3 or higher, a Perl script by Earl Hood)
 latex2html (+ the pbm/ppm tools)
 autoconf and m4
 EOF
