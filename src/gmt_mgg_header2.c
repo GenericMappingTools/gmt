@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.3 2004-01-13 02:04:36 pwessel Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.4 2004-09-28 19:24:13 pwessel Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	This is the README file:
@@ -45,7 +45,7 @@ Test format by checking a grid:
 #define SEC_PER_DEG		(SEC_PER_MIN * MIN_PER_DEG)
 #define BYTE_SIZE
 
-static double dms2degrees(long deg, long min, long sec)
+static double dms2degrees(int deg, int min, int sec)
 {
     double  decDeg = (double)deg;
 
@@ -55,7 +55,7 @@ static double dms2degrees(long deg, long min, long sec)
     return decDeg;
 }
 
-static void degrees2dms(double degrees, long *deg, long *min, long *sec)
+static void degrees2dms(double degrees, int *deg, int *min, int *sec)
 {
 	/* Round off to the nearest half second */
 	if (degrees < 0) degrees -= (0.5 / SEC_PER_DEG);
@@ -79,20 +79,20 @@ static void GMT2MGG2(struct GRD_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
     mgg->dataType    = 1;
 	
 	mgg->lonNumCells = gmt->nx;
-	mgg->lonSpacing  = (long)rint(gmt->x_inc * SEC_PER_DEG);
+	mgg->lonSpacing  = (int)rint(gmt->x_inc * SEC_PER_DEG);
 	degrees2dms(gmt->x_min, &mgg->lonDeg, &mgg->lonMin, &mgg->lonSec);
 	
 	mgg->latNumCells = gmt->ny;
-	mgg->latSpacing  = (long)rint(gmt->y_inc * SEC_PER_DEG);
+	mgg->latSpacing  = (int)rint(gmt->y_inc * SEC_PER_DEG);
 	degrees2dms(gmt->y_max, &mgg->latDeg, &mgg->latMin, &mgg->latSec);
 
 	/* Default values */
 	mgg->gridRadius  = -1;
 	mgg->precision   = DEFAULT_PREC;
 	mgg->nanValue    = MGG_NAN_VALUE;
-	mgg->numType     = sizeof(long);
-	mgg->minValue    = (long)rint(gmt->z_min * mgg->precision);
-	mgg->maxValue    = (long)rint(gmt->z_max * mgg->precision);
+	mgg->numType     = sizeof(int);
+	mgg->minValue    = (int)rint(gmt->z_min * mgg->precision);
+	mgg->maxValue    = (int)rint(gmt->z_max * mgg->precision);
 
 	/* Data fits in two byte boundry */
 	if ((-32767 <= mgg->minValue) && (mgg->maxValue <= 32767)) {
@@ -105,8 +105,8 @@ static void GMT2MGG2(struct GRD_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 		mgg->numType   = sizeof(char);
 		mgg->nanValue  = (char)255;
 		mgg->precision = 1;
-		mgg->minValue  = (long)gmt->z_min;
-		mgg->maxValue  = (long)gmt->z_max;
+		mgg->minValue  = (int)gmt->z_min;
+		mgg->maxValue  = (int)gmt->z_max;
 	}
 #endif
 }
@@ -273,13 +273,14 @@ int mgg2_read_grd (
 {
 	MGG_GRID_HEADER_2	mggHeader;
 	FILE  *fp     = NULL;
-	long  *tLong  = NULL;
+	int  *tLong  = NULL;
 	short *tShort = NULL;
 	char  *tChar  = NULL;
 	int first_col, last_col, first_row, last_row, nm, kk, one_or_zero;
 	int i, j, j2, ij, width_in, width_out, height_in, i_0_out, inc = 1;
 	BOOLEAN piping = FALSE, geo = FALSE;
 	double off, half_or_zero, x, small;
+	long long_offset;	/* For fseek only */
 	
 	if (complex) {
 		fprintf (stderr, "GMT Fatal Error: MGG grdfile %s cannot hold complex data!\n", file);
@@ -294,7 +295,7 @@ int mgg2_read_grd (
 	else if ((fp = GMT_fopen (file, GMT_io.r_mode)) != NULL) {
 		fread(&mggHeader, 1, sizeof(MGG_GRID_HEADER_2), fp);
         swap_header(&mggHeader);
-		if (mggHeader.numType == 0) mggHeader.numType = sizeof(long);
+		if (mggHeader.numType == 0) mggHeader.numType = sizeof(int);
 	}
 
 	else {
@@ -304,7 +305,7 @@ int mgg2_read_grd (
 	
 	if (w == 0.0 && e == 0.0) {	/* Get entire file and return */
 		nm = header->nx * header->ny;
-		tLong  = (long *) GMT_memory (CNULL, nm, sizeof (long), "mgg_read_grd");
+		tLong  = (int *) GMT_memory (CNULL, nm, sizeof (int), "mgg_read_grd");
 		tShort = (short *) tLong;
 		tChar  = (char *) tLong;
 
@@ -314,7 +315,7 @@ int mgg2_read_grd (
 		}
 		for (i = 0; i < nm; i++) {
 			/* 4-byte values */
-			if (mggHeader.numType == sizeof(long)) {
+			if (mggHeader.numType == sizeof(int)) {
                 swap_long(&tLong[i]);
 				if (tLong[i] == mggHeader.nanValue) grid[i] = GMT_f_NaN;
 				else grid[i] = (float) tLong[i] / (float) mggHeader.precision;
@@ -378,7 +379,7 @@ int mgg2_read_grd (
 	
 	if (geo) {	/* Must rollover in longitudes */
 		int *k;
-		tLong  = (long *) GMT_memory (CNULL, header->nx, sizeof (long), "mgg_read_grd");
+		tLong  = (int *) GMT_memory (CNULL, header->nx, sizeof (int), "mgg_read_grd");
 		tShort = (short *)tLong;
 		tChar  = (char *)tLong;
 
@@ -402,7 +403,8 @@ int mgg2_read_grd (
 				}
 			}
 		} else { /* Simply seek by it */
-			fseek (fp, (long) (first_row * header->nx * mggHeader.numType), 1);
+			long_offset = (long)(first_row * header->nx * mggHeader.numType);
+			fseek (fp, long_offset, 1);
 		}
 		
 		for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
@@ -414,7 +416,7 @@ int mgg2_read_grd (
 			ij = (j2 + pad[3]) * width_out + i_0_out;
 			for (i = 0; i < width_in; i++) {
 				kk = ij+i*inc;
-				if (mggHeader.numType == sizeof(long)) {
+				if (mggHeader.numType == sizeof(int)) {
 					swap_long(&tLong[k[i]]);
 					if (tLong[k[i]] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = (float) tLong[k[i]] / (float) mggHeader.precision;
@@ -449,7 +451,7 @@ int mgg2_read_grd (
 		GMT_free ((char *)k);
 	}
 	else {	/* A bit easier here */
-		tLong = (long *) GMT_memory (CNULL, header->nx, sizeof (long), "mgg_read_grd");
+		tLong = (int *) GMT_memory (CNULL, header->nx, sizeof (int), "mgg_read_grd");
 		tShort = (short *) tLong;
 		tChar  = (char *) tLong;
 
@@ -461,7 +463,8 @@ int mgg2_read_grd (
 				}
 			}
 		} else {/* Simply seek by it */
-			fseek (fp, (long) (first_row * header->nx * mggHeader.numType), 1);
+			long_offset = (long) (first_row * header->nx * mggHeader.numType);
+			fseek (fp, long_offset, 1);
 		}
 		
 		for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
@@ -474,7 +477,7 @@ int mgg2_read_grd (
 			for (i = 0; i < width_in; i++) {
 				kk = ij+i;
 				/* 4-byte values */
-				if (mggHeader.numType == sizeof(long)) {
+				if (mggHeader.numType == sizeof(int)) {
 					swap_long(&tLong[first_col + i]);
 					if (tLong[first_col + i] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = (float)tLong[first_col + i] / (float) mggHeader.precision;
@@ -552,7 +555,7 @@ int mgg2_write_grd(
 	BOOLEAN geo = FALSE;
 	double off, half_or_zero, small, x;
 	
-	long  *tLong;
+	int  *tLong;
 	short *tShort;
 	char  *tChar;
 	FILE *fp;
@@ -589,13 +592,13 @@ int mgg2_write_grd(
 		}
 		swap_header(&mggHeader);
 
-		tLong  = (long *) GMT_memory (CNULL, nm, sizeof (long), "mgg_write_grd");
+		tLong  = (int *) GMT_memory (CNULL, nm, sizeof (int), "mgg_write_grd");
 		tShort = (short*)tLong;
 		tChar  = (char*)tLong;
 		
 		for (i = 0; i < nm; i++) {
 			if (GMT_is_fnan ((double)grid[i])) {
-				if (mggHeader.numType == sizeof(long)) {
+				if (mggHeader.numType == sizeof(int)) {
 			       tLong[i]  = mggHeader.nanValue;
 			       swap_long(&tLong[i]);
 				} else if (mggHeader.numType == sizeof(short)) {
@@ -610,8 +613,8 @@ int mgg2_write_grd(
 			} else {
 				if (grid[i] > -0.1 && grid[i] < 0.0) grid[i] = (float)(-0.1);
 
-				if (mggHeader.numType == sizeof(long)) {
-					tLong[i] = (long)rint((double)grid[i] * mggHeader.precision);
+				if (mggHeader.numType == sizeof(int)) {
+					tLong[i] = (int)rint((double)grid[i] * mggHeader.precision);
 					swap_long(&tLong[i]);
 				}
 				
@@ -692,7 +695,7 @@ int mgg2_write_grd(
 	}
 	swap_header(&mggHeader);
 
-	tLong  = (long *) GMT_memory (CNULL, width_in, sizeof (long), "mgg_write_grd");
+	tLong  = (int *) GMT_memory (CNULL, width_in, sizeof (int), "mgg_write_grd");
 	tShort = (short *) tLong;
 	tChar  = (char *)  tLong;
 	
@@ -715,7 +718,7 @@ int mgg2_write_grd(
 			for (i = 0; i < width_out; i++) {
 				kk = ij+k[i];
 				if (GMT_is_fnan ((double)grid[kk])) {
-					if (mggHeader.numType == sizeof(long))       tLong[i]  = mggHeader.nanValue;
+					if (mggHeader.numType == sizeof(int))       tLong[i]  = mggHeader.nanValue;
 					else if (mggHeader.numType == sizeof(short)) tShort[i] = (short)mggHeader.nanValue;
 					else if (mggHeader.numType == sizeof(char))  tChar[i] = (char)mggHeader.nanValue;
 					else {
@@ -725,8 +728,8 @@ int mgg2_write_grd(
 				} else {
 					if (grid[kk] > -0.1 && grid[kk] < 0) grid[kk] = (float)(-0.1);
 
-					if (mggHeader.numType == sizeof(long)) {
-						tLong[i] = (long)rint ((double)grid[kk] * mggHeader.precision);
+					if (mggHeader.numType == sizeof(int)) {
+						tLong[i] = (int)rint ((double)grid[kk] * mggHeader.precision);
 					}
 					
 					else if (mggHeader.numType == sizeof(short)) {
@@ -742,7 +745,7 @@ int mgg2_write_grd(
 						exit(-1);
 					}
 				}
-				if (mggHeader.numType == sizeof(long)) swap_long(&tLong[i]);
+				if (mggHeader.numType == sizeof(int)) swap_long(&tLong[i]);
 				else if (mggHeader.numType == sizeof(short)) swap_word(&tShort[i]);
 			}
 			fwrite ((char *)tLong, mggHeader.numType, width_out, fp);
@@ -756,7 +759,7 @@ int mgg2_write_grd(
 			for (i = 0; i < width_out; i++) {
 				kk = ij+i;
 				if (GMT_is_fnan ((double)grid[kk])) {
-					if (mggHeader.numType == sizeof(long))       tLong[i]  = mggHeader.nanValue;
+					if (mggHeader.numType == sizeof(int))       tLong[i]  = mggHeader.nanValue;
 					else if (mggHeader.numType == sizeof(short)) tShort[i] = (short)mggHeader.nanValue;
 					else if (mggHeader.numType == sizeof(char))  tChar[i] = (char)mggHeader.nanValue;
 					else {
@@ -765,8 +768,8 @@ int mgg2_write_grd(
 					}
 				} else {
 					if (grid[kk] > -0.1 && grid[kk] < 0) grid[kk] = (float)(-0.1);
-					if (mggHeader.numType == sizeof(long)) {
-						tLong[i] = (long) rint ((double)grid[kk] * mggHeader.precision);
+					if (mggHeader.numType == sizeof(int)) {
+						tLong[i] = (int) rint ((double)grid[kk] * mggHeader.precision);
 					}
 					
 					else if (mggHeader.numType == sizeof(short)) {
@@ -782,7 +785,7 @@ int mgg2_write_grd(
 						exit(-1);
 					}
 				}
-				if (mggHeader.numType == sizeof(long)) swap_long(&tLong[i]);
+				if (mggHeader.numType == sizeof(int)) swap_long(&tLong[i]);
 				else if (mggHeader.numType == sizeof(short)) swap_word(&tShort[i]);
 			}
 			fwrite ((char *)tLong, mggHeader.numType, width_out, fp);
