@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.30 2004-04-24 01:30:00 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.31 2004-12-21 20:28:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -615,13 +615,16 @@ void	GMT_gcal_from_dt (GMT_dtime t, struct GMT_gcal *cal) {
 	
 	GMT_cal_rd rd;
 	double	x;
-	
+	int i;
+
 	GMT_dt2rdc (t, &rd, &x);
 	GMT_gcal_from_rd (rd, cal);
-	cal->hour = (int) floor (x * GMT_SEC2HR);
-	x -= GMT_HR2SEC_F * cal->hour;
-	cal->min  = (int) floor (x * GMT_SEC2MIN);
-	cal->sec  = x - GMT_MIN2SEC_F * cal->min;
+	/* split double seconds and integer time */
+	cal->sec = 60.0*modf(x/60.0, &x);
+	/* do the last two calculations as int to reduce trouble */
+	i = (int) x;
+	cal->hour = i/60;
+	cal->min  = i%60;
 	return;
 }
 	
