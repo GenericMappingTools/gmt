@@ -167,24 +167,24 @@ Give scale in UNIT/r-unit.
 Give \fIx-scale\fP in UNIT/x-unit and/or \fIy-scale\fP in UNIT/y-unit; or
 specify \fIwidth\fP and/or \fIheight\fP in UNIT
 (\fIy-scale\fP=\fIx-scale\fP if not specified separately).
-Use negative
-scale(s) to reverse the direction of an axis (e.g., to have y be positive down).
-Append to \fIx-scale\fP, \fIy-scale\fP, \fIwidth\fP or \fIheight\fP any of the following:
+Use negative scale(s) to reverse the direction of an axis (e.g., to have y be positive down).
+Optionally, append to \fIx-scale\fP, \fIy-scale\fP, \fIwidth\fP or \fIheight\fP one of the following:
 .RS
 .TP
-\fBl\fP
+.B d
+Data are geographical coordinates (in degrees).
+.TP
+.B l
 Take log10 of values before scaling.
 .TP
 \fBp\fP\fIpower\fP
 Raise values to \fIpower\fP before scaling.
 .TP
-\fBT|t\fP
-Time axis.
-\fBT\fP indicates input coordinates are absolute time
-while \fBt\fP means they are time relative to \fBTIME_EPOCH\fP.
+.B t
+Input coordinates are time relative to \fBTIME_EPOCH\fP.
 .TP
-\fBd\fP
-Data are geographical coordinates (in degrees).
+.B T
+Input coordinates are absolute time.
 .PP
 Default axis lengths (see gmtdefaults) can be invoked
 using \fB\-JXh\fP (for landscape); \fB\-JXv\fP (for portrait) will swap the x- and y-axis lengths.
