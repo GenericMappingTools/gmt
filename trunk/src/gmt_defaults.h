@@ -104,4 +104,4 @@
 	"\t",			/* FIELD_DELIMETER */
 	gmt_ring,		/* DEGREE_SYMBOL */
 	{ "Standard", 		/* CHAR_ENCODING */
-	  { 0312, 0312, ':', 0251, '"' } } /* PostScript codes */
+	  { 32, 32, 32, 32, 32 } } /* PostScript codes for degree, ring, colon, singlequote, and doublequote [Initialized to space] */

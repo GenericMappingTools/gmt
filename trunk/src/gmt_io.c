@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.29 2001-10-15 17:25:05 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.30 2001-10-16 19:29:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1584,9 +1584,9 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 		if (gmtdefs.degree_symbol != gmt_none)
 		{	/* We want the minute symbol appended */
 			if (gmtdefs.degree_symbol == gmt_colon)
-				sprintf (fmt, "%c", gmt_colon);
+				sprintf (fmt, "%c", gmtdefs.encoding.code[gmt_colon]);
 			else
-				sprintf (fmt, "%c", gmt_squote);
+				sprintf (fmt, "%c", gmtdefs.encoding.code[gmt_squote]);
 			strcat (GMT_plot_format[1][0], fmt);
 			strcat (GMT_plot_format[1][1], fmt);
 		}
@@ -1606,9 +1606,9 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 		if (gmtdefs.degree_symbol != gmt_none)
 		{	/* We want the minute symbol appended */
 			if (gmtdefs.degree_symbol == gmt_colon)
-				sprintf (fmt, "%c", gmt_colon);
+				sprintf (fmt, "%c", gmtdefs.encoding.code[gmt_colon]);
 			else
-				sprintf (fmt, "%c", gmt_squote);
+				sprintf (fmt, "%c", gmtdefs.encoding.code[gmt_squote]);
 			strcat (GMT_plot_format[2][0], fmt);
 			strcat (GMT_plot_format[2][1], fmt);
 		}
@@ -1621,9 +1621,9 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 		if (gmtdefs.degree_symbol != gmt_none)
 		{	/* We want the second symbol appended */
 			if (gmtdefs.degree_symbol == gmt_colon)
-				sprintf (fmt, "%c", gmt_colon);
+				sprintf (fmt, "%c", gmtdefs.encoding.code[gmt_colon]);
 			else
-				sprintf (fmt, "%c", gmt_dquote);
+				sprintf (fmt, "%c", gmtdefs.encoding.code[gmt_dquote]);
 			strcat (GMT_plot_format[2][0], fmt);
 			strcat (GMT_plot_format[2][1], fmt);
 		}
