@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.11 2004-01-08 06:05:47 pwessel Exp $
+#	$Id: Makefile,v 1.12 2004-01-09 22:53:42 pwessel Exp $
 #
 #	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -149,7 +149,7 @@ uninstall-data:
 		fi
 
 
-install-man:
+install-manl-suppl:
 #		First create suppl *.l from *.man in the local installation tree (regular gmt *.l is already there)
 		\rm -f manjob.sh
 		for d in $(SUPPL_M); do \
@@ -167,6 +167,8 @@ install-man:
 			$(SHELL) $(rootdir)/manjob.sh; \
 			rm -f $(rootdir)/manjob.sh; \
 		fi
+
+install-man:	install-manl-suppl
 		if [ -f manuninstall.sh ]; then \
 			rm -f $(rootdir)/manuninstall.sh; \
 		fi
@@ -176,7 +178,8 @@ install-man:
 			cp man/manl/*.l $(mandir)/man$(mansection); \
 			cd $(mandir)/man$(mansection); \
 			for f in *.l; do \
-				echo "sed -e 's/(GMTMANSECTION)/($(mansection))/g' $$f.l > $$f.$(mansection)" >> $(rootdir)/manjob.sh; \
+				echo "sed -e 's/(GMTMANSECTION)/($(mansection))/g' $$f > tmp" >> $(rootdir)/manjob.sh; \
+				echo "\\mv tmp $$f" | sed -e 's/.l$$/.$(mansection)/g' >> $(rootdir)/manjob.sh; \
 				echo "\\rm -f $$f"  | sed -e 's/.l$$/.$(mansection)/g' >> $(rootdir)/manuninstall.sh; \
 			done; \
 			$(SHELL) $(rootdir)/manjob.sh; \
@@ -186,9 +189,12 @@ install-man:
 			echo "Install man directory the same as distribution man directory - man section ID updated"; \
 			cd man/manl; \
 			for f in *.l; do \
-				echo "sed -e 's/(GMTMANSECTION)/(l)/g' $$f.l > $$f.new" >> $(rootdir)/manjob.sh; \
-				echo "mv -f $$f.new $$f.l" >> $(rootdir)/manjob.sh; \
+				echo "sed -e 's/(GMTMANSECTION)/(l)/g' $$f > $$f.new" >> $(rootdir)/manjob.sh; \
+				echo "mv -f $$f.new $$f" >> $(rootdir)/manjob.sh; \
 			done; \
+			$(SHELL) $(rootdir)/manjob.sh; \
+			rm -f $(rootdir)/manjob.sh; \
+			cd $(rootdir); \
 		fi
 
 
