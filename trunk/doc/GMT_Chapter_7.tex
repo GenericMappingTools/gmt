@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.16 2004-05-18 17:29:09 pwessel Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.17 2004-05-26 22:59:16 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -813,9 +813,10 @@ points of departure and arrival\footnote{Pedants who wish to argue about the ``o
 arc going the long way can take a hike.}.  This provides the inspiration for our next
 example which uses \GMTprog{grdmath} to calculate distances from Rome to anywhere on
 Earth and \GMTprog{grdcontour} to contour these distances.  We pick five cities that
-we connect to Rome with great circle arcs, and label
-these cities with their names and distances (in km) from Rome, all laid down on top
-of a beautiful world map.
+we connect to Rome with great circle arcs, and label these cities with their names and
+distances (in km) from Rome, all laid down on top of a beautiful world map.  Note that
+we specify that contour labels opnly be placed along the great-circle arc connecting
+Rome to its antipode, and request curved text that follows the contours.
 
 \input{scripts/GMT_example_23} 
 \GMTfig[ht]{GMT_example_23}{All great-circle paths lead to Rome.}

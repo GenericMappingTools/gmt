@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	GMT Example 23  $Id: job23.sh,v 1.2 2004-04-26 22:40:32 pwessel Exp $
+#	GMT Example 23  $Id: job23.sh,v 1.3 2004-05-26 22:59:16 pwessel Exp $
 #
 # Purpose:	Plot distances from Rome and draw shortest paths
 # GMT progs:	gmtset, grdmath, grdcontour, psxy, pstext, grdtrack
@@ -16,24 +16,20 @@ name="Rome"
 
 grdmath -Rg -I1 $lon $lat SDIST 111.13 MUL = dist.grd
 
-# Location info for 5 other cities
+# Location info for 5 other cities + label justification
 
 cat << EOF > cities.d
-139.75	35.67	TOKYO
-282.95	-12.1	LIMA
-151.17	-33.92	SYDNEY
-237.67	47.58	SEATTLE
-28.03	-26.17	JOHANNESBURG
+105.87	21.02	HANOI		LM
+282.95	-12.1	LIMA		LM
+178.42	-18.13	SUVA		LM
+237.67	47.58	SEATTLE		RM
+28.20	-25.75	PRETORIA	LM
 EOF
 
 pscoast -Rg -JH90/9i -Glightgreen -Sblue -U"Example 23 in Cookbook" -A1000 \
   -B0g30:."Distances from $name to the World": -K -Dc -Wthinnest > example_23.ps
 
-# Temporarily switch basemap pen in order to annotate white contours
-
-gmtset BASEMAP_FRAME_RGB white
-grdcontour dist.grd -A1000t -C500 -O -K -J -Wathin,white -Wcthinnest,- >> example_23.ps
-gmtset BASEMAP_FRAME_RGB black
+grdcontour dist.grd -A1000+T+ukm+c0.1i+gwhite -GLz-/z+ -S4 -C500 -O -K -J -Wathin,white -Wcthinnest,white,- >> example_23.ps
 
 # For each of the cities, plot great circle arc to Rome with psxy
 
@@ -43,7 +39,7 @@ done < cities.d
 
 # Plot red squares at cities and plot names:
 psxy -R -J -O -K -Ss0.2 -Gred -W0.25p cities.d >> example_23.ps
-awk '{print $1, $2, 12, 1, 9, "LM", $3}' cities.d | pstext -R -J -O -K -D0.15/0 -Gred -N >> example_23.ps
+awk '{print $1, $2, 12, 1, 9, $4, $3}' cities.d | pstext -R -J -O -K -Dj0.15/0 -Gred -N >> example_23.ps
 # Place a yellow star at Rome
 echo "$lon $lat" | psxy -R -J -O -K -Sa0.2i -Gyellow -Wthin >> example_23.ps
 

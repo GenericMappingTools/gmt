@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.100 2004-05-26 03:25:22 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.101 2004-05-26 22:59:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1620,6 +1620,7 @@ void GMT_free (void *addr)
 int GMT_contlabel_init (struct GMT_CONTOUR *G)
 {	/* Assign default values to structure */
 	memset ((void *)G, 0, sizeof (struct GMT_CONTOUR));	/* Sets all to 0 */
+	G->spacing = TRUE;
 	G->half_width = 5;
 	G->label_font_size = 9.0;
 	G->label_dist_spacing = 4.0;	/* Inches */
@@ -1768,6 +1769,7 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 	int k, j = 0, error = 0;
 	char txt_a[32], c;
 	
+	L->spacing = FALSE;	/* Turn off the default since we gave an option */
 	strcpy (L->option, &txt[1]);	 /* May need to process L->option later after -R,-J have been set */
 	L->flag = flag;
 	switch (txt[0]) {
@@ -1868,7 +1870,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 				error += GMT_code_to_lonlat (txt_b, &G->xp[G->n_xp].lon[1], &G->xp[G->n_xp].lat[1]);
 			}
 			else if (n == 3) {	/* More complicated: <code>/<lon>/<lat> or <lon>/<lat>/<code> */
-				if (GMT_code_to_lonlat (txt_a, &G->xp[G->n_xp].lon[0], &G->xp[G->n_xp].lat[0])) {	/* Failed, try the other way */
+				if (GMT_code_to_lonlat (txt_a, &G->xp[G->n_xp].lon[0], &G->xp[G->n_xp].lat[0])) {	/* Failed, so try the other way */
 					error += GMT_verify_expectations (GMT_io.in_col_type[0], GMT_scanf_arg (txt_a, GMT_io.in_col_type[0], &G->xp[G->n_xp].lon[0]), txt_a);
 					error += GMT_verify_expectations (GMT_io.in_col_type[1], GMT_scanf_arg (txt_b, GMT_io.in_col_type[1], &G->xp[G->n_xp].lat[0]), txt_b);
 					error += GMT_code_to_lonlat (txt_c, &G->xp[G->n_xp].lon[1], &G->xp[G->n_xp].lat[1]);
@@ -1878,17 +1880,31 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 					error += GMT_verify_expectations (GMT_io.in_col_type[1], GMT_scanf_arg (txt_c, GMT_io.in_col_type[1], &G->xp[G->n_xp].lat[1]), txt_c);
 				}
 			}	
+			for (i = 0; i < 2; i++) {	/* Reset any zmin/max settings if used and applicable */
+				if (G->xp[G->n_xp].lon[i] == DBL_MAX) {	/* Meant zmax location */
+					if (xyz) {
+						G->xp[G->n_xp].lon[i] = xyz[1][0];
+						G->xp[G->n_xp].lat[i] = xyz[1][1];
+					}
+					else {
+						error++;
+						fprintf (stderr, "%s: GMT SYNTAX ERROR -%c:  z+ option not applicable here\n", GMT_program, G->flag);
+					}
+				}
+				else if (G->xp[G->n_xp].lon[i] == -DBL_MAX) {	/* Meant zmin location */
+					if (xyz) {
+						G->xp[G->n_xp].lon[i] = xyz[0][0];
+						G->xp[G->n_xp].lat[i] = xyz[0][1];
+					}
+					else {
+						error++;
+						fprintf (stderr, "%s: GMT SYNTAX ERROR -%c:  z- option not applicable here\n", GMT_program, G->flag);
+					}
+				}
+			}
 			if (G->do_interpolate) G->xp[G->n_xp].np = GMT_fix_up_path (&G->xp[G->n_xp].lon, &G->xp[G->n_xp].lat, G->xp[G->n_xp].np, greenwich, 1.0);
 			G->xp[G->n_xp].seg = (int *) GMT_memory (VNULL, G->xp[G->n_xp].np, sizeof (int), GMT_program);	/* Initialized by default to 0 */
 			for (i = 0; i < G->xp[G->n_xp].np; i++) {	/* Project */
-				if (G->xp[G->n_xp].lon[i] == DBL_MAX && !xyz) {	/* Meant zmax location */
-					G->xp[G->n_xp].lon[i] = xyz[1][0];
-					G->xp[G->n_xp].lat[i] = xyz[1][1];
-				}
-				else if (G->xp[G->n_xp].lon[i] == -DBL_MAX && !xyz) {	/* Meant zmin location */
-					G->xp[G->n_xp].lon[i] = xyz[0][0];
-					G->xp[G->n_xp].lat[i] = xyz[0][1];
-				}
 				GMT_geo_to_xy (G->xp[G->n_xp].lon[i], G->xp[G->n_xp].lat[i], &x, &y);
 				G->xp[G->n_xp].lon[i] = x;
 				G->xp[G->n_xp].lat[i] = y;
@@ -1928,7 +1944,7 @@ void GMT_contlabel_angle (double x[], double y[], int start, int stop, double ca
 		sum_x2 += dx * dx;
 		sum_xy += dx * dy;
 	}
-	L->line_angle = d_atan2 (sum_xy, sum_x2) * R2D;
+	L->line_angle = (fabs(sum_xy) < GMT_CONV_LIMIT) ? 90.0 : d_atan2 (sum_xy, sum_x2) * R2D;
 	if (G->angle_type == 2) { 	/* Just returned the fixed angle given */
 		L->angle = cangle;
 	}
@@ -1952,7 +1968,7 @@ struct GMT_LABEL * GMT_contlabel_new (void *prev, int np)
 	return (L);
 }
 
-#define TXT_SCL 0.4
+#define TXT_SCL 0.425
 
 void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_CONTOUR *G)
 {
@@ -2078,8 +2094,8 @@ void GMT_contlabel_plot (struct GMT_CONTOUR *G)
 	else
 		just = G->just;
 		
-	ps_setpaint (gmtdefs.basemap_frame_rgb);
-	GMT_setpen (&G->pen);
+	ps_setpaint (G->rgb);
+	if (box >= 0) GMT_setpen (&G->pen);
 	ps_setfont (G->label_font);
 	
 	for (old = G->anchor; box >= 0 && !G->curved_text && old->next_label; old = old->next_label) {	/* First draw boxes if not 3-D*/
