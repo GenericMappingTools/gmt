@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.18 2004-08-26 03:50:47 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.19 2004-09-14 20:24:56 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -19,18 +19,20 @@ For a history of the changes from release to release, see the online
 and the file \filename{CHANGES} in the main \GMT\ directory.
 
 The success of \GMT\ is to a large degree due to the input of the user community. In fact, most of the
-capabilities and options in \GMT\ programs were driven by user requests.
+capabilities and options in \GMT\ programs originated as user requests.
 We would like to hear from you should you have any suggestions for future enhancements and modification.
 Please send your comments to
 \htmladdnormallink{the GMT help list}{mailto:gmt-help@hawaii.edu}.
 
 \section{What is new in \gmt\ 4?}
 
-\GMT\ 4 represents a major overhaul of the package; hence the major version number increment.  There are four
+\GMT\ 4 represents a major overhaul of the package, hence the major version number increment.  There are four
 categories of changes that have been implemented:
 \begin{description}
 \item [Time-series support.]  \GMT\ can now read and write time-series data where
-the time coordinates are of the form {\it date}{\bf T}{\it clock}.  The formats
+the time coordinates are of the form {\it date}{\bf T}{\it clock}\footnote{Use standard
+\UNIX\ tools such as \progname{awk} or \progname{perl} to reformat files should
+your {\it date} and {\it clock} components reside in separate columns.}.  The formats
 used for {\it date} and {\it clock} are under the user's control.  Both Gregorian
 and ISO calendars are supported.  Frame annotation for time-series are now supported
 via the \Opt{B} option; there are many new modifiers reflecting the vast number of
@@ -85,13 +87,13 @@ INRANGE}).  We may now create multiple output grids from a single command.
 \item \GMTprog{grdtrack}:	Options to retrieve nearest node value (\Opt{N}, no interpolation) and to push
 the bilinear interpolation closer to nodes that are NaN (\Opt{Q}).
 \item \GMTprog{grdview}:	Colormasking (\Opt{Qc}, PS Level 3 only), draping of images via red, green,
-and blue component grids (\Opt{G}).  Also,  drapegrids can have higher resolution that the relief grid.
+and blue component grids (\Opt{G}).  Also,  drapegrids can have higher resolution than the relief grid.
 \item \GMTprog{makecpt}:	New options \Opt{Q} for logarithmic scales and \Opt{N} to suppress output
 of B, N, F colors.
 \item \GMTprog{mapproject}:	New options for datum conversions (\Opt{T}, \Opt{E}, and \Opt{Q}), azimuth and
-back-azimuth (\Opt{A}) and point distance (\Opt{G}) calculations, and to calculate distances to a line (\Opt{L}.
+back-azimuth (\Opt{A}) and point distance (\Opt{G}) calculations, and to calculate distances to a line (\Opt{L}).
 \item \GMTprog{minmax}:		Added \Opt{T}{\it dz} option to produce \Opt{T} string for \GMTprog{makecpt},
-\Opt{E} for returning extreme records, and the \Opt{I} option was extended to handle any number of columns if \Opt{C} is used.
+\Opt{E} for returning extreme records, and the \Opt{I} option was extended to handle any number of columns when \Opt{C} is used.
 \item \GMTprog{psbasemap}:	Extended \Opt{L} to allow alternate label and justification and added \Opt{T}
 for directional rose ornament or magnetic compass directions.
 \item \GMTprog{pscoast}:	Extended \Opt{L} to allow alternate label and justification and added \Opt{T}
@@ -105,19 +107,22 @@ triangle only (\Opt{E}[{\bf b$|$f}] ).  Also, draw discrete color-key table with
 {\it gap} to the \Opt{L} option. 
 \item \GMTprog{pstext}: 	New option \Opt{A} should azimuths rather than angles be given,
 \item \GMTprog{psxy}: 	Line color control (via \Opt{C}), symbol position offset (with \Opt{D}), custom symbols access 
-(with \Opt{Sk}; use any of the 30 that come with \GMT\ or design your own), many new symbols (horizontal and vertical dashes,
+(with \Opt{Sk}; use any of the 35 (Appendix N) that come with \GMT\ or design your own), many new symbols (horizontal and vertical dashes,
 pentagon, octagon, rectangle, double-header and centered vectors), and annotated (``quoted'') lines with \Opt{Sq}.
 \item \GMTprog{psxyz}: 	Same, plus vertical dash symbol.
 \item \GMTprog{xyz2grd}: 	Added \Opt{Au$|$l} for upper/lower value at each node.
 \end{itemize}
 \item [General enhancements.]  These affect most of the programs:
 \begin{itemize}
-\item New shorthand to repeat the most recent projection (\Opt{J}).
+\item The coastline data have been updated to GSHHS version 1.3.  About 50 or so polygons had lingering
+crossovers and some had duplicate points or failed to close; these have now been fixed. Major
+errors in the Puget Sound coastline have also been corrected.
+\item New shorthand to repeat the most recently used projection (\Opt{J}).
 \item Options for phase-shifting the stride and supply a prefix for frame annotations (\Opt{B}).
 \item Override \GMT\ defaults directly on the command line with any number of {--}{--}\emph{PAR=value} options.
-\item Now choose from 50 ellipsoids and 207 datums, plus add additional custom values.
+\item Now choose from 63 ellipsoids and 223 datums, plus add additional custom values.
 \item Numerous new \GMT\ defaults parameters, mostly in support of time-series functionality.
-\item Shorthand for global regions (\Opt{Rg$|$d}).
+\item Shorthand for global regions (\Opt{Rg} for \Opt{R}0/360/-90/90 and \Opt{Rd} for \Opt{R}-180/180/-90/90).
 \item Full support for either RGB, HSV, or CMYK in pen/fill command-line options or in cpt files.
 \item Support for English color names (e.g., red, lightbrown).
 \item Choice of unit when specifying pen thickness (cm, inch, point).
@@ -131,11 +136,11 @@ pentagon, octagon, rectangle, double-header and centered vectors), and annotated
 \item Better support for various international character encodings.
 \item New Appendices M (color tables), N (custom symbols), O (contours and ``quoted lines''), and P
 (using both \GMT\ 3 and 4).
-\item New hidden files \filename{.gmtdefaults4} and \filename{.gmtcommands4} to ensure peaceful coexistance with \GMT\ 3-series.
-\item Data files in directories pointed to by environmental parameters {\bf \$GMT\_DATADIR}, {\bf \$GMT\_GRIDDIR},
-and {\bf \$GMT\_IMGDIR} can be specified without their full path names.
-\item We have added five new examples.
-\item Utility \progname{gmtswitch} simplifies switching between installed \GMT\ versions.
+\item New hidden files \filename{.gmtdefaults4} and \filename{.gmtcommands4} to ensure peaceful coexistence with \GMT\ 3-series.
+\item Data files in directories pointed to by the three environmental parameters {\bf \$GMT\_DATADIR}, {\bf \$GMT\_GRIDDIR},
+and {\bf \$GMT\_IMGDIR} can be specified without their full path names when used as input files.
+\item We have added five new examples for a total of 25.
+\item Bourne shell utility \progname{gmtswitch} simplifies switching between installed \GMT\ versions.
 \end{itemize}
 \end{description}
 
