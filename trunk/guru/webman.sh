@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.8 2002-02-26 19:55:21 pwessel Exp $
+#	 $Id: webman.sh,v 1.9 2002-03-08 17:09:07 pwessel Exp $
 #
 #	webman.csh - Automatic generation of the GMT web manual pages
 #
@@ -30,7 +30,7 @@ mkdir -p www/gmt/doc/html
 
 # First make a list of all the GMT programs, including pslib (since it has a man page) and the GMT script
 
-cp -f guru/GMT_programs.lis programs.lis
+grep -v '^#' guru/GMT_programs.lis > programs.lis
 echo GMT >> programs.lis
 echo pslib >> programs.lis
 
@@ -44,7 +44,7 @@ awk '{printf "s%%%s$%%<A HREF=%c%s.html%c>%s</A>%%g\n", $1, 34, $1, 34, $1}' pro
 echo 's/^.9$//g' >> webman1.sed
 
 # Ok, go to source directory and make html files
-
+# the -pgsize 5000 is needed since nroff does not do pages anymore?
 for prog in `cat programs.lis`; do
 	if [ $gush = 1 ]; then
 		echo "Making ${prog}.html"
@@ -52,7 +52,7 @@ for prog in `cat programs.lis`; do
 	grep -v ${prog} webman1.sed > this1.sed
 	grep -v ${prog} webman2.sed > this2.sed
 	grep -v ${prog} webman3.sed > this3.sed
-	nroff -man man/manl/${prog}.l | $MAN2HTML -title $prog | sed -f this1.sed | sed -f this2.sed | sed -f this3.sed > www/gmt/doc/html/${prog}.html
+	nroff -man man/manl/${prog}.l | $MAN2HTML -title $prog -pgsize 5000 | sed -f this1.sed | sed -f this2.sed | sed -f this3.sed > www/gmt/doc/html/${prog}.html
 	echo '<body bgcolor="#ffffff">' >> www/gmt/doc/html/${prog}.html
 done
 
