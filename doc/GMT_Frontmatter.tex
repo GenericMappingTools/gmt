@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Frontmatter.tex,v 1.14 2004-01-02 22:45:12 pwessel Exp $
+%	$Id: GMT_Frontmatter.tex,v 1.15 2004-01-03 23:03:30 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -27,7 +27,7 @@ gratefully acknowledges the generous support of the C. H. and I. M.
 Green Foundation for Earth Sciences at the Institute of Geophysics
 and Planetary Physics, Scripps Institution of Oceanography, University
 of California at San Diego.
-\GMT\ versions 3.0--3.4 owe their existence to grants EAR-93-02272, OCE-95-29431,
+\GMT\ versions 3.0--3.4 and 4.0 owe their existence to grants EAR-93-02272, OCE-95-29431,
 and OCE-0082552 from the National Science Foundation, which we
 gratefully acknowledge.
 
@@ -42,7 +42,9 @@ advice on how to make \GMT\ portable to DEC, SGI, HP, IBM, Apple, and
 NEXT workstations.  John Lillibridge provided example 11.  William
 Yip helped translate \GMT\ to POSIX ANSI C and incorporate netCDF 3, 
 Allen Cogbill provided OS/2 patches for EMX, and Hanno von Lom helped
-resolve problems with DLL libraries for Win32.
+resolve problems with DLL libraries for Win32.  The SOEST RCF staff
+(Ross Ishida, Pat Townsend, and Sharon Stahl) provided valuable help
+on Linux, web, and cgi script issues.
 
 \begin{flushright}
 Honolulu, HI and Silver Spring, MD, January 2004
@@ -141,7 +143,7 @@ when scripts are modified.
 \GMT\ EPS files which thus are always up-to-date.
 
 \item It is easy to convert the \LaTeX\ files to other
-formats, such as HTML, SGML, and \PS.
+formats, such as HTML, SGML, \PS, and PDF.
 
 \item The whole task of assembling the pieces, be it generating
 figures or extracting text portions from the master archive under
@@ -201,6 +203,17 @@ curvature splines in tension, {\it Geophysics}, vol. 55 (3), pp.
 293-305, 1990.}
 
 \end{itemize}
+
+\GMT\ includes some code supplied by others, in particular the Triangle code
+used for Delaunay triangulation.  Its author, Jonathan Shewchuk, says
+\begin{quote}
+If you use Triangle, and especially if you use it to accomplish real
+work, I would like very much to hear from you.  A short letter or email
+(to jrs@cs.cmu.edu) describing how you use Triangle will mean a lot to
+me.  The more people I know are using this program, the more easily I can
+justify spending time on improvements and on the three-dimensional
+successor to Triangle, which in turn will benefit you.
+\end{quote}
 
 A few \GMT\ users take the time to write us letters, telling us of the
 difference \GMT\ is making in their work.  We appreciate receiving these
