@@ -1,4 +1,4 @@
-#	$Id: GMT_old_unique_sites.d,v 1.206 2002-10-23 10:01:01 pwessel Exp $
+#	$Id: GMT_old_unique_sites.d,v 1.207 2002-10-24 10:01:00 pwessel Exp $
 #
 #	This is a list of unique, verified block-averaged locations
 #	of GMT registration sites.  It is obtained
@@ -10,7 +10,7 @@
 #	total number of registrations for each 15' bin.
 #
 # longitude(0-360)	latitude(-90/+90)	#of_sites
-16.6083	47.2611	5
-85.55	40.5	6
-116	40	9
-121	31	9
+16.6083	47.2611	6
+85.55	40.5	7
+116	40	10
+121	31	10
