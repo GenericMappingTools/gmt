@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.4 2001-03-07 17:51:41 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.5 2001-03-19 18:15:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -92,271 +92,271 @@ void GMT_explain_option (char option)
 	
 		case 'B':	/* Tickmark option */
 		
-			fprintf (stderr, "	-B specifies Boundary info.  <tickinfo> is a textstring made up of one or\n");
-			fprintf (stderr, "	   more substrings of the form [t]<tick>[m|c].  The optional [t] can be\n");
-			fprintf (stderr, "	   either: a for anotation interval, f for frame interval, or g for\n");
-			fprintf (stderr, "	   gridline interval.  If the [t] is not given, a<tick> AND f<tick>\n");
-			fprintf (stderr, "	   (but no g<tick>) are set.  The frame interval = anotation interval\n");
-			fprintf (stderr, "	   if no separate f<tick> is given.  <tick> is the desired tick-interval.\n");
-			fprintf (stderr, "	   The optional [m|s] indicates minutes or seconds.  To specify separate x and y tick-.\n");
-			fprintf (stderr, "	   info, separate the strings with a slash [/].  E.g., 5 degree ticks for\n");
-			fprintf (stderr, "	   frame AND anotation, 30 minutes grid lines, use\n");
-			fprintf (stderr, "	        -B5g30m.   For different y ticks try -B5g30m/2g15m\n");
-			fprintf (stderr, "	   [If -Jz is selected, use slashes to separate x, y, and z-tickinfo.]\n");
-			fprintf (stderr, "	   Add labels by surrounding them with colons.  If first character is a\n");
-			fprintf (stderr, "	   period, then the text is used as the plot title (e.g. :.Plot_Title:).\n");
-			fprintf (stderr, "	   If it is a comma, then the text is used as unit anotation (e.g. :,%%:).\n");
-			fprintf (stderr, "	   If unit starts with - there will be no space between unit and anotation\n");
-			fprintf (stderr, "	   Append any combination of w, e, s, n to plot those axes\n");
-			fprintf (stderr, "	   only [Default is all].  Append l to anotate log10 (value), p for\n");
-			fprintf (stderr, "	   10^(log10(value)).  (See -J for log10 scaling).  For -Jx with power\n");
-			fprintf (stderr, "	   scaling, append p to annotate value at equidistant pow increments\n");
-			fprintf (stderr, "	   See psbasemap man pages for more details and examples.\n");
+			fprintf (stderr, "\t-B specifies Boundary info.  <tickinfo> is a textstring made up of one or\n");
+			fprintf (stderr, "\t   more substrings of the form [t]<tick>[m|c].  The optional [t] can be\n");
+			fprintf (stderr, "\t   either: a for anotation interval, f for frame interval, or g for\n");
+			fprintf (stderr, "\t   gridline interval.  If the [t] is not given, a<tick> AND f<tick>\n");
+			fprintf (stderr, "\t   (but no g<tick>) are set.  The frame interval = anotation interval\n");
+			fprintf (stderr, "\t   if no separate f<tick> is given.  <tick> is the desired tick-interval.\n");
+			fprintf (stderr, "\t   The optional [m|s] indicates minutes or seconds.  To specify separate x and y tick-.\n");
+			fprintf (stderr, "\t   info, separate the strings with a slash [/].  E.g., 5 degree ticks for\n");
+			fprintf (stderr, "\t   frame AND anotation, 30 minutes grid lines, use\n");
+			fprintf (stderr, "\t        -B5g30m.   For different y ticks try -B5g30m/2g15m\n");
+			fprintf (stderr, "\t   [If -Jz is selected, use slashes to separate x, y, and z-tickinfo.]\n");
+			fprintf (stderr, "\t   Add labels by surrounding them with colons.  If first character is a\n");
+			fprintf (stderr, "\t   period, then the text is used as the plot title (e.g. :.Plot_Title:).\n");
+			fprintf (stderr, "\t   If it is a comma, then the text is used as unit anotation (e.g. :,%%:).\n");
+			fprintf (stderr, "\t   If unit starts with - there will be no space between unit and anotation\n");
+			fprintf (stderr, "\t   Append any combination of w, e, s, n to plot those axes\n");
+			fprintf (stderr, "\t   only [Default is all].  Append l to anotate log10 (value), p for\n");
+			fprintf (stderr, "\t   10^(log10(value)).  (See -J for log10 scaling).  For -Jx with power\n");
+			fprintf (stderr, "\t   scaling, append p to annotate value at equidistant pow increments\n");
+			fprintf (stderr, "\t   See psbasemap man pages for more details and examples.\n");
 			break;
 			
 		case 'b':	/* Condensed tickmark option */
 		
-			fprintf (stderr, "	-B Boundary anotation, give -B<xinfo>[/<yinfo>[/<zinfo>]][.:\"title\":][wesnzWESNZ+]\n");
-			fprintf (stderr, "	   <?info> is 1-3 substring(s) of form [a|f|g]<tick>[m][l|p] and optionally :\"label\": and/or :,[-]\"unit\":\n");
-			fprintf (stderr, "	   (See psbasemap man pages for more details and examples.)\n");
+			fprintf (stderr, "\t-B Boundary anotation, give -B<xinfo>[/<yinfo>[/<zinfo>]][.:\"title\":][wesnzWESNZ+]\n");
+			fprintf (stderr, "\t   <?info> is 1-3 substring(s) of form [a|f|g]<tick>[m][l|p] and optionally :\"label\": and/or :,[-]\"unit\":\n");
+			fprintf (stderr, "\t   (See psbasemap man pages for more details and examples.)\n");
 			break;
 			
 		case 'H':	/* Header */
 		
-			fprintf (stderr, "	-H means input/output file has %d Header record(s) [%s]\n",
+			fprintf (stderr, "\t-H means input/output file has %d Header record(s) [%s]\n",
 				gmtdefs.n_header_recs, GMT_choice[gmtdefs.io_header]);
-			fprintf (stderr, "	   Optionally, append number of header records\n");
+			fprintf (stderr, "\t   Optionally, append number of header records\n");
 			break;
 			
 		case 'J':	/* Map projection option */
 		
-			fprintf (stderr, "	-J Selects the map proJection system. (<mapwidth> is in %s)\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t-J Selects the map proJection system. (<mapwidth> is in %s)\n", GMT_unit_names[gmtdefs.measure_unit]);
 			
-			fprintf (stderr, "	   -Ja<lon0>/<lat0>/<scale> OR -JA<lon0>/<lat0>/<mapwidth> (Lambert Azimuthal Equal Area)\n");
-			fprintf (stderr, "	     lon0/lat0 is the center or the projection.\n");
-			fprintf (stderr, "	     Scale is either <1:xxxx> or <radius>/<lat>, where <radius> distance\n");
-			fprintf (stderr, "	     is in %s to the oblique parallel <lat>.\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   -Ja<lon0>/<lat0>/<scale> OR -JA<lon0>/<lat0>/<mapwidth> (Lambert Azimuthal Equal Area)\n");
+			fprintf (stderr, "\t     lon0/lat0 is the center or the projection.\n");
+			fprintf (stderr, "\t     Scale is either <1:xxxx> or <radius>/<lat>, where <radius> distance\n");
+			fprintf (stderr, "\t     is in %s to the oblique parallel <lat>.\n", GMT_unit_names[gmtdefs.measure_unit]);
 			
-			fprintf (stderr, "	   -Jb<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JB<lon0>/<lat0>/<lat1>/<lat2>/<mapwidth> (Albers Equal-Area Conic)\n");
-			fprintf (stderr, "	     Give origin, 2 standard parallels, and true scale in %s/degree\n",
+			fprintf (stderr, "\t   -Jb<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JB<lon0>/<lat0>/<lat1>/<lat2>/<mapwidth> (Albers Equal-Area Conic)\n");
+			fprintf (stderr, "\t     Give origin, 2 standard parallels, and true scale in %s/degree\n",
 				GMT_unit_names[gmtdefs.measure_unit]);
 				
-			fprintf (stderr, "	   -Jc<lon0>/<lat0><scale> OR -JC<lon0>/<lat0><mapwidth> (Cassini)\n");
-			fprintf (stderr, "	     Give central point and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   -Jc<lon0>/<lat0><scale> OR -JC<lon0>/<lat0><mapwidth> (Cassini)\n");
+			fprintf (stderr, "\t     Give central point and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
 			
-			fprintf (stderr, "	   -Jd<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JD<lon0>/<lat0>/<lat1>/<lat2>/<mapwidth> (Equidistant Conic)\n");
-			fprintf (stderr, "	     Give origin, 2 standard parallels, and true scale in %s/degree\n",
+			fprintf (stderr, "\t   -Jd<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JD<lon0>/<lat0>/<lat1>/<lat2>/<mapwidth> (Equidistant Conic)\n");
+			fprintf (stderr, "\t     Give origin, 2 standard parallels, and true scale in %s/degree\n",
 				GMT_unit_names[gmtdefs.measure_unit]);
 				
-			fprintf (stderr, "	   -Je<lon0>/<lat0>/<scale> OR -JE<lon0>/<lat0>/<mapwidth> (Azimuthal Equidistant)\n");
-			fprintf (stderr, "	     lon0/lat0 is the center or the projection.\n");
-			fprintf (stderr, "	     Scale is either <1:xxxx> or <radius>/<lat>, where <radius> is distance\n");
-			fprintf (stderr, "	     in %s to the oblique parallel <lat>. \n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   -Je<lon0>/<lat0>/<scale> OR -JE<lon0>/<lat0>/<mapwidth> (Azimuthal Equidistant)\n");
+			fprintf (stderr, "\t     lon0/lat0 is the center or the projection.\n");
+			fprintf (stderr, "\t     Scale is either <1:xxxx> or <radius>/<lat>, where <radius> is distance\n");
+			fprintf (stderr, "\t     in %s to the oblique parallel <lat>. \n", GMT_unit_names[gmtdefs.measure_unit]);
 			
-			fprintf (stderr, "	   -Jf<lon0>/<lat0>/<horizon>/<scale> OR -JF<lon0>/<lat0>/<horizon>/<mapwidth> (Gnomonic)\n");
-			fprintf (stderr, "	     lon0/lat0 is the center or the projection.\n");
-			fprintf (stderr, "	     horizon is max distance from center of the projection (< 90).\n");
-			fprintf (stderr, "	     Scale is either <1:xxxx> or <radius>/<lat>, where <radius> is distance\n");
-			fprintf (stderr, "	     in %s to the oblique parallel <lat>. \n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   -Jf<lon0>/<lat0>/<horizon>/<scale> OR -JF<lon0>/<lat0>/<horizon>/<mapwidth> (Gnomonic)\n");
+			fprintf (stderr, "\t     lon0/lat0 is the center or the projection.\n");
+			fprintf (stderr, "\t     horizon is max distance from center of the projection (< 90).\n");
+			fprintf (stderr, "\t     Scale is either <1:xxxx> or <radius>/<lat>, where <radius> is distance\n");
+			fprintf (stderr, "\t     in %s to the oblique parallel <lat>. \n", GMT_unit_names[gmtdefs.measure_unit]);
 			
-			fprintf (stderr, "	   -Jg<lon0>/<lat0>/<scale> OR -JG<lon0>/<lat0>/<mapwidth> (Orthographic)\n");
-			fprintf (stderr, "	     lon0/lat0 is the center or the projection.\n");
-			fprintf (stderr, "	     Scale is either <1:xxxx> or <radius>/<lat>, where <radius> is distance\n");
-			fprintf (stderr, "	     in %s to the oblique parallel <lat>. \n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   -Jg<lon0>/<lat0>/<scale> OR -JG<lon0>/<lat0>/<mapwidth> (Orthographic)\n");
+			fprintf (stderr, "\t     lon0/lat0 is the center or the projection.\n");
+			fprintf (stderr, "\t     Scale is either <1:xxxx> or <radius>/<lat>, where <radius> is distance\n");
+			fprintf (stderr, "\t     in %s to the oblique parallel <lat>. \n", GMT_unit_names[gmtdefs.measure_unit]);
 			
-			fprintf (stderr, "	   -Jh<lon0>/<scale> OR -JH<lon0>/<mapwidth> (Hammer-Aitoff)\n");
-			fprintf (stderr, "	     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   -Jh<lon0>/<scale> OR -JH<lon0>/<mapwidth> (Hammer-Aitoff)\n");
+			fprintf (stderr, "\t     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
 			
-			fprintf (stderr, "	   -Ji<lon0>/<scale> OR -JI<lon0>/<mapwidth> (Sinusoidal)\n");
-			fprintf (stderr, "	     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   -Ji<lon0>/<scale> OR -JI<lon0>/<mapwidth> (Sinusoidal)\n");
+			fprintf (stderr, "\t     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
 
-			fprintf (stderr, "	   -Jj<lon0>/<scale> OR -JJ<lon0>/<mapwidth> (Miller projection)\n");
-			fprintf (stderr, "	     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   -Jj<lon0>/<scale> OR -JJ<lon0>/<mapwidth> (Miller projection)\n");
+			fprintf (stderr, "\t     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
 
-			fprintf (stderr, "	   -Jk[f|s]<lon0>/<scale> OR -JK[f|s]<lon0>/<mapwidth> (Eckert IV (f) or VI (s))\n");
-			fprintf (stderr, "	     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   -Jk[f|s]<lon0>/<scale> OR -JK[f|s]<lon0>/<mapwidth> (Eckert IV (f) or VI (s))\n");
+			fprintf (stderr, "\t     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
 
-			fprintf (stderr, "	   -Jl<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JL<lon0>/<lat0>/<lat1>/<lat2>/<mapwidth> (Lambert Conformal Conic)\n");
-			fprintf (stderr, "	     Give origin, 2 standard parallels,  and true scale in %s/degree\n",
+			fprintf (stderr, "\t   -Jl<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JL<lon0>/<lat0>/<lat1>/<lat2>/<mapwidth> (Lambert Conformal Conic)\n");
+			fprintf (stderr, "\t     Give origin, 2 standard parallels,  and true scale in %s/degree\n",
 				GMT_unit_names[gmtdefs.measure_unit]);
 				
-			fprintf (stderr, "	   -Jm | -JM (Mercator).  Specify one of two definitions:\n");
-			fprintf (stderr, "	      -Jm<scale> OR -JM<mapwidth>\n");
-			fprintf (stderr, "	       Give true scale at Equator in %s/degree\n",
+			fprintf (stderr, "\t   -Jm | -JM (Mercator).  Specify one of two definitions:\n");
+			fprintf (stderr, "\t      -Jm<scale> OR -JM<mapwidth>\n");
+			fprintf (stderr, "\t       Give true scale at Equator in %s/degree\n",
 				GMT_unit_names[gmtdefs.measure_unit]);
-			fprintf (stderr, "	      -Jm<lon0>/<lat0>/<scale> OR -JM<lon0>/<lat0>/<mapwidth>\n");
-			fprintf (stderr, "	       Give true scale at parallel lat0 in %s/degree\n",
+			fprintf (stderr, "\t      -Jm<lon0>/<lat0>/<scale> OR -JM<lon0>/<lat0>/<mapwidth>\n");
+			fprintf (stderr, "\t       Give true scale at parallel lat0 in %s/degree\n",
 				GMT_unit_names[gmtdefs.measure_unit]);
 				
-			fprintf (stderr, "	   -Jn<lon0>/<scale> OR -JN<lon0>/<mapwidth> (Robinson projection)\n");
-			fprintf (stderr, "	     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   -Jn<lon0>/<scale> OR -JN<lon0>/<mapwidth> (Robinson projection)\n");
+			fprintf (stderr, "\t     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
 
-			fprintf (stderr, "	   -Jo | -JO (Oblique Mercator).  Specify one of three definitions:\n");
-			fprintf (stderr, "	      -Joa<orig_lon>/<orig_lat>/<azimuth>/<scale> OR -JOa<orig_lon>/<orig_lat>/<azimuth>/<mapwidth>\n");
-			fprintf (stderr, "	      		Give origin and azimuth of oblique equator\n");
-			fprintf (stderr, "	      -Job<orig_lon>/<orig_lat>/<b_lon>/<b_lat>/<scale> OR -JOb<orig_lon>/<orig_lat>/<b_lon>/<b_lat>/<mapwidth>\n");
-			fprintf (stderr, "	      		Give origin and second point on oblique equator\n");
-			fprintf (stderr, "	      -Joc<orig_lon>/<orig_lat>/<pole_lon>/<pole_lat>/<scale> OR -JOc<orig_lon>/<orig_lat>/<pole_lon>/<pole_lat>/<mapwidth>\n");
-			fprintf (stderr, "	      		Give origin and pole of projection\n");
-			fprintf (stderr, "	        Scale is true scale at oblique equator in %s/degree\n",
+			fprintf (stderr, "\t   -Jo | -JO (Oblique Mercator).  Specify one of three definitions:\n");
+			fprintf (stderr, "\t      -Joa<orig_lon>/<orig_lat>/<azimuth>/<scale> OR -JOa<orig_lon>/<orig_lat>/<azimuth>/<mapwidth>\n");
+			fprintf (stderr, "\t      		Give origin and azimuth of oblique equator\n");
+			fprintf (stderr, "\t      -Job<orig_lon>/<orig_lat>/<b_lon>/<b_lat>/<scale> OR -JOb<orig_lon>/<orig_lat>/<b_lon>/<b_lat>/<mapwidth>\n");
+			fprintf (stderr, "\t      		Give origin and second point on oblique equator\n");
+			fprintf (stderr, "\t      -Joc<orig_lon>/<orig_lat>/<pole_lon>/<pole_lat>/<scale> OR -JOc<orig_lon>/<orig_lat>/<pole_lon>/<pole_lat>/<mapwidth>\n");
+			fprintf (stderr, "\t      		Give origin and pole of projection\n");
+			fprintf (stderr, "\t        Scale is true scale at oblique equator in %s/degree\n",
 				GMT_unit_names[gmtdefs.measure_unit]);
-			fprintf (stderr, "	        Specify region in oblique degrees OR use -R<>r\n");
+			fprintf (stderr, "\t        Specify region in oblique degrees OR use -R<>r\n");
 			
-			fprintf (stderr, "	   -Jq<lon0>/<scale> OR -JQ<lon0>/<mapwidth> (Equidistant Cylindrical)\n");
-			fprintf (stderr, "	     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   -Jq<lon0>/<scale> OR -JQ<lon0>/<mapwidth> (Equidistant Cylindrical)\n");
+			fprintf (stderr, "\t     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
 			
-			fprintf (stderr, "	   -Jr<lon0>/<scale> OR -JR<lon0>/<mapwidth> (Winkel Tripel)\n");
-			fprintf (stderr, "	     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   -Jr<lon0>/<scale> OR -JR<lon0>/<mapwidth> (Winkel Tripel)\n");
+			fprintf (stderr, "\t     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
 
-			fprintf (stderr, "	   -Js<lon0>/<lat0>/<scale> OR -JS<lon0>/<lat0>/<mapwidth> (Stereographic)\n");
-			fprintf (stderr, "	     lon0/lat0 is the center or the projection.\n");
-			fprintf (stderr, "	     Scale is either <1:xxxx> (true at pole) or <slat>/<1:xxxx> (true at <slat>)\n");
-			fprintf (stderr, "	     or <radius>/<lat> (distance in %s to the [oblique] parallel <lat>.\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   -Js<lon0>/<lat0>/<scale> OR -JS<lon0>/<lat0>/<mapwidth> (Stereographic)\n");
+			fprintf (stderr, "\t     lon0/lat0 is the center or the projection.\n");
+			fprintf (stderr, "\t     Scale is either <1:xxxx> (true at pole) or <slat>/<1:xxxx> (true at <slat>)\n");
+			fprintf (stderr, "\t     or <radius>/<lat> (distance in %s to the [oblique] parallel <lat>.\n", GMT_unit_names[gmtdefs.measure_unit]);
 			
-			fprintf (stderr, "	   -Jt | -JT (Transverse Mercator).  Specify one of two definitions:\n");
-			fprintf (stderr, "	      -Jt<lon0>/<scale> OR -JT<lon0>/<mapwidth>\n");
-			fprintf (stderr, "	         Give central meridian and scale as 1:xxxx or %s/degree\n",
+			fprintf (stderr, "\t   -Jt | -JT (Transverse Mercator).  Specify one of two definitions:\n");
+			fprintf (stderr, "\t      -Jt<lon0>/<scale> OR -JT<lon0>/<mapwidth>\n");
+			fprintf (stderr, "\t         Give central meridian and scale as 1:xxxx or %s/degree\n",
 				GMT_unit_names[gmtdefs.measure_unit]);
-			fprintf (stderr, "	      -Jt<lon0>/<lat0>/<scale> OR -JT<lon0>/<lat0>/<mapwidth>\n");
-			fprintf (stderr, "	         Give lon/lat of origin, and scale as 1:xxxx or %s/degree\n",
-				GMT_unit_names[gmtdefs.measure_unit]);
-				
-			fprintf (stderr, "	   -Ju<zone>/<scale> OR -JU<zone>/<mapwidth> (UTM)\n");
-			fprintf (stderr, "	     Give zone (1-60, negative for S hemisphere) and scale as 1:xxxx or %s/degree\n",
+			fprintf (stderr, "\t      -Jt<lon0>/<lat0>/<scale> OR -JT<lon0>/<lat0>/<mapwidth>\n");
+			fprintf (stderr, "\t         Give lon/lat of origin, and scale as 1:xxxx or %s/degree\n",
 				GMT_unit_names[gmtdefs.measure_unit]);
 				
-			fprintf (stderr, "	   -Jv<lon0>/<scale> OR -JV<lon0>/<mapwidth> (van der Grinten)\n");
-			fprintf (stderr, "	     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   -Ju<zone>/<scale> OR -JU<zone>/<mapwidth> (UTM)\n");
+			fprintf (stderr, "\t     Give zone (1-60, negative for S hemisphere) and scale as 1:xxxx or %s/degree\n",
+				GMT_unit_names[gmtdefs.measure_unit]);
+				
+			fprintf (stderr, "\t   -Jv<lon0>/<scale> OR -JV<lon0>/<mapwidth> (van der Grinten)\n");
+			fprintf (stderr, "\t     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
 			
-			fprintf (stderr, "	   -Jw<lon0>/<scale> OR -JW<lon0>/<mapwidth> (Mollweide)\n");
-			fprintf (stderr, "	     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   -Jw<lon0>/<scale> OR -JW<lon0>/<mapwidth> (Mollweide)\n");
+			fprintf (stderr, "\t     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
 			
-			fprintf (stderr, "	   -Jy<lon0>/<lats>/<scale> OR -JY<lon0>/<lats>/<mapwidth> (Cylindrical Equal-area)\n");
-			fprintf (stderr, "	     Give central meridian, standard parallel and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
-			fprintf (stderr, "	     <slat> = 45 (Peters), 37.4 (Trystan Edwards), 30 (Behrmann), 0 (Lambert)\n");
+			fprintf (stderr, "\t   -Jy<lon0>/<lats>/<scale> OR -JY<lon0>/<lats>/<mapwidth> (Cylindrical Equal-area)\n");
+			fprintf (stderr, "\t     Give central meridian, standard parallel and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t     <slat> = 45 (Peters), 37.4 (Trystan Edwards), 30 (Behrmann), 0 (Lambert)\n");
 
-			fprintf (stderr, "	   -Jp[a]<scale>[/<base>] OR -JP[a]<mapwidth>[/<base>] (Polar (theta,radius))\n");
-			fprintf (stderr, "	     Linear scaling for polar coordinates.\n");
-			fprintf (stderr, "	     Optionally append 'a' to -Jp or -JP to use azimuths (CW from North) instead of directions (CCW from East) [default].\n");
-			fprintf (stderr, "	     Give scale in %s/units\n", GMT_unit_names[gmtdefs.measure_unit]);
-			fprintf (stderr, "	     Optionally, append theta value for angular offset (base) [0]\n");
+			fprintf (stderr, "\t   -Jp[a]<scale>[/<base>] OR -JP[a]<mapwidth>[/<base>] (Polar (theta,radius))\n");
+			fprintf (stderr, "\t     Linear scaling for polar coordinates.\n");
+			fprintf (stderr, "\t     Optionally append 'a' to -Jp or -JP to use azimuths (CW from North) instead of directions (CCW from East) [default].\n");
+			fprintf (stderr, "\t     Give scale in %s/units\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t     Optionally, append theta value for angular offset (base) [0]\n");
 				
-			fprintf (stderr, "	   -Jx OR -JX for non-map projections.  Scale in %s/units.  Specify one:\n",
+			fprintf (stderr, "\t   -Jx OR -JX for non-map projections.  Scale in %s/units.  Specify one:\n",
 				GMT_unit_names[gmtdefs.measure_unit]);
-			fprintf (stderr, "	      -Jx<x-scale>		Linear projection\n");
-			fprintf (stderr, "	      -Jx<x-scale>l		Log10 projection\n");
-			fprintf (stderr, "	      -Jx<x-scale>p<power>	x^power projection\n");
-			fprintf (stderr, "	      Use / to specify separate x/y scaling (e.g., -Jx0.5/0.3.)\n");
-			fprintf (stderr, "	      If -JX is used then give axes lengths rather than scales\n");
+			fprintf (stderr, "\t      -Jx<x-scale>		Linear projection\n");
+			fprintf (stderr, "\t      -Jx<x-scale>l		Log10 projection\n");
+			fprintf (stderr, "\t      -Jx<x-scale>p<power>	x^power projection\n");
+			fprintf (stderr, "\t      Use / to specify separate x/y scaling (e.g., -Jx0.5/0.3.)\n");
+			fprintf (stderr, "\t      If -JX is used then give axes lengths rather than scales\n");
 			break;
 			
 		case 'j':	/* Condensed version of J */
 		
-			fprintf (stderr, "	-J Selects map proJection. (<scale> in %s/degree, <mapwidth> in %s)\n", GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t-J Selects map proJection. (<scale> in %s/degree, <mapwidth> in %s)\n", GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 			
-			fprintf (stderr, "	   -Ja|A<lon0>/<lat0>/<scale (or radius/lat)|mapwidth> (Lambert Azimuthal Equal Area)\n");
+			fprintf (stderr, "\t   -Ja|A<lon0>/<lat0>/<scale (or radius/lat)|mapwidth> (Lambert Azimuthal Equal Area)\n");
 			
-			fprintf (stderr, "	   -Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scale|mapwidth> (Albers Equal-Area Conic)\n");
-			fprintf (stderr, "	   -Jc|C<lon0>/<lat0><scale|mapwidth> (Cassini)\n");
+			fprintf (stderr, "\t   -Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scale|mapwidth> (Albers Equal-Area Conic)\n");
+			fprintf (stderr, "\t   -Jc|C<lon0>/<lat0><scale|mapwidth> (Cassini)\n");
 			
-			fprintf (stderr, "	   -Jd|D<lon0>/<lat0>/<lat1>/<lat2>/<scale|mapwidth> (Equidistant Conic)\n");
+			fprintf (stderr, "\t   -Jd|D<lon0>/<lat0>/<lat1>/<lat2>/<scale|mapwidth> (Equidistant Conic)\n");
 
-			fprintf (stderr, "	   -Je|E<lon0>/<lat0>/<scale (or radius/lat)|mapwidth>  (Azimuthal Equidistant)\n");
+			fprintf (stderr, "\t   -Je|E<lon0>/<lat0>/<scale (or radius/lat)|mapwidth>  (Azimuthal Equidistant)\n");
 			
-			fprintf (stderr, "	   -Jf|F<lon0>/<lat0>/<horizon>/<scale (or radius/lat)|mapwidth>  (Gnomonic)\n");
+			fprintf (stderr, "\t   -Jf|F<lon0>/<lat0>/<horizon>/<scale (or radius/lat)|mapwidth>  (Gnomonic)\n");
 
-			fprintf (stderr, "	   -Jg|G<lon0>/<lat0>/<scale (or radius/lat)|mapwidth>  (Orthographic)\n");
+			fprintf (stderr, "\t   -Jg|G<lon0>/<lat0>/<scale (or radius/lat)|mapwidth>  (Orthographic)\n");
 			
-			fprintf (stderr, "	   -Jh|H<lon0>/<scale|mapwidth> (Hammer-Aitoff)\n");
+			fprintf (stderr, "\t   -Jh|H<lon0>/<scale|mapwidth> (Hammer-Aitoff)\n");
 			
-			fprintf (stderr, "	   -Ji|I<lon0>/<scale|mapwidth> (Sinusoidal)\n");
+			fprintf (stderr, "\t   -Ji|I<lon0>/<scale|mapwidth> (Sinusoidal)\n");
 
-			fprintf (stderr, "	   -Jj|J<lon0>/<scale|mapwidth> (Miller)\n");
+			fprintf (stderr, "\t   -Jj|J<lon0>/<scale|mapwidth> (Miller)\n");
 
-			fprintf (stderr, "	   -Jk|K[f|s]<lon0>/<scale/mapwidth> (Eckert IV (f) or VI (s))\n");
+			fprintf (stderr, "\t   -Jk|K[f|s]<lon0>/<scale/mapwidth> (Eckert IV (f) or VI (s))\n");
 
 
-			fprintf (stderr, "	   -Jl|L<lon0>/<lat0>/<lat1>/<lat2>/<scale|mapwidth> (Lambert Conformal Conic)\n");
+			fprintf (stderr, "\t   -Jl|L<lon0>/<lat0>/<lat1>/<lat2>/<scale|mapwidth> (Lambert Conformal Conic)\n");
 				
-			fprintf (stderr, "	   -Jm|M (Mercator).  Specify one of two definitions:\n");
-			fprintf (stderr, "	      -Jm|M<scale|mapwidth>\n");
-			fprintf (stderr, "	      -Jm|M<lon0>/<lat0>/<scale|mapwidth>\n");
+			fprintf (stderr, "\t   -Jm|M (Mercator).  Specify one of two definitions:\n");
+			fprintf (stderr, "\t      -Jm|M<scale|mapwidth>\n");
+			fprintf (stderr, "\t      -Jm|M<lon0>/<lat0>/<scale|mapwidth>\n");
 				
-			fprintf (stderr, "	   -Jn|N<lon0>/<scale|mapwidth> (Robinson projection)\n");
+			fprintf (stderr, "\t   -Jn|N<lon0>/<scale|mapwidth> (Robinson projection)\n");
 
-			fprintf (stderr, "	   -Jo|O (Oblique Mercator).  Specify one of three definitions:\n");
-			fprintf (stderr, "	      -Jo|Oa<orig_lon>/<orig_lat>/<azimuth>/<scale|mapwidth>\n");
-			fprintf (stderr, "	      -Jo|Ob<orig_lon>/<orig_lat>/<b_lon>/<b_lat>/<scale|mapwidth>\n");
-			fprintf (stderr, "	      -Jo|Oc<orig_lon>/<orig_lat>/<pole_lon>/<pole_lat>/<scale|mapwidth>\n");
+			fprintf (stderr, "\t   -Jo|O (Oblique Mercator).  Specify one of three definitions:\n");
+			fprintf (stderr, "\t      -Jo|Oa<orig_lon>/<orig_lat>/<azimuth>/<scale|mapwidth>\n");
+			fprintf (stderr, "\t      -Jo|Ob<orig_lon>/<orig_lat>/<b_lon>/<b_lat>/<scale|mapwidth>\n");
+			fprintf (stderr, "\t      -Jo|Oc<orig_lon>/<orig_lat>/<pole_lon>/<pole_lat>/<scale|mapwidth>\n");
 			
-			fprintf (stderr, "	   -Jq|Q<lon0>/<scale|mapwidth> (Equidistant Cylindrical)\n");
+			fprintf (stderr, "\t   -Jq|Q<lon0>/<scale|mapwidth> (Equidistant Cylindrical)\n");
 			
-			fprintf (stderr, "	   -Jr|R<lon0>/<scale|mapwidth> (Winkel Tripel)\n");
+			fprintf (stderr, "\t   -Jr|R<lon0>/<scale|mapwidth> (Winkel Tripel)\n");
 
-			fprintf (stderr, "	   -Js|S<lon0>/<lat0>/[<slat>/]<scale (or radius/lat)|mapwidth> (Stereographic)\n");
+			fprintf (stderr, "\t   -Js|S<lon0>/<lat0>/[<slat>/]<scale (or radius/lat)|mapwidth> (Stereographic)\n");
 			
-			fprintf (stderr, "	   -Jt|T (Transverse Mercator).  Specify one of two definitions:\n");
-			fprintf (stderr, "	      -Jt|T<lon0>/<scale|mapwidth>\n");
-			fprintf (stderr, "	      -Jt|T<lon0>/<lat0>/<scale|mapwidth>\n");
+			fprintf (stderr, "\t   -Jt|T (Transverse Mercator).  Specify one of two definitions:\n");
+			fprintf (stderr, "\t      -Jt|T<lon0>/<scale|mapwidth>\n");
+			fprintf (stderr, "\t      -Jt|T<lon0>/<lat0>/<scale|mapwidth>\n");
 				
-			fprintf (stderr, "	   -Ju|U<zone>/<scale|mapwidth> (UTM)\n");
+			fprintf (stderr, "\t   -Ju|U<zone>/<scale|mapwidth> (UTM)\n");
 				
-			fprintf (stderr, "	   -Jv|V<lon0>/<scale/mapwidth> (van der Grinten)\n");
+			fprintf (stderr, "\t   -Jv|V<lon0>/<scale/mapwidth> (van der Grinten)\n");
 
-			fprintf (stderr, "	   -Jw|W<lon0>/<scale|mapwidth> (Mollweide)\n");
+			fprintf (stderr, "\t   -Jw|W<lon0>/<scale|mapwidth> (Mollweide)\n");
 			
-			fprintf (stderr, "	   -Jy|Y<lon0>/<lats>/<scale|mapwidth> (Cylindrical Equal-area)\n");
+			fprintf (stderr, "\t   -Jy|Y<lon0>/<lats>/<scale|mapwidth> (Cylindrical Equal-area)\n");
 
-			fprintf (stderr, "	   -Jp|P[a]<scale|mapwidth>[/<origin>] (Polar [azimuth] (theta,radius))\n");
+			fprintf (stderr, "\t   -Jp|P[a]<scale|mapwidth>[/<origin>] (Polar [azimuth] (theta,radius))\n");
 				
-			fprintf (stderr, "	   -Jx|X<x-scale|mapwidth>[l|p<power>][/<y-scale|mapheight>[l|p<power>]] (Linear projections)\n");
-			fprintf (stderr, "	   (See psbasemap for more details on projection syntax)\n");
+			fprintf (stderr, "\t   -Jx|X<x-scale|mapwidth>[l|p<power>][/<y-scale|mapheight>[l|p<power>]] (Linear projections)\n");
+			fprintf (stderr, "\t   (See psbasemap for more details on projection syntax)\n");
 			break;
 			
 		case 'K':	/* Append-more-PostScript-later */
 
-			fprintf (stderr, "	-K means allow for more plot code to be appended later [%s].\n",
+			fprintf (stderr, "\t-K means allow for more plot code to be appended later [%s].\n",
 				GMT_choice[!gmtdefs.last_page]);
 			break;
 			
 		case 'M':	/* Multisegment option */
 
-			fprintf (stderr, "	-M Input file(s) contain multiple segments separated by a record\n");
-			fprintf (stderr, "	   whose first character is <flag> [%c]\n", GMT_io.EOF_flag);
+			fprintf (stderr, "\t-M Input file(s) contain multiple segments separated by a record\n");
+			fprintf (stderr, "\t   whose first character is <flag> [%c]\n", GMT_io.EOF_flag);
 			break;
 			
 		case 'O':	/* Overlay plot */
 
-			fprintf (stderr, "	-O means Overlay plot mode [%s].\n",
+			fprintf (stderr, "\t-O means Overlay plot mode [%s].\n",
 				GMT_choice[gmtdefs.overlay]);
 			break;
 			
 		case 'P':	/* Portrait or landscape */
 		
-			fprintf (stderr, "	-P means Portrait page orientation [%s].\n",
+			fprintf (stderr, "\t-P means Portrait page orientation [%s].\n",
 				GMT_choice[(gmtdefs.page_orientation & 1)]);
 			break;
 			
 		case 'R':	/* Region option */
 		
-			fprintf (stderr, "	-R specifies the min/max coordinates of data region in user units.\n");
-			fprintf (stderr, "	   Use dd:mm[:ss] format for regions given in degrees and minutes [and seconds].\n");
-			fprintf (stderr, "	   Append r if -R specifies the longitudes/latitudes of the lower left\n");
-			fprintf (stderr, "	   and upper right corners of a rectangular area\n");
+			fprintf (stderr, "\t-R specifies the min/max coordinates of data region in user units.\n");
+			fprintf (stderr, "\t   Use dd:mm[:ss] format for regions given in degrees and minutes [and seconds].\n");
+			fprintf (stderr, "\t   Append r if -R specifies the longitudes/latitudes of the lower left\n");
+			fprintf (stderr, "\t   and upper right corners of a rectangular area\n");
 			break;
 			
 		case 'r':	/* Region option for 3-D */
 		
-			fprintf (stderr, "	-R specifies the xyz min/max coordinates of the plot window in user units.\n");
-			fprintf (stderr, "	   Use dd:mm[:ss] format for regions given in degrees and minutes [and seconds].\n");
-			fprintf (stderr, "	   Append r if first 4 arguments to -R specifies the longitudes/latitudes\n");
-			fprintf (stderr, "	   of the lower left and upper right corners of a rectangular area\n");
+			fprintf (stderr, "\t-R specifies the xyz min/max coordinates of the plot window in user units.\n");
+			fprintf (stderr, "\t   Use dd:mm[:ss] format for regions given in degrees and minutes [and seconds].\n");
+			fprintf (stderr, "\t   Append r if first 4 arguments to -R specifies the longitudes/latitudes\n");
+			fprintf (stderr, "\t   of the lower left and upper right corners of a rectangular area\n");
 			break;
 			
 		case 'U':	/* Plot time mark and [optionally] command line */
 		
-			fprintf (stderr, "	-U to plot Unix System Time stamp [and optionally appended text].\n");
-			fprintf (stderr, "	   You may also set the lower left corner position of stamp [%lg/%lg].\n",
+			fprintf (stderr, "\t-U to plot Unix System Time stamp [and optionally appended text].\n");
+			fprintf (stderr, "\t   You may also set the lower left corner position of stamp [%lg/%lg].\n",
 				gmtdefs.unix_time_pos[0], gmtdefs.unix_time_pos[1]);
 			fprintf (stderr, "	   Give -Uc to have the command line plotted [%s].\n",
 				GMT_choice[gmtdefs.unix_time]);
@@ -364,26 +364,26 @@ void GMT_explain_option (char option)
 			
 		case 'V':	/* Verbose */
 		
-			fprintf (stderr, "	-V Run in verbose mode [%s].\n", GMT_choice[gmtdefs.verbose]);
+			fprintf (stderr, "\t-V Run in verbose mode [%s].\n", GMT_choice[gmtdefs.verbose]);
 			break;
 			
 		case 'X':
 		case 'Y':	/* Reset plot origin option */
 		
-			fprintf (stderr, "	-X -Y to shift origin of plot to (<xshift>, <yshift>) [a%lg,a%lg].\n",
+			fprintf (stderr, "\t-X -Y to shift origin of plot to (<xshift>, <yshift>) [a%lg,a%lg].\n",
 				gmtdefs.x_origin, gmtdefs.y_origin);
-			fprintf (stderr, "	   Prepend a for absolute [Default r is relative]\n");
-			fprintf (stderr, "	   (Note that for overlays (-O), the default is [r0,r0].)\n");
+			fprintf (stderr, "\t   Prepend a for absolute [Default r is relative]\n");
+			fprintf (stderr, "\t   (Note that for overlays (-O), the default is [r0,r0].)\n");
 			break;
 			
 		case 'Z':	/* Vertical scaling for 3-D plots */
 		
-			fprintf (stderr, "	   -Jz for z component of 3-D projections.  Same syntax as -Jx.\n");
+			fprintf (stderr, "\t   -Jz for z component of 3-D projections.  Same syntax as -Jx.\n");
 			break;
 			
 		case 'c':	/* Set number of plot copies option */
 		
-			fprintf (stderr, "	-c specifies the number of copies [%d].\n", gmtdefs.n_copies);
+			fprintf (stderr, "\t-c specifies the number of copies [%d].\n", gmtdefs.n_copies);
 			break;
 
 		case 'i':	/* -b binary option with input only */
@@ -403,13 +403,13 @@ void GMT_explain_option (char option)
 
 		case ':':	/* lon/lat or lat/lon */
 
-			fprintf (stderr, "	-: Expect lat/lon input rather than lon/lat [%s].\n",
+			fprintf (stderr, "\t-: Expect lat/lon input rather than lon/lat [%s].\n",
 				GMT_choice[gmtdefs.xy_toggle]);
 			break;
 			
 		case '.':	/* Trailer message */
 		
-			fprintf (stderr, "	(See gmtdefaults man page for hidden GMT default parameters)\n");
+			fprintf (stderr, "\t(See gmtdefaults man page for hidden GMT default parameters)\n");
 			break;
 
 		default:
