@@ -135,8 +135,9 @@ Given topo.grd and the Landsat image veggies.ras, first run \fBgmt2rgb\fP to get
 this image over the topography and shade the result for good measure.  The commands are
 .br
 .sp
-\fBgmt2rgb\fP veggies.ras\fB\-G\fPlayer_%c.grd
-\fBgrdview\fP topo.grd SCALE3 \fB\-G\fP:layer_r.grd:layer_g.grd:layer_b.grd \fB\-Qi \-E\fP140/30 \fB\-I\fPtopo_intens.grd  > image.ps
+\fBgmt2rgb\fP veggies.ras \fB\-G\fPlayer_%c.grd
+.br
+\fBgrdview\fP topo.grd SCALE3 \fB\-Qi \-E\fP140/30 \fB\-I\fPtopo_intens.grd \fB\-G\fP:layer_r.grd:layer_g.grd:layer_b.grd > image.ps
 .SH BUGS
 For the \fB\-Qs\fP option:  \fIPostScript\fP provides no way of smoothly varying colors within a polygon, so colors can only
 vary from polygon to polygon.  To obtain smooth images this way you may resample the grdfile(s) using \fBgrdsample\fP or
