@@ -1,6 +1,6 @@
-#----------------	$Id: GNUmakefile,v 1.9 2001-03-20 22:43:55 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.10 2001-08-14 15:54:49 pwessel Exp $	--------------------
 #
-#		Makefile for GMT Version 3.4
+#		Makefile for GMT Version 3.5
 #			GNU make compatible
 #	[GNU make always looks for GNUmakefile before Makefile/makefile]
 #
@@ -14,7 +14,7 @@
 #	Authors:	Paul Wessel, SOEST, University of Hawaii
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
 #
-#	Date:		07-MAR-2001
+#	Date:		14-AUG-2001
 #-------------------------------------------------------------------------------
 #	Default setup
 #-------------------------------------------------------------------------------
@@ -42,6 +42,7 @@ PS	= -lpsl
 GMT	= -lgmt
 
 LIB_C	= fourt.c \
+	  gmt_calclock.c \
 	  gmt_cdf.c \
 	  gmt_customio.c \
 	  gmt_grdio.c \
@@ -55,6 +56,7 @@ LIB_C	= fourt.c \
 	  gmt_vector.c
 
 GMT_H	= gmt.h \
+	  gmt_calclock.h \
 	  gmt_math.h \
 	  gmt_nan.h \
 	  gmt_map.h \
