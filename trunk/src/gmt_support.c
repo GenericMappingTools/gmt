@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.3 2001-03-01 22:08:26 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.4 2001-03-02 19:54:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -311,7 +311,7 @@ int GMT_getinc (char *line, double *dx, double *dy)
 	
 	for (t_pos = -1, i = 0; line[i] && t_pos < 0; i++) if (line[i] == '/') t_pos = i;
 	
-	if (t_pos != -1) {
+	if (t_pos != -1) {	/* Got -I<xstring>/<ystring> */
 		strcpy (xstring, line);
 		xstring[t_pos] = 0;
 		if (t_pos > 0 && (xstring[t_pos-1] == 'm' || xstring[t_pos-1] == 'M') ) {
@@ -344,7 +344,7 @@ int GMT_getinc (char *line, double *dx, double *dy)
 			if ( (sscanf(ystring, "%lf", dy)) != 1) return(1);
 		}
 	}
-	else {
+	else {		/* Got -I<string> */
 		strcpy (xstring, line);
 		t_pos = strlen(xstring);
 		if (t_pos > 0 && (xstring[t_pos-1] == 'm' || xstring[t_pos-1] == 'M') ) {

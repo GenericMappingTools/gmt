@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.2 2001-03-01 22:08:26 pwessel Exp $
+ *	$Id: pslib.c,v 1.3 2001-03-02 19:54:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2223,8 +2223,8 @@ void init_euro_header (struct EPS *eps)
         /newfontname exch def\n\
         /basefontname exch def\n\
         /basefontdict basefontname findfont def\n\
-        /newfont basefontdict maxlength dict def\n\
-        basefontdict\n\
+        /newfont basefontdict maxlength dict def\n");
+fprintf (ps.fp, "        basefontdict\n\
         { exch dup /FID ne \n\
             { dup /Encoding eq\n\
                 { exch dup length array copy\n\
@@ -2234,8 +2234,8 @@ void init_euro_header (struct EPS *eps)
                 }\n\
                 { pop pop }\n\
                 ifelse\n\
-        } forall\n\
-        newfont /FontName newfontname put\n\
+        } forall\n");
+fprintf (ps.fp, "        newfont /FontName newfontname put\n\
         newcodesandnames aload pop\n\
         newcodesandnames length 2 idiv\n\
         { newfont /Encoding get 3 1 roll put }\n\
@@ -2277,8 +2277,8 @@ fprintf (ps.fp,"8#031 /threequarters\n\
 8#225 /mu\n\
 8#226 /multiply\n\
 8#227 /ntilde\n\
-8#230 /onehalf\n\
-8#231 /onequarter\n\
+8#230 /onehalf\n");
+fprintf (ps.fp, "8#231 /onequarter\n\
 8#232 /onesuperior\n\
 8#233 /otilde\n\
 8#234 /plusminus\n\
@@ -2301,8 +2301,8 @@ fprintf (ps.fp,"8#031 /threequarters\n\
 8#330 /Ocircumflex\n\
 8#331 /Odieresis\n\
 8#332 /Ograve\n\
-8#333 /Uacute\n\
-8#334 /Ucircumflex\n\
+8#333 /Uacute\n");
+fprintf (ps.fp, "8#334 /Ucircumflex\n\
 8#335 /Udieresis\n\
 8#336 /Ugrave\n\
 8#337 /aacute\n\
