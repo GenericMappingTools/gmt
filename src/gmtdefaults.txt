@@ -178,7 +178,7 @@ Give a red/green/blue triplet, with each element in the 0\-255 range.
 [0/0/0] (black).
 .TP
 .B BASEMAP_TYPE
-Choose between plain and fancy (thick boundary, alternating black/white frame)  [fancy].
+Choose between plain and fancy (thick boundary, alternating black/white frame; append + for rounded corners)  [fancy].
 For some map projections (e.g., Oblique Mercator), plain is the only option even if fancy is set as default.
 In general, fancy only applies to situations where the projected x and y directions parallel the lon and lat
 directions (e.g., rectangular projections, polar projections).

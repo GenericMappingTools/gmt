@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.127 2004-04-25 20:00:11 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.128 2004-04-26 21:29:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1292,7 +1292,7 @@ int GMT_setparameter (char *keyword, char *value)
 				gmtdefs.basemap_type = GMT_IS_PLAIN;
 			else if (!strcmp (lower_value, "fancy"))
 				gmtdefs.basemap_type = GMT_IS_FANCY;
-			else if (!strcmp (lower_value, "rounded"))
+			else if (!strcmp (lower_value, "fancy+"))
 				gmtdefs.basemap_type = GMT_IS_ROUNDED;
 			else
 				error = TRUE;
@@ -1945,7 +1945,7 @@ int GMT_savedefaults (char *file)
 	else if (gmtdefs.basemap_type == GMT_IS_FANCY)
 		fprintf (fp, "BASEMAP_TYPE		= fancy\n");
 	else if (gmtdefs.basemap_type == GMT_IS_ROUNDED)
-		fprintf (fp, "BASEMAP_TYPE		= rounded\n");
+		fprintf (fp, "BASEMAP_TYPE		= fancy+\n");
 	fprintf (fp, "FRAME_PEN		= %s\n", GMT_putpen (&gmtdefs.frame_pen));
 	(GMT_force_resize) ? fprintf (fp, "FRAME_WIDTH		= %g%c\n", save_frame_width * s, u) :  fprintf (fp, "FRAME_WIDTH		= %g%c\n", gmtdefs.frame_width * s, u);
 	fprintf (fp, "GRID_CROSS_SIZE_PRIMARY	= %g%c\n", gmtdefs.grid_cross_size[0] * s, u);
