@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.74 2004-12-26 22:13:20 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.75 2004-12-26 23:52:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2502,6 +2502,7 @@ int GMT_points_init (char *file, double **xp, double **yp, double **dp, double d
 	char mode[4];
 	int i = 0, n_alloc = GMT_CHUNK, n_fields, n_expected_fields;
 	BOOLEAN ascii;
+	PFI psave;
 
 	x = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
 	y = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
@@ -2516,6 +2517,8 @@ int GMT_points_init (char *file, double **xp, double **yp, double **dp, double d
 		n_expected_fields = BUFSIZ;
 		strcpy (mode, "r");
 		ascii = TRUE;
+		psave = GMT_input;
+		GMT_input = GMT_input_ascii;
 	}
 	if ((fp = GMT_fopen (file, mode)) == NULL) {
 		fprintf (stderr, "%s: Cannot open file %s\n", GMT_program, file);
@@ -2556,7 +2559,8 @@ int GMT_points_init (char *file, double **xp, double **yp, double **dp, double d
 
 	}
 	GMT_fclose (fp);
-	
+	if (!use_GMT_io) GMT_input = psave;	/* Restore former pointer */
+		
 	if (i == 0) {
 		fprintf (stderr, "%s: File %s is empty!\n", GMT_program, file);
 		exit (EXIT_FAILURE);
@@ -2577,10 +2581,11 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 	FILE *fp;
 	struct GMT_LINES *e;
 	int i = -1, j = 0, n, i_alloc = GMT_CHUNK, n_read = 0, j_alloc = GMT_CHUNK;
-	int n_fields, n_expected_fields, n_tot_mem = 0;
+	int n_fields, n_expected_fields;
 	BOOLEAN poly = FALSE, check_cap, save, ascii;
 	double d, dlon, lon_sum, *in;
 	char buffer[BUFSIZ], *t, mode[4];
+	PFI psave;
 		
 	if (use_GMT_io) {	/* Use GMT_io to determine if input is ascii/binary, else it is ascii */
 		n_expected_fields = (GMT_io.binary[GMT_IN]) ? GMT_io.ncol[GMT_IN] : BUFSIZ;
@@ -2591,13 +2596,14 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 		n_expected_fields = BUFSIZ;
 		strcpy (mode, "r");
 		ascii = TRUE;
+		psave = GMT_input;
+		GMT_input = GMT_input_ascii;
 	}
 	if (fabs (dist + 9999.0) < GMT_CONV_LIMIT) poly = TRUE;	/* A polygon */
 	check_cap = (poly && MAPPING);
 	
 	e = (struct GMT_LINES *) GMT_memory (VNULL, (size_t)i_alloc, sizeof (struct GMT_LINES), GMT_program);
 
-n_tot_mem += i_alloc * sizeof (struct GMT_LINES);
 	if ((fp = GMT_fopen (file, mode)) == NULL) {
 		fprintf (stderr, "%s: Cannot open file %s\n", GMT_program, file);
 		exit (EXIT_FAILURE);
@@ -2703,10 +2709,10 @@ n_tot_mem += i_alloc * sizeof (struct GMT_LINES);
 		if (i == (i_alloc-1)) {
 			i_alloc += GMT_CHUNK;
 			e = (struct GMT_LINES *) GMT_memory ((void *)e, (size_t)i_alloc, sizeof (struct GMT_LINES), GMT_program);
-n_tot_mem += GMT_CHUNK * sizeof (struct GMT_LINES);
 		}
 	}
 	GMT_fclose (fp);
+	if (!use_GMT_io) GMT_input = psave;	/* Restore former pointer */
 	GMT_io.multi_segments = save;
 
 	i++;
