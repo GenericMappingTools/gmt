@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.6 2002-03-04 20:07:40 pwessel Exp $
+REM	$Id: gmtsuppl.bat,v 1.7 2002-05-17 19:10:29 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
@@ -58,23 +58,7 @@ IF %CHOICE%=="static" SET COPT2=/I.. /DWIN32 /W3 /nologo %DLL_NETCDF%
 SET LOPT=/nologo /dll /incremental:no
 set GMTLIB=%LIBDIR%\gmt.lib %LIBDIR%\psl.lib netcdf.lib setargv.obj
 REM ----------------------------------------------------
-ECHO STEP 1: Make cps
-REM ----------------------------------------------------
-cd cps
-IF %CHOICE%=="dynamic" CL %COPT% %DLL_NETCDF% /FD /ML /DDLL_EXPORT /DDLL_UU /c libuu.c
-IF %CHOICE%=="dynamic" LINK %LOPT% /out:libuu.dll /implib:libuu.lib libuu.obj setargv.obj
-IF %CHOICE%=="static"  CL %COPT% /c libuu.c
-IF %CHOICE%=="static"  lib /out:libuu.lib libuu.obj
-CL %COPT% /DDLL_UU cpsencode.c libuu.lib setargv.obj
-CL %COPT% /DDLL_UU cpsdecode.c libuu.lib setargv.obj
-del *.obj
-move libuu.lib %LIBDIR%
-IF %CHOICE%=="dynamic" move libuu.dll %BINDIR%
-IF %CHOICE%=="dynamic" move libuu.exp %LIBDIR%
-move *.exe %BINDIR%
-cd ..
-REM ----------------------------------------------------
-ECHO STEP 2: Make dbase
+ECHO STEP 1: Make dbase
 REM ----------------------------------------------------
 cd dbase
 CL %COPT% grdraster.c %GMTLIB%
@@ -82,7 +66,7 @@ del *.obj
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
-ECHO STEP 3: Make imgsrc
+ECHO STEP 2: Make imgsrc
 REM ----------------------------------------------------
 cd imgsrc
 CL %COPT% img2mercgrd.c gmt_imgsubs.c %GMTLIB%
@@ -90,7 +74,7 @@ del *.obj
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
-ECHO STEP 4: Make meca
+ECHO STEP 3: Make meca
 REM ----------------------------------------------------
 cd meca
 CL %COPT2% /c nrutil.c distaz.c utilmeca.c utilstrain.c submeca.c utilvelo.c
@@ -102,11 +86,11 @@ del *.obj
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
-ECHO STEP 5: Make mex
+ECHO STEP 4: Make mex
 REM ----------------------------------------------------
 echo Follow Matlab instructions on how to make mex files
 REM ----------------------------------------------------
-ECHO STEP 6: Make mgg
+ECHO STEP 5: Make mgg
 REM ----------------------------------------------------
 cd mgg
 IF %CHOICE%=="dynamic" CL %COPT% %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c gmt_mgg.c
@@ -130,7 +114,7 @@ move gmt_mgg.lib %LIBDIR%
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
-ECHO STEP 7: Make misc
+ECHO STEP 6: Make misc
 REM ----------------------------------------------------
 cd misc
 SET DIG="\"COM0:\""
@@ -140,7 +124,7 @@ del *.obj
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
-ECHO STEP 8: Make segyprogs
+ECHO STEP 7: Make segyprogs
 REM ----------------------------------------------------
 cd segyprogs
 CL %COPT% /c segy_io.c
@@ -152,7 +136,7 @@ move segy_io.lib %LIBDIR%
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
-ECHO STEP 9: Make spotter
+ECHO STEP 8: Make spotter
 REM ----------------------------------------------------
 cd spotter
 IF %CHOICE%=="dynamic" CL %COPT% %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c libspotter.c
@@ -170,7 +154,7 @@ move spotter.lib %LIBDIR%
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
-ECHO STEP 10: Make x2sys
+ECHO STEP 9: Make x2sys
 REM ----------------------------------------------------
 cd x2sys
 IF %CHOICE%=="dynamic" CL %COPT% /I..\mgg %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c x2sys.c
@@ -186,7 +170,7 @@ move x2sys.lib %LIBDIR%
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
-ECHO STEP 11: Make x_system
+ECHO STEP 10: Make x_system
 REM ----------------------------------------------------
 cd x_system
 SET COPT2=%COPT% /I..\mgg

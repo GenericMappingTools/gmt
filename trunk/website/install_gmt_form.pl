@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.8 2002-01-17 22:57:17 pwessel Exp $
+#       $Id: install_gmt_form.pl,v 1.9 2002-05-17 19:10:29 pwessel Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -57,7 +57,6 @@ $gmt_coast	= $gmt_form{'radio_coast'};
 $gmt_cli_dir	= $gmt_form{'gmt_cli_dir'};
 $gmt_h_dir	= $gmt_form{'gmt_h_dir'};
 $gmt_f_dir	= $gmt_form{'gmt_f_dir'};
-$get_cps	= $gmt_form{'checkbox_cps'};
 $get_dbase	= $gmt_form{'checkbox_dbase'};
 $get_gshhs	= $gmt_form{'checkbox_gshhs'};
 $get_imgsrc	= $gmt_form{'checkbox_imgsrc'};
@@ -89,7 +88,7 @@ print <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.8 $,  on
+# Processed by install_gmt_form.pl $Revision: 1.9 $,  on
 #
 #	$now
 #
@@ -236,13 +235,6 @@ print "#---------------------------------------------\n";
 print "#	GMT SUPPLEMENTS SELECT SECTION\n";
 print "#---------------------------------------------\n";
 
-print "GMT_suppl_cps=";
-if ($get_cps eq "on") {
-	print "y\n";
-}
-else {
-	print "n\n";
-}
 print "GMT_suppl_dbase=";
 if ($get_dbase eq "on") {
 	print "y\n";

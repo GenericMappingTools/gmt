@@ -72,8 +72,6 @@ echo "/opt/geo-data/gmtdata" > /opt/gmt/share/coastline.conf
 /opt/gmt/bin/blockmean
 /opt/gmt/bin/blockmedian
 /opt/gmt/bin/blockmode
-/opt/gmt/bin/cpsdecode
-/opt/gmt/bin/cpsencode
 /opt/gmt/bin/dat2gmt
 /opt/gmt/bin/filter1d
 /opt/gmt/bin/fitcircle
@@ -284,8 +282,6 @@ echo "/opt/geo-data/gmtdata" > /opt/gmt/share/coastline.conf
 /opt/gmt/man/manl/blockmean.l
 /opt/gmt/man/manl/blockmedian.l
 /opt/gmt/man/manl/blockmode.l
-/opt/gmt/man/manl/cpsencode.l
-/opt/gmt/man/manl/cpsdecode.l
 /opt/gmt/man/manl/dat2gmt.l
 /opt/gmt/man/manl/filter1d.l
 /opt/gmt/man/manl/fitcircle.l
