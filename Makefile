@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.17 2004-10-17 08:56:29 pwessel Exp $
+#	$Id: Makefile,v 1.18 2004-11-26 22:36:22 pwessel Exp $
 #
 #	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -121,9 +121,10 @@ xgrid_config:
 		fi
 
 gmtmacros:	
-		if [ `cat src/makegmt.macros | wc -c` = 0 ]; then \
+		if [ ! -s src/makegmt.macros ]; then \
 			echo "src/makegmt.macros is empty - you must rerun configure in the main GMT directory"; \
 			exit; \
+			ls; pwd; \
 		fi
 
 uninstall-suppl:
@@ -241,11 +242,13 @@ uninstall-www:
 
 install-wrapper:
 		if [ ! $(rootdir)/bin = $(wrapbindir) ]; then \
+			mkdir -p $(wrapbindir); \
 			$(INSTALL) src/GMT $(wrapbindir); \
 		else \
 			echo "Install wrapper bin directory the same as distribution bin directory - nothing installed"; \
 		fi
 		if [ ! $(rootdir)/man = $(wrapmandir) ]; then \
+			mkdir -p $(wrapmandir)/man$(mansection); \
 			cp man/manl/GMT.l $(wrapmandir)/man$(mansection); \
 		else \
 			echo "Install wrapper man directory the same as distribution man directory - nothing installed"; \
