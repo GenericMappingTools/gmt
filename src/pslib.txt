@@ -192,6 +192,20 @@ void \fBps_encode_font\fR (\fIfont_no\fP)
 Will reencode this font using the current encoding vector if it is not StandardEncoding.
 .RE
 .IP
+void \fBps_epsimage\fR (\fIxpos, ypos, xlength, ylength, buffer, size, nx, ny, ox, oy\fP)
+.br
+\fBdouble\fR \fIxpos, ypos, xlength, ylength\fP;
+.br
+\fBunsigned char\fR \fIbuffer[]\fP;
+.br
+\fBint\fR \fIsize, nx, ny, ox, oy\fP;
+.RS 10
+Plots an Encapsulated PostScript\fR (EPS) image. The EPS file is stored in \fIbuffer\fP and has \fIsize\fP bytes.
+This functions simply includes the image in the \fIPostScript\fP\fR output stream within an appropriate wrapper.
+Specify position of lower left corner and size (in inches) of image.
+\fInx,ny,ox,oy\fP refers to the width, height and origin (lower left corner) of the BoundingBox.
+.RE
+.IP
 void \fBps_flush\fR ()
 .RS 10
 Flushes the output buffer.
@@ -286,22 +300,14 @@ ps_polygon will call ps_line with \fIsplit\fP = FALSE since the path must be con
 If \fIsplit\fP is FALSE and the pathlength exceeds MAX_PATH a warning will be issued.
 .RE
 .IP
-unsigned char \fB*ps_loadraster\fP (\fIfp, header, invert, monochrome, template, f_rgb, b_rgb\fP)
+unsigned char \fB*ps_load_image\fP (\fIfp, header\fP)
 .br
 \fBFILE\fP \fI*fp\fP;
 .br
-\fBstruct rasterfile\fP \fI*header\fP;
-.br
-\fBBOOLEAN\fP \fIinvert, monochrome, template\fP;
-.br
-\fBint\fP \fIf_rgb[], b_rgb[]\fP;
+\fBstruct imageinfo\fP \fI*header\fP;
 .RS 10
-Reads the image contents of the Sun rasterfile pointed to by the open filepointer \fIfp\fP.
-The \fIheader\fP must first be obtained with \fBps_read_rasheader\fP.  If \fIinvert\fP is
-TRUE then 1-bit images will be bit-reversed.  If \fImonochrome\fP is TRUE then color images
-are converted to grayimages using the TV YIQ translation.  If \fItemplate\fP is TRUE then
-1-bit images will be colorized using the for- and background colors provided in \fIf_rgb\fP
-and \fIb_rgb\fP.  The routine can handle 1-, 8-, 24-, or 32-bit files in old, standard,
+Reads the image contents of the EPS file or Sun rasterfile pointed to by the open filepointer \fIfp\fP.
+The routine can handle Encapsulated \fIPostScript\fP\fR files or 1-, 8-, 24-, or 32-bit rasterfiles in old, standard,
 run-length encoded, or RGB-style Sun format.
 .RE
 .IP
@@ -431,18 +437,6 @@ Creates a colored polygon from the positions in the x-y arrays.  Polygon will
 automatically be closed by the \fIPostScript\fP driver.  If \fIoutline\fP == 0,
 no outline is drawn.  If \fIoutline\fP == 1, the outline is drawn using current
 penwidth.
-.RE
-.IP
-int \fBps_read_rasheader\fP (\fIfp, header\fP)
-.br
-\fBFILE\fP \fI*fp\fP;
-.br
-\fBstruct rasterfile\fP \fI*header\fP;
-.RS 10
-Using the pointer \fIfp\fP to the open file, return the header structure
-of the Sun rasterfile.  This call is portable as it operates on the byte
-level.  Once the header is returned you may obtain the raster image with
-\fBps_loadraster\fP.
 .RE
 .IP
 void \fBps_rect\fR (\fIx1, y1, x2, y2, rgb, outline\fP)

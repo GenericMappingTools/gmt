@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.17 2005-01-02 05:13:19 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.18 2005-02-02 03:22:44 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -61,8 +61,8 @@
 
 #include "gmt.h"
 
-int GMT_read_rasheader (FILE *fp, struct rasterfile *h);
-int GMT_write_rasheader (FILE *fp, struct rasterfile *h);
+int GMT_read_rasheader (FILE *fp, struct imageinfo *h);
+int GMT_write_rasheader (FILE *fp, struct imageinfo *h);
 int GMT_native_read_grd_info (char *file, struct GRD_HEADER *header);
 int GMT_native_update_grd_info (char *file, struct GRD_HEADER *header);
 int GMT_native_write_grd_info (char *file, struct GRD_HEADER *header);
@@ -346,7 +346,7 @@ int GMT_short_write_grd (char *file, struct GRD_HEADER *header, float *grid, dou
 int GMT_ras_read_grd_info (char *file, struct GRD_HEADER *header)
 {
 	FILE *fp;
-	struct rasterfile h;
+	struct imageinfo h;
 	unsigned char u;
 	int i;
 	
@@ -365,12 +365,12 @@ int GMT_ras_read_grd_info (char *file, struct GRD_HEADER *header)
 		fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
-	if (h.ras_type != 1 || h.ras_depth != 8) {
+	if (h.type != 1 || h.depth != 8) {
 		fprintf (stderr, "GMT Fatal Error: file %s not 8-bit standard Sun rasterfile!\n", file);
 		exit (EXIT_FAILURE);
 	}
 
-	for (i = 0; i < h.ras_maplength; i++) fread ((void *)&u, sizeof (unsigned char *), (size_t)1, fp);	/* Skip colormap */
+	for (i = 0; i < h.maplength; i++) fread ((void *)&u, sizeof (unsigned char *), (size_t)1, fp);	/* Skip colormap */
 	
 	if (fp != GMT_stdin) GMT_fclose (fp);
 	
@@ -379,8 +379,8 @@ int GMT_ras_read_grd_info (char *file, struct GRD_HEADER *header)
 	/* Since we have no info on boundary values, just use integer size and steps = 1 */
 
 	header->x_min = header->y_min = 0.0;
-	header->x_max = header->nx = h.ras_width;
-	header->y_max = header->ny = h.ras_height;
+	header->x_max = header->nx = h.width;
+	header->y_max = header->ny = h.height;
 	header->x_inc = header->y_inc = 1.0;
 	header->node_offset = 1;	/* Pixel format */
 	
@@ -395,7 +395,7 @@ int GMT_ras_update_grd_info (char *file, struct GRD_HEADER *header)
 int GMT_ras_write_grd_info (char *file, struct GRD_HEADER *header)
 {
 	FILE *fp;
-	struct rasterfile h;
+	struct imageinfo h;
 	
 	if (!strcmp (file, "="))
 	{
@@ -409,14 +409,14 @@ int GMT_ras_write_grd_info (char *file, struct GRD_HEADER *header)
 		exit (EXIT_FAILURE);
 	}
 	
-	h.ras_magic = RAS_MAGIC;
-	h.ras_width = header->nx;
-	h.ras_height = header->ny;
-	h.ras_depth = 8;
-	h.ras_length = header->ny * (int) ceil (header->nx/2.0) * 2;
-	h.ras_type = 1;
-	h.ras_maptype = 0;
-	h.ras_maplength = 0;
+	h.magic = RAS_MAGIC;
+	h.width = header->nx;
+	h.height = header->ny;
+	h.depth = 8;
+	h.length = header->ny * (int) ceil (header->nx/2.0) * 2;
+	h.type = 1;
+	h.maptype = 0;
+	h.maplength = 0;
 	
 	if (GMT_write_rasheader (fp, &h)) {
 		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
@@ -443,7 +443,7 @@ int GMT_ras_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	FILE *fp;
 	BOOLEAN piping = FALSE, check;
 	unsigned char *tmp;
-	struct rasterfile h;
+	struct imageinfo h;
 	int *k;
 	
 	if (!strcmp (file, "=")) {
@@ -458,7 +458,7 @@ int GMT_ras_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 			fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
 			exit (EXIT_FAILURE);
 		}
-		if (h.ras_maplength) fseek (fp, (long) h.ras_maplength, SEEK_CUR);
+		if (h.maplength) fseek (fp, (long) h.maplength, SEEK_CUR);
 	}
 	else {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", file);
@@ -537,7 +537,7 @@ int GMT_ras_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	
 	FILE *fp;
 	
-	struct rasterfile h;
+	struct imageinfo h;
 	
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
@@ -550,14 +550,14 @@ int GMT_ras_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 		exit (EXIT_FAILURE);
 	}
 	
-	h.ras_magic = RAS_MAGIC;
-	h.ras_width = header->nx;
-	h.ras_height = header->ny;
-	h.ras_depth = 8;
-	h.ras_length = header->ny * (int) ceil (header->nx/2.0) * 2;
-	h.ras_type = 1;
-	h.ras_maptype = 0;
-	h.ras_maplength = 0;
+	h.magic = RAS_MAGIC;
+	h.width = header->nx;
+	h.height = header->ny;
+	h.depth = 8;
+	h.length = header->ny * (int) ceil (header->nx/2.0) * 2;
+	h.type = 1;
+	h.maptype = 0;
+	h.maplength = 0;
 	
 	n2 = (int) ceil (header->nx / 2.0) * 2;
 	tmp = (unsigned char *) GMT_memory (VNULL, (size_t)n2, sizeof (unsigned char), "GMT_ras_write_grd");
@@ -581,9 +581,9 @@ int GMT_ras_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	header->y_min = s;
 	header->y_max = n;
 	
-	h.ras_width = header->nx;
-	h.ras_height = header->ny;
-	h.ras_length = header->ny * (int) ceil (header->nx/2.0) * 2;
+	h.width = header->nx;
+	h.height = header->ny;
+	h.length = header->ny * (int) ceil (header->nx/2.0) * 2;
 	
 	/* store header information and array */
 	
@@ -611,7 +611,7 @@ int GMT_ras_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 
 }
 
-int GMT_read_rasheader (FILE *fp, struct rasterfile *h)
+int GMT_read_rasheader (FILE *fp, struct imageinfo *h)
 {
 	/* Reads the header of a Sun rasterfile byte by byte
 	   since the format is defined as the byte order on the
@@ -631,38 +631,38 @@ int GMT_read_rasheader (FILE *fp, struct rasterfile *h)
 
 		switch (i) {
 			case 0:
-				h->ras_magic = value;
+				h->magic = value;
 				break;
 			case 1:
-				h->ras_width = value;
+				h->width = value;
 				break;
 			case 2:
-				h->ras_height = value;
+				h->height = value;
 				break;
 			case 3:
-				h->ras_depth = value;
+				h->depth = value;
 				break;
 			case 4:
-				h->ras_length = value;
+				h->length = value;
 				break;
 			case 5:
-				h->ras_type = value;
+				h->type = value;
 				break;
 			case 6:
-				h->ras_maptype = value;
+				h->maptype = value;
 				break;
 			case 7:
-				h->ras_maplength = value;
+				h->maplength = value;
 				break;
 		}
 	}
 
-	if (h->ras_type == RT_OLD && h->ras_length == 0) h->ras_length = 2 * irint (ceil (h->ras_width * h->ras_depth / 16.0)) * h->ras_height;
+	if (h->type == RT_OLD && h->length == 0) h->length = 2 * irint (ceil (h->width * h->depth / 16.0)) * h->height;
 
 	return (0);
 }
 
-int GMT_write_rasheader (FILE *fp, struct rasterfile *h)
+int GMT_write_rasheader (FILE *fp, struct imageinfo *h)
 {
 	/* Writes the header of a Sun rasterfile byte by byte
 	   since the format is defined as the byte order on the
@@ -672,37 +672,37 @@ int GMT_write_rasheader (FILE *fp, struct rasterfile *h)
 	unsigned char byte[4];
 	int i, value;
 
-	if (h->ras_type == RT_OLD && h->ras_length == 0) {
-		h->ras_length = 2 * irint (ceil (h->ras_width * h->ras_depth / 16.0)) * h->ras_height;
-		h->ras_type = RT_STANDARD;
+	if (h->type == RT_OLD && h->length == 0) {
+		h->length = 2 * irint (ceil (h->width * h->depth / 16.0)) * h->height;
+		h->type = RT_STANDARD;
 	}
 
 	for (i = 0; i < 8; i++) {
 
 		switch (i) {
 			case 0:
-				value = h->ras_magic;
+				value = h->magic;
 				break;
 			case 1:
-				value = h->ras_width;
+				value = h->width;
 				break;
 			case 2:
-				value = h->ras_height;
+				value = h->height;
 				break;
 			case 3:
-				value = h->ras_depth;
+				value = h->depth;
 				break;
 			case 4:
-				value = h->ras_length;
+				value = h->length;
 				break;
 			case 5:
-				value = h->ras_type;
+				value = h->type;
 				break;
 			case 6:
-				value = h->ras_maptype;
+				value = h->maptype;
 				break;
 			case 7:
-				value = h->ras_maplength;
+				value = h->maplength;
 				break;
 		}
 		byte[0] = (unsigned char)((value >> 24) & 0xFF);

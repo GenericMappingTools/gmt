@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.27 2005-01-05 20:15:42 pwessel Exp $
+ *	$Id: pslib.h,v 1.28 2005-02-02 03:22:44 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -55,25 +55,28 @@ struct EPS {    /* Holds info for eps files */
         char *title;		/* Plot title */
 };
 
-struct rasterfile {
-        int     ras_magic;	/* magic number */
-        int     ras_width;	/* width (pixels) of image */
-        int     ras_height;	/* height (pixels) of image */
-        int     ras_depth;	/* depth (1, 8, or 24 bits) of pixel */
-        int     ras_length;	/* length (bytes) of image */
-        int     ras_type;	/* type of file; see RT_* below */
-        int     ras_maptype;	/* type of colormap; see RMT_* below */
-        int     ras_maplength;	/* length (bytes) of following map */
-        /* color map follows for ras_maplength bytes, followed by image */
+struct imageinfo {
+        int magic;		/* magic number */
+        int width;		/* width (pixels) of image */
+        int height;		/* height (pixels) of image */
+        int depth;		/* depth (1, 8, or 24 bits) of pixel; 0 for EPS */
+        int length;		/* length (bytes) of image */
+        int type;		/* type of file; see RT_* below */
+        int maptype;		/* type of colormap; see RMT_* below */
+        int maplength;		/* length (bytes) of following map */
+	int xorigin;		/* x-coordinate of origin (EPS only) */
+	int yorigin;		/* y-coordinate of origin (EPS only) */
+        /* color map follows for maplength bytes, followed by image */
 };
 
 #define	RAS_MAGIC	0x59a66a95	/* Magic number for Sun rasterfile */
+#define EPS_MAGIC	0x25215053	/* Magic number for EPS file */
 #define RT_OLD		0	/* Old-style, unencoded Sun rasterfile */
 #define RT_STANDARD	1	/* Standard, unencoded Sun rasterfile */
 #define RT_BYTE_ENCODED	2	/* Run-length-encoded Sun rasterfile */
 #define RT_FORMAT_RGB	3	/* [X]RGB instead of [X]BGR Sun rasterfile */
-#define RMT_NONE	0       /* ras_maplength is expected to be 0 */
-#define RMT_EQUAL_RGB	1       /* red[ras_maplength/3], green[], blue[] follow */
+#define RMT_NONE	0	/* maplength is expected to be 0 */
+#define RMT_EQUAL_RGB	1	/* red[maplength/3], green[], blue[] follow */
 
 EXTERN_MSC int ps_line(double *x, double *y, int n, int type, int close, int split);
 EXTERN_MSC int ps_plotinit(char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, int *page_width, int *rgb, const char *encoding, struct EPS *eps);
@@ -91,6 +94,7 @@ EXTERN_MSC void ps_encode_font(int font_no);
 EXTERN_MSC void ps_dash(double x0, double y0, double x1, double y1);
 EXTERN_MSC void ps_diamond(double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_ellipse(double x, double y, double angle, double major, double minor, int rgb[], int outline);
+EXTERN_MSC void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char *buffer, int size, int nx, int ny, int ox, int oy); 
 EXTERN_MSC void ps_flush(void);
 EXTERN_MSC void ps_free(void *addr);
 EXTERN_MSC void ps_hexagon(double x, double y, double side, int rgb[], int outline);
@@ -128,7 +132,7 @@ EXTERN_MSC void ps_textclip (double x[], double y[], int m, double angle[], char
 EXTERN_MSC void ps_transrotate(double x, double y, double angle);
 EXTERN_MSC void ps_triangle(double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_vector(double xtail, double ytail, double xtip, double ytip, double tailwidth, double headlength, double headwidth, double headshape, int rgb[], int outline);
-EXTERN_MSC unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN monochrome);
+EXTERN_MSC unsigned char *ps_load_image (char *file, struct imageinfo *header);
 EXTERN_MSC void ps_words (double x, double y, char **text, int n_words, double line_space, double par_width, int par_just, int font, double font_size, double angle, int rgb[3], int justify, int draw_box, double x_off, double y_off, double x_gap, double y_gap, int boxpen_width, char *boxpen_texture, int boxpen_offset, int boxpen_rgb[], int vecpen_width, char *vecpen_texture, int vecpen_offset, int vecpen_rgb[], int boxfill_rgb[3]);
 EXTERN_MSC void ps_setline(int linewidth);
 EXTERN_MSC void ps_textdim (char *xdim, char *ydim, double pointsize, int font, char *text, int key);

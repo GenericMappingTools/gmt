@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.88 2005-01-20 20:58:57 pwessel Exp $
+ *	$Id: pslib.c,v 1.89 2005-02-02 03:22:44 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -76,14 +76,17 @@
  *	ps_diamond		: Plots a diamond and [optionally] fills it
  *	ps_ellipse		: Plots an ellipse and [optionally] fills it
  *	ps_encode_font		: Reencode a font with a different encoding vector
+ *	ps_epsimage		: Inserts EPS image
  *	ps_flush		: Flushes the output buffer
  *	ps_hexagon		: Plots a hexagon and {optionally] fills it
- *	ps_image		: Plots a 1-to-8 bit 2-D image using grayshades
+ *	ps_image		: (depreciated: use ps_colorimage)
  *	ps_imagefill		: Fills a polygon with a repeating n x n image pattern
  *	ps_imagemask		: Uses a 1-bit image as mask to paint given color
  *	ps_itriangle		: Plots an inverted triangle and [optionally] fills it
  *	ps_line			: Plots a line
- *	ps_loadraster		: Read image from a Sun rasterfile
+ *	ps_load_eps		: Read EPS 'image'
+ *	ps_load_image		: Read image file of of supported type
+ *	ps_load_raster		: Read image from a Sun rasterfile
  *	ps_octagon		: Plots an octagon and {optionally] fills it
  *	ps_patch		: Special case of ps_polygon:  Short polygons only (< 20 points, no path-shortening)
  *	ps_pentagon		: Plots a pentagon and {optionally] fills it
@@ -181,7 +184,7 @@ char *ps_prepare_text (char *text);
 void def_font_encoding (void);
 void init_font_encoding (struct EPS *eps);
 void get_uppercase(char *new, char *old);
-void ps_rle_decode (struct rasterfile *h, unsigned char **in);
+void ps_rle_decode (struct imageinfo *h, unsigned char **in);
 unsigned char *ps_cmyk_encode (int *nbytes, unsigned char *input);
 unsigned char *ps_rle_encode (int *nbytes, unsigned char *input);
 unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input);
@@ -191,11 +194,11 @@ void ps_a85_encode (unsigned char quad[]);
 void *ps_memory (void *prev_addr, size_t nelem, size_t size);
 int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy);
 int ps_comp_int_asc (const void *p1, const void *p2);
-int ps_read_rasheader (FILE *fp, struct rasterfile *h);
-int ps_write_rasheader (FILE *fp, struct rasterfile *h);
+int ps_read_rasheader (FILE *fp, struct imageinfo *h, int i0, int i1);
+int ps_write_rasheader (FILE *fp, struct imageinfo *h, int i0, int i1);
 static void bulkcopy (const char *);
 static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts);
-int  ps_imagefill_init(int image_no, char *imagefile);
+int ps_imagefill_init(int image_no, char *imagefile);
 void ps_rgb_to_cmyk_char (unsigned char rgb[], unsigned char cmyk[]);
 void ps_rgb_to_cmyk_int (int rgb[], int cmyk[]);
 void ps_rgb_to_cmyk (int rgb[], double cmyk[]);
@@ -212,6 +215,9 @@ int ps_bitreduce (unsigned char *buffer, int nx, int ny, int ncolors);
 int ps_bitimage_cmap (int f_rgb[], int b_rgb[]);
 void ps_colorimage_rgb (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits);
 void ps_colorimage_cmap (double x, double y, double xsize, double ysize, indexed_image_t image, int nx, int ny, int nbits);
+unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header);
+unsigned char *ps_load_eps (FILE *fp, struct imageinfo *header);
+int ps_get_boundingbox(FILE *fp, int *llx, int *lly, int *trx, int *try);
 
 
 /*------------------- PUBLIC PSLIB FUNCTIONS--------------------- */
@@ -324,7 +330,7 @@ void ps_bitimage (double x, double y, double xsize, double ysize, unsigned char 
 	fprintf (ps.fp, "\n%% Start of %s Adobe 1-bit image\n", kind[ps.hex_image]);
 	fprintf (ps.fp, "V N %g %g T %d %d scale\n", x * ps.scale, y * ps.scale, lx, ly);
 	inv = (ps_bitimage_cmap (f_rgb, b_rgb) + invert) % 2;
-	fprintf (ps.fp, "<< /ImageType 1 /Decode [%d %d] ", nx, ny, inv, 1-inv);
+	fprintf (ps.fp, "<< /ImageType 1 /Decode [%d %d] ", inv, 1-inv);
 	ps_stream_dump (buffer, nx, ny, 1, ps.compress, ps.hex_image, f_rgb[0] < 0 || b_rgb[0] < 0);
 
 	fprintf (ps.fp, "U\n%% End of %s Abobe 1-bit image\n", kind[ps.hex_image]);
@@ -830,7 +836,7 @@ int ps_imagefill_init (int image_no, char *imagefile)
 	int i;
 	char file[BUFSIZ];
 	unsigned char *picture;
-	struct rasterfile h;
+	struct imageinfo h;
 	BOOLEAN found;
 
 	if ((image_no >= 0 && image_no < N_PATTERNS) && ps_pattern[image_no].status) return (image_no);	/* Already done this */
@@ -860,20 +866,20 @@ int ps_imagefill_init (int image_no, char *imagefile)
 		ps_n_userimages++;
 	}
 
-	/* Load raster file. Store size, depth and bogus DPI setting */
+	/* Load image file. Store size, depth and bogus DPI setting */
 
-	picture = ps_loadraster (file, &h, FALSE);
+	picture = ps_load_image (file, &h);
 
 	ps_pattern[image_no].status = 1;
-	ps_pattern[image_no].nx = h.ras_width;
-	ps_pattern[image_no].ny = h.ras_height;
-	ps_pattern[image_no].depth = h.ras_depth;
+	ps_pattern[image_no].nx = h.width;
+	ps_pattern[image_no].ny = h.height;
+	ps_pattern[image_no].depth = h.depth;
 	ps_pattern[image_no].dpi = -999;
 
 	ps_comment ("Start of imagefill pattern definition");
 
 	fprintf (ps.fp, "/image%d {<~\n", image_no);
-	ps_stream_dump (picture, h.ras_width, h.ras_height, h.ras_depth, ps.compress, 1, 2);
+	ps_stream_dump (picture, h.width, h.height, h.depth, ps.compress, 1, 2);
 	fprintf (ps.fp, "} def\n");
 
 	ps_free ((void *)picture);
@@ -902,6 +908,31 @@ void ps_imagemask (double x, double y, double xsize, double ysize, unsigned char
 		ps_bitimage (x, y, xsize, ysize, buffer, nx, ny, FALSE, rgb, trans);
 	else
 		ps_bitimage (x, y, xsize, ysize, buffer, nx, ny, FALSE, trans, rgb);
+}
+
+/* fortran interface */
+void ps_epsimage_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, int size, int *nx, int *ny, int *ox, int *oy, int nlen)
+{
+	ps_epsimage (*x, *y, *xsize, *ysize, buffer, size, *nx, *ny, *ox, *oy);
+}
+
+void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char *buffer, int size, int nx, int ny, int ox, int oy)
+{
+	/* Plots an EPS image
+	 * x,y:		Position of image (in inches)
+	 * xsize,ysize:	Size of image (in inches)
+	 * buffer:	EPS file (buffered)
+	 * size:	Number of bytes in buffer
+	 * nx,ny:	Size of image (in pixels)
+	 * ox,oy:	Coordinates of lower left corner (in pixels)
+	 */
+
+	 fprintf (ps.fp, "V N %g %g T %g %g scale\n", x * ps.scale, y * ps.scale, xsize * ps.scale / nx, ysize * ps.scale / ny);
+	 fprintf (ps.fp, "%d %d T\n", -ox, -oy);
+	 fprintf (ps.fp, "N %d %d m %d %d L %d %d L %d %d L P clip N\n", ox, oy, ox+nx, oy, ox+ny, oy+ny, ox, oy+ny);
+	 fprintf (ps.fp, "countdictstack\nmark\n/showpage {} def\n%% Start of imported EPS file\n");
+	 fwrite (buffer, (size_t)1, (size_t)size, ps.fp);
+	 fprintf (ps.fp, "%% End of imported EPS file\ncleartomark\ncountdictstack exch sub { end } repeat\nU\n");
 }
 
 int ps_line (double *x, double *y, int n, int type, int close, int split)
@@ -3131,45 +3162,121 @@ char *ps_prepare_text (char *text)
 	return (string);
 }
 
-unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN monochrome)
+unsigned char *ps_load_image (char *file, struct imageinfo *h)
 {
-	/* ps_loadraster reads a Sun standard rasterfile of depth 1,8,24, or 32 into memory */
+	/* ps_load_image loads an image of any recognised type into memory
+	 *
+	 * Currently supported image types are:
+	 * - Sun Raster File
+	 * - (Encapsulated) PostScript File
+	 */
 
-	int mx_in, mx, j, k, i, ij, n = 0, ny, get, odd, oddlength, r_off, b_off;
-	unsigned char *buffer, *entry, *red, *green, *blue, *tmp, rgb[3];
-	FILE *fp;
+	FILE *fp = NULL;
 
-	if ((fp = fopen (file, "rb")) == NULL) {
-		fprintf (stderr, "pslib: Cannot open rasterfile %s!\n", file);
+	/* Open PostScript file */
+
+	if ((fp = fopen (file, "r")) == NULL) {
+		fprintf (stderr, "pslib: Cannot open image file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
 
-	if (ps_read_rasheader (fp, header)) {
+	/* Read magic number to determine image type */
+
+	if (ps_read_rasheader (fp, h, 0, 0)) {
+		fprintf (stderr, "pslib: Error reading magic number of image file %s!\n", file);
+		exit (EXIT_FAILURE);
+	}
+	if (ps.verbose) fprintf (stderr, "pslib: Loading image file %s of type 0x%x\n", file, h->magic);
+	fseek (fp, 0, SEEK_SET);
+
+	/* Which file type */
+
+	if (h->magic == RAS_MAGIC) {
+		return (ps_load_raster (fp, h));
+	} else if (h->magic == EPS_MAGIC) {
+		return (ps_load_eps (fp, h));
+	} else {
+		fprintf (stderr, "pslib: Unrecognised magic number 0x%x in file %s!\n", h->magic, file);
+		exit (EXIT_FAILURE);
+	}
+}
+
+unsigned char *ps_load_eps (FILE *fp, struct imageinfo *h)
+{
+	/* ps_load_eps reads an Encapsulated PostScript file */
+
+	int k, n, p, llx, lly, trx, try, BLOCKSIZE=4096;
+	unsigned char *buffer;
+	char line[BUFSIZ];
+
+	n=0;
+	llx=0; lly=0; trx=720; try=720;
+
+	/* Scan for BoundingBox */
+
+	ps_get_boundingbox (fp, &llx, &lly, &trx, &try);
+	if (ps.verbose) fprintf (stderr, "ps_load_eps: BoundingBox: %d %d %d %d\n", llx, lly, trx, try);
+
+	/* Rewind and load into buffer */
+
+	n=0;
+	fseek (fp, 0, SEEK_SET);
+	buffer = (unsigned char *) ps_memory (VNULL, (size_t)1, (size_t)BLOCKSIZE);
+	while ((p = fread ((unsigned char *)buffer + n, (size_t)1, (size_t)BLOCKSIZE, fp)) == BLOCKSIZE)
+	{
+		n+=BLOCKSIZE;
+		buffer = (unsigned char *) ps_memory ((void *)buffer, (size_t)1, (size_t)n+BLOCKSIZE);
+	}
+	n+=p;
+
+	/* Fill header struct with appropriate values */
+	h->magic = EPS_MAGIC;
+	h->width = trx - llx;
+	h->height = try - lly;
+	h->depth = 0;
+	h->length = n;
+	h->type = 4;
+	h->maptype = RMT_NONE;
+	h->maplength = 0;
+	h->xorigin = llx;
+	h->yorigin = lly;
+
+	return (buffer);
+}
+
+unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
+{
+	/* ps_load_raster reads a Sun standard rasterfile of depth 1, 8, 24, or 32 into memory */
+
+	int mx_in, mx, j, k, i, ij, n = 0, ny, get, odd, oddlength, r_off, b_off;
+	unsigned char *buffer, *entry, *red, *green, *blue, *tmp, rgb[3];
+
+	if (ps_read_rasheader (fp, header, 0, 7)) {
 		fprintf (stderr, "pslib: Trouble reading Sun rasterfile header!\n");
 		exit (EXIT_FAILURE);
 	}
 
-	if (header->ras_magic != RAS_MAGIC) {	/* Not a Sun rasterfile */
-		fprintf (stderr, "pslib: Raster is not a Sun rasterfile (Magic # = 0x%x)!\n", header->ras_magic);
+	if (header->magic != RAS_MAGIC) {	/* Not a Sun rasterfile */
+		fprintf (stderr, "pslib: Raster is not a Sun rasterfile (Magic # = 0x%x)!\n", header->magic);
 		exit (EXIT_FAILURE);
 	}
-	if (header->ras_type < RT_OLD || header->ras_type > RT_FORMAT_RGB) {
-		fprintf (stderr, "pslib: Can only read Sun rasterfiles types %d - %d (your type = %d)!\n", RT_OLD, RT_FORMAT_RGB, header->ras_type);
+	if (header->type < RT_OLD || header->type > RT_FORMAT_RGB) {
+		fprintf (stderr, "pslib: Can only read Sun rasterfiles types %d - %d (your type = %d)!\n", RT_OLD, RT_FORMAT_RGB, header->type);
 		exit (EXIT_FAILURE);
 	}
 
 	buffer = entry = red = green = blue = (unsigned char *)NULL;
 
-	if (header->ras_depth == 1) {	/* 1 bit black and white image */
-		mx_in = (int) (2 * ceil (header->ras_width / 16.0));	/* Because Sun images are written in multiples of 2 bytes */
-		mx = (int) (ceil (header->ras_width / 8.0));		/* However, PS wants only the bytes that matters, so mx may be one less */
-		ny = header->ras_height;
-		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
-		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
+	if (header->depth == 1) {	/* 1 bit black and white image */
+		mx_in = (int) (2 * ceil (header->width / 16.0));	/* Because Sun images are written in multiples of 2 bytes */
+		mx = (int) (ceil (header->width / 8.0));		/* However, PS wants only the bytes that matters, so mx may be one less */
+		ny = header->height;
+		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
+		if (fread ((void *)buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
 			fprintf (stderr, "pslib: Trouble reading 1-bit Sun rasterfile!\n");
 			exit (EXIT_FAILURE);
 		}
-		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
+		if (header->type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
 
 		if (mx < mx_in) {	/* OK, here we must shuffle image to get rid of the superfluous last byte per line */
 			for (j = k = ij = 0; j < ny; j++) {
@@ -3178,36 +3285,36 @@ unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN mon
 			}
 		}
 	}
-	else if (header->ras_depth == (size_t)8 && header->ras_maplength == (size_t)0) {	/* 8-bit without color table (implicit grayramp) */
-		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
-		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
+	else if (header->depth == (size_t)8 && header->maplength == (size_t)0) {	/* 8-bit without color table (implicit grayramp) */
+		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
+		if (fread ((void *)buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
 			fprintf (stderr, "pslib: Trouble reading 8-bit Sun rasterfile!\n");
 			exit (EXIT_FAILURE);
 		}
-		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
+		if (header->type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
 	}
-	else if (header->ras_depth == 8) {	/* 8-bit with color table */
-		get = header->ras_maplength / 3;
+	else if (header->depth == 8) {	/* 8-bit with color table */
+		get = header->maplength / 3;
 		red   = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
 		green = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
 		blue  = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
 		n  = fread ((void *)red,   (size_t)1, (size_t)get, fp);
 		n += fread ((void *)green, (size_t)1, (size_t)get, fp);
 		n += fread ((void *)blue,  (size_t)1, (size_t)get, fp);
-		if (n != header->ras_maplength) {
+		if (n != header->maplength) {
 			fprintf (stderr, "%s: Error reading colormap!\n", "pslib");
 			return ((unsigned char *)NULL);
 		}
-		odd = (int)header->ras_width%2;
-		entry = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
-		if (fread ((void *)entry, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
+		odd = (int)header->width%2;
+		entry = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
+		if (fread ((void *)entry, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
 			fprintf (stderr, "pslib: Trouble reading 8-bit Sun rasterfile!\n");
 			exit (EXIT_FAILURE);
 		}
-		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &entry);
-		buffer = (unsigned char *) ps_memory (VNULL, (size_t)(3 * header->ras_width * header->ras_height), sizeof (unsigned char));
-		for (j = k = ij = 0; j < header->ras_height; j++) {
-			for (i = 0; i < header->ras_width; i++) {
+		if (header->type == RT_BYTE_ENCODED) ps_rle_decode (header, &entry);
+		buffer = (unsigned char *) ps_memory (VNULL, (size_t)(3 * header->width * header->height), sizeof (unsigned char));
+		for (j = k = ij = 0; j < header->height; j++) {
+			for (i = 0; i < header->width; i++) {
 				buffer[k++] = red[entry[ij]];
 				buffer[k++] = green[entry[ij]];
 				buffer[k++] = blue[entry[ij]];
@@ -3215,32 +3322,32 @@ unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN mon
 			}
 			if (odd) ij++;
 		}
-		header->ras_depth = 24;
+		header->depth = 24;
 	}
-	else if (header->ras_depth == 24 && header->ras_maplength) {	/* 24-bit raster with colormap */
+	else if (header->depth == 24 && header->maplength) {	/* 24-bit raster with colormap */
 		unsigned char r, b;
-		get = header->ras_maplength / 3;
+		get = header->maplength / 3;
 		red   = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
 		green = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
 		blue  = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
 		n  = fread ((void *)red,   (size_t)1, (size_t)get, fp);
 		n += fread ((void *)green, (size_t)1, (size_t)get, fp);
 		n += fread ((void *)blue,  (size_t)1, (size_t)get, fp);
-		if ((size_t)n != (size_t)header->ras_maplength) {
+		if ((size_t)n != (size_t)header->maplength) {
 			fprintf (stderr, "%s: Error reading colormap!\n", "pslib");
 			return ((unsigned char *)NULL);
 		}
-		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
-		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
+		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
+		if (fread ((void *)buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
 			fprintf (stderr, "pslib: Trouble reading 24-bit Sun rasterfile!\n");
 			exit (EXIT_FAILURE);
 		}
-		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
-		oddlength = 3 * header->ras_width;
-		odd = (3 * header->ras_width) % 2;
-		r_off = (header->ras_type == RT_FORMAT_RGB) ? 0 : 2;
-		b_off = (header->ras_type == RT_FORMAT_RGB) ? 2 : 0;
-		for (i = j = 0; i < header->ras_length; i += 3, j += 3) {	/* BGR -> RGB */
+		if (header->type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
+		oddlength = 3 * header->width;
+		odd = (3 * header->width) % 2;
+		r_off = (header->type == RT_FORMAT_RGB) ? 0 : 2;
+		b_off = (header->type == RT_FORMAT_RGB) ? 2 : 0;
+		for (i = j = 0; i < header->length; i += 3, j += 3) {	/* BGR -> RGB */
 			r =  red[buffer[i+r_off]];
 			b = blue[buffer[i+b_off]];
 			buffer[j] = r;
@@ -3249,19 +3356,19 @@ unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN mon
 			if (odd && (j+3)%oddlength == 0) i++;
 		}
 	}
-	else if (header->ras_depth == (size_t)24 && header->ras_maplength == (size_t)0) {	/* 24-bit raster, no colormap */
+	else if (header->depth == (size_t)24 && header->maplength == (size_t)0) {	/* 24-bit raster, no colormap */
 		unsigned char r, b;
-		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
-		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
+		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
+		if (fread ((void *)buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
 			fprintf (stderr, "pslib: Trouble reading 24-bit Sun rasterfile!\n");
 			exit (EXIT_FAILURE);
 		}
-		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
-		oddlength = 3 * header->ras_width;
-		odd = (3 * header->ras_width) % 2;
-		r_off = (header->ras_type == RT_FORMAT_RGB) ? 0 : 2;
-		b_off = (header->ras_type == RT_FORMAT_RGB) ? 2 : 0;
-		for (i = j = 0; i < header->ras_length; i += 3, j += 3) {	/* BGR -> RGB */
+		if (header->type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
+		oddlength = 3 * header->width;
+		odd = (3 * header->width) % 2;
+		r_off = (header->type == RT_FORMAT_RGB) ? 0 : 2;
+		b_off = (header->type == RT_FORMAT_RGB) ? 2 : 0;
+		for (i = j = 0; i < header->length; i += 3, j += 3) {	/* BGR -> RGB */
 			r = buffer[i+r_off];
 			b = buffer[i+b_off];
 			buffer[j] = r;
@@ -3270,70 +3377,63 @@ unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN mon
 			if (odd && (j+3)%oddlength == 0) i++;
 		}
 	}
-	else if (header->ras_depth == 32 && header->ras_maplength) {	/* 32-bit raster with colormap */
+	else if (header->depth == 32 && header->maplength) {	/* 32-bit raster with colormap */
 		unsigned char b;
-		get = header->ras_maplength / 3;
+		get = header->maplength / 3;
 		red   = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
 		green = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
 		blue  = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
 		n  = fread ((void *)red,   (size_t)1, (size_t)get, fp);
 		n += fread ((void *)green, (size_t)1, (size_t)get, fp);
 		n += fread ((void *)blue,  (size_t)1, (size_t)get, fp);
-		if ((size_t)n != (size_t)header->ras_maplength) {
+		if ((size_t)n != (size_t)header->maplength) {
 			fprintf (stderr, "%s: Error reading colormap!\n", "pslib");
 			return ((unsigned char *)NULL);
 		}
-		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
-		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
+		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
+		if (fread ((void *)buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
 			fprintf (stderr, "pslib: Trouble reading 32-bit Sun rasterfile!\n");
 			exit (EXIT_FAILURE);
 		}
-		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
-		r_off = (header->ras_type == RT_FORMAT_RGB) ? 1 : 3;
-		b_off = (header->ras_type == RT_FORMAT_RGB) ? 3 : 1;
+		if (header->type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
+		r_off = (header->type == RT_FORMAT_RGB) ? 1 : 3;
+		b_off = (header->type == RT_FORMAT_RGB) ? 3 : 1;
 		b = blue[buffer[b_off]];
 		buffer[0] = red[buffer[r_off]];
 		buffer[1] = green[buffer[2]];
 		buffer[2] = b;
-		for (i = 3, j = 4; j < header->ras_length; i += 3, j += 4) {	/* _BGR -> RGB */
+		for (i = 3, j = 4; j < header->length; i += 3, j += 4) {	/* _BGR -> RGB */
 			buffer[i] = red[buffer[j+r_off]];
 			buffer[i+1] = green[buffer[j+2]];
 			buffer[i+2] = blue[buffer[j+b_off]];
 		}
+		header->depth = 24;
 	}
-	else if (header->ras_depth == (size_t)32 && header->ras_maplength == (size_t)0) {	/* 32-bit raster, no colormap */
+	else if (header->depth == (size_t)32 && header->maplength == (size_t)0) {	/* 32-bit raster, no colormap */
 		unsigned char b;
-		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
-		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
+		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
+		if (fread ((void *)buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
 			fprintf (stderr, "pslib: Trouble reading 32-bit Sun rasterfile!\n");
 			exit (EXIT_FAILURE);
 		}
-		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
-		r_off = (header->ras_type == RT_FORMAT_RGB) ? 1 : 3;
-		b_off = (header->ras_type == RT_FORMAT_RGB) ? 3 : 1;
+		if (header->type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
+		r_off = (header->type == RT_FORMAT_RGB) ? 1 : 3;
+		b_off = (header->type == RT_FORMAT_RGB) ? 3 : 1;
 		b = buffer[b_off];
 		buffer[0] = buffer[r_off];
 		buffer[1] = buffer[2];
 		buffer[2] = b;
-		for (i = 3, j = 4; j < header->ras_length; i += 3, j += 4) {	/* _BGR -> RGB */
+		for (i = 3, j = 4; j < header->length; i += 3, j += 4) {	/* _BGR -> RGB */
 			buffer[i] = buffer[j+r_off];
 			buffer[i+1] = buffer[j+2];
 			buffer[i+2] = buffer[j+b_off];
 		}
+		header->depth = 24;
 	}
 	else	/* Unrecognized format */
 		return ((unsigned char *)NULL);
 
 	fclose (fp);
-
-	if (monochrome && header->ras_depth > 1) {
-		for (i = j = 0; i < header->ras_width * header->ras_height; i++, j += 3)
-		{
-			memcpy ((void *)rgb, (void *)&buffer[j], 3 * sizeof(unsigned char));
-			buffer[i] = (unsigned char) YIQ (rgb);
-		}
-		header->ras_depth = 8;
-	}
 
 	if (entry) ps_free ((void *)entry);
 	if (red) ps_free ((void *)red);
@@ -3344,17 +3444,17 @@ unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN mon
 	return (buffer);
 }
 
-int ps_read_rasheader (FILE *fp, struct rasterfile *h)
+int ps_read_rasheader (FILE *fp, struct imageinfo *h, int i0, int i1)
 {
-	/* Reads the header of a Sun rasterfile byte by byte
-	   since the format is defined as the byte order on the
-	   PDP-11.
+	/* Reads the header of a Sun rasterfile (or any other).
+	   Since the byte order is defined as Big Endian, the bytes are read
+	   byte by byte to ensure portability onto Little Endian platforms.
 	 */
 
 	unsigned char byte[4];
 	int i, j, value, in[4];
 
-	for (i = 0; i < 8; i++) {
+	for (i = i0; i <= i1; i++) {
 
 		if (fread ((void *)byte, sizeof (unsigned char), (size_t)4, fp) != 4) {
 			fprintf (stderr, "pslib: Error reading rasterfile header\n");
@@ -3366,72 +3466,72 @@ int ps_read_rasheader (FILE *fp, struct rasterfile *h)
 
 		switch (i) {
 			case 0:
-				h->ras_magic = value;
+				h->magic = value;
 				break;
 			case 1:
-				h->ras_width = value;
+				h->width = value;
 				break;
 			case 2:
-				h->ras_height = value;
+				h->height = value;
 				break;
 			case 3:
-				h->ras_depth = value;
+				h->depth = value;
 				break;
 			case 4:
-				h->ras_length = value;
+				h->length = value;
 				break;
 			case 5:
-				h->ras_type = value;
+				h->type = value;
 				break;
 			case 6:
-				h->ras_maptype = value;
+				h->maptype = value;
 				break;
 			case 7:
-				h->ras_maplength = value;
+				h->maplength = value;
 				break;
 		}
 	}
 
-	if (h->ras_type == RT_OLD && h->ras_length == 0) h->ras_length = 2 * irint (ceil (h->ras_width * h->ras_depth / 16.0)) * h->ras_height;
+	if (h->type == RT_OLD && h->length == 0) h->length = 2 * irint (ceil (h->width * h->depth / 16.0)) * h->height;
 
 	return (0);
 }
 
-int ps_write_rasheader (FILE *fp, struct rasterfile *h)
+int ps_write_rasheader (FILE *fp, struct imageinfo *h, int i0, int i1)
 {
-	/* Writes the header of a Sun rasterfile byte by byte
-	   since the format is defined as the byte order on the
-	   PDP-11.
+	/* Writes the header of a Sun rasterfile.
+	   Since the byte order is defined as Big Endian, the bytes are read
+	   byte by byte to ensure portability onto Little Endian platforms.
 	 */
 
 	unsigned char byte[4];
 	int i, j, value, in[4];
 
-	for (i = 0; i < 8; i++) {
+	for (i = i0; i <= i1; i++) {
 		switch (i) {
 			case 0:
-				value = h->ras_magic;
+				value = h->magic;
 				break;
 			case 1:
-				value = h->ras_width;
+				value = h->width;
 				break;
 			case 2:
-				value = h->ras_height;
+				value = h->height;
 				break;
 			case 3:
-				value = h->ras_depth;
+				value = h->depth;
 				break;
 			case 4:
-				value = h->ras_length;
+				value = h->length;
 				break;
 			case 5:
-				value = h->ras_type;
+				value = h->type;
 				break;
 			case 6:
-				value = h->ras_maptype;
+				value = h->maptype;
 				break;
 			case 7:
-				value = h->ras_maplength;
+				value = h->maplength;
 				break;
 		}
 
@@ -3463,10 +3563,10 @@ indexed_image_t ps_makecolormap (unsigned char *buffer, int nx, int ny, int nbit
 
 	npixels = abs(nx) * ny;
 
-	colormap = ps_memory (NULL, 1, sizeof (*colormap));
+	colormap = ps_memory (VNULL, (size_t)1, sizeof (*colormap));
 	colormap->ncolors = 0;
-	image = ps_memory (NULL, 1, sizeof (*image));
-	image->buffer = ps_memory (NULL, npixels, sizeof (*image->buffer));
+	image = ps_memory (VNULL, (size_t)1, sizeof (*image));
+	image->buffer = ps_memory (VNULL, (size_t)npixels, sizeof (*image->buffer));
 	image->colormap = colormap;
 
 	if (nx < 0) {
@@ -3666,7 +3766,7 @@ void ps_a85_encode (unsigned char quad[])
 
 #define ESC 128
 
-void ps_rle_decode (struct rasterfile *h, unsigned char **in)
+void ps_rle_decode (struct imageinfo *h, unsigned char **in)
 {
 	/* Function to undo RLE encoding in Sun rasterfiles
 	 *
@@ -3685,15 +3785,15 @@ void ps_rle_decode (struct rasterfile *h, unsigned char **in)
 
 	i = j = col = count = 0;
 
-	width = irint (ceil (h->ras_width * h->ras_depth / 8.0));	/* Scanline width in bytes */
+	width = irint (ceil (h->width * h->depth / 8.0));	/* Scanline width in bytes */
 	if (width%2) odd = TRUE, width++;	/* To ensure 16-bit words */
-	mask = mask_table[h->ras_width%8];	/* Padding for 1-bit images */
+	mask = mask_table[h->width%8];	/* Padding for 1-bit images */
 
-	len = width * h->ras_height;		/* Length of output image */
+	len = width * h->height;		/* Length of output image */
 	out = (unsigned char *) ps_memory (VNULL, (size_t)len, sizeof (unsigned char));
 	if (odd) width--;
 
-	while (j < h->ras_length || count > 0) {
+	while (j < h->length || count > 0) {
 
 		if (count) {
 			out[i++] = value;
@@ -3722,7 +3822,7 @@ void ps_rle_decode (struct rasterfile *h, unsigned char **in)
 		}
 
 		if (col == width) {
-			if (h->ras_depth == 1) out[width-1] &= mask;
+			if (h->depth == 1) out[width-1] &= mask;
 			if (odd) out[i++] = count = 0;
 			col = 0;
 		}
@@ -3808,9 +3908,9 @@ unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input)
 	byte_stream_t output;
 
 	i = MAX (512, *nbytes) + 8;	/* Maximum output length */
-	output = (byte_stream_t)ps_memory (NULL, 1, sizeof (*output));
-	output->buffer = (unsigned char *)ps_memory (NULL, i, sizeof (*output->buffer));
-	code = (short int *)ps_memory (NULL, ncode, sizeof (short int));
+	output = (byte_stream_t)ps_memory (VNULL, (size_t)1, sizeof (*output));
+	output->buffer = (unsigned char *)ps_memory (VNULL, (size_t)i, sizeof (*output->buffer));
+	code = (short int *)ps_memory (VNULL, (size_t)ncode, sizeof (short int));
 
 	in = 0;
 	output->nbytes = 0;
@@ -4242,6 +4342,22 @@ void ps_cmyk_to_rgb (int rgb[], double cmyk[])
 	for (i = 0; i < 3; i++) rgb[i] = (int) floor ((1.0 - cmyk[i] - cmyk[3]) * 255.999);
 }
 
+void ps_rgb_to_mono (unsigned char *buffer, struct imageinfo *h)
+{
+	int i, j;
+	unsigned char rgb[3];
+
+	if (h->depth == 24) {
+		for (i = j = 0; i < h->width * h->height; i++, j += 3)
+		{
+			memcpy ((void *)rgb, (void *)&buffer[j], 3 * sizeof(unsigned char));
+			buffer[i] = (unsigned char) YIQ (rgb);
+		}
+		h->depth = 8;
+	}
+}
+	
+
 int ps_bitreduce (unsigned char *buffer, int nx, int ny, int ncolors)
 {
 	/* Reduce an 8-bit stream to 1-, 2- or 4-bit stream */
@@ -4283,4 +4399,34 @@ int ps_bitreduce (unsigned char *buffer, int nx, int ny, int ncolors)
 	}
 	if (ps.verbose) fprintf (stderr, "pslib: Image depth reduced to %d bits\n", nbits);
 	return (nbits);
+}
+
+int ps_get_boundingbox(FILE *fp, int *llx, int *lly, int *trx, int *try)
+{
+	int nested;
+	char buf[BUFSIZ];
+
+	nested = 0; *llx = 1; *trx = 0;
+	while (fgets(buf, BUFSIZ, fp) != NULL) {
+		if (!nested && !strncmp(buf, "%%BoundingBox:", 14)) {
+			if (!strstr(buf, "(atend)")) {
+				if (sscanf(strchr(buf, ':') + 1, "%d %d %d %d", llx, lly, trx, try) < 4) return 1;
+				break;
+			}
+		}
+		else if (!strncmp(buf, "%%Begin", 7)) {
+			++nested;
+		}
+		else if (nested && !strncmp(buf, "%%End", 5)) {
+			--nested;
+		}
+	}
+
+	if (*llx >= *trx || *lly >= *try) {
+		*llx = 0; *trx = 720; *lly = 0; *try = 720;
+		fprintf(stderr, "No proper BoundingBox, defaults assumed: %d %d %d %d\n", *llx, *lly, *trx, *try);
+		return 1;
+	}
+
+	return 0;
 }

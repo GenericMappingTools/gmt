@@ -125,7 +125,7 @@ be found in the separate manual pages.
 .br
 \fBpshistogram\fP	Plot a histogram
 .br
-\fBpsimage\fP		Plot images (Sun rasterfiles) on maps
+\fBpsimage\fP		Plot images (EPS or Sun raster files) on maps
 .br
 \fBpslegend\fP		Plot legend on maps
 .br
