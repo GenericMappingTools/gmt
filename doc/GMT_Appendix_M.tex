@@ -1,0 +1,21 @@
+%------------------------------------------
+%	$Id: GMT_Appendix_M.tex,v 1.1 2001-09-05 00:11:54 pwessel Exp $
+%
+%	The GMT Documentation Project
+%	Copyright 2000-2001.
+%	Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+\chapter{Build-in color palette tables}
+\index{cpt!standard}
+\thispagestyle{headings}
+
+\GMT\ has 20 built-in color palette tables (master cpt files).  The following is
+a plot of each one: \\ 
+
+\GMTfig[h]{GMT_App_M}{The standard 20 cpt files supported by \gmt}
+
+The programs \GMTprog{makecpt} and \GMTprog{grd2cpt} are used to access these
+master tables and translate/scale them to fit the user's range of $z$-values.
+The final cpt tables can be discrete (top half of each scale) or continuous
+(bottom half).
