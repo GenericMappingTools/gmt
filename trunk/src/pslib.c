@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.96 2005-03-02 22:35:47 remko Exp $
+ *	$Id: pslib.c,v 1.97 2005-03-04 19:28:21 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1500,7 +1500,7 @@ void ps_setmiterlimit (int limit)
 {
 	double miter;
 	miter = (limit == 0) ? 10.0 : 1.0 / sin (0.5 * limit * D2R);
-	fprintf (ps.fp, "%lg setmiterlimit\n", miter);
+	fprintf (ps.fp, "%g setmiterlimit\n", miter);
 }
 
 /* fortran interface */
