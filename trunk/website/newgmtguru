@@ -1,5 +1,5 @@
 #!/bin/csh
-#		$Id: newgmtguru,v 1.6 2001-03-08 17:18:51 pwessel Exp $
+#		$Id: newgmtguru,v 1.7 2001-03-08 20:42:41 pwessel Exp $
 #
 # newgmtguru is run to initiate a new guru site
 # and helps setting up the guru directory with
@@ -90,7 +90,7 @@ endif
 grep -v CVSROOT guruenv.csh >! $myenv
 echo "setenv CVSROOT :pserver:$usr@gmt.soest.hawaii.edu:/home/gmt/gmt/cvs" >> $myenv
 if ($?EDITOR) then
-	($EDITOR) $myenv
+	$EDITOR $myenv
 else
 	vi $myenv
 endif
@@ -147,7 +147,7 @@ The Cederquist - The main manual for CVS; online at
 www.cvshome.org/docs/manual
 
 You really need to look through one of these to get a feel for how the
-CVS system works.  I wont grant write-access unless you know what you
+CVS system works.  I won't grant write-access unless you know what you
 will be doing!
 
 STEP 8: REQUIRED 3RD PARTY TOOLS

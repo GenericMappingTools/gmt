@@ -1,0 +1,144 @@
+<HTML>
+<!--  $Id: gmt_cvs.html,v 1.1 2001-03-08 20:42:41 pwessel Exp $  -->
+<title>GMT CVS Services</title>
+<body bgcolor="#ffffff">
+<center><h1>GMT CVS Services</center></h1><p>
+<HR>
+<h2>Introduction</h2>
+As of GMT version 3.4, the entire GMT package and supporting scaffolding is
+under version control using the Concurrent Version Systems (CVS) program.
+Unlike the previous version control system used by GMT (SCCS), CVS is Open
+Source and supports access across networks.  Two kinds of access are given:
+Read-only and read/write.  Read-only lets you check out the latest GMT
+tree, while read/write allows you to check back in your modifications.
+Both types will allow you to completely recreate the GMT directory tree
+that the developers are using and you may generate the web-examples
+and tar archives on your own machine.
+<h2>Requirements</h2>
+To take full advantage of the CVS access you need to have several utilities
+installed in your default path.  While most Linux systems come with all of
+them preinstalled (assuming you installed all the utilities), commercial Unix
+workstations usually do not and you must install them separately, either from
+source of from premade packages.  The tools are:
+<UL>
+<LI><U>CVS.</U>  You will not get far if you do not have CVS on your system.
+<LI><U>ghostscript.</U>  Needed to generate bitmaps from PostScript files.
+The ghostscript package should also come with the scripts <U>ps2epsi</U>
+and <U>ps2pdf</U> which you also will use.
+<LI><U>latex.</U>  Needed to generate the Documentation from the GMT Latex
+files.  This package should also include <U>dvips</U> to create the
+PostScript version of the documentation.
+<LI><U>latex2html.</U>  Needed to convert the Latex documentation into HTML
+web pages.  This package also needs <U>Perl5</U> and the <U>netpbm</U>
+library.
+<LI><U>autoconf.</U>  This tools is needed to generate the configure scripts
+from the configure.in templates.  It requires the <U>m4</U> macro pre-processor.
+<LI><U>man2html.</U>  This tools is needed to convert Unix man pages into
+HTML for the web section.
+</UL>
+See links below to obtain any of these utilities.
+<h2>Initiation of CVS service</h2>
+The initial process of starting to use GMT with CVS is done by the utility cshell
+script newgmtguru.  However, here we will go through the steps manually to
+indicate the process.
+<OL>
+<LI><B>Make a GMTdev directory.</B>  This directory will contain all GMT development,
+including the main GMT directory tree (in which you can work on GMT programs)
+as well as previously released versions, e.g., the GMT3.3.6 release tree.  Those
+directories should be treated as read-only; all your GMT-related development should
+take place in the GMT tree.  Change directory to where you want to place GMTdev and type<br>
+<p>
+mkdir GMTdev<br>
+<p>
+Then cd into the GMTdev directory.<P>
+<LI><B>Login to the CVS Server in Hawaii.</B>  First, set the following environment parameter:<br>
+<p>
+setenv CVSROOT :pserver:anonymous@gmt.soest.hawaii.edu:/home/gmt/gmt/cvs
+<p>
+This is the access method for anonymous (read-only) CVS access (Those who have been granted
+read-write access must replace anonymous with their given username).  You probably want
+to place this definition in your .cshrc or .tcshrc file as well as setting it just now.
+Then, login:<br>
+<p>
+cvs login
+<p>
+You will be asked for a password which for anonymous access is <B>gmt-team</B>. (Again,
+writers will have their own specific passwords).  Note that none of these methods grant
+you general system login to the gmt server: It only specifies how you interact with the
+CVS pserver running on gmt.soest.hawaii.edu.  If you try a normal remote login or ssh to
+gmt you will not get in.<P>
+<LI><B>Checkout GMT.</B>  Once login is successful (i.e., no error messages) you will want to
+checkout the entire GMT tree.  Normally this is only done once; later you will instead
+ask for updates.  Type<BR>
+<p>
+cvs checkout GMT
+<p>
+which will start copying the entire GMT tree from the GMT server - this can take a while
+depending on where you are and traffic load.  It is a good time to go for lunch.
+Barring any errors or network troubles you should have everything the GMT gurus have
+access to in your local directory.<P>
+<LI><B>Tune your environment.</B>  There are a few parameters that need to be set before you
+can run any make operations in GMT.  Hopefully, this process can be simplified as more
+gurus come online.  For now, cd into GMT/guru and copy the guruenv.csh to yourname_env.csh
+and edit the latter file.  The file has instructions for what you need to do.  When done,
+add the relevant section to your .cshrc or .tcshrc files and source them so the changes
+will take effect.  Next, copy gmtguru.macros.orig to gmtguru.macros and edit the latter
+file.  Again, follow instructions on what to do.<P>
+<LI><B>Get Coastlines data sets.</B>  Because the GMT coastline files (*.cdf) are themselves created
+from more primitive forms and this process is not in CVS yet, you must install the coastline
+files separately.  If you already have a recent version (e.g., 3.3.6) on your workstation
+you can simply copy *.cdf from GMT3.3.6/share to your GMT/share.  If not, you can get the
+coastlines by anonymous ftp simply by running<br>
+<P>
+gurumake get_coast
+<P>
+<LI><B>Do the guru thing.</B>
+If you are with me so far, you are ready to compile GMT.  I recommend a full shake-down
+which is done by running
+<P>
+gurumake site
+<P>
+This command will run cvs update (in case something has changed on the server), create
+configure scripts, run them, compile and install GMT, make man pages and documentation,
+and convert to HTML.  It does everything short of creating a version link and tarring of
+the release.  You will need to look at guru/Makefile.guru for other things you can do.
+</OL>
+<h2>How to contribute changes</h2>
+If you make any changes (e.g., fix a bug or correct a typographical error) you will want to
+make sure it gets updated on the GMT server.  How this is done depends on your access:
+<UL>
+<LI><U>Anonymous access</U>.  Since you do not have write permission you must email the
+patch or the fix to someone who does.  Most likely you will send it to gmt@soest.hawaii.edu,
+and we will merge your change into the CVS database.
+<LI><U>Write access</U>.  With write access you can upload the changes yourself.  You need
+to know quite a bit more about CVS than the anonymous users does since when you try to
+commit your change there may be a conflict.  Conflicts arise when somebody else has checked
+in an updated version of the file you are editing before you check in yours.  When you do,
+CVS compares your submission to its current version and it if is more recent that your
+starting point it may find a conflict and ask you to resolve it manually.  Usually this is
+not too hard as CVS will mark the sections in question with <<<<<<<<<<<<<<<< and >>>>>>>>>>>>>
+markers.  Make the changes if it is obvious or submit manually to gmt@soest.hawaii.edu if
+in doubt. To commit changes to the CVS archive, you run (as an example)
+<P>
+cvs commit -m "Fixed error in -G option" grdview.c
+<P>
+If successful, the CVS repository in Hawaii is updated and any future cvs update commands
+from anywhere will obtain the revised grdview.c file.  For more info, you need to read
+parts of the CVS Documentation and the CVS book (see references below).
+</UL>
+<HR>
+<h2>References</h2>
+<OL>
+<LI>Open Source Development with CVS by Karl Vogel.  Coriolis Open Press.
+All the relevant chapters of this book are available for free on-line
+from <A HREF="http://cvsbook.red-bean.com">cvsbook.red-bean.com</A>.
+<LI>The Cederquist - The main manual for CVS; online at
+<A HREF="http://www.cvshome.org/docs/manual">cvshome</A>.
+<LI>You can find source, binaries, and information about autoconf at the
+<A HREF="http://sources.redhat.com/autoconf">autoconf page</A>; it has a
+link to the GNU site as well.  The latter has m4 if you need that too.
+<LI>For ghostscript and related programs, goto the
+<A HREF="http://www.ghostscript.com">Ghostscript home page</A>.
+<LI>If you need to get latex, dvips, or latex2html, try searching <A HREF="http://www.ctan.org">CTAN</A>.
+<LI>CVS can be obtained from the <A HREF="http://www.cvshome.com">CVS home page</A>.
+</HTML>
