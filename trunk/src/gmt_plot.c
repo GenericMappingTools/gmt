@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.71 2002-05-03 20:26:56 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.72 2002-05-07 01:00:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4285,7 +4285,7 @@ void GMT_flush_symbol_piece (double *x, double *y, double z, int *n, struct GMT_
 	
 	draw_outline = (outline && p->rgb[0] != -1) ? TRUE : FALSE;
 	if (draw_outline) GMT_setpen (p);
-	if (project_info.three_D) GMT_2D_to_3D (x, y, z, *n);
+	if (project_info.three_D) GMT_2Dz_to_3D (x, y, z, *n);
 	GMT_fill (x, y, *n, f, draw_outline);
 	*flush = FALSE;
 	*n = 0;
