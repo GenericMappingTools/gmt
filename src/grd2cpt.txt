@@ -2,7 +2,7 @@
 .SH NAME
 grd2cpt \- Read a grdfile and make a color palette file
 .SH SYNOPSIS
-\fBgrd2cpt\fP \fIgrdfile\fP [ \fB\-C\fP\fIcptmaster\fP ] [ \fB\-I\fP ] 
+\fBgrd2cpt\fP \fIgrdfile\fP [ \fB\-C\fP\fIcptmaster\fP ] [ \fB\-E\fP\fInlevels\fP ] [ \fB\-I\fP ] 
 [ \fB\-L\fP\fIminlimit/maxlimit\fP ] [ \fB\-Q\fP[\fBi|o\fP] ] 
 [ \fB\-R\fP\fIw/e/s/n\fP ] [ \fB\-S\fP\fIzstart/zstop/zinc\fP ] [ \fB\-V\fP ] [ \fB\-Z\fP ]
 .SH DESCRIPTION
@@ -25,6 +25,9 @@ The 2-D binary grdfile used to derive the color palette table.
 Selects the master color table to use in the interpolation.  Choose among
 the built-in tables (type \fBgrd2cpt\fP to see the list) or give the
 name of an existing cptfile [Default gives a rainbow cpt file].
+.TP
+.B \-E
+Create a linear color table by dividing the grid z-range into \fInlevels\fP equidistant slices.
 .TP
 .B \-I
 Reverses the sense of color progression in the master cptfile.
