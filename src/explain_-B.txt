@@ -1,16 +1,29 @@
 .TP
 .B \-B
-Sets map boundary tickmark intervals. \fItickinfo\fP is a textstring made up of one or more
-concatenated substrings of the form [\fBwhich\fP]\fItick\fP[\fBm|c\fP].  The optional \fBwhich\fP
-can be either \fBa\fP for annotation interval [Default], \fBf\fP for frame stride interval, or
-\fBg\fP for gridline interval.  If frame interval is not set, it is assumed to be the same
-as annotation interval. \fIstride\fP is the desired stride interval.  The optional \fBm|c\fP indicates
-minutes (\fBm\fP) or seconds (\fBc\fP).  To specify separate x and y ticks, separate the substrings that apply to the x and y
-axes with a slash [/] (If a 3-D basemap is selected with \fB\-E, \-Jz\fP, a third substring pertaining
-to the vertical axis may be appended.)  For linear/log/power projections (\fB\-Jx\fP): Labels
+Sets map boundary annotation and tickmark intervals. The format of \fItickinfo\fP is
+\fIxinfo\fP[/\fIyinfo\fP[/\fIzinfo\fP]][:."Title":][\fBW|w\fP][\fBE|d\fP][\fBS|s\fP][\fBN|N\fP][\fBZ|z\fP[\fB+\fP]],
+where each of the \fI?info\fP segments are textstrings of the form \fIinfo\fP[:"Axis label":][:,"unit label"].
+The \fIinfo\fP string is made up of one or more concatenated substrings of the form [\fBwhich\fP]\fIstride\fP[\fBu\fP].
+The optional \fBwhich\fP can be either \fBa\fP for (upper) annotation tick spacing [Default], \fBf\fP for frame tick spacing,
+\fBg\fP for gridline spacing, and, for time axes, \fBA\fP for lower annotation tick spacing, \fBi\fP for upper
+interval spacing, and \fBI\fP for lower interval spacing.  If frame interval is not set, it is assumed to be the same
+as annotation interval. \fIstride\fP is the desired stride interval.  \fBi\fP and \fBI\fP may take a modifier
+\fBf|F|a|A|c|C\fP which determines that interval names (like months) will be written using \fBf\fPull, \fBa\fPbbreviated,
+or a single \fBc\fPharacter name only.  The optional \fBu\fP indicates the unit of the \fIstride\fP and can be any of
+\fBY\fP (year, plot with 4 digits), \fBy\fP (year, plot with 2 digits), \fBO\fP (month, plot using \fBPLOT_DATE_FORMAT\fP),
+\fBo\fP (month, plot with 2 digits), \fBU\fP (ISO week, plot using \fBPLOT_DATE_FORMAT\fP), \fBu\fP (ISO week, plot using 2 digits),
+\fBr\fP (Gregorian week, 7-day stride from start of week \fBTIME_WEEK_START\fP), \fBK\fP (ISO weekday, plot name of day),
+\fBD\fP (date, plot using \fBPLOT_DATE_FORMAT\fP), \fBd\fP (day, plot day of month 0-31 or year 1-366, via \fBPLOT_DATE_FORMAT\fP),
+\fBR\fP (day, same as \fBd\fP, aligned with \fBTIME_WEEK_START\fP), \fBH\fP (hour, plot using \fBPLOT_CLOCK_FORMAT\fP),
+\fBh\fP (hour, plot with 2 digits), \fBM\fP (minute, plot using \fBPLOT_CLOCK_FORMAT\fP),\fBm\fP (minute, plot with 2 digits), 
+\fBC\fP (second, plot using \fBPLOT_CLOCK_FORMAT\fP), \fch\fP (second, plot with 2 digits).  Note for geographic axes both
+\fBm\fP and \fBc\fP instead means arc minutes and arc seconds.  All entities that are language-specific are under control
+by \fBTIME_LANGUAGE\fP.  To specify separate x and y ticks, separate the substrings that apply to the x and y
+axes with a slash [/] (If a 3-D basemap is selected with \fB\-E and \-Jz\fP, a third substring pertaining
+to the vertical axis may be appended.)  For linear/log/power projections (\fB\-Jx|X\fP): Labels
 for each axis can be added by surrounding them with colons.  If the first character in the
 label is a period, then the label is used as plot title; if it is a comma then the label is
-appended to each anotation (start label with - to avoid space between anotation and unit);
+appended to each annotation (start label with - to avoid space between annotation and unit);
 else it is the axis label.
 If the label consists of more than one word, enclose the entire label in double quotes (e.g., :"my label":).
 .br
@@ -36,8 +49,10 @@ the annotation interval is expected to be in transformed units, but the annotati
 will be plotted as untransformed units.  E.g., if \fIstride\fP = 1 and \fIpower\fP = 0.5 (i.e., sqrt),
 then equidistant annotations labeled 1\-4\-9... will appear.
 .br
-These GMT parameters can affect the appearance of the map boundary: \fBANOT_MIN_ANGLE, ANOT_MIN_SPACING,
-ANOT_FONT, ANOT_FONT_SIZE, ANOT_OFFSET, BASEMAP_AXES, BASEMAP_FRAME_RGB, BASEMAP_TYPE, DEGREE_FORMAT,
+These GMT parameters can affect the appearance of the map boundary: \fBANNOT_MIN_ANGLE, ANNOT_MIN_SPACING,
+ANNOT_FONT, ANNOT_FONT2, ANNOT_FONT_SIZE, ANNOT_FONT2_SIZE, ANNOT_OFFSET, ANNOT2_OFFSET, BASEMAP_AXES,
+BASEMAP_FRAME_RGB, BASEMAP_TYPE, DEGREE_FORMAT,
 FRAME_PEN, FRAME_WIDTH, GRID_CROSS_SIZE, GRID_PEN, HEADER_FON, HEADER_FONT_SIZE, LABEL_FONT,
-LABEL_FONT_SIZE, LINE_STEP, OBLIQUE_ANOTATION, TICK_LENGTH, TICK_PEN,\fP and \fBY_AXIS_TYPE\fP; see the
+LABEL_FONT_SIZE, LINE_STEP, OBLIQUE_ANNOTATION, PLOT_CLOCK_FOMAT, PLOT_DATE_FORMAT, TIME_LANGUAGE,
+TIME_WEEK_START, TICK_LENGTH, TICK_PEN,\fP and \fBY_AXIS_TYPE\fP; see the
 \fBgmtdefaults\fP man page for details.
