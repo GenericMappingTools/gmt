@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.15 2004-01-13 01:53:26 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.16 2004-01-28 00:55:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -846,6 +846,15 @@ double GMT_plm (int l, int m, double x)
 		pmmp1 = pll;
 	}
 	return (pll);
+}
+
+/* GMT_sinc (x) calculates the sinc function */
+
+double GMT_sinc (double x)
+{
+	if (x == 0.0) return (1.0);
+	x *= M_PI;
+	return (sin (x) / x);
 }
 
 /* GMT_factorial (n) calculates the factorial n! */
