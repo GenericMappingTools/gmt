@@ -3,7 +3,7 @@
 rotconverter \- Manipulate finite and stage rotations 
 .SH SYNOPSIS
 \fBrotconverter\fP [+][-] \fIrotA\fP [ [+|- \fIrotB\fP ] [ +|- \fIrotC\fP ] ... [ \fB\-D\fP ] 
-[ \-F\fP\fIin/out\fP ] [ \fB\-H\fP[\fBa|t\fP ]] [ \fB\-N\fP ] [ \fB\-S\fP ] [ \fB\-T\fP ] [\fB\-V\fP ]
+[ \-F\fP\fIin/out\fP ] [ \fB\-H\fP[\fBa|t\fP]] [ \fB\-N\fP ] [ \fB\-S\fP ] [ \fB\-T\fP ] [\fB\-V\fP ]
 .SH DESCRIPTION
 \fBrotconverter\fP reads one or more plate motion models (rotations) stored in the
 given files.  If more than one plate motion model is given we will add or subtract

@@ -93,7 +93,7 @@ c, i, m, p to indicate that the size information in the
 input data is in units of cm, inch, meter, or point,
 respectively. [Default is MEASURE_UNIT].
 .br
-The uppercase symbols \fBA\fP, \fBC\fP, \fBD\fP, fBG\fP, \fBH\fP, \fBI\fP, \fBN\fP, \fBS\fP, \fBT\fP are normalized
+The uppercase symbols \fBA\fP, \fBC\fP, \fBD\fP, \fBG\fP, \fBH\fP, \fBI\fP, \fBN\fP, \fBS\fP, \fBT\fP are normalized
 to have the same area as a circle with diameter \fIsize\fP, while
 the corresponding lowercase symbols all are circumscribed
 by the circle.  Choose between these symbol codes:
