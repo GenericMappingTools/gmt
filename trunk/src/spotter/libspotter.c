@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.28 2004-03-23 17:08:39 pwessel Exp $
+ *	$Id: libspotter.c,v 1.29 2005-02-04 02:48:38 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -890,7 +890,7 @@ void make_rot_matrix_sub (double E[3], double w, double R[3][3])
 
 void make_rot0_matrix (double lonp, double latp, double R[3][3], double E[])
 {	/* This starts setting up the matrix without knowing the angle of rotation
-	 * Call set_rot_angle wiht R, E, and omega to complete the matrix
+	 * Call set_rot_angle with R, E, and omega to complete the matrix
 	 * lonp, latp	Euler pole in degrees
 	 *
 	 *	R		the rotation matrix without terms depending on omega

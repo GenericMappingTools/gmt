@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.147 2005-01-12 03:50:47 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.148 2005-02-04 02:48:38 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1479,6 +1479,7 @@ double GMT_csplint (double *x, double *y, double *c, double xp, int klo)
  *   	  mode = 1 : Quasi-cubic hermite spline (GMT_akima)
  *   	  mode = 2 : Natural cubic spline (cubspl)
  * output: v = y-values at interpolated points
+ * PS. v must have space allocated before calling GMT_intpol
  *
  * Programmer:	Paul Wessel
  * Date:	16-JAN-1987
@@ -6007,7 +6008,7 @@ double GMT_great_circle_dist_km (double x0, double y0, double x1, double y1)
 
 /* Functions involving distance from arbitrary points to a line */
 
-int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_LINES *p, int np, BOOLEAN return_mindist, double *dist_min)
+int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_LINES *p, int np, BOOLEAN return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	int i, j0, j1;
 	double edge, dx, dy, xc, yc, s, s_inv, d;
@@ -6023,8 +6024,11 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_LINES *p, int 
 
 		for (j0 = 0; j0 < p[i].np; j0++) {	/* loop over nodes on current line */
 			d = (*GMT_distance_func) (lon, lat, p[i].lon[j0], p[i].lat[j0]);	/* Distance between our point and j'th node on i'th line */
-			if (return_mindist && d < (*dist_min)) *dist_min = d;			/* Node inside the critical distance; we are done */
-			if (d <= p[i].dist) return (TRUE);
+			if (return_mindist && d < (*dist_min)) {	/* Update min distance */
+				*dist_min = d;
+				if (return_mindist == 2) *x_near = p[i].lon[j0], *y_near = p[i].lat[j0];	/* Also update nearest point on the line */
+			}
+			if (d <= p[i].dist) return (TRUE);		/* Node inside the critical distance; we are done */
 		}
 
 		if (p[i].np < 2) continue;	/* 1-point "line" is a point; skip segment check */
@@ -6078,14 +6082,17 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_LINES *p, int 
 			/* OK, here we must check how close the crossing point is */
 			
 			d = (*GMT_distance_func) (lon, lat, xc, yc);			/* Distance between our point and intersection */
-			if (return_mindist && d < (*dist_min)) *dist_min = d;		/* Node inside the critical distance; we are done */
-			if (d <= p[i].dist) return (TRUE);
+			if (return_mindist && d < (*dist_min)) {			/* Update min distance */
+				*dist_min = d;
+				if (return_mindist == 2) *x_near = xc, *y_near = yc;	/* Also update nearest point on the line */
+			}
+			if (d <= p[i].dist) return (TRUE);		/* Node inside the critical distance; we are done */
 		}
 	}
 	return (FALSE);	/* All tests failed, we are not close to the line(s) */
 }
 
-int GMT_near_a_line_spherical (double lon, double lat, struct GMT_LINES *p, int np, BOOLEAN return_mindist, double *dist_min)
+int GMT_near_a_line_spherical (double lon, double lat, struct GMT_LINES *p, int np, BOOLEAN return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	int i, j;
 	double d, A[3], B[3], C[3], X[3], plon, plat, xlon, xlat, cx_dist, cos_dist;
@@ -6104,15 +6111,18 @@ int GMT_near_a_line_spherical (double lon, double lat, struct GMT_LINES *p, int 
 
 		for (j = 0; j < p[i].np; j++) {	/* loop over nodes on current line */
 			d = (*GMT_distance_func) (lon, lat, p[i].lon[j], p[i].lat[j]);	/* Distance between our point and j'th node on i'th line */
-			if (return_mindist && d < (*dist_min)) *dist_min = d;		/* Update minimum distance */
-			if (d <= p[i].dist) return (TRUE);				/* Node inside the critical distance; we are done */
+			if (return_mindist && d < (*dist_min)) {		/* Update minimum distance */
+				*dist_min = d;
+				if (return_mindist == 2) *x_near = p[i].lon[j], *y_near = p[i].lat[j];	/* Also update nearest point on the line */
+			}
+			if (d <= p[i].dist) return (TRUE);			/* Node inside the critical distance; we are done */
 		}
 
 		if (p[i].np < 2) continue;	/* 1-point "line" is a point; skip segment check */
 
 		/* If we get here we must check for intermediate points along the great circle lines between segment nodes.*/
 		
-		cos_dist = cosd (p[i].dist * KM_TO_DEG);		/* Cosine of the great circle distance we are checking for */
+		cos_dist = (return_mindist) ? 2.0 : cosd (p[i].dist * KM_TO_DEG);		/* Cosine of the great circle distance we are checking for. 2 ensures failure to be closer */
 		plon = p[i].lon[0];	plat = p[i].lat[0];
 		GMT_geo_to_cart (&plat, &plon, B, TRUE);		/* 3-D vector of end of last segment */
 		
@@ -6124,7 +6134,10 @@ int GMT_near_a_line_spherical (double lon, double lat, struct GMT_LINES *p, int 
 			if (return_mindist) {		/* Get lon, lat of X, calculate distance, and update min_dist if needed */
 				GMT_cart_to_geo (&xlat, &xlon, X, TRUE);
 				d = (*GMT_distance_func) (xlon, xlat, lon, lat);	/* Distance between our point and j'th node on i'th line */
-				if (d < (*dist_min)) *dist_min = d;				/* Node inside the critical distance; we are done */
+				if (d < (*dist_min)) {
+					*dist_min = d;				/* Update minimum distance */
+					if (return_mindist == 2) *x_near = xlon, *y_near = xlat;	/* Also update nearest point on the line */
+				}
 			}
 			if (cx_dist > cos_dist) return (TRUE);	/* X is on the A-B extension AND within specified distance */
 		}
