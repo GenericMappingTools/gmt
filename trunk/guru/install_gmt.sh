@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.30 2003-03-08 01:32:20 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.31 2004-01-02 22:45:12 pwessel Exp $
 #
-#	Automatic installation of GMT version 4
-#	Version for the Bourne shell (or compatible)
+#	Automatic installation of GMT
+#	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	18-JAN-2002
+#	02-JAN-2004
 #--------------------------------------------------------------------------------
 #	FUNCTIONS
 #--------------------------------------------------------------------------------
@@ -115,7 +115,26 @@ Then, when all parameters have been assembled,
 we will run the installation (unless you chose
 -n when starting this script).
 
+Choose among these GMT versions:
+
+1. GMT 4.0beta [Default]
+2. GMT 3.4.4
+3. GMT 3.4.3
+
 EOF
+answer=`get_def_answer "Enter GMT version to install (1-3)" "1"`
+while [ $answer -lt 0 ] || [ $answer gt 3 ]; do
+	echo "Please enter a number from 1 to 3 [or hit return for the default]" >&2
+	answer=`get_def_answer "Enter GMT version to install (1-3)" "1"`
+done
+if [ $answer -eq 1 ]; then
+	VERSION=4b
+elif [ $answer -eq 2 ]; then
+	VERSION=3.4.4
+else
+	VERSION=3.4.3
+fi
+
 topdir=`pwd`
 os=`uname -s`
 #--------------------------------------------------------------------------------
@@ -167,12 +186,12 @@ passive_ftp=`get_def_answer "Do you want passive ftp transmission (y/n)" "n"`
 #	NETCDF SETUP
 #--------------------------------------------------------------------------------
 
-answer=`get_def_answer "Have you installed netcdf version 3.4 or later? (y/n)" "y"`
+answer=`get_def_answer "Have you installed netcdf (version 3.4 or later)? (y/n)" "y"`
 if [ $answer = "n" ]; then
 	netcdf_path=""
 	answer=`get_def_answer "Do you want me to ftp it for you? (y/n)" "y"`
 	if [ $answer = "n" ]; then
-		answer=`get_def_answer "Do you have netcdf.tar.Z (or .bz2, .gz) in $topdir? (y/n)" "y"`
+		answer=`get_def_answer "Do you have netcdf-beta.tar.Z or netcdf.tar.{Z,bz2,gz} in $topdir? (y/n)" "y"`
 		if [ $answer = "n" ]; then
 			echo "Please ftp or install netcdf and then rerun install_gmt" >&2
 			exit
@@ -189,7 +208,8 @@ if [ $answer = "n" ]; then
 				ok=1
 			fi
 			if [ $ok -eq 0 ]; then
-				echo "netcdf.tar.Z (or .bz2, .gz) not in $topdir, please ftp netcdf or have me do it" >&2
+				echo "netcdf-beta.tar.Z or netcdf.tar.{Z,bz2,gz} not in $topdir" >&2
+				echo "Please ftp netcdf or have me do it" >&2
 				exit
 			fi
 		fi
@@ -299,7 +319,7 @@ EOF
 	echo "GMT can use two different algorithms for Delauney triangulation." >&2
 	echo " " >&2
 	echo "   Shewchuk [1996]: Modern and very fast, copyrighted." >&2
-	echo "   Watson [1982]   : Older and slower, public domain." >&2
+	echo "   Watson [1982]  : Older and slower, public domain." >&2
 	echo " " >&2
 	echo "Because of the copyright, GMT uses Watson's routine by default." >&2
 	echo " " >&2
@@ -314,7 +334,7 @@ else
 		echo "GMT can use two different algorithms for Delauney triangulation." >&2
 		echo " " >&2
 		echo "   Shewchuk [1996]: Modern and very fast, copyrighted." >&2
-		echo "   Watson [1982]   : Older and slower, public domain." >&2
+		echo "   Watson [1982]  : Older and slower, public domain." >&2
 		echo " " >&2
 		echo "Because of the copyright, GMT uses Watson's routine by default." >&2
 		echo "However, since triangle.tar.{bz2,gz} was found in the current directory" >&2
@@ -535,7 +555,7 @@ file=`get_def_answer "Enter name of the parameter file that will now be created"
 
 cat << EOF > $file
 # This file contains parameters needed by the install script
-# for GMT Version ${VERSION} or later.  Give this parameter file
+# for GMT Version ${VERSION}.  Give this parameter file
 # as the argument to the install_gmt script and the whole
 # installation process can be placed in the background.
 # Default answers will be selected where none is given.
@@ -635,10 +655,10 @@ install_this_gmt()
 {
 	ok=1
 	get_this=$1
-	if [ -f GMT_$2.tar.$suffix ]; then
-		this=GMT_$2.tar.$suffix
-	elif [ -f GMT${VERSION}_$2.tar.$suffix ]; then
+	if [ -f GMT${VERSION}_$2.tar.$suffix ]; then
 		this=GMT${VERSION}_$2.tar.$suffix
+	elif [ -f GMT_$2.tar.$suffix ]; then
+		this=GMT_$2.tar.$suffix
 	else
 		ok=0
 	fi
@@ -665,10 +685,10 @@ install_coast()
 	here=`pwd`
 	ok=1
 	done=0
-	if [ -f GMT_${file}.tar.$suffix ]; then
-		this=GMT_${file}.tar.$suffix
-	elif [ -f GMT${VERSION}_${file}.tar.$suffix ]; then
+	if [ -f GMT${VERSION}_${file}.tar.$suffix ]; then
 		this=GMT${VERSION}_${file}.tar.$suffix
+	elif [ -f GMT_${file}.tar.$suffix ]; then
+		this=GMT_${file}.tar.$suffix
 	else
 		ok=0
 	fi
@@ -737,9 +757,9 @@ make_ftp_list()
 	file=$2
 	if [ $get_this = "y" ]; then
 #		User has checked this one - first see if we already have it
-		if [ -f GMT_${file}.tar.$suffix ]; then
+		if [ -f GMT${VERSION}_${file}.tar.$suffix ]; then
 			get=0
-		elif [ -f GMT${VERSION}_${file}.tar.$suffix ]; then
+		elif [ -f GMT_${file}.tar.$suffix ]; then
 			get=0
 		else
 			get=1
@@ -772,7 +792,6 @@ make_ftp_list2()
 
 trap "rm -f gmt_install.ftp_*; exit" 0 2 15
 DIR=pub/gmt
-VERSION=4
 GMT=GMT
 #--------------------------------------------------------------------------------
 #	LISTING OF CURRENT FTP MIRROR SITES
@@ -800,7 +819,7 @@ EOF
 
 if [ $# -gt 0 ] && [ $1 = "-h" ]; then
 	cat << EOF >&2
-install_gmt - Automatic installation of GMT ${VERSION}
+install_gmt - Automatic installation of GMT
 
 GMT is installed in the background following the gathering
 of installation parameters.  These parameters are obtained

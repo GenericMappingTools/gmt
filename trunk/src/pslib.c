@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.52 2003-12-23 01:29:00 pwessel Exp $
+ *	$Id: pslib.c,v 1.53 2004-01-02 22:45:13 pwessel Exp $
  *
- *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify

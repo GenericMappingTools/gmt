@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.h,v 1.13 2002-10-30 23:21:40 pwessel Exp $
+ *	$Id: gmt_calclock.h,v 1.14 2004-01-02 22:45:12 pwessel Exp $
  *
- *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
