@@ -101,8 +101,8 @@ paste data.t data.g | \fBspectrum1d\fP \fB\-S\fP256 \fB\-D\fP1.5 \fB\-N\fPdata \
 .SH REFERENCES
 Bendat, J. S., and A. G. Piersol, 1986, Random Data, 2nd revised ed., John Wiley & Sons.
 .br
-Welch, P. D., 1967, "The use of Fast Fourier Transform for the estimation of power spectra:  a method 
-based on time averaging over short, modified periodograms", IEEE Transactions on Audio and Electroacoustics, 
+Welch, P. D., 1967, The use of Fast Fourier Transform for the estimation of power spectra:  a method 
+based on time averaging over short, modified periodograms, IEEE Transactions on Audio and Electroacoustics, 
 Vol AU-15, No 2.
 
 

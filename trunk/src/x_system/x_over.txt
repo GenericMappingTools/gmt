@@ -13,7 +13,7 @@ on the command line. If they are identical or only one name is passed, then \fBx
 internal cross-overs. The optional parameters are:
 .TP
 .B \-A
-Use Akima's spline to interpolate the geophysical field at the cross-over point.
+Use an Akima spline to interpolate the geophysical field at the cross-over point.
 .TP
 .B \-C
 Use a Natural Cubic spline function instead.
@@ -46,7 +46,7 @@ encountered. The fields written out are lat, lon, time along track #1, time alon
 x_gravity, x_magnetics, x_bathymetry, average gravity, average magnetics, average bathymetry,
 heading along track #1, and heading along track #2. Sign convention: If lega and legb are passed
 on the command line, then the COE value is Value (lega) - Value (legb).  It is recommended that
-the Akima's spline is used instead of the natural cubic spline, since it is less sensitive to
+the Akima spline is used instead of the natural cubic spline, since it is less sensitive to
 outliers that tend to introduce wild oscillations in the interpolation.  A version of \fBx_over\fP
 compiled for a SUN with FPA board is provided (\fBx_over\fP).
 .SH SEE ALSO

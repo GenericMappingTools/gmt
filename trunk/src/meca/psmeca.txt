@@ -131,8 +131,8 @@ Text string to appear above the beach ball (optional).
 .TP
 \fB\-Sp\fIscale[c/i][/fontsize[/offset[u]]]\fR
 Focal mechanisms given with partial data on both planes.
-\fIscale\fR adjusts the scaling of the radius of the "beach
-ball", which will be proportional to the magnitude. Scale is the size
+\fIscale\fR adjusts the scaling of the radius of the "beach ball",
+which will be proportional to the magnitude. Scale is the size
 for magnitude = 5 in inch (unless \fBc\fR, \fBi\fR, \fBm\fR, or \fBp\fR is appended).
 The color or shade of the compressive quadrants
 can be specified with the \fB-G\fR option.  The color or shade
@@ -317,7 +317,7 @@ Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.
 .br
 F. A. Dahlen and Jeoren Trom, Theoretical Seismology, Princeton, 1998, p.167.
 .br
-Cliff Frohlich, Cliff'Nodes Concerning Plotting Nodal Lines for P, Sh and Sv
+Cliff Frohlich, Cliff's Nodes Concerning Plotting Nodal Lines for P, Sh and Sv
 .br
 Seismological Research Letters, Volume 67, Number 1, January-February, 1996
 .br
