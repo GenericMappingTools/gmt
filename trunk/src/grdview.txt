@@ -61,11 +61,6 @@ Draws a plane at this z-level.  If the optional r/g/b is provided, the frontal f
 the plane and the data perimeter is colored.
 #include "explain_-O.txt"
 #include "explain_-P.txt"
-#include "explain_-R.txt"
-This option may be used to indicate the range used for the 3-D axes [Default is
-region given by the \fIrelief_file\fP].  You may ask for a larger
-\fIw/e/s/n\fP region to have more room between the image and the axes.  A smaller region
-than specified in the \fIrelief_file\fP will result in a subset of the grid.
 .TP
 .B \-Q
 Select one of three settings: 1. Specify \fBm\fP for mesh plot [Default], and optionally append /r/g/b for a different mesh paint [white].
@@ -73,6 +68,11 @@ Select one of three settings: 1. Specify \fBm\fP for mesh plot [Default], and op
 3. Specify \fBi\fP for image plot, and optionally append the effective dpi resolution for the rasterization [100].
 For any of these choices, you may force a monochrome image by appending \fBg\fP.  Colors are then
 converted to shades of gray using the (television) YIQ transformation.
+#include "explain_-R.txt"
+This option may be used to indicate the range used for the 3-D axes [Default is
+region given by the \fIrelief_file\fP].  You may ask for a larger
+\fIw/e/s/n\fP region to have more room between the image and the axes.  A smaller region
+than specified in the \fIrelief_file\fP will result in a subset of the grid.
 .TP
 .B \-S
 Smooth the contours before plotting (see \fBgrdcontour\fP) [Default is no smoothing]
