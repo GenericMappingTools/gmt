@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.4 2001-10-19 20:48:35 pwessel Exp $
+ *	$Id: libspotter.c,v 1.5 2001-10-22 17:36:00 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -52,8 +52,8 @@ void matrix_to_pole (double T[3][3], double *plon, double *plat, double *w);
 void matrix_transpose (double At[3][3], double A[3][3]);
 void matrix_mult (double a[3][3], double b[3][3], double c[3][3]);
 void make_rot_matrix (double lonp, double latp, double w, double R[3][3]);
-void finite_to_stages (struct EULER p[], int n, int flag);
-void stages_to_finite (struct EULER p[], int n, int flag);
+void finite_to_stages (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates);
+void stages_to_finite (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates);
 
 int spotter_init (char *file, struct EULER **p, int flowline, int finite, double *t_max)
 {
@@ -101,14 +101,13 @@ int spotter_init (char *file, struct EULER **p, int flowline, int finite, double
 				exit (EXIT_FAILURE);
 			}
 			last_t = e[i].t_stop;
-			e[i].omega /= e[i].duration;	/* For finite, omega is opening angle, not rate; this will change in finite_to_stages */
 		}
+		e[i].omega /= e[i].duration;	/* Convert to opening rate */
 		
 		e[i].omega_r = e[i].omega * D2R;
-		e[i].sin_lat = sin (e[i].lat * D2R);
-		e[i].cos_lat = cos (e[i].lat * D2R);
-		x = e[i].lon * D2R;	y = e[i].lat * D2R;
-		e[i].lon_r = x;		e[i].lat_r = y;
+		sincos (e[i].lat * D2R, &e[i].sin_lat, &e[i].cos_lat);
+		e[i].lon_r = e[i].lon * D2R;
+		e[i].lat_r = e[i].lat * D2R;
 		i++;
 		if (i == n_alloc) {
 			n_alloc += GMT_SMALL_CHUNK;
@@ -119,7 +118,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, int finite, double
 	
 	n = i;
 
-	if (finite) finite_to_stages (e, n, finite-1);	/* Convert finite poles to backward stage poles */
+	if (finite) finite_to_stages (e, n, TRUE, TRUE);	/* Convert finite poles to backward stage poles */
 	
 	/* Extend oldest stage pole back to t_max Ma */
 
@@ -525,8 +524,15 @@ void spotter_rotate_inv (double *lon, double *lat, double tlon, double tlat, str
  * Based partly on Cox and Hart, 1986
  */
 
-void finite_to_stages (struct EULER p[], int n, int flag)
+void finite_to_stages (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates)
 {
+	/* Convert finite rotations to stage rotations */
+	/* p[]		: Array of structure elements with rotation parameters
+	 * n		: Number of rotations
+	 * finite_rates	: TRUE if finite rotations given in degree/my [else we have opening angle]
+	 * stage_rates	: TRUE if stage rotations should be returned in degree/my [else we return opening angle]
+	 */
+	 
 	int i, j;
 	double *elon, *elat, *ew, t_old;
 	double R_new[3][3], R_old[3][3], R_stage[3][3];
@@ -543,6 +549,7 @@ void finite_to_stages (struct EULER p[], int n, int flag)
 	
 	t_old = 0.0;
 	for (i = 0; i < n; i++) {
+		if (finite_rates) p[i].omega *= p[i].duration;	/* Convert opening rate to opening angle */
 		make_rot_matrix (p[i].lon, p[i].lat, p[i].omega, R_old);
 		matrix_mult (R_new, R_old, R_stage);
 		matrix_to_pole (R_stage, &elon[i], &elat[i], &ew[i]);
@@ -559,7 +566,7 @@ void finite_to_stages (struct EULER p[], int n, int flag)
 		p[i].lat = elat[i];
 		p[i].duration = p[i].t_start - p[i].t_stop;
 		p[i].omega = ew[i];
-		if (flag == 0) p[i].omega /= p[i].duration;	/* get rates */
+		if (stage_rates) p[i].omega /= p[i].duration;	/* Convert opening angle to opening rate */
 		p[i].omega_r = p[i].omega * D2R;
 		p[i].sin_lat = sin (p[i].lat * D2R);
 		p[i].cos_lat = cos (p[i].lat * D2R);
@@ -583,8 +590,15 @@ void finite_to_stages (struct EULER p[], int n, int flag)
 	}
 }
 
-void stages_to_finite (struct EULER p[], int n, int flag)
+void stages_to_finite (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates)
 {
+	/* Convert stage rotations to finite rotations */
+	/* p[]		: Array of structure elements with rotation parameters
+	 * n		: Number of rotations
+	 * finite_rates	: TRUE if finite rotations should be returned in degree/my [else we return opening angle]
+	 * stage_rates	: TRUE if stage rotations given in degree/my [else we have opening angle]
+	 */
+
 	int i, j;
 	double *elon, *elat, *ew;
 	double R_new[3][3], R_old[3][3], R_stage[3][3];
@@ -609,7 +623,7 @@ void stages_to_finite (struct EULER p[], int n, int flag)
 	R_old[0][0] = R_old[1][1] = R_old[2][2] = 1.0;
 	
 	for (i = 0; i < n; i++) {
-		if (flag) p[i].omega *= p[i].duration;	/* Because spotter_init converted angles to rates */
+		if (stage_rates) p[i].omega *= p[i].duration;	/* Convert opening rate to opening angle */
 		make_rot_matrix (p[i].lon, p[i].lat, -p[i].omega, R_stage);
 		matrix_mult (R_stage, R_old, R_new);
 		memcpy ((void *)R_old, (void *)R_new, (size_t)(9 * sizeof (double)));
@@ -619,6 +633,7 @@ void stages_to_finite (struct EULER p[], int n, int flag)
 		p[i].lat = elat[i];
 		p[i].duration = p[i].t_start;
 		p[i].omega = -ew[i];
+		if (finite_rates) p[i].omega /= p[i].duration;	/* Convert opening angle to opening rate */
 		p[i].omega_r = p[i].omega * D2R;
 		p[i].sin_lat = sin (p[i].lat * D2R);
 		p[i].cos_lat = cos (p[i].lat * D2R);
