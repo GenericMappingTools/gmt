@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_H.tex,v 1.5 2003-04-11 22:57:15 pwessel Exp $
+%	$Id: GMT_Appendix_H.tex,v 1.6 2003-04-12 01:26:33 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2003.
@@ -12,10 +12,12 @@
 \GMT\ creates valid (so far as we know) Adobe \PS\
 Level 1.  It does not use operators specific to Level 2 and
 should therefore produce output that will print on old as well
-as new \PS\ printers.  Sometimes unexpected things
+as new \PS\ printers\footnote{Note, however, that the \Opt{Q} option in \GMTProg{grdimage}
+will exercise a \PS\ Level 3 feature called colormasking.}.  Sometimes unexpected things
 happen when \GMT\ output is sent to certain printers or displays.
 This section lists some things we have learned from experience,
-and some work-arounds.
+and some work-arounds.  Note that many of these lessons are now rather old so hopefully
+these workarounds no longer apply to anybody...
 
 \section{\PS\ driver bugs}
 \index{PostScript@\PS!driver bugs}
