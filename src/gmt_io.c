@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.76 2005-02-14 03:32:10 lloyd Exp $
+ *	$Id: gmt_io.c,v 1.77 2005-02-15 21:15:18 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -75,6 +75,7 @@
  * Version:	3.4
  */
  
+#define GMT_WITH_NO_PS
 #include "gmt.h"
 
 BOOLEAN GMT_do_swab = FALSE;	/* Used to indicate swab'ing during binary read */

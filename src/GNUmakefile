@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.35 2004-12-27 02:52:07 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.36 2005-02-15 21:15:18 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -40,6 +40,7 @@ CDF	  	= -L$(NETCDFLIB) -lnetcdf
 
 PS	= -lpsl
 GMT	= -lgmt
+GMTPS	= -lgmtps
 
 LIB_C	= fourt.c \
 	  gmt_calclock.c \
@@ -49,11 +50,12 @@ LIB_C	= fourt.c \
 	  gmt_init.c \
 	  gmt_io.c \
 	  gmt_map.c \
-	  gmt_plot.c \
 	  gmt_shore.c \
 	  gmt_stat.c \
 	  gmt_support.c \
 	  gmt_vector.c
+
+LIBPS_C	= gmt_plot.c
 
 GMT_H	= gmt.h \
 	  gmt_calclock.h \
@@ -81,8 +83,7 @@ GMT_H	= gmt.h \
 	  gmt_notunix.h \
 	  gmt_version.h \
 	  gmt_ellipsoids.h \
-	  gmt_datums.h \
-	  pslib.h
+	  gmt_datums.h
 
 GMT_I	= gmt_init.h \
 	  gmt_defaults.h \
@@ -95,13 +96,16 @@ GMT_I	= gmt_init.h \
 PS_H	= pslib.h \
 	  pslib_inc.h
 
-PROGS_C	= blockmean.c blockmedian.c blockmode.c filter1d.c fitcircle.c grdfilter.c gmtconvert.c gmtdefaults.c gmtmath.c gmtselect.c \
-	  gmtset.c gmt2rgb.c grd2cpt.c grd2xyz.c grdblend.c grdcontour.c grdcut.c grdclip.c grdedit.c grdfft.c \
-	  grdgradient.c grdhisteq.c grdimage.c grdinfo.c grdlandmask.c grdmask.c grdtrack.c grdreformat.c \
-	  grdmath.c grdpaste.c grdproject.c grdsample.c grdtrend.c grdvector.c grdview.c grdvolume.c makecpt.c \
-	  mapproject.c minmax.c nearneighbor.c project.c psbasemap.c psclip.c pscoast.c pshistogram.c \
-	  psimage.c pslegend.c psmask.c psrose.c psscale.c pstext.c pscontour.c pswiggle.c psxy.c psxyz.c \
-	  sample1d.c spectrum1d.c splitxyz.c surface.c trend1d.c trend2d.c triangulate.c xyz2grd.c
+PROGS_C	= blockmean.c blockmedian.c blockmode.c filter1d.c fitcircle.c grdfilter.c gmtconvert.c \
+	  gmtdefaults.c gmtmath.c gmtselect.c gmtset.c grd2cpt.c grd2xyz.c grdblend.c grdcut.c \
+	  grdclip.c grdedit.c grdfft.c grdgradient.c grdhisteq.c grdinfo.c grdlandmask.c grdmask.c \
+	  grdtrack.c grdreformat.c grdmath.c grdpaste.c grdproject.c grdsample.c grdtrend.c grdvolume.c \
+	  makecpt.c mapproject.c minmax.c nearneighbor.c project.c sample1d.c spectrum1d.c splitxyz.c \
+	  surface.c trend1d.c trend2d.c triangulate.c xyz2grd.c
+
+PROGSPS_C	= gmt2rgb.c grdcontour.c grdimage.c grdvector.c grdview.c psbasemap.c psclip.c \
+	  pscoast.c pshistogram.c psimage.c pslegend.c psmask.c psrose.c psscale.c pstext.c pscontour.c \
+	  pswiggle.c psxy.c psxyz.c 
 
 SUPPL	=	cps dbase imgsrc meca mex mgg misc segyprogs spotter x2sys x_system xgrid
 
@@ -114,14 +118,27 @@ first:	all
 
 LIB_O	= ${LIB_C:.c=.o}
 
+LIBPS_O	= ${LIBPS_C:.c=.o}
+
 PROGS_O	= ${PROGS_C:.c=.o}
 
 PROGS	= ${PROGS_C:.c=}
 
+PROGSPS_O	= ${PROGSPS_C:.c=.o}
+
+PROGSPS	= ${PROGSPS_C:.c=}
+
+ALLPROGS	= $(PROGS) $(PROGSPS)
+
 $(LIB_O):	%.o:	%.c $(GMT_H) $(GMT_I)
 		$(CC) -c $(CFLAGS) $<
 
+$(LIBPS_O):	%.o:	%.c $(GMT_H) pslib.h $(GMT_I)
+		$(CC) -c $(CFLAGS) $<
+
 $(PROGS_O):	$(GMT_H)
+
+$(PROGSPS_O):	$(GMT_H) pslib.h
 
 # Jonathan Shewchuk's triangulation model
 # Only used if TRIANGLE_D and TRIANGLE_O are set in makegmt.macros
@@ -136,12 +153,12 @@ alpha-sincos.o:	alpha-sincos.s
 		$(AS) -o alpha-sincos.o $<
 
 #-------------------------------------------------------------------------------
-SHARED_LIB	= libpsl.a libgmt.a libpsl.$(SL) libgmt.$(SL)
-STATIC_LIB	= libpsl.a libgmt.a
+SHARED_LIB	= libpsl.a libgmt.a libgmtps.a libpsl.$(SL) libgmt.$(SL) libgmtps.$(SL)
+STATIC_LIB	= libpsl.a libgmt.a libgmtps.a
 
 #-------------------------------------------------------------------------------
 
-all:		init libs $(PROGS)
+all:		init libs $(ALLPROGS)
 
 init:		gmt_nan.h gmt_notposix.h gmtmath.c grdmath.c
 
@@ -175,7 +192,7 @@ install:	all
 		if [ ! -d $(bindir) ]; then \
 			mkdir -p $(bindir); \
 		fi
-		for i in $(PROGS); do \
+		for i in $(ALLPROGS); do \
 			$(INSTALL) $$i$(EXE) $(bindir); \
 		done
 		$(INSTALL) GMT $(bindir)
@@ -183,12 +200,14 @@ install:	all
 			mkdir -p $(libdir); \
 		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			rm -f $(libdir)/libpsl.* $(libdir)/libgmt.*; \
+			rm -f $(libdir)/libpsl.* $(libdir)/libgmt.* $(libdir)/libgmtps.*; \
 			$(INSTALL) -m 444 libpsl.a $(libdir); \
 			$(INSTALL) -m 444 libgmt.a $(libdir); \
+			$(INSTALL) -m 444 libgmtps.a $(libdir); \
 			if [ -f libpsl.$(SL) ]; then \
 				$(INSTALL) -m 444 libpsl.$(SL) $(libdir); \
 				$(INSTALL) -m 444 libgmt.$(SL) $(libdir); \
+				$(INSTALL) -m 444 libgmtps.$(SL) $(libdir); \
 			fi; \
 		fi
 		if [ ! -d $(includedir) ]; then \
@@ -201,15 +220,16 @@ install:	all
 		fi
 
 uninstall:
-		for i in $(PROGS); do \
+		for i in $(ALLPROGS); do \
 			\rm -f $(bindir)/$$i$(EXE); \
 		done
 		\rm -f $(bindir)/GMT
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			\rm -f $(libdir)/libgmt.a $(libdir)/libpsl.a; \
+			\rm -f $(libdir)/libgmt.a $(libdir)/libpsl.a $(libdir)/libgmtps.a ; \
 			if [ -f libpsl.$(SL) ]; then \
 				\rm -f $(libdir)/libpsl.$(SL); \
 				\rm -f $(libdir)/libgmt.$(SL); \
+				\rm -f $(libdir)/libgmtps.$(SL); \
 			fi; \
 		fi
 		if [ ! $(includedir) = $(srcdir) ]; then \
@@ -222,7 +242,7 @@ install2:	all
 		if [ ! -d $(bindir2) ]; then \
 			mkdir -p $(bindir2); \
 		fi
-		for i in $(PROGS); do \
+		for i in $(ALLPROGS); do \
 			$(INSTALL) $$i$(EXE) $(bindir2); \
 		done
 		if [ ! -d $(libdir2) ]; then \
@@ -230,6 +250,7 @@ install2:	all
 		fi
 		$(INSTALL) -m 444 libpsl.a $(libdir2)
 		$(INSTALL) -m 444 libgmt.a $(libdir2)
+		$(INSTALL) -m 444 libgmtps.a $(libdir2)
 		if [ ! -d $(includedir2) ]; then \
 			mkdir -p $(includedir2); \
 		fi
@@ -239,19 +260,21 @@ install2:	all
 		if [ -f libpsl.$(SL) ]; then \
 			$(INSTALL) -m 444 libpsl.$(SL) $(libdir2); \
 			$(INSTALL) -m 444 libgmt.$(SL) $(libdir2); \
+			$(INSTALL) -m 444 libgmtps.$(SL) $(libdir2); \
 		fi
 
 uninstall2:
-		for i in $(PROGS); do \
+		for i in $(ALLPROGS); do \
 			\rm -f $(bindir2)/$$i$(EXE); \
 		done
-		\rm -f $(libdir2)/libgmt.a $(libdir2)/libpsl.a
+		\rm -f $(libdir2)/libgmt.a $(libdir2)/libpsl.a $(libdir2)/libgmtps.a 
 		for i in $(GMT_H); do \
 			\rm -f $(includedir2)/$$i; \
 		done
 		if [ -f libpsl.$(SL) ]; then \
 			\rm -f $(libdir2)/libpsl.$(SL); \
 			\rm -f $(libdir2)/libgmt.$(SL); \
+			\rm -f $(libdir2)/libgmtps.$(SL); \
 		fi
 
 install2-suppl:
@@ -283,13 +306,13 @@ examples:
 
 clean:
 		rm -f *.o gmt_nan_init$(EXE)
-		for i in $(PROGS); do \
+		for i in $(ALLPROGS); do \
 			rm -f $$i$(EXE); \
 		done
 
 spotless:	clean
 		rm -f $(GMTLIB) gmt_nan.h gmt_notposix.h grdmath.c gmtmath.c
-		rm -f gmt_keywords.h gmt_keycases.h gmt_ellipsoids.h *.man
+		rm -f gmt_keywords.h gmt_keycases.h gmt_datums.h gmt_ellipsoids.h *.man
 
 distclean:	spotless
 
@@ -310,18 +333,29 @@ libgmt.a:	$(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
+libgmtps.a:	$(LIBPS_O) 
+		$(AR) cvur $@ $?
+		$(RANLIB) $@
+
 libpsl.$(SL):	pslib.o
 		$(LD) $(LD_OPT) $? -o $@
 
 libgmt.$(SL):	$(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O)
 		$(LD) $(LD_OPT) $(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O) -o $@
 
+libgmtps.$(SL):	$(LIBPS_O)
+		$(LD) $(LD_OPT) $(LIBPS_O) -o $@
+
 #-------------------------------------------------------------------------------
 #	program dependencies
 #-------------------------------------------------------------------------------
 
 $(PROGS):	%:	%.o $(GMTLIB)
-		$(CC) $(CFLAGS) $< -L. -lgmt -lpsl $(CDF) $(LIBS) $(LDFLAGS) -o $@
+		$(CC) $(CFLAGS) $< -L. $(GMT) $(CDF) $(LIBS) $(LDFLAGS) -o $@
+		$(COMPRESS) $@$(EXE)
+
+$(PROGSPS):	%:	%.o $(GMTLIB)
+		$(CC) $(CFLAGS) $< -L. $(GMT) $(GMTPS) $(PS) $(CDF) $(LIBS) $(LDFLAGS) -o $@
 		$(COMPRESS) $@$(EXE)
 
 .c.o:

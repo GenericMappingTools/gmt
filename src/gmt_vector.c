@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.5 2004-05-27 04:24:29 pwessel Exp $
+ *	$Id: gmt_vector.c,v 1.6 2005-02-15 21:15:18 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -22,6 +22,7 @@
  * Version:	3.4
  */
  
+#define GMT_WITH_NO_PS
 #include "gmt.h"
 
 #define MAX_SWEEPS 50

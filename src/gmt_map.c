@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.82 2005-01-12 03:34:17 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.83 2005-02-15 21:15:18 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -195,6 +195,7 @@
  *	GMT_zz_to_z :			Generic inverse linear z projection
  */
  
+#define GMT_WITH_NO_PS
 #include "gmt.h"
 #include "gmt_map.h"
 
@@ -1288,6 +1289,22 @@ void GMT_itranspowz (double *z, double z_in) /* pow z inverse */
 	*z = pow (z_in, project_info.xyz_ipow[2]);
 }
 
+void GMT_coordinate_to_x (double coord, double *x)
+{
+	/* Convert a x user coordinate to map position in inches */
+
+	(*GMT_x_forward) (coord, x);
+	(*x) = (*x) * project_info.x_scale + project_info.x0;
+}
+	
+void GMT_coordinate_to_y (double coord, double *y)
+{
+	/* Convert a GMT time representation to map position in x */
+
+	(*GMT_y_forward) (coord, y);
+	(*y) = (*y) * project_info.y_scale + project_info.y0;
+}
+	
 /*
  *	TRANSFORMATION ROUTINES FOR POLAR (theta,r) PROJECTION
  */
@@ -8734,5 +8751,120 @@ double GMT_geodesic_dist_meter (double lonS, double latS, double lonE, double la
 double GMT_geodesic_dist_km (double lonS, double latS, double lonE, double latE)
 {
 	return (0.001 * GMT_geodesic_dist_meter (lonS, latS, lonE, latE));
+}
+
+		
+int GMT_map_latcross (double lat, double west, double east, struct XINGS **xings)
+{
+	int i, go = FALSE, nx, nc = 0, n_alloc = 50;
+	double lon, lon_old, this_x, this_y, last_x, last_y, xlon[2], xlat[2], gap;
+	double GMT_get_angle (double lon1, double lat1, double lon2, double lat2);
+	struct XINGS *X;
+	
+	X = (struct XINGS *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct XINGS), "GMT_map_latcross");
+		
+	lon_old = west - SMALL;
+	GMT_map_outside (lon_old, lat);
+	GMT_geo_to_xy (lon_old, lat, &last_x, &last_y);
+	for (i = 1; i <= gmtdefs.n_lon_nodes; i++) {
+		lon = (i == gmtdefs.n_lon_nodes) ? east + SMALL : west + i * gmtdefs.dlon;
+		GMT_map_outside (lon, lat);
+		GMT_geo_to_xy (lon, lat, &this_x, &this_y);
+		nx = 0;
+		if ( GMT_break_through (lon_old, lat, lon, lat) ) {	/* Crossed map boundary */
+			nx = GMT_map_crossing (lon_old, lat, lon, lat, xlon, xlat, X[nc].xx, X[nc].yy, X[nc].sides);
+			if (nx == 1) X[nc].angle[0] = GMT_get_angle (lon_old, lat, lon, lat);
+			if (nx == 2) X[nc].angle[1] = X[nc].angle[0] + 180.0;
+			if (GMT_corner > 0) {
+				X[nc].sides[0] = (GMT_corner%4 > 1) ? 1 : 3;
+				if (project_info.got_azimuths) X[nc].sides[0] = (X[nc].sides[0] + 2) % 4;
+				GMT_corner = 0;
+			}
+		}
+		if (GMT_world_map) (*GMT_wrap_around_check) (X[nc].angle, last_x, last_y, this_x, this_y, X[nc].xx, X[nc].yy, X[nc].sides, &nx);
+		if (nx == 2 && (fabs (X[nc].xx[1] - X[nc].xx[0]) - GMT_map_width) < SMALL && !GMT_world_map)
+			go = FALSE;
+		else if (nx == 2 && (gap = fabs (X[nc].yy[1] - X[nc].yy[0])) > SMALL && (gap - GMT_map_height) < SMALL && !GMT_world_map_tm)
+			go = FALSE;
+		else if (nx > 0)
+			go = TRUE;
+		if (go) {
+			X[nc].nx = nx;
+			nc++;
+			if (nc == n_alloc) {
+				n_alloc += 50;
+				X = (struct XINGS *) GMT_memory ((void *)X, (size_t)n_alloc, sizeof (struct XINGS), "GMT_map_latcross");
+			}
+			go = FALSE;
+		}
+		lon_old = lon;
+		last_x = this_x;	last_y = this_y;
+	}
+	
+	if (nc > 0) {
+		X = (struct XINGS *) GMT_memory ((void *)X, (size_t)nc, sizeof (struct XINGS), "GMT_map_latcross");
+		*xings = X;
+	}
+	else
+		GMT_free ((void *)X);
+	
+	return (nc);
+}
+
+int GMT_map_loncross (double lon, double south, double north, struct XINGS **xings)
+{
+	int go = FALSE, j, nx, nc = 0, n_alloc = 50;
+	double lat, lat_old, this_x, this_y, last_x, last_y, xlon[2], xlat[2], gap;
+	double GMT_get_angle (double lon1, double lat1, double lon2, double lat2);
+	struct XINGS *X;
+	
+	X = (struct XINGS *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct XINGS), "GMT_map_loncross");
+	
+	lat_old = ((south - SMALL) >= -90.0) ? south - SMALL : south;	/* Outside */
+	if ((north + SMALL) <= 90.0) north += SMALL;
+	GMT_map_outside (lon, lat_old);
+	GMT_geo_to_xy (lon, lat_old, &last_x, &last_y);
+	for (j = 1; j <= gmtdefs.n_lat_nodes; j++) {
+		lat = (j == gmtdefs.n_lat_nodes) ? north: south + j * gmtdefs.dlat;
+		GMT_map_outside (lon, lat);
+		GMT_geo_to_xy (lon, lat, &this_x, &this_y);
+		nx = 0;
+		if ( GMT_break_through (lon, lat_old, lon, lat) ) {	/* Crossed map boundary */
+			nx = GMT_map_crossing (lon, lat_old, lon, lat, xlon, xlat, X[nc].xx, X[nc].yy, X[nc].sides);
+			if (nx == 1) X[nc].angle[0] = GMT_get_angle (lon, lat_old, lon, lat);
+			if (nx == 2) X[nc].angle[1] = X[nc].angle[0] + 180.0;
+			if (GMT_corner > 0) {
+				X[nc].sides[0] = (GMT_corner < 3) ? 0 : 2;
+				GMT_corner = 0;
+			}
+		}
+		if (GMT_world_map) (*GMT_wrap_around_check) (X[nc].angle, last_x, last_y, this_x, this_y, X[nc].xx, X[nc].yy, X[nc].sides, &nx);
+		if (nx == 2 && (fabs (X[nc].xx[1] - X[nc].xx[0]) - GMT_map_width) < SMALL && !GMT_world_map)
+			go = FALSE;
+		else if (nx == 2 && (gap = fabs (X[nc].yy[1] - X[nc].yy[0])) > SMALL && (gap - GMT_map_height) < SMALL && !GMT_world_map_tm)
+			go = FALSE;
+		else if (nx > 0)
+			go = TRUE;
+		if (go) {
+			X[nc].nx = nx;
+			nc++;
+			if (nc == n_alloc) {
+				n_alloc += 50;
+				X = (struct XINGS *) GMT_memory ((void *)X, (size_t)n_alloc, sizeof (struct XINGS), "GMT_map_loncross");
+			}
+			go = FALSE;
+		}
+		lat_old = lat;
+		last_x = this_x;	last_y = this_y;
+	}
+	
+	if (nc > 0) {
+		X = (struct XINGS *) GMT_memory ((void *)X, (size_t)nc, sizeof (struct XINGS), "GMT_map_loncross");
+		*xings = X;
+	}
+	else
+		GMT_free ((void *)X);
+	
+	return (nc);
 }
 

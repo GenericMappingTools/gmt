@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.8 2004-01-12 01:08:15 pwessel Exp $
+#	$Id: Makefile,v 1.9 2005-02-15 21:15:18 pwessel Exp $
 #
 # makefile for segyprogs directory
 #
@@ -8,7 +8,7 @@ include ../makegmt.macros
 #------------------------- stop here --------------------------
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include -I$(GMT_DEFAULT_PATH)/src
-ALLLIB	= -L.. -L$(libdir) -lgmt -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)
+ALLLIB	= -L.. -L$(libdir) -lgmt -lgmtps -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)
 
 SEGYPLOT_H	= segy_io.h segy.h segyreel.h
 SEGYPLOT_C	= pssegyz.c pssegy.c segy2grd.c

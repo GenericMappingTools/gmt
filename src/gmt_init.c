@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.169 2005-01-12 02:52:30 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.170 2005-02-15 21:15:18 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -53,6 +53,7 @@
  *	GMT_init_time_system_structure ()  Does what it says
  */
 
+#define GMT_WITH_NO_PS
 #include "gmt.h"
 #include "gmt_init.h"
 
