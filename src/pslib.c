@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.94 2005-03-02 14:24:25 remko Exp $
+ *	$Id: pslib.c,v 1.95 2005-03-02 17:47:13 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3865,7 +3865,7 @@ unsigned char *ps_rle_encode (int *nbytes, unsigned char *input)
 	int count = 0, out = 0, in = 0, i;
 	unsigned char pixel, *output;
 
-	i = MAX (512, *nbytes) + 8;	/* Maximum output length */
+	i = MAX (512, *nbytes) + 136;	/* Maximum output length */
 	output = (unsigned char *)ps_memory (VNULL, (size_t)i, sizeof (unsigned char));
 
 	/* Loop scanning all input bytes. Abort when inflating after processing at least 512 bytes */
@@ -3907,9 +3907,10 @@ unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input)
 	/* LZW compress a buffer of nbytes. */
 
 	static int ncode = 4096*256;
-	int i, index, in;
+	int i, index, in = 0;
 	static short int clear = 256, eod = 257;
-	short int table, bmax, pre, oldpre, ext, *code;
+	short int table = 4095;	/* Initial value forces clearing of table on first byte */
+	short int bmax = 0, pre, oldpre, ext, *code;
 	byte_stream_t output;
 
 	i = MAX (512, *nbytes) + 8;	/* Maximum output length */
@@ -3917,11 +3918,8 @@ unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input)
 	output->buffer = (unsigned char *)ps_memory (VNULL, (size_t)i, sizeof (*output->buffer));
 	code = (short int *)ps_memory (VNULL, (size_t)ncode, sizeof (short int));
 
-	return (NULL);
-	in = 0;
 	output->nbytes = 0;
 	output->depth = 9;
-	table = 4095;		/* Initial value forces clearing of table on first byte */
 	pre = input[in++];
 
 	/* Loop scanning all input bytes. Abort when inflating after processing at least 512 bytes */
