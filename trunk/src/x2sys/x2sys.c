@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.7 2004-05-15 02:57:07 pwessel Exp $
+ *	$Id: x2sys.c,v 1.8 2004-05-17 23:47:05 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -545,10 +545,10 @@ int x2sys_ysort (const void *p1, const void *p2)
 	return (0);
 }
 
-int x2sys_crossover (double xa[], double ya[], int sa[], struct X2SYS_SEGMENT A[], int na, double xb[], double yb[], int sb[], struct X2SYS_SEGMENT B[], int nb, BOOLEAN internal, struct X2SYS_XOVER *X)
+int x2sys_crossover (double xa[], double ya[], int *sa0, struct X2SYS_SEGMENT A[], int na, double xb[], double yb[], int *sb0, struct X2SYS_SEGMENT B[], int nb, BOOLEAN internal, struct X2SYS_XOVER *X)
 {
 	int this_a, this_b, n_seg_a, n_seg_b, nx, xa_start, xa_stop, xb_start, xb_stop, ta_start, ta_stop, tb_start, tb_stop;
-	int nx_alloc;
+	int *sa, *sb, nx_alloc;
 	BOOLEAN new_a, new_b, new_a_time, xa_OK, xb_OK;
 	double del_xa, del_xb, del_ya, del_yb, i_del_xa, i_del_xb, i_del_ya, i_del_yb, slp_a, slp_b, xc, yc, tx_a, tx_b;
 
@@ -560,6 +560,10 @@ int x2sys_crossover (double xa[], double ya[], int sa[], struct X2SYS_SEGMENT A[
 
 	n_seg_a = na - 1;
 	n_seg_b = nb - 1;
+
+	/* Assign pointers to segment info given, or initialize zero arrays if not given */
+	sa = (sa0) ? sa0 : (int *) GMT_memory (VNULL, (size_t)na, sizeof (int), "x2sys_crossover");
+	sb = (sb0) ? sb0 : (int *) GMT_memory (VNULL, (size_t)nb, sizeof (int), "x2sys_crossover");
 
 	x2sys_x_alloc (X, -nx_alloc);
 
@@ -841,6 +845,9 @@ int x2sys_crossover (double xa[], double ya[], int sa[], struct X2SYS_SEGMENT A[
 		}
 
 	} /* End while loop */
+
+	if (!sa0) GMT_free ((void *)sa);
+	if (!sb0) GMT_free ((void *)sb);
 
 	return (nx);
 }
