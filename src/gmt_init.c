@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.102 2004-02-24 17:39:51 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.103 2004-03-02 23:12:45 ben Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -612,7 +612,7 @@ void GMT_syntax (char option)
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
 				case MILLER:
-					fprintf (stderr, "\t-Jj<lon0>/<scale> OR -JJ<lon0><mapwidth>\n");
+					fprintf (stderr, "\t-Jj<lon0>/<scale> OR -JJ<lon0>/<mapwidth>\n");
 					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <mapwidth> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
