@@ -77,7 +77,7 @@ To inversely transform the file topo_utm.grd (which is in UTM meters) back onto 
 specify a one-to-one mapping with meter as the measure unit:
 .br
 .sp
-grdproject topo_utm.grd \fB\-R\fP203/05/60/65 \fB\-Ju\fP5/1:1 \fB\-I\fP \fB\-Mm \-V \-G\fPtopo.grd
+grdproject topo_utm.grd \fB\-R\fP203/205/60/65 \fB\-Ju\fP5/1:1 \fB\-I\fP \fB\-Mm \-V \-G\fPtopo.grd
 .br
 .SH RESTRICTIONS
 The boundaries of a projected (rectangular) data set will not necessarily give rectangular
