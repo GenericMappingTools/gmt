@@ -1,17 +1,3 @@
-src/cps/README.cps
-src/cps/cps.h
-src/cps/cpsencode.man
-src/cps/cpsencode.html
-src/cps/cpsdecode.man
-src/cps/cpsdecode.html
-src/cps/cpsdos.h
-src/cps/cpsgmt.h
-src/cps/cpsunix.h
-src/cps/cpsdecode.c
-src/cps/cpsencode.c
-src/cps/makefile
-src/cps/uu.h
-src/cps/libuu.c
 src/dbase/README.dbase
 src/dbase/grdraster.c
 src/dbase/grdraster.man

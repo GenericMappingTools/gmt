@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.26 2002-03-15 18:39:43 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.27 2002-05-17 19:10:29 pwessel Exp $
 #
 #	Automatic installation of GMT version 4
 #	Version for the Bourne shell (or compatible)
@@ -439,7 +439,6 @@ else
 	GMT_dir_full=$GMT_dir_high
 fi
 
-GMT_suppl_cps=d
 GMT_suppl_dbase=d
 GMT_suppl_gshhs=d
 GMT_suppl_imgsrc=d
@@ -460,7 +459,6 @@ cat << EOF >&2
 Several supplemental packages are available:
 
 ------------------------------------------------------------------------------
-cps:       Encoding and decoding of Complete PostScript files for archiving
 dbase:     Extracting data from NGDC DEM and other grids
 gshhs:     Global Self-consistent Hierarchical High-resolution Shoreline extractor
 imgsrc:    Extracting grids from global altimeter files (Sandwell/Smith)
@@ -483,7 +481,6 @@ EOF
 		if [ $answer = "a" ]; then
 			y_or_n=y
 		fi
-		GMT_suppl_cps=$y_or_n
 		GMT_suppl_dbase=$y_or_n
 		GMT_suppl_gshhs=$y_or_n
 		GMT_suppl_imgsrc=$y_or_n
@@ -497,7 +494,6 @@ EOF
 		GMT_suppl_x_system=$y_or_n
 		GMT_suppl_xgrid=$y_or_n
 	elif [ $answer = "y" ]; then
-		GMT_suppl_cps=`get_def_answer "Install the cps supplemental package? (y/n)?" "y"`
 		GMT_suppl_dbase=`get_def_answer "Install the dbase supplemental package? (y/n)?" "y"`
 		GMT_suppl_gshhs=`get_def_answer "Install the gshhs supplemental package? (y/n)?" "y"`
 		GMT_suppl_imgsrc=`get_def_answer "Install the imgsrc supplemental package? (y/n)?" "y"`
@@ -572,7 +568,6 @@ GMT_get_triangle=$GMT_get_triangle
 #---------------------------------------------
 #       GMT SUPPLEMENTS SELECT SECTION
 #---------------------------------------------
-GMT_suppl_cps=$GMT_suppl_cps
 GMT_suppl_dbase=$GMT_suppl_dbase
 GMT_suppl_imgsrc=$GMT_suppl_imgsrc
 GMT_suppl_gshhs=$GMT_suppl_gshhs
@@ -1240,9 +1235,8 @@ fi
 # INSTALL SUPPLEMENTAL PROGRAMS
 #--------------------------------------------------------------------------------
 
-if [ -d src/cps ]; then
+if [ -d src/dbase ]; then
 	cd src
-	make_suppl $GMT_suppl_cps cps
 	make_suppl $GMT_suppl_dbase dbase
 	make_suppl $GMT_suppl_gshhs gshhs
 	make_suppl $GMT_suppl_imgsrc imgsrc

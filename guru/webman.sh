@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.10 2002-03-11 21:05:39 pwessel Exp $
+#	 $Id: webman.sh,v 1.11 2002-05-17 19:10:29 pwessel Exp $
 #
 #	webman.csh - Automatic generation of the GMT web manual pages
 #
@@ -64,7 +64,7 @@ done
 
 MY_SUPPL=${MY_GMT_SUPPL:-""}
 cd src
-for package in cps dbase imgsrc meca mgg misc segyprogs spotter x2sys x_system $MY_SUPPL; do
+for package in dbase imgsrc meca mgg misc segyprogs spotter x2sys x_system $MY_SUPPL; do
 	for f in $package/*.man; do
 		prog=`basename $f .man`
 		if [ $gush = 1 ]; then
@@ -225,12 +225,6 @@ cat << EOF > www/gmt/gmt_suppl.html
 These man pages are html-versions of the Unix man pages for the GMT
 supplemental programs, grouped by package.  Note that only the
 packages actually installed on your system will be accessible.
-<HR>
-<h3>The CPS package</h3>
-<UL>
-<LI><A HREF="doc/html/cpsencode.html"> cpsencode</A> Encoding of Complete PostScript files</LI>
-<LI><A HREF="doc/html/cpsdecode.html"> cpsdecode</A> Decoding of Complete PostScript files</LI>
-</UL>
 <HR>
 <h3>The DBASE package</h3>
 <UL>

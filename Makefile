@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.8 2002-01-17 22:57:17 pwessel Exp $
+#	$Id: Makefile,v 1.9 2002-05-17 19:10:29 pwessel Exp $
 #
 #	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -50,7 +50,7 @@
 #	Authors:	Paul Wessel, SOEST, U. of Hawaii
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
 #
-#	Date:		18-JAN-2002
+#	Date:		18-MAY-2002
 #-------------------------------------------------------------------------------
 #	Get Default Macros
 #-------------------------------------------------------------------------------
@@ -62,8 +62,8 @@ include src/makegmt.macros	# GMT-specific settings determined by user & install_
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
 
-SUPPL	=	cps dbase gshhs imgsrc meca mex mgg misc segyprogs spotter x2sys x_system xgrid
-SUPPL_M	=	cps dbase imgsrc meca mgg misc segyprogs spotter x2sys x_system
+SUPPL	=	dbase gshhs imgsrc meca mex mgg misc segyprogs spotter x2sys x_system xgrid
+SUPPL_M	=	dbase imgsrc meca mgg misc segyprogs spotter x2sys x_system
 
 all:		gmt suppl
 

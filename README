@@ -1,6 +1,6 @@
 #	Information for installing GMT 4
 #
-#		$Id: README,v 1.14 2002-04-15 20:49:19 ben Exp $ 
+#		$Id: README,v 1.15 2002-05-17 19:10:29 pwessel Exp $ 
 #
 #	Copyright (c) 1991-2002, P. Wessel & W. H. F. Smith
 #
@@ -416,8 +416,6 @@ regarding these programs.  The README files in the tar archive
 indicate where to direct such requests (if applicable).
 Currently, the supplemental archive include the directories:
 
-	cps	  - Compaction of plot, scripts, and data sets
-		    into a Complete PostScript file.
 	dbase	  - Data extractor for global gridded data sets such
 		    as those on CD-ROM from NGDC.
 	gshhs	  - Data extractor for GSHHS shoreline polygons.
