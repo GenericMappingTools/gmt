@@ -26,6 +26,10 @@ are recognized, and the syntax for each of these records are presented below:
 \fB#\fP Comment records
 Records starting with # and blank lines are skipped.
 .TP
+\fBC\fP \fItextcolor\fP
+The C record specifies the color with which the remaining text is to be printed.
+\fItextcolor\fP can be in the form \fIr/g/b\fP, \fIc/m/y/k\fP, or a named color.
+.TP
 \fBD\fP \fIoffset pen\fP
 The D record results in a horizontal line across the legend.  The line starts and stops \fIoffset\fP
 units from the frame sides, and is drawn using the specified \fIpen\fP.
