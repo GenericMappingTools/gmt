@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.7 2001-03-23 01:15:39 pwessel Exp $
+#       $Id: install_gmt_form.pl,v 1.8 2002-01-17 22:57:17 pwessel Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
 #
-#	Updated to work with 3.4 input
+#	Updated to work with 4.0 input
 
 $webmaster = "gmt\@soest\.hawaii\.edu";
 
@@ -89,7 +89,7 @@ print <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.7 $,  on
+# Processed by install_gmt_form.pl $Revision: 1.8 $,  on
 #
 #	$now
 #
