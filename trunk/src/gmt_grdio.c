@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.10 2002-04-02 22:45:17 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.11 2002-06-27 03:58:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -176,7 +176,7 @@ void GMT_expand_filename (char *file, char *fname)
 
 int GMT_grd_get_i_format (char *file, char *fname, double *scale, double *offset)
 {
-	int i = 0, j, n, id = 0;
+	int i = 0, j, id = 0;
 
 	GMT_expand_filename (file, fname);
 	
@@ -184,9 +184,7 @@ int GMT_grd_get_i_format (char *file, char *fname, double *scale, double *offset
 	
 	if (fname[i]) {	/* Check format id */
 		i++;
-		n = sscanf (&fname[i], "%d/%lf/%lf/%lf", &id, scale, offset, &GMT_grd_in_nan_value);
-/*		if (n <= 1) *scale = GMT_d_NaN, *offset = 0.0;
-		else if (n == 4) GMT_grd_in_nan_value = (GMT_grd_in_nan_value - *offset) / *scale; */
+		sscanf (&fname[i], "%d/%lf/%lf/%lf", &id, scale, offset, &GMT_grd_in_nan_value);
  		if (id < 0 || id >= N_GRD_FORMATS) {
 			fprintf (stderr, "GMT Warning: grdfile format option (%d) unknown, reset to 0\n", id);
 			id = 0;
@@ -199,7 +197,7 @@ int GMT_grd_get_i_format (char *file, char *fname, double *scale, double *offset
 
 int GMT_grd_get_o_format (char *file, char *fname, double *scale, double *offset)
 {
-	int i = 0, j, n, id = 0;
+	int i = 0, j, id = 0;
 
 	GMT_expand_filename (file, fname);
 	
@@ -207,8 +205,7 @@ int GMT_grd_get_o_format (char *file, char *fname, double *scale, double *offset
 	
 	if (fname[i]) {	/* Check format id */
 		i++;
-		n = sscanf (&fname[i], "%d/%lf/%lf/%lf", &id, scale, offset, &GMT_grd_out_nan_value);
-	/*	if (n == 4) GMT_grd_out_nan_value = (GMT_grd_out_nan_value - *offset) / *scale; */
+		sscanf (&fname[i], "%d/%lf/%lf/%lf", &id, scale, offset, &GMT_grd_out_nan_value);
 		if (id < 0 || id >= N_GRD_FORMATS) {
 			fprintf (stderr, "GMT Warning: grdfile format option (%d) unknown, reset to 0\n", id);
 			id = 0;
