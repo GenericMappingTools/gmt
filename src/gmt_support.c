@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.136 2004-08-19 04:13:48 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.137 2004-09-16 18:12:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4318,65 +4318,77 @@ void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift)
 
 int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax)
 {
-	int region_pos = 0, grd_pos = 0;
+	BOOLEAN region_straddle, grid_straddle, global;
+	double shift_x;
 	
-	/* Round off to nearest multiple of the grid spacing.  This should
-	   only affect the numbers when oblique projections or -R...r has been used */
+	/* Round off to nearest multiple of the grid spacing.  This should only
+	   affect the numbers when oblique projections or -R...r has been used */
 
-	/* Weakness in this logic is that there is no flag in the grid to tell us it is geographic. */
+	/* Weakness in the logic below is that there is no flag in the grid to tell us it is lon/lat data.
+	 * We infer the grid is global (in longitude) and geographic if w-e == 360 && |s,n| <= 90 */
 	
-	/* First check latitudes since they have no complications */
+	/* First set and check latitudes since they have no complications */
 	
-	*ymin = floor (project_info.s / h->y_inc) * h->y_inc;
-	if (*ymin < h->y_min) *ymin = h->y_min;
-	*ymax = ceil (project_info.n / h->y_inc) * h->y_inc;
-	if (*ymax > h->y_max) *ymax = h->y_max;
+	*ymin = MAX (h->y_min, floor (project_info.s / h->y_inc) * h->y_inc);
+	*ymax = MIN (h->y_max,  ceil (project_info.n / h->y_inc) * h->y_inc);
 	
-	if ((*ymax) <= (*ymin)) {	/* Either error or grid outside chosen -R */
+	if ((*ymax) <= (*ymin)) {	/* Grid must be outside chosen -R */
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid y's or latitudes appear to be outside the map region and will be skipped.\n", GMT_program);
 		return (1);
+	}
+
+	if (GMT_io.in_col_type[0] != GMT_IS_LON) {	/* Regular Cartesian stuff is easy... */
+		*xmin = MAX (h->x_min, floor (project_info.w / h->x_inc) * h->x_inc);
+		*xmax = MIN (h->x_max,  ceil (project_info.e / h->x_inc) * h->x_inc);
+		if ((*xmax) <= (*xmin)) {	/* Grid is outside chosen -R */
+			if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid x-range appear to be outside the plot region and will be skipped.\n", GMT_program);
+			return (1);
+		}
+		return (0);
 	}
 	
 	/* OK, longitudes are trickier and we must make sure grid and region is on the same page as far as +-360 degrees go */
 	
-	if (GMT_io.in_col_type[0] == GMT_IS_LON) {
-		if (h->x_min < 0.0 && h->x_max < 0.0) {			/* Change negative range to positive 0-360 */
-			h->x_min += 360.0;
-			h->x_max += 360.0;
-		}
-		if (project_info.w < 0.0 && project_info.e < 0.0) {	/* Change negative range to positive 0-360 */
-			project_info.w += 360.0;
-			project_info.e += 360.0;
-		}
-		/* Now find if grid and region straddle Greenwich */
+	global = (fabs (h->x_max - h->x_min - 360.0) < SMALL && h->y_min >= -90.0 && h->y_max <= +90.0);	/* We believe this indicates a global (in longitude), geographic grid */
+	if (global) {	/* Periodic grid with 360 degree range is easy */
+		*xmin = project_info.w;
+		*xmax = project_info.e;
+		return (0);
+	}
 	
-		grd_pos   = (h->x_min >= 0.0 && h->x_max > 0.0) ? 1 : 0;
-		region_pos = (project_info.w >= 0.0 && project_info.e > 0.0) ? 1 : 0;
-	}
-	/* Use Greenwich knowledge to adjust region to be compatible with grid domain when adjusting the latter */
+	/* There are 4 cases depending on whether the chosen region or the grid straddles Greenwich */
 	
-	*xmin = floor ((project_info.w - (region_pos - grd_pos) * 360.0) / h->x_inc) * h->x_inc;
-	*xmax = ceil  ((project_info.e - (region_pos - grd_pos) * 360.0) / h->x_inc) * h->x_inc;
-	if (GMT_io.in_col_type[0] == GMT_IS_LON) {	/* Geographic grid */
-		if (fabs (h->x_max - h->x_min - 360.0) > SMALL) {	/* Not a periodic grid */
-			if (*xmin < h->x_min) *xmin = h->x_min;
-			if (*xmax > h->x_max) *xmax = h->x_max;
-		}
-		else if ((*xmax - *xmin - 360.0) > SMALL) {		/* 360 degree grid but we want to use less */
-			if (*xmin < project_info.w) *xmin = project_info.w;
-			if (*xmax > project_info.e) *xmax = project_info.e;
-		}
-		else {	/* Possibly just a rotation of a 360 degree grid */
-			*xmin = project_info.w;
-			*xmax = project_info.e;
-		}
+	region_straddle = (project_info.w < 0.0 && project_info.e > 0.0) ? TRUE : FALSE;
+	grid_straddle   = (h->x_min < 0.0 && h->x_max > 0.0) ? TRUE : FALSE;
+	
+	if (! (region_straddle || grid_straddle)) {	/* Case 1: Neither -R nor grid straddles Greenwich */
+		/* Here we KNOW that w/e has already been forced to be positive (0-360 range).
+		 * Just make sure the grid w/e is positive too when we compare range.
+		 */
+		 shift_x = (h->x_min < 0.0 && h->x_max < 0.0) ? 360.0 : 0.0;	/* Shift to SUBTRACT from w/e ... when comparing */
 	}
-	else {
-		if (*xmin < h->x_min) *xmin = h->x_min;
-		if (*xmax > h->x_max) *xmax = h->x_max;
+	else if (region_straddle && grid_straddle) {	/* Case 2: Both straddle Greenwich */
+		/* Here we know both mins are -ve and both max are +ve, so there should be no complications */
+		shift_x = 0.0;
 	}
-	if ((*xmax) <= (*xmin)) {	/* Either error or grid outside chosen -R */
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid x's or longitudes appear to be outside the map region and will be skipped.\n", GMT_program);
+	else if (region_straddle && !grid_straddle) {	/* Case 3a: Region straddles Greenwich but grid doesnt */
+		/* Here we know w is -ve and e is +ve.
+		 * Must make sure the grid w/e is in same range when comparing.
+		 */
+		 shift_x = (h->x_max < project_info.w) ? 360.0 : 0.0;	/* Shift to SUBTRACT from w/e ... when comparing */
+	}		 
+	else {	/* Case 3b: Grid straddles Greenwich but region doesnt */
+		/* Here we KNOW that w/e has been forced to be positive (0-360 range).
+		 * Make sure the grid w/e is in same range
+		 */
+		 shift_x = (h->x_max < project_info.w) ? 360.0 : 0.0;	/* Shift to SUBTRACT from w/e ... when comparing */
+	}	
+	
+	*xmin = MAX (h->x_min, floor ((project_info.w - shift_x) / h->x_inc) * h->x_inc);
+	*xmax = MIN (h->x_max, ceil  ((project_info.e - shift_x) / h->x_inc) * h->x_inc);
+	
+	if ((*xmax) <= (*xmin)) {	/* Grid is outside chosen -R in longitude */
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid longitudes appear to be outside the map region and will be skipped.\n", GMT_program);
 		return (1);
 	}
 	return (0);
