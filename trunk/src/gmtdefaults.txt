@@ -230,34 +230,7 @@ positioning on the page and line thicknesses are still only done in steps of 1/3
 The (case sensitive) name of the ellipsoid used for the map projections  [WGS-84].  Choose among
 .br
 .sp
-WGS-84		1984 World Geodetic System
-.br
-GRS-80		1980 International Geodetic Reference System
-.br
-WGS-72		1972 World Geodetic System
-.br
-WGS-66		1966 World Geodetic System
-.br
-Australian	1965 Used down under
-.br
-Krassovsky	1940 Used in the Soviet Union
-.br
-International	1924 Worldwide use
-.br
-Hayford-1909	1909 Same as the International 1924
-.br
-Clarke-1880	1880 Most of Africa, France
-.br
-Clarke-1866	1866 North America, the Philippines
-.br
-Airy			1830 Great Britain
-.br
-Bessel		1841 Central Europe, Chile, Indonesia
-.br
-Everest		1830 India, Burma, Pakistan, Afghanistan, Thailand, etc.
-.br
-Sphere		1980 The mean radius in GRS-80 (for spherical/plate tectonics applications)
-.br
+#include "gmtdefaults.i"
 .sp
 Note that for some global projections, \fBGMT\fP may default to GRS-80 Sphere regardless
 of ellipsoid actually chosen.  A warning will be given when this happens.  If a different
@@ -265,7 +238,8 @@ ellipsoid name than those mentioned here is given, \fBGMT\fP will attempt to ope
 a file with that name in the current directory, and read a single record that contains
 the ellipsoid name, year, major-axis (in m), minor-axis (in m), and flattening (f) from
 the first record, where the fields must be separated by white-space (not commas).  This way a
-custom ellipsoid (e.g., those used for other planets) may be used.
+custom ellipsoid (e.g., those used for other planets) may be used.  A negative flattening means
+\fBGMT\fP will recalculate flattening from the two radii.
 .TP
 .B FIELD_DELIMITER
 This setting determines what character will separate ASCII output data columns written by \fBGMT\fP.  Choose
