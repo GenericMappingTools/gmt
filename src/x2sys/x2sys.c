@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.11 2004-06-14 23:39:00 pwessel Exp $
+ *	$Id: x2sys.c,v 1.12 2004-06-15 00:44:56 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -70,6 +70,10 @@ char *x2sys_header = "> %s %d %s %d\n";
 
 void x2sys_set_home (void);
 int x2sys_record_length (struct X2SYS_INFO *s);
+
+#define MAX_DATA_PATHS 32
+char *x2sys_datadir[MAX_DATA_PATHS];	/* Directories where track data may live */
+int n_x2sys_paths = 0;			/* Number of these directories */
 
 void x2sys_path (char *fname, char *path)
 {
@@ -256,8 +260,19 @@ int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X
 	size_t n_alloc;
 	FILE *fp;
 	double **z, *rec;
+	char path[BUFSIZ];
 
-	if ((fp = fopen (fname, "rb")) == NULL) {
+ 	if (n_x2sys_paths) {
+  		if (x2sys_get_data_path (path, fname)) {
+   			fprintf (stderr, "x2sys_read_file : Cannot find track %s\n", fname);
+     			return (-1);
+  		}
+  		if ((fp = fopen (path, "rb")) == NULL) {
+   			fprintf (stderr, "x2sys_read_mgd77file : Cannot open file %s\n", path);
+     			return (-1);
+  		}
+	}
+	else if ((fp = fopen (fname, "rb")) == NULL) {
 		fprintf (stderr, "x2sys_read_file: Could not open %s\n", fname);
 		return (-1);
 	}
@@ -651,7 +666,7 @@ int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struc
 int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G)
 {
 	int n_read, i, j, len, n_alloc = GMT_CHUNK;
-	char line[BUFSIZ];
+	char line[BUFSIZ], path[BUFSIZ];
 	double **z;
 	FILE *fp;
 	struct GMTMGG_REC record;
@@ -660,7 +675,17 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 	
 	GMT_make_dnan(NaN);
 
-  	if ((fp = fopen (fname, "r")) == NULL) {
+  	if (n_x2sys_paths) {
+  		if (x2sys_get_data_path (path, fname)) {
+   			fprintf (stderr, "x2sys_read_mgd77file : Cannot find leg %s\n", fname);
+     			return (-1);
+  		}
+  		if ((fp = fopen (path, "r")) == NULL) {
+   			fprintf (stderr, "x2sys_read_mgd77file : Cannot find file %s\n", path);
+     			return (-1);
+  		}
+	}
+	else if ((fp = fopen (fname, "r")) == NULL) {
    		fprintf (stderr, "x2sys_read_mgd77file : Cannot find file %s\n", fname);
      		return (-1);
   	}
@@ -797,6 +822,7 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B)
 		(*s)->geographic = TRUE;
 		(*s)->geodetic = geodetic;	/* Override setting */
 	}
+	x2sys_path_init (TAG);		/* Prepare directory paths to data */
 }
 
 void x2sys_bix_init (struct X2SYS_BIX *B, BOOLEAN alloc)
@@ -914,8 +940,8 @@ int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B)
 {
 	int index;
 	
-	*j = (int)floor ((y - B->y_min) * B->i_bin_y);
-	*i = (int)floor ((x - B->x_min)  * B->i_bin_x);
+	*j = (y == B->y_max) ? B->ny_bin - 1 : (int)floor ((y - B->y_min) * B->i_bin_y);
+	*i = (x == B->x_max) ? B->nx_bin - 1 : (int)floor ((x - B->x_min)  * B->i_bin_x);
 	index = (*j) * B->nx_bin + (*i);
 	if (index >= B->nm_bin) {
 		fprintf (stderr, "x2sys_binlist: Index (%d) outside range implied by -R -I! [0-%d>\n", index, B->nm_bin);
@@ -925,3 +951,69 @@ int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B)
 	return (index);
 }
 
+/* gmtmggpath_init reads the SHAREDIR/share/mgg/gmtfile_paths file and gets all
+ * the gmtfile directories.
+ */
+ 
+void x2sys_path_init (char *TAG)
+{
+	int i;
+	char file[BUFSIZ], line[BUFSIZ];
+	FILE *fp;
+	
+	x2sys_set_home ();
+
+	sprintf (file, "%s%c%s_paths.txt", X2SYS_HOME, DIR_DELIM, TAG);
+	
+	n_x2sys_paths = 0;
+
+	if ((fp = fopen (file, "r")) == NULL) {
+		fprintf (stderr, "%s: Warning: path file %s for %s files not found\n", GMT_program, file, TAG);
+		fprintf (stderr, "%s: (Will only look in current directory for such files)\n", GMT_program);
+		return;
+	}
+	
+	while (fgets (line, BUFSIZ, fp) && n_x2sys_paths < MAX_DATA_PATHS) {
+		if (line[0] == '#') continue;	/* Comments */
+		if (line[0] == ' ' || line[0] == '\0') continue;	/* Blank line */
+		x2sys_datadir[n_x2sys_paths] = GMT_memory (VNULL, (size_t)1, (size_t)(strlen (line)), "x2sys_path_init");
+		line[strlen (line)-1] = 0;
+#if _WIN32
+		for (i = 0; line[i]; i++) if (line[i] == '/') line[i] = DIR_DELIM;
+#else
+		for (i = 0; line[i]; i++) if (line[i] == '\\') line[i] = DIR_DELIM;
+#endif
+		strcpy (x2sys_datadir[n_x2sys_paths], line);
+		n_x2sys_paths++;
+		if (n_x2sys_paths == MAX_DATA_PATHS) fprintf (stderr, "%s: Reached maximum directory (%d) count in %s!\n", GMT_program, MAX_DATA_PATHS, file);
+	}
+	fclose (fp);
+}
+	
+/* x2sys_get_data_path takes a track name as argument and returns the full path
+ * to where this data file can be found.  x2sys_path_init must be called first.
+ */
+ 
+int x2sys_get_data_path (char *track_path, char *track)
+{
+	int id;
+	char geo_path[BUFSIZ];
+	
+	/* First look in current directory */
+	
+	if (!access(track, R_OK)) {
+		strcpy(track_path, track);
+		return (0);
+	}
+	
+	/* Then look elsewhere */
+	
+	for (id = 0; id < n_x2sys_paths; id++) {
+		sprintf (geo_path, "%s%c%s", x2sys_datadir[id], DIR_DELIM, track);
+		if (!access (geo_path, R_OK)) {
+			strcpy (track_path, geo_path);
+			return (0);
+		}
+	}
+	return(1);
+}
