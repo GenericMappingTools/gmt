@@ -6,12 +6,14 @@ x2sys_init \- Initialize data baes for track data files
 [ \fB\-Gd|g\fP ] [ \fB\-I\fP\fIdx\fP[\fIdy\fP] ] 
 [ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-V\fP ] [ \fB\-W\fP\fIsize\fP ]
 .SH DESCRIPTION
-\fBx2sys_init\fP initializes a set of data base that are particular to on kind
+\fBx2sys_init\fP initializes a set of data bases that are particular to one kind
 of track data.  These data and their associated data bases are given a short-hand
 notation called a system TAG.   The TAG remembers settings such as file format,
-if the data are geographic, and the binning resolution for track indexes.  Running
-\fBx2sys_init\fP is a prerequisite to running \fBx2sys_binlist\fP which will create
-a crude representation of where data track go.
+whether the data are geographic or not, and the binning resolution for track indexes.
+Running \fBx2sys_init\fP is a prerequisite to running \fBx2sys_binlist\fP which will
+create a crude representation of where data track go; this serves as input to the
+\fBx2sys_put\fP too which updates the track data base. Then, \fBx2sys_get\fP can
+be used to find which tracks and data are available inside a given region.
 .TP
 \fITAG\fP
 The unique name of this data type system.
@@ -32,10 +34,120 @@ at Greenwhich (makes longitude go from 0 to 360 [Default]).
 Sets maximum time gap (in user units) allowed between points on either
 side of a crossover [Default is Infinity].
 .SH EXAMPLES
+If you have a large set of track data files you can organize them using the
+x2sys tools.  Here we will outline the steps.  Let us assume that your track
+data file format consist of 2 header records with text information followed
+by any number of data records with 6 columns (lat, lon, time, obs1, obs2, obs3).
+We will call this the "line" format.  First we create the line.def file:
+.br
+.sp
+# Define file for the line format
+.br
+#ASCII		# File is ascii
+.br
+#SKIP 2		# Skip 2 header records
+.br
+#name	intype NaN-proxy?	NaN-proxy	scale offset oformat
+.br
+lon	a	N	0	1	0	%10.5lf
+.br
+lat	a	N	0	1	0	%9.5lf
+.br
+time	a	N	0	1	0	%7.1lf
+.br
+obs1	a	N	0	1	0	%7.2lf
+.br
+obs2	a	N	0	1	0	%7.2lf
+.br
+obs3	a	N	0	1	0	%7.2lf
+.br
+.sp
+For ascii data the intype format is always a, Nan-proxy? should be Y
+if there are certain values (e.g., -9999) that is used to represent
+missing data (NaNs).  If so, the NaN-proxy values should be set
+accordingly (otherwise it is ignored).  The scale and offset is
+applied to the data after it is read (first scaled, then offset), 
+whereas the oformat is used by some programs for formatted output.
+.br
+Next we create the TAG and the databases for these line track files.
+Assuming these are geographic and that we want to keep track of the
+data distribution at a 1 x 1 degree resolution, we may run
+.br
+.sp
+\fBx2sys_init\fP LINE \fB\-V \-G \-D\fPline \fB\R\-R\fP0/360/-90/90 \fB\-I\fP1/1 
+.br
+.sp
+where we have call the tag LINE.  When x2sys tools will try to read your
+line data files they will look in the file TAG_paths.txt for a list of
+all the directories to examine.  Therefore, create such a file (here
+LINE_paths.txt) and stick the full paths to your data directories there.
+All TAG-related files will be expected to be in the directory pointed
+to by $X2SYS_HOME.
+.br
+.TP
+.B create tbf file(s)
+Once the (empty) TAG database have been initialize we go through a two-
+step process to populate them.  First we run \fBx2sys_binlist\fP on
+all our track files to create one (or more) multi-segment track binindex
+files (tbf).  These contain information on which 1x1 degree bins each
+track has visited and which observations (in your case obs1, obs2, obs3)
+where actually observed (not all tracks may have all the kinds of
+observations).  Next, the track binindex files are fed to \fBx2sys_put\fP
+which will insert the information into the tag databases.
+.TP
+.B search
+Now you may use \fBx2sys_get\fP to find all the tracks within a certain
+sub-region, and optionally limit the search to those tracks that have
+a particular combination of observables.
+.TP
+.B MGD77 or GMT
+Definition files already exist for MGD77 files, the old
+*.gmt files manipulated by the mgg supplements, and plain x,y,z tracks.
 To initiate new track databases to be used with MGD77 data from NGDC, try
 .br
 .sp
-\fBx2sys_init\fP MGD77 \fB\-V \-D\fPmgd77 \fB\R\-R\fP0/360/-90/90 \fB\-I\fP1/1 
+\fBx2sys_init\fP MGD77 \fB\-V \-D\fPmgd77 \fB\R\-R\fP0/360/-90/90 \fB\-I\fP1/1
+.br
+.sp
+and the other steps are similar.
+.TP
+.B binary files
+Let us pretend that your line files actually were binary files with a
+128-byte header structure (to be skipped) followed by the data records
+and where lon, lat, time are double precision numbers while the three
+observations are 2-byte integers which must be multiplied by 0.1.
+Finally, the first two observations may be 32000 which means there is
+no data.
+All that is needed is a different line.def file:
+.br
+.sp
+# Define file for the line format
+.br
+#BINARY		# File is now binary
+.br
+#SKIP 128	# Skip 128 bytes
+.br
+#name	intype NaN-proxy?	NaN-proxy	scale offset oformat
+.br
+lon	d	N	0	1	0	%10.5lf
+.br
+lat	d	N	0	1	0	%9.5lf
+.br
+time	d	N	0	1	0	%7.1lf
+.br
+obs1	h	Y	32000	0.1	0	%6.1lf
+.br
+obs2	h	Y	32000	0.1	0	%6.1lf
+.br
+obs3	h	N	0	0.1	0	%6.1lf
+.br
+.sp
+The rest of the steps are identical.  The accepted intype flags are
+\fBc\fP fir sugned 1-byte character (-127,+128), \fBu\fP for unsigned
+byte (0-255), \fBh\fP for signed 2-byte integers (-32767,+32767),
+\fBi\fP for  signed 4-byte integers (-2,147,483,648,+2,147,483,648),
+\fBf\fP for 4-byte floating points and \fBd\fP for 8-byte double
+precision floating points.
 .SH "SEE ALSO"
 .IR x2sys_binlist (GMTMANSECTION)
 .IR x2sys_get (GMTMANSECTION)
