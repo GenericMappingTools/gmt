@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_L.tex,v 1.6 2004-01-02 22:45:12 pwessel Exp $
+%	$Id: GMT_Appendix_L.tex,v 1.7 2004-04-13 21:32:27 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -17,38 +17,41 @@
 \index{GMT@\GMT!PCs running Linux}
 
 While \GMT\ can be ported to non-\UNIX\ systems such as
-Windows and MacOS, it is also true that one of the
+Windows, it is also true that one of the
 strengths of \GMT\ lies its symbiotic relationship with
 \UNIX.  We therefore recommend that \GMT\ be installed in
-a POSIX-compliant \UNIX\ PC environment such as Linux (PC)
-or MkLinux (Mac).  There are also commercial products
-for PCs (e.g., Interix [formerly OpenNT]\footnote{www.interix.com})
-and Macs (e.g., MachTen\footnote{www.tenon.com}) that will
+a POSIX-compliant \UNIX\ environment such as Linux
+or MacOS X.  If abandoning your non-\UNIX\ operating system
+is not an option, consider one of these solutions:
+
+and pre-OSX Macs (e.g., MachTen\footnote{www.tenon.com}) that will
 provide a POSIX environment
-without rebooting into \UNIX.  Installation of \GMT\ under
-Interix or Machten is no different than under other POSIX
+without rebooting into \UNIX.  Installation of \GMT\ under MS
+Services for Unix or Machten is no different than under other POSIX
 \UNIX systems.
 
-However, if you own a PC and need a public domain,
-no-cost solution other than Linux you have a few
-additional options.  At the time of this writing they
-include
-
+\begin{description}
+\item [WINDOWS:]
 \begin{enumerate}
 
 \item Install \GMT\ under Cygwin (A GNU port to Windows). 
 
 \item Install \GMT\ under DJGPP (another GNU port to Windows/DOS).
 
+\item Install \GMT\ under SFU (Windows Services for \UNIX; a free download from
+Microsoft\footnote{Microsoft Services for \UNIX\ is formerly known as Interix, also known as OpenNT.}.
+
 \item Install \GMT\ directly using Microsoft C/C++ or other
-compilers.
+compilers.  Unlike the first three, this option will not provide you with any
+\UNIX\ tools so you will be limited to what you can do with
+DOS batch files.
+
 \index{GMT@\GMT!compile with Microsoft C/C++}
 
 \end{enumerate}
 
-Unlike the first two, the latter will not provide you with any
-\UNIX\ tools so you will be limited to what you can do with
-DOS batch files.
+\item [MAC OS9:] Here your choice is a commercial offering called MachTen\footnote{www.tenon.com}.
+\end{description}
 
 \section{Cygwin and \gmt}
 \index{GMT@\GMT!under Cygwin|(}
@@ -88,6 +91,16 @@ script did not work for us.  As soon as this problem is
 overcome we expect a smooth install similar to that of Cygwin.
 \index{GMT@\GMT!under DJGPP|)}
 \index{DJGPP|)}
+
+\section{SFU and \gmt}
+\index{GMT@\GMT!under SFU|(}
+\index{SFU|(}
+
+SFU\footnote{See www.microsoft.com/Windows/sfu for details.} is also similar to Cygwin
+in that it provides precompiled \UNIX\ tools for DOS/WIN32,
+including the \progname{csh} shell.
+\index{GMT@\GMT!under SFU|)}
+\index{SFU|)}
 
 \section{WIN32 and \gmt}
 \index{GMT@\GMT!under Win32|(}

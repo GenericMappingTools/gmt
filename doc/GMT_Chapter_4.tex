@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.38 2004-04-13 17:45:14 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.39 2004-04-13 21:32:27 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -459,8 +459,8 @@ The next example shows two different ways to annotate an axis portraying 2 days 
 
 \input{scripts/GMT_-B_time2}
 
-The lower example (Figure~\ref{fig:GMT_-B_time2}) chooses to annotate the weekdays (by specifying {\bf If}1{\bf K}) while the upper
-example choses dates (by specifying {\bf If}1{\bf D}).  Note how the clock format only selects hours and minutes (no seconds) and
+The lower example (Figure~\ref{fig:GMT_-B_time2}) chooses to annotate the weekdays (by specifying {\bf a}1{\bf K}) while the upper
+example choses dates (by specifying {\bf a}1{\bf D}).  Note how the clock format only selects hours and minutes (no seconds) and
 the date format selects a month name, followed by one space and a two-digit day-of-month number.
 
 \GMTfig[h]{GMT_-B_time2}{Cartesian time axis, example 2.}
@@ -471,8 +471,8 @@ The third example presents two years, annotating both the years and every 3rd mo
 
 Note that while the year annotation is centered on the 1-year interval, the month annotations must be centered
 on the corresponding month and \emph{not} the 3-month interval.  The {\bf PLOT\_DATE\_FORMAT} selects month
-name only and {\bf PLOT\_ANNOT\_FORMAT2} selects the 1-character, upper case abbreviation of monthnames using
-the current language selected by {\bf TIME\_LANGUAGE}.
+name only and {\bf PLOT\_FORMAT\_PRIMARY} selects the 1-character, upper case abbreviation of monthnames using
+the current language (selected by {\bf TIME\_LANGUAGE}).
 \GMTfig[h]{GMT_-B_time3}{Cartesian time axis, example 3.}
 
 The fourth example (Figure~\ref{fig:GMT_-B_time4}) only shows a few hours of a day.  We select both primary and
@@ -672,6 +672,7 @@ projection, specified as
 \vspace{\baselineskip} 
 
 \texttt{-Joc170W/25:30S/33W/56:20N/1:500000} \\ 
+\vspace{\baselineskip} 
 \noindent
 then a subsequent \GMTprog{psxy} command to plot symbols only needs
 to state \Opt{J}o in order to activate the same projection.  In
@@ -869,7 +870,7 @@ Note that a pen thickness of 5 will be of different physical width
 depending on your dpi setting, whereas a thickness of 5{\bf p} will
 always be 5/72 of an inch.  Minimum-thickness pens can be achieved by
 giving zero width, but the result is device-dependent.  Finally, a few
-predefined pen names can be used: default, faint, and {thin, thick, fat}[er$|$est].
+predefined pen names can be used: default, faint, and \{thin, thick, fat\}[er$|$est].
 Table~\ref{tbl:pennames} shows this list and the corresponding pen widths.
 \begin{table}[h]
 \centering
@@ -896,15 +897,15 @@ fat		&	12p \\ \hline
 \index{Attributes!pen!color}%
 \item[$\rightarrow$]The {\it color} can be specified in five different ways:
 \begin{enumerate}
-\item Gray scale. Specify a {\it gray} shade in the range 0--255 (linearly going from black [0] to white [255]).
+\item Gray. Specify a {\it gray} shade in the range 0--255 (linearly going from black [0] to white [255]).
 \item RGB. Specify {\it r}/{\it g}/{\it b}, each ranging from 0--255.  Here 0/0/0 is black and 255/255/255 is white.
 \item HSV. Specify {\it hue}-{\it saturation}-{\it value}, with the former in the 0--360 degree range while the latter
 two take on the range 0--1.
 \item CMYK. Specify {\it cyan}/{\it magenta}/{\it yellow}/{\it black}, each ranging from 0--100\%.
 \item Name.  Specify one of 663 valid color names as defined in the X11 color table\footnote{On most Unix-type systems
 you can find the file rgb.txt in /usr/X11R6/lib/X11 or thereabouts, or use the command showrgb.}.  A very small but
-versatile subset consists of the values {\it white}, {\it black}, and [light$|$dark]{{\it red, orange, yellow, green,
-cyan, blue, magenta, gray, brown}}.
+versatile subset consists of the 29 choices {\it white}, {\it black}, and [light$|$dark]\{{\it red, orange, yellow, green,
+cyan, blue, magenta, gray, brown}\}.
 \end{enumerate}
 
 \index{Pen!texture}
@@ -920,7 +921,8 @@ pattern along the line.  For example, if you want a yellow line of width
 0.2 cm that alternates between long dashes (4 points), an 8 point gap, then
 a 5 point dash, then another 8 point gap, with pattern offset by 2 points
 from the origin, specify \Opt{W}0.2c,yellow,4\_8\_5\_8:2p.
-Here, the texture units can be specified in dpi units or points (see above). 
+In general, the texture units can be specified in dpi units, cm, inch, points,
+or meters (see width discussion). 
 \end{description} 
 
 \section{Specifying area fill attributes}
@@ -945,18 +947,22 @@ symbols.  The fill may take two forms:
 }\par \Opt{Gp}{\it dpi/pattern}[:{\bf B}{\it color}[{\bf F}{\it color}]]\par 
 
 \vspace{\baselineskip} 
-
+\noindent
+\begin{description}
+\item [fill:]
 In the first case we may specify a {\it gray} shade (0--255), RGB color
 ({\it r}/{\it g}/{\it b} all in the 0--255 range), HSV color ({\it hue}-{\it saturation}-{\it value}
-in the 0--360, 0--1, 0--1 range, CMYK color ({\it cyan}/{\it magenta}/{\it yellow}/{\it black},
+in the 0--360, 0--1, 0--1 range), CMYK color ({\it cyan}/{\it magenta}/{\it yellow}/{\it black},
 each ranging from 0--100\%), or a valid color name; in that respect it is similar
 to specifying the pen color settings (see pen color attribute in previous section).
+\item [pattern:]
 The second form allows us to use a predefined bit-image pattern.
 {\it pattern} can either be a number in the range 1--90 or the name of a 1-,
 8-, or 24-bit Sun raster file.  The former will result in one of the 90
 predefined 64 x 64 bit-patterns provided with \GMT\ and reproduced in Appendix E.
 The latter allows the user to create customized, repeating images using
-standard Sun rasterfiles.  The {\it dpi} parameter sets the resolution of
+standard Sun rasterfiles\footnote{Convert other graphics formats to Sun ras format using
+ImageMagick's \progname{convert} program.}.  The {\it dpi} parameter sets the resolution of
 this image on the page;  the area fill is thus made up of a series of these
 ``tiles''.  Specifying {\it dpi} as 0 will result in highest resolution
 obtainable given the present dpi setting in \filename{.gmtdefaults4}.
@@ -966,8 +972,9 @@ to 1-bit images or predefined bit-image patterns).  For these patterns and
 other 1-bit images one may specify alternative background and foreground
 colors (by appending :{\bf B}{\it color}[{\bf F}{\it color}]) that will
 replace the default white and black pixels, respectively.  Setting one of the
-fore- or background colors to -- yields a transparent image where only the
-back- or foreground pixels will be painted.
+fore- or background colors to -- yields a \emph{transparent} image where only the
+back- \emph{or} foreground pixels will be painted.
+
 Due to \PS\ implementation limitations the rasterimages used with
 \Opt{G} must be less than 146 x 146 pixels in size; for larger images see
 \GMTprog{psimage}.  The format of Sun raster files is outlined in Appendix B.
@@ -991,9 +998,10 @@ over what {\it z}-range each color applies.  This is the purpose of the
 color palette table (cpt-file).  These files may also be used by \GMTprog{psxy}
 and \GMTprog{psxyz} to plot color-filled symbols.
 The colors may be specified either in the RGB- (red, green, blue), CMYK- (cyan,
-magenta, yellow, black), or in the HSV-system (hue, saturation, value),
-and the parameter COLOR\_MODEL in the \filename{.gmtdefaults4} file must
-be set accordingly.  Using the RGB system, the format of the cpt-file is: 
+magenta, yellow, black), or in the HSV-system (hue, saturation, value, and
+here the comment \# COLOR\_MODEL = HSV must be present in the cpt file).
+Using the RGB system\footnote{For CMYK the format obviously involves two extra columns.},
+the format of the cpt-file is: 
 
 \begin{center}
 \begin{tabular}{lllllllll}
