@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.3 2001-03-05 15:50:44 pwessel Exp $
+#	$Id: Makefile,v 1.4 2001-03-09 18:32:11 pwessel Exp $
 #
 #	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -56,7 +56,7 @@
 #-------------------------------------------------------------------------------
 #
 
--include src/makegmt.macros	# GMT-specific settings determined by user & install_gmt
+include src/makegmt.macros	# GMT-specific settings determined by user & install_gmt
 
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!

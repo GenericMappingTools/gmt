@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.1 2001-03-09 17:55:54 pwessel Exp $
+#	$Id: Makefile,v 1.2 2001-03-09 18:32:11 pwessel Exp $
 #
 #		Makefile for GMT x_system supplements
 #
@@ -17,7 +17,7 @@
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
--include ../makegmt.macros
+include ../makegmt.macros
 #
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I.. -I../mgg -I$(NETCDF)/include

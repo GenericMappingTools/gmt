@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.2 2001-03-05 15:50:44 pwessel Exp $
+#	$Id: Makefile,v 1.3 2001-03-09 18:32:11 pwessel Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -19,7 +19,7 @@
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
--include ../makegmt.macros
+include ../makegmt.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I.. -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf
