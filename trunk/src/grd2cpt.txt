@@ -3,7 +3,7 @@
 grd2cpt \- Read a grdfile and make a color palette file
 .SH SYNOPSIS
 \fBgrd2cpt\fP \fIgrdfile\fP [ \fB\-C\fP\fIcptmaster\fP ] [ \fB\-E\fP\fInlevels\fP ] [ \fB\-I\fP ] 
-[ \fB\-L\fP\fIminlimit/maxlimit\fP ] [ \fB\-Q\fP[\fBi|o\fP] ] 
+[ \fB\-L\fP\fIminlimit/maxlimit\fP ] [ \fB\-N\fP ] [ \fB\-Q\fP[\fBi|o\fP] ] 
 [ \fB\-R\fP\fIw/e/s/n\fP ] [ \fB\-S\fP\fIzstart/zstop/zinc\fP ] [ \fB\-V\fP ] [ \fB\-Z\fP ]
 .SH DESCRIPTION
 \fBgrd2cpt\fP reads a grdfile and writes a color palette (cpt) file to
@@ -35,6 +35,10 @@ Reverses the sense of color progression in the master cptfile.
 .B \-L
 Limit range of cptfile to \fIminlimit/maxlimit\fP, and don't count data\"'
 outside range when estimating CDF(Z).  [Default uses min and max of data.] 
+.TP
+.B \-N
+Do Not write out the background, foreground, and NaN-color fields [Default will write the parameters
+COLOR_BACKGROUND, COLOR_FOREGROUND, and COLOR_NAN in your .gmtdefaults4 file.
 .TP
 .B \-Q
 Selects a logarithmic interpolation scheme [Default is linear].  \fB\-Qi\fP expects input z-values to be log10(z), assigns colors, and writes out z [Default].

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.133 2004-07-16 17:07:02 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.134 2004-07-19 02:36:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -988,7 +988,7 @@ void GMT_read_cpt (char *cpt_file)
 	gmtdefs.color_model = color_model;	/* Reset to what it was before */
 }
 
-void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, int log_mode)
+void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, int log_mode, BOOLEAN no_BFN)
 {
 	/* Resamples the current cpt table based on new z-array.
 	 * Old cpt is normalized to 0-1 range and scaled to fit new z range.
@@ -1119,8 +1119,14 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 			fprintf (GMT_stdout, format, z_out[lower], rgb_low[0], rgb_low[1], rgb_low[2], z_out[upper], rgb_high[0], rgb_high[1], rgb_high[2]);
 	}
 
+	GMT_free ((void *)x);
+	GMT_free ((void *)lut);
+	if (log_mode) GMT_free ((void *)z_out);
+
 	/* Background, foreground, and nan colors */
 
+	if (no_BFN) return;
+	
 	if (reverse) {	/* Flip foreground and background colors */
 		memcpy ((void *)rgb_low, (void *)GMT_bfn[GMT_BGD].rgb, (size_t)(3 * sizeof (int)));
 		memcpy ((void *)GMT_bfn[GMT_BGD].rgb, (void *)GMT_bfn[GMT_FGD].rgb, (size_t)(3 * sizeof (int)));
@@ -1157,10 +1163,6 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 				fprintf (GMT_stdout, "%c\t%d\t%d\t%d\n", code[k], GMT_bfn[k].rgb[0], GMT_bfn[k].rgb[1], GMT_bfn[k].rgb[2]);
 		}
 	}
-
-	GMT_free ((void *)x);
-	GMT_free ((void *)lut);
-	if (log_mode) GMT_free ((void *)z_out);
 }
 
 int GMT_get_index (double value)
