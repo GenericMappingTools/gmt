@@ -33,7 +33,7 @@ To use the color palette topo.cpt to create r, g, b component grids from hawaii_
 gmt2rgb hawaii_grv.grd \fB\-C\fPtopo.cpt \fB\-G\fPhawaii_grv_%c.grd
 .br
 .sp
-To output the red componets from the Sun raster radiation.ras file, try
+To output the red components from the Sun raster radiation.ras file, try
 .br
 .sp
 gmt2rgb radiation.ras \fB\-L\fPr \fB\-G\fPcomp_%c.grd

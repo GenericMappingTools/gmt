@@ -84,7 +84,7 @@ selected an ellipsoid as the reference shape (see gmtdefaults).  The user
 needs to be aware of a few potential pitfalls: (1)  For some projections,
 such as Transverse Mercator, Albers, and Lamberts conformal conic we use the
 ellipsoidal expressions when the areas mapped are small, and switch to the
-spherical expressions (and substituting the appropriate auxillary latitudes)
+spherical expressions (and substituting the appropriate auxiliary latitudes)
 for larger maps.  The ellipsoidal formulae are used are follows: (a) Transverse
 Mercator: When all points are within 10 degrees of central meridian, (b) Conic
 projections when longitudinal range is less than 90 degrees, (c) Cassini

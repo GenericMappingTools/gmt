@@ -8,7 +8,7 @@ grdlandmask \- Create "wet-dry" mask grdfile from shoreline data base.
 \fBgrdlandmask\fP reads the selected shoreline database and uses that information to decide which
 nodes in the specified grid are over land or over water.  The nodes defined by
 the selected region and lattice spacing will be set according to one of two criteria:
-(1) Lands vs water, or (2) the more detailed (hierarchial) ocean vs land vs lake vs island vs pond.  The
+(1) Lands vs water, or (2) the more detailed (hierarchical) ocean vs land vs lake vs island vs pond.  The
 resulting mask grdfile may be used in subsequent operations involving \fBgrdmath\fP to mask out
 data from land [or water] areas.
 .TP

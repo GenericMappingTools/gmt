@@ -59,7 +59,7 @@ to surface area for the file peaks.grd, use
 grdvolume peaks.grd \fB\-Sk\fP \fB\-C\fP100/300/10 > results.d
 .br
 .sp
-To see the areas and volumes for all the countours in the previous example, try
+To see the areas and volumes for all the contours in the previous example, try
 .br
 .sp
 grdvolume peaks.grd \fB\-Sk \-Vl\fP \fB\-C\fP100/300/10 > results.d

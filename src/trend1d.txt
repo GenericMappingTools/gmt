@@ -58,7 +58,7 @@ will be shifted and scaled to [-1, 1] and the basis functions will be Chebyshev 
 numerical advantage in the form of the matrix which must be inverted and allow more accurate solutions.  
 The Chebyshev polynomial of degree n has n+1 extrema in [-1, 1], at all of which its value is either -1 
 or +1.  Therefore the magnitude of the polynomial model coefficients can be directly compared.  NOTE: 
-The stable model coefficients are Chebeshev coefficients.  The corresponding polynomial coefficients in
+The stable model coefficients are Chebyshev coefficients.  The corresponding polynomial coefficients in
 a + bx + cxx + ...  are also given in Verbose mode but users must realize that they are NOT stable beyond
 degree 7 or 8. See Numerical Recipes for more discussion.
 .sp

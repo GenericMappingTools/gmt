@@ -25,17 +25,17 @@ The contours to be drawn may be specified in one of three possible ways:
 .br
 If \fIcont_int\fP has the suffix ".cpt" and can be opened as a file, it is assumed
 to be a color palette table.  The color boundaries are then used as contour levels.
-If the cpt-file has anotation flags in the last column then those contours will be
-anotated.  By default all contours are labeled; use \fB\-A\-\fP to disable all anotations.
+If the cpt-file has annotation flags in the last column then those contours will be
+annotated.  By default all contours are labeled; use \fB\-A\-\fP to disable all annotations.
 .br
 If \fIcont_int\fP is a file but not a cpt-file, it is expected to contain contour levels
 in column 1 and a C(ontour) OR A(nnotate) in col 2. The levels marked C (or c) are contoured,
 the levels marked A (or a) are contoured and annotated.  Optionally, a third column may be
-present and contain the fixed anotation angle for this contour level.
+present and contain the fixed annotation angle for this contour level.
 .br
 If no file is found, then \fIcont_int\fP is
 interpreted as a constant contour interval.  If \fB\-A\fP is set and \fB\-C\fP is not, then
-the contour interval is set equal to the specified anotation interval.
+the contour interval is set equal to the specified annotation interval.
 .br
 If a file is given and \fB\-T\fP is set, 
 then only contours marked with upper case C or A will have tickmarks.
@@ -45,7 +45,7 @@ No space between the option flag and the associated arguments.
 .TP
 .B \-A
 \fIanot_int\fP is annotation interval in data units.  Ignored if contour levels are given in a file.
-[Default is no annotations].  Several options can be set to modify the form of the annotation.  Give - to disable all anotations.
+[Default is no annotations].  Several options can be set to modify the form of the annotation.  Give - to disable all annotations.
 Append f\fIfont_size\fP to change font size [9], append \fI/r/g/b\fP to change color of text fill box
 [PAGE_COLOR], append a\fIangle\fP to fix annotation angle [Default follows contour], append \fBo\fP to draw the outline of the surrounding text box [Default is no outline],
 or append \fBt\fP to use a transparent label box [Default is opaque].
@@ -99,7 +99,7 @@ User may choose to tick only local highs or local lows by specifying \fB\-T+\fP 
 Appending :LH will plot the characters L and H at the center of closed
 innermost contours (local lows and highs).  L and H can be any single character (e.g., LH, -+, etc.)
 If a file is given by \fB\-C\fP and \fB\-T\fP is set, 
-then only contours marked with upper case C or A will have tickmarks [and anotation].
+then only contours marked with upper case C or A will have tickmarks [and annotation].
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
@@ -135,13 +135,13 @@ plot-title, use a thick red pen for annotated contours, and a thin, dashed, blue
 grdcontour image.grd \fB\-Jx\fP0.1\fBc\fP/50.0\fBc\fP \fB\-C\fPcont.d \fB\-S\fP4 \fB\-B\fP20/0.1:."RMS Misfit":
 \fB\-Wa\fP5/255/0/0 \fB\-Wc\fP1/0/0/255\fBta\fP | lp
 .SH BUGS
-The text-outline box has not been implemented for perspective view plots.  Anotations will plot correctly,
+The text-outline box has not been implemented for perspective view plots.  Annotations will plot correctly,
 but contours will go right through the text.
 .br
 The labeling of local highs and lows may plot outside the innermost contour since only the mean value
 of the contour coordinates is used to position the label.
 .br
-The size of the white box beneath contour anotations is augmented by \fIdx\fP and \fIdy\fP
+The size of the white box beneath contour annotations is augmented by \fIdx\fP and \fIdy\fP
 which are set to 50% and 5% of ANOT_OFFSET, respectively.  You
 must thus change this value in .gmtdefaults to affect the box size.
 .br

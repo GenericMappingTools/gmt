@@ -25,14 +25,14 @@ Raw ASCII (or binary, see \fB\-b\fP) xyz data to be contoured.
 .TP
 .B \-C
 name of the color palette file.  Must have discrete colors if you want to paint the
-surface (\fB\-I\fP).  Only contours that have anotation flags set will be anotated.
+surface (\fB\-I\fP).  Only contours that have annotation flags set will be annotated.
 #include "explain_-j.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
 .B \-A
-Several anotation formatting options can be set to modify the form of the annotation.  Give - to disable all anotations.
+Several annotation formatting options can be set to modify the form of the annotation.  Give - to disable all annotations.
 Append f\fIfont_size\fP to change font size [9], append \fI/r/g/b\fP to change color of text fill box
 [PAGE_COLOR], append a\fIangle\fP to fix annotation angle [Default follows contour], and append \fBo\fP to draw the outline of the surrounding text box [Default is no outline].
 #include "explain_-b.txt"
@@ -59,7 +59,7 @@ Draw the underlying triangular mesh using the specified pen attributes [Default 
 .TP
 .B \-M
 When used in conjunction with \fB\-D\fP a single multisegment file is created, and
-each contour section is preceeded by a header record whose first column is \fIflag\fP
+each contour section is preceded by a header record whose first column is \fIflag\fP
 followed by the contour level.
 .TP
 .B \-N

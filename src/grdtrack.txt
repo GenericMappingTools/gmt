@@ -57,7 +57,7 @@ uses only a 2 by 2 neighborhood, but yields only zeroth-order continuity.  Use b
 important.  Use bilinear to minimize the propagation of NaNs.
 .SH EXAMPLES
 To sample the file hawaii_topo.grd along the SEASAT track track_4.xyg (An ASCII
-table containing longitude, latitude, and SEASAT-derived gravity, preceeded by one header record), try
+table containing longitude, latitude, and SEASAT-derived gravity, preceded by one header record), try
 .br
 .sp
 grdtrack track_4.xyg \fB\-G\fPhawaii_topo.grd \fB\-H\fP > track_4.xygt

@@ -150,18 +150,18 @@ the font name (case sensitive!).  The 39 available fonts are:
 Font size (> 0) in points for map annotations.  [14]
 .TP
 .B ANOT_FONT2
-Font to use for time axis lower anotations.  See ANOT_FONT for available fonts  [Helvetica].
+Font to use for time axis lower annotations.  See ANOT_FONT for available fonts  [Helvetica].
 .TP
 .B ANOT_FONT2_SIZE
-Font size (> 0) for time axis lower anotations in points  [16].
+Font size (> 0) for time axis lower annotations in points  [16].
 .TP
 .B ANOT_OFFSET		
 Distance from end of tickmark to start of annotation [LEN_1_SI (or LEN_1_US)].  A negative
-offset will place the anotation inside the map border.
+offset will place the annotation inside the map border.
 .TP
 .B ANOT2_OFFSET		
-Distance from base of upper annotation to the top of the lower anotation [LEN_1_SI (or LEN_1_US)] (Only
-applies to time axes with both upper and lower anotations).
+Distance from base of upper annotation to the top of the lower annotation [LEN_1_SI (or LEN_1_US)] (Only
+applies to time axes with both upper and lower annotations).
 .TP
 .B BASEMAP_AXES
 Sets which axes to draw and annotate.  Case sensitive: Upper case means both draw and annotate, lower case
@@ -215,7 +215,7 @@ Output format (C language printf syntax) to be used when printing double precisi
 For geographic coordinates, see \fBOUTPUT_DEGREE_FORMAT\fP. [%lg].
 .TP
 .B DEGREE_SYMBOL
-Determines what symbol is used to plot the degree symbol on geographic map anotations.  Choose between
+Determines what symbol is used to plot the degree symbol on geographic map annotations.  Choose between
 ring, degree, colon, none [ring].
 .TP
 .B DOTS_PR_INCH
@@ -247,7 +247,7 @@ Hayford-1909	1909 Same as the International 1924
 .br
 Clarke-1880	1880 Most of Africa, France
 .br
-Clarke-1866	1866 North America, the Phillipines
+Clarke-1866	1866 North America, the Philippines
 .br
 Airy		1830 Great Britain
 .br
@@ -327,10 +327,10 @@ Formatting template that indicates how an input date string is formatted.  This 
 is then used to guide the reading of date strings in data fields.  You may specify either
 Gregorian calendar format or ISO week calendar format.  Gregorian calendar: Use any
 combination of yyyy (or yy for 2-digit years; if so see \fBY2K_OFFSET_YEAR\fP), mm,
-and dd, with or without delimeters.  For day-of-year data, use jjj instead of mm and/or dd.
+and dd, with or without delimiters.  For day-of-year data, use jjj instead of mm and/or dd.
 Examples can be ddmmyyyy, yy-mm-dd, yyyy/dd/mm, yyyy-jjj, etc.
 ISO Calendar:  Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
-day.  Either template must be consistant, e.g., you cannot specify months if you don't specify
+day.  Either template must be consistent, e.g., you cannot specify months if you don't specify
 years.  Examples are yyyyWwwd, yyyy-Www, etc. [yyyy-mm-dd].
 .TP
 .B INTERPOLANT
@@ -375,8 +375,8 @@ Number of plot copies to make  [1].
 This integer is a sum of 5 bit flags (most of which only are relevant for oblique projections):
 If bit 1 is set (1), annotations will occur wherever a gridline crosses the
 map boundaries, else longitudes will be annotated on the lower and upper boundaries only, and latitudes will be
-annotated on the left and right boundaries only.  If bit 2 is set (2), then longitude anotations will
-be plotted horizontally.  If bit 3 is set (4), then latitude anotations will be plotted horizontally.
+annotated on the left and right boundaries only.  If bit 2 is set (2), then longitude annotations will
+be plotted horizontally.  If bit 3 is set (4), then latitude annotations will be plotted horizontally.
 If bit 4 is set (8), then oblique tickmarks are extended to give a projection equal to the specified tick_length.
 If bit 5 is set (16), tickmarks will be drawn normal to the border regardless of gridline angle.
 To set a combination of these, add up the values in parentheses. [1].
@@ -396,7 +396,7 @@ Formatting template that indicates how an output date string is to be formatted.
 is then used to guide the writing of date strings in data fields.  You may specify either
 Gregorian calendar format or ISO week calendar format.  Gregorian calendar: Use any
 combination of yyyy (or yy for 2-digit years; if so see \fBY2K_OFFSET_YEAR\fP), mm,
-and dd, with or without delimeters.  For day-of-year data, use jjj instead of mm and/or dd.
+and dd, with or without delimiters.  For day-of-year data, use jjj instead of mm and/or dd.
 As examples, try yy/mm/dd, yyyy=jjj, dd-mm-yy, yy-mm, etc.
 ISO Calendar:  Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
 day.  Either template must be consistant, e.g., you cannot specify months if you don't specify
@@ -419,7 +419,7 @@ general of the form [+|-]D or [+|-]ddd[:mm[:ss]][.xxx][F].  The various terms ha
 .br
 	ddd	Fixed format integer degrees
 .br
-	:	delimeter
+	:	delimiter
 .br
 	mm	Fixed format integer arc minutes
 .br
@@ -529,7 +529,7 @@ the \fBTIME_LANGUAGE\fP setting.  [yyyy-mm-dd].
 Formatting template that indicates how an output geographical coordinate is to be plotted.  This template
 is then used to guide the plotting of geographical coordinates in data fields.  See 
 \fBOUTPUT_DEGREE_FORMAT\fP for details.  In addition, you can append A which plots the absolute value of 
-the coordinate.  The default is +ddd:mm:ss.  Not all items may be plotted as this depends on the anotation 
+the coordinate.  The default is +ddd:mm:ss.  Not all items may be plotted as this depends on the annotation 
 interval.
 .TP
 .B PSIMAGE_FORMAT

@@ -13,7 +13,7 @@ black pixels (on) becomes white (off) and vice versa, or (2) colorized, by
 assigning different foreground and background colors, and (3) made transparent
 where one of back- or foreground is painted only. As an option,
 the user may choose to convert colorimages to grayscale using TV's YIQ-transformation.
-The user may also choose to replicate the image which, when preceeded by appropriate clip
+The user may also choose to replicate the image which, when preceded by appropriate clip
 paths, may allow larger custom-designed fill patterns to be implemented (the \fB\-Gp\fP
 mechanism offered in most GMT programs is limited to rasters smaller than 146 by 146).
 .TP
