@@ -1,6 +1,6 @@
 #!/bin/csh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.1 2001-03-21 16:27:55 pwessel Exp $
+#	 $Id: webexamples.sh,v 1.2 2001-04-19 18:12:40 pwessel Exp $
 #
 #	webexamples.csh - Automatic generation of the GMT examples pages
 #
@@ -20,8 +20,8 @@
 #	gmt/examples/example_??_100dpi.gif (using convert)
 #-----------------------------------------------------------------------------
 
-GMT050dpi="convert -density 50x50 -page 425x550"
-GMT100dpi="convert -density 100x100 -page 850x1100"
+GMT050dpi="convert -density 50x50 -page 612x792"
+GMT100dpi="convert -density 100x100 -page 612x792"
 
 if [ $# -eq 1 ]; then
 	gush=0

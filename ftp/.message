@@ -1,7 +1,5 @@
 This server is one of six mirror sites for the Generic Mapping Tools (GMT).
-Current version is 3.4
-
-The mirror sites are:
+Current version is 3.4.  The mirror sites are:
 
 gmt.soest.hawaii.edu	 : SOEST [GMT Website], Honolulu, Hawaii, USA
 falcon.grdl.noaa.gov	 : NOAA, Silver Spring, Maryland, USA
@@ -38,7 +36,6 @@ GMT_tut.tar.bz2		Tutorial data sets
 GMT_script.tar.bz2	20 Example scripts and data
 GMT_suppl.tar.bz2	Supplemental programs for GMT
 triangle.tar.bz2	Faster, but copyrighted triangulation
-install_gmt		Automates the installation (csh script)
 
 Finally, you probably want to get:
 
