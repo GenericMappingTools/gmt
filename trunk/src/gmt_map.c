@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.40 2003-11-07 17:38:03 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.41 2003-11-07 20:51:37 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5632,7 +5632,7 @@ int GMT_great_circle_intersection (double A[], double B[], double C[], double X[
 	GMT_normalize3v (P);			/* Make sure P has unit length */
 	GMT_cross3v (C, P, E);			/* Get pole E to plane through C (and origin) but normal to A,B (hence going through P) */
 	GMT_normalize3v (E);			/* Make sure X has unit length */
-	GMT_cross3v (E, P, X);			/* Intersection point between the two planes */
+	GMT_cross3v (P, E, X);			/* Intersection point between the two planes */
 	GMT_normalize3v (X);			/* Make sure X has unit length */
 			
 	/* Must first check if X is along the (A,B) segment and not on its extension */
