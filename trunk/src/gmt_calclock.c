@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.22 2001-12-21 03:50:37 ben Exp $
+ *	$Id: gmt_calclock.c,v 1.23 2002-01-10 18:23:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1109,7 +1109,7 @@ int	GMT_gmonth_length (int year,  int month) {
 	return (k);
 }
 
-int GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *C, BOOLEAN upper, int kind, GMT_dtime dt)
+void GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *C, BOOLEAN upper, int kind, GMT_dtime dt)
 {	/* Given the internal time representation dt and the formatting information
 	 * in the D and C structure, write the calendar representation to strings date and clock,
 	 * but skip either string if it is a NULL pointer */
