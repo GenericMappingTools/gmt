@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.9 2001-04-21 03:13:33 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.10 2001-06-08 20:16:55 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3321,6 +3321,24 @@ void GMT_get_anot_label (double val, char *label, int do_minutes, int do_seconds
 				letter = (fabs (val) < GMT_CONV_LIMIT) ? 0 : ((val < 0.0) ? 'S' : 'N');
 			val = fabs (val);
 			break;
+		case 14:	/* 12-15 are for planetary uses where west longitudes are used */
+			dec_minutes = TRUE;
+		case 12:
+		case 13:	/* Use -360 to 0 for longitudes and -90 to +90 for latitudes */
+			if (lonlat == 0 && val > 0.0) val -= 360.0;
+			break;
+		case 17:
+			dec_minutes = TRUE;
+		case 15:
+		case 16:	/* Use -360 to 0 for longitudes and -90 to +90 for latitudes */
+			if (lonlat == 0) {
+				if (val > 0.0) val -= 360.0;
+				letter = (fabs (val) < GMT_CONV_LIMIT) ? 0 : 'W';
+			}
+			else
+				letter = (fabs (val) < GMT_CONV_LIMIT) ? 0 : ((val < 0.0) ? 'S' : 'N');
+			val = fabs (val);
+			break;
 	}
 	
 	if (fmt == -1) {	/* theta-r */
@@ -3335,12 +3353,12 @@ void GMT_get_anot_label (double val, char *label, int do_minutes, int do_seconds
 		return;
 	}
 	
-	if (fmt >= 4 && fmt <= 6) { /* Pure decimal degrees */
+	if ((fmt >= 4 && fmt <= 6) || fmt == 13) { /* Pure decimal degrees */
 		sprintf (format, "%s%s\0", gmtdefs.d_format, GMT_degree_symbol[which]);
 		sprintf (label, format, val);
 		return;
 	}
-	if (fmt == 7) { /* Pure decimal degrees with trailing letter */
+	if (fmt == 7 || fmt == 16) { /* Pure decimal degrees with trailing letter */
 		sprintf (format, "%s%s%c\0", gmtdefs.d_format, GMT_degree_symbol[which], letter);
 		sprintf (label, format, val);
 		return;

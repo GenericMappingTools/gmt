@@ -189,7 +189,7 @@ Output format (C language syntax) to be used when printing double precision floa
 If it is NOT a 'g'-type format (as the default is), the format is used directly in anotations. [%lg].
 .TP
 .B DEGREE_FORMAT
-Output format to be used when annotating map boundaries.  Choose between six formats:
+Output format to be used when annotating map boundaries.  Choose between 18 formats:
 .br
 .sp
 	0	Longitudes go from 0 to 360, latitudes from -90 to 90 [Default].
@@ -216,6 +216,17 @@ Output format to be used when annotating map boundaries.  Choose between six for
 .br
 	11	Same as 3, with degrees and decimal minutes instead of degrees, minutes, and seconds.
 .br
+	12	Longitudes go from -360 to 0, latitudes from -90 to 90.
+.br
+	13	Same as 12, with decimal degrees instead of degrees, minutes, and seconds.
+.br
+	14	Same as 12, with degrees and decimal minutes instead of degrees, minutes, and seconds.
+.br
+	15	Same as 12, but with letters W, S, or N appended as appropriate.
+.br
+	16	Same as 13, but with letters W, S, or N appended as appropriate.
+.br
+	17	Same as 14, but with letters W, S, or N appended as appropriate.
 .sp
 Add 100 to these values to use the large degree symbol character (octal \217) [Default is the
 small degree symbol (octal \312)].
