@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.7 2001-04-11 19:58:09 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.8 2001-04-25 03:34:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1752,10 +1752,10 @@ struct EPS *GMT_epsinfo (char *program)
 	 /* First crudely estimate the boundingbox coordinates */
 
 	if (gmtdefs.overlay && (fp = fopen (".GMT_bb_info", "r")) != NULL) {	/* Must get previous boundingbox values */
-		fscanf (fp, "%d %lf %lf %d %d %d %d\n", &(new->portrait), &orig_x0, &orig_y0, &old_x0, &old_y0, &old_x1, &old_y1);
+		fscanf (fp, "%d %d %lf %lf %d %d %d %d\n", &(new->portrait), &(new->clip_level), &orig_x0, &orig_y0, &old_x0, &old_y0, &old_x1, &old_y1);
+		fclose (fp);
 		x0 = orig_x0;
 		y0 = orig_y0;
-		fclose (fp);
 		if (gmtdefs.page_orientation & 8) {	/* Absolute */
 			x0 = gmtdefs.x_origin;
 			y0 = gmtdefs.y_origin;
@@ -1770,7 +1770,10 @@ struct EPS *GMT_epsinfo (char *program)
 		x0 = gmtdefs.x_origin;	/* Always absolute the first time */
 		y0 = gmtdefs.y_origin;
 		new->portrait = (gmtdefs.page_orientation & 1);
+		new->clip_level = 0;
 	}
+	if (gmtdefs.page_orientation & 16) new->clip_level++;		/* Initiated clipping that will extend beyond this process */
+	if (gmtdefs.page_orientation & 32) new->clip_level--;		/* Terminated clipping that was initiated in a prior process */
 
 	/* Estinates the bounding box for this overlay */
 
@@ -1828,10 +1831,11 @@ struct EPS *GMT_epsinfo (char *program)
 
 	if (gmtdefs.last_page) {	/* Clobber the .GMT_bb_info file and add label padding */
 		(void) remove (".GMT_bb_info");	/* Don't really care if it is successful or not */
-
+		if (new->clip_level > 0) fprintf (stderr, "%s: Warning: %d (?) external clip operations were not terminated!\n", GMT_program, new->clip_level);
+		if (new->clip_level < 0) fprintf (stderr, "%s: Warning: %d extra terminations of external clip operations!\n", GMT_program, -new->clip_level);
 	}
 	else if ((fp = fopen (".GMT_bb_info", "w")) != NULL) {	/* Update the .GMT_bb_info file */
-		fprintf (fp, "%d %lg %lg %d %d %d %d\n", new->portrait, x0, y0, new->x0, new->y0, new->x1, new->y1);
+		fprintf (fp, "%d %d %lg %lg %d %d %d %d\n", new->portrait, new->clip_level, x0, y0, new->x0, new->y0, new->x1, new->y1);
 		fclose (fp);
 	}
 
