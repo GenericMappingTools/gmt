@@ -1,17 +1,18 @@
 #!/bin/sh
 #
-#	GMT Example 22  $Id: job22.sh,v 1.4 2004-06-25 22:39:01 pwessel Exp $
+#	GMT Example 22  $Id: job22.sh,v 1.5 2004-08-25 17:07:04 pwessel Exp $
 #
 # Purpose:	Automatic map of last 7 days of world-wide seismicity
 # GMT progs:	gmtset, pscoast, psxy, pslegend
-# Unix progs:	cat, sed, awk, wget
+# Unix progs:	cat, sed, awk, wget|curl
 #
 gmtset ANNOT_FONT_SIZE_PRIMARY 10p HEADER_FONT_SIZE 18p PLOT_DEGREE_FORMAT ddd:mm:ssF
 
 # Get the data (-q quietly) from USGS using the wget (comment out in case
-# your system does not have wget)
+# your system does not have wget or curl)
 
 #wget http://neic.usgs.gov/neis/gis/bulletin.asc -q -O neic_quakes.d
+#curl http://neic.usgs.gov/neis/gis/bulletin.asc -s > neic_quakes.d
 
 # Count the number of events (to be used in title later. one less due to header)
 
@@ -39,7 +40,7 @@ EOF
 
 # Start plotting. First lay down map, then plot quakes with size = magintude/50":
 
-pscoast -Rg -JK180/9i -B45g30:."World-wide earthquake activity": -Glightbrown -Slightblue \
+pscoast -Rg -JK180/9i -B45g30:."World-wide earthquake activity": -Gbrown -Slightblue \
   -Dc -A1000 -K -U/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > example_22.ps
 awk -F, '{ print $4, $3, $6, $5*0.02}' neic_quakes.d | psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -H >> example_22.ps
 
