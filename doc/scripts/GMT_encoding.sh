@@ -1,11 +1,15 @@
 #!/bin/sh
 #
-#	$Id: GMT_encoding.sh,v 1.1 2001-10-17 00:41:44 pwessel Exp $
+#	$Id: GMT_encoding.sh,v 1.2 2001-10-17 01:48:47 pwessel Exp $
 #
 #	This plots the given encoding vector to stdout
 #
 #	e.g., GMT_encoding.sh ISO-8859-1 | gv -
 #
+if [ $# -eq 0 ]; then
+	exit
+fi
+
 cat << EOF > $$.awk	# This awk script creates the $$.chart table of which entries are defined
 {
 	printf "%d\t", NR-1
