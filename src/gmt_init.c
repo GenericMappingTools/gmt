@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.143 2004-06-10 03:02:35 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.144 2004-06-13 06:06:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -518,10 +518,12 @@ void GMT_label_syntax (int indent, int kind)
 	}
 	fprintf (stderr, "%s +o to use rounded rectangular text box [Default is rectangular]\n", pad);
 	fprintf (stderr, "%s +p[<pen>] draw outline of textbox  [Default is no outline]; optionally give pen [Default is default pen]\n", pad);
+	fprintf (stderr, "%s +r<min_rad> places no labels where radius of curvature < <min_rad> [Default is 0].\n", pad);
 	fprintf (stderr, "%s +s followed by desired font size in points [Default is 9 point].\n", pad);
 	fprintf (stderr, "%s +u<unit> to append unit to labels; Start with - for no space between annotation and unit.\n", pad);
 	if (kind == 0) fprintf (stderr, "%s  If no unit appended, use z-unit from grdfile. [Default is no unit]\n", pad);
 	fprintf (stderr, "%s +v for placing curved text along path [Default is straight]\n", pad);
+	fprintf (stderr, "%s +w to set how many (x,y) points to use for angle calculation [Default is 10]\n", pad);
 	fprintf (stderr, "%s +^<prefix> to give labels a prefix; Start with - for no space between annotation and prefix.\n", pad);
 }
 
@@ -539,9 +541,8 @@ void GMT_cont_syntax (int indent, int kind)
 	gap = 4.0 * GMT_u2u[GMT_INCH][gmtdefs.measure_unit];
 	
 	pad[0] = '\t';	for (i = 1; i <= indent; i++) pad[i] = ' ';	pad[i] = '\0';
-	fprintf (stderr, "%sd<dist>[c|i|m|p][/<width>] or D<dist>[e|k|m|n|d][/<width>].\n", pad);
-	fprintf (stderr, "%s   d: Give distance between labels in %s and number of (x,y) values used\n", pad, GMT_unit_names[gmtdefs.measure_unit]);
-	fprintf (stderr, "%s   used to smooth the label angle [Default algorithm is d%g%c/10].\n", pad, gap, GMT_unit_names[gmtdefs.measure_unit][0]);
+	fprintf (stderr, "%sd<dist>[c|i|m|p] or D<dist>[e|k|m|n|d].\n", pad);
+	fprintf (stderr, "%s   d: Give distance between labels in %s [Default algorithm is d%g%c]\n", pad, GMT_unit_names[gmtdefs.measure_unit], gap, GMT_unit_names[gmtdefs.measure_unit][0]);
 	fprintf (stderr, "%s   D: Specify distance between labels in m(e)ter [Default], (k)m, (m)ile, (n)autical mile, or (d)egree.\n", pad);
 	fprintf (stderr, "%sf<ffile.d> reads the file <ffile.d> and places labels at those locations that match\n", pad);
 	fprintf (stderr, "%s   individual points along the %ss\n", pad, type[kind]);

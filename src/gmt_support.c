@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.120 2004-06-12 08:15:27 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.121 2004-06-13 06:06:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -121,6 +121,7 @@ void GMT_contlabel_clippath (struct GMT_CONTOUR *G, int mode);
 void GMT_textpath_init (struct GMT_PEN *LP, int Brgb[], struct GMT_PEN *BP, int Frgb[]);
 void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G);
 void GMT_contlabel_debug (struct GMT_CONTOUR *G);
+void GMT_get_radii_of_curvature (double x[], double y[], int n, double r[]);
 
 double *GMT_x2sys_Y;
 
@@ -1663,7 +1664,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 	BOOLEAN g_set = FALSE;
 	char txt_cpy[BUFSIZ], txt_a[32], txt_b[32], c, *p;
 	
-	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+o][+v][+s<size>][+p[<pen>]][+u<unit>][+^<prefix>] strings */
+	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+o][+v][+r<min_rc>][+s<size>][+p[<pen>]][+u<unit>][+w<sidth>][+^<prefix>] strings */
 	
 	for (k = 0; txt[k] && txt[k] != '+'; k++);
 	if (!txt[k]) return (GMT_contlabel_specs_old (txt, G));	/* Old-style info strings */
@@ -1774,6 +1775,10 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 				G->box |= 1;
 				break;
 				
+			case 'r':	/* Minimum radius of curvature specification */
+				G->min_radius = GMT_convert_units (&p[1], GMT_INCH);
+				break;
+				
 			case 's':	/* Font size specification */
 				G->label_font_size = atof (&p[1]);
 				if (G->label_font_size <= 0.0) bad++;
@@ -1785,6 +1790,10 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 
 			case 'v':	/* Curved text [Default is straight] */
 				G->curved_text = TRUE;
+				break;
+
+			case 'w':	/* Angle filter width [Default is 10 points] */
+				G->half_width = atoi (&p[1]) / 2;
 				break;
 
 			case '^':	/* Label Prefix specification */
@@ -1874,7 +1883,7 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 			L->spacing = TRUE;
 			k = sscanf (&txt[j], "%[^/]/%d", txt_a, &L->half_width);
 			if (k == 0) {
-				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c[d]: Give label spacing and optional smoothing width\n", GMT_program, L->flag);
+				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c[d]: Give label spacing\n", GMT_program, L->flag);
 				error++;
 			}
 			if (L->dist_kind == 1) {	/* Distance units other than xy specified */
@@ -1885,8 +1894,7 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 			}
 			else
 				L->label_dist_spacing = GMT_convert_units (txt_a, GMT_INCH);
-			if (k == 1) L->half_width = 10;	/* Smooth over 10 points is the old default */
-			L->half_width /= 2;
+			if (k == 2) L->half_width /= 2;
 			if (L->label_dist_spacing <= 0.0) {
 				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c.  Spacing between labels must exceed 0.0\n", GMT_program, L->flag);
 				error++;
@@ -2557,6 +2565,28 @@ int GMT_code_to_lonlat (char *code, double *lon, double *lat)
 	return (error);
 }
 
+void GMT_get_radii_of_curvature (double x[], double y[], int n, double r[])
+{
+	/* Calculates radius of curvature along the spatial curve x(t), y(t) */
+	
+	int i, im, ip;
+	double a, b, c, d, e, f, x0, y0, denom;
+	
+	for (im = 0, i = 1, ip = 2; ip < n; i++, im++, ip++) {
+		a = (x[im] - x[i]);	b = (y[im] - y[i]);	e = 0.5 * (x[im] * x[im] + y[im] * y[im] - x[i] * x[i] - y[i] * y[i]);
+		c = (x[i] - x[ip]);	d = (y[i] - y[ip]);	f = 0.5 * (x[i] * x[i] + y[i] * y[i] - x[ip] * x[ip] - y[ip] * y[ip]);
+		denom = b * c - a * d;;
+		if (denom == 0.0)
+			r[i] = DBL_MAX;
+		else {
+			x0 = (-d * e + b * f) / denom;
+			y0 = (c * e - a * f) / denom;
+			r[i] = hypot (x[i] - x0, y[i] - y0);
+		}
+	}
+	r[0] = r[n-1] = DBL_MAX;	/* Boundary conditions has zero curvature at end points so r = inf */
+}
+
 #define CONTOUR_IJ(i,j) ((i) + (j) * nx)
 
 int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int int_scheme, int *side, int *edge, int first, double **x_array, double **y_array)
@@ -3121,7 +3151,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 {	/* The xx, yy are expected to be projected x/y inches */
 	int i, j, start = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
-	double angle, dx, dy, width, sum_x2, sum_xy, one = 1.0, f, this_dist, step, stept, *track_dist, *map_dist, *value_dist;
+	double angle, dx, dy, width, sum_x2, sum_xy, one = 1.0, f, this_dist, step, stept, *track_dist, *map_dist, *value_dist, *radii;
 	double x, y, this_value_dist, lon[2], lat[2], *xx, *yy;
 	struct GMT_LABEL *new_label;
 	char format[128], this_label[BUFSIZ];
@@ -3141,6 +3171,21 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 		map_dist = (double *) GMT_memory (VNULL, (size_t)nn, sizeof (double), GMT_program);	/* Distances on map in inches */
 		track_dist = (double *) GMT_memory (VNULL, (size_t)nn, sizeof (double), GMT_program);	/* May be km ,degrees or whatever */
 		value_dist = (double *) GMT_memory (VNULL, (size_t)nn, sizeof (double), GMT_program);	/* May be km ,degrees or whatever */
+		radii = (double *) GMT_memory (VNULL, (size_t)nn, sizeof (double), GMT_program);	/* Radius of curvature, in inches */
+		
+		/* We will calculate the radii of curvature at all points.  By default we dont care and
+		 * will place labels at whatever distance we end up with.  However, if the user has asked
+		 * for a minimum limit on the radius of curvature [Default 0] we do not want to place labels
+		 * at those sections where the curvature is large.  Since labels are placed according to
+		 * distance along track, the way we deal with this is to set distance increments to zero
+		 * where curvature is large:  that way, there is no increase in distance over those patches
+		 * and the machinery for determining when we exceed the next label distance will not kick
+		 * in until after curvature drops and increments are again nonzero.  This procedure only
+		 * applyes to the algorithms based on distance along track.
+		 */
+		 
+		GMT_get_radii_of_curvature (xx, yy, nn, radii);
+		
 		map_dist[0] = track_dist[0] = value_dist[0] = 0.0;	/* Unnecessary, just so we understand the logic */
 		for (i = 1; i < nn; i++) {
 			/* Distance from xy */
@@ -3162,6 +3207,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 				if (G->dist_kind == 1) step = G->d_scale * (G->dist_func) (lon[0], lat[0], lon[1], lat[1]);
 				if (G->label_type == 4) stept = G->L_d_scale * (G->L_dist_func) (lon[0], lat[0], lon[1], lat[1]);
 			}
+			if (radii[i] < G->min_radius) step = stept = 0.0;	/* If curvature is too great we simply don't add up distances */
 			track_dist[i] = track_dist[i-1] + step;
 			value_dist[i] = value_dist[i-1] + stept;
 		}
