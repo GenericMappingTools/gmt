@@ -1,41 +1,54 @@
-#	$Id: RELEASE.HOWTO,v 1.1 2001-04-13 22:06:11 pwessel Exp $
+#	$Id: RELEASE.HOWTO,v 1.2 2001-04-13 23:29:01 pwessel Exp $
 #
+
+PRE-RELEASE TASKS:
+
+1.  Decide on a future date at which point GMT is to be released.
+    Be prepared to change the date if the  bug-fixing workload is
+    too great.  Send email to gmt-team@soest.hawaii.edu and tell
+    them the date and ask for updates.
+    
+RELEASE TASKS:
 
 When you are ready to officially release a new GMT version you
 must ensure you do all the steps listed below:
 
-0. Make any changes to README, README.WIN32, and CHANGES.
-   Finalize Announcements/Announce.3.*
+0.  Make any changes to README, README.WIN32, and CHANGES.
+    Finalize Announcements/Announce.3.*.  Make sure the macros
+    in the gmtsite.macros file points to the actual FTP and WWW dirs.
 
-1. Run cvs commit from the main GMT directory to check in any
-   uncommitted changes.
+1.  Run cvs commit from the main GMT directory to check in any
+    uncommitted changes.
 
-2. Compile and make all to make sure it all works (check examples)
-   gurumake site
+2.  Compile and make all to make sure it all works (check examples)
+    gurumake site
    
-3. Tag the release:
-   cvs -q tag GMT3.4
+3.  Tag the release:
+    cvs -q tag GMT3.4
 
-4. Prepare the archives:
-   gurumake archive >& log
+4.  Prepare the archives:
+    gurumake archive >& log
    
-5. Goto Windows and get all *.zip files and install
-   Copy *.exe *.dll to GMT/bin and *.exp *.lib to GMT/lib
+5.  Goto Windows and get all *.zip files and install
+    Copy *.exe *.dll to GMT/bin and *.exp *.lib to GMT/lib
    
-6. Freshen the new zip files
-   gurumake zip_exe zip_suppl_exe
+6.  Freshen the new zip files
+    gurumake zip_exe zip_suppl_exe
    
-7. In GMT/ftp, update .message, README.GMT, and VERSION
+7.  Determine file sizes of all archives and update these values
+    in guru/install_gmt and website/gmt_install_form.html
+   
+8.  In GMT/ftp, update .message, README.GMT, and VERSION
 
-8. In GMT/website:
-   a) Update gmt.html, gmt_arrrghh.html, gmt_bugs.html, gmt_faq.html,
-      gmt_install_form.html, gmt_news.html, gmt_releases.html
-   b) create web examples:
-      make -f Makefile.site web
-   c) update ftp and web sites:
-      make -f Makefile.site update-version
-   d) Follow the instructions given by the make update-version call
+9.  In GMT/website:
+    a) Update gmt.html, gmt_arrrghh.html, gmt_bugs.html, gmt_faq.html,
+       gmt_install_form.html, gmt_news.html, gmt_releases.html
+    b) create web examples:
+       make -f Makefile.site web
+    c) update ftp and web sites:
+       make -f Makefile.site update-version
+    d) Follow the instructions given by the make update-version call
    
-9. Notify mirror sites that a new version has been posted.
-
-10. Send email to gmt-help and gmt-group with the Announcement.
+10. Send email notifications:
+    a) Alert the mirror sites that a new version has been posted.
+    b) Send email to gmt-help and gmt-group with the Announcement.
