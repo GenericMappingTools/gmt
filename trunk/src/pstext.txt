@@ -139,6 +139,7 @@ Except for paragraph mode, the horizontal justification of surrounding rectangle
 does not work when Greek symbols, sub- and superscripts, and/or composite characters
 are imbedded in the textstring.  In paragraph mode, the presence of composite
 characters and other escape sequences may lead to unfortunate word splitting. 
+Finally, the outline option does not work with the escape sequences.
 .br
 The \fB\-N\fP option does not adjust the BoundingBox information so you may
 have to post-process the PostScript outout with epstool or ps2epsi to obtain

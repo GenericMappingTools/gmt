@@ -12,13 +12,13 @@ Reverse Polish Notation (RPN) syntax (e.g., Hewlett-Packard calculator-style).  
 be evaluated; the final result is written to an output file [or standard output].  When two data tables are
 on the stack, each element in file A is modified by the corresponding element in file B.
 However, some operators only require one operand (see below).  If no data tables are used in the
-expression then options \fB\-T, \-N\fP must be set (and optionally \fB\-b\fP).  By default, all columns except the "time" column is operated on, but this can be changed (see \fB\-C\fP).
+expression then options \fB\-T, \-N\fP must be set (and optionally \fB\-b\fP).  By default, all columns except the "time" column are operated on, but this can be changed (see \fB\-C\fP).
 .TP
 \fIoperand\fP
 If \fIoperand\fP can be opened as a file it will be read as an ASCII (or binary, see \fB\-bi\fP) table data file.  If not a file, it is interpreted
 as a numerical constant or a special symbol (see below).
 .TP
-\fIoutfile\fP is a table data file that will hold the final result.  If not given
+\fIoutfile\fP is a table data file that will hold the final result.  If not given then
 the output is sent to stdout.
 .TP
 .B OPERATORS
@@ -57,7 +57,7 @@ Quick mode for scalar calculation.  Shorthand for \fB\-Ca \-N\fP1/0 \fB\-T\fP0/0
 .TP
 .B \-S
 Only report the first row of the results [Default is all rows].  This is useful if
-you have computed a statistics (say the MODE) and only want to report a single number
+you have computed a statistic (say the MODE) and only want to report a single number
 instead of numerous records with idendical values.
 .TP
 .B \-T
@@ -104,8 +104,8 @@ and store the result in the shell variable z:
 .sp
 	set z = `gmtmath \fB\-Q\fP 1 1.75 \fBADD\fP 2.2 \fBDIV\fP 60 \fBCOSD ADD KEI =\fP`
 .SH BUGS
-Files that has the same name as some operators, e.g., ADD, SIGN, =, etc. cannot be read
-and must not be present in the current directory.  Piping of files are not allowed on input, but the output can be sent to stdout.
+Files that have the same name as some operators, e.g., ADD, SIGN, =, etc. cannot be read
+and must not be present in the current directory.  Piping of files is not allowed on input, but the output can be sent to stdout.
 The stack limit is hard-wired to 50.
 All functions expecting a positive radius (e.g., log, kei, etc.) are passed the
 absolute value of their argument.
