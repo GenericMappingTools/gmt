@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.9 2004-05-26 02:06:33 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.10 2004-05-27 04:05:50 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -45,10 +45,10 @@ struct GMT_LABEL {	/* Contains information on contour/lineation labels */
 	double *x, *y;		/* Either 1 point where label goes OR a path along which to place label */
 	int n;			/* Length of path or 1 */
 	double angle;		/* Angle of text unless curved text */
-	double line_angle;	/* ANgle of line at label unless curved text */
+	double line_angle;	/* Angle of line at label unless curved text */
 	double dist;
 	int node;
-	char label[32];
+	char *label;
 	struct GMT_LABEL *next_label, *prev_label;
 };
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.72 2004-05-18 21:40:51 pwessel Exp $
+ *	$Id: gmt.h,v 1.73 2004-05-27 04:05:50 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -430,6 +430,7 @@ struct MAP_ROSE {	/* Used to plot a map direction "rose" in psbasemap and pscoas
 struct GMT_FONT {		/* Information for each font */
 	char *name;			/* Name of the font */
 	double height;			/* Height of letter "A" for unit fontsize */
+	double ave_width;		/* Average character width for unit fontsize */
 };
 
 struct GMT_LINES {		/* For holding multisegment lines in memory */
