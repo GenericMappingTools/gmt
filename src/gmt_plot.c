@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.30 2001-09-15 19:55:48 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.31 2001-09-15 20:05:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3808,11 +3808,12 @@ struct CUSTOM_SYMBOL * GMT_get_custom_symbol (char *name, char *old_names[], str
 
 struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 	int nc, error = 0;
-	BOOLEAN do_fill, do_pen;
+	BOOLEAN do_fill, do_pen, first = TRUE;
 	char file[BUFSIZ], buffer[BUFSIZ], col[8][64];
 	char *fill_p, *pen_p;
 	FILE *fp;
-	struct CUSTOM_SYMBOL *s, *first = NULL, *previous = NULL;
+	struct CUSTOM_SYMBOL *head;
+	struct CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
 	
 	sprintf (file, "%s.def\0", name);
 	
@@ -3829,13 +3830,16 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 		exit (EXIT_FAILURE);
 	}
 
+	head = (struct CUSTOM_SYMBOL *) GMT_memory (VNULL, (size_t)1, sizeof (struct CUSTOM_SYMBOL), GMT_program);
+	strcpy (head->name, name);
 	while (fgets (buffer, BUFSIZ, fp)) {
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
 		
 		nc = sscanf (buffer, "%s %s %s %s %s %s %s", col[0], col[1], col[2], col[3], col[4], col[5], col[6]);
 		
-		s = (struct CUSTOM_SYMBOL *) GMT_memory (VNULL, (size_t)1, sizeof (struct CUSTOM_SYMBOL), GMT_program);
-		if (!first) first = s;
+		s = (struct CUSTOM_SYMBOL_ITEM *) GMT_memory (VNULL, (size_t)1, sizeof (struct CUSTOM_SYMBOL_ITEM), GMT_program);
+		if (first) head->first = s;
+		first = FALSE;
 		
 		s->x = atof (col[0]);
 		s->y = atof (col[1]);
@@ -3892,12 +3896,11 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 			}
 		}
 		
-		if (previous)  previous->next = s;
+		if (previous) previous->next = s;
 		previous = s;
 	}
-	
 	fclose (fp);
-	return (first);
+	return (head);
 }
 
 void GMT_draw_custom_symbol (double x0, double y0, double size, struct CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, BOOLEAN outline) {
@@ -3905,7 +3908,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double size, struct CUSTOM_SY
 	BOOLEAN flush = FALSE;
 	double x, y, da, arc, sr, sa, ca, *xx, *yy;
 	char cmd[64];
-	struct CUSTOM_SYMBOL *s;
+	struct CUSTOM_SYMBOL_ITEM *s;
 	struct GMT_FILL *f, *this_f;
 	struct GMT_PEN *p;
 	
@@ -3914,7 +3917,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double size, struct CUSTOM_SY
 	
 	sprintf (cmd, "Start of symbol %s\0", symbol->name);
 	ps_comment (cmd);
-	s = symbol;
+	s = symbol->first;
 	while (s) {
 		x = x0 + s->x * size;
 		y = y0 + s->y * size;
