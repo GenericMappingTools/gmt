@@ -68,7 +68,7 @@ Do NOT skip symbols that fall outside map border [Default plots points inside bo
 .B \-S
 Plot symbols.  \fIsize\fP is symbol size in the unit set in \.gmtdefaults4
 (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).   The uppercase symbols
-\fBA, C, D, H, I, S, T\fP are normalized to have the same area as a circle of given size,
+\fBA, C, D, H, I, N, S, T\fP are normalized to have the same area as a circle of given size,
 while the corresponding lowercase symbols are circumscribed by the circle.
 Choose between:
 .TP
@@ -128,6 +128,9 @@ Users may add their own custom *.def files; see CUSTOM SYMBOLS in the \fBpsxy\fP
 \fBl\fPetter or text string (less than 64 characters).  Give size, and append /\fIstring\fP after the size.  Note that the size is only approximate; no individual scaling
 is done for different characters.  Remember to escape special characters like *.  Optionally, you may append %\fIfont\fP
 to select a particular font [Default is ANNOT_FONT].
+.TP
+.B \-Sn
+pe\fBn\fPtagon.  \fIsize\fP is diameter of circumscribing circle.
 .TP
 .B \-So
 c(\fBo\fP)lumn (3-D) extending from \fIbase\fP to z.  \fIsize\fP sets base width (Use \fIxsize/ysize\fP if not the same).  Append \fBu\fP if \fIsize\fP is in x-units

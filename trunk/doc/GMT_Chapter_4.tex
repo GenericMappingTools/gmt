@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.27 2003-12-18 02:27:21 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.28 2003-12-23 01:28:59 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2003.
@@ -171,7 +171,7 @@ these options in order of importance (some are use alot more than others).
 \begin{table}
 \centering
 \index{Standardized command line options}%
-\index{\Opt{B} (set anotations and ticks)}%
+\index{\Opt{B} (set annotations and ticks)}%
 \index{\Opt{H} (header records)}%
 \index{\Opt{J} (set map projection)}%
 \index{\Opt{K} (continue plot)}%
@@ -283,10 +283,10 @@ For details on all \GMT\ projections and the required parameters, see the \GMTpr
 We will also show examples of every projection in the next chapter, and a quick
 summary of projection syntax was given in Chapter 3.
 
-\subsection{Map frame and axes anotations: The \Opt{B} option}
+\subsection{Map frame and axes annotations: The \Opt{B} option}
 \index{\Opt{B}}
 \index{Tickmarks}
-\index{Anotations}
+\index{Annotations}
 \index{Gridlines}
 \index{Frame}
 \index{Basemap}
@@ -352,21 +352,21 @@ The unit flag {\bf u} can take on one of 16 codes; these are listed in  Table~\r
 \emph{Flag}	& \emph{Unit} & \emph{Description} \\ \hline
 {\bf Y}	&	year & Plot using all 4 digits \\ \hline
 {\bf y}	&	year & Plot using last 2 digits \\ \hline
-{\bf O}	&	month & Format anotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
+{\bf O}	&	month & Format annotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
 {\bf o}	&	month & Plot as 2-digit integer (1--12) \\ \hline
-{\bf U}	&	ISO week & Format anotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
+{\bf U}	&	ISO week & Format annotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
 {\bf u}	&	ISO week & Plot as 2-digit integer (1--53) \\ \hline
 {\bf r}	&	Gregorian week & 7-day stride from start of week ({\bf TIME\_WEEK\_START}) \\ \hline
 {\bf K}	&	ISO weekday & Plot name of weekday in selected language \\ \hline
 {\bf k}	&	weekday & Plot number of day in the week (1-7)  {see \bf TIME\_WEEK\_START}\\ \hline
-{\bf D}	&	date & Format anotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
+{\bf D}	&	date & Format annotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
 {\bf d}	&	day & Plot day of month (1--31) or day of year (1--366) {see \bf PLOT\_DATE\_FORMAT} \\
 {\bf R}	&	day & Same as {\bf d}; annotations aligned with week ({\bf TIME\_WEEK\_START})\\ \hline
-{\bf H}	&	hour &	 Format anotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
+{\bf H}	&	hour &	 Format annotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
 {\bf h}	&	hour &	 Plot as 2-digit integer (0--24) \\ \hline
-{\bf M}	&	minute &	 Format anotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
+{\bf M}	&	minute &	 Format annotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
 {\bf m}	&	minute &	 Plot as 2-digit integer (0--60) \\ \hline
-{\bf C}	&	seconds &	 Format anotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
+{\bf C}	&	seconds &	 Format annotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
 {\bf c}	&	seconds &	 Plot as 2-digit integer (0--60) \\ \hline
 \end{tabular}
 \caption{Interval unit codes}
@@ -386,26 +386,26 @@ will clarify what is meant.
 
 Geographic basemaps may differ from regular plot axis in that some projections support a
 ``fancy'' form of axis and is selected by the {\bf BASEMAP\_TYPE} setting.  Only the three
-axis items {\bf a}, {\bf f}, and {\bf g} apply.  The anotations will be formatted according to
+axis items {\bf a}, {\bf f}, and {\bf g} apply.  The annotations will be formatted according to
 the {\bf PLOT\_DEGREE\_FORMAT} template and {\bf DEGREE\_SYMBOL} setting.  An example of part of a basemap is shown in Figure~\ref{fig:GMT_-B_geo}.
 
-\GMTfig[h]{GMT_-B_geo}{Geographic map border using separate selections for anotation,
-frame, and grid intervals.  Formatting of the anotation is controlled by
-the parameter {\bf PLOT\_DEGREE\_FORMAT} in your \filename{.gmtdefaults4} file.}
+\GMTfig[h]{GMT_-B_geo}{Geographic map border using separate selections for annotation,
+frame, and grid intervals.  Formatting of the annotation is controlled by
+the parameter {\bf PLOT\_DEGREE\_FORMAT} in your \filename{.gmtdefaults4}\ file.}
 
 \subsubsection{Cartesian linear axes}
 
 For non-geographic axes, the {\bf BASEMAP\_TYPE} setting is implicitly set to plain.  Other than than,
-cartesian linear axes are very similar to geographic axes.  The anotation format may be controlled with
+cartesian linear axes are very similar to geographic axes.  The annotation format may be controlled with
 the {\bf D\_FORMAT} parameter.  By default, it is set to ``\%lg'', which is a C language format statement
 for floating point numbers, and with this setting the various axis routines will automatically determine
 how many decimal points should be used by inspecting the {\it stride} settings.  If {\bf D\_FORMAT} is set
 to another format it will be used directly (.e.g, ``\%.2lf'' for a fixed, two decimals format).
 Note that for these axes you may use the {\it unit} setting to
-add a unit string to each anotation (see Figure~\ref{fig:GMT_-B_linear}).
+add a unit string to each annotation (see Figure~\ref{fig:GMT_-B_linear}).
 
 \GMTfig[h]{GMT_-B_linear}{Linear Cartesian projection axis.  Long tickmarks accompany
-anotations, shorter ticks indicate frame interval.  The axis label is
+annotations, shorter ticks indicate frame interval.  The axis label is
 optional.  We used \Opt{R}0/12/0/1 \Opt{JX}3/0.4
 \Opt{Ba}4{\bf f}2{\bf g}1:Frequency::,\%:.}
 \
@@ -413,7 +413,7 @@ optional.  We used \Opt{R}0/12/0/1 \Opt{JX}3/0.4
 \index{log$_{10}$ axes}
 \index{Logarithmic axes}
 
-Due to the logarithmic nature of anotation spacings, the {\it stride} parameter take on specific
+Due to the logarithmic nature of annotation spacings, the {\it stride} parameter take on specific
 meanings.  The following concerns are specific to log axes:
 
 \begin{enumerate}
@@ -422,27 +422,27 @@ then occur at 1, 1--2--5, or 1,2,3,4,...,9, respectively, for each magnitude ran
 
 \item Append {\bf l} to {\it stride}. Then, log$_{10}$ of the annotation
 is plotted at every integer log$_{10}$ value (e.g., $x = 100$ will be annotated as ``2'')
-[Default anotates $x$ as is].
+[Default annotates $x$ as is].
 
 \item Append {\bf p} to {\it stride}.  Then, annotations appear as 10
 raised to log$_{10}$ of the value (e.g., $10^{-5}$).
 
 \end{enumerate}
 
-\GMTfig[h]{GMT_-B_log}{Logarithmic projection axis using separate values for anotation,
-frame, and grid intervals.  (top) Here, we have chosen to anotate the actual
+\GMTfig[h]{GMT_-B_log}{Logarithmic projection axis using separate values for annotation,
+frame, and grid intervals.  (top) Here, we have chosen to annotate the actual
 values.  Interval = 1 means every whole power of 10, 2 means 1, 2, 5 times
 powers of 10, and 3 means every 0.1 times powers of 10.  We used
 \Opt{R}1/1000/0/1 \Opt{JX}3l/0.4 \Opt{Ba}1{\bf f}2{\bf g}3.
 (middle) Here, we have chosen to
-anotate log$_{10}$ of the actual values, with \Opt{Ba}1{\bf f}2{\bf g}3{\bf l}. 
-(bottom) We anotate every power of 10 using log$_{10}$ of the actual values
+annotate log$_{10}$ of the actual values, with \Opt{Ba}1{\bf f}2{\bf g}3{\bf l}. 
+(bottom) We annotate every power of 10 using log$_{10}$ of the actual values
 as exponents, with \Opt{Ba}1{\bf f}2{\bf g}3{\bf p}.}
 
 \index{Exponential axis}
 \subsubsection{Cartesian exponential axes}
 Normally, {\it stride} will be used to create equidistant (in the user's unit) annotations
-or ticks, but because of the exponential nature of the axis, such anotations may converge
+or ticks, but because of the exponential nature of the axis, such annotations may converge
 on each other at one end of the axis.  To avoid this problem, you can
 append {\bf p }to {\it stride}, and the annotation
 interval is expected to be in transformed units, yet the annotation itself will be plotted
@@ -452,19 +452,19 @@ then equidistant annotations labeled 1, 4, 9, ... will appear.
 \GMTfig[h]{GMT_-B_pow}{Exponential or power projection axis.  (top) Using an exponent of 0.5
 yields a $\sqrt{x}$ axis.  Here, intervals refer to actual data values, in
 \Opt{R}0/100/0/1 \Opt{JX}3{\bf p}0.5/0.4\ \Opt{Ba}20{\bf f}10{\bf g}5.
-(bottom) Here, intervals refer to projected values, although the anotation
+(bottom) Here, intervals refer to projected values, although the annotation
 uses the corresponding unprojected values, as in \Opt{Ba}3{\bf f}2{\bf g}1{\bf p}.}
 
 \index{Time axis}
 \subsubsection{Cartesian time axes}
 
 What sets time axis apart from the other kinds of plot axes is the numerous ways in which we
-may want to tick and anotate the axis.  Not only do we have both upper and lower anotation
-items but we also have interval anotations versus tickmark anotations, numerous time units,
+may want to tick and annotate the axis.  Not only do we have both upper and lower annotation
+items but we also have interval annotations versus tickmark annotations, numerous time units,
 and several ways in which to modify the plot.  We will demonstrate this flexibility with a series of examples.  While all our examples
 will only show a single $x$-axis, time-axis is supported for all axis.
 
-Our first example shows a time period of almost two months in Spring 2000.  We want to anotate the month
+Our first example shows a time period of almost two months in Spring 2000.  We want to annotate the month
 intervals as well as the date at the start of each week:
 
 \input{scripts/GMT_-B_time1}
@@ -473,11 +473,11 @@ These commands result in Figure~\ref{fig:GMT_-B_time1}.  Note the leading hyphen
 removes leading zeros from calender items (e.g., 02 becomes 2).
 \GMTfig[h]{GMT_-B_time1}{Cartesian time axis, example 1}
 
-The next example shows two different ways to anotate an axis portraying 2 days in September:
+The next example shows two different ways to annotate an axis portraying 2 days in September:
 
 \input{scripts/GMT_-B_time2}
 
-The lower example (Figure~\ref{fig:GMT_-B_time2}) chooses to anotate the weekdays (by specifying {\bf If}1{\bf K}) while the upper
+The lower example (Figure~\ref{fig:GMT_-B_time2}) chooses to annotate the weekdays (by specifying {\bf If}1{\bf K}) while the upper
 example choses dates (by specifying {\bf If}1{\bf D}).  Note how the clock format only selects hours and minutes (no seconds) and
 the date format selects a month name, followed by one space and a two-digit day-of-month number.
 
@@ -487,7 +487,7 @@ The third example presents 2 years, annotating both the years and every 3rd mont
 
 \input{scripts/GMT_-B_time3}
 
-Note that while the year anotation is centered on the 1-year interval, the month anotations must be centered
+Note that while the year annotation is centered on the 1-year interval, the month annotations must be centered
 on the corresponding month and \emph{not} the 3-month interval.  The {\bf PLOT\_DATE\_FORMAT} selects month
 name only and {\bf ic}3{\bf O} says use the 1-character abbreviation of monthnames using the current language
 selected by {\bf TIME\_LANGUAGE}.
@@ -512,7 +512,7 @@ name and 2-digit year.
 \GMTfig[h]{GMT_-B_time6}{Cartesian time axis, example 6}
 
 
-Our seventh and final example illustrates anotation of year-days.  Unless we specify the formatting with a leading hyphen
+Our seventh and final example illustrates annotation of year-days.  Unless we specify the formatting with a leading hyphen
 in  {\bf PLOT\_DATE\_FORMAT} we get 3-digit integer days.
 \input{scripts/GMT_-B_time7}
 
@@ -999,11 +999,11 @@ z$_{n-2}$ &  R$_{min}$ &  G$_{min}$ &  B$_{min}$ &  z$_{n-1}$ &  R$_{max}$ &  G$
 Thus, for each ``{\it z}-slice'', defined as the interval between two boundaries
 (e.g., {\it z$_0$} to {\it z$_1$}), the color can be constant (by letting R$_{min}$
 = R$_{max}$, G$_{min}$ = G$_{max}$, and B$_{min}$ = B$_{max}$) or a continuous,
-linear function of {\it z}.  The optional flag {\bf A} is used to indicate anotation
+linear function of {\it z}.  The optional flag {\bf A} is used to indicate annotation
 of the colorscale when plotted using \GMTprog{psscale}.  {\bf A} may be {\bf L},
-{\bf U}, or {\bf B} to select anotation of the lower, upper, or both limits
+{\bf U}, or {\bf B} to select annotation of the lower, upper, or both limits
 of the particular $z$-slice.  However, the standard \Opt{B} option can be used
-by \GMTprog{psscale} to affect anotation and ticking of colorscales.  The
+by \GMTprog{psscale} to affect annotation and ticking of colorscales.  The
 background color (for {\it z}-values $<$ {\it z$_0$}), foreground color
 (for {\it z}-values $>$ {\it z$_{n-1}$}), and not-a-number (NaN) color (for
 {\it z}-values = NaN) are all defined in the \filename{.gmtdefaults4}

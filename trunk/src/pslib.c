@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.51 2003-02-20 19:00:52 pwessel Exp $
+ *	$Id: pslib.c,v 1.52 2003-12-23 01:29:00 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -44,6 +44,7 @@
  * Updated July 5, 2000 by P. Wessel to ensure that implementation limit on string length in images is not exceeded.
  * Updated April 24, 2001 by P. Wessel to ensure setpagedevice is only used with PS Level 2 or higher.
  * Updated January 4, 2002 by P. Wessel to make all font size variables double instead of int.
+ * Updated December 22, 2003 by P. Wessel to add pentagon symbol.
  *
  * FORTRAN considerations:
  *	All floating point data are assumed to be DOUBLE PRECISION
@@ -80,6 +81,7 @@
  *	ps_line			: Plots a line
  *	ps_loadraster		: Read image from a Sun rasterfile
  *	ps_patch		: Special case of ps_polygon:  Short polygons only (< 20 points, no path-shortening)
+ *	ps_pentagon		: Plots a pentagon and {optionally] fills it
  *	ps_pie			: Plots a sector of a circle and [optionally] fills it
  *	ps_plot			: Absolute move to new position (pen up or down)
  *	ps_plotend		: Close plotfile
@@ -656,6 +658,25 @@ void ps_hexagon (double x, double y, double diameter, int rgb[], int outline)
 void ps_hexagon_ (double *x, double *y, double *diameter, int *rgb, int *outline)
 {
 	 ps_hexagon (*x, *y, *diameter, rgb, *outline);
+}
+
+void ps_pentagon (double x, double y, double diameter, int rgb[], int outline)
+{	/* diameter is diameter of circumscribing circle */
+	int ix, iy, ds, pmode;
+
+	diameter *= 0.5;
+	ds = irint (diameter * ps.scale);
+	ix = irint (x * ps.scale);
+	iy = irint (y * ps.scale);
+	pmode = ps_place_color (rgb);
+	fprintf (ps.fp, "%d %d %d N%d\n", ds, ix, iy, outline + ps_outline_offset[pmode]);
+	ps.npath = 0;
+}
+
+/* fortran interface */
+void ps_pentagon_ (double *x, double *y, double *diameter, int *rgb, int *outline)
+{
+	 ps_pentagon (*x, *y, *diameter, rgb, *outline);
 }
 
 void ps_ellipse (double x, double y, double angle, double major, double minor, int rgb[], int outline)
