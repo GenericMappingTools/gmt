@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.28 2002-08-26 17:24:57 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.29 2002-09-04 17:13:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -40,6 +40,7 @@ char *GMT_unique_option[N_UNIQUE] = {	/* The common GMT commandline options */
 };
  
 struct GMT_FONT *GMT_font;		/* Name and height of fonts recognized by GMT */
+int N_FONTS;				/* Total number of fonts returned by GMT_init_fonts */
 
 char *GMT_keywords[N_KEYS] = {		/* Names of all parameters in .gmtdefaults */
 #include "gmt_keywords.h"
