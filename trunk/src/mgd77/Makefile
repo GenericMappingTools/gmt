@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.2 2004-08-19 21:29:22 pwessel Exp $
+#	$Id: Makefile,v 1.3 2004-08-24 21:42:33 pwessel Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -94,7 +94,7 @@ libmgd77.a:	mgd77.o
 #-------------------------------------------------------------------------------
 
 $(MGD77):	$(MGD77_O) libmgd77.a
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L$(libdir) libmgd77.a -lgmt -lpsl $(CDF) $(LIBS) -o $@
+		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -llibmgd77 -L$(libdir) -lgmt -lpsl $(CDF) $(LIBS) -o $@
 
 .c.o:
 		$(CC) -c $(CFLAGS) $<
