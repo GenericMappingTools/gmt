@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.4 2001-08-17 00:31:36 wsmith Exp $
+ *	$Id: gmt_calclock.c,v 1.5 2001-08-17 19:32:58 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -513,19 +513,55 @@ GMT_dtime	GMT_dt_from_usert (double x) {
 		For now, just scale and offset ?
 	*/
 	
-	fprintf (stderr, "GMT_dt_from_usert is a dummy routine.\n");
-	return ( (GMT_dtime)x);
+	if (GMT_time_system[gmtdefs.time_system].scale == 1.0) {
+		return ( (GMT_dtime) (x + GMT_time_system[gmtdefs.time_system].epoch_t0) );
+	}
+	else {
+		return ( (GMT_dtime) (x*GMT_time_system[gmtdefs.time_system].scale 
+			+ GMT_time_system[gmtdefs.time_system].epoch_t0) );
+	}
 }
 
 int	GMT_y2_to_y4_yearfix (int y2) {
 
-	/* Convert 2-digit year to 4-digit year.
-		This is deliberately slow to punish
-		people still using this, because it is written
-		in August 2001, 2 years after the Y2K bug.  */
+	/* Convert 2-digit year to 4-digit year, using 
+		gmtdefs.Y2K_offset_year.
+		
+		The sense of Y2K_offset_year is that it
+		is the first year representable in the
+		2-digit set.  For example, if the set
+		runs from 1950 to 2049, then Y2K_offset_year
+		should be given as 1950, and then if a
+		two-digit year is from 50 to 99 it will
+		return 1900 plus that amount.  If it is
+		from 00 to 49, it will return 2000 plus
+		that amount.
+		
+		Below, we do a modulo operation and some
+		add/subtract to compute y100, y200, fraction
+		from gmtdefs.Y2K_offset_year.  Because these
+		are constants during any run of a GMT program,
+		they could be computed once in gmt_init, but
+		we do them over and over again here, to make
+		this routine deliberately slow.  I am writing
+		the time code in August 2001, and people who
+		haven't fixed their Y2K bug data by now will
+		be punished.
+		*/
 	
-	fprintf (stderr, "GMT_y2_to_y4_yearfix is a dummy routine.\n");
-	return (y2);
+	int	y100, y200, fraction;
+	int	retval;
+	
+	/* This is all prep and could be done only once:  */
+	
+	fraction = abs(gmtdefs.Y2K_offset_year) % 100;
+	y100 = gmtdefs.Y2K_offset_year - fraction;
+	y200 = y100 + 100;
+	
+	/* This has to be done each time:  */
+	
+	retval = (y2 >= fraction) ? y2 + y100 : y2 + y200;
+	return (retval);
 }
 
 	

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.15 2001-08-16 23:30:53 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.16 2001-08-17 19:32:58 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -49,6 +49,8 @@
  *	GMT_setshorthand ()	:	Reads and initializes the suffix shorthands
  *	GMT_get_ellipse()	:	Returns ellipse id based on name
  *	GMT_prepare_3D ()	:	Initialize 3-D parameters
+ *	GMT_scanf_epoch ()	:	Get user time origin from user epoch string
+ *	GMT_init_time_system_structure ()  Does what it says
  */
  
 #include "gmt.h"
@@ -71,6 +73,8 @@ int GMT_check_region (double w, double e, double s, double n);
 char *GMT_getdefpath (int get);
 int GMT_get_time_system (char *name);
 void GMT_get_time_language (char *name);
+void GMT_init_time_system_structure ();
+int GMT_scanf_epoch (char *s, double *t0);
 
 /* Local variables to gmt_init.c */
 
@@ -645,7 +649,8 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 	 * -B, -H, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -c, -:, -
 	 */
 	 
-	int i, j, nn, n_slashes, error = 0;
+	int i, j, icol, expect_to_read, nn, n_slashes, error = 0;
+	BOOLEAN rect_box_given = FALSE;
 	double *p[6];
 	
 	switch (item[1]) {
@@ -685,19 +690,41 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			p[0] = w;	p[1] = e;	p[2] = s;	p[3] = n;
 			p[4] = &project_info.z_bottom;	p[5] = &project_info.z_top;
 	 		project_info.region_supplied = TRUE;
-			
+	 		if (item[strlen(item)-1] == 'r') {
+	 			rect_box_given = TRUE;
+	 			project_info.region = FALSE;
+	 		}
 			i = 0;
 			strcpy (string, &item[2]);
 			text = strtok (string, "/");
 			while (text) {
-				*p[i] = GMT_ddmmss_to_degree (text);
+				if (i > 5) {
+					error++;
+					GMT_syntax ('R');
+					return (error);		/* Have to break out here to avoid segv on *p[6]  */
+				}
+				/* Figure out what column corresponds to a token to get in_col_type flag  */
+				if (i > 3) {
+					icol = 2;
+				}
+				else if (rect_box_given) {
+					icol = i%2;
+				}
+				else {
+					icol = i/2;
+				}
+				/* If column is either RELTIME or ABSTIME, use ARGTIME */
+				expect_to_read = (GMT_io.in_col_type[icol] & GMT_IS_RATIME) ? GMT_IS_ARGTIME : GMT_io.in_col_type[icol];
+				j = GMT_scanf (text, expect_to_read, p[i]);
+				if (j == GMT_IS_NAN) {
+					error++;
+					GMT_syntax ('R');
+					return (error);
+				}
 				i++;
 				text = strtok (CNULL, "/");
 			}
-	 		if (item[strlen(item)-1] == 'r') {	/* Rectangular box given */
-	 			project_info.region = FALSE;
-	 			d_swap (*p[2], *p[1]);		/* So w/e/s/n makes sense */
-	 		}
+	 		if (rect_box_given) d_swap (*p[2], *p[1]);	/* So w/e/s/n makes sense */
 			if ((i < 4 || i > 6) || (GMT_check_region (*p[0], *p[1], *p[2], *p[3]) || (i == 6 && *p[4] >= *p[5]))) {
 				error++;
 				GMT_syntax ('R');
@@ -1960,6 +1987,8 @@ int GMT_begin (int argc, char **argv)
 	GMT_get_history (argc, argv);	/* Replace command shorthands */
 
 	GMT_getdefaults (this);
+	
+	GMT_init_time_system_structure ();
 
 	GMT_io_init ();			/* Init the table i/o structure */
 	
@@ -2521,7 +2550,7 @@ int GMT_map_getproject (char *args)
 	 		}
 	 		else if (t_pos[0] > 0) {	/* Add option to append time_systems or epoch/unit later */
 	 			project_info.xyz_projection[0] = TIME;
-				GMT_io.in_col_type[0] = GMT_IS_ABSTIME;
+				GMT_io.in_col_type[0] = (args[t_pos[0]] == 'T') ?  GMT_IS_ABSTIME : GMT_IS_RELTIME;
 	 		}
 	 		
 	 		if (slash) {	/* Separate y-scaling desired */
@@ -2542,7 +2571,7 @@ int GMT_map_getproject (char *args)
 	 			}
 	 			else if (t_pos[1] > 0) {	/* Add option to append time_systems or epoch/unit later */
 	 				project_info.xyz_projection[1] = TIME;
-					GMT_io.in_col_type[1] = GMT_IS_ABSTIME;
+					GMT_io.in_col_type[1] = (args[t_pos[0]] == 'T') ?  GMT_IS_ABSTIME : GMT_IS_RELTIME;
 	 			}
 	 		}
 	 		else {	/* Just copy x parameters */
@@ -2592,7 +2621,7 @@ int GMT_map_getproject (char *args)
 	 		}
 	 		else if (t_pos[0] > 0) {
 	 			project_info.xyz_projection[2] = TIME;
-				GMT_io.in_col_type[2] = GMT_IS_ABSTIME;
+				GMT_io.in_col_type[2] = (args[t_pos[0]] == 'T') ? GMT_IS_ABSTIME : GMT_IS_RELTIME;
 	 		}
 	 		if (project_info.z_pars[0] == 0.0) error = TRUE;
 	 		break;
@@ -3402,6 +3431,115 @@ void GMT_set_measure_unit (char *args) {
 			exit (EXIT_FAILURE);
 	}
 }
+
+void	GMT_init_time_system_structure () {
+
+	/* The last time system is user-defined and set up here.
+		All others are known and already complete.  */
+	if (gmtdefs.time_system < (GMT_N_SYSTEMS - 1) ) return;
+	
+	/* Check the unit sanity:  */
+	switch (GMT_time_system[gmtdefs.time_system].unit) {
+		case 'Y':
+			/* This is a kludge:  we assume all years
+			are the same length, thinking that a user
+			with decimal years doesn't care about
+			precise time.  To do this right would
+			take an entirely different scheme, not
+			a simple unit conversion. */
+			GMT_time_system[gmtdefs.time_system].scale = (365.2425 * 86400);
+			break;
+		case 'D':
+			GMT_time_system[gmtdefs.time_system].scale = 86400.0;
+			break;
+		case 'h':
+			GMT_time_system[gmtdefs.time_system].scale = 3600.0;
+			break;
+		case 'm':
+			GMT_time_system[gmtdefs.time_system].scale = 60.0;
+			break;
+		case 's':
+			GMT_time_system[gmtdefs.time_system].scale = 1.0;
+			break;
+		default:
+			fprintf (stderr, "GMT_FATAL_ERROR:  gmtdefault TIME_UNIT is invalid.\n");
+			fprintf (stderr, "    Choose one only from Y D h m s\n");
+			fprintf (stderr, "    Corresponding to Year Day hour minute second\n");
+			exit (EXIT_FAILURE);
+			break;
+	}
+	
+	if ( GMT_scanf_epoch (GMT_time_system[gmtdefs.time_system].epoch, 
+		&GMT_time_system[gmtdefs.time_system].epoch_t0) ) {
+		
+		fprintf (stderr, "GMT_FATAL_ERROR:  gmtdefault TIME_EPOCH format is invalid.\n");
+		fprintf (stderr, "   A correct format has the form [-]YYYY-MM-DDThh:mm:ss[.xxx]\n");
+		fprintf (stderr, "   or (using ISO weekly calendar)   YYYY-Www-dThh:mm:ss[.xxx]\n");
+		fprintf (stderr, "   An example of a correct format is:  %s\n", GMT_time_system[0].epoch);
+		exit (EXIT_FAILURE);
+	}
+}
+
+int	GMT_scanf_epoch (char *s, double *t0) {
+
+	/* Read a string which must be in one of these forms:
+		[-]YYYY-MM-DDThh:mm:ss[.xxx]
+		[-]YYYY-Www-dThh:mm:ss[.xxx]
+	*/
+	
+	double	ss;
+	int	i, j, vals[3], hh, mm;
+	BOOLEAN	neg_year = FALSE;
+	GMT_cal_rd	rd;
+	
+	i = 0;
+	while (s[i] && s[i] == ' ') i++;
+	if (!(s[i])) return (-1);
+	if (s[i] == '-') {
+		neg_year = TRUE;
+		i++;
+	}
+	if (!(s[i])) return (-1);
+	if (strchr (&s[i], (int)'W') ) {
+		if ( (sscanf (&s[i], "%4d-W%2d-%1dT%2d:%2d:%lf", &vals[0],
+			&vals[1], &vals[2], &hh, &mm, &ss) ) != 6) 
+				return (-1);
+		if (neg_year) return (-1);	/* Don't allow negative ISO years.  */
+		if (vals[1] <= 0 || vals[1] > 53) return (-1);
+		if (vals[2] <= 0 || vals[2] > 7)  return (-1);
+		rd = GMT_rd_from_iywd (vals[0], vals[1], vals[2]);
+	}
+	else {
+		if ( (sscanf (&s[i], "%4d-%2d-%2dT%2d:%2d:%lf", &vals[0],
+			&vals[1], &vals[2], &hh, &mm, &ss) ) != 6) 
+				return (-1);
+		if (neg_year) vals[0] = -vals[0];
+		if (vals[1] <= 0 || vals[1] > 12 || vals[2] <= 0) return (-1);
+		if (vals[1] == 2) {
+			j = (GMT_is_gleap (vals[0]) ) ? 29 : 28;
+			if (vals[2] > j) return (-1);
+		}
+		else {
+			i = vals[1]%2;
+			if (vals[1] <= 7) {
+				j = 30 + i;
+			}
+			else {
+				j = 31 - i;
+			}
+			if (vals[2] > j) return (-1);
+		}
+		rd = GMT_rd_from_gymd (vals[0], vals[1], vals[2]);
+	}
+	if (hh < 0 || hh > 23) return (-1);
+	if (mm < 0 || mm > 59) return (-1);
+	if (ss < 0.0 || ss >= 61.0) return (-1);
+	
+	*t0 = GMT_rdc2dt (rd, 60.0*(60.0*hh + mm) + ss);
+	return (0);
+}
+
+		
 
 #ifdef WIN32
 

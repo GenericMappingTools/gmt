@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.6 2001-08-17 00:31:36 wsmith Exp $
+ *	$Id: gmt_io.h,v 1.7 2001-08-17 19:32:58 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -37,15 +37,15 @@
 
 /* Types of possible column entries in a file: */
 
-#define GMT_IS_NAN		0
-#define GMT_IS_UNKNOWN		1
+#define GMT_IS_NAN		0	/* Returned by GMT_scanf routines when read fails */
+#define GMT_IS_UNKNOWN		1	/* Generic (double) data type, no special format */
 #define GMT_IS_LAT		2
 #define GMT_IS_LON		4
-#define GMT_IS_GEO		6
-#define GMT_IS_RELTIME		8
-#define GMT_IS_ABSTIME		16
-#define GMT_IS_TIME		24	/* 56 ? */
-#define GMT_IS_ARGTIME		32
+#define GMT_IS_GEO		6	/* data type is either Lat or Lon */
+#define GMT_IS_RELTIME		8	/* For I/O of data in user units */
+#define GMT_IS_ABSTIME		16	/* For I/O of data in calendar+clock units */
+#define GMT_IS_RATIME		24	/* To see if time is either Relative or Absolute */
+#define GMT_IS_ARGTIME		32	/* To invoke GMT_scanf_argtime()  */
 
 EXTERN_MSC FILE *GMT_fopen (const char* filename, const char* mode);	/* fopen wrapper */
 EXTERN_MSC int GMT_fclose (FILE *stream);				/* fclose wrapper */

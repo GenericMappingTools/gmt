@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.10 2001-08-14 15:54:49 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.11 2001-08-17 19:32:57 wsmith Exp $	--------------------
 #
 #		Makefile for GMT Version 3.5
 #			GNU make compatible
@@ -57,6 +57,7 @@ LIB_C	= fourt.c \
 
 GMT_H	= gmt.h \
 	  gmt_calclock.h \
+	  gmt_time_systems.h \
 	  gmt_math.h \
 	  gmt_nan.h \
 	  gmt_map.h \
