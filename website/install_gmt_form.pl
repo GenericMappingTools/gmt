@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.9 2002-05-17 19:10:29 pwessel Exp $
+#       $Id: install_gmt_form.pl,v 1.10 2004-08-18 23:19:45 pwessel Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -61,6 +61,7 @@ $get_dbase	= $gmt_form{'checkbox_dbase'};
 $get_gshhs	= $gmt_form{'checkbox_gshhs'};
 $get_imgsrc	= $gmt_form{'checkbox_imgsrc'};
 $get_meca	= $gmt_form{'checkbox_meca'};
+$get_mgd77	= $gmt_form{'checkbox_mgd77'};
 $get_mgg	= $gmt_form{'checkbox_mgg'};
 $get_mex	= $gmt_form{'checkbox_mex'};
 $get_misc	= $gmt_form{'checkbox_misc'};
@@ -88,7 +89,7 @@ print <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.9 $,  on
+# Processed by install_gmt_form.pl $Revision: 1.10 $,  on
 #
 #	$now
 #
@@ -265,6 +266,13 @@ else {
 }
 print "GMT_suppl_mex=";
 if ($get_mex eq "on") {
+	print "y\n";
+}
+else {
+	print "n\n";
+}
+print "GMT_suppl_mgd77=";
+if ($get_mgd77 eq "on") {
 	print "y\n";
 }
 else {

@@ -1,5 +1,5 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.12 2002-05-17 19:10:29 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.13 2004-08-18 23:19:45 pwessel Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
@@ -7,7 +7,7 @@
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD=
 "POST">
 <INPUT TYPE="hidden" VALUE="4.0" NAME="gmt_version">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.12 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.13 $" NAME="form_version">
 
 <H1></H1>
 <H1><CENTER><STRONG>GMT 4.0 Installation Helper</CENTER></STRONG>
@@ -295,18 +295,20 @@ Place full resolution coastlines in: <INPUT NAME="gmt_f_dir" TYPE="text" SIZE="3
 <INPUT TYPE="checkbox" NAME="checkbox_imgsrc"  CHECKED="true"> IMGSRC: Extracting grids from global altimeter files (Sandwell/Smith)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_meca"  CHECKED="true"> MECA: Plotting special symbols in seismology and geodesy<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_mex"  CHECKED="false"> MEX: Matlab interface for reading/writing GMT grdfiles (REQUIRES MATLAB*)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_mgg"  CHECKED="true"> MGG: Programs for making, managing, and plotting MGD77 and *.gmt data<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_mgd77"  CHECKED="true"> MGD77: Programs for working with MGD77 files<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_mgg"  CHECKED="true"> MGG: Programs for working with *.gmt files<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_misc"  CHECKED="true"> MISC: Make posters on laserwriters and create bit-patterns<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_segyprogs"  CHECKED="true"> SEGYPROGS: Plot SEGY seismic data files<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_spotter"  CHECKED="true"> SPOTTER: Plate tectonic backtracking and hotspotting<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_x2sys"  CHECKED="true"> X2SYS: Track intersection (crossover) tools (REQUIRES MGG)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_x2sys"  CHECKED="true"> X2SYS: Track intersection (crossover) tools (REQUIRES MGD77 & MGG)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_x_system"  CHECKED="true"> X_SYSTEM: MGG-specific Track intersection (crossover) tools (REQUIRES MGG)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_xgrid"  CHECKED="false"> XGRID: An X11-based graphical editor for netCDF-based .grd files (REQUIRES OpenWin Xlibs)<BR>
 
 <P>
 <I>Note: The selected packages will only be installed if you also selected the supplemental tar archive
-above.  The x2sys and x_system packages require the mgg package, the mex package requires Matlab (octave users
-may want to modify it), and xgrid requires various Openwin/X11 libraries.</I>
+above.  The x2sys package requires the mgd77 and mgg packages, and x_system package requires the mgg package,
+the mex package requires Matlab (octave/scilab users may want to modify it), and xgrid requires various
+Openwin/X11 libraries.</I>
 <BR>
 *Enter Matlab system directory if you selected mex above: <INPUT NAME="matlab_dir" TYPE="text" SIZE="30" VALUE="/usr/local/matlab"><BR>
 <I>Note: You can leave the Matlab path blank if $MATLAB is defined in your environment and points to the correct

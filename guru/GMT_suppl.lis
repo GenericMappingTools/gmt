@@ -60,6 +60,14 @@ src/mex/grdwrite.m
 src/mex/makefile.in
 src/mex/configure
 src/mex/configure.in
+src/mgd77/README.mgd77
+src/mgd77/makefile
+src/mgd77/mgd77.c
+src/mgd77/mgd77defaults.h
+src/mgd77/mgd77.h
+src/mgd77/mgd77list.c
+src/mgd77/mgd77list.txt
+share/mgd77/mgd77_paths.txt
 src/mgg/README.mgg
 src/mgg/binlegs.c
 src/mgg/binlegs.man
