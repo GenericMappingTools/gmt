@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.43 2002-02-14 23:53:58 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.44 2002-02-21 12:29:54 ben Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -310,7 +310,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 		}
 		if (bad_record) {
 			GMT_io.n_bad_records++;
-			if (GMT_io.give_report && (GMT_io.n_bad_records == 1)) {	/* Report 1st occurance */
+			if (GMT_io.give_report && (GMT_io.n_bad_records == 1)) {	/* Report 1st occurrence */
 				fprintf (stderr, "%s: Encountered first invalid record near/at line # %d\n", GMT_program, GMT_io.rec_no);
 				fprintf (stderr, "%s: Likely causes:\n", GMT_program);
 				fprintf (stderr, "%s: (1) Invalid x and/or y values, i.e. NaNs or garbage in text strings.\n", GMT_program);
@@ -1281,7 +1281,7 @@ void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
 				S->range = 1;
 				if (i != 0) error++;		/* Only valid as first flag */
 				break;
-			case 'D':	/* Want to use decimal degress using D_FORMAT [Default] */
+			case 'D':	/* Want to use decimal degrees using D_FORMAT [Default] */
 				S->decimal = TRUE;
 				if (i > 1) error++;		/* Only valid as first or second flag */
 				break;
