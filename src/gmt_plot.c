@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.95 2004-04-12 21:41:37 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.96 2004-04-13 03:07:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -511,6 +511,7 @@ void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *
 	
 	switch (frame_info.axis[T->parent].type) {
 		case LINEAR:
+			if (fabs (coord) < 1.0e-15) coord = 0.0;	/* Intel chip zero issue */
 			sprintf (string, format, coord);
 			break;
 		case LOG10:
@@ -4361,7 +4362,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				p = (s->pen)  ? s->pen  : pen;
 				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
 				if (this_outline) GMT_setpen (p);
-				(project_info.three_D) ? GMT_ellipse3D (x, y, z0, s->p[0], s->p[1] * size, s->p[2] * size, f->rgb, this_outline) : ps_ellipse (x, y, s->p[0], s->p[1] * size, s->p[1] * size, f->rgb, this_outline);
+				(project_info.three_D) ? GMT_ellipse3D (x, y, z0, s->p[0], s->p[1] * size, s->p[2] * size, f->rgb, this_outline) : ps_ellipse (x, y, s->p[0], s->p[1] * size, s->p[2] * size, f->rgb, this_outline);
 				break;
 
 			case ACTION_PIE:
