@@ -3,7 +3,7 @@
 gmtconvert \- Converts, Pastes, and/or Extracts columns from ASCII and binary 1-D tables
 .SH SYNOPSIS
 \fBgmtconvert\fP [ \fIinputfiles\fP] [ \fB\-A\fP ] [ \fB\-E\fP ] [\fB\-FfIcolsfP ] [ \fB\-H\fP[\fInrec\fP] ] 
-[ \fB\-L\fP ] [ \fB\-I\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-S\fP\f"search string"\fP ] [ \fB\-V\fP ] 
+[ \fB\-L\fP ] [ \fB\-I\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-S\fP\fI"search string"\fP ] [ \fB\-V\fP ] 
 [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP]\fIn\fP ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBgmtconvert\fP reads its standard input [or inputfiles] and writes out
