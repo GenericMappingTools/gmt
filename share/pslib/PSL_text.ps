@@ -1,5 +1,5 @@
 %-------------------------------------------------------------------------------------------
-%	$Id: PSL_text.ps,v 1.2 2004-05-25 04:59:47 pwessel Exp $
+%	$Id: PSL_text.ps,v 1.3 2004-05-28 08:20:29 pwessel Exp $
 %
 %	P. Wessel, version 1
 %	Text justification for paragraphs.
@@ -436,3 +436,153 @@ PSL_pathtextdict begin
     /setdist setdist charwidth add def		% Increment the distance we have
   } def						% covered by setting characters.
 end
+
+%%%%%%% NEW STUFF %%%%%%%%%%%%%%
+
+% Function for placing m curved textlabels along a line of n points
+% Assumes the following variables have been assigned already:
+% PSL_n		Number of points in the path
+% PSL_x		(x,y) coordinates of the path
+% PSL_y
+% PSL_m		Number of labels
+% PSL_str	Array with all the labels
+% PSL_node	Array with (x,y) node number of label position
+% PSL_setpenrgb Function that sets the pen rgb
+% PSL_settxtrgb	Function that sets the font rgb
+%
+% We use the current pen texture and width
+
+/PSL_labelline {
+  /PSL_n1 PSL_n 1 sub def	% one less is the upper limit in for loops
+  /PSL_m1 PSL_m 1 sub def	% same
+  
+  % Calculate the width of each label string
+  /PSL_width PSL_n array def	% Assign space for distance
+  0 1 PSL_m1 {
+    /i exch def
+    PSL_width i PSL_txt i get stringwidth pop put
+  } for
+  
+  % Calculate along-track distances
+  /PSL_newx PSL_x 0 get def
+  /PSL_newy PSL_y 0 get def
+  /dist 0.0 def
+  /PSL_dist PSL_n array def	% Assign space for distance
+  PSL_dist 0 dist put		% Distances start at 0 and the 'th point
+  1 1 PSL_n1 {			% Loop over the remaining points
+    /i exch def
+    /PSL_oldx PSL_newx def
+    /PSL_oldy PSL_newy def
+    /PSL_newx PSL_x i get def
+    /PSL_newy PSL_y i get def
+    /dx PSL_newx PSL_oldx sub def
+    /dy PSL_newy PSL_oldy sub def
+    /dist dist dx dx mul dy dy mul add sqrt add def
+    PSL_dist i dist put
+  } for
+  
+  % Initialize an array with all the original line points plus the set of 2*m
+  % points at the transition from line to labelspace at each label
+  % At the end of this section, the PSL_xx/yy array will be the array to use.
+  
+  /PSL_nn PSL_n PSL_m 2 mul add def	% The total path will be 2*m points longer
+  /PSL_xx PSL_nn array def		% Assign space for x and y
+  /PSL_yy PSL_nn array def
+  /k 0 def				% Current cut point
+  /PSL_nc PSL_m 2 mul 1 add def		% 2*m points + one last acting as infinity
+  /PSL_cuts PSL_nc array def		% The array of distances to each cut
+  /PSL_nc1 PSL_nc 1 sub def		% One less to use in for loop limits
+  0 1 PSL_m1 {				% For each of the m labels
+    /i exch def						% Index for label distance
+    /dist PSL_dist PSL_node i get get def		% Recall the distance to this label center
+    /halfwidth PSL_width i get 2 div PSL_gap add def	% Set the halfwidth + gap distance
+    PSL_cuts k dist halfwidth sub put			% Distance at beginning of label gap
+    /k k 1 add def					% Was at start, now go to end distance node
+    PSL_cuts k dist halfwidth add put			% Distance at the end of label gap
+    /k k 1 add def					% Was at end, move to next
+  } for
+  PSL_cuts k 100000.0 put				% Last cut has "infinite" distance
+
+  /j 0 def				% Index for new track array
+  /i 0 def				% Index for old track array
+  /k 0 def				% Index for current cut distance
+  /dist 0.0 def				% Current distance along track, starting at zero
+  /kind PSL_nn array def		% 0 = ordinary point, 1 = added point for label gap
+  0 1 PSL_n1 {				% Loop over every original line point
+    /i exch def				% Index into current point on original line xy array
+    /last_dist dist def			% Update distance to last point (initially zero)
+    /dist PSL_dist i get def		% Distance to current point
+    k 1 PSL_nc1 {			% Loop over remaining cuts (starting with all)
+      /kk exch def			% Index into current cut distance
+      /this_cut PSL_cuts kk get def	% Distance to start of this label gap
+      dist this_cut gt {		% Oh, oh, we just stepped over a cut point
+        /f dist this_cut sub dist last_dist sub div def			% Get fractional distance
+        PSL_xx j PSL_x i get dup PSL_x i 1 sub get sub f mul sub put	% Calc (x,y) at label start (or stop) point
+        PSL_yy j PSL_y i get dup PSL_y i 1 sub get sub f mul sub put
+        kind j 1 put			% Set kind to 1 since it is an added cut point
+        /j j 1 add def			% Go to next output point
+        /k k 1 add def			% Done with this cut point
+      } if
+    } for
+    dist PSL_cuts k get lt {		% Having dealt with the cut, we may add the regular point
+      PSL_xx j PSL_x i get put
+      PSL_yy j PSL_y i get put
+      kind j 0 put			% Ordinary (original) coordinates
+      /j j 1 add def			% Go to next output point
+    } if
+  } for
+
+% Now we have the final x/y array and we are ready to simply lay down the lines
+% and place the text along the line where there are labels.  We will recycle the
+% original PSL_x/y arrays to store the output points since it is possible that
+% we will need to reverse a path so that the text is upside-up.
+
+  newpath PSL_setpenrgb			% Initialize new path and set line color
+  /PSL_nn1 PSL_nn 1 sub def		% End index in for loop
+  /n 0 def				% Toggle: o means line, 1 means text
+  /k 0 def				% Index of the current text string
+  PSL_x PSL_xx 0 get put		% Place first point in array
+  PSL_y PSL_yy 0 get put
+  /j 0 def				% Output point number counter
+  1 1 PSL_nn1				% Loop over rest of points
+  {
+    /i exch def				% Index into PSL_xx/yy arrays
+    /type kind i get def		% Check what kind of point the current point is
+    PSL_x PSL_xx i get j put		% Add this point to the path
+    PSL_y PSL_yy i get j put
+    /j j 1 add def			% Update point count
+    type 1 eq				% If this is a cut point we either stroke or place text
+    {
+      n 0 eq				% n is 0 so this is the strokable segment
+      {
+        PSL_x 0 get PSL_y 0 get moveto				% Set the anchor point of the path
+	1 1 j { /i exch def PSL_x i get PSL_y i get lineto}	% Lay down the rest of the path
+        stroke /n 1 def PSL_settxtrgb				% Stroke, set n to 1, and switch to font color
+      }
+      {					% here, n = 1 so this is the segment along which text should be placed
+        PSL_x j get PSL_x 0 get lt	% Path must first be reversed to avoid upside-down text
+	{
+	  0 1 j 2 idiv			% Loop over half the path and swap left/right points
+	  {
+	    /left exch def		% Current left point
+	    /right j left sub def	% Matching right point
+	    /tmp PSL_x left get def	% Swap left and right values for x then y
+	    PSL_x left PSL_x right get put
+	    PSL_x right tmp put
+	    /tmp PSL_y left get def
+	    PSL_y left PSL_y right get put
+	    PSL_y right tmp put
+	  } for
+	} if
+	% Now PSL_x/y has the correct order to give proper text angles 
+        PSL_txt k get PSL_gap PSL_just PSL_height PSL_pathtext	% Place the text
+	/n 0 def /k k 1 add def PSL_setpenrgb			% Set n back to 0 and switch to pen color
+      } ifelse
+      newpath
+      PSL_x PSL_xx i get 0 put
+      PSL_y PSL_yy i get 0 put
+      /j 0 def
+    } if
+  } for
+  n 0 eq {stroke} {newpath} ifelse
+} def

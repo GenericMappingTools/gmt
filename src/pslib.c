@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.62 2004-05-27 04:05:50 pwessel Exp $
+ *	$Id: pslib.c,v 1.63 2004-05-28 08:20:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2462,6 +2462,65 @@ void ps_path (double x[], double y[], int n) {
 			j = i;
 		}
 	}
+}
+
+void ps_pathtext_new (double x[], double y[], int n, int nodes[], char *labels[], int m, double pointsize, double offset, int justify, int p_rgb[], int t_rgb[], int form)
+{
+	int i = 0, j, k;
+	double height;
+	char *string;
+	
+	/* form is currently ignored */
+	
+	if (PSL_first) {
+		bulkcopy ("PSL_text");
+		PSL_first = FALSE;
+	}
+
+	fprintf (ps.fp, "gsave\n");
+	fprintf (ps.fp, "/PSL_n %d def\n", n);
+	fprintf (ps.fp, "/PSL_m %d def\n", m);
+	fprintf (ps.fp, "/PSL_x\n");
+	for (i = 0; i < n; i++) fprintf (ps.fp, "%.2lf\n", x[i] * ps.scale);
+	fprintf (ps.fp, "PSL_n array astore def\n");
+	fprintf (ps.fp, "/PSL_y\n");
+	for (i = 0; i < n; i++) fprintf (ps.fp, "%.2lf\n", y[i] * ps.scale);
+	fprintf (ps.fp, "PSL_n array astore def\n");
+	fprintf (ps.fp, "/PSL_txt\n");
+	for (i = 0; i < m; i++) {
+		if (justify < 0)  {	/* Strip leading and trailing blanks */
+			for (k = 0; labels[i][k] == ' '; k++);
+			for (j = strlen (labels[i]) - 1; labels[i][j] == ' '; j--) labels[i][j] = 0;
+		}
+		fprintf (ps.fp, "(%s)\n", &labels[i][k]);
+	}
+	fprintf (ps.fp, "PSL_m array astore def\n");
+	fprintf (ps.fp, "/PSL_node\n");
+	for (i = 0; i < m; i++) fprintf (ps.fp, "%d\n", nodes[i]);
+	fprintf (ps.fp, "PSL_m array astore def\n");
+	fprintf (ps.fp, "/PSL_setpenrgb ");
+	k = ps_place_color (p_rgb);
+	fprintf (ps.fp, "%c def\n", ps_paint_code[k]);
+	fprintf (ps.fp, "/PSL_settxtrgb ");
+	k = ps_place_color (t_rgb);
+	fprintf (ps.fp, "%c def\n", ps_paint_code[k]);
+		
+	justify =  abs (justify);
+ 
+ 	if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
+ 		if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
+		ps_textdim ("PSL_dimx", "PSL_dimy", fabs (pointsize), ps.font_no, labels[0], 0);			/* Set the string dimensions in PS */
+ 		if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
+	}
+	
+ 	height = fabs (pointsize) / ps.points_pr_unit;
+  	ps.npath = 0;
+	fprintf (ps.fp, "%d F%d\n", (int) irint (height * ps.scale), ps.font_no);	/* Set font */
+	fprintf (ps.fp, "PSL_just %d def\n", justify);	/* Set font */
+	fprintf (ps.fp, "/PSL_gap %d def\n", (int)irint (offset * ps.scale));
+	
+	fprintf (ps.fp, "PSL_labelline\n");
+	fprintf (ps.fp, "grestore\n");
 }
 
 void ps_transrotate (double x, double y, double angle)
