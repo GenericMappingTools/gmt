@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtsite.macros,v 1.8 2004-01-12 20:07:41 pwessel Exp $
+#	$Id: gmtsite.macros,v 1.9 2004-01-13 05:15:03 pwessel Exp $
 #
 #	Original GMT Site Makefile Macro for Makefile.site
 #-------------------------------------------------------------------------------
@@ -12,5 +12,5 @@
 
 FTPDIR		= /home/gmt/ftp/pub/gmt/4
 #FTPDIR		= /home/gmt/ftp/pub/pwessel/gmttest/4
-#WWWDIR		= /home/gmt/gmt/www
-WWWDIR		= /home/gmt/gmt/www/gmttest
+WWWDIR		= /home/gmt/gmt/www
+#WWWDIR		= /home/gmt/gmt/www/gmttest
