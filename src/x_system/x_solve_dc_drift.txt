@@ -43,7 +43,7 @@ Create an ASCII correction table. At least one of \fB\-A\fP and \fB\-B\fP must b
 .TP
 .B \-V
 Operate in verbose mode.
-.SH    
+.SH BEWARE
 The reason for the \fB\-M \fP option is that if the COEs are few, then a stable estimate of the slope may
 not be obtained (e.g. when most of the COEs occur midway between ports). However, in most
 cases the bulk of the COEs do occur near the ports so that a drift estimate can be computed.

@@ -88,9 +88,9 @@ Position Type Code (1 = fix, 3 = interpolated, 9 = unspecified).
 .TP
 .B bcc
 Bathymetric Correction Code, indicating the procedure used to convert travel time to depth.
-(01-55 = Matthews' zone - use only if Matthews' zones were used to correct depth, 59 = Matthews'
+(01-55 = Matthews' zone - use only if Matthews' zones were used to correct depth, 59 = Matthews'\"'
 corrections used but zones unspecified in data record, 60 = S. Kuwahara formula, 61 = Wilson
-formula, 62 = Del Grosso formula, 63 = Carter's tables, 88 = Other, described in header sections,
+formula, 62 = Del Grosso formula, 63 = Carter's tables, 88 = Other, described in header sections,\"'
 99 = unspecified).
 .TP
 .B btc
@@ -167,6 +167,8 @@ but only the data that are inside the specified area, and make the output binary
 .br
 .sp
 \fBmgd77list\fP `cat cruises.lis` \fB\-F\fPlon,lat,faa \fB\-R\fP-40/-30/25/35 \fB\-bo\fP > allgrav.b
+.br
+.sp
 To extract the locations of depths exceeding 9000 meter that were not interpolated (\fBbtc\fP != 1) from all the cruises listed in the file cruises.lis:
 .br
 .sp

@@ -250,7 +250,7 @@ To make an interrupted sinusiodal world map with breaks at 160W, 20W, and 60E, w
 .br
 \fBpsbasemap\fP \fB\-R\fP60/200/-90/90 \fB\-Ji\fP130/0.02\fBi\fP \fB\-B\fP30\fBg\fP30/15\fBg\fP15\fBwEsn\fP \fB\-O \-X\fP1.6\fBi\fP >> sinus_i.ps
 .br
-.SH Eckert IVI [equal-area]
+.SH Eckert IV [equal-area]
 Pseudo-cylindrical projection typically used for global maps only.  Set the central longitude and scale, e.g.,
 .br
 .sp

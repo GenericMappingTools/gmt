@@ -83,7 +83,7 @@ You want to plot the 2nd column of the file left.d versus the first column of fi
 To extract all segments in the file big_file.d whose headers contain the string "RIDGE AXIS", try
 .br
 .sp
-\fBgmtconvert\fP big_file.d \-S\fP"RIDGE AXIS" > subset.d
+\fBgmtconvert\fP big_file.d \fB\-S\fP"RIDGE AXIS" > subset.d
 .br
 .SH "SEE ALSO"
 .IR gmt (GMTMANSECTION),

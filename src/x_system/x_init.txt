@@ -13,7 +13,7 @@ with the same names in the current directory will be erased, so use with caution
 .TP
 .B \-I
 Must be present form initialization to take effect.
-.SH    
+.SH BEWARE
 Both files are binary and have fixed record lengths. The formats of the files are as follows:
 .br
 .TP
