@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_F.sh,v 1.4 2001-09-10 21:59:37 pwessel Exp $
+#	$Id: GMT_App_F.sh,v 1.5 2002-02-23 00:53:15 pwessel Exp $
 #
 #	Makes the octal code charts in Appendix F
 
@@ -67,7 +67,6 @@ BEGIN {
 EOF
 
 $AWK -f f.awk chart.d > t
-cp t t.d
 gmtset CHAR_ENCODING Standard+
 # Then for Standard+
 # First mark uncoded entries
