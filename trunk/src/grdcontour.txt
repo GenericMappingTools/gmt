@@ -38,7 +38,8 @@ interpreted as a constant contour interval.  If \fB\-A\fP is set and \fB\-C\fP i
 the contour interval is set equal to the specified annotation interval.
 .br
 If a file is given and \fB\-T\fP is set, 
-then only contours marked with upper case C or A will have tickmarks.
+then only contours marked with upper case C or A will have tickmarks.  In all cases the contour
+values have the same units as the grid.
 #include "explain_-J_short.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.

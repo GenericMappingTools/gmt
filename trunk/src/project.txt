@@ -55,6 +55,8 @@ No assumptions are made regarding the units for \fIx, y, r, s, p, q, dist, l_min
 If \fB\-Q\fP is selected, map units are assumed and \fIx, y, r, s\fP must be in degrees and
 \fIp, q, dist, l_min, l_max, w_min, w_max\fP will be in km.
 .br
+Calculations of specific great-circle distances or for back-azimuths or azimuths are better done using \fBmapproject\fP.
+.br
 \fBproject\fP is CASE SENSITIVE.  Use UPPER CASE for all one-letter designators which begin optional arguments.  Use 
 lower case for the xyzpqrs letters in \fB\-flags\fP. 
 .br
