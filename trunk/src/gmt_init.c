@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.10 2001-05-29 21:02:40 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.11 2001-05-29 21:58:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -924,6 +924,8 @@ int GMT_setparameter (char *keyword, char *value)
 						break;
 					case 'n':
 						frame_info.side[2] = 1;
+						break;
+					case '-':	/* None */
 						break;
 					default:
 						error = TRUE;
