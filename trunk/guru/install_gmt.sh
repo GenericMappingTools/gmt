@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.43 2004-07-22 16:49:21 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.44 2004-08-05 21:29:32 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -412,7 +412,7 @@ cat << EOF >&2
 
 Building the GMT libraries as shared instead of static will
 reduce executable sizes considerably.  GMT supports shared
-libraries under Linux, SunOS, Solaris, IRIX, HPUX, and FreeBSD.
+libraries under Linux, Mac OS X, SunOS, Solaris, IRIX, HPUX, and FreeBSD.
 Under other systems you may have to manually configure macros
 and determine what specific options to use with ld.
 
