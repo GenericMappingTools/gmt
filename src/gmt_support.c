@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.46 2003-04-10 19:40:11 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.47 2003-04-14 19:55:00 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3874,4 +3874,27 @@ int GMT_verify_expectations (int wanted, int got, char *item)
 		}
 	}
 	return (error);
+}
+
+void GMT_list_custom_symbols (void)
+{
+	/* Opens up GMT_Custom_Symbols.lis and dislays the list of custom symbols */
+	
+	FILE *fp;
+	char list[256], buffer[256];
+	
+	/* Open the list in $GMTHOME/share */
+
+	sprintf (list, "%s%cshare%cGMT_CustomSymbols.lis", GMTHOME, DIR_DELIM, DIR_DELIM);
+
+	if ((fp = fopen (list, "r")) == NULL) {
+		fprintf (stderr, "%s: ERROR: Cannot open file %s\n", GMT_program, list);
+		exit (EXIT_FAILURE);
+	}
+
+	fprintf (stderr, "\t   Available custom symbols (See Appendix N):\n");
+	fprintf (stderr, "\t   ---------------------------------------------------------\n");
+	while (fgets (buffer, BUFSIZ, fp)) if (!(buffer[0] == '#' || buffer[0] == 0)) fprintf (stderr, "\t   %s", buffer);
+	fclose (fp);
+	fprintf (stderr, "\t   ---------------------------------------------------------\n");
 }
