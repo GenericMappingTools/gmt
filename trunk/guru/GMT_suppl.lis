@@ -65,6 +65,9 @@ src/mgd77/makefile
 src/mgd77/mgd77.c
 src/mgd77/mgd77defaults.h
 src/mgd77/mgd77.h
+src/mgd77/mgd77info.c
+src/mgd77/mgd77info.man
+src/mgd77/mgd77info.html
 src/mgd77/mgd77list.c
 src/mgd77/mgd77list.man
 src/mgd77/mgd77list.html
