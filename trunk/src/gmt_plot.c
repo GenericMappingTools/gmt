@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.4 2001-03-01 22:08:26 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.5 2001-03-20 22:43:55 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -954,6 +954,8 @@ void GMT_fancy_map_boundary (double w, double e, double s, double n)
 		return;
 	}
 	
+	ps_setpaint (gmtdefs.basemap_frame_rgb);
+
 	fat_pen = irint (gmtdefs.frame_width * gmtdefs.dpi);
 	thin_pen = irint (0.1 * gmtdefs.frame_width * gmtdefs.dpi);
 	sign_x = (project_info.xyz_pos[0]) ? +1.0 : -1.0;
@@ -1102,6 +1104,8 @@ void GMT_polar_map_boundary (double w, double e, double s, double n)
 	
 	/* Here draw fancy map boundary */
 	
+	ps_setpaint (gmtdefs.basemap_frame_rgb);
+
 	fat_pen = irint (gmtdefs.frame_width * gmtdefs.dpi);
 	thin_pen = irint (0.1 * gmtdefs.frame_width * gmtdefs.dpi);
 	ps_setline (thin_pen);
@@ -1296,6 +1300,8 @@ void GMT_conic_map_boundary (double w, double e, double s, double n)
 		return;
 	}
 	
+	ps_setpaint (gmtdefs.basemap_frame_rgb);
+
 	fat_pen = irint (gmtdefs.frame_width * gmtdefs.dpi);
 	thin_pen = irint (0.1 * gmtdefs.frame_width * gmtdefs.dpi);
 	ps_setline (thin_pen);

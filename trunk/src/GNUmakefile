@@ -1,4 +1,4 @@
-#----------------	$Id: GNUmakefile,v 1.8 2001-03-09 21:01:13 pwessel Exp $	--------------------
+#----------------	$Id: GNUmakefile,v 1.9 2001-03-20 22:43:55 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 3.4
 #			GNU make compatible
@@ -149,10 +149,10 @@ gmt_notposix.h:
 # Must create g[rd|mt]math.c from g[rd|mt]math_main.c and g[rd|mt]math.func
 
 gmtmath.c:
-		(cd ..; csh -f guru/make_gmtmath.csh)
+		(cd ..; sh guru/make_math.sh gmt)
 
 grdmath.c:
-		(cd ..; csh -f guru/make_grdmath.csh)
+		(cd ..; sh guru/make_math.sh grd)
 
 install:	all
 		if [ ! -d $(bindir) ]; then \
