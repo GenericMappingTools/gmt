@@ -1,8 +1,8 @@
-	$Id: README.GMT,v 1.2 2001-04-18 22:41:24 pwessel Exp $
+	$Id: README.GMT,v 1.3 2002-07-24 02:15:12 pwessel Exp $
 
 Dear potential GMT users-
 
-Version 3.4 of GMT has recently been released.
+Version 4 of GMT has recently been released.
 GMT can be installed under Unix or Windows.
 
 For new installers of GMT under a Unix-like OS:
@@ -14,11 +14,11 @@ return to you a parameter file that you may use with
 the install script that you can download from the same
 install page.  Alternatively, send mail to
 
-	listserver@soest.hawaii.edu
+	listproc@hawaii.edu
 	
 with the single message
 
-information gmtgroup
+information gmt-group
 
 You will then receive instructions for automatic file-retrieval
 and installation.

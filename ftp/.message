@@ -1,5 +1,7 @@
 This server is one of six mirror sites for the Generic Mapping Tools (GMT).
-Current version is 3.4.  The mirror sites are:
+		Current version is 4.0
+
+The mirror sites are:
 
 gmt.soest.hawaii.edu	 : SOEST [GMT Website], Honolulu, Hawaii, USA
 falcon.grdl.noaa.gov	 : NOAA, Silver Spring, Maryland, USA
@@ -8,42 +10,5 @@ ftp.iag.usp.br		 : IAG-USP, Sao Paulo, BRAZIL
 ftp.eos.hokudai.ac.jp	 : ISV, Hokkaido U, Sapporo, JAPAN
 life.csu.edu.au:	 : Charles Sturt U, Albury, AUSTRALIA
 
-Pls select a site near you since GMT archives are very large.
-
-We recommend that you get the Bourne script install_gmt and type
-sh install_gmt in the directory in which GMT3.4 should be installed.
-The script will do all the ftp'ing and installation automatically.
-It can also be used after ftp'ing the files manually. install_gmt
-can also take an argument file which you can assemble interactively
-at gmt.soest.hawaii.edu
-
+See http://gmt.soest.hawaii.edu for automatic installation instructions.
 Alternatively, you can ftp the files manually and follow the README.
-Files are available in both .bz2, .gz, and .zip format.  The former are
-_much_ smaller.  If you do not have bzip2, see sourceware.cygnus.com.
-
-The files you MUST HAVE are (Windows: substitute .zip for tar.bz2)
-
-GMT_progs.tar.bz2	All program code
-GMT_share.tar.bz2	Standard support data and coastlines
-
-You probably want to get these also:
-
-GMT_ps.tar.bz2		PS version of documentation
-GMT_pdf.tar.bz2		PDF documentation and Unix man pages
-GMT_man.tar.bz2		Unix man pages for GMT
-GMT_web.tar.bz2		HTML versions of all documentation
-GMT_tut.tar.bz2		Tutorial data sets
-GMT_script.tar.bz2	20 Example scripts and data
-GMT_suppl.tar.bz2	Supplemental programs for GMT
-triangle.tar.bz2	Faster, but copyrighted triangulation
-
-Finally, you probably want to get:
-
-GMT_full.tar.bz2	Full resolution coastline data
-GMT_high.tar.bz2	High resolution coastline data
-
-Windows user who don't want to compile GMT can also get:
-
-GMT_exe.zip		Zip file with precompiled executables for win32.
-GMT_suppl_exe.zip	Same for supplemental programs
-netcdf-3.5.0.win32bin.zip  Precompiled library for Windows
