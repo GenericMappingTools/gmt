@@ -84,5 +84,5 @@ More details can be found in the \fBpsbasemap\fP man pages.
 .sp
 \fB\-Jp\fP[\fBa\fP]\fIscale\fP[\fI/origin\fP] (Polar coordinates (theta,r))
 .br
-\fB\-Jx\fP\fIx-scale\fP[\fBl|p\fP\fIpow\fP][\fBd\fP][\fI/y-scale\fP[\fBl|p\fP\fIpow\fP]][\fBd\fP] (Linear, log, and power scaling)
+\fB\-Jx\fP\fIx-scale\fP[\fBd|l|p\fP\fIpow\fP\fB|t|T\fP][\fI/y-scale\fP[\fBd|l|p\fP\fIpow\fP\fB|t|T\fP]] (Linear, log, and power scaling)
 .br
