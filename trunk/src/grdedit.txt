@@ -3,12 +3,14 @@
 grdedit \- Modifying the header in a 2-D grdfile
 .SH SYNOPSIS
 \fBgrdedit\fP \fIgrdfile\fP [ \fB\-A\fP ] [ \fB\-D\fP\fIxunit/yunit/zunit/scale/offset/title/remark\fP ] 
-[ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP ] [ \fB\-V\fP ]
+[ \fB\-N\fP\fIxyzfile\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP ] [ \fB\-V\fP ] 
+ [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBgrdedit\fP reads the header information in a binary 2-D grdfile and replaces
 the information with values provided on the command line [if any].  As an option,
 global, geographical grids (with 360 degrees longitude range) can be rotated in
-the east-west direction.  \fBgrdedit\fP only operates on files containing a grdheader.
+the east-west direction, and individual nodal values can be replaced from a
+table of \fIx, y, z\fP values.  \fBgrdedit\fP only operates on files containing a grdheader.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
@@ -27,6 +29,11 @@ prior to GMT 3.1) often had excessive slop in
 .B \-D
 Give new values for \fIxunit, yunit, zunit, scale, offset, title,\fP and \fIremark\fP.
 To leave some of the values untouched, specify = as the new value.
+#include "explain_-H.txt"
+.TP
+.B \-N
+Read the ascii (or binary; see \fB\-bi\fP) file \fIxyzfile\fP and replace the corresponding
+nodal values in the grid with these \fIz\fP values.
 #include "explain_-R.txt"
 The new w/e/s/n values will replace those in the grid, and the \fIx_inc, y_inc\fP
 values are adjusted, if necessary.
@@ -35,6 +42,10 @@ values are adjusted, if necessary.
 For global, geographical grids only.  Grid values will be shifted laterally according to
 the new borders given in \fB\-R\fP.
 #include "explain_-V.txt"
+#include "explain_-i_binary.txt"
+#include "explain_-n.txt"
+[Default is 3 input columns].
+#include "explain_-f.txt"
 .SH EXAMPLES
 Let us assume the file data.grd covers the area 300/310/10/30.  We want
 to change the boundaries from geodetic longitudes to geographic and put a new title in
