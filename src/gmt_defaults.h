@@ -33,7 +33,7 @@
 	0.3,			/* HSV_MIN_VALUE */
 	1.0,			/* HSV_MAX_VALUE */
 	1,			/* INTERPOLANT */
-	FALSE,			/* IO_HEADER */
+	{ FALSE, FALSE },	/* IO_HEADER [0|1] */
 	1,			/* N_HEADER_RECS (if -H is set) */
 	0,			/* LABEL_FONT */
 	24,			/* LABEL_FONT_SIZE */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.125 2004-04-25 03:54:19 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.126 2004-04-25 08:43:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -178,9 +178,9 @@ void GMT_explain_option (char option)
 			
 		case 'H':	/* Header */
 		
-			fprintf (stderr, "\t-H means input/output file has %d Header record(s) [%s]\n",
-				gmtdefs.n_header_recs, GMT_choice[gmtdefs.io_header]);
-			fprintf (stderr, "\t   Optionally, append number of header records\n");
+			fprintf (stderr, "\t-H[i] means input/output file has %d Header record(s) [%s]\n",
+				gmtdefs.n_header_recs, GMT_choice[gmtdefs.io_header[GMT_IN]]);
+			fprintf (stderr, "\t   Optionally, append i for input only and/or number of header records\n");
 			break;
 			
 		case 'J':	/* Map projection option */
@@ -780,8 +780,10 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			}
 			else {
 				GMT_processed_option[2] = TRUE;
-				if (item[2]) {
-					i = atoi (&item[2]);
+				j = 2;
+				if (item[j] == 'i') j = 3;	/* -Hi[nrecs] given */
+				if (item[j]) {
+					i = atoi (&item[j]);
 					if (i < 0) {
 						GMT_syntax ('H');
 						error++;
@@ -789,7 +791,10 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 					else
 						gmtdefs.n_header_recs = i;
 				}
-				gmtdefs.io_header = (gmtdefs.n_header_recs > 0);
+				if (j == 2)	/* Both in and out may have header records */
+					gmtdefs.io_header[GMT_IN] = gmtdefs.io_header[GMT_OUT] = (gmtdefs.n_header_recs > 0);
+				else		/* Only input should have header records */
+					gmtdefs.io_header[GMT_IN] = (gmtdefs.n_header_recs > 0);
 			}
 			break;
 		case 'J':
@@ -1474,7 +1479,7 @@ int GMT_setparameter (char *keyword, char *value)
 				error = TRUE;
 			break;
 		case GMTCASE_IO_HEADER:
-			error = true_false_or_error (lower_value, &gmtdefs.io_header);
+			error = true_false_or_error (lower_value, &gmtdefs.io_header[GMT_IN]);
 			break;
 		case GMTCASE_N_HEADER_RECS:
 			ival = atoi (value);
@@ -2007,7 +2012,7 @@ int GMT_savedefaults (char *file)
 	(gmtdefs.gridfile_shorthand) ? fprintf (fp, "GRIDFILE_SHORTHAND	= TRUE\n") : fprintf (fp, "GRIDFILE_SHORTHAND	= FALSE\n");
 	fprintf (fp, "INPUT_CLOCK_FORMAT	= %s\n", gmtdefs.input_clock_format);
 	fprintf (fp, "INPUT_DATE_FORMAT	= %s\n", gmtdefs.input_date_format);
-	(gmtdefs.io_header) ? fprintf (fp, "IO_HEADER		= TRUE\n") : fprintf (fp, "IO_HEADER		= FALSE\n");
+	(gmtdefs.io_header[GMT_IN]) ? fprintf (fp, "IO_HEADER		= TRUE\n") : fprintf (fp, "IO_HEADER		= FALSE\n");
 	fprintf (fp, "N_HEADER_RECS		= %d\n", gmtdefs.n_header_recs);
 	fprintf (fp, "OUTPUT_CLOCK_FORMAT	= %s\n", gmtdefs.output_clock_format);
 	fprintf (fp, "OUTPUT_DATE_FORMAT	= %s\n", gmtdefs.output_date_format);

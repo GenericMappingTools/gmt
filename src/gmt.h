@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.63 2004-04-24 01:29:59 pwessel Exp $
+ *	$Id: gmt.h,v 1.64 2004-04-25 08:43:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -271,7 +271,7 @@ struct GMTDEFAULTS {
 	double hsv_min_value;		/* For smallest or most negative intensity [0.3] */
 	double hsv_max_value;		/* For largest or most positive intensity [1.0] */
 	int interpolant;		/* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
-	BOOLEAN io_header;		/* Input data has header records [FALSE] */
+	BOOLEAN io_header[2];		/* Input & Output data has header records [FALSE, FALSE] */
 	int n_header_recs;		/* number of header records [0] */
 	int label_font;			/* Font for labels [Helvetica] */
 	double label_font_size;		/* Font size for labels in points [24] */

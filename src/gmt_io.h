@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.24 2004-04-01 17:05:08 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.25 2004-04-25 08:43:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -34,6 +34,11 @@
 
 #define GMT_COLUMN_FORMAT	1
 #define GMT_ROW_FORMAT		2
+
+/* Array indeces for input/output variables */
+
+#define GMT_IN	0
+#define GMT_OUT	1
 
 /* Types of possible column entries in a file: */
 
