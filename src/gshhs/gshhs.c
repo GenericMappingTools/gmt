@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.3 2004-09-12 01:25:20 pwessel Exp $
+/*	$Id: gshhs.c,v 1.4 2004-09-14 19:27:30 pwessel Exp $
  *
  * PROGRAM:	gshhs.c
  * AUTHOR:	Paul Wessel (pwessel@hawaii.edu)
@@ -11,7 +11,7 @@
  *		   POSIX.1 compliant
  *		1.3 08-NOV-1999: Released under GNU GPL
  *		1.4 05-SEPT-2000: Made a GMT supplement; FLIP no longer needed
- *		1.4 11-SEPT-2004: Updated to deal with latest GSHHS database (1.3)
+ *		1.4 14-SEPT-2004: Updated to deal with latest GSHHS database (1.3)
  *
  *	Copyright (c) 1996-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
