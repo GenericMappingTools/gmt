@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.93 2004-05-21 01:31:55 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.94 2004-05-22 00:01:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1623,7 +1623,7 @@ int GMT_contlabel_init (struct GMT_CONTOUR *G)
 	G->label_dist_spacing = 4.0;	/* Inches */
 	if (gmtdefs.measure_unit == GMT_CM) G->label_dist_spacing = 10.0 / 2.54;
 	G->clearance[0] = G->clearance[1] = 0.05;
-	G->box = 1;
+	G->box = 1;	/* Filled box is default */
 	G->angle_type = 0;
 	G->just = 6;	/* CM */
 	G->unit[0] = 0;
@@ -1672,8 +1672,21 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 		txt_a[0] = txt[j+1];	txt_a[1] = txt[j+2];	txt_a[2] = '\0';
 		G->just = GMT_just_decode (txt_a);
 	}
-	if (strchr (txt, 'o')) G->box = 2;
-	if (strchr (txt, 't')) G->box = 0;
+	for (j = 0; txt[j] && txt[j] != 'L'; j++);
+	if (txt[j]) {	/* Found Label info */
+		j++;
+		if (txt[j] == 'h' && !txt[j+1])	/* Take the first string in multisegment headers */
+			G->label_type = 2;
+		else if (txt[j] == 'd' && !txt[j+1])	/* Use the current distance */
+			G->label_type = 3;
+		else {	/* Hardwired fixed label for all lines */
+			strcpy (G->label, &txt[j]);
+			G->label_type = 1;
+		}
+	}
+	if (strchr (txt, 'o')) G->box |= 2;
+	if (strchr (txt, 'O')) G->box |= 4;	/* Rounded box [Default is rectangular] */
+	if (strchr (txt, 't')) G->box = 0;	/* transparent box must be rectangular */
 	
 	return (bad);
 }
@@ -1682,7 +1695,7 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 {
 	/* Interpret the contour-label information string and set structure items */
 	int k, j = 0, error = 0;
-	char txt_a[32];
+	char txt_a[32], c;
 	
 	strcpy (L->option, &txt[1]);	 /* May need to process L->option later after -R,-J have been set */
 	L->flag = flag;
@@ -1710,6 +1723,8 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 			L->crossing = GMT_CONTOUR_XCURVE;
 			strcpy (L->file, &txt[1]);
 			break;
+		case 'D':	/* Specify distances in in geographic units */
+			L->dist_kind = 1;
 		case 'd':	/* Specify distance settings */
 			j = 1;	/* Because the legacy -G option did not have a d (so j = 0) */
 		default:
@@ -1719,7 +1734,14 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c[d]: Give label spacing and optional smoothing width\n", GMT_program, L->flag);
 				error++;
 			}
-			L->label_dist_spacing = GMT_convert_units (txt_a, GMT_INCH);
+			if (L->dist_kind == 1) {	/* Distance units other than xy specified */
+				k = strlen (txt_a) - 1;
+				c = (isdigit ((int)txt_a[k]) || txt_a[k] == '.') ? 0 : txt_a[k];
+				L->label_dist_spacing = atof (txt_a);
+				error += GMT_get_dist_scale (c, &L->d_scale, &L->proj_type, L->dist_func);
+			}
+			else
+				L->label_dist_spacing = GMT_convert_units (txt_a, GMT_INCH);
 			if (k == 1) L->half_width = 10;	/* Smooth over 10 points is the old default */
 			L->half_width /= 2;
 			if (L->label_dist_spacing <= 0.0) {
@@ -1748,6 +1770,8 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 		G->no_gap = (G->just < 5 || G->just > 7);	/* Don't clip contour if label is not in the way */
 	else if (G->angle_type == 1)
 		G->no_gap = ((G->just + 2)%4);	/* Don't clip contour if label is not in the way */
+
+	G->anchor = G->old_label = (struct GMT_LABEL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_LABEL), GMT_program);
 
 	greenwich = (project_info.w < 0.0 && project_info.e > 0.0);
 
@@ -1917,26 +1941,31 @@ void GMT_contlabel_plot (struct GMT_CONTOUR *G)
 {
 	/* box = 1: white box only, box = 2: white box + draw outline */
         /* box = 0: no box (append 't' instead of 'o' in -A parameter) */
-	int box;
+	int box, outline, just;
 	double dx, dy, xc, yc;
 	struct GMT_LABEL *this, *old;
 	
 	dx = G->clearance[0];
 	dy = G->clearance[1];
 	box = G->box - 1;
+	outline = (G->box & 4) + ((G->box & 2) == 2);	/* This will give outline as 0, 1, 4, or 5 */
 	ps_comment ("Contour annotations:");
 	
+	if (G->number_placement && G->n_cont == 1)	/* Special 1-label justification check */
+		just = G->end_just[(G->number_placement+1)/2];	/* Gives index 0 or 1 */
+	else
+		just = G->just;
 	ps_setpaint (gmtdefs.basemap_frame_rgb);
 	GMT_setpen (&G->pen);
 	for (old = G->anchor; box >= 0 && old->next_label; old = old->next_label) {	/* First draw boxes if not 3-D*/
 		this = old->next_label;
 		GMT_smart_justify (G->just, this->angle, dx, dy, &this->x, &this->y);	/* This may change x,y */
-		GMT_textbox3D (this->x, this->y, project_info.z_level, G->label_font_size, gmtdefs.annot_font[0], this->label, this->angle, G->just, box, dx, dy, G->rgb);
+		GMT_textbox3D (this->x, this->y, project_info.z_level, G->label_font_size, gmtdefs.annot_font[0], this->label, this->angle, just, outline, dx, dy, G->rgb);
 	}
 	for (old = G->anchor; old->next_label; old = old->next_label) { /* Then labels */
 		this = old->next_label;
 		if (box == -1) GMT_smart_justify (G->just, this->angle, dx, dy, &this->x, &this->y);	/* Not done above */
-		GMT_text3D (this->x, this->y, project_info.z_level, G->label_font_size, gmtdefs.annot_font[0], this->label, this->angle, G->just, 0);
+		GMT_text3D (this->x, this->y, project_info.z_level, G->label_font_size, gmtdefs.annot_font[0], this->label, this->angle, just, 0);
 	}
 		
 	ps_setpaint (gmtdefs.background_rgb);
@@ -2535,45 +2564,49 @@ void GMT_dump_contour (double *xx, double *yy, int nn, double cval, int id, BOOL
 	GMT_fclose (fp);
 }
 
-void GMT_draw_contour (double *xx, double *yy, int *pen, int nn, double cval, char ctype, double cangle, int closed, struct GMT_CONTOUR *G)
+void GMT_draw_contour (double *xx, double *yy, int *pen, int nn, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G)
 {	/* The xx, yy are expected to be projected x/y inches */
 	int i, j, start = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
-	double angle, dx, dy, width, sum_x2, sum_xy, one = 1.0, *track_dist;
-	double label_height, label_width, x, y;
-	char label[128], format[128];
+	double angle, dx, dy, width, sum_x2, sum_xy, one = 1.0, step, *track_dist;
+	double x, y, lon[2], lat[2];
 	struct GMT_LABEL *new_label;
+	char txt[128], format[128];
 	
 	if (nn < 2) return;
 		
-	sprintf (format, "%g contour", cval);
-	ps_comment (format);
+	sprintf (txt, "Drawing contour/line: %s", label);
+	ps_comment (txt);
 	
 	if (G->box > 0 || G->no_gap) GMT_plot_line (xx, yy, pen, nn);	/* Draw entire contour for opaque label boxes */
 
 	if (ctype == 'A' || ctype == 'a') {	/* Annotated contours */
-		GMT_get_format (cval, G->unit, CNULL, format);
-		sprintf (label, format, cval);
-		label_height = label_width = G->label_font_size * GMT_u2u[GMT_PT][GMT_INCH] * 0.58;  /* Constants from GMT_textbox3D()KJ*/
-		label_width *= 0.81 * strlen(label) * 0.78;
-		label_width *= 0.66;  /* was still too wide KJ*/
 		
 		/* Calculate distance along contour and store in track_dist array */
 		
+		if (G->dist_kind == 1) GMT_xy_to_geo (&lon[1], &lat[1], xx[0], yy[0]);
 		track_dist = (double *) GMT_memory (VNULL, (size_t)nn, sizeof (double), GMT_program);
 		track_dist[0] = 0.0;	/* Unnecessary, just so we understand the logic */
 		for (i = 1; i < nn; i++) {
-			dx = xx[i] - xx[i-1];
-			if (fabs (dx) > (width = GMT_half_map_width (yy[i-1]))) {
-				width *= 2.0;
-				dx = copysign (width - fabs (dx), -dx);
-				if (xx[i] < width)
-					xx[i-1] -= width;
-				else
-					xx[i-1] += width;
+			if (G->dist_kind == 1) {
+				lon[0] = lon[1];	lat[0] = lat[1];
+				GMT_xy_to_geo (&lon[1], &lat[1], xx[i], yy[i]);
+				step = G->d_scale * (G->dist_func) (lon[0], lat[0], lon[1], lat[1]);
 			}
-			dy = yy[i] - yy[i-1];
-			track_dist[i] = track_dist[i-1] + hypot (dx, dy);
+			else {	/* Distance from xy */
+				dx = xx[i] - xx[i-1];
+				if (fabs (dx) > (width = GMT_half_map_width (yy[i-1]))) {
+					width *= 2.0;
+					dx = copysign (width - fabs (dx), -dx);
+					if (xx[i] < width)
+						xx[i-1] -= width;
+					else
+						xx[i-1] += width;
+				}
+				dy = yy[i] - yy[i-1];
+				step = hypot (dx, dy);
+			}
+			track_dist[i] = track_dist[i-1] + step;
 		}
 		G->L = (struct GMT_LABEL **) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 		G->n_label = 0;
@@ -2581,7 +2614,7 @@ void GMT_draw_contour (double *xx, double *yy, int *pen, int nn, double cval, ch
 		if (G->spacing) {	/* Place labels based on distance along contours */
 			double last_label_dist, dist_offset, dist, f;
 			
-			dist_offset = (closed) ? G->label_dist_spacing - one : 0.0;	/* Label closed contours longer than 1 inch */
+			dist_offset = (closed && G->dist_kind == 0) ? G->label_dist_spacing - one : 0.0;	/* Label closed contours longer than 1 inch */
 			last_label_dist = 0.0;
 			for (i = 1; i < nn; i++) {
 				if (GMT_pen[i] == 3) continue;
@@ -2599,13 +2632,20 @@ void GMT_draw_contour (double *xx, double *yy, int *pen, int nn, double cval, ch
 						new_label->x = xx[i-1] + f * (xx[i] - xx[i-1]);
 						new_label->y = yy[i-1] + f * (yy[i] - yy[i-1]);
 					}
-					strcpy (new_label->label, label);
-					new_label->dist = dist - dist_offset + last_label_dist;
+					new_label->dist = G->label_dist_spacing - dist_offset + last_label_dist;
+					if (G->label_type == 0 && label)
+						strcpy (new_label->label, label);
+					else if (G->label_type == 1 || G->label_type == 2)
+						strcpy (new_label->label, G->label);
+					else {
+						GMT_get_format (new_label->dist, G->unit, CNULL, format);
+						sprintf (new_label->label, format, new_label->dist);
+					}
 					new_label->node = i - 1;
 					GMT_contlabel_angle (xx, yy, i - 1, i, cangle, nn, new_label, G);
 					new_label->prev_label = G->old_label;
 					dist_offset = 0.0;
-					last_label_dist = track_dist[i];
+					last_label_dist = new_label->dist;
 					G->old_label->next_label = new_label;
 					G->old_label = new_label;
 					G->L[G->n_label++] = new_label;
@@ -2620,8 +2660,17 @@ void GMT_draw_contour (double *xx, double *yy, int *pen, int nn, double cval, ch
 			double dist, f;
 			for (i = j = 0; i < G->n_cont; i++) {
 				new_label = (struct GMT_LABEL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_LABEL), GMT_program);
-				if (G->number_placement && !closed)
+				if (G->number_placement && !closed) {
+					if (G->number_placement == -1 && G->n_cont == 1) {	/* Label justified with start of segment */
+						f = d_atan2 (xx[0] - xx[1], yy[0] - yy[1]) * R2D + 180.0;	/* 0-360 */
+						G->end_just[0] = (f >= 90.0 && f <= 270) ? 7 : 5;
+					}
+					else if (G->number_placement == +1 && G->n_cont == 1) {	/* Label justified with start of segment */
+						f = d_atan2 (xx[nn-1] - xx[nn-2], yy[nn-1] - yy[nn-2]) * R2D + 180.0;	/* 0-360 */
+						G->end_just[1] = (f >= 90.0 && f <= 270) ? 7 : 5;
+					}
 					dist = (G->n_cont > 1) ? i * track_dist[nn-1] / (G->n_cont - 1) : 0.5 * (G->number_placement + 1.0) * track_dist[nn-1];
+				}
 				else
 					dist = (i + 1 - 0.5 * closed) * track_dist[nn-1] / (G->n_cont + 1 - closed);
 				while (j < nn && track_dist[j] < dist) j++;
@@ -2636,9 +2685,15 @@ void GMT_draw_contour (double *xx, double *yy, int *pen, int nn, double cval, ch
 					new_label->x = xx[j] - f * (xx[j] - xx[j-1]);
 					new_label->y = yy[j] - f * (yy[j] - yy[j-1]);
 				}
-				strcpy (new_label->label, label);
-				new_label->node = j - 1;
 				new_label->dist = dist;
+				if (G->label_type == 0 && label)
+					strcpy (new_label->label, label);
+				else if (G->label_type == 1 || G->label_type == 2)
+					strcpy (new_label->label, G->label);
+				else {
+					sprintf (new_label->label, gmtdefs.d_format, new_label->dist);
+				}
+				new_label->node = j - 1;
 				GMT_contlabel_angle (xx, yy, j - 1, j, cangle, nn, new_label, G);
 				G->old_label->next_label = new_label;
 				G->old_label = new_label;
@@ -2666,9 +2721,15 @@ void GMT_draw_contour (double *xx, double *yy, int *pen, int nn, double cval, ch
 					new_label = (struct GMT_LABEL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_LABEL), GMT_program);
 					new_label->x = G->XC.x[i];
 					new_label->y = G->XC.y[i];
-					strcpy (new_label->label, label);
 					new_label->node = left;
 					new_label->dist = track_dist[left];
+					if (G->label_type == 0 && label)
+						strcpy (new_label->label, label);
+					else if (G->label_type == 1 || G->label_type == 2)
+						strcpy (new_label->label, G->label);
+					else {
+						sprintf (new_label->label, gmtdefs.d_format, new_label->dist);
+					}
 					GMT_contlabel_angle (xx, yy, left, right, cangle, nn, new_label, G);
 					G->old_label->next_label = new_label;
 					G->old_label = new_label;
@@ -5676,4 +5737,67 @@ void GMT_x_free (struct GMT_XOVER *X) {
 	GMT_free ((void *)X->y);
 	GMT_free ((void *)X->xnode[0]);
 	GMT_free ((void *)X->xnode[1]);
+}
+
+int GMT_get_dist_scale (char c, double *d_scale, int *proj_type, PFD distance_func)
+{
+	int error = 0;
+	
+	distance_func = (SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
+	switch (c) {
+		case '\0':	/* Spherical m along great circle */
+		case 'e':
+			distance_func = GMT_great_circle_dist;
+			*d_scale = DEG2M;
+			break;
+		case 'E':	/* m along geodesic */
+			distance_func = (SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
+			*d_scale = (SPHERICAL) ? DEG2M : 1.0;
+			break;
+		case 'k':	/* km along great circle */
+			distance_func = GMT_great_circle_dist;
+			*d_scale = DEG2KM;
+			break;
+		case 'K':	/* km along geodesic */
+			distance_func = (SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
+			*d_scale = (SPHERICAL) ? DEG2KM : 0.001;
+			break;
+		case 'm':	/* Miles along great circle */
+			distance_func = GMT_great_circle_dist;
+			*d_scale = DEG2M / 1609.334;
+			break;
+		case 'M':	/* Miles along geodesic */
+			distance_func = (SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
+			*d_scale = ((SPHERICAL) ? DEG2M : 1.0) / 1609.334;
+			break;
+		case 'n':	/* Nautical miles along great circle */
+			distance_func = GMT_great_circle_dist;
+			*d_scale = DEG2M / 1852.0;
+			break;
+		case 'N':	/* Nautical miles along geodesic */
+			distance_func = (SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
+			*d_scale = ((SPHERICAL) ? DEG2M : 1.0) / 1852.0;
+			break;
+		case 'C':	/* Cartesian distances in projected units */
+			*d_scale = 1.0;
+			*proj_type = 2;
+			break;
+		case 'c':	/* Cartesian distances in user units */
+			*d_scale = 1.0;
+			*proj_type = 1;
+			break;
+		case 'd':	/* Degrees along great circle */
+			distance_func = GMT_great_circle_dist;
+			*d_scale = 1.0;
+			break;
+		case 'D':	/* Degrees along geodesic */
+			*d_scale = 1.0;
+			distance_func = (SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_degree;
+			break;
+		default:
+			fprintf (stderr, "%s: GMT SYNTAX ERROR -G.  Units must be one of k|m|n|c|C|d\n", GMT_program);
+			error++;
+			break;
+	}
+	return (error);
 }
