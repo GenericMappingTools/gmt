@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.28 2002-02-23 03:39:58 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.29 2002-05-02 17:53:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -626,7 +626,7 @@ void GMT_read_cpt (char *cpt_file)
 	if (!GMT_gray) GMT_b_and_w = FALSE;
 }
 
-void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse)
+void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, int log_mode)
 {
 	/* Resamples the current cpt table based on new z-array.
 	 * Old cpt is normalized to 0-1 range and scaled to fit new z range.
@@ -635,7 +635,7 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse)
 
 	int i, j, k, nx, upper, lower, rgb_low[3], rgb_high[3];
 	BOOLEAN even = FALSE;	/* TRUE when nz is passed as negative */
-	double *x, a, b, h1, h2, h3, v1, v2, v3, s1, s2, s3, f, x_inc;
+	double *x, *z_out, a, b, h1, h2, h3, v1, v2, v3, s1, s2, s3, f, x_inc;
 	char format[BUFSIZ];
 	struct GMT_LUT *lut;
 
@@ -672,6 +672,12 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse)
 
 	nx = (continuous) ? nz : nz - 1;
 	x = (double *) GMT_memory (VNULL, (size_t)nz, sizeof(double), GMT_program);
+	if (log_mode) {	/* Our z values are actually log10(z), need array with z for output */
+		z_out = (double *) GMT_memory (VNULL, (size_t)nz, sizeof(double), GMT_program);
+		for (i = 0; i < nz; i++) z_out[i] = pow (10.0, z[i]);
+	}
+	else
+		z_out = z;	/* Just point to the incoming z values */
 
 	if (nx == 1) {	/* Want a single color point, assume 1/2 way */
 		x[0] = 0.5;
@@ -732,10 +738,10 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse)
 		if (gmtdefs.color_model == GMT_HSV) {
 			GMT_rgb_to_hsv(rgb_low, &h1, &s1, &v1);
 			GMT_rgb_to_hsv(rgb_high, &h2, &s2, &v2);
-			fprintf (GMT_stdout, format, z[lower], h1, s1, v1, z[upper], h2, s2, v2);
+			fprintf (GMT_stdout, format, z_out[lower], h1, s1, v1, z_out[upper], h2, s2, v2);
 		}
 		else {
-			fprintf (GMT_stdout, format, z[lower], rgb_low[0], rgb_low[1], rgb_low[2], z[upper], rgb_high[0], rgb_high[1], rgb_high[2]);
+			fprintf (GMT_stdout, format, z_out[lower], rgb_low[0], rgb_low[1], rgb_low[2], z_out[upper], rgb_high[0], rgb_high[1], rgb_high[2]);
 		}
 	}
 
@@ -764,6 +770,7 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse)
 
 	GMT_free ((void *)x);
 	GMT_free ((void *)lut);
+	if (log_mode) GMT_free ((void *)z_out);
 }
 
 int GMT_get_index (double value)
