@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.16 2004-07-21 20:02:50 pwessel Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.17 2004-09-27 18:43:09 pwessel Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_progs tar/zip files.  See GMT_progs_files_bin.lis for binary files
@@ -207,13 +207,40 @@ share/time/to.d
 share/time/tr.d
 share/time/uk.d
 share/time/us.d
+share/custom/astroid.def
 share/custom/circle.def
+share/custom/cross.def
+share/custom/crosshair.def
+share/custom/deltoid.def
 share/custom/diamond.def
+share/custom/flash.def
 share/custom/hexagon.def
+share/custom/hlens.def
+share/custom/hlozenge.def
+share/custom/hneedle.def
 share/custom/invtriangle.def
+share/custom/lcrescent.def
+share/custom/lflag.def
+share/custom/ltriangle.def
+share/custom/meca.def
+share/custom/octagon.def
+share/custom/pacman.def
+share/custom/pentagon.def
+share/custom/rcrescent.def
+share/custom/rflag.def
+share/custom/rtriangle.def
+share/custom/sectoid.def
 share/custom/square.def
+share/custom/squaroid.def
+share/custom/star3.def
+share/custom/star4.def
 share/custom/star.def
+share/custom/starp.def
+share/custom/sun.def
 share/custom/triangle.def
+share/custom/vlens.def
+share/custom/vlozenge.def
+share/custom/vneedle.def
 share/custom/volcano.def
 share/gmt.conf
 share/gmtmedia.d

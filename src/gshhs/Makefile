@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.3 2001-03-09 18:32:11 pwessel Exp $
+#	$Id: Makefile,v 1.4 2004-09-27 18:43:09 pwessel Exp $
 #
 #	makefile for gshhs directory
 #
@@ -6,7 +6,7 @@
 
 include ../makegmt.macros
 
-CFLAGS		= $(CC_OPT) $(FLIP) $(WIN32)
+CFLAGS		= $(CC_OPT) $(WIN32)
 
 
 all:		gshhs gshhs_dp

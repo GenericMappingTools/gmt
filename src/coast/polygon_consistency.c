@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.4 2004-09-10 17:13:44 pwessel Exp $
+ *	$Id: polygon_consistency.c,v 1.5 2004-09-27 18:43:09 pwessel Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -14,7 +14,7 @@ main (int argc, char **argv)
 {
 	FILE	*fp;
 	int	i, n_id, nd, this_n, nx, n_x_problems, n_c_problems, n_r_problems, n_d_problems, ix0, iy0;
-	int w, e, s, n, ixmin, ixmax, iymin, iymax, ANTARCTICA, last_x, last_y;
+	int w, e, s, n, ixmin, ixmax, iymin, iymax, ANTARCTICA, last_x, last_y, ant_trouble = 0;
 	struct GMT_XSEGMENT *ylist;
 	struct GMT_XOVER XC;
 	struct GMT3_POLY h;
@@ -30,6 +30,9 @@ main (int argc, char **argv)
 	n_id = n_c_problems = n_x_problems = n_r_problems = n_d_problems = 0;
 	while (pol_readheader (&h, fp) == 1) {
 		ANTARCTICA = (fabs (h.east - h.west) == 360.0);
+		if (ANTARCTICA) {
+			if (h.south > -90.0) ant_trouble = TRUE;
+		}
 		ixmin = iymin = M360;
 		ixmax = iymax = -M360;
 		w = irint (h.west * 1e6);
@@ -88,7 +91,8 @@ main (int argc, char **argv)
 	
 	fprintf (stderr, "polygon_consistency: Got %d polygons from file %s. %d has closure problems. %d has crossing problems. %d has region problems. %d has duplicate points\n",
 		n_id, argv[1], n_c_problems, n_x_problems, n_r_problems, n_d_problems);
-
+	if (ant_trouble) fprintf (stderr, "polygon_consistency: Antarctica polygon has wrong south border\n");
+	
 	fclose(fp);
 
 	exit(0);
