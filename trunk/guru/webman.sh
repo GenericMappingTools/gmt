@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.18 2004-08-27 17:43:26 pwessel Exp $
+#	 $Id: webman.sh,v 1.19 2004-08-27 21:22:21 pwessel Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -292,8 +292,12 @@ packages actually installed on your system will be accessible.
 <HR>
 <H3>The X2SYS package</H3>
 <UL>
+<LI><A HREF="doc/html/x2sys_binlist.html"> x2sys_binlist</A> Create bin-index files from generic track files
 <LI><A HREF="doc/html/x2sys_cross.html"> x2sys_cross</A> Generic track intersection (Crossover) detector
 <LI><A HREF="doc/html/x2sys_datalist.html"> x2sys_datalist</A> Generic data extractor for ASCII and binary track data
+<LI><A HREF="doc/html/x2sys_get.html"> x2sys_get</A> Find all track files in a given area
+<LI><A HREF="doc/html/x2sys_init.html"> x2sys_init</A> Initialize a new index file database for track data
+<LI><A HREF="doc/html/x2sys_put.html"> x2sys_put</A> Maintain index files database for track data
 </UL>
 <HR>
 <H3>The X_SYSTEM package</H3>
