@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.25 2004-03-10 05:27:54 pwessel Exp $
+ *	$Id: libspotter.c,v 1.26 2004-03-12 02:35:53 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -1027,20 +1027,26 @@ void set_I_matrix (double R[3][3])
 int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, int np, char flag, double out[])
 {
 	/* Given time and rotation parameters, calculate uncertainty in the
-	 * reconstructed point in the form of a confidence ellipse
+	 * reconstructed point in the form of a confidence ellipse.  To follow
+	 * the stuff below, it helps to realize that the covariance matrix C that
+	 * is stored with each rotation R is for the rotation R which rotates a
+	 * point of age t along a chain back to the hotspot.  However, in this
+	 * context (the error in a reconstructed point along the chain) we are
+	 * actually using the inverse rotation R^t (negative opening angle).  For
+	 * that rotation, the covariance matrix is R * cov(r) * R^t.
 	 */
 	
 	int matrix_dim = 3, i, j, k, kk = 3, nrots;
-	double R[3][3], x[3], y[3], M[3][3], MtRt[3][3], Rt[3][3], RM[3][3], tmp[3][3], C[9];
+	double R[3][3], x[3], y[3], M[3][3], MtRt[3][3], Rt[3][3], RM[3][3], cov[3][3], tmp[3][3], C[9];
 	double z_unit_vector[3], EigenValue[3], EigenVector[9], work1[3], work2[3], x_in_plane[3], y_in_plane[3];
 	double x_comp, y_comp, w;
 	
-	/* Find the rotation in question */
+	/* Find the unique rotation in question */
 	
 	for (i = 0, k = -1; k < 0 && i < np; i++) if (fabs (p[i].t_start - t) < GMT_CONV_LIMIT) k = i;
 	if (k == -1) return (1);	/* Did not match finite rotation time */
 	
-	/* Generate R, the rotation matrix */
+	/* Generate R, the rotation matrix.  This is actually R^t since w is -ve */
 	
 	w = p[k].omega * p[k].duration;
 	make_rot_matrix (p[k].lon, p[k].lat, -w, R);
@@ -1056,11 +1062,18 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, int
 	M[2][0] = -x[1];
 	M[2][1] = x[0];
 
-	/* Calculate cov(y) = R * M * cov_R * M^T * R^T */
+	/* Since we are using the inverse rotation (-ve w) we must rotate the covariance: cov(r^t) = R cov(r) R^t.
+	   Here, R actually contains R^t so we need the original R (which we will call R^t) as well. */
+	
+	matrix_mult (p[k].C, R, tmp);			/* Calculate the cov(r) *R^t product */
+	matrix_transpose (Rt, R);			/* Get the transpose of R^t which is R*/
+	matrix_mult (Rt, tmp, cov);			/* cov(r^t) = R^t cov(r) R */
+
+	/* Calculate cov(y) = (R * M) * cov_R * (R * M)^T */
 	
 	matrix_mult (R, M, RM);			/* Calculate the R * M product */
 	matrix_transpose (MtRt, RM);		/* Get the transpose (R*M)^T = M^T * R^T */
-	matrix_mult (p[k].C, MtRt, tmp);	/* Get C * M^T * R^T */
+	matrix_mult (cov, MtRt, tmp);		/* Get C * M^T * R^T */
 	matrix_mult (RM, tmp, M);		/* Finally get R * M * C * M^T * R^T, store in M */
 
 	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) C[3*i+j] = M[i][j];	/* Reformat to 1-D format for GMT_jacobi */
@@ -1089,6 +1102,7 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, int
 	if (out[kk] > 180.0) out[kk] -= 180.0;
 	out[++kk] = sqrt (EigenValue[0]) * EQ_RAD * SQRT_CHI2;
 	out[++kk] = sqrt (EigenValue[1]) * EQ_RAD * SQRT_CHI2;
+	
 	return (0);
 }
 		
