@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.49 2001-10-16 19:29:33 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.50 2001-10-23 18:40:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -909,24 +909,26 @@ int GMT_time_array (double min, double max, struct PLOT_AXIS_ITEM *T, double **a
 
 int GMT_coordinate_array (double min, double max, struct PLOT_AXIS_ITEM *T, double **array)
 {
+	int n;
 	switch (project_info.xyz_projection[T->parent]) {
 		case LINEAR:
-			GMT_linear_array (min, max, GMT_get_map_interval (T->parent, T->id), array);
+			n = GMT_linear_array (min, max, GMT_get_map_interval (T->parent, T->id), array);
 			break;
 		case LOG10:
-			GMT_log_array (min, max, GMT_get_map_interval (T->parent, T->id), array);
+			n = GMT_log_array (min, max, GMT_get_map_interval (T->parent, T->id), array);
 			break;
 		case POW:
-			GMT_pow_array (min, max, GMT_get_map_interval (T->parent, T->id), T->parent, array);
+			n = GMT_pow_array (min, max, GMT_get_map_interval (T->parent, T->id), T->parent, array);
 			break;
 		case TIME:
-			GMT_time_array (min, max, T, array);
+			n = GMT_time_array (min, max, T, array);
 			break;
 		default:
 			fprintf (stderr, "GMT ERROR: Invalid projection type (%d) passed to GMT_coordinate_array!\n", project_info.xyz_projection[T->parent]);
 			exit (EXIT_FAILURE);
 			break;
 	}
+	return (n);
 }
 
 void GMT_linearx_grid (double w, double e, double s, double n, double dval)
