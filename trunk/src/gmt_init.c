@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.114 2004-04-13 04:31:00 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.115 2004-04-14 20:33:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -75,7 +75,7 @@ void GMT_strip_colonitem (const char *in, const char *pattern, char *item, char 
 void GMT_strip_wesnz (const char *in, int side[], BOOLEAN *draw_box, char *out);
 void GMT_split_info (const char *in, char *info[]);
 void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A);
-void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit);
+void GMT_set_titem (struct PLOT_AXIS *A, double val, double phase, char flag, char unit);
 int GMT_map_getframe (char *in);
 static void load_encoding (struct gmt_encoding *);
 void GMT_verify_encodings ();
@@ -116,8 +116,9 @@ void GMT_explain_option (char option)
 		case 'B':	/* Tickmark option */
 		
 			fprintf (stderr, "\t-B specifies Basemap frame info.  <tickinfo> is a textstring made up of one or\n");
-			fprintf (stderr, "\t   more substrings of the form [t]<stride>[<unit>], where the (optional) [t] is the\n");
-			fprintf (stderr, "\t   axis item type, <stride> is the spacing between ticks or annotations, and the (optional)\n");
+			fprintf (stderr, "\t   more substrings of the form [t]<stride>[+-<phase>][<unit>], where the (optional) [t] is the\n");
+			fprintf (stderr, "\t   axis item type, <stride> is the spacing between ticks or annotations, the (optional)\n");
+			fprintf (stderr, "\t   <phase> specifies phase-shifted annoations by that amount, and the (optional)\n");
 			fprintf (stderr, "\t   <unit> specifies the <stride> unit [Default is unit implied in -R]. There can be\n");
 			fprintf (stderr, "\t   no spaces between the substrings - just append to make one very long string.\n");
 			fprintf (stderr, "\t   -B[p] means (p)rimary annotations; use -Bs to specify (s)econdary annotations.\n");
@@ -149,6 +150,9 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t     C: second - format annotation according to PLOT_CLOCK_FORMAT.\n");
 			fprintf (stderr, "\t     c: second - plot as 2-digit integer (0-59; 60-61 if leap seconds are enabled).\n");
 			fprintf (stderr, "\t   Specify an axis label by surrounding it with colons (e.g., :\"my x label\":).\n");
+			fprintf (stderr, "\t   To prepend a prefix to each annotation (e.g., $ 10, $ 20 ...) add a prefix that begins\n");
+			fprintf (stderr, "\t     with a caret (^); the rest is used as annotation prefix (e.g. :\'^$\':). If the prefix has\n");
+			fprintf (stderr, "\t     a leading hyphen (-) there will be no space between prefix and annotation (e.g., :\'^-$\':).\n");
 			fprintf (stderr, "\t   To append a unit to each annotation (e.g., 5 km, 10 km ...) add a label that begins\n");
 			fprintf (stderr, "\t     with a comma; the rest is used as unit annotation (e.g. :\",km\":). If the unit has\n");
 			fprintf (stderr, "\t     a leading hyphen (-) there will be no space between unit and annotation (e.g., :,-%%:).\n");
@@ -3019,7 +3023,7 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 	
 	char *t, *s, flag, unit;
 	int error = 0;
-	double val;
+	double val, phase = 0.0;
 	
 	if (!in) return;	/* NULL pointer passed */
 	
@@ -3050,6 +3054,10 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 		if ((val = strtod (t, &s)) < 0.0) {			/* Interval must be >= 0 */
 			error = 3;
 			continue;
+		}
+		if (s[0] && (s[0] == '-' || s[0] == '+')) {	/* Phase shift information given */
+			t = s;
+			phase = strtod (t, &s);
 		}
 		if (s[0] && strchr ("YyOoUuKkJjDdHhMmCcrRlp", s[0])) {	/* Appended one of the allowed units, or l or p for log10/pow */
 			unit = s[0];
@@ -3083,7 +3091,7 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 				break;
 		}
 		if (!GMT_primary && flag != '*') flag = (char) toupper ((int)flag);	/* Since this is secondary axes items */
-		if (!error) GMT_set_titem (A, val, flag, unit);				/* Store the findings for this segment */
+		if (!error) GMT_set_titem (A, val, phase, flag, unit);				/* Store the findings for this segment */
 		t = s;									/* Make t point to start of next segment, if any */
 	}
 	
@@ -3105,7 +3113,7 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 	}
 }
 
-void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit) {
+void GMT_set_titem (struct PLOT_AXIS *A, double val, double phase, char flag, char unit) {
 	/* Load the values into the appropriate PLOT_AXIS_ITEM structure */
 	
 	int i, n = 1;
@@ -3170,6 +3178,7 @@ void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit) {
 			fprintf (stderr, "%s: Warning: Axis sub-item %c set more than once (typo?)\n", GMT_program, item_flag[i]);
 		}
 		I[i]->interval = val;
+		I[i]->phase = phase;
 		I[i]->unit = unit;
 		I[i]->type = (flag == 'I' || flag == 'i') ? 'I' : 'A';
 		I[i]->flavor = 0;
@@ -3231,7 +3240,7 @@ int GMT_map_getframe (char *in) {
 	 *	-Bs must be in addition to -B[p].
 	 */
 	 
-	char out1[BUFSIZ], out2[BUFSIZ], *info[3];
+	char out1[BUFSIZ], out2[BUFSIZ], out3[BUFSIZ], *info[3];
 	char one[80], two[80], three[80];
 	struct PLOT_AXIS *A;
 	int i, j, k;
@@ -3274,9 +3283,10 @@ int GMT_map_getframe (char *in) {
 		if (!info[i][0]) continue;
 		
 		GMT_strip_colonitem (info[i], ":,", frame_info.axis[i].unit, out1);	/* Pull out annotation unit, if any */
-		GMT_strip_colonitem (out1, ":", frame_info.axis[i].label, out2);	/* Pull out axis label, if any */
+		GMT_strip_colonitem (out1, ":^", frame_info.axis[i].prefix, out2);	/* Pull out annotation prefix, if any */
+		GMT_strip_colonitem (out2, ":", frame_info.axis[i].label, out3);	/* Pull out axis label, if any */
 		
-		GMT_decode_tinfo (out2, &frame_info.axis[i]);				/* Decode the annotation intervals */
+		GMT_decode_tinfo (out3, &frame_info.axis[i]);				/* Decode the annotation intervals */
 		
 		/* Make sure we have ticks to match annotation stride */
 		A = &frame_info.axis[i];

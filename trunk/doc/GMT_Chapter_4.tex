@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.40 2004-04-13 22:02:21 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.41 2004-04-14 20:33:53 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -299,17 +299,19 @@ selected information. The optional flag following \Opt{B} selects {\bf p}(rimary
 axes information (mostly used for time axes annotation; see examples below).
 The components {\it xinfo}, {\it yinfo} and {\it zinfo} are of the form \\
 
-\par {\it info}[:"axis label":][:,"unit label":] \\
+\par {\it info}[:"axis label":][:^"prefix":][:,"unit label":] \\
 
 \noindent
 where {\it info} is one or more concatenated substrings of the form
-[{\bf t}]{\it stride}[{\bf u}].  The {\bf t} flag sets the axis item of interest, and the
+[{\bf t}]{\it stride}[$\pm${\it phase}][{\bf u}].  The {\bf t} flag sets the axis item of interest; the
 available items are listed in Table~\ref{tbl:inttype}.  By
 default, all 4 map boundaries (or plot axes) are plotted (denoted {\bf W}, {\bf E}, {\bf S},
 {\bf N}).  To change this selection, append the codes for those you want
 (e.g., {\bf WSn}).  Upper case (e.g., {\bf W}) will annotate in addition to
 draw axis/tick-marks.  The title, if given, will appear centered above the plot\footnote{However,
-it is suppressed when a 3-D view is selected.}.
+it is suppressed when a 3-D view is selected.}.  Unit label or prefix may start with a
+leading -- to suppress the space between it and the annotation.  Normally, equidistant annotations
+appear at multiple of {\it stride}; you can phase-shift this by appending $\pm${\it phase}.
 \begin{table}[H]
 \centering
 \begin{tabular}{|c|l|} \hline

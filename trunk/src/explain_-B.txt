@@ -1,15 +1,14 @@
 .TP
 .B \-B
 Sets map boundary annotation and tickmark intervals. The format of \fItickinfo\fP is
-\fIxinfo\fP[/\fIyinfo\fP[/\fIzinfo\fP]][:."Title":][\fBW|w\fP][\fBE|e\fP][\fBS|s\fP][\fBN|n\fP][\fBZ|z\fP[\fB+\fP]],
-where each of the \fI?info\fP segments are textstrings of the form \fIinfo\fP[:"Axis label":][:,"unit label":].
-The \fIinfo\fP string is made up of one or more concatenated substrings of the form [\fBwhich\fP]\fIstride\fP[\fBu\fP].
-The optional \fBwhich\fP can be either \fBa\fP for (upper) annotation tick spacing [Default], \fBf\fP for frame tick spacing,
-\fBg\fP for gridline spacing, and, for time axes, \fBA\fP for lower annotation tick spacing, \fBi\fP for upper
-interval spacing, and \fBI\fP for lower interval spacing.  If frame interval is not set, it is assumed to be the same
-as annotation interval. \fIstride\fP is the desired stride interval.  \fBi\fP and \fBI\fP may take a modifier
-\fBf|F|a|A|c|C\fP which determines that interval names (like months) will be written using \fBf\fPull, \fBa\fPbbreviated,
-or a single \fBc\fPharacter name only (case will match the case of the modifier).  The optional \fBu\fP indicates the unit of the \fIstride\fP and can be any of
+[\fBp|s\fP]\fIxinfo\fP[/\fIyinfo\fP[/\fIzinfo\fP]][:."Title":][\fBW|w\fP][\fBE|e\fP][\fBS|s\fP][\fBN|n\fP][\fBZ|z\fP[\fB+\fP]].
+The leading \fBp\fP [Default] or \fBs\fP selects the primary or secondary annotation information.
+Each of the \fI?info\fP segments are textstrings of the form \fIinfo\fP[:"Axis label":][:^"prefix":][:,"unit label":].
+The \fIinfo\fP string is made up of one or more concatenated substrings of the form [\fBwhich\fP]\fIstride\fP[+-\fIphase\fP][\fBu\fP].
+The optional \fBwhich\fP can be either \fBa\fP for annotation tick spacing [Default], \fBf\fP for frame tick spacing, and
+\fBg\fP for gridline spacing.  If frame interval is not set, it is assumed to be the same
+as annotation interval. \fIstride\fP is the desired stride interval.  The optional \fIphase\fP shifts the annotation
+interval by that amount.  The optional \fBu\fP indicates the unit of the \fIstride\fP and can be any of
 \fBY\fP (year, plot with 4 digits), \fBy\fP (year, plot with 2 digits), \fBO\fP (month, plot using \fBPLOT_DATE_FORMAT\fP),
 \fBo\fP (month, plot with 2 digits), \fBU\fP (ISO week, plot using \fBPLOT_DATE_FORMAT\fP), \fBu\fP (ISO week, plot using 2 digits),
 \fBr\fP (Gregorian week, 7-day stride from start of week \fBTIME_WEEK_START\fP), \fBK\fP (ISO weekday, plot name of day),
@@ -23,8 +22,8 @@ axes with a slash [/] (If a 3-D basemap is selected with \fB\-E\fP and \fB\-Jz\f
 to the vertical axis may be appended.)  For linear/log/power projections (\fB\-Jx|X\fP): Labels
 for each axis can be added by surrounding them with colons.  If the first character in the
 label is a period, then the label is used as plot title; if it is a comma then the label is
-appended to each annotation (start label with - to avoid space between annotation and unit);
-else it is the axis label.
+appended to each annotation; if it is a caret (^) the the prefix is prepended to each annotation (start label/prefix
+with - to avoid space between annotation and item); else it is the axis label.
 If the label consists of more than one word, enclose the entire label in double quotes (e.g., :"my label":).
 .br
 By default, all 4 boundaries are plotted (referred to as \fBW, E, S, N\fP).  To change the default,

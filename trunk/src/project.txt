@@ -33,28 +33,28 @@ along the great circle, and the oblique latitude (\fIq\fP) corresponds to the di
 perpendicular to the great circle path.  When moving in the increasing (\fIp\fP) direction, 
 (toward \fIB\fP or in the \fIazimuth\fP direction), the positive (\fIq\fP) direction is to your left.  
 If a Pole has been specified, then the positive (\fIq\fP) direction is toward the pole.
- 
+.br
 To specify an oblique projection, use the \fB\-T\fP option to set the Pole.  Then the 
 equator of the projection is already determined and the \fB\-C\fP option is used to locate 
 the \fIp\fP = 0 meridian.  The Center \fIcx/cy\fP will be taken as a point through which
 the \fIp\fP = 0 meridian passes.  If you do not care to choose a particular point, use the 
 South pole (\fIox\fP = 0, \fIoy\fP = -90).
-
+.br
 Data can be selectively windowed by using the \fB\-L\fP and \fB\-W\fP options.  If 
 \fB\-W\fP is used, the projection Width is set to use only points with 
 \fIw_min\fP < q < \fIw_max\fP.  If \fB\-L\fP is set, then the Length is set to use 
 only those points with \fIl_min\fP < p < \fIl_max\fP.  If the \fB\-E\fP option 
 has been used to define the projection, then \fB\-Lw\fP may be selected to window 
 the length of the projection to exactly the span from \fBO\fP to \fBB\fP.
-
+.br
 Flat earth (Cartesian) coordinate transformations can also be made.  Set \fB\-N\fP  
 and remember that \fIazimuth\fP is clockwise from North (the \fIy\fP axis), NOT 
 the usual cartesian theta, which is counterclockwise from the \fIx\fP axis.  \fIazimuth\fP = 90 - theta. 
-
+.br
 No assumptions are made regarding the units for \fIx, y, r, s, p, q, dist, l_min, l_max, w_min, w_max\fP.
 If \fB\-Q\fP is selected, map units are assumed and \fIx, y, r, s\fP must be in degrees and
 \fIp, q, dist, l_min, l_max, w_min, w_max\fP will be in km.
-
+.br
 \fBproject\fP is CASE SENSITIVE.  Use UPPER CASE for all one-letter designators which begin optional arguments.  Use 
 lower case for the xyzpqrs letters in \fB\-flags\fP. 
 .br
