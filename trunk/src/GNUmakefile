@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.21 2003-04-05 02:32:22 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.22 2003-12-17 23:12:33 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -285,6 +285,7 @@ clean:
 
 spotless:	clean
 		rm -f $(GMTLIB) gmt_nan.h gmt_notposix.h grdmath.c gmtmath.c
+		rm -f gmt_keywords.h gmt_keycases.h gmt_ellipsoids.h
 
 distclean:	spotless
 
