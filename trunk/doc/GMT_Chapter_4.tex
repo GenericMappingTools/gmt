@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.2 2001-04-18 17:36:02 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.3 2001-09-21 20:57:54 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -45,7 +45,7 @@ you always supply the desired unit explicitly.
 \index{GMT@\GMT!defaults}%
 \index{.gmtdefaults}%
 
-There are more than 50 parameters which can be adjusted individually
+There are more than 75 parameters which can be adjusted individually
 to modify the appearance of plots or affect the manipulation of data.
 When a program is run, it initializes all parameters to the \GMT\
 defaults\footnote{Choose between SI and US default units by modifying
@@ -91,7 +91,7 @@ sometimes a number or character string immediately after the letter.
 
 \vspace{\baselineskip} 
 
-\texttt{pscoast –-R0/20/0/20 -–G200 -JM6i -W0.25p -–B5 -V $>$ map.ps}
+\texttt{pscoast -R0/20/0/20 -G200 -JM6i -W0.25p -B5 -V $>$ map.ps}
 
 \section{Standardized command line options} 
 \index{Standardized command line options}%
@@ -99,7 +99,7 @@ sometimes a number or character string immediately after the letter.
 
 Most of the programs take many of the same arguments like those
 related to setting the data region, the map projection, etc.
-The 13 switches in Table~\ref{tbl:switches} have the same meaning
+The 15 switches in Table~\ref{tbl:switches} have the same meaning
 in all the programs (Some programs may not use all of them).
 These options are described in more detail in the manual pages. 
 
@@ -117,7 +117,9 @@ These options are described in more detail in the manual pages.
 \index{\Opt{V} (verbose mode)}%
 \index{\Opt{X} (shift plot in $x$)}%
 \index{\Opt{Y} (shift plot in $y$)}%
+\index{\Opt{b} (binary i/o)}%
 \index{\Opt{c} (set \# of copies)}%
+\index{\Opt{f} (formatting of i/o)}%
 \index{\Opt{:} (input is $y,x$, not $x,y$)}%
 
 \begin{tabular}{|l|l|} \hline
@@ -125,15 +127,17 @@ These options are described in more detail in the manual pages.
 \Opt{B}	&	Defines tickmarks, annotations, and labels for basemaps and axes  \\ \hline
 \Opt{H}	&	Specifies that input tables have header record(s)  \\ \hline
 \Opt{J}	&	Selects a map projection or one of several non-map projections  \\ \hline
-\Opt{–K}	&	Allows more plot code to be appended to this plot later \\ \hline
+\Opt{K}	&	Allows more plot code to be appended to this plot later \\ \hline
 \Opt{O}	&	Allows this plot code to be appended to an existing plot \\ \hline
-\Opt{–P}	&	Selects Portrait plot orientation [Default is landscape] \\ \hline
+\Opt{P}	&	Selects Portrait plot orientation [Default is landscape] \\ \hline
 \Opt{R}	&	Defines the min. and max. coordinates of the map/plot region \\ \hline
-\Opt{–U}	&	Plots a time-stamp, by default in the lower left corner of page  \\ \hline
-\Opt{–V}	&	Verbose operation  \\ \hline
+\Opt{U}	&	Plots a time-stamp, by default in the lower left corner of page  \\ \hline
+\Opt{V}	&	Verbose operation  \\ \hline
 \Opt{X}	&	Sets the {\it x}-coordinate for the plot origin on the page  \\ \hline
 \Opt{Y}	&	Sets the {\it y}-coordinate for the plot origin on the page  \\ \hline
+\Opt{b}	&	Selects binary input or output  \\ \hline
 \Opt{c}	&	Specifies the number of plot copies  \\ \hline
+\Opt{f}	&	Specifies the data format on a per column basis  \\ \hline
 \Opt{:}	&	Input geographic data are ({\it lat,lon}) rather than ({\it lon,lat})  \\ \hline
 \end{tabular}
 \caption{Standardized \gmt\ command line switches}
@@ -153,7 +157,7 @@ projection, specified as
 
 \vspace{\baselineskip} 
 
-\texttt{-Joc190/25.5/327/56/1:500000} \\ 
+\texttt{-Joc170W/25:30S/33W/56:20N/1:500000} \\ 
 
 then a subsequent \GMTprog{psxy} command to plot symbols only needs
 to state \Opt{J}o in order to activate the same projection.
@@ -189,7 +193,7 @@ name without any arguments, the program will write the complete
 usage message to standard error (your screen, unless you
 redirect it).  This message explains in detail what all the
 valid arguments are.  If you enter the program name followed
-by a \emph{hyphen} (--–) only you will get a shorter version
+by a \emph{hyphen} (--) only you will get a shorter version
 which only shows the command line syntax and no detailed
 explanations.  If you incorrectly specify an option or omit
 a required option, the program will produce syntax errors and
@@ -217,7 +221,7 @@ as an instruction; if an argument begins without a hyphen,
 it tries to open this argument as a filename).
 This feature allows you to connect programs with pipes if
 you like.  If your input is ASCII and has one or more header
-records, you must use the \Opt{–H} option.  The number of header
+records, you must use the \Opt{H} option.  The number of header
 records is one of the many parameters in the \filename{.gmtdefaults}
 file, but can be overridden by \Opt{H}{\it n\_header\_recs}.
 ASCII files may in many cases also contain sub-headers
@@ -251,6 +255,65 @@ into another process.  Error messages, usage messages, and
 verbose comments are written to standard error in all cases.
 You can use \UNIX\ to redirect standard error as well,
 if you want to create a log file of what you are doing. 
+
+\section{Input Data Formats}
+\index{Input!format}
+\label{sec:io}
+
+Most of the time, \GMT| will know what kind of data it is reading,
+but there may be times when you must explicitly specify what you are
+providing as input. When binary data is selected (\Opt{b}) they must all
+be floating point numbers, however for ascii text input there are numerous
+ways to specify data.  In particular, there are three kinds of input data formats that \GMT\ can recognize:
+
+\begin{description}
+\item [Geographic coordinates].  These are longitudes and latitudes
+that (presumably) will be plotted or processed using one of several map
+projections.  The coordinates can either be in decimal degrees (e.g., -123.45417)
+or they may be in the [$\pm$]{\it ddd}[:{\it mm}[:{\it ss}[\it .xxx}]]][{\bf W}$|${\bf E}$|${\bf S}$|${\bf N}]
+format (e.g., 123:27:15W).
+\item [Calendar time coordinates].  These are absolute time coordinates referring to a Gregorian or ISO calendar.
+The general format is [{\it date}]{\bf T}[{\it clock}], where {\it date} can be specified in a wide range
+of formats.  Because of the widespread use of incompatible and ambiguous formats, the processing of input
+date components is guided by the structure of the {\bf INPUT\_DATE\_FORMAT} parameters in your
+\filename{.gmtdefaults} file.  The \GMT\ preferred date formats are {\it yyyy-mm-dd} (year, month, day-of-month)
+or {\it yyyy-jjj} (year and day-of-year) for Gregorian calendars and {\it yyyy-}{\bf W}{\it ww-d} (year, week, and
+day-of-week) for the ISO calendar.  A complete discription of possible formats are given in the \GMTprog{gmtdefaults}
+man page.  The {\it clock} string is more standardized but issues like 12- or 24-hour clocks complicate matters
+as well as the presence or absence of delimeters between fields.  Thus, the processing of input
+clock coordinates is guided by the structure of the {\bf INPUT\_CLOCK\_FORMAT} parameters in your
+\filename{.gmtdefaults} file.  The \GMT\ preferred clock format is {\it hh:mm:ss.xxx}.
+\item [Other coordinates].  These are simply anything that is not geographic or calendar time related, and are
+expected to be simple floating point values requiring no special processing.  One exception is the concept
+of relative time which is read as a floating point quantity in units determined by {\bf TIME\_UNIT}, and internally
+is added to an absolute time reference specified by {\bf TIME\_EPOCH}.
+\end{description}
+
+The supported data formats may be used in file input as well as in command line arguments.  However, note that for
+calendar time coordinates on the command line, you \emph{must} use the preferred \GMT\ date formats since other
+delimeters like slashes (/) would make the processing of the arguments ambiguous.  
+
+\GMT\ programs that require a map projection argument will implicitly know what kind of data to expect, and the
+path for input processing is set accordingly.  However, some programs that simply report on minimum and maximum
+values or that do a reformatting of the data will in general not know what to expect.  In such instances we must
+explicitly tell \GMT\ when we are feeding it data in the specific geographic or calendar formats (floating point
+data is assumed by default).  We specify the data type via the \Opt{f} option (which sets both input and output
+formats; use \Opt{fi} and \Opt{fo} to set input and output separately).  For instance, to specify that the
+the first two columns are longitude and latitude, and that the third column is absolute calendar time, we add
+\Opt{fi}0x,1y,2T to the command line.
+
+\section{Output Data Formats}
+\index{Output!format}
+
+The numerical output from \GMT\ programs can be binary (when \Opt{bo} is used) or ascii.
+In the latter case the issue of formatting becomes important.  \GMT\ provides extensive
+machinery for allowing just about any imaginable format to be used on output.  Analogous to
+the processing of input data, several templates guide the formatting process.  These are
+{\bf OUTPUT\_DATE\_FORMAT} and {\bf OUTPUT\_CLOCK\_FORMAT} for calendar time coordinates,
+{\bf OUTPUT\_DEGREE\_FORMAT} for geographical coordinates, and {\bf D_FORMAT} for generic
+floating point data.  In addition, the user have control over how columns are separated via
+the {\bf FIELD_SEPARATOR} parameter.  Thus it is possible to create FORTRAN-style card formats
+by setting {\bf D_FORMAT} to \%7.3lf and {\bf FIELD_SEPARATOR} to none.
 
 \section{\PS\ Features}
 \index{PostScript@\PS!features}
@@ -316,7 +379,7 @@ by appending \PS\ files together.
 If you do this, the first file needs a ``beginning'' and no ``end'',
 the last an ``end'' but no ``beginning'', and the middle files need
 only a ``middle''.  You accomplish this automatically with the
-Overlay (\Opt{–O}) and Continue (\Opt{–K}) options.  Overlay
+Overlay (\Opt{O}) and Continue (\Opt{K}) options.  Overlay
 indicates that this plot will be laid on top of an earlier one;
 therefore the ``beginning'' is not included in the output.  The
 default is always no overlay, i.e. write out the ``beginning''.
@@ -337,7 +400,7 @@ the form of an option argument, e.g.,
 
 \vspace{\baselineskip} 
 
-\par \Opt{–W}{\it width}[/{\it color}][{\bf t}{\it texture}][{\bf p}]\par 
+\par \Opt{W}{\it width}[/{\it color}][{\bf t}{\it texture}][{\bf p}]\par 
 
 \begin{description}
 \index{Pen!width}
@@ -359,9 +422,9 @@ achieved by giving zero width, but the result is device-dependent.
 \index{Color!pen}
 \index{Attributes!pen!color}%
 \item[$\rightarrow$]The {\it color} can be specified as a {\it gray}
-shade in the range 0–--255 (linearly going from black to white) or using
+shade in the range 0--255 (linearly going from black to white) or using
 the RGB system where you specify {\it r}/{\it g}/{\it b}, each ranging
-from 0--–255.  Here 0/0/0 is black and 255/255/255 is white. 
+from 0--255.  Here 0/0/0 is black and 255/255/255 is white. 
 
 \index{Pen!texture}
 \index{Texture, pen}
@@ -376,7 +439,7 @@ segments and the gap between segments.  The {\it offset} shifts the
 pattern along the line.  For example, if you want a yellow line of width
 2 that alternates between long dashes (20 units), a 10 unit gap, then
 a 5 unit dash, then another 10 unit gap, with pattern offset by 10 units
-from the origin, specify \Opt{–W}2/255/255/0{\bf t}20\_10\_5\_10:10.
+from the origin, specify \Opt{W}2/255/255/0{\bf t}20\_10\_5\_10:10.
 Here, the texture units can be specified in dpi units or points (see above). 
 \end{description} 
 
@@ -402,10 +465,10 @@ symbols.  The fill may take two forms:
 
 \vspace{\baselineskip} 
 
-In the first case we may specify a {\it gray} shade (0–--255) or a color
-({\it r}/{\it g}/{\it b} in the 0–--255 range), similar to the pen color
+In the first case we may specify a {\it gray} shade (0--255) or a color
+({\it r}/{\it g}/{\it b} in the 0--255 range), similar to the pen color
 settings.  The second form allows us to use a predefined bit-image pattern.
-{\it pattern} can either be a number in the range 1–--90 or the name of a 1-,
+{\it pattern} can either be a number in the range 1--90 or the name of a 1-,
 8-, or 24-bit Sun raster file.  The former will result in one of the 90
 predefined 64 x 64 bit-patterns provided with \GMT\ and reproduced in Appendix E.
 The latter allows the user to create customized, repeating images using
@@ -413,7 +476,7 @@ standard Sun rasterfiles.  The {\it dpi} parameter sets the resolution of
 this image on the page;  the area fill is thus made up of a series of these
 ``tiles''.  Specifying {\it dpi} as 0 will result in highest resolution
 obtainable given the present dpi setting in \filename{.gmtdefaults}.
-By specifying upper case \Opt{GP} instead of \Opt{–Gp} the image will be
+By specifying upper case \Opt{GP} instead of \Opt{Gp} the image will be
 bit-reversed, i.e., white and black areas will be interchanged (only applies
 to 1-bit images or predefined bit-image patterns).  For these patterns and
 other 1-bit images one may specify alternative background and foreground
@@ -422,7 +485,7 @@ replace the default white and black pixels, respectively.  Setting one of the
 fore- or background colors to -- yields a transparent image where only the
 back- or foreground pixels will be painted.
 Due to \PS\ implementation limitations the rasterimages used with
-\Opt{–G} must be less than 146 x 146 pixels in size; for larger images see
+\Opt{G} must be less than 146 x 146 pixels in size; for larger images see
 \GMTprog{psimage}.  The format of Sun raster files is outlined in Appendix B.
 Note that under \PS\ Level 1 the patterns are filled by using
 the polygon as a \emph{clip path}.  Complex clip paths may require
@@ -484,7 +547,7 @@ you prefer the HSV system, set the
 \filename{.gmtdefaults} parameter accordingly and replace red, green,
 blue with hue, saturation, value.  Color palette tables that contain
 grayshades only may replace the r-g-b triplets with a single grayshade
-in the 0--–255 range.
+in the 0--255 range.
 
 A few programs (i.e., those that plot polygons such as \GMTprog{grdview},
 \GMTprog{psscale}, and \GMTprog{psxy}) can accept pattern fills instead
@@ -610,14 +673,16 @@ added (Table~\ref{tbl:scand}):
 \PS\ fonts used in \GMT\ may be re-encoded to include
 several accented characters used in many European languages.  To
 access these, you must specify the full octal code $\backslash$xxx
-(See Appendix F).  Also see the definition of (and reason for)
-WANT\_EURO\_FONT in the \GMTprog{gmtdefaults} man page.  Basically,
-WANT\_EURO\_FONT must be set to TRUE for the special characters to
-be available.  Many characters that are not directly available by
+(See Appendix F) allowed for your choice of character encodings
+determined by the {\bf CHAR\_ENCODING} setting described
+in the \GMTprog{gmtdefaults} man page.  Only the special characters
+belonging to a particular encoding will
+be available.  Many characters not directly available by
 using single octal codes may be constructed with the composite
 character mechanism @!.
  
-Some examples of escape sequences and embedded octal codes in \GMT\ strings: 
+Some examples of escape sequences and embedded octal codes in \GMT\ strings using the
+Standard+ encoding: 
 
 \begin{tabbing}
 XXX\=\verb|2@~p@~r@+2@+h@-0@- E\363tv\363s|XXXX \== XXXX\=text \kill 
@@ -776,7 +841,7 @@ All \GMT\ programs that accept table data input may read ASCII
 or binary data†.  When using binary data the user must be aware
 of the fact that \GMT\ has no way of determining the actual
 number of columns in the file.  You should therefore pass that
-information to \GMT\ via the binary \Opt{–bi}[{\bf s}]{\it n} option,
+information to \GMT\ via the binary \Opt{bi}[{\bf s}]{\it n} option,
 where {\it n} is the actual number of data columns ({\bf s}
 indicates single rather than double precision).
 Note that {\it n} may be larger than {\it m}, the number of
@@ -784,3 +849,21 @@ columns that the \GMT\ program requires to do its task.  If
 {\it n} is not given then it defaults to {\it m}.  If
 {\it n} $<$ {\it m} an error is generated.  For more information,
 see Appendix B.
+
+\section{Data type selection}
+\index{Table!format}
+\index{Input!format \Opt{fi}}
+\index{Output!format \Opt{fo}}
+\index{\Opt{fi} (set input format)}
+\index{\Opt{fo} (set output format)}
+
+As mention in Section~\ref{sec:io}, there are times when we must explicitly state
+what kind of data each input or output column contains.  This is accomplished with
+the \Opt{f} option.  Following an optional {\bf i} (for input only) or {\bf o} (for output
+only), we append information about each column (or range of columns) separated by commas.
+Each information starts with the column number (0 is first column) followed by either
+x (longitude), y (latitude), T (absolute calendar time) or t (relative time).  If
+several consecutive columns have the same format you may specify a range of columns
+rather than a single column, e.e., 0-4 for the first 5 columns.  For example, if our
+input file has geographic coordinates (latitude, longitude) with absolute calendar
+coordinates in the columns 3 and 4, we would specify {\bf fi}0y,1x,3-4T.

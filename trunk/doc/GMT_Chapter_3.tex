@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_3.tex,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+%	$Id: GMT_Chapter_3.tex,v 1.2 2001-09-21 20:57:54 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -23,6 +23,7 @@ nearneighborxxxxx \=					\kill
 \GMTprog{blockmode}	\>	Mode estimate ({\it x},{\it y},{\it z}) table data filter/decimator \\ 
 \GMTprog{filter1d}	\>	Filter 1-D table data sets (time series) \\ 
 \GMTprog{fitcircle}	\>	Finds the best-fitting great or small circle for a set of points \\ 
+\GMTprog{gmt2rgb}	\>	Convert Sun raster or grd file to red, green, blue component grids \\ 
 \GMTprog{gmtconvert}	\>	Convert data tables from one format to another \\ 
 \GMTprog{gmtdefaults}	\>	List the current default settings \\ 
 \GMTprog{gmtmath}	\>	Mathematical operations on table data \\ 
@@ -63,6 +64,7 @@ nearneighborxxxxx \=					\kill
 \GMTprog{pscontour}	\>	Contour or image raw table data by triangulation \\ 
 \GMTprog{pshistogram}	\>	Plot a histogram \\ 
 \GMTprog{psimage}	\>	Plot Sun rasterfiles on a map \\ 
+\GMTprog{pslegend}	\>	Plot a legend on a map \\ 
 \GMTprog{psmask}	\>	Create overlay to mask out regions on maps \\ 
 \GMTprog{psrose}	\>	Plot sector or rose diagrams \\ 
 \GMTprog{psscale}	\>	Plot grayscale or colorscale on maps \\ 
@@ -102,16 +104,17 @@ for each of the 25 map projections available in \GMT. \\
 \GMTprog{grdcontour}	&	Contouring of 2-D gridded data\\ \hline
 \GMTprog{grdimage}	&	Produce images from 2-D gridded data \\ \hline
 \GMTprog{grdvector}	&	Plot vector fields from 2-D gridded data \\ \hline
-\GMTprog{grdview}		&	3-D perspective imaging of 2-D gridded data \\ \hline
+\GMTprog{grdview}	&	3-D perspective imaging of 2-D gridded data \\ \hline
 \GMTprog{psbasemap}	&	Create a basemap frame \\ \hline
 \GMTprog{psclip}	&	Use polygon files as clipping paths \\ \hline
-\GMTprog{pscoast}		&	Plot coastlines, filled continents, rivers, and political borders \\ \hline
+\GMTprog{pscoast}	&	Plot coastlines, filled continents, rivers, and political borders \\ \hline
 \GMTprog{pscontour}	&	Direct contouring or imaging of {\it xyz} data by triangulation \\ \hline
 \GMTprog{pshistogram}	&	Plot a histogram \\ \hline
-\GMTprog{psimage}		&	Plot Sun rasterfiles on a map \\ \hline
+\GMTprog{psimage}	&	Plot Sun rasterfiles on a map \\ \hline
+\GMTprog{pslegend}	&	Plot a legend on a map \\ 
 \GMTprog{psmask}	&	Create overlay to mask specified regions of a map \\ \hline
 \GMTprog{psrose}	&	Plot sector or rose diagrams \\ \hline
-\GMTprog{psscale}		&	Plot grayscale or colorscale \\ \hline
+\GMTprog{psscale}	&	Plot grayscale or colorscale \\ \hline
 \GMTprog{pstext}	&	Plot textstrings \\ \hline
 \GMTprog{pswiggle}	&	Draw anomalies along track \\ \hline
 \GMTprog{psxy}		&	Plot symbols, polygons, and lines in 2-D \\ \hline
@@ -142,6 +145,7 @@ for each of the 25 map projections available in \GMT. \\
 \GMTprog{spectrum1d}	&	Compute spectral estimates from time-series \\ \hline
 \GMTprog{triangulate}	&	Perform optimal Delauney triangulation on xyz data \\ \hline
 \multicolumn{2}{|c|}{CONVERT OR EXTRACT SUBSETS OF DATA} \\ \hline\hline
+\GMTprog{gmt2rgb}	&	Convert Sun raster or grd file to red, green, blue component grids \\ 
 \GMTprog{gmtconvert}	&	Convert table data from one format to another \\ \hline
 \GMTprog{gmtselect}	&	Select table data subsets based on multiple spatial criteria \\ \hline
 \GMTprog{grd2xyz}	&	Convert 2-D gridded data to table data \\ \hline
@@ -175,87 +179,87 @@ for each of the 25 map projections available in \GMT. \\
 \index{\Opt{H} (header records)|(}
 \index{\Opt{J} (set map projection)|(}
 \index{Projection!azimuthal!Lambert|(}
-\index{Lambert azimuthal projection \Opt{–Ja} \Opt{–JA}|(}
-\index{\Opt{–Ja} \Opt{–JA} (Lambert azimuthal)|(}
+\index{Lambert azimuthal projection \Opt{Ja} \Opt{JA}|(}
+\index{\Opt{Ja} \Opt{JA} (Lambert azimuthal)|(}
 \index{Projection!conic!Albers \Opt{Jb} \Opt{JB}|(}
 \index{Albers conic projection \Opt{Jb} \Opt{JB}|(}
 \index{\Opt{Jb} \Opt{JB} (Albers)|(}
 \index{Projection!conic!Equidistant \Opt{Jd} \Opt{JD}|(}
 \index{Equidistant conic projection \Opt{Jd} \Opt{JD}|(}
-\index{Projection!cylindrical!Cassini \Opt{–Jc} \Opt{JC}|(}
-\index{Cassini projection \Opt{–Jc} \Opt{JC}|(}
-\index{\Opt{–Jc} \Opt{JC} (Cassini)|(}
+\index{Projection!cylindrical!Cassini \Opt{Jc} \Opt{JC}|(}
+\index{Cassini projection \Opt{Jc} \Opt{JC}|(}
+\index{\Opt{Jc} \Opt{JC} (Cassini)|(}
 \index{Projection!azimuthal!equidistant|(}
-\index{Azimuthal equidistant projection \Opt{–Je} \Opt{–JE}|(}
-\index{\Opt{–Je} \Opt{–JE} (Azimuthal equidistant)|(}
+\index{Azimuthal equidistant projection \Opt{Je} \Opt{JE}|(}
+\index{\Opt{Je} \Opt{JE} (Azimuthal equidistant)|(}
 \index{Projection!azimuthal!gnomonic|(}
-\index{Gnomonic projection \Opt{–Jf} \Opt{–JF}|(}
-\index{\Opt{–Jf} \Opt{–JF} (Gnomonic)|(}
+\index{Gnomonic projection \Opt{Jf} \Opt{JF}|(}
+\index{\Opt{Jf} \Opt{JF} (Gnomonic)|(}
 \index{Projection!azimuthal!orthographic|(}
-\index{Orthographic projection \Opt{–Jg} \Opt{–JG}|(}
-\index{\Opt{–Jg} \Opt{–JG} (Orthographic)|(}
-\index{Hammer projection \Opt{–Jh} \Opt{–JH}|(}
+\index{Orthographic projection \Opt{Jg} \Opt{JG}|(}
+\index{\Opt{Jg} \Opt{JG} (Orthographic)|(}
+\index{Hammer projection \Opt{Jh} \Opt{JH}|(}
 \index{Projection!miscellaneous!Hammer|(}
-\index{\Opt{–Jh} \Opt{–JH} (Hammer)|(}
-\index{Sinusoidal projection \Opt{–Ji} \Opt{–JI}|(}
-\index{Projection!miscellaneous!Sinusoidal (\Opt{–Ji} \Opt{–JI})|(}
-\index{\Opt{–Ji} \Opt{–JI} (Sinusoidal)|(}
-\index{Projection!cylindrical!Miller \Opt{–Jj} \Opt{JJ}|(}
-\index{Miller cylindrical projection \Opt{–Jj} \Opt{JJ}|(}
-\index{\Opt{–Jj} \Opt{JJ} (Miller)|(}
-\index{Eckert IV and VI projection \Opt{–Jk} \Opt{–JK}|(}
-\index{Projection!miscellaneous!Eckert IV and VI (\Opt{–Jk} \Opt{–JK})|(}
-\index{\Opt{–Jk} \Opt{–JK} (Eckert IV and VI)|(}
+\index{\Opt{Jh} \Opt{JH} (Hammer)|(}
+\index{Sinusoidal projection \Opt{Ji} \Opt{JI}|(}
+\index{Projection!miscellaneous!Sinusoidal (\Opt{Ji} \Opt{JI})|(}
+\index{\Opt{Ji} \Opt{JI} (Sinusoidal)|(}
+\index{Projection!cylindrical!Miller \Opt{Jj} \Opt{JJ}|(}
+\index{Miller cylindrical projection \Opt{Jj} \Opt{JJ}|(}
+\index{\Opt{Jj} \Opt{JJ} (Miller)|(}
+\index{Eckert IV and VI projection \Opt{Jk} \Opt{JK}|(}
+\index{Projection!miscellaneous!Eckert IV and VI (\Opt{Jk} \Opt{JK})|(}
+\index{\Opt{Jk} \Opt{JK} (Eckert IV and VI)|(}
 \index{Projection!conic!Lambert \Opt{Jl} \Opt{JL}|(}
 \index{Lambert conic projection \Opt{Jl} \Opt{JL}|(}
 \index{\Opt{Jl} \Opt{JL} (Lambert conic)|(}
-\index{Projection!cylindrical!Mercator \Opt{–Jm} \Opt{JM}|(}
-\index{Mercator projection \Opt{–Jm} \Opt{JM}|(}
-\index{\Opt{–Jm} \Opt{JM} (Mercator)|(}
-\index{Robinson projection \Opt{–Jn} \Opt{–JN}|(}
+\index{Projection!cylindrical!Mercator \Opt{Jm} \Opt{JM}|(}
+\index{Mercator projection \Opt{Jm} \Opt{JM}|(}
+\index{\Opt{Jm} \Opt{JM} (Mercator)|(}
+\index{Robinson projection \Opt{Jn} \Opt{JN}|(}
 \index{Projection!miscellaneous!Robinson|(}
-\index{\Opt{–Jn} \Opt{–JN} (Robinson)|(}
-\index{Projection!cylindrical!oblique Mercator \Opt{–Jo} \Opt{JO}|(}
-\index{Oblique Mercator projection \Opt{–Jo} \Opt{JO}|(}
-\index{\Opt{–Jo} \Opt{JO} (Oblique Mercator)|(}
+\index{\Opt{Jn} \Opt{JN} (Robinson)|(}
+\index{Projection!cylindrical!oblique Mercator \Opt{Jo} \Opt{JO}|(}
+\index{Oblique Mercator projection \Opt{Jo} \Opt{JO}|(}
+\index{\Opt{Jo} \Opt{JO} (Oblique Mercator)|(}
 \index{Projection!polar ($\theta, r$)|(}
 \index{Polar ($\theta, r$) projection|(}
-\index{\Opt{–Jp} \Opt{–JP} (Polar ($\theta, r$) projections)|(}
-\index{Projection!cylindrical!equidistant \Opt{–Jq} \Opt{JQ}|(}
-\index{Equidistant cylindrical projection \Opt{–Jq} \Opt{JQ}|(}
-\index{\Opt{–Jq} \Opt{JQ} (Cylindrical equidistant)|(}
-\index{Winkel Tripel projection \Opt{–Jr} \Opt{–JR}|(}
+\index{\Opt{Jp} \Opt{JP} (Polar ($\theta, r$) projections)|(}
+\index{Projection!cylindrical!equidistant \Opt{Jq} \Opt{JQ}|(}
+\index{Equidistant cylindrical projection \Opt{Jq} \Opt{JQ}|(}
+\index{\Opt{Jq} \Opt{JQ} (Cylindrical equidistant)|(}
+\index{Winkel Tripel projection \Opt{Jr} \Opt{JR}|(}
 \index{Projection!miscellaneous!Winkel Tripel|(}
-\index{\Opt{–Jr} \Opt{–JR} (Winkel Tripel)|(}
+\index{\Opt{Jr} \Opt{JR} (Winkel Tripel)|(}
 \index{Projection!azimuthal!stereographic|(}
-\index{Stereographic projection \Opt{–Js} \Opt{–JS}|(}
-\index{\Opt{–Js} \Opt{–JS} (Stereographic)|(}
-\index{Projection!cylindrical!transverse Mercator \Opt{–Jt} \Opt{JT}|(}
-\index{Projection!cylindrical!UTM \Opt{–Ju} \Opt{JU}|(}
-\index{Transverse Mercator projection \Opt{–Jt} \Opt{JT}|(}
-\index{UTM projection \Opt{–Ju} \Opt{JU}|(}
-\index{\Opt{–Jt} \Opt{JT} (Transverse Mercator)|(}
-\index{\Opt{–Ju} \Opt{JU} (UTM)|(}
-\index{Van der Grinten projection \Opt{–Jv} \Opt{–JV}|(}
+\index{Stereographic projection \Opt{Js} \Opt{JS}|(}
+\index{\Opt{Js} \Opt{JS} (Stereographic)|(}
+\index{Projection!cylindrical!transverse Mercator \Opt{Jt} \Opt{JT}|(}
+\index{Projection!cylindrical!UTM \Opt{Ju} \Opt{JU}|(}
+\index{Transverse Mercator projection \Opt{Jt} \Opt{JT}|(}
+\index{UTM projection \Opt{Ju} \Opt{JU}|(}
+\index{\Opt{Jt} \Opt{JT} (Transverse Mercator)|(}
+\index{\Opt{Ju} \Opt{JU} (UTM)|(}
+\index{Van der Grinten projection \Opt{Jv} \Opt{JV}|(}
 \index{Projection!miscellaneous!Van der Grinten|(}
-\index{\Opt{–Jv} \Opt{–JV} (Van der Grinten)|(}
-\index{Mollweide projection \Opt{–Jw} \Opt{–JW}|(}
+\index{\Opt{Jv} \Opt{JV} (Van der Grinten)|(}
+\index{Mollweide projection \Opt{Jw} \Opt{JW}|(}
 \index{Projection!miscellaneous!Mollweide|(}
-\index{\Opt{–Jw} \Opt{–JW} (Mollweide)|(}
+\index{\Opt{Jw} \Opt{JW} (Mollweide)|(}
 \index{Projection!linear|(}
 \index{Projection!linear!Cartesian|(}
 \index{Cartesian linear projection|(}
 \index{Linear projection|(}
-\index{\Opt{–Jx} \Opt{–JX} (Non-map projections)|(}
+\index{\Opt{Jx} \Opt{JX} (Non-map projections)|(}
 \index{Projection!logarithmic|(}
 \index{Logarithmic projection|(}
 \index{Projection!power (exponential)|(}
 \index{Power (exponential) projection|(}
 \index{Projection!linear!geographic|(}
 \index{Geographic Linear projection|(}
-\index{Projection!cylindrical!general \Opt{–Jy} \Opt{JY}|(}
-\index{General cylindrical projection \Opt{–Jy} \Opt{JY}|(}
-\index{\Opt{–Jy} \Opt{JY} (General cylindrical)|(}
+\index{Projection!cylindrical!general \Opt{Jy} \Opt{JY}|(}
+\index{General cylindrical projection \Opt{Jy} \Opt{JY}|(}
+\index{\Opt{Jy} \Opt{JY} (General cylindrical)|(}
 \index{\Opt{K} (continue plot)|(}
 \index{\Opt{O} (overlay plot)|(}
 \index{\Opt{P} (portrait orientation)|(}
@@ -264,13 +268,16 @@ for each of the 25 map projections available in \GMT. \\
 \index{\Opt{V} (verbose mode)|(}
 \index{\Opt{X} (shift plot in $x$)|(}
 \index{\Opt{Y} (shift plot in $y$)|(}
+\index{\Opt{b} (binary i/o)|(}
 \index{\Opt{c} (set \# of copies)|(}
+\index{\Opt{f} (formatting of i/o)|(}
 \index{\Opt{:} (input is $y,x$, not $x,y$)|(}
 
 \begin{tabular}{|ll|} \hline
 \multicolumn{2}{|c|}{STANDARDIZED COMMAND LINE OPTIONS} \\ \hline\hline
 \multicolumn{2}{|l|}{\Opt{B}{\it xinfo}[{\it /yinfo}[{\it /zinfo}]][{\it WESNZwesnz+}][{\it :.title:}] Tickmarks. Each info is} \\
-\multicolumn{2}{|l|}{\hspace{0.2in}[{\bf a}]{\it tick}[{\bf m}$|${\bf c}][{\bf f}{\it tick}[{\bf m}$|${\bf c}]][{\bf g}{\it tick}[{\bf m}$|${\bf c}]][{\bf l}$|${\bf p}][:"label":][:,"unit":]} \\
+\multicolumn{2}{|l|}{\hspace{0.2in}[{\bf t}]{\it stride}[{\bf u}][{\bf l}$|${\bf p}][:"label":][:,"unit":]} \\
+\multicolumn{2}{|l|}{\hspace{0.2in}{\bf t} = \{{\bf a, A, f, g, i, I}\}, {\bf u} = \{{\bf c, C, d, D, h, H, K, k, m, M, o, O, r, u, U, y, Y}\}} \\
 \Opt{H}{\it [n\_headers]}		&	ASCII tables have header record[s] \\ \hline
 \Opt{J}	(upper case for width, lower case for scale) &	Map projection (see below) \\ \hline
 \hspace{0.2in}\Opt{JA}$lon_0/lat_0/width$	&	Lambert azimuthal equal area \\ \hline
@@ -286,7 +293,7 @@ for each of the 25 map projections available in \GMT. \\
 \hspace{0.2in}\Opt{JKf}$lon_0/width$	&	Eckert IV equal area \\ \hline
 \hspace{0.2in}\Opt{JKs}$lon_0/width$	&	Eckert VI equal area \\ \hline
 \hspace{0.2in}\Opt{JL}$lon_0/lat_0/lat_1/lat_2/width$	&	Lambert conic conformal \\ \hline
-\hspace{0.2in}\Opt{JM}$width$ or –\Opt{JM}$lon_0/lat_0/width$	&	Mercator cylindrical \\ \hline
+\hspace{0.2in}\Opt{JM}$width$ or \Opt{JM}$lon_0/lat_0/width$	&	Mercator cylindrical \\ \hline
 \hspace{0.2in}\Opt{JN}$lon_0/width$	&	Robinson \\ \hline
 \hspace{0.2in}\Opt{JOa}$lon_0/lat_0/az/width$	&	Oblique Mercator, 1:	origin and azimuth \\ \hline
 \hspace{0.2in}\Opt{JOb}$lon_0/lat_0/lon_1/lat_1/width$	&	Oblique Mercator, 2:	two points \\ \hline
@@ -299,17 +306,19 @@ for each of the 25 map projections available in \GMT. \\
 \hspace{0.2in}\Opt{JU}$zone/width$	&	Universal Transverse Mercator (UTM) \\ \hline
 \hspace{0.2in}\Opt{JV}$lon_0/width$	&	Van der Grinten \\ \hline
 \hspace{0.2in}\Opt{JW}$lon_0/width$	&	Mollweide \\ \hline
-\hspace{0.2in}\Opt{JX}$width$[{\bf l}$|${\bf p}][/$height$[{\bf l}$|${\bf p}]][{\bf d}]	&	Linear, log$_{10}$, and $x^a$--$–y^b$ (exponential) \\ \hline
+\hspace{0.2in}\Opt{JX}$width$[{\bf l}$|${\bf p}$exp|$]{\bf T}$|${\bf t}[/$height$[{\bf l}$|${\bf p}$exp|$]{\bf T}$|${\bf t}]][{\bf d}]	&	Linear, log$_{10}$, $x^a$--$y^b$, and time \\ \hline
 \hspace{0.2in}\Opt{JY}$lon_0/lat_s/width$	&	General cylindrical equal area \\ \hline
 \Opt{K}	&	Append more PS later \\ \hline
-–\Opt{O}	&	This is an overlay plot \\ \hline
-–\Opt{P}	&	Select Portrait orientation \\ \hline
+\Opt{O}	&	This is an overlay plot \\ \hline
+\Opt{P}	&	Select Portrait orientation \\ \hline
 \Opt{R}{\it west/east/south/north}[{\it /zmin/zmax}][{\bf r}] & Specify Region of interest \\ \hline
-–\Opt{U}[{\it /dx/dy}/][{\it label}]	&	Plot time-stamp on plot \\ \hline
-–\Opt{V}	&	Run in verbose mode \\ \hline
-–\Opt{X}[{\bf a}]{\it off}	&	Shift plot origin in $x$-direction \\ \hline
-–\Opt{Y}[{\bf a}]{\it off}	&	Shift plot origin in $y$-direction \\ \hline
-––\Opt{c}{\it copies}	&	Set number of plot copies [1] \\ \hline
+\Opt{U}[{\it /dx/dy}/][{\it label}]	&	Plot time-stamp on plot \\ \hline
+\Opt{V}	&	Run in verbose mode \\ \hline
+\Opt{X}[{\bf a}]{\it off}	&	Shift plot origin in $x$-direction \\ \hline
+\Opt{Y}[{\bf a}]{\it off}	&	Shift plot origin in $y$-direction \\ \hline
+\Opt{b}[{\bf i}$|{\bf o}][{\bf s}][{\it ncol}]	&	Select binary input or output \\ \hline
+\Opt{c}{\it copies}	&	Set number of plot copies [1] \\ \hline
+\Opt{f}[{\bf i}$|{\bf o}]{\it colinfo}	&	Set formatting of ascii input or output \\ \hline
 \Opt{:}	&	Expect {\it y}/{\it x} input rather than {\it x}/{\it y} \\ \hline
 \end{tabular}
 
@@ -318,87 +327,87 @@ for each of the 25 map projections available in \GMT. \\
 \index{\Opt{H} (header records)|)}
 \index{\Opt{J} (set map projection)|)}
 \index{Projection!azimuthal!Lambert|)}
-\index{Lambert azimuthal projection \Opt{–Ja} \Opt{–JA}|)}
-\index{\Opt{–Ja} \Opt{–JA} (Lambert azimuthal)|)}
+\index{Lambert azimuthal projection \Opt{Ja} \Opt{JA}|)}
+\index{\Opt{Ja} \Opt{JA} (Lambert azimuthal)|)}
 \index{Projection!conic!Albers \Opt{Jb} \Opt{JB}|)}
 \index{Albers conic projection \Opt{Jb} \Opt{JB}|)}
 \index{\Opt{Jb} \Opt{JB} (Albers)|)}
-\index{Projection!cylindrical!Cassini \Opt{–Jc} \Opt{JC}|)}
-\index{Cassini projection \Opt{–Jc} \Opt{JC}|)}
-\index{\Opt{–Jc} \Opt{JC} (Cassini)|)}
+\index{Projection!cylindrical!Cassini \Opt{Jc} \Opt{JC}|)}
+\index{Cassini projection \Opt{Jc} \Opt{JC}|)}
+\index{\Opt{Jc} \Opt{JC} (Cassini)|)}
 \index{Projection!conic!Equidistant \Opt{Jd} \Opt{JD}|)}
 \index{Equidistant conic projection \Opt{Jd} \Opt{JD}|)}
 \index{Projection!azimuthal!equidistant|)}
-\index{Azimuthal equidistant projection \Opt{–Je} \Opt{–JE}|)}
-\index{\Opt{–Je} \Opt{–JE} (Azimuthal equidistant)|)}
+\index{Azimuthal equidistant projection \Opt{Je} \Opt{JE}|)}
+\index{\Opt{Je} \Opt{JE} (Azimuthal equidistant)|)}
 \index{Projection!azimuthal!gnomonic|)}
-\index{Gnomonic projection \Opt{–Jf} \Opt{–JF}|)}
-\index{\Opt{–Jf} \Opt{–JF} (Gnomonic)|)}
+\index{Gnomonic projection \Opt{Jf} \Opt{JF}|)}
+\index{\Opt{Jf} \Opt{JF} (Gnomonic)|)}
 \index{Projection!azimuthal!orthographic|)}
-\index{Orthographic projection \Opt{–Jg} \Opt{–JG}|)}
-\index{\Opt{–Jg} \Opt{–JG} (Orthographic)|)}
-\index{Hammer projection \Opt{–Jh} \Opt{–JH}|)}
+\index{Orthographic projection \Opt{Jg} \Opt{JG}|)}
+\index{\Opt{Jg} \Opt{JG} (Orthographic)|)}
+\index{Hammer projection \Opt{Jh} \Opt{JH}|)}
 \index{Projection!miscellaneous!Hammer|)}
-\index{\Opt{–Jh} \Opt{–JH} (Hammer)|)}
-\index{Sinusoidal projection \Opt{–Ji} \Opt{–JI}|)}
-\index{Projection!miscellaneous!Sinusoidal (\Opt{–Ji} \Opt{–JI})|)}
-\index{\Opt{–Ji} \Opt{–JI} (Sinusoidal)|)}
-\index{Projection!cylindrical!Miller \Opt{–Jj} \Opt{JJ}|)}
-\index{Miller cylindrical projection \Opt{–Jj} \Opt{JJ}|)}
-\index{\Opt{–Jj} \Opt{JJ} (Miller)|)}
-\index{Eckert IV and VI projection \Opt{–Jk} \Opt{–JK}|)}
-\index{Projection!miscellaneous!Eckert IV and VI (\Opt{–Jk} \Opt{–JK})|)}
-\index{\Opt{–Jk} \Opt{–JK} (Eckert IV and VI)|)}
+\index{\Opt{Jh} \Opt{JH} (Hammer)|)}
+\index{Sinusoidal projection \Opt{Ji} \Opt{JI}|)}
+\index{Projection!miscellaneous!Sinusoidal (\Opt{Ji} \Opt{JI})|)}
+\index{\Opt{Ji} \Opt{JI} (Sinusoidal)|)}
+\index{Projection!cylindrical!Miller \Opt{Jj} \Opt{JJ}|)}
+\index{Miller cylindrical projection \Opt{Jj} \Opt{JJ}|)}
+\index{\Opt{Jj} \Opt{JJ} (Miller)|)}
+\index{Eckert IV and VI projection \Opt{Jk} \Opt{JK}|)}
+\index{Projection!miscellaneous!Eckert IV and VI (\Opt{Jk} \Opt{JK})|)}
+\index{\Opt{Jk} \Opt{JK} (Eckert IV and VI)|)}
 \index{Projection!conic!Lambert \Opt{Jl} \Opt{JL}|)}
 \index{Lambert conic projection \Opt{Jl} \Opt{JL}|)}
 \index{\Opt{Jl} \Opt{JL} (Lambert conic)|)}
-\index{Projection!cylindrical!Mercator \Opt{–Jm} \Opt{JM}|)}
-\index{Mercator projection \Opt{–Jm} \Opt{JM}|)}
-\index{\Opt{–Jm} \Opt{JM} (Mercator)|)}
-\index{Robinson projection \Opt{–Jn} \Opt{–JN}|)}
+\index{Projection!cylindrical!Mercator \Opt{Jm} \Opt{JM}|)}
+\index{Mercator projection \Opt{Jm} \Opt{JM}|)}
+\index{\Opt{Jm} \Opt{JM} (Mercator)|)}
+\index{Robinson projection \Opt{Jn} \Opt{JN}|)}
 \index{Projection!miscellaneous!Robinson|)}
-\index{\Opt{–Jn} \Opt{–JN} (Robinson)|)}
-\index{Projection!cylindrical!oblique Mercator \Opt{–Jo} \Opt{JO}|)}
-\index{Oblique Mercator projection \Opt{–Jo} \Opt{JO}|)}
-\index{\Opt{–Jo} \Opt{JO} (Oblique Mercator)|)}
+\index{\Opt{Jn} \Opt{JN} (Robinson)|)}
+\index{Projection!cylindrical!oblique Mercator \Opt{Jo} \Opt{JO}|)}
+\index{Oblique Mercator projection \Opt{Jo} \Opt{JO}|)}
+\index{\Opt{Jo} \Opt{JO} (Oblique Mercator)|)}
 \index{Projection!polar ($\theta, r$)|)}
 \index{Polar ($\theta, r$) projection|)}
-\index{\Opt{–Jp} \Opt{–JP} (Polar ($\theta, r$) projections)|)}
-\index{Projection!cylindrical!equidistant \Opt{–Jq} \Opt{JQ}|)}
-\index{Equidistant cylindrical projection \Opt{–Jq} \Opt{JQ}|)}
-\index{\Opt{–Jq} \Opt{JQ} (Cylindrical equidistant)|)}
-\index{Winkel Tripel projection \Opt{–Jr} \Opt{–JR}|)}
+\index{\Opt{Jp} \Opt{JP} (Polar ($\theta, r$) projections)|)}
+\index{Projection!cylindrical!equidistant \Opt{Jq} \Opt{JQ}|)}
+\index{Equidistant cylindrical projection \Opt{Jq} \Opt{JQ}|)}
+\index{\Opt{Jq} \Opt{JQ} (Cylindrical equidistant)|)}
+\index{Winkel Tripel projection \Opt{Jr} \Opt{JR}|)}
 \index{Projection!miscellaneous!Winkel Tripel|)}
-\index{\Opt{–Jr} \Opt{–JR} (Winkel Tripel)|)}
+\index{\Opt{Jr} \Opt{JR} (Winkel Tripel)|)}
 \index{Projection!azimuthal!stereographic|)}
-\index{Stereographic projection \Opt{–Js} \Opt{–JS}|)}
-\index{\Opt{–Js} \Opt{–JS} (Stereographic)|)}
-\index{Projection!cylindrical!transverse Mercator \Opt{–Jt} \Opt{JT}|)}
-\index{Projection!cylindrical!UTM \Opt{–Ju} \Opt{JU}|)}
-\index{Transverse Mercator projection \Opt{–Jt} \Opt{JT}|)}
-\index{UTM projection \Opt{–Ju} \Opt{JU}|)}
-\index{\Opt{–Jt} \Opt{JT} (Transverse Mercator)|)}
-\index{\Opt{–Ju} \Opt{JU} (UTM)|)}
-\index{Van der Grinten projection \Opt{–Jv} \Opt{–JV}|)}
+\index{Stereographic projection \Opt{Js} \Opt{JS}|)}
+\index{\Opt{Js} \Opt{JS} (Stereographic)|)}
+\index{Projection!cylindrical!transverse Mercator \Opt{Jt} \Opt{JT}|)}
+\index{Projection!cylindrical!UTM \Opt{Ju} \Opt{JU}|)}
+\index{Transverse Mercator projection \Opt{Jt} \Opt{JT}|)}
+\index{UTM projection \Opt{Ju} \Opt{JU}|)}
+\index{\Opt{Jt} \Opt{JT} (Transverse Mercator)|)}
+\index{\Opt{Ju} \Opt{JU} (UTM)|)}
+\index{Van der Grinten projection \Opt{Jv} \Opt{JV}|)}
 \index{Projection!miscellaneous!Van der Grinten|)}
-\index{\Opt{–Jv} \Opt{–JV} (Van der Grinten)|)}
-\index{Mollweide projection \Opt{–Jw} \Opt{–JW}|)}
+\index{\Opt{Jv} \Opt{JV} (Van der Grinten)|)}
+\index{Mollweide projection \Opt{Jw} \Opt{JW}|)}
 \index{Projection!miscellaneous!Mollweide|)}
-\index{\Opt{–Jw} \Opt{–JW} (Mollweide)|)}
+\index{\Opt{Jw} \Opt{JW} (Mollweide)|)}
 \index{Projection!linear|)}
 \index{Projection!linear!Cartesian|)}
 \index{Cartesian linear projection|)}
 \index{Linear projection|)}
-\index{\Opt{–Jx} \Opt{–JX} (Non-map projections)|)}
+\index{\Opt{Jx} \Opt{JX} (Non-map projections)|)}
 \index{Projection!logarithmic|)}
 \index{Logarithmic projection|)}
 \index{Projection!power (exponential)|)}
 \index{Power (exponential) projection|)}
 \index{Projection!linear!geographic|)}
 \index{Geographic Linear projection|)}
-\index{Projection!cylindrical!general \Opt{–Jy} \Opt{JY}|)}
-\index{General cylindrical projection \Opt{–Jy} \Opt{JY}|)}
-\index{\Opt{–Jy} \Opt{JY} (General cylindrical)|)}
+\index{Projection!cylindrical!general \Opt{Jy} \Opt{JY}|)}
+\index{General cylindrical projection \Opt{Jy} \Opt{JY}|)}
+\index{\Opt{Jy} \Opt{JY} (General cylindrical)|)}
 \index{\Opt{K} (continue plot)|)}
 \index{\Opt{O} (overlay plot)|)}
 \index{\Opt{P} (portrait orientation)|)}
@@ -407,7 +416,9 @@ for each of the 25 map projections available in \GMT. \\
 \index{\Opt{V} (verbose mode)|)}
 \index{\Opt{X} (shift plot in $x$)|)}
 \index{\Opt{Y} (shift plot in $y$)|)}
+\index{\Opt{b} (binary i/o)|)}
 \index{\Opt{c} (set \# of copies)|)}
+\index{\Opt{f} (formatting of i/o)|)}
 \index{\Opt{:} (input is $y,x$, not $x,y$)|)}
 
 \index{GMT@\GMT!quick reference|)}

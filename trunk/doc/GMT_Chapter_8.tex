@@ -1,0 +1,749 @@
+%------------------------------------------
+%	$Id: GMT_Chapter_8.tex,v 1.1 2001-09-21 20:57:54 pwessel Exp $
+%
+%	The GMT Documentation Project
+%	Copyright 2000-2001.
+%	Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+\chapter{Cook-book}
+\thispagestyle{headings}
+
+In this section we will be giving several examples of
+typical usage of \GMT\ programs.  In general, we will
+start with a raw data set, manipulate the numbers in
+various ways, then display the results in diagram or
+map view.  The resulting plots will have in common that
+they are all made up of simpler plots that have been
+overlaid to create a complex illustration.  We will
+mostly follow the following format:
+
+\begin{enumerate}
+\item We explain what we want to achieve in plain
+language.
+
+\item We present a cshell script that contains
+all commands used to generate the illustration.
+
+\item We explain the rationale behind the commands.
+
+\item We present the illustration, 50\% reduced in size, and without
+the timestamp (\Opt{U}).
+\end{enumerate}
+
+A detailed discussion of each command is not given;
+we refer you to the manual pages for command line
+syntax, etc.  We encourage you to run these scripts for yourself.
+See Appendix D if you would like an electronic version
+of all the shell-scripts (both \progname{csh} and \progname{bash} scripts
+are available; only the \progname{csh}-scripts are discussed here) and support
+data used below.  Note that all examples explicitly specifies the
+measurement units, so although we use inches you should be able
+to run these scripts and get the same plots even if you have cm
+as the default measure unit.  The examples are all written to be ``quiet'',
+that is no information is echoed to the screen.  Thus,
+these scripts are well suited for background execution.
+Note that we also end each script by cleaning up after
+ourselves. Because \progname{awk} is broken as designed on some
+systems, and \progname{nawk} is not available on others we refer
+to \progname{\$AWK} in the scripts below; the \progname{do\_examples}
+scripts will set this when running all examples. 
+
+\section{The making of contour maps}
+
+\index{Example!contour maps|(}
+
+We want to create two contour maps of the low order geoid
+using the Hammer equal area projection.  Our gridded data
+file is called \filename{osu91a1f\_16.grd} and contains a global 1\DS\ 
+by 1\DS\ gridded geoid (we will see how to make gridded
+files later).  We would like to show one map centered on
+Greenwich and one centered on the dateline.  Positive contours
+should be drawn with a solid pen and negative contours with
+a dashed pen.  Annotations should occur for every 50 m contour
+level, and both contour maps should show the continents in
+light gray in the background.  Finally, we want a rectangular
+frame surrounding the two maps.  This is how it is done:
+
+\input{scripts/GMT_example_1} 
+
+The first command draws a box surrounding the maps.  This is
+followed by two sequences of
+\GMTprog{pscoast}, –\GMTprogi{grdcontour}, \GMTprogi{–grdcontour}.
+They differ in that the first is centered on Greenwich; the
+second on the dateline.  We use the limit option (\Opt{–L})
+in \GMTprog{grdcontour} to select negative contours only and plot
+those with a dashed pen, then positive contours only and draw
+with a solid pen [Default].  The \Opt{–T} option causes tickmarks
+pointing in the downhill direction to be drawn on the innermost,
+closed contours.  For the upper panel we also added - and + to
+the local lows and highs.  You can find this illustration as
+Figure~\ref{fig:GMT_example_01}.
+
+\GMTfig[ht]{GMT_example_01}{Contour maps of gridded data}
+
+\index{Example!contour maps|)}
+
+\section{Image presentations}
+\index{Example!image presentations|(}
+
+As our second example we will demonstrate how to make color
+images from gridded data sets (again, we will deferr the
+actual making of gridded files to later examples).  We will
+use the supplemental program \GMTprog{grdraster} to extract 2-D
+grdfiles of bathymetry and Geosat geoid heights and put the
+two images on the same page.  The region of interest is the
+Hawaiian islands, and due to the oblique trend of the island
+chain we prefer to rotate our geographical data sets using
+an oblique Mercator projection defined by the hotspot pole
+at (68\DS W, 69\DS N).  We choose the point (190\DS ,
+25.5\DS ) to be the center of our projection (e.g., the
+local origin), and we want to image a rectangular region
+defined by the longitudes and latitudes of the lower left
+and upper right corner of region.  In our case we choose
+(160\DS , 20\DS ) and (220\DS , 30\DS ) as the
+corners.  We use \GMTprog{grdimage} to make the illustration:
+
+\input{scripts/GMT_example_2} 
+
+The first step extracts the 2-D data sets from the local
+data base using \GMTprog{grdraster}, which is a supplemental
+utility program (see Appendix A) that may be adapted to
+reflect the nature of your data base format.  It
+automatically figures out the required extent of the region
+given the two corners points and the projection.  The extreme
+meridians and parallels enclosing the oblique region is
+\Opt{R}159:50/220:10/3:10/47:35.  This is
+the area extracted by \GMTprog{grdraster}.  For your convenience
+we have commented out those lines and provided the two
+extracted files so you do not need \GMTprog{grdraster} to try
+this example.  By using the embedded grdfile format
+mechanism we saved the topography using kilometers as the
+data unit.  We now have two grdfiles with bathymetry and
+geoid heights, respectively.  We use \GMTprog{makecpt} to generate
+a linear color palette file \filename{geoid.cpt} for the geoid and use
+\GMTprog{grd2cpt} to get a histogram-equalized cpt file \filename{topo.cpt}
+for the topography data.  To emphasize the structures in
+the data we calculate the slopes in the north-south direction
+using \GMTprog{grdgradient}; these will be used to modulate the
+color image.  Next we run \GMTprog{grdimage} to create a
+color-code image of the Geosat geoid heights, and draw a
+color scale to the right of the image with \GMTprog{psscale}.
+We also annotate the color scales with \GMTprog{psscale}.
+Similarly, we run \GMTprog{grdimage} but specify \Opt{–Y}4.5
+to plot above the previous image.  Adding scale and label
+the two plots a) and b) completes the illustration
+(Figure~\ref{fig:GMT_example_02}).
+\index{Example!image presentations|)}
+\GMTfig[ht]{GMT_example_02}{Color images from gridded data}
+
+\section{Spectral estimation and xy-plots}
+\index{Example!Spectral estimation|(}
+\index{Example!xy plots|(}
+
+In this example we will show how to use the \GMT\ programs
+\GMTprog{fitcircle}, \GMTprog{project}, \GMTprog{sample1d},
+\GMTprog{spectrum1d}, \GMTprog{psxy}, and \GMTprog{pstext}.
+Suppose you have (lon, lat, gravity) along a satellite track
+in a file called \filename{sat.xyg}, and (lon, lat, gravity)
+along a ship track in a file called \filename{ship.xyg}.
+You want to make a cross-spectral analysis of these data.
+First, you will have to get the two data sets into equidistantly
+sampled time-series form.  To do this, it will be convenient to
+project these along the great circle that best fits the sat track.
+We must use \GMTprog{fitcircle} to find this great circle and choose
+the L$_2$  estimates of best pole.  We project the data using
+\GMTprog{project} to find out what their ranges are in the projected
+coordinate.  The \GMTprog{minmax} utility will report the minimum and
+maximum values for multi-column ASCII tables.  Use this information
+to select the range of the projected distance coordinate they have
+in common.  The script prompts you for that information after
+reporting the values.  We decide to make a file of equidistant
+sampling points spaced 1 km apart from -1167 to +1169, and use
+the \UNIX\ utility \progname{\$AWK} to accomplish this step.  We can then
+resample the projected data, and carry out the cross-spectral
+calculations, assuming that the ship is the input and the satellite
+is the output data.  There are several intermediate steps that
+produce helpful plots showing the effect of the various processing
+steps (\filename{example\_3[a--f].ps}), while the final plot
+\filename{example\_03.ps} shows
+the ship and sat power in one diagram and the coherency on another
+diagram, both on the same page.  Note the extended use of
+\GMTprog{pstext} and \GMTprog{psxy} to put labels and legends directly on
+the plots.  For that purpose we often use \Opt{Jx}1i and specify
+positions in inches directly.  Thus, the complete automated
+script reads:
+
+\input{scripts/GMT_example_3} 
+
+The final illustration (Figure~\ref{fig:GMT_example_03}) shows that the ship gravity
+anomalies have more power than altimetry derived gravity for
+short wavelengths and that the coherency between the two
+signals improves dramatically for wavelengths $>$ 20 km.
+\GMTfig[ht]{GMT_example_03}{Spectral estimation and $x/y$-plots}
+
+\index{Example!Spectral estimation|)}
+\index{Example!xy plots|)}
+
+\section{A 3-D perspective mesh plot}
+\index{Example!3-D mesh plot|(}
+
+This example will illustrate how to make a fairly complicated
+composite figure.  We need a subset of the ETOPO5 bathymetry†\footnote{
+These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).}
+and Geosat geoid data sets which we will extract from the local
+data bases using \GMTprog{grdraster}.  We would like to show a
+2-layer perspective plot where layer one shows a contour map
+of the marine geoid with the location of the Hawaiian islands
+superposed, and a second layer showing the 3-D mesh plot of
+the topography.  We also add an arrow pointing north and some
+text.  This is how to do it:
+
+\input{scripts/GMT_example_4} 
+
+The purpose of the color palette file \filename{zero.cpt} is to have
+the positive topography mesh painted light gray (the remainder
+is white).  Figure~\ref{fig:GMT_example_04} shows the complete illustration.
+\GMTfig[ht]{GMT_example_04}{3-D perspective mesh plot}
+
+A color version of this figure was used in our first article in EOS
+Trans. AGU  (Oct. 8th, 1991).  It was created along similar
+lines, but instead of a mesh plot we chose a color-coded surface
+with artificial illumination from a light-source due north.
+We choose to use the \Opt{Qi} option in \GMTprog{grdview} to
+achieve a high degree of smoothness.  Here, we select 100 dpi
+since that will be the resolution of our final raster
+(The EOS raster was 300 dpi). We used \GMTprog{grdgradient} to
+provide the intensity files.  The following script creates
+the color \PS\ file.  Note that the size of the
+resulting output file is directly dependent on the square of
+the dpi chosen for the scanline conversion.  A higher value
+for dpi in \Opt{Qi} would have resulted in a much larger
+output file.  The cpt files were taken from Example 2.
+
+\input{scripts/GMT_example_4c} 
+
+\index{Example!3-D mesh plot|)}
+
+\section{A 3-D illuminated surface in black and white}
+\index{Example!3-D illuminated surface|(}
+
+Instead of a mesh plot we may choose to show 3-D surfaces using
+artificial illumination.  For this example we will use
+\GMTprog{grdmath} to make a grdfile that contains the surface given
+by the function $z(x, y) = \cos (2\pi r/8)\cdot e^{-r/10}$, where
+$r^2 = (x^2 + y^2)$.  The illumination is obtained by passing
+two grdfiles to \GMTprog{grdview}: One with the {\it z}-values
+(the surface) and another with intensity values (which should
+be in the $\pm$1 range).  We use \GMTprog{grdgradient} to compute
+the horizontal gradients in the direction of the artificial
+light source.  The \filename{gray.cpt} file only has one line that states
+that all {\it z} values should have the gray level 128.  Thus,
+variations in shade are entirely due to variations in gradients,
+or illuminations.  We choose to illuminate from the SW and view
+the surface from SE:
+
+\input{scripts/GMT_example_5} 
+
+The variations in intensity could be made more dramatic by
+using \GMTprog{grdmath} to scale the intensity file before
+running \GMTprog{grdview}.  For very rough data sets one may
+improve the smoothness of the intensities by passing the
+output of \GMTprog{grdgradient} to \GMTprog{grdhisteq}.  The
+shell-script above will result in a plot like the one in
+Figure~\ref{fig:GMT_example_05}.
+\GMTfig[ht]{GMT_example_05}{3-D illuminated surface}
+
+\index{Example!3-D illuminated surface|)}
+
+\section{Plotting of histograms}
+\index{Example!histograms|(}
+
+\GMT\ provides two tools to render histograms: \GMTprog{pshistogram}
+and \GMTprog{psrose}.  The former takes care of regular histograms
+whereas the latter deals with polar histograms (rose diagrams,
+sector diagrams, and windrose diagrams).  We will show an
+example that involves both programs.  The file \filename{fractures.yx}
+contains a compilation of fracture lengths and directions as
+digitized from geological maps.  The file \filename{v3206.t} contains
+all the bathymetry measurements from {\it Vema} cruise 3206.
+Our complete figure (Figure~\ref{fig:GMT_example_06}) was made running
+this script:
+
+\input{scripts/GMT_example_6} 
+\GMTfig[ht]{GMT_example_06}{Two kinds of histograms}
+
+\index{Example!histograms|)}
+
+\section{A simple location map}
+\index{Example!location map|(}
+
+Many scientific papers start out by showing a location map
+of the region of interest. This map will typically also
+contain certain features and labels.  This example will
+present a location map for the equatorial Atlantic ocean,
+where fracture zones and mid-ocean ridge segments have been
+plotted.  We also would like to plot earthquake locations
+and available isochrons.  We have obtained one file,
+\filename{quakes.xym}, which contains the position and magnitude of
+available earthquakes in the region.  We choose to use
+magnitude/100 for the symbol-size in inches.  The digital
+fracture zone traces (\filename{fz.xy}) and isochrons (0 isochron as
+\filename{ridge.xy}, the rest as \filename{isochrons.xy}) were digitized from
+available maps†\footnote{These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).}.  We create the final location map
+(Figure~\ref{fig:GMT_example_07}) with the following script:
+
+\input{scripts/GMT_example_7} 
+
+The same figure could equally well be made in color, which
+could be rasterized and made into a slide for a meeting
+presentation.  The script is similar to the one outlined
+above, except we would choose a color for land and oceans,
+and select colored symbols and pens rather than black and white.
+\GMTfig[ht]{GMT_example_07}{A typical location map}
+
+\index{Example!location map|)}
+
+\section{A 3-D histogram}
+\index{Example!3-D histogram|(}
+
+The program \GMTprog{psxyz} allows us to plot three-dimensional
+symbols, including columnar plots.  As a simple demonstration,
+we will convert a gridded netCDF of bathymetry into an
+ASCII $xyz$ table and use the height information to draw a
+2-D histogram in a 3-D perspective view.  Our gridded
+bathymetry file is called \filename{topo.grd} and covers the region
+from 0 to 5 \DS E and 0 to 5 \DS N.  Depth ranges from
+-5000 meter to sea-level.  We produce the illustration by
+running this command:
+
+\input{scripts/GMT_example_8} 
+
+The output can be viewed in Figure~\ref{fig:GMT_example_08}.
+\GMTfig[ht]{GMT_example_08}{A 3-D histogram}
+
+\index{Example!3-D histogram|)}
+
+\section{Plotting time-series along tracks}
+\index{Example!wiggles|(}
+
+A common application in many scientific disciplines involves
+plotting one or several time-series as as ``wiggles'' along
+tracks.  Marine geophysicists often display magnetic anomalies
+in this manner, and seismologists use the technique when
+plotting individual seismic traces.  In our example we will
+show how a set of Geosat sea surface slope profiles from the
+south Pacific can be plotted as ``wiggles'' using the
+\GMTprog{pswiggle} program. We will embellish the plot with track
+numbers, the location of the Pacific-Antarctic Ridge, recognized
+fracture zones in the area, and a ``wiggle'' scale.  The
+Geosat tracks are stored in the files \filename{*.xys}, the ridge in
+\filename{ridge.xy}, and all the fracture zones are stored in the multiple
+segment file \filename{fz.xy}.  We extract the profile id (which is the
+first part of the file name for each profile) and the last point
+in each of the track files to construct an input file for
+\GMTprog{pstext} that will label each profile with the track
+number.  We know the profiles trend approximately N40\DS E
+so we want the labels to have that same orientation (i.e., the
+angle with the baseline must be 50\DS ).  We do this by
+extracting the last record from each track, paste this file
+with the \filename{tracks.lis} file, and use \progname{\$AWK} to create the
+format needed for \GMTprog{pstext}.  Note we offset the positions
+by -0.05 inch with \Opt{–D} in order to have a small gap
+between the profile and the label:
+
+\input{scripts/GMT_example_9} 
+
+The output shows the sea-surface slopes along 42 descending
+Geosat tracks in the Eltanin and Udintsev fracture zone
+region in a Mercator projection (Figure~\ref{fig:GMT_example_09}).
+\GMTfig[ht]{GMT_example_09}{Time-series as ``wiggles'' along a track}
+
+\index{Example!wiggles|)}
+
+\section{A geographical bar graph plot}
+\index{Example!bar graph|(}
+
+Our next and perhaps silliest example presents a
+three-dimensional bargraph plot showing the geographic
+distribution of the membership in the American Geophysical
+Union (AGU).  The input data was taken from the 1991 AGU
+member directory and added up to give total members per
+continent.  We decide to plot a 3-D column centered on
+each continent with a height that is proportional to the
+logarithm of the membership.  A log$_{10}$-scale is
+used since the memberships vary by almost 3 orders of
+magnitude.  We choose a plain linear projection for the
+basemap and add the columns and text on top. Our script reads:
+
+\input{scripts/GMT_example_10}
+
+with the result presented in Figure~\ref{fig:GMT_example_10}.
+
+\GMTfig[ht]{GMT_example_10}{Geographical bar graph}
+
+\index{Example!bar graph|)}
+
+\section{Making a 3-D RGB color cube}
+\index{Example!3-D RGB color cube|(}
+
+In this example we generate a series of 6 color images,
+arranged in the shape of a cross, that can be cut out
+and assembled into a 3-D color cube.  The six faces of
+the cube represent the outside of the R-G-B color space.
+On each face one of the color components is fixed at either
+0 or 255 and the other two components vary smoothly across
+the face from 0 to 255.  The cube is configured as a
+right-handed coordinate system with {\it x-y-z} mapping
+R-G-B.  Hence, the 8 corners of the cube represent the
+primaries red, green, and blue, plus the secondaries cyan,
+magenta and yellow, plus black and white.
+
+The method for generating the 6 color faces utilizes
+\progname{\$AWK} in two steps.  First, a {\it z}-grid is composed
+which is 256 by 256 with {\it z}-values increasing in a planar
+fashion from 0 to 65535.  This {\it z}-grid is common to all
+six faces.  The color variations are generated by creating a
+different color palette for each face using the supplied
+\progname{\$AWK} script \filename{rgb\_cube.awk}.  This script generates a
+``cpt'' file appropriate for each face using arguments for
+each of the three color components.  The arguments specify
+if that component ($r,g,b$) is to be held fixed at 0 or 255,
+is to vary in {\it x}, or is to vary in {\it y}.  If the
+color is to increase in {\it x} or {\it y}, a lower case
+{\it x} or {\it y} is specified; if the color is to decrease
+in {\it x} or {\it y}, an upper case {\it X} or {\it Y} is
+used. Here is the shell script and accompanying \progname{\$AWK}
+script to generate the RGB cube:
+
+\input{scripts/GMT_example_11} 
+
+The \progname{\$AWK} script \filename{rgb\_cube.awk} is as follows:
+
+\input{scripts/rgb_cube_awk}
+
+The cube can be viewed in Figure~\ref{fig:GMT_example_11}
+
+\GMTfig[ht]{GMT_example_11}{The color cube}
+
+\index{Example!3-D RGB color cube|)}
+
+\section{Optimal triangulation of data}
+\index{Example!triangulation|(}
+
+Our next example (Figure~\ref{fig:GMT_example_12})
+operates on a data set of topographic
+readings non-uniformly distributed in the plane (Table
+5.11 in Davis: {\it Statistics and Data Analysis in Geology},
+J. Wiley).  We use \GMTprog{triangulate} to perform the optimal
+Delaunay triangulation, then use the output to draw the
+resulting network.  We label the node numbers as well as
+the node values, and call \GMTprog{pscontour} to make a contour
+map and image directly from the raw data.  Thus, in this
+example we do not actually make gridded files but still
+are able to contour and image the data.  We use a color
+palette table \filename{topo.cpt} (supplied with the script data
+separately).  The script becomes:
+
+\input{scripts/GMT_example_12} 
+\GMTfig[ht]{GMT_example_12}{Optimal triangulation of data}
+
+\index{Example!triangulation|)}
+
+\section{Plotting of vector fields}
+\index{Example!vector fields|(}
+
+In many areas, such as fluid dynamics and elasticity,
+it is desirable to plot vector fields of various kinds.
+\GMT\ provides a way to illustrate 2-component vector fields
+using the \GMTprog{grdvector} utility.  The two components of
+the field (Cartesian or polar components) are stored in
+separate grdfiles.  In this example we use \GMTprog{grdmath}
+to generate a surface $z(x, y) = x \cdot \exp(-x^2 -y^2)$
+and to calculate $\nabla z$ by
+returning the {\it x}- and {\it y}-derivatives separately.
+We superpose the gradient vector field and the surface
+{\it z} and also plot the components of the gradient
+in separate windows:
+
+\input{scripts/GMT_example_13} 
+
+A \GMTprog{pstext} call to place a header finishes the plot
+(Figure~\ref{fig:GMT_example_13}.
+
+\GMTfig[ht]{GMT_example_13}{Display of vector fields in \gmt}
+
+\index{Example!vector fields|)}
+
+\section{Gridding of data and trend surfaces}
+\index{Example!gridding and trend surfaces|(}
+
+This example shows how one goes from randomly spaced data
+points to an evenly sampled surface.  First we plot the
+distribution and values of our raw data set (table 5.11
+from example 12).  We choose an equidistant grid and run
+\GMTprog{blockmean} which preprocesses the data to avoid aliasing.
+The dashed lines indicate the logical blocks used by
+\GMTprog{blockmean}; all points inside a given bin will be averaged.
+The logical blocks are drawn from a temporary file we make on
+the fly within the shell script.  The processed data is then
+gridded with the \GMTprog{surface} program and contoured every 25
+units.  A most important point here is that \GMTprog{blockmean},
+\GMTprog{blockmedian}, or \GMTprog{blockmode} should always be run
+prior to running \GMTprog{surface}, and both of these steps must use the same
+grid interval.  We use \GMTprog{grdtrend} to fit a bicubic trend
+surface to the gridded data, contour it as well, and sample
+both gridded files along a diagonal transect using \GMTprog{grdtrack}.
+The bottom panel compares the gridded (solid line) and bicubic
+trend (dashed line) along the transect using \GMTprog{psxy}
+(Figure~\ref{fig:GMT_example_14}):
+
+\input{scripts/GMT_example_14} 
+\GMTfig[ht]{GMT_example_14}{Gridding of data and trend surfaces}
+
+\index{Example!gridding and trend surfaces|)}
+
+\section{Gridding, contouring, and masking of unconstrained areas}
+\index{Example!gridding, contouring, and masking|(}
+
+This example (Figure~\ref{fig:GMT_example_15}) demonstrates
+some off the different ways one
+can use to grid data in \GMT, and how to deal with unconstrained
+areas.  We first convert a large ASCII file to binary with
+\GMTprog{gmtconvert} since the binary file will read and process
+much faster.  Our lower left plot illustrates the results of
+gridding using a nearest neighbor technique (\GMTprog{nearneighbor})
+which is a local method: No output is given where there are no data.
+Next (lower right), we use a minimum curvature technique
+(\GMTprog{surface}) which is a global method.  Hence, the contours
+cover the entire map allthough the data are only available for
+portions of the area (indicated by the gray areas plotted using
+\GMTprog{psmask}).  The top left scenario illustrates how we can
+create a clip path (using \GMTprog{psmask}) based on the data coverage
+to eliminate contours outside the constrained area.
+Finally (top right) we simply employ \GMTprog{pscoast} to overlay
+gray landmasses to cover up the unwanted contours, and end by
+plotting a star at the deepest point on the map with \GMTprog{psxy}.
+This point was extracted from the gridded files using \GMTprog{grdinfo}.
+
+\input{scripts/GMT_example_15} 
+\GMTfig[ht]{GMT_example_15}{Gridding, contouring, and masking of data}
+
+\index{Example!gridding, contouring, and masking|)}
+
+\section{Gridding of data, continued}
+\index{Example!gridding|(}
+
+\GMTprog{pscontour} (for contouring) and \GMTprog{triangulate}
+(for gridding) use the simplest method of interpolating
+data:  a Delaunay triangulation (see Example 12) which
+forms $z(x, y)$ as a union of planar triangular facets.
+One advantage of this method is that it will not extrapolate
+$z(x, y)$ beyond the convex hull of the input ({\it x, y})
+data.  Another is that it will not estimate a {\it z} value
+above or below the local bounds on any triangle.
+A disadvantage is that the $z(x, y)$ surface is not
+differentiable, but has sharp kinks at triangle edges and
+thus also along contours.  This may not look physically
+reasonable, but it can be filtered later (last panel below).
+\GMTprog{surface} can be used to generate a higher-order
+(smooth and differentiable) interpolation of $z(x, y)$ onto
+a grid, after which the grid may be illustrated (\GMTprog{grdcontour},
+\GMTprog{grdimage}, \GMTprog{grdview}).  \GMTprog{surface} will interpolate
+to all ({\it x, y}) points in a rectangular region, and thus
+will extrapolate beyond the convex hull of the data.  However,
+this can be masked out in various ways (see Example 15).
+
+A more serious objection is that \GMTprog{surface} may estimate
+{\it z} values outside the local range of the data (note area
+near {\it x} = 0.8, {\it y} = 5.3).  This commonly happens when
+the default tension value of zero is used to create a ``minimum
+curvature'' (most smooth) interpolant.  \GMTprog{surface} can be
+used with non-zero tension to partially  overcome this problem.
+The limiting value $tension = 1$ should approximate the triangulation,
+while a value between 0 and 1 may yield a good compromise between
+the above two cases.  A value of 0.5 is shown here
+(Figure~\ref{fig:GMT_example_16}).  A side
+effect of the tension is that it tends to make the contours turn
+near the edges of the domain so that they approach the edge from
+a perpendicular direction.  A solution is to use \GMTprog{surface}
+in a larger area and then use \GMTprog{grdcut} to cut out the desired
+smaller area.  Another way to achieve a compromise is to
+interpolate the data to a grid and then filter the grid using
+\GMTprog{grdfft} or \GMTprog{grdfilter}.  The latter can handle grids
+containing ``NaN'' values and it can do  median and mode filters
+as well as convolutions.  Shown here is \GMTprog{triangulate} followed
+by \GMTprog{grdfilter}.  Note that the filter has done some
+extrapolation beyond the convex hull of the original {\it x, y}
+values.  The ``best'' smooth approximation of $z(x, y)$ depends
+on the errors in the data and the physical laws obeyed by {\it z}.
+\GMT\ cannot always do the ``best'' thing but it offers great
+flexibility through its combinations of tools.  We illustrate all
+four solutions using a cpt file that contains color fills,
+patterns, and a ``skip slice'' request for $700 < z < 725$.
+
+\input{scripts/GMT_example_16} 
+\GMTfig[ht]{GMT_example_16}{More ways to grid data}
+
+\index{Example!gridding|)}
+
+\section{Images clipped by coastlines}
+\index{Example!image clipping|(}
+
+This example demonstrates how \GMTprog{pscoast} can be used
+to set up clippaths based on coastlines.  This approach
+is well suited when different gridded data sets are to be
+merged on a plot using different color palette files.
+Merging the files themselves may not be doable since they
+may represent different data sets, as we show in this example.
+Here, we lay down a color map of the geoid field near India
+with \GMTprog{grdimage}, use \GMTprog{pscoast} to set up land
+clippaths, and then overlay topography from the ETOPO5 data
+set with another call to \GMTprog{grdimage}.  We finally undo
+the clippath with a second call to \GMTprog{pscoast} with the
+option \Opt{–Q} (Figure~\ref{fig:GMT_example_17}): 
+
+\input{scripts/GMT_example_17} 
+\GMTfig[ht]{GMT_example_17}{Clipping of images using coastlines}
+
+\index{Example!image clipping|)}
+
+\section{Volumes and Spatial Selections}
+\index{Example!spatial selections|(}
+
+To demonstrate potential usage of the new programs
+\GMTprog{grdvolume} and \GMTprog{gmtselect} we extract a subset
+of the Sandwell \& Smith altimetric gravity field\footnote{
+See http://topex.ucsd.edu/marine\_grav/mar\_grav.html.}†
+for the northern Pacific and decide to isolate all seamounts that
+(1) exceed 50 mGal in amplitude and (2) are within 200 km
+of the Pratt seamount.  We do this by dumping the 50 mGal
+contours to disk, then making a simple \progname{\$AWK} script
+\filename{center.awk} that returns the mean location of the points
+making up each closed polygon, and then pass these locations
+to \GMTprog{gmtselect} which retains only the points within 200
+km of Pratt.  We then mask out all the data outside this
+radius and use \GMTprog{grdvolume} to determine the combined
+area and volumes of the chosen seamounts.
+
+\input{scripts/GMT_example_18}
+
+Our illustration is presented in Figure~\ref{fig:GMT_example_18}.
+
+\GMTfig[ht]{GMT_example_18}{Volumes and geo-spatial selections}
+
+\index{Example!spatial selections|)}
+
+\section{Color patterns on maps}
+\index{Example!color patterns|(}
+
+\GMT\ 3.1 introduced color patterns and this examples give
+a few cases of how to use this new feature.  We make a phony
+poster that advertises an international conference on \GMT\
+in Honolulu.  We use \GMTprog{grdmath}, \GMTprog{makecpt}, and
+\GMTprog{grdimage} to draw pleasing color backgrounds on maps,
+and overlay \GMTprog{pscoast} clippaths to have the patterns
+change at the coastlines.  The middle panel demonstrates a
+simple \GMTprog{pscoast} call where the built-in pattern \# 86
+is drawn at 100 dpi but with the black and white pixels
+replaced with color combinations.  The final panel repeats
+the top panel except that the land and sea images have changed places
+(Figure~\ref{fig:GMT_example_19}).
+
+\input{scripts/GMT_example_19} 
+\GMTfig[ht]{GMT_example_19}{Using color patterns in illustrations}
+
+\index{Example!color patterns|)}
+
+\section{Custom map symbols}
+\index{Example!custom map symbols|(}
+
+One is often required to make special maps that shows the
+distribution of certain features but one would prefer to
+use a custom symbol instead of the built-in circles,
+squares, triangles, etc. in the \GMT\ plotting programs
+\GMTprog{psxy} and \GMTprog{psxyz}.  Here we demonstrate one
+approach that allows for a fair bit of flexibility in
+designing one’s own symbols.  The following recipe is used
+when designing a new symbol. (1) Use \GMTprog{psbasemap} (or
+engineering paper!) to set up an empty grid that goes from
+-0.5 to +0.5 in both {\it x} and {\it y}.  Use ruler and
+compass to draw your new symbol using straight lines and
+arcs of circles.  This is how your symbol will look when
+a size of 1 inch is chosen.  Figure~\ref{fig:GMT_volcano} illustrates a
+new symbol we will call volcano.
+
+\GMTfig[ht]{GMT_volcano}{Making a new volcano symbol for \gmt}
+
+(2) After designing the symbol we will encode it using a
+simple set of rules.  In our case we describe our volcano
+using no more than 4 possible constructs:
+
+\begin{tabbing} 
+
+$x_0$ $y_0$ $r$ $\Delta\alpha$ {\bf C} [ \Opt{G}{\it fill} ] [ \Opt{W}{\it pen} ] \=Draw \kill
+
+$x_0$ $y_0$ {\bf M} [ \Opt{G}{\it fill} ] [ \Opt{W}{\it pen} ] \> Start
+new element at $x_0$, $y_0$ \\ 
+
+$x_1$ $y_1$ {\bf D} \> Draw straight line from current point to $x_1$, $y_1$ \\ 
+
+$x_0$ $y_0$ $r$ $\Delta\alpha$ {\bf C} [ \Opt{G}{\it fill} ] [ \Opt{W}{\it pen} ] \> Draw
+single circle of radius $r$ around $x_0$, $y_0$ in steps of $\Delta\alpha$\DS \\
+
+$x_0$ $y_0$ $r$ $\alpha_1$ $\alpha_2$ $\Delta\alpha$ {\bf A} \> Draw
+arc segment of radius $r$ from angle $\alpha_1$ to $\alpha_2$
+every $\Delta\alpha$\DS
+
+\end{tabbing} 
+
+The optional \Opt{G} and \Opt{–W} can be used to hardwire
+the color fill and pen for segments.  By default the segments
+are painted based on the values of the command line settings.
+
+Manually applying these rules to our symbol results in a
+definition file \filename{volcano.def}:
+
+\input{scripts/volcano_def} 
+
+The values refer to positions and dimensions illustrated
+in Figure~\ref{fig:GMT_volcano} above.  (3) Given a proper
+definition file we use the supplied \progname{\$AWK}-script \filename{make\_symbol}
+to create a custom \progname{\$AWK}-script that will read locations and
+sizes of the desired symbols and replace them with line-drawings
+like the one in the figure but translated and scaled accordingly.
+The output is a multi-segment file (see Appendix B) which may
+be plotted with \GMTprog{psxy} or \GMTprog{psxyz}.
+
+We are now ready to give it a try.  Based on the hotspot
+locations in the file \filename{hotspots.d} (with a 3rd column
+giving the desired symbol sizes in inches) we lay down a
+world map and overlay red volcano symbols using our custom-built
+\progname{\$AWK}-script \filename{volcano.awk} and \GMTprog{psxy}.
+Note that you must first transform the coordinates using
+\GMTprog{mapproject} prior to running the \progname{\$AWK}-script.
+Without further discussion we also make a definition for a multi-
+colored bulls-eye symbol:
+
+\input{scripts/bullseye_def} 
+
+Here is our final map script:
+
+\input{scripts/GMT_example_20}
+
+which produces the plot in Figure~\ref{fig:GMT_example_20}.
+
+\GMTfig[ht]{GMT_example_20}{Using custom symbols in \gmt}
+
+Given these guidelines you can easily make your own symbols.
+Symbols with more than one color can be obtained by making
+several symbol components.  E.g., to have yellow smoke coming
+out of red volcanoes we would make two symbols: one with just
+the cone and caldera and the other with the bubbles.  These
+would be plotted consecutively using the desired colors.
+Alternatively, like in \filename{bullseye.def}, we may
+specify colors directly for the various segments.  Note that
+the custom symbols, unlike the built-in symbols in \GMT, can
+be used with the built-in patterns (Appendix E).  Other
+approaches are also possible, of course.
+\index{Example!custom map symbols|)}

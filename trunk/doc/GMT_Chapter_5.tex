@@ -1,27 +1,70 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_5.tex,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+%	$Id: GMT_Chapter_5.tex,v 1.2 2001-09-21 20:57:54 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
 %	Paul Wessel and Walter H. F. Smith
 %------------------------------------------
 %
-\chapter{\gmt\ Projections}
+\chapter{\gmt\ Transformations and Projections}
 \thispagestyle{headings}
 
-\GMT\ programs that read position data will need to know how
-to convert the input coordinates to positions on the map.
-This is achieved by selecting one of several projections.
-The purpose of this section is to summarize the properties
-of map projections available in \GMT, what parameters define
+\GMT\ programs that read coordinate data will need to know how
+to convert the input coordinates to positions on a map or plot.
+This is achieved by selecting one of several transformations or projections.
+We distinguish between two sets of scalings:
+\begin{description}
+\item [Linear Transformations].  This label refers to a set of procedures
+that transform input coordinates $(x,y)$ to locations $(x', y')$ on a plot.
+There is no coupling between $x$ and $y$, i.e., $x' = f(x)$ and $y' = f(y)$.
+For that reason, we may use separate transformations for the $x$-, $y$-, and
+$z$-axes.
+Below, we will use the expression $u' = f(u)$, where $u$ is either $x$ or $y$.
+The constant scales and offsets in $f(t)$ are determined from the desired plot
+size (or scale), the chosen $(x,y)$ domain, and the nature of $f$.
+This group contains
+\begin{itemize}
+\item Linear transformation.  Here, $u' = au + b$
+\item Log$_{10}$ transformation.  Here, $x' = a \log_{10}(x) + b$.
+\item power (exponential) transformation.  Here, $x' = a x^b + c$.
+\end{itemize}
+Two special versions of the linear projection deserve special mention.
+\begin{enumerate}
+\item It is sometimes useful to plot geographic coordinates (longitude, latitude) using
+a linear projection.  However, longitude is periodic in 360\DS\ and hence special handling
+must be used to ensure that this is considered.
+\item When the input coordinate is absolute time (calendar dates and clocks) there are special
+issues that are related to unit conversion and the non-equidistant anotation separations for
+some units.  Other than that, the final internal representation of time is linearly transformed
+like any other coordinate.
+\end{enumerate}
+\item [Polar Transformation]. This transforms polar coordinates (angle $\theta$ and radius $r$)
+to positions on a plot.  Now, $x' = f(\theta,r)$ and $y' = g(\theta,r)$ hence it is similar
+to a regular map projection in the sense that $x$ and $y$ are coupled and x ($\theta$) has a 360\DS\ periodicity.
+The transformation comes in two flavors:
+\begin{enumerate}
+\item Normally, $\theta$ is understood to be directions counter-clockwise from the horizontal axis, but we may choose
+to specify an angular offset [whose default value is zero].  We will call this offset $\theta_0$.
+Then, $x' = f(\theta, r) = ar \cos (\theta-\theta_0) + b$ and $y' = g(\theta, r) = ar \sin (\theta-\theta_0) + c$.
+\item Alternatively, $\theta$ can be interpreted to be azimuths clockwise from the vertical axis, yet we may again
+choose to specify the angular offset [whose default value is zero].
+Then, $x' = f(\theta, r) = ar \cos (90 - (\theta-\theta_0)) + b$ and $y' = g(\theta, r) = ar \sin (90 - (\theta-\theta_0)) + c$.
+\end{enumerate}
+\item [Map Projections].  This group consists of 23 different map projections.  They all project the input coordinates
+longitude and latitude to positions on a map.  In general, $x' = f(x,y)$ and $y' = g(x,y)$, where $f$ and $g$ can be
+quite nasty and we will refrain from presenting details in this document.  The interested read is referred to
+{\it Snyder} [1987]{\footnote{Snyder, J. P., 1987, Map Projections \- A Working Manual, U.S. Geological Survey Prof. Paper 1395.}.
+\end{description}
+The purpose of the following chapter is to summarize the properties
+of transformations and map projections available in \GMT, what parameters define
 them, and demonstrate how they are used to create simple
 basemaps.  We will mostly be using the \GMTprog{pscoast}
-command and occasionally \GMTprog{psxy}.  (Our illustrations
-may differ from yours because of different settings in our
+command for geographic maps and \GMTprog{psbasemap} (and occasionally \GMTprog{psxy}) for other transformations.
+Our illustrations may differ from yours because of different settings in our
 \filename{.gmtdefaults} file.)  Note that while we will
 specify dimensions in inches (by appending {\bf i}), you may
 want to use cm ({\bf c}), meters ({\bf m}), or points ({\bf p})
-as unit instead (see \GMTprog{gmtdefaults} man page). 
+as unit instead (see the \GMTprog{gmtdefaults} man page). 
 
 \input{GMT_Chapter_5.1}
 \input{GMT_Chapter_5.2}
