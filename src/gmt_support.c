@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.94 2004-05-22 00:01:47 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.95 2004-05-23 02:41:37 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1634,6 +1634,93 @@ int GMT_contlabel_init (struct GMT_CONTOUR *G)
 
 int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 {
+	int k, bad = 0;
+	char txt_cpy[BUFSIZ], txt_a[32], txt_b[32], *p;
+	
+	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<size>][+g<fill>][+j<just>][+l<label>][+o|O|t][+p<pen>] strings */
+	
+	if (!strchr (txt, '+')) return (GMT_contlabel_specs_old (txt, G));	/* Old-style info strings */
+	
+	/* Decode new-style +separated substrings */
+	
+	strcpy (txt_cpy, txt);
+	p = strtok (txt_cpy, "+");	/* Break into sections separated by + */
+	while (p) {
+		switch (p[0]) {
+			case 'a':	/* Angle specification */
+				if (p[1] == 'p' || p[1] == 'P')		/* Line-parallel label */
+					G->angle_type = 0;
+				else if (p[1] == 'n' || p[1] == 'N')	/* Line-normal label */
+					G->angle_type = 1;
+				else {					/* Label at a fixed angle */
+					G->label_angle = atof (&p[1]);
+					G->angle_type = 2;
+					GMT_lon_range_adjust (2, &G->label_angle);	/* Now -180/+180 */
+					while (fabs (G->label_angle) > 90.0) G->label_angle -= copysign (180.0, G->label_angle);
+				}
+				break;
+				
+			case 'c':	/* Clearance specification */
+				k = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
+				G->clearance[0] = GMT_convert_units (txt_a, GMT_INCH);
+				G->clearance[1] = (k == 2 ) ? GMT_convert_units (txt_b, GMT_INCH) : G->clearance[0];
+				if (k == 0) bad++;
+				break;
+				
+			case 'f':	/* Font size specification */
+				G->label_font_size = atof (&p[1]);
+				if (G->label_font_size <= 0.0) bad++;
+				break;
+				
+			case 'g':	/* Fill specification */
+				if (GMT_getrgb (&p[1], G->rgb)) bad++;
+				break;
+				
+			case 'j':	/* Justification specification */
+				txt_a[0] = p[1];	txt_a[1] = p[2];	txt_a[2] = '\0';
+				G->just = GMT_just_decode (txt_a);
+				break;
+				
+			case 'l':	/* Label specification */
+				if (p[1] == 'h' && !p[2])	/* Take the first string in multisegment headers */
+					G->label_type = 2;
+				else if (p[1] == 'd' && !p[2])	/* Use the current distance */
+					G->label_type = 3;
+				else {	/* Hardwired fixed label for all lines */
+					strcpy (G->label, &p[1]);
+					G->label_type = 1;
+				}
+				break;
+				
+			case 'o':	/* Draw rectangular outline specification */
+				G->box |= 2;
+				break;
+				
+			case 'O':	/* Draw rounded rectangle outline specification */
+				G->box |= 4;
+				break;
+
+			case 'p':	/* Testbox pen specification */
+				if (GMT_getpen (&p[1], &G->pen)) bad++;
+				break;
+				
+			case 't':	/* Transparency is default, but just in case */
+				G->box = 0;
+				break;
+
+			default:
+				bad++;
+				break;
+		}
+				
+		p = strtok (NULL, "+");
+	}
+							
+	return (bad);
+}
+
+int GMT_contlabel_specs_old (char *txt, struct GMT_CONTOUR *G)
+{	/* For backwards compatibility with 3.4.x */
 	int j, k, bad;
 	char txt_a[32], txt_b[32];
 	
@@ -1645,47 +1732,14 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 						
 	for (j = 0; txt[j] && txt[j] != 'a'; j++);
 	if (txt[j])	{ /* Found fixed angle option */
-		if (txt[j+1] == 'p')
-			G->angle_type = 0;
-		else if (txt[j+1] == 'n')
-			G->angle_type = 1;
-		else {
-			G->label_angle = atof (&txt[j+1]);
-			G->angle_type = 2;
-			if (G->label_angle <= -90.0 || G->label_angle > 180.0) bad++;
-		}
+		G->label_angle = atof (&txt[j+1]);
+		G->angle_type = 2;
+		if (G->label_angle <= -90.0 || G->label_angle > 180.0) bad++;
 	}
 
 	for (j = 0; txt[j] && txt[j] != '/'; j++);
 	if (txt[j] && GMT_getrgb (&txt[j+1], G->rgb)) bad++;
-	for (j = 0; txt[j] && txt[j] != '+'; j++);
-	if (txt[j] && GMT_getpen (&txt[j+1], &G->pen)) bad++;
-	for (j = 0; txt[j] && txt[j] != ','; j++);
-	if (txt[j]) {	/* Found dx/dy for textbox */
-		k = sscanf (&txt[j+1], "%[^,],%s", txt_a, txt_b);
-		G->clearance[0] = GMT_convert_units (txt_a, GMT_INCH);
-		G->clearance[1] = (k == 2 ) ? GMT_convert_units (txt_b, GMT_INCH) : G->clearance[0];
-		if (k == 0) bad++;
-	}
-	for (j = 0; txt[j] && txt[j] != 'j'; j++);
-	if (txt[j]) {	/* Found justification */
-		txt_a[0] = txt[j+1];	txt_a[1] = txt[j+2];	txt_a[2] = '\0';
-		G->just = GMT_just_decode (txt_a);
-	}
-	for (j = 0; txt[j] && txt[j] != 'L'; j++);
-	if (txt[j]) {	/* Found Label info */
-		j++;
-		if (txt[j] == 'h' && !txt[j+1])	/* Take the first string in multisegment headers */
-			G->label_type = 2;
-		else if (txt[j] == 'd' && !txt[j+1])	/* Use the current distance */
-			G->label_type = 3;
-		else {	/* Hardwired fixed label for all lines */
-			strcpy (G->label, &txt[j]);
-			G->label_type = 1;
-		}
-	}
 	if (strchr (txt, 'o')) G->box |= 2;
-	if (strchr (txt, 'O')) G->box |= 4;	/* Rounded box [Default is rectangular] */
 	if (strchr (txt, 't')) G->box = 0;	/* transparent box must be rectangular */
 	
 	return (bad);
@@ -1919,6 +1973,7 @@ void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_C
 		xp[c] = x[i];
 		yp[c++] = y[i];
 	}
+	if (project_info.three_D) GMT_2D_to_3D (xp, yp, G->z_level, 4);
 	ps_line (xp, yp, c, 3, FALSE, TRUE);
 	GMT_free ((void *)xp);
 	GMT_free ((void *)yp);

@@ -14,9 +14,11 @@ contours.  The format of each \fIline\fP specification is \fIstart/stop\fP, wher
 are either a specified point \fIlon/lat\fP or a 2-character key that uses the justification
 format employed in \fBpstext\fP to indicate a point on the map, given as [LCR][BMT], as well as
 Z+ and Z- which correspond to the locations of the global max and min locations in the grid, respectively.
-\fB\-GL\fP will interpolate the lines using greatcircle resampling [Default is straight line].
+\fB\-GL\fP will interpolate the lines using great-circle resampling [Default is straight line].
 .br
 \fB\-Gn\fP\fIn_cont\fP specifies the number of equidistant labels per contour line [1].
+Upper case \fB\-GN\fP starts labeling exactly at the start of the line [Default centers them along the line].
+\fB\-GN\fP-1 places one justified label at start, while \fB\-GN\fP+1 places one justified label at the end of the contour.
 .br
 \fB\-Gx|X\fP\fIxfile.d\fP reads the multi-segment file \fIxfile.d\fP and places labels at the intersections
 between the contours and the lines in\fIxfile.d\fP.  \fB\-GX\fP will resample the lines first along

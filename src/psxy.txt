@@ -9,6 +9,8 @@
 #define OPT_2	\fB\-JX\fP6\fBi\fP
 #define LEN_3 0.8
 #define OPT_3	\fB\-Jm\fP0.15\fBi \-Sf\fP0.8\fBi\fP/0.1\fBilt\fP
+#define G_OPT_SI 10\fBc\fP10
+#define G_OPT_US 4\fBi\fP10
 .SH NAME
 psxy \- Plot lines, polygons, and symbols on maps
 .SH SYNOPSIS
@@ -156,6 +158,33 @@ pe\fBn\fPtagon.  \fIsize\fP is diameter of circumscribing circle.
 .B \-Sp
 \fBp\fPoint.  No size needs to be specified (1 pixel is used).
 .TP
+.B \-Sq
+.TP
+\fBq\fPuoted line, i.e., lines with annotations such as contours.  Append [\fBd|n|l|x\fP]\fIinfo\fP[:\fIlabelinfo\fP].
+The required argument controls the placement of labels along the lines.  Choose among four controlling mechanisms:
+.br
+[\fBd\fP]\fIdist\fP[c|i|m|p][/\fIwidth\fP] Give distance between successive labels in your measurement
+unit, and optionally append number of points used to calculate a smooth label angle [Default is
+G_OPT_SI or G_OPT_US].
+.br
+\fBl|L\fP\fIline1\fP[,\fIline2\fP,...] Give \fIstart\fP and \fIstop\fP coordinates for one or
+more comma-separated straight line segments.  Labels will be placed where these lines intersect the
+data lines.  The format of each \fIline\fP specification is \fIstart/stop\fP, where \fIstart\fP and \fIstop\fP
+are either a specified point \fIlon/lat\fP or a 2-character key that uses the justification
+format employed in \fBpstext\fP to indicate a point on the map, given as [LCR][BMT].
+Upper case \fBL\fP will interpolate the lines using great-circle resampling [Default is straight line].
+.br
+\fBn\fP\fIn_cont\fP specifies the number of equidistant labels per contour line [1].
+Upper case \fBN\fP starts labeling exactly at the start of the line [Default centers them along the line].
+\fBN\fP-1 places one justified label at start, while \fBN\fP+1 places one justified label at the end of the segment.
+.br
+\fB\-Gx|X\fP\fIxfile.d\fP reads the multi-segment file \fIxfile.d\fP and places labels at the intersections
+between the data lines and the lines in\fIxfile.d\fP.  Upper case \fB\X\fP will resample the lines first along
+great-circle arcs.
+.br
+The optional \fIlabelinfo\fP controls the specifics of the label formatting and consists of a concatenated string
+made up of any of the following control arguments:
+#include "explain_labeinfo.txt"
 .B \-Sr
 \fBr\fPectangle.  No size needs to be specified, but the x- and y-dimensions must be found in columns 3 and 4.
 .TP
