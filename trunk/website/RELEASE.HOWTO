@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.5 2002-10-16 19:56:15 pwessel Exp $
+#	$Id: RELEASE.HOWTO,v 1.6 2004-01-09 22:53:42 pwessel Exp $
 #
 #		FOR 3.4.x SERIES
 
@@ -56,3 +56,7 @@ must ensure you do all the steps listed below:
 11. Send email notifications:
     a) Alert the mirror sites (gmt-mirrors) that a new version has been posted.
     b) Send email to gmt-help and gmt-group with the Announcement.
+
+12. To make 4-up man page printouts, do
+	 groff -man *.l | mpage -4 | grep -v 'setduplexmode' > man4.ps
+	 lpr -Php834 man4.ps for duplex printing
