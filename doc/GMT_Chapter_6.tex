@@ -1,168 +1,29 @@
 %------------------------------------------
-%	$$
+%	$Id: GMT_Chapter_6.tex,v 1.4 2001-09-22 02:42:08 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
 %	Paul Wessel and Walter H. F. Smith
 %------------------------------------------
 %
-\chapter{\gmt\ Transformations}
+\chapter{\gmt\ Map Projections}
 
-The coordinate transformations come in four flavors: linear, log$_{10}$,
-power (or exponential), and time (calendar).  The projection for the {\it y}-axis can be set
-independently from the {\it x}-axis.  Two subsets of linear will be discussed
-separately; these are a polar (cylindrical) projection and a linear projection applied to
-geographic coordinates (with a 360 degree periodicity in the $x$-coordinate).  We will show examples
-of all of these projections using dummy data sets created with
-\GMTprog{gmtmath}, a ``Reverse Polish Notation'' (RPN) calculator that
-operates on or creates table data: 
-\index{Reverse Polish Notation (RPN)}
-\index{RPN (Reverse Polish Notation)}
-\input{scripts/GMT_dummydata}
+\GMT\ implements 23 different map projections.  They all project the input coordinates
+longitude and latitude to positions on a map.  In general, $x' = f(x,y)$ and $y' = g(x,y)$, where $f$ and $g$ can be
+quite nasty and we will refrain from presenting details in this document.  The interested read is referred to
+{\it Snyder} [1987]\footnote{Snyder, J. P., 1987, Map Projections \- A Working Manual, U.S. Geological Survey Prof. Paper 1395.}.
+We will mostly be using the \GMTprog{pscoast} command to demonstrate each of the projections.
+\GMT\ map projections are grouped into four categories depending on the
+nature of the projection.  The groups are
 
-\section{Cartesian Linear Projection (\Opt{Jx} \Opt{JX})}
-\index{Projection!linear|(}
-\index{Projection!linear!Cartesian|(}
-\index{Cartesian linear projection|(}
-\index{Linear projection|(}
-\index{\Opt{Jx} \Opt{JX} (Non-map projections)|(}
+\begin{enumerate}
+\item Conic map projections
+\item Azimuthal map projections
+\item Cylindrical map projections
+\item Miscellaneous projections
+\end{enumerate}
 
-Selection of this transformation will result in a linear scaling
-of the input coordinates.  The projection is defined by stating \\
-
-$\bullet$ scale in inches/unit (\Opt{Jx}) or axis
-length in inches (\Opt{JX}) \\
-
-If the {\it y}-scale or {\it y}-axis length is different from that of
-the {\it x}-axis (which is most often the case), separate the two
-scales (or lengths) by a slash, e.g., \Opt{Jx}0.1i/0.5i or \Opt{JX}8i/5i. 
-Thus, our $y = \sqrt{x}$ data sets will plot as shown
-in Figure~\ref{fig:GMT_linear}.
-
-\GMTfig{GMT_linear}{Linear transformation of coordinates}
-
-The complete commands given to produce this plot were 
-
-\input{scripts/GMT_linear}
-
-Normally, the user's {\it x}-values will increase to the right
-and the {\it y}-values will increase upwards.  It should be noted
-that in many situations it is desirable to have the direction of
-positive coordinates be reversed.  For example, when plotting
-depth on the {\it y}-axis it makes more sense to have the positive
-direction downwards.  All that is required to reverse the sense of
-positive direction is to supply a negative scale (or axis length).
-\index{Projection!linear|)}
-\index{Projection!linear!Cartesian|)}
-\index{Cartesian linear projection|)}
-\index{Linear projection|)}
-
-\section{Logarithmic projection}
-\index{Projection!logarithmic|(}
-\index{Logarithmic projection|(}
-
-\GMTfig[h]{GMT_log}{Logarithmic transformation of $x$-coordinates}
-
-The log$_{10}$ transformation is selected by appending an {\bf l}
-(lower case L) immediately following the scale (or axis length)
-value.  Hence, to produce a plot in which the {\it x}-axis is
-logarithmic (the {\it y}-axis remains linear), try 
-
-\input{scripts/GMT_log} 
-
-\par Note that if {\it x}- and {\it y}-scaling are different and
-a log$_{10}$-log$_{10}$ plot is desired, the {\bf l} must be
-appended twice: Once after the {\it x}-scale (before the /) and
-once after the {\it y}-scale. 
-\index{Projection!logarithmic|)}
-\index{Logarithmic projection|)}
-
-\section{Power projection}
-\index{Projection!power (exponential)|(}
-\index{Power (exponential) projection|(}
-
-\GMTfig[h]{GMT_pow}{Exponential or power transformation of $x$-coordinates}
-
-This projection allows us to display {\it x$^a$} versus {\it y$^b$}.
-While {\it a} and {\it b} can be any values, we will select {\it a}
-= 0.5 and {\it b} = 1 which means we will plot {\it y} versus $\sqrt{x}$.
-We indicate this scaling by appending a {\bf p} (lower case P) followed
-by the desired exponent, in our case 0.5.  Since {\it b} = 1 we do not
-need to specify {\bf p}1 since it is identical to the linear scaling.
-Thus our command becomes
-
-\input{scripts/GMT_pow} 
-\index{Projection!power (exponential)|)}
-\index{Power (exponential) projection|)}
-
-\section{Geographical linear projection}
-\label{sec:linear}
-\index{Projection!linear!geographic|(}
-\index{Geographic Linear projection|(}
-
-\GMTfig{GMT_linear_d}{Linear transformation of map coordinates}
-
-While these linear projections are primarily designed for generic
-{\it x},{\it y} data, it is sometimes necessary to plot geographical
-data in a linear projection.  This poses a problem since longitudes
-have a 360\DS\ periodicity.  \GMT\ therefore needs to be informed
-that it has been given geographical data although a linear projection
-has been chosen.  We do so by appending a {\bf d} (for degrees) to
-the end of the \Opt{Jx} (or \Opt{JX}) option.  As an example, we
-want to plot a crude world map centered on 125\DS E.  Our command will be 
-
-\input{scripts/GMT_linear_d} 
-
-\noindent
-with the result reproduced in Figure~\ref{fig:GMT_linear_d}.
-
-\index{Projection!linear!geographic|)}
-\index{Geographic Linear projection|)}
-\index{\Opt{Jx} \Opt{JX} (Non-map projections)|)}
-
-\section{Linear Projection with Polar ($\theta, r$)
-Coordinates (\Opt{Jp } \Opt{JP})}
-\index{Projection!polar ($\theta, r$)|(}
-\index{Polar ($\theta, r$) projection|(}
-\index{\Opt{Jp} \Opt{JP} (Polar ($\theta, r$) projections)|(}
-
-\GMTfig{GMT_polar}{Polar (Cylindrical) transformation of
-($\theta, r$) coordinates}
-
-In many applications the data is better described in polar or
-cylindrical ({\it $\theta$}, {\it r}) coordinates rather than
-the usual Cartesian coordinates ({\it x}, {\it y}).  The
-relationship between the Cartesian and polar coordinates are
-described by $x = r \cdot \cos{\theta}, y = r \cdot \sin{\theta}$.
-The polar transformation is simply defined by providing \\
-
-\begin{description}
-
-\item[$\bullet$] scale in inches/unit (\Opt{Jp}) or full width of plot in inches (\Opt{JP})
-\item[$\bullet$] Optionally, insert {\bf a} after {\bf p$|$P} to indicate CW azimuths rather than CCW directions
-\item[$\bullet$] Optionally, append /$origin$ in degrees to indicate an angular offset [0]
-
-\end{description}
-
-As an example of this projection we will create a gridded data set
-in polar coordinates $z(\theta, r) = r^2 \cdot \cos{4\theta}$
-using \GMTprog{grdmath}, a RPN calculator that operates on or
-creates grdfiles.
-
-\input{scripts/GMT_polar} 
-
-We used \GMTprog{grdcontour} to make a contour map of this data.  Because
-the data file only contains values with $2 \leq r \leq 4$, a donut
-shaped plot appears in Figure~\ref{fig:GMT_polar}.\
-\index{Projection!polar ($\theta, r$)|)}
-\index{Polar ($\theta, r$) projection|)}
-\index{\Opt{Jp} \Opt{JP} (Polar ($\theta, r$) projections)|)}
-
-\section{Linear projection with Calendar Time Coordinates}
-\label{sec:time}
-\index{Projection!linear!calendar|(}
-\index{Calendar Linear projection|(}
-
-
-\index{Projection!linear!calendar|)}
-\index{Calendar Linear projection|)}
+\input{GMT_Chapter_6.1}
+\input{GMT_Chapter_6.2}
+\input{GMT_Chapter_6.3}
+\input{GMT_Chapter_6.4}
