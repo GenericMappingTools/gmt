@@ -117,14 +117,12 @@ shading in black, use
 .sp
 \fBpssegyz\fP wa1.segy \fB\-JX\fP5/\-5 \fB\-D\fP1 \fB\-Jz0.05\fP \fB\-E\fP180/5 \fB\-R\fP0/100/0/10/0/10 \fB\-C\fP3 \fB\-N\fP \fB\-S\fPo \fB\-W\fP \fB\-F\fP0 > segy.ps
 .br
-
 .SH BUGS
 Variable area involves filling four-sided figures of distressing generality.
 I \fIknow\fP that some of the more complex degenerate cases are not
 dealt with correctly or at all; the incidence of such cases increases
 as viewing angles become more oblique, and particularly as the
 viewing elevation increases. Wiggle-trace plotting is not affected.
-
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR pssegy (l)

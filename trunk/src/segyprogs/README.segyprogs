@@ -1,4 +1,4 @@
-	$Id: README.segyprogs,v 1.3 2002-09-27 19:15:03 pwessel Exp $
+	$Id: README.segyprogs,v 1.4 2003-04-15 20:32:41 pwessel Exp $
 
 pssegy: program to plot segy files in postscript.
 the code was developed following a devious route from several programs in the GMT and
@@ -53,4 +53,3 @@ Licensing:
 These programs are released without any warranty; they are free software
 and may be modified or redistributed under the terms of the GNU public license
 (see the file COPYING in the main GMT directory, or http://www.gnu.org)
-

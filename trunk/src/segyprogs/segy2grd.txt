@@ -1,0 +1,91 @@
+.TH SEGY2GRD l DATE
+.SH NAME
+segy2grd \- Converting SEGY file to grd file format
+.SH SYNOPSIS
+\fBsegy2grd\fP \fIsegyfile\fP \fB\-G\fP\fIgrdfile\fP \fB\-I\fP\fIx_inc\fP[/\fIy_inc\fP]
+\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-A\fP[\fBn|z\fP] ] [ \fB\-D\fP\fIxunit/yunit/zunit/scale/offset/title/remark\fP ]
+[ \fB\-F\fP ]   [ \fB\-N\fP\fInodata\fP ] [ \fB\-S\fP[\fIzfile\fP] ] [ \fB\-V\fP ]
+[ \fB\-Z\fP[\fIflags\fP] ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+.SH DESCRIPTION
+\fBsegy2grd\fP reads an IEEE SEGY file and
+creates a binary grdfile. Either a simple mapping (equivalent to xyz2grd -Z) or a more complicated
+averaging where a particular grid cell includes values from more than one sample in the SEGY file can be done.
+\fBsegy2grd\fP will report if some of the nodes are not filled in with
+data. Such unconstrained nodes are set to a value specified by the user [Default is NaN].
+Nodes with more than one value will be set to the average value.
+.TP
+\fIsegyfile\fP
+ASCII [or binary] file holding z or (x,y,z) values. xyz triplets do not
+have to be sorted (for binary triplets, see \fB\-b\fP). 1-column z tables must be sorted and the \fB\-Z\fP must be set).
+.TP
+.B \-G
+\fIgrdfile\fP is the name of the binary output grdfile.
+.TP
+.B \-I
+\fIx_inc\fP [and optionally \fIy_inc\fP] is the grid spacing. Append \fBm\fP to indicate minutes or \fBc\fP to indicate seconds.
+.TP
+.B \-R
+\fIwest, east, south,\fP and \fInorth\fP specify the Region of interest. To specify boundaries
+in degrees and minutes [and seconds], use the dd:mm[:ss] format. Append \fBr\fP if lower left and upper right
+map coordinates are given instead of wesn.
+.SH OPTIONS
+.TP
+.B \-A
+Add up multiple values that belong to the same node (same as \fB\-Az\fP).
+Append \fBn\fP to simply count the number of data points that were assigned to each node.
+[Default (no \fB\-A\fp option) will calculate mean value]. Not used for simple mapping.
+.TP
+.B \-D
+Give values for \fIxunit, yunit, zunit, scale, offset, title,\fP and \fIremark\fP.
+To leave some of these values untouched, specify = as the value.
+.TP
+.B \-F
+Force pixel registration [Default is grid registration].
+.TP
+.B \-N
+No data. Set nodes with no input sample to this value [Default is NaN].
+.TP
+.B \-S
+set variable spacing \fIheader\fP is c for cdp, o for offset, b<number> for 4-byte float starting at byte number
+If -S not set, assumes even spacing of samples at the dx, dy supplied with -I
+.TP
+.B \-L
+Override number of samples in each trace
+.TP
+.B \-X
+applies scalar \fIx-scale\fP to coordinates in trace header to match the coordinates specified in -R
+.TP
+.B \-Y
+Specifies sample interval as \fIs_int\fP if incorrect in the SEGY file
+.TP
+.B \-M
+Fix number of traces to read in. Default tries to read 10000 traces.
+-M0 will read number in binary header, -Mn will attempt to read only n traces.
+#include "explain_-V.txt"
+.TP
+.SH EXAMPLES
+To create a grdfile from an even spaced SEGY file test.segy, try
+.br
+.sp
+segy2grd test.segy \fB\-I\fP0.1/0.1
+\fB\-G\fPtest.grd \fB\-R\fP198/208/18/25 \-V\fP
+.br
+.sp
+Note that this will read in 18-25s (or km) on each trace, but the first trace will be assumed to be at
+X=198
+.br
+.sp
+To create a grdfile from the SEGY file test.segy, locating traces according to the CDP number, where
+there are 10 CDPs per km and the sample interval is 0.1, try
+.br
+.sp
+segy2grd test.segy  \fB\-G\fPtest.grd \fB\-R\fP0/100/0/10 \fB\-I\fP0.5/0.2 \fB\-V \fB\-X\fP0.1  \fB\-Y\fP0.1
+.br
+.sp
+Because the grid interval is larger than the SEGY file sampling, the individual samples will be averaged
+in bins 
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grd2xyz (l),
+.IR grdedit (l),
+.IR pssegy (l)
