@@ -1,4 +1,4 @@
-	$Id: README.mgd77,v 1.4 2004-08-27 17:43:26 pwessel Exp $
+	$Id: README.mgd77,v 1.5 2004-08-27 18:07:05 pwessel Exp $
 
 README file for GMT supplemental mgd77 programs
 
@@ -9,8 +9,10 @@ INSTALL INFO:	The mgd77 directory should install under GMT/src
 	These programs are intended for use with the marine geophysical
 data files known as MGD77 files.  These data files are NOT supplied with
 GMT; they are the MGD-77 standard exchange format files provided by the
-National Geophysical Data Center*.  The following is a
-list of the programs and a short description of what they do:
+National Geophysical Data Center*.  The programs provide similar function-
+ality to those of the mgg supplement but uses the actual MGD77 data files.
+The following is a list of the programs and a short description of what
+they do:
 
 	mgd77list	A data extractor for .mgd77 files
 	mgd77info	An information extractor for .mgd77 files
@@ -18,6 +20,10 @@ list of the programs and a short description of what they do:
 	mgd77track	A track plotter for .mgd77 files
 
 man-files for all the above programs can be found in the manl subdirectory.
+
+Note that the functionality provided by the mgg supplement's gmt2bin,
+binlegs and getlegs have now been generalized to any track data by the
+tools in the x2sys package.
 
 The support file mgd77_paths.txt is put in the 
 GMT/share/mgd77 subdirectory directory.
