@@ -46,8 +46,8 @@ Dimensionless number in [0, 1].  The Signal-to-Noise-Ratio (SNR) is coh / (1 - c
 .sp
 .TP
 \fIx[y]file\fP
-ASCII (or binary, see \fB\-bi\fP) file holding X(t) [Y(t)] samples in the first 1 [or 2] columns.  If no file is specified, \fBspectrum1d\fP 
-will read from standard input.
+ASCII (or binary, see \fB\-bi\fP) file holding X(t) [Y(t)] samples in the first 1 [or 2] columns.
+If no file is specified, \fBspectrum1d\fP will read from standard input.
 .TP
 .B \-S
 \fIsegment_size\fP is a radix-2 number of samples per window for ensemble averaging.  The smallest frequency 
