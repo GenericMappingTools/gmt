@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_G.sh,v 1.1 2001-03-21 04:10:21 pwessel Exp $
+#	$Id: GMT_App_G.sh,v 1.2 2001-04-03 16:06:39 pwessel Exp $
 #
 #	Makes the insert for Appendix G (fonts)
 #
@@ -11,7 +11,7 @@ y0=4.744
 #../../rsccs_refresh.sh PS_font_names.h
 cp -f ../../src/PS_font_names.h .
 
-gawk -F\" '{print $2}' PS_font_names.h > t
+$AWK -F\" '{print $2}' PS_font_names.h > t
 
 gmtset FRAME_PEN 0.5p
 psxy -R0/5.4/0/$y0 -Jx1i -P -K -B0 -M <<EOF> GMT_App_G.ps

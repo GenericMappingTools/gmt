@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_F.sh,v 1.1 2001-03-21 04:10:21 pwessel Exp $
+#	$Id: GMT_App_F.sh,v 1.2 2001-04-03 16:06:39 pwessel Exp $
 #
 #	Makes the octal code chart in Appendix F
 
@@ -66,7 +66,7 @@ BEGIN {
 }
 EOF
 
-gawk -f f.awk chart.d > t
+$AWK -f f.awk chart.d > t
 psxy -R0/9/2/32 -Jx0.345/-0.21 -B0g1 -P -K -M -G200 -Y0.0 << EOF > GMT_App_F_1.ps
 >
 1	4
@@ -139,7 +139,7 @@ BEGIN {
 }
 EOF
 
-gawk -f f.awk chart.d > t
+$AWK -f f.awk chart.d > t
 psxy -R0/9/3/16 -Jx0.345/-0.21 -B0g1 -P -K -M -G200 -Y2.58 << EOF > GMT_App_F_2.ps
 >
 8	16
@@ -182,7 +182,7 @@ cat << EOF > f.awk
 }
 EOF
 
-gawk -f f.awk chart.d > t
+$AWK -f f.awk chart.d > t
 psxy -R0/9/20/32 -Jx -B0g1 -O -K -M -G200 -Y-2.58 << EOF >> GMT_App_F_2.ps
 >
 1	21
@@ -245,7 +245,7 @@ BEGIN {
 }
 EOF
 
-gawk -f f.awk chart.d > t
+$AWK -f f.awk chart.d > t
 psxy -R0/9/3/16 -Jx0.345/-0.21 -B0g1 -P -K -M -G200 -Y2.58 << EOF > GMT_App_F_3.ps
 >
 8	16
@@ -288,7 +288,7 @@ cat << EOF > f.awk
 }
 EOF
 
-gawk -f f.awk chart.d > t
+$AWK -f f.awk chart.d > t
 psxy -R0/9/20/32 -Jx -B0g1 -O -K -M -G200 -Y-2.58 << EOF >> GMT_App_F_3.ps
 >
 1	21
