@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.92 2004-03-25 18:11:08 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.93 2004-03-26 17:58:41 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -448,7 +448,8 @@ void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct PLOT_
 			(P->date.compact) ? sprintf (string, "%d", calendar.year) : sprintf (string, "%4.4d", calendar.year);
 			break;
 		case 'y':	/* 2-digit integer year */
-			(P->date.compact) ? sprintf (string, "%d", calendar.year % 100) : sprintf (string, "%2.2d", calendar.year % 100);
+			/* (P->date.compact) ? sprintf (string, "%d", calendar.year % 100) : sprintf (string, "%2.2d", calendar.year % 100); */
+			sprintf (string, "%2.2d", calendar.year % 100);
 			break;
 		case 'O':	/* Plot via date format */
 			GMT_format_calendar (string, CNULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
