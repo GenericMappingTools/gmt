@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.21 2001-09-12 04:03:03 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.22 2001-09-12 19:35:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -106,7 +106,7 @@ int GMT_bin_float_output (FILE *fp, int n, double *ptr);	/* Write binary float o
 int GMT_ascii_output_one (FILE *fp, double x, int col);		/* Writes one item to output in ascii format */
 void GMT_adjust_periodic ();					/* Add/sub 360 as appropriate */
 void GMT_decode_calclock_formats ();
-void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S);
+void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode);
 void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode);
 void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode);
 void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S);
@@ -663,7 +663,7 @@ int GMT_write_abstime_output (FILE *fp, GMT_dtime dt)
 	int e;
 	char date[GMT_CALSTRING_LENGTH], clock[GMT_CALSTRING_LENGTH];
 
-	GMT_format_calendar (date, clock, &GMT_io.date_output, &GMT_io.clock_output, dt);
+	GMT_format_calendar (date, clock, &GMT_io.date_output, &GMT_io.clock_output, FALSE, 0, dt);
 	e = fprintf (fp, "%sT%s", date, clock);
 	return (e);
 }
@@ -1097,59 +1097,79 @@ void GMT_row_ij (struct GMT_Z_IO *r, int ij, int *gmt_ij)
 	*gmt_ij = r->gmt_j * r->nx + r->gmt_i;
 }
 
-void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S)
+void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode)
 {	/* Reads a YYYY-MM-DD or YYYYMMDD-like string and determines order.
 	 * order[0] is the order of the year, [1] is month, etc.
-	 * Items not encountered are left as -1.
+	 * Items not encountered are left as -1. mode is 0 for text i/o
+	 * and 1 for plot format.
 	 */
 
-	int i, j, order, n_y, n_m, n_d, n_j, n_w, sequence[4], n_delim, last, error = 0;
+	int i, j, order, n_y, n_m, n_d, n_j, n_w, n_delim, last, error = 0;
+	BOOLEAN do_text = FALSE;
 	
-	for (i = 0; i < 4; i++) S->order[i] = -1;	/* Meaning not encountered yet */
+	for (i = 0; i < 4; i++) S->item_order[i] = S->item_pos[i] = -1;	/* Meaning not encountered yet */
 	
 	n_y = n_m = n_d = n_j = n_w = n_delim = 0;
 	S->delimeter[0][0] = S->delimeter[0][1] = S->delimeter[1][0] = S->delimeter[1][1] = 0;
-	sequence[0] = sequence[1] = sequence[2] = sequence[3] = -1;
 	
 	for (i = order = 0; i < strlen (text); i++) {
 		switch (text[i]) {
 			case 'y':	/* Year */
-				if (S->order[0] < 0)		/* First time we encounter a y */
-					S->order[0] = order++;
+				if (S->item_pos[0] < 0)		/* First time we encounter a y */
+					S->item_pos[0] = order++;
 				else if (text[i-1] != 'y')	/* Done it before, previous char must be y */
 					error++;
 				n_y++;
 				break;
 			case 'm':	/* Month */
-				if (S->order[1] < 0)		/* First time we encounter a m */
-					S->order[1] = order++;
+				if (S->item_pos[1] < 0)		/* First time we encounter a m */
+					S->item_pos[1] = order++;
 				else if (text[i-1] != 'm')	/* Done it before, previous char must be m */
 					error++;
 				n_m++;
 				break;
+			case 'o':	/* Month name (plot output only) */
+				if (S->item_pos[1] < 0)		/* First time we encounter an o */
+					S->item_pos[1] = order++;
+				else				/* Done it before is error here */
+					error++;
+				S->mw_text = TRUE;
+				n_m = 2;
+				break;
+				
 			case 'W':	/* ISO Week flag */
 				S->iso_calendar = TRUE;
 				break;
 			case 'w':	/* Iso Week */
-				if (S->order[1] < 0) {		/* First time we encounter a w */
-					S->order[1] = order++;
+				if (S->item_pos[1] < 0) {		/* First time we encounter a w */
+					S->item_pos[1] = order++;
 					if (text[i-1] != 'W') error++;	/* Must have the format W just before */
 				}
 				else if (text[i-1] != 'w')	/* Done it before, previous char must be w */
 					error++;
 				n_w++;
 				break;
+			case 'u':	/* Iso Week name ("Week 04") (plot output only) */
+				S->iso_calendar = TRUE;
+				if (S->item_pos[1] < 0) {		/* First time we encounter a u */
+					S->item_pos[1] = order++;
+				}
+				else 				/* Done it before is an error */
+					error++;
+				S->mw_text = TRUE;
+				n_w = 2;
+				break;
 			case 'd':	/* Day of month */
-				if (S->order[2] < 0)		/* First time we encounter a d */
-					S->order[2] = order++;
+				if (S->item_pos[2] < 0)		/* First time we encounter a d */
+					S->item_pos[2] = order++;
 				else if (text[i-1] != 'd')	/* Done it before, previous char must be d */
 					error++;
 				n_d++;
 				break;
 			case 'j':	/* Day of year  */
 				S->day_of_year = TRUE;
-				if (S->order[3] < 0)		/* First time we encounter a j */
-					S->order[3] = order++;
+				if (S->item_pos[3] < 0)		/* First time we encounter a j */
+					S->item_pos[3] = order++;
 				else if (text[i-1] != 'j')	/* Done it before, previous char must be j */
 					error++;
 				n_j++;
@@ -1165,15 +1185,15 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S)
 	
 	/* Then get the actual order by inverting table */
 	
-	for (i = 0; i < 4; i++) for (j = 0; j < 4; j++) if (S->order[j] == i) sequence[i] = j;
-	for (i = 0; i < 4; i++) S->order[i] = sequence[i];
-	S->Y2K_year = (n_y == 2);		/* Must supply the century when reading */
+	for (i = 0; i < 4; i++) for (j = 0; j < 4; j++) if (S->item_pos[j] == i) S->item_order[i] = j;
+	S->Y2K_year = (n_y == 2);		/* Must supply the century when reading and take it out when writing */
 	S->truncated_cal_is_ok = TRUE;		/* May change in the next loop */
-	for (i = 1, last = S->order[0]; S->truncated_cal_is_ok && i < 4; i++) {
-		if (S->order[i] == -1) continue;
-		if (S->order[i] < last) S->truncated_cal_is_ok = FALSE;
-		last = S->order[i];
+	for (i = 1, last = S->item_order[0]; S->truncated_cal_is_ok && i < 4; i++) {
+		if (S->item_order[i] == -1) continue;
+		if (S->item_order[i] < last) S->truncated_cal_is_ok = FALSE;
+		last = S->item_order[i];
 	}
+	if (S->mw_text && mode < 2) error = TRUE;
 	last = (n_y > 0) + (n_m > 0) + (n_w > 0) + (n_d > 0) + (n_j > 0);	/* This is the number of items to read */
 	error += (n_delim && (last - 1) != n_delim);				/* If there are delimeters, must be one less than the items */
 	if (S->iso_calendar) {		/* Check if ISO Week format is ok */
@@ -1430,10 +1450,10 @@ void GMT_decode_calclock_formats ()
 {
 	GMT_date_C_format (gmtdefs.input_date_format, &GMT_io.date_input, 0);
 	GMT_date_C_format (gmtdefs.output_date_format, &GMT_io.date_output, 1);
-	GMT_date_C_format (gmtdefs.plot_date_format, &GMT_plot_calclock.date, 1);
+	GMT_date_C_format (gmtdefs.plot_date_format, &GMT_plot_calclock.date, 2);
 	GMT_clock_C_format (gmtdefs.input_clock_format, &GMT_io.clock_input, 0);
 	GMT_clock_C_format (gmtdefs.output_clock_format, &GMT_io.clock_output, 1);
-	GMT_clock_C_format (gmtdefs.plot_clock_format, &GMT_plot_calclock.clock, 1);
+	GMT_clock_C_format (gmtdefs.plot_clock_format, &GMT_plot_calclock.clock, 2);
 	GMT_geo_C_format (gmtdefs.output_degree_format, &GMT_io.geo);
 	GMT_plot_C_format (gmtdefs.plot_degree_format, &GMT_plot_calclock.geo);
 }
@@ -1487,7 +1507,7 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
 void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 {
 	/* Determine the order of Y, M, D, J in input and output date strings.
-	* mode is 0 for input and 1 for output
+	* mode is 0 for input, 1 for output, and 2 for plot output.
 	 */
 	 
 	char *c, fmt[32];
@@ -1495,39 +1515,54 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 	
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
 	
-	GMT_get_ymdj_order (template, S);
+	GMT_get_ymdj_order (template, S, mode);
 		
 	/* Craft the actual C-format to use for i/o date strings */
 
-	if (S->order[0] >= 0 && S->iso_calendar) {	/* OK, at least ISO year is needed */
-		k = (S->Y2K_year) ? 2 : 4;
-		(mode) ? sprintf (S->format, "%%%d.%dd\0", k, k) : sprintf (S->format, "%%%dd\0", k);
-		if (S->order[1] >= 0) {	/* Need ISO week */
+	if (S->item_order[0] >= 0 && S->iso_calendar) {	/* ISO Calendar string: At least Ione item is needed */
+		k = (S->item_order[0] == 0 && !S->Y2K_year) ? 4 : 2;
+		if (mode == 2 && S->item_order[0] == 1)	/* Prepare for "Week ##" format */
+			sprintf (S->format, "%%s %%2.2d\0");
+		else					/* Numerical formatting of week or year  */
+			(mode) ? sprintf (S->format, "%%%d.%dd\0", k, k) : sprintf (S->format, "%%%dd\0", k);
+		if (S->item_order[1] >= 0) {	/* Need another item */
 			if (S->delimeter[0][0]) strcat (S->format, S->delimeter[0]);
-			strcat (S->format, "W");
+			if (mode == 2 && S->item_order[0] == 1)	/* Prepare for "Week ##" format */
+				sprintf (S->format, "%%s \0");
+			else
+				strcat (S->format, "W");
 			(mode) ? sprintf (fmt, "%%2.2d\0") : sprintf (fmt, "%%2d\0");
 			strcat (S->format, fmt);
-			if (S->order[2] >= 0) {	/* and ISO day of week */
+			if (S->item_order[2] >= 0) {	/* and ISO day of week */
 				if (S->delimeter[1][0]) strcat (S->format, S->delimeter[1]);
 				sprintf (fmt, "%%1d\0");
 				strcat (S->format, fmt);
 			}
 		}
 	}
-	else if (S->order[0] >= 0) {	/* OK, at least one item is needed */
-		k = (S->order[0] == 0 && !S->Y2K_year) ? 4 : 2;
-		if (S->order[0] == 3) k = 3;	/* Day of year */
-		(mode) ? sprintf (S->format, "%%%d.%dd\0", k, k) : sprintf (S->format, "%%%dd\0", k);
-		if (S->order[1] >= 0) {	/* Need more items */
+	else if (S->item_order[0] >= 0) {			/* Gregorian Calendar string: At least one item is needed */
+		k = (S->item_order[0] == 0 && !S->Y2K_year) ? 4 : 2;
+		if (S->item_order[0] == 3) k = 3;	/* Day of year */
+		if (mode == 2 && S->item_order[0] == 1)	/* Prepare for "Monthname" format */
+			sprintf (S->format, "%%s\0");
+		else					/* Numerical formatting of month or year */
+			(mode) ? sprintf (S->format, "%%%d.%dd\0", k, k) : sprintf (S->format, "%%%dd\0", k);
+		if (S->item_order[1] >= 0) {	/* Need more items */
 			if (S->delimeter[0][0]) strcat (S->format, S->delimeter[0]);
-			k = (S->order[1] == 0 && !S->Y2K_year) ? 4 : 2;
-			if (S->order[1] == 3) k = 3;	/* Day of year */
-			(mode) ? sprintf (fmt, "%%%d.%dd\0", k, k) : sprintf (fmt, "%%%dd\0", k);
-			strcat (S->format, fmt);
-			if (S->order[2] >= 0) {	/* .. and even more */
-				if (S->delimeter[1][0]) strcat (S->format, S->delimeter[1]);
-				k = (S->order[2] == 0 && !S->Y2K_year) ? 4 : 2;
+			k = (S->item_order[1] == 0 && !S->Y2K_year) ? 4 : 2;
+			if (S->item_order[1] == 3) k = 3;	/* Day of year */
+			if (mode == 2 && S->item_order[1] == 1)	/* Prepare for "Monthname" format */
+				sprintf (fmt, "%%s");
+			else
 				(mode) ? sprintf (fmt, "%%%d.%dd\0", k, k) : sprintf (fmt, "%%%dd\0", k);
+			strcat (S->format, fmt);
+			if (S->item_order[2] >= 0) {	/* .. and even more */
+				if (S->delimeter[1][0]) strcat (S->format, S->delimeter[1]);
+				k = (S->item_order[2] == 0 && !S->Y2K_year) ? 4 : 2;
+				if (mode == 2 && S->item_order[2] == 1)	/* Prepare for "Monthname" format */
+					sprintf (fmt, "%%s");
+				else
+					(mode) ? sprintf (fmt, "%%%d.%dd\0", k, k) : sprintf (fmt, "%%%dd\0", k);
 				strcat (S->format, fmt);
 			}
 		}
@@ -1830,8 +1865,8 @@ int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd) {
 	if (GMT_io.date_input.day_of_year) {
 		/* Calendar uses year and day of year format.  */
 		if ( (k = sscanf (s, GMT_io.date_input.format,
-			&ival[GMT_io.date_input.order[0]],
-			&ival[GMT_io.date_input.order[3]]) ) == 0) return (-1);
+			&ival[GMT_io.date_input.item_order[0]],
+			&ival[GMT_io.date_input.item_order[3]]) ) == 0) return (-1);
 		if (k < 2) {
 			if (GMT_io.date_input.truncated_cal_is_ok) {
 				ival[1] = 1;	/* Set first day of year  */
@@ -1852,9 +1887,9 @@ int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd) {
 	
 	/* Get here when calendar type has months and days of months.  */
 	if ( (k = sscanf (s, GMT_io.date_input.format,
-		&ival[GMT_io.date_input.order[0]],
-		&ival[GMT_io.date_input.order[1]],
-		&ival[GMT_io.date_input.order[2]]) ) == 0) return (-1);
+		&ival[GMT_io.date_input.item_order[0]],
+		&ival[GMT_io.date_input.item_order[1]],
+		&ival[GMT_io.date_input.item_order[2]]) ) == 0) return (-1);
 	if (k < 3) {
 		if (GMT_io.date_input.truncated_cal_is_ok) {
 			ival[2] = 1;	/* Set first day of month  */

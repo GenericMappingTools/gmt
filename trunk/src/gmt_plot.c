@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.16 2001-09-12 04:03:03 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.17 2001-09-12 19:35:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -125,7 +125,7 @@ void GMT_time_to_y (GMT_dtime t, double *y);
 int GMT_time_array (double min, double max, struct TIME_AXIS_ITEM *T, BOOLEAN interval, double **array);
 void GMT_timex_grid (double w, double e, double s, double n);
 void GMT_timey_grid (double w, double e, double s, double n);
-void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, char unit, int flavor, GMT_dtime t);
+void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct TIME_AXIS_ITEM *T, GMT_dtime t);
 
 /* Local variables to this file */
 
@@ -179,10 +179,10 @@ void GMT_linear_map_boundary (double w, double e, double s, double n)
 void GMT_tx_axis (double x0, double y0, double length, double val0, double val1, struct TIME_AXIS *A, int below, int anotate)
 {
 	int k, i, nx, flip, justify, label_justify, anot_pos, font_size;
-	BOOLEAN is_interval, use_clock;
+	BOOLEAN is_interval, special;
 	double t_mid, *knots, x, tick_len[5], sign, anot_off[2], label_off, len, t_use;
 	struct TIME_AXIS_ITEM *T;
-	struct GMT_MOMENT_INTERVAL I;
+	struct GMT_MOMENT_INTERVAL I, Inext;
 	char string[GMT_CALSTRING_LENGTH];
 	
 	fprintf (stderr, "%s: GMT_tx_axis not implemented yet\n", GMT_program);
@@ -239,13 +239,22 @@ void GMT_tx_axis (double x0, double y0, double length, double val0, double val1,
 		
 		if (k < 4 && anotate) {	/* Then do anotations */
 		
-			use_clock = (T->unit == 'h' || T->unit == 'm' || T->unit == 's');	/* Use clock if unit is hour or less, else use date format */
 			anot_pos = (k == 1 || k == 3);						/* 1 means lower anotation, 0 means upper (close to axis) */
 			font_size = (anot_pos == 1) ? gmtdefs.anot_font2_size : gmtdefs.anot_font_size;
+			special = (is_interval && (I.unit == 'o' || I.unit == 'O') && I.step != 1);	/* Must find next month to get month centered correctly */
+			if (special) {	/* Must find next month to get month centered correctly */
+				Inext.unit = T->unit;		/* Initialize MOMENT_INTERVAL structure members */
+				Inext.step = 1;
+			}
 		
 			for (i = 0; k < 4 && i < (nx - is_interval); i++) {
 				if (is_interval) {
-					t_use = 0.5 * (MAX (val0, knots[i]) + MIN (val1, knots[i+1]));
+					if (special) {	/* Must find next month to get month centered correctly */
+						GMT_moment_interval (&Inext, knots[i], TRUE);	/* Get this one interval only */
+						t_use = 0.5 * (MAX (val0, Inext.dt[0]) + MIN (val1, Inext.dt[1]));
+					}
+					else
+						t_use = 0.5 * (MAX (val0, knots[i]) + MIN (val1, knots[i+1]));
 					if ((t_use - GMT_CONV_LIMIT) < val0 || (t_use + GMT_CONV_LIMIT) > val1) continue;
 				}
 				else if (knots[i] < (val0 - GMT_CONV_LIMIT) || knots[i] > (val1 + GMT_CONV_LIMIT))
@@ -254,7 +263,7 @@ void GMT_tx_axis (double x0, double y0, double length, double val0, double val1,
 					t_use = knots[i];
 				GMT_time_to_x (t_use, &x);
 
-				GMT_get_time_label (string, &GMT_plot_calclock, T->unit, T->flavor, knots[i]);
+				GMT_get_time_label (string, &GMT_plot_calclock, T, knots[i]);
 				ps_text (x, anot_off[anot_pos], font_size, string, 0.0, justify, 0);
 			}
 		}
@@ -267,16 +276,16 @@ void GMT_tx_axis (double x0, double y0, double length, double val0, double val1,
 	ps_setfont (gmtdefs.label_font);
 	if (A->label[0] && anotate) ps_text (0.5 * length, label_off, gmtdefs.label_font_size, A->label, 0.0, label_justify, 0);
 	ps_rotatetrans  (-x0, -y0, 0.0);
-	ps_comment ("End of x-axis");
+	if (below) ps_comment ("End of lower time x-axis"); else ps_comment ("End of upper time x-axis");
 }
 
-void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, char unit, int flavor, GMT_dtime t)
+void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct TIME_AXIS_ITEM *T, GMT_dtime t)
 {	/* Assemble the anotation label given the formatting options presented */
 	struct GMT_gcal calendar;
 
 	GMT_gcal_from_dt (t, &calendar);			/* Convert t to a complete calendar structure */
 
-	switch (unit) {
+	switch (T->unit) {
 		case 'Y':	/* 4-digit integer year */
 			sprintf (string, "%4.4d\0", calendar.year);
 			break;
@@ -284,25 +293,26 @@ void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, char unit, i
 			sprintf (string, "%2.2d\0", calendar.year % 100);
 			break;
 		case 'O':	/* Plot via date format */
-			GMT_format_calendar (string, CNULL, &P->date, &P->clock, t);
+			GMT_format_calendar (string, CNULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'o':	/* 2-digit month */
 			sprintf (string, "%2.2d\0", calendar.month);
 			break;
 		case 'U':	/* ISO year, week, day via date format */
-			GMT_format_calendar (string, CNULL, &P->date, &P->clock, t);
+			GMT_format_calendar (string, CNULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'u':	/* 2-digit ISO week */		
 			sprintf (string, "%2.2d\0", calendar.iso_w);
 			break;
 		case 'K':	/* ISO year, week, day via date format */
-			GMT_format_calendar (string, CNULL, &P->date, &P->clock, t);
+			GMT_format_calendar (string, CNULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'k':	/* Weekday name */
-			sprintf (string, "%s\0", GMT_time_language.day_name[calendar.iso_d-1][flavor]);
+			if (T->upper_case) GMT_str_toupper (GMT_time_language.day_name[calendar.iso_d%7][T->flavor]);
+			sprintf (string, "%s\0", GMT_time_language.day_name[calendar.iso_d%7][T->flavor]);
 			break;
 		case 'D':	/* Day, via date format */
-			GMT_format_calendar (string, CNULL, &P->date, &P->clock, t);
+			GMT_format_calendar (string, CNULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'd':	/* 2-digit day or 3-digit day of year */
 			if (P->date.day_of_year)
@@ -311,19 +321,19 @@ void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, char unit, i
 				sprintf (string, "%3.3d\0", calendar.day_m);
 			break;
 		case 'H':	/* Hours via clock format */
-			GMT_format_calendar (CNULL, string, &P->date, &P->clock, t);
+			GMT_format_calendar (CNULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'h':	/* 2-digit hour */
 			sprintf (string, "%2.2d\0", calendar.hour);
 			break;
 		case 'M':	/* Minutes via clock format */
-			GMT_format_calendar (CNULL, string, &P->date, &P->clock, t);
+			GMT_format_calendar (CNULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'm':	/* 2-digit minutes */
 			sprintf (string, "%2.2d\0", calendar.min);
 			break;
 		case 'C':	/* Seconds via clock format */
-			GMT_format_calendar (CNULL, string, &P->date, &P->clock, t);
+			GMT_format_calendar (CNULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'c':	/* 2-digit seconds */
 			sprintf (string, "%2.2d\0", calendar.sec);

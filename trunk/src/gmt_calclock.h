@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.h,v 1.7 2001-09-12 04:03:03 pwessel Exp $
+ *	$Id: gmt_calclock.h,v 1.8 2001-09-12 19:35:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -100,4 +100,4 @@ EXTERN_MSC int GMT_verify_time_step (int step, char unit);	/* Check that time st
 EXTERN_MSC void GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN init); /* step a time axis by time units */
 EXTERN_MSC int GMT_gmonth_length (int year,  int month);	/* Get the number of days in a month by Gregorian leap rule */
 EXTERN_MSC void GMT_small_moment_interval (struct GMT_MOMENT_INTERVAL *p, int step_secs, BOOLEAN init); /* Aux to GMT_moment_interval */
-EXTERN_MSC int GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *C, GMT_dtime dt);	/* Write formatted strings for date and clock */
+EXTERN_MSC int GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *C, BOOLEAN upper, int kind, GMT_dtime dt);	/* Write formatted strings for date and clock */

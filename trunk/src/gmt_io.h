@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.10 2001-08-28 02:37:01 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.11 2001-09-12 19:35:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -70,12 +70,14 @@ struct GMT_CLOCK_IO {
 };
 
 struct GMT_DATE_IO {
-	int order[4];			/* The relative order of year, month, day, day-of-year in input calendar string */
+	int item_order[4];		/* The sequence year, month, day, day-of-year in input calendar string */
+	int item_pos[4];		/* Which position year, month, day, day-of-year has in calendar string */
 	BOOLEAN Y2K_year;		/* TRUE if we have 2-digit years */
 	BOOLEAN truncated_cal_is_ok;	/* TRUE if we have YMD or YJ order so smallest unit is to the right */
 	char format[32];		/* Actual C format used to input/output date */
 	BOOLEAN iso_calendar;		/* TRUE if we do ISO week calendar */
 	BOOLEAN day_of_year;		/* TRUE if we do day-of-year rather than month/day */
+	BOOLEAN mw_text;		/* TRUE if we must plot the month name or Week rather than a numeral */
 	char delimeter[2][2];		/* Delimeter strings in date, e.g. "-" */
 };
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.10 2001-08-29 18:03:05 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.11 2001-09-12 19:35:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3619,4 +3619,24 @@ int GMT_minmaxinc_verify (double min, double max, double inc, double slop)
 	checkval = (fmod (max - min, inc)) / inc;
 	if (checkval > slop && checkval < (1.0 - slop)) return 1;
 	return 0;
+}
+
+void GMT_str_tolower (char *value)
+{
+	/* Convert entire string to lower case */
+	int i, c;
+	for (i = 0; value[i]; i++) {
+		c = (int)value[i];
+		value[i] = (char) tolower (c);
+	}
+}
+
+void GMT_str_toupper (char *value)
+{
+	/* Convert entire string to upper case */
+	int i, c;
+	for (i = 0; value[i]; i++) {
+		c = (int)value[i];
+		value[i] = (char) toupper (c);
+	}
 }
