@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.42 2001-09-25 22:46:29 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.43 2001-09-27 10:56:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2912,22 +2912,18 @@ void GMT_plot_line (double *x, double *y, int *pen, int n)
 	if (close) ps_command ("P S") ; else ps_command ("S");
 }
 
-void GMT_color_image (double x0, double y0, double x_side, double y_side, unsigned char *image, int nx, int ny)
-              		/* Lower left corner in inches */
-                      	/* Size of cell in inches */
-                     	/* color image  */
-            {		/* image size */
+void GMT_color_image (double x0, double y0, double x_side, double y_side, unsigned char *image, int nx, int ny, int depth)
+{
+	/* x0, y0 = Lower left corner in inches
+	 * x_size, y_side = Size of cell in inches
+	 * image = 1|4|8|24-bit image 
+	 * nx, ny = image size
+	 * depth = bits per pixel (negative means we want to interpolate in PostScript) */
 	
-	/* Call the appropriate image filler (see pslib) */
-	
-	switch (gmtdefs.color_image) {
-		case 0:
-			ps_colorimage (x0, y0, x_side, y_side, image, nx, ny);
-			break;
-		case 1:
-			ps_colortiles (x0, y0, x_side, y_side, image, nx, ny);
-			break;
-	}
+	if (gmtdefs.color_image == 1) /* Must call the tiles machinery */
+		ps_colortiles (x0, y0, x_side, y_side, image, nx, ny);
+	else
+		ps_colorimage (x0, y0, x_side, y_side, image, nx, ny, depth);
 }
 
 void GMT_text3d (double x, double y, double z, int fsize, int fontno, char *text, double angle, int justify, int form)

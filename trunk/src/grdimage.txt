@@ -39,7 +39,8 @@ No space between the option flag and the associated arguments.
 Sets the resolution of the projected grid that will be created if
 a map projection other than Linear or Mercator was selected.  By default,
 the projected grid will be of the same size (rows and columns) as the
-input file.
+input file.  If a negative \fIdpi\fP is given, we use the PostScript
+image operator to interpolate the image at the device resolution.
 .TP
 .B \-G
 This option only applies when the resulting image otherwise would consist
