@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.138 2004-10-24 22:56:36 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.139 2004-11-26 23:13:12 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1763,7 +1763,7 @@ void GMT_circle_map_boundary (double w, double e, double s, double n)
 	GMT_setpen (&gmtdefs.frame_pen);
 	
 	nr = gmtdefs.n_lon_nodes + gmtdefs.n_lat_nodes;
-	if (nr >= GMT_n_alloc) GMT_get_plot_array ();
+	while (nr > GMT_n_alloc) GMT_get_plot_array ();
 	da = 2.0 * M_PI / (nr - 1);
 	for (i = 0; i < nr; i++) {
 		a = i * da;
@@ -1792,7 +1792,7 @@ void GMT_theta_r_map_boundary (double w, double e, double s, double n)
 		frame_info.side[3] = FALSE;
 	}
 	nr = gmtdefs.n_lon_nodes;
-	if (nr >= GMT_n_alloc) GMT_get_plot_array ();
+	while (nr > GMT_n_alloc) GMT_get_plot_array ();
 	da = fabs (project_info.e - project_info.w) / (nr - 1);
 	if (frame_info.side[2]) {
 		for (i = 0; i < nr; i++) {
