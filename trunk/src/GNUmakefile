@@ -1,4 +1,4 @@
-#----------------	$Id: GNUmakefile,v 1.4 2001-03-02 05:40:57 pwessel Exp $	--------------------
+#----------------	$Id: GNUmakefile,v 1.5 2001-03-05 15:50:44 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 3.3.7
 #			GNU make compatible
@@ -19,7 +19,7 @@
 #	Default setup
 #-------------------------------------------------------------------------------
 
-include makegmt.macros	# GMT specific settings created by user
+-include makegmt.macros	# GMT specific settings created by user
 
 bindir2		= /home/pahoehoe/gmt/GMT3.3.4/bin
 libdir2		= /home/pahoehoe/gmt/GMT3.3.4/lib

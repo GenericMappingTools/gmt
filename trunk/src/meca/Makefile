@@ -1,11 +1,11 @@
-#       $Id: Makefile,v 1.3 2001-03-02 05:54:44 pwessel Exp $
+#       $Id: Makefile,v 1.4 2001-03-05 15:50:44 pwessel Exp $
 #
 #	makefile for meca directory
 #	meca must be installed in the gmt/src directory or
 #	you must fix the -L -I for the gmt-dependencies.
 #
 #-----------------stop here-------------------------------
-include ../makegmt.macros
+-include ../makegmt.macros
 
 NETCDFLIB	= $(NETCDF)/lib
 NETCDFINC	= $(NETCDF)/include
