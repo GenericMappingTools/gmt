@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.21 2001-08-20 01:53:39 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.22 2001-08-20 19:31:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1428,7 +1428,10 @@ int GMT_setparameter (char *keyword, char *value)
 			}
 			break;
 		case 74:
-			gmtdefs.Y2K_offset_year = atoi (value);
+			if (value < 0)
+				error = TRUE;
+			else
+				gmtdefs.Y2K_offset_year = atoi (value);
 			break;
 		case 75:
 			if (value[0] == '\0' || !strcmp (value, "tab") || !strcmp (value, "TAB"))	/* DEFAULT */
