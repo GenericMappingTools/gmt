@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.10 2001-09-25 01:38:42 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.11 2001-09-25 01:58:21 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -450,51 +450,9 @@ See Figure~\ref{fig:GMT_-H}.
 Selects the map projection.  The following code (?) determines the
 projection.  Specify map {\it width} (or axis lengths) in the unit of
 your choice.  The projections avaiable in \GMT\ are presented in Figure~\ref{fig:GMT_-J}.
-For this tutorial we will choose one of the following projections
-(for details on all \GMT\ projections see the \GMTprog{psbasemap} man page):
-
-\begin{description}
-
-\item [Mercator:] \Opt{JM}{\it width}.
-\index{Mercator projection \Opt{JM}}
-\index{\Opt{JM} Mercator projection}
-
-\item [Orthographic:] \Opt{JG}$lon_0/lat_0/width$. The
-$lon_0/lat_0$ specifies the projection center.
-\index{Orthographic projection \Opt{JG}}
-\index{\Opt{JG} Orthographic projection}
-
-\item [Albers conic:]	\Opt{JB}$lon_0/lat_0/lat_1/lat_2/width$. 
-Give projection center and two standard parallels.
-\index{Albers projection \Opt{JB}}
-\index{\Opt{JB} Albers projection}
-
-\item [Eckert IV and VI:] \Opt{JK}[{\bf f$|$s}]$lon_0/width$. Give the central meridian.
-\index{Eckert IV and VI projection \Opt{JK}}
-\index{\Opt{JK} Eckert IV and VI projection}
-
-
-\item [Linear:] \Opt{JX}$width/height$.  Give width [and height]
-of plot.  {\it width} [and/or {\it height}] can be given in any of the
-following 3 formats:
-\index{Linear projection \Opt{JX}}
-\index{\Opt{JX} Linear projection}
-
-\begin{enumerate}
-\item \Opt{JX}{\it width}[{\bf d}]---Regular linear scaling.  Append
-'{\bf d}' if {\it x} and {\it y} are geographical coordinates in degrees;
-this allows for 360\DS\ periodicity and degree-symbols in annotations.
-
-\item \Opt{JX}{\it width}{\bf l}---Take log$_{10}$ of values before scaling.
-
-\item \Opt{JX}{\it width}{\bf p}{\it power}---Raise values to {\it power}
-before scaling.
-\end{enumerate}
-
-\end{description}
-
-Use negative {\it width }[{\it and height}] to reverse the direction of
-an axis (e.g., to have {\it y} be positive down).
+For details on all \GMT\ projections, see the \GMTprog{psbasemap} man page.
+We will also show examples of every projection in the next chapter, and a quick
+summary of projection syntax was given in Chapter 3.
 
 \subsection{The \Opt{K} \Opt{O} options}
 \index{\Opt{K}}
@@ -504,7 +462,7 @@ an axis (e.g., to have {\it y} be positive down).
 
 \begin{figure}[h]
 \centering
-\begin{tabular}{cc}
+\begin{tabular}{lr}
 \epsfig{figure=eps/GMT_-H.eps} & \epsfig{figure=eps/GMT_-OK.eps} \\
 \end{tabular}
 \caption{(left) Input files may have an arbitrary number of header records,
@@ -557,8 +515,10 @@ when using different media, such as 11" x 17" or large format plotters
 \index{Region, specifying}
 
 \Opt{R}{\it xmin}/{\it xmax}/{\it ymin}/{\it ymax}[{\bf r}] specify the
-Region of interest.  Decimal or exponential notations are supported.
-To use degrees and minutes [and seconds], use the dd:mm[:ss] format.
+Region of interest.  Decimal, exponential, and date-clock notations are supported,
+as expected by the prevailing coordinate transformation.
+To use geographical degrees and minutes [and seconds], use the dd:mm[:ss] format.
+For calendar date-clock limits, use the formats outlined in Section~\ref{sec:io}.
 Append {\bf r} if lower left and upper right corners are given instead of
 minimum and maximum extent of a rectangular region (Figure~\ref{fig:GMT_-R}).
 
