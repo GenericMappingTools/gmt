@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.24 2002-02-17 22:56:02 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.25 2002-02-21 12:29:54 ben Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -254,7 +254,7 @@ void GMT_ialbers(double *lon, double *lat, double x, double y);		/*	Convert x/y 
 void GMT_econic(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Equidistant Conic)	*/
 void GMT_ieconic(double *lon, double *lat, double x, double y);		/*	Convert x/y (Equidistant Conic) to lon/lat	*/
 void GMT_albers_sph(double lon, double lat, double *x, double *y);	/*	Convert lon/lat to x/y (Albers Spherical)	*/
-void GMT_ialbers_sph(double *lon, double *lat, double x, double y);	/*	Convert x/y (Albers SPherical) to lon/lat	*/
+void GMT_ialbers_sph(double *lon, double *lat, double x, double y);	/*	Convert x/y (Albers Spherical) to lon/lat	*/
 void GMT_azeqdist(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Azimuthal equal-distance)	*/
 void GMT_iazeqdist(double *lon, double *lat, double x, double y);	/*	Convert x/y (Azimuthal equal-distance) to lon/lat	*/
 void GMT_cassini(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Cassini)	*/

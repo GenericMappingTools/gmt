@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.69 2002-01-22 01:00:40 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.70 2002-02-21 12:29:54 ben Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -45,7 +45,7 @@
  *
  *	GMT_loaddefaults ()	:	Reads the GMT global parameters from .gmtdefaults
  *	GMT_map_getframe ()	:	Scans the -Bstring to set tickinfo
- *	GMT_setparameter ()	:	Sets a default value given keyord,value-pair
+ *	GMT_setparameter ()	:	Sets a default value given keyword,value-pair
  *	GMT_setshorthand ()	:	Reads and initializes the suffix shorthands
  *	GMT_get_ellipse()	:	Returns ellipse id based on name
  *	GMT_prepare_3D ()	:	Initialize 3-D parameters

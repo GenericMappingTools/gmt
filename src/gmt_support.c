@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.26 2002-02-14 23:53:58 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.27 2002-02-21 12:29:54 ben Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -564,7 +564,7 @@ void GMT_read_cpt (char *cpt_file)
 
 			}
 			else {
-				GMT_lut[n].skip = TRUE;	/* Don''t paint this slice */
+				GMT_lut[n].skip = TRUE;	/* Don't paint this slice */
 				if (GMT_lut[n].skip && nread != 4) {
 					fprintf (stderr, "%s: GMT Fatal Error: z-slice to skip not in [z0 - z1 -] format!\n", GMT_program);
 					exit (EXIT_FAILURE);
