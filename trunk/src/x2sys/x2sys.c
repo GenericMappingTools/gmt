@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.4 2002-04-30 18:12:41 pwessel Exp $
+ *	$Id: x2sys.c,v 1.5 2004-01-13 03:08:47 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -112,7 +112,7 @@ void x2sys_skip_header (FILE *fp, struct X2SYS_INFO *s)
  * array called data[] with each data value in it.
  */
 
-int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s)
+int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G)
 {
 	int j, k, i, n_read = 0;
 	BOOLEAN error = FALSE;
@@ -133,7 +133,7 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s)
 				if (j == 0) fgets (line, BUFSIZ, fp);	/* Get new record */
 				strncpy (buffer, &line[s->info[j].start_col], s->info[j].n_cols);
 				buffer[s->info[j].n_cols] = 0;
-				GMT_scanf (buffer, GMT_io.in_col_type[j], &data[j]);
+				GMT_scanf (buffer, G->in_col_type[j], &data[j]);
 				break;
 
 			case 'a':	/* ASCII Record, get all columns directly */
@@ -141,7 +141,7 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s)
 				fgets (line, BUFSIZ, fp);
 				p = strtok (line, " ,\t\n");
 				while (p) {
-					GMT_scanf (p, GMT_io.in_col_type[k], &data[k]);
+					GMT_scanf (p, G->in_col_type[k], &data[k]);
 					k++;;
 					p = strtok (NULL, " ,\t\n");
 				}
@@ -201,7 +201,7 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s)
 	return ((error || n_read != s->n_fields) ? -1 : 0);
 }
  
-int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p)
+int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G)
 {
 	/* Reads the entire contents of the file given and returns the
 	 * number of data records.  The data matrix is return in the
@@ -226,7 +226,7 @@ int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X
 	x2sys_skip_header (fp, s);
 
 	j = 0;
-	while (!x2sys_read_record (fp, rec, s)) {
+	while (!x2sys_read_record (fp, rec, s, G)) {
 		for (i = 0; i < s->n_fields; i++) z[i][j] = rec[i];
 		j++;
 		if (j == (int)n_alloc) {	/* Get more */
@@ -246,7 +246,7 @@ int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X
 	return (j);
 }
 
-struct X2SYS_INFO *x2sys_initialize (char *fname)
+struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G)
 {
 	/* Reads the format definition file and sets all information variables */
 
@@ -311,7 +311,7 @@ struct X2SYS_INFO *x2sys_initialize (char *fname)
 	for (i = 0; i < X->n_fields; i++) {	/* Default is same order and use all columns */
 		X->out_order[i] = i;
 		X->use_column[i] = 1;
-		GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = (X->x_col == i) ? GMT_IS_LON : ((X->y_col == i) ? GMT_IS_LAT : GMT_IS_UNKNOWN);
+		G->in_col_type[i] = G->out_col_type[i] = (X->x_col == i) ? GMT_IS_LON : ((X->y_col == i) ? GMT_IS_LAT : GMT_IS_UNKNOWN);
 	}
 	X->n_data_cols = x2sys_n_data_cols (X);
 	X->rec_size = (8 + X->n_data_cols) * sizeof (double);
@@ -889,7 +889,7 @@ double *x2sys_dummytimes (int n)
 	return (t);
 }
 
-int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p)
+int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G)
 {
 	/* Reads the entire contents of the file given and returns the
 	 * number of data records.  The data matrix is return in the
@@ -966,7 +966,7 @@ int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struc
 	return (p->n_rows);
 }
 
-int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p)
+int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G)
 {
 	int n_read, i, j, len, n_alloc = GMT_CHUNK;
 	char line[BUFSIZ];
