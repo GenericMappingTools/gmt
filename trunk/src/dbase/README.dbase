@@ -1,6 +1,12 @@
-	$Id: README.dbase,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+	$Id: README.dbase,v 1.2 2004-10-23 00:38:29 pwessel Exp $
 
 README for gmt/src/dbase directory.
+
+==> CHANGES IN GMT 4.0.1 <==
+
+We can now either give data set ID number or give a text string
+that we search for in the data set descriptions and if we find
+a single match we assign that ID as the chosen one.
 
 ==> CHANGES IN GMT 3.3.1 <==
 
