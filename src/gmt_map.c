@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.32 2002-09-20 03:00:15 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.33 2002-09-25 20:37:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6456,8 +6456,13 @@ int GMT_clip_to_map (double *lon, double *lat, int np, double **x, double **y)
 			n = (*GMT_map_clip) (lon, lat, np, x, y, &total_nx);
 			/* Polygons that completely contains the -R region will not generate crossings, just duplicate -R box */
 			if (n > 0 && total_nx == 0) {	/* No crossings and all points outside means one of two things: */
-				/* Either the polygon contains the -R region or it does not.  We pick mid point and check for insidedness: */
-				if (!GMT_non_zero_winding (0.5 * (project_info.w + project_info.e), 0.5 * (project_info.s + project_info.n), lon, lat, np)) {
+				/* Either the polygon contains portions of the -R region including corners or it does not.  We pick the corners and check for insidedness: */
+				BOOLEAN ok = FALSE;
+				if (GMT_non_zero_winding (project_info.w, project_info.s, lon, lat, np)) ok = TRUE;		/* TRUE if inside */
+				if (!ok && GMT_non_zero_winding (project_info.e, project_info.s, lon, lat, np)) ok = TRUE;	/* TRUE if inside */
+				if (!ok && GMT_non_zero_winding (project_info.e, project_info.n, lon, lat, np)) ok = TRUE;	/* TRUE if inside */
+				if (!ok && GMT_non_zero_winding (project_info.w, project_info.n, lon, lat, np)) ok = TRUE;	/* TRUE if inside */
+				if (!ok) {
 					/* Polygon does NOT contain the region and we delete it */
 					n = 0;
 					GMT_free ((void *)*x);
