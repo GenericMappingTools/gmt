@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.115 2004-05-08 02:10:04 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.116 2004-05-10 22:16:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -139,6 +139,8 @@ void GMT_fancy_frame_straightlat_checkers (double w, double e, double s, double 
 void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n, double radius_s, double radius_n, BOOLEAN secondary_too);
 void GMT_fancy_frame_straightlon_checkers (double w, double e, double s, double n, double angle_s, double angle_n, BOOLEAN secondary_too);
 void GMT_label_trim (char *label, int stage);
+void GMT_draw_mag_rose (struct MAP_ROSE *mr);
+void GMT_Nstar (double x0, double y0, double r);
 
 /* Local variables to this file */
 
@@ -4034,8 +4036,8 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 
 /* These are used to scale the plain arrow given rose size */
 
-#define F_VW	0.02
-#define F_HL	0.1
+#define F_VW	0.01
+#define F_HL	0.15
 #define F_HW	0.05
 
 void GMT_draw_map_rose (struct MAP_ROSE *mr)
@@ -4052,11 +4054,18 @@ void GMT_draw_map_rose (struct MAP_ROSE *mr)
 		mr->lat = mr->y0;
 		GMT_geo_to_xy (mr->lon, mr->lat, &mr->x0, &mr->y0);
 	}
+	
+	if (mr->fancy == 2) {	/* Do magnetic compass rose */
+		GMT_draw_mag_rose (mr);
+		return;
+	}
+	
 	GMT_azim_to_angle (mr->lon, mr->lat, 0.1, 90.0, &angle);	/* Get angle of E-W direction at this location */
 	
 	GMT_setpen (&gmtdefs.tick_pen);
 	
 	if (mr->fancy) {	/* Fancy scale */
+		mr->size *= 0.5;	/* Got diameter, use radius for calculations */
 		L[0] = mr->size;
 		L[1] = 0.8 * mr->size;
 		L[2] = L[3] = 0.6 * mr->size;
@@ -4090,16 +4099,131 @@ void GMT_draw_map_rose (struct MAP_ROSE *mr)
 			tx[1] = x[5];	ty[1] = y[5];	tx[2] = x[6];	ty[2] = y[6];
 			ps_patch (tx, ty, 3, gmtdefs.background_rgb, TRUE);	/* South */
 		}
-		GMT_text3D (mr->x0, mr->y0 + L[0] + gmtdefs.label_offset, project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, mr->label[2], 0.0, 2, 0);
-		GMT_text3D (mr->x0, mr->y0 - L[0] - gmtdefs.label_offset, project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, mr->label[0], 0.0, 10, 0);
-		GMT_text3D (mr->x0 + L[0] + gmtdefs.label_offset, mr->y0, project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, mr->label[1], 0.0, 5, 0);
-		GMT_text3D (mr->x0 - L[0] - gmtdefs.label_offset, mr->y0, project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, mr->label[3], 0.0, 7, 0);
+		GMT_text3D (mr->x0, mr->y0 + L[0] + gmtdefs.label_offset, project_info.z_level, gmtdefs.header_font_size, gmtdefs.header_font, mr->label[2], 0.0, 2, 0);
+		GMT_text3D (mr->x0, mr->y0 - L[0] - gmtdefs.label_offset, project_info.z_level, gmtdefs.header_font_size, gmtdefs.header_font, mr->label[0], 0.0, 10, 0);
+		GMT_text3D (mr->x0 + L[0] + gmtdefs.label_offset, mr->y0, project_info.z_level, gmtdefs.header_font_size, gmtdefs.header_font, mr->label[1], 0.0, 5, 0);
+		GMT_text3D (mr->x0 - L[0] - gmtdefs.label_offset, mr->y0, project_info.z_level, gmtdefs.header_font_size, gmtdefs.header_font, mr->label[3], 0.0, 7, 0);
 	}
 	else {			/* Plain North arrow w/circle */
 		GMT_vector3D (mr->x0, mr->y0 - 0.5 * mr->size, mr->x0, mr->y0 + 0.5 * mr->size, project_info.z_level, F_VW * mr->size, F_HL * mr->size, F_HW * mr->size, gmtdefs.vector_shape, gmtdefs.background_rgb, TRUE);
 		GMT_circle3D (mr->x0, mr->y0, project_info.z_level, 0.25 * mr->size, GMT_no_rgb, TRUE);
 		GMT_cross3D (mr->x0, mr->y0, project_info.z_level, 0.5 * mr->size);
-		GMT_text3D (mr->x0, mr->y0 + 0.5 * mr->size + gmtdefs.annot_offset[0], project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, mr->label[2], 0.0, 2, 0);
+		GMT_text3D (mr->x0, mr->y0 + 0.5 * mr->size + gmtdefs.annot_offset[0], project_info.z_level, gmtdefs.header_font_size, gmtdefs.header_font, mr->label[2], 0.0, 2, 0);
+	}
+}
+
+#define M_VW	0.005
+#define M_HL	0.075
+#define M_HW	0.015
+
+void GMT_draw_mag_rose (struct MAP_ROSE *mr)
+{	/* Magnetic compass rose */
+	int i, k, level, just, step[2] = {30, 10}, ljust[4] = {10, 5, 2, 7};
+	double ew_angle, angle, R[2], tlen[3], s, c, x[2], y[2], offset, t_angle, scale[2], base;
+	char label[16];
+	
+	GMT_azim_to_angle (mr->lon, mr->lat, 0.1, 90.0, &ew_angle);	/* Get angle of E-W direction at this location */
+	
+	R[0] = 0.75 * 0.5 * mr->size;
+	R[1] = 0.5 * mr->size;
+	tlen[0] = 0.5 * gmtdefs.tick_length;
+	tlen[1] = gmtdefs.tick_length;;
+	tlen[2] = 1.5 * gmtdefs.tick_length;
+	scale[0] = 0.85;
+	scale[1] = 1.0;
+	
+	GMT_setpen (&gmtdefs.tick_pen);
+	for (level = 0; level < 2; level++) {	/* Outer and inner angles */
+		if (level == 0 && mr->kind == 1) continue;	/* Sorry, not magnetic directions */
+		offset = (level == 0) ? mr->declination : 0.0;
+		for (i = 0; i < 360; i++) {	/* 1-degree increments of tickmarks */
+			angle = offset + (double)i;
+			k = ((i%10) == 0) ? 2 : ((i%5) ? 0 : 1);
+			sincos ((ew_angle + angle) * D2R, &s, &c);
+			x[0] = mr->x0 + R[level] * c;	y[0] = mr->y0 + R[level] * s;
+			x[1] = mr->x0 + (R[level] - scale[level]*tlen[k]) * c;	y[1] = mr->y0 + (R[level] - scale[level]*tlen[k]) * s;
+			GMT_2D_to_3D (x, y, project_info.z_level, 2);
+			ps_segment (x[0], y[0], x[1], y[1]);
+		}
+		for (i = 0; i < 360; i += step[level]) {	/* Increments of annotations */
+			angle = 90.0 - (offset + (double)i);	/* Since i is azimuth */
+			sincos ((ew_angle + angle) * D2R, &s, &c);
+			x[0] = mr->x0 + (R[level] + gmtdefs.annot_offset[level]) * c;	y[0] = mr->y0 + (R[level] + gmtdefs.annot_offset[level]) * s;
+			sprintf (label, "%d", i);
+			t_angle = fmod ((double)(-i - offset) + 360.0, 360.0);	/* Now in 0-360 range */
+			if (t_angle > 180.0) t_angle -= 180.0;	/* Now in -180/180 range */
+			if (t_angle > 90.0 || t_angle < -90.0) t_angle -= copysign (180.0, t_angle);
+			just = (y[0] <= mr->y0) ? 10 : 2;
+			if (level == 1 && i == 90) t_angle = -90.0, just = 2;
+			GMT_text3D (x[0], y[0], project_info.z_level, gmtdefs.annot_font_size[level], gmtdefs.annot_font[level], label, t_angle, just, 0);
+		}
+	}
+	/* Draw extra tick for the 4 main compass directions */
+	base = R[1] + gmtdefs.annot_offset[1] + gmtdefs.annot_font_size[1] / 72.0;
+	for (i = 0, k = 1; i < 360; i += 90, k++) {	/* 90-degree increments of tickmarks */
+		angle = (double)i;
+		sincos ((ew_angle + angle) * D2R, &s, &c);
+		x[0] = mr->x0 + R[1] * c;	y[0] = mr->y0 + R[1] * s;
+		x[1] = mr->x0 + (R[1] + tlen[0]) * c;	y[1] = mr->y0 + (R[1] + tlen[0]) * s;
+		GMT_2D_to_3D (x, y, project_info.z_level, 2);
+		ps_segment (x[0], y[0], x[1], y[1]);
+		x[0] = mr->x0 + base * c;	y[0] = mr->y0 + base * s;
+		x[1] = mr->x0 + (base + 2.0 * tlen[2]) * c;	y[1] = mr->y0 + (base + 2.0 * tlen[2]) * s;
+		GMT_2D_to_3D (x, y, project_info.z_level, 2);
+		ps_segment (x[0], y[0], x[1], y[1]);
+		if (k == 4) k = 0; 
+		if (k == 2 && mr->label[2][0] == '*') {
+			x[0] = mr->x0 + (base + 2.0*tlen[2] + gmtdefs.label_offset+ 0.025*mr->size) * c;	y[0] = mr->y0 + (base + 2.0*tlen[2] + gmtdefs.label_offset + 0.025*mr->size) * s;
+			GMT_Nstar (x[0], y[0], 0.1*mr->size);
+		}
+		else {
+			x[0] = mr->x0 + (base + 2.0*tlen[2] + gmtdefs.label_offset) * c;	y[0] = mr->y0 + (base + 2.0*tlen[2] + gmtdefs.label_offset) * s;
+			GMT_text3D (x[0], y[0], project_info.z_level, gmtdefs.header_font_size, gmtdefs.header_font, mr->label[k], 0.0, ljust[k], 0);
+		}
+	}
+	
+	if (mr->kind == 2) {	/* Compass needle and label */
+		sincos ((ew_angle + (90.0 - mr->declination)) * D2R, &s, &c);
+		x[0] = mr->x0 - 0.85 * R[0] * c;	y[0] = mr->y0 - 0.85 * R[0] * s;
+		x[1] = mr->x0 + 0.85 * R[0] * c;	y[1] = mr->y0 + 0.85 * R[0] * s;
+		GMT_vector3D (x[0], y[0], x[1], y[1], project_info.z_level, M_VW * mr->size, M_HL * mr->size, M_HW * mr->size, gmtdefs.vector_shape, gmtdefs.background_rgb, TRUE);
+		t_angle = fmod (90.0 - mr->declination + 360.0, 360.0);	/* Now in 0-360 range */
+		if (fabs (t_angle) > 90.0) t_angle -= copysign (180.0, t_angle);
+		x[0] = mr->x0 + 2.0 * M_VW * mr->size * s;	y[0] = mr->y0 - 2.0 * M_VW * mr->size * c;
+		GMT_text3D (x[0], y[0], project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, mr->dlabel, t_angle, 2, 0);
+	}
+	else {			/* Just geographic directions and a centered arrow */
+		GMT_vector3D (mr->x0, mr->y0 - 0.45 * mr->size, mr->x0, mr->y0 + 0.45 * mr->size, project_info.z_level, F_VW * mr->size, F_HL * mr->size, F_HW * mr->size, gmtdefs.vector_shape, gmtdefs.background_rgb, TRUE);
+		GMT_circle3D (mr->x0, mr->y0, project_info.z_level, 0.25 * mr->size, GMT_no_rgb, TRUE);
+		GMT_cross3D (mr->x0, mr->y0, project_info.z_level, 0.5 * mr->size);
+	}
+}
+
+void GMT_Nstar (double x0, double y0, double r)
+{	/* Draw a fancy 5-pointed North star */
+	int a;
+	double r2, x[4], y[4], dir, s, c;
+	
+	x[0] = x[3] = x0;	y[0] = y[3] = y0;
+	r2 = r * sind (18.0) / cosd (36.0);
+	r2 = r * 0.3;
+	for (a = 0; a <= 360; a += 72) {	/* Azimuth of the 5 points on the star */
+		dir = 90.0 - (double)a;
+		sincos (dir * D2R, &s, &c);
+		x[1] = x0 + r * c;
+		y[1] = y0 + r * s;
+		dir -= 36.0;
+		sincos (dir * D2R, &s, &c);
+		x[2] = x0 + r2 * c;
+		y[2] = y0 + r2 * s;
+		GMT_2D_to_3D (x, y, project_info.z_level, 4);
+		ps_patch (x, y, 4, gmtdefs.background_rgb, TRUE);
+		dir += 72.0;
+		sincos (dir * D2R, &s, &c);
+		x[2] = x0 + r2 * c;
+		y[2] = y0 + r2 * s;
+		GMT_2D_to_3D (x, y, project_info.z_level, 4);
+		ps_patch (x, y, 4, gmtdefs.foreground_rgb, TRUE);
 	}
 }
 
