@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.18 2004-06-12 08:15:27 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.19 2004-06-13 06:06:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -81,6 +81,7 @@ struct GMT_CONTOUR {
 	double L_d_scale;		/* Scale to yield correct units for label content only*/
 	int L_proj_type;		/* type of scaling for label content only */
 	int half_width;			/* Number of points to use in smoothing the angle [10/2] */
+	double min_radius;		/* Do not place labels if the radius of curvature drops below this value [0] */
 	BOOLEAN number;			/* TRUE if we have constraints on the number of labels to apply */
 	int number_placement;		/* How the n_cont labels are distributed */
 	int n_cont;			/* Number of labels per segment */

@@ -38,6 +38,8 @@ only makes sense for opaque text boxes.
 .br
 \fB+p\fP[\fIpen\fP] draws the outline of text boxsets [Default is no outline]; optionally specify pen for outline [Default is width = 0.25p, color = black, texture = solid].
 .br
+\fB+r\fP\fImin_rad\fP will not place labels where the line's radius of curvature is less than \fImin_rad\fP [Default is 0].
+.br
 \fB+s\fP\fIsize\fP sets the desired font size in points [Default is 9].
 .br
 \fB+u\fP\fIunit\fP appends \fIunit\fP to all line labels. If \fIunit\fP starts with a leading hypen (-) then there will be no space
@@ -48,6 +50,8 @@ If no \fIunit\fP is appended we use the units listed in the gridfile.
 [Default is no unit].
 .br
 \fB+v\fP specifies curved labels following the path [Default is straight labels].
+.br
+\fB+w\fP specifies how many (\fIx, y\fP) points will be used to estimate label angles [Default is 10].
 .br
 \fB+^\fP\fIprefix\fP prepends \fIprefix\fP to all line labels. If \fIprefix\fP starts with a leading hypen (-) then there will be no space
 between label value and the prefix. [Default is no prefix].

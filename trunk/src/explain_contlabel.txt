@@ -1,5 +1,5 @@
-#define G_OPT_SI 10\fBc\fP10
-#define G_OPT_US 4\fBi\fP10
+#define G_OPT_SI 10\fBc\fP
+#define G_OPT_US 4\fBi\fP
 #ifdef CONTOUR
 #define LINETYPE contours
 #define GFLAG \fB\-G\fP
@@ -9,13 +9,11 @@
 #endif
 Controls the placement of labels along the LINETYPE.  Choose among five controlling algorithms:
 .br
-GFLAG\fBd\fP\fIdist\fP[c|i|m|p][/\fIwidth\fP] or GFLAG\fBD\fP\fIdist\fP[d|e|k|m|n][/\fIwidth\fP].
+GFLAG\fBd\fP\fIdist\fP[c|i|m|p] or GFLAG\fBD\fP\fIdist\fP[d|e|k|m|n].
 For lower case \fBd\fP, give distances between labels on the plot in your preferred measurement unit
 \fBc\fP (cm), \fBi\fP (inch), \fBm\fP (meter), or \fBp\fP (points), while for upper case \fBD\fP, specify
 distances in map units and append the unit; choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile), \fBn\fP
-(nautical mile), or \fBd\fP (spherical degree).
-In either case, optionally append number of (x,y) values used to calculate a smooth label angle [Default is
-G_OPT_SI or G_OPT_US].  
+(nautical mile), or \fBd\fP (spherical degree).  [Default is G_OPT_SI or G_OPT_US].  
 .br
 GFLAG\fBf\fP\fIffile.d\fP reads the ascii file \fIffile.d\fP and places labels at locations in the file
 that matches locations along the LINETYPE.  Inexact mathces and points outside the region are skipped.
