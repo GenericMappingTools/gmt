@@ -44,7 +44,7 @@ Convergence limit.  Iteration is assumed to have converged when the maximum abso
 any grid value is less than \fIconvergence_limit\fP.  (Units same as data z units).  [Default is scaled
 to 0.1 percent of typical gradient in input data.]
 #include "explain_-H.txt"
-Not used with binary data.that we are using a lot of space in the core for things other than labs.
+Not used with binary data.
 .TP
 .B \-L
 Impose limits on the output solution.  \fBl\fP\fIlower\fP sets the lower bound.  \fIlower\fP can be the name of a
