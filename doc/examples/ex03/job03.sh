@@ -1,7 +1,7 @@
 #/bin/sh
 #		GMT EXAMPLE 03
 #
-#		$Id: job03.sh,v 1.3 2002-01-30 03:40:55 ben Exp $
+#		$Id: job03.sh,v 1.4 2002-04-24 23:31:22 ben Exp $
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
 # GMT progs:	filter1d, fitcircle, gmtset, minmax, project, sample1d, 
@@ -113,7 +113,7 @@ paste samp_ship.pg samp_sat.pg | cut -f2,4 | spectrum1d -S256 -D1 -W -C >& /dev/
 # Note the extended use of pstext and psxy to put labels and legends directly on the plots.  
 # For that purpose we often use -Jx1i and specify positions in inches directly:
 #
-psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3d in Cookbook" -P -K -X2.5i -Sc0.07i -G0 -Ey/2 -Y1.5i > example_03.ps
+psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3 in Cookbook" -P -K -X2.5i -Sc0.07i -G0 -Ey/2 -Y1.5i > example_03.ps
 echo "3.85 3.6 18 0.0 1 TR Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx1i -O -K >> example_03.ps
 cat << END > box.d
 2.375	3.75
@@ -144,7 +144,7 @@ echo "0.5 0.4 14 0.0 1 ML Satellite" | pstext -R -Jx -O >> example_03.ps
 # look:
 #
 trend1d -Fxw -N2r samp_ship.pg > samp_ship.xw
-psxy -R$xmin/$xmax/$ymin/$ymax -JX8i/4i -Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn -U/-1.75i/-1.25i/"Example 3e in Cookbook" -X2i -Y1.5i -K -Sp0.03i samp_ship.pg > example_03d.ps
+psxy -R$xmin/$xmax/$ymin/$ymax -JX8i/4i -Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn -U/-1.75i/-1.25i/"Example 3d in Cookbook" -X2i -Y1.5i -K -Sp0.03i samp_ship.pg > example_03d.ps
 psxy -R$xmin/$xmax/0/1.1 -JX8i/1.1i -O -Y4.25i -Bf100/a0.5f0.1:"Weight":Wesn -Sp0.03i samp_ship.xw >> example_03d.ps
 #
 # From this we see that we might want to throw away values where w < 0.6.  So we try that,
@@ -160,16 +160,16 @@ xmin=`$AWK '{print $1}' $$`
 xmax=`$AWK '{print $2}' $$`
 ymin=`$AWK '{print $3}' $$`
 ymax=`$AWK '{print $4}' $$`
-psxy -R$xmin/$xmax/$ymin/$ymax -JX8i/5i -Ba500f100:"Distance along great circle":/a50f25:"Gravity anomaly (mGal)":WeSn -U/-1.75i/-1.25i/"Example 3f in Cookbook" -X2i -Y1.5i -K -W1p samp2_sat.pg > example_03e.ps
+psxy -R$xmin/$xmax/$ymin/$ymax -JX8i/5i -Ba500f100:"Distance along great circle":/a50f25:"Gravity anomaly (mGal)":WeSn -U/-1.75i/-1.25i/"Example 3e in Cookbook" -X2i -Y1.5i -K -W1p samp2_sat.pg > example_03e.ps
 psxy -R -JX -O -Sp0.03i samp2_ship.pg >> example_03e.ps
 #
-# Now we do the cross-spectral analysis again.  Comparing this plot (example_03f.ps) with
-# the previous one (example_03.ps) we see that throwing out the large feature has reduced
+# Now we do the cross-spectral analysis again.  Comparing this plot (example_03e.ps) with
+# the previous one (example_03d.ps) we see that throwing out the large feature has reduced
 # the power in both data sets and reduced the coherency at wavelengths between 20--60 km.
 #
 paste samp2_ship.pg samp2_sat.pg | cut -f2,4 | spectrum1d -S256 -D1 -W -C >& /dev/null
 # 
-psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3g in Cookbook" -P -K -X2.5i -Sc0.07i -G0 -Ey/2 -Y1.5i > example_03f.ps
+psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3f in Cookbook" -P -K -X2.5i -Sc0.07i -G0 -Ey/2 -Y1.5i > example_03f.ps
 echo "3.85 3.6 18 0.0 1 TR Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx -O -K >> example_03f.ps
 cat << END > box.d
 2.375	3.75
