@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_bins.c,v 1.3 2004-09-12 09:08:45 pwessel Exp $
+ *	$Id: polygon_to_bins.c,v 1.4 2004-09-13 17:46:16 pwessel Exp $
  */
 #include "wvs.h"
 
@@ -49,6 +49,8 @@ struct GMT3_BIN_HEADER {
 
 int *ix, *iy;
 int *xx, *yy;
+
+void give_bad_message_and_exit (int id, int kind, int pt);
 
 main (int argc, char **argv) {
 	BOOLEAN first, crossed_x, crossed_y;
@@ -329,12 +331,10 @@ main (int argc, char **argv) {
 			for (k = 0; k < s->n; k++) {
 				/* Don't forget that this modulo calculation for DX doesn't work when you have a right/top edge (this wont happen for this polygon though !!!   */
 				test_long = irint ((xx[k] % B_WIDTH) * SHORT_FACTOR);
-				if (test_long < 0 || test_long > MAX_DELTA)
-					fprintf(stderr,"IDIOT.  SNAFU IN SHORT INTEGER MATH.\n");
+				if (test_long < 0 || test_long > MAX_DELTA) give_bad_message_and_exit (h.id, 0, k);
 				s->p[k].dx = (ushort) test_long;
 				test_long = irint((yy[k] % B_WIDTH) * SHORT_FACTOR);
-				if (test_long < 0 || test_long > MAX_DELTA)
-					fprintf(stderr,"IDIOT.  SNAFU IN SHORT INTEGER MATH.\n");
+				if (test_long < 0 || test_long > MAX_DELTA) give_bad_message_and_exit (h.id, 1, k);
 				s->p[k].dy = (ushort) test_long;
 			}
 			
@@ -414,12 +414,10 @@ main (int argc, char **argv) {
 						test_long = MAX_DELTA;
 					else
 						test_long = irint((xx[kk] - x_origin) * SHORT_FACTOR);
-					if (test_long < 0 || test_long > MAX_DELTA)
-						fprintf(stderr,"IDIOT.  SNAFU IN SHORT INTEGER MATH.\n");
+					if (test_long < 0 || test_long > MAX_DELTA) give_bad_message_and_exit (h.id, 0, kk);
 					s->p[k].dx = (ushort) test_long;
 					test_long = irint((yy[kk] - y_origin) * SHORT_FACTOR);
-					if (test_long < 0 || test_long > MAX_DELTA)
-						fprintf(stderr,"IDIOT.  SNAFU IN SHORT INTEGER MATH.\n");
+					if (test_long < 0 || test_long > MAX_DELTA) give_bad_message_and_exit (h.id, 1, kk);
 					s->p[k].dy = (ushort) test_long;
 				}
 				
@@ -477,10 +475,9 @@ main (int argc, char **argv) {
 	
 	fclose (fp_in);
 	
-	fprintf (stderr, "\nTotal input points %d\n", n_init);
-	fprintf (stderr, "Total output points %d\n", n_final);
-	fprintf (stderr, "Total polygons procesed %d\n", n_id);
-	fprintf (stderr, "# of points added as duplicates at crossings = %d\n", add);
+	fprintf (stderr, "\nTotal input and output points: %d\n", n_init, n_final);
+	fprintf (stderr, "Total polygons processed: %d\n", n_id);
+	fprintf (stderr, "%d points added as duplicates at crossings\n", add);
 	fprintf (stderr, "Adding edges made the database grow by %lg %%\n", (100.0 * (n_final - n_init)) / n_init);
 
 	/* Write out */
@@ -492,7 +489,6 @@ main (int argc, char **argv) {
 	GMT_read_grd (node_file, &n_head, node, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE);
 	se = 1;	ne = 1 - n_head.nx;	nw = -n_head.nx;
 	
-	fprintf (stderr, "nbins = %d \n", nbins);
 	for (b = file_head.n_segments = 0; b < nbins; b++) {
 		i = b % BIN_NX;	j = (b / BIN_NX) + 1;
 		ij = j * (BIN_NX + 1) + i;
@@ -500,7 +496,6 @@ main (int argc, char **argv) {
 		bin_head[b].node_levels = (zero << 9) + (one << 6) + (two << 3) + three;
 		s = bin[b].first_seg;
 		bin_head[b].first_seg_id = file_head.n_segments;
-		if (b == 146) fprintf (stderr, "%d %d %d %d\n", zero, one, two, three);
 		while (s) {
 			if (s->n == 2 && s->exit == s->entry) {	/* remove */
 				skip++;
@@ -583,8 +578,8 @@ main (int argc, char **argv) {
 	fclose(fp_seg);
 	
 	fprintf (stderr, "\npolygon_to_bins: %d corner points, %d jumps, %d total pts\n", n_corner, jump, np);
-	fprintf (stderr, "\npolygon_to_bins: Moved %d points exactly on x edge\n", n_x_exact);
-	fprintf (stderr, "\npolygon_to_bins: Moved %d points exactly on y edge\n", n_y_exact);
+	fprintf (stderr, "polygon_to_bins: Moved %d points exactly on x edge\n", n_x_exact);
+	fprintf (stderr, "polygon_to_bins: Moved %d points exactly on y edge\n", n_y_exact);
 	if (np != file_head.n_points)
 		fprintf (stderr, "polygon_to_bins: # points written (%d) differ from actual points (%d)!\n", np, file_head.n_points);
 	if (ns != file_head.n_segments)
@@ -604,3 +599,11 @@ struct SEGMENT **a, **b; {
 	return (0);
 }
 
+void give_bad_message_and_exit (int id, int kind, int pt)
+{
+	static char *type[2] = {"lon", "lat"};
+	fprintf (stderr, "polygon_to_bins: Incremental %s exceeds short int range for polygon %d near point %d\n",
+		type[kind], id, pt);
+	fprintf (stderr, "polygon_to_bins: Most likely cause is a point separation that exceeds the bin spacing\n");
+	exit (EXIT_FAILURE);
+}

@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_extract.c,v 1.2 2004-09-09 20:17:47 pwessel Exp $
+ *	$Id: polygon_extract.c,v 1.3 2004-09-13 17:46:16 pwessel Exp $
  */
 /* 
  *
@@ -82,6 +82,7 @@ main (int argc, char **argv)
 				fprintf(stderr,"polygon_extract:  ERROR  reading file.\n");
 				exit(EXIT_FAILURE);
 			}
+			if (p.x < 0) fprintf (stderr, "x < 0\n");
 			if (bin)
 				pol_fwrite (&p, 1, fp);
 			else {
