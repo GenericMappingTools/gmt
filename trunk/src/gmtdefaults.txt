@@ -518,9 +518,9 @@ the coordinate.  The default is +ddd:mm:ss.  Not all items may be plotted as thi
 interval.
 .TP
 .B PSIMAGE_FORMAT
-Determines whether images created in PostScript should use hexadecimal (i.e., ascii)
-or binary format.  The latter takes up only half as much space and executes faster but may choke
-some printers, especially those off serial ports.  Select hex or bin [hex].
+Determines whether images written in PostScript should use hexadecimal (i.e., ascii)
+or binary format, and whether RGB or CMYK encoding is used.  Binary takes up only half as much space and executes faster but may choke
+some printers, especially those off serial ports.  Select among hexrgb, binrgb, hexcmyk, bincmyk [hexrgb].
 .TP
 .B TICK_LENGTH
 The length of a tickmark.  Normally, tickmarks are drawn on the outside of

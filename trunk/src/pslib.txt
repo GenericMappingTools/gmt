@@ -115,8 +115,8 @@ void \fBps_colorimage\fR (\fIxpos, ypos, xlength, ylength, buffer, nx, ny\fP)
 .RS 10
 Plots a 24-bit true color image using rgb colors.  Similar to \fIps_image\fP except \fIbits\fP is fixed
 to be 8.  The rgb triplets are stored in \fIbuffer\fP as rgbrgbrgb...
-This functions sets up a call to the \fIPostScript\fP colorimage operator
-which is not implemented in all drivers.
+This functions sets up a call to the \fIPostScript\fP colorimage operator.
+If \fI-nx\fP is passed instead then rgb is converted to cmyk first.
 .RE
 .IP
 void \fBps_colortiles\fR (\fIx0, y0, xlength, ylength, buffer, nx, ny\fP)

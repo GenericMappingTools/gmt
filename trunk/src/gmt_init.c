@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.49 2001-09-26 04:34:47 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.50 2001-09-27 08:17:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -920,7 +920,8 @@ int GMT_loaddefaults (char *file)
 		default:
 			break;
 	}
-	if (gmtdefs.ps_heximage) gmtdefs.page_orientation += 4;
+	if (gmtdefs.ps_heximage % 2) gmtdefs.page_orientation += 4;
+	if (gmtdefs.ps_heximage > 1) gmtdefs.page_orientation += 512;
 
 	if (error) fprintf (stderr, "GMT:  %d conversion errors in file %s!\n", error, file);
 	
@@ -968,7 +969,8 @@ void GMT_setdefaults (int argc, char **argv)
 		default:
 			break;
 	}
-	if (gmtdefs.ps_heximage) gmtdefs.page_orientation += 4;
+	if (gmtdefs.ps_heximage % 2) gmtdefs.page_orientation += 4;
+	if (gmtdefs.ps_heximage > 1) gmtdefs.page_orientation += 512;
 	
 	if (GMT_got_frame_rgb) {	/* Must enforce change of frame, tick, and grid pen rgb */
 		memcpy ((void *)gmtdefs.frame_pen.rgb, (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
@@ -1428,10 +1430,14 @@ int GMT_setparameter (char *keyword, char *value)
 			}
 			break;
 		case 44:
-			if (!strcmp (lower_value, "hex"))
+			if (!strcmp (lower_value, "hex") || !strcmp (lower_value, "hexrgb"))
 				gmtdefs.ps_heximage = 1;
-			else if (!strcmp (lower_value, "bin"))
+			else if (!strcmp (lower_value, "bin") || !strcmp (lower_value, "binrgb"))
 				gmtdefs.ps_heximage = 0;
+			else if (!strcmp (lower_value, "hexcmyk"))
+				gmtdefs.ps_heximage = 3;
+			else if (!strcmp (lower_value, "bincmyk"))
+				gmtdefs.ps_heximage = 2;
 			else
 				error = TRUE;
 			break;
@@ -1636,7 +1642,7 @@ BOOLEAN true_false_or_error (char *value, int *answer)
 int GMT_savedefaults (char *file)
 {
 	FILE *fp;
-	char u, abbrev[4] = {'c', 'i', 'm', 'p'};
+	char u, abbrev[4] = {'c', 'i', 'm', 'p'}, *psimform[4] = {"binrgb", "hexrgb", "bincmyk", "hexcmyk"};
 	double s;
 	
 	if (!file)
@@ -1717,7 +1723,7 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "CHAR_ENCODING		= %s\n", GMT_char_encoding[gmtdefs.char_encoding]);
 	fprintf (fp, "DOTS_PR_INCH		= %d\n", gmtdefs.dpi);
 	fprintf (fp, "N_COPIES		= %d\n", gmtdefs.n_copies);
-	(gmtdefs.ps_heximage) ? fprintf (fp, "PSIMAGE_FORMAT		= hex\n") : fprintf (fp, "PSIMAGE_FORMAT		= bin\n");
+	fprintf (fp, "PSIMAGE_FORMAT		= %s\n", psimform[gmtdefs.ps_heximage]);
 	fprintf (fp, "GLOBAL_X_SCALE		= %lg\n", gmtdefs.global_x_scale);
 	fprintf (fp, "GLOBAL_Y_SCALE		= %lg\n", gmtdefs.global_y_scale);
 	fprintf (fp, "#-------- I/O Format Parameters -------------\n", GMT_VERSION);
