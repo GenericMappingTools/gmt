@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel2.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_findlevel2.c,v 1.2 2004-09-06 02:37:43 pwessel Exp $
  */
 #include "wvs.h"
 
@@ -658,29 +658,4 @@ int	n_path;
 		return(2);
 	else
 		return(0);
-}
-
-int load_file (file, ix, iy, n)
-char *file;
-int ix[], iy[], n; {
-	int i = 0;
-	double x, y;
-	FILE *fp;
-	char line[80];
-	
-	if ((fp = fopen (file, "r")) == NULL) {
-		fprintf (stderr, "Cant open file %s\n", file);
-		exit (-1);
-	}
-	while (fgets (line, 80, fp)) {
-		sscanf (line, "%lf %lf", &x, &y);
-		ix[i] = rint (x * MILL);
-		iy[i] = rint (y * MILL);
-		i++;
-	}
-	fclose (fp);
-	if (i != n) {
-		fprintf (stderr, "Number of points dont match (%s)\n", file);
-		exit (-1);
-	}
 }

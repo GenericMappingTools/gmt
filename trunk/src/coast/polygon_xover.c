@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_xover.c,v 1.2 2004-09-06 02:37:43 pwessel Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -61,7 +61,8 @@ main (int argc, char **argv)
 	full = (P[0].h.n > 1000000);	/* Only the full resolution has more than 1 mill points for EUR-AFR polygon */
 	
 	nx_tot = 0;
-	for (id1 = 0; id1 < n_id; id1++) {
+	/* for (id1 = 0; id1 < n_id; id1++) { */
+	for (id1 = 11500; id1 < n_id; id1++) {
 		if (id1 == ANTARCTICA) continue;	/* Skip Antarctica */
 		ylist1 = GMT_init_track (P[id1].lon, P[id1].lat, P[id1].h.n);
 		if (full && id1 == 0) {	/* Euraafrica */
@@ -119,7 +120,7 @@ main (int argc, char **argv)
 			
 			/* Get here when no cheap determination worked and we must do full crossover calculation */
 			
-			if (verbose) fprintf (stderr, "polygon_xover: %6d vs %6d\r", P[id1].h.id, P[id2].h.id);
+			if (verbose) fprintf (stderr, "polygon_xover: %6d vs %6d [T = %6d]\r", P[id1].h.id, P[id2].h.id, nx_tot);
 			if (fabs (x_shift) > GMT_CONV_LIMIT) for (i = 0; i < P[id2].h.n; i++) P[id2].lon[i] += x_shift;
 			
 			ylist2 = GMT_init_track (P[id2].lon, P[id2].lat, P[id2].h.n);
@@ -127,7 +128,7 @@ main (int argc, char **argv)
 			nx = GMT_crossover (P[id1].lon, P[id1].lat, NULL, ylist1, P[id1].h.n, P[id2].lon, P[id2].lat, NULL, ylist2, P[id2].h.n, FALSE, &XC);
 			GMT_free ((void *)ylist2);
 			if (fabs (x_shift) > GMT_CONV_LIMIT) for (i = 0; i < P[id2].h.n; i++) P[id2].lon[i] -= x_shift;
-			if (nx ) {
+			if (nx) {
 				for (i = 0; i < nx; i++) printf ("%d\t%d\t%d\t%d\t%lf\t%lf\n", P[id1].h.id, P[id2].h.id, (int)floor(XC.xnode[0][i]), (int)floor(XC.xnode[1][i]), XC.x[i], XC.y[i]);
 				GMT_x_free (&XC);
 			}
