@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.81 2005-01-12 03:32:28 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.82 2005-01-12 03:34:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8501,7 +8501,7 @@ double GMT_az_backaz_flatearth (double lonE, double latE, double lonS, double la
 	/* Calculate azimuths or backazimuths.  Flat earth code.
 	 * First point is considered "Event" and second "Station". */
 	
-	double az, sin_yS, cos_yS, sin_yE, cos_yE, sin_dlon, cos_dlon;
+	double az, dx, dy, dlon;
 	
 	latE *= D2R;	lonE *= D2R;
         latS *= D2R;	lonS *= D2R;
