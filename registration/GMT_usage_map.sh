@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.25 2003-10-02 17:30:15 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.26 2003-10-12 20:17:59 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -116,7 +116,7 @@ fi
 if [ $key = "all" ] || [ $key = "map" ]; then
 
 	gmtset DOTS_PR_INCH 100 FRAME_WIDTH 0.04i PAPER_MEDIA Letter+
-	cvs update GMT_old_unique_sites.d
+	cvs -q update GMT_old_unique_sites.d
 	psxy -R0/5.75/0/3 -Jx1i -P -X0.0133i -Y0.0133i -K -L -W2p << EOF > gmt_usage.ps
 0 0
 5.75 0
