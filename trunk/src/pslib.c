@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.74 2004-06-09 21:54:11 pwessel Exp $
+ *	$Id: pslib.c,v 1.75 2004-06-19 03:06:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2182,9 +2182,7 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 	 *		      32 = first time called, 64 = final time called, 128 = fill box, 256 = draw box
 	 */
 	 
-	int i = 0, j, k, place, first;
-	double height;
-	char *string;
+	int i = 0, j, k, first;
 	
 	if (form & 8) {		/* If 8 bit is set we already have placed the info */
 		form -= 8;		/* Knock off the 8 flag */
@@ -2260,8 +2258,6 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 	 */
 	 
 	int i = 0, j, k;
-	double height;
-	char *string;
 	
 	if (key & 2) {	/* Flag to terminate clipping */
 		fprintf (ps.fp, "PSL_clip_on\t\t%% If clipping is active, terminate it\n{\n  grestore\n  /PSL_clip_on false def\n} if\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.57 2004-06-19 01:02:54 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.58 2004-06-19 03:06:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6251,7 +6251,7 @@ int *GMT_split_line (double **xx, double **yy, int *nn, BOOLEAN add_crossings)
 			pos[n_seg] = i;		/* 2nd of the two points that generate the jump */
 			way[n_seg] = k;		/* Which way we jump : +1 is right to left, -1 is left to right */
 			n_seg++;
-			if (n_seg == n_alloc) {
+			if (n_seg == (int)n_alloc) {
 				n_alloc += GMT_SMALL_CHUNK;
 				pos = (int *) GMT_memory ((void *)pos, n_alloc, sizeof (int), GMT_program);
 				way = (short int *) GMT_memory ((void *)way, n_alloc, sizeof (short int), GMT_program);
