@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.131 2004-07-13 18:47:09 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.132 2004-08-06 20:36:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3963,7 +3963,12 @@ int GMT_get_label_parameters (int side, double line_angle, int type, double *tex
 				*justify = ((*text_angle) < 0.0) ? 5 : 7;
 			break;
 		case 1:		/* E */
-			*justify = 5;
+			if (type == 1 && gmtdefs.oblique_annotation & 32) {
+				*text_angle = 90.0;	/* Force parallel lat annotation */
+				*justify = 10;
+			}
+			else
+				*justify = 5;
 			break;
 		case 2:		/* N */
 			if (frame_info.horizontal)
@@ -3972,7 +3977,12 @@ int GMT_get_label_parameters (int side, double line_angle, int type, double *tex
 				*justify = ((*text_angle) < 0.0) ? 7 : 5;
 			break;
 		case 3:		/* W */
-			*justify = 7;
+			if (type == 1 && gmtdefs.oblique_annotation & 32) {
+				*text_angle = 90.0;	/* Force parallel lat annotation */
+				*justify = 2;
+			}
+			else
+				*justify = 7;
 			break;
 	}
 	
