@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+#	$Id: Makefile,v 1.2 2004-09-05 04:05:24 pwessel Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -24,7 +24,7 @@ CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf
 DEGREES = 1
 
-COAST_H	= shore.h wvs.h wvs_connect.h
+COAST_H	= shore.h wvs.h
 
 COAST_C	= border_to_bins.c ciaman_fix.c line_shrink.c linemaker.c \
 	  lines_to_bins.c man_fix.c man_fix2.c polygon_bincount.c \

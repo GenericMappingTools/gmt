@@ -1,5 +1,5 @@
 /*
- *	$Id: coast_io.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: coast_io.c,v 1.2 2004-09-05 04:08:18 pwessel Exp $
  */
 #define COASTLIB 1
 #include "wvs.h"
@@ -63,23 +63,23 @@ int swab_polheader (struct GMT3_POLY *h)
 	h->datelon = GMT_swab4 (h->datelon);
 	h->checked[0] = GMT_swab4 (h->checked[0]);
 	h->checked[1] = GMT_swab4 (h->checked[1]);
-	i = (unsigned int *)h->west;
+	i = (unsigned int *)&h->west;
 	j = GMT_swab4 (i[0]);
 	i[0] = GMT_swab4 (i[1]);
 	i[1] = j;
-	i = (unsigned int *)h->east;
+	i = (unsigned int *)&h->east;
 	j = GMT_swab4 (i[0]);
 	i[0] = GMT_swab4 (i[1]);
 	i[1] = j;
-	i = (unsigned int *)h->south;
+	i = (unsigned int *)&h->south;
 	j = GMT_swab4 (i[0]);
 	i[0] = GMT_swab4 (i[1]);
 	i[1] = j;
-	i = (unsigned int *)h->north;
+	i = (unsigned int *)&h->north;
 	j = GMT_swab4 (i[0]);
 	i[0] = GMT_swab4 (i[1]);
 	i[1] = j;
-	i = (unsigned int *)h->area;
+	i = (unsigned int *)&h->area;
 	j = GMT_swab4 (i[0]);
 	i[0] = GMT_swab4 (i[1]);
 	i[1] = j;
@@ -87,6 +87,7 @@ int swab_polheader (struct GMT3_POLY *h)
 
 int swab_polpoints (struct LONGPAIR *p, int n)
 {
+	int i;
 	for (i = 0; i < n; i++) {
 		p[i].x = GMT_swab4 (p[i].x);
 		p[i].y = GMT_swab4 (p[i].y);
