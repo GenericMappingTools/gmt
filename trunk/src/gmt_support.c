@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.92 2004-05-20 19:06:37 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.93 2004-05-21 01:31:55 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1624,8 +1624,58 @@ int GMT_contlabel_init (struct GMT_CONTOUR *G)
 	if (gmtdefs.measure_unit == GMT_CM) G->label_dist_spacing = 10.0 / 2.54;
 	G->clearance[0] = G->clearance[1] = 0.05;
 	G->box = 1;
+	G->angle_type = 0;
+	G->just = 6;	/* CM */
 	G->unit[0] = 0;
+	G->no_gap = FALSE;
+	GMT_init_pen (&G->pen, GMT_PENWIDTH);
 	memcpy ((void *)G->rgb, (void *)gmtdefs.page_rgb, (size_t)(3 * sizeof (int)));	/* Default box color is page color */
+}
+
+int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
+{
+	int j, k, bad;
+	char txt_a[32], txt_b[32];
+	
+	for (j = 0, bad = 0; txt[j] && txt[j] != 'f'; j++);
+	if (txt[j])	{ /* Found font size option */
+		G->label_font_size = atof (&txt[j+1]);
+		if (G->label_font_size <= 0.0) bad++;
+	}
+						
+	for (j = 0; txt[j] && txt[j] != 'a'; j++);
+	if (txt[j])	{ /* Found fixed angle option */
+		if (txt[j+1] == 'p')
+			G->angle_type = 0;
+		else if (txt[j+1] == 'n')
+			G->angle_type = 1;
+		else {
+			G->label_angle = atof (&txt[j+1]);
+			G->angle_type = 2;
+			if (G->label_angle <= -90.0 || G->label_angle > 180.0) bad++;
+		}
+	}
+
+	for (j = 0; txt[j] && txt[j] != '/'; j++);
+	if (txt[j] && GMT_getrgb (&txt[j+1], G->rgb)) bad++;
+	for (j = 0; txt[j] && txt[j] != '+'; j++);
+	if (txt[j] && GMT_getpen (&txt[j+1], &G->pen)) bad++;
+	for (j = 0; txt[j] && txt[j] != ','; j++);
+	if (txt[j]) {	/* Found dx/dy for textbox */
+		k = sscanf (&txt[j+1], "%[^,],%s", txt_a, txt_b);
+		G->clearance[0] = GMT_convert_units (txt_a, GMT_INCH);
+		G->clearance[1] = (k == 2 ) ? GMT_convert_units (txt_b, GMT_INCH) : G->clearance[0];
+		if (k == 0) bad++;
+	}
+	for (j = 0; txt[j] && txt[j] != 'j'; j++);
+	if (txt[j]) {	/* Found justification */
+		txt_a[0] = txt[j+1];	txt_a[1] = txt[j+2];	txt_a[2] = '\0';
+		G->just = GMT_just_decode (txt_a);
+	}
+	if (strchr (txt, 'o')) G->box = 2;
+	if (strchr (txt, 't')) G->box = 0;
+	
+	return (bad);
 }
 
 int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
@@ -1642,9 +1692,13 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 		case 'l':
 			L->crossing = GMT_CONTOUR_XLINE;
 			break;
+		case 'N':	/* Specify number of labels per segment */
+			L->number_placement = 1;	/* Distribution of labels */
+			if (txt[1] == '-') L->number_placement = -1, j = 1;	/* Left label if n = 1 */
+			if (txt[1] == '+') L->number_placement = +1, j = 1;	/* Right label if n = 1 */
 		case 'n':	/* Specify number of labels per segment */
 			L->number = TRUE;
-			L->n_cont = atoi (&txt[1]);
+			L->n_cont = atoi (&txt[1+j]);
 			if (L->n_cont <= 0) {
 				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c.  Number of labels must exceed zero\n", GMT_program, L->flag);
 				error++;
@@ -1690,6 +1744,11 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 	double x, y;
 	char buffer[BUFSIZ], txt_a[128], txt_b[128], txt_c[128], txt_d[128], *p;
 	
+	if (G->angle_type == 0)
+		G->no_gap = (G->just < 5 || G->just > 7);	/* Don't clip contour if label is not in the way */
+	else if (G->angle_type == 1)
+		G->no_gap = ((G->just + 2)%4);	/* Don't clip contour if label is not in the way */
+
 	greenwich = (project_info.w < 0.0 && project_info.e > 0.0);
 
 	if (G->crossing == GMT_CONTOUR_XLINE) {
@@ -1727,11 +1786,11 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 			if (G->do_interpolate) G->xp[G->n_xp].np = GMT_fix_up_path (&G->xp[G->n_xp].lon, &G->xp[G->n_xp].lat, G->xp[G->n_xp].np, greenwich, 1.0);
 			G->xp[G->n_xp].seg = (int *) GMT_memory (VNULL, G->xp[G->n_xp].np, sizeof (int), GMT_program);	/* Initialized by default to 0 */
 			for (i = 0; i < G->xp[G->n_xp].np; i++) {	/* Project */
-				if (G->xp[G->n_xp].lon[i] == DBL_MAX) {	/* Meant zmax location */
+				if (G->xp[G->n_xp].lon[i] == DBL_MAX && !xyz) {	/* Meant zmax location */
 					G->xp[G->n_xp].lon[i] = xyz[1][0];
 					G->xp[G->n_xp].lat[i] = xyz[1][1];
 				}
-				else if (G->xp[G->n_xp].lon[i] == -DBL_MAX) {	/* Meant zmin location */
+				else if (G->xp[G->n_xp].lon[i] == -DBL_MAX && !xyz) {	/* Meant zmin location */
 					G->xp[G->n_xp].lon[i] = xyz[0][0];
 					G->xp[G->n_xp].lat[i] = xyz[0][1];
 				}
@@ -1762,21 +1821,27 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 	return (error);
 }
 
-double GMT_contlabel_angle (double x[], double y[], double x0, double y0, int start, int stop, int width, int n)
+void GMT_contlabel_angle (double x[], double y[], int start, int stop, double cangle, int n, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
 {
 	int j;
-	double sum_x2 = 0.0, sum_xy = 0.0, dx, dy, angle;
-	for (j = start - width; j <= stop + width; j++) {	/* L2 fit for slope over this range of points */
+	double sum_x2 = 0.0, sum_xy = 0.0, dx, dy;
+	
+	for (j = start - G->half_width; j <= stop + G->half_width; j++) {	/* L2 fit for slope over this range of points */
 		if (j < 0 || j >= n) continue;
-		dx = x[j] - x0;
-		dy = y[j] - y0;
+		dx = x[j] - L->x;
+		dy = y[j] - L->y;
 		sum_x2 += dx * dx;
 		sum_xy += dx * dy;
 	}
-	angle = d_atan2 (sum_xy, sum_x2) * R2D;
-	if (angle < 0.0) angle += 360.0;
-	if (angle > 90.0 && angle < 270) angle -= 180.0;
-	return (angle);
+	L->line_angle = d_atan2 (sum_xy, sum_x2) * R2D;
+	if (G->angle_type == 2) { 	/* Just returned the fixed angle given */
+		L->angle = cangle;
+	}
+	else {
+		L->angle = L->line_angle + G->angle_type * 90.0;	/* May add 90 to get normal */
+		if (L->angle < 0.0) L->angle += 360.0;
+		if (L->angle > 90.0 && L->angle < 270) L->angle -= 180.0;
+	}
 }
 
 void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_CONTOUR *G)
@@ -1796,7 +1861,10 @@ void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_C
 	stop = 0;
 	x_last = x[0];	y_last = y[0];
 	for (k = 0; k < G->n_label && stop < n; k++) {
-		label_width = G->clearance[0] + 0.5 * label_height * strlen(G->L[k]->label);
+		if (G->angle_type == 0)
+			label_width = G->clearance[0] + 0.5 * label_height * strlen(G->L[k]->label);
+		else
+			label_width = G->clearance[1] + 0.5 * label_height;
 		start = stop;
 		stop = G->L[k]->node;
 		while (stop >= 0 && (G->L[k]->dist - d[stop]) < label_width) stop--;
@@ -1850,7 +1918,7 @@ void GMT_contlabel_plot (struct GMT_CONTOUR *G)
 	/* box = 1: white box only, box = 2: white box + draw outline */
         /* box = 0: no box (append 't' instead of 'o' in -A parameter) */
 	int box;
-	double dx, dy;
+	double dx, dy, xc, yc;
 	struct GMT_LABEL *this, *old;
 	
 	dx = G->clearance[0];
@@ -1859,14 +1927,16 @@ void GMT_contlabel_plot (struct GMT_CONTOUR *G)
 	ps_comment ("Contour annotations:");
 	
 	ps_setpaint (gmtdefs.basemap_frame_rgb);
-	
+	GMT_setpen (&G->pen);
 	for (old = G->anchor; box >= 0 && old->next_label; old = old->next_label) {	/* First draw boxes if not 3-D*/
 		this = old->next_label;
-		GMT_textbox3D (this->x, this->y, project_info.z_level, G->label_font_size, gmtdefs.annot_font[0], this->label, this->angle, 6, box, dx, dy, G->rgb);
+		GMT_smart_justify (G->just, this->angle, dx, dy, &this->x, &this->y);	/* This may change x,y */
+		GMT_textbox3D (this->x, this->y, project_info.z_level, G->label_font_size, gmtdefs.annot_font[0], this->label, this->angle, G->just, box, dx, dy, G->rgb);
 	}
 	for (old = G->anchor; old->next_label; old = old->next_label) { /* Then labels */
 		this = old->next_label;
-		GMT_text3D (this->x, this->y, project_info.z_level, G->label_font_size, gmtdefs.annot_font[0], this->label, this->angle, 6, 0);
+		if (box == -1) GMT_smart_justify (G->just, this->angle, dx, dy, &this->x, &this->y);	/* Not done above */
+		GMT_text3D (this->x, this->y, project_info.z_level, G->label_font_size, gmtdefs.annot_font[0], this->label, this->angle, G->just, 0);
 	}
 		
 	ps_setpaint (gmtdefs.background_rgb);
@@ -2463,6 +2533,163 @@ void GMT_dump_contour (double *xx, double *yy, int nn, double cval, int id, BOOL
 		GMT_output (fp, 3, out);
 	}
 	GMT_fclose (fp);
+}
+
+void GMT_draw_contour (double *xx, double *yy, int *pen, int nn, double cval, char ctype, double cangle, int closed, struct GMT_CONTOUR *G)
+{	/* The xx, yy are expected to be projected x/y inches */
+	int i, j, start = 0;
+	size_t n_alloc = GMT_SMALL_CHUNK;
+	double angle, dx, dy, width, sum_x2, sum_xy, one = 1.0, *track_dist;
+	double label_height, label_width, x, y;
+	char label[128], format[128];
+	struct GMT_LABEL *new_label;
+	
+	if (nn < 2) return;
+		
+	sprintf (format, "%g contour", cval);
+	ps_comment (format);
+	
+	if (G->box > 0 || G->no_gap) GMT_plot_line (xx, yy, pen, nn);	/* Draw entire contour for opaque label boxes */
+
+	if (ctype == 'A' || ctype == 'a') {	/* Annotated contours */
+		GMT_get_format (cval, G->unit, CNULL, format);
+		sprintf (label, format, cval);
+		label_height = label_width = G->label_font_size * GMT_u2u[GMT_PT][GMT_INCH] * 0.58;  /* Constants from GMT_textbox3D()KJ*/
+		label_width *= 0.81 * strlen(label) * 0.78;
+		label_width *= 0.66;  /* was still too wide KJ*/
+		
+		/* Calculate distance along contour and store in track_dist array */
+		
+		track_dist = (double *) GMT_memory (VNULL, (size_t)nn, sizeof (double), GMT_program);
+		track_dist[0] = 0.0;	/* Unnecessary, just so we understand the logic */
+		for (i = 1; i < nn; i++) {
+			dx = xx[i] - xx[i-1];
+			if (fabs (dx) > (width = GMT_half_map_width (yy[i-1]))) {
+				width *= 2.0;
+				dx = copysign (width - fabs (dx), -dx);
+				if (xx[i] < width)
+					xx[i-1] -= width;
+				else
+					xx[i-1] += width;
+			}
+			dy = yy[i] - yy[i-1];
+			track_dist[i] = track_dist[i-1] + hypot (dx, dy);
+		}
+		G->L = (struct GMT_LABEL **) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
+		G->n_label = 0;
+
+		if (G->spacing) {	/* Place labels based on distance along contours */
+			double last_label_dist, dist_offset, dist, f;
+			
+			dist_offset = (closed) ? G->label_dist_spacing - one : 0.0;	/* Label closed contours longer than 1 inch */
+			last_label_dist = 0.0;
+			for (i = 1; i < nn; i++) {
+				if (GMT_pen[i] == 3) continue;
+
+				dist = track_dist[i] + dist_offset - last_label_dist;
+				if (dist > G->label_dist_spacing) {	/* Time for label */
+					new_label = (struct GMT_LABEL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_LABEL), GMT_program);
+					f = (dist - G->label_dist_spacing) / (track_dist[i] - track_dist[i-1]);
+					if (f < 0.5) {
+						new_label->x = xx[i] - f * (xx[i] - xx[i-1]);
+						new_label->y = yy[i] - f * (yy[i] - yy[i-1]);
+					}
+					else {
+						f = 1.0 - f;
+						new_label->x = xx[i-1] + f * (xx[i] - xx[i-1]);
+						new_label->y = yy[i-1] + f * (yy[i] - yy[i-1]);
+					}
+					strcpy (new_label->label, label);
+					new_label->dist = dist - dist_offset + last_label_dist;
+					new_label->node = i - 1;
+					GMT_contlabel_angle (xx, yy, i - 1, i, cangle, nn, new_label, G);
+					new_label->prev_label = G->old_label;
+					dist_offset = 0.0;
+					last_label_dist = track_dist[i];
+					G->old_label->next_label = new_label;
+					G->old_label = new_label;
+					G->L[G->n_label++] = new_label;
+					if (G->n_label == n_alloc) {
+						n_alloc += GMT_SMALL_CHUNK;
+						G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
+					}
+				}
+			}
+		}
+		if (G->number) {	/* Place prescribed number of labels evenly along contours */
+			double dist, f;
+			for (i = j = 0; i < G->n_cont; i++) {
+				new_label = (struct GMT_LABEL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_LABEL), GMT_program);
+				if (G->number_placement && !closed)
+					dist = (G->n_cont > 1) ? i * track_dist[nn-1] / (G->n_cont - 1) : 0.5 * (G->number_placement + 1.0) * track_dist[nn-1];
+				else
+					dist = (i + 1 - 0.5 * closed) * track_dist[nn-1] / (G->n_cont + 1 - closed);
+				while (j < nn && track_dist[j] < dist) j++;
+				if (j == nn) j--;	/* Safety precaution */
+				f = (dist - track_dist[j-1]) / (track_dist[j] - track_dist[j-1]);
+				if (f < 0.5) {	/* Pick the smallest fraction to minimize Taylor shortcomings */
+					new_label->x = xx[j-1] + f * (xx[j] - xx[j-1]);
+					new_label->y = yy[j-1] + f * (yy[j] - yy[j-1]);
+				}
+				else {
+					f = 1.0 - f;
+					new_label->x = xx[j] - f * (xx[j] - xx[j-1]);
+					new_label->y = yy[j] - f * (yy[j] - yy[j-1]);
+				}
+				strcpy (new_label->label, label);
+				new_label->node = j - 1;
+				new_label->dist = dist;
+				GMT_contlabel_angle (xx, yy, j - 1, j, cangle, nn, new_label, G);
+				G->old_label->next_label = new_label;
+				G->old_label = new_label;
+				G->L[G->n_label++] = new_label;
+				if (G->n_label == n_alloc) {
+					n_alloc += GMT_SMALL_CHUNK;
+					G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
+				}
+			}
+		}
+		if (G->crossing) {	/* Determine label positions based on crossing lines */
+			int left, right, line_no;
+			G->ylist = GMT_init_track (xx, yy, nn);
+			for (line_no = 0; line_no < G->n_xp; line_no++) {	/* For each of the crossing lines */
+				G->ylist_XP = GMT_init_track (G->xp[line_no].lon, G->xp[line_no].lat, G->xp[line_no].np);
+				G->nx = GMT_crossover (G->xp[line_no].lon, G->xp[line_no].lat, NULL, G->ylist_XP, G->xp[line_no].np, xx, yy, NULL, G->ylist, nn, FALSE, &G->XC);
+				GMT_free ((void *)G->ylist_XP);
+				if (G->nx == 0) continue;
+					
+				/* OK, we found intersections for labels */
+					
+				for (i = 0; i < G->nx; i++) {
+					left  = (int) floor (G->XC.xnode[1][i]);
+					right = (int) ceil  (G->XC.xnode[1][i]);
+					new_label = (struct GMT_LABEL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_LABEL), GMT_program);
+					new_label->x = G->XC.x[i];
+					new_label->y = G->XC.y[i];
+					strcpy (new_label->label, label);
+					new_label->node = left;
+					new_label->dist = track_dist[left];
+					GMT_contlabel_angle (xx, yy, left, right, cangle, nn, new_label, G);
+					G->old_label->next_label = new_label;
+					G->old_label = new_label;
+					G->L[G->n_label++] = new_label;
+					if (G->n_label == n_alloc) {
+						n_alloc += GMT_SMALL_CHUNK;
+						G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
+					}
+				}
+				GMT_x_free (&G->XC);
+			}
+			GMT_free ((void *)G->ylist);
+		}
+		if (G->box == 0 && !G->no_gap) GMT_contlabel_draw (xx, yy, track_dist, nn, G);
+
+		GMT_free ((void *)track_dist);
+		GMT_free ((void *)G->L);
+	}
+	else if (G->box == 0) {   /* just one line, no holes for labels */
+		GMT_plot_line (xx, yy, pen, nn);
+	}
 }
 
 void GMT_get_plot_array (void) {      /* Allocate more space for plot arrays */
@@ -4745,6 +4972,16 @@ int GMT_just_decode (char *key)
 	}
 		
 	return (j + i);
+}
+
+void GMT_smart_justify (int just, double angle, double dx, double dy, double *x_shift, double *y_shift)
+{
+	double s, c, xx, yy;
+	sincos (angle *D2R, &s, &c);
+	xx = (2 - (just%4)) * dx;	/* Smart shift in x */
+	yy = (1 - (just/4)) * dy;	/* Smart shift in x */
+	*x_shift += c * xx - s * yy;	/* Must account for angle of label */
+	*y_shift += s * xx + c * yy;
 }
 
 int GMT_verify_expectations (int wanted, int got, char *item)
