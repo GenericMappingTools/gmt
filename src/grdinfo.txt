@@ -2,7 +2,8 @@
 .SH NAME
 grdinfo \- Get information about the contents of a 2-D grd file
 .SH SYNOPSIS
-\fBgrdinfo\fP \fIgrdfiles\fP [ \fB\-C\fP ] [ \fB\-F\fP ] [ \fB\-L1\fP ] 
+\fBgrdinfo\fP \fIgrdfiles\fP [ \fB\-C\fP ] [ \fB\-F\fP ] 
+[ \fB\-I\fP\fIdx\fP[/\fIdy\fP] ][ \fB\-L1\fP ] 
 [ \fB\-L2\fP ] [ \fB\-M\fP ] [ \fB\-T\fP\fIdz\fP ] [ \fB\-V\fP ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBgrdinfo\fP reads a 2-D binary grd file and reports various statistics for the (x,y,z) data in the
@@ -22,11 +23,17 @@ Formats the report using tab-separated fields on a single line.  The output is
 \fIw e s n z0 z1 dx dy nx ny \fP[ \fIx0 y0 x1 y1\fP ] [ \fImed scale\fP ] [\fI mean std rms\fP] [\fIn_nan\fP].
 The data in brackets are output only if the corresponding options
 \fB\-M, \-L1\fP, \fB\-L2\fP, and \fB\-M\fP are used, respectively.
+If the \fB\-I\fP option is used, the output format is instead
+\fINF w e s n z0 z1\fP, where \fINF\fP is the total number of grids read and \fIw e s n\fP are rounded off (see \fB\-I\fP).
 .TP
 .B \-F
 Report grid domain and x/y-increments in world mapping format [Default is generic].
 Does not apply to the \fB\-C\fP option.
 .TP
+.B \-I
+.TP
+Report the min/max of the region to the nearest multiple of \fIdx\fP and \fIdy\fP,
+and output this in the form \fB\-R\fP\fIw/e/s/n\fP (unless \fB\-C\fP is set).
 .B \-L1
 Report median and L1 scale of z (L1 scale = 1.4826 * Median Absolute Deviation (MAD)).
 .TP

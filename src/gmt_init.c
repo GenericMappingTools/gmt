@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.103 2004-03-02 23:12:45 ben Exp $
+ *	$Id: gmt_init.c,v 1.104 2004-04-01 17:05:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2458,6 +2458,7 @@ int GMT_begin (int argc, char **argv)
 	GMT_grd_in_nan_value = GMT_grd_out_nan_value = GMT_d_NaN;
 	DEG2M = 2.0 * M_PI * gmtdefs.ref_ellipsoid[N_ELLIPSOIDS-1].eq_radius / 360.0;	/* GRS-80 sphere degree->m  */
 	DEG2KM = 0.001 * DEG2M;								/* GRS-80 sphere degree->km */
+	GMT_distance_func = (PFD) GMT_km_dist;
 
 	/* Set the gmtdefault parameters from the $HOME/.gmtdefaults4 (if any) */
 	

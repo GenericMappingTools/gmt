@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.58 2004-01-13 01:53:26 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.59 2004-04-01 17:05:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2315,3 +2315,182 @@ int	GMT_scanf_arg (char *s, int expectation, double *val)
 	return (GMT_scanf (s, expectation, val));
 }
 
+/* Function to read a list of points and hold in memory */
+
+int GMT_points_init (char *file, double **xp, double **yp, double **dp, double dist, BOOLEAN greenwich)
+{
+	FILE *fp;
+	double *x, *y, *d, *in;
+	int i = 0, n_alloc = GMT_CHUNK, n_fields, n_expected_fields = BUFSIZ;
+
+	x = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
+	y = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
+	d = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
+
+	if ((fp = GMT_fopen (file, "r")) == NULL) {
+		fprintf (stderr, "%s: Cannot open file %s\n", GMT_program, file);
+		exit (EXIT_FAILURE);
+	}
+
+	while ((n_fields = GMT_input_ascii (fp, &n_expected_fields, &in)) >= 0 && ! (GMT_io.status & GMT_IO_EOF)) {	/* Not yet EOF */
+
+		while (GMT_io.status & GMT_IO_SEGMENT_HEADER && !(GMT_io.status & GMT_IO_EOF)) {
+			n_fields = GMT_input_ascii (fp, &n_expected_fields, &in);
+		}
+		if ((GMT_io.status & GMT_IO_EOF)) continue;	/* At EOF */
+
+		if (GMT_io.status & GMT_IO_MISMATCH) {
+			fprintf (stderr, "%s: Mismatch between actual (%d) and expected (%d) fields near line %d in file %s\n", GMT_program, n_fields,  n_expected_fields, i, file);
+			exit (EXIT_FAILURE);
+		}
+
+		if (n_expected_fields < 2) {
+			fprintf (stderr, "%s: Failure to read file %s near line %d\n", GMT_program, file, i);
+			exit (EXIT_FAILURE);
+		}
+		
+		x[i] = in[0];	y[i] = in[1];
+		d[i] = (n_expected_fields >= 3 && dist == 0.0) ? in[2] : dist;
+		if (MAPPING) {
+			if (greenwich  && x[i] > 180.0) x[i] -= 360.0;
+			if (!greenwich && x[i] < 0.0)   x[i] += 360.0;
+		}
+
+		i++;
+		if (i == n_alloc) {
+			n_alloc += GMT_CHUNK;
+			x = (double *) GMT_memory ((void *)x, (size_t)n_alloc, sizeof (double), GMT_program);
+			y = (double *) GMT_memory ((void *)y, (size_t)n_alloc, sizeof (double), GMT_program);
+			d = (double *) GMT_memory ((void *)d, (size_t)n_alloc, sizeof (double), GMT_program);
+		}
+
+	}
+	GMT_fclose (fp);
+	
+	if (i == 0) {
+		fprintf (stderr, "%s: File %s is empty!\n", GMT_program, file);
+		exit (EXIT_FAILURE);
+	}
+	
+	x = (double *) GMT_memory ((void *)x, (size_t)i, sizeof (double), GMT_program);
+	y = (double *) GMT_memory ((void *)y, (size_t)i, sizeof (double), GMT_program);
+	d = (double *) GMT_memory ((void *)d, (size_t)i, sizeof (double), GMT_program);
+	*xp = x;
+	*yp = y;
+	*dp = d;
+
+	return (i);
+}
+
+int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN greenwich)
+{
+	FILE *fp;
+	struct GMT_LINES *e;
+	int i = -1, j = 0, n, i_alloc = GMT_CHUNK, n_read = 0, j_alloc = GMT_CHUNK;
+	int n_fields, n_expected_fields = BUFSIZ;
+	BOOLEAN poly = FALSE, check_cap, save;
+	double d, dlon, lon_sum, *in;
+		
+	if (fabs (dist + 9999.0) < GMT_CONV_LIMIT) poly = TRUE;	/* A polygon */
+	check_cap = (poly && MAPPING);
+	
+	e = (struct GMT_LINES *) GMT_memory (VNULL, (size_t)i_alloc, sizeof (struct GMT_LINES), GMT_program);
+
+	if ((fp = GMT_fopen (file, "r")) == NULL) {
+		fprintf (stderr, "%s: Cannot open file %s\n", GMT_program, file);
+		exit (EXIT_FAILURE);
+	}
+
+	save = GMT_io.multi_segments;	/* Must set this to TRUE temporarily */
+	GMT_io.multi_segments = TRUE;
+	
+	n_fields = GMT_input_ascii (fp, &n_expected_fields, &in);
+	if (GMT_io.status & GMT_IO_EOF) {
+		fprintf (stderr, "%s: File %s is empty!\n", GMT_program, file);
+		exit (EXIT_FAILURE);
+	}
+	if (!(GMT_io.status & GMT_IO_SEGMENT_HEADER)) {	/* Quick check up front that it is a -M kind of file */
+		fprintf (stderr, "%s: Files for -F or -L must be in multisegment format!\n", GMT_program);
+		exit (EXIT_FAILURE);
+	}
+
+	while (n_fields >= 0 && !(GMT_io.status & GMT_IO_EOF)) {	/* Not yet EOF */
+		while (GMT_io.status & GMT_IO_SEGMENT_HEADER && !(GMT_io.status & GMT_IO_EOF)) {
+			/* To use different line-distances for each segment, place the distance in the segment header */
+			i++;
+			n_read++;
+			n = sscanf (&GMT_io.segment_header[1], "%lg", &d);
+			e[i].dist = (n == 1 && dist == 0.0) ? d : dist;
+			j_alloc = GMT_CHUNK;
+			j = 0;
+			lon_sum = 0.0;
+			n_fields = GMT_input_ascii (fp, &n_expected_fields, &in);
+		}
+		if ((GMT_io.status & GMT_IO_EOF)) continue;	/* At EOF */
+		
+		e[i].lon = (double *) GMT_memory (VNULL, (size_t)j_alloc, sizeof (double), GMT_program);
+		e[i].lat = (double *) GMT_memory (VNULL, (size_t)j_alloc, sizeof (double), GMT_program);
+
+		while (! (GMT_io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_EOF))) {	/* Keep going until FALSE or = 2 segment header */
+			if (GMT_io.status & GMT_IO_MISMATCH) {
+				fprintf (stderr, "%s: Mismatch between actual (%d) and expected (%d) fields near line %d\n", GMT_program, n_fields, n_expected_fields, i);
+				exit (EXIT_FAILURE);
+			}
+			
+			n_read++;
+			if (n_expected_fields < 2) {
+				fprintf (stderr, "%s: Failure to read file %s near line %d\n", GMT_program, file, n_read);
+				exit (EXIT_FAILURE);
+			}
+			e[i].lon[j] = in[0];
+			e[i].lat[j] = in[1];
+			if (MAPPING) {
+				if (greenwich && e[i].lon[j] > 180.0) e[i].lon[j] -= 360.0;
+				if (!greenwich && e[i].lon[j] < 0.0) e[i].lon[j] += 360.0;
+			}
+
+			if (check_cap && j > 0) {	/* Keep track of sum (dlon) */
+				dlon = e[i].lon[j] - e[i].lon[j-1];
+				if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
+				lon_sum += dlon;
+			}
+			j++;
+			if (j == (j_alloc-1)) {
+				j_alloc += GMT_CHUNK;
+				e[i].lon = (double *) GMT_memory ((void *)e[i].lon, (size_t)j_alloc, sizeof (double), GMT_program);
+				e[i].lat = (double *) GMT_memory ((void *)e[i].lat, (size_t)j_alloc, sizeof (double), GMT_program);
+			}
+			n_fields = GMT_input_ascii (fp, &n_expected_fields, &in);
+		}
+		e[i].np = j;
+
+		/* If dist = -9999.0 then file is a polygon and we must close it if needed */
+
+		if (poly && !(e[i].lon[0] == e[i].lon[j-1] && e[i].lat[0] == e[i].lat[j-1])) {
+			e[i].lon[j] = e[i].lon[0];
+			e[i].lat[j] = e[i].lat[0];
+			e[i].np++;
+			if (check_cap) {	/* Keep track of sum (dlon) */
+				dlon = e[i].lon[j] - e[i].lon[j-1];
+				if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
+				lon_sum += dlon;
+			}
+		}
+		if (check_cap && fabs (fabs (lon_sum) - 360.0) < GMT_CONV_LIMIT) {	/* Contains a pole */
+			e[i].polar = (e[i].lat[0] < 0.0) ? -1 : +1;	/* S or N pole */
+		}
+		
+		if (i == (i_alloc-1)) {
+			i_alloc += GMT_CHUNK;
+			e = (struct GMT_LINES *) GMT_memory ((void *)e, (size_t)i_alloc, sizeof (struct GMT_LINES), GMT_program);
+		}
+	}
+	GMT_fclose (fp);
+	GMT_io.multi_segments = save;
+
+	i++;
+	e = (struct GMT_LINES *) GMT_memory ((void *)e, (size_t)i, sizeof (struct GMT_LINES), GMT_program);
+	*p = e;
+
+	return (i);
+}

@@ -7,7 +7,7 @@ mapproject \- Forward and Inverse map transformation of 2-D coordinates
 \fBmapproject\fP \fIinfiles\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
 [ \fB\-Ab|B|f|F\fP\fIlon0/lat0\fP ][ \fB\-C\fP ] [ \fB\-Dc|i|m|p\fP ] [ \fB\-E\fP[\fIdatum\fP] ] 
 [ \fB\-F\fP[\fBk|m|n|i|c|p\fP] ] [ \fB\-G\fP[\fIx0/y0\fP][/\fIunit\fP] ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] 
-[ \fB\-M\fP[\fIflag\fP] ] [ \fB\-Q\fP[\fBd|e\fP] [ \fB\-S\fP ] [ \fB\-T\fP[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] 
+[ \fB\-L\fPline.xy\fP[/\fIunit\fP] ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-Q\fP[\fBd|e\fP] [ \fB\-S\fP ] [ \fB\-T\fP[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] 
 [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] 
 [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
@@ -16,8 +16,8 @@ computes (x,y) coordinates using the specified map projection and scales.
 Optionally, it can read (x,y) positions and compute (longitude, latitude) values
 doing the inverse transformation.  This can be used to transform linear (x,y) points
 obtained by digitizing a map of known projection to geographical coordinates.  May also
-calculate distances along track or to a fixed point.  Finally, can be used to perform
-various datum conversions.
+calculate distances along track, to a fixed point, or closest approach to a line.
+Finally, can be used to perform various datum conversions.
 Additional data fields are permitted after the first 2 columns which must have (longitude,latitude) or (x,y).
 See option \fB\-:\fP on how to read (latitude,longitude) files.
 .br
@@ -67,6 +67,13 @@ latitudes in degree calculations, assuming the current ellipsoid is not a sphere
 .TP
 .B \-I
 Do the Inverse transformation, i.e. get (longitude,latitude) from (x,y) data.
+.TP
+.B \-L
+Determine the shortest distance from the input data points to the line(s) given in the ASCII multi-segment file \fIline.xy\fP.
+Append the distance unit; choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile), \fBn\fP (nautical mile), \fBd\fP (spherical degree),
+\fBc\fP (Cartesian distance using input coordinates) or \fBC\fP (Cartesian distance using projected coordinates).  The
+last unit requires \fB\-R\fP and \fB\-J\fP to be set.  A spherical approximation is used for geographic data.
+
 #include "explain_-M.txt"
 .TP
 .B \-Q
@@ -109,7 +116,11 @@ To convert the geodetic coordinates (lon, lat, height) in the file old.dat from 
 .br
 .sp
 \fBmapproject\fP old.dat \fB\-Th\fP131 > new.dat
-
+To compute the closest distance (in km) between each point in the input file quakes.dat and the
+line segments given in the multi-segment ASCII file coastline.xy, run
+.br
+.sp
+\fBmapproject\fP quakes.dat \fB\-L\fPcoastline.xy/k > quake_dist.dat
 .SH RESTRICTIONS
 The rectangular input region set with \fB\-R\fP will in general be mapped into a
 non-rectangular grid.  Unless \fB\-C\fP is set, the leftmost point on this grid has xvalue = 0.0, and the
