@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.17 2001-09-21 02:25:49 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.18 2001-10-24 23:28:30 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3611,8 +3611,8 @@ int GMT_minmaxinc_verify (double min, double max, double inc, double slop)
 	   return values are:
 	   0 : Everything is ok
 	   1 : range is not a whole multiple of inc (within assiged slop)
-	   2 : inc is <= 0
-	   3 : the range (max - min) is <= 0
+	   2 : the range (max - min) is <= 0
+	   3 : inc is <= 0
 	*/
 	   
 	if (inc <= 0.0) return (3); 
