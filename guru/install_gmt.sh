@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+#	$Id: install_gmt.sh,v 1.2 2001-02-01 19:17:41 pwessel Exp $
 #
 #	Automatic installation of GMT version 3.3.7
 #	Version for the Bourne shell (or compatible)
@@ -744,7 +744,7 @@ in one of two ways:
 
 (1) Via Internet: You may compose a parameter file using
     the form on the GMT home page (see the installation
-    link under www.soest.hawaii.edu/gmt) and save the result
+    link under gmt.soest.hawaii.edu) and save the result
     of your request to a parameter file on your hard disk.
 2)  Interactively: You may direct this script to start an
     interactive session which gathers information from you

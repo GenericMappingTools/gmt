@@ -2,7 +2,7 @@
 # This the rpm spec file for the Generic Mapping Tools (GMT)
 %define PACKAGE_NAME GMT
 %define PACKAGE_VERSION 3.3.5
-%define PACKAGE_URL http://imina.soest.hawaii.edu/gmt/
+%define PACKAGE_URL http://gmt.soest.hawaii.edu/
 
 Summary: Generic Mapping Tools
 Name: %PACKAGE_NAME
