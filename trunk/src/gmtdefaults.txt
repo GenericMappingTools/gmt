@@ -5,7 +5,8 @@
 #define LEN_4_SI	15\fBc\fP
 #define DEF_XY_SI	2.5\fBc\fP
 #define POS_SI -2\fBc\fP/-2\fBc\fP
-#define CHOICE TRUE
+#define CODE_SI ISOLatin1+
+#define CODE_US Standard+
 #define MY_PAPER A4
 #define TOL_US	0.01\fBi\fP
 #define LEN_1_US	0.075\fBi\fP
@@ -32,10 +33,10 @@ defaults or \fBs\fP for SI defaults. [\fB\-D\fP alone gives current choice in gm
 .B \-L
 Print the user's currently active defaults to standard output.
 .SH \fBGMT\fP PARAMETERS
-The following is a list of the 58 parameters that are user-definable in \fBGMT\fP.  The
+The following is a list of the 77 parameters that are user-definable in \fBGMT\fP.  The
 parameter names are always given in UPPER CASE.  The parameter values are
 case-insensitive unless otherwise noted.  The
-system defaults are given in brackets [ ].  Those marked \fB*\fP can be set on the command
+system defaults are given in brackets [ for SI (and US) ].  Those marked \fB*\fP can be set on the command
 line as well (the corresponding option is given in parentheses).  Note that default distances and
 lengths below are given in both cm or inch; the chosen default depends on your choice of default
 unit (see MEASURE_UNIT).  You can explicitly specify the unit used for distances and
@@ -54,7 +55,7 @@ If an annotation would be plotted less than this minimum distance from its close
 annotation is not plotted (this may occur for certain oblique projections.) [0]
 .TP
 .B ANOT_FONT
-Font used for tick mark annotations etc [Helvetica].  Specify either the font number or
+Font used for upper annotations etc [Helvetica].  Specify either the font number or
 the font name (case sensitive!).  The 39 available fonts are:
 .br
 	0  Helvetica
@@ -138,6 +139,12 @@ the font name (case sensitive!).  The 39 available fonts are:
 .B ANOT_FONT_SIZE
 Font size (> 0) in points for map annotations.  [14]
 .TP
+.B ANOT_FONT2
+Font to use for time axis lower anotations.  See ANOT_FONT for available fonts  [Helvetica].
+.TP
+.B ANOT_FONT2_SIZE
+Font size (> 0) for time axis lower anotations in points  [16].
+.TP
 .B ANOT_OFFSET		
 Distance from end of tickmark to start of annotation [LEN_1_SI (or LEN_1_US)].  A negative
 offset will place the anotation inside the map border.
@@ -156,6 +163,10 @@ Choose between plain and fancy (thick boundary, alternating black/white frame)  
 For some map projections (e.g., Oblique Mercator), plain is the only option even if fancy is set as default.
 In general, fancy only applies to situations where the projected x and y directions parallel the lon and lat
 directions (e.g., rectangular projections, polar projections).
+.TP
+.B CHAR_ENCODING
+Determines what encoding \fBGMT\fP \fIPostScript\fP output should use.  Choose from Standard, Standard+, ISOLatin1, and ISOLatin1+.
+See Appendix F for details [CODE_SI (or CODE_US)].
 .TP
 .B COLOR_BACKGROUND
 Color used for the background of images (i.e., when z < lowest colortable entry).
@@ -186,50 +197,11 @@ Give a red/green/blue triplet, with each element in the 0\-255 range. [128/128/1
 .TP
 .B D_FORMAT
 Output format (C language syntax) to be used when printing double precision floating point numbers.
-If it is NOT a 'g'-type format (as the default is), the format is used directly in anotations. [%lg].
+For geographic coordinates, see \fBOUTPUT_DEGREE_FORMAT\fP. [%lg].
 .TP
-.B DEGREE_FORMAT
-Output format to be used when annotating map boundaries.  Choose between 18 formats:
-.br
-.sp
-	0	Longitudes go from 0 to 360, latitudes from -90 to 90 [Default].
-.br
-	1	Longitudes go from -180 to 180, latitudes from -90 to 90.
-.br
-	2	Longitudes are unsigned 0 to 180, latitudes unsigned 0 to 90.
-.br
-	3	Same as 2, but with letters W, E, S, or N appended as appropriate.
-.br
-	4	Same as 0, with decimal degrees instead of degrees, minutes, and seconds.
-.br
-	5	Same as 1, with decimal degrees instead of degrees, minutes, and seconds.
-.br
-	6	Same as 4, but with letters W, E, S, or N appended as appropriate.
-.br
-	7	Same as 5, but with letters W, E, S, or N appended as appropriate.
-.br
-	8	Same as 0, with degrees and decimal minutes instead of degrees, minutes, and seconds.
-.br
-	9	Same as 1, with degrees and decimal minutes instead of degrees, minutes, and seconds.
-.br
-	10	Same as 2, with degrees and decimal minutes instead of degrees, minutes, and seconds.
-.br
-	11	Same as 3, with degrees and decimal minutes instead of degrees, minutes, and seconds.
-.br
-	12	Longitudes go from -360 to 0, latitudes from -90 to 90.
-.br
-	13	Same as 12, with decimal degrees instead of degrees, minutes, and seconds.
-.br
-	14	Same as 12, with degrees and decimal minutes instead of degrees, minutes, and seconds.
-.br
-	15	Same as 12, but with letters W, S, or N appended as appropriate.
-.br
-	16	Same as 13, but with letters W, S, or N appended as appropriate.
-.br
-	17	Same as 14, but with letters W, S, or N appended as appropriate.
-.sp
-Add 100 to these values to use the large degree symbol character (octal \217) [Default is the
-small degree symbol (octal \312)].  Add 1000 for no degree symbol.
+.B DEGREE_SYMBOL
+Determines what symbol is used to plot the degree symbol on geographic map anotations.  Choose between
+ring, degree, colon, none [ring].
 .TP
 .B DOTS_PR_INCH
 Resolution of the plotting device (dpi).  Note that in order to be as compact as possible,
@@ -278,6 +250,10 @@ name as a file and read the ellipsoid name, year, major-axis (in m), minor-axis 
 the first record, where the fields must be separated by white-space (not commas).  This way a
 custom ellipsoid (e.g., those used for other planets) may be used.
 .TP
+.B FIELD_DELIMETER
+This setting determines what character will separate ascii output data columns written by \fBGMT\fP.  Choose
+from tab, space, comma, and none [tab].
+.TP
 .B FRAME_PEN
 Thickness of pen used to draw plain map frame in dpi units or points (append p)  [5].
 .TP
@@ -320,6 +296,21 @@ Minimum value (0\-1) assigned for most negative intensity value [0.3].
 .TP
 .B HSV_MAX_VALUE
 Maximum value (0\-1) assigned for most positive intensity value [1.0].
+.TP
+.B INPUT_CLOCK_FORMAT
+Formatting template that indicates how an input clock string is formatted.  This template
+is then used to guide the reading of clock strings in data fields.  To properly decode
+12-hour clocks, append am or pm (or upper case) to match your data records. [hh:mm:ss].
+.TP
+.B INPUT_DATE_FORMAT
+Formatting template that indicates how an input date string is formatted.  This template
+is then used to guide the reading of date strings in data fields.  You may specify either
+Gregorian calendar format or ISO week calendar format.  Gregorian calendar: Use any
+combination of yyyy (or yy for 2-digit years; if so see \fBY2K_OFFSET_YEAR\fP), mm,
+and dd, with or without delimeters.  For day-of-year data, use jjj instead of mm and/or dd.
+ISO Calendar:  Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
+day.  Either template must be consistant, e.g., you cannot specify months you dont specify
+year.  [yyyy-mm-dd].
 .TP
 .B INTERPOLANT
 Determines if linear (linear), Akima's spline (akima), or natural cubic spline (cubic) should
@@ -365,6 +356,53 @@ be plotted horizontally.  If bit 3 is set (4), then latitude anotations will be 
 If bit 4 is set (8), then oblique tickmarks are extended to give a projection equal to the specified tick_length.
 If bit 5 is set (16), tickmarks will be drawn normal to the border regardless of gridline angle.
 To set a combination of these, add up the values in parentheses. [1].
+.TP
+.B OUTPUT_CLOCK_FORMAT
+Formatting template that indicates how an output clock string is to be formatted.  This template
+is then used to guide the writing of clock strings in data fields.  To use a floating point
+format for the smallest unit (e.g. seconds), append .xxx, where the number of x indicates
+the desired precision.  If no floating point is indicated then the smallest specified unit
+will be rounded off to nearest integer.  For 12-hour clocks, append am, AM, a.m., or A.M. (\fBGMT\fP
+will replace a|A with p|P for pm) [hh:mm:ss].
+.TP
+.B OUTPUT_DATE_FORMAT
+Formatting template that indicates how an output date string is to be formatted.  This template
+is then used to guide the writing of date strings in data fields.  You may specify either
+Gregorian calendar format or ISO week calendar format.  Gregorian calendar: Use any
+combination of yyyy (or yy for 2-digit years; if so see \fBY2K_OFFSET_YEAR\fP), mm,
+and dd, with or without delimeters.  For day-of-year data, use jjj instead of mm and/or dd.
+ISO Calendar:  Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
+day.  Either template must be consistant, e.g., you cannot specify months you dont specify
+year.  [yyyy-mm-dd].
+.TP
+.B OUTPUT_DEGREE_FORMAT
+Formatting template that indicates how an output geographical coordinate is to be formatted.  This template
+is then used to guide the writing of geographical coordinates in data fields.  The template is in
+general of the form [+|-]D or [+|-]ddd[:mm[:ss]][.xxx][F].  The various terms have the following purpose:
+.sp
+.br
+	+|-	+ means output longitude in the 0 to 360 range
+.br
+		- means output longitude in the -360 to 0 range
+.br
+		If not given, use the -180 to +180 range
+.br
+	D	Use \fBD_FORMAT\fP for floating point degrees.
+.br
+	ddd	Fixed format integer degrees
+.br
+	:	delimeter
+.br
+	mm	Fixed format integer arc minutes
+.br
+	ss	Fixed format integer arc seconds
+.br
+	.xxx	Floating fraction of previous integer field, fixed width.
+.br
+	F	Encode sign using WESN suffix
+.br
+.sp
+The default is +D.
 .TP
 .B PAGE_COLOR
 Sets the color of the imaging background, i.e., the paper.
@@ -447,6 +485,24 @@ manual feed slot.  To indicate you are making an EPS file, append '+' to the
 media name.  Then, GMT will attempt to issue a tight bounding box [Default is
 the paper dimension].
 .TP
+.B PLOT_CLOCK_FORMAT
+Formatting template that indicates how an output clock string is to be plotted.  This template
+is then used to guide the plotting of clock strings in data fields.  See \fBOUTPUT_CLOCK_FORMAT\fP
+for details. [hh:mm:ss].
+.TP
+.B PLOT_DATE_FORMAT
+Formatting template that indicates how an output date string is to be plotted.  This template
+is then used to guide the plotting of date strings in data fields.  See \fBOUTPUT_DATE_FORMAT\fP
+for details.  In addition, you may use a single o instead of mm (to plot month name) and
+u instead of W[-]ww to plot "Week ##".  Both of these text strings will be affected by
+the \fBTIME_LANGUAGE\fB setting.  [yyyy-mm-dd].
+.TP
+.B PLOT_DEGREE_FORMAT
+Formatting template that indicates how an output geographical coordinate is to be plotted.  This template
+is then used to guide the plotting of geographical coordinates in data fields.  See \fBOUTPUT_DEGREE_FORMAT\fB
+for details.  In addition, you can append A which plots the absolute value of the coordinate.
+The default is +ddd:mm:ss.  Not all items may be plotted as this depends on the anotation interval.
+.TP
 .B PSIMAGE_FORMAT
 Determines whether images created in PostScript should use hexadecimal (i.e., ascii)
 or binary format.  The latter takes up only half as much space and executes faster but may choke
@@ -458,6 +514,40 @@ the map boundaries.  To select interior tickmarks, use a negative tick_length [L
 .TP
 .B TICK_PEN
 The pen thickness to be used for tickmarks in dpi units or points (append p) [2].
+.TP
+.B TIME_EPOCH
+Calendar string that indicates the logical "zero" time for relative time coordinates.  It is
+only consulted if \fBTIME_SYSTEM\fP is set to OTHER.
+.TP
+.B TIME_IS_INTERVAL
+Used when input calendar data without a clock (e.g., 1999-05T) should be placed in the middle of the
+implied interval (here the point should be plotted in the middle of May, not at the start of May. [FALSE].
+.TP
+.B TIME_LANGUAGE
+Language to use when plotting calendar items such as months and days.  Look in the $GMTHOME/share/time
+directory for available language files [english].
+.TP
+.B TIME_SYSTEM
+Determines what the time epoch relative time refers to and what the units are.  Choose from one of the preset systems below
+(epoch and units are indicated):
+.br
+	JD	Julian Date, -4713-11-25T12:00:00 d
+.br
+	MJD	Modified Julian Date, 1858-11-27T00:00:00 d
+.br
+	J2000	2000-01-01T00:00:00 d
+.br
+	S1985	1985-01-01T00:00:00 c
+.br
+	UNIX	1970-01-01T00:00:00 c
+.br
+or specify OTHER and supply your own \fBTIME_EPOCH\fP and \fBTIME_UNIT\fP settings [J2000].
+.TP
+.B TIME_UNIT
+Unit used for relative time coordinates.    It is
+only consulted if \fBTIME_SYSTEM\fP is set to OTHER.  Choose y (year), d (day), h (hour), m (minute), or c (second).
+.TIME_WEEK_START
+Determines the first day of the logical week for Gregorian calendars (For ISO it is always Monday) [Monday (or Sunday)].
 .TP
 .B UNIX_TIME * (\-U)
 Specifies if a UNIX system time stamp should be plotted
@@ -474,8 +564,8 @@ settings gives something in between  [0].
 .B VERBOSE * (\-V)
 Determines if \fBGMT\fP programs should display run-time information or run silently  [FALSE].
 .TP
-.B WANT_EURO_FONT
-Determines if \fBGMT\fP \fIPostScript\fP output should include font re-encoding for accented European characters.  See Cookbook section 4.16 and Appendix H for details [CHOICE].
+.B WANT_LEAP_SECONDS
+Set to true if your calculations require the increased complexity of keeping track of leap seconds [FALSE].
 .TP
 .B X_AXIS_LENGTH
 Sets the default length (> 0) of the x-axis [LEN_3_SI (or LEN_3_US)].
@@ -490,6 +580,11 @@ For an overlay, the default offset is 0.
 .B Y_ORIGIN * (\-Y)
 Sets the y-coordinate of the origin on the paper for a new plot [DEF_XY_SI (or DEF_XY_US)].
 For an overlay, the default offset is 0.
+.TP
+.B Y2K_OFFSET_YEAR
+To process 2-digit years we need to make a decision which century to add.  If incoming 2-digit years
+are greater than or equal to the 2-digit value implied by this 4-digit setting then we add the implied century,
+else we add the next century [1950]
 .TP
 .B XY_TOGGLE * (\-:)
 Set if the first two columns of input files contain (latitude,longitude) or (y,x) rather than the expected
