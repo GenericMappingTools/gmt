@@ -2,7 +2,8 @@
 .SH NAME
 minmax \- Find extreme values in data tables
 .SH SYNOPSIS
-\fBminmax\fP [ \fIfiles\fP] [ \fB\-C\fP ] [ \fB\-D\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIdx\fP[/\fIdy\fP] ] 
+\fBminmax\fP [ \fIfiles\fP] [ \fB\-C\fP ] [ \fB\-D\fP ] [ \fB\-EL|l|H|h\fP\fIcol\fP ] 
+[ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIdx\fP[/\fIdy\fP] ] 
 [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-T\fP\fIdz\fP ] 
 [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
@@ -24,6 +25,11 @@ Report the min/max values per column in separate columns [Default uses <min/max>
 .B \-D
 Sets longitude discontinuity to the Dateline (-180/+180) [Default is Greenwich (0-360)].
 Requires \fB\-L\fP.
+.TP
+.B \-E
+Returns the record whose column \fIcol\fP contains the minimum (\fBl\fP) or maximum (\fBh\fP)
+value.  Upper case (\fBL|H\fP) works on absolute value of the data.  In case of multiple
+matches, only the first record is returned.
 #include "explain_-H.txt"
 .TP
 .B \-I
