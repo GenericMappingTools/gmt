@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_gshhs.c,v 1.3 2004-09-13 22:10:16 pwessel Exp $
+ *	$Id: polygon_to_gshhs.c,v 1.4 2004-09-28 18:25:21 pwessel Exp $
  * 
  *	read polygon.b format and write a GSHHS file to stdout
  */
@@ -31,9 +31,23 @@ main (int argc, char **argv)
 		gshhs_header.n  = h.n;
 		gshhs_header.greenwich = h.greenwich;
 		gshhs_header.level  = h.level;
+		gshhs_header.version  = 3;
 		gshhs_header.source = h.source;
 		gshhs_header.area   = rint (10.0 * h.area);
-
+#ifndef WORDS_BIGENDIAN
+		/* Must swap header explicitly on little-endian machines */
+		gshhs_header.id = swabi4 ((unsigned int)gshhs_header.id);
+		gshhs_header.n  = swabi4 ((unsigned int)gshhs_header.n);
+		gshhs_header.level = swabi4 ((unsigned int)gshhs_header.level);
+		gshhs_header.west  = swabi4 ((unsigned int)gshhs_header.west);
+		gshhs_header.east  = swabi4 ((unsigned int)gshhs_header.east);
+		gshhs_header.south = swabi4 ((unsigned int)gshhs_header.south);
+		gshhs_header.north = swabi4 ((unsigned int)gshhs_header.north);
+		gshhs_header.area  = swabi4 ((unsigned int)gshhs_header.area);
+		gshhs_header.version  = swabi4 ((unsigned int)gshhs_header.version);
+		gshhs_header.greenwich = swabi2 ((unsigned int)gshhs_header.greenwich);
+		gshhs_header.source = swabi2 ((unsigned int)gshhs_header.source);
+#endif
 		fwrite((char *)&gshhs_header, sizeof (struct GSHHS), 1, stdout) ;
 		for (k = 0; k < h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
