@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_J.sh,v 1.1 2001-03-21 04:10:21 pwessel Exp $
+#	$Id: GMT_App_J.sh,v 1.2 2001-04-03 16:06:39 pwessel Exp $
 #
 # Script to draw the impulse responses and transfer functions
 # for GMT cookbook Appendix_J.
@@ -583,13 +583,13 @@ EOF
 
 \rm -f GMT_imp_res.ps GMT_x_tr_fns.ps GMT_r_tr_fns.ps temp tempb tempc tempg
 #
-pwd | gawk '{ for (i = -50; i <= 50; i++) print 0.01 * i }' > temp
+pwd | $AWK '{ for (i = -50; i <= 50; i++) print 0.01 * i }' > temp
 #
-gawk '{ if ($1 == -0.5) print $1, 0; print $1, 1; if ($1 == 0.5) print $1, 0; }' temp > tempb
+$AWK '{ if ($1 == -0.5) print $1, 0; print $1, 1; if ($1 == 0.5) print $1, 0; }' temp > tempb
 #
-gawk '{ print $1, 0.5 * (1.0 + cos(6.283185307 * $1)) }' temp > tempc
+$AWK '{ print $1, 0.5 * (1.0 + cos(6.283185307 * $1)) }' temp > tempc
 #
-gawk '{ print $1, exp(-18.0 * $1 * $1) }' temp > tempg
+$AWK '{ print $1, exp(-18.0 * $1 * $1) }' temp > tempg
 #
 gmtset ANOT_FONT Times-Roman ANOT_FONT_SIZE 10 HEADER_FONT Times-Roman HEADER_FONT_SIZE 14 LABEL_FONT Times-Roman LABEL_FONT_SIZE 12
 psxy tempb -R-0.6/0.6/-0.1/1.1 -JX4i/2i -P -Ba0.5f0.1:"Distance (units of filter width)":/a0.2f0.1g1:"Relative amplitude":WeSn -K -W1p > GMT_imp_res.ps
@@ -608,13 +608,13 @@ END
 #
 \rm -f temp tempb tempc tempg
 #
-pwd | gawk '{ for (i = 0; i <= 500; i++) print 0.01 * i }' > temp
+pwd | $AWK '{ for (i = 0; i <= 500; i++) print 0.01 * i }' > temp
 #
-gawk '{ if (NR == 1) print $1, 1; else { x = 3.141592654 * $1; print $1, sin(x)/x } }' temp > tempb
+$AWK '{ if (NR == 1) print $1, 1; else { x = 3.141592654 * $1; print $1, sin(x)/x } }' temp > tempb
 #
-gawk '{ if (NR == 1) print $1, 1; else if ($1 == 1.0) print $1, 0.5; else { x = 3.141592654 * $1; print $1, (sin(x)/x)/(1-$1*$1) } }' temp > tempc
+$AWK '{ if (NR == 1) print $1, 1; else if ($1 == 1.0) print $1, 0.5; else { x = 3.141592654 * $1; print $1, (sin(x)/x)/(1-$1*$1) } }' temp > tempc
 #
-gawk '{ x = 3.141592654 * $1; print $1, exp(-x * x / 18) }' temp > tempg
+$AWK '{ x = 3.141592654 * $1; print $1, exp(-x * x / 18) }' temp > tempg
 #
 psxy tempb -R0/5/-0.3/1 -JX4i/2i -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -W1p > GMT_x_tr_fns.ps
 psxy tempc -R -JX -O -K -W1tap >> GMT_x_tr_fns.ps
