@@ -113,14 +113,17 @@ void \fBps_colorimage\fR (\fIxpos, ypos, xlength, ylength, buffer, nx, ny, depth
 .br
 \fBint\fR \fInx, ny, depth\fP;
 .RS 10
-Plots a 1-, 4-, 8-, or 24-bit deep image.  The pixel values are stored in \fIbuffer\fP.
+Plots a 1-, 2-, 4-, 8-, or 24-bit deep image.
 This functions sets up a call to the \fIPostScript\fP colorimage or image operators.
-If \fI-depth\fP is passed instead then rgb is converted to cmyk first.
-Specify position of lower left corner and size (in inches) of image.  \fIbuffer\fP is an unsigned character array in scanline orientation with gray shade or r,g, b
-values (0 - 255) where 0 is black, 255 is white.  \fIdepth\fP is number of bits pr pixel (24, 8,
-4,  or 1). \fInx,ny\fP refers to the number of pixels in image.  The rowlength of \fIbuffer\fP must be an integral
-number of 8/\fIdepth\fP.  \fIbuffer[0]\fP is upper left corner.  E.g. if \fIdepth\fP = 4, then \fIbuffer[j]\fP/16
+\fIxpos, ypos, xlength, ylength\fP specify the position of lower left corner and size (in inches) of image.
+The pixel values are stored in \fIbuffer\fP, an unsigned character array in scanline orientation with gray shade or r/g/b
+values (0 - 255) where 0 is black, 255 is white.  \fIbuffer[0]\fP is upper left corner.
+\fIdepth\fP is number of bits per pixel (24, 8, 4, 2, or 1).
+\fInx,ny\fP refers to the number of pixels in image.
+The rowlength of \fIbuffer\fP must be an integral number of 8/\fIdepth\fP.
+E.g. if \fIdepth\fP = 4, then \fIbuffer[j]\fP/16
 gives shade for pixel[2j-1] and \fIbuffer[j]\fP%16 (mod 16) gives shade for pixel[2j].
+When \fI-depth\fP is passed instead then "hardware" interpolation of the image is requested.
 If \fI-nx\fP is passed then the first three bytes of \fIbuffer\fP holds the r/g/b color
 for pixels that are to be masked out using the \fIPostScript\fP Level 3 Color Mask method.
 See the Adobe Systems \fIPostScript\fP\fR Reference Manual for more details.
