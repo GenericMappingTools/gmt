@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_J.sh,v 1.7 2004-08-18 04:53:48 pwessel Exp $
+#	$Id: GMT_App_J.sh,v 1.8 2004-08-24 20:43:49 pwessel Exp $
 #
 # Script to draw the impulse responses and transfer functions
 # for GMT cookbook Appendix_J.
@@ -590,10 +590,10 @@ echo "0.5	0" >> $$.tmp
 #
 #
 gmtset ANNOT_FONT_PRIMARY Times-Roman ANNOT_FONT_SIZE_PRIMARY 10 HEADER_FONT Times-Roman HEADER_FONT_SIZE 14 LABEL_FONT Times-Roman LABEL_FONT_SIZE 12
-psxy $$.tmp -R-0.6/0.6/-0.1/1.1 -JX4i/2i -P -Ba0.5f0.1:"Distance (units of filter width)":/a0.2f0.1g1:"Relative amplitude":WeSn -K -W1p > GMT_imp_res.ps
-gmtmath -T-0.5/0.5/0.01 T PI 2 MUL MUL COS 1 ADD 0.5 MUL = | psxy -R -JX -O -K -W1p,- >> GMT_imp_res.ps
-gmtmath -T-0.5/0.5/0.01 T T MUL 18 MUL NEG EXP = | psxy -R -JX -O -K -W1p,. >> GMT_imp_res.ps
-pstext -R -JX -O << END >> GMT_imp_res.ps
+psxy $$.tmp -R-0.6/0.6/-0.1/1.1 -JX4i/2i -P -Ba0.5f0.1:"Distance (units of filter width)":/a0.2f0.1g1:"Relative amplitude":WeSn -K -W1p > GMT_App_J_1.ps
+gmtmath -T-0.5/0.5/0.01 T PI 2 MUL MUL COS 1 ADD 0.5 MUL = | psxy -R -JX -O -K -W1p,- >> GMT_App_J_1.ps
+gmtmath -T-0.5/0.5/0.01 T T MUL 18 MUL NEG EXP = | psxy -R -JX -O -K -W1p,. >> GMT_App_J_1.ps
+pstext -R -JX -O << END >> GMT_App_J_1.ps
 -0.2	0.3	9	0	4	5	Solid Line:
 -0.2	0.2	9	0	4	5	Dotted Line:
 -0.2	0.1	9	0	4	5	Dashed Line:
@@ -603,10 +603,10 @@ pstext -R -JX -O << END >> GMT_imp_res.ps
 END
 #
 #
-gmtmath -T0/5/0.01 T SINC = | psxy -R0/5/-0.3/1 -JX4i/2i -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -W1p > GMT_x_tr_fns.ps
-gmtmath -T0/5/0.01 T SINC 1 T T MUL SUB DIV = | $AWK '{ if ($1 == 1) print 1, 0.5; else print $0}' | psxy -R -JX -O -K -W1p,- >> GMT_x_tr_fns.ps
-gmtmath -T0/5/0.01 T PI MUL DUP MUL 18 DIV NEG EXP = | psxy -R -JX -O -K -W1p,. >> GMT_x_tr_fns.ps
-pstext -R -JX -O << END >> GMT_x_tr_fns.ps
+gmtmath -T0/5/0.01 T SINC = | psxy -R0/5/-0.3/1 -JX4i/2i -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -W1p > GMT_App_J_2.ps
+gmtmath -T0/5/0.01 T SINC 1 T T MUL SUB DIV = | $AWK '{ if ($1 == 1) print 1, 0.5; else print $0}' | psxy -R -JX -O -K -W1p,- >> GMT_App_J_2.ps
+gmtmath -T0/5/0.01 T PI MUL DUP MUL 18 DIV NEG EXP = | psxy -R -JX -O -K -W1p,. >> GMT_App_J_2.ps
+pstext -R -JX -O << END >> GMT_App_J_2.ps
 2.2	0.6	9	0	4	5	Solid Line:
 2.2	0.5	9	0	4	5	Dotted Line:
 2.2	0.4	9	0	4	5	Dashed Line:
@@ -619,10 +619,10 @@ END
 # These were pre-computed because of the need to do a numerical Hankel transform.
 # Also, I found that j0(x) and j1(x) are not reliable on some machines....
 #
-cut -f1,2 $$.r_tr_fns | psxy -R -JX -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -W1p > GMT_$$.r_tr_fns.ps
-cut -f1,3 $$.r_tr_fns | psxy -R -JX -O -K -W1p,- >> GMT_$$.r_tr_fns.ps
-cut -f1,4 $$.r_tr_fns | psxy -R -JX -O -K -W1p,. >> GMT_$$.r_tr_fns.ps
-pstext -R -JX -O << END >> GMT_$$.r_tr_fns.ps
+cut -f1,2 $$.r_tr_fns | psxy -R -JX -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -W1p > GMT_App_J_3.ps
+cut -f1,3 $$.r_tr_fns | psxy -R -JX -O -K -W1p,- >> GMT_App_J_3.ps
+cut -f1,4 $$.r_tr_fns | psxy -R -JX -O -K -W1p,. >> GMT_App_J_3.ps
+pstext -R -JX -O << END >> GMT_App_J_3.ps
 2.2	0.6	9	0	4	5	Solid Line:
 2.2	0.5	9	0	4	5	Dotted Line:
 2.2	0.4	9	0	4	5	Dashed Line:
