@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.13 2004-07-09 00:32:09 pwessel Exp $
+ *	$Id: x2sys.c,v 1.14 2004-07-13 00:40:54 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -70,6 +70,7 @@ char *x2sys_header = "> %s %d %s %d\n";
 
 void x2sys_set_home (void);
 int x2sys_record_length (struct X2SYS_INFO *s);
+int MGD77_items[MGD77_DATA_COLS] = { 0, MGD77_LONGITUDE, MGD77_LATITUDE, 10, 11, 14, 15, 16, 18, 19, 20, 21, 22};
 
 #define MAX_DATA_PATHS 32
 char *x2sys_datadir[MAX_DATA_PATHS];	/* Directories where track data may live */
@@ -342,6 +343,7 @@ struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G)
 		X->read_file = (PFI) x2sys_read_mgd77file;
 		X->geographic = TRUE;
 		X->geodetic = 1;
+		MGD77_Init (&M, TRUE);			/* Initialize MGD77 Machinery */
 	}
 	else
 		X->read_file = (PFI) x2sys_read_file;
@@ -668,12 +670,12 @@ int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struc
 
 int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G)
 {
-	int n_read, i, j, len, n_alloc = GMT_CHUNK;
-	char line[BUFSIZ], path[BUFSIZ];
+	int n_read, i, j, n_alloc = GMT_CHUNK;
+	char path[BUFSIZ];
 	double **z;
 	FILE *fp;
-	struct GMTMGG_REC record;
-	struct GMTMGG_TIME *gmt = NULL;
+	struct MGD77_DATA_RECORD D;
+	struct MGD77_HEADER_RECORD H;
 	double NaN;
 	
 	GMT_make_dnan(NaN);
@@ -693,40 +695,30 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
      		return (-1);
   	}
 
-	z = (double **) GMT_memory (VNULL, (size_t)6, sizeof (double *), "x2sys_read_mgd77file");
-	for (i = 0; i < 6; i++) z[i] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "x2sys_read_mgd77file");
+	if (!MGD77_Read_Header_Record (fp, &H)) {
+		fprintf (stderr, "%s: Error reading header sequence for cruise %s\n", GMT_program, fname);
+		exit (EXIT_FAILURE);
+	}
+	
+	z = (double **) GMT_memory (VNULL, (size_t)MGD77_DATA_COLS, sizeof (double *), "x2sys_read_mgd77file");
+	for (i = 0; i < MGD77_DATA_COLS; i++) z[i] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "x2sys_read_mgd77file");
 
-	j = n_read = 0;
-	while (fgets (line, BUFSIZ, fp)) {
-		n_read++;
-		if (!(line[0] == '3' || line[0] == '5')) continue;	/* Only process data records */
-		if ((len = (int)strlen(line)) != 121) {
-			fprintf (stderr, "x2sys_read_mgd77file: Record # %d has incorrect length (%d), skipped\n", n_read, len);
-			continue;
-		}
-		if (!gmtmgg_decode_MGD77 (line, FALSE, &record, &gmt)) {
-			z[0][j] = record.time;
-			z[1][j] = record.lon * MDEG2DEG;
-			z[2][j] = record.lat * MDEG2DEG;
-			z[3][j] = (record.gmt[0] == GMTMGG_NODATA) ? NaN : 0.1 * record.gmt[0];
-			z[4][j] = (record.gmt[1] == GMTMGG_NODATA) ? NaN : record.gmt[1];
-			z[5][j] = (record.gmt[2] == GMTMGG_NODATA) ? NaN : record.gmt[2];
-			j++;
-		}
-		else
-			fprintf (stderr, "x2sys_read_mgd77file: Trouble decoding record # %d (skipped)\n", n_read);
+	j = 0;
+	while (MGD77_Read_Data_Record (fp, &D)) {		/* While able to read a data record */
+		z[0][j] = D.time;
+		for (i = 1; i < MGD77_DATA_COLS; i++) z[i][j] = D.number[MGD77_items[i]];
 
+		j++;
 		if (j == n_alloc) {
 			n_alloc += GMT_CHUNK;
-			for (i = 0; i < 6; i++) z[i] = (double *) GMT_memory ((void *)z[i], (size_t)n_alloc, sizeof (double), "x2sys_read_mgd77file");
+			for (i = 0; i < MGD77_DATA_COLS; i++) z[i] = (double *) GMT_memory ((void *)z[i], (size_t)n_alloc, sizeof (double), "x2sys_read_mgd77file");
 		}
 	}
 	fclose (fp);
 
 	strncpy (p->name, fname, 32);
-	p->year = gmt->first_year;
 	p->n_rows = j;
-	for (i = 0; i < 6; i++) z[i] = (double *) GMT_memory ((void *)z[i], (size_t)p->n_rows, sizeof (double), "x2sys_read_mgd77file");
+	for (i = 0; i < MGD77_DATA_COLS; i++) z[i] = (double *) GMT_memory ((void *)z[i], (size_t)p->n_rows, sizeof (double), "x2sys_read_mgd77file");
 
 	p->ms_rec = NULL;
 	p->n_segments = 0;
@@ -782,6 +774,8 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B)
 	BOOLEAN geographic = FALSE;
 	FILE *fp;
 	
+	x2sys_set_home ();
+
 	memset ((void *)B, 0, sizeof (struct X2SYS_BIX));
 	B->bin_x = B->bin_y = 1.0;
 	B->x_min = 0.0;	B->x_max = 360.0;	B->y_min = -90.0;	B->y_max = +90.0;

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.8 2004-06-15 00:44:56 pwessel Exp $
+ *	$Id: x2sys.h,v 1.9 2004-07-13 00:40:54 pwessel Exp $
  *
  *      Copyright (c) 1999-2004 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -63,6 +63,7 @@
 
 #include "gmt.h"
 #include "gmt_mgg.h"
+#include "MGD77.h"
 
 #ifdef WIN32
 #define _chmod(path,mode) chmod(path,mode)
@@ -75,6 +76,8 @@ extern int _chmod (const char *path, int mode);
 
 #define X2SYS_VERSION "1.1"
 
+#define MGD77_DATA_COLS 13	/* There are 13 columns of continuously varyiing fields */
+struct MGD77_CONTROL M;
 /* Make sure structure sizes are multiples of 8 */
 
 struct X2SYS_TRK_INFO {			/* Structure with info about one track */
