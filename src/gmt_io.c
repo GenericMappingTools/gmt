@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.15 2001-08-27 18:10:39 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.16 2001-08-28 02:37:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -112,7 +112,10 @@ void GMT_decode_calclock_formats ();
 void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S);
 void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode);
 void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode);
+void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S, int plot);
+void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S);
 int GMT_write_abstime_output (FILE *fp, GMT_dtime dt);		/* Format and write one ABSTIME item to output */
+void GMT_geo_to_dms (double lon, BOOLEAN seconds, int *d, int *m,  int *s,  double *x);
 
 int	GMT_scanf_clock (char *s, double *val);
 int	GMT_scanf_calendar (char *s, GMT_cal_rd *rd);
@@ -535,6 +538,75 @@ int GMT_ascii_output_one (FILE *fp, double x, int col)
 		e = GMT_write_abstime_output (fp, (GMT_dtime) x);
 	}
 	return (e);
+}
+
+int _GMT_write_lon_output (FILE *fp, double lon)
+{
+	int e, d, m, s, m_sec;
+	char letter;
+	BOOLEAN seconds;
+	double x;
+	
+	switch (GMT_io.geo.range) {	/* Adjust to the desired range */
+		case 0:
+			while (lon < 0.0) lon += 360.0;
+			while (lon >= 360.0) lon -= 360.0;
+			break;
+		case 1:
+			while (lon <= -360.0) lon += 360.0;
+			while (lon > 0) lon -= 360.0;
+			break;
+		default:
+			while (lon < -180.0) lon += 360.0;
+			while (lon > 180.0) lon -= 360.0;
+			break;
+	}
+	if (GMT_io.geo.decimal) return (fprintf (fp, gmtdefs.d_format, lon));	/* Easy */
+	
+	if (GMT_io.geo.wesn) {	/* Trailing WESN */
+		letter = (fabs (lon) < GMT_CONV_LIMIT || fabs (lon - 180.0) < GMT_CONV_LIMIT) ? 0 : ((lon < 0.0) ? 'W' : 'E');
+		lon = fabs (lon);
+	}
+	else	/* No letter means we print the NULL character */
+		letter = 0;
+		
+	seconds = (GMT_io.geo.order[2] > 0);		/* Are we doing dd:mm:ss */
+	GMT_geo_to_dms (lon, seconds, &d, &m, &s, &x);	/* Break up into d, m, s, and remainder */
+	if (GMT_io.geo.n_sec_decimals) {		/* Wanted fraction printed */
+		m_sec = irint (GMT_io.geo.f_sec_to_int * x);
+		if (seconds)
+			e = fprintf (fp, GMT_io.geo.x_format, d, m, s, m_sec, letter);
+		else
+			e = fprintf (fp, GMT_io.geo.x_format, d, m, m_sec, letter);
+	}
+	else if (seconds)
+		e = fprintf (fp, GMT_io.geo.x_format, d, m, s, letter);
+	else
+		e = fprintf (fp, GMT_io.geo.x_format, d, m, letter);
+		
+	return (e);
+}
+
+void GMT_geo_to_dms (double lon, BOOLEAN seconds, int *d, int *m,  int *s,  double *x)
+{
+	/* Convert floating point degrees to dd:mm[:ss][.xxx] */
+	BOOLEAN minus;
+	
+	minus = (lon < 0.0);
+	lon = fabs (lon);
+	
+	*d = (int) floor (lon);			/* Integer degrees */
+	lon = (lon - (double)(*d)) * 60.0;	/* floating point minutes */
+	*m = (int) floor (lon);			/* Integer minutes */
+	if (seconds) {				/* Want dd:mm:ss[.xxx] format */
+		lon = (lon - (double)(*m)) * 60.0;		/* floating point seconds */
+		*s = (int) floor (lon);			/* Integer seconds */
+		*x = lon - (double) (*s);		/* fractional seconds */
+	}
+	else {					/* Want dd:mm[.xx] format */
+		*x = lon - (double) (*m);	/* Fractional minutes */
+	}
+	if (minus) *d = -(*d);
 }
 
 int GMT_write_abstime_output (FILE *fp, GMT_dtime dt)
@@ -1235,6 +1307,122 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 	}
 }
 
+void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
+{	/* Reads a ddd:mm:ss-like string and determines order.
+	 * order[0] is the order of the degree, [1] is minutes, etc.
+	 * Order is checked since we only allow d, m, s in that order.
+	 * Items not encountered are left as -1.
+	 */
+
+	int i1, i, j, order, n_d, n_m, n_s, n_x, n_dec, sequence[3], n_delim, last, error = 0;
+	BOOLEAN big_to_small;
+	
+	/* S->order is initialized to {-1, -1, -1} */
+	
+	n_d = n_m = n_s = n_x = n_dec = n_delim = 0;
+	S->delimeter[0][0] = S->delimeter[0][1] = S->delimeter[1][0] = S->delimeter[1][1] = 0;
+	sequence[0] = sequence[1] = sequence[2] = -1;
+	
+	S->range = 2;			/* -80/+180 range, may be overwritten below by + or - */
+	S->decimal = S->wesn = S->no_sign = FALSE;
+	
+	i1 = strlen (text) - 1;
+	for (i = order = 0; i <= i1; i++) {
+		switch (text[i]) {
+			case '+':	/* Want [0-360> range [Default] */
+				S->range = 0;
+				if (i != 0) error++;		/* Only valid as first flag */
+				break;
+			case '-':	/* Want <-360-0] range [i.e., western longitudes] */
+				S->range = 1;
+				if (i != 0) error++;		/* Only valid as first flag */
+				break;
+			case 'D':	/* Want to use decimal degress using D_FORMAT [Default] */
+				S->decimal = TRUE;
+				if (i > 1) error++;		/* Only valid as first or second flag */
+				break;
+			case 'F':	/* Want to use WESN to encode sign */
+				S->wesn = TRUE;
+				if (i != i1 || S->no_sign) error++;		/* Only valid as last flag */
+				break;
+			case 'A':	/* Want no sign in plot string */
+				S->no_sign = TRUE;
+				if (i != i1 || S->wesn) error++;		/* Only valid as last flag */
+				break;
+			case 'd':	/* Degree */
+				if (S->order[0] < 0)		/* First time we encounter a d */
+					S->order[0] = order++;
+				else if (text[i-1] != 'd')	/* Done it before, previous char must be y */
+					error++;
+				n_d++;
+				break;
+			case 'm':	/* Minute */
+				if (S->order[1] < 0)		/* First time we encounter a m */
+					S->order[1] = order++;
+				else if (text[i-1] != 'm')	/* Done it before, previous char must be m */
+					error++;
+				n_m++;
+				break;
+			case 's':	/* Seconds */
+				if (S->order[1] < 0) {		/* First time we encounter a s */
+					S->order[1] = order++;
+				}
+				else if (text[i-1] != 's')	/* Done it before, previous char must be s */
+					error++;
+				n_s++;
+				break;
+			case '.':	/* Decimal point for seconds? */
+				if (text[i+1] == 'x')
+					n_dec++;
+				else {	/* Must be a delimeter */
+					if (n_delim == 2)
+						error++;
+					else
+						S->delimeter[n_delim++][0] = text[i];
+				}
+				break;
+			case 'x':	/* Fraction of seconds */
+				if (n_x > 0 && text[i-1] != 'x')	/* Must follow a previous x */
+					error++;
+				n_x++;
+				break;
+			default:	/* Delimeter of some kind */
+				if (n_delim == 2)
+					error++;
+				else
+					S->delimeter[n_delim++][0] = text[i];
+				break;
+		}
+	}
+	
+	if (S->decimal) return;	/* Easy formatting choice */
+		
+	/* Then get the actual order by inverting table */
+	
+	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) if (S->order[j] == i) sequence[i] = j;
+	for (i = 0; i < 3; i++) S->order[i] = sequence[i];
+	big_to_small = TRUE;		/* May change in the next loop */
+	for (i = 1, last = S->order[0]; big_to_small && i < 3; i++) {
+		if (S->order[i] == -1) continue;
+		if (S->order[i] < last) big_to_small = FALSE;
+		last = S->order[i];
+	}
+	if (!big_to_small) error++;
+	last = (n_d > 0) + (n_m > 0) + (n_s > 0);	/* This is the number of items to read */
+	error += (n_delim && (last - 1) != n_delim);	/* If there are delimeters, must be one less than the items */
+	error += (!(n_d == 0 || n_d == 3) || !(n_m == 0 || n_m == 2) || !(n_s == 0 || n_s == 2));	/* d, m, s are all either 2(3) or 0 */
+	error += (n_s > n_m || n_m > n_d);		/* Cannot have secs without m etc */
+	error += (n_x && n_dec != 1);			/* .xxx is the proper form */
+	error += (n_x == 0 && n_dec);			/* Period by itself and not delimeter? */
+	error += (n_dec > 1);				/* Only one period with xxx */
+	S->n_sec_decimals = n_x;
+	S->f_sec_to_int = rint (pow (10.0, (double)S->n_sec_decimals));			/* To scale fracional seconds to an integer form */
+	if (error) {
+		fprintf (stderr, "%s: ERROR: Unacceptable dmmss template %s\n", GMT_program, text);
+		exit (EXIT_FAILURE);
+	}
+}
+
 void GMT_decode_calclock_formats ()
 {
 	GMT_date_C_format (gmtdefs.input_date_format, &GMT_io.date_input, 0);
@@ -1243,6 +1431,8 @@ void GMT_decode_calclock_formats ()
 	GMT_clock_C_format (gmtdefs.input_clock_format, &GMT_io.clock_input, 0);
 	GMT_clock_C_format (gmtdefs.output_clock_format, &GMT_io.clock_output, 1);
 	GMT_clock_C_format (gmtdefs.plot_clock_format, &GMT_plot_calclock.clock, 1);
+	GMT_geo_C_format (gmtdefs.output_degree_format, &GMT_io.geo, 0);
+	GMT_geo_C_format (gmtdefs.plot_degree_format, &GMT_plot_calclock.geo, 1);
 }
 
 void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
@@ -1335,6 +1525,77 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 				(mode) ? sprintf (fmt, "%%%d.%dd\0", k, k) : sprintf (fmt, "%%%dd\0", k);
 				strcat (S->format, fmt);
 			}
+		}
+	}
+}
+
+void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S, int plot)
+{
+	/* Determine the output or plot geographic location formats.
+	* plot is 0 for output and 1 for plotting
+	 */
+	 
+	char *c, fmt[32];
+	int k;
+	
+	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
+	
+	GMT_get_dms_order (template, S);
+	
+	if (plot == 0 && S->no_sign) {
+		fprintf (stderr, "%s: ERROR: Unacceptable PLOT_DEGREE_FORMAT template %s\n", GMT_program, template);
+		exit (EXIT_FAILURE);
+	}
+	
+	if (S->decimal) {	/* Plain decimal degrees */
+		sprintf (S->x_format, "%s\0", gmtdefs.d_format);
+		sprintf (S->y_format, "%s\0", gmtdefs.d_format);
+	}
+	else {			/* Some form of dd:mm:ss */
+		char fmt[32];
+		if (plot) {
+			sprintf (S->x_format, "%%d\0");
+			sprintf (S->y_format, "%%d\0");
+			if (gmtdefs.degree_symbol < 2) {
+				strcat (S->x_format, GMT_degree_symbol[gmtdefs.degree_symbol]);
+				strcat (S->y_format, GMT_degree_symbol[gmtdefs.degree_symbol]);
+			}
+		}
+		else {
+			sprintf (S->x_format, "%%3.3d\0");
+			sprintf (S->y_format, "%%2.2d\0");
+		}
+		if (S->order[1] >= 0) {	/* Need minutes too */
+			if (! (plot && gmtdefs.degree_symbol < 2)) {
+				strcat (S->x_format, S->delimeter[0]);
+				strcat (S->y_format, S->delimeter[0]);
+			}
+			sprintf (fmt, "%%2.2d\0");
+			strcat (S->x_format, fmt);
+			strcat (S->y_format, fmt);
+			if (!(S->n_sec_decimals && S->order[2] == -1) && gmtdefs.degree_symbol < 2) {
+				strcat (S->x_format, "\251");
+				strcat (S->y_format, "\251");
+			}
+		}
+		if (S->order[2] >= 0) {	/* .. and seconds */
+			if (! (plot && gmtdefs.degree_symbol < 2)) {
+				strcat (S->x_format, S->delimeter[1]);
+				strcat (S->y_format, S->delimeter[1]);
+			}
+			sprintf (fmt, "%%2.2d\0");
+			strcat (S->x_format, fmt);
+			strcat (S->y_format, fmt);
+		}
+		if (S->n_sec_decimals) {	/* even add format for fractions of second */
+			sprintf (fmt, ".%%%d.%dd\0", S->n_sec_decimals, S->n_sec_decimals);
+			strcat (S->x_format, fmt);
+			strcat (S->y_format, fmt);
+		}
+		if (S->wesn) {	/* Finally add %c for the W,E,S,N char */
+			sprintf (fmt, "%%c\0");
+			strcat (S->x_format, fmt);
+			strcat (S->y_format, fmt);
 		}
 	}
 }

@@ -84,10 +84,10 @@
 	"yyyy-mm-dd",		/* INPUT_DATE_FORMAT */
 	"hh:mm:ss",		/* OUTPUT_CLOCK_FORMAT */
 	"yyyy-mm-dd",		/* OUTPUT_DATE_FORMAT */
-	"000",			/* OUTPUT_DEGREE_FORMAT */
+	"+D",			/* OUTPUT_DEGREE_FORMAT */
 	"hh:mm:ss",		/* PLOT_CLOCK_FORMAT */
 	"yyyy-mm-dd",		/* PLOT_DATE_FORMAT */
-	"020",			/* PLOT_DEGREE_FORMAT */
+	"+ddd:mm:ss",		/* PLOT_DEGREE_FORMAT */
 	FALSE,			/* TIME_IS_INTERVAL */
 	FALSE,			/* WANT_LEAP_SECONDS */
 	"2000-01-01T00:00:00",	/* TIME_EPOCH */
@@ -97,4 +97,5 @@
 	"english",		/* TIME_LANGUAGE */
 	0,			/* CHAR_ENCODING */
 	1950,			/* Y2K_OFFSET_YEAR */
-	"\t"			/* FIELD_DELIMETER */
+	"\t",			/* FIELD_DELIMETER */
+	0			/* DEGREE_SYMBOL */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.9 2001-08-27 18:10:39 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.10 2001-08-28 02:37:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -79,6 +79,19 @@ struct GMT_DATE_IO {
 	char delimeter[2][2];		/* Delimeter strings in date, e.g. "-" */
 };
 
+struct GMT_GEO_IO {	/* For geographic output and plotting */
+	int order[3];			/* The relative order of degree, minute, seconds in template */
+	int range;			/* 0 for 0/360, 1 for -360/0, 2 for -180/+180 */
+	BOOLEAN decimal;		/* TRUE if we want to use the D_FORMAT for decimal degrees only */
+	BOOLEAN wesn;			/* TRUE if we want sign encoded with suffix W, E, S, N */
+	BOOLEAN no_sign;		/* TRUE if we want absolute values (plot only) */
+	int n_sec_decimals;		/* Number of digits in decimal seconds (0 for whole seconds) */
+	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
+	char x_format[32];		/* Actual C format used to plot/output longitude */
+	char y_format[32];		/* Actual C format used to plot/output latitude */
+	char delimeter[2][2];		/* Delimeter strings in date, e.g. "-" */
+};
+
 struct GMT_IO {	/* Used to process input data records */
 	
 	BOOLEAN multi_segments;		/* TRUE if current Ascii input file has multiple segments */
@@ -109,6 +122,7 @@ struct GMT_IO {	/* Used to process input data records */
 	struct GMT_DATE_IO date_output;	/* Has all info on how to write output dates */
 	struct GMT_CLOCK_IO clock_input;	/* Has all info on how to decode input clocks */
 	struct GMT_CLOCK_IO clock_output;	/* Has all info on how to write output clocks */
+	struct GMT_GEO_IO geo;		/* Has all the info on how to write geographic coordinates */
 };
 
 struct GMT_Z_IO {	/* Used when processing z(x,y) table input when (x,y) is implicit */
@@ -137,6 +151,7 @@ struct GMT_Z_IO {	/* Used when processing z(x,y) table input when (x,y) is impli
 struct GMT_PLOT_CALCLOCK {
 	struct GMT_DATE_IO date;
 	struct GMT_CLOCK_IO clock;
+	struct GMT_GEO_IO geo;
 };
 
 EXTERN_MSC struct GMT_IO GMT_io;

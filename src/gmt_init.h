@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.9 2001-08-27 18:10:39 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.10 2001-08-28 02:37:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -177,7 +177,8 @@ struct GMT_IO GMT_io = {
 	{ {-1, -1, -1, -1}, FALSE, FALSE, "", FALSE, FALSE, { "", ""} },
 	{ {-1, -1, -1, -1}, FALSE, FALSE, "", FALSE, FALSE, { "", ""} },
 	{ {-1, -1, -1}, 0, 0.0, FALSE, { "am", "pm" }, "", { "", ""} },
-	{ {-1, -1, -1}, 0, 0.0, FALSE, { "am", "pm" }, "", { "", ""} }
+	{ {-1, -1, -1}, 0, 0.0, FALSE, { "am", "pm" }, "", { "", ""} },
+	{ {-1, -1, -1}, 0, FALSE, FALSE, FALSE, 0, 0.0, "", "", { "", ""} }
 };
 struct GMT_Y2K_FIX GMT_Y2K_fix;		/* Used to convert 2-digit years to 4-digit years */
 int GMT_grd_i_format = 0;		/* Default is GMT's cdf format */
