@@ -2,8 +2,8 @@
 .SH NAME
 makecpt \- Make GMT color palette tables
 .SH SYNOPSIS
-\fBmakecpt\fP [ \fB\-C\fP\fItable\fP ] 
-[ \fB\-I\fP ] [ \fB\-T\fP\fIz0/z1/dz\fP | \fB\-T\fP\fIztable\fP] [ \fB\-V\fP ] [ \fB\-Z\fP ]
+\fBmakecpt\fP [ \fB\-C\fP\fItable\fP ]  [ \fB\-I\fP ] [ \fB\-Q\fP[\fBi|o\fP] ] [ \fB\-T\fP\fIz0/z1/dz\fP | \fB\-T\fP\fIztable\fP] 
+[ \fB\-V\fP ] [ \fB\-Z\fP ]
 .SH DESCRIPTION
 \fBmakecpt\fP is a utility that will help you make color palette tables (cpt files).  You define
 an equidistant set of contour intervals or pass your own z-table, and create a new cpt file based on
@@ -18,6 +18,10 @@ give the name of an existing cptfile [Default gives a rainbow cpt file].
 .TP
 .B \-I
 Reverses the sense of color progression in the master cptfile.
+.TP
+.B \-Q
+Selects a logarithmic interpolation scheme [Default is linear].  \fB\-Qi expects input z-values to be log10(z).  Assign color
+but write out z [Default].  \fB\-Qo\fP will take log10(z) first, assign colors, but write out z.
 .TP
 .B \-T
 Defines the range of the new cptfile by giving the lowest and highest z-value
