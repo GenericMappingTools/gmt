@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.144 2004-06-13 06:06:07 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.145 2004-06-13 08:11:21 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -541,8 +541,8 @@ void GMT_cont_syntax (int indent, int kind)
 	gap = 4.0 * GMT_u2u[GMT_INCH][gmtdefs.measure_unit];
 	
 	pad[0] = '\t';	for (i = 1; i <= indent; i++) pad[i] = ' ';	pad[i] = '\0';
-	fprintf (stderr, "%sd<dist>[c|i|m|p] or D<dist>[e|k|m|n|d].\n", pad);
-	fprintf (stderr, "%s   d: Give distance between labels in %s [Default algorithm is d%g%c]\n", pad, GMT_unit_names[gmtdefs.measure_unit], gap, GMT_unit_names[gmtdefs.measure_unit][0]);
+	fprintf (stderr, "%sd<dist>[c|i|m|p] or D<dist>[d|e|k|m|n].\n", pad);
+	fprintf (stderr, "%s   d: Give distance between labels in specified unit [Default algorithm is d%g%c]\n", pad, GMT_unit_names[gmtdefs.measure_unit], gap, GMT_unit_names[gmtdefs.measure_unit][0]);
 	fprintf (stderr, "%s   D: Specify distance between labels in m(e)ter [Default], (k)m, (m)ile, (n)autical mile, or (d)egree.\n", pad);
 	fprintf (stderr, "%sf<ffile.d> reads the file <ffile.d> and places labels at those locations that match\n", pad);
 	fprintf (stderr, "%s   individual points along the %ss\n", pad, type[kind]);
