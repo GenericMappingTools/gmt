@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.48 2002-07-27 01:05:02 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.49 2002-07-29 16:58:41 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1965,7 +1965,7 @@ int	GMT_scanf_geo (char *s, double *val)
 			break;
 		case 1:
 			if ( (sscanf(scopy, "%d:%lf", &id, &dm) ) != 2) return (GMT_IS_NAN);
-			dd = im * GMT_MIN2DEG;
+			dd = dm * GMT_MIN2DEG;
 			if (id < 0) {	/* Negative degrees present, subtract the fractional part */
 				dd = id - dd;
 			}
