@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.4 2001-08-15 15:37:17 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.5 2001-08-16 19:12:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -107,6 +107,7 @@ int GMT_ascii_output (FILE *fp, int n, double *ptr);		/* Write Ascii output reco
 int GMT_bin_double_output (FILE *fp, int n, double *ptr);	/* Write binary double output records */
 int GMT_bin_float_output (FILE *fp, int n, double *ptr);	/* Write binary float output records */
 void GMT_adjust_periodic ();					/* Add/sub 360 as appropriate */
+void GMT_decode_calclock_formats ();
 
 /* Table I/O routines for ascii and binary io */
 
@@ -123,12 +124,21 @@ int GMT_fclose (FILE *stream)
 void GMT_io_init (void)
 {
 	/* No need to init the structure as this is done in gmt_init.h directoy */
+
+	int i;
 	
-	GMT_input = GMT_ascii_input;
+	GMT_input  = GMT_ascii_input;
 	GMT_output = GMT_ascii_output;
 
 	GMT_io.give_report = TRUE;
 	GMT_io.skip_bad_records = TRUE;
+	
+	GMT_io.skip_if_NaN = (BOOLEAN *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (BOOLEAN), GMT_program);
+	GMT_io.in_col_type  = (int *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (int), GMT_program);
+	GMT_io.out_col_type = (int *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (int), GMT_program);
+	for (i = 0; i < BUFSIZ; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = GMT_IS_UNKNOWN;
+
+	GMT_decode_calclock_formats ();
 }
 
 int GMT_io_selection (char *text)
@@ -263,7 +273,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 		p = strtok(line, " \t,");
 		i = 0;
 		while (!bad_record && p && i < *n) {
-			if ((n_convert = GMT_scanf (p, &val)) == 1) {	/* Decoded string to a number */
+			if ((n_convert = GMT_scanf_old (p, &val)) == 1) {	/* Decoded string to a number */
 				GMT_data[i] = val;
 			}
 			else {
@@ -880,4 +890,215 @@ void GMT_row_ij (struct GMT_Z_IO *r, int ij, int *gmt_ij)
 	r->gmt_i = r->start_col + r->x_step * (ij % r->x_period);
 
 	*gmt_ij = r->gmt_j * r->nx + r->gmt_i;
+}
+
+void GMT_get_ymdj_order (char *text, int ymdj_order[])
+{	/* Reads a YYYY-MM-DD or YYYYMMDD-like string and determines order.
+	 * ymdj_order[0] is the order of the year, [1] is month, etc.
+	 * Items not encountered are left as -1.
+	 */
+
+	int i, j, order, sequence[4];
+	
+	/* ymdj_order is initialized to {-1, -1, -1, -1} */
+	
+	for (i = order = 0; i < strlen (text); i++) {
+		switch (text[i]) {
+			case 'Y':	/* Year */
+			case 'y':
+				if (ymdj_order[0] < 0) ymdj_order[0] = order++;
+				break;
+			case 'M':	/* Month */
+			case 'm':
+				if (ymdj_order[1] < 0) ymdj_order[1] = order++;
+				break;
+			case 'D':	/* Day of month */
+			case 'd':
+				if (ymdj_order[2] < 0) ymdj_order[2] = order++;
+				break;
+			case 'J':	/* Day of year  */
+			case 'j':
+				if (ymdj_order[3] < 0) ymdj_order[3] = order++;
+				break;
+			default:	/* Delimeter of some kind */
+				break;
+		}
+	}
+	
+	/* Then get the actual order by inverting table */
+	
+	for (i = 0; i < 4; i++) for (j = 0; j < 4; j++) if (ymdj_order[j] == i) sequence[i] = j;
+	for (i = 0; i < 4; i++) ymdj_order[i] = sequence[i];
+}
+
+void GMT_get_hms_order (char *text, int hms_order[])
+{	/* Reads a HH:MM:SS or HHMMSS-like string and determines order.
+	 * hms_order[0] is the order of the hour, [1] is min, etc.
+	 * Items not encountered are left as -1.
+	 */
+
+	int i, j, order, sequence[3];
+	
+	/* hms_order is initialized to {-1, -1, -1} */
+	
+	for (i = order = 0; i < strlen (text); i++) {
+		switch (text[i]) {
+			case 'H':	/* Hour */
+			case 'h':
+				if (hms_order[0] < 0) hms_order[0] = order++;
+				break;
+			case 'M':	/* Minute */
+			case 'm':
+				if (hms_order[1] < 0) hms_order[1] = order++;
+				break;
+			case 'S':	/* Seconds */
+			case 's':
+				if (hms_order[2] < 0) hms_order[2] = order++;
+				break;
+			default:	/* Delimeter of some kind */
+				break;
+		}
+	}
+	
+	/* Then get the actual order by inverting table */
+	
+	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) if (hms_order[j] == i) sequence[i] = j;
+	for (i = 0; i < 3; i++) hms_order[i] = sequence[i];
+}
+
+void GMT_decode_calclock_formats ()
+{
+	/* Determine the order of Y, M, D, or J in input and output date strings,
+	 * as well as the number of decimals in output seconds (if any), and
+	 * if a 12- or 24-hour clock is used.
+	 */
+	 
+	char *c, delimeter[2];
+	
+	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
+	
+	GMT_get_ymdj_order (gmtdefs.input_date_format, GMT_io.ymdj_input_order);
+	GMT_get_ymdj_order (gmtdefs.output_date_format, GMT_io.ymdj_output_order);
+	
+	/* Determine if the clock output format has decimal seconds, and if so how many decimals */
+	
+	GMT_io.n_sec_decimals = 0;
+	if ((c = strchr (gmtdefs.output_clock_format, 'x'))) {	/* Specified decimal seconds for output */
+		for (GMT_io.n_sec_decimals = 1; c[GMT_io.n_sec_decimals] == 'x'; GMT_io.n_sec_decimals++);;	/* Count the number of decimals */
+		GMT_io.f_sec_to_int = rint (pow (10.0, (double)GMT_io.n_sec_decimals));	/* To scale fracional seconds to an integer form */
+	}
+	
+	/* Determine if we do 12-hour clock (and what form of am/pm suffix) or 24-hour clock */
+	
+	if (strstr (gmtdefs.output_clock_format, "am")) {	/* Want 12 hour clock with am/pm */
+		GMT_io.twelwe_hr_clock = TRUE;
+		strcpy (GMT_io.ampm_suffix[0], "am");
+		strcpy (GMT_io.ampm_suffix[1], "pm");
+	}
+	else if (strstr (gmtdefs.output_clock_format, "AM")) {	/* Want 12 hour clock with AM/PM */
+		GMT_io.twelwe_hr_clock = TRUE;
+		strcpy (GMT_io.ampm_suffix[0], "AM");
+		strcpy (GMT_io.ampm_suffix[1], "PM");
+	}
+	else if (strstr (gmtdefs.output_clock_format, "a.m.")) {	/* Want 12 hour clock with a.m./p.m. */
+		GMT_io.twelwe_hr_clock = TRUE;
+		strcpy (GMT_io.ampm_suffix[0], "a.m.");
+		strcpy (GMT_io.ampm_suffix[1], "p.m.");
+	}
+	else if (strstr (gmtdefs.output_clock_format, "A.M.")) {	/* Want 12 hour clock with A.M./P.M. */
+		GMT_io.twelwe_hr_clock = TRUE;
+		strcpy (GMT_io.ampm_suffix[0], "A.M.");
+		strcpy (GMT_io.ampm_suffix[1], "P.M.");
+	}
+	
+	/* Craft the actual C-format to use for output clock strings */
+	
+	GMT_get_hms_order (gmtdefs.output_clock_format, GMT_io.hms_output_order);
+	
+	if (strlen (gmtdefs.output_clock_format) > 2 && ispunct ((int)gmtdefs.output_clock_format[2])) {	/* will use a delimeter, usually : */
+		delimeter[0] = gmtdefs.output_clock_format[2];
+		delimeter[1] = 0;
+	}
+	else	/* No delimeter, pack the HHMMSS tight */
+		delimeter[0] = 0;
+
+	if (GMT_io.hms_output_order[0] >= 0) {	/* OK, at least hours is needed */
+		char fmt[32];
+		sprintf (GMT_io.output_clock_format, "%%2.2d\0");
+		if (GMT_io.hms_output_order[1] >= 0) {	/* Need minutes too*/
+			if (delimeter[0]) strcat (GMT_io.output_clock_format, delimeter);
+			sprintf (fmt, "%%2.2d\0");
+			strcat (GMT_io.output_clock_format, fmt);
+			if (GMT_io.hms_output_order[2] >= 0) {	/* .. and seconds */
+				if (delimeter[0]) strcat (GMT_io.output_clock_format, delimeter);
+				sprintf (fmt, "%%2.2d\0");
+				strcat (GMT_io.output_clock_format, fmt);
+				if (GMT_io.n_sec_decimals) {	/* even add format for fractions of second */
+					sprintf (fmt, ".%%%s.%sd\0", GMT_io.n_sec_decimals, GMT_io.n_sec_decimals);
+					strcat (GMT_io.output_clock_format, fmt);
+				}
+			}
+		}
+		if (GMT_io.twelwe_hr_clock) {	/* Finally add %s for the am, pm string */
+			sprintf (fmt, "%%s\0");
+			strcat (GMT_io.output_clock_format, fmt);
+		}
+	}
+		
+	fprintf (stderr, "%s\n", GMT_io.output_clock_format);
+}
+
+int GMT_decode_coltype (char *arg)
+{
+	/* Routine will decode the -f[i|o]<col>|<colrange>[t|T|g],... arguments */
+	
+	char copy[BUFSIZ], *p;
+	int i, k = 1, start, stop, c, code, *col;
+	BOOLEAN both_i_and_o = FALSE;
+
+	if (arg[0] == 'i')	/* Apply to input columns only */
+		col = GMT_io.in_col_type;
+	else if (arg[0] == 'o')	/* Apply to output columns only */
+		col = GMT_io.out_col_type;
+	else {			/* Apply to both input and output columns */
+		both_i_and_o = TRUE;
+		k = 0;
+	}
+	
+	strncpy (copy, &arg[k], BUFSIZ);	/* arg should NOT have a leading i|o part */
+	
+	p = strtok (copy, ",");		/* Get first token */
+	while (p) {			/* While it is not empty, process it */
+		if ((c = strchr (p, '-')))	/* Range of columns given. e.g., 7-9T */
+			sscanf (p, "%d-%d", &start, &stop);
+		else				/* Just a single column, e.g., 3t */
+			start = stop = atoi (p);
+
+		c = p[strlen(p)-1];	/* Last char in p is the potential code T, t, or g */
+		switch (c) {
+			case 'T':	/* Absolute calendar time */
+				code = GMT_IS_ABSTIME;
+				break;
+			case 't':	/* Relative calendar time (need epoch) */
+				code = GMT_IS_RELTIME;
+				break;
+			case 'g':	/* Geographical coordinates */
+				code = GMT_IS_GEO;
+				break;
+			default:	/* No suffix, consider it an error */
+				fprintf (stderr, "%s: GMT Error: Malformed -i argument [%s]\n", GMT_program, arg);
+				return 1;
+				break;
+		}
+		
+		/* Now set the code for these columns */
+			
+		if (both_i_and_o)
+			for (i = start; i <= stop; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = code;
+		else
+			for (i = start; i <= stop; i++) col[i] = code;
+		
+		p = strtok (NULL, ",");	/* Next entry */
+	}
+	return (0);
 }

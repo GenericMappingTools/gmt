@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.3 2001-08-15 15:37:17 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.4 2001-08-16 19:12:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -35,17 +35,30 @@
 #define GMT_COLUMN_FORMAT	1
 #define GMT_ROW_FORMAT		2
 
+/* Types of possible column entries in a file: */
+
+#define GMT_IS_NAN		0
+#define GMT_IS_UNKNOWN		1
+#define GMT_IS_LAT		2
+#define GMT_IS_LON		4
+#define GMT_IS_GEO		6
+#define GMT_IS_RELTIME		8
+#define GMT_IS_ABSTIME		16
+#define GMT_IS_TIME		24
+
 EXTERN_MSC FILE *GMT_fopen (const char* filename, const char* mode);	/* fopen wrapper */
 EXTERN_MSC int GMT_fclose (FILE *stream);				/* fclose wrapper */
 EXTERN_MSC void GMT_io_init (void);					/* Initialize pointers */
 EXTERN_MSC int GMT_io_selection (char *text);				/* Decode -b option and set parameters */
+EXTERN_MSC int GMT_decode_coltype (char *text);				/* Decode -i option and set parameters */
 EXTERN_MSC void GMT_multisegment (char *text);				/* Decode -M option */
 EXTERN_MSC void GMT_write_segmentheader (FILE *fp, int n);		/* Write multisegment header back out */
 EXTERN_MSC int GMT_scanf_old (char *p, double *val);			/* Convert text (incl dd:mm:ss) to double number */
 EXTERN_MSC char *GMT_fgets (char *record, int maxlength, FILE *fp);	/* Does a fscanf from inside gmt_io to keep DLLs working */
 
 
-struct GMT_IO {
+struct GMT_IO {	/* Used to process input data records */
+	
 	BOOLEAN multi_segments;		/* TRUE if current Ascii input file has multiple segments */
 	BOOLEAN single_precision[2];	/* TRUE if current binary input(0) or output(1) is in single precision
 					   [Default is double] */
@@ -56,6 +69,7 @@ struct GMT_IO {
 	int ncol[2];			/* Number of expected columns of input(0) and output(1)
 					   0 means it will be determined by program */
 	int rec_no;			/* Number of current records */
+	int n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
 	int n_bad_records;		/* Number of bad records encountered during i/o */
 	unsigned int status;		/* 0	All is ok
 					   1	Current record is segment header
@@ -66,11 +80,24 @@ struct GMT_IO {
 	char segment_header[BUFSIZ];	/* Current ascii segment header */
 	char r_mode[3];			/* Current file opening mode for reading (r or rb) */
 	char w_mode[3];			/* Current file opening mode for writing (w or wb) */
+	BOOLEAN *skip_if_NaN;		/* TRUE if column j cannot be NaN and we must skip the record */
+	int *in_col_type;		/* Type of column on input: Time, geographic, etc, see GMT_IS_<TYPE> */
+	int *out_col_type;		/* Type of column on output: Time, geographic, etc, see GMT_IS_<TYPE> */
+	int n_sec_decimals;		/* Number of digits in decimal seconds (0 for whole seconds) */
+	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
+	BOOLEAN twelwe_hr_clock;	/* TRUE if we are doing am/pm on output */
+	BOOLEAN iso_calendar;		/* TRUE if we do ISO week calendar */
+	BOOLEAN day_of_year;		/* TRUE if we do day-of-year rather than month/day */
+	char ampm_suffix[2][8];		/* Holds the strings to append am or pm */
+	int ymdj_input_order[4];	/* The relative order of year, month, day, day-of-year in input calendar string */
+	int ymdj_output_order[4];	/* The relative order of year, month, day, day-of-year in output calendar string */
+	int hms_output_order[3];	/* The relative order of hour, mn, sec in output clock string */
+	char output_clock_format[32];	/* Actual C format used to output clock */
 };
 
 EXTERN_MSC struct GMT_IO GMT_io;
 
-struct GMT_Z_IO {	/* Used when processing z table input */
+struct GMT_Z_IO {	/* Used when processing z(x,y) table input when (x,y) is implicit */
 	int binary;	/* TRUE if we are reading/writing binary data */
 	int input;	/* TRUE if we are reading, FALSE if we are writing */
 	int format;	/* Either GMT_COLUMN_FORMAT or GMT_ROW_FORMAT */

@@ -185,7 +185,7 @@ Color used for the non-defined areas of images (i.e., where z == NaN).
 Give a red/green/blue triplet, with each element in the 0\-255 range. [128/128/128] (gray)
 .TP
 .B D_FORMAT
-Output format (C language syntax) to be used when printing double precision floating point numbers 
+Output format (C language syntax) to be used when printing double precision floating point numbers.
 If it is NOT a 'g'-type format (as the default is), the format is used directly in anotations. [%lg].
 .TP
 .B DEGREE_FORMAT
