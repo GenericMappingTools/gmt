@@ -114,6 +114,9 @@ src/segyprogs/pssegy.html
 src/segyprogs/pssegyz.c
 src/segyprogs/pssegyz.man
 src/segyprogs/pssegyz.html
+src/segyprogs/segy2grd.c
+src/segyprogs/segy2grd.man
+src/segyprogs/segy2grd.html
 src/segyprogs/segy.h
 src/segyprogs/segy_io.c
 src/segyprogs/segy_io.h
@@ -121,7 +124,10 @@ src/segyprogs/segyreel.h
 src/segyprogs/segyprogs_1.sh
 src/segyprogs/segyprogs_2.sh
 src/segyprogs/segyprogs_3.sh
+src/segyprogs/segyprogs_4.sh
+src/segyprogs/segyprogs_5.sh
 src/segyprogs/test.list
+src/segyprogs/test.cpt
 src/segyprogs/wa1_mig13.segy
 src/spotter/README.spotter
 src/spotter/WK97.d

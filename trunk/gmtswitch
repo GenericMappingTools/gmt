@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: gmtswitch,v 1.7 2003-04-22 02:54:06 pwessel Exp $
+#	$Id: gmtswitch,v 1.8 2004-01-12 01:08:15 pwessel Exp $
 #
 #	gmtswitch - switch between several installed GMT versions
 #
@@ -16,7 +16,7 @@ if [ $help -eq 1 ]; then
 usage: gmtswitch [version]
 
 version, if present, is a unique text pattern identifying a GMT version,
-e.g., GMT3.3.6.  If none are given then we list available versions and
+e.g., GMT3.4.3.  If none are given then we list available versions and
 let the user choose one.  If the version is given as "init" OR it is the
 very first time gmtswitch is run we will initialize the list of versions.
 EOF
@@ -48,11 +48,11 @@ home=`pwd`
 if [ ! -f $home/.gmtversions ]; then	# No .gmtversions exists yet, first do that part
 	cat << EOF >&2
 
-	GMTSWITCH $Revision: 1.7 $
+	GMTSWITCH $Revision: 1.8 $
 	
 gmtswitch helps you modify your environment to allow for the switching back
-and forth between several GMT versions, in particular GMT4b and previous GMT
-versions such as GMT 3.4.3.  First, we need to determine all the GMT versions
+and forth between several GMT versions, in particular GMT4.0b and previous GMT
+versions such as GMT 3.4.4.  First, we need to determine all the GMT versions
 currently installed on this platform.  If you have not already installed GMT4b
 please CTRL-C at the prompt and do that install first.  Otherwise, hit RETURN
 and please be patient while we search your system.

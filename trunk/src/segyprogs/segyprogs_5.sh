@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: segyprogs_5.sh,v 1.2 2003-04-15 20:32:41 pwessel Exp $
+#	$Id: segyprogs_5.sh,v 1.3 2004-01-12 01:08:15 pwessel Exp $
 #
 # script to plot mendo wa1 combined data
 #
@@ -14,3 +14,4 @@ outfile=segyprogs_5.ps
 psbasemap $area1 $proj1 -Bf5a10 -Z0.001 -Y1.5i -K -X1.5i > $outfile
 ./segy2grd $area1  -Sc -X0.1 -Y0.1 -I0.5/0.2 wa1_mig13.segy -Gtest.grd -V
 grdimage $area1 $proj1 -O test.grd -Ctest.cpt >> $outfile
+rm -f test.grd
