@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.54 2003-03-06 18:43:48 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.55 2003-08-21 18:55:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -599,7 +599,8 @@ int GMT_bin_float_output (FILE *fp, int n, double *ptr)
 
 void GMT_write_segmentheader (FILE *fp, int n)
 {
-	/* Output ASCII or binary multisegment header */
+	/* Output ASCII or binary multisegment header.
+	 * ASCII header is expected to contain newline (\n) */
 
 	int i;
 	if (GMT_io.binary[1])

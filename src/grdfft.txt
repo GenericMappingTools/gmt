@@ -119,7 +119,7 @@ by the topography load topo.grd (in m) on a 20 km thick elastic plate, assumed t
 be 4 km beneath the observation level can be computed as
 .br
 .sp
-\fBgrdfft\fP topo.grd \fB\-T\fP20000/2800/3330/1030/2300 \fB\-C\fP4000 \fB\-S\fP0.022 \fB\-G\fPcomp_faa.grd
+\fBgrdfft\fP topo.grd \fB\-T\fP20000/2800/3330/1030/2300 \fB\-S\fP0.022 \fB\-C\fP4000 \fB\-G\fPcomp_faa.grd
 .br
 .sp
 where 0.022 is the scale needed for the first term in Parker's expansion for 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.50 2003-08-14 21:24:09 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.51 2003-08-21 18:55:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1743,6 +1743,51 @@ int GMT_smooth_contour (double **x_in, double **y_in, int n, int sfactor, int st
 	GMT_free ((void *) flag);
 	
 	return (n_out);
+}
+
+void GMT_dump_contour (double *xx, double *yy, int nn, double cval, int id, BOOLEAN interior, char *file)
+{
+	int i;
+	static int int_cont_count = 0, ext_cont_count = 0;
+	char fname[BUFSIZ], format[80], suffix[4];
+	double out[3];
+	FILE *fp;
+	
+	if (nn < 2) return;
+	
+	out[2] = cval;
+	(GMT_io.binary[1]) ? strcpy (suffix, "b") : strcpy (suffix, "xyz");
+	sprintf (format, "%s\t%s\t%s\n", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
+	if (!GMT_io.binary[1] && GMT_io.multi_segments) {
+		if (GMT_io.multi_segments == 2) {	/* Must create file the first time around */
+			fp = GMT_fopen (file, "w");
+			GMT_io.multi_segments = TRUE;
+		}
+		else	/* Later we append to it */
+			fp = GMT_fopen (file, "a+");
+		sprintf (GMT_io.segment_header, "%c %g contour\n", GMT_io.EOF_flag, cval);
+		GMT_write_segmentheader (fp, 3);
+	}
+	else {
+		if (interior) {
+			if (file[0] == '-')	/* Running numbers only */
+				sprintf (fname, "C%d_i.%s", int_cont_count++, suffix);
+			else
+				sprintf (fname, "%s_%g_%d_i.%s", file, cval, id, suffix);
+		}
+		else {
+			if (file[0] == '-')	/* Running numbers only */
+				sprintf (fname, "C%d_e.%s", ext_cont_count++, suffix);
+			else
+				sprintf (fname, "%s_%g_%d.%s", file, cval, id, suffix);
+		}
+		fp = GMT_fopen (fname, GMT_io.w_mode);
+	}
+	for (i = 0; i < nn; i++) {
+		out[0] = xx[i];	out[1] = yy[i];
+		GMT_output (fp, 3, out);
+	}
+	GMT_fclose (fp);
 }
 
 void GMT_get_plot_array (void) {      /* Allocate more space for plot arrays */
