@@ -2,7 +2,7 @@
 .SH NAME
 filter1d \- Time domain filtering of 1-D time series
 .SH SYNOPSIS
-\fBfilter1d\fP [ \fIinfile\fP ] \fB\-F\fP\fI<type><width>\fP [ \fB\-D\fP\fIincrement\fP ]  
+\fBfilter1d\fP [ \fIinfile\fP ] \fB\-F\fP\fI<type><width>\fP[\fImode\fP] [ \fB\-D\fP\fIincrement\fP ]  
 [ \fB\-E\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIignore_val\fP ] [ \fB\-L\fP\fIlack_width\fP ] 
 [ \fB\-N\fP\fIn_cols/t_col\fP ] [ \fB\-Q\fP\fIq_factor\fP ] [ \fB\-S\fP\fIsymmetry_factor\fP ] 
 [ \fB\-T\fP\fIstart/stop/int\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] 
@@ -34,6 +34,9 @@ Non-convolution filters are:
 (\fBm\fP) Median: Returns median value.
 .br
 (\fBp\fP) Maximum likelihood probability (a mode estimator): Return modal value.
+If more than one mode is found we return their average value.  Append - or + to
+the filter width if you rather want to return the smallest or largest of the modal
+values.
 .br
 (\fBl\fP) Lower: Return the minimum of all values.
 .br
