@@ -159,7 +159,6 @@ pe\fBn\fPtagon.  \fIsize\fP is diameter of circumscribing circle.
 \fBp\fPoint.  No size needs to be specified (1 pixel is used).
 .TP
 .B \-Sq
-.TP
 \fBq\fPuoted line, i.e., lines with annotations such as contours.  Append [\fBd|n|l|x\fP]\fIinfo\fP[:\fIlabelinfo\fP].
 The required argument controls the placement of labels along the lines.  Choose among four controlling mechanisms:
 .br
