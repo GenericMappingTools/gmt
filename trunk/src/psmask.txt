@@ -41,7 +41,7 @@ Dumps out the resulting clipping polygons to disk.  Ignored if \fB\-T\fP is set.
 If no dumpprefix is given we use mask (Files will be called mask_*.d).
 .TP
 .B \-E
-Sets the viewpoint's azimuth and elevation for perspective plots [180/90].
+Sets the viewpoint's azimuth and elevation for perspective plots [180/90].\"'
 .TP
 .B \-F
 Force pixel registration.  [Default is grid registration].

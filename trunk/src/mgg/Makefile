@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.4 2001-04-11 19:58:09 pwessel Exp $
+#	$Id: Makefile,v 1.5 2004-05-24 18:39:31 pwessel Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -92,7 +92,7 @@ gmt_mgg.o:	$(MGG_H)
 #-------------------------------------------------------------------------------
 
 $(MGG):		libgmt_mgg.a $(MGG_O)
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lgmt_mgg -L.. -L$(libdir) -lpsl -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lgmt_mgg -L.. -L$(libdir) -lgmt -lpsl $(CDF) $(LIBS) -o $@
 
 .c.o:
 		$(CC) -c $(CFLAGS) $<

@@ -47,7 +47,7 @@ Selects the resolution of the data set to use ((\fBf\fP)ull, (\fBh\fP)igh, (\fBi
 resolution drops off by 80% between data sets. [Default is \fBl\fP].
 .TP
 .B \-E
-Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].
+Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
 .TP
 .B \-G
 Select painting or clipping of "dry" areas.  Append a shade, color, pattern, or \fBc\fP for clipping.
@@ -185,7 +185,7 @@ ocean varies seasonally and interannually.  There are some areas of
 permanent sea ice.  In addition to these time-varying ice-ocean 
 boundaries, there are also ice grounding lines where ice goes from 
 floating on the sea to sitting on land, and lines delimiting areas 
-of rock outcrop.  For consistency's sake, we have used the World
+of rock outcrop.  For consistency's sake, we have used the World\"'
 Vector Shoreline throughout the world in pscoast, as described in
 the \fBGMT\fP Cookbook Appendix K. Users who need specific boundaries
 in Antarctica should get the Antarctic Digital Database, prepared

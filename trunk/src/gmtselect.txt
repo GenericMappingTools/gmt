@@ -33,7 +33,8 @@ will be ignored [Default is 0/4 (all features)]. See DATABASE INFORMATION in the
 .TP
 .B \-C
 Pass all records whose location is within \fIdist\fP of any of the points in the ASCII file \fIptfile\fP.  If \fIdist\fP
-is zero then the 3rd column of \fIptfile\fP must have each point's individual radius of influence.  Distances are in user units; specify
+is zero then the 3rd column of \fIptfile\fP must have each point's\"'
+individual radius of influence.  Distances are in user units; specify
 \fB\-fg\fP or a map projection to indicate distances in km.  Prepend \fBf\fP to indicate you want approximate flat
 earth distance calculations (faster) rather than exact great circle calculations (slower).
 .TP
@@ -49,7 +50,7 @@ ASCII file \fIpolygonfile\fP.
 .B \-I
 Reverses the sense of the test for each of the criteria specified:
 .br
-	\fBc\fP  select records NOT inside any point's circle of influence.
+	\fBc\fP  select records NOT inside any point's circle of influence.\"'
 .br
 	\fBf\fP  select records NOT inside any of the polygons.
 .br
@@ -64,7 +65,8 @@ Reverses the sense of the test for each of the criteria specified:
 .TP
 .B \-L
 Pass all records whose location is within \fIdist\fP of any of the line segments in the multiple-segment ascii
-file \fIlinefile\fP.  If \fIdist\fP is zero then the 2nd column of each sub-header in the \fIptfile\fP must have each lines's individual distance value.
+file \fIlinefile\fP.  If \fIdist\fP is zero then the 2nd column of each
+sub-header in the \fIptfile\fP must have each lines's individual distance value.\"'
 Distances are in user units; specify \fB\-fg\fP or a map projection to indicate distances in km. 
 .TP
 .B \-M

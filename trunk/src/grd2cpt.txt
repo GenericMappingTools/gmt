@@ -9,7 +9,7 @@ grd2cpt \- Read a grdfile and make a color palette file
 \fBgrd2cpt\fP reads a grdfile and writes a color palette (cpt) file to
 standard output.  The cpt file is based on an existing master cptfile of
 your choice, and the mapping from data value to colors is through the
-data's cumulative distribution function (CDF), so that the colors are
+data's cumulative distribution function (CDF), so that the colors are\"'
 histogram equalized.  Thus if the resulting cpt file is used with the
 grdfile and grdimage with a linear projection, the colors will be uniformly
 distributed in area on the plot.  Let z be the data values in the grdfile. 
@@ -33,7 +33,7 @@ Create a linear color table by dividing the grid z-range into \fInlevels\fP equi
 Reverses the sense of color progression in the master cptfile.
 .TP
 .B \-L
-Limit range of cptfile to \fIminlimit/maxlimit\fP, and don't count data
+Limit range of cptfile to \fIminlimit/maxlimit\fP, and don't count data\"'
 outside range when estimating CDF(Z).  [Default uses min and max of data.] 
 .TP
 .B \-Q
@@ -52,7 +52,7 @@ Verbose operation.  This will write CDF(Z) estimates to stderr.  [Default is sil
 Will create a continuous color palette.
 [Default is discontinuous, i.e., constant color intervals]
 .SH EXAMPLES
-Sometimes you don't want to make a cpt file (yet) but would find it helpful
+Sometimes you don't want to make a cpt file (yet) but would find it helpful\"'
 to know that 90% of your data lie between z1 and z2, something you cannot
 learn from \fBgrdinfo\fP.  So you can do this to see some points on the
 CDF(Z) curve (use \fB\-V\fP option to see more):

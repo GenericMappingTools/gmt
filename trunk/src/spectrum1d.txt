@@ -10,7 +10,7 @@ spectrum1d \- compute auto\- [and cross\- ] spectra from one [or two] timeseries
 \fBspectrum1d\fP reads X [and Y] values from the first [and second] columns on standard input 
 [or \fIx[y]file\fP].  These values are treated as timeseries X(t) [Y(t)] sampled at equal intervals 
 spaced \fIdt\fP units apart.  There may be any number of lines of input.  \fBspectrum1d\fP will create 
-file[s] containing auto\- [and cross\- ] spectral density estimates by Welch's method of ensemble 
+file[s] containing auto\- [and cross\- ] spectral density estimates by Welch's method of ensemble\"'
 averaging of multiple overlapped windows, using standard error estimates from Bendat and Piersol.
 .sp
 The output files have 3 columns: f or w, p, and e.  f or w is the frequency or wavelength, p is the 

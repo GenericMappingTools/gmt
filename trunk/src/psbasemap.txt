@@ -61,7 +61,7 @@ option flags and lower case for modifiers.
 .SH OPTIONS
 .TP
 .B \-E
-Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].
+Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
 .TP
 .B \-G
 Paint inside of basemap. [Default is no fill].

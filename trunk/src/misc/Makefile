@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.4 2001-04-11 19:58:09 pwessel Exp $
+#	$Id: Makefile,v 1.5 2004-05-24 18:39:31 pwessel Exp $
 #	makefile for misc directory
 #
 
@@ -51,7 +51,7 @@ clean:
 #-------------------------------------------------------------------------------
 
 $(MISC):	$(MISC_O)
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L.. -L$(libdir) -lpsl -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L.. -L$(libdir) -lgmt -lpsl $(CDF) $(LIBS) -o $@
 
 .c.o:
 		$(CC) -c $(CFLAGS) $<

@@ -12,7 +12,7 @@ from standard input [or \fIxyzfile(s)\fP] and uses a nearest neighbor algorithm 
 an average value to each node that have one or more points within a radius centered on the node.
 The average value is computed as a weighted mean of the nearest point from each sector inside the search radius.  The
 weighting function used is w(r) = 1.0 / (1 + d ^ 2), where d = 3 * r / search_radius and r is
-distance from the node.  This weight is modulated by the observation points' weights [if supplied].
+distance from the node.  This weight is modulated by the observation points' weights [if supplied].\"'
 .TP
 \fIxyzfile(s)\fP
 3 [or 4, see \fB\-W\fP] column ASCII file(s) [or binary, see \fB\-b\fP] holding (x,y,z[,w]) data values.  If no file is specified, \fBnearneighbor\fP

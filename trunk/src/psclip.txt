@@ -32,7 +32,7 @@ No space between the option flag and the associated arguments
 #include "explain_-B_short.txt"
 .TP
 .B \-E
-Sets the viewpoint's azimuth and elevation [180/90].
+Sets the viewpoint's azimuth and elevation [180/90].\"'
 #include "explain_-H.txt"
 #include "explain_-K.txt"
 .TP

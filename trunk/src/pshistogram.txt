@@ -38,7 +38,7 @@ Plot the histogram horizontally from x = 0 [Default is vertically from y = 0].
 Center bin on each value. [Default is left edge].
 .TP
 .B \-E
-Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].
+Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
 .TP
 .B \-G
 Select filling of bars.  [Default is no fill].
