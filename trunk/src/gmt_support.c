@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.148 2005-02-04 02:48:38 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.149 2005-02-04 03:28:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6026,8 +6026,9 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_LINES *p, int 
 			d = (*GMT_distance_func) (lon, lat, p[i].lon[j0], p[i].lat[j0]);	/* Distance between our point and j'th node on i'th line */
 			if (return_mindist && d < (*dist_min)) {	/* Update min distance */
 				*dist_min = d;
-				if (return_mindist == 2) *x_near = p[i].lon[j0], *y_near = p[i].lat[j0];	/* Also update nearest point on the line */
-			}
+				if (return_mindist == 2) *x_near = p[i].lon[j0], *y_near = p[i].lat[j0];	/* Also update (x,y) of nearest point on the line */
+				if (return_mindist == 3) *x_near = (double)i, *y_near = (double)j0;		/* Also update (seg, pt) of nearest point on the line */
+			}	
 			if (d <= p[i].dist) return (TRUE);		/* Node inside the critical distance; we are done */
 		}
 
@@ -6085,6 +6086,12 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_LINES *p, int 
 			if (return_mindist && d < (*dist_min)) {			/* Update min distance */
 				*dist_min = d;
 				if (return_mindist == 2) *x_near = xc, *y_near = yc;	/* Also update nearest point on the line */
+				if (return_mindist == 3) {	/* Also update (seg, pt) of nearest point on the line */
+					*x_near = (double)i;
+					dist_AB = (*GMT_distance_func) (p[i].lon[j0], p[i].lat[j0], p[i].lon[j1], p[i].lat[j1]);
+					fraction = (dist_AB > 0.0) ? (*GMT_distance_func) (p[i].lon[j0], p[i].lat[j0], xc, yc) / dist_AB : 0.0;
+					*y_near = (double)j0 + fraction;
+				}
 			}
 			if (d <= p[i].dist) return (TRUE);		/* Node inside the critical distance; we are done */
 		}
@@ -6094,8 +6101,8 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_LINES *p, int 
 
 int GMT_near_a_line_spherical (double lon, double lat, struct GMT_LINES *p, int np, BOOLEAN return_mindist, double *dist_min, double *x_near, double *y_near)
 {
-	int i, j;
-	double d, A[3], B[3], C[3], X[3], plon, plat, xlon, xlat, cx_dist, cos_dist;
+	int i, j, j0;
+	double d, A[3], B[3], C[3], X[3], plon, plat, xlon, xlat, cx_dist, cos_dist, dist_AB, fraction;
 
 	plon = lon;	plat = lat;
 	GMT_geo_to_cart (&plat, &plon, C, TRUE);	/* Our point to test is now C */
@@ -6113,7 +6120,8 @@ int GMT_near_a_line_spherical (double lon, double lat, struct GMT_LINES *p, int 
 			d = (*GMT_distance_func) (lon, lat, p[i].lon[j], p[i].lat[j]);	/* Distance between our point and j'th node on i'th line */
 			if (return_mindist && d < (*dist_min)) {		/* Update minimum distance */
 				*dist_min = d;
-				if (return_mindist == 2) *x_near = p[i].lon[j], *y_near = p[i].lat[j];	/* Also update nearest point on the line */
+				if (return_mindist == 2) *x_near = p[i].lon[j], *y_near = p[i].lat[j];	/* Also update (x,y) of nearest point on the line */
+				if (return_mindist == 3) *x_near = (double)i, *y_near = (double)j;	/* Also update (seg, pt) of nearest point on the line */
 			}
 			if (d <= p[i].dist) return (TRUE);			/* Node inside the critical distance; we are done */
 		}
@@ -6136,7 +6144,14 @@ int GMT_near_a_line_spherical (double lon, double lat, struct GMT_LINES *p, int 
 				d = (*GMT_distance_func) (xlon, xlat, lon, lat);	/* Distance between our point and j'th node on i'th line */
 				if (d < (*dist_min)) {
 					*dist_min = d;				/* Update minimum distance */
-					if (return_mindist == 2) *x_near = xlon, *y_near = xlat;	/* Also update nearest point on the line */
+					if (return_mindist == 2) *x_near = xlon, *y_near = xlat;	/* Also update (x,y) of nearest point on the line */
+					if (return_mindist == 3) {	/* Also update (seg, pt) of nearest point on the line */
+						*x_near = (double)i;
+						j0 = j - 1;
+						dist_AB = (*GMT_distance_func) (p[i].lon[j0], p[i].lat[j0], p[i].lon[j], p[i].lat[j]);
+						fraction = (dist_AB > 0.0) ? (*GMT_distance_func) (p[i].lon[j0], p[i].lat[j0], xlon, xlat) / dist_AB : 0.0;
+						*y_near = (double)j0 + fraction;
+					}
 				}
 			}
 			if (cx_dist > cos_dist) return (TRUE);	/* X is on the A-B extension AND within specified distance */
