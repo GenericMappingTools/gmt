@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.108 2004-04-20 18:29:36 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.109 2004-04-20 19:01:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1450,10 +1450,9 @@ double GMT_fancy_frame_straight_outline (double lonA, double latA, double lonB, 
 
 double GMT_fancy_frame_curved_outline (double lonA, double latA, double lonB, double latB, int side, BOOLEAN secondary_too)
 {
-	int k;
-	double scale[2] = {1.0, 1.0}, escl, x1, x2, y1, y2, radius, angle, dr, r_inc, az1, az2, da0, da, width, s;
+	double scale[2] = {1.0, 1.0}, escl, x1, x2, y1, y2, radius, dr, r_inc, az1, az2, da0, da, width, s;
 	
-	if (!frame_info.side[side]) return;
+	if (!frame_info.side[side]) return (0.0);
 	
 	if (secondary_too) scale[0] = scale[1] = 0.5;
 	width = gmtdefs.frame_width;
@@ -2515,7 +2514,7 @@ void GMT_map_tickmarks (double w, double e, double s, double n)
 void GMT_map_tickitem (double w, double e, double s, double n, int item)
 {
 	int i, nx, ny;
-	double dx, dy, w1, s1, *val, len;
+	double dx, dy, *val, len;
 	BOOLEAN do_x, do_y;
 	
 	dx = GMT_get_map_interval (0, item);
@@ -2549,7 +2548,7 @@ void GMT_map_tickitem (double w, double e, double s, double n, int item)
 void GMT_map_annotate (double w, double e, double s, double n)
 {
 	double *val, dx[2], dy[2], w2, s2, x, y, del;
-	int i, k, nx, ny, remove[2], item[2] = {GMT_ANNOT_UPPER, GMT_ANNOT_LOWER};
+	int i, k, nx, ny, remove[2];
 	int do_minutes, do_seconds, move_up, done_zero = FALSE, annot, GMT_world_map_save;
 	char label[256], cmd[256];
 	BOOLEAN full_lat_range, proj_A, proj_B, annot_0_and_360, dual;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.71 2004-04-20 18:29:36 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.72 2004-04-20 19:01:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -270,7 +270,7 @@ int GMT_name2rgb (char *name)
 {
 	/* Return index into structure with colornames and r/g/b */
 	
-	int i, k;
+	int k;
 	char Lname[16];
 
 	strcpy (Lname, name);
@@ -308,9 +308,9 @@ void GMT_init_pen (struct GMT_PEN *pen, double width)
 
 void GMT_old2newpen (char *line)
 {
-	int i, j, k, n_slash, t_pos, s_pos, pen_unit, texture_unit;
+	int i, j, n_slash, t_pos, s_pos, texture_unit;
 	BOOLEAN got_pen = FALSE;
-	double pen_scale = 1.0, texture_scale = 1.0, width;
+	double texture_scale = 1.0, width;
 	char pstring[128], pcolor[128], ptexture[256], buffer[BUFSIZ], saved[BUFSIZ], tmp[2], set_points = 0;
 	
 	/* Old Syntax:	[<width][/<color>][t<texture>][p]	p can be anywhere but oughto go just after width */
@@ -330,7 +330,7 @@ void GMT_old2newpen (char *line)
 	memset ((void *)pcolor,   0, (size_t)(128*sizeof(char)));
 	memset ((void *)ptexture, 0, (size_t)(256*sizeof(char)));
 	
-	while (line[i] && line[i] == '.' || isdigit ((int)line[i])) i++;	/* scanning across valid characters for a pen width */
+	while (line[i] && (line[i] == '.' || isdigit ((int)line[i]))) i++;	/* scanning across valid characters for a pen width */
 	
 	if (i) {	/* Case 1: i > 0 which means a numerical width was specified) */
 		if (strchr ("cimp", line[i])) i++;	/* Got a trailing c|i|m|p for pen width unit */
