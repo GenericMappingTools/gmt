@@ -1,4 +1,4 @@
-.TH IMG2GRD GMTMANSECTION DATE VERSION
+.TH IMG2GRD GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 img2grd \- Extract region of img in Mercator or geographic form 
 .SH SYNOPSIS

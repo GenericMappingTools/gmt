@@ -1,4 +1,4 @@
-.TH GRDTREND GMTMANSECTION DATE VERSION
+.TH GRDTREND GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 grdtrend \- Fit and/or remove a polynomial trend in a grd file
 .SH SYNOPSIS

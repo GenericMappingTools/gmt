@@ -1,4 +1,4 @@
-.TH GMT2RGB GMTMANSECTION DATE VERSION
+.TH GMT2RGB GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 gmt2rgb \- Converting a grdfile, a raw, or a Sun rasterfile to r/g/b grids
 .SH SYNOPSIS

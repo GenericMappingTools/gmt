@@ -1,4 +1,4 @@
-.TH PROJECT GMTMANSECTION DATE VERSION
+.TH PROJECT GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 project \- project data along a line or great circle, generate a profile track, or translate coordinates.
 .SH SYNOPSIS

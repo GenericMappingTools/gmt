@@ -1,4 +1,4 @@
-.TH GRDRASTER GMTMANSECTION DATE VERSION
+.TH GRDRASTER GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 grdraster \- extract subregion from a binary raster and write a grd file
 .SH SYNOPSIS

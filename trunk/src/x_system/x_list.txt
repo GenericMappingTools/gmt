@@ -1,4 +1,4 @@
-.TH x_list GMTMANSECTION DATE VERSION
+.TH x_list GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 \fBx_list\fP \- Extract Cross-Over Information from the Data Base.
 .SH SYNOPSIS

@@ -1,4 +1,4 @@
-.TH x_remove GMTMANSECTION DATE VERSION
+.TH x_remove GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 \fBx_remove\fP \- Remove COEs for Selected Cruises from the Data Base
 .SH SYNOPSIS

@@ -1,4 +1,4 @@
-.TH GRDBLEND GMTMANSECTION DATE VERSION
+.TH GRDBLEND GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 grdblend \- Blend several partially over-lapping grids into one large grid
 .SH SYNOPSIS
