@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_gshhs.c,v 1.4 2004-09-28 18:25:21 pwessel Exp $
+ *	$Id: polygon_to_gshhs.c,v 1.5 2004-09-28 18:37:46 pwessel Exp $
  * 
  *	read polygon.b format and write a GSHHS file to stdout
  */
@@ -34,7 +34,7 @@ main (int argc, char **argv)
 		gshhs_header.version  = 3;
 		gshhs_header.source = h.source;
 		gshhs_header.area   = rint (10.0 * h.area);
-#ifndef WORDS_BIGENDIAN
+#if WORDS_BIGENDIAN == 1
 		/* Must swap header explicitly on little-endian machines */
 		gshhs_header.id = swabi4 ((unsigned int)gshhs_header.id);
 		gshhs_header.n  = swabi4 ((unsigned int)gshhs_header.n);
