@@ -94,8 +94,10 @@ To extract the subset of data set that is within 300 km of any of the points in 
 \fBgmtselect\fP lonlatfile \fB\-Jd\fP1d \fB\-C\fP300/pts.d \fB\-L\fP100/lines.d \fB\-Il\fP > subset
 .br
 .sp
-Here, you must specify a mapprojection so that knows you are giving it geographical data (otherwise
+Here, you must specify a map projection so that knows you are giving it geographical data (otherwise
 300 would be interpreted as Cartesian distance in x-y units instead of km).
+.br
+.sp
 To keep all points in data.d except those on land, as determined by the high-resolution
 coastlines, use
 .br
