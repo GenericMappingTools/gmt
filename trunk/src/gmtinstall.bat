@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.12 2004-01-12 01:37:26 pwessel Exp $
+REM	$Id: gmtinstall.bat,v 1.13 2004-01-13 02:33:04 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
@@ -101,7 +101,7 @@ del gmt_nan_init.obj
 del gmt_nan_init.exe
 CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_DEFAULT_PATH=%GMT_PATH% gmt_cdf.c gmt_customio.c gmt_grdio.c gmt_init.c
 CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_DEFAULT_PATH=%GMT_PATH% gmt_io.c gmt_map.c gmt_plot.c gmt_shore.c gmt_stat.c
-CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_DEFAULT_PATH=%GMT_PATH% gmt_support.c gmt_vector.c fourt.c
+CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_DEFAULT_PATH=%GMT_PATH% gmt_calclock.c gmt_support.c gmt_vector.c fourt.c
 IF %TRIANGLE%=="yes" CL %COPT% /c /DNO_TIMER /DTRILIBRARY /DREDUCED /DCDT_ONLY triangle.c
 IF %CHOICE%=="dynamic" link %LOPT% /out:gmt.dll /implib:gmt.lib gmt_*.obj fourt.obj %TROBJ% psl.lib netcdf.lib setargv.obj
 IF %CHOICE%=="static" lib /out:gmt.lib gmt_*.obj fourt.obj %TROBJ%

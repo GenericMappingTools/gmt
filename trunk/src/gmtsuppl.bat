@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.11 2004-01-12 01:37:26 pwessel Exp $
+REM	$Id: gmtsuppl.bat,v 1.12 2004-01-13 02:33:04 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
@@ -71,7 +71,8 @@ REM ----------------------------------------------------
 cd gshhs
 CL %COPT% gshhs.c %GMTLIB%
 CL %COPT% gshhs_dp.c %GMTLIB%
-CL %COPT% gshhstograss.c %GMTLIB%
+REM CL %COPT% gshhstograss.c %GMTLIB%
+ECHO gshhstograss.c not ported to Windows
 del *.obj
 move *.exe %BINDIR%
 cd ..

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.15 2004-01-13 01:53:26 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.16 2004-01-13 02:33:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -541,7 +541,7 @@ void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 		if (row_no < 0) {	/* Special seek instruction */
 			G->row = abs (row_no);
 			G->start[0] = G->row * G->edge[0];
-			return (0);
+			return;
 		}
 		switch (G->id) {
 			case 0:
@@ -576,7 +576,7 @@ void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 		if (row_no < 0) {	/* Special seek instruction */
 			G->row = abs (row_no);
 			fseek (G->fp, (long)(HEADER_SIZE + G->row * G->n_byte), SEEK_SET);
-			return (0);
+			return;
 		}
 		if (!G->auto_advance) fseek (G->fp, (long)(HEADER_SIZE + G->row * G->n_byte), SEEK_SET);
 
@@ -591,8 +591,6 @@ void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 	}
 	GMT_grd_do_scaling (row, G->header.nx, G->scale, G->offset);
 	G->row++;
-	
-	return (0);
 }
 
 void GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
