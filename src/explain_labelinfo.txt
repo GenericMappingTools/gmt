@@ -1,57 +1,83 @@
-.br
-\fB+a\fP\fIangle\fP for annotations at a fixed angle, \fB+an\fP for line-normal, or \fB+ap\fP for line-parallel [Default].
-.br
-\fB+c\fP\fIdx\fP[/\fIdy\fP] sets the clearance between label and optional text box.  Append \fBc|i|m|p\fP to specify
+.RS
+.TP
+\fB+a\fP\fIangle\fP
+For annotations at a fixed angle, \fB+an\fP for line-normal, or \fB+ap\fP for line-parallel [Default].
+.TP
+\fB+c\fP\fIdx\fP[/\fIdy\fP]
+Sets the clearance between label and optional text box.  Append \fBc|i|m|p\fP to specify
 the unit or % to indicate a percentage of the label font size [15%].
-.br
-\fB+f\fP\fIfont\fP sets the desired font [Default \fBANNOT_FONT_PRIMARY\fP].
-.br
-\fB+g\fP[\fIcolor\fP] selects opaque text boxes [Default is transparent]; optionally specify the color [Default is \fBPAGE_COLOR\fP].
-.br
-\fB+j\fP\fIjust\fP sets label justification [Default is CM].
-.br
-\fB+k\fP\fIcolor\fP sets color of text labels [Default is \fBCOLOR_BACKGROUND\fP].
+.TP
+\fB+f\fP\fIfont\fP
+Sets the desired font [Default \fBANNOT_FONT_PRIMARY\fP].
+.TP
+\fB+g\fP[\fIcolor\fP]
+Selects opaque text boxes [Default is transparent]; optionally specify the color [Default is \fBPAGE_COLOR\fP].
+.TP
+\fB+j\fP\fIjust\fP
+Sets label justification [Default is CM].
+.TP
+\fB+k\fP\fIcolor\fP
+Sets color of text labels [Default is \fBCOLOR_BACKGROUND\fP].
 #if !defined(CONTOUR)
-.br
-\fB+l\fP\fIlabel\fP sets the constant label text.
-.br
-\fB+L\fP\fIlflag\fP sets the label text according to the specified flag:
-.br
-\fIflag\fP is \fBh\fP:  Take the label from the current multisegment header (first scan for an embedded
+.TP
+\fB+l\fP\fIlabel\fP
+Sets the constant label text.
+.TP
+\fB+L\fP\fIflag\fP
+Sets the label text according to the specified flag:
+.RS
+.TP
+\fB+Lh\fP
+Take the label from the current multisegment header (first scan for an embedded
 \fB\-L\fP\fIlabel\fP option, if not use the first word following the segment flag).
-.br
-\fIflag\fP is \fBd\fP:  Take the Cartesian plot distances along the line as the label; append \fBc|i|m|p\fP
+.TP
+\fB+Ld\fP
+Take the Cartesian plot distances along the line as the label; append \fBc|i|m|p\fP
 as the unit [Default is \fBMEASURE_UNIT\fP].
-.br
-\fIflag\fP is \fBD\fP:  Calculate actual map distances; append \fBd|e|k|m|n\fP as the unit [Default is \fBd\fP(egrees),
+.TP
+\fB+LD\fP
+Calculate actual map distances; append \fBd|e|k|m|n\fP as the unit [Default is \fBd\fP(egrees),
 unless label placement was based on map distances along the lines in which case we use the same unit specified for that algorithm].
 Requires a map projection to be used.
-.br
-\fIflag\fP is \fBf\fP:  Use text after the 2nd column in the fixed label location file as the label.  Requires the fixed label
+.TP
+\fB+Lf\fP
+Use text after the 2nd column in the fixed label location file as the label.  Requires the fixed label
 location setting.
-.br
-\fIflag\fP is \fBx\fP:  As \fBh\fP but use the headers in the \fIxfile.d\fP instead.  Requires the crossing file option.
+.TP
+\fB+Lx\fP
+As \fB+Lh\fP but use the headers in the \fIxfile.d\fP instead.  Requires the crossing file option.
+.RE
 #endif
-.br
-\fB+o\fP selects rounded rectangular text box [Default is rectangular].  Not applicable for curved text (\fB+v\fP) and
+.TP
+\fB+o\fP
+Selects rounded rectangular text box [Default is rectangular].  Not applicable for curved text (\fB+v\fP) and
 only makes sense for opaque text boxes.
-.br
-\fB+p\fP[\fIpen\fP] draws the outline of text boxsets [Default is no outline]; optionally specify pen for outline [Default is width = 0.25p, color = black, texture = solid].
-.br
-\fB+r\fP\fImin_rad\fP will not place labels where the line's radius of curvature is less than \fImin_rad\fP [Default is 0].\"'
-.br
-\fB+s\fP\fIsize\fP sets the desired font size in points [Default is 9].
-.br
-\fB+u\fP\fIunit\fP appends \fIunit\fP to all line labels. If \fIunit\fP starts with a leading hypen (-) then there will be no space
+.TP
+\fB+p\fP[\fIpen\fP]
+Draws the outline of text boxsets [Default is no outline]; optionally specify pen for outline [Default is width = 0.25p, color = black, texture = solid].
+.TP
+\fB+r\fP\fImin_rad\fP
+Will not place labels where the line's radius of curvature is less than \fImin_rad\fP [Default is 0].\"'
+.TP
+\fB+s\fP\fIsize\fP
+Sets the desired font size in points [Default is 9].
+.TP
+\fB+u\fP\fIunit\fP
+Appends \fIunit\fP to all line labels. If \fIunit\fP starts with a leading hypen (-) then there will be no space
 between label value and the unit.
 #ifdef GRID
 If no \fIunit\fP is appended we use the units listed in the gridfile.
 #endif
 [Default is no unit].
-.br
-\fB+v\fP specifies curved labels following the path [Default is straight labels].
-.br
-\fB+w\fP specifies how many (\fIx, y\fP) points will be used to estimate label angles [Default is 10].
-.br
-\fB+=\fP\fIprefix\fP prepends \fIprefix\fP to all line labels. If \fIprefix\fP starts with a leading hypen (-) then there will be no space
+.TP
+\fB+v\fP
+Specifies curved labels following the path [Default is straight labels].
+.TP
+\fB+w\fP
+Specifies how many (\fIx, y\fP) points will be used to estimate label angles [Default is 10].
+.TP
+\fB+=\fP\fIprefix\fP
+Prepends \fIprefix\fP to all line labels.
+If \fIprefix\fP starts with a leading hypen (-) then there will be no space
 between label value and the prefix. [Default is no prefix].
+.RE

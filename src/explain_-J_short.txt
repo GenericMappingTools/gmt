@@ -6,6 +6,8 @@ overridden on the command line by appending \fBc\fP, \fBi\fP, or \fBm\fP to the 
 For map height, max dimension, or min dimension, append \fBh\fP, \fB+\fP, or \fB-\fP to the width,
 respectively.
 .br
+More details can be found in the \fBpsbasemap\fP man pages.
+.br
 .sp
 \fBCYLINDRICAL PROJECTIONS:\fP
 .br
@@ -82,7 +84,5 @@ respectively.
 .sp
 \fB\-Jp\fP[\fBa\fP]\fIscale\fP[\fI/origin\fP] (polar (theta,r) coordinates, optional \fBa\fP for azimuths and offset theta [0])
 .br
-\fB\-Jx\fP\fIx-scale\fP[\fBl|p\fP\fIpow\fP][\fI/y-scale\fP[\fBl|p\fP\fIpow\fP]][\fBd\fP] (Linear, log, and power scaling)
-.br
-More details can be found in the \fBpsbasemap\fP man pages.
+\fB\-Jx\fP\fIx-scale\fP[\fBl|p\fP\fIpow\fP][\fBd\fP][\fI/y-scale\fP[\fBl|p\fP\fIpow\fP]][\fBd\fP] (Linear, log, and power scaling)
 .br

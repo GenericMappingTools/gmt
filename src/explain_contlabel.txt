@@ -3,22 +3,28 @@
 #ifdef CONTOUR
 #define LINETYPE contours
 #define GFLAG \fB\-G\fP
+Controls the placement of labels along the LINETYPE.
 #else
 #define LINETYPE quoted lines
 #define GFLAG
+The required argument controls the placement of labels along the LINETYPE.
 #endif
-Controls the placement of labels along the LINETYPE.  Choose among five controlling algorithms:
-.br
-GFLAG\fBd\fP\fIdist\fP[c|i|m|p] or GFLAG\fBD\fP\fIdist\fP[d|e|k|m|n].
+Choose among five controlling algorithms:
+.RS
+.TP
+GFLAG\fBd\fP\fIdist\fP[c|i|m|p] or GFLAG\fBD\fP\fIdist\fP[d|e|k|m|n]
 For lower case \fBd\fP, give distances between labels on the plot in your preferred measurement unit
 \fBc\fP (cm), \fBi\fP (inch), \fBm\fP (meter), or \fBp\fP (points), while for upper case \fBD\fP, specify
 distances in map units and append the unit; choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile), \fBn\fP
 (nautical mile), or \fBd\fP (spherical degree).  [Default is G_OPT_SI or G_OPT_US].  
-.br
-GFLAG\fBf\fP\fIffile.d\fP reads the ascii file \fIffile.d\fP and places labels at locations in the file
-that matches locations along the LINETYPE.  Inexact mathces and points outside the region are skipped.
-.br
-GFLAG\fBl|L\fP\fIline1\fP[,\fIline2\fP,...] Give \fIstart\fP and \fIstop\fP coordinates for one or
+.TP
+GFLAG\fBf\fP\fIffile.d\fP
+Reads the ascii file \fIffile.d\fP and places labels at locations in the file
+that matches locations along the LINETYPE.
+Inexact mathces and points outside the region are skipped.
+.TP
+GFLAG\fBl|L\fP\fIline1\fP[,\fIline2\fP,...]
+Give \fIstart\fP and \fIstop\fP coordinates for one or
 more comma-separated straight line segments.  Labels will be placed where these lines intersect the
 LINETYPE.  The format of each \fIline\fP specification is \fIstart/stop\fP, where \fIstart\fP and \fIstop\fP
 are either a specified point \fIlon/lat\fP or a 2-character \fBXY\fP key that uses the justification
@@ -28,12 +34,17 @@ In addition, you may use Z+ and Z- which correspond to the locations of the glob
 the grid, respectively.
 #endif
 GFLAG\fBL\fP will interpret the point pairs as defining great circles [Default is straight line].
-.br
-GFLAG\fBn\fP\fIn_label\fP specifies the number of equidistant labels for LINETYPE line [1].
+.TP
+GFLAG\fBn\fP\fIn_label\fP
+Specifies the number of equidistant labels for LINETYPE line [1].
 Upper case GFLAG\fBN\fP starts labeling exactly at the start of the line [Default centers them along the line].
-GFLAG\fBN\fP-1 places one justified label at start, while GFLAG\fBN\fP+1 places one justified label at the end of LINETYPE.
-Optionally, append /\fImin_dist\fP[c|i|m|p] to enforce that a minimum distance separation between successive labels is enforced.
-.br
-GFLAG\fBx|X\fP\fIxfile.d\fP reads the multi-segment file \fIxfile.d\fP and places labels at the intersections
+GFLAG\fBN\fP-1 places one justified label at start, while GFLAG\fBN\fP+1 places one justified
+label at the end of LINETYPE.
+Optionally, append /\fImin_dist\fP[c|i|m|p] to enforce that a minimum distance separation
+between successive labels is enforced.
+.TP
+GFLAG\fBx|X\fP\fIxfile.d\fP
+Reads the multi-segment file \fIxfile.d\fP and places labels at the intersections
 between the LINETYPE and the lines in\fIxfile.d\fP.  GFLAG\fBX\fP will resample the lines first along
 great-circle arcs.
+.RE
