@@ -3,7 +3,7 @@
 fitcircle \- find mean position and pole of best-fit great [or small] circle to points on a sphere.
 .SH SYNOPSIS
 \fBfitcircle\fP [ \fIxyfile\fP ] \fB\-L\fP\fInorm\fP [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-S\fP ] [ \fB\-V\fP ] [ \fB\-:\fP ] 
-[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBfitcircle\fP reads lon,lat [or lat,lon] values from the first two columns on standard input 
 [or \fIxyfile\fP].  These are converted to Cartesian three-vectors on the unit sphere.  Then two 
@@ -49,6 +49,7 @@ and the mean location of the data.
 #include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
+#include "explain_-f.txt"
 .SH EXAMPLES
 Suppose you have lon,lat,grav data along a twisty ship track in the file ship.xyg.  You want to 
 project this data onto a great circle and resample it in distance, in order to filter it or check its spectrum.  Do the following:
