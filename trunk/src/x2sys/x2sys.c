@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: x2sys.c,v 1.2 2001-09-21 00:26:51 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -133,7 +133,7 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s)
 				if (j == 0) fgets (line, BUFSIZ, fp);	/* Get new record */
 				strncpy (buffer, &line[s->info[j].start_col], s->info[j].n_cols);
 				buffer[s->info[j].n_cols] = 0;
-				data[j] = atof (buffer);
+				GMT_scanf (buffer, GMT_io.in_col_type[j], &data[j]);
 				break;
 
 			case 'a':	/* ASCII Record, get all columns directly */
@@ -141,7 +141,8 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s)
 				fgets (line, BUFSIZ, fp);
 				p = strtok (line, " ,\t");
 				while (p) {
-					data[k++] = atof (p);
+					GMT_scanf (p, GMT_io.in_col_type[k], &data[k]);
+					k++;;
 					p = strtok (NULL, " ,\t");
 				}
 				return ((k != s->n_fields) ? -1 : 0);
@@ -310,6 +311,7 @@ struct X2SYS_INFO *x2sys_initialize (char *fname)
 	for (i = 0; i < X->n_fields; i++) {	/* Default is same order and use all columns */
 		X->out_order[i] = i;
 		X->use_column[i] = 1;
+		GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = (X->x_col == i) ? GMT_IS_LON : ((X->y_col == i) ? GMT_IS_LAT : GMT_IS_UNKNOWN);
 	}
 	X->n_data_cols = x2sys_n_data_cols (X);
 	X->rec_size = (8 + X->n_data_cols) * sizeof (double);
