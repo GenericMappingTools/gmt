@@ -1,0 +1,107 @@
+.TH GMTSELECT l DATE
+.SH NAME
+gmtselect \- Select data subsets based on multiple spatial criteria 
+.SH SYNOPSIS
+\fBgmtselect\fP [ \fIinfiles\fP ] [ \fB\-A\fP\fImin_area\fP[/\fImin_level/max_level\fP] ] 
+[ \fB\-C\fP[\fBf\fP]\fIdist/ptfile\fP ] [ \fB\-D\fP\fIresolution\fP ] [ \fB\-F\fP\fIpolygonfile\fP ] 
+[ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP[\fBcflrs\fP] ] [ \fB\-J\fP\fIparameters\fP ] 
+[ \fB\-L\fP[\fIdist/linefile\fP] ] [ \fB\-M\fP[\fIflag\fP] ] 
+[ \fB\-N\fP\fImaskvalues\fP[\fBo\fP] ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] 
+[ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
+[ \fB\-bo\fP[\fBs\fP] ]
+.SH DESCRIPTION
+\fBgmtselect\fP is a filter that reads (longitude, latitude) positions from the first 2 columns of \fIinfiles\fP [or standard input] and
+uses a combination of 1-5 criteria to pass or reject the records.  Records can be selected based on whether or not they are
+1) inside a rectangular region (\fB\-R\fP [and \fB\-J\fP]), 2) within \fIdist\fP km of any point in \fIptfile\fP,
+3) within \fIdist\fP km of any line in \fIlinefile\fP, 4) inside one of the polygons in the \fIpolygonfile\fP, and 5) inside geographical features (based on coastlines).
+The sense of the tests can be reversed for each of these 5 criteria by using the \fB\-I\fP option.
+See option \fB\-:\fP on how to read (latitude,longitude) files.
+.br
+	No space between the option flag and the associated arguments.  Use upper case for the
+option flags and lower case for modifiers.
+.TP
+\fIinfiles\fP
+ASCII (or binary, see\fB\-b\fP) data file(s) to be operated on.  If not given, standard input is read.
+.SH OPTIONS
+.TP
+.B \-A
+Ignored unless \fB\-N\fP is set.  Geographical features with an area smaller than \fImin_area\fP
+in km^2 or of hierarchical level that is lower than \fImin_level\fP or higher than \fImax_level\fP
+will be ignored [Default is 0/4 (all features)]. See DATABASE INFORMATION in the \fBpscoast\fP man-pages for more details.
+.TP
+.B \-C
+Pass all records whose location is within \fIdist\fP km of any of the points in \fIptfile\fP.  If \fIdist\fP
+is zero then the 3rd column of \fIptfile\fP must have each point's individual radius of influence.  Prepend \fBf\fP to indicate you want approximate flat
+earth distance calculations (faster) than exact great circle calculations (slower).
+.TP
+.B \-D
+Ignored unless \fB\-N\fP is set.  Selects the resolution of the coastline data set to use ((\fBf\fP)ull, (\fBh\fP)igh, (\fBi\fP)ntermediate, (\fBl\fP)ow, or (\fBc\fP)rude).  The
+resolution drops off by ~80% between data sets. [Default is \fBl\fP].  Note that because the coastlines differ in details is not guaranteed that a point will remain inside [or outside] when a different resolution is selected.
+.TP
+.B \-F
+Pass all records whose location is within one of the closed polygons in the multiple-segment
+file \fIpolygonfile\fP.
+#include "explain_-H.txt"
+.TP
+.B \-I
+Reverses the sense of the test for each of the criteria specified:
+.br
+	\fBc\fP  select records NOT inside any point's circle of influence.
+.br
+	\fBf\fP  select records NOT inside any of the polygons.
+.br
+	\fBl\fP  select records NOT within the specified distance of any line.
+.br
+	\fBr\fP  select records NOT inside the specified rectangular region.
+.br
+	\fBs\fP  select records NOT considered inside as specified by \fB\-A, \-D, \-N\fP.
+#include "explain_-j.txt"
+.TP
+.B \-L
+Pass all records whose location is within \fIdist\fP km of any of the line segments in the multiple-segment
+file \fIlinefile\fP.  If \fIdist\fP is zero then the 2nd column of each sub-header in the \fIptfile\fP must have each lines's individual distance value.
+If no arguments are given, it means instead that the x column contains longitudes, which may differ from the region
+in \fB\-R\fP by [multiples of] 360 degrees [Default assumes no periodicity]
+.TP
+.B \-M
+Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP.
+[Default is '>'].
+.TP
+.B \-N
+Pass all records whose location is inside specified geographical features.
+Specify if records should be \fBs\fPkipped or \fBk\fPkept using 1 of 2 formats:
+.br
+	\fB\-N\fP\fIwet/dry\fP.
+.br
+	\fB\-N\fP\fIocean/land/lake/island/pond\fP.
+.br
+Append \fBo\fP to let points exactly on feature boundaries be considered outside the feature [Default is inside]. [Default is s/k/s/k/s (i.e., s/k), which passes all points on dry land].
+#include "explain_-R.txt"
+If no map projection is supplied we implicitly set \fB\-Jx\fP1.
+#include "explain_-V.txt"
+#include "explain_-t.txt"
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+[Default is 2 input columns].
+#include "explain_-o.txt"
+.SH EXAMPLES
+To extract the subset of data set that is within 300 km of any of the points in pts.d but more than
+100 km away from the lines in lines.d, try
+.br
+.sp
+gmtselect lonlatfile \fB\-Jd\fP1d \fB\-C\fP300/pts.d \fB\-L\fP100/lines.d \fB\-Il\fP > subset
+.br
+.sp
+Here, you must specify a mapprojection so that knows you are giving it geographical data (otherwise
+300 would be interpreted as Cartesian distance in x-y units instead of km).
+To keep all points in data.d except those on land, as determined by the high-resolution
+coastlines, try
+.br
+.sp
+gmtselect data.d \fB\-R\fP120/121/22/24 \fB\-Dh\fP \fB\-Ns\fP/\fBk\fP > subset
+.br
+.SH "SEE ALSO"
+.IR gmtdefaults (l),
+.IR gmt (l),
+.IR grdlandmask (l),
+.IR pscoast (l)

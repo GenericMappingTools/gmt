@@ -1,0 +1,119 @@
+.TH SURFACE l DATE
+.SH NAME
+surface \- adjustable tension continuous curvature surface gridding algorithm
+.SH SYNOPSIS
+\fBsurface\fP [ \fIxyzfile\fP ] \fB\-G\fP\fIoutputfile.grd\fP \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] 
+\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-A\fP\fIaspect_ratio\fP ] 
+[ \fB\-C\fP\fIconvergence_limit\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-Ll\fP\fIlower\fP ] [ \fB\-Lu\fP\fIupper\fP ] [ \fB\-N\fP\fImax_iterations\fP ] [ \fB\-Q\fP ] 
+[ \fB\-S\fP\fIsearch_radius\fP[\fBm\fP] ] [ \fB\-T\fP\fItension_factor\fP[\fBib\fP] ] [ \fB\-V\fP[\fBl\fP] ] 
+[ \fB\-Z\fP\fIover-relaxation_factor\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+.SH DESCRIPTION
+\fBsurface\fP reads randomly-spaced (x,y,z) triples from standard input [or \fIxyzfile\fP] and produces
+a binary grdfile of gridded values z(x,y) by solving:
+.sp
+	(1 - T) * L (L (z)) + T * L (z) = 0
+.sp
+where T is a tension factor between 0 and 1, and L indicates the Laplacian operator.
+T = 0 gives the "minimum curvature" solution which is equivalent to SuperMISP and the ISM
+packages.  Minimum curvature can cause undesired oscillations and false local maxima or minima
+(See Smith and Wessel, 1990), and you may wish to use T > 0 to suppress these effects.
+Experience suggests T ~ 0.25 usually looks good for potential field data and T should be larger
+(T ~ 0.35) for steep topography data.  T = 1 gives a harmonic surface (no maxima or minima are
+possible except at control data points).  It is recommended that the user pre-process the data with
+\fBblockmean\fP, \fBblockmedian\fP, or \fBblockmode\fP to avoid spatial aliasing and eliminate redundant data.
+You may impose lower and/or upper bounds on the solution.  These may be entered in the form of
+a fixed value, a grdfile with values, or simply be the minimum/maximum input data values.
+.TP
+\fIxyzfile\fP
+3 column ASCII file [or binary, see \fB\-b\fP] holding (x,y,z) data values.  If no file is specified, \fBsurface\fP will read from
+standard input.
+.TP
+.B \-G
+Output file name.  Output is a binary 2-D \fI.grd\fP file.
+#include "explain_-I.txt"
+#include "explain_-R.txt"
+.SH OPTIONS
+.sp
+.TP
+.B \-A
+Aspect ratio.  If desired, grid anisotropy can be added to the equations.  Enter \fIaspect_ratio\fP,
+where dy = dx / \fIaspect_ratio\fP relates the grid dimensions.  [Default = 1 assumes isotropic grid.]
+.TP
+.B \-C
+Convergence limit.  Iteration is assumed to have converged when the maximum absolute change in 
+any grid value is less than \fIconvergence_limit\fP.  (Units same as data z units).  [Default is scaled
+to 0.1 percent of typical gradient in input data.]
+#include "explain_-H.txt"
+Not used with binary data.
+.TP
+.B \-L
+Without any modifier, this option indicates that x is longitude and may be periodic in 360 degrees.
+With optional arguments it will instead
+impose limits on the output solution.  \fBl\fP\fIlower\fP sets the lower bound.  \fIlower\fP can be the name of a
+grdfile with lower bound values, a fixed value, \fBd\fP to set to minimum input value, or \fBu\fP for unconstrained [Default].
+\fBu\fP\fIupper\fP sets the upper bound and can be the name of a
+grdfile with upper bound values, a fixed value, \fBd\fP to set to maximum input value, or \fBu\fP for unconstrained [Default].
+.TP
+.B \-N
+Number of iterations.  Iteration will cease when \fIconvergence_limit\fP is reached or when number of
+iterations reaches \fImax_iterations\fP. [Default is 250.]
+.TP
+.B \-Q
+Suggest grid dimensions which have a highly composite greatest
+common factor. This allows surface to use several intermediate steps in the
+solution, yielding faster run times and better results. The sizes suggested by
+\fB\-Q\fP can be achieved by altering \fB\-R\fP and/or \fB\-I\fP. You can
+recover the \fB\-R\fP and \fB\-I\fP you want later by using grdsample or grdcut on the output of surface.
+.TP
+.B \-S
+Search radius.  Enter \fIsearch_radius\fP in same units as x,y data; append \fBm\fP to indicate minutes.
+This is used to initialize the grid before the first iteration; it is not worth the time unless the
+grid lattice is prime and cannot have regional stages.  [Default = 0.0 and no search is made.]
+.TP
+.B \-T
+Tension factor[s].  These must be between 0 and 1.  Tension may be used in the interior solution
+(above equation, where it suppresses spurious oscillations) and in the boundary conditions (where
+it tends to flatten the solution approaching the edges).  Using zero for both values results in
+a minimum curvature surface with free edges, i.e. a natural bicubic spline.
+Use \fB\-T\fP\fItension_factor\fP\fBi\fP to set interior tension, and \fB\-T\fP\fItension_factor\fP\fBb\fP
+to set boundary tension.  If you do not append \fBi\fP or \fBb\fP, both will be set to the same value.
+[Default = 0 for both gives minimum curvature solution.]
+#include "explain_-V.txt"
+\fB\-Vl\fP will report the convergence after each iteration;  \fB\-V\fP will report only after 
+each regional grid is converged.
+.TP
+.B \-Z
+Over-relaxation factor.  This parameter is used to accelerate the convergence; it is a number between
+1 and 2.  A value of 1 iterates the equations exactly, and will always assure stable convergence.  Larger
+values overestimate the incremental changes during convergence, and will reach a solution more rapidly but may
+become unstable.  If you use a large value for this factor, it is a good idea to monitor each iteration
+with the \fB\-Vl\fP option.  [Default = 1.4 converges quickly and is almost always stable.]
+#include "explain_-t.txt"
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+[Default is 3 input columns].
+.SH EXAMPLES
+.sp
+To grid 5 by 5 minute gravity block means from the ASCII data in hawaii_5x5.xyg, using a \fItension_factor\fP = 0.25,
+a \fIconvergence_limit\fP = 0.1 milligal, writing the result to a file called \fIhawaii_grd.grd\fP, 
+and monitoring each iteration, try:
+.sp
+surface hawaii_5x5.xyg \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm \-G\fPhawaii_grd.grd \fB\-T\fP0.25 \fB\-C\fP0.1 \fB\-VL\fP
+.SH BUGS
+\fBsurface\fP will complain when more than one data point is found for
+any node and suggest that you run \fBblockmean\fP, \fBblockmedian\fP, or \fBblockmode\fP first.  If you
+did run \fBblockm*\fP and still get this message it usually means that your
+grid spacing is so small that you need more decimals in the output format used by
+\fBblockm*\fP.  You may specify more decimal places by editing the
+parameter D_FORMAT in your .gmtdefaults file prior to running \fBblockm*\fP,
+or choose binary input and/or output using single or double precision storage.
+.SH "SEE ALSO"
+.IR blockmean (l),
+.IR blockmedian (l),
+.IR blockmode (l),
+.IR gmt (l),
+.IR nearneighbor (l),
+.IR triangulate (l)
+.SH REFERENCES
+Smith, W. H. F, and P. Wessel, 1990, Gridding with continuous curvature splines in tension, \fIGeophysics\fP,
+55, 293\-305.

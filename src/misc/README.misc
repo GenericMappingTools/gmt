@@ -1,0 +1,14 @@
+	$Id: README.misc,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+
+This directory contains some miscellaneous programs
+that may come in handy for some users.
+
+	makepattern - create Sun rasterfiles from patterns
+	psmageplot - blow up plots over several pages
+
+makepattern can read the user's Sun 1-bit raster files or
+Sun icon files (of the type used for patterns in GMT3.0)
+and colorize it into an 8-bit Sun rasterfile that can be
+used for patterns in GMT 3.x (x > 1).
+psmegaplot takes a page-sized PS plot and magnifies it by
+tiling.

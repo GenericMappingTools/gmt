@@ -1,0 +1,50 @@
+.TH GRDREFORMAT l DATE
+.SH NAME
+grdreformat \- Converting between different grdfile formats.
+.SH SYNOPSIS
+\fBgrdreformat\fP \fIingrdfile\fP[\fI=id\fP[\fI/scale/offset\fP[\fI/nanvalue\fP]]] \fIoutgrdfile\fP[\fI=id\fP[\fI/scale/offset\fP[\fI/nanvalue\fP]]] 
+[ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-V\fP ]
+.SH DESCRIPTION
+\fBgrdreformat\fP reads a grdfile in one format and writes it out using another format.  As an option the
+user may select a subset of the data to be written and to specify scaling, translation, and nan-value.
+.TP
+\fIingrdfile\fP
+The grdfile to be read.  Append format =\fIid\fP number if not a standard GMT netcdf-based grdfile.
+If \fIid\fP is set, you may optionally append \fIscale\fP and \fIoffset\fP to scale the data and then add an offset.  If \fIscale\fP and \fIoffset\fP
+are supplied you may also append a value that represent 'not-a-number' (for floating-point grids this
+is unneccesary since the IEEE NaN is used; however short integers need a value which means no data available.)
+.TP
+\fIoutgrdfile\fP
+The grdfile to be written.  Append format =\fIid\fP number if not a standard GMT netcdf-based grdfile.
+If \fIid\fP is set, you may optionally append \fIscale\fP and \fIoffset\fP to scale the data and then add an offset.  If \fIscale\fP and \fIoffset\fP
+are supplied you may also append a value that represent 'not-a-number' (for floating-point grids this
+is unneccesary since the IEEE NaN is used; however short integers need a value which means no data available.)
+For format =\fIid\fP > 0 the size of the GMT grdheader block is \fIhsize\fP = 896 bytes, and the total size of the file
+is \fIhsize + nx * ny * item_size\fP, where item_size\fP is the size in bytes of each element (1, 2, 4).  Bit grids
+are stored using 4-byte integers, each holding 32 bits, so for these files the size equation is modified by
+using ceil (\fInx\fP / 32) * 4 instead of \fInx\fP.  For header and grid details, see Appendix B.
+.SH OPTIONS
+#include "explain_-R.txt"
+#include "explain_-V.txt"
+.SH EXAMPLES
+To create a 4-byte raw floating point grid from the netcdf file data.grd, try
+.br
+.sp
+grdreformat data.grd ras_data.b4=1 \fB\-V\fP
+.br
+.sp
+To make a 2-byte short integer file, scale it by 10, subtract 32000, setting
+NaNs to -9999, do
+.br
+.sp
+grdreformat values.grd shorts.i2=2/10/-32000/-9999 \fB\-V\fP
+.br
+.sp
+To create a Sun standard 8-bit rasterfile for a subset of the data file image.grd,
+assuming the range in image.grd is 0-1 and we need 0-255, try
+.br
+.sp
+grdreformat image.grd \fB\-R\fP-60/-40/-40/-30 image.ras8=3/255/0 \fB\-V\fP
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grdmath (l)

@@ -1,0 +1,5 @@
+.TP
+.B \-X \-Y
+Shift origin of plot by (\fIx-shift,y-shift\fP).
+Prepend \fBa\fP for absolute coordinates;
+the default (\fBr\fP) will reset plot origin.

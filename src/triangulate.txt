@@ -1,0 +1,92 @@
+.TH TRIANGULATE l DATE
+#define LEN 15
+#define SCALE \fB\-JM\fP15\fBc\fP
+.SH NAME
+triangulate \- Perform optimal Delauney triangulation and gridding
+.SH SYNOPSIS
+\fBtriangulate\fP \fIinfiles\fP [ \fB\-Dx|y\fP ] [ \fB\-E\fP\fIempty\fP ] [ \fB\-G\fP\fIgrdfile\fP ] 
+[ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] ] [ \fB\-J\fP\fIparameters\fP ] 
+[ \fB\-L\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
+[ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-V\fP ] [ \fB\-Z\fP ] [ \fB\-:\fP ] 
+[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+.SH DESCRIPTION
+\fBtriangulate\fP reads one or more ASCII [or binary] files (or standard input) containing x,y[,z] and
+performs Delauney triangulation, i.e., it find how the points should be connected to give
+the most equilateral triangulation possible.  If a map projection is chosen then it is applied before
+the triangulation is calculated.  By default, the output is triplets of point id numbers
+that make up each triangle and is written to standard output.
+The id numbers refer to the points position in the input file.
+As an option, you may choose to create a multiple segment file that can be piped through
+\fBpsxy\fP to draw the triangulation network.  If \fB\-G \-I\fP are set a grid will be calculated based
+on the surface defined by the planar triangles.  The actual algorithm used
+in the triangulations is either that of Watson [1982] [Default] or Shewchuck [1996] (if installed).
+This choice is made during the GMT installation.
+.TP
+\fIinfiles\fP
+Data files with the point coordinates in ASCII (or binary; see \fB\-b\fP).  If no files are given the standard input is read.
+.SH OPTIONS
+.TP
+.B \-D
+Take either the \fIx\fP- or \fIy\fP-derivatives of surface represented
+by the planar facets (only used when \fB\-G\fP is set).
+.TP
+.B \-E
+Set the value assigned to empty nodes when \fB\-G\fP is set [NaN].
+.TP
+.B \-G
+Use triangulation to grid the data onto an even grid (specified with \fB\-I, \-R\fP).  Append
+the name of the output grid file.  The interpolation is performed in the
+original coordinates, so if your triangles are close to the poles you are
+better off projecting all data to a local coordinate system before using
+triangulate (this is true of all gridding routines).
+#include "explain_-H.txt"
+.TP
+.B \-I
+\fIx_inc\fP [and optionally \fIy_inc\fP] sets the grid  size for optional grid output (see \fB\-G\fP).
+Append \fBm\fP to indicate minutes or \fBc\fP to indicate seconds.
+#include "explain_-j.txt"
+.TP
+.B \-L
+Indicates that the x column contains longitudes, which may differ from the region
+in \fB\-R\fP by [multiples of] 360 degrees [Default assumes no periodicity].
+.TP
+.B \-M
+Output triangulation network as multiple line segments separated by a record whose first
+character is \fIflag\fP [>].  To plot, use \fBpsxy\fP with the \fB\-M\fP option (see Examples).
+#include "explain_-R.txt"
+#include "explain_-V.txt"
+.TP
+.B \-Z
+Controls whether binary data file has two or three columns [2].  Ignored if \fB\-b\fP
+is not set.
+#include "explain_-t.txt"
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+[Default is 2 input columns].
+#include "explain_-o.txt"
+Node ids are stored as binary 4-byte integer triplets.  \fB\-bo\fP is ignored if \fB\-M\fP is selected.
+.SH EXAMPLES
+To triangulate the points in the file samples.xyz, store the triangle information in a binary file, and
+make a grid for the given area and spacing, try
+.br
+.sp
+triangulate samples.xyz \fB\-bo\fP \fB\-R\fP0/30/0/30 \fB\-I\fP2 \fB\-G\fPsurf.grd > samples.ijk
+.br
+.sp
+To draw the optimal Delauney triangulation network based on the same file using a
+LEN-cm-wide Mercator map, try
+.br
+.sp
+triangulate samples.xyz \fB\-M \-R\fP-100/-90/30/34 SCALE | psxy \fB\-M \-R\fP-100/-90/30/34 SCALE
+\fB\-W\fP0.5\fBp\fP \fB\-B\fP1 > network.ps
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR pscontour (l)
+.SH REFERENCES
+Watson, D. F., 1982, Acord: Automatic contouring of raw data, \fIComp. & Geosci., 8\fP, 97\-101.
+.br
+Shewchuck, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
+and Delaunay Triangulator, First Workshop on Applied Computational Geometry
+(Philadelphia, PA), 124-133, ACM, May 1996.
+.br
+www.cs.cmu.edu/~quake/triangle.html

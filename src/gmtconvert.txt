@@ -1,0 +1,36 @@
+.TH GMTCONVERT l DATE
+.SH NAME
+gmtconvert \- Convert between ASCII and binary 1-D tables
+.SH SYNOPSIS
+\fBgmtconvert\fP [ \fIinputfiles\fP] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-M\fP[\fIflag\fP] ] 
+[ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP]\fIn\fP ] [ \fB\-bo\fP[\fBs\fP] ]
+.SH DESCRIPTION
+\fBgmtconvert\fP reads its standard input [or inputfiles] and writes out
+the information to standard output.  Its main purpose is to convert between
+binary and ASCII data tables.  Input (and hence output) may have multiple
+subheaders if \fB\-M\fP is selected.
+.TP
+\fIdatafile(s)\fP
+ASCII (or binary, see \fB\-bi\fP) file(s) holding a number of data columns. 
+.SH OPTIONS
+#include "explain_-H.txt"
+#include "explain_-M.txt"
+#include "explain_-V.txt"
+#include "explain_-t.txt"
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+#include "explain_-o.txt"
+.SH EXAMPLES
+To convert the binary file test.b (single precision) with 4 columns to ASCII, try
+.br
+.sp
+gmtconvert test.b \fB\-bis\fP4 > test.dat
+.br
+.sp
+To convert the multiple segment ASCII table test.d to a double precision binary file, try
+.br
+.sp
+gmtconvert test.d \fB\-M \-bo\fP > test.b
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR minmax (l)

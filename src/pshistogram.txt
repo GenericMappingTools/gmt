@@ -1,0 +1,100 @@
+.TH PSHISTOGRAM l DATE
+#define LEN 0.75
+#define SCALE \fB\-Jx\fP0.75\fBc\fP/0.01\fBc\fP
+.SH NAME
+pshistogram \- Bin data and plot histograms
+.SH SYNOPSIS
+\fBpshistogram\fB \fIfile\fP \fB\-Jx\fP\fIxscale[/yscale]\fP \fB\-W\fP\fIbin_width\fP [ \fB\-2\fP ] [ \fB\-A\fP ] [ \fB\-B\fP\fItickinfo\fP ] 
+[ \fB\-C\fP ] [ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-G\fP\fIfill\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP[\fBo\fP] ] 
+[ \fB\-K\fP ] [ \fB\-L\fP\fIpen\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-Q\fP ] 
+[ \fB\-R\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ]  
+[ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fItype\fP ] [ \fB\-c\fP\fIcopies\fP ] 
+[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+.SH DESCRIPTION
+\fBpshistogram\fP reads the first column from \fIfile\fP [or standard input] and
+calculates histogram parameters based on the bin-width provided.  Using these parameters,
+scaling, and optional range parameters it will generate \fIPostScript\fP code that plots a histogram.
+A cumulative histogram may also be specified.  
+.TP
+\fIfile\fP
+ASCII [or binary, see \fB\-b\fP] datafile. If no file is given, pshistogram will read standard input.
+.TP
+.B \-Jx
+\fIxscale[/yscale]\fP (Linear scale(s) in distance unit/data unit).
+.TP
+.B \-W
+Sets the bin width used for histogram calculations.
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+#include "explain_-b.txt"
+.TP
+.B \-2
+Read second rather than first column.
+.TP
+.B \-A
+Plot the histogram horizontally from x = 0 [Default is vertically from y = 0].
+.TP
+.B \-C
+Center bin on each value. [Default is left edge].
+.TP
+.B \-E
+Sets the viewpoint's azimuth and elevation (for perspective view) [180/90]
+.TP
+.B \-G
+Select filling of bars.  [Default is no fill].
+#include "explain_-G.txt"
+#include "explain_-H.txt"
+.TP
+.B \-I
+Inquire about min/max x and y after binning.  No plotting is done.  Append \fBo\fP
+to output an ASCII table of the resulting x,y data.
+#include "explain_-K.txt"
+.TP
+.B \-L
+Draw bar outline using the specified pen thickness.  [Default is no outline].
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+.TP
+.B \-Q
+Draw a cumulative histogram.
+#include "explain_-R.txt"
+If not given, \fBpshistogram\fP will automatically find reasonable values for the region.
+.TP
+.B \-S
+Draws a stairs-step diagram instead of histogram.
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+#include "explain_-XY.txt"
+.TP
+.B \-Z
+Choose between 6 types of histograms: 0 = counts [Default], 1 = frequency_percent,
+2 = log (1.0 + count), 3 = log (1.0 + frequency_percent),
+4 = log10 (1.0 + count), 5 = log10 (1.0 + frequency_percent).
+#include "explain_-c.txt"
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+[Default is 2 input columns].
+.SH EXAMPLES
+To draw a histogram of the data v3206.t containing seafloor depths, using a 250 meter
+bin width, center bars, and draw bar outline, try:
+.br
+.sp
+pshistogram v3206.t \fB\-JX\fPh \fB\-W\fP250 \fB\-C \-L\fP0.5\fBp\fP \fB\-V\fP > plot.ps
+.br
+.sp
+If you know the distribution of your data, you may explicitly specify range and scales.  E.g.,
+to plot a histogram of the y-values (2nd column) in the file errors.xy using a 1 meter
+bin width, plot from -10 to +10 meters @ LEN cm/m, annotate every 2 m and 100 counts,
+and use black bars, try:
+.br
+.sp
+cut -f2 errors.xy | pshistogram \fB\-W\fP1 \fB\-R\fP-10/10/0/0 SCALE
+\fB\-B\fP2:Error:/100:Counts: \fB\-G\fP0 \fB\-V\fP > plot.ps
+.br
+.sp
+Since no y-range was specified, pshistogram will calculate ymax in even increments of 100.
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR psbasemap (l),
+.IR psrose (l),
+.IR psxy (l)

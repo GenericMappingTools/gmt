@@ -1,0 +1,36 @@
+.TH GRDCLIP l "1 Aug 1993"
+.SH NAME
+grdclip \- Clipping of range in grdfiles.
+.SH SYNOPSIS
+\fBgrdclip\fP \fIinput_file.grd\fP \fB\-G\fP\fIoutput_file.grd\fP [ \fB\-Sa\fP\fIhigh/above\fP ] 
+[ \fB\-Sb\fP\fIlow/below\fP ] [ \fB\-V\fP ] 
+.SH DESCRIPTION
+\fBgrdclip\fP will set values < \fIlow\fP to \fIbelow\fP and/or values > \fIhigh\fP to \fIabove\fP.  Useful
+when you want all of a continent or an ocean to fall into one color or grayshade in image processing,
+or clipping of the range of data values is required.  \fIabove/below\fP can be any number or NaN (Not a Number).
+You must choose at least one of \fB\-Sa\fP or \fB\-Sb\fP.
+.TP
+\fIinput_file.grd\fP
+The input 2-D binary grdfile.
+.TP
+.B \-G
+\fIoutput_file.grd\fP is the modified output grdfile.
+.SH OPTIONS
+.TP
+.B \-Sa
+Set all data[i] > \fIhigh\fP to \fIabove\fP.
+.TP
+.B \-Sb
+Set all data[i] < \fIlow\fP to \fIbelow\fP.
+#include "explain_-V.txt"
+.SH EXAMPLES
+To set all values > 70 to NaN and all values < 0 to 0 in file data.grd, try:
+.sp
+grdclip data.grd \fB\-G\fPnew_data.grd \fB\-Sa\fP70/NaN \fB\-Sb\fP0/0 \fB\-V\fP
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grdlandmask (l),
+.IR grdmask (l),
+.IR grdmath (l),
+.IR grd2xyz (l),
+.IR xyz2grd (l)

@@ -1,0 +1,47 @@
+.TH X2SYS_DATALIST l DATE
+.SH NAME
+x2sys_datalist \- A generic data-extractor ascii or binary files
+.SH SYNOPSIS
+\fBx2sys_datalist\fP \fIfile(s)\fP [ \fB\-D\fP\fIdeffile\fP ] 
+[ \fB\-F\fP\fIname1,name2,...\fP ] [ \fB\-H\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
+[ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-V\fP ] [ \fB\-bo\fP ]
+.SH DESCRIPTION
+x2sys_datalist reads one or more files and produces an ASCII [or binary] table. 
+The files can be of any format, which must be descriped and passed with the
+\fB\-D\fP option.  You may limit the output to a geographic region, and insist
+that the output from several files be separated by a multiple segment header.
+Only the named data fields will be output [Default are all columns].
+.TP
+\fIfiles\fP
+Can be one or more binary or ASCII data files. To give a list of names,
+use `cat list_of_files`.
+.SH OPTIONS
+No space between the option flag and the associated arguments
+.TP
+.B \-D
+Definition file for this data set. [x2sys.def]
+.TP
+.B \-F
+Give a comma-separated list of column names as defined in the definition
+file. [Default is all data columns].
+#include "explain_-H.txt"
+#include "explain_-V.txt"
+#include "explain_-o.txt"
+.SH EXAMPLES
+To extract all data from the old-style GMT MGG file c2104.gmt, try:
+.br
+.sp
+x2sys_datalist c2104.gmt \fB\-D\fPgmt > myfile
+.br
+.sp
+To make x,y,topo input for \fBblockmean\fP and \fBsurface\fP using all the files
+listed in the file tracks.lis, but only the data that are inside the specified
+area, and make output binary, try:
+.br
+.sp
+x2sys_datalist `cat tracks.lis` \fB\-F\fPx,y,topo \fB\-R\fP-40/-30/25/35 \fB\-bo\fP > alltopo.xyz
+.SH "SEE ALSO"
+.IR blockmean (l),
+.IR gmt (l),
+.IR surface (l),
+.IR x2sys_cross (l)

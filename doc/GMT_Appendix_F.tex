@@ -1,0 +1,36 @@
+%------------------------------------------
+%	$Id: GMT_Appendix_F.tex,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+%
+%	The GMT Documentation Project
+%	Copyright 2000-2001.
+%	Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+\chapter{Chart of octal codes for characters}
+\index{Characters!octal}
+\index{Octal characters}
+\thispagestyle{headings}
+
+\GMTfig[h]{GMT_App_F_1}{Octal codes and corresponding symbols for standard fonts}
+
+The characters and their octal codes in the reencoded standard fonts
+are shown in Figure~\ref{fig:GMT_App_F_1}.  The chart for
+the Symbol (\GMT\ font number 12) character
+sets are presented in Figure~\ref{fig:GMT_App_F_2} below.  Gray
+areas signify codes reserved for
+control characters.  The octal code is obtained by appending the
+column value to the $\backslash$?? value, e.g., $\partial$ is
+$\backslash$266 in the Symbol font.  In order to use all the extended
+characters you need to set {\bf WANT\_EURO\_FONT} to true in your
+\filename{.gmtdefaults} file\footnote{By default, this is true if you chose
+SI units and false if you chose US units during the installation.}.
+\index{Symbol font}
+\index{Font!symbol}
+
+\GMTfig[h]{GMT_App_F_2}{Octal codes and corresponding symbols for the Symbol font}
+
+The Pifont ZapfDingbats is available as \GMT\ font number 34 and
+can be used for special symbols not listed above.  The various
+symbols are illustrated in Figure~\ref{fig:GMT_App_F_3}.
+
+\GMTfig[h]{GMT_App_F_3}{Octal codes and corresponding symbols for ZapfDingbats font}

@@ -1,0 +1,78 @@
+.TH PSCLIP l DATE
+.SH NAME
+psclip \- To set up polygonal clip paths
+.SH SYNOPSIS
+\fBpsclip\fP \fIxyfiles\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
+[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-E\fP\fIaz/el\fP ] [ \fB\-K\fP ] [ \fB\-N\fP ] 
+[ \fB\-M\fP[\fIflag\fP] ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
+[ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] 
+[ \fB\-Z\fP\fIzlevel\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+.br
+.sp
+\fBpsclip\fP \fB\-C\fP [ \fB\-K\fP ] [ \fB\-O\fP ]
+.SH DESCRIPTION
+\fBpsclip\fP reads (x,y) file(s) [or standard input] and draws polygons that are
+activated as clipping paths.  Several files may be read to create complex paths
+consisting of several non-connecting segments.  As an option (\fB\-N\fP), the user
+may choose to reverse the sense of what is the inside and outside of the paths.
+After subsequent plotting, which will be clipped against these paths, the clipping
+may be deactivated by running \fBpsclip\fP a second time with the \fB\-C\fP option only.
+.TP
+\fIxyfiles\fP
+ASCII [or binary, see \fB\-b\fP] file(s) with (x,y) values for clip polygons.  If no files are given, the
+standard input is read.
+.TP
+.B \-C
+Mark end of existing clip path.  No input file or projection information are needed.
+#include "explain_-j.txt"
+#include "explain_-R.txt"
+.SH OPTIONS
+No space between the option flag and the associated arguments
+.sp
+#include "explain_-b.txt"
+.TP
+.B \-E
+Sets the viewpoint's azimuth and elevation [180/90]
+#include "explain_-H.txt"
+#include "explain_-K.txt"
+.TP
+.B \-M
+Multiple segment file.  Segments are separated by a record whose first character is \fI<flag>\fP.
+[Default is '>'].
+.TP
+.B \-N
+Invert the sense of what is inside and outside, i.e., use the outside of the polygons for clipping.
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+#include "explain_-XY.txt"
+.TP
+.B \-Z
+For 3-D projections:  Sets the z-level of the polygons [0].
+#include "explain_-t.txt"
+#include "explain_-c.txt"
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+[Default is 2 input columns].
+.SH EXAMPLES
+To make an overlay \fIPostScript\fP file that will set up a complex clip area to which
+subsequent plotting will be confined to, try:
+.br
+.sp
+psclip my_region.xy \fB\-R\fP0/40/0/40 \fB\-J\fPm0.3\fBi\fP \fB\-O \-K\fP > clip_mask_on.ps
+.br
+.sp
+To deactivate the clipping in an existing plotfile, run:
+.br
+.sp
+psclip \fB\-C \-O\fP >> complex_plot.ps
+.SH BUGS
+\fBpsclip\fP cannot handle polygons that contain the south or north pole.  For such polygons,
+you should split them into two and make each explicitly contain the polar point.  The two
+clip polygons will combine to give the desired effect.
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grdmask (l),
+.IR psbasemap (l),
+.IR psmask (l)

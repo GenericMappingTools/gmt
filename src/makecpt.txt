@@ -1,0 +1,57 @@
+.TH MAKECPT l DATE
+.SH NAME
+makecpt \- Make GMT color palette tables
+.SH SYNOPSIS
+\fBmakecpt\fP [ \fB\-C\fP\fItable\fP ] 
+[ \fB\-I\fP ] [ \fB\-T\fP\fIz0/z1/dz\fP | \fB\-T\fP\fIztable\fP] [ \fB\-V\fP ] [ \fB\-Z\fP ]
+.SH DESCRIPTION
+\fBmakecpt\fP is a utility that will help you make color palette tables (cpt files).  You define
+an equidistant set of contour intervals or pass your own z-table, and create a new cpt file based on
+an existing master cpt file.  The resulting cpt file can be reversed relative
+to the master cpt, and can be made continuous or discrete.
+.SH OPTIONS
+.TP
+.B \-C
+Selects the master color table \fItable\fP to use in the interpolation.
+Choose among the built-in tables (type \fBmakecpt\fP to see the list) or
+give the name of an existing cptfile [Default gives a rainbow cpt file].
+.TP
+.B \-I
+Reverses the sense of color progression in the master cptfile.
+.TP
+.B \-T
+Defines the range of the new cptfile by giving the lowest and highest z-value
+and the interval.  Alternatively, give the name of a ASCII file that has one
+z-value per record.  If not given, the existing range in the master cptfile
+will be used intact.
+#include "explain_-V.txt"
+.TP
+.B \-Z
+Creates a continuous cpt file [Default is discontinuous, i.e. constant colors
+for each interval].
+.SH EXAMPLES
+To make a cpt file with z-values from -200 to 200, with discrete color changes every
+25, and using a polar blue-white-red colortable, try
+.br
+.sp
+makecpt \fB\-C\fP\fIpolar\fP \fB\-T\fP-200/200/25 > colors.cpt
+.br
+.sp
+To make an equidistant cpt file from z = -2 to 6, in steps of 1, using
+continuous default rainbow colors, try
+.br
+.sp
+makecpt \fB\-T\fP-2/6/1 \fB\-Z\fP > rainbow.cpt
+.br
+.sp
+To make a GEBCO look-alike cpt file for bathymetry, try
+.br
+.sp
+makecpt \fB\-C\fPgebco > my_gebco.cpt
+.SH BUGS
+Since \fBmakecpt\fP will also interpolate from any existing .cpt file you
+may have in your directory, you cannot use one of the listed cpt names
+as an output filename; hence the my_gebco.cpt in the example.
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grd2cpt (l)

@@ -1,0 +1,74 @@
+.TH HOTSPOTTER l DATE
+.SH NAME
+hotspotter \- Create CVA image from seamount flowlines 
+.SH SYNOPSIS
+\fBhotspotter\fP [\fIinfile(s)\fP] \fB\-E\fP\fIstage_file\fP 
+\fB\-G\fP\fICVAgrid\fP \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] 
+\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-C\fP ] [ \fB\-F\fP ] 
+[ \fB\-H\fP[\fInrec\fP] ] [ \fB\-N\fP\fIupper_age\fP ] 
+[ \fB\-T\fP ] [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+.SH DESCRIPTION
+\fBhotspotter\fP reads (longitude, latitude, amplitude, radius, age) records
+from \fIinfiles\fP  [or standard input] and calculates flowlines using the 
+specified stage pole (Euler) rotations.  These flowlines are convolved with
+the shape of the seamount (using a Gaussian shape given amplitude and radius
+= 6 sigma) and added up to give a Cumulative Volcano Amplitude grid (CVA).
+See option \fB\-:\fP on how to read (latitude,longitude,...) files.
+.br
+	No space between the option flag and the associated arguments.  Use upper case for the
+option flags and lower case for modifiers.
+.TP
+\fIinfile(s)\fP
+Data file(s) to be processed.  If not given, standard input is read.
+.TP
+.B \-E
+Give file with stage poles and opening angles.  This file must contain
+one record for each stage; each record must be of the following format:
+.br
+.sp
+	lon lat tstart tstop ccw-angle
+.br
+.sp
+where time is in Ma and the rest is in degrees.  Oldest stage must be
+listed first.  tstart is the time when the stage begins (oldest age).
+Blank lines and records whose first column contains # will be ignored.
+.SH OPTIONS
+.TP
+.B \-C
+Expect Total Reconstruction Poles (Finite Poles) rather than Backward Stage Poles [Default]
+File format is similar to the stage pole format except the youngest rotation must be listed
+first and that the tstart column is optional (assumed to be 0 Ma).
+.TP
+.B \-F
+Force pixel registration [Default is grid registration].
+#include "explain_-H.txt"
+.TP
+.B \-N
+Set the upper age to assign seamounts whose crustal age is unknown (i.e. NaN) [no upper age].
+.TP
+.B \-T
+Truncate seamount ages exceeding the upper age set with \fB\-N\fP [no truncation].
+#include "explain_-V.txt"
+#include "explain_-t.txt"
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+[Default is 5 input columns]
+.SH EXAMPLES
+To create a CVA image from the Pacific (x,y,z,r,t) data in the file seamounts.d,
+using the DC85.d Euler poles, run
+.br
+.sp
+hotspotter seamounts.d \fB\-E\fPDC85.d \fB\-G\fPCVA.grd \fB\-R\fP130/260/-66/60 \fB\-I\fP10\fBm \-N\fP145 \fB\-T \-V\fP
+.br
+.sp
+This file can then be plotted with grdimage.
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grdimage (l),
+.IR project (l),
+.IR mapproject (l),
+.IR backtracker (l)
+.IR originator (l)
+.SH REFERENCES
+Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
+.br

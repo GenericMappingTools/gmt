@@ -1,0 +1,214 @@
+.TH PSXY l DATE
+#define PARAMS_SI 0.075\fBc\fP/0.3\fBc\fP/0.25\fBc\fP
+#define CAP_SI 0.25c
+#define LEN_1 0.25
+#define LEN_2 5
+#define OPT_1	\fB\-Jm\fP5\fBc \-Sc\fP0.25\fBc\fP
+#define PARAMS_US 0.03\fBi\fP/0.12\fBi\fP/0.1\fBi\fP
+#define CAP_US 0.1i
+#define OPT_2	\fB\-JX\fP6\fBi\fP
+#define LEN_3 0.8
+#define OPT_3	\fB\-Jm\fP0.15\fBi \-Sf\fP0.8\fBi\fP/0.1\fBilt\fP
+.SH NAME
+psxy \- Plot lines, polygons, and symbols on maps
+.SH SYNOPSIS
+\fBpsxy\fP \fIfiles\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
+[ \fB\-A\fP ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIcptfile\fP ] [ \fB\-E\fP[\fBx|y|X|Y\fP][\fIcap\fP][\fP/pen\fP] ] 
+[ \fB\-G\fP\fIfill\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-K\fP ] [ \fB\-L\fP ] 
+[ \fB\-N\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-S\fP[\fIsymbol\fP][\fIsize\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
+[ \fB\-V\fP ] [ \fB\-W\fP[\fIpen\fP] ] 
+[ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-:\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+.SH DESCRIPTION
+\fBpsxy\fP reads (x,y) pairs from \fIfiles\fP [or standard input] and
+generates \fIPostScript\fP code that will plot lines, polygons, or symbols at those locations on a map.
+If a symbol is selected and no symbol size given, then psxy will interpret the third column of the
+input data as symbol size.  Symbols whose size is <= 0 are skipped.  If no symbols are specified then the symbol code (see \fB\-S\fP below)
+must be present as last column in the input.  Multiple segment files may be plotted using the \fB\-M\fP option.
+If \fB\-S\fP is not selected, a line connecting the data points will be drawn instead.  To 
+explicitly close polygons, use \fB\-L\fP.  Select a shade with \fB\-G\fP.  If \fB\-G\fP is set, \fB\-W\fP
+will control whether the polygon outline is drawn or not.  If a symbol is selected, \fB\-G\fP and
+\fB\-W\fP determines the fill color and outline/no outline, respectively.
+The \fIPostScript\fP code is written to standard output. 
+.TP
+\fIfiles\fP
+List one or more file-names. If no files are given, \fBpsxy\fP will read standard input.
+#include "explain_-j.txt"
+#include "explain_-R.txt"
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+.TP
+.B \-A
+Suppress drawing line segments as great circle Arcs.  [Default draws great circle arcs.]
+#include "explain_-b.txt"
+.TP
+.B \-C
+Give a color palette file.  When used with -S, lets symbol color be determined by the z-value in the
+third column.  Additional fields are
+shifted over by one column (optional size would be 4th rather than 3rd field, etc.).
+If -S is not set, psxy expects the user to supply a multisegment polygon file (requires -M) and will look
+for -Z\fIval\fP strings in each multisegment header.  The \fIval\fP will control the color
+via the cpt file.
+.TP
+.B \-E
+Draw error bars.  Append \fBx\fP and/or \fBy\fP to indicate which bars you want to draw (Default is both x and y).  The x and/or
+y errors must be stored in the columns after the (x,y) pair [or (x,y,size) triplet].  The
+\fIcap\fP parameter indicates the length of the end-cap on the error bars [CAP_SI (or CAP_US)].  Pen
+attributes for error bars may also be set.  [Defaults: width = 1, color = 0/0/0, texture = solid].  If upper case
+\fBX\fP and/or \fBY\fP is used we will instead draw "box-and-whisker" (or "stem-and-leaf") symbols.  The x (or y)
+coordinate is then taken as the median value, and 4 more columns are expected to contain the minimum (0% quartile), the 25%
+quartile, the 75% quartile, and the maximum (100% quartile) values.  The 25-75% box may be filled by using \fB\-G\fP.
+.TP
+.B \-G
+Select filling of polygons and symbols.
+Append the shade (0\-255), color (r/g/b), or \fBP\fP|\fBp\fP\fIdpi\fP/\fIpattern\fP (polygons only) [Default is no fill].
+Note when \fB\-M\fP is chosen, \fIpsxy\fP will search for \fB\-G\fP and \fB\-W\fP strings in all the subheaders and let any found values over-ride the command line settings.
+#include "explain_-H.txt"
+#include "explain_-K.txt"
+.TP
+.B \-L
+Force closed polygons: connect the endpoints of the line-segment(s) and draw polygons.
+.TP
+.B \-M
+Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP.
+[Default is '>'].
+.TP
+.B \-N
+Do NOT skip symbols that fall outside map border [Default plots points inside border only].
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+.TP
+.B \-S
+Plot symbols.  If present, \fIsize\fP is symbol size in the unit set in .gmtdefaults
+(unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).  The uppercase symbols
+\fBA, C, D, H, I, S, T\fP are normalized to have the same area as the circle,
+while the corresponding lowercase symbols all are circumscribed by the circle.
+Choose between these symbol codes:
+.TP
+.B \-S
+Read symbol code (see below) from last column in the input data.  Cannot be used in
+conjunction with \fB\-b\fP.  Optionally, append \fBc\fP, \fBi\fP, \fBm\fP, \fBp\fP to
+indicate that the size information in the input data is in units of cm, inch, meter,
+or point, respectively. [Default is MEASURE_UNIT].
+.TP
+.B \-Sa
+st\fBa\fPr.  \fIsize\fP is diameter of circumscribing circle.
+.TP
+.B \-Sb
+\fBb\fPar extending from \fIbase\fP to y.  \fIsize\fP is bar width. Append \fBu\fP
+if \fIsize\fP is in x-units [Default is plot-distance units]. By default,
+\fIbase\fP = 0.  Append \fBb\fP\fIbase\fP to change this value.  
+.TP
+.B \-Sc
+\fBc\fPircle.  \fIsize\fP is diameter of circle.
+.TP
+.B \-Sd
+\fBd\fPiamond.  \fIsize\fP is diameter of circumscribing circle.
+.TP
+.B \-Se
+\fBe\fPllipse.  Direction (in degrees counter-clockwise from horizontal), major_axis, and minor_axis must be found in columns 3, 4, and 5.
+.TP
+.B \-SE
+Same as \fB\-Se\fP, except azimuth (in degrees east of north) should be given instead of direction.  The azimuth will
+be mapped into an angle based on the chosen map projection (\fB\-Se\fP leaves the directions
+unchanged.)  Furthermore, the axes lengths must be given in km instead of plot-distance units.
+.TP
+.B \-Sf
+\fBf\fPront.  \fB\-Sf\fP\fIgap/size\fP[\fIdir\fP][\fItype\fP][:\fIoffset\fP].  Supply distance gap between symbols and symbol size.
+If \fIgap\fP is negative, it is interpreted to mean the number of symbols along the front instead.  Append \fIdir\fP to plot symbols
+on the \fBl\fPeft or \fBr\fPight side of the front [Default is centered].  Append \fItype\fP to specify which symbol
+to plot: \fBb\fPox, \fBc\fPircle, \fBf\fPault, \fBs\fPlip, or \fBt\fPriangle.  [Default is fault].
+Slip means left-lateral or right-lateral strike-slip arrows (centered is not an option).  Append :\fIoffset\fP to offset
+the first symbol from the beginning of the front by that amount [0].
+.TP
+.B \-Sh
+\fBh\fPexagon.  \fIsize\fP is diameter of circumscribing circle.
+.TP
+.B \-Si
+\fBi\fPnverted triangle.  \fIsize\fP is diameter of circumscribing circle.
+.TP
+.B \-Sl
+\fBl\fPetter or text string (less than 64 characters).  Give size, and append /\fIstring\fP after the size.  Note that
+the size is only approximate; no individual scaling
+is done for different characters.  Remember to escape special characters like *.  Optionally, you may append %\fIfont\fP
+to select a particular font [Default is ANOT_FONT].
+.TP
+.B \-Sp
+\fBp\fPoint.  No size needs to be specified (1 pixel is used).
+.TP
+.B \-Ss
+\fBs\fPquare.  \fIsize\fP is diameter of circumscribing circle.
+.TP
+.B \-St
+\fBt\fPriangle.  \fIsize\fP is diameter of circumscribing circle.
+.TP
+.B \-Sv
+\fBv\fPector.  Direction (in degrees counter-clockwise from horizontal) and length must be found in columns 3 and 4.  \fIsize\fP,
+if present, will be interpreted as arrowwidth/headlength/headwidth [Default is PARAMS_SI (or PARAMS_US)].
+By default arrow attributes remains invariant to the length
+of the arrow.  To have the size of the vector scale down with decreasing size,
+append \fBn\fP\fInorm\fP, where vectors shorter than \fInorm\fP will have their
+attributes scaled by length/\fInorm\fP.
+.TP
+.B \-SV
+Same as \fB\-Sv\fP, except azimuth (in degrees east of north) should be given instead of direction.  The azimuth will
+be mapped into an angle based on the chosen map projection (\fB\-Sv\fP leaves the directions
+unchanged.)
+.TP
+.B \-Sw
+pie \fBw\fPedge.  Start and stop directions (in degrees counter-clockwise from horizontal) for pie slice
+must be found in columns 3 and 4.
+.TP
+.B \-Sx
+cross.  \fIsize\fP is diameter of circumscribing circle.
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+.TP
+.B \-W
+Set pen attributes.  [Defaults: width = 1, color = 0/0/0, texture = solid].
+Implicitly draws the outline of symbols with selected pen. 
+#include "explain_-XY.txt"
+#include "explain_-t.txt"
+#include "explain_-c.txt"
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+[Default is the required number of columns given the chosen settings].
+.SH EXAMPLES
+To plot solid red circles (diameter = LEN_1 cm) at the positions listed in the file DSDP.xy on a
+Mercator map at LEN_2 cm/degree of the area 150E to 154E, 18N to 23N, with tickmarks every 1 degree
+and gridlines every 15 minutes, try:
+.br
+.sp
+psxy DSDP.xy \fB\-R\fP150/154/18/23 OPT_1 \fB\-G\fP255/0/0 \fB\-B\fP1\fBg\fP15\fBm\fP | lpr
+.br
+.sp
+To plot the xyz values in the file quakes.xyzm as circles with size given by the magnitude in the
+4th column and color based on the depth in the third using the color palette cpt on a linear map, try
+.br
+.sp
+psxy quakes.xyzm \fB\-R\fP0/1000/0/1000 OPT_2 \fB\-Sc\fP \fB\-C\fPcpt \fB\-B\fP200 > map.ps
+.br
+.sp
+To plot the file trench.xy on a Mercator map, with white triangles with sides LEN_1 inch on the left
+side of the line, spaced every LEN_3 inch, use
+.br
+.sp
+psxy trench.xy \fB\-R\fP150/200/20/50 OPT_3 \fB\-G\fP255 \fB\-W \-B\fP10 | lpr
+br
+.sp
+To plot the data in the file misc.d as symbols determined by the code in the last column, and with size given
+by the magnitude in the 4th column, and color based on the third column via the color palette cpt on a linear map, try
+.br
+.sp
+psxy misc.d \fB\-R\fP0/100/-50/100 OPT_2 \fB\-S\fP \fB\-C\fPcpt \fB\-B\fP20 > t.ps
+.SH BUGS
+The \fB\-N\fP option does not adjust the BoundingBox information so you may
+have to post-process the PostScript outout with epstool or ps2epsi to obtain
+a correct BoundingBox.
+.br
+\fBpsxy\fP cannot handle filling of polygons that contain the south or north pole.  For such a polygon,
+make a copy and split it into two and make each explicitly contain the polar point.  The two polygons
+will combine to give the desired effect when filled; to draw outline use the original polygon.
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR psbasemap (l),
+.IR psxyz (l)

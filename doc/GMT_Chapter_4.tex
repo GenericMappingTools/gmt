@@ -1,0 +1,786 @@
+%------------------------------------------
+%	$Id: GMT_Chapter_4.tex,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+%
+%	The GMT Documentation Project
+%	Copyright 2000-2001.
+%	Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+\chapter{General features}
+\thispagestyle{headings}
+
+This section explains a few features common to all the programs
+in \GMT.  It summarizes the philosophy behind the system.  Some
+of the features described here may make more sense once you reach
+the cook-book section where we present actual examples of their use. 
+
+\section{\gmt\ Units}
+\index{GMT@\GMT!units|(}
+\index{Dimensions|(}
+\index{Units|(}
+
+\GMT\ programs can accept dimensional quantities in cm, inch,
+meter, or point.  There are two ways to ensure that \GMT\ understands
+which unit you intend to use.
+
+\begin{enumerate}
+\item Append the desired unit to the dimension you supply.  This
+way is explicit and clearly communicates what you intend, e.g.,
+\Opt{X}4{\bf c} means 4 cm.
+
+\item Set the parameter MEASURE\_UNIT to the desired unit.  Then, all
+dimensions without explicit unit will be interpreted accordingly.
+
+\end{enumerate}
+
+The latter method is less secure as other users may have a different unit
+set and your script may not work as intended.  We therefore recommend
+you always supply the desired unit explicitly.
+\index{GMT@\GMT!units|)}
+\index{Dimensions|)}
+\index{Units|)}
+
+\section{\gmt\ defaults}
+
+\index{GMT@\GMT!defaults}%
+\index{.gmtdefaults}%
+
+There are more than 50 parameters which can be adjusted individually
+to modify the appearance of plots or affect the manipulation of data.
+When a program is run, it initializes all parameters to the \GMT\
+defaults\footnote{Choose between SI and US default units by modifying
+\filename{gmt.conf} in the \GMT\ share directory},
+then tries to open the file \filename{.gmtdefaults}
+in the current directory.  If not found, it will look for that file
+in your home directory.  If successful, the program will read the
+contents and set the default values to those provided in the file.
+By editing this file you can affect features such as pen thicknesses
+used for maps, fonts and font sizes used for annotations and labels,
+color of the pens, dots-per-inch resolution of the hardcopy device,
+what type of spline interpolant to use, and many other choices
+(A complete list of all the parameters and their default values can
+be found in the \GMTprog{gmtdefaults} manual pages).  You may create
+your own \filename{.gmtdefaults} files by running \GMTprog{gmtdefaults}
+and then modify those parameters you want to change.  If you want
+to use the parameter settings in another file you can do so by
+specifying \texttt{+<defaultfile>} on the command line.
+This makes it easy to maintain several distinct parameter settings,
+corresponding perhaps to the unique styles required by different
+journals or simply reflecting font changes necessary to make
+readable overheads and slides.  Note that any arguments given on
+the command line (see below) will take precedent over the default
+values.  E.g., if your \filename{.gmtdefaults} file has {\it x}
+offset = 1{\bf i} as default, the \Opt{X}1.5{\bf i} option will override the
+default and set the offset to 1.5 inches.  Default values
+may also be changed from the command line with the utility \GMTprog{gmtset}. 
+
+\section{Command Line Arguments} 
+\index{Command line!arguments}%
+\index{Arguments, command line}%
+
+Each program requires certain arguments specific to its operation.
+These are explained in the manual pages and in the usage messages.
+Most programs are ``case-sensitive''; almost all options must start
+with an upper-case letter.  We have tried to choose letters of the
+alphabet which stand for the argument so that they will be easy to
+remember.  Each argument specification begins with a hyphen
+(except input file names; see below), followed by a letter, and
+sometimes a number or character string immediately after the letter.
+\emph{Do not} space between the hyphen, letter, and number or string.
+\emph{Do} space between options.  Example:
+
+\vspace{\baselineskip} 
+
+\texttt{pscoast –-R0/20/0/20 -–G200 -JM6i -W0.25p -–B5 -V $>$ map.ps}
+
+\section{Standardized command line options} 
+\index{Standardized command line options}%
+\index{Command line!standardized options|(}%
+
+Most of the programs take many of the same arguments like those
+related to setting the data region, the map projection, etc.
+The 13 switches in Table~\ref{tbl:switches} have the same meaning
+in all the programs (Some programs may not use all of them).
+These options are described in more detail in the manual pages. 
+
+\begin{table}
+\centering
+\index{Standardized command line options}%
+\index{\Opt{B} (set anotations and ticks)}%
+\index{\Opt{H} (header records)}%
+\index{\Opt{J} (set map projection)}%
+\index{\Opt{K} (continue plot)}%
+\index{\Opt{O} (overlay plot)}%
+\index{\Opt{P} (portrait orientation)}%
+\index{\Opt{R} (set region)}%
+\index{\Opt{U} (plot timestamp)}%
+\index{\Opt{V} (verbose mode)}%
+\index{\Opt{X} (shift plot in $x$)}%
+\index{\Opt{Y} (shift plot in $y$)}%
+\index{\Opt{c} (set \# of copies)}%
+\index{\Opt{:} (input is $y,x$, not $x,y$)}%
+
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c|}{\emph{Option}}	&	\multicolumn{1}{c|}{\emph{Meaning}} \\ \hline
+\Opt{B}	&	Defines tickmarks, annotations, and labels for basemaps and axes  \\ \hline
+\Opt{H}	&	Specifies that input tables have header record(s)  \\ \hline
+\Opt{J}	&	Selects a map projection or one of several non-map projections  \\ \hline
+\Opt{–K}	&	Allows more plot code to be appended to this plot later \\ \hline
+\Opt{O}	&	Allows this plot code to be appended to an existing plot \\ \hline
+\Opt{–P}	&	Selects Portrait plot orientation [Default is landscape] \\ \hline
+\Opt{R}	&	Defines the min. and max. coordinates of the map/plot region \\ \hline
+\Opt{–U}	&	Plots a time-stamp, by default in the lower left corner of page  \\ \hline
+\Opt{–V}	&	Verbose operation  \\ \hline
+\Opt{X}	&	Sets the {\it x}-coordinate for the plot origin on the page  \\ \hline
+\Opt{Y}	&	Sets the {\it y}-coordinate for the plot origin on the page  \\ \hline
+\Opt{c}	&	Specifies the number of plot copies  \\ \hline
+\Opt{:}	&	Input geographic data are ({\it lat,lon}) rather than ({\it lon,lat})  \\ \hline
+\end{tabular}
+\caption{Standardized \gmt\ command line switches}
+\label{tbl:switches}
+\end{table} 
+\index{Command line!standardized options|)}%
+
+\section{Command Line History}
+\index{Command line!history}
+\index{History, command line}
+
+\GMT\ programs ``remember'' the standardized command line options
+(See previous section) given during their previous invocations
+and this provides a shorthand notation for complex options.
+For example, if a basemap was created with an oblique Mercator
+projection, specified as
+
+\vspace{\baselineskip} 
+
+\texttt{-Joc190/25.5/327/56/1:500000} \\ 
+
+then a subsequent \GMTprog{psxy} command to plot symbols only needs
+to state \Opt{J}o in order to activate the same projection.
+Previous commands are maintained in the file \filename{.gmtcommands},
+of which there will be one in each directory you run the programs
+from.  This is handy if you create separate directories for
+separate projects since chances are that data manipulations
+and plotting for each project will share many of the same options.
+Note that an option spelled out on the command line will always
+override the last entry in the \filename{.gmtcommands} file and,
+if execution is successful, will replace this entry as the
+previous option argument in the \filename{.gmtcommands} file.
+If you call several \GMT\ modules piped together then \GMT\ cannot
+guarantee that the \filename{.gmtcommands} file is processed
+in the intended order from left to right.  The only guarantee
+is that the file will not be clobbered since \GMT\ now uses advisory
+file locking.  The uncertainty in processing order makes the use
+of shorthands in pipes unreliable.  We therefore recommend that you
+only use shorthands in single process command lines, and spell out
+the full command option when using chains of commands connected with
+pipes.
+
+\section{Usage messages, syntax- and general error messages}
+\index{Usage messages}
+\index{Messages!usage}
+\index{Syntax messages}
+\index{Messages!syntax}
+\index{Error messages}
+\index{Messages!error}
+
+Each program carries a usage message.  If you enter the program
+name without any arguments, the program will write the complete
+usage message to standard error (your screen, unless you
+redirect it).  This message explains in detail what all the
+valid arguments are.  If you enter the program name followed
+by a \emph{hyphen} (--–) only you will get a shorter version
+which only shows the command line syntax and no detailed
+explanations.  If you incorrectly specify an option or omit
+a required option, the program will produce syntax errors and
+explain what the correct syntax for these options should be.
+If an error occurs during the running of a program, the
+program will in some cases recognize this and give you an
+error message.  Usually this will also terminate the run.
+The error messages generally begin with the name of the
+program in which the error occurred; if you have several
+programs piped together this tells you where the trouble is. 
+
+\section{Standard Input or File, header records}
+\index{Standard input}
+\index{Input!standard}
+\index{Header record \Opt{H}}
+\index{Record, header \Opt{H}}
+\index{\Opt{H} (header records)}
+
+Most of the programs which expect table data input can read
+either standard input or input in one or several files.
+These programs will try to read {\it stdin} unless you type
+the filename(s) on the command line without the above hyphens.
+(If the program sees a hyphen, it reads the next character
+as an instruction; if an argument begins without a hyphen,
+it tries to open this argument as a filename).
+This feature allows you to connect programs with pipes if
+you like.  If your input is ASCII and has one or more header
+records, you must use the \Opt{–H} option.  The number of header
+records is one of the many parameters in the \filename{.gmtdefaults}
+file, but can be overridden by \Opt{H}{\it n\_header\_recs}.
+ASCII files may in many cases also contain sub-headers
+separating data segments; see Appendix B for complete
+documentation.  For binary table data no headers are allowed. 
+
+\section{Verbose Operation}
+\index{Verbose operation\Opt{V}}
+\index{\Opt{V} (verbose mode)}
+
+Most of the programs take an optional \Opt{V} argument
+which will run the program in the ``verbose'' mode.  Verbose
+will write to standard error information about the progress
+of the operation you are running.  Verbose reports things
+such as counts of points read, names of data files
+processed, convergence of iterative solutions, and the like.
+Since these messages are written to {\it stderr},  the
+verbose talk remains separate from your data output. 
+
+\section{Output}
+\index{Output!standard}
+\index{Output!error}
+
+Most programs write their results, including \PS\
+plots, to standard output.  The exceptions are those which may
+create binary netCDF grd-files such as \GMTprog{surface} (due to
+the design of netCDF a filename must be provided; however,
+alternative output formats allowing piping are available).
+With \UNIX\, you can redirect standard output or pipe it
+into another process.  Error messages, usage messages, and
+verbose comments are written to standard error in all cases.
+You can use \UNIX\ to redirect standard error as well,
+if you want to create a log file of what you are doing. 
+
+\section{\PS\ Features}
+\index{PostScript@\PS!features}
+\PS\ is a command language for driving graphics
+devices such as laser printers.  It is ASCII text which you
+can read and edit as you wish (assuming you have some knowledge
+of the syntax).  We prefer this to binary metafile plot
+systems since such files cannot easily be modified after they
+have been created.  \GMT\ programs also write many comments to
+the plot file which make it easier for users to orient
+themselves should they need to edit the file (e.g., \% Start
+of x-axis).  All \GMT\ programs create \PS\ code by
+calling the {\bf pslib} plot library (The user may call these
+functions from his/her own C or FORTRAN plot programs. See the
+manual pages for {\bf pslib} syntax).  Although \GMT\ programs
+can create very individualized plot code, there will always be
+cases not covered by these programs.  Some knowledge of
+\PS\ will enable the user to add such features
+directly into the plot file.  By default, \GMT\ will produce
+freeform \PS\ output with embedded printer directives.  To
+produce Encapsulated \PS\ (EPS) that can be imported into graphics programs such as
+\progname{IslandDraw} and Adobe \progname{Illustrator} for further
+embellishment, change the PAPER\_MEDIA setting in the \filename{.gmtdefaults}
+file.  See Appendix C and the \GMTprog{gmtdefaults} man page for more details.
+
+\section{Landscape and Portrait Orientations}
+\index{Orientation!of plot}
+\index{Plot!orientation}
+\index{Landscape orientation}
+\index{Orientation!landscape}
+\index{Portrait orientation \Opt{P}}
+\index{Orientation!portrait \Opt{P}}
+\index{\Opt{P} (portrait orientation)}
+
+In general, a plot has an {\it x}-axis increasing from left to
+right and a {\it y}-axis increasing from bottom to top.  If the
+paper is turned so that the long dimension of the paper is
+parallel to the {\it x}-axis then the plot is said to have
+\emph{Landscape} orientation.  If the long dimension of
+the paper parallels the {\it y}-axis the orientation is called
+\emph{Portrait}.  (Think of taking pictures with a camera
+and these words make sense).  All the programs in \GMT\ have the
+same default orientation, which is Landscape.  Use \Opt{P} to
+change to Portrait (Note that PAPER\_MEDIA is a user-definable
+parameter, by default set to Letter (or A4).  For other paper
+dimensions you must change this value accordingly). 
+
+\section{Overlay and Continue Modes}
+\index{Overlay plot \Opt{O} \Opt{K}}
+\index{Plot!overlay \Opt{O} \Opt{K}}
+\index{Plot!continue \Opt{O} \Opt{K}}
+\index{\Opt{O} (overlay plot)}
+\index{\Opt{K} (continue plot)}
+
+A typical \PS\ file has a beginning, a middle, and
+an end.  The beginning defines certain features (e.g., macros,
+origin, orientation, scale, etc.) which will be needed to
+create the plot.  The middle has the commands which actually do
+the plotting.  The end tells the graphics device to put out
+the plot (\texttt{showpage} in \PS) and reset the graphics
+state.  Many of the illustrations in this cookbook are built up
+by appending \PS\ files together.
+If you do this, the first file needs a ``beginning'' and no ``end'',
+the last an ``end'' but no ``beginning'', and the middle files need
+only a ``middle''.  You accomplish this automatically with the
+Overlay (\Opt{–O}) and Continue (\Opt{–K}) options.  Overlay
+indicates that this plot will be laid on top of an earlier one;
+therefore the ``beginning'' is not included in the output.  The
+default is always no overlay, i.e. write out the ``beginning''.
+Continue indicates that another plot will follow this one later;
+therefore the ``end'' is not included in the output.
+The default is to output the ``end''.  If you run only one plot
+program, ignore both the \Opt{O} and \Opt{K} options; they are
+only used when stacking plots. 
+
+\section{Specifying pen attributes}
+
+\index{Attributes!pen}%
+\index{Pen!setting attributes}%
+
+A pen in \GMT\ has three attributes: {\it width}, {\it color},
+and {\it texture}.  Most programs will accept pen attributes in
+the form of an option argument, e.g.,
+
+\vspace{\baselineskip} 
+
+\par \Opt{–W}{\it width}[/{\it color}][{\bf t}{\it texture}][{\bf p}]\par 
+
+\begin{description}
+\index{Pen!width}
+\index{Width, pen}
+\index{Attributes!pen!width}%
+\item[$\rightarrow$]{\it Width} is normally measured in units of the
+current device resolution (i.e., the value assigned to the parameter
+DOTS\_PR\_INCH in your
+\filename{.gmtdefaults} file).  Thus, if the dpi is set to 300 this unit
+is 1/300th of an inch.  Append {\bf p} to specify pen width in points
+(1/72 of an inch)\footnote{\PS\ definition.  In the typesetting industry
+a slighly different definition of point (1/72.27 inch) is used.}.
+Note that a pen thickness of 5 will be of different
+physical width depending on your dpi setting, whereas a thickness of
+5{\bf p} will always be 5/72 of an inch.  Minimum-thickness pens can be
+achieved by giving zero width, but the result is device-dependent. 
+
+\index{Pen!color}
+\index{Color!pen}
+\index{Attributes!pen!color}%
+\item[$\rightarrow$]The {\it color} can be specified as a {\it gray}
+shade in the range 0–--255 (linearly going from black to white) or using
+the RGB system where you specify {\it r}/{\it g}/{\it b}, each ranging
+from 0--–255.  Here 0/0/0 is black and 255/255/255 is white. 
+
+\index{Pen!texture}
+\index{Texture, pen}
+\index{Attributes!pen!texture}%
+\item[$\rightarrow$]The {\it texture} attribute controls the appearance
+of the line.  To get a dotted line, simply append ``{\bf t}o'' after the
+width and color arguments; a dashed pen is requested with ``{\bf t}a''.
+For exact specifications you may append {\bf t}{\it string}:{\it offset},
+where {\it string} is a series of integers separated by underscores.
+These numbers represent a pattern by indicating the length of line
+segments and the gap between segments.  The {\it offset} shifts the
+pattern along the line.  For example, if you want a yellow line of width
+2 that alternates between long dashes (20 units), a 10 unit gap, then
+a 5 unit dash, then another 10 unit gap, with pattern offset by 10 units
+from the origin, specify \Opt{–W}2/255/255/0{\bf t}20\_10\_5\_10:10.
+Here, the texture units can be specified in dpi units or points (see above). 
+\end{description} 
+
+\section{Specifying area fill attributes}
+
+\index{Attributes!fill!color}%
+\index{Attributes!fill!pattern}%
+\index{Fill!attributes!color}%
+\index{Fill!attributes!pattern}%
+\index{Color!fill}%
+\index{Pattern!fill}%
+\index{Pattern!color}%
+\index{\Opt{GP} \Opt{Gp}}
+
+Many plotting programs will allow the user to draw filled polygons or
+symbols.  The fill may take two forms: 
+
+\vspace{\baselineskip} 
+
+\par \Opt{G}{\it fill\par 
+
+}\par \Opt{Gp}{\it dpi/pattern}[:{\bf B}{\it r/g/b}[{\bf F}{\it r/g/b}]]\par 
+
+\vspace{\baselineskip} 
+
+In the first case we may specify a {\it gray} shade (0–--255) or a color
+({\it r}/{\it g}/{\it b} in the 0–--255 range), similar to the pen color
+settings.  The second form allows us to use a predefined bit-image pattern.
+{\it pattern} can either be a number in the range 1–--90 or the name of a 1-,
+8-, or 24-bit Sun raster file.  The former will result in one of the 90
+predefined 64 x 64 bit-patterns provided with \GMT\ and reproduced in Appendix E.
+The latter allows the user to create customized, repeating images using
+standard Sun rasterfiles.  The {\it dpi} parameter sets the resolution of
+this image on the page;  the area fill is thus made up of a series of these
+``tiles''.  Specifying {\it dpi} as 0 will result in highest resolution
+obtainable given the present dpi setting in \filename{.gmtdefaults}.
+By specifying upper case \Opt{GP} instead of \Opt{–Gp} the image will be
+bit-reversed, i.e., white and black areas will be interchanged (only applies
+to 1-bit images or predefined bit-image patterns).  For these patterns and
+other 1-bit images one may specify alternative background and foreground
+colors (by appending :{\bf B}{\it r/g/b}[{\bf F}{\it r/g/b}]) that will
+replace the default white and black pixels, respectively.  Setting one of the
+fore- or background colors to -- yields a transparent image where only the
+back- or foreground pixels will be painted.
+Due to \PS\ implementation limitations the rasterimages used with
+\Opt{–G} must be less than 146 x 146 pixels in size; for larger images see
+\GMTprog{psimage}.  The format of Sun raster files is outlined in Appendix B.
+Note that under \PS\ Level 1 the patterns are filled by using
+the polygon as a \emph{clip path}.  Complex clip paths may require
+more memory than the \PS\ interpreter has been assigned.
+There is therefore the possibility that some \PS\ interpreters
+(especially those supplied with older laserwriters) will run out of memory
+and abort.  Should that occur we recommend that you use a regular grayshade
+fill instead of the patterns.  Installing more memory in your printer
+\emph{may or may not} solve the problem! 
+
+\section{Color palette tables}
+
+\index{Color!palette tables|(}
+\index{cpt file|(}
+
+Several programs, such as those which read 2-D gridded data sets and create
+colored images or shaded reliefs, need to be told what colors to use and
+over what {\it z}-range each color applies.  This is the purpose of the
+color palette table (cpt-file).  These files may also be used by \GMTprog{psxy}
+and \GMTprog{psxyz} to plot color-filled symbols.
+The colors may be specified either in the RGB (red, green, blue) system or
+in the HSV system (hue, saturation, value),
+and the parameter COLOR\_MODEL in the \filename{.gmtdefaults} file must
+be set accordingly.  Using the RGB system, the format of the cpt-file is: 
+
+\begin{center}
+\begin{tabular}{lllllllll}
+z$_0$ &  R$_{min}$ &  G$_{min}$ &  B$_{min}$ &  z$_1$ & R$_{max}$ &  G$_{max}$ &  B$_{max}$ &  [{\bf A}] \\ 
+\ldots & & & & & & & & \\ 
+z$_{n-2}$ &  R$_{min}$ &  G$_{min}$ &  B$_{min}$ &  z$_{n-1}$ &  R$_{max}$ &  G$_{max}$ &  B$_{max}$ &  [{\bf A}] \\
+\end{tabular} 
+\end{center}
+
+Thus, for each ``{\it z}-slice'', defined as the interval between two boundaries
+(e.g., {\it z$_0$} to {\it z$_1$}), the color can be constant (by letting R$_{min}$
+= R$_{max}$, G$_{min}$ = G$_{max}$, and B$_{min}$ = B$_{max}$) or a continuous,
+linear function of {\it z}.  The optional flag {\bf A} is used to indicate anotation
+of the colorscale when plotted using \GMTprog{psscale}.  {\bf A} may be {\bf L},
+{\bf U}, or {\bf B} to select anotation of the lower, upper, or both limits
+of the particular $z$-slice.  However, the standard \Opt{B} option can be used
+by \GMTprog{psscale} to affect anotation and ticking of colorscales.  The
+background color (for {\it z}-values $<$ {\it z$_0$}), foreground color
+(for {\it z}-values $>$ {\it z$_{n-1}$}), and not-a-number (NaN) color (for
+{\it z}-values = NaN) are all defined in the \filename{.gmtdefaults}
+file, but can be overridden by the statements
+
+\begin{center}
+\begin{tabular}{llll}
+B &  R$_{back}$ &  G$_{back}$ &  B$_{back}$ \\ 
+F &  R$_{fore}$ &  G$_{fore}$ &  B$_{fore}$ \\ 
+N &  R$_{nan}$ &  G$_{nan}$ &  B$_{nan}$ \\
+
+\end{tabular}
+\end{center}
+
+\noindent
+which can be inserted into the beginning or end of the cpt-file.  If
+you prefer the HSV system, set the
+\filename{.gmtdefaults} parameter accordingly and replace red, green,
+blue with hue, saturation, value.  Color palette tables that contain
+grayshades only may replace the r-g-b triplets with a single grayshade
+in the 0--–255 range.
+
+A few programs (i.e., those that plot polygons such as \GMTprog{grdview},
+\GMTprog{psscale}, and \GMTprog{psxy}) can accept pattern fills instead
+of grayshades.  You must give the pattern as in the previous section (no
+leading \Opt{G} of course), and only the first (low $z$) is used (we cannot
+interpolate between patterns).  
+Finally, some programs let you skip features
+whose $z$-slice in the cptfile has grayshades set to --.  As an example,
+consider
+
+\begin{center}
+\begin{tabular}{lllllllll}
+30 &  p200/16 &  80 & -- \\ 
+80 &  -- &  100 &  -- \\
+100 &  255 &  0  &  0  &  200 &  255 &  255  &  0 \\
+\end{tabular} 
+\end{center}
+
+where slice $30 < z < 80$ is painted with pattern \# 16 at 200 dpi,
+slice $80 < z < 100$ is skipped, while slice $100 < z < 200$ is
+painted in a range of red to yellow, depending on the actual value
+of $z$.
+
+\index{Color!palette tables|)}
+\index{cpt file|)}
+
+\index{Artificial illumination}
+\index{Illumination, artificial}
+\index{Shaded relief}
+\index{Relief, shaded}
+
+Some programs like \GMTprog{grdimage} and \GMTprog{grdview} apply artificial
+illumination to achieve shaded relief maps.  This is typically done
+by finding the directional gradient in the direction of the artificial
+light source and scaling the gradients to have approximately a normal
+distribution on the interval $<$-1,+1$>$.  These intensities are used
+to add ``white'' or ``black'' to the color as defined by the {\it z}-values
+and the cpt-file.  An intensity of zero leaves the color unchanged.
+Higher values will brighten the color, lower values will darken it,
+all without changing the original hue of the color (see Appendix I
+for more details).  The illumination is decoupled from the data
+grd-file in that a separate grdfile holding intensities in the
+$<$-1,+1$>$ range must be provided.  Such intensity files can be
+derived from the data grdfile using \GMTprog{grdgradient} and modified
+with \GMTprog{grdhisteq}, but could equally well be a separate data set.
+E.g., some side-scan sonar systems collect both bathymetry and
+backscatter intensities, and one may want to use the latter information
+to specify the illumination of the colors defined by the former.
+Similarly, one could portray magnetic anomalies superimposed on
+topography by using the former for colors and the latter for shading. 
+
+\section{Character escape sequences}
+\label{sec:escape}
+\index{Characters!European}
+\index{Characters!escape sequences}
+\index{Characters!escape sequences!subscript}
+\index{Characters!escape sequences!superscript}
+\index{Characters!escape sequences!switch fonts}
+\index{Characters!escape sequences!composite character}
+\index{Characters!escape sequences!small caps}
+\index{Characters!escape sequences!octal character}
+\index{Escape sequences!characters}
+\index{European characters}
+\index{Text!European}
+\index{Text!escape sequences}
+\index{Text!subscript}
+\index{Subscripts}
+\index{Text!superscript}
+\index{Superscripts}
+\index{Characters!composite}
+\index{Composite characters}
+\index{Font!switching to a}
+\index{Font!symbol}
+\index{Symbol font}
+\index{"@, printing}
+\index{Small caps}
+\index{Characters!octal}
+\index{Octal characters}
+
+For annotation labels or textstrings plotted with \GMTprog{pstext},
+\GMT\ provides several escape sequences that allow the user to
+temporarily switch to the symbol font, turn on sub- or superscript,
+etc. within words.  These conditions are toggled on/off by the
+escape sequence @{\bf x}, where {\bf x} can be one of several types.
+The escape sequences recognized in \GMT\ are listed in Table~\ref{tbl:escape}. 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c|}{\emph{Code}}	&	\multicolumn{1}{c|}{\emph{Effect}} \\ \hline
+@\~	&	Turns symbol font on or off \\ \hline 
+@\%{\it fontno}\%	&	Switches to another font; @\%\% resets to previous font \\ \hline 
+@+	&	Turns superscript on or off \\ \hline 
+@-	&	Turns subscript on or off \\ \hline 
+@\#	&	Turns small caps on or off \\ \hline 
+@!	&	Creates one composite character of the next two characters \\ \hline 
+@@	&	Prints the @ sign itself \\ \hline 
+\end{tabular}
+\caption{\gmt\ text escape sequences}
+\label{tbl:escape}
+\end{table}
+
+Shorthand notation for a few special Scandinavian characters has also been
+added (Table~\ref{tbl:scand}):
+\index{Characters!escape sequences!Scandinavian}
+\index{Scandinavian characters}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c|}{\emph{Code}}	&	\multicolumn{1}{c|}{\emph{Effect}} \\ \hline
+@E &  \AE \\ \hline
+@e &  \ae \\  \hline
+@O &  \O \\ \hline
+@o &  \o \\  \hline
+@A &  \AA \\ \hline
+@a &  \aa \\ \hline
+\end{tabular}
+\caption{Shortcuts for Scandinavian characters}
+\label{tbl:scand}
+\end{table}
+
+\PS\ fonts used in \GMT\ may be re-encoded to include
+several accented characters used in many European languages.  To
+access these, you must specify the full octal code $\backslash$xxx
+(See Appendix F).  Also see the definition of (and reason for)
+WANT\_EURO\_FONT in the \GMTprog{gmtdefaults} man page.  Basically,
+WANT\_EURO\_FONT must be set to TRUE for the special characters to
+be available.  Many characters that are not directly available by
+using single octal codes may be constructed with the composite
+character mechanism @!.
+ 
+Some examples of escape sequences and embedded octal codes in \GMT\ strings: 
+
+\begin{tabbing}
+XXX\=\verb|2@~p@~r@+2@+h@-0@- E\363tv\363s|XXXX \== XXXX\=text \kill 
+\>\verb|2@~p@~r@+2@+h@-0@- E\363tv\363s| \> = \> 2$\pi r^2h_0$ E\"{o}tv\"{o}s \\ 
+\>\verb|10@+-3 @Angstr@om|		 \> =	\> 10$^{-3}$ \AA ngstr\o m \\ 
+\>\verb|Se\227or Gar\215on|	 \> = \> Se\~{n}or Gar\c{c}on \\ 
+\>\verb|M@!\305anoa stra\373e|	 \> = \> M\={a}noa stra\ss e \\ 
+\>\verb|A@\#cceleration@\# (ms@+-2@+)|	 \> = \> \sc{Acceleration (ms$^{-2}$)}
+\end{tabbing} 
+
+The option in \GMTprog{pstext} to draw a rectangle surrounding the text
+will not work for strings with escape sequences.  A chart of characters
+and their octal codes is given in Appendix F. 
+
+\section{Embedded grdfile format specifications}
+\index{Embedded grdfile format}
+\index{grdfile!embedded format|(}
+\index{grdfile!formats}
+\index{grdfile!formats!netCDF}
+\index{grdfile!formats!floats}
+\index{grdfile!formats!shorts}
+\index{grdfile!formats!unsigned char}
+\index{grdfile!formats!bits}
+\index{grdfile!formats!rasterfile}
+\index{grdfile!formats!custom format}
+
+\GMT\ has the ability to read more than one grdfile
+format.  As distributed, \GMT\ now recognizes 12 predefined file
+formats.  These are  
+
+\begin{description} 
+\item[ 0.] \GMT\ netCDF 4-byte float format [Default] 
+\item[ 1.] Native binary single precision floats in scanlines with leading grd header 
+\item[ 2.] Native binary short integers in scanlines with leading grd header 
+\item[ 3.] 8-bit standard Sun rasterfile (colormap ignored) 
+\item[ 4.] Native binary unsigned char in scanlines with leading grd header 
+\item[ 5.] Native binary bits in scanlines with leading grd header 
+\item[ 6.] Native binary ``surfer'' grid files
+\item[ 7.] netCDF 1-byte byte format
+\item[ 8.] netCDF 1-byte char format
+\item[ 9.] netCDF 2-byte int format
+\item[10.] netCDF 4-byte int format
+\item[11.] netCDF 8-byte double format
+\end{description} 
+
+In addition, users with some C-programming experience may add
+their own read/write kernels and link them with the \GMT\ library
+to extend the number of predefined formats.  Technical information
+on this topic can be found in the source file \filename{gmt\_customio.c}. 
+
+Because of these new formats it is sometimes necessary to provide more
+than simply the name of the file on the command line.  For instance,
+a short integer file may use a unique value to signify an empty node
+or NaN, and the data may need translation and scaling prior to use.
+Therefore, all \GMT\ programs that read or write grdfiles will decode
+the given filename as follows:
+
+\vspace{\baselineskip} 
+
+\par 	name[={\it id}[/{\it scale}/{\it offset}[/{\it nan}]]]\par 
+
+\vspace{\baselineskip} 
+
+\noindent
+where everything in brackets is optional.  If you only use the default
+netCDF file format then no options are needed: just continue to pass
+the name of the grdfile.  However, if you use another format you must
+append the ={\it id} string, where {\it id} is the format id number
+listed above.  In addition, should you want to multiply the data by
+a scale factor, then add a constant offset you may append the
+/{\it scale}/{\it offset} modifier.  Finally, if you need to indicate
+that a certain data value should be interpreted as a NaN (not-a-number)
+you may append the /{\it nan} suffix to the scaling string (it cannot
+go by itself; note the nesting of the brackets!). 
+
+Some of the grd formats allow writing to standard output and reading
+from standard input which means you can connect \GMT\ programs that
+operate on grdfiles with pipes, thereby speeding up execution and
+eliminating the need for large, intermediate grdfiles.  You specify
+standard input/output by leaving out the filename entirely.
+That means the ``filename'' will begin with
+``={\it id}\,'' since the \GMT\ default netCDF format does
+not allow piping (due to the design of netCDF). 
+
+Everything looks more obvious after a few examples: 
+
+\begin{enumerate}
+\item To write a binary float grd file, specify the name as \filename{my\_file.grd=1}.
+
+\item To read a short integer grd file, multiply the data by 10 and then
+add 32000, but first let values that equal 32767 be set to NaN,
+use the filename \filename{my\_file.grd=2/10/32000/32767}. 
+
+\item To read a 8-bit standard Sun rasterfile (with values in the 0--255 range)
+and convert it to a $\pm$1 range, give the name as
+\filename{rasterfile=3/7.84313725e-3/-1} (i.e., 1/127.5).
+
+\item To write a short integer grd file to standard output after subtracting
+32000 and dividing its values by 10, give filename as =2/0.1/-3200. 
+
+\end{enumerate} 
+
+Programs that both read and/or write more than one grdfile may
+specify different formats and/or scaling for the files involved.
+The only restriction with the embedded grd specification mechanism
+is that no grdfiles may actually use the ``=''
+character as part of their name (presumably, a small sacrifice). 
+
+\index{grdfile!suffix}
+
+One can also define special file suffixes to imply a specific file
+format; this approach represents a more intuitive and user-friendly
+way to specify the various file formats.  The user may create a file
+called \filename{.gmt\_io} in the home directory and define any
+number of custom formats.  The following is an example of a
+\filename{.gmt\_io} file:
+\index{.gmt\_io}
+
+\vspace{\baselineskip} 
+
+\noindent
+\begin{tabbing}
+MMM\=\# suffix \=format\_id \=scale \=offset \=NaNxxx\=Comments \kill 
+\>\# GMT i/o shorthand file \\ 
+\>\# It can have any number of comment lines like this one anywhere \\
+\>\# suffix \> format\_id	\> scale \> offset \>NaN\>Comments \\ 
+\>grd \> 0 \> - \> - \> - \>Default format \\ 
+\>b \> 1 \> - \> - \> - \> Native binary floats \\ 
+\>i2 \> 2 \> - \> - \> 32767 \> 2-byte integers \\ 
+\>ras \> 3 \> - \> - \> - \> Sun rasterfiles \\ 
+\>byte \> 4 \> - \> - \> 255 \> 1-byte grids \\ 
+\>bit \> 5 \> - \> - \> - \> 0 or 1 grids \\ 
+\>mask \> 5 \> - \> - \> 0 \> 1 or NaN masks \\ 
+\>faa \> 2 \> 0.1 \> - \> 32767 \> Gravity in 0.1 mGal
+\end{tabbing} 
+
+These suffices can be anything that make sense to the user.  To
+activate this mechanism, set parameter GRIDFILE\_SHORTHAND to TRUE in
+your \filename{.gmtdefaults} file.  Then, using the filename
+\filename{stuff.i2} is equivalent to saying \filename{stuff.i2=2/1/0/32767},
+and the filename \filename{wet.mask} means wet.mask=5/1/0/0.  For a
+file intended for masking, i.e., the nodes are either 1 or NaN,
+the bit or mask format file may be down to 1/32 the size of the
+corresponding grd format file. 
+\index{grdfile!embedded format|)}
+
+\section{Binary table i/o}
+\index{Table!binary}
+\index{Binary tables}
+\index{Input!binary \Opt{bi}}
+\index{Output!binary \Opt{bo}}
+\index{\Opt{bi} (select binary input)}
+\index{\Opt{bo} (select binary output)}
+
+All \GMT\ programs that accept table data input may read ASCII
+or binary data†.  When using binary data the user must be aware
+of the fact that \GMT\ has no way of determining the actual
+number of columns in the file.  You should therefore pass that
+information to \GMT\ via the binary \Opt{–bi}[{\bf s}]{\it n} option,
+where {\it n} is the actual number of data columns ({\bf s}
+indicates single rather than double precision).
+Note that {\it n} may be larger than {\it m}, the number of
+columns that the \GMT\ program requires to do its task.  If
+{\it n} is not given then it defaults to {\it m}.  If
+{\it n} $<$ {\it m} an error is generated.  For more information,
+see Appendix B.

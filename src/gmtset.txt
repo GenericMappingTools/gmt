@@ -1,0 +1,25 @@
+.TH GMTSET l DATE
+.SH NAME
+gmtset \- To change individual \fBGMT\fP default parameters
+.SH SYNOPSIS
+\fBgmtset\fP PARAMETER1 [=] \fIvalue1\fP PARAMETER2 [=] \fIvalue2\fP PARAMETER3 [=] \fIvalue3\fP ...
+.SH DESCRIPTION
+\fBgmtset\fP will adjust individual GMT defaults settings in the current directory's .gmtdefaults
+file.  If no such file exists one will be created.  The main purpose of \fBgmtset\fP is to
+temporarily change certain parameters inside a shellscript, e.g., set the dots-per-inch
+to 600, run the script, and reset to 300 dpi.
+.TP
+PARAMETER \fIvalue\fP
+Provide one or several pairs of parameter/value combinations that you want to modify.  For a
+complete listing of available parameters and their meaning, see the \fBgmtdefaults\fP man page.
+.SH EXAMPLES
+To change the dpi to 600, set anotation font to Helvetica, and select grid-crosses of size 0.1 inch,
+and set anotation offset to 0.2 cm, try
+.br
+.sp
+	gmtset DOTS_PR_INCH 600 ANOT_FONT Helvetica GRID_CROSS_SIZE 0.1\fBi\fP ANOT_OFFSET 0.2\fBc\fP
+.br
+.sp
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR gmtdefaults (l)

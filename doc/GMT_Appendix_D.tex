@@ -1,0 +1,93 @@
+%------------------------------------------
+%	$Id: GMT_Appendix_D.tex,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+%
+%	The GMT Documentation Project
+%	Copyright 2000-2001.
+%	Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+\chapter{Availability of \gmt\ and related code}
+\index{GMT@\GMT!obtaining}
+\thispagestyle{headings}
+
+All the source code, support data, \PS\,
+and HTML versions of all documentation, and \UNIX\
+(including HTML) manual pages can be obtained by anonymous
+ftp from several mirror sites.  We also maintain a \GMT\
+page on the World Wide Web (http://www.soest.hawaii.edu/gmt);
+See this page for installation directions 
+which allow for a simplified, automatic install procedure
+(for a CD-R solution, see \htmladdnormallink{http://www.geoware-online.com}{http://www.geoware-online.com}.)
+
+The \GMT\ tar archives are available both in \progname{gzip}
+and \progname{bzip2} format.  If neither of these utilities
+are installed on your system, you should know that the former
+program is available from GNU\footnote{www.gnu.org} while the
+latter can be obtained from Cygnus\footnote{http://sourceware.cygnus.com/bzip2/index.html}.
+\progname{bzip2} compresses much better than \progname{gzip}:
+for example, the full resolution coastline database is only
+$\sim$29 Mb in \progname{bzip2} format compared to a hefty
+$\sim$44 Mb in \progname{gzip}.  These files have the
+.bz2 suffix. \\
+
+The GMT archives are as follows:
+
+\begin{description}
+
+\item[GMT\_progs.tar.\{gz,bz2\}] Contains all \GMT\ source code,
+cpt files, and \PS\ patterns.
+
+\item [GMT\_share.tar.\{gz,bz2\}] Contains the intermediate,
+low, and crude resolutions of the coastline database.  Required
+with \_progs.tar for minimal setup needed to run \GMT.
+
+\item[GMT\_doc.tar.\{gz,bz2\}] Contains all \GMT\ documentation
+(man pages, PostScript versions of both the Cookbook and Technical
+Reference and the tutorial, and the short course material).
+
+\item[GMT\_web.tar.\{gz,bz2\}] Contains all HTML versions of all
+\GMT\ documentation (man pages, Cookbook and Technical Reference,
+and tutorial).
+
+\item[GMT\_full.tar.\{gz,bz2\}] Contains the optional
+full-resolution coastline database.
+
+\item[GMT\_high.tar.\{gz,bz2\}] Contains the optional
+high-resolution coastline database.
+
+\item[GMT\_scripts.tar.\{gz,bz2\}] Contains all the shellscripts
+and support data used in the Cookbook section.
+
+\item[GMT\_suppl.tar.\{gz,bz2\}] Contains several programs
+written by us and \GMT\ users elsewhere. (See Appendix A for more
+details).
+
+\item[GMT\_win32bin.zip] ZIP archive with all binaries for Win32
+platforms, the example scripts and data, and the default distribution
+of coastline data.
+
+\item[triangle.tar.\{gz,bz2\}] Contains John Shewchuck's fast Delaunay
+triangulation routine which may be installed with GMT. (See the copyright
+information first if you are a commercial user).
+
+\index{GMT@\GMT!binaries for Win32}
+
+\end{description}
+
+\index{netCDF, obtaining}
+
+The netCDF library that makes up the backbone of the grdfile
+I/O operations can be obtained from  Unidata.  A compressed
+tar file can be accessed (in binary mode) from the file
+\filename{netcdf.tar.Z} in the anonymous FTP directory of
+\underline{unidata.ucar.edu} (Internet 128.117.140.3).
+The software distribution includes a \PS\ file of
+the netCDF User's Guide, and there is also online documentation
+from their web site.  [A mailing list,
+\htmladdnormallink{netcdfgroup@unidata.ucar.edu}{mailto:netcdfgroup@unidata.ucar.edu},
+is available for discussion of the netCDF interface and
+announcements about netCDF bugs, fixes, and enhancements.  To
+subscribe, send a request to
+\htmladdnormallink{netcdfgroup-adm@unidata.ucar.edu}{mailto:netcdfgroup-adm@unidata.ucar.edu}].
+Precompiled libraries for WIN32 are also available\footnote{Required
+with \filename{GMT\_win32bin.zip}}.

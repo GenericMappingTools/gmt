@@ -1,0 +1,124 @@
+.TH GMTMATH l DATE
+.SH NAME
+gmtmath \- Reverse Polish Notation calculator for data tables
+.SH SYNOPSIS
+\fBgmtmath\fP [ \fB\-C\fP\fIcols\fP ] [ \fB\-H\fP\fInrec\fP ] [ \fB\-N\fP\fIn_col\fP/\fIt_col\fP ] [ \fB\-Q\fP ] 
+ [ \fB\-S\fP ][ \fB\-T\fP\fIt_min/t_max/t_inc\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
+[ \fB\-bo\fP[\fBs\fP] ] 
+\fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] \fBOPERATOR\fP ... \fB=\fP [ \fIoutfile\fP ]
+.SH DESCRIPTION
+\fBgmtmath\fP will perform operations like add, subtract, multiply, and divide on one or more table data files or constants using
+Reverse Polish Notation (RPN) syntax (e.g., Hewlett-Packard calculator-style).  Arbitrarily complicated expressions may therefore
+be evaluated; the final result is written to an output file [or standard output].  When two data tables are
+on the stack, each element in file A is modified by the corresponding element in file B.
+However, some operators only require one operand (see below).  If no data tables are used in the
+expression then options \fB\-T, \-N\fP must be set (and optionally \fB\-b\fP).  By default, all columns except the "time" column is operated on, but this can be changed (see \fB\-C\fP).
+.TP
+\fIoperand\fP
+If \fIoperand\fP can be opened as a file it will be read as an ASCII (or binary, see \fB\-bi\fP) table data file.  If not a file, it is interpreted
+as a numerical constant or a special symbol (see below).
+.TP
+\fIoutfile\fP is a table data file that will hold the final result.  If not given
+the output is sent to stdout.
+.TP
+.B OPERATORS
+Choose among the following operators:
+.br
+Operator		n_args	Returns
+.br
+.sp
+#include "gmtmath_man.i"
+.TP
+.B SYMBOLS
+The following symbols have special meaning:
+.br
+.sp
+\fBPI\fP	3.1415926...
+.br
+\fBE \fP	2.7182818...
+.br
+\fBT \fP	Table with t-coordinates
+.br
+.SH OPTIONS
+.TP
+.B \-C
+Select the columns that will be operated on until next occurrence of \fB\-C\fP.
+List columns separated by commas; ranges like 1,3-5,7 are allowed.  [\fB\-C\fP
+(no arguments) resets the default action of using all columns except time column (see \fB\-N\fP]. 
+\fB\-Ca\fP selects all columns, inluding time column.
+#include "explain_-H.txt"
+.TP
+.B \-N
+Select the number of columns and the column number that contains the
+"time" variable.  Columns are numbered starting at 0 [2/0].
+.TP
+.B \-Q
+Quick mode for scalar calculation.  Shorthand for \fB\-Ca \-N\fP1/0 \fB\-T\fP0/0/1.
+.TP
+.B \-S
+Only report the first row of the results [Default is all rows].  This is useful if
+you have computed a statistics (say the MODE) and only want to report a single number
+instead of numerous records with idendical values.
+.TP
+.B \-T
+Required when no input files are given.  Sets the t-coordinates of the first
+and last point and the equidistant sampling interval for the "time" column (see \fB\-N\fP).
+#include "explain_-V.txt"
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+#include "explain_-o.txt"
+.SH BEWARE
+The operator \fBPLM\fP calculates the associated Legendre polynomial
+of degree L and order M, and its argument is the cosine of the colatitude
+which must satisfy -1 <= x <= +1. \fBPLM\fP is not normalized.
+.br
+All derivatives are based on central finite differences, with natural
+boundary conditions.
+.SH EXAMPLES
+To take log10 of the average of 2 data files, use
+.br
+	gmtmath file1.d file2.d \fBADD\fP 0.5 \fBMUL LOG10 =\fP file3.d
+.br
+.sp
+Given the file samples.d, which holds seafloor ages in m.y. and seafloor depth in m, use the relation
+depth(in m) = 2500 + 350 * sqrt (age) to print the depth anomalies:
+.br
+	gmtmath samples.d T \fBSQRT\fP 350 \fBMUL \fP2500 \fBADD SUB =\fP | lpr
+.br
+.sp
+To take the average of columns 1 and 4-6 in the three data sets sizes.1, sizes.2, and sizes.3, use
+.br
+	gmtmath \fB\-C\fP1,4-6 sizes.1 sizes.2 \fBADD\fP sizes.3 \fBADD 3 DIV =\fP ave.d
+.br
+.sp
+To take the 1-column data set ages.d and calculate the modal value and assign it to a variable, try
+.br
+	set mode_age = `gmtmath \fB\-S \-T\fP ages.d \fBMODE\fP \fB=\fP`
+.br
+.sp
+To use gmtmath as a RPN Hewlett-Packard calculator on scalars (i.e., no input
+files) and calculate arbitrary expressions, use the \fB\-Q\fP option.
+As an example, we will calculate the value of Kei (((1 + 1.75)/2.2) + cos (60))
+and store the result in the shell variable z:
+.br
+.sp
+	set z = `gmtmath \fB\-Q\fP 1 1.75 \fBADD\fP 2.2 \fBDIV\fP 60 \fBCOSD ADD KEI =\fP`
+.SH BUGS
+Files that has the same name as some operators, e.g., ADD, SIGN, =, etc. cannot be read
+and must not be present in the current directory.  Piping of files are not allowed on input, but the output can be sent to stdout.
+The stack limit is hard-wired to 50.
+All functions expecting a positive radius (e.g., log, kei, etc.) are passed the
+absolute value of their argument.
+.SH REFERENCES
+Abramowitz, M., and I. A. Stegun, 1964, \fIHandbook of Mathematical
+Functions\fP, Applied Mathematics Series, vol. 55, Dover, New York.
+.br
+Press, W. H.,  S. A. Teukolsky, W. T. Vetterling, B. P. Flannery, 1992, 
+\fINumerical Recipes\fP, 2nd edition, Cambridge Univ., New York.
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grd2xyz (l),
+.IR grdedit (l),
+.IR grdinfo (l),
+.IR grdmath (l),
+.IR xyz2grd (l)

@@ -1,0 +1,80 @@
+.TH NEARNEIGHBOR l DATE
+.SH NAME
+nearneighbor \- A "Nearest neighbor" gridding algorithm
+.SH SYNOPSIS
+\fBnearneighbor\fP [ \fIxyzfile(s)\fP ] \fB\-G\fP\fIout_grdfile\fP \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]]  
+\fB\-N\fP\fIsectors\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] \fB\-S\fP\fIsearch_radius\fP[\fBm|c|k|K\fP] 
+[ \fB\-E\fP\fIempty\fP ] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP[\fIflag\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+.SH DESCRIPTION
+\fBnearneighbor\fP reads arbitrarily located (x,y,z[,w]) triples [quadruplets]
+from standard input [or \fIxyzfile(s)\fP] and uses a nearest neighbor algorithm to assign 
+an average value to each node that have one or more points within a radius centered on the node.
+The average value is computed as a weighted mean of the nearest point from each sector inside the search radius.  The
+weighting function used is w(r) = 1.0 / (1 + d ^ 2), where d = 3 * r / search_radius and r is
+distance from the node.  This weight is modulated by the observation points' weights [if supplied].
+.TP
+\fIxyzfile(s)\fP
+3 [or 4, see \fB\-W\fP] column ASCII file(s) [or binary, see \fB\-b\fP] holding (x,y,z[,w]) data values.  If no file is specified, \fBnearneighbor\fP
+will read from standard input.
+.TP
+.B \-G
+Give the name of the output grdfile.
+#include "explain_-I.txt"
+.TP
+.B \-N
+The circular area centered on each node is divided into several sectors.  Average values
+will only be computed if there is at least one value inside each of the sectors for a
+given node.  Nodes that fail this test are assigned the value NaN (but see \fB\-E\fP).  [Default is quadrant
+search, i.e., \fIsectors\fP = 4].  Note that only the nearest value per sector enters into the averaging, not all values inside the circle.
+#include "explain_-R.txt"
+.TP
+.B \-S
+Sets the \fIsearch_radius\fP in same units as the grid spacing; append \fBm\fP to indicate minutes
+or \fBc\fP to indicate seconds.  Append \fBk\fP to indicated km (implies \fB\-R \-I\fP are in degrees);
+use uppercase \fBK\fP if distances should be calculated using great circles [\fBk\fP uses flat Earth].
+.SH OPTIONS
+.TP
+.B \-E
+Set the value assigned to empty nodes [NaN].
+.TP
+.B \-F
+Force pixel registration.  [Default is grid registration].
+#include "explain_-H.txt"
+Not used with binary data.
+.TP
+.B \-L
+Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of 
+x or y or both set by \fB\-R\fP, or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
+lon and lat).  [Default is no boundary conditions].
+If no flag is given, it is assumed that the x column contains longitudes, which may differ from the region
+in \fB\-R\fP by [multiples of] 360 degrees [Default assumes no periodicity].
+#include "explain_-V.txt"
+#include "explain_-t.txt"
+.TP
+.B \-W
+Input data have a 4th column containing observation point weights.  These are multiplied
+with the geometrical weight factor to determine the actual weights used in the calculations.
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+[Default is 3 (or 4 if \fB\-W\fP is set) columns].
+.SH EXAMPLES
+.sp
+To create a gridded data set from the file seaMARCII_bathy.lon_lat_z using a 0.5 min grid,
+a 5 km search radius, using an octant search, and set empty nodes to -9999, try
+.sp
+nearneighbor seaMARCII_bathy.lon_lat_z \fB\-R\fP242/244/-22/-20 \fB\-I\fP.5\fBm \-E\fP-9999 \fB\-G\fPbathymetry.grd
+\fB\-S\fP5k \fB\-N\fP8
+.br
+.sp
+To make a global gridded file from the data in geoid.xyz using a 1 degree grid,
+a 200 km search radius, spherical distances, using an quadrant search, and set empty nodes to NaN, try
+.sp
+nearneighbor geoid.xyz \fB\-R\fP0/360/-90/90 \fB\-I\fP1 \fB\-L\fPg \fB\-G\fPgeoid.grd
+\fB\-S\fP20K \fB\-N\fP4
+.SH "SEE ALSO"
+.IR blockmean (l),
+.IR blockmedian (l),
+.IR blockmode (l),
+.IR gmt (l),
+.IR surface (l),
+.IR triangulate (l)

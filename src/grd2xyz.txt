@@ -1,0 +1,81 @@
+.TH GRD2XYZ l DATE
+.SH NAME
+grd2xyz \- Converting a grdfile to an ASCII or binary table
+.SH SYNOPSIS
+\fBgrd2xyz\fP \fIgrdfile\fP [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
+[ \fB\-S\fP[\fBr\fP ] [ \fB\-V\fP ] [ \fB\-Z\fP[\fIflags\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+.SH DESCRIPTION
+\fBgrd2xyz\fP reads a binary 2-D grdfile and writes out xyz-triplets in ASCII [or binary] format to standard output.
+Modify the
+precision of the ASCII output format by editing the D_FORMAT parameter in your .gmtdefaults file, or
+choose binary output using single or double precision storage.  As an option you may output
+z-values without the (x,y) in a
+number of formats, see \fB\-Z\fP below.
+.TP
+\fIgrdfile\fP
+The 2-D binary file to be converted.
+.SH OPTIONS
+.TP
+.B \-H
+Output 1 header record based on information in the grdfile header.
+Ignored if binary output is selected.  [Default is no header].
+.TP
+.B \-L
+Indicates that the x values are longitudes (necessary for \fB\-:\fP to work).
+#include "explain_-R.txt" 
+.TP
+.B \-S
+Suppress output for nodes whose z-value equals NaN [Default outputs all nodes].
+Append \fBr\fP to reverse the suppression, i.e., only output the nodes whose
+z-value equals NaN.
+#include "explain_-V.txt" 
+.TP
+.B \-Z
+Write a 1-column ASCII [or binary] table.  Output will be organized according to the specified ordering convention contained in \fIflags\fP.
+If data should be written by rows, make \fIflags\fP start with \fBT\fP(op) if first row is y = ymax
+or \fBB\fP(ottom) if first row is y = ymin.  Then, append \fBL\fP or \fBR\fP to indicate that first element should start at left
+or right end of row.  Likewise for column formats: start with \fBL\fP or \fBR\fP to position first column,
+and then append \fBT\fP or \fBB\fP to position first element in a row.  
+For gridline registered grids:  If grid is periodic in x but the
+outcoming data should not contain the (redundant) column at x = xmax, append \fBx\fP.  For grid periodic in y,
+skip writing the redundant row at y = ymax by appending \fBy\fP.  If the byte-order needs to be swapped, append \fBw\fP.  Select
+one of several data types (all binary except \fBa\fP):
+.br
+.sp
+	\fBa\fP  ASCII representation
+.br
+	\fBc\fP  signed 1-byte character
+.br
+	\fBu\fP  unsigned 1-byte character
+.br
+	\fBh\fP  short 2-byte integer
+.br
+	\fBi\fP  4-byte integer
+.br
+	\fBl\fP  long (4- or 8-byte) integer
+.br
+	\fBf\fP  4-byte floating point single precision
+.br
+	\fBd\fP  8-byte floating point double precision
+.br
+.sp
+Default format is scanline orientation of ASCII numbers: \fB\-ZTLa\fP.
+Note that \fB\-Z\fP only applies to 1-column output.
+#include "explain_-o.txt"
+This option only applies to xyz output; see \fB\-Z\fP for z table output.
+.SH EXAMPLES
+To edit individual values in the 5' by 5' hawaii_grv.grd file, try
+.br
+.sp
+grd2xyz hawaii_grv.grd > hawaii_grv.xyz
+.br
+.sp
+To write a single precision binary file without the x,y positions from the file raw_data.grd file, using scanline orientation, try
+.br
+.sp
+grd2xyz raw_data.grd \fB\-ZTLf\fP > hawaii_grv.b
+.SH "SEE ALSO"
+.IR gmtdefaults (l),
+.IR gmt (l),
+.IR grdedit (l),
+.IR xyz2grd (l)

@@ -1,0 +1,10 @@
+#	$Id: gmtfile_paths,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+#
+#	Directories with gmtfiles
+#	Currently set for SOEST data library
+#	Paul Wessel, July-91
+#
+/home/elepaio5/data/gmtfiles
+/home/kiawe3/mgphy/gmtfiles
+/export/reo
+/reo/kiawe

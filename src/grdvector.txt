@@ -1,0 +1,95 @@
+.TH GRDVECTOR l DATE
+#define PARAMS_SI	0.075\fBc\fP/0.3\fBc\fP/0.25\fBc\fP
+#define LEN1	5
+#define SCALE	\fB\-Jx\fP5\fBc\fP
+#define PARAMS_US	0.03\fBi\fP/0.12\fBi\fP/0.1\fBi\fP
+#define LEN2	10
+#define OPT	\fB\-S\fP10\fBi\fP
+.SH NAME
+grdvector \- Plot vector fields from grdfiles
+.SH SYNOPSIS
+\fBgrdvector\fP \fIcompx.grd\fP \fIcompy.grd\fP \fB\-J\fP\fIparameters\fP [ \fB\-A\fP ] 
+[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIcptfile\fP ] [ \fB\-E\fP ]  
+[ \fB\-G\fP\fIfill\fP] [ \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] ] [ \fB\-K\fP ] [ \fB\-N\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
+[ \fB\-Q\fP\fIparameters\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP[\fBl\fP]\fIscale\fP ] 
+[ \fB\-T\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP\fIcontourpen\fP ] [ \fB\-X\fP\fIx-shift\fP ] 
+[ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP ] [ \fB\-c\fP\fIcopies\fP ]
+.SH DESCRIPTION
+\fBgrdvector\fP reads two 2-D gridded files which represents the x- and y-components of a vector field and
+produces a vector field plot by 
+drawing vectors with orientation and length according to the information in the files.  Alternatively,
+polar coordinate components may be used (r, theta).
+\fBgrdvector\fP is basically a short-hand for using 2 calls to \fBgrd2xyz\fP and pasting the output through
+\fBpsxy \-SV\fP.
+.TP
+\fIcompx.grd\fP
+Contains the x-component of the vector field.
+.TP
+\fIcompy.grd\fP
+Contains the y-component of the vector field. 
+#include "explain_-j.txt"
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+.TP
+.B \-A
+Means grdfiles have polar (r, theta) components instead of Cartesian (x, y).
+#include "explain_-b.txt"
+.TP
+.B \-C
+Use \fIcptfile\fP to assign colors based on vector length.
+.TP
+.B \-E
+Center vectors on grid nodes [Default draws from grid node].
+.TP
+.B \-G
+Sets color or shade for vector interiors [Default is no fill].
+#include "explain_-G.txt"
+.TP
+.B \-I
+Only plot vectors at nodes every \fIx_inc, y_inc\fP apart (must be multiples of
+original grid spacing).  Append \fBm\fP for minutes or \fBc\fP for seconds. [Default plots every node].
+#include "explain_-K.txt"
+.TP
+.B \-N
+Do NOT clip vectors at map boundaries [Default will clip].
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+.TP
+.B \-Q
+Select vector plot [Default is stick-plot].  Optionally, specify \fIparameters\fP which
+are \fIarrowwidth/headlength/headwidth\fP [Default is PARAMS_SI (or PARAMS_US)].  Append n\fIsize\fP
+which will cause vectors shorter than \fIsize\fP to have their appearence scaled by length/\fIsize\fP.
+#include "explain_-R.txt"
+Specify a subset of the grid.
+.TP
+.B \-S
+Sets scale for vector length in data units per distance measurement unit [1].  Append c, i, m, p
+to indicate the measurement unit (cm, inch, m, point).  Prepend \fBl\fP to indicate a fixed length for
+all vectors.
+.TP
+.B \-T
+Means azimuth should be converted to angles based on the selected map projection.
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+.TP
+.B \-W
+Set pen attributes used for vector outlines [Default: width = 1, color = 0/0/0, texture = solid].
+#include "explain_-XY.txt"
+.TP
+.B \-Z
+Means the angles provided are azimuths rather than direction (requires \fB\-A\fP).
+#include "explain_-c.txt"
+.SH EXAMPLES
+To draw the vector field given by the files r.grd and theta.grd on a linear plot
+with scale LEN1 cm per data unit,
+using vector rather than stick plot, and scale vector magnitudes so that LEN2 units
+equal 1 inch, try 
+.br
+.sp
+grdvector r.grd theta.grd SCALE \fB\-Q\fP OPT > gradient.ps
+.br
+.sp
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grdcontour (l),
+.IR psxy (l)

@@ -1,0 +1,67 @@
+.TH GRDTRACK l DATE
+.SH NAME
+grdtrack \- Sampling of a 2-D grdfile along 1-D trackline (a sequence of x,y points)
+.SH SYNOPSIS
+\fBgrdtrack\fP \fIxyfile\fP \fB\-G\fP\fIgrdfile\fP [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP[\fIflag\fP] ] [ \fB\-M\fP[\fIflag\fP] ] 
+[ \fB\-Q\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP ] [ \fB\-S\fP ] [ \fB\-V\fP ] [ \fB\-Z\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+.SH DESCRIPTION
+\fBgrdtrack\fP reads a grdfile and a table (from file or standard input) with (x,y) positions 
+in the first two columns (more columns may be present). It interpolates the grid at the positions 
+in the table and writes out the table with the interpolated values added as a new column.  A bicubic 
+[Default] or bilinear [\fB\-Q\fP] interpolation is used, requiring boundary conditions at the limits 
+of the region (see \fB\-L\fP\fIflag\fP option).
+.TP
+\fIxyfile\fP
+This is an ASCII [or binary, see \fB\-b\fP] file where the first 2 columns hold the (x,y) positions where the user wants to sample
+the 2-D data set.
+.TP
+.B \-G
+\fIgrdfile\fP is a 2-D binary grd file with the function f(x,y).
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+#include "explain_-H.txt"
+.TP
+.B \-L
+Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of 
+x or y or both set by \fB\-R\fP, or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
+lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero).]
+If no flag is supplied, it is assumed that the x column contains longitudes, which may differ from the region
+in \fB\-R\fP by [multiples of] 360 degrees [Default assumes no periodicity].
+.TP
+.B \-M
+Multiple segment file.  Segment separator is a record beginning with \fIflag\fP.
+[Default is '>'].
+.TP
+.B \-Q
+Quick mode.  Use bilinear rather than bicubic interpolation.
+#include "explain_-R.txt"
+.TP
+.B \-S
+Suppress the output of interpolated points that result in NaN values.
+#include "explain_-V.txt"
+.TP
+.B \-Z
+Only write out the sampled z-values [Default writes all columns].
+.TP
+.B \-:
+Toggles between (lon,lat) and (lat,lon) input/output.  [Default is (lon,lat)]
+#include "explain_-i.txt"
+#include "explain_-n.txt"
+[Default is 2 input columns].
+#include "explain_-o.txt"
+.SH HINTS
+If an interpolation point is not on a node of the input grid, then a NaN at any node in the neighborhood 
+surrounding the point will yield an interpolated NaN.  Bicubic interpolation [default] yields continuous 
+first derivatives but requires a neighborhood of 4 nodes by 4 nodes.  Bilinear interpolation [\fB\-Q\fP] 
+uses only a 2 by 2 neighborhood, but yields only zeroth-order continuity.  Use bicubic when smoothness is 
+important.  Use bilinear to minimize the propagation of NaNs.
+.SH EXAMPLES
+To sample the file hawaii_topo.grd along the SEASAT track track_4.xyg (An ASCII
+table containing longitude, latitude, and SEASAT-derived gravity, preceeded by one header record), try
+.br
+.sp
+grdtrack track_4.xyg \fB\-G\fPhawaii_topo.grd \fB\-H\fP > track_4.xygt
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR surface (l),
+.IR sample1d (l)

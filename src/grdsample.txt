@@ -1,0 +1,62 @@
+.TH GRDSAMPLE l DATE
+.SH NAME
+grdsample \- Resample a grd file onto a new grid
+.SH SYNOPSIS
+\fBgrdsample\fP \fIin_grdfile\fP \fB\-G\fP\fIout_grdfile\fP [ \fB\-F\fP ] [ \fB\-I\fP\fIdx\fP[\fBm|c\fP][/\fIdy\fP[\fBm|c\fP]] ] 
+[ \fB\-L\fP\fIflag\fP ] [ \fB\-N\fP\fInx/ny\fP ] [ \fB\-Q\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-T\fP ] [ \fB\-V\fP ]
+.SH DESCRIPTION
+\fBgrdsample\fP reads a grdfile and interpolates it to create a new grdfile with either:  a different registration 
+(\fB\-T\fP); or, a new grid-spacing (\fB\-I\fP) or number of nodes (\fB\-N\fP), and perhaps also a new sub-region 
+(\fB\-R\fP).  Interpolation is bicubic [Default] or bilinear (\fB\-Q\fP) and uses boundary conditions (\fB\-L\fP).  
+Note that using (\fB\-R\fP) only is equivalent to \fBgrdcut\fP or \fBgrdedit \-S\fP.  \fBgrdsample\fP safely 
+creates a fine mesh from a coarse one; the converse may suffer aliasing unless the data are filtered using \fBgrdfft\fP or \fBgrdfilter\fP.
+
+.TP
+\fIin_grdfile\fP
+The name of the input 2-D binary grd file.
+.TP
+.B \-G
+The name of the output grd file.
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+.TP
+.B \-F
+Force pixel registration.  [Default is grid registration].
+#include "explain_-I.txt"
+.TP
+.B \-L
+Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of 
+x or y or both set by \fB\-R\fP, or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
+lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero).]  
+.TP
+.B \-Q
+Quick mode, use bilinear rather than bicubic interpolation.
+#include "explain_-R.txt"
+.TP
+.B \-T
+Translate between grid and pixel registration while keeping \fB\-R\fP and \fB\-I\fP the same; if input is 
+grid-registered, output will be pixel-registered and vice-versa.  The input file determines \fB\-R\fP, 
+\fB\-I\fP and \fB\-N\fP so no other options are necessary (except possibly \fB\-L\fP or \fB\-Q\fP).
+#include "explain_-V.txt"
+.SH HINTS
+If an interpolation point is not on a node of the input grid, then a NaN at any node in the neighborhood 
+surrounding the point will yield an interpolated NaN.  Bicubic interpolation [default] yields continuous 
+first derivatives but requires a neighborhood of 4 nodes by 4 nodes.  Bilinear interpolation [\fB\-Q\fP] 
+uses only a 2 by 2 neighborhood, but yields only zeroth-order continuity.  Use bicubic when smoothness is 
+important.  Use bilinear to minimize the propagation of NaNs.
+.SH EXAMPLES
+To resample the 5 x 5 minute grid in hawaii_5by5_topo.grd onto a 1 minute grid, try
+.br
+.sp
+grdsample hawaii_5by5_topo.grd \fB\-I\fP1\fBm \-G\fPhawaii_1by1_topo.grd
+.br
+.sp
+To translate the gridline-registered file surface.grd to pixel registration, try
+.br
+.sp
+grdsample surface.grd \fB\-T \-G\fPpixel.grd
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grdedit (l),
+.IR grdfft (l),
+.IR grdfilter (l)

@@ -1,0 +1,142 @@
+.TH GRDVIEW l DATE
+#define LEN_1	1.5
+#define LEN_2	20
+#define LEN_3	6
+#define SCALE1	\fB\-Jl\fP18/24/1.5\fBc\fP
+#define ZSCALE1	\fB\-Jz\fP0.05\fBc\fP
+#define SCALE2	\fB\-Jx\fP10.0\fBc\fP
+#define SCALE3 \fB\-JM\fP6\fBi\fP
+.SH NAME
+grdview \- Create 3-D perspective grayshaded/colored image or mesh from a 2-D grd file
+.SH SYNOPSIS
+\fBgrdview\fP \fIrelief_file\fP \fB\-J\fP\fIparameters\fP 
+[ \fB\-B\fP\fItickinfo\fP ] [\fB\-C\fP\fIcptfile\fP] [ \fB\-E\fP\fIview_az/view_el\fP ] 
+[ \fB\-G\fP\fIdrapefile\fP] [ \fB\-I\fP\fIintensfile\fP] [ \fB\-K\fP ] 
+[ \fB\-L\fP[\fIflags\fP] ] [ \fB\-N\fP\fIlevel\fP[/\fIr/g/b\fP]] [ \fB\-O\fP ] [ \fB\-P\fP ] 
+[ \fB\-Q\fP\fItype\fP ] [ \fB\-R\fP\fIwest/east/south/north/zmin/zmax\fP[\fBr\fP] ] [ \fB\-S\fP\fIsmooth\fP ] 
+[ \fB\-T\fP[\fBs\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP\fItype/pen\fP ] [ \fB\-X\fP\fIx-shift\fP ]
+[ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fIzlevel\fP ] [ \fB\-c\fP\fIcopies\fP ]
+.SH DESCRIPTION
+\fBgrdview\fP reads a 2-D gridded file and produces a 3-D perspective plot by 
+drawing a mesh, painting a colored/grayshaded surface made up of polygons, or by scanline conversion of these polygons
+to a rasterimage.  Options include draping a data set on top of a surface, plotting of contours on top of the
+surface, and apply artificial illumination based on intensities provided in a separate grd file.
+.TP
+\fIrelief_file\fP
+2-D gridded data set to be imaged (the relief of the surface).
+#include "explain_-j.txt"
+#include "explain_-Jz.txt"
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+#include "explain_-b.txt"
+.TP
+.B \-C
+name of the color palette file.  Must be present if you want (1) mesh plot with
+contours (\fB\-Qm\fP), or (2) shaded/colored perspective image (\fB\-Qs\fP or \fB\-Qi\fP).
+For \fB\-Qs\fP: You can specify that you want to skip a z-slice by setting red = -; to
+use a pattern give red = \fBP|p\fP\fIdpi/pattern\fP[:\fBF\fP\fIr/g/b\fP[\fBB\fP\fIr/g/b\fP]].
+.TP
+.B \-E
+Sets the view point by specifying azimuth and elevation in degrees. [Default is 180/90]
+.TP
+.B \-G
+Drape the image in \fIdrapefile\fP on top of the relief provided by \fIrelief_file\fP. [Default is \fIrelief_file\fP].
+Note that \fB\-Jz\fP and \fB\-N\fP always refers to the \fIrelief_file\fP.  The \fIdrapefile\fP only provides
+the information pertaining to colors.
+.TP
+.B \-I
+Gives the name of a grdfile with intensities in the (-1,+1) range. [Default is no illumination].
+#include "explain_-K.txt"
+.TP
+.B \-L
+Boundary condition \fIflags\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of
+x or y or both, or \fIflags\fP may be \fIg\fP indicating geographical conditions (x and y are
+lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero).]
+If no \fIflags\fP are set, use bilinear rather than the default bicubic resampling when draping is required.
+.TP
+.B \-N
+Draws a plane at this z-level.  If the optional r/g/b is provided, the frontal facade between
+the plane and the data perimeter is colored.
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+#include "explain_-R.txt"
+This option may be used to indicate the range used for the 3-D axes [Default is
+region given by the \fIrelief_file\fP].  You may ask for a larger
+\fIw/e/s/n\fP region to have more room between the image and the axes.  A smaller region
+than specified in the \fIrelief_file\fP will result in a subset of the grid.
+.TP
+.B \-Q
+Select one of three settings: 1. Specify \fBm\fP for mesh plot [Default], and optionally append /r/g/b for a different mesh paint [white].
+2. Specify \fBs\fP for surface plot, and optionally append \fBm\fP to have mesh lines drawn on top of surface.
+3. Specify \fBi\fP for image plot, and optionally append the effective dpi resolution for the rasterization [100].
+For any of these choices, you may force a monochrome image by appending \fBg\fP.  Colors are then
+converted to shades of gray using the (television) YIQ transformation.
+.TP
+.B \-S
+Smooth the contours before plotting (see \fBgrdcontour\fP) [Default is no smoothing]
+.TP
+.B \-T
+Plot image without any interpolation.  This involves converting each node-centered
+bin into a polygon which is then painted separately.  Append \fBs\fP to skip
+nodes with z = NaN.  This option is useful for categorical data where
+interpolating between values is meaningless.
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+.TP
+.B \-Wc
+Draw contour lines on top of surface or mesh (not image).  Append pen attributes used for the contours.
+[Default: width = 3, color = 0/0/0, texture = solid].
+.TP
+.B \-Wm
+Sets the pen attributes used for the mesh. [Default: width = 1, color = 0/0/0, texture = solid].
+You must also select \fB\-Qm\fP or \fB\-Qsm\fP for meshlines to be drawn.
+#include "explain_-XY.txt"
+.TP
+.B \-Z
+Sets the z-level of the basemap [0].
+#include "explain_-c.txt"
+.SH EXAMPLES
+To make a mesh plot from the file hawaii_grav.grd and drawing the contours
+given in the color palette file hawaii.cpt on a Lambert map
+at LEN_1 cm/degree along the standard parallels 18 and 24, with vertical scale LEN_2 mgal/cm, and
+looking at the surface from SW at 30 degree elevation, try 
+.br
+.sp
+grdview hawaii_grav.grd SCALE1 \fB\-C\fPhawaii.cpt ZSCALE1 \fB\-Qm \-N\fP-100 \fB\-E\fP225/30 \fB\-Wc\fP > hawaii_grav_image.ps
+.br
+.sp
+To create a illuminated color perspective plot of the gridded data set image.grd, using the color
+palette file color.rgb, with linear scaling at 10 cm/x-unit
+and tickmarks every 5 units, with intensities provided by the file intens.grd, and looking from the SE, try
+.br
+.sp
+grdview image.grd SCALE2 \fB\-C\fPcolor.rgb \fB\-Qs \-E\fP135/30 \fB\-I\fPintens.grd  > image3D.ps
+.br
+.sp
+To make the same plot using the rastering option with dpi = 50, try
+.br
+.sp
+grdview image.grd SCALE2 \fB\-C\fPcolor.rgb \fB\-Qi\fP50 \fB\-E\fP135/30 \fB\-I\fPintens.grd  > image3D.ps
+.br
+.sp
+To create a color \fIPostScript\fP perspective plot of the gridded data set magnetics.grd, using the color
+palette file mag_intens.cpt, draped over the relief given by the file topography.grd, with Mercator map width of LEN_3 inch
+and tickmarks every 1 degree, with intensities provided by the file topo_intens.grd, and looking from the SE, try
+.br
+.sp
+grdview topography.grd SCALE3 \fB\-G\fPmagnetics.grd \fB\-C\fPmag_intens.cpt \fB\-Qs \-E\fP140/30 \fB\-I\fPtopo_intens.grd  > draped3D.ps
+.SH BUGS
+For the \fB\-Qs\fP option:  \fIPostScript\fP provides no way of smoothly varying colors within a polygon, so colors can only
+vary from polygon to polygon.  To obtain smooth images this way you may resample the grdfile(s) using \fBgrdsample\fP or
+use a finer grid size when running gridding programs like \fBsurface\fP or \fBnearneighbor\fP.  Unfortunately,
+this produces huge \fIPostScript\fP files.  The alternative is to use the \fB\-Qi\fP option, which
+computes bilinear or bicubic continuous color variations within polygons by using scanline conversion to image the polygons.
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grdcontour (l),
+.IR grdimage (l),
+.IR nearneighbor (l),
+.IR psbasemap (l),
+.IR pscontour (l),
+.IR pstext (l),
+.IR surface (l)

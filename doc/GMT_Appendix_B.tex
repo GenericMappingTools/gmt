@@ -1,0 +1,321 @@
+%------------------------------------------
+%	$Id: GMT_Appendix_B.tex,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+%
+%	The GMT Documentation Project
+%	Copyright 2000-2001.
+%	Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+
+\chapter{\gmt\ file formats}
+\thispagestyle{headings}
+
+\section{Table data} 
+\index{Table!format}
+
+These files have {\it N} records which have {\it M} fields each.
+Most programs can read multicolumn files, but require that the
+{\it x} [and {\it y}] variable(s) be stored in the 1st [and 2nd]
+column (There are, however, some exceptions to this rule, such as
+\GMTprog{filter1d} and \GMTprog{sample1d}).  \GMT\ can read both ASCII and
+binary table data.
+
+\subsection{ASCII tables}
+\index{Table!format!ASCII}
+\index{Table!multisegment}
+
+The first data record may be preceded by 1 or more header records.
+When using such files, make sure to use the \Opt{H} option and set
+the parameter N\_HEADER\_RECS in the \filename{.gmtdefaults} file
+(System default is 1 header record if \Opt{H} is set; you may also
+use \Opt{H}{\it nrecs} directly).  Fields
+within a record must be separated by spaces, tabs, or commas.
+Each field can be an integer or floating-point number or a geographic
+coordinate string using the [+$|$-]dd[:mm[:ss]][W$|$S$|$N$|$E$|$w$|$s$|$n$|$e] format.
+Thus, 12:30:44.5W, 17.5S, 1:00:05, and 200:45E are all valid input strings.
+When dealing with time- or ({\it x,y})-series it is usually
+convenient to have each profile in separate files.
+However, this may sometimes prove impractical due to large numbers
+of profiles.  An example is files of digitized lineations where
+the number of individual features may range into the thousands.
+One file per feature would in this case be unreasonable and
+furthermore clog up the directory. \GMT\ provides a mechanism for
+keeping more than one profile in a file.  Such files are called
+\emph{multiple segment files} and are identical to the ones
+just outlined except that they have subheaders interspersed with
+data records that signal the start of a segment.
+The subheaders may be of any format, but all must have the same
+character in the first column.  When using such files, you must
+specify the \Opt{–M} option.  The unique character is by default
+'$>$', but you can override that by appending your chosen character
+to the –M option.  E.g., \Opt{MH} will look for subheaders starting
+with H, whereas \Opt{M'*'} will check for asterisks (The quotes
+are necessary since * has special meaning to \UNIX).  The subheaders
+may contain \Opt{W} and \Opt{G} options for specifying pen and
+fill attributes for individual segments.  These settings will override
+the corresponding command line options.
+
+\subsection{Binary tables}
+\index{Table!format!binary}
+
+\GMT\ programs also support binary tables to speed up input-output
+for i/o-intensive tasks like gridding and preprocessing.  Files
+may have no header (hence the \Opt{–H} option cannot be used)
+and all data must either be single or double precision (no mixing
+allowed).  Multiple segment files are allowed (\Opt{M}) and the
+segment headers are assumed to be records where all the fields equal 
+NaN.  Flags appended to \Opt{M} are ignored.  The format and number
+of fields are specified with the
+\Opt{–b} option.  Thus, for input you may set \Opt{–bi}[{\bf s}][{\it n}],
+where {\bf s} designates single precision (default is double) and
+{\it n} is the number of fields.  For output, use \Opt{bo}[{\bf s}] 
+(the programs know how many columns to write).
+
+\section{2-D grdfiles} 
+
+\subsection{File contents}
+\index{grdfile!contents|(}
+
+The default 2-D binary netCDF grdfile in \GMT\ has several attributes.
+The \GMTprog{grdedit} utility program will allow you to edit parts of
+the header of an existing grdfile.  The attributes listed in Table~\ref{tbl:grdheader}
+are contained within the header record in the order given (except the $z$-array which
+is not part of the header structure, but makes up the rest of the file).
+
+\begin{table}
+\centering
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c}{\emph{Parameter}}	&	\multicolumn{1}{|c|}{\emph{Description}}	\\ \hline
+{\bf int} {\it nx}			&	Number of nodes in the $x$-dimension	\\ \hline
+{\bf int} {\it ny}			&	Number of nodes in the y-dimension	\\ \hline
+{\bf int} {\it node\_offset}	&	0 for grid line registration, 1 for pixel registration  \\ \hline
+{\bf double} {\it x\_min}		&	Minimum $x$-value of region	\\ \hline
+{\bf double} {\it x\_max}		&	Maximum $x$-value of region  \\ \hline
+{\bf double} {\it y\_min}		&	Minimum $y$-value of region  \\ \hline
+{\bf double} {\it y\_max}		&	Maximum $y$-value of region  \\ \hline
+{\bf double} {\it z\_min}		&	Minimum $z$-value in data set  \\ \hline
+{\bf double} {\it z\_max}		&	Maximum $z$-value in data set  \\ \hline
+{\bf double} {\it x\_inc}		&	Node spacing in $x$-dimension  \\ \hline
+{\bf double} {\it y\_inc}		&	Node spacing in $y$-dimension  \\ \hline
+{\bf double} {\it z\_scale\_factor}	&	Factor to multiply $z$-values after read  \\ \hline
+{\bf double} {\it z\_add\_offset}	&	Offset to add to scaled $z$-values  \\ \hline
+{\bf char} {\it x\_units}[80]	&	Units of the $x$-dimension	\\ \hline
+{\bf char} {\it y\_units}[80]	&	Units of the $y$-dimension	\\ \hline
+{\bf char} {\it z\_units}[80]	&	Units of the $z$-dimension	\\ \hline 
+{\bf char} {\it title}[80]	&	Descriptive title of the data set	\\ \hline
+{\bf char} {\it command}[320]	&	Command line that produced the grdfile	\\ \hline
+{\bf char} {\it remark}[160]	&	Any additional comments	\\ \hline \hline
+{\bf float} {\it z}[nx*ny]	&	1-D array with $z$-values in scanline format \\ \hline
+
+\end{tabular} 
+
+\caption{\gmt\ gridded file header record}
+\label{tbl:grdheader}
+\end{table}
+
+\index{grdfile!contents|)}
+
+\GMT\ version 3 also allows other formats to be read.  In addition to
+the default netCDF format it can use binary floating points, short
+integers, bytes, and bits, as well as 8-bit Sun rasterfiles (colormap
+ignored).   Additional formats may be used by supplying read/write
+functions and linking these with the \GMT\ libraries.
+The source file \filename{gmt\_customio.c} has the information that
+programmers will need to augment \GMT\ to read custom grdfiles.  We
+anticipate that the number of pre-programmed formats will increase as
+enterprising users implement what they need.
+
+\subsection{Grid line and Pixel registration} 
+\index{grdfile!registration|(}
+
+Scanline format means that the data are stored in rows ({\it y} = constant)
+going from the ``top'' ($y = y_{max}$ (north)) to the ``bottom''
+($y = y_{min}$ (south)).  Data within each row are ordered from
+``left'' ($x = x_{min}$ (west)) to ``right'' ($x = x_{max}$
+(east)).  The {\it node\_offset} signals how the nodes are laid out.
+The grid is always defined as the intersections of all {\it x}
+( \( x = x_{min}, x_{min} + x_{inc}, x_{min} + 2 \cdot x_{inc}, \ldots, x_{max} \) )
+and {\it y} ( \( y = y_{min}, y_{min} + y_{inc}, y_{min} + 2 \cdot y_{inc}, \ldots, y_{max} \) )
+lines.  The two scenarios differ in which area each data point
+represents.
+The default registration in \GMT\ is grid line registration.  Most
+programs can handle both types, and for some programs like \GMTprog{grdimage}
+a pixel registered file makes more sense.  Utility programs like
+\GMTprog{grdsample} and \GMTprog{grdproject} will allow you to convert
+from one format to the other.
+
+\subsubsection{Grid line registration}
+\index{grdfile!registration!grid line|(}
+
+In this registration, the nodes are centered on the grid line
+intersections and the data points represent the average value
+in a cell of dimensions ($x_{inc} \cdot y_{inc}$) centered on the
+nodes (Figure~\ref{fig:GMT_gridreg}).
+In the case of grid line registration the number of nodes are
+related to region and grid spacing by \\
+
+\[ \begin{array}{ccl} 
+nx & =	&	(x_{max} - x_{min}) / x_{inc} + 1	\\ 
+ny & =	&	(y_{max} - y_{min}) / y_{inc} + 1
+\end{array} \]
+
+which for the example in Figure~\ref{fig:GMT_gridreg} yields $nx = ny = 4$.
+
+\GMTfig[h]{GMT_gridreg}{Grid line registration of data nodes} 
+
+\index{grdfile!registration!grid line|)}
+
+\subsubsection{Pixel registration}
+\index{grdfile!registration!pixel|(}
+
+Here, the nodes are centered in the grid cells, i.e., the areas
+between grid lines, and the data points represent the average
+values within each cell (Figure~\ref{fig:GMT_pixelreg}.
+In the case of pixel registration the number of nodes are related
+to region and grid spacing by \\
+
+\[ \begin{array}{ccl} 
+nx & =	&	(x_{max} - x_{min}) / x_{inc}	\\ 
+ny & =	&	(y_{max} - y_{min}) / y_{inc}
+\end{array} \]
+
+Thus, given the same region (\Opt{R}), the pixel registered grids have one less
+column and one less row than the grid line registered grids; here we
+find $nx = ny = 3$.
+
+\GMTfig[H]{GMT_pixelreg}{Pixel registration of data nodes} 
+
+\index{grdfile!registration!pixel|)}
+\index{grdfile!registration|)}
+
+\subsection{Boundary Conditions for operations on grids} 
+\index{grdfile!boundary conditions|(}
+
+\GMT\ has the option to specify boundary conditions in some programs
+that operate on grids (\GMTprog{grdsample} \Opt{–L}; \GMTprog{grdgradient}
+\Opt{L}; \GMTprog{grdtrack} \Opt{L}; \GMTprog{nearneighbor} \Opt{L};
+\GMTprog{grdview} \Opt{–L}).  The boundary conditions come into play
+when interpolating or computing derivatives near the limits of the
+region covered by the grid. The \emph{default} boundary
+conditions used are those which are ``natural'' for the boundary
+of a minimum curvature interpolating surface.
+If the user knows that the data are periodic in {\it x} (and/or
+{\it y}), or that the data cover a sphere with {\it x},{\it y}
+representing {\it longitude},{\it latitude}, then there are better
+choices for the boundary conditions.
+Periodic conditions on {\it x} (and/or {\it y}) are chosen by
+specifying {\it x} (and/or {\it y}) as the boundary condition flags;
+global spherical cases are specified using the {\it g} (geographical)
+flag.  Behavior of these conditions is as follows:
+
+\begin{description}
+\index{grdfile!boundary conditions!periodic}
+
+\item[Periodic] conditions on {\it x} indicate that the data are
+periodic in the distance ($x_{max} - x_{min}$) and thus repeat
+values after every $N = (x_{max} - x_{min})/x_{inc}$.  Note that
+this implies that in a grid-registered file the values in the first
+and last columns are equal, since these are located at $x = x_{min}$
+and $x = x_{max}$, and there are {\it N} + 1 columns in the file.
+This is not the case in a pixel-registered file, where there are only
+{\it N} and the first and last columns are located at
+$x_{min} + x_{inc}/2$ and $x_{max} - x_{inc}/2$.  If {\it y} is
+periodic all the same holds for {\it y}.
+
+\item[Geographical] conditions indicate the following:
+\index{grdfile!boundary conditions!geographical}
+
+\begin{enumerate}
+
+\item If $(x_{max} - x_{min}) \geq 360$ and also 180 modulo $x_{inc} = 0$
+then a periodic condition is used on {\it x} with a period of 360;
+else a default condition is used on the {\it x} boundaries.
+
+\item If condition 1 is true and also $y_{max} = 90$ then a
+``north pole condition'' is used at $y_{max}$, else a default
+condition is used there.
+
+\item If condition 1 is true and also $y_{min} = -90$ then a
+``south pole condition'' is used at $y_{min}$, else a default
+condition is used there.
+
+\end{enumerate} 
+
+``Pole conditions'' use a 180\DS\ phase-shift of the data,
+requiring 180 modulo $x_{inc} = 0$.
+
+\item[Default] boundary conditions are
+\index{grdfile!boundary conditions!default}
+
+\[ \nabla^2 f = \frac{\partial}{\partial n} \nabla^2 f = 0 \] 
+
+on the boundary, where $f(x, y)$ is represented by the values in
+the grid file, and $\partial/\partial n$ is the derivative in the direction normal to a
+boundary, and
+
+\[ \nabla^2 = \left(\frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial y^2}\right) \]
+
+is the two-dimensional Laplacian operator.
+
+\end{description}
+\index{grdfile!boundary conditions|)}
+
+\section{Sun raster files}
+\index{Rasterfile!format}
+
+The Sun raster file format consists of a header followed by a series
+of unsigned 1-byte integers that represents the bit-pattern.  Bits
+are scanline oriented, and each row must contain an even number of
+bytes.  The predefined 1-bit
+patterns in \GMT\ have dimensions of 64 by 64, but other sizes will be
+accepted when using the \Opt{Gp$|$P} option.  The Sun header structure
+is outline in Table~\ref{tbl:sunheader}.
+
+\begin{table}[H]
+\centering
+
+\begin{tabular}{|l|l|}	\hline
+\multicolumn{1}{|c}{\emph{Parameter}}	&	\multicolumn{1}{|c|}{\emph{Description}}	\\ \hline
+{\bf int} {\it ras\_magic}	&	Magic number  \\ \hline
+{\bf int} {\it ras\_width}	&	Width (pixels) of image  \\ \hline
+{\bf int} {\it ras\_height}	&	Height (pixels) of image  \\ \hline
+{\bf int} {\it ras\_depth}	&	Depth (1, 8, 24, 32 bits) of pixel  \\ \hline
+{\bf int} {\it ras\_length}	&	Length (bytes) of image  \\ \hline
+{\bf int} {\it ras\_type}	&	Type of file; see RT\_* below  \\ \hline
+{\bf int} {\it ras\_maptype}	&	Type of colormap; see RMT\_* below  \\ \hline
+{\bf int} {\it ras\_maplength}	&	Length (bytes) of following map  \\ \hline
+\end{tabular}
+
+\caption{Structure of a Sun rasterfile}
+\label{tbl:sunheader}
+\end{table} 
+
+After the header, the color map (if {\it ras\_maptype} is not RMT\_NONE)
+follows for {\it ras\_maplength} bytes, followed by an image of
+{\it ras\_length} bytes.  Some related definitions are given in Table~\ref{tbl:sundef}.  
+
+\begin{table}[H]
+\index{Rasterfile!definitions}
+\centering
+\begin{tabular}{|l|l|}	\hline
+
+\multicolumn{1}{|c}{\emph{Macro name}}	&	\multicolumn{1}{|c|}{\emph{Description}}	\\ \hline
+RAS\_MAGIC	&	0x59a66a95  \\ \hline
+RT\_STANDARD	&	1 (Raw pixrect image in 68000 byte order)  \\ \hline
+RT\_BYTE\_ENCODED	&	2 (Run-length compression of bytes)  \\ \hline
+RT\_FORMAT\_RGB	&	3 ([X]RGB instead of [X]BGR)  \\ \hline
+RMT\_NONE	&	0 (ras\_maplength is expected to be 0)  \\ \hline
+RMT\_EQUAL\_RGB	&	1 (red[ras\_maplength/3],green[],blue[])  \\ \hline
+
+\end{tabular}
+
+\caption{Sun macro definitions relevant to rasterfiles}
+\label{tbl:sundef}
+\end{table} 
+
+Numerous public-domain programs exist, such as \progname{xv} and
+\progname{convert} (in the ImageMagick package), that will translate
+between various rasterfile formats such as tiff, gif, jpeg, and
+Sun raster.  Raster patterns may be created with \GMT\ plotting
+tools by generating \PS\ plots that can be rasterized
+by \progname{ghostscript} and translated into the right raster format.

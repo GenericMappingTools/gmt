@@ -1,0 +1,627 @@
+.TH pslib l DATE
+.SH NAME
+pslib v3.2 \- A \fIPostScript\fP based plotting library
+.SH DESCRIPTION
+.LP
+\fBpslib\fP\fR was created to make the generation of \fIPostScript\fR page
+description code easier.  It is a library that contains a series of tools
+that can be used to create plots.  The resulting \fIPostScript\fR code is
+ASCII text and can be edited using any text editor.  Thus, it is fairly easy
+to modify a plot file even after it has been created, e.g., to change text
+strings, set new gray shades or colors, experiment with various penwidths etc.
+\fBpslib\fP\fR is written in C but now includes FORTRAN bindings (thanks to John Goff, WHOI)
+and can therefore be called from both C and FORTRAN programs.  To use this library, you must link your plotting program with
+pslib.a.  \fBpslib\fP\fR is the core of the \fBGMT SYSTEM\fP\fR and \fBXY\fP\fR
+graphics programs.  \fBpslib\fP\fR output conforms to the Adobe Encapsulated
+\fIPostScript\fP File Specification Version 3.0 (EPSL), and may be used as EPS
+files and inserted into, say, a Word document on a Mac.  See Appendix F in the
+Technical Reference for detailed instructions.
+.LP
+Before any \fBpslib\fP\fR calls can be issued, the plotting system must be
+initialized.  This is done by calling \fBps_plotinit\fP, which defines macros, sets up
+the plot-coordinate system, scales, and [optionally] opens a file where all the
+\fIPostScript\fR code will be written.  Normally, the plot code is written
+to \fIstdout\fP.  The measure unit for sizes and positions can be set to be centimeter,
+inch, or m.  When all plotting is done, you must terminate the plotting system
+by calling \fBps_plotend\fP.
+.LP
+\fBpslib\fP uses the direct color model where red, green, and blue are given separately,
+each must be in the range from 0-255.  If red < 0 then no fill operation takes place.
+Most plot-items can be plotted
+with or without outlines.  If outline is desired (i.e., set to 1), it
+will be drawn using the current linewidth and pattern. \fBpslib\fP\fR uses highly
+optimized macro substitutions and scales the coordinates depending on the resolution
+of the hardcopy device so that the output file is kept as compact as possible.
+.LP
+A wide variety of output devices that support \fIPostScript\fR exist, including laserwriters
+(color or monochrome) and workstations running \fIPostScript\fR based window systems
+like SUNs OpenWindows.  xnews (part of OpenWindows) or ghostscript (public domain) can be used to create rasterfiles at a
+user-defined resolution (DPI), making it possible to render \fIPostScript\fR on a Versatec
+and other non-\fIPostScript\fR raster devices.  Regular SUN rasterfiles created under NeWS
+from \fIPostScript\fR files can be sent to a variety of color hardcopy units.  Check
+the devices available on your network.
+.SH FUNCTION CALLS
+.LP
+The following is a list of available functions and a short description of what they do and what
+parameters they expect.  All floating point variables are expected to be \fBdouble\fP (i.e.,
+8 bytes), whereas all integers are assumed to be 4 bytes long.  All plotting functions are
+declared as functions returning an int.  Currently, the return value is undefined.
+.LP
+.IP
+void \fBps_arc\fR (\fIx, y, radius, angle1, angle2, status\fP)
+.br
+\fBdouble\fR \fIx, y, radius, angle1, angle2\fP;
+.br
+\fBint\fR \fIstatus\fP;
+.RS 10
+Draws a circular arc centered on (\fIx,y\fP) from angle \fIangle1\fP to \fIangle2\fP.
+Angles must be given in decimal degrees.  If angle1 > angle2, a negative arc is
+drawn.  \fIstatus\fP is a value from 0 through 3.  1 means set new anchor point, 2 means
+stroke the circle, 3 means both, 0 means none of the above.
+.RE
+.IP
+void \fBps_axis\fR (\fIxpos, ypos, length, startval, stopval, tickval, label, anotpointsize, side\fP)
+.br
+\fBdouble\fR \fIxpos, ypos, length, startval, stopval, tickval\fP;
+.br
+\fBint\fR \fIanotpointsize, side\fP;
+.br
+\fBchar\fR \fI*label\fP;
+.RS 10
+Plots an axis with tickmarks, annotation, and label.  \fIxpos, ypos\fP, and \fIlength\fP
+are in inches (or cm or meters), \fIanotpointsize\fP in points (72 points = 1 inch), else
+data units are used.  \fIside\fP can be 0, 1, 2, or 3, which selects lower x-axis, right y-axis,
+upper x-axis, or left y-axis, respectively.  labelpointsize = 1.5 * \fIanotpointsize\fP.
+A negative \fItickval\fP will reverse the sense of positive direction, e.g., to have the
+y-axis be positive down.
+.RE
+.IP
+void \fBps_circle\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
+.br
+\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
+.br
+\fBint\fR \fIrgb[3], outline\fP;
+.RS 10
+Plots a circle and fills it with the specified color.  If \fIoutline\fP == 1, the outline
+will be drawn using current pen-width and -pattern.
+.RE
+.IP
+void \fBps_clipoff\fR ()
+.RS 10
+Resets the clip path to what it was before the last call to \fBclipon\fP.
+.RE
+.IP
+void \fBps_clipon\fR (\fIxarray, yarray, npoints, rgb, flag\fP)
+.br
+\fBdouble\fR \fIxarray[], yarray[]\fP;
+.br
+\fBint\fR \fInpoints, rgb[3], flag\fP;
+.RS 10
+Sets up a user-definable clip path.  Plotting outside this polygon will be clipped
+until \fBps_clipoff\fP is called.  If \fIred\fP >= 0 the inside of the path is
+filled with the specified color.  \fIflag\fP is used to create complex clip paths
+consisting of several disconnected regions, and takes on values 0-3. \fIflag\fP = 1
+means this is the first path in a multi-segment clip path.  \fIflag\fP = 2 means
+this is the last segment.  Thus, for a single path, \fIflag\fP = 3.
+.RE
+.IP
+void \fBps_colorimage\fR (\fIxpos, ypos, xlength, ylength, buffer, nx, ny\fP)
+.br
+\fBdouble\fR \fIxpos, ypos, xlength, ylength\fP;
+.br
+\fBunsigned char\fR \fIbuffer[]\fP;
+.br
+\fBint\fR \fInx, ny\fP;
+.RS 10
+Plots a 24-bit true color image using rgb colors.  Similar to \fIps_image\fP except \fIbits\fP is fixed
+to be 8.  The rgb triplets are stored in \fIbuffer\fP as rgbrgbrgb...
+This functions sets up a call to the \fIPostScript\fP colorimage operator
+which is not implemented in all drivers.
+.RE
+.IP
+void \fBps_colortiles\fR (\fIx0, y0, xlength, ylength, buffer, nx, ny\fP)
+.br
+\fBdouble\fR \fIx0, y0, xlength, ylength\fP;
+.br
+\fBint\fR \fInx, ny\fP;
+.br
+\fBunsigned char\fR \fIbuffer[]\fP;
+.RS 10
+Plots a true color image based on individual color tiles. \fIx0, y0\fP is
+the location of the lower left corner of the image in inches.  \fIxlength,
+ylength\fP is the image size in inches.  \fIbuffer\fP contains rgb triplets
+stored as rgbrgbrgb... \fInx, ny\fP is the image size in pixels.
+.RE
+.IP
+void \fBps_command\fR (\fItext\fP)
+.br
+\fBchar\fR \fI*text\fP;
+.br
+.RS 10
+Writes a raw \fIPostScript\fP command to the \fIPostScript\fP output file,
+e.g. "1 setlinejoin".
+.RE
+.IP
+void \fBps_comment\fR (\fItext\fP)
+.br
+\fBchar\fR \fI*text\fP;
+.RS 10
+Writes a comment (\fItext\fP) to the \fIPostScript\fP\fR output file, e.g. "Start of graph 2".
+.RE
+.IP
+void \fBps_cross\fR (\fIxcenter, ycenter, diameter\fP)
+.br
+\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
+.RS 10
+Plots a cross at the specified point using current pen-width and -pattern
+that fits inside a circle of given diameter.
+.RE
+.IP
+void \fBps_diamond\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
+.br
+\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
+.br
+\fBint\fR \fIrgb[3], outline\fP;
+.RS 10
+Plots a diamond and fills it with the specified color.  If \fIoutline\fP == 1, the outline
+will be drawn using current pen-width and -pattern.
+The symbol will fit inside a circle of given diameter.
+.RE
+.IP
+void \fBps_ellipse\fR (\fIxcenter, ycenter, angle, major, minor, rgb, outline\fP)
+.br
+\fBdouble\fR \fIxcenter, ycenter, angle, major, minor\fP;
+.br
+\fBint\fR \fIrgb[3], outline\fP;
+.RS 10
+Plots a ellipse with its major semiaxis rotated by \fIangle\fP degrees and fills it
+with the specified color.  If \fIoutline\fP == 1, the outline will be drawn using current pen-width and -pattern.
+.RE
+.IP
+void \fBps_flush\fR ()
+.RS 10
+Flushes the output buffer.
+.RE
+.IP
+void \fBps_hexagon\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
+.br
+\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
+.br
+\fBint\fR \fIrgb[3], outline\fP;
+.RS 10
+Plots a hexagon and fills it with the specified color.  If \fIoutline\fP == 1, the outline
+will be drawn using current pen-width and -pattern.
+The symbol will fit inside a circle of given diameter.
+.RE
+.IP
+void \fBps_image\fR (\fIxpos, ypos, xlength, ylength, buffer, nx, ny, bits\fP)
+.br
+\fBdouble\fR \fIxpos, ypos, xlength, ylength\fP;
+.br
+\fBunsigned char\fR \fIbuffer[]\fP;
+.br
+\fBint\fR \fInx, ny, bits\fP;
+.RS 10
+Plots a bit-mapped image using grayshades.  Specify position of lower left corner
+and size (in inches) of image.  \fIbuffer\fP is an unsigned character array with gray shade
+values (0 - 255) where 0 is black, 255 is white.  \fIbits\fP is number of bits pr pixel (8,
+4,  or 1). \fInx,ny\fP refers to the number of pixels in image.  The rowlength of \fIbuffer\fP must be an integral
+number of 8/\fIbits.  buffer[0]\fP is upper left corner.  E.g. if \fIbits\fP = 4, then \fIbuffer[j]\fP/16
+gives shade for pixel[2j-1] and \fIbuffer[j]\fP%16 (mod 16) gives shade for pixel[2j].
+\fIbuffer\fP values are stored as columns, starting at the lower left corner and ending at
+the upper right corner.  See the Adobe Systems \fIPostScript\fP\fR Reference Manual for
+more details.
+.RE
+.IP
+void \fBps_imagefill\fR (\fIx, y, n, image, imagefile, invert, imagedpi, outline, template, r_rgb, b_rgb\fP)
+.br
+\fBdouble\fR \fIx[], y[], x0, y0\fP;
+.br
+\fBint\fR \fIn, image, invert, imagedpi, outline, template, f_rgb[3], b_rgb[3]\fP;
+.br
+\fBchar\fR \fIimagefile\fP;
+.RS 10
+Similar to \fBps_polygon\fP, but fills the area with an image pattern rather than a color
+or grayshade.  \fIx\fP and \fIy\fP hold the arrays of \fIn\fP points.  90 predefined
+patterns are available  (See GMT Appendix E).  \fIimage\fP gives the image number (1-90).  If set to 0,
+\fIimagefile\fP must be the name to the user's image, which must be stored as a
+SUN 1-, 8-, or 24-bit rasterfile.  1-bit images only: (i) If \fIinvert\fP is TRUE (1), the black and
+white pixels are interchanged before plotting.  (ii) If template is TRUE (1), the set
+pixels are colored using the RGB combination in \fIf_rgb\fP, while the unset are painted
+with \fPb_rgb\fP.  The unit size of the image is
+controlled by \fIimagedpi\fP.  If set to zero, the image is plotted at the device
+resolution.  If \fIoutline\fP is TRUE, the current penwidth is used to draw the
+polygon outline.
+.RE
+.IP
+void \fBps_imagemask\fR (\fIxpos, ypos, xlength, ylength, buffer, nx, ny, polarity, rgb\fP)
+.br
+\fBdouble\fR \fIxpos, ypos, xlength, ylength\fP;
+.br
+\fBunsigned char\fR \fIbuffer[]\fP;
+.br
+\fBint\fR \fInx, ny, polarity, rgb[3]\fP;
+.RS 10
+Plots a transparent 1-bit image mask using the given \fIrgb\fP color.  Specify
+position of lower left corner and size (in inches) of image.  \fIbuffer\fP
+is an unsigned character array with 8 pixels per byte.  \fInx,ny\fP
+refers to the number of pixels in image.  The rowlength of \fIbuffer\fP must
+be an integral number of 8.  buffer[0]\fP is upper left corner.  \fIbuffer\fP
+values are stored as columns, starting at the lower left corner and ending at
+the upper right corner.  If \fIpolarity\fP is 0 then the bits that are 0 are
+painted with the \fIrgb\fP color, else the bits that are 1 are colored.
+See the Adobe Systems \fIPostScript\fP\fR Reference Manual for more details.
+.RE
+.IP
+void \fBps_itriangle\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
+.br
+\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
+.br
+\fBint\fR \fIrgb[3], outline\fP;
+.RS 10
+Plots an inverted and fills it with the specified color.  If \fIoutline\fP == 1, the outline
+will be drawn using current pen-width and -pattern.
+The symbol will fit inside a circle of given diameter.
+.RE
+.IP
+void \fBps_line\fR (\fIxarray, yarray, npoints, type, close, split\fP)
+.br
+\fBdouble\fR \fIxarray[], yarray[]\fP;
+.br
+\fBint\fR \fInpoints, type, close, split\fP;
+.RS 10
+Draw a continuous line from the positions in the x-y arrays.  If \fIclose\fP == 1,
+the first and last point will automatically be closed by the \fIPostScript\fP driver.
+If this is the first segment in a multi-segment path, set \fItype\fP == 1.  To end
+the segments and have the line(s) drawn,  set \fItype\fP == 2.  Thus, for a single
+segment, \fItype\fP must be 3.  The line is drawn using the current penwidth.
+Only if \fIsplit\fP is TRUE may ps_line use multiple strokes to draw lines longer that MAX_PATH.
+ps_polygon will call ps_line with \fIsplit\fP = FALSE since the path must be continuous.
+If \fIsplit\fP is FALSE and the pathlength exceeds MAX_PATH a warning will be issued.
+.RE
+.IP
+unsigned char \fB*ps_loadraster\fP (\fIfp, header, invert, monochrome, template, f_rgb, b_rgb\fP)
+.br
+\fBFILE\fP \fI*fp\fP;
+.br
+\fBstruct rasterfile\fP \fI*header\fP;
+.br
+\fBBOOLEAN\fP \fIinvert, monochrome, template\fP;
+.br
+\fBint\fP \fIf_rgb[], b_rgb[]\fP;
+.RS 10
+Reads the image contents of the Sun rasterfile pointed to by the open filepointer \fIfp\fP.
+The \fIheader\fP must first be obtained with \fBps_read_rasheader\fP.  If \fIinvert\fP is
+TRUE then 1-bit images will be bit-reversed.  If \fImonochrome\fP is TRUE then color images
+are converted to grayimages using the TV YIQ translation.  If \fItemplate\fP is TRUE then
+1-bit images will be colorized using the for- and background colors provided in \fIf_rgb\fP
+and \fIb_rgb\fP.  The routine can handle 1-, 8-, 24-, or 32-bit files in old, standard,
+run-length encoded, or RGB-style Sun format.
+.RE
+.IP
+void \fBps_patch\fR (\fIxarray, yarray, npoints, rgb, outline\fP)
+.br
+\fBdouble\fR \fIxarray[], yarray[]\fP;
+.br
+\fBint\fR \fInpoints, rgb[3], outline\fP;
+.RS 10
+Identical to \fBps_polygon\fP except polygon must be < 20 points long and there will
+be no attempt to shorten the path by discarding unnecessary intermediate points along
+straight segments.  Primarily used when painting large number of small polygons and
+not waste output space.
+.RE
+.IP
+void \fBps_pie\fR (\fIxcenter, ycenter, radius, azimuth1, azimuth2, rgb, outline\fP)
+.br
+\fBdouble\fR \fIxcenter, ycenter, radius, azimuth1, azimuth2\fP;
+.br
+\fBint\fR \fIrgb[3], outline\fP;
+.RS 10
+Plots a sector of a circle and paints it with the specified RGB combination.  If
+\fIoutline\fP == 1, the outline will be drawn using current pen-width and -pattern.
+.RE
+.IP
+void \fBps_plot\fR (\fIxabs, yabs, kpen\fP)
+.br
+\fBdouble\fR \fIxabs, yabs\fP;
+.br
+\fBint\fR \fIkpen;\fP
+.RS 10
+Absolute move (\fIkpen\fP=3) or draw (\fIkpen=\fP2), using current linewidth.
+.RE
+.IP
+void \fBps_plotend\fR (\fIlast_page\fP)
+.br
+\fBint\fR \fIlast_page\fP;
+.RS 10
+Terminates the plotting sequence and closes plot file (if other than \fIstdout\fP). If
+\fIlast_page\fP == 1, then a \fIPostScript\fP\fR showpage command is issued, which initiates
+the printing process on hardcopy devices.
+.RE
+.IP
+void \fBps_plotinit\fR (\fIplotfile, overlay, mode, xoff, yoff, xscl, yscl, ncopies, dpi, unit, pagesize, rgb, eps\fP)
+.br
+\fBchar\fR \fI*plotfile;\fP
+.br
+\fBint\fR \fIoverlay, mode, ncopies, dpi, unit\fP;
+.br
+\fBdouble\fR \fIxoff, yoff, xscl, yscl\fP;
+.br
+\fBint\fR \fIpagesize[2], rgb[3]\fP;
+\fBstruct EPS *\fR \fIeps\fP;
+.RS 10
+Initializes the plotting.  If \fIplotfile\fP == NULL (or ""), then output is sent to \fIstdout\fP,
+else output is sent to \fIplotfile\fP.  \fIoverlay\fP should be 1 only if you plan to append
+it to some existing \fIPostScript\fP\fR file.  \fImode\fP contains three flags in the three lowest
+bits.  The lowest bit controls the plot orientation and can be 0 (Landscape) or 1 (Portrait).  The
+next bit, if set to 1, will re-encode the fonts to include European accented characters.  The third
+bit controls the format used to write PostScript images: 0 means binary, 1 means hexadecimal.  Most
+printers needs the latter while some can handle binary which are 50% smaller and therefore execute
+faster.
+\fIxoff,yoff\fP are used to move the origin from the default position in the lower left corner.
+\fIxscl,yscl\fP are used to scale the entire plot (Usually set to 1.0, 1.0).  Set \fIncopies\fP to get
+more than 1 copy.  \fIdpi\fP sets the hardcopy resolution in dots pr units.  For optimum plot
+quality and processing speed, choose \fIdpi\fP to match the intended plotter resolution.  Examples are
+300 for most laserwriters, 2540 for Linotype-300, and ~85 for SUN screens.  When in
+doubt, use 300.  \fIunit\fP can be any of 0 (CM), 1 (INCH), or 2 (M), telling the plot system
+what units are used for distance and sizes.  Note that, regardless of choice of unit, dpi is still in
+dots-pr-inch.  \fIpagesize\fP means the physical width and height of the plotting media in points, (typically 612 by 792 for
+Letter or 595 by 842 for A4 laserwriter plotters.  The \fIrgb\fP array holds the color of the page (usually white = 255,255,255).
+The EPS structure is defined in the pslib.h include file and contains information that will make up the comments header of a EPS file.  Programmers who plan to call pslib routines should read the comments in pslib.h first.  Note that the FORTRAN binding does not
+expect this last argument.
+.RE
+.IP
+void \fBps_plotr\fR (\fIxrel, yrel, kpen\fP)
+.br
+\fBdouble\fR \fIxrel, yrel\fP;
+.br
+\fBint\fR \fIkpen\fP;
+.RS 10
+Move (\fIkpen\fP = 3) or draw (\fIkpen\fP = 2) relative to current point (see \fBps_plot\fP).
+.RE
+.IP
+void \fBps_polygon\fR (\fIxarray, yarray, npoints, rgb, outline\fP)
+.br
+\fBdouble\fR \fIxarray[], yarray[]\fP;
+.br
+\fBint\fR \fInpoints, rgb[3], outline\fP;
+.RS 10
+Creates a colored polygon from the positions in the x-y arrays.  Polygon will
+automatically be closed by the \fIPostScript\fP driver.  If \fIoutline\fP == 0,
+no outline is drawn.  If \fIoutline\fP == 1, the outline is drawn using current
+penwidth.
+.RE
+.IP
+int \fBps_read_rasheader\fP (\fIfp, header\fP)
+.br
+\fBFILE\fP \fI*fp\fP;
+.br
+\fBstruct rasterfile\fP \fI*header\fP;
+.RS 10
+Using the pointer \fIfp\fP to the open file, return the header structure
+of the Sun rasterfile.  This call is portable as it operates on the byte
+level.  Once the header is returned you may obtain the raster image with
+\fBps_loadraster\fP.
+.RE
+.IP
+void \fBps_rect\fR (\fIx1, y1, x2, y2, rgb, outline\fP)
+.br
+\fBdouble\fR \fIx1, y1, x2, y2\fP;
+.br
+int r\fIed, green, blue, outline;\fP
+.RS 10
+Plots a colored rectangle. (\fIx1,y1)\fP and (\fIx2,y2\fP) are any two corners on a diagonal.
+If \fIoutline\fP == 1, the outline will be drawn using current pen-width and -pattern.
+.RE
+.IP
+void \fBps_rotatetrans\fR (\fIx, y, angle\fP)
+.br
+\fBdouble\fR \fIx, y, angle\fP;
+.RS 10
+Rotates the coordinate system by \fIangle\fP degrees, then translates origin to (\fIx,y\fP).
+.RE
+.IP
+void \fBps_setdash\fR (\fIpattern, offset\fP)
+.br
+\fBchar\fR \fI*pattern;\fP
+.br
+\fBint\fR \fIoffset;\fP
+.RS 10
+Changes the current dashpattern.  The character string \fIpattern\fP is set to the desired
+pattern.  E.g., "4 2" and \fIoffset\fP = 1 will plot like:
+.RS 5
+x ----  ----  ---- 
+.RE
+etc, where x is starting point (The x is not plotted).  That is, the line is made up of a repeating pattern of a
+4 units long line and a 2 unit long gap, starting 1 unit after the x.  To reset to solid line,
+specify \fIpattern\fP = NULL ("") and \fIoffset\fP = 0.  Units are in dpi units.
+.RE
+.IP
+void \fBps_setfont\fR (\fIfontnr\fP)
+.br
+\fBint\fR \fIfontnr\fP;
+.RS 10
+Changes the current font number to \fIfontnr\fP.  The fonts available are:  0 = Helvetica,
+1 = H. Bold, 2 = H. Oblique, 3 = H. Bold-Oblique, 4 = Times, 5 =
+T. Bold, 6 = T. Italic, 7 = T. Bold Italic, 8 = Courier, 9 = C. Bold,
+10 = C Oblique, 11 = C Bold Oblique, 12 = Symbol, 13 = AvantGarde-Book,
+14 = A.-BookOblique, 15 = A.-Demi, 16 = A.-DemiOblique, 17 = Bookman-Demi,
+18 = B.-DemiItalic, 19 = B.-Light, 20 = B.-LightItalic, 21 = Helvetica-Narrow,
+22 = H-N-Bold, 23 = H-N-Oblique, 24 = H-N-BoldOblique, 25 = NewCenturySchlbk-Roman, 
+26 = N.-Italic, 27 = N.-Bold, 28 = N.-BoldItalic,
+29 = Palatino-Roman, 30 = P.-Italic, 31 = P.-Bold, 32 = P.-BoldItalic,
+33 = ZapfChancery-MediumItalic.  If \fIfontnr\fP is outside this range, it is set to 0.
+.RE
+.IP
+void \fBps_setformat\fR (\fIn_decimals\fP)
+.br
+\fBint\fR \fIn_decimals\fP;
+.RS 10
+Sets number of decimals to be used when writing color or gray values.  The default
+setting of 3 gives 1000 choices per red, green, and blue value, which is more than
+the 255 choices offered by most 24-bit platforms.  Choosing a lower value will make
+the output file smaller at the expense of less color resolution.  Still, a value of 2
+gives 100 x 100 x 100 = 1 million colors, more than most eyes can distinguish.  For
+a setting of 1, you will have 10 nuances per primary color and a total of 1000 unique
+combinations.
+.RE
+.IP
+void \fBps_setline\fR (\fIlinewidth\fP)
+.br
+\fBint\fR \fIlinewidth\fP;
+.RS 10
+Changes the current linewidth in DPI units.  0 gives thinnest line, but the use of
+0 is implementation-dependent (Works fine on most laserwriters).
+.RE
+.IP
+void \fBps_setpaint\fR (\fIrgb\fP)
+.br
+\fBint\fR \fIrgb[3]\fP;
+.RS 10
+Changes the current RGB setting for pens and text.
+.RE
+.IP
+void \fBps_square\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
+.br
+\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
+.br
+\fBint\fR \fIrgb[3], outline\fP;
+.RS 10
+Plots a square and fills it with the specified color.  If \fIoutline\fP == 1, the outline
+will be drawn using current pen-width and -pattern.
+The symbol will fit inside a circle of given diameter.
+.RE
+.IP
+void \fBps_star\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
+.br
+\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
+.br
+\fBint\fR \fIrgb[3], outline\fP;
+.RS 10
+Plots a star and fills it with the specified color.  If \fIoutline\fP == 1, the outline
+will be drawn using current pen-width and -pattern.
+The symbol will fit inside a circle of given diameter.
+.RE
+.IP
+void \fBps_text\fR (\fIx, y, pointsize, text, angle, justify, form\fP)
+.br
+\fBdouble\fR \fIx, y, angle\fP;
+.br
+\fBchar\fR \fI*text\fP;
+.br
+\fBint\fR \fIpointsize, justify, form\fP;
+.RS 10
+The \fItext\fP is plotted starting at (\fIx,y\fP), and will make an \fIangle\fP with the horizontal.  The
+point (\fIx,y\fP) maps onto different points of the textstring by giving various values for
+\fIjustify\fP.  It is used as follows:
+.LP
+.RS 10
+9------------10----------- 11
+.br
+ |                             |
+.br
+5             6             7
+.br
+ |                             |
+.br
+1------------ 2------------ 3
+.RE
+The box represents the textstring.  E.g., to plot a textstring with its center of gravity
+at (\fIx,y\fP), you must use \fIjustify\fP == 6.  If \fIjustify\fP is negative, then all leading and trailing
+blanks are stripped before plotting.  Certain character sequences (flags) have special
+meaning to ps_text. @~ toggles between current font and the Mathematical Symbols font.
+@%\fIno\fP% sets font to \fIno\fP; @%% resets to starting font.
+@- turns subscript on/off, @+ turns superscript on/off, @# turns small caps
+on/off, and @\\ will make a composite character of the following two character.
+Give fontsize in points (72 points = 1 inch).  Normally, the text is typed using solid characters.
+To draw outline characters, set \fIform\fP == 1.
+.RE
+.IP
+void \fBps_textbox\fR (\fIx, y, pointsize, text, angle, justify, outline, dx, dy, rgb\fP)
+.br
+\fBdouble\fR \fIx, y, angle, dx, dy\fP;
+.br
+\fBchar\fR \fI*text\fP;
+.br
+\fBint\fR \fIpointsize, justify, outline, rgb[3]\fP;
+.RS 10
+This function is used in conjugation with \fBps_text\fP when a box surrounding the
+text string is desired.  Taking most of the arguments of \fBps_text\fP, the user must
+also specify the color of the resulting rectangle, and whether its outline should
+be drawn.  More room between text and rectangle can be obtained by setting \fIdx\fP
+and \fIdy\fP accordingly.
+.RE
+.IP
+void \fBps_transrotate\fR (\fIx, y, angle\fP)
+.br
+\fBdouble\fR \fIx, y, angle\fP;
+.RS 10
+Translates the origin to (\fIx,y\fP), then rotates the coordinate system by \fIangle\fP degrees.
+.RE
+.IP
+void \fBps_triangle\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
+.br
+\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
+.br
+\fBint\fR \fIrgb[3], outline\fP;
+.RS 10
+Plots a triangle and paints it with the specified RGB combination.  If \fIoutline\fP == 1,
+the outline will be drawn using current pen-width and -pattern.
+The symbol will fit inside a circle of given diameter.
+.RE
+.IP
+void \fBps_vector\fR (\fIxtail, ytail, xtip, ytip, tailwidth, headlength, headwidth, headshape, rgb, outline\fP)
+.br
+\fBdouble\fR \fIxtail, ytail, xtip, ytip, tailwidth, headlength, headwidth, headshape\fP;
+.br
+\fBint\fR \fIrgb[3], outline\fP;
+.RS 10
+Draws a vector of size and appearance as specified by the various parameters.  \fIheadshape\fP can
+take on values from 0-1 and specifies how far the intersection point between the base of a
+straight vector head and the vector line is moved toward the tip.  0 gives a triangular
+head, 1.0 gives an arrow shaped head. If \fIoutline\fP == 1, the outline will be drawn using
+current penwidth.
+.RE
+.IP
+void \fBps_words\fR (\fIx, y, text, n_words, line_space, par_width, par_just, font, font_size, angle, rgb, justify, draw_box, x_off, y_off, x_gap, y_gap, boxpen_width, boxpen_texture, boxpen_offset, boxpen_rgb, vecpen_width, vecpen_texture, vecpen_offset, vecpen_rgb, boxfill_rgb\fP)
+.br
+\fBdouble\fR \fIx, y, line_space, par_width, angle, x_off, y_off, x_gap, y_gap\fP;
+.br
+\fBint\fR \fIn_words, font, font_size, justify, draw_box, boxpen_width, boxpen_offset\fP;
+.br
+\fBint\fR \fIboxpen_rgb[3], vecpen_width, vecpen_offset, vecpen_rgb[3], boxfill_rgb[3]\fP;
+.br
+\fBchar\fP \fI**text, *boxpen_texture, *vecpen_texture\fP;
+.RS 10
+Typesets paragraphs of text.  \fItext\fP is an array of the words to typeset, using the given
+line-spacing and paragraph width.  The whole text block is positioned at \fIx, y\fP which is
+the anchor point on the box as indicated by \fIjustify\fP (see ps_text). The whole block
+is then shifted by \fIx_off, y_off\fP. Inside the box, text
+is justified left, centered, right, or justified as governed by \fIpar_just\fP (lcrj).
+\fIdraw_box\fP contains 4 bit flags pertaining to the surrounding outline box.  If on, the first
+(lowest) bit draws the box outline.  The second bit fills the box interior.  The third bit
+makes the outline box have rounded corners (unless \fIx_gap, y_gap\fP, which specifies the
+padding between the text and the box, are zero), while the forth bit draws a line from the original
+\fIx, y\fP point to the shifted position.  The escape sequences described for ps_text applies
+here, as well as two additional commands: @;\fIr/g/b\fP; changes the font color (@;; resets it),
+and @:\fIsize\fP: changes the font size (@:: resets it).
+.RE
+.SH AUTHOR
+Paul Wessel, School of Ocean and Earth Science and Technology, 1680 East-West Road, Honolulu,
+Hawaii 96822, (808) 956-4778, Internet address: wessel@soest.hawaii.edu.
+.SH BUGS
+Caveat Emptor:  The author is \fBnot\fP responsible for any disasters, suicide attempts, or ulcers
+caused by correct \fBor\fP incorrect use of \fBpslib\fR.  If you find bugs, please report
+them to the author by electronic mail.  Be sure to provide enough detail so that I
+can recreate the problem.
+.SH RESTRICTIONS
+Due to the finite memory of some output devices like Laserwriters, certain restrictions due
+to limitations of the \fIPostScript\fP interpreter apply:  For now, the arrays passed to \fBps_clipon\fP
+and \fBps_polygon\fP must contain less than about 1350 points.  Also, the buffer array passed to \fBps_image\fP must
+be able to fit in the available memory.  Check the specifications of the hardcopy device you are using.
+Note that some Raster Image Processors (RIPs) do not support direct color so that the colors you get may
+not be exactly the ones you wanted.  This is a limitation of the RIP, not the underlying \fIPostScript\fP code generated
+by \fBpslib\fR.
+.SH REFERENCES
+Adobe Systems Inc., 1990, \fIPostScript\fP language reference manual, 2nd edition,
+Addison-Wesley, (ISBN 0-201-18127-4).

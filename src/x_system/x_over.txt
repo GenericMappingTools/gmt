@@ -1,0 +1,60 @@
+.TH XOVER l DATE
+.SH NAME
+\fBXOVER\fP \- Find and compute Cross-Over Errors
+.SH SYNOPSIS
+\fBxover\fP \fIleg_1\fP [ \fIleg_2\fP ] [ \fB\-A\fP ] [ \fB\-C\fP ] [ \fB\-L\fP ] [ \fB\-V\fP ] 
+[ \fB\-W\fP\fItimegap\fP ] [ \fB\-G\fP\fIfact\fP ] [ \fB\-M\fP\fIfact\fP ] 
+[ \fB\-T\fP\fIfact\fP ] [ \fB\-N\fP\fInp_int\fP ]
+.SH DESCRIPTION
+\fBxover\fP is used to inspect two cruises to see if they intersect, and if so report the time, position,
+discrepancies in gravity/magnetics/bathymetry, heading for each tracksegment, and the average
+values of the geophysical observables at the cross-over point. The names of the legs are passed
+on the command line. If they are identical or only one name is passed, then \fBxover\fP looks for
+internal cross-overs. The optional parameters are:
+.TP
+.B \-A
+Use Akima's spline to interpolate the geophysical field at the cross-over point.
+.TP
+.B \-C
+Use a Natural Cubic spline function instead.
+.TP
+.B \-L
+Use a linear interpolant [Default].
+.TP
+.B \-W
+Do not compute cross-overs if the 2 nearest points are more than \fItimegap\fP minutes apart.
+.TP
+.B \-G
+Scale gravity by \fIfact\fP [Default is 0.1 since gmt-files store gravity in g.u.]
+.TP
+.B \-M
+Scale magnetic anomaly by \fIfact\fP [1.0].
+.TP
+.B \-T
+Scale bathymetry by \fIfact\fP [1.0].
+.TP
+.B \-N
+Specify how many points to use in the interpolation [Default is 6].
+.TP
+.B \-V
+Verbose, report the number of cross-overs for this pair of legs.
+.br
+.SH   
+The COEs found are printed out to standard output in ASCII format. The first record contains the
+leg names and their start year, whereas subsequent records have the data for each COE
+encountered. The fields written out are lat, lon, time along track #1, time along track #2,
+x_gravity, x_magnetics, x_bathymetry, average gravity, average magnetics, average bathymetry,
+heading along track #1, and heading along track #2. Sign convention: If lega and legb are passed
+on the command line, then the COE value is Value (lega) - Value (legb).  It is recommended that
+the Akima's spline is used instead of the natural cubic spline, since it is less sensitive to
+outliers that tend to introduce wild oscillations in the interpolation.  A version of \fBxover\fP
+compiled for a SUN with FPA board is provided (\fBxover_fpa\fP).
+.SH SEE ALSO
+.IR gmt (l),
+.IR x_system (l)
+.SH REFERENCES
+Wessel, P. XOVER: A Cross-over Error Detector for Track Data,
+\fIComputers & Geosciences, 15\fP, 333-346.
+
+
+

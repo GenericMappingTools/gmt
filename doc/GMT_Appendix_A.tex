@@ -1,0 +1,145 @@
+%-----------------------------------------
+%	$Id: GMT_Appendix_A.tex,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+%
+%	The GMT Documentation Project
+%	Copyright 2000-2001.
+%	Paul Wessel and Walter H. F. Smith
+%-----------------------------------------
+%
+
+\chapter{\gmt\ supplemental packages}
+\index{GMT@\GMT!supplemental packages}
+\thispagestyle{headings}
+
+These packages are for the most part written
+and supported by us, but there are some exceptions.
+ They provide extensions of \GMT\
+that are needed for particular rather than general
+applications.  The software is provided in a separate,
+supplemental archive (GMT\_suppl.tar.gz (or .bz2); see
+Appendix D).  Questions or bug reports for this
+software should be addressed to the person(s) listed in
+the \filename{README} file associated with the particular program.
+It is not guaranteed that these programs are fully ANSI-C,
+Y2K, or POSIX compliant, or that they necessarilly will
+install smoothly on all platforms, but most do.  Note that
+the data sets some of these programs work on are not distributed
+with these packages; they must be obtained separately.
+The contents of the supplemental archive may change
+without notice; at this writing it contains these directories:
+
+\section{cps: complete \PS\ en-/decoder}
+
+This package contains \GMTprog{cpsencode} which reads a shell
+script, compresses and encodes it and all data files referenced
+therein as \PS\ comments, and appends them to the \PS\ plot that the shell
+script generates.  You may reverse the process with
+\GMTprog{cpsdecode} and extract the original data and shell script from
+the \PS\ file. The package is mainained by Paul Wessel\footnote{wessel@soest.hawaii.edu}.
+
+\section{dbase: gridded data extractor}
+
+This package contains \GMTprog{grdraster} which you can use to extract
+data from global gridded data sets such as those available from NGDC.
+We have used it to prepare some of the grids in the examples (Chapter 6).
+You can also customize it to read your own data sets.  The package is
+maintained by the \GMT\ developers.
+
+\section{gshhs: GSHHS data extractor}
+
+This package contains \progname{gshhs} which you can use to extract
+shoreline polygons from the Global Self-consistent Hierarchical High-resolution
+Shorelines (GSHHS) available separately from \htmladdnormallinkfoot{NGDC}{http://www.ngdc.noaa.gov/mgg/shorelines/gshhs.html}
+or the \htmladdnormallinkfoot{GSHHS home page}{http://www.soest.hawaii.edu/wessel/gshhs/gshhs.html}
+(GSHHS is the polygon data base from which
+the \GMT\ coastlines derive).  It also contains \progname{gshhs\_dp}
+for cleverly decimating a shoreline, and \progname{gshhstograss} to convert shoreline
+segments to the GRASS database format.
+The package is maintained by Paul Wessel.
+
+\section{imgsrc: gridded altimetry extractor}
+
+This package consists of the program \GMTprog{img2mercgrd} to
+extract subsets of the global gravity and predicted topography
+solutions derived from satellite altimetry\footnote{For data bases,
+see http://topex.ucsd.edu/marine\_grav/mar\_grav.html.}.  The package
+is maintained by Walter Smith\footnote{walter@raptor.grdl.noaa.gov}.
+
+\section{meca: seismology and geodesy symbols}
+
+This package contains the programs \GMTprog{pscoupe}, \GMTprog{psmeca},
+\GMTprog{pspolar}, and \GMTprog{psvelo} which are used
+by seismologists and geodesists for plotting focal mechanisms (including
+cross-sections and polarities), error ellipses, velocity arrows, rotational
+wedges, and more.  The package is maintained by
+Kurt Feigl\footnote{Kurt.Feigl@cnes.fr} and
+Genevieve Patau\footnote{patau@ipgp.jussieu.fr}.
+
+\section{mex: Matlab 5--\gmt\ interface}
+
+Here you will find the mex files \progname{grdinfo}, \progname{grdread},
+and \progname{grdwrite}, which can be used in Matlab 5 to read and write
+\GMT\ grdfiles.  The package originated with David Sandwell, UCSD,
+and was subsequently modified by Paul Wessel and Phil Sharfstein, UCSB.
+It is now mainained by Paul Wessel.
+
+\section{mgg: MGD77 extractor and plotting tools}
+
+This package holds the programs \GMTprog{binlegs}, \GMTprog{dat2gmt},
+\GMTprog{gmt2dat}, \GMTprog{gmtinfo}, \GMTprog{gmtlegs}, \GMTprog{gmtlist},
+\GMTprog{gmtpath}, \GMTprog{gmttrack}, and \GMTprog{mgd77togmt}, which can be
+used to maintain, access, extract data from, and plot marine geophysical
+data files (MGD-77†\footnote{These data are available on CD-ROM from NGDC
+(www.ngdc.noaa.gov).}). The package is maintained by the \GMT\ developers.
+
+\section{misc: posters, patterns, and digitizing}
+
+At the moment, this package contains the programs \GMTprog{psmegaplot}
+which you can use to make large posters using a simple laserwriter,
+\GMTprog{makepattern} which generates raster patterns from \GMT\ 3.0
+icon files, and \GMTprog{gmtdigitize} which provides a GMT interface
+to a digitizing tablet via a serial port.  The package is maintained by Paul Wessel.
+
+\section{segyprogs: Plotting SEGY seismic data}
+
+This package contains programs to plot SEGY seismic data files using
+the \GMT\ mapping transformations and postscript library. \GMTprog{pssegy} generates
+a 2-D plot (x:location and y:time/depth) while \GMTprog{pssegyz} generates a
+3-D plot (x and y: location coordinates, z: time/depth). Locations may be
+read from predefined or arbitrary portions of each trace header.
+The package is maintained by Tim Henstock\footnote{Timothy.J.Henstock@soc.soton.ac.uk}.
+
+\section{spotter: backtracking and hotspotting}
+
+This package contains the plate tectonic programs \GMTprog{backtracker},
+which you can use to move geologic markers forward or backward in time, 
+\GMTprog{hotspotter} which generates CVA grids based on seamount locations
+and a set of absolute plate motion stage poles, and \GMTprog{originator},
+which associates seamounts with the most likely hotspot origins.  The package
+is maintained by Paul Wessel.
+
+\section{x2sys: Track crossover error estimation}
+
+This package contains the tools \GMTprog{x2sys\_datalist},
+which allows you to extract data from almost any binary or ASCII
+data file, and \GMTprog{x2sys\_cross} which determines crossover
+locations and errors generated by one or several geospatial tracks.
+It is a new generation of tools intended to replace the old
+``X\_SYSTEM'' crossover tools (below).  The package is maintained
+by Paul Wessel.
+
+\section{x\_system: Track crossover error estimation}
+
+This package contains the tools \GMTprog{x\_edit},
+\GMTprog{x\_init}, \GMTprog{x\_list}, \GMTprog{x\_over}, \GMTprog{x\_remove},
+\GMTprog{x\_report}, \GMTprog{x\_setup}, \GMTprog{x\_solve\_dc\_drift}, and
+\GMTprog{x\_update}.
+Collectively, they make up the old ``XSYSTEM'' crossover tools.  This
+package with remain in the \GMT\ supplemental archive until \progname{x2sys} is complete.
+The package is maintained by Paul Wessel.
+
+\section{xgrid: visual editor for grdfiles}
+
+The package contains an X11 editor (\progname{xgridedit}) for visual
+editing of grdfiles.  It was originally developed by Hugh Fisher, CRES,
+in March 1992 but is now maintained by Lloyd Parkes\footnote{Lloyd.Parkes@vuw.ac.nz}.

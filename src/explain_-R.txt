@@ -1,0 +1,5 @@
+.TP
+.B \-R
+\fIwest, east, south,\fP and \fInorth\fP specify the Region of interest.  To specify boundaries
+in degrees and minutes [and seconds], use the dd:mm[:ss] format.  Append \fBr\fP if lower left and upper right
+map coordinates are given instead of wesn.

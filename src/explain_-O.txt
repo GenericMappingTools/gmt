@@ -1,0 +1,3 @@
+.TP
+.B \-O
+Selects Overlay plot mode [Default initializes a new plot system].

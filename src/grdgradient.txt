@@ -1,0 +1,106 @@
+.TH GRDGRADIENT l DATE
+.SH NAME
+grdgradient \- Compute directional derivative or gradient from 2-D grd file representing z(x,y)
+.SH SYNOPSIS
+\fBgrdgradient\fP \fIin_grdfile\fP \fB\-G\fP\fIout_grdfile\fP [ \fB\-A\fP\fIazim\fP[/\fIazim2\fP] ] 
+[ \fB\-D\fP[\fBc\fP][\fBo\fP][\fBn\fP] ] [ \fB\-L\fP\fIflag\fP ] [ \fB\-M\fP ] [ \fB\-N\fP[\fBe\fP][\fBt\fP][\fIamp\fP][/\fIsigma\fP[/\fIoffset\fP]] ]  [ \fB\-S\fP\fIslopefile\fP ] 
+[ \fB\-V\fP ]
+.SH DESCRIPTION
+\fBgrdgradient\fP may be used to compute the directional derivative in a given direction (\fB\-A\fP), 
+or the direction (\fB\-S\fP) [and the magnitude (\fB\-D\fP)] of the vector gradient of the data.
+.br
+Estimated values in the first/last row/column of output depend on boundary conditions (see \fB\-L\fP).
+.br
+.TP
+\fIin_grdfile\fP
+2-D grd file from which to compute directional derivative.
+.TP
+.B \-G
+Name of the output grdfile for the directional derivative.
+.br
+.sp
+.SH OPTIONS
+	No space between the option flag and the associated arguments.  Use upper case for the
+option flags and lower case for modifiers.
+.TP
+.B \-A
+Azimuthal direction for a directional derivative; \fIazim\fP is the angle in the x,y plane 
+measured in degrees positive clockwise from north (the +y direction) toward east (the +x direction).  
+The negative of the directional derivative, \-[dz/dx*sin(\fIazim\fP) + dz/dy*cos(\fIazim\fP)], is 
+found; negation yields positive values when the slope of z(x,y) is downhill in the \fIazim\fP direction,
+the correct sense for shading the illumination of an image (see \fBgrdimage\fP and \fBgrdview\fP) by a 
+light source above the x,y plane shining from the \fIazim\fP direction.  Optionally, supply two azimuths, \fB\-A\fP\fIazim\fP/\fIazim2\fP, in which case the gradients in each of these directions are calculated 
+and the one larger in magnitude is retained; this is useful for illuminating data with two directions of 
+lineated structures, e.g. \fB\-A\fP\fI0\fP/\fI270\fP illuminates from the north (top) and west (left).
+.TP
+.B \-D
+Find the direction of the gradient of the data.  By default, the directions 
+are measured clockwise from north, as \fIazim\fP in \fB\-A\fP above.  Append 
+\fBc\fP to use conventional cartesian angles measured counterclockwise from 
+the positive x (east) direction.  Append \fBo\fP to report orientations (0-180) 
+rather than directions (0-360).  Append \fBn\fP to add 90 degrees to all angles 
+(e.g., to give orientation of lineated features).
+.TP
+.B \-L
+Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of 
+x or y or both, or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
+lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero).]  
+.TP
+.B \-M
+By default the units of \fBgrdgradient\fP are in units_of_z/units_of_dx_and_dy.
+However, the user may choose this option to convert dx,dy in degrees of
+longitude,latitude into meters, so that the units of \fBgrdgradient\fP are in
+z_units/meter.
+.TP
+.B \-N
+Normalization.  [Default:  no normalization.]  The actual gradients \fIg\fP 
+are offset and scaled to produce normalized gradients \fIgn\fP with a maximum 
+output magnitude of \fIamp\fP.  If \fIamp\fP is not given, default \fIamp\fP = 1.  
+If \fIoffset\fP is not given, it is set to the average of \fIg\fP.  \fB\-N\fP 
+yields \fIgn\fP = \fIamp\fP * (\fIg\fP - \fIoffset\fP)/max(abs(\fIg\fP - \fIoffset\fP)).  
+\fB\-Ne\fP normalizes using a cumulative Laplace distribution yielding 
+\fIgn\fP = \fIamp\fP * (1.0 - exp(sqrt(2) * (\fIg\fP - \fIoffset\fP)/\fIsigma\fP)) 
+where \fIsigma\fP is estimated using the L1 norm of (\fIg\fP - \fIoffset\fP) if it is 
+not given.   \fB\-Nt\fP normalizes using a cumulative Cauchy distribution yielding 
+\fIgn\fP = (2 * \fIamp\fP / PI) * atan( (\fIg\fP - \fIoffset\fP)/\fIsigma\fP)
+where \fIsigma\fP is estimated using the L2 norm of (\fIg\fP - \fIoffset\fP) if it is 
+not given.
+.TP
+.B \-S
+Name of output grdfile with scalar magnitudes of gradient vectors.  Requires \fB\-D\fP.
+#include "explain_-V.txt"
+.SH HINTS
+If you don't know what \fB\-N\fP options to use to make an intensity file for 
+\fBgrdimage\fP or \fBgrdview\fP, a good first try is \fB\-Ne\fP0.6.
+.br
+.sp
+If you want to make several illuminated maps of subregions of a large data set, 
+and you need the illumination effects to be consistent across all the maps, use 
+the \fB\-N\fP option and supply the same value of \fIsigma\fP and \fIoffset\fP 
+to \fBgrdgradient\fP for each map.  A good guess is \fIoffset\fP = 0 and \fIsigma\fP 
+found by \fBgrdinfo \-L2\fP or \fB\-L1\fP applied to an unnormalized gradient grd.
+.br
+.sp
+If you simply need the \fIx\fP- or \fIy\fP-derivatives of the grid, use
+\fBgrdmath\fP.
+.SH EXAMPLES
+To make a file for illuminating the data in geoid.grd using exp-normalized gradients 
+imitating light sources in the north and west directions, do
+.br
+.sp
+grdgradient geoid.grd \fB\-A\fP0/270 \fB\-G\fPgradients.grd \fB\-Ne\fP0.6 \fP\-V\fP
+.br
+.sp
+To find the azimuth orientations of seafloor fabric in the file topo.grd, try
+.br
+.sp
+grdgradient topo.grd \fB\-Snao \-G\fPazimuths.grd \fB\-V\fP
+.br
+.sp
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR gmtdefaults (l),
+.IR grdhisteq (l),
+.IR grdimage (l),
+.IR grdview (l),
+.IR grdvector (l)

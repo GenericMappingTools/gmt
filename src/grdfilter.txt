@@ -1,0 +1,61 @@
+.TH GRDFILTER l DATE
+.SH NAME
+grdfilter \- Filter a \fI.grd\fP file in the Time domain
+.SH SYNOPSIS
+\fBgrdfilter\fP \fIinput_file.grd\fP \fB\-D\fP\fIflag\fP \fB\-F\fP\fI<type><width>\fP \fB\-G\fP\fIoutput_file.grd\fP 
+[ \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fIr\fP] ] [ \fB\-T\fP ] [ \fB\-V\fP ] 
+.SH DESCRIPTION
+\fBgrdfilter\fP will filter a \fI.grd\fP file in the time domain, using a boxcar, cosine arch, 
+gaussian, median, or mode filter, and computing distances by Cartesian or Spherical geometries.  
+The output \fI.grd\fP file can optionally be generated in a sub\fB\-R\fPegion of the input, and / or at a
+new \fB\-I\fPncrement.  In this way, one may have "extra space" in the input data so that the edges will not
+be used, and the output can be within one-half-width of the input edges; also, if the filter is low-pass, then
+the output may be needed less frequently sampled than the input.
+.TP
+\fIinput_file.grd\fP
+The file of points to be filtered.
+.TP
+.B \-D
+Distance \fIflag\fP tells how grid (x,y) relates to filter \fIwidth\fP as follows:
+.sp
+\fIflag\fP = 0:  grid (x,y) same units as \fIwidth\fP, Cartesian distances.
+.br
+\fIflag\fP = 1:  grid (x,y) in degrees, \fIwidth\fP in kilometers, Cartesian distances.
+.br
+\fIflag\fP = 2:  grid (x,y) in degrees, \fIwidth\fP in km, dx scaled by cos(middle y), Cartesian distances.
+.sp
+The above options are fastest because they allow weight matrix to be computed only once.
+The next two options are slower because they recompute weights for each East-West scan line.
+.sp
+\fIflag\fP = 3:  grid (x,y) in degrees, \fIwidth\fP in km, dx scaled by cosine(y), Cartesian distance calculation.
+.br
+\fIflag\fP = 4:  grid (x,y) in degrees, \fIwidth\fP in km, Spherical distance calculation.
+.TP
+.B \-F
+Choose one only of \fBbcgmp\fP for (\fBb\fP)oxcar, (\fBc\fP)osine Arch, (\fBg\fP)aussian, (\fBm\fP)edian, or maximum likelihood (\fBp\fP)robability (a mode estimator) filter and specify full \fIwidth\fP.
+.TP
+.B \-G
+\fIoutput_file.grd\fP is the output of the filter.
+.SH OPTIONS
+.TP
+.B \-I
+\fIx_inc\fP [and optionally \fIy_inc\fP] is the output Increment. Append \fBm\fP to indicate minutes, or \fBc\fP to indicate seconds.
+If  the new \fIx_inc, y_inc\fP are NOT integer multiples of the old ones (in the input data), filtering will be considerably slower.
+[Default:  Same as input.]
+.TP
+.B \-R
+\fIwest, east, south, \fPand \fInorth\fP defines the Region of the output points.  [Default:  Same as input.]
+.TP
+.B \-T
+Toggle the node registration for the output grid so as to become the opposite of the input grid
+[Default gives the same registration as the input grid].
+#include "explain_-V.txt"
+.SH EXAMPLES
+Suppose that north_pacific_dbdb5.grd is a file of 5 minute bathymetry from 140E to 260E and 0N to 50N, and you want to find
+the medians of values within a 300km radius (600km full width) of the output points, which you choose to be from 150E to 250E
+and 10N to 40N, and you want the output values every 0.5 degree.  Using spherical distance calculations, you need:
+.sp
+grdfilter north_pacific_dbdb5.grd \fB\-G\fPfiltered_pacific.grd \fB\-Fm\fP600 \fB\-D\fP4 \fB\-R\fP150/250/10/40 \fB\-I\fP0.5 \fB\-V\fP
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grdfft (l)

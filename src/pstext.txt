@@ -1,0 +1,148 @@
+.TH PSTEXT l DATE
+#define CLEARENCE_SI 0.15\fBc\fP/0.15\fBc\fP
+#define CLEARENCE_US 0.05\fBi\fP/0.05\fBi\fP
+.SH NAME
+pstext \- To plot text on maps
+.SH SYNOPSIS
+\fBpstext\fP \fItextfile\fP \fB\-J\fP\fIparameters\fP 
+\fB\-R\fIwest/east/south/north\fP[\fBr\fP] 
+[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIdx/dy\fP ]  
+\fB\-D\fP[\fBj\fP]\fIdx/dy\fP[\fBv\fP[\fIred/green/blue\fP] ] [ \fB\-E\fP\fIazimuth/elevation\fP ] 
+[ \fB\-G\fP\fIred/green/blue\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-K\fP ] [ \fB\-L\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
+[ \fB\-S\fP\fIpen\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP[\fIred/green/blue\fP][\fBo|O|c|C\fP[\fIpen\fP]] ] 
+[ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fIzlevel\fP ] 
+[ \fB\-c\fP\fIcopies\fP ] [ \fB\-:\fP ]
+.SH DESCRIPTION
+\fBpstext\fP plots textstrings of variable size, font type, and orientation.
+Various map projections are provided, with the option to draw and annotate the
+map boundaries. \fIPostScript\fP code is written to standard output.  Greek
+characters, subscript, superscript, and small caps are supported as follows:
+The sequence @~ toggles between the selected font and Greek (Symbol).
+@%\fIno\fP% sets the font to \fIno\fP; @%% resets the font to the starting font,
+@- toggles subscripts on/off, @+ toggles superscript on/off, and @# toggles small
+caps on/off.  @@ prints the @ sign.  @e, @o, @a, @E, @O, @A give the accented
+Scandinavian characters.  Composite characters (overstrike) may be indicated with
+the @!<char1><char2> sequence, which will print the two characters on top of
+each other.  To learn the octal codes for symbols not available on the keyboard
+and some accented European characters, see Section 4.16 and Appendix F in the
+\fBGMT\fP Technical Reference and Cookbook.  Note that WANT_EURO_FONT must be
+set to TRUE in your .gmtdefaults file in order to use the accented characters.
+Using the \fB\-W\fP option, a colored rectangle underlying the text may
+be plotted  (Does not work for strings with sub/super scripts, symbols, or composite
+characters, except in paragraph mode (\fB\-M\fP)).
+.TP
+\fItextfile\fP
+This file contains 1 or more records with (\fIx, y, size, angle, fontno, justify, text\fP).
+If no file is given, \fBpstext\fP will read standard input.
+\fIsize\fP is text size in points, \fIangle\fP is measured in degrees counter-clockwise from horizontal, 
+\fIfontno\fP sets the font type, \fIjustify\fP sets the alignment. 
+If \fIfontno\fP is not an integer, then it is taken to be a textstring with the desired fontname.  See the \fBgmtdefaults\fP man page
+for names and numbers of avaiable fonts (or run \fBpstext \-L\fP).  The alignment refers to the
+part of the textstring that will be mapped onto the (\fIx,y\fP) point.  Choose a 2 character combination
+of L, C, R (for left, center, or right) and T, M, B for top, middle, or bottom. e.g., BL for lower left.
+#include "explain_-j.txt"
+#include "explain_-Jz.txt"
+#include "explain_-R.txt"
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+#include "explain_-b.txt"
+.TP
+.B \-C
+Sets the clearance between the text and the surrounding box [CLEARENCE_SI (or CLEARENCE_US)].
+Only used if \fB\-W\fP is specified.
+.TP
+.B \-D
+Offsets the text from the projected (\fIx,y\fP) point by \fIdx,dy\fP [0/0].
+Use \fB-Dj\fP to offset the text away from the point instead (i.e. the text's justification
+will determine the direction of the shift).  In paragraph mode
+(\fB\-M\fP), one may append \fBv\fP which will draw a line from the original point to the shifted point.
+Optionally append a \fIpen\fP for this line.
+.TP
+.B \-E
+Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].
+(Not implemented for paragraph mode).
+.TP
+.B \-G
+Sets the gray-shade (0-255) or color (r/g/b, each 0-255) used for drawing the text.  [Default is black]
+#include "explain_-H.txt"
+#include "explain_-K.txt"
+.TP
+.B \-L
+Lists the font-numbers and font-names available, then exits.
+.TP
+.B \-M
+Paragraph mode.  Files must be multiple segment files.  Segments are separated by
+a special record whose first character must be \fIflag\fP [Default is '>'].
+Starting in the 3rd column, we expect to find information pertaining to the
+typesetting of a text paragraph (the remaining lines until next segment header).
+The information expected is (x y size angle fontno justify linespace parwidth parjust),
+where \fIx y size angle fontno justify\fP are defined above, while \fIlinespace\fP
+and \fIparwidth\fP are the linespacing and paragraph width, respectively.  The justification
+of the text paragraph is governed by \fIparjust\fP which may be \fBl\fP(eft), \fBc\fP(enter),
+\fBr\fP(ight), or \fBj\fP(ustified).  The segment header is followed by one or more lines
+with paragraph text.  Text may contain the escape sequences discussed above as well as three
+more: @;\fIr/g/b\fP; changes the font color (@;; resets it), @:\fIsize\fP: changes the
+font size (@:: resets it), and @_ toggles underline on/off.  Separate paragraphs with a blank line.
+.TP
+.B \-N
+Do NOT clip text at map boundaries [Default will clip].
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+.TP
+.B \-S
+Draw text outline. Append pen attributes.
+(Not implemented for paragraph mode).
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+.TP
+.B \-W
+Paint a rectangle beneath the text string.  Set color [Default is no fill].
+Append \fBo\fP to draw rectangle outline, add a \fIpen\fP to specify pen attributes [1/0/0/0].
+Choose upper case \fBO\fP to get a rounded rectangle (only in paragraph mode).
+Choose lower case \fBc\fP to get a concave rectangle (only in paragraph mode).
+Choose upper case \fBC\fP to get a convex rectangle (only in paragraph mode).
+#include "explain_-XY.txt"
+.TP
+.B \-Z
+For 3-D projections:  Sets the z-level of the basemap [0].
+(Not implemented for paragraph mode).
+#include "explain_-t.txt"
+#include "explain_-c.txt"
+.SH EXAMPLES
+To plot the outlines of the textstrings stored in the file text.d on a Mercator plot with
+the given specifications, try
+.br
+.sp
+pstext text.d \fB\-R\fP-30/30/-10/20 \fB\-Jm\fP0.1\fBi\fP \fB\-P \-B\fP5 \fB\-S\fP0.5\fBp\fP > plot.ps
+.br
+.sp
+To add a typeset figure caption for a 3-inch wide illustration, try
+.br
+.sp
+pstext \fB\-R\fP0/3/0/5 \fB\-JX\fP3\fBi\fP \fB\-O \-H \-M \-N\fP << EOF >> figure.ps
+.br
+This is an optional header record
+.br
+> 0 -0.5 12 0 4 LT 13p 3i j
+.br
+@%5%Figure 1.@%%  This illustration shows nothing useful, but it still needs
+.br
+a figure caption.  Highlighted in @;255/0/0;red@;; you can see the locations
+.br
+of cities where it is @_impossible@_ to get any good Thai food; these are to
+be avoided.
+.br
+EOF
+.br
+.SH BUGS
+Except for paragraph mode, the horizontal justification of surrounding rectangles
+does not work when Greek symbols, sub- and superscripts, and/or composite characters
+are imbedded in the textstring.  In paragraph mode, the presence of composite
+characters and other escape sequences may lead to unfortunate word splitting. 
+.br
+The \fB\-N\fP option does not adjust the BoundingBox information so you may
+have to post-process the PostScript outout with epstool or ps2epsi to obtain
+a correct BoundingBox.
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR psbasemap (l)

@@ -1,0 +1,3 @@
+.TP
+.B \-P
+Selects Portrait plotting mode [\fBGMT\fP Default is Landscape, see gmtdefaults to change this].

@@ -1,0 +1,5 @@
+.TP
+.B \-M
+Multiple segment file(s).  Segments are separated by a special record.
+For ASCII files the first character must be \fIflag\fP [Default is '>'].
+For binary files all fields must be NaN.

@@ -1,0 +1,282 @@
+%------------------------------------------
+%	$Id: GMT_Frontmatter.tex,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+%
+%	The GMT Documentation Project
+%	Copyright 2000-2001.
+%	Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+
+%----------------------ACKNOWLEDGMENTS--------------------------
+
+\chapter*{Acknowledgments}\index{Acknowledgments}
+\addcontentsline{toc}{chapter}{Acknowledgments}
+
+The Generic Mapping Tools (\GMT) could not have been designed without
+the generous support of several people.  We gratefully acknowledge
+A. B. Watts and W. F. Haxby for supporting our efforts on the original
+version 1.0 while we were their graduate students at Lamont–-Doherty
+Earth Observatory.  Doug Shearer and Roger Davis patiently answered
+many of our questions over e-mail.  The subroutine \texttt{gaussj} was
+written and supplied by Bill Menke, L-DEO.
+Further development of versions 2.0 and 2.1 at SOEST would not have
+been possible without the support from the Hawaii Institute of
+Geophysics and School of Ocean and Earth Science and Technology
+Post-Doctoral Fellowship program to Paul Wessel.  Walter H. F. Smith
+gratefully acknowledges the generous support of the C. H. and I. M.
+Green Foundation for Earth Sciences at the Institute of Geophysics
+and Planetary Physics, Scripps Institution of Oceanography, University
+of California at San Diego.
+\GMT\ versions 3.0--3.3.6 owe their existence to grants EAR-93-02272
+and OCE-95-29431 from the National Science Foundation, which we
+gratefully acknowledge.
+
+We would like to acknowledge the feedback we have received from many
+of the users of earlier versions.  Many of these suggestions have
+been implemented, and the bug reports have been useful in providing
+more robust programs.  Specifically, we would like to thank William
+Weibel, Ameet Raval, Manfred Brands, Angel Li, Andrew Macrae, John
+Lillibridge, Richard Signell, Michael Barck, Alex Madon, Ben Horner-Johnson,
+Georg Schwarz, Lloyd Parkes, David Townsend, and many others for
+advice on how to make \GMT\ portable to DEC, SGI, HP, IBM, Apple, and
+NEXT workstations.  John Lillibridge provided example 11.  William
+Yip helped translate \GMT\ to POSIX ANSI C and incorporate netCDF 3, 
+Allen Cogbill provided OS/2 patches for EMX, and Hanno von Lom helped
+resolve problems with DLL libraries for Win32.
+
+\begin{flushright}
+Honolulu, HI and Silver Spring, MD, October 2000
+\end{flushright}
+\vspace{\baselineskip}
+
+\begin{center}
+\small
+\begin{tabular}{lr}
+\epsfig{figure=eps/Wessel.eps}	&	\epsfig{figure=eps/Smith.eps} \\
+\normalsize \htmladdnormallink{{\textbf {Dr. P\aa l (Paul) Wessel}}}{http://www.soest.hawaii.edu/wessel} & \normalsize \htmladdnormallink{{\textbf {Dr. Walter H. F. Smith}}}{mailto:walter@raptor.grdl.noaa.gov} \\
+Professor & Geophysicist \\
+\htmladdnormallink{Department of Geology and Geophysics}{http://www.soest.hawaii.edu/GG} & \htmladdnormallink{Laboratory for Satellite Altimetry}{http://www.grdl.noaa.gov} \\
+\htmladdnormallink{School of Ocean and Earth Science and Technology}{http://www.soest.hawaii.edu} & \htmladdnormallink{National Oceanographic Data Center}{http://www.nodc.noaa.gov} \\
+\htmladdnormallink{University of Hawaii at Manoa}{http://www.hawaii.edu} & \htmladdnormallink{National Oceanic and Atmospheric Administration}{http://www.noaa.gov} \\
+\normalsize
+\end{tabular}
+\end{center}
+
+% HORIZONTAL MUGSHOTS FOR LATEX
+
+%\begin{latexonly}
+%\noindent
+%\frame{\epsfig{figure=eps/Wessel.eps}}
+%\hfill
+%\frame{\epsfig{figure=eps/Smith.eps}}
+%\par
+%\vspace{0.5\baselineskip}
+%\noindent
+%\htmladdnormallink{{\textbf {Dr. P\aa l (Paul) Wessel}}}{http://www.soest.hawaii.edu/wessel}
+%\hfill \htmladdnormallink{{\textbf {Dr. Walter H. F. Smith}}}{mailto:walter@raptor.grdl.noaa.gov} \\
+%\small
+%\noindent
+%Professor \hfill Geophysicist \\
+%Department of Geology and Geophysics \hfill Laboratory for Satellite Altimetry \\
+%School of Ocean and Earth Science and Technology \hfill National Oceanographic Data Center \\
+%University of Hawaii at Manoa \hfill National Oceanic and Atmospheric Administration \\
+%\normalsize
+%\end{latexonly}
+
+% VERTICAL MUGSHOTS FOR HTML
+
+%\begin{htmlonly}
+%\noindent
+%\epsfig{figure=eps/Wessel.eps}
+%\par
+%\vspace{0.5\baselineskip}
+%\noindent
+%\htmladdnormallink{{\textbf {Dr. P\aa l (Paul) Wessel}}}{http://www.soest.hawaii.edu/wessel} \\
+%\small
+%\noindent
+%Professor \\
+%\htmladdnormallink{Department of Geology and Geophysics}{http://www.soest.hawaii.edu/GG} \\
+%\htmladdnormallink{School of Ocean and Earth Science and Technology}{http://www.soest.hawaii.edu} \\
+%\htmladdnormallink{University of Hawaii at Manoa}{http://www.hawaii.edu} \\
+%\normalsize
+
+%\noindent
+%\frame{\epsfig{figure=eps/Smith.eps}}
+%\par
+%\vspace{0.5\baselineskip}
+%\noindent
+%\htmladdnormallink{{\textbf {Dr. Walter H. F. Smith}}}{mailto:walter@raptor.grdl.noaa.gov} \\
+%\small
+%\noindent
+%Geophysicist \\
+%\htmladdnormallink{Laboratory for Satellite Altimetry}{http://www.grdl.noaa.gov} \\
+%\htmladdnormallink{National Oceanographic Data Center}{http://www.nodc.noaa.gov} \\
+%\htmladdnormallink{National Oceanic and Atmospheric Administration}{http://www.noaa.gov} \\
+%\normalsize
+
+%\end{htmlonly}
+
+
+%------------------------GMT DOCUMENTATION PROJECT---------------------------
+
+\chapter*{The GMT Documentation Project}
+\addcontentsline{toc}{chapter}{The GMT Documentation Project}
+
+Starting with \GMT\ version 3.2, all \GMT\ documentation was
+converted from Microsoft \progname{Word} to \LaTeX\ files.
+This step was taken for a number of reasons:
+
+\begin{enumerate}
+
+\item Having all the documentation source available in
+ASCII format makes it easier to access by several
+\GMT\ developers working on different platforms in 
+different countries.
+
+\item \GMT\ scripts can now be included directly into the text
+so that the documentation is automatically up-to-date
+when scripts are modified.
+
+\item All figures are generated on the fly and included as
+\GMT\ EPS files which thus are always up-to-date.
+
+\item It is easy to convert the \LaTeX\ files to other
+formats, such as HTML, SGML, and \PS.
+
+\item The whole task of assembling the pieces, be it generating
+figures or extracting text portions from the master archive under
+SCCS control, is automated by a simple cshell script.
+
+\item Only free software are used to maintain the \GMT\ Documentation.
+
+\end{enumerate}
+
+Because this transition was undertaken by a complete \LaTeX\ novice
+it is likely that the layout will change with time.  It is also
+likely that errors have crept into the document.  Please send email
+to \htmladdnormallink{gmt@soest.hawaii.edu}{mailto:gmt@soest.hawaii.edu}
+if you find any.
+
+%--------------------------------REMINDER------------------------------------
+
+\chapter*{A Reminder}
+\addcontentsline{toc}{chapter}{A Reminder}
+
+If you feel it is appropriate, you may consider paying us back by
+citing our {\it EOS} articles on \GMT\ (and perhaps also our Geophysics
+article on the \GMT\ program \GMTprog{surface}) when you publish papers
+containing results or illustrations obtained using \GMT.  The EOS
+articles on \GMT\ are \\
+\index{EOS article}%
+\index{Article!in EOS}%
+
+\begin{itemize}
+
+\item{Wessel, P., and W. H. F. Smith, New, improved version of Generic
+Mapping Tools released, {\it EOS Trans. Amer. Geophys. U.}, vol. 79
+(47), pp. 579, 1998.}
+
+\item{Wessel, P., and W. H. F. Smith, New version of the Generic
+Mapping Tools released, {\it EOS Trans. Amer. Geophys. U.}, vol. 76
+(33), pp. 329, 1995.}
+
+\item{Wessel, P., and W. H. F. Smith, New version of the Generic
+Mapping Tools released, {\it EOS Trans. Amer. Geophys. U. electronic
+supplement}, \htmladdnormallink{http://www.agu.org/eos\_elec/95154e.html}
+{http://www.agu.org/eos\_elec/95154e.html}, 1995.}
+
+\item{Wessel, P., and W. H. F. Smith, Free software helps map and
+display data, {\it EOS Trans. Amer. Geophys. U.}, vol. 72 (41),
+pp. 441, 445-446, 1991.}
+
+\end{itemize}
+
+The article in {\it Geophysics} on surface is
+\index{Geophysics article}%
+\index{Article!in Geophysics}%
+\begin{itemize}
+
+\item{Smith, W. H. F., and P. Wessel, Gridding with continuous
+curvature splines in tension, {\it Geophysics}, vol. 55 (3), pp.
+293-305, 1990.}
+
+\end{itemize}
+
+A few \GMT\ users take the time to write us letters, telling us of the
+difference \GMT\ is making in their work.  We appreciate receiving these
+letters.  On days when we wonder why we ever released \GMT\ we pull
+these letters out and read them.  Seriously, as financial support for
+\GMT\ depends on how well we can ``sell'' the idea to funding agencies and
+our superiors, letter-writing is one area where \GMT\ users can affect
+such decisions by supporting the \GMT\ project. 
+
+%-------------------------COPYRIGHT----------------------------------
+
+\chapter*{Copyright and Caveat Emptor!}
+\index{Copyright}
+\addcontentsline{toc}{chapter}{Copyright and Caveat Emptor!}
+
+\begin{center}
+Copyright \copyright 1991–-- 2000 by Paul Wessel and Walter H. F. Smith
+\end{center}
+
+\vspace{\baselineskip}
+
+The Generic Mapping Tools (\GMT) is free software; you can redistribute
+it and/or modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation. \\
+
+The \GMT\ package is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+file \filename{COPYING} in the \GMT\ directory or the
+\htmladdnormallinkfoot{GNU General Public License}{http://www.gnu.org/copyleft/gpl.html}
+for more details. \\
+
+Permission is granted to make and distribute verbatim copies of this
+manual provided that the copyright notice and these paragraphs are
+preserved on all copies.  The \GMT\ package may be included in a bundled
+distribution of software for which a reasonable fee may be charged. \\
+
+The Generic Mapping Tools (\GMT) does not come with any warranties,
+nor is it guaranteed to work on your computer.  The user assumes full
+responsibility for the use of this system. In particular, the School of
+Ocean and Earth Science and Technology, the National Oceanic and
+Atmospheric Administration, the National Science Foundation,
+Paul Wessel, Walter H. F. Smith, or any other individuals involved in
+the design and maintenance of \GMT\ are NOT responsible for any damage
+that may follow from correct \emph{or} incorrect use of these programs.
+
+%----------------------TYPOGRAPHIC CONVENTIONS------------------------
+
+\chapter*{Typographic conventions}
+\index{Typographic conventions}
+\addcontentsline{toc}{chapter}{Typographic conventions}
+
+In reading this documentation, the following provides a summary of
+the typographic conventions used in this document.
+
+\begin{enumerate}
+
+\item User input and \GMT\ or \UNIX\ commands are indicated by
+using the \texttt{typewriter} type style, e.g.,
+\texttt{chmod +x job03.csh}.
+
+\item The names of \GMT\ programs are indicated by the
+\textsf{\textbf{bold, sans serif}} type style, e.g.,
+we plot text with \textsf{\textbf{pstext}}.
+
+\begin{latexonly}
+\item The names of other programs are indicated by the
+\textsl{\textbf{bold, slanted}} type style, e.g.,
+\textsl{\textbf{grep}}.
+\end{latexonly}
+\begin{htmlonly}
+\item The names of other programs are indicated by the
+\textit{italic} type style, e.g., \textit{grep}.
+\end{htmlonly}
+
+\item File names are indicated by the \underline{underline}
+type style, e.g., \underline{gmt.h}.
+
+\end{enumerate}

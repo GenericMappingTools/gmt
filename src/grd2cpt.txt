@@ -1,0 +1,62 @@
+.TH GRD2CPT l DATE
+.SH NAME
+grd2cpt \- Read a grdfile and make a color palette file
+.SH SYNOPSIS
+\fBgrd2cpt\fP \fIgrdfile\fP [ \fB\-C\fP\fIcptmaster\fP ] [ \fB\-I\fP ] 
+[ \fB\-L\fP\fIminlimit/maxlimit\fP ]  
+[ \fB\-S\fP\fIzstart/zstop/zinc\fP ] [ \fB\-V\fP ] [ \fB\-Z\fP ]
+.SH DESCRIPTION
+\fBgrd2cpt\fP reads a grdfile and writes a color palette (cpt) file to
+standard output.  The cpt file is based on an existing master cptfile of
+your choice, and the mapping from data value to colors is through the
+data's cumulative distribution function (CDF), so that the colors are
+histogram equalized.  Thus if the resulting cpt file is used with the
+grdfile and grdimage with a linear projection, the colors will be uniformly
+distributed in area on the plot.  Let z be the data values in the grdfile. 
+Define CDF(Z) = (# of z < Z) / (# of z in grdfile).  (NaNs are ignored).
+These z-values are then normalized to the master cptfile and colors are
+sampled at the desired intervals.
+.TP
+\fIgrdfile\fP
+The 2-D binary grdfile used to derive the color palette table.
+.SH OPTIONS
+.TP
+.B \-C
+Selects the master color table to use in the interpolation.  Choose among
+the built-in tables (type \fBgrd2cpt\fP to see the list) or give the
+name of an existing cptfile [Default gives a rainbow cpt file].
+.TP
+.B \-I
+Reverses the sense of color progression in the master cptfile.
+.TP
+.B \-L
+Limit range of cptfile to \fIminlimit/maxlimit\fP, and don't count data
+outside range when estimating CDF(Z).  [Default uses min and max of data.] 
+.TP
+.B \-S
+Set steps in cpt file.  Calculate entries in cptfile from \fIzstart\fP to \fIzstop\fP
+in steps of (\fIzinc\fP).  [Default chooses arbitrary values by a crazy scheme.] .TP
+.B \-V
+Verbose operation.  This will write CDF(Z) estimates to stderr.  [Default is silent.] 
+.SH EXAMPLES
+Sometimes you don't want to make a cpt file (yet) but would find it helpful
+to know that 90% of your data lie between z1 and z2, something you cannot
+learn from \fBgrdinfo\fP.  So you can do this to see some points on the
+CDF(Z) curve (use \fB\-V\fP option to see more):
+.br
+.sp
+grd2cpt mydata.grd \fB\-V\fP > /dev/null
+.br
+.sp
+To make a cpt file with entries from 0 to 200 in steps of 20, and ignore
+data below zero in computing CDF(Z), and use the built-in master cptfile
+relief, try
+.br
+.sp
+grd2cpt mydata.grd \fB\-C\fP\fIrelief\fP \fB-L\fP0/10000 \fB-S\fP0/200/20 > mydata.cpt
+.SH "SEE ALSO"
+.IR gmtdefaults (l),
+.IR gmt (l),
+.IR grdhisteq (l),
+.IR grdinfo (l),
+.IR makecpt (l)

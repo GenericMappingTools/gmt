@@ -1,0 +1,124 @@
+.TH X2SYS_CROSS l DATE
+.SH NAME
+\fBx2sys_cross\fP \- Find and compute Cross-Over Errors
+.SH SYNOPSIS
+\fBx2sys_cross\fP \fIfile(s)\fP OR \fB\-L\fP\fIflist\fP [ \fB\-A\fP\fIgap\fP ] 
+[ \fB\-Cc|f|g\fP ] [ \fB\-D\fP\fIdeffile\fP ] [ \fB\-F\fP\fIflags\fP ] 
+[ \fB\-Gd|g\fP ] [ \fB\-J\fP\fIparams\fP ] [\fB\-K\fP\fIcombi.lis\fP] 
+[ \fB\-N\fP\fIwindow\fP ] [ \fB\-O\fP ] [ \fB\-Sl|u\fP\fIspeed\fP ] 
+[ \fB\-Tl|a|c\fP ] [ \fB\-W\fP\fIsize\fP ] [ \fB\-V\fP ] [ \fB\-Xe|i\fP ] 
+[ \fB\-bo\fP[\fBs\fP] ] [ \fB\-2\fP ]
+.SH DESCRIPTION
+\fBx2sys_cross\fP is used to determine all intersections between or within
+tracks, and report the time, position, discrepancies in all observables, the
+mean values of the observables, heading along each tracksegment, and the
+distance along track at the cross-over point. The names of the files are passed
+on the command line, or as a list of files with the \fB\-L\fP option.
+If they are identical or only one name is passed, then
+\fBx2sys_cross\fP will also look for internal cross-overs.  The optional
+parameters are:
+.TP
+.B \-A
+Ignore crossovers on segments of length > \fIgap\fP [no gap checking].
+.TP
+.B \-C
+Select procedure for along-track distance calculation:
+.br
+	\fBc\fP Cartesian distances [Default].
+.br
+	\fBf\fP Flat earth distances.
+.br
+	\fBg\fP Great circle distances.
+.br
+.TP
+.B \-D
+Give the definition file for this data format [x2sys].
+.TP
+.B \-F
+Sets which columns to use.  Give a comma-separated list of column names [Default
+is all columns].
+.TP
+.B \-G
+Selects geographical coordinates.  Append \fBd\fP for discontinuity at the
+Dateline (makes longitude go from -180 to + 180) or \fBg\fP for discontinuity
+at Greenwhich (makes longitude go from 0 to 360 [Default]).
+#include "explain_-j.txt"
+.TP
+.B \-K
+Only process the pair-combinations found in the file \fIcombi.lis\fP
+[Default process all possible combinations among the specified files].
+Suitable option for passing old \fBx_setup\fP output.
+.TP
+.B \-N
+Maximum number of points to use in the interpolation [6].
+.TP
+.B \-O
+Output results using the old XOVER format [Default is X2SYS format].
+This options should only be used with *.gmt-formatted MGD77 files.
+#include "explain_-R.txt"
+.TP
+.B \-S
+Defines window of track speed within which to calculate crossovers.
+.br
+	\fB\-Sl\fP sets lower speed [Default is 0].
+.br
+	\fB\-Su\fP sets upper speed [Default is Infinity].
+.br
+.TP
+.B \-T
+Sets the interpolation mode. Choose among:
+.br
+	l Linear interpolation [Default].
+.br
+	a Akima spline interpolation.
+.br
+	c Cubic spline interpolation.
+.br
+#include "explain_-V.txt"
+.TP
+.B \-W
+Sets maximum time gap (in user units) allowed between points on either
+side of a crossover [Default is Infinity].
+.TP
+.B \-X
+Append \fBe\fP for external crossovers only, and \fBi\fP for internal
+crossovers only [Default is all crossovers].
+.TP
+.B \-2
+Report the values of each track at the crossover [Default is the crossover value and the mean value].
+#include "explain_-o.txt"
+.SH REMARKS
+The COEs found are printed out to standard output in ASCII format (unless
+\fB\-bo\fP is set).  When ASCII is chosen, the output format depends on
+whether or not old-style XOVER output (\fB\-O\fP) has been selected.
+If so, then the first record contains the file names and their start year,
+whereas subsequent records have the data for each COE encountered.  The fields
+written out are lat, lon, time along track #1, time along track #2,
+x_gravity, x_magnetics, x_bathymetry, average gravity, average magnetics,
+average bathymetry, heading along track #1, and heading along track #2. If
+the default format is chosen then the header record starts with "> ", and
+the output format for crossovers are first 8 columns that contain
+x, y, time along track #1, time along track #2, distance along track #1,
+distance along track #2, heading along track #1, and heading along track #2,
+and then pairs of (COE, average value) for each data type.  Sign convention:
+If lega and legb are passed on the command line, then the COE value is Value
+(lega) - Value (legb).  It is recommended that the Akima's spline is used
+instead of the natural cubic spline, since it is less sensitive to outliers
+that tend to introduce wild oscillations in the interpolation.
+.SH EXAMPLES
+To compute all internal crossovers in the gmt-formatted file c2104.gmt, and
+output in the old XOVER format, use
+.br
+.sp
+\fBx2sys_cross\fP c2104.gmt \fB\-O \-D\fPgmt > c2104.d
+.br
+.sp
+To find the crossover locations with bathymetry between the two MGD77
+files A13232.mgd77 and A99938.mgd77, try
+.br
+.sp
+\fBx2sys_cross\fP A13232.mgd77 A99938.mgd77 \fB\-Xe \-D\fPmgd77 \fB\-F\fPlon,lat,top > crossovers.d
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR x2sys_datalist (l)
+

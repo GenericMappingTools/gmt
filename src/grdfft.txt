@@ -1,0 +1,125 @@
+.TH GRDFFT l DATE
+.SH NAME
+grdfft \- Perform mathematical operations on grdfiles in the frequency domain 
+.SH SYNOPSIS
+\fBgrdfft\fP \fIin_grdfile\fP \fB\-G\fP\fIout_grdfile\fP [ \fB\-A\fP\fIazimuth\fP ] 
+[ \fB\-C\fP\fIzlevel\fP ] [ \fB\-D\fP[\fIscale\fP\fB|g\fP] ] [ \fB\-E\fP[\fBx|y\fP][\fBw\fP] ] 
+[ \fB\-F\fP[\fIx|y\fP]\fIlc/lp/hp/hc\fP ] [ \fB\-I\fP[\fIscale\fP\fB|g\fP] ] [ \fB\-L\fP ] [ \fB\-M\fP ] 
+[ \fB\-S\fP\fIscale\fP ] [ \fB\-T\fP\fIte/rl/rm/rw/ri\fP ] [ \fB\-V\fP ]
+.SH DESCRIPTION
+\fBgrdfft\fP will take the 2-D forward Fast Fourier Transform and perform one or more mathematical
+operations in the frequency domain before transforming back to the space domain.  An option
+is provided to scale the data before writing the new values to an output file.  The
+horizontal dimensions of the grdfiles are assumed to be in meters.  Geographical grids
+may be used by specifying the \fB\-M\fP option that scales degrees to meters.  If you
+have grdfiles with dimensions in km, you could change this to meters using \fBgrdedit\fP
+or scale the output with \fBgrdmath\fP.
+.br
+	No space between the option flag and the associated arguments.  Use upper case for the
+option flags and lower case for modifiers.
+.TP
+\fIin_grdfile\fP
+2-D binary grd file to be operated on.
+.TP
+.B \-G
+Specify the name of the output grd file.
+.br
+.sp
+.SH OPTIONS
+.TP
+.B \-A
+Take the directional derivative in the \fIazimuth\fP direction measured in degrees CW from north.
+.TP
+.B \-C
+Upward (for \fIzlevel\fP > 0) or downward (for \fIzlevel\fP < 0) continue the field \fIzlevel\fP meters.
+.TP
+.B \-D
+Differentiate the field, i.e., take d(field)/dz.  This is equivalent to multiplying by kr in the frequency
+domain (kr is radial wave number).  Append a scale to multiply by (kr * \fIscale\fP) instead.  Alternatively,
+append \fBg\fP to indicate that your data are geoid heights in meters and output should be gravity anomalies in mGal. 
+[Default is no scale].
+.TP
+.B \-E
+Estimate power spectrum in the radial direction.  Place \fBx\fP or \fBy\fP immediately after \fB\-E\fP to
+compute the spectrum in the x or y direction instead.  No grdfile is created; f (i.e., frequency or wave number),
+power[f], and 1 standard deviation in power[f] are written to stdout.
+Append \fBw\fP to write wavelength instead of frequency.
+.TP
+.B \-F
+Filter the data.  Place x or y immediately after \fB\-F\fP to filter x or y direction only; default is isotropic.  
+Specify four wavelengths in correct units (see \fB\-M\fP) to design a bandpass filter; wavelengths greater than 
+\fIlc\fP or less than \fIhc\fP will be cut, wavelengths greater than \fIlp\fP and less than \fIhp\fP will be 
+passed, and wavelengths in between will be cosine-tapered.  E.g., \fB\-F\fP1000000/250000/50000/10000 \fB\-M\fP 
+will bandpass, cutting wavelengths > 1000 km and < 10 km, passing wavelengths between 250 km and 50 km.  To make 
+a highpass or lowpass filter, give hyphens (-) for \fIhp\fP/\fIhc\fP or \fIlc\fP/\fIlp\fP.  E.g., \fB\-F\fPx-/-/50/10 
+will lowpass X, passing wavelengths > 50 and rejecting wavelengths < 10.  \fB\-F\fPy1000/250/-/- will highpass Y, 
+passing wavelengths < 250 and rejecting wavelengths > 1000.
+.TP
+.B \-I
+Integrate the field, i.e., compute integral_over_z (field * dz).  This is equivalent to divide by kr
+in the frequency domain (kr is radial wave number).  Append a scale to divide by (kr * \fIscale\fP) instead.
+Alternatively, append \fBg\fP to indicate that your data set is gravity anomalies in mGal and output should be geoid
+heights in meters.  [Default is no scale].
+.TP
+.B \-L
+Leave trend alone.  By default, a linear trend will be removed prior to the transform.
+.TP
+.B \-M
+Map units.  Choose this option if your grdfile is a geographical grid and you want to convert
+degrees into meters.  If the data are close to either pole, you should consider
+projecting the grdfile onto a rectangular coordinate system using \fBgrdproject\fP.
+.TP
+.B \-S
+Multiply each element by \fIscale\fP in the space domain (after the frequency domain operations).
+[Default is 1.0].
+.TP
+.B \-T
+Compute the isostatic compensation from the topography load (input grdfile) on an elastic plate
+of thickness \fIte\fP.  Also append densities for load, mantle, water, and infill in SI units.
+If \fIte\fP == 0 then the Airy response is returned.  \fB\-T\fP implicitly sets \fB\-L\fP.
+#include "explain_-V.txt" 
+.SH EXAMPLES
+To upward continue the sea-level magnetic anomalies in the file mag_0.grd to a level 800 m above
+sealevel, try
+.br
+.sp
+grdfft mag_0.grd \fB\-C\fP800 \fB\-V\fP \fB\-G\fPmag_800.grd 
+.br
+.sp
+To transform geoid heights in m (geoid.grd) on a geographical grid to free-air gravity anomalies in mGal,
+do
+.br
+.sp
+grdfft geoid.grd \fB\-Dg \-M\fP \fB\-V\fP \fB\-G\fPgrav.grd
+.br
+.sp
+To transform gravity anomalies in mGal (faa.grd) to deflections of the vertical (in micro-radians) in the
+038 direction, we must first integrate gravity to get geoid, then take the directional derivative, and
+finally scale radians to micro-radians:
+.br
+.sp
+grdfft faa.grd \fB\-Ig \-A\fP38 \fB\-S\fP1e6 \fB\-V\fP \fB\-G\fPdefl_38.grd
+.br
+.sp
+Second vertical derivatives of gravity anomalies are related to the curvature of the field.  We can
+compute these as mGal/m^2 by differentiating twice:
+.br
+.sp
+grdfft gravity.grd \fB\-D\fP \fB\-D\fP \fB\-V\fP \fB\-G\fPgrav_2nd_derivative.grd
+.br
+.sp
+The first order gravity anomaly (in mGal) due to the compensating surface caused 
+by the topography load topo.grd (in m) on a 20 km thick elastic plate, assumed to 
+be 4 km beneath the observation level can be computed as
+.br
+.sp
+grdfft topo.grd \fB\-T\fP20000/2800/3330/1030/2300 \fB\-C\fP4000 \fB\-S\fP0.022 \fB\-G\fPcomp_faa.grd
+.br
+.sp
+where 0.022 is the scale needed for the first term in Parker's expansion for 
+computing gravity from topography (= 2 * PI * G * (rhom - rhol)).
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grdedit (l),
+.IR grdmath (l),
+.IR grdproject (l)
