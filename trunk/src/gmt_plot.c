@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.114 2004-05-07 22:07:08 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.115 2004-05-08 02:10:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -36,10 +36,10 @@
  *	GMT_map_basemap :	Generic basemap function
  *	GMT_map_clip_off :	Deactivate map region clip path
  *	GMT_map_clip_on :	Activate map region clip path
- *	GMT_text3d :		Draw perspective text
- *	GMT_textbox3d :		Draw perspective text box
+ *	GMT_text3D :		Draw perspective text
+ *	GMT_textbox3D :		Draw perspective text box
  *	GMT_timestamp :		Plot UNIX time stamp with optional string
- *	GMT_vector3d :		Draw 3-D vector
+ *	GMT_vector3D :		Draw 3-D vector
  *	GMT_vertical_axis :	Draw 3-D vertical axes
  *	GMT_xy_axis :		Draw x or y axis
  *
@@ -3502,7 +3502,7 @@ void GMT_color_image (double x0, double y0, double x_side, double y_side, unsign
 		ps_colorimage (x0, y0, x_side, y_side, image, nx, ny, depth);
 }
 
-void GMT_text3d (double x, double y, double z, double fsize, int fontno, char *text, double angle, int justify, int form)
+void GMT_text3D (double x, double y, double z, double fsize, int fontno, char *text, double angle, int justify, int form)
 {
 	double xb, yb, xt, yt, xt1, xt2, xt3, yt1, yt2, yt3, del_y;
 	double ca, sa, xshrink, yshrink, tilt, baseline_shift;
@@ -3547,7 +3547,7 @@ void GMT_text3d (double x, double y, double z, double fsize, int fontno, char *t
 	}
 }
 
-void GMT_textbox3d (double x, double y, double z, double size, int font, char *label, double angle, int just, BOOLEAN outline, double dx, double dy, int rgb[])
+void GMT_textbox3D (double x, double y, double z, double size, int font, char *label, double angle, int just, BOOLEAN outline, double dx, double dy, int rgb[])
 {
         if (project_info.three_D) {
         	int i, len, ndig = 0, ndash = 0, nperiod = 0;
@@ -3587,7 +3587,7 @@ void GMT_textbox3d (double x, double y, double z, double size, int font, char *l
 		ps_textbox (x, y, size, label, angle, just, outline, dx, dy, rgb);
 }
 
-void GMT_vector3d (double x0, double y0, double x1, double y1, double z0, double tailwidth, double headlength, double headwidth, double shape, int rgb[], BOOLEAN outline)
+void GMT_vector3D (double x0, double y0, double x1, double y1, double z0, double tailwidth, double headlength, double headwidth, double shape, int rgb[], BOOLEAN outline)
 {
 	if (project_info.three_D) {	/* Fill in local xx, yy cordinates for vector starting at (0,0) aligned horizontally */
 		int i, n;
@@ -3978,7 +3978,7 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 				sprintf (txt, "%g %s", j * d_base, this_label);
 			else
 				sprintf (txt, "%g", j * d_base);
-			GMT_text3d (tx, ty, project_info.z_level, gmtdefs.annot_font_size[0], gmtdefs.annot_font[0], txt, 0.0, 10, 0);
+			GMT_text3D (tx, ty, project_info.z_level, gmtdefs.annot_font_size[0], gmtdefs.annot_font[0], txt, 0.0, 10, 0);
 		}
 		switch (ms->justify) {
 			case 'l':	/* Left */
@@ -4003,7 +4003,7 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 				break;
 		}
 		GMT_xyz_to_xy (x_label, y_label, project_info.z_level, &tx, &ty);
-		GMT_text3d (tx, ty, project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, this_label, 0.0, jj, 0);
+		GMT_text3D (tx, ty, project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, this_label, 0.0, jj, 0);
 	}
 	else {	/* Simple scale */
 	
@@ -4028,7 +4028,78 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 		ps_plot (a, b, 2);
 		GMT_xyz_to_xy (ms->x0 + half, ms->y0 - gmtdefs.map_scale_height, project_info.z_level, &a, &b);
 		ps_plot (a, b, 2);
-		GMT_text3d (ms->x0, ms->y0 - off, project_info.z_level, gmtdefs.annot_font_size[0], gmtdefs.annot_font[0], txt, 0.0, 10, 0);
+		GMT_text3D (ms->x0, ms->y0 - off, project_info.z_level, gmtdefs.annot_font_size[0], gmtdefs.annot_font[0], txt, 0.0, 10, 0);
+	}
+}
+
+/* These are used to scale the plain arrow given rose size */
+
+#define F_VW	0.02
+#define F_HL	0.1
+#define F_HW	0.05
+
+void GMT_draw_map_rose (struct MAP_ROSE *mr)
+{
+	int i, kind;
+	double angle, L[4], R[4], px, py, x[8], y[8], tx[3], ty[3], s, c, rot[4] = {0.0, 45.0, 22.5, -22.5};
+	
+	if (!MAPPING) return;	/* Only for geographic projections */
+
+	if (mr->gave_xy)	/* Also get lon/lat coordinates */
+		GMT_xy_to_geo (&mr->lon, &mr->lat, mr->x0, mr->y0);
+	else {	/* Must convert lon/lat to location on map */
+		mr->lon = mr->x0;
+		mr->lat = mr->y0;
+		GMT_geo_to_xy (mr->lon, mr->lat, &mr->x0, &mr->y0);
+	}
+	GMT_azim_to_angle (mr->lon, mr->lat, 0.1, 90.0, &angle);	/* Get angle of E-W direction at this location */
+	
+	GMT_setpen (&gmtdefs.tick_pen);
+	
+	if (mr->fancy) {	/* Fancy scale */
+		L[0] = mr->size;
+		L[1] = 0.8 * mr->size;
+		L[2] = L[3] = 0.6 * mr->size;
+		R[0] = 0.2 * mr->size;
+		R[1] = 0.2 * mr->size;
+		R[2] = R[3] = 0.25 * mr->size;
+		mr->kind--;	/* Turn 1-3 into 0-2 */
+		if (mr->kind == 2) mr->kind = 3;	/* Trick so that we can draw 8 rather than 4 points */
+		for (kind = mr->kind; kind >= 0; kind--) {
+			/* Do 4 blades 90 degrees apart, aligned with main axes & relative to (0,0) */
+			x[0] = L[kind];	x[1] = x[7] = 0.5 * M_SQRT2 * R[kind];	x[2] = x[6] = 0.0;
+			y[0] = y[4] = 0.0;	y[1] = y[3] = 0.5 * M_SQRT2 * R[kind];	y[2] = L[kind];
+			x[3] = x[5] = -x[1];	x[4] = -x[0];
+			y[5] = y[7] = -y[1];	y[6] = -y[2];
+			/* Rotate by required angle and offset to actual center of rose */
+			sincos (D2R * (rot[kind] + angle), &s, &c);
+			for (i = 0; i < 8; i++) {	/* Coordinate transformation */
+				px = mr->x0 + x[i] * c - y[i] * s;	/* Rotate and add actual (x0, y0) origin */	
+				py = mr->y0 + x[i] * s + y[i] * c;
+				GMT_xyz_to_xy (px, py, project_info.z_level, &x[i], &y[i]);	/* Then do 3-D projection */
+			}
+			ps_polygon (x, y, 8, gmtdefs.foreground_rgb, TRUE);	/* Outline of 4-pointed star */
+			GMT_xyz_to_xy (mr->x0, mr->y0, project_info.z_level, &tx[0], &ty[0]);
+			/* Fill positive halfs of the 4-pointed blades */
+			tx[1] = x[0];	ty[1] = y[0];	tx[2] = x[7];	ty[2] = y[7];
+			ps_patch (tx, ty, 3, gmtdefs.background_rgb, TRUE);	/* East */
+			tx[1] = x[1];	ty[1] = y[1];	tx[2] = x[2];	ty[2] = y[2];
+			ps_patch (tx, ty, 3, gmtdefs.background_rgb, TRUE);	/* North */
+			tx[1] = x[3];	ty[1] = y[3];	tx[2] = x[4];	ty[2] = y[4];
+			ps_patch (tx, ty, 3, gmtdefs.background_rgb, TRUE);	/* West */
+			tx[1] = x[5];	ty[1] = y[5];	tx[2] = x[6];	ty[2] = y[6];
+			ps_patch (tx, ty, 3, gmtdefs.background_rgb, TRUE);	/* South */
+		}
+		GMT_text3D (mr->x0, mr->y0 + L[0] + gmtdefs.label_offset, project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, mr->label[2], 0.0, 2, 0);
+		GMT_text3D (mr->x0, mr->y0 - L[0] - gmtdefs.label_offset, project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, mr->label[0], 0.0, 10, 0);
+		GMT_text3D (mr->x0 + L[0] + gmtdefs.label_offset, mr->y0, project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, mr->label[1], 0.0, 5, 0);
+		GMT_text3D (mr->x0 - L[0] - gmtdefs.label_offset, mr->y0, project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, mr->label[3], 0.0, 7, 0);
+	}
+	else {			/* Plain North arrow w/circle */
+		GMT_vector3D (mr->x0, mr->y0 - 0.5 * mr->size, mr->x0, mr->y0 + 0.5 * mr->size, project_info.z_level, F_VW * mr->size, F_HL * mr->size, F_HW * mr->size, gmtdefs.vector_shape, gmtdefs.background_rgb, TRUE);
+		GMT_circle3D (mr->x0, mr->y0, project_info.z_level, 0.25 * mr->size, GMT_no_rgb, TRUE);
+		GMT_cross3D (mr->x0, mr->y0, project_info.z_level, 0.5 * mr->size);
+		GMT_text3D (mr->x0, mr->y0 + 0.5 * mr->size + gmtdefs.annot_offset[0], project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, mr->label[2], 0.0, 2, 0);
 	}
 }
 
@@ -4627,14 +4698,14 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				font_size = s->p[0] * size * 72.0;
 				if (this_outline && f) {
 					ps_setpaint (f->rgb);
-					(project_info.three_D) ? GMT_text3d (x, y, z0, font_size, font_no, s->string, 0.0, 6, FALSE) : ps_text (x, y, font_size, s->string, 0.0, 6, FALSE);
+					(project_info.three_D) ? GMT_text3D (x, y, z0, font_size, font_no, s->string, 0.0, 6, FALSE) : ps_text (x, y, font_size, s->string, 0.0, 6, FALSE);
 					ps_setpaint (p->rgb);
-					(project_info.three_D) ? GMT_text3d (x, y, z0, font_size, font_no, s->string, 0.0, 6, TRUE) : ps_text (x, y, font_size, s->string, 0.0, 6, TRUE);
+					(project_info.three_D) ? GMT_text3D (x, y, z0, font_size, font_no, s->string, 0.0, 6, TRUE) : ps_text (x, y, font_size, s->string, 0.0, 6, TRUE);
 				}
 				else if (f)
-					(project_info.three_D) ? GMT_text3d (x, y, z0, font_size, font_no, s->string, 0.0, 6, FALSE) : ps_text (x, y, font_size, s->string, 0.0, 6, FALSE);
+					(project_info.three_D) ? GMT_text3D (x, y, z0, font_size, font_no, s->string, 0.0, 6, FALSE) : ps_text (x, y, font_size, s->string, 0.0, 6, FALSE);
 				else
-					(project_info.three_D) ? GMT_text3d (x, y, z0, font_size, font_no, s->string, 0.0, 6, TRUE) : ps_text (x, y, font_size, s->string, 0.0, 6, TRUE);
+					(project_info.three_D) ? GMT_text3D (x, y, z0, font_size, font_no, s->string, 0.0, 6, TRUE) : ps_text (x, y, font_size, s->string, 0.0, 6, TRUE);
 				break;
 
 			case ACTION_PENTAGON:
@@ -4719,13 +4790,13 @@ void GMT_cross3D (double x, double y, double z, double size)
 	size *= 0.5;	
 	xp[0] = x - size;	xp[1] = x + size;
 	yp[0] = y - size;	yp[1] = y + size;
-	GMT_xyz_to_xy (xp[0], yp[0], z, &plot_x, &plot_y);
+	GMT_xyz_to_xy (xp[0], y, z, &plot_x, &plot_y);
 	ps_plot (plot_x, plot_y, 3);
-	GMT_xyz_to_xy (xp[1], yp[1], z, &plot_x, &plot_y);
+	GMT_xyz_to_xy (xp[1], y, z, &plot_x, &plot_y);
 	ps_plot (plot_x, plot_y, 2);
-	GMT_xyz_to_xy (xp[1], yp[0], z, &plot_x, &plot_y);
+	GMT_xyz_to_xy (x, yp[0], z, &plot_x, &plot_y);
 	ps_plot (plot_x, plot_y, 3);
-	GMT_xyz_to_xy (xp[0], yp[1], z, &plot_x, &plot_y);
+	GMT_xyz_to_xy (x, yp[1], z, &plot_x, &plot_y);
 	ps_plot (plot_x, plot_y, 2);
 }
 	

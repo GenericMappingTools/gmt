@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.66 2004-05-07 22:07:08 pwessel Exp $
+ *	$Id: gmt.h,v 1.67 2004-05-08 02:10:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -409,6 +409,17 @@ struct MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */
 	char label[64];		/* Alternative user-specified label */
 	struct GMT_FILL fill;	/* Fill to use for background rectangle */
 	struct GMT_PEN pen;	/* Pen to use for background rectangle */
+};
+
+struct MAP_ROSE {	/* Used to plot a map direction "rose" in psbasemap and pscoast */
+	double lon, lat;	/* Location of center point of rose on the map in lon/lat space */
+	double x0, y0;		/* Location of center point of scale on the map in inches x/y */
+	double size;		/* Diameter of the rose in measure units */
+	BOOLEAN plot;		/* TRUE if we want to draw the rose */
+	BOOLEAN fancy;		/* TRUE for a fancy map rose */
+	BOOLEAN gave_xy;	/* TRUE if x0, y0 was given in cartesian map coordinates and not lon/lat */
+	int kind;		/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
+	char label[4][64];	/* User-cnangable labels for W, E, S, N point */
 };
 
 struct GMT_FONT {		/* Information for each font */
