@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.58 2002-01-04 20:29:48 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.59 2002-01-04 21:13:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1013,14 +1013,14 @@ void GMT_backwards_compatibility () {
 	}
 	
 	if (GMT_force_resize) {	/* Adjust fonts and offsets and ticklenghts relative to ANOT_FONT_SIZE */
-		gmtdefs.anot_font2_size = irint (16.0 * gmtdefs.anot_font_size / 14.0);
-		gmtdefs.label_font_size = irint (24.0 * gmtdefs.anot_font_size / 14.0);
-		gmtdefs.header_font_size = irint (36.0 * gmtdefs.anot_font_size / 14.0);
-		gmtdefs.anot_offset = gmtdefs.tick_length = 0.075 * gmtdefs.anot_font_size / 14.0;
-		gmtdefs.anot_offset2 = 0.075 * gmtdefs.anot_font2_size / 14.0;
-		gmtdefs.label_offset = 1.5 * fabs (gmtdefs.anot_offset);
-		gmtdefs.header_offset = 2.5 * fabs (gmtdefs.anot_offset);
-		gmtdefs.frame_width = 0.05 * gmtdefs.anot_font_size / 14.0;
+		gmtdefs.annot_font2_size = irint (16.0 * gmtdefs.annot_font_size / 14.0);
+		gmtdefs.label_font_size = irint (24.0 * gmtdefs.annot_font_size / 14.0);
+		gmtdefs.header_font_size = irint (36.0 * gmtdefs.annot_font_size / 14.0);
+		gmtdefs.annot_offset = gmtdefs.tick_length = 0.075 * gmtdefs.annot_font_size / 14.0;
+		gmtdefs.annot_offset2 = 0.075 * gmtdefs.annot_font2_size / 14.0;
+		gmtdefs.label_offset = 1.5 * fabs (gmtdefs.annot_offset);
+		gmtdefs.header_offset = 2.5 * fabs (gmtdefs.annot_offset);
+		gmtdefs.frame_width = 0.05 * gmtdefs.annot_font_size / 14.0;
 	}
 }
 
@@ -1038,20 +1038,23 @@ int GMT_setparameter (char *keyword, char *value)
 	case_val = GMT_hash_lookup (keyword, hashnode, HASH_SIZE);
 
 	switch (case_val) {
-		case 0:
+		case GMTCASE_ANNOT_MIN_ANGLE:
+		case GMTCASE_ANOT_MIN_ANGLE:
 			dval = atof (value);
 			if (dval < 0.0)
 				error = TRUE;
 			else
-				gmtdefs.anot_min_angle = dval;
+				gmtdefs.annot_min_angle = dval;
 			break;
-		case 1:
+		case GMTCASE_ANNOT_MIN_SPACING:
+		case GMTCASE_ANOT_MIN_SPACING:
 			if (value[0] == '-')	/* Negative */
 				error = TRUE;
 			else
-				gmtdefs.anot_min_spacing = GMT_convert_units (value, GMT_INCH);
+				gmtdefs.annot_min_spacing = GMT_convert_units (value, GMT_INCH);
 			break;
-		case 2:
+		case GMTCASE_ANNOT_FONT:
+		case GMTCASE_ANOT_FONT:
 			if (value[0] >= '0' && value[0] <= '9')
 				ival = atoi (value);
 			else
@@ -1059,21 +1062,23 @@ int GMT_setparameter (char *keyword, char *value)
 			if (ival < 0 || ival >= N_FONTS)
 				error = TRUE;
 			else
-				gmtdefs.anot_font = ival;
+				gmtdefs.annot_font = ival;
 			break;
-		case 3:
+		case GMTCASE_ANNOT_FONT_SIZE:
+		case GMTCASE_ANOT_FONT_SIZE:
 			if (value[0] == '+') GMT_force_resize = TRUE;	/* Turning on autoscaling of font sizes and ticklengths */
 			if (value[0] != '+' && GMT_force_resize) GMT_anot_special = TRUE;	/* gmtset tries to turn off autoscaling - must report saved values but reset this one */
 			ival = atoi (value);
 			if (ival > 0)
-				gmtdefs.anot_font_size = ival;
+				gmtdefs.annot_font_size = ival;
 			else
 				error = TRUE;
 			break;
-		case 4:
-			save_anot_offset = gmtdefs.anot_offset = GMT_convert_units (value, GMT_INCH);
+		case GMTCASE_ANNOT_OFFSET:
+		case GMTCASE_ANOT_OFFSET:
+			save_anot_offset = gmtdefs.annot_offset = GMT_convert_units (value, GMT_INCH);
 			break;
-		case 5:
+		case GMTCASE_BASEMAP_AXES:
 			strcpy (gmtdefs.basemap_axes, value);
 			for (i = 0; i < 4; i++) frame_info.side[i] = 0;	/* Otherwise we cannot unset default settings */
 			for (i = 0; value[i]; i++) {
@@ -1110,7 +1115,7 @@ int GMT_setparameter (char *keyword, char *value)
 				}
 			}
 			break;
-		case 6:
+		case GMTCASE_BASEMAP_FRAME_RGB:
 			sscanf (value, "%d/%d/%d", &rgb[0], &rgb[1],  &rgb[2]);
 			if (GMT_check_rgb (rgb))
 				error = TRUE;
@@ -1119,7 +1124,7 @@ int GMT_setparameter (char *keyword, char *value)
 				GMT_got_frame_rgb = TRUE;
 			}
 			break;
-		case 7:
+		case GMTCASE_BASEMAP_TYPE:
 			if (!strcmp (lower_value, "plain"))
 				gmtdefs.basemap_type = 1;
 			else if (!strcmp (lower_value, "fancy"))
@@ -1127,28 +1132,28 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
-		case 8:
+		case GMTCASE_COLOR_BACKGROUND:
 			sscanf (value, "%d/%d/%d", &rgb[0], &rgb[1],  &rgb[2]);
 			if (GMT_check_rgb (rgb))
 				error = TRUE;
 			else 
 				memcpy ((void *)gmtdefs.background_rgb, (void *)rgb, (size_t)(3 * sizeof (int)));
 			break;
-		case 9:
+		case GMTCASE_COLOR_FOREGROUND:
 			sscanf (value, "%d/%d/%d", &rgb[0], &rgb[1],  &rgb[2]);
 			if (GMT_check_rgb (rgb))
 				error = TRUE;
 			else 
 				memcpy ((void *)gmtdefs.foreground_rgb, (void *)rgb, (size_t)(3 * sizeof (int)));
 			break;
-		case 10:
+		case GMTCASE_COLOR_NAN:
 			sscanf (value, "%d/%d/%d", &rgb[0], &rgb[1],  &rgb[2]);
 			if (GMT_check_rgb (rgb))
 				error = TRUE;
 			else 
 				memcpy ((void *)gmtdefs.nan_rgb, (void *)rgb, (size_t)(3 * sizeof (int)));
 			break;
-		case 11:
+		case GMTCASE_COLOR_IMAGE:
 			if (!strcmp (lower_value, "adobe"))
 				gmtdefs.color_image = 0;
 			else if (!strcmp (lower_value, "tiles"))
@@ -1156,7 +1161,7 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
-		case 12:
+		case GMTCASE_COLOR_MODEL:
 			if (!strcmp (lower_value, "hsv"))
 				gmtdefs.color_model = GMT_HSV;
 			else if (!strcmp (lower_value, "rgb"))
@@ -1164,10 +1169,10 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
-		case 13:
+		case GMTCASE_D_FORMAT:
 			strcpy (gmtdefs.d_format, value);
 			break;
-		case 14:
+		case GMTCASE_DEGREE_FORMAT:
 			ival = atoi (value);
 			if ((ival%100) >= 0 && (ival%100) <= 17)	/* Mod 100 since we may have added 100 to get big degree symbol or 1000 for no symbol */
 				gmtdefs.degree_format = ival;
@@ -1176,58 +1181,58 @@ int GMT_setparameter (char *keyword, char *value)
 			GMT_backward.got_old_plot_format = TRUE;
 			GMT_backward.got_old_degree_symbol = (ival >= 100);
 			break;
-		case 15:
+		case GMTCASE_DOTS_PR_INCH:
 			ival = atoi (value);
 			if (ival > 0)
 				gmtdefs.dpi = ival;
 			else
 				error = TRUE;
 			break;
-		case 16:
+		case GMTCASE_ELLIPSOID:
 			ival = GMT_get_ellipse (value);
 			if (ival < 0)
 				error = TRUE;
 			else
 				gmtdefs.ellipsoid = ival;
 			break;
-		case 17:
+		case GMTCASE_FRAME_PEN:
 			error = GMT_getpen (value, &gmtdefs.frame_pen);
 			break;
-		case 18:
+		case GMTCASE_FRAME_WIDTH:
 			dval = GMT_convert_units (value, GMT_INCH);
 			if (dval > 0.0)
 				save_frame_width = gmtdefs.frame_width = dval;
 			else
 				error = TRUE;
 			break;
-		case 19:
+		case GMTCASE_GLOBAL_X_SCALE:
 			dval = atof (value);
 			if (dval > 0.0)
 				gmtdefs.global_x_scale = dval;
 			else
 				error = TRUE;
 			break;
-		case 20:
+		case GMTCASE_GLOBAL_Y_SCALE:
 			dval = atof (value);
 			if (dval > 0.0)
 				gmtdefs.global_y_scale = dval;
 			else
 				error = TRUE;
 			break;
-		case 21:
+		case GMTCASE_GRID_CROSS_SIZE:
 			dval = GMT_convert_units (value, GMT_INCH);
 			if (dval >= 0.0)
 				gmtdefs.grid_cross_size = dval;
 			else
 				error = TRUE;
 			break;
-		case 22:
+		case GMTCASE_GRID_PEN:
 			error = GMT_getpen (value, &gmtdefs.grid_pen);
 			break;
-		case 23:
+		case GMTCASE_GRIDFILE_SHORTHAND:
 			error = true_false_or_error (lower_value, &gmtdefs.gridfile_shorthand);
 			break;
-		case 24:
+		case GMTCASE_HEADER_FONT:
 			if (value[0] >= '0' && value[0] <= '9')
 				ival = atoi (value);
 			else
@@ -1237,42 +1242,42 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				gmtdefs.header_font = ival;
 			break;
-		case 25:
+		case GMTCASE_HEADER_FONT_SIZE:
 			ival = atoi (value);
 			if (ival > 0)
 				save_header_size = gmtdefs.header_font_size = ival;
 			else
 				error = TRUE;
 			break;
-		case 26:
+		case GMTCASE_HSV_MIN_SATURATION:
 			dval = atof (value);
 			if (dval < 0.0 || dval > 1.0)
 				error = TRUE;
 			else
 				gmtdefs.hsv_min_saturation = dval;
 			break;
-		case 27:
+		case GMTCASE_HSV_MAX_SATURATION:
 			dval = atof (value);
 			if (dval < 0.0 || dval > 1.0)
 				error = TRUE;
 			else
 				gmtdefs.hsv_max_saturation = dval;
 			break;
-		case 28:
+		case GMTCASE_HSV_MIN_VALUE:
 			dval = atof (value);
 			if (dval < 0.0 || dval > 1.0)
 				error = TRUE;
 			else
 				gmtdefs.hsv_min_value = dval;
 			break;
-		case 29:
+		case GMTCASE_HSV_MAX_VALUE:
 			dval = atof (value);
 			if (dval < 0.0 || dval > 1.0)
 				error = TRUE;
 			else
 				gmtdefs.hsv_max_value = dval;
 			break;
-		case 30:
+		case GMTCASE_INTERPOLANT:
 			if (!strcmp (lower_value, "linear"))
 				gmtdefs.interpolant = 0;
 			else if (!strcmp (lower_value, "akima"))
@@ -1282,17 +1287,17 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
-		case 31:
+		case GMTCASE_IO_HEADER:
 			error = true_false_or_error (lower_value, &gmtdefs.io_header);
 			break;
-		case 32:
+		case GMTCASE_N_HEADER_RECS:
 			ival = atoi (value);
 			if (ival < 0)
 				error = TRUE;
 			else
 				gmtdefs.n_header_recs = ival;
 			break;
-		case 33:
+		case GMTCASE_LABEL_FONT:
 			if (value[0] >= '0' && value[0] <= '9')
 				ival = atoi (value);
 			else
@@ -1302,35 +1307,35 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				gmtdefs.label_font = ival;
 			break;
-		case 34:
+		case GMTCASE_LABEL_FONT_SIZE:
 			ival = atoi (value);
 			if (ival > 0)
 				save_label_size = gmtdefs.label_font_size = ival;
 			else
 				error = TRUE;
 			break;
-		case 35:
+		case GMTCASE_LINE_STEP:
 			if ((gmtdefs.line_step = GMT_convert_units (value, GMT_INCH)) <= 0.0) {
 				gmtdefs.line_step = 0.01;
 				fprintf (stderr, "%s: GMT WARNING: %s <= 0, reset to %lg %s\n", 
 				GMT_program, keyword, gmtdefs.line_step, GMT_unit_names[GMT_INCH]);
 			}
 			break;
-		case 36:
+		case GMTCASE_MAP_SCALE_FACTOR:
 			dval = atof (value);
 			if (dval <= 0.0)
 				error = TRUE;
 			else
 				gmtdefs.map_scale_factor = dval;
 			break;
-		case 37:
+		case GMTCASE_MAP_SCALE_HEIGHT:
 			dval = GMT_convert_units (value, GMT_INCH);
 			if (dval <= 0.0)
 				error = TRUE;
 			else
 				gmtdefs.map_scale_height = dval;
 			break;
-		case 38:
+		case GMTCASE_MEASURE_UNIT:
 			if (!strcmp (lower_value, "cm")) 
 				gmtdefs.measure_unit = 0;
 			else if (!strcmp (lower_value, "inch")) 
@@ -1342,28 +1347,29 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
-		case 39:
+		case GMTCASE_N_COPIES:
 			ival = atoi (value);
 			if (ival > 0)
 				gmtdefs.n_copies = ival;
 			else
 				error = TRUE;
 			break;
-		case 40:
+		case GMTCASE_OBLIQUE_ANNOTATION:
+		case GMTCASE_OBLIQUE_ANOTATION:
 			ival = atoi (value);
 			if (ival >= 0 && ival < 32)
-				gmtdefs.oblique_anotation = ival;
+				gmtdefs.oblique_annotation = ival;
 			else
 				error = TRUE;
 			break;
-		case 41:
+		case GMTCASE_PAGE_COLOR:
 			sscanf (value, "%d/%d/%d", &rgb[0], &rgb[1],  &rgb[2]);
 			if (GMT_check_rgb (rgb))
 				error = TRUE;
 			else 
 				memcpy ((void *)gmtdefs.page_rgb, (void *)rgb, (size_t)(3 * sizeof (int)));
 			break;
-		case 42:
+		case GMTCASE_PAGE_ORIENTATION:
 			if (!strcmp (lower_value, "landscape"))
 				gmtdefs.page_orientation = 0;
 			else if (!strcmp (lower_value, "portrait"))
@@ -1371,7 +1377,7 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
-		case 43:
+		case GMTCASE_PAPER_MEDIA:
 			manual = eps = FALSE;
 			ival = strlen (lower_value) - 1;
 			if (lower_value[ival] == '-') {	/* Manual Feed selected */
@@ -1410,7 +1416,7 @@ int GMT_setparameter (char *keyword, char *value)
 				if (eps) gmtdefs.paper_width[1] = -gmtdefs.paper_width[1];
 			}
 			break;
-		case 44:
+		case GMTCASE_PSIMAGE_FORMAT:
 			if (!strcmp (lower_value, "hex") || !strcmp (lower_value, "hexrgb"))
 				gmtdefs.ps_heximage = 1;
 			else if (!strcmp (lower_value, "bin") || !strcmp (lower_value, "binrgb"))
@@ -1422,57 +1428,57 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
-		case 45:
+		case GMTCASE_TICK_LENGTH:
 			save_tick_length = gmtdefs.tick_length = GMT_convert_units (value, GMT_INCH);
 			break;
-		case 46:
+		case GMTCASE_TICK_PEN:
 			error = GMT_getpen (value, &gmtdefs.tick_pen);
 			break;
-		case 47:
+		case GMTCASE_UNIX_TIME:
 			error = true_false_or_error (lower_value, &gmtdefs.unix_time);
 			break;
-		case 48:
+		case GMTCASE_UNIX_TIME_POS:
 			sscanf (value, "%[^/]/%s", txt_a, txt_b);
 			gmtdefs.unix_time_pos[0] = GMT_convert_units (txt_a, GMT_INCH);
 			gmtdefs.unix_time_pos[1] = GMT_convert_units (txt_b, GMT_INCH);
 			break;
-		case 49:
+		case GMTCASE_VECTOR_SHAPE:
 			dval = atof (value);
 			if (dval < 0.0 || dval > 1.0)
 				error = TRUE;
 			else
 				gmtdefs.vector_shape = dval;
 			break;
-		case 50:
+		case GMTCASE_VERBOSE:
 			error = true_false_or_error (lower_value, &gmtdefs.verbose);
 			break;
-		case 51:
+		case GMTCASE_WANT_EURO_FONT:
 			error = true_false_or_error (lower_value, &gmtdefs.want_euro_font);
 			break;
-		case 52:
+		case GMTCASE_X_AXIS_LENGTH:
 			dval = GMT_convert_units (value, GMT_INCH);
 			if (dval <= 0.0)
 				error = TRUE;
 			else
 				gmtdefs.x_axis_length = dval;
 			break;
-		case 53:
+		case GMTCASE_Y_AXIS_LENGTH:
 			dval = GMT_convert_units (value, GMT_INCH);
 			if (dval <= 0.0)
 				error = TRUE;
 			else
 				gmtdefs.y_axis_length = dval;
 			break;
-		case 54:
+		case GMTCASE_X_ORIGIN:
 			gmtdefs.x_origin = GMT_convert_units (value, GMT_INCH);
 			break;
-		case 55:
+		case GMTCASE_Y_ORIGIN:
 			gmtdefs.y_origin = GMT_convert_units (value, GMT_INCH);
 			break;
-		case 56:
+		case GMTCASE_XY_TOGGLE:
 			error = true_false_or_error (lower_value, &gmtdefs.xy_toggle);
 			break;
-		case 57:
+		case GMTCASE_Y_AXIS_TYPE:
 			if (!strcmp (lower_value, "ver_text"))
 				gmtdefs.y_axis_type = 1;
 			else if (!strcmp (lower_value, "hor_text"))
@@ -1480,70 +1486,70 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
-		case 58:
+		case GMTCASE_INPUT_CLOCK_FORMAT:
 			strncpy (gmtdefs.input_clock_format, value, 32);
 			break;
-		case 59:
+		case GMTCASE_INPUT_DATE_FORMAT:
 			strncpy (gmtdefs.input_date_format, value, 32);
 			break;
-		case 60:
+		case GMTCASE_OUTPUT_CLOCK_FORMAT:
 			strncpy (gmtdefs.output_clock_format, value, 32);
 			break;
-		case 61:
+		case GMTCASE_OUTPUT_DATE_FORMAT:
 			strncpy (gmtdefs.output_date_format, value, 32);
 			break;
-		case 62:
+		case GMTCASE_OUTPUT_DEGREE_FORMAT:
 			strncpy (gmtdefs.output_degree_format, value, 32);
 			break;
-		case 63:
+		case GMTCASE_PLOT_CLOCK_FORMAT:
 			strncpy (gmtdefs.plot_clock_format, value, 32);
 			break;
-		case 64:
+		case GMTCASE_PLOT_DATE_FORMAT:
 			strncpy (gmtdefs.plot_date_format, value, 32);
 			break;
-		case 65:
+		case GMTCASE_PLOT_DEGREE_FORMAT:
 			strncpy (gmtdefs.plot_degree_format, value, 32);
 			GMT_backward.got_new_plot_format = TRUE;
 			break;
-		case 66:
+		case GMTCASE_TIME_IS_INTERVAL:
 			error = true_false_or_error (lower_value, &gmtdefs.time_is_interval);
 			break;
-		case 67:
+		case GMTCASE_WANT_LEAP_SECONDS:
 			error = true_false_or_error (lower_value, &gmtdefs.want_leap_seconds);
 			break;
-		case 68:
+		case GMTCASE_TIME_EPOCH:
 			strncpy (gmtdefs.time_epoch, value, 32);
 			strncpy (GMT_time_system[GMT_N_SYSTEMS-1].epoch, value, 32);
 			break;
-		case 69:
+		case GMTCASE_TIME_UNIT:
 			gmtdefs.time_unit = GMT_time_system[GMT_N_SYSTEMS-1].unit = value[0];
 			break;
-		case 70:
+		case GMTCASE_TIME_SYSTEM:
 			gmtdefs.time_system = GMT_get_time_system (lower_value);
 			if (gmtdefs.time_system < 0 || gmtdefs.time_system >= GMT_N_SYSTEMS) {
 				error = TRUE;
 				gmtdefs.time_system = 0;
 			}
 			break;
-		case 71:
+		case GMTCASE_TIME_WEEK_START:
 			gmtdefs.time_week_start = GMT_key_lookup (value, GMT_weekdays, 7);
 			if (gmtdefs.time_week_start < 0 || gmtdefs.time_week_start >= 7) {
 				error = TRUE;
 				gmtdefs.time_week_start = 0;
 			}
 			break;
-		case 72:
+		case GMTCASE_TIME_LANGUAGE:
 			strncpy (gmtdefs.time_language, value, 32);
 			GMT_str_tolower (gmtdefs.time_language);
 			break;
-		case 73:
+		case GMTCASE_CHAR_ENCODING:
 			gmtdefs.encoding.name = strdup (value);
 			load_encoding (&gmtdefs.encoding);
 			break;
-		case 74:
+		case GMTCASE_Y2K_OFFSET_YEAR:
 			if ((gmtdefs.Y2K_offset_year = atoi (value)) < 0) error = TRUE;
 			break;
-		case 75:
+		case GMTCASE_FIELD_DELIMITER:
 			if (value[0] == '\0' || !strcmp (lower_value, "tab"))	/* DEFAULT */
 				strncpy (gmtdefs.field_delimiter, "\t", 8);
 			else if (!strcmp (lower_value, "space"))
@@ -1556,7 +1562,7 @@ int GMT_setparameter (char *keyword, char *value)
 				strncpy (gmtdefs.field_delimiter, value, 8);
 			gmtdefs.field_delimiter[7] = 0;	/* Just a precaution */
 			break;
-		case 76:
+		case GMTCASE_DEGREE_SYMBOL:
 			if (value[0] == '\0' || !strcmp (lower_value, "ring"))	/* DEFAULT */
 				gmtdefs.degree_symbol = 0;
 			else if (!strcmp (lower_value, "degree"))
@@ -1569,7 +1575,7 @@ int GMT_setparameter (char *keyword, char *value)
 				error = TRUE;
 			break;
 			GMT_backward.got_new_degree_symbol = TRUE;
-		case 77:
+		case GMTCASE_ANNOT_FONT2:
 			if (value[0] >= '0' && value[0] <= '9')
 				ival = atoi (value);
 			else
@@ -1577,23 +1583,23 @@ int GMT_setparameter (char *keyword, char *value)
 			if (ival < 0 || ival >= N_FONTS)
 				error = TRUE;
 			else
-				gmtdefs.anot_font2 = ival;
+				gmtdefs.annot_font2 = ival;
 			break;
-		case 78:
+		case GMTCASE_ANNOT_FONT2_SIZE:
 			ival = atoi (value);
 			if (ival > 0)
-				save_anot_size2 = gmtdefs.anot_font2_size = ival;
+				save_anot_size2 = gmtdefs.annot_font2_size = ival;
 			else
 				error = TRUE;
 			break;
 
-		case 79:
-			save_anot_offset2 = gmtdefs.anot_offset2 = GMT_convert_units (value, GMT_INCH);
+		case GMTCASE_ANNOT_OFFSET2:
+			save_anot_offset2 = gmtdefs.annot_offset2 = GMT_convert_units (value, GMT_INCH);
 			break;
-		case 80:
+		case GMTCASE_LABEL_OFFSET:
 			save_label_offset = gmtdefs.label_offset = GMT_convert_units (value, GMT_INCH);
 			break;
-		case 81:
+		case GMTCASE_HEADER_OFFSET:
 			save_header_offset = gmtdefs.header_offset = GMT_convert_units (value, GMT_INCH);
 			break;
 		default:
@@ -1657,14 +1663,14 @@ int GMT_savedefaults (char *file)
 	else
 		fprintf (fp, "\n");
 	fprintf (fp, "#-------- Basemap Annotation Parameters ------\n", GMT_VERSION);
-	fprintf (fp, "ANOT_MIN_ANGLE		= %lg\n", gmtdefs.anot_min_angle);
-	fprintf (fp, "ANOT_MIN_SPACING	= %lg\n", gmtdefs.anot_min_spacing);
-	fprintf (fp, "ANOT_FONT		= %s\n", GMT_font_name[gmtdefs.anot_font]);
-	(GMT_force_resize && !GMT_anot_special) ? fprintf (fp, "ANOT_FONT_SIZE		= +%dp\n", gmtdefs.anot_font_size) :  fprintf (fp, "ANOT_FONT_SIZE		= %dp\n", gmtdefs.anot_font_size);
-	fprintf (fp, "ANOT_FONT2		= %s\n", GMT_font_name[gmtdefs.anot_font2]);
-	(GMT_force_resize) ? fprintf (fp, "ANOT_FONT2_SIZE		= %dp\n", save_anot_size2) : fprintf (fp, "ANOT_FONT2_SIZE		= %dp\n", gmtdefs.anot_font2_size);
-	(GMT_force_resize) ? fprintf (fp, "ANOT_OFFSET		= %lg%c\n", save_anot_offset * s, u) : fprintf (fp, "ANOT_OFFSET		= %lg%c\n", gmtdefs.anot_offset * s, u);
-	(GMT_force_resize) ? fprintf (fp, "ANOT_OFFSET2		= %lg%c\n", save_anot_offset2 * s, u) : fprintf (fp, "ANOT_OFFSET2		= %lg%c\n", gmtdefs.anot_offset2 * s, u);
+	fprintf (fp, "ANNOT_MIN_ANGLE		= %lg\n", gmtdefs.annot_min_angle);
+	fprintf (fp, "ANNOT_MIN_SPACING	= %lg\n", gmtdefs.annot_min_spacing);
+	fprintf (fp, "ANNOT_FONT		= %s\n", GMT_font_name[gmtdefs.annot_font]);
+	(GMT_force_resize && !GMT_anot_special) ? fprintf (fp, "ANNOT_FONT_SIZE		= +%dp\n", gmtdefs.annot_font_size) :  fprintf (fp, "ANNOT_FONT_SIZE		= %dp\n", gmtdefs.annot_font_size);
+	fprintf (fp, "ANNOT_FONT2		= %s\n", GMT_font_name[gmtdefs.annot_font2]);
+	(GMT_force_resize) ? fprintf (fp, "ANNOT_FONT2_SIZE		= %dp\n", save_anot_size2) : fprintf (fp, "ANNOT_FONT2_SIZE		= %dp\n", gmtdefs.annot_font2_size);
+	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET		= %lg%c\n", save_anot_offset * s, u) : fprintf (fp, "ANNOT_OFFSET		= %lg%c\n", gmtdefs.annot_offset * s, u);
+	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET2	= %lg%c\n", save_anot_offset2 * s, u) : fprintf (fp, "ANNOT_OFFSET2		= %lg%c\n", gmtdefs.annot_offset2 * s, u);
 	fprintf (fp, "DEGREE_SYMBOL		= %s\n", GMT_degree_choice[gmtdefs.degree_symbol - gmt_none]);
 	fprintf (fp, "HEADER_FONT		= %s\n", GMT_font_name[gmtdefs.header_font]);
 	(GMT_force_resize) ? fprintf (fp, "HEADER_FONT_SIZE	= %dp\n", save_header_size) : fprintf (fp, "HEADER_FONT_SIZE	= %dp\n", gmtdefs.header_font_size);
@@ -1672,7 +1678,7 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "LABEL_FONT		= %s\n", GMT_font_name[gmtdefs.label_font]);
 	(GMT_force_resize) ? fprintf (fp, "LABEL_FONT_SIZE		= %dp\n", save_label_size) : fprintf (fp, "LABEL_FONT_SIZE		= %dp\n", gmtdefs.label_font_size);
 	(GMT_force_resize) ? fprintf (fp, "LABEL_OFFSET			= %lg%cp\n", save_label_offset * s, u) : fprintf (fp, "LABEL_OFFSET		= %lg%c\n", gmtdefs.label_offset * s, u);
-	fprintf (fp, "OBLIQUE_ANOTATION	= %d\n", gmtdefs.oblique_anotation);
+	fprintf (fp, "OBLIQUE_ANNOTATION	= %d\n", gmtdefs.oblique_annotation);
 	fprintf (fp, "PLOT_CLOCK_FORMAT	= %s\n", gmtdefs.plot_clock_format);
 	fprintf (fp, "PLOT_DATE_FORMAT	= %s\n", gmtdefs.plot_date_format);
 	fprintf (fp, "PLOT_DEGREE_FORMAT	= %s\n", gmtdefs.plot_degree_format);

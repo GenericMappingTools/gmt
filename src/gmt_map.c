@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.18 2001-12-21 03:50:37 ben Exp $
+ *	$Id: gmt_map.c,v 1.19 2002-01-04 21:13:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1751,7 +1751,7 @@ int GMT_map_init_stereo (void) {
 		GMT_map_clip = (PFI) GMT_rect_clip;
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
-		frame_info.check_side = !(gmtdefs.oblique_anotation & 1);
+		frame_info.check_side = !(gmtdefs.oblique_annotation & 1);
 		frame_info.horizontal = (fabs (project_info.pars[1]) < 30.0 && fabs (project_info.n - project_info.s) < 30.0);
 		search = TRUE;
 	}
@@ -2214,7 +2214,7 @@ int GMT_map_init_oblique (void) {
 			
 	GMT_world_map = (fabs (fabs (w - e) - 360.0) < SMALL);
 	gmtdefs.basemap_type = 1;
-	frame_info.check_side = !(gmtdefs.oblique_anotation & 1);
+	frame_info.check_side = !(gmtdefs.oblique_annotation & 1);
 	return (TRUE);
 }
 
@@ -2793,7 +2793,7 @@ int GMT_map_init_lambeq (void) {
 		GMT_map_clip = (PFI) GMT_rect_clip;
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
-		frame_info.check_side = !(gmtdefs.oblique_anotation & 1);
+		frame_info.check_side = !(gmtdefs.oblique_annotation & 1);
 		frame_info.horizontal = (fabs (project_info.pars[1]) < 30.0 && fabs (project_info.n - project_info.s) < 30.0);
 		search = TRUE;
 	}
@@ -2947,7 +2947,7 @@ int GMT_map_init_ortho (void) {
 		GMT_map_clip = (PFI) GMT_rect_clip;
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
-		frame_info.check_side = !(gmtdefs.oblique_anotation & 1);
+		frame_info.check_side = !(gmtdefs.oblique_annotation & 1);
 		frame_info.horizontal = (fabs (project_info.pars[1]) < 30.0 && fabs (project_info.n - project_info.s) < 30.0);
 		search = TRUE;
 	}
@@ -3084,7 +3084,7 @@ int GMT_map_init_gnomonic (void) {
 		GMT_map_clip = (PFI) GMT_rect_clip;
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
-		frame_info.check_side = !(gmtdefs.oblique_anotation & 1);
+		frame_info.check_side = !(gmtdefs.oblique_annotation & 1);
 		frame_info.horizontal = (fabs (project_info.pars[1]) < 30.0 && fabs (project_info.n - project_info.s) < 30.0);
 		search = TRUE;
 	}
@@ -3227,7 +3227,7 @@ int GMT_map_init_azeqdist (void) {
 		GMT_map_clip = (PFI) GMT_rect_clip;
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
-		frame_info.check_side = !(gmtdefs.oblique_anotation & 1);
+		frame_info.check_side = !(gmtdefs.oblique_annotation & 1);
 		frame_info.horizontal = (fabs (project_info.pars[1]) < 60.0 && fabs (project_info.n - project_info.s) < 30.0);
 		search = TRUE;
 	}
