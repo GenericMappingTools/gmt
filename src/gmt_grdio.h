@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.6 2002-02-23 03:39:58 pwessel Exp $
+ *	$Id: gmt_grdio.h,v 1.7 2003-06-25 13:25:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -50,11 +50,11 @@ EXTERN_MSC PFI GMT_io_writegrd[N_GRD_FORMATS];
 
 /* Default format # 0 */
 
-EXTERN_MSC int GMT_cdf_read_grd_info(char *file, struct GRD_HEADER *header);
-EXTERN_MSC int GMT_cdf_update_grd_info(char *file, struct GRD_HEADER *header);
-EXTERN_MSC int GMT_cdf_write_grd_info(char *file, struct GRD_HEADER *header);
-EXTERN_MSC int GMT_cdf_read_grd(char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
-EXTERN_MSC int GMT_cdf_write_grd(char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex, nc_type nc_type);
+EXTERN_MSC int GMT_cdf_read_grd_info (char *file, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_cdf_update_grd_info (char *file, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_cdf_write_grd_info  (char *file, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_cdf_read_grd  (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex, nc_type nc_type);
+EXTERN_MSC int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex, nc_type nc_type);
 
 
 #include "gmt_customio.h"
