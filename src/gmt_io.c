@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.80 2005-03-03 22:01:55 remko Exp $
+ *	$Id: gmt_io.c,v 1.81 2005-04-05 19:14:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -274,8 +274,8 @@ void GMT_multisegment (char *text)
 
 int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 {
-	char line[BUFSIZ], *p;
-	int i, col_no, len, n_convert;
+	char line[BUFSIZ], *p, token[BUFSIZ];
+	int i, pos, col_no, len, n_convert;
 	BOOLEAN done = FALSE, bad_record;
 	double val;
 
@@ -326,10 +326,9 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 		bad_record = FALSE;
 		strcpy (GMT_io.current_record, line);
 		line[i-1] = '\0';		/* Chop off newline at end of string */
-		p = strtok(line, " \t,");	/* Get first field and keep going until done */
-		col_no = 0;
-		while (!bad_record && p && col_no < *n) {
-			if ((n_convert = GMT_scanf (p, GMT_io.in_col_type[col_no], &val)) == GMT_IS_NAN) {	/* Got NaN or it failed to decode */
+		col_no = pos = 0;
+		while (!bad_record && col_no < *n && (GMT_strtok (line, " \t,", &pos, token))) {	/* Get each field in turn */
+			if ((n_convert = GMT_scanf (token, GMT_io.in_col_type[col_no], &val)) == GMT_IS_NAN) {	/* Got NaN or it failed to decode */
 				if (GMT_io.skip_if_NaN[col_no])	/* This field cannot be NaN so we must skip the entire record */
 					bad_record = TRUE;
 				else				/* OK to have NaN in this field, continue processing of record */
@@ -338,8 +337,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 			else {					/* Successful decode, assign to array */
 				GMT_data[col_no] = val;
 			} 
-			p = strtok(CNULL, " \t,");		/* Goto next field */
-			col_no++;
+			col_no++;		/* Goto next field */
 		}
 		if (bad_record) {
 			GMT_io.n_bad_records++;
@@ -1823,8 +1821,8 @@ int GMT_decode_coltype (char *arg)
 {
 	/* Routine will decode the -f[i|o]<col>|<colrange>[t|T|g],... arguments */
 
-	char copy[BUFSIZ], *p, *c;
-	int i, k = 1, start = -1, stop = -1, ic, code, *col = VNULL;
+	char copy[BUFSIZ], p[BUFSIZ], *c;
+	int i, k = 1, start = -1, stop = -1, ic, pos = 0, code, *col = VNULL;
 	BOOLEAN both_i_and_o = FALSE;
 
 	if (arg[0] == 'i')	/* Apply to input columns only */
@@ -1850,8 +1848,7 @@ int GMT_decode_coltype (char *arg)
 		return (0);
 	}
 
-	p = strtok (copy, ",");		/* Get first token */
-	while (p) {			/* While it is not empty, process it */
+	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		if ((c = strchr (p, '-')))	/* Range of columns given. e.g., 7-9T */
 			sscanf (p, "%d-%d", &start, &stop);
 		else if (isdigit ((int)p[0]))	/* Just a single column, e.g., 3t */
@@ -1888,8 +1885,6 @@ int GMT_decode_coltype (char *arg)
 			for (i = start; i <= stop; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = code;
 		else
 			for (i = start; i <= stop; i++) col[i] = code;
-
-		p = strtok (NULL, ",");	/* Next entry */
 	}
 	return (0);
 }

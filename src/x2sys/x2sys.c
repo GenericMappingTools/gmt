@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.26 2005-03-16 03:26:32 pwessel Exp $
+ *	$Id: x2sys.c,v 1.27 2005-04-05 19:14:15 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -149,9 +149,9 @@ void x2sys_skip_header (FILE *fp, struct X2SYS_INFO *s)
 
 int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G)
 {
-	int j, k, i, n_read = 0;
+	int j, k, i, n_read = 0, pos;
 	BOOLEAN error = FALSE;
-	char line[BUFSIZ], buffer[GMT_TEXT_LEN], *p, c;
+	char line[BUFSIZ], buffer[GMT_TEXT_LEN], p[BUFSIZ], c;
 	unsigned char u;
 	short int h;
 	float f;
@@ -186,11 +186,10 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 					fgets (line, BUFSIZ, fp);
 					if (s->multi_segment) s->ms_next = TRUE;
 				}
-				p = strtok (line, " ,\t\n");
-				while (p) {
+				pos = 0;
+				while ((GMT_strtok (line, " ,\t\n", &pos, p))) {
 					GMT_scanf (p, G->in_col_type[k], &data[k]);
 					k++;;
-					p = strtok (NULL, " ,\t\n");
 				}
 				return ((k != s->n_fields) ? -1 : 0);
 				break;
@@ -471,15 +470,13 @@ void x2sys_pick_fields (char *string, struct X2SYS_INFO *s)
 	 * order as on input
 	 */
 
-	char line[BUFSIZ], *p;
-	int i = 0, j;
+	char line[BUFSIZ], p[BUFSIZ];
+	int i = 0, j, pos = 0;
 
 	strncpy (line, string, BUFSIZ);
 	memset ((void *)s->use_column, 0, (size_t)(s->n_fields * sizeof (int)));
 
-	p = strtok (line, ",");
-
-	while (p) {
+	while ((GMT_strtok (line, ",", &pos, p))) {
 		j = 0;
 		while (j < s->n_fields && strcmp (p, s->info[j].name)) j++;
 		if (j < s->n_fields) {
@@ -490,7 +487,6 @@ void x2sys_pick_fields (char *string, struct X2SYS_INFO *s)
 			fprintf (stderr, "X2SYS: ERROR: Unknown column name %s\n", p);
 			exit (EXIT_FAILURE);
 		}
-		p = strtok (NULL, ",");
 		i++;
 	}
 
@@ -769,9 +765,9 @@ int x2sys_read_list (char *file, char ***list)
 
 void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, struct GMT_IO *G)
 {
-	char tag_file[BUFSIZ], line[BUFSIZ], r_arg[GMT_TEXT_LEN], i_arg[GMT_TEXT_LEN], *p, *sfile = CNULL;
-	int geodetic = 0;
-	BOOLEAN geographic = FALSE, got_r = FALSE, got_i = FALSE;
+	char tag_file[BUFSIZ], line[BUFSIZ], p[BUFSIZ], *sfile = CNULL;
+	int geodetic = 0, pos = 0;
+	BOOLEAN geographic = FALSE;
 	FILE *fp;
 
 	x2sys_set_home ();
@@ -791,16 +787,16 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 	GMT_chop (line);	/* Remove trailing CR or LF */
 
 	GMT_set_processed_option (8, FALSE);	/* In case -R has been processed before */
-	/* Note becuase the -R -I processing also use strtok we cannot call them inside the while loop */
 	
-	p = strtok (line, " \t");
-	while (p) {	/* Process the -D -I -R -G -W arguments from the header */
+	while ((GMT_strtok (line, " \t", &pos, p))) {	/* Process the -D -I -R -G -W arguments from the header */
 		if (p[0] == '-') {
 			switch (p[1]) {
 				/* Common parameters */
 				case 'R':
-					strcpy (r_arg, p);
-					got_r = TRUE;
+					if (GMT_get_common_args (&p[2], &B->x_min, &B->x_max, &B->y_min, &B->y_max)) {
+						fprintf (stderr, "%s: Error processing %s setting in %s!\n", X2SYS_program, &p[1], tag_file);
+						exit (EXIT_FAILURE);
+					}
 					break;
 
 				/* Supplemental parameters */
@@ -814,9 +810,10 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 					if (p[2] == 'd') geodetic = 2;
 					break;
 				case 'I':
-					strcpy (i_arg, &p[2]);
-					got_i = TRUE;
-					break;
+					if (GMT_getinc (&p[2], &B->bin_x, &B->bin_y)) {
+						fprintf (stderr, "%s: Error processing %s setting in %s!\n", X2SYS_program, &p[1], tag_file);
+						exit (EXIT_FAILURE);
+					}
 				case 'W':
 					B->time_gap = atof (&p[2]);
 					break;
@@ -826,18 +823,8 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 					break;
 			}
 		}
-		p = strtok (NULL, " \t");
 	}
 	x2sys_fclose (tag_file, fp);
-
-	if (got_r && GMT_get_common_args (r_arg, &B->x_min, &B->x_max, &B->y_min, &B->y_max)) {
-		fprintf (stderr, "%s: Error processing %s setting in %s!\n", X2SYS_program, r_arg, tag_file);
-		exit (EXIT_FAILURE);
-	}
-	if (got_i && GMT_getinc (i_arg, &B->bin_x, &B->bin_y)) {
-		fprintf (stderr, "%s: Error processing -I%s setting in %s!\n", X2SYS_program, i_arg, tag_file);
-		exit (EXIT_FAILURE);
-	}
 	
 	*s = x2sys_initialize (sfile, G);	/* Initialize X2SYS and info structure */
 

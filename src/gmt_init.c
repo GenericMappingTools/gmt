@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.180 2005-03-04 05:14:20 remko Exp $
+ *	$Id: gmt_init.c,v 1.181 2005-04-05 19:14:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -810,13 +810,13 @@ void GMT_default_error (char option)
 
 int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 {
-	char *text, string[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT];
+	char text[BUFSIZ], string[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT];
 
 	/* GMT_get_common_args interprets the command line for the common, unique options
 	 * -B, -H, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -c, -:, -
 	 */
 
-	int i, j, icol, expect_to_read, got, nn = 0, n_slashes, error = 0, j_type, col_type[2];
+	int i, j, icol, expect_to_read, got, nn = 0, n_slashes, error = 0, pos, j_type, col_type[2];
 	BOOLEAN rect_box_given = FALSE;
 	double *p[6];
 
@@ -930,10 +930,9 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 	 			project_info.region = FALSE;
 				item[strlen(item)-1] = '\0';	/* Temporarily removing the trailing r so GMT_scanf will work */
 	 		}
-			i = 0;
+			i = pos = 0;
 			strcpy (string, &item[2]);
-			text = strtok (string, "/");
-			while (text) {
+			while ((GMT_strtok (string, "/", &pos, text))) {
 				if (i > 5) {
 					error++;
 					GMT_syntax ('R');
@@ -967,7 +966,6 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				}
 
 				i++;
-				text = strtok (CNULL, "/");
 			}
 			if (col_type[0]) GMT_io.in_col_type[0] = col_type[0];	/* Set to what we found */
 			if (col_type[1]) GMT_io.in_col_type[1] = col_type[1];	/* Set to what we found */
@@ -4737,9 +4735,8 @@ int	GMT_scanf_epoch (char *s, double *t0) {
  */
 static void load_encoding (struct gmt_encoding *enc)
 {
-	char line[GMT_LONG_TEXT];
-	char *symbol;
-	int code = 0;
+	char line[GMT_LONG_TEXT], symbol[GMT_LONG_TEXT];
+	int code = 0, pos;
 	FILE *in;
 
 	sprintf (line, "%s%cshare%cpslib%c%s.ps", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, enc->name);
@@ -4753,8 +4750,8 @@ static void load_encoding (struct gmt_encoding *enc)
 
 	while (fgets (line, sizeof line, in))
 	{
-
-		for (symbol = strtok (line, " /\t\n"); symbol; symbol = strtok (NULL, " /\t\n"))
+		pos = 0;
+		while ((GMT_strtok (line, " /\t\n", &pos, symbol))) {
 		{
 			if (strcmp (symbol, "[") == 0)	/* We have found the start of the encoding array. */
 			{

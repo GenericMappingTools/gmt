@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.9 2005-03-04 21:00:54 remko Exp $
+ *	$Id: mgd77.c,v 1.10 2005-04-05 19:14:15 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -837,19 +837,16 @@ void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F)
 	 * order as in the input records.
 	 */
 
-	char line[BUFSIZ], *p, word[GMT_LONG_TEXT], value[GMT_LONG_TEXT];
-	int i, j, k, constraint, n, ne_alloc = 0, nc_alloc = 0;
+	char p[BUFSIZ], word[GMT_LONG_TEXT], value[GMT_LONG_TEXT];
+	int i, j, k, constraint, n, pos, ne_alloc = 0, nc_alloc = 0;
 	BOOLEAN exact;
 
-	strncpy (line, string, BUFSIZ);						/* Make a copy since we strtok will destroy the string */
 	memset ((void *)F->use_column, 0, (size_t)(32 * sizeof (int)));		/* Initialize array */
 	memset ((void *)F->order, 0, (size_t)(32 * sizeof (int)));		/* Initialize array */
 	F->bit_pattern = 0;
 
-	p = strtok (line, ",");							/* Get the 1st comma-separated abbreviation */
-
 	i = 0;		/* Start at the first ouput column */
-	while (p) {	/* Until we run out of abbreviations */
+	while ((GMT_strtok (string, ",", &pos, p))) {	/* Until we run out of abbreviations */
 		/* Must check if we need to break this word into flag[=|<=|>=|<|>value] */
 		for (k = constraint = 0; p[k] && constraint == 0; k++) {
 			if (p[k] == '>') {
@@ -958,7 +955,6 @@ void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F)
 			}
 			i++;					/* Move to the next output column */
 		}
-		p = strtok (NULL, ",");			/* Get the next abbreviation */
 	}
 
 	F->n_out_columns = i;

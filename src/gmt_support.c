@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.156 2005-03-07 16:59:12 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.157 2005-04-05 19:14:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -649,9 +649,9 @@ BOOLEAN GMT_is_color (char *word, int max_slashes)
 }
 
 void GMT_gettexture (char *line, int unit, double scale, struct GMT_PEN *P) {
-	int i, n;
+	int i, n, pos;
 	double width, pen_scale;
-	char tmp[GMT_LONG_TEXT], string[BUFSIZ], *ptr;
+	char tmp[GMT_LONG_TEXT], string[BUFSIZ], ptr[BUFSIZ];
 
 	if (!line[0]) return;	/* Nothing to do */
 	pen_scale = scale;
@@ -686,12 +686,11 @@ void GMT_gettexture (char *line, int unit, double scale, struct GMT_PEN *P) {
 
 		/* Must convert given units to points */
 
-		ptr = strtok (P->texture, " ");
 		memset ((void *)string, 0, (size_t)BUFSIZ);
-		while (ptr) {
+		pos = 0;
+		while ((GMT_strtok (P->texture, " ", &pos, ptr))) {
 			sprintf (tmp, "%g ", (atof (ptr) * GMT_u2u[unit][GMT_PT] * scale));
 			strcat (string, tmp);
-			ptr = strtok (CNULL, " ");
 		}
 		string[strlen (string) - 1] = 0;
 		if (strlen (string) >= GMT_PEN_LEN) {
@@ -731,18 +730,16 @@ int GMT_getinc (char *line, double *dx, double *dy)
 
 int GMT_getincn (char *line, double inc[], int n)
 {
-	int last, i;
-	char tmpstring[BUFSIZ], *p;
+	int last, i, pos;
+	char p[BUFSIZ];
 	double scale;
 
 	/* Dechipers dx/dy/dz/dw/du/dv/... increment strings with n items */
 
 	memset ((void *)inc, 0, (size_t)(n * sizeof (double)));
-	strcpy (tmpstring, line);	/* Since strtok clobbers the string */
 
-	p = strtok (tmpstring, "/");
-	i = 0;
-	while (p && i < n) {
+	i = pos = 0;
+	while (i < n && (GMT_strtok (line, "/", &pos, p))) {
 		last = strlen (p) - 1;
 		if (p[last] == 'm' || p[last] == 'M') {	/* Gave arc minutes */
 			p[last] = 0;
@@ -759,7 +756,6 @@ int GMT_getincn (char *line, double inc[], int n)
 			exit (EXIT_FAILURE);
 		}
 		inc[i] *= scale;
-		p = strtok (NULL, "/");
 		i++;	/* Goto next increment */
 	}
 
@@ -1650,9 +1646,9 @@ void GMT_contlabel_init (struct GMT_CONTOUR *G)
 
 int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 {
-	int k, bad = 0;
+	int k, bad = 0, pos = 0;
 	BOOLEAN g_set = FALSE;
-	char txt_cpy[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], c, *p;
+	char txt_cpy[BUFSIZ], p[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], c;
 
 	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+o][+v][+r<min_rc>][+s<size>][+p[<pen>]][+u<unit>][+w<width>][+=<prefix>] strings */
 
@@ -1662,8 +1658,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 	/* Decode new-style +separated substrings */
 
 	strcpy (txt_cpy, &txt[k+1]);
-	p = strtok (txt_cpy, "+");	/* Break into sections separated by + */
-	while (p) {
+	while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'a':	/* Angle specification */
 				if (p[1] == 'p' || p[1] == 'P')		/* Line-parallel label */
@@ -1800,8 +1795,6 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 				bad++;
 				break;
 		}
-
-		p = strtok (NULL, "+");
 	}
 
 	return (bad);
@@ -1927,11 +1920,11 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 	 
 	/* Prepares contour labeling machinery as needed */
 
-	int i, k, n, error = 0;
+	int i, k, n, error = 0, pos;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	BOOLEAN greenwich;
 	double x, y;
-	char buffer[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], txt_d[GMT_LONG_TEXT], *p;
+	char buffer[BUFSIZ], p[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], txt_d[GMT_LONG_TEXT];
 
 	if (G->clearance_flag) {	/* Gave a percentage of fontsize as clearance */
 		G->clearance[0] = 0.01 * G->clearance[0] * G->label_font_size / 72.0;
@@ -1965,9 +1958,8 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 	if (G->crossing == GMT_CONTOUR_XLINE) {
 		strcpy (buffer, G->option);
 		G->xp = (struct GMT_LINES *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_LINES), GMT_program);
-		G->n_xp = 0;
-		p = strtok (buffer, ",");
-		while (p) {
+		G->n_xp = pos = 0;
+		while ((GMT_strtok (buffer, ",", &pos, p))) {
 			G->xp[G->n_xp].lon = (double *) GMT_memory (VNULL, 2, sizeof (double), GMT_program);
 			G->xp[G->n_xp].lat = (double *) GMT_memory (VNULL, 2, sizeof (double), GMT_program);
 			G->xp[G->n_xp].np = 2;
@@ -2022,7 +2014,6 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 				G->xp[G->n_xp].lon[i] = x;
 				G->xp[G->n_xp].lat[i] = y;
 			}
-			p = strtok (NULL, ",");
 			G->n_xp++;
 			if (G->n_xp == (int)n_alloc) {
 				n_alloc += GMT_SMALL_CHUNK;
@@ -5137,8 +5128,8 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 {
 	/* Pass text as &argv[i][2] */
 
-	int j = 0, i,error = 0, colon, plus, slash, k, order[4] = {3,1,0,2};
-	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], txt_d[GMT_LONG_TEXT], tmpstring[GMT_LONG_TEXT], *p;
+	int j = 0, i,error = 0, colon, plus, slash, k, pos, order[4] = {3,1,0,2};
+	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], txt_d[GMT_LONG_TEXT], tmpstring[GMT_LONG_TEXT], p[GMT_LONG_TEXT];
 
 	/* SYNTAX is -T[f|m][x]<lon0>/<lat0>/<size>[/<info>][:label:][+<aint>/<fint>/<gint>[/<aint>/<fint>/<gint>]], where <info> is
 	 * 1)  -Tf: <info> is <kind> = 1,2,3 which is the level of directions [1].
@@ -5191,12 +5182,10 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 		}
 		strncpy (tmpstring, &text[colon], k-colon);
 		tmpstring[k-colon] = '\0';
-		p = strtok (tmpstring, ",");
 		k = 0;
-		while (p && k < 4) {	/* Get the four labels */
+		while (k < 4 && (GMT_strtok (tmpstring, ",", &pos, p))) {	/* Get the four labels */
 			if (strcmp (p, "-")) strcpy (ms->label[order[k]], p);
 			k++;
-			p = strtok (NULL, ",");
 		}
 		if (k == 0) {	/* No labels wanted */
 			ms->label[0][0] = ms->label[1][0] = ms->label[2][0] = ms->label[3][0] = '\0';
@@ -5318,6 +5307,43 @@ void GMT_chop (char *string)
 	for (i = n - 1; i >= 0 && (string[i] == '\n' || string[i] == '\r'); i--);
 	i++;
 	if (i >= 0) string[i] = '\0';	/* Terminate string */
+}
+
+int GMT_strtok (const char *string, const char *sep, int *pos, char *token)
+{
+	/* Reentrant replacement for strtok that uses no static variables.
+	 * Breaks string into tokens separated by one of more separator
+	 * characters (in sep).  Set *pos to 0 before first call.  Unlike
+	 * strtok, always pass the original string as first argument.
+	 * Returns 1 if it finds a token and 0 if no more tokens left.
+	 * pos is updated and token is returned.  char *token must point
+	 * to memory of length >= strlen (string).
+	 */
+
+	int i, j, string_len;
+	
+	string_len = strlen (string);
+	
+	/* Wind up *pos to first non-separating character: */
+	while (string[*pos] && strchr (sep, (int)string[*pos])) (*pos)++;
+
+	token[0] = '\0';	/* Initialize token to NULL in case we are at end */
+	
+	if (*pos >= string_len || string_len == 0) return 0;	/* Got NULL string or no more string left to search */
+
+	/* Search for next non-separating character */
+	for (i = *pos; string[i] && !strchr (sep, (int)string[i]); i++);
+	
+	/* Copy token */
+	j = i - *pos;
+	strncpy (token, &string[*pos], j);
+	token[j] = 0;
+	
+	/* Wind up *pos to next non-separating character */
+	while (string[i] && strchr (sep, (int)string[i])) i++;
+	*pos = i;
+	
+	return 1;
 }
 
 double GMT_get_map_interval (int axis, int item) {
@@ -7046,9 +7072,9 @@ char *GMT_convertpen (struct GMT_PEN *pen, int *width, int *offset, int rgb[])
 	/* GMT_convertpen converts from internal points to current dpi unit.
 	 * It allocates space and returns a pointer to the texture, if not null */
 
-	char tmp[GMT_TEXT_LEN], buffer[BUFSIZ], *texture = CNULL, *ptr;
+	char tmp[GMT_TEXT_LEN], buffer[BUFSIZ], ptr[BUFSIZ], *texture = CNULL;
 	double pt_to_dpi;
-	int n;
+	int n, pos;
 
 	pt_to_dpi = GMT_u2u[GMT_PT][GMT_INCH] * gmtdefs.dpi;
 
@@ -7057,11 +7083,10 @@ char *GMT_convertpen (struct GMT_PEN *pen, int *width, int *offset, int rgb[])
 	if (pen->texture[0]) {
 		texture = (char *) GMT_memory (VNULL, BUFSIZ, sizeof (char), "GMT_convertpen");
 		strcpy (buffer, pen->texture);
-		ptr = strtok (buffer, " ");
-		while (ptr) {
+		pos = 0;
+		while ((GMT_strtok (buffer, " ", &pos, ptr))) {
 			sprintf (tmp, "%d ", irint (atof (ptr) * pt_to_dpi));
 			strcat (texture, tmp);
-			ptr = strtok (CNULL, " ");
 		}
 		n = strlen (texture);
 		texture[n-1] = 0;
