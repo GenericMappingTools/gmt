@@ -62,7 +62,7 @@ Append \fInorm\fP to force the scores to fall in the <-1,+1> range [Default is s
 Use quadratic intensity scaling.  [Default is linear].
 #include "explain_-V.txt"
 .SH EXAMPLES
-To find the height intervals that devide the file heights.grd into 16 divisions of
+To find the height intervals that divide the file heights.grd into 16 divisions of
 equal area:
 .br
 .sp
