@@ -1,17 +1,21 @@
 .TH GMT2RGB l DATE
 .SH NAME
-gmt2rgb \- Converting a grdfile pr Sun rasterfile to r/g/b grids
+gmt2rgb \- Converting a grdfile, a raw, or a Sun rasterfile to r/g/b grids
 .SH SYNOPSIS
-\fBgmt2rgb\fP \fIinfile\fP \fB\-G\fP\fItemplate\fP [ \fB\-C\fP\fIcptfile\fP ] [ \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] ] 
-[ \fB\-L\fP\fIlayer\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP]  [ \fB\-V\fP ]
+\fBgmt2rgb\fP \fIinfile\fP \fB\-G\fP\fItemplate\fP [ \fB\-C\fP\fIcptfile\fP ] 
+[ \fB\-F\fP ] [ \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] ] 
+[ \fB\-L\fP\fIlayer\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-V\fP ]
 .SH DESCRIPTION
-\fBgmt2rgb\fP reads one of two types of input files: (1) A Sun 8-, 24-, or 32-bit rasterfile; we the write out the red, green, and
-blue components (0-255 range) to separate grid files.  Since the rasterfile header is limited you may use the \fB\-R, \-F, \-I\fP options
-to set a complete header record [Default is simply based on the number of rows and columns]. (2) A binary 2-D grdfile; we then convert the z-values
+\fBgmt2rgb\fP reads one of three types of input files: (1) A Sun 8-, 24-, or 32-bit rasterfile; we the
+write out the red, green, and blue components (0-255 range) to separate grid files.  Since the rasterfile
+header is limited you may use the \fB\-R, \-F, \-I\fP options to set a complete header record [Default is
+simply based on the number of rows and columns]. (2) A binary 2-D grdfile; we then convert the z-values
 to red, green, blue via the provided cpt file.  Optionally, only write out one of the r, g, b, layers.
+(3) A RGB or RGBA raw rasterfile.  Since raw rastefiles have no header, you have to give the image
+dimensions via the \fB\-W\fP option.
 .TP
 \fIinfile\fP
-The (1) Sun rasterfile or (2) 2-D binary grdfile to be converted.
+The (1) Sun rasterfile, (2) 2-D binary grdfile, or (3) raw rasterfile to be converted.
 .TP
 .B \-G
 Provide an output name template for the three output grids.  The template should be a regular gridfile name
@@ -20,12 +24,21 @@ except it must contain the string %c which on output will be replaced by r, g, o
 .TP
 .B \-C
 name of the color palette table (for 2-D binary input grid only).
+.TP
+.B \-F
+ Will force pixel registration [Default is grid registration].
 #include "explain_-I.txt"
 .TP
 .B \-L
 Output only the specified layer (r, g, or b).  [Default outputs all 3 layers].
 #include "explain_-R.txt"
 #include "explain_-V.txt"
+.TP
+.B \-W
+Sets the size of the raw raster file.  By default an RGB file (which has 3 bytes/pixel) is assumed.
+For RGBA files use \fIn_bytes\fP = 4.  Use \fB\-W\fP for guessing the image size of a RGB raw file,
+and \fB\-W\fP\fI=/=/4\fP if the raw image is of the RGBA type.  Notice that this might be a bit slow
+because the guessing algorithm makes uses of FFTs.
 .SH EXAMPLES
 To use the color palette topo.cpt to create r, g, b component grids from hawaii_grv.grd file, use
 .br
