@@ -1,4 +1,4 @@
-#	$Id: gmt_keywords.d,v 1.6 2004-04-12 21:41:37 pwessel Exp $
+#	$Id: gmt_keywords.d,v 1.7 2004-05-07 22:07:08 pwessel Exp $
 #
 # List of all GMT defaults parameters and their case value
 # Some parameters are spelled in two different ways and will
@@ -102,6 +102,7 @@ TIME_FORMAT
 TIME_FORMAT_PRIMARY
 TIME_FORMAT_SECONDARY
 TIME_IS_INTERVAL
+TIME_INTERVAL_FRACTION
 TIME_EPOCH
 TIME_UNIT
 TIME_SYSTEM

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.131 2004-05-06 17:54:08 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.132 2004-05-07 22:07:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1763,6 +1763,9 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
+		case GMTCASE_TIME_INTERVAL_FRACTION:
+			gmtdefs.time_interval_fraction = atof (value);
+			break;
 		case GMTCASE_WANT_LEAP_SECONDS:
 			error = true_false_or_error (lower_value, &gmtdefs.want_leap_seconds);
 			break;
@@ -2044,6 +2047,7 @@ int GMT_savedefaults (char *file)
 		fprintf (fp, "TIME_IS_INTERVAL	= %c%d%c\n", pm[GMT_truncate_time.direction], GMT_truncate_time.T.step, GMT_truncate_time.T.unit);
 	else
 		fprintf (fp, "TIME_IS_INTERVAL	= OFF\n");
+	fprintf (fp, "TIME_INTERVAL_FRACTION	= %g\n", gmtdefs.time_interval_fraction);
 	fprintf (fp, "TIME_LANGUAGE		= %s\n", gmtdefs.time_language);
 	fprintf (fp, "TIME_SYSTEM		= %s\n", GMT_time_system[gmtdefs.time_system].name);
 	fprintf (fp, "TIME_UNIT		= %c\n", gmtdefs.time_unit);

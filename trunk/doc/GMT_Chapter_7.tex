@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.14 2004-04-27 23:24:00 pwessel Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.15 2004-05-07 22:07:08 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -753,7 +753,7 @@ As discussed in Section~\ref{sec:timeaxis}, the annotation of time-series
 is generally more complicated due to the extra degrees of freedome afforded
 by the dual annotation system.  In this example we will display the trend
 of the stock price of RedHat (RHAT) from their initial public offering until
-early 2004.  The datafile is a comma-separated table and the first two records
+early 2004.  The datafile is a comma-separated table and the first few records
 look like this:
 \begin{verbatim}
 Date,Open,High,Low,Close,Volume,Adj.Close*
@@ -790,7 +790,7 @@ example will run even if you do not have \progname{wget} (we use the supplied
 get the actual current seismicity plot using the live data.  The main purpose of
 this script is not to show how to plot a map background and a few circles, but
 rather demonstrate how a map legend may be composed using the new tool \GMTprog{pslegend}.
-SOme scripting is used to pull out information from the data file that is later
+Some scripting is used to pull out information from the data file that is later
 used in the legend.  The legend will normally have the email address of the script
 owner; here that command is commented out and the user is hardwired to ``GMT guru''.
 The USGS logo, taken from their web page and converted to a Sun rasterfile, is used
@@ -821,8 +821,8 @@ of a beautiful world map.
 \GMTfig[ht]{GMT_example_23}{All great-circle paths lead to Rome.}
 
 The script produces the plot in Figure~\ref{fig:GMT_example_23}; note how
-interesting the path from Seattle appears in this particular Hammer projection.
-We also note that Rome's antipode is somewhere on the Chatham plateau (antipodes
+interesting the path from Seattle appears in this particular projection (Hammer).
+We also note that Rome's antipode lies somewhere near the Chatham plateau (antipodes
 will be revisited in Example 25).
 
 \index{Example!Paths to Rome|)}
@@ -855,7 +855,7 @@ which remains constant at 1000 km.
 
 \GMTfig[ht]{GMT_example_24}{Data selection based on geospatial criteria.}
 
-\index{Example!Geospatial criteria|)}s
+\index{Example!Geospatial criteria|)}
 
 \section{Global distribution of antipodes}
 \index{Example!Distribution of antipodes|(}
@@ -865,7 +865,7 @@ $(\phi, \lambda)$ is the point at $(-\phi, \lambda + 180)$.  We seek an answer
 to the question that has plagued so many for so long: Given the distribution of
 land and ocean, how often is the antipode of a point on land also on land? And
 what about marine antipodes?  We use \GMTprog{grdlandmask} and \GMTprog{grdmath}
-to find map these distributions and calculate the area of the Earth (in percent)
+to map these distributions and calculate the area of the Earth (in percent)
 that goes with each of the three possibilities.  To make sense of our \GMTprog{grdmath}
 equations below, note that we first calculate a grid that is +1 when a point and its
 antipode is on land, -1 if both are in the ocean, and 0 elsewhere.  We then
@@ -874,7 +874,7 @@ that equal +1.  As each point represent an area approximated by $\Delta \phi \ti
 and the $\Delta \lambda$ term's actual dimension depends on $\cos (\phi)$, we need
 to allow for that shrinkage and then normalize our sum to that of the whole area of the Earth,
 and convert that ratio to percent.  Since the $\Delta \lambda$, $\Delta \phi$ terms appear twice they cancel out, leaving the
-intractable expressions below where the sum of $cos(\phi)$ for all $\phi$ evaluates to $2N_y / \pi$:
+intractable expressions below where the sum of $cos(\phi)$ for all $\phi$ is known to equal $2N_y / \pi$:
 
 \input{scripts/GMT_example_25}
 
@@ -886,4 +886,4 @@ few minutes).
 
 \GMTfig[ht]{GMT_example_25}{Global distribution of antipodes.}
 
-\index{Example!Distribution of antipodes|)}s
+\index{Example!Distribution of antipodes|)}
