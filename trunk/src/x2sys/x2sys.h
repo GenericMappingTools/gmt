@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.14 2004-08-20 20:43:38 pwessel Exp $
+ *	$Id: x2sys.h,v 1.15 2005-03-13 23:43:53 pwessel Exp $
  *
  *      Copyright (c) 1999-2004 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -173,9 +173,11 @@ struct X2SYS_BIX {
 	double bin_y;		/* Spacing between y bins */
 	double i_bin_x;		/* 1/dx */
 	double i_bin_y;		/* 1/dy */
+	double time_gap;	/* We have a data-gap if two records differ by this amount in time */
 	int nx_bin;		/* Number of x bins */
 	int ny_bin;		/* Number of y bins */
 	int nm_bin;		/* Total number of bins */
+	int periodic;		/* 1 if x is periodic */
 	unsigned int *binflag;	/* The bin array */
 	struct X2SYS_BIX_DATABASE *base;
 	struct X2SYS_BIX_TRACK_INFO *head;
