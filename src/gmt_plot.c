@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.2 2001-02-21 03:52:27 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.3 2001-02-22 00:13:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1642,7 +1642,7 @@ void GMT_theta_r_map_boundary (double w, double e, double s, double n)
 }
 	
 void GMT_map_latline (double lat, double west, double east)		/* Draws a line of constant latitude */
-                        {
+{
 	int nn;
 	double *llon, *llat;
 	char text[32];
@@ -1659,7 +1659,7 @@ void GMT_map_latline (double lat, double west, double east)		/* Draws a line of 
 }
 	
 void GMT_map_lonline (double lon, double south, double north)	/* Draws a line of constant longitude */
-                          {
+{
 	int nn;
 	double *llon, *llat;
 	char text[32];
@@ -1908,6 +1908,7 @@ int GMT_map_latcross (double lat, double west, double east, struct XINGS **xings
 			if (nx == 2) X[nc].angle[1] = X[nc].angle[0] + 180.0;
 			if (GMT_corner > 0) {
 				X[nc].sides[0] = (GMT_corner%4 > 1) ? 1 : 3;
+				if (project_info.got_azimuths) X[nc].sides[0] = (X[nc].sides[0] + 2) % 4;
 				GMT_corner = 0;
 			}
 		}
@@ -3419,11 +3420,28 @@ int GMT_polar_adjust (int side, double angle, double x, double y)
 
 double GMT_get_angle (double lon1, double lat1, double lon2, double lat2)
 {
-	double x1, y1, x2, y2, angle, direction;
+	double x1, y1, x2, y2, dx, dy, angle, direction;
 	
 	GMT_geo_to_xy (lon1, lat1, &x1, &y1);
 	GMT_geo_to_xy (lon2, lat2, &x2, &y2);
-	angle = d_atan2 (y2-y1, x2-x1) * R2D;
+	dx = x2 - x1;
+	dy = y2 - y1;
+	if (dy == 0.0 && dx == 0.0) {	/* Special case that only(?) occurs at N or S pole or r=0 for POLAR */
+		if (fabs (fmod (lon1 - project_info.w + 360.0, 360.0)) > fabs (fmod (lon1 - project_info.e + 360.0, 360.0))) {	/* East */
+			GMT_geo_to_xy (project_info.e, project_info.s, &x1, &y1);
+			GMT_geo_to_xy (project_info.e, project_info.n, &x2, &y2);
+			GMT_corner = 1;
+		}
+		else {
+			GMT_geo_to_xy (project_info.w, project_info.s, &x1, &y1);
+			GMT_geo_to_xy (project_info.w, project_info.n, &x2, &y2);
+			GMT_corner = 3;
+		}
+		angle = d_atan2 (y2-y1, x2-x1) * R2D - 90.0;
+		if (project_info.got_azimuths) angle += 180.0;
+	}
+	else
+		angle = d_atan2 (dy, dx) * R2D;
 	
 	if (abs (GMT_x_status_old) == 2 && abs (GMT_y_status_old) == 2)	/* Last point outside */
 		direction = angle + 180.0;
