@@ -142,7 +142,7 @@ Do not list data that are less than \fIstartdist\fP km (or nautical miles; see \
 track from port of departure. [Default is 0].
 .TP
 .B \-Sb
-Do not list data that are more than \fIstopdist\fP km  (or nautical miles; see \fB\-N\fP)along
+Do not list data that are more than \fIstopdist\fP km (or nautical miles; see \fB\-N\fP) along
 track from port of departure. [Default is length of track].
 #include "explain_-V.txt"
 .TP
