@@ -1,6 +1,6 @@
 #	Information for installing GMT 3.4
 #
-#		$Id: README,v 1.8 2001-04-02 19:32:11 pwessel Exp $ 
+#		$Id: README,v 1.9 2001-04-05 00:53:17 pwessel Exp $ 
 #
 #	Copyright (c) 1991-2001, P. Wessel & W. H. F. Smith
 #
@@ -78,7 +78,9 @@ and optionally
 
 The latter is copyrighted by Shewchuck and is not covered by the GNU Public
 License.  Installing it is optional; by default, GMT will use Dave Watson's
-routine which is much slower than Shewchucks routine.
+routine which is much slower than Shewchucks routine.  Note that triangle.tar.gz
+must be moved into the main GMT directory before you uncompress/extract the
+files (see GMT_full and GMT_high for a similar situation)
 
 You must get 1 and 2 for a minimal GMT installation.
 All archives are available in gzip (*.gz) and bzip2 (*.bz2) format.
