@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.70 2004-12-02 16:19:52 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.71 2004-12-02 17:20:38 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2563,7 +2563,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 	FILE *fp;
 	struct GMT_LINES *e;
 	int i = -1, j = 0, n, i_alloc = GMT_CHUNK, n_read = 0, j_alloc = GMT_CHUNK;
-	int n_fields, n_expected_fields = BUFSIZ;
+	int n_fields, n_expected_fields = BUFSIZ, n_tot_mem = 0;
 	BOOLEAN poly = FALSE, check_cap, save;
 	double d, dlon, lon_sum, *in;
 	char buffer[BUFSIZ], *t;
@@ -2573,6 +2573,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 	
 	e = (struct GMT_LINES *) GMT_memory (VNULL, (size_t)i_alloc, sizeof (struct GMT_LINES), GMT_program);
 
+n_tot_mem += i_alloc * sizeof (struct GMT_LINES);
 	if ((fp = GMT_fopen (file, "r")) == NULL) {
 		fprintf (stderr, "%s: Cannot open file %s\n", GMT_program, file);
 		exit (EXIT_FAILURE);
@@ -2672,8 +2673,11 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 		if (i == (i_alloc-1)) {
 			i_alloc += GMT_CHUNK;
 			e = (struct GMT_LINES *) GMT_memory ((void *)e, (size_t)i_alloc, sizeof (struct GMT_LINES), GMT_program);
+n_tot_mem += GMT_CHUNK * sizeof (struct GMT_LINES);
 		}
+		fprintf (stderr, "Mem count = %d bytes\r", n_tot_mem);
 	}
+		fprintf (stderr, "Mem count = %d bytes\n", n_tot_mem);
 	GMT_fclose (fp);
 	GMT_io.multi_segments = save;
 
