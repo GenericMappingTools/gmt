@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Tutorial.tex,v 1.15 2003-04-13 02:32:06 pwessel Exp $
+%	$Id: GMT_Tutorial.tex,v 1.16 2003-04-25 20:00:08 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2003.
@@ -189,11 +189,11 @@ has modest space/memory requirements.  Minimum requirements are
 
 \begin{itemize}
 
-\item The netCDF library 3.4 (free from www.unidata.edu).
+\item The netCDF library 3.4 or higher (free from www.unidata.edu).
 \item A C Compiler (free from www.gnu.org).
 \item About 100 Mb disk space (70 Mb additional for full- and
 high-resolution coast-lines).
-\item About 16 Mb RAM.
+\item About 32 Mb RAM.
 
 \end{itemize}
 
@@ -217,7 +217,7 @@ described in the \GMT\ \filename{README} file.
 are available from the \GMT\ documentation web page.  It is
 assumed these pages have been installed locally at your site;
 if not they are always available from the main
-\htmladdnormallinkfoot{GMT home page}{http://www.soest.hawaii.edu/gmt}.
+\htmladdnormallinkfoot{GMT home page}{http://gmt.soest.hawaii.edu}.
 
 \item We recommend you create a sub-directory called \filename{tutorial},
 cd into that directory, and copy all the tutorial files directly
@@ -244,8 +244,8 @@ tutorial assumes you are running the \progname{cshell}; if you are using
 something different then you are on your own.
 
 \item Making a script executable is accomplished using the \texttt{chmod}
-command, e.g., the script \filename{figure\_1} is made executable
-with ``\texttt{chmod +x figure\_1}''.
+command, e.g., the script \filename{figure\_1.csh} is made executable
+with ``\texttt{chmod +x figure\_1.csh}''.
 
 \item To view a \PS\ file (e.g., \filename{map.ps}) on a UNIX workstation
 we use \progname{ghostview} \filename{map.ps}.  On some systems there
@@ -317,7 +317,7 @@ in two flavors:
 \end{itemize}
 
 You may choose among several file formats (even define your own format),
-but the \GMT\ default is netCDF.
+but the \GMT\ default is the architecture-indenpendent netCDF format.
 
 \item Color palette table (For imaging, color plots, and contour maps).
 We will discuss these later.
@@ -348,7 +348,7 @@ There are 6 general categories of output produced by \GMT:
 
 \begin{enumerate}
 
-\item \PS\ plot file.
+\item \PS\ plot commands.
 
 \item Data Table(s).
 
@@ -414,7 +414,7 @@ UNIXprogram >& errors.log
 \end{verbatim}
 
 When we want to save both program output and error messages to
-separate files we use the following syntax: \\
+separate files we use the following syntax:
 
 \begin{verbatim}
 (GMTprogram > output.d) >& errors.log
@@ -532,8 +532,8 @@ psbasemap -R1/10000/1e20/1e25 -JX9il/6il \
 \index{Mercator projection \Opt{JM}}
 \index{Projection!Mercator}
 
-Despite the problems of extreme horizontal exaggeration with
-latitude, the conformal Mercator projection (\Opt{JM}) remains
+Despite the problems of extreme horizontal exaggeration at high
+latitudes, the conformal Mercator projection (\Opt{JM}) remains
 the stalwart of location maps used by scientists.  It is one
 of several cylindrical projections offered by \GMT; here we
 will only have time to focus on one such projection.  The
@@ -543,7 +543,7 @@ complete syntax is simply \\
 
 To make coastline maps we use \GMTprog{pscoast} which automatically will
 access the \GMT\ coastline data base derived from the GSHHS
-database\footnote{{\it Wessel and Smith} [1996]}.  In addition
+database\footnote{See {\it Wessel and Smith} [1996].}.  In addition
 to the common switches we may need to use some of several \GMTprog{pscoast}
 -specific options (see Table~\ref{tbl:pscoast}).
 
@@ -580,8 +580,8 @@ pscoast -R-90/-70/0/20 -JM6i -P -B5g5 -G180/120/60 >! map.ps
 
 \item Try \Opt{R}270/290/0/20 instead.  What happens to the annotations?
 
-\item Edit your \filename{.gmtdefaults4} file and change PLOT\_DEGREE\_FORMAT
-to another setting (see the \GMTprog{gmtdefaults} man page).
+\item Edit your \filename{.gmtdefaults4} file, change PLOT\_DEGREE\_FORMAT
+to another setting (see the \GMTprog{gmtdefaults} man page), and plot again.
 
 \item Pick another region and change land color.
 
@@ -603,6 +603,7 @@ The general syntax is \\
 
 \Opt{JB}$lon_0/lat_0/lat_1/lat_2/width$ \\
 
+\noindent
 where ($lon_0, lat_0$) is the map (projection) center and $lat_1, lat_2$
 are the two standard parallels where the cone intersects the Earth's surface.
 We try the following command:
@@ -617,7 +618,7 @@ pscoast -R-130/-70/24/52 -JB-100/35/33/45/6i -B10g5:."Conic Projection": \
 
 \begin{enumerate}
 
-\item Change GRID\_CROSS\_SIZE to make crosses instead of gridlines.
+\item Change the parameter GRID\_CROSS\_SIZE to make grid crosses instead of gridlines.
 
 \item Change \Opt{R} to a rectangular box specification instead of
 minimum and maximum values.
@@ -636,6 +637,7 @@ The syntax for this projection is \\
 
 \Opt{JG}$lon_0/lat_0/width$ \\
 
+\noindent
 where ($lon_0, lat_0$) is the center of the map (projection).
 As an example we will try
 
@@ -665,6 +667,7 @@ are both equal-area projections whose syntax is \\
 
 \Opt{JK}[{\bf f$|$s}]$lon_0/width$ \\
 
+\noindent
 where {\bf f} gives Eckert IV (4) and {\bf s} (Default) gives Eckert VI (6).
 The $lon_0$ is the central meridian (which takes precedence over
 the mid-value implied by the \Opt{R} setting).  A simple Eckert VI world map
@@ -692,8 +695,8 @@ pscoast -R0/360/-90/90 -JKs180/9i -B60g30/30g15 -Dc -A5000 -G180/120/60 \
 
 \section{General Information}
 
-There are 17 \GMT\ programs that directly create or modify
-plots (Table~\ref{tbl:plotprogs}); the remaining 43 are mostly concerned with data
+There are 18 \GMT\ programs that directly create or add overlays to
+plots (Table~\ref{tbl:plotprogs}); the remaining 45 are mostly concerned with data
 processing.  This session will focus on the task of plotting
 lines, symbols, and text on maps.  We will build on the skills
 we acquired while familiarizing ourselves with the various
@@ -708,6 +711,7 @@ and boundary annotations.
 \multicolumn{2}{|c|}{\emph{BASEMAPS}} \\ \hline
 \GMTprog{psbasemap} & Create an empty basemap frame with optional scale \\ \hline
 \GMTprog{pscoast} & Plot coastlines, filled continents, rivers, and political borders \\ \hline
+\GMTprog{pslegend} & Create legend overlay \\ \hline
 \multicolumn{2}{|c|}{\emph{POINTS AND LINES}} \\ \hline
 \GMTprog{pswiggle} & Draw spatial time-series along their $(x,y)$-tracks \\ \hline
 \GMTprog{psxy} & Plot symbols, polygons, and lines in 2-D \\ \hline
@@ -736,7 +740,7 @@ and boundary annotations.
 Plotting lines and symbols, \GMTprog{psxy} is one of the most frequently
 used programs in \GMT.  In addition to the common command line switches
 it has numerous specific options, and expects different file formats
-depending on what symbol has been selected.  These circumstances makes
+depending on what action has been selected.  These circumstances makes
 \GMTprog{psxy} harder to master than most \GMT\ tools.  Table~\ref{tbl:psxy}
 shows a complete list of the options.
 
@@ -762,10 +766,10 @@ shows a complete list of the options.
 The symbols can either be transparent (using \Opt{W} only, not \Opt{G})
 or solid (\Opt{G}, with optional outline using \Opt{W}).  The \Opt{S}
 option takes the code for the desired symbol and optional size information.
-If no symbol is given it is expected to be in the last column of the input
-file.  The size is optional since individual sizes for
+If no symbol is given it is expected to be given in the last column of each record in the input
+file.  The {\it size} is optional since individual sizes for
 symbols may be provided by the input data.  The main symbols available to
-us are
+us are shown in Table~\ref{tbl:psxysymbols}.
 
 \begin{table}[h]
 \index{Symbols, plot}
@@ -833,7 +837,7 @@ additional data columns with the $\pm dx$ and $\pm dy$ values; the form of
 columns are needed.  If upper case flags {\bf X} or {\bf Y} are given then
 we will instead draw a ``box-and-whisker'' symbol and the $\sigma_x$ (or
 $\sigma_y$) must represent 4 columns containing the minimum, the 25 and 75\%
-quartiles, and the maximum value.  The given coordinate is taken as the 50\%
+quartiles, and the maximum value.  The given $x$ (or $y$) coordinate is taken as the 50\%
 quartile (median).
 \index{Error bars}
 
@@ -844,8 +848,8 @@ and {\it length} of each vector.
 
 \item If you draw ellipses (\Opt{Se}) then {\it size} is actually three
 columns containing the {\it direction} and the {\it major} and {\it minor}
-axes in inches (with \Opt{SE} we expect {\it azimuth} instead and axes
-in km).
+axes in plot units (with \Opt{SE} we expect {\it azimuth} instead and axes
+lengths in km).
 \index{Ellipses}
 
 \end{enumerate}
@@ -887,7 +891,8 @@ achieved by giving zero width, but the result is device-dependent.
 \item[$\rightarrow$]The {\it color} can be specified as a {\it gray}
 shade in the range 0--255 (linearly going from black to white) or using
 the RGB system where you specify {\it r}/{\it g}/{\it b}, each ranging
-from 0--255.  Here 0/0/0 is black and 255/255/255 is white. 
+from 0--255.  Here 0/0/0 is black and 255/255/255 is white, with 255/0/0
+being red, etc.  
 
 \index{Pen!texture}
 \index{Texture, pen}
@@ -896,7 +901,7 @@ from 0--255.  Here 0/0/0 is black and 255/255/255 is white.
 of the line.  To get a dotted line, simply append ``{\bf t}o'' after the
 width and color arguments; a dashed pen is requested with ``{\bf t}a''.
 For exact specifications you may append ``{\bf t}{\it string}:{\it offset}'',
-where {\it string} is a series of integers separated by underscores.
+where {\it string} is a series of numbers separated by underscores.
 These numbers represent a pattern by indicating the length of line
 segments and the gap between segments.  The {\it offset} phase-shifts the
 pattern along the line.  For example, if you want a yellow line of width
@@ -1013,7 +1018,7 @@ psxy data -R -JX -P -B -W0.5p >! plot.ps
 \index{Exercises|)}
 
 A common question is : ``How can I plot symbols connected by a line
-with psxy?''.  The answer is that we must call \GMTprog{psxy} twice.
+with psxy?''.  The surprising answer is that we must call \GMTprog{psxy} twice.
 While this sounds cumbersome there is a reason for this:  Basically,
 polygons need to be kept in memory since they may need to be clipped,
 hence computer RAM places a limit on how large polygons we may plot.
@@ -1052,13 +1057,15 @@ magnitude by 0.02 will work well.  Reformatting this file to comply
 with the \GMTprog{psxy} input format can be done in a number of ways,
 including manual editing, using MATLAB, a spreadsheet program, or \UNIX\
 tools.  Here, without further elaboration, we simply use the \UNIX\ tool
-\progname{awk} to do the job (\$5 refers to the 5'th column etc.):
+\progname{awk} to do the job (\$5 refers to the 5'th column etc., and NR
+is the current record number):
 
 \begin{verbatim}
 awk '{if (NR > 3) print $5, $4, $6, 0.02*$7}' quakes.ngdc >! quakes.d
 \end{verbatim} 
 
-The output file \filename{quakes.d} should now look like this (try it!):
+The \progname{awk} statement is automatically applied to each record,
+hence the output file \filename{quakes.d} should now look like this (try it!):
 
 \begin{verbatim}
 149.29  49.77  489  0.082
@@ -1094,6 +1101,7 @@ pscoast -R130/150/35/50 -JM6i -B5 -P -G200 -Lf134/49/42.5/500 -K >! map.ps
 psxy -R -JM -O -Cquakes.cpt quakes.d -Sci -W0.25p >> map.ps
 \end{verbatim} 
 
+\noindent
 where the {\bf i} appended to the \Opt{Sc} option ensures that symbols
 sizes are interpreted to be in inches.
 \subsection{More exercises}
@@ -1150,7 +1158,7 @@ the relevant two-character codes used for justification.
 
 The text string can be one or several words and may include octal codes for
 special characters and escape-sequences used to select subscripts or symbol
-fonts.  The following escape sequences are recognized:
+fonts.  The escape sequences that are recognized by \GMT\ are given in Table~\ref{tbl:escape}.
 \index{Escape sequences}
 \index{Special characters}
 \index{Superscript}
@@ -1180,12 +1188,12 @@ fonts.  The following escape sequences are recognized:
 \end{table}
 
 Note that these escape sequences (as well as octal codes) can be
-used anywhere in \GMT\, including as arguments to the \Opt{B} option.
+used anywhere in \GMT\, including in arguments to the \Opt{B} option.
 A chart of octal codes can be found in Appendix F in the \GMT\
 technical reference book.  For accented European characters you must
 set CHAR\_ENCODING to ISOLatin1 in your \filename{.gmtdefaults4} file.
 
-We will demonstrate pstext with the following script:
+We will demonstrate \progname{pstext} with the following script:
 
 \begin{verbatim} 
 cat << EOF | pstext -R0/7/0/5 -Jx1i -P -B1g1 -G255/128/0 | ghostview -
@@ -1342,7 +1350,7 @@ The \GMT\ program \GMTprog{nearneighbor} implements a simple
 way to grid data when the data density is high.  \GMTprog{nearneighbor}
 is a local procedure which means it will only consider the control
 data that is close to the desired output grid node.  
-Only data points inside a search radius will
+Only data points inside a specified search radius will
 be used, and we may also impose the condition that each of the {\it n}
 sectors must have at least one data point in order to assign the nodal
 value.  The nodal value is computed as a weighted average of the nearest
@@ -1356,6 +1364,7 @@ w_{i} =
 
 \index{nearest neighbor}
 
+\noindent
 The most important switches are listed in Table~\ref{tbl:nearneighbor}.
 
 \begin{table}[h]
@@ -1453,7 +1462,7 @@ latter returns modal values.  As a rule of thumb, we use means for
 most smooth data (such as potential fields) and medians (or modes)
 for rough, non-Gaussian data (such as topography).  In addition
 to the required \Opt{R} and \Opt{I} switches, these preprocessors
-takes the same options:
+all take the same options (listed in Table~\ref{tbl:preprocess}).
 
 \begin{table}[h]
 \small
