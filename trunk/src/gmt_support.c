@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.58 2004-01-13 01:53:26 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.59 2004-02-06 17:46:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -278,7 +278,7 @@ int GMT_getpen (char *line, struct GMT_PEN *pen)
 		
 	/* First check if a pen thickness has been entered */
 	
-	get_pen = ((line[0] == '-' && (line[1] >= '0' && line[1] <= '9')) || (line[0] >= '0' && line[0] <= '9'));
+	get_pen = ((line[0] == '.' && (line[1] >= '0' && line[1] <= '9')) || (line[0] >= '0' && line[0] <= '9'));
 	
 	/* Then look for slash which indicate start of color information */
 	
