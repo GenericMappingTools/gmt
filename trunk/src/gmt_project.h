@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.25 2004-01-02 22:45:13 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.26 2004-02-24 17:39:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -91,7 +91,6 @@ struct MAP_PROJECTIONS {
 	BOOLEAN y_off_supplied;
 	BOOLEAN region_supplied;	/* TRUE when -R option has been given */
 	BOOLEAN units_pr_degree;	/* TRUE if scale is given as inch (or cm)/degree.  FALSE for 1:xxxxx */
-	BOOLEAN gave_map_width;		/* TRUE if map width in inch (or cm) is given instead of scale.  FALSE for 1:xxxxx */
 	BOOLEAN region;			/* TRUE if -R gives lon/lat boundaries, FALSE if it gives lower/left upper right corners */
 	BOOLEAN north_pole;		/* TRUE if projection is on northern hemisphere, FALSE on southern */
 	BOOLEAN edge[4];		/* TRUE if the edge is a map boundary */
@@ -116,6 +115,8 @@ struct MAP_PROJECTIONS {
 	double one_m_ECC2;		/* 1.0 - ECC2 */
 	double i_EQ_RAD, i_one_m_ECC2;		/* Inverse value */
 	
+	int gave_map_width;		/* nonzero if map width (1), height (2), max dim (3) or min dim (4) is given instead of scale.  0 for 1:xxxxx */
+
 	/* Linear plot parameters */
 	
 	int xyz_projection[3];		/* For linear projection, 0 = linear, 1 = log10, 2 = pow */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.50 2004-02-20 08:39:49 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.51 2004-02-24 17:39:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7427,14 +7427,26 @@ void GMT_set_spherical (void) {	/* Force spherical solution */
 
 void GMT_map_setinfo (double xmin, double xmax, double ymin, double ymax, double scl)
 {	/* Set [and rescale] parameters */
-	double factor;
+	double factor = 1.0, w, h;
 
-	if (project_info.gave_map_width) {	/* Must rescale */
-		factor = scl / ((xmax - xmin) * project_info.x_scale);
-		project_info.x_scale *= factor;
-		project_info.y_scale *= factor;
-		project_info.w_r *= factor;
+	w = (xmax - xmin) * project_info.x_scale;
+	h = (ymax - ymin) * project_info.y_scale;
+	
+	if (project_info.gave_map_width == 1) {		/* Must rescale to given width */
+		factor = scl / w;
 	}
+	else if (project_info.gave_map_width == 2) {	/* Must rescale to given height */
+		factor = scl / h;
+	}
+	else if (project_info.gave_map_width == 3) {	/* Must rescale to max dimension */
+		factor = scl / MAX (w, h);
+	}
+	else if (project_info.gave_map_width == 4) {	/* Must rescale to min dimension */
+		factor = scl / MIN (w, h);
+	}
+	project_info.x_scale *= factor;
+	project_info.y_scale *= factor;
+	project_info.w_r *= factor;
 	
 	GMT_map_setxy (xmin, xmax, ymin, ymax);
 }
