@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.6 2001-04-13 21:36:36 pwessel Exp $
+ *	$Id: pslib.c,v 1.7 2001-04-18 05:52:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -845,15 +845,15 @@ int ps_imagefill_init (int image_no, char *imagefile, int invert, int image_dpi,
 
 	if (h.ras_depth == 1) {	/* 1-bit bitmap basis */
 		if (f_rgb[0] < 0 || b_rgb[0] < 0) {	/* Colorized imagemask case */
-			if (b_rgb[0] < 0) {	/* Use background color for masks 0 bits */
-				polarity = 0;
+			if (f_rgb[0] < 0) {	/* Use background color for masks 0 bits */
+				polarity = 1;
 				if (iscolor (b_rgb))	/* color */
 					sprintf (color, "%.3lg %.3lg %.3lg C\0", b_rgb[0] * I_255, b_rgb[1] * I_255, b_rgb[2] * I_255);
 				else /* Grayshade */
 					sprintf (color, "%.3lg A\0", b_rgb[0] * I_255);
 			}
 			else {	/* Use foreground color for masks 1 bits */
-				polarity = 1;
+				polarity = 0;
 				if (iscolor (f_rgb))	/* color */
 					sprintf (color, "%.3lg %.3lg %.3lg C\0", f_rgb[0] * I_255, f_rgb[1] * I_255, f_rgb[2] * I_255);
 				else /* Grayshade */
