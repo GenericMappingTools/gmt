@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.17 2001-08-17 19:52:40 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.18 2001-08-17 20:05:13 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -716,11 +716,24 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				/* If column is either RELTIME or ABSTIME, use ARGTIME */
 				expect_to_read = (GMT_io.in_col_type[icol] & GMT_IS_RATIME) ? GMT_IS_ARGTIME : GMT_io.in_col_type[icol];
 				j = GMT_scanf (text, expect_to_read, p[i]);
-				if (j == GMT_IS_NAN) {
-					error++;
+				switch (j) {
+					case GMT_IS_NAN:
+						error++;
+						break;
+					case GMT_IS_LAT:
+						if (GMT_io.in_col_type[icol] == GMT_IS_LON) error++;
+						break;
+					case GMT_IS_LON:
+						if (GMT_io.in_col_type[icol] == GMT_IS_LAT) error++;
+						break;
+					default:
+						break;
+				}
+				if (error) {
 					GMT_syntax ('R');
 					return (error);
 				}
+					
 				i++;
 				text = strtok (CNULL, "/");
 			}
