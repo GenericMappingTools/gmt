@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.70 2004-09-16 18:12:13 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.71 2004-09-17 16:39:19 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6395,6 +6395,16 @@ int GMT_graticule_path (double **x, double **y, int dir, double w, double e, dou
 		memcpy ((void *)&yy[np], (void *)ytmp, (size_t)(add * sizeof (double)));
 		np += add;
 		GMT_free ((void *)xtmp);	GMT_free ((void *)ytmp);
+	}
+	
+	if (GMT_io.in_col_type[0] == GMT_IS_LON) {
+		BOOLEAN straddle;
+		int i;
+		straddle = (project_info.w < 0.0 && project_info.e > 0.0);
+		for (i = 0; i < np; i++) {
+			while (xx[i] < 0.0) xx[i] += 360.0;
+			if (straddle && xx[i] > 180.0) xx[i] -= 360.0;
+		}
 	}
 	
         *x = xx;
