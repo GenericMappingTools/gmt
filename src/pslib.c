@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.86 2005-01-09 20:17:24 pwessel Exp $
+ *	$Id: pslib.c,v 1.87 2005-01-20 03:19:55 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3586,7 +3586,7 @@ void ps_colorimage_rgb (double x, double y, double xsize, double ysize, unsigned
 
 void ps_stream_dump (unsigned char *buffer, int nx, int ny, int nbits, int compress, int encode, int mask)
 {
-	/* Writes a stream of bytes in binary of ascii, performes RGB to CMYK
+	/* Writes a stream of bytes in binary or ascii, performes RGB to CMYK
 	 * conversion and compression.
 	 * buffer	= stream of bytes
 	 * nx, ny	= image dimensions in pixels
