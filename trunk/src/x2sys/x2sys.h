@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.12 2004-08-19 04:42:35 pwessel Exp $
+ *	$Id: x2sys.h,v 1.13 2004-08-19 18:56:00 pwessel Exp $
  *
  *      Copyright (c) 1999-2004 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -203,6 +203,7 @@ struct X2SYS_BIX_TRACK_INFO {
 
 /* Global variables used by x2sys functions */
 
+EXTERN_MSC char *X2SYS_program;
 EXTERN_MSC char *X2SYS_HOME;
 EXTERN_MSC double *x2sys_Y;
 EXTERN_MSC char *x2sys_xover_format;
@@ -235,7 +236,7 @@ EXTERN_MSC void x2sys_pick_fields (char *string, struct X2SYS_INFO *s);
 
 EXTERN_MSC struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G);
 
-EXTERN_MSC void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B);
+EXTERN_MSC void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, struct GMT_IO *G);
 EXTERN_MSC void x2sys_bix_init (struct X2SYS_BIX *B, BOOLEAN alloc);
 EXTERN_MSC struct X2SYS_BIX_TRACK_INFO *x2sys_bix_make_entry (char *name, int id_no, int flag);
 EXTERN_MSC struct X2SYS_BIX_TRACK *x2sys_bix_make_track (int id, int flag);
