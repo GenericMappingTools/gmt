@@ -50,7 +50,7 @@ src/meca/meca_1.csh
 src/meca/meca_2.csh
 src/meca/meca_3.csh
 src/meca/meca_4.csh
-src/mex/README.mex
+src/mex/mex.README
 src/mex/grdinfo.m
 src/mex/grdinfo2.c
 src/mex/grdread.c
