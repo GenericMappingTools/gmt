@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.73 2004-09-24 21:44:53 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.74 2004-11-26 23:13:12 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6910,7 +6910,7 @@ int GMT_geo_to_xy_line (double *lon, double *lat, int n)
 	double xlon[4], xlat[4], xx[4], yy[4];
 	double this_x, this_y, last_x, last_y, dummy[4];
 	
-	if (n > GMT_n_alloc) GMT_get_plot_array ();
+	while (n > GMT_n_alloc) GMT_get_plot_array ();
 	
 	np = 0;
 	GMT_geo_to_xy (lon[0], lat[0], &last_x, &last_y);
