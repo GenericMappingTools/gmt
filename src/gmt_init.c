@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.32 2001-09-12 21:54:08 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.33 2001-09-13 17:30:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -66,7 +66,6 @@ BOOLEAN true_false_or_error (char *value, int *answer);
 void GMT_get_history(int argc, char **argv);
 void GMT_prepare_3D(void);
 void GMT_free_plot_array(void);
-int GMT_map_getframe_old(char *args);
 char *GMT_putpen (struct GMT_PEN *pen);
 int GMT_check_region (double w, double e, double s, double n);
 char *GMT_getdefpath (int get);
@@ -973,7 +972,6 @@ void GMT_backwards_compatibility () {
 		fprintf (stderr, "%s: WARNING: PLOT_DEGREE_FORMAT overrides old DEGREE_FORMAT\n", GMT_program);
 	}
 	else if (GMT_backward.got_old_plot_format && !GMT_backward.got_new_plot_format) {	/* Must decode old DEGREE_FORMAT */
-		fprintf (stderr, "%s: WARNING: DEGREE_FORMAT decoded but is obsolete.  Please use PLOT_DEGREE_FORMAT\n", GMT_program);
 		memset ((void *)string, 0, 32);
 		k = gmtdefs.degree_format % 100;
 		if (k == 0 || k == 4 || k == 6 || k == 8)	/* These were 0-360 values */
@@ -993,6 +991,7 @@ void GMT_backwards_compatibility () {
 		else if (k == 3 || k == 6 || k == 7 || k == 11 || (k >= 15 && k <= 17))	/* Append WESN */
 			strcat (string, "F");
 		strcpy (gmtdefs.plot_degree_format, string);
+		fprintf (stderr, "%s: WARNING: DEGREE_FORMAT decoded (%d) but is obsolete.  Please use PLOT_DEGREE_FORMAT (%s)\n", GMT_program, gmtdefs.degree_format, gmtdefs.plot_degree_format);
 	}
 	if (GMT_backward.got_old_degree_symbol && GMT_backward.got_new_degree_symbol) {	/* Got both old and new */
 		fprintf (stderr, "%s: WARNING: Both old-style DEGREE_FORMAT and DEGREE_SYMBOL present in .gmtdefaults\n", GMT_program);
@@ -2467,171 +2466,6 @@ void GMT_get_history (int argc, char ** argv)
 	}
 }
 
-int GMT_map_getframe_old (char *args)
-{
-	/* GMT_map_getframe scans an argument string and extract parameters that
-	 * set the interval for  tickmars and anotations on the boundary.
-	 * The string must be continous, i.e. no whitespace must be present
-	 * The string may have 1, 2,  or 3 parts, separated by a slash '/'. All
-	 * info after the first slash are assigned to the y-axis.  Info after
-	 * the second slash are assigned to the z-axis.  If there is no
-	 * slash, x-values are copied to y-values.
-	 * A substring looks like [t][value][m|c]. The [t] and [m|c] are optional
-	 * ([ and ] are NOT part of the string and are just used to clarify)
-	 * [t] can be any of [a](anotation int), [f](frame int), or [g](gridline int).
-	 * Default is a AND f. The [m], if present indicates value is in minutes.
-	 * The [c], if present indicates value is in seConds (s already used for south...).
-	 * Text between : and : are labels for the respective axes. If the first
-	 * character of the text is a period, then the rest of the text is used
-	 * as the plot title.  If it is a comma, then the rest is used as anotation unit.
-	 * For LINEAR axes: If the first characters in args are one or more of w,e,s,n
-	 * only those axes will be drawn. Upper case letters means the chosen axes
-	 * also will be annotated. Default is all 4 axes drawn/annotated.
-	 * For logscale plots:  l will cause log10(x) to be plotted
-	 *			p will cause 10 ^ log10(x) to be plotted
-	 *	anot/tick/grid interval can here be either:
-	 *		1.0	-> Only powers of 10 are anotated
-	 *		2.0	-> powers of 10 times (1, 2, 5) are anotated
-	 *		3.0	-> powers of 10 times (1,2,3,..9) are anotated
-	 */
-	 
-	int i, i1, i2, xyz_side = 0, n_colons = 0, side[5], flag;
-	BOOLEAN xyz_set[3], error = FALSE, set_sides = FALSE;
-	double value;
-	
-	for (i = 0; i < 3; i++) {
-		frame_info.anot_int[i] = 0.0;
-		frame_info.frame_int[i] = 0.0;
-		frame_info.grid_int[i] = 0.0;
-		frame_info.label[i][0] = 0;
-		frame_info.unit[i][0] = 0;
-		frame_info.anot_type[i] = 0;
-		xyz_set[i] = FALSE;
-	}
-	frame_info.plot = TRUE;
-	frame_info.draw_box = FALSE;
-	frame_info.header[0] = 0;
-	for (i = 0; i < 5; i++) side[i] = 0;
-	
-	i1 = 0;
-	while (args[i1]) {
-		if (args[i1] == '/') {
-			xyz_side++;
-			i1++;
-		}
-		flag = '*';	/* If a,f, or g is not appended, we set all to the same value */
-		if (isalpha((int)args[i1])) {
-			flag = args[i1];
-			i1++;
-		}
-		if (flag == 'w' || flag == 'W') {
-			side[3] = (flag == 'W') ? 2 : 1;
-			set_sides = TRUE;
-			continue;
-		}
-		if (flag == 'e' || flag == 'E') {
-			side[1] = (flag == 'E') ? 2 : 1;
-			set_sides = TRUE;
-			continue;
-		}
-		if (flag == 's' || flag == 'S') {
-			side[0] = (flag == 'S') ? 2 : 1;
-			set_sides = TRUE;
-			continue;
-		}
-		if (flag == 'n' || flag == 'N') {
-			side[2] = (flag == 'N') ? 2 : 1;
-			set_sides = TRUE;
-			continue;
-		}
-		if (flag == 'z' || flag == 'Z') {
-			side[4] = (flag == 'Z') ? 2 : 1;
-			if (args[i1] == '+') {
-				frame_info.draw_box = TRUE;
-				i1++;
-			}
-			set_sides = TRUE;
-			continue;
-		}
-		if (isupper(flag)) flag = tolower (flag);
-		if (flag == 'l') {	/* log10(val) anotations */
-			frame_info.anot_type[xyz_side] = 1;
-			continue;
-		}
-		if (flag == 'p') {	/* Powers of 10 anotations */
-			frame_info.anot_type[xyz_side] = 2;
-			continue;
-		}
-		if (args[i1] == ':') {	/* Label string */
-			n_colons++;
-			flag = ' ';
-			i2 = ++i1;
-			while (args[i2] && args[i2] != ':') i2++;
-			if (args[i2] == ':') n_colons++;
-			if (args[i1] == '.') {
-				i1++;
-				strncpy (frame_info.header, &args[i1], (size_t)i2-i1);
-				frame_info.header[i2-i1] = 0;
-			}
-			else if (args[i1] == ',') {
-				i1++;
-				strncpy (frame_info.unit[xyz_side], &args[i1], (size_t)i2-i1);
-				frame_info.unit[xyz_side][i2-i1] = 0;
-			}
-			else {
-				strncpy (frame_info.label[xyz_side], &args[i1], (size_t)i2-i1);
-				frame_info.label[xyz_side][i2-i1] = 0;
-			}
-			i1 = i2 + 1;
-		}
-		i2 = i1;
-		while (args[i2] && strchr ("WESNacefglmnpswz/:", (int)args[i2]) == NULL) i2++;
-		i = i2 + 1;
-		if ((args[i2] == 'e' || args[i2] == 'E') && args[i] && (args[i] == '-' || args[i] == '+' || isdigit ((int)args[i]))) {	/* Hit exponential notation, keep skipping */
-			i2++;
-			while (args[i2] && strchr ("WESNacefglmnpswz/:", (int)args[i2]) == NULL) i2++;
-		}
-		if (flag != ' ') {	/* Decode the numerical value */
-			value = atof (&args[i1]);
-			if (args[i2] == 'm') {
-				value /= 60.0;
-				i2++;
-			}
-			else if (args[i2] == 'c') {
-				value /= 3600.0;
-				i2++;
-			}
-			xyz_set[xyz_side] = TRUE;
-		}
-		if (flag == '*')
-			frame_info.anot_int[xyz_side] = frame_info.frame_int[xyz_side] = value;
-		else if (flag == 'a')
-			frame_info.anot_int[xyz_side] = value;
-		else if (flag == 'f')
-			frame_info.frame_int[xyz_side] = value;
-		else if (flag == 'g')
-			frame_info.grid_int[xyz_side] = value;
-		i1 = i2;
-	}
-	if (!xyz_set[1]) frame_info.anot_type[1] = frame_info.anot_type[0];
-	for (i = 0; i < 3; i++) {	/* Set both a and f if only one of them is set */
-		if (frame_info.anot_int[i] != 0.0 && frame_info.frame_int[i] == 0.0)
-			frame_info.frame_int[i] = frame_info.anot_int[i];
-		else if (frame_info.frame_int[i] != 0.0 && frame_info.anot_int[i] == 0.0)
-			frame_info.anot_int[i] = frame_info.frame_int[i];
-	}
-	if (!xyz_set[1]) {	/* No separate y-axis info given, copy x values */
-		frame_info.anot_int[1] = frame_info.anot_int[0];
-		frame_info.frame_int[1] = frame_info.frame_int[0];
-		frame_info.grid_int[1] = frame_info.grid_int[0];
-	}
-	if (set_sides) for (i = 0; i < 5; i++) frame_info.side[i] = side[i];	/* Override default */
-
-	if (n_colons%2) error++;
-	
-	return (error);
-}
-
 /* Here is the new -B parser with all its sub-functions */
 
 void GMT_strip_colonitem (const char *in, const char *pattern, char *item, char *out) {
@@ -2947,6 +2781,31 @@ void GMT_set_titem (struct TIME_AXIS *A, double val, char flag, char unit, char 
 }
 
 int GMT_map_getframe (char *in) {
+	/* GMT_map_getframe scans an argument string and extract parameters that
+	 * set the interval for  tickmars and anotations on the boundary.
+	 * The string must be continous, i.e. no whitespace must be present
+	 * The string may have 1, 2,  or 3 parts, separated by a slash '/'. All
+	 * info after the first slash are assigned to the y-axis.  Info after
+	 * the second slash are assigned to the z-axis.  If there is no
+	 * slash, x-values are copied to y-values.
+	 * A substring looks like [t][value][m|c]. The [t] and [m|c] are optional
+	 * ([ and ] are NOT part of the string and are just used to clarify)
+	 * [t] can be any of [a](anotation int), [f](frame int), or [g](gridline int).
+	 * Default is a AND f. The [m], if present indicates value is in minutes.
+	 * The [c], if present indicates value is in seConds (s already used for south...).
+	 * Text between : and : are labels for the respective axes. If the first
+	 * character of the text is a period, then the rest of the text is used
+	 * as the plot title.  If it is a comma, then the rest is used as anotation unit.
+	 * For LINEAR axes: If the first characters in args are one or more of w,e,s,n
+	 * only those axes will be drawn. Upper case letters means the chosen axes
+	 * also will be annotated. Default is all 4 axes drawn/annotated.
+	 * For logscale plots:  l will cause log10(x) to be plotted
+	 *			p will cause 10 ^ log10(x) to be plotted
+	 *	anot/tick/grid interval can here be either:
+	 *		1.0	-> Only powers of 10 are anotated
+	 *		2.0	-> powers of 10 times (1, 2, 5) are anotated
+	 *		3.0	-> powers of 10 times (1,2,3,..9) are anotated
+	 */
 	char out1[BUFSIZ], out2[BUFSIZ], *info[3], xyz[3] = {'x', 'y', 'z'}, yn[2] = {'N', 'Y'};
 	char one[80], two[80], three[80];
 	struct TIME_AXIS *A;
@@ -3000,7 +2859,7 @@ int GMT_map_getframe (char *in) {
 	fprintf (stderr, "WESNZ = %d %d %d %d %d\n", tframe_info.side[0], tframe_info.side[1], tframe_info.side[2], tframe_info.side[3], tframe_info.side[4]);
 #endif
 	
-	GMT_copytoframe (&tframe_info);
+	/* GMT_copytoframe (&tframe_info); */
 	return (0);
 }
 
@@ -3033,35 +2892,7 @@ void GMT_copytoframe (struct TIME_FRAME *T)
 	for (i = 0; i < 5; i++) frame_info.side[i] = T->side[i];
 	frame_info.draw_box = T->draw_box;
 	frame_info.plot = T->plot;
-/*
-	printf ("\n\na%lgf%lgg%lg:,%s::%s:/a%lgf%lgg%lg:,%s::%s:/a%lgf%lgg%lg:,%s::%s::.%s:", frame_info.anot_int[0], frame_info.frame_int[0], frame_info.grid_int[0], frame_info.unit[0], frame_info.label[0],
-	frame_info.anot_int[1], frame_info.frame_int[1], frame_info.grid_int[1], frame_info.unit[1], frame_info.label[1],
-	frame_info.anot_int[2], frame_info.frame_int[2], frame_info.grid_int[2], frame_info.unit[2], frame_info.label[2], frame_info.header);
-	if (T->side[0] == 2)
-		printf ("W");
-	else if (T->side[0] == 1)
-		printf ("w");
-	if (T->side[1] == 2)
-		printf ("E");
-	else if (T->side[1] == 1)
-		printf ("e");
-	if (T->side[2] == 2)
-		printf ("S");
-	else if (T->side[2] == 1)
-		printf ("s");
-	if (T->side[3] == 2)
-		printf ("N");
-	else if (T->side[3] == 1)
-		printf ("n");
-	if (T->side[4] == 2)
-		printf ("Z");
-	else if (T->side[4] == 1)
-		printf ("z");
-	if (T->draw_box) printf ("+");
-	printf ("\n");	*/
 }
-
-		
 
 int GMT_map_getproject (char *args)
 {
