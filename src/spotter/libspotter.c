@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.3 2001-10-11 23:02:59 pwessel Exp $
+ *	$Id: libspotter.c,v 1.4 2001-10-19 20:48:35 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -53,7 +53,7 @@ void matrix_transpose (double At[3][3], double A[3][3]);
 void matrix_mult (double a[3][3], double b[3][3], double c[3][3]);
 void make_rot_matrix (double lonp, double latp, double w, double R[3][3]);
 void finite_to_stages (struct EULER p[], int n, int flag);
-
+void stages_to_finite (struct EULER p[], int n, int flag);
 
 int spotter_init (char *file, struct EULER **p, int flowline, int finite, double *t_max)
 {
@@ -581,6 +581,54 @@ void finite_to_stages (struct EULER p[], int n, int flag)
 			p[j] = e_tmp;
 		}
 	}
+}
+
+void stages_to_finite (struct EULER p[], int n, int flag)
+{
+	int i, j;
+	double *elon, *elat, *ew;
+	double R_new[3][3], R_old[3][3], R_stage[3][3];
+	struct EULER e_tmp;
+
+	/* Expects stage pole models to have oldest poles first, so we must flip order */
+	
+	for (i = 0; i < n/2; i++) {
+		j = n - i - 1;
+		if (i != j) {
+			e_tmp = p[i];
+			p[i] = p[j];
+			p[j] = e_tmp;
+		}
+	}
+	
+	elon = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
+	elat = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
+	ew   = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
+	
+	memset ((void *)R_old, 0, (size_t)(9 * sizeof (double)));
+	R_old[0][0] = R_old[1][1] = R_old[2][2] = 1.0;
+	
+	for (i = 0; i < n; i++) {
+		if (flag) p[i].omega *= p[i].duration;	/* Because spotter_init converted angles to rates */
+		make_rot_matrix (p[i].lon, p[i].lat, -p[i].omega, R_stage);
+		matrix_mult (R_stage, R_old, R_new);
+		memcpy ((void *)R_old, (void *)R_new, (size_t)(9 * sizeof (double)));
+		matrix_to_pole (R_new, &elon[i], &elat[i], &ew[i]);
+		if (elon[i] > 180.0) elon[i] -= 360.0;
+		p[i].lon = elon[i];	
+		p[i].lat = elat[i];
+		p[i].duration = p[i].t_start;
+		p[i].omega = -ew[i];
+		p[i].omega_r = p[i].omega * D2R;
+		p[i].sin_lat = sin (p[i].lat * D2R);
+		p[i].cos_lat = cos (p[i].lat * D2R);
+		p[i].lon_r = p[i].lon * D2R;	
+		p[i].lat_r = p[i].lat * D2R;
+	}
+	
+	GMT_free ((void *)elon);
+	GMT_free ((void *)elat);
+	GMT_free ((void *)ew);
 }
 
 void make_rot_matrix (double lonp, double latp, double w, double R[3][3])
