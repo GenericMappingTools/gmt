@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_O.tex,v 1.2 2004-06-12 08:15:27 pwessel Exp $
+%	$Id: GMT_Appendix_O.tex,v 1.3 2004-06-12 18:18:15 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -246,10 +246,28 @@ we have sampled the ETOPO5 relief data set.  The file \filename{transect.d} thus
 \subsection{Label placement by along-track distances}
 
 This example will change the orientation of labels from along-track to across-track, and
-surround the labels with an opaque textbox so that the label is more readable.  We choose
-the place the labels every 1000 km along the line and use that distance as the label:
+surround the labels with an opaque, outlined textbox so that the label is more readable.  We choose
+the place the labels every 1000 km along the line and use that distance as the label.  The
+labels are placed normal to the line:
 
 \input{scripts/GMT_App_O_6}
 
 The composite illustration in Figure~\ref{fig:GMT_App_O_6} shows the new effects.
+A small variation on this theme is to place the labels parallel to the line, use
+spherical degrees for placement, append the degree symbol as a unit for the
+labels, choose a rounded rectangular textbox, and inverse-video the label:
 
+\input{scripts/GMT_App_O_7}
+
+The ouput is presented as Figure~\ref{fig:GMT_App_O_7}.
+
+\section{Putting it all together}
+
+Finally, we will make a more complex composite illustration that uses several of the
+label placement and label attribute settings discussed in the previous sections.
+
+The final script is
+
+\input{scripts/GMT_App_O_8}
+
+with the complete illustration presented as Figure~\ref{fig:GMT_App_O_8}.
