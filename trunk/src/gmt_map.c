@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.56 2004-06-09 06:23:28 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.57 2004-06-19 01:02:54 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1684,12 +1684,12 @@ int GMT_map_init_stereo (void) {
 	BOOLEAN search;
 	double xmin, xmax, ymin, ymax, dummy, radius, latg, D = 1.0;
 	
-	if (project_info.polar && (irint (project_info.pars[4]) == 1)) gmtdefs.map_scale_factor = 1.0;	/* Gave true scale at given parallel set below */
-
 	GMT_convert_latitudes = !SPHERICAL;
 	latg = project_info.pars[1];
 
 	GMT_set_polar (project_info.pars[1]);
+
+	if (project_info.polar && (irint (project_info.pars[4]) == 1)) gmtdefs.map_scale_factor = 1.0;	/* Gave true scale at given parallel set below */
 
 	/* Equatorial view has a problem with infinite loops.  Until I find a cure
 	  we set projection center latitude to 0.001 so equatorial works for now */
