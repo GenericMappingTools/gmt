@@ -1,0 +1,130 @@
+<HTML>
+<!--  $Id: gmt_bugs.html,v 1.1 2001-02-01 18:05:38 pwessel Exp $  -->
+<title>GMT Bug Notes</title>
+<body bgcolor="#ffffff">
+<center><h1>GMT Bug Notes</center></h1><p>
+<HR>
+<h3><center>17-OCT-2000: GMT Version 3.3.6 Released</h3></center>
+<HR><P>
+This page contains links to pieces of GMT source that have been updated
+in response to bug reports, and in some cases due to minor enhancements.
+No documentation of such enhancements will be available until the next
+release.
+Click on the links below to receive the updated file in question.
+<HR>
+<h4>Libraries and include files</h4>
+<LI><A HREF="errata/gmt_io.c">gmt_io.c</A>
+<OL>
+<LI>12/22/2000.  We revert our policy and allow -: to work on any kind of data, just as pre-3.3.4.</LI>
+</OL>
+<LI><A HREF="errata/gmt_support.c">gmt_support.c</A>
+<OL>
+<LI>12/22/2000.  Use Mika Heiskanen's binary search for cpt index, which speeds up grdview/image for large cpt files.</LI>
+<LI>12/08/2000.  When D_FORMAT was not %lg, we format to check if a unit string should be added.</LI>
+<LI>11/28/2000.  While preparing the boundary conditions, the test for xrange
+being a multiple of xinc could fail due to a bug in the test.</LI>
+<LI>10/30/2000.  GMT_getinc, which parses the -Idx/dy options for grid spacings,
+would temporarily remove any trailing m or c (for minute or seconds) and not put
+it back when done.  Thus, the command string in output gridfiles would
+show a slighlty incorrect command line,  e.g., it would say -I2 instead of -I2m.
+The grid interval was correctly set so this is just a cosmetic issue.</LI>
+</OL>
+<LI><A HREF="errata/gmt_map.c">gmt_map.c</A>
+<OL>
+<LI>12/09/2000.  Made grdproject give bogus 2nd message about search radius.</LI>
+<LI>12/08/2000.  Must add 360 if both west and east are negative.</LI>
+<LI>12/05/2000.  There should be no Gnomonic annotations except for rectangular regions.</LI>
+<LI>11/05/2000.  The -JX<width>d projection is a special version of linear with built-in
+knowledge of the 360-degree periodicity.  Unfortunately, the inverse projection was not
+properly implemented; this bug only seems to have affected the z-axis on 3-D basemaps.</LI>
+<LI>10/20/2000.  A _very_ densily sampled track crossing a map boundary could run
+into a GMT-roundoff situation where a crossing is first detected but later
+discarded - resulting in a missing "pen down" instruction (and hence a PostScript violation).  The fix is to
+use the pre-round-off coordinates to decide whether to discard or not.</LI>
+</OL>
+<LI><A HREF="errata/gmt.h">gmt.h</A>
+<OL>
+<LI>12/08/2000.  Added a parameter needed for 3-D basemaps.</LI>
+</OL>
+<LI><A HREF="errata/gmt_init.h">gmt_init.h</A>
+<OL>
+<LI>12/08/2000.  Added a parameter needed for 3-D basemaps.</LI>
+</OL>
+<LI><A HREF="errata/gmt_plot.c">gmt_plot.c</A>
+<OL>
+<LI>12/08/2000.  Minor changes to ensure the user could specify a custom D_FORMAT _and_ us -B,<unit>
+at the same time.</LI>
+</OL>
+<LI><A HREF="errata/gmt_shore.c">gmt_shore.c</A>
+<OL>
+<LI>12/03/2000.  A problem arises in pscoast when -A is used with a minimum size
+larger than zero.  The levels of the bin nodes are based on -A0 but that can change
+if another cutoff is used.  This occasionally results in bad behavior.  The fix improves
+this situation alot but it is not a complete fix.</LI>
+</OL>
+<LI><A HREF="errata/gmt_io.c">gmt_io.c</A>
+<OL>
+<LI>10/20/2000.  Parsing of -Z did check for errors but did not notify users
+why it failed - thus grd2xyz would produce an empty output file and no error messages.
+This is more of a 'documentation' issue than a real bug, though.</LI>
+</OL>
+</UL>
+<HR>
+<h4>Individual programs</h4>
+<LI><A HREF="errata/minmax.c">minmax.c</A>
+<OL>
+<LI>12/15/2000.  Added option -L for geographical data.</LI>
+</OL>
+<LI><A HREF="errata/psxy.c">psxy.c</A>
+<OL>
+<LI>12/09/2000.  -SE will work for points that are outside map but whose ellipse may clip the map.</LI>
+</OL>
+<LI><A HREF="errata/psxyz.c">psxyz.c</A>
+<OL>
+<LI>12/09/2000.  -SE will work for points that are outside map but whose ellipse may clip the map.</LI>
+</OL>
+<LI><A HREF="errata/psscale.c">psscale.c</A>
+<OL>
+<LI>12/08/2000.  Now, -B0 will plot no anotations at all.</LI>
+</OL>
+<LI><A HREF="errata/pswiggle.c">pswiggle.c</A>
+<OL>
+<LI>12/07/2000.  Positive anomaly was not always painted in the preferred direction.</LI>
+<LI>11/17/2000.  The -Z option assumed values were given in inches unless a modifier was appended.
+However, it should instead check what the default measure unit is set to (MEASURE_UNIT).</LI>
+</OL>
+<LI><A HREF="errata/mapproject.c">mapproject.c</A>
+<OL>
+<LI>12/05/2000.  Wrong units sometimes used when reporting xmin/xmax/ymin/ymax; however the output
+coordinates were always correct.</LI>
+</OL>
+<LI><A HREF="errata/pscoast.c">pscoast.c</A>
+<OL>
+<LI>12/05/2000.  Had world_map = TRUE for Gnomonic, which is not correct, and this
+could lead to criss-crossing lines across the map.</LI>
+</OL>
+<LI><A HREF="errata/grdvector.c">grdvector.c</A>
+<OL>
+<LI>11/30/2000.  Added -Sl option to specify a fixed length for all vectors.</LI>
+</OL>
+<LI><A HREF="errata/grdinfo2.c">mex/grdinfo2.c</A>
+<OL>
+<LI>11/17/2000.  If the file was not found, the exit return would shut down Matlab.</LI>
+</OL>
+<LI><A HREF="errata/grdread.c">mex/grdread.c</A>
+<OL>
+<LI>11/17/2000.  If the file was not found, the exit return would shut down Matlab.</LI>
+</OL>
+<LI><A HREF="errata/gmttrack.c">mgg/gmttrack.c</A>
+<OL>
+<LI>11/03/2000.  The -Sa -Sb options did not convert km to meters so km was
+compared to meters internally.  Wrong loop variable used to initialize distance (this
+only affected runs with -Sa, -Sb).</LI>
+</OL>
+<LI><A HREF="errata/img2grd">img2grd</A>
+<OL>
+<LI>10/30/2000.  Would fail if -V were not given.</LI>
+</OL>
+</UL>
+These bug fixes will be incorporated into the next release.
+</HTML>

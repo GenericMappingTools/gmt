@@ -1,0 +1,5 @@
+$Id: job19.txt,v 1.1 2001-02-01 18:05:38 pwessel Exp $
+Example 19.  This example illustrates
+that we can make GMT to color patterns in two ways: (1) set up coastline (or
+other) clippaths and then use grdimage to display an image inside the
+path, or (2) colorizing any of the 90 built-in patterns.

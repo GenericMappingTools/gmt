@@ -1,0 +1,324 @@
+<HTML>
+<!--  $Id: gmt_install_form.html,v 1.1 2001-02-01 18:05:38 pwessel Exp $  -->
+<HEAD>
+<TITLE>GMT Installation Helper</TITLE>
+</HEAD>
+<BODY bgcolor="#ffffff">
+<FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD=
+"POST">
+<INPUT TYPE="hidden" VALUE="3.3.6" NAME="gmt_version">
+<INPUT TYPE="hidden" VALUE="1.60" NAME="form_version">
+
+<H1></H1>
+<H1><CENTER><STRONG>GMT Installation Helper</CENTER></STRONG>
+<P><CENTER><IMG SRC="images/gmt_small_logo.gif" ALT="-------"></CENTER>
+</P>
+</H1>
+This page helps you customize the GMT installation procedure under Unix or Unix-like
+operating systems capable of running a Bourne (sh) script. When submitting the completed form,
+you will receive a parameter file that you may save and use as argument to the
+<b>install_gmt script</b>.  For example, assuming you save the parameter file to par.d,
+you can install the GMT package with the command<BR>
+<p>
+sh install_gmt par.d<BR>
+<p>
+Output may be redirected to a log file by appending >& install.log (if your login shell
+is csh or tcsh) or appending > install.log 2>&1 (if your login shell is bash or sh).<BR>
+<p>
+Any problems during the install will be noted in the log.  Saving the log messages
+is of course optional.<BR>
+<P>
+<I>Note: You do not have to use this form.  <b>install_gmt</b> can still be run interactively as
+in previous versions.  However, after a successful install it will write all the parameters
+to a file named by you, and this file can be used for background installs as shown above.</I><BR>
+<P>
+<b>IMPORTANT: Move or remove old GMT*.{bz2,gz} files from the current directory before running install_gmt!</b>
+<P>
+<P><IMG SRC="images/gmt_bar.gif" ALT="-------"></P>
+<H2>A. Basic Requirements: </H2>
+<HR>
+<UL>
+<LI>You have access to the Bourne shell (Bash will also work).</LI>
+<LI>You have write permissions in all directories you specify below.</LI>
+<LI>You have obtained and saved <A HREF="ftp://gmt.soest.hawaii.edu/pub/gmt/install_gmt" target="ftp_window">install_gmt</A>, the GMT install script.</LI>
+</UL>
+
+<!--  DECOMPRESSION UTILITY SELECTION  -->
+
+<B>1. Select archive format:</B><BR>
+
+<INPUT TYPE="radio" VALUE="gzip" NAME="radio_format"> gzip format<BR>
+<INPUT TYPE="radio" VALUE="bzip2" NAME="radio_format"> bzip2 format<BR>
+<INPUT TYPE="radio" VALUE="default" NAME="radio_format" CHECKED="true"> Either one, I don't care<BR>
+<P>
+<I>Note: The *.bz2 files made by bzip2 are generally much smaller than the corresponding *.gz files.
+Type bzip2 -h to determine if you have bzip2 installed.  Source code and executables for bzip2 are
+available from the <A HREF="http://sourceware.cygnus.com/bzip2/index.html">bzip2</A> site.  The default option will
+determine if you have bzip2 or gzip and pick bzip2 if possible.</I><BR>
+<HR>
+
+<!--  SI OR US UNIT SELECTION  -->
+
+<B>2. Select default units in GMT:</B><BR>
+
+<INPUT TYPE="radio" VALUE="SI" NAME="radio_unit" CHECKED="true"> SI units (cm)<BR>
+<INPUT TYPE="radio" VALUE="US" NAME="radio_unit"> US units (inch)<BR>
+<P>
+<I>Note: This used to be a choice that affected the compilation of GMT.  However, since version 3.3.2
+this selection is a run-time selection, meaning you can reverse it at any time.  The present choice is
+simply a convenient way to set the default units for all users of your GMT installation (see gmtdefaults
+man page for how to change this choice at a later time).  Individual users can always override the default
+with gmtset MEASURE_UNIT cm|inch</I><BR>
+<HR>
+
+<!--  PS OR EPS SELECTION  -->
+
+<B>3. Select default PostScript output format for GMT:</B><BR>
+
+<INPUT TYPE="radio" VALUE="PS"  NAME="radio_eps" CHECKED="true"> Freeform PostScript (PS)<BR>
+<INPUT TYPE="radio" VALUE="EPS" NAME="radio_eps"> Encapsulated PostScript (EPS)<BR>
+<P>
+<I>Note: GMT-produced PostScript files will by default
+use the printer configuration command <b>setpagedevice</b> to set image area (i.e., paper size) and
+to select specific paper trays, including the manual tray (e.g., when making overhead
+transparencies).  Encapsulated PostScript files (EPS) are not allowed to use this command.  Some older
+PostScript previewers (like Sun's pageview) do not understand <b>setpagedevice</b>, while more up-to-date
+previewers like GNU ghostview does.  The parameter PAPER_MEDIA is used to choose between EPS and PS output
+and this can be changed at run-time with the gmtset command.  Thus, this radio button only affects the
+initial default selection.  Choose EPS if you do not need to worry about paper trays.  Choose the default
+PS if you need the extra flexibility offered.  Please read the gmtdefaults man page and Appendix C
+for more details.</I><BR>
+<HR>
+
+<!--  POSIX FILE LOCKING SELECTION  -->
+
+<B>4. Select POSIX Advisory File Locking:<BR></B>
+
+<INPUT TYPE="radio" VALUE="Lock" NAME="radio_flock" CHECKED="true"> YES. Use file locking<BR>
+<INPUT TYPE="radio" VALUE="Nolock" NAME="radio_flock"> NO. Do not use file locking<BR>
+
+<P>
+<I>Note: GMT passes information about previous GMT command-line options to future GMT commands via a
+hidden file in the current directory (.gmtcommands).  To avoid that this file is updated by more than
+one program at the time (e.g., when you connect two or more GMT commands with a pipe) we use POSIX
+advisory file locking on the file.  Unfortunately, some versions of the Network File System (NFS) have
+not implemented file locking properly.  We know this to be the case with Linux pre-2.4 kernels when
+mounting NFS disks from a Sun server.  If this is your case, you must turn file locking OFF, and
+avoid using the GMT shorthands in commands that are piped together.</I><BR>
+
+<!--  NETCDF SELECTION  -->
+
+<H2>B. NetCDF Setup</H2>
+<B>1. Select the appropriate netCDF library option:</B><BR>
+
+<INPUT TYPE="radio" VALUE="have" NAME="radio_netcdf" CHECKED="true"> netCDF 3.4 is already installed<BR>
+<INPUT TYPE="radio" VALUE="get" NAME="radio_netcdf"> Please get and install netCDF 3.4<BR>
+<INPUT TYPE="radio" VALUE="install" NAME="radio_netcdf"> I already have the netcdf.tar.Z archive, just install it for me<BR>
+
+Give full pathname to the netCDF directory: <INPUT NAME="netcdf_dir" TYPE="text" SIZE="30"><BR>
+<P>
+<I>Note: In either case you must fill out the directory name.  If you already have netCDF then give the
+directory it resides in; if you need to install netCDF then give the directory you intend to install it.
+You can leave it blank if you have defined $NETCDFHOME to be the directory where you installed netcdf.</I>
+<HR>
+
+<!--  GMT FTP SELECTION  -->
+
+<H2>C. GMT Setup</H2>
+<B>1. Select the FTP site nearest you:</B><BR>
+
+<INPUT TYPE="radio" VALUE="1" NAME="radio_site" CHECKED="true"> Pacific (SOEST, University of Hawaii [GMT Home], Honolulu, Hawaii, USA)<BR>
+<INPUT TYPE="radio" VALUE="2" NAME="radio_site"> North America (NOAA, Lab for Satellite Altimetry, Silver Springs, Maryland, USA<BR>
+<INPUT TYPE="radio" VALUE="3" NAME="radio_site"> South America (IAG-USP, Dept of Geophysics, University of Sao Paulo, Brazil)<BR>
+<INPUT TYPE="radio" VALUE="4" NAME="radio_site"> Europe (Inst for Geologi, University of Oslo, Norway)<BR>
+<INPUT TYPE="radio" VALUE="5" NAME="radio_site"> Asia (ISV, Hokkaido University, Sapporo, Japan)<BR>
+<INPUT TYPE="radio" VALUE="6" NAME="radio_site"> Australia (Charles Sturt University, Aubury, Australia)<BR>
+<INPUT TYPE="radio" VALUE="7" NAME="radio_site"> No FTP, archives already obtained<BR>
+
+<P>
+<I>Note: Download times are shorter when you pick a site that is physically closer to you.  If you already
+have downloaded the files and simply wants to use the script to reinstall, select the last option.</I>
+
+<!--  GMT ARCHIVE SELECTION  -->
+
+<HR><B>2. Select the components you want (gzip/bzip2 sizes indicated):</B><BR>
+
+<INPUT TYPE="checkbox" NAME="checkbox_progs" CHECKED="true"> GMT source code (0.6/0.5 Mb, the main GMT programs, required for minimal install)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_libs" CHECKED="true"> GMT support data (4.0/3.7 Mb, Crude-, low-, and intermediate-resolution coastlines)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_docs" CHECKED="true"> GMT Documentation (5.7/4.3 Mb, PDF Docs, UNIX man pages, and Tutorial)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_web" CHECKED="true"> GMT Web Docs (1.5/1.4 Mb, Online HTML versions of all documentation)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_scripts" CHECKED= "true"> GMT Example Scripts &amp; Data (4.2/3.1 Mb, required to run test examples)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_suppl" CHECKED="true"> GMT Supplemental Archive (0.37/0.30 Mb, see section C.9 below for details)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_high"> GMT High-resolution coastlines (10.7/8.6 Mb)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_full"> GMT full-resolution coastlines (47.1/28.8 Mb)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_triangle"> J. Shewchuck's fast triangulation routine (0.11/0.09 Mb, faster, but not covered by GNU License)<BR>
+
+<P>
+<I>Note: The first two are required for a simple GMT install (in order to run all the examples in the cookbook).
+Many users will also prefer to get the higher resolution coastline files for map making in smaller areas.  The
+example scripts are required if you want to run the test suite.  Finally, you may want to get the optional
+but faster triangulation routine although it is not distributed under the GNU Public License.  For-profit
+organizations should first inspect <A HREF="README.TRIANGLE">Shewchuck's license</A>.  Make sure you remove
+old GMT *.bz2 or *.gz archives from the working directory before you run the script; otherwise the script
+may decide that it does not need to ftp new versions of those archives.</I>
+
+<!--  INSTALL TOOL OPTION SELECTION  -->
+
+<HR><B>3. Select library build type:<BR></B>
+
+<INPUT TYPE="radio" VALUE="Static" NAME="radio_link" CHECKED="true"> Static Libraries<BR>
+<INPUT TYPE="radio" VALUE="Shared" NAME="radio_link"> Shared (dynamic) Libraries<BR>
+
+<P>
+<I>Note: The GMT libraries can be made static or shared.  The main benefit of using shared (dynamic)
+libraries is significantly reduced executable sizes (50-70% savings in disk space).  The GMT install
+procedure knows how to make shared libraries under Linux, FreeBSD, NetBSD, SunOS, Solaris, HPUX, OSF1,
+and IRIX.  For other systems capable of generating shared libraries you must manually configure the
+makegmt.macros file.  If you have no preferences or no idea what to do on an unlisted system, select
+the default static libraries.</I><BR>
+
+<!--  COMPILER SELECTION  -->
+
+<HR><B>4. Select the C compiler you want to use:</B><BR>
+
+<SELECT NAME="cc">
+<OPTION SELECTED>1. cc
+<OPTION>2. gcc
+<OPTION>3. other
+</SELECT><BR>
+
+<P>
+<I>Note: The default cc should work unless you are on a system with several C compilers.  E.g., you
+may run Solaris and have purchased Sun's compiler but have also installed GNU gcc.  To ensure you
+get the GNU you should select gcc.  If your C compiler has another name or lives in a strange
+directory not in your path, please select "other" and enter the value for CC below.</I><BR>
+
+Custom C Compiler: <INPUT NAME="custom_cc" TYPE="text" SIZE="30"><BR>
+
+<!--  MAKE SELECTION  -->
+
+<HR><B>5. Select the make program you want to use:</B><BR>
+
+<SELECT NAME="make">
+<OPTION SELECTED>1. make
+<OPTION>2. other
+</SELECT><BR>
+
+<P>
+<I>Note: The default make should work unless you are on a system with a weird make utility. 
+GNU make works best, and some Sys V makes have problems.  If you have make problems, 
+use GNU make (assuming it is installed): Select "other" and enter the path for make below.</I><BR>
+
+Custom make program: <INPUT NAME="custom_make" TYPE="text" SIZE="30"><BR>
+
+<!--  GMT DESTINATION DIRECORIES SELECTION  -->
+
+<HR><B>6. Select GMT final destination directories</B><BR>
+
+Place GMT executables in: <INPUT NAME="gmt_bin" TYPE="text" SIZE="30"><BR>
+Place GMT libraries in: <INPUT NAME="gmt_lib" TYPE="text" SIZE="30"><BR>
+Place GMT include files in: <INPUT NAME="gmt_include" TYPE="text" SIZE="30"><BR>
+Place GMT data resources in: <INPUT NAME="gmt_share" TYPE="text" SIZE="30"><BR>
+Place GMT man pages in: <INPUT NAME="gmt_man" TYPE="text" SIZE="30"><BR>
+Give man page section: <INPUT NAME="gmt_mansect" TYPE="text" SIZE="5" VALUE="l"><BR>
+Place GMT web pages in: <INPUT NAME="gmt_web" TYPE="text" SIZE="30"><BR>
+
+<P>
+<I>Note: The GMT archives will first be uncompressed, untarred, and compiled in the current working
+directory where install_gmt is run.  After those steps are successful you may want to copy
+the files to more traditional directories like /usr/local/bin, etc.  The default locations are
+subdirectories bin, lib, include, share, man, and www under GMT3.3.6 in the current install directory.
+Note that the man pages will be be placed in the man/man? subdirectory, where ? is the section specified
+above, e.g. "l", giving man/manl, is the default.  Do NOT specify the man dir as man/man?; the
+section directory will automatically be appended based on the chosen section unit.
+Only specify alternative directories if you want
+to place the files elsewhere.  Make sure the users' search path contains the directory where you
+place the executables.  The directory chosen for GMT data resources is accessed by all GMT users
+via the environmental variable $GMTHOME - all users must set this parameter in their .login file.
+The man utility will find the GMT man pages if the chosen man directory is included in the
+users' MANPATH environmental variable.  Finally, advise users to add a browser bookmark for the
+file gmt/gmt_services.html in the web directory you chose above; that page provides links to online
+GMT documentation and man pages (assuming you selected the web archive in Section C.2).</I><BR>
+
+<!--  GMTHOME DEFAULT DIRECTORY SELECTION  -->
+
+<HR><B>7. Select default GMTHOME directory</B><BR>
+
+Default GMTHOME directory: <INPUT NAME="gmt_def" TYPE="text" SIZE="30"><BR>
+
+<P>
+<I>Note: While the GMT data files will be placed in the local directory indicated in the previous
+section (C.6), that directory may appear with a different name to remote users if a different mount point
+is used or a symbolic link is set.  If so, you may want to specify a different value for the
+default GMTHOME.  This is the directory where GMT will look for the share directory with coastline files if users have
+not set this environmental variable explicitly.  Leave blank to select the parent directory
+of the data resources directory given in C.6 [Default].</I><BR>
+
+<!--  GMT COASTLINE ALTERNATE DIRECORIES SELECTION  -->
+
+<HR><B>8. Alternative coastline directories</B><BR>
+
+<INPUT TYPE="radio" VALUE="all" NAME="radio_coast" CHECKED="true"> Install all selected coastline files in $GMTHOME/share<BR>
+<INPUT TYPE="radio" VALUE="dir" NAME="radio_coast"> Place coastline files in several directories<BR>
+
+<P>
+<I>Note: Normally, all coastline files reside in $GMT/share.  However, if your disk resources are limited
+or you are sharing files via NFS or similar mounts, you may want to place the larger files in places
+separate from where the smaller files reside.  The selections below are only used if you chose that way.</I><BR>
+<P>
+Place crude, low, and intermediate coastlines in: <INPUT NAME="gmt_cli_dir" TYPE="text" SIZE="30"><BR>
+Place high resolution coastlines in: <INPUT NAME="gmt_h_dir" TYPE="text" SIZE="30"><BR>
+Place full resolution coastlines in: <INPUT NAME="gmt_f_dir" TYPE="text" SIZE="30"><BR>
+<P>
+
+<!--  GMT SUPPLEMENTAL PACKAGE SELECTION  -->
+
+<HR><B>9. Select supplemental packages to install:</B><BR>
+
+<INPUT TYPE="checkbox" NAME="checkbox_cps"  CHECKED="true"> CPS: Encoding and decoding of Complete PostScript files for archiving<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_dbase"  CHECKED="true"> DBASE: Extracting data from NGDC DEM and other grids<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_gshhs"  CHECKED="true"> GSHHS: Global Self-consistent Hierarchical High-resolution Shoreline extractor<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_imgsrc"  CHECKED="true"> IMGSRC: Extracting grids from global altimeter files (Sandwell/Smith)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_meca"  CHECKED="true"> MECA: Plotting special symbols in seismology and geodesy<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_mex"  CHECKED="false"> MEX: Matlab interface for reading/writing GMT grdfiles (REQUIRES MATLAB*)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_mgg"  CHECKED="true"> MGG: Programs for making, managing, and plotting MGD77 and *.gmt data<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_misc"  CHECKED="true"> MISC: Make posters on laserwriters and create bit-patterns<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_segyprogs"  CHECKED="true"> SEGYPROGS: Plot SEGY seismic data files<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_spotter"  CHECKED="true"> SPOTTER: Plate tectonic backtracking and hotspotting<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_x2sys"  CHECKED="true"> X2SYS: Track intersection (crossover) tools (REQUIRES MGG)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_x_system"  CHECKED="true"> X_SYSTEM: MGG-specific Track intersection (crossover) tools (REQUIRES MGG)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_xgrid"  CHECKED="false"> XGRID: An X11-based graphical editor for netCDF-based .grd files (REQUIRES OpenWin Xlibs)<BR>
+
+<P>
+<I>Note: The selected packages will only be installed if you also selected the supplemental tar archive
+above.  The x2sys and x_system packages require the mgg package, the mex package requires Matlab (octave users
+may want to modify it), and xgrid requires various Openwin/X11 libraries.</I>
+<BR>
+*Enter Matlab system directory if you selected mex above: <INPUT NAME="matlab_dir" TYPE="text" SIZE="30" VALUE="/usr/local/matlab"><BR>
+<I>Note: You can leave the Matlab path blank if $MATLAB is defined in your environment and points to the correct
+directory</I>.
+
+<!--  GMT COMPLETION SELECTION  -->
+
+<HR><B>10. Complete the operation:<BR>
+
+</B><INPUT TYPE="checkbox" NAME="checkbox_delete" > Delete all archives upon sucessful installation<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_run"  CHECKED="true"> Run all example scripts (assumes scripts tar archive was chosen above)<BR>
+
+<P>
+<I>Note: Examples will only be run if you also ftp'ed the example scripts archive.</I>
+
+<!--  SUBMIT OR RESET FORM  -->
+
+<HR>To receive installation parameters, push <INPUT NAME="name" TYPE="submit" VALUE="GET PARAMETERS">
+To clear all settings, push <INPUT NAME="name" TYPE="reset" VALUE="RESET FORM"><BR>.  Once received,
+choose your browser's File->Save As option and override the default file name (which is the name of
+the Perl script that made the file) to something like GMT.par.
+
+<!--  FORM OWNER AND MAINTENANCE -->
+
+<P>
+<HR>Report problems with this page to <I><A HREF="mailto:%20pwessel@hawaii.edu">Paul Wessel</A></I>.<BR>
+</FORM>
+</BODY>
+</HTML>
