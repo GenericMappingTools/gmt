@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.54 2004-01-02 22:45:13 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.55 2004-01-08 03:27:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2029,8 +2029,12 @@ int GMT_get_format (double interval, char *unit, char *format)
 		sprintf (text, "%.12g", interval);
 		for (i = 0; text[i] && text[i] != '.'; i++);
 		if (text[i]) {	/* Found a decimal point */
-			for (j = i + 1; text[j]; j++);
+			for (j = i + 1; text[j] && text[j] != 'e'; j++);
 			ndec = j - i - 1;
+			if (text[j] == 'e') {	/* Exponential notation, modify ndec */
+				ndec -= atoi (&buffer[++j]);
+				if (ndec < 0) ndec = 0;	/* since a positive exponent could give -ve answer */
+			}
 		}
 	}
 	
