@@ -1,4 +1,4 @@
-/*	$Id: x_solve_dc_drift.c,v 1.3 2001-12-21 03:50:38 ben Exp $
+/*	$Id: x_solve_dc_drift.c,v 1.4 2003-05-04 04:01:02 pwessel Exp $
  *
  * x_solve_dc_drift reads the xx_* databases and computes the best
  * fitting drift and dc values using a least squares method.
@@ -354,7 +354,7 @@ main (int argc, char **argv)
 		
 		if (n_iterations == 0) {
 			printf ("One more iteration?: ");
-			gets(string);
+			fgets (string, sizeof (string), stdin);
 			if (string[0] == 'N' || string[0] == 'n') ok = FALSE;
 		}
 		else if (iteration >= n_iterations)

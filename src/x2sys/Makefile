@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.5 2002-03-14 16:52:16 pwessel Exp $
+#	$Id: Makefile,v 1.6 2003-05-04 04:01:02 pwessel Exp $
 #
 # makefile for x2sys directory
 #
@@ -37,6 +37,12 @@ install:		all
 					$(INSTALL) -m 444 libx2sys.$(SL) $(libdir); \
 				fi; \
 			fi
+			if [ ! -d $(datadir)/x2sys ]; then \
+				mkdir -p $(datadir)/x2sys; \
+			fi
+			for i in *.def; do \
+				cp -f -p $$i $(datadir)/x2sys; \
+			done
 
 uninstall:	
 			for i in $(XSYSTEM); do \
@@ -48,6 +54,7 @@ uninstall:
 					\rm -f $(libdir)/libx2sys.$(SL); \
 				fi; \
 			fi
+			rm -rf $(datadir)/x2sys
 
 clean:
 			\rm -f *.o

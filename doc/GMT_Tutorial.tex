@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Tutorial.tex,v 1.16 2003-04-25 20:00:08 pwessel Exp $
+%	$Id: GMT_Tutorial.tex,v 1.17 2003-05-04 04:01:02 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2003.
@@ -142,30 +142,30 @@ The \GMT\ system was initiated in late 1987 at Lamont-Doherty
 Earth Observatory, Columbia University by graduate students Paul
 Wessel and Walter H. F. Smith.  Version 1 was officially introduced
 to Lamont scientists in July 1988.  \GMT\ 1 migrated by word of mouth
-(and tape) to other institutions in the United States, UK, Japan,
+(and tape) to other institutions in the United States, UK, Japan, and
 France and attracted a small following.  Paul took a Post-doctoral
 position at SOEST in December 1989 and continued the \GMT\ development.
 Version 2.0 was released with an article in EOS, October 1991, and
-quickly spread worldwide.  We obtained minor NSF-funding for \GMT\
+quickly spread worldwide.  We obtained NSF-funding for \GMT\
 version 3.0 in 1993 which was released with another article in EOS
 on August 15, 1995.  Significantly improved versions (3.1-3.3,
-3.3.1--6), 3.4 and 3.4.1--2 were released between Novenber 1998 and November 2002, culminating in the
-May 2003 release of 3.4.3 and 4.0beta. \GMT\ now is
+3.3.1--6), 3.4 and 3.4.1--2 were released between November 1998 and October 2002, culminating in the
+May 2003 release of 3.4.3. \GMT\ now is
 used by $\sim$6,000 users worldwide in a broad range of disciplines.
 
 \subsection*{Philosophy}
 \addcontentsline{toc}{subsection}{Philosophy}
 \index{GMT@\GMT!philosophy}
 
-\GMT\ follows the \UNIX\ philosophy so that complex tasks are broken
+\GMT\ follows the \UNIX\ philosophy in which complex tasks are broken
 down into smaller and more manageable components.  Individual \GMT\
 modules are small, easy to maintain, and can be used as any other
-\UNIX\ tool.  \GMT\ was written in the ANSI C programming language
-(very portable), is POSIX and Y2K compliant, and is independent of
+\UNIX\ tool.  \GMT\ is written in the ANSI C programming language
+(very portable), is POSIX compliant, and is independent of
 hardware constraints (e.g., memory).  \GMT\ was deliberately written
 for command-line usage, not a windows environment, in order to
 maximize flexibility.  We standardized early on to use \PS\ output
-instead of meta-file formats.  Apart from the built-in support for
+instead of other graphics formats.  Apart from the built-in support for
 coastlines, \GMT\ completely decouples data retrieval from the main
 \GMT\ programs.  \GMT\ uses architecture-independent file formats.
 
@@ -193,13 +193,13 @@ has modest space/memory requirements.  Minimum requirements are
 \item A C Compiler (free from www.gnu.org).
 \item About 100 Mb disk space (70 Mb additional for full- and
 high-resolution coast-lines).
-\item About 32 Mb RAM.
+\item About 32 Mb memory.
 
 \end{itemize}
 
 In addition, we recommend access to a \PS\ printer or equivalent
 (e.g., \progname{ghostscript}), \PS\ previewer (e.g., \progname{ghostview}),
-any flavor of the \UNIX\ operating system, and more disk space and RAM.
+any flavor of the \UNIX\ operating system, and more disk space and memory.
 
 \chapter{SESSION ONE} 
 \thispagestyle{headings}
@@ -363,8 +363,8 @@ There are 6 general categories of output produced by \GMT:
 \end{enumerate}
 
 Note: \GMT\ automatically creates and updates a history of past
-\GMT\ command options for the common switches.  These history
-file are called \filename{.gmtcommands} and will be created in
+\GMT\ command options for the common switches.  This history
+file is called \filename{.gmtcommands} and one will be created in
 every directory from which \GMT\ programs are executed.  Many
 initial problems with \GMT\ usage result from not fully appreciating
 the relationships shown in Figure~\ref{fig:GMT_Environment}.
@@ -386,6 +386,7 @@ GMTprogram < input-file >! output-file
 GMTprogram input-file >> output-file       # Append to existing file
 \end{verbatim}
 
+\noindent
 The exclamation sign (!) allows us to overwrite existing files.
 
 \subsection{Piping ($|$)}
@@ -440,6 +441,7 @@ on name patterns (Table~\ref{tbl:wildcard}):
 \caption{\UNIX\ wildcards} \label{tbl:wildcard}
 \end{table}
  
+\noindent
 You can save much time by getting into the habit of selecting
 ``good'' filenames that make it easy to select subsets of all
 files using the \UNIX\ wild card notation.
@@ -483,6 +485,7 @@ from -3 to 8 in {\it y}, annotating every 1.  The final plot should be
 psbasemap -R10/70/-3/8 -JX4i/3i -B10/1:."My first plot": -P >! plot.ps
 \end{verbatim}
 
+\noindent
 You can view the result with \progname{ghostview} \filename{plot.ps}.
 
 \subsubsection{Exercises}
@@ -512,6 +515,7 @@ psbasemap -R1/10000/1e20/1e25 -JX9il/6il \
    -B2:"Wavelength (m)":/a1pf3:"Power (W)":WS >! plot.ps 
 \end{verbatim}
 
+\noindent
 (The backslash $\backslash$ makes \UNIX\ ignore the carriage return that follows and treat the two lines as one long command).
 
 \subsubsection{Exercises}
@@ -552,7 +556,7 @@ to the common switches we may need to use some of several \GMTprog{pscoast}
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{A} & Exclude small features or those of high hierarchical levels \\ \hline
+\Opt{A} & Exclude small features or those of high hierarchical levels (see Appendix K)\\ \hline
 \Opt{D} & Select data resolution ({\bf f}ull, {\bf h}igh, {\bf i}ntermediate, {\bf l}ow, or {\bf c}rude) \\ \hline
 \Opt{G} & Set color of dry areas (default does not paint) \\ \hline
 \Opt{I} & Draw rivers (chose features from one or more hierarchical categories) \\ \hline
@@ -632,7 +636,8 @@ minimum and maximum values.
 
 The azimuthal orthographic projection (\Opt{JG}) is one of several
 projections with similar syntax and behavior; the one we have
-chosen mimics viewing the Earth from space at an infinite distance.
+chosen mimics viewing the Earth from space at an infinite distance;
+it is neither conformal nor equal-area.
 The syntax for this projection is \\
 
 \Opt{JG}$lon_0/lat_0/width$ \\
@@ -695,7 +700,7 @@ pscoast -R0/360/-90/90 -JKs180/9i -B60g30/30g15 -Dc -A5000 -G180/120/60 \
 
 \section{General Information}
 
-There are 18 \GMT\ programs that directly create or add overlays to
+There are 18 \GMT\ programs that directly create (or add overlays to)
 plots (Table~\ref{tbl:plotprogs}); the remaining 45 are mostly concerned with data
 processing.  This session will focus on the task of plotting
 lines, symbols, and text on maps.  We will build on the skills
@@ -740,7 +745,7 @@ and boundary annotations.
 Plotting lines and symbols, \GMTprog{psxy} is one of the most frequently
 used programs in \GMT.  In addition to the common command line switches
 it has numerous specific options, and expects different file formats
-depending on what action has been selected.  These circumstances makes
+depending on what action has been selected.  These circumstances make
 \GMTprog{psxy} harder to master than most \GMT\ tools.  Table~\ref{tbl:psxy}
 shows a complete list of the options.
 
@@ -768,7 +773,7 @@ or solid (\Opt{G}, with optional outline using \Opt{W}).  The \Opt{S}
 option takes the code for the desired symbol and optional size information.
 If no symbol is given it is expected to be given in the last column of each record in the input
 file.  The {\it size} is optional since individual sizes for
-symbols may be provided by the input data.  The main symbols available to
+symbols may also be provided by the input data.  The main symbols available to
 us are shown in Table~\ref{tbl:psxysymbols}.
 
 \begin{table}[h]
@@ -801,7 +806,7 @@ us are shown in Table~\ref{tbl:psxysymbols}.
  & {\it norm} will have their attributes scaled by length/{\it norm} \\ \hline
 \Opt{SV}[{\it thick}/{\it length}/{\it width}][{\bf n}{\it norm}] & {\bf v}ector, except {\it azimuth} (degrees east of north) is expected instead of {\it direction} \\
  & The angle on the map is calculated based on the chosen map projection \\ \hline
-\Opt{Sw}[{\it size} & pie {\bf s}edge; {\it start} and {\it stop} directions (CCW from horizontal) are read from input data \\ \hline
+\Opt{Sw}[{\it size} & pie {\bf w}edge; {\it start} and {\it stop} directions (CCW from horizontal) are read from input data \\ \hline
 \Opt{Sx}{\it size} & cross; {\it size} is length of crossing lines \\ \hline
 \Opt{Sy}{\it size} & vertical dash; {\it size} is length of dash \\ \hline
 \end{tabular}
@@ -818,7 +823,7 @@ is (optional items are in brackets []): \\
 
 $x\mbox{  } y$ [ $z$ ] [ $size$ ] [ $\sigma_x$ ] [ $\sigma_y$ ] [ $symbol$ ] \\
 
-The only required input columns are the first two which must contain the
+Thus, the only required input columns are the first two which must contain the
 longitude and latitude (or {\it x} and {\it y}).  The remaining items
 apply when one (or more) of the following conditions are met:
 
@@ -933,6 +938,7 @@ symbols.  The fill may take two forms:
 
 \vspace{\baselineskip} 
 
+\noindent
 In the first case we may specify a {\it gray} shade (0--255) or a color
 ({\it r}/{\it g}/{\it b} in the 0--255 range), similar to the pen color
 settings.  The second form allows us to use a predefined bit-image pattern.
@@ -950,7 +956,7 @@ to 1-bit images or predefined bit-image patterns).  For these patterns and
 other 1-bit images one may specify alternative background and foreground
 colors (by appending :{\bf B}{\it r/g/b}[{\bf F}{\it r/g/b}]) that will
 replace the default white and black pixels, respectively.  Setting one of the
-fore- or background colors to - yields a transparent image where only the
+fore- or background colors to -- yields a transparent image where only the
 back- or foreground pixels will be painted.
 Due to \PS\ implementation limitations the rasterimages used with
 \Opt{G} must be less than 146 x 146 pixels in size; for larger images see
@@ -976,12 +982,14 @@ data region:
 minmax data
 \end{verbatim} 
 
+\noindent
 which returns
 
 \begin{verbatim}
 data: N = 7   <1/5>   <1/5>
 \end{verbatim} 
 
+\noindent
 telling us that the file \filename{data} has 7 records and gives the
 minimum and maximum values for the first two columns.  Given our
 knowledge of how to set up linear projections with \Opt{R} and \Opt{JX},
@@ -1193,7 +1201,7 @@ A chart of octal codes can be found in Appendix F in the \GMT\
 technical reference book.  For accented European characters you must
 set CHAR\_ENCODING to ISOLatin1 in your \filename{.gmtdefaults4} file.
 
-We will demonstrate \progname{pstext} with the following script:
+We will demonstrate \GMTprog{pstext} with the following script:
 
 \begin{verbatim} 
 cat << EOF | pstext -R0/7/0/5 -Jx1i -P -B1g1 -G255/128/0 | ghostview -
@@ -1264,7 +1272,7 @@ useful options:
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{A}{\it anot\_int} & Annotation interval \\ \hline
+\Opt{A}{\it annot\_int} & Annotation interval \\ \hline
 \Opt{C}{\it cont\_int} & Contour interval \\ \hline
 \Opt{G}{\it gap} & Sets distance between contour annotations \\ \hline
 \Opt{L}{\it low}/{\it high} & Only draw contours within the {\it low} to {\it high} range \\ \hline
@@ -1428,6 +1436,7 @@ z(x_k, y_k) = z_k,	&	\mbox{for all data $(x_k, y_k, z_k), k =1,n$} \\
 (1-t)\nabla^4 z -  t \nabla^2 z = 0	&	\mbox{elsewhere}
 \end{array} \) \\
 
+\noindent
 where $t$ is the ``tension'', $0 \leq t \leq 1$.  Basically, as
 $t \rightarrow 0$ we obtain the minimum curvature solution, while as
 $t \rightarrow \infty$ we go towards a harmonic solution (which is linear
@@ -1567,6 +1576,7 @@ z$_{n-2}$ &  R$_{min}$ &  G$_{min}$ &  B$_{min}$ &  z$_{n-1}$ &  R$_{max}$ &  G$
 \end{tabular} 
 \end{center}
 
+\noindent
 Since a cpt file may contain only shades of gray (here listed as
 the red component), the green and blue columns are optional and
 only used for color tables.  An optional final column may be used
@@ -1591,6 +1601,7 @@ histogram-equalized distribution of $z$-values in a gridded data file (\GMTprog{
 
 \end{enumerate}
 
+\noindent
 One can also make these files manually or with \progname{awk}
 or other tools.  Here we will limit our discussion to \GMTprog{makecpt}.
 Its main argument is the name of the master color table (a list is
@@ -1619,8 +1630,12 @@ makecpt -Crainbow -T-20/60/10 >! disc.cpt
 makecpt -Crainbow -T-20/60/10 -Z >! cont.cpt
 \end{verbatim}
 
+\noindent
 We can plot these color tables with \GMTprog{psscale}; the options
 worth mentioning here are listed in Table~\ref{tbl:psscale}.
+In addition, the \Opt{B} option can be used to set the title
+and unit label (and optionally to set the annotation-, tick-,
+and grid-line intervals for the colorbars.)
 
 \begin{table}[h]
 \small
@@ -1635,10 +1650,6 @@ worth mentioning here are listed in Table~\ref{tbl:psscale}.
 \caption{The main switches and options in \GMTprog{psscale}}
 \label{tbl:psscale}
 \end{table}
-
-In addition, the \Opt{B} option can be used to set the title
-and unit label (and optionally to set the anotation-, tick-,
-and grid-line intervals for the colorbars.)
 
 \begin{verbatim}
 psbasemap -R0/8.5/0/11 -Jx1i -P -B0 -K >! bar.ps
@@ -1720,6 +1731,7 @@ grdraster 9 -R-108/-103/35/40 -Gus.grd
 \end{verbatim}
 
 Using \GMTprog{grdinfo} we find that the data ranges from $\sim$1000m to
+\noindent
 $\sim$4300m so we make a cpt file accordingly:
 
 \begin{verbatim}
@@ -1903,6 +1915,7 @@ grdview us.grd -JM6i -E135/35 -Qi50 -Ius_i.grd -Ctopo.cpt -V -B2 \
     -JZ0.5i >! view.ps
 \end{verbatim}
 
+\noindent
 This plot is pretty crude since we selected 50 dpi but it is fast
 to render and allows us to try alternate values for vantage point
 and scaling.  When we settle on the final values we select the
