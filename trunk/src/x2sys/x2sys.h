@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.10 2004-08-18 23:19:45 pwessel Exp $
+ *	$Id: x2sys.h,v 1.11 2004-08-19 04:34:25 pwessel Exp $
  *
  *      Copyright (c) 1999-2004 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -61,9 +61,8 @@
   This information must be conveyed via the *.def files (-D)
 ------------------------------------------------------------------*/
 
-#include "gmt.h"
-#include "gmt_mgg.h"
 #include "mgd77.h"
+#include "gmt_mgg.h"
 
 #ifdef WIN32
 #define _chmod(path,mode) chmod(path,mode)
