@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.27 2001-09-14 20:10:11 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.28 2001-09-15 00:39:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -340,10 +340,10 @@ int GMT_anot_pos (double min, double max, struct TIME_AXIS_ITEM *T, double coord
 	 * For instance, if our interval is 3 months we do not want "January" centered
 	 * on that quarter.  If the position is outside our range we return TRUE
 	 */
+	double half_width, start, stop;
 	 
 	if (GMT_interval_axis_item(T->id)) {
-		double half_width, start, stop;
-		if ((T->unit == 'o' || T->unit == 'O' || T->unit == 'k' || T->unit == 'K') && T->interval != 1.0) {	/* Must find next month to get month centered correctly */
+		if (GMT_uneven_interval (T->unit) && T->interval != 1.0) {	/* Must find next month to get month centered correctly */
 			struct GMT_MOMENT_INTERVAL Inext;
 			Inext.unit = T->unit;		/* Initialize MOMENT_INTERVAL structure members */
 			Inext.step = 1;
@@ -394,9 +394,13 @@ void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct TIME_
 		case 'u':	/* 2-digit ISO week */		
 			(P->date.compact) ? sprintf (string, "%d\0", calendar.iso_w) : sprintf (string, "%2.2d\0", calendar.iso_w);
 			break;
-		case 'K':	/*  Weekday name */
+		case 'K':	/*  ISO Weekday name */
 			if (T->upper_case) GMT_str_toupper (GMT_time_language.day_name[calendar.iso_d%7][T->flavor]);
 			sprintf (string, "%s\0", GMT_time_language.day_name[calendar.iso_d%7][T->flavor]);
+			break;
+		case 'r':	/*  Gregorian weekday name */
+			if (T->upper_case) GMT_str_toupper (GMT_time_language.day_name[calendar.day_w][T->flavor]);
+			sprintf (string, "%s\0", GMT_time_language.day_name[calendar.day_w][T->flavor]);
 			break;
 		case 'k':	/* Day of the month */
 			(P->date.compact) ? sprintf (string, "%d\0", calendar.day_m) : sprintf (string, "%2.2d\0", calendar.day_m);

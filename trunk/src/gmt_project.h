@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.14 2001-09-14 18:30:17 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.15 2001-09-15 00:39:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -259,6 +259,7 @@ struct MAP_PROJECTIONS {
 #define GMT_upper_and_lower_items(j) (((tframe_info.axis[j].item[GMT_ANOT_UPPER].active || tframe_info.axis[j].item[GMT_INTV_UPPER].active) && \
 	(tframe_info.axis[j].item[GMT_ANOT_LOWER].active || tframe_info.axis[j].item[GMT_INTV_LOWER].active)) ? TRUE : FALSE)	/* TRUE if we have two levels of anotations (tick or interval) */
 #define GMT_two_anot_items(j) ((tframe_info.axis[j].item[GMT_ANOT_UPPER].active && tframe_info.axis[j].item[GMT_ANOT_LOWER].active) ? TRUE : FALSE)	/* TRUE if we have two levels of tick anotations */
+#define GMT_uneven_interval(unit) ((unit == 'o' || unit == 'O' || unit == 'k' || unit == 'K' || unit == 'R' || unit == 'r') ? TRUE : FALSE)		/* TRUE for uneven units */
 
 struct MAP_FRAME {		/* Various parameters for plotting of linear and map boundaries */
 	double frame_int[3];	/* Frame tick intervals, for each axis (x,y,z) */
