@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.80 2003-02-19 19:10:46 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.81 2003-02-20 19:12:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -491,7 +491,8 @@ void GMT_fill_syntax (char option)
 {
 	fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
 	fprintf (stderr, "\t-%cP|p<dpi>/<pattern>[:F<rgb>B<rgb>], dpi of pattern, pattern from 1-90 or a filename, optionally add fore/background colors (use - for transparency)\n", option);
-	fprintf (stderr, "\t-%c<red>/<green>/<blue> or -%c<gray>, all in the 0-255 range\n", option, option);
+	fprintf (stderr, "\t-%c<color>, <color> = <red>/<green>/<blue> or <gray>, all in the 0-255 range,\n", option);
+	fprintf (stderr, "\t  <c>/<m>/<y>/<k> in 0-100%% range, or <hue>/<sat>/<val> in 0-360, 0-1, 0-1 range [when COLOR_MODEL = hsv].\n");
 }
 
 void GMT_pen_syntax (char option)
@@ -499,14 +500,14 @@ void GMT_pen_syntax (char option)
 	fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
 	fprintf (stderr, "\t-%c[<width>][/<color>][to | ta | t<texture>:<offset>][p]\n", option);
 	fprintf (stderr, "\t  <width> >= 0, <color> = <red>/<green>/<blue> or <gray> all in the 0-255 range,\n");
-	fprintf (stderr, "\t  <c>/<m>/<y>/<k> in 0-100% range, or <hue>/<sat>/<val> in 0-360, 0-1, 0-1 range [when COLOR_MODEL = hsv],\n");
+	fprintf (stderr, "\t  <c>/<m>/<y>/<k> in 0-100%% range, or <hue>/<sat>/<val> in 0-360, 0-1, 0-1 range [when COLOR_MODEL = hsv].\n");
 }
 
 void GMT_rgb_syntax (char option)
 {
 	fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
 	fprintf (stderr, "\t-%c<color>, <color> = <red>/<green>/<blue> or <gray>, all in the 0-255 range,\n", option);
-	fprintf (stderr, "\t  <c>/<m>/<y>/<k> in 0-100% range, or <hue>/<sat>/<val> in 0-360, 0-1, 0-1 range [when COLOR_MODEL = hsv],\n");
+	fprintf (stderr, "\t  <c>/<m>/<y>/<k> in 0-100%% range, or <hue>/<sat>/<val> in 0-360, 0-1, 0-1 range [when COLOR_MODEL = hsv],\n");
 }
 
 void GMT_syntax (char option)
@@ -2338,9 +2339,11 @@ int GMT_begin (int argc, char **argv)
 
 	/* Make sure -b options are parsed first in case filenames are given
 	 * before -b options on the command line.  This would only cause grief
-	 * under WIN32. Also make -J come first and -R before -I, if present */
+	 * under WIN32. Also make -J come first and -R before -I, if present.
+	 * Finally, we look for -V so verbose is set prior to testing arguments */
 
 	for (i = 1, j = k = n = 0; i < argc; i++) {
+		if (!strncmp (argv[i], "-V", 2)) gmtdefs.verbose = TRUE;
 		if (!strncmp (argv[i], "-b", 2)) GMT_io_selection (&argv[i][2]);
 		if (!strncmp (argv[i], "-f", 2)) GMT_decode_coltype (&argv[i][2]);
 		if (!strncmp (argv[i], "-J", 2)) j = i;
