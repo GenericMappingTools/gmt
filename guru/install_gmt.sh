@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.47 2004-09-29 21:24:50 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.48 2004-10-12 04:07:44 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1394,9 +1394,11 @@ GMT installation complete. Remember to set these:
 
 -----------------------------------------------------------------------
 For csh or tcsh users:
+setenv NETCDFHOME $NETCDFHOME
 setenv GMTHOME $dir
 set path=($GMT_bin \$path)
 For sh or bash users:
+export NETCDFHOME=$NETCDFHOME
 export GMTHOME=$dir
 export PATH=$GMT_bin:\$PATH
 For all users:
