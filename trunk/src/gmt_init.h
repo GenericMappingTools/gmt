@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.21 2001-10-15 17:25:05 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.22 2001-10-15 17:41:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -71,6 +71,12 @@ char *GMT_weekdays[7] = {	/* Days of the week in English */
 	"Saturday"
 };
 
+char *GMT_degree_choice[4] = {  /* Users choice for degree symbol */
+	"none",
+	"ring",
+	"degree",
+	"colon",
+};
 /*--------------------------------------------------------------------*/
 /*	For plotting purposes */
 /*--------------------------------------------------------------------*/

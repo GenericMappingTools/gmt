@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_math.h,v 1.4 2001-08-20 20:01:37 pwessel Exp $
+ *	$Id: gmt_math.h,v 1.5 2001-10-15 17:41:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -200,6 +200,13 @@ extern double erf(double x);
 EXTERN_MSC double GMT_erfc(double x);
 #else
 extern double erfc(double x);
+#endif
+
+#if HAVE_STRDUP == 0
+#define strdup(s) GMT_strdup(s)
+EXTERN_MSC char *GMT_strdup(const char *s);
+#else
+extern char *strdup(const char *s);
 #endif
 
 #if HAVE_STRTOD == 0
