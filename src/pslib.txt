@@ -356,6 +356,7 @@ void \fBps_plot\fR (\fIxabs, yabs, kpen\fP)
 \fBint\fR \fIkpen;\fP
 .RS 10
 Absolute move (\fIkpen\fP=3) or draw (\fIkpen=\fP2), using current linewidth.
+Use (\fIkpen=\fP-2) to make sure the line is stroked.
 .RE
 .IP
 void \fBps_plotend\fR (\fIlast_page\fP)
@@ -409,6 +410,7 @@ void \fBps_plotr\fR (\fIxrel, yrel, kpen\fP)
 \fBint\fR \fIkpen\fP;
 .RS 10
 Move (\fIkpen\fP = 3) or draw (\fIkpen\fP = 2) relative to current point (see \fBps_plot\fP).
+Use (\fIkpen=\fP-2) to make sure the line is stroked.
 .RE
 .IP
 void \fBps_polygon\fR (\fIxarray, yarray, npoints, rgb, outline\fP)
