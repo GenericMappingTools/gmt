@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.49 2003-07-24 21:08:13 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.50 2003-08-14 21:24:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2537,43 +2537,59 @@ void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift)
 
 int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax)
 {
-	int shifted;
+	int shifted, region_pos, grd_pos;
 	
 	/* Round off to nearest multiple of the grid spacing.  This should
 	   only affect the numbers when oblique projections or -R...r has been used */
 
-	*xmin = floor (project_info.w / h->x_inc) * h->x_inc;
-	*xmax = ceil (project_info.e / h->x_inc) * h->x_inc;
-	if (fabs (h->x_max - h->x_min - 360.0) > SMALL) {	/* Not a periodic grid */
-		shifted = 0;
-		if ((h->x_min < 0.0 && h->x_max <= 0.0) && (project_info.w >= 0.0 && project_info.e > 0.0)) {
-			h->x_min += 360.0;
-			h->x_max += 360.0;
-			shifted = 1;
-		}
-		else if ((h->x_min >= 0.0 && h->x_max > 0.0) && (project_info.w < 0.0 && project_info.e < 0.0)) {
-			h->x_min -= 360.0;
-			h->x_max -= 360.0;
-			shifted = -1;
-		}
-		if (*xmin < h->x_min) *xmin = h->x_min;
-		if (*xmax > h->x_max) *xmax = h->x_max;
-		if (shifted) {
-			h->x_min -= (shifted * 360.0);
-			h->x_max -= (shifted * 360.0);
-		}
-	}
-	else	{ /* Should be 360 */
-		if (*xmin < project_info.w) *xmin = project_info.w;
-		if (*xmax > project_info.e) *xmax = project_info.e;
-	}
+	/* Weakness in this logic is that there is no flag in the grid to tell us it is geographic. */
+	
+	/* First check latitudes since they have no complications */
+	
 	*ymin = floor (project_info.s / h->y_inc) * h->y_inc;
 	if (*ymin < h->y_min) *ymin = h->y_min;
 	*ymax = ceil (project_info.n / h->y_inc) * h->y_inc;
 	if (*ymax > h->y_max) *ymax = h->y_max;
 	
-	if ((*xmax) < (*xmin) || (*ymax) < (*ymin)) {	/* Either error or grid outside chosen -R */
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid appears to be outside the map region and will be skipped.\n", GMT_program);
+	if ((*ymax) <= (*ymin)) {	/* Either error or grid outside chosen -R */
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid latitudes appear to be outside the map region and will be skipped.\n", GMT_program);
+		return (1);
+	}
+	
+	/* OK, longitudes are trickier and we must make sure grid and region is on the same page as far as +-360 degrees go */
+	
+	if (h->x_min < 0.0 && h->x_max < 0.0) {			/* Change negative range to positive 0-360 */
+		h->x_min += 360.0;
+		h->x_max += 360.0;
+	}
+	if (project_info.w < 0.0 && project_info.e < 0.0) {	/* Change negative range to positive 0-360 */
+		project_info.w += 360.0;
+		project_info.e += 360.0;
+	}
+	/* Now find if grid and region straddle Greenwich */
+	
+	grd_pos   = (h->x_min >= 0.0 && h->x_max > 0.0) ? 1 : 0;
+	region_pos = (project_info.w >= 0.0 && project_info.e > 0.0) ? 1 : 0;
+	
+	/* Use Greenwich knowledge to adjust region to be compatible with grid domain when adjusting the latter */
+	
+	*xmin = floor ((project_info.w - (region_pos - grd_pos) * 360.0) / h->x_inc) * h->x_inc;
+	*xmax = ceil  ((project_info.e - (region_pos - grd_pos) * 360.0) / h->x_inc) * h->x_inc;
+	if (fabs (h->x_max - h->x_min - 360.0) > SMALL) {	/* Not a periodic grid */
+		if (*xmin < h->x_min) *xmin = h->x_min;
+		if (*xmax > h->x_max) *xmax = h->x_max;
+	}
+	else if ((*xmax - *xmin - 360.0) > SMALL) {		/* 360 degree grid but we want to use less */
+		if (*xmin < project_info.w) *xmin = project_info.w;
+		if (*xmax > project_info.e) *xmax = project_info.e;
+	}
+	else {	/* Possibly just a rotation of a 360 degree grid */
+		*xmin = project_info.w;
+		*xmax = project_info.e;
+	}
+		
+	if ((*xmax) <= (*xmin)) {	/* Either error or grid outside chosen -R */
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid longitudes appear to be outside the map region and will be skipped.\n", GMT_program);
 		return (1);
 	}
 	return (0);
