@@ -5,13 +5,13 @@ gmt2rgb \- Converting a grdfile pr Sun rasterfile to r/g/b grids
 \fBgmt2rgb\fP \fIinfile\fP \fB\-G\fP\fItemplate\fP [ \fB\-C\fP\fIcptfile\fP ] [ \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] ] 
 [ \fB\-L\fP\fIlayer\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP]  [ \fB\-V\fP ]
 .SH DESCRIPTION
-\fBgmt2rgb\fP reads one of two types of input files: (1) A Sun 8-, 24-, or 32-bit rasterfile and writes out the red, green, and
+\fBgmt2rgb\fP reads one of two types of input files: (1) A Sun 8-, 24-, or 32-bit rasterfile; we the write out the red, green, and
 blue components (0-255 range) to separate grid files.  Since the rasterfile header is limited you may use the \fB\-R, \-F, \-I\fP options
-to set a complete header record [Default is simply based on the number of rows and columns]. (2) A binary 2-D grdfile and converts the z-values
+to set a complete header record [Default is simply based on the number of rows and columns]. (2) A binary 2-D grdfile; we then convert the z-values
 to red, green, blue via the provided cpt file.  Optionally, only write out one of the r, g, b, layers.
 .TP
 \fIinfile\fP
-The (1) Sun rasterfile or (2) 2-D binary file to be converted.
+The (1) Sun rasterfile or (2) 2-D binary grdfile to be converted.
 .TP
 .B \-G
 Provide an output name template for the three output grids.  The template should be a regular gridfile name
@@ -25,7 +25,6 @@ name of the color palette table (for 2-D binary input grid only).
 .B \-L
 Output only the specified layer (r, g, or b).  [Default outputs all 3 layers].
 #include "explain_-R.txt"
-#include "explain_-R.txt"
 #include "explain_-V.txt"
 .SH EXAMPLES
 To use the color palette topo.cpt to create r, g, b component grids from hawaii_grv.grd file, try
@@ -37,9 +36,11 @@ gmt2rgb hawaii_grv.grd \fB\-C\fPtopo.cpt \fB\-G\fPhawaii_grv_%c.grd
 To output the red componets from the Sun raster radiation.ras file, try
 .br
 .sp
-gmt2rgb radiation.ras \fB\-L\fPf \fB\-G\fPcomp_%c.grd
+gmt2rgb radiation.ras \fB\-L\fPr \fB\-G\fPcomp_%c.grd
 .SH "SEE ALSO"
 .IR gmtdefaults (l),
 .IR gmt (l),
 .IR grdedit (l),
+.IR grdimage (l)
 .IR grdmath (l)
+.IR grdview (l)
