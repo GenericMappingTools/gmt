@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.68 2002-01-18 01:03:43 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.69 2002-01-22 01:00:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -475,8 +475,8 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t-f Special formatting of input/output columns (e.g., time or geographical)\n");
 			fprintf (stderr, "\t   Specify i(nput) or o(utput) [Default is both input and output]\n");
 			fprintf (stderr, "\t   Give one or more columns (or column ranges) separated by commas.\n");
-			fprintf (stderr, "\t   Append T (Calendar format), t (time relative to EPOCH),\n");
-			fprintf (stderr, "\t   x (longitude), or y (latitude) to each col/range item.\n");
+			fprintf (stderr, "\t   Append T (Calendar format), t (time relative to EPOCH), f (plain floating point\n");
+			fprintf (stderr, "\t   x (longitude), y (latitude), or g (geographic) to each col/range item.\n");
 			break;
 
 		case '.':	/* Trailer message */
@@ -698,7 +698,8 @@ void GMT_syntax (char option)
 			fprintf (stderr, "\t-f[i|o]<colinfo>, i for input, o for output [Default is both].\n");
 			fprintf (stderr, "\t   <colinfo> is <colno|colrange>u, where column numbers start at 0\n");
 			fprintf (stderr, "\t   a range is given as <first>-<last>, e.g., 2-5., u is type:\n");
-			fprintf (stderr, "\t   t: relative time, T: absolute time, x: longitude, y: latitude.\n");
+			fprintf (stderr, "\t   t: relative time, T: absolute time, f: floating point,\n");
+			fprintf (stderr, "\t   x: longitude, y: latitude, g: geographic coordinate.\n");
 			break;
 			
 		default:
@@ -790,8 +791,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				if (GMT_io.in_col_type[icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
 					got = GMT_scanf_arg (text, GMT_io.in_col_type[icol], p[i]);
 					error += GMT_verify_expectations (GMT_io.in_col_type[icol], got, text);
-					if (got & GMT_IS_GEO) col_type[icol] = GMT_IS_GEO;		/* We will accept the implicit override */
-					if (got & GMT_IS_FLOAT) col_type[icol] = GMT_IS_FLOAT;		/* We will accept the implicit override */
+					if (got & GMT_IS_GEO) col_type[icol] = GMT_IS_GEO;		/* We will accept the implicit override only for geographical data */
 					/* However, finding an abstime here will give error > 0 and an early exit below */
 				}
 				else {	/* Things are set, do or die */

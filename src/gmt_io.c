@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.40 2002-01-18 02:28:34 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.41 2002-01-22 01:00:41 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -439,6 +439,7 @@ void GMT_ascii_format_one (char *text, double x, int type)
 	}
 	switch (type) {
 		case GMT_IS_FLOAT:
+		case GMT_IS_UNKNOWN:
 			sprintf (text, gmtdefs.d_format, x);
 			break;
 		case GMT_IS_LON:
@@ -1705,6 +1706,9 @@ int GMT_decode_coltype (char *arg)
 			case 'g':	/* Geographical coordinates */
 				code = GMT_IS_GEO;
 				break;
+			case 'f':	/* Plain floating point coordinates */
+				code = GMT_IS_FLOAT;
+				break;
 			default:	/* No suffix, consider it an error */
 				fprintf (stderr, "%s: GMT Error: Malformed -i argument [%s]\n", GMT_program, arg);
 				return 1;
@@ -2101,6 +2105,11 @@ int	GMT_scanf (char *s, int expectation, double *val)
 		return (GMT_scanf_argtime (s, val));
 	}
 	
+	if (expectation & GMT_IS_UNKNOWN) {
+		/* True if we dont know but must try both geographic or float formats  */
+		return (GMT_scanf_geo (s, val));
+	}
+
 	fprintf (stderr, "GMT_LOGIC_BUG:  GMT_scanf() called with invalid expectation.\n");
 	return (GMT_IS_NAN);
 }
