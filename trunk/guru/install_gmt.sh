@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.12 2001-04-04 18:53:49 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.13 2001-04-05 00:53:17 pwessel Exp $
 #
 #	Automatic installation of GMT version 3.4
 #	Version for the Bourne shell (or compatible)
@@ -107,7 +107,7 @@ cat << EOF > gmt_install.ftp_gzsizes
 EOF
 cat << EOF >&2
 ====>>>> Interactive installation of GMT <<<<====
-		  $Revision: 1.12 $
+		  $Revision: 1.13 $
 		  
 We first need a questions and answer session to
 determine how and where GMT is to be installed.
@@ -638,12 +638,14 @@ install_this_gmt()
 		$expand $this | tar xvf -
 	fi
 }
-install_this()
+install_triangle()
 # Get? File
 {
 	get_this=$1
 	if [ -f $2.tar.$suffix ] && [ $get_this != "n" ]; then	# File exists and we have not said no
-		$expand $2.tar.$suffix | tar xvf -
+		cd GMT${VERSION}
+		$expand ../$2.tar.$suffix | tar xvf -
+		cd ..
 	fi
 }
 install_coast()
@@ -703,11 +705,11 @@ make_suppl()
 		if [ $pkg = "mex" ] || [ $pkg = "xgrid" ]; then # Save makefiles from extermination
 			\cp -f makefile makefile.copy
 		fi
-		$GMT_make spotless
+		$GMT_make spotless || exit
 		if [ $pkg = "mex" ] || [ $pkg = "xgrid" ]; then # Restore makefiles
 			\mv -f makefile.copy makefile
 		fi
-		$GMT_make all
+		$GMT_make all || exit
 		if [ $write_bin -eq 1 ]; then
 			$GMT_make install || ( echo "Problems during make install for $pgk - check manually later" )
 			$GMT_make clean
@@ -939,10 +941,10 @@ if [ $netcdf_install = "y" ]; then
 	fi
 	rm -f config.{cache,log,status}
 	./configure --prefix=$netcdf_path
-	$GMT_make
-	$GMT_make test
-	$GMT_make install
-	$GMT_make clean
+	$GMT_make || exit
+	$GMT_make test || exit
+	$GMT_make install || exit
+	$GMT_make clean || exit
 	if [ $os = "Windows_NT" ] || [ $os = "Rhapsody" ]; then	# Lord giveth, lord taketh away
 		rm -f ncgen/values.h
 	fi
@@ -1031,7 +1033,7 @@ install_this_gmt $GMT_get_pdf pdf
 install_this_gmt $GMT_get_man man
 install_this_gmt $GMT_get_web web
 install_this_gmt $GMT_get_tut tut
-install_this $GMT_get_triangle triangle
+install_triangle $GMT_get_triangle triangle
 
 #--------------------------------------------------------------------------------
 # Now do coastline archives
@@ -1185,7 +1187,7 @@ rm -f config.{cache,log,status}
 
 if [ -f src/makegmt.macros ]; then
 	echo '---> Clean out old executables, *.o, *.a, gmt_nan.h, and makegmt.macros' >&2
-	$GMT_make spotless
+	$GMT_make spotless || exit
 fi
 	
 ./configure --prefix=$GMT_def --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
@@ -1202,16 +1204,16 @@ cd src
 
 echo "---> Create gmt_nan.h" >&2
 
-$GMT_make init
+$GMT_make init || exit
 
 echo "---> Make all" >&2
 
-$GMT_make all || ( echo "Problems during make all - exit and examine manually >&2"; exit )
+$GMT_make all || exit
 
 if [ $write_bin -eq 1 ]; then
 	echo "---> Make install" >&2
 
-	$GMT_make install || ( echo "Problems during make install - exit and examine manually >&2"; exit )
+	$GMT_make install || exit
 else
 	echo "You do not have write permission to make $GMT_bin" >&2
 fi
@@ -1227,7 +1229,7 @@ cd ..
 
 if [ -d examples ]; then
 	if [ $GMT_run_examples = "y" ]; then
-		$GMT_make run-examples
+		$GMT_make run-examples || exit
 	fi
 fi
 
@@ -1259,7 +1261,7 @@ fi
 #--------------------------------------------------------------------------------
 
 if [ $write_share -eq 1 ]; then
-	$GMT_make install-data
+	$GMT_make install-data || exit
 fi
 
 #--------------------------------------------------------------------------------
@@ -1268,7 +1270,7 @@ fi
 
 if [ $write_man -eq 1 ]; then
 	if [ -d man/manl ]; then
-		$GMT_make install-man
+		$GMT_make install-man || exit
 		echo "All users must include $GMT_man in their MANPATH" >&2
 	else
 		echo "GMT Man pages not installed" >&2
@@ -1285,7 +1287,7 @@ fi
 
 if [ $write_web -eq 1 ]; then
 	if [ -d www ]; then
-		$GMT_make install-www
+		$GMT_make install-www || exit
 		echo "All users should add $GMT_web/gmt/gmt_services.html to their browser bookmarks" >&2
 	fi
 else
