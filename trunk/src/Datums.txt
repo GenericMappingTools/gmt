@@ -1,3 +1,12 @@
+# $Id: Datums.txt,v 1.2 2003-12-23 22:55:27 pwessel Exp $
+#
+# List of Datums available in GMT
+# The (Dx,Dy,Dz) values are in meters relative to WGS-84
+# To add more datumes, add new records, and run
+#
+# gurumake src/gmt_datums.h
+#
+#Datum-name	Ellipsoid	Dx	Dy	Dz	Region
 Adindan	Clarke-1880	-118	-14	218	Burkina Faso
 Adindan	Clarke-1880	-134	-2	210	Cameroon
 Adindan	Clarke-1880	-165	-11	206	Ethiopia
