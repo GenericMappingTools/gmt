@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.8 2001-04-27 20:46:05 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.9 2001-05-04 19:53:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -781,7 +781,7 @@ double GMT_ddmmss_to_degree (char *text)
 int GMT_loaddefaults (char *file)
 {
 	int error = 0;
-	char line[BUFSIZ], keyword[40], value[80];
+	char line[BUFSIZ], keyword[128], value[128];
 	FILE *fp = NULL;
 	
 	if ((fp = fopen (file, "r")) == NULL) return (-1);
