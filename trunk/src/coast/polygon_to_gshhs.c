@@ -1,20 +1,11 @@
 /*
- *	$Id: polygon_to_gshhs.c,v 1.2 2004-09-12 09:08:45 pwessel Exp $
+ *	$Id: polygon_to_gshhs.c,v 1.3 2004-09-13 22:10:16 pwessel Exp $
  * 
  *	read polygon.b format and write a GSHHS file to stdout
  */
 
 #include "wvs.h"
-
-struct GSHHS {
-	int id;
-	int n;
-	int level;			/* 1 land, 2 lake, 3 island_in_lake, etc */
-	int west, east, south, north;	/* in micro-degrees */
-	int area;			/* Area of polygon in 1/10 km^2 */
-	short int greenwich;		/* Greenwich is TRUE if Greenwich is crossed */
-	short int source;		/* 0 = CIA WDBII, 1 = WVS */
-};
+#include "gshhs/gshhs.h"
 
 main (int argc, char **argv)
 {
