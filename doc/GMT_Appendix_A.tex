@@ -1,5 +1,5 @@
 %-----------------------------------------
-%	$Id: GMT_Appendix_A.tex,v 1.10 2004-07-13 18:47:09 pwessel Exp $
+%	$Id: GMT_Appendix_A.tex,v 1.11 2004-08-19 21:37:22 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -75,13 +75,22 @@ and \progname{grdwrite}, which can be used in Matlab to read and write
 and was subsequently modified by Paul Wessel and Phil Sharfstein, UCSB.
 It is now maintained by Paul Wessel.
 
-\section{mgg: MGD77 extractor and plotting tools}
+\section{mgd77: MGD77 extractor and plotting tools}
+
+This package currently holds the programs \GMTprog{mgd77list} and
+\GMTprog{mgd77track} which can be
+used to extract data from or plot marine geophysical
+data files in the MGD-77 format\footnote{These data are available on CD-ROM from NGDC
+(www.ngdc.noaa.gov).}).  We expect his package eventually to replace the {\bf mgg} package.
+The package is maintained by Paul Wessel.
+
+\section{mgg: GMT-MGD77 extractor and plotting tools}
 
 This package holds the programs \GMTprog{binlegs}, \GMTprog{dat2gmt},
 \GMTprog{gmt2dat}, \GMTprog{gmtinfo}, \GMTprog{gmtlegs}, \GMTprog{gmtlist},
 \GMTprog{gmtpath}, \GMTprog{gmttrack}, and \GMTprog{mgd77togmt}, which can be
 used to maintain, access, extract data from, and plot marine geophysical
-data files (MGD-77\footnote{These data are available on CD-ROM from NGDC
+data files converted from the MGD-77 format to the .gmt format\footnote{These data are available on CD-ROM from NGDC
 (www.ngdc.noaa.gov).}). The package is maintained by the \GMT\ developers.
 
 \section{misc: posters, patterns, and digitizing}
