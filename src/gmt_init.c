@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.120 2004-04-20 18:29:36 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.121 2004-04-20 19:01:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -503,7 +503,7 @@ void GMT_pen_syntax (char option)
 	fprintf (stderr, "\t-%c[<width>[cipm]][,][<color>][,][<texture>[cipm]]\n", option);
 	fprintf (stderr, "\t  Separate the <width>, <color>, and <texture> arguments with commas\n");
 	fprintf (stderr, "\t  <width> >= 0.0, or a pen name: faint, default, or {thin, thick, fat}[er|est]\n");
-	fprintf (stderr, "\t  <color> = <red>/<green>/<blue> or <gray>, all in the 0-255 range,\n", option);
+	fprintf (stderr, "\t  <color> = <red>/<green>/<blue> or <gray>, all in the 0-255 range,\n");
 	fprintf (stderr, "\t  <c>/<m>/<y>/<k> in 0-100%% range, <hue>-<sat>-<val> in 0-360, 0-1, 0-1 range,\n");
 	fprintf (stderr, "\t  or black, white or [light|dark]{red, orange, yellow, green, cyan, blue, magenta, brown, gray}.\n");
 	fprintf (stderr, "\t  If no unit is appended, then dots-per-inch is assumed [current dpi = %d].\n", gmtdefs.dpi);
@@ -511,7 +511,7 @@ void GMT_pen_syntax (char option)
 	fprintf (stderr, "\t              (2) a for d(a)shed or o for d(o)tted lines, caled by pen width.\n");
 	fprintf (stderr, "\t              (3) <pattern>:<offset>; <pattern> holds lengths of lines and gaps separated\n");
 	fprintf (stderr, "\t                  by underscores and <offset> is a phase offset.\n");
-	fprintf (stderr, "\t  The default pen specification gives a solid black line [%p]\n", GMT_PENWIDTH);
+	fprintf (stderr, "\t  The default pen specification gives a solid black line [%gp]\n", GMT_PENWIDTH);
 }
 
 void GMT_rgb_syntax (char option)
