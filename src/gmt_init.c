@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.106 2004-04-02 01:00:09 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.107 2004-04-06 19:28:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -496,16 +496,21 @@ void GMT_fill_syntax (char option)
 	fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
 	fprintf (stderr, "\t-%cP|p<dpi>/<pattern>[:F<rgb>B<rgb>], dpi of pattern, pattern from 1-90 or a filename, optionally add fore/background colors (use - for transparency)\n", option);
 	fprintf (stderr, "\t-%c<color>, <color> = <red>/<green>/<blue> or <gray>, all in the 0-255 range,\n", option);
-	fprintf (stderr, "\t  <c>/<m>/<y>/<k> in 0-100%% range, or <hue>/<sat>/<val> in 0-360, 0-1, 0-1 range [when COLOR_MODEL = hsv].\n");
+	fprintf (stderr, "\t  <c>/<m>/<y>/<k> in 0-100%% range, <hue>/<sat>/<val> in 0-360, 0-1, 0-1 range [when COLOR_MODEL = hsv],\n");
+	fprintf (stderr, "\t  or black, white or [light|dark]{red, orange, yellow, green, cyan, blue, magenta, brown, gray}.\n");
 }
 
 void GMT_pen_syntax (char option)
 {
-	fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
+	fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Choose between two correct syntaxes:\n", GMT_program, option);
 	fprintf (stderr, "\t-%c[<width>][/<color>][to | ta | t<texture>:<offset>][cipm]\n", option);
 	fprintf (stderr, "\t  <width> >= 0, <color> = <red>/<green>/<blue> or <gray> all in the 0-255 range,\n");
 	fprintf (stderr, "\t  <c>/<m>/<y>/<k> in 0-100%% range, or <hue>/<sat>/<val> in 0-360, 0-1, 0-1 range [when COLOR_MODEL = hsv].\n");
 	fprintf (stderr, "\t  If no unit is appended, then dots-per-inch is assumed [current dpi = %d].\n", gmtdefs.dpi);
+	fprintf (stderr, "\t-%c:<width>:<color>:<texture>: (leave empty to obtain the default values [%gp:black::]\n", option, GMT_PENWIDTH);
+	fprintf (stderr, "\t   <width> = faint or {thin, thick, fat}[er|est].\n");
+	fprintf (stderr, "\t   <color> = black, white or [light|dark]{red, orange, yellow, green, cyan, blue, magenta, brown, gray}.\n");
+	fprintf (stderr, "\t   <texture> = pattern of dashes (-) and dots (.) which will be scaled by pen width.\n");
 }
 
 void GMT_rgb_syntax (char option)
