@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.85 2005-01-05 20:15:41 pwessel Exp $
+ *	$Id: pslib.c,v 1.86 2005-01-09 20:17:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3490,7 +3490,7 @@ indexed_image_t ps_makecolormap (unsigned char *buffer, int nx, int ny, int nbit
 				ps_free (image->buffer);
 				ps_free (image);
 				ps_free (colormap);
-				if (ps.verbose) fprintf (stderr, "pslib: Too many colors to make colormap.\n");
+				if (ps.verbose) fprintf (stderr, "pslib: Too many colors to make colormap - using 24-bit direct color instead.\n");
 				return (NULL);
 			}
 			image->buffer[i] = j;
