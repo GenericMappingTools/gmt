@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.5 2001-08-16 19:12:23 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.6 2001-08-16 19:17:54 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1052,8 +1052,8 @@ int GMT_decode_coltype (char *arg)
 {
 	/* Routine will decode the -f[i|o]<col>|<colrange>[t|T|g],... arguments */
 	
-	char copy[BUFSIZ], *p;
-	int i, k = 1, start, stop, c, code, *col;
+	char copy[BUFSIZ], *p, *c;
+	int i, k = 1, start, stop, ic, code, *col;
 	BOOLEAN both_i_and_o = FALSE;
 
 	if (arg[0] == 'i')	/* Apply to input columns only */
@@ -1074,8 +1074,8 @@ int GMT_decode_coltype (char *arg)
 		else				/* Just a single column, e.g., 3t */
 			start = stop = atoi (p);
 
-		c = p[strlen(p)-1];	/* Last char in p is the potential code T, t, or g */
-		switch (c) {
+		ic = (int) p[strlen(p)-1];	/* Last char in p is the potential code T, t, or g */
+		switch (ic) {
 			case 'T':	/* Absolute calendar time */
 				code = GMT_IS_ABSTIME;
 				break;
