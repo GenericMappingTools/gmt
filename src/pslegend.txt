@@ -5,7 +5,7 @@
 pslegend \- To plot a map legend
 .SH SYNOPSIS
 \fBpslegend\fP \fItextfile\fP \fB\-D\fP[\fBx\fP]\fIlon/lat/width/height/just\fP \fB\-J\fP\fIparameters\fP 
-\fB\-R\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-C\fP\fIdx/dy\fP ] [ \fB\-F\fIpen\fP ] 
+\fB\-R\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-C\fP\fIdx/dy\fP ] [ \fB\-F\fP ] 
 [ \fB\-G\fP\fIfill\fP ] [ \fB\-K\fP ] [ \fB\-L\fP\fIspacing\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
 [ \fB\-S\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ]
 .SH DESCRIPTION
@@ -75,7 +75,7 @@ No space between the option flag and the associated arguments.
 Sets the clearance between the legend frame and the internal items [CLEARENCE_SI (or CLEARENCE_US)].
 .TP
 .B \-F
-Draws a border around the legend using \fIpen\fP.
+Draws a border around the legend using \fIFRAME_PEN\fP.
 .TP
 .B \-G
 #include "explain_-G.txt"

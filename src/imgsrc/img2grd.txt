@@ -3,7 +3,7 @@
 img2grd \- Extract region of img in Mercator or geographic form 
 .SH SYNOPSIS
 \fBimg2grd\fP \fIimgfile\fP \fB\-G\fP\fIgrdfile\fP \fB\-R\fP\fIwest/east/south/north\fP 
-\fB\-T\fP\fItype\fP  [ \fB\-L\fP ] [ \fB\-M\fP ] [ \fB\-N\fP\fInavg\fP ] [ \fB\-S\fP\fIscale\fP ] [ \fB\-V\fP ] 
+\fB\-T\fP\fItype\fP  [ \fB\-E\fP ] [ \fB\-L\fP ] [ \fB\-M\fP ] [ \fB\-N\fP\fInavg\fP ] [ \fB\-S\fP\fIscale\fP ] [ \fB\-V\fP ] 
 [ \fB\-m\fP\fIminutes\fP ] [ \fB\-x\fP\fImaxlon\fP ] [ \fB\-y\fP\fIminlat/maxlat\fP ]  
 .SH DESCRIPTION
 \fBimg2grd\fP is a front-end to \fBimg2mercgrd\fP which reads an img format file and creates a grdfile.
@@ -32,6 +32,14 @@ later (current) versions of the img files) so that one may produce a grd file as
 constrained points and NaN at interpolated points; \fB\-T\fP\fI3\fP gets 1 at constrained 
 points and 0 at interpolated points. 
 .SH OPTIONS
+.TP
+.B \-E
+Can be used when \fB\-M\fP is not set to force the final grid to have the exact same region
+as requested with \fB\-R\fP.  By default, the final region is a direct projection of the
+original Mercator region and will typically extend slightly beyond the requested latitude
+range, and futhermore the grid increment in latitude does not match the longitude increment.
+However, the extra resampling introduces small interpolation errors and should only
+be used if the output grid must match the requested region and have x_inc = y_inc.
 .TP
 .B \-L
 With no other arguments, list all *.img files found in the directory pointed to by
