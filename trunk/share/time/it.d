@@ -1,28 +1,28 @@
 # GMT Time language file for IT (italian) mode [IT]
 #
-#	$Id: it.d,v 1.1 2002-02-23 00:33:52 pwessel Exp $
+#	$Id: it.d,v 1.2 2002-02-25 01:44:40 pwessel Exp $
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
-M	1	Gennaio		Gen	G
-M	2	Febraio		Feb	F
-M	3	Marzo		Mar	M
-M	4	Aprile		Apr	A
-M	5	Maggio		Mag	M
-M	6	Giugno		Giu	G
-M	7	Luglio		Lug	L
-M	8	Agosto		Ago	A
-M	9	Settembre	Set	S
-M	10	Ottobre		Ott	O
-M	11	Novembre	Nov	N
-M	12	Dicembre	Dic	D
+M	1	gennaio		gen	g
+M	2	febraio		feb	f
+M	3	marzo		mar	m
+M	4	aprile		apr	a
+M	5	maggio		mag	m
+M	6	giugno		giu	g
+M	7	luglio		lug	l
+M	8	agosto		ago	a
+M	9	settembre	set	s
+M	10	ottobre		ott	o
+M	11	novembre	nov	n
+M	12	dicembre	dic	d
 # Name and abbreviations for the word Week in this language
-U	1	Settimana	Sett	S
+U	1	settimana	sett	s
 # Weeknames, with 3-char and 1-char abbreviations
 # (List starts on Sunday regardless of TIME_WEEK_START)
-W	1	Domenica	Dom	D
-W	2	Lunedì		Lun	L
-W	3	Martedì		Mar	M
-W	4	Mrcoledì	Mer	M
-W	5	Giovedì		Gio	G
-W	6	Venerdì		Ven	V
-W	7	Sabato		Sab	S
+W	1	domenica	dom	d
+W	2	lunedì		lun	l
+W	3	martedì		mar	m
+W	4	mercoledì	mer	m
+W	5	giovedì		gio	g
+W	6	venerdì		ven	v
+W	7	sabato		sab	s
