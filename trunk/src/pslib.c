@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.95 2005-03-02 17:47:13 remko Exp $
+ *	$Id: pslib.c,v 1.96 2005-03-02 22:35:47 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4360,7 +4360,6 @@ void ps_rgb_to_mono (unsigned char *buffer, struct imageinfo *h)
 		h->depth = 8;
 	}
 }
-	
 
 int ps_bitreduce (unsigned char *buffer, int nx, int ny, int ncolors)
 {
