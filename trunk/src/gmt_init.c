@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.57 2001-12-21 03:50:37 ben Exp $
+ *	$Id: gmt_init.c,v 1.58 2002-01-04 20:29:48 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -100,8 +100,8 @@ struct GMT_BACKWARD {	/* Used to ensure backwards compatibility */
 } GMT_backward;
 
 BOOLEAN GMT_force_resize = FALSE, GMT_anot_special = FALSE;
-int save_anot2_size, save_label_size, save_header_size;
-double save_anot_offset, save_anot2_offset, save_label_offset, save_header_offset, save_tick_length, save_frame_width;
+int save_anot_size2, save_label_size, save_header_size;
+double save_anot_offset, save_anot_offset2, save_label_offset, save_header_offset, save_tick_length, save_frame_width;
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 	
@@ -1017,7 +1017,7 @@ void GMT_backwards_compatibility () {
 		gmtdefs.label_font_size = irint (24.0 * gmtdefs.anot_font_size / 14.0);
 		gmtdefs.header_font_size = irint (36.0 * gmtdefs.anot_font_size / 14.0);
 		gmtdefs.anot_offset = gmtdefs.tick_length = 0.075 * gmtdefs.anot_font_size / 14.0;
-		gmtdefs.anot2_offset = 0.075 * gmtdefs.anot_font2_size / 14.0;
+		gmtdefs.anot_offset2 = 0.075 * gmtdefs.anot_font2_size / 14.0;
 		gmtdefs.label_offset = 1.5 * fabs (gmtdefs.anot_offset);
 		gmtdefs.header_offset = 2.5 * fabs (gmtdefs.anot_offset);
 		gmtdefs.frame_width = 0.05 * gmtdefs.anot_font_size / 14.0;
@@ -1545,16 +1545,16 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case 75:
 			if (value[0] == '\0' || !strcmp (lower_value, "tab"))	/* DEFAULT */
-				strncpy (gmtdefs.field_delimeter, "\t", 8);
+				strncpy (gmtdefs.field_delimiter, "\t", 8);
 			else if (!strcmp (lower_value, "space"))
-				strncpy (gmtdefs.field_delimeter, " ", 8);
+				strncpy (gmtdefs.field_delimiter, " ", 8);
 			else if (!strcmp (lower_value, "comma"))
-				strncpy (gmtdefs.field_delimeter, ",", 8);
+				strncpy (gmtdefs.field_delimiter, ",", 8);
 			else if (!strcmp (lower_value, "none"))
-				gmtdefs.field_delimeter[0] = 0;
+				gmtdefs.field_delimiter[0] = 0;
 			else
-				strncpy (gmtdefs.field_delimeter, value, 8);
-			gmtdefs.field_delimeter[7] = 0;	/* Just a precaution */
+				strncpy (gmtdefs.field_delimiter, value, 8);
+			gmtdefs.field_delimiter[7] = 0;	/* Just a precaution */
 			break;
 		case 76:
 			if (value[0] == '\0' || !strcmp (lower_value, "ring"))	/* DEFAULT */
@@ -1582,13 +1582,13 @@ int GMT_setparameter (char *keyword, char *value)
 		case 78:
 			ival = atoi (value);
 			if (ival > 0)
-				save_anot2_size = gmtdefs.anot_font2_size = ival;
+				save_anot_size2 = gmtdefs.anot_font2_size = ival;
 			else
 				error = TRUE;
 			break;
 
 		case 79:
-			save_anot2_offset = gmtdefs.anot2_offset = GMT_convert_units (value, GMT_INCH);
+			save_anot_offset2 = gmtdefs.anot_offset2 = GMT_convert_units (value, GMT_INCH);
 			break;
 		case 80:
 			save_label_offset = gmtdefs.label_offset = GMT_convert_units (value, GMT_INCH);
@@ -1662,9 +1662,9 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "ANOT_FONT		= %s\n", GMT_font_name[gmtdefs.anot_font]);
 	(GMT_force_resize && !GMT_anot_special) ? fprintf (fp, "ANOT_FONT_SIZE		= +%dp\n", gmtdefs.anot_font_size) :  fprintf (fp, "ANOT_FONT_SIZE		= %dp\n", gmtdefs.anot_font_size);
 	fprintf (fp, "ANOT_FONT2		= %s\n", GMT_font_name[gmtdefs.anot_font2]);
-	(GMT_force_resize) ? fprintf (fp, "ANOT_FONT2_SIZE		= %dp\n", save_anot2_size) : fprintf (fp, "ANOT_FONT2_SIZE		= %dp\n", gmtdefs.anot_font2_size);
+	(GMT_force_resize) ? fprintf (fp, "ANOT_FONT2_SIZE		= %dp\n", save_anot_size2) : fprintf (fp, "ANOT_FONT2_SIZE		= %dp\n", gmtdefs.anot_font2_size);
 	(GMT_force_resize) ? fprintf (fp, "ANOT_OFFSET		= %lg%c\n", save_anot_offset * s, u) : fprintf (fp, "ANOT_OFFSET		= %lg%c\n", gmtdefs.anot_offset * s, u);
-	(GMT_force_resize) ? fprintf (fp, "ANOT2_OFFSET		= %lg%c\n", save_anot2_offset * s, u) : fprintf (fp, "ANOT2_OFFSET		= %lg%c\n", gmtdefs.anot2_offset * s, u);
+	(GMT_force_resize) ? fprintf (fp, "ANOT_OFFSET2		= %lg%c\n", save_anot_offset2 * s, u) : fprintf (fp, "ANOT_OFFSET2		= %lg%c\n", gmtdefs.anot_offset2 * s, u);
 	fprintf (fp, "DEGREE_SYMBOL		= %s\n", GMT_degree_choice[gmtdefs.degree_symbol - gmt_none]);
 	fprintf (fp, "HEADER_FONT		= %s\n", GMT_font_name[gmtdefs.header_font]);
 	(GMT_force_resize) ? fprintf (fp, "HEADER_FONT_SIZE	= %dp\n", save_header_size) : fprintf (fp, "HEADER_FONT_SIZE	= %dp\n", gmtdefs.header_font_size);
@@ -1718,16 +1718,16 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "GLOBAL_Y_SCALE		= %lg\n", gmtdefs.global_y_scale);
 	fprintf (fp, "#-------- I/O Format Parameters -------------\n", GMT_VERSION);
 	fprintf (fp, "D_FORMAT		= %s\n", gmtdefs.d_format);
-	if (!strcmp (gmtdefs.field_delimeter, "\t"))
-		fprintf (fp, "FIELD_DELIMETER		= tab\n");
-	else if (!strcmp (gmtdefs.field_delimeter, " "))
-		fprintf (fp, "FIELD_DELIMETER		= space\n");
-	else if (!strcmp (gmtdefs.field_delimeter, ","))
-		fprintf (fp, "FIELD_DELIMETER		= comma\n");
-	else if (gmtdefs.field_delimeter[0] == 0)
-		fprintf (fp, "FIELD_DELIMETER		= none\n");
+	if (!strcmp (gmtdefs.field_delimiter, "\t"))
+		fprintf (fp, "FIELD_DELIMITER		= tab\n");
+	else if (!strcmp (gmtdefs.field_delimiter, " "))
+		fprintf (fp, "FIELD_DELIMITER		= space\n");
+	else if (!strcmp (gmtdefs.field_delimiter, ","))
+		fprintf (fp, "FIELD_DELIMITER		= comma\n");
+	else if (gmtdefs.field_delimiter[0] == 0)
+		fprintf (fp, "FIELD_DELIMITER		= none\n");
 	else
-		fprintf (fp, "FIELD_DELIMETER		= %s\n", gmtdefs.field_delimeter);
+		fprintf (fp, "FIELD_DELIMITER		= %s\n", gmtdefs.field_delimiter);
 	(gmtdefs.gridfile_shorthand) ? fprintf (fp, "GRIDFILE_SHORTHAND	= TRUE\n") : fprintf (fp, "GRIDFILE_SHORTHAND	= FALSE\n");
 	fprintf (fp, "INPUT_CLOCK_FORMAT	= %s\n", gmtdefs.input_clock_format);
 	fprintf (fp, "INPUT_DATE_FORMAT	= %s\n", gmtdefs.input_date_format);

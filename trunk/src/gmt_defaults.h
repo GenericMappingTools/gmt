@@ -5,7 +5,7 @@
 	0,			/* ANOT_FONT2 */
 	16,			/* ANOT_FONT2_SIZE */
 	0.075,			/* ANOT_OFFSET */
-	0.075,			/* ANOT2_OFFSET */
+	0.075,			/* ANOT_OFFSET2 */
 	"WESN",			/* BASEMAP_AXES */
 	{0, 0, 0},		/* BASEMAP_FRAME_RGB */
 	0,			/* BASEMAP_TYPE */
@@ -101,7 +101,7 @@
 	0,			/* TIME_WEEK_START */
 	"us",			/* TIME_LANGUAGE */
 	1950,			/* Y2K_OFFSET_YEAR */
-	"\t",			/* FIELD_DELIMETER */
+	"\t",			/* FIELD_DELIMITER */
 	gmt_ring,		/* DEGREE_SYMBOL */
 	{ "Standard", 		/* CHAR_ENCODING */
 	  { 32, 32, 32, 32, 32 } } /* PostScript codes for degree, ring, colon, singlequote, and doublequote [Initialized to space] */

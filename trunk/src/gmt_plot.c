@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.53 2002-01-04 05:22:51 ben Exp $
+ *	$Id: gmt_plot.c,v 1.54 2002-01-04 20:29:48 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -613,7 +613,7 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 	(below) ? ps_command ("/PSL_sign -1 def") :  ps_command ("/PSL_sign 1 def");
 	ps_set_length ("PSL_TL1", gmtdefs.tick_length);
 	ps_set_length ("PSL_AO0", gmtdefs.anot_offset);
-	(A->item[GMT_ANOT_LOWER].active || A->item[GMT_INTV_LOWER].active) ? ps_set_length ("PSL_AO1", gmtdefs.anot2_offset) : ps_set_length ("PSL_AO1", 0.0);
+	(A->item[GMT_ANOT_LOWER].active || A->item[GMT_INTV_LOWER].active) ? ps_set_length ("PSL_AO1", gmtdefs.anot_offset2) : ps_set_length ("PSL_AO1", 0.0);
 	ps_set_length ("PSL_LO", gmtdefs.label_offset);
 	ps_set_length ("PSL_HO", gmtdefs.header_offset);
 	ps_set_length ("PSL_AH0", 0.0);
