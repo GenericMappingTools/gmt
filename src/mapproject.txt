@@ -141,3 +141,5 @@ tens to hundreds of meters.
 .SH REFERENCES
 Snyder, J. P., 1987, Map Projections \- A Working Manual, U.S. Geological Survey Prof. Paper 1395.
 .br
+Vanicek, P. and Krakiwsky, E, 1982, Geodesy \- The Concepts, North-Holland Publ., ISBN: 0 444 86149 1.
+.br
