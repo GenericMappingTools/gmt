@@ -4,7 +4,8 @@ grdmask \- Create mask grdfiles from xy paths.
 .SH SYNOPSIS
 \fBgrdmask\fP \fIpathfiles\fP \fB\-G\fP\fImask_grd_file\fP] \fB\-I\fP\fIxinc\fP[\fBm|c\fP][/\fIyinc\fP[\fBm|c\fP]] 
 \fB\-R\fP\fIwest/east/south/north\fP[\fIr\fP] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
-[ \fB\-N\fP\fIout/edge/in\fP ] [ \fB\-S\fP[\fIradius\fP][\fBk\fP] ] [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+[ \fB\-N\fP\fIout/edge/in\fP ] [ \fB\-S\fP[\fIradius\fP][\fBk\fP] ] [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
+[ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBgrdmask\fP can operate in 2 different modes. 1. It reads one or more xy-files that each define a closed polygon.
 The nodes defined by the specified region and lattice spacing will be set equal to one of three possible values
@@ -48,6 +49,7 @@ degrees and \fIradius\fP in km).
 #include "explain_-i.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
+#include "explain_-f.txt"
 .SH EXAMPLES
 To set all nodes inside and on the polygons coastline_*.xy to 0, and outside points
 to 1, do

@@ -6,7 +6,7 @@ psclip \- To set up polygonal clip paths
 [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-E\fP\fIaz/el\fP ] [ \fB\-K\fP ] [ \fB\-N\fP ] 
 [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
 [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] 
-[ \fB\-Z\fP\fIzlevel\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+[ \fB\-Z\fP\fIzlevel\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .br
 .sp
 \fBpsclip\fP \fB\-C\fP [ \fB\-K\fP ] [ \fB\-O\fP ]
@@ -55,6 +55,7 @@ For 3-D projections:  Sets the z-level of the polygons [0].
 #include "explain_-i.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
+#include "explain_-f.txt"
 .SH EXAMPLES
 To make an overlay \fIPostScript\fP file that will set up a complex clip area to which
 subsequent plotting will be confined to, try:

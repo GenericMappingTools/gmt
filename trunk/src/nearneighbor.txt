@@ -4,7 +4,8 @@ nearneighbor \- A "Nearest neighbor" gridding algorithm
 .SH SYNOPSIS
 \fBnearneighbor\fP [ \fIxyzfile(s)\fP ] \fB\-G\fP\fIout_grdfile\fP \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]]  
 \fB\-N\fP\fIsectors\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] \fB\-S\fP\fIsearch_radius\fP[\fBm|c|k|K\fP] 
-[ \fB\-E\fP\fIempty\fP ] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP[\fIflag\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+[ \fB\-E\fP\fIempty\fP ] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP[\fIflag\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP ] [ \fB\-:\fP ] 
+[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBnearneighbor\fP reads arbitrarily located (x,y,z[,w]) triples [quadruplets]
 from standard input [or \fIxyzfile(s)\fP] and uses a nearest neighbor algorithm to assign 
@@ -57,6 +58,7 @@ with the geometrical weight factor to determine the actual weights used in the c
 #include "explain_-i.txt"
 #include "explain_-n.txt"
 [Default is 3 (or 4 if \fB\-W\fP is set) columns].
+#include "explain_-f.txt"
 .SH EXAMPLES
 .sp
 To create a gridded data set from the file seaMARCII_bathy.lon_lat_z using a 0.5 min grid,

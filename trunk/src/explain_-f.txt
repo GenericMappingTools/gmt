@@ -1,0 +1,7 @@
+.TP
+.B \-f
+Special formatting of input and output columns (time or geographical data)
+Specify \fBi\fP(nput) or \fBo\fP(utput) [Default is both input and output].
+Give one or more columns (or column ranges) separated by commas.
+Append \fBT\fP (Absolute calendar time), \fBt\fP (time relative to chosen TIME_EPOCH),
+\fBx\fP (longitude), or \fBy\fP (latitude) to each column or column range item.

@@ -7,7 +7,7 @@ gmtselect \- Select data subsets based on multiple spatial criteria
 [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP[\fBcflrs\fP] ] [ \fB\-J\fP\fIparameters\fP ] 
 [ \fB\-L\fP[\fIdist/linefile\fP] ] [ \fB\-M\fP[\fIflag\fP] ] 
 [ \fB\-N\fP\fImaskvalues\fP[\fBo\fP] ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] 
-[ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
+[ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 [ \fB\-bo\fP[\fBs\fP] ]
 .SH DESCRIPTION
 \fBgmtselect\fP is a filter that reads (longitude, latitude) positions from the first 2 columns of \fIinfiles\fP [or standard input] and
@@ -84,6 +84,7 @@ If no map projection is supplied we implicitly set \fB\-Jx\fP1.
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-o.txt"
+#include "explain_-f.txt"
 .SH EXAMPLES
 To extract the subset of data set that is within 300 km of any of the points in pts.d but more than
 100 km away from the lines in lines.d, try

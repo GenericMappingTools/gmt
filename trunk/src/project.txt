@@ -6,7 +6,7 @@ project \- project data along a line or great circle, generate a profile track, 
 [ \fB\-Dd|g\fP ] [ \fB\-E\fP\fIbx/by\fP ] [ \fB\-G\fP\fIdist\fP ] [ \fB\-H\fP[\fInrec\fP] ] 
 [ \fB\-L\fP[\fBw\fP][\fIl_min/l_max\fP] ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP ] [ \fB\-Q\fP ] [ \fB\-S\fP ] 
 [ \fB\-T\fP\fIpx/py\fP ] [ \fB\-V\fP ] [ \fB\-W\fP\fIw_min/w_max\fP ] [ \fB\-:\fP ] 
-[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBproject\fP reads arbitrary (\fIx, y\fP[,\fI z\fP]) data from standard input 
 [or \fIinfile\fP ] and writes to standard output any combination of 
@@ -119,6 +119,7 @@ Width controls.  Project only those points whose \fIq\fP coordinate is within \f
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-o.txt"
+#include "explain_-f.txt"
 .SH EXAMPLES
 To generate points every 10km along a great circle from 10N,50W to 30N,10W, try:
 .sp

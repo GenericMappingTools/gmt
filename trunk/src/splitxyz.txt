@@ -5,7 +5,7 @@ splitxyz \- filter to divide (x,y,z[,distance,heading]) data into (x,y,z) track 
 \fBsplitxyz\fP [ \fIxyz[dh]file\fP ] \fB\-C\fP\fIcourse_change\fP [ \fB\-A\fP\fIazimuth\fP/\fItolerance\fP ] 
 [ \fB\-D\fP\fIminimum_distance\fP ] [ \fB\-F\fP\fIxy_filter\fP/\fIz_filter\fP ] [ \fB\-G\fP\fIgap_distance\fP ] 
 [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-M\fP ] [ \fB\-N\fP\fInamestem\fP ] [ \fB\-S\fP ] [ \fB\-V\fP ] [ \fB\-Z\fP ] [ \fB\-:\fP ] 
-[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBsplitxyz\fP reads a series of (x,y[,z]) records [or optionally (x,y,z,d,h); see \fB\-S\fP 
 option] from standard input [or \fIxyz[dh]file\fP] and splits this into separate lists 
@@ -77,6 +77,7 @@ Data have x,y only (no z-column).
 #include "explain_-n.txt"
 [Default is 2, 3, or 5 input columns as set by \fB\-S, \-Z\fP].
 #include "explain_-o.txt"
+#include "explain_-f.txt"
 .SH EXAMPLES
 .sp
 Suppose you want to make a wiggle plot of magnetic anomalies on segments oriented 

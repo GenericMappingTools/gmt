@@ -10,7 +10,7 @@ pswiggle \- Plot anomaly along track on a map
 [ \fB\-I\fP\fIfix_az\fP ] [ \fB\-K\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
 [ \fB\-S\fP[\fBx\fP]\fIlon0/lat0/length\fP[\fIunits\fP] ] [ \fB\-T\fP\fItrack_pen\fP ] 
 [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-W\fP\fIwiggle_pen\fP ] [ \fB\-X\fP\fIx-shift\fP ] 
-[ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+[ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBpswiggle\fP reads (x,y,z) triplets from files [or standard input] and plots z as a function of
 distance along track.  This means that two consecutive (x,y) points define the local distance axis,
@@ -82,6 +82,7 @@ Draw wiggle outline  [Default is no outline].  Append pen attributes to use
 #include "explain_-i.txt"
 #include "explain_-n.txt"
 [Default is 3 input columns].
+#include "explain_-f.txt"
 .SH EXAMPLES
 To plot the magnetic anomaly stored in the file track.xym along track @ 1000 nTesla/cm (after removing a mean value of 32000 Tesla),
 using a LEN-cm-wide Polar Stereographic map ticked

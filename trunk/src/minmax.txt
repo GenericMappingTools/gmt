@@ -3,7 +3,7 @@
 minmax \- Find extreme values in data tables
 .SH SYNOPSIS
 \fBminmax\fP [ \fIfiles\fP] [ \fB\-C\fP ] [ \fB\-D\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIdx\fP[/\fIdy\fP] ] [ \fB\-L\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
-[ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+[ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBminmax\fP reads its standard input [or from files] and finds the
 extreme values in each of the columns.  It recognizes NaNs and
@@ -36,6 +36,7 @@ Only works when \fB\-I\fP is selected.
 #include "explain_-i.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
+#include "explain_-f.txt"
 .SH EXAMPLES
 To find the extreme values in the file ship_gravity.xygd, try
 .br

@@ -3,7 +3,7 @@
 gmtconvert \- Convert between ASCII and binary 1-D tables
 .SH SYNOPSIS
 \fBgmtconvert\fP [ \fIinputfiles\fP] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-M\fP[\fIflag\fP] ] 
-[ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP]\fIn\fP ] [ \fB\-bo\fP[\fBs\fP] ]
+[ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP]\fIn\fP ] [ \fB\-bo\fP[\fBs\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBgmtconvert\fP reads its standard input [or inputfiles] and writes out
 the information to standard output.  Its main purpose is to convert between
@@ -20,6 +20,7 @@ ASCII (or binary, see \fB\-bi\fP) file(s) holding a number of data columns.
 #include "explain_-i.txt"
 #include "explain_-n.txt"
 #include "explain_-o.txt"
+#include "explain_-f.txt"
 .SH EXAMPLES
 To convert the binary file test.b (single precision) with 4 columns to ASCII, try
 .br
