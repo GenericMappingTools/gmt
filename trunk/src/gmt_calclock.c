@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.2 2001-08-14 15:57:24 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.3 2001-08-15 15:49:09 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -19,7 +19,14 @@
 	between [calendar, clock] and time.
 	
 	Calendar conversions are inspired partly by
-	Dershowitz and Reingold.
+	Dershowitz and Reingold.  We use "rata die"
+	integer day numbers with day 1 set at
+	proleptic Gregorian Mon Jan  1 00:00:00 0001.
+	Proleptic means we assume that modern calendar
+	can be extrapolated forward and backward; a
+	year zero is used, and Gregory's reforms after
+	Oct 1572 (?) are extrapolated backward.  Note
+	that this is not historical.
 	
 	W H F Smith, April 2000
 
