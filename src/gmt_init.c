@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.34 2001-09-13 17:32:37 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.35 2001-09-13 17:47:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2665,8 +2665,10 @@ void GMT_decode_tinfo (char *in, struct TIME_AXIS *A) {
 			unit = s[0];
 			s++;
 		}
-		else							/* Default unit implied */
+		else if (A->type == TIME)				/* Default time system unit implied */
 			unit = GMT_time_system[gmtdefs.time_system].unit;
+		else
+			unit = 0;	/* Not specified */
 			
 		/* else s is either 0 or points to the next segment */
 		
@@ -2699,10 +2701,12 @@ void GMT_set_titem (struct TIME_AXIS *A, double val, char flag, char unit, char 
 	struct TIME_AXIS_ITEM *I[2];
 	char item_flag[6] = {'a', 'A', 'i', 'I', 'f', 'g'};
 	
-	if (GMT_verify_time_step (irint (val), unit)) exit (EXIT_FAILURE);
-	if ((fmod (val, 1.0) > GMT_CONV_LIMIT)) {
-		fprintf (stderr, "%s: ERROR: Time step interval (%lg) must be an integer\n", GMT_program, val);
-		exit (EXIT_FAILURE);
+	if (A->type == TIME) {	/* Strict check on time intervals */
+		if (GMT_verify_time_step (irint (val), unit)) exit (EXIT_FAILURE);
+		if ((fmod (val, 1.0) > GMT_CONV_LIMIT)) {
+			fprintf (stderr, "%s: ERROR: Time step interval (%lg) must be an integer\n", GMT_program, val);
+			exit (EXIT_FAILURE);
+		}
 	}
 	
 	switch (flag) {
