@@ -49,3 +49,4 @@ Windows user who don't want to compile GMT can also get:
 
 GMT_exe.zip		Zip file with precompiled executables for win32.
 GMT_suppl_exe.zip	Same for supplemental programs
+netcdf-3.5.0.win32bin.zip  Precompiled library for Windows
