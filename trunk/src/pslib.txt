@@ -1,6 +1,6 @@
 .TH pslib l DATE
 .SH NAME
-pslib v3.2 \- A \fIPostScript\fP based plotting library
+pslib 4.0 \- A \fIPostScript\fP based plotting library
 .SH DESCRIPTION
 .LP
 \fBpslib\fP\fR was created to make the generation of \fIPostScript\fR page
@@ -176,6 +176,13 @@ void \fBps_ellipse\fR (\fIxcenter, ycenter, angle, major, minor, rgb, outline\fP
 .RS 10
 Plots a ellipse with its major semiaxis rotated by \fIangle\fP degrees and fills it
 with the specified color.  If \fIoutline\fP == 1, the outline will be drawn using current pen-width and -pattern.
+.RE
+.IP
+void \fBps_encode_font\fR (\fIfont_no\fP)
+.br
+\fBint\fR \fIfont_no\fP;
+.RS 10
+Will reencode this font using the current encoding vector if it is not StandardEncoding.
 .RE
 .IP
 void \fBps_flush\fR ()
@@ -354,7 +361,8 @@ Initializes the plotting.  If \fIplotfile\fP == NULL (or ""), then output is sen
 else output is sent to \fIplotfile\fP.  \fIoverlay\fP should be 1 only if you plan to append
 it to some existing \fIPostScript\fP\fR file.  \fImode\fP contains three flags in the three lowest
 bits.  The lowest bit controls the plot orientation and can be 0 (Landscape) or 1 (Portrait).  The
-next bit, if set to 1, will re-encode the fonts to include European accented characters.  The third
+next bit, if set to 1, will re-encode the fonts to include European accented characters using the
+now-obsolete GMT3.4 encoding.  To use the ISOLatin1 encoding set the 5th bit to 1.  The third
 bit controls the format used to write PostScript images: 0 means binary, 1 means hexadecimal.  Most
 printers needs the latter while some can handle binary which are 50% smaller and therefore execute
 faster.
@@ -608,7 +616,7 @@ and @:\fIsize\fP: changes the font size (@:: resets it).
 .RE
 .SH AUTHOR
 Paul Wessel, School of Ocean and Earth Science and Technology, 1680 East-West Road, Honolulu,
-Hawaii 96822, (808) 956-4778, Internet address: wessel@soest.hawaii.edu.
+Hawaii 96822, (808) 956-4778, Internet address: pwessel@hawaii.edu.
 .SH BUGS
 Caveat Emptor:  The author is \fBnot\fP responsible for any disasters, suicide attempts, or ulcers
 caused by correct \fBor\fP incorrect use of \fBpslib\fR.  If you find bugs, please report
