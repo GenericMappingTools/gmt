@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.163 2004-12-01 01:45:12 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.164 2004-12-19 02:12:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1015,7 +1015,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 		case 'V':
 			if (GMT_processed_option[10]) fprintf (stderr, "%s: Warning: Option -V given more than once\n", GMT_program);
 			GMT_processed_option[10] = TRUE;
-			gmtdefs.verbose = TRUE;
+			gmtdefs.verbose = (item[2] == 'l') ? 2 : TRUE;	/* -Vl is long verbose */
 			gmtdefs.page_orientation |= 16384;
 			break;
 		case 'X':
