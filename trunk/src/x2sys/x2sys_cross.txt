@@ -5,8 +5,8 @@
 \fBx2sys_cross\fP \fIfile(s)\fP OR \fB\-L\fP\fIflist\fP [ \fB\-A\fP\fIgap\fP ] 
 [ \fB\-Cc|f|g\fP ] [ \fB\-D\fP\fIdeffile\fP ] [ \fB\-F\fP\fIflags\fP ] 
 [ \fB\-Gd|g\fP ] [ \fB\-Il|a|c\fP ] [ \fB\-J\fP\fIparams\fP ] [\fB\-K\fP\fIcombi.lis\fP] [ \fB\-M\fP[\fIflag\fP] 
-[ \fB\-N\fP\fIwindow\fP ] [ \fB\-O\fP ] [ \fB\-Sl|u\fP\fIspeed\fP ] 
-[ \fB\-T\fP\fITAG\fP ] [ \fB\-W\fP\fIsize\fP ] [ \fB\-V\fP ] [ \fB\-Xe|i\fP ] 
+[ \fB\-N\fP\fIwindow\fP ] [ \fB\-O\fP ] [ \fB\-Qe|i\fP ] [ \fB\-Sl|u\fP\fIspeed\fP ] 
+[ \fB\-T\fP\fITAG\fP ] [ \fB\-W\fP\fIsize\fP ] [ \fB\-V\fP ] 
 [ \fB\-2\fP ] [ \fB\-bo\fP[\fBs\fP] ]
 .SH DESCRIPTION
 \fBx2sys_cross\fP is used to determine all intersections between or within
@@ -66,6 +66,10 @@ Maximum number of points to use in the interpolation [6].
 .B \-O
 Output results using the old XOVER format [Default is X2SYS format].
 This option should only be used with *.gmt-formatted MGD77 files.
+.TP
+.B \-Q
+Append \fBe\fP for external crossovers only, and \fBi\fP for internal
+crossovers only [Default is all crossovers].
 #include "explain_-R.txt"
 .TP
 .B \-S
@@ -83,10 +87,6 @@ Sets the data set \fITAG\fP which among other things sets the definition file.
 .B \-W
 Sets maximum time gap (in user units) allowed between points on either
 side of a crossover [Default is Infinity].
-.TP
-.B \-X
-Append \fBe\fP for external crossovers only, and \fBi\fP for internal
-crossovers only [Default is all crossovers].
 .TP
 .B \-2
 Report the values of each track at the crossover [Default is the crossover value and the mean value].
@@ -121,7 +121,7 @@ To find the crossover locations with bathymetry between the two MGD77
 files A13232.mgd77 and A99938.mgd77, try
 .br
 .sp
-\fBx2sys_cross\fP A13232.mgd77 A99938.mgd77 \fB\-Xe \-D\fPmgd77 \fB\-F\fPlon,lat,top > crossovers.d
+\fBx2sys_cross\fP A13232.mgd77 A99938.mgd77 \fB\-Qe \-D\fPmgd77 \fB\-F\fPlon,lat,top > crossovers.d
 .SH "SEE ALSO"
 .IR gmt (GMTMANSECTION),
 .IR x2sys_datalist (GMTMANSECTION)
