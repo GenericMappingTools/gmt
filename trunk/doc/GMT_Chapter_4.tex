@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.41 2004-04-14 20:33:53 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.42 2004-04-17 06:29:16 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -296,7 +296,7 @@ of its usage are actually quite simple.
 Given as \Opt{B}[{\bf p}$|${\bf s}]{\it xinfo}[/{\it yinfo}[/{\it zinfo}]][:."title string":][{\bf W}$|${\bf w}][{\bf E}$|${\bf e}][{\bf S}$|${\bf s}][{\bf N}$|${\bf n}][{\bf Z}$|${\bf z}[{\bf +}]],
 this switch specifies map boundaries (or plot axes) to be plotted by using the
 selected information. The optional flag following \Opt{B} selects {\bf p}(rimary) [Default] or {\bf s}(econdary)
-axes information (mostly used for time axes annotation; see examples below).
+axes information (mostly used for time axes annotations; see examples below).
 The components {\it xinfo}, {\it yinfo} and {\it zinfo} are of the form \\
 
 \par {\it info}[:"axis label":][:^"prefix":][:,"unit label":] \\
@@ -360,9 +360,10 @@ The unit flag {\bf u} can take on one of 16 codes; these are listed in  Table~\r
 
 Almost all of these units are time-axis specific.  However, the {\bf m} and {\bf c} units will be
 interpreted as arc minutes and arc seconds, respectively, when a map projection is in effect.
-For time axes, there may be two levels of annotations.  Here, ``primary'' refers to the annotation
+
+There may be two levels of annotations.  Here, ``primary'' refers to the annotation
 that is closest to the axis (this is the primary annotation), while ``secondary'' refers to the secondary
-annotation that is plotted further from the axis (and is specific to time axes only).  The examples below
+annotation that is plotted further from the axis.  The examples below
 will clarify what is meant.  Note that the terms ``primary'' and ``secondary'' do not reflect any hierarchical
 order of units: The ``primary'' annotation interval is smaller (e.g., days) while the
 ``secondary'' annotation interval is larger (e.g., months).

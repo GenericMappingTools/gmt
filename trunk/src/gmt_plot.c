@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.100 2004-04-17 01:47:47 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.101 2004-04-17 06:29:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1203,7 +1203,7 @@ void GMT_powy_grid (double w, double e, double s, double n, double dval)
 
 void GMT_fancy_map_boundary (double w, double e, double s, double n)
 {
-	double x1, x2, x3, y1, y2, y3, s1, w1, val, v1, v2, dx, dy, sign_x, sign_y, fwidth, sgn, lon, lat, offset[2];
+	double x1, x2, x3, y1, y2, y3, s1, w1, val, v1, v2, dx, dy, sign_x, sign_y, fwidth, elength, sgn, lon, lat, offset[2];
 	int shade, i, k, dual = FALSE, nx, ny, fat_pen, thin_pen, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
 	
 	if (gmtdefs.basemap_type == GMT_IS_PLAIN) {	/* Draw plain boundary and return */
@@ -1213,13 +1213,14 @@ void GMT_fancy_map_boundary (double w, double e, double s, double n)
 	
 	ps_setpaint (gmtdefs.basemap_frame_rgb);
 
-	fwidth = gmtdefs.frame_width;
+	fwidth = elength = fabs (gmtdefs.frame_width);
 	if (GMT_get_map_interval (1, GMT_TICK_LOWER) != 0.0) {	/* Need two-layer frame */
 		fwidth *= 0.5;
 		offset[1] = fwidth;
 		dual = TRUE;
 	}
 	offset[0] = 0.0;
+	if (gmtdefs.basemap_type == GMT_IS_ROUNDED) elength = 0.0;	/* Want rounded corners */
 	
 	fat_pen = irint (fwidth * gmtdefs.dpi);
 	thin_pen = irint (0.1 * fwidth * gmtdefs.dpi);
@@ -1236,8 +1237,8 @@ void GMT_fancy_map_boundary (double w, double e, double s, double n)
 				sgn = (i == 1) ? +1.0 : -1.0;
 				GMT_geo_to_xy (lon, s, &x2, &y1);
 				GMT_geo_to_xy (lon, n, &x1, &y2);
-				y1 -= (sign_y * gmtdefs.frame_width);
-				y2 += (sign_y * gmtdefs.frame_width);
+				y1 -= (sign_y * elength);
+				y2 += (sign_y * elength);
 				ps_plot (x2+sgn*offset[k], y1, 3);
 				ps_plot (x2+sgn*offset[k], y2, -2);
 				x2 += sgn * (sign_x * fwidth);
@@ -1249,14 +1250,31 @@ void GMT_fancy_map_boundary (double w, double e, double s, double n)
 				sgn = (i == 2) ? +1.0 : -1.0;
 				GMT_geo_to_xy (w, lat, &x1, &y1);
 				GMT_geo_to_xy (e, lat, &x2, &y2);
-				x1 -= (sign_x * gmtdefs.frame_width);
-				x2 += (sign_x * gmtdefs.frame_width);
+				x1 -= (sign_x * elength);
+				x2 += (sign_x * elength);
 				ps_plot (x1, y1+sgn*offset[k], 3);
 				ps_plot (x2, y1+sgn*offset[k], -2);
 				y1 += sgn * (sign_y * fwidth);
 				ps_plot (x1, y1+sgn*offset[k], 3);
 				ps_plot (x2, y1+sgn*offset[k], -2);
 			}
+		}
+		if (fabs (elength) > GMT_CONV_LIMIT) continue;
+		if (frame_info.side[0] && frame_info.side[1]) {
+			GMT_geo_to_xy (e, s, &x1, &y1);
+			ps_arc (x1, y1, (k+1)*fwidth, 270.0, 360.0, 3);
+		}
+		if (frame_info.side[1] && frame_info.side[2]) {
+			GMT_geo_to_xy (e, n, &x1, &y1);
+			ps_arc (x1, y1, (k+1)*fwidth, 0.0, 90.0, 3);
+		}
+		if (frame_info.side[2] && frame_info.side[3]) {
+			GMT_geo_to_xy (w, n, &x1, &y1);
+			ps_arc (x1, y1, (k+1)*fwidth, 90.0, 180.0, 3);
+		}
+		if (frame_info.side[3] && frame_info.side[0]) {
+			GMT_geo_to_xy (w, s, &x1, &y1);
+			ps_arc (x1, y1, (k+1)*fwidth, 180.0, 270.0, 3);
 		}
 	}
 	
