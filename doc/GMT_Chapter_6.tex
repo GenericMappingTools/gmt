@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_6.tex,v 1.5 2001-09-22 03:19:01 pwessel Exp $
+%	$Id: GMT_Chapter_6.tex,v 1.6 2001-10-12 19:44:17 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -9,7 +9,8 @@
 \chapter{\gmt\ Map Projections}
 
 \GMT\ implements 25 different map projections.  They all project the input coordinates
-longitude and latitude to positions on a map.  In general, $x' = f(x,y)$ and $y' = g(x,y)$, where $f$ and $g$ can be
+longitude and latitude to positions on a map.  In general, $x' = f(x,y,z)$ and $y' = g(x,y,z)$, where
+$z$ is implicitly given as the radial vector length to the $(x,y)$ point on the chosen ellipsoid.  The functions $f$ and $g$ can be
 quite nasty and we will refrain from presenting details in this document.  The interested read is referred to
 {\it Snyder} [1987]\footnote{Snyder, J. P., 1987, Map Projections \- A Working Manual, U.S. Geological Survey Prof. Paper 1395.}.
 We will mostly be using the \GMTprog{pscoast} command to demonstrate each of the projections.

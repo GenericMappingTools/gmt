@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.25 2001-10-02 21:34:41 pwessel Exp $
+ *	$Id: pslib.c,v 1.26 2001-10-12 19:44:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2097,11 +2097,11 @@ void ps_textbox (double x, double y, int pointsize, char *text, double angle, in
 		fprintf (ps.fp, "V PSL_save_x PSL_save_y T ");
 	
 	if (angle != 0.0) fprintf (ps.fp, "%.3lg R ", angle);
-	if (justify > 1) {	/* Move the new origin so (0,0) is lower left of box
+	if (justify > 1) {	/* Move the new origin so (0,0) is lower left of box */
 		h_just = (justify % 4) - 1;	/* Gives 0 (left justify, i.e., do nothing), 1 (center), or 2 (right justify) */
 		v_just = justify / 4;		/* Gives 0 (bottom justify, i.e., do nothing), 1 (middle), or 2 (top justify) */
-		(h_just) ? fprintf (ps.fp, "0 PSL_dimx %3.1lf mul ", -0.5 * h_just) : fprintf (ps.fp, "0 ") ;
-		(v_just) ? fprintf (ps.fp, "PSL_dimy %3.1lf mul ", -0.5 * v_just) : fprintf (ps.fp, "0 ");
+		(h_just) ? fprintf (ps.fp, "0 PSL_dimx_ur PSL_dimx_ll sub %3.1lf mul ", -0.5 * h_just) : fprintf (ps.fp, "0 ") ;
+		(v_just) ? fprintf (ps.fp, "PSL_dimy_ur PSL_dimy_ll sub %3.1lf mul ", -0.5 * v_just) : fprintf (ps.fp, "0 ");
 		fprintf (ps.fp, "T ");
 	}
 	fprintf (ps.fp, "/PSL_x_side PSL_dimx_ur PSL_dimx_ll sub PSL_dx 2 mul add def\n");
@@ -2689,7 +2689,7 @@ unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN inv
 {
 	/* ps_loadraster reads a Sun standard rasterfile of depth 1,8,24, or 32 into memory */
 
-	int mx, j, k, i, ij, n = 0, ny, get, odd, oddlength, r_off, b_off;
+	int mx_in, mx, j, k, i, ij, n = 0, ny, get, odd, oddlength, r_off, b_off;
 	unsigned char *buffer, *entry, *red, *green, *blue, *tmp, rgb[3];
 	FILE *fp;
 
@@ -2715,7 +2715,8 @@ unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN inv
 	buffer = entry = red = green = blue = (unsigned char *)NULL;
 	
 	if (header->ras_depth == 1) {	/* 1 bit black and white image */
-		mx = (int) (2 * ceil (header->ras_width / 16.0));
+		mx_in = (int) (2 * ceil (header->ras_width / 16.0));	/* Because Sun images are written in multiples of 2 bytes */
+		mx = (int) (ceil (header->ras_width / 8.0));		/* However, PS wants only the bytes that matters, so mx may be one less */
 		ny = header->ras_height;
 		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
 		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
@@ -2723,11 +2724,19 @@ unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN inv
 			exit (EXIT_FAILURE);
 		}
 		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
+		
+		if (mx < mx_in) {	/* OK, here we must shuffle image to get rid of the superflous last byte per line */
+			for (j = k = ij = 0; j < ny; j++) {
+				for (i = 0; i < mx; i++) buffer[k++] = buffer[ij++];
+				ij++;	/* Skip the extra byte */
+			}
+		}
+		
 		if (invert) {
 			unsigned int int4, bit8 = 255, endmask;
 			int mx1;
 
-			n = 8 * mx - header->ras_width;
+			n = header->ras_width % 8;
 			mx1 = mx - 1;
 			endmask = (n) ? ((1 << n) - 1) << (8 - n) : ~0;
 			for (j = k = 0; j < ny; j++) {
@@ -2919,10 +2928,9 @@ unsigned char * ps_1bit_to_24bit (unsigned char *pattern, struct rasterfile *h, 
 {
 	/* This routine accepts a 1-bit image and turns it into a 24-bit image using the
 	   specified foreground and background colors.  Input image pattern has rows that
-	   are multiples of 16 bits; thus unless nx is divisible by 16 there will be extra
-	   bits that are stored in the last 2 bytes (= 1 short) per row. */
+	   are multiples of 8 bits. */
 
-	int color_choice[2][3], mx, extra, step, i, j, k, kk, id, nx, ny, skip;
+	int color_choice[2][3], mx, extra, step, i, j, k, kk, id, nx, ny;
 	unsigned int p;
 	unsigned char *rgb;
 
@@ -2938,8 +2946,7 @@ unsigned char * ps_1bit_to_24bit (unsigned char *pattern, struct rasterfile *h, 
 
 	mx = nx / 8;			/* Number of full 8-bit byte in 1-bit image */
 	extra = nx - mx * 8;		/* Remainder of bits in the last byte in 1-bit image */
-	skip = (!(mx%2) && extra);	/* Must allow for extra byte to skip since pattern comes in multiples of short */
-	step = (extra) ? mx + 1 + skip: mx;	/* Number of bytes per row */
+	step = (extra) ? mx + 1: mx;	/* Number of bytes per row */
 
 	for (j = kk = 0; j < ny; j++) {		/* For each row in image */
 
@@ -2958,7 +2965,7 @@ unsigned char * ps_1bit_to_24bit (unsigned char *pattern, struct rasterfile *h, 
 		if (extra) {	/* Deal with remainder of bits in last short (i is already incremented) */
 			for (k = 0; k < extra; k++) {
 				p = (128 >> k);
-				id = (((unsigned int)(pattern[j*step+i]) & p) > 0);
+				id = (((unsigned int)(pattern[j*step+i]) & p) == 0);
 				rgb[kk++] = color_choice[id][0];
 				rgb[kk++] = color_choice[id][1];
 				rgb[kk++] = color_choice[id][2];
