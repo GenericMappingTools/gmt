@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.9 2002-04-02 01:30:30 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.10 2002-04-02 22:45:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -440,7 +440,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 		G->check = !GMT_is_dnan (GMT_grd_in_nan_value);
 	}
 	else {
-		if (mode == 'w') {
+		if (mode == 'W') {
 			r_w = 2;
 			header = FALSE;
 		}
