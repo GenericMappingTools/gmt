@@ -1,9 +1,7 @@
-#	$Id: gmtfile_paths,v 1.3 2002-09-27 18:04:09 pwessel Exp $
+#	$Id: gmtfile_paths,v 1.4 2003-01-10 23:19:02 pwessel Exp $
 #
 #	Directories with gmtfiles
 #	Currently set for SOEST data library
-#	Paul Wessel, July-2000
+#	Paul Wessel, January-2002
 #
-/home/gmt2/pwessel/NGDC/gmt
-/home/elepaio5/data/gmtfiles
-/home/kiawe3/mgphy/gmtfiles
+/home/gmt2/pwessel/DATA/NGDC/gmt
