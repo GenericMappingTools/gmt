@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.14 2001-09-17 23:44:40 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.15 2001-09-19 03:43:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3658,4 +3658,44 @@ double GMT_get_map_interval (int axis, int item) {
 			return (tframe_info.axis[axis].item[item].interval);
 			break;
 	}
+}
+
+int GMT_just_decode (char *key)
+{
+	int i, j = 0, k;
+
+	/* Converts justification info like LL (lower left) to justification indeces */
+
+	for (k = 0; k < (int)strlen (key); k++) {
+		switch (key[k]) {
+			case 'b':	/* Bottom baseline */
+			case 'B':
+				j = 0;
+				break;
+			case 'm':	/* Middle baseline */
+			case 'M':
+				j = 4;
+				break;
+			case 't':	/* Top baseline */
+			case 'T':
+				j = 8;
+				break;
+			case 'l':	/* Left Justified */
+			case 'L':
+				i = 1;
+				break;
+			case 'c':	/* Center Justified */
+			case 'C':
+				i = 2;
+				break;
+			case 'r':	/* Right Justified */
+			case 'R':
+				i = 3;
+				break;
+			default:
+				return (-99);
+		}
+	}
+
+	return (j + i);
 }

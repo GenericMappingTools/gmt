@@ -1,0 +1,141 @@
+.TH PSLEGEND l DATE
+#define CLEARENCE_SI 0.15\fBc\fP/0.15\fBc\fP
+#define CLEARENCE_US 0.05\fBi\fP/0.05\fBi\fP
+.SH NAME
+pslegend \- To plot a map legend
+.SH SYNOPSIS
+\fBpslegend\fP \fItextfile\fP \fB\-D\fP[\fBx\fP]\fIlon/lat/width/height/just\fP \fB\-J\fP\fIparameters\fP 
+\fB\-R\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-C\fP\fIdx/dy\fP ]  
+[ \fB\-G\fP\fIfill\fP ] [ \fB\-K\fP ] [ \fB\-L\fP\fIspacing\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
+[ \fB\-S\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP\fIpen\fP ] 
+.SH DESCRIPTION
+\fBpslegend\fP will make legends that can be overlaid on maps.  It reads specific
+legend-related information from an input file [or stdin].  Because all the elements
+of the legend can already be created with other tools (\fBpsxy\fP, \fBpstext\fP) we
+use those tools by creating a batch job of commands that are executed to make the final
+PostScript overlay.  Because of this process, the option exists to just output the script which
+can then be fine-tuned manually.
+.TP
+\fItextfile\fP
+This file contains instruction for the layout of items in the legend.  Each legend item is described by
+a unique record.  All records begin with a unique character that is common to all record of the same
+kind.  The order of the legend items is implied by the order of the records.  8 different record types
+are recognized, and the symtax for each of these records are presented below:
+.TP
+\fB#\fP Comment records
+Records starting with # and blank lines are skipped.
+.TP
+\fBD\fP \fIoffset pen\fP
+The D record results in a horizontal line across the legend.  The line starts and stops \fIoffset\fP
+units from the frame sides, and is drawn using the specified \fIpen\fP.
+.TP
+\fBG\fP \fIgap\fP
+The G record specifies a vertical gap of the given length.
+.TP
+\fBH\fP \fIfontsize font Header\fP
+The H record plots a centered text string using the specified font parameters.
+.TP
+\fBL\fP \fIfontsize font justification Label\fP
+The L record plots a (L)eft, (C)entered, or (R)ight-justified text string using the specified font parameters.
+.TB
+\fBN\fP \fIncolums\fP
+Change the number of columns in the legend [1].
+.TP
+\fBS\fP \fIdx1 symbol size fill pen dx2 text\fP
+Plots the selected symbol with specified size, fill, and outline.  The symbol is centered at \fIdx1\fP from the
+left margin of the column, with the explanatory text starting \fIdx2\fP from the margin.  Use - if no fill
+is required.
+.TP
+\fB>\fP <paragraph mode header for pstext>
+Start a new text paragraph by specifying all the parameters needed (see \fBpstext \-M\fP description).  Note that
+\fBpslegend\fP knows what all those values should be, so normally you can leave the entire record (after >) blank.
+If you need to set at least one of the parameters directly, you must specify all and set the ones you want to leave
+at their default value to -.
+.TP
+\fBT\fP \fIparagraph-text\fP
+One or more of these T records with text must follow after the \fB>\fP record.
+.TP
+\fBV\fP \fIoffset pen\fP
+The V record draws a vertical line between columns (if more than one) using the selected pen.  \fIoffset\fP is
+analogous to the offset for the D records but in the vertical direction.
+.TP
+.D
+Positions the legend and specifies its size.  The \fIjust\fP is a 2-char justification string (see \fBpstext\fP)
+that relates the given position to a point on the rectangular legend box.  If you want to specify the position
+in projected units (i.e., inches or cm), use \fB\-Dx\fP.
+#include "explain_-j.txt"
+#include "explain_-R.txt"
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+.TP
+.B \-C
+Sets the clearance between the legend frame and the internal items [CLEARENCE_SI (or CLEARENCE_US)].
+#include "explain_-G.txt"
+#include "explain_-K.txt"
+.TP
+.B \-L
+Ssets the linespacing factor in units of the anotation font size [1.1].
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+.TP
+.B \-S
+Instead of writing the \fIPostScript\fP plot, output the GMT script used to make the legend [Default makes the plot].
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+.SH EXAMPLES
+To add an example of a legend to a Mercator plot (map.ps) with the given specifications, try
+.br
+.sp
+pslegend \fB\-R \-JM \-O \fB\-G\fP255\fP << EOF >> map.ps
+.br
+# Legend test for pslegend
+.br
+# G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line.
+.br
+# H is header, L is label, S is symbol, > & T is paragraph text
+.br
+#
+.br
+G -0.15i
+.br
+H 24 Times-Roman My Map Legend
+.br
+G 0.05i
+.br
+D 0.2i 1p
+.br
+N 2
+.br
+V 0 1p
+.br
+S 0.1i c 0.15i p300/12 0.25p 0.3i This circle is hachured
+.br
+S 0.1i t 0.15i 255/255/0 0.25p 0.3i This triangle is yellow
+.br
+S 0.1i h 0.15i 0/255/0 0.25p 0.3i This hexagon is green
+.br
+S 0.1i d 0.15i 0/0/255 0.25p 0.3i This diamond is blue
+.br
+S 0.1i - 0.15i - 0.25tap 0.3i A contour
+.br
+V 0 1p
+.br
+D 0.2i 1p
+.br
+L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
+.br
+G 0.15i
+.br
+>
+.br
+T Let us just try some simple text that can go on a few lines.
+.br
+T There is now way to predetermine how many lines may be required,
+.br
+T so we just keep plodding along until we get tired.
+.br
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR psbasemap (l)
+.IR pstext (l)
+.IR psxy (l)
