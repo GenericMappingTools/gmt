@@ -24,12 +24,12 @@ standard input is read.
 .TP
 .B \-C
 Mark end of existing clip path.  No input file or projection information are needed.
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments
 .sp
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .TP
 .B \-E
 Sets the viewpoint's azimuth and elevation [180/90].
@@ -52,7 +52,7 @@ Invert the sense of what is inside and outside, i.e., use the outside of the pol
 For 3-D projections:  Sets the z-level of the polygons [0].
 #include "explain_-t.txt"
 #include "explain_-c.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-f.txt"

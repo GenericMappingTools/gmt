@@ -47,10 +47,10 @@ Only write out the sampled z-values [Default writes all columns].
 .TP
 .B \-:
 Toggles between (longitude,latitude) and (latitude,longitude) input/output.  [Default is (longitude,latitude)].
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
-#include "explain_-o.txt"
+#include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
 .SH HINTS

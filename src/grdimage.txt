@@ -30,10 +30,10 @@ grdfile.
 .TP
 .B \-C
 name of the color palette table (for \fIgrd_z\fP only).
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .TP
 .B \-E
 Sets the resolution of the projected grid that will be created if

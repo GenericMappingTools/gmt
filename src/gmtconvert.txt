@@ -24,9 +24,9 @@ processes one file at the time].  Note for binary input, all the files you want 
 have the same number of columns (as set with -bi).
 #include "explain_-V.txt"
 #include "explain_-t.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
-#include "explain_-o.txt"
+#include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
 .SH EXAMPLES

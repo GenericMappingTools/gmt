@@ -40,12 +40,12 @@ If \fIfontno\fP is not an integer, then it is taken to be a textstring with the 
 for names and numbers of available fonts (or run \fBpstext \-L\fP).  The alignment refers to the
 part of the textstring that will be mapped onto the (\fIx,y\fP) point.  Choose a 2 character combination
 of L, C, R (for left, center, or right) and T, M, B for top, middle, or bottom. e.g., BL for lower left.
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-Jz.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .TP
 .B \-C
 Sets the clearance between the text and the surrounding box [CLEARANCE_SI (or CLEARANCE_US)].

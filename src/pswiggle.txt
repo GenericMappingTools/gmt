@@ -22,7 +22,7 @@ code is written to standard output.
 .TP
 \fIfiles\fP
 List one or more file-names. If no files are given, \fBpswiggle\fP will read standard input.
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .TP
 .B \-Z
@@ -33,7 +33,7 @@ No space between the option flag and the associated arguments.
 .B \-A
 Sets the preferred positive azimuth.  Positive wiggles will "gravitate" towards that
 direction.
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .TP
 .B \-C
 Subtract \fIcenter\fP from the data set before plotting [0].
@@ -78,7 +78,7 @@ Draw wiggle outline  [Default is no outline].  Append pen attributes to use
 [Defaults: width = 1, color = 0/0/0, texture = solid].
 #include "explain_-XY.txt"
 #include "explain_-t.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 3 input columns].
 #include "explain_-c.txt"

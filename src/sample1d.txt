@@ -42,10 +42,10 @@ is the smallest even multiple of \fIxinc\fP inside the range of \fIinfile\fP]
 .B \-T
 Sets the column number of the independent variable [Default is 0 (first)].
 #include "explain_-V.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 2 (or at least the number of columns implied by \fB\-T\fP)].
-#include "explain_-o.txt"
+#include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
 .SH EXAMPLES

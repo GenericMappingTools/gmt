@@ -64,7 +64,7 @@ Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].
 .TP
 .B \-G
 Paint inside of basemap. [Default is no fill].
-#include "explain_-g.txt"
+#include "explain_-G_nopattern.txt"
 #include "explain_-Jz.txt"
 #include "explain_-K.txt"
 .TP

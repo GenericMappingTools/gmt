@@ -42,7 +42,7 @@ Report the min/max of the first column to the nearest multiple of \fIdz\fP and o
 the form \fB\-T\fP\fIzmin/zmax/dz\fP.
 #include "explain_-t.txt"
 Only works when \fB\-I\fP is selected.
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-f.txt"

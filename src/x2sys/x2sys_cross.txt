@@ -42,7 +42,7 @@ is all columns].
 Selects geographical coordinates.  Append \fBd\fP for discontinuity at the
 Dateline (makes longitude go from -180 to + 180) or \fBg\fP for discontinuity
 at Greenwhich (makes longitude go from 0 to 360 [Default]).
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 .TP
 .B \-K
 Only process the pair-combinations found in the file \fIcombi.lis\fP
@@ -86,7 +86,7 @@ crossovers only [Default is all crossovers].
 .TP
 .B \-2
 Report the values of each track at the crossover [Default is the crossover value and the mean value].
-#include "explain_-o.txt"
+#include "explain_-o_binary.txt"
 .SH REMARKS
 The COEs found are printed out to standard output in ASCII format (unless
 \fB\-bo\fP is set).  When ASCII is chosen, the output format depends on

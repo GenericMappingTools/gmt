@@ -44,7 +44,7 @@ better off projecting all data to a local coordinate system before using
 .B \-I
 \fIx_inc\fP [and optionally \fIy_inc\fP] sets the grid  size for optional grid output (see \fB\-G\fP).
 Append \fBm\fP to indicate minutes or \fBc\fP to indicate seconds.
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 .TP
 .B \-M
 Output triangulation network as multiple line segments separated by a record whose first
@@ -56,10 +56,10 @@ character is \fIflag\fP [>].  To plot, use \fBpsxy\fP with the \fB\-M\fP option 
 Controls whether binary data file has two or three columns [2].  Ignored if \fB\-b\fP
 is not set.
 #include "explain_-t.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
-#include "explain_-o.txt"
+#include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 Node ids are stored as binary 4-byte integer triplets.  \fB\-bo\fP is ignored if \fB\-M\fP is selected.
 #include "explain_-f.txt"

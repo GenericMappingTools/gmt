@@ -26,7 +26,7 @@ Give a comma-separated list of column names as defined in the definition
 file. [Default is all data columns].
 #include "explain_-H.txt"
 #include "explain_-V.txt"
-#include "explain_-o.txt"
+#include "explain_-o_binary.txt"
 .SH EXAMPLES
 To extract all data from the old-style GMT MGG file c2104.gmt:
 .br

@@ -87,7 +87,7 @@ values overestimate the incremental changes during convergence, and will reach a
 become unstable.  If you use a large value for this factor, it is a good idea to monitor each iteration
 with the \fB\-Vl\fP option.  [Default = 1.4 converges quickly and is almost always stable.]
 #include "explain_-t.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 3 input columns].
 #include "explain_-f.txt"

@@ -32,7 +32,7 @@ Read second rather than first column.
 .TP
 .B \-A
 Plot the histogram horizontally from x = 0 [Default is vertically from y = 0].
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .TP
 .B \-C
 Center bin on each value. [Default is left edge].
@@ -71,7 +71,7 @@ Choose between 6 types of histograms: 0 = counts [Default], 1 = frequency_percen
 2 = log (1.0 + count), 3 = log (1.0 + frequency_percent),
 4 = log10 (1.0 + count), 5 = log10 (1.0 + frequency_percent).
 #include "explain_-c.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-f.txt"

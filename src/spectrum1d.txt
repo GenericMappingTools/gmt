@@ -78,10 +78,10 @@ in any order to create only those output files instead of the default [all].
 .TP
 .B \-W
 Write Wavelength rather than frequency in column 1 of the output file[s] [Default = frequency, (cycles / \fIdt\fP)].
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
-#include "explain_-o.txt"
+#include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
 .SH EXAMPLES

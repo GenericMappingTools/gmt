@@ -26,12 +26,12 @@ effect until turned off by a second call to \fBpsmask\fP using the \fB\-C\fP opt
 File with (x,y,z) values (e.g., that was used to run \fBsurface\fP).  If no file
 is given, standard input is read.  For binary files, see \fB\-b\fP.
 #include "explain_-I.txt"
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments
 .sp
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .TP
 .B \-C
 Mark end of existing clip path.  No input file is needed.  Implicitly sets \fB\-O\fP.
@@ -48,7 +48,7 @@ Force pixel registration.  [Default is grid registration].
 .TP
 .B \-G
 Paint the clip polygons [or tiles] with selected fill [Default is no fill].
-#include "explain_-g.txt"
+#include "explain_-G_nopattern.txt"
 #include "explain_-H.txt"
 Not used with binary data.
 #include "explain_-K.txt"
@@ -71,7 +71,7 @@ Use \fB\-G\fP to set tile color.
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
 #include "explain_-t.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-c.txt"

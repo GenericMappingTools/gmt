@@ -46,7 +46,7 @@ constrained to lie on the great circle connecting the pole of the best-fit great
 and the mean location of the data.
 #include "explain_-V.txt"
 #include "explain_-t.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
 .SH EXAMPLES

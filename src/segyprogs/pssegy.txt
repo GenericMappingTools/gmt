@@ -35,7 +35,7 @@ on all the platforms to which I have access)
 .TP
 \fISEGYfile\fP
 Seismic data set to be imaged
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .br
 .TP

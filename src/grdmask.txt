@@ -46,7 +46,7 @@ Set nodes depending on their distance from the nearest data point.  Nodes within
 a data point are considered inside.  Append \fBk\fP to indicate map units (e.g., \fB\-R\fP and \fB\-I\fP in
 degrees and \fIradius\fP in km).
 #include "explain_-V.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-f.txt"

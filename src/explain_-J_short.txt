@@ -1,0 +1,88 @@
+.TP
+.B \-J
+Selects the map projection. Scale is UNIT/degree, 1:xxxxx, or width in UNIT (upper case modifier).
+UNIT is cm, inch, or m, depending on the MEASURE_UNIT setting in \.gmtdefaults4, but this can be
+overridden on the command line by appending \fBc\fP, \fBi\fP, or \fBm\fP to the scale/width value.
+For map height, max dimension, or min dimension, append \fBh\fP, \fB+\fP, or \fB-\fP to the width,
+respectively.
+.br
+.sp
+\fBCYLINDRICAL PROJECTIONS:\fP
+.br
+.sp
+\fB\-Jc\fP\fIlon0/lat0/scale\fP (Cassini)
+.br
+\fB\-Jj\fP\fIlon0/scale\fP (Miller)
+.br
+\fB\-Jm\fP\fIscale\fP (Mercator - Greenwich and Equator as origin)
+.br
+\fB\-Jm\fP\fIlon0/lat0/scale\fP (Mercator - Give meridian and standard parallel)
+.br
+\fB\-Joa\fP\fIlon0/lat0/azimuth/scale\fP (Oblique Mercator - point and azimuth)
+.br
+\fB\-Job\fP\fIlon0/lat0/lon1/lat1/scale\fP (Oblique Mercator - two points)
+.br
+\fB\-Joc\fP\fIlon0/lat0/lonp/latp/scale\fP (Oblique Mercator - point and pole)
+.br
+\fB\-Jq\fP\fIlon0/scale\fP (Equidistant Cylindrical Projection (Plate Carree))
+.br
+\fB\-Jt\fP\fIlon0/scale\fP (TM - Transverse Mercator, with Equator as y = 0)
+.br
+\fB\-Jt\fP\fIlon0/lat0/scale\fP (TM - Transverse Mercator, set origin)
+.br
+\fB\-Ju\fP\fIzone/scale\fP (UTM - Universal Transverse Mercator)
+.br
+\fB\-Jy\fP\fIlon0/lats/scale\fP (Basic Cylindrical Projection) 
+.br
+.sp
+\fBAZIMUTHAL PROJECTIONS:\fP
+.br
+.sp
+\fB\-Ja\fP\fIlon0/lat0/scale\fP (Lambert).
+.br
+\fB\-Je\fP\fIlon0/lat0/scale\fP (Equidistant).
+.br
+\fB\-Jf\fP\fIlon0/lat0/horizon/scale\fP (Gnomonic).
+.br
+\fB\-Jg\fP\fIlon0/lat0/scale\fP (Orthographic).
+.br
+\fB\-Js\fP\fIlon0/lat0/\fP[\fIslat/\fP]\fIscale\fP (General Stereographic)
+.br
+.sp
+\fBCONIC PROJECTIONS:\fP
+.br
+.sp
+\fB\-Jb\fP\fIlon0/lat0/lat1/lat2/scale\fP (Albers)
+.br
+\fB\-Jd\fP\fIlon0/lat0/lat1/lat2/scale\fP (Equidistant)
+.br
+\fB\-Jl\fP\fIlon0/lat0/lat1/lat2/scale\fP (Lambert)
+.br
+.sp
+\fBMISCELLANEOUS PROJECTIONS:\fP
+.br
+.sp
+\fB\-Jh\fP\fIlon0/scale\fP (Hammer)
+.br
+\fB\-Ji\fP\fIlon0/scale\fP (Sinusoidal)
+.br
+\fB\-Jk\fP[\fBf|s\fP]\fIlon0/scale\fP (Eckert IV (f) and VI (s))
+.br
+\fB\-Jn\fP\fIlon0/scale\fP (Robinson)
+.br
+\fB\-Jr\fP\fIlon0/scale\fP (Winkel Tripel)
+.br
+\fB\-Jv\fP\fIlon0/scale\fP (Van der Grinten)
+.br
+\fB\-Jw\fP\fIlon0/scale\fP (Mollweide)
+.br
+.sp
+\fBNON-GEOGRAPHICAL PROJECTIONS:\fP
+.br
+.sp
+\fB\-Jp\fP[\fBa\fP]\fIscale\fP[\fI/origin\fP] (polar (theta,r) coordinates, optional \fBa\fP for azimuths and offset theta [0])
+.br
+\fB\-Jx\fP\fIx-scale\fP[\fBl|p\fP\fIpow\fP][\fI/y-scale\fP[\fBl|p\fP\fIpow\fP]][\fBd\fP] (Linear, log, and power scaling)
+.br
+More details can be found in the \fBpsbasemap\fP man pages.
+.br
