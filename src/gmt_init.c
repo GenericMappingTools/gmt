@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.84 2003-03-06 18:43:48 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.85 2003-03-11 19:47:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1919,9 +1919,11 @@ void GMT_getdefaults (char *this_file)	/* Read user's .gmtdefaults file and init
 	
 	if (!this_file) {	/* Must figure out which file to use */
 	
-		/* First see if a .gmtdefaults file is present in the current directory */
+		/* First see if a .gmtdefaults[4] file is present in the current directory */
 	
-		if (!access (".gmtdefaults", R_OK)) /* Use cwd */
+		if (!access (".gmtdefaults4", R_OK)) /* Use cwd */
+			strcpy (file, ".gmtdefaults4");
+		else if (!access (".gmtdefaults", R_OK)) /* Use cwd */
 			strcpy (file, ".gmtdefaults");
 		else {	/* Not found, try home dir first */
 			found = FALSE;
@@ -1929,9 +1931,13 @@ void GMT_getdefaults (char *this_file)	/* Read user's .gmtdefaults file and init
 				fprintf (stderr, "GMT Warning: Could not determine home directory!\n");
 			}
 			else {	/* Ok, see if a file is present in the home dir */
-				sprintf (file, "%s%c.gmtdefaults", homedir, DIR_DELIM);
-				if (!access (file, R_OK)) found = TRUE;	/* Use the one in HOME */
-				
+				sprintf (file, "%s%c.gmtdefaults4", homedir, DIR_DELIM);
+				if (!access (file, R_OK))
+					found = TRUE;	/* Use the one in HOME */
+				else {
+					sprintf (file, "%s%c.gmtdefaults", homedir, DIR_DELIM);
+					if (!access (file, R_OK)) found = TRUE;	/* Use the one in HOME */
+				}
 			}
 			if (!found) {	/* Must use GMT system defaults */
 				char *path;
