@@ -11,7 +11,7 @@ grdview \- Create 3-D perspective grayshaded/colored image or mesh from a 2-D gr
 .SH SYNOPSIS
 \fBgrdview\fP \fIrelief_file\fP \fB\-J\fP\fIparameters\fP 
 [ \fB\-B\fP\fItickinfo\fP ] [\fB\-C\fP\fIcptfile\fP] [ \fB\-E\fP\fIview_az/view_el\fP ] 
-[ \fB\-G\fP\fIdrapefile\fP] [ \fB\-I\fP\fIintensfile\fP] [ \fB\-K\fP ] 
+[ \fB\-G\fP\fIdrapefile\fP | \fB\-G\fP:\fIgrd_r\fP:\fIgrd_g\fP:\fIgrd_b\fP ] [ \fB\-I\fP\fIintensfile\fP] [ \fB\-K\fP ] 
 [ \fB\-L\fP[\fIflags\fP] ] [ \fB\-N\fP\fIlevel\fP[/\fIr/g/b\fP]] [ \fB\-O\fP ] [ \fB\-P\fP ] 
 [ \fB\-Q\fP\fItype\fP ] [ \fB\-R\fP\fIwest/east/south/north/zmin/zmax\fP[\fBr\fP] ] [ \fB\-S\fP\fIsmooth\fP ] 
 [ \fB\-T\fP[\fBs\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP\fItype/pen\fP ] [ \fB\-X\fP\fIx-shift\fP ]
@@ -42,7 +42,9 @@ Sets the view point by specifying azimuth and elevation in degrees. [Default is 
 .B \-G
 Drape the image in \fIdrapefile\fP on top of the relief provided by \fIrelief_file\fP. [Default is \fIrelief_file\fP].
 Note that \fB\-Jz\fP and \fB\-N\fP always refers to the \fIrelief_file\fP.  The \fIdrapefile\fP only provides
-the information pertaining to colors.
+the information pertaining to colors, which is looked-up via the cpt file (see \fB\-C\fP).  Alternatively, give
+three gridfiles separated by colons.  These files must contain the red, green, and blue colors directly (in 0-255 range)
+and no cpt file is needed.
 .TP
 .B \-I
 Gives the name of a grdfile with intensities in the (-1,+1) range. [Default is no illumination].
@@ -125,6 +127,12 @@ and tickmarks every 1 degree, with intensities provided by the file topo_intens.
 .br
 .sp
 grdview topography.grd SCALE3 \fB\-G\fPmagnetics.grd \fB\-C\fPmag_intens.cpt \fB\-Qs \-E\fP140/30 \fB\-I\fPtopo_intens.grd  > draped3D.ps
+.br
+.sp
+Given topo.grd and the Landsat image veggies.ras, first run \fBgmt2rgb\fP to get the red, green, and blue grids, and then drape
+this image over the topography and shade the result for good measure.  The commands are
+gmt2rgb veggies.ras\fB\-G\fPlayer_%c.grd
+grdview topo.grd SCALE3 \fB\-G\fP:layer_r.grd:layer_g.grd:layer_b.grd \fB\-Qi \-E\fP140/30 \fB\-I\fPtopo_intens.grd  > image.ps
 .SH BUGS
 For the \fB\-Qs\fP option:  \fIPostScript\fP provides no way of smoothly varying colors within a polygon, so colors can only
 vary from polygon to polygon.  To obtain smooth images this way you may resample the grdfile(s) using \fBgrdsample\fP or
@@ -133,6 +141,7 @@ this produces huge \fIPostScript\fP files.  The alternative is to use the \fB\-Q
 computes bilinear or bicubic continuous color variations within polygons by using scanline conversion to image the polygons.
 .SH "SEE ALSO"
 .IR gmt (l),
+.IR gmt2rgb (l),
 .IR grdcontour (l),
 .IR grdimage (l),
 .IR nearneighbor (l),
