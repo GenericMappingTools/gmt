@@ -613,6 +613,8 @@ Language to use when plotting calendar items such as months and days.  Select fr
 .br
 	SE	Swedish
 .br
+	SG	Scottish Gaelic
+.br
 	TO	Tongan
 .br
 	TR	Turkish
