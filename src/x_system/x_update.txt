@@ -1,6 +1,6 @@
-.TH X_UPDATE l DATE
+.TH x_update l DATE
 .SH NAME
-\fBX_UPDATE\fP \- Archiving of Cross-Over Information
+\fBx_update\fP \- Archiving of Cross-Over Information
 .SH SYNOPSIS
 \fBx_update\fP \fIcross-overfile\fP [ \fB\-X\fP\fIxbase\fP ] [ \fB\-L\fP\fIlegbase\fP ] 
 [ \fB\-V\fP ] [ \fB\-W\fP\fImax\fP ]
@@ -27,8 +27,8 @@ information if a black-out or system crash should occur during writing of the ne
 file. It is recommended that the old file is left on the disk in case of other disasters. Note that
 \fBx_update\fP does not check if a pair of legs already exist in the \fIxx_base.b\fP file. It is the user's
 responsibility to ensure that duplication of information does not occur. Should some pairs
-already in the database need to be re-examined,  then run \fBx_remove\fP which will wipe out all
-traces of the specified cruises from the xsystem data base files. Now we can pass the pairs that
+already in the database need to be re-examined, then run \fBx_remove\fP which will wipe out all
+traces of the specified cruises from the x_system data base files. Now we can pass the pairs that
 need to be redone through \fBx_over/x_update\fP again.
 .SH SEE ALSO
 .IR gmt (l),

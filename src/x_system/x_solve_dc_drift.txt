@@ -1,6 +1,6 @@
-.TH X_SOLVE_DC_DRIFT l DATE
+.TH x_solve_dc_drift l DATE
 .SH NAME
-\fBX_SOLVE_DC_DRIFT\fP \- Find Best-fitting D.C.-shift and Drift Estimates
+\fBx_solve_dc_drift\fP \- Find Best-fitting D.C.-shift and Drift Estimates
 .SH SYNOPSIS
 \fBx_solve_dc_drift\fP [ \fB\-X\fP\fIxbase\fP ] [ \fB\-L\fP\fIlbase\fP ] [ \fB\-I\fP\fIignorefile\fP ] 
 [ \fB\-S\fP ] [ \fB\-C\fP\fIiteration\fP ] [ \fB\-M\fP\fImin_nx\fP ] 

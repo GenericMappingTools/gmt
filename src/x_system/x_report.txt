@@ -1,10 +1,10 @@
-.TH XREPORT l DATE
+.TH x_report l DATE
 .SH NAME
-\fBXREPORT\fP \- Report Cross-Over Error Statistics for Cruises
+\fBx_report\fP \- Report Cross-Over Error Statistics for Cruises
 .SH SYNOPSIS
-\fBxreport\fP [ \fIleg\fP ] [ \fB\-X\fP\fIlegbase\fP ] [ \fB\-G \-M \-T\fP ]
+\fBx_report\fP [ \fIleg\fP ] [ \fB\-X\fP\fIlegbase\fP ] [ \fB\-G \-M \-T\fP ]
 .SH DESCRIPTION
-\fBxreport\fP reads the xsystem data base file and prints out statistics for each leg. The statistics
+\fBx_report\fP reads the x_system data base file and prints out statistics for each leg. The statistics
 are the number of, means, and standard deviations of COEs for both the internal and external
 cases. One or more data types (GMT) may be specified.
 .TP

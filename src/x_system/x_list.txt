@@ -1,13 +1,13 @@
-.TH XLIST l DATE
+.TH x_list l DATE
 .SH NAME
-\fBXLIST\fP \- To extract Cross-Over Information from the Data Base.
+\fBx_list\fP \- Extract Cross-Over Information from the Data Base.
 .SH SYNOPSIS
-\fBxlist\fP [ \fIleg1\fP ] [ \fIleg2\fP ] [ \fB\-\fP\fIdataflags\fP ] 
+\fBx_list\fP [ \fIleg1\fP ] [ \fIleg2\fP ] [ \fB\-\fP\fIdataflags\fP ] 
 [ \fB\-R\fP\fIwest/east/south/north\fP ] 
 [ \fB\-X\fP\fIxbase\fP ] [ \fB\-H\fP ] [ \fB\-I\fP ] 
 [ \fB\-V\fP ] [ \fB\-C\fP\fIcorrfile\fP ] [ \fB\-Z\fP\fIignorefile\fP ]
 .SH DESCRIPTION
-\fBxlist\fP will allow the user to extract information from the xx_base.b and xx_legs.b files.
+\fBx_list\fP will allow the user to extract information from the xx_base.b and xx_legs.b files.
 Several options can be passed on the command line in order to specify which parameters to
 extract. They are:
 .TP
@@ -16,7 +16,7 @@ If two legs are specified, the cross-overs they have in common are returned.  If
 specified, all the external cross-overs involving this leg are returned, OR only its internal
 cross-overs if \-I is selected.  If no legs are given, all the external (or internal with \-I)
 cross-overs are returned.  This program is useful if one wants to look at, say, gravity COEs versus
-time from port for a particular leg etc.
+time from port for a particular leg, etc.
 .TP
 \fIdataflags\fP
 This is a string of any combination of the following:
@@ -25,7 +25,7 @@ This is a string of any combination of the following:
 .br
 	t means list time.
 .br
-	x means list longitude
+	x means list longitude.
 .br
 	y means list latitude.
 .br
