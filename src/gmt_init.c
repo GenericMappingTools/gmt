@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.7 2001-04-25 03:34:58 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.8 2001-04-27 20:46:05 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -241,12 +241,13 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t     Give scale in %s/units\n", GMT_unit_names[gmtdefs.measure_unit]);
 			fprintf (stderr, "\t     Optionally, append theta value for angular offset (base) [0]\n");
 				
-			fprintf (stderr, "\t   -Jx OR -JX for non-map projections.  Scale in %s/units.  Specify one:\n",
+			fprintf (stderr, "\t   -Jx OR -JX for non-map projections.  Scale in %s/units (or 1:xxxx).  Specify one:\n",
 				GMT_unit_names[gmtdefs.measure_unit]);
 			fprintf (stderr, "\t      -Jx<x-scale>		Linear projection\n");
 			fprintf (stderr, "\t      -Jx<x-scale>l		Log10 projection\n");
 			fprintf (stderr, "\t      -Jx<x-scale>p<power>	x^power projection\n");
-			fprintf (stderr, "\t      Use / to specify separate x/y scaling (e.g., -Jx0.5/0.3.)\n");
+			fprintf (stderr, "\t      Use / to specify separate x/y scaling (e.g., -Jx0.5/0.3.).  Not allowed with 1:xxxxx\n");
+			fprintf (stderr, "\t      Append d if -R is geographic coordinates in degrees.\n");
 			fprintf (stderr, "\t      If -JX is used then give axes lengths rather than scales\n");
 			break;
 			
@@ -309,7 +310,7 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t   -Jp|P[a]<scale|mapwidth>[/<origin>] (Polar [azimuth] (theta,radius))\n");
 				
-			fprintf (stderr, "\t   -Jx|X<x-scale|mapwidth>[l|p<power>][/<y-scale|mapheight>[l|p<power>]] (Linear projections)\n");
+			fprintf (stderr, "\t   -Jx|X<x-scale|mapwidth>[l|p<power>][/<y-scale|mapheight>[l|p<power>]][d] (Linear projections)\n");
 			fprintf (stderr, "\t   (See psbasemap for more details on projection syntax)\n");
 			break;
 			
@@ -584,10 +585,12 @@ void GMT_syntax (char option)
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					fprintf (stderr, "\t  Optionally, append theta value for origin [0]\n");
 				case LINEAR:
-					fprintf (stderr, "\t-Jx<x-scale>[l|p<power>][/<y-scale>[l|p<power>]], scale in %s/units\n",
+					fprintf (stderr, "\t-Jx<x-scale>[l|p<power>][/<y-scale>[l|p<power>]][d], scale in %s/units\n",
 						GMT_unit_names[gmtdefs.measure_unit]);
 					fprintf (stderr, "\t-Jz<z-scale>[l|p<power>], scale in %s/units\n",
 						GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\tUse / to specify separate x/y scaling (e.g., -Jx0.5/0.3.).  Not allowed with 1:xxxxx\n");
+					fprintf (stderr, "\tAppend d if -R is geographic coordinates in degrees.\n");
 					fprintf (stderr, "\tUse -JX (and/or -JZ) to give axes lengths rather than scales\n");
 					break;
 				default:
@@ -2288,6 +2291,7 @@ int GMT_map_getproject (char *args)
 	 	case 'x':		/* Linear x/y scaling */
 	 		project_info.pars[4] = (strchr (args, 'd')) ? 1.0 : 0.0;	/* TRUE if input is degrees and d is appended */
 			error = (n_slashes > 1);
+			if (!strncmp (args, "1:", 2)) k = 1;	/* Special check for linear proj with 1:xxx scale */
 	 		
 	 		/* Find occurrences of /, l, or p */
 	 		for (j = 0, slash = 0; args[j] && slash == 0; j++) if (args[j] == '/') slash = j;
@@ -2297,6 +2301,8 @@ int GMT_map_getproject (char *args)
 	 			if (args[j] == 'P' || args[j] == 'p') p_pos[id] = j;
 	 		}
 	 		
+			if (n_slashes && k >= 0) error = TRUE;	/* Cannot have 1:xxx separately for x/y */
+
 			/* Distinguish between p for points and p<power> for scaling */
 
 			n = strlen (args);
@@ -2317,8 +2323,12 @@ int GMT_map_getproject (char *args)
 				args_cp[i] = 0;	/* Chop off log or power part */
 			else if (project_info.pars[4] == 1.0 && !slash)	/* Chop of trailing 'd' */
 				args_cp[strlen(args_cp)-1] = 0;
-	 		if (!skip) project_info.pars[0] = GMT_convert_units (args_cp, GMT_INCH);	/* x-scale */
-	 		
+	 		if (!skip) {
+	 			if (k >= 0)	/* Scale entered as 1:mmmmm */
+					project_info.pars[0] = 1.0 / GMT_convert_units (&args_cp[2], GMT_INCH);
+				else
+					project_info.pars[0] = GMT_convert_units (args_cp, GMT_INCH);	/* x-scale */
+	 		}
 	 		if (l_pos[0] > 0)
 	 			project_info.xyz_projection[0] = LOG10;
 	 		else if (p_pos[0] > 0) {

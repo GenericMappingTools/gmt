@@ -199,6 +199,7 @@ indicate an angular offset [0]).
 Give \fIx-scale\fP in UNIT/x-unit and \fIy-scale\fP in UNIT/y-unit.
 (\fIy-scale\fP = \fIx-scale\fP if not specified separately).  Use negative
 scale(s) to reverse the direction of an axis (e.g., to have y be positive down).
+You may also use the 1:xxxx format to give a single map scale.
 .br
 .sp
 Append a single \fBd\fP if data are geographical coordinates in degrees.

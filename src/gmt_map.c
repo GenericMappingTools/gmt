@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.10 2001-04-17 23:48:36 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.11 2001-04-27 20:46:05 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -593,6 +593,14 @@ void GMT_map_setup (double west, double east, double south, double north)
 
 		if ((fabs (east - west) - 360.0) > SMALL) {
 			fprintf (stderr, "%s: GMT Fatal Error: Region exceeds 360 degrees!\n", GMT_program);
+			exit (EXIT_FAILURE);
+		}
+		if (south < -90.0 || south > 90.0) {
+			fprintf (stderr, "%s: GMT Fatal Error: South (%lg) outside +-90 degree range!\n", GMT_program, south);
+			exit (EXIT_FAILURE);
+		}
+		if (north < -90.0 || north > 90.0) {
+			fprintf (stderr, "%s: GMT Fatal Error: North (%lg) outside +-90 degree range!\n", GMT_program, north);
 			exit (EXIT_FAILURE);
 		}
 	}
