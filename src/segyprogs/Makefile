@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.4 2001-04-11 19:58:09 pwessel Exp $
+#	$Id: Makefile,v 1.5 2002-09-27 18:04:10 pwessel Exp $
 #
 # makefile for segyprogs directory
 #
@@ -11,7 +11,7 @@ CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include -I$(GMT_DEFAULT_PATH
 ALLLIB	= -L.. -L$(libdir) -lgmt -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)
 
 SEGYPLOT_H	= segy_io.h segy.h segyreel.h
-SEGYPLOT_C	= pssegyz.c pssegy.c
+SEGYPLOT_C	= pssegyz.c pssegy.c segy2grd.c
 
 SEGYPLOT_O	= ${SEGYPLOT_C:.c=.o}
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.75 2002-08-26 19:22:45 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.76 2002-09-27 18:04:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -464,8 +464,8 @@ void GMT_explain_option (char option)
 
 		case ':':	/* lon/lat or lat/lon */
 
-			fprintf (stderr, "\t-: Expect lat/lon input rather than lon/lat [%s].\n",
-				GMT_choice[gmtdefs.xy_toggle]);
+			fprintf (stderr, "\t-: Expect lat/lon input/output rather than lon/lat [%s/%s].\n",
+				GMT_choice[gmtdefs.xy_toggle[0]], GMT_choice[gmtdefs.xy_toggle[1]]);
 			break;
 			
 		case 'f':	/* -f option to tell GMT which columns are time (and optionally geographical) */
@@ -679,6 +679,12 @@ void GMT_syntax (char option)
 			fprintf (stderr, "\t-U[/<dx>/<dy>/][<string> | c], c will plot command line.\n");
 			break;
 			
+		case ':':	/* lon/lat vs lat/lon i/o option  */
+		
+			fprintf (stderr, "\t-:[i|o], i for input, o for output [Default is both].\n");
+			fprintf (stderr, "\t   Swap 1st and 2nd column on input and/or output.\n");
+			break;
+			
 		case 'b':	/* Binary i/o option  */
 		
 			fprintf (stderr, "\t-b[i|o][s][<n>], i for input, o for output [Default is both].\n");
@@ -784,7 +790,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				else {
 					icol = i/2;
 				}
-				if (icol < 2 && gmtdefs.xy_toggle) icol = 1 - icol;	/* col_types were swapped */
+				if (icol < 2 && gmtdefs.xy_toggle[0]) icol = 1 - icol;	/* col_types were swapped */
 				/* If column is either RELTIME or ABSTIME, use ARGTIME */
 				if (GMT_io.in_col_type[icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
 					got = GMT_scanf_arg (text, GMT_io.in_col_type[icol], p[i]);
@@ -870,9 +876,26 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				gmtdefs.n_copies = i;
 			break;
 		case ':':	/* Toggle lon/lat - lat/lon */
-			gmtdefs.xy_toggle = TRUE;
-			i_swap (GMT_io.in_col_type[0], GMT_io.in_col_type[1]);
-			i_swap (GMT_io.out_col_type[0], GMT_io.out_col_type[1]);
+			switch (item[2]) {
+				case 'i':	/* Toggle on input data only */
+					gmtdefs.xy_toggle[0] = TRUE;
+					i_swap (GMT_io.in_col_type[0], GMT_io.in_col_type[1]);
+					break;
+				case 'o':	/* Toggle on output data only */
+					gmtdefs.xy_toggle[1] = TRUE;
+					i_swap (GMT_io.out_col_type[0], GMT_io.out_col_type[1]);
+					break;
+				case '\0':	/* Toggle both input and output data */
+					gmtdefs.xy_toggle[0] = gmtdefs.xy_toggle[1] = TRUE;
+					i_swap (GMT_io.in_col_type[0], GMT_io.in_col_type[1]);
+					i_swap (GMT_io.out_col_type[0], GMT_io.out_col_type[1]);
+					break;
+				default:
+					GMT_syntax (':');
+					error++;
+					break;
+				
+			}
 			break;
 		case 'b':	/* Binary i/o */
 			i = GMT_io_selection (&item[2]);
@@ -1492,7 +1515,20 @@ int GMT_setparameter (char *keyword, char *value)
 			gmtdefs.y_origin = GMT_convert_units (value, GMT_INCH);
 			break;
 		case GMTCASE_XY_TOGGLE:
-			error = true_false_or_error (lower_value, &gmtdefs.xy_toggle);
+			if (!strcmp (lower_value, "true"))
+				gmtdefs.xy_toggle[0] = gmtdefs.xy_toggle[1] = TRUE;
+			else if (!strcmp (lower_value, "false"))
+				gmtdefs.xy_toggle[0] = gmtdefs.xy_toggle[1] = FALSE;
+			else if (!strcmp (lower_value, "in")) {
+				gmtdefs.xy_toggle[0] = TRUE;
+				gmtdefs.xy_toggle[1] = FALSE;
+			}
+			else if (!strcmp (lower_value, "out")) {
+				gmtdefs.xy_toggle[0] = FALSE;
+				gmtdefs.xy_toggle[1] = TRUE;
+			}
+			else
+				error = TRUE;
 			break;
 		case GMTCASE_Y_AXIS_TYPE:
 			if (!strcmp (lower_value, "ver_text"))
@@ -1763,7 +1799,14 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "OUTPUT_CLOCK_FORMAT	= %s\n", gmtdefs.output_clock_format);
 	fprintf (fp, "OUTPUT_DATE_FORMAT	= %s\n", gmtdefs.output_date_format);
 	fprintf (fp, "OUTPUT_DEGREE_FORMAT	= %s\n", gmtdefs.output_degree_format);
-	(gmtdefs.xy_toggle) ? fprintf (fp, "XY_TOGGLE	= TRUE\n") : fprintf (fp, "XY_TOGGLE		= FALSE\n");
+	if (gmtdefs.xy_toggle[0] && gmtdefs.xy_toggle[1])
+		fprintf (fp, "XY_TOGGLE	= TRUE\n");
+	else if (!gmtdefs.xy_toggle[0] && !gmtdefs.xy_toggle[1])
+		fprintf (fp, "XY_TOGGLE		= FALSE\n");
+	else if (gmtdefs.xy_toggle[0] && !gmtdefs.xy_toggle[1])
+		fprintf (fp, "XY_TOGGLE		= IN\n");
+	else
+		fprintf (fp, "XY_TOGGLE		= OUT\n");
 	fprintf (fp, "#-------- Projection Parameters -------------\n");
 	fprintf (fp, "ELLIPSOID		= %s\n", gmtdefs.ellipse[gmtdefs.ellipsoid].name);
 	fprintf (fp, "MAP_SCALE_FACTOR	= %lg\n", gmtdefs.map_scale_factor);

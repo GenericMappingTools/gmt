@@ -67,7 +67,7 @@
 	6.0,			/* Y_AXIS_LENGTH */
 	1.0,			/* X_ORIGIN */
 	1.0,			/* Y_ORIGIN */
-	FALSE,			/* XY_TOGGLE */
+	{FALSE,	FALSE},		/* XY_TOGGLE */
 	0,			/* Y_AXIS_TYPE */
 	{	/* Ellipsoid structure and its members */
 		{ "WGS-84", 1984, 6378137.0, 6356752.3, 1.0/298.2572235630 },

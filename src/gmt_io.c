@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.49 2002-07-29 16:58:41 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.50 2002-09-27 18:04:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -324,7 +324,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 	GMT_io.status = (col_no == *n || *n == BUFSIZ) ? 0 : GMT_IO_MISMATCH;
 	if (*n == BUFSIZ) *n = col_no;
 
-	if (gmtdefs.xy_toggle) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
+	if (gmtdefs.xy_toggle[0]) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
 	if (GMT_io.in_col_type[0] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
 	
 	return (col_no);
@@ -360,7 +360,7 @@ int GMT_bin_double_input (FILE *fp, int *n, double **ptr)
 			return (0);
 		}
 	}
-	if (gmtdefs.xy_toggle) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
+	if (gmtdefs.xy_toggle[0]) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
 	if (GMT_io.in_col_type[0] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
 
 	return (n_read);
@@ -393,7 +393,7 @@ int GMT_bin_float_input (FILE *fp, int *n, double **ptr)
 			return (0);
 		}
 	}
-	if (gmtdefs.xy_toggle) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
+	if (gmtdefs.xy_toggle[0]) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
 	if (GMT_io.in_col_type[0] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
 
 	return (n_read);
@@ -412,7 +412,7 @@ int GMT_ascii_output (FILE *fp, int n, double *ptr)
 {
 	int i, last, e = 0, wn = 0;
 	
-	if (gmtdefs.xy_toggle) d_swap (ptr[0], ptr[1]);		/* Write lat/lon instead of lon/lat */
+	if (gmtdefs.xy_toggle[1]) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
 	last = n - 1;						/* Last record, need to output linefeed instead of delimiter */
 
 	for (i = 0; i < n && e >= 0; i++) {			/* Keep writing all fields unless there is a read error (e == -1) */
@@ -569,7 +569,7 @@ void GMT_format_abstime_output (GMT_dtime dt, char *text)
 int GMT_bin_double_output (FILE *fp, int n, double *ptr)
 {
 	int i;
-	if (gmtdefs.xy_toggle) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
+	if (gmtdefs.xy_toggle[1]) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
 	for (i = 0; i < n; i++) {
 		if (GMT_io.out_col_type[i] == GMT_IS_RELTIME) ptr[i] = GMT_usert_from_dt ((GMT_dtime) ptr[i]);
 		if (GMT_io.out_col_type[i] == GMT_IS_LON) GMT_lon_range_adjust (GMT_io.geo.range, &ptr[i]);
@@ -583,7 +583,7 @@ int GMT_bin_float_output (FILE *fp, int n, double *ptr)
 	int i;
 	static float GMT_f[BUFSIZ];
 	
-	if (gmtdefs.xy_toggle) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
+	if (gmtdefs.xy_toggle[1]) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
 	for (i = 0; i < n; i++) {
 		if (GMT_io.out_col_type[i] == GMT_IS_RELTIME)
 			GMT_f[i] = (float) GMT_usert_from_dt ((GMT_dtime) ptr[i]);
