@@ -1,8 +1,6 @@
-/*	$Id: submeca.c,v 1.2 2000-12-29 22:10:37 pwessel Exp $	*/
-#include "meca.h"
+/*	$Id: submeca.c,v 1.3 2001-04-02 15:51:23 pwessel Exp $	*/
 #include <gmt.h>
-
-#define D2R (M_PI / 180.0)
+#include "meca.h"
 
 #define PIDEG 180
 #define PI2DEG 90

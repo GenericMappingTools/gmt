@@ -1,7 +1,7 @@
-/*	$Id: utilmeca.c,v 1.2 2000-12-29 22:10:37 pwessel Exp $	*/
+/*	$Id: utilmeca.c,v 1.3 2001-04-02 15:51:23 pwessel Exp $	*/
+#include <gmt.h>
 #include "meca.h"
 #include "nrutil.h"
-#include <gmt.h>
 
 /************************************************************************/
 void get_trans (double slon,double slat,double *t11,double *t12,double *t21,double *t22)
