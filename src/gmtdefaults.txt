@@ -567,7 +567,55 @@ partial interval [0.5].
 .TP
 .B TIME_LANGUAGE
 Language to use when plotting calendar items such as months and days.  Look in the $GMTHOME/share/time
-directory for available language files [US].
+directory for available language files [US]. Select from:
+.br
+	BR	Brazilian Portuguese
+.br
+	CN1	Simplified Chinese
+.br
+	CN2	Traditional Chinese
+.br
+	DE	German
+.br
+	DK	Danish
+.br
+	EH	Basque
+.br
+	ES	Spanish
+.br
+	FI	Finnish
+.br
+	FR	French
+.br
+	GR	Greek
+.br
+	HU	Hungarian
+.br
+	IL	Hebrew
+.br
+	IT	Italian
+.br
+	JP	Japanese
+.br
+	NL	Dutch
+.br
+	NO	Norwegian
+.br
+	PL	Polish
+.br
+	PT	Portuguese
+.br
+	RU	Russian
+.br
+	SE	Swedish
+.br
+	TO	Tongan
+.br
+	TR	Turkish
+.br
+	UK	British English
+.br
+	US	US English
 .TP
 .B TIME_SYSTEM
 Determines what the time epoch relative time refers to and what the units are.  Choose from one of the preset systems below
