@@ -34,11 +34,11 @@ No space between the option flag and the associated arguments.
 #include "explain_-b.txt"
 .TP
 .B \-C
-Give a color palette file.  If -S is set, let symbol color be determined by the t-value in
+Give a color palette file.  If \fB\-S\fP is set, let symbol color be determined by the t-value in
 the fourth column.  Additional
 fields are shifted over by one column (optional size would be in 5th rather than
 4th field, etc.).
-If -S is not set, then psxyz expects a multisegment polygon file (requires -M) where each segment header contains a -Z\fIval\fP string.  The \fIval\fP controls
+If \fB\-S\fP is not set, then psxyz expects a multisegment polygon file (requires \fB\-M\fP) where each segment header contains a \fB\-Z\fP\fIval\fP string.  The \fIval\fP controls
 the polygon color via the cpt file.
 .TP
 .B \-E
@@ -186,18 +186,18 @@ Implicitly draws the outline of symbol with selected pen.
 .B \-Z
 For 3-D projections:  Sets the z-level of the basemap [0].
 #include "explain_-t.txt"
-#include "explain_-c.txt"
 #include "explain_-i.txt"
 #include "explain_-n.txt"
 [Default is the required number of columns given the settings].
+#include "explain_-c.txt"
 #include "explain_-f.txt"
 .SH EXAMPLES
 To plot blue columns (width = LEN_1 cm) at the positions listed in the file heights.xyz on a
 3-D projection of the space (0\-10), (0\-10), (0\-100),  with tickmarks every 2, 2, and 10,
-viewing it from the southeast at 30 degree elevation, try:
+viewing it from the southeast at 30 degree elevation, use:
 .br
 .sp
-psxyz heights.xyz \fB\-R\fP0/10/0/10/0/100 OPT_1
+\fBpsxyz\fP heights.xyz \fB\-R\fP0/10/0/10/0/100 OPT_1
 \fB\-G\fP0/0/255 \fB\-B\fP2:XLABEL:/2:YLABEL:/10:ZLABEL::."3-D PLOT":15 \fB\-E\fP135/30 \fB\-Uc
 \-W\fP \fB\-P\fP > heights.ps
 .SH BUGS

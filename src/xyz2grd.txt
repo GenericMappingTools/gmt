@@ -28,7 +28,7 @@ have to be sorted (for binary triplets, see \fB\-b\fP).  1-column z tables must 
 .B \-A
 Add up multiple values that belong to the same node (same as \fB\-Az\fP).
 Append \fBn\fP to simply count the number of data points that were assigned to each node.
-[Default (no \fB\-A\fp option) will calculate mean value].  Ignored if \fB\-Z\fP is given.
+[Default (no \fB\-A\fP option) will calculate mean value].  Ignored if \fB\-Z\fP is given.
 .TP
 .B \-D
 Give values for \fIxunit, yunit, zunit, scale, offset, title,\fP and \fIremark\fP.
@@ -88,24 +88,24 @@ Note that \fB\-Z\fP only applies to 1-column input.
 [Default is 3 input columns].  This option only applies to xyz input files; see \fB\-Z\fP for z tables.
 #include "explain_-f.txt"
 .SH EXAMPLES
-To create a grdfile from the ASCII data in hawaii_grv.xyz, try
+To create a grdfile from the ASCII data in hawaii_grv.xyz, use
 .br
 .sp
-xyz2grd hawaii_grv.xyz \fB\-D\fPdegree/degree/mGal/1/0/"Hawaiian Gravity"/"GRS-80 Ellipsoid used"
+\fBxyz2grd\fP hawaii_grv.xyz \fB\-D\fPdegree/degree/mGal/1/0/"Hawaiian Gravity"/"GRS-80 Ellipsoid used"
 \fB\-G\fPhawaii_grv_new.grd \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm \-V\fP
 .br
 .sp
-To create a grdfile from the raw binary (3-column, single-precision) scanline-oriented data raw.b, try
+To create a grdfile from the raw binary (3-column, single-precision) scanline-oriented data raw.b, use
 .br
 .sp
-xyz2grd raw.b \fB\-D\fPm/m/m/1/0/=/= \fB\-G\fPraw.grd \fB\-R\fP0/100/0/100 \fB\-I\fP1 \fB\-V \-Z \-b\fP3
+\fBxyz2grd\fP raw.b \fB\-D\fPm/m/m/1/0/=/= \fB\-G\fPraw.grd \fB\-R\fP0/100/0/100 \fB\-I\fP1 \fB\-V \-Z \-b\fP3
 .br
 .sp
 To make a grdfile from the raw binary USGS DEM (short integer) scanline-oriented data topo30. on the NGDC
-global relief Data CD-ROM, with values of -9999 indicate missing data, one must on some machine reverse the byte-order.  On such machines (like Sun), try
+global relief Data CD-ROM, with values of -9999 indicate missing data, one must on some machine reverse the byte-order.  On such machines (like Sun), use
 .br
 .sp
-xyz2grd topo30. \fB\-D\fPm/m/m/1/0/=/= \fB\-G\fPustopo.grd \fB\-R\fP234/294/24/50 \fB\-I\fP30c \fB\-N\fP-9999 \fB\-V \-ZTLhw\fP
+\fBxyz2grd\fP topo30. \fB\-D\fPm/m/m/1/0/=/= \fB\-G\fPustopo.grd \fB\-R\fP234/294/24/50 \fB\-I\fP30c \fB\-N\fP-9999 \fB\-V \-ZTLhw\fP
 .br
 .sp
 Say you have received a binary file with 4-byte floating points that were
@@ -113,7 +113,7 @@ written on a machine of different byte-order than yours.  You can swap the
 byte-order with
 .br
 .sp
-xyz2grd floats.bin \fB\-S\fPnew_floats.bin \fB\-V \-Zf\fP
+\fBxyz2grd\fP floats.bin \fB\-S\fPnew_floats.bin \fB\-V \-Zf\fP
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR grd2xyz (l),

@@ -88,15 +88,15 @@ influence of outliers is reduced only slightly at each iteration; consequently t
 Chi-Squared is not very significant.  If the procedure needs a few iterations to successfully 
 attenuate their effect, the significance level of the F test must be kept low.
 .SH EXAMPLES
-To remove a planar trend from data.xyz by ordinary least squares, try:  
+To remove a planar trend from data.xyz by ordinary least squares, use:  
 .sp
 \fBtrend2d\fP data.xyz \fB\-F\fPxyr \fB\-N\fP2 > detrended_data.xyz 
 .sp
-To make the above planar trend robust with respect to outliers, try:
+To make the above planar trend robust with respect to outliers, use:
 .sp
 \fBtrend2d\fP data.xzy \fB\-F\fPxyr \fB\-N\fP2\fBr\fP > detrended_data.xyz 
 .sp
-To find out how many terms (up to 10) in a robust interpolant are significant in fitting data.xyz, try:
+To find out how many terms (up to 10) in a robust interpolant are significant in fitting data.xyz, use:
 .sp
 \fBtrend2d\fP data.xyz \fB\-N\fP10\fBr \-I\fP \fB\-V\fP
 .SH "SEE ALSO"

@@ -3,7 +3,7 @@
 psvelo \fR\- Plot velocity vectors, crosses, and wedges on maps
 .SH SYNOPSIS
 .br
-psvelo \fIfiles \fB\-J\fIparameters \fB\-R\fIwest/east/south/north
+\fBpsvelo\fP \fIfiles \fB\-J\fIparameters \fB\-R\fIwest/east/south/north
 \fR[ \fB\-B\fItickinfo\fR ]
 [ \fB\-D\fIsigma_scale\fR ]
 [ \fB\-F\fIred/green/blue\fR ]
@@ -13,19 +13,21 @@ psvelo \fIfiles \fB\-J\fIparameters \fB\-R\fIwest/east/south/north
 [ \fB\-X\fIx-shift\fR ] [ \fB\-Y\fIy-shift\fR ] [ \fB\-:\fP ] [ \fB\-c\fIcopies\fR ]
 .SH DESCRIPTION
 .br
-psvelo \fRreads data values from \fIfiles\fP [or standard input]
+\fBpsvelo\fP \fRreads data values from \fIfiles\fP [or standard input]
 and generates \fIPostScript\fP code that will plot 
-velocity arrows on a map.  Most options are the same as for psxy,
-except \fB\-S\fP The \fIPostScript\fP code is written to standard
+velocity arrows on a map.  Most options are the same as for \fBpsxy\fP,
+except \fB\-S\fP.  The \fIPostScript\fP code is written to standard
 output. The previous version (\fBpsvelomeca\fP) is now obsolete. It has
 been replaced by \fBpsvelo\fP and \fBpsmeca\fP.
 .br
 .sp
 .SH ARGUMENTS
 \fIfiles\fP
-List one or more file-names. If no files are given, psvelo will read standard input.
+List one or more file-names. If no files are given, \fBpsvelo\fP will read standard input.
 #include "explain_-j.txt"
 #include "explain_-R.txt"
+.br
+.sp
 \fB\-S\fRSelects the meaning of the columns in the data file and the
 figure to be plotted.
 .br
@@ -43,10 +45,10 @@ drawn with the pen attributes specified by the \fB-W\fP option.
 Parameters are expected to be in the following columns:
 .TP
 .B 1,2
-longitude, latitude of station (-: option interchanges order)
+longitude, latitude of station (\fB\-:\fP option interchanges order)
 .TP
 .B 3,4
-eastward, northward velocity (\fB-:\fR option interchanges order)
+eastward, northward velocity (\fB\-:\fR option interchanges order)
 .TP
 .B 5,6
 uncertainty of eastward, northward velocities (1-sigma) (\fB-:\fR
@@ -169,9 +171,9 @@ can be used to rescale the uncertainties of velocities (\fB\-Se\fP and
 .br
 .TP
 \fB\-E\fP\fIfill\fP
-\fRSets the color or shade used for filling uncertainty wedges (-Sw)
-or velocity error ellipses (-Se or -Sr).  [If -E is not specified, the
-uncertainty regions will be transparent.]
+\fRSets the color or shade used for filling uncertainty wedges (\fB\-Sw\fP)
+or velocity error ellipses (\fB\-Se\fP or \fB\-Sr\fP).  [If \fB\-E\fP is not
+specified, the uncertainty regions will be transparent.]
 .br
 .TP
 \fB\-G\fP\fIfill\fP
@@ -212,11 +214,11 @@ in red.  Note that the 39% confidence scaling will give an ellipse which
 fits inside a rectangle of dimension Esig by Nsig.
 .br
 .sp
-psvelo << END -H2 -R-10/10/-10/10 -W1/255/0/0 \\
+\fBpsvelo\fP << END \fB\-H\fP2 \fB\-R\fP-10/10/-10/10 \fB\-W\fP1/255/0/0 \\
 .br
--G0/255/0 -L -Se0.2/0.39/18 -B1g1 -Jx0.4/0.4 \\
+\fB\-G\fP0/255/0 \fB\-L\fP \fB\-Se\fP0.2/0.39/18 \fB\-B\fP1g1 \fB\-Jx\fP0.4/0.4 \\
 .br
--A0.1/0.3/0.3 -P -V  >! test.ps
+\fB\-A\fP0.1/0.3/0.3 \fB\-P\fP \fB\-V\fP  >! test.ps
 .br
   Long.   Lat.   Evel   Nvel   Esig   Nsig  CorEN SITE
 .br
@@ -236,15 +238,15 @@ psvelo << END -H2 -R-10/10/-10/10 -W1/255/0/0 \\
 .br
 END
 .br
-The example should plot some residual rates of rotation in the
+This example should plot some residual rates of rotation in the
 Western Transverse Ranges, California.  The wedges will be
 dark gray, with light gray wedges to represent the 2-sigma
 uncertainties.
 .br
 .sp
-psvelo <<END -Sw0.4/1.e7 -W3 -G60 -E210 -H1 -D2 -Jm2.2 \\
+\fBpsvelo\fP <<END \fB\-Sw\fP0.4/1.e7 \fB\-W\fP3 \fB\-G\fP60 \fB\-E\fP210 \fB\-H\fP1 \fB\-D\fP2 \\
 .br
--R240./243./32.5/34.75 -Bf10ma60m/WeSn -P >! test.ps
+\fB\-Jm\fP2.2 \fB\-R\fP240./243./32.5/34.75 \fB\-B\fPf10ma60m/WeSn \fB\-P\fP >! test.ps
 .br
  lon     lat    spin(rad/yr) spin_sigma (rad/yr)
 .br

@@ -98,7 +98,7 @@ To grid 5 by 5 minute gravity block means from the ASCII data in hawaii_5x5.xyg,
 a \fIconvergence_limit\fP = 0.1 milligal, writing the result to a file called \fIhawaii_grd.grd\fP, 
 and monitoring each iteration, try:
 .sp
-surface hawaii_5x5.xyg \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm \-G\fPhawaii_grd.grd \fB\-T\fP0.25 \fB\-C\fP0.1 \fB\-VL\fP
+\fBsurface\fP hawaii_5x5.xyg \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm \-G\fPhawaii_grd.grd \fB\-T\fP0.25 \fB\-C\fP0.1 \fB\-VL\fP
 .SH BUGS
 \fBsurface\fP will complain when more than one data point is found for
 any node and suggest that you run \fBblockmean\fP, \fBblockmedian\fP, or \fBblockmode\fP first.  If you

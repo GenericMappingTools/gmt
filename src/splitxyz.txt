@@ -86,18 +86,19 @@ You want to use a 100km low\-pass filter to smooth the tracks and a 500km high\-
 filter to detrend the magnetic anomalies.  Try this:
 .br
 .sp
-gmtlist cag71 \fB\-R\fP300/315/12/20 \fB\-F\fPxyzdh | 
-splitxyz \fB\-A\fP90/15 \fB\-F\fP100/-500 \fB\-M\fP \fB\-S\fP \fB\-V\fP | 
-pswiggle \fB\-R\fP300/315/12/20 \fB\-Jm\fP0.6 \fB\-Ba\fP5\fBf\fP1:.cag71: \fB\-T\fP1 \fB\-W\fP3 \fB\-G\fP200 \fB\-Z\fP200 > cag71_wiggles.ps
+\fBgmtlist\fP cag71 \fB\-R\fP300/315/12/20 \fB\-F\fPxyzdh | 
+\fBsplitxyz\fP \fB\-A\fP90/15 \fB\-F\fP100/-500 \fB\-M\fP \fB\-S\fP \fB\-V\fP | 
+\fBpswiggle\fP \fB\-R\fP300/315/12/20 \fB\-Jm\fP0.6 \fB\-Ba\fP5\fBf\fP1:.cag71: \fB\-T\fP1 \fB\-W\fP3 \fB\-G\fP200 \fB\-Z\fP200 > cag71_wiggles.ps
 .br
 .sp
 MGD-77 users: For this application we recommend that you extract d, h from \fBgmtlist\fP rather than
 have \fBsplitxyz\fP compute them separately.
 .br
+.sp
 Suppose you have been given a binary, double-precision file containing lat, lon, gravity values from a survey, 
 and you want to split it into profiles named \fIsurvey\fP.profile\fI#\fP (when gap exceeds 100 km).  Try this:
 .sp
-splitxyz survey.bin \fB\-N\fPsurvey \fB\-V \-G\fP100 \fB\-: \-M \-bi\fP3
+\fBsplitxyz\fP survey.bin \fB\-N\fPsurvey \fB\-V \-G\fP100 \fB\-: \-M \-bi\fP3
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR gmtlist (l),
