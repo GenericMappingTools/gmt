@@ -1,24 +1,27 @@
 .TH PSIMAGE GMTMANSECTION DATE VERSION VERSION
 .SH NAME
-psimage \- To plot SUN rasterfiles on maps
+psimage \- To plot images (EPS files or SUN rasterfiles) on maps
 .SH SYNOPSIS
-\fBpsimage\fP \fIrasterfile\fP [ \fB\-W\fP[-]\fIxlength[/ylength]\fP | \fB\-E\fIdpi\fP ] [ \fB\-C\fIxpos/ypos\fP[/\fIjustify\fP] ] 
+\fBpsimage\fP \fIimagefile\fP [ \fB\-W\fP[-]\fIxlength[/ylength]\fP | \fB\-E\fIdpi\fP ] [ \fB\-C\fIxpos/ypos\fP[/\fIjustify\fP] ] 
 [ \fB\-F\fP\fIpen\fP ] [ \fB\-G\fP[\fBf|b\fP]\fIr/g/b\fP ] [ \fB\-I\fP ] [ \fB\-K\fP ] [ \fB\-M\fP ] 
 [ \fB\-N\fInxrep/nyrep\fP] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-U\fP[\fIdx/dy/\fP][\fIlabel\fP] ] 
 [ \fB\-V\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ]
 .SH DESCRIPTION
-\fBpsimage\fP reads a 1, 8, 24, or 32-bit Sun rasterfile and plots it on a map.
-The image can be scaled arbitrarily, and 1-bit images can be (1) inverted, i.e.,
+\fBpsimage\fP reads an Encapsulated \fIPostScript\fP\fR file or
+a 1, 8, 24, or 32-bit Sun rasterfile and plots it on a map.
+The image can be scaled arbitrarily, and 1-bit raster images can be (1) inverted, i.e.,
 black pixels (on) becomes white (off) and vice versa, or (2) colorized, by
 assigning different foreground and background colors, and (3) made transparent
 where one of back- or foreground is painted only. As an option,
-the user may choose to convert colorimages to grayscale using TV's YIQ-transformation.\"'
+the user may choose to convert colored raster images to grayscale using TV's YIQ-transformation.\"'
 The user may also choose to replicate the image which, when preceded by appropriate clip
 paths, may allow larger custom-designed fill patterns to be implemented (the \fB\-Gp\fP
 mechanism offered in most \fBGMT\fP programs is limited to rasters smaller than 146 by 146).
 .TP
-\fIrasterfile\fP
-This must be a Sun rasterfile.  Depth can be 1, 8, 24, or 32-bit. Old-style, Standard, Run-length-encoded, and
+\fIimagefile\fP
+This must be an Encapsulated \fIPostScript\fP\fR (EPS) file or a Sun rasterfile.
+An EPS file must contain an appropriate BoundingBox.
+A rasterfile can have a depth of 1, 8, 24, or 32 bits. Old-style, Standard, Run-length-encoded, and
 RGB Sun rasterfiles are supported.  Other raster formats can be converted
 to Sun format via a variety of public-domain software (e.g., convert, xv).
 .TP
@@ -71,6 +74,13 @@ it to 8 by 10 cm, use
 .br
 .sp
 \fBpsimage\fP scanned_face.ras \fB\-W\fP8\fBc\fP/10\fBc\fP > image.ps
+.br
+.sp
+To include an Encapsulated PostScript file tiger.eps with its upper right corner 2 inch to the right
+and 1 inch up from the current location, and have its width scaled to 3 inches, use
+.br
+.sp
+\fBpsimage\fP tiger.eps \fB\-C\fP2\fBi\fP/1\fBi\fP \fB\-W\fP3\fBi\fP > image.ps
 .br
 .sp
 To replicate the image template 1_bit.ras over a 5 by 5 inch area, colorize it, and setting

@@ -46,8 +46,8 @@ may use \fBl\fP for lines.
 \fBH\fP \fIfontsize font Header\fP
 The H record plots a centered text string using the specified font parameters.
 .TP
-\fBI\fP \fIimage.ras width justification\fP
-Place a Sun raster image in the legend justified relative to the current point.  The
+\fBI\fP \fIimagefile width justification\fP
+Place an EPS or Sun raster image in the legend justified relative to the current point.  The
 image \fIwidth\fP determines the size of the image on the page.
 .TP
 \fBL\fP \fIfontsize font justification Label\fP
