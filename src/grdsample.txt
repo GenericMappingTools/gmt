@@ -29,6 +29,9 @@ Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating d
 x or y or both set by \fB\-R\fP, or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
 lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero).]  
 .TP
+.B \-N
+Specify number of columns \fInx\fP and rows \fIny\fP of new grid.
+.TP
 .B \-Q
 Quick mode, use bilinear rather than bicubic interpolation.
 #include "explain_-R.txt"
