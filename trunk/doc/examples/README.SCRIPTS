@@ -1,4 +1,4 @@
-	$Id: README.SCRIPTS,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+	$Id: README.SCRIPTS,v 1.2 2001-04-18 09:19:15 pwessel Exp $
 
 	README file for GMT Examples directory
 
@@ -28,6 +28,6 @@ to generate the plots.
 
 The DOS versions may differ in subtle ways from the UNIX
 scripts since DOS is a braindead scripting language.  Example
-03 is not even implemented in DOS.  Those who plan to use
+03 is only partly implemented in DOS.  Those who plan to use
 the .bat files should seriously ask themselves why they have
 not installed cygwin yet. (See Appendix L for more on that).

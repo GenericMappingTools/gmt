@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.5 2001-03-09 19:20:44 pwessel Exp $
+#	$Id: Makefile,v 1.6 2001-04-18 09:19:15 pwessel Exp $
 #
 #	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -50,7 +50,7 @@
 #	Authors:	Paul Wessel, SOEST, U. of Hawaii
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
 #
-#	Date:		01-MAR-2001
+#	Date:		18-APR-2001
 #-------------------------------------------------------------------------------
 #	Get Default Macros
 #-------------------------------------------------------------------------------
