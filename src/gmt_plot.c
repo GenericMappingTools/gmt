@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.76 2002-10-14 21:43:29 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.77 2002-11-10 03:13:43 lloyd Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -445,56 +445,56 @@ void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct PLOT_
 
 	switch (T->unit) {
 		case 'Y':	/* 4-digit integer year */
-			(P->date.compact) ? sprintf (string, "%d\0", calendar.year) : sprintf (string, "%4.4d\0", calendar.year);
+			(P->date.compact) ? sprintf (string, "%d", calendar.year) : sprintf (string, "%4.4d", calendar.year);
 			break;
 		case 'y':	/* 2-digit integer year */
-			(P->date.compact) ? sprintf (string, "%d\0", calendar.year % 100) : sprintf (string, "%2.2d\0", calendar.year % 100);
+			(P->date.compact) ? sprintf (string, "%d", calendar.year % 100) : sprintf (string, "%2.2d", calendar.year % 100);
 			break;
 		case 'O':	/* Plot via date format */
 			GMT_format_calendar (string, CNULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'o':	/* 2-digit month */
-			(P->date.compact) ? sprintf (string, "%d\0", calendar.month) : sprintf (string, "%2.2d\0", calendar.month);
+			(P->date.compact) ? sprintf (string, "%d", calendar.month) : sprintf (string, "%2.2d", calendar.month);
 			break;
 		case 'U':	/* ISO year, week, day via date format */
 			GMT_format_calendar (string, CNULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'u':	/* 2-digit ISO week */		
-			(P->date.compact) ? sprintf (string, "%d\0", calendar.iso_w) : sprintf (string, "%2.2d\0", calendar.iso_w);
+			(P->date.compact) ? sprintf (string, "%d", calendar.iso_w) : sprintf (string, "%2.2d", calendar.iso_w);
 			break;
 		case 'K':	/*  ISO Weekday name */
 			if (T->upper_case) GMT_str_toupper (GMT_time_language.day_name[calendar.iso_d%7][T->flavor]);
-			sprintf (string, "%s\0", GMT_time_language.day_name[calendar.iso_d%7][T->flavor]);
+			sprintf (string, "%s", GMT_time_language.day_name[calendar.iso_d%7][T->flavor]);
 			break;
 		case 'k':	/* Day of the month */
-			(P->date.compact) ? sprintf (string, "%d\0", calendar.day_m) : sprintf (string, "%2.2d\0", calendar.day_m);
+			(P->date.compact) ? sprintf (string, "%d", calendar.day_m) : sprintf (string, "%2.2d", calendar.day_m);
 			break;
 		case 'D':	/* Day, via date format */
 			GMT_format_calendar (string, CNULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'd':	/* 2-digit day or 3-digit day of year */
 			if (P->date.day_of_year)
-				(P->date.compact) ? sprintf (string, "%d\0", calendar.day_y) : sprintf (string, "%3.3d\0", calendar.day_y);
+				(P->date.compact) ? sprintf (string, "%d", calendar.day_y) : sprintf (string, "%3.3d", calendar.day_y);
 			else
-				(P->date.compact) ? sprintf (string, "%d\0", calendar.day_m) : sprintf (string, "%2.2d\0", calendar.day_m);
+				(P->date.compact) ? sprintf (string, "%d", calendar.day_m) : sprintf (string, "%2.2d", calendar.day_m);
 			break;
 		case 'H':	/* Hours via clock format */
 			GMT_format_calendar (CNULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'h':	/* 2-digit hour */
-			(P->date.compact) ? sprintf (string, "%d\0", calendar.hour) : sprintf (string, "%2.2d\0", calendar.hour);
+			(P->date.compact) ? sprintf (string, "%d", calendar.hour) : sprintf (string, "%2.2d", calendar.hour);
 			break;
 		case 'M':	/* Minutes via clock format */
 			GMT_format_calendar (CNULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'm':	/* 2-digit minutes */
-			(P->date.compact) ? sprintf (string, "%d\0", calendar.min) : sprintf (string, "%2.2d\0", calendar.min);
+			(P->date.compact) ? sprintf (string, "%d", calendar.min) : sprintf (string, "%2.2d", calendar.min);
 			break;
 		case 'C':	/* Seconds via clock format */
 			GMT_format_calendar (CNULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'c':	/* 2-digit seconds */
-			(P->date.compact) ? sprintf (string, "%d\0", (int)calendar.sec) : sprintf (string, "%2.2d\0", (int)calendar.sec);
+			(P->date.compact) ? sprintf (string, "%d", (int)calendar.sec) : sprintf (string, "%2.2d", (int)calendar.sec);
 			break;
 		default:
 			fprintf (stderr, "ERROR: wrong unit passed to GMT_get_time_label\n");
@@ -514,13 +514,13 @@ void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *
 			sprintf (string, format, coord);
 			break;
 		case LOG10:
-			sprintf (string, "%d\0", irint (d_log10 (coord)));
+			sprintf (string, "%d", irint (d_log10 (coord)));
 			break;
 		case POW:
 			if (project_info.xyz_projection[T->parent] == POW)
 				sprintf (string, format, coord);
 			else
-				sprintf (string, "10@+%d@+\0", irint (d_log10 (coord)));
+				sprintf (string, "10@+%d@+", irint (d_log10 (coord)));
 			break;
 		case TIME:
 			GMT_get_time_label (string, P, T, coord);
@@ -647,7 +647,7 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 				(axis == 0) ? GMT_coordinate_to_x (t_use, &x) : GMT_coordinate_to_y (t_use, &x);	/* Get annotation position */
 				GMT_get_coordinate_label (string, &GMT_plot_calclock, format, T, knots[i]);		/* Get annotation string */
 				ps_textdim ("PSL_dimx", "PSL_dimy", font_size, font, string, 0);				/* Get and set string dimensions in PostScript */
-				sprintf (cmd, "PSL_dim%c PSL_AH%d gt {/PSL_AH%d PSL_dim%c def} if\0", xy[rot[annot_pos]], annot_pos, annot_pos, xy[rot[annot_pos]]);		/* Update the longest annotation */
+				sprintf (cmd, "PSL_dim%c PSL_AH%d gt {/PSL_AH%d PSL_dim%c def} if", xy[rot[annot_pos]], annot_pos, annot_pos, xy[rot[annot_pos]]);		/* Update the longest annotation */
 				ps_command (cmd);
 			}
 		}
@@ -690,14 +690,14 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 			ps_set_length ("PSL_x", x);
 			ps_textdim ("PSL_dimx", "PSL_dimy", font_size, font, string, 0);				/* Get and set string dimensions in PostScript */
 			if (rot[annot_pos]) {	/* Rotate and adjust annotation in y direction */
-				sprintf (cmd, "/PSL_y_off PSL_dimy 0.5 mul neg def\0");
+				sprintf (cmd, "/PSL_y_off PSL_dimy 0.5 mul neg def");
 				ps_command (cmd);
-				sprintf (cmd, "PSL_x PSL_A%d_y M\0", annot_pos);					/* Move to new anchor point */
+				sprintf (cmd, "PSL_x PSL_A%d_y M", annot_pos);					/* Move to new anchor point */
 				ps_command (cmd);
 				ps_text (0.0, 0.0, -font_size, string, -90.0, 7, 0);
 			}
 			else {			/* Just center horizontally */
-				sprintf (cmd, "PSL_x PSL_A%d_y M\0", annot_pos);					/* Move to new anchor point */
+				sprintf (cmd, "PSL_x PSL_A%d_y M", annot_pos);					/* Move to new anchor point */
 				ps_command (cmd);
 				ps_text (0.0, 0.0, -font_size, string, 0.0, 2, 0);
 			}
@@ -764,16 +764,16 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 					sprintf (text_u, format, fabs (val1));
 				}
 				else {
-					sprintf (text_l, "%d\0", (int)floor (val0));
-					sprintf (text_u, "%d\0", (int)ceil (val1));
+					sprintf (text_l, "%d", (int)floor (val0));
+					sprintf (text_u, "%d", (int)ceil (val1));
 				}
 				break;
 			case LOG10:
 				v0 = d_log10 (val0);
 				v1 = d_log10 (val1);
 				if (A->type == 2) {	/* 10 ^ pow annotations */
-					sprintf (text_l, "10%d\0", (int)floor (v0));
-					sprintf (text_u, "10%d\0", (int)ceil (v1));
+					sprintf (text_l, "10%d", (int)floor (v0));
+					sprintf (text_u, "10%d", (int)ceil (v1));
 				}
 				else {
 					if (as_is) {
@@ -781,8 +781,8 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 						sprintf (text_u, format, fabs (val1));
 					}
 					else if (A->type == 1) {
-						sprintf (text_l, "%d\0", (int)floor (v0));
-						sprintf (text_u, "%d\0", (int)ceil (v1));
+						sprintf (text_l, "%d", (int)floor (v0));
+						sprintf (text_u, "%d", (int)ceil (v1));
 					}
 					else {
 						sprintf (text_l, format, val0);
@@ -796,8 +796,8 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 					sprintf (text_u, format, fabs (val1));
 				}
 				else {
-					sprintf (text_l, "%d\0", (int)floor (fabs (val0)));
-					sprintf (text_u, "%d\0", (int)ceil (fabs (val1)));
+					sprintf (text_l, "%d", (int)floor (fabs (val0)));
+					sprintf (text_u, "%d", (int)ceil (fabs (val1)));
 				}
 				break;
 			case TIME:
@@ -1897,7 +1897,7 @@ void GMT_map_latline (double lat, double west, double east)		/* Draws a line of 
 	nn = GMT_latpath (lat, west, east, &llon, &llat);
 	
 	GMT_n_plot = GMT_geo_to_xy_line (llon, llat, nn);
-	sprintf (text, "Lat = %lg\0", lat);
+	sprintf (text, "Lat = %g", lat);
 	ps_comment (text);
 	GMT_plot_line (GMT_x_plot, GMT_y_plot, GMT_pen, GMT_n_plot);
 	
@@ -1914,7 +1914,7 @@ void GMT_map_lonline (double lon, double south, double north)	/* Draws a line of
 	nn = GMT_lonpath (lon, south, north, &llon, &llat);
 
 	GMT_n_plot = GMT_geo_to_xy_line (llon, llat, nn);
-	sprintf (text, "Lon = %lg\0", lon);
+	sprintf (text, "Lon = %g", lon);
 	ps_comment (text);
 	GMT_plot_line (GMT_x_plot, GMT_y_plot, GMT_pen, GMT_n_plot);
 	
@@ -2089,7 +2089,7 @@ void GMT_map_symbol (double *xx, double *yy, int *sides, double *line_angles, ch
 			tilt = 90.0 - R2D * (d_atan2 (yt3 - yt1, xt3 - xt1) - d_atan2 (yt2 - yt1, xt2 - xt1));
 			tilt = tand (tilt);
 			/* Temporarily modify meaning of F0 */
-			sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
+			sprintf (cmd, "/F0 {/%s findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
 				GMT_font[gmtdefs.annot_font].name, xshrink, yshrink * tilt, yshrink);
 			ps_command (cmd);
 			ps_setfont (0);
@@ -2464,10 +2464,10 @@ void GMT_map_annotate (double w, double e, double s, double n)
 			del = ((gmtdefs.tick_length > 0.0) ? gmtdefs.tick_length : 0.0) + gmtdefs.header_offset;
 			del += ((move_up) ? (gmtdefs.annot_font_size) * GMT_u2u[GMT_PT][GMT_INCH] : 0.0);
 			GMT_xy_do_z_to_xy (project_info.xmax * 0.5, project_info.ymax+del, project_info.z_level, &x, &y);
-			sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
+			sprintf (cmd, "/F0 {/%s findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
 				GMT_font[gmtdefs.header_font].name, z_project.xshrink[0], z_project.yshrink[0] * z_project.tilt[0], z_project.yshrink[0]);
 			ps_command (cmd);
-			sprintf (cmd, "/F12 {/Symbol findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
+			sprintf (cmd, "/F12 {/Symbol findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
 				z_project.xshrink[0], z_project.yshrink[0] * z_project.tilt[0], z_project.yshrink[0]);
 			ps_command (cmd);
 			
@@ -2844,11 +2844,11 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 	ps_command ("gsave\n");
 	ps_comment ("Start of xyz-axis3D");
 	/* Temporarily modify meaning of F0 */
-	sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
+	sprintf (cmd, "/F0 {/%s findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
 		GMT_font[gmtdefs.annot_font].name, z_project.xshrink[id], z_project.yshrink[id] * z_project.tilt[id], z_project.yshrink[id]);
 	ps_command (cmd);
 	/* Temporarily redefine F12 for tilted text */
-	sprintf (cmd, "/F12 {/Symbol findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
+	sprintf (cmd, "/F12 {/Symbol findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
 		z_project.xshrink[id], z_project.yshrink[id] * z_project.tilt[id], z_project.yshrink[id]);
 	ps_command (cmd);
 	ps_setfont (0);
@@ -2939,11 +2939,11 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 		val_xyz[1] = z_project.corner_y[axis_no];
 		val_xyz[2] = project_info.z_level;
 		/* Temporarily redefine /F0 for tilted text */
-		sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
+		sprintf (cmd, "/F0 {/%s findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
 			GMT_font[gmtdefs.label_font].name, z_project.xshrink[id], z_project.yshrink[id] * z_project.tilt[id], z_project.yshrink[id]);
 		ps_command (cmd);
 		/* Temporarily redefine /F12 for tilted text */
-		sprintf (cmd, "/F12 {/Symbol findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
+		sprintf (cmd, "/F12 {/Symbol findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
 			z_project.xshrink[id], z_project.yshrink[id] * z_project.tilt[id], z_project.yshrink[id]);
 		ps_command (cmd);
 		GMT_project3D (val_xyz[0], val_xyz[1], val_xyz[2], &w[0], &w[1], &w[2]);
@@ -3071,7 +3071,7 @@ void GMT_timestamp (int argc, char **argv)
 	time_string[24] = 0;
 	sscanf (time_string, "%*s %*s %*s %*s %s", year);
 	time_string[19] = 0;
-	sprintf (label, "%s %s\0", year, &time_string[4]);
+	sprintf (label, "%s %s", year, &time_string[4]);
 	for (i = 1; i < argc && argv[i][1] != 'J'; i++);
 	ps_comment ("Begin time-stamp");
 	ps_transrotate (x, y, 0.0);
@@ -3247,11 +3247,11 @@ void GMT_text3d (double x, double y, double z, double fsize, int fontno, char *t
 		tilt = 90.0 - R2D * (d_atan2 (yt3 - yt1, xt3 - xt1) - d_atan2 (yt2 - yt1, xt2 - xt1));
 		tilt = tand (tilt);
 		/* Temporarily modify meaning of F0 */
-		sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
+		sprintf (cmd, "/F0 {/%s findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
 			GMT_font[fontno].name, xshrink, yshrink * tilt, yshrink);
 		ps_command (cmd);
 		/* Temporarily modify meaning of F12 */
-		sprintf (cmd, "/F12 {/Symbol findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
+		sprintf (cmd, "/F12 {/Symbol findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
 			xshrink, yshrink * tilt, yshrink);
 		ps_command (cmd);
                 ps_text (xt1, yt1, fsize, text, angle + baseline_shift, justify, form);
@@ -3436,7 +3436,7 @@ void GMT_get_annot_label (double val, char *label, int do_minutes, int do_second
 	type = GMT_plot_calclock.geo.n_sec_decimals;
 	
 	if (fmt == -1 && lonlat) {	/* the r in r-theta */
-		sprintf (format, "%s\0", gmtdefs.d_format);
+		sprintf (format, "%s", gmtdefs.d_format);
 		sprintf (label, format, val);
 	}
 	else if (GMT_plot_calclock.geo.decimal)
@@ -3668,7 +3668,7 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 			ps_plot (a, b, 3);
 			GMT_xyz_to_xy (tx, ms->y0, project_info.z_level, &a, &b);
 			ps_plot (a, b, 2);
-			sprintf (txt, "%lg\0", j * d_base);
+			sprintf (txt, "%g", j * d_base);
 			GMT_text3d (tx, ty, project_info.z_level, gmtdefs.annot_font_size, gmtdefs.annot_font, txt, 0.0, 10, 0);
 		}
 		GMT_xyz_to_xy (ms->x0, ms->y0 + f_len, project_info.z_level, &tx, &ty);
@@ -3676,7 +3676,7 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 	}
 	else {	/* Simple scale */
 	
-		sprintf (txt, "%lg %s\0", ms->length, label[unit]);
+		sprintf (txt, "%g %s", ms->length, label[unit]);
 		GMT_xyz_to_xy (ms->x0 - half, ms->y0 - gmtdefs.map_scale_height, project_info.z_level, &a, &b);
 		ps_plot (a, b, 3);
 		GMT_xyz_to_xy (ms->x0 - half, ms->y0, project_info.z_level, &a, &b);
@@ -3756,7 +3756,7 @@ char *GMT_convertpen (struct GMT_PEN *pen, int *width, int *offset, int rgb[])
 		strcpy (buffer, pen->texture);
 		ptr = strtok (buffer, " ");
 		while (ptr) {
-			sprintf (tmp, "%d \0", irint (atof (ptr) * pt_to_dpi));
+			sprintf (tmp, "%d ", irint (atof (ptr) * pt_to_dpi));
 			strcat (texture, tmp);
 			ptr = strtok (CNULL, " ");
 		}
@@ -3911,10 +3911,10 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 	struct CUSTOM_SYMBOL *head;
 	struct CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
 	
-	sprintf (file, "%s.def\0", name);
+	sprintf (file, "%s.def", name);
 	
 	if (access (file, R_OK)) {	/* Not in current dir, try GMTHOME */
-		sprintf (file, "%s%cshare%ccustom%c%s.def\0", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, name);
+		sprintf (file, "%s%cshare%ccustom%c%s.def", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, name);
 		if (access (file, R_OK)) {	/* Not there either - give up */
 			fprintf (stderr, "GMT ERROR: %s : Could not find custom symbol %s\n", GMT_program, name);
 			exit (EXIT_FAILURE);
@@ -4102,7 +4102,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 	xx = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
 	yy = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
 	
-	sprintf (cmd, "Start of symbol %s\0", symbol->name);
+	sprintf (cmd, "Start of symbol %s", symbol->name);
 	ps_comment (cmd);
 	s = symbol->first;
 	while (s) {
@@ -4266,7 +4266,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 		s = s->next;
 	}
 	if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
-	sprintf (cmd, "End of symbol %s\n\0", symbol->name);
+	sprintf (cmd, "End of symbol %s\n", symbol->name);
 	ps_comment (cmd);
 	
 	GMT_free ((void *)xx);

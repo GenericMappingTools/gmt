@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.34 2002-09-27 20:55:17 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.35 2002-11-10 03:13:43 lloyd Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -598,11 +598,11 @@ void GMT_map_setup (double west, double east, double south, double north)
 			exit (EXIT_FAILURE);
 		}
 		if (south < -90.0 || south > 90.0) {
-			fprintf (stderr, "%s: GMT Fatal Error: South (%lg) outside +-90 degree range!\n", GMT_program, south);
+			fprintf (stderr, "%s: GMT Fatal Error: South (%g) outside +-90 degree range!\n", GMT_program, south);
 			exit (EXIT_FAILURE);
 		}
 		if (north < -90.0 || north > 90.0) {
-			fprintf (stderr, "%s: GMT Fatal Error: North (%lg) outside +-90 degree range!\n", GMT_program, north);
+			fprintf (stderr, "%s: GMT Fatal Error: North (%g) outside +-90 degree range!\n", GMT_program, north);
 			exit (EXIT_FAILURE);
 		}
 	}
@@ -2361,7 +2361,7 @@ void GMT_get_origin (double lon1, double lat1, double lon_p, double lat_p, doubl
 		if (c < 90.0) az += 180.0;
 		*lat2 = R2D * d_asin (sind (lat1) * cosd (d) + cosd (lat1) * sind (d) * cosd (az));
 		*lon2 = lon1 + R2D * d_atan2 (sind (d) * sind (az), cosd (lat1) * cosd (d) - sind (lat1) * sind (d) * cosd (az));
-		if (gmtdefs.verbose) fprintf (stderr, "%s: GMT Warning: Correct projection origin = %lg/%lg\n", GMT_program, *lon2, *lat2);
+		if (gmtdefs.verbose) fprintf (stderr, "%s: GMT Warning: Correct projection origin = %g/%g\n", GMT_program, *lon2, *lat2);
 	}
 	else {
 		*lon2 = lon1;
@@ -6896,20 +6896,20 @@ void GMT_init_search_radius (double *radius, struct GRD_HEADER *r_head, struct G
 			if (inverse) {	/* Converting back to a geographical grid, so radius is in distance units */
 				r = (*radius) * GMT_u2u[GMT_INCH][GMT_M];	/* Get meters */
 				if (r > 1000.0) 
-					fprintf (stderr, "%s: Search radius for interpolation is %lg km\n", GMT_program, 0.001 * r);
+					fprintf (stderr, "%s: Search radius for interpolation is %g km\n", GMT_program, 0.001 * r);
 				else
-					fprintf (stderr, "%s: Search radius for interpolation is %lg m\n", GMT_program, r);
+					fprintf (stderr, "%s: Search radius for interpolation is %g m\n", GMT_program, r);
 			}
 			else {
 				r = (*radius) * 60.0;	/* Get minutes */
 				if (r > 60.0) 
-					fprintf (stderr, "%s: Search radius for interpolation is %lg degrees\n", GMT_program, (*radius));
+					fprintf (stderr, "%s: Search radius for interpolation is %g degrees\n", GMT_program, (*radius));
 				else
-					fprintf (stderr, "%s: Search radius for interpolation is %lg minutes\n", GMT_program, r);
+					fprintf (stderr, "%s: Search radius for interpolation is %g minutes\n", GMT_program, r);
 			}
 		}
 		else	/* Just linear, use given units */
-			fprintf (stderr, "%s: Search radius for interpolation is %lg\n", GMT_program, *radius);
+			fprintf (stderr, "%s: Search radius for interpolation is %g\n", GMT_program, *radius);
 	}
 }
 
@@ -7351,7 +7351,7 @@ void GMT_check_R_J (double *clon)	/* Make sure -R and -J agree for global plots;
 	if (GMT_world_map && lon0 != *clon) {
 		project_info.w = *clon - 180.0;
 		project_info.e = *clon + 180.0;
-		fprintf (stderr, "%s: GMT Warning: Central meridian set with -J (%lg) implies -R%lg/%lg/%lg/%lg\n",
+		fprintf (stderr, "%s: GMT Warning: Central meridian set with -J (%g) implies -R%g/%g/%g/%g\n",
 			GMT_program, *clon, project_info.w, project_info.e, project_info.s, project_info.n);
 	}
 	else if (!GMT_world_map) {

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.45 2002-08-26 17:24:57 pwessel Exp $
+ *	$Id: pslib.c,v 1.46 2002-11-10 03:13:43 lloyd Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -51,7 +51,7 @@
  *	All LOGICAL/int data are assumed to be of type INTEGER*4 (1 = TRUE, 0 = FALSE).
  *
  *	When passing (from FORTRAN to C) a fixed-length character variable which has 
- *	blanks at the end, append "\0" (null character) after the last non-blank
+ *	blanks at the end, append '\0' (null character) after the last non-blank
  *	character.  This is so that C will know where the character string ends.
  *	It is NOT sufficient to pass, for example, "string(1:string_length)".
 
@@ -181,9 +181,9 @@ void ps_arc (double x, double y, double radius, double az1, double az2, int stat
 	else
 		ps.npath++;
 	if (az1 < az2)	/* Forward positive arc */
-		fprintf (ps.fp, "%d %d %d %lg %lg arc", ix ,iy, ir, az1, az2);
+		fprintf (ps.fp, "%d %d %d %g %g arc", ix ,iy, ir, az1, az2);
 	else	/* Negative arc */
-		fprintf (ps.fp, "%d %d %d %lg %lg arcn", ix ,iy, ir, az1, az2);
+		fprintf (ps.fp, "%d %d %d %g %g arcn", ix ,iy, ir, az1, az2);
 	if (status > 1)	fprintf (ps.fp, " S");
 	fprintf (ps.fp, "\n");
 }
@@ -203,23 +203,23 @@ void ps_axis (double x, double y, double length, double val0, double val1, doubl
 	
 	if (annotation_int < 0.0) left = TRUE;
 	annotation_int = fabs (annotation_int);
-	sprintf (text, "%lg\0", annotation_int);
+	sprintf (text, "%g", annotation_int);
 	for (i = 0; text[i] && text[i] != '.'; i++);
 	if (text[i]) {	/* Found a decimal point */
 		for (j = i + 1; text[j]; j++);
 		ndig = j - i - 1;
 	}
 	if (ndig > 0)
-		sprintf (format, "%%.%dlf\0", ndig);
+		sprintf (format, "%%.%df", ndig);
 	else
-		strcpy (format, "%lg");
+		strcpy (format, "%g");
 		
 	angle = (side%2) ? 90.0 : 0.0;
 	sign = (side < 2) ? -1.0 : 1.0;
 	annot_justify = label_justify = (side < 2) ? -10 : -2;
 	dy = sign * annotpointsize / ps.points_pr_unit;
 			
-	fprintf (ps.fp, "\nV %lg %lg T %lg R\n", x * ps.scale, y * ps.scale, angle);
+	fprintf (ps.fp, "\nV %g %g T %g R\n", x * ps.scale, y * ps.scale, angle);
 	ps_plot (0.0, 0.0, 3);
 	ps_plot (length, 0.0, 2);
 	if ((val1 - val0) == 0.0) {
@@ -265,9 +265,9 @@ void ps_circle (double x, double y, double size, int rgb[], int outline)
 	if (rgb[0] < 0)	/* Outline only */
 		fprintf (ps.fp, "N %d %d %d C4\n", ix, iy, ir);
 	else if (iscolor(rgb))	/* Color */
-		fprintf (ps.fp, "N %.3lg %.3lg %.3lg %d %d %d C%d\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, ix, iy, ir, outline + 2);
+		fprintf (ps.fp, "N %.3g %.3g %.3g %d %d %d C%d\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, ix, iy, ir, outline + 2);
 	else	/* Grayshade only */
-		fprintf (ps.fp, "N %.3lg %d %d %d C%d\n", rgb[1] * I_255, ix, iy, ir, outline);
+		fprintf (ps.fp, "N %.3g %d %d %d C%d\n", rgb[1] * I_255, ix, iy, ir, outline);
 	ps.npath = 0;
 }
 
@@ -321,9 +321,9 @@ void ps_clipon (double *x, double *y, int n, int rgb[], int flag)
 	
 	if (flag & 2) {	/* End path and [optionally] fill */
 		if (rgb[0] >= 0 && iscolor(rgb)) /* color*/
-			fprintf (ps.fp, "V %.3lg %.3lg %.3lg C eofill U ", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255);
+			fprintf (ps.fp, "V %.3g %.3g %.3g C eofill U ", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255);
 		else if (rgb[0] >= 0)
-			fprintf (ps.fp, "V %.3lg A eofill U ", rgb[0] * I_255);
+			fprintf (ps.fp, "V %.3g A eofill U ", rgb[0] * I_255);
 		if (flag & 4)
 			fprintf (ps.fp, "eoclip\n%% End of clip path.  Clipping is currently ON\n");
 		else
@@ -369,7 +369,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	}
 		
 	fprintf (ps.fp, "\n%% Start of %s Adobe %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], abs (nbits));
-	fprintf (ps.fp, "V N %lg %lg T %d %d scale\n", x * ps.scale, y * ps.scale, lx, ly);
+	fprintf (ps.fp, "V N %g %g T %d %d scale\n", x * ps.scale, y * ps.scale, lx, ly);
 	if (colormask) {	/* Do new PS Level 3 image type 4 with colormask */
 		nbits = abs (nbits);
 		fprintf (ps.fp, "/Device%s setcolorspace\n", colorspace[id]);
@@ -592,9 +592,9 @@ void ps_diamond (double x, double y, double diameter, int rgb[], int outline)
 	if (rgb[0] < 0)	/* Outline only */
 		fprintf (ps.fp, "%d %d %d D4\n", ds, ix, iy);
 	else if (iscolor (rgb))	/* color */
-		fprintf (ps.fp, "%.3lg %.3lg %.3lg %d %d %d D%d\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, ds, ix, iy, outline+2);
+		fprintf (ps.fp, "%.3g %.3g %.3g %d %d %d D%d\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, ds, ix, iy, outline+2);
 	else /* Grayshade only */
-		fprintf (ps.fp, "%.3lg %d %d %d D%d\n", rgb[0] * I_255, ds, ix, iy, outline);
+		fprintf (ps.fp, "%.3g %d %d %d D%d\n", rgb[0] * I_255, ds, ix, iy, outline);
 	ps.npath = 0;
 }
 
@@ -633,9 +633,9 @@ void ps_star (double x, double y, double diameter, int rgb[], int outline)
 	if (rgb[0] < 0)	/* Outline only */
 		fprintf (ps.fp, "%d %d %d E4\n", ds, ix, iy);
 	else if (iscolor (rgb))	/* color */
-		fprintf (ps.fp, "%.3lg %.3lg %.3lg %d %d %d E%d\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, ds, ix, iy, outline+2);
+		fprintf (ps.fp, "%.3g %.3g %.3g %d %d %d E%d\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, ds, ix, iy, outline+2);
 	else /* Grayshade only */
-		fprintf (ps.fp, "%.3lg %d %d %d E%d\n", rgb[0] * I_255, ds, ix, iy, outline);
+		fprintf (ps.fp, "%.3g %d %d %d E%d\n", rgb[0] * I_255, ds, ix, iy, outline);
 	ps.npath = 0;
 }
 
@@ -656,9 +656,9 @@ void ps_hexagon (double x, double y, double diameter, int rgb[], int outline)
 	if (rgb[0] < 0)	/* Outline only */
 		fprintf (ps.fp, "%d %d %d H4\n", ds, ix, iy);
 	else if (iscolor (rgb))	/* color */
-		fprintf (ps.fp, "%.3lg %.3lg %.3lg %d %d %d H%d\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, ds, ix, iy, outline+2);
+		fprintf (ps.fp, "%.3g %.3g %.3g %d %d %d H%d\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, ds, ix, iy, outline+2);
 	else /* Grayshade only */
-		fprintf (ps.fp, "%.3lg %d %d %d H%d\n", rgb[0] * I_255, ds, ix, iy, outline);
+		fprintf (ps.fp, "%.3g %d %d %d H%d\n", rgb[0] * I_255, ds, ix, iy, outline);
 	ps.npath = 0;
 }
 
@@ -678,16 +678,16 @@ void ps_ellipse (double x, double y, double angle, double major, double minor, i
 	ix = irint (x * ps.scale);
 	iy = irint (y * ps.scale);
 	fprintf (ps.fp, "V %d %d T", ix, iy);
-	if (angle != 0.0) fprintf (ps.fp, " %lg R", angle);
+	if (angle != 0.0) fprintf (ps.fp, " %g R", angle);
 	aspect = minor / major;
-	fprintf (ps.fp, " 1 %lg scale\n", aspect);
+	fprintf (ps.fp, " 1 %g scale\n", aspect);
 	ir = irint (major * ps.scale);
 	if (rgb[0] < 0)	/* Outline only */
 		fprintf (ps.fp, " 0 0 %d C4 U\n", ir);
 	else if (iscolor (rgb))	/* color */
-		fprintf (ps.fp, " %.3lg %.3lg %.3lg 0 0 %d C%d U\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, ir, outline + 2);
+		fprintf (ps.fp, " %.3g %.3g %.3g 0 0 %d C%d U\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, ir, outline + 2);
 	else /* Grayshade only */
-		fprintf (ps.fp, " %.3lg 0 0 %d C%d U\n", rgb[0] * I_255, ir, outline);
+		fprintf (ps.fp, " %.3g 0 0 %d C%d U\n", rgb[0] * I_255, ir, outline);
 }
 
 /* fortran interface */
@@ -783,9 +783,9 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 
 	ps_comment ("Start of user imagefill pattern");
 	if (invert)
-		sprintf (op, "fillimage%di\0", image_no);
+		sprintf (op, "fillimage%di", image_no);
 	else
-		sprintf (op, "fillimage%d\0", image_no);
+		sprintf (op, "fillimage%d", image_no);
 	
 	/* Print out clip-path */
 	
@@ -841,7 +841,7 @@ int ps_imagefill_init (int image_no, char *imagefile, int invert, int image_dpi,
 	if ((image_no >= 0 && image_no < N_PATTERNS) && ps_pattern_status[image_no][invert]) return (image_no);	/* Already done this */
 
 	if ((image_no >= 0 && image_no < N_PATTERNS)) {	/* Premade pattern yet not used */
-		sprintf (file, "%s%cshare%cpattern%cps_pattern_%2.2d.ras\0", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, image_no);
+		sprintf (file, "%s%cshare%cpattern%cps_pattern_%2.2d.ras", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, image_no);
 		ps_pattern_status[image_no][invert] = 1;
 	}
 	else {	/* User image, check to see if already used */
@@ -859,7 +859,7 @@ int ps_imagefill_init (int image_no, char *imagefile, int invert, int image_dpi,
 			if (!access (imagefile, R_OK))
 				strcpy (file, imagefile);
 			else
-				sprintf (file, "%s%cshare%c%s\0", PSHOME, DIR_DELIM, DIR_DELIM, imagefile);
+				sprintf (file, "%s%cshare%c%s", PSHOME, DIR_DELIM, DIR_DELIM, imagefile);
 		}
 		ps_user_image[ps_n_userimages].name = (char *) ps_memory (VNULL, (size_t)(strlen (imagefile)+1), sizeof (char));
 		strcpy (ps_user_image[ps_n_userimages].name, imagefile);
@@ -890,9 +890,9 @@ int ps_imagefill_init (int image_no, char *imagefile, int invert, int image_dpi,
 	ps_comment ("Start of user imagefill pattern definition");
 
 	if (invert)
-		sprintf (name, "image%di\0", image_no);
+		sprintf (name, "image%di", image_no);
 	else
-		sprintf (name, "image%d\0", image_no);
+		sprintf (name, "image%d", image_no);
 
 	fprintf (ps.fp, "/%s <\n", name);
 	ps_hex_dump (picture, nx, ny, h.ras_depth);
@@ -903,16 +903,16 @@ int ps_imagefill_init (int image_no, char *imagefile, int invert, int image_dpi,
 			if (f_rgb[0] < 0) {	/* Use background color for masks 0 bits */
 				polarity = 1;
 				if (iscolor (b_rgb))	/* color */
-					sprintf (color, "%.3lg %.3lg %.3lg C\0", b_rgb[0] * I_255, b_rgb[1] * I_255, b_rgb[2] * I_255);
+					sprintf (color, "%.3g %.3g %.3g C", b_rgb[0] * I_255, b_rgb[1] * I_255, b_rgb[2] * I_255);
 				else /* Grayshade */
-					sprintf (color, "%.3lg A\0", b_rgb[0] * I_255);
+					sprintf (color, "%.3g A", b_rgb[0] * I_255);
 			}
 			else {	/* Use foreground color for masks 1 bits */
 				polarity = 0;
 				if (iscolor (f_rgb))	/* color */
-					sprintf (color, "%.3lg %.3lg %.3lg C\0", f_rgb[0] * I_255, f_rgb[1] * I_255, f_rgb[2] * I_255);
+					sprintf (color, "%.3g %.3g %.3g C", f_rgb[0] * I_255, f_rgb[1] * I_255, f_rgb[2] * I_255);
 				else /* Grayshade */
-					sprintf (color, "%.3lg A\0", f_rgb[0] * I_255);
+					sprintf (color, "%.3g A", f_rgb[0] * I_255);
 			}
 			fprintf (ps.fp, "/fill%s { V T %s %d dup scale %d %d %s [%d 0 0 %d 0 %d] {%s} imagemask U} def\n", name, color, dx, nx, ny, TF[polarity], nx, -ny, ny, name);
 		}
@@ -942,7 +942,7 @@ void ps_imagemask (double x, double y, double xsize, double ysize, unsigned char
 	lx = irint (xsize * ps.scale);
 	ly = irint (ysize * ps.scale);
 	fprintf (ps.fp, "\n%% Start of %s imagemask\n", kind[ps.hex_image]);
-	fprintf (ps.fp, "V N %lg %lg T %d %d scale\n", x * ps.scale, y * ps.scale, lx, ly);
+	fprintf (ps.fp, "V N %g %g T %d %d scale\n", x * ps.scale, y * ps.scale, lx, ly);
 	ps_setpaint (rgb);
 	memcpy ((void *)ps.rgb, (void *)no_rgb, 3 * sizeof (int));	/* So subsequent ps_setpaint calls work properly */
 	fprintf (ps.fp, "%d 1 8 div mul ceiling cvi dup 65535 ge {pop 65535} if string /pstr exch def\n", nx);
@@ -1115,13 +1115,13 @@ void ps_pie (double x, double y, double radius, double az1, double az2, int rgb[
 	iy = irint (y * ps.scale);
 	ir = irint (radius * ps.scale);
 	if (rgb[0] < 0)	/* Outline only */
-		fprintf (ps.fp, "%d %d M %d %d %d %lg %lg P4\n",
+		fprintf (ps.fp, "%d %d M %d %d %d %g %g P4\n",
 			ix, iy, ix, iy, ir, az1, az2);
 	if (iscolor (rgb))	/* color */
-		fprintf (ps.fp, "%d %d M %.3lg %.3lg %.3lg %d %d %d %lg %lg P%d\n",
+		fprintf (ps.fp, "%d %d M %.3g %.3g %.3g %d %d %d %g %g P%d\n",
 			ix, iy, rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, ix, iy, ir, az1, az2, outline+2);
 	else /* Grayshade */
-		fprintf (ps.fp, "%d %d M %.3lg %d %d %d %lg %lg P%d\n", ix, iy, rgb[0] * I_255, ix, iy, ir, az1, az2, outline);
+		fprintf (ps.fp, "%d %d M %.3g %d %d %d %g %g P%d\n", ix, iy, rgb[0] * I_255, ix, iy, ir, az1, az2, outline);
 	ps.npath = 0;
 }
 
@@ -1183,8 +1183,8 @@ void ps_plotend (int lastpage)
 			fprintf (ps.fp, "%%%%BoundingBox: %d %d %d %d\n", x0, y0, x1, y1);
 		}
 		fprintf (ps.fp, "%% Reset translations and scale and call showpage\n");
-		fprintf (ps.fp, "S %lg %lg T", -(ps.xoff * ps.scale), -(ps.yoff * ps.scale));
-		fprintf (ps.fp, " %lg %lg scale",
+		fprintf (ps.fp, "S %g %g T", -(ps.xoff * ps.scale), -(ps.yoff * ps.scale));
+		fprintf (ps.fp, " %g %g scale",
 			ps.scale/(ps.points_pr_unit * ps.xscl), ps.scale/(ps.points_pr_unit * ps.yscl));
 		if (ps.landscape) fprintf (ps.fp, " -90 R %d 0 T", -ps.p_width);
 		fprintf (ps.fp, " 0 A\nshowpage\n");
@@ -1193,7 +1193,7 @@ void ps_plotend (int lastpage)
 		if (!ps.eps_format) fprintf (ps.fp, "%%%%EOF\n");
 	}
 	else if (ps.absolute)
-		fprintf (ps.fp, "S %lg %lg T 0 A\n", -(ps.xoff * ps.scale), -(ps.yoff * ps.scale));
+		fprintf (ps.fp, "S %g %g T 0 A\n", -(ps.xoff * ps.scale), -(ps.yoff * ps.scale));
 	else
 		fprintf (ps.fp, "S 0 A\n");
 	if (ps.fp != stdout) fclose (ps.fp);
@@ -1290,8 +1290,8 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps.xoff = xoff;
 	ps.yscl = yscl;
 	ps.yoff = yoff;
-	strcpy (ps.bw_format, "%.3lg ");			/* Default format used for grayshade value */
-	strcpy (ps.rgb_format, "%.3lg %.3lg %.3lg ");	/* Same, for color triplets */
+	strcpy (ps.bw_format, "%.3g ");			/* Default format used for grayshade value */
+	strcpy (ps.rgb_format, "%.3g %.3g %.3g ");	/* Same, for color triplets */
 
 	/* In case this is the last overlay, set the Bounding box coordinates to be used atend */
 
@@ -1378,7 +1378,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 
 		fprintf (ps.fp, "%% Init coordinate system and scales\n");
 		scl = ps.points_pr_unit / ps.scale;
-		fprintf (ps.fp, "%% Scale is originally set to %lg, which means that\n", scl);
+		fprintf (ps.fp, "%% Scale is originally set to %g, which means that\n", scl);
 		if (unit == 0) {	/* CM used as unit */
 			fprintf (ps.fp, "%% 1 cm on the paper equals %d Postscript units\n", (int)ps.scale);
 		}
@@ -1395,7 +1395,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		xscl *= scl;
 		yscl *= scl;
 		if (ps.landscape) fprintf (ps.fp, "%d 0 T 90 R\n", ps.p_width);
-		fprintf (ps.fp, "%lg %lg scale\n", xscl, yscl);
+		fprintf (ps.fp, "%g %g scale\n", xscl, yscl);
 	}
 	if (!overlay) {
 		fprintf (ps.fp, "%% End of pslib header\n");
@@ -1403,15 +1403,15 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		if (!ps.eps_format) fprintf (ps.fp, "%%%%Page: 1 1\n\n");
 		if (!(rgb[0] == rgb[1] && rgb[1] == rgb[2] && rgb[0] == 255)) {	/* Change background color */
 			if (rgb[0] != rgb[1] || rgb[1] != rgb[2])
-				fprintf (ps.fp, "clippath %.3lg %.3lg %.3lg C F N\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255);
+				fprintf (ps.fp, "clippath %.3g %.3g %.3g C F N\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255);
 			else
-				fprintf (ps.fp, "clippath %.3lg A F N\n", rgb[0] * I_255);
+				fprintf (ps.fp, "clippath %.3g A F N\n", rgb[0] * I_255);
 		}
 	}
 	init_font_encoding (eps);	/* Reencode fonts if necessary */
 
 	ps_setpaint (no_rgb);
-	if (!(xoff == 0.0 && yoff == 0.0)) fprintf (ps.fp, "%lg %lg T\n", xoff*ps.scale, yoff*ps.scale);
+	if (!(xoff == 0.0 && yoff == 0.0)) fprintf (ps.fp, "%g %g T\n", xoff*ps.scale, yoff*ps.scale);
 	
 	/* Initialize global variables */
 	
@@ -1562,9 +1562,9 @@ void ps_rect (double x1, double y1, double x2, double y2, int rgb[], int outline
 	if (rgb[0] < 0) /* Outline only */
 		fprintf (ps.fp, "%d %d %d %d R4\n", idy, idx, ix, iy);
 	else if (iscolor (rgb)) /* color */
-		fprintf (ps.fp, "%.3lg %.3lg %.3lg %d %d %d %d R%d\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, idy, idx, ix, iy, outline+2);
+		fprintf (ps.fp, "%.3g %.3g %.3g %d %d %d %d R%d\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, idy, idx, ix, iy, outline+2);
 	else /* Grayshade */
-		fprintf (ps.fp, "%.3lg %d %d %d %d R%d\n", rgb[0] * I_255, idy, idx, ix, iy, outline);
+		fprintf (ps.fp, "%.3g %d %d %d %d R%d\n", rgb[0] * I_255, idy, idx, ix, iy, outline);
 	ps.npath = 0;
 }
 
@@ -1579,12 +1579,12 @@ void ps_rotatetrans (double x, double y, double angle)
 	int go = FALSE;
 	
 	if (angle != 0.0) {
-		fprintf (ps.fp, "%lg R", angle);
+		fprintf (ps.fp, "%g R", angle);
 		go = TRUE;
 	}
 	if (x != 0.0 || y != 0.0) {
 		if (go) fputc (' ', ps.fp);
-		fprintf (ps.fp, "%lg %lg T", x * ps.scale, y * ps.scale);
+		fprintf (ps.fp, "%g %g T", x * ps.scale, y * ps.scale);
 	}
 	fputc ('\n', ps.fp);
 }
@@ -1610,7 +1610,7 @@ void ps_setdash (char *pattern, int offset)
 	if (pattern) {
 		fputs ("S [", ps.fp);
 		while (*pattern) {
-			fprintf (ps.fp, "%lg ", (atoi(pattern) * 72.0 / ps.points_pr_unit));
+			fprintf (ps.fp, "%g ", (atoi(pattern) * 72.0 / ps.points_pr_unit));
 			while (*pattern && *pattern != ' ') pattern++;
 			while (*pattern && *pattern == ' ') pattern++;
 		}		    		
@@ -1647,8 +1647,8 @@ void ps_setformat (int n_decimals)
 	if (n_decimals < 1 || n_decimals > 3)
 		fprintf (stderr, "pslib: Selected decimals for color out of range (%d), ignored\n", n_decimals);
 	else {
-  		sprintf (ps.bw_format, "%%.%dlf \0", n_decimals);
-  		sprintf (ps.rgb_format, "%%.%dlf %%.%dlf %%.%dlf \0", n_decimals, n_decimals, n_decimals);
+  		sprintf (ps.bw_format, "%%.%df ", n_decimals);
+  		sprintf (ps.rgb_format, "%%.%df %%.%df %%.%df ", n_decimals, n_decimals, n_decimals);
   	}
 }
 
@@ -1666,7 +1666,7 @@ void ps_setline (int linewidth)
 	}
 	if (linewidth == ps.linewidth) return;
 
-	fprintf (ps.fp, "S %lg W\n", (double)(linewidth * 72.0 / ps.points_pr_unit));
+	fprintf (ps.fp, "S %g W\n", (double)(linewidth * 72.0 / ps.points_pr_unit));
 	ps.linewidth = linewidth;
 }
 
@@ -1682,9 +1682,9 @@ void ps_setpaint (int rgb[])
 	if (rgb[0] == ps.rgb[0] && rgb[1] == ps.rgb[1] && rgb[2] == ps.rgb[2]) return;	/* Same color as already set */
 
 	if (iscolor (rgb))	/* color */
-		fprintf (ps.fp, "S %.3lg %.3lg %.3lg C\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255);
+		fprintf (ps.fp, "S %.3g %.3g %.3g C\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255);
 	else
-		fprintf (ps.fp, "S %.3lg A\n", rgb[0] * I_255);
+		fprintf (ps.fp, "S %.3g A\n", rgb[0] * I_255);
 
 	/* Update the current color information */
 
@@ -1711,9 +1711,9 @@ void ps_square (double x, double y, double diameter, int rgb[], int outline)
 	if (rgb[0] < 0) /* Outline only */
 		fprintf (ps.fp, "%d %d %d S4\n", ds, ix, iy);
 	else if (iscolor (rgb)) /* color */
-		fprintf (ps.fp, "%.3lg %.3lg %.3lg %d %d %d S%d\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, ds, ix, iy, outline+2);
+		fprintf (ps.fp, "%.3g %.3g %.3g %d %d %d S%d\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, ds, ix, iy, outline+2);
 	else /* Grayshade */
-		fprintf (ps.fp, "%.3lg %d %d %d S%d\n", rgb[0] * I_255, ds, ix, iy, outline);
+		fprintf (ps.fp, "%.3g %d %d %d S%d\n", rgb[0] * I_255, ds, ix, iy, outline);
 	ps.npath = 0;
 }
 
@@ -1766,7 +1766,7 @@ void ps_text_old (double x, double y, int pointsize, char *text, double angle, i
 	ps.iy = irint (y*ps.scale);
 	fprintf (ps.fp, "%d %d M ", ps.ix, ps.iy);
 	
-	if (angle != 0.0) fprintf (ps.fp, "V %.3lg R ", angle);
+	if (angle != 0.0) fprintf (ps.fp, "V %.3g R ", angle);
 	y0 = -0.5 * height * ps.font[ps.font_no].height * (justify/4);
 	if (y0 != 0.0) fprintf (ps.fp, "0 %d G ",(int) irint (y0 * ps.scale));
 	if (!strchr (string, '@')) {	/* Plain text string */
@@ -2033,21 +2033,21 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 	else
 		fprintf (ps.fp, "V PSL_save_x PSL_save_y T ");
 	
-	if (angle != 0.0) fprintf (ps.fp, "%.3lg R ", angle);
+	if (angle != 0.0) fprintf (ps.fp, "%.3g R ", angle);
 	if (justify > 1) {	/* Move the new origin so (0,0) is lower left of box */
 		h_just = (justify % 4) - 1;	/* Gives 0 (left justify, i.e., do nothing), 1 (center), or 2 (right justify) */
 		v_just = justify / 4;		/* Gives 0 (bottom justify, i.e., do nothing), 1 (middle), or 2 (top justify) */
-		(h_just) ? fprintf (ps.fp, "0 PSL_dimx_ur PSL_dimx_ll sub %3.1lf mul ", -0.5 * h_just) : fprintf (ps.fp, "0 ") ;
-		(v_just) ? fprintf (ps.fp, "PSL_dimy_ur PSL_dimy_ll sub %3.1lf mul ", -0.5 * v_just) : fprintf (ps.fp, "0 ");
+		(h_just) ? fprintf (ps.fp, "0 PSL_dimx_ur PSL_dimx_ll sub %3.1f mul ", -0.5 * h_just) : fprintf (ps.fp, "0 ") ;
+		(v_just) ? fprintf (ps.fp, "PSL_dimy_ur PSL_dimy_ll sub %3.1f mul ", -0.5 * v_just) : fprintf (ps.fp, "0 ");
 		fprintf (ps.fp, "T ");
 	}
 	fprintf (ps.fp, "/PSL_x_side PSL_dimx_ur PSL_dimx_ll sub PSL_dx 2 mul add def\n");
 	fprintf (ps.fp, "/PSL_y_side PSL_dimy_ur PSL_dimy_ll sub PSL_dy 2 mul add def\n");
 	fprintf (ps.fp, "PSL_dimx_ll PSL_dx sub PSL_dimy_ll PSL_dy sub M PSL_x_side 0 D 0 PSL_y_side D PSL_x_side neg 0 D 0 PSL_y_side neg D P \n");
 	if (rgb[0] >= 0 && iscolor (rgb))
-		fprintf (ps.fp, "V %.3lg %.3lg %.3lg C F U ", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255);
+		fprintf (ps.fp, "V %.3g %.3g %.3g C F U ", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255);
 	else if (rgb[0] >= 0)
-		fprintf (ps.fp, "V %.3lg A F U ", rgb[0] * I_255);
+		fprintf (ps.fp, "V %.3g A F U ", rgb[0] * I_255);
 	(outline) ? fprintf (ps.fp, "S U\n") : fprintf (ps.fp, "N U\n");
 	fprintf (ps.fp, "U\n%% ps_textbox end:\n\n");
 	
@@ -2245,12 +2245,12 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 		fprintf (ps.fp, "%d %d M ", ps.ix, ps.iy);
 	}
 	
-	if (angle != 0.0) fprintf (ps.fp, "V %.3lg R ", angle);
+	if (angle != 0.0) fprintf (ps.fp, "V %.3g R ", angle);
 	if (justify > 1) {
 		h_just = (justify % 4) - 1;	/* Gives 0 (left justify, i.e., do nothing), 1 (center), or 2 (right justify) */
 		v_just = justify / 4;		/* Gives 0 (bottom justify, i.e., do nothing), 1 (middle), or 2 (top justify) */
-		(h_just) ? fprintf (ps.fp, "0 PSL_dimx %3.1lf mul ", -0.5 * h_just) : fprintf (ps.fp, "0 ") ;
-		(v_just) ? fprintf (ps.fp, "PSL_dimy %3.1lf mul ", -0.5 * v_just) : fprintf (ps.fp, "0 ");
+		(h_just) ? fprintf (ps.fp, "0 PSL_dimx %3.1f mul ", -0.5 * h_just) : fprintf (ps.fp, "0 ") ;
+		(v_just) ? fprintf (ps.fp, "PSL_dimy %3.1f mul ", -0.5 * v_just) : fprintf (ps.fp, "0 ");
 		fprintf (ps.fp, "G ");
 	}
 	
@@ -2376,12 +2376,12 @@ void ps_transrotate (double x, double y, double angle)
 	int go = FALSE;
 	
 	if (x != 0.0 || y != 0.0) {
-		fprintf (ps.fp, "%lg %lg T", x * ps.scale, y * ps.scale);
+		fprintf (ps.fp, "%g %g T", x * ps.scale, y * ps.scale);
 		go = TRUE;
 	}
 	if (angle != 0.0) {
 		if (go) fputc (' ', ps.fp);
-		fprintf (ps.fp, "%lg R", angle);
+		fprintf (ps.fp, "%g R", angle);
 	}
 	fputc ('\n', ps.fp);
 }
@@ -2402,9 +2402,9 @@ void ps_triangle (double x, double y, double diameter, int rgb[], int outline)
 	if (rgb[0] < 0) /* Outline only */
 		fprintf (ps.fp, "%d %d %d T4\n", is, ix, iy);
 	else if (iscolor (rgb)) /* color */
-		fprintf (ps.fp, "%.3lg %.3lg %.3lg %d %d %d T%d\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, is, ix, iy, outline+2);
+		fprintf (ps.fp, "%.3g %.3g %.3g %d %d %d T%d\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, is, ix, iy, outline+2);
 	else /* Grayshade */
-		fprintf (ps.fp, "%.3lg %d %d %d T%d\n", rgb[0] * I_255, is, ix, iy, outline);
+		fprintf (ps.fp, "%.3g %d %d %d T%d\n", rgb[0] * I_255, is, ix, iy, outline);
 	ps.npath = 0;
 }
 
@@ -2424,9 +2424,9 @@ void ps_itriangle (double x, double y, double diameter, int rgb[], int outline)	
 	if (rgb[0] < 0) /* Outline only */
 		fprintf (ps.fp, "%d %d %d I4\n", is, ix, iy);
 	else if (iscolor (rgb)) /* color */
-		fprintf (ps.fp, "%.3lg %.3lg %.3lg %d %d %d I%d\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, is, ix, iy, outline+2);
+		fprintf (ps.fp, "%.3g %.3g %.3g %d %d %d I%d\n", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, is, ix, iy, outline+2);
 	else /* Grayshade */
-		fprintf (ps.fp, "%.3lg %d %d %d I%d\n", rgb[0] * I_255, is, ix, iy, outline);
+		fprintf (ps.fp, "%.3g %d %d %d I%d\n", rgb[0] * I_255, is, ix, iy, outline);
 	ps.npath = 0;
 }
 
@@ -2448,7 +2448,7 @@ void ps_vector (double xtail, double ytail, double xtip, double ytip, double tai
 
 	angle = atan2 ((ytip-ytail),(xtip-xtail)) * R2D;					/* Angle vector makes with horizontal, in radians */
 	fprintf (ps.fp, "V %d %d T", irint (xtail * ps.scale), irint (ytail * ps.scale));	/* Temporarily set tail point the local origin (0, 0) */
-	if (angle != 0.0) fprintf (ps.fp, " %lg R", angle);					/* Rotate so vector is horizontal in local coordinate system */
+	if (angle != 0.0) fprintf (ps.fp, " %g R", angle);					/* Rotate so vector is horizontal in local coordinate system */
 	w2 = irint (0.5 * tailwidth * ps.scale);	if (w2 == 0) w2 = 1;			/* Half-width of vector tail */
 	hw = irint (headwidth * ps.scale);	if (hw == 0) hw = 1;				/* Width of vector head */
 	hl = irint (headlength * ps.scale);							/* Length of vector head */
@@ -2461,10 +2461,10 @@ void ps_vector (double xtail, double ytail, double xtip, double ytip, double tai
 			fprintf (ps.fp, " %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d A4 U\n",
 				hl2, hw2, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -hl2, hw2, hl, -hw);
 		else if (iscolor (rgb)) /* color */
-			fprintf (ps.fp, " %.3lg %.3lg %.3lg %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d a%d U\n",
+			fprintf (ps.fp, " %.3g %.3g %.3g %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d a%d U\n",
 				rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, hl2, hw2, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -hl2, hw2, hl, -hw, outline+2);
 		else /* grayshade */
-			fprintf (ps.fp, " %.3lg %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d a%d U\n",
+			fprintf (ps.fp, " %.3g %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d a%d U\n",
 				rgb[0] * I_255, hl2, hw2, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -hl2, hw2, hl, -hw, outline);
 	}
 	else {			/* Single-headed vector */
@@ -2473,10 +2473,10 @@ void ps_vector (double xtail, double ytail, double xtip, double ytip, double tai
 			fprintf (ps.fp, " %d %d %d %d %d %d %d %d %d %d %d A4 U\n",
 				-l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2);
 		else if (iscolor (rgb)) /* color */
-			fprintf (ps.fp, " %.3lg %.3lg %.3lg %d %d %d %d %d %d %d %d %d %d %d A%d U\n",
+			fprintf (ps.fp, " %.3g %.3g %.3g %d %d %d %d %d %d %d %d %d %d %d A%d U\n",
 				rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2, outline+2);
 		else /* grayshade */
-			fprintf (ps.fp, " %.3lg %d %d %d %d %d %d %d %d %d %d %d A%d U\n",
+			fprintf (ps.fp, " %.3g %d %d %d %d %d %d %d %d %d %d %d A%d U\n",
 				rgb[0] * I_255, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2, outline);
 	}
 }
@@ -3418,8 +3418,8 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	ps_free ((void *)font_unique);
 
 	fprintf (ps.fp, "\n%% Initialize variables:\n\n");
-	fprintf (ps.fp, "/PSL_n %d def\n", n_items);
-	fprintf (ps.fp, "/PSL_n1 %d def\n", n_items - 1);
+	fprintf (ps.fp, "/PSL_n %d def\n", (int)n_items);
+	fprintf (ps.fp, "/PSL_n1 %d def\n", (int)n_items - 1);
 	fprintf (ps.fp, "/PSL_y0 %d def\n", irint (y * ps.scale));
 	fprintf (ps.fp, "/PSL_linespace %d def\n", irint (line_space * ps.scale));
 	fprintf (ps.fp, "/PSL_parwidth %d def\n", irint (par_width * ps.scale));
@@ -3443,7 +3443,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 		}
 	}
 	if (n) fputc ('\n', ps.fp);
-	fprintf (ps.fp, "%d array astore def\n", n_items);
+	fprintf (ps.fp, "%d array astore def\n", (int)n_items);
 
 	fprintf (ps.fp, "\n%% Define array of word font numbers:\n\n/PSL_fnt\n");
 	for (i = 0 ; i < (int)n_items; i++) {
@@ -3451,15 +3451,15 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 		(!((i+1)%25)) ? fputc ('\n', ps.fp) : fputc (' ', ps.fp);
 	}
 	if ((i%25)) fputc ('\n', ps.fp);
-	fprintf (ps.fp, "%d array astore def\n", n_items);
+	fprintf (ps.fp, "%d array astore def\n", (int)n_items);
 
 	fprintf (ps.fp, "\n%% Define array of word fontsizes:\n\n/PSL_size\n");
 	for (i = 0 ; i < (int)n_items; i++) {
-		fprintf (ps.fp, "%.2lf", word[i]->font_size);
+		fprintf (ps.fp, "%.2f", word[i]->font_size);
 		(!((i+1)%20)) ? fputc ('\n', ps.fp) : fputc (' ', ps.fp);
 	}
 	if ((i%20)) fputc ('\n', ps.fp);
-	fprintf (ps.fp, "%d array astore def\n", n_items);
+	fprintf (ps.fp, "%d array astore def\n", (int)n_items);
 
 	fprintf (ps.fp, "\n%% Define array of word spaces to follow:\n\n/PSL_flag\n");
 	for (i = 0 ; i < (int)n_items; i++) {
@@ -3467,15 +3467,15 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 		(!((i+1)%25)) ? fputc ('\n', ps.fp) : fputc (' ', ps.fp);
 	}
 	if ((i%25)) fputc ('\n', ps.fp);
-	fprintf (ps.fp, "%d array astore def\n", n_items);
+	fprintf (ps.fp, "%d array astore def\n", (int)n_items);
 
 	fprintf (ps.fp, "\n%% Define array of word baseline shifts:\n\n/PSL_bshift\n");
 	for (i = 0 ; i < (int)n_items; i++) {
-		fprintf (ps.fp, "%lg", word[i]->baseshift);
+		fprintf (ps.fp, "%g", word[i]->baseshift);
 		(!((i+1)%25)) ? fputc ('\n', ps.fp) : fputc (' ', ps.fp);
 	}
 	if ((i%25)) fputc ('\n', ps.fp);
-	fprintf (ps.fp, "%d array astore def\n", n_items);
+	fprintf (ps.fp, "%d array astore def\n", (int)n_items);
 
 	fprintf (ps.fp, "\n%% Define array of word colors indices:\n\n/PSL_color\n");
 	for (i = 0 ; i < (int)n_items; i++) {
@@ -3483,15 +3483,15 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 		(!((i+1)%25)) ? fputc ('\n', ps.fp) : fputc (' ', ps.fp);
 	}
 	if ((i%25)) fputc ('\n', ps.fp);
-	fprintf (ps.fp, "%d array astore def\n", n_items);
+	fprintf (ps.fp, "%d array astore def\n", (int)n_items);
 
 	fprintf (ps.fp, "\n%% Define array of word colors:\n\n/PSL_rgb\n");
-	for (i = 0 ; i < n_rgb_unique; i++) fprintf (ps.fp, "%.3lg %.3lg %.3lg\n", I_255 * (rgb_unique[i] >> 16), I_255 * ((rgb_unique[i] >> 8) & 0xFF), I_255 * (rgb_unique[i] & 0xFF));
+	for (i = 0 ; i < n_rgb_unique; i++) fprintf (ps.fp, "%.3g %.3g %.3g\n", I_255 * (rgb_unique[i] >> 16), I_255 * ((rgb_unique[i] >> 8) & 0xFF), I_255 * (rgb_unique[i] & 0xFF));
 	fprintf (ps.fp, "%d array astore def\n", 3 * n_rgb_unique);
 	ps_free ((void *)rgb_unique);
 
 	fprintf (ps.fp, "\n%% Define array of word widths:\n\n");
-	fprintf (ps.fp, "/PSL_width %d array def\n", n_items);
+	fprintf (ps.fp, "/PSL_width %d array def\n", (int)n_items);
 	fprintf (ps.fp, "0 1 PSL_n1 {	%% Determine word width given the font and fontsize for each word\n");
 	fprintf (ps.fp, "  /i exch def	%% Loop index i\n");
 	fprintf (ps.fp, "  PSL_size i get PSL_fontname PSL_fnt i get get Y	%% Get and set font and size\n");
@@ -3499,7 +3499,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	fprintf (ps.fp, "} for\n");
 
 	fprintf (ps.fp, "\n%% Define array of word char counts:\n\n");
-	fprintf (ps.fp, "/PSL_count %d array def\n", n_items);
+	fprintf (ps.fp, "/PSL_count %d array def\n", (int)n_items);
 	fprintf (ps.fp, "0 1 PSL_n1 {PSL_count exch dup PSL_word exch get length put} for\n");
 
 	fprintf (ps.fp, "\n%% For composite chars, set width and count to zero for 2nd char:\n\n");
@@ -3606,10 +3606,10 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 			fprintf (ps.fp, "XL YT M XL YB L XR YB L XR YT L P\n");
 		}
 		if (draw_box & 2) {	/* Fill */
-			fprintf (ps.fp, "V %.3lf %.3lf %.3lf C F U ", I_255 * boxfill_rgb[0], I_255 * boxfill_rgb[1], I_255 * boxfill_rgb[2]);
+			fprintf (ps.fp, "V %.3f %.3f %.3f C F U ", I_255 * boxfill_rgb[0], I_255 * boxfill_rgb[1], I_255 * boxfill_rgb[2]);
 		}
 		if (draw_box & 1) {	/* Stroke */
-			fprintf (ps.fp, "%.3lf %.3lf %.3lf C ", I_255 * boxpen_rgb[0], I_255 * boxpen_rgb[1], I_255 * boxpen_rgb[2]);
+			fprintf (ps.fp, "%.3f %.3f %.3f C ", I_255 * boxpen_rgb[0], I_255 * boxpen_rgb[1], I_255 * boxpen_rgb[2]);
 			fprintf (ps.fp, "S\n");
 		}
 		else 
@@ -3707,13 +3707,13 @@ void *ps_memory (void *prev_addr, size_t nelem, size_t size)
 	
 	if (prev_addr) {
 		if ((tmp = realloc ((void *) prev_addr, (size_t)(nelem * size))) == VNULL) {
-			fprintf (stderr, "PSL Fatal Error: Could not reallocate more memory, n = %d\n", nelem);
+			fprintf (stderr, "PSL Fatal Error: Could not reallocate more memory, n = %d\n", (int)nelem);
 			exit (EXIT_FAILURE);
 		}
 	}
 	else {
 		if ((tmp = calloc ((size_t) nelem, (unsigned) size)) == VNULL) {
-			fprintf (stderr, "PSL Fatal Error: Could not allocate memory, n = %d\n", nelem);
+			fprintf (stderr, "PSL Fatal Error: Could not allocate memory, n = %d\n", (int)nelem);
 			exit (EXIT_FAILURE);
 		}
 	}
@@ -3752,7 +3752,7 @@ static void bulkcopy (const char *fname)
 	char buf[80];
 	char fullname[BUFSIZ];
 
-	sprintf (fullname, "%s%cshare%cpslib%c%s.ps\0", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, fname);
+	sprintf (fullname, "%s%cshare%cpslib%c%s.ps", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, fname);
 
 	in = fopen (fullname, "r");
 	if (in == NULL)
