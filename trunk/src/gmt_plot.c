@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.65 2002-02-23 03:39:58 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.66 2002-03-18 16:23:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2451,8 +2451,10 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	char label[256], cmd[256];
 	PFI GMT_outside_save;
 	
-	if (!(MAPPING)) return;	/* Annotations and header already done by linear_axis */
-
+	if (!(MAPPING)) {
+		if (project_info.projection != POLAR) return;	/* Annotations and header already done by linear_axis */
+	}
+	
 	dx = (project_info.edge[0] || project_info.edge[2]) ? GMT_get_map_interval (0, GMT_ANNOT_UPPER) : 0.0;
 	dy = (project_info.edge[1] || project_info.edge[3]) ? GMT_get_map_interval (1, GMT_ANNOT_UPPER) : 0.0;
 
