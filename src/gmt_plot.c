@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.60 2002-01-07 20:24:37 ben Exp $
+ *	$Id: gmt_plot.c,v 1.61 2002-01-07 20:41:24 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2047,7 +2047,7 @@ void GMT_map_symbol (double *xx, double *yy, int *sides, double *line_angles, ch
 		if (project_info.three_D) {
 			int upside = FALSE, k;
 			double xp[2], yp[2], xt2, xt3, yt2, yt3, del_y;
-			double size, xsize, ysize, xshrink, yshrink, tilt, baseline_shift, cb, sb, a;
+			double xshrink, yshrink, tilt, baseline_shift, cb, sb, a;
 				
 			upside = (z_project.quadrant == 1 || z_project.quadrant == 4);
 			sincos (text_angle * D2R, &sb, &cb);
@@ -2099,9 +2099,6 @@ void GMT_map_symbol (double *xx, double *yy, int *sides, double *line_angles, ch
 			baseline_shift = d_atan2 (yt2 - yt1, xt2 - xt1) - d_atan2 (yp[0] - yy[i], xp[0] - xx[i]);
 			tilt = 90.0 - R2D * (d_atan2 (yt3 - yt1, xt3 - xt1) - d_atan2 (yt2 - yt1, xt2 - xt1));
 			tilt = tand (tilt);
-/*			size = gmtdefs.annot_font_size * gmtdefs.dpi * GMT_u2u[GMT_PT][GMT_INCH];
-			xsize = size * xshrink;
-			ysize = size * yshrink; */
 			/* Temporarily modify meaning of F0 */
 			sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
 				GMT_font_name[gmtdefs.annot_font], xshrink, yshrink * tilt, yshrink);
@@ -2469,16 +2466,12 @@ void GMT_map_annotate (double w, double e, double s, double n)
 
 	if (frame_info.header[0]) {	/* Make plot header for geographic maps*/
 		if (project_info.three_D && fabs (project_info.z_scale) < GMT_CONV_LIMIT) {	/* Only do this if flat 2-D plot */
-			double size, xsize, ysize;
 			
 			move_up = (MAPPING || frame_info.side[2] == 2);
 			ps_setfont (0);
 			del = ((gmtdefs.tick_length > 0.0) ? gmtdefs.tick_length : 0.0) + gmtdefs.header_offset;
 			del += ((move_up) ? (gmtdefs.annot_font_size) * GMT_u2u[GMT_PT][GMT_INCH] : 0.0);
 			GMT_xy_do_z_to_xy (project_info.xmax * 0.5, project_info.ymax+del, project_info.z_level, &x, &y);
-/*			size = gmtdefs.header_font_size * gmtdefs.dpi * GMT_u2u[GMT_PT][GMT_INCH];
-			xsize = size * z_project.xshrink[0];
-			ysize = size * z_project.yshrink[0]; */
 			sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
 				GMT_font_name[gmtdefs.header_font], z_project.xshrink[0], z_project.yshrink[0] * z_project.tilt[0], z_project.yshrink[0]);
 			ps_command (cmd);
@@ -2812,7 +2805,7 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 	int i, j, k, id, justify, n, test;
 	
 	double annot_off, label_off, *knots, sign, dy, tmp, xyz[3][2], len, x0, x1, y0, y1;
-	double pp[3], w[3], xp, yp, del_y, val_xyz[3], phi, size, xsize, ysize, val0, val1;
+	double pp[3], w[3], xp, yp, del_y, val_xyz[3], phi, val0, val1;
 	
 	PFI xyz_forward, xyz_inverse;
 	
@@ -2845,9 +2838,6 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 	xyz[1][0] = project_info.s;		xyz[1][1] = project_info.n;
 	xyz[2][0] = project_info.z_bottom;	xyz[2][1] = project_info.z_top;
 	
-/*	size = gmtdefs.annot_font_size * gmtdefs.dpi * GMT_u2u[GMT_PT][GMT_INCH];
-	xsize = size * z_project.xshrink[id];
-	ysize = size * z_project.yshrink[id]; */
 	ps_command ("gsave\n");
 	ps_comment ("Start of xyz-axis3D");
 	/* Temporarily modify meaning of F0 */
@@ -2945,9 +2935,6 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 		val_xyz[0] = z_project.corner_x[axis_no];
 		val_xyz[1] = z_project.corner_y[axis_no];
 		val_xyz[2] = project_info.z_level;
-/*		size = gmtdefs.label_font_size * gmtdefs.dpi * GMT_u2u[GMT_PT][GMT_INCH];
-		xsize = size * z_project.xshrink[id];
-		ysize = size * z_project.yshrink[id]; */
 		/* Temporarily redefine /F0 for tilted text */
 		sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
 			GMT_font_name[gmtdefs.label_font], z_project.xshrink[id], z_project.yshrink[id] * z_project.tilt[id], z_project.yshrink[id]);
@@ -3233,7 +3220,7 @@ void GMT_color_image (double x0, double y0, double x_side, double y_side, unsign
 void GMT_text3d (double x, double y, double z, double fsize, int fontno, char *text, double angle, int justify, int form)
 {
 	double xb, yb, xt, yt, xt1, xt2, xt3, yt1, yt2, yt3, del_y;
-	double ca, sa, xshrink, yshrink, tilt, baseline_shift, size, xsize, ysize;
+	double ca, sa, xshrink, yshrink, tilt, baseline_shift;
 	char cmd[256];
 	
         if (project_info.three_D) {
@@ -3256,9 +3243,6 @@ void GMT_text3d (double x, double y, double z, double fsize, int fontno, char *t
 		baseline_shift = R2D * (d_atan2 (yt2 - yt1, xt2 - xt1) - d_atan2 (yb - y, xb - x));	/* Rotation of baseline */
 		tilt = 90.0 - R2D * (d_atan2 (yt3 - yt1, xt3 - xt1) - d_atan2 (yt2 - yt1, xt2 - xt1));
 		tilt = tand (tilt);
-/*		size = fsize * gmtdefs.dpi * GMT_u2u[GMT_PT][GMT_INCH];
-		xsize = size * xshrink;
-		ysize = size * yshrink; */
 		/* Temporarily modify meaning of F0 */
 		sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
 			GMT_font_name[fontno], xshrink, yshrink * tilt, yshrink);
