@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.2 2004-09-06 02:37:43 pwessel Exp $
+ *	$Id: polygon_xover.c,v 1.3 2004-09-06 05:42:12 pwessel Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -62,7 +62,7 @@ main (int argc, char **argv)
 	
 	nx_tot = 0;
 	/* for (id1 = 0; id1 < n_id; id1++) { */
-	for (id1 = 11500; id1 < n_id; id1++) {
+	for (id1 = 28000; id1 < n_id; id1++) {
 		if (id1 == ANTARCTICA) continue;	/* Skip Antarctica */
 		ylist1 = GMT_init_track (P[id1].lon, P[id1].lat, P[id1].h.n);
 		if (full && id1 == 0) {	/* Euraafrica */
@@ -134,7 +134,6 @@ main (int argc, char **argv)
 			}
 			nx_tot += nx;
 		}
-		n_id++;
 		GMT_free ((void *)ylist1);
 	}
 	
