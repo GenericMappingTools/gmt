@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.13 2001-09-14 20:10:11 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.14 2001-09-17 23:44:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1002,10 +1002,9 @@ int GMT_cspline (double *x, double *y, int n, double *c)
 	int i, k;
 	double ip, s, dx1, i_dx2, *u;
 
-	/* Assumes that n >= 4 and x is monotonically increaseing */
+	/* Assumes that n >= 4 and x is monotonically increasing */
 
 	u = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "GMT_cspline");
-	c[1] = c[n] = u[1] = 0.0;
 	for (i = 1; i < n-1; i++) {
 		i_dx2 = 1.0 / (x[i+1] - x[i-1]);
 		dx1 = x[i] - x[i-1];
