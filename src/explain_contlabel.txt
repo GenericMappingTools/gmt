@@ -1,0 +1,21 @@
+.TP
+.B \-G
+Controls the placement of contour labels along the contours.  Choose among four controlling mechanisms:
+.br
+\fB\-G\fP[\fBd\fP]\fIdist\fP[c|i|m|p][/\fIwidth\fP] Give distance between labels in your measurement
+unit, and optionally append number of (x,y) values used to calculate a smooth label angle [Default is
+10\fBc\fP/10 or 4\fBi\fP/10].
+.br
+\fB\-Gl|L\fP\fIline1\fP[,\fIline2\fP,...] Give \fIstart\fP and \fIstop\fP coordinates for one or
+more comma-separated straight line segments.  Labels will be placed where these lines intersect the
+contours.  The format of each \fIline\fP specification is \fIstart/stop\fP, where \fIstart\fP and \fIstop\fP
+are either a specified point \fIlon/lat\fP or a 2-character key that uses the justification
+format employed in \fBpstext\fP to indicate a point on the map, given as [LCR][BMT], as well as
+Z+ and Z- which correspond to the locations of the global max and min locations in the grid, respectively.
+\fB\-GL\fP will interpolate the lines using greatcircle resampling [Default is straight line].
+.br
+\fB\-Gn\fP\fIn_cont\fP specifies the number of equidistant labels per contour line [1].
+.br
+\fB\-Gx|X\fP\fIxfile.d\fP reads the multi-segment file \fIxfile.d\fP and places labels at the intersections
+between the contours and the lines in\fIxfile.d\fP.  \fB\-GX\fP will resample the lines first along
+great-circle arcs.

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.71 2004-05-18 17:29:09 pwessel Exp $
+ *	$Id: gmt.h,v 1.72 2004-05-18 21:40:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -574,5 +574,6 @@ EXTERN_MSC double DEG2KM;			/*	Scale converting degrees to km on spheroid	*/
 #include "gmt_bcr.h"		/* Grid resampling functions */
 #include "gmt_calclock.h"	/* Calendar/time functions */
 #include "gmt_symbol.h"		/* Custom symbol functions */
+#include "gmt_contour.h"	/* Contour label structure and functions */
 
 #endif  /* _GMT_H */
