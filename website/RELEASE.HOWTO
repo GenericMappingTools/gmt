@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.6 2004-01-09 22:53:42 pwessel Exp $
+#	$Id: RELEASE.HOWTO,v 1.7 2004-09-30 03:39:15 pwessel Exp $
 #
 #		FOR 3.4.x SERIES
 
@@ -18,7 +18,7 @@ must ensure you do all the steps listed below:
     Finalize Announcements/Announce.3.*.  Make sure the macros
     in the gmtsite.macros file points to the actual FTP and WWW dirs.
 
-1.  Goto http://subversions.gnu.org/cgi-bin/cvsweb/autoconf/config/ and
+1.  run gurumake latest-config
     get the latest config.sub and config.guess.
     
 2.  Run cvs commit from the main GMT directory to check in any
@@ -27,8 +27,8 @@ must ensure you do all the steps listed below:
 3.  Compile and make all to make sure it all works (check examples)
     gurumake site
    
-4.  Tag the release:
-    cvs -q tag Release_2001_04_18_GMT_-3_4_x
+4.  Tag the release(s), e.g.
+    cvs -q tag Release_2004_10_01_GMT_-4_0_0
 
 5.  Prepare the archives:
     gurumake archive >& log
@@ -49,8 +49,10 @@ must ensure you do all the steps listed below:
        gmt_install_form.html, gmt_news.html, gmt_releases.html
     b) create web examples:
        make -f Makefile.site web
-    c) update ftp and web sites:
-       make -f Makefile.site update-version
+    c) test the update of ftp and web sites:
+       make -f Makefile.site update-version-test
+    c) If OK, update the "live" ftp and web sites:
+       make -f Makefile.site update-version-live
     d) Follow the instructions given by the make update-version call
    
 11. Send email notifications:
