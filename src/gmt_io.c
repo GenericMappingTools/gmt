@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.46 2002-04-11 20:37:40 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.47 2002-04-13 02:02:52 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1970,11 +1970,14 @@ int	GMT_scanf_geo (char *s, double *val)
 		case 2:
 			if ( (sscanf(scopy, "%d:%d:%lf", &id, &im, &ds) ) != 3) return (GMT_IS_NAN);
 			dd = im * GMT_MIN2DEG + ds * GMT_SEC2DEG;
-			if (id < 0) {
+			if (id < 0) {	/* Negative degrees present, subtract the fractional part */
 				dd = id - dd;
 			}
-			else {
+			else if (id > 0) {	/* Positive degrees present, add the fractional part */
 				dd = id + dd;
+			}
+			else {			/* degree part is 0; check if a leading sign is present */
+				if (scopy[0] == '-') dd = -dd;	/* Make fraction negative */
 			}
 			break;
 	}
