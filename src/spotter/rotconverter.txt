@@ -2,8 +2,8 @@
 .SH NAME
 rotconverter \- Manipulate finite and stage rotations 
 .SH SYNOPSIS
-\fBrotconverter\fP [+][-] \fIrotA\fP [ [+|- \fIrotB\fP ] [ +|- \fIrotC\fP ] ... \fB\-D 
-\-F\fP\fIin/out\fP \fB\-H\fP[\fBa|t\fP] \fB\-N \-S \-V\fP
+\fBrotconverter\fP [+][-] \fIrotA\fP [ [+|- \fIrotB\fP ] [ +|- \fIrotC\fP ] ... [ \fB\-D\fP ] 
+[ \-F\fP\fIin/out\fP ] [ \fB\-H\fP[\fBa|t\fP ]] [ \fB\-N\fP ] [ \fB\-S\fP ] [ \fB\-T\fP ] [\fB\-V\fP ]
 .SH DESCRIPTION
 \fBrotconverter\fP reads one or more plate motion models (rotations) stored in the
 given files.  If more than one plate motion model is given we will add or subtract
@@ -43,6 +43,9 @@ Place all output poles in the northern hemisphere [Default reports positive rota
 .TP
 .B \-S
 Place all output poles in the southern hemisphere [Default reports positive rotation angles].
+.TP
+.B \-T
+Transpose the final result, i.e., change the sign of the rotation angles.
 .TP
 .B \-V
 Verbose option: Report statistics of extracted rotations [Default is silent].
