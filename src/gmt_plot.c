@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.120 2004-05-11 17:56:42 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.121 2004-05-11 19:44:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4140,10 +4140,10 @@ void GMT_draw_mag_rose (struct MAP_ROSE *mr)
 	step[0] = irint (mr->a_int[0]);
 	step[1] = irint (mr->a_int[1]);
 	
-	GMT_setpen (&gmtdefs.tick_pen);
 	for (level = 0; level < 2; level++) {	/* Outer and inner angles */
 		if (level == 0 && mr->kind == 1) continue;	/* Sorry, not magnetic directions */
 		offset = (level == 0) ? mr->declination : 0.0;
+		GMT_setpen (&gmtdefs.tick_pen);
 		for (i = 0; i < 360; i++) {	/* 1-degree increments of tickmarks */
 			angle = offset + (double)i;
 			k = ((i%step[level]) == 0) ? 2 : ((i%5) ? 0 : 1);
@@ -4153,6 +4153,7 @@ void GMT_draw_mag_rose (struct MAP_ROSE *mr)
 			GMT_2D_to_3D (x, y, project_info.z_level, 2);
 			ps_segment (x[0], y[0], x[1], y[1]);
 		}
+		ps_setpaint (gmtdefs.background_rgb);
 		for (i = 0; i < 360; i += step[level]) {	/* Increments of annotations */
 			angle = 90.0 - (offset + (double)i);	/* Since i is azimuth */
 			sincos ((ew_angle + angle) * D2R, &s, &c);
@@ -4167,6 +4168,7 @@ void GMT_draw_mag_rose (struct MAP_ROSE *mr)
 		}
 	}
 	/* Draw extra tick for the 4 main compass directions */
+	GMT_setpen (&gmtdefs.tick_pen);
 	base = R[1] + gmtdefs.annot_offset[1] + gmtdefs.annot_font_size[1] / 72.0;
 	for (i = 0, k = 1; i < 360; i += 90, k++) {	/* 90-degree increments of tickmarks */
 		angle = (double)i;
@@ -4185,8 +4187,10 @@ void GMT_draw_mag_rose (struct MAP_ROSE *mr)
 			GMT_Nstar (x[0], y[0], 0.1*mr->size);
 		}
 		else {
+			ps_setpaint (gmtdefs.background_rgb);
 			x[0] = mr->x0 + (base + 2.0*tlen[2] + gmtdefs.label_offset) * c;	y[0] = mr->y0 + (base + 2.0*tlen[2] + gmtdefs.label_offset) * s;
 			GMT_text3D (x[0], y[0], project_info.z_level, gmtdefs.header_font_size, gmtdefs.header_font, mr->label[k], 0.0, ljust[k], 0);
+			GMT_setpen (&gmtdefs.tick_pen);
 		}
 	}
 	
@@ -4197,7 +4201,10 @@ void GMT_draw_mag_rose (struct MAP_ROSE *mr)
 		GMT_vector3D (x[0], y[0], x[1], y[1], project_info.z_level, M_VW * mr->size, M_HL * mr->size, M_HW * mr->size, gmtdefs.vector_shape, gmtdefs.background_rgb, TRUE);
 		t_angle = fmod (90.0 - mr->declination + 360.0, 360.0);	/* Now in 0-360 range */
 		if (fabs (t_angle) > 90.0) t_angle -= copysign (180.0, t_angle);
-		x[0] = mr->x0 + 2.0 * M_VW * mr->size * s;	y[0] = mr->y0 - 2.0 * M_VW * mr->size * c;
+		sincos (t_angle * D2R, &s, &c);
+		x[0] = mr->x0 - 2.0 * M_VW * mr->size * s;	y[0] = mr->y0 + 2.0 * M_VW * mr->size * c;
+		ps_setpaint (gmtdefs.background_rgb);
+		if (mr->dlabel[0] == '\0' || !strcmp(mr->dlabel, "-")) GMT_get_annot_label (mr->declination, mr->dlabel, TRUE, FALSE, 0, GMT_world_map);
 		GMT_text3D (x[0], y[0], project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, mr->dlabel, t_angle, 2, 0);
 	}
 	else {			/* Just geographic directions and a centered arrow */
