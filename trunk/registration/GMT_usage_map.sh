@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.5 2001-02-10 03:58:12 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.6 2001-03-08 17:18:51 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -32,7 +32,8 @@ EOF
 fi
 
 MAIL=/home/aa1/wessel/nsmail/GMT.sbd/Registrations	# Where incoming registrations reside
-REGHOME=/home/koolina/wessel/GMTdev/GMT/registration	# Where to do the work
+REGHOME=/home/aa/wessel/GMTdev/GMT/registration	# Where to do the work
+CVSROOT=":pserver:pwessel@gmt.soest.hawaii.edu:/home/gmt/gmt/cvs"
 
 cd $REGHOME
 if [ "X$GMTHOME" = "X" ]; then	# Must set environment
