@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.79 2005-03-03 20:49:20 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.80 2005-03-03 22:01:55 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -163,12 +163,12 @@ void GMT_io_init (void)
 	/* No need to init the structure as this is done in gmt_init.h directory */
 
 	int i;
-	
+
 	GMT_input  = GMT_input_ascii = GMT_ascii_input;
 	GMT_output = GMT_ascii_output;
 
 	GMT_io.give_report = TRUE;
-	
+
 	GMT_io.skip_if_NaN = (BOOLEAN *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (BOOLEAN), GMT_program);
 	GMT_io.in_col_type  = (int *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (int), GMT_program);
 	GMT_io.out_col_type = (int *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (int), GMT_program);
@@ -177,7 +177,7 @@ void GMT_io_init (void)
 	for (i = 2; i < BUFSIZ; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = GMT_IS_FLOAT;	/* Other columns default to floats */
 
 	/* Set the Y2K conversion parameters once */
-	
+
 	GMT_Y2K_fix.y2_cutoff = abs (gmtdefs.Y2K_offset_year) % 100;
 	GMT_Y2K_fix.y100 = gmtdefs.Y2K_offset_year - GMT_Y2K_fix.y2_cutoff;
 	GMT_Y2K_fix.y200 = GMT_Y2K_fix.y100 + 100;
@@ -278,7 +278,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 	int i, col_no, len, n_convert;
 	BOOLEAN done = FALSE, bad_record;
 	double val;
-	
+
 	/* GMT_ascii_input will skip blank lines and cshell comment lines which start
 	 * with # except when -M# is used of course.  Fields may be separated by
 	 * spaces, tabs, or commas.  The routine returns the actual
@@ -319,7 +319,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 			exit (EXIT_FAILURE);
 		}
 #endif
-			
+
 		for (i = len - 1; i >= 0 && strchr (" \t,\r\n", (int)line[i]); i--);
 		line[++i] = '\n';	line[++i] = '\0';	/* Now have clean C string with \n\0 at end */
  
@@ -361,7 +361,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 
 	if (gmtdefs.xy_toggle[0]) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
 	if (GMT_io.in_col_type[0] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
-	
+
 	return (col_no);
 }
 
@@ -400,7 +400,7 @@ int GMT_bin_double_input (FILE *fp, int *n, double **ptr)
 
 	return (n_read);
 }
-	
+
 int GMT_bin_double_input_swab (FILE *fp, int *n, double **ptr)
 {	/* Same, but must perform byte swabbing on 8-byte double after read */
 	int n_read, i;
@@ -437,13 +437,13 @@ int GMT_bin_double_input_swab (FILE *fp, int *n, double **ptr)
 
 	return (n_read);
 }
-	
+
 
 int GMT_bin_float_input (FILE *fp, int *n, double **ptr)
 {
 	int i, n_read;
 	static float GMT_f[BUFSIZ];
-	
+
 	GMT_io.status = 0;
 	if ((n_read = fread ((void *) GMT_f, sizeof (float), (size_t)(*n), fp)) != (*n)) {
 		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
@@ -476,7 +476,7 @@ int GMT_bin_float_input_swab (FILE *fp, int *n, double **ptr)
 	int i, n_read;
 	unsigned int *ii;
 	static float GMT_f[BUFSIZ];
-	
+
 	GMT_io.status = 0;
 	if ((n_read = fread ((void *) GMT_f, sizeof (float), (size_t)(*n), fp)) != (*n)) {
 		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
@@ -516,11 +516,11 @@ void GMT_adjust_periodic (void) {
 	/* If data is not inside the given range it will satisfy (lon > east) */
 	/* Now it will be outside the region on the same side it started out at */
 }
-	
+
 int GMT_ascii_output (FILE *fp, int n, double *ptr)
 {
 	int i, last, e = 0, wn = 0;
-	
+
 	if (gmtdefs.xy_toggle[1]) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
 	last = n - 1;						/* Last record, need to output linefeed instead of delimiter */
 
@@ -531,7 +531,7 @@ int GMT_ascii_output (FILE *fp, int n, double *ptr)
 			putc ('\n', fp);
 		else if (gmtdefs.field_delimiter[0])		/* Not last field, and a separator is required */
 			fprintf (fp, "%s", gmtdefs.field_delimiter);
-			
+
 		wn += e;
 	}
 	return ((e < 0) ? e : wn);
@@ -539,7 +539,7 @@ int GMT_ascii_output (FILE *fp, int n, double *ptr)
 
 void GMT_ascii_format_one (char *text, double x, int type)
 {
-	
+
 	if (GMT_is_dnan (x)) {
 		sprintf (text, "NaN");
 		return;
@@ -567,7 +567,7 @@ void GMT_ascii_format_one (char *text, double x, int type)
 int GMT_ascii_output_one (FILE *fp, double x, int col)
 {
 	char text[GMT_LONG_TEXT];
-	
+
 	GMT_ascii_format_one (text, x, GMT_io.out_col_type[col]);
 	return (fprintf (fp, "%s", text));
 }
@@ -595,13 +595,13 @@ void GMT_format_geo_output (BOOLEAN is_lat, double geo, char *text)
 	int d, m, s, m_sec;
 	char letter;
 	BOOLEAN seconds, minus;
-	
+
 	if (!is_lat) GMT_lon_range_adjust (GMT_io.geo.range, &geo);
 	if (GMT_io.geo.decimal) {	/* Easy */
 		sprintf (text, gmtdefs.d_format, geo);
 		return;
 	}
-	
+
 	if (GMT_io.geo.wesn) {	/* Trailing WESN */
 		if (is_lat)
 			letter = (fabs (geo) < GMT_CONV_LIMIT) ? 0 : ((geo < 0.0) ? 'S' : 'N');
@@ -611,7 +611,7 @@ void GMT_format_geo_output (BOOLEAN is_lat, double geo, char *text)
 	}
 	else	/* No letter means we print the NULL character */
 		letter = 0;
-		
+
 	seconds = (GMT_io.geo.order[2] > 0);		/* Are we doing dd:mm:ss */
 	minus = GMT_geo_to_dms (geo, seconds, GMT_io.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
 	if (minus) text[0] = '-';	/* Must manually insert leading minus sign when degree == 0 */
@@ -633,10 +633,10 @@ BOOLEAN GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m
 	BOOLEAN minus;
 	int isec, imin;
 	double sec, fsec, min, fmin, step;
-	
+
 	minus = (val < 0.0);
 	step = (fact == 0.0) ? GMT_CONV_LIMIT : 0.5 / fact;  		/* Precision desired in seconds (or minutes); else just deal with roundoff */
-	
+
 	if (seconds) {		/* Want dd:mm:ss[.xxx] format */
 		sec = GMT_DEG2SEC_F * fabs (val);		/* Convert to seconds */
 		isec = (int)floor (sec + step);			/* Integer seconds */
@@ -686,13 +686,13 @@ int GMT_bin_double_output (FILE *fp, int n, double *ptr)
 
 	return (fwrite ((void *) ptr, sizeof (double), (size_t)n, fp));
 }
-	
+
 int GMT_bin_double_output_swab (FILE *fp, int n, double *ptr)
 {	/* Binary output after swabing the data.  Use temp variable d so we dont modify the original data */
 	int i, k;
 	unsigned int *ii, jj;
 	double d;
-	
+
 	if (gmtdefs.xy_toggle[1]) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
 	for (i = k = 0; i < n; i++) {
 		if (GMT_io.out_col_type[i] == GMT_IS_RELTIME) ptr[i] = GMT_usert_from_dt ((GMT_dtime) ptr[i]);
@@ -708,12 +708,12 @@ int GMT_bin_double_output_swab (FILE *fp, int n, double *ptr)
 
 	return (k);
 }
-	
+
 int GMT_bin_float_output (FILE *fp, int n, double *ptr)
 {
 	int i;
 	static float GMT_f[BUFSIZ];
-	
+
 	if (gmtdefs.xy_toggle[1]) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
 	for (i = 0; i < n; i++) {
 		if (GMT_io.out_col_type[i] == GMT_IS_RELTIME)
@@ -733,7 +733,7 @@ int GMT_bin_float_output_swab (FILE *fp, int n, double *ptr)
 	int i, k;
 	unsigned int *ii;
 	static float GMT_f[BUFSIZ];
-	
+
 	if (gmtdefs.xy_toggle[1]) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
 	for (i = k = 0; i < n; i++) {
 		if (GMT_io.out_col_type[i] == GMT_IS_RELTIME)
@@ -764,7 +764,7 @@ void GMT_write_segmentheader (FILE *fp, int n)
 	else
 		fprintf (fp, "%s", GMT_io.segment_header);
 }
-		
+
 void GMT_init_z_io (struct GMT_Z_IO *r, BOOLEAN input)
 {
 	memset ((void *) r, 0, sizeof (struct GMT_Z_IO));
@@ -1176,12 +1176,12 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode)
 	 */
 
 	int i, j, order, n_y, n_m, n_d, n_j, n_w, n_delim, last, error = 0;
-	
+
 	for (i = 0; i < 4; i++) S->item_order[i] = S->item_pos[i] = -1;	/* Meaning not encountered yet */
-	
+
 	n_y = n_m = n_d = n_j = n_w = n_delim = 0;
 	S->delimiter[0][0] = S->delimiter[0][1] = S->delimiter[1][0] = S->delimiter[1][1] = 0;
-	
+
 	i = 0;
 	if (text[i] == '-') {	/* Leading hyphen means use %d and not %x.xd for integer formats */
 		S->compact = TRUE;
@@ -1211,7 +1211,7 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode)
 				S->mw_text = TRUE;
 				n_m = 2;
 				break;
-				
+
 			case 'W':	/* ISO Week flag */
 				S->iso_calendar = TRUE;
 				break;
@@ -1257,9 +1257,9 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode)
 				break;
 		}
 	}
-	
+
 	/* Then get the actual order by inverting table */
-	
+
 	for (i = 0; i < 4; i++) for (j = 0; j < 4; j++) if (S->item_pos[j] == i) S->item_order[i] = j;
 	S->Y2K_year = (n_y == 2);		/* Must supply the century when reading and take it out when writing */
 	S->truncated_cal_is_ok = TRUE;		/* May change in the next loop */
@@ -1296,15 +1296,15 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 	BOOLEAN big_to_small;
 	char *p;
 	ptrdiff_t off;
-	
+
 	for (i = 0; i < 3; i++) S->order[i] = -1;	/* Meaning not encountered yet */
 	sequence[0] = sequence[1] = sequence[2] = -1;
-	
+
 	S->delimiter[0][0] = S->delimiter[0][1] = S->delimiter[1][0] = S->delimiter[1][1] = 0;
 	n_h = n_m = n_s = n_x = n_dec = n_delim = 0;
-	
+
 	/* Determine if we do 12-hour clock (and what form of am/pm suffix) or 24-hour clock */
-	
+
 	if ((p = strstr (text, "am"))) {	/* Want 12 hour clock with am/pm */
 		S->twelve_hr_clock = TRUE;
 		strcpy (S->ampm_suffix[0], "am");
@@ -1331,7 +1331,7 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 	}
 	else
 		off = strlen (text);
-	
+
 	i = 0;
 	if (text[i] == '-') {	/* Leading hyphen means use %d and not %x.xd for integer formats */
 		S->compact = TRUE;
@@ -1383,9 +1383,9 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 				break;
 		}
 	}
-	
+
 	/* Then get the actual order by inverting table */
-	
+
 	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) if (S->order[j] == i) sequence[i] = j;
 	for (i = 0; i < 3; i++) S->order[i] = sequence[i];
 	big_to_small = TRUE;		/* May change in the next loop */
@@ -1419,16 +1419,16 @@ void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
 
 	int i1, i, j, order, n_d, n_m, n_s, n_x, n_dec, sequence[3], n_delim, last, error = 0;
 	BOOLEAN big_to_small;
-	
+
 	for (i = 0; i < 3; i++) S->order[i] = -1;	/* Meaning not encountered yet */
-	
+
 	n_d = n_m = n_s = n_x = n_dec = n_delim = 0;
 	S->delimiter[0][0] = S->delimiter[0][1] = S->delimiter[1][0] = S->delimiter[1][1] = 0;
 	sequence[0] = sequence[1] = sequence[2] = -1;
-	
+
 	S->range = 2;			/* -180/+180 range, may be overwritten below by + or - */
 	S->decimal = S->wesn = S->no_sign = FALSE;
-	
+
 	i1 = strlen (text) - 1;
 	for (i = order = 0; i <= i1; i++) {
 		switch (text[i]) {
@@ -1497,11 +1497,11 @@ void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
 				break;
 		}
 	}
-	
+
 	if (S->decimal) return;	/* Easy formatting choice */
-		
+
 	/* Then get the actual order by inverting table */
-	
+
 	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) if (S->order[j] == i) sequence[i] = j;
 	for (i = 0; i < 3; i++) S->order[i] = sequence[i];
 	big_to_small = TRUE;		/* May change in the next loop */
@@ -1547,11 +1547,11 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
 	 */
 	 
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
-	
+
 	GMT_get_hms_order (template, S);
-	
+
 	/* Craft the actual C-format to use for input/output clock strings */
-		
+
 	if (S->order[0] >= 0) {	/* OK, at least hours is needed */
 		char fmt[GMT_LONG_TEXT];
 		if (S->compact)
@@ -1593,11 +1593,11 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 	 
 	char fmt[GMT_LONG_TEXT];
 	int k;
-	
+
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
-	
+
 	GMT_get_ymdj_order (template, S, mode);
-		
+
 	/* Craft the actual C-format to use for i/o date strings */
 
 	if (S->item_order[0] >= 0 && S->iso_calendar) {	/* ISO Calendar string: At least Ione item is needed */
@@ -1666,14 +1666,14 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S)
 {
 	/* Determine the output of geographic location formats. */
-	 	
+	 
 	GMT_get_dms_order (template, S);	/* Get the order of degree, min, sec in output formats */
-	
+
 	if (S->no_sign) {
 		fprintf (stderr, "%s: ERROR: Unacceptable PLOT_DEGREE_FORMAT template %s. A not allowed\n", GMT_program, template);
 		exit (EXIT_FAILURE);
 	}
-	
+
 	if (S->decimal) {	/* Plain decimal degrees */
 		sprintf (S->x_format, "%s", gmtdefs.d_format);
 		sprintf (S->y_format, "%s", gmtdefs.d_format);
@@ -1711,11 +1711,11 @@ void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S)
 void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 {
 	int i, j;
-	
+
 	/* Determine the plot geographic location formats. */
-	
+
 	GMT_get_dms_order (template, S);	/* Get the order of degree, min, sec in output formats */
-	
+
 	if (S->decimal) {	/* Plain decimal degrees */
 		int len;
 		len = sprintf (S->x_format, "%s", gmtdefs.d_format);
@@ -1731,13 +1731,13 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 	}
 	else {			/* Must cover all the 6 forms of dd[:mm[:ss]][.xxx] */
 		char fmt[GMT_LONG_TEXT];
-		
+
 		for (i = 0; i < 3; i++)
 		  for (j = 0; j < 2; j++)
 		    GMT_plot_format[i][j] = GMT_memory (VNULL, GMT_LONG_TEXT, sizeof (char), GMT_program);
-		
+
 		/* Level 0: degrees only. index 0 is integer degrees, index 1 is [possibly] fractional degrees */
-		
+
 		sprintf (GMT_plot_format[0][0], "%%d");		/* ddd */
 		if (S->order[1] == -1 && S->n_sec_decimals > 0) /* ddd.xxx format */
 			sprintf (GMT_plot_format[0][1], "%%d.%%%d.%dd", S->n_sec_decimals, S->n_sec_decimals);
@@ -1749,9 +1749,9 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 			strcat (GMT_plot_format[0][0], fmt);
 			strcat (GMT_plot_format[0][1], fmt);
 		}
-		
+
 		/* Level 1: degrees and minutes only. index 0 is integer minutes, index 1 is [possibly] fractional minutes  */
-		
+
 		sprintf (GMT_plot_format[1][0], "%%d");	/* ddd */
 		sprintf (GMT_plot_format[1][1], "%%d");
 		if (gmtdefs.degree_symbol != gmt_none)
@@ -1777,7 +1777,7 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 		}
 
 		/* Level 2: degrees, minutes, and seconds. index 0 is integer seconds, index 1 is [possibly] fractional seconds  */
-		
+
 		sprintf (GMT_plot_format[2][0], "%%d");
 		sprintf (GMT_plot_format[2][1], "%%d");
 		if (gmtdefs.degree_symbol != gmt_none)
@@ -1812,9 +1812,9 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 			strcat (GMT_plot_format[2][0], fmt);
 			strcat (GMT_plot_format[2][1], fmt);
 		}
-		
+
 		/* Finally add %c for the W,E,S,N char (or NULL) */
-	
+
 		for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) strcat (GMT_plot_format[i][j], "%c");
 	}
 }
@@ -1822,9 +1822,9 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 int GMT_decode_coltype (char *arg)
 {
 	/* Routine will decode the -f[i|o]<col>|<colrange>[t|T|g],... arguments */
-	
+
 	char copy[BUFSIZ], *p, *c;
-	int i, k = 1, start = -1, stop = -1, ic, code, *col;
+	int i, k = 1, start = -1, stop = -1, ic, code, *col = VNULL;
 	BOOLEAN both_i_and_o = FALSE;
 
 	if (arg[0] == 'i')	/* Apply to input columns only */
@@ -1835,9 +1835,9 @@ int GMT_decode_coltype (char *arg)
 		both_i_and_o = TRUE;
 		k = 0;
 	}
-	
+
 	strncpy (copy, &arg[k], BUFSIZ);	/* arg should NOT have a leading i|o part */
-	
+
 	if (copy[0] == 'g') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y */
 		if (both_i_and_o) {
 			GMT_io.in_col_type[0] = GMT_io.out_col_type[0] = GMT_IS_LON;
@@ -1849,7 +1849,7 @@ int GMT_decode_coltype (char *arg)
 		}
 		return (0);
 	}
-			
+
 	p = strtok (copy, ",");		/* Get first token */
 	while (p) {			/* While it is not empty, process it */
 		if ((c = strchr (p, '-')))	/* Range of columns given. e.g., 7-9T */
@@ -1881,14 +1881,14 @@ int GMT_decode_coltype (char *arg)
 				return 1;
 				break;
 		}
-		
+
 		/* Now set the code for these columns */
-			
+
 		if (both_i_and_o)
 			for (i = start; i <= stop; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = code;
 		else
 			for (i = start; i <= stop; i++) col[i] = code;
-		
+
 		p = strtok (NULL, ",");	/* Next entry */
 	}
 	return (0);
@@ -1897,24 +1897,24 @@ int GMT_decode_coltype (char *arg)
 int	GMT_scanf_clock (char *s, double *val)
 {
 	/* On failure, return -1.  On success, set val and return 0.
-	
+
 	Looks for apAP, but doesn't discover a failure if called
 	with "11:13:15 Hello, Walter", because it will find an a. 
-	
+
 	Doesn't check whether use of a or p matches stated intent
 	to use twelve_hour_clock.
-	
+
 	ISO standard allows 24:00:00, so 86400 is not too big.
 	If the day of this clock might be a day with a leap second, 
 	(this routine doesn't know that) then we should also allow
 	86401.  A value exceeding 86401 is an error.
 	*/
-	
+
 	int	k, hh, mm, add_noon = 0;
 	int	hh_limit = 24;	/* ISO std allows 24:00:00  */
 	double	ss, x;
 	char	*p;
-	
+
 	if ( (p = strpbrk (s, "apAP") ) ) {
 		switch (p[0]) {
 			case 'a':
@@ -1932,12 +1932,12 @@ int	GMT_scanf_clock (char *s, double *val)
 				break;
 		}
 	}
-	
+
 	k = sscanf(s, GMT_io.clock_input.format, &hh, &mm, &ss);
 	if (k == 0) return (-1);
 	if (hh < 0 || hh > hh_limit) return (-1);
-	
-	x = add_noon + 3600*hh;	
+
+	x = add_noon + 3600*hh;
 	if (k > 1) {
 		if (mm < 0 || mm > 59) return (-1);
 		x += 60*mm;
@@ -1949,7 +1949,7 @@ int	GMT_scanf_clock (char *s, double *val)
 	*val = x;
 	return (0);
 }
-	
+
 int	GMT_scanf_calendar (char *s, GMT_cal_rd *rd)
 {
 	/* On failure, return -1.  On success, set rd and return 0 */
@@ -1967,12 +1967,12 @@ int	GMT_scanf_ISO_calendar (char *s, GMT_cal_rd *rd) {
 	Assumes also that it is always OK to fill in missing bits.  */
 
 	int	k, n, ival[3];
-	
+
 	if ( (n = sscanf(s, GMT_io.date_input.format, &ival[0], &ival[1], &ival[2]) ) == 0) return (-1);
-	
+
 	/* Handle possible missing bits:  */
 	for (k = n; k < 3; k++) ival[k] = 1;
-	
+
 	if (ival[1] < 1 || ival[1] > 53) return (-1);
 	if (ival[2] < 1 || ival[2] > 7) return (-1);
 	if (GMT_io.date_input.Y2K_year) {
@@ -1986,12 +1986,12 @@ int	GMT_scanf_ISO_calendar (char *s, GMT_cal_rd *rd) {
 int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd)
 {
 	/* Return -1 on failure.  Set rd and return 0 on success.  
-	
+
 	For gregorian calendars.  */
-	
+
 	int	k, ival[4];
 	char month[16];
-	
+
 	if (GMT_io.date_input.day_of_year) {
 		/* Calendar uses year and day of year format.  */
 		if ( (k = sscanf (s, GMT_io.date_input.format,
@@ -2014,9 +2014,9 @@ int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd)
 		*rd = GMT_rd_from_gymd (ival[0], 1, 1) + ival[3] - 1;
 		return (0);
 	}
-	
+
 	/* Get here when calendar type has months and days of months.  */
-	
+
 	if (GMT_io.date_input.mw_text) {	/* Have month name abbreviation in data format */
 		switch (GMT_io.date_input.item_pos[1]) {	/* Order of month in data string */
 			case 0:	/* e.g., JAN-24-1987 or JAN-1987-24 */
@@ -2057,13 +2057,13 @@ int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd)
 		if (ival[0] < 0 || ival[0] > 99) return (-1);
 		ival[0] = GMT_y2_to_y4_yearfix (ival[0]);
 	}
-	
+
 	if (GMT_g_ymd_is_bad (ival[0], ival[1], ival[2]) ) return (-1);
-	
+
 	*rd = GMT_rd_from_gymd (ival[0], ival[1], ival[2]);
 	return (0);
 }
-		
+
 
 int	GMT_scanf_geo (char *s, double *val)
 {
@@ -2080,12 +2080,12 @@ int	GMT_scanf_geo (char *s, double *val)
 	precision format in the minutes or seconds, and does
 	more error checking.  However, this is not optimized
 	for speed (yet).  WHFS, 16 Aug 2001
-	
+
 	note:  mismatch handling (e.g. this routine finds a lon
 	but calling routine expected a lat) is not done here.
 
 	*/
-	
+
 	char	scopy[GMT_TEXT_LEN], suffix, *p, *p2;
 	double	dd, dm, ds;
 	int	retval = GMT_IS_FLOAT;
@@ -2148,9 +2148,9 @@ int	GMT_scanf_geo (char *s, double *val)
 		if (ncolons > 2) return (GMT_IS_NAN);
 		p = &p2[1];
 	}
-	
+
 	if (ncolons && retval == GMT_IS_FLOAT) retval = GMT_IS_GEO;
-	
+
 	switch (ncolons) {
 		case 0:
 			if ( (sscanf(scopy, "%lf", &dd) ) != 1) return (GMT_IS_NAN);
@@ -2186,7 +2186,7 @@ int	GMT_scanf_geo (char *s, double *val)
 	return (retval);
 }
 
-		
+
 int	GMT_scanf_float (char *s, double *val)
 {
 	/* Try to decode a value from s and store
@@ -2196,7 +2196,7 @@ int	GMT_scanf_float (char *s, double *val)
 	However, D and d are permitted to map to e
 	if this would result in a success.  This
 	allows Fortran Double Precision to be readable.
-	
+
 	On success, return GMT_IS_FLOAT and store val.
 	On failure, return GMT_IS_NAN and do not touch val.
 	*/
@@ -2204,7 +2204,7 @@ int	GMT_scanf_float (char *s, double *val)
 	char	scopy[GMT_TEXT_LEN], *p;
 	double	x;
 	int	j,k;
-	
+
 	x = strtod (s, &p);
 	if (p[0] == 0) {
 		/* Success (non-Fortran).  */
@@ -2241,23 +2241,23 @@ int	GMT_scanf (char *s, int expectation, double *val)
 	are
 		GMT_IS_FLOAT	we expect an uncomplicated float.
 	*/
-	
+
 	char	calstring[GMT_TEXT_LEN], clockstring[GMT_TEXT_LEN], *p;
 	double	x;
 	int	callen, clocklen;
 	GMT_cal_rd rd;
-	
-	
+
+
 	if (expectation & GMT_IS_GEO) {
 		/* True if either a lat or a lon is expected  */
 		return (GMT_scanf_geo (s, val));
 	}
-	
+
 	if (expectation == GMT_IS_FLOAT) {
 		/* True if no special format is expected or allowed  */
 		return (GMT_scanf_float (s, val));
 	}
-	
+
 	if (expectation == GMT_IS_RELTIME) {
 		/* True if we expect to read a float with no special
 		formatting, and then convert that float to our time
@@ -2266,7 +2266,7 @@ int	GMT_scanf (char *s, int expectation, double *val)
 		*val = GMT_dt_from_usert (x);
 		return (GMT_IS_ABSTIME);
 	}
-	
+
 	if (expectation == GMT_IS_ABSTIME) {
 		/* True when we expect to read calendar and/or
 		clock strings in user-specified formats.  If both 
@@ -2277,10 +2277,10 @@ int	GMT_scanf (char *s, int expectation, double *val)
 		If only a clock string is present, then it must
 		be preceded by a T:  T<clock_string>, and the time
 		will be treated as if on day one of our calendar.  */
-		
+
 		callen = strlen (s);
 		if (callen < 2) return (GMT_IS_NAN);	/* Maybe should be more than 2  */
-		
+
 		if ( (p = strchr ( s, (int)('T') ) ) == NULL) {
 			/* There is no T.  Put all of s in calstring.  */
 			clocklen = 0;
@@ -2313,11 +2313,11 @@ int	GMT_scanf (char *s, int expectation, double *val)
 		}
 		return (GMT_IS_ABSTIME);
 	}
-	
+
 	if (expectation == GMT_IS_ARGTIME) {
 		return (GMT_scanf_argtime (s, val));
 	}
-	
+
 	if (expectation & GMT_IS_UNKNOWN) {
 		/* True if we dont know but must try both geographic or float formats  */
 		return (GMT_scanf_geo (s, val));
@@ -2339,34 +2339,34 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t)
 			time relative to user units and epoch;
 		OR
 			-absolute time in a restricted format.
-		
+
 		The absolute format must be restricted because
 		we cannot use '/' as a delimiter in an arg
 		string, but we might allow the user to use that
 		in a data file (in gmtdefs.[in/out]put_date_format.
 		Therefore we cannot use the user's date format
 		string here, and we hard-wire something here.
-		
+
 		The relative format must be decodable by GMT_scanf_float().
-		
+
 		The absolute format must have a T.  If it has a clock
 		string then it must be of the form 
 		<complete_calstring>T<clockstring>
 		or just T<clockstring>.  If it has no clockstring then
 		it must be of the form 
 		<partial or complete calstring>T.
-		
+
 		A <clockstring> may be partial (e.g. hh or hh:mm) or
 		complete (hh:mm:ss[.xxx]) but it must use ':' for a
 		delimiter and it must be readable with "%2d:%2d:%lf".
 		Also, it must be a 24 hour clock (00:00:00 to 23:59:59.xxx,
 		or 60.xxx on a leap second); no am/pm suffixes allowed.
-		
+
 		A <calstring> must be of the form
 		[-]yyyy[-mm[-dd]]T readable after first '-' with "%4d-%2d-%2dT" (Gregorian year,month,day)
 		[-]yyyy[-jjj]T readable after first '-' with "%4d-%3dT" (Gregorian year, day-of-year)
 		yyyy[-Www[-d]]T (ISO week calendar)
-			
+
 	Upon failure, returns GMT_IS_NAN.  Upon success, sets
 	t and returns GMT_IS_ABSTIME.
 	We could have it return either ABSTIME or RELTIME to indicate
@@ -2376,12 +2376,12 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t)
 	That is, we always return an absolute time if we haven't failed,
 	so that is the returned value.
 	*/
-	
+
 	double	ss, x;
 	char 	*pw, *pt;
 	int	hh, mm, j, k, i, dash, ival[3];
 	BOOLEAN negate_year = FALSE, got_yd = FALSE;
-	
+
 	if ( (pt = strchr (s, (int)'T') ) == CNULL) {
 		/* There is no T.  This must decode with GMT_scanf_float()
 			or we die.  */
@@ -2404,7 +2404,7 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t)
 			x += ss;
 		}
 	}
-	
+
 	k = 0;
 	while (s[k] && s[k] == ' ') k++;
 	if (s[k] == '-') negate_year = TRUE;
@@ -2413,9 +2413,9 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t)
 		*t = GMT_rdc2dt ( (GMT_cal_rd)1, x);
 		return (GMT_IS_ABSTIME);
 	}
-	
+
 	if (!(isdigit ( (int)s[k]) ) ) return (GMT_IS_NAN);	/* Bad format */
-	
+
 	if ( (pw = strchr (s, (int)'W') ) ) {
 		/* There is a W.  ISO calendar or junk.  */
 		if (strlen(pw) <= strlen(pt)) {
@@ -2433,7 +2433,7 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t)
 		*t = GMT_rdc2dt ( GMT_rd_from_iywd (ival[0], ival[1], ival[2]), x);
 		return (GMT_IS_ABSTIME);
 	}
-	
+
 	for (i = negate_year; s[k+i] && s[k+i] != '-'; i++);;	/* Goes to first - between yyyy and jjj or yyyy and mm */
 	dash = ++i;				/* Position of first character after the first dash (could be end of string if no dash) */
 	while (s[k+i] && !(s[k+i] == '-' || s[k+i] == 'T')) i++;	/* Goto the ending T character or get stuck on a second - */
@@ -2456,7 +2456,7 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t)
 		if (GMT_g_ymd_is_bad (ival[0], ival[1], ival[2]) ) return (GMT_IS_NAN);
 		*t = GMT_rdc2dt (GMT_rd_from_gymd (ival[0], ival[1], ival[2]), x);
 	}
-	
+
 	return (GMT_IS_ABSTIME);
 }
 
@@ -2469,9 +2469,9 @@ int	GMT_scanf_arg (char *s, int expectation, double *val)
 	 * compatibility: if we encounter geographic data it will also set the GMT_io.type[]
 	 * variable accordingly so that data i/o will work as in 3.4
 	 */
-	
+
 	char c;
-	
+
 	if (expectation == GMT_IS_UNKNOWN) {	/* Expectation for this column not set - must be determined if possible */
 		if (strchr (s, (int)'T')) {				/* Found a T in the argument - assume Absolute time */
 			expectation = GMT_IS_ABSTIME;
@@ -2489,9 +2489,9 @@ int	GMT_scanf_arg (char *s, int expectation, double *val)
 			expectation = GMT_IS_FLOAT;
 		}
 	}
-	
+
 	/* OK, here we have an expectation, now call GMT_scanf */
-	
+
 	return (GMT_scanf (s, expectation, val));
 }
 
@@ -2504,7 +2504,7 @@ int GMT_points_init (char *file, double **xp, double **yp, double **dp, double d
 	char mode[4];
 	int i = 0, n_alloc = GMT_CHUNK, n_fields, n_expected_fields;
 	BOOLEAN ascii;
-	PFI psave;
+	PFI psave = VNULL;
 
 	x = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
 	y = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
@@ -2543,7 +2543,7 @@ int GMT_points_init (char *file, double **xp, double **yp, double **dp, double d
 			fprintf (stderr, "%s: Failure to read file %s near line %d\n", GMT_program, file, i);
 			exit (EXIT_FAILURE);
 		}
-		
+
 		x[i] = in[0];	y[i] = in[1];
 		d[i] = (ascii && n_expected_fields >= 3 && dist == 0.0) ? in[2] : dist;
 		if (MAPPING) {
@@ -2562,12 +2562,12 @@ int GMT_points_init (char *file, double **xp, double **yp, double **dp, double d
 	}
 	GMT_fclose (fp);
 	if (!use_GMT_io) GMT_input = psave;	/* Restore former pointer */
-		
+
 	if (i == 0) {
 		fprintf (stderr, "%s: File %s is empty!\n", GMT_program, file);
 		exit (EXIT_FAILURE);
 	}
-	
+
 	x = (double *) GMT_memory ((void *)x, (size_t)i, sizeof (double), GMT_program);
 	y = (double *) GMT_memory ((void *)y, (size_t)i, sizeof (double), GMT_program);
 	d = (double *) GMT_memory ((void *)d, (size_t)i, sizeof (double), GMT_program);
@@ -2587,8 +2587,8 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 	BOOLEAN poly = FALSE, check_cap, save, ascii;
 	double d, dlon, lon_sum = 0.0, *in;
 	char buffer[BUFSIZ], *t, mode[4];
-	PFI psave;
-		
+	PFI psave = VNULL;
+
 	if (use_GMT_io) {	/* Use GMT_io to determine if input is ascii/binary, else it is ascii */
 		n_expected_fields = (GMT_io.binary[GMT_IN]) ? GMT_io.ncol[GMT_IN] : BUFSIZ;
 		strcpy (mode, GMT_io.r_mode);
@@ -2603,7 +2603,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 	}
 	if (fabs (dist + 9999.0) < GMT_CONV_LIMIT) poly = TRUE;	/* A polygon */
 	check_cap = (poly && MAPPING);
-	
+
 	e = (struct GMT_LINES *) GMT_memory (VNULL, (size_t)i_alloc, sizeof (struct GMT_LINES), GMT_program);
 
 	if ((fp = GMT_fopen (file, mode)) == NULL) {
@@ -2613,7 +2613,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 
 	save = GMT_io.multi_segments;	/* Must set this to TRUE temporarily */
 	GMT_io.multi_segments = TRUE;
-	
+
 	n_fields = GMT_input (fp, &n_expected_fields, &in);
 	if (GMT_io.status & GMT_IO_EOF) {
 		fprintf (stderr, "%s: File %s is empty!\n", GMT_program, file);
@@ -2649,7 +2649,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 			e[i].label = (char *) GMT_memory ((void *)VNULL, (size_t)(strlen(buffer)+1), sizeof (char), GMT_program);
 			strcpy (e[i].label, buffer);
 		}
-		
+
 		e[i].lon = (double *) GMT_memory (VNULL, (size_t)j_alloc, sizeof (double), GMT_program);
 		e[i].lat = (double *) GMT_memory (VNULL, (size_t)j_alloc, sizeof (double), GMT_program);
 
@@ -2658,7 +2658,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 				fprintf (stderr, "%s: Mismatch between actual (%d) and expected (%d) fields near line %d\n", GMT_program, n_fields, n_expected_fields, i);
 				exit (EXIT_FAILURE);
 			}
-			
+
 			n_read++;
 			if (n_expected_fields < 2) {
 				fprintf (stderr, "%s: Failure to read file %s near line %d\n", GMT_program, file, n_read);
@@ -2698,16 +2698,16 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 				lon_sum += dlon;
 			}
 		}
-		
+
 		/* Reallocate to free up some memory */
-		
+
 		e[i].lon = (double *) GMT_memory ((void *)e[i].lon, (size_t)e[i].np, sizeof (double), GMT_program);
 		e[i].lat = (double *) GMT_memory ((void *)e[i].lat, (size_t)e[i].np, sizeof (double), GMT_program);
-		
+
 		if (check_cap && fabs (fabs (lon_sum) - 360.0) < GMT_CONV_LIMIT) {	/* Contains a pole */
 			e[i].polar = (e[i].lat[0] < 0.0) ? -1 : +1;	/* S or N pole */
 		}
-		
+
 		if (i == (i_alloc-1)) {
 			i_alloc += GMT_CHUNK;
 			e = (struct GMT_LINES *) GMT_memory ((void *)e, (size_t)i_alloc, sizeof (struct GMT_LINES), GMT_program);
