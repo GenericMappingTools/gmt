@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.78 2003-02-05 17:09:53 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.79 2003-02-06 18:18:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -466,8 +466,8 @@ void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct PLOT_
 			if (T->upper_case) GMT_str_toupper (GMT_time_language.day_name[calendar.iso_d%7][T->flavor]);
 			sprintf (string, "%s", GMT_time_language.day_name[calendar.iso_d%7][T->flavor]);
 			break;
-		case 'k':	/* Day of the month */
-			(P->date.compact) ? sprintf (string, "%d", calendar.day_m) : sprintf (string, "%2.2d", calendar.day_m);
+		case 'k':	/* Day of the week 1-7 */
+			sprintf (string, "%d", (calendar.day_w - gmtdefs.time_week_start + 7) % 7 + 1);
 			break;
 		case 'D':	/* Day, via date format */
 			GMT_format_calendar (string, CNULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
