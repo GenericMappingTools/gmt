@@ -4,8 +4,8 @@ backtracker \- Forward and Backward flowlines and hotspot tracks
 .SH SYNOPSIS
 \fBbacktracker\fP [\fIinfile(s)\fP] \fB\-E\fP\fIstage_file\fP 
 [ \fB\-A\fP[\fIyoung/old\fP] ] [ \fB\-C\fP ] [ \fB\-Df|b\fP ] [ \fB\-H\fP[\fInrec\fP] ] 
-[ \fB\-Lf|b\fP\fIstep\fP ] [ \fB\-N\fP\fIupper_age\fP ] 
-[ \fB\-S\fP\fIfilestem\fP ] [ \fB\-T\fP\fIzero_age\fP ] [ \fB\-V\fP ] [ \fB\-:\fP ] 
+[ \fB\-Lf|b\fP\fIstep\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP\fIupper_age\fP ] 
+[ \fB\-Q\fP\fIfixed_age\fP ] [ \fB\-S\fP\fIfilestem\fP ] [ \fB\-T\fP\fIzero_age\fP ] [ \fB\-V\fP ] [ \fB\-:\fP ] 
 [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
 .SH DESCRIPTION
 \fBbacktracker\fP reads (longitude, latitude, age) positions from \fIinfiles\fP 
@@ -57,9 +57,13 @@ draw flowlines, while \fB\-Lb\fP will draw backtrack (hotspot track) paths.
 Append sampling interval in km.  When \fB\-LF\fP or \fB\-LB\fP is used, the
 third output column will contain the stage id (1 is youngest) [Default is
 along-track ages].
+#include "explain_-M.txt"
 .TP
 .B \-N
 Set the maximum age to extend the oldest stage back in time [Default is no extension].
+.TP
+.B \-Q
+Assign a fixed age to all positions.  Only lon, lat input is expected.
 .TP
 .B \-S
 When \fB\-L\fP is set, the tracks are normally written to stdout as a multisegment
