@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.12 2004-08-18 23:19:45 pwessel Exp $
+#	$Id: Makefile,v 1.13 2004-08-24 21:18:11 pwessel Exp $
 #
 # makefile for x2sys directory
 #
@@ -32,6 +32,7 @@ install:		all
 				mkdir -p $(libdir); \
 			fi
 			if [ ! $(libdir) = $(srcdir) ]; then \
+				rm -f $(libdir)/libx2sys.*; \
 				$(INSTALL) -m 444 libx2sys.a $(libdir); \
 				if [ -f libx2sys.$(SL) ]; then \
 					$(INSTALL) -m 444 libx2sys.$(SL) $(libdir); \

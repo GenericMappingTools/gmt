@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.5 2004-05-24 18:39:31 pwessel Exp $
+#	$Id: Makefile,v 1.6 2004-08-24 21:18:11 pwessel Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -51,6 +51,7 @@ install:	all
 			mkdir -p $(libdir); \
 		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
+			rm -f $(libdir)/libgmt_mgg.*; \
 			$(INSTALL) -m 444 libgmt_mgg.a $(libdir); \
 			if [ -f libgmt_mgg.$(SL) ]; then \
 				$(INSTALL) -m 444 libgmt_mgg.$(SL) $(libdir); \
