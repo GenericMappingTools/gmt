@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 07
 REM
-REM		$Id: job07.bat,v 1.2 2002-01-30 02:17:57 ben Exp $
+REM		$Id: job07.bat,v 1.3 2002-01-30 03:40:56 ben Exp $
 REM
 REM Purpose:	Make a basemap with earthquakes and isochrons etc
 REM GMT progs:	pscoast, pstext, psxy
@@ -26,7 +26,7 @@ echo -2.15 17.65 >> tmp
 echo -14.35 17.65 >> tmp
 psxy -R -JM -O -K -G255 -W0.5p -A tmp >> example_07.ps
 echo -13.5 16.5 | psxy -R -JM -O -K -Sc0.08i -G255 -W0.5p >> example_07.ps
-echo -12.5 16.5 18 0 6 5 ISC Earthquakes | pstext -R -JM -O -K >> example_07.ps
+echo -12.5 16.5 18 0 6 LM ISC Earthquakes | pstext -R -JM -O -K >> example_07.ps
 echo -43 -5 30 0 1 CM SOUTH > tmp
 echo -43 -8 30 0 1 CM AMERICA >> tmp
 echo -7 11 30 0 1 CM AFRICA >> tmp
