@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.96 2004-05-23 05:52:07 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.97 2004-05-23 09:08:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1618,6 +1618,7 @@ void GMT_free (void *addr)
 
 int GMT_contlabel_init (struct GMT_CONTOUR *G)
 {	/* Assign default values to structure */
+	memset ((void *)G, 0, sizeof (struct GMT_CONTOUR));
 	G->half_width = 5;
 	G->label_font_size = 9.0;
 	G->label_dist_spacing = 4.0;	/* Inches */
@@ -1637,13 +1638,14 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 	int k, bad = 0;
 	char txt_cpy[BUFSIZ], txt_a[32], txt_b[32], *p;
 	
-	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<size>][+g<fill>][+j<just>][+l<label>][+o|O|t][+p<pen>] strings */
+	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<size>][+g<fill>][+j<just>][+l<label>][+o|O|t][+p<pen>][+u<unit>] strings */
 	
-	if (!strchr (txt, '+')) return (GMT_contlabel_specs_old (txt, G));	/* Old-style info strings */
+	for (k = 0; txt[k] && txt[k] != '+'; k++);
+	if (!txt[k]) return (GMT_contlabel_specs_old (txt, G));	/* Old-style info strings */
 	
 	/* Decode new-style +separated substrings */
 	
-	strcpy (txt_cpy, txt);
+	strcpy (txt_cpy, &txt[k+1]);
 	p = strtok (txt_cpy, "+");	/* Break into sections separated by + */
 	while (p) {
 		switch (p[0]) {
@@ -1706,6 +1708,10 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 				
 			case 't':	/* Transparency is default, but just in case */
 				G->box = 0;
+				break;
+
+			case 'u':	/* Unit specification */
+				if (p[1]) strcpy (G->unit, &p[1]);
 				break;
 
 			default:
@@ -1928,7 +1934,11 @@ void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_C
 	int i, k, start, stop, c;
 	double *xp, *yp, f, label_height, label_width, x_last, y_last;
 	
-	if (G->n_label == 0) return;	/* Nothing to do */
+	if (G->n_label == 0) {
+		if (project_info.three_D) GMT_2D_to_3D (x, y, G->z_level, n);
+		ps_line (x, y, n, 3, FALSE, TRUE);
+		return;	/* Nothing more to do */
+	}
 	
 	if (G->n_label > 1) qsort((void *)G->L, (size_t)G->n_label, sizeof (struct GMT_LABEL *), sort_label_struct);
 
@@ -1959,6 +1969,7 @@ void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_C
 		xp[c] = x[stop+1] - f * (x[stop+1] - x[stop]);
 		yp[c++] = y[stop+1] - f * (y[stop+1] - y[stop]);
 		ps_comment ("Next segment");
+		if (project_info.three_D) GMT_2D_to_3D (xp, yp, G->z_level, c);
 		ps_line (xp, yp, c, 3, FALSE, TRUE);
 		/* Go to other side */
 		stop = G->L[k]->node;
@@ -1973,7 +1984,7 @@ void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_C
 		xp[c] = x[i];
 		yp[c++] = y[i];
 	}
-	if (project_info.three_D) GMT_2D_to_3D (xp, yp, G->z_level, 4);
+	if (project_info.three_D) GMT_2D_to_3D (xp, yp, G->z_level, c);
 	ps_line (xp, yp, c, 3, FALSE, TRUE);
 	GMT_free ((void *)xp);
 	GMT_free ((void *)yp);
@@ -2673,7 +2684,7 @@ void GMT_draw_contour (double *xx, double *yy, int *pen, int nn, char *label, ch
 			dist_offset = (closed && G->dist_kind == 0) ? G->label_dist_spacing - one : 0.0;	/* Label closed contours longer than 1 inch */
 			last_label_dist = 0.0;
 			for (i = 1; i < nn; i++) {
-				if (GMT_pen[i] == 3) continue;
+				if (pen[i] == 3) continue;
 
 				dist = track_dist[i] + dist_offset - last_label_dist;
 				if (dist > G->label_dist_spacing) {	/* Time for label */

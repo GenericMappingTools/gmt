@@ -4,7 +4,7 @@ grdcontour \- contouring of 2-D gridded data sets
 .SH SYNOPSIS
 \fBgrdcontour\fP \fIgrdfile\fP \fB\-C\fP\fIcont_int\fP \fB\-J\fP\fIparameters\fP [ \fB\-A\fP[\fB-\fP|\fIannot_int\fP][\fIlabelinfo\fP] ] 
 [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-D\fP\fIdumpfile\fP ] [ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-G\fP[d|n|l|L|x|X]\fIinfo\fP ] 
-[ \fB\-K\fP ] [ \fB\-L\fP\fIlow/high\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP[[-]\fIunit\fP] ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-Q\fP\fIcut\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] 
+[ \fB\-K\fP ] [ \fB\-L\fP\fIlow/high\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-Q\fP\fIcut\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] 
 [ \fB\-S\fP\fIsmoothfactor\fP ] [ \fB\-T\fP[\fB+|-\fP][\fIgap/length\fP][\fB:\fP\fILH\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-W\fP[\fB+\fP][\fItype\fP]\fIpen\fP ] 
 [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP[\fIfactor\fP[/\fIshift\fP]][\fBp\fP] ] [ \fB\-c\fP\fIcopies\fP ] 
 [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ]
@@ -49,6 +49,7 @@ No space between the option flag and the associated arguments.
 The optional \fIlabelinfo\fP controls the specifics of the label formatting and consists of a concatenated string
 made up of any of the following control arguments:
 #include "explain_labeinfo.txt"
+If no name is specified, the unit given in the \fIgrdfile\fP will be used.  
 #include "explain_-B_short.txt"
 .TP
 .B \-D
@@ -72,11 +73,6 @@ Limit range: Do not draw contours for data values below \fIlow\fP or above \fIhi
 When used in conjunction with \fB\-D\fP a single multisegment file is created, and
 each contour section is preceeded by a header record whose first column is \fIflag\fP
 followed by the contour level.
-.TP
-.B \-N
-Appends \fIunit\fP to all contour labels (assuming \fB\-A\fP is set).  If no name is specified, the unit given in
-the \fIgrdfile\fP will be used.  If \fIunit\fP starts with a leading - then there will be no space
-between contour value and the unit. [Default is no unit].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
@@ -131,10 +127,6 @@ plot-title, use a thick red pen for annotated contours, and a thin, dashed, blue
 .sp
 \fBgrdcontour\fP image.grd \fB\-Jx\fP0.1\fBc\fP/50.0\fBc\fP \fB\-C\fPcont.d \fB\-S\fP4 \fB\-B\fP20/0.1:."RMS Misfit":
 \fB\-Wa\fP5/255/0/0 \fB\-Wc\fP1/0/0/255\fBta\fP | lp
-.SH BUGS
-The text-outline box has not been implemented for perspective view plots.  Annotations will plot correctly,
-but contours will go right through the text.
-.br
 The labeling of local highs and lows may plot outside the innermost contour since only the mean value
 of the contour coordinates is used to position the label.
 .SH "SEE ALSO"
