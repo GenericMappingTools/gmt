@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.60 2004-05-25 04:59:47 pwessel Exp $
+ *	$Id: pslib.c,v 1.61 2004-05-26 01:29:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -168,6 +168,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts);
 void ps_rgb_to_cmyk (int rgb[], double cmyk[]);
 void ps_cmyk_to_rgb (int rgb[], double cmyk[]);
 int ps_place_color (int rgb[]);
+void ps_path (double x[], double y[], int n);
 
 
 /*------------------- PUBLIC PSLIB FUNCTIONS--------------------- */
@@ -2410,7 +2411,7 @@ void ps_pathtext (double x[], double y[], int n, double pointsize, char *text, d
 		fprintf (stderr, "pslib: text_item > %d long - text not plotted!\n", BUFSIZ);
 		return;
 	}
-	if (strchr (string, '@')) {	/* Cannot handle special tricks */
+	if (strchr (text, '@')) {	/* Cannot handle special tricks */
 		fprintf (stderr, "pslib: text_item contains escape code - cannot be plotted along path!\n", BUFSIZ);
 		return;
 	}
@@ -2439,7 +2440,7 @@ void ps_pathtext (double x[], double y[], int n, double pointsize, char *text, d
  	ps.npath = 0;
 	
 	fprintf (ps.fp, "%d F%d\n", (int) irint (height * ps.scale), ps.font_no);	/* Set font */
-	ps_line (x, y, n, 1, FALSE, FALSE);					/* Lay down path for text */	
+	ps_path (x, y, n);					/* Lay down path for text */	
 	
 	if (justify > 1)
 		fprintf (ps.fp, "(%s) %d %d PSL_dimy PSL_pathtext\n", string, (int) irint (offset * ps.scale), justify);
@@ -2447,6 +2448,17 @@ void ps_pathtext (double x[], double y[], int n, double pointsize, char *text, d
 		fprintf (ps.fp, "(%s) %d 1 0 PSL_pathtext\n", string, (int) irint (offset * ps.scale));
 		
 	ps_free ((void *)string);
+}
+
+void ps_path (double x[], double y[], int n) {
+	int i;
+	double dx, dy;
+	fprintf (ps.fp, "%g %g M\n", x[0] * ps.scale, y[0] * ps.scale);
+	for (i = 1; i < n; i++) {
+		dx = irint ((x[i] - x[i-1]) * ps.scale);
+		dy = irint ((y[i] - y[i-1]) * ps.scale);
+		if (hypot (dx, dy) > 0.0) fprintf (ps.fp, "%g %g L\n", x[i] * ps.scale, y[i] * ps.scale);
+	}
 }
 
 void ps_transrotate (double x, double y, double angle)
