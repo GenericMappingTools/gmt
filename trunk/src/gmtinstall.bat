@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.7 2002-01-17 22:57:17 pwessel Exp $
+REM	$Id: gmtinstall.bat,v 1.8 2002-02-14 23:53:58 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
@@ -42,8 +42,10 @@ REM STEP b: Set the environment needed by MSC by running
 REM	    C:\MSVC\DEVSTUDIO\VC\BIN\VCVARS32.BAT
 REM	    (your MSVC directory may be different)
 REM
-REM STEP c: Modify GMTENV.BAT and run it (you may want to
-REM	    do this from inside autoexec.bat)
+REM STEP c: Modify GMTENV.BAT.  Later, you may want to run it
+REM	    from inside autoexec.bat so GMTHOME and PATH are set.
+REM	    Here, we call it directly:
+CALL GMTENV.BAT
 REM
 REM STEP d: Check/edit definitions of BINDIR, LIBDIR, and GMT_PATH.
 REM	    Make sure BINDIR below points to a valid directory

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.25 2002-01-18 01:03:43 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.26 2002-02-14 23:53:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3545,57 +3545,81 @@ BOOLEAN GMT_getpathname (char *name, char *path) {
 	return (found);
 }
 
-int GMT_getscale (char *text, double *x0, double *y0, double *scale_lat, double *length, char *measure, BOOLEAN *fancy, BOOLEAN *gave_xy)
+int GMT_getscale (char *text, struct MAP_SCALE *ms)
 {
 	/* Pass text as &argv[i][2] */
 	
-	int j = 0, error = 0, k;
-	char txt_a[32], txt_b[32], txt_c[32];
+	int j = 0, i, n_slash, error = 0, k;
+	char txt_a[32], txt_b[32], txt_sx[32], txt_sy[32];
 	
-	*fancy = *gave_xy = FALSE;
-	*measure = '\0';
-	*length = 0.0;
+	ms->fancy = ms->gave_xy = FALSE;
+	ms->measure = '\0';
+	ms->length = 0.0;
 	
-	if (text[j] == 'f') *fancy = TRUE, j++;
-	if (text[j] == 'x') *gave_xy = TRUE, j++;
-	if (text[j] == 'f') *fancy = TRUE, j++;	/* in case we got xf instead of fx */
-	k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%lf", txt_a, txt_b, txt_c, length);
-	if ((*gave_xy)) {	/* Convert user's x/y to inches */
-		*x0 = GMT_convert_units (txt_a, GMT_INCH);
-		*y0 = GMT_convert_units (txt_b, GMT_INCH);
+	/* First deal with possible prefixes f and x (i.e., f, x, xf, fx( */
+	if (text[j] == 'f') ms->fancy = TRUE, j++;
+	if (text[j] == 'x') ms->gave_xy = TRUE, j++;
+	if (text[j] == 'f') ms->fancy = TRUE, j++;	/* in case we got xf instead of fx */
+	
+	/* Determine if we have the optional longitude component specified */
+	
+	for (n_slash = 0, i = j; text[i]; i++) if (text[i] == '/') n_slash++;
+	
+	if (n_slash == 4) {		/* -L[f][x]<x0>/<y0>/<lon>/<lat>/<length>[m|n|k] */
+		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%[^/]/%lf", txt_a, txt_b, txt_sx, txt_sy, &ms->length);
+	}
+	else if (n_slash == 3) {	/* -L[f][x]<x0>/<y0>/<lat>/<length>[m|n|k] */
+		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%lf", txt_a, txt_b, txt_sy, &ms->length);
+	}
+	else {	/* Wrong number of slashes */
+		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Correct syntax\n", GMT_program);
+		fprintf (stderr, "\t-L[f][x]<x0>/<y0>/[<lon>/]<lat>/<length>[m|n|k], append m, n, or k for miles, nautical miles, or km [Default]\n");
+		error++;
+	}
+	if (ms->gave_xy) {	/* Convert user's x/y to inches */
+		ms->x0 = GMT_convert_units (txt_a, GMT_INCH);
+		ms->y0 = GMT_convert_units (txt_b, GMT_INCH);
 	}
 	else {	/* Read geographical coordinates */
-		error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_a, GMT_IS_LON, x0), txt_a);
-		error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_b, GMT_IS_LAT, y0), txt_b);
-		if (fabs (*y0) > 90.0) {
+		error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_a, GMT_IS_LON, &ms->x0), txt_a);
+		error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_b, GMT_IS_LAT, &ms->y0), txt_b);
+		if (fabs (ms->y0) > 90.0) {
 			fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Position latitude is out of range\n", GMT_program);
 			error++;
 		}
-		if (fabs (*x0) > 360.0) {
+		if (fabs (ms->x0) > 360.0) {
 			fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Position longitude is out of range\n", GMT_program);
 			error++;
 		}
 	}
-	error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_c, GMT_IS_LAT, scale_lat), txt_c);
-	if (fabs (*scale_lat) > 90.0) {
+	error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_sy, GMT_IS_LAT, &ms->scale_lat), txt_sy);
+	if (k == 5)	/* Must also decode longitude of scale */
+		error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_sx, GMT_IS_LON, &ms->scale_lon), txt_sx);
+	else		/* Default to central meridian */
+		ms->scale_lon = project_info.central_meridian;
+	if (fabs (ms->scale_lat) > 90.0) {
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Scale latitude is out of range\n", GMT_program);
 		error++;
 	}
-	*measure = text[strlen(text)-1];
-	if (k != 4) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Correct syntax\n", GMT_program);
-		fprintf (stderr, "\t-L[f][x]<x0>/<y0>/<lat>/<length>[m|n|k], append m, n, or k for miles, nautical miles, or km [Default]\n");
+	if (fabs (ms->scale_lon) > 360.0) {
+		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Scale longitude is out of range\n", GMT_program);
 		error++;
 	}
-	if ((*length) <= 0.0) {
+	ms->measure = text[strlen(text)-1];
+	if (k <4 || k > 5) {
+		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Correct syntax\n", GMT_program);
+		fprintf (stderr, "\t-L[f][x]<x0>/<y0>/[<lon>/]<lat>/<length>[m|n|k], append m, n, or k for miles, nautical miles, or km [Default]\n");
+		error++;
+	}
+	if (ms->length <= 0.0) {
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Length must be positive\n", GMT_program);
 		error++;
 	}
-	if (fabs (*scale_lat) > 90.0) {
+	if (fabs (ms->scale_lat) > 90.0) {
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Defining latitude is out of range\n", GMT_program);
 		error++;
 	}
-	if (isalpha ((int)(*measure)) && ! ((*measure) == 'm' || (*measure) == 'n' || (*measure) == 'k')) {
+	if (isalpha ((int)(ms->measure)) && ! ((ms->measure) == 'm' || (ms->measure) == 'n' || (ms->measure) == 'k')) {
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Valid units are m, n, or k\n", GMT_program);
 		error++;
 	}
