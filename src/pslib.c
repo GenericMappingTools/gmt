@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.55 2004-01-13 01:53:26 pwessel Exp $
+ *	$Id: pslib.c,v 1.56 2004-02-04 00:55:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -400,7 +400,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	else {		/* Standard colorimage call PS Level 1 */
 		n_channels = (ps.cmyk_mode) ? 4 : 3;
 		fprintf (ps.fp, "%d %d 8 div mul ceiling cvi dup 65535 ge {pop 65535} if string /pstr exch def\n", nx, nbits);
-		fprintf (ps.fp, "%d %d %d [%d 0 0 %d 0 %d] {currentfile pstr %s pop}", nx, ny, MIN (nbits, 8), nx, -ny, ny, read[ps.hex_image]);
+		fprintf (ps.fp, "%d %d %d [%d 0 0 %d 0 %d] {currentfile pstr %s pop} ", nx, ny, MIN (nbits, 8), nx, -ny, ny, read[ps.hex_image]);
 		(nbits <= 8) ? fprintf (ps.fp, "image\n") : fprintf (ps.fp, "false %d colorimage\n", n_channels);
 	}
 

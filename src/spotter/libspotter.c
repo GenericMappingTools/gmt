@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.22 2004-02-02 18:16:55 pwessel Exp $
+ *	$Id: libspotter.c,v 1.23 2004-02-04 00:55:15 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -807,11 +807,11 @@ double spotter_t2w (struct EULER a[], int n, double t)
 	
 	i = n - 1;
 	while (i >= 0 && t > a[i].t_start) {
-		w += fabs (a[i].omega);
+		w += fabs (a[i].omega * a[i].duration);
 		i--;
 	}
 	if (i >= 0 && t > a[i].t_stop) {
-		w += fabs (a[i].omega * (t - a[i].t_stop) / a[i].duration);
+		w += fabs (a[i].omega * (t - a[i].t_stop));
 	}
 	
 	return (w);
