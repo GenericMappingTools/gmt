@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.3 2001-02-03 00:40:25 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.4 2001-02-22 01:44:26 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -9,18 +9,20 @@
 \chapter{Prefaces} 
 \thispagestyle{headings}
 
-\section{Preface to version 3.3.7 (February--2001)} 
-Version 3.3.7 is yet another service release with
-several bug fixes.  However, there are also (once again) a few enhancements
+\section{Preface to version 3.4 (March--2001)} 
+Version 3.4, despite the increase in the minor version index, is for the most part
+another service release with several bug fixes.  However, there are also (once again) a few enhancements
 driven by bug reports as well as a few enhancements driven
-by the developers' research needs.  Soon, we expect
-to release the stable release series 3.4 (and subsequent releases
-3.4.x) as well as initiate a developers' release 3.5 (where new features
+by the developers' research needs.  This release marks the official
+beginning of the stable release series 3.4 (and subsequent releases
+3.4.x) as well as the initiation of a \GMT\ developers' release 3.5 (where new features
 will be tested before they are incorporated into a future stable release
 series 3.6).  This release marks the first release that is under CVS control as
-previously the GMT project was maintained using SCCS on a Sun workstation.
+previously the \GMT\ project was maintained using SCCS on a Sun workstation.
+This setup will allow us to better separate bug fixes from enhancements until
+such time that the enhancements have been thoroughly tested.
 
-\subsection{Major bug fixes in 3.3.7}
+\subsection{Major bug fixes in 3.4}
 
 We continue to converge asymptotically toward a stable release
 as both old and new problems are brought to our attention.
@@ -39,7 +41,8 @@ gmt\_map.c	&	Only had forward, but not inverse projection of linear \\
 		&	Really densely sampled lines could fail to generate \\
 		&	a crossing at map boundary due to imposed round-off. \\
 		&	Now enforce that all lines start with "pen down". \\ \hline
-gmt\_plot.c	&	No longer overrides \texttt{GMT\_set\_format} for anotations. \\ \hline
+gmt\_plot.c	&	No longer overrides \texttt{GMT\_set\_format} for anotations. \\
+		&	Basemaps for \Opt{JPa}{\it width/base} were incorrectly oriented. \hline
 gmt\_shore.c	&	Needed to reset node-levels when some polygons are skipped with \Opt{A}. \\ \hline
 gmt\_support.c	&	Had error in verifying xinc for boundary condition prep. \\
 		&	\texttt{GMT\_set\_format} now always checks if units should be added. \\
@@ -48,7 +51,9 @@ gmt\_support.c	&	Had error in verifying xinc for boundary condition prep. \\
 		&	processing the increments; this only affected titles \\
 		&	or remarks in output gridfiles. \\ \hline
 gmtselect.c	&	Distance calculations to nearest line were in error. \\ \hline
+grdview.c	&	For negative length in\Opt{JZ} the $z$-anotations were not plotted. \\ \hline
 mapproject.c	&	Wrong units used when reporting xmin/xmax/ymin/ymax. \\ \hline
+minmax.c	&	Needed \Opt{L} so that \Opt{:} would work for geographical data. \\ \hline
 project.c	&	Distances along small circles were incorrect. \\ \hline
 pscoast.c	&	Had \texttt{GMT\_world\_map} = TRUE for Gnomonic, which is not correct \\
 		&	and led to criss-crossing of lines \\ \hline
@@ -59,6 +64,7 @@ pswiggle.c	&	\Opt{Z} did not use the default measure unit but instead used \\
 		&	inches in the absence of a modifier. \\
 		&	Still did not get the azimuths correct.  Now positive wiggles \\
 		&	should go in the preferred direction [north]. \\ \hline
+meca/psmeca.c	&	Several pens and fills were not initialized, forcing an exit. \\ \hline
 mgg/gmttrack.c	&	\Opt{Sa}b was not converted to meters internally, and distances \\
 		&	were initialized to zero more than once. \\ \hline
 *.c		&	Retreat: Now \Opt{:} works as before regardless of \Opt{L}. \\ \hline
@@ -67,7 +73,7 @@ mgg/gmttrack.c	&	\Opt{Sa}b was not converted to meters internally, and distances
 \label{tbl:3.3.5bugs}
 \end{table}
 
-\subsection{Minor changes in 3.3.7}
+\subsection{Minor changes in 3.4}
 
 %We have also added
 %one new supplemental program to the {\bf misc} package.  The program is
@@ -77,11 +83,18 @@ mgg/gmttrack.c	&	\Opt{Sa}b was not converted to meters internally, and distances
 %Linux but we expect it to port easily to other configurations.
 
 There were some bad links in the \filename{gmt\_man.html} module that have been fixed.
-One enhancement in an individual program functionality has also occured:
+Minor enhancements to a few individual program functionality has also occured:
 
 \begin{description}
 
 \item [grdvector.c] \Opt{Sf} now sets fixed length vectors.
+
+\item [minmax.c] Added \Opt{D} for Dateline (-180/+180) vs Greenwich (0/360).
+
+\item [surface.c] Now gives error message if more than one datafile is given (rather than
+quietly skip data files).
+
+\item [xyz2grd.c] Now can handle multiple input files (except when \Opt{S} is used)
 
 \end{description}
 
@@ -311,7 +324,7 @@ xyz triplets to stdout instead.
 including supplement, can be done in the background.
 
 \item [xgrid/xgridedit.c]	We have added a configure script to this package to deal properly
-with the required X libraries, as well as using the GMT library for reading and writing grid files.
+with the required X libraries, as well as using the \GMT\ library for reading and writing grid files.
 
 \end{description}
 
