@@ -118,7 +118,7 @@ If \fIgap\fP is negative, it is interpreted to mean the number of symbols along 
 on the \fBl\fPeft or \fBr\fPight side of the front [Default is centered].  Append \fItype\fP to specify which symbol
 to plot: \fBb\fPox, \fBc\fPircle, \fBf\fPault, \fBs\fPlip, or \fBt\fPriangle.  [Default is fault].
 Slip means left-lateral or right-lateral strike-slip arrows (centered is not an option).  Append :\fIoffset\fP to offset
-the first symbol from the beginning of the front by that amount [0].
+the first symbol from the beginning of the front by that amount [Default is 0].
 .TP
 .B \-Sh
 \fBh\fPexagon.  \fIsize\fP is diameter of circumscribing circle.

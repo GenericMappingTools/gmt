@@ -38,7 +38,7 @@ Blank lines and records whose first column contains # will be ignored.
 .B \-A
 Used in conjunction with \fB\-Lb|f\fP to limit the track output to those sections
 whose predicted ages fit between the \fIyoung\fP and \fIold\fP limits.  If \fB\-LB|F\fP
-is used instead then the limits apply to the stage ids.  If not limits are supplied
+is used instead then the limits apply to the stage ids.  If no limits are supplied
 then individual limits for each seamount are expected in the input file's columns 4 and 5.
 .TP
 .B \-C
@@ -59,7 +59,7 @@ third output column will contain the stage id (1 is youngest) [Default is
 along-track ages].
 .TP
 .B \-N
-Set the maximum age to extend the oldest stage back in time [no extension].
+Set the maximum age to extend the oldest stage back in time [Default is no extension].
 .TP
 .B \-S
 When \fP\-L\fP is set, the tracks are normally written to stdout as a multisegment
@@ -67,12 +67,12 @@ file.  Specify a \fIfilestem\fP to have each track written to \fIfilestem.#\fP, 
 \fI#\fP is the track number.  The track number is also copied to the 4th output column.
 .TP
 .B \-T
-Set the current time [0 Ma].
+Set the current time [Default is 0 Ma].
 #include "explain_-V.txt"
 #include "explain_-t.txt"
 #include "explain_-i.txt"
 #include "explain_-n.txt"
-[Default is 3 input columns]
+[Default is 3 input columns].
 #include "explain_-o.txt"
 .SH EXAMPLES
 To backtrack the (x,y,t) points in the file seamounts.d to their origin
