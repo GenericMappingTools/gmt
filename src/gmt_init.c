@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.95 2003-12-24 02:43:22 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.96 2003-12-28 20:38:56 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -47,7 +47,7 @@
  *	GMT_map_getframe ()	:	Scans the -Bstring to set tickinfo
  *	GMT_setparameter ()	:	Sets a default value given keyword,value-pair
  *	GMT_setshorthand ()	:	Reads and initializes the suffix shorthands
- *	GMT_get_ellipse()	:	Returns ellipse id based on name
+ *	GMT_get_ellipsoid()	:	Returns ellipsoid id based on name
  *	GMT_prepare_3D ()	:	Initialize 3-D parameters
  *	GMT_scanf_epoch ()	:	Get user time origin from user epoch string
  *	GMT_init_time_system_structure ()  Does what it says
@@ -59,7 +59,7 @@
 #define USER_MEDIA_OFFSET 1000
 
 int GMT_setparameter(char *keyword, char *value);
-int GMT_get_ellipse(char *name);
+int GMT_get_ellipsoid(char *name);
 int GMT_load_user_media (void);
 BOOLEAN true_false_or_error (char *value, int *answer);
 void GMT_get_history(int argc, char **argv);
@@ -1326,7 +1326,7 @@ int GMT_setparameter (char *keyword, char *value)
 				error = TRUE;
 			break;
 		case GMTCASE_ELLIPSOID:
-			ival = GMT_get_ellipse (value);
+			ival = GMT_get_ellipsoid (value);
 			if (ival < 0)
 				error = TRUE;
 			else
@@ -1952,7 +1952,7 @@ int GMT_savedefaults (char *file)
 	else
 		fprintf (fp, "XY_TOGGLE		= OUT\n");
 	fprintf (fp, "#-------- Projection Parameters -------------\n");
-	fprintf (fp, "ELLIPSOID		= %s\n", gmtdefs.ellipse[gmtdefs.ellipsoid].name);
+	fprintf (fp, "ELLIPSOID		= %s\n", gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].name);
 	fprintf (fp, "MAP_SCALE_FACTOR	= %g\n", gmtdefs.map_scale_factor);
 	fprintf (fp, "MEASURE_UNIT		= %s\n", GMT_unit_names[gmtdefs.measure_unit]);
 	fprintf (fp, "#-------- Calendar/Time Parameters ----------\n");
@@ -2180,11 +2180,11 @@ int GMT_hash (char *v)
         return (h);
 }
 
-int GMT_get_ellipse (char *name)
+int GMT_get_ellipsoid (char *name)
 {
 	int i, n;
 	
-	for (i = 0; i < N_ELLIPSOIDS && strcmp (name, gmtdefs.ellipse[i].name); i++);
+	for (i = 0; i < N_ELLIPSOIDS && strcmp (name, gmtdefs.ref_ellipsoid[i].name); i++);
 
 	if (i == N_ELLIPSOIDS) {	/* Try to open as file */
 		FILE *fp;
@@ -2196,24 +2196,24 @@ int GMT_get_ellipse (char *name)
 			i = N_ELLIPSOIDS - 1;
 			while (fgets (line, BUFSIZ, fp) && (line[0] == '#' || line[0] == '\n'));
 			fclose (fp);
-			n = sscanf (line, "%s %d %lf %lf %lf", gmtdefs.ellipse[i].name, 
-				&gmtdefs.ellipse[i].date, &gmtdefs.ellipse[i].eq_radius,
-				&gmtdefs.ellipse[i].pol_radius, &gmtdefs.ellipse[i].flattening);
+			n = sscanf (line, "%s %d %lf %lf %lf", gmtdefs.ref_ellipsoid[i].name, 
+				&gmtdefs.ref_ellipsoid[i].date, &gmtdefs.ref_ellipsoid[i].eq_radius,
+				&gmtdefs.ref_ellipsoid[i].pol_radius, &gmtdefs.ref_ellipsoid[i].flattening);
 			if (n != 5) {
 				fprintf (stderr, "GMT: Error decoding user ellipsoid parameters (%s)\n", line);
 				exit (EXIT_FAILURE);
 			}
 			
-			if (gmtdefs.ellipse[i].pol_radius > 0.0 && gmtdefs.ellipse[i].flattening < 0.0) {
+			if (gmtdefs.ref_ellipsoid[i].pol_radius > 0.0 && gmtdefs.ref_ellipsoid[i].flattening < 0.0) {
 				/* negative flattening means we must compute flattening from the polar and equatorial radii: */
 
-				gmtdefs.ellipse[i].flattening = 1.0 - (gmtdefs.ellipse[i].pol_radius / gmtdefs.ellipse[i].eq_radius);
-				fprintf (stderr, "GMT: user-supplied ellipsoid has implicit flattening of %.8f\n", gmtdefs.ellipse[i].flattening);
+				gmtdefs.ref_ellipsoid[i].flattening = 1.0 - (gmtdefs.ref_ellipsoid[i].pol_radius / gmtdefs.ref_ellipsoid[i].eq_radius);
+				fprintf (stderr, "GMT: user-supplied ellipsoid has implicit flattening of %.8f\n", gmtdefs.ref_ellipsoid[i].flattening);
 				if (gmtdefs.verbose) fprintf (stderr, "GMT: user-supplied ellipsoid has flattening of %s%.8f\n",
-					gmtdefs.ellipse[i].flattening != 0.0 ? "1/" : "", gmtdefs.ellipse[i].flattening != 0.0 ? 1./gmtdefs.ellipse[i].flattening : 0.0);
+					gmtdefs.ref_ellipsoid[i].flattening != 0.0 ? "1/" : "", gmtdefs.ref_ellipsoid[i].flattening != 0.0 ? 1./gmtdefs.ref_ellipsoid[i].flattening : 0.0);
 			}
 			/* else check consistency: */
-			else if (gmtdefs.ellipse[i].pol_radius > 0.0 && fabs(gmtdefs.ellipse[i].flattening - 1.0 + (gmtdefs.ellipse[i].pol_radius/gmtdefs.ellipse[i].eq_radius)) > 1.0e-11) {
+			else if (gmtdefs.ref_ellipsoid[i].pol_radius > 0.0 && fabs(gmtdefs.ref_ellipsoid[i].flattening - 1.0 + (gmtdefs.ref_ellipsoid[i].pol_radius/gmtdefs.ref_ellipsoid[i].eq_radius)) > 1.0e-11) {
 				fprintf (stderr, "GMT: Possible inconsistency in user ellipsoid parameters (%s)\n", line);
 				exit (EXIT_FAILURE);		
 			}
