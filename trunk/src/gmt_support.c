@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.122 2004-06-13 19:58:22 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.123 2004-06-13 22:30:18 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -111,7 +111,7 @@ int GMT_ysort (const void *p1, const void *p2);
 void GMT_x_alloc (struct GMT_XOVER *X, int nx_alloc);
 int sort_label_struct (const void *p_1, const void *p_2);
 struct GMT_LABEL * GMT_contlabel_new (void);
-void GMT_place_label (struct GMT_LABEL *L, char *txt, struct GMT_CONTOUR *G);
+void GMT_place_label (struct GMT_LABEL *L, char *txt, struct GMT_CONTOUR *G, BOOLEAN use_unit);
 void GMT_contlabel_fixpath (double **xin, double **yin, double d[], int *n, struct GMT_CONTOUR *G);
 void GMT_contlabel_addpath (double x[], double y[], int n, char *label, BOOLEAN annot, struct GMT_CONTOUR *G);
 void GMT_contlabel_drawlines (struct GMT_CONTOUR *G, int mode);
@@ -3265,7 +3265,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 					else if (G->label_type == 4) {
 						sprintf (this_label, gmtdefs.d_format, this_value_dist);
 					}
-					GMT_place_label (new_label, this_label, G);
+					GMT_place_label (new_label, this_label, G, G->label_type != 3);
 					new_label->node = i - 1;
 					GMT_contlabel_angle (xx, yy, i - 1, i, cangle, nn, new_label, G);
 					dist_offset = 0.0;
@@ -3328,7 +3328,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 					else if (G->label_type == 4) {
 						sprintf (this_label, gmtdefs.d_format, this_value_dist);
 					}
-					GMT_place_label (new_label, this_label, G);
+					GMT_place_label (new_label, this_label, G, TRUE);
 					new_label->node = (j == 0) ? 0 : j - 1;
 					GMT_contlabel_angle (xx, yy, new_label->node, j, cangle, nn, new_label, G);
 					G->L[G->n_label++] = new_label;
@@ -3386,7 +3386,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 					else if (G->label_type == 6) {
 						strcpy (this_label, G->xp[line_no].label);
 					}
-					GMT_place_label (new_label, this_label, G);
+					GMT_place_label (new_label, this_label, G, TRUE);
 					GMT_contlabel_angle (xx, yy, left, right, cangle, nn, new_label, G);
 					G->L[G->n_label++] = new_label;
 					if (G->n_label == n_alloc) {
@@ -3430,7 +3430,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 					else if (G->label_type == 5) {
 						strcpy (this_label, G->f_label[j]);
 					}
-					GMT_place_label (new_label, this_label, G);
+					GMT_place_label (new_label, this_label, G, TRUE);
 					GMT_contlabel_angle (xx, yy, start, start, cangle, nn, new_label, G);
 					G->L[G->n_label++] = new_label;
 					if (G->n_label == n_alloc) {
@@ -3456,11 +3456,12 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 	*yyy = yy;
 }
 
-void GMT_place_label (struct GMT_LABEL *L, char *txt, struct GMT_CONTOUR *G)
+void GMT_place_label (struct GMT_LABEL *L, char *txt, struct GMT_CONTOUR *G, BOOLEAN use_unit)
 {	/* Allocates needed space and copies in the label */
-	int n;
+	int n, m = 0;
 	
-	n = strlen (txt) + 1;
+	if (use_unit && G->unit && G->unit[0]) m = strlen (G->unit) + (G->unit[0] != '-');	/* Must allow extra space for a unit string */
+	n = strlen (txt) + 1 + m;
 	if (G->prefix && G->prefix[0]) {	/* Must prepend the prefix string */
 		n += strlen (G->prefix) + 1;
 		L->label = (char *) GMT_memory (VNULL, (size_t)n, sizeof (char), "gmt");
@@ -3472,6 +3473,14 @@ void GMT_place_label (struct GMT_LABEL *L, char *txt, struct GMT_CONTOUR *G)
 	else {
 		L->label = (char *) GMT_memory (VNULL, (size_t)n, sizeof (char), "gmt");
 		strcpy (L->label, txt);
+	}
+	if (use_unit && G->unit && G->unit[0]) {	/* Append a unit string */
+		if (G->unit[0] == '-')	/* No space between annotation and prefix */
+			strcat (L->label, &G->unit[1]);
+		else {
+			strcat (L->label, " ");
+			strcat (L->label, G->unit);
+		}
 	}
 }
 
