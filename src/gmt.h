@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.67 2004-05-08 02:10:04 pwessel Exp $
+ *	$Id: gmt.h,v 1.68 2004-05-10 22:16:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -415,11 +415,13 @@ struct MAP_ROSE {	/* Used to plot a map direction "rose" in psbasemap and pscoas
 	double lon, lat;	/* Location of center point of rose on the map in lon/lat space */
 	double x0, y0;		/* Location of center point of scale on the map in inches x/y */
 	double size;		/* Diameter of the rose in measure units */
+	double declination;	/* Magnetic declination if needed */
 	BOOLEAN plot;		/* TRUE if we want to draw the rose */
 	BOOLEAN fancy;		/* TRUE for a fancy map rose */
 	BOOLEAN gave_xy;	/* TRUE if x0, y0 was given in cartesian map coordinates and not lon/lat */
 	int kind;		/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
-	char label[4][64];	/* User-cnangable labels for W, E, S, N point */
+	char label[4][64];	/* User-changable labels for W, E, S, N point */
+	char dlabel[128];	/* Magnetic declination label */
 };
 
 struct GMT_FONT {		/* Information for each font */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.80 2004-05-08 02:10:04 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.81 2004-05-10 22:16:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4164,31 +4164,25 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 	/* Pass text as &argv[i][2] */
 	
 	int j = 0, i,error = 0, colon, plus, k;
-	char txt_a[32], txt_b[32], txt_c[32];
+	char txt_a[32], txt_b[32], txt_c[32], txt_d[32];
 	
 	ms->fancy = ms->gave_xy = FALSE;
 	ms->size = 0.0;
 	
 	/* First deal with possible prefixes f and x (i.e., f, x, xf, fx( */
 	if (text[j] == 'f') ms->fancy = TRUE, j++;
+	if (text[j] == 'm') ms->fancy = 2, j++;
 	if (text[j] == 'x') ms->gave_xy = TRUE, j++;
 	if (text[j] == 'f') ms->fancy = TRUE, j++;	/* in case we got xf instead of fx */
+	if (text[j] == 'm') ms->fancy = 2, j++;		/* in case we got xm instead of mx */
 	
 	
 	/* Determine if we have the optional label components specified */
 	
 	for (colon = -1, i = j; text[i] && colon < 0; i++) if (text[i] == ':') colon = i+1;
-	
-	/* -L[f][x]<x0>/<y0>/<size>[/<kind>][:label:] */
-	k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%d", txt_a, txt_b, txt_c, &ms->kind);
-	if (k == 3) ms->kind = 1;
-	if (k < 3 || k > 4) {	/* Wrong number of parameters */
-		fprintf (stderr, "%s: GMT SYNTAX ERROR -T option:  Correct syntax\n", GMT_program);
-		fprintf (stderr, "\t-T[f][x]<x0>/<y0>/<size>[/<kind>][:wesnlabels]\n");
-		error++;
-	}
 	if (colon > 0) {	/* Get labels */
 		sscanf (&text[colon], "%[^,],%[^,],%[^,],%[^,]", ms->label[3], ms->label[1], ms->label[0], ms->label[2]);
+		text[colon-1] = '\0';	/* Break string so sscanf wont get confused later */
 	}
 	else {			/* Set Default */
 		strcpy (ms->label[0], "S");
@@ -4196,6 +4190,35 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 		strcpy (ms->label[2], "N");
 		strcpy (ms->label[3], "W");
 	}
+	
+	/* -L[f][x]<x0>/<y0>/<size>[/<kind>][:label:] OR -L[m][x]<x0>/<y0>/<size>[/<dec>/<declabel>][:label:] */
+	if (ms->fancy == 2) {	/* Magnetic rose */
+		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", txt_a, txt_b, txt_c, txt_d, &ms->dlabel);
+		if (! (k == 3 || k == 5)) {	/* Wrong number of parameters */
+			fprintf (stderr, "%s: GMT SYNTAX ERROR -T option:  Correct syntax\n", GMT_program);
+			fprintf (stderr, "\t-T[f|m][x]<x0>/<y0>/<size>[/<info>][:wesnlabels]\n");
+			error++;
+		}
+		if (k == 3) {	/* No magnetic north directions */
+			ms->kind = 1;
+			ms->declination = 0.0;
+			ms->dlabel[0] = '\0';
+		}
+		else {
+			ms->declination = atof (txt_d);
+			ms->kind = 2;
+		}
+	}
+	else {
+		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%d", txt_a, txt_b, txt_c, &ms->kind);
+		if (k == 3) ms->kind = 1;
+		if (k < 3 || k > 4) {	/* Wrong number of parameters */
+			fprintf (stderr, "%s: GMT SYNTAX ERROR -T option:  Correct syntax\n", GMT_program);
+			fprintf (stderr, "\t-T[f|m][x]<x0>/<y0>/<size>[/<info>][:wesnlabels]\n");
+			error++;
+		}
+	}
+	if (colon > 0) text[colon-1] = ':';	/* Put it back */
 	if (ms->gave_xy) {	/* Convert user's x/y to inches */
 		ms->x0 = GMT_convert_units (txt_a, GMT_INCH);
 		ms->y0 = GMT_convert_units (txt_b, GMT_INCH);
