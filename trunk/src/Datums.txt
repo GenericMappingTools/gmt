@@ -1,4 +1,4 @@
-# $Id: Datums.txt,v 1.3 2004-01-07 20:44:53 pwessel Exp $
+# $Id: Datums.txt,v 1.4 2004-09-02 18:15:23 pwessel Exp $
 #
 # List of Datums available in GMT
 # The (Dx,Dy,Dz) values are in meters relative to WGS-84
@@ -55,6 +55,8 @@ Chatham Island Astro 1971	International-1924	175	-38	113	New Zealand (Chatham Is
 Chua Astro	International-1924	-134	229	-29	Paraguay
 Corrego Alegre	International-1924	-206	172	-6	Brazil
 Dabola	Clarke-1880	-83	37	124	Guinea
+Datum 73	International-1924	-223.237	110.193	36.649	Portugal
+Datum Lisboa	International-1924	-304.046	60.576	103.640	Portugal
 Deception Island	Clarke-1880	260	12	-147	Deception Island; Antarctia
 Djakarta (Batavia)	Bessel	-377	681	-50	Indonesia (Sumatra)
 DOS 1968	International-1924	230	-199	-752	New Georgia Islands (Gizo Island)
@@ -73,7 +75,7 @@ European 1950	International-1924	-107	-88	-149	Malta
 European 1950	International-1924	-87	-98	-121	MEAN FOR Austria; Belgium; Denmark; Finland;France; W Germany; Gibraltar; Greece; Italy; Luxembourg; Netherlands;Norway; Portugal; Spain; Sweden; Switzerland
 European 1950	International-1924	-87	-96	-120	MEAN FOR Austria; Denmark; France; W Germany; Netherlands; Switzerland
 European 1950	International-1924	-103	-106	-141	MEAN FOR Iraq; Israel; Jordan; Lebanon; Kuwait; Saudi Arabia; Syria
-European 1950	International-1924	-84	-107	-120	Portugal; Spain
+European 1950	International-1924	-86.277	-108.879	-120.181	Portugal; Spain
 European 1950	International-1924	-112	-77	-145	Tunisia
 European 1979	International-1924	-86	-98	-119	MEAN FOR Austria; Finland; Netherlands; Norway; Spain; Sweden; Switzerland
 Fort Thomas 1955	Clarke-1880	-7	215	225	Nevis; St. Kitts (Leeward Islands)
@@ -111,6 +113,7 @@ Liberia 1964	Clarke-1880	-90	40	88	Liberia
 Luzon	Clarke-1866	-133	-77	-51	Philippines (Excluding Mindanao)
 Luzon	Clarke-1866	-133	-79	-72	Philippines (Mindanao)
 M'Poraloko	Clarke-1880	-74	-130	42	Gabon
+Macau		International-1924	-203.792	-303.371	-154.020	Macau
 Mahe 1971	Clarke-1880	41	-220	-134	Mahe Island
 Massawa	Bessel	639	405	60	Ethiopia (Eritrea)
 Merchich	Clarke-1880	31	146	47	Morocco
@@ -193,6 +196,7 @@ S-42 (Pulkovo 1942)	Krassovsky	28	-121	-77	Romania
 S-JTSK	Bessel	589	76	480	Czechoslavakia (Prior 1 JAN 1993)
 Santo (DOS) 1965	International-1924	170	42	84	Espirito Santo Island
 Sao Braz	International-1924	-203	141	53	Azores (Sao Miguel; Santa Maria Ids)
+Sao Tome	International-1924	-176	-650	-82	Sao Tome Island
 Sapper Hill 1943	International-1924	-355	21	72	East Falkland Island
 Schwarzeck	Bessel (Namibia)	616	97	-251	Namibia
 Selvagem Grande 1938	International-1924	-289	-124	60	Salvage Islands

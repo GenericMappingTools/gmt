@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.79 2004-07-17 00:04:14 pwessel Exp $
+ *	$Id: gmt.h,v 1.80 2004-09-02 18:15:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -223,7 +223,7 @@ typedef double GMT_dtime;	/* GMT internal time representation */
 /* This structure contains default parameters for the GMT system */
 
 #define N_ELLIPSOIDS	63
-#define N_DATUMS	219
+#define N_DATUMS	223
 
 #define GMT_PEN_LEN	128
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
