@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.4 2001-03-09 19:20:44 pwessel Exp $
+ *	$Id: pslib.c,v 1.5 2001-04-04 16:49:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1146,7 +1146,6 @@ void ps_plot_ (double *x, double *y, int *pen)
 
 void ps_plotend (int lastpage)
 {
-
 	ps_imagefill_cleanup ();
 	ps_setdash (CNULL, 0);
 
@@ -1167,15 +1166,15 @@ void ps_plotend (int lastpage)
 		fprintf (ps.fp, " %lg %lg scale",
 			ps.scale/(ps.points_pr_unit * ps.xscl), ps.scale/(ps.points_pr_unit * ps.yscl));
 		if (ps.landscape) fprintf (ps.fp, " -90 R %d 0 T", -ps.p_width);
-		fprintf (ps.fp, "\nshowpage\n");
+		fprintf (ps.fp, " 0 A\nshowpage\n");
 		if (!ps.eps_format) fprintf (ps.fp, "\n%%%%Trailer\n");
 		fprintf (ps.fp, "\nend\n");
 		if (!ps.eps_format) fprintf (ps.fp, "%%%%EOF\n");
 	}
 	else if (ps.absolute)
-		fprintf (ps.fp, "S %d %d T\n", -(int) irint (ps.xoff * ps.scale), -(int) irint (ps.yoff * ps.scale));
+		fprintf (ps.fp, "S %d %d T 0 A\n", -(int) irint (ps.xoff * ps.scale), -(int) irint (ps.yoff * ps.scale));
 	else
-		fprintf (ps.fp, "S\n");
+		fprintf (ps.fp, "S 0 A\n");
 	if (ps.fp != stdout) fclose (ps.fp);
 }
 
