@@ -1,11 +1,11 @@
 #!/bin/sh
-#	$Id: GMT_-P.sh,v 1.1 2001-03-21 04:10:21 pwessel Exp $
+#	$Id: GMT_-P.sh,v 1.2 2003-04-14 21:56:56 pwessel Exp $
 #
 
 pstext -R0/2.5/0/1.7 -Jx1 -P -K -N << EOF > GMT_-P.ps
 1.125	1.525	9	0	0	CB	leading
 1.125	1.4	9	0	0	CB	paper edge
-0.5	0.65	10	0	1	CM	\261P
+0.5	0.65	10	0	1	CM	\035P
 1.75	0.65	10	0	1	CM	Default
 0.8	0.15	9	0	2	BL	x
 0.15	1.1	9	0	2	BL	y
