@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.55 2004-01-08 03:27:04 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.56 2004-01-08 06:05:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2032,7 +2032,7 @@ int GMT_get_format (double interval, char *unit, char *format)
 			for (j = i + 1; text[j] && text[j] != 'e'; j++);
 			ndec = j - i - 1;
 			if (text[j] == 'e') {	/* Exponential notation, modify ndec */
-				ndec -= atoi (&buffer[++j]);
+				ndec -= atoi (&text[++j]);
 				if (ndec < 0) ndec = 0;	/* since a positive exponent could give -ve answer */
 			}
 		}
