@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.14 2004-07-13 00:40:54 pwessel Exp $
+ *	$Id: x2sys.c,v 1.15 2004-08-19 04:42:35 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -78,9 +78,6 @@ int n_x2sys_paths = 0;			/* Number of these directories */
 
 void x2sys_path (char *fname, char *path)
 {
-	FILE *fp;
-	char file[BUFSIZ];
-
 	sprintf (path, "%s%c%s", X2SYS_HOME, DIR_DELIM, fname);
 }
 
@@ -670,7 +667,7 @@ int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struc
 
 int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G)
 {
-	int n_read, i, j, n_alloc = GMT_CHUNK;
+	int i, j, n_alloc = GMT_CHUNK;
 	char path[BUFSIZ];
 	double **z;
 	FILE *fp;
@@ -767,10 +764,10 @@ int x2sys_read_list (char *file, char ***list)
 	return (n);
 }
 
-int x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B)
+void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B)
 {
 	char tag_file[BUFSIZ], line[BUFSIZ], *p, *sfile;
-	int i, geodetic, error = 0;
+	int geodetic, error = 0;
 	BOOLEAN geographic = FALSE;
 	FILE *fp;
 	
@@ -884,7 +881,7 @@ int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode)
 	while (fgets (line, BUFSIZ, ftrack)) {
 		sscanf (line, "%s %d %d", name, &id, &flag);
 		if (mode == 1) {
-			if (id >= n_alloc) {
+			if (id >= (int)n_alloc) {
 				n_alloc += GMT_CHUNK;
 				B->head = (struct X2SYS_BIX_TRACK_INFO *) GMT_memory ((void *)B->head, n_alloc, sizeof (struct X2SYS_BIX_TRACK_INFO), GMT_program);
 			}

@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.13 2004-08-18 23:19:44 pwessel Exp $
+REM	$Id: gmtsuppl.bat,v 1.14 2004-08-19 04:42:35 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
@@ -184,12 +184,12 @@ REM ----------------------------------------------------
 ECHO STEP 11: Make x2sys
 REM ----------------------------------------------------
 cd x2sys
-IF %CHOICE%=="dynamic" CL %COPT% /I..\mgg %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c x2sys.c
-IF %CHOICE%=="dynamic" LINK %LOPT% /out:x2sys.dll /implib:x2sys.lib x2sys.obj %LIBDIR%\gmt_mgg.lib %GMTLIB%
-IF %CHOICE%=="static"  CL %COPT% /I..\mgg %DLL_NETCDF% /DDLL_EXPORT /c x2sys.c
+IF %CHOICE%=="dynamic" CL %COPT% /I..\mgd77 /I..\mgg %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c x2sys.c
+IF %CHOICE%=="dynamic" LINK %LOPT% /out:x2sys.dll /implib:x2sys.lib x2sys.obj %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
+IF %CHOICE%=="static"  CL %COPT% /I..\mgd77 /I..\mgg %DLL_NETCDF% /DDLL_EXPORT /c x2sys.c
 IF %CHOICE%=="static"  lib /out:x2sys.lib x2sys.obj
-CL %COPT% /I..\mgg x2sys_cross.c x2sys.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
-CL %COPT% /I..\mgg x2sys_datalist.c  x2sys.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
+CL %COPT% /I..\mgd77 /I..\mgg x2sys_cross.c x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
+CL %COPT% /I..\mgd77 /I..\mgg x2sys_datalist.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
 del *.obj
 IF %CHOICE%=="dynamic" move x2sys.dll %BINDIR%
 IF %CHOICE%=="dynamic" move x2sys.exp %LIBDIR%
