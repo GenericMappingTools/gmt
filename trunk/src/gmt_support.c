@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.43 2003-03-22 01:47:08 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.44 2003-04-07 00:39:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -465,7 +465,7 @@ void GMT_read_cpt (char *cpt_file)
 		}
 				
 		if (id < 3) {	/* Foreground, background, or nan color */
-			if ((nread = sscanf (&line[1], "%s", T1)) != 1) error = TRUE;
+			if ((nread = sscanf (&line[2], "%s %s %s %s", T1, T2, T3, T4)) < 1) error = TRUE;
 			if (T1[0] == 'p' || T1[0] == 'P') {	/* Gave a pattern */
 				GMT_bfn[id].fill = (struct GMT_FILL *) GMT_memory (VNULL, 1, sizeof (struct GMT_FILL), GMT_program);
 				if (GMT_getfill (T1, GMT_bfn[id].fill)) {
@@ -477,6 +477,10 @@ void GMT_read_cpt (char *cpt_file)
 			else {	/* Shades, RGB, HSV, or CMYK */
 				if (T1[0] == '-')	/* Skip this slice */
 					GMT_bfn[id].skip = TRUE;
+				else if (gmtdefs.color_model == GMT_CMYK) {
+					sprintf (option, "%s/%s/%s/%s", T1, T2, T3, T4);
+					if (GMT_getrgb (option, GMT_bfn[id].rgb)) error++;
+				}
 				else {
 					sprintf (option, "%s/%s/%s", T1, T2, T3);
 					if (GMT_getrgb (option, GMT_bfn[id].rgb)) error++;
@@ -795,13 +799,9 @@ int GMT_get_index (double value)
 	int index;
 	int lo, hi, mid;
 	
-	if (GMT_is_dnan (value))	/* Set to NaN color */
-		return (-1);
-	if (value < GMT_lut[0].z_low)	/* Set to background color */
-		return (-2);
-	if (value > GMT_lut[GMT_n_colors-1].z_high)	/* Set to foreground color */
-		return (-3);
-	
+	if (GMT_is_dnan (value)) return (-1);				/* Set to NaN color */
+	if (value > GMT_lut[GMT_n_colors-1].z_high) return (-2);	/* Set to foreground color */
+	if (value < GMT_lut[0].z_low) return (-3);			/* Set to background color */
 
 	/* Must search for correct index */
 
@@ -843,15 +843,15 @@ int GMT_get_rgb24 (double value, int *rgb)
 	
 	index = GMT_get_index (value);
 	
-	if (index == -1) {
+	if (index == -1) {	/* Nan */
 		memcpy ((void *)rgb, (void *)GMT_bfn[GMT_NAN].rgb, 3 * sizeof (int));
 		GMT_cpt_skip = GMT_bfn[GMT_NAN].skip;
 	}
-	else if (index == -2) {
+	else if (index == -2) {	/* Background */
 		memcpy ((void *)rgb, (void *)GMT_bfn[GMT_BGD].rgb, 3 * sizeof (int));
 		GMT_cpt_skip = GMT_bfn[GMT_BGD].skip;
 	}
-	else if (index == -3) {
+	else if (index == -3) {	/* Foreground */
 		memcpy ((void *)rgb, (void *)GMT_bfn[GMT_FGD].rgb, 3 * sizeof (int));
 		GMT_cpt_skip = GMT_bfn[GMT_FGD].skip;
 	}
