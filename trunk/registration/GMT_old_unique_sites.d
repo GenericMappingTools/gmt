@@ -1,4 +1,4 @@
-#	$Id: GMT_old_unique_sites.d,v 1.122 2002-02-08 10:00:58 pwessel Exp $
+#	$Id: GMT_old_unique_sites.d,v 1.123 2002-02-13 10:00:59 pwessel Exp $
 #
 #	This is a list of unique, verified block-averaged locations
 #	of GMT registration sites.  It is obtained
@@ -258,6 +258,7 @@
 41	-70.7	1
 41.05	29.9833	1
 41	38	1
+42	12	1
 42.365	-71.1	1
 43	20	1
 44.5	38	1
@@ -649,6 +650,7 @@
 285	4.5	2
 285	6	1
 285	40	1
+285.017	44.5667	1
 285	45	1
 285.35	40.35	1
 285.6	4.5	1
