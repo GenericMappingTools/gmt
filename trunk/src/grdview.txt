@@ -14,7 +14,7 @@ grdview \- Create 3-D perspective grayshaded/colored image or mesh from a 2-D gr
 [ \fB\-G\fP\fIdrapefile\fP | \fB\-G\fP\fIgrd_r\fP,\fIgrd_g\fP,\fIgrd_b\fP ] [ \fB\-I\fP\fIintensfile\fP] [ \fB\-K\fP ] 
 [ \fB\-L\fP[\fIflags\fP] ] [ \fB\-N\fP\fIlevel\fP[/\fIr/g/b\fP]] [ \fB\-O\fP ] [ \fB\-P\fP ] 
 [ \fB\-Q\fP\fItype\fP[\fBg\fP] ] [ \fB\-R\fP\fIwest/east/south/north/zmin/zmax\fP[\fBr\fP] ] [ \fB\-S\fP\fIsmooth\fP ] 
-[ \fB\-T\fP[\fBs\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP\fItype/pen\fP ] [ \fB\-X\fP\fIx-shift\fP ]
+[ \fB\-T\fP[\fBs\fP][\fBo\fP[\fIpen\fP]] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP\fItype/pen\fP ] [ \fB\-X\fP\fIx-shift\fP ]
 [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fIzlevel\fP ] [ \fB\-c\fP\fIcopies\fP ]
 .SH DESCRIPTION
 \fBgrdview\fP reads a 2-D gridded file and produces a 3-D perspective plot by 
@@ -83,7 +83,9 @@ Smooth the contours before plotting (see \fBgrdcontour\fP) [Default is no smooth
 Plot image without any interpolation.  This involves converting each node-centered
 bin into a polygon which is then painted separately.  Append \fBs\fP to skip
 nodes with z = NaN.  This option is useful for categorical data where
-interpolating between values is meaningless.
+interpolating between values is meaningless.  Optionally, append \fBo\fP to
+draw the tile outlines, and specify a custom pen if the default pen is not to
+your liking.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
