@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.65 2004-04-06 23:28:13 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.66 2004-04-07 20:15:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -96,7 +96,7 @@ void GMT_get_bcr_xy(struct GRD_HEADER *grd, double xx, double yy, double *x, dou
 void GMT_get_bcr_nodal_values(float *z, int ii, int jj);
 int GMT_check_hsv (double h, double s, double v);
 int GMT_check_cmyk (double cmyk[]);
-int GMT_slash_count (char *txt);
+int GMT_char_count (char *txt, char c);
 int GMT_name2rgb (char *name);
 int GMT_name2pen (char *name);
 void GMT_gettexture (char *line, int unit, double scale, struct GMT_PEN *P);
@@ -139,14 +139,14 @@ void GMT_init_fill (struct GMT_FILL *fill, int r, int g, int b)
 
 int GMT_getfill (char *line, struct GMT_FILL *fill)
 {
-	int n, error = 0;
-	int pos, i, fr, fg, fb;
-	char f;
+	int n, end, error = 0;
+	int pos, i, fb_rgb[3];
+	char f, word[128];
 	
 	/* Syntax:   -G<gray>, -G<rgb>, -G<cmyk>, -G<hsv> or -Gp|P<dpi>/<image>[:F<rgb>B<rgb>]   */
 	/* Note, <rgb> can be r/g/b, gray, or - for masks */
 
-	if (line[0] == 'p' || line[0] == 'P') {	/* Image specified */
+	if ((line[0] == 'p' || line[0] == 'P') && isdigit((int)line[1])) {	/* Image specified */
 		n = sscanf (&line[1], "%d/%s", &fill->dpi, fill->pattern);
 		if (n != 2) error = 1;
 		for (i = 0, pos = -1; fill->pattern[i] && pos == -1; i++) if (fill->pattern[i] == ':') pos = i;
@@ -165,35 +165,30 @@ int GMT_getfill (char *line, struct GMT_FILL *fill)
 			fill->colorize = TRUE;
 			while (line[pos]) {
 				f = line[pos++];
-				if (line[pos] == '-') {	/* Signal for masking */
-					fr = fg = fb = -1;
-					n = 3;
+				if (line[pos] == '-') {	/* Signal for transpacency masking */
+					fb_rgb[0] = fb_rgb[1] = fb_rgb[2] = -1;
 					fill->colorize = FALSE;
 				}
-				else
-					n = sscanf (&line[pos], "%d/%d/%d", &fr, &fg, &fb);
-				if (n == 1 || n == 3) {
-					if (n == 1) fg = fb = fr;	/* Gave gray */
-					if (f == 'f' || f == 'F') {
-						fill->f_rgb[0] = fr;
-						fill->f_rgb[1] = fg;
-						fill->f_rgb[2] = fb;
+				else {
+					end = pos;
+					while (line[end] && !(line[end] == 'F' || line[end] == 'B')) end++;
+					strncpy (word, &line[pos], end - pos);
+					word[end - pos] = '\0';
+					if (GMT_getrgb (word, fb_rgb)) {
+						fprintf (stderr, "%s: Colorizing value %s not recognized!\n", GMT_program, word);
+						exit (EXIT_FAILURE);
 					}
-					else if (f == 'b' || f == 'B') {
-						fill->b_rgb[0] = fr;
-						fill->b_rgb[1] = fg;
-						fill->b_rgb[2] = fb;
-					}
-					else
-						error++;
 				}
-				else
-					error++;
-
+				if (f == 'f' || f == 'F')
+					memcpy ((void *)fill->f_rgb, (void *)fb_rgb, (size_t)(3 * sizeof (int)));
+				else if (f == 'b' || f == 'B')
+					memcpy ((void *)fill->b_rgb, (void *)fb_rgb, (size_t)(3 * sizeof (int)));
+				else {
+					fprintf (stderr, "%s: Colorizing argument %c not recognized!\n", GMT_program, f);
+					exit (EXIT_FAILURE);
+				}
 				while (line[pos] && !(line[pos] == 'F' || line[pos] == 'B')) pos++;
 			}
-			if (fill->f_rgb[0] >= 0) error += GMT_check_rgb (fill->f_rgb);
-			if (fill->b_rgb[0] >= 0) error += GMT_check_rgb (fill->b_rgb);
 		}
 	}
 	else {	/* Plain color or shade */
@@ -203,20 +198,21 @@ int GMT_getfill (char *line, struct GMT_FILL *fill)
 	return (error);
 }
 
-int GMT_slash_count (char *txt)
+int GMT_char_count (char *txt, char c)
 {
 	int i = 0, n = 0;
-	while (txt[i]) if (txt[i++] == '/') n++;
+	while (txt[i]) if (txt[i++] == c) n++;
 	return (n);
 }
 
 int GMT_getrgb (char *line, int rgb[])
 {
-	int n, i, count;
+	int n, i, count, hyp;
 	
 	if (!line[0]) return (FALSE);	/* Nothing to do - accept default action */
 	
-	count = GMT_slash_count (line);
+	count = GMT_char_count (line, '/');
+	hyp   = GMT_char_count (line, '-');
 	
 	if (count == 3) {	/* c/m/y/k */
 		double cmyk[4];
@@ -226,7 +222,7 @@ int GMT_getrgb (char *line, int rgb[])
 		return (FALSE);
 	}
 	
-	if (count == 2) {	/* r/g/b or h/s/v */
+	if (count == 2) {	/* r/g/b */
 		if (gmtdefs.color_model == GMT_RGB) {	/* r/g/b */
 			n = sscanf (line, "%d/%d/%d", &rgb[0], &rgb[1], &rgb[2]);
 			if (n != 3 || GMT_check_rgb (rgb)) return (TRUE);
@@ -241,6 +237,14 @@ int GMT_getrgb (char *line, int rgb[])
 		return (FALSE);
 	}
 	
+	if (hyp == 2) {	/* h-s-v */
+		double h, s, v;
+		n = sscanf (line, "%lf-%lf-%lf", &h, &s, &v);
+		if (n != 3 || GMT_check_hsv (h, s, v)) return (TRUE);
+		GMT_hsv_to_rgb (rgb, h, s, v);
+		return (FALSE);
+	}
+	
 	if (count == 0) {				/* gray or colorname */
 		if (isdigit((int)line[0])) {
 			n = sscanf (line, "%d", &rgb[0]);
@@ -252,7 +256,7 @@ int GMT_getrgb (char *line, int rgb[])
 				fprintf (stderr, "%s: Colorname %s not recognized!\n", GMT_program, line);
 				exit (EXIT_FAILURE);
 			}
-			for (i = 0; i < 3; i++) rgb[i] = GMT_colorname[n].rgb[i];
+			for (i = 0; i < 3; i++) rgb[i] = GMT_color_rgb[n][i];
 		}
 		return (FALSE);
 	}
@@ -271,7 +275,7 @@ int GMT_name2rgb (char *name)
 
 	strcpy (Lname, name);
 	GMT_str_tolower (Lname);
-	for (i = 0, k = -1; k < 0 && i < GMT_N_COLOR_NAMES; i++) if (!strcmp (Lname, GMT_colorname[i].name)) k = i;
+	k = GMT_hash_lookup (Lname, GMT_rgb_hashnode, GMT_N_COLOR_NAMES);
 	
 	return (k);
 }

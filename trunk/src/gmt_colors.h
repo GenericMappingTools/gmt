@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_colors.h,v 1.10 2004-04-05 22:54:24 pwessel Exp $
+ *	$Id: gmt_colors.h,v 1.11 2004-04-07 20:15:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -37,7 +37,7 @@
 #define GMT_FGD 1
 #define GMT_NAN 2
 
-#define GMT_N_COLOR_NAMES 29
+#define GMT_N_COLOR_NAMES 663
 
 /* How B/W TV's convert RGB to Gray */
 #define YIQ(rgb) irint (0.299 * (rgb[0]) + 0.587 * (rgb[1]) + 0.114 * (rgb[2]))
@@ -66,12 +66,10 @@ struct GMT_BFN_COLOR {	/* For back-, fore-, and nan-colors */
 	struct GMT_FILL *fill;
 };
 
-struct GMT_COLOR_NAME {	/* Used to translate colornames to r/g/b */
-	char name[16];
-	int rgb[3];
-};
+EXTERN_MSC char *GMT_color_name[GMT_N_COLOR_NAMES];		/* Names of X11 color names */
+EXTERN_MSC int   GMT_color_rgb[GMT_N_COLOR_NAMES][3];		/* Corresponding r/g/b values */
+EXTERN_MSC struct GMT_HASH GMT_rgb_hashnode[GMT_N_COLOR_NAMES];	/* Used to translate colornames to r/g/b */
 
-EXTERN_MSC struct GMT_COLOR_NAME GMT_colorname[];
 EXTERN_MSC struct GMT_LUT *GMT_lut;
 EXTERN_MSC struct GMT_BFN_COLOR GMT_bfn[3];
 EXTERN_MSC int GMT_n_colors;
