@@ -5,7 +5,7 @@ grdfft \- Perform mathematical operations on grdfiles in the frequency domain
 \fBgrdfft\fP \fIin_grdfile\fP \fB\-G\fP\fIout_grdfile\fP [ \fB\-A\fP\fIazimuth\fP ] 
 [ \fB\-C\fP\fIzlevel\fP ] [ \fB\-D\fP[\fIscale\fP\fB|g\fP] ] [ \fB\-E\fP[\fBx|y\fP][\fBw\fP] ] 
 [ \fB\-F\fP[\fIx|y\fP]\fIlc/lp/hp/hc\fP ] [ \fB\-I\fP[\fIscale\fP\fB|g\fP] ] [ \fB\-L\fP ] [ \fB\-M\fP ] 
-[ \fB\-S\fP\fIscale\fP ] [ \fB\-T\fP\fIte/rl/rm/rw/ri\fP ] [ \fB\-V\fP ]
+[ \fB\-N\fP\fIstuff\fP ] [ \fB\-S\fP\fIscale\fP ] [ \fB\-T\fP\fIte/rl/rm/rw/ri\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBgrdfft\fP will take the 2-D forward Fast Fourier Transform and perform one or more mathematical
 operations in the frequency domain before transforming back to the space domain.  An option
@@ -68,6 +68,14 @@ Leave trend alone.  By default, a linear trend will be removed prior to the tran
 Map units.  Choose this option if your grdfile is a geographical grid and you want to convert
 degrees into meters.  If the data are close to either pole, you should consider
 projecting the grdfile onto a rectangular coordinate system using \fBgrdproject\fP.
+.TP
+.B \-N
+Choose or inquire about suitable grid dimensions for FFT.
+\fB\-Nf\fP will force the FFT to use the dimensions of the data.
+\fB\-Nq will inQuire about more suitable dimensions.
+\fB\-N\fP\fInx/ny\fP will do FFT on array size \fInx/ny\fP (Must be >= grdfile size).
+Default chooses dimensions >= data which optimize speed, accuracy of FFT.
+If FFT dimensions > grdfile dimensions, data are extended and tapered to zero.
 .TP
 .B \-S
 Multiply each element by \fIscale\fP in the space domain (after the frequency domain operations).
