@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.39 2002-01-18 01:03:43 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.40 2002-01-18 02:28:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -149,6 +149,7 @@ void GMT_io_init (void)
 	GMT_io.skip_if_NaN = (BOOLEAN *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (BOOLEAN), GMT_program);
 	GMT_io.in_col_type  = (int *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (int), GMT_program);
 	GMT_io.out_col_type = (int *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (int), GMT_program);
+	for (i = 0; i < 2; i++) GMT_io.skip_if_NaN[i] = TRUE;						/* x/y must be non-NaN */
 	for (i = 0; i < 2; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = GMT_IS_UNKNOWN;	/* Must be told [or find out] what x/y are */
 	for (i = 2; i < BUFSIZ; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = GMT_IS_FLOAT;	/* Other columns default to floats */
 
@@ -311,7 +312,9 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 			GMT_io.n_bad_records++;
 			if (GMT_io.give_report && (GMT_io.n_bad_records == 1)) {	/* Report 1st occurance */
 				fprintf (stderr, "%s: Encountered first invalid record near/at line # %d\n", GMT_program, GMT_io.rec_no);
-				fprintf (stderr, "%s: Likely cause: Invalid x and/or y values or missing -: switch\n", GMT_program);
+				fprintf (stderr, "%s: Likely causes: (1) Invalid x and/or y values, i.e. NaNs or garbage in text strings.\n", GMT_program);
+				fprintf (stderr, "%s:                (2) Incorrect data type assumed if -J, -f are not set or set incorrectly.\n", GMT_program);
+				fprintf (stderr, "%s:                (3) The -: switch is implied but not set.\n", GMT_program);
 			}
 		}
 		else
