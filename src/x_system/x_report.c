@@ -1,4 +1,4 @@
-/*	$Id: x_report.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+/*	$Id: x_report.c,v 1.2 2001-04-04 00:59:32 pwessel Exp $
  *
  * XREPORT reads the xx_legs.b file and reports statistics for one or
  * all or the legs. The information reported are legname, year-of-cruise,
@@ -74,11 +74,11 @@ main (int argc, char *argv[])
 		if (all_legs || !strcmp(thisleg.name, leg)) {
 			for (i = 0; i < 3; i++) {
 				if (!gmt[i]) continue;
-				printf("%s\t%ld\t%s\t",
+				printf("%s\t%d\t%s\t",
 					thisleg.name,
 					thisleg.year,
 					thisleg.agency);
-				printf("%c\t%ld\t%8.2lf\t%7.2lf\t%6ld\t%8.2lf\t%7.2lf\n",
+				printf("%c\t%d\t%8.2lf\t%7.2lf\t%6d\t%8.2lf\t%7.2lf\n",
 					datatype[i],
 					thisleg.n_gmtint[i],
 					thisleg.mean_gmtint[i],

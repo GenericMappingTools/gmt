@@ -1,4 +1,4 @@
-/*	$Id: x_solve_dc_drift.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+/*	$Id: x_solve_dc_drift.c,v 1.2 2001-04-04 00:59:32 pwessel Exp $
  *
  * x_solve_dc_drift reads the xx_* databases and computes the best
  * fitting drift and dc values using a least squares method.
@@ -235,7 +235,7 @@ main (int argc, char **argv)
 		fseek (fpb, (long int)REC_SIZE, SEEK_SET);
 		
 		while (fread ((void *)header, REC_SIZE, 1, fpb) == 1) {
-			sscanf(header, "%s %s %ld",lega, legb, &n_x);
+			sscanf(header, "%s %s %d",lega, legb, &n_x);
 			if (!strcmp(lega, legb)) {	/* Internal crossovers, skip this pair */
 				fseek (fpb, (long int)(n_x*REC_SIZE), SEEK_CUR);
 				continue;
@@ -349,7 +349,7 @@ main (int argc, char **argv)
 		printf("Before iteration # %d we have:\n", iteration);
 		for (j = 0; j < 3; j++) {
 			if (!do_gmt[j]) continue;
-			printf("%c >>> Mean: %8.3lf St.Deviation: %8.3lf n: %6ld\n", type[j], mean[j], stdev[j], n[j]);
+			printf("%c >>> Mean: %8.3lf St.Deviation: %8.3lf n: %6d\n", type[j], mean[j], stdev[j], n[j]);
 		}
 		
 		if (n_iterations == 0) {
