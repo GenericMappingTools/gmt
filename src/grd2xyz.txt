@@ -3,7 +3,7 @@
 grd2xyz \- Converting a grdfile to an ASCII or binary table
 .SH SYNOPSIS
 \fBgrd2xyz\fP \fIgrdfile\fP [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-S\fP[\fBr\fP ] [ \fB\-V\fP ] [ \fB\-Z\fP[\fIflags\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+[ \fB\-S\fP[\fBr\fP ] [ \fB\-V\fP ] [ \fB\-Z\fP[\fIflags\fP] ] [ \fB\-bo\fP[\fBs\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBgrd2xyz\fP reads a binary 2-D grdfile and writes out xyz-triplets in ASCII [or binary] format to standard output.
 Modify the
@@ -63,6 +63,7 @@ Default format is scanline orientation of ASCII numbers: \fB\-ZTLa\fP.
 Note that \fB\-Z\fP only applies to 1-column output.
 #include "explain_-o.txt"
 This option only applies to xyz output; see \fB\-Z\fP for z table output.
+#include "explain_-f.txt"
 .SH EXAMPLES
 To edit individual values in the 5' by 5' hawaii_grv.grd file, try
 .br

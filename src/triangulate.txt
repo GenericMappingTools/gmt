@@ -8,7 +8,7 @@ triangulate \- Perform optimal Delauney triangulation and gridding
 [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] ] [ \fB\-J\fP\fIparameters\fP ] 
 [ \fB\-L\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
 [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-V\fP ] [ \fB\-Z\fP ] [ \fB\-:\fP ] 
-[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBtriangulate\fP reads one or more ASCII [or binary] files (or standard input) containing x,y[,z] and
 performs Delauney triangulation, i.e., it find how the points should be connected to give
@@ -65,6 +65,7 @@ is not set.
 [Default is 2 input columns].
 #include "explain_-o.txt"
 Node ids are stored as binary 4-byte integer triplets.  \fB\-bo\fP is ignored if \fB\-M\fP is selected.
+#include "explain_-f.txt"
 .SH EXAMPLES
 To triangulate the points in the file samples.xyz, store the triangle information in a binary file, and
 make a grid for the given area and spacing, try

@@ -5,7 +5,7 @@ xyz2grd \- Converting an ASCII or binary table to grd file format
 \fBxyz2grd\fP \fIxyzfile\fP \fB\-G\fP\fIgrdfile\fP \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] 
 \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-A\fP[\fBn|z\fP] ] [ \fB\-D\fP\fIxunit/yunit/zunit/scale/offset/title/remark\fP ] 
 [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP ] [ \fB\-N\fP\fInodata\fP ] [ \fB\-S\fP[\fIzfile\fP] ] [ \fB\-V\fP ] 
-[ \fB\-Z\fP[\fIflags\fP] ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+[ \fB\-Z\fP[\fIflags\fP] ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBxyz2grd\fP reads a z or xyz table and
 creates a binary grdfile.  \fBxyz2grd\fP will report if some of the nodes are not filled in with
@@ -89,6 +89,7 @@ Note that \fB\-Z\fP only applies to 1-column input.
 #include "explain_-i.txt"
 #include "explain_-n.txt"
 [Default is 3 input columns].  This option only applies to xyz input files; see \fB\-Z\fP for z tables.
+#include "explain_-f.txt"
 .SH EXAMPLES
 To create a grdfile from the ASCII data in hawaii_grv.xyz, try
 .br

@@ -3,7 +3,8 @@
 trend1d \- Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data.
 .SH SYNOPSIS
 \fBtrend1d\fP \fB\-F\fP\fI<xymrw>\fP \fB\-N\fP[\fBf\fP]\fIn_model\fP[\fBr\fP] [ \fIxy[w]file\fP ] 
-[ \fB\-C\fP\fIcondition_#\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP[\fIconfidence_level\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+[ \fB\-C\fP\fIcondition_#\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP[\fIconfidence_level\fP] ] [ \fB\-V\fP ] 
+[ \fB\-W\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBtrend1d\fP reads x,y [and w] values from the first two [three] columns on standard input 
 [or \fIxy[w]file\fP] and fits a regression model y = f(x) + e by [weighted] least squares.  The
@@ -49,6 +50,7 @@ when doing the iterative robust fit].  [Default reads only the first 2 columns.]
 #include "explain_-n.txt"
 [Default is 2 (or 3 if \fB\-W\fP is set) columns].
 #include "explain_-o.txt"
+#include "explain_-f.txt"
 .SH REMARKS
 If a Fourier model is selected, the domain of x will be shifted and scaled to [-pi, pi] and the basis functions 
 used will be 1, cos(x), sin(x), cos(2x), sin(2x), ...   If a polynomial model is selected, the domain of x 

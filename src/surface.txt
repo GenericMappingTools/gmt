@@ -6,7 +6,7 @@ surface \- adjustable tension continuous curvature surface gridding algorithm
 \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-A\fP\fIaspect_ratio\fP ] 
 [ \fB\-C\fP\fIconvergence_limit\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-Ll\fP\fIlower\fP ] [ \fB\-Lu\fP\fIupper\fP ] [ \fB\-N\fP\fImax_iterations\fP ] [ \fB\-Q\fP ] 
 [ \fB\-S\fP\fIsearch_radius\fP[\fBm\fP] ] [ \fB\-T\fP\fItension_factor\fP[\fBib\fP] ] [ \fB\-V\fP[\fBl\fP] ] 
-[ \fB\-Z\fP\fIover-relaxation_factor\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+[ \fB\-Z\fP\fIover-relaxation_factor\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBsurface\fP reads randomly-spaced (x,y,z) triples from standard input [or \fIxyzfile\fP] and produces
 a binary grdfile of gridded values z(x,y) by solving:
@@ -92,6 +92,7 @@ with the \fB\-Vl\fP option.  [Default = 1.4 converges quickly and is almost alwa
 #include "explain_-i.txt"
 #include "explain_-n.txt"
 [Default is 3 input columns].
+#include "explain_-f.txt"
 .SH EXAMPLES
 .sp
 To grid 5 by 5 minute gravity block means from the ASCII data in hawaii_5x5.xyg, using a \fItension_factor\fP = 0.25,

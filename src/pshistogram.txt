@@ -9,7 +9,7 @@ pshistogram \- Bin data and plot histograms
 [ \fB\-K\fP ] [ \fB\-L\fP\fIpen\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-Q\fP ] 
 [ \fB\-R\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ]  
 [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fItype\fP ] [ \fB\-c\fP\fIcopies\fP ] 
-[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBpshistogram\fP reads the first column from \fIfile\fP [or standard input] and
 calculates histogram parameters based on the bin-width provided.  Using these parameters,
@@ -74,6 +74,7 @@ Choose between 6 types of histograms: 0 = counts [Default], 1 = frequency_percen
 #include "explain_-i.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
+#include "explain_-f.txt"
 .SH EXAMPLES
 To draw a histogram of the data v3206.t containing seafloor depths, using a 250 meter
 bin width, center bars, and draw bar outline, try:

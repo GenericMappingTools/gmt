@@ -5,7 +5,7 @@ spectrum1d \- compute auto\- [and cross\- ] spectra from one [or two] timeseries
 \fBspectrum1d\fP [ \fIx[y]file\fP ] \fB\-S\fP\fIsegment_size\fP] 
 [ \fB\-C\fP[\fBxycnpago\fP] ] [ \fB\-D\fP\fIdt\fP ] 
 [ \fB\-N\fP\fIname_stem\fP ] [ \fB\-V\fP ] [ \fB\-W\fP ] 
-[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBspectrum1d\fP reads X [and Y] values from the first [and second] columns on standard input 
 [or \fIx[y]file\fP].  These values are treated as timeseries X(t) [Y(t)] sampled at equal intervals 
@@ -84,6 +84,7 @@ Write Wavelength rather than frequency in column 1 of the output file[s] [Defaul
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-o.txt"
+#include "explain_-f.txt"
 .SH EXAMPLES
 Suppose data.g is gravity data in mGal, sampled every 1.5 km.  To write its power spectrum, in mGal**2-km, 
 to the file data.xpower, try  

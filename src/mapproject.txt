@@ -5,7 +5,9 @@
 mapproject \- Forward and Inverse map transformation of 2-D coordinates 
 .SH SYNOPSIS
 \fBmapproject\fP \fIinfiles\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-C\fP ] [ \fB\-Dc|i|m|p\fP ] [ \fB\-F\fP[\fBk|m|n|i|c|p\fP] ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-S\fP ] [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+[ \fB\-C\fP ] [ \fB\-Dc|i|m|p\fP ] [ \fB\-F\fP[\fBk|m|n|i|c|p\fP] ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] 
+[ \fB\-M\fP[\fIflag\fP] ] [ \fB\-S\fP ] [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ] 
+[ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBmapproject\fP reads (longitude, latitude) positions from \fIinfiles\fP [or standard input] and
 computes (x,y) coordinates using the specified map projection and scales.
@@ -52,6 +54,7 @@ Suppress points that fall outside the region.
 #include "explain_-n.txt"
 [Default is 2 input columns]
 #include "explain_-o.txt"
+#include "explain_-f.txt"
 .SH EXAMPLES
 To transform a file with (longitude,latitude) into (x,y) positions in cm on
 a Mercator grid for a given scale of LEN1 cm per degree, run

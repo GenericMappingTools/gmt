@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.41 2001-09-14 20:10:11 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.42 2001-09-14 22:37:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -116,7 +116,8 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t-B specifies Basemap frame info.  <tickinfo> is a textstring made up of one or\n");
 			fprintf (stderr, "\t   more substrings of the form [t]<stride>[<unit>], where the (optional) [t] is the\n");
 			fprintf (stderr, "\t   axis item type, <stride> is the spacing between ticks or anotations, and the (optional)\n");
-			fprintf (stderr, "\t   <unit> specifies the <stride> unit [Default is unit implied in -R).\n");
+			fprintf (stderr, "\t   <unit> specifies the <stride> unit [Default is unit implied in -R]. There can be\n");
+			fprintf (stderr, "\t   no spaces between the substrings - just append to make one very long string.\n");
 			fprintf (stderr, "\t   Three axis item types exist (six for time-axis, which may also use A, I, and i):\n");
 			fprintf (stderr, "\t     a: (upper) tick anotation stride (upper means anotations closest to the axis).\n");
 			fprintf (stderr, "\t     f: (upper) frame tick stride.\n");
@@ -124,32 +125,54 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t     A: lower tick anotation stride (lower means anotations farthest from the axis).\n");
 			fprintf (stderr, "\t     i: upper interval anotation stride (interval means anotation is centered on the interval).\n");
 			fprintf (stderr, "\t     I: lower interval anotation stride.\n");
-			fprintf (stderr, "\t   If the [t] is not given, it defaults to a (upper tick anotations). \n");
-			fprintf (stderr, "\t   The optional [<unit>] modifies the <stride> value accordlingly.  For maps, you may use\n");
+			fprintf (stderr, "\t        i or I may be immediately followed by <mod> which controls interval anotations:\n");
+			fprintf (stderr, "\t          f: Anotate full calendar-item name (e.g., \"%s\")\n", GMT_time_language.month_name[0][0]);
+			fprintf (stderr, "\t          a: Anotate abbreviated calendar-item name (e.g., \"%s\")\n", GMT_time_language.month_name[0][1]);
+			fprintf (stderr, "\t          c: Anotate 1-char calendar-item name (e.g., \"%s\")\n", GMT_time_language.month_name[0][2]);
+			fprintf (stderr, "\t        Use F, A, C to force upper case anotation. \n");
+			fprintf (stderr, "\t     If the [t] is not given, it defaults to a (upper tick anotations). \n");
+			fprintf (stderr, "\t   The optional [<unit>] modifies the <stride> value accordingly.  For maps, you may use\n");
 			fprintf (stderr, "\t     m: arc minutes [Default unit is degree].\n");
 			fprintf (stderr, "\t     c: arc seconds.\n");
-			fprintf (stderr, "\t   For time axis, several units are recognized:\n");
-			fprintf (stderr, "\t   The optional [<unit>] indicates minutes or seconds.  To specify separate x and y tick-.\n");
-			fprintf (stderr, "\t   info, separate the strings with a slash [/].  E.g., 5 degree ticks for\n");
-			fprintf (stderr, "\t   frame AND anotation, 30 minutes grid lines, use\n");
-			fprintf (stderr, "\t        -B5g30m.   For different y ticks try -B5g30m/2g15m\n");
-			fprintf (stderr, "\t   [If -Jz is selected, use slashes to separate x, y, and z-tickinfo.]\n");
-			fprintf (stderr, "\t   Add labels by surrounding them with colons.  If first character is a\n");
-			fprintf (stderr, "\t   period, then the text is used as the plot title (e.g. :.Plot_Title:).\n");
-			fprintf (stderr, "\t   If it is a comma, then the text is used as unit anotation (e.g. :,%%:).\n");
-			fprintf (stderr, "\t   If unit starts with - there will be no space between unit and anotation\n");
-			fprintf (stderr, "\t   Append any combination of w, e, s, n to plot those axes\n");
-			fprintf (stderr, "\t   only [Default is all].  Append l to anotate log10 (value), p for\n");
-			fprintf (stderr, "\t   10^(log10(value)).  (See -J for log10 scaling).  For -Jx with power\n");
-			fprintf (stderr, "\t   scaling, append p to annotate value at equidistant pow increments\n");
-			fprintf (stderr, "\t   See psbasemap man pages for more details and examples.\n");
+			fprintf (stderr, "\t   For time axes, several units are recognized:\n");
+			fprintf (stderr, "\t     Y: year - plot using all 4 digits.\n");
+			fprintf (stderr, "\t     y: year - plot only last 2 digits.\n");
+			fprintf (stderr, "\t     O: month - format anotation according to PLOT_DATE_FORMAT.\n");
+			fprintf (stderr, "\t     o: month - plot as 2-digit integer (1-12).\n");
+			fprintf (stderr, "\t     U: ISO week - format anotation according to PLOT_DATE_FORMAT.\n");
+			fprintf (stderr, "\t     u: ISO week - plot as 2-digit integer (1-53).\n");
+			fprintf (stderr, "\t     r: Gregorian week - 7-day stride from chosen start of week (%s).\n", GMT_weekdays[gmtdefs.time_week_start]);
+			fprintf (stderr, "\t     K: ISO weekday - format anotation according to PLOT_DATE_FORMAT.\n");
+			fprintf (stderr, "\t     k: weekday - plot name of weekdays in selected language [%s].\n", gmtdefs.time_language);
+			fprintf (stderr, "\t     D: day  - format anotation according to PLOT_DATE_FORMAT, which also determines whether\n");
+			fprintf (stderr, "\t               we should plot day of month (1-31) or day of year (1-366).\n");
+			fprintf (stderr, "\t     d: day - plot as 2- (day of month) or 3- (day of year) integer.\n");
+			fprintf (stderr, "\t     H: hour - format anotation according to PLOT_CLOCK_FORMAT.\n");
+			fprintf (stderr, "\t     h: hour - plot as 2-digit integer (0-23).\n");
+			fprintf (stderr, "\t     M: minute - format anotation according to PLOT_CLOCK_FORMAT.\n");
+			fprintf (stderr, "\t     m: minute - plot as 2-digit integer (0-59).\n");
+			fprintf (stderr, "\t     C: second - format anotation according to PLOT_CLOCK_FORMAT.\n");
+			fprintf (stderr, "\t     c: second - plot as 2-digit integer (0-59; 60-61 if leap seconds are enabled).\n");
+			fprintf (stderr, "\t   Specify an axis label by surrounding it with colons (e.g., :\"my x label\":).\n");
+			fprintf (stderr, "\t   To append a unit to each anotation (e.g., 5 km, 10 km ...) add a label that begins\n");
+			fprintf (stderr, "\t     with a comma; the rest is used as unit anotation (e.g. :\",km\":). If the unit has\n");
+			fprintf (stderr, "\t     a leading hyphen (-) there will be no space between unit and anotation (e.g., :,-%%:).\n");
+			fprintf (stderr, "\t   For separate x and y [and z if -Jz is used] tickinfo, separate the strings with slashes [/].\n");
+			fprintf (stderr, "\t   Specify an plot title by adding a label whose first character is a period; the rest\n");
+			fprintf (stderr, "\t     of the label is used as the title (e.g. :\".My Plot Title\":).\n");
+			fprintf (stderr, "\t   Append any combination of W, E, S, N, Z to anotate those axes only [Default is WESNZ (all)].\n");
+			fprintf (stderr, "\t     Use lower case w, e, s, n, z to draw & tick but not to anotate those axes.\n");
+			fprintf (stderr, "\t     Z+ will also draw a 3-D box .\n");
+			fprintf (stderr, "\t   Log10 axis: Append l to anotate log10 (x) or p for 10^(log10(x)) [Default anotates x].\n");
+			fprintf (stderr, "\t   Power axis: append p to annotate x at equidistant pow increments [Default is nonlinear].\n");
+			fprintf (stderr, "\t   See psbasemap man pages for more details and examples of all settings.\n");
 			break;
 			
 		case 'b':	/* Condensed tickmark option */
 		
 			fprintf (stderr, "\t-B Boundary anotation, give -B<xinfo>[/<yinfo>[/<zinfo>]][.:\"title\":][wesnzWESNZ+]\n");
-			fprintf (stderr, "\t   <?info> is 1-3 substring(s) of form [a|f|g]<tick>[m][l|p] and optionally :\"label\": and/or :,[-]\"unit\":\n");
-			fprintf (stderr, "\t   (See psbasemap man pages for more details and examples.)\n");
+			fprintf (stderr, "\t   <?info> is 1-3 substring(s) of form [<type>]<stride>[<unit>][l|p][:\"label\":][:,[-]\"unit\":]\n");
+			fprintf (stderr, "\t   See psbasemap man pages for more details and examples of all settings.\n");
 			break;
 			
 		case 'H':	/* Header */
@@ -277,10 +300,11 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t      -Jx<x-scale>		Linear projection\n");
 			fprintf (stderr, "\t      -Jx<x-scale>l		Log10 projection\n");
 			fprintf (stderr, "\t      -Jx<x-scale>p<power>	x^power projection\n");
-			fprintf (stderr, "\t      -Jx<x-scale>t		Calendar time projection\n");
-			fprintf (stderr, "\t      Use / to specify separate x/y scaling (e.g., -Jx0.5/0.3.).  Not allowed with 1:xxxxx\n");
+			fprintf (stderr, "\t      -Jx<x-scale>t		Calendar time projection using relative time coordinates\n");
+			fprintf (stderr, "\t      -Jx<x-scale>T		Calendar time projection using absolute time coordinates\n");
+			fprintf (stderr, "\t      Use / to specify separate x/y scaling (e.g., -Jx0.5/0.3.).  Not allowed with 1:xxxxx.\n");
 			fprintf (stderr, "\t      Append d if -R is geographic coordinates in degrees.\n");
-			fprintf (stderr, "\t      If -JX is used then give axes lengths rather than scales\n");
+			fprintf (stderr, "\t      If -JX is used then give axes lengths rather than scales.\n");
 			break;
 			
 		case 'j':	/* Condensed version of J */
@@ -342,7 +366,7 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t   -Jp|P[a]<scale|mapwidth>[/<origin>] (Polar [azimuth] (theta,radius))\n");
 				
-			fprintf (stderr, "\t   -Jx|X<x-scale|mapwidth>[l|p<power>|t][/<y-scale|mapheight>[l|p<power>|t][d] (Linear projections)\n");
+			fprintf (stderr, "\t   -Jx|X<x-scale|mapwidth>[l|p<power>|t][/<y-scale|mapheight>[l|p<power>|t|T][d] (Linear projections)\n");
 			fprintf (stderr, "\t   (See psbasemap for more details on projection syntax)\n");
 			break;
 			
@@ -374,8 +398,9 @@ void GMT_explain_option (char option)
 		
 			fprintf (stderr, "\t-R specifies the min/max coordinates of data region in user units.\n");
 			fprintf (stderr, "\t   Use dd:mm[:ss] format for regions given in degrees and minutes [and seconds].\n");
+			fprintf (stderr, "\t   Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes.\n");
 			fprintf (stderr, "\t   Append r if -R specifies the longitudes/latitudes of the lower left\n");
-			fprintf (stderr, "\t   and upper right corners of a rectangular area\n");
+			fprintf (stderr, "\t   and upper right corners of a rectangular area.\n");
 			break;
 			
 		case 'r':	/* Region option for 3-D */
@@ -446,7 +471,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t   Specify i(nput) or o(utput) [Default is both input and output]\n");
 			fprintf (stderr, "\t   Give one or more columns (or column ranges) separated by commas.\n");
 			fprintf (stderr, "\t   Append T (Calendar format), t (time relative to EPOCH),\n");
-			fprintf (stderr, "\t   or g (geographical, i.e., dd:mm:ss) to each col/range item.\n");
+			fprintf (stderr, "\t   x (longitude), or y (latitude) to each col/range item.\n");
 			break;
 
 		case '.':	/* Trailer message */
@@ -626,7 +651,7 @@ void GMT_syntax (char option)
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					fprintf (stderr, "\t  Optionally, append theta value for origin [0]\n");
 				case LINEAR:
-					fprintf (stderr, "\t-Jx<x-scale>[l|p<power>|t][/<y-scale>[l|p<power>|t]][d], scale in %s/units\n",
+					fprintf (stderr, "\t-Jx<x-scale>[l|p<power>|t|T][/<y-scale>[l|p<power>|t]][d], scale in %s/units\n",
 						GMT_unit_names[gmtdefs.measure_unit]);
 					fprintf (stderr, "\t-Jz<z-scale>[l|p<power>], scale in %s/units\n",
 						GMT_unit_names[gmtdefs.measure_unit]);
@@ -642,7 +667,7 @@ void GMT_syntax (char option)
 	
 		case 'R':	/* Region option */
 		
-			fprintf (stderr, "\t-R<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>], dd:mm format ok\n");
+			fprintf (stderr, "\t-R<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>]\n");
 			fprintf (stderr, "\tAppend r if giving lower left and upper right coordinates\n");
 			break;
 			
@@ -651,11 +676,26 @@ void GMT_syntax (char option)
 			fprintf (stderr, "\t-U[/<dx>/<dy>/][<string> | c], c will plot command line.\n");
 			break;
 			
+		case 'b':	/* Binary i/o option  */
+		
+			fprintf (stderr, "\t-b[i|o][s][<n>], i for input, o for output [Default is both].\n");
+			fprintf (stderr, "\t   Use s for single precision [Default is double precision]\n");
+			fprintf (stderr, "\t   and append the number of data columns (for input only).\n");
+			break;
+			
 		case 'c':	/* Set number of plot copies option */
 		
 			fprintf (stderr, "\t-c<copies>, copies is number of copies\n");
 			break;
 
+		case 'f':	/* Column information option  */
+		
+			fprintf (stderr, "\t-f[i|o]<colinfo>, i for input, o for output [Default is both].\n");
+			fprintf (stderr, "\t   <colinfo> is <colno|colrange>u, where column numbers start at 0\n");
+			fprintf (stderr, "\t   a range is given as <first>-<last>, e.g., 2-5., u is type:\n");
+			fprintf (stderr, "\t   t: relative time, T: absolute time, x: longitude, y: latitude.\n");
+			break;
+			
 		default:
 			break;
 	}
@@ -840,10 +880,14 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			i_swap (GMT_io.out_col_type[0], GMT_io.out_col_type[1]);
 			break;
 		case 'b':	/* Binary i/o */
-			error += GMT_io_selection (&item[2]);
+			i = GMT_io_selection (&item[2]);
+			if (i) GMT_syntax ('b');
+			error += i;
 			break;
 		case 'f':	/* Column type specifications */
-			error += GMT_decode_coltype (&item[2]);
+			i = GMT_decode_coltype (&item[2]);
+			if (i) GMT_syntax ('f');
+			error += i;
 			break;
 		default:	/* Should never get here, but... */
 			error++;

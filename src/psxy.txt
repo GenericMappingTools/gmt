@@ -17,7 +17,7 @@ psxy \- Plot lines, polygons, and symbols on maps
 [ \fB\-G\fP\fIfill\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-K\fP ] [ \fB\-L\fP ] 
 [ \fB\-N\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-S\fP[\fIsymbol\fP][\fIsize\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
 [ \fB\-V\fP ] [ \fB\-W\fP[\fIpen\fP] ] 
-[ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-:\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+[ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-:\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBpsxy\fP reads (x,y) pairs from \fIfiles\fP [or standard input] and
 generates \fIPostScript\fP code that will plot lines, polygons, or symbols at those locations on a map.
@@ -173,6 +173,7 @@ Implicitly draws the outline of symbols with selected pen.
 #include "explain_-i.txt"
 #include "explain_-n.txt"
 [Default is the required number of columns given the chosen settings].
+#include "explain_-f.txt"
 .SH EXAMPLES
 To plot solid red circles (diameter = LEN_1 cm) at the positions listed in the file DSDP.xy on a
 Mercator map at LEN_2 cm/degree of the area 150E to 154E, 18N to 23N, with tickmarks every 1 degree
