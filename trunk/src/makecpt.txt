@@ -20,7 +20,7 @@ give the name of an existing cptfile [Default gives a rainbow cpt file].
 Reverses the sense of color progression in the master cptfile.
 .TP
 .B \-Q
-Selects a logarithmic interpolation scheme [Default is linear].  \fB\-Qi expects input z-values to be log10(z).  Assign color
+Selects a logarithmic interpolation scheme [Default is linear].  \fB\-Qi\fP expects input z-values to be log10(z).  Assign color
 but write out z [Default].  \fB\-Qo\fP will take log10(z) first, assign colors, but write out z.
 .TP
 .B \-T
