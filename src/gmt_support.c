@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.36 2003-02-19 02:45:43 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.37 2003-02-19 19:10:46 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -940,15 +940,20 @@ void GMT_hsv_to_rgb (int rgb[], double h, double s, double v)
 
 void GMT_rgb_to_cmyk (int rgb[], double cmyk[])
 {
-	/* Plain conversion; no undercolor removal or blackgeneration */
+	/* Plain conversion; with default undercolor removal or blackgeneration */
 	
 	int i;
 	
 	/* RGB is in 0-255, CMYK will be in 0-1 range */
 	
 	for (i = 0; i < 3; i++) cmyk[i] = 1.0 - (rgb[i] / 255.0);
-	cmyk[3] = MIN (cmyk[0], MIN (cmyk[1], cmyk[2]));	/* Black */
-	for (i = 0; i < 3; i++) cmyk[i] -= cmyk[3];
+	cmyk[3] = MIN (cmyk[0], MIN (cmyk[1], cmyk[2]));	/* Default Black generation */
+	
+	/* To implement device-specific blackgeneration, supply lookup table K = BG[cmyk[3]] */
+	
+	for (i = 0; i < 3; i++) cmyk[i] -= cmyk[3];		/* Default undercolor removal */
+	
+	/* To implement device-specific undercolor removal, supply lookup table u = UR[cmyk[3]] */
 }
 
 void GMT_cmyk_to_rgb (int rgb[], double cmyk[])
