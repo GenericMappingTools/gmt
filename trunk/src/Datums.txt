@@ -1,4 +1,4 @@
-# $Id: Datums.txt,v 1.5 2004-09-03 20:26:45 pwessel Exp $
+# $Id: Datums.txt,v 1.6 2004-09-04 00:49:06 pwessel Exp $
 #
 # List of Datums available in GMT
 # The (Dx,Dy,Dz) values are in meters relative to WGS-84
@@ -56,7 +56,7 @@ Chua Astro	International-1924	-134	229	-29	Paraguay
 Corrego Alegre	International-1924	-206	172	-6	Brazil
 Dabola	Clarke-1880	-83	37	124	Guinea
 Datum 73	International-1924	-223.237	110.193	36.649	Portugal
-Datum Lisboa	International-1924	-304.046	60.576	103.640	Portugal
+Datum Lisboa	International-1924	-304.046	-60.576	103.640	Portugal
 Deception Island	Clarke-1880	260	12	-147	Deception Island; Antarctia
 Djakarta (Batavia)	Bessel	-377	681	-50	Indonesia (Sumatra)
 DOS 1968	International-1924	230	-199	-752	New Georgia Islands (Gizo Island)
