@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Frontmatter.tex,v 1.19 2004-08-02 02:10:56 pwessel Exp $
+%	$Id: GMT_Frontmatter.tex,v 1.20 2004-08-17 00:45:17 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -31,20 +31,38 @@ of California at San Diego.
 and OCE-0082552 from the National Science Foundation, which we
 gratefully acknowledge.
 
-We would like to acknowledge the feedback we have received from many
+We would also like to acknowledge the feedback we have received from many
 of the users of earlier versions.  Many of these suggestions have
 been implemented, and the bug reports have been useful in providing
-more robust programs.  Specifically, we would like to thank William
-Weibel, Ameet Raval, Manfred Brands, Angel Li, Andrew Macrae, John
-Lillibridge, Richard Signell, Michael Barck, Alex Madon, Ben Horner-Johnson,
-Georg Schwarz, Lloyd Parkes, Remko Scharroo, David Townsend, and many others for
+more robust programs.  Specifically, we would like to thank
+Michael Barck,
+Manfred Brands,
+Stephan Eickschen,
+Ben Horner-Johnson,
+John Kuhn,
+Angel Li,
+John Lillibridge,
+Joaquim Luis,
+Andrew Macrae,
+Alex Madon,
+greg Neumann,
+Lloyd Parkes,
+Ameet Raval,
+Remko Scharroo,
+Georg Schwarz,
+Richard Signell,
+Dirk Stoecker,
+Malte Thoma,
+David Townsend,
+William Weibel,
+and many others for
 advice on how to make \GMT\ portable to DEC, SGI, HP, IBM, Apple, and
 NEXT workstations.  John Lillibridge provided example 11.  William
 Yip helped translate \GMT\ to POSIX ANSI C and incorporate netCDF 3, 
 Allen Cogbill provided OS/2 patches for EMX, and Hanno von Lom helped
 resolve problems with DLL libraries for Win32.  The SOEST RCF staff
 (Ross Ishida, Pat Townsend, and Sharon Stahl) provided valuable help
-on Linux, web, and cgi script issues.
+on Linux, web, and CGI script issues.
 
 \begin{flushright}
 Honolulu, HI and Silver Spring, MD, September 2004
@@ -55,7 +73,7 @@ Honolulu, HI and Silver Spring, MD, September 2004
 \small
 \begin{tabular}{lr}
 \epsfig{figure=eps/Wessel.eps}	&	\epsfig{figure=eps/Smith.eps} \\
-\normalsize \htmladdnormallink{{\textbf {Dr. P\aa l (Paul) Wessel}}}{http://www.soest.hawaii.edu/wessel} & \normalsize \htmladdnormallink{{\textbf {Dr. Walter H. F. Smith}}}{mailto:walter@raptor.grdl.noaa.gov} \\
+\normalsize \htmladdnormallink{{\textbf {Dr. P\aa l (Paul) Wessel}}}{http://www.soest.hawaii.edu/pwessel} & \normalsize \htmladdnormallink{{\textbf {Dr. Walter H. F. Smith}}}{mailto:walter@raptor.grdl.noaa.gov} \\
 Professor & Geophysicist \\
 \htmladdnormallink{Department of Geology and Geophysics}{http://www.soest.hawaii.edu/GG} & \htmladdnormallink{Laboratory for Satellite Altimetry}{http://www.grdl.noaa.gov} \\
 \htmladdnormallink{School of Ocean and Earth Science and Technology}{http://www.soest.hawaii.edu} & \htmladdnormallink{National Oceanographic Data Center}{http://www.nodc.noaa.gov} \\
@@ -74,7 +92,7 @@ Professor & Geophysicist \\
 %\par
 %\vspace{0.5\baselineskip}
 %\noindent
-%\htmladdnormallink{{\textbf {Dr. P\aa l (Paul) Wessel}}}{http://www.soest.hawaii.edu/wessel}
+%\htmladdnormallink{{\textbf {Dr. P\aa l (Paul) Wessel}}}{http://www.soest.hawaii.edu/pwessel}
 %\hfill \htmladdnormallink{{\textbf {Dr. Walter H. F. Smith}}}{mailto:walter@raptor.grdl.noaa.gov} \\
 %\small
 %\noindent
@@ -93,7 +111,7 @@ Professor & Geophysicist \\
 %\par
 %\vspace{0.5\baselineskip}
 %\noindent
-%\htmladdnormallink{{\textbf {Dr. P\aa l (Paul) Wessel}}}{http://www.soest.hawaii.edu/wessel} \\
+%\htmladdnormallink{{\textbf {Dr. P\aa l (Paul) Wessel}}}{http://www.soest.hawaii.edu/pwessel} \\
 %\small
 %\noindent
 %Professor \\
@@ -153,12 +171,9 @@ CVS control, is automated by a simple cshell script.
 
 \end{enumerate}
 
-Because this transition was undertaken by a complete \LaTeX\ novice
-it is likely that the layout will change with time.  It is also
-likely that errors have crept into the document.  Please send email
-to \htmladdnormallink{the GMT help list}{mailto:gmt-help@hawaii.edu}
-if you find any.
-
+Please send email to
+\htmladdnormallink{the GMT help list}{mailto:gmt-help@hawaii.edu}
+if you find errors or inconsistencies in the documention.
 %--------------------------------REMINDER------------------------------------
 
 \chapter*{A Reminder}
