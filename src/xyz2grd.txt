@@ -3,7 +3,7 @@
 xyz2grd \- Converting an ASCII or binary table to grd file format
 .SH SYNOPSIS
 \fBxyz2grd\fP \fIxyzfile\fP \fB\-G\fP\fIgrdfile\fP \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] 
-\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-A\fP[\fBn|z\fP] ] [ \fB\-D\fP\fIxunit/yunit/zunit/scale/offset/title/remark\fP ] 
+\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-A\fP[\fBn|z|u|l\fP] ] [ \fB\-D\fP\fIxunit/yunit/zunit/scale/offset/title/remark\fP ] 
 [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-N\fP\fInodata\fP ] [ \fB\-S\fP[\fIzfile\fP] ] [ \fB\-V\fP ] 
 [ \fB\-Z\fP[\fIflags\fP] ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
@@ -28,6 +28,7 @@ have to be sorted (for binary triplets, see \fB\-b\fP).  1-column z tables must 
 .B \-A
 Add up multiple values that belong to the same node (same as \fB\-Az\fP).
 Append \fBn\fP to simply count the number of data points that were assigned to each node.
+Append \fBl\fP or \fBu\fP to find the lowest (minimum) or upper (maximum) value at each node, respectively. 
 [Default (no \fB\-A\fP option) will calculate mean value].  Ignored if \fB\-Z\fP is given.
 .TP
 .B \-D
