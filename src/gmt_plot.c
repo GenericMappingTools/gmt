@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.135 2004-08-17 01:54:32 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.136 2004-08-25 04:37:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2364,7 +2364,7 @@ void GMT_map_tickitem (double w, double e, double s, double n, int item)
 	
 	if (do_y) {	/* Draw grid lines that go S to N */
 		ny = GMT_linear_array (s, n, dy, frame_info.axis[1].phase, &val);
-		for (i = 0; i <= ny; i++) GMT_map_lattick (val[i], w, e, len);
+		for (i = 0; i < ny; i++) GMT_map_lattick (val[i], w, e, len);
 		if (ny) GMT_free ((void *)val);
 	}
 	
