@@ -1,10 +1,12 @@
+#define G_OPT_SI 10\fBc\fP10
+#define G_OPT_US 4\fBi\fP10
 .TP
 .B \-G
 Controls the placement of contour labels along the contours.  Choose among four controlling mechanisms:
 .br
 \fB\-G\fP[\fBd\fP]\fIdist\fP[c|i|m|p][/\fIwidth\fP] Give distance between labels in your measurement
 unit, and optionally append number of (x,y) values used to calculate a smooth label angle [Default is
-10\fBc\fP/10 or 4\fBi\fP/10].
+G_OPT_SI or G_OPT_US].
 .br
 \fB\-Gl|L\fP\fIline1\fP[,\fIline2\fP,...] Give \fIstart\fP and \fIstop\fP coordinates for one or
 more comma-separated straight line segments.  Labels will be placed where these lines intersect the

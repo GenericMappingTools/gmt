@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.89 2004-05-18 21:40:51 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.90 2004-05-18 22:29:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1739,6 +1739,23 @@ int GMT_contlabel_init (struct GMT_CONTOUR *G)
 	if (error) fprintf (stderr, "%s: GMT SYNTAX ERROR -%c:  Valid codes are [lcr][bmt] and z[+-]\n", GMT_program, G->flag);
 
 	return (error);
+}
+
+double GMT_contlabel_angle (double x[], double y[], double x0, double y0, int start, int stop, int width, int n)
+{
+	int j;
+	double sum_x2 = 0.0, sum_xy = 0.0, dx, dy, angle;
+	for (j = start - width; j <= stop + width; j++) {	/* L2 fit for slope over this range of points */
+		if (j < 0 || j >= n) continue;
+		dx = x[j] - x0;
+		dy = y[j] - y0;
+		sum_x2 += dx * dx;
+		sum_xy += dx * dy;
+	}
+	angle = d_atan2 (sum_xy, sum_x2) * R2D;
+	if (angle < 0.0) angle += 360.0;
+	if (angle > 90.0 && angle < 270) angle -= 180.0;
+	return (angle);
 }
 
 int GMT_code_to_lonlat (char *code, double *lon, double *lat)
