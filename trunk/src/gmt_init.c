@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.63 2002-01-07 18:26:54 ben Exp $
+ *	$Id: gmt_init.c,v 1.64 2002-01-08 20:18:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1576,6 +1576,7 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 			GMT_backward.got_new_degree_symbol = TRUE;
 		case GMTCASE_ANNOT_FONT2:
+		case GMTCASE_ANOT_FONT2:
 			if (value[0] >= '0' && value[0] <= '9')
 				ival = atoi (value);
 			else
@@ -1586,6 +1587,7 @@ int GMT_setparameter (char *keyword, char *value)
 				gmtdefs.annot_font2 = ival;
 			break;
 		case GMTCASE_ANNOT_FONT2_SIZE:
+		case GMTCASE_ANOT_FONT2_SIZE:
 			dval = atof (value);
 			if (dval > 0.0)
 				save_annot_size2 = gmtdefs.annot_font2_size = dval;
@@ -1594,6 +1596,7 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 
 		case GMTCASE_ANNOT_OFFSET2:
+		case GMTCASE_ANOT_OFFSET2:
 			save_annot_offset2 = gmtdefs.annot_offset2 = GMT_convert_units (value, GMT_INCH);
 			break;
 		case GMTCASE_LABEL_OFFSET:
