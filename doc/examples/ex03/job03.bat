@@ -1,7 +1,7 @@
 REM
 REM		GMT EXAMPLE 03
 REM
-REM		$Id: job03.bat,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+REM		$Id: job03.bat,v 1.2 2001-09-24 02:30:55 pwessel Exp $
 REM
 echo GMT EXAMPLE 03
 set master=y
@@ -66,5 +66,5 @@ del box.d
 del *.pg
 del spectrum.*
 del samp.x
-del .gmtcommands
+del .gmt*
 if %master%==y cd ..
