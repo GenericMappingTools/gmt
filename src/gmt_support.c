@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.37 2003-02-19 19:10:46 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.38 2003-02-20 19:00:52 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -92,10 +92,24 @@ void GMT_get_bcr_cardinals (double x, double y);
 void GMT_get_bcr_ij (struct GRD_HEADER *grd, double xx, double yy, int *ii, int *jj, struct GMT_EDGEINFO *edgeinfo);
 void GMT_get_bcr_xy(struct GRD_HEADER *grd, double xx, double yy, double *x, double *y);
 void GMT_get_bcr_nodal_values(float *z, int ii, int jj);
+int GMT_check_hsv (double h, double s, double v);
+int GMT_check_cmyk (double cmyk[]);
+int GMT_slash_count (char *txt);
 
 int GMT_check_rgb (int rgb[])
 {
 	return (( (rgb[0] < 0 || rgb[0] > 255) || (rgb[1] < 0 || rgb[1] > 255) || (rgb[2] < 0 || rgb[2] > 255) ));
+}
+
+int GMT_check_hsv (double h, double s, double v)
+{
+	return (( (h < 0.0 || h > 360.0) || (s < 0.0 || s > 1.0) || (h < 0.0 || v > 1.0) ));
+}
+
+int GMT_check_cmyk (double cmyk[])
+{
+	for (i = 0; i < 4; i++) if (cmyk[i] < 0.0 || cmyk[i] > 100.0) return (TRUE);
+	return (FALSE);
 }
 
 void GMT_init_fill (struct GMT_FILL *fill, int r, int g, int b)
@@ -113,11 +127,11 @@ void GMT_init_fill (struct GMT_FILL *fill, int r, int g, int b)
 
 int GMT_getfill (char *line, struct GMT_FILL *fill)
 {
-	int n, count, error = 0, slash_count(char *txt);
+	int n, count, error = 0;
 	int pos, i, fr, fg, fb;
 	char f;
 	
-	/* Syntax:   -G<gray>, -G<rgb>, or -Gp|P<dpi>/<image>[:F<rgb>B<rgb>]   */
+	/* Syntax:   -G<gray>, -G<rgb>, -G<cmyk>, -G<hsv> or -Gp|P<dpi>/<image>[:F<rgb>B<rgb>]   */
 	/* Note, <rgb> can be r/g/b, gray, or - for masks */
 
 	if (line[0] == 'p' || line[0] == 'P') {	/* Image specified */
@@ -170,26 +184,13 @@ int GMT_getfill (char *line, struct GMT_FILL *fill)
 		}
 	}
 	else {	/* Plain color or shade */
-		if ((count = slash_count (line)) == 3) {	/* c/m/y/k */
-			double cmyk[4];
-			n = sscanf (line, "%lf/%lf/%lf/%lf", &cmyk[0], &cmyk[1], &cmyk[2], &cmyk[3]);
-			GMT_cmyk_to_rgb (fill->rgb, cmyk);
-		}
-		else if (count == 2)
-			n = sscanf (line, "%d/%d/%d", &fill->rgb[0], &fill->rgb[1], &fill->rgb[2]);
-		else if (count == 0) {
-			n = sscanf (line, "%d", &fill->rgb[0]);
-			fill->rgb[1] = fill->rgb[2] = fill->rgb[0];
-		}
-		else
-			n = 0;
+		error = GMT_getrgb (line, fill->rgb);
 		fill->use_pattern = FALSE;
-		error = (!(n == 1 || n == 3 || n == 4)) ? TRUE : GMT_check_rgb (fill->rgb);
 	}
 	return (error);
 }
 
-int slash_count (char *txt)
+int GMT_slash_count (char *txt)
 {
 	int i = 0, n = 0;
 	while (txt[i]) if (txt[i++] == '/') n++;
@@ -198,22 +199,43 @@ int slash_count (char *txt)
 
 int GMT_getrgb (char *line, int rgb[])
 {
-	int n, count, slash_count(char *txt);
+	int n, count;
 	
-	if ((count = slash_count (line)) == 3) {	/* c/m/y/k */
+	count = GMT_slash_count (line);
+	
+	if (count == 3) {	/* c/m/y/k */
 		double cmyk[4];
 		n = sscanf (line, "%lf/%lf/%lf/%lf", &cmyk[0], &cmyk[1], &cmyk[2], &cmyk[3]);
+		if (n != 4 || GMT_check_cmyk (cmyk)) return (TRUE);
 		GMT_cmyk_to_rgb (rgb, cmyk);
+		return (FALSE);
 	}
-	else if ((count = slash_count (line)) == 2)	/* r/g/b */
-		n = sscanf (line, "%d/%d/%d", &rgb[0], &rgb[1], &rgb[2]);
-	else if (count == 0) {				/* gray */
+	
+	if (count == 2) {	/* r/g/b or h/s/v */
+		if (gmtdefs.color_model == GMT_RGB) {	/* r/g/b */
+			n = sscanf (line, "%d/%d/%d", &rgb[0], &rgb[1], &rgb[2]);
+			if (n != 3 || GMT_check_rgb (rgb)) return (TRUE);
+		}
+		else {					/* h/s/v */
+			double h, s, v;
+			if (gmtdefs.verbose) fprintf (stderr, "%s: GMT Warning: COLOR_MODEL = hsv; Color triplets will be interpreted as HSV\n", GMT_program);
+			n = sscanf (line, "%lf/%lf/%lf", &h, &s, &v);
+			if (n != 3 || GMT_check_hsv (h, s, v)) return (TRUE);
+			GMT_hsv_to_rgb (rgb, h, s, v);
+		}
+		return (FALSE);
+	}
+	
+	if (count == 0) {				/* gray */
 		n = sscanf (line, "%d", &rgb[0]);
 		rgb[1] = rgb[2] = rgb[0];
+		if (n != 1 || GMT_check_rgb (rgb)) return (TRUE);
+		return (FALSE);
 	}
-	else
-		n = 0;
-	return (!(n == 1 || n == 3 || n == 4) || GMT_check_rgb (rgb));
+
+	/* Get here if there is a problem */
+			
+	return (TRUE);
 }
 
 void GMT_init_pen (struct GMT_PEN *pen, double width)
