@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_Defaults_1c.sh,v 1.3 2004-01-10 02:34:54 pwessel Exp $
+#	$Id: GMT_Defaults_1c.sh,v 1.4 2004-04-10 17:19:14 pwessel Exp $
 #
 gmtset BASEMAP_TYPE plain PLOT_DATE_FORMAT "o dd" PLOT_CLOCK_FORMAT hh ANNOT_FONT_SIZE +8p
 psbasemap -R2001-9-11T/2001-9-13T/0.01/100 -JX2.25T/2.25l -Ba6Hf1hIa1Dg6h:"x-axis label":/a1g3p:"y-axis label":WSne -P -K -U/-0.75/-0.85/"Dazed and Confused" > GMT_Defaults_1c.ps
@@ -18,7 +18,7 @@ pstext -R0/2.25/0/2.25 -Jx1i -O -K -N << EOF >> GMT_Defaults_1c.ps
 2.3 -0.25 7 0 1 LM ANNOT_FONT2
 2.3 -0.35 7 0 1 LM ANNOT_FONT2_SIZE
 EOF
-psxy -R -Jx -O -Svs0.005i/0.04i/0.03i -N -G0 << EOF >> GMT_Defaults_1c.ps
+psxy -R -Jx -O -Svs0.005i/0.04i/0.03i -N -Gblack << EOF >> GMT_Defaults_1c.ps
 0.65 2.4 0.9 2.3
 -0.35 2.1 -0.05 2.1
 -0.35 1.9 -0.05 1.9

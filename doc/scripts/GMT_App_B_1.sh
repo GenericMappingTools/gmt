@@ -1,8 +1,8 @@
 #!/bin/sh 
-#	$Id: GMT_App_B_1.sh,v 1.1 2001-03-21 04:10:21 pwessel Exp $
+#	$Id: GMT_App_B_1.sh,v 1.2 2004-04-10 17:19:14 pwessel Exp $
 #
 
-psxy -R0/3/0/3 -JX2.5i/1.25i -B1g1wesn -P -K -W0.5p -L -G200 << EOF > GMT_gridreg.ps
+psxy -R0/3/0/3 -JX2.5i/1.25i -B1g1wesn -P -K -W0.5p -L -Ggray << EOF > GMT_gridreg.ps
 0.5	1.5
 1.5	1.5
 1.5	2.5

@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_E.sh,v 1.2 2001-03-23 19:30:42 pwessel Exp $
+#	$Id: GMT_App_E.sh,v 1.3 2004-04-10 17:19:14 pwessel Exp $
 #
 #	This script makes the documentation in Appendix E.
 #
@@ -32,7 +32,7 @@ do
 		psxy -R -Jx -W0.5p -L -O -K App_E.d >> GMT_App_E.ps
 		psxy -R -Jx -GP0/$p -O -K App_E.d -X${xwidth}i >> GMT_App_E.ps
 		psxy -R -Jx -W0.5p -L -O -K App_E.d >> GMT_App_E.ps
-		echo "0 0.225" | psxy -R0/$w/0/$ywidth -Jx -O -K -N -Sc0.17i -W0.25p -G255 >> GMT_App_E.ps
+		echo "0 0.225" | psxy -R0/$w/0/$ywidth -Jx -O -K -N -Sc0.17i -W0.25p -Gwhite >> GMT_App_E.ps
 		echo "0 0.225 9 0 1 CM $p" | pstext -R0/$w/0/$ywidth -Jx -O -K -N >> GMT_App_E.ps
 		y=0.0
 		x=$dx

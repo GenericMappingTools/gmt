@@ -1,8 +1,8 @@
 #!/bin/sh
-#	$Id: GMT_nearneighbor.sh,v 1.1 2001-03-21 04:10:21 pwessel Exp $
+#	$Id: GMT_nearneighbor.sh,v 1.2 2004-04-10 17:19:14 pwessel Exp $
 #
 
-psxy -R0/2/0/2 -Jx1 -B0g0.25 -Sc0.025 -G0 -P -K << EOF > GMT_nearneighbor.ps
+psxy -R0/2/0/2 -Jx1 -B0g0.25 -Sc0.025 -Gblack -P -K << EOF > GMT_nearneighbor.ps
 0.04	1.8
 0.3	0.3
 0.31	0.7
