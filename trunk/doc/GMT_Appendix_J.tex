@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_J.tex,v 1.5 2004-01-03 23:03:30 pwessel Exp $
+%	$Id: GMT_Appendix_J.tex,v 1.6 2004-08-24 20:43:49 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -36,16 +36,16 @@ weights shown; the values in the center of the window have
 been fixed equal to 1 for ease of plotting.  In this way the
 same graph can serve to illustrate both the 1-d and 2-d impulse
 responses; in the 2-d case this plot is a diametrical
-cross-section through the filter weights (Figure~\ref{fig:GMT_imp_res}).
+cross-section through the filter weights (Figure~\ref{fig:GMT_App_J_1}).
 
-\GMTfig[H]{GMT_imp_res}{Impulse responses for \gmt\ filters.}
+\GMTfig[H]{GMT_App_J_1}{Impulse responses for \gmt\ filters.}
 
 Although the impulse responses look the same in 1-d and 2-d,
 this is not true of the transfer functions; in 1-d the transfer
 function is the Fourier transform of the impulse response, 
 while in 2-d it is the Hankel transform of the impulse response.
-These are shown in Figures~\ref{fig:GMT_x_tr_fns} and
-\ref{fig:GMT_r_tr_fns}, respectively.  Note that in 1-d the boxcar transfer
+These are shown in Figures~\ref{fig:GMT_App_J_2} and
+\ref{fig:GMT_App_J_3}, respectively.  Note that in 1-d the boxcar transfer
 function has its first zero crossing at $f = 1$, while in 2-d 
 it is around $f \sim 1.2$.  The 1-d cosine transfer function
 has its first zero crossing at $f = 2$; so a cosine filter needs
@@ -59,7 +59,7 @@ work (doubling the width to achieve the same cut-off wavelength).
 
 \clearpage
 
-\GMTfig[H]{GMT_x_tr_fns}{Transfer functions for 1-D \gmt\ filters.}
+\GMTfig[H]{GMT_App_J_2}{Transfer functions for 1-D \gmt\ filters.}
 
 One of the nice things about the gaussian filter is that its
 transfer functions are the same in 1-d and 2-d.  Another nice
@@ -73,4 +73,4 @@ definition, the transfer function is $\exp[-2(\pi\sigma f)^2]$
 and the wavelength at which the transfer function equals 0.5 is 
 about 5.34 $\sigma$, or about 0.89 of the filter width.
 
-\GMTfig[H]{GMT_r_tr_fns}{Transfer functions for 2-D (radial) \gmt\ filters.}
+\GMTfig[H]{GMT_App_J_3}{Transfer functions for 2-D (radial) \gmt\ filters.}
