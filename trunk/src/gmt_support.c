@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.86 2004-05-12 00:05:00 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.87 2004-05-12 19:11:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4067,7 +4067,7 @@ int GMT_getscale (char *text, struct MAP_SCALE *ms)
 	ms->boxdraw = ms->boxfill = FALSE;
 	memcpy ((void *)ms->fill.rgb, (void *)GMT_no_rgb, 3 * sizeof (int));
 	
-	/* First deal with possible prefixes f and x (i.e., f, x, xf, fx( */
+	/* First deal with possible prefixes f and x (i.e., f, x, xf, fx) */
 	if (text[j] == 'f') ms->fancy = TRUE, j++;
 	if (text[j] == 'x') ms->gave_xy = TRUE, j++;
 	if (text[j] == 'f') ms->fancy = TRUE, j++;	/* in case we got xf instead of fx */
@@ -4169,7 +4169,7 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 	int j = 0, i,error = 0, colon, plus, slash, k, order[4] = {3,1,0,2};
 	char txt_a[32], txt_b[32], txt_c[32], txt_d[32], tmpstring[256], *p;
 	
-	/* SYNTAX is -T[f|m][x]<lon0>/<lat0>/<size>[/<info>][:label:][+gint[/mint]], where <info> is
+	/* SYNTAX is -T[f|m][x]<lon0>/<lat0>/<size>[/<info>][:label:][+<aint>/<fint>/<gint>[/<aint>/<fint>/<gint>]], where <info> is
 	 * 1)  -Tf: <info> is <kind> = 1,2,3 which is the level of directions [1].
 	 * 2)  -Tm: <info> is <dec>/<dlabel>, where <Dec> is magnetic declination and dlabel its label [no mag].
 	 * If -Tm, optionally set annotation interval with +
@@ -4177,8 +4177,8 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 	 
 	ms->fancy = ms->gave_xy = FALSE;
 	ms->size = 0.0;
-	ms->a_int[0] = 10.0;
-	ms->a_int[1] = 30.0;
+	ms->a_int[0] = 10.0;	ms->f_int[0] = 5.0;	ms->g_int[0] = 1.0;
+	ms->a_int[1] = 30.0;	ms->f_int[1] = 5.0;	ms->g_int[1] = 1.0;
 	strcpy (ms->label[0], "S");
 	strcpy (ms->label[1], "E");
 	strcpy (ms->label[2], "N");
@@ -4203,12 +4203,12 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 		
 	for (plus = -1, i = slash; text[i] && plus < 0; i++) if (text[i] == '+') plus = i+1;	/* Find location of + */
 	if (plus > 0) {		/* Get annotation interval(s) */
-		k = sscanf (&text[plus], "%lf/%lf", &ms->a_int[1], &ms->a_int[0]);
+		k = sscanf (&text[plus], "%lf/%lf/%lf/%lf/%lf/%lf", &ms->a_int[1], &ms->f_int[1], &ms->g_int[1], &ms->a_int[0], &ms->f_int[0], &ms->g_int[0]);
 		if (k < 1) {
 			fprintf (stderr, "%s: GMT SYNTAX ERROR -T option:  Give annotation interval(s)\n", GMT_program);
 			error++;
 		}
-		if (k == 1) ms->a_int[0] = ms->a_int[1];
+		if (k == 3) ms->a_int[0] = ms->a_int[1], ms->f_int[0] = ms->f_int[1], ms->g_int[0] = ms->g_int[1];
 		text[plus-1] = '\0';	/* Break string so sscanf wont get confused later */
 	}
 	if (colon > 0) {	/* Get labels in string :w,e,s,n: */
@@ -4227,7 +4227,10 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 			k++;
 			p = strtok (NULL, ",");
 		}
-		if (k != 4) {	/* Ran out of labels */
+		if (k == 0) {	/* No labels wanted */
+			ms->label[0][0] = ms->label[1][0] = ms->label[2][0] = ms->label[3][0] = '\0';
+		}
+		else if (k != 4) {	/* Ran out of labels */
 			fprintf (stderr, "%s: GMT SYNTAX ERROR -T option: Labels must be given in format :w,e,s,n:\n", GMT_program);
 			error++;
 		}
@@ -4700,3 +4703,16 @@ int GMT_near_a_line_spherical (double lon, double lat, struct GMT_LINES *p, int 
 	}
 	return (FALSE);	/* All tests failed, we are not close to the line(s) */
 }
+
+void GMT_rotate2D (double x[], double y[], int n, double x0, double y0, double angle, double xp[], double yp[])
+{	/* Cartesian rotation of x,y in the plane by angle followed by translation by (x0, y0) */
+	int i;
+	double s, c;
+	
+	sincos (angle * D2R, &s, &c);
+	for (i = 0; i < n; i++) {	/* Coordinate transformation: Rotate and add new (x0, y0) offset */
+		xp[i] = x0 + x[i] * c - y[i] * s;	
+		yp[i] = y0 + x[i] * s + y[i] * c;
+	}
+}
+	
