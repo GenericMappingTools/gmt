@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.58 2004-04-06 19:28:06 pwessel Exp $
+ *	$Id: pslib.c,v 1.59 2004-05-22 00:01:48 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2009,13 +2009,15 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
  *   1	 2	 3
  */
 	char *string;
-	int i = 0, pmode, j, h_just, v_just;
+	int i = 0, pmode, j, h_just, v_just, rounded;
 
 	if (strlen (text) >= (BUFSIZ-1)) {
 		fprintf (stderr, "pslib: text_item > %d long!\n", BUFSIZ);
 		return;
 	}
 	
+	rounded = (outline & 4 && dx > 0.0 && dy > 0.0);	/* Want rounded label boxes, assuming there is clearance */
+	outline |= 3;	/* Turn off the 4 */
 	fprintf (ps.fp, "\n%% ps_textbox begin:\nV\n");
 
 	if (justify < 0)  {	/* Strip leading and trailing blanks */
@@ -2049,9 +2051,25 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 		(v_just) ? fprintf (ps.fp, "PSL_dimy_ur PSL_dimy_ll sub %3.1f mul ", -0.5 * v_just) : fprintf (ps.fp, "0 ");
 		fprintf (ps.fp, "T ");
 	}
-	fprintf (ps.fp, "/PSL_x_side PSL_dimx_ur PSL_dimx_ll sub PSL_dx 2 mul add def\n");
-	fprintf (ps.fp, "/PSL_y_side PSL_dimy_ur PSL_dimy_ll sub PSL_dy 2 mul add def\n");
-	fprintf (ps.fp, "PSL_dimx_ll PSL_dx sub PSL_dimy_ll PSL_dy sub M PSL_x_side 0 D 0 PSL_y_side D PSL_x_side neg 0 D 0 PSL_y_side neg D P \n");
+	/* Here, (0,0) is lower point on textbox with no clearance yet */
+	if (rounded) {
+		fprintf (ps.fp, "/PSL_r %d def\n", irint (MIN (dx, dy) * ps.scale));
+		fprintf (ps.fp, "/PSL_dx2 %d def\n", irint ((dx - MIN (dx, dy)) * ps.scale));
+		fprintf (ps.fp, "/PSL_dy2 %d def\n", irint ((dy - MIN (dx, dy)) * ps.scale));
+		fprintf (ps.fp, "/PSL_x_side PSL_dimx_ur PSL_dimx_ll sub PSL_dx2 2 mul add def\n");
+		fprintf (ps.fp, "/PSL_y_side PSL_dimy_ur PSL_dimy_ll sub PSL_dy2 2 mul add def\n");
+		fprintf (ps.fp, "/PSL_bx0 PSL_dimx_ll PSL_dx2 sub def\n");
+		fprintf (ps.fp, "/PSL_by0 PSL_dimy_ll PSL_dy2 sub def\n");
+		fprintf (ps.fp, "PSL_dimx_ll PSL_dx2 sub PSL_dimy_ll PSL_dy sub M PSL_x_side 0 D\n");
+		fprintf (ps.fp, "PSL_bx0 PSL_x_side add PSL_by0 PSL_r 270 360 arc\n");
+		fprintf (ps.fp, "0 PSL_y_side D PSL_bx0 PSL_x_side add PSL_by0 PSL_y_side add PSL_r 0 90 arc\n");
+		fprintf (ps.fp, "PSL_x_side neg 0 D PSL_bx0 PSL_by0 PSL_y_side add PSL_r 90 180 arc 0 PSL_y_side neg D P \n");
+	}
+	else {
+		fprintf (ps.fp, "/PSL_x_side PSL_dimx_ur PSL_dimx_ll sub PSL_dx 2 mul add def\n");
+		fprintf (ps.fp, "/PSL_y_side PSL_dimy_ur PSL_dimy_ll sub PSL_dy 2 mul add def\n");
+		fprintf (ps.fp, "PSL_dimx_ll PSL_dx sub PSL_dimy_ll PSL_dy sub M PSL_x_side 0 D 0 PSL_y_side D PSL_x_side neg 0 D 0 PSL_y_side neg D P \n");
+	}
 	if (rgb[0] >= 0) {	/* Paint the textbox */
 		fprintf (ps.fp, "V ");
 		pmode = ps_place_color (rgb);
