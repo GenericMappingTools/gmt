@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.17 2002-04-18 20:44:05 pwessel Exp $
+ *	$Id: libspotter.c,v 1.18 2002-04-20 03:40:58 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -55,6 +55,8 @@ void make_rot_matrix (double lonp, double latp, double w, double R[3][3]);
 void reverse_rotation_order (struct EULER *p, int n);
 void xyw_to_struct_euler (struct EULER *p, double lon[], double lat[], double w[], int n, BOOLEAN stages, BOOLEAN convert);
 void set_I_matrix (double R[3][3]);
+BOOLEAN must_do_track (int sideA[], int sideB[]);
+void set_inout_sides (double x, double y, double wesn[], int sideXY[2]);
 
 void spotter_finite_to_fwstages (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates);
 
@@ -154,7 +156,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
  *	age t_zero.  For t_zero = 0 this means the hotspot
  */
 
-int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EULER p[], int ns, double d_km, double t_zero, BOOLEAN do_time, double **c)
+int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EULER p[], int ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c)
 /* xp, yp;	Points, in RADIANS */
 /* tp;		Age of feature in m.y. */
 /* np;		# of points */
@@ -163,15 +165,24 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 /* d_km;	Create track point every d_km km.  If == -1.0, return bend points only */
 /* t_zero;	Backtrack up to this age */
 /* do_time;	TRUE if we want to interpolate and return time along track, 2 if we just want stage # */
+/* wesn:	if do_time >= 10, only to track within the given box */
 /* **c;		Pointer to return track vector */
 {
-	int i, j, k, kk = 0, start_k, nd = 1, nn, n_alloc = 2 * GMT_CHUNK;
-	BOOLEAN path, bend;
-	double t, tt, dt, d_lon, tlon, dd, i_km, xnew, xx, yy, *track;
+	int i, j, k, kk = 0, start_k, nd = 1, nn, n_alloc = 2 * GMT_CHUNK, sideA[2], sideB[2];
+	BOOLEAN path, bend, go, box_check;
+	double t, tt, dt, d_lon, tlon, dd, i_km, xnew, xx, yy, *track, next_x, next_y;
 	double s_lat, c_lat, s_lon, c_lon, cc, ss, cs, i_nd;
 
 	bend = (d_km <= (SMALL - 1.0));
 	path = (bend || d_km > SMALL);
+	if (do_time >= 10) {	/* Restrict track sampling to given wesn box */
+		do_time -= 10;
+		box_check = TRUE;
+	}
+	else {
+		box_check = FALSE;
+		go = TRUE;
+	}
 
 	if (path) {
 		track = (double *) GMT_memory (VNULL, n_alloc, sizeof (double), "libspotter");
@@ -192,7 +203,10 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 		nn = 0;
 			
 		t = tp[i];
+
+		if (box_check) set_inout_sides (xp[i], yp[i], wesn, sideB);
 		while (t > t_zero) {	/* As long as we're not back at zero age */
+			if (box_check) sideA[0] = sideB[0], sideA[1] = sideB[1];
 
 			j = 0;
 			while (j < ns && t <= p[j].t_stop) j++;	/* Find first applicable stage pole */
@@ -213,6 +227,21 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 			ss = p[j].sin_lat * s_lat;
 			cs = p[j].cos_lat * s_lat;
 
+			/* Get the next bend point first */
+
+			xnew = tlon + d_lon;
+			sincos (xnew, &s_lon, &c_lon);
+			cc = c_lat * c_lon;
+			next_y = d_asin (ss - p[j].cos_lat * cc);
+			next_x = p[j].lon_r + d_atan2 (c_lat * s_lon, p[j].sin_lat * cc + cs);
+
+			if (next_x < 0.0) next_x += TWO_PI;
+			if (next_x >= TWO_PI) next_x -= TWO_PI;
+
+			if (box_check) {	/* See if this segment _might_ involve the box in any way; if so do the track sampling */
+				set_inout_sides (next_x, next_y, wesn, sideB);
+				go = must_do_track (sideA, sideB);
+			}
 			if (path) {
 				if (!bend) {
 					nd = (int) ceil ((fabs (d_lon) * c_lat) * i_km);
@@ -237,7 +266,8 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 						track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 					}
 				}
-				for (k = 1; k < nd; k++) {
+				if (!go) nd = 1;
+				for (k = 1; go && k < nd; k++) {
 
 					xnew = tlon + k * dd;
 					sincos (xnew, &s_lon, &c_lon);
@@ -267,14 +297,7 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 				}
 				nn += nd;
 			}
-			xnew = tlon + d_lon;
-			sincos (xnew, &s_lon, &c_lon);
-			cc = c_lat * c_lon;
-			yp[i] = d_asin (ss - p[j].cos_lat * cc);
-			xp[i] = p[j].lon_r + d_atan2 (c_lat * s_lon, p[j].sin_lat * cc + cs);
-
-			if (xp[i] < 0.0) xp[i] += TWO_PI;
-			if (xp[i] >= TWO_PI) xp[i] -= TWO_PI;
+			xp[i] = next_x;	yp[i] = next_y;
 			t -= dt;
 		}
 		if (path) {
@@ -307,12 +330,47 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 	return (np);
 }
 
+void set_inout_sides (double x, double y, double wesn[], int sideXY[2]) {
+	/* Given the rectangular region in wesn, return -1, 0, +1 for
+	 * x and y if the point is left/below (-1) in (0), or right/above (+1).
+	 * 
+	 */
+	 
+	if (y < wesn[2])
+		sideXY[1] = -1;
+	else if (y > wesn[3])
+		sideXY[1] = +1;
+	else
+		sideXY[1] = 0;
+	while ((x + TWO_PI) < wesn[1]) x += TWO_PI;
+	while ((x - TWO_PI) > wesn[0]) x -= TWO_PI;
+	if (x < wesn[0])
+		sideXY[0] = -1;
+	else if (x > wesn[1])
+		sideXY[0] = +1;
+	else
+		sideXY[0] = 0;
+}	
+
+BOOLEAN must_do_track (int sideA[], int sideB[]) {
+	int dx, dy;
+	/* First check if any of the two points are inside the box */
+	if (sideA[0] == 0 && sideA[1] == 0) return (TRUE);
+	if (sideB[0] == 0 && sideB[1] == 0) return (TRUE);
+	/* Now check if the two points may cut a corner */
+	dx = abs (sideA[0] - sideB[0]);
+	dy = abs (sideA[1] - sideB[1]);
+	if (dx && dy) return (TRUE);
+	if (dx == 2 || dy == 2) return (TRUE);	/* COuld cut across the box */
+	return (FALSE);
+}
+
 /* spotter_forthtrack: Given a hotspot location and final age, trace the
  *	hotspot-track between the seamount created at t_zero and a
  *	seamount of age tp.  For t_zero = 0 this means from the hotspot.
  */
 
-int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EULER p[], int ns, double d_km, double t_zero, BOOLEAN do_time, double **c)
+int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EULER p[], int ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c)
 /* xp, yp;	Points, in RADIANS */
 /* tp;		Age of feature in m.y. */
 /* np;		# of points */
@@ -321,15 +379,24 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 /* d_km;	Create track point every d_km km.  If == -1.0, return bend points only */
 /* t_zero;	Foretrack from this age forward */
 /* do_time;	TRUE if we want to interpolate and return time along track */
+/* wesn:	if do_time >= 10, only to track within the given box */
 /* c;		Pointer to return track vector */
 {
-	int i, j, k, kk = 0, start_k, nd = 1, nn, n_alloc = 2 * GMT_CHUNK;
-	BOOLEAN path, bend;
+	int i, j, k, kk = 0, start_k, nd = 1, nn, n_alloc = 2 * GMT_CHUNK, sideA[2], sideB[2];
+	BOOLEAN path, bend, go, box_check;
 	double t, tt, dt, d_lon, tlon, dd, i_km, xnew, xx, yy, *track;
-	double s_lat, c_lat, s_lon, c_lon, cc, ss, cs, i_nd;
+	double s_lat, c_lat, s_lon, c_lon, cc, ss, cs, i_nd, next_x, next_y;
 
 	bend = (d_km <= (SMALL - 1.0));
 	path = (bend || d_km > SMALL);
+	if (do_time >= 10) {	/* Restrict track sampling to given wesn box */
+		do_time -= 10;
+		box_check = TRUE;
+	}
+	else {
+		box_check = FALSE;
+		go = TRUE;
+	}
 
 	if (path) {
 		track = (double *) GMT_memory (VNULL, n_alloc, sizeof (double), "libspotter");
@@ -350,8 +417,10 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 		nn = 0;
 
 		t = t_zero;
+		
+		if (box_check) set_inout_sides (xp[i], yp[i], wesn, sideB);
 		while (t < tp[i]) {	/* As long as we're not back at zero age */
-
+			if (box_check) sideA[0] = sideB[0], sideA[1] = sideB[1];
 			j = ns - 1;
 			while (j && (t + GMT_CONV_LIMIT) > p[j].t_start) j--;
 			/* while (j < ns && (t + GMT_CONV_LIMIT) < p[j].t_stop) j++; */	/* Find first applicable stage pole */
@@ -372,6 +441,21 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 			ss = p[j].sin_lat * s_lat;
 			cs = p[j].cos_lat * s_lat;
 
+			/* Get the next bend point first */
+
+			xnew = tlon - d_lon;
+			sincos (xnew, &s_lon, &c_lon);
+			cc = c_lat * c_lon;
+			next_y = d_asin (ss - p[j].cos_lat * cc);
+			next_x = p[j].lon_r + d_atan2 (c_lat * s_lon, p[j].sin_lat * cc + cs);
+
+			if (next_x < 0.0) next_x += TWO_PI;
+			if (next_x >= TWO_PI) next_x -= TWO_PI;
+
+			if (box_check) {	/* See if this segment _might_ involve the box in any way; if so do the track sampling */
+				set_inout_sides (next_x, next_y, wesn, sideB);
+				go = must_do_track (sideA, sideB);
+			}
 			if (path) {
 				if (!bend) {
 					nd = (int) ceil ((fabs (d_lon) * c_lat) * i_km);
@@ -396,7 +480,8 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 						track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 					}
 				}
-				for (k = 1; k < nd; k++) {
+				if (!go) nd = 1;
+				for (k = 1; go && k < nd; k++) {
 					xnew = tlon - k * dd;
 					sincos (xnew, &s_lon, &c_lon);
 					cc = c_lat * c_lon;
@@ -425,14 +510,8 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 				}
 				nn += nd;
 			}
-			xnew = tlon - d_lon;
-			sincos (xnew, &s_lon, &c_lon);
-			cc = c_lat * c_lon;
-			yp[i] = d_asin (ss - p[j].cos_lat * cc);
-			xp[i] = p[j].lon_r + d_atan2 (c_lat * s_lon, p[j].sin_lat * cc + cs);
 
-			if (xp[i] < 0.0) xp[i] += TWO_PI;
-			if (xp[i] >= TWO_PI) xp[i] -= TWO_PI;
+			xp[i] = next_x;	yp[i] = next_y;
 			t += dt;
 		}
 		if (path) {
