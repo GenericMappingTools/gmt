@@ -1,18 +1,30 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.10 2004-08-18 23:19:45 pwessel Exp $
+#       $Id: install_gmt_form.pl,v 1.11 2004-09-24 21:31:19 pwessel Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
 #
-#	Updated to work with 4.0 input
+#	Updated to work for multiple versions and passes browser
+#	control to unique (temporary) parameter file on GMT server
+#	You must start cron job on the server that will find and
+#	delete all temporary files in /export/gmt/gmt/www/gmttemp
+#	that are older than 5 minutes.  The command for cron would be
+#
+#	0,15,30,45 * * * * find /export/gmt/gmt/www/gmttemp -type d -amin +5 -exec rm -rf {}\;
+#
+#	The temporary files are placed in <PID>/GMTparam.txt
 
 $webmaster = "gmt\@soest\.hawaii\.edu";
 
-# Create return plain text file
+# Create unique filename for temp file:
 
-print "Content-type: text/plain", "\n";
-print "Status: 200 OK", "\n\n";
+$PID		= $$;
+$OUT          = "/export/gmt/gmt/www/gmttemp/" . $PID . "/GMTparam.txt";
+$FOUT          = $PID . "/GMTparam.txt";
+$PDIR           = "/export/gmt/gmt/www/gmttemp/" . $PID;
+
+mkdir $PDIR;
 
 &parse_form_data (*gmt_form);
 
@@ -61,7 +73,6 @@ $get_dbase	= $gmt_form{'checkbox_dbase'};
 $get_gshhs	= $gmt_form{'checkbox_gshhs'};
 $get_imgsrc	= $gmt_form{'checkbox_imgsrc'};
 $get_meca	= $gmt_form{'checkbox_meca'};
-$get_mgd77	= $gmt_form{'checkbox_mgd77'};
 $get_mgg	= $gmt_form{'checkbox_mgg'};
 $get_mex	= $gmt_form{'checkbox_mex'};
 $get_misc	= $gmt_form{'checkbox_misc'};
@@ -74,13 +85,14 @@ $matlab_dir	= $gmt_form{'matlab_dir'};
 $delete		= $gmt_form{'checkbox_delete'};
 $run		= $gmt_form{'checkbox_run'};
 
-
 $now		= `date`;
 chop($now);
 
-# Start printing the parameter file to be returned
 
-print <<EOF;
+# Open temp file
+
+open (FILE, ">" . $OUT) || die "Sorry, cound not create tmp file\n";
+print FILE <<EOF;
 # This file contains parameters needed by the install script
 # for GMT Version $gmt_version or later.  Give this parameter file
 # as the argument to the install_gmt script and the whole
@@ -89,7 +101,7 @@ print <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.10 $,  on
+# Processed by install_gmt_form.pl $Revision: 1.11 $,  on
 #
 #	$now
 #
@@ -100,331 +112,332 @@ print <<EOF;
 #---------------------------------------------
 EOF
 
+print FILE "VERSION=", $gmt_version, "\n";
 if ($zip eq "default") {
-	print "GMT_expand=\n";
+	print FILE "GMT_expand=\n";
 }
 else {
-	print "GMT_expand=", $zip, "\n";
+	print FILE "GMT_expand=", $zip, "\n";
 }
 @k = split (/\s+/, $make);
 if ($k[0] eq "1.") {
-	print "GMT_make=make\n";
+	print FILE "GMT_make=make\n";
 }
 else {
-	print "GMT_make=", $custom_make, "\n";
+	print FILE "GMT_make=", $custom_make, "\n";
 }
 
-print "#---------------------------------------------\n";
-print "#	NETCDF SECTION\n";
-print "#---------------------------------------------\n";
+print FILE "#---------------------------------------------\n";
+print FILE "#	NETCDF SECTION\n";
+print FILE "#---------------------------------------------\n";
 if ($cdf eq "get") {
-	print "netcdf_ftp=y\n";
-	print "netcdf_install=y\n";
+	print FILE "netcdf_ftp=y\n";
+	print FILE "netcdf_install=y\n";
 }
 elsif ($cdf eq "install") {
-	print "netcdf_ftp=n\n";
-	print "netcdf_install=y\n";
+	print FILE "netcdf_ftp=n\n";
+	print FILE "netcdf_install=y\n";
 }
 else {
-	print "netcdf_ftp=n\n";
-	print "netcdf_install=n\n";
+	print FILE "netcdf_ftp=n\n";
+	print FILE "netcdf_install=n\n";
 }
-print "netcdf_path=", $cdf_path, "\n";
-print "passive_ftp=";
+print FILE "netcdf_path=", $cdf_path, "\n";
+print FILE "passive_ftp=";
 if ($ftpmode eq "passive") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "#---------------------------------------------\n";
-print "#	GMT FTP SECTION\n";
-print "#---------------------------------------------\n";
+print FILE "#---------------------------------------------\n";
+print FILE "#	GMT FTP SECTION\n";
+print FILE "#---------------------------------------------\n";
 if ($site eq "7") {
-	print "GMT_ftp=n\n";
+	print FILE "GMT_ftp=n\n";
 }
 else {
-	print "GMT_ftp=y\n";
+	print FILE "GMT_ftp=y\n";
 }
-print "GMT_ftpsite=", $site, "\n";
-print "GMT_get_progs=";
+print FILE "GMT_ftpsite=", $site, "\n";
+print FILE "GMT_get_progs=";
 if ($get_progs eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_get_share=";
+print FILE "GMT_get_share=";
 if ($get_libs eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_get_high=";
+print FILE "GMT_get_high=";
 if ($get_high eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_get_full=";
+print FILE "GMT_get_full=";
 if ($get_full eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_get_suppl=";
+print FILE "GMT_get_suppl=";
 if ($get_suppl eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_get_scripts=";
+print FILE "GMT_get_scripts=";
 if ($get_scripts eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_get_ps=";
+print FILE "GMT_get_ps=";
 if ($get_ps eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_get_pdf=";
+print FILE "GMT_get_pdf=";
 if ($get_pdf eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_get_man=";
+print FILE "GMT_get_man=";
 if ($get_man eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_get_tut=";
+print FILE "GMT_get_tut=";
 if ($get_tut eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_get_web=";
+print FILE "GMT_get_web=";
 if ($get_web eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_get_triangle=";
+print FILE "GMT_get_triangle=";
 if ($get_triangle eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
 
-print "#---------------------------------------------\n";
-print "#	GMT SUPPLEMENTS SELECT SECTION\n";
-print "#---------------------------------------------\n";
+print FILE "#---------------------------------------------\n";
+print FILE "#	GMT SUPPLEMENTS SELECT SECTION\n";
+print FILE "#---------------------------------------------\n";
 
-print "GMT_suppl_dbase=";
+print FILE "GMT_suppl_dbase=";
 if ($get_dbase eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_suppl_gshhs=";
+print FILE "GMT_suppl_gshhs=";
 if ($get_gshhs eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_suppl_imgsrc=";
+print FILE "GMT_suppl_imgsrc=";
 if ($get_imgsrc eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_suppl_meca=";
+print FILE "GMT_suppl_meca=";
 if ($get_meca eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_suppl_mex=";
+print FILE "GMT_suppl_mex=";
 if ($get_mex eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_suppl_mgd77=";
-if ($get_mgd77 eq "on") {
-	print "y\n";
-}
-else {
-	print "n\n";
-}
-print "GMT_suppl_mgg=";
+print FILE "GMT_suppl_mgg=";
 if ($get_mgg eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_suppl_misc=";
+print FILE "GMT_suppl_misc=";
 if ($get_misc eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_suppl_segyprogs=";
+print FILE "GMT_suppl_segyprogs=";
 if ($get_segyprogs eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_suppl_spotter=";
+print FILE "GMT_suppl_spotter=";
 if ($get_spotter eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_suppl_x2sys=";
+print FILE "GMT_suppl_x2sys=";
 if ($get_x2sys eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_suppl_x_system=";
+print FILE "GMT_suppl_x_system=";
 if ($get_x_system eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
-print "GMT_suppl_xgrid=";
+print FILE "GMT_suppl_xgrid=";
 if ($get_xgrid eq "on") {
-	print "y\n";
+	print FILE "y\n";
 }
 else {
-	print "n\n";
+	print FILE "n\n";
 }
 
-print "#---------------------------------------------\n";
-print "#	GMT ENVIRONMENT SECTION\n";
-print "#---------------------------------------------\n";
+print FILE "#---------------------------------------------\n";
+print FILE "#	GMT ENVIRONMENT SECTION\n";
+print FILE "#---------------------------------------------\n";
 
 if ($unit eq "SI") {
-	print "GMT_si=y\n";
+	print FILE "GMT_si=y\n";
 }
 else {
-	print "GMT_si=n\n";
+	print FILE "GMT_si=n\n";
 }
 
 if ($eps eq "PS") {
-	print "GMT_ps=y\n";
+	print FILE "GMT_ps=y\n";
 }
 else {
-	print "GMT_ps=n\n";
+	print FILE "GMT_ps=n\n";
 }
 
 if ($gmt_def eq "" && $gmt_share ne "") {
 	$gmt_def =$gmt_share;
 	$gmt_def =~ s#/share$##;	# Remove trailing /share
 }
-print "GMT_def=", $gmt_def, "\n";
-print "GMT_share=", $gmt_share, "\n";
-print "GMT_bin=", $gmt_bin, "\n";
-print "GMT_lib=", $gmt_lib, "\n";
-print "GMT_include=", $gmt_include, "\n";
-print "GMT_man=", $gmt_man, "\n";
-print "GMT_web=", $gmt_web, "\n";
+print FILE "GMT_def=", $gmt_def, "\n";
+print FILE "GMT_share=", $gmt_share, "\n";
+print FILE "GMT_bin=", $gmt_bin, "\n";
+print FILE "GMT_lib=", $gmt_lib, "\n";
+print FILE "GMT_include=", $gmt_include, "\n";
+print FILE "GMT_man=", $gmt_man, "\n";
+print FILE "GMT_web=", $gmt_web, "\n";
 
 if ($gmt_coast eq "all") {
-	print "GMT_dir_full=\nGMT_dir_high=\nGMT_dir_cli=\n";
+	print FILE "GMT_dir_full=\nGMT_dir_high=\nGMT_dir_cli=\n";
 }
 else {
-	print "GMT_dir_full=", $gmt_full_dir, "\n";
-	print "GMT_dir_high=", $gmt_high_dir, "\n";
-	print "GMT_dir_cli=", $gmt_cli_dir, "\n";
+	print FILE "GMT_dir_full=", $gmt_full_dir, "\n";
+	print FILE "GMT_dir_high=", $gmt_high_dir, "\n";
+	print FILE "GMT_dir_cli=", $gmt_cli_dir, "\n";
 }
 
-print "GMT_mansect=", $gmt_mansect, "\n";
+print FILE "GMT_mansect=", $gmt_mansect, "\n";
 
-print "#---------------------------------------------\n";
-print "#	COMPILING & LINKING SECTION\n";
-print "#---------------------------------------------\n";
+print FILE "#---------------------------------------------\n";
+print FILE "#	COMPILING & LINKING SECTION\n";
+print FILE "#---------------------------------------------\n";
 
 if ($libtype eq "Static") {
-	print "GMT_sharedlib=n\n";
+	print FILE "GMT_sharedlib=n\n";
 }
 else {
-	print "GMT_sharedlib=y\n";
+	print FILE "GMT_sharedlib=y\n";
 }
 
 @k = split (/\s+/, $cc);
 if ($k[0] eq "1.") {
-	print "GMT_cc=cc\n";
+	print FILE "GMT_cc=cc\n";
 }
 elsif ($k[0] eq "2.") {
-	print "GMT_cc=gcc\n";
+	print FILE "GMT_cc=gcc\n";
 }
 else {
-	print "GMT_cc=", $custom_cc, "\n";
+	print FILE "GMT_cc=", $custom_cc, "\n";
 }
 
 if ($flock eq "Lock") {
-	print "GMT_flock=y\n";
+	print FILE "GMT_flock=y\n";
 }
 else {
-	print "GMT_flock=n\n";
+	print FILE "GMT_flock=n\n";
 }
 
 if ($get_triangle eq "on") {
-	print "GMT_triangle=y\n";
+	print FILE "GMT_triangle=y\n";
 }
 else {
-	print "GMT_triangle=n\n";
+	print FILE "GMT_triangle=n\n";
 }
 
-print "#---------------------------------------------\n";
-print "#	TEST & PRINT SECTION\n";
-print "#---------------------------------------------\n";
+print FILE "#---------------------------------------------\n";
+print FILE "#	TEST & print FILE SECTION\n";
+print FILE "#---------------------------------------------\n";
 
 if ($run eq "on") {
-	print "GMT_run_examples=y\n";
+	print FILE "GMT_run_examples=y\n";
 }
 else {
-	print "GMT_run_examples=n\n";
+	print FILE "GMT_run_examples=n\n";
 }
 if ($delete eq "on") {
-	print "GMT_delete=y\n";
+	print FILE "GMT_delete=y\n";
 }
 else {
-	print "GMT_delete=n\n";
+	print FILE "GMT_delete=n\n";
 }
 if ($matlab_dir ne "/usr/local/matlab" && $matlab_dir ne "") {
-	print "MATDIR=", $matlab_dir, "\n";
+	print FILE "MATDIR=", $matlab_dir, "\n";
 }
 
+close (FILE);
+
+# Create return plain text file for browser with SSI to get the temp file
+
+print "Content-type: text/html", "\n";
+print "Status: 200 OK", "\n\n";
+print "<META HTTP-EQUIV=\"refresh\" CONTENT=\"0; url=http://gmt.soest.hawaii.edu/gmttemp/$FOUT\">";
 
 exit(0);
 
