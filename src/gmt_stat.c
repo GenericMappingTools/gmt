@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.19 2004-07-01 21:00:08 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.20 2004-07-23 06:07:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2322,10 +2322,10 @@ int GMT_median_f (float *x, int n, double xmin, double xmax, double m_initial, d
 	return (iteration);
 }
 
-int GMT_mode (double *x, int n, int j, int sort, double *mode_est)
+int GMT_mode (double *x, int n, int j, int sort, int mode_selection, int *n_multiples, double *mode_est)
 {
-	int	i, istop, multiplicity = 0;
-	double	mid_point_sum = 0.0, length, short_length = 1.0e+30;
+	int	i, istop, multiplicity;
+	double	mid_point_sum = 0.0, length, short_length = DBL_MAX, this_mode;
 
 	if (n == 0) return (0);
 	if (n == 1) {
@@ -2337,33 +2337,49 @@ int GMT_mode (double *x, int n, int j, int sort, double *mode_est)
 
 	istop = n - j;
 	
+
 	for (i = 0; i < istop; i++) {
 		length = x[i + j] - x[i];
 		if (length < 0.0) {
 			fprintf(stderr,"GMT_mode: Array not sorted in non-decreasing order.\n");
 			return (-1);
 		}
-		else if (length == short_length) {
-			multiplicity++;
-			mid_point_sum += (0.5 * (x[i + j] + x[i]));
+		else if (length == short_length) {	/* Possibly multiple mode */
+			switch (mode_selection) {
+				case -1:	/* Always pick lowest mode */
+					this_mode = 0.5 * (x[i + j] + x[i]);
+					if (this_mode < mid_point_sum) mid_point_sum = this_mode;
+					break;
+				case 0:		/* Return average of all modes */
+					multiplicity++;
+					mid_point_sum += (0.5 * (x[i + j] + x[i]));
+					break;
+				case +1:	/* Always pick highest mode */
+					this_mode = 0.5 * (x[i + j] + x[i]);
+					if (this_mode > mid_point_sum) mid_point_sum = this_mode;
+					break;
+			}
 		}
-		else if (length < short_length) {
+		else if (length < short_length) {	/* Update current best mode estimate */
 			multiplicity = 1;
 			mid_point_sum = (0.5 * (x[i + j] + x[i]));
 			short_length = length;
 		}
 	}
 
-	if (multiplicity - 1) mid_point_sum /= multiplicity;
+	if (multiplicity > 1) {	/* Found more than 1 mode; return mean of them all */
+		mid_point_sum /= multiplicity;
+		(*n_multiples) += multiplicity;
+	}
 	
 	*mode_est = mid_point_sum;
 	return (0);
 }
 
-int GMT_mode_f (float *x, int n, int j, int sort, double *mode_est)
+int GMT_mode_f (float *x, int n, int j, int sort, int mode_selection, int *n_multiples, double *mode_est)
 {
-	int	i, istop, multiplicity = 0;
-	double	mid_point_sum = 0.0, length, short_length = 1.0e+30;
+	int	i, istop, multiplicity;
+	double	mid_point_sum = 0.0, length, short_length = FLT_MAX, this_mode;
 
 	if (n == 0) return (0);
 	if (n == 1) {
@@ -2377,12 +2393,24 @@ int GMT_mode_f (float *x, int n, int j, int sort, double *mode_est)
 	for (i = 0; i < istop; i++) {
 		length = x[i + j] - x[i];
 		if (length < 0.0) {
-			fprintf (stderr,"GMT_mode: Array not sorted in non-decreasing order.\n");
+			fprintf (stderr,"GMT_mode_f: Array not sorted in non-decreasing order.\n");
 			return (-1);
 		}
-		else if (length == short_length) {
-			multiplicity++;
-			mid_point_sum += (0.5 * (x[i + j] + x[i]));
+		else if (length == short_length) {	/* Possibly multiple mode */
+			switch (mode_selection) {
+				case -1:	/* Always pick lowest mode */
+					this_mode = 0.5 * (x[i + j] + x[i]);
+					if (this_mode < mid_point_sum) mid_point_sum = this_mode;
+					break;
+				case 0:		/* Return average of all modes */
+					multiplicity++;
+					mid_point_sum += (0.5 * (x[i + j] + x[i]));
+					break;
+				case +1:	/* Always pick highest mode */
+					this_mode = 0.5 * (x[i + j] + x[i]);
+					if (this_mode > mid_point_sum) mid_point_sum = this_mode;
+					break;
+			}
 		}
 		else if (length < short_length) {
 			multiplicity = 1;
@@ -2391,7 +2419,10 @@ int GMT_mode_f (float *x, int n, int j, int sort, double *mode_est)
 		}
 	}
 
-	if (multiplicity - 1) mid_point_sum /= multiplicity;
+	if (multiplicity > 1) {	/* Found more than 1 mode; return mean of them all */
+		mid_point_sum /= multiplicity;
+		(*n_multiples) += multiplicity;
+	}
 	
 	*mode_est = mid_point_sum;
 	return (0);
