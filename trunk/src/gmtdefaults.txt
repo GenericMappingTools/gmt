@@ -359,13 +359,14 @@ universal definition.
 Number of plot copies to make  [1].
 .TP
 .B OBLIQUE_ANNOTATION
-This integer is a sum of 5 bit flags (most of which only are relevant for oblique projections):
+This integer is a sum of 6 bit flags (most of which only are relevant for oblique projections):
 If bit 1 is set (1), annotations will occur wherever a gridline crosses the
 map boundaries, else longitudes will be annotated on the lower and upper boundaries only, and latitudes will be
 annotated on the left and right boundaries only.  If bit 2 is set (2), then longitude annotations will
 be plotted horizontally.  If bit 3 is set (4), then latitude annotations will be plotted horizontally.
 If bit 4 is set (8), then oblique tickmarks are extended to give a projection equal to the specified tick_length.
 If bit 5 is set (16), tickmarks will be drawn normal to the border regardless of gridline angle.
+If bit 6 is set (32), then latitude annotations will be plotted parallel to the border.
 To set a combination of these, add up the values in parentheses. [1].
 .TP
 .B OUTPUT_CLOCK_FORMAT

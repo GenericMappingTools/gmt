@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.150 2004-07-03 01:41:58 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.151 2004-08-06 20:36:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1630,7 +1630,7 @@ int GMT_setparameter (char *keyword, char *value)
 		case GMTCASE_OBLIQUE_ANNOTATION:
 		case GMTCASE_OBLIQUE_ANOTATION:
 			ival = atoi (value);
-			if (ival >= 0 && ival < 32)
+			if (ival >= 0 && ival < 64)
 				gmtdefs.oblique_annotation = ival;
 			else
 				error = TRUE;
