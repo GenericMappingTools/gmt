@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.68 2004-04-13 04:31:00 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.69 2004-04-14 20:33:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -105,7 +105,7 @@ int GMT_penunit (char c, double *pen_scale);
 void GMT_old2newpen (char *line);
 BOOLEAN GMT_is_texture (char *word);
 BOOLEAN GMT_is_penwidth (char *word);
-BOOLEAN GMT_is_color (char *word);
+BOOLEAN GMT_is_color (char *word, int max_slashes);
 
 int GMT_check_rgb (int rgb[])
 {
@@ -428,7 +428,7 @@ void GMT_old2newpen (char *line)
 		strcpy (pstring, saved);
 		pcolor[0] = ptexture[0] = '\0';
 	}
-	else if (GMT_is_color (saved))	{	/* Stand-alone pen color only */
+	else if (GMT_is_color (saved,2))	{	/* Stand-alone pen color only.  Only 0-2 slashes allowed in GMT 3.* */
 		strcpy (pcolor, saved);
 		pstring[0] = ptexture[0] = '\0';
 	}
@@ -517,7 +517,7 @@ int GMT_getpen (char *buffer, struct GMT_PEN *P)
 	n = sscanf (line, "%s %s %s", pen, color, texture);
 	for (i = 0; line[i]; i++) if (line[i] == ' ') line[i] = ',';	/* Replace space with , */
 	if (n == 2) {	/* Could be pen,color  pen,[,]texture, or [,]color,texture */
-		if (line[0] == ',' || (GMT_is_color(pen) && GMT_is_texture(color))) {	/* Got [,]color,texture which got stored in pen, color */
+		if (line[0] == ',' || (GMT_is_color(pen,3) && GMT_is_texture(color))) {	/* Got [,]color,texture which got stored in pen, color */
 			strcpy (texture, color);
 			strcpy (color, pen);
 			pen[0] = '\0';
@@ -537,7 +537,7 @@ int GMT_getpen (char *buffer, struct GMT_PEN *P)
 			strcpy (texture, pen);
 			pen[0] = color[0] = '\0';
 		}
-		else if (line[0] == ',' || GMT_is_color(line)) {	/* Got [,]color so color got stored in pen */
+		else if (line[0] == ',' || GMT_is_color(line,3)) {	/* Got [,]color so color got stored in pen */
 			strcpy (color, pen);
 			pen[0] = '\0';
 		}
@@ -595,9 +595,9 @@ BOOLEAN GMT_is_texture (char *word)
 	return (n == -1);	/* TRUE if we only found -/., FALSE otherwise */
 }
 	
-BOOLEAN GMT_is_color (char *word)
+BOOLEAN GMT_is_color (char *word, int max_slashes)
 {
-	int n, n_hyphen = 0;
+	int i, k, n, n_hyphen = 0;
 	
 	/* Returns TRUE if we are sure the word is a color string - else FALSE.
 	 * color syntax is <gray>|<r/g/b>|<h-s-v>/<c/m/y/k>/<colorname>.
@@ -606,8 +606,15 @@ BOOLEAN GMT_is_color (char *word)
 	n = strlen (word);
 	if (n == 0) return (FALSE);
 	
-	if (strchr(word,'/')) return (TRUE);		/* Only color (r/g/b and c/m/y/k) may have slashes */
 	if (GMT_name2rgb (word) >= 0) return (TRUE);	/* Valid color name */
+	if (strchr(word,'t')) return (FALSE);		/* Got a t somewhere */
+	if (strchr(word,':')) return (FALSE);		/* Got a : somewhere */
+	if (strchr(word,'c')) return (FALSE);		/* Got a c somewhere */
+	if (strchr(word,'i')) return (FALSE);		/* Got a i somewhere */
+	if (strchr(word,'m')) return (FALSE);		/* Got a m somewhere */
+	if (strchr(word,'p')) return (FALSE);		/* Got a p somewhere */
+	for (i = k = 0; word[i]; i++) if (word[i] == '/') k++;
+	if (k && k <= max_slashes) return (TRUE);		/* Only color (r/g/b [and c/m/y/k if max_slashes = 3]) may have slashes */
 	n--;
 	while (n >= 0 && (word[n] == '-' || word[n] == '.' || isdigit ((int)word[n]))) {
 		if (word[n] == '-') n_hyphen++;
@@ -2350,10 +2357,10 @@ struct EPS *GMT_epsinfo (char *program)
 	return (new);
 }
 
-int GMT_get_format (double interval, char *unit, char *format)
+int GMT_get_format (double interval, char *unit, char *prefix, char *format)
 {
 	int i, j, ndec = 0;
-	char text[128];
+	char text[BUFSIZ];
 	
 	if (strchr (gmtdefs.d_format, 'g')) {	/* General format requested */
 
@@ -2400,6 +2407,13 @@ int GMT_get_format (double interval, char *unit, char *format)
 	else
 		strcpy (format, gmtdefs.d_format);
 
+	if (prefix && prefix[0]) {	/* Must prepend the prefix string */
+		if (prefix[0] == '-')	/* No space between annotation and unit */
+			sprintf (text, "%s%s", &prefix[1], format);
+		else
+			sprintf (text, "%s %s", prefix, format);
+		strcpy (format, text);
+	}
 	return (ndec);
 }
 

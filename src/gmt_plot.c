@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.96 2004-04-13 03:07:03 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.97 2004-04-14 20:33:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -96,7 +96,7 @@ void GMT_get_annot_label (double val, char *label, int do_minutes, int do_second
 void GMT_basemap_3D(int mode);
 void GMT_xyz_axis3D(int axis_no, char axis, struct PLOT_AXIS *A, int annotate);
 int GMT_coordinate_array (double min, double max, struct PLOT_AXIS_ITEM *T, double **array);
-int GMT_linear_array (double min, double max, double delta, double **array);
+int GMT_linear_array (double min, double max, double delta, double phase, double **array);
 int GMT_pow_array (double min, double max, double delta, int x_or_y, double **array);
 int GMT_grid_clip_path (struct GRD_HEADER *h, double **x, double **y, BOOLEAN *donut);
 void GMT_wesn_map_boundary (double w, double e, double s, double n);
@@ -584,7 +584,7 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 	tick_len[1] = 3.0 * sign * gmtdefs.tick_length;
 	tick_len[3] = (A->item[GMT_ANNOT_UPPER].active) ? tick_len[0] : 3.0 * sign * gmtdefs.tick_length;
 	tick_len[4] = 0.5 * sign * gmtdefs.tick_length;
-	if (A->type != TIME) GMT_get_format (GMT_get_map_interval (axis, GMT_ANNOT_UPPER), A->unit, format);	/* Set the annotation format template */
+	if (A->type != TIME) GMT_get_format (GMT_get_map_interval (axis, GMT_ANNOT_UPPER), A->unit, A->prefix, format);	/* Set the annotation format template */
 	
 	/* Ready to draw axis */
 	
@@ -741,7 +741,7 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 	sign = ((below && axis == 0) || (!below && axis == 1)) ? -1.0 : 1.0;			/* since annotations go either below or above */
 	len = (gmtdefs.tick_length > 0.0) ? gmtdefs.tick_length : 0.0;
 	if (axis == 0) {
-		if (A->type != TIME) GMT_get_format (GMT_get_map_interval (axis, GMT_ANNOT_UPPER), A->unit, format);	/* Set the annotation format template */
+		if (A->type != TIME) GMT_get_format (GMT_get_map_interval (axis, GMT_ANNOT_UPPER), A->unit, A->prefix, format);	/* Set the annotation format template */
 		annot_off[0] = GMT_get_annot_offset (&flip);										/* Set upper annotation offset and flip depending on annot_offset */
 		annot_off[1] = annot_off[0] + (gmtdefs.annot_font_size_primary * GMT_u2u[GMT_PT][GMT_INCH]) + 0.5 * fabs (gmtdefs.annot_offset_primary);	/* Lower annotation offset */
 		if (both)	/* Must move label farther from axis given both annotation levels */
@@ -755,7 +755,7 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 		angle = 0.0;
 	}
 	else {
-		ndec = GMT_get_format (GMT_get_map_interval (axis, GMT_ANNOT_UPPER), A->unit, format);
+		ndec = GMT_get_format (GMT_get_map_interval (axis, GMT_ANNOT_UPPER), A->unit, A->prefix, format);
 		as_is = (ndec == 0 && !strchr (format, 'g'));	/* Use the d_format as is */
 	
 		switch (project_info.xyz_projection[axis]) {
@@ -884,15 +884,15 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 	return (angle);
 }
 
-int GMT_linear_array (double min, double max, double delta, double **array)
+int GMT_linear_array (double min, double max, double delta, double phase, double **array)
 {
 	double first, small, *val;
 	int i, n;
 
 	if (delta == 0.0) return (0);
 	small = SMALL * delta;
-	first = floor (min / delta) * delta;
-	if ((min - first) > small) first += delta;
+	first = floor ((min - delta - phase) / delta) * delta + phase;
+	while ((min - first) > small) first += delta;
 	if (first > max) return (0);
 
 	n = irint ((max - first) / delta) + 1;
@@ -1081,7 +1081,7 @@ int GMT_coordinate_array (double min, double max, struct PLOT_AXIS_ITEM *T, doub
 	int n;
 	switch (project_info.xyz_projection[T->parent]) {
 		case LINEAR:
-			n = GMT_linear_array (min, max, GMT_get_map_interval (T->parent, T->id), array);
+			n = GMT_linear_array (min, max, GMT_get_map_interval (T->parent, T->id), T->phase, array);
 			break;
 		case LOG10:
 			n = GMT_log_array (min, max, GMT_get_map_interval (T->parent, T->id), array);
@@ -1105,7 +1105,7 @@ void GMT_linearx_grid (double w, double e, double s, double n, double dval)
 	double *x;
 	int i, nx;
 
-	nx = GMT_linear_array (w, e, dval, &x);
+	nx = GMT_linear_array (w, e, dval, 0.0, &x);
 	for (i = 0; i < nx; i++) GMT_map_lonline (x[i], s, n);
 	if (nx) GMT_free ((char *)x);
 }
@@ -1115,7 +1115,7 @@ void GMT_lineary_grid (double w, double e, double s, double n, double dval)
 	double *y;
 	int i, ny;
 
-	ny = GMT_linear_array (s, n, dval, &y);
+	ny = GMT_linear_array (s, n, dval, 0.0, &y);
 	for (i = 0; i < ny; i++) GMT_map_latline (y[i], w, e);
 	if (ny) GMT_free ((char *)y);
 }
@@ -2877,7 +2877,7 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 	
 	/* Find number of decimals needed, if any */
 	
-	GMT_get_format (GMT_get_map_interval (id, GMT_ANNOT_UPPER), A->unit, format);
+	GMT_get_format (GMT_get_map_interval (id, GMT_ANNOT_UPPER), A->unit, A->prefix, format);
 
 	annot_off = sign * (len + gmtdefs.annot_offset_primary);
 	label_off = sign * (len + 2.5 * gmtdefs.annot_offset_primary + (gmtdefs.annot_font_size_primary * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font[gmtdefs.annot_font_primary].height);
