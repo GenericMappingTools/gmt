@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.8 2001-04-02 19:32:39 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.9 2001-04-02 20:08:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -364,6 +364,7 @@ int GMT_map_init_grinten (void);
 int GMT_map_init_econic (void);
 
 void GMT_wesn_search (double xmin, double xmax, double ymin, double ymax, double *west, double *east, double *south, double *north);
+void GMT_horizon_search (double w, double e, double s, double n, double xmin, double xmax, double ymin, double ymax);
 void GMT_xy_search(double *x0, double *x1, double *y0, double *y1, double w0, double e0, double s0, double n0);
 void GMT_init_three_D(void);
 void GMT_map_setxy(double xmin, double xmax, double ymin, double ymax);
@@ -785,6 +786,8 @@ void GMT_map_setup (double west, double east, double south, double north)
 		gmtdefs.dlon = (project_info.e - project_info.w) / gmtdefs.n_lon_nodes;
 		gmtdefs.dlat = (project_info.n - project_info.s) / gmtdefs.n_lat_nodes;
 	}
+
+	if (AZIMUTHAL && !project_info.region) GMT_horizon_search (west, east, south, north, project_info.xmin, project_info.xmax, project_info.ymin, project_info.ymax);
 
 	for (i = 0; i < 3; i++) {
 		if (!project_info.xyz_pos[i]) {	/* Max intervals negative */
@@ -3202,6 +3205,7 @@ int GMT_map_init_azeqdist (void) {
 	GMT_set_spherical ();	/* PW: Force spherical for now */
 
 	GMT_set_polar (project_info.pars[1]);
+	project_info.f_horizon = 180.0;
 	
 	if (project_info.units_pr_degree) {
 		GMT_vazeqdist (0.0, 90.0);
@@ -4820,6 +4824,38 @@ void GMT_wesn_search (double xmin, double xmax, double ymin, double ymax, double
 	*east = e;
 	*south = s;
 	*north = n;
+}
+
+void GMT_horizon_search (double w, double e, double s, double n, double xmin, double xmax, double ymin, double ymax) {
+	double dx, dy, d, x, y, lon, lat;
+	int i, j;
+	BOOLEAN beyond = FALSE;
+	
+	/* Search for extreme original coordinates lon/lat and see if any fall beyond the horizon */
+			
+	dx = (xmax - xmin) / gmtdefs.n_lon_nodes;
+	dy = (ymax - ymin) / gmtdefs.n_lat_nodes;
+	if ((d = GMT_great_circle_dist (project_info.central_meridian, project_info.pole, w, s)) > project_info.f_horizon) beyond = TRUE;
+	if ((d = GMT_great_circle_dist (project_info.central_meridian, project_info.pole, e, n)) > project_info.f_horizon) beyond = TRUE;
+	for (i = 0; !beyond && i <= gmtdefs.n_lon_nodes; i++) {
+		x = xmin + i * dx;
+		GMT_xy_to_geo (&lon, &lat, x, ymin);
+		if ((d = GMT_great_circle_dist (project_info.central_meridian, project_info.pole, lon, lat)) > project_info.f_horizon) beyond = TRUE;
+		GMT_xy_to_geo (&lon, &lat, x, ymax);
+		if ((d = GMT_great_circle_dist (project_info.central_meridian, project_info.pole, lon, lat)) > project_info.f_horizon) beyond = TRUE;
+	}
+	for (j = 0; !beyond && j <= gmtdefs.n_lat_nodes; j++) {
+		y = ymin + j * dy;
+		GMT_xy_to_geo (&lon, &lat, xmin, y);
+		if ((d = GMT_great_circle_dist (project_info.central_meridian, project_info.pole, lon, lat)) > project_info.f_horizon) beyond = TRUE;
+		GMT_xy_to_geo (&lon, &lat, xmax, y);
+		if ((d = GMT_great_circle_dist (project_info.central_meridian, project_info.pole, lon, lat)) > project_info.f_horizon) beyond = TRUE;
+	}
+	if (beyond) {
+		fprintf (stderr, "%s: ERROR: Rectangular region for azimuthal projection extends beyond the horizon\n", GMT_program);
+		fprintf (stderr, "%s: ERROR: Please select a region that is completely within the visible hemisphere\n", GMT_program);
+		exit (EXIT_FAILURE);
+	}
 }
 
 void GMT_xy_search (double *x0, double *x1, double *y0, double *y1, double w0, double e0, double s0, double n0)
