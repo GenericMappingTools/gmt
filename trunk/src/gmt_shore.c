@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.10 2005-02-15 21:15:18 pwessel Exp $
+ *	$Id: gmt_shore.c,v 1.11 2005-02-15 23:03:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -16,7 +16,6 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
-#define GMT_WITH_NO_PS
 #include "gmt.h"
 
 /*
@@ -99,7 +98,7 @@ int GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, double s,
 	short *stmp;
 	int *itmp;
 	size_t start[1], count[1];
-	char file[32], path[BUFSIZ];
+	char file[GMT_TEXT_LEN], path[BUFSIZ];
 	
 	sprintf (file, "binned_GSHHS_%c.cdf", res);
 	
@@ -282,7 +281,7 @@ int GMT_init_br (char which, char res, struct GMT_BR *c, double w, double e, dou
 	short *stmp;
 	int *itmp;
 	size_t start[1], count[1];
-	char file[32], path[BUFSIZ];
+	char file[GMT_TEXT_LEN], path[BUFSIZ];
 	
 	if (which == 'r')
 		sprintf (file, "binned_river_%c.cdf", res);

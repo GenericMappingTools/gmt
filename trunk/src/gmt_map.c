@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.83 2005-02-15 21:15:18 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.84 2005-02-15 23:03:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8343,7 +8343,7 @@ int GMT_datum_init (char *text)
 	/* Decode -T option (in mapproject) and initialize datum conv structures */
 	
 	int k = 0;
-	char from[128], to[128];
+	char from[GMT_LONG_TEXT], to[GMT_LONG_TEXT];
 	
 	if (text[0] == 'h') {	/* We will process lon, lat, height data */
 		k = 1;
@@ -8388,7 +8388,7 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D)
 		D->ellipsoid_id = 0;
 	}
 	else if (strchr (text, ':')) {	/* Has colons, must get ellipsoid and dr separately */
-		char ellipsoid[128], dr[64];
+		char ellipsoid[GMT_LONG_TEXT], dr[GMT_LONG_TEXT];
 		if (sscanf (text, "%[^:]:%s", ellipsoid, dr) != 2) {
 			fprintf (stderr, "%s: Malformed <ellipsoid>:<dr> argument!\n", GMT_program);
 			return (-1);

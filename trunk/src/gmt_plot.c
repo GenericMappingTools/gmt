@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.141 2005-02-15 21:15:18 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.142 2005-02-15 23:03:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -365,7 +365,7 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 	double font_size;			/* Annotation font size (ANNOT_FONT_SIZE_PRIMARY or ANNOT_FONT_SIZE_SECONDARY) */
 	struct PLOT_AXIS_ITEM *T;	/* Pointer to the current axis item */
 	char string[GMT_CALSTRING_LENGTH];	/* Annotation string */
-	char format[32];		/* format used for non-time annotations */
+	char format[GMT_LONG_TEXT];		/* format used for non-time annotations */
 	char xy[2] = {'y', 'x'};
 	char cmd[BUFSIZ];
 	int rot[2], font;
@@ -1238,7 +1238,7 @@ void GMT_map_latline (double lat, double west, double east)		/* Draws a line of 
 {
 	int nn;
 	double *llon, *llat;
-	char text[32];
+	char text[GMT_LONG_TEXT];
 	
 	nn = GMT_latpath (lat, west, east, &llon, &llat);
 	
@@ -1255,7 +1255,7 @@ void GMT_map_lonline (double lon, double south, double north)	/* Draws a line of
 {
 	int nn;
 	double *llon, *llat;
-	char text[32];
+	char text[GMT_LONG_TEXT];
 	
 	nn = GMT_lonpath (lon, south, north, &llon, &llat);
 
@@ -1682,7 +1682,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	double *val, dx[2], dy[2], w2, s2, x, y, del;
 	int i, k, nx, ny, remove[2];
 	int do_minutes, do_seconds, move_up, done_zero = FALSE, annot, GMT_world_map_save;
-	char label[256], cmd[256];
+	char label[GMT_LONG_TEXT], cmd[GMT_LONG_TEXT];
 	BOOLEAN full_lat_range, proj_A, proj_B, annot_0_and_360, dual;
 	PFI GMT_outside_save;
 	
@@ -2038,7 +2038,7 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 	
 	PFI xyz_forward, xyz_inverse;
 	
-	char annotation[256], format[32], cmd[256];
+	char annotation[GMT_LONG_TEXT], format[GMT_LONG_TEXT], cmd[GMT_LONG_TEXT];
 	
 	id = (axis == 'x') ? 0 : ((axis == 'y') ? 1 : 2);
 	j = (id == 0) ? 1 : ((id == 1) ? 0 : z_project.k);
@@ -2284,7 +2284,7 @@ void GMT_timestamp (int argc, char **argv)
 {
 	time_t right_now;
 	int i, plot_command = FALSE;
-	char label[BUFSIZ], time_string[32], year[8];
+	char label[BUFSIZ], time_string[GMT_LONG_TEXT], year[8];
 	double x, y, dim[5];
 
 	/* Plot time string in YEAR MONTH DAY HH:MM:SS format */
@@ -2293,7 +2293,7 @@ void GMT_timestamp (int argc, char **argv)
 	x = gmtdefs.unix_time_pos[0];
 	y = gmtdefs.unix_time_pos[1];
 	right_now = time ((time_t *)0);
-	strncpy (time_string, ctime (&right_now), 32);
+	strncpy (time_string, ctime (&right_now), 256);
 	time_string[24] = 0;
 	sscanf (time_string, "%*s %*s %*s %*s %s", year);
 	time_string[19] = 0;
@@ -2453,7 +2453,7 @@ void GMT_text3D (double x, double y, double z, double fsize, int fontno, char *t
 {
 	double xb, yb, xt, yt, xt1, xt2, xt3, yt1, yt2, yt3, del_y;
 	double ca, sa, xshrink, yshrink, tilt, baseline_shift;
-	char cmd[256];
+	char cmd[GMT_LONG_TEXT];
 	
         if (project_info.three_D) {
                 ps_setfont (0);
@@ -2587,7 +2587,7 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 	int i, j, jj, k, *rgb, n_a_ticks[9], n_f_ticks[9], unit;
 	double dlon, x1, x2, dummy, a, b, tx, ty, off, f_len, a_len, x_left, bar_length, x_label, y_label;
 	double xx[4], yy[4], bx[4], by[4], base, d_base, width, half, bar_width, dx, dx_f, dx_a;
-	char txt[256], *this_label;
+	char txt[GMT_LONG_TEXT], *this_label;
 	char label[3][16];
 	
 	if (!ms->plot) return;
@@ -2998,7 +2998,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 	int n = 0, n_alloc = GMT_SMALL_CHUNK, na, i, font_no = gmtdefs.annot_font[0];
 	BOOLEAN flush = FALSE, this_outline;
 	double x, y, da, sr, sa, ca, *xx, *yy, font_size;
-	char cmd[64], *c;
+	char cmd[GMT_TEXT_LEN], *c;
 	struct CUSTOM_SYMBOL_ITEM *s;
 	struct GMT_FILL *f;
 	struct GMT_PEN *p;

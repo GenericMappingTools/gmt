@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.89 2005-02-15 21:15:18 pwessel Exp $
+ *	$Id: gmt.h,v 1.90 2005-02-15 23:03:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -116,9 +116,11 @@
 
 #define GMT_CONV_LIMIT	1.0e-8	/* Fairly tight convergence limit or "close to zero" limit */
 #define SMALL		1.0e-4	/* Needed when results aren't exactly zero but close */
-#define GMT_CHUNK	2000
-#define GMT_SMALL_CHUNK	50
-#define GMT_TINY_CHUNK	5
+#define GMT_CHUNK	2048
+#define GMT_SMALL_CHUNK	64
+#define GMT_TINY_CHUNK	8
+#define GMT_TEXT_LEN	64
+#define GMT_LONG_TEXT	256
 #define GMT_LEVEL	4
 #define CNULL		((char *)NULL)
 #define VNULL		((void *)NULL)
@@ -254,7 +256,7 @@ struct GMTDEFAULTS {
 	int nan_rgb[3];			/* Color of NaNs [0/0/0] */
 	int color_image;		/* 0 = Adobe's colorimage, 1 = Tiles, 2 = RGB-separation */
 	int color_model;		/* 0 = RGB, 1 = HSV [0] */
-	char d_format[32];		/* Default double output format [%lg] */
+	char d_format[GMT_TEXT_LEN];	/* Default double output format [%lg] */
 	int degree_format;		/* 0 = <0/360/-90/90>, 1 = <-180/180/-90/90>, 2 = <0/180/0/90>
 					   3 = 0E/180E/180W/0W/90S/90N> */
 	int dpi;			/* Dots pr. inch plotter resolution [300] */
@@ -316,35 +318,35 @@ struct GMTDEFAULTS {
 	int y_axis_type;		/* Select y-axis with horizontal (0) or vertical (1) annotations  [0] */
 	struct ELLIPSOID {	/* Information about a particular ellipsoid */
 		/* Table taken from Snyder "Map projection - a working manual", p 12 Table 1 */
-		char name[64];
+		char name[GMT_TEXT_LEN];
 		int date;
 		double eq_radius;
 		double pol_radius;
 		double flattening;
 	} ref_ellipsoid[N_ELLIPSOIDS];	/* Ellipsoid parameters */
 	struct DATUM {	/* Information about a particular datum */
-		char name[64];		/* Datum name */
-		char ellipsoid[64];	/* Ellipsoid GMT ID name */
-		char region[256];	/* Region of use */
+		char name[GMT_TEXT_LEN];	/* Datum name */
+		char ellipsoid[GMT_TEXT_LEN];	/* Ellipsoid GMT ID name */
+		char region[GMT_LONG_TEXT];	/* Region of use */
 		double xyz[3];		/* Coordinate shifts in meter for x, y, and z */
 	} datum[N_DATUMS];	/* Datum parameters */
-	char input_clock_format[32];	/* How to decode an incoming clock string [hh:mm:ss] */
-	char input_date_format[32];	/* How to decode an incoming date string [yyyy-mm-dd] */
-	char output_clock_format[32];	/* Controls how clocks are written on output [hh:mm:ss] */
-	char output_date_format[32];	/* Controls how dates are written on output [yyyy-mm-dd] */
-	char output_degree_format[32];	/* Controls how degrees are written on output [000 = dd.xxxx] */
-	char plot_clock_format[32];	/* Controls how clocks are plotted on maps [hh:mm:ss] */
-	char plot_date_format[32];	/* Controls how dates are plotted on maps [yyyy-mm-dd] */
-	char plot_degree_format[32];	/* Controls how degrees are plotted on maps [020 = dd:mm:ss as in old DEGREE_FORMAT = 0] */
-	char time_format[2][32];	/* Controls annotation format for Months/Weeks/Weekdays for primary and secondary axes */
+	char input_clock_format[GMT_TEXT_LEN];	/* How to decode an incoming clock string [hh:mm:ss] */
+	char input_date_format[GMT_TEXT_LEN];	/* How to decode an incoming date string [yyyy-mm-dd] */
+	char output_clock_format[GMT_TEXT_LEN];	/* Controls how clocks are written on output [hh:mm:ss] */
+	char output_date_format[GMT_TEXT_LEN];	/* Controls how dates are written on output [yyyy-mm-dd] */
+	char output_degree_format[GMT_TEXT_LEN];/* Controls how degrees are written on output [000 = dd.xxxx] */
+	char plot_clock_format[GMT_TEXT_LEN];	/* Controls how clocks are plotted on maps [hh:mm:ss] */
+	char plot_date_format[GMT_TEXT_LEN];	/* Controls how dates are plotted on maps [yyyy-mm-dd] */
+	char plot_degree_format[GMT_TEXT_LEN];	/* Controls how degrees are plotted on maps [020 = dd:mm:ss as in old DEGREE_FORMAT = 0] */
+	char time_format[2][GMT_TEXT_LEN];	/* Controls annotation format for Months/Weeks/Weekdays for primary and secondary axes */
 	BOOLEAN time_is_interval;	/* Does a time given as a month (or year or day) mean the middle of the interval? */
 	double time_interval_fraction;	/* How much of a partial interval is needed in order to annotate it */
 	BOOLEAN want_leap_seconds;	/* Do we need to worry about leap seconds? */
-	char time_epoch[32];		/* User-defined epoch for time */
+	char time_epoch[GMT_TEXT_LEN];	/* User-defined epoch for time */
 	char time_unit;			/* User-defined time unit */
 	int time_system;		/* Which time system is in effect */
 	int time_week_start;		/* Which day (Sun = 0, Sat = 7) is start of week */
-	char time_language[32];		/* Language file for time support */
+	char time_language[GMT_TEXT_LEN];	/* Language file for time support */
 	int Y2K_offset_year;		/* Cutoff for making 4-digit years from 2-digit years (1900 vs 2000) */
 	char field_delimiter[8];	/* Separator between output ascii data columns [tab] */
 	enum gmt_symbol { gmt_none = -1, gmt_ring, gmt_degree, gmt_colon, gmt_squote, gmt_dquote, gmt_lastsym } degree_symbol;
@@ -362,12 +364,12 @@ struct GMT_HASH {	/* Used to related keywords to gmtdefaults entry */
 };
 
 struct GMT_TIME_SYSTEM {
-	char name[32];		/* Name of system */
-	char epoch[32];		/* Epoch time string */
-	char unit;		/* Time unit */
-	double epoch_t0;	/* Internal time representation of epoch in seconds*/
-	double scale;		/* Converts user units to seconds */
-	double i_scale;		/* Converts seconds to user units (1.0/scale) */
+	char name[GMT_TEXT_LEN];	/* Name of system */
+	char epoch[GMT_TEXT_LEN];	/* Epoch time string */
+	char unit;			/* Time unit */
+	double epoch_t0;		/* Internal time representation of epoch in seconds*/
+	double scale;			/* Converts user units to seconds */
+	double i_scale;			/* Converts seconds to user units (1.0/scale) */
 };
 
 struct GMT_TIME_LANGUAGE {	/* Language-specific text strings for calendars */
@@ -413,7 +415,7 @@ struct MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */
 	BOOLEAN gave_xy;	/* TRUE if x0, y0 was given in cartesian map coordinates and not lon/lat */
 	char measure;		/* The unit, i.e., m (miles), n (nautical miles), or k (kilometers) */
 	char justify;		/* Placement of label: t(op), b(ottom), l(eft), r(ight), u(nit) */
-	char label[64];		/* Alternative user-specified label */
+	char label[GMT_TEXT_LEN];	/* Alternative user-specified label */
 	struct GMT_FILL fill;	/* Fill to use for background rectangle */
 	struct GMT_PEN pen;	/* Pen to use for background rectangle */
 };
@@ -430,8 +432,8 @@ struct MAP_ROSE {	/* Used to plot a map direction "rose" in psbasemap and pscoas
 	BOOLEAN fancy;		/* TRUE for a fancy map rose */
 	BOOLEAN gave_xy;	/* TRUE if x0, y0 was given in cartesian map coordinates and not lon/lat */
 	int kind;		/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
-	char label[4][64];	/* User-changable labels for W, E, S, N point */
-	char dlabel[128];	/* Magnetic declination label */
+	char label[4][GMT_TEXT_LEN];	/* User-changable labels for W, E, S, N point */
+	char dlabel[GMT_LONG_TEXT];	/* Magnetic declination label */
 };
 
 struct GMT_FONT {		/* Information for each font */

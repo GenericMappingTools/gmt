@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.151 2005-02-15 21:15:18 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.152 2005-02-15 23:03:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -157,7 +157,7 @@ int GMT_getfill (char *line, struct GMT_FILL *fill)
 {
 	int n, end, error = 0;
 	int pos, i, fb_rgb[3];
-	char f, word[128];
+	char f, word[GMT_LONG_TEXT];
 	
 	/* Syntax:   -G<gray>, -G<rgb>, -G<cmyk>, -G<hsv> or -Gp|P<dpi>/<image>[:F<rgb>B<rgb>]   */
 	/* Note, <rgb> can be r/g/b, gray, or - for masks */
@@ -288,7 +288,7 @@ int GMT_name2rgb (char *name)
 	/* Return index into structure with colornames and r/g/b */
 	
 	int k;
-	char Lname[64];
+	char Lname[GMT_TEXT_LEN];
 
 	strcpy (Lname, name);
 	GMT_str_tolower (Lname);
@@ -302,7 +302,7 @@ int GMT_name2pen (char *name)
 	/* Return index into structure with pennames and width */
 	
 	int i, k;
-	char Lname[64];
+	char Lname[GMT_TEXT_LEN];
 
 	strcpy (Lname, name);
 	GMT_str_tolower (Lname);
@@ -328,7 +328,7 @@ void GMT_old2newpen (char *line)
 	int i, j, n_slash, t_pos, s_pos, texture_unit;
 	BOOLEAN got_pen = FALSE;
 	double texture_scale = 1.0, width;
-	char pstring[128], pcolor[128], ptexture[256], buffer[BUFSIZ], saved[BUFSIZ], tmp[2], set_points = 0;
+	char pstring[GMT_LONG_TEXT], pcolor[GMT_LONG_TEXT], ptexture[GMT_LONG_TEXT], buffer[BUFSIZ], saved[BUFSIZ], tmp[2], set_points = 0;
 	
 	/* Old Syntax:	[<width][/<color>][t<texture>][p]	p can be anywhere but oughto go just after width */
 	 
@@ -343,9 +343,9 @@ void GMT_old2newpen (char *line)
 	s_pos = t_pos = -1;
 	i = 0;
 	tmp[1] = '\0';
-	memset ((void *)pstring,  0, (size_t)(128*sizeof(char)));
-	memset ((void *)pcolor,   0, (size_t)(128*sizeof(char)));
-	memset ((void *)ptexture, 0, (size_t)(256*sizeof(char)));
+	memset ((void *)pstring,  0, (size_t)(GMT_LONG_TEXT*sizeof(char)));
+	memset ((void *)pcolor,   0, (size_t)(GMT_LONG_TEXT*sizeof(char)));
+	memset ((void *)ptexture, 0, (size_t)(GMT_LONG_TEXT*sizeof(char)));
 	
 	while (line[i] && (line[i] == '.' || isdigit ((int)line[i]))) i++;	/* scanning across valid characters for a pen width */
 	
@@ -521,7 +521,7 @@ int GMT_getpen (char *buffer, struct GMT_PEN *P)
 {
 	int i, n, pen_unit = GMT_PT;
 	double pen_scale = 1.0;
-	char pen[128], color[128], texture[256], line[BUFSIZ];
+	char pen[GMT_LONG_TEXT], color[GMT_LONG_TEXT], texture[GMT_LONG_TEXT], line[BUFSIZ];
 	
 	strcpy (line, buffer);	/* Work on a copy of the arguments */
 	GMT_chop (line);	/* Remove trailing CR, LF and propoerly NULL-terminate the string */
@@ -531,9 +531,9 @@ int GMT_getpen (char *buffer, struct GMT_PEN *P)
 	
 	/* Processes new pen specifications now given as [pen[<punit>][,color[,texture[<tunit>]]] */
 	
-	memset ((void *)pen, 0, (size_t)(128*sizeof(char)));
-	memset ((void *)color, 0, (size_t)(128*sizeof(char)));
-	memset ((void *)texture, 0, (size_t)(256*sizeof(char)));
+	memset ((void *)pen, 0, (size_t)(GMT_LONG_TEXT*sizeof(char)));
+	memset ((void *)color, 0, (size_t)(GMT_LONG_TEXT*sizeof(char)));
+	memset ((void *)texture, 0, (size_t)(GMT_LONG_TEXT*sizeof(char)));
 	for (i = 0; line[i]; i++) if (line[i] == ',') line[i] = ' ';	/* Replace , with space */
 	n = sscanf (line, "%s %s %s", pen, color, texture);
 	for (i = 0; line[i]; i++) if (line[i] == ' ') line[i] = ',';	/* Replace space with , */
@@ -648,7 +648,7 @@ BOOLEAN GMT_is_color (char *word, int max_slashes)
 void GMT_gettexture (char *line, int unit, double scale, struct GMT_PEN *P) {
 	int i, n;
 	double width, pen_scale;
-	char tmp[32], string[BUFSIZ], *ptr;
+	char tmp[GMT_LONG_TEXT], string[BUFSIZ], *ptr;
 	
 	if (!line[0]) return;	/* Nothing to do */
 	pen_scale = scale;
@@ -770,8 +770,9 @@ void GMT_read_cpt (char *cpt_file)
 	int n = 0, i, nread, annot, n_alloc = GMT_SMALL_CHUNK, color_model, id;
 	double dz;
 	BOOLEAN gap, error = FALSE;
-	char T0[64], T1[64], T2[64], T3[64], T4[64], T5[64], T6[64], T7[64], T8[64], T9[64];
-	char line[BUFSIZ], option[64], c;
+	char T0[GMT_TEXT_LEN], T1[GMT_TEXT_LEN], T2[GMT_TEXT_LEN], T3[GMT_TEXT_LEN], T4[GMT_TEXT_LEN];
+	char T5[GMT_TEXT_LEN], T6[GMT_TEXT_LEN], T7[GMT_TEXT_LEN], T8[GMT_TEXT_LEN], T9[GMT_TEXT_LEN];
+	char line[BUFSIZ], option[GMT_TEXT_LEN], c;
 	FILE *fp = NULL;
 	
 	if (!cpt_file)
@@ -1648,7 +1649,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 {
 	int k, bad = 0;
 	BOOLEAN g_set = FALSE;
-	char txt_cpy[BUFSIZ], txt_a[32], txt_b[32], c, *p;
+	char txt_cpy[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], c, *p;
 	
 	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+o][+v][+r<min_rc>][+s<size>][+p[<pen>]][+u<unit>][+w<width>][+=<prefix>] strings */
 	
@@ -1832,7 +1833,7 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 {
 	/* Interpret the contour-label information string and set structure items */
 	int k, j = 0, error = 0;
-	char txt_a[32], c;
+	char txt_a[GMT_LONG_TEXT], c;
 	
 	L->spacing = FALSE;	/* Turn off the default since we gave an option */
 	strcpy (L->option, &txt[1]);	 /* May need to process L->option later after -R,-J have been set */
@@ -1927,7 +1928,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	BOOLEAN greenwich;
 	double x, y;
-	char buffer[BUFSIZ], txt_a[128], txt_b[128], txt_c[128], txt_d[128], *p;
+	char buffer[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], txt_d[GMT_LONG_TEXT], *p;
 	
 	if (G->clearance_flag) {	/* Gave a percentage of fontsize as clearance */
 		G->clearance[0] = 0.01 * G->clearance[0] * G->label_font_size / 72.0;				
@@ -3163,7 +3164,7 @@ void GMT_place_label (struct GMT_LABEL *L, char *txt, struct GMT_CONTOUR *G, BOO
 int GMT_label_is_OK (char *this_label, char *label, double this_dist, double this_value_dist, int xl, int fj, struct GMT_CONTOUR *G)
 {
 	int label_OK = TRUE;
-	char format[128];
+	char format[GMT_LONG_TEXT];
 	
 	switch (G->label_type) {
 		case 0:
@@ -5024,7 +5025,7 @@ int GMT_getscale (char *text, struct MAP_SCALE *ms)
 	/* Pass text as &argv[i][2] */
 	
 	int j = 0, i, ns, n_slash, error = 0, colon, plus, k;
-	char txt_a[32], txt_b[32], txt_sx[32], txt_sy[32], txt_pf[2][128];
+	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_sx[GMT_LONG_TEXT], txt_sy[GMT_LONG_TEXT], txt_pf[2][GMT_LONG_TEXT];
 	
 	ms->fancy = ms->gave_xy = FALSE;
 	ms->measure = ms->label[0] = '\0';
@@ -5133,7 +5134,7 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 	/* Pass text as &argv[i][2] */
 	
 	int j = 0, i,error = 0, colon, plus, slash, k, order[4] = {3,1,0,2};
-	char txt_a[32], txt_b[32], txt_c[32], txt_d[32], tmpstring[256], *p;
+	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], txt_d[GMT_LONG_TEXT], tmpstring[GMT_LONG_TEXT], *p;
 	
 	/* SYNTAX is -T[f|m][x]<lon0>/<lat0>/<size>[/<info>][:label:][+<aint>/<fint>/<gint>[/<aint>/<fint>/<gint>]], where <info> is
 	 * 1)  -Tf: <info> is <kind> = 1,2,3 which is the level of directions [1].
@@ -5475,7 +5476,7 @@ void GMT_list_custom_symbols (void)
 	/* Opens up GMT_Custom_Symbols.lis and dislays the list of custom symbols */
 	
 	FILE *fp;
-	char list[256], buffer[256];
+	char list[GMT_LONG_TEXT], buffer[GMT_LONG_TEXT];
 	
 	/* Open the list in $GMTHOME/share */
 
@@ -6547,7 +6548,7 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 	int ndec;
 	BOOLEAN as_is, flip, both;
 	double v0, v1, tmp_offset, off, angle, sign, len;
-	char text_l[256], text_u[256];
+	char text_l[GMT_LONG_TEXT], text_u[GMT_LONG_TEXT];
 	struct PLOT_AXIS_ITEM *T;	/* Pointer to the current axis item */
 	
 	both = GMT_upper_and_lower_items(axis);							/* Two levels of annotations? */
@@ -6786,7 +6787,7 @@ void GMT_get_annot_label (double val, char *label, int do_minutes, int do_second
 {
 	int fmt, sign, d, m, s, m_sec, level, type;
 	BOOLEAN zero_fix = FALSE;
-	char letter = 0, format[64];
+	char letter = 0, format[GMT_TEXT_LEN];
 	
 	if (lonlat == 0) {	/* Fix longitudes range first */
 		GMT_lon_range_adjust (GMT_plot_calclock.geo.range, &val);
@@ -7039,7 +7040,7 @@ char *GMT_convertpen (struct GMT_PEN *pen, int *width, int *offset, int rgb[])
 	/* GMT_convertpen converts from internal points to current dpi unit.
 	 * It allocates space and returns a pointer to the texture, if not null */
 
-	char tmp[64], buffer[BUFSIZ], *texture = CNULL, *ptr;
+	char tmp[GMT_TEXT_LEN], buffer[BUFSIZ], *texture = CNULL, *ptr;
 	double pt_to_dpi;
 	int n;
 
@@ -7183,7 +7184,7 @@ struct CUSTOM_SYMBOL * GMT_get_custom_symbol (char *name) {
 struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 	int nc, last, error = 0;
 	BOOLEAN do_fill, do_pen, first = TRUE;
-	char file[BUFSIZ], buffer[BUFSIZ], col[8][64];
+	char file[BUFSIZ], buffer[BUFSIZ], col[8][GMT_TEXT_LEN];
 	char *fill_p, *pen_p;
 	FILE *fp;
 	struct CUSTOM_SYMBOL *head;

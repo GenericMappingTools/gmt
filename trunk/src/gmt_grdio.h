@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.12 2005-01-02 05:13:19 pwessel Exp $
+ *	$Id: gmt_grdio.h,v 1.13 2005-02-15 23:03:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -60,7 +60,7 @@ EXTERN_MSC int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *
 #include "gmt_customio.h"
 
 struct GMT_GRDFILE {
-	char name[256];		/* Actual name of the file after any =<stuff> has been removed */
+	char name[GMT_LONG_TEXT];	/* Actual name of the file after any =<stuff> has been removed */
 	int id;			/* Gridfile format id (0-N_GRD_FORMATS) */
 	int fid;		/* NetCDF file number */
 	int z_id;		/* NetCDF z array ID */

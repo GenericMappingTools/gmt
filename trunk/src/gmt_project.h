@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.31 2004-09-14 19:07:07 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.32 2005-02-15 23:03:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -281,14 +281,14 @@ struct PLOT_AXIS {		/* Information for one time axis */
 	struct PLOT_AXIS_ITEM item[8];	/* see above defines for which is which */
 	int type;			/* LINEAR, LOG10, POW, or TIME */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
-	char label[256];		/* Label of the axis */
-	char unit[32];			/* Axis unit appended to annotations */
-	char prefix[32];		/* Axis prefix starting all annotations */
+	char label[GMT_LONG_TEXT];	/* Label of the axis */
+	char unit[GMT_TEXT_LEN];	/* Axis unit appended to annotations */
+	char prefix[GMT_TEXT_LEN];	/* Axis prefix starting all annotations */
 };
 
 struct PLOT_FRAME {		/* Various parameters for plotting of time axis boundaries */
 	struct PLOT_AXIS axis[3];	/* One each for x, y, and z */
-	char header[256];		/* Plot title */
+	char header[GMT_LONG_TEXT];	/* Plot title */
 	BOOLEAN plot;			/* TRUE if -B was used */
 	BOOLEAN draw_box;		/* TRUE is a 3-D Z-box is desired */
 	BOOLEAN check_side;		/* TRUE if lon and lat annotations should be on x and y axis only */

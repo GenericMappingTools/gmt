@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.89 2005-02-02 03:22:44 remko Exp $
+ *	$Id: pslib.c,v 1.90 2005-02-15 23:03:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -256,7 +256,7 @@ void ps_axis (double x, double y, double length, double val0, double val1, doubl
 	int annot_justify, label_justify, i, j, ndig = 0;
 	int left = FALSE;
 	double angle, dy, scl, val, annot_off, label_off, xx, sign;
-	char text[128], format[32];
+	char text[256], format[256];
 
 	if (annotation_int < 0.0) left = TRUE;
 	annotation_int = fabs (annotation_int);
@@ -4222,7 +4222,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 
 	ps.font = (struct PS_FONT *) ps_memory (VNULL, (size_t)n_alloc, sizeof (struct PS_FONT));
 
-	while (fgets (buf, 128, in)) {
+	while (fgets (buf, BUFSIZ, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 		if (sscanf (buf, "%s %lf %d", fullname, &ps.font[i].height, &ps.font[i].encoded) != 3) {
 			fprintf (stderr, "PSL Fatal Error: Trouble decoding font info for font %d\n", i);
@@ -4252,7 +4252,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 			exit (EXIT_FAILURE);
 		}
 
-		while (fgets (buf, 128, in)) {
+		while (fgets (buf, BUFSIZ, in)) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 			ps.font[i].name = (char *)ps_memory (VNULL, strlen (buf), sizeof (char));
 			if (sscanf (buf, "%s %lf %d", ps.font[i].name, &ps.font[i].height, &ps.font[i].encoded) != 3) {
