@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.7 2004-01-13 05:15:03 pwessel Exp $
+#	 $Id: webexamples.sh,v 1.8 2004-04-23 22:50:42 pwessel Exp $
 #
 #	webexamples.csh - Automatic generation of the GMT examples pages
 #
@@ -115,6 +115,21 @@ surfaces.</A></LI>
 
 <LI>
 <A HREF="examples/ex20/gmt_example_20.html">Extending GMT with custom symbols.</A></LI>
+
+<LI>
+<A HREF="examples/ex21/gmt_example_21.html">New GMT Example.</A></LI>
+
+<LI>
+<A HREF="examples/ex22/gmt_example_22.html">New GMT Example.</A></LI>
+
+<LI>
+<A HREF="examples/ex23/gmt_example_23.html">New GMT Example.</A></LI>
+
+<LI>
+<A HREF="examples/ex24/gmt_example_24.html">New GMT Example.</A></LI>
+
+<LI>
+<A HREF="examples/ex25/gmt_example_25.html">New GMT Example.</A></LI>
 </OL>
 </BODY>
 </HTML>
@@ -124,7 +139,7 @@ mkdir -p examples
 cd examples
 
 i=1
-n_examples=20
+n_examples=25
 
 #	Go over all examples and generate HTML, GIF etc
 

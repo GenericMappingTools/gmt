@@ -1,4 +1,4 @@
-	$Id: README.SCRIPTS,v 1.4 2003-04-11 22:57:15 pwessel Exp $
+	$Id: README.SCRIPTS,v 1.5 2004-04-23 22:50:42 pwessel Exp $
 
 	README file for GMT Examples directory
 
@@ -30,4 +30,5 @@ The DOS versions may differ in subtle ways from the UNIX
 scripts since DOS is a braindead scripting language.  Example
 03 is only partly implemented in DOS.  Those who plan to use
 the .bat files should seriously ask themselves why they have
-not installed cygwin yet. (See Appendix L for more on that).
+not installed cygwin or MS Services for UNIX yet. (See Appendix
+L for more on that).
