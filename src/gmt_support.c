@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.51 2003-08-21 18:55:45 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.52 2003-09-26 17:42:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3838,7 +3838,7 @@ double GMT_get_map_interval (int axis, int item) {
 
 int GMT_just_decode (char *key)
 {
-	int i, j = 0, k;
+	int i = -1, j = -1, k;
 
 	/* Converts justification info like LL (lower left) to justification indices */
 
@@ -3873,6 +3873,15 @@ int GMT_just_decode (char *key)
 		}
 	}
 
+	if (i < 0) {
+		fprintf (stderr, "%s: Horizontal text justification not set, defaults to L(eft)\n", GMT_program);
+		i = 1;
+	}
+	if (j < 0) {
+		fprintf (stderr, "%s: Vertical text justification not set, defaults to B(ottom)\n", GMT_program);
+		j = 1;
+	}
+		
 	return (j + i);
 }
 
