@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.87 2004-05-12 19:11:27 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.88 2004-05-12 19:16:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4193,7 +4193,7 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 	
 	/* Determine if we have the optional label components specified */
 	
-	for (i = j; text[i] && slash < 2; i++) if (text[i] == '/') slash++;	/* Move i until the 2nd slash is reached */
+	for (i = j, slash = 0; text[i] && slash < 2; i++) if (text[i] == '/') slash++;	/* Move i until the 2nd slash is reached */
 	for (k = strlen(text) - 1, colon = 0; text[k] && k > i && colon < 2; k--) if (text[k] == ':') colon++;	/* Move k to starting colon of :label: */
 	if (colon == 2 && k > i) {
 		colon = k + 2;	/* Beginning of label */
