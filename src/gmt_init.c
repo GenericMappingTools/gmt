@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.98 2004-01-02 22:45:13 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.99 2004-01-09 00:31:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -87,7 +87,6 @@ struct GMT_HASH hashnode[HASH_SIZE];
 BOOLEAN GMT_x_abs = FALSE, GMT_y_abs = FALSE;
 BOOLEAN GMT_got_frame_rgb;
 FILE *GMT_fp_history;	/* For .gmtcommands4 file */
-BOOLEAN GMT_processed_option[N_UNIQUE];
 struct GMT_BACKWARD {	/* Used to ensure backwards compatibility */
 	BOOLEAN got_old_plot_format;		/* TRUE if DEGREE_FORMAT was decoded */
 	BOOLEAN got_old_degree_symbol;		/* TRUE if DEGREE_FORMAT was decoded */
