@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.28 2002-10-16 19:56:15 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.29 2003-02-26 01:35:31 pwessel Exp $
 #
 #	Automatic installation of GMT version 4
 #	Version for the Bourne shell (or compatible)
@@ -179,7 +179,9 @@ if [ $answer = "n" ]; then
 		else
 			netcdf_ftp=n
 			ok=0
-			if [ -f netcdf.tar.Z ]; then
+			if [ -f netcdf-beta.tar.Z ]; then
+				ok=1
+			elif [ -f netcdf.tar.Z ]; then
 				ok=1
 			elif [ -f netcdf.tar.bz2 ] && [ $GMT_expand = "bzip2" ]; then
 				ok=1
@@ -911,7 +913,9 @@ if [ $netcdf_install = "y" ]; then
 		rm -f $$
 	fi
 
-	if [ -f netcdf.tar.Z ]; then
+	if [ -f netcdf-beta.tar.Z ]; then
+		zcat netcdf.tar.Z | tar xvf -
+	elif [ -f netcdf.tar.Z ]; then
 		zcat netcdf.tar.Z | tar xvf -
 	elif [ -f netcdf.tar.bz2 ] && [ $GMT_expand = "bzip2" ]; then
 		$expand netcdf.tar.$suffix | tar xvf -
@@ -947,7 +951,7 @@ if [ $netcdf_install = "y" ]; then
 	fi
 	cd ../..
 	if [ $GMT_delete = "y" ]; then
-		rm -f netcdf.tar.Z
+		rm -f netcdf*.tar.Z
 	fi
 fi
 
