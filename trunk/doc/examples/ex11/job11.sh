@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 11
 #
-#		$Id: job11.sh,v 1.5 2003-04-11 22:57:15 pwessel Exp $
+#		$Id: job11.sh,v 1.6 2003-12-18 02:27:21 pwessel Exp $
 #
 # Purpose:	Create a 3-D RGB Cube
 # GMT progs:	gmtset, grdimage, grdmath, pstext, psxy
@@ -34,26 +34,26 @@ $AWK -f rgb_cube.awk r=x g=y b=255 < /dev/null > rgb_cube.cpt
 grdimage rgb_cube.grd -Crgb_cube.cpt -JX2.5i/2.5i -R0/255/0/255 -K -O -X2i -Y4.5i -B256wesn >> example_11.ps
 
 $AWK -f rgb_cube.awk r=255 g=y b=X < /dev/null > rgb_cube.cpt
-grdimage rgb_cube.grd -Crgb_cube.cpt -JX -K -O -X2.5i -B256wesn >> example_11.ps
+grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X2.5i -B256wesn >> example_11.ps
 
 $AWK -f rgb_cube.awk r=x g=255 b=Y < /dev/null > rgb_cube.cpt
-grdimage rgb_cube.grd -Crgb_cube.cpt -JX -K -O -X-2.5i -Y2.5i -B256wesn >> example_11.ps
+grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X-2.5i -Y2.5i -B256wesn >> example_11.ps
 
-psxy -W0.25pto -JX -R -K -O -X2.5i << END >> example_11.ps
+psxy -W0.25pto -J -R -K -O -X2.5i << END >> example_11.ps
 0 0
 20 20
 20 235
 0 255
 END
 
-psxy -W0.25pto -JX -R -K -O -X-2.5i -Y2.5i << END >> example_11.ps
+psxy -W0.25pto -J -R -K -O -X-2.5i -Y2.5i << END >> example_11.ps
 0 0
 20 20
 235 20
 255 0
 END
 
-psxy -W0.25pto -JX -R -K -O -X-2.5i -Y-2.5i << END >> example_11.ps
+psxy -W0.25pto -J -R -K -O -X-2.5i -Y-2.5i << END >> example_11.ps
 255 0
 235 20
 235 235
@@ -61,22 +61,22 @@ psxy -W0.25pto -JX -R -K -O -X-2.5i -Y-2.5i << END >> example_11.ps
 END
 
 $AWK -f rgb_cube.awk r=0 g=y b=x < /dev/null > rgb_cube.cpt
-grdimage rgb_cube.grd -Crgb_cube.cpt -JX -K -O -Y-2.5i -B256wesn >> example_11.ps
+grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -Y-2.5i -B256wesn >> example_11.ps
 
 $AWK -f rgb_cube.awk r=x g=0 b=y < /dev/null > rgb_cube.cpt
-grdimage rgb_cube.grd -Crgb_cube.cpt -JX -K -O -X2.5i -Y-2.5i -B256wesn >> example_11.ps
+grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X2.5i -Y-2.5i -B256wesn >> example_11.ps
 
 
-echo "10 10 14 0 Times-BoldItalic BL GMT 4" | pstext -JX -R -G255 -K -O >> example_11.ps
+echo "10 10 14 0 Times-BoldItalic BL GMT 4" | pstext -J -R -G255 -K -O >> example_11.ps
 
-psxy -W0.25pto -JX -R -K -O -X2.5i << END >> example_11.ps
+psxy -W0.25pto -J -R -K -O -X2.5i << END >> example_11.ps
 0 0
 20 20
 20 235
 0 255
 END
 
-psxy -W0.25pto -JX -R -K -O -X-5i << END >> example_11.ps
+psxy -W0.25pto -J -R -K -O -X-5i << END >> example_11.ps
 255 0
 235 20
 235 235
@@ -84,16 +84,16 @@ psxy -W0.25pto -JX -R -K -O -X-5i << END >> example_11.ps
 END
 
 $AWK -f rgb_cube.awk r=x g=Y b=0 < /dev/null > rgb_cube.cpt
-grdimage rgb_cube.grd -Crgb_cube.cpt -JX -K -O -X2.5i -Y-2.5i -B256wesn >> example_11.ps
+grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X2.5i -Y-2.5i -B256wesn >> example_11.ps
 
-psxy -W0.25pto -JX -R -K -O -X2.5i << END >> example_11.ps
+psxy -W0.25pto -J -R -K -O -X2.5i << END >> example_11.ps
 0 0
 20 20
 20 235
 0 255
 END
 
-psxy -W0.25pto -JX -R -O -X-5i << END >> example_11.ps
+psxy -W0.25pto -J -R -O -X-5i << END >> example_11.ps
 255 0
 235 20
 235 235

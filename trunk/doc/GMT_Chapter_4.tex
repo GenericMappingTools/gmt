@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.26 2003-07-24 21:08:13 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.27 2003-12-18 02:27:21 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2003.
@@ -158,6 +158,7 @@ sometimes a number or character string immediately after the letter.
 \section{Standardized command line options} 
 \index{Standardized command line options}%
 \index{Command line!standardized options|(}%
+\label{sec:stopt}
 
 Most of the programs take many of the same arguments like those
 related to setting the data region, the map projection, etc.
@@ -211,6 +212,7 @@ these options in order of importance (some are use alot more than others).
 \subsection{Data domain: The \Opt{R} option}
 \index{\Opt{R}}
 \index{Region, specifying}
+\label{sec:R}
 \GMTfig[h]{GMT_-R}{The plot region can be specified in two different ways}
 
 The \Opt{R} option defines the map region or data domain of interest.  It may be specified
@@ -680,7 +682,7 @@ apply the \Opt{:} option.
 \index{History, command line}
 
 \GMT\ programs ``remember'' the standardized command line options
-(See previous section) given during their previous invocations
+(See Section~\ref{sec:stopt}) given during their previous invocations
 and this provides a shorthand notation for complex options.
 For example, if a basemap was created with an oblique Mercator
 projection, specified as
@@ -690,7 +692,8 @@ projection, specified as
 \texttt{-Joc170W/25:30S/33W/56:20N/1:500000} \\ 
 
 then a subsequent \GMTprog{psxy} command to plot symbols only needs
-to state \Opt{J}o in order to activate the same projection.
+to state \Opt{J}o in order to activate the same projection.  In
+contrast, note that \Opt{J} by itself will pick the most recently used projection.
 Previous commands are maintained in the file \filename{.gmtcommands4},
 of which there will be one in each directory you run the programs
 from.  This is handy if you create separate directories for
@@ -924,6 +927,7 @@ Here, the texture units can be specified in dpi units or points (see above).
 \index{Pattern!fill}%
 \index{Pattern!color}%
 \index{\Opt{GP} \Opt{Gp}}
+\label{sec:fill}
 
 Many plotting programs will allow the user to draw filled polygons or
 symbols.  The fill may take two forms: 
@@ -1024,7 +1028,7 @@ in the 0--255 range.
 
 A few programs (i.e., those that plot polygons such as \GMTprog{grdview},
 \GMTprog{psscale}, and \GMTprog{psxy}) can accept pattern fills instead
-of grayshades.  You must give the pattern as in the previous section (no
+of grayshades.  You must specify the pattern as in Section~\ref{sec:fill} (no
 leading \Opt{G} of course), and only the first (low $z$) is used (we cannot
 interpolate between patterns).  
 Finally, some programs let you skip features

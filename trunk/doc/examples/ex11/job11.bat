@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 11
 REM
-REM		$Id: job11.bat,v 1.3 2002-01-30 03:40:56 ben Exp $
+REM		$Id: job11.bat,v 1.4 2003-12-18 02:27:21 pwessel Exp $
 REM
 REM Purpose:	Create a 3-D RGB Cube
 REM GMT progs:	gmtset, grdimage, grdmath, pstext, psxy
@@ -36,42 +36,42 @@ pstext -R0/8/0/11 -Jx1i NUL -P -U"Example 11 in Cookbook" -K > example_11.ps
 gawk -f rgb_cube.awk r=x g=y b=255 < NUL > rgb_cube.cpt
 grdimage rgb_cube.grd -Crgb_cube.cpt -JX2.5i/2.5i -R0/255/0/255 -K -O -X2i -Y4.5i -B256wesn >> example_11.ps
 gawk -f rgb_cube.awk r=255 g=y b=X < NUL > rgb_cube.cpt
-grdimage rgb_cube.grd -Crgb_cube.cpt -JX -K -O -X2.5i -B256wesn >> example_11.ps
+grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X2.5i -B256wesn >> example_11.ps
 
 gawk -f rgb_cube.awk r=x g=255 b=Y < NUL > rgb_cube.cpt
-grdimage rgb_cube.grd -Crgb_cube.cpt -JX -K -O -X-2.5i -Y2.5i -B256wesn >> example_11.ps
+grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X-2.5i -Y2.5i -B256wesn >> example_11.ps
 echo 0 0 > ex11_1.d
 echo 20 20 >> ex11_1.d
 echo 20 235 >> ex11_1.d
 echo 0 255 >> ex11_1.d
-psxy -W0.25pto -JX -R -K -O -X2.5i ex11_1.d >> example_11.ps
+psxy -W0.25pto -J -R -K -O -X2.5i ex11_1.d >> example_11.ps
 echo 0 0 > ex11_2.d
 echo 20 20 >> ex11_2.d
 echo 235 20 >> ex11_2.d
 echo 255 0 >> ex11_2.d
-psxy -W0.25pto -JX -R -K -O -X-2.5i -Y2.5i ex11_2.d >> example_11.ps
+psxy -W0.25pto -J -R -K -O -X-2.5i -Y2.5i ex11_2.d >> example_11.ps
 echo 255 0 > ex11_3.d
 echo 235 20 >> ex11_3.d
 echo 235 235 >> ex11_3.d
 echo 255 255 >> ex11_3.d
-psxy -W0.25pto -JX -R -K -O -X-2.5i -Y-2.5i ex11_3.d >> example_11.ps
+psxy -W0.25pto -J -R -K -O -X-2.5i -Y-2.5i ex11_3.d >> example_11.ps
 
 gawk -f rgb_cube.awk r=0 g=y b=x < NUL > rgb_cube.cpt
-grdimage rgb_cube.grd -Crgb_cube.cpt -JX -K -O -Y-2.5i -B256wesn >> example_11.ps
+grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -Y-2.5i -B256wesn >> example_11.ps
 
 gawk -f rgb_cube.awk r=x g=0 b=y < NUL > rgb_cube.cpt
-grdimage rgb_cube.grd -Crgb_cube.cpt -JX -K -O -X2.5i -Y-2.5i -B256wesn >> example_11.ps
+grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X2.5i -Y-2.5i -B256wesn >> example_11.ps
 
-echo 10 10 14 0 Times-BoldItalic BL GMT 4 | pstext -JX -R -G255 -K -O >> example_11.ps
+echo 10 10 14 0 Times-BoldItalic BL GMT 4 | pstext -J -R -G255 -K -O >> example_11.ps
 
-psxy -W0.25pto -JX -R -K -O -X2.5i ex11_1.d >> example_11.ps
-psxy -W0.25pto -JX -R -K -O -X-5i ex11_3.d >> example_11.ps
+psxy -W0.25pto -J -R -K -O -X2.5i ex11_1.d >> example_11.ps
+psxy -W0.25pto -J -R -K -O -X-5i ex11_3.d >> example_11.ps
 
 gawk -f rgb_cube.awk r=x g=Y b=0 < NUL > rgb_cube.cpt
-grdimage rgb_cube.grd -Crgb_cube.cpt -JX -K -O -X2.5i -Y-2.5i -B256wesn >> example_11.ps
+grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X2.5i -Y-2.5i -B256wesn >> example_11.ps
 
-psxy -W0.25pto -JX -R -K -O -X2.5i ex11_1.d >> example_11.ps
-psxy -W0.25pto -JX -R -O -X-5i ex11_3.d >> example_11.ps
+psxy -W0.25pto -J -R -K -O -X2.5i ex11_1.d >> example_11.ps
+psxy -W0.25pto -J -R -O -X-5i ex11_3.d >> example_11.ps
 
 del rgb_cube.cpt
 del rgb_cube.grd
