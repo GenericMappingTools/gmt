@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.73 2004-05-27 04:05:50 pwessel Exp $
+ *	$Id: gmt.h,v 1.74 2004-06-04 19:43:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -439,6 +439,7 @@ struct GMT_LINES {		/* For holding multisegment lines in memory */
 	int *seg;		/* Segment number information */
 	int np;			/* Number of points in this segment */
 	int polar;		/* TRUE if a polygon and enclosing N or S pole */
+	char *label;		/* Label string (if applicable) */
 };
 
 

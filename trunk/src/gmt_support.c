@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.111 2004-06-04 05:06:51 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.112 2004-06-04 19:43:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1732,6 +1732,12 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 						G->dist_unit = (int)c;
 						bad += GMT_get_dist_scale (c, &G->L_d_scale, &G->L_proj_type, &G->L_dist_func);
 						break;
+					case 'f':	/* Take the 3rd column in fixed contour location file */
+						G->label_type = 5;
+						break;
+					case 'x':	/* Take the first string in multisegment headers in the crossing file */
+						G->label_type = 6;
+						break;
 					default:	/* Probably meant lower case l */
 						strcpy (G->label, &p[1]);
 						G->label_type = 1;
@@ -1739,11 +1745,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 				}
 				break;
 				
-			case 'o':	/* Use rectangular textbox shape */
-				G->box = 2 + (G->box & 1);
-				break;
-				
-			case 'O':	/* Use rounded rectangle textbox shape */
+			case 'o':	/* Use rounded rectangle textbox shape */
 				G->box = 4 + (G->box & 1);
 				break;
 
@@ -1833,6 +1835,10 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 				error++;
 			}
 			break;
+		case 'f':	/* fixed points file */
+			L->fixed = TRUE;
+			strcpy (L->file, &txt[1]);
+			break;
 		case 'X':	/* Crossing complicated curve */
 			L->do_interpolate = TRUE;
 		case 'x':	/* Crossing line */
@@ -1885,14 +1891,18 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 	/* Prepares contour labeling machinery as needed */
 	
 	int i, k, n, error = 0;
-	size_t n_alloc;
+	size_t n_alloc = GMT_SMALL_CHUNK;
 	BOOLEAN greenwich;
 	double x, y;
 	char buffer[BUFSIZ], txt_a[128], txt_b[128], txt_c[128], txt_d[128], *p;
 	
-	if (G->label_type == 5 && (mode & 4) == 0) {	/* Only psxy[z] with data column can do this */
+	if (G->label_type == 5 && !G->fixed) {	/* Requires fixed file */
 		error++;
-		fprintf (stderr, "%s: GMT SYNTAX ERROR -%c:  Labeling option +Lz requires optional data column\n", GMT_program, G->flag);
+		fprintf (stderr, "%s: GMT SYNTAX ERROR -%c:  Labeling option +Lf requires the fixed label location setting\n", GMT_program, G->flag);
+	}
+	if (G->label_type == 6 && G->crossing != GMT_CONTOUR_XCURVE) {	/* Requires cross file */
+		error++;
+		fprintf (stderr, "%s: GMT SYNTAX ERROR -%c:  Labeling option +Lx requires the crossing lines setting\n", GMT_program, G->flag);
 	}
 	if (G->spacing && G->dist_kind == 1 && G->label_type == 4 && G->dist_unit == 0) {	/* Did not specify unit - use same as in -G */
 		G->L_d_scale = G->d_scale;
@@ -1913,7 +1923,6 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 
 	if (G->crossing == GMT_CONTOUR_XLINE) {
 		strcpy (buffer, G->option);
-		n_alloc = GMT_SMALL_CHUNK;
 		G->xp = (struct GMT_LINES *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_LINES), GMT_program);
 		G->n_xp = 0;
 		p = strtok (buffer, ",");
@@ -1989,6 +1998,62 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 				G->xp[k].lat[i] = y;
 			}
 		}
+	}
+	else if (G->fixed) {
+		FILE *fp;
+		int n_col, len;
+		BOOLEAN bad_record;
+		double xy[2];
+		
+		if ((fp = GMT_fopen (G->file, "r")) == NULL) {
+			fprintf (stderr, "%s: GMT SYNTAX ERROR -%c:  Could not open file %s\n", GMT_program, G->flag, G->file);
+			error++;
+		}
+		n_col = (G->label_type == 5) ? 3 : 2;
+		G->f_xy[0] = (double *) GMT_memory ((void *)VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
+		G->f_xy[1] = (double *) GMT_memory ((void *)VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
+		if (n_col == 3) G->f_label = (char **) GMT_memory ((void *)VNULL, (size_t)n_alloc, sizeof (char *), GMT_program);
+		G->f_n = 0;
+		while (fgets (buffer, BUFSIZ, fp)) {
+			if (buffer[0] == '#' || buffer[0] == '>' || buffer[0] == '\n') continue;
+			len = strlen (buffer);
+			for (i = len - 1; i >= 0 && strchr (" \t,\r\n", (int)buffer[i]); i--);
+			buffer[++i] = '\n';	buffer[++i] = '\0';	/* Now have clean C string with \n\0 at end */
+			sscanf (buffer, "%s %s %[^\n]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
+			if (GMT_scanf (txt_a, GMT_io.in_col_type[0], &xy[0]) == GMT_IS_NAN) bad_record = TRUE;	/* Got NaN or it failed to decode */
+			if (GMT_scanf (txt_b, GMT_io.in_col_type[1], &xy[1]) == GMT_IS_NAN) bad_record = TRUE;	/* Got NaN or it failed to decode */
+			if (bad_record) {
+				GMT_io.n_bad_records++;
+				if (GMT_io.give_report && (GMT_io.n_bad_records == 1)) {	/* Report 1st occurrence */
+					fprintf (stderr, "%s: Encountered first invalid record near/at line # %d\n", GMT_program, GMT_io.rec_no);
+					fprintf (stderr, "%s: Likely causes:\n", GMT_program);
+					fprintf (stderr, "%s: (1) Invalid x and/or y values, i.e. NaNs or garbage in text strings.\n", GMT_program);
+					fprintf (stderr, "%s: (2) Incorrect data type assumed if -J, -f are not set or set incorrectly.\n", GMT_program);
+					fprintf (stderr, "%s: (3) The -: switch is implied but not set.\n", GMT_program);
+					fprintf (stderr, "%s: (4) Input file in multiple segment format but the -M switch is not set.\n", GMT_program);
+				}
+				continue;
+			}
+			/* Got here if data are OK */
+			
+			if (gmtdefs.xy_toggle[0]) d_swap (xy[0], xy[1]);				/* Got lat/lon instead of lon/lat */
+			GMT_map_outside (xy[0], xy[1]);
+			if ( abs (GMT_x_status_new) > 1 || abs (GMT_y_status_new) > 1) continue;	/* Outside map region */
+			
+			GMT_geo_to_xy (xy[0], xy[1], &G->f_xy[0][G->f_n], &G->f_xy[1][G->f_n]);		/* Project -> xy inches */
+			if (n_col == 3) {	/* The label part if asked for */
+				G->f_label[G->f_n] = (char *) GMT_memory ((void *)VNULL, (size_t)(strlen(txt_c)+1), sizeof (char), GMT_program);
+				strcpy (G->f_label[G->f_n], txt_c);
+			}
+			G->f_n++;
+			if (G->f_n == n_alloc) {
+				n_alloc += GMT_SMALL_CHUNK;
+				G->f_xy[0] = (double *) GMT_memory ((void *)G->f_xy[0], (size_t)n_alloc, sizeof (double), GMT_program);
+				G->f_xy[1] = (double *) GMT_memory ((void *)G->f_xy[1], (size_t)n_alloc, sizeof (double), GMT_program);
+				if (n_col == 3) G->f_label = (char **) GMT_memory ((void *)G->f_label, (size_t)n_alloc, sizeof (char *), GMT_program);
+			}
+		}
+		GMT_fclose (fp);
 	}
 	if (error) fprintf (stderr, "%s: GMT SYNTAX ERROR -%c:  Valid codes are [lcr][bmt] and z[+-]\n", GMT_program, G->flag);
 
@@ -2176,7 +2241,7 @@ void GMT_contlabel_drawlines (struct GMT_CONTOUR *G, int mode)
 		
 void GMT_contlabel_clippath (struct GMT_CONTOUR *G, int mode)
 {
-	int i, k, m, nseg, just;
+	int i, k, m, nseg, just, form;
 	double *angle, *xt, *yt;
 	char **txt;
 	struct GMT_CONTOUR_LINE *C;
@@ -2220,7 +2285,8 @@ void GMT_contlabel_clippath (struct GMT_CONTOUR *G, int mode)
 			}
 			/* Note this uses the last segments pen/fontrgb on behalf of all */
 			GMT_textpath_init (&C->pen, G->rgb, &G->pen, C->font_rgb);
-			ps_textclip (xt, yt, m, angle, txt, G->label_font_size, G->clearance, just, 0);	/* This turns clipping ON */
+			form = (G->box == 4) ? 16 : 0;
+			ps_textclip (xt, yt, m, angle, txt, G->label_font_size, G->clearance, just, form);	/* This turns clipping ON */
 			GMT_free ((void *)angle);
 			GMT_free ((void *)xt);
 			GMT_free ((void *)yt);
@@ -2327,6 +2393,7 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode)
 	}
 	else {	/* 2-D Straight transparent or opaque text labels: repeat call to ps_textclip */
 		form = 1;
+		if (G->box & 4) form |= 16;		/* Want round box shape */
 		if (!G->transparent) form |= 256;	/* Want the box filled */
 		if (G->box & 1) form |= 512;		/* Want box outline */
 
@@ -3165,6 +3232,9 @@ void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char cty
 					else if (G->label_type == 4) {
 						sprintf (this_label, gmtdefs.d_format, this_value_dist);
 					}
+					else if (G->label_type == 6) {
+						strcpy (this_label, G->xp[line_no].label);
+					}
 					GMT_place_label (new_label, this_label, G);
 					GMT_contlabel_angle (xx, yy, left, right, cangle, nn, new_label, G);
 					G->L[G->n_label++] = new_label;
@@ -3176,6 +3246,43 @@ void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char cty
 				GMT_x_free (&G->XC);
 			}
 			GMT_free ((void *)G->ylist);
+		}
+		if (G->fixed) {	/* Prescribed point locations for labels that match points in input records */
+			for (j = 0; j < G->f_n; j++) {	/* Loop over fixed point list */
+				for (i = 1; i < nn; i++) {	/* Loop over input line/contour */
+					if (hypot (xx[i] - G->f_xy[0][j], yy[i] - G->f_xy[1][j]) < GMT_CONV_LIMIT) {	/* Match */
+						new_label = GMT_contlabel_new ();
+						new_label->x = G->f_xy[0][j];
+						new_label->y = G->f_xy[1][j];
+						new_label->node = i;
+						new_label->dist = track_dist[i];
+						this_dist = track_dist[i];
+						new_label->dist = map_dist[i];
+						this_value_dist = value_dist[i];
+						if (G->label_type == 0 && label)
+							strcpy (this_label, label);
+						else if (G->label_type == 1 || G->label_type == 2)
+							strcpy (this_label, G->label);
+						else if (G->label_type == 3) {
+							sprintf (this_label, gmtdefs.d_format, this_dist * GMT_u2u[GMT_INCH][G->dist_unit]);
+						}
+						else if (G->label_type == 4) {
+							sprintf (this_label, gmtdefs.d_format, this_value_dist);
+						}
+						else if (G->label_type == 5) {
+							strcpy (this_label, G->f_label[j]);
+						}
+						GMT_place_label (new_label, this_label, G);
+						GMT_contlabel_angle (xx, yy, i, i, cangle, nn, new_label, G);
+						G->L[G->n_label++] = new_label;
+						if (G->n_label == n_alloc) {
+							n_alloc += GMT_SMALL_CHUNK;
+							G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
+						}
+					}
+				}
+			}
+						
 		}
 		GMT_contlabel_fixpath (&xx, &yy, map_dist, &nn, G);	/* Inserts the label x,y into path */
 		GMT_contlabel_addpath (xx, yy, nn, label, TRUE, G);		/* Appends this path and the labels to list */

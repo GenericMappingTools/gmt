@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.70 2004-06-04 04:24:27 pwessel Exp $
+ *	$Id: pslib.c,v 1.71 2004-06-04 19:43:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2255,7 +2255,7 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 	 * pointsize	Pointsize of label text
 	 * offset	Gaps between text and textbox
 	 * just		Justification of text relative to label coordinates
-	 * key		bits: 0 = lay down clip path, 1 = Just place text, 2 turn off clipping, 4 = paint clippath (debug), 8 = reuse pars, 256 fill box, 512 draw box
+	 * key		bits: 0 = lay down clip path, 1 = Just place text, 2 turn off clipping, 4 = paint clippath (debug), 8 = reuse pars, 16 = rounded box, 256 fill box, 512 draw box
 	 */
 	 
 	int i = 0, j, k;

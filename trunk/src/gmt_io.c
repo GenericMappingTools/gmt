@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.64 2004-04-24 02:25:04 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.65 2004-06-04 19:43:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2428,6 +2428,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 	int n_fields, n_expected_fields = BUFSIZ;
 	BOOLEAN poly = FALSE, check_cap, save;
 	double d, dlon, lon_sum, *in;
+	char buffer[BUFSIZ], *t;
 		
 	if (fabs (dist + 9999.0) < GMT_CONV_LIMIT) poly = TRUE;	/* A polygon */
 	check_cap = (poly && MAPPING);
@@ -2465,6 +2466,12 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 			n_fields = GMT_input_ascii (fp, &n_expected_fields, &in);
 		}
 		if ((GMT_io.status & GMT_IO_EOF)) continue;	/* At EOF */
+		if ((t = strstr (GMT_io.segment_header, " -L")) || (t = strstr (GMT_io.segment_header, "	-L")))	/* Set specified label */
+			strcpy (buffer, &t[3]);
+		else
+			sscanf (&GMT_io.segment_header[1], "%s", buffer);
+		e[i].label = (char *) GMT_memory ((void *)VNULL, (size_t)(strlen(buffer)+1), sizeof (char), GMT_program);
+		strcpy (e[i].label, buffer);
 		
 		e[i].lon = (double *) GMT_memory (VNULL, (size_t)j_alloc, sizeof (double), GMT_program);
 		e[i].lat = (double *) GMT_memory (VNULL, (size_t)j_alloc, sizeof (double), GMT_program);
