@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.76 2004-04-24 02:25:04 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.77 2004-04-25 20:47:46 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -902,9 +902,11 @@ void GMT_read_cpt (char *cpt_file)
 		else {							/* Shades, RGB, HSV, or CMYK */
 			if (nread == 4) {	/* gray shades */
 				GMT_lut[n].z_high = atof (T2);
-				GMT_lut[n].rgb_low[0]  = GMT_lut[n].rgb_low[1]  = GMT_lut[n].rgb_low[2]  = irint (atof (T1));
+				if (GMT_getrgb (T1, GMT_lut[n].rgb_low)) error++;
+				if (GMT_getrgb (T3, GMT_lut[n].rgb_high)) error++;
+				/* GMT_lut[n].rgb_low[0]  = GMT_lut[n].rgb_low[1]  = GMT_lut[n].rgb_low[2]  = irint (atof (T1));
 				GMT_lut[n].rgb_high[0] = GMT_lut[n].rgb_high[1] = GMT_lut[n].rgb_high[2] = irint (atof (T3));
-				if (GMT_lut[n].rgb_low[0] < 0 || GMT_lut[n].rgb_high[0] < 0) error++;
+				if (GMT_lut[n].rgb_low[0] < 0 || GMT_lut[n].rgb_high[0] < 0) error++; */
 			}
 			else if (gmtdefs.color_model == GMT_CMYK) {
 				GMT_lut[n].z_high = atof (T5);
