@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: makespotter.bat,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+REM	$Id: makespotter.bat,v 1.2 2001-12-24 18:13:26 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
@@ -50,7 +50,9 @@ REM ----------------------------------------------------
 ECHO STEP 2: Compile and link programs
 REM ----------------------------------------------------
 CL %COPT% backtracker.c spotter.lib %LIBS%
+CL %COPT% grdspotter.c  spotter.lib %LIBS%
 CL %COPT% hotspotter.c  spotter.lib %LIBS%
 CL %COPT% originator.c  spotter.lib %LIBS%
+CL %COPT% rotconverter.c  spotter.lib %LIBS%
 del *.obj
 move *.exe %BINDIR%

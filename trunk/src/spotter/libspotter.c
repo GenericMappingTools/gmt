@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.10 2001-12-21 03:50:38 ben Exp $
+ *	$Id: libspotter.c,v 1.11 2001-12-24 18:13:26 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -18,14 +18,17 @@
  * SPOTTER: functions for moving points along small circles on a sphere.
  *
  * Paul Wessel, University of Hawaii
- * June 09, 1999
- * Version 1.0
+ * October 24, 2001
+ * Version 1.1
  *
  * The user-callable functions in this library are:
  *
  * spotter_init			: Load stage poles from file
  * spotter_backtrack		: Trace track from seamount to hotspot
  * spotter_forthtrack		: Trace track from hotspot to seamount
+ * spotter_finite_to_stages	: Convert finite rotations to stage poles
+ * spotter_stages_to_finite	: Convert stage poles to finite rotations
+ * spotter_add_rotations	: Add to plate motion models together.
  *
  * programs must first call spotter_init() which reads a file of
  * backward stage poles.  Given the right flag it can convert these
@@ -175,7 +178,7 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 /* d_km;	Create track point every d_km km.  If == -1.0, return bend points only */
 /* t_zero;	Backtrack up to this age */
 /* do_time;	TRUE if we want to interpolate and return time along track, 2 if we just want stage # */
-/* **c;		Pointer to return trac vector */
+/* **c;		Pointer to return track vector */
 {
 	int i, j, k, kk = 0, start_k, nd = 1, nn, n_alloc = 2 * GMT_CHUNK;
 	BOOLEAN path, bend;
@@ -215,8 +218,6 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 			dt = MIN (p[j].duration, t - MAX(p[j].t_stop, t_zero));
 			d_lon = p[j].omega_r * dt;
 
-			/* spotter_rotate_fwd (xp[i], yp[i], &tlon, &tlat, &p[j]); */
-
 			xnew = xp[i] - p[j].lon_r;
 			sincos (yp[i], &s_lat, &c_lat);
 			sincos (xnew, &s_lon, &c_lon);
@@ -252,7 +253,6 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 					}
 				}
 				for (k = 1; k < nd; k++) {
-					/* spotter_rotate_inv (&xx, &yy, tlon + k * dd, tlat, &p[j]); */
 
 					xnew = tlon + k * dd;
 					sincos (xnew, &s_lon, &c_lon);
@@ -282,7 +282,6 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 				}
 				nn += nd;
 			}
-			/* spotter_rotate_inv (&xp[i], &yp[i], tlon + d_lon, tlat, &p[j]); */
 			xnew = tlon + d_lon;
 			sincos (xnew, &s_lon, &c_lon);
 			cc = c_lat * c_lon;
@@ -337,7 +336,7 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 /* d_km;	Create track point every d_km km.  If == -1.0, return bend points only */
 /* t_zero;	Foretrack from this age forward */
 /* do_time;	TRUE if we want to interpolate and return time along track */
-/* c;		Pointer to return trac vector */
+/* c;		Pointer to return track vector */
 {
 	int i, j, k, kk = 0, start_k, nd = 1, nn, n_alloc = 2 * GMT_CHUNK;
 	BOOLEAN path, bend;
@@ -369,14 +368,13 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 		while (t < tp[i]) {	/* As long as we're not back at zero age */
 
 			j = 0;
-			while (j < ns && t < p[j].t_stop) j++;	/* Find first applicable stage pole */
+			while (j < ns && (t + GMT_CONV_LIMIT) < p[j].t_stop) j++;	/* Find first applicable stage pole */
 			if (j == ns) {
 				fprintf (stderr, "libspotter: (spotter_forthtrack) Ran out of stage poles for t = %lg\n", t);
 				exit (EXIT_FAILURE);
 			}
 			dt = MIN (tp[i], p[j].t_start) - t;	/* Time interval to rotate */
 			d_lon = p[j].omega_r * dt;		/* Rotation angle (radians) */
-			/* spotter_rotate_fwd (xp[i], yp[i], &tlon, &tlat, &p[j]); */
 
 			xnew = xp[i] - p[j].lon_r;
 			sincos (yp[i], &s_lat, &c_lat);
@@ -413,7 +411,6 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 					}
 				}
 				for (k = 1; k < nd; k++) {
-					/* spotter_rotate_inv (&xx, &yy, tlon - k * dd, tlat, &p[j]); */
 					xnew = tlon - k * dd;
 					sincos (xnew, &s_lon, &c_lon);
 					cc = c_lat * c_lon;
@@ -442,7 +439,6 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 				}
 				nn += nd;
 			}
-			/* spotter_rotate_inv (&xp[i], &yp[i], tlon - d_lon, tlat, &p[j]); */
 			xnew = tlon - d_lon;
 			sincos (xnew, &s_lon, &c_lon);
 			cc = c_lat * c_lon;
