@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.5 2001-08-20 20:01:37 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.6 2001-08-20 22:01:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1111,8 +1111,97 @@ double GMT_erfc (double y)
 #endif
 
 #if HAVE_STRTOD == 0
-double GMT_strtod (const char *p, char **e) {
-	fprintf (stderr, "GMT_strtod not implemented yet!\n");
+double	GMT_strtod (char *s, char **ends) {
+
+	/* Given s, try to scan it to convert an
+		ascii string representation of a
+		double, and return the double so
+		found.  If (ends != (char **)NULL),
+		return a pointer to the first char
+		of s which cannot be converted.
+	
+	This routine is supplied in GMT because it
+	is not in the POSIX standard.  However, it
+	is in ANSI standard C, and so most systems
+	running GMT should have it as a library
+	routine.  If the library routine exists,
+	it should be used, as this one will probably
+	be slower.  Also, the library routine has
+	ways of dealing with LOCALE info on the 
+	radix character, and error setting for
+	over and underflows.  Here, I rely on atof()
+	to do that.
+	
+	Note that if s can be converted successfully
+	and a non-null ends was supplied, then on
+	return, *ends[0] == 0.
+	
+	*/
+	
+	char	*t, savechar;
+	double	x = 0.0;
+	int	i, nsign[2], nradix[2], nexp, ndigits, error;
+	BOOLEAN inside = FALSE;
+	
+	t = s;
+	i = 0;
+	ndigits = 0;
+	while (t[i] && isspace( (int)t[i]) ) i++;
+	if (t[i] == 0 || isalpha ( (int)t[i]) ) {
+		if (ends != (char **)NULL) *ends = s;
+		return (x);
+	}
+	nsign[0] = nsign[1] = nradix[0] = nradix[1] = nexp = error = 0;
+	while (t[i]) {
+		if (!isdigit((int)t[i])) {
+			switch (t[i]) {
+				case '+':
+				case '-':
+					nsign[nexp]++;
+					if (inside) error++;
+					inside = TRUE;
+					break;
+				case '.':	/* This hardwires the radix char,
+						instead of using LOCALE  */
+					nradix[nexp]++;
+					inside = TRUE;
+					break;
+				case 'e':
+				case 'E':
+					nexp++;
+					inside = FALSE;
+					break;
+				default:
+					error++;
+					break;
+			}
+			if (nexp > 1 || nradix[nexp] > 1 || nsign[nexp] > 1) error++;
+			if (error) {
+				if (ndigits == 0) {
+					if (ends != (char **)NULL) *ends = s;
+					return (0.0);
+				}
+				savechar = t[i];
+				t[i] = 0;
+				x = atof(t);
+				t[i] = savechar;
+				if (ends != (char **)NULL) *ends = &t[i];
+				return (x);
+			}
+		}
+		else {
+			ndigits++;
+			inside = TRUE;
+		}
+		i++;
+	}
+	if (ndigits == 0) {
+		if (ends != (char **)NULL) *ends = s;
+		return (0.0);
+	}
+	x = atof(t);
+	if (ends != (char **)NULL) *ends = &t[i];
+	return (x);
 }
 #endif
 
