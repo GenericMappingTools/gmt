@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.121 2004-04-20 19:01:23 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.122 2004-04-23 01:45:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3057,6 +3057,7 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 	
 	char *t, *s, flag, orig_flag, unit;
 	int error = 0;
+	BOOLEAN time_interval_unit;
 	double val, phase = 0.0;
 	
 	if (!in) return;	/* NULL pointer passed */
@@ -3120,14 +3121,19 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 			case 'U':
 			case 'u':
 				if (A->type == TIME && flag == 'a') flag = 'i';
+				time_interval_unit = TRUE;
 				break;
 			default:
+				time_interval_unit = FALSE;
 				break;
 		}
 		orig_flag = flag;
-		if (!GMT_primary) {	/* Since this is secondary axes items */
+		if (GMT_primary) {	/* Since this is primary axes items */
+			if (flag == '*' && time_interval_unit) flag = '+';
+		}
+		else {			/* Since this is secondary axes items */
 			if (flag == '*')
-			 	flag = '^';
+			 	flag = (time_interval_unit) ? '-' : '^';
 			else
 			 	flag = (char) toupper ((int)flag);
 		}
@@ -3198,8 +3204,18 @@ void GMT_set_titem (struct PLOT_AXIS *A, double val, double phase, char flag, ch
 			I[1] = &A->item[4];
 			n = 2;
 			break;
+		case '+':	/* Both i and f */
+			I[0] = &A->item[2];
+			I[1] = &A->item[4];
+			n = 2;
+			break;
 		case '^':	/* Both A and F */
 			I[0] = &A->item[1];
+			I[1] = &A->item[5];
+			n = 2;
+			break;
+		case '-':	/* Both I and F */
+			I[0] = &A->item[3];
 			I[1] = &A->item[5];
 			n = 2;
 			break;
@@ -3309,17 +3325,19 @@ int GMT_map_getframe (char *in) {
 	/* frame_info.side[] may be set already when parsing .gmtdefaults4 flags */
 	
 	info[0] = one;	info[1] = two;	info[2] = three;
-	for (i = 0; GMT_primary && i < 3; i++) {
-		memset ((void *)&frame_info.axis[i], 0, sizeof (struct PLOT_AXIS));
-		for (j = 0; j < 8; j++) {
-			frame_info.axis[i].item[j].parent = i;
-			frame_info.axis[i].item[j].id = j;
+	if (!frame_info.plot) {	/* First time we initialize stuff */
+		for (i = 0; GMT_primary && i < 3; i++) {
+			memset ((void *)&frame_info.axis[i], 0, sizeof (struct PLOT_AXIS));
+			for (j = 0; j < 8; j++) {
+				frame_info.axis[i].item[j].parent = i;
+				frame_info.axis[i].item[j].id = j;
+			}
+			if (project_info.xyz_projection[i] == TIME) frame_info.axis[i].type = TIME;
 		}
-		if (project_info.xyz_projection[i] == TIME) frame_info.axis[i].type = TIME;
+		frame_info.header[0] = '\0';
+		frame_info.plot = TRUE;
+		frame_info.draw_box = FALSE;
 	}
-	frame_info.header[0] = '\0';
-	frame_info.plot = TRUE;
-	frame_info.draw_box = FALSE;
 	
 	GMT_strip_colonitem (&in[k], ":.", frame_info.header, out1);			/* Extract header string, if any */
 	
