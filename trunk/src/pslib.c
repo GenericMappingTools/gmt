@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.67 2004-06-02 03:11:13 pwessel Exp $
+ *	$Id: pslib.c,v 1.68 2004-06-02 22:52:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -46,6 +46,7 @@
  * Updated January 4, 2002 by P. Wessel to make all font size variables double instead of int.
  * Updated December 22, 2003 by P. Wessel to add pentagon symbol.
  * Updated January 12, 2004 by P. Wessel to add octagon symbol.
+ * Updated June 2, 2004 by P. Wessel to add contour/line clipping & labeling machinery (PSL_label.ps).
  *
  * FORTRAN considerations:
  *	All floating point data are assumed to be DOUBLE PRECISION
@@ -103,6 +104,8 @@
  *	ps_star			: Plots a star and {optionally] fills it
  *	ps_text			: Plots textstring
  *	ps_textbox		: Draw a filled box around a textstring
+ *	ps_textclip		: Place clippaths to protect areas where labels will print
+ *	ps_textpath		: --"-- for curved text following lines - also places labels
  *	ps_transrotate		: Translates and rotates the coordinate system
  *	ps_triangle		: Plots a triangle and [optionally] fills it
  *	ps_vector		: Draws an vector as specified
@@ -116,8 +119,8 @@
  *		School of Ocean and Earth Science and Technology
  *		1680 East-West Road, Honolulu, HI 96822
  *		pwessel@hawaii.edu
- * Date:	15-SEP-2001
- * Version:	4.0
+ * Date:	02-JUN-2004
+ * Version:	4.1
  *
  * The environmental variable GMTHOME must be set to the directory that holds the subdirectory
  *   share/pattern where all the pattern Sun raster files are stored
@@ -145,7 +148,6 @@ struct GMT_WORD {
 };
 
 int PSL_text_first = TRUE;
-int PSL_label_first = TRUE;
 
 /* Define support functions called inside pslib functions */
 
@@ -1398,6 +1400,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		for (i = 0; i < N_FONTS; i++) fprintf (ps.fp, "/F%d {/%s Y} bind def\n", i, ps.font[i].name);
 
 		if (!ps.eps_format) fprintf (ps.fp, "/#copies %d def\n\n", ncopies);
+		bulkcopy ("PSL_label");		/* Place code for label line annotations and clipping */
 	 	fprintf (ps.fp, "%%%%EndProlog\n\n");
 
 		fprintf (ps.fp, "%%%%BeginSetup\n\n");
@@ -1622,13 +1625,16 @@ void ps_setdash (char *pattern, int offset)
 	 *   5 units line, 3 units space, 1 unit line, 3 units space, start
 	 *    2 units from curr. point.
 	 */
-
+	int place_space;
 	if (pattern) {
 		fputs ("S [", ps.fp);
+		place_space = 0;
 		while (*pattern) {
-			fprintf (ps.fp, "%g ", (atoi(pattern) * 72.0 / ps.points_pr_unit));
+			if (place_space) fputc (' ', ps.fp);
+			fprintf (ps.fp, "%g", (atoi(pattern) * 72.0 / ps.points_pr_unit));
 			while (*pattern && *pattern != ' ') pattern++;
 			while (*pattern && *pattern == ' ') pattern++;
+			place_space = 1;
 		}		    		
 		fprintf (ps.fp, "] %d B\n", offset);
 	}
@@ -2151,7 +2157,7 @@ void ps_text_ (double *x, double *y, double *pointsize, char *text, double *angl
 	ps_text (*x, *y, *pointsize, text, *angle, *justify, *form);
 }
 
-void ps_pathtext (double x[], double y[], int n, int node[], double angle[], char *label[], int m, double pointsize, double offset[], int justify, int p_rgb[], int t_rgb[], int form)
+void ps_textpath (double x[], double y[], int n, int node[], double angle[], char *label[], int m, double pointsize, double offset[], int justify, int p_rgb[], int t_rgb[], int form)
 {
 	/* x,y		Array containing the label path
 	/* n		Length of label path
@@ -2181,11 +2187,6 @@ void ps_pathtext (double x[], double y[], int n, int node[], double angle[], cha
 
 	if (m <= 0) return;	/* Nothing to do yet */
 	
-	if (PSL_label_first) {
-		bulkcopy ("PSL_label");
-		PSL_label_first = FALSE;
-	}
-
 	first = (form & 64);
 	
 	for (i = 0; i < m; i++) {
@@ -2238,6 +2239,12 @@ void ps_pathtext (double x[], double y[], int n, int node[], double angle[], cha
   	ps.npath = 0;
 }
 
+/* fortran interface */
+void ps_textpath_ (double x[], double y[], int *n, int node[], double angle[], char *label[], int *m, double *pointsize, double offset[], int *justify, int p_rgb[], int t_rgb[], int *form, int len)
+{
+	ps_textpath (x, y, *n, node, angle, label, *m, *pointsize, offset, *justify, p_rgb, t_rgb, *form);
+}
+
 void ps_textclip (double x[], double y[], int m, double angle[], char *label[], double pointsize, double offset[], int justify, int key)
 {
 	/* x,y		Array containing the locations where labels will go
@@ -2247,20 +2254,26 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 	 * pointsize	Pointsize of label text
 	 * offset	Gaps between text and textbox
 	 * just		Justification of text relative to label coordinates
-	 * key		bits: 0 = lay down clip path, 1 = paint clip path
+	 * key		bits: 0 = lay down clip path, 1 = Just place text, 2 turn off clipping, 4 = paint clippath (debug)
 	 */
 	 
 	int i = 0, j, k;
 	double height;
 	char *string;
 	
+	if (key & 2) {	/* Flag to terminate clipping */
+		fprintf (ps.fp, "PSL_clip_on\t\t%% If clipping is active, terminate it\n{\n  grestore\n  /PSL_clip_on false def\n} if\n");
+		return;
+	}
+	if (key & 1) {		/* Flag to place text already define in PSL arrays */
+		fprintf (ps.fp, "1 PSL_labelclip\n", key);
+		return;
+	}
+	
+	/* Here key == 0 (or 4) which means we plan to create labeltext clip paths (and paint them) */
+	
 	if (m <= 0) return;	/* Nothing to do yet */
 	
-	if (PSL_label_first) {
-		bulkcopy ("PSL_label");
-		PSL_label_first = FALSE;
-	}
-
 	for (i = 0; i < m; i++) {
 		if (justify < 0)  {	/* Strip leading and trailing blanks */
 			for (k = 0; label[i][k] == ' '; k++);	/* Count # of leading blanks */
@@ -2298,6 +2311,12 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 	fprintf (ps.fp, "%d PSL_labelclip\n", key);
 	
   	ps.npath = 0;
+}
+
+/* fortran interface */
+void ps_textclip_ (double x[], double y[], int *m, double angle[], char *label[], double *pointsize, double offset[], int *justify, int *key, int len)
+{
+	ps_textclip (x, y, *m, angle, label, *pointsize, offset, *justify, *key);
 }
 
 void ps_transrotate (double x, double y, double angle)

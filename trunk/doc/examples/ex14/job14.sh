@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 14
 #
-#		$Id: job14.sh,v 1.9 2004-04-12 21:41:47 pwessel Exp $
+#		$Id: job14.sh,v 1.10 2004-06-02 22:52:32 pwessel Exp $
 #
 # Purpose:	Showing simple gridding, contouring, and resampling along tracks
 # GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, minmax, project,
@@ -23,8 +23,8 @@ grdcontour data.grd -J -B2f1WSne -C25 -A50 -G3i/10 -S4 -O -K -X-3.25i -Y-3.55i >
 psxy -R -J mean.xyz -Ss0.05i -Gblack -O -K >> example_14.ps
 # Fit bicubic trend to data and compare to gridded surface
 grdtrend data.grd -N10 -Ttrend.grd
-grdcontour trend.grd -J -B2f1wSne -C25 -A50 -G3i/10 -S4 -O -K -X3.25i >> example_14.ps
 project -C0/0 -E7/7 -G0.1 > track
+grdcontour trend.grd -J -B2f1wSne -C25 -A50 -Glct/cb -S4 -O -K -X3.25i >> example_14.ps
 psxy -R -J track -W1pto -O -K >> example_14.ps
 # Sample along diagonal
 grdtrack track -Gdata.grd | cut -f3,4 > data.d

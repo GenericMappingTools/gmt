@@ -1,6 +1,6 @@
 .TH PSTEXT GMTMANSECTION DATE VERSION VERSION
-#define CLEARANCE_SI 0.15\fBc\fP/0.15\fBc\fP
-#define CLEARANCE_US 0.05\fBi\fP/0.05\fBi\fP
+#define CLEARANCE_SI 0.1\fBc\fP/0.1\fBc\fP
+#define CLEARANCE_US 0.0254\fBi\fP/0.0254\fBi\fP
 .SH NAME
 pstext \- To plot text on maps
 .SH SYNOPSIS
