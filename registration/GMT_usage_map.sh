@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.16 2002-05-14 16:59:27 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.17 2002-06-26 22:00:38 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -39,7 +39,9 @@ help	Give a brief help message
 EOF
 	exit
 fi
-
+GMTHOME=/home/aa/wessel/GMTdev/GMT
+PATH=$GMTHOME/bin:$PATH
+export PATH
 MAIL=/home/aa/wessel/nsmail/GMT.sbd/Registrations	# Where incoming registrations reside
 REGHOME=/home/aa/wessel/GMTdev/GMT/registration	# Where to do the work
 CVSROOT=":pserver:pwessel@gmt.soest.hawaii.edu:/home/gmt/gmt/cvs"
