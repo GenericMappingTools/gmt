@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.22 2004-06-22 20:00:28 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.23 2005-02-15 23:03:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -117,8 +117,8 @@ struct GMT_CONTOUR {
 	struct GMT_PEN line_pen;	/* Pen for drawing the contour line */
 	struct GMT_LABEL **L;		/* Pointers to sorted list of labels */
 	int n_label;			/* Length of list */
-	char unit[32];			/* Unit for labels */
-	char prefix[32];		/* prefix for labels */
+	char unit[GMT_TEXT_LEN];	/* Unit for labels */
+	char prefix[GMT_TEXT_LEN];	/* prefix for labels */
 	int just;			/* Label justification */
 	int end_just[2];		/* Justification for end of lines */
 	int angle_type;			/* 0 = contour-parallel, 1 = contour-normal, 2 = fixed angle */

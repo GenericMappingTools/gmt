@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.28 2004-12-26 22:13:20 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.29 2005-02-15 23:03:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -78,7 +78,7 @@ struct GMT_CLOCK_IO {
 	BOOLEAN compact;		/* TRUE if we do not want leading zeros in items (e.g., 03) */
 	BOOLEAN twelve_hr_clock;	/* TRUE if we are doing am/pm on output */
 	char ampm_suffix[2][8];		/* Holds the strings to append am or pm */
-	char format[32];		/* Actual C format used to output clock */
+	char format[GMT_TEXT_LEN];	/* Actual C format used to output clock */
 	char delimiter[2][2];		/* Delimiter strings in clock, e.g. ":" */
 };
 
@@ -87,7 +87,7 @@ struct GMT_DATE_IO {
 	int item_pos[4];		/* Which position year, month, day, day-of-year has in calendar string */
 	BOOLEAN Y2K_year;		/* TRUE if we have 2-digit years */
 	BOOLEAN truncated_cal_is_ok;	/* TRUE if we have YMD or YJ order so smallest unit is to the right */
-	char format[32];		/* Actual C format used to input/output date */
+	char format[GMT_TEXT_LEN];	/* Actual C format used to input/output date */
 	BOOLEAN iso_calendar;		/* TRUE if we do ISO week calendar */
 	BOOLEAN day_of_year;		/* TRUE if we do day-of-year rather than month/day */
 	BOOLEAN mw_text;		/* TRUE if we must plot the month name or Week rather than a numeral */
@@ -103,8 +103,8 @@ struct GMT_GEO_IO {	/* For geographic output and plotting */
 	BOOLEAN no_sign;		/* TRUE if we want absolute values (plot only) */
 	int n_sec_decimals;		/* Number of digits in decimal seconds (0 for whole seconds) */
 	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
-	char x_format[32];		/* Actual C format used to plot/output longitude */
-	char y_format[32];		/* Actual C format used to plot/output latitude */
+	char x_format[GMT_TEXT_LEN];	/* Actual C format used to plot/output longitude */
+	char y_format[GMT_TEXT_LEN];	/* Actual C format used to plot/output latitude */
 	char delimiter[2][2];		/* Delimiter strings in date, e.g. "-" */
 };
 

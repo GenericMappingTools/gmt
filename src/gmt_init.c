@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.170 2005-02-15 21:15:18 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.171 2005-02-15 23:03:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -811,7 +811,7 @@ void GMT_default_error (char option)
 
 int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 {
-	char *text, string[BUFSIZ], txt_a[32], txt_b[32];
+	char *text, string[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT];
 
 	/* GMT_get_common_args interprets the command line for the common, unique options
 	 * -B, -H, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -c, -:, -
@@ -1136,7 +1136,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 int GMT_loaddefaults (char *file)
 {
 	int error = 0;
-	char line[BUFSIZ], keyword[128], value[128];
+	char line[BUFSIZ], keyword[[GMT_LONG_TEXT]], value[[GMT_LONG_TEXT]];
 	FILE *fp = NULL;
 
 	if ((fp = fopen (file, "r")) == NULL) return (-1);
@@ -1226,7 +1226,7 @@ void GMT_backwards_compatibility () {
 	/* Convert old GMT 3.4 DEGREE_FORMAT settings to the new PLOT_DEGREE_FORMAT string and DEGREE_SYMBOL setting */
 	/* Also to automatic scaling of font sizes relative to ANNOT_FONT_SIZE if given with leading + */
 
-	char string[32];
+	char string[GMT_LONG_TEXT];
 	int k;
 
 	if (GMT_backward.got_old_plot_format && GMT_backward.got_new_plot_format) {	/* Got both old and new */
@@ -1234,7 +1234,7 @@ void GMT_backwards_compatibility () {
 		fprintf (stderr, "%s: WARNING: PLOT_DEGREE_FORMAT overrides old DEGREE_FORMAT\n", GMT_program);
 	}
 	else if (GMT_backward.got_old_plot_format && !GMT_backward.got_new_plot_format) {	/* Must decode old DEGREE_FORMAT */
-		memset ((void *)string, 0, 32);
+		memset ((void *)string, 0, GMT_LONG_TEXT);
 		k = gmtdefs.degree_format % 100;
 		if (k == 0 || k == 4 || k == 6 || k == 8)	/* These were 0-360 values */
 			strcpy (string, "+");
@@ -1293,7 +1293,7 @@ int GMT_setparameter (char *keyword, char *value)
 {
 	int i, ival, case_val, rgb[3];
 	BOOLEAN manual, eps, error = FALSE;
-	char txt_a[32], txt_b[32], lower_value[BUFSIZ];
+	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], lower_value[BUFSIZ];
 	double dval;
 
 	if (!value) return (TRUE);		/* value argument missing */
@@ -3610,7 +3610,7 @@ int GMT_map_getproject (char *args)
 	BOOLEAN error = FALSE, skip = FALSE;
 	double o_x, o_y, b_x, b_y, c, az;
 	double GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
-	char type, args_cp[BUFSIZ], txt_a[32], txt_b[32], txt_c[32], txt_d[32], txt_e[32];
+	char type, args_cp[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], txt_d[GMT_LONG_TEXT], txt_e[GMT_LONG_TEXT];
 
 	l_pos[0] = l_pos[1] = p_pos[0] = p_pos[1] = t_pos[0] = t_pos[1] = d_pos[0] = d_pos[1] = 0;
 	type = args[0];
@@ -4738,7 +4738,7 @@ int	GMT_scanf_epoch (char *s, double *t0) {
  */
 static void load_encoding (struct gmt_encoding *enc)
 {
-	char line[256];
+	char line[GMT_LONG_TEXT];
 	char *symbol;
 	int code = 0;
 	FILE *in;
@@ -4831,7 +4831,7 @@ void GMT_init_fonts (int *n_fonts)
 
 	GMT_font = (struct GMT_FONT *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_FONT), GMT_program);
 
-	while (fgets (buf, 128, in)) {
+	while (fgets (buf, BUFSIZ, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 		if (sscanf (buf, "%s %lf %*d", fullname, &GMT_font[i].height) != 2) {
 			fprintf (stderr, "GMT Fatal Error: Trouble decoding font info for font %d\n", i);
@@ -4861,7 +4861,7 @@ void GMT_init_fonts (int *n_fonts)
 			exit (EXIT_FAILURE);
 		}
 
-		while (fgets (buf, 128, in)) {
+		while (fgets (buf, BUFSIZ, in)) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 			GMT_font[i].name = (char *)GMT_memory (VNULL, strlen (buf), sizeof (char), GMT_program);
 			if (sscanf (buf, "%s %lf %*d", GMT_font[i].name, &GMT_font[i].height) != 2) {

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_symbol.h,v 1.13 2004-01-12 18:57:37 pwessel Exp $
+ *	$Id: gmt_symbol.h,v 1.14 2005-02-15 23:03:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -56,7 +56,7 @@ struct CUSTOM_SYMBOL_ITEM {
 };
 
 struct CUSTOM_SYMBOL {
-	char name[64];
+	char name[GMT_TEXT_LEN];
 	struct CUSTOM_SYMBOL_ITEM *first;
 };
 

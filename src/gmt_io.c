@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.77 2005-02-15 21:15:18 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.78 2005-02-15 23:03:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -566,7 +566,7 @@ void GMT_ascii_format_one (char *text, double x, int type)
 
 int GMT_ascii_output_one (FILE *fp, double x, int col)
 {
-	char text[32];
+	char text[GMT_LONG_TEXT];
 	
 	GMT_ascii_format_one (text, x, GMT_io.out_col_type[col]);
 	return (fprintf (fp, "%s", text));
@@ -949,8 +949,8 @@ void GMT_check_z_io (struct GMT_Z_IO *r, float *a)
 int GMT_a_read (FILE *fp, double *d)
 {
 	int i;
-	char line[64];
-	if (fgets (line, 64, fp)) {	/* Read was successful */
+	char line[GMT_TEXT_LEN];
+	if (fgets (line, GMT_TEXT_LEN, fp)) {	/* Read was successful */
 		for (i = strlen(line) - 1; i >= 0 && strchr (" \t,\r\n", (int)line[i]); i--);	/* Take out trailing whitespace */
 		line[++i] = '\0';
 		GMT_scanf (line, GMT_io.in_col_type[2], d);	/* Convert whatever it is to double */
@@ -1553,7 +1553,7 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
 	/* Craft the actual C-format to use for input/output clock strings */
 		
 	if (S->order[0] >= 0) {	/* OK, at least hours is needed */
-		char fmt[32];
+		char fmt[GMT_LONG_TEXT];
 		if (S->compact)
 			sprintf (S->format, "%%d");
 		else
@@ -1591,7 +1591,7 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 	* mode is 0 for input, 1 for output, and 2 for plot output.
 	 */
 	 
-	char fmt[32];
+	char fmt[GMT_LONG_TEXT];
 	int k;
 	
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
@@ -1679,7 +1679,7 @@ void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S)
 		sprintf (S->y_format, "%s", gmtdefs.d_format);
 	}
 	else {			/* Some form of dd:mm:ss */
-		char fmt[32];
+		char fmt[GMT_LONG_TEXT];
 		sprintf (S->x_format, "%%3.3d");
 		sprintf (S->y_format, "%%2.2d");
 		if (S->order[1] >= 0) {	/* Need minutes too */
@@ -1730,11 +1730,11 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 		strcat (S->y_format, "%c");
 	}
 	else {			/* Must cover all the 6 forms of dd[:mm[:ss]][.xxx] */
-		char fmt[32];
+		char fmt[GMT_LONG_TEXT];
 		
 		for (i = 0; i < 3; i++)
 		  for (j = 0; j < 2; j++)
-		    GMT_plot_format[i][j] = GMT_memory (VNULL, 32, sizeof (char), GMT_program);
+		    GMT_plot_format[i][j] = GMT_memory (VNULL, GMT_LONG_TEXT, sizeof (char), GMT_program);
 		
 		/* Level 0: degrees only. index 0 is integer degrees, index 1 is [possibly] fractional degrees */
 		
@@ -2086,7 +2086,7 @@ int	GMT_scanf_geo (char *s, double *val)
 
 	*/
 	
-	char	scopy[64], suffix, *p, *p2;
+	char	scopy[GMT_TEXT_LEN], suffix, *p, *p2;
 	double	dd, dm, ds;
 	int	retval = GMT_IS_FLOAT;
 	int	k, id, im, ncolons;
@@ -2123,7 +2123,7 @@ int	GMT_scanf_geo (char *s, double *val)
 		}
 		k--;
 	}
-	if (k >= 64) return (GMT_IS_NAN);
+	if (k >= GMT_TEXT_LEN) return (GMT_IS_NAN);
 	strncpy (scopy, s, k);	/* Copy all but the suffix  */
 	scopy[k] = 0;
 	ncolons = 0;
@@ -2201,7 +2201,7 @@ int	GMT_scanf_float (char *s, double *val)
 	On failure, return GMT_IS_NAN and do not touch val.
 	*/
 
-	char	scopy[64], *p;
+	char	scopy[GMT_TEXT_LEN], *p;
 	double	x;
 	int	j,k;
 	
@@ -2219,7 +2219,7 @@ int	GMT_scanf_float (char *s, double *val)
 	}
 	/* Make a copy of s in scopy, mapping the d or D to an e:  */
 	j = strlen(s);
-	if (j > 64) return (GMT_IS_NAN);
+	if (j > GMT_TEXT_LEN) return (GMT_IS_NAN);
 	j -= k;
 	strncpy (scopy, s, (size_t)j );
 	scopy[j] = 'e';
@@ -2242,7 +2242,7 @@ int	GMT_scanf (char *s, int expectation, double *val)
 		GMT_IS_FLOAT	we expect an uncomplicated float.
 	*/
 	
-	char	calstring[64], clockstring[64], *p;
+	char	calstring[GMT_TEXT_LEN], clockstring[GMT_TEXT_LEN], *p;
 	double	x;
 	int	callen, clocklen;
 	GMT_cal_rd rd;
