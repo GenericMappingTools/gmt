@@ -82,32 +82,32 @@ boundary conditions.
 To take log10 of the average of 2 data files, use
 .br
 .sp
-\fBgmtmath\fP file1.d file2.d \fBADD\fP 0.5 \fBMUL LOG10 =\fP file3.d
+\fBgmtmath\fP file1.d file2.d \fBADD\fP 0.5 \fBMUL LOG10 \=\fP file3.d
 .br
 .sp
 Given the file samples.d, which holds seafloor ages in m.y. and seafloor depth in m, use the relation
 depth(in m) = 2500 + 350 * sqrt (age) to print the depth anomalies:
 .br
 .sp
-\fBgmtmath\fP samples.d T \fBSQRT\fP 350 \fBMUL \fP2500 \fBADD SUB =\fP | lpr
+\fBgmtmath\fP samples.d \fBT SQRT\fP 350 \fBMUL \fP2500 \fBADD SUB \=\fP | lpr
 .br
 .sp
 To take the average of columns 1 and 4-6 in the three data sets sizes.1, sizes.2, and sizes.3, use
 .br
 .sp
-\fBgmtmath\fP \fB\-C\fP1,4-6 sizes.1 sizes.2 \fBADD\fP sizes.3 \fBADD 3 DIV =\fP ave.d
+\fBgmtmath\fP \fB\-C\fP1,4-6 sizes.1 sizes.2 \fBADD\fP sizes.3 \fBADD 3 DIV \=\fP ave.d
 .br
 .sp
 To take the 1-column data set ages.d and calculate the modal value and assign it to a variable, try
 .br
 .sp
-set mode_age = `\fBgmtmath\fP \fB\-S \-T\fP ages.d \fBMODE\fP \fB=\fP`
+set mode_age = `\fBgmtmath\fP \fB\-S \-T\fP ages.d \fBMODE \=\fP`
 .br
 .sp
 To evaluate the dilog(x) function for coordinates given in the file t.d:
 .br
 .sp
-\fBgmtmath\fP \fB\-T\fPt.d \fBT DILOG\fP \fB=\fP dilog.d
+\fBgmtmath\fP \fB\-T\fPt.d \fBT DILOG \=\fP dilog.d
 .br
 .sp
 To use gmtmath as a RPN Hewlett-Packard calculator on scalars (i.e., no input
@@ -116,7 +116,7 @@ As an example, we will calculate the value of Kei (((1 + 1.75)/2.2) + cos (60))
 and store the result in the shell variable z:
 .br
 .sp
-set z = `\fBgmtmath\fP \fB\-Q\fP 1 1.75 \fBADD\fP 2.2 \fBDIV\fP 60 \fBCOSD ADD KEI =\fP`
+set z = `\fBgmtmath\fP \fB\-Q\fP 1 1.75 \fBADD\fP 2.2 \fBDIV\fP 60 \fBCOSD ADD KEI \=\fP`
 .br
 .sp
 To use \fBgmtmath\fP as a general least squares equation solver, imagine that the current table is the
@@ -128,16 +128,17 @@ Then, you need a 4-column augmented table loaded with t in column 1 and your obs
 The calculation becomes
 .br
 .sp
-\fBgmtmath\fP \fB\-N\fP4/1 \fB\-A\fPty.d -C0 1 ADD -C2 1.55 STEPT ADD -Ca LSQFIT = solution.d
+\fBgmtmath\fP \fB\-N\fP4/1 \fB\-A\fPty.d \fB-C\fP0 1 \fBADD \-C\fP2 1.55 \fBSTEPT ADD \-Ca LSQFIT \=\fP solution.d
 .br
+.sp
 Note we use the \fB\-C\fP option to select which columns we are working on, then make active all the
-columns we need (here all of them, with \fB\-Ca\fP) before calling \fBLSQFIT\fP.  The second and forth
+columns we need (here all of them, with \fB\-Ca\fP) before calling \fBLSQFIT\fP.  The second and fourth
 columns are preloaded with t and y(t), respectively, the other columns are zero.  If you already have
 a precalculated table with the augmented matrix [ A | b ] in a file (say lsqsys.d), the least squares
 solution is simply
 .br
 .sp
-\fBgmtmath\fP \fB\-T\fP lsqsys.d LSQFIT = solution.d
+\fBgmtmath\fP \fB\-T\fP lsqsys.d \fBLSQFIT \=\fP solution.d
 .SH BUGS
 Files that have the same name as some operators, e.g., \fBADD\fP, \fBSIGN\fP, \fB=\fP, etc. cannot be read
 and must not be present in the current directory.  Piping of files is not allowed on input, but the output can be sent to stdout.
