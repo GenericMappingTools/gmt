@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.26 2001-09-20 20:17:06 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.27 2001-09-21 18:46:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2173,12 +2173,10 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t) {
 		or 60.xxx on a leap second); no am/pm suffixes allowed.
 		
 		A <calstring> must be of the form
-		[-]yyyy[-mm[-dd]]T readable after first '-' with "%4d-%2d-%2dT"
-		or
-		yyyy[-Www[-d]]T
-		
-		sorry, i haven't got day of year in here yet...
-	
+		[-]yyyy[-mm[-dd]]T readable after first '-' with "%4d-%2d-%2dT" (Gregorian year,month,day)
+		[-]yyyy[-jjj]T readable after first '-' with "%4d-%3dT" (Gregorian year, day-of-year)
+		yyyy[-Www[-d]]T (ISO week calendar)
+			
 	Upon failure, returns GMT_IS_NAN.  Upon success, sets
 	t and returns GMT_IS_ABSTIME.
 	We could have it return either ABSTIME or RELTIME to indicate
@@ -2191,8 +2189,8 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t) {
 	
 	double	ss, x;
 	char 	*pw, *pt;
-	int	hh, mm, j, k, ival[3];
-	BOOLEAN negate_year = FALSE;
+	int	hh, mm, j, k, i, dash, ival[3];
+	BOOLEAN negate_year = FALSE, got_yd = FALSE;
 	
 	if ( (pt = strchr (s, (int)'T') ) == CNULL) {
 		/* There is no T.  This must decode with GMT_scanf_float()
@@ -2246,12 +2244,28 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t) {
 		return (GMT_IS_ABSTIME);
 	}
 	
-	/* Gregorian yyyy-mm-dd calendar:  */
-	if ( (j = sscanf(&s[k], "%4d-%2d-%2d", &ival[0], &ival[1], &ival[2]) ) == 0) return (GMT_IS_NAN);
-	for (k = j; k < 3; k++) ival[k] = 1;
+	for (i = negate_year; s[k+i] && s[k+i] != '-'; i++);;	/* Goes to first - between yyyy and jjj or yyyy and mm */
+	dash = ++i;				/* Position of first character after the first dash (could be end of string if no dash) */
+	while (s[k+i] && !(s[k+i] == '-' || s[k+i] == 'T')) i++;	/* Goto the ending T character or get stuck on a second - */
+	got_yd = ((i - dash) == 3 && s[k+i] == 'T');		/* Must have a field of 3-characters between - and T to constitute a valid day-of-year format */
+
+	if (got_yd) {	/* Gregorian yyyy-jjj calendar:  */
+		if ( (j = sscanf(&s[k], "%4d-%3d", &ival[0], &ival[1]) ) != 2) return (GMT_IS_NAN);
+		ival[2] = 1;
+	}
+	else {	/* Gregorian yyyy-mm-dd calendar:  */
+		if ( (j = sscanf(&s[k], "%4d-%2d-%2d", &ival[0], &ival[1], &ival[2]) ) == 0) return (GMT_IS_NAN);
+		for (k = j; k < 3; k++) ival[k] = 1;
+	}
 	if (negate_year) ival[0] = -ival[0];
-	if (GMT_g_ymd_is_bad (ival[0], ival[1], ival[2]) ) return (GMT_IS_NAN);
-	*t = GMT_rdc2dt ( GMT_rd_from_gymd (ival[0], ival[1], ival[2]), x);
+	if (got_yd) {
+		if (ival[1] < 1 || ival[1] > 366)  return (GMT_IS_NAN);	/* Simple range check on day-of-year (1-366) */
+		*t = GMT_rdc2dt (GMT_rd_from_gymd (ival[0], 1, 1) + ival[1] - 1, x);
+	}
+	else {
+		if (GMT_g_ymd_is_bad (ival[0], ival[1], ival[2]) ) return (GMT_IS_NAN);
+		*t = GMT_rdc2dt (GMT_rd_from_gymd (ival[0], ival[1], ival[2]), x);
+	}
+	
 	return (GMT_IS_ABSTIME);
 }
-
