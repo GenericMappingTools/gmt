@@ -3,7 +3,7 @@
 x2sys_get \- Get track listing from track index databases
 .SH SYNOPSIS
 \fBx2sys_get\fP \fB\-T\fP\fITAG\fP [ \fB\-F\fP\fIflags\fP ] 
-[ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-V\fP ]
+[ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-S\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBx2sys_get\fP will return the track data files that match the given
 requirements.  You may choose a geographic region and optionally ask
@@ -18,6 +18,9 @@ No space between the option flag and the associated arguments
 Give a comma-separated list of column names as defined in the definition
 file. [Default is all data columns].
 #include "explain_-R.txt"
+.TP
+.B \-S
+Strip off the filename suffix when reporting.
 #include "explain_-V.txt"
 .SH EXAMPLES
 To find all the tracks associated with the tag MGD77, restricted to occupy
