@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.28 2001-09-10 23:56:16 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.29 2001-09-12 04:03:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1558,6 +1558,23 @@ int GMT_setparameter (char *keyword, char *value)
 				error = TRUE;
 			break;
 			GMT_backward.got_new_degree_symbol = TRUE;
+		case 77:
+			if (value[0] >= '0' && value[0] <= '9')
+				ival = atoi (value);
+			else
+				ival = GMT_key_lookup (value, GMT_font_name, N_FONTS);
+			if (ival < 0 || ival >= N_FONTS)
+				error = TRUE;
+			else
+				gmtdefs.anot_font2 = ival;
+			break;
+		case 78:
+			ival = atoi (value);
+			if (ival > 0)
+				gmtdefs.anot_font2_size = ival;
+			else
+				error = TRUE;
+			break;
 
 		default:
 			error = TRUE;
@@ -1729,6 +1746,8 @@ int GMT_savedefaults (char *file)
 		fprintf (fp, "DEGREE_SYMBOL		= colon\n");
 	else
 		fprintf (fp, "DEGREE_SYMBOL		= none\n");
+	fprintf (fp, "ANOT_FONT2	= %s\n", GMT_font_name[gmtdefs.anot_font2]);
+	fprintf (fp, "ANOT_FONT2_SIZE		= %dp\n", gmtdefs.anot_font2_size);
 
 	if (fp != GMT_stdout) fclose (fp);
 	
@@ -2020,15 +2039,15 @@ void GMT_get_time_language (char *name)
 		if (line[0] == '#' || line[0] == '\n') continue;
 		sscanf (line, "%c %d %s %s %s", &dwu, &i, full, abbrev, c);
 		if (dwu == 'M') {	/* Month record */
-			strncpy (GMT_time_language.month_name[i][0], full, 16);
-			strncpy (GMT_time_language.month_name[i][1], abbrev, 16);
-			strncpy (GMT_time_language.month_name[i][2], c, 16);
+			strncpy (GMT_time_language.month_name[i-1][0], full, 16);
+			strncpy (GMT_time_language.month_name[i-1][1], abbrev, 16);
+			strncpy (GMT_time_language.month_name[i-1][2], c, 16);
 			nm += i;
 		}
 		else if (dwu == 'W') {	/* Weekday record */
-			strncpy (GMT_time_language.day_name[i][0], full, 16);
-			strncpy (GMT_time_language.day_name[i][1], abbrev, 16);
-			strncpy (GMT_time_language.day_name[i][2], c, 16);
+			strncpy (GMT_time_language.day_name[i-1][0], full, 16);
+			strncpy (GMT_time_language.day_name[i-1][1], abbrev, 16);
+			strncpy (GMT_time_language.day_name[i-1][2], c, 16);
 			nw += i;
 		}
 		else {			/* Week name record */
@@ -2690,7 +2709,7 @@ void GMT_strip_wesnz (const char *in, int t_side[], BOOLEAN *draw_box, char *out
 			case 'W':	/* Draw AND Anotate */
 				set++;
 			case 'w':	/* Just Draw */
-				side[0] = ++set;
+				side[3] = ++set;
 				set_sides = TRUE;
 				break;
 			case 'E':	/* Draw AND Anotate */
@@ -2706,13 +2725,13 @@ void GMT_strip_wesnz (const char *in, int t_side[], BOOLEAN *draw_box, char *out
 			case 'S':	/* Draw AND Anotate */
 				set++;
 			case 's':	/* Just Draw */
-				side[2] = ++set;
+				side[0] = ++set;
 				set_sides = TRUE;
 				break;
 			case 'N':	/* Draw AND Anotate */
 				set++;
 			case 'n':	/* Just Draw */
-				side[3] = ++set;
+				side[2] = ++set;
 				set_sides = TRUE;
 				break;
 			case 'Z':	/* Draw AND Anotate */
@@ -2988,18 +3007,19 @@ void GMT_copytoframe (struct TIME_FRAME *T)
 	 */
 	 
 	int i, j;
-	for (i = 0; i < 4; i++) T->side[i] = 2;
-	T->side[4] = 0;
+	double val[6];
+
 	for (i = 0; i < 3; i++) {
 		for (j = 0; j < 6; j++) {	/* Convert units directly */
-			if (T->axis[i].item[j].unit == 'm') T->axis[i].item[j].interval /= 60.0;
-			if (T->axis[i].item[j].unit == 'c') T->axis[i].item[j].interval /= 3600.0;
-			if (T->axis[i].item[j].unit == 'h') T->axis[i].item[j].interval /= 24.0;
+			val[j] = T->axis[i].item[j].interval;
+			if (T->axis[i].item[j].unit == 'm') val[j] /= 60.0;
+			if (T->axis[i].item[j].unit == 'c') val[j] /= 3600.0;
+			if (T->axis[i].item[j].unit == 'h') val[j] /= 24.0;
 		}
-		frame_info.anot_int[i] = T->axis[i].item[0].interval;
-		frame_info.frame_int[i] = T->axis[i].item[4].interval;
+		frame_info.anot_int[i] = val[0];
+		frame_info.frame_int[i] = val[4];
 		if (frame_info.frame_int[i] == 0.0) frame_info.frame_int[i] = frame_info.anot_int[i];
-		frame_info.grid_int[i] = T->axis[i].item[5].interval;
+		frame_info.grid_int[i] = val[5];
 		strcpy (frame_info.label[i], T->axis[i].label);
 		strcpy (frame_info.unit[i], T->axis[i].unit);
 	}
