@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.3 2004-01-13 03:08:47 pwessel Exp $
+ *	$Id: x2sys.h,v 1.4 2004-05-15 02:29:50 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -128,6 +128,9 @@ struct X2SYS_INFO {
 	PFI read_file;			/* Pointer to function that reads this file */
 	BOOLEAN ascii_in;		/* TRUE if input is in ascii */
 	BOOLEAN ascii_out;		/* TRUE if output should be in ascii */
+	BOOLEAN multi_segment;		/* TRUE if there are multiple segments in this file */
+	BOOLEAN ms_next;		/* TRUE if we just read 1st record in a new segments in this file */
+	char ms_flag;			/* Multi-segment header flag */
 	struct X2SYS_DATA_INFO *info;	/* Array of info for each data field */
 };
 
@@ -150,6 +153,8 @@ struct X2SYS_FILE_INFO {
 	/* Information for a particular data file */
 	int year;		/* Starting year for this leg */
 	int n_rows;		/* Number of rows */
+	int n_segments;		/* Number of segments in this file */
+	int *ms_rec;		/* Pointer to array with start record for each segment */
 	char name[32];		/* Name of cruise or agency */
 };
 
@@ -174,7 +179,7 @@ EXTERN_MSC int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, 
 EXTERN_MSC int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
 EXTERN_MSC int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
 EXTERN_MSC int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
-EXTERN_MSC int x2sys_crossover (double xa[], double ya[], struct X2SYS_SEGMENT A[], int na, double xb[], double yb[], struct X2SYS_SEGMENT B[], int nb, BOOLEAN internal, struct X2SYS_XOVER *X);
+EXTERN_MSC int x2sys_crossover (double xa[], double ya[], int sa[], struct X2SYS_SEGMENT A[], int na, double xb[], double yb[], int sb[], struct X2SYS_SEGMENT B[], int nb, BOOLEAN internal, struct X2SYS_XOVER *X);
 EXTERN_MSC int x2sys_xover_output (FILE *fp, int n, double out[]);
 EXTERN_MSC int x2sys_n_data_cols (struct X2SYS_INFO *s);
 EXTERN_MSC int x2sys_read_list (char *file, char ***list);
@@ -189,7 +194,6 @@ EXTERN_MSC void x2sys_free_info (struct X2SYS_INFO *s);
 EXTERN_MSC void x2sys_free_data (double **data, int n);
 EXTERN_MSC void x2sys_x_free (struct X2SYS_XOVER *X);
 EXTERN_MSC void x2sys_pick_fields (char *string, struct X2SYS_INFO *s);
-EXTERN_MSC void x2sys_adjust_longitudes (double *x, BOOLEAN geodetic);
 
 EXTERN_MSC struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G);
 EXTERN_MSC struct X2SYS_SEGMENT *x2sys_init_track (double x[], double y[], int n);

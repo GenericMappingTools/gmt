@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.5 2004-01-13 03:08:47 pwessel Exp $
+ *	$Id: x2sys.c,v 1.6 2004-05-15 02:29:50 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -130,7 +130,14 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 		switch (s->info[j].intype) {
 
 			case 'A':	/* ASCII Card Record, must extract columns */
-				if (j == 0) fgets (line, BUFSIZ, fp);	/* Get new record */
+				if (j == 0) {
+					s->ms_next = FALSE;
+					fgets (line, BUFSIZ, fp);	/* Get new record */
+					while (s->multi_segment && line[0] == s->ms_flag) {
+						fgets (line, BUFSIZ, fp);
+						s->ms_next = TRUE;
+					}
+				}
 				strncpy (buffer, &line[s->info[j].start_col], s->info[j].n_cols);
 				buffer[s->info[j].n_cols] = 0;
 				GMT_scanf (buffer, G->in_col_type[j], &data[j]);
@@ -138,7 +145,12 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 
 			case 'a':	/* ASCII Record, get all columns directly */
 				k = 0;
+				s->ms_next = FALSE;
 				fgets (line, BUFSIZ, fp);
+				while (s->multi_segment && line[0] == s->ms_flag) {
+					fgets (line, BUFSIZ, fp);
+					s->ms_next = TRUE;
+				}
 				p = strtok (line, " ,\t\n");
 				while (p) {
 					GMT_scanf (p, G->in_col_type[k], &data[k]);
@@ -223,19 +235,26 @@ int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X
 	rec = (double *) GMT_memory (VNULL, s->n_fields, sizeof (double), "x2sys_read_file");
 	z = (double **) GMT_memory (VNULL, s->n_fields, sizeof (double *), "x2sys_read_file");
 	for (i = 0; i < s->n_fields; i++) z[i] = (double *) GMT_memory (VNULL, n_alloc, sizeof (double), "x2sys_read_file");
+	p->ms_rec = (int *) GMT_memory (VNULL, n_alloc, sizeof (int), "x2sys_read_file");
 	x2sys_skip_header (fp, s);
+	if (s->multi_segment) p->n_segments = -1;	/* So that first increment sets it to 0 */
 
 	j = 0;
-	while (!x2sys_read_record (fp, rec, s, G)) {
+	while (!x2sys_read_record (fp, rec, s, G)) {	/* Gets the next data record */
 		for (i = 0; i < s->n_fields; i++) z[i][j] = rec[i];
+		if (s->multi_segment && s->ms_next) p->n_segments++;
+		p->ms_rec[j] = p->n_segments;
 		j++;
 		if (j == (int)n_alloc) {	/* Get more */
 			n_alloc += GMT_CHUNK;
 			for (i = 0; i < s->n_fields; i++) z[i] = (double *) GMT_memory ((void *)z[i], n_alloc, sizeof (double), "x2sys_read_file");
+			p->ms_rec = (int *) GMT_memory ((void *)p->ms_rec, n_alloc, sizeof (int), "x2sys_read_file");
 		}
 	}
 
 	fclose (fp);
+	for (i = 0; i < s->n_fields; i++) z[i] = (double *) GMT_memory ((void *)z[i], (size_t)j, sizeof (double), "x2sys_read_file");
+	p->ms_rec = (int *) GMT_memory ((void *)p->ms_rec, (size_t)j, sizeof (int), "x2sys_read_file");
 
 	*data = z;
 
@@ -278,6 +297,10 @@ struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G)
 		if (line[0] == '#') {
 			if (!strncmp (line, "#SKIP ", 6)) X->skip = atoi (&line[6]);
 			if (!strncmp (line, "#BINARY ", 7)) X->ascii_in = FALSE;
+			if (!strncmp (line, "#MULTISEG ", 9)) {
+				X->multi_segment = TRUE;
+				sscanf (line, "%*s %c", &X->ms_flag);
+			}
 			continue;
 		}
 
@@ -521,11 +544,11 @@ int x2sys_ysort (const void *p1, const void *p2)
 	return (0);
 }
 
-int x2sys_crossover (double xa[], double ya[], struct X2SYS_SEGMENT A[], int na, double xb[], double yb[], struct X2SYS_SEGMENT B[], int nb, BOOLEAN internal, struct X2SYS_XOVER *X)
+int x2sys_crossover (double xa[], double ya[], int sa[], struct X2SYS_SEGMENT A[], int na, double xb[], double yb[], int sb[], struct X2SYS_SEGMENT B[], int nb, BOOLEAN internal, struct X2SYS_XOVER *X)
 {
 	int this_a, this_b, n_seg_a, n_seg_b, nx, xa_start, xa_stop, xb_start, xb_stop, ta_start, ta_stop, tb_start, tb_stop;
 	int nx_alloc;
-	BOOLEAN new_a, new_b, new_a_time;
+	BOOLEAN new_a, new_b, new_a_time, xa_OK, xb_OK;
 	double del_xa, del_xb, del_ya, del_yb, i_del_xa, i_del_xb, i_del_ya, i_del_yb, slp_a, slp_b, xc, yc, tx_a, tx_b;
 
 	if (na < 2 || nb < 2) return (0);	/* Need at least 2 points to make a segment */
@@ -556,6 +579,10 @@ int x2sys_crossover (double xa[], double ya[], struct X2SYS_SEGMENT A[], int na,
 			this_b++;
 			new_b = TRUE;
 		}
+		else if (sb[B[this_b].stop] != sb[B[this_b].start]) {	/* Must advance B in y-direction since this segment crosses multiseg boundary*/
+			this_b++;
+			new_b = TRUE;
+		}
 		else {	/* Current A and B segments overlap in y-range */
 
 			if (new_a) {	/* Must sort this A new segment in x */
@@ -569,6 +596,7 @@ int x2sys_crossover (double xa[], double ya[], struct X2SYS_SEGMENT A[], int na,
 				}
 				new_a = FALSE;
 				new_a_time = TRUE;
+				xa_OK = (sa[xa_start] == sa[xa_stop]);	/* FALSE if we cross between multiple segments */
 			}
 
 			if (new_b) {	/* Must sort this new B segment in x */
@@ -581,11 +609,12 @@ int x2sys_crossover (double xa[], double ya[], struct X2SYS_SEGMENT A[], int na,
 					xb_stop  = B[this_b].stop;
 				}
 				new_b = FALSE;
+				xb_OK = (sb[xb_start] == sb[xb_stop]);	/* FALSE if we cross between multiple segments */
 			}
 
 			/* OK, first check for any overlap in x range */
 
-			if (!((xa[xa_stop] < xb[xb_start]) || (xa[xa_start] > xb[xb_stop]))) {
+			if (xa_OK && xb_OK && !((xa[xa_stop] < xb[xb_start]) || (xa[xa_start] > xb[xb_stop]))) {
 
 				/* We have segment overlap in x.  Now check if the segments cross  */
 
@@ -1060,15 +1089,4 @@ int x2sys_read_list (char *file, char ***list)
 	*list = p;
 
 	return (n);
-}
-
-void x2sys_adjust_longitudes (double *x, BOOLEAN geodetic)
-{
-	if (geodetic) {	/* Enfore 0-360 */
-		while ((*x) < 0.0) (*x) += 360.0;
-		while ((*x) >= 360.0) (*x) -= 360.0;
-	} else {	/* enforce -180/+180 */
-		while ((*x) < -180.0) (*x) += 360.0;
-		while ((*x) >= 180.0) (*x) -= 360.0;
-	}
 }
