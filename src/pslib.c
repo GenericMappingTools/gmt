@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.81 2004-09-03 20:26:45 pwessel Exp $
+ *	$Id: pslib.c,v 1.82 2004-11-04 03:07:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -47,13 +47,14 @@
  * Updated December 22, 2003 by P. Wessel to add pentagon symbol.
  * Updated January 12, 2004 by P. Wessel to add octagon symbol.
  * Updated June 2, 2004 by P. Wessel to add contour/line clipping & labeling machinery (PSL_label.ps).
+ * Updated October 25, 2004 by R. Scharroo and L. Parkes to add image compression tricks.
  *
  * FORTRAN considerations:
  *	All floating point data are assumed to be DOUBLE PRECISION
  *	All integer data are assumed to be INTEGER, i.e. INTEGER*4
  *	All LOGICAL/int data are assumed to be of type INTEGER*4 (1 = TRUE, 0 = FALSE).
  *
- *	When passing (from FORTRAN to C) a fixed-length character variable which has 
+ *	When passing (from FORTRAN to C) a fixed-length character variable which has
  *	blanks at the end, append '\0' (null character) after the last non-blank
  *	character.  This is so that C will know where the character string ends.
  *	It is NOT sufficient to pass, for example, "string(1:string_length)".
@@ -62,6 +63,7 @@
  * List of functions:
  *	ps_arc			: Draws a circular arc
  *	ps_axis			: Plots an axis with tickmarks and annotation/label
+ *	ps_bitimage		: Plots a 1-bit image or imagemask
  *	ps_circle		: Plots circle and [optionally] fills it
  *	ps_clipoff		: Restores previous clipping path
  *	ps_clipon		: Clips plot outside the specified polygon
@@ -69,7 +71,7 @@
  *	ps_colortiles		: Plots a 24-bit 2-D image using tiling
  *	ps_command		: Writes a given PostScript statement to the plot file
  *	ps_comment		: Writes a comment statement to the plot file
- *	ps_cross		: Plots a + 
+ *	ps_cross		: Plots a +
  *	ps_dash			: Plots a short horizontal line segment (dash)
  *	ps_diamond		: Plots a diamond and [optionally] fills it
  *	ps_ellipse		: Plots an ellipse and [optionally] fills it
@@ -131,8 +133,8 @@
 
 /* Special macros and structure for ps_words */
 
-#define NO_SPACE	 0
-#define ONE_SPACE	 1
+#define NO_SPACE	0
+#define ONE_SPACE	1
 #define COMPOSITE_1	8
 #define COMPOSITE_2	16
 #define SYMBOL		12
@@ -147,7 +149,31 @@ struct GMT_WORD {
 	char *txt;
 };
 
+/* Special macros and structure for color(sic) maps. */
+
+#define INDEX_BITS 8	/* PostScript indices may be 12 bit */
+			/* But we only do 8 bits for now. */
+#define MAX_COLORS (1<<INDEX_BITS)
+
+typedef struct
+{
+	int ncolors;
+	unsigned char colors[MAX_COLORS][3];
+} *colormap_t;
+
+typedef struct
+{
+	unsigned char *buffer;
+	colormap_t colormap;
+} *indexed_image_t;
+
+typedef struct {
+	int nbytes, depth;
+	unsigned char *buffer;
+} *byte_stream_t;
+
 int PSL_text_first = TRUE;
+int PSL_len = 0;
 
 /* Define support functions called inside pslib functions */
 
@@ -155,12 +181,13 @@ char *ps_prepare_text (char *text);
 void def_font_encoding (void);
 void init_font_encoding (struct EPS *eps);
 void get_uppercase(char *new, char *old);
-unsigned char * ps_1bit_to_24bit (unsigned char *pattern, struct rasterfile *h, int f_rgb[], int b_rgb[]);
 void ps_rle_decode (struct rasterfile *h, unsigned char **in);
-void ps_hex_dump (unsigned char *buffer, int nx, int ny, int depth);
-void ps_hex_dump_cmyk (unsigned char *buffer, int nx, int ny, int depth);
-void ps_bin_dump (unsigned char *buffer, int nx, int ny, int depth);
-void ps_bin_dump_cmyk (unsigned char *buffer, int nx, int ny);
+unsigned char *ps_cmyk_encode (int *nbytes, unsigned char *input);
+unsigned char *ps_rle_encode (int *nbytes, unsigned char *input);
+unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input);
+byte_stream_t ps_lzw_putcode (byte_stream_t stream, short int incode);
+void ps_stream_dump (unsigned char *buffer, int nx, int ny, int depth, int compress, int encode, int mask);
+void ps_a85_encode (unsigned char quad[]);
 void *ps_memory (void *prev_addr, size_t nelem, size_t size);
 int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy);
 int ps_comp_int_asc (const void *p1, const void *p2);
@@ -168,6 +195,9 @@ int ps_read_rasheader (FILE *fp, struct rasterfile *h);
 int ps_write_rasheader (FILE *fp, struct rasterfile *h);
 static void bulkcopy (const char *);
 static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts);
+int  ps_imagefill_init(int image_no, char *imagefile);
+void ps_rgb_to_cmyk_char (unsigned char rgb[], unsigned char cmyk[]);
+void ps_rgb_to_cmyk_int (int rgb[], int cmyk[]);
 void ps_rgb_to_cmyk (int rgb[], double cmyk[]);
 void ps_cmyk_to_rgb (int rgb[], double cmyk[]);
 int ps_place_color (int rgb[]);
@@ -177,6 +207,11 @@ int ps_set_xyn_arrays (char *xparam, char *yparam, char *nparam, double *x, doub
 void ps_set_txt_array (char *param, char *array[], int n);
 void ps_set_integer (char *param, int value);
 void ps_set_real_array (char *param, double *array, int n);
+indexed_image_t ps_makecolormap (unsigned char *buffer, int nx, int ny, int nbits);
+int ps_bitreduce (unsigned char *buffer, int nx, int ny, int ncolors);
+int ps_bitimage_cmap (int f_rgb[], int b_rgb[]);
+void ps_colorimage_rgb (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits);
+void ps_colorimage_cmap (double x, double y, double xsize, double ysize, indexed_image_t image, int nx, int ny, int nbits);
 
 
 /*------------------- PUBLIC PSLIB FUNCTIONS--------------------- */
@@ -185,11 +220,11 @@ void ps_set_real_array (char *param, double *array, int n);
 void ps_arc (double x, double y, double radius, double az1, double az2, int status)
 {	/* 1 = set anchor, 2 = set end, 3 = both */
 	int ix, iy, ir;
-	
+
 	ix = irint (x * ps.scale);
 	iy = irint (y * ps.scale);
 	ir = irint (radius * ps.scale);
-	if (fabs (az1 - az2) > 360.0) az1 = 0.0, az2 = 360.0; 
+	if (fabs (az1 - az2) > 360.0) az1 = 0.0, az2 = 360.0;
 	if (status%2) {	/* Beginning of new segment */
 		fprintf (ps.fp, "S ");
 		ps.npath = 0;
@@ -203,20 +238,20 @@ void ps_arc (double x, double y, double radius, double az1, double az2, int stat
 	if (status > 1)	fprintf (ps.fp, " S");
 	fprintf (ps.fp, "\n");
 }
-	
+
 /* fortran interface */
 void ps_arc_ (double *x, double *y, double *radius, double *az1, double *az2, int *status)
 {
 	 ps_arc (*x, *y, *radius, *az1, *az2, *status);
 }
-	
+
 void ps_axis (double x, double y, double length, double val0, double val1, double annotation_int, char *label, double annotpointsize, int side)
 {
 	int annot_justify, label_justify, i, j, ndig = 0;
 	int left = FALSE;
 	double angle, dy, scl, val, annot_off, label_off, xx, sign;
 	char text[128], format[32];
-	
+
 	if (annotation_int < 0.0) left = TRUE;
 	annotation_int = fabs (annotation_int);
 	sprintf (text, "%g", annotation_int);
@@ -229,12 +264,12 @@ void ps_axis (double x, double y, double length, double val0, double val1, doubl
 		sprintf (format, "%%.%df", ndig);
 	else
 		strcpy (format, "%g");
-		
+
 	angle = (side%2) ? 90.0 : 0.0;
 	sign = (side < 2) ? -1.0 : 1.0;
 	annot_justify = label_justify = (side < 2) ? -10 : -2;
 	dy = sign * annotpointsize / ps.points_pr_unit;
-			
+
 	fprintf (ps.fp, "\nV %g %g T %g R\n", x * ps.scale, y * ps.scale, angle);
 	ps_plot (0.0, 0.0, 3);
 	ps_plot (length, 0.0, 2);
@@ -246,7 +281,7 @@ void ps_axis (double x, double y, double length, double val0, double val1, doubl
 	annot_off = dy;
 	label_off = 2.5 * dy;
 	dy *= 0.5;
-	
+
 	i = 0;
 	val = val0;
 	while (val <= (val1+SMALL)) {
@@ -269,11 +304,43 @@ void ps_axis_ (double *x, double *y, double *length, double *val0, double *val1,
 	ps_axis (*x, *y, *length, *val0, *val1, *annotation_int, label, *annotpointsize, *side);
 }
 
+void ps_bitimage (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int invert, int f_rgb[], int b_rgb[])
+{
+	/* Plots a 1-bit image or imagemask.
+	 * x,y:		Position of image (in inches)
+	 * xsize,ysize:	Size of image (in inches)
+	 * buffer:	Image bit buffer
+	 * nx,ny:	Size of image (in pixels)
+	 * invert:	If TRUE: invert set and unset bits
+	 * f_rgb:	Foreground color for unset bits (if f_rgb[0] < 0, make transparent)
+	 * b_rgb:	Background color for set bits (if b_rgb[0] < 0, make transparent)
+	 */
+	int lx, ly, j, inv;
+	char *kind[2] = {"Binary", "Ascii"};
+
+	lx = irint (xsize * ps.scale);
+	ly = irint (ysize * ps.scale);
+
+	fprintf (ps.fp, "\n%% Start of %s Adobe 1-bit image\n", kind[ps.hex_image]);
+	fprintf (ps.fp, "V N %g %g T %d %d scale\n", x * ps.scale, y * ps.scale, lx, ly);
+	inv = (ps_bitimage_cmap (f_rgb, b_rgb) + invert) % 2;
+	fprintf (ps.fp, "<< /ImageType 1 /Decode [%d %d] ", nx, ny, inv, 1-inv);
+	ps_stream_dump (buffer, nx, ny, 1, ps.compress, ps.hex_image, f_rgb[0] < 0 || b_rgb[0] < 0);
+
+	fprintf (ps.fp, "U\n%% End of %s Abobe 1-bit image\n", kind[ps.hex_image]);
+}
+
+/* fortran interface */
+void ps_bitimage_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, int *nx, int *ny, int *invert, int *f_rgb, int *b_rgb)
+{
+	ps_bitimage (*x, *y, *xsize, *ysize, buffer, *nx, *ny, *invert, f_rgb, b_rgb);
+}
+
 void ps_circle (double x, double y, double size, int rgb[], int outline)
 {
 	int ix, iy, ir, pmode;
 
-	/* size is assumed to be diameter */	
+	/* size is assumed to be diameter */
 
 	ix = irint (x * ps.scale);
 	iy = irint (y * ps.scale);
@@ -291,7 +358,7 @@ void ps_circle_ (double *x, double *y, double *size, int *rgb, int *outline)
 }
 
 void ps_clipoff (void) {
-	fprintf (ps.fp, "\nS U\n%%Clipping is currently OFF\n");
+	fprintf (ps.fp, "S U\n%% Clipping is currently OFF\n");
 	ps.npath = ps.clip_path_length = 0;
 }
 
@@ -301,16 +368,16 @@ void ps_clipoff_ (void) {
 }
 
 void ps_clipon (double *x, double *y, int n, int rgb[], int flag)
-{        
-      	/* Path length */
-            	/* Optional paint (-1 to avoid paint) */
-	        /* combo of 1 | 2. 1 = Start, 2 = end */
+{
+	/* Path length */
+	/* Optional paint (-1 to avoid paint) */
+	/* combo of 1 | 2. 1 = Start, 2 = end */
 	/* Any plotting outside the path defined by x,y will be clipped.
 	   use clipoff to restore the original clipping path. */
-	
+
 	int used, pmode;
 	char move[7];
-	
+
 	if (flag & 1) {	/* First segment in (possibly multi-segmented) clip-path */
 		strcpy (move, "M");
 		fprintf (ps.fp, "\n%% Start of clip path\nS V\n");
@@ -318,7 +385,7 @@ void ps_clipon (double *x, double *y, int n, int rgb[], int flag)
 	}
 	else
 		strcpy (move, "moveto");
-		
+
 	used = 0;
 	if (n > 0) {
 		ps.ix = irint (x[0]*ps.scale);
@@ -331,7 +398,7 @@ void ps_clipon (double *x, double *y, int n, int rgb[], int flag)
 	}
 	ps.clip_path_length += used;
 	ps.max_path_length = MAX (ps.clip_path_length, ps.max_path_length);
-	
+
 	if (flag & 2) {	/* End path and [optionally] fill */
 		if (rgb[0] >= 0) {	/* fill is desired */
 			fprintf (ps.fp, "V ");
@@ -345,176 +412,25 @@ void ps_clipon (double *x, double *y, int n, int rgb[], int flag)
 		ps.npath = 0;
 	}
 }
-	  
+
 /* fortran interface */
 void ps_clipon_ (double *x, double *y, int *n, int *rgb, int *flag)
 {
 	ps_clipon (x, y, *n, rgb, *flag);
 }
-	  
+
 void ps_colorimage (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits)
 {
-	/* Plots a B/W (1), gray (4|8), or color (24)  bitmapped image (nbits)
-	 * x, y is lower left position of image in inches
-	 * xsize, ysize is the image size in inches
-	 * buffer contains the bytes for the image
-	 * nx, ny is the pixel dimension
-	 * nbits is the number of bits per pixel (1, 4, 8, 24)
-	 */
-	 
-	int lx, ly;		/* x and y dimension of image in PS coordinates */
-	int mx, n_channels, id, nan_rgb[3];
-	BOOLEAN colormask = FALSE;
-	char *colorspace[3] = {"Gray", "RGB", "CMYK"};			/* What kind of image we are writing */
-	char *decode[3] = {"0 1", "0 1 0 1 0 1", "0 1 0 1 0 1 0 1"};	/* What kind of color decoding */
-	char *kind[2] = {"bin", "hex"};					/* What encoding to use */
-	char *read[2] = {"readstring", "readhexstring"};		/* What read function to use */
-	
-	lx = irint (xsize * ps.scale);
-	ly = irint (ysize * ps.scale);
-	id = (ps.cmyk_mode && abs(nbits) == 24) ? 2 : ((abs(nbits) == 24) ? 1 : 0);
-	if (nx < 0 && abs(nbits) == 24) {		/* Colormask requested, 24-bit only */
-		nx = abs (nx);
-		colormask = TRUE;
-		nan_rgb[0] = (int)buffer[0];
-		nan_rgb[1] = (int)buffer[1];
-		nan_rgb[2] = (int)buffer[2];
-		buffer += 3;		/* Skip to start of image */
-	}
-		
-	fprintf (ps.fp, "\n%% Start of %s Adobe %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], abs (nbits));
-	fprintf (ps.fp, "V N %g %g T %d %d scale\n", x * ps.scale, y * ps.scale, lx, ly);
-	if (colormask) {	/* Do new PS Level 3 image type 4 with colormask */
-		nbits = abs (nbits);
-		fprintf (ps.fp, "/Device%s setcolorspace\n", colorspace[id]);
-		fprintf (ps.fp, "<<\t%% Start Image dictionary\n  /ImageType 4\n  /Width %d /Height %d\n", nx, ny);
-		fprintf (ps.fp, "  /BitsPerComponent %d\n", MIN (nbits, 8));
-		fprintf (ps.fp, "  /Decode [%s]\n", decode[id]);
-		fprintf (ps.fp, "  /ImageMatrix [%d 0 0 %d 0 %d]\n", nx, -ny, ny);
-		fprintf (ps.fp, "  /DataSource currentfile");
-		if (ps.hex_image) fprintf (ps.fp, " /ASCIIHexDecode filter");
-		fprintf (ps.fp, "\n  /MaskColor [%d %d %d]\n>>\nimage\n", nan_rgb[0], nan_rgb[1], nan_rgb[2]);
-	}
-	else if (nbits < 0) {	/* Do new PS Level 2 image with interpolation */
-		nbits = abs (nbits);
-		fprintf (ps.fp, "/Device%s setcolorspace\n", colorspace[id]);
-		fprintf (ps.fp, "<<\t%% Start Image dictionary\n  /ImageType 1\n  /Width %d /Height %d\n", nx, ny);
-		fprintf (ps.fp, "  /BitsPerComponent %d\n", MIN (nbits, 8));
-		fprintf (ps.fp, "  /Decode [%s]\n", decode[id]);
-		fprintf (ps.fp, "  /ImageMatrix [%d 0 0 %d 0 %d]\n", nx, -ny, ny);
-		fprintf (ps.fp, "  /DataSource currentfile");
-		if (ps.hex_image) fprintf (ps.fp, " /ASCIIHexDecode filter");
-		fprintf (ps.fp, "\n  /Interpolate true\n>>\nimage\n");
-	}
-	else {		/* Standard colorimage call PS Level 1 */
-		n_channels = (ps.cmyk_mode) ? 4 : 3;
-		fprintf (ps.fp, "%d %d 8 div mul ceiling cvi dup 65535 ge {pop 65535} if string /pstr exch def\n", nx, nbits);
-		fprintf (ps.fp, "%d %d %d [%d 0 0 %d 0 %d] {currentfile pstr %s pop} ", nx, ny, MIN (nbits, 8), nx, -ny, ny, read[ps.hex_image]);
-		(nbits <= 8) ? fprintf (ps.fp, "image\n") : fprintf (ps.fp, "false %d colorimage\n", n_channels);
-	}
+	indexed_image_t indexed_image;
 
-	mx = (int) ceil (nbits * nx / 8.0);
-	if (ps.hex_image)
-		(id == 2) ? ps_hex_dump_cmyk (buffer, nx, ny, 24) : ps_hex_dump (buffer, nx, ny, nbits);
+	if ((indexed_image = ps_makecolormap (buffer, nx, ny, nbits))) {
+		ps_colorimage_cmap (x, y, xsize, ysize, indexed_image, nx, ny, nbits);
+		ps_free (indexed_image->buffer);
+		ps_free (indexed_image->colormap);
+		ps_free (indexed_image);
+	}
 	else
-		(id == 2) ? ps_bin_dump_cmyk (buffer, nx, ny) : ps_bin_dump (buffer, nx, ny, nbits);
-
-	fprintf (ps.fp, "U\n%% End of %s Adobe %s image\n", kind[ps.hex_image], colorspace[id]);
-}
-
-void ps_bin_dump (unsigned char *buffer, int nx, int ny, int depth)
-{
-	int mx;
-	mx = (int) ceil (depth * nx / 8.0);
-	(void)fwrite ((void *)buffer, sizeof (unsigned char), (size_t)(mx * ny), ps.fp);
-}
-
-void ps_hex_dump (unsigned char *buffer, int nx, int ny, int depth)
-{
-	/* Writes core of output image using hex format */
-
-	char hex[16], pixel[61];
-	int mx, i, j, kk, ij;
-	
-	pixel[60] = 0;
-	hex[0] = '0';	hex[1] = '1';	hex[2] = '2';	hex[3] = '3';
-	hex[4] = '4';	hex[5] = '5';	hex[6] = '6';	hex[7] = '7';
-	hex[8] = '8';	hex[9] = '9';	hex[10] = 'A';	hex[11] = 'B';
-	hex[12] = 'C';	hex[13] = 'D';	hex[14] = 'E';	hex[15] = 'F';
-	
-	mx = (int) ceil (depth * nx / 8.0);
-	kk = 0;
-	for (j = ij = 0; j < ny; j++) {
-		for (i = 0; i < mx; i++) {
-			pixel[kk++] = hex[buffer[ij] / 16];
-			pixel[kk++] = hex[buffer[ij++] % 16];
-			if (kk == 60) {
-				fprintf (ps.fp, "%s\n", pixel);
-				kk = 0;
-			}
-		}
-	}
-	if (kk > 0) {
-		pixel[kk] = 0;
-		fprintf (ps.fp, "%s\n", pixel);
-	}
-}
-
-void ps_hex_dump_cmyk (unsigned char *buffer, int nx, int ny, int depth)
-{
-	/* Writes core of output image in CMYK using hex format */
-
-	char hex[16], pixel[65];
-	int mx, i, j, kk, ij, c, m, y, k;
-	
-	pixel[64] = 0;
-	hex[0] = '0';	hex[1] = '1';	hex[2] = '2';	hex[3] = '3';
-	hex[4] = '4';	hex[5] = '5';	hex[6] = '6';	hex[7] = '7';
-	hex[8] = '8';	hex[9] = '9';	hex[10] = 'A';	hex[11] = 'B';
-	hex[12] = 'C';	hex[13] = 'D';	hex[14] = 'E';	hex[15] = 'F';
-	
-	mx = (int) ceil (depth * nx / 8.0);
-	kk = 0;
-	for (j = ij = 0; j < ny; j++) {
-		for (i = 0; i < nx; i++) {
-			c = 255 - buffer[ij++];	m = 255 - buffer[ij++];	y = 255 - buffer[ij++];
-			k = MIN (c, m);	if (y < k) k = y;
-			c -= k;	m -= k;	y -= k;
-			pixel[kk++] = hex[c / 16];
-			pixel[kk++] = hex[c % 16];
-			pixel[kk++] = hex[m / 16];
-			pixel[kk++] = hex[m % 16];
-			pixel[kk++] = hex[y / 16];
-			pixel[kk++] = hex[y % 16];
-			pixel[kk++] = hex[k / 16];
-			pixel[kk++] = hex[k % 16];
-			if (kk == 64) {
-				fprintf (ps.fp, "%s\n", pixel);
-				kk = 0;
-			}
-		}
-	}
-	if (kk > 0) {
-		pixel[kk] = 0;
-		fprintf (ps.fp, "%s\n", pixel);
-	}
-}
-
-void ps_bin_dump_cmyk (unsigned char *buffer, int nx, int ny)
-{
-	/* Writes  image in CMYK using bin format */
-	
-	int i, ij, j;
-	unsigned char cmyk[4];
-	
-	for (j = ij = 0; j < ny; j++) {
-		for (i = 0; i < nx; i++) {
-			cmyk[0] = 255 - buffer[ij++];	cmyk[1] = 255 - buffer[ij++];	cmyk[2] = 255 - buffer[ij++];
-			cmyk[3] = MIN (cmyk[0], cmyk[1]);	if (cmyk[2] < cmyk[3]) cmyk[3] = cmyk[2];
-			cmyk[0] -= cmyk[3];	cmyk[1] -= cmyk[3];	cmyk[2] -= cmyk[3];
-			fwrite ((void *)cmyk, sizeof (unsigned char), (size_t)4, ps.fp);
-		}
-	}
+		ps_colorimage_rgb (x, y, xsize, ysize, buffer, nx, ny, nbits);
 }
 
 /* fortran interface */
@@ -531,7 +447,7 @@ void ps_colortiles (double x0, double y0, double xsize, double ysize, unsigned c
 {
 	int i, j, k, rgb[3];
 	double x1, x2, y1, y2, dx, dy, noise, noise2;
-	
+
 	noise = 2.0 / ps.scale;
 	noise2 = 2.0 * noise;
 	dx = xsize / nx;
@@ -598,12 +514,12 @@ void ps_cross_ (double *x, double *y, double *diameter)
 void ps_diamond (double x, double y, double diameter, int rgb[], int outline)
 {	/* diameter is diameter of circumscribing circle */
 	int ix, iy, ds, pmode;
-	
+
 	diameter *= 0.5;
 	ds = irint (diameter * ps.scale);
 	ix = irint (x * ps.scale);
 	iy = irint ((y - diameter) * ps.scale);
-	
+
 	pmode = ps_place_color (rgb);
 	fprintf (ps.fp, "%d %d %d D%d\n", ds, ix, iy, outline + ps_outline_offset[pmode]);
 	ps.npath = 0;
@@ -618,7 +534,7 @@ void ps_diamond_ (double *x, double *y, double *diameter, int *rgb, int *outline
 void ps_segment (double x0, double y0, double x1, double y1)
 {	/* Short line segment */
 	int ix, iy, dx, dy;
-	
+
 	ix = irint (x0 * ps.scale);
 	iy = irint (y0 * ps.scale);
 	dx = irint (x1 * ps.scale) - ix;
@@ -713,9 +629,9 @@ void ps_ellipse (double x, double y, double angle, double major, double minor, i
 {
 	int ix, iy, ir, pmode;
 	double aspect;
-	
+
 	/* Feature: Pen thickness also affected by aspect ratio */
-	
+
 	ix = irint (x * ps.scale);
 	iy = irint (y * ps.scale);
 	fprintf (ps.fp, "V %d %d T", ix, iy);
@@ -737,8 +653,7 @@ void ps_ellipse_ (double *x, double *y, double *angle, double *major, double *mi
 void ps_flush ()
 {
 	/* Simply flushes the output buffer */
-
-         fflush (ps.fp);
+	fflush (ps.fp);
 }
 
 /* fortran interface */
@@ -760,20 +675,12 @@ void ps_image_ (double *x, double *y, double *xsize, double *ysize, unsigned cha
 
 void ps_imagefill_cleanup (void) {
 	int image_no;
-	
-	for (image_no = 0; image_no < N_PATTERNS; image_no++) {
-		if (ps_pattern_status[image_no][0]) {
+
+	for (image_no = 0; image_no < N_PATTERNS * 2; image_no++) {
+		if (ps_pattern[image_no].status) {
 			fprintf (ps.fp, "currentdict /image%d undef\n", image_no);
 			fprintf (ps.fp, "currentdict /fillimage%d undef\n", image_no);
 		}
-		if (ps_pattern_status[image_no][1]) {
-			fprintf (ps.fp, "currentdict /image%di undef\n", image_no);
-			fprintf (ps.fp, "currentdict /fillimage%di undef\n", image_no);
-		}
-	}
-	for (image_no = 0; image_no < ps_n_userimages; image_no++) {
-		fprintf (ps.fp, "currentdict /image%d undef\n", N_PATTERNS+image_no);
-		fprintf (ps.fp, "currentdict /fillimage%d undef\n", N_PATTERNS+image_no);
 	}
 }
 
@@ -784,55 +691,93 @@ void ps_imagefill_ (double *x, double *y, int *n, int *image_no, char *imagefile
 }
 
 void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, int invert, int image_dpi, int outline, BOOLEAN colorize, int f_rgb[], int b_rgb[])
-{              
-	/* x,y:		Array of enclosing path */
-	/* image_dpi:	Resolution of image on the page */
- 	/* n:		No of points in path */
-	/* imagefile:	Name of image file */
-	/* invert:	If TRUE exchange white and black pixels (1-bit only)  */
-	/* outline:	TRUE will draw outline, -1 means clippath already in place */
-	/* colorize:	If TRUE, replace set bits with f_rgb color and unset bits with b_rgb  */
-	/* f_rgb:	Foreground color */
-	/* b_rgb:	Background color */
+{
+	/* x,y:		Array of enclosing path
+	 * image_dpi:	Resolution of image on the page
+	 * n:		No of points in path
+	 * imagefile:	Name of image file
+	 * invert:	If TRUE exchange white and black pixels (1-bit only)
+	 * outline:	TRUE will draw outline, -1 means clippath already in place
+	 * colorize:	If FALSE, black/white colors are forced
+	 * f_rgb:	Foreground color
+	 * b_rgb:	Background color
+	 */
 
-	BOOLEAN found, refresh;
-	int i, j, ix, iy, nx, ny, n_times = 0;
-	char op[15];
+	BOOLEAN found;
+	int i, j, ix, iy, nx, ny, dx, dy, n_times = 0, id, inv, refresh;
 	double xx, yy, xmin, xmax, ymin, ymax, image_size_x, image_size_y;
-	
-	refresh = (colorize || f_rgb[0] < 0 || b_rgb[0] < 0);
-	if (refresh || ((image_no >= 0 && image_no < N_PATTERNS) && !ps_pattern_status[image_no][invert])) {	/* Unused predefined */
-		image_no = ps_imagefill_init (image_no, imagefile, invert, image_dpi, colorize, f_rgb, b_rgb);
-		nx = ps_pattern_nx[image_no][invert];
-		ny = ps_pattern_ny[image_no][invert];
-		if (refresh) ps_pattern_status[image_no][invert] = FALSE;	/* Since color may change next time */
+	char *colorspace[3] = {"Gray", "RGB", "CMYK"};			/* What kind of image we are writing */
+	char *decode[3] = {"0 1", "0 1 0 1 0 1", "0 1 0 1 0 1 0 1"};	/* What kind of color decoding */
+	char *name;
+
+	/* Determine if image was used before */
+
+	if ((image_no >= 0 && image_no < N_PATTERNS) && !ps_pattern[image_no].status) {	/* Unused predefined */
+		image_no = ps_imagefill_init (image_no, imagefile);
 	}
 	else if (image_no < 0) {	/* User image, check if already used */
-		for (i = 0, found = FALSE; !found && i < ps_n_userimages; i++) found = !strcmp (ps_user_image[i].name, imagefile);
+		for (i = 0, found = FALSE; !found && i < ps_n_userimages; i++) found = !strcmp (ps_user_image[i], imagefile);
 		if (!found)	/* Not found or no previous user images loaded */
-			image_no = ps_imagefill_init (image_no, imagefile, invert, image_dpi, colorize, f_rgb, b_rgb);
+			image_no = ps_imagefill_init (image_no, imagefile);
 		else
 			image_no = N_PATTERNS + i - 1;
-		nx = ps_user_image[image_no-N_PATTERNS].nx;
-		ny = ps_user_image[image_no-N_PATTERNS].ny;
 	}
-	else {	/* Used predefined pattern */
-		nx = ps_pattern_nx[image_no][invert];
-		ny = ps_pattern_ny[image_no][invert];
+	nx = ps_pattern[image_no].nx;
+	ny = ps_pattern[image_no].ny;
+
+	id = (ps.cmyk_mode) ? 2 : 1;
+	name = (ps_pattern[image_no].depth == 1 && (f_rgb[0] < 0 || b_rgb[0] < 0)) ? "imagemask" : "image";
+
+	fprintf (ps.fp, "\n%% Start of %s fill pattern\n", name);
+
+	/* If colorize is FALSE, force black/white colors */
+
+	if (!colorize) {
+		for (i = 0; i < 3; i++) { f_rgb[i] = 0; b_rgb[i] = 255; }
 	}
 
-	ps_comment ("Start of user imagefill pattern");
-	if (invert)
-		sprintf (op, "fillimage%di", image_no);
-	else
-		sprintf (op, "fillimage%d", image_no);
-	
+	/* When DPI or colors have changed, the /fillimage procedure needs to be rewritten */
+
+	refresh = 0;
+	if (ps_pattern[image_no].dpi != image_dpi) refresh++;
+	for (i = 0; !refresh && i < 3; i++) {
+		if (ps_pattern[image_no].f_rgb[i] != f_rgb[i]) refresh++;
+		if (ps_pattern[image_no].b_rgb[i] != b_rgb[i]) refresh++;
+	}
+
+	if (refresh) {
+		if (image_dpi) {	/* Use given DPI */
+			dx = irint (nx * ps.scale / image_dpi);
+			dy = irint (ny * ps.scale / image_dpi);
+		}
+		else {	/* Use device resolution */
+			dx = nx;
+			dy = ny;
+		}
+		fprintf (ps.fp, "/fillimage%d { V T %d %d scale ", image_no, dx, dy);
+
+		if (ps_pattern[image_no].depth == 1) {	/* 1-bit bitmap basis */
+			inv = (ps_bitimage_cmap (f_rgb, b_rgb) + invert) % 2;
+			fprintf (ps.fp, "<< /ImageType 1 /Decode [%d %d] ", inv, 1-inv);
+		}
+		else
+			fprintf (ps.fp, "/Device%s setcolorspace\n<< /ImageType 1 /Decode [%s] ", colorspace[id], decode[id]);
+		fprintf (ps.fp, "/Width %d /Height %d /BitsPerComponent %d\n", nx, ny, MIN(ps_pattern[image_no].depth,8));
+		fprintf (ps.fp, "   /ImageMatrix [%d 0 0 %d 0 %d] /DataSource image%d\n>> %s U} def\n", nx, -ny, ny, image_no, name);
+
+		ps_pattern[image_no].dpi = image_dpi;
+		for (i = 0; i < 3; i++) {
+			ps_pattern[image_no].f_rgb[i] = f_rgb[i];
+			ps_pattern[image_no].b_rgb[i] = b_rgb[i];
+		}
+	}
+
 	/* Print out clip-path */
-	
+
 	if (outline >= 0) ps_clipon (x, y, n, no_rgb, 3);
-	
+
 	/* Find extreme bounds for area */
-	
+
 	xmin = xmax = x[0];
 	ymin = ymax = y[0];
 	for (i = 1; i < n; i++) {
@@ -841,7 +786,7 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 		xmax = MAX (xmax, x[i]);
 		ymax = MAX (ymax, y[i]);
 	}
-	
+
 	image_size_x = (image_dpi) ? (double) nx / (double) image_dpi : nx / ps.scale;	/* Use device resolution if dpi is not set */
 	image_size_y = (image_dpi) ? (double) ny / (double) image_dpi : ny / ps.scale;	/* Use device resolution if dpi is not set */
 
@@ -855,38 +800,34 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 			n_times++;
 			(n_times%5) ? fputc (' ', ps.fp) : fputc ('\n', ps.fp);
 			/* Prevent stack from getting too full by flushing every 200 times */
-                        if (!(n_times%200)) {
-                        	fprintf (ps.fp, "200 {%s} repeat\n", op);
-                        	n_times = 0;
-                        } 
+			if (!(n_times%200)) {
+				fprintf (ps.fp, "200 {fillimage%d} repeat\n", image_no);
+				n_times = 0;
+			}
 		}
 	}
 	if (n_times%5) fputc ('\n', ps.fp);
-	fprintf (ps.fp, "%d {%s} repeat\n", n_times, op);
+	fprintf (ps.fp, "%d {fillimage%d} repeat\n", n_times, image_no);
 	if (outline > 0) fprintf (ps.fp, "clippath S\n");
 	ps_clipoff ();
-	ps_comment ("End of user imagefill pattern");
+	fprintf (ps.fp, "%% End of %s fill pattern\n", name);
 }
 
-int ps_imagefill_init (int image_no, char *imagefile, int invert, int image_dpi, BOOLEAN colorize, int f_rgb[], int b_rgb[])
+int ps_imagefill_init (int image_no, char *imagefile)
 {
-
-	int i, nx, ny, dx, dy, pmode, polarity, n_channels;
-	char file[BUFSIZ], name[BUFSIZ];
-	char *TF[2] = {"false", "true"};
+	int i;
+	char file[BUFSIZ];
 	unsigned char *picture;
 	struct rasterfile h;
 	BOOLEAN found;
-	
-	if ((image_no >= 0 && image_no < N_PATTERNS) && ps_pattern_status[image_no][invert]) return (image_no);	/* Already done this */
 
-	if ((image_no >= 0 && image_no < N_PATTERNS)) {	/* Premade pattern yet not used */
+	if ((image_no >= 0 && image_no < N_PATTERNS) && ps_pattern[image_no].status) return (image_no);	/* Already done this */
+
+	if ((image_no >= 0 && image_no < N_PATTERNS))	/* Premade pattern yet not used */
 		sprintf (file, "%s%cshare%cpattern%cps_pattern_%2.2d.ras", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, image_no);
-		ps_pattern_status[image_no][invert] = 1;
-	}
 	else {	/* User image, check to see if already used */
 
-		for (i = 0, found = FALSE; !found && i < ps_n_userimages; i++) found = !strcmp (ps_user_image[i].name, imagefile);
+		for (i = 0, found = FALSE; !found && i < ps_n_userimages; i++) found = !strcmp (ps_user_image[i], imagefile);
 		if (found) return (N_PATTERNS + i - 1);
 #ifdef WIN32
 		if (imagefile[0] == '\\' || imagefile[1] == ':')	/* Full path name, use it as is */
@@ -895,78 +836,45 @@ int ps_imagefill_init (int image_no, char *imagefile, int invert, int image_dpi,
 #endif
 			strcpy (file, imagefile);
 		else {
-			/* First look in users current directory */
+			/* First look in user's current directory */
 			if (!access (imagefile, R_OK))
 				strcpy (file, imagefile);
 			else
 				sprintf (file, "%s%cshare%c%s", PSHOME, DIR_DELIM, DIR_DELIM, imagefile);
 		}
-		ps_user_image[ps_n_userimages].name = (char *) ps_memory (VNULL, (size_t)(strlen (imagefile)+1), sizeof (char));
-		strcpy (ps_user_image[ps_n_userimages].name, imagefile);
+		ps_user_image[ps_n_userimages] = (char *) ps_memory (VNULL, (size_t)(strlen (imagefile)+1), sizeof (char));
+		strcpy (ps_user_image[ps_n_userimages], imagefile);
 		image_no = N_PATTERNS + ps_n_userimages;
 		ps_n_userimages++;
 	}
 
-	picture = ps_loadraster (file, &h, invert, FALSE, colorize, f_rgb, b_rgb);
+	/* Load raster file. Store size, depth and bogus DPI setting */
 
-	nx = h.ras_width;
-	ny = h.ras_height;
-	if (image_no < N_PATTERNS) {
-		ps_pattern_nx[image_no][invert] = nx;
-		ps_pattern_ny[image_no][invert] = ny;
-	}
-	else {
-		ps_user_image[ps_n_userimages-1].nx = nx;
-		ps_user_image[ps_n_userimages-1].ny = ny;
-	}
+	picture = ps_loadraster (file, &h, FALSE);
 
-	if (image_dpi) {	/* Use given DPI */
-		dx = irint (h.ras_width * ps.scale / image_dpi);
-		dy = irint (h.ras_height * ps.scale / image_dpi);
-	}
-	else {	/* Use device resolution */
-		dx = h.ras_width;
-		dy = h.ras_height;
-	}
-	
-	ps_comment ("Start of user imagefill pattern definition");
+	ps_pattern[image_no].status = 1;
+	ps_pattern[image_no].nx = h.ras_width;
+	ps_pattern[image_no].ny = h.ras_height;
+	ps_pattern[image_no].depth = h.ras_depth;
+	ps_pattern[image_no].dpi = -999;
 
-	if (invert)
-		sprintf (name, "image%di", image_no);
-	else
-		sprintf (name, "image%d", image_no);
+	ps_comment ("Start of imagefill pattern definition");
 
-	fprintf (ps.fp, "/%s <\n", name);
-	ps_hex_dump (picture, nx, ny, h.ras_depth);
-	(ps.cmyk_mode) ? ps_hex_dump_cmyk (picture, nx, ny, h.ras_depth) : ps_hex_dump (picture, nx, ny, h.ras_depth);
-	fprintf (ps.fp, "> def\n");
-
-	if (h.ras_depth == 1) {	/* 1-bit bitmap basis */
-		if (f_rgb[0] < 0 || b_rgb[0] < 0) {	/* Colorized imagemask case */
-			fprintf (ps.fp, "/fill%s { V T ", name);
-			if (f_rgb[0] < 0) {	/* Use background color for masks 0 bits */
-				polarity = 1;
-				pmode = ps_place_color (b_rgb);
-			}
-			else {	/* Use foreground color for masks 1 bits */
-				polarity = 0;
-				pmode = ps_place_color (f_rgb);
-			}
-			fprintf (ps.fp, "%c %d %d scale %d %d %s [%d 0 0 %d 0 %d] {%s} imagemask U} def\n", ps_paint_code[pmode], dx, dy, nx, ny, TF[polarity], nx, -ny, ny, name);
-		}
-		else	/* Plain b/w image */
-			fprintf (ps.fp, "/fill%s { V T %d %d scale %d %d 1 [%d 0 0 %d 0 %d] {%s} image U} def\n", name, dx, dy, nx, ny, nx, -ny, ny, name);
-	}
-	else {
-		n_channels = (ps.cmyk_mode) ? 4 : 3;
-		fprintf (ps.fp, "/fill%s { V T %d %d scale %d %d 8 [%d 0 0 %d 0 %d] {%s} false %d colorimage U} def\n", name, dx, dy, nx, ny, nx, -ny, ny, name, n_channels);
-	}
+	fprintf (ps.fp, "/image%d {<~\n", image_no);
+	ps_stream_dump (picture, h.ras_width, h.ras_height, h.ras_depth, ps.compress, 1, 2);
+	fprintf (ps.fp, "} def\n");
 
 	ps_free ((void *)picture);
-	
-	ps_comment ("End of user imagefill pattern definition");
+
+	ps_comment ("End of imagefill pattern definition");
 
 	return (image_no);
+}
+
+/* fortran interface */
+void ps_imagemask_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, int *nx, int *ny, int *polarity, int *rgb, int nlen)
+{
+	ps_imagemask (*x, *y, *xsize, *ysize, buffer, *nx, *ny, *polarity, rgb);
 }
 
 void ps_imagemask (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int polarity, int rgb[])
@@ -976,62 +884,45 @@ void ps_imagemask (double x, double y, double xsize, double ysize, unsigned char
 	 * If 0 is used, then maskbits == 0 will be painted with rgb.
 	 * buffer width must be an integral of 8 bits.
 	 */
-	int lx, ly;
-	char *TF[2] = {"false", "true"}, *kind[2] = {"bin", "hex"}, *read[2] = {"readstring", "readhexstring"};
-	
-	lx = irint (xsize * ps.scale);
-	ly = irint (ysize * ps.scale);
-	fprintf (ps.fp, "\n%% Start of %s imagemask\n", kind[ps.hex_image]);
-	fprintf (ps.fp, "V N %g %g T %d %d scale\n", x * ps.scale, y * ps.scale, lx, ly);
-	ps_setpaint (rgb);
-	memcpy ((void *)ps.rgb, (void *)no_rgb, 3 * sizeof (int));	/* So subsequent ps_setpaint calls work properly */
-	fprintf (ps.fp, "%d 1 8 div mul ceiling cvi dup 65535 ge {pop 65535} if string /pstr exch def\n", nx);
-	fprintf (ps.fp, "%d %d %s [%d 0 0 %d 0 %d] {currentfile pstr %s pop} imagemask\n",
-		nx, ny, TF[polarity], nx, -ny, ny, read[ps.hex_image]);
-	
-	(ps.hex_image) ? ps_hex_dump (buffer, nx, ny, 1) : (void)fwrite ((void *)buffer, sizeof (unsigned char), (size_t)(((int) ceil (0.125 * nx)) * ny), ps.fp);
-
-
-	fprintf (ps.fp, "U\n%% End of imagemask\n\n");
-}
-
-/* fortran interface */
-void ps_imagemask_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, int *nx, int *ny, int *polarity, int *rgb, int nlen)
-{
-	ps_imagemask (*x, *y, *xsize, *ysize, buffer, *nx, *ny, *polarity, rgb);
+	int trans[3];
+	trans[0]=-1;
+	if (polarity)
+		ps_bitimage (x, y, xsize, ysize, buffer, nx, ny, FALSE, rgb, trans);
+	else
+		ps_bitimage (x, y, xsize, ysize, buffer, nx, ny, FALSE, trans, rgb);
 }
 
 int ps_line (double *x, double *y, int n, int type, int close, int split)
-              
-            	/* type: 1 means new anchor point, 2 means stroke line, 3 = both */
-          	/* TRUE if a closed polygon */
-           {	/* TRUE if we can split line segment into several sections */
+{
+	/* type: 1 means new anchor point, 2 means stroke line, 3 = both */
+	/* TRUE if a closed polygon */
+	/* TRUE if we can split line segment into several sections */
 	int i, *ix, *iy, trim = FALSE;
 	char move = 'M';
-	
+
 	ps.split = 0;	/* No splitting yet... */
-	
+
 	/* First remove unnecessary points that have zero curvature */
-	
+
 	ix = (int *) ps_memory (VNULL, (size_t)n, sizeof (int));
 	iy = (int *) ps_memory (VNULL, (size_t)n, sizeof (int));
-	
+
 	if ((n = ps_shorten_path (x, y, n, ix, iy)) < 2) {
 		ps_free ((void *)ix);
 		ps_free ((void *)iy);
 		return (0);
 	}
-	
+
 	if (close && ix[0] == ix[n-1] && iy[0] == iy[n-1]) {
 		trim = TRUE;
 		n--;
 	}
-	
+
 	if (type < 0) {	/* Do not stroke before moveto */
 		type = -type;
 		move = 'm';
 	}
-	
+
 	if (type%2) {
 		fprintf (ps.fp, "%d %d %c\n", ix[0], iy[0], move);
 		ps.npath = 1;
@@ -1040,9 +931,9 @@ int ps_line (double *x, double *y, int n, int type, int close, int split)
 		fprintf (ps.fp, "%d %d D\n", ix[0] - ps.ix, iy[0] - ps.iy);
 	ps.ix = ix[0];
 	ps.iy = iy[0];
-		
+
 	if (!split) ps.max_path_length = MAX ((n + ps.clip_path_length), ps.max_path_length);
-	
+
 	for (i = 1; i < n; i++) {
 		fprintf (ps.fp, "%d %d D\n", ix[i] - ps.ix, iy[i] - ps.iy);
 		ps.ix = ix[i];
@@ -1066,10 +957,10 @@ int ps_line (double *x, double *y, int n, int type, int close, int split)
 	}
 	else if (close)
 		fprintf (ps.fp, "\n");
-	
+
 	ps_free ((void *)ix);
 	ps_free ((void *)iy);
-	
+
 	return (n);
 }
 
@@ -1083,43 +974,43 @@ int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy)
 {
 	double old_slope, new_slope, dx, dy, old_dir, new_dir;
 	int i, j, k, *xx, *yy, fixed;
-	
+
 	if (n < 2) return (0);
-	
+
 	xx = (int *) ps_memory (VNULL, (size_t)n, sizeof (int));
 	yy = (int *) ps_memory (VNULL, (size_t)n, sizeof (int));
-	
+
 	xx[0] = irint (x[0] * ps.scale);
 	yy[0] = irint (y[0] * ps.scale);
-	
+
 	for (i = j = 1; i < n; i++) {
 		xx[j] = irint (x[i] * ps.scale);
 		yy[j] = irint (y[i] * ps.scale);
 		if (xx[j] != xx[j-1] || yy[j] != yy[j-1]) j++;
 	}
 	n = j;
-	
+
 	if (n < 2) {
 		ps_free ((void *)xx);
 		ps_free ((void *)yy);
 		return (0);
 	}
-	
+
 	ix[0] = xx[0];	iy[0] = yy[0];	k = 1;
-	
+
 	dx = xx[1] - xx[0];
 	dy = yy[1] - yy[0];
 	fixed = (dx == 0.0 && dy == 0.0);
 	old_slope = (fixed) ? 1.01e100 : ((dx == 0) ? copysign (1.0e100, dy) : dy / dx);
 	old_dir = (dx >= 0.0) ? 1 : -1;
-	
+
 	for (i = 1; i < n-1; i++) {
 		dx = xx[i+1] - xx[i];
 		dy = yy[i+1] - yy[i];
 		fixed = (dx == 0.0 && dy == 0.0);
 		new_slope = (fixed) ? 1.01e100 : ((dx == 0) ? copysign (1.0e100, dy) : dy / dx);
 		if (fixed) continue;	/* Didnt move */
-		
+
 		new_dir = (dx >= 0.0) ? 1 : -1;
 		if (new_slope != old_slope || new_dir != old_dir) {
 			ix[k] = xx[i];
@@ -1137,10 +1028,10 @@ int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy)
 		iy[k] = yy[n-1];
 		k++;
 	}
-	
+
 	ps_free ((void *)xx);
 	ps_free ((void *)yy);
-	
+
 	return (k);
 }
 
@@ -1153,13 +1044,13 @@ void ps_shorten_path_ (double *x, double *y, int *n, int *ix, int *iy)
 void ps_pie (double x, double y, double radius, double az1, double az2, int rgb[], int outline)
 {
 	int ix, iy, ir, pmode;
-	
+
 	ix = irint (x * ps.scale);
 	iy = irint (y * ps.scale);
 	ir = irint (radius * ps.scale);
 	fprintf (ps.fp, "%d %d M ", ix, iy);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d %lg %lg P%d\n", ix, iy, ir, az1, az2, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d %g %g P%d\n", ix, iy, ir, az1, az2, outline + ps_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -1172,7 +1063,7 @@ void ps_pie_ (double *x, double *y, double *radius, double *az1, double *az2, in
 void ps_plot (double x, double y, int pen)
 {
 	int ix, iy, idx, idy;
-	
+
 	ix = irint (x*ps.scale);
 	iy = irint (y*ps.scale);
 	if (abs (pen) == 2) {	/* Convert absolute draw to relative draw */
@@ -1244,30 +1135,34 @@ void ps_plotend_ (int *lastpage)
 }
 
 int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, int *page_size, int *rgb, const char *encoding, struct EPS *eps)
-/* plotfile:	Name of output file or NULL for standard output */
-/* xoff, yoff:	Sets a new origin relative to old */
-/* xscl, yscl:	Global scaling, usually left to 1,1 */
-/* page_size:	Physical width and height of paper used in points */
-/* overlay:	FALSE means print headers and macros first */
-/* mode:	 1st bit 0 = Landscape, 1 = Portrait,
-                 3rd bit 0 = bin image, 1 = hex image
-		 4th bit 0 = rel positions, 1 = abs positions
-		10th bit 0 = RGB image, 1 = CMYK image */
-/* ncopies:	Number of copies for this plot */
-/* dpi:		Plotter resolution in dots-per-inch */
-/* unit:	0 = cm, 1 = inch, 2 = meter */
-/* rgb:		array with Color of page (paper) */
-/* encoding:	Font encoding used */
-/* eps:		structure with Document info.  !! Fortran version (ps_plotinit_) does not have this argument !! */
+/* plotfile:	Name of output file or NULL for standard output
+   xoff, yoff:	Sets a new origin relative to old
+   xscl, yscl:	Global scaling, usually left to 1,1
+   page_size:	Physical width and height of paper used in points
+   overlay:	FALSE means print headers and macros first
+   mode:	 0st bit 0 = Landscape, 1 = Portrait,
+		 2nd bit 0 = bin image, 1 = hex image
+		 3rd bit 0 = rel positions, 1 = abs positions
+		 9th bit 0 = RGB image, 1 = CMYK image
+		12th bit 0 = no RLE compression, 1 = RLE compression
+		13th bit 0 = no LZW compression, 1 = LZW compression
+		14th bit 0 = be silent, 1 = be verbose
+   ncopies:	Number of copies for this plot
+   dpi:		Plotter resolution in dots-per-inch
+   unit:	0 = cm, 1 = inch, 2 = meter
+   rgb:		array with Color of page (paper)
+   encoding:	Font encoding used
+   eps:		structure with Document info.  !! Fortran version (ps_plotinit_) does not have this argument !!
+*/
 {
 	int i, pmode, manual = FALSE;
 	time_t right_now;
 	char openmode[2], *this;
 	double scl;
-	
+
 	if ((this = getenv ("GMTHOME")) == NULL) {	/* Use default GMT path */
- 		PSHOME = (char *) ps_memory (VNULL, (size_t)(strlen (GMT_DEFAULT_PATH) + 1), sizeof (char));
- 		strcpy (PSHOME, GMT_DEFAULT_PATH);
+		PSHOME = (char *) ps_memory (VNULL, (size_t)(strlen (GMT_DEFAULT_PATH) + 1), sizeof (char));
+		strcpy (PSHOME, GMT_DEFAULT_PATH);
 	}
 	else {	/* Set user's default path */
 		PSHOME = (char *) ps_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char));
@@ -1279,6 +1174,8 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps.eps_format = FALSE;
 	ps.hex_image = (mode & 4) ? TRUE : FALSE;
 	ps.cmyk_mode = (mode & 512) ? TRUE : FALSE;
+	ps.compress = (mode & 12288) >> 12;
+	ps.verbose = (mode & 16384) ? TRUE : FALSE;
 	ps.absolute = (mode & 8) ? TRUE : FALSE;
 	if (page_size[0] < 0) {		/* Want Manual Request for paper */
 		ps.p_width  = abs (page_size[0]);
@@ -1286,7 +1183,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	}
 	else
 		ps.p_width = page_size[0];
-	if (page_size[1] < 0) {	/* Want EPS format */
+	if (page_size[1] < 0) {		/* Want EPS format */
 		page_size[1] = -page_size[1];
 		ps.eps_format = TRUE;
 	}
@@ -1313,7 +1210,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	}
 
 #ifdef WIN32
-	/* 
+	/*
 	 * Diomidis Spinellis, December 2001
 	 * Set binary mode to avoid corrupting binary color images.
 	 */
@@ -1329,7 +1226,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps.yscl = yscl;
 	ps.yoff = yoff;
 	strcpy (ps.bw_format, "%.3lg ");			/* Default format used for grayshade value */
-	strcpy (ps.rgb_format, "%.3lg %.3lg %.3lg ");	/* Same, for color triplets */
+	strcpy (ps.rgb_format, "%.3lg %.3lg %.3lg ");		/* Same, for color triplets */
 	strcpy (ps.cmyk_format, "%.3lg %.3lg %.3lg %.3lg ");	/* Same, for CMYK quadruples */
 
 	/* In case this is the last overlay, set the Bounding box coordinates to be used atend */
@@ -1359,7 +1256,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 			fprintf (ps.fp, "%%!PS-Adobe-3.0\n");
 
 		/* Write definitions of macros to plotfile */
-		
+
 		fprintf (ps.fp, "%%%%BoundingBox: ");
 		if (ps.eps_format)
 			fprintf (ps.fp, "(atend)\n");
@@ -1395,14 +1292,14 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 
 		bulkcopy ("PSL_prologue");
 		bulkcopy (ps.encoding);
-		
+
 		def_font_encoding ();		/* Place code for reencoding of fonts and initialize book-keeping */
 
 		/* XXX This should be done by code in the prologue */
 		/* XXX This may also be wishful thinking. */
 		/* Define font macros (see pslib.h for details on how to add fonts) */
-		
-		
+
+
 		for (i = 0; i < N_PS_FONTS; i++) fprintf (ps.fp, "/F%d {/%s Y} bind def\n", i, ps.font[i].name);
 
 		if (!ps.eps_format) fprintf (ps.fp, "/#copies %d def\n\n", ncopies);
@@ -1431,7 +1328,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 			fprintf (stderr, "pslib: Measure unit not valid!\n");
 			exit (EXIT_FAILURE);
 		}
-		
+
 		xscl *= scl;
 		yscl *= scl;
 		if (ps.landscape) fprintf (ps.fp, "%d 0 T 90 R\n", ps.p_width);
@@ -1451,12 +1348,11 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 
 	ps_setpaint (no_rgb);
 	if (!(xoff == 0.0 && yoff == 0.0)) fprintf (ps.fp, "%g %g T\n", xoff*ps.scale, yoff*ps.scale);
-	
+
 	/* Initialize global variables */
-	
+
 	ps.npath = ps.clip_path_length = ps.max_path_length = 0;
-	memset ((void *) ps_pattern_status, 0, (size_t)(2 * N_PATTERNS));
-	memset ((void *) ps_user_image, 0, (size_t)(sizeof (struct USERIMAGE) * N_PATTERNS));
+	memset ((void *) ps_pattern, 0, (size_t)(sizeof (struct PATTERN) * N_PATTERNS * 2));
 	ps_n_userimages = 0;
 	return (0);
 }
@@ -1470,7 +1366,7 @@ void ps_plotinit_ (char *plotfile, int *overlay, int *mode, double *xoff, double
 void ps_plotr (double x, double y, int pen)
 {
 	int ix, iy;
-	
+
 	ix = irint (x * ps.scale);
 	iy = irint (y * ps.scale);
 	if (ix == 0 && iy == 0) return;
@@ -1496,13 +1392,13 @@ void ps_polygon (double *x, double *y, int n, int rgb[], int outline)
 {
 	int split, pmode;
 	char mode;
-	
+
 	split = (rgb[0] < 0);	/* Can only split if we need outline only */
 	if (outline >= 0) ps_line (x, y, n, 1, FALSE, split);	/* No stroke or close path yet */
 	ps.npath = 0;
 
 	ps.max_path_length = MAX ((n + ps.clip_path_length), ps.max_path_length);
-	
+
 	if (split) {	/* Outline only */
 		mode = (ps.split == 1) ? 'S' : 'p';
 		outline = 0;
@@ -1514,7 +1410,7 @@ void ps_polygon (double *x, double *y, int n, int rgb[], int outline)
 	if (outline > 0) mode += outline;		/* Convert a, c, or k to b, d, or l */
 	fprintf (ps.fp, "%c\n", mode);
 	if (outline < 0) {
-		fprintf (ps.fp, "\nN U\n%%Clipping is currently OFF\n");
+		fprintf (ps.fp, "\nN U\n%% Clipping is currently OFF\n");
 		ps.clip_path_length = 0;
 	}
 }
@@ -1525,13 +1421,13 @@ void ps_polygon_ (double *x, double *y, int *n, int *rgb, int *outline)
 	ps_polygon (x, y, *n, rgb, *outline);
 }
 
-  
 void ps_patch (double *x, double *y, int np, int rgb[], int outline)
 {
 	/* Like ps_polygon but intended for small polygons (< 20 points).  No checking for
 	 * shorter path by calling ps_shorten_path as in ps_polygon.
 	 *
-	 * Thus, the usage is (with xi,yi being absolute coordinate for point i and dxi the increment
+	 * Thus, the usage is (with xi,yi being absolute coordinate for point i and dxi
+	 * the increment)
 	 * from point i to i+1, and r,g,b in the range 0.0-1.0.  Here, n = np-1.
 	 *
 	 *	dx_n dy_n ... n x0 y0 w		(If r < 0 then outline only)
@@ -1539,27 +1435,27 @@ void ps_patch (double *x, double *y, int np, int rgb[], int outline)
 	 *	r g b dx_n dy_n ... n x0 y0 s	(rgb; use t for outline)
 	 *	c m y k dx_n dy_n ... n x0 y0 u (cmyk; use v for outline)
 	 */
-	 
+
 	int i, n, pmode, n1, ix[20], iy[20];
 	char mode;
-	
+
 	if (np > 20) {	/* Must call ps_polygon instead */
 		ps_polygon ( x, y, np, rgb, outline);
 		return;
 	}
-	
+
 	ix[0] = irint (x[0] * ps.scale);	/* Convert inch to absolute pixel position for start of quadrilateral */
 	iy[0] = irint (y[0] * ps.scale);
-	
+
 	for (i = n = 1, n1 = 0; i < np; i++) {	/* Same but check if new point represent a different pixel */
 		ix[n] = irint (x[i] * ps.scale);
 		iy[n] = irint (y[i] * ps.scale);
 		if (ix[n] != ix[n1] || iy[n] != iy[n1]) n++, n1++;
 	}
 	if (ix[0] == ix[n1] && iy[0] == iy[n1]) n--, n1--;	/* Closepath will do this automatically */
-	
+
 	if (n < 3) return;	/* 2 points or less don't make a polygon */
-	
+
 	pmode = ps_place_color (rgb);
 	mode = 'q' + 2 * pmode;			/* Will give q, s, u, or w */
 	if (outline && pmode < 3) mode++;	/* Will turn q -> r, s -> t, and u -> v but leave w as is */
@@ -1580,7 +1476,7 @@ void ps_patch_ (double *x, double *y, int *n, int *rgb, int *outline)
 void ps_rect (double x1, double y1, double x2, double y2, int rgb[], int outline)
 {
 	int ix, iy, idx, idy, pmode;
-	
+
 	ix = irint (x1 * ps.scale);
 	iy = irint (y1 * ps.scale);
 	idx = irint (x2 * ps.scale) - ix;
@@ -1599,7 +1495,7 @@ void ps_rect_ (double *x1, double *y1, double *x2, double *y2, int *rgb, int *ou
 void ps_rotatetrans (double x, double y, double angle)
 {
 	int go = FALSE;
-	
+
 	if (angle != 0.0) {
 		if (fabs(angle) < 1e-9) angle = 0.0;
 		fprintf (ps.fp, "%g R", angle);
@@ -1650,7 +1546,7 @@ void ps_place_setdash (char *pattern, int offset)
 			while (*pattern && *pattern != ' ') pattern++;
 			while (*pattern && *pattern == ' ') pattern++;
 			place_space = 1;
-		}		    		
+		}
 		fprintf (ps.fp, "] %d B", offset);
 	}
 	else
@@ -1683,10 +1579,10 @@ void ps_setformat (int n_decimals)
 	if (n_decimals < 1 || n_decimals > 3)
 		fprintf (stderr, "pslib: Selected decimals for color out of range (%d), ignored\n", n_decimals);
 	else {
-  		sprintf (ps.bw_format, "%%.%df ", n_decimals);
-  		sprintf (ps.rgb_format, "%%.%df %%.%df %%.%df ", n_decimals, n_decimals, n_decimals);
-  		sprintf (ps.cmyk_format, "%%.%df %%.%df %%.%df %%.%df ", n_decimals, n_decimals, n_decimals, n_decimals);
-  	}
+		sprintf (ps.bw_format, "%%.%df ", n_decimals);
+		sprintf (ps.rgb_format, "%%.%df %%.%df %%.%df ", n_decimals, n_decimals, n_decimals);
+		sprintf (ps.cmyk_format, "%%.%df %%.%df %%.%df %%.%df ", n_decimals, n_decimals, n_decimals, n_decimals);
+	}
 }
 
 /* fortran interface */
@@ -1716,7 +1612,7 @@ void ps_setline_ (int *linewidth)
 void ps_setpaint (int rgb[])
 {
 	int pmode;
-	
+
 	if (rgb[0] < 0) return;	/* Some rgb's indicate no fill */
 	if (rgb[0] == ps.rgb[0] && rgb[1] == ps.rgb[1] && rgb[2] == ps.rgb[2]) return;	/* Same color as already set */
 
@@ -1740,7 +1636,7 @@ void ps_setpaint_ (int *rgb)
 void ps_square (double x, double y, double diameter, int rgb[], int outline)
 {	/* give diameter of circumscribing circle */
 	int ds, ix, iy, pmode;
-	
+
 	diameter *= 0.707106781187;
 	ds = irint (diameter * ps.scale);
 	diameter *= 0.5;
@@ -1758,7 +1654,7 @@ void ps_square_ (double *x, double *y, double *diameter, int *rgb, int *outline)
 }
 
 void ps_textbox (double x, double y, double pointsize, char *text, double angle, int justify, int outline, double dx, double dy, int rgb[])
-{                   
+{
 /* x,y = location of string
  * pointsize = fontsize in points
  * text = text to be boxed in
@@ -1782,7 +1678,7 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 		fprintf (stderr, "pslib: text_item > %d long!\n", BUFSIZ);
 		return;
 	}
-	
+
 	rounded = (outline & 4 && dx > 0.0 && dy > 0.0);	/* Want rounded label boxes, assuming there is clearance */
 	outline &= 3;	/* Turn off the 4 */
 	fprintf (ps.fp, "\n%% ps_textbox begin:\nV\n");
@@ -1790,18 +1686,18 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 	if (justify < 0)  {	/* Strip leading and trailing blanks */
 		for (i = 0; text[i] == ' '; i++);
 		for (j = strlen (text) - 1; text[j] == ' '; j--) text[j] = 0;
- 		justify = -justify;
+		justify = -justify;
 	}
-	
- 	if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
+
+	if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
 	ps_textdim ("PSL_dimx", "PSL_dimy", fabs (pointsize), ps.font_no, &text[i], 1);			/* Set the string BB dimensions in PS */
- 	if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
+	if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
 	ps_set_length ("PSL_dx", dx);
 	ps_set_length ("PSL_dy", dy);
 	string = ps_prepare_text (&text[i]);	/* Check for escape sequences */
-	
-  	/* Got to anchor point */
-  	
+
+	/* Got to anchor point */
+
 	if (pointsize > 0.0) {	/* Set a new anchor point */
 		ps.ix = irint (x * ps.scale);
 		ps.iy = irint (y * ps.scale);
@@ -1809,7 +1705,7 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 	}
 	else
 		fprintf (ps.fp, "V PSL_save_x PSL_save_y T ");
-	
+
 	if (angle != 0.0) fprintf (ps.fp, "%.3g R ", angle);
 	if (justify > 1) {	/* Move the new origin so (0,0) is lower left of box */
 		h_just = (justify % 4) - 1;	/* Gives 0 (left justify, i.e., do nothing), 1 (center), or 2 (right justify) */
@@ -1844,7 +1740,7 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 	}
 	(outline) ? fprintf (ps.fp, "S U\n") : fprintf (ps.fp, "N U\n");
 	fprintf (ps.fp, "U\n%% ps_textbox end:\n\n");
-	
+
 	ps_free ((void *)string);
 }
 
@@ -1863,7 +1759,7 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 	 * key = 1: Will return bounding box of the text string instead.  Will append
 	 * _ll and _ur to the xdim and ydim strings and initialize 4 variables in PS.
 	 */
-	 
+
 	char *tempstring, *piece, *piece2, *ptr, *string;
 	int i = 0, font;
 	int sub, super, small, old_font;
@@ -1873,14 +1769,14 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 		fprintf (stderr, "pslib: text_item > %d long!\n", BUFSIZ);
 		return;
 	}
-	
+
 	ps_setfont (in_font);			/* Switch to the selected font */
-	
+
 	string = ps_prepare_text (&text[i]);	/* Check for escape sequences */
-	
-  	height = pointsize / ps.points_pr_unit;
-  	
- 	if (!strchr (string, '@')) {	/* Plain text string */
+
+	height = pointsize / ps.points_pr_unit;
+
+	if (!strchr (string, '@')) {	/* Plain text string */
 		fprintf (ps.fp, "0 0 M %d F%d (%s) true charpath flattenpath pathbbox N ", (int) irint (height * ps.scale), ps.font_no, string);
 		if (key == 0)
 			fprintf (ps.fp, "exch 2 {3 1 roll sub abs} repeat /%s exch def /%s exch def\n", xdim, ydim);
@@ -1889,7 +1785,7 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 		ps_free ((void *)string);
 		return;
 	}
-	
+
 	/* Here, we have special request for Symbol font and sub/superscript
 	 * @~ toggles between Symbol font and default font
 	 * @%<fontno>% switches font number <fontno>; give @%% to reset
@@ -1899,16 +1795,16 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 	 * @! will make a composite character of next two characters
 	 * Use @@ to print a single @
 	 */
-	
+
 	piece  = ps_memory (VNULL, (size_t)(2 * BUFSIZ), sizeof (char));
 	piece2 = ps_memory (VNULL, (size_t)BUFSIZ, sizeof (char));
-	 
+
 	font = old_font = ps.font_no;
 	size = height;
 	small_size = height * 0.7;
 	scap_size = height * 0.85;
 	sub = super = small = FALSE;
-	
+
 	tempstring = ps_memory (VNULL, (size_t)(strlen(string)+1), sizeof (char));	/* Since strtok steps on it */
 	strcpy (tempstring, string);
 	ptr = strtok (tempstring, "@");
@@ -1973,8 +1869,8 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 		fprintf (ps.fp, "exch 2 {3 1 roll sub abs} repeat /%s exch def /%s exch def\n", xdim, ydim);
 	else
 		fprintf (ps.fp, "/%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n", ydim, xdim, ydim, xdim);
-	
-	ps_free ((void *)tempstring);	
+
+	ps_free ((void *)tempstring);
 	ps_free ((void *)piece);
 	ps_free ((void *)piece2);
 	ps_free ((void *)string);
@@ -2014,31 +1910,31 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 		fprintf (stderr, "pslib: text_item > %d long - text not plotted!\n", BUFSIZ);
 		return;
 	}
-	
+
 	if (justify < 0)  {	/* Strip leading and trailing blanks */
 		for (i = 0; text[i] == ' '; i++);
 		for (j = strlen (text) - 1; text[j] == ' '; j--) text[j] = 0;
 		justify = -justify;
 	}
- 
- 	if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
- 		if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
+
+	if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
+		if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
 		ps_textdim ("PSL_dimx", "PSL_dimy", fabs (pointsize), ps.font_no, &text[i], 0);			/* Set the string dimensions in PS */
- 		if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
+		if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
 	}
-	
+
 	string = ps_prepare_text (&text[i]);	/* Check for escape sequences */
-	
- 	height = fabs (pointsize) / ps.points_pr_unit;
-  	
- 	ps.npath = 0;
-	
+
+	height = fabs (pointsize) / ps.points_pr_unit;
+
+	ps.npath = 0;
+
 	if (pointsize > 0.0) {	/* Set a new anchor point */
 		ps.ix = irint (x * ps.scale);
 		ps.iy = irint (y * ps.scale);
 		fprintf (ps.fp, "%d %d M ", ps.ix, ps.iy);
 	}
-	
+
 	if (angle != 0.0) fprintf (ps.fp, "V %.3g R ", angle);
 	if (justify > 1) {
 		h_just = (justify % 4) - 1;	/* Gives 0 (left justify, i.e., do nothing), 1 (center), or 2 (right justify) */
@@ -2047,7 +1943,7 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 		(v_just) ? fprintf (ps.fp, "PSL_dimy %3.1f mul ", -0.5 * v_just) : fprintf (ps.fp, "0 ");
 		fprintf (ps.fp, "G ");
 	}
-	
+
 	if (!strchr (string, '@')) {	/* Plain text string - do things simply and exit */
 		fprintf (ps.fp, "%d F%d (%s) ", (int) irint (height * ps.scale), ps.font_no, string);
 		(form == 0) ? fprintf (ps.fp, "Z") : fprintf (ps.fp, "false charpath S");
@@ -2055,7 +1951,7 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 		ps_free ((void *)string);
 		return;
 	}
-	
+
 	/* Here, we have special request for Symbol font and sub/superscript
 	 * @~ toggles between Symbol font and default font
 	 * @%<fontno>% switches font number <fontno>; give @%% to reset
@@ -2065,12 +1961,12 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	 * @! will make a composite character of next two characters
 	 * Use @@ to print a single @
 	 */
-	
+
 	piece  = ps_memory (VNULL, (size_t)(2 * BUFSIZ), sizeof (char));
 	piece2 = ps_memory (VNULL, (size_t)BUFSIZ, sizeof (char));
-	 
+
 	/* Now we can start printing text items */
-	
+
 	font = old_font = ps.font_no;
 	(form == 0) ? strcpy (op, "Z") : strcpy (op, "false charpath");
 	sub = super = small = FALSE;
@@ -2159,7 +2055,7 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	}
 	if (form == 1) fprintf (ps.fp, "S\n");
 	if (angle != 0.0) fprintf (ps.fp, "U\n");
-	
+
 	ps_free ((void *)piece);
 	ps_free ((void *)piece2);
 	ps_free ((void *)string);
@@ -2174,7 +2070,7 @@ void ps_text_ (double *x, double *y, double *pointsize, char *text, double *angl
 void ps_textpath (double x[], double y[], int n, int node[], double angle[], char *label[], int m, double pointsize, double offset[], int justify, int form)
 {
 	/* x,y		Array containing the label path
-	/* n		Length of label path
+	 * n		Length of label path
 	 * node		Index into x/y array of label plot positions
 	 * angle	Text angle for each label
 	 * label	Array of text labels
@@ -2186,9 +2082,9 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 	 *		      8 = just call labelline and reuse last set of parameters
 	 *		      32 = first time called, 64 = final time called, 128 = fill box, 256 = draw box
 	 */
-	 
+
 	int i = 0, j, k, first;
-	
+
 	if (form & 8) {		/* If 8 bit is set we already have placed the info */
 		form -= 8;		/* Knock off the 8 flag */
 		fprintf (ps.fp, "%d PSL_curved_text_labels\n", form);
@@ -2196,9 +2092,9 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 	}
 
 	if (m <= 0) return;	/* Nothing to do yet */
-	
+
 	first = (form & 32);
-	
+
 	for (i = 0; i < m; i++) {
 		if (justify < 0)  {	/* Strip leading and trailing blanks */
 			for (k = 0; label[i][k] == ' '; k++);	/* Count # of leading blanks */
@@ -2221,24 +2117,24 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 		ps_set_length ("PSL_gap_x", offset[0]);
 		ps_set_length ("PSL_gap_y", offset[1]);
 		if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
- 			if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
+			if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
 			ps_textdim ("PSL_dimx", "PSL_height", fabs (pointsize), ps.font_no, label[0], 0);		/* Set the string dimensions in PS */
- 			if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
+			if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
 		}
 		fprintf (ps.fp, "%d F%d\n", (int) irint ((fabs (pointsize) / ps.points_pr_unit) * ps.scale), ps.font_no);	/* Set font */
 	}
-	
+
 	/* Set these each time */
-	
+
 	n = ps_set_xyn_arrays ("PSL_x", "PSL_y", "PSL_node", x, y, node, n, m);
 	ps_set_real_array ("PSL_angle", angle, m);
 	ps_set_txt_array ("PSL_str", label, m);
- 	ps_set_integer ("PSL_n", n);
+	ps_set_integer ("PSL_n", n);
 	ps_set_integer ("PSL_m", m);
-	
+
 	fprintf (ps.fp, "%d PSL_curved_text_labels\n", form);
-	
-  	ps.npath = 0;
+
+	ps.npath = 0;
 }
 
 /* fortran interface */
@@ -2259,9 +2155,9 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 	 * key		bits: 0 = lay down clip path, 1 = Just place text, 2 turn off clipping,
 	 *		8 = reuse pars, 16 = rounded box, 128 fill box, 256 draw box
 	 */
-	 
+
 	int i = 0, j, k;
-	
+
 	if (key & 2) {	/* Flag to terminate clipping */
 		fprintf (ps.fp, "PSL_clip_on\t\t%% If clipping is active, terminate it\n{\n  grestore\n  /PSL_clip_on false def\n} if\n");
 		return;
@@ -2270,11 +2166,11 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 		fprintf (ps.fp, "%d PSL_straight_text_labels\n", key);
 		return;
 	}
-	
+
 	/* Here key == 0 (or 4) which means we plan to create labeltext clip paths (and paint them) */
-	
+
 	if (m <= 0) return;	/* Nothing to do yet */
-	
+
 	for (i = 0; i < m; i++) {
 		if (justify < 0)  {	/* Strip leading and trailing blanks */
 			for (k = 0; label[i][k] == ' '; k++);	/* Count # of leading blanks */
@@ -2301,17 +2197,17 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 	ps_set_integer ("PSL_just", justify);
 	ps_set_length ("PSL_gap_x", offset[0]);
 	ps_set_length ("PSL_gap_y", offset[1]);
-		
- 	if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
- 		if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
+
+	if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
+		if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
 		ps_textdim ("PSL_dimx", "PSL_height", fabs (pointsize), ps.font_no, label[0], 0);		/* Set the string dimensions in PS */
- 		if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
+		if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
 	}
-	
+
 	fprintf (ps.fp, "%d F%d\n", (int) irint ((fabs (pointsize) / ps.points_pr_unit) * ps.scale), ps.font_no);	/* Set font */
 	fprintf (ps.fp, "%d PSL_straight_text_labels\n", key);
-	
-  	ps.npath = 0;
+
+	ps.npath = 0;
 }
 
 /* fortran interface */
@@ -2323,7 +2219,7 @@ void ps_textclip_ (double x[], double y[], int *m, double angle[], char *label[]
 void ps_transrotate (double x, double y, double angle)
 {
 	int go = FALSE;
-	
+
 	if (x != 0.0 || y != 0.0) {
 		if (fabs(x) < 1e-9) x = 0.0;
 		if (fabs(y) < 1e-9) y = 0.0;
@@ -2347,7 +2243,7 @@ void ps_transrotate_ (double *x, double *y, double *angle)
 void ps_triangle (double x, double y, double diameter, int rgb[], int outline)
 {	/* Give diameter of circumscribing circle */
 	int ix, iy, is, pmode;
-	
+
 	ix = irint ((x-0.433012701892*diameter) * ps.scale);
 	iy = irint ((y-0.25*diameter) * ps.scale);
 	is = irint (0.866025403784 * diameter * ps.scale);
@@ -2365,7 +2261,7 @@ void ps_triangle_ (double *x, double *y, double *diameter, int *rgb, int *outlin
 void ps_itriangle (double x, double y, double diameter, int rgb[], int outline)	/* Inverted triangle */
 {	/* Give diameter of circumscribing circle */
 	int ix, iy, is, pmode;
-	
+
 	ix = irint ((x-0.433012701892*diameter) * ps.scale);
 	iy = irint ((y+0.25*diameter) * ps.scale);
 	is = irint (0.866025403784 * diameter * ps.scale);
@@ -2383,10 +2279,10 @@ void ps_itriangle_ (double *x, double *y, double *diameter, int *rgb, int *outli
 void ps_vector (double xtail, double ytail, double xtip, double ytip, double tailwidth, double headlength, double headwidth, double headshape, int rgb[], int outline)
 {
 	/* Will make sure that arrow has a finite width in PS coordinates */
-	
+
 	double angle;
 	int w2, length, hw, hl, hl2, hw2, l2, pmode;
-	
+
 	length = irint (hypot ((xtail-xtip), (ytail-ytip)) * ps.scale);	/* Vector length in PS units */
 	if (length == 0) return;					/* NULL vector */
 
@@ -2417,662 +2313,6 @@ void ps_vector (double xtail, double ytail, double xtip, double ytip, double tai
 void ps_vector_ (double *xtail, double *ytail, double *xtip, double *ytip, double *tailwidth, double *headlength, double *headwidth, double *headshape, int *rgb, int *outline)
 {
 	 ps_vector (*xtail, *ytail, *xtip, *ytip, *tailwidth, *headlength, *headwidth, *headshape, rgb, *outline);
-}
-
-/* Support functions used in ps_* functions.  No Fortran bindings needed */
-
-void get_uppercase (char *new, char *old)
-{
-	int i = 0, c;
-	while (old[i]) {
-		c = (int)old[i];
-		new[i++] = toupper (c);
-	}
-	new[i] = 0;
-}
-
-void ps_encode_font (int font_no)
-{
-	if (ps.encoding == 0) return;		/* Already have StandardEncoding by default */
-	if (ps.font[font_no].encoded) return;	/* Already reencoded or should not be reencoded ever */
-
-	/* Reencode fonts with Standard+ or ISOLatin1[+] encodings */
-	fprintf (ps.fp, "PSL_font_encode %d get 0 eq { %% Set this font\n", font_no);
-	fprintf (ps.fp, "\t%s_Encoding /%s /%s PSL_reencode\n", ps.encoding, ps.font[font_no].name, ps.font[font_no].name);
-	fprintf (ps.fp, "\tPSL_font_encode %d 1 put\n} if\n", font_no);
-	ps.font[font_no].encoded = TRUE;
-}
-
-void init_font_encoding (struct EPS *eps)
-{	/* Reencode all the fonts that we know may be used: the ones listed in eps */
-
-	int i;
-
-	if (eps)
-		for (i = 0; i < 6 && eps->fontno[i] != -1; i++) ps_encode_font (eps->fontno[i]);
-	else	/* Must output all */
-		for (i = 0; i < N_PS_FONTS; i++) ps_encode_font (i);
-}
-
-void def_font_encoding (void)
-{	/* Place code for reencoding of fonts and initialize book-keeping array */
-
-	int i;
-	
-	fprintf (ps.fp, "/PSL_reencode {\t%% To reencode one font with the provided encoding vector\n");
-	fprintf (ps.fp, "\tfindfont dup length dict begin\n");
-	fprintf (ps.fp, "\t{1 index /FID ne {def} {pop pop} ifelse} forall\n");
-	fprintf (ps.fp, "\texch /Encoding exch def currentdict end definefont pop\n");
-	fprintf (ps.fp, "} bind def\n");
-
-	/* Initialize T/F array for font reencoding so that we only do it once
-	 * for each font that is used */
-
-	fprintf (ps.fp, "/PSL_font_encode ");
-	for (i = 0; i < N_PS_FONTS; i++) fprintf (ps.fp, "0 ");
-	fprintf (ps.fp, "%d array astore def	%% Initially zero\n", N_PS_FONTS);
-}
-
-char *ps_prepare_text (char *text)
-           
-/*	Adds escapes for misc parenthesis, brackets etc.
-	Will also translate to some Norwegian characters from the @a, @e
-	etc escape sequences. Calling function must REMEMBER to free memory
-	allocated by string */
-{
-	char *string;
-	int i=0, j=0, font;
-	int he = 0;		/* GMT Historical Encoding (if any) */
-
-	if (strcmp ("Standard", ps.encoding) == 0)
-		he = 1;
-	if (strcmp ("Standard+", ps.encoding) == 0)
-		he = 2;
-	/* ISOLatin1 and ISOLatin1+ are the same _here_. */
-	if (strncmp ("ISOLatin1", ps.encoding, 9) == 0)
-		he = 3;
-
-	string = ps_memory (NULL, 2 * BUFSIZ, sizeof(char));
-	while (text[i]) {
-		if (he && text[i] == '@') {
-			i++;
-			switch (text[i]) {
-				case 'A':
-					strcat (string, ps_scandcodes[0][he-1]);
-					j += strlen(ps_scandcodes[0][he-1]); i++;
-					break;
-				case 'E':
-					strcat (string, ps_scandcodes[1][he-1]);
-					j += strlen(ps_scandcodes[1][he-1]); i++;
-					break;
-				case 'O':
-					strcat (string, ps_scandcodes[2][he-1]);
-					j += strlen(ps_scandcodes[2][he-1]); i++;
-					break;
-				case 'a':
-					strcat (string, ps_scandcodes[3][he-1]);
-					j += strlen(ps_scandcodes[3][he-1]); i++;
-					break;
-				case 'e':
-					strcat (string, ps_scandcodes[4][he-1]);
-					j += strlen(ps_scandcodes[4][he-1]); i++;
-					break;
-				case 'o':
-					strcat (string, ps_scandcodes[5][he-1]);
-					j += strlen(ps_scandcodes[5][he-1]); i++;
-					break;
-				case 'C':
-					strcat (string, ps_scandcodes[6][he-1]);
-					j += strlen(ps_scandcodes[6][he-1]); i++;
-					break;
-				case 'N':
-					strcat (string, ps_scandcodes[7][he-1]);
-					j += strlen(ps_scandcodes[7][he-1]); i++;
-					break;
-				case 'U':
-					strcat (string, ps_scandcodes[8][he-1]);
-					j += strlen(ps_scandcodes[8][he-1]); i++;
-					break;
-				case 'c':
-					strcat (string, ps_scandcodes[9][he-1]);
-					j += strlen(ps_scandcodes[9][he-1]); i++;
-					break;
-				case 'n':
-					strcat (string, ps_scandcodes[10][he-1]);
-					j += strlen(ps_scandcodes[10][he-1]); i++;
-					break;
-				case 's':
-					strcat (string, ps_scandcodes[11][he-1]);
-					j += strlen(ps_scandcodes[1][he-1]); i++;
-					break;
-				case 'u':
-					strcat (string, ps_scandcodes[12][he-1]);
-					j += strlen(ps_scandcodes[12][he-1]); i++;
-					break;
-				case '@':
-/*    Also now converts "@@" to the octal code for "@" = "\100" in both std and ISO.
-       This was necessary since the system routine "strtok" gobbles up
-       multiple @'s when parsing the string inside "ps_text", and thus
-       didn't properly output a single "@" sign when encountering "@@".
-       John L. Lillibridge: 4/6/95 [This was a problem on SGI; PW]
-*/
-
-					strcat (string, "\\100"); j += 4; i++;
-					break;
-				case '%':	/* Font switcher */
-					if (isdigit (text[i+1])) {	/* Got a font */
-						font = atoi (&text[i+1]);
-						ps_encode_font (font);
-					}
-					string[j++] = '@';
-					string[j++] = text[i++];	/* Just copy over the rest */
-					while (text[i] != '%') string[j++] = text[i++];
-					break; 
-				default:
-					string[j++] = '@';
-					string[j++] = text[i++];
-					break;
-			}
-		}
-		else {
-			switch (text[i]) {    /* NEED TO BE ESCAPED!!!! for PostScript*/
-				case '{':
-				case '}':
-				case '[':
-				case ']':
-				case '(':
-				case ')':
-				case '<':
-				case '>':
-					if (j > 0 && string[MAX(j-1,0)] == '\\')        /* ALREADY ESCAPED... */
-						string[j++] = text[i++];
-					else {
-						strcat(string, "\\"); j++;
-						string[j++] = text[i++];
-					}
-					break;
-				default:
-					string[j++] = text[i++];
-					break;
-			}
-		}
-	}
-	return (string);
-}
-
-unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN invert, BOOLEAN monochrome, BOOLEAN colorize, int f_rgb[], int b_rgb[])
-{
-	/* ps_loadraster reads a Sun standard rasterfile of depth 1,8,24, or 32 into memory */
-
-	int mx_in, mx, j, k, i, ij, n = 0, ny, get, odd, oddlength, r_off, b_off;
-	unsigned char *buffer, *entry, *red, *green, *blue, *tmp, rgb[3];
-	FILE *fp;
-
-	if ((fp = fopen (file, "rb")) == NULL) {
-		fprintf (stderr, "pslib: Cannot open rasterfile %s!\n", file);
-		exit (EXIT_FAILURE);
-	}
-
-	if (ps_read_rasheader (fp, header)) {
-		fprintf (stderr, "pslib: Trouble reading Sun rasterfile header!\n");
-		exit (EXIT_FAILURE);
-	}
-	
-	if (header->ras_magic != RAS_MAGIC) {	/* Not a Sun rasterfile */
-		fprintf (stderr, "pslib: Raster is not a Sun rasterfile (Magic # = 0x%x)!\n", header->ras_magic);
-		exit (EXIT_FAILURE);
-	}
-	if (header->ras_type < RT_OLD || header->ras_type > RT_FORMAT_RGB) {
-		fprintf (stderr, "pslib: Can only read Sun rasterfiles types %d - %d (your type = %d)!\n", RT_OLD, RT_FORMAT_RGB, header->ras_type);
-		exit (EXIT_FAILURE);
-	}
-
-	buffer = entry = red = green = blue = (unsigned char *)NULL;
-	
-	if (header->ras_depth == 1) {	/* 1 bit black and white image */
-		mx_in = (int) (2 * ceil (header->ras_width / 16.0));	/* Because Sun images are written in multiples of 2 bytes */
-		mx = (int) (ceil (header->ras_width / 8.0));		/* However, PS wants only the bytes that matters, so mx may be one less */
-		ny = header->ras_height;
-		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
-		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
-			fprintf (stderr, "pslib: Trouble reading 1-bit Sun rasterfile!\n");
-			exit (EXIT_FAILURE);
-		}
-		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
-		
-		if (mx < mx_in) {	/* OK, here we must shuffle image to get rid of the superfluous last byte per line */
-			for (j = k = ij = 0; j < ny; j++) {
-				for (i = 0; i < mx; i++) buffer[k++] = buffer[ij++];
-				ij++;	/* Skip the extra byte */
-			}
-		}
-		
-		if (invert) {
-			unsigned int int4, bit8 = 255, endmask;
-			int mx1;
-
-			n = header->ras_width % 8;
-			mx1 = mx - 1;
-			endmask = (n) ? ((1 << n) - 1) << (8 - n) : ~0;
-			for (j = k = 0; j < ny; j++) {
-				for (i = 0; i < mx; i++, k++) {
-					int4 = buffer[k];
-					if (i == mx1) {
-						int4 = ~int4;
-						int4 &= endmask;
-					}
-					else
-						int4 = ~int4;
-					buffer[k] = int4 & bit8;
-				}
-			}
-		}
-		if (colorize) {	/* Convert from 1-bit to 24-bit */
-			tmp = ps_1bit_to_24bit (buffer, header, f_rgb, b_rgb);
-			ps_free ((void *)buffer);
-			buffer = tmp;
-		}
-	}
-	else if (header->ras_depth == (size_t)8 && header->ras_maplength == (size_t)0) {	/* 8-bit without color table (implicit grayramp) */
-		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
-		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
-			fprintf (stderr, "pslib: Trouble reading 8-bit Sun rasterfile!\n");
-			exit (EXIT_FAILURE);
-		}
-		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
-	}
-	else if (header->ras_depth == 8) {	/* 8-bit with color table */
-		get = header->ras_maplength / 3;
-		red   = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
-		green = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
-		blue  = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
-		n  = fread ((void *)red,   (size_t)1, (size_t)get, fp);
-		n += fread ((void *)green, (size_t)1, (size_t)get, fp);
-		n += fread ((void *)blue,  (size_t)1, (size_t)get, fp);
-		if (n != header->ras_maplength) {
-			fprintf (stderr, "%s: Error reading colormap!\n", "pslib");
-			return ((unsigned char *)NULL);
-		}
-		odd = (int)header->ras_width%2;
-		entry = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
-		if (fread ((void *)entry, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
-			fprintf (stderr, "pslib: Trouble reading 8-bit Sun rasterfile!\n");
-			exit (EXIT_FAILURE);
-		}
-		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &entry);
-		buffer = (unsigned char *) ps_memory (VNULL, (size_t)(3 * header->ras_width * header->ras_height), sizeof (unsigned char));
-		for (j = k = ij = 0; j < header->ras_height; j++) {
-			for (i = 0; i < header->ras_width; i++) {
-				buffer[k++] = red[entry[ij]];
-				buffer[k++] = green[entry[ij]];
-				buffer[k++] = blue[entry[ij]];
-				ij++;
-			}
-			if (odd) ij++;
-		}
-		header->ras_depth = 24;
-	}
-	else if (header->ras_depth == 24 && header->ras_maplength) {	/* 24-bit raster with colormap */
-		unsigned char r, b;
-		get = header->ras_maplength / 3;
-		red   = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
-		green = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
-		blue  = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
-		n  = fread ((void *)red,   (size_t)1, (size_t)get, fp);
-		n += fread ((void *)green, (size_t)1, (size_t)get, fp);
-		n += fread ((void *)blue,  (size_t)1, (size_t)get, fp);
-		if ((size_t)n != (size_t)header->ras_maplength) {
-			fprintf (stderr, "%s: Error reading colormap!\n", "pslib");
-			return ((unsigned char *)NULL);
-		}
-		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
-		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
-			fprintf (stderr, "pslib: Trouble reading 24-bit Sun rasterfile!\n");
-			exit (EXIT_FAILURE);
-		}
-		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
-		oddlength = 3 * header->ras_width;
-		odd = (3 * header->ras_width) % 2;
-		r_off = (header->ras_type == RT_FORMAT_RGB) ? 0 : 2;
-		b_off = (header->ras_type == RT_FORMAT_RGB) ? 2 : 0;
-		for (i = j = 0; i < header->ras_length; i += 3, j += 3) {	/* BGR -> RGB */
-			r =  red[buffer[i+r_off]];
-			b = blue[buffer[i+b_off]];
-			buffer[j] = r;
-			buffer[j+1] = green[buffer[i+1]];
-			buffer[j+2] = b;
-			if (odd && (j+3)%oddlength == 0) i++;
-		}
-	}
-	else if (header->ras_depth == (size_t)24 && header->ras_maplength == (size_t)0) {	/* 24-bit raster, no colormap */
-		unsigned char r, b;
-		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
-		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
-			fprintf (stderr, "pslib: Trouble reading 24-bit Sun rasterfile!\n");
-			exit (EXIT_FAILURE);
-		}
-		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
-		oddlength = 3 * header->ras_width;
-		odd = (3 * header->ras_width) % 2;
-		r_off = (header->ras_type == RT_FORMAT_RGB) ? 0 : 2;
-		b_off = (header->ras_type == RT_FORMAT_RGB) ? 2 : 0;
-		for (i = j = 0; i < header->ras_length; i += 3, j += 3) {	/* BGR -> RGB */
-			r = buffer[i+r_off];
-			b = buffer[i+b_off];
-			buffer[j] = r;
-			buffer[j+1] = buffer[i+1];
-			buffer[j+2] = b;
-			if (odd && (j+3)%oddlength == 0) i++;
-		}
-	}
-	else if (header->ras_depth == 32 && header->ras_maplength) {	/* 32-bit raster with colormap */
-		unsigned char b;
-		get = header->ras_maplength / 3;
-		red   = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
-		green = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
-		blue  = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
-		n  = fread ((void *)red,   (size_t)1, (size_t)get, fp);
-		n += fread ((void *)green, (size_t)1, (size_t)get, fp);
-		n += fread ((void *)blue,  (size_t)1, (size_t)get, fp);
-		if ((size_t)n != (size_t)header->ras_maplength) {
-			fprintf (stderr, "%s: Error reading colormap!\n", "pslib");
-			return ((unsigned char *)NULL);
-		}
-		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
-		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
-			fprintf (stderr, "pslib: Trouble reading 32-bit Sun rasterfile!\n");
-			exit (EXIT_FAILURE);
-		}
-		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
-		r_off = (header->ras_type == RT_FORMAT_RGB) ? 1 : 3;
-		b_off = (header->ras_type == RT_FORMAT_RGB) ? 3 : 1;
-		b = blue[buffer[b_off]];
-		buffer[0] = red[buffer[r_off]];
-		buffer[1] = green[buffer[2]];
-		buffer[2] = b;
-		for (i = 3, j = 4; j < header->ras_length; i += 3, j += 4) {	/* _BGR -> RGB */
-			buffer[i] = red[buffer[j+r_off]];
-			buffer[i+1] = green[buffer[j+2]];
-			buffer[i+2] = blue[buffer[j+b_off]];
-		}
-	}
-	else if (header->ras_depth == (size_t)32 && header->ras_maplength == (size_t)0) {	/* 32-bit raster, no colormap */
-		unsigned char b;
-		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
-		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
-			fprintf (stderr, "pslib: Trouble reading 32-bit Sun rasterfile!\n");
-			exit (EXIT_FAILURE);
-		}
-		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
-		r_off = (header->ras_type == RT_FORMAT_RGB) ? 1 : 3;
-		b_off = (header->ras_type == RT_FORMAT_RGB) ? 3 : 1;
-		b = buffer[b_off];
-		buffer[0] = buffer[r_off];
-		buffer[1] = buffer[2];
-		buffer[2] = b;
-		for (i = 3, j = 4; j < header->ras_length; i += 3, j += 4) {	/* _BGR -> RGB */
-			buffer[i] = buffer[j+r_off];
-			buffer[i+1] = buffer[j+2];
-			buffer[i+2] = buffer[j+b_off];
-		}
-	}
-	else	/* Unrecognized format */
-		return ((unsigned char *)NULL);
-		
-	fclose (fp);
-
-	if (monochrome && header->ras_depth > 1) {
-		for (i = j = 0; i < header->ras_width * header->ras_height; i++, j += 3)
-		{
-			memcpy ((void *)rgb, (void *)&buffer[j], 3 * sizeof(unsigned char));
-			buffer[i] = (unsigned char) YIQ (rgb);
-		}
-		header->ras_depth = 8;
-	}
-		
-	if (entry) ps_free ((void *)entry);
-	if (red) ps_free ((void *)red);
-	if (green) ps_free ((void *)green);
-	if (blue) ps_free ((void *)blue);
-
-	
-	return (buffer);	
-}
-
-unsigned char *ps_1bit_to_24bit (unsigned char *pattern, struct rasterfile *h, int f_rgb[], int b_rgb[])
-{
-	/* This routine accepts a 1-bit image and turns it into a 24-bit image using the
-	   specified foreground and background colors.  Input image pattern has rows that
-	   are multiples of 8 bits. */
-
-	int color_choice[2][3], mx, extra, step, i, j, k, kk, id, nx, ny, m, my;
-	unsigned int p;
-	unsigned char *rgb;
-
-	/* Set fore- and background color choices */
-
-	color_choice[0][0] = b_rgb[0];	color_choice[0][1] = b_rgb[1];	color_choice[0][2] = b_rgb[2];
-	color_choice[1][0] = f_rgb[0];	color_choice[1][1] = f_rgb[1];	color_choice[1][2] = f_rgb[2];
-
-	nx = h->ras_width;
-	ny = h->ras_height;
-
-	rgb = (unsigned char *) ps_memory (VNULL, (size_t)(3 * nx * ny), sizeof (unsigned char));
-
-	mx = nx / 8;			/* Number of full 8-bit byte in 1-bit image */
-	extra = nx - mx * 8;		/* Remainder of bits in the last byte in 1-bit image */
-	step = (extra) ? mx + 1: mx;	/* Number of bytes per row */
-
-	for (j = kk = my = 0; j < ny; j++, my += step) {		/* For each row in image */
-
-		for (i = 0, m = my; i < mx; i++, m++) {	/* For each chunk of full 8 bits */
-
-			for (k = 0; k < 8; k++) {	/* Deal with each bit */
-
-				p = (128 >> k);
-				id = (((unsigned int)(pattern[m]) & p) == 0);	/* 0 = background, 1 = foreground */
-				rgb[kk++] = color_choice[id][0];
-				rgb[kk++] = color_choice[id][1];
-				rgb[kk++] = color_choice[id][2];
-
-			}
-		}
-		if (extra) {	/* Deal with remainder of bits in last short (m is already incremented) */
-			for (k = 0; k < extra; k++) {
-				p = (128 >> k);
-				id = (((unsigned int)(pattern[m]) & p) == 0);
-				rgb[kk++] = color_choice[id][0];
-				rgb[kk++] = color_choice[id][1];
-				rgb[kk++] = color_choice[id][2];
-			}
-		}
-	}
-
-	/* Fill out header structure for rasterfile */
-
-	h->ras_depth = 24;
-	h->ras_length = 3 * nx * ny;
-	h->ras_maptype = RMT_NONE;
-	h->ras_maplength = 0;
-
-	return (rgb);
-}
-
-#define ESC 128
-
-void ps_rle_decode (struct rasterfile *h, unsigned char **in)
-{
-	/* Function to undo RLE encoding in Sun rasterfiles
-	 *
-	 * RLE consists of ESCaped pairs of bytes.  This are started
-	 * when the ESC value is encountered.  The Next byte is the <count>,
-	 * the following is the <value>.  We then replicate <value>
-	 * the required number of times.  If count is 0 then ESC is output.
-	 * If bytes are not ESCaped they are simply copied to output.
-	 * This is implemented with the constraint that all scanlines must
-	 * be an even number of bytes (i.e., we are using 16-bit words
-	 */
-
-	int i, j, col, count, width, len, odd = FALSE;
-	unsigned char mask_table[] = {0xff, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe};
-	unsigned char mask, *out, value = 0;
-
-	i = j = col = count = 0;
-
-	width = irint (ceil (h->ras_width * h->ras_depth / 8.0));	/* Scanline width in bytes */
-	if (width%2) odd = TRUE, width++;	/* To ensure 16-bit words */
-	mask = mask_table[h->ras_width%8];	/* Padding for 1-bit images */
-
-	len = width * h->ras_height;		/* Length of output image */
-	out = (unsigned char *) ps_memory (VNULL, (size_t)len, sizeof (unsigned char));
-	if (odd) width--;
-
-	while (j < h->ras_length || count > 0) {
-
-		if (count) {
-			out[i++] = value;
-			count--;
-			col++;
-		}
-		else {
-			switch ((int)(*in)[j]) {
-				case ESC:
-					count = (int)(*in)[++j];
-					j++;
-					if (count == 0) {
-						out[i++] = ESC;
-						col++;
-					}
-					else {
-						count++;
-						value = (*in)[j];
-						j++;
-					}
-					break;
-				default:
-					out[i++] = (*in)[j++];
-					col++;
-			}
-		}
-
-		if (col == width) {
-			if (h->ras_depth == 1) out[width-1] &= mask;
-			if (odd) out[i++] = count = 0;
-			col = 0;
-		}
-	}
-
-	if (i != len) fprintf (stderr, "pslib: ps_rle_decode has wrong # of outbytes (%d versus expected %d)\n", i, len);
-
-	ps_free ((void *)*in);
-
-	*in = out;
-}
-
-int ps_read_rasheader (FILE *fp, struct rasterfile *h)
-{
-	/* Reads the header of a Sun rasterfile byte by byte
-	   since the format is defined as the byte order on the
-	   PDP-11.
-	 */
-
-	unsigned char byte[4];
-	int i, j, value, in[4];
-
-	for (i = 0; i < 8; i++) {
-
-		if (fread ((void *)byte, sizeof (unsigned char), (size_t)4, fp) != 4) {
-			fprintf (stderr, "pslib: Error reading rasterfile header\n");
-			return (-1);
-		}
-		for (j = 0; j < 4; j++) in[j] = (int)byte[j];
-
-		value = (in[0] << 24) + (in[1] << 16) + (in[2] << 8) + in[3];
-
-		switch (i) {
-			case 0:
-				h->ras_magic = value;
-				break;
-			case 1:
-				h->ras_width = value;
-				break;
-			case 2:
-				h->ras_height = value;
-				break;
-			case 3:
-				h->ras_depth = value;
-				break;
-			case 4:
-				h->ras_length = value;
-				break;
-			case 5:
-				h->ras_type = value;
-				break;
-			case 6:
-				h->ras_maptype = value;
-				break;
-			case 7:
-				h->ras_maplength = value;
-				break;
-		}
-	}
-
-	if (h->ras_type == RT_OLD && h->ras_length == 0) h->ras_length = 2 * irint (ceil (h->ras_width * h->ras_depth / 16.0)) * h->ras_height;
-
-	return (0);
-}
-
-int ps_write_rasheader (FILE *fp, struct rasterfile *h)
-{
-	/* Writes the header of a Sun rasterfile byte by byte
-	   since the format is defined as the byte order on the
-	   PDP-11.
-	 */
-
-	unsigned char byte[4];
-	int i, j, value, in[4];
-
-	for (i = 0; i < 8; i++) {
-		switch (i) {
-			case 0:
-				value = h->ras_magic;
-				break;
-			case 1:
-				value = h->ras_width;
-				break;
-			case 2:
-				value = h->ras_height;
-				break;
-			case 3:
-				value = h->ras_depth;
-				break;
-			case 4:
-				value = h->ras_length;
-				break;
-			case 5:
-				value = h->ras_type;
-				break;
-			case 6:
-				value = h->ras_maptype;
-				break;
-			case 7:
-				value = h->ras_maplength;
-				break;
-		}
-
-		in[0] = (value >> 24);
-		in[1] = (value >> 16) & 255;
-		in[2] = (value >> 8) & 255;
-		in[3] = (value & 255);
-		for (j = 0; j < 4; j++) byte[j] = (unsigned char)in[j];
-		
-		if (fwrite ((void *)byte, sizeof (unsigned char), (size_t)4, fp) != 4) {
-			fprintf (stderr, "pslib: Error writing rasterfile header\n");
-			return (-1);
-		}
-	}
-
-	return (0);
 }
 
 void ps_words (double x, double y, char **text, int n_words, double line_space, double par_width, int par_just, int font, double font_size, double angle, int rgb[3], int justify, int draw_box, double x_off, double y_off, double x_gap, double y_gap, int boxpen_width, char *boxpen_texture, int boxpen_offset, int boxpen_rgb[], int vecpen_width, char *vecpen_texture, int vecpen_offset, int vecpen_rgb[], int boxfill_rgb[3])
@@ -3115,7 +2355,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 			}
 
 			i1++;	/* Skip the @ */
-			
+
 			while (clean[i1]) {
 
 				escape = (clean[i1-1] == '@');	/* i1 char is an escape argument */
@@ -3307,7 +2547,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	ps_free ((void *)rgb_list);
 
 	/* Replace each word's red value with the index of the corresponding unique color entry */
-	
+
 	for (i = 0; i < (int)n_items; i++) {
 		color = (word[i]->rgb[0] << 16) + (word[i]->rgb[1] << 8) + word[i]->rgb[2];
 		for (j = 0, found = -1; found < 0 && j < n_rgb_unique; j++) if (color == rgb_unique[j]) found = j;
@@ -3333,7 +2573,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	ps_free ((void *)font_list);
 
 	/* Replace each word's font with the index of the corresponding unique font entry */
-	
+
 	for (i = 0; i < (int)n_items; i++) {
 		for (j = 0, found = -1; found < 0 && j < n_font_unique; j++) if (word[i]->font_no == font_unique[j]) found = j;
 		word[i]->font_no = found;
@@ -3575,7 +2815,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 			fprintf (ps.fp, "%c ", ps_paint_code[pmode]);
 			fprintf (ps.fp, "S\n");
 		}
-		else 
+		else
 			fprintf (ps.fp, "N\n");
 		if (boxpen_texture) ps_setdash (CNULL, 0);
 		/* Because inside gsave/grestore we must reset ps.pen and ps.rgb so that they are set next time */
@@ -3622,7 +2862,7 @@ struct GMT_WORD *add_word_part (char *word, int length, int fontno, double font_
 
 	new = (struct GMT_WORD *) ps_memory (VNULL, (size_t)1, sizeof (struct GMT_WORD));
 	new->txt = (char *) ps_memory (VNULL, (size_t)(length+1), sizeof (char));
-  	fs = font_size * ps.scale / ps.points_pr_unit;
+	fs = font_size * ps.scale / ps.points_pr_unit;
 
 	strncpy (new->txt, &word[i], length);
 	new->font_no = fontno;
@@ -3650,6 +2890,989 @@ struct GMT_WORD *add_word_part (char *word, int length, int fontno, double font_
 	memcpy ((void *)new->rgb, rgb, (3 * sizeof (int)));
 
 	return (new);
+}
+
+
+/* Support functions used in ps_* functions.  No Fortran bindings needed */
+
+void get_uppercase (char *new, char *old)
+{
+	int i = 0, c;
+	while (old[i]) {
+		c = (int)old[i];
+		new[i++] = toupper (c);
+	}
+	new[i] = 0;
+}
+
+void ps_encode_font (int font_no)
+{
+	if (ps.encoding == 0) return;		/* Already have StandardEncoding by default */
+	if (ps.font[font_no].encoded) return;	/* Already reencoded or should not be reencoded ever */
+
+	/* Reencode fonts with Standard+ or ISOLatin1[+] encodings */
+	fprintf (ps.fp, "PSL_font_encode %d get 0 eq { %% Set this font\n", font_no);
+	fprintf (ps.fp, "\t%s_Encoding /%s /%s PSL_reencode\n", ps.encoding, ps.font[font_no].name, ps.font[font_no].name);
+	fprintf (ps.fp, "\tPSL_font_encode %d 1 put\n} if\n", font_no);
+	ps.font[font_no].encoded = TRUE;
+}
+
+void init_font_encoding (struct EPS *eps)
+{	/* Reencode all the fonts that we know may be used: the ones listed in eps */
+
+	int i;
+
+	if (eps)
+		for (i = 0; i < 6 && eps->fontno[i] != -1; i++) ps_encode_font (eps->fontno[i]);
+	else	/* Must output all */
+		for (i = 0; i < N_PS_FONTS; i++) ps_encode_font (i);
+}
+
+void def_font_encoding (void)
+{
+	/* Place code for reencoding of fonts and initialize book-keeping array */
+
+	int i;
+
+	fprintf (ps.fp, "/PSL_reencode {\t%% To reencode one font with the provided encoding vector\n");
+	fprintf (ps.fp, "\tfindfont dup length dict begin\n");
+	fprintf (ps.fp, "\t{1 index /FID ne {def} {pop pop} ifelse} forall\n");
+	fprintf (ps.fp, "\texch /Encoding exch def currentdict end definefont pop\n");
+	fprintf (ps.fp, "} bind def\n");
+
+	/* Initialize T/F array for font reencoding so that we only do it once
+	 * for each font that is used */
+
+	fprintf (ps.fp, "/PSL_font_encode ");
+	for (i = 0; i < N_PS_FONTS; i++) fprintf (ps.fp, "0 ");
+	fprintf (ps.fp, "%d array astore def	%% Initially zero\n", N_PS_FONTS);
+}
+
+char *ps_prepare_text (char *text)
+
+/*	Adds escapes for misc parenthesis, brackets etc.
+	Will also translate to some Norwegian characters from the @a, @e
+	etc escape sequences. Calling function must REMEMBER to free memory
+	allocated by string */
+{
+	char *string;
+	int i=0, j=0, font;
+	int he = 0;		/* GMT Historical Encoding (if any) */
+
+	if (strcmp ("Standard", ps.encoding) == 0)
+		he = 1;
+	if (strcmp ("Standard+", ps.encoding) == 0)
+		he = 2;
+	/* ISOLatin1 and ISOLatin1+ are the same _here_. */
+	if (strncmp ("ISOLatin1", ps.encoding, 9) == 0)
+		he = 3;
+
+	string = ps_memory (NULL, 2 * BUFSIZ, sizeof(char));
+	while (text[i]) {
+		if (he && text[i] == '@') {
+			i++;
+			switch (text[i]) {
+				case 'A':
+					strcat (string, ps_scandcodes[0][he-1]);
+					j += strlen(ps_scandcodes[0][he-1]); i++;
+					break;
+				case 'E':
+					strcat (string, ps_scandcodes[1][he-1]);
+					j += strlen(ps_scandcodes[1][he-1]); i++;
+					break;
+				case 'O':
+					strcat (string, ps_scandcodes[2][he-1]);
+					j += strlen(ps_scandcodes[2][he-1]); i++;
+					break;
+				case 'a':
+					strcat (string, ps_scandcodes[3][he-1]);
+					j += strlen(ps_scandcodes[3][he-1]); i++;
+					break;
+				case 'e':
+					strcat (string, ps_scandcodes[4][he-1]);
+					j += strlen(ps_scandcodes[4][he-1]); i++;
+					break;
+				case 'o':
+					strcat (string, ps_scandcodes[5][he-1]);
+					j += strlen(ps_scandcodes[5][he-1]); i++;
+					break;
+				case 'C':
+					strcat (string, ps_scandcodes[6][he-1]);
+					j += strlen(ps_scandcodes[6][he-1]); i++;
+					break;
+				case 'N':
+					strcat (string, ps_scandcodes[7][he-1]);
+					j += strlen(ps_scandcodes[7][he-1]); i++;
+					break;
+				case 'U':
+					strcat (string, ps_scandcodes[8][he-1]);
+					j += strlen(ps_scandcodes[8][he-1]); i++;
+					break;
+				case 'c':
+					strcat (string, ps_scandcodes[9][he-1]);
+					j += strlen(ps_scandcodes[9][he-1]); i++;
+					break;
+				case 'n':
+					strcat (string, ps_scandcodes[10][he-1]);
+					j += strlen(ps_scandcodes[10][he-1]); i++;
+					break;
+				case 's':
+					strcat (string, ps_scandcodes[11][he-1]);
+					j += strlen(ps_scandcodes[1][he-1]); i++;
+					break;
+				case 'u':
+					strcat (string, ps_scandcodes[12][he-1]);
+					j += strlen(ps_scandcodes[12][he-1]); i++;
+					break;
+				case '@':
+/*	Also now converts "@@" to the octal code for "@" = "\100" in both std and ISO.
+	This was necessary since the system routine "strtok" gobbles up
+	multiple @'s when parsing the string inside "ps_text", and thus
+	didn't properly output a single "@" sign when encountering "@@".
+	John L. Lillibridge: 4/6/95 [This was a problem on SGI; PW]
+*/
+
+					strcat (string, "\\100"); j += 4; i++;
+					break;
+				case '%':	/* Font switcher */
+					if (isdigit (text[i+1])) {	/* Got a font */
+						font = atoi (&text[i+1]);
+						ps_encode_font (font);
+					}
+					string[j++] = '@';
+					string[j++] = text[i++];	/* Just copy over the rest */
+					while (text[i] != '%') string[j++] = text[i++];
+					break;
+				default:
+					string[j++] = '@';
+					string[j++] = text[i++];
+					break;
+			}
+		}
+		else {
+			switch (text[i]) {    /* NEED TO BE ESCAPED!!!! for PostScript*/
+				case '{':
+				case '}':
+				case '[':
+				case ']':
+				case '(':
+				case ')':
+				case '<':
+				case '>':
+					if (j > 0 && string[MAX(j-1,0)] == '\\')        /* ALREADY ESCAPED... */
+						string[j++] = text[i++];
+					else {
+						strcat(string, "\\"); j++;
+						string[j++] = text[i++];
+					}
+					break;
+				default:
+					string[j++] = text[i++];
+					break;
+			}
+		}
+	}
+	return (string);
+}
+
+unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN monochrome)
+{
+	/* ps_loadraster reads a Sun standard rasterfile of depth 1,8,24, or 32 into memory */
+
+	int mx_in, mx, j, k, i, ij, n = 0, ny, get, odd, oddlength, r_off, b_off;
+	unsigned char *buffer, *entry, *red, *green, *blue, *tmp, rgb[3];
+	FILE *fp;
+
+	if ((fp = fopen (file, "rb")) == NULL) {
+		fprintf (stderr, "pslib: Cannot open rasterfile %s!\n", file);
+		exit (EXIT_FAILURE);
+	}
+
+	if (ps_read_rasheader (fp, header)) {
+		fprintf (stderr, "pslib: Trouble reading Sun rasterfile header!\n");
+		exit (EXIT_FAILURE);
+	}
+
+	if (header->ras_magic != RAS_MAGIC) {	/* Not a Sun rasterfile */
+		fprintf (stderr, "pslib: Raster is not a Sun rasterfile (Magic # = 0x%x)!\n", header->ras_magic);
+		exit (EXIT_FAILURE);
+	}
+	if (header->ras_type < RT_OLD || header->ras_type > RT_FORMAT_RGB) {
+		fprintf (stderr, "pslib: Can only read Sun rasterfiles types %d - %d (your type = %d)!\n", RT_OLD, RT_FORMAT_RGB, header->ras_type);
+		exit (EXIT_FAILURE);
+	}
+
+	buffer = entry = red = green = blue = (unsigned char *)NULL;
+
+	if (header->ras_depth == 1) {	/* 1 bit black and white image */
+		mx_in = (int) (2 * ceil (header->ras_width / 16.0));	/* Because Sun images are written in multiples of 2 bytes */
+		mx = (int) (ceil (header->ras_width / 8.0));		/* However, PS wants only the bytes that matters, so mx may be one less */
+		ny = header->ras_height;
+		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
+		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
+			fprintf (stderr, "pslib: Trouble reading 1-bit Sun rasterfile!\n");
+			exit (EXIT_FAILURE);
+		}
+		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
+
+		if (mx < mx_in) {	/* OK, here we must shuffle image to get rid of the superfluous last byte per line */
+			for (j = k = ij = 0; j < ny; j++) {
+				for (i = 0; i < mx; i++) buffer[k++] = buffer[ij++];
+				ij++;	/* Skip the extra byte */
+			}
+		}
+	}
+	else if (header->ras_depth == (size_t)8 && header->ras_maplength == (size_t)0) {	/* 8-bit without color table (implicit grayramp) */
+		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
+		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
+			fprintf (stderr, "pslib: Trouble reading 8-bit Sun rasterfile!\n");
+			exit (EXIT_FAILURE);
+		}
+		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
+	}
+	else if (header->ras_depth == 8) {	/* 8-bit with color table */
+		get = header->ras_maplength / 3;
+		red   = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
+		green = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
+		blue  = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
+		n  = fread ((void *)red,   (size_t)1, (size_t)get, fp);
+		n += fread ((void *)green, (size_t)1, (size_t)get, fp);
+		n += fread ((void *)blue,  (size_t)1, (size_t)get, fp);
+		if (n != header->ras_maplength) {
+			fprintf (stderr, "%s: Error reading colormap!\n", "pslib");
+			return ((unsigned char *)NULL);
+		}
+		odd = (int)header->ras_width%2;
+		entry = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
+		if (fread ((void *)entry, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
+			fprintf (stderr, "pslib: Trouble reading 8-bit Sun rasterfile!\n");
+			exit (EXIT_FAILURE);
+		}
+		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &entry);
+		buffer = (unsigned char *) ps_memory (VNULL, (size_t)(3 * header->ras_width * header->ras_height), sizeof (unsigned char));
+		for (j = k = ij = 0; j < header->ras_height; j++) {
+			for (i = 0; i < header->ras_width; i++) {
+				buffer[k++] = red[entry[ij]];
+				buffer[k++] = green[entry[ij]];
+				buffer[k++] = blue[entry[ij]];
+				ij++;
+			}
+			if (odd) ij++;
+		}
+		header->ras_depth = 24;
+	}
+	else if (header->ras_depth == 24 && header->ras_maplength) {	/* 24-bit raster with colormap */
+		unsigned char r, b;
+		get = header->ras_maplength / 3;
+		red   = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
+		green = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
+		blue  = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
+		n  = fread ((void *)red,   (size_t)1, (size_t)get, fp);
+		n += fread ((void *)green, (size_t)1, (size_t)get, fp);
+		n += fread ((void *)blue,  (size_t)1, (size_t)get, fp);
+		if ((size_t)n != (size_t)header->ras_maplength) {
+			fprintf (stderr, "%s: Error reading colormap!\n", "pslib");
+			return ((unsigned char *)NULL);
+		}
+		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
+		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
+			fprintf (stderr, "pslib: Trouble reading 24-bit Sun rasterfile!\n");
+			exit (EXIT_FAILURE);
+		}
+		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
+		oddlength = 3 * header->ras_width;
+		odd = (3 * header->ras_width) % 2;
+		r_off = (header->ras_type == RT_FORMAT_RGB) ? 0 : 2;
+		b_off = (header->ras_type == RT_FORMAT_RGB) ? 2 : 0;
+		for (i = j = 0; i < header->ras_length; i += 3, j += 3) {	/* BGR -> RGB */
+			r =  red[buffer[i+r_off]];
+			b = blue[buffer[i+b_off]];
+			buffer[j] = r;
+			buffer[j+1] = green[buffer[i+1]];
+			buffer[j+2] = b;
+			if (odd && (j+3)%oddlength == 0) i++;
+		}
+	}
+	else if (header->ras_depth == (size_t)24 && header->ras_maplength == (size_t)0) {	/* 24-bit raster, no colormap */
+		unsigned char r, b;
+		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
+		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
+			fprintf (stderr, "pslib: Trouble reading 24-bit Sun rasterfile!\n");
+			exit (EXIT_FAILURE);
+		}
+		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
+		oddlength = 3 * header->ras_width;
+		odd = (3 * header->ras_width) % 2;
+		r_off = (header->ras_type == RT_FORMAT_RGB) ? 0 : 2;
+		b_off = (header->ras_type == RT_FORMAT_RGB) ? 2 : 0;
+		for (i = j = 0; i < header->ras_length; i += 3, j += 3) {	/* BGR -> RGB */
+			r = buffer[i+r_off];
+			b = buffer[i+b_off];
+			buffer[j] = r;
+			buffer[j+1] = buffer[i+1];
+			buffer[j+2] = b;
+			if (odd && (j+3)%oddlength == 0) i++;
+		}
+	}
+	else if (header->ras_depth == 32 && header->ras_maplength) {	/* 32-bit raster with colormap */
+		unsigned char b;
+		get = header->ras_maplength / 3;
+		red   = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
+		green = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
+		blue  = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
+		n  = fread ((void *)red,   (size_t)1, (size_t)get, fp);
+		n += fread ((void *)green, (size_t)1, (size_t)get, fp);
+		n += fread ((void *)blue,  (size_t)1, (size_t)get, fp);
+		if ((size_t)n != (size_t)header->ras_maplength) {
+			fprintf (stderr, "%s: Error reading colormap!\n", "pslib");
+			return ((unsigned char *)NULL);
+		}
+		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
+		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
+			fprintf (stderr, "pslib: Trouble reading 32-bit Sun rasterfile!\n");
+			exit (EXIT_FAILURE);
+		}
+		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
+		r_off = (header->ras_type == RT_FORMAT_RGB) ? 1 : 3;
+		b_off = (header->ras_type == RT_FORMAT_RGB) ? 3 : 1;
+		b = blue[buffer[b_off]];
+		buffer[0] = red[buffer[r_off]];
+		buffer[1] = green[buffer[2]];
+		buffer[2] = b;
+		for (i = 3, j = 4; j < header->ras_length; i += 3, j += 4) {	/* _BGR -> RGB */
+			buffer[i] = red[buffer[j+r_off]];
+			buffer[i+1] = green[buffer[j+2]];
+			buffer[i+2] = blue[buffer[j+b_off]];
+		}
+	}
+	else if (header->ras_depth == (size_t)32 && header->ras_maplength == (size_t)0) {	/* 32-bit raster, no colormap */
+		unsigned char b;
+		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->ras_length, sizeof (unsigned char));
+		if (fread ((void *)buffer, (size_t)1, (size_t)header->ras_length, fp) != (size_t)header->ras_length) {
+			fprintf (stderr, "pslib: Trouble reading 32-bit Sun rasterfile!\n");
+			exit (EXIT_FAILURE);
+		}
+		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
+		r_off = (header->ras_type == RT_FORMAT_RGB) ? 1 : 3;
+		b_off = (header->ras_type == RT_FORMAT_RGB) ? 3 : 1;
+		b = buffer[b_off];
+		buffer[0] = buffer[r_off];
+		buffer[1] = buffer[2];
+		buffer[2] = b;
+		for (i = 3, j = 4; j < header->ras_length; i += 3, j += 4) {	/* _BGR -> RGB */
+			buffer[i] = buffer[j+r_off];
+			buffer[i+1] = buffer[j+2];
+			buffer[i+2] = buffer[j+b_off];
+		}
+	}
+	else	/* Unrecognized format */
+		return ((unsigned char *)NULL);
+
+	fclose (fp);
+
+	if (monochrome && header->ras_depth > 1) {
+		for (i = j = 0; i < header->ras_width * header->ras_height; i++, j += 3)
+		{
+			memcpy ((void *)rgb, (void *)&buffer[j], 3 * sizeof(unsigned char));
+			buffer[i] = (unsigned char) YIQ (rgb);
+		}
+		header->ras_depth = 8;
+	}
+
+	if (entry) ps_free ((void *)entry);
+	if (red) ps_free ((void *)red);
+	if (green) ps_free ((void *)green);
+	if (blue) ps_free ((void *)blue);
+
+
+	return (buffer);
+}
+
+int ps_read_rasheader (FILE *fp, struct rasterfile *h)
+{
+	/* Reads the header of a Sun rasterfile byte by byte
+	   since the format is defined as the byte order on the
+	   PDP-11.
+	 */
+
+	unsigned char byte[4];
+	int i, j, value, in[4];
+
+	for (i = 0; i < 8; i++) {
+
+		if (fread ((void *)byte, sizeof (unsigned char), (size_t)4, fp) != 4) {
+			fprintf (stderr, "pslib: Error reading rasterfile header\n");
+			return (-1);
+		}
+		for (j = 0; j < 4; j++) in[j] = (int)byte[j];
+
+		value = (in[0] << 24) + (in[1] << 16) + (in[2] << 8) + in[3];
+
+		switch (i) {
+			case 0:
+				h->ras_magic = value;
+				break;
+			case 1:
+				h->ras_width = value;
+				break;
+			case 2:
+				h->ras_height = value;
+				break;
+			case 3:
+				h->ras_depth = value;
+				break;
+			case 4:
+				h->ras_length = value;
+				break;
+			case 5:
+				h->ras_type = value;
+				break;
+			case 6:
+				h->ras_maptype = value;
+				break;
+			case 7:
+				h->ras_maplength = value;
+				break;
+		}
+	}
+
+	if (h->ras_type == RT_OLD && h->ras_length == 0) h->ras_length = 2 * irint (ceil (h->ras_width * h->ras_depth / 16.0)) * h->ras_height;
+
+	return (0);
+}
+
+int ps_write_rasheader (FILE *fp, struct rasterfile *h)
+{
+	/* Writes the header of a Sun rasterfile byte by byte
+	   since the format is defined as the byte order on the
+	   PDP-11.
+	 */
+
+	unsigned char byte[4];
+	int i, j, value, in[4];
+
+	for (i = 0; i < 8; i++) {
+		switch (i) {
+			case 0:
+				value = h->ras_magic;
+				break;
+			case 1:
+				value = h->ras_width;
+				break;
+			case 2:
+				value = h->ras_height;
+				break;
+			case 3:
+				value = h->ras_depth;
+				break;
+			case 4:
+				value = h->ras_length;
+				break;
+			case 5:
+				value = h->ras_type;
+				break;
+			case 6:
+				value = h->ras_maptype;
+				break;
+			case 7:
+				value = h->ras_maplength;
+				break;
+		}
+
+		in[0] = (value >> 24);
+		in[1] = (value >> 16) & 255;
+		in[2] = (value >> 8) & 255;
+		in[3] = (value & 255);
+		for (j = 0; j < 4; j++) byte[j] = (unsigned char)in[j];
+
+		if (fwrite ((void *)byte, sizeof (unsigned char), (size_t)4, fp) != 4) {
+			fprintf (stderr, "pslib: Error writing rasterfile header\n");
+			return (-1);
+		}
+	}
+
+	return (0);
+}
+
+/* It is important that the first RGB tuple is mapped to index 0.
+ * This is used for color masked images.
+ */
+indexed_image_t ps_makecolormap (unsigned char *buffer, int nx, int ny, int nbits)
+{
+	int i, j, npixels;
+	colormap_t colormap;
+	indexed_image_t image;
+
+	if (abs (nbits) != 24) return (NULL);		/* We only index into the RGB colorspace. */
+
+	npixels = abs(nx) * ny;
+
+	colormap = ps_memory (NULL, 1, sizeof (*colormap));
+	colormap->ncolors = 0;
+	image = ps_memory (NULL, 1, sizeof (*image));
+	image->buffer = ps_memory (NULL, npixels, sizeof (*image->buffer));
+	image->colormap = colormap;
+
+	if (nx < 0) {
+		/* Copy the colour mask value into index 0 */
+		colormap->colors[0][0] = buffer[0];
+		colormap->colors[0][1] = buffer[1];
+		colormap->colors[0][2] = buffer[2];
+		colormap->ncolors++;
+		buffer += 3;		/* Skip to start of image */
+	}
+
+	for (i = 0; i < npixels; i++) {
+		for (j = 0; j < colormap->ncolors; j++)
+			if (colormap->colors[j][0] == buffer[0] && colormap->colors[j][1] == buffer[1] && colormap->colors[j][2] == buffer[2]) {
+				image->buffer[i] = j;
+				break;
+			}
+
+		if (j == colormap->ncolors) {
+			if (colormap->ncolors == MAX_COLORS) {	/* Too many colors to index. */
+				ps_free (image->buffer);
+				ps_free (image);
+				ps_free (colormap);
+				if (ps.verbose) fprintf (stderr, "pslib: Too many colors to make colormap.\n");
+				return (NULL);
+			}
+			image->buffer[i] = j;
+			colormap->colors[j][0] = buffer[0];
+			colormap->colors[j][1] = buffer[1];
+			colormap->colors[j][2] = buffer[2];
+			colormap->ncolors++;
+		}
+		buffer += 3;
+	}
+	if (ps.verbose) fprintf (stderr, "pslib: Colormap of %d colors created.\n", colormap->ncolors);
+	return (image);
+}
+
+void ps_colorimage_cmap (double x, double y, double xsize, double ysize, indexed_image_t image, int nx, int ny, int nbits)
+{
+	/* Plots a 24 bit color bitmapped image using a color map
+	 * x, y is lower left position of image in inches
+	 * xsize, ysize is the image size in inches
+	 * buffer contains the bytes for the image
+	 * nx, ny is the pixel dimension
+	 * nbits is the number of bits per pixel (1, 4, 8, 24)
+	 */
+
+	int lx, ly, id, it, i;
+	BOOLEAN colormask, interpolate;
+	char *colorspace[3] = {"Gray", "RGB", "CMYK"};	/* What kind of image we are writing */
+	char *kind[2] = {"Binary", "Ascii"};		/* What encoding to use */
+	char *type[3] = {"1", "4 /Maskcolor[0]", "1 /Interpolate true"};
+	unsigned char cmyk[4];
+
+	lx = irint (xsize * ps.scale);
+	ly = irint (ysize * ps.scale);
+	id = (ps.cmyk_mode && abs(nbits) == 24) ? 2 : ((abs(nbits) == 24) ? 1 : 0);
+	it = (nx < 0 && abs(nbits) == 24) ? 1 : (nbits < 0 ? 2 : 0); 	/* Colormask or interpolate */
+	nx = abs (nx);
+	interpolate = (nbits < 0);
+
+	/* Reduce number of bits per pixel according to number of colors */
+	nbits = ps_bitreduce (image->buffer, nx, ny, image->colormap->ncolors);
+
+	fprintf (ps.fp, "\n%% Start of %s Adobe Indexed %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], nbits);
+	fprintf (ps.fp, "V N %g %g T %d %d scale ", x * ps.scale, y * ps.scale, lx, ly);
+	fprintf (ps.fp, "[/Indexed /Device%s %d <\n", colorspace[id], image->colormap->ncolors - 1);
+	ps_stream_dump (&image->colormap->colors[0][0], image->colormap->ncolors, 1, 24, 0, 2, 2);
+	fprintf (ps.fp, ">] setcolorspace\n");
+	fprintf (ps.fp, "<< /ImageType %s /Decode [0 %d] ", type[it], (1<<nbits)-1);
+	ps_stream_dump (image->buffer, nx, ny, nbits, ps.compress, ps.hex_image, 0);
+
+	fprintf (ps.fp, "U\n%% End of %s Adobe Indexed %s image\n", kind[ps.hex_image], colorspace[id]);
+}
+
+void ps_colorimage_rgb (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits)
+{
+	/* Plots a B/W (1), gray (2|4|8), or color (24)  bitmapped image (nbits)
+	 * x, y is lower left position of image in inches
+	 * xsize, ysize is the image size in inches
+	 * buffer contains the bytes for the image
+	 * nx, ny is the pixel dimension
+	 * nbits is the number of bits per pixel (1, 2, 4, 8, 24)
+	 */
+
+	int lx, ly, id, it;
+	char *colorspace[3] = {"Gray", "RGB", "CMYK"};			/* What kind of image we are writing */
+	char *decode[3] = {"0 1", "0 1 0 1 0 1", "0 1 0 1 0 1 0 1"};	/* What kind of color decoding */
+	char *kind[2] = {"Binary", "Ascii"};				/* What encoding to use */
+
+	lx = irint (xsize * ps.scale);
+	ly = irint (ysize * ps.scale);
+	id = (ps.cmyk_mode && abs(nbits) == 24) ? 2 : ((abs(nbits) == 24) ? 1 : 0);
+	it = (nx < 0 && abs(nbits) == 24) ? 1 : (nbits < 0 ? 2 : 0); 	/* Colormask or interpolate */
+	nx = abs (nx);
+	nbits = abs(nbits);
+
+	fprintf (ps.fp, "\n%% Start of %s Adobe %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], nbits);
+	fprintf (ps.fp, "V N %g %g T %d %d scale ", x * ps.scale, y * ps.scale, lx, ly);
+	fprintf (ps.fp, "/Device%s setcolorspace\n", colorspace[id]);
+
+	if (it == 1) {	/* Do new PS Level 3 image type 4 with colormask */
+		fprintf (ps.fp, "<< /ImageType 4 /Maskcolor[%d %d %d]", buffer[0], buffer[1], buffer[2]);
+		buffer += 3;
+	}
+	else if (it == 2) 	/* Do new PS Level 2 image with interpolation */
+		fprintf (ps.fp, "<< /ImageType 1 /Interpolate true");
+	else			/* Do new PS Level 2 image without interpolation */
+		fprintf (ps.fp, "<< /ImageType 1");
+
+	fprintf (ps.fp, " /Decode [%s] ", decode[id]);
+	ps_stream_dump (buffer, nx, ny, nbits, ps.compress, ps.hex_image, 0);
+
+	fprintf (ps.fp, "U\n%% End of %s Adobe %s image\n", kind[ps.hex_image], colorspace[id]);
+}
+
+void ps_stream_dump (unsigned char *buffer, int nx, int ny, int nbits, int compress, int encode, int mask)
+{
+	/* Writes a stream of bytes in binary of ascii, performes RGB to CMYK
+	 * conversion and compression.
+	 * buffer	= stream of bytes
+	 * nx, ny	= image dimensions in pixels
+	 * nbits	= depth of image pixels in bits
+	 * compress	= no (0), rle (1) or lzw (2) compression
+	 * encode	= binary (0), ascii85 (1) or hex (2) encoding
+	 * mask		= image (0), imagemask (1), or neither (2)
+	 */
+	int nbytes, i;
+	unsigned char quad[4], *compressed_buffer;
+	char *kind_compress[3] = {"", "/RunLengthDecode filter", "/LZWDecode filter"};
+	char *kind_mask[2] = {"", "mask"};
+
+	nbytes = (nbits * nx + 7) / 8 * ny;
+	PSL_len = 0;
+
+	/* Transform RGB stream to CMYK stream */
+	if (ps.cmyk_mode && nbits == 24) buffer = ps_cmyk_encode (&nbytes, buffer);
+
+	/* Perform selected compression method */
+	if (compress == 1) {
+		if ((compressed_buffer = ps_rle_encode (&nbytes, buffer)))
+			buffer = compressed_buffer;
+		else
+			compress = 0;
+	}
+	else if (compress == 2) {
+		if ((compressed_buffer = ps_lzw_encode (&nbytes, buffer)))
+			buffer = compressed_buffer;
+		else
+			compress = 0;
+	}
+
+	/* Output image dictionary */
+	if (mask < 2) {
+		fprintf (ps.fp, "/Width %d /Height %d /BitsPerComponent %d\n", nx, ny, MIN(nbits,8));
+		fprintf (ps.fp, "   /ImageMatrix [%d 0 0 %d 0 %d] /DataSource currentfile ", nx, -ny, ny);
+		if (ps.hex_image) fprintf (ps.fp, "/ASCII85Decode filter ");
+		fprintf (ps.fp, "%s\n>> image%s\n", kind_compress[compress], kind_mask[mask]);
+	}
+	if (encode == 1) {
+		/* Write each 4-tuple as ASCII85 5-tuple */
+		for (i = 0; i < nbytes; i += 4) ps_a85_encode (&buffer[i]);
+		fprintf (ps.fp, "~>\n");
+	}
+	else if (encode == 2) {
+		for (i = 0; i < nbytes; i++) {
+			fprintf (ps.fp, "%02X", buffer[i]); PSL_len++;
+			if (PSL_len > 47) { fprintf (ps.fp, "\n"); PSL_len = 0; }
+		}
+	}
+	else {
+		/* Plain binary dump */
+		fwrite ((void *)buffer, sizeof (unsigned char), (size_t)nbytes, ps.fp);
+	}
+	if (compress || (ps.cmyk_mode && nbits == 24)) ps_free(buffer);
+	if (mask == 2) fprintf (ps.fp, "%s", kind_compress[compress]);
+}
+
+void ps_a85_encode (unsigned char quad[])
+{
+	unsigned int n, j;
+	unsigned char c[5];
+	n = (quad[0] << 24) + (quad[1] << 16) + (quad[2] << 8) + quad[3];
+	if ( n == 0 ) {
+		fprintf (ps.fp, "z");
+		PSL_len++;
+	}
+	else {
+		for (j = 0; j < 4; j++) { c[j] = (n % 85) + 33; n = n / 85; }
+		c[4] = n + 33 ;
+		fprintf (ps.fp, "%c%c%c%c%c", c[4], c[3], c[2], c[1], c[0]);
+		PSL_len += 5;
+	}
+	if (PSL_len > 91) { fprintf (ps.fp, "\n"); PSL_len = 0; }
+}
+
+#define ESC 128
+
+void ps_rle_decode (struct rasterfile *h, unsigned char **in)
+{
+	/* Function to undo RLE encoding in Sun rasterfiles
+	 *
+	 * RLE consists of ESCaped pairs of bytes.  This are started
+	 * when the ESC value is encountered.  The Next byte is the <count>,
+	 * the following is the <value>.  We then replicate <value>
+	 * the required number of times.  If count is 0 then ESC is output.
+	 * If bytes are not ESCaped they are simply copied to output.
+	 * This is implemented with the constraint that all scanlines must
+	 * be an even number of bytes (i.e., we are using 16-bit words
+	 */
+
+	int i, j, col, count, width, len, odd = FALSE;
+	unsigned char mask_table[] = {0xff, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe};
+	unsigned char mask, *out, value = 0;
+
+	i = j = col = count = 0;
+
+	width = irint (ceil (h->ras_width * h->ras_depth / 8.0));	/* Scanline width in bytes */
+	if (width%2) odd = TRUE, width++;	/* To ensure 16-bit words */
+	mask = mask_table[h->ras_width%8];	/* Padding for 1-bit images */
+
+	len = width * h->ras_height;		/* Length of output image */
+	out = (unsigned char *) ps_memory (VNULL, (size_t)len, sizeof (unsigned char));
+	if (odd) width--;
+
+	while (j < h->ras_length || count > 0) {
+
+		if (count) {
+			out[i++] = value;
+			count--;
+			col++;
+		}
+		else {
+			switch ((int)(*in)[j]) {
+				case ESC:
+					count = (int)(*in)[++j];
+					j++;
+					if (count == 0) {
+						out[i++] = ESC;
+						col++;
+					}
+					else {
+						count++;
+						value = (*in)[j];
+						j++;
+					}
+					break;
+				default:
+					out[i++] = (*in)[j++];
+					col++;
+			}
+		}
+
+		if (col == width) {
+			if (h->ras_depth == 1) out[width-1] &= mask;
+			if (odd) out[i++] = count = 0;
+			col = 0;
+		}
+	}
+
+	if (i != len) fprintf (stderr, "pslib: ps_rle_decode has wrong # of outbytes (%d versus expected %d)\n", i, len);
+
+	ps_free ((void *)*in);
+	*in = out;
+}
+
+unsigned char *ps_cmyk_encode (int *nbytes, unsigned char *input)
+{
+	/* Recode RGB stream as CMYK stream */
+
+	int in, out, nout;
+	unsigned char *output;
+
+	nout = *nbytes / 3 * 4;
+	output = (unsigned char *)ps_memory (VNULL, (size_t)nout, sizeof (unsigned char));
+	out = 0;
+
+	for (in = 0; in < *nbytes; in += 3) {
+		ps_rgb_to_cmyk_char (&input[in], &output[out]);
+		out += 4;
+	}
+	*nbytes = nout;
+	return (output);
+}
+
+unsigned char *ps_rle_encode (int *nbytes, unsigned char *input)
+{
+	/* Run Length Encode a buffer of nbytes. */
+
+	int count = 0, out = 0, in, i;
+	unsigned char pixel, *output;
+
+	i = MAX (512, *nbytes) + 2;	/* Maximum output length */
+	output = (unsigned char *)ps_memory (VNULL, (size_t)i, sizeof (unsigned char));
+
+	while (count < *nbytes) {
+		in = count;
+		pixel = input[in++];
+		while (in < *nbytes && in - count < 127 && input[in] == pixel) in++;
+		if (in - count == 1) {	/* No more duplicates. How many non-duplicates were there? */
+			while (in < *nbytes && in - count < 127 && (input[in] != input[in-1] || in > 1 && input[in] != input[in-2])) in++;
+			while (in < *nbytes && input[in] == input[in-1]) in--;
+			output[out++] = (unsigned char)(in - count - 1);
+			for (i = count; i < in; i++) output[out++] = input[i];
+		}
+		else {		/* Write out a runlength */
+			output[out++] = (unsigned char)(count - in + 1);
+			output[out++] = pixel;
+		}
+		count=in;
+		if (in > 512 && out > in) {
+			if (ps.verbose) fprintf (stderr, "pslib: RLE compression aborted after byte %d\n", in);
+			ps_free (output);
+			return (NULL);
+		}
+	}
+	output[out++] = 128;
+	if (ps.verbose) fprintf (stderr, "pslib: RLE compressed %d to %d bytes\n", in, out);
+	*nbytes = out;
+	return (output);
+}
+
+unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input)
+{
+	/* LZW compress a buffer of nbytes. */
+
+	static int ncode = 4096*256;
+	int i, index, in;
+	static short int clear = 256, eod = 257;
+	short int table, bmax, pre, oldpre, ext, *code;
+	byte_stream_t output;
+
+	i = MAX (512, *nbytes) + 2;	/* Maximum output length */
+	output = (byte_stream_t)ps_memory (NULL, 1, sizeof (*output));
+	output->buffer = (unsigned char *)ps_memory (NULL, i, sizeof (*output->buffer));
+	code = (short int *)ps_memory (NULL, ncode, sizeof (short int));
+
+	in = 0;
+	output->nbytes = 0;
+	table = 4095;		/* Initial value forces clearing of table on first byte */
+	pre = input[in++];
+
+	/* Loop scanning all input bytes */
+	while (in < *nbytes) {
+		if (table >= 4095) {	/* Refresh code table */
+			output = ps_lzw_putcode (output, clear);
+			for (i = 0; i < ncode; i++) code[i]=0;
+			table = eod + 1;
+			bmax = clear * 2;
+			output->depth = 9;
+		}
+
+		ext = input[in++];
+		oldpre = pre;
+		index = (pre << 8) + ext;
+		pre = code[index];
+
+		if (pre == 0) {		/* Add new entry to code table */
+			code[index] = table;
+			table++;
+			output = ps_lzw_putcode (output, oldpre);
+			pre = ext;
+			if (table == bmax) {
+				bmax <<= 1;
+				output->depth++;
+			}
+		}
+		if (in > 512 && output->nbytes > in) {
+			if (ps.verbose) fprintf (stderr, "pslib: LZW compression aborted after byte %d\n", in);
+			ps_free (code);
+			ps_free (output);
+			return (NULL);
+		}
+	}
+
+	/* Output last byte and End-of-Data */
+	output = ps_lzw_putcode (output, pre);
+	output = ps_lzw_putcode (output, eod);
+
+	/* Return number of output bytes and output buffer; release code table */
+	if (ps.verbose) fprintf (stderr, "pslib: LZW compressed %d to %d bytes\n", in, output->nbytes);
+	*nbytes = output->nbytes;
+	ps_free (code);
+	ps_free (output);
+	return (output->buffer);
+}
+
+byte_stream_t ps_lzw_putcode (byte_stream_t stream, short int incode)
+{
+	static short int eod = 257;
+	static int bit_count = 0;
+	static unsigned int bit_buffer = 0;
+
+	/* Add incode to buffer and output 1 or 2 bytes */
+	bit_buffer |= (unsigned int) incode << (32 - stream->depth - bit_count);
+	bit_count += stream->depth;
+	while (bit_count >= 8) {
+		stream->buffer[stream->nbytes] = bit_buffer >> 24;
+		stream->nbytes++;
+		bit_buffer <<= 8;
+		bit_count -= 8;
+	}
+	if (incode == eod) {	/* Flush buffer */
+		stream->buffer[stream->nbytes] = bit_buffer >> 24;
+		stream->nbytes++;
+		bit_buffer = 0;
+		bit_count = 0;
+	}
+	return (stream);
+}
+
+int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
+{
+	/* Print colormap for 1-bit image or imagemask. Returns value of "polarity":
+	 * 0 = Paint 0 bits foreground color, leave 1 bits transparent
+	 * 1 = Paint 1 bits background color, leave 0 bits transparent
+	 * 2 = Paint 0 bits foreground color, paint 1 bits background color
+	 * 4 = Paint 0 bits black, leave 1 bits transparent
+	 * 5 = Paint 1 bits black, leave 0 bits transparent
+	 * 6 = No coloring (i.e., 0 bits black, 1 bits white)
+	 */
+	int polarity, f_cmyk[4], b_cmyk[4];
+
+	if (b_rgb[0] < 0) {
+		polarity = 0;
+		if (f_rgb[0] == 0 && f_rgb[1] == 0 && f_rgb[2] == 0)
+			polarity = 4;
+		else if (ps.cmyk_mode) {
+			ps_rgb_to_cmyk_int (f_rgb, f_cmyk);
+			fprintf (ps.fp, "[/Indexed /DeviceCMYK 0 <%02X%02X%02X%02X>] setcolorspace\n", f_cmyk[0], f_cmyk[1], f_cmyk[2], f_cmyk[3]);
+		}
+		else
+			fprintf (ps.fp, "[/Indexed /DeviceRGB 0 <%02X%02X%02X>] setcolorspace\n", f_rgb[0], f_rgb[1], f_rgb[2]);
+	}
+	else if (f_rgb[0] < 0) {
+		polarity = 1;
+		if (b_rgb[0] == 0 && b_rgb[1] == 0 && b_rgb[2] == 0)
+			polarity = 5;
+		else if (ps.cmyk_mode) {
+			ps_rgb_to_cmyk_int (b_rgb, b_cmyk);
+			fprintf (ps.fp, "[/Indexed /DeviceCMYK 0 <%02X%02X%02X%02X>] setcolorspace\n", b_cmyk[0], b_cmyk[1], b_cmyk[2], b_cmyk[3]);
+		}
+		else
+			fprintf (ps.fp, "[/Indexed /DeviceRGB 0 <%02X%02X%02X>] setcolorspace\n", b_rgb[0], b_rgb[1], b_rgb[2]);
+	}
+	else if (f_rgb[0] != 0 || f_rgb[1] != 0 || f_rgb[2] != 0 || b_rgb[0] != 255 || b_rgb[1] !=255 || b_rgb[1] != 255) {
+		polarity = 2;
+		if (ps.cmyk_mode) {
+			ps_rgb_to_cmyk_int (f_rgb, f_cmyk);
+			ps_rgb_to_cmyk_int (b_rgb, b_cmyk);
+			fprintf (ps.fp, "[/Indexed /DeviceCMYK 1 <%02X%02X%02X%02X%02X%02X%02X%02X>] setcolorspace\n", f_cmyk[0], f_cmyk[1], f_cmyk[2], f_cmyk[3], b_cmyk[0], b_cmyk[1], b_cmyk[2], b_cmyk[3]);
+		}
+		else
+			fprintf (ps.fp, "[/Indexed /DeviceRGB 1 <%02X%02X%02X%02X%02X%02X>] setcolorspace\n", f_rgb[0], f_rgb[1], f_rgb[2], b_rgb[0], b_rgb[1], b_rgb[2]);
+	}
+	else {
+		fprintf (ps.fp, "\n");
+		polarity = 6;
+	}
+
+	return (polarity);
 }
 
 void ps_set_length (char *param, double value)
@@ -3690,7 +3913,7 @@ void ps_set_length_array (char *param, double *array, int n)
 {	/* These are scaled by psscale */
 	int i;
 	fprintf (ps.fp, "/%s\n", param);
-	for (i = 0; i < n; i++) fprintf (ps.fp, "%.2lf\n", array[i] * ps.scale);
+	for (i = 0; i < n; i++) fprintf (ps.fp, "%.2f\n", array[i] * ps.scale);
 	fprintf (ps.fp, "%d array astore def\n", n);
 }
 
@@ -3699,7 +3922,7 @@ int ps_set_xyn_arrays (char *xparam, char *yparam, char *nparam, double *x, doub
 	 * at the resolution we are using (0.01 DPI units), hence a new n (possibly shorter) is returned. */
 	int i, j, k, this_i, this_j, last_i, last_j, n_skipped;
 	char *use;
-	
+
 	use = (char *) ps_memory (VNULL, (size_t)n, sizeof (char));
 	this_i = this_j = INT_MAX;
 	for (i = j = k = n_skipped = 0; i < n; i++) {
@@ -3715,15 +3938,15 @@ int ps_set_xyn_arrays (char *xparam, char *yparam, char *nparam, double *x, doub
 		if (k < m && node[k] == i && n_skipped) node[k++] -= n_skipped;	/* Adjust node pointer since we are removing points and upsetting the order */
 	}
 	fprintf (ps.fp, "/%s\n", xparam);
-	for (i = 0; i < n; i++) if (use[i]) fprintf (ps.fp, "%.2lf\n", x[i] * ps.scale);
+	for (i = 0; i < n; i++) if (use[i]) fprintf (ps.fp, "%.2f\n", x[i] * ps.scale);
 	fprintf (ps.fp, "%d array astore def\n", j);
 	fprintf (ps.fp, "/%s\n", yparam);
-	for (i = 0; i < n; i++) if (use[i]) fprintf (ps.fp, "%.2lf\n", y[i] * ps.scale);
+	for (i = 0; i < n; i++) if (use[i]) fprintf (ps.fp, "%.2f\n", y[i] * ps.scale);
 	fprintf (ps.fp, "%d array astore def\n", j);
 	fprintf (ps.fp, "/%s\n", nparam);
 	for (i = 0; i < m; i++) fprintf (ps.fp, "%d\n", node[i]);
 	fprintf (ps.fp, "%d array astore def\n", m);
-	
+
 	ps_free ((void *)use);
 	return (j);
 }
@@ -3732,7 +3955,7 @@ void ps_set_real_array (char *param, double *array, int n)
 {	/* These are raw and not scaled */
 	int i;
 	fprintf (ps.fp, "/%s\n", param);
-	for (i = 0; i < n; i++) fprintf (ps.fp, "%.2lf\n", array[i]);
+	for (i = 0; i < n; i++) fprintf (ps.fp, "%.2f\n", array[i]);
 	fprintf (ps.fp, "%d array astore def\n", n);
 }
 
@@ -3749,7 +3972,7 @@ void *ps_memory (void *prev_addr, size_t nelem, size_t size)
 	void *tmp;
 
 	if (nelem == 0) return (VNULL); /* Take care of n = 0 */
-	
+
 	if (prev_addr) {
 		if ((tmp = realloc ((void *) prev_addr, (size_t)(nelem * size))) == VNULL) {
 			fprintf (stderr, "PSL Fatal Error: Could not reallocate more memory, n = %d\n", (int)nelem);
@@ -3809,7 +4032,7 @@ static void bulkcopy (const char *fname)
 	while ((nread = fread (buf, 1, sizeof (buf), in)) > 0)
 		fwrite (buf, 1, nread, ps.fp);
 	fclose (in);
- }
+}
 
 static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 {
@@ -3819,9 +4042,9 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 	char fullname[BUFSIZ];
 
 	/* Loads the available fonts for this installation */
-	
+
 	/* First the standard 35 PostScript fonts from Adobe */
-	
+
 	sprintf (fullname, "%s%cshare%cpslib%cPS_font_info.d", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
 
 	if ((in = fopen (fullname, "r")) == NULL)
@@ -3830,9 +4053,9 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 		perror (fullname);
 		exit (EXIT_FAILURE);
 	}
-	
+
 	ps.font = (struct PS_FONT *) ps_memory (VNULL, (size_t)n_alloc, sizeof (struct PS_FONT));
-	
+
 	while (fgets (buf, 128, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 		if (sscanf (buf, "%s %lf %d", fullname, &ps.font[i].height, &ps.font[i].encoded) != 3) {
@@ -3849,20 +4072,20 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 	}
 	fclose (in);
 	*n_fonts = *n_GMT_fonts = i;
-	
- 	/* Then any custom fonts */
-	
+
+	/* Then any custom fonts */
+
 	sprintf (fullname, "%s%cshare%cpslib%cCUSTOM_font_info.d", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
 
 	if (!access (fullname, R_OK)) {	/* Decode Custom font file */
-	
+
 		if ((in = fopen (fullname, "r")) == NULL)
 		{
 			fprintf (stderr, "PSL Fatal Error: ");
 			perror (fullname);
 			exit (EXIT_FAILURE);
 		}
-	
+
 		while (fgets (buf, 128, in)) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 			ps.font[i].name = (char *)ps_memory (VNULL, strlen (buf), sizeof (char));
@@ -3885,9 +4108,9 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 int ps_place_color (int rgb[])
 {
 	int pmode;
-	
+
 	if (rgb[0] < 0)	return (3);	/* Outline only, no color set */
-	
+
 	if (iscolor (rgb)) {
 		if (ps.cmyk_mode) {
 			double cmyk[4];
@@ -3907,14 +4130,37 @@ int ps_place_color (int rgb[])
 	return (pmode);
 }
 
+void ps_rgb_to_cmyk_char (unsigned char rgb[], unsigned char cmyk[])
+{
+	/* Plain conversion; no undercolor removal or blackgeneration */
+	/* RGB is in 0-255, CMYK will be in 0-255 range */
+
+	int i;
+
+	for (i = 0; i < 3; i++) cmyk[i] = 255 - rgb[i];
+	cmyk[3] = MIN (cmyk[0], MIN (cmyk[1], cmyk[2]));	/* Black */
+	for (i = 0; i < 3; i++) cmyk[i] -= cmyk[3];
+}
+
+void ps_rgb_to_cmyk_int (int rgb[], int cmyk[])
+{
+	/* Plain conversion; no undercolor removal or blackgeneration */
+	/* RGB is in 0-255, CMYK will be in 0-255 range */
+
+	int i;
+
+	for (i = 0; i < 3; i++) cmyk[i] = 255 - rgb[i];
+	cmyk[3] = MIN (cmyk[0], MIN (cmyk[1], cmyk[2]));	/* Black */
+	for (i = 0; i < 3; i++) cmyk[i] -= cmyk[3];
+}
+
 void ps_rgb_to_cmyk (int rgb[], double cmyk[])
 {
 	/* Plain conversion; no undercolor removal or blackgeneration */
-	
-	int i;
-	
 	/* RGB is in 0-255, CMYK will be in 0-1 range */
-	
+
+	int i;
+
 	for (i = 0; i < 3; i++) cmyk[i] = 1.0 - (rgb[i] * I_255);
 	cmyk[3] = MIN (cmyk[0], MIN (cmyk[1], cmyk[2]));	/* Black */
 	for (i = 0; i < 3; i++) cmyk[i] -= cmyk[3];
@@ -3923,10 +4169,52 @@ void ps_rgb_to_cmyk (int rgb[], double cmyk[])
 void ps_cmyk_to_rgb (int rgb[], double cmyk[])
 {
 	/* Plain conversion; no undercolor removal or blackgeneration */
-	
-	int i;
-	
 	/* CMYK is in 0-1, RGB will be in 0-255 range */
-	
+
+	int i;
+
 	for (i = 0; i < 3; i++) rgb[i] = (int) floor ((1.0 - cmyk[i] - cmyk[3]) * 255.999);
+}
+
+int ps_bitreduce (unsigned char *buffer, int nx, int ny, int ncolors)
+{
+	/* Reduce an 8-bit stream to 1-, 2- or 4-bit stream */
+	int in, out, i, j, nout, nbits;
+
+	/* Number of colors determines number of bits */
+	if (ncolors <= 2)
+		nbits = 1;
+	else if (ncolors <= 4)
+		nbits = 2;
+	else if (ncolors <= 16)
+		nbits = 4;
+	else
+		return (8);
+
+	/* "Compress" bytes line-by-line. The number of bits per line should be multiple of 8 */
+	out = 0;
+	nout = (nx * nbits + 7) / 8;
+	for (j = 0; j < ny; j++) {
+		in = j * nx;
+		if (nbits == 1) {
+			for (i = 0; i < nout; i++) {
+				buffer[out++] = (buffer[in] << 7) + (buffer[in+1] << 6) + (buffer[in+2] << 5) + (buffer[in+3] << 4) + (buffer[in+4] << 3) + (buffer[in+5] << 2) + (buffer[in+6] << 1) + buffer[in+7];
+				in += 8;
+			}
+		}
+		else if (nbits == 2) {
+			for (i = 0; i < nout; i++) {
+				buffer[out++] = (buffer[in] << 6) + (buffer[in+1] << 4) + (buffer[in+2] << 2) + buffer[in+3];
+				in += 4;
+			}
+		}
+		else if (nbits == 4) {
+			for (i = 0; i < nout; i++) {
+				buffer[out++] = (buffer[in] << 4) + buffer[in+1];
+				in += 2;
+			}
+		}
+	}
+	if (ps.verbose) fprintf (stderr, "pslib: Image depth reduced to %d bits\n", nbits);
+	return (nbits);
 }
