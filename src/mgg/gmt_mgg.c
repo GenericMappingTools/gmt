@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.4 2004-06-09 20:08:16 pwessel Exp $
+ *	$Id: gmt_mgg.c,v 1.5 2004-06-09 20:23:31 pwessel Exp $
  *
  *    Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -265,12 +265,12 @@ int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, str
 			strncpy (s_yr, &string[14], (size_t) 2);	s_yr[2] = 0;
 			year = atoi (s_yr);
 			if (year < NGDC_OLDEST_YY) {	/* Presumably 20xx */
-				if (MGD77_first_2000) fprintf (stderr, "mgd77togmt: Warning: 2-digit year %d assumed to be 20%d\n", year, year);
+				if (MGD77_first_2000) fprintf (stderr, "GMT WARNING: in gmtmgg_decode_MGD77: Warning: 2-digit year %d assumed to be 20%d\n", year, year);
 				year += 2000;
 				MGD77_first_2000 = FALSE;
 			}
 			else {
-				if (MGD77_first_1900) fprintf (stderr, "mgd77togmt: Warning: 2-digit year %d assumed to be 19%d\n", year, year);
+				if (MGD77_first_1900) fprintf (stderr, "GMT WARNING: in gmtmgg_decode_MGD77: Warning: 2-digit year %d assumed to be 19%d\n", year, year);
 				year += 1900;
 				MGD77_first_1900 = FALSE;
 			}
@@ -292,7 +292,7 @@ int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, str
 
 		if (!(*gmt)) {	/* If not set, now is the time */
 			*gmt = gmtmgg_init (year);
-			if (gmtdefs.verbose) fprintf (stderr, "gmtmgg_decode_MGD77: No start year set, using year = %d from 1st data record\n", year);
+			if (gmtdefs.verbose) fprintf (stderr, "GMT ERROR: in gmtmgg_decode_MGD77:  : No start year set, using year = %d from 1st data record\n", year);
 		}
 		test = gmtmgg_time (&(record->time), year, month, day, hour, min, sec, *gmt);
 		if (test < 0) return (1);
@@ -352,7 +352,7 @@ int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, str
 		twt = irint (0.1 * l_twt);
 		/* Convert the twt to depth  */
 		if ((carter_get_bin (record->lat, record->lon, &bin)) || (carter_get_zone (bin, &zone)) || (carter_depth_from_twt (zone, twt, &(record->gmt[2]))) ) {
-			fprintf (stderr, "mgd77togmt:  ERROR in Carter correction system.\n");
+			fprintf (stderr, "GMT ERROR: in gmtmgg_decode_MGD77:  ERROR in Carter correction system.\n");
 			record->gmt[2] = GMTMGG_NODATA;
 		}
 		else {
@@ -456,11 +456,11 @@ int carter_get_bin (int lat, int lon, int *bin)
 	int latdeg, londeg;
 
 	if (lat < -90000000 || lat > 90000000) {
-		fprintf (stderr, "getbin_6:  Latitude domain error.\n");
+		fprintf (stderr, "GMT ERROR: in carter_get_bin:  Latitude domain error (%lg)\n", 1e-6 * lat);
 		return (-1);
 	}
 	if (lon < 0 || lon > 360000000) {
-		fprintf (stderr, "getbin_6:  Longitude domain error.\n");
+		fprintf (stderr, "GMT ERROR: in carter_get_bin:  Longitude domain error (%lg)\n", 1e-6 * lon);
 		return (-1);
 	}
 	latdeg = (lat + 90000000)/1000000;
@@ -479,12 +479,12 @@ int carter_get_zone (int bin, int *zone)
 		range.  */
 
 	if (carter_not_initialized && carter_setup() ) {
-		fprintf (stderr,"carter_get_zone:  Initialization failure.\n");
+		fprintf (stderr, "GMT ERROR: in carter_get_zone:  Initialization failure.\n");
 		return (-1);
 	}
 
 	if (bin < 0 || bin >= N_CARTER_BINS) {
-		fprintf (stderr,"carter_get_zone:  bin out of range.\n");
+		fprintf (stderr, "GMT ERROR: in carter_get_zone:  Input bin out of range [0-%d]: %d.\n", N_CARTER_BINS, bin);
 		return (-1);
 	}
 	*zone = carter_zone[bin];
@@ -501,22 +501,21 @@ int carter_depth_from_twt (int zone, short int twt_in_msec, short int *depth_in_
 	int	i, nominal_z1500, low_hundred, part_in_100;
 
 	if (carter_not_initialized && carter_setup() ) {
-		fprintf (stderr,"carter_depth_from_twt:  Initialization failure.\n");
+		fprintf (stderr,"GMT ERROR: in carter_depth_from_twt:  Initialization failure.\n");
 		return (-1);
 	}
 	if (zone < 1 || zone > N_CARTER_ZONES) {
-		fprintf (stderr,"carter_depth_from_twt:  Zone out of range.\n");
+		fprintf (stderr,"GMT ERROR: in carter_depth_from_twt:  Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
 		return (-1);
 	}
 	if (twt_in_msec < 0) {
-		fprintf (stderr,"carter_depth_from_twt:  Negative twt.\n");
+		fprintf (stderr,"GMT ERROR: in carter_depth_from_twt:  Negative twt: %d msec\n", (int)twt_in_msec);
 		return (-1);
 	}
 
 	nominal_z1500 = irint (0.75 * twt_in_msec);
 
-	if (nominal_z1500 <= 100) {
-		/* There is no correction in water this shallow.  */
+	if (nominal_z1500 <= 100) {	/* There is no correction in water this shallow.  */
 		*depth_in_corr_m = nominal_z1500;
 		return (0);
 	}
@@ -525,7 +524,7 @@ int carter_depth_from_twt (int zone, short int twt_in_msec, short int *depth_in_
 	i = carter_offset[zone-1] + low_hundred - 1;	/* -1 'cause .f indices */
 	
 	if (i >= (carter_offset[zone] - 1) ) {
-		fprintf (stderr, "carter_depth_from_twt:  twt too big.\n");
+		fprintf (stderr, "GMT ERROR: in carter_depth_from_twt:  twt too big: %d msec\n", (int)twt_in_msec);
 		return (-1);
 	}
 
@@ -534,7 +533,7 @@ int carter_depth_from_twt (int zone, short int twt_in_msec, short int *depth_in_
 	if (part_in_100) {	/* We have to interpolate the table  */
 
 		if ( i == (carter_offset[zone] - 2) ) {
-			fprintf (stderr, "carter_depth_from_twt:  twt too big.\n");
+			fprintf (stderr, "GMT ERROR: in carter_depth_from_twt:  twt too big: %d msec\n", (int)twt_in_msec);
 			return (-1);
 		}
 
@@ -560,15 +559,15 @@ int carter_twt_from_depth (int zone, short int depth_in_corr_m, short int *twt_i
 	double	fraction;
 
 	if (carter_not_initialized && carter_setup() ) {
-		fprintf(stderr,"carter_twt_from_depth:  Initialization failure.\n");
+		fprintf(stderr,"GMT ERROR: in carter_twt_from_depth:  Initialization failure.\n");
 		return (-1);
 	}
 	if (zone < 1 || zone > N_CARTER_ZONES) {
-		fprintf (stderr,"carter_twt_from_depth:  Zone out of range.\n");
+		fprintf (stderr,"GMT ERROR: in carter_twt_from_depth:  Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
 		return (-1);
 	}
 	if (depth_in_corr_m < 0) {
-		fprintf(stderr,"carter_twt_from_depth:  Negative depth.\n");
+		fprintf(stderr,"GMT ERROR: in carter_twt_from_depth:  Negative depth: %d m\n", (int)depth_in_corr_m);
 		return(-1);
 	}
 
@@ -581,7 +580,7 @@ int carter_twt_from_depth (int zone, short int depth_in_corr_m, short int *twt_i
 	min = carter_offset[zone-1] - 1;
 
 	if (depth_in_corr_m > carter_correction[max]) {
-		fprintf (stderr, "carter_twt_from_depth:  Depth too big.\n");
+		fprintf (stderr, "GMT ERROR: in carter_twt_from_depth:  Depth too big: %d m.\n", (int)depth_in_corr_m);
 		return (-1);
 	}
 
