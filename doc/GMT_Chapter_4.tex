@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.9 2001-09-25 01:09:26 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.10 2001-09-25 01:38:42 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -270,7 +270,7 @@ The unit flag {\bf u} can take on one of 16 codes; these are listed in  Table~\r
 
 \begin{table}[H]
 \centering
-\begin{tabular}{|c|l|l} \hline
+\begin{tabular}{|c|l|l|} \hline
 \emph{Flag}	& \emph{Unit} & \emph{Description} \\ \hline
 {\bf Y}	&	year & Plot using all 4 digits \\ \hline
 {\bf y}	&	year & Plot using last 2 digits \\ \hline
@@ -281,8 +281,8 @@ The unit flag {\bf u} can take on one of 16 codes; these are listed in  Table~\r
 {\bf r}	&	Gregorian week & 7-day stride from start of week \\ \hline
 {\bf K}	&	ISO weekday & Format anotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
 {\bf k}	&	weekday & Plot name of weekday in selected language \\ \hline
-{\bf D}	&	day & Format anotation using {\bf PLOT\_DATE\_FORMAT} which \\ \hline
-	&		& selects day of month (1--31) or day of year (1--366) \\ \hline
+{\bf D}	&	day & Format anotation using {\bf PLOT\_DATE\_FORMAT} which \\
+	&		& also selects day of month (1--31) or day of year (1--366) \\ \hline
 {\bf H}	&	hour &	 Format anotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
 {\bf h}	&	hour &	 Plot as 2-digit integer (0--24) \\ \hline
 {\bf M}	&	minute &	 Format anotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
@@ -366,6 +366,65 @@ uses the corresponding unprojected values, as in \Opt{Ba}3{\bf f}2{\bf g}1{\bf p
 
 \index{Time axis}
 \subsubsection{Cartesian time axes}
+
+What sets time axis apart from the other kinds of plots is the numerous ways in which we
+may want to tick and anotate the axis.  Not only do we have both upper and lower anotation
+items but we also have interval anotations versus tickmark anotations, numerous time units,
+and several ways in which to modify the plot.  We will demonstrate this flexibility with a series of examples.  While all our examples
+will only show a single $x$-axis, time-axis is supported for all axis.
+
+Our first example shows a time period of almost two months in Spring 2000.  We want to anotate the month
+intervals as well as the date at the start of each week:
+
+\input{scripts/GMT_-B_time1}
+
+These commands result in Figure~\ref{fig:GMT_-B_time1}.  Note the leading hyphen in the {\bf PLOT\_DATE\_FORMAT}
+removes leading zeros from calender items (e.g., 02 versus 2).
+\GMTfig[h]{GMT_-B_time1}{Cartesian time axis, example 1}
+
+The next example shows two different ways to anotate an axis portraying 2 days in September:
+
+\input{scripts/GMT_-B_time2}
+
+The lower example (Figure~\ref{fig:GMT_-B_time2}) chooses to anotate the weekdays (by specifying {\bf If}1{\bf K}) while the upper
+example choses dates (by specifying {\bf If}1{\bf D}).  Note how the clock format only selects hours and minutes (no seconds).
+\GMTfig[h]{GMT_-B_time2}{Cartesian time axis, example 2}
+
+The third example presents 2 years, annotating both the years and every 3rd month.
+
+\input{scripts/GMT_-B_time3}
+
+Note that while the year anotation is centered on the 1-year interval, the month anotations must be centered
+on the corresponding month and \emph{not} the 3-month interval.  The {\bf PLOT\_DATE\_FORMAT} selects month
+name only and {\bf ic}3{\bf O} says use the 1-character abbreviation of monthnames using the current language
+selected by {\bf TIME\_LANGUAGE}.
+\GMTfig[h]{GMT_-B_time3}{Cartesian time axis, example 3}
+
+The fourth example (Figure~\ref{fig:GMT_-B_time4}) only shows a few hours of a day.  We select both upper and lower anotations, ask for a 12-hour
+clock, and let time go from right to left:
+
+\input{scripts/GMT_-B_time4}
+\GMTfig[h]{GMT_-B_time4}{Cartesian time axis, example 4}
+
+The fifth example shows a few weeks of time (Figure~\ref{fig:GMT_-B_time5}).  The lower axis shows ISO weeks with week numbers and
+abbreviated names of the weekdays.   The upper uses Gregorian weeks (which start at the day chosen by {\bf TIME\_WEEK\_START}); there
+do not have numbers.
+\input{scripts/GMT_-B_time5}
+\GMTfig[h]{GMT_-B_time5}{Cartesian time axis, example 5}
+
+Our sixth example shows the first five months of 1996, and we have annotated each month with an abbreviated, upper case
+name and 2-digit year.
+\input{scripts/GMT_-B_time6}
+
+\GMTfig[h]{GMT_-B_time6}{Cartesian time axis, example 6}
+
+
+Our seventh and final example illustrates anotation of year-days.  Without a leading hyphen in  {\bf PLOT\_DATE\_FORMAT}
+we get 3-digit integer days.
+\input{scripts/GMT_-B_time7}
+
+\GMTfig[h]{GMT_-B_time7}{Cartesian time axis, example 7}
+
 
 \subsection{The \Opt{c} option}
 \index{\Opt{c}}
