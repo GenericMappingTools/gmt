@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.5 2001-08-17 20:22:06 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.6 2001-08-17 21:25:48 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -172,10 +172,10 @@ struct GMT_IO GMT_io = {
 	NULL,
 	NULL,
 	NULL,
-	{ {-1, -1, -1, -1}, FALSE, FALSE, NULL, FALSE, FALSE, { NULL, NULL} },
-	{ {-1, -1, -1, -1}, FALSE, FALSE, NULL, FALSE, FALSE, { NULL, NULL} },
-	{ {-1, -1, -1}, 0, 0.0, FALSE, { "am", "pm" }, NULL, { NULL, NULL} },
-	{ {-1, -1, -1}, 0, 0.0, FALSE, { "am", "pm" }, NULL, { NULL, NULL} }
+	{ {-1, -1, -1, -1}, FALSE, FALSE, NULL, FALSE, FALSE, NULL },
+	{ {-1, -1, -1, -1}, FALSE, FALSE, NULL, FALSE, FALSE, NULL },
+	{ {-1, -1, -1}, 0, 0.0, FALSE, { "am", "pm" }, NULL, NULL },
+	{ {-1, -1, -1}, 0, 0.0, FALSE, { "am", "pm" }, NULL, NULL }
 };
 int GMT_grd_i_format = 0;		/* Default is GMT's cdf format */
 int GMT_grd_o_format = 0;
