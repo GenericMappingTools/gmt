@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.53 2003-03-05 23:14:49 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.54 2003-03-06 18:43:48 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1668,7 +1668,7 @@ int GMT_decode_coltype (char *arg)
 	/* Routine will decode the -f[i|o]<col>|<colrange>[t|T|g],... arguments */
 	
 	char copy[BUFSIZ], *p, *c;
-	int i, k = 1, start, stop, ic, code, *col;
+	int i, k = 1, start = -1, stop = -1, ic, code, *col;
 	BOOLEAN both_i_and_o = FALSE;
 
 	if (arg[0] == 'i')	/* Apply to input columns only */
@@ -1682,12 +1682,26 @@ int GMT_decode_coltype (char *arg)
 	
 	strncpy (copy, &arg[k], BUFSIZ);	/* arg should NOT have a leading i|o part */
 	
+	if (copy[0] == 'g') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y */
+		if (both_i_and_o) {
+			GMT_io.in_col_type[0] = GMT_io.out_col_type[0] = GMT_IS_LON;
+			GMT_io.in_col_type[1] = GMT_io.out_col_type[1] = GMT_IS_LAT;
+		}
+		else {
+			col[0] = GMT_IS_LON;
+			col[1] = GMT_IS_LAT;
+		}
+		return (0);
+	}
+			
 	p = strtok (copy, ",");		/* Get first token */
 	while (p) {			/* While it is not empty, process it */
 		if ((c = strchr (p, '-')))	/* Range of columns given. e.g., 7-9T */
 			sscanf (p, "%d-%d", &start, &stop);
-		else				/* Just a single column, e.g., 3t */
+		else if (isdigit ((int)p[0]))	/* Just a single column, e.g., 3t */
 			start = stop = atoi (p);
+		else				/* Just assume it goes column by column */
+			start++, stop++;
 
 		ic = (int) p[strlen(p)-1];	/* Last char in p is the potential code T, t, or g */
 		switch (ic) {
@@ -1702,9 +1716,6 @@ int GMT_decode_coltype (char *arg)
 				break;
 			case 'y':	/* Latitude coordinates */
 				code = GMT_IS_LAT;
-				break;
-			case 'g':	/* Geographical coordinates */
-				code = GMT_IS_GEO;
 				break;
 			case 'f':	/* Plain floating point coordinates */
 				code = GMT_IS_FLOAT;
