@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl
 
-#       $Id: gmt_form.pl,v 1.1 2001-02-01 18:05:38 pwessel Exp $
+#       $Id: gmt_form.pl,v 1.2 2001-02-01 19:17:41 pwessel Exp $
 
 $webmaster = "gmt\@soest\.hawaii\.edu";
 $registration = "gmt\@soest\.hawaii\.edu";
@@ -112,7 +112,7 @@ if ($Comments) {
 print <<EOF;
 </h3>
 <HR>
-<A HREF="http://www.soest.hawaii.edu/gmt">
+<A HREF="http://gmt.soest.hawaii.edu">
 <IMG SRC="/gmt/gmt/images/gmt_small_logo.gif" ALT="RETURN">
 Return to GMT home page.
 </A>
