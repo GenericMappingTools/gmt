@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.27 2002-05-17 19:10:29 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.28 2002-10-16 19:56:15 pwessel Exp $
 #
 #	Automatic installation of GMT version 4
 #	Version for the Bourne shell (or compatible)
@@ -451,7 +451,7 @@ GMT_suppl_spotter=d
 GMT_suppl_x2sys=d
 GMT_suppl_x_system=d
 GMT_suppl_xgrid=d
-MATLAB=/usr/local/matlab
+MATDIR=/usr/local/matlab
 if [ ! $GMT_get_suppl = "n" ]; then
 
 cat << EOF >&2
@@ -510,7 +510,7 @@ EOF
 	if [ $GMT_suppl_mex = "y" ]; then
 		echo " " >&2
 		echo "The mex supplement requires Matlab." >&2
-		MATLAB=`get_def_answer "Enter MATLAB system directory" "$MATLAB"`
+		MATDIR=`get_def_answer "Enter MATLAB system directory" "$MATDIR"`
 	fi
 fi
 
