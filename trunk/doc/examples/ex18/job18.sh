@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 18
 #
-#		$Id: job18.sh,v 1.1 2001-09-14 18:55:04 pwessel Exp $
+#		$Id: job18.sh,v 1.2 2003-04-11 23:49:54 pwessel Exp $
 #
 # Purpose:	Illustrates volumes of grids inside contours and spatial
 #		selection of data
@@ -96,4 +96,4 @@ EOF
 
 # Clean up
 
-\rm -f $$ grav.cpt sm_*.xyz *_i.grd tmp.grd mask.grd pratt.d center* .gmt*
+rm -f $$ grav.cpt sm_*.xyz *_i.grd tmp.grd mask.grd pratt.d center* .gmt*

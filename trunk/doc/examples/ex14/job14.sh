@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 14
 #
-#		$Id: job14.sh,v 1.4 2003-04-11 22:57:15 pwessel Exp $
+#		$Id: job14.sh,v 1.5 2003-04-11 23:49:54 pwessel Exp $
 #
 # Purpose:	Showing simple gridding, contouring, and resampling along tracks
 # GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, minmax, project,
@@ -31,4 +31,4 @@ grdtrack track -Gdata.grd | cut -f3,4 > data.d
 grdtrack track -Gtrend.grd | cut -f3,4 > trend.d
 psxy `minmax data.d trend.d -I0.5/25` -JX6.3i/1.4i data.d -W1p -O -K -X-3.25i -Y-1.9i -B1/50WSne >> example_14.ps
 psxy -R -JX trend.d -W0.5pta -O -U"Example 14 in Cookbook" >> example_14.ps
-\rm mean.xyz track *.grd *.d .gmt*
+rm -f mean.xyz track *.grd *.d .gmt*
