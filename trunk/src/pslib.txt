@@ -121,6 +121,8 @@ values (0 - 255) where 0 is black, 255 is white.  \fIdepth\fP is number of bits 
 4,  or 1). \fInx,ny\fP refers to the number of pixels in image.  The rowlength of \fIbuffer\fP must be an integral
 number of 8/\fIdepth\fP.  \fIbuffer[0]\fP is upper left corner.  E.g. if \fIdepth\fP = 4, then \fIbuffer[j]\fP/16
 gives shade for pixel[2j-1] and \fIbuffer[j]\fP%16 (mod 16) gives shade for pixel[2j].
+If \fI-nx\fP is passed then the first three bytes of \fIbuffer\fP holds the r/g/b color
+for pixels that are to be masked out using the \fIPostScript\fP Level 3 Color Mask method.
 See the Adobe Systems \fIPostScript\fP\fR Reference Manual for more details.
 .RE
 .IP

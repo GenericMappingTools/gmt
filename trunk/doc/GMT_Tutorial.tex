@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Tutorial.tex,v 1.8 2002-01-17 22:57:17 pwessel Exp $
+%	$Id: GMT_Tutorial.tex,v 1.9 2002-02-15 21:30:24 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2002.
@@ -752,7 +752,7 @@ shows a complete list of the options.
 \Opt{L} & Explicitly close polygons \\ \hline
 \Opt{M}[{\it flag}] & Multiple segment input data; headers start with {\it flag} \\ \hline
 \Opt{N} & Do Not clip symbols at map borders \\ \hline
-\Opt{S[symbol]}[{\it size}] & Select one of 16 symbols (See Table~\ref{tbl:psxysymbols}) \\ \hline
+\Opt{S[symbol]}[{\it size}] & Select one of several symbols (See Table~\ref{tbl:psxysymbols}) \\ \hline
 \Opt{W}{\it pen} & Set {\it pen} for line or symbol outline \\ \hline
 \end{tabular}
 \caption{Optional switches in the \GMTprog{psxy} program}
@@ -764,7 +764,7 @@ or solid (\Opt{G}, with optional outline using \Opt{W}).  The \Opt{S}
 option takes the code for the desired symbol and optional size information.
 If no symbol is given it is expected to be in the last column of the input
 file.  The size is optional since individual sizes for
-symbols may be provided by the input data.  The 15 symbols available to
+symbols may be provided by the input data.  The main symbols available to
 us are
 
 \begin{table}[h]
@@ -774,6 +774,7 @@ us are
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Symbol}} \\ \hline 
+\Opt{S-}{\it size} & horizontal dash; {\it size} is length of dash \\ \hline
 \Opt{Sa}{\it size} & st{\bf a}r; {\it size} is radius of circumscribing circle \\ \hline
 \Opt{Sb}{\it size}[/{\it base}][{\bf u}] & {\bf b}ar; {\it size} is bar width, append {\bf u} if {\it size} is in {\it x}-units \\
  & Bar extends from {\it base} [0] to the {\it y}-value \\ \hline
@@ -783,14 +784,11 @@ us are
  & are read from the input file \\ \hline
 \Opt{SE} & {\bf e}llipse; {\it azimuth} (CW from vertical), {\it major}, and {\it minor} axes in kilometers \\
  & are read from the input file\\ \hline
-\Opt{Sf}{\it gap}/{\it tick}[{\bf l$|$L$|$r$|$R}] & {\bf f}ault; {\it gap} and {\it tick} set length of and distance between ticks. \\
- & If {\it gap} $<$ 0 it means the number of ticks.  {\bf l} or {\bf r} will draw ticks to left or right \\
- & side of line [Default is centered] \\
- & Use upper case {\bf L} or {\bf R} to draw triangles instead of ticks \\ \hline
 \Opt{Sh}{\it size} & {\bf h}exagon; {\it size} is its side \\ \hline
 \Opt{Si}{\it size} & {\bf i}nverted triangle; {\it size} is its side \\ \hline
 \Opt{Sl}{\it size}/{\it string}[\%{\it font}] & {\bf l}etter; {\it size} is fontsize.  Append a letter or text string, and optionally a font \\ \hline
 \Opt{Sp} & {\bf p}oint; no size needed (1 pixel at current resolution is used) \\ \hline
+\Opt{Sr}{\it size} & {\bf r}ect, {\it width} and {\it height} are read from input file \\ \hline
 \Opt{Ss}{\it size} & {\bf s}quare, {\it size} is its side \\ \hline
 \Opt{St}{\it size} & {\bf t}riangle; {\it size} is its side \\ \hline
 \Opt{Sv}[{\it thick}/{\it length}/{\it width}][{\bf n}{\it norm}] & {\bf v}ector; {\it direction} (CCW from horizontal) and {\it length} are read from input data \\
@@ -801,6 +799,7 @@ us are
  & The angle on the map is calculated based on the chosen map projection \\ \hline
 \Opt{Sw}[{\it size} & pie {\bf s}edge; {\it start} and {\it stop} directions (CCW from horizontal) are read from input data \\ \hline
 \Opt{Sx}{\it size} & cross; {\it size} is length of crossing lines \\ \hline
+\Opt{Sy}{\it size} & vertical dash; {\it size} is length of dash \\ \hline
 \end{tabular}
 \caption{The symbol option in \GMTprog{psxy}.  Lower case symbols ({\bf a, c, d, h, i, s, t, x})
 will fit inside a circle of given diameter.  Upper case symbols ({\bf A, C, D, H, I, S, T, X}) will have area equal to that of a circle of given diameter.}
