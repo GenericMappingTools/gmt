@@ -311,7 +311,7 @@ pen attributes.
 .br
 sp.
 \fB\-t\fR[\fIpen\fP]
-\fRDraws the T axis outline using default pen (see \fB\-W\fP), or sets
+\fRDraws the T axis outline using default pen (see \fB\-W\fP), or sets 
 pen attributes.
 #include "explain_-t.txt"
 #include "explain_-c.txt"

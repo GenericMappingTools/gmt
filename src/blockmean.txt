@@ -54,7 +54,7 @@ only, \fB\-Wo\fP for weighted output only.  [Default uses unweighted i/o]
 #include "explain_-o.txt"
 .SH EXAMPLES
 .sp
-To find 5 by 5 minute block means from the ASCII data in hawaii.xyg, try
+To find 5 by 5 minute block mean values from the ASCII data in hawaii.xyg, try
 .sp
 blockmean hawaii.xyg \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm\fP > hawaii_5x5.xyg
 .SH "SEE ALSO"

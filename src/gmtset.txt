@@ -5,8 +5,8 @@ gmtset \- To change individual \fBGMT\fP default parameters
 \fBgmtset\fP [ \fB\-GfP\fIdefaultsfile\fP ] PARAMETER1 [=] \fIvalue1\fP PARAMETER2 [=] \fIvalue2\fP PARAMETER3 [=] \fIvalue3\fP ...
 .SH DESCRIPTION
 \fBgmtset\fP will adjust individual GMT defaults settings in the current directory's .gmtdefaults
-file.  If no such file exists one will be created.  The main purpose of \fBgmtset\fP is to
-temporarily change certain parameters inside a shellscript, e.g., set the dots-per-inch
+file.  If no such file exists one will be created.  The main purpose of \fBgmtset\fP is
+temporarily to change certain parameters inside a shellscript, e.g., set the dots-per-inch
 to 600, run the script, and reset to 300 dpi.
 .TP
 PARAMETER \fIvalue\fP
