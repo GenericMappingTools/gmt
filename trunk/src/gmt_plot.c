@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.127 2004-06-02 03:11:13 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.128 2004-06-15 17:02:41 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -523,7 +523,7 @@ void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *
 	
 	switch (frame_info.axis[T->parent].type) {
 		case LINEAR:
-			if (fabs (coord) < 1.0e-15) coord = 0.0;	/* Intel chip zero issue */
+			/* if (fabs (coord) < 1.0e-15) coord = 0.0; */	/* Intel chip zero issue */
 			sprintf (string, format, coord);
 			break;
 		case LOG10:
