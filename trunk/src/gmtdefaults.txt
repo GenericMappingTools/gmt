@@ -204,8 +204,20 @@ Output format to be used when annotating map boundaries.  Choose between six for
 .br
 	5	Same as 1, with decimal degrees instead of degrees, minutes, and seconds.
 .br
+	6	Same as 4, but with letters W, E, S, or N appended as appropriate.
+.br
+	7	Same as 5, but with letters W, E, S, or N appended as appropriate.
+.br
+	8	Same as 0, with degrees and decimal minutes instead of degrees, minutes, and seconds.
+.br
+	9	Same as 1, with degrees and decimal minutes instead of degrees, minutes, and seconds.
+.br
+	10	Same as 2, with degrees and decimal minutes instead of degrees, minutes, and seconds.
+.br
+	11	Same as 3, with degrees and decimal minutes instead of degrees, minutes, and seconds.
+.br
 .sp
-Add 10 to these values to use the large degree symbol character (octal \217) [Default is the
+Add 100 to these values to use the large degree symbol character (octal \217) [Default is the
 small degree symbol (octal \312)].
 .TP
 .B DOTS_PR_INCH

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.6 2001-04-17 22:25:34 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.7 2001-04-17 23:48:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2285,7 +2285,7 @@ void GMT_map_anotate (double w, double e, double s, double n)
 			do_seconds = (fabs (60.0 * fmod (fmod (dy, 1.0) * 60.0, 1.0)) >= 1.0);
 			lonlat = 1;
 		}
-		else {	/* Also, we know that gmtdefs.degree_format = 6 in this case */
+		else {	/* Also, we know that gmtdefs.degree_format = -1 in this case */
 			do_minutes = do_seconds = 0;
 			lonlat = 2;
 			if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Temporary swap to trick justify machinery */
@@ -3270,11 +3270,11 @@ void GMT_get_anot_label (double val, char *label, int do_minutes, int do_seconds
 /* worldmap:	T/F, whatever GMT_world_map is */
 {
 	int ival, minutes, seconds, sign, which, fmt;
-	BOOLEAN zero_fix = FALSE;
+	BOOLEAN zero_fix = FALSE, dec_minutes = FALSE;
 	char letter = 0, format[64];
 	
-	which = (gmtdefs.degree_format >= 10);	/* 0 is small [Default], 1 is large */
-	fmt = gmtdefs.degree_format % 10;	/* take out the optional 10 */
+	which = (gmtdefs.degree_format >= 100);	/* 0 is small [Default], 1 is large */
+	fmt = gmtdefs.degree_format % 100;	/* take out the optional 100 */
 	
 	if (lonlat == 0) {	/* Fix longitudes to 0.0 <= lon <= 360 first */
 		while (val > 360.0) val -= 360.0;
@@ -3287,15 +3287,27 @@ void GMT_get_anot_label (double val, char *label, int do_minutes, int do_seconds
 	}
 
 	switch (fmt) {
+		case 8:
+			dec_minutes = TRUE;
+		case 4:
 		case 0:	/* Use 0 to 360 for longitudes and -90 to +90 for latitudes */
 			break;
+		case 9:
+			dec_minutes = TRUE;
+		case 5:
 		case 1:	/* Use -180 to +180 for longitudes and -90 to +90 for latitudes */
 			if (lonlat == 0 && val > 180.0) val -= 360.0;
 			break;
+		case 10:
+			dec_minutes = TRUE;
+		case 6:
 		case 2:	/* Use unsigned 0 to 180 for longitudes and 0 to 90 for latitudes */
 			if (lonlat == 0 && val > 180.0) val -= 360.0;
 			val = fabs (val);
 			break;
+		case 11:
+			dec_minutes = TRUE;
+		case 7:
 		case 3:	/* Use 0 to 180E and 0 to 180W for longitudes and 90S to 90N for latitudes */
 			if (lonlat == 0) {
 				if (val > 180.0) val -= 360.0;
@@ -3305,14 +3317,9 @@ void GMT_get_anot_label (double val, char *label, int do_minutes, int do_seconds
 				letter = (fabs (val) < GMT_CONV_LIMIT) ? 0 : ((val < 0.0) ? 'S' : 'N');
 			val = fabs (val);
 			break;
-		case 4:	/* Use decimal 0 to 360 for longitudes and -90 to +90 for latitudes */
-			break;
-		case 5:	/* Use decimal -180 to +180 for longitudes and -90 to +90 for latitudes */
-			if (lonlat == 0 && val > 180.0) val -= 360.0;
-			break;
 	}
 	
-	if (fmt == 6) {	/* theta-r */
+	if (fmt == -1) {	/* theta-r */
 		if (lonlat) {
 			sprintf (format, "%s\0", gmtdefs.d_format);
 			sprintf (label, format, val);
@@ -3324,8 +3331,13 @@ void GMT_get_anot_label (double val, char *label, int do_minutes, int do_seconds
 		return;
 	}
 	
-	if (fmt > 3) {
+	if (fmt >= 4 && fmt <= 6) { /* Pure decimal degrees */
 		sprintf (format, "%s%s\0", gmtdefs.d_format, GMT_degree_symbol[which]);
+		sprintf (label, format, val);
+		return;
+	}
+	if (fmt == 7) { /* Pure decimal degrees with trailing letter */
+		sprintf (format, "%s%s%c\0", gmtdefs.d_format, GMT_degree_symbol[which], letter);
 		sprintf (label, format, val);
 		return;
 	}
@@ -3351,16 +3363,22 @@ void GMT_get_anot_label (double val, char *label, int do_minutes, int do_seconds
 		}
 	}
 	
+	if (dec_minutes) do_minutes = do_seconds = TRUE;
 	if (do_minutes) {
 		if (ival == 0 && sign == -1) {	/* Must write out -0 degrees, do so by writing -1 and change 1 to 0 */
 			ival = 1;
 			zero_fix = TRUE;
 		}
 		if (do_seconds) {
-			if (letter)
-				sprintf (label, "%d%s %.2d\\251 %.2d\\042%c\0", sign * ival, GMT_degree_symbol[which], minutes, seconds, letter);
+			char minsec[128];
+			if (dec_minutes)
+				sprintf (minsec, gmtdefs.d_format, minutes + (seconds / 60.0));
 			else
-				sprintf (label, "%d%s %.2d\\251 %.2d\\042\0", sign * ival, GMT_degree_symbol[which], minutes, seconds);
+				sprintf (minsec, "%.2d\\251 %.2d\\042\0", minutes, seconds);
+			if (letter)
+				sprintf (label, "%d%s %s%c\0", sign * ival, GMT_degree_symbol[which], minsec, letter);
+			else
+				sprintf (label, "%d%s %s\0", sign * ival, GMT_degree_symbol[which], minsec);
 		}
 		else {
 			if (letter)

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.9 2001-04-02 20:08:29 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.10 2001-04-17 23:48:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1324,7 +1324,7 @@ int GMT_map_init_polar (void)
 	GMT_overlap = (PFI) GMT_wesn_overlap;
 	GMT_map_clip = (PFI) GMT_wesn_clip;
 	frame_info.horizontal = TRUE;
-	gmtdefs.degree_format = 6;	/* Special labeling case */
+	gmtdefs.degree_format = -1;	/* Special labeling case */
 	gmtdefs.n_lat_nodes = 2;
 	GMT_meridian_straight = TRUE;
 	
