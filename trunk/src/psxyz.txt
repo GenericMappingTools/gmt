@@ -26,12 +26,12 @@ The \fIPostScript\fP code is written to standard output.
 .TP
 \fIfiles\fP
 List one or more file-names. If no files are given, \fBpsxyz\fP will read standard input.
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-Jz.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .TP
 .B \-C
 Give a color palette file.  If \fB\-S\fP is set, let symbol fill color be determined by the t-value in
@@ -194,7 +194,7 @@ Implicitly draws the outline of symbol with selected pen.
 .B \-Z
 For 3-D projections:  Sets the z-level of the basemap [0].
 #include "explain_-t.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is the required number of columns given the settings].
 #include "explain_-c.txt"

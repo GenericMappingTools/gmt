@@ -45,10 +45,10 @@ Weights can be used in input to construct weighted modal values in blocks.  Weig
 output for later combining several runs, etc.  Use \fB\-W\fP for weighted i/o, \fB\-Wi\fP for weighted input
 only, \fB\-Wo\fP for weighted output only.  [Default uses unweighted i/o].
 #include "explain_-t.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 3 (or 4 if \fB\-W\fP is set) columns].
-#include "explain_-o.txt"
+#include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
 .SH EXAMPLES

@@ -28,14 +28,14 @@ will be transparent.  The \fIPostScript\fP code is written to standard output.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
 .TP
 .B \-A
 Features with an area smaller than \fImin_area\fP in km^2 or of hierarchical level that is lower than \fImin_level\fP or higher than \fImax_level\fP
 will not be plotted [Default is 0/0/4 (all features)]. See DATABASE INFORMATION below for more details.
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .TP
 .B \-C
 Set the shade (0\-255), color (r/g/b), or pattern (\fBp|P\fP\fIdpi/pattern\fP; see \fB\-G\fP) for lakes  [Default is the fill chosen for "wet" areas (\fB\-S\fP)].
@@ -129,7 +129,7 @@ Draw coastlines. [Default is no coastlines].  Append pen attributes  [Defaults:
 width = 1, color = 0/0/0, texture = solid].
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
-#include "explain_-o.txt"
+#include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 .SH EXAMPLES
 To plot a green Africa with white outline on blue background, with permanent major rivers in thick blue pen, additional major rivers in thin blue pen, and national borders as dashed lines

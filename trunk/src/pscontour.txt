@@ -26,7 +26,7 @@ Raw ASCII (or binary, see \fB\-b\fP) xyz data to be contoured.
 .B \-C
 name of the color palette file.  Must have discrete colors if you want to paint the
 surface (\fB\-I\fP).  Only contours that have annotation flags set will be annotated.
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
@@ -35,7 +35,7 @@ No space between the option flag and the associated arguments.
 Several annotation formatting options can be set to modify the form of the annotation.  Give - to disable all annotations.
 Append f\fIfont_size\fP to change font size [9], append \fI/r/g/b\fP to change color of text fill box
 [PAGE_COLOR], append \fBa\fP\fIangle\fP to fix annotation angle [Default follows contour], and append \fBo\fP to draw the outline of the surrounding text box [Default is no outline].
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .TP
 .B \-D
 Dump the (x,y,z) coordinates of each contour to separate files, one for each contour segment. The
@@ -79,11 +79,11 @@ the contour lines are colored according to the cpt file (see \fB\-C\fP).
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
 #include "explain_-t.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 3 input columns].
 Use 4-byte integer triplets for node ids (\fB\-T\fP).
-#include "explain_-o.txt"
+#include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 .SH EXAMPLES
 To make a raw contour plot from the file topo.xyz and drawing the contours (pen = 2)

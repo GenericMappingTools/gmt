@@ -54,10 +54,10 @@ between 0 and 1.  See remarks section.
 Weights are supplied in input column 4.  Do a weighted least squares fit [or start with these weights 
 when doing the iterative robust fit].  [Default reads only the first 3 columns.]
 #include "explain_-t.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 3 (or 4 if \fB\-W\fP is set) input columns].
-#include "explain_-o.txt"
+#include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
 .SH REMARKS

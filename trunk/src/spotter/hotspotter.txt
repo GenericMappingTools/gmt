@@ -54,7 +54,7 @@ Set the upper age to assign seamounts whose crustal age is unknown (i.e. NaN) [n
 Truncate seamount ages exceeding the upper age set with \fB\-N\fP [no truncation].
 #include "explain_-V.txt"
 #include "explain_-t.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 5 input columns].
 .SH EXAMPLES

@@ -60,7 +60,7 @@ Reverses the sense of the test for each of the criteria specified:
 	\fBs\fP  select records NOT considered inside as specified by \fB\-A, \-D, \-N\fP.
 .br
 	\fBs\fP  select records NOT within the range specified by \fB\-Z\fP.
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 .TP
 .B \-L
 Pass all records whose location is within \fIdist\fP of any of the line segments in the multiple-segment ascii
@@ -88,10 +88,10 @@ three columns.  To indicate no limit on min or max, specify a hyphen (-).
 If no map projection is supplied we implicitly set \fB\-Jx\fP1.
 #include "explain_-V.txt"
 #include "explain_-t.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
-#include "explain_-o.txt"
+#include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
 .SH EXAMPLES

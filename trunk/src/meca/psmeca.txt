@@ -25,7 +25,7 @@ The \fIPostScript\fR code is written to standard output.
 .SH ARGUMENTS
 \fIfiles\fR
 List one or more file-names. If no files are given, \fBpsmeca\fP will read standard input.
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .TP
 \fB\-S\fR
@@ -195,7 +195,7 @@ Text string to appear above the beach ball (optional).
 .LP
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .TP
 \fB\-C\fR[\fIpen\fR][P\fIpointsize\fR]
 Offsets focal mechanisms to the longitude, latitude specified in the last

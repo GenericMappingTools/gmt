@@ -39,7 +39,7 @@ the contour interval is set equal to the specified annotation interval.
 .br
 If a file is given and \fB\-T\fP is set, 
 then only contours marked with upper case C or A will have tickmarks.
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -49,7 +49,7 @@ No space between the option flag and the associated arguments.
 Append f\fIfont_size\fP to change font size [9], append \fI/r/g/b\fP to change color of text fill box
 [PAGE_COLOR], append a\fIangle\fP to fix annotation angle [Default follows contour], append \fBo\fP to draw the outline of the surrounding text box [Default is no outline],
 or append \fBt\fP to use a transparent label box [Default is opaque].
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .TP
 .B \-D
 Dump the (x,y,z) coordinates of each contour to separate files, one for each contour segment. The
@@ -118,7 +118,7 @@ that this grid file contains z-values that are periodic in 360 degrees (e.g.,
 phase data, angular distributions) and that
 special precautions must be taken when determining 0-contours.
 #include "explain_-c.txt"
-#include "explain_-o.txt"
+#include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 .SH EXAMPLES
 To contour the file hawaii_grav.grd every 25 mGal on a Mercator map at 0.5 inch/degree, annotate

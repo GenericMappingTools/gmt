@@ -53,7 +53,7 @@ lon and lat).  [Default is no boundary conditions].
 .B \-W
 Input data have a 4th column containing observation point weights.  These are multiplied
 with the geometrical weight factor to determine the actual weights used in the calculations.
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 3 (or 4 if \fB\-W\fP is set) columns].
 #include "explain_-f.txt"

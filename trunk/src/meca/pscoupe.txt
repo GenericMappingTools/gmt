@@ -38,7 +38,7 @@ Moment tensor (initially in r, t, f system that is up, south, east)
 is defined in (-u^s, -u, s) system.
 A \fI file\fR  is created with extracted events.
 .sp 
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-R.txt"
 If frame is defined from cross-section parameters (see \fB-A\fR) this option is not taken into account,
 but must be present.
@@ -243,7 +243,7 @@ Text string to appear above the beach ball (default) or under (add u).
 .br
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .br
 .TP
 \fB\-E\fP\fIfill\fP

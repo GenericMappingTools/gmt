@@ -24,11 +24,11 @@ surface, and apply artificial illumination based on intensities provided in a se
 .TP
 \fIrelief_file\fP
 2-D gridded data set to be imaged (the relief of the surface).
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-Jz.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .TP
 .B \-C
 name of the color palette file.  Must be present if you want (1) mesh plot with

@@ -1,4 +1,4 @@
-#include "explain_-g.txt"
+#include "explain_-G_nopattern.txt"
 Alternatively, specify \fB\-Gp\fP\fIdpi/pattern\fP, where \fIpattern\fP gives
 the number of the built-in pattern (1-90) \fIor\fP the name of a Sun 1-, 8-,
 or 24-bit raster file. The \fIdpi\fP sets the resolution of the image. For

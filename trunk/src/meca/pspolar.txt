@@ -39,7 +39,7 @@ polarity:
 .SH ARGUMENTS
 \fIfiles\fR
 List one or more file-names. If no files are given, pspolar will read standard input.
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .TP
 \fB\-D\fIlongitude/latitude\fR
@@ -62,7 +62,7 @@ st(\fIa\fR)r, (\fIc\fR)ircle, (\fId\fR)iamond, (\fIh\fR)exagon,
 .LP
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .TP
 \fB\-C\fR
 Offsets focal mechanisms to the latitude and longitude specified in the last

@@ -27,13 +27,13 @@ Contains the x-component of the vector field.
 .TP
 \fIcompy.grd\fP
 Contains the y-component of the vector field. 
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
 .B \-A
 Means grdfiles have polar (r, theta) components instead of Cartesian (x, y).
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .TP
 .B \-C
 Use \fIcptfile\fP to assign colors based on vector length.

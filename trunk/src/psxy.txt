@@ -32,14 +32,14 @@ The \fIPostScript\fP code is written to standard output.
 .TP
 \fIfiles\fP
 List one or more file-names. If no files are given, \fBpsxy\fP will read standard input.
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
 .B \-A
 Suppress drawing line segments as great circle Arcs.  [Default draws great circle arcs].
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .TP
 .B \-C
 Give a color palette file.  When used with \fB\-S\fP, lets symbol fill color be determined by the z-value in the
@@ -197,7 +197,7 @@ Set pen attributes.  [Defaults: width = 1, color = 0/0/0, texture = solid].
 Implicitly draws the outline of symbols with selected pen. 
 #include "explain_-XY.txt"
 #include "explain_-t.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is the required number of columns given the chosen settings].
 #include "explain_-c.txt"

@@ -89,10 +89,10 @@ ID (see \fB\-Qd\fP) or give \fIellipsoid\fP:\fIdx,dy,dz\fP, where \fIellipsoid\f
 ID (see \fB\-Qe\fP) or given as \fIa,1/f\fP.  If \fIdatum\fP is - or not given we use WGS-84.
 #include "explain_-V.txt"
 #include "explain_-t.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
-#include "explain_-o.txt"
+#include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
 .SH EXAMPLES

@@ -20,7 +20,7 @@ option flags and lower case for modifiers.
 .TP
 \fIin_grdfile\fP
 2-D binary grd file to be transformed.
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
 .TP

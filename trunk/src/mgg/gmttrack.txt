@@ -20,11 +20,11 @@ map using the specified projection.  The \fIPostScript\fP code is written to sta
 .TP
 \fIleg-ids\fP
 Can be one or more gmtleg-names, like c2104 v3206 etc.
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .TP
 .B \-A
 Annotate each leg every time it enters the plot. Optional \fIsize\fP is character size in points.

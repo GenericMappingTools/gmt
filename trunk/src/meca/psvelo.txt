@@ -24,7 +24,7 @@ been replaced by \fBpsvelo\fP and \fBpsmeca\fP.
 .SH ARGUMENTS
 \fIfiles\fP
 List one or more file-names. If no files are given, \fBpsvelo\fP will read standard input.
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .br
 .sp
@@ -152,7 +152,7 @@ No space between the option flag and the associated arguments.
 .B \-A
 \fIArrow_width/Head_length/Head_width \fR
 Size of arrow in inches.  [Default is 0.03/0.12/0.09].
-#include "explain_-b.txt"
+#include "explain_-B_short.txt"
 .TP
 \fB\-C
 \fROffset focal mechanisms to the latitude and longitude specified in the last

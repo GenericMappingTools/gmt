@@ -79,7 +79,7 @@ analogous to the offset for the D records but in the vertical direction.
 Positions the legend and specifies its size.  The \fIjust\fP is a 2-char justification string (see \fBpstext\fP)
 that relates the given position to a point on the rectangular legend box.  If you want to specify the position
 in projected units (i.e., inches or cm), use \fB\-Dx\fP.
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.

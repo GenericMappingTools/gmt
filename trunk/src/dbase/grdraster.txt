@@ -38,9 +38,9 @@ in both dimensions.
 Name of output grid file.  If not set, the grid will be written as ASCII
 (or binary; see \fB\-bo\fP xyz-triplets to stdout instead.
 #include "explain_-I.txt"
-#include "explain_-j.txt"
+#include "explain_-J_short.txt"
 #include "explain_-V.txt"
-#include "explain_-o.txt"
+#include "explain_-o_binary.txt"
 This option applies only if no \fB\-G\fP option has been set.
 .SH EXAMPLES
 .sp

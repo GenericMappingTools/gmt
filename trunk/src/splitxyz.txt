@@ -72,10 +72,10 @@ delta y, according to \fB\-M\fP option]
 .B \-Z
 Data have x,y only (no z-column).
 #include "explain_-t.txt"
-#include "explain_-i.txt"
+#include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 2, 3, or 5 input columns as set by \fB\-S, \-Z\fP].
-#include "explain_-o.txt"
+#include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
 .SH EXAMPLES
