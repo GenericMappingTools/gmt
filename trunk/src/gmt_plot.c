@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.126 2004-05-23 05:52:07 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.127 2004-06-02 03:11:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2401,6 +2401,10 @@ void GMT_map_gridcross (double w, double e, double s, double n)
 
 	char *comment[2] = {"Map gridcrosses (primary)", "Map gridcrosses (secondary)"};
 
+	for (k = i = 0; k < 2; k++) if (gmtdefs.grid_cross_size[k] > 0.0) i++;
+	
+	if (i == 0) return;	/* No grid ticks requested */
+	
 	GMT_map_clip_on (GMT_no_rgb, 3);
 
 	for (k = 0; k < 2; k++) {

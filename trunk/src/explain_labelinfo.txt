@@ -5,9 +5,11 @@
 .br
 \fB+f\fP\fIfont\fP sets the desired font [Default \fBANNOT_FONT_PRIMARY\fP].
 .br
-\fB+g\fP\fIcolor\fP sets color of opaque text box [Default is transparent box].
+\fB+g\fP\fIcolor\fP sets color of opaque text boxes [Default is \fBPAGE_COLOR\fP].
 .br
 \fB+j\fP\fIjust\fP sets label justification [Default is CM].
+.br
+\fB+k\fP\fIcolor\fP sets color of text labels [Default is \fBCOLOR_BACKGROUND\fP].
 .br
 \fB+o|O\fP activates the drawing of rectangular or rounded rectangular outline of text box [Default is no outline].
 .br
@@ -15,9 +17,12 @@
 .br
 \fB+s\fP\fIsize\fP sets the desired font size in points [Default is 9].
 .br
-\fB+t\fP specifies transparent text box [Default].
+\fB+t\fP specifies straight text and transparent rectangular text box [Default].
 .br
-\fB+T\fP specifies transparent text box and places text along the curved path.
+\fB+T\fP specifies curved text and transparent curved text box following line.
 .br
-\fB+u\fP\fIunit\fP appends \fIunit\fP to all contour labels. If \fIunit\fP starts with a leading hypen (-) then there will be no space
+\fB+^\fP\fIprefix\fP prepends \fIprefix\fP to all line labels. If \fIprefix\fP starts with a leading hypen (-) then there will be no space
+between label value and the prefix. [Default is no prefix].
+.br
+\fB+u\fP\fIunit\fP appends \fIunit\fP to all line labels. If \fIunit\fP starts with a leading hypen (-) then there will be no space
 between label value and the unit. [Default is no unit].
