@@ -1,0 +1,9 @@
+#	$Id: invtriangle.def,v 1.1 2001-09-21 03:01:12 pwessel Exp $
+#
+#	Definition file for invtriangle symbol.  Use in psxy
+#	as -Skinvtriangle/size.  Unlike -Si, this allows for
+#	using patterns as fill
+#
+-0.433012701892	0.25	M
+0.433012701892	0.25	D
+0		-0.5	D

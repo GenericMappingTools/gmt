@@ -1,0 +1,10 @@
+#	$Id: square.def,v 1.1 2001-09-21 03:01:12 pwessel Exp $
+#
+#	Definition file for square symbol.  Use in psxy
+#	as -Sksquare/size.  Unlike -Ss this allows for
+#	using patterns as fill
+#
+-0.353553391	0.353553391	M
+0.353553391	0.353553391	D
+0.353553391	-0.353553391	D
+-0.353553391	-0.353553391	D
