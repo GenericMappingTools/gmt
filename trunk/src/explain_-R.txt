@@ -1,5 +1,12 @@
 .TP
 .B \-R
-\fIwest, east, south,\fP and \fInorth\fP specify the Region of interest.  To specify boundaries
-in degrees and minutes [and seconds], use the dd:mm[:ss] format.  Append \fBr\fP if lower left and upper right
-map coordinates are given instead of wesn.
+\fIxmin, xmax, ymin,\fP and \fIymax\fP specify the Region of interest.  For geographic
+regions, these limits correspond to \fIwest, east, south,\fP and \fInorth\fP and you may specify them
+in decimal degrees or in [+-]dd:mm[:ss.xxx][W|E|S|N] format.  Append \fBr\fP if lower left and upper right
+map coordinates are given instead of wesn.  For calendar time coordinates you may either give relative
+time (relative to the selected TIME_EPOCH and in the selected TIME_UNIT; append \fBt\fP to \fB\-JX|x\fP),
+or absolute time of the form [\fIdate\fP]\fBT[\fP\fIclock\fP].  At least one of \fIdate\fP and \fIclock\fP
+must be present; the \fBT\fP is required.  The \fIdate\fP string must be of the form [-]yyyy[-mm[-dd]]
+(Gregorian calendar) or yyyy[-Www[-d]] (ISO week calendar), while the \fIclock\fP string must be of
+the form hh:mm:ss[.xxx].  The use of delimeters and their positions are required (input/output and plotting
+is flexible). 

@@ -1,18 +1,93 @@
 .TP
 .B \-B
 Sets map boundary tickmark intervals. \fItickinfo\fP is a textstring made up of one or more
-concatenated substrings of the form [\fBwhich\fP]\fItick\fP[\fBm|c\fP].  The optional \fBwhich\fP
-can be either \fBa\fP for annotation interval [Default], \fBf\fP for frame tick interval, or
-\fBg\fP for gridline interval.  If frame interval is not set, it is assumed to be the same
-as annotation interval. \fItick\fP is the desired tick interval.  The optional \fBm|c\fP indicates
-minutes (\fBm\fP) or seconds (\fBc\fP).  To specify separate x and y ticks, separate the substrings that apply to the x and y
-axes with a slash [/] (If a 3-D basemap is selected with \fB\-E, \-Jz\fP, a third substring pertaining
-to the vertical axis may be appended.)  For linear/log/power projections (\fB\-Jx\fP): Labels
-for each axis can be added by surrounding them with colons.  If the first character in the
-label is a period, then the label is used as plot title; if it is a comma then the label is
-appended to each anotation (start label with - to avoid space between anotation and unit);
-else it is the axis label.
-If the label consists of more than one word, enclose the entire label in double quotes (e.g., :"my label":).
+concatenated substrings of the form [\fBitem\fP]\fIstride\fP[\fBunit\fP].  The optional \fBitem\fP
+identifies a particular axis item.  Three axis item types exist (six for time-axis, which may also
+use \fBA\fP, \fBI\fP, and \fBi\fP):
+.br
+.sp
+	\fBa\fP: (upper) tick anotation stride (upper means anotations closest to the axis)
+.br
+	f: (upper) frame tick stride.
+.br
+	g: grid line stride.
+.br
+	A: lower tick anotation stride (lower means anotations farthest from the axis).\
+.br
+	i: upper interval anotation stride (interval means anotation is centered on the interval).
+.br
+	I: lower interval anotation stride.
+.br
+	   i or I may be immediately followed by \fImodfP which controls interval anotations:
+.br
+	     f: Anotate full calendar-item name (e.g., "January").
+.br
+	     a: Anotate abbreviated calendar-item name (e.g., "Jan").
+.br
+	     c: Anotate 1-char calendar-item name (e.g., "J").
+.br
+	   Use F, A, C to force upper case anotation.
+.br
+	If \fBitem\fP is not given, it defaults to a (upper tick anotations).
+.br
+	If frame tick stride is not set, it is assumed to be the same as the upper annotation stride.
+.br
+.sp
+	The optional \fBunit\fP modifies \fIstride\fP accordingly.  For maps, you may use
+.br
+	  m: arc minutes [Default unit is degree].
+.br
+	  c: arc seconds.
+.br
+	For time axes, several units are recognized:
+.br
+	  Y: year - plot using all 4 digits.
+.br
+	  y: year - plot only last 2 digits.
+.br
+	  O: month - format anotation according to PLOT_DATE_FORMAT.;
+.br
+	  o: month - plot as 2-digit integer (1-12).
+.br
+	  U: ISO week - format anotation according to PLOT_DATE_FORMAT.
+.br
+	  u: ISO week - plot as 2-digit integer (1-53).
+.br
+	  r: Gregorian week - 7-day stride from chosen start of week (Sunday).
+.br
+	  K: ISO weekday - format anotation according to PLOT_DATE_FORMAT.
+.br
+	  k: weekday - plot name of weekdays in selected language [english].
+.br
+	  D: day  - format anotation according to PLOT_DATE_FORMAT, which also determines whether
+we should plot day of month (1-31) or day of year (1-366).
+.br
+	  d: day - plot as 2- (day of month) or 3- (day of year) integer.
+.br
+	  H: hour - format anotation according to PLOT_CLOCK_FORMAT.
+.br
+	  h: hour - plot as 2-digit integer (0-23).
+.br
+	  M: minute - format anotation according to PLOT_CLOCK_FORMAT.
+.br
+	  m: minute - plot as 2-digit integer (0-59).
+.br
+	  C: second - format anotation according to PLOT_CLOCK_FORMAT.
+.br
+	  c: second - plot as 2-digit integer (0-59; 60-61 if leap seconds are enabled).
+.br
+.sp
+Specify an axis label by surrounding it with colons (e.g., :"my x label":).
+Note that all labels that contain spaces must be quoted.
+.br
+To append a unit to each anotation (e.g., 5 km, 10 km ...) add a label that begins
+with a comma; the rest is used as unit anotation (e.g. :",km":). If the unit has
+a leading hyphen (-) there will be no space between unit and anotation (e.g., :,-%:).
+.br
+For separate x and y [and z if -Jz is used] tickinfo, separate the strings with slashes [/].
+.br
+Specify an plot title by adding a label whose first character is a period; the rest
+of the label is used as the title (e.g. :".My Plot Title":).
 .br
 By default, all 4 boundaries are plotted (referred to as \fBW, E, S, N\fP).  To change the default,
 append the code for only those axes you want (e.g., \fBWS\fP for standard lower-left x- and y-axis system).
@@ -22,22 +97,28 @@ Upper case (e.g., \fBW\fP) means draw axis/tickmarks AND annotate it, whereas lo
 of the vertical axis.  Append '+' to draw the outline of the cube defined by \fB\-R\fP.  Note
 that for 3-D views the title, if given, will be suppressed.)
 .br
+Log10 axis: Append l to anotate log10 (x) or p for 10^(log10(x)) [Default anotates x].
+Power axis: append p to annotate x at equidistant pow increments [Default will yield nonlinear
+spacing between anotations due to the nonlinear projection].
+
+.br
 For non-geographical projections:
 Give negative scale (in \fB\-Jx\fP) or axis length (in \fB\-JX\fP) to change the direction
 of increasing coordinates (i.e., to make the y-axis positive down).  For log10 axes:  Annotations
-can be specified in one of three ways:  (1) \fItick\fP can be 1, 2, or 3.  Annotations will then
+can be specified in one of three ways:  (1) \fIstride\fP can be 1, 2, or 3.  Annotations will then
 occur at 1, 1\-2\-5, or 1\-2\-3\-4\-...\-9, respectively.  This option can also be used for
-the frame and grid intervals.  (2) An \fBl\fP is appended to the \fItickinfo\fP string.
-Then, log10 of the tick value is plotted at every integer log10 value.  (3) A \fBp\fP is appended
+the frame and grid intervals.  (2) An \fBl\fP (lower case L) may be appended to the \fItickinfo\fP string.
+Then, log10 of the tick value is plotted at every integer log10 value.  (3) A \fBp\fP may be appended
 to the \fItickinfo\fP string.  Then, annotations appear as 10 raised to log10 of the tick value.
-For power axes: Annotations can be specified in one of two ways:  (1) \fItick\fP sets the
+For power axes: Annotations can be specified in one of two ways:  (1) \fIstride\fP sets the
 regular annotation interval.  (2) A \fBp\fP is appended to the \fItickinfo\fP string.  Then,
 the annotation interval is expected to be in transformed units, but the annotation value
-will be plotted as untransformed units.  E.g., if \fItick\fP = 1 and \fIpower\fP = 0.5 (i.e., sqrt),
+will be plotted as untransformed units.  E.g., if \fIstride\fP = 1 and \fIpower\fP = 0.5 (i.e., sqrt),
 then equidistant annotations labeled 1\-4\-9... will appear.
 .br
 These GMT parameters can affect the appearance of the map boundary: ANOT_MIN_ANGLE, ANOT_MIN_SPACING,
-ANOT_FONT, ANOT_FONT_SIZE, ANOT_OFFSET, BASEMAP_AXES, BASEMAP_FRAME_RGB, BASEMAP_TYPE, DEGREE_FORMAT,
+ANOT_FONT, ANOT_FONT_SIZE, ANOT_OFFSET, BASEMAP_AXES, BASEMAP_FRAME_RGB, BASEMAP_TYPE, DEGREE_SYMBOL,
 FRAME_PEN, FRAME_WIDTH, GRID_CROSS_SIZE, GRID_PEN, HEADER_FON, HEADER_FONT_SIZE, LABEL_FONT,
-LABEL_FONT_SIZE, LINE_STEP, OBLIQUE_ANOTATION, TICK_LENGTH, TICK_PEN, and Y_AXIS_TYPE; see the
-\fBgmtdefaults\fP man page for details.
+LABEL_FONT_SIZE, LINE_STEP, OBLIQUE_ANOTATION, PLOT_DEGREE_FORMAT, TICK_LENGTH, TICK_PEN, and Y_AXIS_TYPE.  In addition,
+time axies can also be affected by:  ANOT_FONT2, ANOT_FONT2_SIZE, PLOT_CLOCK_FORMAT, PLOT_DATE_FORMAT,
+TIME_LANGUAGE, and TIME_WEEK_START; see the \fBgmtdefaults\fP man page for details.
