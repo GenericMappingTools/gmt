@@ -45,9 +45,9 @@ Suppress drawing line segments as great circle Arcs.  [Default draws great circl
 Give a color palette file.  When used with \fB\-S\fP, lets symbol fill color be determined by the z-value in the
 third column.  Additional fields are
 shifted over by one column (optional size would be 4th rather than 3rd field, etc.).
-If \fB\-S\fP is not set, \fBpsxy\fP expects the user to supply a multisegment polygon file (requires \fB\-M\fP) and will look
-for \fB\-Z\fP\fIval\fP strings in each multisegment header.  The \fIval\fP will control the color
-via the cpt file.
+If \fB\-S\fP is not set, \fBpsxy\fP expects the user to supply a multisegment line or polygon file
+(requires \fB\-M\fP) and will look for \fB\-Z\fP\fIval\fP strings in each multisegment header.  The \fIval\fP
+will control the color of the line or polygon (use \fB\-L\fp) via the cpt file.
 .TP
 .B \-D
 Offset the plot symbol locations by the given amounts \fIdx/dy\fP [Default is no offset].  Only applies to symbols.
