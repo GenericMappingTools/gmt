@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.179 2005-03-04 02:26:10 remko Exp $
+ *	$Id: gmt_init.c,v 1.180 2005-03-04 05:14:20 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3295,7 +3295,7 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 
 		/* Here, t must point to a valid number.  If t[0] is not [+,-,.] followed by a digit we have an error */
 
-		if (!(isdigit (t[0]) || ((t[0] == '-' || t[0] == '+' || t[0] == '.')) && strlen(t) > 1)) {
+		if (!(isdigit (t[0]) || ((t[0] == '-' || t[0] == '+' || t[0] == '.') && strlen(t) > 1))) {
 			error = 2;
 			continue;
 		}

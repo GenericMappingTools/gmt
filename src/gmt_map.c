@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.86 2005-03-03 22:07:32 remko Exp $
+ *	$Id: gmt_map.c,v 1.87 2005-03-04 05:14:20 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6424,7 +6424,7 @@ int GMT_map_path (double lon1, double lat1, double lon2, double lat2, double **x
 
 int GMT_lonpath (double lon, double lat1, double lat2, double **x, double **y)
 {
-	int ny, n, n_try, keep_trying, jump, pos;
+	int ny, n, n_try, keep_trying, pos;
 	double dlat, dlat0, *tlon, *tlat, x0, x1, y0, y1, d;
 	double min_gap;
 
@@ -6472,13 +6472,17 @@ int GMT_lonpath (double lon, double lat1, double lat2, double **x, double **y)
 			tlat[n] = tlat[n-1] + dlat;
 			if (MAPPING && fabs (tlat[n]) > 90.0) tlat[n] = copysign (90.0, tlat[n]);
 			GMT_geo_to_xy (tlon[n], tlat[n], &x1, &y1);
-			jump = (*GMT_map_jump) (x0, y0, x1, y1) || (y0 < project_info.ymin || y0 > project_info.ymax);
-			if (!jump && (d = hypot (x1 - x0, y1 - y0)) > gmtdefs.line_step)
-				dlat *= 0.5;
-			else if (!jump && d < min_gap)
-				dlat *= 2.0;
-			else
+			if ((*GMT_map_jump) (x0, y0, x1, y1) || (y0 < project_info.ymin || y0 > project_info.ymax))
 				keep_trying = FALSE;
+			else {
+				d = hypot (x1 - x0, y1 - y0);
+				if (d > gmtdefs.line_step)
+					dlat *= 0.5;
+				else if (d < min_gap)
+					dlat *= 2.0;
+				else
+					keep_trying = FALSE;
+			}
 		} while (keep_trying && n_try < 10);
 		x0 = x1;	y0 = y1;
 	}
@@ -6497,7 +6501,7 @@ int GMT_lonpath (double lon, double lat1, double lat2, double **x, double **y)
 
 int GMT_latpath (double lat, double lon1, double lon2, double **x, double **y)
 {
-	int nx, n, n_try, keep_trying, jump, pos;
+	int nx, n, n_try, keep_trying, pos;
 	double dlon, dlon0, *tlon, *tlat, x0, x1, y0, y1, d;
 	double min_gap;
 
@@ -6542,13 +6546,17 @@ int GMT_latpath (double lat, double lon1, double lon2, double **x, double **y)
 			n_try++;
 			tlon[n] = tlon[n-1] + dlon;
 			GMT_geo_to_xy (tlon[n], tlat[n], &x1, &y1);
-			jump = (*GMT_map_jump) (x0, y0, x1, y1) || (y0 < project_info.ymin || y0 > project_info.ymax);
-			if (!jump && (d = hypot (x1 - x0, y1 - y0)) > gmtdefs.line_step)
-				dlon *= 0.5;
-			else if (!jump && d < min_gap)
-				dlon *= 2.0;
-			else
+			if ((*GMT_map_jump) (x0, y0, x1, y1) || (y0 < project_info.ymin || y0 > project_info.ymax))
 				keep_trying = FALSE;
+			else {
+				d = hypot (x1 - x0, y1 - y0);
+				if (d > gmtdefs.line_step)
+					dlon *= 0.5;
+				else if (d < min_gap)
+					dlon *= 2.0;
+				else
+					keep_trying = FALSE;
+			}
 		} while (keep_trying && n_try < 10);
 		x0 = x1;	y0 = y1;
 	}
