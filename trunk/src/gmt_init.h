@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.36 2004-01-02 22:45:13 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.37 2004-01-09 00:31:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -231,6 +231,7 @@ int GMT_no_rgb[3] = {-1, -1, -1};
 
 int GMT_oldargc;
 char *GMT_oldargv[N_UNIQUE];	/* Pointers to old common arguments */
+BOOLEAN GMT_processed_option[N_UNIQUE];	/* TRUE if option has been procssed */
 BOOLEAN GMT_quick = FALSE;
 
 struct BCR bcr;			/* For interpolations on grid */
