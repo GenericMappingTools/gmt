@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.4 2001-04-11 19:58:09 pwessel Exp $
+#	$Id: Makefile,v 1.5 2001-10-24 22:27:31 pwessel Exp $
 #
 #		Makefile for GMT spotter supplements
 #
@@ -10,7 +10,7 @@
 #
 #	Author:	Paul Wessel, SOEST, U. of Hawaii
 #
-#	Date:	07-FEB-2000
+#	Date:	24-OCT-2001
 #
 
 #-------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ CDF	= -L$(NETCDF)/lib -lnetcdf
 
 SPOT_H	= spotter.h
 
-SPOT_C	= backtracker.c hotspotter.c originator.c
+SPOT_C	= backtracker.c hotspotter.c originator.c rotconverter.c
 
 #-------------------------------------------------------------------------------
 #	object file dependencies
