@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.30 2001-10-17 01:04:35 pwessel Exp $
+ *	$Id: pslib.c,v 1.31 2001-10-24 23:32:43 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -285,10 +285,10 @@ void ps_clipoff_ (void) {
 }
 
 void ps_clipon (double *x, double *y, int n, int rgb[], int flag)
-                
+{        
       	/* Path length */
             	/* Optional paint (-1 to avoid paint) */
-          {	/* combo of 1 | 2. 1 = Start, 2 = end */
+	        /* combo of 1 | 2. 1 = Start, 2 = end */
 	/* Any plotting outside the path defined by x,y will be clipped.
 	   use clipoff to restore the original clipping path. */
 	
