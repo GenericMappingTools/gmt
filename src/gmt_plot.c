@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.28 2001-09-15 00:39:14 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.29 2001-09-15 02:36:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -178,6 +178,8 @@ void GMT_x_axis (double x0, double y0, double length, double val0, double val1, 
 	BOOLEAN is_interval;		/* TRUE when the anotation is interval anotation and not tick anotation */
 	BOOLEAN both;			/* TRUE if we have both upper and lower anotations on one axis */
 	BOOLEAN check_anotation;	/* TRUE is we have two levels of tick anotations that can overprint */
+	BOOLEAN do_anot;		/* TRUE unless we are dealing with Gregorian weeks */
+	BOOLEAN do_tick;		/* TRUE unless we are dealing with bits of weeks */
 	double *knots, *knots_p;	/* Array pointers with tick/anotation knots, the latter for primary anotations */
 	double tick_len[5];		/* Ticklengths for each of the 5 axis items */
 	double anot_off[2];		/* Distances from the axis for upper (0) and lower (1) anotations */
@@ -232,14 +234,16 @@ void GMT_x_axis (double x0, double y0, double length, double val0, double val1, 
 		
 		/* First plot all the tick marks */
 		
-		for (i = 0; i < nx; i++) {
+		do_tick = !((T->unit == 'K' || T->unit == 'k') && (T->interval > 1 && fmod (T->interval, 7.0) > 0.0));
+		for (i = 0; do_tick && i < nx; i++) {
 			if (knots[i] < (val0 - GMT_CONV_LIMIT) || knots[i] > (val1 + GMT_CONV_LIMIT)) continue;	/* Outside the range */
 			GMT_coordinate_to_x (knots[i], &x);							/* Convert to inches on the page */
 			ps_plot (x, 0.0, 3);									/* Draw tick mark */
 			ps_plotr (0.0, tick_len[k], -2);
 		}
 		
-		if (k < GMT_TICK_UPPER && anotate) {	/* Then do anotations too */
+		do_anot = ((k < GMT_TICK_UPPER && anotate) && !(T->unit == 'R' || T->unit == 'r'));		/* Cannot annotate a Gregorian week */
+		if (do_anot) {	/* Then do anotations too */
 		
 			anot_pos = GMT_lower_axis_item(k);							/* 1 means lower anotation, 0 means upper (close to axis) */
 			font_size = (anot_pos == 1) ? gmtdefs.anot_font2_size : gmtdefs.anot_font_size;		/* Set the id of the font to use */
@@ -397,10 +401,6 @@ void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct TIME_
 		case 'K':	/*  ISO Weekday name */
 			if (T->upper_case) GMT_str_toupper (GMT_time_language.day_name[calendar.iso_d%7][T->flavor]);
 			sprintf (string, "%s\0", GMT_time_language.day_name[calendar.iso_d%7][T->flavor]);
-			break;
-		case 'r':	/*  Gregorian weekday name */
-			if (T->upper_case) GMT_str_toupper (GMT_time_language.day_name[calendar.day_w][T->flavor]);
-			sprintf (string, "%s\0", GMT_time_language.day_name[calendar.day_w][T->flavor]);
 			break;
 		case 'k':	/* Day of the month */
 			(P->date.compact) ? sprintf (string, "%d\0", calendar.day_m) : sprintf (string, "%2.2d\0", calendar.day_m);
