@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.5 2004-09-10 23:24:48 pwessel Exp $
+#	$Id: Makefile,v 1.6 2004-09-10 23:37:34 pwessel Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -83,23 +83,61 @@ set_newf:
 set_oldf:
 		cp -f $(GMTHOME)/share/binned_GSHHS_f.cdf.old $(GMTHOME)/share/binned_GSHHS_f.cdf 
 		
-shrink: 	shrink_h shrink_i shrink_l shrink_c
+shrinkb: 	shrinkb_h shrinkb_i shrinkb_l shrinkb_c
+
+shrinkl: 	shrinkl_h shrinkl_i shrinkl_l shrinkl_c
+
+shrinkr: 	shrinkr_h shrinkr_i shrinkr_l shrinkr_c
 
 bin:		bin_f bin_h bin_i bin_l bin_c
 
 nodes:		nodes_f nodes_h nodes_i nodes_l nodes_c
 
-shrink_h:	
+lines:		lines_f lines_h lines_i lines_l lines_c
+		rm -f res_?/binned_border_?.bin
+		rm -f res_?/binned_border_?.seg
+		rm -f res_?/binned_border_?.pt
+
+rivers: 	river_f river_h river_i river_l river_c
+		rm -f res_?/binned_river_?.bin
+		rm res_?/binned_river_?.seg
+		rm res_?/binned_river_?.pt
+
+shrinkb_h:	
 		polygon_shrink res_f/${VERSION}_final_dbase.b 0.2 res_h/${VERSION}_final_dbase_0.2km.b
 		
-shrink_i:	
+shrinkb_i:	
 		polygon_shrink res_f/${VERSION}_final_dbase.b 1 res_i/${VERSION}_final_dbase_1km.b
 		
-shrink_l:	
+shrinkb_l:	
 		polygon_shrink res_f/${VERSION}_final_dbase.b 5 res_l/${VERSION}_final_dbase_5km.b
 		
-shrink_c:	
+shrinkb_c:	
 		polygon_shrink res_f/${VERSION}_final_dbase.b 25 res_c/${VERSION}_final_dbase_25km.b
+
+shrinkl_h:	
+		line_shrink wdb/wdb_borders.b 0.2 wdb/wdb_borders_0.2km.b
+		
+shrinkl_i:	
+		line_shrink wdb/wdb_borders.b 1 wdb/wdb_borders_1km.b
+		
+shrinkl_l:	
+		line_shrink wdb/wdb_borders.b 5 wdb/wdb_borders_5km.b
+		
+shrinkl_c:	
+		line_shrink wdb/wdb_borders.b 25 wdb/wdb_borders_25km.b
+
+shrinkr_h:	
+		line_shrink res_f/new_cia_rivers.b 0.2 res_h/new_cia_rivers_0.2km.b
+		
+shrinkr_i:	
+		line_shrink res_f/new_cia_rivers.b 1 res_i/new_cia_rivers_1km.b
+		
+shrinkr_l:	
+		line_shrink res_f/new_cia_rivers.b 5 res_l/new_cia_rivers_5km.b
+		
+shrinkr_c:	
+		line_shrink res_f/new_cia_rivers.b 25 res_c/new_cia_rivers_25km.b
 
 bin_f:
 		polygon_to_bins res_f/${VERSION}_final_dbase.b 1 res_f/${VERSION}_final_nodes.grd res_f/binned_GSHHS_f
@@ -140,6 +178,46 @@ nodes_l:
 
 nodes_c:
 		polygon_setnodes res_c/${VERSION}_final_dbase_25km.b 20 res_c/${VERSION}_final_nodes_25km.grd
+
+lines_f:
+		lines_to_bins wdb/wdb_borders.b 1 res_f/binned_border_f
+		linemaker res_f/binned_border_f
+
+lines_h:
+		lines_to_bins wdb/wdb_borders_0.2km.b 2 res_h/binned_border_h
+		linemaker res_h/binned_border_h
+
+lines_i:
+		lines_to_bins wdb/wdb_borders_1km.b 5 res_i/binned_border_i
+		linemaker res_i/binned_border_i
+
+lines_l:
+		lines_to_bins wdb/wdb_borders_5km.b 10 res_l/binned_border_l
+		linemaker res_l/binned_border_l
+
+lines_c:
+		lines_to_bins wdb/wdb_borders_25km.b 20 res_c/binned_border_c
+		linemaker res_c/binned_border_c
+
+river_f:
+		lines_to_bins res_f/new_cia_rivers.b 1 res_f/binned_river_f
+		linemaker res_f/binned_river_f
+
+river_h:
+		lines_to_bins res_h/new_cia_rivers_0.2km.b 2 res_h/binned_river_h
+		linemaker res_h/binned_river_h
+
+river_i:
+		lines_to_bins res_i/new_cia_rivers_1km.b 5 res_i/binned_river_i
+		linemaker res_i/binned_river_i
+
+river_l:
+		lines_to_bins res_l/new_cia_rivers_5km.b 10 res_l/binned_river_l
+		linemaker res_l/binned_river_l
+
+river_c:
+		lines_to_bins res_c/new_cia_rivers_25km.b 20 res_c/binned_river_c
+		linemaker res_c/binned_river_c
 
 gshhs:
 		polygon_to_gshhs res_f/${VERSION}_final_dbase.b > gshhs_f.b
