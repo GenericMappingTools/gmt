@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.4 2001-08-16 19:12:23 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.5 2001-08-16 23:30:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -56,6 +56,25 @@ EXTERN_MSC void GMT_write_segmentheader (FILE *fp, int n);		/* Write multisegmen
 EXTERN_MSC int GMT_scanf_old (char *p, double *val);			/* Convert text (incl dd:mm:ss) to double number */
 EXTERN_MSC char *GMT_fgets (char *record, int maxlength, FILE *fp);	/* Does a fscanf from inside gmt_io to keep DLLs working */
 
+struct GMT_CLOCK_IO {
+	int order[3];			/* The relative order of hour, mn, sec in input clock string */
+	int n_sec_decimals;		/* Number of digits in decimal seconds (0 for whole seconds) */
+	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
+	BOOLEAN twelwe_hr_clock;	/* TRUE if we are doing am/pm on output */
+	char ampm_suffix[2][8];		/* Holds the strings to append am or pm */
+	char format[32];		/* Actual C format used to output clock */
+	char delimeter[2];		/* Delimeter string in clock, e.g. ":" */
+};
+
+struct GMT_DATE_IO {
+	int order[4];			/* The relative order of year, month, day, day-of-year in input calendar string */
+	BOOLEAN Y2K_year;		/* TRUE if we have 2-digit years */
+	BOOLEAN truncated_cal_is_ok;	/* TRUE if we have YMD or YJ order so smallest unit is to the right */
+	char format[32];		/* Actual C format used to input/output date */
+	BOOLEAN iso_calendar;		/* TRUE if we do ISO week calendar */
+	BOOLEAN day_of_year;		/* TRUE if we do day-of-year rather than month/day */
+	char delimeter[2];		/* Delimeter string in date, e.g. "-" */
+};
 
 struct GMT_IO {	/* Used to process input data records */
 	
@@ -83,16 +102,10 @@ struct GMT_IO {	/* Used to process input data records */
 	BOOLEAN *skip_if_NaN;		/* TRUE if column j cannot be NaN and we must skip the record */
 	int *in_col_type;		/* Type of column on input: Time, geographic, etc, see GMT_IS_<TYPE> */
 	int *out_col_type;		/* Type of column on output: Time, geographic, etc, see GMT_IS_<TYPE> */
-	int n_sec_decimals;		/* Number of digits in decimal seconds (0 for whole seconds) */
-	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
-	BOOLEAN twelwe_hr_clock;	/* TRUE if we are doing am/pm on output */
-	BOOLEAN iso_calendar;		/* TRUE if we do ISO week calendar */
-	BOOLEAN day_of_year;		/* TRUE if we do day-of-year rather than month/day */
-	char ampm_suffix[2][8];		/* Holds the strings to append am or pm */
-	int ymdj_input_order[4];	/* The relative order of year, month, day, day-of-year in input calendar string */
-	int ymdj_output_order[4];	/* The relative order of year, month, day, day-of-year in output calendar string */
-	int hms_output_order[3];	/* The relative order of hour, mn, sec in output clock string */
-	char output_clock_format[32];	/* Actual C format used to output clock */
+	struct GMT_DATE_IO date_input;	/* Has all info on how to decode input dates */
+	struct GMT_DATE_IO date_output;	/* Has all info on how to write output dates */
+	struct GMT_CLOCK_IO clock_input;	/* Has all info on how to decode input clocks */
+	struct GMT_CLOCK_IO clock_output;	/* Has all info on how to write output clocks */
 };
 
 EXTERN_MSC struct GMT_IO GMT_io;
