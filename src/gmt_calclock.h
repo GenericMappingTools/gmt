@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.h,v 1.5 2001-08-20 01:53:39 pwessel Exp $
+ *	$Id: gmt_calclock.h,v 1.6 2001-08-22 20:52:55 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -55,6 +55,17 @@ struct GMT_Y2K_FIX {	/* The issue that refuses to go away... */
 	int y200;	/* The multiple of 100 to add to the 2-digit year if we are below the Y2K_offset_year */
 };
 
+struct GMT_MOMENT_INTERVAL {
+	struct GMT_gcal	cc[2];		
+	GMT_dtime	dt[2];		
+	double		sd[2];		/* Seconds since the start of the day.  */
+	GMT_cal_rd	rd[2];
+	int		itype;
+	int		step;
+	char		unit;
+};
+
+
 /* Functions whose source is in gmt_calclock.c:  */
 
 EXTERN_MSC GMT_dtime GMT_rdc2dt (GMT_cal_rd rd, double secs);
@@ -83,3 +94,8 @@ EXTERN_MSC BOOLEAN GMT_iso_ywd_is_bad (int y, int w, int d);	/* Check range of w
 EXTERN_MSC BOOLEAN GMT_g_ymd_is_bad (int y, int m, int d);	/* Check range of month and day for Gregorian YMD calendar values  */
 EXTERN_MSC void	GMT_gcal_from_dt (GMT_dtime t, struct GMT_gcal *cal);	/* Break internal time into calendar and clock struct info  */
 EXTERN_MSC struct GMT_Y2K_FIX GMT_Y2K_fix;	/* Structure holding Y2K parameters */
+EXTERN_MSC int GMT_verify_time_step (int step, char unit);	/* Check that time step and unit for time axis are OK  */
+EXTERN_MSC void GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN init); /* step a time axis by time units */
+EXTERN_MSC int GMT_gmonth_length (int year,  int month);	/* Get the number of days in a month by Gregorian leap rule */
+EXTERN_MSC void GMT_small_moment_interval (struct GMT_MOMENT_INTERVAL *p, int step_secs, BOOLEAN init); /* Aux to GMT_moment_interval */
+
