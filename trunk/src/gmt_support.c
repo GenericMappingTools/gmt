@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.139 2004-10-12 19:26:33 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.140 2004-10-14 03:29:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -354,7 +354,7 @@ void GMT_old2newpen (char *line)
 	
 	while (line[i] && (line[i] == '.' || isdigit ((int)line[i]))) i++;	/* scanning across valid characters for a pen width */
 	
-	if (i) {	/* Case 1: i > 0 which means a numerical width was specified) */
+	if (i) {	/* Case 1: i > 0 which means a numerical width was specified */
 		if (strchr ("cimp", line[i])) i++;	/* Got a trailing c|i|m|p for pen width unit */
 		strncpy (pstring, line, i);
 		got_pen = TRUE;
@@ -449,15 +449,15 @@ void GMT_old2newpen (char *line)
 	
 	/* Last-minute sanity check for "quick-n-dirty" usage */
 	
-	if (GMT_is_penwidth (saved)) {	/* Stand-alone pen width only */
+	if (GMT_is_penwidth (saved)) {		/* Stand-alone pen width only */
 		strcpy (pstring, saved);
 		pcolor[0] = ptexture[0] = '\0';
 	}
-	else if (GMT_is_color (saved,2))	{	/* Stand-alone pen color only.  Only 0-2 slashes allowed in GMT 3.* */
+	else if (GMT_is_color (saved,2)) {	/* Stand-alone pen color only.  Only 0-2 slashes allowed in GMT 3.x */
 		strcpy (pcolor, saved);
 		pstring[0] = ptexture[0] = '\0';
 	}
-	else if (GMT_is_texture (saved)){	/* Stand-alone pen texture only */
+	else if (GMT_is_texture (saved)) {	/* Stand-alone pen texture only */
 		strcpy (ptexture, saved);
 		pstring[0] = pcolor[0] = '\0';
 	}
@@ -4384,8 +4384,6 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 		 shift_x = (h->x_max < project_info.w) ? 360.0 : 0.0;	/* Shift to SUBTRACT from w/e ... when comparing */
 	}	
 	
-	/* *xmin = MAX (h->x_min, floor ((project_info.w - shift_x) / h->x_inc) * h->x_inc);
-	*xmax = MIN (h->x_max, ceil  ((project_info.e - shift_x) / h->x_inc) * h->x_inc); */
 	h->x_min += shift_x;
 	h->x_max += shift_x;
 	*xmin = MAX (h->x_min, floor (project_info.w / h->x_inc) * h->x_inc);

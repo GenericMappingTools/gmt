@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.82 2004-09-14 20:26:54 pwessel Exp $
+ *	$Id: gmt.h,v 1.83 2004-10-14 03:29:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -216,9 +216,9 @@ typedef double GMT_dtime;	/* GMT internal time representation */
  *--------------------------------------------------------------------*/
 
 #define N_UNIQUE 59		/* Number of unique options */
-#define N_KEYS 112		/* Number of gmt defaults */
+#define N_KEYS 113		/* Number of gmt defaults */
 #define GMT_N_MEDIA 29		/* Number of standard paper formats in the GMT_media_names.h include file */
-#define HASH_SIZE 112		/* Used in get_gmtdefaults, should be ~> N_KEYS */
+#define HASH_SIZE 113		/* Used in get_gmtdefaults, should be ~> N_KEYS */
 #define GMT_N_SYSTEMS 6		/* Number of time systems in gmt_time_systems.h */
 /* This structure contains default parameters for the GMT system */
 
@@ -296,6 +296,7 @@ struct GMTDEFAULTS {
 	int page_orientation;		/* Orientation of page [0 = Landscape, 1 = Portrait] */
 	int paper_width[2];		/* Width and height of paper to plot on in points [Letter or A4] */
 	BOOLEAN ps_cmykmode;		/* TRUE writes CMYK in PostSCript, FALSE uses RGB [FALSE] */
+	BOOLEAN ps_compress;		/* FALSE means NONE and TRUE means RLE [FALSE] */
 	BOOLEAN ps_heximage;		/* TRUE gives hex ps output image, FALSE gives binary image [TRUE] */
 	double tick_length;		/* Length of tickmarks [0.075] */
 	struct GMT_PEN tick_pen;	/* Pen attributes for tickmarks [2] */

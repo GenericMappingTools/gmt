@@ -55,6 +55,7 @@
 	0,			/* PAGE_ORIENTATION */
 	{612, 792},		/* PAPER_MEDIA (US Letter) */
 	FALSE,			/* PS_COLOR (TRUE = CMYK, FALSE = RGB) */
+	FALSE,			/* PSIMAGE_COMPRESS (FALSE = NONE, TRUE = RLE) */
 	TRUE,			/* PSIMAGE_FORMAT (TRUE = HEX, FALSE = BIN) */
 	0.075,			/* TICK_LENGTH */
 	{0.5, 0.0, {0, 0, 0}, ""},	/* TICK_PEN */
