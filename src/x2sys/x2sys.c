@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.3 2001-12-21 03:50:38 ben Exp $
+ *	$Id: x2sys.c,v 1.4 2002-04-30 18:12:41 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -139,11 +139,11 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s)
 			case 'a':	/* ASCII Record, get all columns directly */
 				k = 0;
 				fgets (line, BUFSIZ, fp);
-				p = strtok (line, " ,\t");
+				p = strtok (line, " ,\t\n");
 				while (p) {
 					GMT_scanf (p, GMT_io.in_col_type[k], &data[k]);
 					k++;;
-					p = strtok (NULL, " ,\t");
+					p = strtok (NULL, " ,\t\n");
 				}
 				return ((k != s->n_fields) ? -1 : 0);
 				break;
