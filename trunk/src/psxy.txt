@@ -13,7 +13,7 @@
 psxy \- Plot lines, polygons, and symbols on maps
 .SH SYNOPSIS
 \fBpsxy\fP \fIfiles\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-A\fP ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIcptfile\fP ] [ \fB\-E\fP[\fBx|y|X|Y\fP][\fIcap\fP][\fP/pen\fP] ] 
+[ \fB\-A\fP ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIcptfile\fP ] [ \fB\-D\fP\fIdx/dy\fP ] [ \fB\-E\fP[\fBx|y|X|Y\fP][\fIcap\fP][\fP/pen\fP] ] 
 [ \fB\-G\fP\fIfill\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-K\fP ] [ \fB\-L\fP ] 
 [ \fB\-N\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-S\fP[\fIsymbol\fP][\fIsize\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
 [ \fB\-V\fP ] [ \fB\-W\fP[\fIpen\fP] ] 
@@ -48,6 +48,9 @@ shifted over by one column (optional size would be 4th rather than 3rd field, et
 If \fB\-S\fP is not set, \fBpsxy\fP expects the user to supply a multisegment polygon file (requires \fB\-M\fP) and will look
 for \fB\-Z\fP\fIval\fP strings in each multisegment header.  The \fIval\fP will control the color
 via the cpt file.
+.TP
+.B \-D
+Offset the plot symbol locations by the given amounts \fIdx/dy\fP [Default is no offset].  Only applies to symbols.
 .TP
 .B \-E
 Draw error bars.  Append \fBx\fP and/or \fBy\fP to indicate which bars you want to draw (Default is both x and y).  The x and/or
