@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.102 2004-04-17 06:54:51 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.103 2004-04-18 07:42:48 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -130,6 +130,8 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name);
 
 void GMT_map_tickitem (double w, double e, double s, double n, int item);
 void GMT_NaN_pen_up (double x[], double y[], int pen[], int n);
+double GMT_frame_line (double lonA, double latA, double lonB, double latB, int side, BOOLEAN secondary_too);
+double GMT_frame_polarline (double lonA, double latA, double lonB, double latB, int side, BOOLEAN secondary_too);
 
 /* Local variables to this file */
 
@@ -1228,37 +1230,13 @@ void GMT_fancy_map_boundary (double w, double e, double s, double n)
 	sign_y = (project_info.xyz_pos[1]) ? +1.0 : -1.0;
 	
 	ps_setline (thin_pen);
-	
+
+	(void) GMT_frame_line (w, s, e, s, 0, dual);
+	(void) GMT_frame_line (e, s, e, n, 1, dual);
+	(void) GMT_frame_line (e, n, w, n, 2, dual);
+	(void) GMT_frame_line (w, n, w, s, 3, dual);
+
 	for (k = 0; k < 1 + dual; k++) {
-		for (i = 0; i < 4; i++) {
-			if (!frame_info.side[i]) continue;	/* Do not draw this frame side */
-			if (i%2) {	/* West or East */
-				lon = (i == 1) ? e : w;
-				sgn = (i == 1) ? +1.0 : -1.0;
-				GMT_geo_to_xy (lon, s, &x2, &y1);
-				GMT_geo_to_xy (lon, n, &x1, &y2);
-				y1 -= (sign_y * elength);
-				y2 += (sign_y * elength);
-				ps_plot (x2+sgn*offset[k], y1, 3);
-				ps_plot (x2+sgn*offset[k], y2, -2);
-				x2 += sgn * (sign_x * fwidth);
-				ps_plot (x2+sgn*offset[k], y1, 3);
-				ps_plot (x2+sgn*offset[k], y2, -2);
-			}
-			else {		/* South or North */
-				lat = (i == 0) ? s : n;
-				sgn = (i == 2) ? +1.0 : -1.0;
-				GMT_geo_to_xy (w, lat, &x1, &y1);
-				GMT_geo_to_xy (e, lat, &x2, &y2);
-				x1 -= (sign_x * elength);
-				x2 += (sign_x * elength);
-				ps_plot (x1, y1+sgn*offset[k], 3);
-				ps_plot (x2, y1+sgn*offset[k], -2);
-				y1 += sgn * (sign_y * fwidth);
-				ps_plot (x1, y1+sgn*offset[k], 3);
-				ps_plot (x2, y1+sgn*offset[k], -2);
-			}
-		}
 		if (fabs (elength) > GMT_CONV_LIMIT) continue;
 		if (frame_info.side[0] && frame_info.side[1]) {
 			GMT_geo_to_xy (e, s, &x1, &y1);
@@ -1348,12 +1326,85 @@ void GMT_fancy_map_boundary (double w, double e, double s, double n)
 	ps_setline (thin_pen);
 }
 
+double GMT_frame_line (double lonA, double latA, double lonB, double latB, int side, BOOLEAN secondary_too)
+{
+	int k;
+	double scale = 1.0, x[2], y[2], angle, dx, dy, Ldx, Ldy;
+	
+	if (!frame_info.side[side]) return (0.0);	/* Do not draw this frame side */
+	
+	if (secondary_too) scale = 0.5;
+
+	GMT_geo_to_xy (lonA, latA, &x[0], &y[0]);
+	GMT_geo_to_xy (lonB, latB, &x[1], &y[1]);
+	angle = d_atan2 (y[1] - y[0], x[1] - x[0]);
+	Ldx = (gmtdefs.basemap_type == GMT_IS_ROUNDED) ? 0.0 : gmtdefs.frame_width * cos (angle);
+	Ldy = (gmtdefs.basemap_type == GMT_IS_ROUNDED) ? 0.0 : gmtdefs.frame_width * sin (angle);
+	dx =  gmtdefs.frame_width * sin (angle);
+	dy = -gmtdefs.frame_width * cos (angle);
+	fprintf (stderr, "%d: A = %lg dx = %lg dy = %lg Ldx = %lg Ldy = %lg\n", side, angle*R2D, dx, dy, Ldx, Ldy);
+	ps_plot (x[0]-Ldx, y[0]-Ldy, +3);
+	ps_plot (x[1]+Ldx, y[1]+Ldy, -2);
+	for (k = 0; k < 1 + secondary_too; k++) {
+		x[0] += scale*dx;
+		y[0] += scale*dy;
+		x[1] += scale*dx;
+		y[1] += scale*dy;
+		ps_plot (x[0]-Ldx, y[0]-Ldy, +3);
+		ps_plot (x[1]+Ldx, y[1]+Ldy, -2);
+	}
+	return (angle);
+}
+
+double GMT_frame_polarline (double lonA, double latA, double lonB, double latB, int side, BOOLEAN secondary_too)
+{
+	int k;
+	double scale[2] = {1.0, 1.0}, escl, x0, x1, x2, y0, y1, y2, radius, angle, dr, r2, az1, az2, da0, da, width, s;
+	
+	if (!frame_info.side[side]) return;
+	
+	if (secondary_too) scale[0] = scale[1] = 0.5;
+	s = (side == 2) ? +1.0 : -1.0;
+	width = gmtdefs.frame_width;
+	escl = (gmtdefs.basemap_type == GMT_IS_ROUNDED) ? 0.0 : 1.0;	/* Want rounded corners */
+	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &x0, &y0);
+	GMT_geo_to_xy (lonA, latA, &x1, &y1);
+	GMT_geo_to_xy (lonB, latB, &x2, &y2);
+	radius = hypot (x1 - x0, y1 - y0);
+	dr = 0.5 * width;
+	az1 = d_atan2 (y1 - y0, x1 - x0) * R2D;
+	az2 = d_atan2 (y2 - y0, x2 - x0) * R2D;
+	fprintf (stderr, "%d: A1 = %lg A2 = %lg\n", side, az1, az2);
+	da0 = da = 0.0;
+	r2 = radius;
+	for (k = 0; k < 1 + secondary_too; k++) {
+		if (project_info.north_pole) {
+			r2 -= s*scale[k] * width;
+			da0 -= R2D * scale[k] * width /radius;
+			da -= R2D * scale[k] * width / r2;
+			/* if (az1 <= az2) az1 += 360.0; */
+			ps_arc (x0, y0, radius, az1-s*escl*da0, az2+s*escl*da0, 3);
+			ps_arc (x0, y0, r2, az1-s*escl*da, az2+s*escl*da, 3);
+		}
+		else {
+			r2 += s*scale[k] * width;
+			da += R2D * scale[k] * width / r2;
+			da0 += R2D * scale[k] * width /radius;
+			/* if (az2 <= az1) az2 += 360.0; */
+			ps_arc (x0, y0, radius, az2+s*escl*da0, az1-s*escl*da0, 3);
+			ps_arc (x0, y0, r2, az2+s*escl*da, az1-s*escl*da, 3);
+		}
+	}
+	return (radius);
+}
+
 /*	POLAR (S or N) PROJECTION MAP BOUNDARY	*/
 
 void GMT_polar_map_boundary (double w, double e, double s, double n)
 {
-	int i, nx, ny, shade, thin_pen, fat_pen;
-	double anglew, dx2w, dy2w, anglee, dx2e, dy2e;
+	int i, k, nx, ny, shade, thin_pen, fat_pen, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
+	BOOLEAN dual = FALSE;
+	double anglew, dx2w, dy2w, anglee, dx2e, dy2e, fwidth, escl, scale[2] = {1.0, 1.0};
 	double y0, x0, radiuss, radiusn, da, da0, az1, az2, psize, dx, dy;
 	double x1, x2, x3, y1, y2, y3, s1, w1, val, v1, v2, dummy, r2, dr;
 	
@@ -1378,180 +1429,143 @@ void GMT_polar_map_boundary (double w, double e, double s, double n)
 	
 	/* Here draw fancy map boundary */
 	
+	fwidth = psize = fabs (gmtdefs.frame_width);
+	if (GMT_get_map_interval (1, GMT_TICK_LOWER) != 0.0) {	/* Need two-layer frame */
+		fwidth *= 0.5;
+		scale[0] = scale[1] = 0.5;
+		dual = TRUE;
+	}
+	escl = (gmtdefs.basemap_type == GMT_IS_ROUNDED) ? 0.0 : 1.0;	/* Want rounded corners */
+	dr = 0.5 * psize;
+	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &x0, &y0);
+
 	ps_setpaint (gmtdefs.basemap_frame_rgb);
 
-	fat_pen = irint (gmtdefs.frame_width * gmtdefs.dpi);
-	thin_pen = irint (0.1 * gmtdefs.frame_width * gmtdefs.dpi);
+	fat_pen = irint (fwidth * gmtdefs.dpi);
+	thin_pen = irint (0.1 * fwidth * gmtdefs.dpi);
 	ps_setline (thin_pen);
+
+	radiuss = GMT_frame_polarline (w, s, e, s, 0, dual);
+	anglee = GMT_frame_line (e, s, e, n, 1, dual);
+	radiusn = GMT_frame_polarline (e, n, w, n, 2, dual);
+	anglew = GMT_frame_line (w, n, w, s, 3, dual);
 	
-	psize = gmtdefs.frame_width;
-	
-	/* Angle of western boundary:  */
-	
-	GMT_geo_to_xy (w, n, &x1, &y1);
-	GMT_geo_to_xy (w, s, &x2, &y2);
-	anglew = d_atan2 (y1 - y2, x1 - x2);
 	dx2w = -psize * sin (anglew);
 	dy2w = psize * cos (anglew);
-	
-	/* Angle of eastern boundary:  */
-	
-	GMT_geo_to_xy (e, n, &x1, &y1);
-	GMT_geo_to_xy (e, s, &x2, &y2);
-	anglee = d_atan2 (y1 - y2, x1 - x2);
 	dx2e = -psize * cos (anglee);
 	dy2e = psize * sin (anglee);
-	
-	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &x0, &y0);
-	GMT_geo_to_xy (project_info.central_meridian, s, &dummy, &y1);
-	GMT_geo_to_xy (project_info.central_meridian, n, &dummy, &y2);
-	radiuss = fabs(y1 - y0);
-	radiusn = fabs(y2 - y0);
-	dr = 0.5 * psize;
-	
-	if (frame_info.side[3]) {	/* Draw western boundary */
-		GMT_geo_to_xy (w, n, &x1, &y1);
-		GMT_geo_to_xy (w, s, &x2, &y2);
-		ps_plot (x1+dy2w, y1-dx2w, 3);
-		ps_plot (x2-dy2w, y2+dx2w, -2);
-		x1 += dx2w;
-		y1 += dy2w;
-		x2 += dx2w;
-		y2 += dy2w;
-		ps_plot (x1+dy2w, y1-dx2w, 3);
-		ps_plot (x2-dy2w, y2+dx2w, -2);
-	}
-	if (frame_info.side[1]) {	/* Draw eastern boundary */
-		GMT_geo_to_xy (e, n, &x1, &y1);
-		GMT_geo_to_xy (e, s, &x2, &y2);
-		ps_plot (x1-dx2e, y1+dy2e, 3);
-		ps_plot (x2+dx2e, y2-dy2e, -2);
-		x1 += dy2e;
-		y1 += dx2e;
-		x2 += dy2e;
-		y2 += dx2e;
-		ps_plot (x1-dx2e, y1+dy2e, 3);
-		ps_plot (x2+dx2e, y2-dy2e, -2);
-	}
-	if (frame_info.side[0]) {	/* Draw southern boundary */
-		da0 = R2D * psize /radiuss;
-		GMT_geo_to_xy (e, s, &x1, &y1);
-		GMT_geo_to_xy (w, s, &x2, &y2);
-		az1 = d_atan2 (y1 - y0, x1 - x0) * R2D;
-		az2 = d_atan2 (y2 - y0, x2 - x0) * R2D;
-		if (project_info.north_pole) {
-			r2 = radiuss + psize;
-			da = R2D * psize / r2;
-			if (az1 <= az2) az1 += 360.0;
-			ps_arc (x0, y0, radiuss, az2-da0, az1+da0, 3);
-			ps_arc (x0, y0, r2, az2-da, az1+da, 3);
+
+	anglee *= R2D;	anglew *= R2D;
+	fprintf (stderr, "E = %lg W = %lg\n", anglee, anglew);
+	for (k = 0; k < dual + 1; k++) {
+		if (fabs (escl) > GMT_CONV_LIMIT) continue;
+		if (frame_info.side[0] && frame_info.side[1]) {
+			GMT_geo_to_xy (e, s, &x1, &y1);
+			ps_arc (x1, y1, (k+1)*fwidth, 180.0+anglee, 270.0+anglee, 3);
 		}
-		else {
-			r2 = radiuss - psize;
-			da = R2D * psize / r2;
-			if (az2 <= az1) az2 += 360.0;
-			ps_arc (x0, y0, radiuss, az1-da0, az2+da0, 3);
-			ps_arc (x0, y0, r2, az1-da, az2+da, 3);
+		if (frame_info.side[1] && frame_info.side[2]) {
+			GMT_geo_to_xy (e, n, &x1, &y1);
+			ps_arc (x1, y1, (k+1)*fwidth, 270.0+anglee, 360.0+anglee, 3);
 		}
-	}
-	if (frame_info.side[2]) {	/* Draw northern boundary */
-		da0 = R2D * psize / radiusn;
-		GMT_geo_to_xy (e, n, &x1, &y1);
-		GMT_geo_to_xy (w, n, &x2, &y2);
-		az1 = d_atan2 (y1 - y0, x1 - x0) * R2D;
-		az2 = d_atan2 (y2 - y0, x2 - x0) * R2D;
-		if (project_info.north_pole) {
-			r2 = radiusn - psize;
-			da = R2D * psize / r2;
-			if (az1 <= az2) az1 += 360.0;
-			ps_arc (x0, y0, radiusn, az2-da0, az1+da0, 3);
-			ps_arc (x0, y0, r2, az2-da, az1+da, 3);
+		if (frame_info.side[2] && frame_info.side[3]) {
+			GMT_geo_to_xy (w, n, &x1, &y1);
+			ps_arc (x1, y1, (k+1)*fwidth, 180.0+anglew, 270.0+anglew, 3);
 		}
-		else {
-			r2 = radiusn + psize;
-			da = R2D * psize / r2;
-			if (az2 <= az1) az2 += 360.0;
-			ps_arc (x0, y0, radiusn, az1-da0, az2+da0, 3);
-			ps_arc (x0, y0, r2, az1-da, az2+da, 3);
+		if (frame_info.side[3] && frame_info.side[0]) {
+			GMT_geo_to_xy (w, s, &x1, &y1);
+			ps_arc (x1, y1, (k+1)*fwidth, 270.0+anglew, 360.0+anglew, 3);
+		}
+		if (project_info.n_polar && frame_info.side[3] && frame_info.side[1]) {
+			GMT_geo_to_xy (w, n, &x1, &y1);
+			ps_arc (x1, y1, (k+1)*fwidth, anglee, 180.0+anglew, 3);
+		}
+		if (project_info.s_polar && frame_info.side[3] && frame_info.side[1]) {
+			GMT_geo_to_xy (w, s, &x1, &y1);
+			ps_arc (x1, y1, (k+1)*fwidth, anglew-90.0, anglee-90.0, 3);
 		}
 	}
 	
 	/* Tick S-N axes */
 	
 	ps_setline (fat_pen);
-	if ((dy = GMT_get_map_interval (1, GMT_TICK_UPPER)) != 0.0) {
-		shade = ((int)floor (s / dy) + 1) % 2;
-		s1 = floor(s/dy) * dy;
-		ny = (s1 > n) ? -1 : (int)((n-s1) / dy + SMALL);
-		for (i = 0; i <= ny; i++) {
-			val = s1 + i * dy;
-			v1 = (val < s) ? s : val;
-			GMT_geo_to_xy (w, v1, &x1, &y1);
-			GMT_geo_to_xy (e, v1, &x2, &y2);
-			if (shade) {
-				v2 = val + dy;
-				if (v2 > n) v2 = n;
-				if (frame_info.side[3]) {
-					GMT_geo_to_xy (w, v2, &x3, &y3);
-					ps_plot (x1+0.5*dx2w, y1+0.5*dy2w, 3);
-					ps_plot (x3+0.5*dx2w, y3+0.5*dy2w, -2);
+	scale[1] = 1.5;
+	for (k = 0; k < 1 + dual; k++) {
+		if ((dy = GMT_get_map_interval (1, item[k])) != 0.0) {
+			shade = ((int)floor (s / dy) + 1) % 2;
+			s1 = floor(s/dy) * dy;
+			ny = (s1 > n) ? -1 : (int)((n-s1) / dy + SMALL);
+			for (i = 0; i <= ny; i++) {
+				val = s1 + i * dy;
+				v1 = (val < s) ? s : val;
+				GMT_geo_to_xy (w, v1, &x1, &y1);
+				GMT_geo_to_xy (e, v1, &x2, &y2);
+				if (shade) {
+					v2 = val + dy;
+					if (v2 > n) v2 = n;
+					if (frame_info.side[3]) {
+						GMT_geo_to_xy (w, v2, &x3, &y3);
+						ps_plot (x1-0.5*scale[k]*dx2w, y1-0.5*scale[k]*dy2w, 3);
+						ps_plot (x3-0.5*scale[k]*dx2w, y3-0.5*scale[k]*dy2w, -2);
+					}
+					if (frame_info.side[1]) {
+						GMT_geo_to_xy (e, v2, &x3, &y3);
+						ps_plot (x2+0.5*scale[k]*dy2e, y2+0.5*scale[k]*dx2e, 3);
+						ps_plot (x3+0.5*scale[k]*dy2e, y3+0.5*scale[k]*dx2e, -2);
+					}
+					shade = FALSE;
 				}
-				if (frame_info.side[1]) {
-					GMT_geo_to_xy (e, v2, &x3, &y3);
-					ps_plot (x2+0.5*dy2e, y2+0.5*dx2e, 3);
-					ps_plot (x3+0.5*dy2e, y3+0.5*dx2e, -2);
-				}
-				shade = FALSE;
+				else
+					shade = TRUE;
 			}
-			else
-				shade = TRUE;
 		}
 	}
-
+	
 	/* Tick W-E axes */
 	
-	if ((dx = GMT_get_map_interval (0, GMT_TICK_UPPER)) != 0.0) {
-		shade = ((int)floor (w / dx) + 1) % 2;
-		w1 = floor(w/dx) * dx;
-		nx = (w1 > e) ? -1 : (int)((e-w1) / dx + SMALL);
-		for (i = 0; i <= nx; i++) {
-			val = w1 + i * dx;
-			v1 = (val < w) ? w : val;
-			if (shade) {
-				v2 = val + dx;
-				if (v2 > e) v2 = e;
-				if (frame_info.side[0]) {
-					GMT_geo_to_xy (v2, s, &x1, &y1);
-					GMT_geo_to_xy (v1, s, &x2, &y2);
-					az1 = d_atan2 (y1 - y0, x1 - x0) * R2D;
-					az2 = d_atan2 (y2 - y0, x2 - x0) * R2D;
-					if (project_info.north_pole) {
-						if (az1 < az2) az1 += 360.0;
-						ps_arc (x0, y0, radiuss+dr, az2, az1, 3);
+	for (k = 0; k < 1 + dual; k++) {
+		if ((dx = GMT_get_map_interval (0, item[k])) != 0.0) {
+			shade = ((int)floor (w / dx) + 1) % 2;
+			w1 = floor(w/dx) * dx;
+			nx = (w1 > e) ? -1 : (int)((e-w1) / dx + SMALL);
+			for (i = 0; i <= nx; i++) {
+				val = w1 + i * dx;
+				v1 = (val < w) ? w : val;
+				if (shade) {
+					v2 = val + dx;
+					if (v2 > e) v2 = e;
+					if (frame_info.side[0]) {
+						GMT_geo_to_xy (v2, s, &x1, &y1);
+						GMT_geo_to_xy (v1, s, &x2, &y2);
+						az1 = d_atan2 (y1 - y0, x1 - x0) * R2D;
+						az2 = d_atan2 (y2 - y0, x2 - x0) * R2D;
+						if (project_info.north_pole) {
+							if (az1 < az2) az1 += 360.0;
+							ps_arc (x0, y0, radiuss+scale[k]*dr, az2, az1, 3);
+						}
+						else {
+							if (az2 < az1) az2 += 360.0;
+							ps_arc (x0, y0, radiuss-scale[k]*dr, az1, az2, 3);
+						}
 					}
-					else {
-						if (az2 < az1) az2 += 360.0;
-						ps_arc (x0, y0, radiuss-dr, az1, az2, 3);
+					if (frame_info.side[2]) {
+						GMT_geo_to_xy (v2, n, &x1, &y1);
+						GMT_geo_to_xy (v1, n, &x2, &y2);
+						az1 = d_atan2 (y1 - y0, x1 - x0) * R2D;
+						az2 = d_atan2 (y2 - y0, x2 - x0) * R2D;
+						if (project_info.north_pole) {
+							if (az1 < az2) az1 += 360.0;
+							ps_arc (x0, y0, radiusn-scale[k]*dr, az2, az1, 3);
+						}
+						else {
+							if (az2 < az1) az2 += 360.0;
+							ps_arc (x0, y0, radiusn+scale[k]*dr, az1, az2, 3);
+						}
 					}
+					shade = FALSE;
 				}
-				if (frame_info.side[2]) {
-					GMT_geo_to_xy (v2, n, &x1, &y1);
-					GMT_geo_to_xy (v1, n, &x2, &y2);
-					az1 = d_atan2 (y1 - y0, x1 - x0) * R2D;
-					az2 = d_atan2 (y2 - y0, x2 - x0) * R2D;
-					if (project_info.north_pole) {
-						if (az1 < az2) az1 += 360.0;
-						ps_arc (x0, y0, radiusn-dr, az2, az1, 3);
-					}
-					else {
-						if (az2 < az1) az2 += 360.0;
-						ps_arc (x0, y0, radiusn+dr, az1, az2, 3);
-					}
-				}
-				shade = FALSE;
+				else
+					shade = TRUE;
 			}
-			else
-				shade = TRUE;
 		}
 	}
 	ps_setline (thin_pen);
