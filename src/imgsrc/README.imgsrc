@@ -1,4 +1,4 @@
-	$Id: README.imgsrc,v 1.2 2001-05-18 17:32:02 pwessel Exp $
+	$Id: README.imgsrc,v 1.3 2003-04-11 22:57:15 pwessel Exp $
 
 Maintained by: W H F Smith
 
@@ -131,7 +131,7 @@ provide both forward [default] and inverse [-I] transformations.
  
 The "img" files use a spherical Mercator coordinate system (detailed 
 below in section #6), which is available in GMT using -Jm or -JM with 
-the .gmtdefaults parameter ELLIPSOID set to "Sphere".  The img values 
+the .gmtdefaults4 parameter ELLIPSOID set to "Sphere".  The img values 
 are given at locations corresponding to pixels in a spherical Mercator 
 map whose overall dimension (scale) is arbitrary.  img2mercgrd extracts 
 pixels from this map and writes their values as a pixel-registered grd 
@@ -173,7 +173,7 @@ understand, is to make a Mercator map which combines the img data with
 other GMT plot operations referred to longitude-latitude coordinates 
 (such as psbasemap, pscoast, psxy, etc.).  To make a map, note the 
 overall width of the mercatorized grd file obtained from img2mercgrd.  
-Since it was arbitrarily scaled with -Jm1 its width (in .gmtdefaults 
+Since it was arbitrarily scaled with -Jm1 its width (in .gmtdefaults4 
 MEASURE_UNIT values) is simply the range of longitude from <aw> to <ae>.  
 Choose a map scale (in degrees of longitude per MEASURE_UNIT) so that 
 the desired map has the desired width.  Any plot operations (such as 

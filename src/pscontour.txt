@@ -103,7 +103,7 @@ the colors in temp.cpt, run
 .SH BUGS
 Sometimes there will appear to be thin lines of the wrong color in the image.
 This is a round-off problem which may be remedied by using a higher value of
-DOTS_PR_INCH in the .gmtdefaults file.
+DOTS_PR_INCH in the \.gmtdefaults4 file.
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR grdcontour (l),

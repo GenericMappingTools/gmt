@@ -25,9 +25,9 @@ gmtdefaults \- To list current \fBGMT\fP defaults
 .SH DESCRIPTION
 \fBgmtdefaults\fP lists the 
 \fBGMT\fP parameter defaults if the option \fB\-D\fP is used.  To change some of the settings,
-use the command \fBgmtset\fP or use any texteditor to edit the file .gmtdefaults in your home
+use the command \fBgmtset\fP or use any texteditor to edit the file \.gmtdefaults4 in your home
 or current directory.  If you do not have this file in your home or current directory, run 
-\fBgmtdefaults\fP -D > ~/.gmtdefaults to get the system settings.
+\fBgmtdefaults\fP -D > ~/.gmtdefaults4 to get the system settings.
 \fBGMT\fP can provide default values in US or SI units.  This choice is determined by the contents of the
 gmt.conf file in \fBGMT\fP's share directory.
 .TP
@@ -39,8 +39,8 @@ defaults or \fBs\fP for SI defaults. [\fB\-D\fP alone gives current choice in gm
 Print the user's currently active defaults to standard output.
 .br
 .sp
-Your currently active defaults come from the .gmtdefaults file in the 
-current working directory, if present; else from the .gmtdefaults file 
+Your currently active defaults come from the \.gmtdefaults4 file in the 
+current working directory, if present; else from the \.gmtdefaults4 file 
 in your home directory, if present; else from the
 system defaults set at the time \fBGMT\fP was compiled.
 .SH \fBGMT\fP PARAMETERS
@@ -621,13 +621,13 @@ or vertically (ver_text)  [hor_text].
 To get a copy of the \fBGMT\fP parameter defaults in your home directory, run
 .br
 .sp
-\fBgmtdefaults\fP \fB\-D\fP > ~/.gmtdefaults
+\fBgmtdefaults\fP \fB\-D\fP > ~/.gmtdefaults4
 .br
 .sp
 You may now change the settings by editing this file using a text editor of your choice, or
 use \fBgmtset\fP to change specified parameters on the command line.
 .SH BUGS
-If you have typographical errors in your .gmtdefaults file(s), a warning message will be
+If you have typographical errors in your \.gmtdefaults4 file(s), a warning message will be
 issued, and the \fBGMT\fP defaults for the affected parameters will be used.
 .SH "SEE ALSO"
 .IR gmt (l),

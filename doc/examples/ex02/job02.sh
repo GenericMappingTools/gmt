@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 02
 #
-#		$Id: job02.sh,v 1.3 2002-01-30 03:40:55 ben Exp $
+#		$Id: job02.sh,v 1.4 2003-04-11 22:57:15 pwessel Exp $
 #
 # Purpose:	Make two color images based gridded data
 # GMT progs:	gmtset grd2cpt grdgradient grdimage makecpt psscale pstext
@@ -22,4 +22,4 @@ cat << EOF | pstext -R0/8.5/0/11 -Jx1i -O -N -Y-4.5i >> example_02.ps
 -0.4 7.5 30 0.0 1 CB a)
 -0.4 3.0 30 0.0 1 CB b)
 EOF
-\rm -f .gmtcommands .gmtdefaults HI_topo2_int.grd ?.cpt
+rm -f .gmtcommands4 .gmtdefaults4 HI_topo2_int.grd ?.cpt

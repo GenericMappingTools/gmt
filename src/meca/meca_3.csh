@@ -1,7 +1,7 @@
 #!/bin/csh -xe
-#	$Id: meca_3.csh,v 1.2 2000-12-29 22:10:37 pwessel Exp $
+#	$Id: meca_3.csh,v 1.3 2003-04-11 22:57:15 pwessel Exp $
 
-\rm -f .gmtdefaults
+\rm -f .gmtdefaults4
 gmtset MEASURE_UNIT inch TICK_LENGTH 0.075i FRAME_WIDTH 0.1i \
     X_ORIGIN 2.5c Y_ORIGIN 1.3i DEGREE_FORMAT 3 HEADER_FONT_SIZE 18p
 
@@ -85,3 +85,4 @@ pspolar -R85/89/25/50 -JX7i -P -D87/35 -M4i -N -Sc0.3i -e -O \
 69 131.7 15 d
 70 114.1 15 c
 EOF
+\rm -f .gmtdefaults4

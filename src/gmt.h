@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.43 2003-03-21 17:10:58 pwessel Exp $
+ *	$Id: gmt.h,v 1.44 2003-04-11 22:57:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -465,7 +465,7 @@ EXTERN_MSC int GMT_n_file_suffix;
 EXTERN_MSC int *GMT_file_id;
 EXTERN_MSC double *GMT_file_scale, *GMT_file_offset, *GMT_file_nan;
 EXTERN_MSC char **GMT_file_suffix;
-EXTERN_MSC int GMT_fd_history;	/* File descriptor for .gmtcommands */
+EXTERN_MSC int GMT_fd_history;	/* File descriptor for .gmtcommands4 */
 EXTERN_MSC BOOLEAN GMT_lock;	/*T/F for advisory file locking */
 EXTERN_MSC int GMT_pad[4];
 

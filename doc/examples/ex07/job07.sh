@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 07
 #
-#		$Id: job07.sh,v 1.3 2002-01-30 03:40:56 ben Exp $
+#		$Id: job07.sh,v 1.4 2003-04-11 22:57:15 pwessel Exp $
 #
 # Purpose:	Make a basemap with earthquakes and isochrons etc
 # GMT progs:	pscoast, pstext, psxy
@@ -31,4 +31,4 @@ pstext -R -JM -O -S0.75p -G255 << END >> example_07.ps
 -43 -8 30 0 1 CM AMERICA
  -7 11 30 0 1 CM AFRICA
 END
-\rm -f .gmtcommands
+rm -f .gmt*

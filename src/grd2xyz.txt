@@ -7,7 +7,7 @@ grd2xyz \- Converting a grdfile to an ASCII or binary table
 .SH DESCRIPTION
 \fBgrd2xyz\fP reads a binary 2-D grdfile and writes out xyz-triplets in ASCII [or binary] format to standard output.
 Modify the
-precision of the ASCII output format by editing the D_FORMAT parameter in your .gmtdefaults file, or
+precision of the ASCII output format by editing the D_FORMAT parameter in your \.gmtdefaults4 file, or
 choose binary output using single or double precision storage.  As an option you may output
 z-values without the (x,y) in a
 number of formats, see \fB\-Z\fP below.

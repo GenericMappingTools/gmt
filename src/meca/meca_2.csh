@@ -1,7 +1,7 @@
 #!/bin/csh -xe
-#	$Id: meca_2.csh,v 1.2 2000-12-29 22:10:37 pwessel Exp $
+#	$Id: meca_2.csh,v 1.3 2003-04-11 22:57:15 pwessel Exp $
 
-\rm -f .gmtdefaults
+\rm -f .gmtdefaults4
 gmtset MEASURE_UNIT inch TICK_LENGTH 0.075i FRAME_WIDTH 0.1i \
     X_ORIGIN 2.5c Y_ORIGIN 1.3i DEGREE_FORMAT 3
 
@@ -171,4 +171,4 @@ pstext -X-5 -R0/10/0/15 -Jx1 -O << EOF >> $plotfile
 3 8.5 24 0 1 1 Variation of azimuth
 3 8.0 20 0 1 1 vertical cross-section
 EOF
-\rm Aa* Ab*
+\rm -f Aa* Ab* .gmtdefaults4

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.82 2003-04-10 19:40:11 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.83 2003-04-11 22:57:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -473,6 +473,7 @@ void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct PLOT_
 			GMT_format_calendar (string, CNULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'd':	/* 2-digit day or 3-digit day of year */
+		case 'R':	/* Gregorian month-days are the same thing - only they start at beginning of weeks and not months */
 			if (P->date.day_of_year)
 				(P->date.compact) ? sprintf (string, "%d", calendar.day_y) : sprintf (string, "%3.3d", calendar.day_y);
 			else
@@ -634,7 +635,7 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 			ps_segment (x, 0.0, x, tick_len[k]);
 		}
 		
-		do_annot = ((k < GMT_TICK_UPPER && annotate) && !(T->unit == 'R' || T->unit == 'r'));		/* Cannot annotate a Gregorian week */
+		do_annot = ((k < GMT_TICK_UPPER && annotate) && !(T->unit == 'r'));	/* Cannot annotate a Gregorian week */
 		if (do_annot) {	/* Then do annotations too - here just set text height/width parameters in PostScript */
 		
 			annot_pos = GMT_lower_axis_item(k);							/* 1 means lower annotation, 0 means upper (close to axis) */
@@ -673,7 +674,7 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 		
 		T = &A->item[k];					/* Get pointer to this item */
 		if (!T->active) continue;				/* Don't want this item plotted - goto next item */
-		if (T->unit == 'R' || T->unit == 'r') continue;		/* Cannot annotate a Gregorian week */
+		if (T->unit == 'r') continue;				/* Cannot annotate a Gregorian week */
 		
 		is_interval = GMT_interval_axis_item(k);			/* Interval or tick mark annotation? */
 		nx = GMT_coordinate_array (val0, val1, &A->item[k], &knots);	/* Get all the annotation tick knots */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.37 2003-04-05 02:38:19 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.38 2003-04-11 22:57:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -76,7 +76,7 @@
  *	Eckert IV
  *	Van der Grinten
  *
- * The ellipsoid used is selectable by editing the .gmtdefaults in your
+ * The ellipsoid used is selectable by editing the .gmtdefaults4 in your
  * home directory.  If no such file, create one by running gmtdefaults.
  *
  * Usage: Initialize system by calling GMT_map_setup (separate module), and

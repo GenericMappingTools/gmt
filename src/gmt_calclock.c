@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.25 2003-04-11 18:53:31 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.26 2003-04-11 22:57:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -660,6 +660,8 @@ int	GMT_verify_time_step (int step, char unit) {
 				retval = -1;
 			}
 			break;
+		case 'R':	/* Special Gregorian days: Anotate from start of each week and not first day of month */
+			/* We are leveraging the machinery for 'K' and 'k' to step along but reset to start of week */
 		case 'd':
 		case 'D':
 			/* The letter d is used for both days of the month and days of the (gregorian) year */
@@ -686,7 +688,6 @@ int	GMT_verify_time_step (int step, char unit) {
 			break;
 		case 'r':	/* Gregorian week.  Special case:  since weeks aren't numbered on Gregorian
 					calendar, we only allow step size = 1 here, for ticking each week start. */
-		case 'R':
 			if (step != 1) {
 				fprintf (stderr, "GMT SYNTAX ERROR:  time step must be 1 for Gregorian weeks\n");
 				retval = -1;
@@ -870,6 +871,7 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 		
 		case 'k':
 		case 'K':
+		case 'R':	/* Special Gregorian Days of the Month: Annotations start at start of week, not start of month */
 			/* Here we need to know: how do you define the n'th day 
 			of the week?  I answered this question (for now) numbering
 			days as 0=Sun through 6=Sat, (this matches kday routines)
@@ -912,8 +914,7 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 			p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
 			break;
 		
-		case 'r':
-		case 'R':	/* Gregorian weeks.  Step size is 1.  */
+		case 'r':	/* Gregorian weeks.  Step size is 1.  */
 			if (init) {
 				/* Floor to the first day of the week start.  */
 				k = p->cc[0].day_w - gmtdefs.time_week_start;
