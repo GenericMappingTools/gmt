@@ -305,6 +305,17 @@ and \fIb_rgb\fP.  The routine can handle 1-, 8-, 24-, or 32-bit files in old, st
 run-length encoded, or RGB-style Sun format.
 .RE
 .IP
+void \fBps_octagon\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
+.br
+\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
+.br
+\fBint\fR \fIrgb[3], outline\fP;
+.RS 10
+Plots a octagon and fills it with the specified color.  If \fIoutline\fP == 1, the outline
+will be drawn using current pen-width and -pattern.
+The symbol will fit inside a circle of given diameter.
+.RE
+.IP
 void \fBps_patch\fR (\fIxarray, yarray, npoints, rgb, outline\fP)
 .br
 \fBdouble\fR \fIxarray[], yarray[]\fP;
@@ -315,6 +326,17 @@ Identical to \fBps_polygon\fP except polygon must be < 20 points long and there 
 be no attempt to shorten the path by discarding unnecessary intermediate points along
 straight segments.  Primarily used when painting large number of small polygons and
 not waste output space.
+.RE
+.IP
+void \fBps_pentagon\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
+.br
+\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
+.br
+\fBint\fR \fIrgb[3], outline\fP;
+.RS 10
+Plots a pentagon and fills it with the specified color.  If \fIoutline\fP == 1, the outline
+will be drawn using current pen-width and -pattern.
+The symbol will fit inside a circle of given diameter.
 .RE
 .IP
 void \fBps_pie\fR (\fIxcenter, ycenter, radius, azimuth1, azimuth2, rgb, outline\fP)
