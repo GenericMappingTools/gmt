@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtsite.macros,v 1.1 2001-02-01 18:05:38 pwessel Exp $
+#	$Id: gmtsite.macros,v 1.2 2001-02-24 01:51:25 pwessel Exp $
 #
 #	Original GMT Guru Makefile Macro for Makefile.guru
 #	Users should cp to gmtguru.macros and edit it instead!
@@ -18,19 +18,5 @@
 # pub/ftp directory but use a temporary place and copy over later.
 # Also, you may want to change the DATE value
 
-VERSION		= GMT3.3.7
-DIR		= /home/wessel/ftp
 FTPDIR		= /data/ftp/pub/gmt
 WWWDIR		= /home/gmt/gmt/www
-CPFLAGS		= -I. -DDATE="\"1 Feb 2001\""
-AUTOCONF	= autoconf
-
-#  LINUX:
-TXT2MAN	= /usr/bin/cpp -P -nostdinc
-
-# HP-UX:
-#TXT2MAN	= /usr/ccs/lbin/cpp
-
-# SOLARIS:
-#TXT2MAN	= cc -E -Xs
-
