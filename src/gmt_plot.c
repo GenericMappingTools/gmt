@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.89 2004-01-13 01:53:26 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.90 2004-02-06 17:34:46 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -904,46 +904,49 @@ int GMT_linear_array (double min, double max, double delta, double **array)
 
 int GMT_log_array (double min, double max, double delta, double **array)
 {
-	int i, n, nticks, test, n_alloc = GMT_SMALL_CHUNK;
-	double *val, v0, end_val, start_log, tvals[9];
+	int i, n, nticks, test, n_alloc = GMT_SMALL_CHUNK, start_log;
+	double *val, log10_min, log10_max, tvals[9];
 
+	/* Because min and max may be tiny values (e.g., 10^-20) we must do all calculations on the log10 (value) */
+	
 	if (delta == 0.0) return (0);
 	val = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_log_array");
 
 	test = irint (fabs (delta)) - 1;
 	if (test < 0 || test > 2) test = 0;
 	if (test == 0) {
-		tvals[0] = 1.0;
+		tvals[0] = 0.0;
 		nticks = 1;
 	}
 	if (test == 1) {
-		tvals[0] = 1.0;
-		tvals[1] = 2.0;
-		tvals[2] = 5.0;
+		tvals[0] = 0.0;	/* = log10 (1.0) */
+		tvals[1] = log10 (2.0);
+		tvals[2] = log10 (5.0);
 		nticks = 3;
 	}
 	else if (test == 2) {
 		nticks = 9;
-		for (i = 0; i < nticks; i++) tvals[i] = i + 1;
+		for (i = 0; i < nticks; i++) tvals[i] = log10 ((double)(i + 1));
 	}
 	
-	v0 = d_log10 (min);
-	start_log = val[0] = pow (10.0, floor (v0));
-	n = 0;
-	i = 1;	/* Because val[0] is initially set to be a power or ten, hence * tvals[0], so next should be 1 */
-	while ((v0 - d_log10 (val[n])) > SMALL) {
+	log10_min = d_log10 (min);
+	log10_max = d_log10 (max);
+	start_log = irint (floor (log10_min));
+	val[0] = (double)start_log;
+	i = 1;	/* Because val[0] is initially set to be a power or ten (i = 0), so next should be 1 */
+	while ((log10_min - val[0]) > SMALL) {
 		if (i < nticks)
-			val[n] = start_log * tvals[i];
+			val[0] = start_log + tvals[i];
 		else {
-			val[n] = (start_log *= 10.0);
+			val[0] = ++start_log;
 			i = 0;
 		}
 		i++;
 	}
 	i--;
-	end_val = max;
 	
-	while ((end_val - val[n]) > GMT_CONV_LIMIT) {
+	n = 0;
+	while ((log10_max - val[n]) > GMT_CONV_LIMIT) {
 		i++;
 		n++;
 		if (n == n_alloc) {
@@ -952,15 +955,17 @@ int GMT_log_array (double min, double max, double delta, double **array)
 		}
 			
 		if (i < nticks) 
-			val[n] = start_log * tvals[i];
+			val[n] = start_log + tvals[i];
 		else {
-			start_log *= 10;
-			val[n] = start_log;
+			val[n] = ++start_log;
 			i = 0;
 		}
 	}
-	while (n && val[n] > end_val) n--;	/* In case of over-run */
+	while (n && val[n] > log10_max) n--;	/* In case of over-run */
 	n++;
+	
+	for (i = 0; i < n; i++) val[i] = pow (10.0, val[i]);	/* Convert from log10 to values */
+	
 	val = (double *) GMT_memory ((void *)val, (size_t)n, sizeof (double), "GMT_log_array");
 
 	*array = val;
