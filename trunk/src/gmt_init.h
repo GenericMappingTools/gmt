@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.17 2001-09-14 03:08:26 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.18 2001-09-15 19:55:48 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -261,3 +261,8 @@ struct BCR bcr;			/* For interpolations on grid */
 
 struct GMT_TIME_LANGUAGE GMT_time_language;	/* For time axis */
 
+/* For custom symbol plotting in psxy[z] */
+
+int n_custom_symbols = 0;
+char **custom_symbol_names;
+struct CUSTOM_SYMBOL **custom_symbols ;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.29 2001-09-15 02:36:01 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.30 2001-09-15 19:55:48 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3783,3 +3783,229 @@ int GMT_flip_justify (int justify)
 	
 	return (j);
 }
+		
+struct CUSTOM_SYMBOL * GMT_get_custom_symbol (char *name, char *old_names[], struct CUSTOM_SYMBOL *old_symbols[], int *n_symbols) {
+	int i;
+	BOOLEAN found = FALSE;
+	struct CUSTOM_SYMBOL *new;
+	
+	/* First see if we already have loaded this symbol */
+	
+	for (i = 0; !found && i < (*n_symbols); i++) found = !strcmp (name, old_names[i]);
+	
+	if (!found) {	/* Must load new symbol */
+		new = GMT_init_custom_symbol (name);
+		i = (*n_symbols)++;
+		old_names = (char **) GMT_memory ((void *)old_names, (size_t)(*n_symbols), sizeof (char *), GMT_program);
+		old_names[i] = (char *) GMT_memory (VNULL, (size_t)(strlen (name) + 1), sizeof (char), GMT_program);
+		strcpy (old_names[i], name);
+		old_symbols = (struct CUSTOM_SYMBOL **) GMT_memory ((void *)old_symbols, (size_t)(*n_symbols), sizeof (struct CUSTOM_SYMBOL *), GMT_program);
+		old_symbols[i] = new;
+	}
+	
+	return (old_symbols[i]);
+}
+
+struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
+	int nc, error = 0;
+	BOOLEAN do_fill, do_pen;
+	char file[BUFSIZ], buffer[BUFSIZ], col[8][64];
+	char *fill_p, *pen_p;
+	FILE *fp;
+	struct CUSTOM_SYMBOL *s, *first = NULL, *previous = NULL;
+	
+	sprintf (file, "%s.def\0", name);
+	
+	if (access (file, R_OK)) {	/* Not in current dir, try GMTHOME */
+		sprintf (file, "%s%cshare%c%s.def\0", GMTHOME, DIR_DELIM, DIR_DELIM, name);
+		if (access (file, R_OK)) {	/* Not there either - give up */
+			fprintf (stderr, "GMT ERROR: %s : Could not find custom symbol %s\n", GMT_program, name);
+			exit (EXIT_FAILURE);
+		}
+	}
+	
+	if ((fp = fopen (file, "r")) == NULL) {
+		fprintf (stderr, "GMT ERROR: %s : Could not open file %s\n", GMT_program, file);
+		exit (EXIT_FAILURE);
+	}
+
+	while (fgets (buffer, BUFSIZ, fp)) {
+		if (buffer[0] == '#' || buffer[0] == '\n') continue;
+		
+		nc = sscanf (buffer, "%s %s %s %s %s %s %s", col[0], col[1], col[2], col[3], col[4], col[5], col[6]);
+		
+		s = (struct CUSTOM_SYMBOL *) GMT_memory (VNULL, (size_t)1, sizeof (struct CUSTOM_SYMBOL), GMT_program);
+		if (!first) first = s;
+		
+		s->x = atof (col[0]);
+		s->y = atof (col[1]);
+
+		do_fill = do_pen = FALSE;
+		
+		if (col[2][0] == 'M') {	/* Set new anchor point */
+			if (nc < 3 || nc > 5) error++;
+			s->action = ACTION_MOVE;
+			if (nc > 3 && col[3][0] == '-' && col[3][1] == 'G') fill_p = &col[3][2], do_fill = TRUE;
+			if (nc > 3 && col[3][0] == '-' && col[3][1] == 'W') pen_p = &col[3][2], do_pen = TRUE;
+			if (nc > 4 && col[4][0] == '-' && col[4][1] == 'G') fill_p = &col[4][2], do_fill = TRUE;
+			if (nc > 4 && col[4][0] == '-' && col[4][1] == 'W') pen_p = &col[4][2], do_pen = TRUE;
+		}
+		else if (col[2][0] == 'D') {	/* Draw to next point */
+			if (!nc == 3) error++;
+			s->action = ACTION_DRAW;
+		}
+		else if (nc > 3 && col[3][0] == 'C') {	/* Draw complete circle */
+			s->action = ACTION_CIRCLE;
+			s->r = atof (col[2]);
+			if (nc > 4 && col[4][0] == '-' && col[4][1] == 'G') fill_p = &col[4][2], do_fill = TRUE;
+			if (nc > 4 && col[4][0] == '-' && col[4][1] == 'W') pen_p = &col[4][2], do_pen = TRUE;
+			if (nc > 5 && col[5][0] == '-' && col[5][1] == 'G') fill_p = &col[5][2], do_fill = TRUE;
+			if (nc > 5 && col[5][0] == '-' && col[5][1] == 'W') pen_p = &col[5][2], do_pen = TRUE;
+		}
+		else if (nc == 6 && col[5][0] == 'A') {	/* Draw arc of a circle */
+			s->action = ACTION_ARC;
+			s->r = atof (col[2]);
+			s->dir1 = atof (col[3]) * D2R;	/* Convert to radians here */
+			s->dir2 = atof (col[4]) * D2R;
+		}
+		else
+			error++;
+			
+		if (error) {
+			fprintf (stderr, "GMT ERROR: %s : Error in parsing symbol commands in file %s\n", GMT_program, file);
+			fprintf (stderr, "GMT ERROR: %s : Offending line: %s\n", GMT_program, buffer);
+			exit (EXIT_FAILURE);
+		}
+
+		if (do_fill) {
+			s->fill = (struct GMT_FILL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_FILL), GMT_program);
+			if (GMT_getfill (fill_p, s->fill)) {
+				GMT_fill_syntax ('G');
+				exit (EXIT_FAILURE);
+			}
+		}
+		if (do_pen) {
+			s->pen = (struct GMT_PEN *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_PEN), GMT_program);
+			if (GMT_getpen (pen_p, s->pen)) {
+				GMT_pen_syntax ('W');
+				exit (EXIT_FAILURE);
+			}
+		}
+		
+		if (previous)  previous->next = s;
+		previous = s;
+	}
+	
+	fclose (fp);
+	return (first);
+}
+
+void GMT_draw_custom_symbol (double x0, double y0, double size, struct CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, BOOLEAN outline) {
+	int n = 0, n_alloc = GMT_SMALL_CHUNK, na, i;
+	BOOLEAN flush = FALSE;
+	double x, y, da, arc, sr, sa, ca, *xx, *yy;
+	char cmd[64];
+	struct CUSTOM_SYMBOL *s;
+	struct GMT_FILL *f, *this_f;
+	struct GMT_PEN *p;
+	
+	xx = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
+	yy = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
+	
+	sprintf (cmd, "Start of symbol %s\0", symbol->name);
+	ps_comment (cmd);
+	s = symbol;
+	while (s) {
+		x = x0 + s->x * size;
+		y = y0 + s->y * size;
+		
+		switch (s->action) {
+			case ACTION_MOVE:
+				if (flush) GMT_flush_symbol_piece (xx, yy, &n, p, pen, f, fill, outline, &flush);
+				xx[0] = x;
+				yy[0] = y;
+				n = 1;
+				p = s->pen;
+				f = s->fill;
+				break;
+				
+			case ACTION_DRAW:
+				flush = TRUE;
+				if (n >= n_alloc) {
+					n_alloc += GMT_SMALL_CHUNK;
+					xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), GMT_program);
+					yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), GMT_program);
+				}
+				xx[n] = x;
+				yy[n] = y;
+				n++;
+				break;
+				
+			case ACTION_CIRCLE:
+				if (flush) GMT_flush_symbol_piece (xx, yy, &n, p, pen, f, fill, outline, &flush);
+				p = s->pen;
+				f = s->fill;
+				sr = s->r * size;
+				na = MAX (irint (TWO_PI * sr / gmtdefs.line_step), 16);
+				da = TWO_PI / na;
+				for (i = 0; i < na; i++) {
+					if (n >= n_alloc) {
+						n_alloc += GMT_SMALL_CHUNK;
+						xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), GMT_program);
+						yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), GMT_program);
+					}
+					sincos (i * da, &sa, &ca);
+					xx[n] = x + sr * ca;
+					yy[n] = y + sr * sa;
+					n++;
+				}
+				GMT_flush_symbol_piece (xx, yy, &n, p, pen, f, fill, outline, &flush);
+				break;
+				
+			case ACTION_ARC:
+				flush = TRUE;
+				sr = s->r * size;
+				arc = s->dir2 - s->dir1;	/* Arc length in radians */
+				na = MAX (irint (fabs (arc) * sr/ gmtdefs.line_step), 16);
+				da = arc / na;
+				for (i = 0; i < na; i++) {
+					if (n >= n_alloc) {
+						n_alloc += GMT_SMALL_CHUNK;
+						xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), GMT_program);
+						yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), GMT_program);
+					}
+					sincos (s->dir1 + i * da, &sa, &ca);
+					xx[n] = x + sr * ca;
+					yy[n] = y + sr * sa;
+					n++;
+				}
+				break;
+		}
+		
+		s = s->next;
+	}
+	if (flush) GMT_flush_symbol_piece (xx, yy, &n, p, pen, f, fill, outline, &flush);
+	sprintf (cmd, "End of symbol %s\n\0", symbol->name);
+	ps_comment (cmd);
+	
+	GMT_free ((void *)xx);
+	GMT_free ((void *)yy);
+}
+
+void GMT_flush_symbol_piece (double *x, double *y, int *n, struct GMT_PEN *p, struct GMT_PEN *pen, struct GMT_FILL *f, struct GMT_FILL *fill, BOOLEAN outline, BOOLEAN *flush) {
+	struct GMT_FILL *this_f;
+	BOOLEAN draw_outline;
+	
+	draw_outline = ((p && p->rgb[0] != -1) || (!p && pen && outline)) ? TRUE : FALSE;
+	if (draw_outline) {
+		(p) ?  GMT_setpen (p) : GMT_setpen (pen);
+	}
+	if ((f && f->rgb[0] != -1) || (!f && fill))
+		this_f = (f) ? f : fill;
+	else
+		this_f = (struct GMT_FILL *)NULL;
+	GMT_fill (x, y, *n, this_f, draw_outline);
+	*flush = FALSE;
+	*n = 0;
+}
+
