@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.12 2001-08-06 19:45:42 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.13 2001-08-23 23:17:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -118,6 +118,8 @@ double GMT_get_anot_offset (BOOLEAN *flip);
 int GMT_flip_justify (int justify);
 BOOLEAN GMT_anot_too_crowded (double x, double y, int side);
 BOOLEAN GMT_is_fancy_boundary (void);
+void GMT_tx_axis (double x0, double y0, double length, double val0, double val1, struct TIME_FRAME *T, int below);
+void GMT_ty_axis (double x0, double y0, double length, double val0, double val1, struct TIME_FRAME *T, int left_side);
 
 /* Local variables to this file */
 
@@ -138,21 +140,44 @@ void GMT_linear_map_boundary (double w, double e, double s, double n)
 	x_length = fabs (x2 - x1);
 	y_length = fabs (y2 - y1);
 	
-	if (frame_info.side[3])	/* West or left y-axis */
-		GMT_y_axis (x1, y1, y_length, s, n, frame_info.anot_int[1], frame_info.frame_int[1],
+	if (frame_info.side[3])	{	/* West or left y-axis */
+		if (project_info.xyz_projection[1] == TIME)
+			GMT_ty_axis (x1, y1, y_length, s, n, &tframe_info, TRUE);
+		else
+			GMT_y_axis (x1, y1, y_length, s, n, frame_info.anot_int[1], frame_info.frame_int[1],
 				frame_info.label[1], frame_info.unit[1], project_info.xyz_projection[1], frame_info.anot_type[1], TRUE, frame_info.side[3]-1);
-	
-	if (frame_info.side[1])	/* East or right y-axis */
-		GMT_y_axis (x2, y1, y_length, s, n, frame_info.anot_int[1], frame_info.frame_int[1],
-			frame_info.label[1], frame_info.unit[1], project_info.xyz_projection[1], frame_info.anot_type[1], FALSE, frame_info.side[1]-1);
-	
-	if (frame_info.side[0])	/* South or lower x-axis */
-		GMT_x_axis (x1, y1, x_length, w, e, frame_info.anot_int[0], frame_info.frame_int[0],
-			frame_info.label[0], frame_info.unit[0], project_info.xyz_projection[0], frame_info.anot_type[0], TRUE, frame_info.side[0]-1);
-	
-	if (frame_info.side[2])	/* North or upper x-axis */
-		GMT_x_axis (x1, y2, x_length, w, e, frame_info.anot_int[0], frame_info.frame_int[0],
-			frame_info.label[0], frame_info.unit[0], project_info.xyz_projection[0], frame_info.anot_type[0], FALSE, frame_info.side[2]-1);
+	}
+	if (frame_info.side[1])	{	/* East or right y-axis */
+		if (project_info.xyz_projection[1] == TIME)
+			GMT_ty_axis (x2, y1, y_length, s, n, &tframe_info, FALSE);
+		else
+			GMT_y_axis (x2, y1, y_length, s, n, frame_info.anot_int[1], frame_info.frame_int[1],
+				frame_info.label[1], frame_info.unit[1], project_info.xyz_projection[1], frame_info.anot_type[1], FALSE, frame_info.side[1]-1);
+	}
+	if (frame_info.side[0])	{	/* South or lower x-axis */
+		if (project_info.xyz_projection[0] == TIME)
+			GMT_tx_axis (x1, y1, x_length, w, e, &tframe_info, TRUE);
+		else
+			GMT_x_axis (x1, y1, x_length, w, e, frame_info.anot_int[0], frame_info.frame_int[0],
+				frame_info.label[0], frame_info.unit[0], project_info.xyz_projection[0], frame_info.anot_type[0], TRUE, frame_info.side[0]-1);
+	}
+	if (frame_info.side[2])	{	/* North or upper x-axis */
+		if (project_info.xyz_projection[0] == TIME)
+			GMT_tx_axis (x1, y2, x_length, w, e, &tframe_info, FALSE);
+		else
+			GMT_x_axis (x1, y2, x_length, w, e, frame_info.anot_int[0], frame_info.frame_int[0],
+				frame_info.label[0], frame_info.unit[0], project_info.xyz_projection[0], frame_info.anot_type[0], FALSE, frame_info.side[2]-1);
+	}
+}
+
+void GMT_tx_axis (double x0, double y0, double length, double val0, double val1, struct TIME_FRAME *T, int below)
+{
+	fprintf (stderr, "%s: GMT_tx_axis not implemented yet\n", GMT_program);
+}
+
+void GMT_ty_axis (double x0, double y0, double length, double val0, double val1, struct TIME_FRAME *T, int left_side)
+{
+	fprintf (stderr, "%s: GMT_ty_axis not implemented yet\n", GMT_program);
 }
 
 void GMT_x_axis (double x0, double y0, double length, double val0, double val1, double anotation_int, double tickmark_int, char *label, char *unit, int axistype, int anottype, int below, int anotate)
