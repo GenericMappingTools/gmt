@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.2 2004-09-05 04:05:24 pwessel Exp $
+#	$Id: Makefile,v 1.3 2004-09-06 02:37:43 pwessel Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -13,6 +13,10 @@
 #			Walter H. F. Smith, NOAA
 #
 #	Date:	04-SEPT-2004
+#
+#	Note: Most of these tools were last used in 1995/96 and only
+#	minor changes to make them compile have been performed.
+#	Several are probably obsolete.
 #
 
 #-------------------------------------------------------------------------------
