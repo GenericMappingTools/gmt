@@ -10,10 +10,10 @@
 mgd77track \- A shiptrack plotting program
 .SH SYNOPSIS
 \fBmgd77track\fP \fIleg-ids\fP \fB\-R\fIwest/east/south/north\fP \fB\-J\fP\fIparameters\fP 
-[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-M\fP\fItrackticks\fP ] [ \fB\-W\fP\fIpen\fP[\fIred/green/blue\fP][\fBOA\fP] ] 
-[ \fB\-A\fP[\fIsize\fP] ] 
-[ \fB\-P\fP ] [ \fB\-O\fP ] [ \fB\-K\fP ]  [ \fB\-U\fP[\fIdx/dy/\fP][\fIlabel\fP] ] [ \fB\-X\fP\fIx-shift\fP ] 
-[ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-V \fP ]
+[ \fB\-A\fP[\fIsize\fP] ]  [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-Da\fP\fIstartdate\fP ] [ \fB\-Db\fP\fIstopdate\fP ] 
+[ \fB\-K\fP ] [ \fB\-M\fP\fItrackticks\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-Sa\fP\fIstartdist\fP ] 
+[ \fB\-Sb\fP\fIstopdist\fP ] [ \fB\-TT|t|d\fP\fIms,mc,mfs,mf,mfc\fP ] [ \fB\-U\fP[\fIdx/dy/\fP][\fIlabel\fP] ] 
+[ \fB\-V \fP ] [ \fB\-W\fP\fIpen\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ]
 .SH DESCRIPTION
 \fBmgd77track\fP reads NGDC MGD-77 cruises and creates \fIPostScript\fP code that will plot one or more ship tracks on a
 map using the specified projection.  The \fIPostScript\fP code is written to standard output.
@@ -24,10 +24,11 @@ Can be one or more NGDC names, like 01010007 etc.
 #include "explain_-R.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-#include "explain_-B_short.txt"
 .TP
 .B \-A
 Annotate each leg every time it enters the plot. Optional \fIsize\fP is character size in points.
+The leg annotation font is controlled by \fBLABEL_FONT\fP.
+#include "explain_-B_short.txt"
 .TP
 .B \-Da
 Do not plot data collected before \fIstartdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss])  [Default is first day].
@@ -50,11 +51,17 @@ k for km, m for miles, or n for nautical miles [Default is 0 meters].
 .B \-Sb
 Do not plot data that are more than \fIstopdist\fP km along track from port of departure.   Append
 k for km, m for miles, or n for nautical miles [Default is length of track].
+.TP
+.B \-T
+Controlls the attributes of the three kinds of markers (\fBT\fP for the first time marker in a new
+day, \fBt\fP for additional time markers in the same day, and \fBd\fP for distance markers).  For each
+of these you can specify the 5 comma-separated attributes \fImarkersize\fP, \fImarkercolor\fP,
+\fImarkerfontsize\fP, \fImarkerfont\fP, and \fImarkerconfcolor\fP.  Repeat the \fB\-T\fP option for
+each marker type.
 #include "explain_-U.txt"
 .TP
 .B \-W
-\fIpen\fP is thickness of the trackline. [Default is 1].  Optionally, specify the rgb combination
-to obtain a colored trackline [Default is black].  Append \fBo\fP for d\fBo\fPtted line, \fBa\fP for d\fBa\fPshed. 
+\fIpen\fP is the pne used for the trackline. [Default is 0.25p,black]. 
 [Default is solid].
 #include "explain_-XY.txt"
 #include "explain_-V.txt"
@@ -62,11 +69,12 @@ to obtain a colored trackline [Default is black].  Append \fBo\fP for d\fBo\fPtt
 .SH EXAMPLES
 To generate a Mercator plot of the track of the cruise 01010007 in the area 70W to
 20E, 40S to 20N, using a Mercator scale of SCALE1, label the tracks with 10 points characters, annotate
-the boundaries every 10 degrees, and draw gridlines every 5 degrees, and send the plot to the default printer,
+the boundaries every 10 degrees, draw gridlines every 5 degrees, and mark the track every day and 1000 km,
+with ticks every 6 hours and 250 km, and send the plot to the default printer,
 enter the following command:
 .br
 .sp
-\fBmgd77track\fP 01010007 \fB\-R\fP70W/20E/40S/20N SCALE2 \fB\-B\fP10\fBg\fP5 \fB\-A\fP10 | lpr
+\fBmgd77track\fP 01010007 \fB\-R\fP70W/20E/40S/20N SCALE2 \fB\-B\fP10\fBg\fP5 \fB\-A\fP10 \fB\-M\fPa1da1000kf6hf250k | lpr
 .SH "SEE ALSO"
 .IR mgd77info (GMTMANSECTION),
 .IR psbasemap (GMTMANSECTION)
