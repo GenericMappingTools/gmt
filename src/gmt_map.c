@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.33 2002-09-25 20:37:43 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.34 2002-09-27 20:55:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6515,6 +6515,7 @@ int GMT_rect_clip (double *lon, double *lat, int n, double **x, double **y, int 
 			xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
 			yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
 		}
+		
 		j += GMT_move_to_rect (xx, yy, j, nx);	/* May add 2 points, which explains the n_alloc-2 stuff */
 	}
 	
@@ -6580,7 +6581,7 @@ int GMT_move_to_rect (double *x_edge, double *y_edge, int j, int nx)
 	
 	/* May add 0, 1, or 2 points to path */
 	
-	if (GMT_x_status_new == 0 && GMT_y_status_new == 0) return (1);	/* Inside */
+	if (GMT_x_status_new == 0 && GMT_y_status_new == 0) return (1);	/* Completely Inside */
 	
 	if (!nx && j > 0 && GMT_x_status_new != GMT_x_status_old && GMT_y_status_new != GMT_y_status_old) {	/* Must include corner */
 		xtmp = x_edge[j];	ytmp = y_edge[j];
@@ -6602,8 +6603,30 @@ int GMT_move_to_rect (double *x_edge, double *y_edge, int j, int nx)
 		x_edge[j] = xtmp;	y_edge[j] = ytmp;
 		n = 1;
 	}
-	if (GMT_x_status_new != 0) x_edge[j] = (GMT_x_status_new < 0) ? project_info.xmin : project_info.xmax;
-	if (GMT_y_status_new != 0) y_edge[j] = (GMT_y_status_new < 0) ? project_info.ymin : project_info.ymax;
+	
+	if (GMT_outside == GMT_rect_outside2) {	/* Need special check because this outside2 test is screwed up... */
+		if (x_edge[j] < project_info.xmin) {
+			x_edge[j] = project_info.xmin;
+			GMT_x_status_new = -2;
+		}	
+		else if (x_edge[j] > project_info.xmax) {
+			x_edge[j] = project_info.xmax;
+			GMT_x_status_new = 2;
+		}	
+		if (y_edge[j] < project_info.ymin) {
+			y_edge[j] = project_info.ymin;
+			GMT_y_status_new = -2;
+		}	
+		else if (y_edge[j] > project_info.ymax) {
+			y_edge[j] = project_info.ymax;
+			GMT_y_status_new = 2;
+		}
+	}
+	else {
+		if (GMT_x_status_new != 0) x_edge[j] = (GMT_x_status_new < 0) ? project_info.xmin : project_info.xmax;
+		if (GMT_y_status_new != 0) y_edge[j] = (GMT_y_status_new < 0) ? project_info.ymin : project_info.ymax; 
+	}
+	
 	return (n + 1);
 }
 
