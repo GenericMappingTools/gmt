@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.16 2001-09-22 21:12:25 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.17 2001-10-05 03:51:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7177,10 +7177,12 @@ void GMT_check_R_J (double *clon)	/* Make sure -R and -J agree for global plots;
 		fprintf (stderr, "%s: GMT Warning: Central meridian set with -J (%lg) implies -R%lg/%lg/%lg/%lg\n",
 			GMT_program, *clon, project_info.w, project_info.e, project_info.s, project_info.n);
 	}
-	else if (!GMT_world_map && !(project_info.w <= *clon && *clon <= project_info.e)) {	/* Must reset meridian */
-		/*  *clon = lon0; 
-		fprintf (stderr, "%s: GMT Warning: Central meridian outside region, reset to %lg\n", GMT_program, lon0); */
-		fprintf (stderr, "%s: GMT Warning: Central meridian outside region\n", GMT_program);
+	else if (!GMT_world_map) {
+		lon0 = *clon - 360.0;
+		while (lon0 < project_info.w) lon0 += 360.0;
+		if (lon0 > project_info.e) {	/* Warn user*/
+			fprintf (stderr, "%s: GMT Warning: Central meridian outside region\n", GMT_program);
+		}
 	}	
 }
 

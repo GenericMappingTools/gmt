@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.51 2001-10-01 23:26:08 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.52 2001-10-05 03:51:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2897,8 +2897,13 @@ int GMT_map_getframe (char *in) {
 		
 		GMT_decode_tinfo (out2, &frame_info.axis[i]);					/* Decode the anotation intervals */
 		
-#ifdef DEBUGT
+		/* Make sure we have ticks to match anotation stride */
 		A = &frame_info.axis[i];
+		if (A->item[GMT_ANOT_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = anot stride */
+			memcpy ((void *)&A->item[GMT_TICK_UPPER], (void *)&A->item[GMT_ANOT_UPPER], sizeof (struct PLOT_AXIS_ITEM));
+		else if (A->item[GMT_INTV_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = anot stride */
+			memcpy ((void *)&A->item[GMT_INTV_UPPER], (void *)&A->item[GMT_ANOT_UPPER], sizeof (struct PLOT_AXIS_ITEM));
+#ifdef DEBUGT
 		fprintf (stderr, "Unit: [%s]\n", A->unit);
 		fprintf (stderr, "Label: [%s]\n", A->label);
 		for (k = 0; k < 6; k++) {
