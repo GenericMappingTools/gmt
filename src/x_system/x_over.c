@@ -1,4 +1,4 @@
-/*	$Id: x_over.c,v 1.3 2001-12-21 03:50:38 ben Exp $
+/*	$Id: x_over.c,v 1.4 2005-03-04 00:48:32 pwessel Exp $
  *
  * X_OVER will compute cross-overs between 2 legs (or internal cross-overs
  * if both legs are the same) and write out time,lat,lon,cross-over values,
@@ -73,7 +73,7 @@ static float lon[MAXPOINTS];		/* longitude for each point */
 static float grid_section[4][MAXSECT+1][MAXBLOCK][2];
 BOOLEAN gmt_flag[3] = {FALSE, FALSE, FALSE};		/* TRUE (for each data type) if it exists */
 
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
   char legname[2][10];		/* Names of the legs */
   char legfile[100];		/* Filename for leg */

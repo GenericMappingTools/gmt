@@ -1,5 +1,5 @@
 /*
- *	$Id: x_list.c,v 1.2 2001-12-21 03:50:38 ben Exp $
+ *	$Id: x_list.c,v 1.3 2005-03-04 00:48:32 pwessel Exp $
  *
  * XLIST produces ASCII listings of cross-over info. The xx_base.b-file
  * contains longitude(x), latitude(y), time1(t1), time2(t2),  heading1(h),
@@ -46,7 +46,7 @@ char badlegs[BUFSIZ][10];
 int get_id (char *name);
 int findleg (char *name);
 
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
 	int i, j, id1, id2, time, no[12];
 	int nval = 0, ok, n_x, nlegs_in = 0, strike, heading;

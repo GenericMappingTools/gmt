@@ -1,4 +1,4 @@
-/*	$Id: x_remove.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+/*	$Id: x_remove.c,v 1.2 2005-03-04 00:48:32 pwessel Exp $
  *
  * XREMOVE will read a list of bad legs from a file, and then remove all
  * trace of these files from the x_system data base files. New x_system files
@@ -31,7 +31,7 @@ char badlegs[MAXBADLEGS][10];
 int findleg (char *name);
 int get_id (char *name);
 
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	FILE *fpb = NULL, *fpl = NULL, *fpr = NULL, *fpl2, *fpb2;
 	int i, j, n_x, error, id1, id2, internal, ok, nrecs = 1, verbose = FALSE;

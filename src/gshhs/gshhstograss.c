@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.4 2004-09-12 01:25:20 pwessel Exp $
+/*	$Id: gshhstograss.c,v 1.5 2005-03-04 00:48:31 pwessel Exp $
  *
  * PROGRAM:     gshhstograss.c
  * AUTHOR:      Simon Cox (simon@ned.dem.csiro.au) &
@@ -17,7 +17,7 @@
 #include <string.h>
 #include <time.h>
 
-main (argc, argv)
+int main (argc, argv)
 int     argc;
 char **argv;
 

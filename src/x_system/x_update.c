@@ -1,4 +1,4 @@
-/*	$Id: x_update.c,v 1.2 2001-04-04 00:59:32 pwessel Exp $
+/*	$Id: x_update.c,v 1.3 2005-03-04 00:48:32 pwessel Exp $
  *
  * XUPDATE will read a xover.d-file that contains a series of crossovers. The first
  * record contains leg1 year1 leg2 year2, and the next n records has all the
@@ -47,7 +47,7 @@ int read_xx_legs (void);
 struct LEG *make_leg (char *text);
 struct LEG *find_leg (char *text);
 
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
 
 	char lega[10], legb[10];	/* two legnames */

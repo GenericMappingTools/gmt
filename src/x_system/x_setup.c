@@ -1,4 +1,4 @@
-/*	$Id: x_setup.c,v 1.2 2001-12-21 03:50:38 ben Exp $
+/*	$Id: x_setup.c,v 1.3 2005-03-04 00:48:32 pwessel Exp $
  *
  * XSETUP will read the gmtindex files and create a list of
  * pairs of legs that cross the same bin. As an option, the
@@ -46,7 +46,7 @@ char leg_used[MAXNEW][10];
 unsigned int legpointer[NTOT];
 struct INFO *ptr[MAXLEGS];
 
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
 	int i, j, byte_1, byte_2, bit_1, bit_2, leg_1, leg_2, ok;
 	int lat, lon, west = 0, east = 360, south = -90, north = 89;

@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.5 2004-09-28 18:09:25 pwessel Exp $
+/*	$Id: gshhs.c,v 1.6 2005-03-04 00:48:31 pwessel Exp $
  *
  * PROGRAM:	gshhs.c
  * AUTHOR:	Paul Wessel (pwessel@hawaii.edu)
@@ -29,7 +29,7 @@
 
 #include "gshhs.h"
 
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	double w, e, s, n, area, lon, lat;
 	char source;

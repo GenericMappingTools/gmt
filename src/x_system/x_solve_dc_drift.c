@@ -1,4 +1,4 @@
-/*	$Id: x_solve_dc_drift.c,v 1.4 2003-05-04 04:01:02 pwessel Exp $
+/*	$Id: x_solve_dc_drift.c,v 1.5 2005-03-04 00:48:32 pwessel Exp $
  *
  * x_solve_dc_drift reads the xx_* databases and computes the best
  * fitting drift and dc values using a least squares method.
@@ -44,7 +44,7 @@ double dc[MAX_LEGS][3], drift[MAX_LEGS][3], sum[3], sum2[3];
 double legsum_t[MAX_LEGS][3], legsum_x[MAX_LEGS][3], legsum_tt[MAX_LEGS][3], legsum_tx[MAX_LEGS][3], mean[3], stdev[3];
 double sum_t1[3], sum_t2[3], sum_x[3], sum_tt1[3], sum_tt2[3], sum_t1x[3], sum_t2x[3];
 
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	int n_iterations = 0, iteration = 0, reset = FALSE, i, j, error = FALSE, ok, min_nx = 0;
 	int n_x, id_1, id_2, test_area = FALSE, do_gmt[3];
