@@ -33,7 +33,7 @@ map coordinates are given instead of wesn.
 .B \-A
 Add up multiple values that belong to the same node (same as \fB\-Az\fP).
 Append \fBn\fP to simply count the number of data points that were assigned to each node.
-[Default (no \fB\-A\fp option) will calculate mean value]. Not used for simple mapping.
+[Default (no \fB\-A\fP option) will calculate mean value]. Not used for simple mapping.
 .TP
 .B \-D
 Give values for \fIxunit, yunit, zunit, scale, offset, title,\fP and \fIremark\fP.

@@ -18,7 +18,7 @@ Name of output correction table [stdout].
 .SH EXAMPLES
 To convert the binary file crossover_corr.b to ASCII and write to stdout, run
 .br
-\fBx_edit \X\fPcrossover_corr.b > corrections.d
+\fBx_edit \-X\fPcrossover_corr.b > corrections.d
 .br
 .SH SEE ALSO
 .IR gmt (GMTMANSECTION),
