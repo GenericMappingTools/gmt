@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_O.tex,v 1.8 2004-06-24 02:07:50 pwessel Exp $
+%	$Id: GMT_Appendix_O.tex,v 1.9 2004-06-24 05:02:06 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -41,12 +41,12 @@ unit you want to measure distances in [Default is taken from {\bf MEASURE\_UNIT}
 Starting at the beginning of a line, place labels every {\it dist} increment of
 distance along the line.  To ensure that closed lines whose total length is less
 than {\it dist} get annotated, we may append {\it frac} which will place the first
-label at the distance $d =$ {\it dist} $\times$ {\it frac} from the start of the
+label at the distance $d =$ {\it dist} $\times$ {\it frac} from the start of a closed
 line (and every {\it dist} thereafter).  If not given, {\it frac} defaults to 0.25.
 \item [D:] Full syntax is {\bf D}{\it dist}[{\bf d$|$e$|$k$|$m$|$n}][/{\it frac}].
 This option is similar to {\bf d} except the original data must be referred to geographic
 coordinates (and a map projection must have been chosen) and actual Earth\footnote{or whatever
-planet we are deaing with.} surface distances along the lines are considered.  Append the
+planet we are dealing with.} surface distances along the lines are considered.  Append the
 unit you want to measure distances in; choose among {\bf d}egree, m{\bf e}ter [Default],
 {\bf k}ilometer, statute {\bf m}iles, or {\bf n}autical miles.  Other aspects are similar to code {\bf d}.
 \item [f:] Full syntax is {\bf f}{\it fix.d}[/{\it slop}[{\bf c$|$i$|$m$|$p}]].  Here, an ASCII file {\it fix.d} is
@@ -55,12 +55,12 @@ the lines at which locations the labels should be placed.  Labels will only be p
 match the line coordinates to within a distance of {\it slop} (append unit or we use {\bf MEASURE\_UNIT}).
 The default {\it slop} is zero, meaning only exact coordinate matches will do.
 \item [l:] Full syntax is {\bf l}{\it line1}[,{\it line2}[, ...]].  One or more straight line segments
-are specified separated by commas, and labels will be placed at the intersections of these lines and
-our line segments.  Each {\it line} specification implies a {\it start} and {\it stop} point which each
-correspond to a coordinate pair.  These pairs can be regular coordinate pairs with longitude/latitude separated by a slash, or they
+are specified separated by commas, and labels will be placed at the intersections between these lines and
+our line segments.  Each {\it line} specification implies a {\it start} and {\it stop} point, each
+corresponding to a coordinate pair.  These pairs can be regular coordinate pairs (i.e., longitude/latitude separated by a slash), or they
 can be two-character codes that refer to predetermined points relative to the map region.  These codes
 are taken from the \GMTprog{pstext} justification keys [{\bf L$|$C$|$R}][{\bf B$|$M$|$T}] so that the first
-character determines the $x$-coordinate and the second determines the $y$-coordinate.  For contours,
+character determines the $x$-coordinate and the second determines the $y$-coordinate.  In \GMTpro{grdcontour},
 you can also use the two codes {\bf Z+} and {\bf Z-} as shorthands for the location of the grid's global
 maximum and minimum, respectively.  For example, the {\it line} {\bf LT}/{\bf RB} is a diagonal from the
 upper left to the lower right map corner, while {\bf Z-}/135W/15S is a line from the grid minimum to the point
@@ -112,22 +112,22 @@ the color you want to fill the label boxes; the default is the same as {\bf PAGE
 above.  Normally this is center/mid justified ({\bf CM} in \GMTprog{pstext} justification parlance) and
 this is indeed the default setting.  Override by using this option and append another justification
 key code from [{\bf L$|$C$|$R}][{\bf B$|$M$|$T}].  Note for curved text ({\bf +v}) only vertical
-justification may be affected.
+justification will be affected.
 \item [+k:] Sets the color of the text labels, which otherwise defaults to that given by {\bf COLOR\_BACKGROUND}.
 \item [+o:] Request a rounded, rectangular label box shape; the default is rectangular.  This is only
-manifested if the box is filled or outlined, neither of which is implied by this option.  Ignored if {\bf +v}
-is given.
+manifested if the box is filled or outlined, neither of which is implied by this option alone (see {\bf +g}
+and {\bf +p}).  As this option only applies to straight text, it is ignored if {\bf +v} is given.
 \item [+p:] Selects the drawing of the label box outline; append your preferred {\it pen} unless you
 want the default \GMT\ pen [0.25p,black].
 \item [+r:] Do not place labels at points along the line whose local radius of curvature falls below
-the given threshold value [Default is 0].
-\item [+s:] Change the fontsize of the labels, which by default is 9 points.
+the given threshold value.  Append the radius unit of your choice ({\bf c$|$i$|$m$|$p}) [Default is 0].
+\item [+s:] Change the font size of the labels, which by default is 9 points.
 \item [+u:] Append the chosen {\it unit} to the label.  Normally a space will separate the label
 and the unit.  If you want to close this gap, append a {\it unit} that begins with a hyphen (--).
 If you are contouring with \GMTprog{grdcontour} and you specify this option without appending a unit, the unit will be taken from the
 $z$-unit attribute of the grid header.
 \item [+v:]  Place curved labels that follow the wiggles of the line segments.  This is especially
-useful if the labels are long relative to the length-scale of the line wiggles.  The default places labels
+useful if the labels are long relative to the length-scale of the wiggles.  The default places labels
 on an invisible straight line at the angle determined.
 \item [+w:] The angle of the line at the point of label placement is calculated by a least-squares
 fit to the {\it width} closest points.  If not specified, {\it width} defaults to 10.
@@ -153,7 +153,7 @@ case we determine the appropriate format from the distance value itself.
 the label; append {\bf d$|$e$|$k$|$m$|$n} to specify the unit [If not given we default to {\bf d}egrees,
 \emph{unless} label placement was determined from map distances along the segment lines, in which case we
 use the same unit specified for that algorithm].  Requires a map projection to be used.
-\item [+Lf:]  Use all text after the 2nd column in the fixed label location file {\it fix.d} as the label.
+\item [+Lf:]  Use all text after the 2nd column in the fixed label location file {\it fix.d} as labels.
 This choice obviously requires the fixed label location algorithm (code {\bf f}) to be in effect.
 \item [+Ln:]  Use the running number of the current multi-segment as label.
 \item [+LN:]  Use a slash-separated combination of the current file number and the current multi-segment number as label.
@@ -178,10 +178,11 @@ of the map we request contour labels every 1.5 inches along the lines:
 
 \noindent
 As seen in Figure~\ref{fig:GMT_App_O_1}, the contours are placed rather arbitrary.
-The string of countours for $-20$ to $60$ align well but that is a fortuitous 
+The string of countours for $-40$ to $60$ align well but that is a fortuitous 
 consequence of reaching the 1.5 inch distance from the start at the bottom of the map.
 
-\GMTfig[H]{GMT_App_O_1}{Equidistant contour label placement with \Opt{Gd}.}
+\GMTfig[H]{GMT_App_O_1}{Equidistant contour label placement with \Opt{Gd}, the only algorithm
+available in previous \gmt\ versions.}
 
 \subsection{Fixed number of labels}
 
@@ -235,8 +236,8 @@ here we are content with just one.
 
 \subsection{Label placement at general line intersections}
 
-If the number of intersecting straight line segments needed to pick the desired label
-positions becomes too large to conveniently be given on the command line, or we have
+If (1) the number of intersecting straight line segments needed to pick the desired label
+positions becomes too large to be given conveniently on the command line, or (2) we have
 another data set or lines whose intersections we wish to use, the general crossing
 algorithm makes more sense:
 
