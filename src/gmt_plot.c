@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.118 2004-05-10 22:38:32 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.119 2004-05-11 01:07:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4131,6 +4131,8 @@ void GMT_draw_mag_rose (struct MAP_ROSE *mr)
 	tlen[2] = 1.5 * gmtdefs.tick_length;
 	scale[0] = 0.85;
 	scale[1] = 1.0;
+	step[0] = irint (mr->a_int[0]);
+	step[1] = irint (mr->a_int[1]);
 	
 	GMT_setpen (&gmtdefs.tick_pen);
 	for (level = 0; level < 2; level++) {	/* Outer and inner angles */
@@ -4138,7 +4140,7 @@ void GMT_draw_mag_rose (struct MAP_ROSE *mr)
 		offset = (level == 0) ? mr->declination : 0.0;
 		for (i = 0; i < 360; i++) {	/* 1-degree increments of tickmarks */
 			angle = offset + (double)i;
-			k = ((i%10) == 0) ? 2 : ((i%5) ? 0 : 1);
+			k = ((i%step[level]) == 0) ? 2 : ((i%5) ? 0 : 1);
 			sincos ((ew_angle + angle) * D2R, &s, &c);
 			x[0] = mr->x0 + R[level] * c;	y[0] = mr->y0 + R[level] * s;
 			x[1] = mr->x0 + (R[level] - scale[level]*tlen[k]) * c;	y[1] = mr->y0 + (R[level] - scale[level]*tlen[k]) * s;
