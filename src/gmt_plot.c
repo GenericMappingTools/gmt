@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.84 2003-04-12 00:40:42 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.85 2003-05-13 14:54:00 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4288,7 +4288,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
 				if (p) GMT_setpen (p);
-				(project_info.three_D) ? GMT_ellipse3D (x, y, z0, s->p[0], s->p[1] * size, s->p[1] * size, f->rgb, outline) : ps_ellipse (x, y, s->p[0], s->p[1] * size, s->p[1] * size, f->rgb, outline);
+				(project_info.three_D) ? GMT_ellipse3D (x, y, z0, s->p[0], s->p[1] * size, s->p[2] * size, f->rgb, outline) : ps_ellipse (x, y, s->p[0], s->p[1] * size, s->p[1] * size, f->rgb, outline);
 				break;
 
 			case ACTION_PIE:
