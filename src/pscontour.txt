@@ -1,6 +1,4 @@
 .TH PSCONTOUR GMTMANSECTION DATE VERSION VERSION
-#define G_OPT_SI 10\fBc\fP
-#define G_OPT_US 4\fBi\fP
 #define LEN_L 0.5
 #define SCALE_L \fB\-Jl\fP18/24/0.5\fBi\fP
 .SH NAME
@@ -8,7 +6,7 @@ pscontour \- Contour xyz-data by direct triangulation
 .SH SYNOPSIS
 \fBpscontour\fP \fIxyzfile\fP \fB\-C\fP\fIcptfile\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
 [ \fB\-A\fP[\fB-\fP][\fBf\fP\fIfont_size\fP][\fBa\fP\fIangle\fP][\fI/r/g/b\fP][\fBo\fP]] ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-D\fP[\fIdumpfile\fP] ] [ \fB\-E\fP\fIview_az/view_el\fP ] 
-[ \fB\-G\fP\fIgap\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] [ \fB\-K\fP ] 
+[ \fB\-G\fP[d|n|l|L|x|X]\fIinfo\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] [ \fB\-K\fP ] 
 [ \fB\-L\fP\fIpen\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-T\fP\fIindexfile\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
 [ \fB\-V\fP ] [ \fB\-W\fP[\fB+\fP]\fIpen\fP ] [ \fB\-X\fP\fIx-shift\fP ] 
 [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ]
@@ -45,9 +43,7 @@ However, when \fB\-M\fP is used in conjunction with \fB\-D\fP a single multisegm
 .TP
 .B \-E
 Sets the view point by specifying azimuth and elevation in degrees. [Default is 180/90].
-.TP
-.B \-G
-\fIgap\fP is distance between each annotation along the same contour [Default is G_OPT_SI (or G_OPT_US)].
+#include "explain_contlabel.txt"
 #include "explain_-H.txt"
 .TP
 .B \-I
