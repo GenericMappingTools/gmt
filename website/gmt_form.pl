@@ -1,9 +1,8 @@
 #!/usr/bin/perl
 
-#       $Id: gmt_form.pl,v 1.5 2002-07-24 01:48:57 pwessel Exp $
+#       $Id: gmt_form.pl,v 1.6 2002-09-29 22:27:24 pwessel Exp $
 
 $webmaster = "gmt-team\@hawaii\.edu";
-$registration = "pwessel\@hawaii\.edu";
 
 # Create return HTML Test file
 
@@ -38,11 +37,8 @@ if ($caste ne "guru" && $caste ne "user") {
 
 # Send mail to the gmt registration service
 
-open (SENDMAIL, "| /usr/lib/sendmail " . $registration) || die "Cannot send to $registration";
-print SENDMAIL <<EOF;
-From: GMT-Registration-Script
-To: $registration
-Subject: GMT Registration
+open (TMPFILE, ">>/tmp/gmtregistration") || die "Cannot write to tmp/gmtregistration";
+print TMPFILE <<EOF;
 
 First_Name  : $First_Name
 Last_Name   : $Last_Name
@@ -60,15 +56,15 @@ E-mail      : $Email
 Class       : $caste
 EOF
 if ($group eq "yes") {
-	print SENDMAIL "Subscribe gmtgroup\n";
+	print TMPFILE "Subscribe gmtgroup\n";
 }
 if ($help eq "yes") {
-	print SENDMAIL "Subscribe gmthelp\n";
+	print TMPFILE "Subscribe gmthelp\n";
 }
-print SENDMAIL "#-- Comments --\n";
-print SENDMAIL $Comments, "\n";
+print TMPFILE "#-- Comments --\n";
+print TMPFILE $Comments, "\n";
 
-close (SENDMAIL);
+close (TMPFILE);
 
 print <<EOF;
 <HTML>
