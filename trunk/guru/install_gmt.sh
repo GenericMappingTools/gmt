@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.17 2001-04-18 06:55:06 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.18 2001-04-18 18:00:07 pwessel Exp $
 #
 #	Automatic installation of GMT version 3.4
 #	Version for the Bourne shell (or compatible)
@@ -928,7 +928,7 @@ if [ $netcdf_install = "y" ]; then
 		exit
 	fi
 	
-	n_version=`cat netcdf*/src/VERSION`
+	n_version=`cat netcdf*/src/VERSION | sort -r | head -1`
 	cd netcdf-${n_version}/src
 
 #	Interix/MacOS fix for bad lex which creates an #include statement for values.h which
