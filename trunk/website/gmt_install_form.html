@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.20 2004-10-02 02:26:25 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.21 2004-10-28 22:28:39 pwessel Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.20 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.21 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -298,7 +298,7 @@ of the data resources directory given in C.7 [Default].</I><BR>
 <INPUT TYPE="radio" VALUE="dir" NAME="radio_coast"> Place coastline files in several directories<BR>
 
 <P>
-<I>Note: Normally, all coastline files reside in $GMT/share.  However, if your disk resources are limited
+<I>Note: Normally, all coastline files reside in $GMTHOME/share.  However, if your disk resources are limited
 or you are sharing files via NFS or similar mounts, you may want to place the larger files in places
 separate from where the smaller files reside.  The selections below are only used if you chose that way.</I><BR>
 <P>
