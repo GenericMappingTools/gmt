@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.33 2001-09-13 17:30:32 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.34 2001-09-13 17:32:37 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1503,7 +1503,7 @@ int GMT_setparameter (char *keyword, char *value)
 			gmtdefs.time_unit = GMT_time_system[GMT_N_SYSTEMS-1].unit = value[0];
 			break;
 		case 70:
-			gmtdefs.time_system = GMT_get_time_system (value);
+			gmtdefs.time_system = GMT_get_time_system (lower_value);
 			if (gmtdefs.time_system < 0 || gmtdefs.time_system >= GMT_N_SYSTEMS) {
 				error = TRUE;
 				gmtdefs.time_system = 0;
