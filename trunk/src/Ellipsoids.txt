@@ -1,4 +1,4 @@
-#	$Id: Ellipsoids.txt,v 1.2 2003-03-21 17:10:16 pwessel Exp $
+#	$Id: Ellipsoids.txt,v 1.3 2003-12-23 21:38:24 pwessel Exp $
 #
 # This is the core listing of supported ellipsoids in GMT map projections.
 # To add more ellipsoids, add record sorted by year, run make_ellipsoids.sh
@@ -53,13 +53,16 @@ Struve			1860 6378297.0		294.73		: Friedrich Georg Wilhelm Struve
 Clarke-1858		1858 6378293.639	294.26068	: Clarke's early ellipsoid
 Airy			1830 6377563.396	299.3249646	: Applies to Great Britain
 Airy-Ireland		1830 6377340.189	299.3249646	: Applies to Ireland in 1965
+Modified-Airy		1830 6377340.189	299.3249646	: Same as Airy-Ireland
 Bessel			1841 6377397.155	299.1528128	: Applies to Central Europe, Chile, Indonesia
 Bessel-Schwazeck	1841 6377483.865	299.1528128	: Applies to Namibia
+Bessel-Namibia		1841 6377483.865	299.1528128	: Same as Bessel-Schwazeck
 Bessel-NGO1948		1841 6377492.0176	299.15281	: Modified Bessel for NGO 1948
 Everest-1830		1830 6377276.345	300.8017	: India, Burma, Pakistan, Afghanistan, Thailand
-Everest-1830-Kalianpur	1830 6377301.243	300.80174	: Modified Everest for Kalianpur
-Everest-1830-Kertau	1830 6377304.063	300.8017	: Modified Everest for Kertau
-Everest-1830-Timbalai	1830 6377298.556	300.8017	: Modified Everest for Timbalai
+Everest-1830-Kalianpur	1830 6377301.243	300.80174	: Modified Everest for Kalianpur (1956)
+Everest-1830-Kertau	1830 6377304.063	300.8017	: Modified Everest for Kertau, Malaysia & Singapore
+Everest-1830-Timbalai	1830 6377298.556	300.8017	: Modified Everest for Timbalai, Sabah Sarawak
+Everest-1830-Pakistan	1830 6377309.613	300.8017	: Modified Everest for Pakistan
 Walbeck			1819 6376896.0		302.78		: First least squares solution by Finnish astronomer
 Plessis			1817 6376523.0		308.64		: Old ellipsoid used in France
 Delambre		1810 6376428.0		311.5		: Applies to Belgium
