@@ -30,9 +30,12 @@ surface (\fB\-I\fP).  Only contours that have annotation flags set will be annot
 No space between the option flag and the associated arguments.
 .TP
 .B \-A
-Several annotation formatting options can be set to modify the form of the annotation.  Give - to disable all annotations.
-Append f\fIfont_size\fP to change font size [9], append \fI/r/g/b\fP to change color of text fill box
-[PAGE_COLOR], append \fBa\fP\fIangle\fP to fix annotation angle [Default follows contour], and append \fBo\fP to draw the outline of the surrounding text box [Default is no outline].
+Several annotation formatting options can be set to modify the form of the annotation.
+Give - to disable all annotations.  Append f\fIfont_size\fP to change font size [9], append
+\fI/r/g/b\fP to change color of text fill box [PAGE_COLOR], append \fBa\fP\fIangle\fP to fix
+annotation angle [Default follows contour], and append \fBo\fP to draw the outline of the
+surrounding text box [Default is no outline].  The font used is controlled by the
+ANNOT_FONT_PRIMARY setting.
 #include "explain_-B_short.txt"
 .TP
 .B \-D

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.3 2004-05-19 03:06:10 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.4 2004-05-20 19:06:37 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -41,6 +41,15 @@ struct GMT_XSEGMENT {
 	int stop;	/* y-array index for maximum y endpoint */
 };
 
+struct GMT_LABEL {	/* Contains information on contour/lineation labels */
+	double x, y;
+	double angle;
+	double dist;
+	int node;
+	char label[32];
+	struct GMT_LABEL *next_label, *prev_label;
+};
+
 struct GMT_CONTOUR {
 	char option[BUFSIZ];		/* Copy of the option string */
 	char flag;			/* Char for the option key */
@@ -59,21 +68,23 @@ struct GMT_CONTOUR {
 	struct GMT_XSEGMENT *ylist;	/* y-indices sorted in increasing order */
 	struct GMT_XOVER XC;		/* Structure with resulting crossovers */
 	int nx;				/* Number of crossovers at any time */
+	double label_font_size;		/* Font size for labels */
+	double angle;			/* Label angle [NaN if parallell] */
+	double clearance[2];		/* Spacing between text and textbox */
+	int box;			/* Textbox [0 = transparent, 1 = filled, 2 = filled + outline */
+	int rgb[3];			/* Opaque box color */
+	struct GMT_LABEL *anchor, *old_label;	/* Linked list of contours */
+	struct GMT_LABEL **L;		/* Pointers to sorted list of labels */
+	int n_label;			/* Length of list */
+	char unit[32];			/* Unit for labels */
 };
 
-struct GMT_LABEL {	/* Contains information on contour/lineation labels */
-	double x, y;
-	double angle;
-	double dist;
-	int node;
-	char label[32];
-	struct GMT_LABEL *next_label, *prev_label;
-};
-
-EXTERN_MSC int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L);
-EXTERN_MSC int GMT_contlabel_init (struct GMT_CONTOUR *G, double xyz[2][3]);
+EXTERN_MSC int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *G);
+EXTERN_MSC int GMT_contlabel_init (struct GMT_CONTOUR *G);
+EXTERN_MSC int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3]);
 EXTERN_MSC double GMT_contlabel_angle (double x[], double y[], double x0, double y0, int start, int stop, int width, int n);
-EXTERN_MSC void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_LABEL *L[], int n_label, double label_font_size, double clearance[]);
+EXTERN_MSC void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_CONTOUR *G);
+EXTERN_MSC void GMT_contlabel_plot (struct GMT_CONTOUR *G);
 EXTERN_MSC int GMT_code_to_lonlat (char *code, double *lon, double *lat);
 EXTERN_MSC void GMT_x_free (struct GMT_XOVER *X);
 EXTERN_MSC struct GMT_XSEGMENT *GMT_init_track (double x[], double y[], int n);

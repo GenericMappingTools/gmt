@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.91 2004-05-19 03:06:10 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.92 2004-05-20 19:06:37 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1616,6 +1616,18 @@ void GMT_free (void *addr)
 	free (addr);
 }
 
+int GMT_contlabel_init (struct GMT_CONTOUR *G)
+{	/* Assign default values to structure */
+	G->half_width = 5;
+	G->label_font_size = 9.0;
+	G->label_dist_spacing = 4.0;	/* Inches */
+	if (gmtdefs.measure_unit == GMT_CM) G->label_dist_spacing = 10.0 / 2.54;
+	G->clearance[0] = G->clearance[1] = 0.05;
+	G->box = 1;
+	G->unit[0] = 0;
+	memcpy ((void *)G->rgb, (void *)gmtdefs.page_rgb, (size_t)(3 * sizeof (int)));	/* Default box color is page color */
+}
+
 int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 {
 	/* Interpret the contour-label information string and set structure items */
@@ -1669,7 +1681,7 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 	return (error);
 }
 
-int GMT_contlabel_init (struct GMT_CONTOUR *G, double xyz[2][3])
+int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 {
 	/* Prepares contour labeling machinery as needed */
 	int i, k, n, error = 0;
@@ -1767,27 +1779,27 @@ double GMT_contlabel_angle (double x[], double y[], double x0, double y0, int st
 	return (angle);
 }
 
-void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_LABEL *L[], int n_label, double label_font_size, double clearance[])
+void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_CONTOUR *G)
 {
 	/* Sort lables based on distance along contour */
 	int i, k, start, stop, c;
 	double *xp, *yp, f, label_height, label_width, x_last, y_last;
 	
-	if (n_label == 0) return;	/* Nothing to do */
+	if (G->n_label == 0) return;	/* Nothing to do */
 	
-	if (n_label > 1) qsort((void *)L, (size_t)n_label, sizeof (struct GMT_LABEL *), sort_label_struct);
+	if (G->n_label > 1) qsort((void *)G->L, (size_t)G->n_label, sizeof (struct GMT_LABEL *), sort_label_struct);
 
-	xp = (double *) GMT_memory (VNULL, (size_t)(n + 2 * n_label), sizeof (double), GMT_program);
-	yp = (double *) GMT_memory (VNULL, (size_t)(n + 2 * n_label), sizeof (double), GMT_program);
+	xp = (double *) GMT_memory (VNULL, (size_t)(n + 2 * G->n_label), sizeof (double), GMT_program);
+	yp = (double *) GMT_memory (VNULL, (size_t)(n + 2 * G->n_label), sizeof (double), GMT_program);
 	
-	label_height = label_font_size * GMT_u2u[GMT_PT][GMT_INCH] * 0.58;  /* Constants from GMT_textbox3D()KJ*/
+	label_height = G->label_font_size * GMT_u2u[GMT_PT][GMT_INCH] * 0.58;  /* Constants from GMT_textbox3D()KJ*/
 	stop = 0;
 	x_last = x[0];	y_last = y[0];
-	for (k = 0; k < n_label && stop < n; k++) {
-		label_width = clearance[0] + 0.5 * label_height * strlen(L[k]->label);
+	for (k = 0; k < G->n_label && stop < n; k++) {
+		label_width = G->clearance[0] + 0.5 * label_height * strlen(G->L[k]->label);
 		start = stop;
-		stop = L[k]->node;
-		while (stop >= 0 && (L[k]->dist - d[stop]) < label_width) stop--;
+		stop = G->L[k]->node;
+		while (stop >= 0 && (G->L[k]->dist - d[stop]) < label_width) stop--;
 		if (stop < 0) {	/* Ran out, nothing to plot */
 			stop = 0;
 			continue;
@@ -1797,16 +1809,16 @@ void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_L
 			xp[c] = x[i];
 			yp[c++] = y[i];
 		}
-		f = label_width / (L[k]->dist - d[stop]);
+		f = label_width / (G->L[k]->dist - d[stop]);
 		xp[c] = x[stop+1] - f * (x[stop+1] - x[stop]);
 		yp[c++] = y[stop+1] - f * (y[stop+1] - y[stop]);
 		ps_comment ("Next segment");
 		ps_line (xp, yp, c, 3, FALSE, TRUE);
 		/* Go to other side */
-		stop = L[k]->node;
-		while (stop < n && (d[stop] - L[k]->dist) < label_width) stop++;
+		stop = G->L[k]->node;
+		while (stop < n && (d[stop] - G->L[k]->dist) < label_width) stop++;
 		if (stop == n) continue;	/* Ran out, nothing to plot */
-		f = label_width / (d[stop] - L[k]->dist);
+		f = label_width / (d[stop] - G->L[k]->dist);
 		x_last = x[stop-1] + f * (x[stop] - x[stop-1]);
 		y_last = y[stop-1] + f * (y[stop] - y[stop-1]);
 	}
@@ -1832,6 +1844,40 @@ int sort_label_struct (const void *p_1, const void *p_2)
 	return 0;
 }
 
+
+void GMT_contlabel_plot (struct GMT_CONTOUR *G)
+{
+	/* box = 1: white box only, box = 2: white box + draw outline */
+        /* box = 0: no box (append 't' instead of 'o' in -A parameter) */
+	int box;
+	double dx, dy;
+	struct GMT_LABEL *this, *old;
+	
+	dx = G->clearance[0];
+	dy = G->clearance[1];
+	box = G->box - 1;
+	ps_comment ("Contour annotations:");
+	
+	ps_setpaint (gmtdefs.basemap_frame_rgb);
+	
+	for (old = G->anchor; box >= 0 && old->next_label; old = old->next_label) {	/* First draw boxes if not 3-D*/
+		this = old->next_label;
+		GMT_textbox3D (this->x, this->y, project_info.z_level, G->label_font_size, gmtdefs.annot_font[0], this->label, this->angle, 6, box, dx, dy, G->rgb);
+	}
+	for (old = G->anchor; old->next_label; old = old->next_label) { /* Then labels */
+		this = old->next_label;
+		GMT_text3D (this->x, this->y, project_info.z_level, G->label_font_size, gmtdefs.annot_font[0], this->label, this->angle, 6, 0);
+	}
+		
+	ps_setpaint (gmtdefs.background_rgb);
+	
+	this = G->anchor;
+	while (this) {	/* Free memory */
+		old = this;
+		this = old->next_label;
+		GMT_free ((void *)old);
+	}
+}
 
 int GMT_code_to_lonlat (char *code, double *lon, double *lat)
 {
