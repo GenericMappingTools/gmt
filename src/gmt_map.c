@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.31 2002-09-05 20:05:47 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.32 2002-09-20 03:00:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5703,8 +5703,10 @@ int GMT_polar_outside (double lon, double lat)
 {	
 
 	if (GMT_world_map) {
-		while ((lon - project_info.central_meridian) < -180.0) lon += 360.0;
-		while ((lon - project_info.central_meridian) > 180.0) lon -= 360.0;
+		/* while ((lon - project_info.central_meridian) < -180.0) lon += 360.0;
+		while ((lon - project_info.central_meridian) > 180.0) lon -= 360.0; */
+		while (lon < project_info.w && (lon + 360.0) < project_info.e) lon += 360.0;
+		while (lon > project_info.e && (lon - 360.0) > project_info.w) lon -= 360.0;
 	}
 	
 	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < SMALL )
