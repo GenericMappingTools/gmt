@@ -72,7 +72,7 @@ projecting the grdfile onto a rectangular coordinate system using \fBgrdproject\
 .B \-N
 Choose or inquire about suitable grid dimensions for FFT.
 \fB\-Nf\fP will force the FFT to use the dimensions of the data.
-\fB\-Nq will inQuire about more suitable dimensions.
+\fB\-Nq\fP will inQuire about more suitable dimensions.
 \fB\-N\fP\fInx/ny\fP will do FFT on array size \fInx/ny\fP (Must be >= grdfile size).
 Default chooses dimensions >= data which optimize speed, accuracy of FFT.
 If FFT dimensions > grdfile dimensions, data are extended and tapered to zero.
