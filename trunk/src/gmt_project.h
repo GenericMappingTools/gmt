@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.5 2001-08-16 19:12:23 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.6 2001-08-17 18:11:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -241,9 +241,9 @@ struct MAP_PROJECTIONS {
 };
 
 struct MAP_FRAME {		/* Various parameters for plotting of map boundaries */
-	double frame_int[3];	/* x,y,z */
-	double grid_int[3];
-	double anot_int[3];
+	double frame_int[3];	/* Frame tick intervals, for each axis (x,y,z) */
+	double grid_int[3];	/* Gridline interval, --"-- */
+	double anot_int[3];	/* Anotation interval (upper, i.e. closest to axis), --"-- */
 	char label[3][256];	/* Axis label */
 	char unit[3][32];	/* Axis unit appended to anotations */
 	char header[256];	/* Plot title */
