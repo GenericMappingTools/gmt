@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.2 2001-03-21 17:41:03 pwessel Exp $
+#	 $Id: webman.sh,v 1.3 2001-03-29 22:30:22 pwessel Exp $
 #
 #	webman.csh - Automatic generation of the GMT web manual pages
 #
@@ -60,18 +60,21 @@ done
 
 # Ok, then do the supplemental packages
 
+# Gurus who have their own supplemental packages can have them processed too by
+# defining an environmental parameter MY_GMT_SUPPL which contains a list of these
+# supplements.  THey must all be in src of course
+
+MY_SUPPL=${MY_GMT_SUPPL:-""}
 cd src
-for package in cps dbase imgsrc meca mgg misc segyprogs spotter x2sys x_system; do
-	cd $package
-	for f in *.man; do
-		prog=`echo $f | awk -F. '{print $1}'`
+for package in cps dbase imgsrc meca mgg misc segyprogs spotter x2sys x_system $MY_SUPPL; do
+	for f in $package/*.man; do
+		prog=`basename $f .man`
 		if [ $gush = 1 ]; then
 			echo "Making ${prog}.html"
 		fi
-		nroff -man $f | $MAN2HTML -title $prog | sed -f ../../webman1.sed | sed -f ../../webman2.sed | sed -f ../../webman3.sed > ${prog}.html
-		echo '<body bgcolor="#ffffff">' >> ${prog}.html
+		nroff -man $f | $MAN2HTML -title $prog | sed -f ../webman1.sed | sed -f ../webman2.sed | sed -f ../webman3.sed > $package/${prog}.html
+		echo '<body bgcolor="#ffffff">' >> $package/${prog}.html
 	done
-	cd ..
 done
 cd ..
 
