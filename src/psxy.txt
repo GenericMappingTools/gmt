@@ -171,6 +171,7 @@ The optional \fIlabelinfo\fP controls the specifics of the label formatting and 
 made up of any of the following control arguments:
 .br
 #include "explain_labelinfo.txt"
+.TP
 .B \-Sr
 \fBr\fPectangle.  No size needs to be specified, but the x- and y-dimensions must be found in columns 3 and 4.
 .TP
