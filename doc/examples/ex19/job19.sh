@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 19
 #
-#		$Id: job19.sh,v 1.5 2004-04-10 17:19:14 pwessel Exp $
+#		$Id: job19.sh,v 1.6 2004-05-06 00:07:25 pwessel Exp $
 #
 # Purpose:	Illustrates various color pattern effects for maps
 # GMT progs:	gmtset, grdimage, grdmath, makecpt, pscoast, pstext
@@ -10,8 +10,8 @@
 # First make a worldmap with graded blue oceans and rainbow continents
 
 gmtset COLOR_MODEL rgb
-grdmath -R-180/180/-90/90 -I1 -F Y COSD 2 POW = lat.grd
-grdmath -R-180/180/-90/90 -I1 -F X = lon.grd
+grdmath -Rd -I1 -F Y COSD 2 POW = lat.grd
+grdmath -Rd -I1 -F X = lon.grd
 echo "0 255 255 255 1 0 0 255" > lat.cpt
 makecpt -Crainbow -T-180/180/60 -Z > lon.cpt
 grdimage lat.grd -JI0/6.5i -Clat.cpt -P -K -Y7.5i -B0 > example_19.ps
