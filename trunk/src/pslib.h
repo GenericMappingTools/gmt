@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.25 2004-06-04 04:24:27 pwessel Exp $
+ *	$Id: pslib.h,v 1.26 2004-11-04 03:07:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -47,23 +47,23 @@
 #endif	/* _PSLIB_INC_H */
 
 struct EPS {    /* Holds info for eps files */
-        int x0, x1, y0, y1;     /* Bounding box values in points */
+        int x0, x1, y0, y1;	/* Bounding box values in points */
 	int portrait;		/* TRUE if start of plot was portrait */
 	int clip_level;		/* Add/sub 1 as we clip/unclip - should end at 0 */
-        int fontno[6];   	 /* Array with font ids used (skip if -1). 6 is max fonts used in GMT anot/labels */
-        char *name;             /* User name */
-        char *title;            /* Plot title */
+        int fontno[6];		/* Array with font ids used (skip if -1). 6 is max fonts used in GMT anot/labels */
+        char *name;		/* User name */
+        char *title;		/* Plot title */
 };
 
 struct rasterfile {
-        int     ras_magic;              /* magic number */
-        int     ras_width;              /* width (pixels) of image */
-        int     ras_height;             /* height (pixels) of image */
-        int     ras_depth;              /* depth (1, 8, or 24 bits) of pixel */
-        int     ras_length;             /* length (bytes) of image */
-        int     ras_type;               /* type of file; see RT_* below */
-        int     ras_maptype;            /* type of colormap; see RMT_* below */
-        int     ras_maplength;          /* length (bytes) of following map */
+        int     ras_magic;	/* magic number */
+        int     ras_width;	/* width (pixels) of image */
+        int     ras_height;	/* height (pixels) of image */
+        int     ras_depth;	/* depth (1, 8, or 24 bits) of pixel */
+        int     ras_length;	/* length (bytes) of image */
+        int     ras_type;	/* type of file; see RT_* below */
+        int     ras_maptype;	/* type of colormap; see RMT_* below */
+        int     ras_maplength;	/* length (bytes) of following map */
         /* color map follows for ras_maplength bytes, followed by image */
 };
 
@@ -96,8 +96,8 @@ EXTERN_MSC void ps_free(void *addr);
 EXTERN_MSC void ps_hexagon(double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_image(double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits);
 EXTERN_MSC void ps_imagefill(double *x, double *y, int n, int image_no, char *imagefile, int invert, int image_dpi, int outline, BOOLEAN colorize, int f_rgb[], int b_rgb[]);
-EXTERN_MSC int  ps_imagefill_init(int image_no, char *imagefile, int invert, int image_dpi, BOOLEAN colorize, int f_rgb[], int b_rgb[]);
 EXTERN_MSC void ps_imagemask (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int polarity, int rgb[]);
+EXTERN_MSC void ps_bitimage (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int invert, int f_rgb[], int b_rgb[]);
 EXTERN_MSC void ps_itriangle(double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_octagon(double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_pentagon(double x, double y, double side, int rgb[], int outline);
@@ -124,7 +124,7 @@ EXTERN_MSC void ps_textclip (double x[], double y[], int m, double angle[], char
 EXTERN_MSC void ps_transrotate(double x, double y, double angle);
 EXTERN_MSC void ps_triangle(double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_vector(double xtail, double ytail, double xtip, double ytip, double tailwidth, double headlength, double headwidth, double headshape, int rgb[], int outline);
-EXTERN_MSC unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN invert, BOOLEAN monochrome, BOOLEAN colorize, int f_rgb[], int b_rgb[]);
+EXTERN_MSC unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN monochrome);
 EXTERN_MSC void ps_words (double x, double y, char **text, int n_words, double line_space, double par_width, int par_just, int font, double font_size, double angle, int rgb[3], int justify, int draw_box, double x_off, double y_off, double x_gap, double y_gap, int boxpen_width, char *boxpen_texture, int boxpen_offset, int boxpen_rgb[], int vecpen_width, char *vecpen_texture, int vecpen_offset, int vecpen_rgb[], int boxfill_rgb[3]);
 EXTERN_MSC void ps_setline(int linewidth);
 EXTERN_MSC void ps_textdim (char *xdim, char *ydim, double pointsize, int font, char *text, int key);
@@ -141,7 +141,7 @@ EXTERN_MSC void ps_define_pen (char *param, int width, char *texture, int offset
    instead you will get default values for the BoundingBox plus no
    info is provided about the users name, document title, and fonts used.
    To fill in the structure you must:
-   
+
    - Determine the extreme dimensions of your plot in points (1/72 inch).
    - Supply the user's name (or NULL)
    - Supply the document's title (or NULL)

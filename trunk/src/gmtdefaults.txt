@@ -527,12 +527,13 @@ interval.
 Determines whether PostScript output should use RGB or CMYK when specifying color.  Select from rgb or cmyk [rgb].
 .TP
 .B PSIMAGE_COMPRESS
-Determines if PostScript images are compressed using the Run-Length Encoding scheme (rle) or not at all (none) [none].
+Determines if PostScript images are compressed using the Run-Length Encoding scheme (rle),
+LZW compression (lzw), or not at all (none) [none].
 .TP
 .B PSIMAGE_FORMAT
-Determines whether images created in PostScript should use hexadecimal (i.e., ascii)
-or binary format.  The latter takes up only half as much space and executes faster but may choke
-some printers, especially those off serial ports.  Select hex or bin [hex].
+Determines whether images created in PostScript should use ascii
+or binary format.  The latter takes up less space and executes faster but may choke
+some printers, especially those off serial ports.  Select ascii or bin [ascii].
 .TP
 .B TICK_LENGTH
 The length of a tickmark.  Normally, tickmarks are drawn on the outside of

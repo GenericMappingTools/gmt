@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.86 2004-10-31 04:50:07 pwessel Exp $
+ *	$Id: gmt.h,v 1.87 2004-11-04 03:07:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -24,7 +24,7 @@
  * Revised:	15-SEP-2004
  * Version:	4.0
  */
- 
+
 #ifndef _GMT_H
 #define _GMT_H
 
@@ -294,8 +294,8 @@ struct GMTDEFAULTS {
 	int page_rgb[3];		/* Color of the page [255/255/255 white] */
 	int page_orientation;		/* Orientation of page [0 = Landscape, 1 = Portrait] */
 	int paper_width[2];		/* Width and height of paper to plot on in points [Letter or A4] */
-	BOOLEAN ps_cmykmode;		/* TRUE writes CMYK in PostSCript, FALSE uses RGB [FALSE] */
-	BOOLEAN ps_compress;		/* FALSE means NONE and TRUE means RLE [FALSE] */
+	BOOLEAN ps_cmykmode;		/* TRUE writes CMYK in PostScript, FALSE uses RGB [FALSE] */
+	int ps_compress;		/* Compression of PostScript images: 0 = no, 1 = RLE, 2 = LZW [0] */
 	BOOLEAN ps_heximage;		/* TRUE gives hex ps output image, FALSE gives binary image [TRUE] */
 	double tick_length;		/* Length of tickmarks [0.075] */
 	struct GMT_PEN tick_pen;	/* Pen attributes for tickmarks [2] */
@@ -372,7 +372,7 @@ struct GMT_TIME_LANGUAGE {	/* Language-specific text strings for calendars */
 	char day_name[3][7][16];	/* Full, short, and 1-char weekday names */
 	char week_name[3][16];		/* Full, short, and 1-char versions of the word Week */
 };
-	
+
 struct GMT_FILL {	/* Holds fill attributes */
 	BOOLEAN use_pattern;	/* TRUE if pattern rather than rgb is set */
 	int rgb[3];		/* Chosen color if no pattern */

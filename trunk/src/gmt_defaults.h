@@ -51,11 +51,11 @@
 	0.0,			/* --SET AT RUNTIME */
 	1,			/* OBLIQUE_ANNOTATION */
 	FALSE,			/* OVERLAY */
-	{255, 255, 255},	/* PAGE_COLOR */	
+	{255, 255, 255},	/* PAGE_COLOR */
 	0,			/* PAGE_ORIENTATION */
 	{612, 792},		/* PAPER_MEDIA (US Letter) */
 	FALSE,			/* PS_COLOR (TRUE = CMYK, FALSE = RGB) */
-	FALSE,			/* PSIMAGE_COMPRESS (FALSE = NONE, TRUE = RLE) */
+	0,			/* PSIMAGE_COMPRESS (0 = NONE, 1 = RLE, 2 = LZW) */
 	TRUE,			/* PSIMAGE_FORMAT (TRUE = HEX, FALSE = BIN) */
 	0.075,			/* TICK_LENGTH */
 	{0.5, 0.0, {0, 0, 0}, ""},	/* TICK_PEN */
