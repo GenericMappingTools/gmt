@@ -1,10 +1,10 @@
-/*	$Id: gshhs.h,v 1.3 2001-12-21 03:50:38 ben Exp $
+/*	$Id: gshhs.h,v 1.4 2004-09-12 01:25:20 pwessel Exp $
  *
  * Include file defining structures used in gshhs.c
  *
  * Paul Wessel, SOEST
  *
- *	Copyright (c) 1996-1999 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1996-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,10 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU General Public License for more details.
  *
- *	Contact info: www.soest.hawaii.edu/wessel
-
+ *	Contact info: www.soest.hawaii.edu/pwessel
+ *
+ *	11-SEP-2004.  PW: Version 1.3.  Header is now n * 8 bytes (n = 5)
+ *			  For use with version 1.3 of GSHHS
  */
 
 #define _POSIX_SOURCE 1		/* GSHHS code is POSIX compliant */
@@ -45,11 +47,12 @@ struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines
 	int level;			/* 1 land, 2 lake, 3 island_in_lake, 4 pond_in_island_in_lake */
 	int west, east, south, north;	/* min/max extent in micro-degrees */
 	int area;			/* Area of polygon in 1/10 km^2 */
+	int version;			/* Version of GSHHS polygon (3 is latest and first with this item) */
 	short int greenwich;		/* Greenwich is 1 if Greenwich is crossed */
 	short int source;		/* 0 = CIA WDBII, 1 = WVS */
 };
 
-struct	POINT {
+struct	POINT {	/* Each lon, lat pair is stored in micro-degrees in 4-byte integer format */
 	int	x;
 	int	y;
 };

@@ -1,4 +1,4 @@
-/*	$Id: gshhs_dp.c,v 1.3 2002-11-10 03:13:43 lloyd Exp $
+/*	$Id: gshhs_dp.c,v 1.4 2004-09-12 01:25:20 pwessel Exp $
  *
  * gshhs_dp applies the Douglas-Peucker algorithm to simplify a line
  * segment given a tolerance.  The algorithm is based on the paper
@@ -14,8 +14,9 @@
  *	    1.2 Explicit binary read for DOS.  POSIX compliance
  *	    1.3, 08-NOV-1999: Released under GNU GPL
  *	    1.4 05-SEPT-2000: Made a GMT supplement; FLIP no longer needed
+ *	    1.5 11-SEPT-2004: Updated t owork with GSHHS v1.3 data format
  *
- *	Copyright (c) 1996-2000 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1996-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,7 +28,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU General Public License for more details.
  *
- *	Contact info: www.soest.hawaii.edu/wessel
+ *	Contact info: www.soest.hawaii.edu/pwessel
  */
 
 #include "gshhs.h"
@@ -51,10 +52,10 @@ main (int argc, char **argv)
 	struct	POINT p;
         
 	if (argc < 2 || !(argc == 4 || argc == 5)) {
-		fprintf (stderr,"gshhs_dp v. 1.4 Line reduction using the Douglas-Peucker algorithm\n\n");
-		fprintf (stderr,"usage:  gshhs_dp input.b tolerance output.b [-v]\n");
-		fprintf (stderr,"	tolerance is maximum mismatch in km\n");
-		fprintf (stderr,"	-v will run in verbose mode and report shrinkage\n");
+		fprintf (stderr, "gshhs_dp v. 1.4 Line reduction using the Douglas-Peucker algorithm\n\n");
+		fprintf (stderr, "usage:  gshhs_dp input.b tolerance output.b [-v]\n");
+		fprintf (stderr, "\ttolerance is maximum mismatch in km\n");
+		fprintf (stderr, "\t-v will run in verbose mode and report shrinkage\n");
 		exit (EXIT_FAILURE);
 	}
 
@@ -79,15 +80,16 @@ main (int argc, char **argv)
 	
 		if (flip) {
 			h.id = swabi4 ((unsigned int)h.id);
-			h.n = swabi4 ((unsigned int)h.n);
+			h.n  = swabi4 ((unsigned int)h.n);
 			h.level = swabi4 ((unsigned int)h.level);
-			h.west = swabi4 ((unsigned int)h.west);
-			h.east = swabi4 ((unsigned int)h.east);
+			h.west  = swabi4 ((unsigned int)h.west);
+			h.east  = swabi4 ((unsigned int)h.east);
 			h.south = swabi4 ((unsigned int)h.south);
 			h.north = swabi4 ((unsigned int)h.north);
-			h.area = swabi4 ((unsigned int)h.area);
+			h.area  = swabi4 ((unsigned int)h.area);
+			h.version   = swabi4 ((unsigned int)h.version);
 			h.greenwich = swabi2 ((unsigned int)h.greenwich);
-			h.source = swabi2 ((unsigned int)h.source);
+			h.source    = swabi2 ((unsigned int)h.source);
 		}
 		if (verbose) fprintf (stderr, "Poly %6d", h.id);	
 		
@@ -97,7 +99,7 @@ main (int argc, char **argv)
 		
 		for (k = 0; k < h.n; k++) {
 			if (fread ((void *)&p, sizeof(struct POINT), (size_t)1, fp_in) != 1) {
-				fprintf(stderr,"gshhs_dp:  ERROR  reading data point.\n");
+				fprintf (stderr,"gshhs_dp:  ERROR reading data point.\n");
 				exit (EXIT_FAILURE);
 			}
 			if (flip) {

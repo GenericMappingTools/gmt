@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.3 2004-01-13 02:33:04 pwessel Exp $
+/*	$Id: gshhstograss.c,v 1.4 2004-09-12 01:25:20 pwessel Exp $
  *
  * PROGRAM:     gshhstograss.c
  * AUTHOR:      Simon Cox (simon@ned.dem.csiro.au) &
@@ -9,6 +9,7 @@
  *	        and write files in dig_ascii format for import as GRASS vector maps
  * VERSION:	1.2 18-MAY-1999: Explicit binary open for DOS
  * VERSION:	1.4 05-SEP-2000: Swab done automatically
+ *		1.5 11-SEP-2004: Updated to work with GSHHS database v1.3
  */
 
 #include "gshhs.h"
@@ -104,7 +105,7 @@ char **argv;
 	fprintf(dig_ascii,"DIGIT DATE:   %s",ctime(&tloc));
 	fprintf(dig_ascii,"DIGIT NAME:   %s\n",cuserid(buf));
 	fprintf(dig_ascii,"MAP NAME:     Global Shorelines\n");
-	fprintf(dig_ascii,"MAP DATE:     1996\n");
+	fprintf(dig_ascii,"MAP DATE:     2004\n");
 	fprintf(dig_ascii,"MAP SCALE:    1\n");
 	fprintf(dig_ascii,"OTHER INFO:   \n");
 	fprintf(dig_ascii,"ZONE:	 0\n");
@@ -129,15 +130,16 @@ char **argv;
 
 		if (flip) {
 			h.id = swabi4 ((unsigned int)h.id);
-			h.n = swabi4 ((unsigned int)h.n);
+			h.n  = swabi4 ((unsigned int)h.n);
 			h.level = swabi4 ((unsigned int)h.level);
-			h.west = swabi4 ((unsigned int)h.west);
-			h.east = swabi4 ((unsigned int)h.east);
+			h.west  = swabi4 ((unsigned int)h.west);
+			h.east  = swabi4 ((unsigned int)h.east);
 			h.south = swabi4 ((unsigned int)h.south);
 			h.north = swabi4 ((unsigned int)h.north);
-			h.area = swabi4 ((unsigned int)h.area);
+			h.area  = swabi4 ((unsigned int)h.area);
+			h.version   = swabi4 ((unsigned int)h.version);
 			h.greenwich = swabi2 ((unsigned int)h.greenwich);
-			h.source = swabi2 ((unsigned int)h.source);
+			h.source    = swabi2 ((unsigned int)h.source);
 		}
 		w = h.west  * 1.0e-6;
 		e = h.east  * 1.0e-6;
@@ -149,7 +151,6 @@ char **argv;
 		if( ( w < maxx && e > minx ) && ( s < maxy && n > miny ) ){
 			fprintf(dig_ascii,"L %d\n",h.n);
 			if( h.id > max_id )     max_id= h.id;
-/*		      if( h.id==0 )   h.id=-1; */
 			fprintf(dig_cats,"%d:%s\n",h.id,slevel[h.level]);
 		}
 
@@ -179,9 +180,9 @@ char **argv;
 	fclose(dig_ascii);
 	fclose(dig_att);
 	/* now fix up the number of categories */
-	fseek(dig_cats,0L,0);
-	fprintf(dig_cats,"# %6d categories\n",max_id);
+	fseek (dig_cats, 0L, 0);
+	fprintf(dig_cats,"# %6d categories\n", max_id);
 	fclose(dig_cats);
 
-	exit (0);
+	exit (EXIT_SUCCSESS);
 }
