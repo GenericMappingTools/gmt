@@ -3,10 +3,10 @@
 PS=`basename $0 .sh`
 R=-R-85/5/10/55
 #ttt atl_topo_15m -E-17/28 -Tttt.b -V
+#grdsample ttt.b=1 $R -I5m -Gttt_atl.grd
 #grdraster - 2> $$
 #ID=`grep ETOPO5 $$ | awk '{print $1}'`
 #grdraster $ID $R -Gtopo5.grd
-grdsample ttt.b=1 $R -I5m -Gttt_atl.grd
 grdgradient topo5.grd -Nt1 -A45 -Gtopo5_int.grd
 gmtset PLOT_DEGREE_FORMAT ddd:mm:ssF ANNOT_FONT_SIZE_PRIMARY +9p
 project -E74W/41N -C17W/28N -G10 -Q > great_NY_Canaries.d
@@ -31,4 +31,3 @@ cat << EOF | pstext -R -J -O -K -WwhiteOthin -Dj0.1i/0.1i >> $PS.ps
 17W	28N	9	0	17	CT	Canaries
 EOF
 psxy -R -J -O /dev/null >> $PS.ps
-gv $PS.ps &
