@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.6 2002-02-22 19:22:57 pwessel Exp $
+ *	$Id: gmt_cdf.c,v 1.7 2003-06-25 13:25:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -252,7 +252,7 @@ int GMT_cdf_wu_grd_info (char *file, struct GRD_HEADER *header, char w_or_u)
 	return (0);
 }
 
-int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex, nc_type nc_type)
 {	/* file:	File name	*/
 	/* header:	grid structure header */
 	/* grid:	array with final grid */
@@ -275,7 +275,12 @@ int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	int *k;
 	BOOLEAN check = !GMT_is_fnan (GMT_grd_in_nan_value);
 		
-	float *tmp;
+	unsigned char *tmp_b;
+	signed char *tmp_c;
+	short int *tmp_s;
+	int *tmp_i;
+	float *tmp_f;
+	double *tmp_d;
 		
 	/* Open file and get info */
 	
@@ -303,18 +308,65 @@ int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 		inc = 2;
 	}
 	
-	tmp = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_cdf_read_grd");
-	edge[0] = header->nx;
-		
+	switch (nc_type) {
+		case NC_BYTE:
+			tmp_b = (unsigned char *) GMT_memory (VNULL, (size_t)header->nx, sizeof (unsigned char), "GMT_cdf_read_grd");
+			break;
+		case NC_CHAR:
+			tmp_c = (signed char *) GMT_memory (VNULL, (size_t)header->nx, sizeof (signed char), "GMT_cdf_read_grd");
+			break;
+		case NC_SHORT:
+			tmp_s = (short int *) GMT_memory (VNULL, (size_t)header->nx, sizeof (short int), "GMT_cdf_read_grd");
+			break;
+		case NC_INT:
+			tmp_i = (int *) GMT_memory (VNULL, (size_t)header->nx, sizeof (int), "GMT_cdf_read_grd");
+			break;
+		case NC_FLOAT:
+			tmp_f = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_cdf_read_grd");
+			break;
+		case NC_DOUBLE:
+			tmp_d = (double *) GMT_memory (VNULL, (size_t)header->nx, sizeof (double), "GMT_cdf_read_grd");
+			break;
+		default:
+			fprintf (stderr, "%s: ERROR: Wrong nc_type in GMT_cdf_read_grd\n", GMT_program);
+			exit (EXIT_FAILURE);
+			break;
+	}
+	
+	edge[0] = header->nx;	
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 		start[0] = j * header->nx;
-		/* Get one row */
-		check_nc_status (nc_get_vara_float (cdfid, z_id, start, edge, tmp));
 		ij = (j2 + pad[3]) * width_out + i_0_out;	/* Already has factor of 2 in it if complex */
-		for (i = 0; i < width_in; i++) {
+		/* Get one row */
+		switch (nc_type) {
+			case NC_BYTE:
+				check_nc_status (nc_get_vara_uchar (cdfid, z_id, start, edge, tmp_b));
+				for (i = 0; i < width_in; i++) grid[ij+i*inc] = (float)tmp_b[k[i]];
+				break;
+			case NC_CHAR:
+				check_nc_status (nc_get_vara_schar (cdfid, z_id, start, edge, tmp_c));
+				for (i = 0; i < width_in; i++) grid[ij+i*inc] = (float)tmp_c[k[i]];
+				break;
+			case NC_SHORT:
+				check_nc_status (nc_get_vara_short (cdfid, z_id, start, edge, tmp_s));
+				for (i = 0; i < width_in; i++) grid[ij+i*inc] = (float)tmp_s[k[i]];
+				break;
+			case NC_INT:
+				check_nc_status (nc_get_vara_int (cdfid, z_id, start, edge, tmp_i));
+				for (i = 0; i < width_in; i++) grid[ij+i*inc] = (float)tmp_i[k[i]];
+				break;
+			case NC_FLOAT:
+				check_nc_status (nc_get_vara_float (cdfid, z_id, start, edge, tmp_f));
+				for (i = 0; i < width_in; i++) grid[ij+i*inc] = tmp_f[k[i]];
+				break;
+			case NC_DOUBLE:
+				check_nc_status (nc_get_vara_double (cdfid, z_id, start, edge, tmp_d));
+				for (i = 0; i < width_in; i++) grid[ij+i*inc] = (float)tmp_d[k[i]];
+				break;
+		}
+		for (i = 0; i < width_in; i++) {	/* Check for and handle NaN proxies */
 			kk = ij+i*inc;
-			grid[kk] = tmp[k[i]];
 			if (check && grid[kk] == GMT_grd_in_nan_value) grid[kk] = GMT_f_NaN;
 			if (GMT_is_fnan (grid[kk])) continue;
 			if ((double)grid[kk] < header->z_min) header->z_min = (double)grid[kk];
@@ -331,8 +383,28 @@ int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 
 	check_nc_status (nc_close (cdfid));
 	
-	GMT_free ((void *)tmp);
 	GMT_free ((void *)k);
+	
+	switch (nc_type) {
+		case NC_BYTE:
+			GMT_free ((void *)tmp_b);
+			break;
+		case NC_CHAR:
+			GMT_free ((void *)tmp_c);
+			break;
+		case NC_SHORT:
+			GMT_free ((void *)tmp_s);
+			break;
+		case NC_INT:
+			GMT_free ((void *)tmp_i);
+			break;
+		case NC_FLOAT:
+			GMT_free ((void *)tmp_f);
+			break;
+		case NC_DOUBLE:
+			GMT_free ((void *)tmp_d);
+			break;
+	}	
 
 	return (0);
 }
@@ -357,7 +429,13 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	
 	char text[GRD_COMMAND_LEN+GRD_REMARK_LEN];
 	
-	float *tmp;
+	unsigned char *tmp_b;
+	signed char *tmp_c;
+	short int *tmp_s;
+	int *tmp_i;
+	float *tmp_f;
+	double *tmp_d;
+	
 	BOOLEAN check = !GMT_is_fnan (GMT_grd_out_nan_value);
 	
 	/* dimension ids */
@@ -463,21 +541,88 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	dummy[1] = header->z_max;
 	check_nc_status (nc_put_vara_double(cdfid, z_range_id, start, edge, dummy));
 
-	tmp = (float *) GMT_memory (VNULL, (size_t)width_in, sizeof (float), "GMT_cdf_write_grd");
+	switch (nc_type) {
+		case NC_BYTE:
+			tmp_b = (unsigned char *) GMT_memory (VNULL, (size_t)width_in, sizeof (unsigned char), "GMT_cdf_write_grd");
+			break;
+		case NC_CHAR:
+			tmp_c = (signed char *) GMT_memory (VNULL, (size_t)width_in, sizeof (signed char), "GMT_cdf_write_grd");
+			break;
+		case NC_SHORT:
+			tmp_s = (short int *) GMT_memory (VNULL, (size_t)width_in, sizeof (short int), "GMT_cdf_write_grd");
+			break;
+		case NC_INT:
+			tmp_i = (int *) GMT_memory (VNULL, (size_t)width_in, sizeof (int), "GMT_cdf_write_grd");
+			break;
+		case NC_FLOAT:
+			tmp_f = (float *) GMT_memory (VNULL, (size_t)width_in, sizeof (float), "GMT_cdf_write_grd");
+			break;
+		case NC_DOUBLE:
+			tmp_d = (double *) GMT_memory (VNULL, (size_t)width_in, sizeof (double), "GMT_cdf_write_grd");
+			break;
+		default:
+			fprintf (stderr, "%s: ERROR: Wrong nc_type in GMT_cdf_write_grd\n", GMT_program);
+			exit (EXIT_FAILURE);
+			break;
+	}
 		
 	edge[0] = width_out;
 	i2 = first_col + pad[0];
 	for (j = 0, j2 = first_row + pad[3]; j < height_out; j++, j2++) {
 		ij = j2 * width_in + i2;
 		start[0] = j * width_out;
-		for (i = 0; i < width_out; i++) tmp[i] = grid[inc * (ij+k[i])];
-		check_nc_status (nc_put_vara_float (cdfid, z_id, start, edge, tmp));
+		switch (nc_type) {
+			case NC_BYTE:
+				for (i = 0; i < width_out; i++) tmp_b[i] = (unsigned char)grid[inc * (ij+k[i])];
+				check_nc_status (nc_put_vara_uchar (cdfid, z_id, start, edge, tmp_b));
+				break;
+			case NC_CHAR:
+				for (i = 0; i < width_out; i++) tmp_c[i] = (char)grid[inc * (ij+k[i])];
+				check_nc_status (nc_put_vara_schar (cdfid, z_id, start, edge, tmp_c));
+				break;
+			case NC_SHORT:
+				for (i = 0; i < width_out; i++) tmp_s[i] = (short int)grid[inc * (ij+k[i])];
+				check_nc_status (nc_put_vara_short (cdfid, z_id, start, edge, tmp_s));
+				break;
+			case NC_INT:
+				for (i = 0; i < width_out; i++) tmp_i[i] = (int)grid[inc * (ij+k[i])];
+				check_nc_status (nc_put_vara_int (cdfid, z_id, start, edge, tmp_i));
+				break;
+			case NC_FLOAT:
+				for (i = 0; i < width_out; i++) tmp_f[i] = grid[inc * (ij+k[i])];
+				check_nc_status (nc_put_vara_float (cdfid, z_id, start, edge, tmp_f));
+				break;
+			case NC_DOUBLE:
+				for (i = 0; i < width_out; i++) tmp_d[i] = (double)grid[inc * (ij+k[i])];
+				check_nc_status (nc_put_vara_double (cdfid, z_id, start, edge, tmp_d));
+				break;
+		}
+				
 	}
 	check_nc_status (nc_close (cdfid));
 
 	GMT_free ((void *)k);
-	GMT_free ((void *)tmp);
 	
+	switch (nc_type) {
+		case NC_BYTE:
+			GMT_free ((void *)tmp_b);
+			break;
+		case NC_CHAR:
+			GMT_free ((void *)tmp_c);
+			break;
+		case NC_SHORT:
+			GMT_free ((void *)tmp_s);
+			break;
+		case NC_INT:
+			GMT_free ((void *)tmp_i);
+			break;
+		case NC_FLOAT:
+			GMT_free ((void *)tmp_f);
+			break;
+		case NC_DOUBLE:
+			GMT_free ((void *)tmp_d);
+			break;
+	}	
 	return (0);
 }
 
