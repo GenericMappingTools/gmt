@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.29 2003-02-26 01:35:31 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.30 2003-03-08 01:32:20 pwessel Exp $
 #
 #	Automatic installation of GMT version 4
 #	Version for the Bourne shell (or compatible)
@@ -310,6 +310,17 @@ else
 	echo " " >&2
 	echo "Since you do not want to ftp, the install procedure will" >&2
 	echo "assume the compressed archives are in the current directory." >&2
+	if [ -f triangle.tar.bz2 ] || [ -f triangle.tar.gz ]; then
+		echo "GMT can use two different algorithms for Delauney triangulation." >&2
+		echo " " >&2
+		echo "   Shewchuk [1996]: Modern and very fast, copyrighted." >&2
+		echo "   Watson [1982]   : Older and slower, public domain." >&2
+		echo " " >&2
+		echo "Because of the copyright, GMT uses Watson's routine by default." >&2
+		echo "However, since triangle.tar.{bz2,gz} was found in the current directory" >&2
+		echo "you probably want to use the optional Shewchuk routine." >&2
+		GMT_triangle=`get_def_answer "Use optional Shewchuk's triangulation routine (y/n)?" "y"`
+	fi
 fi
 	
 GMT_def="$topdir/GMT${VERSION}"
