@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.3 2002-11-10 03:13:43 lloyd Exp $
+ *	$Id: gmt_mgg.c,v 1.4 2004-06-09 20:08:16 pwessel Exp $
  *
  *    Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -56,7 +56,17 @@ int gmtmgg_date (int time, int *year, int *month, int *day, int *hour, int *minu
 	day_time = time/86400;
 	*month = day_time / 31 + 1;	/* Only approximately, may be smaller */
 
-	while (gmt_struct->daymon[*month +1] <= day_time) (*month)++;
+	if ((*month) < 0 || (*month) >= GMTMGG_TIME_MAXMONTH) {
+		fprintf (stderr, "GMT ERROR: in gmtmgg_date: Month outside valid range [0-%d>: %d\n", GMTMGG_TIME_MAXMONTH, *month);
+		exit (EXIT_FAILURE);
+	}
+	while (gmt_struct->daymon[*month +1] <= day_time) {
+		(*month)++;
+		if ((*month) < 0 || (*month) > GMTMGG_TIME_MAXMONTH) {
+			fprintf (stderr, "GMT ERROR: in gmtmgg_date: Month outside valid range [0-%d>: %d\n", GMTMGG_TIME_MAXMONTH, *month);
+			exit (EXIT_FAILURE);
+		}
+	}
 	*year = (*month  - 1) / 12 + gmt_struct->first_year;
 	*day = day_time - gmt_struct->daymon[*month] + 1;
 	julian_day = (*month > 12) ?
@@ -133,9 +143,14 @@ int gmtmgg_time (int *time, int year, int month, int day, int hour, int minute, 
 {
 	int mon, n_days;
 	if ((mon = (year - gmt_struct->first_year)) > 4) {
-	  fprintf(stderr,"gmtmgg_time:  Year - first_year > 4\n");
-	  return(-1);
+		fprintf (stderr, "gmtmgg_time:  Year - first_year > 4\n");
+		return(-1);
 	}
+	if (month < 1 || month > 12) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Month out of range [1-12]: %d\n", month);
+	if (day < 1 || day > 31) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Day out of range [1-31]: %d\n", day);
+	if (hour < 0 || hour > 24) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Hour out of range [0-24]: %d\n", hour);
+	if (minute < 0 || minute > 60) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Minute out of range [0-60]: %d\n", minute);
+	if (second < 0 || second > 60) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Second out of range [0-60]: %d\n", second);
 	mon = mon * 12 + month;
 	n_days = gmt_struct->daymon[mon] + day - 1;
 	*time = n_days * 86400 + hour * 3600 + minute * 60 + second;
@@ -277,7 +292,7 @@ int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, str
 
 		if (!(*gmt)) {	/* If not set, now is the time */
 			*gmt = gmtmgg_init (year);
-			fprintf (stderr, "gmtmgg_decode_MGD77: No start year set, using year = %d from 1st data record\n", year);
+			if (gmtdefs.verbose) fprintf (stderr, "gmtmgg_decode_MGD77: No start year set, using year = %d from 1st data record\n", year);
 		}
 		test = gmtmgg_time (&(record->time), year, month, day, hour, min, sec, *gmt);
 		if (test < 0) return (1);
