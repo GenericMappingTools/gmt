@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.66 2004-09-02 18:15:23 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.67 2004-09-14 17:16:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1692,8 +1692,8 @@ int GMT_map_init_stereo (void) {
 
 	GMT_set_polar (project_info.pars[1]);
 
+	if (gmtdefs.map_scale_factor == -1.0) gmtdefs.map_scale_factor = 0.9996;	/* Select default map scale for Stereographic */
 	if (project_info.polar && (irint (project_info.pars[4]) == 1)) gmtdefs.map_scale_factor = 1.0;	/* Gave true scale at given parallel set below */
-
 	/* Equatorial view has a problem with infinite loops.  Until I find a cure
 	  we set projection center latitude to 0.001 so equatorial works for now */
 
@@ -2403,6 +2403,7 @@ int GMT_map_init_tm (void) {
 	GMT_get_crossings = (PFV) GMT_get_crossings_tm;
 	GMT_truncate = (PFI) GMT_truncate_tm;
 
+	if (gmtdefs.map_scale_factor == -1.0) gmtdefs.map_scale_factor = 1.0;	/* Select default map scale for TM */
 	GMT_convert_latitudes = GMT_quicktm (project_info.pars[0], 10.0);
 	if (GMT_convert_latitudes) GMT_scale_eqrad ();
 	GMT_vtm (project_info.pars[0], project_info.pars[1]);
@@ -2650,6 +2651,7 @@ int GMT_map_init_utm (void) {
 	BOOLEAN search;
 	double xmin, xmax, ymin, ymax, lon0;
 
+	if (gmtdefs.map_scale_factor == -1.0) gmtdefs.map_scale_factor = 0.9996;	/* Select default map scale for UTM */
 	lon0 = 180.0 + 6.0 * project_info.pars[0] - 3.0;	/* Central meridian for this UTM zone */
 	if (lon0 >= 360.0) lon0 -= 360.0;
 	GMT_convert_latitudes = GMT_quicktm (lon0, 10.0);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.156 2004-09-14 17:16:53 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.157 2004-09-14 17:19:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1595,7 +1595,7 @@ int GMT_setparameter (char *keyword, char *value)
 			}
 			break;
 		case GMTCASE_MAP_SCALE_FACTOR:
-			if (!strncmp (value, "def")) /* Default scale for chosen projection */
+			if (!strncmp (value, "def", 3)) /* Default scale for chosen projection */
 				gmtdefs.map_scale_factor = -1.0;
 			else {
 				dval = atof (value);
