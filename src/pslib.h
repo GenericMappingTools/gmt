@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.6 2001-09-19 03:43:07 pwessel Exp $
+ *	$Id: pslib.h,v 1.7 2001-09-27 10:56:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -83,7 +83,7 @@ EXTERN_MSC void ps_axis(double x, double y, double length, double val0, double v
 EXTERN_MSC void ps_circle(double x, double y, double size, int rgb[], int outline);
 EXTERN_MSC void ps_clipoff(void);
 EXTERN_MSC void ps_clipon(double *x, double *y, int n, int rgb[], int flag);
-EXTERN_MSC void ps_colorimage(double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny);
+EXTERN_MSC void ps_colorimage(double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits);
 EXTERN_MSC void ps_colortiles(double x0, double y0, double xsize, double ysize, unsigned char *image, int nx, int ny);
 EXTERN_MSC void ps_command(char *text);
 EXTERN_MSC void ps_comment(char *text);

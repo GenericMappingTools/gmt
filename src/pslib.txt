@@ -105,18 +105,23 @@ means this is the first path in a multi-segment clip path.  \fIflag\fP = 2 means
 this is the last segment.  Thus, for a single path, \fIflag\fP = 3.
 .RE
 .IP
-void \fBps_colorimage\fR (\fIxpos, ypos, xlength, ylength, buffer, nx, ny\fP)
+void \fBps_colorimage\fR (\fIxpos, ypos, xlength, ylength, buffer, nx, ny, depth\fP)
 .br
 \fBdouble\fR \fIxpos, ypos, xlength, ylength\fP;
 .br
 \fBunsigned char\fR \fIbuffer[]\fP;
 .br
-\fBint\fR \fInx, ny\fP;
+\fBint\fR \fInx, ny, depth\fP;
 .RS 10
-Plots a 24-bit true color image using rgb colors.  Similar to \fIps_image\fP except \fIbits\fP is fixed
-to be 8.  The rgb triplets are stored in \fIbuffer\fP as rgbrgbrgb...
-This functions sets up a call to the \fIPostScript\fP colorimage operator.
-If \fI-nx\fP is passed instead then rgb is converted to cmyk first.
+Plots a 1-, 4-, 8-, or 24-bit deep image.  The pixel values are stored in \fIbuffer\fP.
+This functions sets up a call to the \fIPostScript\fP colorimage or image operators.
+If \fI-depth\fP is passed instead then rgb is converted to cmyk first.
+Specify position of lower left corner and size (in inches) of image.  \fIbuffer\fP is an unsigned character array in scanline orientation with gray shade or r,g, b
+values (0 - 255) where 0 is black, 255 is white.  \fIdepth\fP is number of bits pr pixel (24, 8,
+4,  or 1). \fInx,ny\fP refers to the number of pixels in image.  The rowlength of \fIbuffer\fP must be an integral
+number of 8/\fIdepth\fP.  \fIbuffer[0]\fP is upper left corner.  E.g. if \fIdepth\fP = 4, then \fIbuffer[j]\fP/16
+gives shade for pixel[2j-1] and \fIbuffer[j]\fP%16 (mod 16) gives shade for pixel[2j].
+See the Adobe Systems \fIPostScript\fP\fR Reference Manual for more details.
 .RE
 .IP
 void \fBps_colortiles\fR (\fIx0, y0, xlength, ylength, buffer, nx, ny\fP)
@@ -209,15 +214,7 @@ void \fBps_image\fR (\fIxpos, ypos, xlength, ylength, buffer, nx, ny, bits\fP)
 .br
 \fBint\fR \fInx, ny, bits\fP;
 .RS 10
-Plots a bit-mapped image using grayshades.  Specify position of lower left corner
-and size (in inches) of image.  \fIbuffer\fP is an unsigned character array with gray shade
-values (0 - 255) where 0 is black, 255 is white.  \fIbits\fP is number of bits pr pixel (8,
-4,  or 1). \fInx,ny\fP refers to the number of pixels in image.  The rowlength of \fIbuffer\fP must be an integral
-number of 8/\fIbits.  buffer[0]\fP is upper left corner.  E.g. if \fIbits\fP = 4, then \fIbuffer[j]\fP/16
-gives shade for pixel[2j-1] and \fIbuffer[j]\fP%16 (mod 16) gives shade for pixel[2j].
-\fIbuffer\fP values are stored as columns, starting at the lower left corner and ending at
-the upper right corner.  See the Adobe Systems \fIPostScript\fP\fR Reference Manual for
-more details.
+Obsolete, simply passes arguments to \fBps_colorimage\fP.
 .RE
 .IP
 void \fBps_imagefill\fR (\fIx, y, n, image, imagefile, invert, imagedpi, outline, template, r_rgb, b_rgb\fP)

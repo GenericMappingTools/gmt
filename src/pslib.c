@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.21 2001-09-27 08:17:11 pwessel Exp $
+ *	$Id: pslib.c,v 1.22 2001-09-27 10:56:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -152,18 +152,13 @@ int PSL_first = TRUE;
 
 char *ps_prepare_text (char *text);
 void init_font_encoding (struct EPS *eps);
-void ps_colorimage_hex(double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny);
-void ps_colorimage_bin(double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny);
-void ps_image_hex(double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits);
-void ps_image_bin(double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits);
-void ps_imagemask_hex (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int polarity, int rgb[]);
-void ps_imagemask_bin (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int polarity, int rgb[]);
 void get_uppercase(char *new, char *old);
 unsigned char * ps_1bit_to_24bit (unsigned char *pattern, struct rasterfile *h, int f_rgb[], int b_rgb[]);
 void ps_rle_decode (struct rasterfile *h, unsigned char **in);
 void ps_hex_dump (unsigned char *buffer, int nx, int ny, int depth);
 void ps_hex_dump_cmyk (unsigned char *buffer, int nx, int ny, int depth);
-void ps_bin_dump_cmyk (unsigned char *buffer, int nx, int ny, FILE *fp);
+void ps_bin_dump (unsigned char *buffer, int nx, int ny, int depth);
+void ps_bin_dump_cmyk (unsigned char *buffer, int nx, int ny);
 void *ps_memory (void *prev_addr, size_t nelem, size_t size);
 int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy);
 int ps_comp_int_asc (const void *p1, const void *p2);
@@ -346,41 +341,63 @@ void ps_clipon_ (double *x, double *y, int *n, int *rgb, int *flag)
 	ps_clipon (x, y, *n, rgb, *flag);
 }
 	  
-void ps_colorimage (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny)
+void ps_colorimage (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits)
 {
-	/* Plots a color bitmapped image. Each pixel is described by
-	 * 3 hexadecimal numbers, each may take on values from
-	 * 00(0) to FF(255).  buffer stores the colroinfo in
-	 * r g b r g b r g b format. Kosher Adobe operator.
+	/* Plots a B/W (1), gray (4|8), or color (24)  bitmapped image (nbits)
+	 * x, y is lower left position of image in inches
+	 * xsize, ysize is the image size in inches
+	 * buffer contains the bytes for the image
+	 * nx, ny is the pixel dimension
+	 * nbits is the number of bits per pixel (1, 4, 8, 24)
 	 */
-	if (ps.hex_image)
-		ps_colorimage_hex (x, y, xsize, ysize, buffer, nx, ny);
-	else
-		ps_colorimage_bin (x, y, xsize, ysize, buffer, nx, ny);
-}
-
-void ps_colorimage_hex (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny)
-{
-	/* Writes output image using hex format */
-
-	int ix, iy, lx, ly, mx, n_channels;
-	char *type[2] = {"RGB", "CMYK"};
+	 
+	int ix, iy;		/* Position of the lower left corder of the image */
+	int lx, ly;		/* x and y dimension of image in PS coordinates */
+	int mx, n_channels, id;
+	char *colorspace[3] = {"Gray", "RGB", "CMYK"};			/* What kind of image we are writing */
+	char *decode[3] = {"0 1", "0 1 0 1 0 1", "0 1 0 1 0 1 0 1"};	/* What kind of color decoding */
+	char *kind[2] = {"bin", "hex"};					/* What encoding to use */
+	char *read[2] = {"readstring", "readhexstring"};		/* What read function to use */
 	
-	n_channels = (ps.cmyk_image) ? 4 : 3;
 	ix = irint (x * ps.scale);
 	iy = irint (y * ps.scale);
 	lx = irint (xsize * ps.scale);
 	ly = irint (ysize * ps.scale);
-	mx = n_channels * nx;
-	fprintf (ps.fp, "\n%% Start of hex Adobe colorimage [%s]\n", type[ps.cmyk_image]);
+	id = (ps.cmyk_image && nbits == 24) ? 2 : ((nbits == 24) ? 1 : 0);
+	fprintf (ps.fp, "\n%% Start of %s Adobe %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], abs (nbits));
 	fprintf (ps.fp, "V N %d %d T %d %d scale\n", ix, iy, lx, ly);
-	fprintf (ps.fp, "%d 65535 lt {%d} {65535} ifelse string /pstr exch def\n", mx, mx);
-	fprintf (ps.fp, "%d %d 8 [%d 0 0 %d 0 %d] {currentfile pstr readhexstring pop} false %d colorimage\n",
-		nx, ny, nx, -ny, ny, n_channels);
+	if (nbits < 0) {	/* Do new PS Level 2 image with interpolation */
+		nbits = abs (nbits);
+		fprintf (ps.fp, "/Device%s setcolorspace\n", colorspace[id]);
+		fprintf (ps.fp, "<<\t%% Start Image dictionary\n  /ImageType 1\n  /Width %d /Height %d\n", nx, ny);
+		fprintf (ps.fp, "  /BitsPerComponent %d\n", MIN (nbits, 8));
+		fprintf (ps.fp, "  /Decode [%s]\n", decode[id]);
+		fprintf (ps.fp, "  /ImageMatrix [%d 0 0 %d 0 %d]\n", nx, -ny, ny);
+		fprintf (ps.fp, "  /DataSource currentfile");
+		if (ps.hex_image) fprintf (ps.fp, " /ASCIIHexDecode filter");
+		fprintf (ps.fp, "\n  /Interpolate true\n>>\nimage\n");
+	}
+	else {		/* Standard colorimage call PS Level 1 */
+		n_channels = (ps.cmyk_image) ? 4 : 3;
+		fprintf (ps.fp, "%d %d 8 div mul ceiling cvi dup 65535 ge {pop 65535} if string /pstr exch def\n", nx, nbits);
+		fprintf (ps.fp, "%d %d %d [%d 0 0 %d 0 %d] {currentfile pstr %s pop}", nx, ny, MIN (nbits, 8), nx, -ny, ny, read[ps.hex_image]);
+		(nbits <= 8) ? fprintf (ps.fp, "image\n") : fprintf (ps.fp, "false %d colorimage\n", n_channels);
+	}
 
-	(ps.cmyk_image) ? ps_hex_dump_cmyk (buffer, nx, ny, 24) : ps_hex_dump (buffer, nx, ny, 24);
+	mx = (int) ceil (nbits * nx / 8.0);
+	if (ps.hex_image)
+		(id == 2) ? ps_hex_dump_cmyk (buffer, nx, ny, 24) : ps_hex_dump (buffer, nx, ny, nbits);
+	else
+		(id == 2) ? ps_bin_dump_cmyk (buffer, nx, ny) : ps_bin_dump (buffer, nx, ny, nbits);
 
-	fprintf (ps.fp, "U\n%% End of colorimage\n\n");
+	fprintf (ps.fp, "U\n%% End of %s Adobe %s image\n", kind[ps.hex_image], colorspace[id]);
+}
+
+void ps_bin_dump (unsigned char *buffer, int nx, int ny, int depth)
+{
+	int mx;
+	mx = (int) ceil (depth * nx / 8.0);
+	(void)fwrite ((void *)buffer, sizeof (unsigned char), (size_t)(mx * ny), ps.fp);
 }
 
 void ps_hex_dump (unsigned char *buffer, int nx, int ny, int depth)
@@ -454,9 +471,10 @@ void ps_hex_dump_cmyk (unsigned char *buffer, int nx, int ny, int depth)
 	}
 }
 
-void ps_bin_dump_cmyk (unsigned char *buffer, int nx, int ny, FILE *fp)
+void ps_bin_dump_cmyk (unsigned char *buffer, int nx, int ny)
 {
-	/* Writes core of output image in CMYK using bin format */
+	/* Writes  image in CMYK using bin format */
+	
 	int i, ij, j;
 	unsigned char cmyk[4];
 	
@@ -465,37 +483,15 @@ void ps_bin_dump_cmyk (unsigned char *buffer, int nx, int ny, FILE *fp)
 			cmyk[0] = 255 - buffer[ij++];	cmyk[1] = 255 - buffer[ij++];	cmyk[2] = 255 - buffer[ij++];
 			cmyk[3] = MIN (cmyk[0], cmyk[1]);	if (cmyk[2] < cmyk[3]) cmyk[3] = cmyk[2];
 			cmyk[0] -= cmyk[3];	cmyk[1] -= cmyk[3];	cmyk[2] -= cmyk[3];
-			fwrite ((void *)cmyk, sizeof (unsigned char), (size_t)4, fp);
+			fwrite ((void *)cmyk, sizeof (unsigned char), (size_t)4, ps.fp);
 		}
 	}
 }
 
-void ps_colorimage_bin (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny)
-{
-	/* Writes output image using bin format */
-
-	int ix, iy, lx, ly, mx, n_channels;
-	char *type[2] = {"RGB", "CMYK"};
-	
-	n_channels = (ps.cmyk_image) ? 4 : 3;
-	ix = irint (x * ps.scale);
-	iy = irint (y * ps.scale);
-	lx = irint (xsize * ps.scale);
-	ly = irint (ysize * ps.scale);
-	mx = n_channels * nx;
-	fprintf (ps.fp, "\n%% Start of binary Adobe colorimage [%s]\n", type[ps.cmyk_image]);
-	fprintf (ps.fp, "V N %d %d T %d %d scale\n", ix, iy, lx, ly);
-	fprintf (ps.fp, "%d 65535 lt {%d} {65535} ifelse string /pstr exch def\n", mx, mx);
-	fprintf (ps.fp, "%d %d 8 [%d 0 0 %d 0 %d] {currentfile pstr readstring pop} false %d colorimage\n",
-		nx, ny, nx, -ny, ny, n_channels);
-	(ps.cmyk_image) ? ps_bin_dump_cmyk (buffer, nx, ny, ps.fp) : (void)fwrite ((void *)buffer, sizeof (unsigned char), (size_t)(mx * ny), ps.fp);
-	fprintf (ps.fp, "\nU\n%% End of colorimage\n\n");
-}
-
 /* fortran interface */
-void ps_colorimage_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, int *nx, int *ny, int nlen)
+void ps_colorimage_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, int *nx, int *ny, int *nbits, int nlen)
 {
-	ps_colorimage (*x, *y, *xsize, *ysize, buffer, *nx, *ny);
+	ps_colorimage (*x, *y, *xsize, *ysize, buffer, *nx, *ny, *nbits);
 }
 
 void ps_colortiles (double x0, double y0, double xsize, double ysize, unsigned char *image, int nx, int ny)
@@ -697,61 +693,8 @@ void ps_flush_ ()
 }
 
 void ps_image (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits)
-{
-	/* Plots a bitmapped image. Each pixel is described by
-	 * a hexadecimal number, which may take on values from
-	 * 00(0) to FF(255).
-	 * nbits is no of bits/pixel. Can be 8,4, or 1.
-	 * Eg. if 1 is used, the each element of buffer provides
-	 * shade info for 8 pixels, going from left to right.
-	 * Note that nx refers to number of pixels, not buffer values.
-	 * buffer width must be an integral of 8/nbits.
-	 */
-	if (ps.hex_image)
-		ps_image_hex (x, y, xsize, ysize, buffer, nx, ny, nbits);
-	else
-		ps_image_bin (x, y, xsize, ysize, buffer, nx, ny, nbits);
-}
-
-void ps_image_hex (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits)
-{
-	/* Write output image using hex notation */
-
-	int ix, iy, lx, ly;
-	
-	ix = irint (x * ps.scale);
-	iy = irint (y * ps.scale);
-	lx = irint (xsize * ps.scale);
-	ly = irint (ysize * ps.scale);
-	fprintf (ps.fp, "\n%% Start of hex monochrome image\n");
-	fprintf (ps.fp, "V N %d %d T %d %d scale\n", ix, iy, lx, ly);
-	fprintf (ps.fp, "%d %d 8 div mul ceiling cvi dup 65535 ge {pop 65535} if string /pstr exch def\n", nx, nbits);
-	fprintf (ps.fp, "%d %d %d [%d 0 0 %d 0 %d] {currentfile pstr readhexstring pop} image\n",
-		nx, ny, nbits, nx, -ny, ny);
-	
-	ps_hex_dump (buffer, nx, ny, nbits);
-
-	fprintf (ps.fp, "U\n%% End of image\n\n");
-}
-
-void ps_image_bin (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits)
-{
-	/* Write output image using bin notation */
-	int ix, iy, lx, ly, mx;
-	
-	ix = irint (x * ps.scale);
-	iy = irint (y * ps.scale);
-	lx = irint (xsize * ps.scale);
-	ly = irint (ysize * ps.scale);
-	fprintf (ps.fp, "\n%% Start of binary monochrome image\n");
-	fprintf (ps.fp, "V N %d %d T %d %d scale\n", ix, iy, lx, ly);
-	fprintf (ps.fp, "%d %d 8 div mul ceiling cvi dup 65535 ge {pop 65535} if string /pstr exch def\n", nx, nbits);
-	fprintf (ps.fp, "%d %d %d [%d 0 0 %d 0 %d] {currentfile pstr readstring pop} image\n",
-		nx, ny, nbits, nx, -ny, ny);
-	
-	mx = (int) ceil (nbits * nx / 8.0);
-	fwrite ((void *)buffer, sizeof (unsigned char), (size_t)(mx * ny), ps.fp);
-	fprintf (ps.fp, "\nU\n%% End of image\n\n");
+{	/* Backwards compatibility */
+	ps_colorimage (x, y, xsize, ysize, buffer, nx, ny, nbits);
 }
 
 /* fortran interface */
@@ -976,57 +919,25 @@ void ps_imagemask (double x, double y, double xsize, double ysize, unsigned char
 	 * If 0 is used, then maskbits == 0 will be painted with rgb.
 	 * buffer width must be an integral of 8 bits.
 	 */
-	if (ps.hex_image)
-		ps_imagemask_hex (x, y, xsize, ysize, buffer, nx, ny, polarity, rgb);
-	else
-		ps_imagemask_bin (x, y, xsize, ysize, buffer, nx, ny, polarity, rgb);
-}
-
-void ps_imagemask_hex (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int polarity, int rgb[])
-{
-	/* Write output imagemask using hex notation */
-
 	int ix, iy, lx, ly;
-	char *TF[2] = {"false", "true"};
+	char *TF[2] = {"false", "true"}, *kind[2] = {"bin", "hex"}, *read[2] = {"readstring", "readhexstring"};
 	
 	ix = irint (x * ps.scale);
 	iy = irint (y * ps.scale);
 	lx = irint (xsize * ps.scale);
 	ly = irint (ysize * ps.scale);
-	fprintf (ps.fp, "\n%% Start of hex imagemask\n");
+	fprintf (ps.fp, "\n%% Start of %s imagemask\n", kind[ps.hex_image]);
 	fprintf (ps.fp, "V N %d %d T %d %d scale\n", ix, iy, lx, ly);
 	ps_setpaint (rgb);
 	memcpy ((void *)ps.rgb, (void *)no_rgb, 3 * sizeof (int));	/* So subsequent ps_setpaint calls work properly */
 	fprintf (ps.fp, "%d 1 8 div mul ceiling cvi dup 65535 ge {pop 65535} if string /pstr exch def\n", nx);
-	fprintf (ps.fp, "%d %d %s [%d 0 0 %d 0 %d] {currentfile pstr readhexstring pop} imagemask\n",
-		nx, ny, TF[polarity], nx, -ny, ny);
+	fprintf (ps.fp, "%d %d %s [%d 0 0 %d 0 %d] {currentfile pstr %s pop} imagemask\n",
+		nx, ny, TF[polarity], nx, -ny, ny, read[ps.hex_image]);
 	
-	ps_hex_dump (buffer, nx, ny, 1);
+	(ps.hex_image) ? ps_hex_dump (buffer, nx, ny, 1) : (void)fwrite ((void *)buffer, sizeof (unsigned char), (size_t)(((int) ceil (0.125 * nx)) * ny), ps.fp);
+
 
 	fprintf (ps.fp, "U\n%% End of imagemask\n\n");
-}
-
-void ps_imagemask_bin (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int polarity, int rgb[])
-{
-	/* Write output imagemask using bin notation */
-	int ix, iy, lx, ly, mx;
-	char *TF[2] = {"false", "true"};
-	
-	ix = irint (x * ps.scale);
-	iy = irint (y * ps.scale);
-	lx = irint (xsize * ps.scale);
-	ly = irint (ysize * ps.scale);
-	fprintf (ps.fp, "\n%% Start of binary imagemask\n");
-	fprintf (ps.fp, "V N %d %d T %d %d scale\n", ix, iy, lx, ly);
-	ps_setpaint (rgb);
-	memcpy ((void *)ps.rgb, (void *)no_rgb, 3 * sizeof (int));	/* So subsequent ps_setpaint calls work properly */
-	fprintf (ps.fp, "%d 1 8 div mul ceiling cvi dup 65535 ge {pop 65535} if string /pstr exch def\n", nx);
-	fprintf (ps.fp, "%d %d %s [%d 0 0 %d 0 %d] {currentfile pstr readstring pop} imagemask\n",
-		nx, ny, TF[polarity], nx, -ny, ny);
-	
-	mx = (int) ceil (0.125 * nx);
-	fwrite ((void *)buffer, sizeof (unsigned char), (size_t)(mx * ny), ps.fp);
-	fprintf (ps.fp, "\nU\n%% End of imagemask\n\n");
 }
 
 /* fortran interface */
