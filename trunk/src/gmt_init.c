@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.108 2004-04-07 20:15:45 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.109 2004-04-07 20:31:55 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -438,6 +438,7 @@ void GMT_explain_option (char option)
 				gmtdefs.x_origin, gmtdefs.y_origin);
 			fprintf (stderr, "\t   Prepend a for absolute [Default r is relative]\n");
 			fprintf (stderr, "\t   (Note that for overlays (-O), the default is [r0,r0].)\n");
+			fprintf (stderr, "\t   Give c to center plot on page in x and/or y.)\n");
 			break;
 			
 		case 'Z':	/* Vertical scaling for 3-D plots */
@@ -931,8 +932,12 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			i = 2;
 			if (item[2] == 'r') i++;	/* Relative mode is default anyway */
 			if (item[2] == 'a') i++, GMT_x_abs = TRUE;
-			gmtdefs.x_origin = GMT_convert_units (&item[i], GMT_INCH);
-			project_info.x_off_supplied = TRUE;
+			if (item[2] == 'c')
+				project_info.x_off_supplied = 2;	/* Must center in map_setup */
+			else {
+				gmtdefs.x_origin = GMT_convert_units (&item[i], GMT_INCH);
+				project_info.x_off_supplied = TRUE;
+			}
 			break;
 		case 'Y':
 		case 'y':
@@ -945,8 +950,12 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			i = 2;
 			if (item[2] == 'r') i++;	/* Relative mode is default anyway */
 			if (item[2] == 'a') i++, GMT_y_abs = TRUE;
-			gmtdefs.y_origin = GMT_convert_units (&item[i], GMT_INCH);
-			project_info.y_off_supplied = TRUE;
+			if (item[2] == 'c')
+				project_info.y_off_supplied = 2;	/* Must center in map_setup */
+			else {
+				gmtdefs.y_origin = GMT_convert_units (&item[i], GMT_INCH);
+				project_info.y_off_supplied = TRUE;
+			}
 			break;
 		case 'c':
 			if (GMT_processed_option[13]) {
