@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.8 2001-07-16 00:49:47 pwessel Exp $
+ *	$Id: gmt.h,v 1.9 2001-08-14 15:57:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -440,5 +440,6 @@ EXTERN_MSC PFD GMT_scan_time_string;		/*	pointer to functions that converts time
 #include "gmt_funcnames.h"      /* List of functions */
 #include "gmt_boundcond.h"	/* Boundary conditions for grids */
 #include "gmt_bcr.h"		/* Grid resampling functions */
+#include "gmt_calclock.h"	/* Calendar/time functions */
 
 #endif  /* _GMT_H */
