@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.14 2004-10-02 02:26:25 pwessel Exp $
+#       $Id: install_gmt_form.pl,v 1.15 2004-10-02 21:21:47 pwessel Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -102,7 +102,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.14 $, on
+# Processed by install_gmt_form.pl $Revision: 1.15 $, on
 #
 #	$now
 #
@@ -435,7 +435,7 @@ if ($delete eq "on") {
 else {
 	print FILE "GMT_delete=n\n";
 }
-if ($matlab_dir ne "/usr/local/matlab" && $matlab_dir ne "") {
+if ($matlab_dir ne "") {
 	print FILE "MATDIR=", $matlab_dir, "\n";
 }
 
