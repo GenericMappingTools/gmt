@@ -1,5 +1,5 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.4 2001-03-07 22:11:26 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.5 2001-03-23 01:15:39 pwessel Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
@@ -7,7 +7,7 @@
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD=
 "POST">
 <INPUT TYPE="hidden" VALUE="3.4" NAME="gmt_version">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.4 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.5 $" NAME="form_version">
 
 <H1></H1>
 <H1><CENTER><STRONG>GMT Installation Helper</CENTER></STRONG>
@@ -139,9 +139,20 @@ You can leave it blank if you have defined $NETCDFHOME to be the directory where
 <I>Note: Download times are shorter when you pick a site that is physically closer to you.  If you already
 have downloaded the files and simply wants to use the script to reinstall, select the last option.</I>
 
+<!--  FTP MODE SELECTION  -->
+
+<HR><B>2. Select normal [Default] or passive ftp transmission:</B><BR>
+
+<INPUT TYPE="radio" VALUE="active" NAME="radio_ftpmode" CHECKED="true"> Normal ftp<BR>
+<INPUT TYPE="radio" VALUE="passive" NAME="radio_ftpmode"> passive ftp<BR>
+
+<P>
+<I>Note: Normal ftp from a client will make the server connect to the client.  This may not work if you
+are behind a firewall.  In that case you may want to select passive ftp mode.</I>
+
 <!--  GMT ARCHIVE SELECTION  -->
 
-<HR><B>2. Select the components you want (gzip/bzip2 sizes indicated):</B><BR>
+<HR><B>3. Select the components you want (gzip/bzip2 sizes indicated):</B><BR>
 
 <INPUT TYPE="checkbox" NAME="checkbox_progs" CHECKED="true"> GMT source code (0.6/0.5 Mb, the main GMT programs, required for minimal install)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_libs" CHECKED="true"> GMT support data (4.0/3.7 Mb, Crude-, low-, and intermediate-resolution coastlines)<BR>
@@ -151,7 +162,7 @@ have downloaded the files and simply wants to use the script to reinstall, selec
 <INPUT TYPE="checkbox" NAME="checkbox_web" CHECKED="true"> GMT Web Docs (1.6/1.6 Mb, HTML versions of all GMT Documentation)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_tut" CHECKED="true"> GMT Tutorial (1.4/1.0 Mb, Tutorial data sets)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_scripts" CHECKED= "true"> GMT Example Scripts &amp; Data (4.2/3.1 Mb, required to run test examples)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_suppl" CHECKED="true"> GMT Supplemental Archive (0.37/0.30 Mb, see section C.9 below for details)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_suppl" CHECKED="true"> GMT Supplemental Archive (0.37/0.30 Mb, see section C.10 below for details)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_high"> GMT High-resolution coastlines (10.7/8.6 Mb)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_full"> GMT full-resolution coastlines (47.1/28.8 Mb)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_triangle"> J. Shewchuck's fast triangulation routine (0.11/0.09 Mb, faster, but not covered by GNU License)<BR>
@@ -168,7 +179,7 @@ may decide that it does not need to ftp new versions of those archives.</I>
 
 <!--  INSTALL TOOL OPTION SELECTION  -->
 
-<HR><B>3. Select library build type:<BR></B>
+<HR><B>4. Select library build type:<BR></B>
 
 <INPUT TYPE="radio" VALUE="Static" NAME="radio_link" CHECKED="true"> Static Libraries<BR>
 <INPUT TYPE="radio" VALUE="Shared" NAME="radio_link"> Shared (dynamic) Libraries<BR>
@@ -183,7 +194,7 @@ the default static libraries.</I><BR>
 
 <!--  COMPILER SELECTION  -->
 
-<HR><B>4. Select the C compiler you want to use:</B><BR>
+<HR><B>5. Select the C compiler you want to use:</B><BR>
 
 <SELECT NAME="cc">
 <OPTION SELECTED>1. cc
@@ -201,7 +212,7 @@ Custom C Compiler: <INPUT NAME="custom_cc" TYPE="text" SIZE="30"><BR>
 
 <!--  MAKE SELECTION  -->
 
-<HR><B>5. Select the make program you want to use:</B><BR>
+<HR><B>6. Select the make program you want to use:</B><BR>
 
 <SELECT NAME="make">
 <OPTION SELECTED>1. make
@@ -217,7 +228,7 @@ Custom make program: <INPUT NAME="custom_make" TYPE="text" SIZE="30"><BR>
 
 <!--  GMT DESTINATION DIRECORIES SELECTION  -->
 
-<HR><B>6. Select GMT final destination directories</B><BR>
+<HR><B>7. Select GMT final destination directories</B><BR>
 
 Place GMT executables in: <INPUT NAME="gmt_bin" TYPE="text" SIZE="30"><BR>
 Place GMT libraries in: <INPUT NAME="gmt_lib" TYPE="text" SIZE="30"><BR>
@@ -242,25 +253,25 @@ via the environmental variable $GMTHOME - all users must set this parameter in t
 The man utility will find the GMT man pages if the chosen man directory is included in the
 users' MANPATH environmental variable.  Finally, advise users to add a browser bookmark for the
 file gmt/gmt_services.html in the web directory you chose above; that page provides links to online
-GMT documentation and man pages (assuming you selected the web archive in Section C.2).</I><BR>
+GMT documentation and man pages (assuming you selected the web archive in Section C.3).</I><BR>
 
 <!--  GMTHOME DEFAULT DIRECTORY SELECTION  -->
 
-<HR><B>7. Select default GMTHOME directory</B><BR>
+<HR><B>8. Select default GMTHOME directory</B><BR>
 
 Default GMTHOME directory: <INPUT NAME="gmt_def" TYPE="text" SIZE="30"><BR>
 
 <P>
 <I>Note: While the GMT data files will be placed in the local directory indicated in the previous
-section (C.6), that directory may appear with a different name to remote users if a different mount point
+section (C.7), that directory may appear with a different name to remote users if a different mount point
 is used or a symbolic link is set.  If so, you may want to specify a different value for the
 default GMTHOME.  This is the directory where GMT will look for the share directory with coastline files if users have
 not set this environmental variable explicitly.  Leave blank to select the parent directory
-of the data resources directory given in C.6 [Default].</I><BR>
+of the data resources directory given in C.7 [Default].</I><BR>
 
 <!--  GMT COASTLINE ALTERNATE DIRECORIES SELECTION  -->
 
-<HR><B>8. Alternative coastline directories</B><BR>
+<HR><B>9. Alternative coastline directories</B><BR>
 
 <INPUT TYPE="radio" VALUE="all" NAME="radio_coast" CHECKED="true"> Install all selected coastline files in $GMTHOME/share<BR>
 <INPUT TYPE="radio" VALUE="dir" NAME="radio_coast"> Place coastline files in several directories<BR>
@@ -277,7 +288,7 @@ Place full resolution coastlines in: <INPUT NAME="gmt_f_dir" TYPE="text" SIZE="3
 
 <!--  GMT SUPPLEMENTAL PACKAGE SELECTION  -->
 
-<HR><B>9. Select supplemental packages to install:</B><BR>
+<HR><B>10. Select supplemental packages to install:</B><BR>
 
 <INPUT TYPE="checkbox" NAME="checkbox_cps"  CHECKED="true"> CPS: Encoding and decoding of Complete PostScript files for archiving<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_dbase"  CHECKED="true"> DBASE: Extracting data from NGDC DEM and other grids<BR>
@@ -304,7 +315,7 @@ directory</I>.
 
 <!--  GMT COMPLETION SELECTION  -->
 
-<HR><B>10. Complete the operation:<BR>
+<HR><B>11. Complete the operation:<BR>
 
 </B><INPUT TYPE="checkbox" NAME="checkbox_delete" > Delete all archives upon sucessful installation<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_run"  CHECKED="true"> Run all example scripts (assumes scripts tar archive was chosen above)<BR>
