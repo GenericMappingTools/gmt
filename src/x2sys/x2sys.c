@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.16 2004-08-19 18:56:00 pwessel Exp $
+ *	$Id: x2sys.c,v 1.17 2004-08-20 20:43:38 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -68,6 +68,7 @@ char *X2SYS_program;
 char *x2sys_xover_format = "%9.5lf %9.5lf %10.1lf %10.1lf %9.2lf %9.2lf %9.2lf %8.1lf %8.1lf %8.1lf %5.1lf %5.1lf\n";
 char *x2sys_xover_header = "%s %d %s %d\n";
 char *x2sys_header = "> %s %d %s %d\n";
+struct MGD77_CONTROL M;
 
 void x2sys_set_home (void);
 int x2sys_record_length (struct X2SYS_INFO *s);
