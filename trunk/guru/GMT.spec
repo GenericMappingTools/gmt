@@ -374,6 +374,7 @@ echo "/opt/geo-data/gmtdata" > /opt/gmt/share/coastline.conf
 /usr/local/include/gmt.h
 /usr/local/include/gmt_bcr.h
 /usr/local/include/gmt_boundcond.h
+/usr/local/include/gmt_calclock.h
 /usr/local/include/gmt_colors.h
 /usr/local/include/gmt_customio.h
 /usr/local/include/gmt_funcnames.h
