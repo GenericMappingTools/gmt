@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.16 2004-01-13 02:33:04 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.17 2004-04-20 18:29:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -455,7 +455,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 		G->start[0] = 0;
 	}
 	else {				/* Regular binary file with/w.o standard GMT header */
-		if ((G->fp = fopen (G->name, bin_mode[r_w])) == NULL) {
+		if ((G->fp = GMT_fopen (G->name, bin_mode[r_w])) == NULL) {
 			fprintf (stderr, "%s: Error opening file %s\n", GMT_program, G->name);
 			exit (EXIT_FAILURE);
 		}
@@ -526,7 +526,7 @@ void GMT_close_grd (struct GMT_GRDFILE *G)
 	if (G->is_cdf)
 		check_nc_status (nc_close (G->fid));
 	else
-		fclose (G->fp);
+		GMT_fclose (G->fp);
 }
 
 void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)

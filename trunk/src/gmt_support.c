@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.70 2004-04-17 01:39:00 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.71 2004-04-20 18:29:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -614,7 +614,8 @@ BOOLEAN GMT_is_color (char *word, int max_slashes)
 	if (strchr(word,'m')) return (FALSE);		/* Got a m somewhere */
 	if (strchr(word,'p')) return (FALSE);		/* Got a p somewhere */
 	for (i = k = 0; word[i]; i++) if (word[i] == '/') k++;
-	if (k && k <= max_slashes) return (TRUE);		/* Only color (r/g/b [and c/m/y/k if max_slashes = 3]) may have slashes */
+	if (k == 1 || k > max_slashes) return (FALSE);	/* No color spec takes only 1 slash */
+	if ((k == 2 || k == 3) && k <= max_slashes) return (TRUE);		/* Only color (r/g/b [and c/m/y/k if max_slashes = 3]) may have slashes */
 	n--;
 	while (n >= 0 && (word[n] == '-' || word[n] == '.' || isdigit ((int)word[n]))) {
 		if (word[n] == '-') n_hyphen++;

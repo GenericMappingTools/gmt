@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.107 2004-04-20 05:37:23 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.108 2004-04-20 18:29:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1091,7 +1091,7 @@ int GMT_coordinate_array (double min, double max, struct PLOT_AXIS_ITEM *T, doub
 	int n;
 	switch (project_info.xyz_projection[T->parent]) {
 		case LINEAR:
-			n = GMT_linear_array (min, max, GMT_get_map_interval (T->parent, T->id), T->phase, array);
+			n = GMT_linear_array (min, max, GMT_get_map_interval (T->parent, T->id), frame_info.axis[T->parent].phase, array);
 			break;
 		case LOG10:
 			n = GMT_log_array (min, max, GMT_get_map_interval (T->parent, T->id), array);
@@ -1115,7 +1115,7 @@ void GMT_linearx_grid (double w, double e, double s, double n, double dval)
 	double *x;
 	int i, nx;
 
-	nx = GMT_linear_array (w, e, dval, 0.0, &x);
+	nx = GMT_linear_array (w, e, dval, frame_info.axis[0].phase, &x);
 	for (i = 0; i < nx; i++) GMT_map_lonline (x[i], s, n);
 	if (nx) GMT_free ((char *)x);
 }
@@ -1125,7 +1125,7 @@ void GMT_lineary_grid (double w, double e, double s, double n, double dval)
 	double *y;
 	int i, ny;
 
-	ny = GMT_linear_array (s, n, dval, 0.0, &y);
+	ny = GMT_linear_array (s, n, dval, frame_info.axis[1].phase, &y);
 	for (i = 0; i < ny; i++) GMT_map_latline (y[i], w, e);
 	if (ny) GMT_free ((char *)y);
 }
@@ -1287,8 +1287,8 @@ void GMT_fancy_frame_straightlat_checkers (double w, double e, double s, double 
 	
 	for (k = 0; k < 1 + secondary_too; k++) {
 		if ((dy = GMT_get_map_interval (1, item[k])) != 0.0) {
-			shade = ((int)floor (s / dy) + 1) % 2;
-			s1 = floor(s/dy) * dy;
+			shade = ((int)floor ((s - frame_info.axis[1].phase) / dy) + 1) % 2;
+			s1 = floor((s - frame_info.axis[1].phase)/dy) * dy + frame_info.axis[1].phase;
 			ny = (s1 > n) ? -1 : (int)((n-s1) / dy + SMALL);
 			for (i = 0; i <= ny; i++) {
 				val = s1 + i * dy;
@@ -1330,8 +1330,8 @@ void GMT_fancy_frame_straightlon_checkers (double w, double e, double s, double 
 	
 	for (k = 0; k < 1 + secondary_too; k++) {
 		if ((dx = GMT_get_map_interval (0, item[k])) != 0.0) {
-			shade = ((int)floor (w / dx) + 1) % 2;
-			w1 = floor (w / dx) * dx;
+			shade = ((int)floor ((w - frame_info.axis[0].phase)/ dx) + 1) % 2;
+			w1 = floor ((w - frame_info.axis[0].phase)/ dx) * dx + frame_info.axis[0].phase;
 			nx = (w1 > e) ? -1 : (int)((e - w1) / dx + SMALL);
 			for (i = 0; i <= nx; i++) {
 				val = w1 + i * dx;
@@ -1372,8 +1372,8 @@ void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n,
 	
 	for (k = 0; k < 1 + secondary_too; k++) {
 		if ((dx = GMT_get_map_interval (0, item[k])) != 0.0) {
-			shade = ((int)floor (w / dx) + 1) % 2;
-			w1 = floor(w/dx) * dx;
+			shade = ((int)floor ((w - frame_info.axis[0].phase) / dx) + 1) % 2;
+			w1 = floor((w - frame_info.axis[0].phase)/dx) * dx + frame_info.axis[0].phase;
 			nx = (w1 > e) ? -1 : (int)((e-w1) / dx + SMALL);
 			for (i = 0; i <= nx; i++) {
 				val = w1 + i * dx;
@@ -2515,7 +2515,7 @@ void GMT_map_tickmarks (double w, double e, double s, double n)
 void GMT_map_tickitem (double w, double e, double s, double n, int item)
 {
 	int i, nx, ny;
-	double dx, dy, w1, s1, val, len;
+	double dx, dy, w1, s1, *val, len;
 	BOOLEAN do_x, do_y;
 	
 	dx = GMT_get_map_interval (0, item);
@@ -2532,25 +2532,15 @@ void GMT_map_tickitem (double w, double e, double s, double n, int item)
 	GMT_on_border_is_outside = TRUE;	/* Temporarily, points on the border are outside */
 	
 	if (do_x) {	/* Draw grid lines that go E to W */
-		w1 = floor (w / dx) * dx;
-		if (fabs (w1 - w) > SMALL) w1 += dx;
-		nx = (w1 > e) ? -1 : (int)((e - w1) / dx + SMALL);
-		for (i = 0; i <= nx; i++) {
-			val = w1 + i * dx;
-			if (val > e) val = e;
-			GMT_map_lontick (val, s, n, len);
-		}
+		nx = GMT_linear_array (w, e, dx, frame_info.axis[0].phase, &val);
+		for (i = 0; i < nx; i++)  GMT_map_lontick (val[i], s, n, len);
+		if (nx) GMT_free ((void *)val);
 	}
 	
 	if (do_y) {	/* Draw grid lines that go S to N */
-		s1 = floor (s / dy) * dy;
-		if (fabs (s1 - s) > SMALL) s1 += dy;
-		ny = (s1 > n) ? -1 : (int)((n - s1) / dy + SMALL);
-		for (i = 0; i <= ny; i++) {
-			val = s1 + i * dy;
-			if (val > n) val = n;
-			GMT_map_lattick (val, w, e, len);
-		}
+		ny = GMT_linear_array (s, n, dy, frame_info.axis[1].phase, &val);
+		for (i = 0; i <= ny; i++) GMT_map_lattick (val[i], w, e, len);
+		if (ny) GMT_free ((void *)val);
 	}
 	
 	GMT_on_border_is_outside = FALSE;	/* Reset back to default */
@@ -2558,8 +2548,9 @@ void GMT_map_tickitem (double w, double e, double s, double n, int item)
 
 void GMT_map_annotate (double w, double e, double s, double n)
 {
-	double s1, w1, val, dx[2], dy[2], x, y, del;
-	int do_minutes, do_seconds, move_up, i, k, nx, ny, done_zero = FALSE, annot, GMT_world_map_save, item[2] = {GMT_ANNOT_UPPER, GMT_ANNOT_LOWER};
+	double *val, dx[2], dy[2], w2, s2, x, y, del;
+	int i, k, nx, ny, remove[2], item[2] = {GMT_ANNOT_UPPER, GMT_ANNOT_LOWER};
+	int do_minutes, do_seconds, move_up, done_zero = FALSE, annot, GMT_world_map_save;
 	char label[256], cmd[256];
 	BOOLEAN full_lat_range, proj_A, proj_B, annot_0_and_360, dual;
 	PFI GMT_outside_save;
@@ -2654,28 +2645,33 @@ void GMT_map_annotate (double w, double e, double s, double n)
 		GMT_outside = GMT_wesn_outside_np;
 	}
 	
+	w2 = floor (w / dx[1]) * dx[1];
+	s2 = floor (s / dy[1]) * dy[1];
+	
+	if (dual) {
+		remove[0] = (dx[0] < (1.0/60.0)) ? 2 : 1;
+		remove[1] = (dy[0] < (1.0/60.0)) ? 2 : 1;
+	}
 	for (k = 0; k < 1 + dual; k++) {
 		if (dx[k] > 0.0) {	/* Annotate the S and N boundaries */
 			done_zero = FALSE;
 			do_minutes = (fabs (fmod (dx[k], 1.0)) > SMALL);
 			do_seconds = (fabs (60.0 * fmod (fmod (dx[k], 1.0) * 60.0, 1.0)) >= 1.0);
-			w1 = floor (w / dx[k]) * dx[k];
-			if (fabs (w1 - w) > SMALL) w1 += dx[k];
-			nx = (w1 > e) ? -1 : (int)((e - w1) / dx[k] + SMALL);
-			for (i = 0; i <= nx; i++) {
-				val = w1 + i * dx[k];
-				if (fabs (val) < GMT_CONV_LIMIT) done_zero = TRUE;
-				if (val > e) val = e;
-				GMT_get_annot_label (val, label, do_minutes, do_seconds, 0, GMT_world_map_save);
-				annot = annot_0_and_360 || !(done_zero && fabs (val - 360.0) < GMT_CONV_LIMIT);
+			nx = GMT_linear_array (w, e, dx[k], frame_info.axis[0].phase, &val);
+			for (i = 0; i < nx; i++) {
+				if (fabs (val[i]) < GMT_CONV_LIMIT) done_zero = TRUE;
+				GMT_get_annot_label (val[i], label, do_minutes, do_seconds, 0, GMT_world_map_save);
+				annot = annot_0_and_360 || !(done_zero && fabs (val[i] - 360.0) < GMT_CONV_LIMIT);
 				if (dual && k == 0) {
-					if (fabs (fmod (val - w1, dx[1])) < GMT_CONV_LIMIT)
+					del = fmod (val[i] - w2, dx[1]);
+					if (fabs (del) < GMT_CONV_LIMIT || fabs (del - dx[1]) < GMT_CONV_LIMIT)
 						annot = FALSE;
 					else
-						GMT_label_trim (label, 1);
+						GMT_label_trim (label, remove[0]);
 				}
-				GMT_map_symbol_ns (val, label, s, n, annot, k);
+				GMT_map_symbol_ns (val[i], label, s, n, annot, k);
 			}
+			if (nx) GMT_free ((void *)val);
 		}
 	
 		if (dy[k] > 0.0) {	/* Annotate W and E boundaries */
@@ -2691,24 +2687,21 @@ void GMT_map_annotate (double w, double e, double s, double n)
 				lonlat = 2;
 				if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Temporary swap to trick justify machinery */
 			}
-			s1 = floor (s / dy[k]) * dy[k];
-			if (fabs (s1 - s) > SMALL) s1 += dy[k];
-			ny = (s1 > n) ? -1: (int)((n - s1) / dy[k] + SMALL);
-			for (i = 0; i <= ny; i++) {
-				/* val = s1 + i * dy; */
-				val = s1 + i * dy[k];
-				if (val > n) val = n;
-				if ((project_info.polar || project_info.projection == GRINTEN) && fabs (fabs (val) - 90.0) < GMT_CONV_LIMIT) continue;
-				GMT_get_annot_label (val, label, do_minutes, do_seconds, lonlat, GMT_world_map_save);
+			ny = GMT_linear_array (s, n, dy[k], frame_info.axis[1].phase, &val);
+			for (i = 0; i < ny; i++) {
+				if ((project_info.polar || project_info.projection == GRINTEN) && fabs (fabs (val[i]) - 90.0) < GMT_CONV_LIMIT) continue;
+				GMT_get_annot_label (val[i], label, do_minutes, do_seconds, lonlat, GMT_world_map_save);
 				annot = TRUE;
 				if (dual && k == 0) {
-					if (fabs (fmod (val - s1, dy[1])) < GMT_CONV_LIMIT)
+					del = fmod (val[i] - s2, dy[1]);
+					if (fabs (del) < GMT_CONV_LIMIT || fabs (del - dy[1]) < GMT_CONV_LIMIT)
 						annot = FALSE;
 					else
-						GMT_label_trim (label,1);
+						GMT_label_trim (label, remove[1]);
 				}
-				GMT_map_symbol_ew (val, label, w, e, annot, k);
+				GMT_map_symbol_ew (val[i], label, w, e, annot, k);
 			}
+			if (ny) GMT_free ((void *)val);
 			if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Undo the temporary swap */
 		}
 	}
