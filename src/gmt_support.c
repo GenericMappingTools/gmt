@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.141 2004-10-24 21:39:44 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.142 2004-10-28 22:28:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -293,7 +293,7 @@ int GMT_name2rgb (char *name)
 	/* Return index into structure with colornames and r/g/b */
 	
 	int k;
-	char Lname[16];
+	char Lname[64];
 
 	strcpy (Lname, name);
 	GMT_str_tolower (Lname);
@@ -307,7 +307,7 @@ int GMT_name2pen (char *name)
 	/* Return index into structure with pennames and width */
 	
 	int i, k;
-	char Lname[16];
+	char Lname[64];
 
 	strcpy (Lname, name);
 	GMT_str_tolower (Lname);
