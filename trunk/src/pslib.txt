@@ -343,9 +343,9 @@ Terminates the plotting sequence and closes plot file (if other than \fIstdout\f
 the printing process on hardcopy devices.
 .RE
 .IP
-void \fBps_plotinit\fR (\fIplotfile, overlay, mode, xoff, yoff, xscl, yscl, ncopies, dpi, unit, pagesize, rgb, eps\fP)
+void \fBps_plotinit\fR (\fIplotfile, overlay, mode, xoff, yoff, xscl, yscl, ncopies, dpi, unit, pagesize, rgb, encoding, eps\fP)
 .br
-\fBchar\fR \fI*plotfile;\fP
+\fBchar\fR \fI*plotfile, *encoding;\fP
 .br
 \fBint\fR \fIoverlay, mode, ncopies, dpi, unit\fP;
 .br
@@ -372,7 +372,9 @@ doubt, use 300.  \fIunit\fP can be any of 0 (CM), 1 (INCH), or 2 (M), telling th
 what units are used for distance and sizes.  Note that, regardless of choice of unit, dpi is still in
 dots-pr-inch.  \fIpagesize\fP means the physical width and height of the plotting media in points, (typically 612 by 792 for
 Letter or 595 by 842 for A4 laserwriter plotters.  The \fIrgb\fP array holds the color of the page (usually white = 255,255,255).
-The EPS structure is defined in the pslib.h include file and contains information that will make up the comments header of a EPS file.  Programmers who plan to call pslib routines should read the comments in pslib.h first.  Note that the FORTRAN binding does not
+The \fIencoding\fP is the name of a character encoding scheme to be used, e.g., Standard, ISOLatin1, ISO-8859-2, etc.
+The EPS structure is defined in the pslib.h include file and contains information that will make up the comments header of a EPS file.
+Programmers who plan to call pslib routines should read the comments in pslib.h first.  Note that the FORTRAN binding does not
 expect this last argument.
 .RE
 .IP

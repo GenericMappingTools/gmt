@@ -179,8 +179,8 @@ In general, fancy only applies to situations where the projected x and y directi
 directions (e.g., rectangular projections, polar projections).
 .TP
 .B CHAR_ENCODING
-Determines what encoding \fBGMT\fP \fIPostScript\fP output should use.  Choose from Standard, Standard+, ISOLatin1, and ISOLatin1+.
-See Appendix F for details [CODE_SI (or CODE_US)].
+Determines what encoding \fBGMT\fP \fIPostScript\fP output should use.  Choose from Standard, Standard+, ISOLatin1, ISOLatin1+,
+and ISO-8859-x (where x is in the range 1-9).  See Appendix F for details [CODE_SI (or CODE_US)].
 .TP
 .B COLOR_BACKGROUND
 Color used for the background of images (i.e., when z < lowest colortable entry).
