@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.177 2005-03-03 20:49:20 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.178 2005-03-03 21:57:48 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -816,7 +816,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 	 * -B, -H, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -c, -:, -
 	 */
 
-	int i, j, icol, expect_to_read, got, nn, n_slashes, error = 0, j_type, col_type[2];
+	int i, j, icol, expect_to_read, got, nn = 0, n_slashes, error = 0, j_type, col_type[2];
 	BOOLEAN rect_box_given = FALSE;
 	double *p[6];
 
@@ -3295,7 +3295,7 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 
 		/* Here, t must point to a valid number.  If t[0] is not [+,-,.] followed by a digit we have an error */
 
-		if (!(isdigit (t[0]) || ((t[0] == '-' || t[0] == '+' || t[0] == '.')) && strlen(t) > 1)) {
+		if (!((isdigit (t[0]) || t[0] == '-' || t[0] == '+' || t[0] == '.') && strlen(t) > 1)) {
 			error = 2;
 			continue;
 		}
