@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_math.h,v 1.8 2004-01-28 00:55:04 pwessel Exp $
+ *	$Id: gmt_math.h,v 1.9 2004-05-18 17:29:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -125,8 +125,8 @@ extern int isnan(double x);
  */
 
 #ifdef NO_IEEE
-#define GMT_is_fnan(x) ((x) == MAX_FLT)
-#define GMT_is_dnan(x) ((x) == MAX_DBL)
+#define GMT_is_fnan(x) ((x) == FLT_MAX)
+#define GMT_is_dnan(x) ((x) == DBL_MAX)
 #endif
 
 /* Misc. ANSI-C math functions used by grdmath and gmtmath.

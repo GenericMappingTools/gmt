@@ -1,6 +1,6 @@
 #	Information for installing GMT 4
 #
-#		$Id: README,v 1.18 2004-01-03 03:41:43 pwessel Exp $ 
+#		$Id: README,v 1.19 2004-05-18 17:29:09 pwessel Exp $ 
 #
 #	Copyright (c) 1991-2004, P. Wessel & W. H. F. Smith
 #
@@ -247,7 +247,7 @@ use his routine you should append --enable-triangle.
 
 At run-time, GMT will initialize all default variables by reading
 either the share/.gmtdefaults_SI or the share/.gmtdefaults_US file.
-Both are installed, and the one that is read is given my the file
+Both are installed, and the one that is read is given by the file
 share/gmt.conf.  This file will have either SI or US as the first
 two columns on a line.  SI is default, use --enable-US to switch.
 The default values differ slightly between SI and US, mostly because
@@ -258,7 +258,7 @@ permanent changes to some of the defaults you can edit the
 create a .gmtdefaults file in your home directory and edit those
 settings since GMT will check for that file before loading system
 defaults (actually, it will first look in the current directory,
-then the home directory, and then finally in share.  See the gmtdefaults
+then the home directory, and then finally in share).  See the gmtdefaults
 man page for a description of all defaults.
 
 To prevent two GMT processes writing to the same .gmtcommands file

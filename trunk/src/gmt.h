@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.70 2004-05-12 19:11:27 pwessel Exp $
+ *	$Id: gmt.h,v 1.71 2004-05-18 17:29:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -435,6 +435,7 @@ struct GMT_FONT {		/* Information for each font */
 struct GMT_LINES {		/* For holding multisegment lines in memory */
 	double *lon, *lat;	/* Coordinates x,y */
 	double dist;		/* Distance from a point to this feature */
+	int *seg;		/* Segment number information */
 	int np;			/* Number of points in this segment */
 	int polar;		/* TRUE if a polygon and enclosing N or S pole */
 };
