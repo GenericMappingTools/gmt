@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.12 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.13 2002-02-23 03:39:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1549,9 +1549,8 @@ double GMT_tcrit (double alpha, double nu)
 {
 	/* Critical values for Student t-distribution */
 
-	int i;
 	BOOLEAN done = FALSE;
-	double t_low, t_high, t_mid, p_low, p_high, p_mid, p, sign;
+	double t_low, t_high, t_mid, p_high, p_mid, p, sign;
 	
 	if (alpha > 0.5) {	/* right tail */
 		p = 1 - (1 - alpha) * 2.0;
@@ -1591,7 +1590,6 @@ double GMT_chi2crit (double alpha, double nu)
 {
 	/* Critical values for Chi^2-distribution */
 
-	int i;
 	BOOLEAN done = FALSE;
 	double chi2_low, chi2_high, chi2_mid, p_high, p_mid, p;
 	
@@ -1626,7 +1624,6 @@ double GMT_Fcrit (double alpha, double nu1, double nu2)
 {
 	/* Critical values for F-distribution */
 
-	int i;
 	BOOLEAN done = FALSE;
 	double F_low, F_high, F_mid, p_high, p_mid, p, chisq1, chisq2;
 	void F_to_ch1_ch2 (double F, double nu1, double nu2, double *chisq1, double *chisq2);

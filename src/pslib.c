@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.39 2002-02-15 18:05:07 pwessel Exp $
+ *	$Id: pslib.c,v 1.40 2002-02-23 03:39:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1999,7 +1999,6 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
  */
 	char *string;
 	int i = 0, j, h_just, v_just;
-	double height;
 
 	if (strlen (text) >= (BUFSIZ-1)) {
 		fprintf (stderr, "pslib: text_item > %d long!\n", BUFSIZ);
@@ -2069,9 +2068,9 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 	 */
 	 
 	char *tempstring, *piece, *piece2, *ptr, *string;
-	int i = 0, j, font;
+	int i = 0, font;
 	int sub, super, small, old_font;
-	double height, small_size, size, scap_size, y0;
+	double height, small_size, size, scap_size;
 
 	if (strlen (text) >= (BUFSIZ-1)) {
 		fprintf (stderr, "pslib: text_item > %d long!\n", BUFSIZ);
@@ -2209,10 +2208,10 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	* form:		0 = normal text, 1 = outline of text only
 	*/
 
-	char *tempstring, *piece, *piece2, *ptr, *string, op[16];
+	char *piece, *piece2, *ptr, *string, op[16];
 	int dy, i = 0, j, font, v_just, h_just;
 	int sub, super, small, old_font;
-	double height, small_size, size, scap_size, ustep, dstep, y0;
+	double height, small_size, size, scap_size, ustep, dstep;
 
 	if (strlen (text) >= (BUFSIZ-1)) {	/* We gotta have some limit on how long a single string can be... */
 		fprintf (stderr, "pslib: text_item > %d long - text not plotted!\n", BUFSIZ);
@@ -2459,7 +2458,7 @@ void ps_vector (double xtail, double ytail, double xtip, double ytip, double tai
 		outline -= 8;	/* Remove the flag */
 		l2 = length - 2 * hl + 2 * hl2;							/* Inside length between start of heads */
 		if (rgb[0] < 0) /* Outline only */
-			fprintf (ps.fp, " %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %Da4 U\n",
+			fprintf (ps.fp, " %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d A4 U\n",
 				hl2, hw2, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -hl2, hw2, hl, -hw);
 		else if (iscolor (rgb)) /* color */
 			fprintf (ps.fp, " %.3lg %.3lg %.3lg %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d a%d U\n",
@@ -3109,11 +3108,10 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	int *font_list, *font_unique, n_font_unique;
 	size_t n_alloc, n_items;
 	BOOLEAN sub, super, small, plain_word = FALSE, under, escape;
-	char *c, line[BUFSIZ], *clean, test_char;
+	char *c, *clean, test_char;
 	double last_size;
 	struct GMT_WORD **word;
 	struct GMT_WORD *add_word_part (char *word, int length, int fontno, double font_size, BOOLEAN sub, BOOLEAN super, BOOLEAN small, BOOLEAN under, int space, int rgb[]);
-	FILE *fp;
 
 	sub = super = small = under = FALSE;
 	if (draw_box & 64) {	/* Smart offsets follow justification */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.44 2002-02-21 12:29:54 ben Exp $
+ *	$Id: gmt_io.c,v 1.45 2002-02-23 03:39:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -112,7 +112,6 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode);
 void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S);
 void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S);
 void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S);
-void GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  int *s,  int *ix);
 
 int	GMT_scanf_clock (char *s, double *val);
 int	GMT_scanf_calendar (char *s, GMT_cal_rd *rd);
@@ -120,7 +119,6 @@ int	GMT_scanf_ISO_calendar (char *s, GMT_cal_rd *rd);
 int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd);
 int	GMT_scanf_geo (char *s, double *val);
 int	GMT_scanf_float (char *s, double *val);
-void GMT_lon_range_adjust (int range, double *lon);
 
 
 /* Table I/O routines for ascii and binary io */
@@ -412,8 +410,6 @@ void GMT_adjust_periodic (void) {
 	
 int GMT_ascii_output (FILE *fp, int n, double *ptr)
 {
-	struct GMT_gcal calendar;
-	double	x;
 	int i, last, e = 0, wn = 0;
 	
 	if (gmtdefs.xy_toggle) d_swap (ptr[0], ptr[1]);		/* Write lat/lon instead of lon/lat */
@@ -487,10 +483,9 @@ void GMT_lon_range_adjust (int range, double *lon)
 
 void GMT_format_geo_output (BOOLEAN is_lat, double geo, char *text)
 {
-	int e, d, m, s, m_sec;
+	int d, m, s, m_sec;
 	char letter;
 	BOOLEAN seconds;
-	double x;
 	
 	if (!is_lat) GMT_lon_range_adjust (GMT_io.geo.range, &geo);
 	if (GMT_io.geo.decimal) {	/* Easy */
@@ -558,7 +553,6 @@ void GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  
 
 void GMT_format_abstime_output (GMT_dtime dt, char *text)
 {
-	int e;
 	char date[GMT_CALSTRING_LENGTH], clock[GMT_CALSTRING_LENGTH];
 
 	GMT_format_calendar (date, clock, &GMT_io.date_output, &GMT_io.clock_output, FALSE, 0, dt);
@@ -1016,7 +1010,6 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode)
 	 */
 
 	int i, j, order, n_y, n_m, n_d, n_j, n_w, n_delim, last, error = 0;
-	BOOLEAN do_text = FALSE;
 	
 	for (i = 0; i < 4; i++) S->item_order[i] = S->item_pos[i] = -1;	/* Meaning not encountered yet */
 	
@@ -1387,8 +1380,6 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
 	 * mode is 0 for input and 1 for output format
 	 */
 	 
-	char *c;
-	
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
 	
 	GMT_get_hms_order (template, S);
@@ -1437,7 +1428,7 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 	* mode is 0 for input, 1 for output, and 2 for plot output.
 	 */
 	 
-	char *c, fmt[32];
+	char fmt[32];
 	int k;
 	
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
@@ -1824,7 +1815,7 @@ int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd)
 	
 	For gregorian calendars.  */
 	
-	int	i, k, ival[3];
+	int	k, ival[3];
 	
 	if (GMT_io.date_input.day_of_year) {
 		/* Calendar uses year and day of year format.  */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.25 2002-02-21 12:29:54 ben Exp $
+ *	$Id: gmt_map.c,v 1.26 2002-02-23 03:39:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -573,7 +573,7 @@ double GMT_robinson_spline (double xp, double *x, double *y, double *c);
 
 void GMT_map_setup (double west, double east, double south, double north)
 {
-	int i, search;
+	int search;
 	double f;
 	
 	/* if (!project_info.region) d_swap (south, east); */  /* Got w/s/e/n, make into w/e/s/n */

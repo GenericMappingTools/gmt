@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.5 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt_grdio.h,v 1.6 2002-02-23 03:39:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -56,6 +56,7 @@ EXTERN_MSC int GMT_cdf_write_grd_info(char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_cdf_read_grd(char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 EXTERN_MSC int GMT_cdf_write_grd(char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex, nc_type nc_type);
 
+
 #include "gmt_customio.h"
 
 struct GMT_GRDFILE {
@@ -91,4 +92,11 @@ struct GMT_GRDFILE {
 	struct GRD_HEADER header;	/* Full GMT header for the file */
 };
 	
+/* Row i/o functions */
+
+EXTERN_MSC void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode);
+EXTERN_MSC void GMT_close_grd (struct GMT_GRDFILE *G);
+EXTERN_MSC int GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row);
+EXTERN_MSC int GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row);
+
 #endif /* GMT_GRDIO_H */

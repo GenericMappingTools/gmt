@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.27 2002-02-21 12:29:54 ben Exp $
+ *	$Id: gmt_support.c,v 1.28 2002-02-23 03:39:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3750,7 +3750,7 @@ int GMT_verify_expectations (int wanted, int got, char *item)
 					fprintf (stderr, "You should append d to the -Jx or -JX projection for geographical data.\n");
 				else
 					fprintf (stderr, "You should specify geographical data type with option -f.\n");
-				fprintf (stderr, "%s will proceed assuming geographical input data.\n");
+				fprintf (stderr, "%s will proceed assuming geographical input data.\n", GMT_program);
 				break;
 				
 			case GMT_IS_LON:	/* Found a : in the string and then W or E - LON ? */
@@ -3759,7 +3759,7 @@ int GMT_verify_expectations (int wanted, int got, char *item)
 					fprintf (stderr, "You should append d to the -Jx or -JX projection for geographical data.\n");
 				else
 					fprintf (stderr, "You should specify geographical data type with option -f.\n");
-				fprintf (stderr, "%s will proceed assuming geographical input data.\n");
+				fprintf (stderr, "%s will proceed assuming geographical input data.\n", GMT_program);
 				break;
 				
 			case GMT_IS_LAT:	/* Found a : in the string and then S or N - LAT ? */
@@ -3768,7 +3768,7 @@ int GMT_verify_expectations (int wanted, int got, char *item)
 					fprintf (stderr, "You should append d to the -Jx or -JX projection for geographical data.\n");
 				else
 					fprintf (stderr, "You should specify geographical data type with option -f.\n");
-				fprintf (stderr, "%s will proceed assuming geographical input data.\n");
+				fprintf (stderr, "%s will proceed assuming geographical input data.\n", GMT_program);
 				break;
 				
 			case GMT_IS_FLOAT:
