@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.24 2002-03-14 16:52:16 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.25 2002-03-15 18:34:09 pwessel Exp $
 #
 #	Automatic installation of GMT version 4
 #	Version for the Bourne shell (or compatible)
@@ -688,11 +688,11 @@ install_coast()
 		else
 			t=`echo $file | awk '{print substr($1,1,1)}'`
 			echo "share/binned_GSHHS_${t}.cdf"
-			$expand $here/GMT${file}c.bz2 > $dir/binned_GSHHS_${t}.cdf
+			$expand $here/GMT${file}c.bz2 > $dir/share/binned_GSHHS_${t}.cdf
 			echo "share/binned_binned_${t}.cdf"
-			$expand $here/GMT${file}r.bz2 > $dir/binned_river_${t}.cdf
+			$expand $here/GMT${file}r.bz2 > $dir/share/binned_river_${t}.cdf
 			echo "share/binned_river_${t}.cdf"
-			$expand $here/GMT${file}b.bz2 > $dir/binned_border_${t}.cdf
+			$expand $here/GMT${file}b.bz2 > $dir/share/binned_border_${t}.cdf
 		fi
 	fi
 		
