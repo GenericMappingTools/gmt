@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.18 2001-08-17 20:05:13 wsmith Exp $
+ *	$Id: gmt_init.c,v 1.19 2001-08-17 20:13:00 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -718,13 +718,20 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				j = GMT_scanf (text, expect_to_read, p[i]);
 				switch (j) {
 					case GMT_IS_NAN:
+						fprintf (stderr, "GMT ERROR:  Could not read item %d in -R string.\n", i+1);
 						error++;
 						break;
 					case GMT_IS_LAT:
-						if (GMT_io.in_col_type[icol] == GMT_IS_LON) error++;
+						if (GMT_io.in_col_type[icol] == GMT_IS_LON) {
+							fprintf (stderr, "GMT ERROR:  Expected lon, found lat, in item %d in -R string.\n", i+1);
+							error++;
+						}
 						break;
 					case GMT_IS_LON:
-						if (GMT_io.in_col_type[icol] == GMT_IS_LAT) error++;
+						if (GMT_io.in_col_type[icol] == GMT_IS_LAT) {
+							fprintf (stderr, "GMT ERROR:  Expected lat, found lon, in item %d in -R string.\n", i+1);
+							error++;
+						}
 						break;
 					default:
 						break;
