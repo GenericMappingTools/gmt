@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.15 2002-04-11 20:37:40 pwessel Exp $
+ *	$Id: libspotter.c,v 1.16 2002-04-12 21:01:29 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -75,7 +75,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	e = (struct EULER *) GMT_memory (VNULL, n_alloc, sizeof (struct EULER), "libspotter");
 
 	if ((fp = fopen (file, "r")) == NULL) {
-		fprintf (stderr, "EULER: Cannot open stage pole file: %s\n", file);
+		fprintf (stderr, "libspotter: Cannot open stage pole file: %s\n", file);
 		exit (EXIT_FAILURE);
 	}
 
@@ -137,7 +137,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	/* Extend oldest stage pole back to t_max Ma */
 
 	if ((*t_max) > 0.0 && e[0].t_start < (*t_max)) {
-		fprintf (stderr, "Extending oldest stage pole back to %lg Ma\n", (*t_max));
+		fprintf (stderr, "litspotter: Extending oldest stage pole back to %lg Ma\n", (*t_max));
 
 		e[0].t_start = (*t_max);
 		e[0].duration = e[0].t_start - e[0].t_stop;
