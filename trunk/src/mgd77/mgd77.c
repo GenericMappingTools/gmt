@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.3 2004-08-19 04:34:25 pwessel Exp $
+ *	$Id: mgd77.c,v 1.4 2004-08-19 21:29:22 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -986,7 +986,7 @@ void MGD77_Path_Init (struct MGD77_CONTROL *F)
 	
 	MGD77_Set_Home (F);
 
-	sprintf (file, "%s%cMGD77_paths.txt", F->MGD77_HOME, DIR_DELIM);
+	sprintf (file, "%s%cmgd77_paths.txt", F->MGD77_HOME, DIR_DELIM);
 	
 	F->n_MGD77_paths = 0;
 
@@ -1200,3 +1200,22 @@ int MGD77_storage_bin (int constraint)
 	return (bin);
 }
 
+int MGD77_set_unit (char *dist, double *scale)
+{
+	switch (dist[strlen(dist)-1]) {
+		case 'k':	/* km */
+			*scale = 1000.0;
+			break;
+		case 'm':	/* miles */
+			*scale = MGD77_METERS_PER_M;
+			break;
+		case 'n':	/* nautical miles */
+			*scale = MGD77_METERS_PER_NM;
+			break;
+		default:
+			*scale = 1.0;
+			break;
+	}
+}
+
+			
