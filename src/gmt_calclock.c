@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.24 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.25 2003-04-11 18:53:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -478,7 +478,7 @@ void GMT_gcal_from_rd (GMT_cal_rd date, struct GMT_gcal *gcal) {
 
 	gcal->day_y = prior_days + 1;
 	
-	tempdate = GMT_rd_from_gymd (gcal->year, 1, 1);
+	tempdate = GMT_rd_from_gymd (gcal->year, 2, 1);
 	
 	if (date < tempdate) {
 		corexn = 0;
