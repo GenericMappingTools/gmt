@@ -1,0 +1,249 @@
+<!--    $Id: gmt.html,v 1.1 2001-04-04 01:23:56 pwessel Exp $      -->
+<HTML>
+<HEAD>
+<TITLE>GMT - The Generic Mapping Tools</TITLE>
+</HEAD>
+<BODY BACKGROUND="gmt/images/gmt_paper.gif">
+<CENTER><IMG SRC="gmt/images/gmt_bar.gif" ALT="---------------------------------" ></CENTER>
+<CENTER>
+<H1>
+GMT - The Generic Mapping Tools</H1></CENTER>
+
+<HR>
+<CENTER><IMG SRC="gmt/images/gmt_logo_250.gif">
+<p>
+GMT is released under the
+<A HREF="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</A>
+</CENTER>
+
+
+<P><IMG SRC="gmt/images/gmt_construction.gif"  ALIGN=CENTER> Note: current version is
+GMT-3.4. Also see the <A HREF="gmt/gmt_bugs.html">ERRATA </A> page.
+
+<P>Version 3.4 was officially announced on April 5, 2001.  Click
+<A HREF="gmt/gmt_releases.html">here</A> to
+read the release announcements.
+
+<P><CENTER><IMG SRC="gmt/images/gmt_bar.gif" ALT="---------------------------------" ></CENTER>
+
+<P>GMT is a free, open source collection of ~60 UNIX tools that allow
+users to manipulate (x,y) and (x,y,z) data sets (including filtering, trend
+fitting, gridding, projecting, etc.) and produce Encapsulated PostScript
+File (EPS) illustrations ranging from simple x-y plots through contour
+maps to artificially illuminated surfaces and 3-D perspective views in
+black and white, gray tone, hachure patterns, and 24-bit color. GMT supports
+25 common map projections plus linear, log, and power scaling, and comes
+with support data such as coastlines, rivers, and political boundaries.
+
+<P>GMT is developed and maintained by <A HREF="http://www.soest.hawaii.edu/wessel/wessel.html">Paul
+Wessel</A> and <A HREF="http://ibis.grdl.noaa.gov/SAT/people/walter.html">Walter H. F.
+Smith</A>.&nbsp;<P>
+GMT is partly supported by the <A HREF="http://www.nsf.gov">National Science Foundation</A>.
+<HR>
+<H2>
+Where is GMT used?</H2>
+
+<CENTER><IMG SRC="gmt/images/gmt_usage.jpg" ALT="RETURN" ></CENTER>
+
+
+<P>GMT is used all over the world. The yellow dots show the location of individuals at
+700+ institutions who have installed GMT, representing about 6000 GMT users. To add
+your dot, fill out the <A HREF="gmt/gmt_registration.html">registration form</A>.
+<HR>
+
+<P><CENTER><IMG SRC="gmt/images/gmt_bar.gif" ALT="---------------------------------" ></CENTER>
+<BR><A HREF="gmt/gmt_faq.html"><IMG SRC="gmt/images/gmt_faq.gif" ALT="RETURN" ></A><A HREF="gmt/gmt_faq.html">
+Frequently Asked Questions about GMT.</A>
+
+<P><CENTER><IMG SRC="gmt/images/gmt_bar.gif" ALT="---------------------------------" ></CENTER>
+<HR>
+<H2>Online GMT Services</H2>
+Click <A HREF="gmt/gmt_services.html">HERE</A> for access to the complete Online
+GMT Technical Reference and Cookbook, GMT Tutorial, and GMT Unix Man Pages.
+<P><CENTER><IMG SRC="gmt/images/gmt_bar.gif" ALT="---------------------------------" ></CENTER>
+<BR>
+<HR>
+<H2>GMT Examples</H2>
+Click <A HREF="gmt/gmt_examples.html">HERE</A> to see examples of GMT output.
+<P><CENTER><IMG SRC="gmt/images/gmt_bar.gif" ALT="---------------------------------" ></CENTER>
+<BR>
+<HR>
+<H2>
+Cannot find the answer to a question in the documentation?</H2>
+We have a world-wide mailinglist for use by GMT users. If you send mail
+to <A HREF="mailto:gmthelp@soest.hawaii.edu">gmthelp</A> it will reach
+~500 subscribed GMT users, one of which is likely to know the solution
+to your problem. To add yourself to this mailinglist (which is maintained
+by the listserver program), you must send mail to the <A HREF="mailto:listserv@soest.hawaii.edu">listserver</A>
+with a 1-line message. E.g., if your name is John Smith then send
+
+<P><B>subscribe gmthelp John Smith</B>
+
+<P>The listserver will automatically obtain your email address.
+<P>
+To browse previously posted messages, Stephan Eickschen (eicksch@gfz-potsdam.de)
+maintains a <A HREF="http://op.gfz-potsdam.de/GMT-Help/">GMT Mailing List Archive</A>.
+
+<P>There is a second mailinglist that is only used by the GMT developers
+to broadcast infrequent messages regarding bug fixes and updates. Users
+cannot post to this mailinglist. To stay informed of new developments,
+send mail to the <A HREF="mailto:listserv@soest.hawaii.edu">listserver</A>
+replacing gmthelp with <B>gmtgroup</B> in the message example above. Note:
+the GMT developers monitor both lists and are aware of all submissions
+allthough they may not respond personally to each message.
+
+<P>&nbsp;Occacionally, a frustrated new GMT user will convince him/herself
+that their work is so important that they are justified in digging up our
+phone numbers and calling us directly to get personal attention to their
+problem. Please don't even <B>think</B> about doing this unless you are
+prepared to pay our standard consulting fee of USD 200 per hour.&nbsp;
+<HR>
+<H2>
+Availability of GMT source code</H2>
+The GMT package is available via anonymous ftp from several servers; they
+all contain the same files as the main server in Hawaii. Because of file
+sizes you are strongly encouraged to use the server closest to you.
+We distribute a Bourne shell script (install_gmt) that automatically will
+ftp the required archives from the ftp site you choose.  For users
+with a slow Internet-connection and users who desire large amounts
+of supplemental data sets to use with GMT: See the <B>GMT Companion CD-ROM</B>
+product distributed by <A HREF="http://www.geoware-online.com"><B>Geoware</B></A>.
+<HR>
+
+<h2>Obtaining and Installing GMT</h2>
+
+<OL>
+<LI> <B>UNIX or LINUX:</B>
+Because of the size of the archives we suggest you verify that you have
+<A HREF="http://sourceware.cygnus.com/bzip2/index.html">bzip2</A> on your system.
+If not, it is worth installing (executables for most platforms are available)
+since *.bz2 files are much smaller than the *.gz files.  For instance, the
+entire GMT package is ~50 Mb with bzip2 and 75 Mb with gzip.
+<P>
+<OL>
+<LI><I>Automated install [Recommended]</I>.
+Obtain and install GMT by interacting with the <A HREF="gmt/gmt_install_form.html">INSTALL FORM</A> on the web.
+Follow instructions there to obtain an Bourne shell install-script and a customized install parameter file.  The
+automated install can also install netCDF as part of the installation.
+<LI><I>Manual install</I>.
+If you prefer, you can also do the typical manual install by ftping the files, untar,
+run configure, make etc.  Read the README file for the required steps.
+For manual install you must also manually get and install the <A HREF="ftp://unidata.ucar.edu/pub/netcdf/netcdf.tar.Z">Unidata
+netCDF library</A>, version 3.4 or higher, which GMT requries.
+For your convenience, this library is also available from the GMT ftp sites.
+</OL>
+<P>
+
+<LI> <B>WINDOWS:</B>
+<OL>
+<LI><I>DOS batch files rule</I>.
+All the archives are also available as *.zip files.  In addition, two extra files can be found:
+GMT_exe.zip contains main GMT executables, and GMT_suppl_exe.zip contains executables for the supplements.
+Note that many of the DOS example scripts utilize GNU awk; the WIN32 executable
+<A HREF="ftp://gmt.soest.hawaii.edu/pub/gmt/gawk303x.zip">gawk</A>
+has therefore been placed on all ftp sites.
+A precompiled <A HREF="ftp://gmt.soest.hawaii.edu/pub/gmt/netcdf-3_4_win32bin.zip">netCDF</A>
+library for Windows is also available, and needed for GMT to compile and run (even if you only get the executables).
+For your convenience, this library is also available from the GMT ftp sites.
+<LI><I>DOS batch files suck, part I</I>.
+Because you cannot get much done with DOS batch jobs, we strongly recommend that you install
+<A HREF="http://sourceware.cygnus.com/cygwin">Cygwin</A>, a free Unix emulation package for Windows.
+Cygwin lets you open a bash command window and run bash shell scripts and comes with a suite of
+standard Unix tools.  You would then install GMT as described above for Unix/Linux.  If you don't like
+bash then Cygnus (now RedHat) sells a commercial version that has csh.
+<LI><I>DOS batch files suck, part II</I>.
+If you run Windows NT/2000, you can get access to csh command windows by installing the commercial
+product <A HREF="http://www.interix.com">Interix</A>, a Unix environment for Windows.
+Interix lets you install GMT as described for Unix/Linux above.  Recently, Interix was
+assimilated by the Borg from the planet Redmond.
+</OL>
+<P>
+
+<LI> <B>OS/2: </B>
+GMT has been ported to OS/2.  For information and precompiled executables, see Allen Cogbill's
+<A HREF="ftp://ees.lanl.gov/pub/EES3/pub/gmt/gmt4os2.html">GMT OS/2 page</A>.
+<P>
+
+<LI> <B>MacIntosh: </B>
+<OL>
+<LI><I>Running Linux</I>.
+If you run Linux on your Mac, follow the steps above for automatic install under UNIX or LINUX (1.1).
+<LI><I>Running MacOS X or MacOS X Server</I>.
+GMT installs and runs under MacOS X which is Unix-based (follow instructions for
+UNIX/Linux in 1.1). 
+<LI><I>Running MacOS 9</I>.
+GMT does not run directly under MacOS 9 or earlier.  However, you can run GMT
+using the commercial <A HREF="http://www.tenon.com/products/machten">Machten</A> Unix emulation package.  When
+Machten is installed, GMT can be installed as under 1.1 above.
+</OL>
+</OL>
+
+<HR>
+<h2>GMT master and mirror sites</h2>
+You only need to visit one of these sites if you cannot do the automatic Unix/Linux install under 1.1 above.<P>
+<A HREF="http://gmt.soest.hawaii.edu/cgi-bin/imagemap/gmt/gmt/images/gmt_hitmap.map">
+<P><CENTER><IMG SRC="gmt/images/gmt_hitmap.gif" WIDTH="361" HEIGHT="216" ALIGN=
+bottom NATURALSIZEFLAG="3" ISMAP> </A></CENTER>
+<P>
+<OL>
+<LI>
+<A HREF="ftp://gmt.soest.hawaii.edu/pub/gmt">SOEST, Dept of Geology & Geophysics, Honolulu, Hawaii, USA</A>.  Serving the Pacific Rim</LI>
+
+<LI>
+<A HREF="ftp://falcon.grdl.noaa.gov/pub/gmt">NOAA, Lab for Satellite Altimetry, Silver Spring, Maryland, USA</A>.  Serving North America</LI>
+
+<LI>
+<A HREF="ftp://ftp.iag.usp.br/pub/gmt">IAG-USP, Dept of Geophysics, Sao Paulo, Brazil</A>.  Serving South America</LI>
+
+<LI>
+<A HREF="ftp://ftp.geologi.uio.no/pub/gmt">IFG, Institute for Geology, Oslo, Norway</A>.  Serving Europe</LI>
+
+<LI>
+<A HREF="ftp://life.csu.edu.au/pub/gmt">Charles Sturt U, Albury, Australia</A>.  Serving Australia</LI>
+
+<LI>
+<A HREF="ftp://ftp.eos.hokudai.ac.jp/pub/gmt">ISV, Sapporo, Japan</A>.  Serving Asia</LI>
+</OL>
+
+<HR>
+<h2>Post-Installation Notes</h2>
+<UL>
+<LI>The latest compressed tar archives for version 3.4 were created April
+5, 2001.  See the list of <A HREF="gmt/gmt_bugs.html">known bugs</A> since the creation
+of the archive - use this information to temporarily fix these problems.</LI>
+<LI>The latest version may have caused a few cases of <A HREF="gmt/gmt_arrrghh.html">backward incompability</A>
+with previous versions, so you may need to modify your custom scripts.</LI>
+<LI>You can also check out <A HREF="gmt/gmt_news.html">the latest news</A> about
+programs and useful scripts added to the ftp site since the release of
+the current GMT version.&nbsp;</LI>
+</UL>
+<HR>
+<H2>
+Don't forget to register now!</H2>
+Fill out the GMT users <A HREF="gmt/gmt_registration.html">online registration
+form</A> and subscribe to the official GMT mailing lists;
+<P>
+<HR>
+<BR>
+<CENTER><IMG SRC="gmt/images/gmt_bar.gif" ALT="---------------------------------" ></CENTER>
+<H2>
+Thank you for visiting the GMT home page!</H2>
+
+<CENTER><IMG SRC="gmt/images/gmt_cglobe.gif" ></CENTER>
+
+
+<P>An illuminated view of the world.
+
+<P>
+<CENTER><IMG SRC="gmt/images/gmt_bar.gif" ALT="---------------------------------" ></CENTER>
+<BR><A HREF="http://www.soest.hawaii.edu/"><IMG SRC="gmt/images/soest_logo_reduced2.gif" ALT="RETURN" ></A><A HREF="http://www.soest.hawaii.edu/">
+Go to SOEST home page.&nbsp;</A>&nbsp;
+<HR>
+
+<P>This page is maintained by:
+<ADDRESS>
+<A HREF="http://www.soest.hawaii.edu/wessel/wessel.html">Paul Wessel</A> (pwessel@hawaii.edu)</ADDRESS>
+
+<BR>Last update April 5, 2001 08:00 HST
+</BODY>
+</HTML>
