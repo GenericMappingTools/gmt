@@ -1,13 +1,12 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.1 2001-02-01 18:05:38 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.2 2001-02-24 03:06:28 pwessel Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD=
 "POST">
-<INPUT TYPE="hidden" VALUE="3.3.6" NAME="gmt_version">
-<INPUT TYPE="hidden" VALUE="1.60" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="3.4" NAME="gmt_version">
 
 <H1></H1>
 <H1><CENTER><STRONG>GMT Installation Helper</CENTER></STRONG>
@@ -227,7 +226,7 @@ Place GMT web pages in: <INPUT NAME="gmt_web" TYPE="text" SIZE="30"><BR>
 <I>Note: The GMT archives will first be uncompressed, untarred, and compiled in the current working
 directory where install_gmt is run.  After those steps are successful you may want to copy
 the files to more traditional directories like /usr/local/bin, etc.  The default locations are
-subdirectories bin, lib, include, share, man, and www under GMT3.3.6 in the current install directory.
+subdirectories bin, lib, include, share, man, and www under GMT3.4 in the current install directory.
 Note that the man pages will be be placed in the man/man? subdirectory, where ? is the section specified
 above, e.g. "l", giving man/manl, is the default.  Do NOT specify the man dir as man/man?; the
 section directory will automatically be appended based on the chosen section unit.

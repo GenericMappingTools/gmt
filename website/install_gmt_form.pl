@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.2 2001-02-02 23:13:24 pwessel Exp $
+#       $Id: install_gmt_form.pl,v 1.3 2001-02-24 03:06:28 pwessel Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
 #
-#	Updated to work with 3.3.7 input
+#	Updated to work with 3.4 input
 
 $webmaster = "gmt\@soest\.hawaii\.edu";
 
@@ -19,7 +19,6 @@ print "Status: 200 OK", "\n\n";
 # Assign internal variables for each form item:
 
 $gmt_version	= $gmt_form{'gmt_version'};
-$form_version	= $gmt_form{'form_version'};
 $zip		= $gmt_form{'radio_format'};
 $unit		= $gmt_form{'radio_unit'};
 $eps		= $gmt_form{'radio_eps'};

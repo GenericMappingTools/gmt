@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.3 2001-02-22 01:44:26 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.4 2001-02-24 03:06:28 pwessel Exp $
 #
 #	Automatic installation of GMT version 3.4
 #	Version for the Bourne shell (or compatible)
@@ -707,7 +707,8 @@ make_ftp_list2()
 #============================================================
 
 trap "rm -f gmt_install.ftp_*; exit" 0 2 15
-DIR=pub/gmt
+#DIR=pub/gmt
+DIR=pub/wessel
 VERSION=3.4
 GMT=GMT
 #--------------------------------------------------------------------------------
