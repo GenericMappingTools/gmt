@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.119 2004-06-11 03:02:58 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.120 2004-06-12 08:15:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -120,6 +120,7 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode);
 void GMT_contlabel_clippath (struct GMT_CONTOUR *G, int mode);
 void GMT_textpath_init (struct GMT_PEN *LP, int Brgb[], struct GMT_PEN *BP, int Frgb[]);
 void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G);
+void GMT_contlabel_debug (struct GMT_CONTOUR *G);
 
 double *GMT_x2sys_Y;
 
@@ -1694,6 +1695,11 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 				if (k == 0) bad++;
 				break;
 				
+			case 'd':	/* Debug option - draw helper points or lines */
+				G->debug = TRUE;
+				break;
+				
+				
 			case 'f':	/* Font specification */
 				if (p[1] >= '0' && p[1] <= '9')
 					k = atoi (&p[1]);
@@ -2210,12 +2216,34 @@ int sort_label_struct (const void *p_1, const void *p_2)
 	return 0;
 }
 
+void GMT_contlabel_debug (struct GMT_CONTOUR *G)
+{
+	int i, j, *pen;
+	struct GMT_PEN P;
+	
+	/* If called we simply draw the helper lines or points to assist in debug */
+	
+	GMT_init_pen (&P, GMT_PENWIDTH);
+	GMT_setpen (&P);
+	if (G->fixed) {	/* Place a small open circle at each fixed point */
+		for (i = 0; i < G->f_n; i++) ps_circle (G->f_xy[0][i], G->f_xy[1][i], 0.025, GMT_no_rgb, 1);
+	}
+	else if (G->crossing) {	/* Draw a thin line */
+		for (j = 0; j < G->n_xp; j++) {
+			pen = (int *) GMT_memory (VNULL, (size_t)G->xp[j].np, sizeof (int), GMT_program);
+			for (i = 1, pen[0] = 3; i < G->xp[j].np; i++) pen[i] = 2;
+			GMT_plot_line (G->xp[j].lon, G->xp[j].lat, pen, G->xp[j].np);
+			GMT_free ((void *)pen);
+		}
+	}
+}
 
 void GMT_contlabel_plot (struct GMT_CONTOUR *G)
 {
 	int i;
 	struct GMT_CONTOUR_LINE *C;
 	
+	if (G->debug) GMT_contlabel_debug (G);		/* Debugging lines and points */
 	if (G->transparent) {		/* Transparent boxes */
 		GMT_contlabel_clippath (G, 1);		/* Lays down clippath based on ALL labels */
 		GMT_contlabel_drawlines (G, 0);		/* Safe to draw continuous lines everywhere - they will be clipped at labels */
@@ -3314,7 +3342,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 						start = i;
 					}
 				}
-				if (dist < G->slop) {	/* Closest point within tolerance */	
+				if (min_dist < G->slop) {	/* Closest point within tolerance */	
 					new_label = GMT_contlabel_new ();
 					new_label->x = xx[start];
 					new_label->y = yy[start];
