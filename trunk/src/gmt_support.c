@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.42 2003-03-12 17:58:52 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.43 2003-03-22 01:47:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -477,9 +477,9 @@ void GMT_read_cpt (char *cpt_file)
 			else {	/* Shades, RGB, HSV, or CMYK */
 				if (T1[0] == '-')	/* Skip this slice */
 					GMT_bfn[id].skip = TRUE;
-				else if (GMT_getrgb (&line[1], GMT_bfn[id].rgb)) {
-					fprintf (stderr, "%s: GMT Fatal Error: Skip slice specification not in [%c -] format!\n", GMT_program, c);
-					exit (EXIT_FAILURE);
+				else {
+					sprintf (option, "%s/%s/%s", T1, T2, T3);
+					if (GMT_getrgb (option, GMT_bfn[id].rgb)) error++;
 				}
 			}
 			continue;
