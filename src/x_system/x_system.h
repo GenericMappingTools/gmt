@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	x_systemid = "@(#)x_system.h	2.8  03/07/00"
+ *	$Id: x_system.h,v 1.3 2002-08-02 02:23:58 pwessel Exp $
  *
  * xsystem.h contains the declaration for the LEG and XOVER structures
  * used in the XSYSTEM programs
