@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.4 2001-02-22 01:44:26 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.5 2001-02-22 21:13:13 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -40,9 +40,9 @@ gmt\_map.c	&	Only had forward, but not inverse projection of linear \\
 		&	Ensure that if BOTH west/east are < 0, add 360. \\
 		&	Really densely sampled lines could fail to generate \\
 		&	a crossing at map boundary due to imposed round-off. \\
-		&	Now enforce that all lines start with "pen down". \\ \hline
+		&	Now enforce that all lines start with ``pen down''. \\ \hline
 gmt\_plot.c	&	No longer overrides \texttt{GMT\_set\_format} for anotations. \\
-		&	Basemaps for \Opt{JPa}{\it width/base} were incorrectly oriented. \hline
+		&	Basemaps for \Opt{JPa}{\it width/base} were incorrectly oriented. \\ \hline
 gmt\_shore.c	&	Needed to reset node-levels when some polygons are skipped with \Opt{A}. \\ \hline
 gmt\_support.c	&	Had error in verifying xinc for boundary condition prep. \\
 		&	\texttt{GMT\_set\_format} now always checks if units should be added. \\
@@ -70,7 +70,7 @@ mgg/gmttrack.c	&	\Opt{Sa}b was not converted to meters internally, and distances
 *.c		&	Retreat: Now \Opt{:} works as before regardless of \Opt{L}. \\ \hline
 \end{tabular}
 \caption{Bugs in \gmt\ version 3.3.6}
-\label{tbl:3.3.5bugs}
+\label{tbl:3.3.6bugs}
 \end{table}
 
 \subsection{Minor changes in 3.4}
