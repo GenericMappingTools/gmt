@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.2 2004-05-18 22:29:08 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.3 2004-05-19 03:06:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -61,9 +61,19 @@ struct GMT_CONTOUR {
 	int nx;				/* Number of crossovers at any time */
 };
 
+struct GMT_LABEL {	/* Contains information on contour/lineation labels */
+	double x, y;
+	double angle;
+	double dist;
+	int node;
+	char label[32];
+	struct GMT_LABEL *next_label, *prev_label;
+};
+
 EXTERN_MSC int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L);
-EXTERN_MSC int GMT_contlabel_init (struct GMT_CONTOUR *G);
+EXTERN_MSC int GMT_contlabel_init (struct GMT_CONTOUR *G, double xyz[2][3]);
 EXTERN_MSC double GMT_contlabel_angle (double x[], double y[], double x0, double y0, int start, int stop, int width, int n);
+EXTERN_MSC void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_LABEL *L[], int n_label, double label_font_size, double clearance[]);
 EXTERN_MSC int GMT_code_to_lonlat (char *code, double *lon, double *lat);
 EXTERN_MSC void GMT_x_free (struct GMT_XOVER *X);
 EXTERN_MSC struct GMT_XSEGMENT *GMT_init_track (double x[], double y[], int n);

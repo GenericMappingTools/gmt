@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.90 2004-05-18 22:29:08 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.91 2004-05-19 03:06:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -109,6 +109,7 @@ BOOLEAN GMT_is_penwidth (char *word);
 BOOLEAN GMT_is_color (char *word, int max_slashes);
 int GMT_ysort (const void *p1, const void *p2);
 void GMT_x_alloc (struct GMT_XOVER *X, int nx_alloc);
+int sort_label_struct (const void *p_1, const void *p_2);
 
 double *GMT_x2sys_Y;
 
@@ -1668,7 +1669,7 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 	return (error);
 }
 
-int GMT_contlabel_init (struct GMT_CONTOUR *G)
+int GMT_contlabel_init (struct GMT_CONTOUR *G, double xyz[2][3])
 {
 	/* Prepares contour labeling machinery as needed */
 	int i, k, n, error = 0;
@@ -1714,6 +1715,14 @@ int GMT_contlabel_init (struct GMT_CONTOUR *G)
 			if (G->do_interpolate) G->xp[G->n_xp].np = GMT_fix_up_path (&G->xp[G->n_xp].lon, &G->xp[G->n_xp].lat, G->xp[G->n_xp].np, greenwich, 1.0);
 			G->xp[G->n_xp].seg = (int *) GMT_memory (VNULL, G->xp[G->n_xp].np, sizeof (int), GMT_program);	/* Initialized by default to 0 */
 			for (i = 0; i < G->xp[G->n_xp].np; i++) {	/* Project */
+				if (G->xp[G->n_xp].lon[i] == DBL_MAX) {	/* Meant zmax location */
+					G->xp[G->n_xp].lon[i] = xyz[1][0];
+					G->xp[G->n_xp].lat[i] = xyz[1][1];
+				}
+				else if (G->xp[G->n_xp].lon[i] == -DBL_MAX) {	/* Meant zmin location */
+					G->xp[G->n_xp].lon[i] = xyz[0][0];
+					G->xp[G->n_xp].lat[i] = xyz[0][1];
+				}
 				GMT_geo_to_xy (G->xp[G->n_xp].lon[i], G->xp[G->n_xp].lat[i], &x, &y);
 				G->xp[G->n_xp].lon[i] = x;
 				G->xp[G->n_xp].lat[i] = y;
@@ -1757,6 +1766,72 @@ double GMT_contlabel_angle (double x[], double y[], double x0, double y0, int st
 	if (angle > 90.0 && angle < 270) angle -= 180.0;
 	return (angle);
 }
+
+void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_LABEL *L[], int n_label, double label_font_size, double clearance[])
+{
+	/* Sort lables based on distance along contour */
+	int i, k, start, stop, c;
+	double *xp, *yp, f, label_height, label_width, x_last, y_last;
+	
+	if (n_label == 0) return;	/* Nothing to do */
+	
+	if (n_label > 1) qsort((void *)L, (size_t)n_label, sizeof (struct GMT_LABEL *), sort_label_struct);
+
+	xp = (double *) GMT_memory (VNULL, (size_t)(n + 2 * n_label), sizeof (double), GMT_program);
+	yp = (double *) GMT_memory (VNULL, (size_t)(n + 2 * n_label), sizeof (double), GMT_program);
+	
+	label_height = label_font_size * GMT_u2u[GMT_PT][GMT_INCH] * 0.58;  /* Constants from GMT_textbox3D()KJ*/
+	stop = 0;
+	x_last = x[0];	y_last = y[0];
+	for (k = 0; k < n_label && stop < n; k++) {
+		label_width = clearance[0] + 0.5 * label_height * strlen(L[k]->label);
+		start = stop;
+		stop = L[k]->node;
+		while (stop >= 0 && (L[k]->dist - d[stop]) < label_width) stop--;
+		if (stop < 0) {	/* Ran out, nothing to plot */
+			stop = 0;
+			continue;
+		}
+		xp[0] = x_last;	yp[0] = y_last;
+		for (i = start, c = 1; i <= stop; i++) {
+			xp[c] = x[i];
+			yp[c++] = y[i];
+		}
+		f = label_width / (L[k]->dist - d[stop]);
+		xp[c] = x[stop+1] - f * (x[stop+1] - x[stop]);
+		yp[c++] = y[stop+1] - f * (y[stop+1] - y[stop]);
+		ps_comment ("Next segment");
+		ps_line (xp, yp, c, 3, FALSE, TRUE);
+		/* Go to other side */
+		stop = L[k]->node;
+		while (stop < n && (d[stop] - L[k]->dist) < label_width) stop++;
+		if (stop == n) continue;	/* Ran out, nothing to plot */
+		f = label_width / (d[stop] - L[k]->dist);
+		x_last = x[stop-1] + f * (x[stop] - x[stop-1]);
+		y_last = y[stop-1] + f * (y[stop] - y[stop-1]);
+	}
+	xp[0] = x_last;	yp[0] = y_last;
+	for (i = stop, c = 1; i < n; i++) {
+		xp[c] = x[i];
+		yp[c++] = y[i];
+	}
+	ps_line (xp, yp, c, 3, FALSE, TRUE);
+	GMT_free ((void *)xp);
+	GMT_free ((void *)yp);
+}
+
+int sort_label_struct (const void *p_1, const void *p_2)
+{
+	int bad_1, bad_2;
+	struct GMT_LABEL **point_1, **point_2;
+	
+	point_1 = (struct GMT_LABEL **)p_1;
+	point_2 = (struct GMT_LABEL **)p_2;
+	if ((*point_1)->dist < (*point_2)->dist) return -1;
+	if ((*point_1)->dist > (*point_2)->dist) return +1;
+	return 0;
+}
+
 
 int GMT_code_to_lonlat (char *code, double *lon, double *lat)
 {
@@ -3149,7 +3224,7 @@ void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift)
 
 int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax)
 {
-	int region_pos, grd_pos;
+	int region_pos = 0, grd_pos = 0;
 	
 	/* Round off to nearest multiple of the grid spacing.  This should
 	   only affect the numbers when oblique projections or -R...r has been used */
@@ -3164,44 +3239,46 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 	if (*ymax > h->y_max) *ymax = h->y_max;
 	
 	if ((*ymax) <= (*ymin)) {	/* Either error or grid outside chosen -R */
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid latitudes appear to be outside the map region and will be skipped.\n", GMT_program);
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid y's or latitudes appear to be outside the map region and will be skipped.\n", GMT_program);
 		return (1);
 	}
 	
 	/* OK, longitudes are trickier and we must make sure grid and region is on the same page as far as +-360 degrees go */
 	
-	if (h->x_min < 0.0 && h->x_max < 0.0) {			/* Change negative range to positive 0-360 */
-		h->x_min += 360.0;
-		h->x_max += 360.0;
-	}
-	if (project_info.w < 0.0 && project_info.e < 0.0) {	/* Change negative range to positive 0-360 */
-		project_info.w += 360.0;
-		project_info.e += 360.0;
-	}
-	/* Now find if grid and region straddle Greenwich */
+	if (GMT_io.in_col_type[0] == GMT_IS_LON) {
+		if (h->x_min < 0.0 && h->x_max < 0.0) {			/* Change negative range to positive 0-360 */
+			h->x_min += 360.0;
+			h->x_max += 360.0;
+		}
+		if (project_info.w < 0.0 && project_info.e < 0.0) {	/* Change negative range to positive 0-360 */
+			project_info.w += 360.0;
+			project_info.e += 360.0;
+		}
+		/* Now find if grid and region straddle Greenwich */
 	
-	grd_pos   = (h->x_min >= 0.0 && h->x_max > 0.0) ? 1 : 0;
-	region_pos = (project_info.w >= 0.0 && project_info.e > 0.0) ? 1 : 0;
-	
+		grd_pos   = (h->x_min >= 0.0 && h->x_max > 0.0) ? 1 : 0;
+		region_pos = (project_info.w >= 0.0 && project_info.e > 0.0) ? 1 : 0;
+	}
 	/* Use Greenwich knowledge to adjust region to be compatible with grid domain when adjusting the latter */
 	
 	*xmin = floor ((project_info.w - (region_pos - grd_pos) * 360.0) / h->x_inc) * h->x_inc;
 	*xmax = ceil  ((project_info.e - (region_pos - grd_pos) * 360.0) / h->x_inc) * h->x_inc;
-	if (fabs (h->x_max - h->x_min - 360.0) > SMALL) {	/* Not a periodic grid */
-		if (*xmin < h->x_min) *xmin = h->x_min;
-		if (*xmax > h->x_max) *xmax = h->x_max;
+	if (GMT_io.in_col_type[0] == GMT_IS_LON) {	/* Geographic grid */
+		if (fabs (h->x_max - h->x_min - 360.0) > SMALL) {	/* Not a periodic grid */
+			if (*xmin < h->x_min) *xmin = h->x_min;
+			if (*xmax > h->x_max) *xmax = h->x_max;
+		}
+		else if ((*xmax - *xmin - 360.0) > SMALL) {		/* 360 degree grid but we want to use less */
+			if (*xmin < project_info.w) *xmin = project_info.w;
+			if (*xmax > project_info.e) *xmax = project_info.e;
+		}
+		else {	/* Possibly just a rotation of a 360 degree grid */
+			*xmin = project_info.w;
+			*xmax = project_info.e;
+		}
 	}
-	else if ((*xmax - *xmin - 360.0) > SMALL) {		/* 360 degree grid but we want to use less */
-		if (*xmin < project_info.w) *xmin = project_info.w;
-		if (*xmax > project_info.e) *xmax = project_info.e;
-	}
-	else {	/* Possibly just a rotation of a 360 degree grid */
-		*xmin = project_info.w;
-		*xmax = project_info.e;
-	}
-		
 	if ((*xmax) <= (*xmin)) {	/* Either error or grid outside chosen -R */
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid longitudes appear to be outside the map region and will be skipped.\n", GMT_program);
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid x's or longitudes appear to be outside the map region and will be skipped.\n", GMT_program);
 		return (1);
 	}
 	return (0);
