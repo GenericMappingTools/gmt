@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.67 2004-10-04 16:39:19 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.68 2004-10-21 04:51:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -35,10 +35,14 @@
  *	GMT_ascii_input:	Decode ascii input record
  *	GMT_scanf:		Robust scanf function with optional dd:mm:ss conversion
  *	GMT_bin_double_input:	Decode binary double precision record
+ *	GMT_bin_double_input_swab:	Decode binary double precision record followed by byte-swabbing
  *	GMT_bin_float_input:	Decode binary single precision record
+ *	GMT_bin_float_input_swab:	Decode binary single precision record followed by byte-swabbing
  *	GMT_ascii_output:	Write ascii record
  *	GMT_bin_double_output:	Write binary double precision record
+ *	GMT_bin_double_output_swab:	Write binary double precision record after first swabbing
  *	GMT_bin_float_output:	Write binary single precision record
+ *	GMT_bin_float_output_swab:	Write binary single precision record after first swabbing
  *	GMT_init_z_io:		Initialize GMT_Z_IO structure
  *	GMT_parse_z_io:		Parse the -Z switch
  *	GMT_set_z_io:		Set GMT_Z_IO structure based on -Z
@@ -99,10 +103,14 @@ void GMT_col_ij (struct GMT_Z_IO *r, int ij, int *gmt_ij);
 void GMT_row_ij (struct GMT_Z_IO *r, int ij, int *gmt_ij);
 int GMT_ascii_input (FILE *fp, int *n, double **ptr);		/* Decode ASCII input records */
 int GMT_bin_double_input (FILE *fp, int *n, double **ptr);	/* Decode binary double input records */
+int GMT_bin_double_input_swab (FILE *fp, int *n, double **ptr);	/* Decode binary double input records */
 int GMT_bin_float_input (FILE *fp, int *n, double **ptr);	/* Decode binary float input records */
+int GMT_bin_float_input_swab (FILE *fp, int *n, double **ptr);	/* Decode binary float input records */
 int GMT_ascii_output (FILE *fp, int n, double *ptr);		/* Write ASCII output records */
 int GMT_bin_double_output (FILE *fp, int n, double *ptr);	/* Write binary double output records */
+int GMT_bin_double_output_swab (FILE *fp, int n, double *ptr);	/* Write binary double output records */
 int GMT_bin_float_output (FILE *fp, int n, double *ptr);	/* Write binary float output records */
+int GMT_bin_float_output_swab (FILE *fp, int n, double *ptr);	/* Write binary float output records */
 int GMT_ascii_output_one (FILE *fp, double x, int col);		/* Writes one item to output in ascii format */
 void GMT_adjust_periodic ();					/* Add/sub 360 as appropriate */
 void GMT_decode_calclock_formats ();
@@ -178,7 +186,7 @@ void GMT_io_init (void)
 
 int GMT_io_selection (char *text)
 {
-	/* Syntax:	-b[i][o][s][d][#cols] */
+	/* Syntax:	-b[i][o][s|S][d|D][#cols] */
 
 	int i, id = 0;
 	BOOLEAN i_or_o = FALSE, ok = TRUE, error = FALSE;
@@ -195,9 +203,13 @@ int GMT_io_selection (char *text)
 				id = 1;
 				GMT_io.binary[id] = i_or_o = TRUE;
 				break;
+			case 'S':	/* Single Precision but needs byte swap */
+				GMT_io.swab[id] = TRUE;
 			case 's':	/* Single Precision */
 				GMT_io.single_precision[id] = TRUE;
 				break;
+			case 'D':	/* Double Precision but needs byte swap */
+				GMT_io.swab[id] = TRUE;
 			case 'd':	/* Double Precision */
 				GMT_io.single_precision[id] = FALSE;
 				break;
@@ -226,23 +238,29 @@ int GMT_io_selection (char *text)
 	if (!i_or_o) {	/* Specified neither i or o so let settings apply to both */
 		GMT_io.binary[0] = GMT_io.binary[1] = TRUE;
 		GMT_io.single_precision[1] = GMT_io.single_precision[0];
+		GMT_io.swab[1] = GMT_io.swab[0];
 		GMT_io.ncol[1] = GMT_io.ncol[0];
 	}
 
 	if (GMT_io.binary[0]) {
-		GMT_input  = (GMT_io.single_precision[0]) ? GMT_bin_float_input  : GMT_bin_double_input;
+		if (GMT_io.swab[0])
+			GMT_input  = (GMT_io.single_precision[0]) ? GMT_bin_float_input_swab  : GMT_bin_double_input_swab;
+		else
+			GMT_input  = (GMT_io.single_precision[0]) ? GMT_bin_float_input  : GMT_bin_double_input;
 		strcpy (GMT_io.r_mode, "rb");
 	}
 
 	if (GMT_io.binary[1]) {
-		GMT_output = (GMT_io.single_precision[1]) ? GMT_bin_float_output : GMT_bin_double_output;
+		if (GMT_io.swab[1])
+			GMT_output = (GMT_io.single_precision[1]) ? GMT_bin_float_output : GMT_bin_double_output;
+		else
+			GMT_output = (GMT_io.single_precision[1]) ? GMT_bin_float_output_swab : GMT_bin_double_output_swab;
 		strcpy (GMT_io.w_mode, "wb");
 		strcpy (GMT_io.a_mode, "ab+");
 	}
 
 	return (error);
 }
-
 
 void GMT_multisegment (char *text)
 {
@@ -382,6 +400,43 @@ int GMT_bin_double_input (FILE *fp, int *n, double **ptr)
 	return (n_read);
 }
 	
+int GMT_bin_double_input_swab (FILE *fp, int *n, double **ptr)
+{	/* Same, but must perform byte swabbing on 8-byte double after read */
+	int n_read, i;
+	unsigned int *ii, jj;
+
+	GMT_io.status = 0;
+	if ((n_read = fread ((void *) GMT_data, sizeof (double), (size_t)(*n), fp)) != (*n)) {
+		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
+	}
+
+	for (i = 0; i < (*n); i++) {
+		ii = (unsigned int *)&GMT_data[i];	/* These 4 lines do the swab */
+		jj = GMT_swab4 (ii[0]);
+		ii[0] = GMT_swab4 (ii[1]);
+		ii[1] = jj;
+		if (GMT_io.in_col_type[i] == GMT_IS_RELTIME) GMT_data[i] = GMT_dt_from_usert (GMT_data[i]);
+	}
+	*ptr = GMT_data;
+
+	/* Read ok, how about multisegment? */
+
+	if (!GMT_io.status && GMT_io.multi_segments) {	/* Must have n_read NaNs */
+		int i;
+		BOOLEAN is_bad = TRUE;
+		for (i = 0; i < n_read && is_bad; i++) is_bad = GMT_is_dnan (GMT_data[i]);
+		if (is_bad) {
+			GMT_io.status = GMT_IO_SEGMENT_HEADER;
+			strcpy (GMT_io.segment_header, "> Binary multisegment header\n");
+			return (0);
+		}
+	}
+	if (gmtdefs.xy_toggle[0]) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
+	if (GMT_io.in_col_type[0] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
+
+	return (n_read);
+}
+	
 
 int GMT_bin_float_input (FILE *fp, int *n, double **ptr)
 {
@@ -394,6 +449,43 @@ int GMT_bin_float_input (FILE *fp, int *n, double **ptr)
 	}
 	else {
 		for (i = 0; i < n_read; i++) GMT_data[i] = (double)((GMT_io.in_col_type[i] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double)GMT_f[i]) : GMT_f[i]);
+	}
+
+	*ptr = GMT_data;
+
+	/* Read ok, how about multisegment? */
+
+	if (!GMT_io.status && GMT_io.multi_segments) {	/* Must have n_read NaNs */
+		BOOLEAN is_bad = TRUE;
+		for (i = 0; i < n_read && is_bad; i++) is_bad = GMT_is_dnan (GMT_data[i]);
+		if (is_bad) {
+			GMT_io.status = GMT_IO_SEGMENT_HEADER;
+			strcpy (GMT_io.segment_header, "> Binary multisegment header\n");
+			return (0);
+		}
+	}
+	if (gmtdefs.xy_toggle[0]) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
+	if (GMT_io.in_col_type[0] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
+
+	return (n_read);
+}
+
+int GMT_bin_float_input_swab (FILE *fp, int *n, double **ptr)
+{	/* Same, but must do the 4-byte swab after read */
+	int i, n_read;
+	unsigned int *ii;
+	static float GMT_f[BUFSIZ];
+	
+	GMT_io.status = 0;
+	if ((n_read = fread ((void *) GMT_f, sizeof (float), (size_t)(*n), fp)) != (*n)) {
+		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
+	}
+	else {
+		for (i = 0; i < n_read; i++) {
+			ii = (unsigned int *)&GMT_f[i];	/* These 2 lines do the swab */
+			*ii = GMT_swab4 (*ii);
+			GMT_data[i] = (double)((GMT_io.in_col_type[i] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double)GMT_f[i]) : GMT_f[i]);
+		}
 	}
 
 	*ptr = GMT_data;
@@ -594,6 +686,28 @@ int GMT_bin_double_output (FILE *fp, int n, double *ptr)
 	return (fwrite ((void *) ptr, sizeof (double), (size_t)n, fp));
 }
 	
+int GMT_bin_double_output_swab (FILE *fp, int n, double *ptr)
+{	/* Binary output after swabing the data.  Use temp variable d so we dont modify the original data */
+	int i, k;
+	unsigned int *ii, jj;
+	double d;
+	
+	if (gmtdefs.xy_toggle[1]) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
+	for (i = k = 0; i < n; i++) {
+		if (GMT_io.out_col_type[i] == GMT_IS_RELTIME) ptr[i] = GMT_usert_from_dt ((GMT_dtime) ptr[i]);
+		if (GMT_io.out_col_type[i] == GMT_IS_LON) GMT_lon_range_adjust (GMT_io.geo.range, &ptr[i]);
+		/* Do the 8-byte swabbing */
+		d = ptr[i];
+		ii = (unsigned int *)&d;
+		jj = GMT_swab4 (ii[0]);
+		ii[0] = GMT_swab4 (ii[1]);
+		ii[1] = jj;
+		k += fwrite ((void *) &d, sizeof (double), (size_t)1, fp);
+	}
+
+	return (k);
+}
+	
 int GMT_bin_float_output (FILE *fp, int n, double *ptr)
 {
 	int i;
@@ -611,6 +725,29 @@ int GMT_bin_float_output (FILE *fp, int n, double *ptr)
 			GMT_f[i] = (float) ptr[i];
 	}
 	return (fwrite ((void *) GMT_f, sizeof (float), (size_t)n, fp));
+}
+
+int GMT_bin_float_output_swab (FILE *fp, int n, double *ptr)
+{	/* Binary output after swabing the data. */
+	int i, k;
+	unsigned int *ii;
+	static float GMT_f[BUFSIZ];
+	
+	if (gmtdefs.xy_toggle[1]) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
+	for (i = k = 0; i < n; i++) {
+		if (GMT_io.out_col_type[i] == GMT_IS_RELTIME)
+			GMT_f[i] = (float) GMT_usert_from_dt ((GMT_dtime) ptr[i]);
+		else if (GMT_io.out_col_type[i] == GMT_IS_LON) {
+			GMT_lon_range_adjust (GMT_io.geo.range, &ptr[i]);
+			GMT_f[i] = (float) ptr[i];
+		}
+		else
+			GMT_f[i] = (float) ptr[i];
+		ii = (unsigned int *)&GMT_f[i];
+		*ii = GMT_swab4 (*ii);
+		k += fwrite ((void *) &GMT_f[i], sizeof (float), (size_t)1, fp);
+	}
+	return (k);
 }
 
 void GMT_write_segmentheader (FILE *fp, int n)
