@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.26 2003-10-12 20:17:59 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.27 2003-10-31 16:53:47 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -36,7 +36,7 @@
 
 if [ $# = 1 ] && [ $1 = "help" ]; then
 	cat << EOF >&2
-usage: GMT_usage_map.sh [all | get | update | map | help]
+usage: GMT_usage_map.sh [-v] [all | get | update | map | help]
 
 get	Get fresh registrations and compile locations
 update	Update the CVS version of the complete list
@@ -59,7 +59,13 @@ if [ "X$GMTHOME" = "X" ]; then	# Must set environment
 	export GMTHOME=/opt/gmt
 	export PATH=$GMTHOME/bin:$PATH
 fi
-
+verbose=0
+if [ $# -ge 1 ]; then	# Check for verbose first
+	if [ "X$1" = "X-v" ]; then
+		verbose=1
+		shift
+	fi
+fi
 if [ $# = 1 ]; then	# Only wanted some tasks done
 	key=$1
 else				# Default is all tasks
@@ -74,7 +80,7 @@ if [ $key = "all" ] || [ $key = "get" ]; then
 # Check if there is new data there
 
 	FILE=/tmp/gmtregistration
-	if [ ! -e $FILE ]; then
+	if [ ! -e $FILE ] & [ $verbose -eq 1 ]; then
 		echo "GMT_usage_map.sh: No new registrations to process" >&2
 		exit
 	fi
@@ -86,9 +92,9 @@ if [ $key = "all" ] || [ $key = "get" ]; then
 #
 	gmtselect -R0/360/-60/72 -Jm1 -Ns/k -Dl $FILE > new_sites_land.d
 	n=`cat new_sites_land.d | wc  -l`
-#	if [ $n -gt 0 ]; then
-#		echo "GMT_usage_map.sh: Found $n new sites" >&2
-#	fi
+	if [ $n -gt 0 ] & [ $verbose -eq 1 ];; then
+		echo "GMT_usage_map.sh: Found $n new sites" >&2
+	fi
 fi
 
 if [ $key = "all" ] || [ $key = "update" ]; then
@@ -97,18 +103,18 @@ if [ $key = "all" ] || [ $key = "update" ]; then
 #	add in the new_sites_land.d data, and runs blockmean
 #	on it again to remove duplicates
 
-	cvs -q update GMT_old_unique_sites.d
+	cvs -Q update GMT_old_unique_sites.d
 	egrep '^#' GMT_old_unique_sites.d > $$.d
 	n_old=`grep -v '^#' GMT_old_unique_sites.d | wc -l`
 	egrep -v '^#' GMT_old_unique_sites.d > $$.add
 	awk '{print $1, $2, 1}' new_sites_land.d >> $$.add
 	blockmean -R0/360/-72/72 -I15m $$.add -S >> $$.d
 	mv -f $$.d GMT_old_unique_sites.d
-	cvs -q commit -m "Automatic update" -n GMT_old_unique_sites.d
+	cvs -Q commit -m "Automatic update" -n GMT_old_unique_sites.d
 	rm -f $$.add new_sites_land.d
 	n_new=`grep -v '^#' GMT_old_unique_sites.d | wc -l`
 	delta=`expr $n_new - $n_old`
-	if [ $delta -gt 0 ]; then
+	if [ $delta -gt 0 ] & [ $verbose -eq 1 ];; then
 		echo "GMT_usage_map.sh: Added $delta new sites" >&2
 	fi
 fi
@@ -116,7 +122,7 @@ fi
 if [ $key = "all" ] || [ $key = "map" ]; then
 
 	gmtset DOTS_PR_INCH 100 FRAME_WIDTH 0.04i PAPER_MEDIA Letter+
-	cvs -q update GMT_old_unique_sites.d
+	cvs -Q update GMT_old_unique_sites.d
 	psxy -R0/5.75/0/3 -Jx1i -P -X0.0133i -Y0.0133i -K -L -W2p << EOF > gmt_usage.ps
 0 0
 5.75 0
