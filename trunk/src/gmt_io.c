@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.10 2001-08-17 20:22:06 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.11 2001-08-17 21:25:48 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -981,12 +981,18 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S)
 		if (S->order[i] < last) S->truncated_cal_is_ok = FALSE;
 		last = S->order[i];
 	}
-	error += (S->iso_calendar && !S->truncated_cal_is_ok);
-	error += (!(n_y == 4 || n_y == 2));
-	error += (!S->iso_calendar && !((n_m == 2 && n_d == 2) || n_j == 3));
-	error += (S->iso_calendar && n_w != 2);		/* Gotta have 2 ww */
-	error += (S->iso_calendar && n_d != 1);		/* Gotta have 2 ww */
-	error += (!S->iso_calendar && n_w != 0);	/* Should have no w if there is no W */
+	last = (n_y > 0) + (n_m > 0) + (n_w > 0) + (n_d > 0) + (n_j > 0);	/* This is the number of items to read */
+	error += (n_delim && (last - 1) != n_delim);				/* If there are delimeters, must be one less than the items */
+	if (S->iso_calendar) {		/* Check if ISO Week format is ok */
+		error += (!S->truncated_cal_is_ok);
+		error += (n_w != 2);			/* Gotta have 2 ww */
+		error += !(n_d == 1 || n_d == 0);	/* Gotta have 1 d if present */
+	}
+	else {				/* Check if Gregorian format is ok */
+		error += (n_w != 0);	/* Should have no w */
+		error += (n_j == 3 && !(n_m == 0 && n_d == 0));	/* day of year should have m = d = 0 */
+		error += (n_j == 0 && !((n_m == 2 || n_m == 0) && (n_d == 2 || n_d == 0) && n_d <= n_m));	/* mm/dd must have jjj = 0 and m >= d and m,d 0 or 2 */
+	}
 	if (error) {
 		fprintf (stderr, "%s: ERROR: Unacceptable date template %s\n", GMT_program, text);
 		exit (EXIT_FAILURE);
@@ -999,33 +1005,82 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 	 * Items not encountered are left as -1.
 	 */
 
-	int i, j, order, n_delim = 0, sequence[3], last, error = 0;
+	int i, j, order, n_delim, sequence[3], last, n_h, n_m, n_s, n_x, n_dec, off, error = 0;
 	BOOLEAN big_to_small;
+	char *p;
 	
 	/* hms_order is initialized to {-1, -1, -1} */
 	sequence[0] = sequence[1] = sequence[2] = -1;
 	
 	S->delimeter[0][0] = S->delimeter[0][1] = S->delimeter[1][0] = S->delimeter[1][1] = 0;
+	n_h = n_m = n_s = n_x = n_dec = n_delim = 0;
 	
-	for (i = order = 0; i < strlen (text); i++) {
+	/* Determine if we do 12-hour clock (and what form of am/pm suffix) or 24-hour clock */
+	
+	if ((p = strstr (text, "am"))) {	/* Want 12 hour clock with am/pm */
+		S->twelwe_hr_clock = TRUE;
+		strcpy (S->ampm_suffix[0], "am");
+		strcpy (S->ampm_suffix[1], "pm");
+		off = (int)(p) - (int)text;
+	}
+	else if ((p = strstr (text, "AM"))) {	/* Want 12 hour clock with AM/PM */
+		S->twelwe_hr_clock = TRUE;
+		strcpy (S->ampm_suffix[0], "AM");
+		strcpy (S->ampm_suffix[1], "PM");
+		off = (int)(p) - (int)text;
+	}
+	else if ((p = strstr (text, "a.m."))) {	/* Want 12 hour clock with a.m./p.m. */
+		S->twelwe_hr_clock = TRUE;
+		strcpy (S->ampm_suffix[0], "a.m.");
+		strcpy (S->ampm_suffix[1], "p.m.");
+		off = (int)(p) - (int)text;
+	}
+	else if ((p = strstr (text, "A.M."))) {	/* Want 12 hour clock with A.M./P.M. */
+		S->twelwe_hr_clock = TRUE;
+		strcpy (S->ampm_suffix[0], "A.M.");
+		strcpy (S->ampm_suffix[1], "P.M.");
+		off = (int)(p) - (int)text;
+	}
+	else
+		off = strlen (text);
+	
+	for (i = order = 0; i < off; i++) {
 		switch (text[i]) {
 			case 'h':	/* Hour */
 				if (S->order[0] < 0)		/* First time we encountered a h */
 					S->order[0] = order++;
 				else if (text[i-1] != 'h')	/* Must follow a previous h */
 					error++;
+				n_h++;
 				break;
 			case 'm':	/* Minute */
 				if (S->order[1] < 0)		/* First time we encountered a m */
 					S->order[1] = order++;
 				else if (text[i-1] != 'm')	/* Must follow a previous m */
 					error++;
+				n_m++;
 				break;
 			case 's':	/* Seconds */
 				if (S->order[2] < 0)		/* First time we encountered a s */
 					S->order[2] = order++;
 				else if (text[i-1] != 's')	/* Must follow a previous s */
 					error++;
+				n_s++;
+				break;
+			case '.':	/* Decimal point for seconds? */
+				if (text[i+1] == 'x')
+					n_dec++;
+				else {	/* Must be a delimeter */
+					if (n_delim == 2)
+						error++;
+					else
+						S->delimeter[n_delim++][0] = text[i];
+				}
+				break;
+			case 'x':	/* Fraction of seconds */
+				if (n_x > 0 && text[i-1] != 'x')	/* Must follow a previous x */
+					error++;
+				n_x++;
 				break;
 			default:	/* Delimeter of some kind */
 				if (n_delim == 2)
@@ -1047,11 +1102,20 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 		last = S->order[i];
 	}
 	if (!big_to_small) error++;
+	last = (n_h > 0) + (n_m > 0) + (n_s > 0);	/* This is the number of items to read */
+	error += (n_delim && (last - 1) != n_delim);	/* If there are delimeters, must be one less than the items */
+	error += (!(n_h == 0 || n_h == 2) || !(n_m == 0 || n_m == 2) || !(n_s == 0 || n_s == 2));	/* h, m, s are all either 2 or 0 */
+	error += (n_s > n_m || n_m > n_h);		/* Cannot have secs without m etc */
+	error += (n_x && n_dec != 1);			/* .xxx is the proper form */
+	error += (n_x == 0 && n_dec);			/* Period by itself and not delimeter? */
+	error += (n_dec > 1);				/* Only one period with xxx */
+	S->n_sec_decimals = n_x;
+	S->f_sec_to_int = rint (pow (10.0, (double)S->n_sec_decimals));			/* To scale fracional seconds to an integer form */
 	if (error) {
 		fprintf (stderr, "%s: ERROR: Unacceptable clock template %s\n", GMT_program, text);
 		exit (EXIT_FAILURE);
 	}
-}}
+}
 
 void GMT_decode_calclock_formats ()
 {
@@ -1075,37 +1139,6 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
 	
 	GMT_get_hms_order (template, S);
 	
-	/* Determine if the clock format has decimal seconds, and if so how many decimals */
-	
-	S->n_sec_decimals = 0;
-	if ((c = strchr (template, 'x'))) {	/* Specified decimal seconds for format */
-		for (S->n_sec_decimals = 1; c[S->n_sec_decimals] == 'x'; S->n_sec_decimals++);;	/* Count the number of decimals */
-		S->f_sec_to_int = rint (pow (10.0, (double)S->n_sec_decimals));			/* To scale fracional seconds to an integer form */
-	}
-	
-	/* Determine if we do 12-hour clock (and what form of am/pm suffix) or 24-hour clock */
-	
-	if (strstr (template, "am")) {	/* Want 12 hour clock with am/pm */
-		S->twelwe_hr_clock = TRUE;
-		strcpy (S->ampm_suffix[0], "am");
-		strcpy (S->ampm_suffix[1], "pm");
-	}
-	else if (strstr (template, "AM")) {	/* Want 12 hour clock with AM/PM */
-		S->twelwe_hr_clock = TRUE;
-		strcpy (S->ampm_suffix[0], "AM");
-		strcpy (S->ampm_suffix[1], "PM");
-	}
-	else if (strstr (template, "a.m.")) {	/* Want 12 hour clock with a.m./p.m. */
-		S->twelwe_hr_clock = TRUE;
-		strcpy (S->ampm_suffix[0], "a.m.");
-		strcpy (S->ampm_suffix[1], "p.m.");
-	}
-	else if (strstr (template, "A.M.")) {	/* Want 12 hour clock with A.M./P.M. */
-		S->twelwe_hr_clock = TRUE;
-		strcpy (S->ampm_suffix[0], "A.M.");
-		strcpy (S->ampm_suffix[1], "P.M.");
-	}
-	
 	/* Craft the actual C-format to use for input/output clock strings */
 		
 	if (S->order[0] >= 0) {	/* OK, at least hours is needed */
@@ -1121,7 +1154,7 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
 					sprintf (fmt, "%%2.2d\0");
 					strcat (S->format, fmt);
 					if (S->n_sec_decimals) {	/* even add format for fractions of second */
-						sprintf (fmt, ".%%%s.%sd\0", S->n_sec_decimals, S->n_sec_decimals);
+						sprintf (fmt, ".%%%d.%dd\0", S->n_sec_decimals, S->n_sec_decimals);
 						strcat (S->format, fmt);
 					}
 				}
@@ -1136,8 +1169,6 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
 			strcat (S->format, fmt);
 		}
 	}
-		
-	fprintf (stderr, "%s\n", S->format);
 }
 
 void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
@@ -1186,8 +1217,6 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 			}
 		}
 	}
-		
-	fprintf (stderr, "%s\n", S->format);
 }
 
 int GMT_decode_coltype (char *arg)
