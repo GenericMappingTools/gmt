@@ -151,6 +151,7 @@ and must not be present in the current directory.  Piping of files is not allowe
 The stack limit is hard-wired to 50.
 All functions expecting a positive radius (e.g., \fBLOG\fP, \fBKEI\fP, etc.) are passed the
 absolute value of their argument.  The \fBDDT\fP and \fBD2DT2\fP functions only work on regularly spaced data.
+\fBROOTS\fP must be the last operator on the stack, only followed by \fB=\fP.
 .SH REFERENCES
 Abramowitz, M., and I. A. Stegun, 1964, \fIHandbook of Mathematical
 Functions\fP, Applied Mathematics Series, vol. 55, Dover, New York.
