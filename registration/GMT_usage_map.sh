@@ -1,11 +1,11 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.20 2002-09-09 17:03:27 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.21 2002-10-01 04:30:46 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
 # It is run from inside the registration directory and will
-# collect new registrations from my mailbox Registrations.
+# collect new lon/lat locations from /tmp/gmtregistration.
 # This script performs any of three operations; by default they
 # are all done unless you specify one of them:
 #
@@ -16,16 +16,23 @@
 #	help	Give a brief help message
 #
 #	Paul Wessel
-#	05-FEB-2001
+#	30-SEPT-2002
+#
+# Typicall this script is run by cron on gmt:
+#
+# 1 0 * * * /home/aa/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT/registration/GMT_usage_map.sh
+#
+# Then, to remove the gmtregistration file (which has permission that this user
+# cannot delete), a root cron script
+#
+# 5 0 * * * rm -f /tmp/gmtregistrations
 #
 # Related info:  The registration form on gmt.soest.hawaii.edu collects
-# information about the user, including a lon,lat location.  The form
+# a lon,lat location of the users site.  The submitted data form
 # is processed by gmt_form.pl in the cgi-bin directory on the gmt
-# server (currently /var/www/cgi-bin on gmt) which will email the info
-# via sendmail to gmt@soest.hawaii.edu (which is forwarded to wessel).
-# Netscape communicator has a message filter that will automatically
-# move these messages into the GMT/Registrations folder.  This script
-# then acts on these messages as described above.
+# server (currently /var/www/cgi-bin on gmt) which will write the lon/lat
+# to /tmp/gmtregistration on gmt.  This script
+# then acts on these records as described above.
 
 if [ $# = 1 ] && [ $1 = "help" ]; then
 	cat << EOF >&2
@@ -40,24 +47,17 @@ EOF
 	exit
 fi
 GS_LIB=/usr/share/ghostscript/7.00/lib
-GMTHOME=/home/aa/pwessel/GMTdev/GMT
+GMTHOME=/home/aa/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT
 PATH=$GMTHOME/bin:$PATH
 export PATH
 export GS_LIB
-MAIL=/home/aa/pwessel/nsmail/GMT.sbd/Registrations	# Where incoming registrations reside
-REGHOME=/home/aa/pwessel/GMTdev/GMT/registration	# Where to do the work
+REGHOME=$GMTHOME/registration	# Where to do the work
 CVSROOT=":pserver:pwessel@gmt.soest.hawaii.edu:/home/gmt/gmt/cvs"
 
 cd $REGHOME
 if [ "X$GMTHOME" = "X" ]; then	# Must set environment
 	export GMTHOME=/opt/gmt
 	export PATH=$GMTHOME/bin:$PATH
-fi
-
-jd=`date +%j`
-yr=`date +%Y`
-if [ ! -d RegArchive/$yr ]; then
-	mkdir -p RegArchive/$yr
 fi
 
 if [ $# = 1 ]; then	# Only wanted some tasks done
@@ -71,45 +71,26 @@ if [ $key = "all" ] || [ $key = "get" ]; then
 #	directory.
 
 
-# Get a copy if not already there
+# Check if there is new data there
 
-	SAVE="RegArchive/$yr/Registrations.$jd"
-	if [ ! -e $SAVE ]; then
-		cp $MAIL $SAVE
-		cp -f /dev/null $MAIL
-	else
-		echo "GMT_usage_map.x: Can only be run once a day" >&2
+	FILE=/tmp/gmtregistration
+	if [ ! -e $FILE ]; then
+		echo "GMT_usage_map.x: No new registrations to process" >&2
 		exit
 	fi
 
 # OK, go ahead and process the new data
 
-	grep Longitude $SAVE > $$.lon
-	grep Latitude $SAVE > $$.lat
-	grep City $SAVE > $$.city
-	grep Country $SAVE > $$.country
-
-	nx=`cat $$.lon | wc -l`
-	ny=`cat $$.lat | wc -l`
-
-	if [ $nx -ne $ny ]; then
-		echo "GMT_usage_map.x: Different number of lons and lats\!" >&2
-		rm -f $$.lon $$.lat $$.city $$.country
-		exit
-	fi
-
-	paste $$.lon $$.lat $$.city $$.country | awk '{ if (!($3 == 0 && $6 == 0) && ($3 >= -360.0 && $3 <= 360.0 && $6 >= -90.0 && $6 <= 90.0)) print $3, $6, $9, $12}' > $$.d
-	awk '{if ($1 < 0.0) {printf "%lg\t%lg\t%s\t%s\n", $1+360.0, $2, $3, $4} else {printf "%lg\t%lg\t%s\t%s\n", $1, $2, $3, $4}}' $$.d | sort -u > $$.new
 #
-#	Then only keep ones over land with 4 columns
+#	Only keep ones over land
 #
-	awk '{if (NF == 4) print $0}' $$.new | gmtselect -R0/360/-60/72 -Jx1d -Ns/k -Dl > new_sites_land.d
+	gmtselect -R0/360/-60/72 -Jx1d -Ns/k -Dl $FILE > new_sites_land.d
 	n=`cat new_sites_land.d | wc  -l`
 	if [ $n -gt 0 ]; then
 		echo "GMT_usage_map.x: Found $n new sites" >&2
 	fi
 
-	rm -f $$.*
+	rm -f $FILE
 fi
 
 if [ $key = "all" ] || [ $key = "update" ]; then
