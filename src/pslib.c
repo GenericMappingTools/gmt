@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.11 2001-04-25 22:48:09 pwessel Exp $
+ *	$Id: pslib.c,v 1.12 2001-04-26 01:12:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -42,6 +42,7 @@
  * Updated June 17, 1999 by P. Wessel to remove all references to GMT functions and add ps_memory for internal use.
  * Updated June 16, 2000 by P. Wessel to add more encoded special characters.
  * Updated July 5, 2000 by P. Wessel to ensure that implementation limit on string length in images is not exceeded.
+ * Updated April 24, 2001 by P. Wessel to ensure setpagedevice is only used with PS Level 2 or higher.
  *
  * FORTRAN considerations:
  *	All floating point data are assumed to be DOUBLE PRECISION
@@ -1411,10 +1412,11 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		fprintf (ps.fp, "%%%%EndProlog\n\n");
 		
 		fprintf (ps.fp, "%%%%BeginSetup\n\n");
+		fprintf (ps.fp, "/PSLevel /languagelevel where {pop languagelevel} {1} ifelse def\n");
 		if (manual)	/* Manual media feed requested */
-			fprintf (ps.fp, "<< /ManualFeed true >> setpagedevice\n\n");
+			fprintf (ps.fp, "PSLevel 1 gt { << /ManualFeed true >> setpagedevice } if\n\n");
 		else if (!ps.eps_format && ps.p_width > 0 && ps.p_height > 0)	/* Specific media selected */
-			fprintf (ps.fp, "<< /PageSize [%d %d] /ImagingBBox null >> setpagedevice\n\n", ps.p_width, ps.p_height);
+			fprintf (ps.fp, "PSLevel 1 gt { << /PageSize [%d %d] /ImagingBBox null >> setpagedevice } if\n\n", ps.p_width, ps.p_height);
 
 		fprintf (ps.fp, "%% Init coordinate system and scales\n");
 		scl = ps.points_pr_unit / ps.scale;

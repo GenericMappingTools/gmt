@@ -22,7 +22,7 @@ If no file is specified, \fBblockmean\fP will read from standard input.
 #include "explain_-R.txt"
 .SH OPTIONS
 .sp
-TP
+.TP
 .B \-C
 Use the center of the block as the output location [Default uses the mean location].
 .TP
