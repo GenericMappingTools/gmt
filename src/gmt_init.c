@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.139 2004-06-05 02:05:54 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.140 2004-06-09 21:34:38 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4671,8 +4671,8 @@ void GMT_init_fonts (int *n_fonts)
 {
 	FILE *in;
 	int i = 0, n_GMT_fonts, n_alloc = 50;
-	char buf[128];
-	char fullname[128];
+	char buf[BUFSIZ];
+	char fullname[BUFSIZ];
 
 	/* Loads the available fonts for this installation */
 	
@@ -4691,11 +4691,12 @@ void GMT_init_fonts (int *n_fonts)
 	
 	while (fgets (buf, 128, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-		GMT_font[i].name = (char *)GMT_memory (VNULL, strlen (buf), sizeof (char), GMT_program);
-		if (sscanf (buf, "%s %lf %*d %lf", GMT_font[i].name, &GMT_font[i].height, &GMT_font[i].ave_width) != 3) {
+		if (sscanf (buf, "%s %lf %*d %lf", fullname, &GMT_font[i].height, &GMT_font[i].ave_width) != 3) {
 			fprintf (stderr, "GMT Fatal Error: Trouble decoding font info for font %d\n", i);
 			exit (EXIT_FAILURE);
 		}
+		GMT_font[i].name = (char *)GMT_memory (VNULL, (size_t)(strlen (fullname)+1), sizeof (char), GMT_program);
+		strcpy (GMT_font[i].name, fullname);
 		i++;
 		if (i == n_alloc) {
 			n_alloc += 50;
