@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.2 2001-03-01 22:08:26 pwessel Exp $
+ *	$Id: libspotter.c,v 1.3 2001-10-11 23:02:59 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -191,6 +191,8 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 		i_km = EQ_RAD / d_km;
 	}
 
+	if (p[ns-1].t_stop > t_zero) t_zero = p[ns-1].t_stop;	/* In case we dont go all the way to zero */
+	
 	for (i = 0; i < np; i++) {
 
 		if (path) {
@@ -207,6 +209,10 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 
 			j = 0;
 			while (j < ns && t <= p[j].t_stop) j++;	/* Find first applicable stage pole */
+			if (j == ns) {
+				fprintf (stderr, "libspotter: (spotter_backtrack) Ran out of stage poles for t = %lg\n", t);
+				exit (EXIT_FAILURE);
+			}
 			dt = MIN (p[j].duration, t - MAX(p[j].t_stop, t_zero));
 			d_lon = p[j].omega_r * dt;
 
@@ -347,6 +353,8 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 		i_km = EQ_RAD / d_km;
 	}
 
+	if (p[ns-1].t_stop > t_zero) t_zero = p[ns-1].t_stop;	/* In case we dont go all the way to zero */
+
 	for (i = 0; i < np; i++) {
 
 		if (path) {
@@ -363,6 +371,10 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 
 			j = 0;
 			while (j < ns && t < p[j].t_stop) j++;	/* Find first applicable stage pole */
+			if (j == ns) {
+				fprintf (stderr, "libspotter: (spotter_forthtrack) Ran out of stage poles for t = %lg\n", t);
+				exit (EXIT_FAILURE);
+			}
 			dt = MIN (tp[i], p[j].t_start) - t;	/* Time interval to rotate */
 			d_lon = p[j].omega_r * dt;		/* Rotation angle (radians) */
 			/* spotter_rotate_fwd (xp[i], yp[i], &tlon, &tlat, &p[j]); */
