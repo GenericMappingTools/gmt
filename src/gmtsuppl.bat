@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.14 2004-08-19 04:42:35 pwessel Exp $
+REM	$Id: gmtsuppl.bat,v 1.15 2004-08-19 21:44:06 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
@@ -109,6 +109,7 @@ IF %CHOICE%=="dynamic" LINK %LOPT% /out:mgd77.dll /implib:mgd77.lib mgd77.obj %G
 IF %CHOICE%=="static"  CL %COPT% %DLL_NETCDF% /DDLL_EXPORT /c mgd77.c
 IF %CHOICE%=="static"  lib /out:mgd77.lib mgd77.obj
 CL %COPT% mgd77list.c    mgd77.lib %GMTLIB%
+CL %COPT% mgd77track.c    mgd77.lib %GMTLIB%
 del *.obj
 IF %CHOICE%=="dynamic" move mgd77.dll %BINDIR%
 IF %CHOICE%=="dynamic" move mgd77.exp %LIBDIR%
