@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.47 2003-04-14 19:55:00 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.48 2003-04-22 18:50:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -450,6 +450,7 @@ void GMT_read_cpt (char *cpt_file)
 		c = line[0];
 		if (c == '#' || c == '\n') continue;	/* Comment or blank */
 		
+		T1[0] = T2[0] = T3[0] = T4[0] = T5[0] = T6[0] = T7[0] = T8[0] = T9[0] = 0;
 		switch (c) {
 			case 'B':
 				id = 0;
@@ -478,6 +479,10 @@ void GMT_read_cpt (char *cpt_file)
 			else {	/* Shades, RGB, HSV, or CMYK */
 				if (T1[0] == '-')	/* Skip this slice */
 					GMT_bfn[id].skip = TRUE;
+				else if (nread == 1) {	/* Gray shade */
+					sprintf (option, "%s", T1);
+					if (GMT_getrgb (option, GMT_bfn[id].rgb)) error++;
+				}
 				else if (gmtdefs.color_model == GMT_CMYK) {
 					sprintf (option, "%s/%s/%s/%s", T1, T2, T3, T4);
 					if (GMT_getrgb (option, GMT_bfn[id].rgb)) error++;
