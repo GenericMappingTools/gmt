@@ -33,7 +33,8 @@ location setting.
 \fIflag\fP is \fBx\fP:  As \fBh\fP but use the headers in the \fIxfile.d\fP instead.  Requires the crossing file option.
 #endif
 .br
-\fB+o\fP selects rounded rectangular text box [Default is rectangular].  Not applicable for curved text (\fB+v\fP).
+\fB+o\fP selects rounded rectangular text box [Default is rectangular].  Not applicable for curved text (\fB+v\fP) and
+only makes sense for opaque text boxes.
 .br
 \fB+p\fP[\fIpen\fP] draws the outline of text boxsets [Default is no outline]; optionally specify pen for outline [Default is width = 0.25p, color = black, texture = solid].
 .br

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.141 2004-06-09 21:54:10 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.142 2004-06-10 02:57:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -507,7 +507,7 @@ void GMT_label_syntax (int indent, int kind)
 	fprintf (stderr, "%s +g[<color>] for opaque text box [Default is transparent]; optionally give color [white]\n", pad);
 	fprintf (stderr, "%s +j<just> to set label justification [Default is CM]\n", pad);
 	fprintf (stderr, "%s +k<color> to change color of label text [Default is black]\n", pad);
-	if (kind == 0) {
+	if (kind == 1) {
 		fprintf (stderr, "%s +l<label> Use this fixed text as the label (quote text if containing spaces).\n", pad);
 		fprintf (stderr, "%s +L<d|D|f|h|x>[<unit>] Sets the label according to the given flag:\n", pad);
 		fprintf (stderr, "%s   d for Cartesian plot distance; append desired unit c, i, m, or p.\n", pad);
