@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: img2grd,v 1.2 2001-03-06 01:54:51 pwessel Exp $
+#	$Id: img2grd,v 1.3 2002-09-27 21:40:07 pwessel Exp $
 #
 #      Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
 #      See COPYING file for copying and redistribution conditions.
@@ -24,15 +24,17 @@
 # return a geographic grid.
 #
 # Author:	Paul Wessel
-# Date:		05-MAR-2001
-# Version:	1.2
+# Date:		26-SEP-2002
+# Version:	1.3
 #------------------------------------------------------------------------
 
 if [ $# = 0 ] ; then	# No arguments, give full usage message
 	echo 'usage: img2grd <world_image_filename> -R<w>/<e>/<s>/<n> -G<grdfile> -T<type>' 1>&2
-        echo '	[-L] [-M] [-N<navg>] [-S<scale>] [-V] [-m<minutes>] [-x<maxlon>] [-y<minlat>/<maxlat>]' 1>&2
+        echo '	[-E] [-L] [-M] [-N<navg>] [-S<scale>] [-V] [-m<minutes>] [-x<maxlon>] [-y<minlat>/<maxlat>]' 1>&2
 	img2mercgrd 2>&1 | sed -n -e '/REQUIRED/,$p' > $$	# Get the bulk of the usage message
 	cat $$ 1>&2
+	echo "	-E Resample to the specified -R [Ignored if -M is given]"  1>&2
+	echo "	   Default gives the exact -R of the Mercator grid"  1>&2
 	echo "	-L List all available *.img files [Ignored if other options are given]"  1>&2
 	echo "	-M Write a Mercator grid [Default writes a geographic grid]"  1>&2
 	\rm -f $$
@@ -41,7 +43,7 @@ fi
 
 if [ $# = 1 ] && [ $1 = '-' ] ; then	# Quick synopsis check
 	echo 'usage: img2grd <world_image_filename> -R<w>/<e>/<s>/<n> -G<grdfile> -T<type>' 1>&2
-        echo '	[-L] [-M] [-N<navg>] [-S<scale>] [-V] [-m<minutes>] [-x<maxlon>] [-y<minlat>/<maxlat>]' 1>&2
+        echo '	[-E] [-L] [-M] [-N<navg>] [-S<scale>] [-V] [-m<minutes>] [-x<maxlon>] [-y<minlat>/<maxlat>]' 1>&2
 	exit 1
 fi
 
@@ -58,6 +60,7 @@ fi
 # First initialize all variables to blanks
 
 merc=0
+exact=0
 R=""
 G=""
 T=""
@@ -82,7 +85,9 @@ while [ ! x"$1" = x ]; do
 			shift;;
 		-M)	merc=1;		# Want Mercator grid output
 			shift;;
-		-L)	echo "$0: Option -L ignored uness it is the single argument" 1>&2;
+		-E)	exact=1;	# Want given -R grid output
+			shift;;
+		-L)	echo "$0: Option -L ignored unless it is the single argument" 1>&2;
 			shift;;
 		-V)	V=$1;		# Verbose run
 			shift;;
@@ -129,6 +134,10 @@ if [ $merc = 0 ]; then	# We want a lonlat output grid
 	gmtset -G/tmp/$$.def ELLIPSOID Sphere
 	exactR=`grdinfo $name | grep "Spherical Mercator Projected with -Jm1" | awk '{print $8}'`
 	grdproject $exactR -Jm1 -I $name $V $G +/tmp/$$.def	# Overwrite the Mercator file
+	if [ $exact = 1 ]; then	# Resample again using the given -R and the dx/dy in even minutes
+		dx=`grdinfo $name -C | cut -f8`
+		grdsample $R -I$dx $name $G $V +/tmp/$$.def
+	fi
 	\rm -f /tmp/$$.def	# Remove the temporary defaults file
 fi
 
