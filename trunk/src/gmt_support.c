@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.32 2002-08-23 00:59:40 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.33 2002-08-26 17:24:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1880,13 +1880,12 @@ struct EPS *GMT_epsinfo (char *program)
 	
 	last = -1;
 	for (i = n_fonts = 0; i < id; i++) {
-		if (fno[i] != last) {
-			new->fontno[n_fonts] = fno[i];
-			new->font[n_fonts++] = GMT_font_name[fno[i]];
+		if (fno[i] != last) {	/* To avoid duplicates */
+			new->fontno[n_fonts++] = fno[i];
 			last = fno[i];
 		}
 	}
-	new->font[n_fonts] = CNULL;
+	if (n_fonts < 6) new->fontno[n_fonts] = -1;	/* Terminate */
 	
 	/* Get user name and date */
 

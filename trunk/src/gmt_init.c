@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.73 2002-07-26 03:05:54 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.74 2002-08-26 17:24:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -80,6 +80,7 @@ void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit, char 
 int GMT_map_getframe (char *in);
 static void load_encoding (struct gmt_encoding *);
 void GMT_verify_encodings ();
+static void GMT_init_fonts (int *n_fonts);
 
 /* Local variables to gmt_init.c */
 
@@ -1068,7 +1069,7 @@ int GMT_setparameter (char *keyword, char *value)
 			if (value[0] >= '0' && value[0] <= '9')
 				ival = atoi (value);
 			else
-				ival = GMT_key_lookup (value, GMT_font_name, N_FONTS);
+				ival = GMT_font_lookup (value, GMT_font, N_FONTS);
 			if (ival < 0 || ival >= N_FONTS)
 				error = TRUE;
 			else
@@ -1246,7 +1247,7 @@ int GMT_setparameter (char *keyword, char *value)
 			if (value[0] >= '0' && value[0] <= '9')
 				ival = atoi (value);
 			else
-				ival = GMT_key_lookup (value, GMT_font_name, N_FONTS);
+				ival = GMT_font_lookup (value, GMT_font, N_FONTS);
 			if (ival < 0 || ival >= N_FONTS)
 				error = TRUE;
 			else
@@ -1311,7 +1312,7 @@ int GMT_setparameter (char *keyword, char *value)
 			if (value[0] >= '0' && value[0] <= '9')
 				ival = atoi (value);
 			else
-				ival = GMT_key_lookup (value, GMT_font_name, N_FONTS);
+				ival = GMT_font_lookup (value, GMT_font, N_FONTS);
 			if (ival < 0 || ival >= N_FONTS)
 				error = TRUE;
 			else
@@ -1596,7 +1597,7 @@ int GMT_setparameter (char *keyword, char *value)
 			if (value[0] >= '0' && value[0] <= '9')
 				ival = atoi (value);
 			else
-				ival = GMT_key_lookup (value, GMT_font_name, N_FONTS);
+				ival = GMT_font_lookup (value, GMT_font, N_FONTS);
 			if (ival < 0 || ival >= N_FONTS)
 				error = TRUE;
 			else
@@ -1686,17 +1687,17 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "#-------- Basemap Annotation Parameters ------\n");
 	fprintf (fp, "ANNOT_MIN_ANGLE		= %lg\n", gmtdefs.annot_min_angle);
 	fprintf (fp, "ANNOT_MIN_SPACING	= %lg\n", gmtdefs.annot_min_spacing);
-	fprintf (fp, "ANNOT_FONT		= %s\n", GMT_font_name[gmtdefs.annot_font]);
+	fprintf (fp, "ANNOT_FONT		= %s\n", GMT_font[gmtdefs.annot_font].name);
 	(GMT_force_resize && !GMT_annot_special) ? fprintf (fp, "ANNOT_FONT_SIZE		= +%lgp\n", gmtdefs.annot_font_size) :  fprintf (fp, "ANNOT_FONT_SIZE		= %lgp\n", gmtdefs.annot_font_size);
-	fprintf (fp, "ANNOT_FONT2		= %s\n", GMT_font_name[gmtdefs.annot_font2]);
+	fprintf (fp, "ANNOT_FONT2		= %s\n", GMT_font[gmtdefs.annot_font2].name);
 	(GMT_force_resize) ? fprintf (fp, "ANNOT_FONT2_SIZE		= %lgp\n", save_annot_size2) : fprintf (fp, "ANNOT_FONT2_SIZE		= %lgp\n", gmtdefs.annot_font2_size);
 	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET		= %lg%c\n", save_annot_offset * s, u) : fprintf (fp, "ANNOT_OFFSET		= %lg%c\n", gmtdefs.annot_offset * s, u);
 	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET2	= %lg%c\n", save_annot_offset2 * s, u) : fprintf (fp, "ANNOT_OFFSET2		= %lg%c\n", gmtdefs.annot_offset2 * s, u);
 	fprintf (fp, "DEGREE_SYMBOL		= %s\n", GMT_degree_choice[gmtdefs.degree_symbol - gmt_none]);
-	fprintf (fp, "HEADER_FONT		= %s\n", GMT_font_name[gmtdefs.header_font]);
+	fprintf (fp, "HEADER_FONT		= %s\n", GMT_font[gmtdefs.header_font].name);
 	(GMT_force_resize) ? fprintf (fp, "HEADER_FONT_SIZE	= %lgp\n", save_header_size) : fprintf (fp, "HEADER_FONT_SIZE	= %lgp\n", gmtdefs.header_font_size);
 	(GMT_force_resize) ? fprintf (fp, "HEADER_OFFSET			= %lg%cp\n", save_header_offset * s, u) : fprintf (fp, "HEADER_OFFSET		= %lg%c\n", gmtdefs.header_offset * s, u);
-	fprintf (fp, "LABEL_FONT		= %s\n", GMT_font_name[gmtdefs.label_font]);
+	fprintf (fp, "LABEL_FONT		= %s\n", GMT_font[gmtdefs.label_font].name);
 	(GMT_force_resize) ? fprintf (fp, "LABEL_FONT_SIZE		= %lgp\n", save_label_size) : fprintf (fp, "LABEL_FONT_SIZE		= %lgp\n", gmtdefs.label_font_size);
 	(GMT_force_resize) ? fprintf (fp, "LABEL_OFFSET			= %lg%cp\n", save_label_offset * s, u) : fprintf (fp, "LABEL_OFFSET		= %lg%c\n", gmtdefs.label_offset * s, u);
 	fprintf (fp, "OBLIQUE_ANNOTATION	= %d\n", gmtdefs.oblique_annotation);
@@ -2013,6 +2014,14 @@ int GMT_key_lookup (char *name, char **list, int n)
 	return (i);
 }
 
+int GMT_font_lookup (char *name, struct GMT_FONT *list, int n)
+{
+	int i;
+	
+	for (i = 0; i < n && strcmp (name, list[i].name); i++);
+	return (i);
+}
+
 int GMT_load_user_media (void) {	/* Load any user-specified media formats */
 	int n, n_alloc, w, h;
 	char line[BUFSIZ], media[80];
@@ -2196,6 +2205,7 @@ int GMT_begin (int argc, char **argv)
 
 	GMT_set_home ();
 
+	GMT_init_fonts (&N_FONTS);
 	this = CNULL;
 	GMT_make_fnan (GMT_f_NaN);
 	GMT_make_dnan (GMT_d_NaN);
@@ -4091,6 +4101,76 @@ void GMT_verify_encodings () {
 	if (gmtdefs.degree_symbol < 2 && gmtdefs.encoding.code[gmt_dquote] == 32) {
 		fprintf (stderr, "GMT Warning: Selected character encoding does not have second symbol (double quote) - will use space instead\n");
 	}
+}
+
+static void GMT_init_fonts (int *n_fonts)
+{
+	FILE *in;
+	int i = 0, n_GMT_fonts, n_alloc = 50;
+	char buf[128];
+	char fullname[128];
+
+	/* Loads the available fonts for this installation */
+	
+	/* First the standard 35 PostScript fonts from Adobe */
+	
+	sprintf (fullname, "%s%cshare%cpslib%cPS_font_info.d", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+
+	if ((in = fopen (fullname, "r")) == NULL)
+	{
+		fprintf (stderr, "GMT Fatal Error: ");
+		perror (fullname);
+		exit (EXIT_FAILURE);
+	}
+	
+	GMT_font = (struct GMT_FONT *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_FONT), GMT_program);
+	
+	while (fgets (buf, 128, in)) {
+		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
+		GMT_font[i].name = (char *)GMT_memory (VNULL, strlen (buf), sizeof (char), GMT_program);
+		if (sscanf (buf, "%s %lf %*d", GMT_font[i].name, &GMT_font[i].height) != 2) {
+			fprintf (stderr, "GMT Fatal Error: Trouble decoding font info for font %d\n", i);
+			exit (EXIT_FAILURE);
+		}
+		i++;
+		if (i == n_alloc) {
+			n_alloc += 50;
+			GMT_font = (struct GMT_FONT *) GMT_memory ((void *)GMT_font, (size_t)n_alloc, sizeof (struct GMT_FONT), GMT_program);
+		}
+	}
+	fclose (in);
+	*n_fonts = n_GMT_fonts = i;
+	
+ 	/* Then any custom fonts */
+	
+	sprintf (fullname, "%s%cshare%cpslib%cCUSTOM_font_info.d", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+
+	if (!access (fullname, R_OK)) {	/* Decode Custom font file */
+	
+		if ((in = fopen (fullname, "r")) == NULL)
+		{
+			fprintf (stderr, "GMT Fatal Error: ");
+			perror (fullname);
+			exit (EXIT_FAILURE);
+		}
+	
+		while (fgets (buf, 128, in)) {
+			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
+			GMT_font[i].name = (char *)GMT_memory (VNULL, strlen (buf), sizeof (char), GMT_program);
+			if (sscanf (buf, "%s %lf %*d", GMT_font[i].name, &GMT_font[i].height) != 2) {
+				fprintf (stderr, "GMT Fatal Error: Trouble decoding custom font info for font %d\n", i - n_GMT_fonts);
+				exit (EXIT_FAILURE);
+			}
+			i++;
+			if (i == n_alloc) {
+				n_alloc += 50;
+				GMT_font = (struct GMT_FONT *) GMT_memory ((void *)GMT_font, (size_t)n_alloc, sizeof (struct GMT_FONT), GMT_program);
+			}
+		}
+		fclose (in);
+		*n_fonts = i;
+	}
+	GMT_font = (struct GMT_FONT *) GMT_memory ((void *)GMT_font, (size_t)(*n_fonts), sizeof (struct GMT_FONT), GMT_program);
 }
 
 #ifdef WIN32

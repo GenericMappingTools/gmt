@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.16 2002-06-18 17:31:16 pwessel Exp $
+ *	$Id: pslib.h,v 1.17 2002-08-26 17:24:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -50,8 +50,7 @@ struct EPS {    /* Holds info for eps files */
         int x0, x1, y0, y1;     /* Bounding box values in points */
 	int portrait;		/* TRUE if start of plot was portrait */
 	int clip_level;		/* Add/sub 1 as we clip/unclip - should end at 0 */
-        char *font[N_FONTS];    /* Pointers to font names used */
-        int fontno[N_FONTS];    /* Array with font ids */
+        int fontno[6];   	 /* Array with font ids used (skip if -1). 6 is max fonts used in GMT anot/labels */
         char *name;             /* User name */
         char *title;            /* Plot title */
 };
