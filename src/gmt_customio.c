@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.12 2004-01-10 19:41:03 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.13 2004-01-12 00:37:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1697,4 +1697,4 @@ int GMT_cdf_double_write_grd (char *file, struct GRD_HEADER *header, float *grid
 }
 
 /* 12: NOAA NGDC MGG Format */
-#include "mgg_header2.c"
+#include "gmt_mgg_header2.c"
