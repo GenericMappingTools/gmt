@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.17 2001-08-28 19:25:11 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.18 2001-08-28 21:46:37 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -109,7 +109,8 @@ void GMT_decode_calclock_formats ();
 void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S);
 void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode);
 void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode);
-void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S, int plot);
+void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S);
+void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S);
 void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S);
 int GMT_write_abstime_output (FILE *fp, GMT_dtime dt);		/* Format and write one ABSTIME item to output */
 void GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  int *s,  int *ix);
@@ -1473,8 +1474,8 @@ void GMT_decode_calclock_formats ()
 	GMT_clock_C_format (gmtdefs.input_clock_format, &GMT_io.clock_input, 0);
 	GMT_clock_C_format (gmtdefs.output_clock_format, &GMT_io.clock_output, 1);
 	GMT_clock_C_format (gmtdefs.plot_clock_format, &GMT_plot_calclock.clock, 1);
-	GMT_geo_C_format (gmtdefs.output_degree_format, &GMT_io.geo, 0);
-	GMT_geo_C_format (gmtdefs.plot_degree_format, &GMT_plot_calclock.geo, 1);
+	GMT_geo_C_format (gmtdefs.output_degree_format, &GMT_io.geo);
+	GMT_plot_C_format (gmtdefs.plot_degree_format, &GMT_plot_calclock.geo);
 }
 
 void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
@@ -1571,21 +1572,14 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 	}
 }
 
-void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S, int plot)
+void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S)
 {
-	/* Determine the output or plot geographic location formats.
-	* plot is 0 for output and 1 for plotting
-	 */
-	 
-	char *c, fmt[32];
-	int k;
+	/* Determine the output of geographic location formats. */
+	 	
+	GMT_get_dms_order (template, S);	/* Get the order of degree, min, sec in output formats */
 	
-	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
-	
-	GMT_get_dms_order (template, S);
-	
-	if (plot == 0 && S->no_sign) {
-		fprintf (stderr, "%s: ERROR: Unacceptable PLOT_DEGREE_FORMAT template %s\n", GMT_program, template);
+	if (S->no_sign) {
+		fprintf (stderr, "%s: ERROR: Unacceptable PLOT_DEGREE_FORMAT template %s. A not allowed\n", GMT_program, template);
 		exit (EXIT_FAILURE);
 	}
 	
@@ -1595,41 +1589,23 @@ void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S, int plot)
 	}
 	else {			/* Some form of dd:mm:ss */
 		char fmt[32];
-		if (plot) {
-			sprintf (S->x_format, "%%d\0");
-			sprintf (S->y_format, "%%d\0");
-			if (gmtdefs.degree_symbol < 2) {
-				strcat (S->x_format, GMT_degree_symbol[gmtdefs.degree_symbol]);
-				strcat (S->y_format, GMT_degree_symbol[gmtdefs.degree_symbol]);
-			}
-		}
-		else {
-			sprintf (S->x_format, "%%3.3d\0");
-			sprintf (S->y_format, "%%2.2d\0");
-		}
+		sprintf (S->x_format, "%%3.3d\0");
+		sprintf (S->y_format, "%%2.2d\0");
 		if (S->order[1] >= 0) {	/* Need minutes too */
-			if (! (plot && gmtdefs.degree_symbol < 2)) {
-				strcat (S->x_format, S->delimeter[0]);
-				strcat (S->y_format, S->delimeter[0]);
-			}
+			strcat (S->x_format, S->delimeter[0]);
+			strcat (S->y_format, S->delimeter[0]);
 			sprintf (fmt, "%%2.2d\0");
 			strcat (S->x_format, fmt);
 			strcat (S->y_format, fmt);
-			if (plot && !(S->n_sec_decimals && S->order[2] == -1) && gmtdefs.degree_symbol < 2) {
-				strcat (S->x_format, "\251");
-				strcat (S->y_format, "\251");
-			}
 		}
 		if (S->order[2] >= 0) {	/* .. and seconds */
-			if (! (plot && gmtdefs.degree_symbol < 2)) {
-				strcat (S->x_format, S->delimeter[1]);
-				strcat (S->y_format, S->delimeter[1]);
-			}
+			strcat (S->x_format, S->delimeter[1]);
+			strcat (S->y_format, S->delimeter[1]);
 			sprintf (fmt, "%%2.2d\0");
 			strcat (S->x_format, fmt);
 			strcat (S->y_format, fmt);
 		}
-		if (S->n_sec_decimals) {	/* even add format for fractions of second */
+		if (S->n_sec_decimals) {	/* even add format for fractions of second (or minutes or degrees) */
 			sprintf (fmt, ".%%%d.%dd\0", S->n_sec_decimals, S->n_sec_decimals);
 			strcat (S->x_format, fmt);
 			strcat (S->y_format, fmt);
@@ -1639,6 +1615,89 @@ void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S, int plot)
 		strcat (S->x_format, fmt);
 		strcat (S->y_format, fmt);
 	}
+}
+
+void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
+{
+	int i, j;
+	
+	/* Determine the plot geographic location formats. */
+	
+	GMT_get_dms_order (template, S);	/* Get the order of degree, min, sec in output formats */
+	
+	if (S->decimal) {	/* Plain decimal degrees */
+		sprintf (S->x_format, "%s\0", gmtdefs.d_format);
+		sprintf (S->y_format, "%s\0", gmtdefs.d_format);
+		if (gmtdefs.degree_symbol < 2) {	/* But we want the degree symbol appended */
+			strcat (S->x_format, GMT_degree_symbol[gmtdefs.degree_symbol]);
+			strcat (S->y_format, GMT_degree_symbol[gmtdefs.degree_symbol]);
+		}
+	}
+	else {			/* Must cover all the 6 forms of dd[:mm[:ss]][.xxx] */
+		char fmt[32];
+		
+		for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) GMT_plot_format[i][j] = (char *) GMT_memory (VNULL, (size_t)32, sizeof (char), GMT_program);
+		
+		/* Level 0: degrees only. index 0 is integer degrees, index 1 is [possibly] fractional degrees */
+		
+		sprintf (GMT_plot_format[0][0], "%%d\0");	/* ddd */
+		if (S->order[1] == -1 && S->n_sec_decimals > 0) /* ddd.xxx format */
+			sprintf (GMT_plot_format[0][1], "%%d.%%%d.%dd\0", S->n_sec_decimals, S->n_sec_decimals);
+		else						/* ddd format */
+			sprintf (GMT_plot_format[0][1], "%%d\0");
+		if (gmtdefs.degree_symbol < 2) {	/* But we want the degree symbol appended */
+			strcat (GMT_plot_format[0][0], GMT_degree_symbol[gmtdefs.degree_symbol]);
+			strcat (GMT_plot_format[0][1], GMT_degree_symbol[gmtdefs.degree_symbol]);
+		}
+		
+		/* Level 1: degrees and minutes only. index 0 is integer minutes, index 1 is [possibly] fractional minutes  */
+		
+		sprintf (GMT_plot_format[1][0], "%%d\0");	/* ddd */
+		sprintf (GMT_plot_format[1][1], "%%d\0");
+		if (gmtdefs.degree_symbol < 3) {	/* We want the degree symbol appended */
+			strcat (GMT_plot_format[1][0], GMT_degree_symbol[gmtdefs.degree_symbol]);
+			strcat (GMT_plot_format[1][1], GMT_degree_symbol[gmtdefs.degree_symbol]);
+		}
+		strcat (GMT_plot_format[1][0], "%2.2d");
+		if (S->order[2] == -1 && S->n_sec_decimals > 0) /* ddd:mm.xxx format */
+			sprintf (fmt, "%%d.%%%d.%dd\0", S->n_sec_decimals, S->n_sec_decimals);
+		else						/* ddd:mm format */
+			sprintf (fmt, "%%2.2d\0");
+		strcat (GMT_plot_format[1][1], fmt);
+		if (gmtdefs.degree_symbol < 2) {	/* We want the minute symbol appended */
+			strcat (GMT_plot_format[1][0], GMT_minute_symbol);
+			strcat (GMT_plot_format[1][1], GMT_minute_symbol);
+		}
+
+		/* Level 2: degrees, minutes, and seconds. index 0 is integer seconds, index 1 is [possibly] fractional seconds  */
+		
+		sprintf (GMT_plot_format[2][0], "%%d\0");
+		sprintf (GMT_plot_format[2][1], "%%d\0");
+		if (gmtdefs.degree_symbol < 3) {	/* We want the degree symbol appended */
+			strcat (GMT_plot_format[2][0], GMT_degree_symbol[gmtdefs.degree_symbol]);
+			strcat (GMT_plot_format[2][1], GMT_degree_symbol[gmtdefs.degree_symbol]);
+		}
+		strcat (GMT_plot_format[2][0], "%2.2d");
+		strcat (GMT_plot_format[2][1], "%2.2d");
+		if (gmtdefs.degree_symbol < 2) {	/* We want the minute symbol appended */
+			strcat (GMT_plot_format[2][0], GMT_minute_symbol);
+			strcat (GMT_plot_format[2][1], GMT_minute_symbol);
+		}
+		strcat (GMT_plot_format[2][0], "%2.2d");
+		if (S->n_sec_decimals > 0)			 /* ddd:mm:ss.xxx format */
+			sprintf (fmt, "%%d.%%%d.%dd\0", S->n_sec_decimals, S->n_sec_decimals);
+		else						/* ddd:mm:ss format */
+			sprintf (fmt, "%%2.2d\0");
+		strcat (GMT_plot_format[2][1], fmt);
+		if (gmtdefs.degree_symbol < 2) {	/* We want the second symbol appended */
+			strcat (GMT_plot_format[2][0], GMT_second_symbol);
+			strcat (GMT_plot_format[2][1], GMT_second_symbol);
+		}
+	}
+
+	/* Finally add %c for the W,E,S,N char (or NULL) */
+	
+	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) strcat (GMT_plot_format[i][j], "%%c\0");
 }
 
 int GMT_decode_coltype (char *arg)

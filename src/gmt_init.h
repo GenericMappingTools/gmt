@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.10 2001-08-28 02:37:01 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.11 2001-08-28 21:46:37 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -77,9 +77,12 @@ char *GMT_char_encoding[3] = {	/* PostScript character encodings */
 	"IsoLatin1"
 };
 
-char *GMT_degree_symbol[2] = {		/* Small [Default] and large degree symbols */
-"\\312", "\\217"
+char *GMT_degree_symbol[3] = {		/* Ring [Default], Degree, and colon degree symbols */
+"\\312", "\\217", ":"
 };
+
+char *GMT_minute_symbol = "\\251";	/* Standard encoding minute symbol */
+char *GMT_second_symbol = "\\042";	/* Standard encoding second symbol */
 
 /*--------------------------------------------------------------------*/
 /*	For plotting purposes */
@@ -120,6 +123,7 @@ PFI GMT_truncate;		/* Truncate polygons agains boundaries */
 BOOLEAN GMT_meridian_straight = FALSE;	/* TRUE if meridians plot as straight lines */
 BOOLEAN GMT_parallel_straight = FALSE;	/* TRUE if parallels plot as straight lines */
 int GMT_3D_mode = 3;			/* Determines if we draw fore and/or back 3-D box lines [Default is both] */
+char *GMT_plot_format[3][2];		/* Keeps the 6 formats for dd:mm:ss plot output */
 
 /*--------------------------------------------------------------------*/
 /*	For color lookup purposes */
