@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.26 2001-08-29 04:34:30 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.27 2001-09-05 19:23:21 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -703,6 +703,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 	 		if (item[strlen(item)-1] == 'r') {
 	 			rect_box_given = TRUE;
 	 			project_info.region = FALSE;
+				item[strlen(item)-1] = '\0';	/* Temporarily removing the trailing r so GMT_scanf will work */
 	 		}
 			i = 0;
 			strcpy (string, &item[2]);
@@ -755,7 +756,10 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				i++;
 				text = strtok (CNULL, "/");
 			}
-	 		if (rect_box_given) d_swap (*p[2], *p[1]);	/* So w/e/s/n makes sense */
+	 		if (rect_box_given) {
+				d_swap (*p[2], *p[1]);	/* So w/e/s/n makes sense */
+				item[strlen(item)-1] = 'r';	/* Put back the trailing r we temporarily removed */
+			}
 			if ((i < 4 || i > 6) || (GMT_check_region (*p[0], *p[1], *p[2], *p[3]) || (i == 6 && *p[4] >= *p[5]))) {
 				error++;
 				GMT_syntax ('R');
