@@ -545,8 +545,8 @@ the end of the path [butt].
 .B PS_LINE_JOIN
 Determines what happens at kinks in line segments.  Choose among a \fImiter\fP join
 where the outer edges of the strokes for the two segments are extended until they
-meet at an angle (as in a picture frame).  If the angle is too acute, a bevel join is used
-instead (threshold is set by \fBPS_MITER_LIMIT\fP), \fIround\fP join where a
+meet at an angle (as in a picture frame; if the angle is too acute, a bevel join is used
+instead, with threshold set by \fBPS_MITER_LIMIT\fP), \fIround\fP join where a
 circular arc is used to fill in the cracks at the kinks, and \fIbevel\fP join which
 is a miter join that is cut off so kinks are triangular in shape [miter].
 .TP
