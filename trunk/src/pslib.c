@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.43 2002-06-19 06:36:55 ben Exp $
+ *	$Id: pslib.c,v 1.44 2002-08-20 19:07:28 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -145,6 +145,7 @@ int PSL_first = TRUE;
 /* Define support functions called inside pslib functions */
 
 char *ps_prepare_text (char *text);
+void def_font_encoding (void);
 void init_font_encoding (struct EPS *eps);
 void get_uppercase(char *new, char *old);
 unsigned char * ps_1bit_to_24bit (unsigned char *pattern, struct rasterfile *h, int f_rgb[], int b_rgb[]);
@@ -1353,13 +1354,13 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		bulkcopy ("PSL_prologue");
 		bulkcopy (ps.encoding);
 		
+		def_font_encoding ();		/* Place code for reencoding of fonts and initialize book-keeping */
+
 		/* XXX This should be done by code in the prologue */
 		/* XXX This may also be wishful thinking. */
 		/* Define font macros (see pslib.h for details on how to add fonts) */
 		
 		for (i = 0; i < N_FONTS; i++) fprintf (ps.fp, "/F%d {/%s Y} bind def\n", i, ps_font_name[i]);
-
-		init_font_encoding (eps);	/* Reencode fonts if necessary */
 
 		if (!ps.eps_format) fprintf (ps.fp, "/#copies %d def\n\n", ncopies);
 	 	fprintf (ps.fp, "%%%%EndProlog\n\n");
@@ -1403,6 +1404,8 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 				fprintf (ps.fp, "clippath %.3lg A F N\n", rgb[0] * I_255);
 		}
 	}
+	init_font_encoding (eps);	/* Reencode fonts if necessary */
+
 	ps_setpaint (no_rgb);
 	if (!(xoff == 0.0 && yoff == 0.0)) fprintf (ps.fp, "%lg %lg T\n", xoff*ps.scale, yoff*ps.scale);
 	
@@ -2508,7 +2511,19 @@ void ps_encode_font (int font_no)
 }
 
 void init_font_encoding (struct EPS *eps)
-{
+{	/* Reencode all the fonts that we know may be used: the ones listed in eps */
+
+	int i;
+
+	if (eps)
+		for (i = 0; eps->font[i]; i++) ps_encode_font (eps->fontno[i]);
+	else	/* Must output all */
+		for (i = 0; i < N_FONTS; i++) ps_encode_font (i);
+}
+
+void def_font_encoding (void)
+{	/* Place code for reencoding of fonts and initialize book-keeping array */
+
 	int i;
 	
 	fprintf (ps.fp, "/PSL_reencode {\t%% To reencode one font with the provided encoding vector\n");
@@ -2523,11 +2538,6 @@ void init_font_encoding (struct EPS *eps)
 	fprintf (ps.fp, "/PSL_font_encode ");
 	for (i = 0; i < N_FONTS; i++) fprintf (ps.fp, "0 ");
 	fprintf (ps.fp, "%d array astore def	%% Initially zero\n", N_FONTS);
-		
-	if (eps)
-		for (i = 0; eps->font[i]; i++) ps_encode_font (eps->fontno[i]);
-	else	/* Must output all */
-		for (i = 0; i < N_FONTS; i++) ps_encode_font (i);
 }
 
 char *ps_prepare_text (char *text)

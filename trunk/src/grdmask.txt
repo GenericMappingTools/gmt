@@ -3,7 +3,7 @@
 grdmask \- Create mask grdfiles from xy paths.
 .SH SYNOPSIS
 \fBgrdmask\fP \fIpathfiles\fP \fB\-G\fP\fImask_grd_file\fP] \fB\-I\fP\fIxinc\fP[\fBm|c\fP][/\fIyinc\fP[\fBm|c\fP]] 
-\fB\-R\fP\fIwest/east/south/north\fP[\fIr\fP] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-M\fP[\fIflag\fP] ] 
+\fB\-R\fP\fIwest/east/south/north\fP[\fIr\fP] [ \fB\-A\fP ] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-M\fP[\fIflag\fP] ] 
 [ \fB\-N\fP\fIout/edge/in\fP ] [ \fB\-S\fP[\fIradius\fP][\fBk\fP] ] [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
 [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
@@ -23,6 +23,10 @@ Name of resulting output mask grd file.
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
+.TP
+.B \-A
+If the input data are geographic (as indicated by \fB\-fi\fP) then the sides in the polygons will be
+approximated by great circle arcs.  This can be turned off using the \fB\-A\fP switch.
 .TP
 .B \-F
 Force pixel registration.  [Default is grid registration].
