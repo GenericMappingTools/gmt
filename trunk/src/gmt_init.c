@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.175 2005-03-02 00:56:14 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.176 2005-03-02 19:16:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -990,7 +990,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			}
 			GMT_processed_option[9] = TRUE;
 			gmtdefs.unix_time = TRUE;
-			for (i = n_slashes = 0; item[i]; i++) if (item[i] == '/') {
+			for (i = j = n_slashes = 0; item[i]; i++) if (item[i] == '/') {
 				n_slashes++;
 				if (n_slashes < 4) j = i;
 			}
@@ -3605,7 +3605,7 @@ int GMT_map_getproject (char *args)
 	 * project_info structure.  The function returns TRUE if an error is encountered.
 	 */
 
-	int i, j, k, n, slash, l_pos[2], p_pos[2], t_pos[2], d_pos[2], id, project = -1, n_slashes = 0, width_given;
+	int i, j, k = 9, n, slash, l_pos[2], p_pos[2], t_pos[2], d_pos[2], id, project = -1, n_slashes = 0, width_given;
 	BOOLEAN error = FALSE, skip = FALSE;
 	double o_x, o_y, b_x, b_y, c, az;
 	double GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */

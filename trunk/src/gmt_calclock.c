@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.34 2005-02-15 21:15:18 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.35 2005-03-02 19:16:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -94,7 +94,7 @@ int	GMT_atoft (char *s, double *t) {
 	GMT_cal_rd	rd;
 	char	*cp;
 	
-	if ( cp = strpbrk (s, "T") ) {
+	if ( (cp = strpbrk (s, "T")) ) {
 		k = strlen(s);
 		j = strlen(cp);
 		if (j > 1) {
@@ -125,7 +125,7 @@ int	GMT_atoft (char *s, double *t) {
 	of a hyphen.  If this is preceded by a digit, then it is an
 	internal hyphen, and the string is a time string.  */
 	
-	if (cp = strrchr (s, '-') ) {
+	if ( (cp = strrchr (s, '-')) ) {
 		/* There is a hyphen.  If more than one, this is the last.  */
 		k = strlen(s);
 		j = strlen(cp);
@@ -1173,8 +1173,10 @@ void GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct
 		i_sec = (int) floor (calendar.sec);
 		m_sec = irint (C->f_sec_to_int * (calendar.sec - i_sec));
 	}
-	else
+	else {
 		i_sec = irint (calendar.sec);
+		m_sec = 0;
+	}
 	
 	if (C->twelve_hr_clock) {		/* Must deal with am/pm formatting */
 		if (calendar.hour < 12)
