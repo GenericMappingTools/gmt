@@ -566,8 +566,7 @@ interval exceeds the specified fraction of the normal interval stride we will pl
 partial interval [0.5].
 .TP
 .B TIME_LANGUAGE
-Language to use when plotting calendar items such as months and days.  Look in the $GMTHOME/share/time
-directory for available language files [US]. Select from:
+Language to use when plotting calendar items such as months and days.  Select from:
 .br
 	BR	Brazilian Portuguese
 .br
@@ -616,6 +615,10 @@ directory for available language files [US]. Select from:
 	UK	British English
 .br
 	US	US English
+.br
+.sp
+If your language is not supported, please examine the $GMTHOME/share/time/us.d file and
+make a similar file.  Please submit it to the GMT Developers for official inclusion. 
 .TP
 .B TIME_SYSTEM
 Determines what the time epoch relative time refers to and what the units are.  Choose from one of the preset systems below
