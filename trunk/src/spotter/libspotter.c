@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: libspotter.c,v 1.2 2001-03-01 22:08:26 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -52,7 +52,7 @@ void matrix_to_pole (double T[3][3], double *plon, double *plat, double *w);
 void matrix_transpose (double At[3][3], double A[3][3]);
 void matrix_mult (double a[3][3], double b[3][3], double c[3][3]);
 void make_rot_matrix (double lonp, double latp, double w, double R[3][3]);
-void finite_to_stages (struct EULER p[], int n);
+void finite_to_stages (struct EULER p[], int n, int flag);
 
 
 int spotter_init (char *file, struct EULER **p, int flowline, int finite, double *t_max)
@@ -119,7 +119,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, int finite, double
 	
 	n = i;
 
-	if (finite) finite_to_stages (e, n);	/* Convert finite poles to backward stage poles */
+	if (finite) finite_to_stages (e, n, finite-1);	/* Convert finite poles to backward stage poles */
 	
 	/* Extend oldest stage pole back to t_max Ma */
 
@@ -508,13 +508,12 @@ void spotter_rotate_inv (double *lon, double *lat, double tlon, double tlat, str
 	*lon = p->lon_r + d_atan2 (c_lat * s_lon, p->sin_lat * cc + p->cos_lat * s_lat);
 }
 
-/* Converts a set of total reconstruction poles
- * to stage poles
+/* Converts a set of total reconstruction poles to stage poles
  *
  * Based partly on Cox and Hart, 1986
  */
 
-void finite_to_stages (struct EULER p[], int n)
+void finite_to_stages (struct EULER p[], int n, int flag)
 {
 	int i, j;
 	double *elon, *elat, *ew, t_old;
@@ -547,7 +546,8 @@ void finite_to_stages (struct EULER p[], int n)
 		p[i].lon = elon[i];
 		p[i].lat = elat[i];
 		p[i].duration = p[i].t_start - p[i].t_stop;
-		p[i].omega = ew[i] / p[i].duration;
+		p[i].omega = ew[i];
+		if (flag == 0) p[i].omega /= p[i].duration;	/* get rates */
 		p[i].omega_r = p[i].omega * D2R;
 		p[i].sin_lat = sin (p[i].lat * D2R);
 		p[i].cos_lat = cos (p[i].lat * D2R);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: pslib.h,v 1.2 2001-03-01 22:08:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -13,14 +13,14 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU General Public License for more details.
  *
- *	Contact info: www.soest.hawaii.edu/gmt
+ *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
  *
  * This include file must be included by all programs using pslib.a
  *
  * Author:	Paul Wessel
- * Version:	3.3.1
+ * Version:	3.4
  * Date:	10-OCT-2000
  */
 

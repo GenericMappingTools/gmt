@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.2 2001-02-20 17:48:32 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.3 2001-03-01 22:08:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -13,7 +13,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU General Public License for more details.
  *
- *	Contact info: www.soest.hawaii.edu/gmt
+ *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
  * Include file for programs that use the map-projections functions.  Note
@@ -22,7 +22,7 @@
  * Author:	Paul Wessel
  * Date:	26-FEB-1990
  * Revised:	24-MAR-2000
- * Version:	3.3.6
+ * Version:	3.4
  *
  */
 #ifndef _GMT_PROJECT_H

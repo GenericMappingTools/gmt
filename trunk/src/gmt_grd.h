@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.2 2001-02-20 17:48:32 pwessel Exp $
+ *	$Id: gmt_grd.h,v 1.3 2001-03-01 22:08:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -13,7 +13,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU General Public License for more details.
  *
- *	Contact info: www.soest.hawaii.edu/gmt
+ *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
  * grd.h contains the definition for a GMT-SYSTEM Version >= 2 grd file
@@ -25,7 +25,7 @@
  * Author:	Paul Wessel
  * Date:	26-MAY-1990
  * Revised:	21-OCT-1998
- * Version:	3.3.6
+ * Version:	3.4
  */
  
 #ifndef _GMT_GRD_H
