@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.115 2004-06-05 00:53:02 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.116 2004-06-09 06:23:28 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -119,6 +119,7 @@ void GMT_contlabel_plotboxes (struct GMT_CONTOUR *G);
 void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode);
 void GMT_contlabel_clippath (struct GMT_CONTOUR *G, int mode);
 void GMT_textpath_init (struct GMT_PEN *LP, int Brgb[], struct GMT_PEN *BP, int Frgb[]);
+void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G);
 
 double *GMT_x2sys_Y;
 
@@ -1629,7 +1630,14 @@ void GMT_free (void *addr)
 int GMT_contlabel_init (struct GMT_CONTOUR *G)
 {	/* Assign default values to structure */
 	memset ((void *)G, 0, sizeof (struct GMT_CONTOUR));	/* Sets all to 0 */
-	(strstr (GMT_program, "contour")) ? strcpy (G->line_type, "Contour") : strcpy (G->line_type, "Line");
+	if (strstr (GMT_program, "contour")) {
+		G->line_type = 1;
+		strcpy (G->line_name, "Contour");
+		}
+	else {
+		G->line_type = 0;
+		strcpy (G->line_name, "Line");
+	}
 	G->transparent = TRUE;
 	G->spacing = TRUE;
 	G->half_width = 5;
@@ -1637,7 +1645,8 @@ int GMT_contlabel_init (struct GMT_CONTOUR *G)
 	G->label_dist_spacing = 4.0;	/* Inches */
 	G->box = 2;			/* Rect box shape is Default */
 	if (gmtdefs.measure_unit == GMT_CM) G->label_dist_spacing = 10.0 / 2.54;
-	G->clearance[0] = G->clearance[1] = 0.0254;	/* 1 mm */
+	G->clearance[0] = G->clearance[1] = 15.0;	/* 15 % */
+	G->clearance_flag = 1;	/* Means we gave percentages of label font size */
 	G->just = 6;	/* CM */
 	G->label_font = gmtdefs.annot_font[0];	/* ANNOT_FONT_PRIMARY */
 	G->dist_unit = gmtdefs.measure_unit;
@@ -1650,7 +1659,7 @@ int GMT_contlabel_init (struct GMT_CONTOUR *G)
 int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 {
 	int k, bad = 0;
-	BOOLEAN g_set = FALSE;
+	BOOLEAN g_set = FALSE, percentage = FALSE;
 	char txt_cpy[BUFSIZ], txt_a[32], txt_b[32], c, *p;
 	
 	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+o|O|t|v][+s<size>][+p[<pen>]][+u<unit>][+^<prefix>] strings */
@@ -1681,6 +1690,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 				k = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
 				G->clearance[0] = GMT_convert_units (txt_a, GMT_INCH);
 				G->clearance[1] = (k == 2 ) ? GMT_convert_units (txt_b, GMT_INCH) : G->clearance[0];
+				G->clearance_flag = ((strchr (txt_a, '%')) ? 1 : 0);
 				if (k == 0) bad++;
 				break;
 				
@@ -1782,7 +1792,11 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 				
 		p = strtok (NULL, "+");
 	}
-						
+	if (G->clearance_flag) {	/* Gave a percentage of fontsize as clearance */
+		G->clearance[0] = G->clearance[0] * G->label_font_size / 72.0;				
+		G->clearance[1] = G->clearance[1] * G->label_font_size / 72.0;
+	}
+				
 	return (bad);
 }
 
@@ -2236,7 +2250,7 @@ void GMT_contlabel_drawlines (struct GMT_CONTOUR *G, int mode)
 		GMT_setpen (&C->pen);
 		pen = (int *) GMT_memory (VNULL, (size_t)C->n, sizeof (int), GMT_program);
 		for (k = 1, pen[0] = 3; k < C->n; k++) pen[k] = 2;
-		sprintf (buffer, "%s: %s", G->line_type, C->name);
+		sprintf (buffer, "%s: %s", G->line_name, C->name);
 		ps_comment (buffer);
 		GMT_plot_line (C->x, C->y, pen, C->n);
 		GMT_free ((void *)pen);
@@ -2250,6 +2264,12 @@ void GMT_contlabel_clippath (struct GMT_CONTOUR *G, int mode)
 	char **txt;
 	struct GMT_CONTOUR_LINE *C;
 	
+	if (mode == 0) {	/* Turn OFF Clipping and bail */
+		ps_comment ("Turn label clipping off:");
+		ps_textclip (NULL, NULL, 0, NULL, NULL, 0.0, NULL, 0, 2);	/* This turns clipping OFF if it was ON in the first place */
+		return;
+	}
+	
 	for (i = m = nseg = 0; i < G->n_segments; i++) {	/* Get total number of segments with labels */
 		C = G->segment[i];		/* Pointer to current segment */
 		if (C->n_labels) {
@@ -2260,46 +2280,42 @@ void GMT_contlabel_clippath (struct GMT_CONTOUR *G, int mode)
 	
 	if (m == 0) return;	/* Nothing to do */
 	
-	if (mode == 1) {	/* Turn ON clipping */
-		if (G->curved_text) {		/* Do it via the labeling PSL function */
-			GMT_contlabel_plotlabels (G, 1);
-			if (nseg == 1) G->box |= 8;	/* Special message to just repeate the labelline call */
-		}
-		else {				/* Same PS memory by doing it this way instead via ps_textclip */
-			if (G->number_placement && G->n_cont == 1)		/* Special 1-label justification check */
-				just = G->end_just[(G->number_placement+1)/2];	/* Gives index 0 or 1 */
-			else
-				just = G->just;
-			/* Allocate temp space for everything that must be passed to ps_textclip */
-			angle = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
-			xt = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
-			yt = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
-			txt = (char **) GMT_memory (VNULL, (size_t)m, sizeof (char *), GMT_program);
-			for (i = m = 0; i < G->n_segments; i++) {
-				C = G->segment[i];	/* Pointer to current segment */
-				for (k = 0; k < C->n_labels; k++, m++) {
-					angle[m] = C->L[k].angle;
-					txt[m] = C->L[k].label;
-					xt[m] = C->L[k].x;
-					yt[m] = C->L[k].y;
-				}
-			}
-			if (project_info.three_D) {	/* Must place text items with GMT_text3D */
-				GMT_2D_to_3D (xt, yt, G->z_level, m);
-			}
-			/* Note this uses the last segments pen/fontrgb on behalf of all */
-			GMT_textpath_init (&C->pen, G->rgb, &G->pen, C->font_rgb);
-			form = (G->box == 4) ? 16 : 0;
-			ps_textclip (xt, yt, m, angle, txt, G->label_font_size, G->clearance, just, form);	/* This turns clipping ON */
-			GMT_free ((void *)angle);
-			GMT_free ((void *)xt);
-			GMT_free ((void *)yt);
-			GMT_free ((void *)txt);
-		}
+	/* Turn ON clipping */
+	if (G->curved_text) {		/* Do it via the labeling PSL function */
+		GMT_contlabel_plotlabels (G, 1);
+		if (nseg == 1) G->box |= 8;	/* Special message to just repeate the labelline call */
 	}
-	else {	/* Turn OFF Clipping */
-		ps_comment ("Turn label clipping off:");
-		ps_textclip (NULL, NULL, 0, NULL, NULL, 0.0, NULL, 0, 2);	/* This turns clipping OFF if it was ON in the first place */
+	else {				/* Same PS memory by doing it this way instead via ps_textclip */
+		if (G->number_placement && G->n_cont == 1)		/* Special 1-label justification check */
+			just = G->end_just[(G->number_placement+1)/2];	/* Gives index 0 or 1 */
+		else
+			just = G->just;
+		/* Allocate temp space for everything that must be passed to ps_textclip */
+		angle = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
+		xt = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
+		yt = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
+		txt = (char **) GMT_memory (VNULL, (size_t)m, sizeof (char *), GMT_program);
+		for (i = m = 0; i < G->n_segments; i++) {
+			C = G->segment[i];	/* Pointer to current segment */
+			for (k = 0; k < C->n_labels; k++, m++) {
+				angle[m] = C->L[k].angle;
+				txt[m] = C->L[k].label;
+				xt[m] = C->L[k].x;
+				yt[m] = C->L[k].y;
+			}
+		}
+		if (project_info.three_D) {	/* Must place text items with GMT_text3D */
+			GMT_2D_to_3D (xt, yt, G->z_level, m);
+		}
+		/* Note this uses the last segments pen/fontrgb on behalf of all */
+		GMT_textpath_init (&C->pen, G->rgb, &G->pen, C->font_rgb);
+		form = (G->box == 4) ? 16 : 0;
+		ps_textclip (xt, yt, m, angle, txt, G->label_font_size, G->clearance, just, form);	/* This turns clipping ON */
+		G->box |= 8;	/* Special message to just repeate the PSL call as variables have been defined */
+		GMT_free ((void *)angle);
+		GMT_free ((void *)xt);
+		GMT_free ((void *)yt);
+		GMT_free ((void *)txt);
 	}
 }
 		
@@ -2340,7 +2356,10 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode)
 	if (G->box & 8) {	/* Repeat call for Transparent text box (already set by clip) */
 		form = 8;
 		if (G->box & 1) form |= 256;		/* Transparent box with outline */
-		ps_textpath (NULL, NULL, 0, NULL, NULL, NULL, 0, 0.0, NULL, 0, form);
+		if (G->curved_text)
+			ps_textpath (NULL, NULL, 0, NULL, NULL, NULL, 0, 0.0, NULL, 0, form);
+		else
+			ps_textclip (NULL, NULL, 0, NULL, NULL, 0.0, NULL, 0, (form | 1));
 		return;
 	}
 	
@@ -3037,6 +3056,38 @@ void GMT_dump_contour (double *xx, double *yy, int nn, double cval, int id, BOOL
 }
 
 void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G)
+{	/* The xx, yy are expected to be projected x/y inches.
+	 * This function just makes sure that the xxx/yyy are continuous and do not have map jumps.
+	 * If there are jumps we find them and call the main GMT_hold_contour_sub for each segment
+	 */
+
+	int k, seg, first, n, *split;
+	double *xs, *ys, *xin, *yin;
+	
+	if ((split = GMT_split_line (xxx, yyy, &nn, G->line_type)) == NULL) {	/* Just one long line */
+		GMT_hold_contour_sub (xxx, yyy, nn, label, ctype, cangle, closed, G);
+		return;
+	}
+	
+	/* Here we had jumps and need to call the _sub function once for each segment */
+	
+	xin = *xxx;
+	yin = *yyy;
+	for (seg = 0, first = 0; seg <= split[0]; seg++) {	/* Number of segments are given by split[0] + 1 */
+		n = split[seg+1] - first;
+		xs = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), GMT_program);
+		ys = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), GMT_program);
+		memcpy ((void *)xs, (void *)&xin[first], (size_t)(n * sizeof (double)));
+		memcpy ((void *)ys, (void *)&yin[first], (size_t)(n * sizeof (double)));
+		GMT_hold_contour_sub (&xs, &ys, n, label, ctype, cangle, closed, G);
+		GMT_free ((void *)xs);
+		GMT_free ((void *)ys);
+		first = n;	/* First point in next segment */
+	}
+	GMT_free ((void *)split);
+}
+
+void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G)
 {	/* The xx, yy are expected to be projected x/y inches */
 	int i, j, start = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
