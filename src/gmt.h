@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.30 2001-12-21 03:50:38 ben Exp $
+ *	$Id: gmt.h,v 1.31 2002-01-04 20:29:48 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -235,7 +235,7 @@ struct GMTDEFAULTS {
 	int anot_font2;			/* Font for upper annotations on time axis  [Helvetica] */
 	int anot_font2_size;		/* Font size for upper annotations on time axis in points [16] */
 	double anot_offset;		/* Distance between annotation and tickmarks [0.075] */
-	double anot2_offset;		/* Distance between upper and lower annotations [0.075] */
+	double anot_offset2;		/* Distance between upper and lower annotations [0.075] */
 	char basemap_axes[5];		/* Which axes to draw and annotate ["WESN"]  */
 	int basemap_frame_rgb[3];	/* Frame color rgb [(0,0,0) = black] */
 	int basemap_type;		/* Fancy (0) or plain (1) [0] */

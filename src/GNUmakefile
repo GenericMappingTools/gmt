@@ -1,6 +1,6 @@
-#-------	$Id: GNUmakefile,v 1.17 2001-12-24 18:20:29 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.18 2002-01-04 20:29:48 pwessel Exp $	--------------------
 #
-#		Makefile for GMT Version 3.5
+#		Makefile for GMT Version 4
 #			GNU make compatible
 #	[GNU make always looks for GNUmakefile before Makefile/makefile]
 #
@@ -14,7 +14,7 @@
 #	Authors:	Paul Wessel, SOEST, University of Hawaii
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
 #
-#	Date:		14-SEP-2001
+#	Date:		04-JAN-2002
 #-------------------------------------------------------------------------------
 #	Default setup
 #-------------------------------------------------------------------------------
@@ -158,6 +158,12 @@ gmtmath.c:
 grdmath.c:
 		(cd ..; sh guru/make_math.sh grd)
 
+gmt_keywords.h:
+		grep -v '^#' gmt_keywords.d | awk '{printf "\"%s\",\n", $$1}' > gmt_keywords.h
+
+gmt_keycases.h:
+		grep -v '^#' gmt_keywords.d | awk '{printf "#define GMTCASE_%s\t%d\n", $$1, $$2}' > gmt_keycases.h
+		
 install:	all
 		if [ ! -d $(bindir) ]; then \
 			mkdir -p $(bindir); \

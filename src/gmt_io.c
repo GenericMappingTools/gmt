@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.33 2001-12-24 18:20:29 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.34 2002-01-04 20:29:48 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -418,8 +418,8 @@ int GMT_ascii_output (FILE *fp, int n, double *ptr)
 
 		if (i == last)					/* This is the last field, must add newline */
 			putc ('\n', fp);
-		else if (gmtdefs.field_delimeter[0])		/* Not last field, and a separator is required */
-			fprintf (fp, "%s", gmtdefs.field_delimeter);
+		else if (gmtdefs.field_delimiter[0])		/* Not last field, and a separator is required */
+			fprintf (fp, "%s", gmtdefs.field_delimiter);
 			
 		wn += e;
 	}
