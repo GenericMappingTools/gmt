@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.31 2004-12-21 20:28:35 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.32 2005-01-05 03:12:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -157,7 +157,7 @@ int	GMT_read_clock (char *s, double *t) {
 	W H F Smith, 20 april 2000
 */
 
-	double	tau, dsec;
+	double	dsec;
 	int	j, k;
 	char	*cm, *cs;
 	
@@ -171,7 +171,7 @@ int	GMT_read_clock (char *s, double *t) {
 	}
 	if ( (sscanf(s, "%d", &k)) != 1) return (-1);
 	if (k < 0 || k > 24) return (-1);
-	tau = GMT_HR2SEC_I * k;
+	*t = GMT_HR2SEC_I * k;		/* t now has hours (in secs) */
 	
 	if (!(cm)) return (0);	/* This allows colon-terminated
 		strings to be treated as OK.  */
@@ -184,12 +184,12 @@ int	GMT_read_clock (char *s, double *t) {
 	}
 	if ( (sscanf(cm, "%d", &k)) != 1) return (-1);
 	if (k < 0 || k > 59) return (-1);
-	tau += GMT_MIN2SEC_I * k;
+	(*t) += GMT_MIN2SEC_I * k;	/* Now add in minutes (in secs) */
 	
 	if (!(cs)) return (0);
 	if ( (sscanf(cs, "%lf", &dsec)) != 1) return (-1);
 	if (dsec < 0.0 || dsec >= 60.0) return (-1);
-	*t = tau + dsec;
+	*t += dsec;			/* Finally add in seconds */
 	return (0);
 }
 

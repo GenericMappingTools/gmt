@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.166 2005-01-01 21:48:25 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.167 2005-01-05 03:12:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1103,12 +1103,22 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			error += i;
 			break;
 		case 'f':	/* Column type specifications */
-			if (GMT_processed_option[15]) {
+			if (GMT_processed_option[15] > 3) {
 				fprintf (stderr, "%s: Error: Option -f given more than once\n", GMT_program);
 				error++;
 				break;
 			}
-			GMT_processed_option[15] = TRUE;
+			switch (item[2]) {
+				case 'i':
+					GMT_processed_option[15]++;
+					break;
+				case 'o':
+					GMT_processed_option[15] += 2;
+					break;
+				default:
+					GMT_processed_option[15] += 3;
+					break;
+			}
 			i = GMT_decode_coltype (&item[2]);
 			if (i) GMT_syntax ('f');
 			error += i;
