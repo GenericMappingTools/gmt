@@ -1,0 +1,31 @@
+	$Id: README.mgd77,v 1.1 2004-08-18 23:19:44 pwessel Exp $
+
+README file for GMT supplemental mgd77 programs
+
+AUTHORS:	Paul Wessel and Michael Chandler
+DATE:		18-AUG-2004
+INSTALL INFO:	The mgd77 directory should install under GMT/src
+
+	These programs are intended for use with the marine geophysical
+data files known as MGD77 files.  These data files are NOT supplied with
+GMT; they are the MGD-77 standard exchange format files provided by the
+National Geophysical Data Center*.  The following is a
+list of the programs and a short description of what they do:
+
+	mgd77list	A data extractor for .mgd77 files
+
+man-files for all the above programs can be found in the manl subdirectory.
+
+The support file mgd77_paths.txt is put in the 
+GMT/share/mgd77 subdirectory directory.
+
+To install these programs, simply type
+
+	make install
+
+Uses must have the environmental variable GMTHOME set which they
+are likely to have if they are using GMT.
+
+You may copy the manl/*.man files to /usr/man/manl/*.l if you wish.
+
+* Available on CD-ROM from NGDC (www.ngdc.noaa.gov).

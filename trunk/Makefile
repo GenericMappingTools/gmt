@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.15 2004-01-22 19:14:23 pwessel Exp $
+#	$Id: Makefile,v 1.16 2004-08-18 23:19:44 pwessel Exp $
 #
 #	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -62,8 +62,8 @@ include src/makegmt.macros	# GMT-specific settings determined by user & install_
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
 
-SUPPL	=	dbase gshhs imgsrc meca mex mgg misc segyprogs spotter x2sys x_system xgrid
-SUPPL_M	=	dbase imgsrc meca mgg misc segyprogs spotter x2sys x_system
+SUPPL	=	dbase gshhs imgsrc meca mex mgd77 mgg misc segyprogs spotter x2sys x_system xgrid
+SUPPL_M	=	dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
 
 all:		gmt suppl
 

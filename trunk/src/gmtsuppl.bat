@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.12 2004-01-13 02:33:04 pwessel Exp $
+REM	$Id: gmtsuppl.bat,v 1.13 2004-08-18 23:19:44 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
@@ -101,7 +101,22 @@ ECHO STEP 5: Make mex
 REM ----------------------------------------------------
 echo Follow Matlab instructions on how to make mex files
 REM ----------------------------------------------------
-ECHO STEP 6: Make mgg
+ECHO STEP 6: Make mgd77
+REM ----------------------------------------------------
+cd mgd77
+IF %CHOICE%=="dynamic" CL %COPT% %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c mgd77.c
+IF %CHOICE%=="dynamic" LINK %LOPT% /out:mgd77.dll /implib:mgd77.lib mgd77.obj %GMTLIB%
+IF %CHOICE%=="static"  CL %COPT% %DLL_NETCDF% /DDLL_EXPORT /c mgd77.c
+IF %CHOICE%=="static"  lib /out:mgd77.lib mgd77.obj
+CL %COPT% mgd77list.c    mgd77.lib %GMTLIB%
+del *.obj
+IF %CHOICE%=="dynamic" move mgd77.dll %BINDIR%
+IF %CHOICE%=="dynamic" move mgd77.exp %LIBDIR%
+move mgd77.lib %LIBDIR%
+move *.exe %BINDIR%
+cd ..
+REM ----------------------------------------------------
+ECHO STEP 7: Make mgg
 REM ----------------------------------------------------
 cd mgg
 IF %CHOICE%=="dynamic" CL %COPT% %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c gmt_mgg.c
@@ -125,7 +140,7 @@ move gmt_mgg.lib %LIBDIR%
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
-ECHO STEP 7: Make misc
+ECHO STEP 8: Make misc
 REM ----------------------------------------------------
 cd misc
 SET DIG="\"COM0:\""
@@ -135,7 +150,7 @@ del *.obj
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
-ECHO STEP 8: Make segyprogs
+ECHO STEP 9: Make segyprogs
 REM ----------------------------------------------------
 cd segyprogs
 CL %COPT% /c segy_io.c
@@ -148,7 +163,7 @@ move segy_io.lib %LIBDIR%
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
-ECHO STEP 9: Make spotter
+ECHO STEP 10: Make spotter
 REM ----------------------------------------------------
 cd spotter
 IF %CHOICE%=="dynamic" CL %COPT% %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c libspotter.c
@@ -166,7 +181,7 @@ move spotter.lib %LIBDIR%
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
-ECHO STEP 10: Make x2sys
+ECHO STEP 11: Make x2sys
 REM ----------------------------------------------------
 cd x2sys
 IF %CHOICE%=="dynamic" CL %COPT% /I..\mgg %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c x2sys.c
@@ -182,7 +197,7 @@ move x2sys.lib %LIBDIR%
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
-ECHO STEP 11: Make x_system
+ECHO STEP 12: Make x_system
 REM ----------------------------------------------------
 cd x_system
 SET COPT2=%COPT% /I..\mgg

@@ -1,8 +1,8 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.13 2004-01-07 20:44:53 pwessel Exp $
+#	 $Id: webman.sh,v 1.14 2004-08-18 23:19:44 pwessel Exp $
 #
-#	webman.csh - Automatic generation of the GMT web manual pages
+#	webman.sh - Automatic generation of the GMT web manual pages
 #
 #	Author:	Paul Wessel
 #	Date:	17-SEP-1999
@@ -17,8 +17,10 @@
 #	On HP (raptor) we must do an extra sed substitution since some
 #	blank lines comes through as lines with ?9 at the end or line
 #	(? is some unknown character).  This sed line is added to the
-#	webman1.sed file
+#	$$.w1.sed file
 #-----------------------------------------------------------------------------
+
+trap 'rm -f $$.*; exit 1' 1 2 3 15
 
 if [ $#argv = 1 ]; then	# If -s is given we run silently with defaults
 	gush=0
@@ -30,29 +32,29 @@ mkdir -p www/gmt/doc/html
 
 # First make a list of all the GMT programs, including pslib (since it has a man page) and the GMT script
 
-grep -v '^#' guru/GMT_programs.lis > programs.lis
-echo GMT >> programs.lis
-echo pslib >> programs.lis
+grep -v '^#' guru/GMT_programs.lis > $$.programs.lis
+echo GMT >> $$.programs.lis
+echo pslib >> $$.programs.lis
 
 # Now make sed script (actually 3, since sed seems to have trouble with long sed scripts...)
 
-awk '{printf "s%%>%s<%%><A HREF=%c%s.html%c>%s</A><%%g\n", $1, 34, $1, 34, $1}' programs.lis > webman1.sed
-awk '{printf "s%%%s,%%<A HREF=%c%s.html%c>%s</A>,%%g\n", $1, 34, $1, 34, $1}' programs.lis > webman2.sed
-awk '{printf "s%%%s$%%<A HREF=%c%s.html%c>%s</A>%%g\n", $1, 34, $1, 34, $1}' programs.lis > webman3.sed
+awk '{printf "s%%>%s<%%><A HREF=%c%s.html%c>%s</A><%%g\n", $1, 34, $1, 34, $1}' $$.programs.lis > $$.w1.sed
+awk '{printf "s%%%s,%%<A HREF=%c%s.html%c>%s</A>,%%g\n", $1, 34, $1, 34, $1}' $$.programs.lis > $$.w2.sed
+awk '{printf "s%%%s$%%<A HREF=%c%s.html%c>%s</A>%%g\n", $1, 34, $1, 34, $1}' $$.programs.lis > $$.w3.sed
 
 # Fix for man on HP that gives 9s in output
-echo 's/^.9$//g' >> webman1.sed
+echo 's/^.9$//g' >> $$.w1.sed
 
 # Ok, go to source directory and make html files
 # the -pgsize 5000 is needed since nroff does not do pages anymore?
-for prog in `cat programs.lis`; do
+for prog in `cat $$.programs.lis`; do
 	if [ $gush = 1 ]; then
 		echo "Making ${prog}.html"
 	fi
-	grep -v ${prog} webman1.sed > this1.sed
-	grep -v ${prog} webman2.sed > this2.sed
-	grep -v ${prog} webman3.sed > this3.sed
-	nroff -man man/manl/${prog}.l | $MAN2HTML -topm 4 -pgsize 5000 | sed -f this1.sed | sed -f this2.sed | sed -f this3.sed > www/gmt/doc/html/${prog}.html
+	grep -v ${prog} $$.w1.sed > $$.t1.sed
+	grep -v ${prog} $$.w2.sed > $$.t2.sed
+	grep -v ${prog} $$.w3.sed > $$.t3.sed
+	nroff -man man/manl/${prog}.l | $MAN2HTML -topm 4 -pgsize 5000 | sed -f $$.t1.sed | sed -f $$.t2.sed | sed -f $$.t3.sed > www/gmt/doc/html/${prog}.html
 	echo '<BODY bgcolor="#ffffff">' >> www/gmt/doc/html/${prog}.html
 done
 
@@ -64,13 +66,13 @@ done
 
 MY_SUPPL=${MY_GMT_SUPPL:-""}
 cd src
-for package in dbase imgsrc meca mgg misc segyprogs spotter x2sys x_system $MY_SUPPL; do
+for package in dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system $MY_SUPPL; do
 	for f in $package/*.man; do
 		prog=`basename $f .man`
 		if [ $gush = 1 ]; then
 			echo "Making ${prog}.html"
 		fi
-		nroff -man $f | $MAN2HTML -topm 4 | sed -f ../webman1.sed | sed -f ../webman2.sed | sed -f ../webman3.sed > $package/${prog}.html
+		nroff -man $f | $MAN2HTML -topm 4 | sed -f ../$$.w1.sed | sed -f ../$$.w2.sed | sed -f ../$$.w3.sed > $package/${prog}.html
 		echo '<BODY bgcolor="#ffffff">' >> $package/${prog}.html
 	done
 done
@@ -198,7 +200,7 @@ For a thematic listing, click <A HREF="#anchor_theme">here</A>.
 <OL>
 EOF
 # Exclude pslib since it is not a program
-grep -v pslib programs.lis | awk '{printf "<LI><A HREF=%cdoc/html/%s.html%c> %s</A>\n", 34, $1, 34, $1}' >> www/gmt/gmt_man.html
+grep -v pslib $$.programs.lis | awk '{printf "<LI><A HREF=%cdoc/html/%s.html%c> %s</A>\n", 34, $1, 34, $1}' >> www/gmt/gmt_man.html
 cat << EOF >> www/gmt/gmt_man.html
 </OL>
 <HR>
@@ -243,6 +245,10 @@ packages actually installed on your system will be accessible.
 <LI><A HREF="doc/html/pspolar.html"> pspolar</A> Plot polarities on the lower half-sphere
 <LI><A HREF="doc/html/psvelo.html"> psvelo</A> Plot velocity ellipses, strain crosses, or strain wedges on maps
 </UL>
+<HR>
+<H3>The MGD77 package</H3>
+<UL>
+<LI><A HREF="doc/html/mgd77list.html"> gmtlist</A> Extract data from .mgd77 files
 <HR>
 <H3>The MGG package</H3>
 <UL>
@@ -314,4 +320,4 @@ EOF
 
 # Clean up
 
-rm -f webman?.sed this?.sed programs.lis lis
+rm -f $$.*

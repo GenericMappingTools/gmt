@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.44 2004-08-05 21:29:32 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.45 2004-08-18 23:19:44 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -479,6 +479,7 @@ GMT_suppl_gshhs=d
 GMT_suppl_imgsrc=d
 GMT_suppl_meca=d
 GMT_suppl_mex=d
+GMT_suppl_mgd77=d
 GMT_suppl_mgg=d
 GMT_suppl_misc=d
 GMT_suppl_segyprogs=d
@@ -499,7 +500,8 @@ gshhs:     Global Self-consistent Hierarchical High-resolution Shoreline extract
 imgsrc:    Extracting grids from global altimeter files (Sandwell/Smith)
 meca:      Plotting special symbols in seismology and geodesy
 mex:       Matlab interface for reading/writing GMT grdfiles (REQUIRES MATLAB)
-mgg:       Programs for making, managing, and plotting MGD77 & .gmt data
+mgd77:     Programs for handling MGD77 data files
+mgg:       Programs for making, managing, and plotting .gmt files
 misc:      Make posters on laserwriters and create bit-patterns
 segyprogs: Plot SEGY seismic data files
 spotter:   Plate tectonic backtracking and hotspotting
@@ -521,6 +523,7 @@ EOF
 		GMT_suppl_imgsrc=$y_or_n
 		GMT_suppl_meca=$y_or_n
 		GMT_suppl_mex=$y_or_n
+		GMT_suppl_mgd77=$y_or_n
 		GMT_suppl_mgg=$y_or_n
 		GMT_suppl_misc=$y_or_n
 		GMT_suppl_segyprogs=$y_or_n
@@ -534,6 +537,7 @@ EOF
 		GMT_suppl_imgsrc=`get_def_answer "Install the imgsrc supplemental package? (y/n)?" "y"`
 		GMT_suppl_meca=`get_def_answer "Install the meca supplemental package? (y/n)?" "y"`
 		GMT_suppl_mex=`get_def_answer "Install the mex supplemental package? (y/n)?" "y"`
+		GMT_suppl_mgd77=`get_def_answer "Install the mgd77 supplemental package? (y/n)?" "y"`
 		GMT_suppl_mgg=`get_def_answer "Install the mgg supplemental package? (y/n)?" "y"`
 		GMT_suppl_misc=`get_def_answer "Install the misc supplemental package? (y/n)?" "y"`
 		GMT_suppl_segyprogs=`get_def_answer "Install the segyprogs supplemental package? (y/n)?" "y"`
@@ -612,6 +616,7 @@ GMT_suppl_imgsrc=$GMT_suppl_imgsrc
 GMT_suppl_gshhs=$GMT_suppl_gshhs
 GMT_suppl_meca=$GMT_suppl_meca
 GMT_suppl_mex=$GMT_suppl_mex
+GMT_suppl_mgd77=$GMT_suppl_mgd77
 GMT_suppl_mgg=$GMT_suppl_mgg
 GMT_suppl_misc=$GMT_suppl_misc
 GMT_suppl_segyprogs=$GMT_suppl_segyprogs
@@ -905,7 +910,7 @@ elif [ $GMT_expand = "gzip" ]; then
 	suffix="gz"
 	expand="gzip -dc"
 	echo "+++ Will expand *.gz files make with gzip +++" >&2
-	echo "    [Consider installing bzip2 (http://sourceware.cygnus.com/bzip2/index.html)" >&2
+	echo "    [Consider installing bzip2 (http://sources.redhat.com/bzip2)" >&2
 	echo "     since bzip2 files are considerably smaller\!]" >&2
 fi
 
@@ -1299,6 +1304,7 @@ if [ -d src/dbase ]; then
 	make_suppl $GMT_suppl_imgsrc imgsrc
 	make_suppl $GMT_suppl_meca meca
 	make_suppl $GMT_suppl_mex mex
+	make_suppl $GMT_suppl_mgd77 mgd77
 	make_suppl $GMT_suppl_mgg mgg
 	make_suppl $GMT_suppl_misc misc
 	make_suppl $GMT_suppl_segyprogs segyprogs
