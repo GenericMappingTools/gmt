@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.14 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: pslib.h,v 1.15 2002-02-23 03:39:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -108,6 +108,7 @@ EXTERN_MSC void ps_polygon(double *x, double *y, int n, int rgb[], int outline);
 EXTERN_MSC void ps_rect(double x1, double y1, double x2, double y2, int rgb[], int outline);
 EXTERN_MSC void ps_patch(double *x, double *y, int np, int rgb[], int outline);
 EXTERN_MSC void ps_rotatetrans(double x, double y, double angle);
+EXTERN_MSC void ps_segment (double x0, double y0, double x1, double y1);
 EXTERN_MSC void ps_setdash(char *pattern, int offset);
 EXTERN_MSC void ps_setfont(int font_no);
 EXTERN_MSC void ps_setformat(int n_decimals);

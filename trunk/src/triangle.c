@@ -2682,8 +2682,7 @@ char **argv;
   int increment;
   int meshnumber;
 #endif /* not TRILIBRARY */
-  int i, j, k;
-  char workstring[FILENAMESIZE];
+  int i, j;
 
   poly = refine = quality = vararea = fixedarea = regionattrib = convex = 0;
   firstnumber = 1;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.64 2002-02-14 23:53:58 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.65 2002-02-23 03:39:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -115,7 +115,6 @@ double GMT_get_annot_offset (BOOLEAN *flip);
 int GMT_flip_justify (int justify);
 BOOLEAN GMT_annot_too_crowded (double x, double y, int side);
 BOOLEAN GMT_is_fancy_boundary (void);
-void GMT_xy_axis (double x0, double y0, double length, double val0, double val1, struct PLOT_AXIS *A, int below, int annotate);
 void GMT_coordinate_to_x (double coord, double *x);
 void GMT_coordinate_to_y (double coord, double *y);
 int GMT_time_array (double min, double max, struct PLOT_AXIS_ITEM *T, double **array);
@@ -308,7 +307,6 @@ unsigned char GMT_glyph[2520] = {
 void GMT_linear_map_boundary (double w, double e, double s, double n)
 {
 	double x1, x2, y1, y2, x_length, y_length, del;
-	char cmd[256];
 	
 	GMT_geo_to_xy (w, s, &x1, &y1);
 	GMT_geo_to_xy (e, n, &x2, &y2);
@@ -496,7 +494,7 @@ void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct PLOT_
 			GMT_format_calendar (CNULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'c':	/* 2-digit seconds */
-			(P->date.compact) ? sprintf (string, "%d\0", calendar.sec) : sprintf (string, "%2.2d\0", calendar.sec);
+			(P->date.compact) ? sprintf (string, "%d\0", (int)calendar.sec) : sprintf (string, "%2.2d\0", (int)calendar.sec);
 			break;
 		default:
 			fprintf (stderr, "ERROR: wrong unit passed to GMT_get_time_label\n");
@@ -535,7 +533,7 @@ void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *
 			GMT_get_time_label (string, P, T, coord);
 			break;
 		default:
-			fprintf (stderr, "GMT ERROR: Wrong type passed to GMT_get_coordinate_label!\n", frame_info.axis[T->parent].type);
+			fprintf (stderr, "%s: GMT ERROR: Wrong type (%d) passed to GMT_get_coordinate_label!\n", GMT_program, frame_info.axis[T->parent].type);
 			exit (EXIT_FAILURE);
 			break;
 	}
@@ -560,8 +558,6 @@ void GMT_coordinate_to_y (double coord, double *y)
 void GMT_xy_axis (double x0, double y0, double length, double val0, double val1, struct PLOT_AXIS *A, int below, int annotate)
 {
 	int k, i, nx, np = 0;		/* Misc. variables */
-	int justify[2];			/* Text justification of annotations */
-	int label_justify;		/* Text justification of axis label */
 	int annot_pos;			/* Either 0 for upper annotation or 1 for lower annotation */
 	int primary = 0;		/* Axis item number of annotation with largest interval/unit */
 	int secondary = 0;		/* Axis item number of annotation with smallest interval/unit */
@@ -577,9 +573,8 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 	struct PLOT_AXIS_ITEM *T;	/* Pointer to the current axis item */
 	char string[GMT_CALSTRING_LENGTH];	/* Annotation string */
 	char format[32];		/* format used for non-time annotations */
-	char *wh[2] = {"height", "width"}, xy[2] = {'y', 'x'};
+	char xy[2] = {'y', 'x'};
 	char cmd[BUFSIZ];
-	int left_side;
 	int rot[2], font;
 	/* Initialize parameters for this axis */
 	
@@ -2685,7 +2680,7 @@ BOOLEAN GMT_is_fancy_boundary (void)
 			return (FALSE);
 			break;
 		default:
-			fprintf (stderr, "%s: Error in GMT_is_fancy_boundary - notify developers\n");
+			fprintf (stderr, "%s: Error in GMT_is_fancy_boundary - notify developers\n", GMT_program);
 			return (FALSE);
 	}
 }
@@ -2741,7 +2736,6 @@ void GMT_basemap_3D (int mode)
 	/* Mode means: 1 = background axis, 2 = foreground axis, 3 = all */
 	BOOLEAN go[4], back;
 	int i;
-	double x_annot, x_tick, y_annot, y_tick;
 	
 	back = (mode % 2);
 	for (i = 0; i < 4; i++) go[i] = (mode == 3) ? TRUE : ((back) ? z_project.draw[i] : !z_project.draw[i]);
@@ -2810,7 +2804,7 @@ void GMT_vertical_axis (int mode)
 
 void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 {
-	int i, j, k, id, justify, n, test;
+	int i, j, k, id, justify, n;
 	
 	double annot_off, label_off, *knots, sign, dy, tmp, xyz[3][2], len, x0, x1, y0, y1;
 	double pp[3], w[3], xp, yp, del_y, val_xyz[3], phi, val0, val1;
@@ -3314,7 +3308,7 @@ void GMT_vector3d (double x0, double y0, double x1, double y1, double z0, double
 {
 	if (project_info.three_D) {	/* Fill in local xx, yy cordinates for vector starting at (0,0) aligned horizontally */
 		int i, n;
-		double xx[10], yy[10], dx, dy, angle, length, s, c, L, xp, yp;
+		double xx[10], yy[10], angle, length, s, c, L, xp, yp;
 	
 		angle = atan2 (y1 - y0, x1 - x0);
 		length = hypot (y1 - y0, x1 - x0);
@@ -4098,10 +4092,10 @@ BOOLEAN GMT_fill_is_image (char *fill) {
 void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struct CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, BOOLEAN outline) {
 	int n = 0, n_alloc = GMT_SMALL_CHUNK, na, i;
 	BOOLEAN flush = FALSE;
-	double x, y, da, arc, sr, sa, ca, *xx, *yy;
+	double x, y, da, sr, sa, ca, *xx, *yy;
 	char cmd[64];
 	struct CUSTOM_SYMBOL_ITEM *s;
-	struct GMT_FILL *f, *this_f;
+	struct GMT_FILL *f;
 	struct GMT_PEN *p;
 	
 	xx = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.7 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.8 2002-02-23 03:39:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -49,6 +49,7 @@
 #include "gmt.h"
 
 void GMT_grd_do_scaling (float *grid, int nm, double scale, double offset);
+int check_nc_status (int status);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
 
@@ -318,7 +319,7 @@ int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s
 		if (*w < header->x_min || *e > header->x_max) geo = TRUE;	/* Dealing with periodic grid */
 
 		if (*s < header->y_min || *n > header->y_max) {	/* Calling program goofed... */
-			fprintf (stderr, "GMT ERROR: Trying to read beyond grid domain - abort!!\n", GMT_program);
+			fprintf (stderr, "%s: GMT ERROR: Trying to read beyond grid domain - abort!!\n", GMT_program);
 			exit (EXIT_FAILURE);
 		}
 		one_or_zero = (header->node_offset) ? 0 : 1;
@@ -428,7 +429,6 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	int r_w;
 	int cdf_mode[2] = { NC_NOWRITE, NC_WRITE};
 	char *bin_mode[2] = { "rb", "rb+"};
-	size_t n_byte;
 	 
 	if (mode == 'r') {	/* Open file for reading */
 		r_w = 0;
