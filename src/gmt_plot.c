@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.66 2002-03-18 16:23:40 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.67 2002-03-19 00:25:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -306,7 +306,7 @@ unsigned char GMT_glyph[2520] = {
 
 void GMT_linear_map_boundary (double w, double e, double s, double n)
 {
-	double x1, x2, y1, y2, x_length, y_length, del;
+	double x1, x2, y1, y2, x_length, y_length;
 	
 	GMT_geo_to_xy (w, s, &x1, &y1);
 	GMT_geo_to_xy (e, n, &x2, &y2);
@@ -322,7 +322,7 @@ void GMT_linear_map_boundary (double w, double e, double s, double n)
 	
 	if (!frame_info.header[0]) return;	/* No header today */
 	
-	if (frame_info.side[2] == 0) ps_set_length ("PSL_H_y", del);	/* PSL_H was not set by GMT_xy_axis */
+	if (frame_info.side[2] == 0) ps_set_length ("PSL_H_y", 0.0);	/* PSL_H was not set by GMT_xy_axis */
 	ps_set_length ("PSL_x", 0.5 * x_length);
 	ps_set_length ("PSL_y", y_length);
 	ps_set_height ("PSL_HF", gmtdefs.header_font_size);
@@ -2484,13 +2484,18 @@ void GMT_map_annotate (double w, double e, double s, double n)
 		}
 		else if (!project_info.three_D) {
 			ps_setfont (gmtdefs.header_font);
-			if (MAPPING || frame_info.side[2] == 0) {
+			if (MAPPING || frame_info.side[2] == 2) {
 				ps_set_length ("PSL_TL", gmtdefs.tick_length);
 				ps_set_length ("PSL_AO0", gmtdefs.annot_offset);
 				ps_set_length ("PSL_HO", gmtdefs.header_offset);
 				ps_textdim ("PSL_dimx", "PSL_AF0", gmtdefs.annot_font_size, gmtdefs.annot_font, "100\\312", 0);			/* Get and set typical annotation dimensions in PostScript */
-				ps_command ("/PSL_H_y PSL_TL PSL_AO0 add PSL_AF0 add PSL_HO add def");						/* PSL_H was not set by linear axis */
 			}
+			else {
+				ps_set_length ("PSL_TL", gmtdefs.tick_length);
+				ps_set_length ("PSL_AO0", 0.0);
+				ps_set_length ("PSL_HO", gmtdefs.header_offset);
+			}
+			ps_command ("/PSL_H_y PSL_TL PSL_AO0 add PSL_AF0 add PSL_HO add def");						/* PSL_H was not set by linear axis */
 			ps_set_length ("PSL_x", project_info.xmax * 0.5);
 			ps_set_length ("PSL_y", project_info.ymax);
 			ps_textdim ("PSL_dimx", "PSL_dimy", gmtdefs.header_font_size, gmtdefs.header_font, frame_info.header, 0);			/* Get and set string dimensions in PostScript */
