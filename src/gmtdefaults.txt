@@ -266,7 +266,7 @@ the ellipsoid name, year, major-axis (in m), minor-axis (in m), and flattening (
 the first record, where the fields must be separated by white-space (not commas).  This way a
 custom ellipsoid (e.g., those used for other planets) may be used.
 .TP
-.B FIELD_DELIMETER
+.B FIELD_DELIMITER
 This setting determines what character will separate ascii output data columns written by \fBGMT\fP.  Choose
 from tab, space, comma, and none [tab].
 .TP
