@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.39 2003-04-20 07:35:41 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.40 2003-11-07 17:38:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5614,6 +5614,39 @@ double GMT_great_circle_dist(double lon1, double lat1, double lon2, double lat2)
 	if (cosc<-1.0) c=M_PI; else if (cosc>1) c=0.0; else c=d_acos(cosc);
 
 	return( c * R2D);
+}
+
+int GMT_great_circle_intersection (double A[], double B[], double C[], double X[], double *CX_dist)
+{
+	/* A, B, C are 3-D Cartesian unit vectors, i.e., points on the sphere.
+	 * Let points A and B define a great circle, and consider a
+	 * third point C.  A second great cirle goes through C and
+	 * is orthogonal to the first great circle.  Their intersection
+	 * X is the point on (A,B) closest to C.  We must test if X is
+	 * between A,B or outside.
+	 */
+
+	double P[3], E[3], cos_AB, cos_test, cos_dist;
+	
+	GMT_cross3v (A, B, P);			/* Get pole position of plane through A and B (and origin O) */
+	GMT_normalize3v (P);			/* Make sure P has unit length */
+	GMT_cross3v (C, P, E);			/* Get pole E to plane through C (and origin) but normal to A,B (hence going through P) */
+	GMT_normalize3v (E);			/* Make sure X has unit length */
+	GMT_cross3v (E, P, X);			/* Intersection point between the two planes */
+	GMT_normalize3v (X);			/* Make sure X has unit length */
+			
+	/* Must first check if X is along the (A,B) segment and not on its extension */
+			
+	cos_AB = fabs (GMT_dot3v (A, B));	/* Cos of spherical distance between A,B */
+	cos_test = fabs (GMT_dot3v (A, X));	/* Cos of spherical distance between A and X */
+	if (cos_test < cos_AB) return 1;	/* X must be on the A-B extension if its distance to A exceeds the A-B length */
+	cos_test = fabs (GMT_dot3v (B, X));	/* Cos of spherical distance between B and X */
+	if (cos_test < cos_AB) return 1;	/* X must be on the A-B extension if its distance to B exceeds the A-B length */
+			
+	/* X is between A and B.  Now calculate distance between C and X */
+	
+	*CX_dist = fabs (GMT_dot3v (C, X));	/* Cos of spherical distance between C and X */
+	return (0);				/* Return zero if intersection is between A and B */
 }
 
 /* The *_outside routines returns the status of the current point.  Status is
