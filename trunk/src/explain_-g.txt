@@ -1,8 +1,1 @@
-Specify the shade (0\-255) or color (r/g/b), or
-\fB\-Gp\fP\fIdpi/pattern\fP, where \fIpattern\fP gives the number of the
-built-in pattern (1-90) OR the name of a Sun 1-, 8-, or 24-bit raster file.
-\fIdpi\fP sets the resolution of the image.  For 1-bit rasters: use \fB\-GP\fP
-for inverse video, or append \fB:F\fP\fIrgb\fP[\fBB\fP[\fIrgb\fP]] to
-specify fore- and background colors (use \fIrgb\fP = - for transparency).
-See \fBGMT\fP Cookbook & Technical Reference Appendix E for information
-on individual patterns. 
+Specify the shade (0\-255) or color (r/g/b, each in 0\-255).
