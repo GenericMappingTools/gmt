@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.13 2004-06-01 19:49:34 pwessel Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.14 2004-07-14 18:41:29 pwessel Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_progs tar/zip files.  See GMT_progs_files_bin.lis for binary files
@@ -182,6 +182,9 @@ share/pslib/ISOLatin1+.ps
 share/pslib/Standard.ps
 share/pslib/Standard+.ps
 share/pslib/PS_font_info.d
+share/time/br.d
+share/time/cn1.d
+share/time/cn2.d
 share/time/de.d
 share/time/dk.d
 share/time/eh.d
@@ -190,10 +193,14 @@ share/time/fi.d
 share/time/fr.d
 share/time/gr.d
 share/time/hu.d
+share/time/il.d
 share/time/it.d
+share/time/jp.d
 share/time/nl.d
 share/time/no.d
+share/time/pl.d
 share/time/pt.d
+share/time/ru.d
 share/time/se.d
 share/time/to.d
 share/time/tr.d
