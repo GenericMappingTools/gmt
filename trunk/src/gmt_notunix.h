@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.3 2001-03-01 22:08:26 pwessel Exp $
+ *	$Id: gmt_notunix.h,v 1.4 2001-08-20 20:01:37 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -85,6 +85,7 @@
 #define HAVE_YN 1
 #define HAVE_ERF 0
 #define HAVE_ERFC 0
+#define HAVE_STRTOD 1
 #define HAVE_SINCOS 0
 #define HAVE_ALPHASINCOS 0
 #define WORDS_BIGENDIAN 0
@@ -208,6 +209,7 @@ EXTERN_MSC void GMT_setmode (int i_or_o);
 #define HAVE_YN 1
 #define HAVE_ERF 1
 #define HAVE_ERFC 1
+#define HAVE_STRTOD 1
 #define HAVE_SINCOS 0
 #define HAVE_ALPHASINCOS 0
 #define WORDS_BIGENDIAN 0

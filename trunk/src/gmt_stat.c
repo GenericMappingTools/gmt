@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.4 2001-08-17 19:32:58 wsmith Exp $
+ *	$Id: gmt_stat.c,v 1.5 2001-08-20 20:01:37 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1107,6 +1107,12 @@ double GMT_erfc (double y)
 		res = 0.0;
 
 	return (res);
+}
+#endif
+
+#if HAVE_STRTOD == 0
+double GMT_strtod (const char *p, char **e) {
+	fprintf (stderr, "GMT_strtod not implemented yet!\n");
 }
 #endif
 
