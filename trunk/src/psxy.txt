@@ -126,6 +126,13 @@ the first symbol from the beginning of the front by that amount [Default is 0].
 .B \-Si
 \fBi\fPnverted triangle.  \fIsize\fP is diameter of circumscribing circle.
 .TP
+.B \-Sk
+\fBk\fPustom symbol.  Append <name>/\fIsize\fP, and we will look for a definition file called
+<name>.def in (1) the current directory or (2) in $GMTHOME/share/custom.  The symbol as defined
+in that file is of size 1.0 by default; the appended \fIsize\fP will scale symbol accordingly.
+Users may add their own custom *.def files using the rules in the GMT Reference and Cookbook, section
+X.X.
+.TP
 .B \-Sl
 \fBl\fPetter or text string (less than 64 characters).  Give size, and append /\fIstring\fP after the size.  Note that
 the size is only approximate; no individual scaling
