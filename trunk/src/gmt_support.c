@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.113 2004-06-04 20:47:22 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.114 2004-06-04 23:48:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2263,7 +2263,7 @@ void GMT_contlabel_clippath (struct GMT_CONTOUR *G, int mode)
 	if (mode == 1) {	/* Turn ON clipping */
 		if (G->curved_text) {		/* Do it via the labeling PSL function */
 			GMT_contlabel_plotlabels (G, 1);
-			if (nseg == 1) G->box |= 32;	/* Special message to just repeate the labelline call */
+			if (nseg == 1) G->box |= 8;	/* Special message to just repeate the labelline call */
 		}
 		else {				/* Same PS memory by doing it this way instead via ps_textclip */
 			if (G->number_placement && G->n_cont == 1)		/* Special 1-label justification check */
@@ -2299,7 +2299,7 @@ void GMT_contlabel_clippath (struct GMT_CONTOUR *G, int mode)
 	}
 	else {	/* Turn OFF Clipping */
 		ps_comment ("Turn label clipping off:");
-		ps_textclip (NULL, NULL, 0, NULL, NULL, 0.0, NULL, 0, -1);	/* This turns clipping OFF if it was ON in the first place */
+		ps_textclip (NULL, NULL, 0, NULL, NULL, 0.0, NULL, 0, 2);	/* This turns clipping OFF if it was ON in the first place */
 	}
 }
 		
@@ -2337,9 +2337,9 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode)
 	char **txt;
 	struct GMT_CONTOUR_LINE *C;
 
-	if (G->box & 32) {	/* Repeat call for Transparent text box (already set by clip) */
-		form = 32 + G->curved_text + 4;
-		if (G->box & 1) form |= 512;		/* Transparent box with outline */
+	if (G->box & 8) {	/* Repeat call for Transparent text box (already set by clip) */
+		form = 8;
+		if (G->box & 1) form |= 256;		/* Transparent box with outline */
 		ps_textpath (NULL, NULL, 0, NULL, NULL, NULL, 0, 0.0, NULL, 0, form);
 		return;
 	}
@@ -2383,11 +2383,11 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode)
 				node[k] = C->L[k].node;
 			}
 			
-			form = 8 * mode + G->curved_text + 4;	/* 8 means clip label and 4 means do not draw line */
-			if (i == first_i) form |= 64;		/* First of possibly several calls to ps_textpath */
-			if (i == last_i)  form |= 128;		/* Final call to ps_textpath */
-			if (!G->transparent) form |= 256;	/* Want the box filled */
-			if (G->box & 1) form |= 512;		/* Want box outline */
+			form = mode;		/* 1 means clip labelboxes, 0 means place text */
+			if (i == first_i) form |= 32;		/* First of possibly several calls to ps_textpath */
+			if (i == last_i)  form |= 64;		/* Final call to ps_textpath */
+			if (!G->transparent) form |= 128;	/* Want the box filled */
+			if (G->box & 1) form |= 256;		/* Want box outline */
 			GMT_textpath_init (&C->pen, G->rgb, &G->pen, C->font_rgb);
 			ps_textpath (C->x, C->y, C->n, node, angle, txt, C->n_labels, G->label_font_size, G->clearance, just, form);
 			GMT_free ((void *)angle);
@@ -2398,8 +2398,8 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode)
 	else {	/* 2-D Straight transparent or opaque text labels: repeat call to ps_textclip */
 		form = 1;
 		if (G->box & 4) form |= 16;		/* Want round box shape */
-		if (!G->transparent) form |= 256;	/* Want the box filled */
-		if (G->box & 1) form |= 512;		/* Want box outline */
+		if (!G->transparent) form |= 128;	/* Want the box filled */
+		if (G->box & 1) form |= 256;		/* Want box outline */
 
 		if (mode == 0) {	/* Opaque so ps_textclip is called for 1st time here */
 			/* Allocate temp space for everything that must be passed to ps_textclip */
