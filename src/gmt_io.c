@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.59 2004-04-01 17:05:08 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.60 2004-04-02 01:00:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -284,9 +284,8 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 		}
 #endif
 			
-		for (i = len - 1; i >= 0 && strchr (" \t,\n", (int)line[i]); i--);
-		if (line[i] == '\r') i--;	/* DOS CR/LF, replace with LF only */
-		line[++i] = '\n';	line[++i] = '\0';
+		for (i = len - 1; i >= 0 && strchr (" \t,\r\n", (int)line[i]); i--);
+		line[++i] = '\n';	line[++i] = '\0';	/* Now have clean C string with \n\0 at end */
  
 		bad_record = FALSE;
 		strcpy (GMT_io.current_record, line);
@@ -792,9 +791,11 @@ void GMT_check_z_io (struct GMT_Z_IO *r, float *a)
  
 int GMT_a_read (FILE *fp, double *d)
 {
+	int i;
 	char line[64];
 	if (fgets (line, 64, fp)) {	/* Read was successful */
-		line[strlen(line)-1] = '\0';	/* Chop off the '\n' at end of line */
+		for (i = strlen(line) - 1; i >= 0 && strchr (" \t,\r\n", (int)line[i]); i--);	/* Take out trailing whitespace */
+		line[++i] = '\0';
 		GMT_scanf (line, GMT_io.in_col_type[2], d);	/* Convert whatever it is to double */
 		return (1);
 	}
