@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.4 2004-01-02 22:45:13 pwessel Exp $
+ *	$Id: gmt_vector.c,v 1.5 2004-05-27 04:24:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -572,7 +572,7 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, BOOLEAN greenwich, d
 		GMT_geo_to_cart (&lat[i],&lon[i], b, TRUE);
 		
 		if ((theta = d_acos (GMT_dot3v (a, b))) == M_PI) {	/* trouble, no unique great circle */
-			fprintf (stderr, "GMT Warning: Two points in input list are antipodal!\n");
+			if (gmtdefs.verbose) fprintf (stderr, "%s: GMT Warning: Two points in input list are antipodal - no resampling taken place!\n", GMT_program);
 		}
 		else if ((n_insert = (int)floor (theta * R2D * i_step))) {	/* Must insert n_insert points */
 			fraction = step * D2R / theta;
