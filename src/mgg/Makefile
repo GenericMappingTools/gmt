@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.3 2001-03-09 18:32:11 pwessel Exp $
+#	$Id: Makefile,v 1.4 2001-04-11 19:58:09 pwessel Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -21,7 +21,7 @@
 #-------------------------------------------------------------------------------
 include ../makegmt.macros
 
-CFLAGS	= $(CC_OPT) $(WIN32) -I.. -I$(NETCDF)/include
+CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf
 
 MGG_H	= gmt_mgg.h
@@ -47,11 +47,26 @@ install:	all
 		for i in $(MGG); do \
 			$(INSTALL) $$i$(EXE) $(bindir); \
 		done
+		if [ ! -d $(libdir) ]; then \
+			mkdir -p $(libdir); \
+		fi
+		if [ ! $(libdir) = $(srcdir) ]; then \
+			$(INSTALL) -m 444 libgmt_mgg.a $(libdir); \
+			if [ -f libgmt_mgg.$(SL) ]; then \
+				$(INSTALL) -m 444 libgmt_mgg.$(SL) $(libdir); \
+			fi; \
+		fi
 
 uninstall:
 		for i in $(MGG); do \
 			\rm -f $(bindir)/$$i$(EXE); \
 		done
+		if [ ! $(libdir) = $(srcdir) ]; then \
+			\rm -f $(libdir)/libgmt_mgg.a; \
+			if [ -f libgmt_mgg.$(SL) ]; then \
+				\rm -f $(libdir)/libgmt_mgg.$(SL); \
+			fi; \
+		fi
 
 clean:
 		rm -f *.o
@@ -77,7 +92,7 @@ gmt_mgg.o:	$(MGG_H)
 #-------------------------------------------------------------------------------
 
 $(MGG):		libgmt_mgg.a $(MGG_O)
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lgmt_mgg -L.. -lpsl -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lgmt_mgg -L.. -L$(libdir) -lpsl -lgmt $(CDF) $(LIBS) -o $@
 
 .c.o:
 		$(CC) -c $(CFLAGS) $<

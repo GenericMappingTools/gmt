@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.2 2001-03-01 22:08:26 pwessel Exp $
+ *	$Id: gmt_cdf.c,v 1.3 2001-04-11 19:58:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -150,13 +150,13 @@ int GMT_cdf_write_grd_info (char *file, struct GRD_HEADER *header)
 	
 	strcpy (text, header->command);
 	strcpy (&text[GRD_COMMAND_LEN], header->remark);
-	check_nc_status (nc_put_att_text (cdfid, x_range_id, "units", strlen(header->x_units)+1, header->x_units));
-        check_nc_status (nc_put_att_text (cdfid, y_range_id, "units", strlen(header->y_units)+1, header->y_units));
-        check_nc_status (nc_put_att_text (cdfid, z_range_id, "units", strlen(header->z_units)+1, header->z_units));
+	check_nc_status (nc_put_att_text (cdfid, x_range_id, "units", GRD_UNIT_LEN, header->x_units));
+        check_nc_status (nc_put_att_text (cdfid, y_range_id, "units", GRD_UNIT_LEN, header->y_units));
+        check_nc_status (nc_put_att_text (cdfid, z_range_id, "units", GRD_UNIT_LEN, header->z_units));
         check_nc_status (nc_put_att_double (cdfid, z_id, "scale_factor", NC_DOUBLE, 1, &header->z_scale_factor));
         check_nc_status (nc_put_att_double (cdfid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
         check_nc_status (nc_put_att_int (cdfid, z_id, "node_offset", NC_LONG, 1, &header->node_offset));
-        check_nc_status (nc_put_att_text (cdfid, NC_GLOBAL, "title", strlen(header->title)+1, header->title));
+        check_nc_status (nc_put_att_text (cdfid, NC_GLOBAL, "title", GRD_TITLE_LEN, header->title));
         check_nc_status (nc_put_att_text (cdfid, NC_GLOBAL, "source", (GRD_COMMAND_LEN+GRD_REMARK_LEN), text));
 	
 	/* leave define mode */
@@ -350,13 +350,13 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	
 	strcpy (text, header->command);
 	strcpy (&text[GRD_COMMAND_LEN], header->remark);
-	check_nc_status (nc_put_att_text (cdfid, x_range_id, "units", strlen(header->x_units)+1, header->x_units));
-        check_nc_status (nc_put_att_text (cdfid, y_range_id, "units", strlen(header->y_units)+1, header->y_units));
-        check_nc_status (nc_put_att_text (cdfid, z_range_id, "units", strlen(header->z_units)+1, header->z_units));
+	check_nc_status (nc_put_att_text (cdfid, x_range_id, "units", GRD_UNIT_LEN, header->x_units));
+        check_nc_status (nc_put_att_text (cdfid, y_range_id, "units", GRD_UNIT_LEN, header->y_units));
+        check_nc_status (nc_put_att_text (cdfid, z_range_id, "units", GRD_UNIT_LEN, header->z_units));
         check_nc_status (nc_put_att_double (cdfid, z_id, "scale_factor", NC_DOUBLE, 1, &header->z_scale_factor));
         check_nc_status (nc_put_att_double (cdfid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
         check_nc_status (nc_put_att_int (cdfid, z_id, "node_offset", NC_LONG, 1, &header->node_offset));
-        check_nc_status (nc_put_att_text (cdfid, NC_GLOBAL, "title", strlen(header->title)+1, header->title));
+        check_nc_status (nc_put_att_text (cdfid, NC_GLOBAL, "title", GRD_TITLE_LEN, header->title));
         check_nc_status (nc_put_att_text (cdfid, NC_GLOBAL, "source", (GRD_COMMAND_LEN+GRD_REMARK_LEN), text));
 	
 	/* leave define mode */

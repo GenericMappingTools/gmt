@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.6 2001-03-20 22:43:55 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.7 2001-04-11 19:58:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -663,6 +663,8 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse)
 			memcpy ((void *)lut[i].rgb_low,  (void *)GMT_lut[j].rgb_low,  (size_t)(3 * sizeof (int)));
 		}
 	}
+	lut[0].z_low = 0.0;			/* Prevent roundoff errors */
+	lut[GMT_n_colors-1].z_high = 1.0;
 	
 	/* Then set up normalized output locations x */
 
@@ -675,11 +677,13 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse)
 	else if (even) {
 		x_inc = 1.0 / (nx - 1);
 		for (i = 0; i < nz; i++) x[i] = i * x_inc;	/* Normalized z values 0-1 */
+		x[nz-1] = 1.0;	/* To prevent bad roundoff */
 	}
 	else {	/* As with LUT, translate users z-range to 0-1 range */
 		b = 1.0 / (z[nz-1] - z[0]);
 		a = -z[0] * b;
 		for (i = 0; i < nz; i++) x[i] = a + b * z[i];	/* Normalized z values 0-1 */
+		x[nz-1] = 1.0;	/* To prevent bad roundoff */
 	}
 
 	/* Start writing cpt file info to stdout */

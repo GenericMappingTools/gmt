@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.3 2001-03-09 18:32:11 pwessel Exp $
+#	$Id: Makefile,v 1.4 2001-04-11 19:58:09 pwessel Exp $
 #
 #		Makefile for GMT spotter supplements
 #
@@ -18,7 +18,7 @@
 #-------------------------------------------------------------------------------
 include ../makegmt.macros
 
-CFLAGS	= $(CC_OPT) $(WIN32) -I.. -I$(NETCDF)/include
+CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf
 
 SPOT_H	= spotter.h
@@ -73,7 +73,7 @@ libspotter.o:	$(SPOT_H)
 #-------------------------------------------------------------------------------
 
 $(SPOT):	libspotter.a $(SPOT_O)
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lspotter -L.. -lpsl -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lspotter -L.. -L$(libdir) -lpsl -lgmt $(CDF) $(LIBS) -o $@
 
 .c.o:
 		$(CC) -c $(CFLAGS) $<
