@@ -78,7 +78,7 @@ the Mercator gridding, try
 img2grd world_grav.img.7.2 \fB\-G\fPmerc_grav.grd \fB\-R\fP-40/40/-70/-30 \fB\-M \-T\fP1 \fB\-V\fP
 .br
 .sp
-Wothout the \fB\-M\fP option the same command will yield a geographic grid.
+Without the \fB\-M\fP option the same command will yield a geographic grid.
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR img2mercgrd (l)

@@ -86,7 +86,7 @@ using vector rather than stick plot, and scale vector magnitudes so that LEN2 un
 equal 1 inch, try 
 .br
 .sp
-grdvector r.grd theta.grd SCALE \fB\-Q\fP OPT > gradient.ps
+grdvector r.grd theta.grd SCALE \fB\-A \-Q\fP OPT > gradient.ps
 .br
 .sp
 .SH "SEE ALSO"
