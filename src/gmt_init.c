@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.54 2001-10-15 22:38:58 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.55 2001-10-16 19:29:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -81,6 +81,7 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A);
 void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit, char mod);
 int GMT_map_getframe (char *in);
 static void load_encoding (struct gmt_encoding *);
+void GMT_verify_encodings ();
 
 /* Local variables to gmt_init.c */
 
@@ -910,6 +911,7 @@ int GMT_loaddefaults (char *file)
 	GMT_backwards_compatibility ();
 	if (gmtdefs.ps_heximage % 2) gmtdefs.page_orientation += 4;
 	if (gmtdefs.ps_heximage > 1) gmtdefs.page_orientation += 512;
+	GMT_verify_encodings ();
 
 	if (error) fprintf (stderr, "GMT:  %d conversion errors in file %s!\n", error, file);
 	
@@ -946,6 +948,7 @@ void GMT_setdefaults (int argc, char **argv)
 	GMT_backwards_compatibility ();
 	if (gmtdefs.ps_heximage % 2) gmtdefs.page_orientation += 4;
 	if (gmtdefs.ps_heximage > 1) gmtdefs.page_orientation += 512;
+	GMT_verify_encodings ();
 	
 	if (GMT_got_frame_rgb) {	/* Must enforce change of frame, tick, and grid pen rgb */
 		memcpy ((void *)gmtdefs.frame_pen.rgb, (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
@@ -3998,7 +4001,7 @@ int	GMT_scanf_epoch (char *s, double *t0) {
  */
 static void load_encoding (struct gmt_encoding *enc)
 {
-	char line[80];
+	char line[256];
 	char *symbol;
 	int i;
 	int code = 0;
@@ -4039,7 +4042,37 @@ static void load_encoding (struct gmt_encoding *enc)
 
 	GMT_fclose (in);
 }
- 
+
+void GMT_verify_encodings () {
+	/* Check that special map-related codes are present - if not give warning */
+	
+	/* First check for degree symbol */
+	
+	if (gmtdefs.encoding.code[gmt_ring] == 32 && gmtdefs.encoding.code[gmt_degree] == 32) {	/* Neither /ring or /degree encoded */
+		fprintf (stderr, "GMT Warning: Selected character encoding does not have suitable degree symbol - will use space instead\n");
+	}
+	else if (gmtdefs.degree_symbol == 0 && gmtdefs.encoding.code[gmt_ring] == 32) {		/* want /ring but only /degree is encoded */
+		fprintf (stderr, "GMT Warning: Selected character encoding does not have ring symbol - will use degree symbol instead\n");
+		gmtdefs.degree_symbol = 1;
+	}
+	else if (gmtdefs.degree_symbol == 1 && gmtdefs.encoding.code[gmt_degree] == 32) {	/* want /degree but only /ring is encoded */
+		fprintf (stderr, "GMT Warning: Selected character encoding does not have degree symbol - will use ring symbol instead\n");
+		gmtdefs.degree_symbol = 0;
+	}
+	
+	/* Then single quote for minute symbol... */
+	
+	if (gmtdefs.degree_symbol < 2 && gmtdefs.encoding.code[gmt_squote] == 32) {
+		fprintf (stderr, "GMT Warning: Selected character encoding does not have minute symbol (single quote) - will use space instead\n");
+	}
+	
+	/* ... and double quote for second symbol */
+	
+	if (gmtdefs.degree_symbol < 2 && gmtdefs.encoding.code[gmt_dquote] == 32) {
+		fprintf (stderr, "GMT Warning: Selected character encoding does not have second symbol (double quote) - will use space instead\n");
+	}
+}
+
 #ifdef WIN32
 
 /* Make dummy functions so GMT will link under WIN32 */
