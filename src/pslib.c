@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.20 2001-09-25 20:29:35 pwessel Exp $
+ *	$Id: pslib.c,v 1.21 2001-09-27 08:17:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -162,6 +162,8 @@ void get_uppercase(char *new, char *old);
 unsigned char * ps_1bit_to_24bit (unsigned char *pattern, struct rasterfile *h, int f_rgb[], int b_rgb[]);
 void ps_rle_decode (struct rasterfile *h, unsigned char **in);
 void ps_hex_dump (unsigned char *buffer, int nx, int ny, int depth);
+void ps_hex_dump_cmyk (unsigned char *buffer, int nx, int ny, int depth);
+void ps_bin_dump_cmyk (unsigned char *buffer, int nx, int ny, FILE *fp);
 void *ps_memory (void *prev_addr, size_t nelem, size_t size);
 int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy);
 int ps_comp_int_asc (const void *p1, const void *p2);
@@ -361,20 +363,22 @@ void ps_colorimage_hex (double x, double y, double xsize, double ysize, unsigned
 {
 	/* Writes output image using hex format */
 
-	int ix, iy, lx, ly, mx;
+	int ix, iy, lx, ly, mx, n_channels;
+	char *type[2] = {"RGB", "CMYK"};
 	
+	n_channels = (ps.cmyk_image) ? 4 : 3;
 	ix = irint (x * ps.scale);
 	iy = irint (y * ps.scale);
 	lx = irint (xsize * ps.scale);
 	ly = irint (ysize * ps.scale);
-	mx = 3 * nx;
-	fprintf (ps.fp, "\n%% Start of hex Adobe colorimage\n");
+	mx = n_channels * nx;
+	fprintf (ps.fp, "\n%% Start of hex Adobe colorimage [%s]\n", type[ps.cmyk_image]);
 	fprintf (ps.fp, "V N %d %d T %d %d scale\n", ix, iy, lx, ly);
 	fprintf (ps.fp, "%d 65535 lt {%d} {65535} ifelse string /pstr exch def\n", mx, mx);
-	fprintf (ps.fp, "%d %d 8 [%d 0 0 %d 0 %d] {currentfile pstr readhexstring pop} false 3 colorimage\n",
-		nx, ny, nx, -ny, ny);
+	fprintf (ps.fp, "%d %d 8 [%d 0 0 %d 0 %d] {currentfile pstr readhexstring pop} false %d colorimage\n",
+		nx, ny, nx, -ny, ny, n_channels);
 
-	ps_hex_dump (buffer, nx, ny, 24);
+	(ps.cmyk_image) ? ps_hex_dump_cmyk (buffer, nx, ny, 24) : ps_hex_dump (buffer, nx, ny, 24);
 
 	fprintf (ps.fp, "U\n%% End of colorimage\n\n");
 }
@@ -410,23 +414,81 @@ void ps_hex_dump (unsigned char *buffer, int nx, int ny, int depth)
 	}
 }
 
+void ps_hex_dump_cmyk (unsigned char *buffer, int nx, int ny, int depth)
+{
+	/* Writes core of output image in CMYK using hex format */
+
+	char hex[16], pixel[65];
+	int mx, i, j, kk, ij, c, m, y, k;
+	
+	pixel[64] = 0;
+	hex[0] = '0';	hex[1] = '1';	hex[2] = '2';	hex[3] = '3';
+	hex[4] = '4';	hex[5] = '5';	hex[6] = '6';	hex[7] = '7';
+	hex[8] = '8';	hex[9] = '9';	hex[10] = 'A';	hex[11] = 'B';
+	hex[12] = 'C';	hex[13] = 'D';	hex[14] = 'E';	hex[15] = 'F';
+	
+	mx = (int) ceil (depth * nx / 8.0);
+	kk = 0;
+	for (j = ij = 0; j < ny; j++) {
+		for (i = 0; i < nx; i++) {
+			c = 255 - buffer[ij++];	m = 255 - buffer[ij++];	y = 255 - buffer[ij++];
+			k = MIN (c, m);	if (y < k) k = y;
+			c -= k;	m -= k;	y -= k;
+			pixel[kk++] = hex[c / 16];
+			pixel[kk++] = hex[c % 16];
+			pixel[kk++] = hex[m / 16];
+			pixel[kk++] = hex[m % 16];
+			pixel[kk++] = hex[y / 16];
+			pixel[kk++] = hex[y % 16];
+			pixel[kk++] = hex[k / 16];
+			pixel[kk++] = hex[k % 16];
+			if (kk == 64) {
+				fprintf (ps.fp, "%s\n", pixel);
+				kk = 0;
+			}
+		}
+	}
+	if (kk > 0) {
+		pixel[kk] = 0;
+		fprintf (ps.fp, "%s\n", pixel);
+	}
+}
+
+void ps_bin_dump_cmyk (unsigned char *buffer, int nx, int ny, FILE *fp)
+{
+	/* Writes core of output image in CMYK using bin format */
+	int i, ij, j;
+	unsigned char cmyk[4];
+	
+	for (j = ij = 0; j < ny; j++) {
+		for (i = 0; i < nx; i++) {
+			cmyk[0] = 255 - buffer[ij++];	cmyk[1] = 255 - buffer[ij++];	cmyk[2] = 255 - buffer[ij++];
+			cmyk[3] = MIN (cmyk[0], cmyk[1]);	if (cmyk[2] < cmyk[3]) cmyk[3] = cmyk[2];
+			cmyk[0] -= cmyk[3];	cmyk[1] -= cmyk[3];	cmyk[2] -= cmyk[3];
+			fwrite ((void *)cmyk, sizeof (unsigned char), (size_t)4, fp);
+		}
+	}
+}
+
 void ps_colorimage_bin (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny)
 {
 	/* Writes output image using bin format */
 
-	int ix, iy, lx, ly, mx;
+	int ix, iy, lx, ly, mx, n_channels;
+	char *type[2] = {"RGB", "CMYK"};
 	
+	n_channels = (ps.cmyk_image) ? 4 : 3;
 	ix = irint (x * ps.scale);
 	iy = irint (y * ps.scale);
 	lx = irint (xsize * ps.scale);
 	ly = irint (ysize * ps.scale);
-	mx = 3 * nx;
-	fprintf (ps.fp, "\n%% Start of binary Adobe colorimage\n");
+	mx = n_channels * nx;
+	fprintf (ps.fp, "\n%% Start of binary Adobe colorimage [%s]\n", type[ps.cmyk_image]);
 	fprintf (ps.fp, "V N %d %d T %d %d scale\n", ix, iy, lx, ly);
 	fprintf (ps.fp, "%d 65535 lt {%d} {65535} ifelse string /pstr exch def\n", mx, mx);
-	fprintf (ps.fp, "%d %d 8 [%d 0 0 %d 0 %d] {currentfile pstr readstring pop} false 3 colorimage\n",
-		nx, ny, nx, -ny, ny);
-	fwrite ((void *)buffer, sizeof (unsigned char), (size_t)(mx * ny), ps.fp);
+	fprintf (ps.fp, "%d %d 8 [%d 0 0 %d 0 %d] {currentfile pstr readstring pop} false %d colorimage\n",
+		nx, ny, nx, -ny, ny, n_channels);
+	(ps.cmyk_image) ? ps_bin_dump_cmyk (buffer, nx, ny, ps.fp) : (void)fwrite ((void *)buffer, sizeof (unsigned char), (size_t)(mx * ny), ps.fp);
 	fprintf (ps.fp, "\nU\n%% End of colorimage\n\n");
 }
 
@@ -1224,7 +1286,8 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 /* page_size:	Physical width and height of paper used in points */
 /* overlay:	FALSE means print headers and macros first */
 /* mode:	First bit 0 = Landscape, 1 = Portrait, Second bit 1 = Standard+ encoding, Third bit 1 = hex image, 0 = bin image
-		Forth bit 1 = abs positions, 0 = rel positions, Fifth bit 1 = ISOLatin1, 0 not, Sixth bit 1 = ISOLatin1+, 0 not */
+		Forth bit 1 = abs positions, 0 = rel positions, Fifth bit 1 = ISOLatin1, 0 not, Sixth bit 1 = ISOLatin1+, 0 not
+		10th bit 1 = CMYK image, 0 = RGB image */
 /* ncopies:	Number of copies for this plot */
 /* dpi:		Plotter resolution in dots-per-inch */
 /* unit:	0 = cm, 1 = inch, 2 = meter */
@@ -1246,6 +1309,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	}
 	ps.eps_format = FALSE;
 	ps.hex_image = (mode & 4) ? TRUE : FALSE;
+	ps.cmyk_image = (mode & 512) ? TRUE : FALSE;
 	ps.absolute = (mode & 8) ? TRUE : FALSE;
 	if (page_size[0] < 0) {		/* Want Manual Request for paper */
 		ps.p_width  = abs (page_size[0]);
