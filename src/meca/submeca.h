@@ -1,3 +1,4 @@
+/*	$Id: submeca.h,v 1.2 2000-12-29 22:10:37 pwessel Exp $	*/
 void rot_axis(struct AXIS A,struct nodal_plane PREF,struct AXIS *Ar);
 void rot_tensor(struct M_TENSOR mt,struct nodal_plane PREF,struct M_TENSOR *mtr);
 void rot_meca(st_me meca,struct nodal_plane PREF,st_me *mecar);

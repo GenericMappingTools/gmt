@@ -1,3 +1,4 @@
+REM	$Id: meca_1.bat,v 1.2 2000-12-29 22:10:37 pwessel Exp $
 gmtset MEASURE_UNIT inch TICK_LENGTH 0.075i FRAME_WIDTH 0.1i X_ORIGIN 2.5c Y_ORIGIN 1.3i DEGREE_FORMAT 3
 set frame=-R238.5/242/32.5/35.5
 set proj=-Jm1.3i 

@@ -1,3 +1,4 @@
+/*	$Id: distaz.c,v 1.2 2000-12-29 22:10:37 pwessel Exp $	*/
 #include "gmt.h"
 
 #define CONSTANTE2 0.9931177
