@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.11 2001-07-11 18:35:14 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.12 2001-07-13 18:37:17 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -103,7 +103,7 @@ if [ $key = "all" ] || [ $key = "get" ]; then
 	n=`cat new_sites_land.d | wc  -l`
 	if ($n > 0) then
 		echo "GMT_usage_map.x: Found $n new sites" >&2
-	endif
+	fi
 
 	rm -f $$.*
 fi
@@ -127,7 +127,7 @@ if [ $key = "all" ] || [ $key = "update" ]; then
 	delta=`expr $n_new - $n_old`
 	if ($delta > 0) then
 		echo "GMT_usage_map.x: Added $delta new sites" >&2
-	endif
+	fi
 fi
 
 if [ $key = "all" ] || [ $key = "map" ]; then
