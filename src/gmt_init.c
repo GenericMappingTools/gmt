@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.109 2004-04-07 20:31:55 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.110 2004-04-12 19:51:12 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -75,7 +75,7 @@ void GMT_strip_colonitem (const char *in, const char *pattern, char *item, char 
 void GMT_strip_wesnz (const char *in, int side[], BOOLEAN *draw_box, char *out);
 void GMT_split_info (const char *in, char *info[]);
 void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A);
-void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit, char mod);
+void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit);
 int GMT_map_getframe (char *in);
 static void load_encoding (struct gmt_encoding *);
 void GMT_verify_encodings ();
@@ -99,7 +99,7 @@ BOOLEAN GMT_force_resize = FALSE, GMT_annot_special = FALSE;
 double save_annot_size2, save_label_size, save_header_size;
 double save_annot_offset, save_annot_offset2, save_label_offset, save_header_offset, save_tick_length, save_frame_width;
 BOOLEAN GMT_getuserpath (char *stem, char *path);
-
+BOOLEAN GMT_primary;
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 	
 void GMT_explain_option (char option)
@@ -120,19 +120,11 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t   axis item type, <stride> is the spacing between ticks or annotations, and the (optional)\n");
 			fprintf (stderr, "\t   <unit> specifies the <stride> unit [Default is unit implied in -R]. There can be\n");
 			fprintf (stderr, "\t   no spaces between the substrings - just append to make one very long string.\n");
-			fprintf (stderr, "\t   Three axis item types exist (six for time-axis, which may also use A, I, and i):\n");
-			fprintf (stderr, "\t     a: (upper) tick annotation stride (upper means annotations closest to the axis).\n");
-			fprintf (stderr, "\t     f: (upper) frame tick stride.\n");
+			fprintf (stderr, "\t   -B[p] means (p)rimary annotations; use -Bs to specify (s)econdary annotations.\n");
+			fprintf (stderr, "\t   Three axis item types exist:\n");
+			fprintf (stderr, "\t     a: tick annotation stride.\n");
+			fprintf (stderr, "\t     f: frame tick stride.\n");
 			fprintf (stderr, "\t     g: grid line stride.\n");
-			fprintf (stderr, "\t     A: lower tick annotation stride (lower means annotations farthest from the axis).\n");
-			fprintf (stderr, "\t     i: upper interval annotation stride (interval means annotation is centered on the interval).\n");
-			fprintf (stderr, "\t     I: lower interval annotation stride.\n");
-			fprintf (stderr, "\t        i or I may be immediately followed by <mod> which controls interval annotations:\n");
-			fprintf (stderr, "\t          f: Annotate full calendar-item name (e.g., \"%s\")\n", GMT_time_language.month_name[0][0]);
-			fprintf (stderr, "\t          a: Annotate abbreviated calendar-item name (e.g., \"%s\")\n", GMT_time_language.month_name[0][1]);
-			fprintf (stderr, "\t          c: Annotate 1-char calendar-item name (e.g., \"%s\")\n", GMT_time_language.month_name[0][2]);
-			fprintf (stderr, "\t        Use F, A, C to force upper case annotation. \n");
-			fprintf (stderr, "\t     If the [t] is not given, it defaults to a (upper tick annotations). \n");
 			fprintf (stderr, "\t   The optional [<unit>] modifies the <stride> value accordingly.  For maps, you may use\n");
 			fprintf (stderr, "\t     m: arc minutes [Default unit is degree].\n");
 			fprintf (stderr, "\t     c: arc seconds.\n");
@@ -173,7 +165,7 @@ void GMT_explain_option (char option)
 			
 		case 'b':	/* Condensed tickmark option */
 		
-			fprintf (stderr, "\t-B Boundary annotation, give -B<xinfo>[/<yinfo>[/<zinfo>]][.:\"title\":][wesnzWESNZ+]\n");
+			fprintf (stderr, "\t-B Boundary annotation, give -B[p|s]<xinfo>[/<yinfo>[/<zinfo>]][.:\"title\":][wesnzWESNZ+]\n");
 			fprintf (stderr, "\t   <?info> is 1-3 substring(s) of form [<type>]<stride>[<unit>][l|p][:\"label\":][:,[-]\"unit\":]\n");
 			fprintf (stderr, "\t   See psbasemap man pages for more details and examples of all settings.\n");
 			break;
@@ -538,7 +530,7 @@ void GMT_syntax (char option)
 	
 		case 'B':	/* Tickmark option */
 		
-			fprintf (stderr, "\t-B[a|f|g]<tick>[m][l|p][:\"label\":][:,\"unit\":][/.../...]:.\"Title\":[W|w|E|e|S|s|N|n][Z|z]\n");
+			fprintf (stderr, "\t-B[p|s][a|f|g]<tick>[m][l|p][:\"label\":][:,\"unit\":][/.../...]:.\"Title\":[W|w|E|e|S|s|N|n][Z|z]\n");
 			break;
 			
 		case 'H':	/* Header */
@@ -753,17 +745,28 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			GMT_processed_option[0] = TRUE;
 			GMT_quick = TRUE;
 			break;
+
 		case 'B':
-			if (GMT_processed_option[1]) {
-				fprintf (stderr, "%s: Error: Option -B given more than once\n", GMT_program);
-				error++;
+			switch (item[2]) {	/* Check for -B[p] and -Bs */
+				case 's':
+					if (GMT_processed_option[1] & 2) {
+						fprintf (stderr, "%s: Error: Option -Bs given more than once\n", GMT_program);
+						error++;
+					}
+					GMT_processed_option[1] |= 2;
+					break;
+				default:
+					if (GMT_processed_option[1] & 1) {
+						fprintf (stderr, "%s: Error: Option -B[p] given more than once\n", GMT_program);
+						error++;
+					}
+					GMT_processed_option[1] |= 1;
+					break;
 			}
-			else {
-				GMT_processed_option[1] = TRUE;
-				error += (i = GMT_map_getframe (&item[2]));
-				if (i) GMT_syntax ('B');
-			}
+			error += (i = GMT_map_getframe (&item[2]));
+			if (i) GMT_syntax ('B');
 			break;
+
 		case 'H':
 			if (GMT_processed_option[2]) {
 				fprintf (stderr, "%s: Error: Option -H given more than once\n", GMT_program);
@@ -1690,6 +1693,12 @@ int GMT_setparameter (char *keyword, char *value)
 			strncpy (gmtdefs.plot_degree_format, value, 32);
 			GMT_backward.got_new_plot_format = TRUE;
 			break;
+		case GMTCASE_TIME_ANNOT_FORMAT:
+			strncpy (gmtdefs.time_annot_format, value, 32);
+			break;
+		case GMTCASE_TIME_ANNOT_FORMAT2:
+			strncpy (gmtdefs.time_annot_format2, value, 32);
+			break;
 		case GMTCASE_TIME_IS_INTERVAL:
 			if (value[0] == '+' || value[0] == '-') {	/* OK, gave +<n>u or -<n>u, check for unit */
 				sscanf (&lower_value[1], "%d%c", &GMT_truncate_time.T.step, &GMT_truncate_time.T.unit);
@@ -1975,6 +1984,8 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "MAP_SCALE_FACTOR	= %g\n", gmtdefs.map_scale_factor);
 	fprintf (fp, "MEASURE_UNIT		= %s\n", GMT_unit_names[gmtdefs.measure_unit]);
 	fprintf (fp, "#-------- Calendar/Time Parameters ----------\n");
+	fprintf (fp, "TIME_ANNOT_FORMAT		= %s\n", gmtdefs.time_annot_format);
+	fprintf (fp, "TIME_ANNOT_FORMAT2	= %s\n", gmtdefs.time_annot_format2);
 	fprintf (fp, "TIME_EPOCH		= %s\n", gmtdefs.time_epoch);
 	if (gmtdefs.time_is_interval)
 		fprintf (fp, "TIME_IS_INTERVAL	= %c%d%c\n", pm[GMT_truncate_time.direction], GMT_truncate_time.T.step, GMT_truncate_time.T.unit);
@@ -2977,7 +2988,7 @@ void GMT_split_info (const char *in, char *info[]) {
 void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 	/* Decode the annot/tick segments of the clean -B string pieces */
 	
-	char *t, *s, flag, mod, unit;
+	char *t, *s, flag, unit;
 	int error = 0;
 	double val;
 	
@@ -2989,7 +3000,7 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 			flag = '*';
 		else {
 			flag = t[0];	/* Set flag */
-			if (!strchr ("AaIifg*", flag)) {	/* Illegal flag given */
+			if (!strchr ("afg*", flag)) {	/* Illegal flag given */
 				error = 1;
 				continue;
 			}
@@ -2997,17 +3008,6 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 			if (!t[0]) {
 				error = 2;
 				continue;
-			}
-		}
-		mod = 0;				/* No mod for Aafg flags */
-		if (flag == 'i' || flag == 'I') {	/* Interval annotations may have modifier flag */
-			if (strchr ("FACfac", t[0])) {	/* One of the allowed list of modifiers? */
-				mod = t[0];
-				t++;			/* Skip to next */
-				if (!t[0]) {		/* If nothing follows modifier we have a problem */
-					error = 2;
-					continue;
-				}
 			}
 		}
 		
@@ -3033,8 +3033,29 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 			
 		/* else s is either 0 or points to the next segment */
 		
-		if (!error) GMT_set_titem (A, val, flag, unit, mod);	/* Store the findings for this segment */
-		t = s;							/* Make t point to start of next segment, if any */
+		switch (unit) {	/* Determine if we have intervals or moments */
+			case 'Y':
+			case 'y':
+			case 'O':
+			case 'o':
+			case 'K':
+			case 'k':
+			case 'J':
+			case 'j':
+			case 'D':
+			case 'd':
+			case 'R':
+			case 'r':
+			case 'U':
+			case 'u':
+				if (A->type == TIME && flag == 'a') flag = 'i';
+				break;
+			default:
+				break;
+		}
+		if (GMT_primary && flag != '*') flag = (char) toupper ((int)flag);	/* Since this is primary axes items */
+		if (!error) GMT_set_titem (A, val, flag, unit);				/* Store the findings for this segment */
+		t = s;									/* Make t point to start of next segment, if any */
 	}
 	
 	if (error) {
@@ -3055,12 +3076,12 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 	}
 }
 
-void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit, char mod) {
+void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit) {
 	/* Load the values into the appropriate PLOT_AXIS_ITEM structure */
 	
 	int i, n = 1;
 	struct PLOT_AXIS_ITEM *I[2];
-	char item_flag[6] = {'a', 'A', 'i', 'I', 'f', 'g'};
+	char item_flag[6] = {'a', 'A', 'i', 'I', 'f', 'g'}, *format;
 	
 	if (A->type == TIME) {	/* Strict check on time intervals */
 		if (GMT_verify_time_step (irint (val), unit)) exit (EXIT_FAILURE);
@@ -3083,9 +3104,11 @@ void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit, char 
 		case 'I':	/* Lower interval annotation */
 			I[0] = &A->item[3];
 			break;
+		case 'F':	/* Frame tick interval */
 		case 'f':	/* Frame tick interval */
 			I[0] = &A->item[4];
 			break;
+		case 'G':	/* Gridline interval */
 		case 'g':	/* Gridline interval */
 			I[0] = &A->item[5];
 			break;
@@ -3123,7 +3146,8 @@ void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit, char 
 		I[i]->flavor = 0;
 		I[i]->active = n;
 		I[i]->upper_case = FALSE;
-		switch (mod) {	/* This parameter controls which version of month/day textstrings we use for plotting */
+		format = (GMT_primary) ? gmtdefs.time_annot_format : gmtdefs.time_annot_format2;
+		switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
 			case 'F':	/* Full name, upper case */
 				I[i]->upper_case = TRUE;
 			case 'f':	/* Full name, lower case */
@@ -3170,16 +3194,35 @@ int GMT_map_getframe (char *in) {
 	 *		1.0	-> Only powers of 10 are annotated
 	 *		2.0	-> powers of 10 times (1, 2, 5) are annotated
 	 *		3.0	-> powers of 10 times (1,2,3,..9) are annotated
+	 *
+	 * Up to two -B options may be given on the command line:
+	 *	-B[p] the primary specifications
+	 *	-Bs   the secondary specifications
+	 *
+	 *	-Bs must be in addition to -B[p].
 	 */
+	 
 	char out1[BUFSIZ], out2[BUFSIZ], *info[3];
 	char one[80], two[80], three[80];
 	struct PLOT_AXIS *A;
-	int i, j;
+	int i, j, k;
 	
+	if (in[0] == 's') {
+		GMT_primary = FALSE;
+		k = 1;
+	}
+	else if (in[0] == 'p') {
+		GMT_primary = TRUE;
+		k = 1;
+	}
+	else {
+		GMT_primary = TRUE;
+		k = 0;
+	}
 	/* frame_info.side[] may be set already when parsing .gmtdefaults4 flags */
 	
 	info[0] = one;	info[1] = two;	info[2] = three;
-	for (i = 0; i < 3; i++) {
+	for (i = 0; GMT_primary && i < 3; i++) {
 		memset ((void *)&frame_info.axis[i], 0, sizeof (struct PLOT_AXIS));
 		for (j = 0; j < 6; j++) {
 			frame_info.axis[i].item[j].parent = i;
@@ -3191,7 +3234,7 @@ int GMT_map_getframe (char *in) {
 	frame_info.plot = TRUE;
 	frame_info.draw_box = FALSE;
 	
-	GMT_strip_colonitem (in, ":.", frame_info.header, out1);			/* Extract header string, if any */
+	GMT_strip_colonitem (&in[k], ":.", frame_info.header, out1);			/* Extract header string, if any */
 	
 	GMT_strip_wesnz (out1, frame_info.side, &frame_info.draw_box, out2);		/* Decode WESNZwesnz+ flags, if any */
 	
@@ -3202,9 +3245,9 @@ int GMT_map_getframe (char *in) {
 		if (!info[i][0]) continue;
 		
 		GMT_strip_colonitem (info[i], ":,", frame_info.axis[i].unit, out1);	/* Pull out annotation unit, if any */
-		GMT_strip_colonitem (out1, ":", frame_info.axis[i].label, out2);		/* Pull out axis label, if any */
+		GMT_strip_colonitem (out1, ":", frame_info.axis[i].label, out2);	/* Pull out axis label, if any */
 		
-		GMT_decode_tinfo (out2, &frame_info.axis[i]);					/* Decode the annotation intervals */
+		GMT_decode_tinfo (out2, &frame_info.axis[i]);				/* Decode the annotation intervals */
 		
 		/* Make sure we have ticks to match annotation stride */
 		A = &frame_info.axis[i];

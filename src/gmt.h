@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.57 2004-04-06 23:28:13 pwessel Exp $
+ *	$Id: gmt.h,v 1.58 2004-04-12 19:51:12 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -212,7 +212,7 @@ typedef double GMT_dtime;	/* GMT internal time representation */
  *--------------------------------------------------------------------*/
 
 #define N_UNIQUE 59		/* Number of unique options */
-#define N_KEYS 92		/* Number of gmt defaults */
+#define N_KEYS 94		/* Number of gmt defaults */
 #define GMT_N_MEDIA 29		/* Number of standard paper formats in the GMT_media_names.h include file */
 #define HASH_SIZE 92		/* Used in get_gmtdefaults, should be ~> N_KEYS */
 #define GMT_N_SYSTEMS 6		/* Number of time systems in gmt_time_systems.h */
@@ -332,6 +332,8 @@ struct GMTDEFAULTS {
 	char plot_clock_format[32];	/* Controls how clocks are plotted on maps [hh:mm:ss] */
 	char plot_date_format[32];	/* Controls how dates are plotted on maps [yyyy-mm-dd] */
 	char plot_degree_format[32];	/* Controls how degrees are plotted on maps [020 = dd:mm:ss as in old DEGREE_FORMAT = 0] */
+	char time_annot_format[32];	/* Controls annotation format for Months/Weeks/Weekdays for Primary axes */
+	char time_annot_format2[32];	/* Controls annotation format for Months/Weeks/Weekdays for Secondary axes */
 	BOOLEAN time_is_interval;	/* Does a time given as a month (or year or day) mean the middle of the interval? */
 	BOOLEAN want_leap_seconds;	/* Do we need to worry about leap seconds? */
 	char time_epoch[32];		/* User-defined epoch for time */

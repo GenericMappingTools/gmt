@@ -528,6 +528,14 @@ the map boundaries.  To select interior tickmarks, use a negative tick_length [L
 .B TICK_PEN
 The pen thickness to be used for tickmarks in dpi units or points (append p) [2].
 .TP
+.B TIME_ANNOT_FORMAT
+Controls how primary month-, week-, and weekday-names are formatted.  Choose among full, abbreviated, and
+character.  If the leading f, a, or c are replaced with F, A, and C the entire annotation will be in upper case. 
+.TP
+.B TIME_ANNOT_FORMAT2
+Controls how secondary month-, week-, and weekday-names are formatted.  Choose among full, abbreviated, and
+character.  If the leading f, a, or c are replaced with F, A, and C the entire annotation will be in upper case. 
+.TP
 .B TIME_EPOCH
 This parameter is active only when \fBTIME_SYSTEM\fP is set to OTHER.  It is a string
 of the form yyyy-mm-ddThh:mm:ss (Gregorian) or yyyy-Www-ddThh:mm:ss (ISO) indicating
