@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.15 2001-09-12 19:35:08 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.16 2001-09-14 20:10:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -684,8 +684,9 @@ int	GMT_verify_time_step (int step, char unit) {
 				retval = -1;
 			}
 			break;
-		case 'u':
+		case 'u':	/* ISO week */
 		case 'U':
+		case 'r':	/* Gregorian week */
 			if (step > 52) {
 				fprintf (stderr, "GMT SYNTAX ERROR:  time steps in weeks must be <= 52\n");
 				retval = -1;

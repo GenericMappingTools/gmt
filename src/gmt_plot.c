@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.26 2001-09-14 18:30:17 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.27 2001-09-14 20:10:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -189,7 +189,7 @@ void GMT_x_axis (double x0, double y0, double length, double val0, double val1, 
 	
 	/* Initialize parameters for this axis */
 	
-	if (A->type != TIME) GMT_get_format (GMT_get_map_interval (0, 'a'), A->unit, format);	/* Set the anotation format template */
+	if (A->type != TIME) GMT_get_format (GMT_get_map_interval (0, GMT_ANOT_UPPER), A->unit, format);	/* Set the anotation format template */
 	both = GMT_upper_and_lower_items(0);							/* Two levels of anotations? */
 	if ((check_anotation = GMT_two_anot_items(0))) {					/* Must worry about anotation overlap */
 		GMT_get_primary_anot (A, &primary, &secondary);					/* Find primary and secondary axis items */
@@ -507,7 +507,7 @@ void GMT_y_axis (double x0, double y0, double length, double val0, double val1, 
 	len = (gmtdefs.tick_length > 0.0) ? gmtdefs.tick_length : 0.0;
 	dy = sign * gmtdefs.tick_length;
 	
-	ndec = GMT_get_format (GMT_get_map_interval (1, 'a'), A->unit, format);
+	ndec = GMT_get_format (GMT_get_map_interval (1, GMT_ANOT_UPPER), A->unit, format);
 	as_is = (ndec == 0 && !strchr (format, 'g'));	/* Use the d_format as is */
 	/* Ready to draw axis */
 	
@@ -839,13 +839,13 @@ int GMT_coordinate_array (double min, double max, struct TIME_AXIS_ITEM *T, doub
 {
 	switch (project_info.xyz_projection[T->parent]) {
 		case LINEAR:
-			GMT_linear_array (min, max, T->interval, array);
+			GMT_linear_array (min, max, GMT_get_map_interval (T->parent, T->id), array);
 			break;
 		case LOG10:
-			GMT_log_array (min, max, T->interval, array);
+			GMT_log_array (min, max, GMT_get_map_interval (T->parent, T->id), array);
 			break;
 		case POW:
-			GMT_pow_array (min, max, T->interval, T->parent, array);
+			GMT_pow_array (min, max, GMT_get_map_interval (T->parent, T->id), T->parent, array);
 			break;
 		case TIME:
 			GMT_time_array (min, max, T, array);
@@ -1023,7 +1023,7 @@ void GMT_fancy_map_boundary (double w, double e, double s, double n)
 	/* Draw frame grid for W/E boundaries */
 	
 	ps_setline(fat_pen);
-	if ((dy = GMT_get_map_interval (1,'f')) != 0.0) {
+	if ((dy = GMT_get_map_interval (1, GMT_TICK_UPPER)) != 0.0) {
 		sign_x *= 0.5;
 		shade = ((int)floor (s / dy) + 1) % 2;
 		s1 = floor (s / dy) * dy;
@@ -1055,7 +1055,7 @@ void GMT_fancy_map_boundary (double w, double e, double s, double n)
 	
 	/* Draw Frame grid for N and S boundaries */
 	
-	if ((dx = GMT_get_map_interval (0,'f')) != 0.0) {
+	if ((dx = GMT_get_map_interval (0, GMT_TICK_UPPER)) != 0.0) {
 		sign_y *= 0.5;
 		shade = ((int)floor (w / dx) + 1) % 2;
 		w1 = floor (w / dx) * dx;
@@ -1218,7 +1218,7 @@ void GMT_polar_map_boundary (double w, double e, double s, double n)
 	/* Anotate S-N axes */
 	
 	ps_setline (fat_pen);
-	if ((dy = GMT_get_map_interval (1,'f')) != 0.0) {
+	if ((dy = GMT_get_map_interval (1, GMT_TICK_UPPER)) != 0.0) {
 		shade = ((int)floor (s / dy) + 1) % 2;
 		s1 = floor(s/dy) * dy;
 		ny = (s1 > n) ? -1 : (int)((n-s1) / dy + SMALL);
@@ -1249,7 +1249,7 @@ void GMT_polar_map_boundary (double w, double e, double s, double n)
 
 	/* Anotate W-E axes */
 	
-	if ((dx = GMT_get_map_interval (0,'f')) != 0.0) {
+	if ((dx = GMT_get_map_interval (0, GMT_TICK_UPPER)) != 0.0) {
 		shade = ((int)floor (w / dx) + 1) % 2;
 		w1 = floor(w/dx) * dx;
 		nx = (w1 > e) ? -1 : (int)((e-w1) / dx + SMALL);
@@ -1404,10 +1404,10 @@ void GMT_conic_map_boundary (double w, double e, double s, double n)
 		}
 	}
 	
-	/* Anotate S-N axes */
+	/* Frame tick S-N axes */
 	
 	ps_setline (fat_pen);
-	if ((y_inc = GMT_get_map_interval (1,'f')) != 0.0) {
+	if ((y_inc = GMT_get_map_interval (1, GMT_TICK_UPPER)) != 0.0) {
 		shade = ((int)floor (s / y_inc) + 1) % 2;
 		s1 = floor(s/y_inc) * y_inc;
 		ny = (s1 > n) ? -1 : (int)((n-s1) / y_inc + SMALL);
@@ -1436,9 +1436,9 @@ void GMT_conic_map_boundary (double w, double e, double s, double n)
 		}
 	}
 
-	/* Anotate W-E axes */
+	/* Frame tick W-E axes */
 	
-	if ((x_inc = GMT_get_map_interval (0,'f')) != 0.0) {
+	if ((x_inc = GMT_get_map_interval (0, GMT_TICK_UPPER)) != 0.0) {
 		shade = ((int)floor (w / x_inc) + 1) % 2;
 		w1 = floor(w / x_inc) * x_inc;
 		nx = (w1 > e) ? -1 : (int)((e-w1) / x_inc + SMALL);
@@ -2024,8 +2024,8 @@ void GMT_map_gridlines (double w, double e, double s, double n)
 	
 	if (gmtdefs.grid_cross_size > 0.0) return;
 	
-	dx = GMT_get_map_interval (0, 'g');;
-	dy = GMT_get_map_interval (1, 'g');;
+	dx = GMT_get_map_interval (0, GMT_GRID_UPPER);
+	dy = GMT_get_map_interval (1, GMT_GRID_UPPER);
 	
 	if (dx <= 0.0 && dy <= 0.0) return;
 
@@ -2161,8 +2161,8 @@ void GMT_map_tickmarks (double w, double e, double s, double n)
 	
 	if (!(MAPPING || project_info.projection == POLAR) || gmtdefs.basemap_type == GMT_IS_FANCY) return;		/* Tickmarks already done by linear_axis or done in fancy ways */
 	
-	dx = GMT_get_map_interval (0, 'f');
-	dy = GMT_get_map_interval (1, 'f');
+	dx = GMT_get_map_interval (0, GMT_TICK_UPPER);
+	dy = GMT_get_map_interval (1, GMT_TICK_UPPER);
 
 	if (dx <= 0.0 && dy <= 0.0) return;
 
@@ -2171,7 +2171,7 @@ void GMT_map_tickmarks (double w, double e, double s, double n)
 
 	GMT_on_border_is_outside = TRUE;	/* Temporarily, points on the border are outside */
 	
-	if (dx > 0.0 && dx != GMT_get_map_interval (0, 'a')) {	/* Draw grid lines that go E to W */
+	if (dx > 0.0 && dx != GMT_get_map_interval (0, GMT_ANOT_UPPER)) {	/* Draw grid lines that go E to W */
 		w1 = floor (w / dx) * dx;
 		if (fabs (w1 - w) > SMALL) w1 += dx;
 		nx = (w1 > e) ? -1 : (int)((e - w1) / dx + SMALL);
@@ -2182,7 +2182,7 @@ void GMT_map_tickmarks (double w, double e, double s, double n)
 		}
 	}
 	
-	if (dy > 0.0 && dy != GMT_get_map_interval (1, 'a')) {	/* Draw grid lines that go S to N */
+	if (dy > 0.0 && dy != GMT_get_map_interval (1, GMT_ANOT_UPPER)) {	/* Draw grid lines that go S to N */
 		s1 = floor (s / dy) * dy;
 		if (fabs (s1 - s) > SMALL) s1 += dy;
 		ny = (s1 > n) ? -1 : (int)((n - s1) / dy + SMALL);
@@ -2204,8 +2204,8 @@ void GMT_map_anotate (double w, double e, double s, double n)
 	int do_minutes, do_seconds, move_up, i, nx, ny, done_zero = FALSE, anot, GMT_world_map_save;
 	char label[256], cmd[256];
 	
-	dx = (project_info.edge[0] || project_info.edge[2]) ? GMT_get_map_interval (0, 'a') : 0.0;
-	dy = (project_info.edge[1] || project_info.edge[3]) ? GMT_get_map_interval (1, 'a') : 0.0;
+	dx = (project_info.edge[0] || project_info.edge[2]) ? GMT_get_map_interval (0, GMT_ANOT_UPPER) : 0.0;
+	dy = (project_info.edge[1] || project_info.edge[3]) ? GMT_get_map_interval (1, GMT_ANOT_UPPER) : 0.0;
 
 	if (!tframe_info.header[0] && dx <= 0.0 && dy <= 0.0) return;
 
@@ -2495,7 +2495,7 @@ void GMT_vertical_axis (int mode)
 	int i, j;
 	double xp[2], yp[2], z_anot;
 	
-	if ((z_anot = GMT_get_map_interval (2, 'a')) == 0.0) return;
+	if ((z_anot = GMT_get_map_interval (2, GMT_ANOT_UPPER)) == 0.0) return;
 
 	fore = (mode > 1);	back = (mode % 2);
 	for (i = 0; i < 4; i++) go[i] = (mode == 3) ? TRUE : ((back) ? z_project.draw[i] : !z_project.draw[i]);
@@ -2594,7 +2594,7 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct TIME_AXIS *A, int anotate)
 	
 	/* Find number of decimals needed, if any */
 	
-	GMT_get_format (GMT_get_map_interval (id, 'a'), A->unit, format);
+	GMT_get_format (GMT_get_map_interval (id, GMT_ANOT_UPPER), A->unit, format);
 
 	anot_off = sign * (len + gmtdefs.anot_offset);
 	label_off = sign * (len + 2.5 * gmtdefs.anot_offset + (gmtdefs.anot_font_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font_height[gmtdefs.anot_font]);
