@@ -1382,7 +1382,8 @@ int GMT_map_init_merc (void) {
 	GMT_inverse = (PFI)GMT_imerc_sph;
 	(*GMT_forward) (project_info.w, project_info.s, &xmin, &ymin);
 	(*GMT_forward) (project_info.e, project_info.n, &xmax, &ymax);
-	if (project_info.units_pr_degree) project_info.pars[0] /= project_info.M_PR_DEG;
+	/* if (project_info.units_pr_degree) project_info.pars[0] /= project_info.M_PR_DEG; */
+	if (project_info.units_pr_degree) project_info.pars[0] /= (D * project_info.M_PR_DEG);
 	project_info.x_scale = project_info.y_scale = project_info.pars[0]; 
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[0]);
 	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
