@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.117 2004-06-09 21:34:38 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.118 2004-06-10 02:57:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1662,7 +1662,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 	BOOLEAN g_set = FALSE;
 	char txt_cpy[BUFSIZ], txt_a[32], txt_b[32], c, *p;
 	
-	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+o|O|t|v][+s<size>][+p[<pen>]][+u<unit>][+^<prefix>] strings */
+	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+o][+v][+s<size>][+p[<pen>]][+u<unit>][+^<prefix>] strings */
 	
 	for (k = 0; txt[k] && txt[k] != '+'; k++);
 	if (!txt[k]) return (GMT_contlabel_specs_old (txt, G));	/* Old-style info strings */
@@ -2309,7 +2309,7 @@ void GMT_contlabel_clippath (struct GMT_CONTOUR *G, int mode)
 		}
 		/* Note this uses the last segments pen/fontrgb on behalf of all */
 		GMT_textpath_init (&C->pen, G->rgb, &G->pen, C->font_rgb);
-		form = (G->box == 4) ? 16 : 0;
+		form = (G->box & 4) ? 16 : 0;
 		ps_textclip (xt, yt, m, angle, txt, G->label_font_size, G->clearance, just, form);	/* This turns clipping ON */
 		G->box |= 8;	/* Special message to just repeate the PSL call as variables have been defined */
 		GMT_free ((void *)angle);
@@ -2356,6 +2356,7 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode)
 	if (G->box & 8) {	/* Repeat call for Transparent text box (already set by clip) */
 		form = 8;
 		if (G->box & 1) form |= 256;		/* Transparent box with outline */
+		if (G->box & 4) form |= 16;		/* Rounded box with outline */
 		if (G->curved_text)
 			ps_textpath (NULL, NULL, 0, NULL, NULL, NULL, 0, 0.0, NULL, 0, form);
 		else
