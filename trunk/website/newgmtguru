@@ -1,12 +1,12 @@
 #!/bin/csh
-#		$Id: newgmtguru,v 1.1 2001-02-01 18:05:38 pwessel Exp $
+#		$Id: newgmtguru,v 1.2 2001-03-06 01:54:51 pwessel Exp $
 #
 # newgmtguru is run to initiate a new guru site
 # and helps setting up the guru directory with
 # macros suitable for this site.
 #
 # Author:	P. Wessel
-# Date:		02-JAN-2001
+# Date:		02-MAR-2001
 
 unalias cd
 set p = `pwd`

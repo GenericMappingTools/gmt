@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.2 2001-03-01 22:08:26 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.3 2001-03-06 01:54:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -34,7 +34,7 @@
  *
  * Author:	Paul Wessel
  * Date:	9-SEP-1992
- * Modified:	22-AUG-2000
+ * Modified:	05-MAR-2001
  * Version:	3.4
  *
  * Functions include:
@@ -70,6 +70,7 @@
 int GMT_read_rasheader (FILE *fp, struct rasterfile *h);
 int GMT_write_rasheader (FILE *fp, struct rasterfile *h);
 float GMT_native_decode (void *vptr, int k, int type);
+double GMT_native_encode (float z, int type);
 size_t GMT_native_write_one (FILE *fp, float z, int type);
 int GMT_native_read_grd_info (char *file, struct GRD_HEADER *header);
 int GMT_native_write_grd_info (char *file, struct GRD_HEADER *header);
@@ -1153,6 +1154,10 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 			}
 		}
 	}
+	/* Round off to chosen type */
+	
+	header->z_min = GMT_native_encode ((float)header->z_min, type);
+	header->z_max = GMT_native_encode ((float)header->z_max, type);
 	
 	/* store header information and array */
 	
@@ -1204,6 +1209,39 @@ float GMT_native_decode (void *vptr, int k, int type)
 	return (fval);
 }
 
+double GMT_native_encode (float z, int type)
+{
+	char c;
+	unsigned char u;
+	short int h;
+	int i;
+
+	switch (type) {
+		case GMT_NATIVE_CHAR:
+			c = (char)irint ((double)z);
+			return ((double)c);
+			break;
+		case GMT_NATIVE_UCHAR:
+			u = (unsigned char)irint ((double)z);
+			return ((double)u);
+			break;
+		case GMT_NATIVE_SHORT:
+			h = (short int)irint ((double)z);
+			return ((double)h);
+			break;
+		case GMT_NATIVE_INT:
+			i = (int)irint ((double)z);
+			return ((double)i);
+			break;
+		case GMT_NATIVE_FLOAT:
+		case GMT_NATIVE_DOUBLE:
+			return ((double)z);
+			break;
+		default:
+			break;
+	}
+}
+
 size_t GMT_native_write_one (FILE *fp, float z, int type)
 {
 	char c;
@@ -1214,19 +1252,19 @@ size_t GMT_native_write_one (FILE *fp, float z, int type)
 
 	switch (type) {
 		case GMT_NATIVE_CHAR:
-			c = (char)z;
+			c = (char)irint ((double)z);
 			return (fwrite ((void *)&c, GMT_native_size[type], (size_t)1, fp));
 			break;
 		case GMT_NATIVE_UCHAR:
-			u = (unsigned char)z;
+			u = (unsigned char)irint ((double)z);
 			return (fwrite ((void *)&u, GMT_native_size[type], (size_t)1, fp));
 			break;
 		case GMT_NATIVE_SHORT:
-			h = (short int)z;
+			h = (short int)irint ((double)z);
 			return (fwrite ((void *)&h, GMT_native_size[type], (size_t)1, fp));
 			break;
 		case GMT_NATIVE_INT:
-			i = (int)z;
+			i = (int)irint ((double)z);
 			return (fwrite ((void *)&i, GMT_native_size[type], (size_t)1, fp));
 			break;
 		case GMT_NATIVE_FLOAT:
