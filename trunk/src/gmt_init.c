@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.65 2002-01-10 22:35:24 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.66 2002-01-12 06:37:36 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2145,14 +2145,14 @@ void GMT_setshorthand (void) {/* Read user's .gmt_io file and initialize shortha
 int GMT_begin (int argc, char **argv)
 {
 	/* GMT_begin will merge the command line arguments with the arguments
-	 * that were used the last time this programs was called (if any).  This
-	 * way one only have to give -R -J to repeat previous map projection instead
-	 * of spelling out the wesn and projection parameters every time.
+	 * that were used the last time this program was called (if any).  This
+	 * way one only has to give -R -J to repeat previous map projection
+	 * instead of spelling out the -R and projection parameters every time.
 	 * The information is stored in the first line of the file .gmtcommands
 	 * in the current directory [or optionally a provided filename] and will
 	 * contain the last arguments to the common parameters like
 	 * -B, -H, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -c
-	 * Since the meaning of -X/-Y depends on whether we have an overlay or not
+	 * Since the meaning of -X/-Y depends on whether we have an overlay,
 	 * we maintain -X -Y for absolute shifts and -x -y for relative shifts.
 	 * If the argument +file is encountered then file is used in lieu of the
 	 * usual .gmtdefaults file and this argument is chopped from argv
