@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.38 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.39 2002-01-18 01:03:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -149,7 +149,8 @@ void GMT_io_init (void)
 	GMT_io.skip_if_NaN = (BOOLEAN *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (BOOLEAN), GMT_program);
 	GMT_io.in_col_type  = (int *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (int), GMT_program);
 	GMT_io.out_col_type = (int *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (int), GMT_program);
-	for (i = 0; i < BUFSIZ; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = GMT_IS_UNKNOWN;
+	for (i = 0; i < 2; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = GMT_IS_UNKNOWN;	/* Must be told [or find out] what x/y are */
+	for (i = 2; i < BUFSIZ; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = GMT_IS_FLOAT;	/* Other columns default to floats */
 
 	/* Set the Y2K conversion parameters once */
 	
@@ -434,7 +435,7 @@ void GMT_ascii_format_one (char *text, double x, int type)
 		return;
 	}
 	switch (type) {
-		case GMT_IS_UNKNOWN:
+		case GMT_IS_FLOAT:
 			sprintf (text, gmtdefs.d_format, x);
 			break;
 		case GMT_IS_LON:
@@ -1870,7 +1871,7 @@ int	GMT_scanf_geo (char *s, double *val)
 	/* Try to read a character string token stored in s,
 	knowing that it should be a geographical variable.  
 	If successful, stores value in val and returns one of
-	GMT_IS_UNKNOWN, GMT_IS_GEO, GMT_IS_LAT, GMT_IS_LON, 
+	GMT_IS_FLOAT, GMT_IS_GEO, GMT_IS_LAT, GMT_IS_LON, 
 	whichever can be determined from the format of s.
 	If unsuccessful, does not store anything in val and
 	returns GMT_IS_NAN.  
@@ -1888,7 +1889,7 @@ int	GMT_scanf_geo (char *s, double *val)
 	
 	char	scopy[64], suffix, *p, *p2;
 	double	dd, dm, ds;
-	int	retval = GMT_IS_UNKNOWN;
+	int	retval = GMT_IS_FLOAT;
 	int	k, id, im, ncolons;
 	BOOLEAN	negate = FALSE;
 
@@ -1949,7 +1950,7 @@ int	GMT_scanf_geo (char *s, double *val)
 		p = &p2[1];
 	}
 	
-	if (ncolons && retval == GMT_IS_UNKNOWN) retval = GMT_IS_GEO;
+	if (ncolons && retval == GMT_IS_FLOAT) retval = GMT_IS_GEO;
 	
 	switch (ncolons) {
 		case 0:
@@ -1985,7 +1986,7 @@ int	GMT_scanf_float (char *s, double *val)
 	if this would result in a success.  This
 	allows Fortran Double Precision to be readable.
 	
-	On success, return GMT_IS_UNKNOWN and store val.
+	On success, return GMT_IS_FLOAT and store val.
 	On failure, return GMT_IS_NAN and do not touch val.
 	*/
 
@@ -1997,7 +1998,7 @@ int	GMT_scanf_float (char *s, double *val)
 	if (p[0] == 0) {
 		/* Success (non-Fortran).  */
 		*val = x;
-		return (GMT_IS_UNKNOWN);
+		return (GMT_IS_FLOAT);
 	}
 	if (p[0] != 'D' && p[0] != 'd') return (GMT_IS_NAN);
 	k = strlen(p);
@@ -2015,7 +2016,7 @@ int	GMT_scanf_float (char *s, double *val)
 	x = strtod(scopy, &p);
 	if (p[0] != 0) return (GMT_IS_NAN);
 	*val = x;
-	return (GMT_IS_UNKNOWN);
+	return (GMT_IS_FLOAT);
 }
 
 int	GMT_scanf (char *s, int expectation, double *val)
@@ -2027,7 +2028,7 @@ int	GMT_scanf (char *s, int expectation, double *val)
 	returns type found.  Upon failure, does not touch val,
 	and returns GMT_IS_NAN.  Expectations permitted on call
 	are
-		GMT_IS_UNKNOWN	we expect an uncomplicated float.
+		GMT_IS_FLOAT	we expect an uncomplicated float.
 	*/
 	
 	char	calstring[64], clockstring[64], *p;
@@ -2041,7 +2042,7 @@ int	GMT_scanf (char *s, int expectation, double *val)
 		return (GMT_scanf_geo (s, val));
 	}
 	
-	if (expectation == GMT_IS_UNKNOWN) {
+	if (expectation == GMT_IS_FLOAT) {
 		/* True if no special format is expected or allowed  */
 		return (GMT_scanf_float (s, val));
 	}
@@ -2233,3 +2234,39 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t)
 	
 	return (GMT_IS_ABSTIME);
 }
+
+int	GMT_scanf_arg (char *s, int expectation, double *val)
+{
+	/* Version of GMT_scanf used for command line arguments only (not data records).
+	 * It differs from GMT_scanf in that if the expectation is GMT_IS_UNKNOWN it will
+	 * check to see if the argument is (1) an absolute time string, (2) a geographical
+	 * location string, or if not (3) a floating point string.  To ensure backward
+	 * compatibility: if we encounter geographic data it will also set the GMT_io.type[]
+	 * variable accordingly so that data i/o will work as in 3.4
+	 */
+	
+	char c;
+	
+	if (expectation == GMT_IS_UNKNOWN) {	/* Expectation for this column not set - must be determined if possible */
+		if (strchr (s, (int)'T')) {				/* Found a T in the argument - assume Absolute time */
+			expectation = GMT_IS_ABSTIME;
+		}
+		else if ((c = s[strlen(s)-1]) == 'W' || c == 'E') {	/* Found trailing W or E - assume Geographic longitudes */
+			expectation = GMT_IS_LON;
+		}
+		else if ((c = s[strlen(s)-1]) == 'S' || c == 'N') {	/* Found trailing S or N - assume Geographic latitudes */
+			expectation = GMT_IS_LON;
+		}
+		else if (strchr (s, (int)':')) {			/* Found a : in the argument - assume Geographic coordinates */
+			expectation = GMT_IS_GEO;
+		}
+		else {							/* Found nothing - assume floating point */
+			expectation = GMT_IS_FLOAT;
+		}
+	}
+	
+	/* OK, here we have an expectation, now call GMT_scanf */
+	
+	return (GMT_scanf (s, expectation, val));
+}
+

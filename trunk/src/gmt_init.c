@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.67 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.68 2002-01-18 01:03:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -719,7 +719,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 	 * -B, -H, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -c, -:, -
 	 */
 	 
-	int i, j, icol, expect_to_read, nn, n_slashes, error = 0;
+	int i, j, icol, expect_to_read, got, nn, n_slashes, error = 0, col_type[2];
 	BOOLEAN rect_box_given = FALSE;
 	double *p[6];
 	
@@ -759,6 +759,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 		case 'R':
 			p[0] = w;	p[1] = e;	p[2] = s;	p[3] = n;
 			p[4] = &project_info.z_bottom;	p[5] = &project_info.z_top;
+			col_type[0] = col_type[1] = 0;
 	 		project_info.region_supplied = TRUE;
 	 		if (item[strlen(item)-1] == 'r') {
 	 			rect_box_given = TRUE;
@@ -786,8 +787,17 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				}
 				if (icol < 2 && gmtdefs.xy_toggle) icol = 1 - icol;	/* col_types were swapped */
 				/* If column is either RELTIME or ABSTIME, use ARGTIME */
-				expect_to_read = (GMT_io.in_col_type[icol] & GMT_IS_RATIME) ? GMT_IS_ARGTIME : GMT_io.in_col_type[icol];
-				error += GMT_verify_expectations (expect_to_read, GMT_scanf (text, expect_to_read, p[i]), text);
+				if (GMT_io.in_col_type[icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
+					got = GMT_scanf_arg (text, GMT_io.in_col_type[icol], p[i]);
+					error += GMT_verify_expectations (GMT_io.in_col_type[icol], got, text);
+					if (got & GMT_IS_GEO) col_type[icol] = GMT_IS_GEO;		/* We will accept the implicit override */
+					if (got & GMT_IS_FLOAT) col_type[icol] = GMT_IS_FLOAT;		/* We will accept the implicit override */
+					/* However, finding an abstime here will give error > 0 and an early exit below */
+				}
+				else {	/* Things are set, do or die */
+					expect_to_read = (GMT_io.in_col_type[icol] & GMT_IS_RATIME) ? GMT_IS_ARGTIME : GMT_io.in_col_type[icol];
+					error += GMT_verify_expectations (expect_to_read, GMT_scanf (text, expect_to_read, p[i]), text);
+				}
 				if (error) {
 					GMT_syntax ('R');
 					return (error);
@@ -796,6 +806,8 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				i++;
 				text = strtok (CNULL, "/");
 			}
+			if (col_type[0]) GMT_io.in_col_type[0] = col_type[0];	/* Set to what we found */
+			if (col_type[1]) GMT_io.in_col_type[1] = col_type[1];	/* Set to what we found */
 	 		if (rect_box_given) {
 				d_swap (*p[2], *p[1]);	/* So w/e/s/n makes sense */
 				item[strlen(item)] = 'r';	/* Put back the trailing r we temporarily removed */
@@ -2932,7 +2944,7 @@ int GMT_map_getproject (char *args)
 	l_pos[0] = l_pos[1] = p_pos[0] = p_pos[1] = t_pos[0] = t_pos[1] = 0;
 	type = args[0];
 	GMT_io.in_col_type[0] = GMT_IS_LON;	GMT_io.in_col_type[1] = GMT_IS_LAT;	/* This may be overridden in -Jx, -Jp */
-	GMT_io.out_col_type[0] = GMT_io.out_col_type[1] = GMT_IS_UNKNOWN;		/* This may be overridden by mapproject -I */
+	GMT_io.out_col_type[0] = GMT_io.out_col_type[1] = GMT_IS_FLOAT;		/* This may be overridden by mapproject -I */
 
 	if (strchr ("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz", (int)type) == NULL) return (TRUE);	/* NO valid projection specified */
 	args++;
@@ -2967,7 +2979,7 @@ int GMT_map_getproject (char *args)
 			}
 			else {	/* Not involving geographical coordinates */
 	 			project_info.pars[4] = 0.0;
-				GMT_io.in_col_type[0] = GMT_io.in_col_type[1] = GMT_IS_UNKNOWN;
+				GMT_io.in_col_type[0] = GMT_io.in_col_type[1] = GMT_IS_FLOAT;
 			}
 			error = (n_slashes > 1);
 			if (!strncmp (args, "1:", 2)) k = 1;	/* Special check for linear proj with 1:xxx scale */
@@ -3057,7 +3069,7 @@ int GMT_map_getproject (char *args)
 	 	case 'z':
 	 		
 			error = (n_slashes > 0);
-			GMT_io.in_col_type[2] = GMT_IS_UNKNOWN;
+			GMT_io.in_col_type[2] = GMT_IS_FLOAT;
 
 	 		/* Find occurrences of l, p, or t */
 	 		for (j = 0; args[j]; j++) if (args[j] == 'L' || args[j] == 'l') l_pos[0] = j;
@@ -3098,7 +3110,7 @@ int GMT_map_getproject (char *args)
 	 	case 'P':		/* Polar (theta,r) */
 	 		project_info.gave_map_width = TRUE;
 	 	case 'p':
-			GMT_io.in_col_type[0] = GMT_IS_LON;	GMT_io.in_col_type[1] = GMT_IS_UNKNOWN;
+			GMT_io.in_col_type[0] = GMT_IS_LON;	GMT_io.in_col_type[1] = GMT_IS_FLOAT;
 			if (args[0] == 'a' || args[0] == 'A') {
 				project_info.got_azimuths = TRUE;	/* using azimuths instead of directions */
 				i = 1;
@@ -3140,7 +3152,7 @@ int GMT_map_getproject (char *args)
 	 		}
 	 		else {
 	 			n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
-				error += GMT_verify_expectations (GMT_IS_UNKNOWN, GMT_scanf (txt_c, GMT_IS_UNKNOWN, &project_info.pars[2]), txt_c);
+				error += GMT_verify_expectations (GMT_IS_FLOAT, GMT_scanf (txt_c, GMT_IS_FLOAT, &project_info.pars[2]), txt_c);
 				error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_d, GMT_IS_LAT, &project_info.pars[3]), txt_d);
 				error += (!(n_slashes == 3 && n == 4));
 	 		}

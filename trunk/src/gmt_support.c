@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.24 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.25 2002-01-18 01:03:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3709,25 +3709,73 @@ int GMT_verify_expectations (int wanted, int got, char *item)
 {	/* Compare what we wanted with what we got and see if it is OK */
 	int error = 0;
 	
-	switch (got) {
-		case GMT_IS_NAN:
-			fprintf (stderr, "GMT ERROR:  Could not decode %s, return NaN.\n", item);
-			error++;
-			break;
-		case GMT_IS_LAT:
-			if (wanted == GMT_IS_LON) {
-				fprintf (stderr, "GMT ERROR:  Expected longitude, but %s is a latitude!\n", item);
+	if (wanted == GMT_IS_UNKNOWN) {	/* No expectations set */
+		switch (got) {
+			case GMT_IS_ABSTIME:	/* Found a T in the string - ABSTIME ? */
+				fprintf (stderr, "%s: GMT ERROR: %s appears to be an Absolute Time String: ", GMT_program, item);
+				if (MAPPING)
+					fprintf (stderr, "This is not allowed for a map projection\n");
+				else
+					fprintf (stderr, "You must specify time data type with option -f.\n");
 				error++;
-			}
-			break;
-		case GMT_IS_LON:
-			if (wanted == GMT_IS_LAT) {
-				fprintf (stderr, "GMT ERROR:  Expected latitude, but %s is a longitude!\n", item);
+				break;
+				
+			case GMT_IS_GEO:	/* Found a : in the string - GEO ? */
+				fprintf (stderr, "%s: GMT Warning:  %s appears to be a Geographical Location String: ", GMT_program, item);
+				if (project_info.projection == LINEAR)
+					fprintf (stderr, "You should append d to the -Jx or -JX projection for geographical data.\n");
+				else
+					fprintf (stderr, "You should specify geographical data type with option -f.\n");
+				fprintf (stderr, "%s will proceed assuming geographical input data.\n");
+				break;
+				
+			case GMT_IS_LON:	/* Found a : in the string and then W or E - LON ? */
+				fprintf (stderr, "%s: GMT Warning:  %s appears to be a Geographical Longitude String: ", GMT_program, item);
+				if (project_info.projection == LINEAR)
+					fprintf (stderr, "You should append d to the -Jx or -JX projection for geographical data.\n");
+				else
+					fprintf (stderr, "You should specify geographical data type with option -f.\n");
+				fprintf (stderr, "%s will proceed assuming geographical input data.\n");
+				break;
+				
+			case GMT_IS_LAT:	/* Found a : in the string and then S or N - LAT ? */
+				fprintf (stderr, "%s: GMT Warning:  %s appears to be a Geographical Latitude String: ", GMT_program, item);
+				if (project_info.projection == LINEAR)
+					fprintf (stderr, "You should append d to the -Jx or -JX projection for geographical data.\n");
+				else
+					fprintf (stderr, "You should specify geographical data type with option -f.\n");
+				fprintf (stderr, "%s will proceed assuming geographical input data.\n");
+				break;
+				
+			case GMT_IS_FLOAT:
+				break;
+			default:
+				break;
+		}
+	}
+	else {
+		switch (got) {
+			case GMT_IS_NAN:
+				fprintf (stderr, "%s: GMT ERROR:  Could not decode %s, return NaN.\n", GMT_program, item);
 				error++;
-			}
-			break;
-		default:
-			break;
+				break;
+				
+			case GMT_IS_LAT:
+				if (wanted == GMT_IS_LON) {
+					fprintf (stderr, "%s: GMT ERROR:  Expected longitude, but %s is a latitude!\n", GMT_program, item);
+					error++;
+				}
+				break;
+				
+			case GMT_IS_LON:
+				if (wanted == GMT_IS_LAT) {
+					fprintf (stderr, "%s: GMT ERROR:  Expected latitude, but %s is a longitude!\n", GMT_program, item);
+					error++;
+				}
+				break;
+			default:
+				break;
+		}
 	}
 	return (error);
 }
