@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.36 2004-01-12 00:37:22 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.37 2004-01-12 20:07:41 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1022,6 +1022,7 @@ if [ $GMT_ftp = "y" ]; then
 
 #	Set-up ftp command
 	p=
+	sub=`echo $VERSION | awk '{print substr($1,1,1)}'`
 	echo "user anonymous $USER@" > gmt_install.ftp_list
 	if [ $passive_ftp = "y" ]; then
 		echo "passive" >> gmt_install.ftp_list
@@ -1030,7 +1031,7 @@ if [ $GMT_ftp = "y" ]; then
 			p=p
 		fi
 	fi
-	echo "cd $DIR" >> gmt_install.ftp_list
+	echo "cd $DIR/$sub" >> gmt_install.ftp_list
 	echo "binary" >> gmt_install.ftp_list
 	make_ftp_list $GMT_get_progs progs
 	make_ftp_list $GMT_get_share share
