@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_D.tex,v 1.4 2002-02-27 23:15:24 pwessel Exp $
+%	$Id: GMT_Appendix_D.tex,v 1.5 2002-09-29 22:27:24 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2002.
@@ -62,15 +62,22 @@ and support data used in the Cookbook section.
 written by us and \GMT\ users elsewhere. (See Appendix A for more
 details).
 
-\item[GMT\_win32bin.zip] ZIP archive with all binaries for Win32
-platforms, the example scripts and data, and the default distribution
-of coastline data.
-
 \item[triangle.tar.\{gz,bz2\}] Contains John Shewchuk's fast Delaunay
 triangulation routine which may be installed with GMT. (See the copyright
 information first if you are a commercial user).
 
+\end{description}
+
 \index{GMT@\GMT!binaries for Win32}
+
+All of the above archives are also available as Windows ZIP archives, e.g., {bf GMT\_progs.zip}.
+For Windows users who do not want to compile themselves, there are two zip files with Win32 executables:
+
+\begin{description}
+
+\item[GMT\_exe.zip] ZIP archive with all main \GMT\ executables.
+
+\item[GMT\_suppl\_exe.zip] ZIP archive with all supplemental \GMT\ executables.
 
 \end{description}
 
@@ -80,7 +87,7 @@ The netCDF library that makes up the backbone of the grdfile
 I/O operations can be obtained from  Unidata.  A compressed
 tar file can be accessed (in binary mode) from the file
 \filename{netcdf.tar.Z} in the anonymous FTP directory of
-\underline{unidata.ucar.edu} (Internet 128.117.140.3).
+\underline{unidata.ucar.edu}.
 The software distribution includes a \PS\ file of
 the netCDF User's Guide, and there is also online documentation
 from their web site.  [A mailing list,
@@ -90,4 +97,4 @@ announcements about netCDF bugs, fixes, and enhancements.  To
 subscribe, send a request to
 \htmladdnormallink{netcdfgroup-adm@unidata.ucar.edu}{mailto:netcdfgroup-adm@unidata.ucar.edu}].
 Precompiled libraries for WIN32 are also available\footnote{Required
-with \filename{GMT\_win32bin.zip}}.
+with \filename{GMT\_exe.zip}}.
