@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.61 2002-01-07 20:41:24 ben Exp $
+ *	$Id: gmt_plot.c,v 1.62 2002-01-13 23:50:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2454,6 +2454,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	double s1, w1, val, dx, dy, x, y, del;
 	int do_minutes, do_seconds, move_up, i, nx, ny, done_zero = FALSE, annot, GMT_world_map_save;
 	char label[256], cmd[256];
+	PFI GMT_outside_save;
 	
 	if (!(MAPPING)) return;	/* Annotations and header already done by linear_axis */
 
@@ -2509,7 +2510,11 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	
 	GMT_on_border_is_outside = TRUE;	/* Temporarily, points on the border are outside */
 	GMT_world_map_save = GMT_world_map;
-	if (project_info.region) GMT_world_map = FALSE;
+	if (project_info.region) {
+		GMT_world_map = FALSE;
+		GMT_outside_save = GMT_outside;
+		GMT_outside = GMT_wesn_outside_np;
+	}
 	
 	if (dx > 0.0) {	/* Annotate the S and N boundaries */
 		BOOLEAN full_lat_range, proj_A, proj_B, annot_0_and_360;
@@ -2572,7 +2577,10 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	if (project_info.three_D) ps_command ("/F12 {/Symbol Y} bind def");	/* Reset definition of F12 */
 	
 	GMT_on_border_is_outside = FALSE;	/* Reset back to default */
-	if (project_info.region) GMT_world_map = GMT_world_map_save;
+	if (project_info.region) {
+		GMT_world_map = GMT_world_map_save;
+		GMT_outside = GMT_outside_save;
+	}
 }
 
 void GMT_map_boundary (double w, double e, double s, double n)
