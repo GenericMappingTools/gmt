@@ -3,7 +3,7 @@
 Sets map boundary annotation and tickmark intervals. The format of \fItickinfo\fP is
 [\fBp|s\fP]\fIxinfo\fP[/\fIyinfo\fP[/\fIzinfo\fP]][:."Title":][\fBW|w\fP][\fBE|e\fP][\fBS|s\fP][\fBN|n\fP][\fBZ|z\fP[\fB+\fP]].
 The leading \fBp\fP [Default] or \fBs\fP selects the primary or secondary annotation information.
-Each of the \fI?info\fP segments are textstrings of the form \fIinfo\fP[:"Axis label":][:^"prefix":][:,"unit label":].
+Each of the \fI?info\fP segments are textstrings of the form \fIinfo\fP[:"Axis label":][:="prefix":][:,"unit label":].
 The \fIinfo\fP string is made up of one or more concatenated substrings of the form [\fBwhich\fP]\fIstride\fP[+-\fIphase\fP][\fBu\fP].
 The optional \fBwhich\fP can be either \fBa\fP for annotation tick spacing [Default], \fBf\fP for frame tick spacing, and
 \fBg\fP for gridline spacing.  If frame interval is not set, it is assumed to be the same
@@ -22,7 +22,7 @@ axes with a slash [/] (If a 3-D basemap is selected with \fB\-E\fP and \fB\-Jz\f
 to the vertical axis may be appended.)  For linear/log/power projections (\fB\-Jx|X\fP): Labels
 for each axis can be added by surrounding them with colons.  If the first character in the
 label is a period, then the label is used as plot title; if it is a comma then the label is
-appended to each annotation; if it is a caret (^) the the prefix is prepended to each annotation (start label/prefix
+appended to each annotation; if it is an equal sign (=) the the prefix is prepended to each annotation (start label/prefix
 with - to avoid space between annotation and item); else it is the axis label.
 If the label consists of more than one word, enclose the entire label in double quotes (e.g., :"my label":).
 .br

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.75 2004-06-19 03:06:15 pwessel Exp $
+ *	$Id: pslib.c,v 1.76 2004-06-24 02:07:50 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -173,7 +173,7 @@ void ps_cmyk_to_rgb (int rgb[], double cmyk[]);
 int ps_place_color (int rgb[]);
 void ps_place_setdash (char *pattern, int offset);
 void ps_set_length_array (char *param, double *array, int n);
-void ps_set_int_array (char *param, int *array, int n);
+int ps_set_xyn_arrays (char *xparam, char *yparam, char *nparam, double *x, double *y, int *node, int n, int m);
 void ps_set_txt_array (char *param, char *array[], int n);
 void ps_set_integer (char *param, int value);
 void ps_set_real_array (char *param, double *array, int n);
@@ -2225,13 +2225,11 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 	
 	/* Set these each time */
 	
+	n = ps_set_xyn_arrays ("PSL_x", "PSL_y", "PSL_node", x, y, node, n, m);
+	ps_set_real_array ("PSL_angle", angle, m);
+	ps_set_txt_array ("PSL_str", label, m);
  	ps_set_integer ("PSL_n", n);
 	ps_set_integer ("PSL_m", m);
-	ps_set_length_array ("PSL_x", x, n);
-	ps_set_length_array ("PSL_y", y, n);
-	ps_set_real_array ("PSL_angle", angle, m);
-	ps_set_int_array ("PSL_node", node, m);
-	ps_set_txt_array ("PSL_str", label, m);
 	
 	fprintf (ps.fp, "%d PSL_curved_text_labels\n", form);
 	
@@ -3663,19 +3661,45 @@ void ps_set_length_array (char *param, double *array, int n)
 	fprintf (ps.fp, "%d array astore def\n", n);
 }
 
+int ps_set_xyn_arrays (char *xparam, char *yparam, char *nparam, double *x, double *y, int *node, int n, int m)
+{	/* These are scaled by psscale.  We make sure there are no point pairs that would yield dx = dy = 0 (repeat point)
+	 * at the resolution we are using (0.01 DPI units), hence a new n (possibly shorter) is returned. */
+	int i, j, k, this_i, this_j, last_i, last_j, n_skipped;
+	char *use;
+	
+	use = (char *) ps_memory (VNULL, (size_t)n, sizeof (char));
+	this_i = this_j = INT_MAX;
+	for (i = j = k = n_skipped = 0; i < n; i++) {
+		last_i = this_i;	last_j = this_j;
+		this_i = irint (x[i] * ps.scale * 100.0);	/* Simulates the digits written by a %.2lf format */
+		this_j = irint (y[i] * ps.scale * 100.0);
+		if (this_i != last_i && this_j != last_j) {	/* Not a repeat point, use it */
+			use[i] = TRUE;
+			j++;
+		}
+		else	/* Repeat point, skip it */
+			n_skipped++;
+		if (k < m && node[k] == i && n_skipped) node[k++] -= n_skipped;	/* Adjust node pointer since we are removing points and upsetting the order */
+	}
+	fprintf (ps.fp, "/%s\n", xparam);
+	for (i = 0; i < n; i++) if (use[i]) fprintf (ps.fp, "%.2lf\n", x[i] * ps.scale);
+	fprintf (ps.fp, "%d array astore def\n", j);
+	fprintf (ps.fp, "/%s\n", yparam);
+	for (i = 0; i < n; i++) if (use[i]) fprintf (ps.fp, "%.2lf\n", y[i] * ps.scale);
+	fprintf (ps.fp, "%d array astore def\n", j);
+	fprintf (ps.fp, "/%s\n", nparam);
+	for (i = 0; i < m; i++) fprintf (ps.fp, "%d\n", node[i]);
+	fprintf (ps.fp, "%d array astore def\n", m);
+	
+	ps_free ((void *)use);
+	return (j);
+}
+
 void ps_set_real_array (char *param, double *array, int n)
 {	/* These are raw and not scaled */
 	int i;
 	fprintf (ps.fp, "/%s\n", param);
 	for (i = 0; i < n; i++) fprintf (ps.fp, "%.2lf\n", array[i]);
-	fprintf (ps.fp, "%d array astore def\n", n);
-}
-
-void ps_set_int_array (char *param, int *array, int n)
-{
-	int i;
-	fprintf (ps.fp, "/%s\n", param);
-	for (i = 0; i < n; i++) fprintf (ps.fp, "%d\n", array[i]);
 	fprintf (ps.fp, "%d array astore def\n", n);
 }
 

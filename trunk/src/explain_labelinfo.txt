@@ -53,5 +53,5 @@ If no \fIunit\fP is appended we use the units listed in the gridfile.
 .br
 \fB+w\fP specifies how many (\fIx, y\fP) points will be used to estimate label angles [Default is 10].
 .br
-\fB+^\fP\fIprefix\fP prepends \fIprefix\fP to all line labels. If \fIprefix\fP starts with a leading hypen (-) then there will be no space
+\fB+=\fP\fIprefix\fP prepends \fIprefix\fP to all line labels. If \fIprefix\fP starts with a leading hypen (-) then there will be no space
 between label value and the prefix. [Default is no prefix].

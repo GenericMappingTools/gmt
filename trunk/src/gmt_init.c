@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.147 2004-06-22 20:00:28 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.148 2004-06-24 02:07:50 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -153,8 +153,8 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t     c: second - plot as 2-digit integer (0-59; 60-61 if leap seconds are enabled).\n");
 			fprintf (stderr, "\t   Specify an axis label by surrounding it with colons (e.g., :\"my x label\":).\n");
 			fprintf (stderr, "\t   To prepend a prefix to each annotation (e.g., $ 10, $ 20 ...) add a prefix that begins\n");
-			fprintf (stderr, "\t     with a caret (^); the rest is used as annotation prefix (e.g. :\'^$\':). If the prefix has\n");
-			fprintf (stderr, "\t     a leading hyphen (-) there will be no space between prefix and annotation (e.g., :\'^-$\':).\n");
+			fprintf (stderr, "\t     with the equal-sign (=); the rest is used as annotation prefix (e.g. :=\'$\':). If the prefix has\n");
+			fprintf (stderr, "\t     a leading hyphen (-) there will be no space between prefix and annotation (e.g., :=-\'$\':).\n");
 			fprintf (stderr, "\t   To append a unit to each annotation (e.g., 5 km, 10 km ...) add a label that begins\n");
 			fprintf (stderr, "\t     with a comma; the rest is used as unit annotation (e.g. :\",km\":). If the unit has\n");
 			fprintf (stderr, "\t     a leading hyphen (-) there will be no space between unit and annotation (e.g., :,-%%:).\n");
@@ -526,7 +526,7 @@ void GMT_label_syntax (int indent, int kind)
 	if (kind == 0) fprintf (stderr, "%s  If no unit appended, use z-unit from grdfile. [Default is no unit]\n", pad);
 	fprintf (stderr, "%s +v for placing curved text along path [Default is straight]\n", pad);
 	fprintf (stderr, "%s +w to set how many (x,y) points to use for angle calculation [Default is 10]\n", pad);
-	fprintf (stderr, "%s +^<prefix> to give labels a prefix; Start with - for no space between annotation and prefix.\n", pad);
+	fprintf (stderr, "%s +=<prefix> to give labels a prefix; Start with - for no space between annotation and prefix.\n", pad);
 }
 
 void GMT_cont_syntax (int indent, int kind)
@@ -3044,7 +3044,7 @@ void GMT_strip_colonitem (const char *in, const char *pattern, char *item, char 
 		fprintf (stderr, "%s: ERROR: More than one unit string in  -B component %s\n", GMT_program, in);
 		exit (EXIT_FAILURE);
 	}
-	if (strstr (out, pattern) && !strcmp (pattern, ":^")) {	/* Problems with decoding prefix */
+	if (strstr (out, pattern) && !strcmp (pattern, ":=")) {	/* Problems with decoding prefix */
 		fprintf (stderr, "%s: ERROR: More than one prefix string in  -B component %s\n", GMT_program, in);
 		exit (EXIT_FAILURE);
 	}
@@ -3451,7 +3451,7 @@ int GMT_map_getframe (char *in) {
 		if (!info[i][0]) continue;
 		
 		GMT_strip_colonitem (info[i], ":,", frame_info.axis[i].unit, out1);	/* Pull out annotation unit, if any */
-		GMT_strip_colonitem (out1, ":^", frame_info.axis[i].prefix, out2);	/* Pull out annotation prefix, if any */
+		GMT_strip_colonitem (out1, ":=", frame_info.axis[i].prefix, out2);	/* Pull out annotation prefix, if any */
 		GMT_strip_colonitem (out2, ":", frame_info.axis[i].label, out3);	/* Pull out axis label, if any */
 		
 		GMT_decode_tinfo (out3, &frame_info.axis[i]);				/* Decode the annotation intervals */

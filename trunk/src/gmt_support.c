@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.129 2004-06-22 20:00:28 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.130 2004-06-24 02:07:50 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1666,7 +1666,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 	BOOLEAN g_set = FALSE;
 	char txt_cpy[BUFSIZ], txt_a[32], txt_b[32], c, *p;
 	
-	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+o][+v][+r<min_rc>][+s<size>][+p[<pen>]][+u<unit>][+w<sidth>][+^<prefix>] strings */
+	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+o][+v][+r<min_rc>][+s<size>][+p[<pen>]][+u<unit>][+w<width>][+=<prefix>] strings */
 	
 	for (k = 0; txt[k] && txt[k] != '+'; k++);
 	if (!txt[k]) return (GMT_contlabel_specs_old (txt, G));	/* Old-style info strings */
@@ -1804,7 +1804,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 				G->half_width = atoi (&p[1]) / 2;
 				break;
 
-			case '^':	/* Label Prefix specification */
+			case '=':	/* Label Prefix specification */
 				if (p[1]) strcpy (G->prefix, &p[1]);
 				break;
 
@@ -3269,7 +3269,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 					}
 					this_dist = G->label_dist_spacing - dist_offset + last_label_dist;
 					if (GMT_label_is_OK (this_label, label, this_dist, this_value_dist, -1, -1, G)) {
-						GMT_place_label (new_label, this_label, G, G->label_type != 3);
+						GMT_place_label (new_label, this_label, G, !(G->label_type == 0 || G->label_type == 3));
 						new_label->node = i - 1;
 						GMT_contlabel_angle (xx, yy, i - 1, i, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
@@ -3324,7 +3324,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 				if ((new_label->dist - last_dist) >= G->min_dist) {	/* OK to accept this label */
 					this_dist = dist;
 					if (GMT_label_is_OK (this_label, label, this_dist, this_value_dist, -1, -1, G)) {
-						GMT_place_label (new_label, this_label, G, TRUE);
+						GMT_place_label (new_label, this_label, G, !(G->label_type == 0));
 						new_label->node = (j == 0) ? 0 : j - 1;
 						GMT_contlabel_angle (xx, yy, new_label->node, j, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
@@ -3371,7 +3371,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 						this_value_dist = value_dist[right] - f * (value_dist[right] - value_dist[left]);
 					}
 					if (GMT_label_is_OK (this_label, label, this_dist, this_value_dist, line_no, -1, G)) {
-						GMT_place_label (new_label, this_label, G, TRUE);
+						GMT_place_label (new_label, this_label, G, !(G->label_type == 0));
 						GMT_contlabel_angle (xx, yy, left, right, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == (int)n_alloc) {
@@ -3404,7 +3404,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 					new_label->dist = map_dist[start];
 					this_value_dist = value_dist[start];
 					if (GMT_label_is_OK (this_label, label, this_dist, this_value_dist, -1, j, G)) {
-						GMT_place_label (new_label, this_label, G, TRUE);
+						GMT_place_label (new_label, this_label, G, !(G->label_type == 0));
 						GMT_contlabel_angle (xx, yy, start, start, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == (int)n_alloc) {
@@ -3812,7 +3812,7 @@ int GMT_get_format (double interval, char *unit, char *prefix, char *format)
 	return (ndec);
 }
 
-int	GMT_non_zero_winding(double xp, double yp, double *x, double *y, int n_path)
+int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path)
 {
 	/* Routine returns (2) if (xp,yp) is inside the
 	   polygon x[n_path], y[n_path], (0) if outside,
