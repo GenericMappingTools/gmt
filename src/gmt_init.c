@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.30 2001-09-12 19:35:08 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.31 2001-09-12 21:04:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1532,26 +1532,26 @@ int GMT_setparameter (char *keyword, char *value)
 			if ((gmtdefs.Y2K_offset_year = atoi (value)) < 0) error = TRUE;
 			break;
 		case 75:
-			if (value[0] == '\0' || !strcmp (value, "tab") || !strcmp (value, "TAB"))	/* DEFAULT */
+			if (value[0] == '\0' || !strcmp (lower_value, "tab"))	/* DEFAULT */
 				strncpy (gmtdefs.field_delimeter, "\t", 8);
-			else if (!strcmp (value, "space") || !strcmp (value, "SPACE"))
+			else if (!strcmp (lower_value, "space"))
 				strncpy (gmtdefs.field_delimeter, " ", 8);
-			else if (!strcmp (value, "comma") || !strcmp (value, "COMMA"))
+			else if (!strcmp (lower_value, "comma"))
 				strncpy (gmtdefs.field_delimeter, ",", 8);
-			else if (!strcmp (value, "none") || !strcmp (value, "NONE"))
+			else if (!strcmp (lower_value, "none"))
 				gmtdefs.field_delimeter[0] = 0;
 			else
 				strncpy (gmtdefs.field_delimeter, value, 8);
 			gmtdefs.field_delimeter[7] = 0;	/* Just a precaution */
 			break;
 		case 76:
-			if (value[0] == '\0' || !strcmp (value, "ring") || !strcmp (value, "RING"))	/* DEFAULT */
+			if (value[0] == '\0' || !strcmp (lower_value, "ring"))	/* DEFAULT */
 				gmtdefs.degree_symbol = 0;
-			else if (!strcmp (value, "degree") || !strcmp (value, "DEGREE"))
+			else if (!strcmp (lower_value, "degree"))
 				gmtdefs.degree_symbol = 1;
-			else if (!strcmp (value, "colon") || !strcmp (value, "COLON"))
+			else if (!strcmp (lower_value, "colon"))
 				gmtdefs.degree_symbol = 2;
-			else if (!strcmp (value, "none") || !strcmp (value, "NONE"))
+			else if (!strcmp (lower_value, "none"))
 				gmtdefs.degree_symbol = 3;
 			else
 				error = TRUE;
@@ -4056,7 +4056,7 @@ void	GMT_init_time_system_structure () {
 	
 	/* Check the unit sanity:  */
 	switch (GMT_time_system[gmtdefs.time_system].unit) {
-		case 'Y':
+		case 'y':
 			/* This is a kludge:  we assume all years
 			are the same length, thinking that a user
 			with decimal years doesn't care about
@@ -4065,7 +4065,7 @@ void	GMT_init_time_system_structure () {
 			a simple unit conversion. */
 			GMT_time_system[gmtdefs.time_system].scale = (365.2425 * 86400);
 			break;
-		case 'D':
+		case 'd':
 			GMT_time_system[gmtdefs.time_system].scale = 86400.0;
 			break;
 		case 'h':
@@ -4079,8 +4079,8 @@ void	GMT_init_time_system_structure () {
 			break;
 		default:
 			fprintf (stderr, "GMT_FATAL_ERROR:  gmtdefault TIME_UNIT is invalid.\n");
-			fprintf (stderr, "    Choose one only from Y D h m s\n");
-			fprintf (stderr, "    Corresponding to Year Day hour minute second\n");
+			fprintf (stderr, "    Choose one only from y d h m s\n");
+			fprintf (stderr, "    Corresponding to year day hour minute second\n");
 			exit (EXIT_FAILURE);
 			break;
 	}
@@ -4091,8 +4091,8 @@ void	GMT_init_time_system_structure () {
 		&GMT_time_system[gmtdefs.time_system].epoch_t0) ) {
 		
 		fprintf (stderr, "GMT_FATAL_ERROR:  gmtdefault TIME_EPOCH format is invalid.\n");
-		fprintf (stderr, "   A correct format has the form [-]YYYY-MM-DDThh:mm:ss[.xxx]\n");
-		fprintf (stderr, "   or (using ISO weekly calendar)   YYYY-Www-dThh:mm:ss[.xxx]\n");
+		fprintf (stderr, "   A correct format has the form [-]yyyy-mm-ddThh:mm:ss[.xxx]\n");
+		fprintf (stderr, "   or (using ISO weekly calendar)   yyyy-Www-dThh:mm:ss[.xxx]\n");
 		fprintf (stderr, "   An example of a correct format is:  %s\n", GMT_time_system[0].epoch);
 		exit (EXIT_FAILURE);
 	}
@@ -4101,8 +4101,8 @@ void	GMT_init_time_system_structure () {
 int	GMT_scanf_epoch (char *s, double *t0) {
 
 	/* Read a string which must be in one of these forms:
-		[-]YYYY-MM-DDThh:mm:ss[.xxx]
-		[-]YYYY-Www-dThh:mm:ss[.xxx]
+		[-]yyyy-mm-ddThh:mm:ss[.xxx]
+		[-]yyyy-Www-dThh:mm:ss[.xxx]
 	*/
 	
 	double	ss;
