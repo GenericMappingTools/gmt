@@ -526,14 +526,34 @@ interval.
 .B PS_COLOR
 Determines whether PostScript output should use RGB or CMYK when specifying color.  Select from rgb or cmyk [rgb].
 .TP
-.B PSIMAGE_COMPRESS
+.B PS_IMAGE_COMPRESS
 Determines if PostScript images are compressed using the Run-Length Encoding scheme (rle),
 LZW compression (lzw), or not at all (none) [none].
 .TP
-.B PSIMAGE_FORMAT
+.B PS_IMAGE_FORMAT
 Determines whether images created in PostScript should use ascii
 or binary format.  The latter takes up less space and executes faster but may choke
 some printers, especially those off serial ports.  Select ascii or bin [ascii].
+.TP
+.B PS_LINE_CAP
+Determines how the ends of a line segment will be drawn.  Choose among a \fIbutt\fP cap (default)
+where there is no projection beyond the end of the path, a \fIround\fP cap where a
+semicircular arc with diameter equal to the linewidth is drawn around the end points,
+and \fIsquare\fP cap where a half square of size equal to the linewidth extends beyond
+the end of the path [butt].
+.TP
+.B PS_LINE_JOIN
+Determines what happens at kinks in line segments.  Choose among a \fImiter\fP join
+where the outer edges of the strokes for the two segments are extended until they
+meet at an angle (as in a picture frame).  If the angle is too acute, a bevel join is used
+instead (threshold is set by \fBPS_MITER_LIMIT\fP), \fIround\fP join where a
+circular arc is used to fill in the cracks at the kinks, and \fIbevel\fP join which
+is a miter join that is cut off so kinks are triangular in shape [miter].
+.TP
+.B PS_MITER_LIMIT
+Sets the threshold angle (integer in 0-180 range) used for mitered joins.  0 and 180
+are special flag values that imply the PostScript default [11] and always bevels,
+respectively.  Other values sets the acute angle used to decide between mitered and bevelled.
 .TP
 .B TICK_LENGTH
 The length of a tickmark.  Normally, tickmarks are drawn on the outside of
