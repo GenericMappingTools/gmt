@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.41 2002-05-09 17:23:20 pwessel Exp $
+ *	$Id: pslib.c,v 1.42 2002-05-23 22:59:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -217,7 +217,7 @@ void ps_axis (double x, double y, double length, double val0, double val1, doubl
 	annot_justify = label_justify = (side < 2) ? -10 : -2;
 	dy = sign * annotpointsize / ps.points_pr_unit;
 			
-	fprintf (ps.fp, "\nV %d %d T %lg R\n", irint (x * ps.scale), irint (y * ps.scale), angle);
+	fprintf (ps.fp, "\nV %lg %lg T %lg R\n", x * ps.scale, y * ps.scale, angle);
 	ps_plot (0.0, 0.0, 3);
 	ps_plot (length, 0.0, 2);
 	if ((val1 - val0) == 0.0) {
@@ -346,7 +346,6 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	 * nbits is the number of bits per pixel (1, 4, 8, 24)
 	 */
 	 
-	int ix, iy;		/* Position of the lower left corder of the image */
 	int lx, ly;		/* x and y dimension of image in PS coordinates */
 	int mx, n_channels, id, nan_rgb[3];
 	BOOLEAN colormask = FALSE;
@@ -355,8 +354,6 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	char *kind[2] = {"bin", "hex"};					/* What encoding to use */
 	char *read[2] = {"readstring", "readhexstring"};		/* What read function to use */
 	
-	ix = irint (x * ps.scale);
-	iy = irint (y * ps.scale);
 	lx = irint (xsize * ps.scale);
 	ly = irint (ysize * ps.scale);
 	id = (ps.cmyk_image && abs(nbits) == 24) ? 2 : ((abs(nbits) == 24) ? 1 : 0);
@@ -370,7 +367,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	}
 		
 	fprintf (ps.fp, "\n%% Start of %s Adobe %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], abs (nbits));
-	fprintf (ps.fp, "V N %d %d T %d %d scale\n", ix, iy, lx, ly);
+	fprintf (ps.fp, "V N %lg %lg T %d %d scale\n", x * ps.scale, y * ps.scale, lx, ly);
 	if (colormask) {	/* Do new PS Level 3 image type 4 with colormask */
 		nbits = abs (nbits);
 		fprintf (ps.fp, "/Device%s setcolorspace\n", colorspace[id]);
@@ -671,12 +668,14 @@ void ps_hexagon_ (double *x, double *y, double *diameter, int *rgb, int *outline
 
 void ps_ellipse (double x, double y, double angle, double major, double minor, int rgb[], int outline)
 {
-	int ir;
+	int ix, iy, ir;
 	double aspect;
 	
 	/* Feature: Pen thickness also affected by aspect ratio */
 	
-	fprintf (ps.fp, "V %d %d T", (int) irint (x * ps.scale), (int) irint (y * ps.scale));
+	ix = irint (x * ps.scale);
+	iy = irint (y * ps.scale);
+	fprintf (ps.fp, "V %d %d T", ix, iy);
 	if (angle != 0.0) fprintf (ps.fp, " %lg R", angle);
 	aspect = minor / major;
 	fprintf (ps.fp, " 1 %lg scale\n", aspect);
@@ -935,15 +934,13 @@ void ps_imagemask (double x, double y, double xsize, double ysize, unsigned char
 	 * If 0 is used, then maskbits == 0 will be painted with rgb.
 	 * buffer width must be an integral of 8 bits.
 	 */
-	int ix, iy, lx, ly;
+	int lx, ly;
 	char *TF[2] = {"false", "true"}, *kind[2] = {"bin", "hex"}, *read[2] = {"readstring", "readhexstring"};
 	
-	ix = irint (x * ps.scale);
-	iy = irint (y * ps.scale);
 	lx = irint (xsize * ps.scale);
 	ly = irint (ysize * ps.scale);
 	fprintf (ps.fp, "\n%% Start of %s imagemask\n", kind[ps.hex_image]);
-	fprintf (ps.fp, "V N %d %d T %d %d scale\n", ix, iy, lx, ly);
+	fprintf (ps.fp, "V N %lg %lg T %d %d scale\n", x * ps.scale, y * ps.scale, lx, ly);
 	ps_setpaint (rgb);
 	memcpy ((void *)ps.rgb, (void *)no_rgb, 3 * sizeof (int));	/* So subsequent ps_setpaint calls work properly */
 	fprintf (ps.fp, "%d 1 8 div mul ceiling cvi dup 65535 ge {pop 65535} if string /pstr exch def\n", nx);
@@ -1184,7 +1181,7 @@ void ps_plotend (int lastpage)
 			fprintf (ps.fp, "%%%%BoundingBox: %d %d %d %d\n", x0, y0, x1, y1);
 		}
 		fprintf (ps.fp, "%% Reset translations and scale and call showpage\n");
-		fprintf (ps.fp, "S %d %d T", -(int) irint (ps.xoff * ps.scale), -(int) irint (ps.yoff * ps.scale));
+		fprintf (ps.fp, "S %lg %lg T", -(ps.xoff * ps.scale), -(ps.yoff * ps.scale));
 		fprintf (ps.fp, " %lg %lg scale",
 			ps.scale/(ps.points_pr_unit * ps.xscl), ps.scale/(ps.points_pr_unit * ps.yscl));
 		if (ps.landscape) fprintf (ps.fp, " -90 R %d 0 T", -ps.p_width);
@@ -1194,7 +1191,7 @@ void ps_plotend (int lastpage)
 		if (!ps.eps_format) fprintf (ps.fp, "%%%%EOF\n");
 	}
 	else if (ps.absolute)
-		fprintf (ps.fp, "S %d %d T 0 A\n", -(int) irint (ps.xoff * ps.scale), -(int) irint (ps.yoff * ps.scale));
+		fprintf (ps.fp, "S %lg %lg T 0 A\n", -(ps.xoff * ps.scale), -(ps.yoff * ps.scale));
 	else
 		fprintf (ps.fp, "S 0 A\n");
 	if (ps.fp != stdout) fclose (ps.fp);
@@ -1406,7 +1403,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		}
 	}
 	ps_setpaint (no_rgb);
-	if (!(xoff == 0.0 && yoff == 0.0)) fprintf (ps.fp, "%d %d T\n", irint (xoff*ps.scale), irint (yoff*ps.scale));
+	if (!(xoff == 0.0 && yoff == 0.0)) fprintf (ps.fp, "%lg %lg T\n", xoff*ps.scale, yoff*ps.scale);
 	
 	/* Initialize global variables */
 	
@@ -1571,18 +1568,15 @@ void ps_rect_ (double *x1, double *y1, double *x2, double *y2, int *rgb, int *ou
 
 void ps_rotatetrans (double x, double y, double angle)
 {
-	int ix, iy;
 	int go = FALSE;
 	
-	ix = irint (x * ps.scale);
-	iy = irint (y * ps.scale);
 	if (angle != 0.0) {
 		fprintf (ps.fp, "%lg R", angle);
 		go = TRUE;
 	}
-	if (ix != 0 || iy != 0) {
+	if (x != 0.0 || y != 0.0) {
 		if (go) fputc (' ', ps.fp);
-		fprintf (ps.fp, "%d %d T", ix, iy);
+		fprintf (ps.fp, "%lg %lg T", x * ps.scale, y * ps.scale);
 	}
 	fputc ('\n', ps.fp);
 }
@@ -2371,13 +2365,10 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 
 void ps_transrotate (double x, double y, double angle)
 {
-	int ix, iy;
 	int go = FALSE;
 	
-	ix = irint (x * ps.scale);
-	iy = irint (y * ps.scale);
-	if (ix != 0 || iy != 0) {
-		fprintf (ps.fp, "%d %d T", ix, iy);
+	if (x != 0.0 || y != 0.0) {
+		fprintf (ps.fp, "%lg %lg T", x * ps.scale, y * ps.scale);
 		go = TRUE;
 	}
 	if (angle != 0.0) {
