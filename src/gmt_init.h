@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.44 2004-06-22 20:00:28 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.45 2004-10-21 04:51:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -174,6 +174,7 @@ BOOLEAN GMT_geographic_in = FALSE;	/* TRUE if input data is long/lat */
 BOOLEAN GMT_geographic_out = FALSE;	/* TRUE if output data is long/lat */
 struct GMT_IO GMT_io = {
 	FALSE,
+	{ FALSE, FALSE },
 	{ FALSE, FALSE },
 	{ FALSE, FALSE },
 	FALSE,

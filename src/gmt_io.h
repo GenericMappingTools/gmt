@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.26 2004-06-22 20:00:28 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.27 2004-10-21 04:51:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -113,6 +113,7 @@ struct GMT_IO {	/* Used to process input data records */
 	BOOLEAN multi_segments;		/* TRUE if current Ascii input file has multiple segments */
 	BOOLEAN single_precision[2];	/* TRUE if current binary input(0) or output(1) is in single precision
 					   [Default is double] */
+	BOOLEAN swab[2];		/* TRUE if current binary input(0) or output(1) must be byte-swapped */
 	BOOLEAN binary[2];		/* TRUE if current input(0) or output(1) is in binary format */
 	BOOLEAN skip_bad_records;	/* TRUE if records where x and/or y are NaN or Inf */
 	BOOLEAN give_report;		/* TRUE if functions should report how many bad records were skipped */

@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.57 2004-09-15 00:40:14 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.58 2004-10-21 04:51:35 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -666,7 +666,9 @@ of the fact that \GMT\ has no way of determining the actual
 number of columns in the file.  You must therefore pass that
 information to \GMT\ via the binary \Opt{bi}[{\bf s}]{\it n} option,
 where {\it n} is the actual number of data columns ({\bf s}
-indicates single rather than double precision).
+indicates single (4 bytes) rather than double (8 bytes) precision).  If uppercase
+{\bf S} (or {\bf D}) are used it implies that byte-swapping should be performed
+just prior to writing (for output) or immediately after  reading (for input).
 Note that {\it n} may be larger than {\it m}, the number of
 columns that the \GMT\ program requires to do its task.  If
 {\it n} is not given then it defaults to {\it m}.  If
