@@ -90,6 +90,9 @@ conjunction with \fB\-b\fP.  Optionally, append \fBc\fP, \fBi\fP, \fBm\fP, \fBp\
 indicate that the size information in the input data is in units of cm, inch, meter,
 or point, respectively. [Default is MEASURE_UNIT].
 .TP
+.B \-S-
+dash.  \fIsize\fP is the length of a short horizontal line segment.
+.TP
 .B \-Sa
 st\fBa\fPr.  \fIsize\fP is diameter of circumscribing circle.
 .TP

@@ -30,7 +30,8 @@ The D record results in a horizontal line across the legend.  The line starts an
 units from the frame sides, and is drawn using the specified \fIpen\fP.
 .TP
 \fBG\fP \fIgap\fP
-The G record specifies a vertical gap of the given length.
+The G record specifies a vertical gap of the given length.  In addition to the standard units (i, c, p) you
+may use l for lines.
 .TP
 \fBH\fP \fIfontsize font Header\fP
 The H record plots a centered text string using the specified font parameters.
@@ -44,7 +45,9 @@ Change the number of columns in the legend [1].
 \fBS\fP \fIdx1 symbol size fill pen dx2 text\fP
 Plots the selected symbol with specified size, fill, and outline.  The symbol is centered at \fIdx1\fP from the
 left margin of the column, with the explanatory text starting \fIdx2\fP from the margin.  Use - if no fill
-is required.
+is required.  Two \fBpsxy\fP symbols front (f) and vector (v) require special attention.  You must prepend
+the length of the desired item to the rest of the symbol argument; this will be used internally to set the
+correct fault or vector length and stripped before passing the arguments to \fBpsxy\fP.
 .TP
 \fB>\fP <paragraph mode header for pstext>
 Start a new text paragraph by specifying all the parameters needed (see \fBpstext \-M\fP description).  Note that
@@ -130,9 +133,9 @@ G 0.15i
 .br
 T Let us just try some simple text that can go on a few lines.
 .br
-T There is now way to predetermine how many lines may be required,
+T There is no easy way to predetermine how many lines will be required,
 .br
-T so we just keep plodding along until we get tired.
+T so we may need to adjust the box height to get the right size.
 .br
 .SH "SEE ALSO"
 .IR gmt (l),
