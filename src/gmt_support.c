@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.56 2004-01-08 06:05:47 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.57 2004-01-12 01:37:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2588,7 +2588,7 @@ void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift)
 
 int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax)
 {
-	int shifted, region_pos, grd_pos;
+	int region_pos, grd_pos;
 	
 	/* Round off to nearest multiple of the grid spacing.  This should
 	   only affect the numbers when oblique projections or -R...r has been used */

@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.11 2004-01-02 22:45:13 pwessel Exp $
+REM	$Id: gmtinstall.bat,v 1.12 2004-01-12 01:37:26 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
@@ -24,7 +24,7 @@ REM Microsoft Visual C/c++ tools.  It will build GMT
 REM using DLL libraries.  To make static executables
 REM you must make some edits to the setup below.
 REM
-REM Author: Paul Wessel, 20-APR-2003
+REM Author: Paul Wessel, 10-JAN-2004
 REM ----------------------------------------------------
 REM
 REM How to make and install GMT under DOS/Win95/98:
