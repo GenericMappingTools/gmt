@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_O.tex,v 1.3 2004-06-12 18:18:15 pwessel Exp $
+%	$Id: GMT_Appendix_O.tex,v 1.4 2004-06-13 08:11:21 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -35,7 +35,7 @@ upper and lower case; they share the same algorithm but differ in some other way
 In what follows, the phrase ``line segment'' is taken to mean either a contour or a line
 to be labelled.
 \begin{description}
-\item [d:] Full syntax is [{\bf d}]{\it dist}[{\bf c$|$i$|$m$|$p}][/{\it width}[{\it frac}]].
+\item [d:] Full syntax is [{\bf d}]{\it dist}[{\bf c$|$i$|$m$|$p}][{\it frac}].
 Here, the code {\bf d} is optional to ensure backwards compatibility with \GMT\ 3.
 Place labels according to the distance measured along the projected line on the map.  Append the
 unit you want to measure distances in [Default is taken from {\bf MEASURE\_UNIT}].
@@ -44,21 +44,17 @@ distance along the line.  To ensure that closed lines whose total length is less
 than {\it dist} get annotated, we may append {\it frac} which will place the first
 label at the distance $d =$ {\it dist} $\times$ {\it frac} from the start of the
 line (and every {\it dist} thereafter).  If not given, {\it frac} defaults to 0.25.
-The angle of the line at the point of label placement is calculated by a least-squares
-fit to the {\it width} closest points.  If not specified, {\it width} defaults to 10.
-Note that you must specify {\it width} if you want to specify {\it frac}.
-\item [D:] Full syntax is {\bf D}{\it dist}[{\bf d$|$e$|$k$|$m$|$n}][/{\it width}[/{\it frac}]].
+\item [D:] Full syntax is {\bf D}{\it dist}[{\bf d$|$e$|$k$|$m$|$n}][/{\it frac}].
 This option is similar to {\bf d} except the original data must be referred to geographic
 coordinates (and a map projection must have been chosen) and actual Earth\footnote{or whatever
 planet we are deaing with.} surface distances along the lines are considered.  Append the
 unit you want to measure distances in; choose among {\bf d}egree, m{\bf e}ter [Default],
-{\bf k}ilometer, statute {\bf m}iles, or {\bf n}autical miles.  Other aspecs are similar to code {\bf d}.
-\item [f:] Full syntax is {\bf f}{\it fix.d}[/{\it width}[/{\it slop}]].  Here, an ASCII file {\it fix.d} is
+{\bf k}ilometer, statute {\bf m}iles, or {\bf n}autical miles.  Other aspects are similar to code {\bf d}.
+\item [f:] Full syntax is {\bf f}{\it fix.d}[/{\it slop}].  Here, an ASCII file {\it fix.d} is
 given which must contain records whose first two columns contain the coordinates of points along
 the lines at which location labels should be placed.  Labels will only be placed if the coordinates
 match the line coordinates to within a distance of {\it slop} (with units taken from {\bf MEASURE\_UNIT}).
-The default {\it slop} is zero, meaning only exact coordinate matches will do.  The optional {\it width}
-for angle smoothing remains the same.
+The default {\it slop} is zero, meaning only exact coordinate matches will do.
 \item [l:] Full syntax is {\bf l}{\it line1}[,{\it line2}[, ...]].  One or more straight line segments
 are specified separated by commas, and labels will be placed at the intersections of these lines and
 our line segments.  Each {\it line} specification implies a {\it start} and {\it stop} point which each
@@ -72,15 +68,15 @@ upper left to the lower right map corner, while {\bf Z-}/135W/15S is a line from
 (135\DS W, 15\DS S).
 \item [L:] Same as {\bf l} except we will treat the lines given as great circle start/stop coordinates and fill in
 the points between before looking for intersections.
-\item [n:] Full syntax is {\bf n}{\it number}[/{\it width}[/{\it minlength}[{\bf c$|$i$|$m$|$p}]]].  Place
+\item [n:] Full syntax is {\bf n}{\it number}[{\it minlength}[{\bf c$|$i$|$m$|$p}]].  Place
 {\it number} of labels along each line regardless of total line length.  The line is divided into {\it number}
 segments and the labels are placed at the centers of these segments.  Optionally, you may give a {\it minlength}
 distance to exclude contour segments of shorted length.
-\item [N:] Full syntax is {\bf N}{\it number}[/{\it width}[/{\it minlength}[{\bf c$|$i$|$m$|$p}]]].  Similar to
+\item [N:] Full syntax is {\bf N}{\it number}[{\it minlength}[{\bf c$|$i$|$m$|$p}]].  Similar to
 code {\bf n} but here labels are placed at the ends of each segment (for {\it number} $ /geq 2$).  A special
 case arises for {\it number} $= 1$ when a single label will be placed according to the sign of {\it number}:
 $-1$ places one label justified at the start of the line, while $+1$ places one label justified at the end of the line.
-\item [x:] Full syntax is {\bf x}{\it cross.d}[/{\it width}[/{\it slop}]].  Here, an ASCII file {\it cross.d} is
+\item [x:] Full syntax is {\bf x}{\it cross.d}.  Here, an ASCII file {\it cross.d} is
 a multi-segment file whose lines will intersect out segment lines; labels will be placed at these intersections.
 \item [X:] Same as {\bf x} except we treat the lines given as great circle start/stop coordinates and fill in the
 points between.
@@ -123,6 +119,8 @@ justification will take effect.
 manifested if the box is filled or outlined, neither of which is implied by this option.
 \item [+p:] Selects the drawing of the label box outline; append your preferred {\it pen} unless you
 want the default \GMT\ pen [0.25p,black].
+\item [+r:] Do not place labels at points along the line whose local radius of curvature falls below
+the given threshold value [Default is 0]..
 \item [+s:] Change the fontsize of the labels, which by default is 9 points.
 \item [+u:] Append the chosen {\it unit} to the label.  Normally a space will separate the label
 and the unit.  If you want to close this gap, append a {\it unit} that begins with a hyphen (--).
@@ -131,6 +129,8 @@ $z$-unit attribute of the grid header.
 \item [+v:]  Place curved labels that follow the wiggles of the line segments.  This is especially
 useful if the labels are long relative to the length-scale of the line wiggles.  The default labels
 are text set on an invisible straight line at the angle determined.
+\item [+w:] The angle of the line at the point of label placement is calculated by a least-squares
+fit to the {\it width} closest points.  If not specified, {\it width} defaults to 10.
 \item [+^:]  Similar in most regards to {\bf +u} but applies instead to a label \emph{prefix} which
 you must append.
 \end{description}
