@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.12 2001-09-26 02:07:39 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.13 2001-09-26 04:34:47 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -255,16 +255,27 @@ epoch are specified with the {\bf TIME\_SYSTEM} parameter.  Relative time coordi
 involving relative time has been selected or when the \Opt{f} switch has been used to indicate relative time coordinates.
 \end{description}
 
-\subsection{Projections -- The \Opt{J?} options}
+\subsection{Projections -- The \Opt{J} option}
 \index{\Opt{J}}
 \index{Map projections}
 
 \GMTfig[h]{GMT_-J}{The 25 projections available in \gmt}
 
-Selects the map projection.  The following code (?) determines the
-projection.  Specify map {\it width} (or axis lengths) in the unit of
-your choice.  The projections avaiable in \GMT\ are presented in Figure~\ref{fig:GMT_-J}.
-For details on all \GMT\ projections, see the \GMTprog{psbasemap} man page.
+This option selects the coordinate transformation or map projection.  The general format is
+
+\begin{itemize}
+\item {\bf --J}$\delta${\it parameters}/{\it scale}.  Here, $\delta$ is a lower-case
+letter of the alphabet that selects a particular map projection, the {\it parameters}
+is one or more slash-delimited projection parameter, and {\it scale} is map scale given in
+distance units per degree or as 1:xxxxx.
+\item {\bf --J}$\Delta${\it parameters}/{\it width}.  Now, $\Delta$ is an upper-case
+letter of the alphabet that selects a particular map projection, the {\it parameters}
+is one or more slash-delimited projection parameter, and {\it width} is map width (map
+height is automatically computed from the implied map scale and region).
+\end{itemize}
+
+The projections avaiable in \GMT\ are presented in Figure~\ref{fig:GMT_-J}.
+For details on all \GMT\ projections and the required parameters, see the \GMTprog{psbasemap} man page.
 We will also show examples of every projection in the next chapter, and a quick
 summary of projection syntax was given in Chapter 3.
 
@@ -384,7 +395,8 @@ cartesian linear axes are very similar to geographic axes.  The anotation format
 the {\bf D\_FORMAT} parameter.  By default, it is set to ``\%lg'', which is a C language format statement
 for floating point numbers, and with this setting the various axis routines will automatically determine
 how many decimal points should be used by inspecting the {\it stride} settings.  If {\bf D\_FORMAT} is set
-to another format it will be used directly.  Note that for these axes you may use the {\it unit} setting to
+to another format it will be used directly (.e.g, ``\%.2lf'' for a fixed, two decimals format).
+Note that for these axes you may use the {\it unit} setting to
 add a unit string to each anotation (see Figure~\ref{fig:GMT_-B_linear}).
 
 \GMTfig[h]{GMT_-B_linear}{Linear Cartesian projection axis.  Long tickmarks accompany
@@ -783,7 +795,7 @@ with the following additional flexibility for calendar data:
 
 Because of the widespread use of incompatible and ambiguous formats, the processing of input
 date components is guided by the template {\bf INPUT\_DATE\_FORMAT} in your
-\filename{.gmtdefaults} file which by default is set to {\it yyyy-mm-dd}.  Y2K-challenged input data such as 29/05/89T08.30pm can be processed by setting {\bf INPUT\_DATE\_FORMAT}
+\filename{.gmtdefaults} file which by default is set to {\it yyyy-mm-dd}.  Y2K-challenged input data such as 29/05/89 can be processed by setting {\bf INPUT\_DATE\_FORMAT}
 to dd/mm/yy.  A complete discription of possible formats is given in the \GMTprog{gmtdefaults}
 man page.  The {\it clock} string is more standardized but issues like 12- or 24-hour clocks complicate matters
 as well as the presence or absence of delimeters between fields.  Thus, the processing of input

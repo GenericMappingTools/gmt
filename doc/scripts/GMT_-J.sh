@@ -1,8 +1,8 @@
 #!/bin/sh
-#	$Id: GMT_-J.sh,v 1.2 2001-09-25 01:58:21 pwessel Exp $
+#	$Id: GMT_-J.sh,v 1.3 2001-09-26 04:34:47 pwessel Exp $
 #
 
-pstext -R0/5/0/3 -Jx1 -P -K -W200 -C0.01/0.035 << EOF > GMT_-J.ps
+pstext -R0/5/0/3 -Jx1 -P -K << EOF > GMT_-J.ps
 2.5	2.8	16	0	1	BC	GMT PROJECTIONS
 2	2.25	12	0	1	BC	GEOGRAPHIC PROJECTIONS
 0	1.75	11	0	0	BL	CYLINDRICAL
@@ -48,7 +48,7 @@ pstext -R0/5/0/3 -Jx1 -P -K -W200 -C0.01/0.035 << EOF > GMT_-J.ps
 0.05	2.6	8	0	0	BL	E = Equal Area
 EOF
 
-psxy -R -Jx -O -K -M -W0.5p << EOF >> GMT_-J.ps
+psxy -R -Jx -O -M -W0.5p << EOF >> GMT_-J.ps
 >
 2.3	2.75
 2	2.4
