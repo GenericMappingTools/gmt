@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.6 2001-08-20 22:01:10 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.7 2001-08-23 02:18:18 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1111,7 +1111,7 @@ double GMT_erfc (double y)
 #endif
 
 #if HAVE_STRTOD == 0
-double	GMT_strtod (char *s, char **ends) {
+double	GMT_strtod (const char *s, char **ends) {
 
 	/* Given s, try to scan it to convert an
 		ascii string representation of a
