@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.9 2001-08-17 19:52:40 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.10 2001-08-17 20:22:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -911,12 +911,13 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S)
 	 * Items not encountered are left as -1.
 	 */
 
-	int i, j, order, n_y, n_m, n_d, n_j, n_w, sequence[4], delim, last, error = 0;
+	int i, j, order, n_y, n_m, n_d, n_j, n_w, sequence[4], n_delim, last, error = 0;
 	
 	/* S->order is initialized to {-1, -1, -1, -1} */
 	
-	n_y = n_m = n_d = n_j = n_w = 0;
-	S->delimeter[0] = S->delimeter[1] = 0;
+	n_y = n_m = n_d = n_j = n_w = n_delim = 0;
+	S->delimeter[0][0] = S->delimeter[0][1] = S->delimeter[1][0] = S->delimeter[1][1] = 0;
+	sequence[0] = sequence[1] = sequence[2] = sequence[3] = -1;
 	
 	for (i = order = 0; i < strlen (text); i++) {
 		switch (text[i]) {
@@ -928,26 +929,43 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S)
 				n_y++;
 				break;
 			case 'm':	/* Month */
-				if (S->order[1] < 0) S->order[1] = order++;
+				if (S->order[1] < 0)		/* First time we encounter a m */
+					S->order[1] = order++;
+				else if (text[i-1] != 'm')	/* Done it before, previous char must be m */
+					error++;
 				n_m++;
 				break;
 			case 'W':	/* ISO Week flag */
 				S->iso_calendar = TRUE;
 				break;
 			case 'w':	/* Iso Week */
-				if (S->order[1] < 0) S->order[1] = order++;
+				if (S->order[1] < 0) {		/* First time we encounter a w */
+					S->order[1] = order++;
+					if (text[i-1] != 'W') error++;	/* Must have the format W just before */
+				}
+				else if (text[i-1] != 'w')	/* Done it before, previous char must be w */
+					error++;
 				n_w++;
 				break;
 			case 'd':	/* Day of month */
-				if (S->order[2] < 0) S->order[2] = order++;
+				if (S->order[2] < 0)		/* First time we encounter a d */
+					S->order[2] = order++;
+				else if (text[i-1] != 'd')	/* Done it before, previous char must be d */
+					error++;
 				n_d++;
 				break;
 			case 'j':	/* Day of year  */
-				if (S->order[3] < 0) S->order[3] = order++;
+				if (S->order[3] < 0)		/* First time we encounter a j */
+					S->order[3] = order++;
+				else if (text[i-1] != 'j')	/* Done it before, previous char must be j */
+					error++;
 				n_j++;
 				break;
 			default:	/* Delimeter of some kind */
-				S->delimeter[0] = text[i];
+				if (n_delim == 2)
+					error++;
+				else
+					S->delimeter[n_delim++][0] = text[i];
 				break;
 		}
 	}
@@ -970,7 +988,7 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S)
 	error += (S->iso_calendar && n_d != 1);		/* Gotta have 2 ww */
 	error += (!S->iso_calendar && n_w != 0);	/* Should have no w if there is no W */
 	if (error) {
-		fprintf (stderr, "%s: ERROR: Incomplete date template %s\n", GMT_program, text);
+		fprintf (stderr, "%s: ERROR: Unacceptable date template %s\n", GMT_program, text);
 		exit (EXIT_FAILURE);
 	}
 }
@@ -981,25 +999,39 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 	 * Items not encountered are left as -1.
 	 */
 
-	int i, j, order, sequence[3];
+	int i, j, order, n_delim = 0, sequence[3], last, error = 0;
+	BOOLEAN big_to_small;
 	
 	/* hms_order is initialized to {-1, -1, -1} */
+	sequence[0] = sequence[1] = sequence[2] = -1;
 	
-	S->delimeter[0] = S->delimeter[1] = 0;
+	S->delimeter[0][0] = S->delimeter[0][1] = S->delimeter[1][0] = S->delimeter[1][1] = 0;
 	
 	for (i = order = 0; i < strlen (text); i++) {
 		switch (text[i]) {
 			case 'h':	/* Hour */
-				if (S->order[0] < 0) S->order[0] = order++;
+				if (S->order[0] < 0)		/* First time we encountered a h */
+					S->order[0] = order++;
+				else if (text[i-1] != 'h')	/* Must follow a previous h */
+					error++;
 				break;
 			case 'm':	/* Minute */
-				if (S->order[1] < 0) S->order[1] = order++;
+				if (S->order[1] < 0)		/* First time we encountered a m */
+					S->order[1] = order++;
+				else if (text[i-1] != 'm')	/* Must follow a previous m */
+					error++;
 				break;
 			case 's':	/* Seconds */
-				if (S->order[2] < 0) S->order[2] = order++;
+				if (S->order[2] < 0)		/* First time we encountered a s */
+					S->order[2] = order++;
+				else if (text[i-1] != 's')	/* Must follow a previous s */
+					error++;
 				break;
 			default:	/* Delimeter of some kind */
-				S->delimeter[0] = text[i];
+				if (n_delim == 2)
+					error++;
+				else
+					S->delimeter[n_delim++][0] = text[i];
 				break;
 		}
 	}
@@ -1008,7 +1040,18 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 	
 	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) if (S->order[j] == i) sequence[i] = j;
 	for (i = 0; i < 3; i++) S->order[i] = sequence[i];
-}
+	big_to_small = TRUE;		/* May change in the next loop */
+	for (i = 1, last = S->order[0]; big_to_small && i < 3; i++) {
+		if (S->order[i] == -1) continue;
+		if (S->order[i] < last) big_to_small = FALSE;
+		last = S->order[i];
+	}
+	if (!big_to_small) error++;
+	if (error) {
+		fprintf (stderr, "%s: ERROR: Unacceptable clock template %s\n", GMT_program, text);
+		exit (EXIT_FAILURE);
+	}
+}}
 
 void GMT_decode_calclock_formats ()
 {
@@ -1069,11 +1112,11 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
 		char fmt[32];
 		(mode) ? sprintf (S->format, "%%2.2d\0") : sprintf (S->format, "%%2d\0");
 		if (S->order[1] >= 0) {	/* Need minutes too*/
-			if (S->delimeter[0]) strcat (S->format, S->delimeter);
+			if (S->delimeter[0][0]) strcat (S->format, S->delimeter[0]);
 			(mode) ? sprintf (fmt, "%%2.2d\0") : sprintf (fmt, "%%2d\0");
 			strcat (S->format, fmt);
 			if (S->order[2] >= 0) {	/* .. and seconds */
-				if (S->delimeter[0]) strcat (S->format, S->delimeter);
+				if (S->delimeter[1][0]) strcat (S->format, S->delimeter[1]);
 				if (mode) {	/* Output format */
 					sprintf (fmt, "%%2.2d\0");
 					strcat (S->format, fmt);
@@ -1116,12 +1159,12 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 		k = (S->Y2K_year) ? 2 : 4;
 		(mode) ? sprintf (S->format, "%%%d.%dd\0", k, k) : sprintf (S->format, "%%%dd\0", k);
 		if (S->order[1] >= 0) {	/* Need ISO week */
-			if (S->delimeter[0]) strcat (S->format, S->delimeter);
+			if (S->delimeter[0][0]) strcat (S->format, S->delimeter[0]);
 			strcat (S->format, "W");
 			(mode) ? sprintf (fmt, "%%2.2d\0") : sprintf (fmt, "%%2d\0");
 			strcat (S->format, fmt);
 			if (S->order[2] >= 0) {	/* and ISO day of week */
-				if (S->delimeter[0]) strcat (S->format, S->delimeter);
+				if (S->delimeter[1][0]) strcat (S->format, S->delimeter[1]);
 				sprintf (fmt, "%%1d\0");
 				strcat (S->format, fmt);
 			}
@@ -1131,12 +1174,12 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 		k = (S->order[0] == 0 && !S->Y2K_year) ? 4 : 2;
 		(mode) ? sprintf (S->format, "%%%d.%dd\0", k, k) : sprintf (S->format, "%%%dd\0", k);
 		if (S->order[1] >= 0) {	/* Need more items */
-			if (S->delimeter[0]) strcat (S->format, S->delimeter);
+			if (S->delimeter[0][0]) strcat (S->format, S->delimeter[0]);
 			k = (S->order[1] == 0 && !S->Y2K_year) ? 4 : 2;
 			(mode) ? sprintf (fmt, "%%%d.%dd\0", k, k) : sprintf (fmt, "%%%dd\0", k);
 			strcat (S->format, fmt);
 			if (S->order[2] >= 0) {	/* .. and even more */
-				if (S->delimeter[0]) strcat (S->format, S->delimeter);
+				if (S->delimeter[1][0]) strcat (S->format, S->delimeter[1]);
 				k = (S->order[2] == 0 && !S->Y2K_year) ? 4 : 2;
 				(mode) ? sprintf (fmt, "%%%d.%dd\0", k, k) : sprintf (fmt, "%%%dd\0", k);
 				strcat (S->format, fmt);
