@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.54 2004-04-01 17:05:08 pwessel Exp $
+ *	$Id: gmt.h,v 1.55 2004-04-05 18:50:18 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -417,6 +417,8 @@ struct MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */
 	BOOLEAN fancy;		/* TRUE for a fancy map scale */
 	BOOLEAN gave_xy;	/* TRUE if x0, y0 was given in cartesian map coordinates and not lon/lat */
 	char measure;		/* The unit, i.e., m (miles), n (nautical miles), or k (kilometers) */
+	char justify;		/* Placement of label: t(op), b(ottom), l(eft), r(ight), u(nit) */
+	char label[64];		/* Alternative user-specified label */
 };
 
 struct GMT_FONT {		/* Information for each font */

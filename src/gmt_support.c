@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.61 2004-04-01 17:05:08 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.62 2004-04-05 18:50:19 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3705,12 +3705,13 @@ int GMT_getscale (char *text, struct MAP_SCALE *ms)
 {
 	/* Pass text as &argv[i][2] */
 	
-	int j = 0, i, n_slash, error = 0, k;
+	int j = 0, i, n_slash, error = 0, colon, k;
 	char txt_a[32], txt_b[32], txt_sx[32], txt_sy[32];
 	
 	ms->fancy = ms->gave_xy = FALSE;
-	ms->measure = '\0';
+	ms->measure = ms->label[0] = '\0';
 	ms->length = 0.0;
+	ms->justify = 't';
 	
 	/* First deal with possible prefixes f and x (i.e., f, x, xf, fx( */
 	if (text[j] == 'f') ms->fancy = TRUE, j++;
@@ -3721,10 +3722,14 @@ int GMT_getscale (char *text, struct MAP_SCALE *ms)
 	
 	for (n_slash = 0, i = j; text[i]; i++) if (text[i] == '/') n_slash++;
 	
-	if (n_slash == 4) {		/* -L[f][x]<x0>/<y0>/<lon>/<lat>/<length>[m|n|k] */
+	/* Determine if we have the optional label/justify component specified */
+	
+	for (colon = -1, i = j; text[i] && colon < 0; i++) if (text[i] == ':') colon = i+1;
+	
+	if (n_slash == 4) {		/* -L[f][x]<x0>/<y0>/<lon>/<lat>/<length>[m|n|k][:label:<just>] */
 		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%[^/]/%lf", txt_a, txt_b, txt_sx, txt_sy, &ms->length);
 	}
-	else if (n_slash == 3) {	/* -L[f][x]<x0>/<y0>/<lat>/<length>[m|n|k] */
+	else if (n_slash == 3) {	/* -L[f][x]<x0>/<y0>/<lat>/<length>[m|n|k][:label:<just>] */
 		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%lf", txt_a, txt_b, txt_sy, &ms->length);
 	}
 	else {	/* Wrong number of slashes */
@@ -3732,6 +3737,12 @@ int GMT_getscale (char *text, struct MAP_SCALE *ms)
 		fprintf (stderr, "\t-L[f][x]<x0>/<y0>/[<lon>/]<lat>/<length>[m|n|k], append m, n, or k for miles, nautical miles, or km [Default]\n");
 		error++;
 	}
+	if (colon > 0) {	/* Get label and justification */
+		sscanf (&text[colon], "%[^:]:%c", ms->label, &ms->justify);
+		ms->measure = text[colon-2];
+	}
+	else
+		ms->measure = text[strlen(text)-1];
 	if (ms->gave_xy) {	/* Convert user's x/y to inches */
 		ms->x0 = GMT_convert_units (txt_a, GMT_INCH);
 		ms->y0 = GMT_convert_units (txt_b, GMT_INCH);
@@ -3761,7 +3772,6 @@ int GMT_getscale (char *text, struct MAP_SCALE *ms)
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Scale longitude is out of range\n", GMT_program);
 		error++;
 	}
-	ms->measure = text[strlen(text)-1];
 	if (k <4 || k > 5) {
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Correct syntax\n", GMT_program);
 		fprintf (stderr, "\t-L[f][x]<x0>/<y0>/[<lon>/]<lat>/<length>[m|n|k], append m, n, or k for miles, nautical miles, or km [Default]\n");

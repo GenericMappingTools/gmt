@@ -43,6 +43,15 @@ image \fIwidth\fP determines the size of the image on the page.
 \fBL\fP \fIfontsize font justification Label\fP
 The L record plots a (L)eft, (C)entered, or (R)ight-justified text string using the specified font parameters.
 .TP
+\fBM\fP \fIslon slat length\fP \fBf|p\fP [ \fB\-R\fP\fIw/e/s/n\fP \fB\-J\fP\fIparam\fP ]
+Place a map scale in the legend.  Specify \fIslon slat\fP, the point on the map where the scale applies,
+\fIlength\fP, the length of the scale in km (append \fBm\fP or \fBn\fP for miles or nautical miles), and
+\fBf|p\fP for fancy or plain scale.  If the \fB\-R \-J\fP supplied to \fBpslegend\fP is different than the
+projection needed for the scale, supply the optional \fB\-R \-J\fP settings as well.  Note that \fIlength\fP
+can have \fI:label:just\fP appended, where \fIlabel\fP replaces the default label (unless - is given) and
+\fIjust\fP (\fBl|r|t|b\fP) dictates where the label is placed [Default is \fBt\fP].  Use \fBu\fP to treat the
+label as distance units appended to each annotation.
+.TP
 \fBN\fP \fIncolums\fP
 Change the number of columns in the legend [1].
 .TP
