@@ -1,20 +1,27 @@
 .TH GMTCONVERT GMTMANSECTION DATE VERSION VERSION
 .SH NAME
-gmtconvert \- Convert between ASCII and binary 1-D tables
+gmtconvert \- Converts, Pastes, and/or Extracts columns from ASCII and binary 1-D tables
 .SH SYNOPSIS
-\fBgmtconvert\fP [ \fIinputfiles\fP] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-M\fP[\fIflag\fP] ] 
+\fBgmtconvert\fP [ \fIinputfiles\fP] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-S\fP ] 
 [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP]\fIn\fP ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBgmtconvert\fP reads its standard input [or inputfiles] and writes out
-the information to standard output.  Its main purpose is to convert between
-binary and ASCII data tables.  Input (and hence output) may have multiple
-subheaders if \fB\-M\fP is selected.
+the desired information to standard output.  It can do a combination of
+three things: (1) convert between binary and ASCII data tables, (2) paste
+corresponding records from multiple files into a single file, and (3)
+extract a subset of the columns.  Input (and hence output) may have multiple
+subheaders if \fB\-M\fP is selected, and ascii tables may have regular headers as well.
 .TP
 \fIdatafile(s)\fP
 ASCII (or binary, see \fB\-bi\fP) file(s) holding a number of data columns. 
 .SH OPTIONS
 #include "explain_-H.txt"
 #include "explain_-M.txt"
+.TP
+.B \-S
+The records from the input files should be paSted horizontally, not appended vertically.  [Default
+processes one file at the time].  Note for binary input, all the files you want to paste must
+have the same number of columns (as set with -bi).
 #include "explain_-V.txt"
 #include "explain_-t.txt"
 #include "explain_-i.txt"
@@ -33,6 +40,25 @@ To convert the multiple segment ASCII table test.d to a double precision binary 
 .br
 .sp
 \fBgmtconvert\fP test.d \fB\-M \-bo\fP > test.b
+.br
+.sp
+You have an ASCII table with 6 columns and you want to plot column 5 versus column 0.  Try
+.br
+.sp
+\fBgmtconvert\fP table.d \fB\-F\fP5,0 | psxy ...
+.br
+.sp
+If the file instead is the binary file results.b which has 9 single-precision values per record,
+we extract the last column and columns 4-6 and write ASCII with the command
+.br
+.sp
+\fBgmtconvert\fP results.b \fB\-F\fP8,4-6 -bi9s | psxy ...
+.br
+.sp
+You want to plot the 2nd column of the file left.d versus the first column of file right.d:
+.br
+.sp
+\fBgmtconvert\fP left.d right.d \fB\-S \-F\fP1,2 | psxy ...
 .SH "SEE ALSO"
 .IR gmt (GMTMANSECTION),
 .IR minmax (GMTMANSECTION)
