@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.137 2004-09-10 23:16:15 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.138 2004-10-24 22:56:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1470,21 +1470,28 @@ double GMT_fancy_frame_curved_outline (double lonA, double latA, double lonB, do
 	GMT_geo_to_xy (lonB, latB, &x2, &y2);
 	radius = hypot (x1 - project_info.c_x0, y1 - project_info.c_y0);
 	dr = 0.5 * width;
-	az1 = d_atan2 (y1 - project_info.c_y0, x1 - project_info.c_x0) * R2D;
-	az2 = d_atan2 (y2 - project_info.c_y0, x2 - project_info.c_x0) * R2D;
-	if (!project_info.north_pole) d_swap (az1, az2);	/* In S hemisphere, must draw in opposite direction */
-	while (az1 < 0.0) az1 += 360.0;	/* Wind az1 to be in the 0-360 range */
-	while (az2 < az1) az2 += 360.0;	/* Likewise ensure az1 > az1 and is now in the 0-720 range */
 	s = ((project_info.north_pole && side == 2) || (!project_info.north_pole && side == 0)) ? -1.0 : +1.0;	/* North: needs shorter radius.  South: Needs longer radius (opposite in S hemi) */
 	r_inc = s*scale[0] * width;
-	da0 = R2D * escl * width /radius;
-	da  = R2D * escl * width / (radius + r_inc);
-	ps_arc (project_info.c_x0, project_info.c_y0, radius, az1-da0, az2+da0, 3);
-	ps_arc (project_info.c_x0, project_info.c_y0, radius + r_inc, az1-da, az2+da, 3);
-	if (secondary_too) {
-		r_inc *= 2.0;
-		da = R2D * escl * width / (radius + r_inc);
+	if (fabs (360.0 - fabs (lonA - lonB)) < GMT_CONV_LIMIT) {	/* Full 360-degree cirle */
+		ps_arc (project_info.c_x0, project_info.c_y0, radius, 0.0, 360.0, 3);
+		ps_arc (project_info.c_x0, project_info.c_y0, radius + r_inc, 0.0, 360.0, 3);
+		if (secondary_too)  ps_arc (project_info.c_x0, project_info.c_y0, radius + 2.0 * r_inc, 0.0, 360.0, 3);
+	}
+	else {
+		az1 = d_atan2 (y1 - project_info.c_y0, x1 - project_info.c_x0) * R2D;
+		az2 = d_atan2 (y2 - project_info.c_y0, x2 - project_info.c_x0) * R2D;
+		if (!project_info.north_pole) d_swap (az1, az2);	/* In S hemisphere, must draw in opposite direction */
+		while (az1 < 0.0) az1 += 360.0;	/* Wind az1 to be in the 0-360 range */
+		while (az2 < az1) az2 += 360.0;	/* Likewise ensure az1 > az1 and is now in the 0-720 range */
+		da0 = R2D * escl * width /radius;
+		da  = R2D * escl * width / (radius + r_inc);
+		ps_arc (project_info.c_x0, project_info.c_y0, radius, az1-da0, az2+da0, 3);
 		ps_arc (project_info.c_x0, project_info.c_y0, radius + r_inc, az1-da, az2+da, 3);
+		if (secondary_too) {
+			r_inc *= 2.0;
+			da = R2D * escl * width / (radius + r_inc);
+			ps_arc (project_info.c_x0, project_info.c_y0, radius + r_inc, az1-da, az2+da, 3);
+		}
 	}
 	return (radius);
 }
@@ -2470,8 +2477,8 @@ void GMT_map_annotate (double w, double e, double s, double n)
 		GMT_outside = GMT_wesn_outside_np;
 	}
 	
-	w2 = floor (w / dx[1]) * dx[1];
-	s2 = floor (s / dy[1]) * dy[1];
+	w2 = (dx[1] > 0.0) ? floor (w / dx[1]) * dx[1] : 0.0;
+	s2 = (dy[1] > 0.0) ? floor (s / dy[1]) * dy[1] : 0.0;
 	
 	if (dual) {
 		remove[0] = (dx[0] < (1.0/60.0)) ? 2 : 1;
