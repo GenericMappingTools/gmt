@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.6 2001-08-17 21:25:48 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.7 2001-08-20 01:53:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -169,14 +169,15 @@ struct GMT_IO GMT_io = {
 	"",
 	"r",
 	"w",
-	NULL,
-	NULL,
-	NULL,
-	{ {-1, -1, -1, -1}, FALSE, FALSE, NULL, FALSE, FALSE, NULL },
-	{ {-1, -1, -1, -1}, FALSE, FALSE, NULL, FALSE, FALSE, NULL },
-	{ {-1, -1, -1}, 0, 0.0, FALSE, { "am", "pm" }, NULL, NULL },
-	{ {-1, -1, -1}, 0, 0.0, FALSE, { "am", "pm" }, NULL, NULL }
+	(BOOLEAN *)NULL,
+	(int *)NULL,
+	(int *)NULL,
+	{ {-1, -1, -1, -1}, FALSE, FALSE, "", FALSE, FALSE, { "", ""} },
+	{ {-1, -1, -1, -1}, FALSE, FALSE, "", FALSE, FALSE, { "", ""} },
+	{ {-1, -1, -1}, 0, 0.0, FALSE, { "am", "pm" }, "", { "", ""} },
+	{ {-1, -1, -1}, 0, 0.0, FALSE, { "am", "pm" }, "", { "", ""} }
 };
+struct GMT_Y2K_FIX GMT_Y2K_fix;		/* Used to convert 2-digit years to 4-digit years */
 int GMT_grd_i_format = 0;		/* Default is GMT's cdf format */
 int GMT_grd_o_format = 0;
 int GMT_n_file_suffix;

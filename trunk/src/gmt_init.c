@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.20 2001-08-17 23:53:49 wsmith Exp $
+ *	$Id: gmt_init.c,v 1.21 2001-08-20 01:53:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1430,6 +1430,20 @@ int GMT_setparameter (char *keyword, char *value)
 		case 74:
 			gmtdefs.Y2K_offset_year = atoi (value);
 			break;
+		case 75:
+			if (value[0] == '\0' || !strcmp (value, "tab") || !strcmp (value, "TAB"))	/* DEFAULT */
+				strncpy (gmtdefs.field_delimeter, "\t", 8);
+			else if (!strcmp (value, "space") || !strcmp (value, "SPACE"))
+				strncpy (gmtdefs.field_delimeter, " ", 8);
+			else if (!strcmp (value, "comma") || !strcmp (value, "COMMA"))
+				strncpy (gmtdefs.field_delimeter, ",", 8);
+			else if (!strcmp (value, "none") || !strcmp (value, "NONE"))
+				gmtdefs.field_delimeter[0] = 0;
+			else
+				strncpy (gmtdefs.field_delimeter, value, 8);
+			gmtdefs.field_delimeter[7] = 0;	/* Just a precaution */
+			break;
+
 		default:
 			error = TRUE;
 			fprintf (stderr, "%s: GMT SYNTAX ERROR in GMT_setparameter:  Unrecognized keyword %s\n", 
@@ -1582,6 +1596,16 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "TIME_LANGUAGE		= %s\n", gmtdefs.time_language);
 	fprintf (fp, "CHAR_ENCODING		= %s\n", GMT_char_encoding[gmtdefs.char_encoding]);
 	fprintf (fp, "Y2K_OFFSET_YEAR		= %d\n", gmtdefs.Y2K_offset_year);
+	if (!strcmp (gmtdefs.field_delimeter, "\t"))
+		fprintf (fp, "FIELD_DELIMETER		= tab\n");
+	else if (!strcmp (gmtdefs.field_delimeter, " "))
+		fprintf (fp, "FIELD_DELIMETER		= space\n");
+	else if (!strcmp (gmtdefs.field_delimeter, ","))
+		fprintf (fp, "FIELD_DELIMETER		= comma\n");
+	else if (gmtdefs.field_delimeter[0] == 0)
+		fprintf (fp, "FIELD_DELIMETER		= none\n");
+	else
+		fprintf (fp, "FIELD_DELIMETER		= %s\n", gmtdefs.field_delimeter);
 
 	if (fp != GMT_stdout) fclose (fp);
 	
@@ -1855,8 +1879,8 @@ int GMT_get_char_encoding (char *name)
 void GMT_get_time_language (char *name)
 {
 	FILE *fp;
-	char file[BUFSIZ], line[BUFSIZ], full[16], abbrev[16], c[16], dw;
-	int i;
+	char file[BUFSIZ], line[BUFSIZ], full[16], abbrev[16], c[16], dwu;
+	int i, nm = 0, nw = 0, nu = 0;
 	
 	sprintf (file, "%s%cshare%ctime%c%s.d\0", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, name);
 	if ((fp = fopen (file, "r")) == NULL) {
@@ -1871,19 +1895,31 @@ void GMT_get_time_language (char *name)
 	
 	while (fgets (line, BUFSIZ, fp)) {
 		if (line[0] == '#' || line[0] == '\n') continue;
-		sscanf (line, "%c %d %s %s %s", &dw, &i, full, abbrev, c);
-		if (dw == 'M') {	/* Month record */
+		sscanf (line, "%c %d %s %s %s", &dwu, &i, full, abbrev, c);
+		if (dwu == 'M') {	/* Month record */
 			strncpy (GMT_time_language.month_name[i][0], full, 16);
 			strncpy (GMT_time_language.month_name[i][1], abbrev, 16);
 			strncpy (GMT_time_language.month_name[i][2], c, 16);
+			nm += i;
 		}
-		else {			/* Weekday record */
+		else if (dwu == 'W') {	/* Weekday record */
 			strncpy (GMT_time_language.day_name[i][0], full, 16);
 			strncpy (GMT_time_language.day_name[i][1], abbrev, 16);
 			strncpy (GMT_time_language.day_name[i][2], c, 16);
+			nw += i;
+		}
+		else {			/* Week name record */
+			strncpy (GMT_time_language.week_name[0], full, 16);
+			strncpy (GMT_time_language.week_name[1], abbrev, 16);
+			strncpy (GMT_time_language.week_name[2], c, 16);
+			nu += i;
 		}
 	}
 	fclose (fp);
+	if (! (nm == 78 && nw == 28 && nu == 1)) {	/* Sums of 1-12, 1-7, and 1, respectively */
+		fprintf (stderr, "GMT Error: Mismatch between expected and actual contents in %s!\n", file);
+		exit (EXIT_FAILURE);
+	}
 }
 	
 void GMT_setshorthand (void) {/* Read user's .gmt_io file and initialize shorthand notation */
@@ -3486,6 +3522,8 @@ void	GMT_init_time_system_structure () {
 			exit (EXIT_FAILURE);
 			break;
 	}
+	/* Set inverse scale and store it to avoid divisions later */
+	GMT_time_system[gmtdefs.time_system].i_scale = 1.0 / GMT_time_system[gmtdefs.time_system].scale;
 	
 	if ( GMT_scanf_epoch (GMT_time_system[gmtdefs.time_system].epoch, 
 		&GMT_time_system[gmtdefs.time_system].epoch_t0) ) {

@@ -95,4 +95,6 @@
 	0,			/* TIME_SYSTEM */
 	0,			/* TIME_WEEK_START */
 	"english",		/* TIME_LANGUAGE */
-	0			/* CHAR_ENCODING */
+	0,			/* CHAR_ENCODING */
+	1950,			/* Y2K_OFFSET_YEAR */
+	"\t"			/* FIELD_DELIMETER */

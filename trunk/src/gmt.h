@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.12 2001-08-17 14:03:33 pwessel Exp $
+ *	$Id: gmt.h,v 1.13 2001-08-20 01:53:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -179,10 +179,10 @@ typedef double (*PFD) ();	/* PFD declares a pointer to a function returning a do
  *--------------------------------------------------------------------*/
 
 #define N_UNIQUE 59		/* Number of unique options */
-#define N_KEYS 75		/* Number of gmt defaults */
+#define N_KEYS 76		/* Number of gmt defaults */
 #define N_FONTS 39		/* Number of fonts in the PS_font_names.h include file */
 #define GMT_N_MEDIA 29		/* Number of standard paper formats in the GMT_media_names.h include file */
-#define HASH_SIZE 75		/* Used in get_gmtdefaults, should be ~> N_KEYS */
+#define HASH_SIZE 76		/* Used in get_gmtdefaults, should be ~> N_KEYS */
 #define GMT_N_SYSTEMS 6		/* Number of time systems in gmt_time_systems.h */
 /* This structure contains default parameters for the GMT system */
 
@@ -290,6 +290,7 @@ struct GMTDEFAULTS {
 	char time_language[32];		/* Language file for time support */
 	int char_encoding;		/* PostScript font encoding used */
 	int Y2K_offset_year;		/* Cutoff for making 4-digit years from 2-digit years (1900 vs 2000) */
+	char field_delimeter[8];	/* Separator between output ascii data columns [tab] */
 };
 
 struct GMT_HASH {	/* Used to related keywords to gmtdefaults entry */
@@ -304,11 +305,13 @@ struct GMT_TIME_SYSTEM {
 	char unit;		/* Time unit */
 	double epoch_t0;	/* Internal time representation of epoch in seconds*/
 	double scale;		/* Converts user units to seconds */
+	double i_scale;		/* Converts seconds to user units (1.0/scale) */
 };
 
-struct GMT_TIME_LANGUAGE {
+struct GMT_TIME_LANGUAGE {	/* Language-specific text strings for calendars */
 	char month_name[12][3][16];	/* Full, short, and 1-char month names */
-	char day_name[12][3][16];	/* Full, short, and 1-char weekday names */
+	char day_name[7][3][16];	/* Full, short, and 1-char weekday names */
+	char week_name[3][16];		/* Full, short, and 1-char versions of the word Week */
 };
 	
 struct GMT_FILL {	/* Holds fill attributes */
@@ -323,8 +326,8 @@ struct GMT_FILL {	/* Holds fill attributes */
 };
 
 struct GMT_MEDIA {	/* Holds information about paper sizes in points */
-	int width;	/* Width in points */
-	int height;	/* Height in points */
+	int width;		/* Width in points */
+	int height;		/* Height in points */
 };
 
 /*  Moved from gmt_plot.c */
