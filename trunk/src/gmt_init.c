@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.112 2004-04-12 23:08:51 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.113 2004-04-13 03:52:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1268,7 +1268,7 @@ int GMT_setparameter (char *keyword, char *value)
 			}
 			break;
 		case GMTCASE_BASEMAP_FRAME_RGB:
-			sscanf (value, "%d/%d/%d", &rgb[0], &rgb[1],  &rgb[2]);
+			error = GMT_getrgb (value, rgb);
 			if (GMT_check_rgb (rgb))
 				error = TRUE;
 			else {
@@ -1288,7 +1288,7 @@ int GMT_setparameter (char *keyword, char *value)
 			if (value[0] == '-')
 				gmtdefs.background_rgb[0] = gmtdefs.background_rgb[1] = gmtdefs.background_rgb[2] = -1;
 			else {
-				sscanf (value, "%d/%d/%d", &rgb[0], &rgb[1],  &rgb[2]);
+				error = GMT_getrgb (value, rgb);
 				if (GMT_check_rgb (rgb))
 					error = TRUE;
 				else 
@@ -1299,7 +1299,7 @@ int GMT_setparameter (char *keyword, char *value)
 			if (value[0] == '-')
 				gmtdefs.foreground_rgb[0] = gmtdefs.foreground_rgb[1] = gmtdefs.foreground_rgb[2] = -1;
 			else {
-				sscanf (value, "%d/%d/%d", &rgb[0], &rgb[1],  &rgb[2]);
+				error = GMT_getrgb (value, rgb);
 				if (GMT_check_rgb (rgb))
 					error = TRUE;
 				else 
@@ -1310,7 +1310,7 @@ int GMT_setparameter (char *keyword, char *value)
 			if (value[0] == '-')
 				gmtdefs.nan_rgb[0] = gmtdefs.nan_rgb[1] = gmtdefs.nan_rgb[2] = -1;
 			else {
-				sscanf (value, "%d/%d/%d", &rgb[0], &rgb[1],  &rgb[2]);
+				error = GMT_getrgb (value, rgb);
 				if (GMT_check_rgb (rgb))
 					error = TRUE;
 				else 
@@ -1541,7 +1541,7 @@ int GMT_setparameter (char *keyword, char *value)
 				error = TRUE;
 			break;
 		case GMTCASE_PAGE_COLOR:
-			sscanf (value, "%d/%d/%d", &rgb[0], &rgb[1],  &rgb[2]);
+			error = GMT_getrgb (value, rgb);
 			if (GMT_check_rgb (rgb))
 				error = TRUE;
 			else 
@@ -2051,6 +2051,10 @@ void GMT_getdefaults (char *this_file)	/* Read user's .gmtdefaults4 file and ini
 	int i;
 	char file[BUFSIZ];
 	
+	/* Set up hash table for colornames */
+	
+	GMT_hash_init (GMT_rgb_hashnode, GMT_color_name, GMT_N_COLOR_NAMES, GMT_N_COLOR_NAMES);
+
 	 /* Default is to draw AND annotate all sides */
 	for (i = 0; i < 5; i++) frame_info.side[i] = 2;
 	
@@ -2568,9 +2572,6 @@ int GMT_begin (int argc, char **argv)
 	memcpy ((void *)GMT_bfn[GMT_BGD].rgb, (void *)gmtdefs.background_rgb, 3 * sizeof (int));
 	memcpy ((void *)GMT_bfn[GMT_NAN].rgb, (void *)gmtdefs.nan_rgb, 3 * sizeof (int));
 	for (k = 0; k < 3; k++) if (GMT_bfn[k].rgb[0] == -1) GMT_bfn[k].skip = TRUE;
-	/* Set up hash table for colornames */
-	
-	GMT_hash_init (GMT_rgb_hashnode, GMT_color_name, GMT_N_COLOR_NAMES, GMT_N_COLOR_NAMES);
 
 	/* Make sure -b options are parsed first in case filenames are given
 	 * before -b options on the command line.  This would only cause grief
