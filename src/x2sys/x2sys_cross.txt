@@ -7,7 +7,7 @@
 [ \fB\-Gd|g\fP ] [ \fB\-J\fP\fIparams\fP ] [\fB\-K\fP\fIcombi.lis\fP] 
 [ \fB\-N\fP\fIwindow\fP ] [ \fB\-O\fP ] [ \fB\-Sl|u\fP\fIspeed\fP ] 
 [ \fB\-Tl|a|c\fP ] [ \fB\-W\fP\fIsize\fP ] [ \fB\-V\fP ] [ \fB\-Xe|i\fP ] 
-[ \fB\-bo\fP[\fBs\fP] ] [ \fB\-2\fP ]
+[ \fB\-2\fP ] [ \fB\-bo\fP[\fBs\fP] ]
 .SH DESCRIPTION
 \fBx2sys_cross\fP is used to determine all intersections between or within
 tracks, and report the time, position, discrepancies in all observables, the
@@ -68,11 +68,11 @@ Defines window of track speed within which to calculate crossovers.
 .B \-T
 Sets the interpolation mode. Choose among:
 .br
-	l Linear interpolation [Default].
+	\fBl\fP Linear interpolation [Default].
 .br
-	a Akima spline interpolation.
+	\fBa\fP Akima spline interpolation.
 .br
-	c Cubic spline interpolation.
+	\fBc\fP Cubic spline interpolation.
 .br
 #include "explain_-V.txt"
 .TP
