@@ -1,5 +1,5 @@
 %-------------------------------------------------------------------------------------------
-%	$Id: PSL_label.ps,v 1.4 2004-06-04 04:24:26 pwessel Exp $
+%	$Id: PSL_label.ps,v 1.5 2004-06-04 19:43:14 pwessel Exp $
 %
 %	P. Wessel, version 1
 %
@@ -544,6 +544,7 @@ end
   /bits exch def				% Single bitflag argument passed
   /PSL_placetext bits 1 and 1 eq def		% true if we want to just place text (no clipping)
   /PSL_paintclippath bits 4 and 4 eq def	% true if we want to debug the path with painting
+  /PSL_rounded bits 16 and 0 gt def		% true for rounded box shape, false gives rectangular box
   /PSL_fillbox bits 256 and 0 gt def		% true to paint box opaque before placing text, false gives transparent box
   /PSL_drawbox bits 512 and 0 gt def		% true to draw box outline before placing text, false gives no outline
   /PSL_m1 PSL_m 1 sub def
@@ -581,32 +582,7 @@ end
 
 /PSL_placelabelclip
 {	% Create and lay down clip path
-  newpath				% Start fresh
-  PSL_usebox not { gsave clippath } if	% Set gsave and start clip path
-  0 1 PSL_m1				% Loop over all labels
-  {
-    /k exch def						% Current label index
-    /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def					% Get text placement point
-    /MAT PSL_angle k get matrix rotate def			% Rotate the coordinate system to follow baseline text
-    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def	% Width of current label space including clearance
-    /BoxH PSL_height PSL_gap_y 2 mul add def			% Height of current label space including clearance
-    /x0 0 BoxW PSL_justx mul add def				% (x0,y0) is the rotated and adjusted text LL point relative to xp,yp
-    /y0 0 PSL_justy add PSL_gap_y sub def
-    /DelX 0 BoxW BoxW 3 array astore def			% Offsets in x from LL
-    /DelY BoxH BoxH 0 3 array astore def			% Offsets in y from LL
-    x0 y0 MAT transform
-    /dy exch def /dx exch def
-    xp dx add yp dy add moveto			% Start new clippath segment
-    0 1 2
-    { % Visit all 5 points and append to clippath
-      /ii exch def
-      x0 DelX ii get add y0 DelY ii get add MAT transform
-      /dy exch def /dx exch def
-      xp dx add yp dy add lineto			% Start new clippath segment
-    } for
-    closepath
-  } for
+  PSL_rounded { PSL_placelabelclipround } { PSL_placelabelcliprect } ifelse
   PSL_usebox
   {
     PSL_fillbox
@@ -630,6 +606,65 @@ end
     grestore
   } if
   newpath			% Clean up and return
+} def
+
+/PSL_placelabelcliprect
+{	% Create and lay down clip path
+  newpath				% Start fresh
+  /BoxH PSL_height PSL_gap_y 2 mul add def		% Height of current label space including clearance
+  /DelY BoxH BoxH 0 3 array astore def			% Offsets in y from LL
+  PSL_usebox not { gsave clippath } if	% Set gsave and start clip path
+  0 1 PSL_m1				% Loop over all labels
+  {
+    /k exch def						% Current label index
+    /xp PSL_txt_x k get def
+    /yp PSL_txt_y k get def					% Get text placement point
+    /MAT PSL_angle k get matrix rotate def			% Rotate the coordinate system to follow baseline text
+    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def	% Width of current label space including clearance
+    /x0 0 BoxW PSL_justx mul add def				% (x0,y0) is the rotated and adjusted text LL point relative to xp,yp
+    /y0 0 PSL_justy add PSL_gap_y sub def
+    /DelX 0 BoxW BoxW 3 array astore def			% Offsets in x from LL
+    x0 y0 MAT transform
+    /dy exch def /dx exch def
+    xp dx add yp dy add moveto			% Start new clippath segment
+    0 1 2
+    { % Visit all 5 points and append to clippath
+      /ii exch def
+      x0 DelX ii get add y0 DelY ii get add MAT transform
+      /dy exch def /dx exch def
+      xp dx add yp dy add lineto			% Start new clippath segment
+    } for
+    closepath
+  } for
+} def
+
+/PSL_placelabelclipround
+{	% Create and lay down rounded rectangular clip path
+  newpath				% Start fresh
+  /PSL_justy2 PSL_just 4 idiv 2 div neg def
+  /PSL_r PSL_gap_x PSL_gap_y lt { PSL_gap_x } { PSL_gap_y } ifelse def	% Smallest gap distance
+  /PSL_dx PSL_gap_x PSL_r sub def
+  /PSL_dy PSL_gap_y PSL_r sub def
+  /PSL_r2 PSL_r 2 mul def 
+  /BoxH PSL_height PSL_dy 2 mul add def		% Height of inside rectangle
+  /y0 PSL_height PSL_gap_y 2 mul add PSL_justy2 mul def
+  PSL_usebox not { gsave clippath } if		% Set gsave and start clip path
+  0 1 PSL_m1					% Loop over all labels
+  {
+    /k exch def						% Current label index
+    /xp PSL_txt_x k get def
+    /yp PSL_txt_y k get def				% Get text placement point
+    /PSL_width PSL_str k get stringwidth pop def	% Width of current label only
+    /BoxW PSL_width PSL_dx 2 mul add def		% Lenght of inside rectangle
+    /x0 BoxW PSL_justx mul def				% (x0,y0) is the rotated and adjusted text LL point on inside rectangle relative to xp,yp
+    xp yp T PSL_angle k get R x0 y0 T			% Rotate the coordinate system to follow baseline text
+    0 0 moveto
+    BoxW PSL_r add 0 BoxW PSL_r add PSL_r PSL_r arct
+    BoxW PSL_r add BoxH PSL_r2 add BoxW BoxH PSL_r2 add PSL_r arct
+    PSL_r neg BoxH PSL_r2 add PSL_r neg BoxH PSL_r add PSL_r arct
+    PSL_r neg 0 0 0 PSL_r arct closepath
+    x0 neg y0 neg T PSL_angle k get neg R xp neg yp neg T	% Unto trans/rots
+  } for
 } def
 
 /PSL_debug false def
