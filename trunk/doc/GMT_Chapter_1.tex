@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.16 2004-08-26 02:54:15 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.17 2004-08-26 03:16:58 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -29,9 +29,9 @@ Please send your comments to
 \GMT\ 4 represents a major overhaul of the package; hence the major version increment.  There are three
 categories of changes that has been implemented:
 \begin{description}
-\item [Time-series support].  \GMT\ can now read and write time-series data where
+\item [Time-series support.]  \GMT\ can now read and write time-series data where
 the time coordinates are of the form {\it date}{\bf T}{\it clock}.  The formats
-used for \it date} and {\it clock} are under the user's control.  Both Gregorian
+used for {\it date} and {\it clock} are under the user's control.  Both Gregorian
 and ISO calendars are supported.  Frame annotation for time-series are now supported
 via the \Opt{B} option which has many new modifiers to accomodate the vast number of
 ways one may want to annotate time axes, including support for primary and secondary
@@ -40,7 +40,7 @@ is not supported, send us the info we need).  The capability to handle time (in 
 \Opt{J}, \Opt{B}, i/o and plotting) represents considerable changes ``under the hood'',
 including the introduction of numerous new \GMTprog{gmtdefaults} parameters to make
 time series support as ``generic'' as we need it to be.
-\item [New Tools].  Three new tools have been added:
+\item [New Tools.]  Three new tools have been added:
 \begin{enumerate}
 \item \GMTprog{gmt2rgb}: Make red, green, and blue component gridfiles from an image (to be
 used for false color images or draping).
@@ -107,7 +107,7 @@ pentagon, octagon, rectangle, double-header and centered vectors), and annotated
 \item \GMTprog{psxyz}: 	Same, plus vertical dash symbol.
 \item \GMTprog{xyz2grd}: 	Added \Opt{Au$|$l} for upper/lower value at each node.
 \end{itemize}
-\item [General enhancements].  These affect most or all programs under the hood:
+\item [General enhancements.]  These affect most or all programs under the hood:
 \begin{itemize}
 \item New shorthand for the most recent projection (\Opt{J}).
 \item Options for phase-shifting the stride and supply prefix for annotations (\Opt{B}).
@@ -128,10 +128,12 @@ pentagon, octagon, rectangle, double-header and centered vectors), and annotated
 \item Better support for various international character encodings.
 \item New Appendix M (color tables), N (custom symbols), and O (contours and ``quoted lines'').
 \item Use \filename{.gmtdefaults4} and \filename{.gmtcommands4} to ensure peaceful coexistance with \GMT\ 3-series.
-\item Data files in directories pointed to by environmental parameters {\bf \$GMT_DATADIR}, {\bf \$GMT_GRIDDIR},
-and {\bf \$GMT_IMGDIR} can be specified without full path.
+\item Data files in directories pointed to by environmental parameters {\bf \$GMT\_DATADIR}, {\bf \$GMT\_GRIDDIR},
+and {\bf \$GMT\_IMGDIR} can be specified without full path.
 \item We have added five new examples.
 \item Utility \progname{gmtswitch} simplifies switching between installed \GMT\ versions.
 \end{itemize}
 \end{description}
-Appendix P discusses how you can install both \GMT\ 3.x and \GMT\ 4 and have them coexist peacefully.
+Appendix P discusses how you can have both the \GMT\ 3.x-series and \GMT\ 4 installed and have them coexist peacefully,
+and switch back and forth between versions.
+
