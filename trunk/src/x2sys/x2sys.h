@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.4 2004-05-15 02:29:50 pwessel Exp $
+ *	$Id: x2sys.h,v 1.5 2004-05-18 21:40:51 pwessel Exp $
  *
- *      Copyright (c) 1999-2001 by P. Wessel
+ *      Copyright (c) 1999-2004 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@
  * used in the XSYSTEM programs
  *
  * Author:	Paul Wessel
- * Date:	03-MAR-2000
+ * Date:	18-MAY-2004
  * Version:	1.1, based on the spirit of the old xsystem code
  *
  */
@@ -64,7 +64,7 @@
 #include "gmt.h"
 #include "gmt_mgg.h"
 
-#define X2SYS_VERSION "1.0"
+#define X2SYS_VERSION "1.1"
 
 /* Make sure structure sizes are multiples of 8 */
 
@@ -92,12 +92,6 @@ struct X2SYS_TRK {			/* Structure for each track */
 	struct X2SYS_TRK_INFO info;	/* Track-level information */
 	struct X2SYS_SET *set;		/* Array of structures; one for each data set */
 	struct X2SYS_TRK *next_track;	/* Pointer to next track */
-};
-
-struct X2SYS_XOVER {		/* Structure with info on all track cross-over */
-	double *x;		/* x or Longitude */
-	double *y;		/* y or Latitude */
-	double *xnode[2];	/* Decimal Node index at cross-over along track 1 and 2 */
 };
 
 struct X2SYS_XOVER_SET {		/* Structure with info on one data type cross-over values */
@@ -158,11 +152,6 @@ struct X2SYS_FILE_INFO {
 	char name[32];		/* Name of cruise or agency */
 };
 
-struct X2SYS_SEGMENT {
-	int start;	/* y-array index for minimum y endpoint */
-	int stop;	/* y-array index for maximum y endpoint */
-};
-
 /* Global variables used by x2sys functions */
 
 EXTERN_MSC char *X2SYS_HOME;
@@ -179,7 +168,6 @@ EXTERN_MSC int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, 
 EXTERN_MSC int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
 EXTERN_MSC int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
 EXTERN_MSC int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
-EXTERN_MSC int x2sys_crossover (double xa[], double ya[], int sa[], struct X2SYS_SEGMENT A[], int na, double xb[], double yb[], int sb[], struct X2SYS_SEGMENT B[], int nb, BOOLEAN internal, struct X2SYS_XOVER *X);
 EXTERN_MSC int x2sys_xover_output (FILE *fp, int n, double out[]);
 EXTERN_MSC int x2sys_n_data_cols (struct X2SYS_INFO *s);
 EXTERN_MSC int x2sys_read_list (char *file, char ***list);
@@ -192,9 +180,7 @@ EXTERN_MSC void x2sys_skip_header (FILE *fp, struct X2SYS_INFO *s);
 EXTERN_MSC void x2sys_fclose (char *fname, FILE *fp);
 EXTERN_MSC void x2sys_free_info (struct X2SYS_INFO *s);
 EXTERN_MSC void x2sys_free_data (double **data, int n);
-EXTERN_MSC void x2sys_x_free (struct X2SYS_XOVER *X);
 EXTERN_MSC void x2sys_pick_fields (char *string, struct X2SYS_INFO *s);
 
 EXTERN_MSC struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G);
-EXTERN_MSC struct X2SYS_SEGMENT *x2sys_init_track (double x[], double y[], int n);
 

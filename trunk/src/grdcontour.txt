@@ -67,6 +67,7 @@ Sets the viewpoint's azimuth and elevation for perspective view [180/90].
 \fIgap\fP is distance between each annotation along the same contour.
 \fIwidth\fP is number of points over which to estimate the best fitting slope
 for contour labels  [Default is 10\fBc\fP/10 or 4\fBi\fP/10].
+#include "explain_contlabel.txt"
 #include "explain_-K.txt"
 .TP
 .B \-L

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.88 2004-05-12 19:16:02 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.89 2004-05-18 21:40:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -76,6 +76,7 @@
  */
  
 #include "gmt.h"
+#include "gmt_contour.h"
 
 #define I_255	(1.0 / 255.0)
 #define DEG_TO_KM (6371.0087714 * D2R)
@@ -106,6 +107,10 @@ void GMT_old2newpen (char *line);
 BOOLEAN GMT_is_texture (char *word);
 BOOLEAN GMT_is_penwidth (char *word);
 BOOLEAN GMT_is_color (char *word, int max_slashes);
+int GMT_ysort (const void *p1, const void *p2);
+void GMT_x_alloc (struct GMT_XOVER *X, int nx_alloc);
+
+double *GMT_x2sys_Y;
 
 int GMT_check_rgb (int rgb[])
 {
@@ -1608,6 +1613,190 @@ void GMT_free (void *addr)
 {
 
 	free (addr);
+}
+
+int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
+{
+	/* Interpret the contour-label information string and set structure items */
+	int k, j = 0, error = 0;
+	char txt_a[32];
+	
+	strcpy (L->option, &txt[1]);	 /* May need to process L->option later after -R,-J have been set */
+	L->flag = flag;
+	switch (txt[0]) {
+		case 'L':	/* Quick straight lines for intersections */
+			L->do_interpolate = TRUE;
+		case 'l':
+			L->crossing = GMT_CONTOUR_XLINE;
+			break;
+		case 'n':	/* Specify number of labels per segment */
+			L->number = TRUE;
+			L->n_cont = atoi (&txt[1]);
+			if (L->n_cont <= 0) {
+				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c.  Number of labels must exceed zero\n", GMT_program, L->flag);
+				error++;
+			}
+			break;
+		case 'X':	/* Crossing complicated curve */
+			L->do_interpolate = TRUE;
+		case 'x':	/* Crossing line */
+			L->crossing = GMT_CONTOUR_XCURVE;
+			strcpy (L->file, &txt[1]);
+			break;
+		case 'd':	/* Specify distance settings */
+			j = 1;	/* Because the legacy -G option did not have a d (so j = 0) */
+		default:
+			L->spacing = TRUE;
+			k = sscanf (&txt[j], "%[^/]/%d", txt_a, &L->half_width);
+			if (k == 0) {
+				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c[d]: Give label spacing and optional smoothing width\n", GMT_program, L->flag);
+				error++;
+			}
+			L->label_dist_spacing = GMT_convert_units (txt_a, GMT_INCH);
+			if (k == 1) L->half_width = 10;	/* Smooth over 10 points is the old default */
+			L->half_width /= 2;
+			if (L->label_dist_spacing <= 0.0) {
+				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c.  Spacing between labels must exceed 0.0\n", GMT_program, L->flag);
+				error++;
+			}
+			if (L->half_width <= 0) {
+				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c.  Label smoothing width must exceed 0points\n", GMT_program, L->flag);
+				error++;
+			}
+			break;
+	}
+	return (error);
+}
+
+int GMT_contlabel_init (struct GMT_CONTOUR *G)
+{
+	/* Prepares contour labeling machinery as needed */
+	int i, k, n, error = 0;
+	size_t n_alloc;
+	BOOLEAN greenwich;
+	double x, y;
+	char buffer[BUFSIZ], txt_a[128], txt_b[128], txt_c[128], txt_d[128], *p;
+	
+	greenwich = (project_info.w < 0.0 && project_info.e > 0.0);
+
+	if (G->crossing == GMT_CONTOUR_XLINE) {
+		strcpy (buffer, G->option);
+		n_alloc = GMT_SMALL_CHUNK;
+		G->xp = (struct GMT_LINES *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_LINES), GMT_program);
+		G->n_xp = 0;
+		p = strtok (buffer, ",");
+		while (p) {
+			G->xp[G->n_xp].lon = (double *) GMT_memory (VNULL, 2, sizeof (double), GMT_program);
+			G->xp[G->n_xp].lat = (double *) GMT_memory (VNULL, 2, sizeof (double), GMT_program);
+			G->xp[G->n_xp].np = 2;
+			n = sscanf (p, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
+			if (n == 4) {	/* Easy, got lon0/lat0/lon1/lat1 */
+				error += GMT_verify_expectations (GMT_io.in_col_type[0], GMT_scanf_arg (txt_a, GMT_io.in_col_type[0], &G->xp[G->n_xp].lon[0]), txt_a);
+				error += GMT_verify_expectations (GMT_io.in_col_type[1], GMT_scanf_arg (txt_b, GMT_io.in_col_type[1], &G->xp[G->n_xp].lat[0]), txt_b);
+				error += GMT_verify_expectations (GMT_io.in_col_type[0], GMT_scanf_arg (txt_c, GMT_io.in_col_type[0], &G->xp[G->n_xp].lon[1]), txt_c);
+				error += GMT_verify_expectations (GMT_io.in_col_type[1], GMT_scanf_arg (txt_d, GMT_io.in_col_type[1], &G->xp[G->n_xp].lat[1]), txt_d);
+			}
+			else if (n == 2) { /* Easy, got <code>/<code> */
+				error += GMT_code_to_lonlat (txt_a, &G->xp[G->n_xp].lon[0], &G->xp[G->n_xp].lat[0]);
+				error += GMT_code_to_lonlat (txt_b, &G->xp[G->n_xp].lon[1], &G->xp[G->n_xp].lat[1]);
+			}
+			else if (n == 3) {	/* More complicated: <code>/<lon>/<lat> or <lon>/<lat>/<code> */
+				if (GMT_code_to_lonlat (txt_a, &G->xp[G->n_xp].lon[0], &G->xp[G->n_xp].lat[0])) {	/* Failed, try the other way */
+					error += GMT_verify_expectations (GMT_io.in_col_type[0], GMT_scanf_arg (txt_a, GMT_io.in_col_type[0], &G->xp[G->n_xp].lon[0]), txt_a);
+					error += GMT_verify_expectations (GMT_io.in_col_type[1], GMT_scanf_arg (txt_b, GMT_io.in_col_type[1], &G->xp[G->n_xp].lat[0]), txt_b);
+					error += GMT_code_to_lonlat (txt_c, &G->xp[G->n_xp].lon[1], &G->xp[G->n_xp].lat[1]);
+				}
+				else {	/* Worked, pick up second point */
+					error += GMT_verify_expectations (GMT_io.in_col_type[0], GMT_scanf_arg (txt_b, GMT_io.in_col_type[0], &G->xp[G->n_xp].lon[1]), txt_b);
+					error += GMT_verify_expectations (GMT_io.in_col_type[1], GMT_scanf_arg (txt_c, GMT_io.in_col_type[1], &G->xp[G->n_xp].lat[1]), txt_c);
+				}
+			}	
+			if (G->do_interpolate) G->xp[G->n_xp].np = GMT_fix_up_path (&G->xp[G->n_xp].lon, &G->xp[G->n_xp].lat, G->xp[G->n_xp].np, greenwich, 1.0);
+			G->xp[G->n_xp].seg = (int *) GMT_memory (VNULL, G->xp[G->n_xp].np, sizeof (int), GMT_program);	/* Initialized by default to 0 */
+			for (i = 0; i < G->xp[G->n_xp].np; i++) {	/* Project */
+				GMT_geo_to_xy (G->xp[G->n_xp].lon[i], G->xp[G->n_xp].lat[i], &x, &y);
+				G->xp[G->n_xp].lon[i] = x;
+				G->xp[G->n_xp].lat[i] = y;
+			}
+			p = strtok (NULL, ",");
+			G->n_xp++;
+			if (G->n_xp == n_alloc) {
+				n_alloc += GMT_SMALL_CHUNK;
+				G->xp = (struct GMT_LINES *) GMT_memory ((void *)G->xp, (size_t)n_alloc, sizeof (struct GMT_LINES), GMT_program);
+			}
+		}
+	}
+	else if (G->crossing == GMT_CONTOUR_XCURVE) {
+		G->n_xp = GMT_lines_init (G->option, &G->xp, 0.0, FALSE);
+		for (k = 0; k < G->n_xp; k++) {
+			for (i = 0; i < G->xp[k].np; i++) {	/* Project */
+				GMT_geo_to_xy (G->xp[k].lon[i], G->xp[k].lat[i], &x, &y);
+				G->xp[k].lon[i] = x;
+				G->xp[k].lat[i] = y;
+			}
+		}
+	}
+	if (error) fprintf (stderr, "%s: GMT SYNTAX ERROR -%c:  Valid codes are [lcr][bmt] and z[+-]\n", GMT_program, G->flag);
+
+	return (error);
+}
+
+int GMT_code_to_lonlat (char *code, double *lon, double *lat)
+{
+	int i, n, error = 0;
+	BOOLEAN z_OK = FALSE;
+	
+	n = strlen (code);
+	if (n != 2) return (1);
+	
+	for (i = 0; i < 2; i++) {
+		switch (code[i]) {
+			case 'l':
+			case 'L':	/* Left */
+				*lon = project_info.w;
+				break;
+			case 'c':
+			case 'C':	/* center */
+				*lon = 0.5 * (project_info.w + project_info.e);
+				break;
+			case 'r':
+			case 'R':	/* right */
+				*lon = project_info.e;
+				break;
+			case 'b':
+			case 'B':	/* bottom */
+				*lat = project_info.s;
+				break;
+			case 'm':
+			case 'M':	/* center */
+				*lat = 0.5 * (project_info.s + project_info.n);
+				break;
+			case 't':
+			case 'T':	/* top */
+				*lat = project_info.n;
+				break;
+			case 'z':
+			case 'Z':	/* z-value */
+				z_OK = TRUE;
+				break;
+			case '+':	/* zmax-location */
+				if (z_OK)
+					*lon = *lat = DBL_MAX;
+				else
+					error++;
+				break;
+			case '-':	/* zmin-location */
+				if (z_OK)
+					*lon = *lat = -DBL_MAX;
+				else
+					error++;
+				break;
+			default:
+				error++;
+				break;
+		}
+	}
+	return (error);
 }
 
 #define CONTOUR_IJ(i,j) ((i) + (j) * nx)
@@ -4715,4 +4904,399 @@ void GMT_rotate2D (double x[], double y[], int n, double x0, double y0, double a
 		yp[i] = y0 + x[i] * s + y[i] * c;
 	}
 }
-	
+
+/* Here lies GMT Crossover core functions that previously was in X2SYS only */
+
+struct GMT_XSEGMENT *GMT_init_track (double x[], double y[], int n)
+{
+	/* GMT_init_track accepts the x-y track of length n and returns an array of
+	 * line segments that have been sorted on the minimum y-coordinate
+	 */
+ 
+	int a, b;
+	size_t nl = n - 1;
+	struct GMT_XSEGMENT *L;
+	int GMT_ysort (const void *p1, const void *p2);
+
+	if (nl <= 0) {
+		fprintf (stderr, "GMT: ERROR in GMT_init_track; nl = %d\n", (int)nl);
+		exit (EXIT_FAILURE);
+	}
+
+	L = (struct GMT_XSEGMENT *) GMT_memory (VNULL, nl, sizeof (struct GMT_XSEGMENT), "GMT_init_track");
+
+	for (a = 0, b = 1; b < n; a++, b++) {
+		if (y[b] < y[a]) {
+			L[a].start = b;
+			L[a].stop = a;
+		}
+		else {
+			L[a].start = a;
+			L[a].stop = b;
+		}
+	}
+
+	/* Sort on minimum y-coordinate, if tie then on 2nd coordinate */
+
+	GMT_x2sys_Y = y;	/* Sort routine needs this pointer */
+
+	qsort ((void *)L, nl, sizeof (struct GMT_XSEGMENT), GMT_ysort);
+
+	GMT_x2sys_Y = (double *)NULL;
+
+	return (L);
+}
+
+
+int GMT_ysort (const void *p1, const void *p2)
+{
+	/* The double pointer GMT_x2sys_Y must be set to point to the relevant y-array
+	 * before this call!!! */
+
+	struct GMT_XSEGMENT *a, *b;
+
+	a = (struct GMT_XSEGMENT *)p1;
+	b = (struct GMT_XSEGMENT *)p2;
+
+	if (GMT_x2sys_Y[a->start] < GMT_x2sys_Y[b->start]) return -1;
+	if (GMT_x2sys_Y[a->start] > GMT_x2sys_Y[b->start]) return  1;
+
+	/* Here they have the same low y-value, now sort on other y value */
+
+	if (GMT_x2sys_Y[a->stop] < GMT_x2sys_Y[b->stop]) return -1;
+	if (GMT_x2sys_Y[a->stop] > GMT_x2sys_Y[b->stop]) return  1;
+
+	/* Identical */
+
+	return (0);
+}
+
+int GMT_crossover (double xa[], double ya[], int *sa0, struct GMT_XSEGMENT A[], int na, double xb[], double yb[], int *sb0, struct GMT_XSEGMENT B[], int nb, BOOLEAN internal, struct GMT_XOVER *X)
+{
+	int this_a, this_b, n_seg_a, n_seg_b, nx, xa_start, xa_stop, xb_start, xb_stop, ta_start, ta_stop, tb_start, tb_stop;
+	int *sa, *sb, nx_alloc;
+	BOOLEAN new_a, new_b, new_a_time, xa_OK, xb_OK;
+	double del_xa, del_xb, del_ya, del_yb, i_del_xa, i_del_xb, i_del_ya, i_del_yb, slp_a, slp_b, xc, yc, tx_a, tx_b;
+
+	if (na < 2 || nb < 2) return (0);	/* Need at least 2 points to make a segment */
+
+	this_a = this_b = nx = 0;
+	new_a = new_b = TRUE;
+	nx_alloc = GMT_SMALL_CHUNK;
+
+	n_seg_a = na - 1;
+	n_seg_b = nb - 1;
+
+	/* Assign pointers to segment info given, or initialize zero arrays if not given */
+	sa = (sa0) ? sa0 : (int *) GMT_memory (VNULL, (size_t)na, sizeof (int), "GMT_crossover");
+	sb = (sb0) ? sb0 : (int *) GMT_memory (VNULL, (size_t)nb, sizeof (int), "GMT_crossover");
+
+	GMT_x_alloc (X, -nx_alloc);
+
+	while (this_a < n_seg_a && yb[B[this_b].start] > ya[A[this_a].stop]) this_a++;	/* Go to first possible A segment */
+
+	while (this_a < n_seg_a) {
+
+		/* First check for internal neighboring segments which cannot cross */
+
+		if (internal && (this_a == this_b || (A[this_a].stop == B[this_b].start || A[this_a].start == B[this_b].stop) || (A[this_a].start == B[this_b].start || A[this_a].stop == B[this_b].stop))) {	/* Neighboring segments cannot cross */
+			this_b++;
+			new_b = TRUE;
+		}
+		else if (yb[B[this_b].start] > ya[A[this_a].stop]) {	/* Reset this_b and go to next A */
+			this_b = n_seg_b;
+		}
+		else if (yb[B[this_b].stop] < ya[A[this_a].start]) {	/* Must advance B in y-direction */
+			this_b++;
+			new_b = TRUE;
+		}
+		else if (sb[B[this_b].stop] != sb[B[this_b].start]) {	/* Must advance B in y-direction since this segment crosses multiseg boundary*/
+			this_b++;
+			new_b = TRUE;
+		}
+		else {	/* Current A and B segments overlap in y-range */
+
+			if (new_a) {	/* Must sort this A new segment in x */
+				if (xa[A[this_a].stop] < xa[A[this_a].start]) {
+					xa_start = A[this_a].stop;
+					xa_stop  = A[this_a].start;
+				}
+				else {
+					xa_start = A[this_a].start;
+					xa_stop  = A[this_a].stop;
+				}
+				new_a = FALSE;
+				new_a_time = TRUE;
+				xa_OK = (sa[xa_start] == sa[xa_stop]);	/* FALSE if we cross between multiple segments */
+			}
+
+			if (new_b) {	/* Must sort this new B segment in x */
+				if (xb[B[this_b].stop] < xb[B[this_b].start]) {
+					xb_start = B[this_b].stop;
+					xb_stop  = B[this_b].start;
+				}
+				else {
+					xb_start = B[this_b].start;
+					xb_stop  = B[this_b].stop;
+				}
+				new_b = FALSE;
+				xb_OK = (sb[xb_start] == sb[xb_stop]);	/* FALSE if we cross between multiple segments */
+			}
+
+			/* OK, first check for any overlap in x range */
+
+			if (xa_OK && xb_OK && !((xa[xa_stop] < xb[xb_start]) || (xa[xa_start] > xb[xb_stop]))) {
+
+				/* We have segment overlap in x.  Now check if the segments cross  */
+
+				del_xa = xa[xa_stop] - xa[xa_start];
+				del_xb = xb[xb_stop] - xb[xb_start];
+				del_ya = ya[xa_stop] - ya[xa_start];
+				del_yb = yb[xb_stop] - yb[xb_start];
+
+				if (del_xa == 0.0) {	/* Vertical A segment: Special case */
+
+					i_del_xb = 1.0 / del_xb;
+					yc = yb[xb_start] + (xa[xa_start] - xb[xb_start]) * del_yb * i_del_xb;
+					if (!(yc < ya[A[this_a].start] || yc > ya[A[this_a].stop])) {	/* Did cross within the segment extents */
+						/* Only accept xover if occurring before segment end (in time) */
+
+						if (xb_start < xb_stop) {
+							tb_start = xb_start;	/* B Node first in time */
+							tb_stop = xb_stop;	/* B Node last in time */
+						}
+						else {
+							tb_start = xb_stop;	/* B Node first in time */
+							tb_stop = xb_start;	/* B Node last in time */
+						}
+						if (new_a_time) {
+							if (xa_start < xa_stop) {
+								ta_start = xa_start;	/* A Node first in time */
+								ta_stop = xa_stop;	/* A Node last in time */
+							}
+							else {
+								ta_start = xa_stop;	/* A Node first in time */
+								ta_stop = xa_start;	/* A Node last in time */
+							}
+							new_a_time = FALSE;
+						}
+
+						tx_a = ta_start + fabs ((yc - ya[ta_start]) / del_ya);
+						tx_b = tb_start + fabs (xa[xa_start] - xb[tb_start]) * i_del_xb;
+						if (tx_a < ta_stop && tx_b < tb_stop) {
+							X->x[nx] = xa[xa_start];
+							X->y[nx] = yc;
+							X->xnode[0][nx] = tx_a;
+							X->xnode[1][nx] = tx_b;
+							nx++;
+						}
+					}
+				}
+				else if (del_xb == 0.0) {	/* Vertical B segment: Special case */
+					
+					i_del_xa = 1.0 / del_xa;
+					yc = ya[xa_start] + (xb[xb_start] - xa[xa_start]) * del_ya * i_del_xa;
+					if (!(yc < yb[B[this_b].start] || yc > yb[B[this_b].stop])) {	/* Did cross within the segment extents */
+						/* Only accept xover if occurring before segment end (in time) */
+
+						if (xb_start < xb_stop) {
+							tb_start = xb_start;	/* B Node first in time */
+							tb_stop = xb_stop;	/* B Node last in time */
+						}
+						else {
+							tb_start = xb_stop;	/* B Node first in time */
+							tb_stop = xb_start;	/* B Node last in time */
+						}
+						if (new_a_time) {
+							if (xa_start < xa_stop) {
+								ta_start = xa_start;	/* A Node first in time */
+								ta_stop = xa_stop;	/* A Node last in time */
+							}
+							else {
+								ta_start = xa_stop;	/* A Node first in time */
+								ta_stop = xa_start;	/* A Node last in time */
+							}
+							new_a_time = FALSE;
+						}
+
+						tx_a = ta_start + fabs (xb[xb_start] - xa[ta_start]) * i_del_xa;
+						tx_b = tb_start + fabs ((yc - yb[tb_start]) / del_yb);
+						if (tx_a < ta_stop && tx_b < tb_stop) {
+							X->x[nx] = xb[xb_start];
+							X->y[nx] = yc;
+							X->xnode[0][nx] = tx_a;
+							X->xnode[1][nx] = tx_b;
+							nx++;
+						}
+					}
+				}
+				else if (del_ya == 0.0) {	/* Horizontal A segment: Special case */
+					
+					i_del_yb = 1.0 / del_yb;
+					xc = xb[xb_start] + (ya[xa_start] - yb[xb_start]) * del_xb * i_del_yb;
+					if (!(xc < xa[xa_start] || xc > xa[xa_stop])) {	/* Did cross within the segment extents */
+
+						/* Only accept xover if occurring before segment end (in time) */
+
+						if (xb_start < xb_stop) {
+							tb_start = xb_start;	/* B Node first in time */
+							tb_stop = xb_stop;	/* B Node last in time */
+						}
+						else {
+							tb_start = xb_stop;	/* B Node first in time */
+							tb_stop = xb_start;	/* B Node last in time */
+						}
+						if (new_a_time) {
+							if (xa_start < xa_stop) {
+								ta_start = xa_start;	/* A Node first in time */
+								ta_stop = xa_stop;	/* A Node last in time */
+							}
+							else {
+								ta_start = xa_stop;	/* A Node first in time */
+								ta_stop = xa_start;	/* A Node last in time */
+							}
+							new_a_time = FALSE;
+						}
+
+						tx_a = ta_start + fabs (xc - xa[ta_start]) / del_xa;
+						tx_b = tb_start + fabs ((ya[xa_start] - yb[tb_start]) * i_del_yb);
+						if (tx_a < ta_stop && tx_b < tb_stop) {
+							X->y[nx] = ya[xa_start];
+							X->x[nx] = xc;
+							X->xnode[0][nx] = tx_a;
+							X->xnode[1][nx] = tx_b;
+							nx++;
+						}
+					}
+				}
+				else if (del_yb == 0.0) {	/* Horizontal B segment: Special case */
+					
+					i_del_ya = 1.0 / del_ya;
+					xc = xa[xa_start] + (yb[xb_start] - ya[xa_start]) * del_xa * i_del_ya;
+					if (!(xc < xb[xb_start] || xc > xb[xb_stop])) {	/* Did cross within the segment extents */
+
+						/* Only accept xover if occurring before segment end (in time) */
+
+						if (xb_start < xb_stop) {
+							tb_start = xb_start;	/* B Node first in time */
+							tb_stop = xb_stop;	/* B Node last in time */
+						}
+						else {
+							tb_start = xb_stop;	/* B Node first in time */
+							tb_stop = xb_start;	/* B Node last in time */
+						}
+						if (new_a_time) {
+							if (xa_start < xa_stop) {
+								ta_start = xa_start;	/* A Node first in time */
+								ta_stop = xa_stop;	/* A Node last in time */
+							}
+							else {
+								ta_start = xa_stop;	/* A Node first in time */
+								ta_stop = xa_start;	/* A Node last in time */
+							}
+							new_a_time = FALSE;
+						}
+
+						tx_a = ta_start + fabs ((yb[xb_start] - ya[ta_start]) * i_del_ya);
+						tx_b = tb_start + fabs (xc - xb[tb_start]) / del_xb;
+						if (tx_a < ta_stop && tx_b < tb_stop) {
+							X->y[nx] = yb[xb_start];
+							X->x[nx] = xc;
+							X->xnode[0][nx] = tx_a;
+							X->xnode[1][nx] = tx_b;
+							nx++;
+						}
+					}
+				}
+				else {	/* General case */
+
+					i_del_xa = 1.0 / del_xa;
+					i_del_xb = 1.0 / del_xb;
+					slp_a = del_ya * i_del_xa;
+					slp_b = del_yb * i_del_xb;
+					if (slp_a != slp_b) {	/* Segments are not parallel */
+						xc = (yb[xb_start] - ya[xa_start] + slp_a * xa[xa_start] - slp_b * xb[xb_start]) / (slp_a - slp_b);
+						if (!(xc < xa[xa_start] || xc > xa[xa_stop] || xc < xb[xb_start] || xc > xb[xb_stop])) {	/* Did cross within the segment extents */
+
+							/* Only accept xover if occurring before segment end (in time) */
+
+							if (xb_start < xb_stop) {
+								tb_start = xb_start;	/* B Node first in time */
+								tb_stop = xb_stop;	/* B Node last in time */
+							}
+							else {
+								tb_start = xb_stop;	/* B Node first in time */
+								tb_stop = xb_start;	/* B Node last in time */
+							}
+							if (new_a_time) {
+								if (xa_start < xa_stop) {
+									ta_start = xa_start;	/* A Node first in time */
+									ta_stop = xa_stop;	/* A Node last in time */
+								}
+								else {
+									ta_start = xa_stop;	/* A Node first in time */
+									ta_stop = xa_start;	/* A Node last in time */
+								}
+								new_a_time = FALSE;
+							}
+
+							tx_a = ta_start + fabs (xc - xa[ta_start]) * i_del_xa;
+							tx_b = tb_start + fabs (xc - xb[tb_start]) * i_del_xb;
+							if (tx_a < ta_stop && tx_b < tb_stop) {
+								X->x[nx] = xc;
+								X->y[nx] = ya[xa_start] + (xc - xa[xa_start]) * slp_a;
+								X->xnode[0][nx] = tx_a;
+								X->xnode[1][nx] = tx_b;
+								nx++;
+							}
+						}
+					}
+				}
+
+				if (nx == nx_alloc) {
+					nx_alloc += GMT_SMALL_CHUNK;
+					GMT_x_alloc (X, nx_alloc);
+				}
+			} /* End x-overlap */
+
+			this_b++;
+			new_b = TRUE;
+
+		} /* End y-overlap */
+
+		if (this_b == n_seg_b) {
+			this_a++;
+			this_b = (internal) ? this_a : 0;
+			new_a = new_b = TRUE;
+		}
+
+	} /* End while loop */
+
+	if (!sa0) GMT_free ((void *)sa);
+	if (!sb0) GMT_free ((void *)sb);
+
+	return (nx);
+}
+
+void GMT_x_alloc (struct GMT_XOVER *X, int nx_alloc) {
+	if (nx_alloc < 0) {	/* Initial allocation */
+		nx_alloc = -nx_alloc;
+		X->x = (double *) GMT_memory (VNULL, (size_t)nx_alloc, sizeof (double), "GMT_x_alloc");
+		X->y = (double *) GMT_memory (VNULL, (size_t)nx_alloc, sizeof (double), "GMT_x_alloc");
+		X->xnode[0] = (double *) GMT_memory (VNULL, (size_t)nx_alloc, sizeof (double), "GMT_x_alloc");
+		X->xnode[1] = (double *) GMT_memory (VNULL, (size_t)nx_alloc, sizeof (double), "GMT_x_alloc");
+	}
+	else {	/* Increment */
+		X->x = (double *) GMT_memory ((void *)X->x, (size_t)nx_alloc, sizeof (double), "GMT_x_alloc");
+		X->y = (double *) GMT_memory ((void *)X->y, (size_t)nx_alloc, sizeof (double), "GMT_x_alloc");
+		X->xnode[0] = (double *) GMT_memory ((void *)X->xnode[0], (size_t)nx_alloc, sizeof (double), "GMT_x_alloc");
+		X->xnode[1] = (double *) GMT_memory ((void *)X->xnode[1], (size_t)nx_alloc, sizeof (double), "GMT_x_alloc");
+	}
+}
+
+void GMT_x_free (struct GMT_XOVER *X) {
+	GMT_free ((void *)X->x);
+	GMT_free ((void *)X->y);
+	GMT_free ((void *)X->xnode[0]);
+	GMT_free ((void *)X->xnode[1]);
+}
