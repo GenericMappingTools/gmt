@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.123 2004-05-12 19:11:27 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.124 2004-05-12 19:42:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4146,7 +4146,7 @@ void GMT_draw_mag_rose (struct MAP_ROSE *mr)
 		n_tick = GMT_linear_array (0.0, 360.0, mr->g_int[level], 0.0, &val);
 		for (i = 0; i < n_tick - 1; i++) {	/* Increments of fine tickmarks (-1 to avoid repeating 360) */
 			angle = offset + val[i];
-			k = (fabs (fmod (val[i], mr->a_int[level])) < GMT_CONV_LIMIT) ? 2 : ((fabs (fmod (val[i], mr->f_int[level])) < GMT_CONV_LIMIT) ? 0 : 1);
+			k = (fabs (fmod (val[i], mr->a_int[level])) < GMT_CONV_LIMIT) ? 2 : ((fabs (fmod (val[i], mr->f_int[level])) < GMT_CONV_LIMIT) ? 1 : 0);
 			sincos ((ew_angle + angle) * D2R, &s, &c);
 			x[0] = mr->x0 + R[level] * c;	y[0] = mr->y0 + R[level] * s;
 			x[1] = mr->x0 + (R[level] - scale[level]*tlen[k]) * c;	y[1] = mr->y0 + (R[level] - scale[level]*tlen[k]) * s;
