@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.35 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt.h,v 1.36 2002-02-14 23:53:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -396,6 +396,18 @@ struct BCR {	/* Used mostly in gmt_support.c */
 	int	my;			/* Ditto  */
 };
 
+struct MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */
+	double lon, lat;	/* Location of top/mid point of scale on the map in lon/lat space */
+	double x0, y0;		/* Location of top/mid point of scale on the map in inches x/y */
+	double scale_lon;	/* Point where scale should apply */
+	double scale_lat;	/* Point where scale should apply */
+	double length;		/* How long the scale is in measure units */
+	BOOLEAN plot;		/* TRUE if we want to draw the scale */
+	BOOLEAN fancy;		/* TRUE for a fancy map scale */
+	BOOLEAN gave_xy;	/* TRUE if x0, y0 was given in cartesian map coordinates and not lon/lat */
+	char measure;		/* The unit, i.e., m (miles), n (nautical miles), or k (kilometers) */
+};
+
 /*--------------------------------------------------------------------*/
 /*	External variables for misc purposes */
 /*--------------------------------------------------------------------*/
@@ -435,7 +447,7 @@ EXTERN_MSC char *GMT_second_symbol[4][2];	/* Standard encoding second symbol */
 
 
 EXTERN_MSC FILE *GMT_stdin, *GMT_stdout;
-EXTERN_MSC PFI GMT_input, GMT_output;
+EXTERN_MSC PFI GMT_input, GMT_output, GMT_input_ascii;
 EXTERN_MSC BOOLEAN GMT_geographic_in;	/*TRUE if input data is long/lat */
 EXTERN_MSC BOOLEAN GMT_geographic_out;	/*TRUE if output data is long/lat */
 EXTERN_MSC double GMT_data[BUFSIZ];

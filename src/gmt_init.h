@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.26 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.27 2002-02-14 23:53:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -150,6 +150,7 @@ PFI GMT_z_forward, GMT_z_inverse;	/*	Pointers to the selected linear functions *
 FILE *GMT_stdin;		/* Pointer for standard input */
 FILE *GMT_stdout;		/* Pointer for standard output */
 PFI GMT_input;			/* Pointer to function reading ascii or binary tables */
+PFI GMT_input_ascii;		/* Pointer to function reading ascii tables only */
 PFI GMT_output;			/* Pointer to function writing ascii or binary tables */
 BOOLEAN GMT_geographic_in = FALSE;	/* TRUE if input data is long/lat*/
 BOOLEAN GMT_geographic_out = FALSE;	/* TRUE if output data is long/lat*/

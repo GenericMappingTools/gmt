@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.42 2002-01-30 06:49:07 ben Exp $
+ *	$Id: gmt_io.c,v 1.43 2002-02-14 23:53:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -141,7 +141,7 @@ void GMT_io_init (void)
 
 	int i;
 	
-	GMT_input  = GMT_ascii_input;
+	GMT_input  = GMT_input_ascii = GMT_ascii_input;
 	GMT_output = GMT_ascii_output;
 
 	GMT_io.give_report = TRUE;

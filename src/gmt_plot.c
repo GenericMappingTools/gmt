@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.63 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.64 2002-02-14 23:53:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3580,7 +3580,7 @@ double GMT_get_angle (double lon1, double lat1, double lon2, double lat2)
 }
 
 
-void GMT_draw_map_scale (double x0, double y0, double lat, double length, char measure, BOOLEAN gave_xy, BOOLEAN fancy)
+void GMT_draw_map_scale (struct MAP_SCALE *ms)
 {
 	int i, j, k, *rgb, n_a_ticks[9], n_f_ticks[9], unit;
 	double dlon, x1, x2, dummy, a, b, tx, ty, off, f_len, a_len, x_left, bar_length;
@@ -3593,38 +3593,46 @@ void GMT_draw_map_scale (double x0, double y0, double lat, double length, char m
 	
 	if (!MAPPING) return;	/* Only for geographic projections */
 	
-	switch (measure) {
-		case 'm':
+	switch (ms->measure) {
+		case 'm':	/* Statute miles instead */
 			unit = 1;
-			bar_length = 1.609344 * length;
+			bar_length = 1.609344 * ms->length;
 			break;
-		case 'n':
+		case 'n':	/* Nautical miles instead */
 			unit = 2;
-			bar_length = 1.852 * length;
+			bar_length = 1.852 * ms->length;
 			break;
-		default:
+		default:	/* Default (or k) is km */
 			unit = 0;
-			bar_length = length;
+			bar_length = ms->length;
 			break;
 	}
 
-	if (!gave_xy) {
-		GMT_geo_to_xy (x0, y0, &a, &b);
-		x0 = a;
-		y0 = b;
+	if (ms->gave_xy)	/* Also get lon/lat coordinates */
+		GMT_xy_to_geo (&ms->lon, &ms->lat, ms->x0, ms->y0);
+	else {	/* Must convert lon/lat to location on map */
+		ms->lon = ms->x0;
+		ms->lat = ms->y0;
+		GMT_geo_to_xy (ms->lon, ms->lat, &ms->x0, &ms->y0);
 	}
 	
-	dlon = 0.5 * bar_length * 1000.0 / (project_info.M_PR_DEG * cosd (lat));
+	if (project_info.projection == OBLIQUE_MERC) {	/* Set latitude to the oblique latitude */
+		a = fabs (GMT_great_circle_dist (project_info.o_pole_lon * R2D, project_info.o_pole_lat * R2D, ms->scale_lon, ms->scale_lat));	/* Colatitude */
+		if (a > 90.0) a = 180.0 - 90.0;	/* Flip hemisphere */
+		ms->scale_lat = 90.0 - a;
+	}
 	
-	GMT_geoz_to_xy (project_info.central_meridian - dlon, lat, project_info.z_level, &x1, &dummy);
-	GMT_geoz_to_xy (project_info.central_meridian + dlon, lat, project_info.z_level, &x2, &dummy);
+	dlon = 0.5 * bar_length * 1000.0 / (project_info.M_PR_DEG * cosd (ms->scale_lat));
+	
+	GMT_geoz_to_xy (project_info.central_meridian - dlon, ms->scale_lat, project_info.z_level, &x1, &dummy);
+	GMT_geoz_to_xy (project_info.central_meridian + dlon, ms->scale_lat, project_info.z_level, &x2, &dummy);
 	width = x2 - x1;
 	half = 0.5 * width;
 	a_len = fabs (gmtdefs.map_scale_height);
 	off = a_len + 0.75 * gmtdefs.annot_offset;
 	
 	GMT_setpen (&gmtdefs.tick_pen);
-	if (fancy) {	/* Fancy scale */
+	if (ms->fancy) {	/* Fancy scale */
 		n_f_ticks[8] = 3;
 		n_f_ticks[1] = n_f_ticks[3] = n_f_ticks[7] = 4;
 		n_f_ticks[0] = n_f_ticks[4] = 5;
@@ -3633,19 +3641,19 @@ void GMT_draw_map_scale (double x0, double y0, double lat, double length, char m
 		n_a_ticks[4] = n_a_ticks[6] = n_a_ticks[8] = 1;
 		n_a_ticks[0] = n_a_ticks[1] = n_a_ticks[3] = n_a_ticks[7] = 2;
 		n_a_ticks[2] = n_a_ticks[5] = 3;
-		base = pow (10.0, floor (d_log10 (length)));
-		i = irint (length / base) - 1;
-		d_base = length / n_a_ticks[i];
+		base = pow (10.0, floor (d_log10 (ms->length)));
+		i = irint (ms->length / base) - 1;
+		d_base = ms->length / n_a_ticks[i];
 		dx_f = width / n_f_ticks[i];
 		dx_a = width / n_a_ticks[i];
 		bar_width = 0.5 * fabs (gmtdefs.map_scale_height);
 		f_len = 0.75 * fabs (gmtdefs.map_scale_height);
-		yy[2] = yy[3] = y0;
-		yy[0] = yy[1] = y0 - bar_width;
-		x_left = x0 - half;
-		GMT_xyz_to_xy (x_left, y0 - f_len, project_info.z_level, &a, &b);
+		yy[2] = yy[3] = ms->y0;
+		yy[0] = yy[1] = ms->y0 - bar_width;
+		x_left = ms->x0 - half;
+		GMT_xyz_to_xy (x_left, ms->y0 - f_len, project_info.z_level, &a, &b);
 		ps_plot (a, b, 3);
-		GMT_xyz_to_xy (x_left, y0, project_info.z_level, &a, &b);
+		GMT_xyz_to_xy (x_left, ms->y0, project_info.z_level, &a, &b);
 		ps_plot (a, b, 2);
 		for (j = 0; j < n_f_ticks[i]; j++) {
 			xx[0] = xx[3] = x_left + j * dx_f;
@@ -3653,36 +3661,36 @@ void GMT_draw_map_scale (double x0, double y0, double lat, double length, char m
 			for (k = 0; k < 4; k++) GMT_xyz_to_xy (xx[k], yy[k], project_info.z_level, &bx[k], &by[k]);
 			rgb = (j%2) ? gmtdefs.foreground_rgb : gmtdefs.background_rgb;
 			ps_polygon (bx, by, 4, rgb, TRUE);
-			GMT_xyz_to_xy (xx[1], y0 - f_len, project_info.z_level, &a, &b);
+			GMT_xyz_to_xy (xx[1], ms->y0 - f_len, project_info.z_level, &a, &b);
 			ps_plot (a, b, 3);
-			GMT_xyz_to_xy (xx[1], y0, project_info.z_level, &a, &b);
+			GMT_xyz_to_xy (xx[1], ms->y0, project_info.z_level, &a, &b);
 			ps_plot (a, b, 2);
 		}
-		ty = y0 - off;
+		ty = ms->y0 - off;
 		for (j = 0; j <= n_a_ticks[i]; j++) {
 			tx = x_left + j * dx_a;
-			GMT_xyz_to_xy (tx, y0 - a_len, project_info.z_level, &a, &b);
+			GMT_xyz_to_xy (tx, ms->y0 - a_len, project_info.z_level, &a, &b);
 			ps_plot (a, b, 3);
-			GMT_xyz_to_xy (tx, y0, project_info.z_level, &a, &b);
+			GMT_xyz_to_xy (tx, ms->y0, project_info.z_level, &a, &b);
 			ps_plot (a, b, 2);
 			sprintf (txt, "%lg\0", j * d_base);
 			GMT_text3d (tx, ty, project_info.z_level, gmtdefs.annot_font_size, gmtdefs.annot_font, txt, 0.0, 10, 0);
 		}
-		GMT_xyz_to_xy (x0, y0 + f_len, project_info.z_level, &tx, &ty);
+		GMT_xyz_to_xy (ms->x0, ms->y0 + f_len, project_info.z_level, &tx, &ty);
 		GMT_text3d (tx, ty, project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, label[unit], 0.0, 2, 0);
 	}
 	else {	/* Simple scale */
 	
-		sprintf (txt, "%lg %s\0", length, label[unit]);
-		GMT_xyz_to_xy (x0 - half, y0 - gmtdefs.map_scale_height, project_info.z_level, &a, &b);
+		sprintf (txt, "%lg %s\0", ms->length, label[unit]);
+		GMT_xyz_to_xy (ms->x0 - half, ms->y0 - gmtdefs.map_scale_height, project_info.z_level, &a, &b);
 		ps_plot (a, b, 3);
-		GMT_xyz_to_xy (x0 - half, y0, project_info.z_level, &a, &b);
+		GMT_xyz_to_xy (ms->x0 - half, ms->y0, project_info.z_level, &a, &b);
 		ps_plot (a, b, 2);
-		GMT_xyz_to_xy (x0 + half, y0, project_info.z_level, &a, &b);
+		GMT_xyz_to_xy (ms->x0 + half, ms->y0, project_info.z_level, &a, &b);
 		ps_plot (a, b, 2);
-		GMT_xyz_to_xy (x0 + half, y0 - gmtdefs.map_scale_height, project_info.z_level, &a, &b);
+		GMT_xyz_to_xy (ms->x0 + half, ms->y0 - gmtdefs.map_scale_height, project_info.z_level, &a, &b);
 		ps_plot (a, b, 2);
-		GMT_text3d (x0, y0 - off, project_info.z_level, gmtdefs.annot_font_size, gmtdefs.annot_font, txt, 0.0, 10, 0);
+		GMT_text3d (ms->x0, ms->y0 - off, project_info.z_level, gmtdefs.annot_font_size, gmtdefs.annot_font, txt, 0.0, 10, 0);
 	}
 }
 
