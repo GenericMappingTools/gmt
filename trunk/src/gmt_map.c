@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.76 2005-01-01 21:48:26 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.77 2005-01-06 20:55:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7619,11 +7619,15 @@ void GMT_2Dz_to_3D (double *x, double *y, double z, int n)
 
 void GMT_azim_to_angle (double lon, double lat, double c, double azim, double *angle)
                          	/* All variables in degrees */
-               {
+{
 	double lon1, lat1, x0, x1, y0, y1, dx, width, sinc, cosc, sinaz, cosaz, sinl, cosl;
 	
 	if (project_info.projection < MERCATOR) {	/* Trivial case */
 		*angle = 90.0 - azim;
+		if (project_info.x_scale != project_info.y_scale) {
+			sincos (*angle * D2R, &sinaz, &cosaz);
+			*angle = d_atan2 (sinaz * project_info.y_scale, cosaz * project_info.x_scale) * R2D;
+		}
 		return;
 	}
 
