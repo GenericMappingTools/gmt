@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.139 2004-11-26 23:13:12 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.140 2004-12-08 20:53:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3740,6 +3740,8 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 #define ROSE_WIDTH_SCL2		0.2
 #define ROSE_WIDTH_SCL3		0.2
 
+#define DIST_TO_2ND_POINT 1.0
+
 void GMT_draw_map_rose (struct MAP_ROSE *mr)
 {
 	int i, kind, just[4] = {10, 5, 2, 7};
@@ -3762,7 +3764,7 @@ void GMT_draw_map_rose (struct MAP_ROSE *mr)
 		return;
 	}
 	
-	GMT_azim_to_angle (mr->lon, mr->lat, 0.1, 90.0, &angle);	/* Get angle of E-W direction at this location */
+	GMT_azim_to_angle (mr->lon, mr->lat, DIST_TO_2ND_POINT, 90.0, &angle);	/* Get angle of E-W direction at this location */
 	
 	GMT_setpen (&gmtdefs.tick_pen);
 	
@@ -3825,7 +3827,7 @@ void GMT_draw_mag_rose (struct MAP_ROSE *mr)
 	double ew_angle, angle, R[2], tlen[3], L, s, c, x[5], y[5], xp[5], yp[5], offset, t_angle, scale[2], base, *val;
 	char label[16];
 	
-	GMT_azim_to_angle (mr->lon, mr->lat, 0.1, 90.0, &ew_angle);	/* Get angle of E-W direction at this location */
+	GMT_azim_to_angle (mr->lon, mr->lat, DIST_TO_2ND_POINT, 90.0, &ew_angle);	/* Get angle of E-W direction at this location */
 	
 	R[0] = 0.75 * 0.5 * mr->size;
 	R[1] = 0.5 * mr->size;
