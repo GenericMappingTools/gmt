@@ -1,5 +1,5 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.13 2004-08-18 23:19:45 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.14 2004-08-25 00:15:25 pwessel Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
@@ -7,7 +7,7 @@
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD=
 "POST">
 <INPUT TYPE="hidden" VALUE="4.0" NAME="gmt_version">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.13 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.14 $" NAME="form_version">
 
 <H1></H1>
 <H1><CENTER><STRONG>GMT 4.0 Installation Helper</CENTER></STRONG>
@@ -187,7 +187,7 @@ may decide that it does not need to ftp new versions of those archives.</I>
 <P>
 <I>Note: The GMT libraries can be made static or shared.  The main benefit of using shared (dynamic)
 libraries is significantly reduced executable sizes (50-70% savings in disk space).  The GMT install
-procedure knows how to make shared libraries under Linux, FreeBSD, NetBSD, SunOS, Solaris, HPUX, OSF1,
+procedure knows how to make shared libraries under Linux, Mac OS X, FreeBSD, NetBSD, SunOS, Solaris, HPUX, OSF1,
 and IRIX.  For other systems capable of generating shared libraries you must manually configure the
 makegmt.macros file.  If you have no preferences or no idea what to do on an unlisted system, select
 the default static libraries.</I><BR>
