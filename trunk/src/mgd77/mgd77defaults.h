@@ -16,7 +16,7 @@
 		{ "BathyTypeCode",                 "btc",        60,	   1,        "int",        1,       "%1d",      15,        "%1d",        NULL,   "9",		   1,            9,       FALSE},
 		{ "MagFirstSensorTotalField",     "mtf1",        61,	   6,       "real",       10,      "%06d",      16,       "%06d",     "%7.1f",   "999999",     20000,        70000,        2000},
 		{ "MagSecondSensorTotalField",    "mtf2",        67,	   6,       "real",       10,      "%06d",      17,       "%06d",     "%7.1f",   "999999",     20000,        70000,          40},
-		{ "MagResidualField", 	          "mres",        73,	   6,       "real",       10,      "%06d",      18,      "%+06d",     "%7.1f",   "+99999",    -10000,        10000,         200},
+		{ "MagResidualField", 	           "mag",        73,	   6,       "real",       10,      "%06d",      18,      "%+06d",     "%7.1f",   "+99999",    -10000,        10000,         200},
 		{ "MagSensorForResidualField",   "msens",        79,	   1,        "int",        1,       "%1d",      19,        "%1d",        NULL,   "9",		   1,            9,       FALSE},
 		{ "MagDiurnalCorrection",         "diur",        80,	   5,       "real",       10,      "%05d",      20,      "%+05d",     "%6.1f",   "+9999",	-500,          500,         1.5},
 		{ "MagSensorDepthAltitude",        "msd",        85,	   6,        "int",        1,      "%06d",      21,      "%+06d",       "%7d",   "+99999",     -1000,        10000,          10},
