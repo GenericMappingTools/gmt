@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.25 2001-09-20 20:10:31 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.26 2001-09-20 20:17:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -471,7 +471,7 @@ int GMT_bin_float_input (FILE *fp, int *n, double **ptr)
 		}
 	}
 	if (gmtdefs.xy_toggle) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
-	if (MT_io.in_col_type[0] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
+	if (GMT_io.in_col_type[0] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
 
 	return (n_read);
 }
