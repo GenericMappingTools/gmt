@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.4 2002-01-17 22:57:17 pwessel Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.5 2002-02-26 22:26:14 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2002.
@@ -69,12 +69,12 @@ frame surrounding the two maps.  This is how it is done:
 
 The first command draws a box surrounding the maps.  This is
 followed by two sequences of
-\GMTprog{pscoast}, –\GMTprogi{grdcontour}, \GMTprogi{–grdcontour}.
+\GMTprog{pscoast}, \GMTprogi{grdcontour}, \GMTprogi{grdcontour}.
 They differ in that the first is centered on Greenwich; the
-second on the dateline.  We use the limit option (\Opt{–L})
+second on the dateline.  We use the limit option (\Opt{L})
 in \GMTprog{grdcontour} to select negative contours only and plot
 those with a dashed pen, then positive contours only and draw
-with a solid pen [Default].  The \Opt{–T} option causes tickmarks
+with a solid pen [Default].  The \Opt{T} option causes tickmarks
 pointing in the downhill direction to be drawn on the innermost,
 closed contours.  For the upper panel we also added - and + to
 the local lows and highs.  You can find this illustration as
@@ -130,7 +130,7 @@ color image.  Next we run \GMTprog{grdimage} to create a
 color-code image of the Geosat geoid heights, and draw a
 color scale to the right of the image with \GMTprog{psscale}.
 We also annotate the color scales with \GMTprog{psscale}.
-Similarly, we run \GMTprog{grdimage} but specify \Opt{–Y}4.5
+Similarly, we run \GMTprog{grdimage} but specify \Opt{Y}4.5
 to plot above the previous image.  Adding scale and label
 the two plots a) and b) completes the illustration
 (Figure~\ref{fig:GMT_example_02}).
@@ -349,7 +349,7 @@ angle with the baseline must be 50\DS ).  We do this by
 extracting the last record from each track, paste this file
 with the \filename{tracks.lis} file, and use \progname{\$AWK} to create the
 format needed for \GMTprog{pstext}.  Note we offset the positions
-by -0.05 inch with \Opt{–D} in order to have a small gap
+by -0.05 inch with \Opt{D} in order to have a small gap
 between the profile and the label:
 
 \input{scripts/GMT_example_9} 
@@ -601,7 +601,7 @@ with \GMTprog{grdimage}, use \GMTprog{pscoast} to set up land
 clippaths, and then overlay topography from the ETOPO5 data
 set with another call to \GMTprog{grdimage}.  We finally undo
 the clippath with a second call to \GMTprog{pscoast} with the
-option \Opt{–Q} (Figure~\ref{fig:GMT_example_17}): 
+option \Opt{Q} (Figure~\ref{fig:GMT_example_17}): 
 
 \input{scripts/GMT_example_17} 
 \GMTfig[ht]{GMT_example_17}{Clipping of images using coastlines}
@@ -702,7 +702,7 @@ $x_0$ $y_0$ $r$ {\bf C} [ \Opt{G}{\it fill} ] [ \Opt{W}{\it pen} ] \> Draw
 single circle of radius $r$ around $x_0$, $y_0$ \\
 \end{tabbing} 
 
-The optional \Opt{G} and \Opt{–W} can be used to hardwire
+The optional \Opt{G} and \Opt{W} can be used to hardwire
 the color fill and pen for segments.  By default the segments
 are painted based on the values of the command line settings.
 

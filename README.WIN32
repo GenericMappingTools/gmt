@@ -1,4 +1,4 @@
-	$Id: README.WIN32,v 1.8 2002-01-17 22:57:17 pwessel Exp $
+	$Id: README.WIN32,v 1.9 2002-02-26 22:26:14 pwessel Exp $
 
 README file for GMT 4 Distribution for Win32
 This version contains dynamic executables with the DLL support.
@@ -13,7 +13,7 @@ To use GMT on your system you must
    for details and ftp links.  There is also a .zip file on the
    GMT ftp sites.
 
-2a Win95/98:
+2a Win95/98/Me:
    Edit SRC/GMTENV.BAT and change the values for GMTHOME, HOME, and NETCDF
    if your setup differs from what these defaults values indicate.
    Execute GMTENV.BAT or place it in autoexec.bat so it is run each
@@ -54,4 +54,3 @@ To view your GMT PostScript or EPS plots, we recommend you install gsview
 
 Paul Wessel
 Walter H. F. Smith
-01-FEB-2002

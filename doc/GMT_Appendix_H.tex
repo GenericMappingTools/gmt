@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_H.tex,v 1.2 2002-01-17 22:57:17 pwessel Exp $
+%	$Id: GMT_Appendix_H.tex,v 1.3 2002-02-26 22:26:14 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2002.
@@ -37,7 +37,7 @@ based on our experiences:
 caused linewidth-dependent path displacement.  We reported
 this bug and it has been fixed in newer versions of the software.
 Try using \GMTprog{psxy} to draw $y = f(x)$ twice, once with a
-thin pen (\Opt{–W}1) and once with a fat pen (\Opt{W}10);
+thin pen (\Opt{W}1) and once with a fat pen (\Opt{W}10);
 if they do not plot on top of each other, you have this kind
 of bug and need new software.  The problem may also show up
 when you plot a mixture of solid and dashed (or dotted) lines
@@ -57,9 +57,9 @@ an HP LaserJet 4M.
 \item Apple Laserwriters with the older versions of Apple's
 \PS\ driver will give the error ``limitcheck''
 and fail to plot when they encounter a path exceeding about
-1000--–1500 points.  Try to get a newer driver from Apple, but
+1000--1500 points.  Try to get a newer driver from Apple, but
 if you can't do that, set the parameter MAX\_L1\_PATH to
-1000--–1500 or even smaller in the file \filename{src/pslib\_inc.h}
+1000--1500 or even smaller in the file \filename{src/pslib\_inc.h}
 and recompile \GMT.  The number of points in a \PS\
 path can be arbitrarily large, in principle; \GMT\ will only
 create paths longer than MAX\_L1\_PATH if the path represents
@@ -260,7 +260,7 @@ If you want to make color shaded relief images and you haven't
 had much experience with it, here is a good first cut at the
 problem:  Set your COLOR\_MODEL to HSV using \GMTprog{gmtset}.  Use
 \GMTprog{makecpt} or \GMTprog{grd2cpt} to make a continuous color
-palette spanning the range of your data.  Use the \Opt{–Nt}
+palette spanning the range of your data.  Use the \Opt{Nt}
 option on \GMTprog{grdgradient}.  Try the result, and then play with
 the tuning of the \filename{.gmtdefaults}, the cpt file, and
 the gradient file.

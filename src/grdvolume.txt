@@ -20,7 +20,7 @@ No space between the option flag and the associated arguments.
 .B \-C
 find area and volume inside the \fIcval\fP contour.  Alternatively, search using
 all contours from \fIlow\fP to \fIhigh\fP in steps of \fIdelta\fP.  [Default returns
-entire area and volume of grid].
+entire area and volume of grid].  The area is measured in the plane of the countour.
 .TP
 .B \-L
 Also add in the volume from the level of the contour down to \fIbase\fP [Default base is contour].

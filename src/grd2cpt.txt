@@ -39,6 +39,10 @@ in steps of (\fIzinc\fP).  [Default chooses arbitrary values by a crazy scheme.]
 .TP
 .B \-V
 Verbose operation.  This will write CDF(Z) estimates to stderr.  [Default is silent.] 
+.TP
+.B \-Z
+Will create a continuous color palette.
+[Default is discontinuous, i.e., constant color intervals]
 .SH EXAMPLES
 Sometimes you don't want to make a cpt file (yet) but would find it helpful
 to know that 90% of your data lie between z1 and z2, something you cannot
