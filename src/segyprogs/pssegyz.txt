@@ -3,24 +3,22 @@
 pssegyz \- Create imagemasked postscript from SEGY file
 .SH SYNOPSIS
 \fBpssegyz\fP \fISEGYfile\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP \fB\-D\fP\fIdeviation 
-\fB\-F\fP[\fBrgb|gray\fP]|-W 
-[ \fB\-I\fP] [ \fB\-N\fP ] [ \fB\-B\fP\fIbias\fP ] [ \fB\-C\fP\fIclip\fP ] 
-[ \fB\-Z\fP ] [ \fB\-X\fP\fIscale\fP ] [ \fB\-Y\fP\fIsample int\fP ]
-[ \fB\-S\fP\fIheader_x\fP/\fIheader_y\fP ] [ \fB\-L\fP\fInsamp\fP ] 
-[ \fB\-M\fP\fIntrace\fP ] [ \fB\-U\fP\fIredvel\fP ]
-[ \fB-E\fP\fIazimuth\fP/\fIelevation\fP ]
-[ \fB\-O\fP ] [ \fB\-K\fP ] [ \fB\-P\fP ][ \fB\-V \fP ] 
+\fB\-F\fP[\fBrgb|gray\fP]|\fB\-W\fP 
+[ \fB\-B\fP\fIbias\fP ] [ \fB\-C\fP\fIclip\fP ] [ \fB-E\fP\fIazimuth\fP/\fIelevation\fP ]
+[ \fB\-I\fP ] [ \fB\-K\fP ] [ \fB\-L\fP\fInsamp\fP ] [ \fB\-M\fP\fIntrace\fP ] [ \fB\-N\fP ] 
+[ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-S\fP\fIheader_x\fP/\fIheader_y\fP ] [ \fB\-U\fP\fIredvel\fP ]
+[ \fB\-V \fP ] [ \fB\-X\fP\fIscale\fP ] [ \fB\-Y\fP\fIsample_int\fP ] [ \fB\-Z\fP ]
 .SH DESCRIPTION
 \fBpssegyz\fP reads a native (IEEE) format SEGY file and produces a
 \fIPostScript\fP image of the seismic data. The \fIimagemask\fP
 operator is used so that the seismic data are plotted as a 1-bit
 deep bitmap in a single
 (user-specified) color or gray shade, with a transparent background.
-The bitmap resolution is taken from the current GMT defaults.
+The bitmap resolution is taken from the current \fBGMT\fP defaults.
 The seismic traces may be plotted at their true locations using information
 in the trace headers (in which case order of the
 traces in the file is not significant).
- Standard GMT geometry routines are used so that
+ Standard \fBGMT\fP geometry routines are used so that
 in principle any map projection may be used, however it is likely that the
 geographic projections will lead to unexpected results. Beware also
 that some parameters have non-standard meanings, and a couple of
@@ -48,6 +46,9 @@ This may
 be a single number (applied equally in X and Y directions) or devX/devY
 .br 
 .TP
+.B \-E
+Azimuth and elevation for the 3-D projection.
+.TP
 .B \-F[\fIrgb\fP|\fIgray\fP]
 Fill trace (variable area, defaults to filling positive). rgb or gray gives
 the color with which the imagemask is filled.
@@ -59,12 +60,6 @@ Draw wiggle trace.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-I
-Fill negative rather than positive excursions.
-.TP
-.B \-N
-Normalize trace by dividing by rms amplitude over full trace length.
-.TP
 .B \-B
 Bias to apply to data (added to sample values).
 .TP
@@ -72,21 +67,9 @@ Bias to apply to data (added to sample values).
 Sample value at which to clip data (clipping is applied to both positive and
 negative values).
 .TP
-.B \-Z
-Don't plot traces with zero rms amplitude.
-.TP
-.B \-X
-Multiply trace locations by scale before plotting.
-.TP
-.B \-Y
-Override sample interval in reel header.
-.TP
-.B \-S
-Read trace locations from trace headers: header is either c for CDP,
-o for offset, b<num> to read a long starting at byte <num> in the
-header (first byte corresponds to num=0), or a number to fix the location.
- First parameter for x, second for y. Default has X and Y given by trace
-number.
+.B \-I
+Fill negative rather than positive excursions.
+#include "explain_-K.txt"
 .TP
 .B \-L
 Override number of samples per trace in reel header (program attempts to
@@ -98,24 +81,41 @@ Override number of traces specified in reel header. Program detects
 end of file (relatively) gracefully, but this parameter limits number
 of traces that the program attempts to read.
 .TP
+.B \-N
+Normalize trace by dividing by rms amplitude over full trace length.
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+.TP
+.B \-S
+Read trace locations from trace headers: header is either c for CDP,
+o for offset, b<num> to read a long starting at byte <num> in the
+header (first byte corresponds to num=0), or a number to fix the location.
+ First parameter for x, second for y. Default has X and Y given by trace
+number.
+.TP
 .B \-U
 Apply reduction velocity by shifting traces \fIupwards\fP by redvel/|offset|.
 Negative velocity removes existing reduction. Units should be consistent with
 offset in trace header and sample interval.
-.TP
-.B \-E
-Azimuth and elevation for the 3-D projection.
-#include "explain_-K.txt"
-#include "explain_-O.txt"
-#include "explain_-P.txt"
 #include "explain_-V.txt"
+.TP
+.B \-X
+Multiply trace locations by scale before plotting.
+.TP
+.B \-Y
+Override sample interval in reel header.
+.TP
+.B \-Z
+Don't plot traces with zero rms amplitude.
+.br
+.sp
 .SH EXAMPLES
 To plot the SEGY file wa1.segy with normalized traces plotted at true offset 
 locations, clipped at +-3 and with wiggle trace and positive variable area
-shading in black, try
+shading in black, use
 .br
 .sp
-pssegyz wa1.segy \fB\-JX\fP5/\-5 \fB\-D\fP1 \fB\-Jz0.05\fP \fB\-E\fP180/5 \fB\-R\fP0/100/0/10/0/10 \fB\-C\fP3 \fB\-N\fP \fB\-S\fPo \fB\-W\fP \fB\-F\fP0 > segy.ps
+\fBpssegyz\fP wa1.segy \fB\-JX\fP5/\-5 \fB\-D\fP1 \fB\-Jz0.05\fP \fB\-E\fP180/5 \fB\-R\fP0/100/0/10/0/10 \fB\-C\fP3 \fB\-N\fP \fB\-S\fPo \fB\-W\fP \fB\-F\fP0 > segy.ps
 .br
 
 .SH BUGS

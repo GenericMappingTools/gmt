@@ -85,19 +85,19 @@ To plot a half circle rose diagram of the data in the file fault_segments.az_r (
 pairs of (azimuth, length in meters), using a 10 degree bin sector width,
 on a circle of radius = LEN_1 inch, grid going out to radius = 150 km in steps of 25 km with a 30 degree
 sector interval, radial direction annotated every 50 km, using a light blue shading (200/240/255) outlined
-by a solid red pen (width = 0.75 points), draw the mean azimuth, and shown in Portrait orientation, try:
+by a solid red pen (width = 0.75 points), draw the mean azimuth, and shown in Portrait orientation, use:
 .br
 .sp
-psrose fault_segments.az_r \fB\-R\fP0/150/-90/90 \fB\-B\fP50g25:"Fault length":/g30:."Rose diagram":
+\fBpsrose\fP fault_segments.az_r \fB\-R\fP0/150/-90/90 \fB\-B\fP50g25:"Fault length":/g30:."Rose diagram":
 SCALE_1 \fB\-A\fP10\fBr \-G\fP200/240/255 \fB\-W\fP0.75\fBp\fP/255/0/0 \fB\-Z\fP0.001 \fB\-C\fP \fB\-P \-T\fP \fB\-:\fP | lpr
 .br
 .sp
 To plot a full circle wind rose diagram of the data in the file lines.r_az, on a circle of radius = LEN_2 cm, 
 grid going out to radius = 500 units in steps of 100 with a 45 degree sector interval, using a solid pen (width = 0.5 point), 
-and shown in landscape [Default] orientation with UNIX timestamp and command line plotted, try:
+and shown in landscape [Default] orientation with UNIX timestamp and command line plotted, use:
 .br
 .sp
-psrose lines.az_r \fB\-R\fP0/500/0/360 SCALE_2 \fB\-Bg\fP100/\fBg\fP45:."Windrose diagram": \fB\-W\fP0.5\fBp\fP \fB\-Uc\fP | lpr
+\fBpsrose\fP lines.az_r \fB\-R\fP0/500/0/360 SCALE_2 \fB\-Bg\fP100/\fBg\fP45:."Windrose diagram": \fB\-W\fP0.5\fBp\fP \fB\-Uc\fP | lpr
 .SH BUGS
 No default radial scale and grid settings for polar histograms.  User must run \fBpsrose \-I\fP to find max length in
 binned data set.

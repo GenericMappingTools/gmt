@@ -27,7 +27,7 @@ Parameters are expected to be in the following columns
 station_code, azimuth, take-off angle, polarity
 .br
 .sp
-polarity :
+polarity:
 .br
 - compression can be c,C,u,U,+
 .br
@@ -138,7 +138,7 @@ Set current pen attributes
 .br
 .SH EXAMPLES
 .sp
-pspolar << END -R239/240/34/35.2 -JM8 -N -Sc0.4 -H1 -D239.5/34.5 -M5 >! test.ps
+\fBpspolar\fP \fB\-R\fP239/240/34/35.2 \fB\-JM\fP8 \fB\-N\fP \fB\-Sc\fP0.4 \fB\-H\fP1 \fB\-D\fP239.5/34.5 \fB\-M\fP5 <<END>! test.ps
 .br
 stat azim  ih pol
 .br
@@ -156,7 +156,7 @@ END
 .br
 or
 .br
-pspolar << END -R239/240/34/35.2 -JM8 -N -Sc0.4 -H1 -D239.5/34.5 -M5 -h >! test.ps
+\fBpspolar\fP \fB\-R\fP239/240/34/35.2 \fB\-JM\fP8 \fB\-N\fP \fB\-Sc\fP0.4 \fB\-H\fP1 \fB\-D\fP239.5/34.5 \fB\-M\fP5 \fB\-h\fP <<END>! test.ps
 .br
 Date   Or. time stat azim  ih                                    
 .br

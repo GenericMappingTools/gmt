@@ -7,18 +7,18 @@ pslegend \- To plot a map legend
 \fBpslegend\fP \fItextfile\fP \fB\-D\fP[\fBx\fP]\fIlon/lat/width/height/just\fP \fB\-J\fP\fIparameters\fP 
 \fB\-R\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-C\fP\fIdx/dy\fP ]  
 [ \fB\-G\fP\fIfill\fP ] [ \fB\-K\fP ] [ \fB\-L\fP\fIspacing\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
-[ \fB\-S\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP\fIpen\fP ] 
+[ \fB\-S\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBpslegend\fP will make legends that can be overlaid on maps.  It reads specific
 legend-related information from an input file [or stdin].  Because all the elements
 of the legend can already be created with other tools (\fBpsxy\fP, \fBpstext\fP) we
 use those tools by creating a batch job of commands that are executed to make the final
-PostScript overlay.  Because of this process, the option exists to just output the script which
+\fIPostScript\fP overlay.  Because of this process, the option exists to just output the script which
 can then be fine-tuned manually.
 .TP
 \fItextfile\fP
 This file contains instruction for the layout of items in the legend.  Each legend item is described by
-a unique record.  All records begin with a unique character that is common to all record of the same
+a unique record.  All records begin with a unique character that is common to all records of the same
 kind.  The order of the legend items is implied by the order of the records.  8 different record types
 are recognized, and the syntax for each of these records are presented below:
 .TP
@@ -38,7 +38,7 @@ The H record plots a centered text string using the specified font parameters.
 .TP
 \fBL\fP \fIfontsize font justification Label\fP
 The L record plots a (L)eft, (C)entered, or (R)ight-justified text string using the specified font parameters.
-.TB
+.TP
 \fBN\fP \fIncolums\fP
 Change the number of columns in the legend [1].
 .TP
@@ -47,7 +47,7 @@ Plots the selected symbol with specified size, fill, and outline.  The symbol is
 left margin of the column, with the explanatory text starting \fIdx2\fP from the margin.  Use - if no fill
 is required.  Two \fBpsxy\fP symbols front (f) and vector (v) require special attention.  You must prepend
 the length of the desired item to the rest of the symbol argument; this will be used internally to set the
-correct fault or vector length and stripped before passing the arguments to \fBpsxy\fP.
+correct fault or vector length and will be stripped before passing the arguments to \fBpsxy\fP.
 .TP
 \fB>\fP <paragraph mode header for pstext>
 Start a new text paragraph by specifying all the parameters needed (see \fBpstext \-M\fP description).  Note that
@@ -86,18 +86,18 @@ Instead of writing the \fIPostScript\fP plot, output the GMT script used to make
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .SH EXAMPLES
-To add an example of a legend to a Mercator plot (map.ps) with the given specifications, try
+To add an example of a legend to a Mercator plot (map.ps) with the given specifications, use
 .br
 .sp
-pslegend \fB\-R \-JM \-O \fB\-G\fP255\fP << EOF >> map.ps
+\fBpslegend\fP \fB\-R \-JM \-O \-G\fP255 << EOF >> map.ps
 .br
-# Legend test for pslegend
+\# Legend test for pslegend
 .br
-# G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line.
+\# G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line.
 .br
-# H is header, L is label, S is symbol, > & T is paragraph text
+\# H is header, L is label, S is symbol, > & T is paragraph text
 .br
-#
+\#
 .br
 G -0.15i
 .br

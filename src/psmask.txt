@@ -41,7 +41,7 @@ Dumps out the resulting clipping polygons to disk.  Ignored if \fB\-T\fP is set.
 If no dumpprefix is given we use mask (Files will be called mask_*.d).
 .TP
 .B \-E
-Sets the viewpoint's azimuth and elevation for perspective plots [180/90]
+Sets the viewpoint's azimuth and elevation for perspective plots [180/90].
 .TP
 .B \-F
 Force pixel registration.  [Default is grid registration].
@@ -61,8 +61,8 @@ Invert the sense of the test, i.e. clip regions where there is data coverage.
 .TP
 .B \-S
 Sets radius of influence. Grid nodes within \fIradius\fP of a data point are considered reliable. [Default is 0, which
-means that only grid cells with data in them are reliable].  Append \fBk\fP to indicated km,
-also implying that \fB\-R \-I\fP are in degrees.
+means that only grid cells with data in them are reliable].  Append \fBk\fP to indicate km,
+also implying that \fB\-R\fP and \fB\-I\fP are in degrees.
 .TP
 .B \-T
 Plot tiles instead of clip polygons (Only works with \fB\-Jx\fP, \fB\-Jj\fP, \fB\-Jm\fP, \fB\-Jq\fP, and \fB\-Jy\fP).
@@ -70,22 +70,22 @@ Plot tiles instead of clip polygons (Only works with \fB\-Jx\fP, \fB\-Jj\fP, \fB
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
 #include "explain_-t.txt"
-#include "explain_-c.txt"
 #include "explain_-i.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
+#include "explain_-c.txt"
 .SH EXAMPLES
 To make an overlay \fIPostScript\fP file that will mask out the regions of a contour map
-where there is no control data using clip polygons, try:
+where there is no control data using clip polygons, use:
 .br
 .sp
-psmask africa_grav.xyg \fB\-R\fP20/40/20/40 \fB\-I\fP5\fBm \-J\fPM10\fBi\fP \fB\-O \-K\fP > mask.ps
+\fBpsmask\fP africa_grav.xyg \fB\-R\fP20/40/20/40 \fB\-I\fP5\fBm \-J\fPM10\fBi\fP \fB\-O \-K\fP > mask.ps
 .br
 .sp
 The same example but this time we use tiling:
 .br
 .sp
-psmask africa_grav.xyg \fB\-R\fP20/40/20/40 \fB\-I\fP5\fBm \-J\fPM10\fBi\fP \fB\-T \-O \-K\fP > mask.ps
+\fBpsmask\fP africa_grav.xyg \fB\-R\fP20/40/20/40 \fB\-I\fP5\fBm \-J\fPM10\fBi\fP \fB\-T \-O \-K\fP > mask.ps
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR grdmask (l),
