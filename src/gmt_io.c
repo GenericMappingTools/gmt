@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.66 2004-06-22 20:00:28 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.67 2004-10-04 16:39:19 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1848,14 +1848,14 @@ int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd)
 	
 	For gregorian calendars.  */
 	
-	int	k, ival[3];
+	int	k, ival[4];
 	char month[16];
 	
 	if (GMT_io.date_input.day_of_year) {
 		/* Calendar uses year and day of year format.  */
 		if ( (k = sscanf (s, GMT_io.date_input.format,
 			&ival[GMT_io.date_input.item_order[0]],
-			&ival[GMT_io.date_input.item_order[3]]) ) == 0) return (-1);
+			&ival[GMT_io.date_input.item_order[1]]) ) == 0) return (-1);
 		if (k < 2) {
 			if (GMT_io.date_input.truncated_cal_is_ok) {
 				ival[1] = 1;	/* Set first day of year  */
@@ -1869,8 +1869,8 @@ int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd)
 			ival[0] = GMT_y2_to_y4_yearfix (ival[0]);
 		}
 		k = (GMT_is_gleap(ival[0])) ? 366 : 365;
-		if (ival[1] < 1 || ival[1] > k) return (-1);
-		*rd = GMT_rd_from_gymd (ival[0], 1, 1) + ival[1] - 1;
+		if (ival[3] < 1 || ival[3] > k) return (-1);
+		*rd = GMT_rd_from_gymd (ival[0], 1, 1) + ival[3] - 1;
 		return (0);
 	}
 	
