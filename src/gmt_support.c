@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.77 2004-04-25 20:47:46 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.78 2004-04-26 19:38:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -229,7 +229,6 @@ int GMT_getrgb (char *line, int rgb[])
 		}
 		else {					/* h/s/v */
 			double h, s, v;
-			if (gmtdefs.verbose) fprintf (stderr, "%s: GMT Warning: COLOR_MODEL = hsv; Color triplets will be interpreted as HSV\n", GMT_program);
 			n = sscanf (line, "%lf/%lf/%lf", &h, &s, &v);
 			if (n != 3 || GMT_check_hsv (h, s, v)) return (TRUE);
 			GMT_hsv_to_rgb (rgb, h, s, v);
