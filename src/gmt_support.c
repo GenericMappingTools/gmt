@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.44 2003-04-07 00:39:51 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.45 2003-04-07 02:18:54 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -847,13 +847,13 @@ int GMT_get_rgb24 (double value, int *rgb)
 		memcpy ((void *)rgb, (void *)GMT_bfn[GMT_NAN].rgb, 3 * sizeof (int));
 		GMT_cpt_skip = GMT_bfn[GMT_NAN].skip;
 	}
-	else if (index == -2) {	/* Background */
-		memcpy ((void *)rgb, (void *)GMT_bfn[GMT_BGD].rgb, 3 * sizeof (int));
-		GMT_cpt_skip = GMT_bfn[GMT_BGD].skip;
-	}
-	else if (index == -3) {	/* Foreground */
+	else if (index == -2) {	/* Foreground */
 		memcpy ((void *)rgb, (void *)GMT_bfn[GMT_FGD].rgb, 3 * sizeof (int));
 		GMT_cpt_skip = GMT_bfn[GMT_FGD].skip;
+	}
+	else if (index == -3) {	/* Background */
+		memcpy ((void *)rgb, (void *)GMT_bfn[GMT_BGD].rgb, 3 * sizeof (int));
+		GMT_cpt_skip = GMT_bfn[GMT_BGD].skip;
 	}
 	else if (GMT_lut[index].skip) {		/* Set to page color for now */
 		memcpy ((void *)rgb, (void *)gmtdefs.page_rgb, 3 * sizeof (int));
