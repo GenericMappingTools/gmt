@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_consistency.c,v 1.2 2004-09-06 23:19:32 pwessel Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -14,7 +14,7 @@ main (int argc, char **argv)
 {
 	FILE	*fp;
 	int	i, n_id, this_n, nx, n_x_problems, n_c_problems, n_r_problems, ix0, iy0;
-	int w, e, s, n, ixmin, ixmax, iymin, iymax;
+	int w, e, s, n, ixmin, ixmax, iymin, iymax, ANTARCTICA;
 	struct GMT_XSEGMENT *ylist;
 	struct GMT_XOVER XC;
 	struct GMT3_POLY h;
@@ -29,6 +29,7 @@ main (int argc, char **argv)
 	
 	n_id = n_c_problems = n_x_problems = n_r_problems = 0;
 	while (pol_readheader (&h, fp) == 1) {
+		ANTARCTICA = (fabs (h.east - h.west) == 360.0);
 		ixmin = iymin = M360;
 		ixmax = iymax = -M360;
 		w = irint (h.west * 1e6);
@@ -53,6 +54,7 @@ main (int argc, char **argv)
 			if (p.y > iymax) iymax = p.y;
 		}
 		
+		if (ANTARCTICA) iymin = -M90;
 		if (! (p.x == ix0 && p.y == iy0)) {
 			printf ("%d\tnot closed\n", h.id);
 			n_c_problems++;
@@ -69,9 +71,7 @@ main (int argc, char **argv)
 			nx = GMT_crossover (lon, lat, NULL, ylist, this_n, lon, lat, NULL, ylist, this_n, TRUE, &XC);
 			GMT_free ((void *)ylist);
 			if (nx ) {
-				printf ("%d\t%d crossovers:", h.id, nx);
-				for (i = 0; i < nx; i++) printf (" [%lf, %lf (%d)]", XC.x[i], XC.y[i], (int)floor(XC.xnode[0][i]));
-				printf ("\n");
+				for (i = 0; i < nx; i++) printf ("%d\t%d\t%10.5lf\t%9.5lf\n", h.id, (int)floor(XC.xnode[0][i]), XC.x[i], XC.y[i]);
 				n_x_problems++;
 				GMT_x_free (&XC);
 			}
