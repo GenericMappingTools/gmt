@@ -507,6 +507,8 @@ the gmtmedia.d file in $GMTHOME/share; see that file for details):
 	ledger	1224	792
 .br
 .sp
+For a completely custom format (e.g., for large format plotters) you may also
+specify Custom_WxH, where W and H are in points.
 To force the printer to request a manual paper feed, append '-' to the media
 name, e.g., A3- will require the user to insert a A3 paper into the printer's
 manual feed slot.  To indicate you are making an EPS file, append '+' to the

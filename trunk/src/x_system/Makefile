@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.4 2002-01-10 19:04:46 pwessel Exp $
+#	$Id: Makefile,v 1.5 2002-01-10 22:35:24 pwessel Exp $
 #
 #		Makefile for GMT x_system supplements
 #
@@ -21,7 +21,7 @@ include ../makegmt.macros
 #
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I../mgg -I$(NETCDF)/include
-ALLLIB  = -L$(libdir) -lgmt -L../mgg -lgmt_mgg -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)
+ALLLIB  = -L.. -L$(libdir) -lgmt -L../mgg -lgmt_mgg -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)
 
 ALL_C	= x_edit.c x_init.c x_list.c x_over.c x_report.c x_remove.c x_setup.c x_solve_dc_drift.c x_update.c
 
