@@ -1,14 +1,9 @@
 /*
- *	$Id: polygon_to_bins.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_to_bins.c,v 1.2 2004-09-09 20:17:47 pwessel Exp $
  */
 #include "wvs.h"
 
-#define BSIZE (DEGREES * 60)				/* in minutes.  Assumed to devide nicely into 60 (e.g, 60, 30, 15, ...) */
-#define BIN_NX ((360 * 60) / BSIZE)
-#define BIN_NY ((180 * 60) / BSIZE)
-#define B_WIDTH ((MILL * BSIZE) / 60)		/* Bin width in micro-degrees */
-#define MAX_DELTA 65535				/* Largest value to store in a ushort, used as largest dx or dy in bin  */
-#define SHORT_FACTOR (65535.0 / (double)B_WIDTH)	/* This must be a double.  converts microdegrees to short units  */ 
+#define MAX_DELTA 65535		/* Largest value to store in a ushort, used as largest dx or dy in bin  */
 
 struct GMT3_POLY h;
 
@@ -55,22 +50,20 @@ struct GMT3_BIN_HEADER {
 int *ix, *iy;
 int *xx, *yy;
 
-main (argc, argv)
-int argc;
-char **argv; {
+main (int argc, char **argv) {
 	BOOLEAN first, crossed_x, crossed_y;
 	
 	int i, k, kk, test_long, nn, np, j, n_alloc, start_i, i_x_1, i_x_2, i_y_1, i_y_2, nbins, b;
 	int n_final = 0, n_init = 0, dx_1, dx_2, dx, dy, i_x_1mod, i_y_1mod, last_i, i_x_2mod, i_y_2mod;
 	int x_x_c, x_y_c, y_x_c, y_y_c, last_x_bin, x_x_index, i_x_3, i_y_3, x_origin, y_origin;
-	int noise, se, ne, nw, zero, one, two, three, ij, n, comp_segments(), skip = 0;
+	int noise, se, ne, nw, zero, one, two, three, ij, n, comp_segments(), skip = 0, BSIZE, BIN_NX, BIN_NY, B_WIDTH;
 	int n_id = 0,  n_corner = 0, jump = 0, add = 0, n_seg = 0, ns, nclose = 0, n_x_exact = 0, n_y_exact = 0;
 	
 	char *node_file = 0, file[512];
 	
 	float *node;
 	
-	double rx, ry;
+	double rx, ry, SHORT_FACTOR;
 	
 	FILE *fp_in, *fp_pt, *fp_bin, *fp_seg;
 	
@@ -79,20 +72,29 @@ char **argv; {
 	struct GRD_HEADER n_head;
 	
 		
-	if (argc != 4) {
-		fprintf (stderr, "usage: polygon_to_bins coast.base nodes.grd binned_prefix\n");
-		fprintf (stderr, "Bin_size is currently %d minutes.  Recompile to change this\n", BSIZE);
+	if (argc != 5) {
+		fprintf (stderr, "usage: polygon_to_bins coast.base bsize nodes.grd binned_prefix\n");
+		fprintf (stderr, "bsize must be 1, 2, 5, 10, or 20 degrees\n");
 		exit (-1);
 	}
 	
-	fprintf (stderr, "polygon_to_bins: Bin_size is currently %d minutes.  Recompile to change this\n", BSIZE);
-	
 	GMT_begin (argc, argv);
 	
-	noise = ceil (1.0 / SHORT_FACTOR);	/* Add to corner points so they dont fall exactly on corner */
+	BSIZE = atoi (argv[2]);
+	if (! (BSIZE == 1 || BSIZE == 2 || BSIZE == 5 || BSIZE == 10 || BSIZE == 20)) {
+		fprintf (stderr, "polygon_to_bins: Bin_size must be 1, 2, 5, 10, or 20\n");
+		exit (-1);
+	}
+	BSIZE *= 60;	/* Now in minutes */
+	BIN_NX = (360 * 60) / BSIZE;
+	BIN_NY = (180 * 60) / BSIZE;
+	B_WIDTH = (MILL * BSIZE) / 60;			/* Bin width in micro-degrees */
+	SHORT_FACTOR = (65535.0 / (double)B_WIDTH);	/* This must be a double.  converts microdegrees to short units  */ 
+	noise = ceil (1.0 / SHORT_FACTOR);		/* Add to corner points so they dont fall exactly on corner */
 	
 	fp_in = fopen (argv[1], "r");
-	node_file = argv[2];
+	
+	node_file = argv[3];
 
 	nbins = BIN_NX * BIN_NY;
 	
@@ -511,7 +513,7 @@ char **argv; {
 	}
 	free ((void *) node);
 	
-	fprintf (stderr, "polygon_to_bins: Start writing file %s\n", argv[3]);
+	fprintf (stderr, "polygon_to_bins: Start writing file %s\n", argv[4]);
 
 	file_head.n_bins = nbins;
 	file_head.n_points = n_final + add - 2*skip;
@@ -519,11 +521,11 @@ char **argv; {
 	file_head.nx_bins = BIN_NX;
 	file_head.ny_bins = BIN_NY;
 	
-	sprintf (file, "%s.bin\0", argv[3]);
+	sprintf (file, "%s.bin\0", argv[4]);
 	fp_bin = fopen (file, "w");
-	sprintf (file, "%s.seg\0", argv[3]);
+	sprintf (file, "%s.seg\0", argv[4]);
 	fp_seg = fopen (file, "w");
-	sprintf (file, "%s.pt\0", argv[3]);
+	sprintf (file, "%s.pt\0", argv[4]);
 	fp_pt = fopen (file, "w");
 	
 	if (fwrite ((void *)&file_head, sizeof (struct GMT3_FILE_HEADER), 1, fp_bin) != 1) {

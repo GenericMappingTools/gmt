@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_id.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_id.c,v 1.2 2004-09-09 20:17:47 pwessel Exp $
  */
 /* 
  *
@@ -51,7 +51,7 @@ char **argv;
 		}
 	}
 	
-	fprintf (stderr, "Min dist = %lg m for polygon id %d\n", D2M * d_min, id);
+	printf ("polygon_id: Min dist = %.1lf m for polygon id %d\n", D2M * d_min, id);
 	
 	fclose(fp_in);
 

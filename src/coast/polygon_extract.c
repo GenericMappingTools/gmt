@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_extract.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_extract.c,v 1.2 2004-09-09 20:17:47 pwessel Exp $
  */
 /* 
  *
@@ -15,12 +15,14 @@ struct CHECK {
 main (int argc, char **argv)
 {
 	FILE	*fp_in, *fp;
-	int	i, j, id, n_id, k, pos;
+	int	i, j, id, n_id, k, pos, start = 2, multi = FALSE, bin = FALSE, individual = FALSE;
 	struct	LONGPAIR p;
 	char file[80];
         
 	if (argc == 1) {
-		fprintf(stderr,"usage:  polygon_extract final_polygons.b id1 id2 id3 ... idn\n");
+		fprintf(stderr,"usage:  polygon_extract final_polygons.b [-M|b] id1 id2 id3 ... idn\n");
+		fprintf(stderr,"	-M will write a multiseg ascii file to stdout\n");
+		fprintf(stderr,"	-b will write binary polygon file to stdout\n");
 		exit (EXIT_FAILURE);
 	}
 
@@ -36,18 +38,22 @@ main (int argc, char **argv)
 		n_id++;
 	}
 	
-	/* fp = fopen ("/home/aa4/gmt/wvs/headers3.b", "r");
-	fread ((char *)&n_id, sizeof (int), 1, fp);
-	fread ((char *)poly, sizeof (struct CHECK), n_id, fp);
-	
-	fp = fopen ("/home/aa4/gmt/wvs/headers3.b", "w");
-	fwrite ((char *)&n_id, sizeof (int), 1, fp);
-	fwrite ((char *)poly, sizeof (struct CHECK), n_id, fp);
-	fclose (fp); */
-	
 	/* Start extraction */
 	
-	for (i = 2; i < argc; i++) {
+	if (!strncmp (argv[2], "-M", 2)) {	/* Just want everything out in a multiseg file */
+		start = 3;
+		multi = TRUE;
+		fp = stdout;
+	}
+	else if (!strncmp (argv[2], "-b", 2)) {	/* Just want everything out in a binary polygon file */
+		start = 3;
+		bin = TRUE;
+		fp = stdout;
+	}
+	else
+		individual = TRUE;
+	
+	for (i = start; i < argc; i++) {
 		id = atoi (argv[i]);
 		
 		if (id < 0) continue;
@@ -60,8 +66,14 @@ main (int argc, char **argv)
 		
 		if (j == n_id) continue;
 		
-		sprintf (file, "polygon.%d\0", id);
-		fp = fopen (file, "w");
+		if (multi)
+			fprintf (fp, "> Polygon %d\n", id);
+		else if (bin)
+			pol_writeheader (&poly[j].h, fp);
+		else {
+			sprintf (file, "polygon.%d\0", id);
+			fp = fopen (file, "w");
+		}
 		
 		fseek (fp_in, poly[j].pos, SEEK_SET);
 		
@@ -70,12 +82,14 @@ main (int argc, char **argv)
 				fprintf(stderr,"polygon_extract:  ERROR  reading file.\n");
 				exit(EXIT_FAILURE);
 			}
-			if (poly[j].h.greenwich && p.x > poly[j].h.datelon) p.x -= M360;
-			
-			/* fprintf (fp, "%d\t%d\n", p.x, p.y); */
-			fprintf (fp, "%.10lg\t%.10lg\n", 1.0e-6*p.x, 1.0e-6*p.y);
+			if (bin)
+				pol_fwrite (&p, 1, fp);
+			else {
+				if (poly[j].h.greenwich && p.x > poly[j].h.datelon) p.x -= M360;
+				fprintf (fp, "%.10lg\t%.10lg\n", 1.0e-6*p.x, 1.0e-6*p.y);
+			}
 		}
-		fclose (fp);
+		if (individual) fclose (fp);
 		
 	}
 		

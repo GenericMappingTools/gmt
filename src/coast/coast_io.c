@@ -1,5 +1,5 @@
 /*
- *	$Id: coast_io.c,v 1.3 2004-09-09 16:15:13 pwessel Exp $
+ *	$Id: coast_io.c,v 1.4 2004-09-09 20:17:47 pwessel Exp $
  */
 #define COASTLIB 1
 #include "wvs.h"
@@ -22,10 +22,16 @@ int pol_readheader (struct GMT3_POLY *h, FILE *fp)
 int pol_writeheader (struct GMT3_POLY *h, FILE *fp)
 {
 	int n;
+	struct GMT3_POLY *use_h;
 #if WORDS_BIGENDIAN == 0
-	swab_polheader (h);
+	struct GMT3_POLY tmp_h;
+	tmp_h = *h;
+	swab_polheader (&tmp_h);
+	use_h = &tmp_h;
+#else
+	use_h = h;
 #endif
-	n = fwrite ((void *)h, sizeof (struct GMT3_POLY), 1, fp);
+	n = fwrite ((void *)use_h, sizeof (struct GMT3_POLY), 1, fp);
 	return (n);
 }
 
@@ -43,7 +49,6 @@ int pol_fread (struct LONGPAIR *p, size_t n_items, FILE *fp)
 int pol_fwrite (struct LONGPAIR *p, size_t n_items, FILE *fp)
 {
 	int n;
-
 #if WORDS_BIGENDIAN == 0
 	swab_polpoints (p, n_items);
 #endif
