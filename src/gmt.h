@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.55 2004-04-05 18:50:18 pwessel Exp $
+ *	$Id: gmt.h,v 1.56 2004-04-05 22:54:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -223,12 +223,18 @@ typedef double GMT_dtime;	/* GMT internal time representation */
 
 #define GMT_PEN_LEN	128
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
+#define GMT_N_PEN_NAMES	10
 
 struct GMT_PEN {	/* Holds pen attributes */
 	double width;	/* In points */
 	double offset;	/* In points */
 	int rgb[3];
 	char texture[GMT_PEN_LEN];	/* In points */
+};
+
+struct GMT_PEN_NAME {	/* Names of pens and their thicknesses */
+	char name[16];
+	double width;
 };
 
 struct GMTDEFAULTS {
@@ -455,6 +461,7 @@ EXTERN_MSC int GMT_n_user_media;
 EXTERN_MSC char *GMT_weekdays[];
 EXTERN_MSC struct GMT_TIME_SYSTEM GMT_time_system[];
 EXTERN_MSC struct GMT_TIME_LANGUAGE GMT_time_language;
+EXTERN_MSC struct GMT_PEN_NAME GMT_penname[];
 
 EXTERN_MSC float GMT_f_NaN;		/* Holds IEEE not-a-number float */
 EXTERN_MSC double GMT_d_NaN;		/* Holds IEEE not-a-number double */

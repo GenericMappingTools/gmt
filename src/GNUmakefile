@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.25 2004-01-08 06:05:47 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.26 2004-04-05 22:54:24 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -84,7 +84,9 @@ GMT_H	= gmt.h \
 GMT_I	= gmt_init.h \
 	  gmt_defaults.h \
 	  gmt_media_name.h \
-	  gmt_media_size.h
+	  gmt_media_size.h \
+	  gmt_colornames.h \
+	  gmt_pennames.h
 
 PS_H	= pslib.h \
 	  pslib_inc.h
