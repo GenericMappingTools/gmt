@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 17
 REM
-REM		$Id: job17.bat,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+REM		$Id: job17.bat,v 1.2 2003-12-18 02:27:21 pwessel Exp $
 REM
 REM Purpose:	Illustrates clipping of images using coastlines
 REM GMT progs:	grd2cpt, grdgradient, grdimage, pscoast, pstext
@@ -22,17 +22,17 @@ grdimage india_geoid.grd -Iindia_geoid_i.grd -JM6.5i -Cgeoid.cpt -P -K -U"Exampl
 
 REM Then use pscoast to initiate clip path for land
 
-pscoast -R60/90/-10/25 -JM -O -K -Dl -Gc >> example_17.ps
+pscoast -R60/90/-10/25 -J -O -K -Dl -Gc >> example_17.ps
 
 REM Now generate topography image w/shading
 
 echo -10000 150 10000 150 > gray.cpt
 grdgradient india_topo.grd -Nt1 -A45 -Gindia_topo_i.grd
-grdimage india_topo.grd -Iindia_topo_i.grd -JM -Cgray.cpt -O -K >> example_17.ps
+grdimage india_topo.grd -Iindia_topo_i.grd -J -Cgray.cpt -O -K >> example_17.ps
 
 REM Finally undo clipping and overlay basemap
 
-pscoast -R -JM -O -K -Q -B10f5:."Clipping of Images": >> example_17.ps
+pscoast -R -J -O -K -Q -B10f5:."Clipping of Images": >> example_17.ps
 
 REM Add a text paragraph (Note double %% to get a single % in DOS)
 echo # 90 -10 12 0 4 RB 12p 3i j > tmp
@@ -40,7 +40,7 @@ echo @_@%%5%%Example 17.@%%%%@_  We first plot the color geoid image >> tmp
 echo for the entire region, followed by a gray-shaded @#etopo5@# >> tmp
 echo image that is clipped so it is only visible inside the coastlines. >> tmp
 
-pstext -R -JM -O -M# -W255O0.5p -D-0.1i/0.1i tmp >> example_17.ps
+pstext -R -J -O -M# -W255O0.5p -D-0.1i/0.1i tmp >> example_17.ps
 
 REM Clean up
 

@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 20
 REM
-REM		$Id: job20.bat,v 1.2 2001-09-23 23:41:15 pwessel Exp $
+REM		$Id: job20.bat,v 1.3 2003-12-18 02:27:21 pwessel Exp $
 REM
 REM Purpose:	Extend GMT to plot custom symbols
 REM GMT progs:	pscoast, psxy
@@ -28,7 +28,7 @@ echo -153.5 -21.0 0.25 >> hotspots.d
 echo -116.7 -26.3 0.25 >> hotspots.d
 echo -16.5 64.4 0.25 >> hotspots.d
 
-psxy -R -JR hotspots.d -Skvolcano -O -K -W0.25p -G255/0/0 >> example_20.ps
+psxy -R -J hotspots.d -Skvolcano -O -K -W0.25p -G255/0/0 >> example_20.ps
 
 REM Overlay a few bullseyes at NY, Cairo, and Perth
 
@@ -36,7 +36,7 @@ echo 286 40.45 0.8 > cities.d
 echo 31.15 30.03 0.8 >> cities.d
 echo 115.49 -31.58 0.8 >> cities.d
 
-psxy -R -JR cities.d -Skbullseye -O >> example_20.ps
+psxy -R -J cities.d -Skbullseye -O >> example_20.ps
 
 del *.d
 del .gmt*

@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 02
 REM
-REM		$Id: job02.bat,v 1.3 2002-01-30 03:40:55 ben Exp $
+REM		$Id: job02.bat,v 1.4 2003-12-18 02:27:21 pwessel Exp $
 REM
 REM Purpose:	Make two color images based gridded data
 REM GMT progs:	gmtset, grd2cpt, grdgradient, grdimage, makecpt, psscale, pstext
@@ -19,7 +19,7 @@ grdimage HI_geoid2.grd -R160/20/220/30r -JOc190/25.5/292/69/4.5i -E50 -K -P -U/-
 psscale -Cg.cpt -D5.1i/1.35i/2.88i/0.4i -O -K -L -B2:GEOID:/:m: -E >> example_02.ps
 grd2cpt HI_topo2.grd -Crelief -Z > t.cpt
 grdgradient HI_topo2.grd -A0 -Nt -GHI_topo2_int.grd
-grdimage HI_topo2.grd -IHI_topo2_int.grd -R -JO -E50 -B10:."H@#awaiian@# T@#opo and @#G@#eoid:" -O -K -Ct.cpt -Y4.5i >> example_02.ps
+grdimage HI_topo2.grd -IHI_topo2_int.grd -R -J -E50 -B10:."H@#awaiian@# T@#opo and @#G@#eoid:" -O -K -Ct.cpt -Y4.5i >> example_02.ps
 psscale -Ct.cpt -D5.1i/1.35i/2.88i/0.4i -O -K -I0.3 -B2:TOPO:/:km: >> example_02.ps
 echo -0.4 7.5 30 0.0 1 CB a) > tmp
 echo -0.4 3.0 30 0.0 1 CB b) >> tmp

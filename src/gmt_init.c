@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.90 2003-07-24 21:08:13 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.91 2003-12-18 02:27:21 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -87,7 +87,7 @@ struct GMT_HASH hashnode[HASH_SIZE];
 BOOLEAN GMT_x_abs = FALSE, GMT_y_abs = FALSE;
 BOOLEAN GMT_got_frame_rgb;
 FILE *GMT_fp_history;	/* For .gmtcommands4 file */
-
+BOOLEAN GMT_processed_option[N_UNIQUE];
 struct GMT_BACKWARD {	/* Used to ensure backwards compatibility */
 	BOOLEAN got_old_plot_format;		/* TRUE if DEGREE_FORMAT was decoded */
 	BOOLEAN got_old_degree_symbol;		/* TRUE if DEGREE_FORMAT was decoded */
@@ -738,38 +738,73 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 	
 	switch (item[1]) {
 		case '\0':
+			if (GMT_processed_option[0]) fprintf (stderr, "%s: Warning: Option - given more than once\n", GMT_program);
+			GMT_processed_option[0] = TRUE;
 			GMT_quick = TRUE;
 			break;
 		case 'B':
-			error += (i = GMT_map_getframe (&item[2]));
-			if (i) GMT_syntax ('B');
+			if (GMT_processed_option[1]) {
+				fprintf (stderr, "%s: Error: Option -B given more than once\n", GMT_program);
+				error++;
+			}
+			else {
+				GMT_processed_option[1] = TRUE;
+				error += (i = GMT_map_getframe (&item[2]));
+				if (i) GMT_syntax ('B');
+			}
 			break;
 		case 'H':
-			if (item[2]) {
-				i = atoi (&item[2]);
-				if (i < 0) {
-					GMT_syntax ('H');
-					error++;
-				}
-				else
-					gmtdefs.n_header_recs = i;
+			if (GMT_processed_option[2]) {
+				fprintf (stderr, "%s: Error: Option -H given more than once\n", GMT_program);
+				error++;
 			}
-			gmtdefs.io_header = (gmtdefs.n_header_recs > 0);
+			else {
+				GMT_processed_option[2] = TRUE;
+				if (item[2]) {
+					i = atoi (&item[2]);
+					if (i < 0) {
+						GMT_syntax ('H');
+						error++;
+					}
+					else
+						gmtdefs.n_header_recs = i;
+				}
+				gmtdefs.io_header = (gmtdefs.n_header_recs > 0);
+			}
 			break;
 		case 'J':
-			error += (i = GMT_map_getproject (&item[2]));
-			if (i) GMT_syntax ('J');
+			if (GMT_processed_option[3]) {
+				fprintf (stderr, "%s: Error: Option -J given more than once\n", GMT_program);
+				error++;
+			}
+			else {
+				GMT_processed_option[3] = TRUE;
+				error += (i = GMT_map_getproject (&item[2]));
+				if (i) GMT_syntax ('J');
+			}
 			break;
 		case 'K':
+			if (GMT_processed_option[4]) fprintf (stderr, "%s: Warning: Option -K given more than once\n", GMT_program);
+			GMT_processed_option[4] = TRUE;
 			gmtdefs.last_page = FALSE;
 			break;
 		case 'O':
+			if (GMT_processed_option[5]) fprintf (stderr, "%s: Warning: Option -O given more than once\n", GMT_program);
+			GMT_processed_option[5] = TRUE;
 			gmtdefs.overlay = TRUE;
 			break;
 		case 'P':
+			if (GMT_processed_option[6]) fprintf (stderr, "%s: Warning: Option -P given more than once\n", GMT_program);
+			GMT_processed_option[6] = TRUE;
 			gmtdefs.page_orientation |= 1;	/* Bit arith because eurofont bit may be set */
 			break;
 		case 'R':
+			if (GMT_processed_option[7]) {
+				fprintf (stderr, "%s: Error: Option -R given more than once\n", GMT_program);
+				error++;
+				break;
+			}
+			GMT_processed_option[7] = TRUE;
 			if (item[2] == 'g') {	/* Shorthand for -R0/360/-90/90 */
 				*w = project_info.w = 0.0;	*e = project_info.e = 360.0;
 				*s = project_info.s = -90.0;	*n = project_info.n = +90.0;
@@ -840,6 +875,12 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			project_info.s = *p[2];	project_info.n = *p[3];
 			break;
 		case 'U':
+			if (GMT_processed_option[8]) {
+				fprintf (stderr, "%s: Error: Option -U given more than once\n", GMT_program);
+				error++;
+				break;
+			}
+			GMT_processed_option[8] = TRUE;
 			gmtdefs.unix_time = TRUE;
 			for (i = n_slashes = 0; item[i]; i++) if (item[i] == '/') {
 				n_slashes++;
@@ -864,10 +905,18 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			}
 			break;
 		case 'V':
+			if (GMT_processed_option[9]) fprintf (stderr, "%s: Warning: Option -V given more than once\n", GMT_program);
+			GMT_processed_option[9] = TRUE;
 			gmtdefs.verbose = TRUE;
 			break;
 		case 'X':
 		case 'x':
+			if (GMT_processed_option[10]) {
+				fprintf (stderr, "%s: Error: Option -%c given more than once\n", GMT_program, item[1]);
+				error++;
+				break;
+			}
+			GMT_processed_option[10] = TRUE;
 			i = 2;
 			if (item[2] == 'r') i++;	/* Relative mode is default anyway */
 			if (item[2] == 'a') i++, GMT_x_abs = TRUE;
@@ -876,6 +925,12 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			break;
 		case 'Y':
 		case 'y':
+			if (GMT_processed_option[11]) {
+				fprintf (stderr, "%s: Error: Option -%c given more than once\n", GMT_program, item[1]);
+				error++;
+				break;
+			}
+			GMT_processed_option[11] = TRUE;
 			i = 2;
 			if (item[2] == 'r') i++;	/* Relative mode is default anyway */
 			if (item[2] == 'a') i++, GMT_y_abs = TRUE;
@@ -883,6 +938,12 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			project_info.y_off_supplied = TRUE;
 			break;
 		case 'c':
+			if (GMT_processed_option[12]) {
+				fprintf (stderr, "%s: Error: Option -c given more than once\n", GMT_program);
+				error++;
+				break;
+			}
+			GMT_processed_option[12] = TRUE;
 			i = atoi (&item[2]);
 			if (i < 1) {
 				error++;
@@ -892,6 +953,12 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				gmtdefs.n_copies = i;
 			break;
 		case ':':	/* Toggle lon/lat - lat/lon */
+			if (GMT_processed_option[13]) {
+				fprintf (stderr, "%s: Error: Option -: given more than once\n", GMT_program);
+				error++;
+				break;
+			}
+			GMT_processed_option[13] = TRUE;
 			switch (item[2]) {
 				case 'i':	/* Toggle on input data only */
 					gmtdefs.xy_toggle[0] = TRUE;
@@ -919,6 +986,12 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			error += i;
 			break;
 		case 'f':	/* Column type specifications */
+			if (GMT_processed_option[14]) {
+				fprintf (stderr, "%s: Error: Option -f given more than once\n", GMT_program);
+				error++;
+				break;
+			}
+			GMT_processed_option[14] = TRUE;
 			i = GMT_decode_coltype (&item[2]);
 			if (i) GMT_syntax ('f');
 			error += i;
@@ -2502,6 +2575,8 @@ void GMT_put_history (int argc, char **argv)
 
 	for (i = 0; i < N_UNIQUE; i++) {        /* Loop over GMT_unique_option parameters */
 
+		GMT_processed_option[i] = FALSE;	/* Not processed this option yet */
+		
 		/* First see if an updated value exist for this common parameter */
 
 		for (j = 1, found_new = FALSE; !found_new && j < argc; j++) {
@@ -2514,6 +2589,9 @@ void GMT_put_history (int argc, char **argv)
 
 		if (found_new) { /* Need to store this updated value */
 			fprintf (GMT_fp_history, "%s\n", argv[j-1]);
+			if (GMT_unique_option[i][0] == 'J') {	/* Make this the last -J? of any kind, identified by lower-case -j */
+				fprintf (GMT_fp_history, "-j%s\n", &argv[j-1][2]);
+			}
 		}
 		else  {	 	/* Need to find and store the old value if any */
 			for (k = 0, found_old = FALSE; !found_old && k < GMT_oldargc; k++) {
@@ -2664,14 +2742,16 @@ void GMT_get_history (int argc, char ** argv)
 
 		/* Skip if filename or option has modifiers */
               
-		if (argv[i][0] != '-') continue;
-		if (argv[i][1] != 'J' && argv[i][2] != 0) continue;
-		if (argv[i][1] == 'J' && argv[i][3] != 0) continue;
+		if (argv[i][0] != '-') continue;			/* Not an option argument */
+		if (argv[i][1] != 'J' && argv[i][2] != 0) continue;	/* 1-char option with modifier */
+		if (argv[i][1] == 'J' && argv[i][2] != 0 && argv[i][3] != 0) continue;	/* 2-char option with modifier */
 
 		for (j = 0, found = FALSE; !found && j < GMT_oldargc; j++) {
-			if (argv[i][1] == 'J')
+			if (argv[i][1] == 'J' && argv[i][2] == '\0')	/* Given -J only, match with -j */
+				found = (GMT_oldargv[j][1] == 'j');
+			else if (argv[i][1] == 'J')			/* Given -J? */
 				found = (GMT_oldargv[j][1] == argv[i][1] && GMT_oldargv[j][2] == argv[i][2]);
-			else
+			else						/* All other options */
 				found = (GMT_oldargv[j][1] == argv[i][1]);
 		}
 		j--;
@@ -2679,12 +2759,14 @@ void GMT_get_history (int argc, char ** argv)
 		/* Skip if not found or GMT_oldargv has no modifiers */
               
 		if (!found) continue;
+		
 		if (argv[i][1] != 'J' && GMT_oldargv[j][2] == 0) continue;
 		if (argv[i][1] == 'J' && GMT_oldargv[j][3] == 0) continue;
       
 		/* Here, GMT_oldargv has modifiers and argv don't, set pointer */
               
 		argv[i] = GMT_oldargv[j];
+		if (argv[i][1] == 'j') argv[i][1] = 'J';	/* Reset to upper case */
 	}
 }
 
