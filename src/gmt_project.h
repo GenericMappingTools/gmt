@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.6 2001-08-17 18:11:53 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.7 2001-08-23 23:17:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -240,7 +240,7 @@ struct MAP_PROJECTIONS {
 	
 };
 
-struct MAP_FRAME {		/* Various parameters for plotting of map boundaries */
+struct MAP_FRAME {		/* Various parameters for plotting of linear and map boundaries */
 	double frame_int[3];	/* Frame tick intervals, for each axis (x,y,z) */
 	double grid_int[3];	/* Gridline interval, --"-- */
 	double anot_int[3];	/* Anotation interval (upper, i.e. closest to axis), --"-- */
@@ -254,6 +254,28 @@ struct MAP_FRAME {		/* Various parameters for plotting of map boundaries */
 	BOOLEAN check_side;	/* TRUE if lon and lat anotations should be on x and y axis only */
 	BOOLEAN horizontal;	/* TRUE is S/N anotations should be parallel to axes */
 };
+
+struct TIME_AXIS_ITEM {		/* Information for one type of tick/anotation */
+	BOOLEAN active;			/* TRUE if we want to use this item */
+	double interval;		/* Distance bewteen ticks in user units */
+	int flavor;			/* Index into month/day name abbreviation array (0-2) */
+	char type;			/* One of a, i, A, I, f, g */
+	char unit;			/* User's interval unit (y, M, u, d, h, m, c) */
+};
+
+struct TIME_AXIS {		/* Informatino for one time axis */
+	struct TIME_AXIS_ITEM item[6];	/* 0 = upper anot, 1 = lower anot, 2 = upper tick, 3 = middle tick, 4 = lower tick, 5 = grid */
+	int side;			/* 2 = draw/anot, 1 = draw, 0 = skip */
+	char label[256];		/* Label of the axis */
+};
+
+struct TIME_FRAME {		/* Various parameters for plotting of time axis boundaries */
+	struct TIME_AXIS axis[3];	/* One each for x, y, and z */
+	char header[256];		/* Plot title */
+	BOOLEAN plot;			/* TRUE if -B was used */
+	BOOLEAN draw_box;		/* TRUE is a 3-D Z-box is desired */
+};
+
 
 struct THREE_D {
 	double view_azimuth, view_elevation;
