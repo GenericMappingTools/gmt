@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-#	$Id: do_examples.csh,v 1.2 2004-04-23 22:50:42 pwessel Exp $
+#	$Id: do_examples.csh,v 1.3 2004-04-29 04:15:26 pwessel Exp $
 #
 # csh script to test all GMT examples (csh versions).
 # If one argument is passed it is assumed to be the
@@ -8,6 +8,14 @@
 # argument is passed it is assumed to be dir of shared libs
 
 unalias cd
+
+# Temporary change LANG to C
+if ("X$LANG" == "X") then
+	set OLDLANG = ""
+else
+	set OLDLANG = $LANG
+endif
+setenv LANG = C
 
 # First find the right awk tool:
 
@@ -69,4 +77,6 @@ if ($#argv >= 1) then
 	endif
 	setenv GMTHOME $old_GMTHOME
 endif
+setenv LANG $OLDLANG
+
 echo "Completed all examples"
