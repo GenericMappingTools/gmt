@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.35 2001-09-13 17:47:47 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.36 2001-09-13 18:22:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1734,7 +1734,7 @@ int GMT_savedefaults (char *file)
 		fprintf (fp, "DEGREE_SYMBOL		= colon\n");
 	else
 		fprintf (fp, "DEGREE_SYMBOL		= none\n");
-	fprintf (fp, "ANOT_FONT2	= %s\n", GMT_font_name[gmtdefs.anot_font2]);
+	fprintf (fp, "ANOT_FONT2		= %s\n", GMT_font_name[gmtdefs.anot_font2]);
 	fprintf (fp, "ANOT_FONT2_SIZE		= %dp\n", gmtdefs.anot_font2_size);
 
 	if (fp != GMT_stdout) fclose (fp);
@@ -2637,6 +2637,7 @@ void GMT_decode_tinfo (char *in, struct TIME_AXIS *A) {
 				continue;
 			}
 		}
+		mod = 0;				/* No mod for Aafg flags */
 		if (flag == 'i' || flag == 'I') {	/* Interval anotations may have modifier flag */
 			if (strchr ("FACfac", t[0])) {	/* One of the allowed list of modifiers? */
 				mod = t[0];
@@ -2647,8 +2648,6 @@ void GMT_decode_tinfo (char *in, struct TIME_AXIS *A) {
 				}
 			}
 		}
-		else
-			mod = 0;			/* No mod for Aafg flags */
 		
 		/* Here, t must point to a valid number.  If t[0] is not +,-,. or a digit we have an error */
 		

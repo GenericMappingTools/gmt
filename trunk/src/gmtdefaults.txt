@@ -363,7 +363,8 @@ is then used to guide the writing of clock strings in data fields.  To use a flo
 format for the smallest unit (e.g. seconds), append .xxx, where the number of x indicates
 the desired precision.  If no floating point is indicated then the smallest specified unit
 will be rounded off to nearest integer.  For 12-hour clocks, append am, AM, a.m., or A.M. (\fBGMT\fP
-will replace a|A with p|P for pm) [hh:mm:ss].
+will replace a|A with p|P for pm).  If your template starts with a leading hyphen (-) then each integer item (y,m,d) will be
+printed without leading zeros (default uses fixed width formats) [hh:mm:ss].
 .TP
 .B OUTPUT_DATE_FORMAT
 Formatting template that indicates how an output date string is to be formatted.  This template
@@ -373,7 +374,8 @@ combination of yyyy (or yy for 2-digit years; if so see \fBY2K_OFFSET_YEAR\fP), 
 and dd, with or without delimeters.  For day-of-year data, use jjj instead of mm and/or dd.
 ISO Calendar:  Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
 day.  Either template must be consistant, e.g., you cannot specify months you dont specify
-year.  [yyyy-mm-dd].
+year.  If your template starts with a leading hyphen (-) then each integer item (y,m,d) will be
+printed without leading zeros (default uses fixed width formats) [yyyy-mm-dd].
 .TP
 .B OUTPUT_DEGREE_FORMAT
 Formatting template that indicates how an output geographical coordinate is to be formatted.  This template
