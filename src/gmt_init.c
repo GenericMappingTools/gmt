@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.158 2004-09-20 21:07:54 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.159 2004-10-14 03:29:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1146,6 +1146,7 @@ int GMT_loaddefaults (char *file)
 	
 	fclose (fp);
 	GMT_backwards_compatibility ();
+	if (gmtdefs.ps_compress) gmtdefs.page_orientation += 1024;
 	if (gmtdefs.ps_heximage) gmtdefs.page_orientation += 4;
 	if (gmtdefs.ps_cmykmode) gmtdefs.page_orientation += 512;
 	if (!strstr (GMT_program, "gmtset")) GMT_verify_encodings ();
@@ -1183,6 +1184,7 @@ void GMT_setdefaults (int argc, char **argv)
 	}
 
 	GMT_backwards_compatibility ();
+	if (gmtdefs.ps_compress) gmtdefs.page_orientation += 1024;
 	if (gmtdefs.ps_heximage) gmtdefs.page_orientation += 4;
 	if (gmtdefs.ps_cmykmode) gmtdefs.page_orientation += 512;
 	
@@ -1707,6 +1709,14 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
+		case GMTCASE_PSIMAGE_COMPRESS:
+			if (!strcmp (lower_value, "none"))
+				gmtdefs.ps_compress = 0;
+			else if (!strcmp (lower_value, "rle"))
+				gmtdefs.ps_compress = 1;
+			else
+				error = TRUE;
+			break;
 		case GMTCASE_PSIMAGE_FORMAT:
 			if (!strcmp (lower_value, "hex"))
 				gmtdefs.ps_heximage = 1;
@@ -2083,6 +2093,10 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "DOTS_PR_INCH		= %d\n", gmtdefs.dpi);
 	fprintf (fp, "N_COPIES		= %d\n", gmtdefs.n_copies);
 	(gmtdefs.ps_cmykmode) ? fprintf (fp, "PS_COLOR		= cmyk\n") : fprintf (fp, "PS_COLOR		= rgb\n");
+	if (gmtdefs.ps_heximage == 0)
+		fprintf (fp, "PSIMAGE_COMPRESS		= none\n");
+	else
+		fprintf (fp, "PSIMAGE_COMPRESS		= rle\n");
 	(gmtdefs.ps_heximage) ? fprintf (fp, "PSIMAGE_FORMAT		= hex\n") : fprintf (fp, "PSIMAGE_FORMAT		= bin\n");
 	fprintf (fp, "GLOBAL_X_SCALE		= %g\n", gmtdefs.global_x_scale);
 	fprintf (fp, "GLOBAL_Y_SCALE		= %g\n", gmtdefs.global_y_scale);

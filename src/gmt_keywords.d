@@ -1,4 +1,4 @@
-#	$Id: gmt_keywords.d,v 1.7 2004-05-07 22:07:08 pwessel Exp $
+#	$Id: gmt_keywords.d,v 1.8 2004-10-14 03:29:22 pwessel Exp $
 #
 # List of all GMT defaults parameters and their case value
 # Some parameters are spelled in two different ways and will
@@ -95,6 +95,7 @@ PLOT_CLOCK_FORMAT
 PLOT_DATE_FORMAT
 PLOT_DEGREE_FORMAT
 PS_COLOR
+PSIMAGE_COMPRESS
 PSIMAGE_FORMAT
 TICK_LENGTH
 TICK_PEN
