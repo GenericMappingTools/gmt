@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.18 2004-10-07 17:47:25 pwessel Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.19 2004-10-08 23:28:47 pwessel Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_progs tar/zip files.  See GMT_progs_files_bin.lis for binary files
@@ -204,6 +204,7 @@ share/time/pl.d
 share/time/pt.d
 share/time/ru.d
 share/time/se.d
+share/time/sg.d
 share/time/to.d
 share/time/tr.d
 share/time/uk.d
