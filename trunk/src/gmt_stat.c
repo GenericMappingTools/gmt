@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.20 2004-07-23 06:07:33 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.21 2004-09-30 03:39:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2444,10 +2444,11 @@ void GMT_getmad (double *x, int n, double location, double *scale)
 	while (i_high >= 0 && x[i_high] >= location) i_high--;
 	i_high++;
 
+	while (i_high < i_low) i_high++, i_low--;	/* I think this must be added in (P. Wessel, 9/29/04) */
+	
 	n_dev_stop = n / 2;
 	error = 0.0;
 	n_dev = 0;
-
 
 	while (n_dev < n_dev_stop) {
 	
@@ -2505,6 +2506,8 @@ void GMT_getmad_f (float *x, int n, double location, double *scale)
 	i_high = n - 1;
 	while (i_high >= 0 && x[i_high] >= location) i_high--;
 	i_high++;
+
+	while (i_high < i_low) i_high++, i_low--;	/* I think this must be added in (P. Wessel, 9/29/04) */
 
 	n_dev_stop = n / 2;
 	error = 0.0;
