@@ -91,7 +91,7 @@ imaginary amplitude 1.1:
 To extract the locations of local maxima that exceed 100 mGal in the file faa.grd:
 .br
 .sp
-\fBgrdmath\fP faa.grd \fBDUP EXTREMA\fP 2 \fBEQ MUL DUP\fP 100 \fBGT NAN MUL\fP = z.grd
+\fBgrdmath\fP faa.grd \fBDUP EXTREMA\fP 2 \fBEQ MUL DUP\fP 100 \fBGT MUL\fP 0 \fBNAN\fP = z.grd
 .br
 \fBgrd2xyz\fP z.grd \fB\-S\fP > max.xyz
 .SH BUGS
