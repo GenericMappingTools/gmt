@@ -2,16 +2,15 @@
 .SH NAME
 x2sys_binlist \- Create bin-index files from track data files
 .SH SYNOPSIS
-\fBx2sys_binlist\fP \fIfile(s)\fP [ \fB\-D\fP\fIdeffile\fP ] 
-[ \fB\-Gd|g\fP ] [ \fB\-I\fP\fIdx\fP[\fIdy\fP] ] 
-[ \fB\-R\fIwest/east/south/north\fP ]  [ \fB\-T\fP\fITAG\fP ] [ \fB\-V\fP ] [ \fB\-W\fP\fIsize\fP ]
+\fBx2sys_binlist\fP \fIfile(s)\fP [ \fB\-T\fP\fITAG\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBx2sys_binlist\fP reads one or more track data files and produces a multi-
 segment ascii track bin index listing. 
-The input files can be of any format, which must be descriped and passed with the
-\fB\-D\fP or \fB\-T\fP option.  The bin index listing is a crude representation of where
+The input files can be of any format, which must be described and passed with the
+\fB\-T\fP option.  The bin index listing is a crude representation of where
 the track goes and is used by the data archivist to determine which tracks
-need to be compared for crossover analysis.
+need to be compared for crossover analysis.  You must run \fBx2ys_init\fP
+to initialize the tag before you can run the indexing.
 .TP
 \fIfiles\fP
 Can be one or more binary or ASCII data files. To give a list of names,
@@ -19,33 +18,20 @@ use `cat list_of_files`.
 .SH OPTIONS
 No space between the option flag and the associated arguments
 .TP
-.B \-D
-Definition file for this data set. [x2sys.def]
-.TP
-.B \-G
-Selects geographical coordinates.  Append \fBd\fP for discontinuity at the
-Dateline (makes longitude go from -180 to + 180) or \fBg\fP for discontinuity
-at Greenwhich (makes longitude go from 0 to 360 [Default]).
-#include "explain_-R.txt"
-.TP
 .B \-T
 Sets the data set \fITAG\fP which among other things sets the definition file.
 #include "explain_-V.txt"
-.TP
-.B \-W
-Sets maximum time gap (in user units) allowed between points on either
-side of a crossover [Default is Infinity].
 .SH EXAMPLES
 To create a bin index table from the old-style GMT MGG file c2104.gmt using a global, 1x1 degree bin system, do
 .br
 .sp
-\fBx2sys_binlist\fP c2104.gmt \fB\-D\fPgmt > index.d
+\fBx2sys_binlist\fP c2104.gmt \fB\-T\fPGMT > index.d
 .br
 .sp
 To create a bin index list of all MGD77 files residing in the current directory at a bin resolution
 of 30x30 minutes, run
 .br
 .sp
-\fBx2sys_binlist\fP *.mgd77 \fI\fP30m > alltopo.xyz
+\fBx2sys_binlist\fP *.mgd77 \fB\-T\fPMGD77 > index.d
 .SH "SEE ALSO"
-.IR x2sys_cross (GMTMANSECTION)
+.IR x2sys_init (GMTMANSECTION)
