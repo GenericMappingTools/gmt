@@ -1,6 +1,14 @@
-	$Id: README.imgsrc,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+	$Id: README.imgsrc,v 1.2 2001-05-18 17:32:02 pwessel Exp $
 
 Maintained by: W H F Smith
+
+==> CHANGES IN GMT 3.4 <==
+
+For complete portability, it is understood that the Sandwell/Smith
+*.img format is defined to be big-endian and thus the img2grd routines
+have built-in automatic byte-swapping for little-endian systems.  If
+you have byte-swapped the data files to little-endian you may need to
+revert to the original big-endian format.
 
 ==> CHANGES IN GMT 3.3.6 <==
 

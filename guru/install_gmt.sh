@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.20 2001-04-18 22:53:13 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.21 2001-05-18 17:32:02 pwessel Exp $
 #
 #	Automatic installation of GMT version 3.4
 #	Version for the Bourne shell (or compatible)
@@ -944,7 +944,7 @@ if [ $netcdf_install = "y" ]; then
 	rm -f config.{cache,log,status}
 	if [ $os = "Darwin" ]; then	# Get special versions of config.* for MacOS X
 		cp /usr/libexec/config.* .
-		host="--host=powerpc-apple-Darwin"
+		host="--host=powerpc-apple-darwin"
 	else
 		host=
 	fi
@@ -1200,7 +1200,7 @@ fi
 	
 if [ $os = "Darwin" ]; then	# Get special versions of config.* for MacOS X
 	cp /usr/libexec/config.* .
-	host="--host=powerpc-apple-Darwin"
+	host="--host=powerpc-apple-darwin"
 else
 	host=
 fi
