@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.70 2002-05-03 20:21:08 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.71 2002-05-03 20:26:56 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -951,7 +951,7 @@ int GMT_log_array (double min, double max, double delta, double **array)
 	n--;
 	end_val = max;
 	
-	while (val[n] <= end_val) {
+	while ((end_val - val[n]) > GMT_CONV_LIMIT) {
 		i++;
 		n++;
 		if (n == n_alloc) {
