@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.10 2004-01-07 20:44:53 pwessel Exp $
+#	$Id: Makefile,v 1.11 2004-01-08 06:05:47 pwessel Exp $
 #
 #	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -189,7 +189,6 @@ install-man:
 				echo "sed -e 's/(GMTMANSECTION)/(l)/g' $$f.l > $$f.new" >> $(rootdir)/manjob.sh; \
 				echo "mv -f $$f.new $$f.l" >> $(rootdir)/manjob.sh; \
 			done; \
-			
 		fi
 
 
