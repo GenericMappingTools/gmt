@@ -1,4 +1,4 @@
-	$Id: README.GMT,v 1.5 2004-10-02 02:04:22 pwessel Exp $
+	$Id: README.GMT,v 1.6 2004-10-02 02:09:15 pwessel Exp $
 
 Dear potential GMT users-
 
@@ -77,7 +77,7 @@ throughput:
 ----------------------------------------------------------------
 gmt.soest.hawaii.edu		Honolulu, Hawaii, USA [GMT HOME]
 falcon.grdl.noaa.gov		Silver Spring, Maryland, USA
-ftp.iris.washington.edu		IRIS, Seattle, Washington, USA
+ftp.iris.washington.edu		Seattle, Washington, USA
 ftp.geologi.uio.no		Oslo, Norway
 gd.tuwien.ac.at			Vienna U of Techology, AUSTRIA
 ftp.iag.usp.br			Sao Paulo, Brazil
