@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.36 2002-01-13 23:00:57 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.37 2002-01-16 07:07:39 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1719,8 +1719,8 @@ int GMT_decode_coltype (char *arg)
 	return (0);
 }
 
-int	GMT_scanf_clock (char *s, double *val) {
-
+int	GMT_scanf_clock (char *s, double *val)
+{
 	/* On failure, return -1.  On success, set val and return 0.
 	
 	Looks for apAP, but doesn't discover a failure if called
@@ -1774,11 +1774,9 @@ int	GMT_scanf_clock (char *s, double *val) {
 	*val = x;
 	return (0);
 }
-
 	
-	
-int	GMT_scanf_calendar (char *s, GMT_cal_rd *rd) {
-
+int	GMT_scanf_calendar (char *s, GMT_cal_rd *rd)
+{
 	/* On failure, return -1.  On success, set rd and return 0 */
 	if (GMT_io.date_input.iso_calendar) {
 		return (GMT_scanf_ISO_calendar (s, rd));
@@ -1810,8 +1808,8 @@ int	GMT_scanf_ISO_calendar (char *s, GMT_cal_rd *rd) {
 	return (0);
 }
 
-int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd) {
-
+int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd)
+{
 	/* Return -1 on failure.  Set rd and return 0 on success.  
 	
 	For gregorian calendars.  */
@@ -1867,8 +1865,8 @@ int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd) {
 }
 		
 
-int	GMT_scanf_geo (char *s, double *val) {
-
+int	GMT_scanf_geo (char *s, double *val)
+{
 	/* Try to read a character string token stored in s,
 	knowing that it should be a geographical variable.  
 	If successful, stores value in val and returns one of
@@ -1977,10 +1975,10 @@ int	GMT_scanf_geo (char *s, double *val) {
 }
 
 		
-int	GMT_scanf_float (char *s, double *val) {
-
+int	GMT_scanf_float (char *s, double *val)
+{
 	/* Try to decode a value from s and store
-	in val.  S should not have any special format
+	in val.  s should not have any special format
 	(neither geographical, with suffixes or
 	separating colons, nor calendar nor clock).
 	However, D and d are permitted to map to e
@@ -2020,8 +2018,8 @@ int	GMT_scanf_float (char *s, double *val) {
 	return (GMT_IS_UNKNOWN);
 }
 
-int	GMT_scanf (char *s, int expectation, double *val) {
-
+int	GMT_scanf (char *s, int expectation, double *val)
+{
 	/* Called with s pointing to a char string, expectation
 	indicating what is known/required/expected about the
 	format of the string.  Attempts to decode the string to
@@ -2103,8 +2101,8 @@ int	GMT_scanf (char *s, int expectation, double *val) {
 	return (GMT_IS_NAN);
 }
 
-int	GMT_scanf_argtime (char *s, GMT_dtime *t) {
-
+int	GMT_scanf_argtime (char *s, GMT_dtime *t)
+{
 	/* s is a string from a command-line argument.
 		The argument is known to refer to a time
 		variable.  For example, the argument is
