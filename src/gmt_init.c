@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.36 2001-09-13 18:22:42 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.37 2001-09-13 21:47:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2623,7 +2623,7 @@ void GMT_decode_tinfo (char *in, struct TIME_AXIS *A) {
 	
 	t = in;
 	while (t[0] && !error) {	/* As long as there are more segments to decode and no trouble so far */
-		if (isdigit (t[0]))	/* No segment type given, set to * which means a + f */
+		if (isdigit (t[0]) || t[0] == '-' || t[0] == '+' || t[0] == '.')	/* No segment type given, set to * which means a + f */
 			flag = '*';
 		else {
 			flag = t[0];	/* Set flag */
@@ -2812,13 +2812,17 @@ int GMT_map_getframe (char *in) {
 	char out1[BUFSIZ], out2[BUFSIZ], *info[3], xyz[3] = {'x', 'y', 'z'}, yn[2] = {'N', 'Y'};
 	char one[80], two[80], three[80];
 	struct TIME_AXIS *A;
-	int i, k;
+	int i, j, k;
 	
 	/* tframe_info.side[] may be set already when parsing .gmtdefaults flags */
 	
 	info[0] = one;	info[1] = two;	info[2] = three;
 	for (i = 0; i < 3; i++) {
 		memset ((void *)&tframe_info.axis[i], 0, sizeof (struct TIME_AXIS));
+		for (j = 0; j < 6; j++) {
+			tframe_info.axis[i].item[j].parent = i;
+			tframe_info.axis[i].item[j].id = j;
+		}
 		if (project_info.xyz_projection[i] == TIME) tframe_info.axis[i].type = TIME;
 	}
 	tframe_info.header[0] = '\0';

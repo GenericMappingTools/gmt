@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.11 2001-09-13 17:30:32 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.12 2001-09-13 21:47:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -256,6 +256,8 @@ struct MAP_FRAME {		/* Various parameters for plotting of linear and map boundar
 };
 
 struct TIME_AXIS_ITEM {		/* Information for one type of tick/anotation */
+	int parent;			/* Id of axis this item belongs to (0,1,2) */
+	int id;				/* Id of this item (0-5) */
 	BOOLEAN active;			/* TRUE if we want to use this item */
 	double interval;		/* Distance bewteen ticks in user units */
 	int flavor;			/* Index into month/day name abbreviation array (0-2) */
