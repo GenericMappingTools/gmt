@@ -9,7 +9,7 @@ grdimage \- Create grayshaded or colored image from a 2-D netCDF grd file
 \fBgrdimage\fP \fIgrd_z\fP | \fIgrd_r grd_g grd_b\fP \fB\-C\fP\fIcptfile\fP \fB\-J\fP\fIparameters\fP 
 [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-Ei\fP|\fIdpi\fP ] [ \fB\-G\fP[\fBf|b\fP]\fIrgb\fP ] [ \fB\-I\fP\fIintensfile\fP] [ \fB\-K\fP ] 
 [ \fB\-M\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP\fIsearch_radius\fP ] 
-[ \fB\-T\fP[\fBs\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] 
+[ \fB\-T\fP[\fBs|m\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] 
 [ \fB\-c\fP\fIcopies\fP ]
 .SH DESCRIPTION
 \fBgrdimage\fP reads one 2-D gridded file and produces a gray-shaded (or colored) map by assigning
@@ -68,7 +68,9 @@ Set the search radius for the averaging procedure  [Default avoids aliasing].
 Plot image without any interpolation.  This involves converting each node-centered
 bin into a polygon which is then painted separately.  Append \fBs\fP to skip
 nodes with z = NaN.  This option is useful for categorical data where
-interpolating between values is meaningless.
+interpolating between values is meaningless.  Finally, append \fBm\fP to mask out
+nodes with z = NaN using the colormasking feature in PostScript Level 3 (i.e., no
+tiling at all, but your PS device must support PS Level 3).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
