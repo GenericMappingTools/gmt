@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.5 2001-03-07 20:29:12 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.6 2001-03-07 21:18:26 pwessel Exp $
 #
 #	Automatic installation of GMT version 3.4
 #	Version for the Bourne shell (or compatible)
@@ -75,7 +75,8 @@ cat << EOF > gmt_install.ftp_site
 5. ISV, Hokkaido U, Sapporo, JAPAN
 6. Charles Sturt U, Albury, AUSTRALIA
 EOF
-# Order (1-12) is progs, share, high, full, suppl, scripts, ps, pdf, man, tut, web, triangle
+# Order (1-12) is 1:progs, 2:share, 3:high, 4:full, 5:suppl, 6:scripts
+#		  7:ps, 8:pdf, 9:man, 10:web, 11:tut, 12:triangle
 cat << EOF > gmt_install.ftp_bzsizes
 0.55
 3.7
@@ -83,9 +84,11 @@ cat << EOF > gmt_install.ftp_bzsizes
 28.8
 0.31
 3.0
-4.2
+3.1
 7.3
+0.09
 1.6
+1.0
 0.09
 EOF
 cat << EOF > gmt_install.ftp_gzsizes
@@ -95,9 +98,11 @@ cat << EOF > gmt_install.ftp_gzsizes
 47.1
 0.37
 4.2
-5.6
+4.2
 7.3
+0.12
 1.6
+1.4
 0.11
 EOF
 cat << EOF >&2
@@ -193,9 +198,11 @@ GMT_get_progs=d
 GMT_get_share=d
 GMT_get_scripts=d
 GMT_get_suppl=d
-GMT_get_doc=d
+GMT_get_ps=d
 GMT_get_pdf=d
+GMT_get_man=d
 GMT_get_web=d
+GMT_get_tut=d
 GMT_get_high=d
 GMT_get_full=d
 GMT_get_triangle=d
@@ -254,11 +261,15 @@ EOF
 	size=`sed -n 5p $sizes`
 	GMT_get_suppl=`get_def_answer "Want optional GMT supplemental programs [$size Mb] (y/n)?" "y"`
 	size=`sed -n 7p $sizes`
-	GMT_get_doc=`get_def_answer "Want optional GMT Documentation (PS and MAN) [$size Mb] (y/n)?" "y"`
+	GMT_get_ps=`get_def_answer "Want optional GMT Documentation 1 (PS version) [$size Mb] (y/n)?" "y"`
 	size=`sed -n 8p $sizes`
-	GMT_get_pdf=`get_def_answer "Want optional GMT Documentation (PDF) [$size Mb] (y/n)?" "y"`
+	GMT_get_pdf=`get_def_answer "Want optional GMT Documentation 2 (PDF version) [$size Mb] (y/n)?" "y"`
 	size=`sed -n 9p $sizes`
-	GMT_get_web=`get_def_answer "Want optional GMT Documentation (HTML) [$size Mb] (y/n)?" "y"`
+	GMT_get_man=`get_def_answer "Want optional GMT Documentation 3 (Unix MAN) [$size Mb] (y/n)?" "y"`
+	size=`sed -n 10p $sizes`
+	GMT_get_web=`get_def_answer "Want optional GMT Web Documentation (HTML of all Docs) [$size Mb] (y/n)?" "y"`
+	size=`sed -n 11p $sizes`
+	GMT_get_tut=`get_def_answer "Want optional GMT tutorial data sets [$size Mb] (y/n)?" "y"`
 
 	echo " " >&2
 	echo " The next two archives contain bigger and more accurate coastline data:" >&2
@@ -278,7 +289,7 @@ EOF
 	echo " " >&2
 	echo "Because of the copyright, GMT uses Watson's routine by default." >&2
 	echo " " >&2
-	size=`sed -n 10p $sizes`
+	size=`sed -n 12p $sizes`
 	GMT_triangle=`get_def_answer "Want optional Shewchuck's triangulation routine [$size Mb] (y/n)?" "n"`
 	GMT_get_triangle=$GMT_triangle
 else
@@ -539,9 +550,11 @@ GMT_get_high=$GMT_get_high
 GMT_get_full=$GMT_get_full
 GMT_get_suppl=$GMT_get_suppl
 GMT_get_scripts=$GMT_get_scripts
-GMT_get_doc=$GMT_get_doc
+GMT_get_ps=$GMT_get_ps
 GMT_get_pdf=$GMT_get_pdf
+GMT_get_man=$GMT_get_man
 GMT_get_web=$GMT_get_web
+GMT_get_tut=$GMT_get_tut
 GMT_get_triangle=$GMT_get_triangle
 #---------------------------------------------
 #       GMT SUPPLEMENTS SELECT SECTION
@@ -943,9 +956,11 @@ if [ $GMT_ftp = "y" ]; then
 	make_ftp_list $GMT_get_full full
 	make_ftp_list $GMT_get_suppl suppl
 	make_ftp_list $GMT_get_scripts scripts
-	make_ftp_list $GMT_get_doc doc
+	make_ftp_list $GMT_get_ps ps
 	make_ftp_list $GMT_get_pdf pdf
+	make_ftp_list $GMT_get_man man
 	make_ftp_list $GMT_get_web web
+	make_ftp_list $GMT_get_tut tut
 	make_ftp_list2 $GMT_get_triangle triangle
 	echo "quit" >> install_gmt.ftp_list
 	echo " " >> install_gmt.ftp_list
@@ -966,9 +981,11 @@ fi
 install_this_gmt $GMT_get_progs progs
 install_this_gmt $GMT_get_suppl suppl
 install_this_gmt $GMT_get_scripts scripts
-install_this_gmt $GMT_get_doc doc
+install_this_gmt $GMT_get_ps ps
 install_this_gmt $GMT_get_pdf pdf
+install_this_gmt $GMT_get_man man
 install_this_gmt $GMT_get_web web
+install_this_gmt $GMT_get_tut tut
 install_this $GMT_get_triangle triangle
 
 #--------------------------------------------------------------------------------
