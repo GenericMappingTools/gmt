@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.64 2004-04-06 19:28:06 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.65 2004-04-06 23:28:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -99,11 +99,13 @@ int GMT_check_cmyk (double cmyk[]);
 int GMT_slash_count (char *txt);
 int GMT_name2rgb (char *name);
 int GMT_name2pen (char *name);
-int GMT_getpen2 (char *line, struct GMT_PEN *pen);
 void GMT_gettexture (char *line, int unit, double scale, struct GMT_PEN *P);
 void GMT_getpenwidth (char *line, int *pen_unit, double *pen_scale, struct GMT_PEN *P);
 int GMT_penunit (char c, double *pen_scale);
 void GMT_old2newpen (char *line);
+BOOLEAN GMT_is_texture (char *word);
+BOOLEAN GMT_is_penwidth (char *word);
+BOOLEAN GMT_is_color (char *word);
 
 int GMT_check_rgb (int rgb[])
 {
@@ -246,7 +248,10 @@ int GMT_getrgb (char *line, int rgb[])
 			if (n != 1 || GMT_check_rgb (rgb)) return (TRUE);
 		}
 		else {
-			n = GMT_name2rgb (line);	/* This will exit if there is an error */
+			if ((n = GMT_name2rgb (line)) < 0) {
+				fprintf (stderr, "%s: Colorname %s not recognized!\n", GMT_program, line);
+				exit (EXIT_FAILURE);
+			}
 			for (i = 0; i < 3; i++) rgb[i] = GMT_colorname[n].rgb[i];
 		}
 		return (FALSE);
@@ -268,10 +273,6 @@ int GMT_name2rgb (char *name)
 	GMT_str_tolower (Lname);
 	for (i = 0, k = -1; k < 0 && i < GMT_N_COLOR_NAMES; i++) if (!strcmp (Lname, GMT_colorname[i].name)) k = i;
 	
-	if (k < 0) {
-		fprintf (stderr, "%s: Colorname %s not recognized!\n", GMT_program, name);
-		exit (EXIT_FAILURE);
-	}
 	return (k);
 }
 	
@@ -285,11 +286,7 @@ int GMT_name2pen (char *name)
 	strcpy (Lname, name);
 	GMT_str_tolower (Lname);
 	for (i = 0, k = -1; k < 0 && i < GMT_N_PEN_NAMES; i++) if (!strcmp (Lname, GMT_penname[i].name)) k = i;
-	
-	if (k < 0) {
-		fprintf (stderr, "%s: Pen name %s not recognized!\n", GMT_program, name);
-		exit (EXIT_FAILURE);
-	}
+
 	return (k);
 }
 	
@@ -328,7 +325,8 @@ void GMT_old2newpen (char *line)
 	memset ((void *)pstring,  0, (size_t)(128*sizeof(char)));
 	memset ((void *)pcolor,   0, (size_t)(128*sizeof(char)));
 	memset ((void *)ptexture, 0, (size_t)(256*sizeof(char)));
-	while (line[i] && line[i] == '.' || isdigit ((int)line[i])) i++;
+	
+	while (line[i] && line[i] == '.' || isdigit ((int)line[i])) i++;	/* scanning across valid characters for a pen width */
 	
 	if (i) {	/* Case 1: i > 0 which means a numerical width was specified) */
 		if (strchr ("cimp", line[i])) i++;	/* Got a trailing c|i|m|p for pen width unit */
@@ -420,6 +418,21 @@ void GMT_old2newpen (char *line)
 		}
 	}
 	
+	/* Last-minute sanity check for "quick-n-dirty" usage */
+	
+	if (GMT_is_penwidth (saved)) {	/* Stand-alone pen width only */
+		strcpy (pstring, saved);
+		pcolor[0] = ptexture[0] = '\0';
+	}
+	else if (GMT_is_color (saved))	{	/* Stand-alone pen color only */
+		strcpy (pcolor, saved);
+		pstring[0] = ptexture[0] = '\0';
+	}
+	else if (GMT_is_texture (saved)){	/* Stand-alone pen texture only */
+		strcpy (ptexture, saved);
+		pstring[0] = pcolor[0] = '\0';
+	}
+	
 	/* Build newstyle pen specification string */
 	
 	sprintf (buffer, "%s,", pstring);
@@ -451,7 +464,11 @@ void GMT_getpenwidth (char *line, int *pen_unit, double *pen_scale, struct GMT_P
 		P->width = atof (line) * GMT_u2u[*pen_unit][GMT_PT] * (*pen_scale);
 	}
 	else {	/* Pen name was given - these refer to fixed widths in points */
-		P->width = GMT_penname[GMT_name2pen (line)].width;	/* This will also exit if there is an error in pen name */
+		if ((n = GMT_name2pen (line)) < 0) {
+			fprintf (stderr, "%s: Pen name %s not recognized!\n", GMT_program, line);
+			exit (EXIT_FAILURE);
+		}
+		P->width = GMT_penname[n].width;
 		*pen_unit = GMT_PT;
 		*pen_scale = 1.0;	/* Default scale */
 	}
@@ -495,27 +512,34 @@ int GMT_getpen (char *buffer, struct GMT_PEN *P)
 	for (i = 0; line[i]; i++) if (line[i] == ',') line[i] = ' ';	/* Replace , with space */
 	n = sscanf (line, "%s %s %s", pen, color, texture);
 	for (i = 0; line[i]; i++) if (line[i] == ' ') line[i] = ',';	/* Replace space with , */
-	if (n == 2) {	/* Could be pen,color  pen,,texture, or  ,color,texture */
-		if (line[0] == ',') {	/* Got ,color,texture which got stored in pen, color */
+	if (n == 2) {	/* Could be pen,color  pen,[,]texture, or [,]color,texture */
+		if (line[0] == ',' || (GMT_is_color(pen) && GMT_is_texture(color))) {	/* Got [,]color,texture which got stored in pen, color */
 			strcpy (texture, color);
 			strcpy (color, pen);
 			pen[0] = '\0';
 		}
-		else if (strstr(line, ",,")) {	/* Got pen,,texture so texture got stored in color */
+		else if ((GMT_is_penwidth(pen) && GMT_is_texture(color))) {	/* Got pen,texture which got stored in pen, color */
 			strcpy (texture, color);
 			color[0] = '\0';
 		}
+		else if (strstr(line, ",,") || GMT_is_texture(color)) {	/* Got pen[,],texture so texture got stored in color */
+			strcpy (texture, color);
+			color[0] = '\0';
+		}
+		/* unstated else branch means we got pen,color which are stored correctly */
 	}
-	else if (n == 1) {	/* Could be pen  ,color or ,,texture */
-		if (strstr (line, ",,")) {	/* Got ,,texture so texture got stored in pen */
+	else if (n == 1) {	/* Could be pen  [,]color or [,,]texture */
+		if (strstr (line, ",,") || GMT_is_texture (line)) {	/* Got [,,]texture so texture got stored in pen */
 			strcpy (texture, pen);
 			pen[0] = color[0] = '\0';
 		}
-		else if (line[0] == ',') {	/* Got ,color so color got stored in pen */
+		else if (line[0] == ',' || GMT_is_color(line)) {	/* Got [,]color so color got stored in pen */
 			strcpy (color, pen);
 			pen[0] = '\0';
 		}
+		/* unstated else branch means we got pen which is stored correctly */
 	}
+	/* unstated else branch means we got all 3: pen,color,texture */
 	
 	GMT_init_pen (P, GMT_PENWIDTH);	/* Default pen */
 
@@ -526,6 +550,67 @@ int GMT_getpen (char *buffer, struct GMT_PEN *P)
 	return (P->width < 0.0 || GMT_check_rgb (P->rgb));
 }
 
+BOOLEAN GMT_is_penwidth (char *word)
+{
+	int n;
+	
+	/* Returns TRUE if we are sure the word is a penwidth string - else FALSE.
+	 * width syntax is <penname> or <floatingpoint>[<unit>] */
+
+	n = strlen (word);
+	if (n == 0) return (FALSE);
+	
+	n--;
+	if (strchr ("cimp", word[n])) n--;	/* Reduce length by 1; the unit character */
+	if (n < 0) return (FALSE);		/* word only contained a unit character? */
+	if (GMT_name2pen (word) >= 0) return (TRUE);	/* Valid pen name */
+	while (n >= 0 && (word[n] == '.' || isdigit((int)word[n]))) n--;	/* Wind down as long as we find . or integers */
+	return (n == -1);	/* TRUE if we only found ploating point FALSE otherwise */
+}	
+	
+BOOLEAN GMT_is_texture (char *word)
+{
+	int n;
+	
+	/* Returns TRUE if we are sure the word is a texture string - else FALSE.
+	 * texture syntax is a|o|<pattern>:<phase>|<string made up of -|. only>[<unit>] */
+
+	n = strlen (word);
+	if (n == 0) return (FALSE);
+	
+	n--;
+	if (strchr ("cimp", word[n])) n--;	/* Reduce length by 1; the unit character */
+	if (n < 0) return (FALSE);		/* word only contained a unit character? */
+	if (n == 0) {
+		if (word[0] == '-' || word[0] == 'a' || word[0] == '.' || word[0] == 'o') return (TRUE);
+		return (FALSE);	/* No other 1-char texture patterns possible */
+	}
+	if (strchr(word,':')) return (TRUE);	/* Got <pattern>:<phase> */
+	while (n >= 0 && (word[n] == '-' || word[n] == '.')) n--;	/* Wind down as long as we find - or . */
+	return (n == -1);	/* TRUE if we only found -/., FALSE otherwise */
+}
+	
+BOOLEAN GMT_is_color (char *word)
+{
+	int n, n_hyphen = 0;
+	
+	/* Returns TRUE if we are sure the word is a color string - else FALSE.
+	 * color syntax is <gray>|<r/g/b>|<h-s-v>/<c/m/y/k>/<colorname>.
+	 * NOTE: we are not checking if the values are kosher; just the pattern  */
+
+	n = strlen (word);
+	if (n == 0) return (FALSE);
+	
+	if (strchr(word,'/')) return (TRUE);		/* Only color (r/g/b and c/m/y/k) may have slashes */
+	if (GMT_name2rgb (word) >= 0) return (TRUE);	/* Valid color name */
+	n--;
+	while (n >= 0 && (word[n] == '-' || word[n] == '.' || isdigit ((int)word[n]))) {
+		if (word[n] == '-') n_hyphen++;
+		n--;	/* Wind down as long as we find -,., or digits */
+	}
+	return (n == -1 && n_hyphen == 2);	/* TRUE if we only found h-s-v and FALSE otherwise */
+}
+	
 void GMT_gettexture (char *line, int unit, double scale, struct GMT_PEN *P) {
 	int i, n;
 	double width, pen_scale;

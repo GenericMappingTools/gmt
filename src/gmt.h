@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.56 2004-04-05 22:54:24 pwessel Exp $
+ *	$Id: gmt.h,v 1.57 2004-04-06 23:28:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -223,7 +223,7 @@ typedef double GMT_dtime;	/* GMT internal time representation */
 
 #define GMT_PEN_LEN	128
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
-#define GMT_N_PEN_NAMES	10
+#define GMT_N_PEN_NAMES	11
 
 struct GMT_PEN {	/* Holds pen attributes */
 	double width;	/* In points */
