@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spotter.h,v 1.9 2004-03-10 05:27:54 pwessel Exp $
+ *	$Id: spotter.h,v 1.10 2004-03-10 17:49:23 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -31,7 +31,7 @@
 #define BIG_CHUNK 50000
 #define T_2_PA	250.0
 #define PA_2_T  (1.0 / T_2_PA)
-#define SQRT_CHI2	  2.44774689322;	/* This is sqrt (Chi^2) for 95% and 2 degrees of freedom */
+#define SQRT_CHI2 2.44774689322	/* This is sqrt (Chi^2) for 95% and 2 degrees of freedom */
 
 struct EULER {	/* Structure with info on each Euler (stage) pole */
 	double lon, lat;		/* Location of Euler pole in degrees */
