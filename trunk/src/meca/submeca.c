@@ -1,4 +1,4 @@
-
+/*	$Id: submeca.c,v 1.2 2000-12-29 22:10:37 pwessel Exp $	*/
 #include "meca.h"
 #include <gmt.h>
 

@@ -1,3 +1,4 @@
+/*	$Id: utilmeca.h,v 1.2 2000-12-29 22:10:37 pwessel Exp $	*/
 void get_trans (double slon,double slat,double *t11,double *t12,double *t21,double *t22);
 double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], int ergb[3], BOOLEAN outline);
 double ps_meca(double x0,double y0,st_me meca,double size);

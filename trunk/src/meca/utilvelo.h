@@ -1,3 +1,4 @@
+/*	$Id: utilvelo.h,v 1.2 2000-12-29 22:10:37 pwessel Exp $	*/
 void get_trans (double slon,double slat,double *t11,double *t12,double *t21,double *t22);
 void transform_local (double x0,double y0,double dxp,double dyp,double scale,double t11,double t12,double t21,double t22,double *x1,double *y1);
 void trace_arrow (double slon,double slat,double dxp,double dyp,double scale,double *x1,double *y1,double *x2,double *y2);

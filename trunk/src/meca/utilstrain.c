@@ -1,3 +1,4 @@
+/*	$Id: utilstrain.c,v 1.2 2000-12-29 22:10:37 pwessel Exp $	*/
 #include "gmt.h"
 #include "utilvelo.h"
 #define veclen(x, y) sqrt((x) * (x) + (y) * (y))

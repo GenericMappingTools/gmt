@@ -1,4 +1,4 @@
-
+/*	$Id: utilvelo.c,v 1.2 2000-12-29 22:10:37 pwessel Exp $	*/
 #include "gmt.h"
 #include <math.h>
 

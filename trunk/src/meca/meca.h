@@ -1,3 +1,4 @@
+/*	$Id: meca.h,v 1.2 2000-12-29 22:10:37 pwessel Exp $	*/
 #include <stdio.h>
 #include <math.h>
 
