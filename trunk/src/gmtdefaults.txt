@@ -261,7 +261,7 @@ Sphere		1980 The mean radius in GRS-80 (for spherical/plate tectonics applicatio
 Note that for some global projections, \fBGMT\fP may default to GRS-80 Sphere regardless
 of ellipsoid actually chosen.  A warning will be given when this happens.  If a different
 ellipsoid name than those mentioned here is given, \fBGMT\fP will attempt to open
-a file with that name in the current directory, and read a signel record that contains
+a file with that name in the current directory, and read a single record that contains
 the ellipsoid name, year, major-axis (in m), minor-axis (in m), and flattening (f) from
 the first record, where the fields must be separated by white-space (not commas).  This way a
 custom ellipsoid (e.g., those used for other planets) may be used.
