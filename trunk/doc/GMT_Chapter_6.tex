@@ -6,9 +6,9 @@
 %	Paul Wessel and Walter H. F. Smith
 %------------------------------------------
 %
-\section{Non-map Projections}
+\chapter{\gmt\ Transformations}
 
-The linear projection comes in four flavors: linear, log$_{10}$,
+The coordinate transformations come in four flavors: linear, log$_{10}$,
 power (or exponential), and time (calendar).  The projection for the {\it y}-axis can be set
 independently from the {\it x}-axis.  Two subsets of linear will be discussed
 separately; these are a polar (cylindrical) projection and a linear projection applied to
@@ -20,7 +20,7 @@ operates on or creates table data:
 \index{RPN (Reverse Polish Notation)}
 \input{scripts/GMT_dummydata}
 
-\subsection{Cartesian Linear Projection (\Opt{Jx} \Opt{JX})}
+\section{Cartesian Linear Projection (\Opt{Jx} \Opt{JX})}
 \index{Projection!linear|(}
 \index{Projection!linear!Cartesian|(}
 \index{Cartesian linear projection|(}
@@ -57,7 +57,7 @@ positive direction is to supply a negative scale (or axis length).
 \index{Cartesian linear projection|)}
 \index{Linear projection|)}
 
-\subsection{Logarithmic projection}
+\section{Logarithmic projection}
 \index{Projection!logarithmic|(}
 \index{Logarithmic projection|(}
 
@@ -77,7 +77,7 @@ once after the {\it y}-scale.
 \index{Projection!logarithmic|)}
 \index{Logarithmic projection|)}
 
-\subsection{Power projection}
+\section{Power projection}
 \index{Projection!power (exponential)|(}
 \index{Power (exponential) projection|(}
 
@@ -95,7 +95,7 @@ Thus our command becomes
 \index{Projection!power (exponential)|)}
 \index{Power (exponential) projection|)}
 
-\subsection{Geographical linear projection}
+\section{Geographical linear projection}
 \label{sec:linear}
 \index{Projection!linear!geographic|(}
 \index{Geographic Linear projection|(}
@@ -120,7 +120,7 @@ with the result reproduced in Figure~\ref{fig:GMT_linear_d}.
 \index{Geographic Linear projection|)}
 \index{\Opt{Jx} \Opt{JX} (Non-map projections)|)}
 
-\subsection{Linear Projection with Polar ($\theta, r$)
+\section{Linear Projection with Polar ($\theta, r$)
 Coordinates (\Opt{Jp } \Opt{JP})}
 \index{Projection!polar ($\theta, r$)|(}
 \index{Polar ($\theta, r$) projection|(}
@@ -158,7 +158,7 @@ shaped plot appears in Figure~\ref{fig:GMT_polar}.\
 \index{Polar ($\theta, r$) projection|)}
 \index{\Opt{Jp} \Opt{JP} (Polar ($\theta, r$) projections)|)}
 
-\subsection{Linear projection with Calendar Time Coordinates}
+\section{Linear projection with Calendar Time Coordinates}
 \label{sec:time}
 \index{Projection!linear!calendar|(}
 \index{Calendar Linear projection|(}

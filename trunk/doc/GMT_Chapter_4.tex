@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.4 2001-09-21 21:39:22 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.5 2001-09-21 23:18:47 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -260,30 +260,31 @@ if you want to create a log file of what you are doing.
 \index{Input!format}
 \label{sec:io}
 
-Most of the time, \GMT| will know what kind of data it is reading,
+Most of the time, \GMT\ will know what kind of data it is reading,
 but there may be times when you must explicitly specify what you are
 providing as input. When binary data is selected (\Opt{b}) they must all
 be floating point numbers, however for ascii text input there are numerous
-ways to specify data.  In particular, there are three kinds of input data formats that \GMT\ can recognize:
+ways to encode data.  In particular, there are three kinds of input data formats that \GMT\ can recognize:
 
 \begin{description}
-\item [Geographic coordinates].  These are longitudes and latitudes
+\item [Geographic coordinates:]  These are longitudes and latitudes
 that (presumably) will be plotted or processed using one of several map
 projections.  The coordinates can either be in decimal degrees (e.g., -123.45417)
 or they may be in the [$\pm$]{\it ddd}[:{\it mm}[:{\it ss}[{\it .xxx}]]][{\bf W}$|${\bf E}$|${\bf S}$|${\bf N}]
 format (e.g., 123:27:15W).
-\item [Calendar time coordinates].  These are absolute time coordinates referring to a Gregorian or ISO calendar.
+\item [Calendar time coordinates:]  These are absolute time coordinates referring to a Gregorian or ISO calendar.
 The general format is [{\it date}]{\bf T}[{\it clock}], where {\it date} can be specified in a wide range
 of formats.  Because of the widespread use of incompatible and ambiguous formats, the processing of input
-date components is guided by the structure of the {\bf INPUT\_DATE\_FORMAT} parameters in your
+date components is guided by the template {\bf INPUT\_DATE\_FORMAT} in your
 \filename{.gmtdefaults} file.  The \GMT\ preferred date formats are {\it yyyy-mm-dd} (year, month, day-of-month)
 or {\it yyyy-jjj} (year and day-of-year) for Gregorian calendars and {\it yyyy-}{\bf W}{\it ww-d} (year, week, and
-day-of-week) for the ISO calendar.  A complete discription of possible formats are given in the \GMTprog{gmtdefaults}
+day-of-week) for the ISO calendar.  A complete discription of possible formats is given in the \GMTprog{gmtdefaults}
 man page.  The {\it clock} string is more standardized but issues like 12- or 24-hour clocks complicate matters
 as well as the presence or absence of delimeters between fields.  Thus, the processing of input
-clock coordinates is guided by the structure of the {\bf INPUT\_CLOCK\_FORMAT} parameters in your
-\filename{.gmtdefaults} file.  The \GMT\ preferred clock format is {\it hh:mm:ss.xxx}.
-\item [Other coordinates].  These are simply anything that is not geographic or calendar time related, and are
+clock coordinates is guided by the template {\bf INPUT\_CLOCK\_FORMAT}.  The \GMT\ preferred clock format is {\it hh:mm:ss.xxx}.
+Note that not all of the specified enteties (e.g., the seconds or the decimals following the seconds) need be present
+in the data.
+\item [Other coordinates:]  These are simply anything that is not geographic or calendar time related and are
 expected to be simple floating point values requiring no special processing.  One exception is the concept
 of relative time which is read as a floating point quantity in units determined by {\bf TIME\_UNIT}, and internally
 is added to an absolute time reference specified by {\bf TIME\_EPOCH}.
@@ -291,16 +292,16 @@ is added to an absolute time reference specified by {\bf TIME\_EPOCH}.
 
 The supported data formats may be used in file input as well as in command line arguments.  However, note that for
 calendar time coordinates on the command line, you \emph{must} use the preferred \GMT\ date formats since other
-delimeters like slashes (/) would make the processing of the arguments ambiguous.  
+formats with delimeters like slashes (/) would make the processing of the arguments ambiguous.  
 
 \GMT\ programs that require a map projection argument will implicitly know what kind of data to expect, and the
 path for input processing is set accordingly.  However, some programs that simply report on minimum and maximum
-values or that do a reformatting of the data will in general not know what to expect.  In such instances we must
-explicitly tell \GMT\ when we are feeding it data in the specific geographic or calendar formats (floating point
+values or just do a reformatting of the data will in general not know what to expect.  In such instances we must
+explicitly tell \GMT\ that we are feeding it data in the specific geographic or calendar formats (floating point
 data is assumed by default).  We specify the data type via the \Opt{f} option (which sets both input and output
 formats; use \Opt{fi} and \Opt{fo} to set input and output separately).  For instance, to specify that the
 the first two columns are longitude and latitude, and that the third column is absolute calendar time, we add
-\Opt{fi}0x,1y,2T to the command line.
+\Opt{fi}0x,1y,2T to the command line.  For more details, see the man page for the program you need to use.
 
 \section{Output Data Formats}
 \index{Output!format}
@@ -309,10 +310,10 @@ The numerical output from \GMT\ programs can be binary (when \Opt{bo} is used) o
 In the latter case the issue of formatting becomes important.  \GMT\ provides extensive
 machinery for allowing just about any imaginable format to be used on output.  Analogous to
 the processing of input data, several templates guide the formatting process.  These are
-{\bf OUTPUT\_DATE\_FORMAT} and {\bf OUTPUT\_CLOCK\_FORMAT} for calendar time coordinates,
+{\bf OUTPUT\_DATE\_FORMAT} and {\bf OUTPUT\_CLOCK\_FORMAT} for calendar coordinates,
 {\bf OUTPUT\_DEGREE\_FORMAT} for geographical coordinates, and {\bf D\_FORMAT} for generic
 floating point data.  In addition, the user have control over how columns are separated via
-the {\bf FIELD\_SEPARATOR} parameter.  Thus it is possible to create FORTRAN-style card formats
+the {\bf FIELD\_SEPARATOR} parameter.  Thus, as an example, it is possible to create FORTRAN-style card formats
 by setting {\bf D\_FORMAT} to \%7.3lf and {\bf FIELD\_SEPARATOR} to none.
 
 \section{\PS\ Features}
@@ -857,13 +858,14 @@ see Appendix B.
 \index{\Opt{fi} (set input format)}
 \index{\Opt{fo} (set output format)}
 
-As mention in Section~\ref{sec:io}, there are times when we must explicitly state
+As mentioned in Section~\ref{sec:io}, there are times when we must explicitly state
 what kind of data each input or output column contains.  This is accomplished with
 the \Opt{f} option.  Following an optional {\bf i} (for input only) or {\bf o} (for output
-only), we append information about each column (or range of columns) separated by commas.
-Each information starts with the column number (0 is first column) followed by either
+only), we append a text string with information about each column (or range of columns) separated by commas.
+Each string starts with the column number (0 is first column) followed by either
 x (longitude), y (latitude), T (absolute calendar time) or t (relative time).  If
 several consecutive columns have the same format you may specify a range of columns
 rather than a single column, e.e., 0-4 for the first 5 columns.  For example, if our
 input file has geographic coordinates (latitude, longitude) with absolute calendar
-coordinates in the columns 3 and 4, we would specify {\bf fi}0y,1x,3-4T.
+coordinates in the columns 3 and 4, we would specify {\bf fi}0y,1x,3-4T.  All other columns
+as assumed to have the default, floating point format and need not be set individually.
