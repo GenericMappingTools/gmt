@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.52 2004-07-14 01:59:53 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.53 2004-08-13 00:53:31 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -1103,9 +1103,10 @@ colored images or shaded reliefs, need to be told what colors to use and
 over what {\it z}-range each color applies.  This is the purpose of the
 color palette table (cpt-file).  These files may also be used by \GMTprog{psxy}
 and \GMTprog{psxyz} to plot color-filled symbols.  For most applications, you
-will simply create a cpt-file using the tool \GMTprog}{makecpt} which will
-take an existing color table and resample it to fit your particular data
-range.  However, in some situations you will need to make a cpt-file by
+will simply create a cpt-file using the tool \GMTprog{makecpt} which will
+take an existing color table and resample it to fit your chosen data
+range, or use \GMTprog{grd2cpt} to build a cpt-file based on the data distribution
+in a given grid file.  However, in some situations you will need to make a cpt-file by
 hand or using text tools like \progname{awk} or \progname{perl}.
 
 The colors may be specified either in the RGB- (red, green, blue), CMYK- (cyan,
@@ -1266,21 +1267,15 @@ added (Table~\ref{tbl:scand}):
 
 \begin{table}[H]
 \centering
-\begin{tabular}{|l|l|} \hline
-\multicolumn{1}{|c|}{\emph{Code}}	&	\multicolumn{1}{c|}{\emph{Effect}} \\ \hline
-@E &  \AE \\ \hline
-@e &  \ae \\  \hline
-@O &  \O \\ \hline
-@o &  \o \\  \hline
-@A &  \AA \\ \hline
-@a &  \aa \\ \hline
-@C &  \c{C} \\ \hline
-@N &  \~{N} \\ \hline
-@U &  \"{U} \\ \hline
-@c &  \c{c} \\ \hline
-@n &  \~{n} \\ \hline
-@s &  \ss \\ \hline
-@u &  \"{u} \\ \hline
+\begin{tabular}{|l|l||l|l|} \hline
+\emph{Code} & \emph{Effect}  & \emph{Code} & \emph{Effect} \\ \hline
+@E &  \AE   & @e &  \ae   \\ \hline
+@O &  \O    & @o &  \o    \\ \hline
+@A &  \AA   & @a &  \aa   \\ \hline
+@C &  \c{C} & @c &  \c{c} \\ \hline
+@N &  \~{N} & @n &  \~{n} \\ \hline
+@U &  \"{U} & @u &  \"{u} \\ \hline
+@s &  \ss   &    &        \\ \hline
 \end{tabular}
 \caption{Shortcuts for some European characters.}
 \label{tbl:scand}
