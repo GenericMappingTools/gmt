@@ -78,17 +78,19 @@ Do NOT skip symbols that fall outside map border [Default plots points inside bo
 #include "explain_-P.txt"
 .TP
 .B \-S
-Plot symbols.  If present, \fIsize\fP is symbol size in the unit set in .gmtdefaults
-(unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).  The uppercase symbols
-\fBA, C, D, H, I, S, T\fP are normalized to have the same area as the circle,
-while the corresponding lowercase symbols all are circumscribed by the circle.
-Choose between these symbol codes:
-.TP
-.B \-S
-Read symbol code (see below) from last column in the input data.  Cannot be used in
-conjunction with \fB\-b\fP.  Optionally, append \fBc\fP, \fBi\fP, \fBm\fP, \fBp\fP to
-indicate that the size information in the input data is in units of cm, inch, meter,
-or point, respectively. [Default is MEASURE_UNIT].
+Plot symbols.  If present, size is symbol size in the
+unit set in .gmtdefaults (unless c, i, m, or p is
+appended).  If the symbol code (see below) is not given
+it will be read from the last column in the input data.
+Cannot be used in conjunction with -b.  Optionally, append
+c, i, m, p to indicate that the size information in the
+input data is in units of cm, inch, meter, or point,
+respectively. [Default is MEASURE_UNIT.].
+.br
+The uppercase symbols A, C, D, H, I, S, T are normalized
+to have the same area as a circle with radius size, while
+the corresponding lowercase symbols all are circumscribed
+by the circle.  Choose between these symbol codes:
 .TP
 .B \-S-
 x-dash.  \fIsize\fP is the length of a short horizontal line segment.
