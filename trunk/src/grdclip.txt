@@ -1,4 +1,4 @@
-.TH GRDCLIP l "1 Aug 1993"
+.TH GRDCLIP GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 grdclip \- Clipping of range in grdfiles.
 .SH SYNOPSIS
