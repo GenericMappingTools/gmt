@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.118 2004-04-17 06:54:51 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.119 2004-04-20 03:08:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2259,12 +2259,26 @@ int GMT_get_ellipsoid (char *name)
 	
 	for (i = 0; i < N_ELLIPSOIDS && strcmp (name, gmtdefs.ref_ellipsoid[i].name); i++);
 
-	if (i == N_ELLIPSOIDS) {	/* Try to open as file */
+	if (i == N_ELLIPSOIDS) {	/* Try to open as file first in (1) current dir, then in (2) $GMTHOME/share */
 		FILE *fp;
-		char line[BUFSIZ];
+		char line[BUFSIZ], path[BUFSIZ];
 			
-		if ((fp = fopen (name, "r")) == NULL)
+		sprintf (path, "%s%cshare%c%s", GMTHOME, DIR_DELIM, DIR_DELIM, name);
+		
+		if (!strcmp ("Sphere", name)) {
+			/* Special case where previous setting in .gmtdefaults4 is a custom ellipse which
+			 * is now stored in the place of "Sphere".  Hence the entry for "Sphere" is no longer
+			 * there and we must reinsert manually here */
+			 i = N_ELLIPSOIDS - 1;
+			 strcpy (gmtdefs.ref_ellipsoid[i].name, "Sphere");
+			 gmtdefs.ref_ellipsoid[i].date = 1980;
+			 gmtdefs.ref_ellipsoid[i].eq_radius = 6371008.7714;
+			 gmtdefs.ref_ellipsoid[i].pol_radius = gmtdefs.ref_ellipsoid[i].eq_radius;
+			 gmtdefs.ref_ellipsoid[i].flattening = 0.0;
+		}
+		else if ((fp = fopen (name, "r")) == NULL && (fp = fopen (path, "r")) == NULL) {
 			i = -1;	/* Failed, give error */
+		}
 		else {	/* Found file, now get parameters */
 			i = N_ELLIPSOIDS - 1;
 			while (fgets (line, BUFSIZ, fp) && (line[0] == '#' || line[0] == '\n'));
@@ -2292,6 +2306,7 @@ int GMT_get_ellipsoid (char *name)
 			}
 		}
 	}
+		 
 			
 	return (i);
 }

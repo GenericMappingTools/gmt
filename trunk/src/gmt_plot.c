@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.105 2004-04-19 20:52:27 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.106 2004-04-20 03:08:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2555,7 +2555,8 @@ void GMT_map_tickitem (double w, double e, double s, double n, int item)
 	GMT_on_border_is_outside = FALSE;	/* Reset back to default */
 }
 
-void GMT_map_annotate (double w, double e, double s, double n)
+#ifdef NEW
+void GMT_map_annotate_new (double w, double e, double s, double n)
 {
 	double s1, w1, val, dx, dy, x, y, del;
 	int do_minutes, do_seconds, move_up, i, nx, ny, done_zero = FALSE, annot, GMT_world_map_save;
@@ -2566,11 +2567,6 @@ void GMT_map_annotate (double w, double e, double s, double n)
 		if (project_info.projection != POLAR) return;	/* Annotations and header already done by linear_axis */
 	}
 	
-	dx = (project_info.edge[0] || project_info.edge[2]) ? GMT_get_map_interval (0, GMT_ANNOT_UPPER) : 0.0;
-	dy = (project_info.edge[1] || project_info.edge[3]) ? GMT_get_map_interval (1, GMT_ANNOT_UPPER) : 0.0;
-
-	if (!frame_info.header[0] && dx <= 0.0 && dy <= 0.0) return;
-
 	ps_setpaint (gmtdefs.basemap_frame_rgb);
 
 	if (frame_info.header[0]) {	/* Make plot header for geographic maps*/
@@ -2616,6 +2612,167 @@ void GMT_map_annotate (double w, double e, double s, double n)
 		}
 	}
 	
+	dx_upper = GMT_get_map_interval (0, GMT_ANNOT_UPPER);
+	dx_lower = GMT_get_map_interval (0, GMT_ANNOT_LOWER);
+	if (project_info.edge[0] || project_info.edge[2]) {
+		dx_upper = GMT_get_map_interval (0, GMT_ANNOT_UPPER);
+		dx_lower = GMT_get_map_interval (0, GMT_ANNOT_LOWER);
+	}
+	else
+		dx_upper = dx_lower = 0.0;
+	if (project_info.edge[1] || project_info.edge[3]) {
+		dy_upper = GMT_get_map_interval (1, GMT_ANNOT_UPPER);
+		dy_lower = GMT_get_map_interval (1, GMT_ANNOT_LOWER);
+	}
+	else
+		dy_upper = dy_lower = 0.0;
+
+	if (dx_upper <= 0.0 && dy_upper <= 0.0) return;
+
+	dual = (dx_lower > 0.0 || dy_lower > 0.0);
+	
+	ps_comment ("Map annotations");
+
+	ps_setfont (gmtdefs.annot_font[0]);
+	GMT_setpen (&gmtdefs.tick_pen);
+	
+	GMT_on_border_is_outside = TRUE;	/* Temporarily, points on the border are outside */
+	GMT_world_map_save = GMT_world_map;
+	if (project_info.region) {
+		GMT_world_map = FALSE;
+		GMT_outside_save = GMT_outside;
+		GMT_outside = GMT_wesn_outside_np;
+	}
+	
+	if (dx > 0.0) {	/* Annotate the S and N boundaries */
+		BOOLEAN full_lat_range, proj_A, proj_B, annot_0_and_360;
+		
+		/* Determine if we should annotate both 0 and 360 degrees */
+		
+		full_lat_range = (fabs (180.0 - fabs (project_info.n - project_info.s)) < SMALL);
+		proj_A = (project_info.projection == MERCATOR || project_info.projection == OBLIQUE_MERC ||
+			project_info.projection == WINKEL || project_info.projection == ECKERT4 || project_info.projection == ECKERT6 ||
+			project_info.projection == ROBINSON || project_info.projection == CYL_EQ ||
+			project_info.projection == CYL_EQDIST || project_info.projection == MILLER || project_info.projection == LINEAR);
+		proj_B = (project_info.projection == HAMMER || project_info.projection == MOLLWEIDE ||
+			project_info.projection == SINUSOIDAL);
+/*		annot_0_and_360 = (GMT_world_map_save && ((full_lat_range && proj_A) || (!full_lat_range && proj_B))); */
+		annot_0_and_360 = (GMT_world_map_save && (proj_A || (!full_lat_range && proj_B)));
+		
+		do_minutes = (fabs (fmod (dx, 1.0)) > SMALL);
+		do_seconds = (fabs (60.0 * fmod (fmod (dx, 1.0) * 60.0, 1.0)) >= 1.0);
+		w1 = floor (w / dx) * dx;
+		if (fabs (w1 - w) > SMALL) w1 += dx;
+		nx = (w1 > e) ? -1 : (int)((e - w1) / dx + SMALL);
+		for (i = 0; i <= nx; i++) {
+			val = w1 + i * dx;
+			if (fabs (val) < GMT_CONV_LIMIT) done_zero = TRUE;
+			if (val > e) val = e;
+			GMT_get_annot_label (val, label, do_minutes, do_seconds, 0, GMT_world_map_save);
+			annot = annot_0_and_360 || !(done_zero && fabs (val - 360.0) < GMT_CONV_LIMIT);
+			GMT_map_symbol_ns (val, label, s, n, annot);
+		}
+	}
+	
+	if (dy > 0.0) {	/* Annotate W and E boundaries */
+		int lonlat;
+		
+		if (MAPPING) {
+			do_minutes = (fabs (fmod (dy, 1.0)) > SMALL);
+			do_seconds = (fabs (60.0 * fmod (fmod (dy, 1.0) * 60.0, 1.0)) >= 1.0);
+			lonlat = 1;
+		}
+		else {	/* Also, we know that gmtdefs.degree_format = -1 in this case */
+			do_minutes = do_seconds = 0;
+			lonlat = 2;
+			if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Temporary swap to trick justify machinery */
+		}
+		s1 = floor (s / dy) * dy;
+		if (fabs (s1 - s) > SMALL) s1 += dy;
+		ny = (s1 > n) ? -1: (int)((n - s1) / dy + SMALL);
+		for (i = 0; i <= ny; i++) {
+			/* val = s1 + i * dy; */
+			val = s1 + i * dy;
+			if (val > n) val = n;
+			if ((project_info.polar || project_info.projection == GRINTEN) && fabs (fabs (val) - 90.0) < GMT_CONV_LIMIT) continue;
+			GMT_get_annot_label (val, label, do_minutes, do_seconds, lonlat, GMT_world_map_save);
+			GMT_map_symbol_ew (val, label, w, e, TRUE);
+		}
+		if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Undo the temporary swap */
+	}
+	
+	if (project_info.three_D) ps_command ("/F0 {/Helvetica Y} bind def");	/* Reset definition of F0 */
+	if (project_info.three_D) ps_command ("/F12 {/Symbol Y} bind def");	/* Reset definition of F12 */
+	
+	GMT_on_border_is_outside = FALSE;	/* Reset back to default */
+	if (project_info.region) {
+		GMT_world_map = GMT_world_map_save;
+		GMT_outside = GMT_outside_save;
+	}
+}
+#endif
+
+void GMT_map_annotate (double w, double e, double s, double n)
+{
+	double s1, w1, val, dx, dy, x, y, del;
+	int do_minutes, do_seconds, move_up, i, nx, ny, done_zero = FALSE, annot, GMT_world_map_save;
+	char label[256], cmd[256];
+	PFI GMT_outside_save;
+	
+	if (!(MAPPING)) {
+		if (project_info.projection != POLAR) return;	/* Annotations and header already done by linear_axis */
+	}
+	
+	ps_setpaint (gmtdefs.basemap_frame_rgb);
+
+	if (frame_info.header[0]) {	/* Make plot header for geographic maps*/
+		if (project_info.three_D && fabs (project_info.z_scale) < GMT_CONV_LIMIT) {	/* Only do this if flat 2-D plot */
+			
+			move_up = (MAPPING || frame_info.side[2] == 2);
+			ps_setfont (0);
+			del = ((gmtdefs.tick_length > 0.0) ? gmtdefs.tick_length : 0.0) + gmtdefs.header_offset;
+			del += ((move_up) ? (gmtdefs.annot_font_size[0]) * GMT_u2u[GMT_PT][GMT_INCH] : 0.0);
+			GMT_xy_do_z_to_xy (project_info.xmax * 0.5, project_info.ymax+del, project_info.z_level, &x, &y);
+			sprintf (cmd, "/F0 {/%s findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
+				GMT_font[gmtdefs.header_font].name, z_project.xshrink[0], z_project.yshrink[0] * z_project.tilt[0], z_project.yshrink[0]);
+			ps_command (cmd);
+			sprintf (cmd, "/F12 {/Symbol findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
+				z_project.xshrink[0], z_project.yshrink[0] * z_project.tilt[0], z_project.yshrink[0]);
+			ps_command (cmd);
+			
+			ps_text (x, y, gmtdefs.header_font_size, frame_info.header, z_project.phi[0], -2, 0);
+			ps_command ("/F0 {/Helvetica Y} bind def");	/* Reset F0 */
+			ps_command ("/F12 {/Symbol Y} bind def");	/* Reset F12 */
+			ps_setfont (gmtdefs.header_font);
+		}
+		else if (!project_info.three_D) {
+			ps_setfont (gmtdefs.header_font);
+			if (MAPPING || frame_info.side[2] == 2) {
+				ps_set_length ("PSL_TL", gmtdefs.tick_length);
+				ps_set_length ("PSL_AO0", gmtdefs.annot_offset[0]);
+				ps_set_length ("PSL_HO", gmtdefs.header_offset);
+				ps_textdim ("PSL_dimx", "PSL_AF0", gmtdefs.annot_font_size[0], gmtdefs.annot_font[0], "100\\312", 0);			/* Get and set typical annotation dimensions in PostScript */
+			}
+			else {
+				ps_set_length ("PSL_TL", gmtdefs.tick_length);
+				ps_set_length ("PSL_AO0", 0.0);
+				ps_set_length ("PSL_HO", gmtdefs.header_offset);
+			}
+			ps_command ("/PSL_H_y PSL_TL PSL_AO0 add PSL_AF0 add PSL_HO add def");						/* PSL_H was not set by linear axis */
+			ps_set_length ("PSL_x", project_info.xmax * 0.5);
+			ps_set_length ("PSL_y", project_info.ymax);
+			ps_textdim ("PSL_dimx", "PSL_dimy", gmtdefs.header_font_size, gmtdefs.header_font, frame_info.header, 0);			/* Get and set string dimensions in PostScript */
+			ps_command ("PSL_x PSL_dimx -0.5 mul add PSL_y PSL_H_y add M");
+			ps_setfont (gmtdefs.header_font);
+			ps_text (0.0, 0.0, -gmtdefs.header_font_size, frame_info.header, 0.0, 0, 0);
+		}
+	}
+	
+	dx = (project_info.edge[0] || project_info.edge[2]) ? GMT_get_map_interval (0, GMT_ANNOT_UPPER) : 0.0;
+	dy = (project_info.edge[1] || project_info.edge[3]) ? GMT_get_map_interval (1, GMT_ANNOT_UPPER) : 0.0;
+
+	if (dx <= 0.0 && dy <= 0.0) return;
+
 	ps_comment ("Map annotations");
 
 	ps_setfont (gmtdefs.annot_font[0]);
