@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.53 2001-10-15 17:25:05 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.54 2001-10-15 22:38:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4001,7 +4001,7 @@ static void load_encoding (struct gmt_encoding *enc)
 	char line[80];
 	char *symbol;
 	int i;
-	int code = -1;
+	int code = 0;
 	FILE *in;
 
 	sprintf (line, "%s%cshare%cpslib%c%s.ps", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, enc->name);
@@ -4015,9 +4015,14 @@ static void load_encoding (struct gmt_encoding *enc)
 
 	while (fgets (line, sizeof line, in))
 	{
-		for (symbol = strtok (line, "[ /\t"); symbol; symbol = strtok (NULL, "[ /\t"))
+
+		for (symbol = strtok (line, " /\t\n"); symbol; symbol = strtok (NULL, " /\t\n"))
 		{
-			code++;
+			if (strcmp (symbol, "[") == 0)	/* We have found the start of the encoding array. */
+			{
+				code = 0;
+				continue;
+			}
 			if (strcmp (symbol, "degree") == 0)
 				enc->code[gmt_degree] = code;
 			else if (strcmp (symbol, "ring") == 0)
@@ -4028,6 +4033,7 @@ static void load_encoding (struct gmt_encoding *enc)
 				enc->code[gmt_squote] = code;
 			else if (strcmp (symbol, "colon") == 0)
 				enc->code[gmt_colon] = code;
+			code++;
 		}
 	}
 
