@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_symbol.h,v 1.2 2001-09-15 20:05:16 pwessel Exp $
+ *	$Id: gmt_symbol.h,v 1.3 2001-09-15 22:57:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -45,11 +45,10 @@ struct CUSTOM_SYMBOL {
 	struct CUSTOM_SYMBOL_ITEM *first;
 };
 
-EXTERN_MSC int n_custom_symbols;
-EXTERN_MSC char **custom_symbol_names;
-EXTERN_MSC struct CUSTOM_SYMBOL **custom_symbols ;
+EXTERN_MSC int GMT_n_custom_symbols;
+EXTERN_MSC struct CUSTOM_SYMBOL **GMT_custom_symbol;
 
-EXTERN_MSC struct CUSTOM_SYMBOL * GMT_get_custom_symbol (char *name, char *old_names[], struct CUSTOM_SYMBOL *old_symbols[], int *n_symbols);
+EXTERN_MSC struct CUSTOM_SYMBOL * GMT_get_custom_symbol (char *name);
 EXTERN_MSC struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name);
 EXTERN_MSC void GMT_draw_custom_symbol (double x0, double y0, double size, struct CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, BOOLEAN outline);
 EXTERN_MSC void GMT_flush_symbol_piece (double *x, double *y, int *n, struct GMT_PEN *p, struct GMT_PEN *pen, struct GMT_FILL *f, struct GMT_FILL *fill, BOOLEAN outline, BOOLEAN *flush);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.18 2001-09-15 19:55:48 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.19 2001-09-15 22:57:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -263,6 +263,5 @@ struct GMT_TIME_LANGUAGE GMT_time_language;	/* For time axis */
 
 /* For custom symbol plotting in psxy[z] */
 
-int n_custom_symbols = 0;
-char **custom_symbol_names;
-struct CUSTOM_SYMBOL **custom_symbols ;
+int GMT_n_custom_symbols = 0;
+struct CUSTOM_SYMBOL **GMT_custom_symbol;
