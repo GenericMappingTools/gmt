@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.37 2001-09-21 02:25:49 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.38 2001-09-22 21:12:25 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -127,6 +127,8 @@ void GMT_get_primary_anot (struct PLOT_AXIS *A, int *primary, int *secondary);
 BOOLEAN GMT_skip_second_anot (int item, double x, double x2[], int n, int primary, int secondary);
 BOOLEAN GMT_fill_is_image (char *fill);
 double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AXIS *A, int below, double anot_off[], double *label_off, int *anot_justify, int *label_justify, char *format);
+void GMT_flush_symbol_piece (double *x, double *y, double z, int *n, struct GMT_PEN *p, struct GMT_PEN *pen, struct GMT_FILL *f, struct GMT_FILL *fill, BOOLEAN outline, BOOLEAN *flush);
+struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name);
 
 /* Local variables to this file */
 
@@ -3002,9 +3004,7 @@ void GMT_textbox3d (double x, double y, double z, int size, int font, char *labe
 			ya = xx[i] * sina + yy[i] * cosa;
 			xx[i] = x + xa;	yy[i] = y + ya;
 		}
-		d_swap (z, project_info.z_level); 
-		GMT_2D_to_3D (xx, yy, 4);
-		d_swap (z, project_info.z_level);
+		GMT_2D_to_3D (xx, yy, z, 4);
 		if (rgb[0] < 0)
 			ps_clipon (xx, yy, 4, rgb, 0);
 		else
@@ -3703,7 +3703,7 @@ int GMT_grid_clip_path (struct GRD_HEADER *h, double **x, double **y, BOOLEAN *d
 	}
 
 	if (!(*donut)) np = GMT_compact_line (work_x, work_y, np, FALSE, (int *)0);
-	if (project_info.three_D) GMT_2D_to_3D (work_x, work_y, np);
+	if (project_info.three_D) GMT_2D_to_3D (work_x, work_y, project_info.z_level, np);
 	
 	*x = work_x;
 	*y = work_y;
@@ -3880,7 +3880,7 @@ BOOLEAN GMT_fill_is_image (char *fill) {
 	return (fill[0] == 'P' || fill[0] == 'p');
 }
 
-void GMT_draw_custom_symbol (double x0, double y0, double size, struct CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, BOOLEAN outline) {
+void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struct CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, BOOLEAN outline) {
 	int n = 0, n_alloc = GMT_SMALL_CHUNK, na, i;
 	BOOLEAN flush = FALSE;
 	double x, y, da, arc, sr, sa, ca, *xx, *yy;
@@ -3901,7 +3901,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double size, struct CUSTOM_SY
 		
 		switch (s->action) {
 			case ACTION_MOVE:
-				if (flush) GMT_flush_symbol_piece (xx, yy, &n, p, pen, f, fill, outline, &flush);
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, pen, f, fill, outline, &flush);
 				xx[0] = x;
 				yy[0] = y;
 				n = 1;
@@ -3924,8 +3924,8 @@ void GMT_draw_custom_symbol (double x0, double y0, double size, struct CUSTOM_SY
 			case ACTION_CIRCLE:
 				f = (s->fill) ? s->fill : fill;
 				p = s->pen;
-				if (f->use_pattern) {
-					if (flush) GMT_flush_symbol_piece (xx, yy, &n, p, pen, f, fill, outline, &flush);
+				if (f->use_pattern || project_info.three_D) {
+					if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, pen, f, fill, outline, &flush);
 					sr = 0.5 * s->r * size;
 					na = MAX (irint (TWO_PI * sr / gmtdefs.line_step), 16);
 					da = TWO_PI / na;
@@ -3940,10 +3940,10 @@ void GMT_draw_custom_symbol (double x0, double y0, double size, struct CUSTOM_SY
 						yy[n] = y + sr * sa;
 						n++;
 					}
-					GMT_flush_symbol_piece (xx, yy, &n, p, pen, f, fill, outline, &flush);
+					GMT_flush_symbol_piece (xx, yy, z0, &n, p, pen, f, fill, outline, &flush);
 				}
 				else {	/* Clean circle - no image fill required */
-					if (flush) GMT_flush_symbol_piece (xx, yy, &n, p, pen, f, fill, outline, &flush);
+					if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, pen, f, fill, outline, &flush);
 					if (p) GMT_setpen (p);
 					ps_circle (x, y, s->r * size, f->rgb, outline);
 				}
@@ -3951,13 +3951,30 @@ void GMT_draw_custom_symbol (double x0, double y0, double size, struct CUSTOM_SY
 				
 			case ACTION_ARC:
 				flush = TRUE;
-				ps_arc (x, y, s->r * size, s->dir1, s->dir2, 0);
+				if (project_info.three_D) {
+					sr = 0.5 * s->r * size;
+					na = MAX (irint (fabs (s->dir2 - s->dir1) * sr / gmtdefs.line_step), 16);
+					da = (s->dir2 - s->dir1) / na;
+					for (i = 0; i < na; i++) {
+						if (n >= n_alloc) {
+							n_alloc += GMT_SMALL_CHUNK;
+							xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), GMT_program);
+							yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), GMT_program);
+						}
+						sincos (s->dir1 + i * da, &sa, &ca);
+						xx[n] = x + sr * ca;
+						yy[n] = y + sr * sa;
+						n++;
+					}
+				}
+				else
+					ps_arc (x, y, s->r * size, s->dir1, s->dir2, 0);
 				break;
 		}
 		
 		s = s->next;
 	}
-	if (flush) GMT_flush_symbol_piece (xx, yy, &n, p, pen, f, fill, outline, &flush);
+	if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, pen, f, fill, outline, &flush);
 	sprintf (cmd, "End of symbol %s\n\0", symbol->name);
 	ps_comment (cmd);
 	
@@ -3965,7 +3982,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double size, struct CUSTOM_SY
 	GMT_free ((void *)yy);
 }
 
-void GMT_flush_symbol_piece (double *x, double *y, int *n, struct GMT_PEN *p, struct GMT_PEN *pen, struct GMT_FILL *f, struct GMT_FILL *fill, BOOLEAN outline, BOOLEAN *flush) {
+void GMT_flush_symbol_piece (double *x, double *y, double z, int *n, struct GMT_PEN *p, struct GMT_PEN *pen, struct GMT_FILL *f, struct GMT_FILL *fill, BOOLEAN outline, BOOLEAN *flush) {
 	struct GMT_FILL *this_f;
 	BOOLEAN draw_outline;
 	
@@ -3974,6 +3991,7 @@ void GMT_flush_symbol_piece (double *x, double *y, int *n, struct GMT_PEN *p, st
 		(p) ?  GMT_setpen (p) : GMT_setpen (pen);
 	}
 	this_f = (f) ? f : fill;
+	if (project_info.three_D) GMT_2D_to_3D (x, y, z, *n);
 	GMT_fill (x, y, *n, this_f, draw_outline);
 	*flush = FALSE;
 	*n = 0;
