@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.5 2001-03-20 22:43:55 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.6 2001-04-17 22:25:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -257,7 +257,7 @@ void GMT_x_axis (double x0, double y0, double length, double val0, double val1, 
 			}
 			i_a = 0;
 			start_log_a = val = pow (10.0, floor (v0));
-			while ((val0 - val) > SMALL) {
+			while ((v0 - d_log10 (val)) > SMALL) {
 				if (i_a < n_anotations)
 					val = start_log_a * tvals_a[i_a];
 				else {
@@ -270,7 +270,7 @@ void GMT_x_axis (double x0, double y0, double length, double val0, double val1, 
 			start_val_a = val;
 			i_f = 0;
 			start_log_f = val = pow (10.0, floor (v0));
-			while ((val0 - val) > SMALL) {
+			while ((v0 - d_log10 (val)) > SMALL) {
 				if (i_f < n_tickmarks)
 					val = start_log_f * tvals_f[i_f];
 				else {
@@ -499,7 +499,7 @@ void GMT_y_axis (double x0, double y0, double length, double val0, double val1, 
 			}
 			i_a = 0;
 			start_log_a = val = pow (10.0, floor (v0));
-			while ((val0 - val) > SMALL) {
+			while ((v0 - d_log10 (val)) > SMALL) {
 				if (i_a < n_anotations)
 					val = start_log_a * tvals_a[i_a];
 				else {
@@ -512,7 +512,7 @@ void GMT_y_axis (double x0, double y0, double length, double val0, double val1, 
 			start_val_a = val;
 			i_f = 0;
 			start_log_f = val = pow (10.0, floor (v0));
-			while ((val0 - val) > SMALL) {
+			while ((v0 - d_log10 (val)) > SMALL) {
 				if (i_f < n_tickmarks)
 					val = start_log_f * tvals_f[i_f];
 				else {
@@ -533,9 +533,13 @@ void GMT_y_axis (double x0, double y0, double length, double val0, double val1, 
 					sprintf (text_l, format, fabs (val0));
 					sprintf (text_u, format, fabs (val1));
 				}
+				else if (anottype == 1) {
+					sprintf (text_l, "%d\0", (int)floor (v0));
+					sprintf (text_u, "%d\0", (int)ceil (v1));
+				}
 				else {
-					sprintf (text_l, "%d\0", (int)floor ((anottype == 0) ? val0 : v0));
-					sprintf (text_u, "%d\0", (int)ceil ((anottype == 0) ? val1 : v1));
+					sprintf (text_l, format, val0);
+					sprintf (text_u, format, val1);
 				}
 			}
 			break;
@@ -566,7 +570,7 @@ void GMT_y_axis (double x0, double y0, double length, double val0, double val1, 
 	axis_scale = length / (v1 - v0);
 	
 	tmp_offset = GMT_get_anot_offset (&flip);
-	if (unit && gmtdefs.y_axis_type == 0) {	/* Accomodate extra width of anotation */
+	if (unit[0] && gmtdefs.y_axis_type == 0) {	/* Accomodate extra width of anotation */
 		int i, u_len, n_comp, len;
 		i = u_len = n_comp = 0;
 		len = strlen (unit);
@@ -728,11 +732,12 @@ void GMT_y_axis (double x0, double y0, double length, double val0, double val1, 
 
 int GMT_linear_array (double min, double max, double delta, double **array)
 {
-	double first, *val;
+	double first, small, *val;
 	int i, n;
 
+	small = SMALL * delta;
 	first = floor (min / delta) * delta;
-	if ((min - first) > SMALL) first += delta;
+	if ((min - first) > small) first += delta;
 	if (first > max) return (0);
 
 	n = irint ((max - first) / delta) + 1;
@@ -771,7 +776,7 @@ int GMT_log_array (double min, double max, double delta, double **array)
 	v0 = d_log10 (min);
 	start_log = val[0] = pow (10.0, floor (v0));
 	i = n = 0;
-	while ((min - val[n]) > SMALL) {
+	while ((v0 - d_log10 (val[n])) > SMALL) {
 		if (i < nticks)
 			val[n] = start_log * tvals[i];
 		else {
@@ -810,7 +815,7 @@ int GMT_log_array (double min, double max, double delta, double **array)
 int GMT_pow_array (double min, double max, double delta, int x_or_y, double **array)
 {
 	int anottype, n, n_alloc = GMT_SMALL_CHUNK;
-	double *val, tval, v0, v1, start_val, end_val;
+	double *val, tval, v0, v1, small, start_val, end_val;
 	PFI fwd, inv;
 	
 	val = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_pow_array");
@@ -826,23 +831,24 @@ int GMT_pow_array (double min, double max, double delta, int x_or_y, double **ar
 		inv = GMT_y_inverse;
 	}
 
+	small = SMALL * delta;
 	if (anottype == 2) {
 		(*fwd) (min, &v0);
 		(*fwd) (max, &v1);
 
 		tval = (delta == 0.0) ? 0.0 : floor (v0 / delta) * delta;
-		if (fabs (tval - v0) > SMALL) tval += delta;
+		if (fabs (tval - v0) > small) tval += delta;
 		start_val = tval;
 		tval = (delta == 0.0) ? 0.0 : ceil (v1 / delta) * delta;
-		if (fabs (tval - v1) > SMALL) tval -= delta;
+		if (fabs (tval - v1) > small) tval -= delta;
 		end_val = tval;
 	}
 	else {
 		tval = (delta == 0.0) ? 0.0 : floor (min / delta) * delta;
-		if (fabs (tval - min) > SMALL) tval += delta;
+		if (fabs (tval - min) > small) tval += delta;
 		start_val = tval;
 		tval = (delta == 0.0) ? 0.0 : ceil (max / delta) * delta;
-		if (fabs (tval - max) > SMALL) tval -= delta;
+		if (fabs (tval - max) > small) tval -= delta;
 		end_val = tval;
 	}
  
@@ -2669,7 +2675,7 @@ void GMT_xyz_axis3D (int axis_no, char axis, double anotation_int, double tickma
 			}
 			i_a = 0;
 			start_log_a = val = pow (10.0, floor (v0));
-			while ((val0 - val) > SMALL) {
+			while ((v0 - d_log10 (val)) > SMALL) {
 				if (i_a < n_anotations)
 					val = start_log_a * tvals_a[i_a];
 				else {
@@ -2682,7 +2688,7 @@ void GMT_xyz_axis3D (int axis_no, char axis, double anotation_int, double tickma
 			start_val_a = val;
 			i_f = 0;
 			start_log_f = val = pow (10.0, floor (v0));
-			while ((val0 - val) > SMALL) {
+			while ((v0 - d_log10 (val)) > SMALL) {
 				if (i_f < n_tickmarks)
 					val = start_log_f * tvals_f[i_f];
 				else {
