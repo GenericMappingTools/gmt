@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.7 2004-09-13 22:10:16 pwessel Exp $
+#	$Id: Makefile,v 1.8 2004-09-28 18:50:03 pwessel Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -226,6 +226,16 @@ gshhs:
 		polygon_to_gshhs res_i/${VERSION}_final_dbase_1km.b > gshhs_i.b
 		polygon_to_gshhs res_l/${VERSION}_final_dbase_5km.b > gshhs_l.b
 		polygon_to_gshhs res_c/${VERSION}_final_dbase_25km.b > gshhs_c.b
+
+tar-gshhs:
+		tar cvjf gshhs_1.3.tbz gshhs_[clihf].b
+		cd $(GMTHOME)/src; \
+		tar cvjf gshhs_1.5_src.tbz gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
+
+zip-gshhs:
+		zip -r -9 -q gshhs_1.3.zip gshhs_[clihf].b
+		cd $(GMTHOME)/src; \
+		zip -r -9 -q -l gshhs_1.5_src.zip gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
 
 #-------------------------------------------------------------------------------
 #	library
