@@ -3,7 +3,7 @@
 rotconverter \- Manipulate finite and stage rotations 
 .SH SYNOPSIS
 \fBrotconverter\fP [+][-] \fIrotA\fP [ [+|- \fIrotB\fP ] [ +|- \fIrotC\fP ] ... \fB\-D 
-\-F\fP\fIin/out\fP \fB\-N \-S \-V\fP
+\-F\fP\fIin/out\fP \fB\-H \-N \-S \-V\fP
 .SH DESCRIPTION
 \fBrotconverter\fP reads one or more plate motion models (rotations) stored in the
 given files.  If more than one plate motion model is given we will add or subtract
@@ -33,6 +33,9 @@ Specify both the input and output format for rotations.  The \fIin\fP and \fIout
 must be either \fBf\fP or \fBs\fP for finite or stage rotations, respectively.  Note that
 both must be specified if \fB\-F\fP is set [Default is \fB\-Fff\fP (both input and output
 are finite rotations)].
+.TP
+.B \-H
+Write out a header record indentifying the various columns [Default is no header record].
 .TP
 .B \-N
 Place all output poles in the northern hemisphere [Default reports positive rotation angles].
