@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.137 2004-09-16 18:12:13 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.138 2004-09-23 21:17:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4365,7 +4365,7 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 		/* Here we KNOW that w/e has already been forced to be positive (0-360 range).
 		 * Just make sure the grid w/e is positive too when we compare range.
 		 */
-		 shift_x = (h->x_min < 0.0 && h->x_max < 0.0) ? 360.0 : 0.0;	/* Shift to SUBTRACT from w/e ... when comparing */
+		 shift_x = (h->x_min < 0.0 && h->x_max <= 0.0) ? 360.0 : 0.0;	/* Shift to SUBTRACT from w/e ... when comparing */
 	}
 	else if (region_straddle && grid_straddle) {	/* Case 2: Both straddle Greenwich */
 		/* Here we know both mins are -ve and both max are +ve, so there should be no complications */
@@ -4386,7 +4386,9 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 	
 	*xmin = MAX (h->x_min, floor ((project_info.w - shift_x) / h->x_inc) * h->x_inc);
 	*xmax = MIN (h->x_max, ceil  ((project_info.e - shift_x) / h->x_inc) * h->x_inc);
-	
+	while (*xmin <= -360) (*xmin) += 360.0;
+	while (*xmax <= -360) (*xmax) += 360.0;
+
 	if ((*xmax) <= (*xmin)) {	/* Grid is outside chosen -R in longitude */
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid longitudes appear to be outside the map region and will be skipped.\n", GMT_program);
 		return (1);
