@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.64 2004-04-25 08:43:17 pwessel Exp $
+ *	$Id: gmt.h,v 1.65 2004-05-04 20:33:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -390,25 +390,6 @@ struct XINGS {
         double angle[2];        /* Angles of intersection */
         int sides[2];           /* Side id of intersection */
         int nx;                 /* Number of intersections (1 or 2) */
-};
-
-struct BCR {	/* Used mostly in gmt_support.c */
-	double	nodal_value[4][4];	/* z, dz/dx, dz/dy, d2z/dxdy at 4 corners  */
-	double	bcr_basis[4][4];	/* multiply on nodal vals, yields z at point */
-	double	bl_basis[4];		/* bilinear basis functions  */
-	double	rx_inc;			/* 1.0 / grd.x_inc  */
-	double	ry_inc;			/* 1.0 / grd.y_inc  */
-	double	offset;			/* 0 or 0.5 for grid or pixel registration  */
-/* If we later want to estimate of dz/dx or dz/dy, we will need [4][4] basis for these  */
-	int	ij_move[4];		/* add to ij of zero vertex to get other vertex ij  */
-	int	i;			/* Location of current nodal_values  */
-	int	j;			/* Ditto.   */
-	int	bilinear;		/* T/F use bilinear instead of bicubic  */
-	int	nan_condition;		/* T/F we cannot evaluate; return z = NaN  */
-	int	ioff;			/* Padding on west side of array  */
-	int	joff;			/* Padding on north side of array  */
-	int	mx;			/* Padded array dimension  */
-	int	my;			/* Ditto  */
 };
 
 struct MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */

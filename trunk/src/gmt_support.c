@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.78 2004-04-26 19:38:04 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.79 2004-05-04 20:33:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -90,10 +90,10 @@ void GMT_rgb_to_hsv(int rgb[], double *h, double *s, double *v);
 void GMT_hsv_to_rgb(int rgb[], double h, double s, double v);
 void GMT_rgb_to_cmyk (int rgb[], double cmyk[]);
 void GMT_cmyk_to_rgb (int rgb[], double cmyk[]);
-void GMT_get_bcr_cardinals (double x, double y);
-void GMT_get_bcr_ij (struct GRD_HEADER *grd, double xx, double yy, int *ii, int *jj, struct GMT_EDGEINFO *edgeinfo);
-void GMT_get_bcr_xy(struct GRD_HEADER *grd, double xx, double yy, double *x, double *y);
-void GMT_get_bcr_nodal_values(float *z, int ii, int jj);
+void GMT_get_bcr_cardinals (double x, double y, struct GMT_BCR *bcr);
+void GMT_get_bcr_ij (struct GRD_HEADER *grd, double xx, double yy, int *ii, int *jj, struct GMT_EDGEINFO *edgeinfo, struct GMT_BCR *bcr);
+void GMT_get_bcr_xy(struct GRD_HEADER *grd, double xx, double yy, double *x, double *y, struct GMT_BCR *bcr);
+void GMT_get_bcr_nodal_values(float *z, int ii, int jj, struct GMT_BCR *bcr);
 int GMT_check_hsv (double h, double s, double v);
 int GMT_check_cmyk (double cmyk[]);
 int GMT_char_count (char *txt, char c);
@@ -3005,37 +3005,37 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 */
 
 
-void	GMT_bcr_init(struct GRD_HEADER *grd, int *pad, int bilinear)
+void	GMT_bcr_init(struct GRD_HEADER *grd, int *pad, int bilinear, struct GMT_BCR *bcr)
                        
    	      	/* padding on grid, as given to read_grd2 */
    	         	/* T/F we only want bilinear  */
 {
 	/* Initialize i,j so that they cannot look like they have been used:  */
-	bcr.i = -10;
-	bcr.j = -10;
+	bcr->i = -10;
+	bcr->j = -10;
 
 	/* Initialize bilinear:  */
-	bcr.bilinear = bilinear;
+	bcr->bilinear = bilinear;
 
 	/* Initialize ioff, joff, mx, my according to grd and pad:  */
-	bcr.ioff = pad[0];
-	bcr.joff = pad[3];
-	bcr.mx = grd->nx + pad[0] + pad[1];
-	bcr.my = grd->ny + pad[2] + pad[3];
+	bcr->ioff = pad[0];
+	bcr->joff = pad[3];
+	bcr->mx = grd->nx + pad[0] + pad[1];
+	bcr->my = grd->ny + pad[2] + pad[3];
 
 	/* Initialize rx_inc, ry_inc, and offset:  */
-	bcr.rx_inc = 1.0 / grd->x_inc;
-	bcr.ry_inc = 1.0 / grd->y_inc;
-	bcr.offset = (grd->node_offset) ? 0.5 : 0.0;
+	bcr->rx_inc = 1.0 / grd->x_inc;
+	bcr->ry_inc = 1.0 / grd->y_inc;
+	bcr->offset = (grd->node_offset) ? 0.5 : 0.0;
 
 	/* Initialize ij_move:  */
-	bcr.ij_move[0] = 0;
-	bcr.ij_move[1] = 1;
-	bcr.ij_move[2] = -bcr.mx;
-	bcr.ij_move[3] = 1 - bcr.mx;
+	bcr->ij_move[0] = 0;
+	bcr->ij_move[1] = 1;
+	bcr->ij_move[2] = -bcr->mx;
+	bcr->ij_move[3] = 1 - bcr->mx;
 }
 
-void	GMT_get_bcr_cardinals (double x, double y)
+void	GMT_get_bcr_cardinals (double x, double y, struct GMT_BCR *bcr)
 {
 	/* Given x,y compute the cardinal functions.  Note x,y should be in
 	 * normalized range, usually [0,1) but sometimes a little outside this.  */
@@ -3043,13 +3043,13 @@ void	GMT_get_bcr_cardinals (double x, double y)
 	double	xcf[2][2], ycf[2][2], tsq, tm1, tm1sq, dx, dy;
 	int	vertex, verx, very, value, valx, valy;
 
-	if (bcr.bilinear) {
+	if (bcr->bilinear) {
 		dx = 1.0 - x;
 		dy = 1.0 - y;
-		bcr.bl_basis[0] = dx * dy;
-		bcr.bl_basis[1] = x * dy;
-		bcr.bl_basis[2] = y * dx;
-		bcr.bl_basis[3] = x * y;
+		bcr->bl_basis[0] = dx * dy;
+		bcr->bl_basis[1] = x * dy;
+		bcr->bl_basis[2] = y * dx;
+		bcr->bl_basis[3] = x * y;
 
 		return;
 	}
@@ -3078,12 +3078,12 @@ void	GMT_get_bcr_cardinals (double x, double y)
 			valx = value%2;
 			valy = value/2;
 
-			bcr.bcr_basis[vertex][value] = xcf[verx][valx] * ycf[very][valy];
+			bcr->bcr_basis[vertex][value] = xcf[verx][valx] * ycf[very][valy];
 		}
 	}
 }
 
-void GMT_get_bcr_ij (struct GRD_HEADER *grd, double xx, double yy, int *ii, int *jj, struct GMT_EDGEINFO *edgeinfo)
+void GMT_get_bcr_ij (struct GRD_HEADER *grd, double xx, double yy, int *ii, int *jj, struct GMT_EDGEINFO *edgeinfo, struct GMT_BCR *bcr)
 {
 	/* Given xx, yy in user's grdfile x and y units (not normalized),
 	   set ii,jj to the point to be used for the bqr origin. 
@@ -3111,12 +3111,12 @@ void GMT_get_bcr_ij (struct GRD_HEADER *grd, double xx, double yy, int *ii, int 
 
 	int	i, j;
 
-	i = (int)floor((xx-grd->x_min)*bcr.rx_inc - bcr.offset);
+	i = (int)floor((xx-grd->x_min)*bcr->rx_inc - bcr->offset);
 /*	if (i < 0) i = 0;  CHANGED:  */
 	if (i < 0 && edgeinfo->nxp <= 0) i = 0;
 /*	if (i > grd->nx-2) i = grd->nx-2;  CHANGED:  */
 	if (i > grd->nx-2  && edgeinfo->nxp <= 0) i = grd->nx-2;
-	j = (int)ceil ((grd->y_max-yy)*bcr.ry_inc - bcr.offset);
+	j = (int)ceil ((grd->y_max-yy)*bcr->ry_inc - bcr->offset);
 /*	if (j < 1) j = 1;  CHANGED:  */
 	if (j < 1 && !(edgeinfo->nyp > 0 || edgeinfo->gn) ) j = 1;
 /*	if (j > grd->ny-1) j = grd->ny-1;  CHANGED:  */
@@ -3126,26 +3126,26 @@ void GMT_get_bcr_ij (struct GRD_HEADER *grd, double xx, double yy, int *ii, int 
 	*jj = j;
 }
 	
-void	GMT_get_bcr_xy(struct GRD_HEADER *grd, double xx, double yy, double *x, double *y)
+void	GMT_get_bcr_xy(struct GRD_HEADER *grd, double xx, double yy, double *x, double *y, struct GMT_BCR *bcr)
 {
 	/* Given xx, yy in user's grdfile x and y units (not normalized),
-	   use the bcr.i and bcr.j to find x,y (normalized) which are the
+	   use the bcr->i and bcr->j to find x,y (normalized) which are the
 	   coordinates of xx,yy in the bcr rectangle.  */
 
 	double	xorigin, yorigin;
 
-	xorigin = (bcr.i + bcr.offset)*grd->x_inc + grd->x_min;
-	yorigin = grd->y_max - (bcr.j + bcr.offset)*grd->y_inc;
+	xorigin = (bcr->i + bcr->offset)*grd->x_inc + grd->x_min;
+	yorigin = grd->y_max - (bcr->j + bcr->offset)*grd->y_inc;
 
-	*x = (xx - xorigin) * bcr.rx_inc;
-	*y = (yy - yorigin) * bcr.ry_inc;
+	*x = (xx - xorigin) * bcr->rx_inc;
+	*y = (yy - yorigin) * bcr->ry_inc;
 }
 
-void	GMT_get_bcr_nodal_values(float *z, int ii, int jj)
+void	GMT_get_bcr_nodal_values(float *z, int ii, int jj, struct GMT_BCR *bcr)
 {
 	/* ii, jj is the point we want to use now, which is different from
-	   the bcr.i, bcr.j point we used last time this function was called.
-	   If (nan_condition == FALSE) && abs(ii-bcr.i) < 2 && abs(jj-bcr.j)
+	   the bcr->i, bcr->j point we used last time this function was called.
+	   If (nan_condition == FALSE) && abs(ii-bcr->i) < 2 && abs(jj-bcr->j)
 	   < 2 then we can reuse some previous results.  
 
 	Changed 22 May 98 by WHFS to load vertex values even in case of NaN,
@@ -3161,46 +3161,46 @@ void	GMT_get_bcr_nodal_values(float *z, int ii, int jj)
 	/* whattodo[vertex] says which vertices are previously known.  */
 	for (i = 0; i < 4; i++) dontneed[i] = FALSE;
 
-	valstop = (bcr.bilinear) ? 1 : 4;
+	valstop = (bcr->bilinear) ? 1 : 4;
 
-	if (!(bcr.nan_condition) && (abs(ii-bcr.i) < 2 && abs(jj-bcr.j) < 2) ) {
+	if (!(bcr->nan_condition) && (abs(ii-bcr->i) < 2 && abs(jj-bcr->j) < 2) ) {
 		/* There was no nan-condition last time and we can use some
 			previously computed results.  */
-		switch (ii-bcr.i) {
+		switch (ii-bcr->i) {
 			case 1:
 				/* We have moved to the right ...  */
-				switch (jj-bcr.j) {
+				switch (jj-bcr->j) {
 					case -1:
 						/* ... and up.  New 0 == old 3  */
 						dontneed[0] = TRUE;
 						for (i = 0; i < valstop; i++)
-							bcr.nodal_value[0][i] = bcr.nodal_value[3][i];
+							bcr->nodal_value[0][i] = bcr->nodal_value[3][i];
 						break;
 					case 0:
 						/* ... horizontally.  New 0 == old 1; New 2 == old 3  */
 						dontneed[0] = dontneed[2] = TRUE;
 						for (i = 0; i < valstop; i++) {
-							bcr.nodal_value[0][i] = bcr.nodal_value[1][i];
-							bcr.nodal_value[2][i] = bcr.nodal_value[3][i];
+							bcr->nodal_value[0][i] = bcr->nodal_value[1][i];
+							bcr->nodal_value[2][i] = bcr->nodal_value[3][i];
 						}
 						break;
 					case 1:
 						/* ... and down.  New 2 == old 1  */
 						dontneed[2] = TRUE;
 						for (i = 0; i < valstop; i++)
-							bcr.nodal_value[2][i] = bcr.nodal_value[1][i];
+							bcr->nodal_value[2][i] = bcr->nodal_value[1][i];
 						break;
 				}
 				break;
 			case 0:
 				/* We have moved only ...  */
-				switch (jj-bcr.j) {
+				switch (jj-bcr->j) {
 					case -1:
 						/* ... up.  New 0 == old 2; New 1 == old 3  */
 						dontneed[0] = dontneed[1] = TRUE;
 						for (i = 0; i < valstop; i++) {
-							bcr.nodal_value[0][i] = bcr.nodal_value[2][i];
-							bcr.nodal_value[1][i] = bcr.nodal_value[3][i];
+							bcr->nodal_value[0][i] = bcr->nodal_value[2][i];
+							bcr->nodal_value[1][i] = bcr->nodal_value[3][i];
 						}
 						break;
 					case 0:
@@ -3210,34 +3210,34 @@ void	GMT_get_bcr_nodal_values(float *z, int ii, int jj)
 						/* ... down.  New 2 == old 0; New 3 == old 1  */
 						dontneed[2] = dontneed[3] = TRUE;
 						for (i = 0; i < valstop; i++) {
-							bcr.nodal_value[2][i] = bcr.nodal_value[0][i];
-							bcr.nodal_value[3][i] = bcr.nodal_value[1][i];
+							bcr->nodal_value[2][i] = bcr->nodal_value[0][i];
+							bcr->nodal_value[3][i] = bcr->nodal_value[1][i];
 						}
 						break;
 				}
 				break;
 			case -1:
 				/* We have moved to the left ...  */
-				switch (jj-bcr.j) {
+				switch (jj-bcr->j) {
 					case -1:
 						/* ... and up.  New 1 == old 2  */
 						dontneed[1] = TRUE;
 						for (i = 0; i < valstop; i++)
-							bcr.nodal_value[1][i] = bcr.nodal_value[2][i];
+							bcr->nodal_value[1][i] = bcr->nodal_value[2][i];
 						break;
 					case 0:
 						/* ... horizontally.  New 1 == old 0; New 3 == old 2  */
 						dontneed[1] = dontneed[3] = TRUE;
 						for (i = 0; i < valstop; i++) {
-							bcr.nodal_value[1][i] = bcr.nodal_value[0][i];
-							bcr.nodal_value[3][i] = bcr.nodal_value[2][i];
+							bcr->nodal_value[1][i] = bcr->nodal_value[0][i];
+							bcr->nodal_value[3][i] = bcr->nodal_value[2][i];
 						}
 						break;
 					case 1:
 						/* ... and down.  New 3 == old 0  */
 						dontneed[3] = TRUE;
 						for (i = 0; i < valstop; i++)
-							bcr.nodal_value[3][i] = bcr.nodal_value[0][i];
+							bcr->nodal_value[3][i] = bcr->nodal_value[0][i];
 						break;
 				}
 				break;
@@ -3246,9 +3246,9 @@ void	GMT_get_bcr_nodal_values(float *z, int ii, int jj)
 		
 	/* When we get here, we are ready to look for new values (and possibly derivatives)  */
 
-	ij_origin = (jj + bcr.joff) * bcr.mx + (ii + bcr.ioff);
-	bcr.i = ii;
-	bcr.j = jj;
+	ij_origin = (jj + bcr->joff) * bcr->mx + (ii + bcr->ioff);
+	bcr->i = ii;
+	bcr->j = jj;
 
 	nnans = 0;	/* WHFS 22 May 98  */
 
@@ -3256,55 +3256,55 @@ void	GMT_get_bcr_nodal_values(float *z, int ii, int jj)
 
 		if (dontneed[vertex]) continue;
 
-		ij = ij_origin + bcr.ij_move[vertex];
+		ij = ij_origin + bcr->ij_move[vertex];
 		if (GMT_is_fnan (z[ij])) {
-			bcr.nodal_value[vertex][0] = (GMT_d_NaN);
+			bcr->nodal_value[vertex][0] = (GMT_d_NaN);
 			nnans++;
 		}
 		else {
-			bcr.nodal_value[vertex][0] = (double)z[ij];
+			bcr->nodal_value[vertex][0] = (double)z[ij];
 		}
 
-		if (bcr.bilinear) continue;
+		if (bcr->bilinear) continue;
 
 		/* Get dz/dx:  */
 		if (GMT_is_fnan (z[ij+1]) || GMT_is_fnan (z[ij-1]) ){
-			bcr.nodal_value[vertex][1] = (GMT_d_NaN);
+			bcr->nodal_value[vertex][1] = (GMT_d_NaN);
 			nnans++;
 		}
 		else {
-			bcr.nodal_value[vertex][1] = 0.5 * (z[ij+1] - z[ij-1]);
+			bcr->nodal_value[vertex][1] = 0.5 * (z[ij+1] - z[ij-1]);
 		}
 
 		/* Get dz/dy:  */
-		if (GMT_is_fnan (z[ij+bcr.mx]) || GMT_is_fnan (z[ij-bcr.mx]) ){
-			bcr.nodal_value[vertex][2] = (GMT_d_NaN);
+		if (GMT_is_fnan (z[ij+bcr->mx]) || GMT_is_fnan (z[ij-bcr->mx]) ){
+			bcr->nodal_value[vertex][2] = (GMT_d_NaN);
 			nnans++;
 		}
 		else {
-			bcr.nodal_value[vertex][2] = 0.5 * (z[ij-bcr.mx] - z[ij+bcr.mx]);
+			bcr->nodal_value[vertex][2] = 0.5 * (z[ij-bcr->mx] - z[ij+bcr->mx]);
 		}
 
 		/* Get d2z/dxdy:  */
-		k0 = ij + bcr.mx - 1;
+		k0 = ij + bcr->mx - 1;
 		k1 = k0 + 2;
-		k2 = ij - bcr.mx - 1;
+		k2 = ij - bcr->mx - 1;
 		k3 = k2 + 2;
 		if (GMT_is_fnan (z[k0]) || GMT_is_fnan (z[k1]) || GMT_is_fnan (z[k2]) || GMT_is_fnan (z[k3]) ) {
-			bcr.nodal_value[vertex][3] = (GMT_d_NaN);
+			bcr->nodal_value[vertex][3] = (GMT_d_NaN);
 			nnans++;
 		}
 		else {
-			bcr.nodal_value[vertex][3] = 0.25 * ( (z[k3] - z[k2]) - (z[k1] - z[k0]) );
+			bcr->nodal_value[vertex][3] = 0.25 * ( (z[k3] - z[k2]) - (z[k1] - z[k0]) );
 		}
 	}
 
-	bcr.nan_condition = (nnans > 0);
+	bcr->nan_condition = (nnans > 0);
 
 	return;
 }
 
-double	GMT_get_bcr_z(struct GRD_HEADER *grd, double xx, double yy, float *data,  struct GMT_EDGEINFO *edgeinfo)
+double	GMT_get_bcr_z(struct GRD_HEADER *grd, double xx, double yy, float *data, struct GMT_EDGEINFO *edgeinfo, struct GMT_BCR *bcr)
 {
 	/* Given xx, yy in user's grdfile x and y units (not normalized),
 	   this routine returns the desired interpolated value (bilinear
@@ -3316,12 +3316,12 @@ double	GMT_get_bcr_z(struct GRD_HEADER *grd, double xx, double yy, float *data, 
 	if (xx < grd->x_min || xx > grd->x_max) return(GMT_d_NaN);
 	if (yy < grd->y_min || yy > grd->y_max) return(GMT_d_NaN);
 
-	GMT_get_bcr_ij(grd, xx, yy, &i, &j, edgeinfo);
+	GMT_get_bcr_ij (grd, xx, yy, &i, &j, edgeinfo, bcr);
 
-	if (i != bcr.i || j != bcr.j)
-		GMT_get_bcr_nodal_values(data, i, j);
+	if (i != bcr->i || j != bcr->j)
+		GMT_get_bcr_nodal_values(data, i, j, bcr);
 
-	GMT_get_bcr_xy(grd, xx, yy, &x, &y);
+	GMT_get_bcr_xy(grd, xx, yy, &x, &y, bcr);
 
 	/* See if we can copy a node value.  This saves the user
 		from getting a NaN if the node value is fine but
@@ -3331,31 +3331,31 @@ double	GMT_get_bcr_z(struct GRD_HEADER *grd, double xx, double yy, float *data, 
 
 	if ( (fabs(x)) <= SMALL) {
 		if ( (fabs(y)) <= SMALL)
-			return(bcr.nodal_value[0][0]);
+			return(bcr->nodal_value[0][0]);
 		if ( (fabs(1.0 - y)) <= SMALL)
-			return(bcr.nodal_value[2][0]);
+			return(bcr->nodal_value[2][0]);
 	}
 	if ( (fabs(1.0 - x)) <= SMALL) {
 		if ( (fabs(y)) <= SMALL)
-			return(bcr.nodal_value[1][0]);
+			return(bcr->nodal_value[1][0]);
 		if ( (fabs(1.0 - y)) <= SMALL)
-			return(bcr.nodal_value[3][0]);
+			return(bcr->nodal_value[3][0]);
 	}
 
-	if (bcr.nan_condition) return(GMT_d_NaN);
+	if (bcr->nan_condition) return(GMT_d_NaN);
 
-	GMT_get_bcr_cardinals(x, y);
+	GMT_get_bcr_cardinals(x, y, bcr);
 
 	retval = 0.0;
-	if (bcr.bilinear) {
+	if (bcr->bilinear) {
 		for (vertex = 0; vertex < 4; vertex++) {
-			retval += (bcr.nodal_value[vertex][0] * bcr.bl_basis[vertex]);
+			retval += (bcr->nodal_value[vertex][0] * bcr->bl_basis[vertex]);
 		}
 		return(retval);
 	}
 	for (vertex = 0; vertex < 4; vertex++) {
 		for (value = 0; value < 4; value++) {
-			retval += (bcr.nodal_value[vertex][value]*bcr.bcr_basis[vertex][value]);
+			retval += (bcr->nodal_value[vertex][value]*bcr->bcr_basis[vertex][value]);
 		}
 	}
 	return(retval);

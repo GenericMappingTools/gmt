@@ -44,7 +44,7 @@ Drape the image in \fIdrapefile\fP on top of the relief provided by \fIrelief_fi
 Note that \fB\-Jz\fP and \fB\-N\fP always refers to the \fIrelief_file\fP.  The \fIdrapefile\fP only provides
 the information pertaining to colors, which is looked-up via the cpt file (see \fB\-C\fP).  Alternatively, give
 three gridfiles separated by commas.  These files must contain the red, green, and blue colors directly (in 0-255 range)
-and no cpt file is needed.
+and no cpt file is needed.  The \fIdrapefile\fP may be of higher resolution than the \fIrelief_file\fP.
 .TP
 .B \-I
 Gives the name of a grdfile with intensities in the (-1,+1) range. [Default is no illumination].

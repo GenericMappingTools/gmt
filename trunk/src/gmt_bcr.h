@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.h,v 1.5 2004-01-02 22:45:12 pwessel Exp $
+ *	$Id: gmt_bcr.h,v 1.6 2004-05-04 20:33:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -35,10 +35,27 @@
 #ifndef _GMT_BCR_H
 #define _GMT_BCR_H
 
-EXTERN_MSC struct BCR bcr;
+struct GMT_BCR {	/* Used mostly in gmt_support.c */
+	double	nodal_value[4][4];	/* z, dz/dx, dz/dy, d2z/dxdy at 4 corners  */
+	double	bcr_basis[4][4];	/* multiply on nodal vals, yields z at point */
+	double	bl_basis[4];		/* bilinear basis functions  */
+	double	rx_inc;			/* 1.0 / grd.x_inc  */
+	double	ry_inc;			/* 1.0 / grd.y_inc  */
+	double	offset;			/* 0 or 0.5 for grid or pixel registration  */
+/* If we later want to estimate of dz/dx or dz/dy, we will need [4][4] basis for these  */
+	int	ij_move[4];		/* add to ij of zero vertex to get other vertex ij  */
+	int	i;			/* Location of current nodal_values  */
+	int	j;			/* Ditto.   */
+	int	bilinear;		/* T/F use bilinear instead of bicubic  */
+	int	nan_condition;		/* T/F we cannot evaluate; return z = NaN  */
+	int	ioff;			/* Padding on west side of array  */
+	int	joff;			/* Padding on north side of array  */
+	int	mx;			/* Padded array dimension  */
+	int	my;			/* Ditto  */
+};
 
-EXTERN_MSC void GMT_bcr_init (struct GRD_HEADER *grd, int *pad, int bilinear);
-EXTERN_MSC double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data,  struct GMT_EDGEINFO *edgeinfo);		/* Compute z(x,y) from bcr structure  */
+EXTERN_MSC void GMT_bcr_init (struct GRD_HEADER *grd, int *pad, int bilinear, struct GMT_BCR *bcr);
+EXTERN_MSC double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data,  struct GMT_EDGEINFO *edgeinfo, struct GMT_BCR *bcr);		/* Compute z(x,y) from bcr structure  */
 
 /*----------------------------------------------------------------
 		Here are some more remarks:
