@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.37 2004-01-12 20:07:41 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.38 2004-01-12 20:41:03 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -766,7 +766,7 @@ make_ftp_list()
 			get=1
 		fi
 		if [ $get -eq 1 ]; then
-			echo "get GMT${VERSION}_${file}.tar.$suffix" >> gmt_install.ftp_list
+			echo "get GMT_${file}.tar.$suffix" >> gmt_install.ftp_list
 		fi
 	fi
 }
