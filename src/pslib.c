@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.23 2001-10-01 23:26:08 pwessel Exp $
+ *	$Id: pslib.c,v 1.24 2001-10-02 21:32:52 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1420,8 +1420,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		fprintf (ps.fp, "/c {P V C F U N} def\n");
 		fprintf (ps.fp, "/d {P V C F U S} def\n");
 		fprintf (ps.fp, "/p {P S} def\n");
-		fprintf (ps.fp, "/PSL_get_stringwidth {0 0 M true charpath flattenpath pathbbox N pop exch pop sub abs} def\n");
-		fprintf (ps.fp, "/PSL_get_stringheight {0 0 M true charpath flattenpath pathbbox N exch pop sub abs exch pop} def\n");
+		fprintf (ps.fp, "/PSL_get_stringdim {0 0 M true charpath flattenpath pathbbox N exch 2 {3 1 roll sub abs} repeat} def\n");	/* Leaves xdim, ydim on stack */
 	
 		/* Define font macros (see pslib.h for details on how to add fonts) */
 		
@@ -1787,19 +1786,23 @@ void ps_square_ (double *x, double *y, double *diameter, int *rgb, int *outline)
 	ps_square (*x, *y, *diameter, rgb, *outline);
 }
 
-void ps_text (double x, double y, int pointsize, char *text, double angle, int justify, int form)
-                   
-           
-              
-            	/* indicates what x,y refers to, see fig */
-          {	/* 0 = normal text, 1 = outline */
-  /*
-   *    9	10	11
-   *   |----------------|
-   *   5  <textstring>  7
-   *   |----------------|
-   *   1	 2	 3
-   */
+void ps_text_old (double x, double y, int pointsize, char *text, double angle, int justify, int form)
+{
+/* x,y = location of string
+ * pointsize = fontsize in points
+ * text = text to be boxed in
+ * angle = angle with baseline (horizontal)
+ * justify indicates what x,y refers to, see fig below
+ * form = 0 = normal text, 1 = outline
+ *
+ *
+ *    9	      10      11
+ *   |----------------|
+ *   5  <textstring>  7
+ *   |----------------|
+ *   1	      2	      3
+ */
+
 	char *tempstring, *piece, *piece2, *ptr, *string, op[16];
 	int dy, i = 0, j, font;
 	int sub, super, small, old_font;
@@ -2043,67 +2046,74 @@ void ps_text_ (double *x, double *y, int *pointsize, char *text, double *angle, 
 }
 
 void ps_textbox (double x, double y, int pointsize, char *text, double angle, int justify, int outline, double dx, double dy, int rgb[])
-                   
-           
-                       	/* indicates what x,y refers to, see fig */
-            
-              	/* Space between box border and text, in inches */
-             {
-  /*
-   *    9	10	11
-   *   |----------------|
-   *   5  <textstring>  7
-   *   |----------------|
-   *   1	 2	 3
-   */
+{                   
+/* x,y = location of string
+ * pointsize = fontsize in points
+ * text = text to be boxed in
+ * angle = angle with baseline (horizontal)
+ * justify indicates what x,y refers to, see fig below
+ * outline = TRUE if we should draw box outline
+ * dx, dy = Space between box border and text, in inches
+ * rgb = fill color
+ *
+ *
+ *    9	10	11
+ *   |----------------|
+ *   5  <textstring>  7
+ *   |----------------|
+ *   1	 2	 3
+ */
 	char *string;
-	int i = 0, j, idx, idy;
-	double height, y0;
+	int i = 0, j, h_just, v_just;
+	double height;
 
 	if (strlen (text) >= (BUFSIZ-1)) {
 		fprintf (stderr, "pslib: text_item > %d long!\n", BUFSIZ);
 		return;
 	}
 	
+	fprintf (ps.fp, "\n%% ps_textbox begin:\nV\n");
+
 	if (justify < 0)  {	/* Strip leading and trailing blanks */
 		for (i = 0; text[i] == ' '; i++);
 		for (j = strlen (text) - 1; text[j] == ' '; j--) text[j] = 0;
+ 		justify = -justify;
 	}
 	
-	string = ps_prepare_text (&text[i]);
+ 	if (pointsize < 0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
+	ps_textdim ("PSL_dimx", "PSL_dimy", abs (pointsize), ps.font_no, &text[i], 1);			/* Set the string BB dimensions in PS */
+ 	if (pointsize < 0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
+	ps_set_length ("PSL_dx", dx);
+	ps_set_length ("PSL_dy", dy);
+	string = ps_prepare_text (&text[i]);	/* Check for escape sequences */
 	
-	if (strchr (string, '@')) {
-		ps_free ((void *)string);
-		return;	/* Text string still contains escape sequence, box not yet supported */
-	}
-	
-	fprintf (ps.fp, "\n%% ps_textbox begin:\n");
-	
-  	height = pointsize / ps.points_pr_unit;
-	justify = abs (justify);
-	idx = irint (dx * ps.scale);	idy = irint (dy * ps.scale);
-  	
   	/* Got to anchor point */
   	
-	ps.ix = irint (x * ps.scale);
-	ps.iy = irint (y * ps.scale);
-	fprintf (ps.fp, "V %d %d T 0 0 M ", ps.ix, ps.iy);
+	if (pointsize > 0) {	/* Set a new anchor point */
+		ps.ix = irint (x * ps.scale);
+		ps.iy = irint (y * ps.scale);
+		fprintf (ps.fp, "V %d %d T ", ps.ix, ps.iy);
+	}
+	else
+		fprintf (ps.fp, "V PSL_save_x PSL_save_y T ");
 	
-	y0 = -0.5 * height * ps_font_height[ps.font_no] * (justify/4);
-	if (y0 != 0.0) fprintf (ps.fp, "0 %d G ", irint (y0 * ps.scale));
-	fprintf (ps.fp, "%d F%d (%s) ", irint (height * ps.scale), ps.font_no, string);
-	if ((justify %= 4) > 1) fprintf (ps.fp, "E %d div 0 G ",(justify - 4));
-	fprintf (ps.fp, "false charpath flattenpath pathbbox\n");
-	fprintf (ps.fp, "%d add /y2 exch def %d add /x2 exch def %d sub /y1 exch def %d sub /x1 exch def N\n",
-		idy, idx, idy, idx);
 	if (angle != 0.0) fprintf (ps.fp, "%.3lg R ", angle);
-	fprintf (ps.fp, "x1 y1 M x2 y1 L x2 y2 L x1 y2 L P ");
+	if (justify > 1) {	/* Move the new origin so (0,0) is lower left of box
+		h_just = (justify % 4) - 1;	/* Gives 0 (left justify, i.e., do nothing), 1 (center), or 2 (right justify) */
+		v_just = justify / 4;		/* Gives 0 (bottom justify, i.e., do nothing), 1 (middle), or 2 (top justify) */
+		(h_just) ? fprintf (ps.fp, "0 PSL_dimx %3.1lf mul ", -0.5 * h_just) : fprintf (ps.fp, "0 ") ;
+		(v_just) ? fprintf (ps.fp, "PSL_dimy %3.1lf mul ", -0.5 * v_just) : fprintf (ps.fp, "0 ");
+		fprintf (ps.fp, "T ");
+	}
+	fprintf (ps.fp, "/PSL_x_side PSL_dimx_ur PSL_dimx_ll sub PSL_dx 2 mul add def\n");
+	fprintf (ps.fp, "/PSL_y_side PSL_dimy_ur PSL_dimy_ll sub PSL_dy 2 mul add def\n");
+	fprintf (ps.fp, "PSL_dimx_ll PSL_dx sub PSL_dimy_ll PSL_dy sub M PSL_x_side 0 D 0 PSL_y_side D PSL_x_side neg 0 D 0 PSL_y_side neg D P \n");
 	if (rgb[0] >= 0 && iscolor (rgb))
 		fprintf (ps.fp, "V %.3lg %.3lg %.3lg C F U ", rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255);
 	else if (rgb[0] >= 0)
 		fprintf (ps.fp, "V %.3lg A F U ", rgb[0] * I_255);
 	(outline) ? fprintf (ps.fp, "S U\n") : fprintf (ps.fp, "N U\n");
-	fprintf (ps.fp, "%% ps_textbox end:\n\n");
+	fprintf (ps.fp, "U\n%% ps_textbox end:\n\n");
 	
 	ps_free ((void *)string);
 }
@@ -2112,6 +2122,317 @@ void ps_textbox (double x, double y, int pointsize, char *text, double angle, in
 void ps_textbox_ (double *x, double *y, int *pointsize, char *text, double *angle, int *justify, int *outline, double *dx, double *dy, int *rgb, int nlen)
 {
 	 ps_textbox (*x, *y, *pointsize, text, *angle, *justify, *outline, *dx, *dy, rgb);
+}
+
+void ps_textdim (char *xdim, char *ydim, int pointsize, int in_font, char *text, int key)
+{
+	/* key = 0: Will calculate the exact dimenions (xdim, ydim) of the given text string.
+	 * Because of possible escape sequences we need to examine the string
+	 * carefully.  The dimensions will be set in PostScript and can be
+	 * used by addressing the variables xdim and ydim.
+	 * key = 1: Will return bounding box of the text string instead.  Will append
+	 * _ll and _ur to the xdim and ydim strings and initialize 4 variables in PS.
+	 */
+	 
+	char *tempstring, *piece, *piece2, *ptr, *string;
+	int i = 0, j, font;
+	int sub, super, small, old_font;
+	double height, small_size, size, scap_size, y0;
+
+	if (strlen (text) >= (BUFSIZ-1)) {
+		fprintf (stderr, "pslib: text_item > %d long!\n", BUFSIZ);
+		return;
+	}
+	
+	ps_setfont (in_font);			/* Switch to the selected font */
+	
+	string = ps_prepare_text (&text[i]);	/* Check for escape sequences */
+	
+  	height = pointsize / ps.points_pr_unit;
+  	
+ 	if (!strchr (string, '@')) {	/* Plain text string */
+		fprintf (ps.fp, "0 0 M %d F%d (%s) true charpath flattenpath pathbbox N ", (int) irint (height * ps.scale), ps.font_no, string);
+		if (key == 0)
+			fprintf (ps.fp, "exch 2 {3 1 roll sub abs} repeat /%s exch def /%s exch def\n", xdim, ydim);
+		else
+			fprintf (ps.fp, "/%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n", ydim, xdim, ydim, xdim);
+		ps_free ((void *)string);
+		return;
+	}
+	
+	/* Here, we have special request for Symbol font and sub/superscript
+	 * @~ toggles between Symbol font and default font
+	 * @%<fontno>% switches font number <fontno>; give @%% to reset
+	 * @- toggles between subscript and normal text
+	 * @+ toggles between superscript and normal text
+	 * @# toggles between Small caps and normal text
+	 * @! will make a composite character of next two characters
+	 * Use @@ to print a single @
+	 */
+	
+	piece  = ps_memory (VNULL, (size_t)(2 * BUFSIZ), sizeof (char));
+	piece2 = ps_memory (VNULL, (size_t)BUFSIZ, sizeof (char));
+	 
+	font = old_font = ps.font_no;
+	size = height;
+	small_size = height * 0.7;
+	scap_size = height * 0.85;
+	sub = super = small = FALSE;
+	
+	tempstring = ps_memory (VNULL, (size_t)(strlen(string)+1), sizeof (char));	/* Since strtok steps on it */
+	strcpy (tempstring, string);
+	ptr = strtok (tempstring, "@");
+	fprintf (ps.fp, "N 0 0 m ");	/* Initialize currentpoint */
+	if(string[0] != '@') {
+		fprintf (ps.fp, "%d F%d (%s) true charpath flattenpath ", irint (size*ps.scale), font, ptr);
+		ptr = strtok ((char *)NULL, "@");
+	}
+
+	while (ptr) {
+		if (ptr[0] == '!') {	/* Composite character */
+			ptr++;
+			if (ptr[0] == '\\')	/* Octal code */
+				ptr += 4;
+			else
+				ptr++;
+			strcpy (piece, ptr);
+		}
+		else if (ptr[0] == '~') {	/* Symbol font toggle */
+			font = (font == 12) ? ps.font_no : 12;
+			ptr++;
+			strcpy (piece, ptr);
+		}
+		else if (ptr[0] == '%') {	/* Switch font option */
+			ptr++;
+			if (ptr[0] == '%')
+				font = old_font;
+			else {
+				old_font = font;
+				font = atoi (ptr);
+			}
+			while (*ptr != '%') ptr++;
+			ptr++;
+			strcpy (piece, ptr);
+		}
+		else if (ptr[0] == '-') {	/* Subscript toggle  */
+			sub = !sub;
+			size = (sub) ? small_size : height;
+			ptr++;
+			strcpy (piece, ptr);
+		}
+		else if (ptr[0] == '+') {	/* Superscript toggle */
+			super = !super;
+			size = (super) ? small_size : height;
+			ptr++;
+			strcpy (piece, ptr);
+		}
+		else if (ptr[0] == '#') {	/* Small caps toggle */
+			small = !small;
+			size = (small) ? scap_size : height;
+			ptr++;
+			(small) ? get_uppercase (piece, ptr) : (void) strcpy (piece, ptr);
+		}
+		else	/* Not recognized or @@ for a single @ */
+			strcpy (piece, ptr);
+		if (strlen (piece) > 0) fprintf (ps.fp, "%d F%d (%s) true charpath flattenpath ", irint (size*ps.scale), font, piece);
+		ptr = strtok ((char *)NULL, "@");
+	}
+
+	fprintf (ps.fp, "pathbbox N ");
+	if (key == 0)
+		fprintf (ps.fp, "exch 2 {3 1 roll sub abs} repeat /%s exch def /%s exch def\n", xdim, ydim);
+	else
+		fprintf (ps.fp, "/%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n", ydim, xdim, ydim, xdim);
+	
+	ps_free ((void *)tempstring);	
+	ps_free ((void *)piece);
+	ps_free ((void *)piece2);
+	ps_free ((void *)string);
+}
+
+void ps_text (double x, double y, int pointsize, char *text, double angle, int justify, int form)
+{
+	/* General purpose text plotter for single line of text.  For paragraphs, see ps_words.
+	* ps_text positions and justifies the text string according to the parameters given.
+	* The adjustments requires knowledge of font metrix and characteristics; hence all such
+	* adjustments are passed on to the PostScript interpreter who will calculate the offsets.
+	* The arguments to ps_text are as follows:
+	*
+	* x,y:		location of string
+	* pointsize:	fontsize in points.  If negative, assume currentpoint is already set,
+	*		else we use x, y to set a new currentpoint.
+	* text:		text string to be plotted
+	* angle:	angle between text baseline and the horizontal.
+	* justify:	indicates where on the textstring the x,y point refers to, see fig below.
+	*		If negative then we string leading and trailing blanks from the text.
+	*		0 means no justification (already done separately).
+	*
+	*   9	    10      11
+	*   |----------------|
+	*   5       6        7
+	*   |----------------|
+	*   1	    2	     3
+	* form:		0 = normal text, 1 = outline of text only
+	*/
+
+	char *tempstring, *piece, *piece2, *ptr, *string, op[16];
+	int dy, i = 0, j, font, v_just, h_just;
+	int sub, super, small, old_font;
+	double height, small_size, size, scap_size, ustep, dstep, y0;
+
+	if (strlen (text) >= (BUFSIZ-1)) {	/* We gotta have some limit on how long a single string can be... */
+		fprintf (stderr, "pslib: text_item > %d long - text not plotted!\n", BUFSIZ);
+		return;
+	}
+	
+	if (justify < 0)  {	/* Strip leading and trailing blanks */
+		for (i = 0; text[i] == ' '; i++);
+		for (j = strlen (text) - 1; text[j] == ' '; j--) text[j] = 0;
+		justify = -justify;
+	}
+ 
+ 	if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
+ 		if (pointsize < 0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
+		ps_textdim ("PSL_dimx", "PSL_dimy", abs (pointsize), ps.font_no, &text[i], 0);			/* Set the string dimensions in PS */
+ 		if (pointsize < 0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
+	}
+	
+	string = ps_prepare_text (&text[i]);	/* Check for escape sequences */
+	
+ 	height = abs (pointsize) / ps.points_pr_unit;
+  	
+ 	ps.npath = 0;
+	
+	if (pointsize > 0) {	/* Set a new anchor point */
+		ps.ix = irint (x * ps.scale);
+		ps.iy = irint (y * ps.scale);
+		fprintf (ps.fp, "%d %d M ", ps.ix, ps.iy);
+	}
+	
+	if (angle != 0.0) fprintf (ps.fp, "V %.3lg R ", angle);
+	if (justify > 1) {
+		h_just = (justify % 4) - 1;	/* Gives 0 (left justify, i.e., do nothing), 1 (center), or 2 (right justify) */
+		v_just = justify / 4;		/* Gives 0 (bottom justify, i.e., do nothing), 1 (middle), or 2 (top justify) */
+		(h_just) ? fprintf (ps.fp, "0 PSL_dimx %3.1lf mul ", -0.5 * h_just) : fprintf (ps.fp, "0 ") ;
+		(v_just) ? fprintf (ps.fp, "PSL_dimy %3.1lf mul ", -0.5 * v_just) : fprintf (ps.fp, "0 ");
+		fprintf (ps.fp, "G ");
+	}
+	
+	if (!strchr (string, '@')) {	/* Plain text string - do things simply and exit */
+		fprintf (ps.fp, "%d F%d (%s) ", (int) irint (height * ps.scale), ps.font_no, string);
+		(form == 0) ? fprintf (ps.fp, "Z") : fprintf (ps.fp, "false charpath S");
+		(angle != 0.0) ? fprintf (ps.fp, " U\n") : fprintf (ps.fp, "\n");
+		ps_free ((void *)string);
+		return;
+	}
+	
+	/* Here, we have special request for Symbol font and sub/superscript
+	 * @~ toggles between Symbol font and default font
+	 * @%<fontno>% switches font number <fontno>; give @%% to reset
+	 * @- toggles between subscript and normal text
+	 * @+ toggles between superscript and normal text
+	 * @# toggles between Small caps and normal text
+	 * @! will make a composite character of next two characters
+	 * Use @@ to print a single @
+	 */
+	
+	piece  = ps_memory (VNULL, (size_t)(2 * BUFSIZ), sizeof (char));
+	piece2 = ps_memory (VNULL, (size_t)BUFSIZ, sizeof (char));
+	 
+	/* Now we can start printing text items */
+	
+	font = old_font = ps.font_no;
+	(form == 0) ? strcpy (op, "Z") : strcpy (op, "false charpath");
+	sub = super = small = FALSE;
+	size = height;
+	small_size = height * 0.7;
+	scap_size = height * 0.85;
+	ustep = 0.35 * height;
+	dstep = 0.25 * height;
+
+	ptr = strtok (string, "@");
+	if(string[0] != '@') {	/* String has @ but not at start - must deal with first piece explicitly */
+		fprintf (ps.fp, "%d F%d (%s) %s\n", irint (size*ps.scale), font, ptr, op);
+		ptr = strtok ((char *)NULL, "@");
+	}
+
+	while (ptr) {	/* Loop over all the sub-text items separated by escape characters */
+		if (ptr[0] == '!') {	/* Composite character */
+			ptr++;
+			if (ptr[0] == '\\') {	/* Octal code */
+				strncpy (piece, ptr, 4);
+				piece[4] = 0;
+				ptr += 4;
+			}
+			else {
+				piece[0] = ptr[0];	piece[1] = 0;
+				ptr++;
+			}
+			if (ptr[0] == '\\') {	/* Octal code again */
+				strncpy (piece2, ptr, 4);
+				piece2[4] = 0;
+				ptr += 4;
+			}
+			else {
+				piece2[0] = ptr[0];	piece2[1] = 0;
+				ptr++;
+			}
+			/* Try to center justify these two character to make a composite character - may not be right */
+			fprintf (ps.fp, "%d F%d (%s) dup stringwidth pop exch %s -2 div dup 0 G\n", irint (size*ps.scale), font, piece2, op);
+			fprintf (ps.fp, "%d F%d (%s) E -2 div dup 0 G exch %s sub neg dup 0 lt {pop 0} if 0 G\n", irint (size*ps.scale), font, piece, op);
+			strcpy (piece, ptr);
+		}
+		else if (ptr[0] == '~') {	/* Symbol font */
+			font = (font == 12) ? ps.font_no : 12;
+			ptr++;
+			strcpy (piece, ptr);
+		}
+		else if (ptr[0] == '%') {	/* Switch font option */
+			ptr++;
+			if (*ptr == '%')
+				font = old_font;
+			else {
+				old_font = font;
+				font = atoi (ptr);
+			}
+			while (*ptr != '%') ptr++;
+			ptr++;
+			strcpy (piece, ptr);
+		}
+		else if (ptr[0] == '-') {	/* Subscript */
+			sub = !sub;
+			size = (sub) ? small_size : height;
+			dy = (sub) ? irint (-dstep*ps.scale) : irint (dstep*ps.scale);
+			fprintf (ps.fp, "0 %d G\n", dy);
+			ptr++;
+			strcpy (piece, ptr);
+		}
+		else if (ptr[0] == '+') {	/* Superscript */
+			super = !super;
+			size = (super) ? small_size : height;
+			dy = (super) ? irint (ustep*ps.scale) : irint (-ustep*ps.scale);
+			fprintf (ps.fp, "0 %d G\n", dy);
+			ptr++;
+			strcpy (piece, ptr);
+		}
+		else if (ptr[0] == '#') {	/* Small caps */
+			small = !small;
+			size = (small) ? scap_size : height;
+			ptr++;
+			(small) ? get_uppercase (piece, ptr) : (void) strcpy (piece, ptr);
+		}
+		else
+			strcpy (piece, ptr);
+		if (strlen (piece) > 0)
+			fprintf (ps.fp, "%d F%d (%s) %s\n", irint (size*ps.scale), font, piece, op);
+		ptr = strtok ((char *)NULL, "@");
+	}
+	if (form == 1) fprintf (ps.fp, "S\n");
+	if (angle != 0.0) fprintf (ps.fp, "U\n");
+	
+	ps_free ((void *)piece);
+	ps_free ((void *)piece2);
+	ps_free ((void *)string);
 }
 
 void ps_transrotate (double x, double y, double angle)

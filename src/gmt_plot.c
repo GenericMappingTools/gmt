@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.44 2001-10-01 23:26:08 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.45 2001-10-02 21:32:52 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -152,8 +152,8 @@ void GMT_linear_map_boundary (double w, double e, double s, double n)
 	x_length = fabs (x2 - x1);
 	y_length = fabs (y2 - y1);
 	
-	if (frame_info.side[3]) GMT_xy_axis (x1, y1, y_length, s, n, &frame_info.axis[1], TRUE,  frame_info.side[3]-1);	/* West or left y-axis */
-	if (frame_info.side[1]) GMT_xy_axis (x2, y1, y_length, s, n, &frame_info.axis[1], FALSE, frame_info.side[1]-1);	/* East or right y-axis */
+	if (frame_info.side[3]) GMT_xy_axis_new (x1, y1, y_length, s, n, &frame_info.axis[1], TRUE,  frame_info.side[3]-1);	/* West or left y-axis */
+	if (frame_info.side[1]) GMT_xy_axis_new (x2, y1, y_length, s, n, &frame_info.axis[1], FALSE, frame_info.side[1]-1);	/* East or right y-axis */
 	if (frame_info.side[0]) GMT_xy_axis_new (x1, y1, x_length, w, e, &frame_info.axis[0], TRUE,  frame_info.side[0]-1);	/* South or lower x-axis */
 	if (frame_info.side[2]) GMT_xy_axis_new (x1, y2, x_length, w, e, &frame_info.axis[0], FALSE, frame_info.side[2]-1);	/* North or upper x-axis */
 	
@@ -163,11 +163,10 @@ void GMT_linear_map_boundary (double w, double e, double s, double n)
 	ps_set_length ("PSL_x", 0.5 * x_length);
 	ps_set_length ("PSL_y", y_length);
 	ps_set_height ("PSL_HF", gmtdefs.header_font_size);
-	sprintf (cmd, "/PSL_off PSL_HF F%d (%s) PSL_get_stringwidth 0.5 mul neg def\0", gmtdefs.header_font, frame_info.header);
-	ps_command (cmd);
-	ps_command ("PSL_x PSL_off add PSL_y PSL_H_y add M");
-	sprintf (cmd, "PSL_HF F%d (%s) Z\0", gmtdefs.header_font, frame_info.header);
-	ps_command (cmd);
+	ps_textdim ("PSL_dimx", "PSL_dimy", gmtdefs.header_font_size, gmtdefs.header_font, frame_info.header, 0);			/* Get and set string dimensions in PostScript */
+	ps_command ("PSL_x PSL_dimx -0.5 mul add PSL_y PSL_H_y add M");
+	ps_setfont (gmtdefs.header_font);
+	ps_text (0.0, 0.0, -gmtdefs.header_font_size, frame_info.header, 0.0, 0, 0);
 
 }
 
@@ -520,7 +519,7 @@ void GMT_xy_axis_new (double x0, double y0, double length, double val0, double v
 	struct PLOT_AXIS_ITEM *T;	/* Pointer to the current axis item */
 	char string[GMT_CALSTRING_LENGTH];	/* Anotation string */
 	char format[32];		/* format used for non-time anotations */
-	char *wh[2] = {"height", "width"};
+	char *wh[2] = {"height", "width"}, xy[2] = {'y', 'x'};
 	char cmd[BUFSIZ];
 	int left_side;
 	int rot[2], font;
@@ -548,7 +547,7 @@ void GMT_xy_axis_new (double x0, double y0, double length, double val0, double v
 		ps_transrotate (x0, y0, 0.0);
 	}
 	else if (axis == 1) {
-		if (below) ps_comment ("Start of left y-axis"); else ps_comment ("Start of right y-axis");
+		if (below) ps_comment ("Start of right y-axis"); else ps_comment ("Start of left y-axis");
 		ps_transrotate (x0, y0, 90.0);
 	}
 	
@@ -601,7 +600,8 @@ void GMT_xy_axis_new (double x0, double y0, double length, double val0, double v
 				if (GMT_skip_second_anot (k, knots[i], knots_p, np, primary, secondary)) continue;	/* Secondary anotation skipped when coinciding with primary anotation */
 				(axis == 0) ? GMT_coordinate_to_x (t_use, &x) : GMT_coordinate_to_y (t_use, &x);	/* Get anotation position */
 				GMT_get_coordinate_label (string, &GMT_plot_calclock, format, T, knots[i]);		/* Get anotation string */
-				sprintf (cmd, "/w PSL_AF%d F%d (%s) PSL_get_string%s def w PSL_AH%d gt {/PSL_AH%d w def} if\0", anot_pos, font, string, wh[rot[anot_pos]], anot_pos, anot_pos);		/* Update the longest anotation */
+				ps_textdim ("PSL_dimx", "PSL_dimy", font_size, font, string, 0);				/* Get and set string dimensions in PostScript */
+				sprintf (cmd, "PSL_dim%c PSL_AH%d gt {/PSL_AH%d PSL_dim%c def} if\0", xy[rot[anot_pos]], anot_pos, anot_pos, xy[rot[anot_pos]]);		/* Update the longest anotation */
 				ps_command (cmd);
 			}
 		}
@@ -610,10 +610,9 @@ void GMT_xy_axis_new (double x0, double y0, double length, double val0, double v
 	}
 	
 	if (A->label[0] && anotate)
-		sprintf (cmd, "/PSL_LH PSL_LF F%d (M) PSL_get_stringheight def\0", gmtdefs.label_font);
+		ps_textdim ("PSL_dimx", "PSL_LH", gmtdefs.label_font_size, gmtdefs.label_font, "M", 0);				/* Get and set string dimensions in PostScript */
 	else 
-		sprintf (cmd, "/PSL_LH 0 def\0");
-	ps_command (cmd);
+		ps_command ("/PSL_LH 0 def");
 
 	/* Here, PSL_AH0, PSL_AH1, and PSL_LH have been defined.  We may now set the y offsets */
 	
@@ -643,17 +642,19 @@ void GMT_xy_axis_new (double x0, double y0, double length, double val0, double v
 			(axis == 0) ? GMT_coordinate_to_x (t_use, &x) : GMT_coordinate_to_y (t_use, &x);	/* Get anotation position */
 			GMT_get_coordinate_label (string, &GMT_plot_calclock, format, T, knots[i]);		/* Get anotation string */
 			ps_set_length ("PSL_x", x);
-			sprintf (cmd, "/PSL_off PSL_AF%d F%d (%s) PSL_get_stringwidth neg def\0", anot_pos, font, string);
-			ps_command (cmd);
-			sprintf (cmd, "PSL_x PSL_A%d_y M\0", anot_pos);					/* Move to new anchor point */
-			ps_command (cmd);
-			if (rot[anot_pos])	/* Rotate and adjust anotation in y direction */
-				sprintf (cmd, "V 90 R 0 PSL_AH%d 0.5 mul G PSL_off 0 G\0", anot_pos);
-			else			/* Just center horizontally */
-				sprintf (cmd, "V PSL_off 0.5 mul 0 G\0");
-			ps_command (cmd);
-			sprintf (cmd, "PSL_AF%d F%d (%s) Z U\0", anot_pos, font, string);
-			ps_command (cmd);
+			ps_textdim ("PSL_dimx", "PSL_dimy", font_size, font, string, 0);				/* Get and set string dimensions in PostScript */
+			if (rot[anot_pos]) {	/* Rotate and adjust anotation in y direction */
+				sprintf (cmd, "/PSL_y_off PSL_dimy 0.5 mul neg def\0");
+				ps_command (cmd);
+				sprintf (cmd, "PSL_x PSL_A%d_y M\0", anot_pos);					/* Move to new anchor point */
+				ps_command (cmd);
+				ps_text (0.0, 0.0, -font_size, string, -90.0, 7, 0);
+			}
+			else {			/* Just center horizontally */
+				sprintf (cmd, "PSL_x PSL_A%d_y M\0", anot_pos);					/* Move to new anchor point */
+				ps_command (cmd);
+				ps_text (0.0, 0.0, -font_size, string, 0.0, 2, 0);
+			}
 		}
 			
 		if (nx) GMT_free ((void *)knots);
@@ -664,11 +665,10 @@ void GMT_xy_axis_new (double x0, double y0, double length, double val0, double v
 	
 	if (A->label[0] && anotate) {
 		ps_set_length ("PSL_x", 0.5 * length);
-		sprintf (cmd, "/PSL_off PSL_LF F%d (%s) PSL_get_stringwidth neg def\0", gmtdefs.label_font, A->label);
-		ps_command (cmd);
+		ps_textdim ("PSL_dimx", "PSL_dimy", gmtdefs.label_font_size, gmtdefs.label_font, A->label, 0);				/* Get and set string dimensions in PostScript */
 		ps_command ("PSL_x PSL_L_y M");				/* Move to new anchor point */
-		sprintf (cmd, "PSL_off 0.5 mul 0 G PSL_LF F%d (%s) Z\0", gmtdefs.label_font, A->label, gmtdefs.label_font, A->label);
-		ps_command (cmd);
+		ps_setfont (gmtdefs.label_font);
+		ps_text (0.0, 0.0, -gmtdefs.label_font_size, A->label, 0.0, 2, 0);
 	}
 	if (axis == 0) {
 		ps_rotatetrans  (-x0, -y0, 0.0);
@@ -676,7 +676,7 @@ void GMT_xy_axis_new (double x0, double y0, double length, double val0, double v
 	}
 	else if (axis == 1) {
 		ps_rotatetrans  (-x0, -y0, -90.0);
-		if (below) ps_comment ("End of left y-axis"); else ps_comment ("End of right y-axis");
+		if (below) ps_comment ("End of right y-axis"); else ps_comment ("End of left y-axis");
 	}
 }
 
@@ -2420,15 +2420,12 @@ void GMT_map_anotate (double w, double e, double s, double n)
 			ps_set_length ("PSL_x", x);
 			ps_set_length ("PSL_y", y);
 			ps_set_height ("PSL_HF", gmtdefs.header_font_size);
-			sprintf (cmd, "/PSL_off PSL_HF F%d (%s) PSL_get_stringwidth 0.5 mul neg def\0", gmtdefs.header_font, frame_info.header);
-			ps_command (cmd);
-			ps_command ("PSL_x PSL_off add PSL_y PSL_H_y add M");
-			sprintf (cmd, "PSL_HF F%d (%s) Z\0", gmtdefs.header_font, frame_info.header);
-			ps_command (cmd);
+			ps_textdim ("PSL_dimx", "PSL_dimy", gmtdefs.header_font_size, gmtdefs.header_font, frame_info.header, 0);			/* Get and set string dimensions in PostScript */
+			ps_command ("PSL_x PSL_dimx -0.5 mul add PSL_y PSL_H_y add M");
+			ps_setfont (gmtdefs.header_font);
+			ps_text (0.0, 0.0, -gmtdefs.header_font_size, frame_info.header, 0.0, 0, 0);
 		}
 	}
-	
-	if (!(project_info.projection == POLAR)) return;	/* Annotation already done by linear_axis */
 	
 	ps_comment ("Map anotations");
 
