@@ -2,11 +2,11 @@
 .SH NAME
 grdreformat \- Converting between different grdfile formats.
 .SH SYNOPSIS
-\fBgrdreformat\fP \fIingrdfile\fP[\fI=id\fP[\fI/scale/offset\fP[\fI/nanvalue\fP]]] \fIoutgrdfile\fP[\fI=id\fP[\fI/scale/offset\fP[\fI/nanvalue\fP]]] 
+\fBgrdreformat\fP \fIingrdfile\fP[\fI=id\fP[\fI/scale/offset\fP[\fI/NaNvalue\fP]]] \fIoutgrdfile\fP[\fI=id\fP[\fI/scale/offset\fP[\fI/NaNvalue\fP]]] 
 [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBgrdreformat\fP reads a grdfile in one format and writes it out using another format.  As an option the
-user may select a subset of the data to be written and to specify scaling, translation, and nan-value.
+user may select a subset of the data to be written and to specify scaling, translation, and NaN-value.
 .TP
 \fIingrdfile\fP
 The grdfile to be read.  Append format =\fIid\fP number if not a standard GMT netcdf-based grdfile.
