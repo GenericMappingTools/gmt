@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.75 2005-01-01 20:44:47 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.76 2005-01-01 21:48:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -577,7 +577,6 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D);
 void GMT_map_setup (double west, double east, double south, double north)
 {
 	int search, k;
-	double f;
 	
 	/* if (!project_info.region) d_swap (south, east); */  /* Got w/s/e/n, make into w/e/s/n */
 
@@ -615,22 +614,6 @@ void GMT_map_setup (double west, double east, double south, double north)
 	project_info.w = west;	project_info.e = east;	project_info.s = south;	project_info.n = north;
 	if (project_info.gave_map_width) project_info.units_pr_degree = FALSE;
 	
-	/* Set up ellipsoid parameters for the selected ellipsoid */
-	
-	frame_info.check_side = frame_info.horizontal = FALSE;
-	project_info.EQ_RAD = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius;
-	project_info.i_EQ_RAD = 1.0 / project_info.EQ_RAD;
-	f = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening;
-	project_info.ECC2 = 2 * f - f * f;
-	project_info.ECC4 = project_info.ECC2 * project_info.ECC2;
-	project_info.ECC6 = project_info.ECC2 * project_info.ECC4;
-	project_info.one_m_ECC2 = 1.0 - project_info.ECC2;
-	project_info.i_one_m_ECC2 = 1.0 / project_info.one_m_ECC2;
-	project_info.ECC = d_sqrt (project_info.ECC2);
-	project_info.half_ECC = 0.5 * project_info.ECC;
-	project_info.i_half_ECC = 0.5 / project_info.ECC;
-	project_info.M_PR_DEG = TWO_PI * project_info.EQ_RAD / 360.0;
-	project_info.f_horizon = 90.0;
 	if (!GMT_z_forward) GMT_z_forward = (PFI) GMT_translin;
 	if (!GMT_z_inverse) GMT_z_inverse = (PFI) GMT_itranslin;
 	gmtdefs.n_lon_nodes = gmtdefs.n_lat_nodes = 0;
