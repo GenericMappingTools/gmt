@@ -34,7 +34,7 @@ No space between the option flag and the associated arguments.
 #include "explain_-b.txt"
 .TP
 .B \-C
-Give a color palette file.  If \fB\-S\fP is set, let symbol color be determined by the t-value in
+Give a color palette file.  If \fB\-S\fP is set, let symbol fill color be determined by the t-value in
 the fourth column.  Additional
 fields are shifted over by one column (optional size would be in 5th rather than
 4th field, etc.).

@@ -42,7 +42,7 @@ Suppress drawing line segments as great circle Arcs.  [Default draws great circl
 #include "explain_-b.txt"
 .TP
 .B \-C
-Give a color palette file.  When used with \fB\-S\fP, lets symbol color be determined by the z-value in the
+Give a color palette file.  When used with \fB\-S\fP, lets symbol fill color be determined by the z-value in the
 third column.  Additional fields are
 shifted over by one column (optional size would be 4th rather than 3rd field, etc.).
 If \fB\-S\fP is not set, psxy expects the user to supply a multisegment polygon file (requires \fB\-M\fP) and will look
