@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.7 2003-04-15 20:32:41 pwessel Exp $
+#	$Id: Makefile,v 1.8 2004-01-12 01:08:15 pwessel Exp $
 #
 # makefile for segyprogs directory
 #
@@ -32,7 +32,7 @@ uninstall:
 			done
 
 clean:
-			\rm -f *.o
+			\rm -f *.o *.ps
 			for i in $(SEGYPLOT); do \
 				\rm -f $$i$(EXE); \
 			done
