@@ -46,8 +46,8 @@ power[f], and 1 standard deviation in power[f] are written to stdout.
 Append \fBw\fP to write wavelength instead of frequency.
 .TP
 .B \-F
-Filter the data.  Place x or y immediately after \fB\-F\fP to filter x or y direction only; default is isotropic.  
-Specify four wavelengths in correct units (see \fB\-M\fP) to design a bandpass filter; wavelengths greater than 
+Filter the data.  Place \fBx\fP or \fBy\fP immediately after \fB\-F\fP to filter x or y direction only; default is isotropic.  
+Specify four wavelengths in correct units (see \fB\-M\fP) to design a bandpass filter: wavelengths greater than 
 \fIlc\fP or less than \fIhc\fP will be cut, wavelengths greater than \fIlp\fP and less than \fIhp\fP will be 
 passed, and wavelengths in between will be cosine-tapered.  E.g., \fB\-F\fP1000000/250000/50000/10000 \fB\-M\fP 
 will bandpass, cutting wavelengths > 1000 km and < 10 km, passing wavelengths between 250 km and 50 km.  To make 
@@ -79,18 +79,16 @@ of thickness \fIte\fP.  Also append densities for load, mantle, water, and infil
 If \fIte\fP == 0 then the Airy response is returned.  \fB\-T\fP implicitly sets \fB\-L\fP.
 #include "explain_-V.txt" 
 .SH EXAMPLES
-To upward continue the sea-level magnetic anomalies in the file mag_0.grd to a level 800 m above
-sealevel, try
+To upward continue the sea-level magnetic anomalies in the file mag_0.grd to a level 800 m above sealevel:
 .br
 .sp
-grdfft mag_0.grd \fB\-C\fP800 \fB\-V\fP \fB\-G\fPmag_800.grd 
+\fBgrdfft\fP mag_0.grd \fB\-C\fP800 \fB\-V\fP \fB\-G\fPmag_800.grd 
 .br
 .sp
-To transform geoid heights in m (geoid.grd) on a geographical grid to free-air gravity anomalies in mGal,
-do
+To transform geoid heights in m (geoid.grd) on a geographical grid to free-air gravity anomalies in mGal:
 .br
 .sp
-grdfft geoid.grd \fB\-Dg \-M\fP \fB\-V\fP \fB\-G\fPgrav.grd
+\fBgrdfft\fP geoid.grd \fB\-Dg \-M\fP \fB\-V\fP \fB\-G\fPgrav.grd
 .br
 .sp
 To transform gravity anomalies in mGal (faa.grd) to deflections of the vertical (in micro-radians) in the
@@ -98,14 +96,14 @@ To transform gravity anomalies in mGal (faa.grd) to deflections of the vertical 
 finally scale radians to micro-radians:
 .br
 .sp
-grdfft faa.grd \fB\-Ig \-A\fP38 \fB\-S\fP1e6 \fB\-V\fP \fB\-G\fPdefl_38.grd
+\fBgrdfft\fP faa.grd \fB\-Ig \-A\fP38 \fB\-S\fP1e6 \fB\-V\fP \fB\-G\fPdefl_38.grd
 .br
 .sp
 Second vertical derivatives of gravity anomalies are related to the curvature of the field.  We can
 compute these as mGal/m^2 by differentiating twice:
 .br
 .sp
-grdfft gravity.grd \fB\-D\fP \fB\-D\fP \fB\-V\fP \fB\-G\fPgrav_2nd_derivative.grd
+\fBgrdfft\fP gravity.grd \fB\-D\fP \fB\-D\fP \fB\-V\fP \fB\-G\fPgrav_2nd_derivative.grd
 .br
 .sp
 The first order gravity anomaly (in mGal) due to the compensating surface caused 
@@ -113,7 +111,7 @@ by the topography load topo.grd (in m) on a 20 km thick elastic plate, assumed t
 be 4 km beneath the observation level can be computed as
 .br
 .sp
-grdfft topo.grd \fB\-T\fP20000/2800/3330/1030/2300 \fB\-C\fP4000 \fB\-S\fP0.022 \fB\-G\fPcomp_faa.grd
+\fBgrdfft\fP topo.grd \fB\-T\fP20000/2800/3330/1030/2300 \fB\-C\fP4000 \fB\-S\fP0.022 \fB\-G\fPcomp_faa.grd
 .br
 .sp
 where 0.022 is the scale needed for the first term in Parker's expansion for 

@@ -4,8 +4,8 @@ Selects the map projection.  The following character determines the projection. 
 character is upper case then the argument(s) supplied as scale(s) is interpreted to be
 the map width (or axis lengths), else the scale argument(s) is the map scale (see its
 definition for each projection).  UNIT is cm, inch, or m, depending on the MEASURE_UNIT
-setting in .gmtdefaults, but this can be overridden on the command line by appending c,
-i, or m to the scale/width values.
+setting in .gmtdefaults, but this can be overridden on the command line by appending \fBc\fP,
+\fBi\fP, or \fBm\fP to the scale/width values.
 Choose one of the following projections (The \fBE\fP or \fBC\fP after projection names stands for
 Equal-Area and Conformal, respectively):
 .br
@@ -203,14 +203,14 @@ You may also use the 1:xxxx format to give a single map scale.
 .br
 .sp
 Append a single \fBd\fP if data are geographical coordinates in degrees.
-Default axes lengths (see gmtdefaults) can be invoked
+Default axes lengths (see \fBgmtdefaults\fP) can be invoked
 using \fB\-JXh\fP (for landscape); \fB\-JXv\fP (for portrait) will swap the x- and y-axes lengths.
 The \fBGMT\fP default unit for this installation is UNIT.  However, you may
-change this by editing your .gmtdefaults file(s) (run gmtdefaults to create one
+change this by editing your .gmtdefaults file(s) (run \fBgmtdefaults\fP to create one
 if you don't have it).
 .br
 	The ellipsoid used in the map projections is user-definable by editing the .gmtdefaults file
 in your home directory.  13 commonly used ellipsoids and a spheroid are currently
-supported, and users may also specify their own ellipsoid parameters (see man gmtdefaults for more details).
-\fBGMT\fP default is WGS-84.  Several GMT parameters can affect the projection: ELLIPSOID, INTERPOLANT,
+supported, and users may also specify their own ellipsoid parameters (see man \fBgmtdefaults\fP for more details).
+\fBGMT\fP default is WGS-84.  Several \fBGMT\fP parameters can affect the projection: ELLIPSOID, INTERPOLANT,
 MAP_SCALE_FACTOR, and MEASURE_UNIT; see the \fBgmtdefaults\fP man page for details.

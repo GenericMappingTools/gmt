@@ -17,7 +17,7 @@ scaling, and optional range parameters it will generate \fIPostScript\fP code th
 A cumulative histogram may also be specified.  
 .TP
 \fIfile\fP
-ASCII [or binary, see \fB\-b\fP] datafile. If no file is given, pshistogram will read standard input.
+ASCII [or binary, see \fB\-b\fP] datafile. If no file is given, \fBpshistogram\fP will read standard input.
 .TP
 .B \-Jx
 \fIxscale[/yscale]\fP (Linear scale(s) in distance unit/data unit).
@@ -26,19 +26,19 @@ ASCII [or binary, see \fB\-b\fP] datafile. If no file is given, pshistogram will
 Sets the bin width used for histogram calculations.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-#include "explain_-b.txt"
 .TP
 .B \-2
 Read second rather than first column.
 .TP
 .B \-A
 Plot the histogram horizontally from x = 0 [Default is vertically from y = 0].
+#include "explain_-b.txt"
 .TP
 .B \-C
 Center bin on each value. [Default is left edge].
 .TP
 .B \-E
-Sets the viewpoint's azimuth and elevation (for perspective view) [180/90]
+Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].
 .TP
 .B \-G
 Select filling of bars.  [Default is no fill].
@@ -77,19 +77,19 @@ Choose between 6 types of histograms: 0 = counts [Default], 1 = frequency_percen
 #include "explain_-f.txt"
 .SH EXAMPLES
 To draw a histogram of the data v3206.t containing seafloor depths, using a 250 meter
-bin width, center bars, and draw bar outline, try:
+bin width, center bars, and draw bar outline, use:
 .br
 .sp
-pshistogram v3206.t \fB\-JX\fPh \fB\-W\fP250 \fB\-C \-L\fP0.5\fBp\fP \fB\-V\fP > plot.ps
+\fBpshistogram\fP v3206.t \fB\-JX\fPh \fB\-W\fP250 \fB\-C \-L\fP0.5\fBp\fP \fB\-V\fP > plot.ps
 .br
 .sp
 If you know the distribution of your data, you may explicitly specify range and scales.  E.g.,
 to plot a histogram of the y-values (2nd column) in the file errors.xy using a 1 meter
 bin width, plot from -10 to +10 meters @ LEN cm/m, annotate every 2 m and 100 counts,
-and use black bars, try:
+and use black bars, run:
 .br
 .sp
-cut -f2 errors.xy | pshistogram \fB\-W\fP1 \fB\-R\fP-10/10/0/0 SCALE
+cut -f2 errors.xy | \fBpshistogram\fP \fB\-W\fP1 \fB\-R\fP-10/10/0/0 SCALE
 \fB\-B\fP2:Error:/100:Counts: \fB\-G\fP0 \fB\-V\fP > plot.ps
 .br
 .sp

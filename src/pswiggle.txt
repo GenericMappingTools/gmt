@@ -44,7 +44,7 @@ units apart.  For longitude/latitude data \fIgap\fP is in km, else it is in the
 user's units.
 .TP
 .B \-E
-Sets the viewpoint's azimuth and elevation [180/90]
+Sets the viewpoint's azimuth and elevation [180/90].
 .TP
 .B \-G
 Set fill of positive wiggles. [Default is black]
@@ -103,7 +103,7 @@ awk '{ if (NR > 1) print atan2(y-$1, x-$2); y=$1; x=$2; }' yourdata.xyz | more
 Then if these numbers jump around a lot, you may do this:
 .br
 .sp
-gmtset D_FORMAT %.12lg
+\fBgmtset\fP D_FORMAT %.12lg
 .br
 awk '{ print NR, $0 }' yourdata.xyz | \fBfilter1d\fP \fB\-Fb\fP5 \fB\-N\fP4/0 > smoothed.xyz
 .br

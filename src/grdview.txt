@@ -37,7 +37,7 @@ For \fB\-Qs\fP: You can specify that you want to skip a z-slice by setting red =
 use a pattern give red = \fBP|p\fP\fIdpi/pattern\fP[:\fBF\fP\fIr/g/b\fP[\fBB\fP\fIr/g/b\fP]].
 .TP
 .B \-E
-Sets the view point by specifying azimuth and elevation in degrees. [Default is 180/90]
+Sets the view point by specifying azimuth and elevation in degrees. [Default is 180/90].
 .TP
 .B \-G
 Drape the image in \fIdrapefile\fP on top of the relief provided by \fIrelief_file\fP. [Default is \fIrelief_file\fP].
@@ -75,14 +75,14 @@ region given by the \fIrelief_file\fP].  You may ask for a larger
 than specified in the \fIrelief_file\fP will result in a subset of the grid.
 .TP
 .B \-S
-Smooth the contours before plotting (see \fBgrdcontour\fP) [Default is no smoothing]
+Smooth the contours before plotting (see \fBgrdcontour\fP) [Default is no smoothing].
 .TP
 .B \-T
 Plot image without any interpolation.  This involves converting each node-centered
 bin into a polygon which is then painted separately.  Append \fBs\fP to skip
 nodes with z = NaN.  This option is useful for categorical data where
 interpolating between values is meaningless.  Finally, append \fBm\fP to mask out
-nodes with z = NaN using the colormasking feature in PostScript Level 3 (i.e., no
+nodes with z = NaN using the colormasking feature in \fIPostScript\fP Level 3 (i.e., no
 tiling at all, but your PS device must support PS Level 3).  Ignored unless \fB\-Qi\fP
 is also specified.
 #include "explain_-U.txt"
@@ -104,38 +104,40 @@ Sets the z-level of the basemap [0].
 To make a mesh plot from the file hawaii_grav.grd and drawing the contours
 given in the color palette file hawaii.cpt on a Lambert map
 at LEN_1 cm/degree along the standard parallels 18 and 24, with vertical scale LEN_2 mgal/cm, and
-looking at the surface from SW at 30 degree elevation, try 
+looking at the surface from SW at 30 degree elevation, run 
 .br
 .sp
-grdview hawaii_grav.grd SCALE1 \fB\-C\fPhawaii.cpt ZSCALE1 \fB\-Qm \-N\fP-100 \fB\-E\fP225/30 \fB\-Wc\fP > hawaii_grav_image.ps
+\fBgrdview\fP hawaii_grav.grd SCALE1 \fB\-C\fPhawaii.cpt ZSCALE1 \fB\-Qm \-N\fP-100 \fB\-E\fP225/30 \fB\-Wc\fP > hawaii_grav_image.ps
 .br
 .sp
 To create a illuminated color perspective plot of the gridded data set image.grd, using the color
 palette file color.rgb, with linear scaling at 10 cm/x-unit
-and tickmarks every 5 units, with intensities provided by the file intens.grd, and looking from the SE, try
+and tickmarks every 5 units, with intensities provided by the file intens.grd, and looking from the SE, use
 .br
 .sp
-grdview image.grd SCALE2 \fB\-C\fPcolor.rgb \fB\-Qs \-E\fP135/30 \fB\-I\fPintens.grd  > image3D.ps
+\fBgrdview\fP image.grd SCALE2 \fB\-C\fPcolor.rgb \fB\-Qs \-E\fP135/30 \fB\-I\fPintens.grd  > image3D.ps
 .br
 .sp
-To make the same plot using the rastering option with dpi = 50, try
+To make the same plot using the rastering option with dpi = 50, use
 .br
 .sp
-grdview image.grd SCALE2 \fB\-C\fPcolor.rgb \fB\-Qi\fP50 \fB\-E\fP135/30 \fB\-I\fPintens.grd  > image3D.ps
+\fBgrdview\fP image.grd SCALE2 \fB\-C\fPcolor.rgb \fB\-Qi\fP50 \fB\-E\fP135/30 \fB\-I\fPintens.grd  > image3D.ps
 .br
 .sp
 To create a color \fIPostScript\fP perspective plot of the gridded data set magnetics.grd, using the color
 palette file mag_intens.cpt, draped over the relief given by the file topography.grd, with Mercator map width of LEN_3 inch
-and tickmarks every 1 degree, with intensities provided by the file topo_intens.grd, and looking from the SE, try
+and tickmarks every 1 degree, with intensities provided by the file topo_intens.grd, and looking from the SE, run
 .br
 .sp
-grdview topography.grd SCALE3 \fB\-G\fPmagnetics.grd \fB\-C\fPmag_intens.cpt \fB\-Qs \-E\fP140/30 \fB\-I\fPtopo_intens.grd  > draped3D.ps
+\fBgrdview\fP topography.grd SCALE3 \fB\-G\fPmagnetics.grd \fB\-C\fPmag_intens.cpt \fB\-Qs \-E\fP140/30 \fB\-I\fPtopo_intens.grd  > draped3D.ps
 .br
 .sp
 Given topo.grd and the Landsat image veggies.ras, first run \fBgmt2rgb\fP to get the red, green, and blue grids, and then drape
 this image over the topography and shade the result for good measure.  The commands are
-gmt2rgb veggies.ras\fB\-G\fPlayer_%c.grd
-grdview topo.grd SCALE3 \fB\-G\fP:layer_r.grd:layer_g.grd:layer_b.grd \fB\-Qi \-E\fP140/30 \fB\-I\fPtopo_intens.grd  > image.ps
+.br
+.sp
+\fBgmt2rgb\fP veggies.ras\fB\-G\fPlayer_%c.grd
+\fBgrdview\fP topo.grd SCALE3 \fB\-G\fP:layer_r.grd:layer_g.grd:layer_b.grd \fB\-Qi \-E\fP140/30 \fB\-I\fPtopo_intens.grd  > image.ps
 .SH BUGS
 For the \fB\-Qs\fP option:  \fIPostScript\fP provides no way of smoothly varying colors within a polygon, so colors can only
 vary from polygon to polygon.  To obtain smooth images this way you may resample the grdfile(s) using \fBgrdsample\fP or

@@ -79,22 +79,22 @@ To backtrack the (x,y,t) points in the file seamounts.d to their origin
 (presumably the hotspot), using the DC85.d Euler poles, run
 .br
 .sp
-backtracker seamounts.d \fB\-Db \-E\fPDC85.d > newpos.d
+\fBbacktracker\fP seamounts.d \fB\-Db \-E\fPDC85.d > newpos.d
 .br
 .sp
 To project flowlines forward from the (x,y,t) points stored in several 3-column,
 binary, double precision files, run
 .br
 .sp
-backtracker points.* \fB\-Df \-E\fPDC85.d \fB\-Lf\fP25 \fB\-bo \-bi\fP\fI3\fP > lines.b
+\fBbacktracker\fP points.* \fB\-Df \-E\fPDC85.d \fB\-Lf\fP25 \fB\-bo \-bi\fP\fI3\fP > lines.b
 .br
 .sp
-This file can then be plotted with psxy \fB\-M\fP.
+This file can then be plotted with \fBpsxy \-M\fP.
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR project (l),
 .IR mapproject (l),
-.IR hotspotter (l)
+.IR hotspotter (l),
 .IR originator (l)
 .SH REFERENCES
 Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.

@@ -20,7 +20,7 @@ a file with intensities in the (-1,+1) range.  Values outside this range will be
 Such intensity files can be created from the
 grdfile using \fBgrdgradient\fP and modified by \fBgrdmath\fP or \fBgrdhisteq\fP.  Each grid-node in the
 grdfile is represented as a shaded (or colored) rectangle centered on the grid node.  When using map projections,
-the grid is first resampled on a new rectangular grid  (This can be a time-consuming process for large grid files; but see -T).
+the grid is first resampled on a new rectangular grid  (This can be a time-consuming process for large grid files; but see \fB-T\fP).
 A 24-bit true color \fIPostScript\fP file is output.
 The region option can be used to select a map region larger or smaller than that implied by the extent of the
 grdfile.
@@ -39,7 +39,7 @@ No space between the option flag and the associated arguments.
 Sets the resolution of the projected grid that will be created if
 a map projection other than Linear or Mercator was selected.  By default,
 the projected grid will be of the same size (rows and columns) as the
-input file.  Specify \fBi\fP to use the PostScript
+input file.  Specify \fBi\fP to use the \fIPostScript\fP
 image operator to interpolate the image at the device resolution.
 .TP
 .B \-G
@@ -69,7 +69,7 @@ Plot image without any interpolation.  This involves converting each node-center
 bin into a polygon which is then painted separately.  Append \fBs\fP to skip
 nodes with z = NaN.  This option is useful for categorical data where
 interpolating between values is meaningless.  Finally, append \fBm\fP to mask out
-nodes with z = NaN using the colormasking feature in PostScript Level 3 (i.e., no
+nodes with z = NaN using the colormasking feature in \fIPostScript\fP Level 3 (i.e., no
 tiling at all, but your PS device must support PS Level 3).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
@@ -77,25 +77,25 @@ tiling at all, but your PS device must support PS Level 3).
 #include "explain_-c.txt"
 .SH EXAMPLES
 To gray-shade the file hawaii_grav.grd with shades given in shades.cpt on a Lambert map
-at LEN_L cm/degree along the standard parallels 18 and 24, and using 1 degree tickmarks, try 
+at LEN_L cm/degree along the standard parallels 18 and 24, and using 1 degree tickmarks:
 .br
 .sp
-grdimage hawaii_grav.grd SCALE1 \fB\-C\fPshades.cpt \fB\-B\fP1 > hawaii_grav_image.ps
+\fBgrdimage\fP hawaii_grav.grd SCALE1 \fB\-C\fPshades.cpt \fB\-B\fP1 > hawaii_grav_image.ps
 .br
 .sp
 To create an illuminated color \fIPostScript\fP plot of the gridded data set image.grd, using the
 intensities provided by the file intens.grd, and color
-levels in the file colors.cpt, with linear scaling at LEN_X inch/x-unit, tickmarks every 5 units, try
+levels in the file colors.cpt, with linear scaling at LEN_X inch/x-unit, tickmarks every 5 units:
 .br
 .sp
-grdimage image.grd SCALE2 \fB\-C\fPcolors.cpt \fB\-I\fPintens.grd \fB\-B\fP5 > image.ps
+\fBgrdimage\fP image.grd SCALE2 \fB\-C\fPcolors.cpt \fB\-I\fPintens.grd \fB\-B\fP5 > image.ps
 .br
 .sp
 To create an false color \fIPostScript\fP plot from the three gridded files red.grd, green.grd, and blue.grd,
-with linear scaling at LEN_X inch/x-unit, tickmarks every 5 units, try
+with linear scaling at LEN_X inch/x-unit, tickmarks every 5 units:
 .br
 .sp
-grdimage red.grd green.grd blue.grd SCALE2 \fB\-B\fP5 > rgbimage.ps
+\fBgrdimage\fP red.grd green.grd blue.grd SCALE2 \fB\-B\fP5 > rgbimage.ps
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR gmt2rgb (l),

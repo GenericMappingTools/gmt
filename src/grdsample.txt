@@ -45,16 +45,16 @@ first derivatives but requires a neighborhood of 4 nodes by 4 nodes.  Bilinear i
 uses only a 2 by 2 neighborhood, but yields only zeroth-order continuity.  Use bicubic when smoothness is 
 important.  Use bilinear to minimize the propagation of NaNs.
 .SH EXAMPLES
-To resample the 5 x 5 minute grid in hawaii_5by5_topo.grd onto a 1 minute grid, try
+To resample the 5 x 5 minute grid in hawaii_5by5_topo.grd onto a 1 minute grid:
 .br
 .sp
-grdsample hawaii_5by5_topo.grd \fB\-I\fP1\fBm \-G\fPhawaii_1by1_topo.grd
+\fBgrdsample\fP hawaii_5by5_topo.grd \fB\-I\fP1\fBm \-G\fPhawaii_1by1_topo.grd
 .br
 .sp
-To translate the gridline-registered file surface.grd to pixel registration, try
+To translate the gridline-registered file surface.grd to pixel registration:
 .br
 .sp
-grdsample surface.grd \fB\-T \-G\fPpixel.grd
+\fBgrdsample\fP surface.grd \fB\-T \-G\fPpixel.grd
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR grdedit (l),

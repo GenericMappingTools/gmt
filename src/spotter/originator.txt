@@ -33,9 +33,9 @@ one record for each stage; each record must be of the following format:
 	lon lat tstart tstop ccw-angle
 .br
 .sp
-where time is in Ma and the rest is in degrees.  Oldest stage must be
-listed first.  tstart is the time when the stage begins (oldest age).
-Blank lines and records whose first column contains # will be ignored.
+where tstart and tstop are in Ma and the rest is in degrees.  The oldest stage
+must be listed first.  tstart (tstop) is the age of the old (young) end of the
+stage.  Blank lines and records whose first column contains # will be ignored.
 .TP
 .B \-F
 Give file with hotspot locations.  This file must contain
@@ -61,17 +61,17 @@ File format is similar to the stage pole format except the youngest rotation mus
 first and that the tstart column is optional (assumed to be 0 Ma).
 .TP
 .B \-D
-Sets the flowline sampling interval in km.  [5].
+Sets the flowline sampling interval in km.  [Default is 5].
 #include "explain_-H.txt"
 .TP
 .B \-N
 Set the maximum age to extend the oldest stage back in time [no extension].
 .TP
 .B \-S
-Set the number of closest hotspots to report [1].
+Set the number of closest hotspots to report [Default is 1].
 .TP
 .B \-T
-Truncate seamount ages exceeding the upper age set with -N [no truncation].
+Truncate seamount ages exceeding the upper age set with \fB\-N\fP [no truncation].
 #include "explain_-V.txt"
 .TP
 .B \-W
@@ -80,14 +80,14 @@ were less than \fImaxdist\fP [Default reports all seamounts].
 #include "explain_-t.txt"
 #include "explain_-i.txt"
 #include "explain_-n.txt"
-[Default is 5 input columns]
+[Default is 5 input columns].
 .SH EXAMPLES
 To find the likely (hotspot) origins of the seamounts represented by the (x,y,z,r,tc) points
 in the file seamounts.d, using the DC85.d Euler poles and the pac_hs.d list of possible hotspots,
 and report the 2 most likely hotspot candidates for each seamount, run
 .br
 .sp
-originator seamounts.d \fB\-S\fP2 \fB\-E\fPDC85.d \fB\-F\fPpac_hs.d > origins.d
+\fBoriginator\fP seamounts.d \fB\-S\fP2 \fB\-E\fPDC85.d \fB\-F\fPpac_hs.d > origins.d
 .br
 .sp
 .SH "SEE ALSO"

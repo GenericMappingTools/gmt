@@ -7,8 +7,8 @@ gmtselect \- Select data subsets based on multiple spatial criteria
 [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP[\fBcflrs\fP] ] [ \fB\-J\fP\fIparameters\fP ] 
 [ \fB\-L\fP[\fIdist/linefile\fP] ] [ \fB\-M\fP[\fIflag\fP] ] 
 [ \fB\-N\fP\fImaskvalues\fP[\fBo\fP] ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] 
-[ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
-[ \fB\-bo\fP[\fBs\fP] ]
+[ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+[ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBgmtselect\fP is a filter that reads (longitude, latitude) positions from the first 2 columns of \fIinfiles\fP [or standard input] and
 uses a combination of 1-5 criteria to pass or reject the records.  Records can be selected based on whether or not they are
@@ -61,7 +61,7 @@ Reverses the sense of the test for each of the criteria specified:
 Pass all records whose location is within \fIdist\fP km of any of the line segments in the multiple-segment ascii
 file \fIlinefile\fP.  If \fIdist\fP is zero then the 2nd column of each sub-header in the \fIptfile\fP must have each lines's individual distance value.
 If no arguments are given, it means instead that the x column contains longitudes, which may differ from the region
-in \fB\-R\fP by [multiples of] 360 degrees [Default assumes no periodicity]
+in \fB\-R\fP by [multiples of] 360 degrees [Default assumes no periodicity].
 .TP
 .B \-M
 Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP.
@@ -87,19 +87,19 @@ If no map projection is supplied we implicitly set \fB\-Jx\fP1.
 #include "explain_-f.txt"
 .SH EXAMPLES
 To extract the subset of data set that is within 300 km of any of the points in pts.d but more than
-100 km away from the lines in lines.d, try
+100 km away from the lines in lines.d, run
 .br
 .sp
-gmtselect lonlatfile \fB\-Jd\fP1d \fB\-C\fP300/pts.d \fB\-L\fP100/lines.d \fB\-Il\fP > subset
+\fBgmtselect\fP lonlatfile \fB\-Jd\fP1d \fB\-C\fP300/pts.d \fB\-L\fP100/lines.d \fB\-Il\fP > subset
 .br
 .sp
 Here, you must specify a mapprojection so that knows you are giving it geographical data (otherwise
 300 would be interpreted as Cartesian distance in x-y units instead of km).
 To keep all points in data.d except those on land, as determined by the high-resolution
-coastlines, try
+coastlines, use
 .br
 .sp
-gmtselect data.d \fB\-R\fP120/121/22/24 \fB\-Dh\fP \fB\-Ns\fP/\fBk\fP > subset
+\fBgmtselect\fP data.d \fB\-R\fP120/121/22/24 \fB\-Dh\fP \fB\-Ns\fP/\fBk\fP > subset
 .br
 .SH "SEE ALSO"
 .IR gmtdefaults (l),

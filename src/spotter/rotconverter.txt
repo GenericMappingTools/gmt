@@ -69,6 +69,6 @@ To add the final rotations ROT(150.1, 70.5, -20.3) and ROT (145.0, 40.0, 11.4), 
 .br
 which prints out 157.32, -80.44, 11.97.
 .SH "SEE ALSO"
-.IR backtracker (l)
-.IR hotspotter (l)
+.IR backtracker (l),
+.IR hotspotter (l),
 .IR originator (l)

@@ -6,7 +6,7 @@ fitcircle \- find mean position and pole of best-fit great [or small] circle to 
 [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
 .SH DESCRIPTION
 \fBfitcircle\fP reads lon,lat [or lat,lon] values from the first two columns on standard input 
-[or \fIxyfile\fP].  These are converted to cartesian three-vectors on the unit sphere.  Then two 
+[or \fIxyfile\fP].  These are converted to Cartesian three-vectors on the unit sphere.  Then two 
 locations are found:  the mean of the input positions, and the pole to the great circle which 
 best fits the input positions.  The user may choose one or both of two possible solutions to this 
 problem.  The first is called \fB\-L1\fP and the second is called \fB\-L2\fP.  When the data are 
@@ -14,12 +14,14 @@ closely grouped along a great circle both solutions are similar.  If the data ha
 the pole to the great circle will be less well determined than the mean.  Compare both solutions as 
 a qualitative check.
 .br
+.sp
 The \fB\-L1\fP solution is so called because it approximates the minimization of the sum of absolute 
 values of cosines of angular distances.  This solution finds the mean position as the Fisher average 
 of the data, and the pole position as the Fisher average of the cross-products between the mean and 
 the data.  Averaging cross-products gives weight to points in proportion to their distance from the 
 mean, analogous to the "leverage" of distant points in linear regression in the plane.
 .br
+.sp
 The \fB\-L2\fP solution is so called because it approximates the minimization of the sum of squares 
 of cosines of angular distances.  It creates a 3 by 3 matrix of sums of squares of components of the 
 data vectors.  The eigenvectors of this matrix give the mean and pole locations.  This method may 
@@ -49,12 +51,12 @@ and the mean location of the data.
 [Default is 2 input columns].
 .SH EXAMPLES
 Suppose you have lon,lat,grav data along a twisty ship track in the file ship.xyg.  You want to 
-project this data onto a great circle and resample it in distance, in order to filter it or check its spectrum.  
-Try:  
+project this data onto a great circle and resample it in distance, in order to filter it or check its spectrum.  Do the following:
+.br
 .sp
 \fBfitcircle\fP ship.xyg \fB\-L\fP2 
 .sp
-\fBproject\fP ship.xyg \fB\-O\fP\fIox\fP/\fIoy\fP \fB\-P\fP\fIpx\fP/\fIpy\fP \fB\-S\fP \fB\-pz\fP | sample1d \fB\-S\fP\-100 \fB\-I\fP1 
+\fBproject\fP ship.xyg \fB\-O\fP\fIox\fP/\fIoy\fP \fB\-P\fP\fIpx\fP/\fIpy\fP \fB\-S\fP \fB\-pz\fP | \fBsample1d\fP \fB\-S\fP\-100 \fB\-I\fP1 
 > output.pg
 .sp
 Here, \fIox\fP/\fIoy\fP is the lon/lat of the mean from \fBfitcircle\fP, and \fIpx\fP/\fIpy\fP is the lon/lat 

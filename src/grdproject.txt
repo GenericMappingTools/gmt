@@ -36,7 +36,7 @@ Let projected coordinates be relative to projection center [Default is relative 
 Set the grid spacing for the new grid.  Append \fBm\fP for minutes, \fBc\fP for seconds.
 .TP
 .B \-E
-Set the resolution for the new grid in dots pr inch.
+Set the resolution for the new grid in dots per inch.
 .TP
 .B \-F
 Toggle between pixel and gridline registration [Default is same as input].
@@ -61,23 +61,23 @@ Set the search radius for the averaging procedure  [Default avoids aliasing].
 To transform the geographical grid dbdb5.grd onto a pixel Mercator grid at 300 dpi, run
 .br
 .sp
-grdproject dbdb5.grd \fB\-R\fP20/50/12/25 \fB\-Jm\fP0.25\fBi\fP \fB\-E\fP300 \fB\-F\fP
+\fBgrdproject\fP dbdb5.grd \fB\-R\fP20/50/12/25 \fB\-Jm\fP0.25\fBi\fP \fB\-E\fP300 \fB\-F\fP
 \fB\-G\fPdbdb5_merc.grd 
 .br
 .sp
-To inversely transform the file topo_tm.grd back onto a geographical grid try
+To inversely transform the file topo_tm.grd back onto a geographical grid, use
 .br
 .sp
-grdproject topo_tm.grd \fB\-R\fP-80/-70/20/40 \fB\-Jt\fP-75/1:500000 \fB\-I\fP \fB\-D\fP5\fBm \-V\fP \fB\-G\fPtopo.grd
+\fBgrdproject\fP topo_tm.grd \fB\-R\fP-80/-70/20/40 \fB\-Jt\fP-75/1:500000 \fB\-I\fP \fB\-D\fP5\fBm \-V\fP \fB\-G\fPtopo.grd
 .br
 .sp
 This assumes, of course, that the coordinates in topo_tm.grd were created with the same projection parameters.
 .br
-To inversely transform the file topo_utm.grd (which is in UTM meters) back onto a geographical grid we
+To inversely transform the file topo_utm.grd (which is in UTM meters) back to a geographical grid we
 specify a one-to-one mapping with meter as the measure unit:
 .br
 .sp
-grdproject topo_utm.grd \fB\-R\fP203/205/60/65 \fB\-Ju\fP5/1:1 \fB\-I\fP \fB\-Mm \-V \-G\fPtopo.grd
+\fBgrdproject\fP topo_utm.grd \fB\-R\fP203/205/60/65 \fB\-Ju\fP5/1:1 \fB\-I\fP \fB\-Mm \-V \-G\fPtopo.grd
 .br
 .SH RESTRICTIONS
 The boundaries of a projected (rectangular) data set will not necessarily give rectangular

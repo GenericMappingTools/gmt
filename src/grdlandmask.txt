@@ -8,7 +8,7 @@ grdlandmask \- Create "wet-dry" mask grdfile from shoreline data base.
 \fBgrdlandmask\fP reads the selected shoreline database and uses that information to decide which
 nodes in the specified grid are over land or over water.  The nodes defined by
 the selected region and lattice spacing will be set according to one of two criteria:
-(1) Lands vs water, or (2) the more detailed (hierarchical) ocean vs land vs lake vs island vs pond.  The
+(1) land vs water, or (2) the more detailed (hierarchical) ocean vs land vs lake vs island vs pond.  The
 resulting mask grdfile may be used in subsequent operations involving \fBgrdmath\fP to mask out
 data from land [or water] areas.
 .TP
@@ -45,13 +45,13 @@ Specify this information using 1 of 2 formats:
 To set all nodes on land to NaN, and nodes over water to 1, using the high resolution data set, do
 .br
 .sp
-grdlandmask \fB\-R\fP-60/-40/-40/-30 \fB\-Dh  \-I\fP5\fBm \-N\fP1/NaN \fB\-G\fPland_mask.grd \fB\-V\fP
+\fBgrdlandmask\fP \fB\-R\fP-60/-40/-40/-30 \fB\-Dh  \-I\fP5\fBm \-N\fP1/NaN \fB\-G\fPland_mask.grd \fB\-V\fP
 .br
 .sp
-To make a 1x1 degree global grid with the hierarchical levels of the nodes based on the low resolution data, try
+To make a 1x1 degree global grid with the hierarchical levels of the nodes based on the low resolution data:
 .br
 .sp
-grdlandmask \fB\-R\fP0/360/-90/90 \fB\-Dl  \-I\fP1 \fB\-N\fP0/1/2/3/4 \fB\-G\fPlevels.grd \fB\-V\fP
+\fBgrdlandmask\fP \fB\-R\fP0/360/-90/90 \fB\-Dl  \-I\fP1 \fB\-N\fP0/1/2/3/4 \fB\-G\fPlevels.grd \fB\-V\fP
 .br
 .SH "SEE ALSO"
 .IR gmt (l),

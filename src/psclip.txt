@@ -32,7 +32,7 @@ No space between the option flag and the associated arguments
 #include "explain_-b.txt"
 .TP
 .B \-E
-Sets the viewpoint's azimuth and elevation [180/90]
+Sets the viewpoint's azimuth and elevation [180/90].
 #include "explain_-H.txt"
 #include "explain_-K.txt"
 .TP
@@ -58,16 +58,16 @@ For 3-D projections:  Sets the z-level of the polygons [0].
 #include "explain_-f.txt"
 .SH EXAMPLES
 To make an overlay \fIPostScript\fP file that will set up a complex clip area to which
-subsequent plotting will be confined to, try:
+subsequent plotting will be confined, run:
 .br
 .sp
-psclip my_region.xy \fB\-R\fP0/40/0/40 \fB\-J\fPm0.3\fBi\fP \fB\-O \-K\fP > clip_mask_on.ps
+\fBpsclip\fP my_region.xy \fB\-R\fP0/40/0/40 \fB\-J\fPm0.3\fBi\fP \fB\-O \-K\fP > clip_mask_on.ps
 .br
 .sp
 To deactivate the clipping in an existing plotfile, run:
 .br
 .sp
-psclip \fB\-C \-O\fP >> complex_plot.ps
+\fBpsclip\fP \fB\-C \-O\fP >> complex_plot.ps
 .SH BUGS
 \fBpsclip\fP cannot handle polygons that contain the south or north pole.  For such polygons,
 you should split them into two and make each explicitly contain the polar point.  The two

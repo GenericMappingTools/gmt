@@ -26,9 +26,9 @@ cumulative distribution.  One example would be to find the lowest 10%
 of the data:  Take a grdfile, run \fBgrdhisteq\fP and make a grdfile using
 \fIn_cells\fP = 10, and then contour the result to trace the 1 contour.
 This will enclose the lowest 10% of the data, regardless of their original
-values.  Another example is in equalizing the output of grdgradient.
+values.  Another example is in equalizing the output of \fBgrdgradient\fP.
 For shading purposes it is desired that the data have a smooth distribution,
-such as a gaussian.  If you run \fBgrdhisteq\fP on output from grdgradient
+such as a gaussian.  If you run \fBgrdhisteq\fP on output from \fBgrdgradient\fP
 and make a grdfile output with the Gaussian option, you will have a
 grdfile whose values are distributed according to a gaussian distribution
 with zero mean and unit variance.  The locations of these values will
@@ -63,17 +63,17 @@ Use quadratic intensity scaling.  [Default is linear].
 #include "explain_-V.txt"
 .SH EXAMPLES
 To find the height intervals that devide the file heights.grd into 16 divisions of
-equal area, try
+equal area:
 .br
 .sp
-grdhisteq heights.grd \fB\-C\fP16 \fB\-D\fP > levels.d
+\fBgrdhisteq\fP heights.grd \fB\-C\fP16 \fB\-D\fP > levels.d
 .br
 .sp
 To make the poorly distributed intensities in the file raw_intens.grd suitable for use
-with \fBgrdimage\fP or \fBgrdview\fP, try
+with \fBgrdimage\fP or \fBgrdview\fP, run
 .br
 .sp
-grdhisteq raw_intens.grd \fB\-G\fPsmooth_intens.grd \fB\-N \-V\fP
+\fBgrdhisteq\fP raw_intens.grd \fB\-G\fPsmooth_intens.grd \fB\-N \-V\fP
 .br
 .SH RESTRICTIONS
 If you use \fBgrdhisteq\fP to make a gaussian output for gradient shading

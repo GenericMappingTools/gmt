@@ -47,7 +47,7 @@ only those points with \fIl_min\fP < p < \fIl_max\fP.  If the \fB\-E\fP option
 has been used to define the projection, then \fB\-Lw\fP may be selected to window 
 the length of the projection to exactly the span from \fBO\fP to \fBB\fP.
 
-Flat earth (cartesian) coordinate transformations can also be made.  Set \fB\-N\fP  
+Flat earth (Cartesian) coordinate transformations can also be made.  Set \fB\-N\fP  
 and remember that \fIazimuth\fP is clockwise from North (the \fIy\fP axis), NOT 
 the usual cartesian theta, which is counterclockwise from the \fIx\fP axis.  \fIazimuth\fP = 90 - theta. 
 
@@ -67,12 +67,12 @@ lower case for the xyzpqrs letters in \fB\-flags\fP.
 .TP
 \fIinfile\fP
 name of ASCII (or binary, see \fB\-bi\fP) file(s) with 2 or more columns holding (x,y,[z]) data values.
-If no filenames are given, project will read from standard input.
+If no filenames are given, \fBproject\fP will read from standard input.
 If the \fB\-G\fP option is selected, no input data are read.
 .TP
 .B \-F
 Specify your desired output using any combination of \fIxyzpqrs\fP, in any order.  Do not space between
-the letters.  Use lower case.  The output will be ASCII (or binary) columns of values corresponding 
+the letters.  Use lower case.  The output will be ASCII (or binary, see \fB\-bo\fP) columns of values corresponding 
 to \fIxyzpqrs\fP.  If both input and output are using ASCII format then the \fIz\fP data are treated as
 textstring(s).
 If the \fB\-G\fP option is selected, the output will be \fIrsp\fP.
@@ -99,11 +99,11 @@ If \fB\-E\fP has been set, then you may use \fB\-Lw\fP to stay within the distan
 #include "explain_-M.txt"
 .TP
 .B \-N
-Flat earth.  Make a cartesian coordinate transformation in the plane.  [Default uses spherical trigonometry.]
+Flat earth.  Make a Cartesian coordinate transformation in the plane.  [Default uses spherical trigonometry.]
 .TP
 .B \-Q
 Map type units, i.e., project assumes \fIx, y, r, s\fP are in degrees while 
-\fIp, q, dist, l_min,l _max, w_min, w_max\fP are in km.  If \fB\-Q\fP is not set, then all these are assumed in same units.
+\fIp, q, dist, l_min,l _max, w_min, w_max\fP are in km.  If \fB\-Q\fP is not set, then all these are assumed to be in the same units.
 .TP
 .B \-S
 Sort the output into increasing \fIp\fP order.  Useful when projecting random data into a sequential profile.
@@ -121,32 +121,32 @@ Width controls.  Project only those points whose \fIq\fP coordinate is within \f
 #include "explain_-o.txt"
 #include "explain_-f.txt"
 .SH EXAMPLES
-To generate points every 10km along a great circle from 10N,50W to 30N,10W, try:
+To generate points every 10km along a great circle from 10N,50W to 30N,10W:
 .sp
 \fBproject\fP \fB\-C\fP-50/10 \fB\-E\fP-10/30 \fB\-G\fP10 \fB\-Q\fP > great_circle_points.xyp
 .sp
 (Note that great_circle_points.xyp could now be used as input for \fBgrdtrack\fP, etc. ).
 .sp
 To project the shiptrack gravity, magnetics, and bathymetry in c2610.xygmb along a great circle through an origin at 30S, 30W, the great circle having 
-an azimuth of N20W at the origin, keeping only the data from NE of the profile and within +/- 500 km of the origin, try:
+an azimuth of N20W at the origin, keeping only the data from NE of the profile and within +/- 500 km of the origin, run:
 .sp 
 \fBproject\fP c2610.xygmb \fB\-C\fP-30/-30 \fB\-A\fP-20 \fB\-W\fP-10000/0 \fB\-L\fP-500/500 \fB\-F\fPpz \fB\-Q\fP > c2610_projected.pgmb
 .sp
 (Note in this example that \fB\-W\fP-10000/0 is used to admit any value with a large negative \fIq\fP coordinate.  This 
 will take those points which are on our right as we walk along the great circle path, or to the NE in this example.)
 .sp
-To make a cartesian coordinate transformation of mydata.xy so that the new origin is at 5,3 and the new \fIx\fP axis (\fIp\fP) 
-makes an angle of 20 degrees with the old \fIx\fP axis, try:
+To make a Cartesian coordinate transformation of mydata.xy so that the new origin is at 5,3 and the new \fIx\fP axis (\fIp\fP) 
+makes an angle of 20 degrees with the old \fIx\fP axis, use:
 .sp
 \fBproject\fP mydata.xy \fB\-C\fP5/3 \fB\-A\fP70 \fB\-F\fPpq > mydata.pq
 .sp
 To take data in the file pacific.lonlat and transform it into oblique coordinates using a pole from the hotspot reference 
-frame and placing the oblique zero meridian (\fIp\fP = 0 line) through Tahiti, try:
+frame and placing the oblique zero meridian (\fIp\fP = 0 line) through Tahiti, run:
 .sp
 \fBproject\fP pacific.lonlat \fB\-T\fP-75/68 \fB\-C\fP-149:26/-17:37 \fB\-F\fPpq > pacific.pq
 .sp
 Suppose that pacific_topo.grd is a grdfile of bathymetry, and you want to make a file of flowlines in the hotspot reference 
-frame.  If you try:
+frame.  If you run:
 .sp
 \fBgrd2xyz\fP pacific_topo.grd | \fBproject\fP \fB\-T\fP-75/68 \fB\-C\fP0/-90 \fB\-F\fPxyq | \fBxyz2grd\fP 
 \fB\-R\fP\fIetc\fP \fB\-I\fP\fIetc\fP \fB\-C\fPflow.grd

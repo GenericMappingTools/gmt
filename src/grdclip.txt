@@ -24,9 +24,9 @@ Set all data[i] > \fIhigh\fP to \fIabove\fP.
 Set all data[i] < \fIlow\fP to \fIbelow\fP.
 #include "explain_-V.txt"
 .SH EXAMPLES
-To set all values > 70 to NaN and all values < 0 to 0 in file data.grd, try:
+To set all values > 70 to NaN and all values < 0 to 0 in file data.grd:
 .sp
-grdclip data.grd \fB\-G\fPnew_data.grd \fB\-Sa\fP70/NaN \fB\-Sb\fP0/0 \fB\-V\fP
+\fBgrdclip\fP data.grd \fB\-G\fPnew_data.grd \fB\-Sa\fP70/NaN \fB\-Sb\fP0/0 \fB\-V\fP
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR grdlandmask (l),

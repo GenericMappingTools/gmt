@@ -28,18 +28,18 @@ file. [Default is all data columns].
 #include "explain_-V.txt"
 #include "explain_-o.txt"
 .SH EXAMPLES
-To extract all data from the old-style GMT MGG file c2104.gmt, try:
+To extract all data from the old-style GMT MGG file c2104.gmt:
 .br
 .sp
-x2sys_datalist c2104.gmt \fB\-D\fPgmt > myfile
+\fBx2sys_datalist\fP c2104.gmt \fB\-D\fPgmt > myfile
 .br
 .sp
 To make x,y,topo input for \fBblockmean\fP and \fBsurface\fP using all the files
 listed in the file tracks.lis, but only the data that are inside the specified
-area, and make output binary, try:
+area, and make output binary, run
 .br
 .sp
-x2sys_datalist `cat tracks.lis` \fB\-F\fPx,y,topo \fB\-R\fP-40/-30/25/35 \fB\-bo\fP > alltopo.xyz
+\fBx2sys_datalist\fP `cat tracks.lis` \fB\-F\fPx,y,topo \fB\-R\fP-40/-30/25/35 \fB\-bo\fP > alltopo.xyz
 .SH "SEE ALSO"
 .IR blockmean (l),
 .IR gmt (l),

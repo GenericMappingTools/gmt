@@ -20,7 +20,7 @@ As an option, you may choose to create a multiple segment file that can be piped
 \fBpsxy\fP to draw the triangulation network.  If \fB\-G \-I\fP are set a grid will be calculated based
 on the surface defined by the planar triangles.  The actual algorithm used
 in the triangulations is either that of Watson [1982] [Default] or Shewchuk [1996] (if installed).
-This choice is made during the GMT installation.
+This choice is made during the \fBGMT\fP installation.
 .TP
 \fIinfiles\fP
 Data files with the point coordinates in ASCII (or binary; see \fB\-b\fP).  If no files are given the standard input is read.

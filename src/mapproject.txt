@@ -28,7 +28,7 @@ Data file(s) to be transformed.  If not given, standard input is read.
 .SH OPTIONS
 .TP
 \fIinfile(s)\fP
-input file(s) with 2 or more columns. If no file(s) is given, mapproject will read standard input.
+input file(s) with 2 or more columns. If no file(s) is given, \fBmapproject\fP will read the standard input.
 .TP
 .B \-C
 Set center of projected coordinates to be at map projection center [Default is lower left corner].
@@ -39,12 +39,12 @@ Temporarily override MEASURE_UNIT and use \fBc\fP (cm), \fBi\fP (inch),
 .TP
 .B \-F
 Force 1:1 scaling, i.e., output (or input, see \fB\-I\fP) data are in actual projected meters.  To specify other units,
-append \fBk\fP (km), \fBm\fP (mile),\fBn\fP (nautical mile), \fBi\fP (inch), \fBc\fP (cm), or \fBp\fP (points).
+append \fBk\fP (km), \fBm\fP (mile), \fBn\fP (nautical mile), \fBi\fP (inch), \fBc\fP (cm), or \fBp\fP (points).
 Without \fB\-F\fP, the output (or input, see \fB\-I\fP) are in the units specified by MEASURE_UNIT (but see \fB\-D\fP).
 .TP
 .B \-G
 Calculate distances along track or to the optional point set with \fB\-G\fP\fIx0/y0\fP.  Optionally append the distance
-unit (default is meters).  Choose among \fBk\fP (km), \fBm\fP (mile),\fBn\fP (nautical mile), \fBd\fP (spherical degree),
+unit (default is meters).  Choose among \fBk\fP (km), \fBm\fP (mile), \fBn\fP (nautical mile), \fBd\fP (spherical degree),
 \fBc\fP (Cartesian distance using input coordinates) or \fBC\fP (Cartesian distance using projected coordinates).  The
 last unit requires \fB\-R\fP and \fB\-J\fP to be set.
 #include "explain_-H.txt"
@@ -59,7 +59,7 @@ Suppress points that fall outside the region.
 #include "explain_-t.txt"
 #include "explain_-i.txt"
 #include "explain_-n.txt"
-[Default is 2 input columns]
+[Default is 2 input columns].
 #include "explain_-o.txt"
 #include "explain_-f.txt"
 .SH EXAMPLES
@@ -67,7 +67,7 @@ To transform a file with (longitude,latitude) into (x,y) positions in cm on
 a Mercator grid for a given scale of LEN1 cm per degree, run
 .br
 .sp
-mapproject lonlatfile \fB\-R\fP20/50/12/25 SCALE1 > xyfile
+\fBmapproject\fP lonlatfile \fB\-R\fP20/50/12/25 SCALE1 > xyfile
 .br
 .sp
 To transform several 2-column, binary, double precision files with (latitude,longitude) into (x,y) positions in inch on
@@ -75,7 +75,7 @@ a Transverse Mercator grid (central longitude 75W) for scale = 1:500000 and supp
 that would fall outside the map area, run
 .br
 .sp
-mapproject tracks.* \fB\-R\fP-80/-70/20/40 \fB\-Jt\fP-75/1:500000 \fB\-:\fP \fB\-S \-Di \-bo \-bi\fP\fI2\fP > tmfile.b
+\fBmapproject\fP tracks.* \fB\-R\fP-80/-70/20/40 \fB\-Jt\fP-75/1:500000 \fB\-:\fP \fB\-S \-Di \-bo \-bi\fP\fI2\fP > tmfile.b
 .br
 .SH RESTRICTIONS
 The rectangular input region set with \fB\-R\fP will in general be mapped into a
@@ -84,10 +84,10 @@ lowermost point will have yvalue = 0.0. Thus, before you digitize a map, run the
 extreme map coordinates through \fBmapproject\fP using the appropriate scale and see
 what  (x,y) values they are mapped onto.  Use these values when setting up for
 digitizing in order to have the inverse transformation work correctly, or alternatively,
-use \fIawk\fP to scale and shift the (x,y) values before transforming.
+use \fBawk\fP to scale and shift the (x,y) values before transforming.
 .SH ELLIPSOIDS AND SPHEROIDS
-GMT will use ellipsoidal formulae if they are implemented and the user have
-selected an ellipsoid as the reference shape (see gmtdefaults).  The user
+\fBGMT\fP will use ellipsoidal formulae if they are implemented and the user have
+selected an ellipsoid as the reference shape (see \fBgmtdefaults\fP).  The user
 needs to be aware of a few potential pitfalls: (1)  For some projections,
 such as Transverse Mercator, Albers, and Lamberts conformal conic we use the
 ellipsoidal expressions when the areas mapped are small, and switch to the
@@ -97,12 +97,12 @@ Mercator: When all points are within 10 degrees of central meridian, (b) Conic
 projections when longitudinal range is less than 90 degrees, (c) Cassini
 projection when all points are within 4 degrees of central meridian. (2) When
 you are trying to match some historical data (e.g., coordinates obtained with
-a certain projection and a certain reference ellipsoid) you may find that GMT
+a certain projection and a certain reference ellipsoid) you may find that \fBGMT\fP
 gives results that are slightly different.  One likely source of this mismatch
 is that older calculations often used less significant digits.  For instance,
 Snyder's examples often use the Clarke 1866 ellipsoid (defined by him as
 having a flattening f = 1/294.98).  From f we get the eccentricity squared to
-be 0.00676862818 (this is what GMT uses), while Snyder rounds off and uses
+be 0.00676862818 (this is what \fBGMT\fP uses), while Snyder rounds off and uses
 0.00676866.  This difference can give discrepancies of several 10 of cm.
 If you need to reproduce coordinates projected with this slightly different
 eccentricity, you should specify your own ellipsoid with the same parameters

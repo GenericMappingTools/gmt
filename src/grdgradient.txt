@@ -36,7 +36,7 @@ lineated structures, e.g. \fB\-A\fP\fI0\fP/\fI270\fP illuminates from the north 
 .B \-D
 Find the direction of the gradient of the data.  By default, the directions 
 are measured clockwise from north, as \fIazim\fP in \fB\-A\fP above.  Append 
-\fBc\fP to use conventional cartesian angles measured counterclockwise from 
+\fBc\fP to use conventional Cartesian angles measured counterclockwise from 
 the positive x (east) direction.  Append \fBo\fP to report orientations (0-180) 
 rather than directions (0-360).  Append \fBn\fP to add 90 degrees to all angles 
 (e.g., to give orientation of lineated features).
@@ -85,16 +85,16 @@ If you simply need the \fIx\fP- or \fIy\fP-derivatives of the grid, use
 \fBgrdmath\fP.
 .SH EXAMPLES
 To make a file for illuminating the data in geoid.grd using exp-normalized gradients 
-imitating light sources in the north and west directions, do
+imitating light sources in the north and west directions:
 .br
 .sp
-grdgradient geoid.grd \fB\-A\fP0/270 \fB\-G\fPgradients.grd \fB\-Ne\fP0.6 \fP\-V\fP
+\fBgrdgradient\fP geoid.grd \fB\-A\fP0/270 \fB\-G\fPgradients.grd \fB\-Ne\fP0.6 \fP\-V\fP
 .br
 .sp
-To find the azimuth orientations of seafloor fabric in the file topo.grd, try
+To find the azimuth orientations of seafloor fabric in the file topo.grd:
 .br
 .sp
-grdgradient topo.grd \fB\-Snao \-G\fPazimuths.grd \fB\-V\fP
+\fBgrdgradient\fP topo.grd \fB\-Snao \-G\fPazimuths.grd \fB\-V\fP
 .br
 .sp
 .SH "SEE ALSO"

@@ -18,15 +18,15 @@ done, however; the \fIx_inc\fP and \fIy_inc\fP of the grd file must be
 multiples of the increments of the raster file and \fBgrdraster\fP simply 
 takes every n'th point.  The output of \fBgrdraster\fP is either grid or
 pixel registered depending on the registration of the raster used.  It is up
-to the GMT system person to maintain the \fBgrdraster\fP.info file in
+to the \fBGMT\fP system person to maintain the \fIgrdraster.info\fP file in
 accordance with the available rasters at each site.  Raster data sets are
-not supplied with GMT but can be obtained by anonymous ftp and on 
-cd-rom (see README page in dbase directory).  \fBgrdraster\fP will list the
+not supplied with \fBGMT\fP but can be obtained by anonymous ftp and on 
+CD-ROM (see README page in dbase directory).  \fBgrdraster\fP will list the
 available files if no arguments are given.  Finally, \fBgrdraster\fP will
 write xyz-triplets to stdout if no output gridfile name is given
 .TP
 \fIfilenumber\fP
-An integer matching one of the files listed in the grdraster.info file.
+An integer matching one of the files listed in the \fIgrdraster.info\fP file.
 .sp
 #include "explain_-R.txt"
 If \fBr\fP is appended, you may also specify a map projection to define the shape of
@@ -36,7 +36,7 @@ in both dimensions.
 .TP
 .B \-G
 Name of output grid file.  If not set, the grid will be written as ASCII
-(or binary; see \fB\-bo\fPxyz-triplets to stdout instead.
+(or binary; see \fB\-bo\fP xyz-triplets to stdout instead.
 #include "explain_-I.txt"
 #include "explain_-j.txt"
 #include "explain_-V.txt"
@@ -45,7 +45,7 @@ This option applies only if no \fB\-G\fP option has been set.
 .SH EXAMPLES
 .sp
 To extract data from raster 1, taking one point every 30 minutes, in an 
-area extended beyond 360 degrees to allow later filtering, try
+area extended beyond 360 degrees to allow later filtering, run
 .br
 .sp
 \fBgrdraster\fP 1 \fB\-R\fP-4/364/-62/62 \fB\-I\fP30\fBm \-G\fPdata.grd
@@ -55,19 +55,20 @@ To obtain data for an oblique Mercator projection we need to extract more data
 that is actually used.  This is necessary because the output of \fBgrdraster\fP has edges defined by
 parallels and meridians, while the oblique map in general does not.  Hence, to
 get all the data from data set 3 needed to make a contour map for the region defined by its
-lower left and upper right corners and the desired projection, try
+lower left and upper right corners and the desired projection, use
 .br
 .sp
 \fBgrdraster\fP 3 \fB\-R\fP160/20/220/30\fBr\fP \fB\-Joc\fP190/25.5/292/69/1 \fB\-G\fPdata.grd
 .br
 .sp
 To extract data from raster 3 and write it as binary double precision xyz-triplets to
-standard output, try
+standard output:
 .br
 .sp
-\fBgrdraster\fP 3 \fB\-R\fP20/25/-10/5  \-bo\fP >! triplets.b
+\fBgrdraster\fP 3 \fB\-R\fP20/25/-10/5  \fB\-bo\fP >! triplets.b
 .br
-.sp.SH "SEE ALSO"
+.sp
+.SH "SEE ALSO"
 .IR gmtdefaults (l),
 .IR gmt (l),
 .IR grdsample (l),

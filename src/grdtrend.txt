@@ -55,14 +55,14 @@ Legendre polynomial coefficients; they are not numerically equivalent to the m#s
 described above.  The description above is to allow the user to match \fB\-N\fP with the order of the 
 polynomial surface.    
 .SH EXAMPLES
-To remove a planar trend from hawaii_topo.grd and write result in hawaii_residual.grd, try
+To remove a planar trend from hawaii_topo.grd and write result in hawaii_residual.grd:
 .br
 .sp
 \fBgrdtrend\fP hawaii_topo.grd \fB\-N\fP3 \fB\-D\fPhawaii_residual.grd
 .br
 .sp
 To do a robust fit of a bicubic surface to hawaii_topo.grd, writing the result in 
-hawaii_trend.grd and the weights used in hawaii_weight.grd, and reporting the progress, try
+hawaii_trend.grd and the weights used in hawaii_weight.grd, and reporting the progress:
 .br
 .sp
 \fBgrdtrend\fP hawaii_topo.grd \fB\-N\fP10\fBr\fP \fB\-T\fPhawaii_trend.grd 

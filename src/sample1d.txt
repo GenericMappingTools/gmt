@@ -15,7 +15,7 @@ Several interpolation schemes are available.
 \fIinfile\fP
 This is a multi-column ASCII [of binary, see \fB\-b\fP] file with one column containing the independent variable (which must
 be monotonically in/de-creasing) and the remaining columns holding misc. data values.
-If no file is provided, sample1d reads from standard input.
+If no file is provided, \fBsample1d\fP reads from standard input.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP

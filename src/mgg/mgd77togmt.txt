@@ -5,19 +5,20 @@ mgd77togmt \- Convert an MGD-77 ascii file to a binary gmt file
 \fBmgd77togmt\fP [ \fB\-L\fP\fIlist\fP ] [ \fImgd77file\fP ] \fB\-F\fP\fIlegid\fP \fB\-Y\fP\fIstart_year\fP 
 [ \fB\-A\fP\fIinformation\fP ] [ \fB\-I\fP\fItime_increment\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
-mgd77togmt reads an ASCII MGD-77 format file [or standard
+\fBmgd77togmt\fP reads an ASCII MGD-77 format file [or standard
 input] and creates a binary gmt file.  The 16 header records specified in
 the MGD-77 documentation may or may not be present.  If two-way travel times are
-available, mgd77togmt will convert those to corrected depths using the Carter
+available, \fBmgd77togmt\fP will convert those to corrected depths using the Carter
 tables.  Both old and new (Y2K-compliant) MGD-77 files are supported.
 .TP
 .B \-L
 Name of file with several records of the format \fImgd77file legid start_year\fP.  For multiple files, use this option rather than the \fB\-F \-Y\fP combination.
+.TP
 .B \-F
 Leg id that will be used in file name (\fIlegid\fP.gmt).
 .TP
 .B \-Y
-The year of the first data point in the file
+The year of the first data point in the file.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -29,18 +30,19 @@ Used for files where time is missing.  The increment is used to calculate
 fake times.
 #include "explain_-V.txt"
 .SH EXAMPLES
-To create a gmt file from the ASCII file c2104.mgd77, try
+To create a gmt file from the ASCII file c2104.mgd77, run
 .br
 .sp
-mgd77togmt c2104.mgd77 \fB\-Y\fP1977 \fB\-F\fPc2104
+\fBmgd77togmt\fP c2104.mgd77 \fB\-Y\fP1977 \fB\-F\fPc2104
 .br
 .sp
-To create new gmt files from all the mgd77-file listed in \fIlist.d\fP, try
+To create new gmt files from all the mgd77 files listed in \fIlist.d\fP:
 .br
 .sp
-mgd77togmt \fB\-L\fPlist.d \fB\-V\fP
+\fBmgd77togmt\fP \fB\-L\fPlist.d \fB\-V\fP
 .SH SEE ALSO
-dat2gmt, gmt
+.IR dat2gmt (l),
+.IR gmt (l)
 #include "refs.i"
 .br
 .sp

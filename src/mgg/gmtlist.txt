@@ -6,7 +6,7 @@ gmtlist \- A data-extractor for <legid>.gmt files
 [ \fB\-Db\fP\fIstopdate\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-G\fP ] [ \fB\-H\fP ] [ \fB\-R\fIwest/east/south/north\fP ] 
 [ \fB\-Sa\fP\fIstartdist\fP ] [ \fB\-Sb\fP\fIstopdist\fP ] [ \fB\-V\fP ] [ \fB\-W\fP\fIweight\fP ] [ \fB\-b\fP ]
 .SH DESCRIPTION
-gmtlist reads <legid>.gmt files and produces an ASCII [or binary] table.  The <legid>.gmt files
+\fBgmtlist\fP reads <legid>.gmt files and produces an ASCII [or binary] table.  The <legid>.gmt files
 contain time(\fBs\fP), latitude(\fBy\fP), longitude(\fBx\fP), gravity(\fBg/G\fP),
 magnetics(\fBm/M\fP), and bathymetry(\fBt/T\fP),
 and the user may extract any combination of these 6 parameters + distance(\fBd\fP),
@@ -20,7 +20,7 @@ No space between the option flag and the associated arguments
 .TP
 .B \-C
 Apply crossover Corrections to the data. If no correction file is given, gmtlist reads the
-default correction file. (See \fBXSYSTEM\fP for how to set up your own correction file)
+default correction file. (See \fBXSYSTEM\fP for how to set up your own correction file).
 .TP
 .B \-Da
 Do not list data collected before \fIstartdate\fP (mm/dd/yyyy/hh:mm)  [Default is first day].
@@ -62,14 +62,14 @@ To get a (distance, heading, crossover-corrected gravity, bathymetry) listing fr
 starting at June 3 1971 20:45 and ending at distance = 5000 km, use the following command:
 .br
 .sp
-gmtlist c2104 \fB\-Da\fP6/3/1971/20:45 \fB\-Sb\fP5000 \fB\-F\fPdhgt \fB\-C\fP > myfile
+\fBgmtlist\fP c2104 \fB\-Da\fP6/3/1971/20:45 \fB\-Sb\fP5000 \fB\-F\fPdhgt \fB\-C\fP > myfile
 .br
 .sp
 To make input for \fBblockmean\fP and \fBsurface\fP using all the cruises listed in the file gmt.list,
-but only the data that are inside the specified area, and make output binary, try:
+but only the data that are inside the specified area, and make output binary:
 .br
 .sp
-gmtlist `cat gmt.list` \fB\-F\fPxyg \fB\-R\fP-40/-30/25/35 \fB\-b\fP > allgrav.xyg
+\fBgmtlist\fP `cat gmt.list` \fB\-F\fPxyg \fB\-R\fP-40/-30/25/35 \fB\-b\fP > allgrav.xyg
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR xsystem (l)

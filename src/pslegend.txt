@@ -5,7 +5,7 @@
 pslegend \- To plot a map legend
 .SH SYNOPSIS
 \fBpslegend\fP \fItextfile\fP \fB\-D\fP[\fBx\fP]\fIlon/lat/width/height/just\fP \fB\-J\fP\fIparameters\fP 
-\fB\-R\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-C\fP\fIdx/dy\fP ]  
+\fB\-R\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-C\fP\fIdx/dy\fP ] [ \fB\-F\fIpen\fP ] 
 [ \fB\-G\fP\fIfill\fP ] [ \fB\-K\fP ] [ \fB\-L\fP\fIspacing\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
 [ \fB\-S\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ]
 .SH DESCRIPTION
@@ -19,7 +19,7 @@ can then be fine-tuned manually.
 \fItextfile\fP
 This file contains instruction for the layout of items in the legend.  Each legend item is described by
 a unique record.  All records begin with a unique character that is common to all records of the same
-kind.  The order of the legend items is implied by the order of the records.  8 different record types
+kind.  The order of the legend items is implied by the order of the records.  Ten different record types
 are recognized, and the syntax for each of these records are presented below:
 .TP
 \fB#\fP Comment records
@@ -62,7 +62,7 @@ One or more of these T records with text must follow after the \fB>\fP record.
 The V record draws a vertical line between columns (if more than one) using the selected pen.  \fIoffset\fP is
 analogous to the offset for the D records but in the vertical direction.
 .TP
-.D
+.B \-D
 Positions the legend and specifies its size.  The \fIjust\fP is a 2-char justification string (see \fBpstext\fP)
 that relates the given position to a point on the rectangular legend box.  If you want to specify the position
 in projected units (i.e., inches or cm), use \fB\-Dx\fP.
@@ -73,6 +73,11 @@ No space between the option flag and the associated arguments.
 .TP
 .B \-C
 Sets the clearance between the legend frame and the internal items [CLEARENCE_SI (or CLEARENCE_US)].
+.TP
+.B \-F
+Draws a border around the legend using \fIpen\fP.
+.TP
+.B \-G
 #include "explain_-G.txt"
 #include "explain_-K.txt"
 .TP
@@ -139,6 +144,6 @@ T so we may need to adjust the box height to get the right size.
 .br
 .SH "SEE ALSO"
 .IR gmt (l),
-.IR psbasemap (l)
-.IR pstext (l)
+.IR psbasemap (l),
+.IR pstext (l),
 .IR psxy (l)
