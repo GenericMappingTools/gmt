@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.8 2001-08-29 16:22:44 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.9 2001-10-15 17:41:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1107,6 +1107,18 @@ double GMT_erfc (double y)
 		res = 0.0;
 
 	return (res);
+}
+#endif
+
+#if HAVE_STRDUP == 0
+char	*GMT_strdup (const char *s) {
+	int n;
+	char *p;
+	
+	n = strlen (s) + 1;
+	p = (char *)malloc ((size_t)n);
+	strncpy (p, s, n);
+	return (p);
 }
 #endif
 
