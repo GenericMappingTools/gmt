@@ -10,7 +10,7 @@ given files.  If more than one plate motion model is given we will add or subtra
 them in the order they were listed.  The minus sign means we should first transpose the
 rotation and then add it to the previous rotation.  The input files must all be of the
 same type (stage poles or finite rotations) which may differ from the desired output
-format; see \fB\-F\fP.  If a file cannot be open we will attempt to decode the file name
+format; see \fB\-F\fP.  If a file cannot be opened we will attempt to decode the file name
 as a single rotation whose parameters are separated by slashes.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
@@ -50,7 +50,7 @@ Verbose option: Report statistics of extracted rotations [Default is silent].
 To convert the finite rotations in the file model_finite.APM to stage poles, run
 .br
 .sp
-rotconverter model_finite.APM \fB\-Ffs\fP > model_stages.APM
+\fBrotconverter\fP model_finite.APM \fB\-Ffs\fP > model_stages.APM
 .br
 .sp
 To obtain Nazca motion relative to Pacific hotspots by adding the motion
@@ -58,13 +58,13 @@ of Nazca relative to a fixed Pacific to the Pacific-Hotspot reference model DC85
 and report the result as finite reconstruction poles in the northern hemisphere, try
 .br
 .sp
-rotconverter DC85_stages.APM + Pac_Naz_stages.RPM \fB\-N \-Fsf\fP > Naz_HS_finite.APM
+\fBrotconverter\fP DC85_stages.APM + Pac_Naz_stages.RPM \fB\-N \-Fsf\fP > Naz_HS_finite.APM
 .br
 .sp
 To add the final rotations ROT(150.1, 70.5, -20.3) and ROT (145.0, 40.0, 11.4),  try
 .br
 .sp
-rotconverter 150.1/70.5/-20.3 + 145/40/11.4
+\fBrotconverter\fP 150.1/70.5/-20.3 + 145/40/11.4
 .sp
 .br
 which prints out 157.32, -80.44, 11.97.

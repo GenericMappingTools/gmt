@@ -78,15 +78,15 @@ influence of outliers is reduced only slightly at each iteration; consequently t
 Chi-Squared is not very significant.  If the procedure needs a few iterations to successfully 
 attenuate their effect, the significance level of the F test must be kept low.
 .SH EXAMPLES
-To remove a linear trend from data.xy by ordinary least squares, try:  
+To remove a linear trend from data.xy by ordinary least squares, use:  
 .sp
 \fBtrend1d\fP data.xy \fB\-F\fPxr \fB\-N\fP2 > detrended_data.xy 
 .sp
-To make the above linear trend robust with respect to outliers, try:
+To make the above linear trend robust with respect to outliers, use:
 .sp
 \fBtrend1d\fP data.xy \fB\-F\fPxr \fB\-N\fP2\fBr\fP > detrended_data.xy 
 .sp
-To find out how many terms (up to 20, say) in a robust Fourier interpolant are significant in fitting data.xy, try:
+To find out how many terms (up to 20, say) in a robust Fourier interpolant are significant in fitting data.xy, use:
 .sp
 \fBtrend1d\fP data.xy \fB\-Nf\fP20\fBr \-I\fP \fB\-V\fP
 .SH "SEE ALSO"

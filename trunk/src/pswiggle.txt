@@ -78,18 +78,18 @@ Draw wiggle outline  [Default is no outline].  Append pen attributes to use
 [Defaults: width = 1, color = 0/0/0, texture = solid].
 #include "explain_-XY.txt"
 #include "explain_-t.txt"
-#include "explain_-c.txt"
 #include "explain_-i.txt"
 #include "explain_-n.txt"
 [Default is 3 input columns].
+#include "explain_-c.txt"
 #include "explain_-f.txt"
 .SH EXAMPLES
 To plot the magnetic anomaly stored in the file track.xym along track @ 1000 nTesla/cm (after removing a mean value of 32000 Tesla),
 using a LEN-cm-wide Polar Stereographic map ticked
-every 5 degrees in Portrait mode, with positive anomalies in red on a blue track of width 0.25 points, try
+every 5 degrees in Portrait mode, with positive anomalies in red on a blue track of width 0.25 points, use
 .br
 .sp
-pswiggle track.xym \fB\-R\fP-20/10/-80/-60 SCALE_S \fB\-Z\fP1000 \fB\-B\fP5 \fB\-P \-G\fP255/0/0 \fB\-T\fP0.25\fBp\fP/0/0/255 \fB\-S\fP1000 \fB\-V\fP > track_xym.ps
+\fBpswiggle\fP track.xym \fB\-R\fP-20/10/-80/-60 SCALE_S \fB\-Z\fP1000 \fB\-B\fP5 \fB\-P \-G\fP255/0/0 \fB\-T\fP0.25\fBp\fP/0/0/255 \fB\-S\fP1000 \fB\-V\fP > track_xym.ps
 .SH BUGS
 Sometimes the (x,y) coordinates are not printed with enough significant
 digits, so the local perpendicular to the track swings around a lot.  To
@@ -105,7 +105,7 @@ Then if these numbers jump around a lot, you may do this:
 .sp
 gmtset D_FORMAT %.12lg
 .br
-awk '{ print NR, $0 }' yourdata.xyz | filter1d \fB\-Fb\fP5 \fB\-N\fP4/0 > smoothed.xyz
+awk '{ print NR, $0 }' yourdata.xyz | \fBfilter1d\fP \fB\-Fb\fP5 \fB\-N\fP4/0 > smoothed.xyz
 .br
 .sp
 and plot this data set instead.

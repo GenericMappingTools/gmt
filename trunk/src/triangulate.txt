@@ -38,7 +38,7 @@ Use triangulation to grid the data onto an even grid (specified with \fB\-I, \-R
 the name of the output grid file.  The interpolation is performed in the
 original coordinates, so if your triangles are close to the poles you are
 better off projecting all data to a local coordinate system before using
-triangulate (this is true of all gridding routines).
+\fBtriangulate\fP (this is true of all gridding routines).
 #include "explain_-H.txt"
 .TP
 .B \-I
@@ -64,17 +64,17 @@ Node ids are stored as binary 4-byte integer triplets.  \fB\-bo\fP is ignored if
 #include "explain_-f.txt"
 .SH EXAMPLES
 To triangulate the points in the file samples.xyz, store the triangle information in a binary file, and
-make a grid for the given area and spacing, try
+make a grid for the given area and spacing, use
 .br
 .sp
-triangulate samples.xyz \fB\-bo\fP \fB\-R\fP0/30/0/30 \fB\-I\fP2 \fB\-G\fPsurf.grd > samples.ijk
+\fBtriangulate\fP samples.xyz \fB\-bo\fP \fB\-R\fP0/30/0/30 \fB\-I\fP2 \fB\-G\fPsurf.grd > samples.ijk
 .br
 .sp
 To draw the optimal Delauney triangulation network based on the same file using a
-LEN-cm-wide Mercator map, try
+LEN-cm-wide Mercator map, use
 .br
 .sp
-triangulate samples.xyz \fB\-M \-R\fP-100/-90/30/34 SCALE | psxy \fB\-M \-R\fP-100/-90/30/34 SCALE
+\fBtriangulate\fP samples.xyz \fB\-M \-R\fP-100/-90/30/34 SCALE | psxy \fB\-M \-R\fP-100/-90/30/34 SCALE
 \fB\-W\fP0.5\fBp\fP \fB\-B\fP1 > network.ps
 .SH "SEE ALSO"
 .IR gmt (l),

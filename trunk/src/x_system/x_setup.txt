@@ -14,6 +14,6 @@ Only report pairs where at least one of the legs are present in the \fIlegfile\f
 .B \-R
 The region of interrest.  [Default is world]
 .SH   
-The \-L option is useful when one wants to check out a handful of new cruises. Obviously we
+The \fB\-L\fP option is useful when one wants to check out a handful of new cruises. Obviously we
 only need to compute COEs for the pairs that involve one or two of the new cruises, since all the
 other combinations have already been done.

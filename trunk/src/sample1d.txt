@@ -44,22 +44,22 @@ Sets the column number of the independent variable [Default is 0 (first)].
 #include "explain_-V.txt"
 #include "explain_-i.txt"
 #include "explain_-n.txt"
-[Default is 2 (or at least the number of columns implied by \fB\-T\fP].
+[Default is 2 (or at least the number of columns implied by \fB\-T\fP)].
 #include "explain_-o.txt"
 #include "explain_-f.txt"
 .SH EXAMPLES
 To resample the file profiles.tdgmb, which contains (time,distance,gravity,magnetics,bathymetry) records,
-at 1km equidistant intervals using Akima's spline, try
+at 1km equidistant intervals using Akima's spline, use
 .br
 .sp
-sample1d profiles.tdgmb \fB\-I\fP1 \fB\-Fa\fP \fB\-T\fP1 > profiles_equi_d.tdgmb
+\fBsample1d\fP profiles.tdgmb \fB\-I\fP1 \fB\-Fa\fP \fB\-T\fP1 > profiles_equi_d.tdgmb
 .br
 .sp
 To resample the file depths.dt at positions listed in the file grav_pos.dg, using a cubic spline
-for the interpolation, try
+for the interpolation, use
 .br
 .sp
-sample1d depths.dt \fB\-N\fPgrav_pos.dg \fB\-Fc\fP > new_depths.dt
+\fBsample1d\fP depths.dt \fB\-N\fPgrav_pos.dg \fB\-Fc\fP > new_depths.dt
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR filter1d (l)

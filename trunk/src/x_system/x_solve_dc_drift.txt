@@ -18,7 +18,7 @@ Indicate an alternate database to read. [Default is \fIxx_base.b\fP].
 Indicate an alternate legbase to read. [Default is \fIxx_legs.b\fP].
 .TP
 .B \-I
-Ignore information for certain legs (that might be bad etc).
+Ignore information for certain legs (that might be bad, etc).
 .TP
 .B \-S
 Reset the old d.c.-shift and drift estimates to zero before iterating.
