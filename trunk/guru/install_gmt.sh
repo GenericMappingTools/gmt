@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.9 2001-03-22 17:12:44 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.10 2001-04-02 19:32:11 pwessel Exp $
 #
 #	Automatic installation of GMT version 3.4
 #	Version for the Bourne shell (or compatible)
@@ -107,7 +107,7 @@ cat << EOF > gmt_install.ftp_gzsizes
 EOF
 cat << EOF >&2
 ====>>>> Interactive installation of GMT <<<<====
-		  $Revision: 1.9 $
+		  $Revision: 1.10 $
 		  
 We first need a questions and answer session to
 determine how and where GMT is to be installed.
@@ -196,7 +196,7 @@ if [ $answer = "n" ]; then
 	fi
 	netcdf_install=y
 else
-	def=${NETCDFHOME:-/usr/local/netcdf-3.4}
+	def=${NETCDFHOME:-/usr/local/netcdf-3.5.0}
 	netcdf_path=`get_def_answer "Enter directory with netcdf lib and include" "$def"`
 	netcdf_ftp=n
 	netcdf_install=n

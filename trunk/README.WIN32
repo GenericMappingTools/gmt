@@ -1,4 +1,4 @@
-	$Id: README.WIN32,v 1.4 2001-03-27 22:40:08 pwessel Exp $
+	$Id: README.WIN32,v 1.5 2001-04-02 19:32:11 pwessel Exp $
 
 README file for GMT 3.4 Distribution for Win32
 This version contains dynamic executables with the DLL support.
@@ -54,4 +54,4 @@ To view your GMT PostScript or EPS plots, we recommend you install gsview
 
 Paul Wessel
 Walter H. F. Smith
-23-MAR-2001
+02-APR-2001
