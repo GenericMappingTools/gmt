@@ -38,7 +38,7 @@ Note that since vertical labels will be plotted as a column
 of individual characters, no octal escape characters imbedded in the label are allowed.
 .TP
 .B \-C
-\fIcpt_file\fP is the color palette file to be used
+\fIcpt_file\fP is the color palette file to be used.
 By default all color changes are anotated.  To use a subset, add an extra column to the
 cpt-file with a L, U, or B to anotate Lower, Upper, or Both color segment boundaries (but see \fB\-B\fP).
 If not given, \fBpsscale\fP will read stdin.  As for \fBgrdview\fP, \fBpsscale\fP can understand
