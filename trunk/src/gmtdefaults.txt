@@ -553,8 +553,14 @@ of the form yyyy-mm-ddThh:mm:ss (Gregorian) or yyyy-Www-ddThh:mm:ss (ISO) indica
 the value of the calendar and clock at the origin (zero point) of relative time units.
 .TP
 .B TIME_IS_INTERVAL
-Used when input calendar data without a clock (e.g., 1999-05T) should be placed in the middle of the
-implied interval (here the point should be plotted in the middle of May, not at the start of May. [FALSE].
+Used when input calendar data should be truncated and adjusted to the middle of the relevant interval.  In the following discussion,
+the unit \fBu\fP can be one of these time units: (\fBy\fP year, \fBo\fP month, \fBu\fP ISO week, \fBd\fP day, \fBh\fP hour,
+\fBm\fP minute, and \fBc\fP second).  \fBTIME_IS_INTERVAL\fP
+can have any of the following three values: 1. OFF [Default].  No adjustment, time is decoded as given. 2. +\fIn\fP\fBu\fP.  Activate interval
+adjustment for input by truncate to previous whole number of \fIn\fP units and then center time on the following interval.  3. -\fIn\fP\fBu\fP.  Same,
+but center time on the previous interval.  For example, with \fBTIME_IS_INTERVAL\fP = +1o, an input data string like 1999-12 will
+be interpreted to mean 1999-12-15T12:00:00.0 (exactly middle of December), while if \fBTIME_IS_INTERVAL\fP = OFF then that date
+is interpreted to mean 1999-12-1T00:00:00.0 (start of December).
 .TP
 .B TIME_LANGUAGE
 Language to use when plotting calendar items such as months and days.  Look in the $GMTHOME/share/time

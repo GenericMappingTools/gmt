@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.50 2002-09-27 18:04:09 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.51 2002-10-30 23:21:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2110,6 +2110,15 @@ int	GMT_scanf (char *s, int expectation, double *val)
 			return (GMT_IS_NAN);
 		}
 		*val = GMT_rdc2dt (rd, x);
+		if (gmtdefs.time_is_interval) {	/* Must truncate and center on time interval */
+			GMT_moment_interval (&GMT_truncate_time.T, *val, TRUE);	/* Get the current interval */
+			if (GMT_truncate_time.direction) {	/* Actually need midpoint of previous interval... */
+				x = GMT_truncate_time.T.dt[0] - 0.5 * (GMT_truncate_time.T.dt[1] - GMT_truncate_time.T.dt[0]);
+				GMT_moment_interval (&GMT_truncate_time.T, x, TRUE);	/* Get the current interval */
+			}
+			/* Now get half-point of interval */
+			*val = 0.5 * (GMT_truncate_time.T.dt[1] + GMT_truncate_time.T.dt[0]);
+		}
 		return (GMT_IS_ABSTIME);
 	}
 	

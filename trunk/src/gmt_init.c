@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.76 2002-09-27 18:04:09 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.77 2002-10-30 23:21:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1564,7 +1564,28 @@ int GMT_setparameter (char *keyword, char *value)
 			GMT_backward.got_new_plot_format = TRUE;
 			break;
 		case GMTCASE_TIME_IS_INTERVAL:
-			error = true_false_or_error (lower_value, &gmtdefs.time_is_interval);
+			if (value[0] == '+' || value[0] == '-') {	/* OK, gave +<n>u or -<n>u, check for unit */
+				sscanf (&lower_value[1], "%d%c", &GMT_truncate_time.T.step, &GMT_truncate_time.T.unit);
+				switch (GMT_truncate_time.T.unit) {
+					case 'y':
+					case 'o':
+					case 'd':
+					case 'h':
+					case 'm':
+					case 'c':
+						GMT_truncate_time.direction = (lower_value[0] == '+') ? 0 : 1;
+						break;
+					default:
+						error = TRUE;
+						break;
+				}
+				if (GMT_truncate_time.T.step == 0) error = TRUE;
+				gmtdefs.time_is_interval = TRUE;
+			}
+			else if (!strcmp (lower_value, "off"))
+				gmtdefs.time_is_interval = FALSE;
+			else
+				error = TRUE;
 			break;
 		case GMTCASE_WANT_LEAP_SECONDS:
 			error = true_false_or_error (lower_value, &gmtdefs.want_leap_seconds);
@@ -1690,7 +1711,7 @@ BOOLEAN true_false_or_error (char *value, int *answer)
 int GMT_savedefaults (char *file)
 {
 	FILE *fp;
-	char u, abbrev[4] = {'c', 'i', 'm', 'p'}, *psimform[4] = {"binrgb", "hexrgb", "bincmyk", "hexcmyk"};
+	char u, abbrev[4] = {'c', 'i', 'm', 'p'}, *psimform[4] = {"binrgb", "hexrgb", "bincmyk", "hexcmyk"}, pm[2] = {'+', '-'};
 	double s;
 	
 	if (!file)
@@ -1708,7 +1729,7 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "PAGE_COLOR		= %d/%d/%d\n", gmtdefs.page_rgb[0], gmtdefs.page_rgb[1], gmtdefs.page_rgb[2]);
 	(gmtdefs.page_orientation & 1) ? fprintf (fp, "PAGE_ORIENTATION	= portrait\n") : fprintf (fp, "PAGE_ORIENTATION	= landscape\n");
 	if (gmtdefs.media == -USER_MEDIA_OFFSET)
-		fprintf (fp, "PAPER_MEDIA		= Custom_%dx%d", gmtdefs.paper_width[0], gmtdefs.paper_width[1]);
+		fprintf (fp, "PAPER_MEDIA		= Custom_%dx%d", abs(gmtdefs.paper_width[0]), abs(gmtdefs.paper_width[1]));
 	else if (gmtdefs.media >= USER_MEDIA_OFFSET)
 		fprintf (fp, "PAPER_MEDIA		= %s", GMT_user_media_name[gmtdefs.media-USER_MEDIA_OFFSET]);
 	else
@@ -1813,7 +1834,10 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "MEASURE_UNIT		= %s\n", GMT_unit_names[gmtdefs.measure_unit]);
 	fprintf (fp, "#-------- Calendar/Time Parameters ----------\n");
 	fprintf (fp, "TIME_EPOCH		= %s\n", gmtdefs.time_epoch);
-	(gmtdefs.time_is_interval) ? fprintf (fp, "TIME_IS_INTERVAL	= TRUE\n") : fprintf (fp, "TIME_IS_INTERVAL	= FALSE\n");
+	if (gmtdefs.time_is_interval)
+		fprintf (fp, "TIME_IS_INTERVAL	= %c%d%c\n", pm[GMT_truncate_time.direction], GMT_truncate_time.T.step, GMT_truncate_time.T.unit);
+	else
+		fprintf (fp, "TIME_IS_INTERVAL	= OFF\n");
 	fprintf (fp, "TIME_LANGUAGE		= %s\n", gmtdefs.time_language);
 	fprintf (fp, "TIME_SYSTEM		= %s\n", GMT_time_system[gmtdefs.time_system].name);
 	fprintf (fp, "TIME_UNIT		= %c\n", gmtdefs.time_unit);
