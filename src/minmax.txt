@@ -2,7 +2,7 @@
 .SH NAME
 minmax \- Find extreme values in data tables
 .SH SYNOPSIS
-\fBminmax\fP [ \fIfiles\fP] [ \fB\-C\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIdx\fP[/\fIdy\fP] ] [ \fB\-L\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
+\fBminmax\fP [ \fIfiles\fP] [ \fB\-C\fP ] [ \fB\-D\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIdx\fP[/\fIdy\fP] ] [ \fB\-L\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
 [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
 .SH DESCRIPTION
 \fBminmax\fP reads its standard input [or from files] and finds the
@@ -18,6 +18,10 @@ ASCII [or binary, see \fB\-b\fP] file(s) holding a fixed number of data columns.
 .TP
 .B \-C
 Report the min/max values per column in separate columns [Default uses <min/max> format]
+.TP
+.B \-D
+Sets longitude discontinuity to the Dateline (-180/+180) [Default is Greenwich (0-360)].
+Requires \fB\-L\fP.
 #include "explain_-H.txt"
 .TP
 .B \-I

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_math.h,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: gmt_math.h,v 1.2 2001-02-20 17:48:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -28,6 +28,9 @@
  *
  * Version:	3.3.6
  */
+
+#ifndef _GMT_MATH_H
+#define _GMT_MATH_H
 
 #ifndef SET_IN_NOTUNIX
 #include "gmt_notposix.h"
@@ -233,3 +236,4 @@ EXTERN_MSC double GMT_erfinv(double x);
 EXTERN_MSC double GMT_rand(void);
 EXTERN_MSC double GMT_nrand(void);
 
+#endif /* _GMT_MATH_H */

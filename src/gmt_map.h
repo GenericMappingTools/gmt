@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.h,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: gmt_map.h,v 1.2 2001-02-20 17:48:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -15,6 +15,9 @@
  *
  *	Contact info: www.soest.hawaii.edu/gmt
  *--------------------------------------------------------------------*/
+
+#ifndef _GMT_MAP_H
+#define _GMT_MAP_H
 
 /* Macros, structures, and functions for conversion between different kinds
  * of latitudes used in GMT
@@ -54,3 +57,5 @@ struct GMT_LATSWAP_CONSTS {
 void GMT_lat_swap_init (void);
 double	GMT_lat_swap_quick (double lat, double c[]);
 double	GMT_lat_swap (double lat, int itype);
+
+#endif /* _GMT_MAP_H */

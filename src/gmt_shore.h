@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.h,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: gmt_shore.h,v 1.2 2001-02-20 17:48:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -15,6 +15,9 @@
  *
  *	Contact info: www.soest.hawaii.edu/gmt
  *--------------------------------------------------------------------*/
+
+#ifndef _GMT_SHORE_H
+#define _GMT_SHORE_H
 
 /*
  * Include file for gmt_shore.c
@@ -194,3 +197,5 @@ EXTERN_MSC int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level
 EXTERN_MSC int GMT_assemble_br (struct GMT_BR *c, BOOLEAN shift, double edge, struct POL **pol);
 EXTERN_MSC int GMT_prep_polygons (struct POL **p, int np, BOOLEAN greenwich, BOOLEAN sample, double step, int anti_bin);
 EXTERN_MSC int GMT_set_resolution (char *res, char opt);
+
+#endif /* _GMT_SHORE_H */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: gmt_grdio.h,v 1.2 2001-02-20 17:48:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -24,6 +24,9 @@
  * Revised:	10-SEP-1999
  * Version:	3.3.6
  */
+
+#ifndef GMT_GRDIO_H
+#define GMT_GRDIO_H
 
 #define N_GRD_FORMATS	12	/* Number of supported grd file formats */
 
@@ -51,3 +54,5 @@ EXTERN_MSC int GMT_cdf_read_grd(char *file, struct GRD_HEADER *header, float *gr
 EXTERN_MSC int GMT_cdf_write_grd(char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex, nc_type nc_type);
 
 #include "gmt_customio.h"
+
+#endif /* GMT_GRDIO_H */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_boundcond.h,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: gmt_boundcond.h,v 1.2 2001-02-20 17:48:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -24,6 +24,9 @@
  * Version:	3.3.6
  *
  */
+
+#ifndef _GMT_BOUNDCOND_H
+#define _GMT_BOUNDCOND_H
 
 struct GMT_EDGEINFO {
 	/* Description below is the final outcome after parse and verify */
@@ -50,3 +53,5 @@ EXTERN_MSC int GMT_boundcond_set (struct GRD_HEADER *h, struct GMT_EDGEINFO *edg
 
 EXTERN_MSC BOOLEAN GMT_y_out_of_bounds (int *j, struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo, BOOLEAN *wrap_180);
 EXTERN_MSC BOOLEAN GMT_x_out_of_bounds (int *i, struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo, BOOLEAN wrap_180);
+
+#endif /* _GMT_BOUNDCOND_H */

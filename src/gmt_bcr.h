@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.h,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: gmt_bcr.h,v 1.2 2001-02-20 17:48:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -31,6 +31,9 @@
 
    This include file defines structures and functions used.
 */
+
+#ifndef _GMT_BCR_H
+#define _GMT_BCR_H
 
 EXTERN_MSC struct BCR bcr;
 
@@ -90,3 +93,4 @@ we cannot continue.
 multiply-adds.  If x=0 or 1 or y = 0 or 1, there may be a trivial solution.
 
 */
+#endif /* _GMT_BCR_H */
