@@ -2,4 +2,5 @@
 .B \-M
 Multiple segment file(s).  Segments are separated by a special record.
 For ASCII files the first character must be \fIflag\fP [Default is '>'].
-For binary files all fields must be NaN.
+For binary files all fields must be NaN and \fB\-bo[s]\fP\fIn\fP must
+set the number of output columns explicitly.

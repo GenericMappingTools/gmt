@@ -1,6 +1,6 @@
 #	Information for installing GMT 4
 #
-#		$Id: README,v 1.12 2002-01-17 22:57:17 pwessel Exp $ 
+#		$Id: README,v 1.13 2002-02-26 22:26:14 pwessel Exp $ 
 #
 #	Copyright (c) 1991-2002, P. Wessel & W. H. F. Smith
 #
@@ -61,7 +61,7 @@ and installation details.
 Note there are several GMT tar archives available:
 
  1. GMT_progs.tar.gz		: Source code only, no documentation
- 2. GMT_share.tar.gz		: Standard read-only support data
+ 2. GMT_share.tar.gz		: Standard resolution coastline data
  3. GMT_ps.tar.gz		: PS version of cookbook and tutorial
  4. GMT_pdf.tar.gz		: PDF version of cookbook and tutorial
  5. GMT_man.tar.gz		: UNIX man pages for GMT
@@ -510,8 +510,8 @@ You may post messages to gmthelp while gmtgroup is more of a one-way street
 for us to inform users of bug fixes and upgrades.  The online registration
 also lets you subscribe to the two mailinglists.
 
-15. Ordering the GMT package
-----------------------------
+15. Ordering the GMT package on CD-Rs
+-------------------------------------
 
 Should you or someone you know without net-access need to obtain GMT:
 Geoware makes and distributes CD-Rs with the GMT package and many
