@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.65 2004-06-04 19:43:15 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.66 2004-06-22 20:00:28 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -284,6 +284,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 
 		if (GMT_io.multi_segments && line[0] == GMT_io.EOF_flag) {	/* Got a multisegment header, take action and return */
 			GMT_io.status = GMT_IO_SEGMENT_HEADER;
+			GMT_io.seg_no++;
 			strcpy (GMT_io.segment_header, line);
 			return (0);
 		}

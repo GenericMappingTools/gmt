@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.128 2004-06-21 22:06:57 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.129 2004-06-22 20:00:28 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1761,6 +1761,12 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 					case 'x':	/* Take the first string in multisegment headers in the crossing file */
 						G->label_type = 6;
 						break;
+					case 'n':	/* Use the current multisegment number */
+						G->label_type = 7;
+						break;
+					case 'N':	/* Use <current file number>/<multisegment number> */
+						G->label_type = 8;
+						break;
 					default:	/* Probably meant lower case l */
 						strcpy (G->label, &p[1]);
 						G->label_type = 1;
@@ -1859,9 +1865,9 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 			if (txt[1] == '+') L->number_placement = +1, j = 1;	/* Right label if n = 1 */
 		case 'n':	/* Specify number of labels per segment */
 			L->number = TRUE;
-			k = sscanf (&txt[1], "%d/%s", &L->n_cont, txt_a);
+			k = sscanf (&txt[1+j], "%d/%s", &L->n_cont, txt_a);
 			if (k == 2) L->min_dist = GMT_convert_units (txt_a, GMT_INCH);
-			if (L->n_cont <= 0 && L->number_placement == 0) {
+			if (L->n_cont == 0) {
 				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c.  Number of labels must exceed zero\n", GMT_program, L->flag);
 				error++;
 			}
@@ -3502,6 +3508,14 @@ int GMT_label_is_OK (char *this_label, char *label, double this_dist, double thi
 				label_OK = FALSE;
 			break;
 		
+		case 7:
+			sprintf (this_label, "%d", (GMT_io.status & GMT_IO_SEGMENT_HEADER) ? GMT_io.seg_no - 1 : GMT_io.seg_no);
+			break;
+			
+		case 8:
+			sprintf (this_label, "%d/%d", GMT_io.file_no, (GMT_io.status & GMT_IO_SEGMENT_HEADER) ? GMT_io.seg_no - 1 : GMT_io.seg_no);
+			break;
+			
 		default:	/* Should not happen... */
 			fprintf (stderr, "%s: ERROR in GMT_label_is_OK. Notify gmt-team@hawaii.edu\n", GMT_program);
 			exit (EXIT_FAILURE);
