@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.37 2002-02-23 00:53:15 pwessel Exp $
+ *	$Id: gmt.h,v 1.38 2002-08-26 17:24:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -213,7 +213,6 @@ typedef double GMT_dtime;	/* GMT internal time representation */
 
 #define N_UNIQUE 59		/* Number of unique options */
 #define N_KEYS 91		/* Number of gmt defaults */
-#define N_FONTS 39		/* Number of fonts in the PS_font_names.h include file */
 #define GMT_N_MEDIA 29		/* Number of standard paper formats in the GMT_media_names.h include file */
 #define HASH_SIZE 91		/* Used in get_gmtdefaults, should be ~> N_KEYS */
 #define GMT_N_SYSTEMS 6		/* Number of time systems in gmt_time_systems.h */
@@ -412,17 +411,22 @@ struct MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */
 	char measure;		/* The unit, i.e., m (miles), n (nautical miles), or k (kilometers) */
 };
 
+struct GMT_FONT {		/* Information for each font */
+	char *name;			/* Name of the font */
+	double height;			/* Height of letter "A" for unit fontsize */
+};
+
 /*--------------------------------------------------------------------*/
 /*	External variables for misc purposes */
 /*--------------------------------------------------------------------*/
 
 EXTERN_MSC struct GMTDEFAULTS gmtdefs;
 
+EXTERN_MSC int N_FONTS;				/* Number of fonts loaded from share/pslib */
 EXTERN_MSC char *GMTHOME;			/* Points to the GMT home directory with lib subdir */
 EXTERN_MSC char *GMT_unit_names[];
 EXTERN_MSC double GMT_u2u[4][4];		/* measure unit translation matrix 4 x 4*/
-EXTERN_MSC char *GMT_font_name[];
-EXTERN_MSC double GMT_font_height[];
+EXTERN_MSC struct GMT_FONT *GMT_font;
 EXTERN_MSC char *GMT_unique_option[];
 EXTERN_MSC char *GMT_keywords[];
 EXTERN_MSC char *GMT_media_name[];

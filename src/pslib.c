@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.44 2002-08-20 19:07:28 pwessel Exp $
+ *	$Id: pslib.c,v 1.45 2002-08-26 17:24:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -160,6 +160,7 @@ int ps_comp_int_asc (const void *p1, const void *p2);
 int ps_read_rasheader (FILE *fp, struct rasterfile *h);
 int ps_write_rasheader (FILE *fp, struct rasterfile *h);
 static void bulkcopy (const char *);
+static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts);
 
 
 /*------------------- PUBLIC PSLIB FUNCTIONS--------------------- */
@@ -1234,6 +1235,9 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		PSHOME = (char *) ps_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char));
 		strcpy (PSHOME, this);
 	}
+
+	ps_init_fonts (&N_FONTS, &N_GMT_FONTS);	/* Load the available font information */
+
 	ps.eps_format = FALSE;
 	ps.hex_image = (mode & 4) ? TRUE : FALSE;
 	ps.cmyk_image = (mode & 512) ? TRUE : FALSE;
@@ -1269,7 +1273,6 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 			return (-1);
 		}
 	}
-	memset ((void *)ps.font_used, 0, N_FONTS * sizeof (BOOLEAN));
 
 #ifdef WIN32
 	/* 
@@ -1328,7 +1331,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 			fprintf (ps.fp, "%%%%Creator: GMT\n");
 			fprintf (ps.fp, "%%%%For: %s\n", eps->name);
 			fprintf (ps.fp, "%%%%DocumentNeededResources: font");
-			for (i = 0; eps->font[i]; i++) fprintf (ps.fp, " %s", eps->font[i]);
+			for (i = 0; i < 6 && eps->fontno[i] != -1; i++) fprintf (ps.fp, " %s", ps.font[eps->fontno[i]].name);
 			fprintf (ps.fp, "\n");
 		}
 		else {
@@ -1360,7 +1363,8 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		/* XXX This may also be wishful thinking. */
 		/* Define font macros (see pslib.h for details on how to add fonts) */
 		
-		for (i = 0; i < N_FONTS; i++) fprintf (ps.fp, "/F%d {/%s Y} bind def\n", i, ps_font_name[i]);
+		
+		for (i = 0; i < N_FONTS; i++) fprintf (ps.fp, "/F%d {/%s Y} bind def\n", i, ps.font[i].name);
 
 		if (!ps.eps_format) fprintf (ps.fp, "/#copies %d def\n\n", ncopies);
 	 	fprintf (ps.fp, "%%%%EndProlog\n\n");
@@ -1763,7 +1767,7 @@ void ps_text_old (double x, double y, int pointsize, char *text, double angle, i
 	fprintf (ps.fp, "%d %d M ", ps.ix, ps.iy);
 	
 	if (angle != 0.0) fprintf (ps.fp, "V %.3lg R ", angle);
-	y0 = -0.5 * height * ps_font_height[ps.font_no] * (justify/4);
+	y0 = -0.5 * height * ps.font[ps.font_no].height * (justify/4);
 	if (y0 != 0.0) fprintf (ps.fp, "0 %d G ",(int) irint (y0 * ps.scale));
 	if (!strchr (string, '@')) {	/* Plain text string */
 		fprintf (ps.fp, "%d F%d ", (int) irint (height * ps.scale), ps.font_no);
@@ -2497,17 +2501,14 @@ void get_uppercase (char *new, char *old)
 
 void ps_encode_font (int font_no)
 {
-	if (ps.encoding == 0) return;	/* Already have StandardEncoding by default */
-	/* Reencode fonts except for Symbol, Dingbats, and the Japanese fonts */
-	if (font_no < 0 || font_no >= PS_FIRST_JAPANESE_FONT) return;
-	if (ps.font_used[font_no]) return;	/* Already reencoded */
-	if (!(strcmp (ps_font_name[font_no], "Symbol") && strcmp (ps_font_name[font_no], "ZapfDingbats"))) return;
+	if (ps.encoding == 0) return;		/* Already have StandardEncoding by default */
+	if (ps.font[font_no].encoded) return;	/* Already reencoded or should not be reencoded ever */
 
 	/* Reencode fonts with Standard+ or ISOLatin1[+] encodings */
 	fprintf (ps.fp, "PSL_font_encode %d get 0 eq { %% Set this font\n", font_no);
-	fprintf (ps.fp, "\t%s_Encoding /%s /%s PSL_reencode\n", ps.encoding, ps_font_name[font_no], ps_font_name[font_no]);
+	fprintf (ps.fp, "\t%s_Encoding /%s /%s PSL_reencode\n", ps.encoding, ps.font[font_no].name, ps.font[font_no].name);
 	fprintf (ps.fp, "\tPSL_font_encode %d 1 put\n} if\n", font_no);
-	ps.font_used[font_no] = TRUE;
+	ps.font[font_no].encoded = TRUE;
 }
 
 void init_font_encoding (struct EPS *eps)
@@ -2516,7 +2517,7 @@ void init_font_encoding (struct EPS *eps)
 	int i;
 
 	if (eps)
-		for (i = 0; eps->font[i]; i++) ps_encode_font (eps->fontno[i]);
+		for (i = 0; i < 6 && eps->fontno[i] != -1; i++) ps_encode_font (eps->fontno[i]);
 	else	/* Must output all */
 		for (i = 0; i < N_FONTS; i++) ps_encode_font (i);
 }
@@ -3412,7 +3413,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	fprintf (ps.fp, "\n%% ps_words begin:\n\ngsave\n");
 
 	fprintf (ps.fp, "\n%% Define array of fonts:\n\n/PSL_fontname\n");
-	for (i = 0 ; i < n_font_unique; i++) fprintf (ps.fp, "/%s\n", ps_font_name[font_unique[i]]);
+	for (i = 0 ; i < n_font_unique; i++) fprintf (ps.fp, "/%s\n", ps.font[font_unique[i]].name);
 	fprintf (ps.fp, "%d array astore def\n", n_font_unique);
 	ps_free ((void *)font_unique);
 
@@ -3764,3 +3765,73 @@ static void bulkcopy (const char *fname)
 		fwrite (buf, 1, nread, ps.fp);
 	fclose (in);
  }
+
+static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
+{
+	FILE *in;
+	int i = 0, n_alloc = 50;
+	char buf[128];
+	char fullname[128];
+
+	/* Loads the available fonts for this installation */
+	
+	/* First the standard 35 PostScript fonts from Adobe */
+	
+	sprintf (fullname, "%s%cshare%cpslib%cPS_font_info.d", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+
+	if ((in = fopen (fullname, "r")) == NULL)
+	{
+		fprintf (stderr, "PSL Fatal Error: ");
+		perror (fullname);
+		exit (EXIT_FAILURE);
+	}
+	
+	ps.font = (struct PS_FONT *) ps_memory (VNULL, (size_t)n_alloc, sizeof (struct PS_FONT));
+	
+	while (fgets (buf, 128, in)) {
+		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
+		ps.font[i].name = (char *)ps_memory (VNULL, strlen (buf), sizeof (char));
+		if (sscanf (buf, "%s %lf %d", ps.font[i].name, &ps.font[i].height, &ps.font[i].encoded) != 3) {
+			fprintf (stderr, "PSL Fatal Error: Trouble decoding font info for font %d\n", i);
+			exit (EXIT_FAILURE);
+		}
+		i++;
+		if (i == n_alloc) {
+			n_alloc += 50;
+			ps.font = (struct PS_FONT *) ps_memory ((void *)ps.font, (size_t)n_alloc, sizeof (struct PS_FONT));
+		}
+	}
+	fclose (in);
+	*n_fonts = *n_GMT_fonts = i;
+	
+ 	/* Then any custom fonts */
+	
+	sprintf (fullname, "%s%cshare%cpslib%cCUSTOM_font_info.d", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+
+	if (!access (fullname, R_OK)) {	/* Decode Custom font file */
+	
+		if ((in = fopen (fullname, "r")) == NULL)
+		{
+			fprintf (stderr, "PSL Fatal Error: ");
+			perror (fullname);
+			exit (EXIT_FAILURE);
+		}
+	
+		while (fgets (buf, 128, in)) {
+			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
+			ps.font[i].name = (char *)ps_memory (VNULL, strlen (buf), sizeof (char));
+			if (sscanf (buf, "%s %lf %d", ps.font[i].name, &ps.font[i].height, &ps.font[i].encoded) != 3) {
+				fprintf (stderr, "PSL Fatal Error: Trouble decoding custom font info for font %d\n", i - *n_GMT_fonts);
+				exit (EXIT_FAILURE);
+			}
+			i++;
+			if (i == n_alloc) {
+				n_alloc += 50;
+				ps.font = (struct PS_FONT *) ps_memory ((void *)ps.font, (size_t)n_alloc, sizeof (struct PS_FONT));
+			}
+		}
+		fclose (in);
+		*n_fonts = i;
+	}
+	ps.font = (struct PS_FONT *) ps_memory ((void *)ps.font, (size_t)(*n_fonts), sizeof (struct PS_FONT));
+}

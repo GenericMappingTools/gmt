@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.74 2002-06-26 22:29:15 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.75 2002-08-26 17:24:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -751,9 +751,9 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 		annot_off[0] = GMT_get_annot_offset (&flip);										/* Set upper annotation offset and flip depending on annot_offset */
 		annot_off[1] = annot_off[0] + (gmtdefs.annot_font_size * GMT_u2u[GMT_PT][GMT_INCH]) + 0.5 * fabs (gmtdefs.annot_offset);	/* Lower annotation offset */
 		if (both)	/* Must move label farther from axis given both annotation levels */
-			*label_off = sign * (((flip) ? len : fabs (annot_off[1]) + (gmtdefs.annot_font2_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font_height[gmtdefs.annot_font2]) + 1.5 * fabs (gmtdefs.annot_offset));
+			*label_off = sign * (((flip) ? len : fabs (annot_off[1]) + (gmtdefs.annot_font2_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font[gmtdefs.annot_font2].height) + 1.5 * fabs (gmtdefs.annot_offset));
 		else		/* Just one level of annotation to clear */
-			*label_off = sign * (((flip) ? len : fabs (annot_off[0]) + (gmtdefs.annot_font_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font_height[gmtdefs.annot_font]) + 1.5 * fabs (gmtdefs.annot_offset));
+			*label_off = sign * (((flip) ? len : fabs (annot_off[0]) + (gmtdefs.annot_font_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font[gmtdefs.annot_font].height) + 1.5 * fabs (gmtdefs.annot_offset));
 		annot_off[0] *= sign;		/* Change sign according to which axis we are doing */
 		annot_off[1] *= sign;
 		annot_justify[0] = annot_justify[1] = *label_justify = (below) ? 10 : 2;				/* Justification of annotation and label strings */
@@ -874,15 +874,15 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 		}
 		else {
 			annot_off[0] = sign * tmp_offset;
-			annot_off[1] = sign * (((flip) ? len : fabs (tmp_offset) + (gmtdefs.annot_font_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font_height[gmtdefs.annot_font]) + 1.5 * fabs (gmtdefs.annot_offset));
+			annot_off[1] = sign * (((flip) ? len : fabs (tmp_offset) + (gmtdefs.annot_font_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font[gmtdefs.annot_font].height) + 1.5 * fabs (gmtdefs.annot_offset));
 			annot_justify[0] = (below) ? 2 : 10;
 			angle = 0.0;
 			if (flip) annot_justify[0] = GMT_flip_justify (annot_justify[0]);
 		}
 		if (both)	/* Must move label farther from axis given both annotation levels */
-			*label_off = sign * (((flip) ? len : fabs (annot_off[1]) + (gmtdefs.annot_font2_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font_height[gmtdefs.annot_font2]) + 1.5 * fabs (gmtdefs.annot_offset));
+			*label_off = sign * (((flip) ? len : fabs (annot_off[1]) + (gmtdefs.annot_font2_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font[gmtdefs.annot_font2].height) + 1.5 * fabs (gmtdefs.annot_offset));
 		else		/* Just one level of annotation to clear */
-			*label_off = sign * (((flip) ? len : fabs (annot_off[0]) + (gmtdefs.annot_font_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font_height[gmtdefs.annot_font]) + 1.5 * fabs (gmtdefs.annot_offset));
+			*label_off = sign * (((flip) ? len : fabs (annot_off[0]) + (gmtdefs.annot_font_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font[gmtdefs.annot_font].height) + 1.5 * fabs (gmtdefs.annot_offset));
 		if (A->item[GMT_ANNOT_LOWER].active && gmtdefs.y_axis_type == 0) *label_off += off;
 		annot_justify[1] = (below) ? 2 : 10;
 		if (A->item[GMT_ANNOT_LOWER].active) annot_justify[1] = annot_justify[0];
@@ -2097,7 +2097,7 @@ void GMT_map_symbol (double *xx, double *yy, int *sides, double *line_angles, ch
 			tilt = tand (tilt);
 			/* Temporarily modify meaning of F0 */
 			sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
-				GMT_font_name[gmtdefs.annot_font], xshrink, yshrink * tilt, yshrink);
+				GMT_font[gmtdefs.annot_font].name, xshrink, yshrink * tilt, yshrink);
 			ps_command (cmd);
 			ps_setfont (0);
 			text_angle += (R2D * baseline_shift);
@@ -2472,7 +2472,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 			del += ((move_up) ? (gmtdefs.annot_font_size) * GMT_u2u[GMT_PT][GMT_INCH] : 0.0);
 			GMT_xy_do_z_to_xy (project_info.xmax * 0.5, project_info.ymax+del, project_info.z_level, &x, &y);
 			sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
-				GMT_font_name[gmtdefs.header_font], z_project.xshrink[0], z_project.yshrink[0] * z_project.tilt[0], z_project.yshrink[0]);
+				GMT_font[gmtdefs.header_font].name, z_project.xshrink[0], z_project.yshrink[0] * z_project.tilt[0], z_project.yshrink[0]);
 			ps_command (cmd);
 			sprintf (cmd, "/F12 {/Symbol findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
 				z_project.xshrink[0], z_project.yshrink[0] * z_project.tilt[0], z_project.yshrink[0]);
@@ -2852,7 +2852,7 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 	ps_comment ("Start of xyz-axis3D");
 	/* Temporarily modify meaning of F0 */
 	sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
-		GMT_font_name[gmtdefs.annot_font], z_project.xshrink[id], z_project.yshrink[id] * z_project.tilt[id], z_project.yshrink[id]);
+		GMT_font[gmtdefs.annot_font].name, z_project.xshrink[id], z_project.yshrink[id] * z_project.tilt[id], z_project.yshrink[id]);
 	ps_command (cmd);
 	/* Temporarily redefine F12 for tilted text */
 	sprintf (cmd, "/F12 {/Symbol findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
@@ -2872,7 +2872,7 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 	GMT_get_format (GMT_get_map_interval (id, GMT_ANNOT_UPPER), A->unit, format);
 
 	annot_off = sign * (len + gmtdefs.annot_offset);
-	label_off = sign * (len + 2.5 * gmtdefs.annot_offset + (gmtdefs.annot_font_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font_height[gmtdefs.annot_font]);
+	label_off = sign * (len + 2.5 * gmtdefs.annot_offset + (gmtdefs.annot_font_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font[gmtdefs.annot_font].height);
 	
 	/* Ready to draw axis */
 	
@@ -2947,7 +2947,7 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 		val_xyz[2] = project_info.z_level;
 		/* Temporarily redefine /F0 for tilted text */
 		sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
-			GMT_font_name[gmtdefs.label_font], z_project.xshrink[id], z_project.yshrink[id] * z_project.tilt[id], z_project.yshrink[id]);
+			GMT_font[gmtdefs.label_font].name, z_project.xshrink[id], z_project.yshrink[id] * z_project.tilt[id], z_project.yshrink[id]);
 		ps_command (cmd);
 		/* Temporarily redefine /F12 for tilted text */
 		sprintf (cmd, "/F12 {/Symbol findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
@@ -3255,7 +3255,7 @@ void GMT_text3d (double x, double y, double z, double fsize, int fontno, char *t
 		tilt = tand (tilt);
 		/* Temporarily modify meaning of F0 */
 		sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
-			GMT_font_name[fontno], xshrink, yshrink * tilt, yshrink);
+			GMT_font[fontno].name, xshrink, yshrink * tilt, yshrink);
 		ps_command (cmd);
 		/* Temporarily modify meaning of F12 */
 		sprintf (cmd, "/F12 {/Symbol findfont [%lg 0 %lg %lg 0 0] makefont exch scalefont setfont} bind def\0",
@@ -3286,7 +3286,7 @@ void GMT_textbox3d (double x, double y, double z, int size, int font, char *labe
 		len -= (ndig + nperiod + ndash);
 		w = ndig * 0.78 + nperiod * 0.38 + ndash * 0.52 + len;
 		
-		h = 0.58 * GMT_font_height[font] * size * GMT_u2u[GMT_PT][GMT_INCH];
+		h = 0.58 * GMT_font[font].height * size * GMT_u2u[GMT_PT][GMT_INCH];
 		w *= (0.81 * h);
 		just = abs (just);
 		y -= (((just/4) - 1) * h);
