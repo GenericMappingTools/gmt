@@ -66,6 +66,7 @@ also implying that \fB\-R\fP and \fB\-I\fP are in degrees.
 .TP
 .B \-T
 Plot tiles instead of clip polygons (Only works with \fB\-Jx\fP, \fB\-Jj\fP, \fB\-Jm\fP, \fB\-Jq\fP, and \fB\-Jy\fP).
+Use \fB\-G\fP to set tile color.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
@@ -82,10 +83,10 @@ where there is no control data using clip polygons, use:
 \fBpsmask\fP africa_grav.xyg \fB\-R\fP20/40/20/40 \fB\-I\fP5\fBm \-J\fPM10\fBi\fP \fB\-O \-K\fP > mask.ps
 .br
 .sp
-The same example but this time we use tiling:
+The same example but this time we use white tiling:
 .br
 .sp
-\fBpsmask\fP africa_grav.xyg \fB\-R\fP20/40/20/40 \fB\-I\fP5\fBm \-J\fPM10\fBi\fP \fB\-T \-O \-K\fP > mask.ps
+\fBpsmask\fP africa_grav.xyg \fB\-R\fP20/40/20/40 \fB\-I\fP5\fBm \-J\fPM10\fBi\fP \fB\-T \-O \-K \-G\fP255 > mask.ps
 .SH "SEE ALSO"
 .IR gmt (GMTMANSECTION),
 .IR grdmask (GMTMANSECTION),

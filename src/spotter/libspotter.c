@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.27 2004-03-19 03:30:33 pwessel Exp $
+ *	$Id: libspotter.c,v 1.28 2004-03-23 17:08:39 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -949,9 +949,9 @@ void matrix_mult (double a[3][3], double b[3][3], double c[3][3])
 
 void matrix_vect_mult (double a[3][3], double b[3], double c[3])
 {	/* c = A * b */
-	int i, j, k;
+	int i, j;
 	
-	for (i = 0; i < 3; i++) for (j = 0, c[i] = 0.0; j < 3; j++) c[i] += a[i][k] * b[k];
+	for (i = 0; i < 3; i++) for (j = 0, c[i] = 0.0; j < 3; j++) c[i] += a[i][j] * b[j];
 }
 
 void matrix_transpose (double At[3][3], double A[3][3])
