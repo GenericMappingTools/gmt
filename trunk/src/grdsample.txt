@@ -3,7 +3,7 @@
 grdsample \- Resample a grd file onto a new grid
 .SH SYNOPSIS
 \fBgrdsample\fP \fIin_grdfile\fP \fB\-G\fP\fIout_grdfile\fP [ \fB\-F\fP ] [ \fB\-I\fP\fIdx\fP[\fBm|c\fP][/\fIdy\fP[\fBm|c\fP]] ] 
-[ \fB\-L\fP\fIflag\fP ] [ \fB\-N\fP\fInx/ny\fP ] [ \fB\-Q\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-T\fP ] [ \fB\-V\fP ]
+[ \fB\-L\fP\fIflag\fP ] [ \fB\-N\fP\fInx/ny\fP ] [ \fB\-Q\fP[\fIvalue\fP] ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-T\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBgrdsample\fP reads a grdfile and interpolates it to create a new grdfile with either:  a different registration 
 (\fB\-T\fP); or, a new grid-spacing (\fB\-I\fP) or number of nodes (\fB\-N\fP), and perhaps also a new sub-region 
@@ -33,7 +33,11 @@ lon and lat).  [Default uses "natural" conditions (second partial derivative nor
 Specify number of columns \fInx\fP and rows \fIny\fP of new grid.
 .TP
 .B \-Q
-Quick mode, use bilinear rather than bicubic interpolation.
+Quick mode, use bilinear rather than bicubic interpolation.  optionally, append \fIvalue\fP in the
+0 < \fIvalue\fP <= 1 range.  This parameter controls how close to nodes with NaN values the
+interpolation will go.  E.g., a \fIvaluefP of 0.5 will interpolate about 1/2-way from a non-NaN to a
+NaN node, whereas 0.1 will go about 90% of the way, etc. [Default is 1, which means none of the four nearby
+nodes may be NaN].
 #include "explain_-R.txt"
 .TP
 .B \-T

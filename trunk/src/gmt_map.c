@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.62 2004-07-03 01:41:58 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.63 2004-07-15 20:09:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7295,7 +7295,7 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 
 	/* Initialize bcr structure:  */
 
-	GMT_bcr_init (I, GMT_pad, bilinear, &bcr);
+	GMT_bcr_init (I, GMT_pad, bilinear, 1.0, &bcr);
 
 	/* Set boundary conditions  */
 	
