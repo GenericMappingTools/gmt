@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.7 2002-01-10 18:36:27 pwessel Exp $
+#	 $Id: webman.sh,v 1.8 2002-02-26 19:55:21 pwessel Exp $
 #
 #	webman.csh - Automatic generation of the GMT web manual pages
 #
@@ -28,26 +28,24 @@ fi
 
 mkdir -p www/gmt/doc/html
 
-# First make a list of all the GMT programs
+# First make a list of all the GMT programs, including pslib (since it has a man page) and the GMT script
 
-sed -e 's/\./ /gp' -e 'sB/B Bgp' guru/GMT_all_files.lis | egrep -v 'gmt_|fourt' | awk '{if ($3 == "c") print $2}' | sort -u > GMT_programs.lis
-
-# add GMT to the program list file as well
-
-echo GMT >> GMT_programs.lis
+cp -f guru/GMT_programs.lis programs.lis
+echo GMT >> programs.lis
+echo pslib >> programs.lis
 
 # Now make sed script (actually 3, since sed seems to have trouble with long sed scripts...)
 
-awk '{printf "s%%>%s<%%><A HREF=%c%s.html%c>%s</A><%%g\n", $1, 34, $1, 34, $1}' GMT_programs.lis > webman1.sed
-awk '{printf "s%%%s,%%<A HREF=%c%s.html%c>%s</A>,%%g\n", $1, 34, $1, 34, $1}' GMT_programs.lis > webman2.sed
-awk '{printf "s%%%s$%%<A HREF=%c%s.html%c>%s</A>%%g\n", $1, 34, $1, 34, $1}' GMT_programs.lis > webman3.sed
+awk '{printf "s%%>%s<%%><A HREF=%c%s.html%c>%s</A><%%g\n", $1, 34, $1, 34, $1}' programs.lis > webman1.sed
+awk '{printf "s%%%s,%%<A HREF=%c%s.html%c>%s</A>,%%g\n", $1, 34, $1, 34, $1}' programs.lis > webman2.sed
+awk '{printf "s%%%s$%%<A HREF=%c%s.html%c>%s</A>%%g\n", $1, 34, $1, 34, $1}' programs.lis > webman3.sed
 
 # Fix for man on HP that gives 9s in output
 echo 's/^.9$//g' >> webman1.sed
 
 # Ok, go to source directory and make html files
 
-for prog in `cat GMT_programs.lis`; do
+for prog in `cat programs.lis`; do
 	if [ $gush = 1 ]; then
 		echo "Making ${prog}.html"
 	fi
@@ -199,10 +197,8 @@ are grouped by function. For an alphabetical order, click <A HREF="#anchor_alpha
 <h2><A NAME="anchor_alpha">Alphabetical listing of GMT Unix man pages</h2>
 <OL>
 EOF
-grep -v pslib GMT_programs.lis > $$
-\rm -f GMT_programs.lis
-\mv -f $$ GMT_programs.lis
-awk '{printf "<LI><A HREF=%cdoc/html/%s.html%c> %s</A></LI>\n", 34, $1, 34, $1}' GMT_programs.lis >> www/gmt/gmt_man.html
+# Exclude pslib since it is not a program
+grep -v pslib programs.lis | awk '{printf "<LI><A HREF=%cdoc/html/%s.html%c> %s</A></LI>\n", 34, $1, 34, $1}' >> www/gmt/gmt_man.html
 cat << EOF >> www/gmt/gmt_man.html
 </OL>
 <HR>
@@ -324,4 +320,4 @@ EOF
 
 # Clean up
 
-rm -f webman?.sed this?.sed GMT_programs.lis lis
+rm -f webman?.sed this?.sed programs.lis lis
