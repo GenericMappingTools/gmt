@@ -1,8 +1,8 @@
-#	$Id: Makefile,v 1.1 2001-03-02 05:54:44 pwessel Exp $
+#	$Id: Makefile,v 1.2 2001-03-05 15:50:44 pwessel Exp $
 #
 # makefile for x2sys directory
 #
-include ../makegmt.macros
+-include ../makegmt.macros
 
 #------------------------- stop here --------------------------
 
