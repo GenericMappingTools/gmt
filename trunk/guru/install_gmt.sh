@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.22 2001-12-20 02:56:01 ben Exp $
+#	$Id: install_gmt.sh,v 1.23 2002-01-15 18:00:05 pwessel Exp $
 #
-#	Automatic installation of GMT version 3.4
+#	Automatic installation of GMT version 4
 #	Version for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	18-APR-2001
+#	18-JAN-2002
 #--------------------------------------------------------------------------------
 #	FUNCTIONS
 #--------------------------------------------------------------------------------
@@ -107,7 +107,7 @@ cat << EOF > gmt_install.ftp_gzsizes
 EOF
 cat << EOF >&2
 ====>>>> Interactive installation of GMT <<<<====
-		   Version 3.4
+		   Version 4
 		  
 We first need a questions and answer session to
 determine how and where GMT is to be installed.
@@ -764,7 +764,7 @@ make_ftp_list2()
 
 trap "rm -f gmt_install.ftp_*; exit" 0 2 15
 DIR=pub/gmt
-VERSION=3.4
+VERSION=4
 GMT=GMT
 #--------------------------------------------------------------------------------
 #	LISTING OF CURRENT FTP MIRROR SITES
