@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.99 2004-05-26 02:06:33 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.100 2004-05-26 03:25:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2016,9 +2016,11 @@ void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_C
 			}
 		}
 		if (stop == n) {	/* Ran out, nothing to plot */
-			G->L[k] = GMT_contlabel_new ((void *)G->L[k], nc);
-			memcpy ((void *)G->L[k]->x, xc, (size_t)(nc * sizeof (double)));
-			memcpy ((void *)G->L[k]->y, yc, (size_t)(nc * sizeof (double)));
+			if (G->curved_text) {	/* Must get the path on which to place text */
+				G->L[k] = GMT_contlabel_new ((void *)G->L[k], nc);
+				memcpy ((void *)G->L[k]->x, xc, (size_t)(nc * sizeof (double)));
+				memcpy ((void *)G->L[k]->y, yc, (size_t)(nc * sizeof (double)));
+			}
 			continue;
 		}
 		f = label_width / (d[stop] - G->L[k]->dist);
@@ -3759,6 +3761,10 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 			*xmin = project_info.w;
 			*xmax = project_info.e;
 		}
+	}
+	else {
+		if (*xmin < h->x_min) *xmin = h->x_min;
+		if (*xmax > h->x_max) *xmax = h->x_max;
 	}
 	if ((*xmax) <= (*xmin)) {	/* Either error or grid outside chosen -R */
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid x's or longitudes appear to be outside the map region and will be skipped.\n", GMT_program);

@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-#	$Id: do_examples.csh,v 1.4 2004-04-29 22:41:30 pwessel Exp $
+#	$Id: do_examples.csh,v 1.5 2004-05-26 03:25:22 pwessel Exp $
 #
 # csh script to test all GMT examples (csh versions).
 # If one argument is passed it is assumed to be the
@@ -10,6 +10,9 @@
 unalias cd
 
 # Temporary change LANG to C
+if ($?LANG == 0) then
+	setenv LANG
+endif
 if ("X$LANG" == "X") then
 	set OLDLANG = ""
 else
@@ -77,6 +80,10 @@ if ($#argv >= 1) then
 	endif
 	setenv GMTHOME $old_GMTHOME
 endif
-setenv LANG $OLDLANG
+if ("X$OLDLANG" == "X") then
+	unsetenv LANG
+else
+	setenv LANG $OLDLANG
+endif
 
 echo "Completed all examples"
