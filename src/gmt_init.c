@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.159 2004-10-14 03:29:22 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.160 2004-10-14 03:34:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1711,9 +1711,9 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case GMTCASE_PSIMAGE_COMPRESS:
 			if (!strcmp (lower_value, "none"))
-				gmtdefs.ps_compress = 0;
+				gmtdefs.ps_compress = FALSE;
 			else if (!strcmp (lower_value, "rle"))
-				gmtdefs.ps_compress = 1;
+				gmtdefs.ps_compress = TRUE;
 			else
 				error = TRUE;
 			break;
@@ -2093,10 +2093,7 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "DOTS_PR_INCH		= %d\n", gmtdefs.dpi);
 	fprintf (fp, "N_COPIES		= %d\n", gmtdefs.n_copies);
 	(gmtdefs.ps_cmykmode) ? fprintf (fp, "PS_COLOR		= cmyk\n") : fprintf (fp, "PS_COLOR		= rgb\n");
-	if (gmtdefs.ps_heximage == 0)
-		fprintf (fp, "PSIMAGE_COMPRESS		= none\n");
-	else
-		fprintf (fp, "PSIMAGE_COMPRESS		= rle\n");
+	(gmtdefs.ps_compress) ? fprintf (fp, "PSIMAGE_COMPRESS	= rle\n") : fprintf (fp, "PSIMAGE_COMPRESS	= none\n");
 	(gmtdefs.ps_heximage) ? fprintf (fp, "PSIMAGE_FORMAT		= hex\n") : fprintf (fp, "PSIMAGE_FORMAT		= bin\n");
 	fprintf (fp, "GLOBAL_X_SCALE		= %g\n", gmtdefs.global_x_scale);
 	fprintf (fp, "GLOBAL_Y_SCALE		= %g\n", gmtdefs.global_y_scale);
