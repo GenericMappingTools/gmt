@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.130 2004-07-12 22:08:58 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.131 2004-07-13 18:47:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1226,7 +1226,6 @@ void GMT_fancy_map_boundary (double w, double e, double s, double n)
 	ps_setpaint (gmtdefs.basemap_frame_rgb);
 
 	fwidth = fabs (gmtdefs.frame_width);
-	/* if (GMT_get_map_interval (1, GMT_TICK_LOWER) != 0.0) { */	/* Need two-layer frame */
 	if (frame_info.axis[1].item[GMT_TICK_LOWER].active) {	/* Need two-layer frame */
 		fwidth *= 0.5;
 		dual = TRUE;
@@ -1290,7 +1289,6 @@ void GMT_fancy_frame_straightlat_checkers (double w, double e, double s, double 
 	/* Tick S-N axes */
 	
 	for (k = 0; k < 1 + secondary_too; k++) {
-		/* if ((dy = GMT_get_map_interval (1, item[k])) != 0.0) { */
 		if (frame_info.axis[1].item[item[k]].active) {
 			dy = GMT_get_map_interval (1, item[k]);
 			shade = ((int)floor ((s - frame_info.axis[1].phase) / dy) + 1) % 2;
@@ -1556,8 +1554,7 @@ void GMT_polar_map_boundary (double w, double e, double s, double n)
 	/* Here draw fancy map boundary */
 	
 	fwidth = fabs (gmtdefs.frame_width);
-	/* if (GMT_get_map_interval (1, GMT_TICK_LOWER) != 0.0) { */	/* Need two-layer frame */
-	if (frame_info.axis[1].item[GMT_TICK_LOWER].active) {
+	if (frame_info.axis[1].item[GMT_TICK_LOWER].active) {	/* Need two-layer frame */
 		fwidth *= 0.5;
 		dual = TRUE;
 	}
@@ -1614,8 +1611,7 @@ void GMT_conic_map_boundary (double w, double e, double s, double n)
 	/* Here draw fancy map boundary */
 	
 	fwidth = fabs (gmtdefs.frame_width);
-	/* if (GMT_get_map_interval (1, GMT_TICK_LOWER) != 0.0) { */	/* Need two-layer frame */
-	if (frame_info.axis[1].item[GMT_TICK_LOWER].active) {
+	if (frame_info.axis[1].item[GMT_TICK_LOWER].active) {	/* Need two-layer frame */
 		fwidth *= 0.5;
 		dual = TRUE;
 	}
@@ -1639,198 +1635,6 @@ void GMT_conic_map_boundary (double w, double e, double s, double n)
 	GMT_fancy_frame_straightlat_checkers (w, e, s, n, 180.0 + anglew * R2D, anglee * R2D, dual);
 	GMT_fancy_frame_curvedlon_checkers (w, e, s, n, radiuss, radiusn, dual);
 	
-	ps_setline (thin_pen);
-}
-
-void GMT_conic_map_boundary_old (double w, double e, double s, double n)
-{
-	int i, nx, ny, shade, fat_pen, thin_pen;
-	double dx, dy, angle, dx2, dy2, y0, x0, radiuss, radiusn, dr, da, da0, az1, az2, psize;
-	double x1, x2, x3, y1, y2, y3, s1, w1, val, v1, v2, rsize, x_inc, y_inc;
-	
-	if (!project_info.region) { /* Draw rectangular boundary and return */
-		GMT_rect_map_boundary (0.0, 0.0, project_info.xmax, project_info.ymax);
-		return;
-	}
-	if (gmtdefs.basemap_type == GMT_IS_PLAIN) { /* Draw plain boundary and return */
-		GMT_wesn_map_boundary (w, e, s, n);
-		return;
-	}
-	
-	ps_setpaint (gmtdefs.basemap_frame_rgb);
-
-	fat_pen = irint (gmtdefs.frame_width * gmtdefs.dpi);
-	thin_pen = irint (0.1 * gmtdefs.frame_width * gmtdefs.dpi);
-	ps_setline (thin_pen);
-	
-	psize = (project_info.north_pole) ? gmtdefs.frame_width : -gmtdefs.frame_width;
-	rsize = fabs (psize);
-	GMT_geo_to_xy (w, n, &x1, &y1);
-	GMT_geo_to_xy (w, s, &x2, &y2);
-	dx = x1 - x2;
-	dy = y1 - y2;
-	angle = R2D*d_atan2 (dy, dx) - 90.0;
-	if (fabs(angle-180.0) < SMALL) angle = 0.0;
-	dx2 = rsize * cos (angle*D2R);
-	dy2 = rsize * sin (angle*D2R);
-	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &x0, &y0);
-	GMT_geo_to_xy (w, project_info.pole, &x1, &y1);
-	GMT_geo_to_xy (e, project_info.pole, &x2, &y2);
-	dr = y1 - y0;
-	if (fabs (dr) > SMALL) {
-		az1 = 2.0 * d_atan2 (dr, x1 - x0);
-		dr /= (1.0 - cos (az1));
-		y0 += dr;
-	}
-	GMT_geo_to_xy (project_info.central_meridian, s, &x1, &y1);
-	GMT_geo_to_xy (project_info.central_meridian, n, &x2, &y2);
-	radiuss = hypot (x1 - x0, y1 - y0);
-	radiusn = hypot (x2 - x0, y2 - y0);
-	
-	if (frame_info.side[3]) {	/* Draw western boundary */
-		GMT_geo_to_xy (w, s, &x1, &y1);
-		GMT_geo_to_xy (w, n, &x2, &y2);
-		ps_plot (x1+dy2, y1-dx2, 3);
-		ps_plot (x2-dy2, y2+dx2, -2);
-		x1 -= dx2;
-		y1 -= dy2;
-		x2 -= dx2;
-		y2 -= dy2;
-		ps_plot (x1+dy2, y1-dx2, 3);
-		ps_plot (x2-dy2, y2+dx2, -2);
-	}
-	if (frame_info.side[1]) {	/* Draw eastern boundary */
-		GMT_geo_to_xy (e, s, &x1, &y1);
-		GMT_geo_to_xy (e, n, &x2, &y2);
-		ps_plot (x1-dy2, y1-dx2, 3);
-		ps_plot (x2+dy2, y2+dx2, -2);
-		x1 += dx2;
-		y1 -= dy2;
-		x2 += dx2;
-		y2 -= dy2;
-		ps_plot (x1-dy2, y1-dx2, 3);
-		ps_plot (x2+dy2, y2+dx2, -2);
-	}
-	if (frame_info.side[0]) {	/* Draw southern boundary */
-		da0 = R2D*gmtdefs.frame_width/radiuss;
-		da = R2D*gmtdefs.frame_width/(radiuss+psize);
-		GMT_geo_to_xy (e, s, &x1, &y1);
-		GMT_geo_to_xy (w, s, &x2, &y2);
-		az1 = d_atan2 (y1 - y0, x1 - x0) * R2D;
-		az2 = d_atan2 (y2 - y0, x2 - x0) * R2D;
-		if (project_info.north_pole) {
-			if (az1 <= az2) az1 += 360.0;
-			ps_arc (x0, y0, radiuss, az2-da0, az1+da0, 3);
-			ps_arc (x0, y0, radiuss + psize, az2-da, az1+da, 3);
-		}
-		else {
-			if (az2 <= az1) az2 += 360.0;
-			ps_arc (x0, y0, radiuss, az1-da0, az2+da0, 3);
-			ps_arc (x0, y0, radiuss + psize, az1-da, az2+da, 3);
-		}
-	}
-	if (frame_info.side[2]) {	/* Draw northern boundary */
-		da0 = R2D*gmtdefs.frame_width/radiusn;
-		da = R2D*gmtdefs.frame_width/(radiusn-psize);
-		GMT_geo_to_xy (e, s, &x1, &y1);
-		GMT_geo_to_xy (w, s, &x2, &y2);
-		az1 = d_atan2 (y1 - y0, x1 - x0) * R2D;
-		az2 = d_atan2 (y2 - y0, x2 - x0) * R2D;
-		if (project_info.north_pole) {
-			if (az1 <= az2) az1 += 360.0;
-			ps_arc (x0, y0, radiusn, az2-da0, az1+da0, 3);
-			ps_arc (x0, y0, radiusn - psize, az2-da, az1+da, 3);
-		}
-		else {
-			if (az2 <= az1) az2 += 360.0;
-			ps_arc (x0, y0, radiusn, az1-da0, az2+da0, 3);
-			ps_arc (x0, y0, radiusn - psize, az1-da, az2+da, 3);
-		}
-	}
-	
-	/* Frame tick S-N axes */
-	
-	ps_setline (fat_pen);
-	if (frame_info.axis[1].item[GMT_TICK_UPPER].active) {
-		y_inc = GMT_get_map_interval (1, GMT_TICK_UPPER);
-		shade = ((int)floor (s / y_inc) + 1) % 2;
-		s1 = floor(s/y_inc) * y_inc;
-		ny = (s1 > n) ? -1 : (int)((n-s1) / y_inc + SMALL);
-		for (i = 0; i <= ny; i++) {
-			val = s1 + i*y_inc;
-			v1 = (val < s) ? s : val;
-			GMT_geo_to_xy (w, v1, &x1, &y1);
-			GMT_geo_to_xy (e, v1, &x2, &y2);
-			if (shade) {
-				v2 = val + y_inc;
-				if (v2 > n) v2 = n;
-				if (frame_info.side[3]) {
-					GMT_geo_to_xy (w, v2, &x3, &y3);
-					ps_plot (x1-0.5*dx2, y1-0.5*dy2, 3);
-					ps_plot (x3-0.5*dx2, y3-0.5*dy2, -2);
-				}
-				if (frame_info.side[1]) {
-					GMT_geo_to_xy (e, v2, &x3, &y3);
-					ps_plot (x2+0.5*dx2, y2-0.5*dy2, 3);
-					ps_plot (x3+0.5*dx2, y3-0.5*dy2, -2);
-				}
-				shade = FALSE;
-			}
-			else
-				shade = TRUE;
-		}
-	}
-
-	/* Frame tick W-E axes */
-	
-	if (frame_info.axis[0].item[GMT_TICK_UPPER].active) {
-		x_inc = GMT_get_map_interval (0, GMT_TICK_UPPER);
-		shade = ((int)floor (w / x_inc) + 1) % 2;
-		w1 = floor(w / x_inc) * x_inc;
-		nx = (w1 > e) ? -1 : (int)((e-w1) / x_inc + SMALL);
-		da = dx;
-		dx = dy;
-		dy = da;
-		for (i = 0; i <= nx; i++) {
-			val = w1 + i * x_inc;
-			v1 = (val < w) ? w : val;
-			if (shade) {
-				v2 = val + x_inc;
-				if (v2 > e) v2 = e;
-				if (frame_info.side[0]) {
-					GMT_geo_to_xy (v2, s, &x1, &y1);
-					GMT_geo_to_xy (v1, s, &x2, &y2);
-					az1 = d_atan2 (y1 - y0, x1 - x0) * R2D;
-					az2 = d_atan2 (y2 - y0, x2 - x0) * R2D;
-					if (project_info.north_pole) {
-						if (az1 < az2) az1 += 360.0;
-						ps_arc (x0, y0, radiuss+0.5*psize, az2, az1, 3);
-					}
-					else {
-						if (az2 < az1) az2 += 360.0;
-						ps_arc (x0, y0, radiuss+0.5*psize, az1, az2, 3);
-					}
-				}
-				if (frame_info.side[2]) {
-					GMT_geo_to_xy (v2, n, &x1, &y1);
-					GMT_geo_to_xy (v1, n, &x2, &y2);
-					az1 = d_atan2 (y1 - y0, x1 - x0) * R2D;
-					az2 = d_atan2 (y2 - y0, x2 - x0) * R2D;
-					if (project_info.north_pole) {
-						if (az1 < az2) az1 += 360.0;
-						ps_arc (x0, y0, radiusn-0.5*psize, az2, az1, 3);
-					}
-					else {
-						if (az2 < az1) az2 += 360.0;
-						ps_arc (x0, y0, radiusn-0.5*psize, az1, az2, 3);
-					}
-				}
-				shade = FALSE;
-			}
-			else
-				shade = TRUE;
-		}
-	}
 	ps_setline (thin_pen);
 }
 
@@ -2734,148 +2538,6 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	}
 }
 
-#ifdef OLD
-void GMT_map_annotate_old (double w, double e, double s, double n)
-{
-	double s1, w1, val, dx, dy, x, y, del;
-	int do_minutes, do_seconds, move_up, i, nx, ny, done_zero = FALSE, annot, GMT_world_map_save;
-	char label[256], cmd[256];
-	PFI GMT_outside_save;
-	
-	if (!(MAPPING)) {
-		if (project_info.projection != POLAR) return;	/* Annotations and header already done by linear_axis */
-	}
-	
-	ps_setpaint (gmtdefs.basemap_frame_rgb);
-
-	if (frame_info.header[0]) {	/* Make plot header for geographic maps*/
-		if (project_info.three_D && fabs (project_info.z_scale) < GMT_CONV_LIMIT) {	/* Only do this if flat 2-D plot */
-			
-			move_up = (MAPPING || frame_info.side[2] == 2);
-			ps_setfont (0);
-			del = ((gmtdefs.tick_length > 0.0) ? gmtdefs.tick_length : 0.0) + gmtdefs.header_offset;
-			del += ((move_up) ? (gmtdefs.annot_font_size[0]) * GMT_u2u[GMT_PT][GMT_INCH] : 0.0);
-			GMT_xy_do_z_to_xy (project_info.xmax * 0.5, project_info.ymax+del, project_info.z_level, &x, &y);
-			sprintf (cmd, "/F0 {/%s findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
-				GMT_font[gmtdefs.header_font].name, z_project.xshrink[0], z_project.yshrink[0] * z_project.tilt[0], z_project.yshrink[0]);
-			ps_command (cmd);
-			sprintf (cmd, "/F12 {/Symbol findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
-				z_project.xshrink[0], z_project.yshrink[0] * z_project.tilt[0], z_project.yshrink[0]);
-			ps_command (cmd);
-			
-			ps_text (x, y, gmtdefs.header_font_size, frame_info.header, z_project.phi[0], -2, 0);
-			ps_command ("/F0 {/Helvetica Y} bind def");	/* Reset F0 */
-			ps_command ("/F12 {/Symbol Y} bind def");	/* Reset F12 */
-			ps_setfont (gmtdefs.header_font);
-		}
-		else if (!project_info.three_D) {
-			ps_setfont (gmtdefs.header_font);
-			if (MAPPING || frame_info.side[2] == 2) {
-				ps_set_length ("PSL_TL", gmtdefs.tick_length);
-				ps_set_length ("PSL_AO0", gmtdefs.annot_offset[0]);
-				ps_set_length ("PSL_HO", gmtdefs.header_offset);
-				ps_textdim ("PSL_dimx", "PSL_AF0", gmtdefs.annot_font_size[0], gmtdefs.annot_font[0], "100\\312", 0);			/* Get and set typical annotation dimensions in PostScript */
-			}
-			else {
-				ps_set_length ("PSL_TL", gmtdefs.tick_length);
-				ps_set_length ("PSL_AO0", 0.0);
-				ps_set_length ("PSL_HO", gmtdefs.header_offset);
-			}
-			ps_command ("/PSL_H_y PSL_TL PSL_AO0 add PSL_AF0 add PSL_HO add def");						/* PSL_H was not set by linear axis */
-			ps_set_length ("PSL_x", project_info.xmax * 0.5);
-			ps_set_length ("PSL_y", project_info.ymax);
-			ps_textdim ("PSL_dimx", "PSL_dimy", gmtdefs.header_font_size, gmtdefs.header_font, frame_info.header, 0);			/* Get and set string dimensions in PostScript */
-			ps_command ("PSL_x PSL_dimx -0.5 mul add PSL_y PSL_H_y add M");
-			ps_setfont (gmtdefs.header_font);
-			ps_text (0.0, 0.0, -gmtdefs.header_font_size, frame_info.header, 0.0, 0, 0);
-		}
-	}
-	
-	dx = (project_info.edge[0] || project_info.edge[2]) ? GMT_get_map_interval (0, GMT_ANNOT_UPPER) : 0.0;
-	dy = (project_info.edge[1] || project_info.edge[3]) ? GMT_get_map_interval (1, GMT_ANNOT_UPPER) : 0.0;
-
-	if (dx <= 0.0 && dy <= 0.0) return;
-
-	ps_comment ("Map annotations");
-
-	ps_setfont (gmtdefs.annot_font[0]);
-	GMT_setpen (&gmtdefs.tick_pen);
-	
-	GMT_on_border_is_outside = TRUE;	/* Temporarily, points on the border are outside */
-	GMT_world_map_save = GMT_world_map;
-	if (project_info.region) {
-		GMT_world_map = FALSE;
-		GMT_outside_save = GMT_outside;
-		GMT_outside = GMT_wesn_outside_np;
-	}
-	
-	if (dx > 0.0) {	/* Annotate the S and N boundaries */
-		BOOLEAN full_lat_range, proj_A, proj_B, annot_0_and_360;
-		
-		/* Determine if we should annotate both 0 and 360 degrees */
-		
-		full_lat_range = (fabs (180.0 - fabs (project_info.n - project_info.s)) < SMALL);
-		proj_A = (project_info.projection == MERCATOR || project_info.projection == OBLIQUE_MERC ||
-			project_info.projection == WINKEL || project_info.projection == ECKERT4 || project_info.projection == ECKERT6 ||
-			project_info.projection == ROBINSON || project_info.projection == CYL_EQ ||
-			project_info.projection == CYL_EQDIST || project_info.projection == MILLER || project_info.projection == LINEAR);
-		proj_B = (project_info.projection == HAMMER || project_info.projection == MOLLWEIDE ||
-			project_info.projection == SINUSOIDAL);
-/*		annot_0_and_360 = (GMT_world_map_save && ((full_lat_range && proj_A) || (!full_lat_range && proj_B))); */
-		annot_0_and_360 = (GMT_world_map_save && (proj_A || (!full_lat_range && proj_B)));
-		
-		do_minutes = (fabs (fmod (dx, 1.0)) > SMALL);
-		do_seconds = (fabs (60.0 * fmod (fmod (dx, 1.0) * 60.0, 1.0)) >= 1.0);
-		w1 = floor (w / dx) * dx;
-		if (fabs (w1 - w) > SMALL) w1 += dx;
-		nx = (w1 > e) ? -1 : (int)((e - w1) / dx + SMALL);
-		for (i = 0; i <= nx; i++) {
-			val = w1 + i * dx;
-			if (fabs (val) < GMT_CONV_LIMIT) done_zero = TRUE;
-			if (val > e) val = e;
-			GMT_get_annot_label (val, label, do_minutes, do_seconds, 0, GMT_world_map_save);
-			annot = annot_0_and_360 || !(done_zero && fabs (val - 360.0) < GMT_CONV_LIMIT);
-			GMT_map_symbol_ns (val, label, s, n, annot);
-		}
-	}
-	
-	if (dy > 0.0) {	/* Annotate W and E boundaries */
-		int lonlat;
-		
-		if (MAPPING) {
-			do_minutes = (fabs (fmod (dy, 1.0)) > SMALL);
-			do_seconds = (fabs (60.0 * fmod (fmod (dy, 1.0) * 60.0, 1.0)) >= 1.0);
-			lonlat = 1;
-		}
-		else {	/* Also, we know that gmtdefs.degree_format = -1 in this case */
-			do_minutes = do_seconds = 0;
-			lonlat = 2;
-			if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Temporary swap to trick justify machinery */
-		}
-		s1 = floor (s / dy) * dy;
-		if (fabs (s1 - s) > SMALL) s1 += dy;
-		ny = (s1 > n) ? -1: (int)((n - s1) / dy + SMALL);
-		for (i = 0; i <= ny; i++) {
-			/* val = s1 + i * dy; */
-			val = s1 + i * dy;
-			if (val > n) val = n;
-			if ((project_info.polar || project_info.projection == GRINTEN) && fabs (fabs (val) - 90.0) < GMT_CONV_LIMIT) continue;
-			GMT_get_annot_label (val, label, do_minutes, do_seconds, lonlat, GMT_world_map_save);
-			GMT_map_symbol_ew (val, label, w, e, TRUE);
-		}
-		if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Undo the temporary swap */
-	}
-	
-	if (project_info.three_D) ps_command ("/F0 {/Helvetica Y} bind def");	/* Reset definition of F0 */
-	if (project_info.three_D) ps_command ("/F12 {/Symbol Y} bind def");	/* Reset definition of F12 */
-	
-	GMT_on_border_is_outside = FALSE;	/* Reset back to default */
-	if (project_info.region) {
-		GMT_world_map = GMT_world_map_save;
-		GMT_outside = GMT_outside_save;
-	}
-}
-#endif
 void GMT_map_boundary (double w, double e, double s, double n)
 {
 	ps_comment ("Map boundaries");
@@ -3059,8 +2721,9 @@ void GMT_vertical_axis (int mode)
 	int i, j;
 	double xp[2], yp[2], z_annot;
 	
-	if ((z_annot = GMT_get_map_interval (2, GMT_ANNOT_UPPER)) == 0.0) return;
-
+	if (frame_info.axis[2].item[GMT_ANNOT_UPPER].active) return;
+	
+	z_annot = GMT_get_map_interval (2, GMT_ANNOT_UPPER);
 	fore = (mode > 1);	back = (mode % 2);
 	for (i = 0; i < 4; i++) go[i] = (mode == 3) ? TRUE : ((back) ? z_project.draw[i] : !z_project.draw[i]);
 	

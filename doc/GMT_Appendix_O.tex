@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_O.tex,v 1.9 2004-06-24 05:02:06 pwessel Exp $
+%	$Id: GMT_Appendix_O.tex,v 1.10 2004-07-13 18:47:09 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -60,7 +60,7 @@ our line segments.  Each {\it line} specification implies a {\it start} and {\it
 corresponding to a coordinate pair.  These pairs can be regular coordinate pairs (i.e., longitude/latitude separated by a slash), or they
 can be two-character codes that refer to predetermined points relative to the map region.  These codes
 are taken from the \GMTprog{pstext} justification keys [{\bf L$|$C$|$R}][{\bf B$|$M$|$T}] so that the first
-character determines the $x$-coordinate and the second determines the $y$-coordinate.  In \GMTpro{grdcontour},
+character determines the $x$-coordinate and the second determines the $y$-coordinate.  In \GMTprog{grdcontour},
 you can also use the two codes {\bf Z+} and {\bf Z-} as shorthands for the location of the grid's global
 maximum and minimum, respectively.  For example, the {\it line} {\bf LT}/{\bf RB} is a diagonal from the
 upper left to the lower right map corner, while {\bf Z-}/135W/15S is a line from the grid minimum to the point
@@ -93,11 +93,11 @@ that separates the label codes from the placement algorithm.  Several of the att
 apply to contours so we start off with listing those that apply universially.  These codes are:
 \begin{description}
 \item [+a:]  Controls the angle of the label relative to the angle of the line.  Append {\bf p}
-for parallel [Default], {\bf n} for normal, or a fixed {\it angle} relative to the
-horizontal.
+for parallel [Default], {\bf n} for normal, or a fixed {\it angle} measured counter-clockwise
+relative to the horizontal.
 \item [+c:] Surrounding each label is an imaginary label ``textbox'' which defines a region in
 which no segment lines should be visible.  The initial box provides an exact fit to the enclosed
-text but clearance may be extended in both the horizontal and vertical direction (relative to the label
+text but clearance may be extended in both the horizontal and vertical directions (relative to the label
 baseline) by the given amounts.  If these should be different amounts please separate them by
 a slash; otherwise the single value applies to both directions.  Append the distance units of
 your choice ({\bf c$|$i$|$m$|$p}), or give \% to indicate that the clearance should be this
@@ -139,11 +139,11 @@ However, for quoted lines other options apply:
 \begin{description}
 \item [+l:] Append a fixed {\it label} that will be placed at all label locations.  If the label contains
 spaces you must place it inside matching quotes.
-\item [+L:] Append a code {\it flag} that determines what the label will contain.  Available codes are:
+\item [+L:] Append a code {\it flag} that will determine the label.  Available codes are:
 \begin{description}
 \item [+Lh:]  Take the label from the current multi-segment header (hence it is assumed that the
 input line segments are given in the multi-segment file format; if not we pick the single label
-from the files header record).  We first scan the header for an embedded
+from the file's header record).  We first scan the header for an embedded
 \Opt{L}{\it label} option; if none is found we instead use the first word following the segment marker [$>$].
 \item [+Ld:] Take the Cartesian plot distances along the line as the label; append {\bf c$|$i$|$m$|$p}
 as the unit [Default is {\bf MEASURE\_UNIT}].  The label will be formatted according to the {\bf D\_FORMAT}
@@ -269,7 +269,10 @@ labels are placed normal to the line:
 \GMTfig[H]{GMT_App_O_6}{Labels attributes are controlled with the arguments to the \Opt{Sq} option.}
 
 \noindent
-The composite illustration in Figure~\ref{fig:GMT_App_O_6} shows the new effects.
+The composite illustration in Figure~\ref{fig:GMT_App_O_6} shows the new effects.  Note that
+the line connecting the extrema does not end exactly at the `-' and `+' symbols.  This is
+because the placement of those symbols are based on the mean coordinates of the contour and
+not the location of the (local or global) extrema.
 
 \subsection{Label placement by along-track distances, 2}
 
@@ -307,7 +310,7 @@ Finally, we will make a more complex composite illustration that uses several of
 label placement and label attribute settings discussed in the previous sections.  We
 make a map showing the tsunami travel times (in hours) from a hypothetical catastrophic
 landslide in the Canary Islands\footnote{Travel times were calculated using Geoware's
-travel time calculator.}.  We lay down a color map based on the travel times
+travel time calculator, \progname{ttt}.}.  We lay down a color map based on the travel times
 and the shape of the seafloor, and travel time contours with curved labels as well
 as a few quoted lines.  The final script is
 
