@@ -1,4 +1,4 @@
-# $Id: Datums.txt,v 1.4 2004-09-02 18:15:23 pwessel Exp $
+# $Id: Datums.txt,v 1.5 2004-09-03 20:26:45 pwessel Exp $
 #
 # List of Datums available in GMT
 # The (Dx,Dy,Dz) values are in meters relative to WGS-84
@@ -113,7 +113,7 @@ Liberia 1964	Clarke-1880	-90	40	88	Liberia
 Luzon	Clarke-1866	-133	-77	-51	Philippines (Excluding Mindanao)
 Luzon	Clarke-1866	-133	-79	-72	Philippines (Mindanao)
 M'Poraloko	Clarke-1880	-74	-130	42	Gabon
-Macau		International-1924	-203.792	-303.371	-154.020	Macau
+Macau	International-1924	-203.792	-303.371	-154.020	Macau
 Mahe 1971	Clarke-1880	41	-220	-134	Mahe Island
 Massawa	Bessel	639	405	60	Ethiopia (Eritrea)
 Merchich	Clarke-1880	31	146	47	Morocco
