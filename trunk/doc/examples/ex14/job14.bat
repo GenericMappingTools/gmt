@@ -1,10 +1,10 @@
 REM		GMT EXAMPLE 14
 REM
-REM		$Id: job14.bat,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+REM		$Id: job14.bat,v 1.2 2002-03-08 21:10:40 ben Exp $
 REM
 REM Purpose:	Showing simple gridding, contouring, and resampling along tracks
-REM GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, minmax, project, pstext
-REM		psbasemap, psxy, surface
+REM GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, minmax, project
+REM		pstext, psbasemap, psxy, surface
 REM DOS calls:	del, gawk
 REM
 REM First draw network and label the nodes
@@ -16,7 +16,7 @@ gmtset GRID_PEN 0.25pta
 psxy table_5.11 -R0/7/0/7 -JX3.06i/3.15i -B2f1WSNe -Sc0.05i -G0 -P -K -Y6.45i > example_14.ps
 gawk "{print $1+0.08, $2, 6, 0, 0, 5, $3}" table_5.11 | pstext -R -JX -O -K -N >> example_14.ps
 blockmean table_5.11 -R0/7/0/7 -I1 > mean.xyz
-REM Then draw blocmean cells
+REM Then draw blockmean cells
 psbasemap -R0.5/7.5/0.5/7.5 -JX -O -K -B0g1 -X3.25i >> example_14.ps
 psxy -R0/7/0/7 -JX -B2f1eSNw mean.xyz -Ss0.05i -G0 -O -K >> example_14.ps
 gawk "{print $1+0.1, $2, 6, 0, 0, 5, $3}" mean.xyz | pstext -R -JX -O -K -W255o -C0.01i/0.01i -N >> example_14.ps
