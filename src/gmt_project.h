@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.27 2004-04-14 07:28:56 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.28 2004-04-17 01:39:00 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -252,7 +252,9 @@ struct MAP_PROJECTIONS {
 #define GMT_INTV_UPPER		2	/* Interval annotations closest to the axis */
 #define GMT_INTV_LOWER		3	/* Interval annotations farthest from the axis */
 #define GMT_TICK_UPPER		4	/* Frame tick marks closest to the axis (the only kind in GMT3.4 or earlier) */
-#define GMT_GRID_UPPER		5	/* Gridline spacing */
+#define GMT_TICK_LOWER		5	/* Frame tick marks closest to the axis (the only kind in GMT3.4 or earlier) */
+#define GMT_GRID_UPPER		6	/* Gridline spacing */
+#define GMT_GRID_LOWER		7	/* Gridline spacing */
 
 /* Some convenient macros for axis routines */
 
@@ -265,18 +267,18 @@ struct MAP_PROJECTIONS {
 
 struct PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
 	int parent;			/* Id of axis this item belongs to (0,1,2) */
-	int id;				/* Id of this item (0-5) */
+	int id;				/* Id of this item (0-7) */
 	BOOLEAN active;			/* TRUE if we want to use this item */
 	double interval;		/* Distance between ticks in user units */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
 	int flavor;			/* Index into month/day name abbreviation array (0-2) */
 	BOOLEAN upper_case;		/* TRUE if we want upper case text (used with flavor) */
-	char type;			/* One of a, i, A, I, f, g */
+	char type;			/* One of a, i, A, I, f, F, g, G */
 	char unit;			/* User's interval unit (y, M, u, d, h, m, c) */
 };
 
 struct PLOT_AXIS {		/* Information for one time axis */
-	struct PLOT_AXIS_ITEM item[6];	/* see above defines for which is which */
+	struct PLOT_AXIS_ITEM item[8];	/* see above defines for which is which */
 	int type;			/* LINEAR, LOG10, POW, or TIME */
 	char label[256];		/* Label of the axis */
 	char unit[32];			/* Axis unit appended to annotations */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.69 2004-04-14 20:33:53 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.70 2004-04-17 01:39:00 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2258,7 +2258,7 @@ struct EPS *GMT_epsinfo (char *program)
 	frame_space = irint (GMT_u2u[GMT_INCH][GMT_PT] * gmtdefs.frame_width);
 	if (frame_info.header[0]) {	/* Make space for header text */
 		move_up = (MAPPING || frame_info.side[2] == 2);
-		dy = ((move_up) ? (gmtdefs.annot_font_size_primary + gmtdefs.label_font_size) * GMT_u2u[GMT_PT][GMT_INCH] : 0.0) + 2.5 * gmtdefs.annot_offset_primary;
+		dy = ((move_up) ? (gmtdefs.annot_font_size[0] + gmtdefs.label_font_size) * GMT_u2u[GMT_PT][GMT_INCH] : 0.0) + 2.5 * gmtdefs.annot_offset[0];
 		new->y1 += tick_space + irint (GMT_u2u[GMT_INCH][GMT_PT] * dy);
 	}
 	
@@ -2324,7 +2324,7 @@ struct EPS *GMT_epsinfo (char *program)
 	
 	if (frame_info.axis[0].label[0] || frame_info.axis[1].label[0] || frame_info.axis[2].label[0]) fno[id++] = gmtdefs.label_font;
 	
-	fno[id++] = gmtdefs.annot_font_primary;
+	fno[id++] = gmtdefs.annot_font[0];
 	
 	qsort ((void *)fno, (size_t)id, sizeof (int), GMT_comp_int_asc);
 	
@@ -4181,7 +4181,7 @@ void GMT_str_toupper (char *value)
 
 double GMT_get_map_interval (int axis, int item) {
 	
-	if (item < GMT_ANNOT_UPPER || item > GMT_GRID_UPPER) {
+	if (item < GMT_ANNOT_UPPER || item > GMT_GRID_LOWER) {
 		fprintf (stderr, "GMT ERROR in GMT_get_map_interval (wrong item %d)\n", item);
 		exit (EXIT_FAILURE);
 	}
