@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.25 2003-04-13 02:32:06 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.26 2003-07-24 21:08:13 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2003.
@@ -866,19 +866,19 @@ the form of an option argument, e.g.,
 
 \vspace{\baselineskip} 
 
-\par \Opt{W}{\it width}[/{\it color}][{\bf t}{\it texture}][{\bf p}]\par 
+\par \Opt{W}{\it width}[/{\it color}][{\bf t}{\it texture}][{\bf c$|$i$|$p$|$m}]\par 
 
 \begin{description}
 \index{Pen!width}
 \index{Width, pen}
 \index{Attributes!pen!width}%
-\item[$\rightarrow$]{\it Width} is normally measured in units of the
+\item[$\rightarrow$]{\it Width} is by default measured in units of the
 current device resolution (i.e., the value assigned to the parameter
 DOTS\_PR\_INCH in your
 \filename{.gmtdefaults4} file).  Thus, if the dpi is set to 300 this unit
-is 1/300th of an inch.  Append {\bf p} to specify pen width in points
-(1/72 of an inch)\footnote{\PS\ definition.  In the typesetting industry
-a slighly different definition of point (1/72.27 inch) is used.}.
+is 1/300th of an inch.  Append {\bf c}, {\bf i}, {\bf p}, or {\bf m} to specify pen width in
+cm, inch, points (1/72 of an inch)\footnote{\PS\ definition.  In the typesetting industry
+a slighly different definition of point (1/72.27 inch) is used.}, or meters.
 Note that a pen thickness of 5 will be of different
 physical width depending on your dpi setting, whereas a thickness of
 5{\bf p} will always be 5/72 of an inch.  Minimum-thickness pens can be

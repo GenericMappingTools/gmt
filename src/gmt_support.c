@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.48 2003-04-22 18:50:24 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.49 2003-07-24 21:08:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -254,18 +254,28 @@ void GMT_init_pen (struct GMT_PEN *pen, double width)
 
 int GMT_getpen (char *line, struct GMT_PEN *pen)
 {
-	int i, n_slash, t_pos, c_pos, s_pos;
-	BOOLEAN get_pen, points = FALSE;
-	double val = 0.0, width, dpi_to_pt;
+	int i, n_slash, t_pos, c_pos, s_pos, pen_unit;
+	BOOLEAN get_pen;
+	double val = 0.0, width, dpi_to_inch = 1.0;
+	char tmp[32], string[BUFSIZ], *ptr;
 	
-	dpi_to_pt = GMT_u2u[GMT_INCH][GMT_PT] / gmtdefs.dpi;
-
 	GMT_init_pen (pen, GMT_PENWIDTH);	/* Default pen */
 
 	/* Check for p which means pen thickness is given in points */
 	
-	points = (strchr (line, 'p')) ? TRUE : FALSE;
-	
+	if (strchr (line, 'p'))
+		pen_unit = GMT_PT;
+	else if (strchr (line, 'i'))
+		pen_unit = GMT_INCH;
+	else if (strchr (line, 'c'))
+		pen_unit = GMT_CM;
+	else if (strchr (line, 'm'))
+		pen_unit = GMT_M;
+	else {	/* For pens, the default unit is dpi, must apply scaling to get inch first*/
+		pen_unit = GMT_INCH;
+		dpi_to_inch = 1.0 / gmtdefs.dpi;
+	}
+		
 	/* First check if a pen thickness has been entered */
 	
 	get_pen = ((line[0] == '-' && (line[1] >= '0' && line[1] <= '9')) || (line[0] >= '0' && line[0] <= '9'));
@@ -284,8 +294,7 @@ int GMT_getpen (char *line, struct GMT_PEN *pen)
 	/* Now decode values */
 	
 	if (get_pen) {	/* Decode pen width */
-		val = atof (line);
-		pen->width = (points) ? val : (val * dpi_to_pt);
+		pen->width = atof (line) * GMT_u2u[pen_unit][GMT_PT] * dpi_to_inch;
 	}
 	if (s_pos >= 0) {	/* Get color of pen */
 		s_pos++;
@@ -301,6 +310,8 @@ int GMT_getpen (char *line, struct GMT_PEN *pen)
 			GMT_cmyk_to_rgb (pen->rgb, cmyk);
 		}
 	}
+	
+	/* here, the pen width is now in points */
 	
 	if (t_pos >= 0) {	/* Get texture */
 		t_pos++;
@@ -321,25 +332,23 @@ int GMT_getpen (char *line, struct GMT_PEN *pen)
 			sscanf (&line[t_pos], "%s %lf", pen->texture, &pen->offset);
 			line[c_pos] = ':';
 			for (i = 0; pen->texture[i]; i++) if (pen->texture[i] == '_') pen->texture[i] = ' ';
-			if (!points) {	/* Must convert current dpi units to points  */
-				char tmp[32], string[BUFSIZ], *ptr;
+			
+			/* Must convert given units to points */
 				
-				ptr = strtok (pen->texture, " ");
-				memset ((void *)string, 0, (size_t)BUFSIZ);
-				while (ptr) {
-					sprintf (tmp, "%g ", (atof (ptr) * dpi_to_pt));
-					strcat (string, tmp);
-					ptr = strtok (CNULL, " ");
-				}
-				string[strlen (string) - 1] = 0;
-				if (strlen (string) >= GMT_PEN_LEN) {
-					fprintf (stderr, "%s: GMT Error: Pen attributes too long!\n", GMT_program);
-					exit (EXIT_FAILURE);
-				}
-				strcpy (pen->texture, string);
-				pen->offset *= dpi_to_pt;
+			ptr = strtok (pen->texture, " ");
+			memset ((void *)string, 0, (size_t)BUFSIZ);
+			while (ptr) {
+				sprintf (tmp, "%g ", (atof (ptr) * GMT_u2u[pen_unit][GMT_PT] * dpi_to_inch));
+				strcat (string, tmp);
+				ptr = strtok (CNULL, " ");
 			}
-					
+			string[strlen (string) - 1] = 0;
+			if (strlen (string) >= GMT_PEN_LEN) {
+				fprintf (stderr, "%s: GMT Error: Pen attributes too long!\n", GMT_program);
+				exit (EXIT_FAILURE);
+			}
+			strcpy (pen->texture, string);
+			pen->offset *= GMT_u2u[pen_unit][GMT_PT] * dpi_to_inch;
 		}
 	}
 	return (pen->width < 0.0 || GMT_check_rgb (pen->rgb));
