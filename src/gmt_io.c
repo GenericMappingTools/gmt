@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.55 2003-08-21 18:55:45 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.56 2003-12-03 23:12:54 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -466,15 +466,15 @@ int GMT_ascii_output_one (FILE *fp, double x, int col)
 void GMT_lon_range_adjust (int range, double *lon)
 {
 	switch (range) {	/* Adjust to the desired range */
-		case 0:
+		case 0:		/* Make 0 <= lon < 360 */
 			while ((*lon) < 0.0) (*lon) += 360.0;
 			while ((*lon) >= 360.0) (*lon) -= 360.0;
 			break;
-		case 1:
+		case 1:		/* Make -360 < lon <= 0 */
 			while ((*lon) <= -360.0) (*lon) += 360.0;
 			while ((*lon) > 0) (*lon) -= 360.0;
 			break;
-		default:
+		default:	/* Make -180 < lon < +180 */
 			while ((*lon) < -180.0) (*lon) += 360.0;
 			while ((*lon) > 180.0) (*lon) -= 360.0;
 			break;
