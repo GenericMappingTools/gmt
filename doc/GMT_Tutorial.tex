@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Tutorial.tex,v 1.4 2001-04-13 22:21:44 pwessel Exp $
+%	$Id: GMT_Tutorial.tex,v 1.5 2001-09-14 18:30:17 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -606,7 +606,7 @@ it is suppressed when a 3-D view is selected.}.
 \epsfig{figure=eps/GMT_-B_geo.eps}
 \caption{Geographic map border using separate selections for anotation,
 frame, and grid intervals.  Formatting of the anotation is controlled by
-the parameter DEGREE\_FORMAT in your \filename{.gmtdefaults} file.}
+the parameter PLOT\_DEGREE\_FORMAT in your \filename{.gmtdefaults} file.}
 \label{fig:GMT_-B_geo}
 \end{figure}
 \begin{figure}[h]
@@ -978,8 +978,8 @@ pscoast –-R-90/-70/0/20 -–JM6i -–P -–B5g5 –-G180/120/60 >! map.ps
 
 \item Try \Opt{–R}270/290/0/20 instead.  What happens to the annotations?
 
-\item Edit your \filename{.gmtdefaults} file and change DEGREE\_FORMAT
-to a number in the 0–--4 range.
+\item Edit your \filename{.gmtdefaults} file and change PLOT\_DEGREE\_FORMAT
+to another setting (see the \GMTprog{gmtdefaults} man page).
 
 \item Pick another region and change land color.
 
@@ -1582,7 +1582,7 @@ Note that these escape sequences (as well as octal codes) can be
 used anywhere in \GMT\, including as arguments to the \Opt{–B} option.
 A chart of octal codes can be found in Appendix F in the \GMT\
 technical reference book.  For accented European characters you must
-set WANT\_EURO\_FONT to TRUE in your \filename{.gmtdefaults} file.
+set CHAR\_ENCODING to ISOLatin1 in your \filename{.gmtdefaults} file.
 
 We will demonstrate pstext with the following script:
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.38 2001-09-14 03:08:26 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.39 2001-09-14 18:30:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -763,7 +763,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			}
 	 		if (rect_box_given) {
 				d_swap (*p[2], *p[1]);	/* So w/e/s/n makes sense */
-				item[strlen(item)-1] = 'r';	/* Put back the trailing r we temporarily removed */
+				item[strlen(item)] = 'r';	/* Put back the trailing r we temporarily removed */
 			}
 			if ((i < 4 || i > 6) || (GMT_check_region (*p[0], *p[1], *p[2], *p[3]) || (i == 6 && *p[4] >= *p[5]))) {
 				error++;
