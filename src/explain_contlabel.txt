@@ -1,11 +1,11 @@
 #define G_OPT_SI 10\fBc\fP10
 #define G_OPT_US 4\fBi\fP10
 #ifdef CONTOUR
-#define LINETYPE contour
+#define LINETYPE contours
 #else
-#define LINETYPE quoted line
+#define LINETYPE quoted lines
 #endif
-Controls the placement of labels along the LINETYPEs.  Choose among four controlling algorithms:
+Controls the placement of labels along the LINETYPE.  Choose among four controlling algorithms:
 .br
 \fB\-G\fP\fBd\fP\fIdist\fP[c|i|m|p][/\fIwidth\fP] or \fB\-G\fP\fBD\fP\fIdist\fP[d|e|k|m|n][/\fIwidth\fP].
 For lower case \fBd\fP, give distances between labels on the plot in your preferred measurement unit
@@ -17,7 +17,7 @@ G_OPT_SI or G_OPT_US].
 .br
 \fB\-Gl|L\fP\fIline1\fP[,\fIline2\fP,...] Give \fIstart\fP and \fIstop\fP coordinates for one or
 more comma-separated straight line segments.  Labels will be placed where these lines intersect the
-LINETYPEs.  The format of each \fIline\fP specification is \fIstart/stop\fP, where \fIstart\fP and \fIstop\fP
+LINETYPE.  The format of each \fIline\fP specification is \fIstart/stop\fP, where \fIstart\fP and \fIstop\fP
 are either a specified point \fIlon/lat\fP or a 2-character \fBXY\fP key that uses the justification
 format employed in \fBpstext\fP to indicate a point on the map, given as [LCR][BMT].
 #ifdef GRID
@@ -26,10 +26,10 @@ the grid, respectively.
 #endif
 \fB\-GL\fP will interpret the point pairs as defining great circles [Default is straight line].
 .br
-\fB\-Gn\fP\fIn_cont\fP specifies the number of equidistant labels per LINETYPE line [1].
+\fB\-Gn\fP\fIn_cont\fP specifies the number of equidistant labels for LINETYPE line [1].
 Upper case \fB\-GN\fP starts labeling exactly at the start of the line [Default centers them along the line].
-\fB\-GN\fP-1 places one justified label at start, while \fB\-GN\fP+1 places one justified label at the end of the LINETYPE.
+\fB\-GN\fP-1 places one justified label at start, while \fB\-GN\fP+1 places one justified label at the end of LINETYPE.
 .br
 \fB\-Gx|X\fP\fIxfile.d\fP reads the multi-segment file \fIxfile.d\fP and places labels at the intersections
-between the LINETYPEs and the lines in\fIxfile.d\fP.  \fB\-GX\fP will resample the lines first along
+between the LINETYPE and the lines in\fIxfile.d\fP.  \fB\-GX\fP will resample the lines first along
 great-circle arcs.
