@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.30 2001-10-16 19:29:33 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.31 2001-10-30 18:13:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1892,6 +1892,8 @@ int	GMT_scanf_geo (char *s, double *val) {
 			case 'N':
 			case 'n':
 				retval = GMT_IS_LAT;
+				break;
+			case '.':	/* Decimal point without decimals, e.g., 123. */
 				break;
 			default:
 				return (GMT_IS_NAN);
