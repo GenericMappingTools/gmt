@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.16 2001-04-14 00:20:12 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.17 2001-04-18 06:55:06 pwessel Exp $
 #
 #	Automatic installation of GMT version 3.4
 #	Version for the Bourne shell (or compatible)
@@ -931,10 +931,10 @@ if [ $netcdf_install = "y" ]; then
 	n_version=`cat netcdf*/src/VERSION`
 	cd netcdf-${n_version}/src
 
-#	Interix/OpenNT fix for bad lex which creates an #include statement for values.h which
+#	Interix/MacOS fix for bad lex which creates an #include statement for values.h which
 #	which does not exist.  We create an empty values.h file in the ncgen directory:
 
-	if [ $os = "Windows_NT" ] || [ $os = "Rhapsody" ]; then
+	if [ $os = "Windows_NT" ] || [ $os = "Rhapsody" ] || [ $os = "Darwin" ]; then
 		touch ncgen/values.h
 	fi
 	netcdf_path=${netcdf_path:-$topdir/netcdf-${n_version}}
@@ -943,12 +943,18 @@ if [ $netcdf_install = "y" ]; then
 		export DEFINES
 	fi
 	rm -f config.{cache,log,status}
-	./configure --prefix=$netcdf_path
+	if [ $os = "Darwin" ]; then	# Get special versions of config.* for MacOS X
+		cp /usr/libexec/config.* .
+		host="--host=powerpc-apple-Darwin"
+	else
+		host=
+	fi
+	./configure $host --prefix=$netcdf_path
 	$GMT_make || exit
 	$GMT_make test || exit
 	$GMT_make install || exit
 	$GMT_make clean || exit
-	if [ $os = "Windows_NT" ] || [ $os = "Rhapsody" ]; then	# Lord giveth, lord taketh away
+	if [ $os = "Windows_NT" ] || [ $os = "Rhapsody" ] || [ $os = "Darwin" ]; then	# Lord giveth, lord taketh away
 		rm -f ncgen/values.h
 	fi
 	cd ../..
@@ -1193,7 +1199,13 @@ if [ -f src/makegmt.macros ]; then
 	$GMT_make spotless || exit
 fi
 	
-./configure --prefix=$GMT_def --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
+if [ $os = "Darwin" ]; then	# Get special versions of config.* for MacOS X
+	cp /usr/libexec/config.* .
+	host="--host=powerpc-apple-Darwin"
+else
+	host=
+fi
+./configure $host --prefix=$GMT_def --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   $enable_eps $disable_flock $enable_shared $enable_triangle --mandir=$GMT_man --enable-mansect=$GMT_mansect --enable-www=$GMT_web --datadir=$GMT_share
 
 if [ -f .gmtconfigure ]; then
