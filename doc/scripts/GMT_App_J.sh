@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_J.sh,v 1.3 2004-01-10 02:34:54 pwessel Exp $
+#	$Id: GMT_App_J.sh,v 1.4 2004-01-28 01:38:44 pwessel Exp $
 #
 # Script to draw the impulse responses and transfer functions
 # for GMT cookbook Appendix_J.
@@ -581,20 +581,16 @@ cat << EOF > r_tr_fns
 EOF
 #---------------------------------------------------
 
-\rm -f GMT_imp_res.ps GMT_x_tr_fns.ps GMT_r_tr_fns.ps temp tempb tempc tempg
+echo "-0.5	0" > temp
+gmtmath -T-0.5/0.5/0.01 1 = >> temp
+echo "0.5	0" >> temp
 #
-pwd | $AWK '{ for (i = -50; i <= 50; i++) print 0.01 * i }' > temp
 #
-$AWK '{ if ($1 == -0.5) print $1, 0; print $1, 1; if ($1 == 0.5) print $1, 0; }' temp > tempb
-#
-$AWK '{ print $1, 0.5 * (1.0 + cos(6.283185307 * $1)) }' temp > tempc
-#
-$AWK '{ print $1, exp(-18.0 * $1 * $1) }' temp > tempg
 #
 gmtset ANNOT_FONT Times-Roman ANNOT_FONT_SIZE 10 HEADER_FONT Times-Roman HEADER_FONT_SIZE 14 LABEL_FONT Times-Roman LABEL_FONT_SIZE 12
-psxy tempb -R-0.6/0.6/-0.1/1.1 -JX4i/2i -P -Ba0.5f0.1:"Distance (units of filter width)":/a0.2f0.1g1:"Relative amplitude":WeSn -K -W1p > GMT_imp_res.ps
-psxy tempc -R -JX -O -K -W1tap >> GMT_imp_res.ps
-psxy tempg -R -JX -O -K -W1top >> GMT_imp_res.ps
+psxy temp -R-0.6/0.6/-0.1/1.1 -JX4i/2i -P -Ba0.5f0.1:"Distance (units of filter width)":/a0.2f0.1g1:"Relative amplitude":WeSn -K -W1p > GMT_imp_res.ps
+gmtmath -T-0.5/0.5/0.01 T PI 2 MUL MUL COS 1 ADD 0.5 MUL = | psxy -R -JX -O -K -W1tap >> GMT_imp_res.ps
+gmtmath -T-0.5/0.5/0.01 T T MUL 18 MUL NEG EXP = | psxy -R -JX -O -K -W1top >> GMT_imp_res.ps
 pstext -R -JX -O << END >> GMT_imp_res.ps
 -0.2	0.3	9	0	4	5	Solid Line:
 -0.2	0.2	9	0	4	5	Dotted Line:
@@ -605,20 +601,9 @@ pstext -R -JX -O << END >> GMT_imp_res.ps
 END
 #
 #
-#
-\rm -f temp tempb tempc tempg
-#
-pwd | $AWK '{ for (i = 0; i <= 500; i++) print 0.01 * i }' > temp
-#
-$AWK '{ if (NR == 1) print $1, 1; else { x = 3.141592654 * $1; print $1, sin(x)/x } }' temp > tempb
-#
-$AWK '{ if (NR == 1) print $1, 1; else if ($1 == 1.0) print $1, 0.5; else { x = 3.141592654 * $1; print $1, (sin(x)/x)/(1-$1*$1) } }' temp > tempc
-#
-$AWK '{ x = 3.141592654 * $1; print $1, exp(-x * x / 18) }' temp > tempg
-#
-psxy tempb -R0/5/-0.3/1 -JX4i/2i -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -W1p > GMT_x_tr_fns.ps
-psxy tempc -R -JX -O -K -W1tap >> GMT_x_tr_fns.ps
-psxy tempg -R -JX -O -K -W1top >> GMT_x_tr_fns.ps
+gmtmath -T0/5/0.01 T SINC = | psxy -R0/5/-0.3/1 -JX4i/2i -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -W1p > GMT_x_tr_fns.ps
+gmtmath -T0/5/0.01 T SINC 1 T T MUL SUB DIV = | $AWK '{ if ($1 == 1) print 1, 0.5; else print $0}' | psxy -R -JX -O -K -W1tap >> GMT_x_tr_fns.ps
+gmtmath -T0/5/0.01 T PI MUL DUP MUL 18 DIV NEG EXP = | psxy -R -JX -O -K -W1top >> GMT_x_tr_fns.ps
 pstext -R -JX -O << END >> GMT_x_tr_fns.ps
 2.2	0.6	9	0	4	5	Solid Line:
 2.2	0.5	9	0	4	5	Dotted Line:
@@ -643,4 +628,4 @@ pstext -R -JX -O << END >> GMT_r_tr_fns.ps
 3.8	0.5	9	0	4	7	Gaussian
 3.8	0.4	9	0	4	7	Cosine
 END
-\rm -f temp tempb tempc tempg r_tr_fns
+\rm -f temp r_tr_fns
