@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.13 2001-04-05 00:53:17 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.14 2001-04-08 21:20:58 pwessel Exp $
 #
 #	Automatic installation of GMT version 3.4
 #	Version for the Bourne shell (or compatible)
@@ -107,7 +107,7 @@ cat << EOF > gmt_install.ftp_gzsizes
 EOF
 cat << EOF >&2
 ====>>>> Interactive installation of GMT <<<<====
-		  $Revision: 1.13 $
+		   Version 3.4
 		  
 We first need a questions and answer session to
 determine how and where GMT is to be installed.
@@ -453,7 +453,7 @@ GMT_suppl_x2sys=d
 GMT_suppl_x_system=d
 GMT_suppl_xgrid=d
 MATLAB=/usr/local/matlab
-if [ $GMT_get_suppl = "y" ]; then
+if [ ! $GMT_get_suppl = "n" ]; then
 
 cat << EOF >&2
 
@@ -687,9 +687,15 @@ install_coast()
 			echo "Could not make the directory $dir - $this not untarred"
 		else
 			t=`echo $file | awk '{print substr($1,1,1)}'`
+			echon "Installing $dir/binned_GSHHS_${t}.cdf..."
 			$expand $here/GMT${file}c.bz2 > $dir/binned_GSHHS_${t}.cdf
+			echo "OK"
+			echon "Installing $dir/binned_binned_${t}.cdf..."
 			$expand $here/GMT${file}r.bz2 > $dir/binned_river_${t}.cdf
+			echo "OK"
+			echon "Installing $dir/binned_river_${t}.cdf..."
 			$expand $here/GMT${file}b.bz2 > $dir/binned_border_${t}.cdf
+			echo "OK"
 		fi
 	fi
 		
