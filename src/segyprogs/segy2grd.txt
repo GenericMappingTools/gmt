@@ -1,4 +1,4 @@
-.TH SEGY2GRD l DATE
+.TH SEGY2GRD GMTMANSECTION DATE VERSION
 .SH NAME
 segy2grd \- Converting SEGY file to grd file format
 .SH SYNOPSIS

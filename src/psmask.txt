@@ -1,4 +1,4 @@
-.TH PSMASK l DATE
+.TH PSMASK GMTMANSECTION DATE VERSION
 .SH NAME
 psmask \- To clip or mask areas of no data on a map
 .SH SYNOPSIS

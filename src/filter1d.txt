@@ -1,4 +1,4 @@
-.TH FILTER1D l DATE
+.TH FILTER1D GMTMANSECTION DATE VERSION
 .SH NAME
 filter1d \- Time domain filtering of 1-D time series
 .SH SYNOPSIS

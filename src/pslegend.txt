@@ -1,4 +1,4 @@
-.TH PSLEGEND l DATE
+.TH PSLEGEND GMTMANSECTION DATE VERSION
 #define CLEARENCE_SI 0.15\fBc\fP/0.15\fBc\fP
 #define CLEARENCE_US 0.05\fBi\fP/0.05\fBi\fP
 .SH NAME
@@ -30,8 +30,8 @@ The D record results in a horizontal line across the legend.  The line starts an
 units from the frame sides, and is drawn using the specified \fIpen\fP.
 .TP
 \fBG\fP \fIgap\fP
-The G record specifies a vertical gap of the given length.  In addition to the standard units (i, c, p) you
-may use l for lines.
+The G record specifies a vertical gap of the given length.  In addition to the standard units (\fBi, c, p\fP) you
+may use \fBl\fP for lines.
 .TP
 \fBH\fP \fIfontsize font Header\fP
 The H record plots a centered text string using the specified font parameters.

@@ -1,4 +1,4 @@
-.TH PSBASEMAP l DATE
+.TH PSBASEMAP GMTMANSECTION DATE VERSION
 #define LEN_1   25
 #define LEN_2   15
 #define SCALE_LL   \fB\-JX\fP25\fBcl\fP/15\fBcl\fP

@@ -1,4 +1,4 @@
-.TH GRDLANDMASK l DATE
+.TH GRDLANDMASK GMTMANSECTION DATE VERSION
 .SH NAME
 grdlandmask \- Create "wet-dry" mask grdfile from shoreline data base.
 .SH SYNOPSIS

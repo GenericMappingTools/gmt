@@ -1,4 +1,4 @@
-.TH BLOCKMEDIAN l DATE
+.TH BLOCKMEDIAN GMTMANSECTION DATE VERSION
 .SH NAME
 blockmedian \- filter to block average (x,y,z) data by L1 norm.
 .SH SYNOPSIS

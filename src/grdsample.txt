@@ -1,4 +1,4 @@
-.TH GRDSAMPLE l DATE
+.TH GRDSAMPLE GMTMANSECTION DATE VERSION
 .SH NAME
 grdsample \- Resample a grd file onto a new grid
 .SH SYNOPSIS

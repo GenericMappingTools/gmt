@@ -1,4 +1,4 @@
-.TH PSMECA l DATE
+.TH PSMECA GMTMANSECTION DATE VERSION
 .SH NAME
 psmeca \fR\- Plot focal mechanisms on maps
 .SH SYNOPSIS

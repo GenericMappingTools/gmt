@@ -1,4 +1,4 @@
-.TH GRDCUT l DATE
+.TH GRDCUT GMTMANSECTION DATE VERSION
 .SH NAME
 grdcut \- Extract a subregion out of a \fI.grd\fP file
 .SH SYNOPSIS

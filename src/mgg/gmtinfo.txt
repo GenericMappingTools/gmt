@@ -1,4 +1,4 @@
-.TH GMTINFO l DATE
+.TH GMTINFO GMTMANSECTION DATE VERSION
 .SH NAME
 gmtinfo \- Get information about individual cruises
 .SH SYNOPSIS

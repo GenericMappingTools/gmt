@@ -1,4 +1,4 @@
-.TH GRDHISTEQ l DATE
+.TH GRDHISTEQ GMTMANSECTION DATE VERSION
 .SH NAME
 grdhisteq \- Histogram equalization for grd files 
 .SH SYNOPSIS

@@ -1,4 +1,4 @@
-.TH x_list l DATE
+.TH x_list GMTMANSECTION DATE VERSION
 .SH NAME
 \fBx_list\fP \- Extract Cross-Over Information from the Data Base.
 .SH SYNOPSIS
@@ -21,27 +21,27 @@ time from port for a particular leg, etc.
 \fIdataflags\fP
 This is a string of any combination of the following:
 .br
-	l means list both legnames.
+	\fBl\fP means list both legnames.
 .br
-	t means list time.
+	\fBt\fP means list time.
 .br
-	x means list longitude.
+	\fBx\fP means list longitude.
 .br
-	y means list latitude.
+	\fBy\fP means list latitude.
 .br
-	g means list gravity COEs.
+	\fBg\fP means list gravity COEs.
 .br
-	m means list magnetics COEs.
+	\fBm\fP means list magnetics COEs.
 .br
-	b means list bathymetry COEs.
+	\fBb\fP means list bathymetry COEs.
 .br
-	G means list average gravity at cross-over.
+	\fBG\fP means list average gravity at cross-over.
 .br
-	M means list average magnetic anomaly at cross-over.
+	\fBM\fP means list average magnetic anomaly at cross-over.
 .br
-	B means list average bathymetry at cross-over.
+	\fBB\fP means list average bathymetry at cross-over.
 .br
-	h means list heading of ship at cross-over.
+	\fBh\fP means list heading of ship at cross-over.
 .br
 The components are written out in the order they appear in \fIdataflags\fP. The default output is
 \fB\-txygmbGMBhl\fP.  When internal COEs are desired, the time reported is the elapsed time since

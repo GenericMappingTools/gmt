@@ -1,4 +1,4 @@
-.TH BACKTRACKER l DATE
+.TH BACKTRACKER GMTMANSECTION DATE VERSION
 .SH NAME
 backtracker \- Forward and Backward flowlines and hotspot tracks 
 .SH SYNOPSIS

@@ -1,4 +1,4 @@
-.TH GMTCONVERT l DATE
+.TH GMTCONVERT GMTMANSECTION DATE VERSION
 .SH NAME
 gmtconvert \- Convert between ASCII and binary 1-D tables
 .SH SYNOPSIS

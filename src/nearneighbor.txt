@@ -1,4 +1,4 @@
-.TH NEARNEIGHBOR l DATE
+.TH NEARNEIGHBOR GMTMANSECTION DATE VERSION
 .SH NAME
 nearneighbor \- A "Nearest neighbor" gridding algorithm
 .SH SYNOPSIS

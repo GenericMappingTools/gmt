@@ -1,4 +1,4 @@
-.TH GRDMATH l DATE
+.TH GRDMATH GMTMANSECTION DATE VERSION
 .SH NAME
 grdmath \- Reverse Polish Notation calculator for grd files
 .SH SYNOPSIS

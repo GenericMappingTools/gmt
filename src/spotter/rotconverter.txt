@@ -1,4 +1,4 @@
-.TH ROTCONVERTER l DATE
+.TH ROTCONVERTER GMTMANSECTION DATE VERSION
 .SH NAME
 rotconverter \- Manipulate finite and stage rotations 
 .SH SYNOPSIS

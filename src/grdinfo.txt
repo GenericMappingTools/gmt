@@ -1,4 +1,4 @@
-.TH GRDINFO l DATE
+.TH GRDINFO GMTMANSECTION DATE VERSION
 .SH NAME
 grdinfo \- Get information about the contents of a 2-D grd file
 .SH SYNOPSIS

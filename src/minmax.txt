@@ -1,4 +1,4 @@
-.TH MINMAX l DATE
+.TH MINMAX GMTMANSECTION DATE VERSION
 .SH NAME
 minmax \- Find extreme values in data tables
 .SH SYNOPSIS

@@ -1,4 +1,4 @@
-.TH XYZ2GRD l DATE
+.TH XYZ2GRD GMTMANSECTION DATE VERSION
 .SH NAME
 xyz2grd \- Converting an ASCII or binary table to grd file format
 .SH SYNOPSIS

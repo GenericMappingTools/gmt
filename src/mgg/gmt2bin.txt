@@ -1,4 +1,4 @@
-.TH GMT2BIN l DATE
+.TH GMT2BIN GMTMANSECTION DATE VERSION
 .SH NAME
 gmt2bin \- Create bin-index files from gmt files
 .SH SYNOPSIS

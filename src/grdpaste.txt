@@ -1,4 +1,4 @@
-.TH GRDPASTE l DATE
+.TH GRDPASTE GMTMANSECTION DATE VERSION
 .SH NAME
 grdpaste \- Paste together two \fI.grd\fP files along a common edge.
 .SH SYNOPSIS

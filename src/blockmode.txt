@@ -1,4 +1,4 @@
-.TH BLOCKMODE l DATE
+.TH BLOCKMODE GMTMANSECTION DATE VERSION
 .SH NAME
 blockmode \- filter to block average (x,y,z) data by mode estimation.
 .SH SYNOPSIS

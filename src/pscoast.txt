@@ -1,4 +1,4 @@
-.TH PSCOAST l DATE
+.TH PSCOAST GMTMANSECTION DATE VERSION
 #define LEN_1   0.1
 #define SCALE_M1   \fB\-Jm\fP0.1\fBi\fP
 #define LEN_2   1

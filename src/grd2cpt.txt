@@ -1,4 +1,4 @@
-.TH GRD2CPT l DATE
+.TH GRD2CPT GMTMANSECTION DATE VERSION
 .SH NAME
 grd2cpt \- Read a grdfile and make a color palette file
 .SH SYNOPSIS

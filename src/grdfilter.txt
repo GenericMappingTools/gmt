@@ -1,4 +1,4 @@
-.TH GRDFILTER l DATE
+.TH GRDFILTER GMTMANSECTION DATE VERSION
 .SH NAME
 grdfilter \- Filter a \fI.grd\fP file in the Time domain
 .SH SYNOPSIS

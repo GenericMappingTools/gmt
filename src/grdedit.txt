@@ -1,4 +1,4 @@
-.TH GRDEDIT l DATE
+.TH GRDEDIT GMTMANSECTION DATE VERSION
 .SH NAME
 grdedit \- Modifying the header in a 2-D grdfile
 .SH SYNOPSIS

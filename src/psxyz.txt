@@ -1,4 +1,4 @@
-.TH PSXYZ l DATE
+.TH PSXYZ GMTMANSECTION DATE VERSION
 #define PARAMS_SI 0.075\fBc\fP/0.3\fBc\fP/0.25\fBc\fP
 #define LEN_1 1.25
 #define OPT_1	\fB\-Jx\fP1.25\fBc \-Jz\fP0.125\fBc \-So\fP1.25\fBc\fP

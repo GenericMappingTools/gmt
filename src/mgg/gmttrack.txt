@@ -1,4 +1,4 @@
-.TH GMTTRACK l DATE
+.TH GMTTRACK GMTMANSECTION DATE VERSION
 #ifdef SI
 #define SCALE1 4cm/degree
 #define SCALE2 \fB\-Jm\fP4

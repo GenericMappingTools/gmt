@@ -1,4 +1,4 @@
-.TH PSCLIP l DATE
+.TH PSCLIP GMTMANSECTION DATE VERSION
 .SH NAME
 psclip \- To set up polygonal clip paths
 .SH SYNOPSIS
