@@ -1,4 +1,4 @@
-	$Id: README.WIN32,v 1.9 2002-02-26 22:26:14 pwessel Exp $
+	$Id: README.WIN32,v 1.10 2004-04-28 22:29:16 pwessel Exp $
 
 README file for GMT 4 Distribution for Win32
 This version contains dynamic executables with the DLL support.
@@ -24,9 +24,8 @@ To use GMT on your system you must
    environmental parameters via the system settings.  See the gmtenv.bat
    file for what the definitions should be.
 
-3. To test that all is well, cd into the examples directory and type
-   do_examples.  To see the finished plots, make sure gsview32 is in
-   your path (see below) and type do_view.
+3. To test that all is well, try some of the commands in the cookbook.
+   As of version 4, we no longer maintain DOS-versions of examples.
 
 
 ADDITIONAL MATERIAL:
@@ -45,9 +44,6 @@ need the HTML or PDF versions.
 If you want the high and/or full resolution coastlines, political borders,
 and rivers you must obtain GMT_high.zip and GMT_full.zip as well.
 unzip from the directory that contains GMT.
-
-The examples use the WIN32 version of gawk, also available from the GMT ftp
-sites.
 
 To view your GMT PostScript or EPS plots, we recommend you install gsview
 (see www.cs.wisc.edu/~ghost/gsview). It is required to run the do_view script.

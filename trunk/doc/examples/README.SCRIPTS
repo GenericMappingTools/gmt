@@ -1,10 +1,9 @@
-	$Id: README.SCRIPTS,v 1.5 2004-04-23 22:50:42 pwessel Exp $
+	$Id: README.SCRIPTS,v 1.6 2004-04-28 22:29:16 pwessel Exp $
 
 	README file for GMT Examples directory
 
-There are cshell (csh), bourne shell (sh) and DOS
-(bat) versions of all example scripts.  Simply run the
-appropriate do_examples script.
+There are cshell (csh) and bourne shell (sh) versions of all
+example scripts.  Simply run the appropriate do_examples script.
 
 The UNIX scripts will access your awk-like program via the
 environmental variable $AWK.  This will be automatically
@@ -25,10 +24,3 @@ script will differ in subtle ways from the figures shown
 in the GMT documentation.  This is most likely caused by
 different settings in the .gmtdefaults4 file that we used
 to generate the plots.
-
-The DOS versions may differ in subtle ways from the UNIX
-scripts since DOS is a braindead scripting language.  Example
-03 is only partly implemented in DOS.  Those who plan to use
-the .bat files should seriously ask themselves why they have
-not installed cygwin or MS Services for UNIX yet. (See Appendix
-L for more on that).
