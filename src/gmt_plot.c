@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.104 2004-04-19 16:50:17 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.105 2004-04-19 20:52:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -131,8 +131,13 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name);
 void GMT_map_tickitem (double w, double e, double s, double n, int item);
 void GMT_NaN_pen_up (double x[], double y[], int pen[], int n);
 double GMT_fancy_frame_straight_outline (double lonA, double latA, double lonB, double latB, int side, BOOLEAN secondary_too);
-double GMT_fancy_frame_polar_outline (double lonA, double latA, double lonB, double latB, int side, BOOLEAN secondary_too);
-void GMT_rounded_framecorners (double w, double e, double s, double n, double anglee, double anglew, BOOLEAN secondary_too);
+double GMT_fancy_frame_curved_outline (double lonA, double latA, double lonB, double latB, int side, BOOLEAN secondary_too);
+void GMT_rounded_framecorners (double w, double e, double s, double n, double anglew, double anglee, BOOLEAN secondary_too);
+void GMT_fancy_frame_offset (double angle, double shift[2]);
+void GMT_fancy_frame_extension (double angle, double extend[2]);
+void GMT_fancy_frame_straightlat_checkers (double w, double e, double s, double n, double angle_w, double angle_e, BOOLEAN secondary_too);
+void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n, double radius_s, double radius_n, BOOLEAN secondary_too);
+void GMT_fancy_frame_straightlon_checkers (double w, double e, double s, double n, double angle_s, double angle_n, BOOLEAN secondary_too);
 
 /* Local variables to this file */
 
@@ -1206,8 +1211,8 @@ void GMT_powy_grid (double w, double e, double s, double n, double dval)
 
 void GMT_fancy_map_boundary (double w, double e, double s, double n)
 {
-	double x1, x2, x3, y1, y2, y3, s1, w1, val, v1, v2, dx, dy, sign_x, sign_y, fwidth, elength, sgn, lon, lat, offset[2];
-	int shade, i, k, dual = FALSE, nx, ny, fat_pen, thin_pen, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
+	double fwidth;
+	int dual = FALSE, fat_pen, thin_pen;
 	
 	if (gmtdefs.basemap_type == GMT_IS_PLAIN) {	/* Draw plain boundary and return */
 		GMT_wesn_map_boundary (w, e, s, n);
@@ -1216,19 +1221,14 @@ void GMT_fancy_map_boundary (double w, double e, double s, double n)
 	
 	ps_setpaint (gmtdefs.basemap_frame_rgb);
 
-	fwidth = elength = fabs (gmtdefs.frame_width);
+	fwidth = fabs (gmtdefs.frame_width);
 	if (GMT_get_map_interval (1, GMT_TICK_LOWER) != 0.0) {	/* Need two-layer frame */
 		fwidth *= 0.5;
-		offset[1] = fwidth;
 		dual = TRUE;
 	}
-	offset[0] = 0.0;
-	if (gmtdefs.basemap_type == GMT_IS_ROUNDED) elength = 0.0;	/* Want rounded corners */
 	
 	fat_pen = irint (fwidth * gmtdefs.dpi);
 	thin_pen = irint (0.1 * fwidth * gmtdefs.dpi);
-	sign_x = (project_info.xyz_pos[0]) ? +1.0 : -1.0;
-	sign_y = (project_info.xyz_pos[1]) ? +1.0 : -1.0;
 	
 	ps_setline (thin_pen);
 
@@ -1237,18 +1237,58 @@ void GMT_fancy_map_boundary (double w, double e, double s, double n)
 	(void) GMT_fancy_frame_straight_outline (e, n, w, n, 2, dual);
 	(void) GMT_fancy_frame_straight_outline (w, n, w, s, 3, dual);
 
-	GMT_rounded_framecorners (w, e, s, n, 90.0, 270.0, dual);
+	GMT_rounded_framecorners (w, e, s, n, 270.0, 90.0, dual);
 	
 	/* Draw frame grid for W/E boundaries */
 	
 	ps_setline(fat_pen);
-	sign_x *= 0.5;
-	sign_y *= 0.5;
-	for (k = 0; k < 1 + dual; k++) {
+
+	GMT_fancy_frame_straightlat_checkers (w, e, s, n, 90.0, 90.0, dual);
+	GMT_fancy_frame_straightlon_checkers (w, e, s, n, 180.0, 0.0, dual);
+	
+	ps_setline (thin_pen);
+}
+
+void GMT_fancy_frame_extension (double angle, double extend[2])
+{
+	/* Given the angle of the axis, return the coordinate adjustments needed to
+	 * allow for a possible extension of the line (extend[0|1] */
+	 
+	double s, c;
+	sincos (angle * D2R, &s, &c);
+	extend[0] = (gmtdefs.basemap_type == GMT_IS_ROUNDED) ? 0.0 : gmtdefs.frame_width * c;
+	extend[1] = (gmtdefs.basemap_type == GMT_IS_ROUNDED) ? 0.0 : gmtdefs.frame_width * s;
+}
+
+void GMT_fancy_frame_offset (double angle, double shift[2])
+{
+	/* Given the angle of the axis, return the coordinate adjustments needed to
+	 * shift in order to plot the outer 1-2 parallell frame lines (shift[0|1] */
+	 
+	double s, c;
+	sincos (angle * D2R, &s, &c);
+	shift[0] =  gmtdefs.frame_width * s;
+	shift[1] = -gmtdefs.frame_width * c;
+}
+
+void GMT_fancy_frame_straightlat_checkers (double w, double e, double s, double n, double angle_w, double angle_e, BOOLEAN secondary_too)
+{
+	int i, k, ny, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
+	double dy, s1, val, v1, v2, x1, x2, x3, y1, y2, y3, shift_w[2], shift_e[2], scale[2];
+	BOOLEAN shade;
+	
+	scale[0] = (secondary_too) ? 0.5 : 1.0;
+	scale[1] = 1.5;
+	GMT_fancy_frame_offset (angle_w, shift_w);
+	GMT_fancy_frame_offset (angle_e, shift_e);
+	
+	/* Tick S-N axes */
+	
+	for (k = 0; k < 1 + secondary_too; k++) {
 		if ((dy = GMT_get_map_interval (1, item[k])) != 0.0) {
 			shade = ((int)floor (s / dy) + 1) % 2;
-			s1 = floor (s / dy) * dy;
-			ny = (s1 > n) ? -1 : (int)((n - s1) / dy + SMALL);
+			s1 = floor(s/dy) * dy;
+			ny = (s1 > n) ? -1 : (int)((n-s1) / dy + SMALL);
 			for (i = 0; i <= ny; i++) {
 				val = s1 + i * dy;
 				v1 = (val < s) ? s : val;
@@ -1259,13 +1299,13 @@ void GMT_fancy_map_boundary (double w, double e, double s, double n)
 					if (v2 > n) v2 = n;
 					if (frame_info.side[3]) {
 						GMT_geo_to_xy (w, v2, &x3, &y3);
-						ps_plot (x1-sign_x*fwidth-offset[k], y1, 3);
-						ps_plot (x3-sign_x*fwidth-offset[k], y3, -2);
+						ps_plot (x1-0.5*scale[k]*shift_w[0], y1-0.5*scale[k]*shift_w[1], +3);
+						ps_plot (x3-0.5*scale[k]*shift_w[0], y3-0.5*scale[k]*shift_w[1], -2);
 					}
 					if (frame_info.side[1]) {
 						GMT_geo_to_xy (e, v2, &x3, &y3);
-						ps_plot (x2+sign_x*fwidth+offset[k], y2, 3);
-						ps_plot (x3+sign_x*fwidth+offset[k], y3, -2);
+						ps_plot (x2+0.5*scale[k]*shift_e[0], y2+0.5*scale[k]*shift_e[1], +3);
+						ps_plot (x3+0.5*scale[k]*shift_e[0], y3+0.5*scale[k]*shift_e[1], -2);
 					}
 					shade = FALSE;
 				}
@@ -1273,9 +1313,21 @@ void GMT_fancy_map_boundary (double w, double e, double s, double n)
 					shade = TRUE;
 			}
 		}
+	}
+}	
 
-		/* Draw Frame grid for N and S boundaries */
+void GMT_fancy_frame_straightlon_checkers (double w, double e, double s, double n, double angle_s, double angle_n, BOOLEAN secondary_too)
+{
+	int i, k, nx, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
+	double dx, w1, val, v1, v2, x1, x2, x3, y1, y2, y3, shift_s[2], shift_n[2], scale[2];
+	BOOLEAN shade;
 	
+	scale[0] = (secondary_too) ? 0.5 : 1.0;
+	scale[1] = 1.5;
+	GMT_fancy_frame_offset (angle_s, shift_s);
+	GMT_fancy_frame_offset (angle_n, shift_n);
+	
+	for (k = 0; k < 1 + secondary_too; k++) {
 		if ((dx = GMT_get_map_interval (0, item[k])) != 0.0) {
 			shade = ((int)floor (w / dx) + 1) % 2;
 			w1 = floor (w / dx) * dx;
@@ -1290,13 +1342,13 @@ void GMT_fancy_map_boundary (double w, double e, double s, double n)
 					if (v2 > e) v2 = e;
 					if (frame_info.side[0]) {
 						GMT_geo_to_xy (v2, s, &x3, &y3);
-						ps_plot (x1, y1-sign_y*fwidth-offset[k], 3);
-						ps_plot (x3, y3-sign_y*fwidth-offset[k], -2);
+						ps_plot (x1-0.5*scale[k]*shift_s[0], y1-0.5*scale[k]*shift_s[1], 3);
+						ps_plot (x3-0.5*scale[k]*shift_s[0], y3-0.5*scale[k]*shift_s[1], -2);
 					}
 					if (frame_info.side[2]) {
 						GMT_geo_to_xy (v2, n, &x3, &y3);
-						ps_plot (x2, y2+sign_y*fwidth+offset[k], 3);
-						ps_plot (x3, y3+sign_y*fwidth+offset[k], -2);
+						ps_plot (x2-0.5*scale[k]*shift_n[0], y2-0.5*scale[k]*shift_n[1], 3);
+						ps_plot (x3-0.5*scale[k]*shift_n[0], y3-0.5*scale[k]*shift_n[1], -2);
 					}
 					shade = FALSE;
 				}
@@ -1305,8 +1357,64 @@ void GMT_fancy_map_boundary (double w, double e, double s, double n)
 			}
 		}
 	}
+}
 	
-	ps_setline (thin_pen);
+void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n, double radius_s, double radius_n, BOOLEAN secondary_too)
+{
+	int i, k, nx, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
+	BOOLEAN shade;
+	double dx, w1, v1, v2, val, x1, x2, y1, y2, az1, az2, dr, scale[2];
+	
+	scale[0] = (secondary_too) ? 0.5 : 1.0;
+	scale[1] = 1.5;
+	dr = 0.5 * gmtdefs.frame_width;
+	
+	for (k = 0; k < 1 + secondary_too; k++) {
+		if ((dx = GMT_get_map_interval (0, item[k])) != 0.0) {
+			shade = ((int)floor (w / dx) + 1) % 2;
+			w1 = floor(w/dx) * dx;
+			nx = (w1 > e) ? -1 : (int)((e-w1) / dx + SMALL);
+			for (i = 0; i <= nx; i++) {
+				val = w1 + i * dx;
+				v1 = (val < w) ? w : val;
+				if (shade) {
+					v2 = val + dx;
+					if (v2 > e) v2 = e;
+					if (frame_info.side[0]) {
+						GMT_geo_to_xy (v2, s, &x1, &y1);
+						GMT_geo_to_xy (v1, s, &x2, &y2);
+						az1 = d_atan2 (y1 - project_info.c_y0, x1 - project_info.c_x0) * R2D;
+						az2 = d_atan2 (y2 - project_info.c_y0, x2 - project_info.c_x0) * R2D;
+						if (project_info.north_pole) {
+							if (az1 < az2) az1 += 360.0;
+							ps_arc (project_info.c_x0, project_info.c_y0, radius_s+scale[k]*dr, az2, az1, 3);
+						}
+						else {
+							if (az2 < az1) az2 += 360.0;
+							ps_arc (project_info.c_x0, project_info.c_y0, radius_s-scale[k]*dr, az1, az2, 3);
+						}
+					}
+					if (frame_info.side[2]) {
+						GMT_geo_to_xy (v2, n, &x1, &y1);
+						GMT_geo_to_xy (v1, n, &x2, &y2);
+						az1 = d_atan2 (y1 - project_info.c_y0, x1 - project_info.c_x0) * R2D;
+						az2 = d_atan2 (y2 - project_info.c_y0, x2 - project_info.c_x0) * R2D;
+						if (project_info.north_pole) {
+							if (az1 < az2) az1 += 360.0;
+							ps_arc (project_info.c_x0, project_info.c_y0, radius_n-scale[k]*dr, az2, az1, 3);
+						}
+						else {
+							if (az2 < az1) az2 += 360.0;
+							ps_arc (project_info.c_x0, project_info.c_y0, radius_n+scale[k]*dr, az1, az2, 3);
+						}
+					}
+					shade = FALSE;
+				}
+				else
+					shade = TRUE;
+			}
+		}
+	}
 }
 
 double GMT_fancy_frame_straight_outline (double lonA, double latA, double lonB, double latB, int side, BOOLEAN secondary_too)
@@ -1326,7 +1434,6 @@ double GMT_fancy_frame_straight_outline (double lonA, double latA, double lonB, 
 	Ldy = (gmtdefs.basemap_type == GMT_IS_ROUNDED) ? 0.0 : gmtdefs.frame_width * s;
 	dx =  gmtdefs.frame_width * s;
 	dy = -gmtdefs.frame_width * c;
-	fprintf (stderr, "%d: A = %lg dx = %lg dy = %lg Ldx = %lg Ldy = %lg\n", side, angle*R2D, dx, dy, Ldx, Ldy);
 	ps_plot (x[0]-Ldx, y[0]-Ldy, +3);
 	ps_plot (x[1]+Ldx, y[1]+Ldy, -2);
 	for (k = 0; k < 1 + secondary_too; k++) {
@@ -1340,58 +1447,46 @@ double GMT_fancy_frame_straight_outline (double lonA, double latA, double lonB, 
 	return (angle);
 }
 
-double GMT_fancy_frame_polar_outline (double lonA, double latA, double lonB, double latB, int side, BOOLEAN secondary_too)
+double GMT_fancy_frame_curved_outline (double lonA, double latA, double lonB, double latB, int side, BOOLEAN secondary_too)
 {
 	int k;
-	double scale[2] = {1.0, 1.0}, escl, x0, x1, x2, y0, y1, y2, radius, angle, dr, r2, az1, az2, da0, da, width, s;
+	double scale[2] = {1.0, 1.0}, escl, x1, x2, y1, y2, radius, angle, dr, r_inc, az1, az2, da0, da, width, s;
 	
 	if (!frame_info.side[side]) return;
 	
 	if (secondary_too) scale[0] = scale[1] = 0.5;
-	s = (side == 2) ? +1.0 : -1.0;
 	width = gmtdefs.frame_width;
 	escl = (gmtdefs.basemap_type == GMT_IS_ROUNDED) ? 0.0 : 1.0;	/* Want rounded corners */
-	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &x0, &y0);
 	GMT_geo_to_xy (lonA, latA, &x1, &y1);
 	GMT_geo_to_xy (lonB, latB, &x2, &y2);
-	radius = hypot (x1 - x0, y1 - y0);
+	radius = hypot (x1 - project_info.c_x0, y1 - project_info.c_y0);
 	dr = 0.5 * width;
-	az1 = d_atan2 (y1 - y0, x1 - x0) * R2D;
-	az2 = d_atan2 (y2 - y0, x2 - x0) * R2D;
-	fprintf (stderr, "%d: A1 = %lg A2 = %lg\n", side, az1, az2);
-	da0 = da = 0.0;
-	r2 = radius;
-	for (k = 0; k < 1 + secondary_too; k++) {
-		if (project_info.north_pole) {
-			r2 -= s*scale[k] * width;
-			da0 -= R2D * scale[k] * width /radius;
-			da -= R2D * scale[k] * width / r2;
-			if (az2 <= az1) az2 += 360.0;
-			if (az2 > 0.0 && az1 < 0.0) az1 += 360.0;
-			ps_arc (x0, y0, radius, az2+s*escl*da0, az1-s*escl*da0, 3);
-			ps_arc (x0, y0, r2, az2+s*escl*da, az1-s*escl*da, 3);
-		}
-		else {
-			r2 += s*scale[k] * width;
-			da += R2D * scale[k] * width / r2;
-			da0 += R2D * scale[k] * width /radius;
-			if (az1 <= az2) az1 += 360.0;
-			if (az1 > 0.0 && az2 < 0.0) az2 += 360.0;
-			ps_arc (x0, y0, radius, az1-s*escl*da0, az2+s*escl*da0, 3);
-			ps_arc (x0, y0, r2, az1-s*escl*da, az2+s*escl*da, 3);
-		}
+	az1 = d_atan2 (y1 - project_info.c_y0, x1 - project_info.c_x0) * R2D;
+	az2 = d_atan2 (y2 - project_info.c_y0, x2 - project_info.c_x0) * R2D;
+	if (!project_info.north_pole) d_swap (az1, az2);	/* In S hemisphere, must draw in opposite direction */
+	while (az1 < 0.0) az1 += 360.0;	/* Wind az1 to be in the 0-360 range */
+	while (az2 < az1) az2 += 360.0;	/* Likewise ensure az1 > az1 and is now in the 0-720 range */
+	s = ((project_info.north_pole && side == 2) || (!project_info.north_pole && side == 0)) ? -1.0 : +1.0;	/* North: needs shorter radius.  South: Needs longer radius (opposite in S hemi) */
+	r_inc = s*scale[0] * width;
+	da0 = R2D * escl * width /radius;
+	da  = R2D * escl * width / (radius + r_inc);
+	ps_arc (project_info.c_x0, project_info.c_y0, radius, az1-da0, az2+da0, 3);
+	ps_arc (project_info.c_x0, project_info.c_y0, radius + r_inc, az1-da, az2+da, 3);
+	if (secondary_too) {
+		r_inc *= 2.0;
+		da = R2D * escl * width / (radius + r_inc);
+		ps_arc (project_info.c_x0, project_info.c_y0, radius + r_inc, az1-da, az2+da, 3);
 	}
 	return (radius);
 }
 
-void GMT_rounded_framecorners (double w, double e, double s, double n, double anglee, double anglew, BOOLEAN secondary_too)
+void GMT_rounded_framecorners (double w, double e, double s, double n, double anglew, double anglee, BOOLEAN secondary_too)
 {
 	int k;
 	double x, y, width;
 	
 	if (gmtdefs.basemap_type != GMT_IS_ROUNDED) return;	/* Only do this if rounded corners are requested */
 	
-	fprintf (stderr, "E = %lg W = %lg\n", anglee, anglew);
 	width = ((secondary_too) ? 0.5 : 1.0) * fabs (gmtdefs.frame_width);
 	for (k = 0; k < 1 + secondary_too; k++) {
 		if (frame_info.side[0] && frame_info.side[1]) {
@@ -1410,13 +1505,15 @@ void GMT_rounded_framecorners (double w, double e, double s, double n, double an
 			GMT_geo_to_xy (w, s, &x, &y);
 			ps_arc (x, y, (k+1)*width, 270.0+anglew, 360.0+anglew, 3);
 		}
-		if (project_info.n_polar && frame_info.side[3] && frame_info.side[1]) {
-			GMT_geo_to_xy (w, n, &x, &y);
-			ps_arc (x, y, (k+1)*width, anglee, 180.0+anglew, 3);
-		}
-		if (project_info.s_polar && frame_info.side[3] && frame_info.side[1]) {
-			GMT_geo_to_xy (w, s, &x, &y);
-			ps_arc (x, y, (k+1)*width, anglew-90.0, anglee-90.0, 3);
+		if ((AZIMUTHAL || CONICAL) && frame_info.side[3] && frame_info.side[1]) {	/* Round off the pointy head? */
+			if (fabs (project_info.n - 90.0) < GMT_CONV_LIMIT) {
+				GMT_geo_to_xy (w, n, &x, &y);
+				ps_arc (x, y, (k+1)*width, anglee, 180.0+anglew, 3);
+			}
+			else if (fabs (project_info.s + 90.0) < GMT_CONV_LIMIT) {
+				GMT_geo_to_xy (w, s, &x, &y);
+				ps_arc (x, y, (k+1)*width, anglew-90.0, anglee-90.0, 3);
+			}
 		}
 	}
 }
@@ -1425,11 +1522,9 @@ void GMT_rounded_framecorners (double w, double e, double s, double n, double an
 
 void GMT_polar_map_boundary (double w, double e, double s, double n)
 {
-	int i, k, nx, ny, shade, thin_pen, fat_pen, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
+	int thin_pen, fat_pen;
 	BOOLEAN dual = FALSE;
-	double anglew, dx2w, dy2w, anglee, dx2e, dy2e, fwidth, escl, scale[2] = {1.0, 1.0};
-	double y0, x0, radiuss, radiusn, da, da0, az1, az2, psize, dx, dy;
-	double x1, x2, x3, y1, y2, y3, s1, w1, val, v1, v2, dummy, r2, dr;
+	double anglew, anglee, fwidth, radiuss, radiusn;
 	
 	if (!project_info.region) { /* Draw rectangular boundary and return */
 		GMT_rect_map_boundary (0.0, 0.0, project_info.xmax, project_info.ymax);
@@ -1452,123 +1547,92 @@ void GMT_polar_map_boundary (double w, double e, double s, double n)
 	
 	/* Here draw fancy map boundary */
 	
-	fwidth = psize = fabs (gmtdefs.frame_width);
+	fwidth = fabs (gmtdefs.frame_width);
 	if (GMT_get_map_interval (1, GMT_TICK_LOWER) != 0.0) {	/* Need two-layer frame */
 		fwidth *= 0.5;
-		scale[0] = scale[1] = 0.5;
 		dual = TRUE;
 	}
-	escl = (gmtdefs.basemap_type == GMT_IS_ROUNDED) ? 0.0 : 1.0;	/* Want rounded corners */
-	dr = 0.5 * psize;
-	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &x0, &y0);
 
 	ps_setpaint (gmtdefs.basemap_frame_rgb);
 
-	fat_pen = irint (fwidth * gmtdefs.dpi);
+	fat_pen  = irint (fwidth * gmtdefs.dpi);
 	thin_pen = irint (0.1 * fwidth * gmtdefs.dpi);
 	ps_setline (thin_pen);
 
-	radiuss = GMT_fancy_frame_polar_outline (w, s, e, s, 0, dual);
-	anglee = GMT_fancy_frame_straight_outline (e, s, e, n, 1, dual);
-	radiusn = GMT_fancy_frame_polar_outline (w, n, e, n, 2, dual);
-	anglew = GMT_fancy_frame_straight_outline (w, n, w, s, 3, dual);
+	radiuss = GMT_fancy_frame_curved_outline (w, s, e, s, 0, dual);
+	anglee  = GMT_fancy_frame_straight_outline (e, s, e, n, 1, dual);
+	radiusn = GMT_fancy_frame_curved_outline (w, n, e, n, 2, dual);
+	anglew  = GMT_fancy_frame_straight_outline (w, n, w, s, 3, dual);
 	
-	dx2w = -psize * sin (anglew);
-	dy2w = psize * cos (anglew);
-	dx2e = -psize * cos (anglee);
-	dy2e = psize * sin (anglee);
+	GMT_rounded_framecorners (w, e, s, n, anglew * R2D, anglee * R2D, dual);
 
-	GMT_rounded_framecorners (w, e, s, n, anglee * R2D, anglew * R2D, dual);
+	/* Tick N-S and W-E axes */
 
-	/* Tick S-N axes */
-	
 	ps_setline (fat_pen);
-	scale[1] = 1.5;
-	for (k = 0; k < 1 + dual; k++) {
-		if ((dy = GMT_get_map_interval (1, item[k])) != 0.0) {
-			shade = ((int)floor (s / dy) + 1) % 2;
-			s1 = floor(s/dy) * dy;
-			ny = (s1 > n) ? -1 : (int)((n-s1) / dy + SMALL);
-			for (i = 0; i <= ny; i++) {
-				val = s1 + i * dy;
-				v1 = (val < s) ? s : val;
-				GMT_geo_to_xy (w, v1, &x1, &y1);
-				GMT_geo_to_xy (e, v1, &x2, &y2);
-				if (shade) {
-					v2 = val + dy;
-					if (v2 > n) v2 = n;
-					if (frame_info.side[3]) {
-						GMT_geo_to_xy (w, v2, &x3, &y3);
-						ps_plot (x1-0.5*scale[k]*dx2w, y1-0.5*scale[k]*dy2w, 3);
-						ps_plot (x3-0.5*scale[k]*dx2w, y3-0.5*scale[k]*dy2w, -2);
-					}
-					if (frame_info.side[1]) {
-						GMT_geo_to_xy (e, v2, &x3, &y3);
-						ps_plot (x2+0.5*scale[k]*dy2e, y2+0.5*scale[k]*dx2e, 3);
-						ps_plot (x3+0.5*scale[k]*dy2e, y3+0.5*scale[k]*dx2e, -2);
-					}
-					shade = FALSE;
-				}
-				else
-					shade = TRUE;
-			}
-		}
-	}
+	GMT_fancy_frame_straightlat_checkers (w, e, s, n, 180.0 + anglew * R2D, anglee * R2D, dual);
+	GMT_fancy_frame_curvedlon_checkers (w, e, s, n, radiuss, radiusn, dual);
 	
-	/* Tick W-E axes */
-	
-	for (k = 0; k < 1 + dual; k++) {
-		if ((dx = GMT_get_map_interval (0, item[k])) != 0.0) {
-			shade = ((int)floor (w / dx) + 1) % 2;
-			w1 = floor(w/dx) * dx;
-			nx = (w1 > e) ? -1 : (int)((e-w1) / dx + SMALL);
-			for (i = 0; i <= nx; i++) {
-				val = w1 + i * dx;
-				v1 = (val < w) ? w : val;
-				if (shade) {
-					v2 = val + dx;
-					if (v2 > e) v2 = e;
-					if (frame_info.side[0]) {
-						GMT_geo_to_xy (v2, s, &x1, &y1);
-						GMT_geo_to_xy (v1, s, &x2, &y2);
-						az1 = d_atan2 (y1 - y0, x1 - x0) * R2D;
-						az2 = d_atan2 (y2 - y0, x2 - x0) * R2D;
-						if (project_info.north_pole) {
-							if (az1 < az2) az1 += 360.0;
-							ps_arc (x0, y0, radiuss+scale[k]*dr, az2, az1, 3);
-						}
-						else {
-							if (az2 < az1) az2 += 360.0;
-							ps_arc (x0, y0, radiuss-scale[k]*dr, az1, az2, 3);
-						}
-					}
-					if (frame_info.side[2]) {
-						GMT_geo_to_xy (v2, n, &x1, &y1);
-						GMT_geo_to_xy (v1, n, &x2, &y2);
-						az1 = d_atan2 (y1 - y0, x1 - x0) * R2D;
-						az2 = d_atan2 (y2 - y0, x2 - x0) * R2D;
-						if (project_info.north_pole) {
-							if (az1 < az2) az1 += 360.0;
-							ps_arc (x0, y0, radiusn-scale[k]*dr, az2, az1, 3);
-						}
-						else {
-							if (az2 < az1) az2 += 360.0;
-							ps_arc (x0, y0, radiusn+scale[k]*dr, az1, az2, 3);
-						}
-					}
-					shade = FALSE;
-				}
-				else
-					shade = TRUE;
-			}
-		}
-	}
 	ps_setline (thin_pen);
 }
 
 /*	CONIC PROJECTION MAP BOUNDARY	*/
 
 void GMT_conic_map_boundary (double w, double e, double s, double n)
+{
+	int thin_pen, fat_pen;
+	BOOLEAN dual = FALSE;
+	double anglew, anglee, fwidth, radiuss, radiusn;
+	
+	if (!project_info.region) { /* Draw rectangular boundary and return */
+		GMT_rect_map_boundary (0.0, 0.0, project_info.xmax, project_info.ymax);
+		return;
+	}
+	
+	if (!project_info.north_pole && s <= -90.0) /* Cannot have southern boundary */
+		frame_info.side[0] = FALSE;
+	if (project_info.north_pole && n >= 90.0) /* Cannot have northern boundary */
+		frame_info.side[2] = FALSE;
+	if (fabs (fabs (e-w) - 360.0) < GMT_CONV_LIMIT || fabs (e - w) < GMT_CONV_LIMIT) {
+		frame_info.side[1] = FALSE;
+		frame_info.side[3] = FALSE;
+	}
+	
+	if (gmtdefs.basemap_type == GMT_IS_PLAIN) { /* Draw plain boundary and return */
+		GMT_wesn_map_boundary (w, e, s, n);
+		return;
+	}
+	
+	/* Here draw fancy map boundary */
+	
+	fwidth = fabs (gmtdefs.frame_width);
+	if (GMT_get_map_interval (1, GMT_TICK_LOWER) != 0.0) {	/* Need two-layer frame */
+		fwidth *= 0.5;
+		dual = TRUE;
+	}
+
+	ps_setpaint (gmtdefs.basemap_frame_rgb);
+
+	fat_pen  = irint (fwidth * gmtdefs.dpi);
+	thin_pen = irint (0.1 * fwidth * gmtdefs.dpi);
+	ps_setline (thin_pen);
+
+	radiuss = GMT_fancy_frame_curved_outline (w, s, e, s, 0, dual);
+	anglee  = GMT_fancy_frame_straight_outline (e, s, e, n, 1, dual);
+	radiusn = GMT_fancy_frame_curved_outline (w, n, e, n, 2, dual);
+	anglew  = GMT_fancy_frame_straight_outline (w, n, w, s, 3, dual);
+	
+	GMT_rounded_framecorners (w, e, s, n, anglew * R2D, anglee * R2D, dual);
+
+	/* Tick N-S and W-E axes */
+
+	ps_setline (fat_pen);
+	GMT_fancy_frame_straightlat_checkers (w, e, s, n, 180.0 + anglew * R2D, anglee * R2D, dual);
+	GMT_fancy_frame_curvedlon_checkers (w, e, s, n, radiuss, radiusn, dual);
+	
+	ps_setline (thin_pen);
+}
+
+void GMT_conic_map_boundary_old (double w, double e, double s, double n)
 {
 	int i, nx, ny, shade, fat_pen, thin_pen;
 	double dx, dy, angle, dx2, dy2, y0, x0, radiuss, radiusn, dr, da, da0, az1, az2, psize;
