@@ -1,10 +1,12 @@
 #!/bin/sh
-#	$Id: GMT_App_N.sh,v 1.5 2004-08-17 02:30:32 pwessel Exp $
+#	$Id: GMT_App_N.sh,v 1.6 2004-08-18 04:53:48 pwessel Exp $
 #
 #	Makes the insert for Appendix N(custom symbols)
 #	Note that this script also assembles App N tex
 #	file since the number of figures must be calculated.
 #
+
+trap 'rm -f $$.*; exit 1' 1 2 3 15
 
 grep -v '^#' ../../share/GMT_CustomSymbols.lis | awk '{print $1}' > $$.lis
 n=`cat $$.lis | wc -l`
@@ -78,6 +80,6 @@ EOF
 	pstext -R -Jx -O $$.text -Gwhite >> GMT_App_N_$p.ps
 	rm -f $$.lines $$.symbols $$.text $$.bars
 done
-rm -f $$.lis
+rm -f $$.*
 
 	

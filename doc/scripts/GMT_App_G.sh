@@ -1,14 +1,16 @@
 #!/bin/sh
-#	$Id: GMT_App_G.sh,v 1.3 2002-08-26 22:03:16 pwessel Exp $
+#	$Id: GMT_App_G.sh,v 1.4 2004-08-18 04:53:48 pwessel Exp $
 #
 #	Makes the insert for Appendix G (fonts)
 #
+
+trap 'rm -f $$.*; exit 1' 1 2 3 15
 
 # dy is line spacing and y0 is total box height
 
 dy=-0.2222
 y0=4.3
-grep -v '^#' ../../share/pslib/PS_font_info.d | $AWK '{print $1}' > t
+grep -v '^#' ../../share/pslib/PS_font_info.d | $AWK '{print $1}' > $$.d
 gmtset FRAME_PEN 0.5p
 psxy -R0/5.4/0/$y0 -Jx1i -P -K -B0 -M << EOF > GMT_App_G.ps
 >
@@ -41,8 +43,8 @@ do
 	k1=$i
 	k2=`echo "$i + 17" | bc`
 
-	f1=`sed -n ${k1}p t`
-	f2=`sed -n ${k2}p t`
+	f1=`sed -n ${k1}p $$.d`
+	f2=`sed -n ${k2}p $$.d`
 
 	if [ $i1 -eq "12" ]; then
 		f1="Symbol @%0%(Symbol)@%%"
@@ -63,6 +65,6 @@ pstext -R -Jx -O -K -Y${dy}i << EOF >> GMT_App_G.ps
 EOF
 
 psxy -R -Jx -O /dev/null >> GMT_App_G.ps
-\rm -f tbg
+rm -f $$.*
 
 gmtset FRAME_PEN 1.25p
