@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.2 2004-09-06 23:19:32 pwessel Exp $
+ *	$Id: polygon_consistency.c,v 1.3 2004-09-10 04:28:46 pwessel Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -79,7 +79,7 @@ main (int argc, char **argv)
 		n_id++;
 	}
 	
-	fprintf (stderr, "polygon_sort: Got %d polygons from file %s. %d has closure problems. %d has crossing problems. %d has region problems\n",
+	fprintf (stderr, "polygon_consistency: Got %d polygons from file %s. %d has closure problems. %d has crossing problems. %d has region problems\n",
 		n_id, argv[1], n_c_problems, n_x_problems, n_r_problems);
 
 	fclose(fp);
