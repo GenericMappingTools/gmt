@@ -256,6 +256,8 @@ for any given polygon, give \fB\-G\-\fP or \fB\-W\-\fP.  To add other geometric 
 to your custom symbol, add any number of the following plot code records:
 star: \fIx	y	size\fP	\fBa\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
 .br
+circle: \fIx	y	size\fP	\fBc\fP  [ \fB\-W\fP\fIpen\fP ]
+.br
 cross: \fIx	y	size\fP	\fBx\fP  [ \fB\-W\fP\fIpen\fP ]
 .br
 diamond: \fIx	y	size\fP	\fBd\fP  [ \fB\-W\fP\fIpen\fP ] [ \fB\-G\fP\fIfill\fP ]
