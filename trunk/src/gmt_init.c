@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.154 2004-09-10 23:16:15 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.155 2004-09-10 23:44:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -622,12 +622,12 @@ void GMT_syntax (char option)
 		
 			switch (project_info.projection) {
 				case LAMB_AZ_EQ:
-					fprintf (stderr, "\t-Ja<lon0>/<lat0>/<scale> OR -Ja<lon0>/<lat0>/<mapwidth>\n");
+					fprintf (stderr, "\t-Ja<lon0>/<lat0>/<scale> OR -JA<lon0>/<lat0>/<mapwidth>\n");
 					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <mapwidth> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
 				case ALBERS:
-					fprintf (stderr, "\t-Jb<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -Jb<lon0>/<lat0>/<lat1>/<lat2>/<mapwidth>\n");
+					fprintf (stderr, "\t-Jb<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JB<lon0>/<lat0>/<lat1>/<lat2>/<mapwidth>\n");
 					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <mapwidth> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
