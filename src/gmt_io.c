@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.45 2002-02-23 03:39:58 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.46 2002-04-11 20:37:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -485,7 +485,7 @@ void GMT_format_geo_output (BOOLEAN is_lat, double geo, char *text)
 {
 	int d, m, s, m_sec;
 	char letter;
-	BOOLEAN seconds;
+	BOOLEAN seconds, minus;
 	
 	if (!is_lat) GMT_lon_range_adjust (GMT_io.geo.range, &geo);
 	if (GMT_io.geo.decimal) {	/* Easy */
@@ -504,28 +504,29 @@ void GMT_format_geo_output (BOOLEAN is_lat, double geo, char *text)
 		letter = 0;
 		
 	seconds = (GMT_io.geo.order[2] > 0);		/* Are we doing dd:mm:ss */
-	GMT_geo_to_dms (geo, seconds, GMT_io.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
+	minus = GMT_geo_to_dms (geo, seconds, GMT_io.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
+	if (minus) text[0] = '-';	/* Must manually insert leading minus sign when degree == 0 */
 	if (GMT_io.geo.n_sec_decimals) {		/* Wanted fraction printed */
 		if (seconds)
-			sprintf (text, GMT_io.geo.y_format, d, m, s, m_sec, letter);
+			sprintf (&text[minus], GMT_io.geo.y_format, d, m, s, m_sec, letter);
 		else
-			sprintf (text, GMT_io.geo.y_format, d, m, m_sec, letter);
+			sprintf (&text[minus], GMT_io.geo.y_format, d, m, m_sec, letter);
 	}
 	else if (seconds)
-		sprintf (text, GMT_io.geo.y_format, d, m, s, letter);
+		sprintf (&text[minus], GMT_io.geo.y_format, d, m, s, letter);
 	else
-		sprintf (text, GMT_io.geo.y_format, d, m, letter);
+		sprintf (&text[minus], GMT_io.geo.y_format, d, m, letter);
 }
 
-void GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  int *s,  int *ix)
+BOOLEAN GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  int *s,  int *ix)
 {
-	/* Convert floating point degrees to dd:mm[:ss][.xxx] */
+	/* Convert floating point degrees to dd:mm[:ss][.xxx].  Returns TRUE if d = 0 and val is negative */
 	BOOLEAN minus;
 	int isec, imin;
 	double sec, fsec, min, fmin, step;
 	
 	minus = (val < 0.0);
-	step = (fact == 0.0) ? 0.0 : 0.5 / fact;  		/* Precision desired in seconds (or minutes) */
+	step = (fact == 0.0) ? GMT_CONV_LIMIT : 0.5 / fact;  		/* Precision desired in seconds (or minutes); else just deal with roundoff */
 	
 	if (seconds) {		/* Want dd:mm:ss[.xxx] format */
 		sec = GMT_DEG2SEC_F * fabs (val);		/* Convert to seconds */
@@ -548,7 +549,13 @@ void GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  
 		*s = 0;						/* No seconds */
 		*ix = irint (fmin * fact);			/* Fractional minutes scaled to integer */
 	}
-	if (minus) *d = -(*d);
+	if (minus) {	/* OK, change sign, but watch for *d = 0 */
+		if (*d)	/* Non-zero degree term is easy */
+			*d = -(*d);
+		else	/* Cannot change 0 to -0, so pass flag back to calling function */
+			return (TRUE);
+	}
+	return (FALSE);
 }
 
 void GMT_format_abstime_output (GMT_dtime dt, char *text)
