@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.51 2004-11-07 20:42:48 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.52 2004-11-23 18:44:07 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -343,7 +343,7 @@ EOF
 	GMT_get_triangle=$GMT_triangle
 else
 	echo " " >&2
-	echo "Since you do not want to ftp, the install procedure will" >&2
+	echo "Since ftp mode is not selected, the install procedure will" >&2
 	echo "assume the compressed archives are in the current directory." >&2
 	if [ -f triangle.tar.bz2 ] || [ -f triangle.tar.gz ]; then
 		echo "GMT can use two different algorithms for Delauney triangulation." >&2
