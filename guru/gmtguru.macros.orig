@@ -1,0 +1,32 @@
+#-------------------------------------------------------------------------------
+#	$Id: gmtguru.macros.orig,v 1.1 2000-12-29 19:35:14 pwessel Exp $
+#
+#	Original GMT Guru Makefile Macro for Makefile.guru
+#	Users should cp to gmtguru.macros and edit it instead!
+#-------------------------------------------------------------------------------
+#
+# The Makefile.guru file for GMT can be used by any GMT
+# Developer to do chores ranging from compiling and linking
+# and running examples, to preparing new tar archives for release.
+# Any developer may create a tar distribution locally with the
+# Makefile.guru makefile for testing purposes.
+#
+# Below, set the VERSION to be created and the DIR in which
+# to place the tar archives.  It is best not to use an actual
+# pub/ftp directory but use a temporary place and copy over later.
+# Also, you may want to change the DATE value
+
+VERSION		= GMT3.3.7
+CPFLAGS		= -I. -DDATE="\"1 Jan 2001\""
+AUTOCONF	= autoconf		# GNU autoconf utility (add path if not in your search path)
+GMT_SHARED_LIBS	= --enable-shared	# --enable-shared for shared; empty for static libraries
+GMT_US		= --enable-US		# --enable-US for inch; empty for cm
+GMT_TRIANGLE	= --enable-triangle	# --enable-triangle for Shewchuck's triangulation; empty for Watson's
+GMT_DEBUG	= --enable-debug	# --enable-debug will use -g; else -O with compiler
+
+#  Choose the correct preprocessing command for your system (this is for man page processing only):
+#
+TXT2MAN		= /usr/bin/cpp -P -nostdinc	# Linux
+#TXT2MAN	= /usr/ccs/lbin/cpp		# HPUX
+#TXT2MAN	= cc -E -Xs			# Solaris Workshop
+
