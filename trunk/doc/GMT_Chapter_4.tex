@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.36 2004-04-12 21:41:36 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.37 2004-04-12 23:08:51 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -589,7 +589,8 @@ plot the current command string (Figure~\ref{fig:GMT_-U}).
 inches (Default is (1,1) for new plots\footnote{ensures that
 boundary annotations do not fall off the page} and (0,0) for overlays (\Opt{O})).
 By default, all translations are relative to the previous origin
-(see Figure~\ref{fig:GMT_-XY}).
+(see Figure~\ref{fig:GMT_-XY}).  Supply offset as {\bf c} to center the
+plot in that direction relative to the page margin.
 Absolute translations (i.e., relative to a fixed point (0,0) at the
 lower left corner of the paper) can be achieve by prepending ``a''
 to the offsets.  Subsequent overlays will be co-registered with the
