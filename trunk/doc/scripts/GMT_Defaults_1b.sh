@@ -1,8 +1,8 @@
 #!/bin/sh
-#	$Id: GMT_Defaults_1b.sh,v 1.1 2001-09-25 22:48:53 pwessel Exp $
+#	$Id: GMT_Defaults_1b.sh,v 1.2 2001-09-26 04:34:47 pwessel Exp $
 #
 gmtset BASEMAP_TYPE plain PLOT_DEGREE_FORMAT ddd:mm:ssF GRID_CROSS_SIZE 0i \
-FRAME_WIDTH 0.025i TICK_LENGTH 0.05i ANOT_OFFSET 0.05i OBLIQUE_ANOTATION 1
+ANOT_FONT_SIZE +8p OBLIQUE_ANOTATION 1
 psbasemap -R-90/20/-55/25r -JOc-80/25.5/2/69/2.25i -Ba10f5g5 -P -K > GMT_Defaults_1b.ps
 pstext -R0/2.25/0/2 -Jx1i -O -K -N << EOF >> GMT_Defaults_1b.ps
 -0.05 0.15 7 0 1 RB X_ORIGIN
