@@ -80,7 +80,7 @@ To include an Encapsulated PostScript file tiger.eps with its upper right corner
 and 1 inch up from the current location, and have its width scaled to 3 inches, use
 .br
 .sp
-\fBpsimage\fP tiger.eps \fB\-C\fP2\fBi\fP/1\fBi\fP \fB\-W\fP3\fBi\fP > image.ps
+\fBpsimage\fP tiger.eps \fB\-C\fP2\fBi\fP/1\fBi\fP/TR \fB\-W\fP3\fBi\fP > image.ps
 .br
 .sp
 To replicate the image template 1_bit.ras over a 5 by 5 inch area, colorize it, and setting
