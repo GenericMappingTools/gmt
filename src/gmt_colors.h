@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_colors.h,v 1.7 2003-03-03 21:09:49 pwessel Exp $
+ *	$Id: gmt_colors.h,v 1.8 2003-04-07 00:39:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -33,8 +33,8 @@
 #define GMT_HSV 1
 #define GMT_CMYK 2
 
-#define GMT_FGD 0
-#define GMT_BGD 1
+#define GMT_BGD 0
+#define GMT_FGD 1
 #define GMT_NAN 2
 
 /* How B/W TV's convert RGB to Gray */
