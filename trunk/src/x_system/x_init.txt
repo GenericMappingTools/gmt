@@ -1,24 +1,24 @@
-.TH XINIT l DATE
+.TH x_init l DATE
 .SH NAME
-\fBXINIT\fP \- Initialization of Cross-Over Data Bases.
+\fBx_init\fP \- Initialization of Cross-Over Data Bases.
 .SH SYNOPSIS
-\fBxinit\fP \fB\-I\fP
+\fBx_init\fP \fB\-I\fP
 .SH DESCRIPTION
-The purpose of \fBxinit\fP is to create two key files that will be holding all the cross-over
+The purpose of \fBx_init\fP is to create two key files that will be holding all the cross-over
 information for all the cruises tested. These files are called \fIxx_base.b\fP and \fIxx_legs.b\fP, and
 they will contain data for each cross-over and totals for each leg, respectively. 
-\fBxinit\fP will create these two files in the current directory, and write out the
+\fBx_init\fP will create these two files in the current directory, and write out the
 fileheader with a 1 as the next record number in the case of xx_base.b. NB! Any previous files
 with the same names in the current directory will be erased, so use with caution.
 .TP
 .B \-I
 Must be present form initialization to take effect.
 .SH    
-Both files are binary and have fixed recordlengths. The formats of the files are as follows:
+Both files are binary and have fixed record lengths. The formats of the files are as follows:
 .br
 .TP
 .B xx_base.b:
-	Recordlength = 40 bytes.
+	Record length = 40 bytes.
 .br
 	Rec # 1:		fileheader
 .br
@@ -33,17 +33,16 @@ the last record in the file.
 The pairheader is a 40 byte character string which contains the names of the two legs in question
 and the number of COEs generated between them.
 The crossover-structure contains all the information for one COE, that is lat, lon, time along leg
-#1, time along leg #2, cross-over values for gravity, magnetics, and bathymetry, the average
 values of gravity, magnetics, and bathymetry at the cross-over point, the heading of track #1,
 and the heading of track #2. See program listing for more details on formats. The file is
 sequential in that new data are appended at the end of the file.
 .TP
 .B xx_legs.b:
-	Recordlength = 204 bytes.
+	Record length = 204 bytes.
 .br
 .sp
 Each record contains the complete information for each leg that has been checked. The
-leg-structure contains fields like year of cruise, no of internal/external COEs for gravity,
+leg-structure contains fields like year of cruise, number of internal/external COEs for gravity,
 magnetics, and bathymetry, their means and standard deviations, and the best fitting regression
 lines, i.e. the dc-shifts and drift-rates computed from the time/error data points. See program
 listing for complete description of record format.

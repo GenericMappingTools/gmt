@@ -1,8 +1,8 @@
-.TH X_SYSTEM l DATE
+.TH x_system l DATE
 .SH NAME
-\fBX_SYSTEM\fP \- A Cross-Over Error Analysis Tool
+\fBx_system\fP \- A Cross-Over Error Analysis Tool
 .SH INTRODUCTION
-	The \fBX_SYSTEM\fP was developed to aid in the task of gridding geophysical track data, e.g.
+	The \fBx_system\fP was developed to aid in the task of gridding geophysical track data, e.g.
 gravity, magnetics, or bathymetry. It has long been recognized that although the data quality
 along track may be quite good, one usually finds discrepancies at the points where two tracks
 intersect. These cross-over errors (COE) can be large enough to cause artificial features in the
@@ -10,7 +10,7 @@ final gridded dataset, which would render geological interpretations of such a m
 Also, notoriously bad cruises will generate high COEs along their tracks, and should ideally be
 removed from the data base before gridding is attempted. The reasons why COEs arise are many
 and will not be dealt with here. Although originally intended to be used for marine gravity data
-only, \fBX_SYSTEM\fP has been designed to handle magnetics and bathymetry as well. (For an
+only, \fBx_system\fP has been designed to handle magnetics and bathymetry as well. (For an
 overview of gravity COEs, see Wessel and Watts [1988]). In most cases, marine gravity COEs
 can be explained by a simple model having only 2 parameters. These are a d.c.-shift and a
 drift-rate that apply for the duration of the cruise. The goal of the COE analysis is thus to
@@ -20,18 +20,18 @@ correction for d.c.-shift/drift). Furthermore, we can also assign a 'quality ind
 looking at the standard deviation of the COEs. The d.c.-shift/drift rate model may not be as
 meaningful for magnetics and bathymetry as it is for gravity. However, looking for high COEs is
 still one of the best ways of identifying systematic errors in the magnetic/bathymetric data sets.
-.SH X_SYSTEM PHILOSOPHY
+.SH x_system PHILOSOPHY
 	Since the d.c.-shift/drift corrections for a given cruise depend entirely on the  values of the
 COEs generated at intersections with other cruises, there is no such thing as a 'final correction'
 as long as we keep on adding data to the data base. This means that the system must be able to
 incorporate new data and compute a new set of d.c.-shifts/drift-rates that takes the new COEs into
-account. \fBX_SYSTEM\fP is made modular so that one program computes the actual COEs, one
+account. \fBx_system\fP is made modular so that one program computes the actual COEs, one
 program archives the COE information, and the remaining programs do various tasks like
 reporting statistics (to flag bad cruises), extracting a subset of the COE database, and solving for
 the best fitting d.c.-shift/drift corrections. This way only the new COEs generated need to be
 computed and added to the database before a new correction solution is sought.
 .br
-	All the 8 programs that make up the \fBX_SYSTEM\fP package have been written in the C
+	All the 8 programs that make up the \fBx_system\fP package have been written in the C
 programming language and are intended to be run on a UNIX machine. Thus, it is assumed that
 the user has access to UNIX tools like \fIawk, grep\fP, and \fIsort\fP, and that the operating system
 provides a means for redirecting input/output. Likewise, it is assumed that all the geophysical
@@ -43,7 +43,7 @@ being maintained by the database librarian.
 point out usage, useful tricks, and pitfalls. (A more complete description of what exactly each
 program does can be found in the man pages for each program).
 We will assume that we initially have N cruises in our GMT data bank, and that we just have
-received the \fBX_SYSTEM\fP package. The first thing to do is to run \fBx_init\fP which will create an
+received the \fBx_system\fP package. The first thing to do is to run \fBx_init\fP which will create an
 empty data base system. This will normally be done only once. 
 With N cruises on our hands we will in the worst case have to compare the N*(N+1)/2
 possible pairs. This is where \fBx_setup\fP comes in handy. It will read the 1 by 1 degree bin
@@ -80,7 +80,7 @@ a temporary file, but it is wise to back it up to tape just in case.
 	When the \fBx_over\fP part is done, time has come to archive the data more efficiently than
 ASCII files. This is done by \fBx_update\fP which rearranges the data and updates the binary data
 base system. After this step the xjob.d files can be deleted (presuming they have been backed up
-to tape).  At this stage we have several options available. We can  list some of the COEs by running
+to tape).  At this stage we have several options available. We can list some of the COEs by running
 \fBx_list\fP, which will extract COEs that match the options we pass, e.g. we might ask for all the
 internal COEs for cruise c2104, and only print out time and gravity COE. See the man pages for more
 details. \fBx_report\fP can be run, and will output statistics for separate cruises, i.e. mean and

@@ -1,6 +1,6 @@
-.TH X_SETUP l DATE
+.TH x_setup l DATE
 .SH NAME
-\fBX_SETUP\fP \- Determine Pairs of Legs that need Cross-Over Checking
+\fBx_setup\fP \- Determine Pairs of Legs that need Cross-Over Checking
 .SH SYNOPSIS
 \fBx_setup\fP [ \fB\-L\fP\fIlegfile\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP ]
 .SH DESCRIPTION
