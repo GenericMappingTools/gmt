@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.26 2001-09-21 02:25:49 pwessel Exp $
+ *	$Id: gmt.h,v 1.27 2001-10-01 23:26:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -208,10 +208,10 @@ typedef double GMT_dtime;	/* GMT internal time representation */
  *--------------------------------------------------------------------*/
 
 #define N_UNIQUE 59		/* Number of unique options */
-#define N_KEYS 79		/* Number of gmt defaults */
+#define N_KEYS 82		/* Number of gmt defaults */
 #define N_FONTS 39		/* Number of fonts in the PS_font_names.h include file */
 #define GMT_N_MEDIA 29		/* Number of standard paper formats in the GMT_media_names.h include file */
-#define HASH_SIZE 79		/* Used in get_gmtdefaults, should be ~> N_KEYS */
+#define HASH_SIZE 82		/* Used in get_gmtdefaults, should be ~> N_KEYS */
 #define GMT_N_SYSTEMS 6		/* Number of time systems in gmt_time_systems.h */
 /* This structure contains default parameters for the GMT system */
 
@@ -235,6 +235,7 @@ struct GMTDEFAULTS {
 	int anot_font2;			/* Font for upper anotations on time axis  [Helvetica] */
 	int anot_font2_size;		/* Font size for upper anotations on time axis in points [16] */
 	double anot_offset;		/* Distance between anotation and tickmarks [0.075] */
+	double anot2_offset;		/* Distance between upper and lower anotations [0.075] */
 	char basemap_axes[5];		/* Which axes to draw and annotate ["WESN"]  */
 	int basemap_frame_rgb[3];	/* Frame color rgb [(0,0,0) = black] */
 	int basemap_type;		/* Fancy (0) or plain (1) [0] */
@@ -257,6 +258,7 @@ struct GMTDEFAULTS {
 	BOOLEAN gridfile_shorthand;	/* Use shorthand suffix notation for embedded formats [FALSE] */
 	int header_font;		/* Font for headers [Helvetica] */
 	int header_font_size;		/* Font size for headers in points [36] */
+	double header_offset;		/* Distance between lowermost anotation (or label) and base of plot title [0.1875] */
 	double hsv_min_saturation;	/* For smallest or most negative intensity [1.0] */
 	double hsv_max_saturation;	/* For largest or most positive intensity [0.1] */
 	double hsv_min_value;		/* For smallest or most negative intensity [0.3] */
@@ -266,6 +268,7 @@ struct GMTDEFAULTS {
 	int n_header_recs;		/* number of header records [0] */
 	int label_font;			/* Font for labels [Helvetica] */
 	int label_font_size;		/* Font size for labels in points [24] */
+	double label_offset;		/* Distance between lowermost anotation and top of label [0.1125] */
 	BOOLEAN last_page;		/* If TRUE, terminate plot system when done [TRUE] */
 	double line_step;		/* Maximum straight linesegment length for arcuate lines */
 	double map_scale_factor;	/* Central mapscale factor, typically 0.9996 */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.50 2001-09-27 08:17:11 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.51 2001-10-01 23:26:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -99,7 +99,7 @@ struct GMT_BACKWARD {	/* Used to ensure backwards compatibility */
 
 BOOLEAN GMT_force_resize = FALSE, GMT_anot_special = FALSE;
 int save_anot2_size, save_label_size, save_header_size;
-double save_anot_offset, save_tick_length, save_frame_width;
+double save_anot_offset, save_anot2_offset, save_label_offset, save_header_offset, save_tick_length, save_frame_width;
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 	
@@ -1039,6 +1039,9 @@ void GMT_backwards_compatibility () {
 		gmtdefs.label_font_size = irint (24.0 * gmtdefs.anot_font_size / 14.0);
 		gmtdefs.header_font_size = irint (36.0 * gmtdefs.anot_font_size / 14.0);
 		gmtdefs.anot_offset = gmtdefs.tick_length = 0.075 * gmtdefs.anot_font_size / 14.0;
+		gmtdefs.anot2_offset = 0.075 * gmtdefs.anot_font2_size / 14.0;
+		gmtdefs.label_offset = 1.5 * fabs (gmtdefs.anot_offset);
+		gmtdefs.header_offset = 2.5 * fabs (gmtdefs.anot_offset);
 		gmtdefs.frame_width = 0.05 * gmtdefs.anot_font_size / 14.0;
 	}
 }
@@ -1609,6 +1612,15 @@ int GMT_setparameter (char *keyword, char *value)
 				error = TRUE;
 			break;
 
+		case 79:
+			save_anot2_offset = gmtdefs.anot2_offset = GMT_convert_units (value, GMT_INCH);
+			break;
+		case 80:
+			save_label_offset = gmtdefs.label_offset = GMT_convert_units (value, GMT_INCH);
+			break;
+		case 81:
+			save_header_offset = gmtdefs.header_offset = GMT_convert_units (value, GMT_INCH);
+			break;
 		default:
 			error = TRUE;
 			fprintf (stderr, "%s: GMT SYNTAX ERROR in GMT_setparameter:  Unrecognized keyword %s\n", 
@@ -1677,11 +1689,14 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "ANOT_FONT2		= %s\n", GMT_font_name[gmtdefs.anot_font2]);
 	(GMT_force_resize) ? fprintf (fp, "ANOT_FONT2_SIZE		= %dp\n", save_anot2_size) : fprintf (fp, "ANOT_FONT2_SIZE		= %dp\n", gmtdefs.anot_font2_size);
 	(GMT_force_resize) ? fprintf (fp, "ANOT_OFFSET		= %lg%c\n", save_anot_offset * s, u) : fprintf (fp, "ANOT_OFFSET		= %lg%c\n", gmtdefs.anot_offset * s, u);
+	(GMT_force_resize) ? fprintf (fp, "ANOT2_OFFSET		= %lg%c\n", save_anot2_offset * s, u) : fprintf (fp, "ANOT2_OFFSET		= %lg%c\n", gmtdefs.anot2_offset * s, u);
 	fprintf (fp, "DEGREE_SYMBOL		= %s\n", GMT_degree_choice[gmtdefs.degree_symbol]);
 	fprintf (fp, "HEADER_FONT		= %s\n", GMT_font_name[gmtdefs.header_font]);
 	(GMT_force_resize) ? fprintf (fp, "HEADER_FONT_SIZE	= %dp\n", save_header_size) : fprintf (fp, "HEADER_FONT_SIZE	= %dp\n", gmtdefs.header_font_size);
+	(GMT_force_resize) ? fprintf (fp, "HEADER_OFFSET			= %lg%cp\n", save_header_offset * s, u) : fprintf (fp, "HEADER_OFFSET		= %lg%c\n", gmtdefs.header_offset * s, u);
 	fprintf (fp, "LABEL_FONT		= %s\n", GMT_font_name[gmtdefs.label_font]);
 	(GMT_force_resize) ? fprintf (fp, "LABEL_FONT_SIZE		= %dp\n", save_label_size) : fprintf (fp, "LABEL_FONT_SIZE		= %dp\n", gmtdefs.label_font_size);
+	(GMT_force_resize) ? fprintf (fp, "LABEL_OFFSET			= %lg%cp\n", save_label_offset * s, u) : fprintf (fp, "LABEL_OFFSET		= %lg%c\n", gmtdefs.label_offset * s, u);
 	fprintf (fp, "OBLIQUE_ANOTATION	= %d\n", gmtdefs.oblique_anotation);
 	fprintf (fp, "PLOT_CLOCK_FORMAT	= %s\n", gmtdefs.plot_clock_format);
 	fprintf (fp, "PLOT_DATE_FORMAT	= %s\n", gmtdefs.plot_date_format);

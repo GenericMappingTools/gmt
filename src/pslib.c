@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.22 2001-09-27 10:56:24 pwessel Exp $
+ *	$Id: pslib.c,v 1.23 2001-10-01 23:26:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1420,6 +1420,8 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		fprintf (ps.fp, "/c {P V C F U N} def\n");
 		fprintf (ps.fp, "/d {P V C F U S} def\n");
 		fprintf (ps.fp, "/p {P S} def\n");
+		fprintf (ps.fp, "/PSL_get_stringwidth {0 0 M true charpath flattenpath pathbbox N pop exch pop sub abs} def\n");
+		fprintf (ps.fp, "/PSL_get_stringheight {0 0 M true charpath flattenpath pathbbox N exch pop sub abs exch pop} def\n");
 	
 		/* Define font macros (see pslib.h for details on how to add fonts) */
 		
@@ -3411,6 +3413,16 @@ struct GMT_WORD *add_word_part (char *word, int length, int fontno, int font_siz
 	memcpy ((void *)new->rgb, rgb, (3 * sizeof (int)));
 
 	return (new);
+}
+
+void ps_set_length (char *param, double value)
+{
+	fprintf (ps.fp, "/%s %d def\n", param, irint (value * ps.scale));
+}
+
+void ps_set_height (char *param, int fontsize)
+{
+	fprintf (ps.fp, "/%s %d def\n", param, irint (fontsize * ps.scale / ps.points_pr_unit));
 }
 
 void *ps_memory (void *prev_addr, size_t nelem, size_t size)

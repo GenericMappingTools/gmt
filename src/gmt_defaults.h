@@ -5,6 +5,7 @@
 	0,			/* ANOT_FONT2 */
 	16,			/* ANOT_FONT2_SIZE */
 	0.075,			/* ANOT_OFFSET */
+	0.075,			/* ANOT2_OFFSET */
 	"WESN",			/* BASEMAP_AXES */
 	{0, 0, 0},		/* BASEMAP_FRAME_RGB */
 	0,			/* BASEMAP_TYPE */
@@ -26,6 +27,7 @@
 	FALSE,			/* GRIDFILE_SHORTHAND */
 	0,			/* HEADER_FONT */
 	36,			/* HEADER_FONT_SIZE */
+	0.1875,			/* HEADER_OFFSET */
 	1.0,			/* HSV_MIN_SATURATION */
 	0.1,			/* HSV_MAX_SATURATION */
 	0.3,			/* HSV_MIN_VALUE */
@@ -35,6 +37,7 @@
 	1,			/* N_HEADER_RECS (if -H is set) */
 	0,			/* LABEL_FONT */
 	24,			/* LABEL_FONT_SIZE */
+	0.1125,			/* LABEL_OFFSET */
 	TRUE,			/* LAST_PAGE */
 	0.01,
 	0.9996,			/* MAP_SCALE_FACTOR */
