@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.72 2004-09-23 21:17:42 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.73 2004-09-24 21:44:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5538,7 +5538,7 @@ int GMT_truncate_x (double *x, double *y, int n, int start, int l_or_r)
 		i = (i + 1)%n;	/* Next point */
 		w_last = w_this;
 		w_this = GMT_half_map_width (y[i]);
-		if (GMT_this_point_wraps_x (x[i-1], x[i], w_last, w_this)) {
+		if (GMT_this_point_wraps_x (x[i1], x[i], w_last, w_this)) {
 			(*GMT_get_crossings) (xc, yc, x[i1], y[i1], x[i], y[i]);
 			GMT_x_plot[j] = (*x_on_border) (yc[0]);
 			GMT_y_plot[j] = yc[0];
@@ -5582,7 +5582,7 @@ int GMT_truncate_tm (double *x, double *y, int n, int start, int b_or_t)
 	while (k <= n) {
 		i1 = i;
 		i = (i + 1)%n;	/* Next point */
-		if (GMT_this_point_wraps_tm (y[i-1], y[i])) {
+		if (GMT_this_point_wraps_tm (y[i1], y[i])) {
 			GMT_get_crossings_tm (xc, yc, x[i1], y[i1], x[i], y[i]);
 			GMT_x_plot[j] = xc[0];
 			GMT_y_plot[j] = trunc_y;

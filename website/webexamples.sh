@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.9 2004-09-21 18:58:44 pwessel Exp $
+#	 $Id: webexamples.sh,v 1.10 2004-09-24 21:44:53 pwessel Exp $
 #
 #	webexamples.sh - Automatic generation of the GMT examples pages
 #
@@ -11,7 +11,7 @@
 #
 #	Script that creates the examples web pages from
 #	the scripts files and resulting postscript files
-#	Files created:
+#	Files created in the local www directory:
 #
 #	gmt/gmt_examples.html
 #	gmt/examples/gmt_example_??.html
