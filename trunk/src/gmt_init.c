@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.129 2004-05-04 17:14:15 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.130 2004-05-06 00:07:25 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -404,7 +404,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t   Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes.\n");
 			fprintf (stderr, "\t   Append r if -R specifies the longitudes/latitudes of the lower left\n");
 			fprintf (stderr, "\t   and upper right corners of a rectangular area.\n");
-			fprintf (stderr, "\t   -Rg is accepted shorthand for -R0/360/-90/90\n");
+			fprintf (stderr, "\t   -Rg -Rd are accepted shorthands for -R0/360/-90/90 -R-180/180/-90/90\n");
 			break;
 			
 		case 'r':	/* Region option for 3-D */
@@ -833,6 +833,13 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			GMT_processed_option[8] = TRUE;
 			if (item[2] == 'g') {	/* Shorthand for -R0/360/-90/90 */
 				*w = project_info.w = 0.0;	*e = project_info.e = 360.0;
+				*s = project_info.s = -90.0;	*n = project_info.n = +90.0;
+				GMT_io.in_col_type[0] = GMT_IS_LON;	GMT_io.in_col_type[1] = GMT_IS_LAT;
+	 			project_info.region_supplied = TRUE;
+				break;
+			}
+			if (item[2] == 'd') {	/* Shorthand for -R-180/+180/-90/90 */
+				*w = project_info.w = -180.0;	*e = project_info.e = +180.0;
 				*s = project_info.s = -90.0;	*n = project_info.n = +90.0;
 				GMT_io.in_col_type[0] = GMT_IS_LON;	GMT_io.in_col_type[1] = GMT_IS_LAT;
 	 			project_info.region_supplied = TRUE;

@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.46 2004-04-27 22:34:33 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.47 2004-05-06 00:07:25 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -232,7 +232,8 @@ formats:
 \begin{description}
 \item [Geographic coordinates:]  These are longitudes and latitudes and may be given in decimal degrees (e.g., -123.45417)
 or in the [$\pm$]{\it ddd}[:{\it mm}[:{\it ss}[{\it .xxx}]]][{\bf W}$|${\bf E}$|${\bf S}$|${\bf N}]
-format (e.g., 123:27:15W).  Note that \Opt{Rg} is a shorthand for ``global domain'' \Opt{R}{\it 0}/{\it 360}/{\it -90}/{\it 90}.
+format (e.g., 123:27:15W).  Note that \Opt{Rg} and \Opt{Rg} are shorthands for ``global domain'' \Opt{R}{\it 0}/{\it 360}/{\it -90}/{\it 90}
+and  \Opt{R}{\it -180}/{\it 180}/{\it -90}/{\it 90}, respectively.
 \item [Calendar time coordinates:]  These are absolute time coordinates referring to a Gregorian or ISO calendar.
 The general format is [{\it date}]{\bf T}[{\it clock}], where {\it date} (if present) must be in the {\it yyyy}[{\it -mm}[{\it -dd}]] (year, month, day-of-month)
 or {\it yyyy}[{\it -jjj}] (year and day-of-year) for Gregorian calendars and {\it yyyy}[{\it -}{\bf W}{\it ww}[{\it -d}]] (year, week, and
