@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.69 2004-05-11 01:07:16 pwessel Exp $
+ *	$Id: gmt.h,v 1.70 2004-05-12 19:11:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -417,6 +417,8 @@ struct MAP_ROSE {	/* Used to plot a map direction "rose" in psbasemap and pscoas
 	double size;		/* Diameter of the rose in measure units */
 	double declination;	/* Magnetic declination if needed */
 	double a_int[2];	/* Annotation interval for geographic and magnetic directions */
+	double f_int[2];	/* Tick (large) interval for geographic and magnetic directions */
+	double g_int[2];	/* Tick (small) interval for geographic and magnetic directions */
 	BOOLEAN plot;		/* TRUE if we want to draw the rose */
 	BOOLEAN fancy;		/* TRUE for a fancy map rose */
 	BOOLEAN gave_xy;	/* TRUE if x0, y0 was given in cartesian map coordinates and not lon/lat */
