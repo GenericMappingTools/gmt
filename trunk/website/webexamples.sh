@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.3 2001-10-12 04:02:24 pwessel Exp $
+#	 $Id: webexamples.sh,v 1.4 2002-02-27 23:15:24 pwessel Exp $
 #
 #	webexamples.csh - Automatic generation of the GMT examples pages
 #
@@ -20,8 +20,8 @@
 #	gmt/examples/example_??_100dpi.gif (using convert)
 #-----------------------------------------------------------------------------
 
-GMT050dpi="convert -density 50x50 -page 612x792"
-GMT100dpi="convert -density 100x100 -page 612x792"
+GMT050dpi="convert -density 50x50"
+GMT100dpi="convert -density 100x100"
 
 if [ $# -eq 1 ]; then
 	gush=0
@@ -153,10 +153,15 @@ while [ $i -le $n_examples ]; do
 
 	\cp ../../../../examples/$dir/example_${number}.ps .
 
-#	Make the GIF at both 50 and 100 dpi
+#	Make the GIF at both 50 and 100 dpi, rotating the landscape ones
 
-	$GMT100dpi example_${number}.ps example_${number}_100dpi.gif
-	$GMT050dpi example_${number}.ps example_${number}_50dpi.gif
+	if [ `grep "612 0 T 90 R" example_${number}.ps | wc -l` -eq 1 ]; then
+		rot="-rotate 90"
+	else
+		rot=""
+	fi
+	$GMT100dpi $rot example_${number}.ps example_${number}_100dpi.gif
+	$GMT050dpi $rot example_${number}.ps example_${number}_50dpi.gif
 
 #	Write the html file
 
