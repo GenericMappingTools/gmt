@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.20 2004-07-13 18:47:09 pwessel Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.21 2004-07-14 00:46:17 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -22,7 +22,7 @@ mostly follow the following format:
 \item We explain what we want to achieve in plain
 language.
 
-\item We present a cshell script that contains
+\item We present an annotated cshell script that contains
 all commands used to generate the illustration.
 
 \item We explain the rationale behind the commands.
@@ -130,7 +130,7 @@ color image.  Next we run \GMTprog{grdimage} to create a
 color-code image of the Geosat geoid heights, and draw a
 color scale to the right of the image with \GMTprog{psscale}.
 We also annotate the color scales with \GMTprog{psscale}.
-Similarly, we run \GMTprog{grdimage} but specify \Opt{Y}4.5
+Similarly, we run \GMTprog{grdimage} but specify \Opt{Y}4.5i
 to plot above the previous image.  Adding scale and label
 the two plots a) and b) completes the illustration
 (Figure~\ref{fig:GMT_example_02}).
@@ -379,7 +379,7 @@ basemap and add the columns and text on top. Our script reads:
 
 \input{scripts/GMT_example_10}
 
-with the result presented in Figure~\ref{fig:GMT_example_10}.
+The result is presented in Figure~\ref{fig:GMT_example_10}.
 
 \GMTfig[ht]{GMT_example_10}{Geographical bar graph.}
 
@@ -423,7 +423,7 @@ The \progname{\$AWK} script \filename{rgb\_cube.awk} is as follows:
 
 \input{scripts/rgb_cube_awk}
 
-The cube can be viewed in Figure~\ref{fig:GMT_example_11}
+The cube can be viewed in Figure~\ref{fig:GMT_example_11}.
 
 \GMTfig[ht]{GMT_example_11}{The RGB color cube.}
 
@@ -666,7 +666,9 @@ squares, triangles, etc. in the \GMT\ plotting programs
 \GMTprog{psxy} and \GMTprog{psxyz}.  Here we demonstrate one
 approach that allows for a fair bit of flexibility in
 designing ones own symbols.  The following recipe is used
-when designing a new symbol. (1) Use \GMTprog{psbasemap} (or
+when designing a new symbol.
+\begin{enumerate}
+\item Use \GMTprog{psbasemap} (or
 engineering paper!) to set up an empty grid that goes from
 -0.5 to +0.5 in both {\it x} and {\it y}.  Use ruler and
 compass to draw your new symbol using straight lines,
@@ -677,9 +679,9 @@ new symbol we will call volcano.
 
 \GMTfig[ht]{GMT_volcano}{Making a new volcano symbol for \gmt.}
 
-(2) After designing the symbol we will encode it using a
+\item After designing the symbol we will encode it using a
 simple set of rules.  In our case we describe our volcano
-using these 3 freeform polygon generators:
+using these three freeform polygon generators:
 
 \begin{tabbing} 
 
@@ -687,7 +689,7 @@ $x_0$ $y_0$ $r$ {\bf C} [ \Opt{G}{\it fill} ] [ \Opt{W}{\it pen} ] \=Draw \kill
 
 $x_0$ $y_0$ {\bf M} [ \Opt{G}{\it fill} ] [ \Opt{W}{\it pen} ] \> Start new element at $x_0$, $y_0$ \\ 
 
-$x_1$ $y_1$ {\bf D} \> Draw straight line from current point to $x_1$, $y_1$ \\ 
+$x_1$ $y_1$ {\bf D} \> Draw straight line from current point to $x_1$, $y_1$ around ($x_0$, $y_0$) \\ 
 
 $x_0$ $y_0$ $r$ $\alpha_1$ $\alpha_2$ {\bf A} \> Draw
 arc segment of radius $r$ from angle $\alpha_1$ to $\alpha_2$
@@ -713,8 +715,11 @@ definition file \filename{volcano.def}:
 \input{scripts/volcano_def} 
 
 The values refer to positions and dimensions illustrated
-in Figure~\ref{fig:GMT_volcano} above.  (3) Given a proper
+in Figure~\ref{fig:GMT_volcano} above.
+
+\item Given a proper
 definition file we may now use it with \GMTprog{psxy} or \GMTprog{psxyz}.
+\end{enumerate}
 
 We are now ready to give it a try.  Based on the hotspot
 locations in the file \filename{hotspots.d} (with a 3rd column

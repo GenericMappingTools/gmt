@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.50 2004-07-13 18:47:09 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.51 2004-07-14 00:46:17 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -391,12 +391,22 @@ order of units: The ``primary'' annotation interval is smaller (e.g., days) whil
 \subsubsection{Geographic basemaps}
 
 Geographic basemaps may differ from regular plot axis in that some projections support a
-``fancy'' form of axis and is selected by the {\bf BASEMAP\_TYPE} setting.  The annotations will be formatted according to
-the {\bf PLOT\_DEGREE\_FORMAT} template and {\bf DEGREE\_SYMBOL} setting.  An example of part of a basemap is shown in Figure~\ref{fig:GMT_-B_geo}.
+``fancy'' form of axis and is selected by the {\bf BASEMAP\_TYPE} setting.  The annotations
+will be formatted according to the {\bf PLOT\_DEGREE\_FORMAT} template and {\bf DEGREE\_SYMBOL}
+setting.  A simple example of part of a basemap is shown in Figure~\ref{fig:GMT_-B_geo_1}.
 
-\GMTfig[h]{GMT_-B_geo}{Geographic map border using separate selections for annotation,
+\GMTfig[h]{GMT_-B_geo_1}{Geographic map border using separate selections for annotation,
 frame, and grid intervals.  Formatting of the annotation is controlled by
 the parameter {\bf PLOT\_DEGREE\_FORMAT} in your \filename{.gmtdefaults4}\ file.}
+
+The machinery for primary and secondary annotations introduced for time-series axes can
+also be utilized for geographic basemaps.  This is particularly useful to separate the
+degree annotations from minutes and seconds annotations.  For a more complicated basemap
+example using several sets of intervals, including different intervals and pen attributes
+for grid lines and grid crosses, see Figure~\ref{fig:GMT_-B_geo_2}.
+
+\GMTfig[h]{GMT_-B_geo_2}{Geographic map border with both primary and secondary components.}
+
 
 \subsubsection{Cartesian linear axes}
 
@@ -788,9 +798,15 @@ documentation.
 If filenames are given for reading, \GMT\ programs will first look for them in the
 current directory.  If the file is not found, the programs
 will look in three other directories pointed to by environmental
-parameters (if set).  These are {\bf GMT\_DATADIR}, {\bf GMT\_GRIDDIR}, and
-{\bf GMT\_IMGDIR} and may be set by the user to point to directories
-that contain data sets of general use.  Data sets that are often needed
+parameters (if set).  These are {\bf GMT\_GRIDDIR}, {\bf GMT\_IMGDIR}, and
+{\bf GMT\_DATADIR}, and they may be set by the user to point to directories
+that contain data sets of general use.  Normally, the first directory will
+hold gridded data sets accessible via the supplemental program \GMTprog{grdraster}
+whereas the second will hold the binary Mercator data images accessible via
+the supplemental program \GMTprog{img2grd}; see Appendix A for information
+about these supplemental programs.  The third directory may hold miscellaneous
+data sets such as lines, points, and text plottable directly with \GMTprog{psxy}
+or \GMTprog{pstext}.  Data sets that the user finds are often needed
 may be placed in these directories, thus eliminating the need to specify
 a full path to the file.  Program output is always written to the
 current directory unless a full path has been specified.
@@ -965,7 +981,9 @@ orange, yellow, green, cyan, blue, magenta, gray, brown}\}.
 \index{Attributes!pen!texture}%
 \item[$\rightarrow$]The {\it texture} attribute controls the appearance
 of the line.  ``.'' yieds a dotted line, while a dashed pen is requested with ``-''.
-The lengths of dots and dashes are scaled relative to the pen width.
+The lengths of dots and dashes are scaled relative to the pen width (dots has
+a length that equals the pen width while dashes are 8 times as long; gaps between
+segments are 4 times the pen width).
 For more detailed attributes including exact dimensions you may specify {\it string}:{\it offset},
 where {\it string} is a series of numbers separated by underscores.
 These numbers represent a pattern by indicating the length of line
@@ -977,6 +995,21 @@ from the origin, specify \Opt{W}0.1c,yellow,4\_8\_5\_8:2p.
 In general, the texture units can be specified in dpi units, cm, inch, points,
 or meters (see \emph{width} discussion above). 
 \end{description} 
+Table~\ref{tbl:penex} contains additional examples of pen specifications suitable for, say, \GMTprog{psxy}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|} \hline
+\multicolumn{1}{|c|}{\emph{Pen example}}	&	\multicolumn{1}{c|}{\emph{Comment}} \\ \hline
+\Opt{W}0.5p		&	Plain solid line, 0.5 point thick \\ \hline 
+\Opt{W}thin,red,-	&	Dashed, thin red line \\ \hline 
+\Opt{W}fat,.		&	Fat dotted line [black] \\ \hline 
+\Opt{W}0.1c,120-1-1	&	Green (in h-s-v) pen, 1 mm thick \\ \hline 
+\Opt{W}faint,100/0/0/0,..-	&	Very thin, cyan (in c/m/y/k), dot-dot-dashed line \\ \hline 
+\end{tabular}
+\caption{A few examples of pen specifications.}
+\label{tbl:penex}
+\end{table}
 
 \section{Specifying area fill attributes}
 
@@ -1041,6 +1074,25 @@ and abort.  Should that occur we recommend that you use a regular grayshade
 fill instead of the patterns.  Installing more memory in your printer
 \emph{may or may not} solve the problem! 
 
+Table~\ref{tbl:fillex} contains a few examples of fill specifications.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|} \hline
+\multicolumn{1}{|c|}{\emph{Fill example}}	&	\multicolumn{1}{c|}{\emph{Comment}} \\ \hline
+\Opt{G}blue		&	Solid blue \\ \hline 
+\Opt{G}120/80/35	&	Kind of brown, R/G/B-style \\ \hline 
+\Opt{G}290-0.25-1	&	Digging pink, h-s-v -- style \\ \hline 
+\Opt{G}DarkOliveGreen1	&	One of those X11 colors \\ \hline 
+\Opt{Gp}300/7		&	Simple diagonal hachure pattern in b/w at 300 dpi\\ \hline 
+\Opt{Gp}300/7:Bred	&	Same, but with red lines on white \\ \hline 
+\Opt{Gp}300/7:BredF-	&	Now the gaps between red lines are transparent \\ \hline 
+\Opt{Gp}100/marble.ras	&	Using user image of marble as the fill at 100 dpi \\ \hline 
+\end{tabular}
+\caption{A few examples of fill specifications.}
+\label{tbl:fillex}
+\end{table}
+
 \section{Color palette tables}
 
 \index{Color!palette tables|(}
@@ -1050,7 +1102,12 @@ Several programs, such as those which read 2-D gridded data sets and create
 colored images or shaded reliefs, need to be told what colors to use and
 over what {\it z}-range each color applies.  This is the purpose of the
 color palette table (cpt-file).  These files may also be used by \GMTprog{psxy}
-and \GMTprog{psxyz} to plot color-filled symbols.
+and \GMTprog{psxyz} to plot color-filled symbols.  For most applications, you
+will simply create a cpt-file using the tool \GMTprog}{makecpt} which will
+take an existing color table and resample it to fit your particular data
+range.  However, in some situations you will need to make a cpt-file by
+hand or using text tools like \progname{awk} or \progname{perl}.
+
 The colors may be specified either in the RGB- (red, green, blue), CMYK- (cyan,
 magenta, yellow, black), or in the HSV-system (hue, saturation, value, and
 here the comment \# COLOR\_MODEL = HSV must be present in the cpt file since there
@@ -1112,13 +1169,15 @@ consider
 \begin{tabular}{lllllllll}
 30 &  p200/16 &  80 & -- \\ 
 80 &  -- &  100 &  -- \\
-100 &  255 &  0  &  0  &  200 &  255 &  255  &  0 \\
+100 &  200 &  0  &  0  &  200 &  255 &  255  &  0 \\
+200 &  yellow &  green & -- \\ 
 \end{tabular} 
 \end{center}
 \noindent
 where slice $30 < z < 80$ is painted with pattern \# 16 at 200 dpi,
-slice $80 < z < 100$ is skipped, while slice $100 < z < 200$ is
-painted in a range of red to yellow, depending on the actual value
+slice $80 < z < 100$ is skipped, slice $100 < z < 200$ is
+painted in a range of dark red to yellow, whereas the slice $200 < z < 300$
+will linearly yield colors from yellow to green, depending on the actual value
 of $z$.
 
 \index{Color!palette tables|)}
@@ -1133,14 +1192,14 @@ Some programs like \GMTprog{grdimage} and \GMTprog{grdview} apply artificial
 illumination to achieve shaded relief maps.  This is typically done
 by finding the directional gradient in the direction of the artificial
 light source and scaling the gradients to have approximately a normal
-distribution on the interval $<$-1,+1$>$.  These intensities are used
+distribution on the interval [-1,+1].  These intensities are used
 to add ``white'' or ``black'' to the color as defined by the {\it z}-values
 and the cpt-file.  An intensity of zero leaves the color unchanged.
 Higher values will brighten the color, lower values will darken it,
 all without changing the original hue of the color (see Appendix I
 for more details).  The illumination is decoupled from the data
 grd-file in that a separate grdfile holding intensities in the
-$<$-1,+1$>$ range must be provided.  Such intensity files can be
+[-1,+1] range must be provided.  Such intensity files can be
 derived from the data grdfile using \GMTprog{grdgradient} and modified
 with \GMTprog{grdhisteq}, but could equally well be a separate data set.
 E.g., some side-scan sonar systems collect both bathymetry and
@@ -1267,7 +1326,7 @@ and their octal codes is given in Appendix F.
 \index{grdfile!formats!custom format}
 \label{sec:grdformats}
 \GMT\ has the ability to read more than one grdfile
-format.  As distributed, \GMT\ now recognizes 12 predefined file
+format.  As distributed, \GMT\ now recognizes 13 predefined file
 formats.  These are  
 
 \begin{description} 
@@ -1283,6 +1342,7 @@ formats.  These are
 \item[ 9.] netCDF 2-byte int format
 \item[10.] netCDF 4-byte int format
 \item[11.] netCDF 8-byte double format
+\item[12.] NOAA/NGDC MGG grid format
 \end{description} 
 
 In addition, users with some C-programming experience may add

@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_B.tex,v 1.8 2004-06-11 03:02:58 pwessel Exp $
+%	$Id: GMT_Appendix_B.tex,v 1.9 2004-07-14 00:46:17 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -51,10 +51,12 @@ specify the \Opt{M} option.  The unique character is by default
 '$>$', but you can override that by appending your chosen character
 to the M option.  E.g., \Opt{MH} will look for subheaders starting
 with H, whereas \Opt{M'*'} will check for asterisks (The quotes
-are necessary since * has special meaning to \UNIX).  The subheaders
-may contain \Opt{W} and \Opt{G} options for specifying pen and
-fill attributes for individual segments.  These settings (and occasionally
-others) will override the corresponding command line options.
+are necessary since * has special meaning to \UNIX).  Some programs
+such as \GMTpog{psxy} will examine the subheaders to see if they
+contain \Opt{W} and \Opt{G} options for specifying pen and
+fill attributes for individual segments, \Opt{Z} to change
+color via a cpt-file, or \Opt{L} for label specifications.  These settings
+(and occasionally others) will override the corresponding command line options.
 
 \subsection{Binary tables}
 \index{Table!format!binary}
