@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.27 2004-10-21 04:51:35 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.28 2004-12-26 22:13:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -181,5 +181,5 @@ EXTERN_MSC void GMT_init_z_io (struct GMT_Z_IO *r, BOOLEAN input);
 EXTERN_MSC int GMT_parse_z_io (char *txt, struct GMT_Z_IO *r, BOOLEAN input);
 EXTERN_MSC void GMT_set_z_io (struct GMT_Z_IO *r, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_check_z_io (struct GMT_Z_IO *r, float *a);
-EXTERN_MSC int GMT_points_init (char *file, double **xp, double **yp, double **dp, double dist, BOOLEAN greenwich);
-EXTERN_MSC int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN greenwich);
+EXTERN_MSC int GMT_points_init (char *file, double **xp, double **yp, double **dp, double dist, BOOLEAN greenwich, BOOLEAN use_GMT_io);
+EXTERN_MSC int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN greenwich, BOOLEAN use_GMT_io);

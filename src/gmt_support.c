@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.144 2004-12-26 02:34:08 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.145 2004-12-26 22:13:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2031,7 +2031,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 		}
 	}
 	else if (G->crossing == GMT_CONTOUR_XCURVE) {
-		G->n_xp = GMT_lines_init (G->option, &G->xp, 0.0, FALSE);
+		G->n_xp = GMT_lines_init (G->option, &G->xp, 0.0, FALSE, FALSE);
 		for (k = 0; k < G->n_xp; k++) {
 			for (i = 0; i < G->xp[k].np; i++) {	/* Project */
 				GMT_geo_to_xy (G->xp[k].lon[i], G->xp[k].lat[i], &x, &y);
@@ -6031,14 +6031,16 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_LINES *p, int 
 		 * intersection between the line segment and the normal from our point. */
 		
 		for (j0 = 0, j1 = 1; j1 < p[i].np; j0++, j1++) {	/* loop over straight segments on current line */
-			edge = lon - p[i].dist;
-			if (p[i].lon[j0] < edge && p[i].lon[j1] < edge) continue;	/* Left of square */
-			edge = lon + p[i].dist;
-			if (p[i].lon[j0] > edge && p[i].lon[j1] > edge) continue;	/* Right of square */
-			edge = lat - p[i].dist;
-			if (p[i].lat[j0] < edge && p[i].lat[j1] < edge) continue;	/* Below square */
-			edge = lat + p[i].dist;
-			if (p[i].lat[j0] > edge && p[i].lat[j1] > edge) continue;	/* Above square */
+			if (!return_mindist) {
+				edge = lon - p[i].dist;
+				if (p[i].lon[j0] < edge && p[i].lon[j1] < edge) continue;	/* Left of square */
+				edge = lon + p[i].dist;
+				if (p[i].lon[j0] > edge && p[i].lon[j1] > edge) continue;	/* Right of square */
+				edge = lat - p[i].dist;
+				if (p[i].lat[j0] < edge && p[i].lat[j1] < edge) continue;	/* Below square */
+				edge = lat + p[i].dist;
+				if (p[i].lat[j0] > edge && p[i].lat[j1] > edge) continue;	/* Above square */
+			}
 			
 			/* Here there is potential for the line segment crossing inside the circle */
 			
@@ -6048,6 +6050,8 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_LINES *p, int 
 				if (dy == 0.0) continue;	/* Dummy segment with no length */
 				xc = p[i].lon[j0];
 				yc = lat;
+				if (p[i].lat[j0] <= yc && p[i].lat[j1] <= yc ) continue;	/* Cross point is on extension */
+				if (p[i].lat[j0] >= yc && p[i].lat[j1] >= yc ) continue;	/* Cross point is on extension */
 			}
 			else {	/* Line segment is not vertical */
 				if (dy == 0.0) {	/* Line segment is horizontal, our normal is thus vertical */
@@ -6059,18 +6063,18 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_LINES *p, int 
 					s_inv = -1.0 / s;
 					xc = (lat - p[i].lat[j0] + s * p[i].lon[j0] - s_inv * lon ) / (s - s_inv);
 					yc = p[i].lat[j0] + s * (xc - p[i].lon[j0]);
+			
 				}
+				/* To be inside, (xc, yc) must (1) be on the line segment and not its extension and (2) be within dist of our point */
+			
+				if (p[i].lon[j0] <= xc && p[i].lon[j1] <= xc ) continue;	/* Cross point is on extension */
+				if (p[i].lon[j0] >= xc && p[i].lon[j1] >= xc ) continue;	/* Cross point is on extension */
 			}
 			
-			/* To be inside, (xc, yc) must (1) be on the line segment and not its extension and (2) be within dist of our point */
-			
-			if (p[i].lon[j0] <= xc && p[i].lon[j1] <= xc ) continue;	/* Cross point is on extension */
-			if (p[i].lon[j0] >= xc && p[i].lon[j1] >= xc ) continue;	/* Cross point is on extension */
-			
-			/* OK, here we must check how close the point is */
+			/* OK, here we must check how close the crossing point is */
 			
 			d = (*GMT_distance_func) (lon, lat, xc, yc);			/* Distance between our point and intersection */
-			if (return_mindist && d < (*dist_min)) *dist_min = d;				/* Node inside the critical distance; we are done */
+			if (return_mindist && d < (*dist_min)) *dist_min = d;		/* Node inside the critical distance; we are done */
 			if (d <= p[i].dist) return (TRUE);
 		}
 	}
