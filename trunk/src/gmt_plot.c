@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.32 2001-09-15 22:57:30 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.33 2001-09-16 21:02:41 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -127,6 +127,7 @@ void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct TIME_
 void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct TIME_AXIS_ITEM *T, double coord);
 void GMT_get_primary_anot (struct TIME_AXIS *A, int *primary, int *secondary);
 BOOLEAN GMT_skip_second_anot (int item, double x, double x2[], int n, int primary, int secondary);
+BOOLEAN GMT_fill_is_image (char *fill);
 
 /* Local variables to this file */
 
@@ -3793,7 +3794,7 @@ struct CUSTOM_SYMBOL * GMT_get_custom_symbol (char *name) {
 	for (i = 0; !found && i < GMT_n_custom_symbols; i++) found = !strcmp (name, GMT_custom_symbol[i]->name);
 	
 	if (!found) {	/* Must load new symbol */
-		GMT_custom_symbol = (struct CUSTOM_SYMBOL **) GMT_memory ((void *)GMT_custom_symbol, (size_t)GMT_n_custom_symbols, sizeof (struct CUSTOM_SYMBOL *), GMT_program);
+		GMT_custom_symbol = (struct CUSTOM_SYMBOL **) GMT_memory ((void *)GMT_custom_symbol, (size_t)(GMT_n_custom_symbols+1), sizeof (struct CUSTOM_SYMBOL *), GMT_program);
 		GMT_custom_symbol[GMT_n_custom_symbols] = GMT_init_custom_symbol (name);
 	}
 	
@@ -3853,12 +3854,12 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 			s->action = ACTION_DRAW;
 		}
 		else if (nc > 3 && col[3][0] == 'C') {	/* Draw complete circle */
-			s->action = ACTION_CIRCLE;
 			s->r = atof (col[2]);
 			if (nc > 4 && col[4][0] == '-' && col[4][1] == 'G') fill_p = &col[4][2], do_fill = TRUE;
 			if (nc > 4 && col[4][0] == '-' && col[4][1] == 'W') pen_p = &col[4][2], do_pen = TRUE;
 			if (nc > 5 && col[5][0] == '-' && col[5][1] == 'G') fill_p = &col[5][2], do_fill = TRUE;
 			if (nc > 5 && col[5][0] == '-' && col[5][1] == 'W') pen_p = &col[5][2], do_pen = TRUE;
+			s->action = (do_fill && GMT_fill_is_image (fill_p)) ? ACTION_POLYCIRCLE : ACTION_CIRCLE;
 		}
 		else if (nc == 6 && col[5][0] == 'A') {	/* Draw arc of a circle */
 			s->action = ACTION_ARC;
@@ -3875,13 +3876,15 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 			exit (EXIT_FAILURE);
 		}
 
+		s->fill = (struct GMT_FILL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_FILL), GMT_program);
 		if (do_fill) {
-			s->fill = (struct GMT_FILL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_FILL), GMT_program);
 			if (GMT_getfill (fill_p, s->fill)) {
 				GMT_fill_syntax ('G');
 				exit (EXIT_FAILURE);
 			}
 		}
+		else
+			s->fill->rgb[0] = s->fill->rgb[1] = s->fill->rgb[2] = -1;
 		if (do_pen) {
 			s->pen = (struct GMT_PEN *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_PEN), GMT_program);
 			if (GMT_getpen (pen_p, s->pen)) {
@@ -3895,6 +3898,11 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 	}
 	fclose (fp);
 	return (head);
+}
+
+BOOLEAN GMT_fill_is_image (char *fill) {
+	/* Returns TRUE if the fill arguments involves an image pattern */
+	return (fill[0] == 'P' || fill[0] == 'p');
 }
 
 void GMT_draw_custom_symbol (double x0, double y0, double size, struct CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, BOOLEAN outline) {
@@ -3938,7 +3946,14 @@ void GMT_draw_custom_symbol (double x0, double y0, double size, struct CUSTOM_SY
 				n++;
 				break;
 				
-			case ACTION_CIRCLE:
+			case ACTION_CIRCLE:	/* Clean circle - no image fill required */
+				if (flush) GMT_flush_symbol_piece (xx, yy, &n, p, pen, f, fill, outline, &flush);
+				p = s->pen;
+				f = s->fill;
+				ps_circle (x, y, s->r * size, f->rgb, outline);
+				break;
+				
+			case ACTION_POLYCIRCLE:	/* Circle to be filled with an image pattern - render as polygon */
 				if (flush) GMT_flush_symbol_piece (xx, yy, &n, p, pen, f, fill, outline, &flush);
 				p = s->pen;
 				f = s->fill;
@@ -3960,6 +3975,11 @@ void GMT_draw_custom_symbol (double x0, double y0, double size, struct CUSTOM_SY
 				break;
 				
 			case ACTION_ARC:
+				flush = TRUE;
+				ps_arc (x, y, s->r * size, s->dir1, s->dir2, 0);
+				break;
+				
+			case 99:
 				flush = TRUE;
 				sr = s->r * size;
 				arc = s->dir2 - s->dir1;	/* Arc length in radians */
