@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+/*	$Id: gshhstograss.c,v 1.2 2004-01-13 02:04:36 pwessel Exp $
  *
  * PROGRAM:     gshhstograss.c
  * AUTHOR:      Simon Cox (simon@ned.dem.csiro.au) &
@@ -11,9 +11,8 @@
  * VERSION:	1.4 05-SEP-2000: Swab done automatically
  */
 
+#include "gmt.h"
 #include "gshhs.h"
-#include <unistd.h>
-#include <string.h>
 #include <time.h>
 
 main (argc, argv)
