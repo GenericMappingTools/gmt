@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.111 2004-04-12 21:41:36 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.112 2004-04-12 23:08:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1390,6 +1390,13 @@ int GMT_setparameter (char *keyword, char *value)
 			dval = GMT_convert_units (value, GMT_INCH);
 			if (dval >= 0.0)
 				gmtdefs.grid_cross_size_primary = dval;
+			else
+				error = TRUE;
+			break;
+		case GMTCASE_GRID_CROSS_SIZE_SECONDARY:
+			dval = GMT_convert_units (value, GMT_INCH);
+			if (dval >= 0.0)
+				gmtdefs.grid_cross_size_secondary = dval;
 			else
 				error = TRUE;
 			break;
