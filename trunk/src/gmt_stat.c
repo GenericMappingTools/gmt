@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.25 2005-03-03 20:49:20 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.26 2005-03-03 22:40:04 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -82,7 +82,7 @@
 
 int GMT_inc_beta (double a, double b, double x, double *ibeta);
 int GMT_ln_gamma_r (double x, double *lngam);
-int GMT_f_q (double chisq1, int nu1, double chisq2, int nu2, double *prob);	
+int GMT_f_q (double chisq1, int nu1, double chisq2, int nu2, double *prob);
 int GMT_f_test_new (double chisq1, int nu1, double chisq2, int nu2, double *prob, int iside);
 int GMT_student_t_a (double t, int n, double *prob);
 double GMT_ln_gamma (double xx);
@@ -148,24 +148,24 @@ int	GMT_f_test_new (double chisq1, int nu1, double chisq2, int nu2, double *prob
 		routine in effect always set iside=0.
 		This routine also differs from GMT_f_test() in that the former
 		used the incomplete beta function and this one uses GMT_f_q().
-		
+
 		Returns 0 on success, -1 on failure.
-		
+
 		WHF Smith, 12 August 1999.
 	*/
-	
+
 	double	q;	/* The probability from GMT_f_q(), which is the prob
 				that H0 should be retained even though 
 				chisq1/nu1 > chisq2/nu2.  */
-	
+
 	if (chisq1 <= 0.0 || chisq2 <= 0.0 || nu1 < 1 || nu2 < 1) {
 		*prob = GMT_d_NaN;
 		fprintf (stderr, "GMT_f_test_new:  ERROR:  Bad argument(s).\n");
 		return (-1);
 	}
-	
+
 	GMT_f_q (chisq1, nu1, chisq2, nu2, &q);
-	
+
 	if (iside > 0) {
 		*prob = 1.0 - q;
 	}
@@ -178,7 +178,7 @@ int	GMT_f_test_new (double chisq1, int nu1, double chisq2, int nu2, double *prob
 	else {
 		*prob = 2.0*(1.0 - q);
 	}
-	
+
 	return (0);
 }
 
@@ -241,7 +241,7 @@ int	GMT_sig_f (double chi1, int n1, double chi2, int n2, double level, double *p
 		at the level level.  Returns FALSE if:
 			error occurs in GMT_f_test_new();
 			chi1/n1 not significantly < chi2/n2 at level.
-			
+
 			Changed 12 August 1999 to use GMT_f_test_new()  */
 
 	int	trouble;
@@ -450,7 +450,7 @@ void	GMT_gamma_cf (double *gammcf, double a, double x, double *gln) {
 	int n;
 	double gold = 0.0, g, fac = 1.0, b1 = 1.0;
 	double b0 = 0.0, anf, ana, an, a1, a0 = 1.0;
-	
+
 	GMT_ln_gamma_r (a, gln);
 
 	a1 = x;
@@ -477,14 +477,14 @@ void	GMT_gamma_cf (double *gammcf, double a, double x, double *gln) {
 
 double GMT_gammq (double a, double x) {
 	/* Returns Q(a,x) = 1 - P(a,x) Inc. Gamma function */
-	
+
 	double G, gln;
-	
+
 	if (x < 0.0 || a <= 0.0) {
 		fprintf (stderr, "GMT DOMAIN ERROR:  Invalid arguments to GMT_gammaq\n");
 		return (GMT_d_NaN);
 	}
-	
+
 	if (x < (a + 1.0)) {
 		GMT_gamma_ser (&G, a, x, &gln);
 		return (1.0 - G);
@@ -506,10 +506,10 @@ double GMT_ber (double x)
 	double t, rxsq, alpha, beta;
 
 	if (x == 0.0) return (1.0);
-	
+
 	/* ber is an even function of x:  */
 	x = fabs(x);
-	
+
 	if (x <= 8.0) {
 		/* Telescoped power series from Abramowitz & Stegun  */
 		t = x * 0.125;
@@ -525,7 +525,7 @@ double GMT_ber (double x)
 	else {
 		/* Russell's asymptotic approximation,
 			from Watson, p. 204  */
-		
+
 		rxsq = 1.0 / (x * x);
 		t = x / M_SQRT2;
 
@@ -547,12 +547,12 @@ double GMT_ber (double x)
 double GMT_bei (double x)
 {
 	double t, rxsq, alpha, beta;
-	
+
 	if (x == 0.0) return (0.0);
-	
+
 	/* bei is an even function of x:  */
 	x = fabs(x);
-	
+
 	if (x <= 8.0) {
 		/* Telescoped power series from Abramowitz & Stegun  */
 		t = x * 0.125;
@@ -596,7 +596,7 @@ double GMT_ker (double x)
 		fprintf (stderr, "GMT DOMAIN ERROR:  x <= 0 in GMT_ker(x)\n");
 		return (GMT_d_NaN);
 	}
-	
+
 	if (x <= 8.0) {
 		/* Telescoped power series from Abramowitz & Stegun  */
 		t = 0.125 * x;
@@ -611,11 +611,11 @@ double GMT_ker (double x)
 			-0.199636347 + t * (
 			0.00309699   + t * (
 			-0.00002458 * t))))))));
-	}	
+	}
 	else {
 		/* Russell's asymptotic approximation,
 			from Watson, p. 204  */
-	
+
 		rxsq = 1.0 / (x * x);
 		t = -x / M_SQRT2;
 
@@ -637,11 +637,11 @@ double GMT_ker (double x)
 double GMT_kei (double x)
 {
 	double t, rxsq, alpha, beta;
-	
+
 	if (x <= 0.0) {
 		/* Zero is valid.  If near enough to zero, return kei(0)  */
 		if (x > -GMT_CONV_LIMIT) return (-0.25 * M_PI);
-	
+
 		fprintf (stderr, "GMT DOMAIN ERROR:  x < 0 in GMT_kei(x)\n");
 		return (GMT_d_NaN);
 	}
@@ -815,7 +815,7 @@ double GMT_kn (int n, double x)
 
 double GMT_plm (int l, int m, double x)
 {
-	double fact, pll, pmm, pmmp1, somx2;
+	double fact, pll = 0, pmm, pmmp1, somx2;
 	int i, ll;
 
 	/* x is cosine of colatitude and must be -1 <= x <= +1 */
@@ -823,7 +823,6 @@ double GMT_plm (int l, int m, double x)
 		fprintf (stderr, "GMT DOMAIN ERROR:  fabs(x) > 1.0 in GMT_plm(x)\n");
 		return (GMT_d_NaN);
 	}
-		
 
 	pmm = 1.0;
 	if (m > 0) {
@@ -836,7 +835,7 @@ double GMT_plm (int l, int m, double x)
 		}
 	}
 	if (l == m) return (pmm);
-	
+
 	pmmp1 = x * (2*m + 1) * pmm;
 	if (l == (m + 1)) return (pmmp1);
 
@@ -863,14 +862,14 @@ double GMT_factorial (int n)
 {
 	int i;
 	double val = 1.0;
-	
+
 	if (n < 0) {
 		fprintf (stderr, "GMT DOMAIN ERROR:  n < 0 in GMT_factorial(n)\n");
 		return (GMT_d_NaN);
 		/* This could be set to return 0 without warning, to facilitate
 			sums over binomial coefficients, if desired.  -whfs  */
 	}
-		
+
 	for (i = 1; i <= n; i++) val *= ((double)i);
 	return (val);
 }
@@ -939,8 +938,8 @@ double GMT_dilog (double x)
 
 double GMT_erfinv (double y)
 {
-	double x, fy, z;
-	
+	double x = 0.0, fy, z;
+
 	/*  Misc. efficients for expansion */
 
 	static double a[4] = {0.886226899, -1.645349621,  0.914624893, -0.140543331};
@@ -949,24 +948,24 @@ double GMT_erfinv (double y)
 	static double d[2] = {3.543889200, 1.637067800};
 
 	fy = fabs (y);
-	
+
 	if (fy > 1.0) return (GMT_d_NaN);	/* Outside domain */
-	
+
 	if (fabs (1.0 - fy) < GMT_CONV_LIMIT) {	/* Close to +- Inf */
 		return (copysign (DBL_MAX, y));
 	}
-	
-	if (fy < 0.7) {	/* Central range */
-		z = y * y;
-		x = y * (((a[3] * z + a[2]) * z + a[1]) * z + a[0]) / ((((b[3] * z + b[2]) * z + b[1]) * z + b[0]) * z + 1.0);
-	}
-	else if (y > 0.7 && y < 1.0) { /* Near upper range */
+
+	if (y > 0.7) {		/* Near upper range */
 		z = sqrt (-log (0.5 * (1.0 - y)));
 		x = (((c[3] * z + c[2]) * z + c[1]) * z + c[0]) / ((d[1] * z + d[0]) * z + 1.0);
 	}
-	else if (y < -0.7 && y > -1.0) {	/* Near lower range */
+	else if (y < -0.7) {	/* Near lower range */
 		z = sqrt (-log (0.5 * (1.0 + y)));
 		x = -(((c[3] * z + c[2]) * z + c[1]) * z + c[0]) / ((d[1] * z + d[0]) * z + 1.0);
+	}
+	else {			/* Central range */
+		z = y * y;
+		x = y * (((a[3] * z + a[2]) * z + a[1]) * z + a[0]) / ((((b[3] * z + b[2]) * z + b[1]) * z + b[0]) * z + 1.0);
 	}
 
 	/* Apply two steps of Newton-Raphson correction to improve accuracy */
@@ -1122,7 +1121,7 @@ double GMT_erfc (double y)
 char	*GMT_strdup (const char *s) {
 	int n;
 	char *p;
-	
+
 	n = strlen (s) + 1;
 	p = (char *)malloc ((size_t)n);
 	strncpy (p, s, n);
@@ -1139,7 +1138,7 @@ double	GMT_strtod (const char *s, char **ends) {
 		found.  If (ends != (char **)NULL),
 		return a pointer to the first char
 		of s which cannot be converted.
-	
+
 	This routine is supplied in GMT because it
 	is not in the POSIX standard.  However, it
 	is in ANSI standard C, and so most systems
@@ -1151,18 +1150,18 @@ double	GMT_strtod (const char *s, char **ends) {
 	radix character, and error setting for
 	over and underflows.  Here, I rely on atof()
 	to do that.
-	
+
 	Note that if s can be converted successfully
 	and a non-null ends was supplied, then on
 	return, *ends[0] == 0.
-	
+
 	*/
-	
+
 	char	*t, savechar;
 	double	x = 0.0;
 	int	i, nsign[2], nradix[2], nexp, ndigits, error;
 	BOOLEAN inside = FALSE;
-	
+
 	t = (char *)s;
 	i = 0;
 	ndigits = 0;
@@ -1238,7 +1237,7 @@ int     GMT_f_q (double chisq1, int nu1, double chisq2, int nu2, double *prob)
 		is large with respect to 1.  That is, the value returned by
 		this routine is the likelihood that an F >= (chisq1/nu1)/
 		(chisq2/nu2) would occur by chance.
-		
+
 		Follows Abramowitz and Stegun.
 		This is different from the method in Numerical Recipes, which
 		uses the incomplete beta function but makes no use of the fact
@@ -1246,7 +1245,7 @@ int     GMT_f_q (double chisq1, int nu1, double chisq2, int nu2, double *prob)
 		a finite limit on the sum for their expression.
 
 		W H F Smith, August, 1999.
-		
+
 		REVISED by W H F Smith, October 27, 2000 after GMT 3.3.6 release.
 		I found that the A&S methods overflowed for large nu1 and nu2, so
 		I decided to go back to the GMT_inc_beta way of doing things.
@@ -1254,18 +1253,18 @@ int     GMT_f_q (double chisq1, int nu1, double chisq2, int nu2, double *prob)
 	*/
 		double	t, p, x, y, theta, term, sum, c, s, csq, ssq;
 		int	kt, kb, k, kstop;
-		
-	
+
+
 	/* Check range of arguments:  */
 
 	if (nu1 <= 0 || nu2 <= 0 || chisq1 < 0.0 || chisq2 < 0.0) {
 		fprintf (stderr, "GMT_f_q:  Bad argument(s).\n");
 		return (-1);
 	}
-	
-	
+
+
 	/* Extreme cases evaluate immediately:  */
-	
+
 	if (chisq1 == 0.0) {
 		*prob = 1.0;
 		return (0);
@@ -1274,10 +1273,10 @@ int     GMT_f_q (double chisq1, int nu1, double chisq2, int nu2, double *prob)
 		*prob = 0.0;
 		return (0);
 	}
-	
+
 	/* REVISION of Oct 27, 2000:  This inc beta call here returns
 		the value.  All subsequent code is not used.  */
-	
+
 	if (GMT_inc_beta(0.5*nu2, 0.5*nu1, chisq2/(chisq2+chisq1), prob) ) {
 		fprintf(stderr,"GMT_q_p:  Trouble in GMT_inc_beta call.\n");
 		return(-1);
@@ -1286,7 +1285,7 @@ int     GMT_f_q (double chisq1, int nu1, double chisq2, int nu2, double *prob)
 
 	/* If nu1 == 1, sqrt(F) is distributed as Student's t;
 		if nu2 == 1, use reflexive property to swap 1 and 2.  */
-	
+
 	if (nu1 == 1) {
 		t = sqrt(nu2 * chisq1 / chisq2);
 		if (GMT_student_t_a(t, nu2, &p) ) {
@@ -1303,11 +1302,11 @@ int     GMT_f_q (double chisq1, int nu1, double chisq2, int nu2, double *prob)
 		}
 		*prob = p;
 	}
-	
+
 	/* if nu1 == nu2, this reduces to a case of Student's t by using
 		A & S 26.5.14 and swapping chisq1, chisq2 if needed, using
 		the reflexive property:  */
-	
+
 	else if (nu1 == nu2) {
 		t = 0.5 * fabs(chisq1 - chisq2) * sqrt(nu1/(chisq1*chisq2));
 		GMT_student_t_a(t, nu1, &p);
@@ -1320,7 +1319,7 @@ int     GMT_f_q (double chisq1, int nu1, double chisq2, int nu2, double *prob)
 	}
 
 	/* General cases  */
-	
+
 	else if (nu1%2 == 1) {
 		if (nu2%2 == 1) {
 			/* Both odd.  Use Abramowitz and Stegun 26.6.8  */
@@ -1358,14 +1357,14 @@ int     GMT_f_q (double chisq1, int nu1, double chisq2, int nu2, double *prob)
 				fprintf (stderr, "GMT_f_q:  Error calling GMT_student_t_a()\n");
 				return (-1);
 			}
-			
+
 			*prob = 1.0 - p + term * sum;
 		}
 		else {
 
 			/* Get here when nu2 is even and both are greater than 1.
 				Use Abramowitz and Stegun 26.6.5  */
-		
+
 			x = chisq2 / (chisq1 + chisq2);
 			y = chisq1 / (chisq1 + chisq2);		/* y = 1 - x  */
 			kstop = (nu2 - 2)/2;
@@ -1381,7 +1380,7 @@ int     GMT_f_q (double chisq1, int nu1, double chisq2, int nu2, double *prob)
 				term *= (kt * x)/kb;
 				sum += term;
 			}
-			
+
 			term = sqrt(y);
 			k = 0;
 			kstop = (nu1 - 1)/2;
@@ -1389,13 +1388,13 @@ int     GMT_f_q (double chisq1, int nu1, double chisq2, int nu2, double *prob)
 				k++;
 				term *= y;
 			}
-			
+
 			*prob = 1.0 - term * sum;
 		}
 	}
 	else {
 		/* nu1 is even.  Use Abramowitz & Stegun 26.6.4  */
-			
+
 		x = chisq2 / (chisq1 + chisq2);
 		y = chisq1 / (chisq1 + chisq2);		/* y = 1 - x  */
 		kstop = (nu1 - 2)/2;
@@ -1411,7 +1410,7 @@ int     GMT_f_q (double chisq1, int nu1, double chisq2, int nu2, double *prob)
 			term *= (kt * y)/kb;
 			sum += term;
 		}
-		
+
 		if (nu2%2) {
 			kstop = (nu2 - 1)/2;
 			term = sqrt(x);
@@ -1425,25 +1424,25 @@ int     GMT_f_q (double chisq1, int nu1, double chisq2, int nu2, double *prob)
 			k++;
 			term *= x;
 		}
-		
+
 		*prob = term * sum;
 	}
-	
+
 	/* Get here when prob has been assigned.  Adjust range
 		in case it went slightly out due to roundoff:  */
-	
+
 	if (*prob < 0.0) *prob = 0.0;
 	if (*prob > 1.0) *prob = 1.0;
 	return (0);
 }
 
-		
+
 int	GMT_student_t_a(double t, int n, double *prob)
 {
 	/* Probability integral called A(t,n) by Abramowitz &
 	Stegun for the student's t distribution with n degrees
 	of freedom.  Uses expressions A&S 26.7.3 and 26.7.4
-	
+
 	If X is distributed N(0,1) and V is distributed chi-
 	square with n degrees of freedom, then
 	tau = X / sqrt(V/n) is said to have Student's t-
@@ -1451,11 +1450,11 @@ int	GMT_student_t_a(double t, int n, double *prob)
 	tau could be the sample mean divided by the sample
 	standard deviation, for a sample of N points; then
 	n = N - 1.
-	
+
 	This function sets *prob = GMT_d_NaN and returns (-1)
 	if t < 0.  Otherwise it sets *prob = the probability
 	fabs(tau) <= t and returns (0).
-	
+
 	As n -> oo, we can replace this function with 
 	erf (t / M_SQRT2).  However, it isn't clear how large
 	n has to be to make this a good approximation.  I
@@ -1467,35 +1466,35 @@ int	GMT_student_t_a(double t, int n, double *prob)
 	approximation would be < 0.01 for n > 30, all t, but
 	I also found that the expression here is stable to
 	large n and large t, so I decided to leave it as is.
-	
+
 	W H F Smith, August 1999.
 */
 
 	double	theta, s, c, csq, term, sum;
 	int	k, kstop, kt, kb;
-	
+
 	if (t < 0.0 || n <= 0) {
 		fprintf (stderr, "GMT_student_t_a:  Bad argument(s).\n");
 		*prob = GMT_d_NaN;
 		return (-1);
 	}
-	
+
 	if (t == 0.0) {
 		*prob = 0.0;
 		return (0);
 	}
 
 	theta = atan(t/sqrt((double)n));
-	
+
 	if (n == 1) {
 		*prob = 2.0 * theta / M_PI;
 		return (0);
 	}
-	
+
 	sincos (theta, &s, &c);
 
 	csq = c * c;
-		
+
 	kstop = n-2;
 	if (n%2 == 1) {
 		kt = 0;
@@ -1508,7 +1507,7 @@ int	GMT_student_t_a(double t, int n, double *prob)
 		kb = 0;
 		k = 0;
 		term = 1.0;
-	}	
+	}
 	sum = term;
 	while (k < kstop) {
 		k += 2;
@@ -1517,21 +1516,21 @@ int	GMT_student_t_a(double t, int n, double *prob)
 		term *= (kt * csq)/kb;
 		sum += term;
 	}
-	
+
 	sum *= s;
-	
+
 	if (n%2 == 1) {
 		*prob = 2.0 * (theta + sum) / M_PI;
 	}
 	else {
 		*prob = sum;
 	}
-	
+
 	/* Adjust in case of roundoff:  */
-	
+
 	if (*prob < 0.0) *prob = 0.0;
 	if (*prob > 1.0) *prob = 1.0;
-	
+
 	return (0);
 }
 
@@ -1539,9 +1538,9 @@ double GMT_zcrit (double alpha)
 {
 	double sign;
 	/* Critical values for Normal (z) distribution */
-	
+
 	/* Simple since z_a = M_SQRT2 * erf^-1 (1-a) */
-	
+
 	if (alpha > 0.5) {	/* right tail */
 		alpha = (1.0 - alpha) * 2.0;
 		sign = 1.0;
@@ -1550,7 +1549,7 @@ double GMT_zcrit (double alpha)
 		alpha *= 2.0;
 		sign = -1.0;
 	}
-	
+
 	return (sign * M_SQRT2 * GMT_erfinv (1.0 - alpha));
 }
 
@@ -1561,7 +1560,7 @@ double GMT_tcrit (double alpha, double nu)
 	int NU;
 	BOOLEAN done;
 	double t_low, t_high, t_mid, p_high, p_mid, p, sign;
-	
+
 	if (alpha > 0.5) {	/* right tail */
 		p = 1 - (1 - alpha) * 2.0;
 		sign = 1.0;
@@ -1578,9 +1577,9 @@ double GMT_tcrit (double alpha, double nu)
 		t_high *= 2.0;
 		GMT_student_t_a (t_high, NU, &p_high);
 	}
-	
+
 	/* Now, (t_low, p_low) and (t_high, p_high) are bracketing the desired (t,p) */
-	
+
 	done = FALSE;
 	while (!done) {
 		t_mid = 0.5 * (t_low + t_high);
@@ -1604,7 +1603,7 @@ double GMT_chi2crit (double alpha, double nu)
 
 	BOOLEAN done;
 	double chi2_low, chi2_high, chi2_mid, p_high, p_mid, p;
-	
+
 	p = 1.0 - alpha;
 	chi2_low = 0.0;
 	chi2_high = 5.0;
@@ -1613,9 +1612,9 @@ double GMT_chi2crit (double alpha, double nu)
 		chi2_high *= 2.0;
 		GMT_chi2 (chi2_high, nu, &p_high);
 	}
-	
+
 	/* Now, (chi2_low, p_low) and (chi2_high, p_high) are bracketing the desired (chi2,p) */
-	
+
 	done = FALSE;
 	while (!done) {
 		chi2_mid = 0.5 * (chi2_low + chi2_high);
@@ -1641,7 +1640,7 @@ double GMT_Fcrit (double alpha, double nu1, double nu2)
 	BOOLEAN done;
 	double F_low, F_high, F_mid, p_high, p_mid, p, chisq1, chisq2;
 	void F_to_ch1_ch2 (double F, double nu1, double nu2, double *chisq1, double *chisq2);
-	
+
 	F_high = 5.0;
 	p = 1.0 - alpha;
 	F_low = 0.0;
@@ -1654,9 +1653,9 @@ double GMT_Fcrit (double alpha, double nu1, double nu2)
 		F_to_ch1_ch2 (F_high, nu1, nu2, &chisq1, &chisq2);
 		GMT_f_q (chisq1, NU1, chisq2, NU2, &p_high);
 	}
-	
+
 	/* Now, (F_low, p_low) and (F_high, p_high) are bracketing the desired (F,p) */
-	
+
 	done = FALSE;
 	while (!done) {
 		F_mid = 0.5 * (F_low + F_high);
@@ -1681,7 +1680,7 @@ void F_to_ch1_ch2 (double F, double nu1, double nu2, double *chisq1, double *chi
 	*chisq1 = F * nu1 / nu2;
 }
 
-		
+
 #if HAVE_J0 == 0
 
 /* Alternative j0 coded from Numerical Recipes by Press et al */
@@ -1705,7 +1704,7 @@ double GMT_j0 (double x)
 		sincos (xx, &s, &c);
 		ans = d_sqrt (0.636619772 / ax) * (c * ans1 - z * s * ans2);
 	}
-	
+
 	return (ans);
 }
 
@@ -1734,7 +1733,7 @@ double GMT_j1 (double x)
 		sincos (xx, &s, &c);
 		ans = d_sqrt (0.636619772 / ax) * (c * ans1 - z * s * ans2);
 	}
-	
+
 	return (ans);
 }
 
@@ -1758,7 +1757,7 @@ double GMT_jn (int n, double x)
 
 	ax = fabs (x);
 	if (ax <= GMT_CONV_LIMIT) return (0.0);
-	
+
 	if (ax > (double)n) {	/* Upwards recurrence */
 		tox = 2.0 / ax;
 		bjm = GMT_j0 (ax);
@@ -1793,7 +1792,7 @@ double GMT_jn (int n, double x)
 		sum = 2.0 * sum - bj;
 		ans /= sum;
 	}
-	
+
 	return ((x < 0.0 && (n % 2) == 1) ? -ans : ans);
 }
 
@@ -1823,7 +1822,7 @@ double GMT_y0 (double x)
 		sincos (xx, &s, &c);
 		ans = d_sqrt (0.636619772 / ax) * (s * ans1 - z * c * ans2);
 	}
-	
+
 fprintf (stderr, "GMT_y0 called\n");
 	return (ans);
 }
@@ -1854,7 +1853,7 @@ double GMT_y1 (double x)
 		sincos (xx, &s, &c);
 		ans = d_sqrt (0.636619772 / ax) * (s * ans1 - z * c * ans2);
 	}
-	
+
 	return (ans);
 }
 
@@ -1880,7 +1879,7 @@ double GMT_yn (int n, double x)
 		bym = by;
 		by = byp;
 	}
-	
+
 	return (by);
 }
 
@@ -1914,13 +1913,13 @@ double GMT_rand ()
 	 * converted from Fortran to C.  Will return values
 	 * x so that 0.0 < x < 1.0 occurs with equal probability.
 	 */
-	
+
 	static int GMT_rand_iy = 0;
 	static int GMT_rand_seed = 0;
 	static int GMT_rand_iv[GMT_RAND_NTAB];
-	
+
 	int j, k;
-	
+
 	if (GMT_rand_iy == 0) {	/* First time initialization */
 		GMT_rand_seed = (int) time (NULL);		/* Seed value is positive sec since 1970 */
 		if (GMT_rand_seed <= 0) GMT_rand_seed = 1;	/* Make sure to prevent seed = 0 */
@@ -1964,9 +1963,9 @@ double GMT_nrand (void) {
 			v2 = 2.0 * GMT_rand () - 1.0;
 			r = v1 * v1 + v2 * v2;
 		} while (r >= 1.0 || r == 0.0);	/* Keep trying until v1,v2 is inside unit circle */
-		
+
 		fac = sqrt (-2.0 * log (r) / r);
-		
+
 		/* Now make Box-Muller transformation to get two normal deviates.  Return
 		 * one and save the other for the next time GMT_nrand is called */
 	 
@@ -1986,7 +1985,7 @@ double GMT_lrand (void) {
 	 */
 	 
 	double rand_0_to_1;
-	
+
 	rand_0_to_1 = GMT_rand ();	/* Gives uniformly distributed random values in 0-1 range */
 	return ( ((rand_0_to_1 <= 0.5) ? log (2.0 * rand_0_to_1) : -log (2.0 * (1.0 - rand_0_to_1))) / M_SQRT2);
 }
@@ -2000,7 +1999,7 @@ void GMT_chi2 (double chi2, double nu, double *prob) {
 
 void GMT_cumpoission (double k, double mu, double *prob) {
 	/* evaluate Cumulative Poisson Distribution */
-	
+
 	*prob = GMT_gammq (k, mu);
 }
 
@@ -2012,26 +2011,26 @@ double	GMT_hypot (double x, double y) {
 	library hypot() is available, it should be
 	used instead; it could be faster and more
 	accurate.  WHFS 30 March 2000  */
-	
+
 	double	a, b, c, d, r, s, t;
 
 	if (GMT_is_dnan (x) || GMT_is_dnan (y) ) return (GMT_d_NaN);
-	
+
 	/* A complete implementation of IEEE exceptional values
 	would also return +Inf if either x or y is +/- Inf  */
-	
-	
+
+
 	if (x == 0.0) return (fabs(y));
 	if (y == 0.0) return (fabs(x));
-	
+
 	a = fabs(x);
 	b = fabs(y);
-	
+
 	/* If POSIX defined M_SQRT2 (= sqrt(2.0) to machine
 	precision) then we could say
 		if (a == b) return (a * M_SQRT2);
 	*/
-	
+
 	if (a < b) {
 		c = b;
 		d = a/b;
@@ -2043,23 +2042,23 @@ double	GMT_hypot (double x, double y) {
 		c = a;
 		d = b/a;
 	}
-	
+
 	/* DBL_EPSILON is defined in POSIX float.h
 	as the smallest positive e such that 1+e > 1
 	in floating point.  */
-	
+
 	if (d < DBL_EPSILON) return (c);
-	
+
 	s = d*d;
 	if (s > DBL_EPSILON) return (c * sqrt (1.0 + s) );
-	
+
 	t = 1.0 + d;
 	s = (2 * (d/t)) / t;
-	
+
 	r = t * sqrt (1.0 - s);
-	
+
 	if (r <= 1.0) return (c);
-	
+
 	return (c * r);
 }
 
@@ -2073,11 +2072,11 @@ double	GMT_log1p (double x) {
 	library routine available.  WHFS 30 March 2000  */
 
 	double 	u;
-	
+
 	if (GMT_is_dnan(x) || x <= -1.0) return (GMT_d_NaN);
-	
+
 	u = 1.0 + x;
-	
+
 	if (u == 1.0) 
 		return (x);
 	else
@@ -2092,9 +2091,9 @@ double	GMT_atanh (double x) {
 /* 	Return hyperbolic arctangent of x.
 	This should be used only if there isn't a better
 	library routine available.  WHFS 30 March 2000  */
-	
+
 	if (GMT_is_dnan(x) || fabs(x) >= 1.0) return (GMT_d_NaN);
-	
+
 	return (0.5 * ( log1p(x) - log1p(-x) ) );
 }
 
@@ -2107,7 +2106,7 @@ int GMT_median (double *x, int n, double xmin, double xmax, double m_initial, do
 	int	i, n_above, n_below, n_equal, n_lub, n_glb;
 	int	finished = FALSE;
 	int	iteration = 0;
-	
+
 	if (n == 0) {
 		*med = m_initial;
 		return (1);
@@ -2120,22 +2119,22 @@ int GMT_median (double *x, int n, double xmin, double xmax, double m_initial, do
 		*med = 0.5 * (x[0] + x[1]);
 		return (1);
 	}
-	
+
 	m_guess = m_initial;
 	lower_bound = xmin;
 	upper_bound = xmax;
 	t_0 = 0;
 	t_1 = n - 1;
 	t_middle = 0.5 * (n - 1);
-	
+
 	do {
 
 		n_above = n_below = n_equal = n_lub = n_glb = 0;
 		lub = xmax;
 		glb = xmin;
-		
+
 		for (i = 0; i < n; i++) {
-		
+
 			xx = x[i];
 			if (xx == m_guess) {
 				n_equal++;
@@ -2161,13 +2160,13 @@ int GMT_median (double *x, int n, double xmin, double xmax, double m_initial, do
 				}
 			}
 		}
-		
+
 		iteration++;
 
 		/* Now test counts, watch multiple roots, think even/odd:  */
-		
+
 		if ( (abs(n_above - n_below)) <= n_equal) {
-			
+
 			if (n_equal) {
 				*med = m_guess;
 			}
@@ -2177,26 +2176,26 @@ int GMT_median (double *x, int n, double xmin, double xmax, double m_initial, do
 			finished = TRUE;
 		}
 		else if ( (abs( (n_above - n_lub) - (n_below + n_equal) ) ) < n_lub) {
-		
+
 			*med = lub;
 			finished = TRUE;
 		}
 		else if ( (abs( (n_below - n_glb) - (n_above + n_equal) ) ) < n_glb) {
-		
+
 			*med = glb;
 			finished = TRUE;
 		}
 		/* Those cases found the median; the next two will forecast a new guess:  */
-		
+
 		else if ( n_above > (n_below + n_equal) ) {  /* Guess is too low  */
-		
+
 			lower_bound = m_guess;
 			t_0 = n_below + n_equal - 1;
 			temp = lower_bound + (upper_bound - lower_bound) * (t_middle - t_0) / (t_1 - t_0);
 			m_guess = (temp > lub) ? temp : lub;	/* Move guess at least to lub  */
 		}
 		else if ( n_below > (n_above + n_equal) ) {  /* Guess is too high  */
-		
+
 			upper_bound = m_guess;
 			t_1 = n_below + n_equal - 1;
 			temp = lower_bound + (upper_bound - lower_bound) * (t_middle - t_0) / (t_1 - t_0);
@@ -2206,9 +2205,9 @@ int GMT_median (double *x, int n, double xmin, double xmax, double m_initial, do
 			fprintf (stderr,"%s: GMT Fatal Error: Internal goof - please report to developers!\n", GMT_program);
 			exit (EXIT_FAILURE);
 		}
-			
+
 	} while (!finished);
-	
+
 	/* That's all, folks!  */
 	return (iteration);
 }
@@ -2220,7 +2219,7 @@ int GMT_median_f (float *x, int n, double xmin, double xmax, double m_initial, d
 	int	i, n_above, n_below, n_equal, n_lub, n_glb;
 	int	finished = FALSE;
 	int	iteration = 0;
-	
+
 	if (n == 0) {
 		*med = m_initial;
 		return (1);
@@ -2233,22 +2232,22 @@ int GMT_median_f (float *x, int n, double xmin, double xmax, double m_initial, d
 		*med = 0.5 * (x[0] + x[1]);
 		return (1);
 	}
-	
+
 	m_guess = m_initial;
 	lower_bound = xmin;
 	upper_bound = xmax;
 	t_0 = 0;
 	t_1 = n - 1;
 	t_middle = 0.5 * (n - 1);
-	
+
 	do {
 
 		n_above = n_below = n_equal = n_lub = n_glb = 0;
 		lub = xmax;
 		glb = xmin;
-		
+
 		for (i = 0; i < n; i++) {
-		
+
 			xx = x[i];
 			if (xx == m_guess) {
 				n_equal++;
@@ -2274,13 +2273,13 @@ int GMT_median_f (float *x, int n, double xmin, double xmax, double m_initial, d
 				}
 			}
 		}
-		
+
 		iteration++;
 
 		/* Now test counts, watch multiple roots, think even/odd:  */
-		
+
 		if ( (abs(n_above - n_below)) <= n_equal) {
-			
+
 			if (n_equal) {
 				*med = m_guess;
 			}
@@ -2290,26 +2289,26 @@ int GMT_median_f (float *x, int n, double xmin, double xmax, double m_initial, d
 			finished = TRUE;
 		}
 		else if ( (abs( (n_above - n_lub) - (n_below + n_equal) ) ) < n_lub) {
-		
+
 			*med = lub;
 			finished = TRUE;
 		}
 		else if ( (abs( (n_below - n_glb) - (n_above + n_equal) ) ) < n_glb) {
-		
+
 			*med = glb;
 			finished = TRUE;
 		}
 		/* Those cases found the median; the next two will forecast a new guess:  */
-		
+
 		else if ( n_above > (n_below + n_equal) ) {  /* Guess is too low  */
-		
+
 			lower_bound = m_guess;
 			t_0 = n_below + n_equal - 1;
 			temp = lower_bound + (upper_bound - lower_bound) * (t_middle - t_0) / (t_1 - t_0);
 			m_guess = (temp > lub) ? temp : lub;	/* Move guess at least to lub  */
 		}
 		else if ( n_below > (n_above + n_equal) ) {  /* Guess is too high  */
-		
+
 			upper_bound = m_guess;
 			t_1 = n_below + n_equal - 1;
 			temp = lower_bound + (upper_bound - lower_bound) * (t_middle - t_0) / (t_1 - t_0);
@@ -2319,9 +2318,9 @@ int GMT_median_f (float *x, int n, double xmin, double xmax, double m_initial, d
 			fprintf (stderr,"%s: GMT Fatal Error: Internal goof - please report to developers!\n", GMT_program);
 			exit (EXIT_FAILURE);
 		}
-			
+
 	} while (!finished);
-	
+
 	/* That's all, folks!  */
 	return (iteration);
 }
@@ -2336,7 +2335,7 @@ int GMT_mode (double *x, int n, int j, int sort, int mode_selection, int *n_mult
 		*mode_est = x[0];
 		return (0);
 	}
-	
+
 	if (sort) qsort((void *)x, (size_t)n, sizeof(double), GMT_comp_double_asc);
 
 	istop = n - j;
@@ -2375,7 +2374,7 @@ int GMT_mode (double *x, int n, int j, int sort, int mode_selection, int *n_mult
 		mid_point_sum /= multiplicity;
 		(*n_multiples) += multiplicity;
 	}
-	
+
 	*mode_est = mid_point_sum;
 	return (0);
 }
@@ -2394,7 +2393,7 @@ int GMT_mode_f (float *x, int n, int j, int sort, int mode_selection, int *n_mul
 
 	istop = n - j;
 	multiplicity = 0;
-	
+
 	for (i = 0; i < istop; i++) {
 		length = x[i + j] - x[i];
 		if (length < 0.0) {
@@ -2428,7 +2427,7 @@ int GMT_mode_f (float *x, int n, int j, int sort, int mode_selection, int *n_mul
 		mid_point_sum /= multiplicity;
 		(*n_multiples) += multiplicity;
 	}
-	
+
 	*mode_est = mid_point_sum;
 	return (0);
 }
@@ -2439,7 +2438,7 @@ void GMT_getmad (double *x, int n, double location, double *scale)
 {
 	int i;
 	double *dev, med;
-	
+
 	dev = (double *) GMT_memory (VNULL, (size_t)n, sizeof(double), GMT_program);
 	for (i = 0; i < n; i++) dev[i] = fabs (x[i] - location);
 	qsort ((void *)dev, (size_t)n, sizeof (double), GMT_comp_double_asc);
@@ -2457,7 +2456,7 @@ void GMT_getmad_f (float *x, int n, double location, double *scale)
 	int i;
 	float *dev;
 	double med;
-	
+
 	dev = (float *) GMT_memory (VNULL, (size_t)n, sizeof(float), GMT_program);
 	for (i = 0; i < n; i++) dev[i] = (float) fabs ((double)(x[i] - location));
 	qsort ((void *)dev, (size_t)n, sizeof (float), GMT_comp_float_asc);
@@ -2473,26 +2472,26 @@ void GMT_getmad_f (float *x, int n, double location, double *scale)
 void GMT_getmad_BROKEN (double *x, int n, double location, double *scale)
 {
 	/* Compute MAD (Median Absolute Deviation) for a double data set */
-	
+
 	double	e_low, e_high, error, last_error;
 	int	i_low, i_high, n_dev, n_dev_stop;
-	
+
 	i_low = 0;
 	while (i_low < n && x[i_low] <= location) i_low++;
 	i_low--;
-	
+
 	i_high = n - 1;
 	while (i_high >= 0 && x[i_high] >= location) i_high--;
 	i_high++;
 
 	while (i_high < i_low) i_high++, i_low--;	/* I think this must be added in (P. Wessel, 9/29/04) */
-	
+
 	n_dev_stop = n / 2;
 	error = last_error = 0.0;
 	n_dev = 0;
 
 	while (n_dev < n_dev_stop) {
-	
+
 		last_error = error;
 
 		if (i_low < 0) {
@@ -2500,7 +2499,7 @@ void GMT_getmad_BROKEN (double *x, int n, double location, double *scale)
 			i_high++;
 			n_dev++;
 		}
-		
+
 		else if (i_high == n) {
 			error = location - x[i_low];
 			i_low--;
@@ -2509,7 +2508,7 @@ void GMT_getmad_BROKEN (double *x, int n, double location, double *scale)
 		else {
 			e_low = location - x[i_low];
 			e_high = x[i_high] - location;
-			
+
 			if (e_low < e_high) {
 				error = e_low;
 				i_low--;
@@ -2529,21 +2528,21 @@ void GMT_getmad_BROKEN (double *x, int n, double location, double *scale)
 			}
 		}
 	}
-	
+
 	*scale = (n%2) ? (1.4826 * error) : (0.7413 * (error + last_error));
 }
 
 void GMT_getmad_f_BROKEN (float *x, int n, double location, double *scale)
 {
 	/* Compute MAD (Median Absolute Deviation) for a float data set */
-	
+
 	double	e_low, e_high, error, last_error;
 	int	i_low, i_high, n_dev, n_dev_stop;
-	
+
 	i_low = 0;
 	while (i_low < n && x[i_low] <= location) i_low++;
 	i_low--;
-	
+
 	i_high = n - 1;
 	while (i_high >= 0 && x[i_high] >= location) i_high--;
 	i_high++;
@@ -2556,7 +2555,7 @@ void GMT_getmad_f_BROKEN (float *x, int n, double location, double *scale)
 
 
 	while (n_dev < n_dev_stop) {
-	
+
 		last_error = error;
 
 		if (i_low < 0) {
@@ -2564,7 +2563,7 @@ void GMT_getmad_f_BROKEN (float *x, int n, double location, double *scale)
 			i_high++;
 			n_dev++;
 		}
-		
+
 		else if (i_high == n) {
 			error = location - x[i_low];
 			i_low--;
@@ -2573,7 +2572,7 @@ void GMT_getmad_f_BROKEN (float *x, int n, double location, double *scale)
 		else {
 			e_low = location - x[i_low];
 			e_high = x[i_high] - location;
-			
+
 			if (e_low < e_high) {
 				error = e_low;
 				i_low--;
@@ -2593,7 +2592,7 @@ void GMT_getmad_f_BROKEN (float *x, int n, double location, double *scale)
 			}
 		}
 	}
-	
+
 	*scale = (n%2) ? (1.4826 * error) : (0.7413 * (error + last_error));
 }
 
@@ -2608,10 +2607,10 @@ double GMT_extreme (double x[], int n, double x_default, int kind, int way)
 	* If kind is non-zero we assign x_default is no values are found.
 	* If kind == 0 we expect x_default to be set so that x[0] will reset x_select.
 	*/
-	
+
 	int i, k;
-	double x_select;
-	
+	double x_select = GMT_d_NaN;
+
 	for (i = k = 0; i < n; i++) {
 		if (kind == -1 && x[i] > 0.0) continue;
 		if (kind == +1 && x[i] < 0.0) continue;
@@ -2619,7 +2618,7 @@ double GMT_extreme (double x[], int n, double x_default, int kind, int way)
 		if (way == -1 && x[i] < x_select) x_select = x[i];
 		if (way == +1 && x[i] > x_select) x_select = x[i];
 		k++;
-	}	
-	
+	}
+
 	return ((k) ? x_select : x_default);
 }
