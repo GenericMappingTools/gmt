@@ -8,7 +8,7 @@ description code easier.  It is a library that contains a series of tools
 that can be used to create plots.  The resulting \fIPostScript\fR code is
 ASCII text and can be edited using any text editor.  Thus, it is fairly easy
 to modify a plot file even after it has been created, e.g., to change text
-strings, set new gray shades or colors, experiment with various penwidths etc.
+strings, set new gray shades or colors, experiment with various pen widths, etc.
 \fBpslib\fP\fR is written in C but now includes FORTRAN bindings (thanks to John Goff, WHOI)
 and can therefore be called from both C and FORTRAN programs.  To use this library, you must link your plotting program with
 pslib.a.  \fBpslib\fP\fR is the core of the \fBGMT SYSTEM\fP\fR and \fBXY\fP\fR
@@ -21,8 +21,8 @@ Before any \fBpslib\fP\fR calls can be issued, the plotting system must be
 initialized.  This is done by calling \fBps_plotinit\fP, which defines macros, sets up
 the plot-coordinate system, scales, and [optionally] opens a file where all the
 \fIPostScript\fR code will be written.  Normally, the plot code is written
-to \fIstdout\fP.  The measure unit for sizes and positions can be set to be centimeter,
-inch, or m.  When all plotting is done, you must terminate the plotting system
+to \fIstdout\fP.  The measure unit for sizes and positions can be set to be centimeter (c),
+inch (i), or meter (m).  When all plotting is done, you must terminate the plotting system
 by calling \fBps_plotend\fP.
 .LP
 \fBpslib\fP uses the direct color model where red, green, and blue are given separately,
@@ -88,7 +88,7 @@ will be drawn using current pen-width and -pattern.
 .IP
 void \fBps_clipoff\fR ()
 .RS 10
-Resets the clip path to what it was before the last call to \fBclipon\fP.
+Resets the clip path to what it was before the last call to \fBps_clipon\fP.
 .RE
 .IP
 void \fBps_clipon\fR (\fIxarray, yarray, npoints, rgb, flag\fP)
@@ -527,11 +527,11 @@ point (\fIx,y\fP) maps onto different points of the textstring by giving various
 .RS 10
 9------------10----------- 11
 .br
- |                             |
+|                           |
 .br
 5             6             7
 .br
- |                             |
+|                           |
 .br
 1------------ 2------------ 3
 .RE

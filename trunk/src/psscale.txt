@@ -50,7 +50,7 @@ triangle height [Default is half the barwidth].
 .TP
 .B \-I
 Add illumination effects.  Optionally, set the range of intensities from
-+ to - \fImax_intens\fP.  If not specified, 1.0 is used.  [Default is no illumination]
++ to - \fImax_intens\fP.  If not specified, 1.0 is used.  [Default is no illumination].
 #include "explain_-K.txt"
 .TP
 .B \-L
@@ -74,10 +74,10 @@ to color range, i.e., z = 0-100 gives twice the width as z = 100-150 (Also see \
 #include "explain_-c.txt"
 .SH EXAMPLES
 To append a vertical colorscale (LEN_1 cm long; LEN_2 cm wide) to the right of a plot that is LEN_3 inch wide and LEN_4 inch
-high, using illumination, and show back- and foreground colors, and annotating every 5 units, try
+high, using illumination, and show back- and foreground colors, and annotating every 5 units, use
 .br
 .sp
-psscale SCALE \fB\-O \-C\fPcolors.cpt \fB\-I \-E\fP \fB\-B\fP5:BATHYMETRY:/:m: >> map.ps
+\fBpsscale\fP SCALE \fB\-O \-C\fPcolors.cpt \fB\-I \-E\fP \fB\-B\fP5:BATHYMETRY:/:m: >> map.ps
 .SH NOTES
 When the cpt file is discrete and no illumination is specified, the color bar will be painted
 using polygons.  For all other cases we must paint with an image.  Some color printers may give

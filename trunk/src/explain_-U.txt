@@ -2,6 +2,6 @@
 .B \-U
 Draw Unix System time stamp on plot.  User may specify where the lower left corner
 of the stamp should fall on the page relative to lower left corner of plot.  Optionally,
-append a label, or \fBc\fP (which will plot the command string.).  The GMT parameters
+append a label, or \fBc\fP (which will plot the command string.).  The \fBGMT\fP parameters
 UNIX_TIME and UNIX_TIME_POS can affect the appearance; see the \fBgmtdefaults\fP man
 page for details.

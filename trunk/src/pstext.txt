@@ -110,16 +110,16 @@ For 3-D projections:  Sets the z-level of the basemap [0].
 #include "explain_-c.txt"
 .SH EXAMPLES
 To plot the outlines of the textstrings stored in the file text.d on a Mercator plot with
-the given specifications, try
+the given specifications, use
 .br
 .sp
-pstext text.d \fB\-R\fP-30/30/-10/20 \fB\-Jm\fP0.1\fBi\fP \fB\-P \-B\fP5 \fB\-S\fP0.5\fBp\fP > plot.ps
+\fBpstext\fP text.d \fB\-R\fP-30/30/-10/20 \fB\-Jm\fP0.1\fBi\fP \fB\-P \-B\fP5 \fB\-S\fP0.5\fBp\fP > plot.ps
 .br
 .sp
-To add a typeset figure caption for a 3-inch wide illustration, try
+To add a typeset figure caption for a 3-inch wide illustration, use
 .br
 .sp
-pstext \fB\-R\fP0/3/0/5 \fB\-JX\fP3\fBi\fP \fB\-O \-H \-M \-N\fP << EOF >> figure.ps
+\fBpstext\fP \fB\-R\fP0/3/0/5 \fB\-JX\fP3\fBi\fP \fB\-O \-H \-M \-N\fP << EOF >> figure.ps
 .br
 This is an optional header record
 .br

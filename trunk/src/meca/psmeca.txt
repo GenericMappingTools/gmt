@@ -18,13 +18,13 @@ psmeca \fIfiles\fR \fB\-J\fIparameters \fB\-R\fIwest/east/south/north\fR
 .br
 \fBpsmeca\fR reads data values from \fIfiles\fR [or standard input]
 and generates \fIPostScript\fR code that will plot focal mechanisms
-on a map.  Most options are the same as for psxy.
+on a map.  Most options are the same as for \fBpsxy\fP.
 The \fIPostScript\fR code is written to standard output.
 .br
 .sp
 .SH ARGUMENTS
 \fIfiles\fR
-List one or more file-names. If no files are given, psvelomeca will read standard input.
+List one or more file-names. If no files are given, \fBpsmeca\fP will read standard input.
 #include "explain_-j.txt"
 #include "explain_-R.txt"
 .TP
@@ -32,7 +32,7 @@ List one or more file-names. If no files are given, psvelomeca will read standar
 Selects the meaning of the columns in the data file 
 .br
 In order to use the same file to plot cross-sections, depth is in third column.
-Nevertheless, it is possible to use "old style" psvelomeca input files
+Nevertheless, it is possible to use "old style" \fBpsvelomeca\fP input files
 without depth in third column using the \fB-o\fR option.
 .br
 .TP
@@ -279,7 +279,7 @@ Set the shade (0\-255) or color (r/g/b). Default black.
 .br
 .TP
 \fB-o\fR
-Use the psvelomeca input format without depth in the third column.
+Use the \fBpsvelomeca\fP input format without depth in the third column.
 .br
 .TP
 \fB\-p\fR[\fIpen\fR]
@@ -296,9 +296,7 @@ pen attributes.
 .sp
 The following file should give a normal-faulting CMT mechanism:
 .br
-psmeca << END -R239/240/34/35.2 -Jm4 \\
-.br
--Sc0.4 -H1 >! test.ps
+\fBpsmeca\fP \fB\-R\fP239/240/34/35.2 \fB\-Jm\fP4 \fB\-Sc\fP0.4 \fB\-H\fP1 <<END>! test.ps
 .br
 lon     lat    depth str dip slip  st dip slip mant exp plon plat
 .br
