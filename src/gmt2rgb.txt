@@ -27,13 +27,13 @@ Output only the specified layer (r, g, or b).  [Default outputs all 3 layers].
 #include "explain_-R.txt"
 #include "explain_-V.txt"
 .SH EXAMPLES
-To use the color palette topo.cpt to create r, g, b component grids from hawaii_grv.grd file, try
+To use the color palette topo.cpt to create r, g, b component grids from hawaii_grv.grd file, use
 .br
 .sp
 gmt2rgb hawaii_grv.grd \fB\-C\fPtopo.cpt \fB\-G\fPhawaii_grv_%c.grd
 .br
 .sp
-To output the red components from the Sun raster radiation.ras file, try
+To output the red component from the Sun raster radiation.ras file, use
 .br
 .sp
 gmt2rgb radiation.ras \fB\-L\fPr \fB\-G\fPcomp_%c.grd
