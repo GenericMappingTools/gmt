@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.4 2001-03-07 20:29:12 pwessel Exp $
+#       $Id: install_gmt_form.pl,v 1.5 2001-03-07 22:11:26 pwessel Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -19,6 +19,7 @@ print "Status: 200 OK", "\n\n";
 # Assign internal variables for each form item:
 
 $gmt_version	= $gmt_form{'gmt_version'};
+$form_version	= $gmt_form{'form_version'};
 $zip		= $gmt_form{'radio_format'};
 $unit		= $gmt_form{'radio_unit'};
 $eps		= $gmt_form{'radio_eps'};
@@ -86,8 +87,8 @@ print <<EOF;
 # Default answers will be selected where none is given.
 # You can edit the values, but do not remove definitions!
 #
-# Assembled by gmt_install_form.html, version $form_version
-# Processed by install_gmt_form.pl version 1.38,  on
+# Assembled by gmt_install_form.html, $form_version
+# Processed by install_gmt_form.pl $Revision: 1.5 $,  on
 #
 #	$now
 #
