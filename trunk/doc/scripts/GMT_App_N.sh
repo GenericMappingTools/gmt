@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_N.sh,v 1.1 2003-04-14 21:23:13 pwessel Exp $
+#	$Id: GMT_App_N.sh,v 1.2 2004-04-10 17:19:14 pwessel Exp $
 #
 #	Makes the insert for Appendix N(custom symbols)
 #	Note that this script also assembles App N tex
@@ -74,8 +74,8 @@ EOF
 	done
 	psxy -R0/$n_cols/0/$H -Jx1i -P -K -M $$.lines -W1p -B0 > GMT_App_N_$p.ps
 	psxy -R -Jx -O -K -S1i -W0.25p $$.symbols >> GMT_App_N_$p.ps
-	psxy -R -Jx -O -K -Sr -G0 $$.bars >> GMT_App_N_$p.ps
-	pstext -R -Jx -O $$.text -G255 >> GMT_App_N_$p.ps
+	psxy -R -Jx -O -K -Sr -Gblack $$.bars >> GMT_App_N_$p.ps
+	pstext -R -Jx -O $$.text -Gwhite >> GMT_App_N_$p.ps
 	rm -f $$.lines $$.symbols $$.text $$.bars
 done
 rm -f $$.lis

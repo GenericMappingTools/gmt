@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_-OK.sh,v 1.3 2003-04-14 21:56:56 pwessel Exp $
+#	$Id: GMT_-OK.sh,v 1.4 2004-04-10 17:19:14 pwessel Exp $
 #
 
 pstext -R0/2.7/0/2 -Jx1 -P -K -N << EOF > GMT_-OK.ps
@@ -12,7 +12,7 @@ pstext -R0/2.7/0/2 -Jx1 -P -K -N << EOF > GMT_-OK.ps
 1.15	0.875	9	0	0	LM	require both @%1%\035O@%% and @%1%\035K@%%.
 1.15	0.1	9	0	0	LM	@%1%\035K@%% ommits the trailer.
 EOF
-psxy -R -Jx -O -K -W1t2_2:0p << EOF >> GMT_-OK.ps
+psxy -R -Jx -O -K -W0.25p,- << EOF >> GMT_-OK.ps
 0.5	0.8
 0.5	1.1
 EOF

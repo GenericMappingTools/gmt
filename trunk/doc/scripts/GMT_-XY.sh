@@ -1,8 +1,8 @@
 #!/bin/sh
-#	$Id: GMT_-XY.sh,v 1.1 2001-03-21 04:10:21 pwessel Exp $
+#	$Id: GMT_-XY.sh,v 1.2 2004-04-10 17:19:14 pwessel Exp $
 #
 
-psxy -R0/1.5/0/1.7 -Jx1 -P -B0 -K -Sv0.005/0.035/0.025 -G0 << EOF > GMT_-XY.ps
+psxy -R0/1.5/0/1.7 -Jx1 -P -B0 -K -Sv0.005/0.035/0.025 -Gblack << EOF > GMT_-XY.ps
 0.2	0.2	0	1.1
 0.2	0.2	90	1.4
 EOF

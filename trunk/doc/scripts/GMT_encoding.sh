@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_encoding.sh,v 1.2 2001-10-17 01:48:47 pwessel Exp $
+#	$Id: GMT_encoding.sh,v 1.3 2004-04-10 17:19:14 pwessel Exp $
 #
 #	This plots the given encoding vector to stdout
 #
@@ -51,7 +51,7 @@ BEGIN {
 EOF
 
 gmtset CHAR_ENCODING $1
-psxy -R0/9/-1/32 -Jx0.345/-0.21 -B0g1:."Octal codes for $1": -P -K -M -G100 -X3 -Sr $$.empty
+psxy -R0/9/-1/32 -Jx0.345/-0.21 -B0g1:."Octal codes for $1": -P -K -M -Ggray -X3 -Sr $$.empty
 $AWK -f $$.awk $$.chart | pstext -R -Jx -O -K
 psxy -R -Jx -O -M -W1p << EOF
 >

@@ -1,7 +1,7 @@
 REM
 REM		GMT EXAMPLE 03
 REM
-REM		$Id: job03.bat,v 1.3 2002-01-30 03:40:55 ben Exp $
+REM		$Id: job03.bat,v 1.4 2004-04-10 17:19:14 pwessel Exp $
 REM
 echo GMT EXAMPLE 03
 set master=y
@@ -42,24 +42,24 @@ REM power in one diagram and the coherency on another diagram,  both on the same
 REM Note the extended use of pstext and psxy to put labels and legends directly on the plots.  
 REM For that purpose we often use -Jx1i and specify positions in inches directly:
 REM
-psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3 in Cookbook" -P -K -X2.5i -Sc0.07i -G0 -Ey/2 -Y1.5i > example_03.ps
+psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3 in Cookbook" -P -K -X2.5i -Sc0.07i -Gblack -Ey/2 -Y1.5i > example_03.ps
 echo 3.85 3.6 18 0.0 1 TR Coherency@+2@+ | pstext -R0/4/0/3.75 -Jx1i -O -K >> example_03.ps
 echo 2.375 3.75 > box.d
 echo 2.375 3.25 >> box.d
 echo 4 3.25 >> box.d
 psxy -R -Jx -O -K -W1.5p box.d >> example_03.ps
 psxy -St0.07i -O -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/2 >> example_03.ps
-psxy spectrum.ypower -R -JX -O -K -G0 -Sc0.07i -Ey/2 >> example_03.ps
+psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/2 >> example_03.ps
 echo 3.9 3.6 18 0.0 1 TR Input Power | pstext -R0/4/0/3.75 -Jx -O -K >> example_03.ps
 psxy -R -Jx -O -K -W1.5p box.d >> example_03.ps
 echo 0.25 0.25 > box.d
 echo 1.4 0.25 >> box.d
 echo 1.4 0.9 >> box.d
 echo 0.25 0.9 >> box.d
-psxy -R -Jx -O -K -G240 -L -W1.5p box.d >> example_03.ps
-echo 0.4 0.7 | psxy -R -Jx -O -K -St0.07i -G0 >> example_03.ps
+psxy -R -Jx -O -K -Glightgray -L -W1.5p box.d >> example_03.ps
+echo 0.4 0.7 | psxy -R -Jx -O -K -St0.07i -Gblack >> example_03.ps
 echo 0.5 0.7 14 0.0 1 ML Ship | pstext -R -Jx -O -K >> example_03.ps
-echo 0.4 0.4 | psxy -R -Jx -O -K -Sc0.07i -G0 >> example_03.ps
+echo 0.4 0.4 | psxy -R -Jx -O -K -Sc0.07i -Gblack >> example_03.ps
 echo 0.5 0.4 14 0.0 1 ML Satellite | pstext -R -Jx -O >> example_03.ps
 REM
 del box.d

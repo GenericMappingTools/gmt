@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 12
 REM
-REM		$Id: job12.bat,v 1.3 2003-12-18 02:27:21 pwessel Exp $
+REM		$Id: job12.bat,v 1.4 2004-04-10 17:19:14 pwessel Exp $
 REM
 REM Purpose:	Illustrates Delaunay triangulation of points, and contouring
 REM GMT progs:	makecpt, minmax, pscontour, pstext, psxy, triangulate
@@ -15,13 +15,13 @@ if exist job12.bat set master=n
 if %master%==y cd ex12
 triangulate table_5.11 -M > net.xy
 psxy -R0/6.5/-0.2/6.5 -JX3.06i/3.15i -B2f1WSNe -M net.xy -W0.5p -P -K -Y4.65i > example_12.ps
-psxy table_5.11 -R -J -O -K -Sc0.12i -G255 -W0.25p >> example_12.ps
+psxy table_5.11 -R -J -O -K -Sc0.12i -Gwhite -W0.25p >> example_12.ps
 gawk "{print $1, $2, 6, 0, 0, 6, NR-1}" table_5.11 | pstext -R -J -O -K >> example_12.ps
 REM
 REM Then draw network and print the node values
 REM
 psxy -R -J -B2f1eSNw -M net.xy -W0.5p -O -K -X3.25i >> example_12.ps
-psxy -R -J -O -K table_5.11 -Sc0.03i -G0 >> example_12.ps
+psxy -R -J -O -K table_5.11 -Sc0.03i -Gblack >> example_12.ps
 gawk "{print $1, $2, 6, 0, 0, 5, $3}" table_5.11 | pstext -R -J -O -K -W255o -C0.01i/0.01i -D0.08i/0i -N >> example_12.ps
 REM
 REM Then contour the data and draw triangles using dashed pen; use "minmax" and "makecpt" to make a color palette (.cpt) file
