@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.2 2001-04-13 23:29:01 pwessel Exp $
+#	$Id: RELEASE.HOWTO,v 1.3 2001-04-18 21:33:53 pwessel Exp $
 #
 
 PRE-RELEASE TASKS:
@@ -24,7 +24,7 @@ must ensure you do all the steps listed below:
     gurumake site
    
 3.  Tag the release:
-    cvs -q tag GMT3.4
+    cvs -q tag Release_2001_04_18_GMT_-3_4
 
 4.  Prepare the archives:
     gurumake archive >& log
