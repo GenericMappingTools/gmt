@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.22 2005-03-06 16:04:00 remko Exp $
+ *	$Id: x2sys.c,v 1.23 2005-03-13 23:43:53 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -779,6 +779,8 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 	memset ((void *)B, 0, sizeof (struct X2SYS_BIX));
 	B->bin_x = B->bin_y = 1.0;
 	B->x_min = 0.0;	B->x_max = 360.0;	B->y_min = -90.0;	B->y_max = +90.0;
+	B->time_gap = DBL_MAX;	/* Default is no data gap */
+	B->periodic = 0;
 
 	sprintf (tag_file, "%s.tag", TAG);
 	if ((fp = x2sys_fopen (tag_file, "r")) == NULL) {
@@ -789,7 +791,7 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 
 	GMT_set_processed_option (8, FALSE);	/* In case -R has been processed before */
 	p = strtok (line, " \t");
-	while (p) {	/* Process the -D -I -R -G arguments from the header */
+	while (p) {	/* Process the -D -I -R -G -W arguments from the header */
 		if (p[0] == '-') {
 			switch (p[1]) {
 				/* Common parameters */
@@ -810,6 +812,13 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 				case 'I':
 					if (p[2]) GMT_getinc (&p[2], &B->bin_x, &B->bin_y);
 					break;
+				case 'W':
+					B->time_gap = atof (&p[2]);
+					break;
+				default:
+					fprintf (stderr, "%s: Bad arg in x2sys_set_system! (%s)\n", X2SYS_program, p);
+					exit (EXIT_FAILURE);
+					break;
 			}
 		}
 		p = strtok (NULL, " \t");
@@ -829,6 +838,7 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 		}
 		(*s)->geographic = TRUE;
 		(*s)->geodetic = geodetic;	/* Override setting */
+		if (fabs (fabs (B->x_max - B->x_min) - 360.0) <= GMT_CONV_LIMIT) B->periodic = 1;
 	}
 	x2sys_path_init (TAG);		/* Prepare directory paths to data */
 }
@@ -954,6 +964,10 @@ int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B)
 		exit (EXIT_FAILURE);
 	}
 	*i = (x == B->x_max) ? B->nx_bin - 1 : (int)floor ((x - B->x_min)  * B->i_bin_x);
+	if (B->periodic) {
+		while (*i < 0) *i += B->nx_bin;
+		while (*i >= B->nx_bin) *i -= B->nx_bin;
+	}
 	if ((*i) < 0 || (*i) >= B->nx_bin) {
 		fprintf (stderr, "x2sys_binlist: i (%d) outside range implied by -R -I! [0-%d>\n", index, B->nx_bin);
 		exit (EXIT_FAILURE);
