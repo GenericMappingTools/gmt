@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Tutorial.tex,v 1.5 2001-09-14 18:30:17 pwessel Exp $
+%	$Id: GMT_Tutorial.tex,v 1.6 2001-09-24 02:22:11 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -290,7 +290,7 @@ unlimited number of rows.  We distinguish between two groups:
 
 \item [--] Single segment [Default]
 
-\item [--] Multi-segment with internal header records ({\bf --–M})
+\item [--] Multi-segment with internal header records ({\bf --M})
 \end{description}
 
 \item Binary (to speed up input/output)
@@ -299,7 +299,7 @@ unlimited number of rows.  We distinguish between two groups:
 
 \item [--] Single segment [Default]
 
-\item [--] Multi-segment (segment headers are all NaN fields) ({\bf --–M})
+\item [--] Multi-segment (segment headers are all NaN fields) ({\bf --M})
 \end{description}
 
 \end{itemize}
@@ -455,415 +455,17 @@ files using the \UNIX\ wild card notation.
 ``line\_'' followed by any single character and ending in ``.d''.
 
 \item GMTprogram section\_1[0-9]0.part\_[12] only processes data
-from sections 100 through 190, only using every 10’th profile, and
+from sections 100 through 190, only using every 10th profile, and
 gets both part 1 and 2.
 
 \end{itemize} 
 \index{Examples|)}
 
-\section{\gmt\ Defaults}
-\index{GMT@\GMT!defaults|(}
-\index{Default settings|(}
-
-Numerous minor options (more than 50) can only be changed by
-modifying the \GMT\ defaults settings.  These settings control
-such aspects of \GMT\ as font types and sizes, pen thickness used
-for basemaps, linear interpolants used when interpolation is needed
-and many more (Figures \ref{fig:GMT_Defaults_1a}, \ref{fig:GMT_Defaults_1b},
-and \ref{fig:GMT_Defaults_1c} show the parameters that affect plots).
-The \GMT\ defaults reside in a file named
-\filename{.gmtdefaults}.  A user will typically have a ``master''
-\filename{.gmtdefaults} file in the home directory, and possibly
-more specialized \filename{.gmtdefaults} files in certain sub-
-directories.  If no such file exist in the current directory,
-\GMT\ will attempt to open the user'’s master defaults file.  If
-it is not present then the site-specific \GMT\ defaults are used.
-These come preset from the \GMT\ developers but may be modified
-prior to \GMT\ installation.  One typical change at this level
-is to select SI units rather than the default US/British units.
-It is recommended not to modify the system \GMT\ defaults
-substantially since some applications may rely on the presence of
-a standard set of default values.  Users may create a new
-\filename{.gmtdefaults} file with the current \GMT\ preset values
-using the \GMTprog{gmtdefaults} utility.
-
-\GMTfig[h]{GMT_Defaults_1a}{Some \gmt\ parameters that affect plot appearance}
-
-There are at least two good reasons why the \GMT\ default options
-are placed in a separate parameter file:
-
-\begin{enumerate}
-
-\item It would not be practical to allow for command-line syntax
-covering so many options, many of which are rarely or never
-changed (such as the ellipsoid used for map projections).
-
-\item It is convenient to keep separate \filename{.gmtdefaults}
-files for specific projects, so that one may achieve a special
-effect simply by running \GMT\ commands in a sub-directory whose
-\filename{.gmtdefaults} file has the desired settings.  For example,
-when making final illustrations for a journal article one must often
-standardize on font sizes and font types, etc.  Keeping all those
-settings in a separate \filename{.gmtdefaults} file simplifies this
-process.  Likewise, \GMT\ scripts that make slides often use a
-different color scheme and font size than output intended for laser
-printers.  Organizing these various scenarios into separate
-\filename{.gmtdefaults} files will minimize headaches associated
-with micro-editing of illustrations.
-
-\GMTfig[h]{GMT_Defaults_1b}{More \gmt\ parameters that affect plot appearance}
-
-\end{enumerate}
-
-As mentioned, \GMT\ programs will attempt to open a file named
-\filename{.gmtdefaults}.  At times it may be desirable to override
-that default.  As an alternative, we may supply another filename using
-the \emph{+filename} syntax, i.e., on the same command line as the
-\GMT\ command we append the name of the alternate \filename{.gmtdefaults}
-file with the plus sign as a prefix.
-A perhaps less tedious method is to start each script with making a
-copy of the current \filename{.gmtdefaults}, then copy the desired
-\filename{.gmtdefaults} file to the current directory, and finally
-undo the changes at the end of the script.  To change some of the
-\GMT\ parameters on the fly inside a script the gmtset utility can
-be used.  E.g., to change the annotation font to 12 point Times-Bold
-we run \\
-
-\texttt{gmtset ANOT\_FONT Times-Bold ANOT\_FONT\_SIZE 12} \\
-
-In addition to these 29 parameters
-that directly affect the plot there are numerous parameters than
-modify units, scales, etc.  For a complete listing, see the
-\GMTprog{gmtdefaults} man pages.
-
-\GMTfig[h]{GMT_Defaults_1c}{Even more \gmt\ parameters that affect plot appearance}
-
-At the end of the script one can then reset the specific parameters
-back to what they originally were.  We suggest that you go through
-all the available parameters at least once so that you know what is
-available to change via one of the proposed mechanisms.
-\index{GMT@\GMT!defaults|)}
-\index{Default settings|)}
-
-\section{\gmt\ Units}
-\index{GMT@\GMT!units|(}
-\index{Dimensions|(}
-\index{Units|(}
-
-\GMT\ programs can accept dimensional quantities in cm, inch,
-meter, or point.  There are two ways to ensure that \GMT\ understands
-which unit you intend to use.
-
-\begin{enumerate}
-\item Append the desired unit to the dimension you supply.  This
-way is explicit and clearly communicates what you intend, e.g.,
-\Opt{X}4{\bf c} means 4 cm.
-
-\item Set the parameter MEASURE\_UNIT to the desired unit.  Then, all
-dimensions without explicit unit will be interpreted accordingly.
-
-\end{enumerate}
-
-The latter method is less secure as other users may have a different unit
-set and your script may not work as intended.  We therefore recommend
-you always supply the desired unit explicitly.
-\index{GMT@\GMT!units|)}
-\index{Dimensions|)}
-\index{Units|)}
-
-\section{\gmt\ Common Command Line Options}
-
-\GMT\ has 13 options that are identical to all programs.  It is vital that
-you understand how to use these options, which we here present
-alphabetically.
-
-\subsection{The \Opt{B} option}
-\index{\Opt{B}}
-\index{Tickmarks}
-\index{Anotations}
-\index{Gridlines}
-\index{Frame}
-\index{Basemap}
-
-This is by far the most complicated option in \GMT, but most examples
-of its usage are actually quite simple.
-Given as \Opt{–B}{\it xinfo}[/{\it yinfo}][:."title string":][{\bf W}$|${\bf w}][{\bf E}$|${\bf e}][{\bf S}$|${\bf s}][{\bf N}$|${\bf n}],
-this switch specifies a map boundary to be plotted by using the
-selected tick-mark intervals. {\it xinfo} and {\it yinfo} are of the form \\
-
-\par [{\bf a}]{\it tick}[{\bf m}$|${\bf c}][{\bf f}{\it tick}[{\bf m}$|${\bf c}]][{\bf g}{\it tick}[{\bf m}$|${\bf c}]][{\bf l}$|${\bf p}][:"axis label":][:,"unit label":] \\
-
-where {\bf a}, {\bf f}, and {\bf g} stand for annotation, frame, and grid interval.
-The {\bf m}$|${\bf c} indicates minutes ({\bf m}) or seconds ({\bf c}).  By
-default, all 4 boundaries are plotted (denoted {\bf W}, {\bf E}, {\bf S},
-{\bf N}).  To change this selection, append the codes for those you want
-(e.g., {\bf WSn}).  Upper case (e.g., {\bf W}) will annotate in addition to
-draw axis/tick-marks.  The title, if given, will appear centered above the plot\footnote{However,
-it is suppressed when a 3-D view is selected.}.
-
-\begin{figure}[h]
-\centering
-\epsfig{figure=eps/GMT_-B_geo.eps}
-\caption{Geographic map border using separate selections for anotation,
-frame, and grid intervals.  Formatting of the anotation is controlled by
-the parameter PLOT\_DEGREE\_FORMAT in your \filename{.gmtdefaults} file.}
-\label{fig:GMT_-B_geo}
-\end{figure}
-\begin{figure}[h]
-\centering
-\epsfig{figure=eps/GMT_-B_linear.eps}
-\caption{Linear Cartesian projection axis.  Long tickmarks accompany
-anotations, shorter ticks indicate frame interval.  The axis label is
-optional.  We used \Opt{R}0/12/0/1 \Opt{JX}3/0.4
-\Opt{Ba}4{\bf f}2{\bf g}1:Frequency::,\%:.}
-\end{figure}
-
-\subsubsection{Options for log$_{10}$ axes}
-\index{log$_{10}$ axes}
-\index{Logarithmic axes}
-
-\begin{enumerate}
-\item {\it tick} must be 1, 2, or 3.  Annotations/ticks will
-then occur at 1, 1--–2–--5, or 1,–2,–3,–4–,...–,9, respectively.
-
-\item Append {\bf l} to {\it tick}. Then, log$_{10}$ of the annotation
-is plotted at every integer log$_{10}$ value.
-
-\item Append {\bf p} to {\it tick}.  Then, annotations appear as 10
-raised to log$_{10}$ of the value (e.g., $10^{-5}$).
-
-\end{enumerate}
-
-\begin{figure}[h]
-\centering
-\epsfig{figure=eps/GMT_-B_log.eps}
-\caption{Logarithmic projection axis using separate values for anotation,
-frame, and grid intervals.  (top) Here, we have chosen to anotate the actual
-values.  Interval = 1 means every whole power of 10, 2 means 1, 2, 5 times
-powers of 10, and 3 means every 0.1 times powers of 10.  We used
-\Opt{R}1/1000/0/1 \Opt{JX}3l/0.4 \Opt{Ba}1{\bf f}2{\bf g}3.
-(middle) Here, we have chosen to
-anotate log$_{10}$ of the actual values, with \Opt{Ba}1{\bf f}2{\bf g}3{\bf l}. 
-(bottom) We anotate every power of 10 using log$_{10}$ of the actual values
-as exponents, with \Opt{Ba}1{\bf f}2{\bf g}3{\bf p}.}
-\end{figure}
-
-\index{Exponential axis}
-\subsubsection{Options for exponential axes}
-Append {\bf p }to {\it tick}, and the annotation
-interval is expected to be in transformed units, but annotation will be plotted
-as un-transformed units.  E.g., if {\it tick} = 1 and power = 0.5 (i.e., sqrt),
-then equidistant annotations labeled 1, –4, –9, ... will appear.
-
-\begin{figure}[h]
-\centering
-\epsfig{figure=eps/GMT_-B_pow.eps}
-\caption{Exponential or power projection axis.  (top) Using an exponent of 0.5
-yields a $\sqrt{x}$ axis.  Here, intervals refer to actual data values, in
-\Opt{R}0/100/0/1 \Opt{JX}3{\bf p}0.5/0.4\ \Opt{Ba}20{\bf f}10{\bf g}5.
-(bottom) Here, intervals refer to projected values, although the anotation
-uses the corresponding unprojected values, as in \Opt{Ba}3{\bf f}2{\bf g}1{\bf p}.}
-\label{fig:GMT_-B_pow}
-\end{figure}
-
-\subsection{The \Opt{c} option}
-\index{\Opt{c}}
-\index{Number of copies}
-
-The \Opt{–c} option specifies the number of plot copies. [Default is 1]
-
-\subsection{The \Opt{H} option}
-\index{\Opt{H}}
-\index{Header records}
-
-The \Opt{H}[{\it n\_recs}] option lets \GMT\ know that input file(s) have
-one [Default] or more header records.  If there are more than one header
-record you must specify the number after the \Opt{H} option, e.g., \Opt{H}4.
-See Figure~\ref{fig:GMT_-H}.
-
-\subsection{The \Opt{J?} options}
-\index{\Opt{J}}
-\index{Map projections}
-
-\GMTfig[h]{GMT_-J}{The 25 projections available in \gmt}
-
-Selects the map projection.  The following code (?) determines the
-projection.  Specify map {\it width} (or axis lengths) in the unit of
-your choice.  The projections avaiable in \GMT\ are presented in Figure~\ref{fig:GMT_-J}.
-For this tutorial we will choose one of the following projections
-(for details on all \GMT\ projections see the \GMTprog{psbasemap} man page):
-
-\begin{description}
-
-\item [Mercator:] \Opt{–JM}{\it width}.
-\index{Mercator projection \Opt{JM}}
-\index{\Opt{JM} Mercator projection}
-
-\item [Orthographic:] \Opt{–JG}$lon_0/lat_0/width$. The
-$lon_0/lat_0$ specifies the projection center.
-\index{Orthographic projection \Opt{JG}}
-\index{\Opt{JG} Orthographic projection}
-
-\item [Albers conic:]	\Opt{–JB}$lon_0/lat_0/lat_1/lat_2/width$. 
-Give projection center and two standard parallels.
-\index{Albers projection \Opt{JB}}
-\index{\Opt{JB} Albers projection}
-
-\item [Eckert IV and VI:] \Opt{–JK}[{\bf f$|$s}]$lon_0/width$. Give the central meridian.
-\index{Eckert IV and VI projection \Opt{JK}}
-\index{\Opt{JK} Eckert IV and VI projection}
-
-
-\item [Linear:] \Opt{–JX}$width/height$.  Give width [and height]
-of plot.  {\it width} [and/or {\it height}] can be given in any of the
-following 3 formats:
-\index{Linear projection \Opt{JX}}
-\index{\Opt{JX} Linear projection}
-
-\begin{enumerate}
-\item \Opt{–JX}{\it width}[{\bf d}]---Regular linear scaling.  Append
-'{\bf d}' if {\it x} and {\it y} are geographical coordinates in degrees;
-this allows for 360\DS\ periodicity and degree-symbols in annotations.
-
-\item \Opt{–JX}{\it width}{\bf l}---Take log$_{10}$ of values before scaling.
-
-\item \Opt{–JX}{\it width}{\bf p}{\it power}---Raise values to {\it power}
-before scaling.
-\end{enumerate}
-
-\end{description}
-
-Use negative {\it width }[{\it and height}] to reverse the direction of
-an axis (e.g., to have {\it y} be positive down).
-
-\subsection{The \Opt{K} \Opt{O} options}
-\index{\Opt{K}}
-\index{\Opt{O}}
-\index{Overlay plots}
-\index{Plot!overlay}
-
-\begin{figure}[h]
-\centering
-\begin{tabular}{cc}
-\epsfig{figure=eps/GMT_-H.eps} & \epsfig{figure=eps/GMT_-OK.eps} \\
-\end{tabular}
-\caption{(left) Input files may have an arbitrary number of header records,
-specified with \Opt{H}.
-(right) A final \PS\ file consists of a stack of individual pieces}
-\label{fig:GMT_-H}
-\label{fig:GMT_-OK}
-\end{figure}
-
-The \Opt{–K} and \Opt{O} options control the generation of \PS\ code for multiple
-overlay plots.  All \PS\ files must have a header (for initializations),
-a body (drawing the figure), and a trailer (printing it out) (see
-Figure~\ref{fig:GMT_-OK}).  Thus,
-when overlaying several \GMT\ plots we must make sure that the first plot
-call ommits the trailer, that all intermediate calls omit both header and
-trailer, and that the final overlay omits the header.
-\Opt{–K} omits the trailer which implies that more \PS\ code will be appended
-later [Default terminates the plot system].  \Opt{–O} selects Overlay plot
-mode and ommits the header information [Default initializes a new plot system].
-Most unexpected results for multiple overlay plots can be traced to the
-incorrect use of these options.
-
-\subsection{The \Opt{P} option} 
-\index{\Opt{P}}
-\index{Landscape orientation}
-\index{Portrait orientation \Opt{P}}
-
-\begin{figure}[h]
-\centering
-\begin{tabular}{cc}
-\epsfig{figure=eps/GMT_-P.eps} & \epsfig{figure=eps/GMT_-XY.eps} \\
-\end{tabular}
-\caption{(left) Users can specify Landscape [Default] or Portrait (\Opt{P}) orientation.
-(right) Plot origin can be translated freely with \Opt{X} \Opt{Y}}
-\label{fig:GMT_-P}
-\label{fig:GMT_-XY}
-\end{figure}
-
-\Opt{–P} selects Portrait plotting mode\footnote{For historical reasons, the \GMT\
-Default is Landscape, see \GMTprog{gmtdefaults} to change this.}.  The
-default Landscape orientation is obtained by translating the origin in the
-{\it x}-direction (by the width of the chosen paper PAPER\_MEDIA) and then rotating the
-coordinate system counterclockwise by 90\DS.  By default the PAPER\_MEDIA is
-set to Letter (or A4 if SI is chosen); this value must be changed
-when using different media, such as 11" x 17" or large format plotters
-(Figure~\ref{fig:GMT_-P}).
-
-\subsection{The \Opt{R} option}
-\index{\Opt{R}}
-\index{Region, specifying}
-
-\Opt{–R}{\it xmin}/{\it xmax}/{\it ymin}/{\it ymax}[{\bf r}] specify the
-Region of interest.  Decimal or exponential notations are supported.
-To use degrees and minutes [and seconds], use the dd:mm[:ss] format.
-Append {\bf r} if lower left and upper right corners are given instead of
-minimum and maximum extent of a rectangular region (Figure~\ref{fig:GMT_-R}).
-
-\begin{figure}[h]
-\centering
-\epsfig{figure=eps/GMT_-R.eps}
-\caption{The plot region can be specified in two different ways}
-\label{fig:GMT_-R}
-\end{figure}
-
-\subsection{The \Opt{U} option} 
-\index{\Opt{U}}
-\index{Timestamp}
-\index{UNIX@\UNIX!timestamp}
-
-\Opt{–U} draws \UNIX\ System time stamp.  Optionally, append an arbitrary
-text string (surrounded by double quotes), or the code {\bf c}, which will
-plot the current command string (Figure~\ref{fig:GMT_-U}).
-
-\begin{figure}[h]
-\centering
-\epsfig{figure=eps/GMT_-U.eps}
-\caption{The \Opt{U} option makes it easy to ``date'' a plot}
-\label{fig:GMT_-U}
-\end{figure}
-
-\subsection{The \Opt{V} option} 
-\index{\Opt{V}}
-\index{Verbose}
-
-\Opt{–V} selects verbose mode, which will send progress reports to
-\emph{stderr} [Default runs ``silently''].
-
-\subsection{The \Opt{X} \Opt{Y} options}
-\index{\Opt{X}}
-\index{\Opt{Y}}
-\index{Plot!offset}
-\index{Offset, plot}
-
-\Opt{–X} and \Opt{–Y} shift origin of plot by ({\it xoff},{\it yoff})
-inches (Default is (1,1) for new plots\footnote{ensures that
-boundary annotations do not fall off the page} and (0,0) for overlays (\Opt{O})).
-By default, all translations are relative to the previous origin
-(see Figure~\ref{fig:GMT_-XY}).
-Absolute translations (i.e., relative to a fixed point (0,0) at the
-lower left corner of the paper) can be achieve by prepending ``a''
-to the offsets.  Subsequent overlays will be co-registered with the
-previous plot unless the origin is shifted using these options.
-The offsets are measured in the current coordinates system (which can
-be rotated using the initial \Opt{–P} option; subsequent \Opt{–P} options
-for overlays are ignored).
-
-\subsection{The \Opt{:} option}
-\index{\Opt{:}}
-\index{lat/lon input}
-
-For geographical data, the first column is expected to contain longitudes
-and the second to contain latitudes.  To reverse this expectation you must
-apply the \Opt{:} option.
-
 \section{Laboratory Exercises}
 
 We will begin our adventure by making some simple plot axes and
 coastline basemaps.  We will do this in order to introduce the all-%
-important \Opt{–B}, \Opt{–J}, and \Opt{–R} switches and to familiarize
+important \Opt{B}, \Opt{J}, and \Opt{R} switches and to familiarize
 ourselves with a few selected \GMT\ projections.  The \GMT\ programs
 we will utilize are \GMTprog{psbasemap} and \GMTprog{pscoast}.  Please
 consult their manual pages on the \GMT\ web site for reference.
@@ -878,7 +480,7 @@ from -3 to 8 in {\it y}, annotating every 1.  The final plot should be
 4 by 3 inches in size.  Here's how we do it:
 
 \begin{verbatim}
-psbasemap –-R10/70/-3/8 –-JX4i/3i -–B10/1:."My first plot": –-P >! plot.ps
+psbasemap -R10/70/-3/8 -JX4i/3i -B10/1:."My first plot": -P >! plot.ps
 \end{verbatim}
 
 You can view the result with \progname{ghostview} \filename{plot.ps}.
@@ -888,11 +490,11 @@ You can view the result with \progname{ghostview} \filename{plot.ps}.
 
 \begin{enumerate}
 
-\item Try change the \Opt{–JX} values.
+\item Try change the \Opt{JX} values.
 
-\item Try change the \Opt{–B} values.
+\item Try change the \Opt{B} values.
 
-\item Omit the \Opt{–P}.
+\item Omit the \Opt{P}.
 
 \end{enumerate}
 \index{Exercises|)}
@@ -906,8 +508,8 @@ assume that the raw {\it x} data range from 3 to 9613 and {\it y}
 ranges from $3.2 \cdot 10^{20}$ to $6.8 \cdot 10^{24}$.  One possibility is
 
 \begin{verbatim} 
-psbasemap –-R1/10000/1e20/1e25 -–JX9il/6il \
-   -–B2:"Wavelength (m)":/a1pf3:"Power (W)":WS >! plot.ps 
+psbasemap -R1/10000/1e20/1e25 -JX9il/6il \
+   -B2:"Wavelength (m)":/a1pf3:"Power (W)":WS >! plot.ps 
 \end{verbatim}
 
 (The backslash $\backslash$ makes \UNIX\ ignore the carriage return that follows and treat the two lines as one long command).
@@ -919,9 +521,9 @@ psbasemap –-R1/10000/1e20/1e25 -–JX9il/6il \
 
 \item Do not append {\bf l} to the axes lengths.
 
-\item Leave the {\bf p} modifier out of the \Opt{–B} string.
+\item Leave the {\bf p} modifier out of the \Opt{B} string.
 
-\item Add {\bf g}3 to each side of the slash in \Opt{–B}.
+\item Add {\bf g}3 to each side of the slash in \Opt{B}.
 
 \end{enumerate}
 \index{Exercises|)}
@@ -931,13 +533,13 @@ psbasemap –-R1/10000/1e20/1e25 -–JX9il/6il \
 \index{Projection!Mercator}
 
 Despite the problems of extreme horizontal exaggeration with
-latitude, the conformal Mercator projection (\Opt{–JM}) remains
+latitude, the conformal Mercator projection (\Opt{JM}) remains
 the stalwart of location maps used by scientists.  It is one
 of several cylindrical projections offered by \GMT; here we
 will only have time to focus on one such projection.  The
 complete syntax is simply \\
 
-\Opt{–JM}{\it width} \\
+\Opt{JM}{\it width} \\
 
 To make coastline maps we use \GMTprog{pscoast} which automatically will
 access the \GMT\ coastline data base derived from the GSHHS
@@ -950,23 +552,23 @@ to the common switches we may need to use some of several \GMTprog{pscoast}
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{–A} & Exclude small features or those of high hierarchical levels \\ \hline
-\Opt{–D} & Select data resolution ({\bf f}ull, {\bf h}igh, {\bf i}ntermediate, {\bf l}ow, or {\bf c}rude) \\ \hline
-\Opt{–G} & Set color of dry areas (default does not paint) \\ \hline
-\Opt{–I} & Draw rivers (chose features from one or more hierarchical categories) \\ \hline
-\Opt{–L} & Plot map scale (length scale can be km, miles, or nautical miles) \\ \hline
-\Opt{–N} & Draw political borders (including US state borders) \\ \hline
-\Opt{–S} & Set color for wet areas (default does not paint) \\ \hline
-\Opt{–W} & Draw coastlines and set pen thickness \\ \hline
+\Opt{A} & Exclude small features or those of high hierarchical levels \\ \hline
+\Opt{D} & Select data resolution ({\bf f}ull, {\bf h}igh, {\bf i}ntermediate, {\bf l}ow, or {\bf c}rude) \\ \hline
+\Opt{G} & Set color of dry areas (default does not paint) \\ \hline
+\Opt{I} & Draw rivers (chose features from one or more hierarchical categories) \\ \hline
+\Opt{L} & Plot map scale (length scale can be km, miles, or nautical miles) \\ \hline
+\Opt{N} & Draw political borders (including US state borders) \\ \hline
+\Opt{S} & Set color for wet areas (default does not paint) \\ \hline
+\Opt{W} & Draw coastlines and set pen thickness \\ \hline
 \end{tabular}
 \caption{Main options when making coastline plots or overlays.} \label{tbl:pscoast}
 \end{table}
 
-One of \Opt{–W}, \Opt{–G}, \Opt{–S} must be selected.  Our first coastline
+One of \Opt{W}, \Opt{G}, \Opt{S} must be selected.  Our first coastline
 example is from Latin America:
 
 \begin{verbatim}
-pscoast –-R-90/-70/0/20 -–JM6i -–P -–B5g5 –-G180/120/60 >! map.ps 
+pscoast -R-90/-70/0/20 -JM6i -P -B5g5 -G180/120/60 >! map.ps 
 \end{verbatim} 
 
 \subsubsection{Exercises}
@@ -974,9 +576,9 @@ pscoast –-R-90/-70/0/20 -–JM6i -–P -–B5g5 –-G180/120/60 >! map.ps
 
 \begin{enumerate}
 
-\item Add the \Opt{–V} option.
+\item Add the \Opt{V} option.
 
-\item Try \Opt{–R}270/290/0/20 instead.  What happens to the annotations?
+\item Try \Opt{R}270/290/0/20 instead.  What happens to the annotations?
 
 \item Edit your \filename{.gmtdefaults} file and change PLOT\_DEGREE\_FORMAT
 to another setting (see the \GMTprog{gmtdefaults} man page).
@@ -985,7 +587,7 @@ to another setting (see the \GMTprog{gmtdefaults} man page).
 
 \item Pick a region that includes the north or south poles.
 
-\item Try \Opt{–W}0.25{\bf p} instead of (or in addition to) \Opt{–G}.
+\item Try \Opt{W}0.25{\bf p} instead of (or in addition to) \Opt{G}.
 
 \end{enumerate}
 \index{Exercises|)}
@@ -994,20 +596,20 @@ to another setting (see the \GMTprog{gmtdefaults} man page).
 \index{Albers projection \Opt{JB}}
 \index{Projection!Albers}
 
-The Albers projection (\Opt{–JB}) is an equal-area conical projection;
-its conformal cousin is the Lambert conic projection (\Opt{–JL}).
+The Albers projection (\Opt{JB}) is an equal-area conical projection;
+its conformal cousin is the Lambert conic projection (\Opt{JL}).
 Their usages are almost identical so we will only use the Albers here.
 The general syntax is \\
 
-\Opt{–JB}$lon_0/lat_0/lat_1/lat_2/width$ \\
+\Opt{JB}$lon_0/lat_0/lat_1/lat_2/width$ \\
 
 where ($lon_0, lat_0$) is the map (projection) center and $lat_1, lat_2$
 are the two standard parallels where the cone intersects the Earth's surface.
 We try the following command:
 
 \begin{verbatim}
-pscoast –-R-130/-70/24/52 -–JB-100/35/33/45/6i -–B10g5:."Conic Projection": \
-   –-N1/2p -–N2/0.25p -–A500 -–G200 –-W0.25p -–P >! map.ps
+pscoast -R-130/-70/24/52 -JB-100/35/33/45/6i -B10g5:."Conic Projection": \
+   -N1/2p -N2/0.25p -A500 -G200 -W0.25p -P >! map.ps
 \end{verbatim}
 
 \subsubsection{Exercises}
@@ -1017,7 +619,7 @@ pscoast –-R-130/-70/24/52 -–JB-100/35/33/45/6i -–B10g5:."Conic Projection": \
 
 \item Change GRID\_CROSS\_SIZE to make crosses instead of gridlines.
 
-\item Change \Opt{–R} to a rectangular box specification instead of
+\item Change \Opt{R} to a rectangular box specification instead of
 minimum and maximum values.
 
 \end{enumerate}
@@ -1027,19 +629,19 @@ minimum and maximum values.
 \index{Orthographic projection \Opt{JG}}
 \index{Projection!orthographic}
 
-The azimuthal orthographic projection (\Opt{–JG}) is one of several
+The azimuthal orthographic projection (\Opt{JG}) is one of several
 projections with similar syntax and behavior; the one we have
 chosen mimics viewing the Earth from space at an infinite distance.
 The syntax for this projection is \\
 
-\Opt{–JG}$lon_0/lat_0/width$ \\
+\Opt{JG}$lon_0/lat_0/width$ \\
 
 where ($lon_0, lat_0$) is the center of the map (projection).
 As an example we will try
 
 \begin{verbatim}
-pscoast –-R0/360/-90/90 –-JG280/30/6i –-Bg30/g15 -–Dc -–A5000 –-G255/255/255 \
-    -–S150/50/150 –-P >! map.ps
+pscoast -R0/360/-90/90 -JG280/30/6i -Bg30/g15 -Dc -A5000 -G255/255/255 \
+    -S150/50/150 -P >! map.ps
 \end{verbatim} 
 
 \subsubsection{Exercises}
@@ -1047,7 +649,7 @@ pscoast –-R0/360/-90/90 –-JG280/30/6i –-Bg30/g15 -–Dc -–A5000 –-G255/255/255 \
 
 \begin{enumerate}
 
-\item Use the rectangular option in \Opt{–R} to make a rectangular map
+\item Use the rectangular option in \Opt{R} to make a rectangular map
 showing the US only.
 
 \end{enumerate}
@@ -1058,19 +660,19 @@ showing the US only.
 \index{Projection!Eckert IV and VI}
 
 We conclude the survey of map projections with the Eckert IV and VI projections
-(\Opt{–JK}), two of several projections used for global thematic maps; They
+(\Opt{JK}), two of several projections used for global thematic maps; They
 are both equal-area projections whose syntax is \\
 
-\Opt{–JK}[{\bf f$|$s}]$lon_0/width$ \\
+\Opt{JK}[{\bf f$|$s}]$lon_0/width$ \\
 
 where {\bf f} gives Eckert IV (4) and {\bf s} (Default) gives Eckert VI (6).
 The $lon_0$ is the central meridian (which takes precedence over
-the mid-value implied by the \Opt{–R} setting).  A simple Eckert VI world map
+the mid-value implied by the \Opt{R} setting).  A simple Eckert VI world map
 is thus generated by
 
 \begin{verbatim}
-pscoast -–R0/360/-90/90 –-JKs180/9i -–B60g30/30g15 –-Dc –-A5000 -–G180/120/60 \
-    -–S100/180/255 -–W0.25p >! map.ps
+pscoast -R0/360/-90/90 -JKs180/9i -B60g30/30g15 -Dc -A5000 -G180/120/60 \
+    -S100/180/255 -W0.25p >! map.ps
 \end{verbatim}
 
 \subsubsection{Exercises}
@@ -1080,7 +682,7 @@ pscoast -–R0/360/-90/90 –-JKs180/9i -–B60g30/30g15 –-Dc –-A5000 -–G180/120/60 \
 
 \item Center the map on Greenwich.
 
-\item Add a map scale with \Opt{–L}.
+\item Add a map scale with \Opt{L}.
 
 \end{enumerate}
 \index{Exercises|)}
@@ -1143,22 +745,22 @@ shows a complete list of the options.
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{–A} & Suppress line interpolation along great circles \\ \hline
-\Opt{–C}{\it cpt} & Let symbol color be determined from $z$-values and the {\it cpt} file \\ \hline
-\Opt{–E}[{\bf x}$|${\bf X}][{\bf y}$|${\bf Y}][{\it cap}][/{\it pen}] & Draw selected error bars with specified attributes \\ \hline
-\Opt{–G}{\it fill} & Set color for symbol or fill for polygons \\ \hline
-\Opt{–L} & Explicitly close polygons \\ \hline
-\Opt{–M}[{\it flag}] & Multiple segment input data; headers start with {\it flag} \\ \hline
-\Opt{–N} & Do Not clip symbols at map borders \\ \hline
-\Opt{–S[symbol]}[{\it size}] & Select one of 16 symbols (See Table~\ref{tbl:psxysymbols}) \\ \hline
-\Opt{–W}{\it pen} & Set {\it pen} for line or symbol outline \\ \hline
+\Opt{A} & Suppress line interpolation along great circles \\ \hline
+\Opt{C}{\it cpt} & Let symbol color be determined from $z$-values and the {\it cpt} file \\ \hline
+\Opt{E}[{\bf x}$|${\bf X}][{\bf y}$|${\bf Y}][{\it cap}][/{\it pen}] & Draw selected error bars with specified attributes \\ \hline
+\Opt{G}{\it fill} & Set color for symbol or fill for polygons \\ \hline
+\Opt{L} & Explicitly close polygons \\ \hline
+\Opt{M}[{\it flag}] & Multiple segment input data; headers start with {\it flag} \\ \hline
+\Opt{N} & Do Not clip symbols at map borders \\ \hline
+\Opt{S[symbol]}[{\it size}] & Select one of 16 symbols (See Table~\ref{tbl:psxysymbols}) \\ \hline
+\Opt{W}{\it pen} & Set {\it pen} for line or symbol outline \\ \hline
 \end{tabular}
 \caption{Optional switches in the \GMTprog{psxy} program}
 \label{tbl:psxy}
 \end{table}
 
-The symbols can either be transparent (using \Opt{–W} only, not \Opt{–G})
-or solid (\Opt{–G}, with optional outline using \Opt{–W}).  The \Opt{–S}
+The symbols can either be transparent (using \Opt{W} only, not \Opt{G})
+or solid (\Opt{G}, with optional outline using \Opt{W}).  The \Opt{S}
 option takes the code for the desired symbol and optional size information.
 If no symbol is given it is expected to be in the last column of the input
 file.  The size is optional since individual sizes for
@@ -1172,33 +774,33 @@ us are
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Symbol}} \\ \hline 
-\Opt{–Sa}{\it size} & st{\bf a}r; {\it size} is radius of circumscribing circle \\ \hline
-\Opt{–Sb}{\it size}[/{\it base}][{\bf u}] & {\bf b}ar; {\it size} is bar width, append {\bf u} if {\it size} is in {\it x}-units \\
+\Opt{Sa}{\it size} & st{\bf a}r; {\it size} is radius of circumscribing circle \\ \hline
+\Opt{Sb}{\it size}[/{\it base}][{\bf u}] & {\bf b}ar; {\it size} is bar width, append {\bf u} if {\it size} is in {\it x}-units \\
  & Bar extends from {\it base} [0] to the {\it y}-value \\ \hline
-\Opt{–Sc}{\it size} & {\bf c}ircle; {\it size} is the diameter \\ \hline
-\Opt{–Sd}{\it size} & {\bf d}iamond; {\it size} is its side \\ \hline
-\Opt{–Se} & {\bf e}llipse; {\it direction} (CCW from horizontal), {\it major}, and {\it minor} axes in inches \\
+\Opt{Sc}{\it size} & {\bf c}ircle; {\it size} is the diameter \\ \hline
+\Opt{Sd}{\it size} & {\bf d}iamond; {\it size} is its side \\ \hline
+\Opt{Se} & {\bf e}llipse; {\it direction} (CCW from horizontal), {\it major}, and {\it minor} axes in inches \\
  & are read from the input file \\ \hline
-\Opt{–SE} & {\bf e}llipse; {\it azimuth} (CW from vertical), {\it major}, and {\it minor} axes in kilometers \\
+\Opt{SE} & {\bf e}llipse; {\it azimuth} (CW from vertical), {\it major}, and {\it minor} axes in kilometers \\
  & are read from the input file\\ \hline
-\Opt{–Sf}{\it gap}/{\it tick}[{\bf l$|$L$|$r$|$R}] & {\bf f}ault; {\it gap} and {\it tick} set length of and distance between ticks. \\
+\Opt{Sf}{\it gap}/{\it tick}[{\bf l$|$L$|$r$|$R}] & {\bf f}ault; {\it gap} and {\it tick} set length of and distance between ticks. \\
  & If {\it gap} $<$ 0 it means the number of ticks.  {\bf l} or {\bf r} will draw ticks to left or right \\
  & side of line [Default is centered] \\
  & Use upper case {\bf L} or {\bf R} to draw triangles instead of ticks \\ \hline
-\Opt{–Sh}{\it size} & {\bf h}exagon; {\it size} is its side \\ \hline
-\Opt{–Si}{\it size} & {\bf i}nverted triangle; {\it size} is its side \\ \hline
-\Opt{–Sl}{\it size}/{\it string}[\%{\it font}] & {\bf l}etter; {\it size} is fontsize.  Append a letter or text string, and optionally a font \\ \hline
-\Opt{–Sp} & {\bf p}oint; no size needed (1 pixel at current resolution is used) \\ \hline
-\Opt{–Ss}{\it size} & {\bf s}quare, {\it size} is its side \\ \hline
-\Opt{–St}{\it size} & {\bf t}riangle; {\it size} is its side \\ \hline
-\Opt{–Sv}[{\it thick}/{\it length}/{\it width}][{\bf n}{\it norm}] & {\bf v}ector; {\it direction} (CCW from horizontal) and {\it length} are read from input data \\
+\Opt{Sh}{\it size} & {\bf h}exagon; {\it size} is its side \\ \hline
+\Opt{Si}{\it size} & {\bf i}nverted triangle; {\it size} is its side \\ \hline
+\Opt{Sl}{\it size}/{\it string}[\%{\it font}] & {\bf l}etter; {\it size} is fontsize.  Append a letter or text string, and optionally a font \\ \hline
+\Opt{Sp} & {\bf p}oint; no size needed (1 pixel at current resolution is used) \\ \hline
+\Opt{Ss}{\it size} & {\bf s}quare, {\it size} is its side \\ \hline
+\Opt{St}{\it size} & {\bf t}riangle; {\it size} is its side \\ \hline
+\Opt{Sv}[{\it thick}/{\it length}/{\it width}][{\bf n}{\it norm}] & {\bf v}ector; {\it direction} (CCW from horizontal) and {\it length} are read from input data \\
  & Optionally, append the thickness of the vector and the width and length of the \\
  & arrow-head.  If the {\bf n}{\it norm} is appended, all vectors whose lengths are less than \\
  & {\it norm} will have their attributes scaled by length/{\it norm} \\ \hline
-\Opt{–SV}[{\it thick}/{\it length}/{\it width}][{\bf n}{\it norm}] & {\bf v}ector, except {\it azimuth} (degrees east of north) is expected instead of {\it direction} \\
+\Opt{SV}[{\it thick}/{\it length}/{\it width}][{\bf n}{\it norm}] & {\bf v}ector, except {\it azimuth} (degrees east of north) is expected instead of {\it direction} \\
  & The angle on the map is calculated based on the chosen map projection \\ \hline
 \Opt{Sw}[{\it size} & pie {\bf s}edge; {\it start} and {\it stop} directions (CCW from horizontal) are read from input data \\ \hline
-\Opt{–Sx}{\it size} & cross; {\it size} is length of crossing lines \\ \hline
+\Opt{Sx}{\it size} & cross; {\it size} is length of crossing lines \\ \hline
 \end{tabular}
 \caption{The symbol option in \GMTprog{psxy}.  Lower case symbols ({\bf a, c, d, h, i, s, t, x})
 will fit inside a circle of given diameter.  Upper case symbols ({\bf A, C, D, H, I, S, T, X}) will have area equal to that of a circle of given diameter.}
@@ -1220,15 +822,15 @@ apply when one (or more) of the following conditions are met:
 \begin{enumerate}
 
 \item If you want the color of each symbol to be determined individually,
-supply a cptfile with the \Opt{–C} option and let the 3rd data column
+supply a cptfile with the \Opt{C} option and let the 3rd data column
 contain the {\it z}-values to be used with the cptfile.
 
 \item If you want the size of each symbol to be determined individually,
 append the size in a separate column.
 
-\item To draw error bars, use the \Opt{–E} option and give one or two
+\item To draw error bars, use the \Opt{E} option and give one or two
 additional data columns with the $\pm dx$ and $\pm dy$ values; the form of
-\Opt{–E} determines if one (\Opt{–Ex} or \Opt{–Ey}) or two (\Opt{–Exy})
+\Opt{E} determines if one (\Opt{Ex} or \Opt{Ey}) or two (\Opt{Exy})
 columns are needed.  If upper case flags {\bf X} or {\bf Y} are given then
 we will instead draw a ``box-and-whisker'' symbol and the $\sigma_x$ (or
 $\sigma_y$) must represent 4 columns containing the minimum, the 25 and 75\%
@@ -1236,14 +838,14 @@ quartiles, and the maximum value.  The given coordinate is taken as the 50\%
 quartile (median).
 \index{Error bars}
 
-\item If you draw vectors with \Opt{–Sv} (or \Opt{–SV}) then {\it size} is
+\item If you draw vectors with \Opt{Sv} (or \Opt{SV}) then {\it size} is
 actually two columns containing the {\it direction} (or {\it azimuth})
 and {\it length} of each vector.
 \index{Vectors}
 
-\item If you draw ellipses (\Opt{–Se}) then {\it size} is actually three
+\item If you draw ellipses (\Opt{Se}) then {\it size} is actually three
 columns containing the {\it direction} and the {\it major} and {\it minor}
-axes in inches (with \Opt{–SE} we expect {\it azimuth} instead and axes
+axes in inches (with \Opt{SE} we expect {\it azimuth} instead and axes
 in km).
 \index{Ellipses}
 
@@ -1263,7 +865,7 @@ the form of an option argument, e.g.,
 
 \vspace{\baselineskip} 
 
-\par \Opt{–W}{\it width}[/{\it color}][{\bf t}{\it texture}][{\bf p}]\par 
+\par \Opt{W}{\it width}[/{\it color}][{\bf t}{\it texture}][{\bf p}]\par 
 
 \begin{description}
 \index{Pen!width}
@@ -1284,9 +886,9 @@ achieved by giving zero width, but the result is device-dependent.
 \index{Color!pen}
 \index{Attributes!pen!color}%
 \item[$\rightarrow$]The {\it color} can be specified as a {\it gray}
-shade in the range 0–--255 (linearly going from black to white) or using
+shade in the range 0--255 (linearly going from black to white) or using
 the RGB system where you specify {\it r}/{\it g}/{\it b}, each ranging
-from 0--–255.  Here 0/0/0 is black and 255/255/255 is white. 
+from 0--255.  Here 0/0/0 is black and 255/255/255 is white. 
 
 \index{Pen!texture}
 \index{Texture, pen}
@@ -1301,7 +903,7 @@ segments and the gap between segments.  The {\it offset} phase-shifts the
 pattern along the line.  For example, if you want a yellow line of width
 2 that alternates between long dashes (20 units), a 10 unit gap, then
 a 5 unit dash, then another 10 unit gap, with pattern offset by 10 units
-from the origin, specify \Opt{–W}2/255/255/0{\bf t}20\_10\_5\_10:10.
+from the origin, specify \Opt{W}2/255/255/0{\bf t}20\_10\_5\_10:10.
 Here, the texture units can be specified in dpi units or points (see above). 
 \end{description} 
 
@@ -1327,10 +929,10 @@ symbols.  The fill may take two forms:
 
 \vspace{\baselineskip} 
 
-In the first case we may specify a {\it gray} shade (0–--255) or a color
-({\it r}/{\it g}/{\it b} in the 0–--255 range), similar to the pen color
+In the first case we may specify a {\it gray} shade (0--255) or a color
+({\it r}/{\it g}/{\it b} in the 0--255 range), similar to the pen color
 settings.  The second form allows us to use a predefined bit-image pattern.
-The {\it pattern} can either be a number in the range 1–--90 or the name of a 1-,
+The {\it pattern} can either be a number in the range 1--90 or the name of a 1-,
 8-, or 24-bit Sun raster file.  The former will result in one of the 90
 predefined 64 x 64 bit-patterns provided with \GMT\ and reproduced in Appendix E in the Technical Reference.
 The latter allows the user to create customized, repeating images using
@@ -1338,7 +940,7 @@ standard Sun rasterfiles.  The {\it dpi} parameter sets the resolution of
 this image on the page;  the area fill is thus made up of a series of these
 ``tiles''.  Specifying {\it dpi} as 0 will result in highest resolution
 obtainable given the present dpi setting in \filename{.gmtdefaults}.
-By specifying upper case \Opt{GP} instead of \Opt{–Gp} the image will be
+By specifying upper case \Opt{GP} instead of \Opt{Gp} the image will be
 bit-reversed, i.e., white and black areas will be interchanged (only applies
 to 1-bit images or predefined bit-image patterns).  For these patterns and
 other 1-bit images one may specify alternative background and foreground
@@ -1347,7 +949,7 @@ replace the default white and black pixels, respectively.  Setting one of the
 fore- or background colors to - yields a transparent image where only the
 back- or foreground pixels will be painted.
 Due to \PS\ implementation limitations the rasterimages used with
-\Opt{–G} must be less than 146 x 146 pixels in size; for larger images see
+\Opt{G} must be less than 146 x 146 pixels in size; for larger images see
 \GMTprog{psimage}.  The format of Sun raster files is outlined in Appendix B
 in the Technical Reference.
 Note that under \PS\ Level 1 the patterns are filled by using
@@ -1378,7 +980,7 @@ data: N = 7   <1/5>   <1/5>
 
 telling us that the file \filename{data} has 7 records and gives the
 minimum and maximum values for the first two columns.  Given our
-knowledge of how to set up linear projections with \Opt{–R} and \Opt{JX},
+knowledge of how to set up linear projections with \Opt{R} and \Opt{JX},
 try the following:
 
 \begin{enumerate}
@@ -1395,7 +997,7 @@ dashed pen.
 To simply plot the data as a line we choose no symbol and specify a pen thickness instead:
 
 \begin{verbatim} 
-psxy data -–R -–JX –-P -–B -–W0.5p >! plot.ps
+psxy data -R -JX -P -B -W0.5p >! plot.ps
 \end{verbatim} 
 \index{Examples|)}
 
@@ -1422,8 +1024,8 @@ symbols with a line we must use the overlay approach:
 \index{Connected symbols}
 
 \begin{verbatim} 
-psxy data –-R –-JX -–B -–P –-K –-W0.5p >! plot.ps
-psxy data –-R –-JX -–O -–W –-Si0.2i >> plot.ps
+psxy data -R -JX -B -P -K -W0.5p >! plot.ps
+psxy data -R -JX -O -W -Si0.2i >> plot.ps
 \end{verbatim} 
 
 Our final \GMTprog{psxy} example involves a more complicated scenario
@@ -1466,8 +1068,8 @@ The output file \filename{quakes.d} should now look like this (try it!):
 \end{verbatim} 
 
 We will follow conventional color schemes for seismicity and assign red
-to shallow quakes (depth 0--–100 km), green to intermediate quakes
-(100--–300 km), and blue to deep earthquakes (depth $>$ 300 km).  The
+to shallow quakes (depth 0--100 km), green to intermediate quakes
+(100--300 km), and blue to deep earthquakes (depth $>$ 300 km).  The
 \filename{quakes.cpt} file establishes the relationship between depth
 and color:
 
@@ -1489,8 +1091,8 @@ We may now complete our example using the Mercator projection; we throw in a
 map scale out of pure generosity:
 
 \begin{verbatim} 
-pscoast –-R130/150/35/50 -–JM6i -–B5 -–P –-G200 -–Lf134/49/42.5/500 –-K >! map.ps
-psxy -–R –-JM –-O -–Cquakes.cpt quakes.d –-Sci -–W0.25p >> map.ps
+pscoast -R130/150/35/50 -JM6i -B5 -P -G200 -Lf134/49/42.5/500 -K >! map.ps
+psxy -R -JM -O -Cquakes.cpt quakes.d -Sci -W0.25p >> map.ps
 \end{verbatim} 
 
 where the {\bf i} appended to the \Opt{Sc} option ensures that symbols
@@ -1516,13 +1118,13 @@ switches, there are 7 options that are particularly useful (Table~\ref{tbl:pstex
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{–C}{\it dx}/{\it dy} & Spacing between text and the text box (see \Opt{–W}) \\ \hline
-\Opt{–D}{\it dx}/{\it dy} & Offsets the projected location of the strings \\ \hline
-\Opt{–G}{\it fill} & Sets the color of the text \\ \hline
-\Opt{–L} & Lists the font ids and exits \\ \hline
-\Opt{–N} & Deactivates clipping at the borders \\ \hline
-\Opt{–S}{\it pen} & Selects outline font and sets pen attributes \\ \hline
-\Opt{–W}[{\it fill}][{\bf o}[{\it pen}]] & Paint the text box; draw the outline if {\bf o} is appended (also see \Opt{–C}) \\ \hline
+\Opt{C}{\it dx}/{\it dy} & Spacing between text and the text box (see \Opt{W}) \\ \hline
+\Opt{D}{\it dx}/{\it dy} & Offsets the projected location of the strings \\ \hline
+\Opt{G}{\it fill} & Sets the color of the text \\ \hline
+\Opt{L} & Lists the font ids and exits \\ \hline
+\Opt{N} & Deactivates clipping at the borders \\ \hline
+\Opt{S}{\it pen} & Selects outline font and sets pen attributes \\ \hline
+\Opt{W}[{\it fill}][{\bf o}[{\it pen}]] & Paint the text box; draw the outline if {\bf o} is appended (also see \Opt{C}) \\ \hline
 \end{tabular}
 \caption{Some of the most frequently used options in \GMTprog{pstext}}
 \label{tbl:pstext}
@@ -1579,7 +1181,7 @@ fonts.  The following escape sequences are recognized:
 \end{table}
 
 Note that these escape sequences (as well as octal codes) can be
-used anywhere in \GMT\, including as arguments to the \Opt{–B} option.
+used anywhere in \GMT\, including as arguments to the \Opt{B} option.
 A chart of octal codes can be found in Appendix F in the \GMT\
 technical reference book.  For accented European characters you must
 set CHAR\_ENCODING to ISOLatin1 in your \filename{.gmtdefaults} file.
@@ -1587,8 +1189,8 @@ set CHAR\_ENCODING to ISOLatin1 in your \filename{.gmtdefaults} file.
 We will demonstrate pstext with the following script:
 
 \begin{verbatim} 
-cat << EOF | pstext –-R0/7/0/7 -–JX7i -–P -–B1g1 -–G255/128/0 | ghostview -
-1	1	30	0	4	BL	It’s P@al, not Pal!
+cat << EOF | pstext -R0/7/0/7 -JX7i -P -B1g1 -G255/128/0 | ghostview -
+1	1	30	0	4	BL	Its P@al, not Pal!
 1	2	30	0	4	BL	Try @%33%ZapfChancery@%% today
 1	3	30	0	4	BL	@~D@~g@-b@- = 2@~pr@~G@~D@~h.
 1	4	30	0	4	BL	University of Hawaii at M@!a\305noa
@@ -1629,7 +1231,7 @@ and DEM for the continental US.  Here, we will use \GMTprog{grdraster}
 to extract a \GMT-ready grid that we will next use for contouring:
 
 \begin{verbatim}
-grdraster 1 –-R-66/-60/30/35 –-Gbermuda.grd -–V
+grdraster 1 -R-66/-60/30/35 -Gbermuda.grd -V
 \end{verbatim} 
 
 We first use the \GMT\ program \GMTprog{grdinfo} to see what's in this file:
@@ -1641,7 +1243,7 @@ grdinfo bermuda.grd
 The file contains bathymetry for the Bermuda region and has depth
 values from -5475 to -89 meters.  We want to make a contour map of
 this data; this is a job for \GMTprog{grdcontour}.  As with previous
-plot commands we need to set up the map projection with \Opt{–J}.
+plot commands we need to set up the map projection with \Opt{J}.
 Here, however, we do not have to specify the region since that is by
 default assumed to be the extent of the grid file.
 To generate any plot we will in addition need to supply information
@@ -1655,17 +1257,17 @@ useful options:
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{–A}{\it anot\_int} & Annotation interval \\ \hline
-\Opt{–C}{\it cont\_int} & Contour interval \\ \hline
-\Opt{–G}{\it gap} & Sets distance between contour annotations \\ \hline
-\Opt{–L}{\it low}/{\it high} & Only draw contours within the {\it low} to {\it high} range \\ \hline
-\Opt{–N}{\it unit} & Append {\it unit} to contour annotations \\ \hline
-\Opt{–Q}{\it cut} & Do not draw contours with fewer than {\it cut} points \\ \hline
-\Opt{–S}{\it smooth} & Resample contours every {\it x\_inc}/{\it smooth} increment \\ \hline
-\Opt{–T}[{\bf +}$|${\bf -}][{\it gap}/{\it length}][:{\it LH}] & Draw tick-marks in downhill direction for innermost closed contours \\ \hline
+\Opt{A}{\it anot\_int} & Annotation interval \\ \hline
+\Opt{C}{\it cont\_int} & Contour interval \\ \hline
+\Opt{G}{\it gap} & Sets distance between contour annotations \\ \hline
+\Opt{L}{\it low}/{\it high} & Only draw contours within the {\it low} to {\it high} range \\ \hline
+\Opt{N}{\it unit} & Append {\it unit} to contour annotations \\ \hline
+\Opt{Q}{\it cut} & Do not draw contours with fewer than {\it cut} points \\ \hline
+\Opt{S}{\it smooth} & Resample contours every {\it x\_inc}/{\it smooth} increment \\ \hline
+\Opt{T}[{\bf +}$|${\bf -}][{\it gap}/{\it length}][:{\it LH}] & Draw tick-marks in downhill direction for innermost closed contours \\ \hline
  & Add tick spacing and length, and characters to plot at the center of closed contours. \\ \hline
-\Opt{–W}[{\bf a}$|${\bf c}]{\it pen} & Set contour and annotation pens \\ \hline
-\Opt{–Z}{\it factor}[/{\it offset}] & [Subtract {\it offset}] and multiply data by {\it factor} prior to processing \\ \hline
+\Opt{W}[{\bf a}$|${\bf c}]{\it pen} & Set contour and annotation pens \\ \hline
+\Opt{Z}{\it factor}[/{\it offset}] & [Subtract {\it offset}] and multiply data by {\it factor} prior to processing \\ \hline
 \end{tabular}
 \caption{The most useful options in \GMTprog{grdcontour}}
 \label{tbl:grdcontour}
@@ -1676,7 +1278,7 @@ interval and 250 m as contour interval.  We choose a 7-inch-wide
 Mercator plot and annotate the borders every 2\DS:
 
 \begin{verbatim} 
-grdcontour bermuda.grd –-JM7i -–C250 –-A1000 –-P –-B2 | ghostview -
+grdcontour bermuda.grd -JM7i -C250 -A1000 -P -B2 | ghostview -
 \end{verbatim}
 
 \subsection{Exercises}
@@ -1684,13 +1286,13 @@ grdcontour bermuda.grd –-JM7i -–C250 –-A1000 –-P –-B2 | ghostview -
 
 \begin{enumerate}
 
-\item Add smoothing with \Opt{–S}4.
+\item Add smoothing with \Opt{S}4.
 
-\item Try tick all highs and lows with \Opt{–T}.
+\item Try tick all highs and lows with \Opt{T}.
 
-\item Skip small features with \Opt{–Q}10.
+\item Skip small features with \Opt{Q}10.
 
-\item Override region using \Opt{–R}-70/-60/25/35.
+\item Override region using \Opt{R}-70/-60/25/35.
 
 \item Try another region that clips our data domain.
 
@@ -1727,9 +1329,9 @@ All \GMT\ gridding programs have in common the requirement that the
 user must specify the grid domain and output filename: \\
 
 \begin{tabular}{ll}
-\Opt{–R}{\it xmin}/{\it xmax}/{\it ymin}/{\it ymax}	& The desired grid extent \\
-\Opt{–I}{\it xinc}[{\bf m}$|${\bf c}][/{\it yinc}[{\bf m}$|${\bf c}]]	& The grid spacing (append {\bf m} or {\bf c} for minutes or seconds of arc) \\
-\Opt{–G}{\it gridfile}	& The output grid filename \\
+\Opt{R}{\it xmin}/{\it xmax}/{\it ymin}/{\it ymax}	& The desired grid extent \\
+\Opt{I}{\it xinc}[{\bf m}$|${\bf c}][/{\it yinc}[{\bf m}$|${\bf c}]]	& The grid spacing (append {\bf m} or {\bf c} for minutes or seconds of arc) \\
+\Opt{G}{\it gridfile}	& The output grid filename \\
 \end{tabular} 
 
 \subsection{Nearest neighbor gridding}
@@ -1762,10 +1364,10 @@ The most important switches are listed in Table~\ref{tbl:nearneighbor}.
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{–S}{\it radius}[{\bf k}] & Sets search radius.  Append {\bf k} to indicate radius in kilometers [Default is {\it x}-units] \\ \hline
+\Opt{S}{\it radius}[{\bf k}] & Sets search radius.  Append {\bf k} to indicate radius in kilometers [Default is {\it x}-units] \\ \hline
 \Opt{E}{\it empty} & Assign this value to unconstrained nodes [Default is NaN] \\ \hline
-\Opt{–N}{\it sectors} & Sector search, indicate number of sectors [Default is 4] \\ \hline
-\Opt{–W} & Read relative weights from the 4th column of input data \\ \hline
+\Opt{N}{\it sectors} & Sector search, indicate number of sectors [Default is 4] \\ \hline
+\Opt{W} & Read relative weights from the 4th column of input data \\ \hline
 \end{tabular}
 \caption{Switches used with the \GMTprog{nearneighbor} program}
 \label{tbl:nearneighbor}
@@ -1782,13 +1384,13 @@ ship.xyz: N = 82970	<245/254.705>	<20/29.99131>	<-7708/-9>
 so we choose the region accordingly:
 
 \begin{verbatim}
-nearneighbor –-R245/255/20/30 –-I5m -–S40k –-Gship.grd –-V ship.xyz
+nearneighbor -R245/255/20/30 -I5m -S40k -Gship.grd -V ship.xyz
 \end{verbatim} 
 
 We may get a view of the contour map using
 
 \begin{verbatim} 
-grdcontour ship.grd –-JM6i –-P –-B2 -–C250 –-A1000 | ghostview -
+grdcontour ship.grd -JM6i -P -B2 -C250 -A1000 | ghostview -
 \end{verbatim} 
 
 \subsubsection{Exercises}
@@ -1832,9 +1434,9 @@ switches for this program are indicated in Table~\ref{tbl:surface}\footnote{The
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{–A}{\it aspect} & Sets aspect ratio for anisotropic grids. \\ \hline
-\Opt{–C}{\it limit} & Sets convergence limit.  Default is 1/1000 of data range. \\ \hline
-\Opt{–T}{\it tension} & Sets the tension [Default is 0] \\ \hline
+\Opt{A}{\it aspect} & Sets aspect ratio for anisotropic grids. \\ \hline
+\Opt{C}{\it limit} & Sets convergence limit.  Default is 1/1000 of data range. \\ \hline
+\Opt{T}{\it tension} & Sets the tension [Default is 0] \\ \hline
 \end{tabular}
 \caption{Some of the options in \GMTprog{surface}}
 \label{tbl:surface}
@@ -1851,7 +1453,7 @@ grid-spacing boxes, the second returns median values, wile the
 latter returns modal values.  As a rule of thumb, we use means for
 most smooth data (such as potential fields) and medians (or modes)
 for rough, non-Gaussian data (such as topography).  In addition
-to the required \Opt{–R} and \Opt{–I} switches, these preprocessors
+to the required \Opt{R} and \Opt{I} switches, these preprocessors
 takes the same options:
 
 \begin{table}[h]
@@ -1859,8 +1461,8 @@ takes the same options:
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{–N} & Choose pixel registration [Default is gridline] \\ \hline
-\Opt{–W}[{\bf i}$|${\bf o}] & Append {\bf i} or {\bf o} to read or write weights in the 4th column \\ \hline
+\Opt{N} & Choose pixel registration [Default is gridline] \\ \hline
+\Opt{W}[{\bf i}$|${\bf o}] & Append {\bf i} or {\bf o} to read or write weights in the 4th column \\ \hline
 \end{tabular}
 \caption{Some of the preprocessing options}
 \label{tbl:preprocess}
@@ -1869,13 +1471,13 @@ takes the same options:
 With respect to our ship data we preprocess it using the median method:
 
 \begin{verbatim}
-blockmedian -–R245/255/20/30 –-I5m –-V ship.xyz >! ship_5m.xyz
+blockmedian -R245/255/20/30 -I5m -V ship.xyz >! ship_5m.xyz
 \end{verbatim} 
 
 The output data can now be used with surface:
 
 \begin{verbatim}
-surface ship_5m.xyz -–R245/255/20/30 –-I5m –-Gship.grd –-V
+surface ship_5m.xyz -R245/255/20/30 -I5m -Gship.grd -V
 \end{verbatim} 
 
 If you rerun \GMTprog{grdcontour} on the new grid file (try it!)
@@ -1908,9 +1510,9 @@ contour the final grid; we finally deactivate the clipping with a second
 call to \GMTprog{psmask}.  Here's the recipe:
 
 \begin{verbatim}
-psmask -–R245/255/20/30 –-I5m ship_5m.xyz -–JM6i –-B2 -–P -–K -–V >! map.ps
-grdcontour ship.grd –-JM –-O –-K –-C250 –-A1000 >> map.ps
-psmask -–C –-O >> map.ps
+psmask -R245/255/20/30 -I5m ship_5m.xyz -JM6i -B2 -P -K -V >! map.ps
+grdcontour ship.grd -JM -O -K -C250 -A1000 >> map.ps
+psmask -C -O >> map.ps
 \end{verbatim}
 
 \section{Exercises}
@@ -1920,7 +1522,7 @@ psmask -–C –-O >> map.ps
 
 \item Add the continents using any color you want.
 
-\item Color the clip path light gray (use \Opt{–G} in the first
+\item Color the clip path light gray (use \Opt{G} in the first
 \GMTprog{psmask} call).
 
 \end{enumerate}
@@ -1964,7 +1566,7 @@ to affect annotation of color bars (created by \GMTprog{psscale}).
 The {\bf U}, {\bf L}, and {\bf B} flags (position {\bf A}) indicate
 we want to annotate
 the upper, lower, and both color boundaries, respectively.
-Alternatively, you can use the \GMTprog{psscale} \Opt{–B} option in
+Alternatively, you can use the \GMTprog{psscale} \Opt{B} option in
 the same way you use it in, say, \GMTprog{psbasemap}.
 
 Cpt files can be created in any number of ways.  \GMT\ provides
@@ -1992,10 +1594,10 @@ $z$-values to go with it.  The main options are given below.
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{–C} & Set the name of the master cpt file to use \\ \hline
-\Opt{–I} & Reverse the sense of the color progression \\ \hline
+\Opt{C} & Set the name of the master cpt file to use \\ \hline
+\Opt{I} & Reverse the sense of the color progression \\ \hline
 \Opt{V} & Run in verbose mode \\ \hline
-\Opt{–Z} & Make a continuous rather than discrete table \\ \hline
+\Opt{Z} & Make a continuous rather than discrete table \\ \hline
 \end{tabular}
 \caption{Prime options available in \GMTprog{makecpt}}
 \label{tbl:makecpt}
@@ -2005,8 +1607,8 @@ To make discrete and continuous color cpt files for data that ranges
 from -20 to 60, with color changes at every 10, try these two variants:
 
 \begin{verbatim}
-makecpt -Crainbow –-T-20/60/10 –>! disc.cpt
-makecpt –-Crainbow -T-20/60/10 -–Z >! cont.cpt
+makecpt -Crainbow -T-20/60/10 >! disc.cpt
+makecpt -Crainbow -T-20/60/10 -Z >! cont.cpt
 \end{verbatim}
 
 We can plot these color tables with \GMTprog{psscale}; the options
@@ -2017,25 +1619,25 @@ worth mentioning here are listed in Table~\ref{tbl:psscale}.
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{–C}{\it cptfile} & The required cpt file \\ \hline
-\Opt{–D}{\it xpos}/{\it ypos}/{\it length}/{\it width}[{\bf h}] & Sets the position of the center/left and dimensions of scale bar. \\ \hline
+\Opt{C}{\it cptfile} & The required cpt file \\ \hline
+\Opt{D}{\it xpos}/{\it ypos}/{\it length}/{\it width}[{\bf h}] & Sets the position of the center/left and dimensions of scale bar. \\ \hline
 	& Append {\bf h} to get horizontal bar and give center/top instead \\ \hline
-\Opt{–I}{\it max\_intensity} & Add illumination effects \\ \hline
+\Opt{I}{\it max\_intensity} & Add illumination effects \\ \hline
 \end{tabular}
 \caption{The main switches and options in \GMTprog{psscale}}
 \label{tbl:psscale}
 \end{table}
 
-In addition, the \Opt{–B} option can be used to set the title
+In addition, the \Opt{B} option can be used to set the title
 and unit label (and optionally to set the anotation-, tick-,
 and grid-line intervals for the colorbars.)
 
 \begin{verbatim}
 psbasemap -R0/8.5/0/11 -Jx1i -P -B0 -K >! bar.ps
-psscale -–D3i/3i/4i/0.5ih –-Cdisc.cpt –-B:discrete: -–O –-K >> bar.ps
-psscale –-D3i/5i/4i/0.5ih –-Ccont.cpt –-B:continuous: –-O -–K >> bar.ps
-psscale –-D3i/7i/4i/0.5ih –-Cdisc.cpt –-B:discrete: –-I0.5 –-O –-K >> bar.ps
-psscale –-D3i/9i/4i/0.5ih –-Ccont.cpt –-B:continuous: –-I0.5 -–O >> bar.ps
+psscale -D3i/3i/4i/0.5ih -Cdisc.cpt -B:discrete: -O -K >> bar.ps
+psscale -D3i/5i/4i/0.5ih -Ccont.cpt -B:continuous: -O -K >> bar.ps
+psscale -D3i/7i/4i/0.5ih -Cdisc.cpt -B:discrete: -I0.5 -O -K >> bar.ps
+psscale -D3i/9i/4i/0.5ih -Ccont.cpt -B:continuous: -I0.5 -O >> bar.ps
 \end{verbatim}
 
 \subsection{Exercises}
@@ -2046,7 +1648,7 @@ psscale –-D3i/9i/4i/0.5ih –-Ccont.cpt –-B:continuous: –-I0.5 -–O >> bar.ps
 \item Redo the \GMTprog{makecpt} exercise using the master table
 {\it hot} and redo the bar plot.
 
-\item Try specifying \Opt{–B}10g5.
+\item Try specifying \Opt{B}10g5.
 
 \end{enumerate}
 \index{Exercises|)}
@@ -2090,7 +1692,7 @@ Yellow, Green, Cyan, Blue, and Magenta.
 The CMY colors are the complimentary colors and are used when paints are
 mixed to produce a new color (this is how printers operate; they also add
 pure black (K) to avoid making gray from CMY).  In this coordinate system the
-angle 0--–360\DS\ is the hue (H); the Saturation and Value are harder to
+angle 0--360\DS\ is the hue (H); the Saturation and Value are harder to
 explain.  Suffice it to say here that we intend to darken any pure color
 (on the cube facets) by keeping H fixed and adding black and brighten it by adding white; for
 interior points in the cube we will add or remove gray.
@@ -2106,18 +1708,18 @@ a color image of a gridded data.  Here, we will extract a subset of the
 global 30" DEM (data id 9) from USGS:
 
 \begin{verbatim}
-grdraster 9 -–R-108/-103/35/40 -–Gus.grd
+grdraster 9 -R-108/-103/35/40 -Gus.grd
 \end{verbatim}
 
 Using \GMTprog{grdinfo} we find that the data ranges from $\sim$1000m to
 $\sim$4300m so we make a cpt file accordingly:
 
 \begin{verbatim}
-makecpt -Crainbow –-T1000/5000/500 –-Z >! topo.cpt
+makecpt -Crainbow -T1000/5000/500 -Z >! topo.cpt
 \end{verbatim}
 
 Color images are made with \GMTprog{grdimage} which takes the usual
-common command options (by default the \Opt{–R} is taken from the data set)
+common command options (by default the \Opt{R} is taken from the data set)
 and a cptfile; the main other options are
 
 \begin{table}[h]
@@ -2125,9 +1727,9 @@ and a cptfile; the main other options are
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{–E}{\it dpi} & Sets the desired resolution of the image [Default is data resolution] \\ \hline
-\Opt{–I}{\it intenfile} & Use artificial illumination using intensities from {\it intensfile} \\ \hline
-\Opt{–M} & Force grayshade using the (television) YIQ conversion \\ \hline
+\Opt{E}{\it dpi} & Sets the desired resolution of the image [Default is data resolution] \\ \hline
+\Opt{I}{\it intenfile} & Use artificial illumination using intensities from {\it intensfile} \\ \hline
+\Opt{M} & Force grayshade using the (television) YIQ conversion \\ \hline
 \end{tabular}
 \caption{The main options in \GMTprog{grdimage}}
 \label{tbl:grdimage}
@@ -2137,8 +1739,8 @@ We want to make a plain color map with a color bar superimposed above
 the plot.  We try
 
 \begin{verbatim}
-grdimage us.grd -–JM6i –-P –-B2 -–Ctopo.cpt –-V -–K >! topo.ps
-psscale -–D3i/8.5i/5i/0.25ih –-Ctopo.cpt -–I0.4 -–B/:m: -O >> topo.ps
+grdimage us.grd -JM6i -P -B2 -Ctopo.cpt -V -K >! topo.ps
+psscale -D3i/8.5i/5i/0.25ih -Ctopo.cpt -I0.4 -B/:m: -O >> topo.ps
 \end{verbatim}
 
 The plain color map lacks detail and fails to reveal the topographic
@@ -2155,9 +1757,9 @@ required input and output filenames, the available options are
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{–A}{\it azimuth} & Azimuthal direction for gradients \\ \hline
+\Opt{A}{\it azimuth} & Azimuthal direction for gradients \\ \hline
 \Opt{M} & Indicates that this is a geographic grid \\ \hline
-\Opt{–N}[{\bf t}$|${\bf e}][{\it norm}[/{\it offset}]] & Normalize gradients by {\it norm/offset} [= 1/0 by default]. \\
+\Opt{N}[{\bf t}$|${\bf e}][{\it norm}[/{\it offset}]] & Normalize gradients by {\it norm/offset} [= 1/0 by default]. \\
 	& Insert {\bf t} to normalize by the $tan^{-1}$ transformation. \\
 	& Insert {\bf e} to normalize by the cumulative Laplace distribution. \\ \hline
 \end{tabular}
@@ -2175,21 +1777,21 @@ arrow pointing to the {\it y}-value).
 
 \GMTfig[h]{GMT_atan}{How the inverse tangent operation works}
 
-Both \Opt{–Ne} and \Opt{–Nt} yield well behaved gradients.  Personally,
-we prefer to use the \Opt{–Ne} option; the value of
+Both \Opt{Ne} and \Opt{Nt} yield well behaved gradients.  Personally,
+we prefer to use the \Opt{Ne} option; the value of
 {\it norm} is subjective and you may experiment somewhat in the
 0.5--5 range.  For our case we choose
 
 \begin{verbatim}
-grdgradient us.grd –-Ne0.8 -–A100 -–M –-Gus_i.grd
+grdgradient us.grd -Ne0.8 -A100 -M -Gus_i.grd
 \end{verbatim}
 
 Given the cpt file and the two gridded data sets we can
 create the shaded relief image:
 
 \begin{verbatim}
-grdimage us.grd -–Ius_i.grd -–JM6i -–P -–B2 -–Ctopo.cpt –-K >! topo.ps
-psscale –-D3i/8.5i/5i/0.25ih -–Ctopo.cpt –-I0.4 -–B/:m: –-O >> topo.ps
+grdimage us.grd -Ius_i.grd -JM6i -P -B2 -Ctopo.cpt -K >! topo.ps
+psscale -D3i/8.5i/5i/0.25ih -Ctopo.cpt -I0.4 -B/:m: -O >> topo.ps
 \end{verbatim}
 
 \subsection{Exercises}
@@ -2199,7 +1801,7 @@ psscale –-D3i/8.5i/5i/0.25ih -–Ctopo.cpt –-I0.4 -–B/:m: –-O >> topo.ps
 
 \item Force a gray-shade image.
 
-\item Rerun \GMTprog{grdgradient} with \Opt{–N}1.
+\item Rerun \GMTprog{grdgradient} with \Opt{N}1.
 
 \end{enumerate}
 \index{Exercises|)}
@@ -2227,11 +1829,11 @@ Regardless of plot type, some arguments must be specified; these are
 
 \item {\it relief\_file}; a gridded data set of the surface.
 
-\item –\Opt{J} for the desired map projection.
+\item \Opt{J} for the desired map projection.
 
-\item –\Opt{JZ}{\it height} for the vertical scaling.
+\item \Opt{JZ}{\it height} for the vertical scaling.
 
-\item \Opt{–E}{\it azimuth}/{\it elevation} for vantage point.
+\item \Opt{E}{\it azimuth}/{\it elevation} for vantage point.
 
 \end{enumerate}
 
@@ -2243,13 +1845,13 @@ In addition, some options may be required:
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{–C}{\it cptfile} & The {\it cptfile} is required for color -coded surfaces and for contoured mesh plots \\ \hline
-\Opt{–G}{\it drape\_file} & Assign colors using {\it drape\_file} instead of {\it relief\_file} \\ \hline
-\Opt{–I}{\it intens\_file} & File with illumination intensities \\ \hline
-\Opt{–Qm} & Selects mesh plot \\ \hline
-\Opt{–Qs}[{\bf m}] & Surface plot using polygons; append {\bf m} to show mesh.  This option allows for \Opt{–W} \\ \hline
-\Opt{–Qi}{\it dpi}[{\bf g}] & Image by scan-line conversion.  Specify {\it dpi}; append {\bf g} to force gray-shade image.  \Opt{–B} is disabled. \\ \hline
-\Opt{–W}{\it pen} & Draw contours on top of surface (except with \Opt{–Qi}) \\ \hline
+\Opt{C}{\it cptfile} & The {\it cptfile} is required for color -coded surfaces and for contoured mesh plots \\ \hline
+\Opt{G}{\it drape\_file} & Assign colors using {\it drape\_file} instead of {\it relief\_file} \\ \hline
+\Opt{I}{\it intens\_file} & File with illumination intensities \\ \hline
+\Opt{Qm} & Selects mesh plot \\ \hline
+\Opt{Qs}[{\bf m}] & Surface plot using polygons; append {\bf m} to show mesh.  This option allows for \Opt{W} \\ \hline
+\Opt{Qi}{\it dpi}[{\bf g}] & Image by scan-line conversion.  Specify {\it dpi}; append {\bf g} to force gray-shade image.  \Opt{B} is disabled. \\ \hline
+\Opt{W}{\it pen} & Draw contours on top of surface (except with \Opt{Qi}) \\ \hline
 \end{tabular}
 \caption{The most useful options in \GMTprog{grdview}}
 \label{tbl:grdview}
@@ -2269,7 +1871,7 @@ grd2cpt bermuda.grd -Cocean >! bermuda.cpt
 A simple mesh plot can therefore be obtained with
 
 \begin{verbatim}
-grdview bermuda.grd –-JM5i -–P -–JZ2i –-E135/30 –-B2 –-Cbermuda.cpt >! map.ps
+grdview bermuda.grd -JM5i -P -JZ2i -E135/30 -B2 -Cbermuda.cpt >! map.ps
 \end{verbatim}
 
 
@@ -2289,8 +1891,8 @@ We will make a perspective, color-coded view of the US Rockies
 from the southeast.  This is done using
 
 \begin{verbatim}
-grdview us.grd –-JM6i –-E135/35 -–Qi50 –-Ius_i.grd -–Ctopo.cpt -V –-B2 \
-    -–JZ0.5i >! view.ps
+grdview us.grd -JM6i -E135/35 -Qi50 -Ius_i.grd -Ctopo.cpt -V -B2 \
+    -JZ0.5i >! view.ps
 \end{verbatim}
 
 This plot is pretty crude since we selected 50 dpi but it is fast
@@ -2318,7 +1920,7 @@ appropriate {\it dpi} for the final output device and let it rip.
 \begin{enumerate}
 
 \item Smith, W.H.F., and P. Wessel, Gridding with continous curvature
-splines in tension, {\it Geophysics}, {\it 55}, 293–--305, 1990.
+splines in tension, {\it Geophysics}, {\it 55}, 293--305, 1990.
 
 \item Wessel, P., and W.H.F. Smith, Free software helps map and
 display data, {\it EOS Trans. AGU}, {\it 72}, 441, 1991.
@@ -2328,7 +1930,7 @@ Mapping Tools released, {\it EOS Trans. AGU}, {\it 76}, 329, 1995.
 
 \item Wessel, P., and W.H.F. Smith, A global, self-consistent,
 hierarchical, high-resolution shoreline database, {\it J. Geophys. Res.},
-{\it 101}, 8741--–8743, 1996.
+{\it 101}, 8741--8743, 1996.
 
 \item Wessel, P., and W.H.F. Smith, New, improved version of the Generic
 Mapping Tools released, {\it EOS Trans. AGU}, {\it 79}, 579, 1998.

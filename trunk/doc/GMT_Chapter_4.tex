@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.6 2001-09-23 03:41:55 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.7 2001-09-24 02:22:11 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -42,8 +42,8 @@ you always supply the desired unit explicitly.
 
 \section{\gmt\ defaults}
 
-\index{GMT@\GMT!defaults}%
-\index{.gmtdefaults}%
+\index{GMT@\GMT!defaults|(}
+\index{Default settings|(}
 
 There are more than 75 parameters which can be adjusted individually
 to modify the appearance of plots or affect the manipulation of data.
@@ -59,7 +59,9 @@ used for maps, fonts and font sizes used for annotations and labels,
 color of the pens, dots-per-inch resolution of the hardcopy device,
 what type of spline interpolant to use, and many other choices
 (A complete list of all the parameters and their default values can
-be found in the \GMTprog{gmtdefaults} manual pages).  You may create
+be found in the \GMTprog{gmtdefaults} manual pages).  Figures
+\ref{fig:GMT_Defaults_1a}, \ref{fig:GMT_Defaults_1b},
+and \ref{fig:GMT_Defaults_1c} show the parameters that affect plots). You may create
 your own \filename{.gmtdefaults} files by running \GMTprog{gmtdefaults}
 and then modify those parameters you want to change.  If you want
 to use the parameter settings in another file you can do so by
@@ -73,6 +75,64 @@ values.  E.g., if your \filename{.gmtdefaults} file has {\it x}
 offset = 1{\bf i} as default, the \Opt{X}1.5{\bf i} option will override the
 default and set the offset to 1.5 inches.  Default values
 may also be changed from the command line with the utility \GMTprog{gmtset}. 
+
+\GMTfig[h]{GMT_Defaults_1a}{Some \gmt\ parameters that affect plot appearance}
+
+There are at least two good reasons why the \GMT\ default options
+are placed in a separate parameter file:
+
+\begin{enumerate}
+
+\item It would not be practical to allow for command-line syntax
+covering so many options, many of which are rarely or never
+changed (such as the ellipsoid used for map projections).
+
+\item It is convenient to keep separate \filename{.gmtdefaults}
+files for specific projects, so that one may achieve a special
+effect simply by running \GMT\ commands in a sub-directory whose
+\filename{.gmtdefaults} file has the desired settings.  For example,
+when making final illustrations for a journal article one must often
+standardize on font sizes and font types, etc.  Keeping all those
+settings in a separate \filename{.gmtdefaults} file simplifies this
+process.  Likewise, \GMT\ scripts that make slides often use a
+different color scheme and font size than output intended for laser
+printers.  Organizing these various scenarios into separate
+\filename{.gmtdefaults} files will minimize headaches associated
+with micro-editing of illustrations.
+
+\GMTfig[h]{GMT_Defaults_1b}{More \gmt\ parameters that affect plot appearance}
+
+\end{enumerate}
+
+As mentioned, \GMT\ programs will attempt to open a file named
+\filename{.gmtdefaults}.  At times it may be desirable to override
+that default.  As an alternative, we may supply another filename using
+the \emph{+filename} syntax, i.e., on the same command line as the
+\GMT\ command we append the name of the alternate \filename{.gmtdefaults}
+file with the plus sign as a prefix.
+A perhaps less tedious method is to start each script with making a
+copy of the current \filename{.gmtdefaults}, then copy the desired
+\filename{.gmtdefaults} file to the current directory, and finally
+undo the changes at the end of the script.  To change some of the
+\GMT\ parameters on the fly inside a script the gmtset utility can
+be used.  E.g., to change the annotation font to 12 point Times-Bold
+we run \\
+
+\texttt{gmtset ANOT\_FONT Times-Bold ANOT\_FONT\_SIZE 12} \\
+
+In addition to these 29 parameters
+that directly affect the plot there are numerous parameters than
+modify units, scales, etc.  For a complete listing, see the
+\GMTprog{gmtdefaults} man pages.
+
+\GMTfig[h]{GMT_Defaults_1c}{Even more \gmt\ parameters that affect plot appearance}
+
+At the end of the script one can then reset the specific parameters
+back to what they originally were.  We suggest that you go through
+all the available parameters at least once so that you know what is
+available to change via one of the proposed mechanisms.
+\index{GMT@\GMT!defaults|)}
+\index{Default settings|)}
 
 \section{Command Line Arguments} 
 \index{Command line!arguments}%
@@ -101,7 +161,8 @@ Most of the programs take many of the same arguments like those
 related to setting the data region, the map projection, etc.
 The 15 switches in Table~\ref{tbl:switches} have the same meaning
 in all the programs (Some programs may not use all of them).
-These options are described in more detail in the manual pages. 
+These options will be described here as well as in the manual pages,
+as is vital that you understand how to use these options.
 
 \begin{table}
 \centering
@@ -143,6 +204,350 @@ These options are described in more detail in the manual pages.
 \caption{Standardized \gmt\ command line switches}
 \label{tbl:switches}
 \end{table} 
+
+\subsection{The \Opt{B} option}
+\index{\Opt{B}}
+\index{Tickmarks}
+\index{Anotations}
+\index{Gridlines}
+\index{Frame}
+\index{Basemap}
+
+This is by far the most complicated option in \GMT, but most examples
+of its usage are actually quite simple.
+Given as \Opt{B}{\it xinfo}[/{\it yinfo}[/{\it zinfo}]][:."title string":][{\bf W}$|${\bf w}][{\bf E}$|${\bf e}][{\bf S}$|${\bf s}][{\bf N}$|${\bf n}][{\bf Z}$|${\bf z}[{\bf +}]],
+this switch specifies a map boundary (or plot axis) to be plotted by using the
+selected information. {\it xinfo}, {\it yinfo} and {\it zinfo} are of the form \\
+
+\par {\it info}[:"axis label":][:,"unit label":] \\
+
+where {\it info} is one or more concatenated substrings of the form
+[{\bf t}]{\it stride}[{\bf u}].  The {\bf t} flag sets the axis item of interest, and the
+available items are listed in Table~\ref{tbl:inttype}.  By
+default, all 4 boundaries are plotted (denoted {\bf W}, {\bf E}, {\bf S},
+{\bf N}).  To change this selection, append the codes for those you want
+(e.g., {\bf WSn}).  Upper case (e.g., {\bf W}) will annotate in addition to
+draw axis/tick-marks.  The title, if given, will appear centered above the plot\footnote{However,
+it is suppressed when a 3-D view is selected.}.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|l|} \hline
+Flag	& Description \\ \hline
+{\bf a}	&	(upper) tick annotation spacing \\ \hline
+{\bf A}	&	lower tick annotation spacing \\ \hline
+{\bf i}[v]	&	(upper) interval  annotation spacing\\ \hline
+{\bf I}[v]	&	lower interval  annotation spacing\\ \hline
+{\bf f}	&	frame tick spacing \\ \hline
+{\bf g}	&	grid tick spacing \\ \hline
+\end{tabular}
+\caption{Interval type codes}
+\label{tbl:inttype}
+\end{table}
+
+\noindent
+The items {\bf A}, {\bf I}, and {\bf i} only apply to calendar time axes, while {\bf a}, {\bf f}, and {\bf g}
+can be specified for any map or plot axis.  For the {\bf i} and {\bf I} flags, an optional modifier {\it v}
+may be appended to specify further the format of the annotation.  These modifiers are explained in
+Table~\ref{tbl:modifier}.  Note that this choice is also affected by the {\bf TIME\_LANGUAGE} setting
+since annotations may require the name of months and weekdays.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|l|} \hline
+Modifier	& Description \\ \hline
+{\bf f} (or {\bf F} 	& Full name of interval, e.g., January (or JANUARY) \\ \hline
+{\bf a} (or {\bf A}	& Short abbreviation of interval, e.g., Jan (or JAN) \\ \hline
+{\bf c} (or {\bf C} 	& 1-char abbreviation of interval, e.g., J (or J) \\ \hline
+\end{tabular}
+\caption{{\bf I} and {\bf i} interval annotation modifiers}
+\label{tbl:modifier}
+\end{table}
+
+\noindent
+The unit flag {\bf u} can take on one of 16 codes; these are listed in  Table~\ref{tbl:units}.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|l|} \hline
+Flag	& Unit & Description \\ \hline
+{\bf Y}	&	year & Plot using all 4 digits \\ \hline
+{\bf y}	&	year & Plot using last 2 digits \\ \hline
+{\bf O}	&	month & Format anotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
+{\bf o}	&	month & Plot as 2-digit integer (1--12) \\ \hline
+{\bf U}	&	ISO week & Format anotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
+{\bf u}	&	ISO week & Plot as 2-digit integer (1--53) \\ \hline
+{\bf r}	&	Gregorian week & 7-day stride from start of week \\ \hline
+{\bf K}	&	ISO weekday & Format anotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
+{\bf k}	&	weekday & Plot name of weekday in selected language \\ \hline
+{\bf D}	&	day & Format anotation using {\bf PLOT\_DATE\_FORMAT}, which also \\ \hline
+	&		& determines if we plot day of month (1--31) or day of year (1--366) \\ \hline
+{\bf H}	&	hour &	 Format anotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
+{\bf h}	&	hour &	 Plot as 2-digit integer (0--24) \\ \hline
+{\bf M}	&	minute &	 Format anotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
+{\bf m}	&	minute &	 Plot as 2-digit integer (0--60) \\ \hline
+{\bf C}	&	seconds &	 Format anotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
+{\bf c}	&	seconds &	 Plot as 2-digit integer (0--60) \\ \hline
+\end{tabular}
+\caption{Interval unit codes}
+\label{tbl:units}
+\end{table}
+
+\noindent
+
+Almost all of these units are time-axis specific.  However, the {\bf m} and {\bf c} units will be
+interpreted as arc minutes and arc seconds, respectively, when a map projection is in effect.
+For time axes, there may be two levels of annotations.  Here, ``upper'' refers to the annotation
+that is closest to the axis (this is the primary annotation), while ``lower'' refers to the secondary
+annotation that is plotted further from the axis (and is specific to time axes only).  The examples below
+will clarify what is meant.
+
+\subsubsection{Geographic basemaps}
+
+\GMTfig[h]{GMT_-B_geo}{Geographic map border using separate selections for anotation,
+frame, and grid intervals.  Formatting of the anotation is controlled by
+the parameter PLOT\_DEGREE\_FORMAT in your \filename{.gmtdefaults} file.}
+
+\GMTfig[h]{GMT_-B_linear}{Linear Cartesian projection axis.  Long tickmarks accompany
+anotations, shorter ticks indicate frame interval.  The axis label is
+optional.  We used \Opt{R}0/12/0/1 \Opt{JX}3/0.4
+\Opt{Ba}4{\bf f}2{\bf g}1:Frequency::,\%:.}
+\
+\subsubsection{Options for log$_{10}$ axes}
+\index{log$_{10}$ axes}
+\index{Logarithmic axes}
+
+\begin{enumerate}
+\item {\it tick} must be 1, 2, or 3.  Annotations/ticks will
+then occur at 1, 1--2--5, or 1,2,3,4,...,9, respectively.
+
+\item Append {\bf l} to {\it tick}. Then, log$_{10}$ of the annotation
+is plotted at every integer log$_{10}$ value.
+
+\item Append {\bf p} to {\it tick}.  Then, annotations appear as 10
+raised to log$_{10}$ of the value (e.g., $10^{-5}$).
+
+\end{enumerate}
+
+\GMTfig[h]{GMT_-B_log}{Logarithmic projection axis using separate values for anotation,
+frame, and grid intervals.  (top) Here, we have chosen to anotate the actual
+values.  Interval = 1 means every whole power of 10, 2 means 1, 2, 5 times
+powers of 10, and 3 means every 0.1 times powers of 10.  We used
+\Opt{R}1/1000/0/1 \Opt{JX}3l/0.4 \Opt{Ba}1{\bf f}2{\bf g}3.
+(middle) Here, we have chosen to
+anotate log$_{10}$ of the actual values, with \Opt{Ba}1{\bf f}2{\bf g}3{\bf l}. 
+(bottom) We anotate every power of 10 using log$_{10}$ of the actual values
+as exponents, with \Opt{Ba}1{\bf f}2{\bf g}3{\bf p}.}
+
+\index{Exponential axis}
+\subsubsection{Options for exponential axes}
+Append {\bf p }to {\it tick}, and the annotation
+interval is expected to be in transformed units, but annotation will be plotted
+as un-transformed units.  E.g., if {\it tick} = 1 and power = 0.5 (i.e., sqrt),
+then equidistant annotations labeled 1, 4, 9, ... will appear.
+
+\GMTfig[h]{GMT_-B_pow}{Exponential or power projection axis.  (top) Using an exponent of 0.5
+yields a $\sqrt{x}$ axis.  Here, intervals refer to actual data values, in
+\Opt{R}0/100/0/1 \Opt{JX}3{\bf p}0.5/0.4\ \Opt{Ba}20{\bf f}10{\bf g}5.
+(bottom) Here, intervals refer to projected values, although the anotation
+uses the corresponding unprojected values, as in \Opt{Ba}3{\bf f}2{\bf g}1{\bf p}.}
+
+\index{Time axis}
+\subsubsection{Options for time axes}
+
+\subsection{The \Opt{c} option}
+\index{\Opt{c}}
+\index{Number of copies}
+
+The \Opt{c} option specifies the number of plot copies. [Default is 1]
+
+\subsection{The \Opt{H} option}
+\index{\Opt{H}}
+\index{Header records}
+
+The \Opt{H}[{\it n\_recs}] option lets \GMT\ know that input file(s) have
+one [Default] or more header records.  If there are more than one header
+record you must specify the number after the \Opt{H} option, e.g., \Opt{H}4.
+See Figure~\ref{fig:GMT_-H}.
+
+\subsection{The \Opt{J?} options}
+\index{\Opt{J}}
+\index{Map projections}
+
+\GMTfig[h]{GMT_-J}{The 25 projections available in \gmt}
+
+Selects the map projection.  The following code (?) determines the
+projection.  Specify map {\it width} (or axis lengths) in the unit of
+your choice.  The projections avaiable in \GMT\ are presented in Figure~\ref{fig:GMT_-J}.
+For this tutorial we will choose one of the following projections
+(for details on all \GMT\ projections see the \GMTprog{psbasemap} man page):
+
+\begin{description}
+
+\item [Mercator:] \Opt{JM}{\it width}.
+\index{Mercator projection \Opt{JM}}
+\index{\Opt{JM} Mercator projection}
+
+\item [Orthographic:] \Opt{JG}$lon_0/lat_0/width$. The
+$lon_0/lat_0$ specifies the projection center.
+\index{Orthographic projection \Opt{JG}}
+\index{\Opt{JG} Orthographic projection}
+
+\item [Albers conic:]	\Opt{JB}$lon_0/lat_0/lat_1/lat_2/width$. 
+Give projection center and two standard parallels.
+\index{Albers projection \Opt{JB}}
+\index{\Opt{JB} Albers projection}
+
+\item [Eckert IV and VI:] \Opt{JK}[{\bf f$|$s}]$lon_0/width$. Give the central meridian.
+\index{Eckert IV and VI projection \Opt{JK}}
+\index{\Opt{JK} Eckert IV and VI projection}
+
+
+\item [Linear:] \Opt{JX}$width/height$.  Give width [and height]
+of plot.  {\it width} [and/or {\it height}] can be given in any of the
+following 3 formats:
+\index{Linear projection \Opt{JX}}
+\index{\Opt{JX} Linear projection}
+
+\begin{enumerate}
+\item \Opt{JX}{\it width}[{\bf d}]---Regular linear scaling.  Append
+'{\bf d}' if {\it x} and {\it y} are geographical coordinates in degrees;
+this allows for 360\DS\ periodicity and degree-symbols in annotations.
+
+\item \Opt{JX}{\it width}{\bf l}---Take log$_{10}$ of values before scaling.
+
+\item \Opt{JX}{\it width}{\bf p}{\it power}---Raise values to {\it power}
+before scaling.
+\end{enumerate}
+
+\end{description}
+
+Use negative {\it width }[{\it and height}] to reverse the direction of
+an axis (e.g., to have {\it y} be positive down).
+
+\subsection{The \Opt{K} \Opt{O} options}
+\index{\Opt{K}}
+\index{\Opt{O}}
+\index{Overlay plots}
+\index{Plot!overlay}
+
+\begin{figure}[h]
+\centering
+\begin{tabular}{cc}
+\epsfig{figure=eps/GMT_-H.eps} & \epsfig{figure=eps/GMT_-OK.eps} \\
+\end{tabular}
+\caption{(left) Input files may have an arbitrary number of header records,
+specified with \Opt{H}.
+(right) A final \PS\ file consists of a stack of individual pieces}
+\label{fig:GMT_-H}
+\label{fig:GMT_-OK}
+\end{figure}
+
+The \Opt{K} and \Opt{O} options control the generation of \PS\ code for multiple
+overlay plots.  All \PS\ files must have a header (for initializations),
+a body (drawing the figure), and a trailer (printing it out) (see
+Figure~\ref{fig:GMT_-OK}).  Thus,
+when overlaying several \GMT\ plots we must make sure that the first plot
+call ommits the trailer, that all intermediate calls omit both header and
+trailer, and that the final overlay omits the header.
+\Opt{K} omits the trailer which implies that more \PS\ code will be appended
+later [Default terminates the plot system].  \Opt{O} selects Overlay plot
+mode and ommits the header information [Default initializes a new plot system].
+Most unexpected results for multiple overlay plots can be traced to the
+incorrect use of these options.
+
+\subsection{The \Opt{P} option} 
+\index{\Opt{P}}
+\index{Landscape orientation}
+\index{Portrait orientation \Opt{P}}
+
+\begin{figure}[h]
+\centering
+\begin{tabular}{cc}
+\epsfig{figure=eps/GMT_-P.eps} & \epsfig{figure=eps/GMT_-XY.eps} \\
+\end{tabular}
+\caption{(left) Users can specify Landscape [Default] or Portrait (\Opt{P}) orientation.
+(right) Plot origin can be translated freely with \Opt{X} \Opt{Y}}
+\label{fig:GMT_-P}
+\label{fig:GMT_-XY}
+\end{figure}
+
+\Opt{P} selects Portrait plotting mode\footnote{For historical reasons, the \GMT\
+Default is Landscape, see \GMTprog{gmtdefaults} to change this.}.  The
+default Landscape orientation is obtained by translating the origin in the
+{\it x}-direction (by the width of the chosen paper PAPER\_MEDIA) and then rotating the
+coordinate system counterclockwise by 90\DS.  By default the PAPER\_MEDIA is
+set to Letter (or A4 if SI is chosen); this value must be changed
+when using different media, such as 11" x 17" or large format plotters
+(Figure~\ref{fig:GMT_-P}).
+
+\subsection{The \Opt{R} option}
+\index{\Opt{R}}
+\index{Region, specifying}
+
+\Opt{R}{\it xmin}/{\it xmax}/{\it ymin}/{\it ymax}[{\bf r}] specify the
+Region of interest.  Decimal or exponential notations are supported.
+To use degrees and minutes [and seconds], use the dd:mm[:ss] format.
+Append {\bf r} if lower left and upper right corners are given instead of
+minimum and maximum extent of a rectangular region (Figure~\ref{fig:GMT_-R}).
+
+\begin{figure}[h]
+\centering
+\epsfig{figure=eps/GMT_-R.eps}
+\caption{The plot region can be specified in two different ways}
+\label{fig:GMT_-R}
+\end{figure}
+
+\subsection{The \Opt{U} option} 
+\index{\Opt{U}}
+\index{Timestamp}
+\index{UNIX@\UNIX!timestamp}
+
+\Opt{U} draws \UNIX\ System time stamp.  Optionally, append an arbitrary
+text string (surrounded by double quotes), or the code {\bf c}, which will
+plot the current command string (Figure~\ref{fig:GMT_-U}).
+
+\begin{figure}[h]
+\centering
+\epsfig{figure=eps/GMT_-U.eps}
+\caption{The \Opt{U} option makes it easy to ``date'' a plot}
+\label{fig:GMT_-U}
+\end{figure}
+
+\subsection{The \Opt{V} option} 
+\index{\Opt{V}}
+\index{Verbose}
+
+\Opt{V} selects verbose mode, which will send progress reports to
+\emph{stderr} [Default runs ``silently''].
+
+\subsection{The \Opt{X} \Opt{Y} options}
+\index{\Opt{X}}
+\index{\Opt{Y}}
+\index{Plot!offset}
+\index{Offset, plot}
+
+\Opt{X} and \Opt{Y} shift origin of plot by ({\it xoff},{\it yoff})
+inches (Default is (1,1) for new plots\footnote{ensures that
+boundary annotations do not fall off the page} and (0,0) for overlays (\Opt{O})).
+By default, all translations are relative to the previous origin
+(see Figure~\ref{fig:GMT_-XY}).
+Absolute translations (i.e., relative to a fixed point (0,0) at the
+lower left corner of the paper) can be achieve by prepending ``a''
+to the offsets.  Subsequent overlays will be co-registered with the
+previous plot unless the origin is shifted using these options.
+The offsets are measured in the current coordinates system (which can
+be rotated using the initial \Opt{P} option; subsequent \Opt{P} options
+for overlays are ignored).
+
+\subsection{The \Opt{:} option}
+\index{\Opt{:}}
+\index{lat/lon input}
+
+For geographical data, the first column is expected to contain longitudes
+and the second to contain latitudes.  To reverse this expectation you must
+apply the \Opt{:} option.
+
 \index{Command line!standardized options|)}%
 
 \section{Command Line History}
