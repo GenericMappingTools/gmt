@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.39 2004-01-12 22:46:56 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.40 2004-01-14 07:20:52 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -199,13 +199,17 @@ if [ $answer = "n" ]; then
 				ok=1
 			elif [ -f netcdf.tar.Z ]; then
 				ok=1
+			elif [ -f netcdf-beta.tar.bz2 ] && [ $GMT_expand = "bzip2" ]; then
+				ok=1
+			elif [ -f netcdf-beta.tar.gz ] && [ $GMT_expand = "gzip" ]; then
+				ok=1
 			elif [ -f netcdf.tar.bz2 ] && [ $GMT_expand = "bzip2" ]; then
 				ok=1
 			elif [ -f netcdf.tar.gz ] && [ $GMT_expand = "gzip" ]; then
 				ok=1
 			fi
 			if [ $ok -eq 0 ]; then
-				echo "netcdf-beta.tar.Z or netcdf.tar.{Z,bz2,gz} not in $topdir" >&2
+				echo "netcdf-beta.tar.{Z,bz2,gz} or netcdf.tar.{Z,bz2,gz} not in $topdir" >&2
 				echo "Please ftp netcdf or have me do it" >&2
 				exit
 			fi
@@ -949,6 +953,10 @@ if [ $netcdf_install = "y" ]; then
 
 	if [ -f netcdf-beta.tar.Z ]; then
 		zcat netcdf-beta.tar.Z | tar xvf -
+	elif [ -f netcdf-beta.tar.bz2 ] && [ $GMT_expand = "bzip2" ]; then
+		$expand netcdf-beta.tar.$suffix | tar xvf -
+	elif [ -f netcdf-beta.tar.gz ] && [ $GMT_expand = "gzip" ]; then
+		$expand netcdf-beta.tar.$suffix | tar xvf -
 	elif [ -f netcdf.tar.Z ]; then
 		zcat netcdf.tar.Z | tar xvf -
 	elif [ -f netcdf.tar.bz2 ] && [ $GMT_expand = "bzip2" ]; then
