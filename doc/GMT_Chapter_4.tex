@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.11 2001-09-25 01:58:21 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.12 2001-09-26 02:07:39 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -10,7 +10,7 @@
 \thispagestyle{headings}
 
 This section explains features common to all the programs
-in \GMT and summarizes the philosophy behind the system.  Some
+in \GMT\ and summarizes the philosophy behind the system.  Some
 of the features described here may make more sense once you reach
 the cook-book section where we present actual examples of their use. 
 
@@ -120,7 +120,7 @@ we run \\
 
 \texttt{gmtset ANOT\_FONT Times-Bold ANOT\_FONT\_SIZE 12} \\
 
-In addition to these 29 parameters
+In addition to those parameters
 that directly affect the plot there are numerous parameters than
 modify units, scales, etc.  For a complete listing, see the
 \GMTprog{gmtdefaults} man pages.
@@ -162,7 +162,8 @@ related to setting the data region, the map projection, etc.
 The 15 switches in Table~\ref{tbl:switches} have the same meaning
 in all the programs (Some programs may not use all of them).
 These options will be described here as well as in the manual pages,
-as is vital that you understand how to use these options.
+as is vital that you understand how to use these options.  We will present
+these options in order of importance (some are use alot more than others).
 
 \begin{table}
 \centering
@@ -201,11 +202,73 @@ as is vital that you understand how to use these options.
 \Opt{f}	&	Specifies the data format on a per column basis  \\ \hline
 \Opt{:}	&	Input geographic data are ({\it lat,lon}) rather than ({\it lon,lat})  \\ \hline
 \end{tabular}
-\caption{Standardized \gmt\ command line switches}
+\caption{The 15 standardized \gmt\ command line switches}
 \label{tbl:switches}
 \end{table} 
 
-\subsection{The \Opt{B} option}
+\subsection{Data domain -- The \Opt{R} option}
+\index{\Opt{R}}
+\index{Region, specifying}
+\GMTfig[h]{GMT_-R}{The plot region can be specified in two different ways}
+
+The \Opt{R} option defines the map region or data domain of interest.  It may be specified
+in one of two ways (Figure~\ref{fig:GMT_-R}):
+\begin{enumerate}
+\item \Opt{R}{\it xmin}/{\it xmax}/{\it ymin}/{\it ymax}.  This is the standard way to specify
+data domains and regions for map projections in which meridians and parallels are rectilinear.
+\item \Opt{R}{\it xlleft}/{\it ylleft}/{\it xuright}/{\it yuright}{\bf r}.
+This form is used with map projections that are oblique, making meridians and parallels poor
+choices for map boundaries.  Here, we instead specify the lower left corner and upper right
+corner geographic coordinates. 
+\end{enumerate}
+For rectilinear projections the two forms give identical results.  Depending on the selected map
+projection (or the kind of expected input data), the boundary coordinates may take on three different
+formats:
+
+\begin{description}
+\item [Geographic coordinates:]  These are longitudes and latitudes and may be given in decimal degrees (e.g., -123.45417)
+or in the [$\pm$]{\it ddd}[:{\it mm}[:{\it ss}[{\it .xxx}]]][{\bf W}$|${\bf E}$|${\bf S}$|${\bf N}]
+format (e.g., 123:27:15W).
+\item [Calendar time coordinates:]  These are absolute time coordinates referring to a Gregorian or ISO calendar.
+The general format is [{\it date}]{\bf T}[{\it clock}], where {\it date} (if present) must be in the {\it yyyy}[{\it -mm}[{\it -dd}]] (year, month, day-of-month)
+or {\it yyyy}[{\it -jjj}] (year and day-of-year) for Gregorian calendars and {\it yyyy}[{\it -}{\bf W}{\it ww}[{\it -d}]] (year, week, and
+day-of-week) for the ISO calendar.  Following the [optional] {\it date} string we require the {\bf T} flag.
+The optional {\it clock} string is a 24-hour clock in {\it hh}[{\it :mm}[{\it :ss}[{\it .xxx}]]] format.
+Note that not all of the specified enteties need be present in the data.  All calendar-clock strings are internally represented as double precision seconds since
+proleptic Gregorian date Mon Jan 1 00:00:00 0001.  Proleptic means we assume that modern calendar
+can be extrapolated forward and backward; a year zero is used, and Gregory's reforms\footnote{The Gregorian Calendar
+is a revision of the Julian Calendar which was instituted in a papal bull by Pope Gregory XIII in 1582. The reason for the calendar
+change was to correct for drift in the dates of signifigant religious observations (primarily Easter) and to prevent further drift
+in the dates. The important effects of the change were (a) Drop 10 days from October 1582 to realign the Vernal Equinox with 21 March,
+(b) change leap year selection so that not all years ending in "00" are leap years, and (c) change the beginning of the year to
+1 January from 25 March.  Adoption of the new calendar was essentially immediate within Catholic countries. In the Protestant countries,
+where papal authority was neither recognized not appreciated, adoption came more slowly. 
+England finally adopted the new calendar in 1752, with eleven days removed from September. The additional day came because the old and
+new calendars disagreed on whether 1700 was a leap year, so the Julian calendar had to be adjusted by one more day.} are extrapolated
+backward.  Note that this is not historical.
+\item [Other coordinates:]  These are simply anything that is not geographic or calendar time related and are
+expected to be simple floating point values such as [$\pm$]{\it xxx.xxx}[E$|$e$|$D$|$d[$\pm$][xx]], i.e., regular or exponential
+notations, with the enhancement to understand FORTRAN double precision output which use D instead of E for exponents.
+These values are simple converted as they are to internal representation.  One exception is the concept
+of relative time which is read as a floating point offset from an absolute time reference point (epoch).  The unit and the
+epoch are specified with the {\bf TIME\_SYSTEM} parameter.  Relative time coordinates are expected when a coordinate transformation
+involving relative time has been selected or when the \Opt{f} switch has been used to indicate relative time coordinates.
+\end{description}
+
+\subsection{Projections -- The \Opt{J?} options}
+\index{\Opt{J}}
+\index{Map projections}
+
+\GMTfig[h]{GMT_-J}{The 25 projections available in \gmt}
+
+Selects the map projection.  The following code (?) determines the
+projection.  Specify map {\it width} (or axis lengths) in the unit of
+your choice.  The projections avaiable in \GMT\ are presented in Figure~\ref{fig:GMT_-J}.
+For details on all \GMT\ projections, see the \GMTprog{psbasemap} man page.
+We will also show examples of every projection in the next chapter, and a quick
+summary of projection syntax was given in Chapter 3.
+
+\subsection{Map frame and axes -- The \Opt{B} option}
 \index{\Opt{B}}
 \index{Tickmarks}
 \index{Anotations}
@@ -216,7 +279,7 @@ as is vital that you understand how to use these options.
 This is by far the most complicated option in \GMT, but most examples
 of its usage are actually quite simple.
 Given as \Opt{B}{\it xinfo}[/{\it yinfo}[/{\it zinfo}]][:."title string":][{\bf W}$|${\bf w}][{\bf E}$|${\bf e}][{\bf S}$|${\bf s}][{\bf N}$|${\bf n}][{\bf Z}$|${\bf z}[{\bf +}]],
-this switch specifies a map boundary (or plot axes) to be plotted by using the
+this switch specifies map boundaries (or plot axes) to be plotted by using the
 selected information. The components {\it xinfo}, {\it yinfo} and {\it zinfo} are of the form \\
 
 \par {\it info}[:"axis label":][:,"unit label":] \\
@@ -237,8 +300,8 @@ it is suppressed when a 3-D view is selected.}.
 \emph{Flag}	& \emph{Description} \\ \hline
 {\bf a}	&	(upper) tick annotation spacing \\ \hline
 {\bf A}	&	lower tick annotation spacing \\ \hline
-{\bf i}[v]	&	(upper) interval  annotation spacing\\ \hline
-{\bf I}[v]	&	lower interval  annotation spacing\\ \hline
+{\bf i}[{\it v}]	&	(upper) interval  annotation spacing\\ \hline
+{\bf I}[{\it v}]	&	lower interval  annotation spacing\\ \hline
 {\bf f}	&	frame tick spacing \\ \hline
 {\bf g}	&	grid tick spacing \\ \hline
 \end{tabular}
@@ -278,7 +341,7 @@ The unit flag {\bf u} can take on one of 16 codes; these are listed in  Table~\r
 {\bf o}	&	month & Plot as 2-digit integer (1--12) \\ \hline
 {\bf U}	&	ISO week & Format anotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
 {\bf u}	&	ISO week & Plot as 2-digit integer (1--53) \\ \hline
-{\bf r}	&	Gregorian week & 7-day stride from start of week \\ \hline
+{\bf r}	&	Gregorian week & 7-day stride from start of week ({\bf TIME\_WEEK\_START}) \\ \hline
 {\bf K}	&	ISO weekday & Format anotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
 {\bf k}	&	weekday & Plot name of weekday in selected language \\ \hline
 {\bf D}	&	day & Format anotation using {\bf PLOT\_DATE\_FORMAT} which \\
@@ -308,11 +371,21 @@ will clarify what is meant.
 Geographic basemaps may differ from regular plot axis in that some projections support a
 ``fancy'' form of axis and is selected by the {\bf BASEMAP\_TYPE} setting.  Only the three
 axis items {\bf a}, {\bf f}, and {\bf g} apply.  The anotations will be formatted according to
-the {\bf PLOT\_DEGREE\_SYMBOL} template.  An example of part of a basemap is shown in Figure~\ref{fig:GMT_-B_geo}.
+the {\bf PLOT\_DEGREE\_FORMAT} template and {\bf DEGREE\_SYMBOL} setting.  An example of part of a basemap is shown in Figure~\ref{fig:GMT_-B_geo}.
 
 \GMTfig[h]{GMT_-B_geo}{Geographic map border using separate selections for anotation,
 frame, and grid intervals.  Formatting of the anotation is controlled by
-the parameter PLOT\_DEGREE\_FORMAT in your \filename{.gmtdefaults} file.}
+the parameter {\bf PLOT\_DEGREE\_FORMAT} in your \filename{.gmtdefaults} file.}
+
+\subsubsection{Cartesian linear axes}
+
+For non-geographic axes, the {\bf BASEMAP\_TYPE} setting is implicitly set to plain.  Other than than,
+cartesian linear axes are very similar to geographic axes.  The anotation format may be controlled with
+the {\bf D\_FORMAT} parameter.  By default, it is set to ``\%lg'', which is a C language format statement
+for floating point numbers, and with this setting the various axis routines will automatically determine
+how many decimal points should be used by inspecting the {\it stride} settings.  If {\bf D\_FORMAT} is set
+to another format it will be used directly.  Note that for these axes you may use the {\it unit} setting to
+add a unit string to each anotation (see Figure~\ref{fig:GMT_-B_linear}).
 
 \GMTfig[h]{GMT_-B_linear}{Linear Cartesian projection axis.  Long tickmarks accompany
 anotations, shorter ticks indicate frame interval.  The axis label is
@@ -324,14 +397,15 @@ optional.  We used \Opt{R}0/12/0/1 \Opt{JX}3/0.4
 \index{Logarithmic axes}
 
 Due to the logarithmic nature of anotation spacings, the {\it stride} parameter take on specific
-meanings.  The following concerns as specific to log axes:
+meanings.  The following concerns are specific to log axes:
 
 \begin{enumerate}
 \item {\it stride} must be 1, 2, or 3.  Annotations/ticks will
 then occur at 1, 1--2--5, or 1,2,3,4,...,9, respectively, for each magnitude range.
 
 \item Append {\bf l} to {\it stride}. Then, log$_{10}$ of the annotation
-is plotted at every integer log$_{10}$ value (e.g., $x = 100$ will be annotated as ``2'').
+is plotted at every integer log$_{10}$ value (e.g., $x = 100$ will be annotated as ``2'')
+[Default anotates $x$ as is].
 
 \item Append {\bf p} to {\it stride}.  Then, annotations appear as 10
 raised to log$_{10}$ of the value (e.g., $10^{-5}$).
@@ -367,7 +441,7 @@ uses the corresponding unprojected values, as in \Opt{Ba}3{\bf f}2{\bf g}1{\bf p
 \index{Time axis}
 \subsubsection{Cartesian time axes}
 
-What sets time axis apart from the other kinds of plots is the numerous ways in which we
+What sets time axis apart from the other kinds of plot axes is the numerous ways in which we
 may want to tick and anotate the axis.  Not only do we have both upper and lower anotation
 items but we also have interval anotations versus tickmark anotations, numerous time units,
 and several ways in which to modify the plot.  We will demonstrate this flexibility with a series of examples.  While all our examples
@@ -379,7 +453,7 @@ intervals as well as the date at the start of each week:
 \input{scripts/GMT_-B_time1}
 
 These commands result in Figure~\ref{fig:GMT_-B_time1}.  Note the leading hyphen in the {\bf PLOT\_DATE\_FORMAT}
-removes leading zeros from calender items (e.g., 02 versus 2).
+removes leading zeros from calender items (e.g., 02 becomes 2).
 \GMTfig[h]{GMT_-B_time1}{Cartesian time axis, example 1}
 
 The next example shows two different ways to anotate an axis portraying 2 days in September:
@@ -387,7 +461,9 @@ The next example shows two different ways to anotate an axis portraying 2 days i
 \input{scripts/GMT_-B_time2}
 
 The lower example (Figure~\ref{fig:GMT_-B_time2}) chooses to anotate the weekdays (by specifying {\bf If}1{\bf K}) while the upper
-example choses dates (by specifying {\bf If}1{\bf D}).  Note how the clock format only selects hours and minutes (no seconds).
+example choses dates (by specifying {\bf If}1{\bf D}).  Note how the clock format only selects hours and minutes (no seconds) and
+the date format selects a month name, followed by one space and a two-digit day-of-month number.
+
 \GMTfig[h]{GMT_-B_time2}{Cartesian time axis, example 2}
 
 The third example presents 2 years, annotating both the years and every 3rd month.
@@ -407,7 +483,7 @@ clock, and let time go from right to left:
 \GMTfig[h]{GMT_-B_time4}{Cartesian time axis, example 4}
 
 The fifth example shows a few weeks of time (Figure~\ref{fig:GMT_-B_time5}).  The lower axis shows ISO weeks with week numbers and
-abbreviated names of the weekdays.   The upper uses Gregorian weeks (which start at the day chosen by {\bf TIME\_WEEK\_START}); there
+abbreviated names of the weekdays.   The upper uses Gregorian weeks (which start at the day chosen by {\bf TIME\_WEEK\_START}); they
 do not have numbers.
 \input{scripts/GMT_-B_time5}
 \GMTfig[h]{GMT_-B_time5}{Cartesian time axis, example 5}
@@ -419,58 +495,59 @@ name and 2-digit year.
 \GMTfig[h]{GMT_-B_time6}{Cartesian time axis, example 6}
 
 
-Our seventh and final example illustrates anotation of year-days.  Without a leading hyphen in  {\bf PLOT\_DATE\_FORMAT}
-we get 3-digit integer days.
+Our seventh and final example illustrates anotation of year-days.  Unless we specify the formatting with a leading hyphen
+in  {\bf PLOT\_DATE\_FORMAT} we get 3-digit integer days.
 \input{scripts/GMT_-B_time7}
 
 \GMTfig[h]{GMT_-B_time7}{Cartesian time axis, example 7}
 
-
-\subsection{The \Opt{c} option}
-\index{\Opt{c}}
-\index{Number of copies}
-
-The \Opt{c} option specifies the number of plot copies. [Default is 1]
-
-\subsection{The \Opt{H} option}
+\subsection{Header records -- The \Opt{H} option}
 \index{\Opt{H}}
 \index{Header records}
 
 The \Opt{H}[{\it n\_recs}] option lets \GMT\ know that input file(s) have
 one [Default] or more header records.  If there are more than one header
 record you must specify the number after the \Opt{H} option, e.g., \Opt{H}4.
-See Figure~\ref{fig:GMT_-H}.
+Note that blank lines and records that be start with the character \# are
+automatically skipped.
 
-\subsection{The \Opt{J?} options}
-\index{\Opt{J}}
-\index{Map projections}
+\subsection{Portrait orientation -- The \Opt{P} option} 
+\index{Orientation!of plot}
+\index{Plot!orientation}
+\index{Landscape orientation}
+\index{Orientation!landscape}
+\index{Portrait orientation \Opt{P}}
+\index{Orientation!portrait \Opt{P}}
+\index{\Opt{P} (portrait orientation)}
 
-\GMTfig[h]{GMT_-J}{The 25 projections available in \gmt}
+\GMTfig[h]{GMT_-P}{Users can specify Landscape [Default] or Portrait (\Opt{P}) orientation}
 
-Selects the map projection.  The following code (?) determines the
-projection.  Specify map {\it width} (or axis lengths) in the unit of
-your choice.  The projections avaiable in \GMT\ are presented in Figure~\ref{fig:GMT_-J}.
-For details on all \GMT\ projections, see the \GMTprog{psbasemap} man page.
-We will also show examples of every projection in the next chapter, and a quick
-summary of projection syntax was given in Chapter 3.
+\Opt{P} selects Portrait plotting mode\footnote{For historical reasons, the \GMT\
+Default is Landscape, see \GMTprog{gmtdefaults} to change this.}.  In general,
+a plot has an {\it x}-axis increasing from left to
+right and a {\it y}-axis increasing from bottom to top.  If the
+paper is turned so that the long dimension of the paper is
+parallel to the {\it x}-axis then the plot is said to have
+\emph{Landscape} orientation.  If the long dimension of
+the paper parallels the {\it y}-axis the orientation is called
+\emph{Portrait} (think of taking pictures with a camera
+and these words make sense).  The
+default Landscape orientation is obtained by translating the origin in the
+{\it x}-direction (by the width of the chosen paper PAPER\_MEDIA) and then rotating the
+coordinate system counterclockwise by 90\DS.  By default the PAPER\_MEDIA is
+set to Letter (or A4 if SI is chosen); this value must be changed
+when using different media, such as 11" x 17" or large format plotters
+(Figure~\ref{fig:GMT_-P}).
 
-\subsection{The \Opt{K} \Opt{O} options}
+
+\subsection{Plot Overlays -- The \Opt{K} \Opt{O} options}
+\index{Overlay plot \Opt{O} \Opt{K}}
+\index{Plot!overlay \Opt{O} \Opt{K}}
+\index{Plot!continue \Opt{O} \Opt{K}}
 \index{\Opt{K}}
 \index{\Opt{O}}
-\index{Overlay plots}
-\index{Plot!overlay}
 
-\begin{figure}[h]
-\centering
-\begin{tabular}{lr}
-\epsfig{figure=eps/GMT_-H.eps} & \epsfig{figure=eps/GMT_-OK.eps} \\
-\end{tabular}
-\caption{(left) Input files may have an arbitrary number of header records,
-specified with \Opt{H}.
-(right) A final \PS\ file consists of a stack of individual pieces}
-\label{fig:GMT_-H}
-\label{fig:GMT_-OK}
-\end{figure}
+\GMTfig[h]{GMT_-OK}{A final \PS\ file consists of a stack of individual pieces}
 
 The \Opt{K} and \Opt{O} options control the generation of \PS\ code for multiple
 overlay plots.  All \PS\ files must have a header (for initializations),
@@ -483,53 +560,11 @@ trailer, and that the final overlay omits the header.
 later [Default terminates the plot system].  \Opt{O} selects Overlay plot
 mode and ommits the header information [Default initializes a new plot system].
 Most unexpected results for multiple overlay plots can be traced to the
-incorrect use of these options.
+incorrect use of these options.  If you run only one plot
+program, ignore both the \Opt{O} and \Opt{K} options; they are
+only used when stacking plots. 
 
-\subsection{The \Opt{P} option} 
-\index{\Opt{P}}
-\index{Landscape orientation}
-\index{Portrait orientation \Opt{P}}
-
-\begin{figure}[h]
-\centering
-\begin{tabular}{cc}
-\epsfig{figure=eps/GMT_-P.eps} & \epsfig{figure=eps/GMT_-XY.eps} \\
-\end{tabular}
-\caption{(left) Users can specify Landscape [Default] or Portrait (\Opt{P}) orientation.
-(right) Plot origin can be translated freely with \Opt{X} \Opt{Y}}
-\label{fig:GMT_-P}
-\label{fig:GMT_-XY}
-\end{figure}
-
-\Opt{P} selects Portrait plotting mode\footnote{For historical reasons, the \GMT\
-Default is Landscape, see \GMTprog{gmtdefaults} to change this.}.  The
-default Landscape orientation is obtained by translating the origin in the
-{\it x}-direction (by the width of the chosen paper PAPER\_MEDIA) and then rotating the
-coordinate system counterclockwise by 90\DS.  By default the PAPER\_MEDIA is
-set to Letter (or A4 if SI is chosen); this value must be changed
-when using different media, such as 11" x 17" or large format plotters
-(Figure~\ref{fig:GMT_-P}).
-
-\subsection{The \Opt{R} option}
-\index{\Opt{R}}
-\index{Region, specifying}
-
-\Opt{R}{\it xmin}/{\it xmax}/{\it ymin}/{\it ymax}[{\bf r}] specify the
-Region of interest.  Decimal, exponential, and date-clock notations are supported,
-as expected by the prevailing coordinate transformation.
-To use geographical degrees and minutes [and seconds], use the dd:mm[:ss] format.
-For calendar date-clock limits, use the formats outlined in Section~\ref{sec:io}.
-Append {\bf r} if lower left and upper right corners are given instead of
-minimum and maximum extent of a rectangular region (Figure~\ref{fig:GMT_-R}).
-
-\begin{figure}[h]
-\centering
-\epsfig{figure=eps/GMT_-R.eps}
-\caption{The plot region can be specified in two different ways}
-\label{fig:GMT_-R}
-\end{figure}
-
-\subsection{The \Opt{U} option} 
+\subsection{Timestamps -- The \Opt{U} option} 
 \index{\Opt{U}}
 \index{Timestamp}
 \index{UNIX@\UNIX!timestamp}
@@ -538,25 +573,21 @@ minimum and maximum extent of a rectangular region (Figure~\ref{fig:GMT_-R}).
 text string (surrounded by double quotes), or the code {\bf c}, which will
 plot the current command string (Figure~\ref{fig:GMT_-U}).
 
-\begin{figure}[h]
-\centering
-\epsfig{figure=eps/GMT_-U.eps}
-\caption{The \Opt{U} option makes it easy to ``date'' a plot}
-\label{fig:GMT_-U}
-\end{figure}
+\GMTfig[h]{GMT_-U}{The \Opt{U} option makes it easy to ``date'' a plot}
 
-\subsection{The \Opt{V} option} 
+\subsection{Verbose Feedback -- The \Opt{V} option} 
 \index{\Opt{V}}
 \index{Verbose}
 
 \Opt{V} selects verbose mode, which will send progress reports to
 \emph{stderr} [Default runs ``silently''].
 
-\subsection{The \Opt{X} \Opt{Y} options}
+\subsection{Plot positioning -- The \Opt{X} \Opt{Y} options}
 \index{\Opt{X}}
 \index{\Opt{Y}}
 \index{Plot!offset}
 \index{Offset, plot}
+\GMTfig[h]{GMT_-XY}{Plot origin can be translated freely with \Opt{X} \Opt{Y}}
 
 \Opt{X} and \Opt{Y} shift origin of plot by ({\it xoff},{\it yoff})
 inches (Default is (1,1) for new plots\footnote{ensures that
@@ -571,7 +602,53 @@ The offsets are measured in the current coordinates system (which can
 be rotated using the initial \Opt{P} option; subsequent \Opt{P} options
 for overlays are ignored).
 
-\subsection{The \Opt{:} option}
+
+\subsection{Binary table i/o -- The \Opt{b} option}
+\index{Table!binary}
+\index{Binary tables}
+\index{Input!binary \Opt{bi}}
+\index{Output!binary \Opt{bo}}
+\index{\Opt{bi} (select binary input)}
+\index{\Opt{bo} (select binary output)}
+
+All \GMT\ programs that accept table data input may read ASCII
+or binary data†.  When using binary data the user must be aware
+of the fact that \GMT\ has no way of determining the actual
+number of columns in the file.  You should therefore pass that
+information to \GMT\ via the binary \Opt{bi}[{\bf s}]{\it n} option,
+where {\it n} is the actual number of data columns ({\bf s}
+indicates single rather than double precision).
+Note that {\it n} may be larger than {\it m}, the number of
+columns that the \GMT\ program requires to do its task.  If
+{\it n} is not given then it defaults to {\it m}.  If
+{\it n} $<$ {\it m} an error is generated.  For more information,
+see Appendix B.
+
+\subsection{Data type selection -- The \Opt{f} option}
+\index{Table!format}
+\index{Input!format \Opt{fi}}
+\index{Output!format \Opt{fo}}
+\index{\Opt{fi} (set input format)}
+\index{\Opt{fo} (set output format)}
+
+As mentioned in Section~\ref{sec:io}, there are times when we must explicitly state
+what kind of data each input or output column contains.  This is accomplished with
+the \Opt{f} option.  Following an optional {\bf i} (for input only) or {\bf o} (for output
+only), we append a text string with information about each column (or range of columns) separated by commas.
+Each string starts with the column number (0 is first column) followed by either
+x (longitude), y (latitude), T (absolute calendar time) or t (relative time).  If
+several consecutive columns have the same format you may specify a range of columns
+rather than a single column, e.e., 0-4 for the first 5 columns.  For example, if our
+input file has geographic coordinates (latitude, longitude) with absolute calendar
+coordinates in the columns 3 and 4, we would specify {\bf fi}0y,1x,3-4T.  All other columns
+as assumed to have the default, floating point format and need not be set individually.
+\subsection{Number of Copies -- The \Opt{c} option}
+\index{\Opt{c}}
+\index{Number of copies}
+
+The \Opt{c} option specifies the number of plot copies. [Default is 1]
+
+\subsection{lat and Lon -- The \Opt{:} option}
 \index{\Opt{:}}
 \index{lat/lon input}
 
@@ -701,48 +778,16 @@ a particular coordinate transformation or map projection.  However,
 there may be times when you must explicitly specify what you are
 providing as input using the \Opt{f} switch (see below). When binary data are expected (\Opt{b}) they must all
 be floating point numbers, however for ascii input there are numerous
-ways to encode data coordinates.  In particular, there are three kinds of input data formats that \GMT\ can recognize:
+ways to encode data coordinates.  Valid input data are generally of the same form as the arguments to the \Opt{R} option (see Section~\ref{sec:R}),
+with the following additional flexibility for calendar data:
 
-\begin{description}
-\item [Geographic coordinates:]  These are longitudes and latitudes
-that (presumably) will be plotted or processed using one of several map
-projections.  The coordinates can either be in decimal degrees (e.g., -123.45417)
-or they may be in the [$\pm$]{\it ddd}[:{\it mm}[:{\it ss}[{\it .xxx}]]][{\bf W}$|${\bf E}$|${\bf S}$|${\bf N}]
-format (e.g., 123:27:15W).
-\item [Calendar time coordinates:]  These are absolute time coordinates referring to a Gregorian or ISO calendar.
-The general format is [{\it date}]{\bf T}[{\it clock}], where {\it date} can be specified in a wide range
-of formats.  Because of the widespread use of incompatible and ambiguous formats, the processing of input
+Because of the widespread use of incompatible and ambiguous formats, the processing of input
 date components is guided by the template {\bf INPUT\_DATE\_FORMAT} in your
-\filename{.gmtdefaults} file.  The \GMT\ preferred date formats are {\it yyyy-mm-dd} (year, month, day-of-month)
-or {\it yyyy-jjj} (year and day-of-year) for Gregorian calendars and {\it yyyy-}{\bf W}{\it ww-d} (year, week, and
-day-of-week) for the ISO calendar.  Y2K-challenged input data such as 29/05/89T08.30pm can be processed by setting {\bf INPUT\_DATE\_FORMAT}
-to dd/mm/yyThh.mmam.  A complete discription of possible formats is given in the \GMTprog{gmtdefaults}
+\filename{.gmtdefaults} file which by default is set to {\it yyyy-mm-dd}.  Y2K-challenged input data such as 29/05/89T08.30pm can be processed by setting {\bf INPUT\_DATE\_FORMAT}
+to dd/mm/yy.  A complete discription of possible formats is given in the \GMTprog{gmtdefaults}
 man page.  The {\it clock} string is more standardized but issues like 12- or 24-hour clocks complicate matters
 as well as the presence or absence of delimeters between fields.  Thus, the processing of input
-clock coordinates is guided by the template {\bf INPUT\_CLOCK\_FORMAT}.  The \GMT\ preferred clock format is {\it hh:mm:ss.xxx}.
-Note that not all of the specified enteties (e.g., the seconds or the decimals following the seconds) need be present
-in the data.  All calendar-clock strings are internally represented as double precision seconds since
-proleptic Gregorian date Mon Jan 1 00:00:00 0001.  Proleptic means we assume that modern calendar
-can be extrapolated forward and backward; a year zero is used, and Gregory's reforms\footnote{The Gregorian Calendar
-is a revision of the Julian Calendar which was instituted in a papal bull by Pope Gregory XIII in 1582. The reason for the calendar
-change was to correct for drift in the dates of signifigant religious observations (primarily Easter) and to prevent further drift
-in the dates. The important effects of the change were (a) Drop 10 days from October 1582 to realign the Vernal Equinox with 21 March,
-(b) change leap year selection so that not all years ending in "00" are leap years, and (c) change the beginning of the year to
-1 January from 25 March.  Adoption of the new calendar was essentially immediate within Catholic countries. In the Protestant countries,
-where papal authority was neither recognized not appreciated, adoption came more slowly. 
-England finally adopted the new calendar in 1752, with eleven days removed from September. The additional day came because the old and
-new calendars disagreed on whether 1700 was a leap year, so the Julian calendar had to be adjusted by one more day.} are extrapolated
-backward.  Note that this is not historical.
-\item [Other coordinates:]  These are simply anything that is not geographic or calendar time related and are
-expected to be simple floating point values requiring no special processing.  One exception is the concept
-of relative time which is read as a floating point offset from an absolute time reference point (epoch).  The unit and the
-epoch are specified with the {\bf TIME\_SYSTEM} parameter.  Relative time coordinates are expected when a coordinate transformation
-involving relative time has been selected or when the \Opt{f} switch has been used to indicate relative time coordinates.
-\end{description}
-
-The supported data formats may be used in file input as well as in command line arguments.  However, note that for
-calendar time coordinates on the command line, you \emph{must} use the preferred \GMT\ date formats since other
-formats with delimeters like slashes (/) would make the processing of the arguments ambiguous.  
+clock coordinates is guided by the template {\bf INPUT\_CLOCK\_FORMAT} which defaults to {\it hh:mm:ss.xxx}.
 
 \GMT\ programs that require a map projection argument will implicitly know what kind of data to expect, and the
 input processing is done accordingly.  However, some programs that simply report on minimum and maximum
@@ -792,56 +837,6 @@ produce Encapsulated \PS\ (EPS) that can be imported into graphics programs such
 \progname{IslandDraw} and Adobe \progname{Illustrator} for further
 embellishment, change the PAPER\_MEDIA setting in the \filename{.gmtdefaults}
 file.  See Appendix C and the \GMTprog{gmtdefaults} man page for more details.
-
-\section{Landscape and Portrait Orientations}
-\index{Orientation!of plot}
-\index{Plot!orientation}
-\index{Landscape orientation}
-\index{Orientation!landscape}
-\index{Portrait orientation \Opt{P}}
-\index{Orientation!portrait \Opt{P}}
-\index{\Opt{P} (portrait orientation)}
-
-In general, a plot has an {\it x}-axis increasing from left to
-right and a {\it y}-axis increasing from bottom to top.  If the
-paper is turned so that the long dimension of the paper is
-parallel to the {\it x}-axis then the plot is said to have
-\emph{Landscape} orientation.  If the long dimension of
-the paper parallels the {\it y}-axis the orientation is called
-\emph{Portrait}.  (Think of taking pictures with a camera
-and these words make sense).  All the programs in \GMT\ have the
-same default orientation, which is Landscape.  Use \Opt{P} to
-change to Portrait (Note that PAPER\_MEDIA is a user-definable
-parameter, by default set to Letter (or A4).  For other paper
-dimensions you must change this value accordingly). 
-
-\section{Overlay and Continue Modes}
-\index{Overlay plot \Opt{O} \Opt{K}}
-\index{Plot!overlay \Opt{O} \Opt{K}}
-\index{Plot!continue \Opt{O} \Opt{K}}
-\index{\Opt{O} (overlay plot)}
-\index{\Opt{K} (continue plot)}
-
-A typical \PS\ file has a beginning, a middle, and
-an end.  The beginning defines certain features (e.g., macros,
-origin, orientation, scale, etc.) which will be needed to
-create the plot.  The middle has the commands which actually do
-the plotting.  The end tells the graphics device to put out
-the plot (\texttt{showpage} in \PS) and reset the graphics
-state.  Many of the illustrations in this cookbook are built up
-by appending \PS\ files together.
-If you do this, the first file needs a ``beginning'' and no ``end'',
-the last an ``end'' but no ``beginning'', and the middle files need
-only a ``middle''.  You accomplish this automatically with the
-Overlay (\Opt{O}) and Continue (\Opt{K}) options.  Overlay
-indicates that this plot will be laid on top of an earlier one;
-therefore the ``beginning'' is not included in the output.  The
-default is always no overlay, i.e. write out the ``beginning''.
-Continue indicates that another plot will follow this one later;
-therefore the ``end'' is not included in the output.
-The default is to output the ``end''.  If you run only one plot
-program, ignore both the \Opt{O} and \Opt{K} options; they are
-only used when stacking plots. 
 
 \section{Specifying pen attributes}
 
@@ -1282,43 +1277,3 @@ file intended for masking, i.e., the nodes are either 1 or NaN,
 the bit or mask format file may be down to 1/32 the size of the
 corresponding grd format file. 
 \index{grdfile!embedded format|)}
-
-\section{Binary table i/o}
-\index{Table!binary}
-\index{Binary tables}
-\index{Input!binary \Opt{bi}}
-\index{Output!binary \Opt{bo}}
-\index{\Opt{bi} (select binary input)}
-\index{\Opt{bo} (select binary output)}
-
-All \GMT\ programs that accept table data input may read ASCII
-or binary data†.  When using binary data the user must be aware
-of the fact that \GMT\ has no way of determining the actual
-number of columns in the file.  You should therefore pass that
-information to \GMT\ via the binary \Opt{bi}[{\bf s}]{\it n} option,
-where {\it n} is the actual number of data columns ({\bf s}
-indicates single rather than double precision).
-Note that {\it n} may be larger than {\it m}, the number of
-columns that the \GMT\ program requires to do its task.  If
-{\it n} is not given then it defaults to {\it m}.  If
-{\it n} $<$ {\it m} an error is generated.  For more information,
-see Appendix B.
-
-\section{Data type selection}
-\index{Table!format}
-\index{Input!format \Opt{fi}}
-\index{Output!format \Opt{fo}}
-\index{\Opt{fi} (set input format)}
-\index{\Opt{fo} (set output format)}
-
-As mentioned in Section~\ref{sec:io}, there are times when we must explicitly state
-what kind of data each input or output column contains.  This is accomplished with
-the \Opt{f} option.  Following an optional {\bf i} (for input only) or {\bf o} (for output
-only), we append a text string with information about each column (or range of columns) separated by commas.
-Each string starts with the column number (0 is first column) followed by either
-x (longitude), y (latitude), T (absolute calendar time) or t (relative time).  If
-several consecutive columns have the same format you may specify a range of columns
-rather than a single column, e.e., 0-4 for the first 5 columns.  For example, if our
-input file has geographic coordinates (latitude, longitude) with absolute calendar
-coordinates in the columns 3 and 4, we would specify {\bf fi}0y,1x,3-4T.  All other columns
-as assumed to have the default, floating point format and need not be set individually.
