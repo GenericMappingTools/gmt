@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.34 2004-01-09 22:58:10 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.35 2004-01-10 19:55:37 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -923,11 +923,15 @@ if [ $netcdf_install = "y" ]; then
 		cd $topdir
 	
 #		Set-up ftp command
-  
+
+		p=
 		echo "user anonymous $USER@" > $$
 		if [ $passive_ftp = "y" ]; then
 			echo "passive" >> $$
 			echo "quote pasv" >> $$
+			if [ $os = "IRIX64" ]; then
+				p=p
+			fi
 		fi
 		echo "cd pub/netcdf" >> $$
 		echo "binary" >> $$
@@ -939,7 +943,7 @@ if [ $netcdf_install = "y" ]; then
 
 		echo "Getting netcdf by anonymous ftp (be patient)..." >&2
 		before=`du -sk . | cut -f1`
-		ftp -dn unidata.ucar.edu < $$ || ( echo "ftp failed - try again later" >&2; exit )
+		ftp -dn$p unidata.ucar.edu < $$ || ( echo "ftp failed - try again later" >&2; exit )
 		after=`du -sk . | cut -f1`
 		newstuff=`echo $before $after | awk '{print $2 - $1}'`
 		echo "Got $newstuff kb ... done" >&2
@@ -1020,11 +1024,14 @@ if [ $GMT_ftp = "y" ]; then
 	is_dns=`sed -n ${GMT_ftpsite}p gmt_install.ftp_dns`
 
 #	Set-up ftp command
-  
+	p=
 	echo "user anonymous $USER@" > gmt_install.ftp_list
 	if [ $passive_ftp = "y" ]; then
 		echo "passive" >> gmt_install.ftp_list
 		echo "quote pasv" >> gmt_install.ftp_list
+		if [ $os = "IRIX64" ]; then
+			p=p
+		fi
 	fi
 	echo "cd $DIR" >> gmt_install.ftp_list
 	echo "binary" >> gmt_install.ftp_list
@@ -1048,7 +1055,7 @@ if [ $GMT_ftp = "y" ]; then
 	echo "Getting GMT by anonymous ftp from $ftp_ip (be patient)..." >&2
 
 	before=`du -sk . | cut -f1`
-	ftp -dn $ftp_ip < gmt_install.ftp_list || ( echo "fpt failed - try again later >&2"; exit )
+	ftp -dn$p $ftp_ip < gmt_install.ftp_list || ( echo "fpt failed - try again later >&2"; exit )
 	after=`du -sk . | cut -f1`
 	rm -f gmt_install.ftp_list
 	newstuff=`echo $before $after | awk '{print $2 - $1}'`
