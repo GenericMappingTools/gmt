@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.165 2004-12-20 16:07:58 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.166 2005-01-01 21:48:25 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2688,6 +2688,7 @@ int GMT_begin (int argc, char **argv)
 
 	int i, j, k, n;
 	char *this;
+	double f;
 
 #ifdef __FreeBSD__
 	/* allow divide by zero -- Inf */
@@ -2725,6 +2726,23 @@ int GMT_begin (int argc, char **argv)
 	for (i = strlen(argv[0]); i >= 0 && argv[0][i] != '/'; i--);
 	GMT_program = &argv[0][i+1];
 	GMT_grd_in_nan_value = GMT_grd_out_nan_value = GMT_d_NaN;
+	
+	/* Set up ellipsoid parameters for the selected ellipsoid */
+	
+	frame_info.check_side = frame_info.horizontal = FALSE;
+	project_info.EQ_RAD = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius;
+	project_info.i_EQ_RAD = 1.0 / project_info.EQ_RAD;
+	f = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening;
+	project_info.ECC2 = 2 * f - f * f;
+	project_info.ECC4 = project_info.ECC2 * project_info.ECC2;
+	project_info.ECC6 = project_info.ECC2 * project_info.ECC4;
+	project_info.one_m_ECC2 = 1.0 - project_info.ECC2;
+	project_info.i_one_m_ECC2 = 1.0 / project_info.one_m_ECC2;
+	project_info.ECC = d_sqrt (project_info.ECC2);
+	project_info.half_ECC = 0.5 * project_info.ECC;
+	project_info.i_half_ECC = 0.5 / project_info.ECC;
+	project_info.M_PR_DEG = TWO_PI * project_info.EQ_RAD / 360.0;
+	project_info.f_horizon = 90.0;
 	DEG2M = 2.0 * M_PI * gmtdefs.ref_ellipsoid[N_ELLIPSOIDS-1].eq_radius / 360.0;	/* GRS-80 sphere degree->m  */
 	DEG2KM = 0.001 * DEG2M;								/* GRS-80 sphere degree->km */
 	GMT_distance_func = (PFD) GMT_km_dist;
