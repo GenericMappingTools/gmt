@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.111 2004-04-24 01:30:00 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.112 2004-04-28 07:08:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2352,8 +2352,8 @@ int GMT_map_loncross (double lon, double south, double north, struct XINGS **xin
 
 void GMT_map_gridlines (double w, double e, double s, double n)
 {
-	int k;
-	double dx, dy, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
+	int k, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
+	double dx, dy;
 	char *comment[2] = {"Map gridlines (primary)", "Map gridlines (secondary)"};
 	
 	for (k = 0; k < 2; k++) {
@@ -2559,6 +2559,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	}
 	
 	ps_setpaint (gmtdefs.basemap_frame_rgb);
+	GMT_world_map_save = GMT_world_map;
 
 	if (frame_info.header[0]) {	/* Make plot header for geographic maps*/
 		if (project_info.three_D && fabs (project_info.z_scale) < GMT_CONV_LIMIT) {	/* Only do this if flat 2-D plot */
@@ -2637,7 +2638,6 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	GMT_setpen (&gmtdefs.tick_pen);
 	
 	GMT_on_border_is_outside = TRUE;	/* Temporarily, points on the border are outside */
-	GMT_world_map_save = GMT_world_map;
 	if (project_info.region) {
 		GMT_world_map = FALSE;
 		GMT_outside_save = GMT_outside;
