@@ -1,8 +1,8 @@
 #!/bin/sh
-#	$Id: GMT_-R.sh,v 1.1 2001-03-21 04:10:21 pwessel Exp $
+#	$Id: GMT_-R.sh,v 1.2 2001-09-14 18:30:17 pwessel Exp $
 #
 
-gmtset BASEMAP_TYPE PLAIN ANOT_FONT 0 ANOT_FONT_SIZE 8 TICK_LENGTH 0.05i DEGREE_FORMAT 1
+gmtset BASEMAP_TYPE PLAIN ANOT_FONT 0 ANOT_FONT_SIZE 8 TICK_LENGTH 0.05i PLOT_DEGREE_FORMAT ddd:mm:ss
 pscoast -R-90/-70/18/35.819 -JM2 -P -Dl -G200 -W1 -Ba10g5WSEn -K > GMT_-R.ps
 pstext -R0/2/-0.5/2 -Jx1 -O -K -N -Y-0.5 << EOF >> GMT_-R.ps
 1	-0.375	9	0	2	CT	@%0%a)@%% @%1%\261R@%%xmin/xmax/ymin/ymax

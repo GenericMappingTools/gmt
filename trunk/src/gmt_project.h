@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.13 2001-09-14 03:08:26 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.14 2001-09-14 18:30:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -240,6 +240,9 @@ struct MAP_PROJECTIONS {
 	
 };
 
+#define GMT_IS_FANCY	0	/* Fancy baseframe */
+#define GMT_IS_PLAIN	1	/* Plain baseframe */
+
 /* Define the 6 axis items that each axis can have (some are mutually exclusive: only one ANOT/INTV for upper and lower) */
 
 #define GMT_ANOT_UPPER		0	/* Tick anotations closest to the axis (the only kind in GMT3.4 or earlier) */
@@ -249,7 +252,7 @@ struct MAP_PROJECTIONS {
 #define GMT_TICK_UPPER		4	/* Frame tick marks closest to the axis (the only kind in GMT3.4 or earlier) */
 #define GMT_GRID_UPPER		5	/* Gridline spacing */
 
-/* SOme convenient macros for axis routines */
+/* Some convenient macros for axis routines */
 
 #define GMT_interval_axis_item(k) (((k) == GMT_INTV_UPPER || (k) == GMT_INTV_LOWER) ? TRUE : FALSE)	/* TRUE for interval anotations */
 #define GMT_lower_axis_item(k) (((k) == GMT_ANOT_LOWER || (k) == GMT_INTV_LOWER) ? 1 : 0)		/* 1 if this is a lower axis anotation */
