@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.6 2001-03-19 23:44:37 pwessel Exp $
+#       $Id: install_gmt_form.pl,v 1.7 2001-03-23 01:15:39 pwessel Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -25,6 +25,7 @@ $unit		= $gmt_form{'radio_unit'};
 $eps		= $gmt_form{'radio_eps'};
 $flock		= $gmt_form{'radio_flock'};
 $cdf		= $gmt_form{'radio_netcdf'};
+$ftpmode	= $gmt_form{'radio_ftpmode'};
 $cdf_path	= $gmt_form{'netcdf_dir'};
 $site		= $gmt_form{'radio_site'};
 $get_progs	= $gmt_form{'checkbox_progs'};
@@ -88,7 +89,7 @@ print <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.6 $,  on
+# Processed by install_gmt_form.pl $Revision: 1.7 $,  on
 #
 #	$now
 #
@@ -129,6 +130,13 @@ else {
 	print "netcdf_install=n\n";
 }
 print "netcdf_path=", $cdf_path, "\n";
+print "passive_ftp=";
+if ($ftpmode eq "passive") {
+	print "y\n";
+}
+else {
+	print "n\n";
+}
 print "#---------------------------------------------\n";
 print "#	GMT FTP SECTION\n";
 print "#---------------------------------------------\n";
