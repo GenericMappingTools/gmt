@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.16 2001-09-13 18:22:42 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.17 2001-09-14 03:08:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -76,6 +76,13 @@ char *GMT_char_encoding[4] = {	/* PostScript character encodings */
 	"Standard+",
 	"ISOLatin1",
 	"ISOLatin1+"
+};
+
+char *GMT_degree_choice[4] = {	/* Users choice for degree symbol */
+	"ring",
+	"degree",
+	"colon",
+	"none"
 };
 
 char *GMT_degree_symbol[4][3] = {		/* Ring [Default], Degree, and colon degree symbols for each encoding */

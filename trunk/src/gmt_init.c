@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.37 2001-09-13 21:47:47 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.38 2001-09-14 03:08:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1621,58 +1621,7 @@ int GMT_savedefaults (char *file)
 	s = GMT_u2u[GMT_INCH][gmtdefs.measure_unit];	/* Convert from internal inch to users unit */
 
 	fprintf (fp, "#\n#	GMT-SYSTEM %s Defaults file\n#\n", GMT_VERSION);
-	fprintf (fp, "ANOT_MIN_ANGLE		= %lg\n", gmtdefs.anot_min_angle);
-	fprintf (fp, "ANOT_MIN_SPACING	= %lg\n", gmtdefs.anot_min_spacing);
-	fprintf (fp, "ANOT_FONT		= %s\n", GMT_font_name[gmtdefs.anot_font]);
-	fprintf (fp, "ANOT_FONT_SIZE		= %dp\n", gmtdefs.anot_font_size);
-	fprintf (fp, "ANOT_OFFSET		= %lg%c\n", gmtdefs.anot_offset * s, u);
-	fprintf (fp, "BASEMAP_AXES		= %s\n", gmtdefs.basemap_axes);
-	fprintf (fp, "BASEMAP_FRAME_RGB	= %d/%d/%d\n", gmtdefs.basemap_frame_rgb[0],
-		gmtdefs.basemap_frame_rgb[1], gmtdefs.basemap_frame_rgb[2]);
-	(gmtdefs.basemap_type) ? fprintf (fp, "BASEMAP_TYPE		= plain\n") : fprintf (fp, "BASEMAP_TYPE		= fancy\n");
-	fprintf (fp, "COLOR_BACKGROUND	= %d/%d/%d\n", gmtdefs.background_rgb[0], gmtdefs.background_rgb[1], gmtdefs.background_rgb[2]);
-	fprintf (fp, "COLOR_FOREGROUND	= %d/%d/%d\n", gmtdefs.foreground_rgb[0], gmtdefs.foreground_rgb[1], gmtdefs.foreground_rgb[2]);
-	fprintf (fp, "COLOR_NAN		= %d/%d/%d\n", gmtdefs.nan_rgb[0], gmtdefs.nan_rgb[1], gmtdefs.nan_rgb[2]);
-	fprintf (fp, "COLOR_IMAGE		= ");
-	if (gmtdefs.color_image == 0)
-		fprintf (fp, "adobe\n");
-	else if (gmtdefs.color_image == 1)
-		fprintf (fp, "tiles\n");
-	(gmtdefs.color_model == GMT_HSV) ? fprintf (fp, "COLOR_MODEL		= hsv\n") : fprintf (fp, "COLOR_MODEL		= rgb\n");
-	fprintf (fp, "D_FORMAT		= %s\n", gmtdefs.d_format);
-	/* fprintf (fp, "DEGREE_FORMAT		= %d\n", gmtdefs.degree_format); */
-	fprintf (fp, "DOTS_PR_INCH		= %d\n", gmtdefs.dpi);
-	fprintf (fp, "ELLIPSOID		= %s\n", gmtdefs.ellipse[gmtdefs.ellipsoid].name);
-	fprintf (fp, "FRAME_PEN		= %s\n", GMT_putpen (&gmtdefs.frame_pen));
-	fprintf (fp, "FRAME_WIDTH		= %lg%c\n", gmtdefs.frame_width * s, u);
-	fprintf (fp, "GLOBAL_X_SCALE		= %lg\n", gmtdefs.global_x_scale);
-	fprintf (fp, "GLOBAL_Y_SCALE		= %lg\n", gmtdefs.global_y_scale);
-	fprintf (fp, "GRID_CROSS_SIZE		= %lg%c\n", gmtdefs.grid_cross_size * s, u);
-	fprintf (fp, "GRID_PEN		= %s\n", GMT_putpen (&gmtdefs.grid_pen));
-	(gmtdefs.gridfile_shorthand) ? fprintf (fp, "GRIDFILE_SHORTHAND	= TRUE\n") : fprintf (fp, "GRIDFILE_SHORTHAND	= FALSE\n");
-	fprintf (fp, "HEADER_FONT		= %s\n", GMT_font_name[gmtdefs.header_font]);
-	fprintf (fp, "HEADER_FONT_SIZE	= %dp\n", gmtdefs.header_font_size);
-	fprintf (fp, "HSV_MIN_SATURATION	= %lg\n", gmtdefs.hsv_min_saturation);
-	fprintf (fp, "HSV_MAX_SATURATION	= %lg\n", gmtdefs.hsv_max_saturation);
-	fprintf (fp, "HSV_MIN_VALUE		= %lg\n", gmtdefs.hsv_min_value);
-	fprintf (fp, "HSV_MAX_VALUE		= %lg\n", gmtdefs.hsv_max_value);
-	fprintf (fp, "INTERPOLANT		= ");
-	if (gmtdefs.interpolant == 0)
-		fprintf (fp, "linear\n");
-	else if (gmtdefs.interpolant == 1)
-		fprintf (fp, "akima\n");
-	else if (gmtdefs.interpolant == 2)
-		fprintf (fp, "cubic\n");
-	(gmtdefs.io_header) ? fprintf (fp, "IO_HEADER		= TRUE\n") : fprintf (fp, "IO_HEADER		= FALSE\n");
-	fprintf (fp, "N_HEADER_RECS		= %d\n", gmtdefs.n_header_recs);
-	fprintf (fp, "LABEL_FONT		= %s\n", GMT_font_name[gmtdefs.label_font]);
-	fprintf (fp, "LABEL_FONT_SIZE		= %dp\n", gmtdefs.label_font_size);
-	fprintf (fp, "LINE_STEP		= %lg%c\n", gmtdefs.line_step * s, u);
-	fprintf (fp, "MAP_SCALE_FACTOR	= %lg\n", gmtdefs.map_scale_factor);
-	fprintf (fp, "MAP_SCALE_HEIGHT	= %lg%c\n", gmtdefs.map_scale_height * s, u);
-	fprintf (fp, "MEASURE_UNIT		= %s\n", GMT_unit_names[gmtdefs.measure_unit]);
-	fprintf (fp, "N_COPIES		= %d\n", gmtdefs.n_copies);
-	fprintf (fp, "OBLIQUE_ANOTATION	= %d\n", gmtdefs.oblique_anotation);
+	fprintf (fp, "#-------- Plot Media Parameters -------------\n", GMT_VERSION);
 	fprintf (fp, "PAGE_COLOR		= %d/%d/%d\n", gmtdefs.page_rgb[0], gmtdefs.page_rgb[1], gmtdefs.page_rgb[2]);
 	(gmtdefs.page_orientation & 1) ? fprintf (fp, "PAGE_ORIENTATION	= portrait\n") : fprintf (fp, "PAGE_ORIENTATION	= landscape\n");
 	if (gmtdefs.media >= USER_MEDIA_OFFSET)
@@ -1685,37 +1634,65 @@ int GMT_savedefaults (char *file)
 		fprintf (fp, "+\n");
 	else
 		fprintf (fp, "\n");
-	(gmtdefs.ps_heximage) ? fprintf (fp, "PSIMAGE_FORMAT		= hex\n") : fprintf (fp, "PSIMAGE_FORMAT		= bin\n");
+	fprintf (fp, "#-------- Basemap Anotation Parameters ------\n", GMT_VERSION);
+	fprintf (fp, "ANOT_MIN_ANGLE		= %lg\n", gmtdefs.anot_min_angle);
+	fprintf (fp, "ANOT_MIN_SPACING	= %lg\n", gmtdefs.anot_min_spacing);
+	fprintf (fp, "ANOT_FONT		= %s\n", GMT_font_name[gmtdefs.anot_font]);
+	fprintf (fp, "ANOT_FONT_SIZE		= %dp\n", gmtdefs.anot_font_size);
+	fprintf (fp, "ANOT_FONT2		= %s\n", GMT_font_name[gmtdefs.anot_font2]);
+	fprintf (fp, "ANOT_FONT2_SIZE		= %dp\n", gmtdefs.anot_font2_size);
+	fprintf (fp, "ANOT_OFFSET		= %lg%c\n", gmtdefs.anot_offset * s, u);
+	fprintf (fp, "DEGREE_SYMBOL		= %s\n", GMT_degree_choice[gmtdefs.degree_symbol]);
+	fprintf (fp, "HEADER_FONT		= %s\n", GMT_font_name[gmtdefs.header_font]);
+	fprintf (fp, "HEADER_FONT_SIZE	= %dp\n", gmtdefs.header_font_size);
+	fprintf (fp, "LABEL_FONT		= %s\n", GMT_font_name[gmtdefs.label_font]);
+	fprintf (fp, "LABEL_FONT_SIZE		= %dp\n", gmtdefs.label_font_size);
+	fprintf (fp, "OBLIQUE_ANOTATION	= %d\n", gmtdefs.oblique_anotation);
+	fprintf (fp, "PLOT_CLOCK_FORMAT	= %s\n", gmtdefs.plot_clock_format);
+	fprintf (fp, "PLOT_DATE_FORMAT	= %s\n", gmtdefs.plot_date_format);
+	fprintf (fp, "PLOT_DEGREE_FORMAT	= %s\n", gmtdefs.plot_degree_format);
+	(gmtdefs.y_axis_type == 1) ? fprintf (fp, "Y_AXIS_TYPE		= ver_text\n") : fprintf (fp, "Y_AXIS_TYPE		= hor_text\n");
+	fprintf (fp, "#-------- Basemap Layout Parameters ---------\n", GMT_VERSION);
+	fprintf (fp, "BASEMAP_AXES		= %s\n", gmtdefs.basemap_axes);
+	fprintf (fp, "BASEMAP_FRAME_RGB	= %d/%d/%d\n", gmtdefs.basemap_frame_rgb[0],
+		gmtdefs.basemap_frame_rgb[1], gmtdefs.basemap_frame_rgb[2]);
+	(gmtdefs.basemap_type) ? fprintf (fp, "BASEMAP_TYPE		= plain\n") : fprintf (fp, "BASEMAP_TYPE		= fancy\n");
+	fprintf (fp, "FRAME_PEN		= %s\n", GMT_putpen (&gmtdefs.frame_pen));
+	fprintf (fp, "FRAME_WIDTH		= %lg%c\n", gmtdefs.frame_width * s, u);
+	fprintf (fp, "GRID_CROSS_SIZE		= %lg%c\n", gmtdefs.grid_cross_size * s, u);
+	fprintf (fp, "GRID_PEN		= %s\n", GMT_putpen (&gmtdefs.grid_pen));
+	fprintf (fp, "MAP_SCALE_HEIGHT	= %lg%c\n", gmtdefs.map_scale_height * s, u);
 	fprintf (fp, "TICK_LENGTH		= %lg%c\n", gmtdefs.tick_length * s, u);
 	fprintf (fp, "TICK_PEN		= %s\n", GMT_putpen (&gmtdefs.tick_pen));
-	(gmtdefs.unix_time) ? fprintf (fp, "UNIX_TIME		= TRUE\n") : fprintf (fp, "UNIX_TIME		= FALSE\n");
-	fprintf (fp, "UNIX_TIME_POS		= %lg%c/%lg%c\n", gmtdefs.unix_time_pos[0] * s, u, gmtdefs.unix_time_pos[1] * s, u);
-	fprintf (fp, "VECTOR_SHAPE		= %lg\n", gmtdefs.vector_shape);
-	(gmtdefs.verbose) ? fprintf (fp, "VERBOSE			= TRUE\n") : fprintf (fp, "VERBOSE			= FALSE\n");
-	/* (gmtdefs.want_euro_font) ? fprintf (fp, "WANT_EURO_FONT		= TRUE\n") : fprintf (fp, "WANT_EURO_FONT		= FALSE\n"); */
 	fprintf (fp, "X_AXIS_LENGTH		= %lg%c\n", gmtdefs.x_axis_length * s, u);
 	fprintf (fp, "Y_AXIS_LENGTH		= %lg%c\n", gmtdefs.y_axis_length * s, u);
 	fprintf (fp, "X_ORIGIN		= %lg%c\n", gmtdefs.x_origin * s, u);
 	fprintf (fp, "Y_ORIGIN		= %lg%c\n", gmtdefs.y_origin * s, u);
-	(gmtdefs.xy_toggle) ? fprintf (fp, "XY_TOGGLE	= TRUE\n") : fprintf (fp, "XY_TOGGLE		= FALSE\n");
-	(gmtdefs.y_axis_type == 1) ? fprintf (fp, "Y_AXIS_TYPE		= ver_text\n") : fprintf (fp, "Y_AXIS_TYPE		= hor_text\n");
-	fprintf (fp, "INPUT_CLOCK_FORMAT	= %s\n", gmtdefs.input_clock_format);
-	fprintf (fp, "INPUT_DATE_FORMAT	= %s\n", gmtdefs.input_date_format);
-	fprintf (fp, "OUTPUT_CLOCK_FORMAT	= %s\n", gmtdefs.output_clock_format);
-	fprintf (fp, "OUTPUT_DATE_FORMAT	= %s\n", gmtdefs.output_date_format);
-	fprintf (fp, "OUTPUT_DEGREE_FORMAT	= %s\n", gmtdefs.output_degree_format);
-	fprintf (fp, "PLOT_CLOCK_FORMAT	= %s\n", gmtdefs.plot_clock_format);
-	fprintf (fp, "PLOT_DATE_FORMAT	= %s\n", gmtdefs.plot_date_format);
-	fprintf (fp, "PLOT_DEGREE_FORMAT	= %s\n", gmtdefs.plot_degree_format);
-	(gmtdefs.time_is_interval) ? fprintf (fp, "TIME_IS_INTERVAL	= TRUE\n") : fprintf (fp, "TIME_IS_INTERVAL	= FALSE\n");
-	(gmtdefs.want_leap_seconds) ? fprintf (fp, "WANT_LEAP_SECONDS	= TRUE\n") : fprintf (fp, "WANT_LEAP_SECONDS	= FALSE\n");
-	fprintf (fp, "TIME_EPOCH		= %s\n", gmtdefs.time_epoch);
-	fprintf (fp, "TIME_UNIT		= %c\n", gmtdefs.time_unit);
-	fprintf (fp, "TIME_SYSTEM		= %s\n", GMT_time_system[gmtdefs.time_system].name);
-	fprintf (fp, "TIME_WEEK_START		= %s\n", GMT_weekdays[gmtdefs.time_week_start]);
-	fprintf (fp, "TIME_LANGUAGE		= %s\n", gmtdefs.time_language);
+	(gmtdefs.unix_time) ? fprintf (fp, "UNIX_TIME		= TRUE\n") : fprintf (fp, "UNIX_TIME		= FALSE\n");
+	fprintf (fp, "UNIX_TIME_POS		= %lg%c/%lg%c\n", gmtdefs.unix_time_pos[0] * s, u, gmtdefs.unix_time_pos[1] * s, u);
+	fprintf (fp, "#-------- Color System Parameters -----------\n", GMT_VERSION);
+	fprintf (fp, "COLOR_BACKGROUND	= %d/%d/%d\n", gmtdefs.background_rgb[0], gmtdefs.background_rgb[1], gmtdefs.background_rgb[2]);
+	fprintf (fp, "COLOR_FOREGROUND	= %d/%d/%d\n", gmtdefs.foreground_rgb[0], gmtdefs.foreground_rgb[1], gmtdefs.foreground_rgb[2]);
+	fprintf (fp, "COLOR_NAN		= %d/%d/%d\n", gmtdefs.nan_rgb[0], gmtdefs.nan_rgb[1], gmtdefs.nan_rgb[2]);
+	fprintf (fp, "COLOR_IMAGE		= ");
+	if (gmtdefs.color_image == 0)
+		fprintf (fp, "adobe\n");
+	else if (gmtdefs.color_image == 1)
+		fprintf (fp, "tiles\n");
+	(gmtdefs.color_model == GMT_HSV) ? fprintf (fp, "COLOR_MODEL		= hsv\n") : fprintf (fp, "COLOR_MODEL		= rgb\n");
+	fprintf (fp, "HSV_MIN_SATURATION	= %lg\n", gmtdefs.hsv_min_saturation);
+	fprintf (fp, "HSV_MAX_SATURATION	= %lg\n", gmtdefs.hsv_max_saturation);
+	fprintf (fp, "HSV_MIN_VALUE		= %lg\n", gmtdefs.hsv_min_value);
+	fprintf (fp, "HSV_MAX_VALUE		= %lg\n", gmtdefs.hsv_max_value);
+	fprintf (fp, "#-------- PostScript Parameters -------------\n", GMT_VERSION);
 	fprintf (fp, "CHAR_ENCODING		= %s\n", GMT_char_encoding[gmtdefs.char_encoding]);
-	fprintf (fp, "Y2K_OFFSET_YEAR		= %d\n", gmtdefs.Y2K_offset_year);
+	fprintf (fp, "DOTS_PR_INCH		= %d\n", gmtdefs.dpi);
+	fprintf (fp, "N_COPIES		= %d\n", gmtdefs.n_copies);
+	(gmtdefs.ps_heximage) ? fprintf (fp, "PSIMAGE_FORMAT		= hex\n") : fprintf (fp, "PSIMAGE_FORMAT		= bin\n");
+	fprintf (fp, "GLOBAL_X_SCALE		= %lg\n", gmtdefs.global_x_scale);
+	fprintf (fp, "GLOBAL_Y_SCALE		= %lg\n", gmtdefs.global_y_scale);
+	fprintf (fp, "#-------- I/O Format Parameters -------------\n", GMT_VERSION);
+	fprintf (fp, "D_FORMAT		= %s\n", gmtdefs.d_format);
 	if (!strcmp (gmtdefs.field_delimeter, "\t"))
 		fprintf (fp, "FIELD_DELIMETER		= tab\n");
 	else if (!strcmp (gmtdefs.field_delimeter, " "))
@@ -1726,16 +1703,39 @@ int GMT_savedefaults (char *file)
 		fprintf (fp, "FIELD_DELIMETER		= none\n");
 	else
 		fprintf (fp, "FIELD_DELIMETER		= %s\n", gmtdefs.field_delimeter);
-	if (gmtdefs.degree_symbol == 0)
-		fprintf (fp, "DEGREE_SYMBOL		= ring\n");
-	else if (gmtdefs.degree_symbol == 1)
-		fprintf (fp, "DEGREE_SYMBOL		= degree\n");
-	else if (gmtdefs.degree_symbol == 2)
-		fprintf (fp, "DEGREE_SYMBOL		= colon\n");
-	else
-		fprintf (fp, "DEGREE_SYMBOL		= none\n");
-	fprintf (fp, "ANOT_FONT2		= %s\n", GMT_font_name[gmtdefs.anot_font2]);
-	fprintf (fp, "ANOT_FONT2_SIZE		= %dp\n", gmtdefs.anot_font2_size);
+	(gmtdefs.gridfile_shorthand) ? fprintf (fp, "GRIDFILE_SHORTHAND	= TRUE\n") : fprintf (fp, "GRIDFILE_SHORTHAND	= FALSE\n");
+	fprintf (fp, "INPUT_CLOCK_FORMAT	= %s\n", gmtdefs.input_clock_format);
+	fprintf (fp, "INPUT_DATE_FORMAT	= %s\n", gmtdefs.input_date_format);
+	(gmtdefs.io_header) ? fprintf (fp, "IO_HEADER		= TRUE\n") : fprintf (fp, "IO_HEADER		= FALSE\n");
+	fprintf (fp, "N_HEADER_RECS		= %d\n", gmtdefs.n_header_recs);
+	fprintf (fp, "OUTPUT_CLOCK_FORMAT	= %s\n", gmtdefs.output_clock_format);
+	fprintf (fp, "OUTPUT_DATE_FORMAT	= %s\n", gmtdefs.output_date_format);
+	fprintf (fp, "OUTPUT_DEGREE_FORMAT	= %s\n", gmtdefs.output_degree_format);
+	(gmtdefs.xy_toggle) ? fprintf (fp, "XY_TOGGLE	= TRUE\n") : fprintf (fp, "XY_TOGGLE		= FALSE\n");
+	fprintf (fp, "#-------- Projection Parameters -------------\n", GMT_VERSION);
+	fprintf (fp, "ELLIPSOID		= %s\n", gmtdefs.ellipse[gmtdefs.ellipsoid].name);
+	fprintf (fp, "MAP_SCALE_FACTOR	= %lg\n", gmtdefs.map_scale_factor);
+	fprintf (fp, "MEASURE_UNIT		= %s\n", GMT_unit_names[gmtdefs.measure_unit]);
+	fprintf (fp, "#-------- Calendar/Time Parameters ----------\n", GMT_VERSION);
+	fprintf (fp, "TIME_EPOCH		= %s\n", gmtdefs.time_epoch);
+	(gmtdefs.time_is_interval) ? fprintf (fp, "TIME_IS_INTERVAL	= TRUE\n") : fprintf (fp, "TIME_IS_INTERVAL	= FALSE\n");
+	fprintf (fp, "TIME_LANGUAGE		= %s\n", gmtdefs.time_language);
+	fprintf (fp, "TIME_SYSTEM		= %s\n", GMT_time_system[gmtdefs.time_system].name);
+	fprintf (fp, "TIME_UNIT		= %c\n", gmtdefs.time_unit);
+	fprintf (fp, "TIME_WEEK_START		= %s\n", GMT_weekdays[gmtdefs.time_week_start]);
+	(gmtdefs.want_leap_seconds) ? fprintf (fp, "WANT_LEAP_SECONDS	= TRUE\n") : fprintf (fp, "WANT_LEAP_SECONDS	= FALSE\n");
+	fprintf (fp, "Y2K_OFFSET_YEAR		= %d\n", gmtdefs.Y2K_offset_year);
+	fprintf (fp, "#-------- Miscellaneous Parameters ----------\n", GMT_VERSION);
+	fprintf (fp, "INTERPOLANT		= ");
+	if (gmtdefs.interpolant == 0)
+		fprintf (fp, "linear\n");
+	else if (gmtdefs.interpolant == 1)
+		fprintf (fp, "akima\n");
+	else if (gmtdefs.interpolant == 2)
+		fprintf (fp, "cubic\n");
+	fprintf (fp, "LINE_STEP		= %lg%c\n", gmtdefs.line_step * s, u);
+	fprintf (fp, "VECTOR_SHAPE		= %lg\n", gmtdefs.vector_shape);
+	(gmtdefs.verbose) ? fprintf (fp, "VERBOSE			= TRUE\n") : fprintf (fp, "VERBOSE			= FALSE\n");
 
 	if (fp != GMT_stdout) fclose (fp);
 	
@@ -2752,14 +2752,14 @@ void GMT_set_titem (struct TIME_AXIS *A, double val, char flag, char unit, char 
 	}
 	
 	for (i = 0; i < n; i++) {
-		if (I[i]->active) {
+		if (I[i]->active == 1) {
 			fprintf (stderr, "%s: Warning: Axis sub-item %c set more than once (typo?)\n", GMT_program, item_flag[i]);
 		}
 		I[i]->interval = val;
 		I[i]->unit = unit;
 		I[i]->type = (flag == 'I' || flag == 'i') ? 'I' : 'A';
 		I[i]->flavor = 0;
-		I[i]->active = TRUE;
+		I[i]->active = n;
 		I[i]->upper_case = FALSE;
 		switch (mod) {	/* This parameter controls which version of month/day textstrings we use for plotting */
 			case 'F':	/* Full name, upper case */

@@ -251,8 +251,9 @@ Sphere		1980 The mean radius in GRS-80 (for spherical/plate tectonics applicatio
 .sp
 Note that for some global projections, \fBGMT\fP may default to GRS-80 Sphere regardless
 of ellipsoid actually chosen.  A warning will be given when this happens.  If a different
-ellipsoid name than those mentioned here is given, \fBGMT\fP will attempt to open this
-name as a file and read the ellipsoid name, year, major-axis (in m), minor-axis (in m), and flattening from
+ellipsoid name than those mentioned here is given, \fBGMT\fP will attempt to open
+a file with that name in the current directory, and read a signel record that contains
+the ellipsoid name, year, major-axis (in m), minor-axis (in m), and flattening (f) from
 the first record, where the fields must be separated by white-space (not commas).  This way a
 custom ellipsoid (e.g., those used for other planets) may be used.
 .TP
@@ -306,7 +307,8 @@ Maximum value (0\-1) assigned for most positive intensity value [1.0].
 .B INPUT_CLOCK_FORMAT
 Formatting template that indicates how an input clock string is formatted.  This template
 is then used to guide the reading of clock strings in data fields.  To properly decode
-12-hour clocks, append am or pm (or upper case) to match your data records. [hh:mm:ss].
+12-hour clocks, append am or pm (or upper case) to match your data records. As examples,
+try hh:mm, hh:mm:ssAM, etc. [hh:mm:ss].
 .TP
 .B INPUT_DATE_FORMAT
 Formatting template that indicates how an input date string is formatted.  This template
@@ -314,9 +316,10 @@ is then used to guide the reading of date strings in data fields.  You may speci
 Gregorian calendar format or ISO week calendar format.  Gregorian calendar: Use any
 combination of yyyy (or yy for 2-digit years; if so see \fBY2K_OFFSET_YEAR\fP), mm,
 and dd, with or without delimeters.  For day-of-year data, use jjj instead of mm and/or dd.
+Examples can be ddmmyyyy, yy-mm-dd, yyyy/dd/mm, yyyy-jjj, etc.
 ISO Calendar:  Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
 day.  Either template must be consistant, e.g., you cannot specify months if you don't specify
-years.  [yyyy-mm-dd].
+years.  Examples are yyyyWwwd, yyyy-Www, etc. [yyyy-mm-dd].
 .TP
 .B INTERPOLANT
 Determines if linear (linear), Akima's spline (akima), or natural cubic spline (cubic) should
@@ -370,7 +373,8 @@ format for the smallest unit (e.g. seconds), append .xxx, where the number of x 
 the desired precision.  If no floating point is indicated then the smallest specified unit
 will be rounded off to nearest integer.  For 12-hour clocks, append am, AM, a.m., or A.M. (\fBGMT\fP
 will replace a|A with p|P for pm).  If your template starts with a leading hyphen (-) then each integer item (y,m,d) will be
-printed without leading zeros (default uses fixed width formats) [hh:mm:ss].
+printed without leading zeros (default uses fixed width formats).  As examples, try
+hh:mm, hh.mm.ss, hh:mm:ss.xxxx, hha.m., etc. [hh:mm:ss].
 .TP
 .B OUTPUT_DATE_FORMAT
 Formatting template that indicates how an output date string is to be formatted.  This template
@@ -378,9 +382,10 @@ is then used to guide the writing of date strings in data fields.  You may speci
 Gregorian calendar format or ISO week calendar format.  Gregorian calendar: Use any
 combination of yyyy (or yy for 2-digit years; if so see \fBY2K_OFFSET_YEAR\fP), mm,
 and dd, with or without delimeters.  For day-of-year data, use jjj instead of mm and/or dd.
+As examples, try yy/mm/dd, yyyy=jjj, dd-mm-yy, yy-mm, etc.
 ISO Calendar:  Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
 day.  Either template must be consistant, e.g., you cannot specify months if you don't specify
-years.  If your template starts with a leading hyphen (-) then each integer item (y,m,d) will be
+years.  As examples, try yyyyWww, yy-W-ww-d, etc. If your template starts with a leading hyphen (-) then each integer item (y,m,d) will be
 printed without leading zeros (default uses fixed width formats) [yyyy-mm-dd].
 .TP
 .B OUTPUT_DEGREE_FORMAT
@@ -557,7 +562,7 @@ or specify OTHER and supply your own \fBTIME_EPOCH\fP and \fBTIME_UNIT\fP settin
 This parameter is active only when \fBTIME_SYSTEM\fP is set to OTHER, and specifies the
 units of relative time data.  Choose y (year), d (day), h (hour), m (minute), or c (second).
 .TP
-.B .TIME_WEEK_START
+.B TIME_WEEK_START
 When weeks are indicated on time axes, this parameter determines the first day of the week
 for Gregorian calendars.  (The ISO weekly calendar always begins weeks with Monday.)
 [Monday (or Sunday)]
