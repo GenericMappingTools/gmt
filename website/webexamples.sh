@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.10 2004-09-24 21:44:53 pwessel Exp $
+#	 $Id: webexamples.sh,v 1.11 2004-09-24 21:59:51 pwessel Exp $
 #
 #	webexamples.sh - Automatic generation of the GMT examples pages
 #
@@ -144,6 +144,9 @@ i=1
 
 #	Go over all examples and generate HTML, GIF etc
 
+if [ $gush ]; then
+	echo "webexamples.sh: Preparing the example web pages and images"
+fi
 while [ $i -le $n_examples ]; do
 
 	number=`echo $i | awk '{printf "%2.2d\n", $1}'`
