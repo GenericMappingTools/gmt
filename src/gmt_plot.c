@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.31 2001-09-15 20:05:16 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.32 2001-09-15 22:57:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3784,26 +3784,20 @@ int GMT_flip_justify (int justify)
 	return (j);
 }
 		
-struct CUSTOM_SYMBOL * GMT_get_custom_symbol (char *name, char *old_names[], struct CUSTOM_SYMBOL *old_symbols[], int *n_symbols) {
+struct CUSTOM_SYMBOL * GMT_get_custom_symbol (char *name) {
 	int i;
 	BOOLEAN found = FALSE;
-	struct CUSTOM_SYMBOL *new;
 	
 	/* First see if we already have loaded this symbol */
 	
-	for (i = 0; !found && i < (*n_symbols); i++) found = !strcmp (name, old_names[i]);
+	for (i = 0; !found && i < GMT_n_custom_symbols; i++) found = !strcmp (name, GMT_custom_symbol[i]->name);
 	
 	if (!found) {	/* Must load new symbol */
-		new = GMT_init_custom_symbol (name);
-		i = (*n_symbols)++;
-		old_names = (char **) GMT_memory ((void *)old_names, (size_t)(*n_symbols), sizeof (char *), GMT_program);
-		old_names[i] = (char *) GMT_memory (VNULL, (size_t)(strlen (name) + 1), sizeof (char), GMT_program);
-		strcpy (old_names[i], name);
-		old_symbols = (struct CUSTOM_SYMBOL **) GMT_memory ((void *)old_symbols, (size_t)(*n_symbols), sizeof (struct CUSTOM_SYMBOL *), GMT_program);
-		old_symbols[i] = new;
+		GMT_custom_symbol = (struct CUSTOM_SYMBOL **) GMT_memory ((void *)GMT_custom_symbol, (size_t)GMT_n_custom_symbols, sizeof (struct CUSTOM_SYMBOL *), GMT_program);
+		GMT_custom_symbol[GMT_n_custom_symbols] = GMT_init_custom_symbol (name);
 	}
 	
-	return (old_symbols[i]);
+	return (GMT_custom_symbol[GMT_n_custom_symbols++]);
 }
 
 struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
