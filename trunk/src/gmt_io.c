@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.68 2004-10-21 04:51:35 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.69 2004-11-02 23:45:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -252,9 +252,9 @@ int GMT_io_selection (char *text)
 
 	if (GMT_io.binary[1]) {
 		if (GMT_io.swab[1])
-			GMT_output = (GMT_io.single_precision[1]) ? GMT_bin_float_output : GMT_bin_double_output;
-		else
 			GMT_output = (GMT_io.single_precision[1]) ? GMT_bin_float_output_swab : GMT_bin_double_output_swab;
+		else
+			GMT_output = (GMT_io.single_precision[1]) ? GMT_bin_float_output : GMT_bin_double_output;
 		strcpy (GMT_io.w_mode, "wb");
 		strcpy (GMT_io.a_mode, "ab+");
 	}
