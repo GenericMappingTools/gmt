@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.20 2001-09-20 02:12:20 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.21 2001-09-23 03:41:55 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -25,7 +25,7 @@
 	Proleptic means we assume that modern calendar
 	can be extrapolated forward and backward; a
 	year zero is used, and Gregory's reforms after
-	Oct 1572 (?) are extrapolated backward.  Note
+	Oct 1582 are extrapolated backward.  Note
 	that this is not historical.
 	
 	W H F Smith, April 2000

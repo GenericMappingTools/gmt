@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.5 2001-09-21 23:18:47 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.6 2001-09-23 03:41:55 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -260,11 +260,12 @@ if you want to create a log file of what you are doing.
 \index{Input!format}
 \label{sec:io}
 
-Most of the time, \GMT\ will know what kind of data it is reading,
-but there may be times when you must explicitly specify what you are
-providing as input. When binary data is selected (\Opt{b}) they must all
-be floating point numbers, however for ascii text input there are numerous
-ways to encode data.  In particular, there are three kinds of input data formats that \GMT\ can recognize:
+Most of the time, \GMT\ will know what kind of $x$ and $y$ coordinates it is reading because you have selected
+a particular coordinate transformation or map projection.  However,
+there may be times when you must explicitly specify what you are
+providing as input using the \Opt{f} switch (see below). When binary data are expected (\Opt{b}) they must all
+be floating point numbers, however for ascii input there are numerous
+ways to encode data coordinates.  In particular, there are three kinds of input data formats that \GMT\ can recognize:
 
 \begin{description}
 \item [Geographic coordinates:]  These are longitudes and latitudes
@@ -278,16 +279,29 @@ of formats.  Because of the widespread use of incompatible and ambiguous formats
 date components is guided by the template {\bf INPUT\_DATE\_FORMAT} in your
 \filename{.gmtdefaults} file.  The \GMT\ preferred date formats are {\it yyyy-mm-dd} (year, month, day-of-month)
 or {\it yyyy-jjj} (year and day-of-year) for Gregorian calendars and {\it yyyy-}{\bf W}{\it ww-d} (year, week, and
-day-of-week) for the ISO calendar.  A complete discription of possible formats is given in the \GMTprog{gmtdefaults}
+day-of-week) for the ISO calendar.  Y2K-challenged input data such as 29/05/89T08.30pm can be processed by setting {\bf INPUT\_DATE\_FORMAT}
+to dd/mm/yyThh.mmam.  A complete discription of possible formats is given in the \GMTprog{gmtdefaults}
 man page.  The {\it clock} string is more standardized but issues like 12- or 24-hour clocks complicate matters
 as well as the presence or absence of delimeters between fields.  Thus, the processing of input
 clock coordinates is guided by the template {\bf INPUT\_CLOCK\_FORMAT}.  The \GMT\ preferred clock format is {\it hh:mm:ss.xxx}.
 Note that not all of the specified enteties (e.g., the seconds or the decimals following the seconds) need be present
-in the data.
+in the data.  All calendar-clock strings are internally represented as double precision seconds since
+proleptic Gregorian date Mon Jan 1 00:00:00 0001.  Proleptic means we assume that modern calendar
+can be extrapolated forward and backward; a year zero is used, and Gregory's reforms\footnote{The Gregorian Calendar
+is a revision of the Julian Calendar which was instituted in a papal bull by Pope Gregory XIII in 1582. The reason for the calendar
+change was to correct for drift in the dates of signifigant religious observations (primarily Easter) and to prevent further drift
+in the dates. The important effects of the change were (a) Drop 10 days from October 1582 to realign the Vernal Equinox with 21 March,
+(b) change leap year selection so that not all years ending in "00" are leap years, and (c) change the beginning of the year to
+1 January from 25 March.  Adoption of the new calendar was essentially immediate within Catholic countries. In the Protestant countries,
+where papal authority was neither recognized not appreciated, adoption came more slowly. 
+England finally adopted the new calendar in 1752, with eleven days removed from September. The additional day came because the old and
+new calendars disagreed on whether 1700 was a leap year, so the Julian calendar had to be adjusted by one more day.} are extrapolated
+backward.  Note that this is not historical.
 \item [Other coordinates:]  These are simply anything that is not geographic or calendar time related and are
 expected to be simple floating point values requiring no special processing.  One exception is the concept
-of relative time which is read as a floating point quantity in units determined by {\bf TIME\_UNIT}, and internally
-is added to an absolute time reference specified by {\bf TIME\_EPOCH}.
+of relative time which is read as a floating point offset from an absolute time reference point (epoch).  The unit and the
+epoch are specified with the {\bf TIME\_SYSTEM} parameter.  Relative time coordinates are expected when a coordinate transformation
+involving relative time has been selected or when the \Opt{f} switch has been used to indicate relative time coordinates.
 \end{description}
 
 The supported data formats may be used in file input as well as in command line arguments.  However, note that for
@@ -295,26 +309,29 @@ calendar time coordinates on the command line, you \emph{must} use the preferred
 formats with delimeters like slashes (/) would make the processing of the arguments ambiguous.  
 
 \GMT\ programs that require a map projection argument will implicitly know what kind of data to expect, and the
-path for input processing is set accordingly.  However, some programs that simply report on minimum and maximum
-values or just do a reformatting of the data will in general not know what to expect.  In such instances we must
+input processing is done accordingly.  However, some programs that simply report on minimum and maximum
+values or just do a reformatting of the data will in general not know what to expect, and furthermore there is
+no way for the programs to know what kind of data other columns (beyond the leading $x$ and $y$ columns) contain.
+In such instances we must
 explicitly tell \GMT\ that we are feeding it data in the specific geographic or calendar formats (floating point
 data is assumed by default).  We specify the data type via the \Opt{f} option (which sets both input and output
 formats; use \Opt{fi} and \Opt{fo} to set input and output separately).  For instance, to specify that the
-the first two columns are longitude and latitude, and that the third column is absolute calendar time, we add
+the first two columns are longitude and latitude, and that the third column (e.g., $z$) is absolute calendar time, we add
 \Opt{fi}0x,1y,2T to the command line.  For more details, see the man page for the program you need to use.
 
 \section{Output Data Formats}
 \index{Output!format}
 
-The numerical output from \GMT\ programs can be binary (when \Opt{bo} is used) or ascii.
+The numerical output from \GMT\ programs can be binary (when \Opt{bo} is used) or ascii [Default].
 In the latter case the issue of formatting becomes important.  \GMT\ provides extensive
 machinery for allowing just about any imaginable format to be used on output.  Analogous to
 the processing of input data, several templates guide the formatting process.  These are
-{\bf OUTPUT\_DATE\_FORMAT} and {\bf OUTPUT\_CLOCK\_FORMAT} for calendar coordinates,
+{\bf OUTPUT\_DATE\_FORMAT} and {\bf OUTPUT\_CLOCK\_FORMAT} for calendar-time coordinates,
 {\bf OUTPUT\_DEGREE\_FORMAT} for geographical coordinates, and {\bf D\_FORMAT} for generic
 floating point data.  In addition, the user have control over how columns are separated via
-the {\bf FIELD\_SEPARATOR} parameter.  Thus, as an example, it is possible to create FORTRAN-style card formats
-by setting {\bf D\_FORMAT} to \%7.3lf and {\bf FIELD\_SEPARATOR} to none.
+the {\bf FIELD\_SEPARATOR} parameter.  Thus, as an example, it is possible to create limited
+FORTRAN-style card records by setting {\bf D\_FORMAT} to \%7.3lf and {\bf FIELD\_SEPARATOR} to
+none [Default is tab].
 
 \section{\PS\ Features}
 \index{PostScript@\PS!features}
