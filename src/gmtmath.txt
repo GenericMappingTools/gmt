@@ -43,13 +43,13 @@ The following symbols have special meaning:
 .TP
 .B \-A
 Requires \fB\-N\fP and will partially initialize a table with values from the given file containing
-\fIt\fP and \fIf(t)\fP only.  The \fIt\fP is placed in column \fIt_colfP while \fIf(t)\fP goes into
+\fIt\fP and \fIf(t)\fP only.  The \fIt\fP is placed in column \fIt_col\fP while \fIf(t)\fP goes into
 column \fIn_col\fP - 1 (see \fB\-N\fP).
 .TP
 .B \-C
 Select the columns that will be operated on until next occurrence of \fB\-C\fP.
-List columns separated by commas; ranges like 1,3-5,7 are allowed.  [\fB\-C\fP
-(no arguments) resets the default action of using all columns except time column (see \fB\-N\fP]. 
+List columns separated by commas; ranges like 1,3-5,7 are allowed.  \fB\-C\fP
+(no arguments) resets the default action of using all columns except time column (see \fB\-N\fP). 
 \fB\-Ca\fP selects all columns, including time column, while \fB\-Cr\fP reverses (toggles) the current
 choices.
 #include "explain_-H.txt"
