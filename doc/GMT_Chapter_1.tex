@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.21 2004-09-15 00:40:14 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.22 2004-09-17 16:58:41 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -76,7 +76,8 @@ of contour labels.
 in table form (options \Opt{H}, \Opt{b}, \Opt{f}, and \Opt{:} added for file support).
 \item \GMTprog{grdfilter}:	New geospatial filters \Opt{Fl$|$L$|$u$|$U} that return extreme (min, max) values. 
 \item \GMTprog{grdimage}:	New option for colormasking (\Opt{Q}; \PS\ Level 3 only), \PS\ image 
-interpolation (\Opt{E}{\it -dpi}), and false RGB color image (when given three grids).
+interpolation (\Opt{E}{\it -dpi}), and false RGB color image (when given three grids), as well as a modifier to \Opt{T}
+to draw tile outlines.
 \item \GMTprog{grdinfo}:	New option to create argument for \GMTprog{makecpt} (\Opt{T}) and to round-off
 region boundary coordinates (\Opt{I}). 
 \item \GMTprog{grdmath}:	Added new operators for critical values ({\bf CHICRIT, FCRIT, TCRIT, ZCRIT}),
@@ -89,7 +90,8 @@ INRANGE}).  We may now create multiple output grids from a single command.
 \item \GMTprog{grdtrack}:	Options to retrieve nearest node value (\Opt{N}, no interpolation) and to push
 the bilinear interpolation closer to nodes that are NaN (\Opt{Q}).
 \item \GMTprog{grdview}:	Colormasking (\Opt{Qc}, PS Level 3 only), draping of images via red, green,
-and blue component grids (\Opt{G}).  Also,  drapegrids can have higher resolution than the relief grid.
+and blue component grids (\Opt{G}).  Also,  drapegrids can have higher resolution than the relief grid, and we
+added a modifier to \Opt{T} to draw tile outlines.
 \item \GMTprog{makecpt}:	New options \Opt{Q} for logarithmic scales and \Opt{N} to suppress output
 of B, F, N colors.
 \item \GMTprog{mapproject}:	New options for datum conversions (\Opt{T}, \Opt{E}, and \Opt{Q}), azimuth and
