@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.68 2004-06-02 22:52:32 pwessel Exp $
+ *	$Id: pslib.c,v 1.69 2004-06-03 03:45:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2210,13 +2210,7 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 		ps_set_integer ("PSL_just", justify);
 		ps_set_length ("PSL_gap_x", offset[0]);
 		ps_set_length ("PSL_gap_y", offset[1]);
-		fprintf (ps.fp, "/PSL_setpenrgb { ");
-		k = ps_place_color (p_rgb);
-		fprintf (ps.fp, "%c } def\n", ps_paint_code[k]);
-		fprintf (ps.fp, "/PSL_settxtrgb { ");
-		k = ps_place_color (t_rgb);
-		fprintf (ps.fp, "%c } def\n", ps_paint_code[k]);
- 		if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
+		if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
  			if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
 			ps_textdim ("PSL_dimx", "PSL_height", fabs (pointsize), ps.font_no, label[0], 0);		/* Set the string dimensions in PS */
  			if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
@@ -2226,7 +2220,13 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 	
 	/* Set these each time */
 	
-	ps_set_integer ("PSL_n", n);
+	fprintf (ps.fp, "/PSL_setpenrgb { ");
+	k = ps_place_color (p_rgb);
+	fprintf (ps.fp, "%c } def\n", ps_paint_code[k]);
+	fprintf (ps.fp, "/PSL_settxtrgb { ");
+	k = ps_place_color (t_rgb);
+	fprintf (ps.fp, "%c } def\n", ps_paint_code[k]);
+ 	ps_set_integer ("PSL_n", n);
 	ps_set_integer ("PSL_m", m);
 	ps_set_length_array ("PSL_x", x, n);
 	ps_set_length_array ("PSL_y", y, n);

@@ -48,6 +48,7 @@ No space between the option flag and the associated arguments.
 [Default is no annotations].   Give \fB-\fP to disable all annotations implied by \fB\-C\fP.
 The optional \fIlabelinfo\fP controls the specifics of the label formatting and consists of a concatenated string
 made up of any of the following control arguments:
+.br
 #include "explain_labelinfo.txt"
 If no name is specified, the unit given in the \fIgrdfile\fP will be used.  
 #include "explain_-B_short.txt"
@@ -63,6 +64,10 @@ is used in conjunction with \fB\-D\fP a single multisegment file is created inst
 .TP
 .B \-E
 Sets the viewpoint's azimuth and elevation for perspective view [180/90].\"'
+#define GRID
+#define CONTOUR
+.TP
+.B \-G
 #include "explain_contlabel.txt"
 #include "explain_-K.txt"
 .TP

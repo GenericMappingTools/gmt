@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.135 2004-06-02 22:52:32 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.136 2004-06-03 03:45:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -485,25 +485,67 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t(See gmtdefaults man page for hidden GMT default parameters)\n");
 			break;
 
-		case 'A':	/* Contour/line specifications in *contour and psxy[z] */
-		
-			fprintf (stderr, "\t   Append +a<angle> for annotations at a fixed angle, +an for line-normal, or +ap for line-parallel [Default]\n");
-			fprintf (stderr, "\t   Append +c<dx>[/<dy>] to change the clearance between label and text box [0.0254i or 0.1c]\n");
-			fprintf (stderr, "\t   Append +f followed by desired label font [Default is %d].\n", gmtdefs.annot_font[0]);
-			fprintf (stderr, "\t   Append +g<color> to set color of opaque text box [Default is white]\n");
-			fprintf (stderr, "\t   Append +j<just> to set label justification [Default is CM]\n");
-			fprintf (stderr, "\t   Append +o|O to draw opaque rectangular or rounded rectangular text box [Default is transparent]\n");
-			fprintf (stderr, "\t   Append +p<pen> to change pen for text box [Default is no outline]\n");
-			fprintf (stderr, "\t   Append +s followed by desired font size in points [Default is 9].\n");
-			fprintf (stderr, "\t   Append +t for transparent text box [Default]\n");
-			fprintf (stderr, "\t   Append +T for transparent text box and texted curved along path\n");
-			fprintf (stderr, "\t   Append +^<prefix> to labels; Start prefix with hyphen (-) for no space between annotation and prefix.\n");
-			fprintf (stderr, "\t   Append +u<unit> to labels; Start unit with hyphen (-) for no space between annotation and unit.\n");
-			break;
-
 		default:
 			break;
 	}
+}
+
+void GMT_label_syntax (int indent, int kind)
+{
+	/* Contour/line specifications in *contour and psxy[z]
+	 * indent is the number of spaces to indent after the TAB.
+	 * kind = 0 for *contour and 1 for psxy[z]
+	 */
+	 
+	int i;
+	char pad[16];
+	
+	pad[0] = '\t';	for (i = 1; i <= indent; i++) pad[i] = ' ';	pad[i] = '\0';
+	fprintf (stderr, "%s +a<angle> for annotations at a fixed angle, +an for line-normal, or +ap for line-parallel [Default]\n", pad);
+	fprintf (stderr, "%s +c<dx>[/<dy>] to change the clearance between label and text box [0.0254i or 0.1c]\n", pad);
+	fprintf (stderr, "%s +f followed by desired label font [Default is %d].\n", pad, gmtdefs.annot_font[0]);
+	fprintf (stderr, "%s +g<color> to set color of opaque text box [Default is white]\n", pad);
+	fprintf (stderr, "%s +j<just> to set label justification [Default is CM]\n", pad);
+	fprintf (stderr, "%s +k<color> to set color of label text [Default is black]\n", pad);
+	fprintf (stderr, "%s +o|O to draw opaque rectangular or rounded rectangular text box [Default is transparent]\n", pad);
+	fprintf (stderr, "%s +p[<pen>] to change pen for text box and draw outline [Default is no outline]\n", pad);
+	fprintf (stderr, "%s +s followed by desired font size in points [Default is 9].\n", pad);
+	fprintf (stderr, "%s +t for transparent rectangular text box and straight labels[Default]\n", pad);
+	fprintf (stderr, "%s +T for transparent text box and text curved along path\n", pad);
+	fprintf (stderr, "%s +u<unit> to give units to labels; Start with hyphen (-) for no space between annotation and unit.\n", pad);
+	if (kind == 0) fprintf (stderr, "%s  If no unit appended, use z-unit from grdfile. [Default is no unit]\n", pad);
+	fprintf (stderr, "%s +^<prefix> to give labels a prefix; Start with hyphen (-) for no space between annotation and prefix.\n", pad);
+}
+
+void GMT_cont_syntax (int indent, int kind)
+{
+	/* Contour/line label placement specifications in *contour and psxy[z]
+	 * indent is the number of spaces to indent after the TAB.
+	 * kind = 0 for *contour and 1 for psxy[z]
+	 */
+	int i;
+	double gap;
+	char pad[16];
+	char *type[2] = {"contour", "quoted line"};
+	
+	gap = 4.0 * GMT_u2u[GMT_INCH][gmtdefs.measure_unit];
+	
+	pad[0] = '\t';	for (i = 1; i <= indent; i++) pad[i] = ' ';	pad[i] = '\0';
+	fprintf (stderr, "%sd<dist>[c|i|m|p][/<width>] or D<dist>[e|k|m|n|d][/<width>].\n", pad);
+	fprintf (stderr, "%s   d: Give distance between labels in %s and number of (x,y) values used\n", pad, GMT_unit_names[gmtdefs.measure_unit]);
+	fprintf (stderr, "%s   used to smooth the label angle [Default algorithm is d%g%c/10].\n", pad, gap, GMT_unit_names[gmtdefs.measure_unit][0]);
+	fprintf (stderr, "%s   D: Specify distance between labels in m(e)ter [Default], (k)m, (m)ile, (n)autical mile, or (d)egree.\n", pad);
+	fprintf (stderr, "%sl|L<line1>[,<line2>,...] Give start and stop coordinates for straight line segments.\n", pad);
+	fprintf (stderr, "%s   Labels will be placed where these lines intersect %ss.  The format of each <line> is\n", pad, type[kind]);
+	fprintf (stderr, "%s   <start>/<stop>, where <start> or <stop> = <lon/lat> or a 2-character XY key that uses the\n", pad);
+	fprintf (stderr, "%s   \"pstext\"-style justification format to specify a point on the map as [LCR][BMT].\n", pad);
+	if (kind == 0) fprintf (stderr, "%s   In addition, you can use Z-, Z+ to mean the global min, max locations in the grid.\n", pad);
+	fprintf (stderr, "%s   L: Let point pairs define great circles [Default is a straight line].\n", pad);
+	fprintf (stderr, "%sn|N<n_label> specifies the number of equidistant labels per %s.\n", pad, type[kind]);
+	fprintf (stderr, "%s   N: Starts labeling exactly at the start of %s [Default centers the labels].\n", pad, type[kind]);
+	fprintf (stderr, "%s   N-1 places one label at start, while N+1 places one label at the end of the %s.\n", pad, type[kind]);
+	fprintf (stderr, "%sx|X<xfile.d> reads the multi-segment file <xfile.d> and places labels at the intersections\n", pad);
+	fprintf (stderr, "%s   between the %ss and the lines in <xfile.d>.  X: Resample the lines first.\n", pad, type[kind]);
 }
 
 void GMT_fill_syntax (char option)
