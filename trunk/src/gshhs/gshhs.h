@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.2 2001-02-03 00:38:13 pwessel Exp $
+/*	$Id: gshhs.h,v 1.3 2001-12-21 03:50:38 ben Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -39,7 +39,7 @@
 #define swabi2(i2) (((i2) >> 8) + (((i2) & 255) << 8))
 #define swabi4(i4) (((i4) >> 24) + (((i4) >> 8) & 65280) + (((i4) & 65280) << 8) + (((i4) & 255) << 24))
 
-struct GSHHS {	/* Global Self-consistant Hierarchical High-resolution Shorelines */
+struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines */
 	int id;				/* Unique polygon id number, starting at 0 */
 	int n;				/* Number of points in this polygon */
 	int level;			/* 1 land, 2 lake, 3 island_in_lake, 4 pond_in_island_in_lake */

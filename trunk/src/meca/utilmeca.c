@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.3 2001-04-02 15:51:23 pwessel Exp $	*/
+/*	$Id: utilmeca.c,v 1.4 2001-12-21 03:50:38 ben Exp $	*/
 #include <gmt.h>
 #include "meca.h"
 #include "nrutil.h"
@@ -467,7 +467,7 @@ double datan2(double y,double x)
     if(fabs(x) < EPSIL) {
         if(fabs(y) < EPSIL) {
 /*
-            fprintf(stderr, "indetermined form 0. / 0.");
+            fprintf(stderr, "undetermined form 0. / 0.");
             exit();
 */
             arctg = 0.;
@@ -508,7 +508,7 @@ double computed_strike1(struct nodal_plane NP1)
     if(cd1 < EPSIL && fabs(cr) < EPSIL) {
 /*
         fprintf(stderr, "\nThe second plane is horizontal;");
-        fprintf(stderr, "\nStrike is indetermined.");
+        fprintf(stderr, "\nStrike is undetermined.");
         fprintf(stderr, "\nstr2 = NP1.str + 180. is taken to define");
         fprintf(stderr, "\nrake in the second plane.");
 */
@@ -591,7 +591,7 @@ double computed_dip2(double str1,double dip1,double str2)
    the second plane.
    Angles are in degrees.
    Warning : if dip1 == 90 and cos(str1 - str2) == 0
-             the second plane dip is indetermined
+             the second plane dip is undetermined
              and the only first plane will be plotted.
 */
  

@@ -1,4 +1,4 @@
-/*	$Id: x_solve_dc_drift.c,v 1.2 2001-04-04 00:59:32 pwessel Exp $
+/*	$Id: x_solve_dc_drift.c,v 1.3 2001-12-21 03:50:38 ben Exp $
  *
  * x_solve_dc_drift reads the xx_* databases and computes the best
  * fitting drift and dc values using a least squares method.
@@ -140,7 +140,7 @@ main (int argc, char **argv)
 	if (!bin_on && !asc_on) error = TRUE;
 	
 	if (argc == 1 || error) {
-		fprintf(stderr, "x_solve_dc_drift - Find crossover correection terms\n\n");
+		fprintf(stderr, "x_solve_dc_drift - Find crossover correction terms\n\n");
 		fprintf(stderr, "usage: x_solve_dc_drift [-X<xbasefile>] [-L<xlegsfile>] [-I<ignore-file>\n");
 		fprintf(stderr, "	-G -M -T -S -C<n_iterations> -D<min_nx> -B<binfile> -A<asciifile>\n");
 		fprintf(stderr, "	-R<west>/<east>/<south>/<north>]\n\n");

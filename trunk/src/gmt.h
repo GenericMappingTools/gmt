@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.29 2001-10-15 22:39:41 pwessel Exp $
+ *	$Id: gmt.h,v 1.30 2001-12-21 03:50:38 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -59,7 +59,7 @@
 #include <math.h>
 #include <stddef.h>
 #ifdef __MACHTEN__
-/* Kludge to fix a Macthen POSIX bug */
+/* Kludge to fix a Machten POSIX bug */
 #include <sys/types.h>
 #endif
 #if defined(__ultrix__) && defined(__mips)
@@ -228,14 +228,14 @@ struct GMT_PEN {	/* Holds pen attributes */
 };
 
 struct GMTDEFAULTS {
-	double anot_min_angle;		/* If angle between map boundary and anotation is less, no anot is drawn [20] */
-	double anot_min_spacing;	/* If an anotation is closer that this to an older anotation, the anot is skipped [0.0] */
-	int anot_font;			/* Font for anotations [Helvetica] */
-	int anot_font_size;		/* Font size for anotations in points [14] */
-	int anot_font2;			/* Font for upper anotations on time axis  [Helvetica] */
-	int anot_font2_size;		/* Font size for upper anotations on time axis in points [16] */
-	double anot_offset;		/* Distance between anotation and tickmarks [0.075] */
-	double anot2_offset;		/* Distance between upper and lower anotations [0.075] */
+	double anot_min_angle;		/* If angle between map boundary and annotation is less, no anot is drawn [20] */
+	double anot_min_spacing;	/* If an annotation is closer that this to an older annotation, the anot is skipped [0.0] */
+	int anot_font;			/* Font for annotations [Helvetica] */
+	int anot_font_size;		/* Font size for annotations in points [14] */
+	int anot_font2;			/* Font for upper annotations on time axis  [Helvetica] */
+	int anot_font2_size;		/* Font size for upper annotations on time axis in points [16] */
+	double anot_offset;		/* Distance between annotation and tickmarks [0.075] */
+	double anot2_offset;		/* Distance between upper and lower annotations [0.075] */
 	char basemap_axes[5];		/* Which axes to draw and annotate ["WESN"]  */
 	int basemap_frame_rgb[3];	/* Frame color rgb [(0,0,0) = black] */
 	int basemap_type;		/* Fancy (0) or plain (1) [0] */
@@ -258,7 +258,7 @@ struct GMTDEFAULTS {
 	BOOLEAN gridfile_shorthand;	/* Use shorthand suffix notation for embedded formats [FALSE] */
 	int header_font;		/* Font for headers [Helvetica] */
 	int header_font_size;		/* Font size for headers in points [36] */
-	double header_offset;		/* Distance between lowermost anotation (or label) and base of plot title [0.1875] */
+	double header_offset;		/* Distance between lowermost annotation (or label) and base of plot title [0.1875] */
 	double hsv_min_saturation;	/* For smallest or most negative intensity [1.0] */
 	double hsv_max_saturation;	/* For largest or most positive intensity [0.1] */
 	double hsv_min_value;		/* For smallest or most negative intensity [0.3] */
@@ -268,7 +268,7 @@ struct GMTDEFAULTS {
 	int n_header_recs;		/* number of header records [0] */
 	int label_font;			/* Font for labels [Helvetica] */
 	int label_font_size;		/* Font size for labels in points [24] */
-	double label_offset;		/* Distance between lowermost anotation and top of label [0.1125] */
+	double label_offset;		/* Distance between lowermost annotation and top of label [0.1125] */
 	BOOLEAN last_page;		/* If TRUE, terminate plot system when done [TRUE] */
 	double line_step;		/* Maximum straight linesegment length for arcuate lines */
 	double map_scale_factor;	/* Central mapscale factor, typically 0.9996 */
@@ -276,10 +276,10 @@ struct GMTDEFAULTS {
 	int measure_unit;		/* Choose 0 (cm), 1 (inch), 2 (m) or 3 (point) [1] */
 	int media;			/* Default paper media [25(Letter)] */
 	int n_copies;			/* Number of copies pr plot [1] */
-	int n_lat_nodes;		/* No of points to use for drawing a latitudal line [50] */
-	int n_lon_nodes;		/* No of points to use for drawing a longitudal line [50] */
+	int n_lat_nodes;		/* No of points to use for drawing a latitudinal line [50] */
+	int n_lon_nodes;		/* No of points to use for drawing a longitudinal line [50] */
 	double dlon, dlat;		/* Corresponding increment in lon/lat */
-	int oblique_anotation;		/* Controls anotations and tick angles etc. [0] */
+	int oblique_anotation;		/* Controls annotations and tick angles etc. [0] */
 	BOOLEAN overlay;		/* Make plot in overlay mode [FALSE] */
 	int page_rgb[3];		/* Color of the page [255/255/255 white] */
 	int page_orientation;		/* Orientation of page [0 = Landscape, 1 = Portrait] */
@@ -508,7 +508,7 @@ EXTERN_MSC PFD GMT_scan_time_string;		/*	pointer to functions that converts time
 #endif
 #include "gmt_project.h"        /* Define project_info and frame_info structures */
 #include "gmt_grd.h"            /* Define grd file header structure */
-#include "gmt_io.h"		/* Defines structurs and macros for table i/o */
+#include "gmt_io.h"		/* Defines structures and macros for table i/o */
 #include "gmt_colors.h"         /* Defines color/shading global structure */
 #include "gmt_grdio.h"          /* Defines function pointers for grd i/o operations */
 #include "pslib.h"		/* Defines pslib function prototypes */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.17 2001-10-05 03:51:39 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.18 2001-12-21 03:50:37 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -96,7 +96,7 @@
  *	GMT_geo_to_xy_line :	Same for polygons
  *	GMT_geoz_to_xy :	Generic 3-D lon/lat/z to x/y
  *	GMT_grd_forward :	Forward map-transform grid matrix from lon/lat to x/y
- *	GMT_grd_inverse :	Inversly transform grid matrix from x/y to lon/lat
+ *	GMT_grd_inverse :	Inversely transform grid matrix from x/y to lon/lat
  *	GMT_grdproject_init :	Initialize parameters for grid transformations
  *	GMT_great_circle_dist :	Returns great circle distance in degrees
  *	GMT_map_outside :	Generic function determines if we're outside map boundary
@@ -158,7 +158,7 @@
  *	GMT_radial_outside :		Determine if point is outside radial region
  *	GMT_radial_overlap :		Determine overlap, always TRUE for his projection
  *	GMT_rect_clip :			Clip to rectangular region
- *	GMT_rect_crossing :		Find crossling between line and rect region
+ *	GMT_rect_crossing :		Find crossing between line and rect region
  *	GMT_rect_outside :		Determine if point is outside rect region
  *	GMT_rect_outside2 :		Determine if point is outside rect region (azimuthal proj only)
  *	GMT_rect_overlap :		Determine overlap between rect regions
@@ -316,9 +316,9 @@ void GMT_icyleqdist(double *lon, double *lat, double x, double y);	/*	Convert x/
 void GMT_miller(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Miller Cylindrical)	*/
 void GMT_imiller(double *lon, double *lat, double x, double y);		/*	Convert x/y (Miller Cylindrical) to lon/lat 	*/
 void GMT_obl (double lon, double lat, double *olon, double *olat);	/*	Convert lon/loat to oblique lon/lat		*/
-void GMT_iobl (double *lon, double *lat, double olon, double olat);	/*	COnvert onlique lon/lat to regular lon/lat	*/
+void GMT_iobl (double *lon, double *lat, double olon, double olat);	/*	Convert oblique lon/lat to regular lon/lat	*/
 
-int GMT_wesn_outside(double lon, double lat);		/*	Returns TRUE if a lon/lat point is outside map (rectangular wesn bounaries only)	*/
+int GMT_wesn_outside(double lon, double lat);		/*	Returns TRUE if a lon/lat point is outside map (rectangular wesn boundaries only)	*/
 int GMT_polar_outside(double lon, double lat);		/*	Returns TRUE if a x'/y' point is outside the polar boundaries	*/
 int GMT_rect_outside(double lon, double lat);		/*	Returns TRUE if a x'/y' point is outside the x'/y' boundaries	*/
 int GMT_rect_outside2(double lon, double lat);		/*	Returns TRUE if a x'/y' point is outside the x'/y' boundaries (azimuthal maps only)	*/
@@ -464,9 +464,9 @@ double GMT_robinson_spline (double xp, double *x, double *y, double *c);
  *	   by parameters[3] OR 1:xxxxx OR map-width.
  *
  * LAMBERT projection (Conic):
- *	parameters[0] is first standard parallell
- *	parameters[1] is second standard parallell
- *	parameters[2] is scale in inch (or cm)/degree along parallells OR 1:xxxxx OR map-width
+ *	parameters[0] is first standard parallel
+ *	parameters[1] is second standard parallel
+ *	parameters[2] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
  * OBLIQUE MERCATOR projection:
  *	parameters[0] is longitude of origin
@@ -536,36 +536,36 @@ double GMT_robinson_spline (double xp, double *x, double *y, double *c);
  * CASSINI projection
  *	parameters[0] is longitude of origin
  *	parameters[1] is latitude of origin
- *	parametres[2] is scale in inch (cm)/degree along this meridian OR 1:xxxxx OR map-width
+ *	parameters[2] is scale in inch (cm)/degree along this meridian OR 1:xxxxx OR map-width
  *
  * ALBERS projection (Conic):
- *	parameters[0] is first standard parallell
- *	parameters[1] is second standard parallell
- *	parameters[2] is scale in inch (or cm)/degree along parallells OR 1:xxxxx OR map-width
+ *	parameters[0] is first standard parallel
+ *	parameters[1] is second standard parallel
+ *	parameters[2] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
  * CONIC EQUIDISTANT projection:
- *	parameters[0] is first standard parallell
- *	parameters[1] is second standard parallell
- *	parameters[2] is scale in inch (or cm)/degree along parallells OR 1:xxxxx OR map-width
+ *	parameters[0] is first standard parallel
+ *	parameters[1] is second standard parallel
+ *	parameters[2] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
  * ECKERT6 IV projection:
  *	parameters[0] is longitude of origin
- *	parameters[1] is scale in inch (or cm)/degree along parallells OR 1:xxxxx OR map-width
+ *	parameters[1] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
  * ECKERT6 IV projection:
  *	parameters[0] is longitude of origin
- *	parameters[1] is scale in inch (or cm)/degree along parallells OR 1:xxxxx OR map-width
+ *	parameters[1] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
  * CYLINDRICAL EQUAL-AREA projections (Behrmann, Gall, Peters):
  *	parameters[0] is longitude of origin
- *	parameters[1] is the standard parallell
- *	parameters[2] is scale in inch (or cm)/degree along parallells OR 1:xxxxx OR map-width
+ *	parameters[1] is the standard parallel
+ *	parameters[2] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
  * MILLER CYLINDRICAL projection:
  *	parameters[0] is longitude of origin
- *	parameters[1] is scale in inch (or cm)/degree along parallells OR 1:xxxxx OR map-width
+ *	parameters[1] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
- * Pointers to the correct map transformation fuctions will be set up so that
+ * Pointers to the correct map transformation functions will be set up so that
  * there are no if tests to determine which routine to call. These pointers
  * are forward and inverse, and are called from GMT_geo_to_xy and GMT_xy_to_geo.
  *
@@ -1680,7 +1680,7 @@ int GMT_map_init_stereo (void) {
 
 	GMT_set_polar (project_info.pars[1]);
 
-	/* Equatorial view has a problem with infinite loops.  Untill I find a cure
+	/* Equatorial view has a problem with infinite loops.  Until I find a cure
 	  we set projection center latitude to 0.001 so equatorial works for now */
 
 	if (fabs (project_info.pars[1]) < SMALL) project_info.pars[1] = 0.001;
@@ -4008,7 +4008,7 @@ void GMT_ieckert6 (double *lon, double *lat, double x, double y)
 	if (GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
 }
 /*
- *	TRANSFORMATION ROUTINES FOR THE ROBINSON PSEUDOCYLIDRICAL PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE ROBINSON PSEUDOCYLINDRICAL PROJECTION
  */
 
 int GMT_map_init_robinson (void) {
@@ -4231,7 +4231,7 @@ int GMT_map_init_sinusoidal (void) {
 
 void GMT_vsinusoidal (double lon0)
 {
-	/* Set up Sinusiodal projection */
+	/* Set up Sinusoidal projection */
 	
 	GMT_check_R_J (&lon0);
 	project_info.central_meridian = lon0;
@@ -4904,7 +4904,7 @@ int GMT_map_crossing (double lon1, double lat1, double lon2, double lat2, double
 	GMT_corner = -1;
 	nx = (*GMT_crossing) (lon1, lat1, lon2, lat2, xlon, xlat, xx, yy, sides);
 	
-	/* nx may be -2, in which case we dont want to check the order */
+	/* nx may be -2, in which case we don't want to check the order */
 	if (nx == 2) {	/* Must see if crossings are in correct order */
 		double da, db;
 
@@ -5611,7 +5611,7 @@ double GMT_great_circle_dist(double lon1, double lat1, double lon2, double lat2)
 	return( c * R2D);
 }
 
-/* The *_outside rutines returns the status of the current point.  Status is
+/* The *_outside routines returns the status of the current point.  Status is
  * the sum of x_status and y_status. x_status may be
  *	0	w < lon < e
  *	-1	lon == w
@@ -6108,7 +6108,7 @@ int GMT_ellipse_crossing (double lon1, double lat1, double lon2, double lat2, do
 			GMT_xy_to_geo (&clon[0], &clat[0], xx[0], yy[0]);
 			GMT_xy_to_geo (&clon[1], &clat[1], xx[1], yy[1]);
 		}
-		n = -2;	/* To signal dont change order */
+		n = -2;	/* To signal don't change order */
 	}
 	if (n == 1) for (i = 0; i < n; i++) GMT_geo_to_xy (clon[i], clat[i], &xx[i], &yy[i]);
 	return (n);
@@ -6168,7 +6168,7 @@ int GMT_graticule_path (double **x, double **y, int dir, double w, double e, dou
 		yy[0] = yy[1] = s;	yy[2] = yy[3] = n;
 		np = 4;
 	}
-	else {	/* Must assemple path from meridians and parallel pieces */
+	else {	/* Must assemble path from meridians and parallel pieces */
 		double *xtmp, *ytmp;
 		int add;
 		size_t n_alloc;

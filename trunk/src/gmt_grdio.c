@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.4 2001-04-11 19:58:09 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.5 2001-12-21 03:50:37 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -275,8 +275,8 @@ void GMT_grd_RI_verify (struct GRD_HEADER *h, int mode)
 
 int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s, double *n, int *width, int *height, int *first_col, int *last_col, int *first_row, int *last_row)
 {
-	/* Determines which rows and colums to extract, and if it is
-	 * a grid that is periodic and wraps around and returns indeces. */
+	/* Determines which rows and columns to extract, and if it is
+	 * a grid that is periodic and wraps around and returns indices. */
 
 	int one_or_zero, i, *k;
 	BOOLEAN geo = FALSE;

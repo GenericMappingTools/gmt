@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.9 2001-10-15 17:41:49 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.10 2001-12-21 03:50:38 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -53,7 +53,7 @@
  *	GMT_f_test :	Routine to compute the probability that two variances are the same
  *	GMT_f_test_new:	As above, but allows choosing 1- or 2-sided, and which side
  *	GMT_f_q:	Returns the probability integral Q(F,nu1,nu2) of the F-distribution.
- *	GMT_student_t_a:	Returns the prob integrl A(t,nu) of the student-t distrib.
+ *	GMT_student_t_a:	Returns the prob integral A(t,nu) of the student-t distrib.
  *	GMT_sig_f :	Returns TRUE if reduction in model misfit was significant
  *	GMT_bei:	Kelvin-Bessel function bei(x)
  *	GMT_ber:	Kelvin-Bessel function ber(x)
@@ -880,7 +880,7 @@ double GMT_dilog (double x)
 	   obtained numerically from this routine against an analytic
 	   expression, and I found the smallest angular separation
 	   between two points on a sphere such that their Gram
-	   matrix expression (see Parker) was differenet from 1; this
+	   matrix expression (see Parker) was different from 1; this
 	   is smallest epsilon such that dilog(epsilon) - dilog(0)
 	   != 0.0.  This turned out to be very much smaller than I 
 	   would have guessed from the apparent e-15 accuracy of 
@@ -1757,7 +1757,7 @@ double GMT_rand ()
 	/* Uniform random number generator based on ran1 of
 	 * Press et al, Numerical Recipes, 2nd edition,
 	 * converted from Fortran to C.  Will return values
-	 * x so that 0.0 < x < 1.0 occurs with equal probablilty.
+	 * x so that 0.0 < x < 1.0 occurs with equal probability.
 	 */
 	
 	static int GMT_rand_iy = 0;
@@ -1790,7 +1790,7 @@ double GMT_rand ()
 	j = GMT_rand_iy / GMT_RAND_NDIV;	/* Will be in the range 0:NTAB-1 */
 	GMT_rand_iy = GMT_rand_iv[j];		/* Output previous shuffle value and fill table again */
 	GMT_rand_iv[j] = GMT_rand_seed;
-	return (MIN (GMT_RAND_AM * GMT_rand_iy, (1.0 - GMT_RAND_EPS)));	/* so we dont return 1.0 */
+	return (MIN (GMT_RAND_AM * GMT_rand_iy, (1.0 - GMT_RAND_EPS)));	/* so we don't return 1.0 */
 }
 
 double GMT_nrand (void) {
@@ -1827,7 +1827,7 @@ double GMT_nrand (void) {
 }
 
 void GMT_chi2 (double chi2, double nu, double *prob) {
-	/* Evalulate probability that chi2 will exceed the
+	/* Evaluate probability that chi2 will exceed the
 	 * theoretical chi2 by chance. */
  
  	*prob = GMT_gammq (0.5 * nu, 0.5 * chi2);

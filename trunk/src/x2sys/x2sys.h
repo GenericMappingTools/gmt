@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: x2sys.h,v 1.2 2001-12-21 03:50:38 ben Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -122,7 +122,7 @@ struct X2SYS_INFO {
 	size_t rec_size;		/* Number of bytes for a potential x2sys_dbase_*.b file */
 	int x_col, y_col, t_col;	/* Column numbers for x, y, and t */
 	int skip;			/* Number of header records to skip */
-	int flags;			/* Various processing flags for interal use */
+	int flags;			/* Various processing flags for internal use */
 	int *out_order;			/* Array with column number in the order for output */
 	int *use_column;		/* Array of T/F for which columns to use */
 	PFI read_file;			/* Pointer to function that reads this file */

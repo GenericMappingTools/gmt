@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.2 2001-09-21 00:26:51 pwessel Exp $
+ *	$Id: x2sys.c,v 1.3 2001-12-21 03:50:38 ben Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -97,7 +97,7 @@ void x2sys_skip_header (FILE *fp, struct X2SYS_INFO *s)
 	int i;
 	char line[BUFSIZ];
 
-	if (s->ascii_in) {	/* Ascii, skip records */
+	if (s->ascii_in) {	/* ASCII, skip records */
 		for (i = 0; i < s->skip; i++) fgets (line, BUFSIZ, fp);
 	}
 	else {			/* Binary, skip bytes */
@@ -599,7 +599,7 @@ int x2sys_crossover (double xa[], double ya[], struct X2SYS_SEGMENT A[], int na,
 					i_del_xb = 1.0 / del_xb;
 					yc = yb[xb_start] + (xa[xa_start] - xb[xb_start]) * del_yb * i_del_xb;
 					if (!(yc < ya[A[this_a].start] || yc > ya[A[this_a].stop])) {	/* Did cross within the segment extents */
-						/* Only accept xover if occuring before segment end (in time) */
+						/* Only accept xover if occurring before segment end (in time) */
 
 						if (xb_start < xb_stop) {
 							tb_start = xb_start;	/* B Node first in time */
@@ -637,7 +637,7 @@ int x2sys_crossover (double xa[], double ya[], struct X2SYS_SEGMENT A[], int na,
 					i_del_xa = 1.0 / del_xa;
 					yc = ya[xa_start] + (xb[xb_start] - xa[xa_start]) * del_ya * i_del_xa;
 					if (!(yc < yb[B[this_b].start] || yc > yb[B[this_b].stop])) {	/* Did cross within the segment extents */
-						/* Only accept xover if occuring before segment end (in time) */
+						/* Only accept xover if occurring before segment end (in time) */
 
 						if (xb_start < xb_stop) {
 							tb_start = xb_start;	/* B Node first in time */
@@ -676,7 +676,7 @@ int x2sys_crossover (double xa[], double ya[], struct X2SYS_SEGMENT A[], int na,
 					xc = xb[xb_start] + (ya[xa_start] - yb[xb_start]) * del_xb * i_del_yb;
 					if (!(xc < xa[xa_start] || xc > xa[xa_stop])) {	/* Did cross within the segment extents */
 
-						/* Only accept xover if occuring before segment end (in time) */
+						/* Only accept xover if occurring before segment end (in time) */
 
 						if (xb_start < xb_stop) {
 							tb_start = xb_start;	/* B Node first in time */
@@ -715,7 +715,7 @@ int x2sys_crossover (double xa[], double ya[], struct X2SYS_SEGMENT A[], int na,
 					xc = xa[xa_start] + (yb[xb_start] - ya[xa_start]) * del_xa * i_del_ya;
 					if (!(xc < xb[xb_start] || xc > xb[xb_stop])) {	/* Did cross within the segment extents */
 
-						/* Only accept xover if occuring before segment end (in time) */
+						/* Only accept xover if occurring before segment end (in time) */
 
 						if (xb_start < xb_stop) {
 							tb_start = xb_start;	/* B Node first in time */
@@ -758,7 +758,7 @@ int x2sys_crossover (double xa[], double ya[], struct X2SYS_SEGMENT A[], int na,
 						xc = (yb[xb_start] - ya[xa_start] + slp_a * xa[xa_start] - slp_b * xb[xb_start]) / (slp_a - slp_b);
 						if (!(xc < xa[xa_start] || xc > xa[xa_stop] || xc < xb[xb_start] || xc > xb[xb_stop])) {	/* Did cross within the segment extents */
 
-							/* Only accept xover if occuring before segment end (in time) */
+							/* Only accept xover if occurring before segment end (in time) */
 
 							if (xb_start < xb_stop) {
 								tb_start = xb_start;	/* B Node first in time */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.5 2001-10-15 17:41:49 pwessel Exp $
+ *	$Id: gmt_notunix.h,v 1.6 2001-12-21 03:50:38 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -52,7 +52,7 @@
  *
  *	   W I N D O W S   1 9 9 5,  1 9 9 8,  2 0 0 0,  N T
  *
- *	 THis section applies to Microsoft Windows 95, 98, NT
+ *	 This section applies to Microsoft Windows 95, 98, NT
  *
  *--------------------------------------------------------------------*/
 

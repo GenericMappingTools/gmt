@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.56 2001-10-17 00:30:23 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.57 2001-12-21 03:50:37 ben Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -36,9 +36,9 @@
  *	GMT_hash ()		:	Key - id lookup using hashing
  *	GMT_begin ()		:	Gets history and init parameters
  *	GMT_end ()		:	Cleans up and exits
- *	GMT_get_history ()	:	Read the .gmtcommand file
+ *	GMT_get_history ()	:	Read the .gmtcommands file
  *	GMT_putpen		:	Encode pen argument into textstring
- *	GMT_put_history ()	:	Writes updates to the .gmtcommand file
+ *	GMT_put_history ()	:	Writes updates to the .gmtcommands file
  *	GMT_map_getproject ()	:	Scans the -Jstring to set projection
  *
  * The INTERNAL functions are:
@@ -120,62 +120,62 @@ void GMT_explain_option (char option)
 		
 			fprintf (stderr, "\t-B specifies Basemap frame info.  <tickinfo> is a textstring made up of one or\n");
 			fprintf (stderr, "\t   more substrings of the form [t]<stride>[<unit>], where the (optional) [t] is the\n");
-			fprintf (stderr, "\t   axis item type, <stride> is the spacing between ticks or anotations, and the (optional)\n");
+			fprintf (stderr, "\t   axis item type, <stride> is the spacing between ticks or annotations, and the (optional)\n");
 			fprintf (stderr, "\t   <unit> specifies the <stride> unit [Default is unit implied in -R]. There can be\n");
 			fprintf (stderr, "\t   no spaces between the substrings - just append to make one very long string.\n");
 			fprintf (stderr, "\t   Three axis item types exist (six for time-axis, which may also use A, I, and i):\n");
-			fprintf (stderr, "\t     a: (upper) tick anotation stride (upper means anotations closest to the axis).\n");
+			fprintf (stderr, "\t     a: (upper) tick annotation stride (upper means annotations closest to the axis).\n");
 			fprintf (stderr, "\t     f: (upper) frame tick stride.\n");
 			fprintf (stderr, "\t     g: grid line stride.\n");
-			fprintf (stderr, "\t     A: lower tick anotation stride (lower means anotations farthest from the axis).\n");
-			fprintf (stderr, "\t     i: upper interval anotation stride (interval means anotation is centered on the interval).\n");
-			fprintf (stderr, "\t     I: lower interval anotation stride.\n");
-			fprintf (stderr, "\t        i or I may be immediately followed by <mod> which controls interval anotations:\n");
-			fprintf (stderr, "\t          f: Anotate full calendar-item name (e.g., \"%s\")\n", GMT_time_language.month_name[0][0]);
-			fprintf (stderr, "\t          a: Anotate abbreviated calendar-item name (e.g., \"%s\")\n", GMT_time_language.month_name[0][1]);
-			fprintf (stderr, "\t          c: Anotate 1-char calendar-item name (e.g., \"%s\")\n", GMT_time_language.month_name[0][2]);
-			fprintf (stderr, "\t        Use F, A, C to force upper case anotation. \n");
-			fprintf (stderr, "\t     If the [t] is not given, it defaults to a (upper tick anotations). \n");
+			fprintf (stderr, "\t     A: lower tick annotation stride (lower means annotations farthest from the axis).\n");
+			fprintf (stderr, "\t     i: upper interval annotation stride (interval means annotation is centered on the interval).\n");
+			fprintf (stderr, "\t     I: lower interval annotation stride.\n");
+			fprintf (stderr, "\t        i or I may be immediately followed by <mod> which controls interval annotations:\n");
+			fprintf (stderr, "\t          f: Annotate full calendar-item name (e.g., \"%s\")\n", GMT_time_language.month_name[0][0]);
+			fprintf (stderr, "\t          a: Annotate abbreviated calendar-item name (e.g., \"%s\")\n", GMT_time_language.month_name[0][1]);
+			fprintf (stderr, "\t          c: Annotate 1-char calendar-item name (e.g., \"%s\")\n", GMT_time_language.month_name[0][2]);
+			fprintf (stderr, "\t        Use F, A, C to force upper case annotation. \n");
+			fprintf (stderr, "\t     If the [t] is not given, it defaults to a (upper tick annotations). \n");
 			fprintf (stderr, "\t   The optional [<unit>] modifies the <stride> value accordingly.  For maps, you may use\n");
 			fprintf (stderr, "\t     m: arc minutes [Default unit is degree].\n");
 			fprintf (stderr, "\t     c: arc seconds.\n");
 			fprintf (stderr, "\t   For time axes, several units are recognized:\n");
 			fprintf (stderr, "\t     Y: year - plot using all 4 digits.\n");
 			fprintf (stderr, "\t     y: year - plot only last 2 digits.\n");
-			fprintf (stderr, "\t     O: month - format anotation according to PLOT_DATE_FORMAT.\n");
+			fprintf (stderr, "\t     O: month - format annotation according to PLOT_DATE_FORMAT.\n");
 			fprintf (stderr, "\t     o: month - plot as 2-digit integer (1-12).\n");
-			fprintf (stderr, "\t     U: ISO week - format anotation according to PLOT_DATE_FORMAT.\n");
+			fprintf (stderr, "\t     U: ISO week - format annotation according to PLOT_DATE_FORMAT.\n");
 			fprintf (stderr, "\t     u: ISO week - plot as 2-digit integer (1-53).\n");
 			fprintf (stderr, "\t     r: Gregorian week - 7-day stride from chosen start of week (%s).\n", GMT_weekdays[gmtdefs.time_week_start]);
-			fprintf (stderr, "\t     K: ISO weekday - format anotation according to PLOT_DATE_FORMAT.\n");
+			fprintf (stderr, "\t     K: ISO weekday - format annotation according to PLOT_DATE_FORMAT.\n");
 			fprintf (stderr, "\t     k: weekday - plot name of weekdays in selected language [%s].\n", gmtdefs.time_language);
-			fprintf (stderr, "\t     D: day  - format anotation according to PLOT_DATE_FORMAT, which also determines whether\n");
+			fprintf (stderr, "\t     D: day  - format annotation according to PLOT_DATE_FORMAT, which also determines whether\n");
 			fprintf (stderr, "\t               we should plot day of month (1-31) or day of year (1-366).\n");
 			fprintf (stderr, "\t     d: day - plot as 2- (day of month) or 3- (day of year) integer.\n");
-			fprintf (stderr, "\t     H: hour - format anotation according to PLOT_CLOCK_FORMAT.\n");
+			fprintf (stderr, "\t     H: hour - format annotation according to PLOT_CLOCK_FORMAT.\n");
 			fprintf (stderr, "\t     h: hour - plot as 2-digit integer (0-23).\n");
-			fprintf (stderr, "\t     M: minute - format anotation according to PLOT_CLOCK_FORMAT.\n");
+			fprintf (stderr, "\t     M: minute - format annotation according to PLOT_CLOCK_FORMAT.\n");
 			fprintf (stderr, "\t     m: minute - plot as 2-digit integer (0-59).\n");
-			fprintf (stderr, "\t     C: second - format anotation according to PLOT_CLOCK_FORMAT.\n");
+			fprintf (stderr, "\t     C: second - format annotation according to PLOT_CLOCK_FORMAT.\n");
 			fprintf (stderr, "\t     c: second - plot as 2-digit integer (0-59; 60-61 if leap seconds are enabled).\n");
 			fprintf (stderr, "\t   Specify an axis label by surrounding it with colons (e.g., :\"my x label\":).\n");
-			fprintf (stderr, "\t   To append a unit to each anotation (e.g., 5 km, 10 km ...) add a label that begins\n");
-			fprintf (stderr, "\t     with a comma; the rest is used as unit anotation (e.g. :\",km\":). If the unit has\n");
-			fprintf (stderr, "\t     a leading hyphen (-) there will be no space between unit and anotation (e.g., :,-%%:).\n");
+			fprintf (stderr, "\t   To append a unit to each annotation (e.g., 5 km, 10 km ...) add a label that begins\n");
+			fprintf (stderr, "\t     with a comma; the rest is used as unit annotation (e.g. :\",km\":). If the unit has\n");
+			fprintf (stderr, "\t     a leading hyphen (-) there will be no space between unit and annotation (e.g., :,-%%:).\n");
 			fprintf (stderr, "\t   For separate x and y [and z if -Jz is used] tickinfo, separate the strings with slashes [/].\n");
 			fprintf (stderr, "\t   Specify an plot title by adding a label whose first character is a period; the rest\n");
 			fprintf (stderr, "\t     of the label is used as the title (e.g. :\".My Plot Title\":).\n");
-			fprintf (stderr, "\t   Append any combination of W, E, S, N, Z to anotate those axes only [Default is WESNZ (all)].\n");
-			fprintf (stderr, "\t     Use lower case w, e, s, n, z to draw & tick but not to anotate those axes.\n");
+			fprintf (stderr, "\t   Append any combination of W, E, S, N, Z to annotate those axes only [Default is WESNZ (all)].\n");
+			fprintf (stderr, "\t     Use lower case w, e, s, n, z to draw & tick but not to annotate those axes.\n");
 			fprintf (stderr, "\t     Z+ will also draw a 3-D box .\n");
-			fprintf (stderr, "\t   Log10 axis: Append l to anotate log10 (x) or p for 10^(log10(x)) [Default anotates x].\n");
+			fprintf (stderr, "\t   Log10 axis: Append l to annotate log10 (x) or p for 10^(log10(x)) [Default annotates x].\n");
 			fprintf (stderr, "\t   Power axis: append p to annotate x at equidistant pow increments [Default is nonlinear].\n");
 			fprintf (stderr, "\t   See psbasemap man pages for more details and examples of all settings.\n");
 			break;
 			
 		case 'b':	/* Condensed tickmark option */
 		
-			fprintf (stderr, "\t-B Boundary anotation, give -B<xinfo>[/<yinfo>[/<zinfo>]][.:\"title\":][wesnzWESNZ+]\n");
+			fprintf (stderr, "\t-B Boundary annotation, give -B<xinfo>[/<yinfo>[/<zinfo>]][.:\"title\":][wesnzWESNZ+]\n");
 			fprintf (stderr, "\t   <?info> is 1-3 substring(s) of form [<type>]<stride>[<unit>][l|p][:\"label\":][:,[-]\"unit\":]\n");
 			fprintf (stderr, "\t   See psbasemap man pages for more details and examples of all settings.\n");
 			break;
@@ -1078,7 +1078,7 @@ int GMT_setparameter (char *keyword, char *value)
 			for (i = 0; i < 4; i++) frame_info.side[i] = 0;	/* Otherwise we cannot unset default settings */
 			for (i = 0; value[i]; i++) {
 				switch (value[i]) {
-					case 'W':	/* Upper case: Draw axis/ticks AND anotate */
+					case 'W':	/* Upper case: Draw axis/ticks AND annotate */
 						frame_info.side[3] = 2;
 						break;
 					case 'w':	/* Lower case: Draw axis/ticks only */
@@ -1621,7 +1621,7 @@ BOOLEAN true_false_or_error (char *value, int *answer)
 		return (FALSE);
 	}
 
-	/* Got neither true or false.  Make no assignement and return TRUE for error */
+	/* Got neither true or false.  Make no assignment and return TRUE for error */
 
 	return (TRUE);
 }
@@ -1656,7 +1656,7 @@ int GMT_savedefaults (char *file)
 		fprintf (fp, "+\n");
 	else
 		fprintf (fp, "\n");
-	fprintf (fp, "#-------- Basemap Anotation Parameters ------\n", GMT_VERSION);
+	fprintf (fp, "#-------- Basemap Annotation Parameters ------\n", GMT_VERSION);
 	fprintf (fp, "ANOT_MIN_ANGLE		= %lg\n", gmtdefs.anot_min_angle);
 	fprintf (fp, "ANOT_MIN_SPACING	= %lg\n", gmtdefs.anot_min_spacing);
 	fprintf (fp, "ANOT_FONT		= %s\n", GMT_font_name[gmtdefs.anot_font]);
@@ -2039,7 +2039,7 @@ void GMT_get_time_language (char *name)
 	
 	sprintf (file, "%s%cshare%ctime%c%s.d\0", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, name);
 	if ((fp = fopen (file, "r")) == NULL) {
-		fprintf (stderr, "GMT Warning: Could not load %s - revert to us (english)!\n", name);
+		fprintf (stderr, "GMT Warning: Could not load %s - revert to us (English)!\n", name);
 		sprintf (file, "%s%cshare%ctime%cus.d\0", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
 		if ((fp = fopen (file, "r")) == NULL) {
 			fprintf (stderr, "GMT Error: Could not find %s!\n", file);
@@ -2205,7 +2205,7 @@ int GMT_begin (int argc, char **argv)
 	
 	if (gmtdefs.gridfile_shorthand) GMT_setshorthand ();
 	
-	/* Copy various colors to GMT_BFN_COLOR stucture */
+	/* Copy various colors to GMT_BFN_COLOR structure */
 
 	memset ((void *)(&GMT_bfn), 0, sizeof (struct GMT_BFN_COLOR));
 	memcpy ((void *)GMT_bfn.foreground_rgb, (void *)gmtdefs.foreground_rgb, 3 * sizeof (int));
@@ -2369,10 +2369,10 @@ void GMT_get_history (int argc, char ** argv)
 	 * already have taken effect.
 	 */
 
-	/* If current directory is writeable, use it; else use the home directory */
+	/* If current directory is writable, use it; else use the home directory */
 	
 	(void) getcwd (cwd, BUFSIZ);
-	if (!access (cwd, W_OK)) {	/* Current directory is writeable */
+	if (!access (cwd, W_OK)) {	/* Current directory is writable */
 		sprintf (hfile, ".gmtcommands\0");
 	}
 	else {	/* Try home directory instead */
@@ -2485,7 +2485,7 @@ void GMT_get_history (int argc, char ** argv)
 		if (argv[i][1] != 'J' && GMT_oldargv[j][2] == 0) continue;
 		if (argv[i][1] == 'J' && GMT_oldargv[j][3] == 0) continue;
       
-		/* Here, GMT_oldargv has modifiers and argv dont, set pointer */
+		/* Here, GMT_oldargv has modifiers and argv don't, set pointer */
               
 		argv[i] = GMT_oldargv[j];
 	}
@@ -2554,13 +2554,13 @@ void GMT_strip_wesnz (const char *in, int t_side[], BOOLEAN *draw_box, char *out
 		}
 		set = 0;
 		switch (in[i]) {
-			case 'W':	/* Draw AND Anotate */
+			case 'W':	/* Draw AND Annotate */
 				set++;
 			case 'w':	/* Just Draw */
 				side[3] = ++set;
 				set_sides = TRUE;
 				break;
-			case 'E':	/* Draw AND Anotate */
+			case 'E':	/* Draw AND Annotate */
 				set++;
 			case 'e':	/* Just Draw */
 				if (i > 0 && (in[i-1] == '.' || isdigit (in[i-1])) && (in[i+1] && (isdigit (in[i+1]) || in[i+1] == '-' || in[i+1] == '+')))	/* Exponential notation */
@@ -2570,19 +2570,19 @@ void GMT_strip_wesnz (const char *in, int t_side[], BOOLEAN *draw_box, char *out
 					set_sides = TRUE;
 				}
 				break;
-			case 'S':	/* Draw AND Anotate */
+			case 'S':	/* Draw AND Annotate */
 				set++;
 			case 's':	/* Just Draw */
 				side[0] = ++set;
 				set_sides = TRUE;
 				break;
-			case 'N':	/* Draw AND Anotate */
+			case 'N':	/* Draw AND Annotate */
 				set++;
 			case 'n':	/* Just Draw */
 				side[2] = ++set;
 				set_sides = TRUE;
 				break;
-			case 'Z':	/* Draw AND Anotate */
+			case 'Z':	/* Draw AND Annotate */
 				set++;
 			case 'z':	/* Just Draw */
 				side[4] = ++set;
@@ -2663,7 +2663,7 @@ void GMT_decode_tinfo (char *in, struct PLOT_AXIS *A) {
 			}
 		}
 		mod = 0;				/* No mod for Aafg flags */
-		if (flag == 'i' || flag == 'I') {	/* Interval anotations may have modifier flag */
+		if (flag == 'i' || flag == 'I') {	/* Interval annotations may have modifier flag */
 			if (strchr ("FACfac", t[0])) {	/* One of the allowed list of modifiers? */
 				mod = t[0];
 				t++;			/* Skip to next */
@@ -2734,16 +2734,16 @@ void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit, char 
 	}
 	
 	switch (flag) {
-		case 'a':	/* Upper tick anotation */
+		case 'a':	/* Upper tick annotation */
 			I[0] = &A->item[0];
 			break;
-		case 'A':	/* Lower tick anotation */
+		case 'A':	/* Lower tick annotation */
 			I[0] = &A->item[1];
 			break;
-		case 'i':	/* Upper interval anotation */
+		case 'i':	/* Upper interval annotation */
 			I[0] = &A->item[2];
 			break;
-		case 'I':	/* Lower interval anotation */
+		case 'I':	/* Lower interval annotation */
 			I[0] = &A->item[3];
 			break;
 		case 'f':	/* Frame tick interval */
@@ -2764,11 +2764,11 @@ void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit, char 
 	}
 	
 	switch (unit) {
-		case 'l':	/* Log10 anotation flag */
+		case 'l':	/* Log10 annotation flag */
 			A->type = LOG10;
 			unit = 0;
 			break;
-		case 'p':	/* pow anotation flag */
+		case 'p':	/* pow annotation flag */
 			A->type = POW;
 			unit = 0;
 			break;
@@ -2810,29 +2810,29 @@ void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit, char 
 
 int GMT_map_getframe (char *in) {
 	/* GMT_map_getframe scans an argument string and extract parameters that
-	 * set the interval for  tickmars and anotations on the boundary.
-	 * The string must be continous, i.e. no whitespace must be present
+	 * set the interval for tickmarks and annotations on the boundary.
+	 * The string must be continuous, i.e. no whitespace must be present
 	 * The string may have 1, 2,  or 3 parts, separated by a slash '/'. All
 	 * info after the first slash are assigned to the y-axis.  Info after
 	 * the second slash are assigned to the z-axis.  If there is no
 	 * slash, x-values are copied to y-values.
 	 * A substring looks like [t][value][m|c]. The [t] and [m|c] are optional
 	 * ([ and ] are NOT part of the string and are just used to clarify)
-	 * [t] can be any of [a](anotation int), [f](frame int), or [g](gridline int).
+	 * [t] can be any of [a](annotation int), [f](frame int), or [g](gridline int).
 	 * Default is a AND f. The [m], if present indicates value is in minutes.
 	 * The [c], if present indicates value is in seConds (s already used for south...).
 	 * Text between : and : are labels for the respective axes. If the first
 	 * character of the text is a period, then the rest of the text is used
-	 * as the plot title.  If it is a comma, then the rest is used as anotation unit.
+	 * as the plot title.  If it is a comma, then the rest is used as annotation unit.
 	 * For LINEAR axes: If the first characters in args are one or more of w,e,s,n
 	 * only those axes will be drawn. Upper case letters means the chosen axes
 	 * also will be annotated. Default is all 4 axes drawn/annotated.
 	 * For logscale plots:  l will cause log10(x) to be plotted
 	 *			p will cause 10 ^ log10(x) to be plotted
 	 *	anot/tick/grid interval can here be either:
-	 *		1.0	-> Only powers of 10 are anotated
-	 *		2.0	-> powers of 10 times (1, 2, 5) are anotated
-	 *		3.0	-> powers of 10 times (1,2,3,..9) are anotated
+	 *		1.0	-> Only powers of 10 are annotated
+	 *		2.0	-> powers of 10 times (1, 2, 5) are annotated
+	 *		3.0	-> powers of 10 times (1,2,3,..9) are annotated
 	 */
 	char out1[BUFSIZ], out2[BUFSIZ], *info[3], xyz[3] = {'x', 'y', 'z'}, yn[2] = {'N', 'Y'};
 	char one[80], two[80], three[80];
@@ -2867,16 +2867,16 @@ int GMT_map_getframe (char *in) {
 		
 		if (!info[i][0]) continue;
 		
-		GMT_strip_colonitem (info[i], ":,", frame_info.axis[i].unit, out1);	/* Pull out anotation unit, if any */
+		GMT_strip_colonitem (info[i], ":,", frame_info.axis[i].unit, out1);	/* Pull out annotation unit, if any */
 		GMT_strip_colonitem (out1, ":", frame_info.axis[i].label, out2);		/* Pull out axis label, if any */
 		
-		GMT_decode_tinfo (out2, &frame_info.axis[i]);					/* Decode the anotation intervals */
+		GMT_decode_tinfo (out2, &frame_info.axis[i]);					/* Decode the annotation intervals */
 		
-		/* Make sure we have ticks to match anotation stride */
+		/* Make sure we have ticks to match annotation stride */
 		A = &frame_info.axis[i];
-		if (A->item[GMT_ANOT_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = anot stride */
+		if (A->item[GMT_ANOT_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = annot stride */
 			memcpy ((void *)&A->item[GMT_TICK_UPPER], (void *)&A->item[GMT_ANOT_UPPER], sizeof (struct PLOT_AXIS_ITEM));
-		else if (A->item[GMT_INTV_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = anot stride */
+		else if (A->item[GMT_INTV_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = annot stride */
 			memcpy ((void *)&A->item[GMT_INTV_UPPER], (void *)&A->item[GMT_ANOT_UPPER], sizeof (struct PLOT_AXIS_ITEM));
 #ifdef DEBUGT
 		fprintf (stderr, "Unit: [%s]\n", A->unit);

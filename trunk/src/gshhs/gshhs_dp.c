@@ -1,4 +1,4 @@
-/*	$Id: gshhs_dp.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+/*	$Id: gshhs_dp.c,v 1.2 2001-12-21 03:50:38 ben Exp $
  *
  * gshhs_dp applies the Douglas-Peucker algorithm to simplify a line
  * segment given a tolerance.  The algorithm is based on the paper
@@ -169,7 +169,7 @@ int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band
 /* y_source[]:						*/
 /* n_source:	Number of points			*/
 /* band:	tolerance in kilometers 		*/
-/* index[]:	output co-ordinates indeces 		*/
+/* index[]:	output co-ordinates indices 		*/
 {
 	int	n_stack, n_dest, start, end, i, sig;
 	int	*sig_start, *sig_end;	/* indices of start&end of working section */
@@ -181,7 +181,7 @@ int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band
 
         if ( n_source < 3 ) return(0);    /* one or two points */
 
-        /* more complex case. initialise stack */
+        /* more complex case. initialize stack */
 
  	sig_start = (int *) get_memory (VNULL, n_source, sizeof (int), "Douglas_Peucker_i");
 	sig_end   = (int *) get_memory (VNULL, n_source, sizeof (int), "Douglas_Peucker_i");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.9 2001-10-24 22:27:31 pwessel Exp $
+ *	$Id: libspotter.c,v 1.10 2001-12-21 03:50:38 ben Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -190,7 +190,7 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 		i_km = EQ_RAD / d_km;
 	}
 
-	if (p[ns-1].t_stop > t_zero) t_zero = p[ns-1].t_stop;	/* In case we dont go all the way to zero */
+	if (p[ns-1].t_stop > t_zero) t_zero = p[ns-1].t_stop;	/* In case we don't go all the way to zero */
 	
 	for (i = 0; i < np; i++) {
 
@@ -352,7 +352,7 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 		i_km = EQ_RAD / d_km;
 	}
 
-	if (p[ns-1].t_stop > t_zero) t_zero = p[ns-1].t_stop;	/* In case we dont go all the way to zero */
+	if (p[ns-1].t_stop > t_zero) t_zero = p[ns-1].t_stop;	/* In case we don't go all the way to zero */
 
 	for (i = 0; i < np; i++) {
 
