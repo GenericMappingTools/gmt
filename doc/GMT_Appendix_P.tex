@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_P.tex,v 1.3 2004-08-26 03:50:47 pwessel Exp $
+%	$Id: GMT_Appendix_P.tex,v 1.4 2004-09-14 20:24:56 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -10,6 +10,12 @@
 \chapter{Using both \gmt\ 3 and 4}
 \index{\GMT, using 3 and 4}
 \thispagestyle{headings}
+
+We encourage all \GMT\ users to start using version 4 immediately; it has been tested extensively by
+the \GMT\ team and has benefitted from bug reports for the 3.4.x versions.  Users who still worry about the
+new version breaking things may install both \GMT\ 3.4.5 and 4 and use our utility \progname{gmtswitch}
+to select their current version should the need to switch arises.  You will find \progname{gmtswitch}
+in the top-level \GMT 4 directory; install as explained below.
 
 Because \GMT\ 4 is backwards compatible with the 3.4.x series yet maintains its parameters
 and history in separate hidden files (e.g., \filename{.gmtdefaults4} versus \filename{.gmtdefaults})
@@ -22,7 +28,7 @@ it will try to find all the available versions installed on your file system.  T
 found will be listed in the file \filename{.gmtversions} in your home directory; each line
 is the full path to a \GMT\ root directory (e.g., /usr/local/GMT3.4.2).  You may
 manually add or remove entries there at any time.  You are then instructed to make two
-changes to your environment (the detauls are shell dependent but explained by \progname{gmtswitch}):
+changes to your environment (the details are shell-dependent but explained by \progname{gmtswitch}):
 \begin{enumerate}
 \item Define the environmental variable {\bf GMTHOME} to point to {\bf \$HOME}/this\_gmt,
 where {\bf \$HOME} is the full path to your home directory.
@@ -36,8 +42,3 @@ available versions in a numerical menu and prompt you to choose one, whereas \pr
 will immediately switch to that version ({\it version} must be a piece of unique text making
 up the full path to a verson, e.g., 3.4.2).  If you use \progname{tcsh} or \progname{csh} you may have to type
 ``rehash'' to initiate the path changes.
-
-We encourage all \GMT\ users to start using version 4 immediately; it has been tesxted extensively by
-the \GMT\ team and has benefitted from bug reports for the 3.4.x versions.  Users who still worry about the
-new version breaking things should install both \GMT\ 3.4.5 and 4 and use \progname{gmtswitch} if the need
-arises.  You will find \progname{gmtswitch} in the top-level \GMT 4 directory; install as explained above.
