@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.79 2005-01-11 18:18:06 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.80 2005-01-11 18:52:37 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8696,13 +8696,12 @@ double GMT_geodesic_dist_meter (double lonS, double latS, double lonE, double la
 	sqrte1p1 = sqrt (e1p1);
 	u1bot = sqrte1p1 * cosa12;
 	u1 = atan2 (tanthk, u1bot);
-	/* u1 = atan (tanthk / u1bot); */
 	u2top = v1 * sinthk + e1p1 * (z2 - z1);
 	u2bot = sqrte1p1 * (x2 * cosa12 - y2 * sinthk * sina12);
 	u2 = atan2 (u2top, u2bot);
-	/* u2 = atan (u2top / u2bot); */
 	b0 = v1 * sqrt (1.0 + el * pow (costhk * cosa12, 2.0)) / e1p1;
 	du = u2  - u1;
+	if (fabs (du) > M_PI) du = copysign (TWO_PI - fabs (du), du);
 	pdist = b0 * (c2 * (sin (2.0 * u2) - sin(2.0 * u1)) + c4 * (sin (4.0 * u2) - sin (4.0 * u1)));
 	dist = fabs (b0 * c0 * du + pdist);
 	
