@@ -3,7 +3,7 @@
 gmtmath \- Reverse Polish Notation calculator for data tables
 .SH SYNOPSIS
 \fBgmtmath\fP [ \fB\-A\fP\fIt_f(t).d\fP ] [ \fB\-C\fP\fIcols\fP ] [ \fB\-H\fP\fInrec\fP ] [ \fB\-N\fP\fIn_col\fP/\fIt_col\fP ] [ \fB\-Q\fP ] 
- [ \fB\-S\fP ][ \fB\-T\fP\fIt_min/t_max/t_inc\fP|\fItfile\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
+ [ \fB\-S\fP[\fBf|l\fP] ][ \fB\-T\fP\fIt_min/t_max/t_inc\fP|\fItfile\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
 [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] 
 \fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] \fBOPERATOR\fP ... \fB=\fP [ \fIoutfile\fP ]
 .SH DESCRIPTION
@@ -62,9 +62,11 @@ Select the number of columns and the column number that contains the
 Quick mode for scalar calculation.  Shorthand for \fB\-Ca \-N\fP1/0 \fB\-T\fP0/0/1.
 .TP
 .B \-S
-Only report the first row of the results [Default is all rows].  This is useful if
+Only report the first or last row of the results [Default is all rows].  This is useful if
 you have computed a statistic (say the \fBMODE\fP) and only want to report a single number
 instead of numerous records with identical values.
+Append \fBl\fP to get the last row and \fBf\fP to get the first row only
+[Default].
 .TP
 .B \-T
 Required when no input files are given.  Sets the t-coordinates of the first
