@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.20 2001-09-21 02:25:49 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.21 2001-10-15 17:25:05 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -69,40 +69,6 @@ char *GMT_weekdays[7] = {	/* Days of the week in English */
 	"Thursday",
 	"Friday",
 	"Saturday"
-};
-
-char *GMT_char_encoding[4] = {	/* PostScript character encodings */
-	"Standard",
-	"Standard+",
-	"ISOLatin1",
-	"ISOLatin1+"
-};
-
-char *GMT_degree_choice[4] = {	/* Users choice for degree symbol */
-	"ring",
-	"degree",
-	"colon",
-	"none"
-};
-
-char *GMT_degree_symbol[4][3] = {		/* Ring [Default], Degree, and colon degree symbols for each encoding */
-	{ "\\312", "\\217", ":"},
-	{ "\\312", "\\217", ":"},
-	{ "\\232", "\\260", ":"},
-	{ "\\232", "\\260", ":"}
-};
-
-char *GMT_minute_symbol[4][2] = {		/* minute symbol for each encoding. Tricky because ISOLatin1 does not have plain singlequote... */
-	{ "\\251", ":" },
-	{ "\\251", ":" },
-	{ "\\047", ":" },
-	{ "\\234", ":" }
-};
-char *GMT_second_symbol[4][2] = {			/* Second symbol for each encoding */
-	{ "\\042", ":" },
-	{ "\\042", ":" },
-	{ "\\042", ":" },
-	{ "\\042", ":" }
 };
 
 /*--------------------------------------------------------------------*/

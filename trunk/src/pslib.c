@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.26 2001-10-12 19:44:17 pwessel Exp $
+ *	$Id: pslib.c,v 1.27 2001-10-15 17:25:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -139,13 +139,6 @@ struct GMT_WORD {
 	char *txt;
 };
 
-char *ps_encoding[4] = {
-"StandardEncoding",
-"StandardPlusEncoding",
-"ISOLatin1Encoding",
-"ISOLatin1PlusEncoding"
-};
-
 int PSL_first = TRUE;
 
 /* Define support functions called inside pslib functions */
@@ -164,6 +157,7 @@ int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy);
 int ps_comp_int_asc (const void *p1, const void *p2);
 int ps_read_rasheader (FILE *fp, struct rasterfile *h);
 int ps_write_rasheader (FILE *fp, struct rasterfile *h);
+static void bulkcopy (const char *);
 
 
 /*------------------- PUBLIC PSLIB FUNCTIONS--------------------- */
@@ -1190,22 +1184,23 @@ void ps_plotend_ (int *lastpage)
 	ps_plotend (*lastpage);
 }
 
-int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, int *page_size, int *rgb, struct EPS *eps)
+int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, int *page_size, int *rgb, const char *encoding, struct EPS *eps)
 /* plotfile:	Name of output file or NULL for standard output */
 /* xoff, yoff:	Sets a new origin relative to old */
 /* xscl, yscl:	Global scaling, usually left to 1,1 */
 /* page_size:	Physical width and height of paper used in points */
 /* overlay:	FALSE means print headers and macros first */
-/* mode:	First bit 0 = Landscape, 1 = Portrait, Second bit 1 = Standard+ encoding, Third bit 1 = hex image, 0 = bin image
-		Forth bit 1 = abs positions, 0 = rel positions, Fifth bit 1 = ISOLatin1, 0 not, Sixth bit 1 = ISOLatin1+, 0 not
+/* mode:	First bit 0 = Landscape, 1 = Portrait, Third bit 1 = hex image, 0 = bin image
+		Forth bit 1 = abs positions, 0 = rel positions
 		10th bit 1 = CMYK image, 0 = RGB image */
 /* ncopies:	Number of copies for this plot */
 /* dpi:		Plotter resolution in dots-per-inch */
 /* unit:	0 = cm, 1 = inch, 2 = meter */
 /* rgb:		array with Color of page (paper) */
+/* encoding:	FOnt encoding used */
 /* eps:		structure with Document info.  !! Fortran version (ps_plotinit_) does not have this argument !! */
 {
-	int i, gmt_encoding, iso = 0, manual = FALSE;
+	int i, manual = FALSE;
 	time_t right_now;
 	char openmode[2], *this;
 	double scl;
@@ -1241,14 +1236,8 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps.points_pr_unit = 72.0;
 	if (unit == 0) ps.points_pr_unit /= 2.54;
 	if (unit == 2) ps.points_pr_unit /= 0.0254;
-	gmt_encoding = ((mode & 2) == 2);	/* If 2nd bit set then old GMT3.4 European character encoding (Standard+) is wanted */
-	if ((mode & 16) == 16) iso = 1;		/* If 5th bit set then ISOLatin1 character encoding is wanted */
-	if ((mode & 32) == 32) iso = 2;		/* If 6th bit set then ISOLatin1+ character encoding is wanted */
-	if (gmt_encoding && iso) {
-		fprintf (stderr, "pslib: Cannot specify both Standard+ and ISOLatin1 encodings\n");
-		return (-1);
-	}
-	ps.encoding = (iso) ? iso + 1 : ((gmt_encoding) ? 1 : 0);	/* Should give 0-3 range */
+	ps.encoding = ps_memory (NULL, strlen (encoding) + 1, sizeof (char));;
+	strcpy (ps.encoding, encoding);
 	mode &= 1;							/* Get rid of other flags */
 	if (plotfile == NULL || plotfile[0] == 0)
 		ps.fp = stdout;
@@ -1328,99 +1317,12 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 			fprintf (ps.fp, "%%%%Pages: 1\n");
 		}
 		fprintf (ps.fp, "%%%%EndComments\n\n");
-		
-		fprintf (ps.fp, "%%%%BeginProlog\n\n");
 
-		fprintf (ps.fp, "%% Begin pslib header\n\n");
+		bulkcopy ("prologue");
+		bulkcopy (ps.encoding);
 		
-		fprintf (ps.fp, "250 dict begin\n\n");
-		fprintf (ps.fp, "/A /setgray load def\n");
-		fprintf (ps.fp, "/B /setdash load def\n");
-		fprintf (ps.fp, "/C /setrgbcolor load def\n");
-		fprintf (ps.fp, "/D /rlineto load def\n");
-		fprintf (ps.fp, "/E {dup stringwidth pop} bind def\n");
-		fprintf (ps.fp, "/F /fill load def\n");
-		fprintf (ps.fp, "/G /rmoveto load def\n");
-		fprintf (ps.fp, "/L /lineto load def\n"); 
-		fprintf (ps.fp, "/M {stroke moveto} bind def\n");
-		fprintf (ps.fp, "/m {moveto} bind def\n");
-		fprintf (ps.fp, "/N /newpath load def\n");
-		fprintf (ps.fp, "/O {M {D} repeat P V C F U S} def\n");
-		fprintf (ps.fp, "/o {M {D} repeat P V A F U S} def\n");
-		fprintf (ps.fp, "/P /closepath load def\n");
-		fprintf (ps.fp, "/Q {M {D} repeat P V C F U N} def\n");
-		fprintf (ps.fp, "/q {M {D} repeat P V A F U N} def\n");
-		fprintf (ps.fp, "/t {M {D} repeat P S} def\n");
-		fprintf (ps.fp, "/R /rotate load def\n");
-		fprintf (ps.fp, "/S /stroke load def\n");
-		fprintf (ps.fp, "/T /translate load def\n");
-		fprintf (ps.fp, "/U /grestore load def\n");
-		fprintf (ps.fp, "/V /gsave load def\n");
-		fprintf (ps.fp, "/W /setlinewidth load def\n");
-		fprintf (ps.fp, "/X {M dup 0 D dup -0.5 mul dup G 0 exch D S} bind def\n");
-		fprintf (ps.fp, "/Y {findfont exch scalefont setfont} bind def\n");
-		fprintf (ps.fp, "/Z /show load def\n");
-		fprintf (ps.fp, "/a0 {0 0 M D D 0 D D D D D 0 D D P V A F U N} bind def\n");
-		fprintf (ps.fp, "/a1 {0 0 M D D 0 D D D D D 0 D D P V A F U S} bind def\n");
-		fprintf (ps.fp, "/a2 {0 0 M D D 0 D D D D D 0 D D P V C F U N} bind def\n");
-		fprintf (ps.fp, "/a3 {0 0 M D D 0 D D D D D 0 D D P V C F U S} bind def\n");
-		fprintf (ps.fp, "/a4 {0 0 M D D 0 D D D D D 0 D D P S} bind def\n");
-		fprintf (ps.fp, "/A0 {0 exch M 0 D D D D D 0 D P V A F U N} bind def\n");
-		fprintf (ps.fp, "/A1 {0 exch M 0 D D D D D 0 D P V A F U S} bind def\n");
-		fprintf (ps.fp, "/A2 {0 exch M 0 D D D D D 0 D P V C F U N} bind def\n");
-		fprintf (ps.fp, "/A3 {0 exch M 0 D D D D D 0 D P V C F U S} bind def\n");
-		fprintf (ps.fp, "/A4 {0 exch M 0 D D D D D 0 D P S} bind def\n");
-		fprintf (ps.fp, "/C0 {0 360 arc V A F U N} bind def\n");
-		fprintf (ps.fp, "/C1 {0 360 arc V A F U S} bind def\n");
-		fprintf (ps.fp, "/C2 {0 360 arc V C F U N} bind def\n");
-		fprintf (ps.fp, "/C3 {0 360 arc V C F U S} bind def\n");
-		fprintf (ps.fp, "/C4 {0 360 arc S} bind def\n");
-		fprintf (ps.fp, "/D0 {M 5 {dup} repeat D neg exch D neg exch neg D P V A F U N} bind def\n");
-		fprintf (ps.fp, "/D1 {M 5 {dup} repeat D neg exch D neg exch neg D P V A F U S} bind def\n");
-		fprintf (ps.fp, "/D2 {M 5 {dup} repeat D neg exch D neg exch neg D P V C F U N} bind def\n");
-		fprintf (ps.fp, "/D3 {M 5 {dup} repeat D neg exch D neg exch neg D P V C F U S} bind def\n");
-		fprintf (ps.fp, "/D4 {M 5 {dup} repeat D neg exch D neg exch neg D P S} bind def\n");
-		fprintf (ps.fp, "/R0 {M dup 0 D exch 0 exch D neg 0 D P V A F U N} bind def\n");
-		fprintf (ps.fp, "/R1 {M dup 0 D exch 0 exch D neg 0 D P V A F U S} bind def\n");
-		fprintf (ps.fp, "/R2 {M dup 0 D exch 0 exch D neg 0 D P V C F U N} bind def\n");
-		fprintf (ps.fp, "/R3 {M dup 0 D exch 0 exch D neg 0 D P V C F U S} bind def\n");
-		fprintf (ps.fp, "/R4 {M dup 0 D exch 0 exch D neg 0 D P S} bind def\n");
-		fprintf (ps.fp, "/S0 {M dup dup 0 D 0 exch D neg 0 D P V A F U N} bind def\n");
-		fprintf (ps.fp, "/S1 {M dup dup 0 D 0 exch D neg 0 D P V A F U S} bind def\n");
-		fprintf (ps.fp, "/S2 {M dup dup 0 D 0 exch D neg 0 D P V C F U N} bind def\n");
-		fprintf (ps.fp, "/S3 {M dup dup 0 D 0 exch D neg 0 D P V C F U S} bind def\n");
-		fprintf (ps.fp, "/S4 {M dup dup 0 D 0 exch D neg 0 D P S} bind def\n");
-		fprintf (ps.fp, "/T0 {M dup 0 D dup -0.5 mul exch 0.866025 mul D P V A F U N} bind def\n");
-		fprintf (ps.fp, "/T1 {M dup 0 D dup -0.5 mul exch 0.866025 mul D P V A F U S} bind def\n");
-		fprintf (ps.fp, "/T2 {M dup 0 D dup -0.5 mul exch 0.866025 mul D P V C F U N} bind def\n");
-		fprintf (ps.fp, "/T3 {M dup 0 D dup -0.5 mul exch 0.866025 mul D P V C F U S} bind def\n");
-		fprintf (ps.fp, "/T4 {M dup 0 D dup -0.5 mul exch 0.866025 mul D P S} bind def\n");
-		fprintf (ps.fp, "/I0 {M dup 0 D dup -0.5 mul exch -0.866025 mul D P V A F U N} bind def\n");
-		fprintf (ps.fp, "/I1 {M dup 0 D dup -0.5 mul exch -0.866025 mul D P V A F U S} bind def\n");
-		fprintf (ps.fp, "/I2 {M dup 0 D dup -0.5 mul exch -0.866025 mul D P V C F U N} bind def\n");
-		fprintf (ps.fp, "/I3 {M dup 0 D dup -0.5 mul exch -0.866025 mul D P V C F U S} bind def\n");
-		fprintf (ps.fp, "/I4 {M dup 0 D dup -0.5 mul exch -0.866025 mul D P S} bind def\n");
-		fprintf (ps.fp, "/E0 {V T dup 0 exch M 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop P V A F U N U} bind def\n");
-		fprintf (ps.fp, "/E1 {V T dup 0 exch M 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop P V A F U S U} bind def\n");
-		fprintf (ps.fp, "/E2 {V T dup 0 exch M 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop P V C F U N U} bind def\n");
-		fprintf (ps.fp, "/E3 {V T dup 0 exch M 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop P V C F U S U} bind def\n");
-		fprintf (ps.fp, "/E4 {V T dup 0 exch M 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop P S U} bind def\n");
-		fprintf (ps.fp, "/H0 {V T dup dup 0.5 mul exch 0.866025404 mul M 5 {-60 R dup 0 D} repeat pop P V A F U N U} bind def\n");
-		fprintf (ps.fp, "/H1 {V T dup dup 0.5 mul exch 0.866025404 mul M 5 {-60 R dup 0 D} repeat pop P V A F U S U} bind def\n");
-		fprintf (ps.fp, "/H2 {V T dup dup 0.5 mul exch 0.866025404 mul M 5 {-60 R dup 0 D} repeat pop P V C F U N U} bind def\n");
-		fprintf (ps.fp, "/H3 {V T dup dup 0.5 mul exch 0.866025404 mul M 5 {-60 R dup 0 D} repeat pop P V C F U S U} bind def\n");
-		fprintf (ps.fp, "/H4 {V T dup dup 0.5 mul exch 0.866025404 mul M 5 {-60 R dup 0 D} repeat pop P S U} bind def\n");
-		fprintf (ps.fp, "/P0 {arc P V A F U N} bind def\n");
-		fprintf (ps.fp, "/P1 {arc P V A F U S} bind def\n");
-		fprintf (ps.fp, "/P2 {arc P V C F U N} bind def\n");
-		fprintf (ps.fp, "/P3 {arc P V C F U S} bind def\n");
-		fprintf (ps.fp, "/P4 {arc P S} bind def\n");
-		fprintf (ps.fp, "/a {P V A F U N} def\n");
-		fprintf (ps.fp, "/b {P V A F U S} def\n");
-		fprintf (ps.fp, "/c {P V C F U N} def\n");
-		fprintf (ps.fp, "/d {P V C F U S} def\n");
-		fprintf (ps.fp, "/p {P S} def\n");
-	
+		/* XXX This should be done by code in the prologue */
+		/* XXX This may also be wishful thinking. */
 		/* Define font macros (see pslib.h for details on how to add fonts) */
 		
 		for (i = 0; i < N_FONTS; i++) fprintf (ps.fp, "/F%d {/%s Y} bind def\n", i, ps_font_name[i]);
@@ -1428,8 +1330,8 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		init_font_encoding (eps);	/* Reencode fonts if necessary */
 
 		if (!ps.eps_format) fprintf (ps.fp, "/#copies %d def\n\n", ncopies);
-		fprintf (ps.fp, "%%%%EndProlog\n\n");
-		
+	 	fprintf (ps.fp, "%%%%EndProlog\n\n");
+
 		fprintf (ps.fp, "%%%%BeginSetup\n\n");
 		fprintf (ps.fp, "/PSLevel /languagelevel where {pop languagelevel} {1} ifelse def\n");
 		if (manual)	/* Manual media feed requested */
@@ -1482,9 +1384,9 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 }
 
 /* fortran interface */
-void ps_plotinit_ (char *plotfile, int *overlay, int *mode, double *xoff, double *yoff, double *xscl, double *yscl, int *ncopies, int *dpi, int *unit, int *page_size, int *rgb, int nlen)
+void ps_plotinit_ (char *plotfile, int *overlay, int *mode, double *xoff, double *yoff, double *xscl, double *yscl, int *ncopies, int *dpi, int *unit, int *page_size, int *rgb, int nlen, const char *encoding)
 {
-	 ps_plotinit (plotfile, *overlay, *mode, *xoff, *yoff, *xscl, *yscl, *ncopies, *dpi, *unit, page_size, rgb, (struct EPS *)NULL);
+	 ps_plotinit (plotfile, *overlay, *mode, *xoff, *yoff, *xscl, *yscl, *ncopies, *dpi, *unit, page_size, rgb, encoding, (struct EPS *)NULL);
 }
 
 void ps_plotr (double x, double y, int pen)
@@ -2574,7 +2476,7 @@ void ps_encode_font (int font_no)
 
 	/* Reencode fonts with Standard+ or ISOLatin1[+] encodings */
 	fprintf (ps.fp, "PSL_font_encode %d get 0 eq { %% Set this font\n", font_no);
-	fprintf (ps.fp, "\t%s /%s /%s PSL_reencode\n", ps_encoding[ps.encoding], ps_font_name[font_no], ps_font_name[font_no]);
+	fprintf (ps.fp, "\t%s_Encoding /%s /%s PSL_reencode\n", ps.encoding, ps_font_name[font_no], ps_font_name[font_no]);
 	fprintf (ps.fp, "\tPSL_font_encode %d 1 put\n} if\n", font_no);
 }
 
@@ -2588,15 +2490,6 @@ void init_font_encoding (struct EPS *eps)
 	fprintf (ps.fp, "\texch /Encoding exch def currentdict end definefont pop\n");
 	fprintf (ps.fp, "} bind def\n");
 
-	fprintf (ps.fp, "\n%% Here is the complete encoding vector for Standard+ encoding (GMT3.4 WANT_EURO_FONT encoding)\n");
-	fprintf (ps.fp, "\n/%s[\n", ps_encoding[1]);
-	for (i = 0; i < 256; i++) fprintf (ps.fp, "%s\n", ps_StandardPlusEncoding[i]);
-	fprintf (ps.fp, "] def\n");
-	fprintf (ps.fp, "\n%% Here is the complete encoding vector for ISOLatin1+ encoding (ISOLatin1 plus GMT 4.0 extentions)\n");
-	fprintf (ps.fp, "\n/%s[\n", ps_encoding[3]);
-	for (i = 0; i < 256; i++) fprintf (ps.fp, "%s\n", ps_ISOLatin1PlusEncoding[i]);
-	fprintf (ps.fp, "] def\n");
-	
 	/* Initialize T/F array for font reencoding so that we only do it once
 	 * for each font that is used */
 
@@ -2619,29 +2512,44 @@ char *ps_prepare_text (char *text)
 {
 	char *string;
 	int i=0, j=0;
+	int he = 0;		/* GMT Historical Encoding (if any) */
 
-	string = (char *) ps_memory (VNULL, (size_t)(2 * BUFSIZ), sizeof(char));
+	if (strcmp ("Standard", ps.encoding) == 0)
+		he = 1;
+	if (strcmp ("Standard+", ps.encoding) == 0)
+		he = 2;
+	/* ISOLatin1 and ISOLatin1+ are the same _here_. */
+	if (strncmp ("ISOLatin1", ps.encoding, 9) == 0)
+		he = 3;
+
+	string = ps_memory (NULL, 2 * BUFSIZ, sizeof(char));
 	while (text[i]) {
-		if (text[i] == '@') {
+		if (he && text[i] == '@') {
 			i++;
 			switch (text[i]) {
 				case 'A':
-					strcat (string, ps_scandcodes[0][ps.encoding]); j += strlen(ps_scandcodes[0][ps.encoding]); i++;
+					strcat (string, ps_scandcodes[0][he-1]);
+					j += strlen(ps_scandcodes[0][he-1]); i++;
 					break;
 				case 'E':
-					strcat (string, ps_scandcodes[1][ps.encoding]); j += strlen(ps_scandcodes[1][ps.encoding]); i++;
+					strcat (string, ps_scandcodes[1][he-1]);
+					j += strlen(ps_scandcodes[1][he-1]); i++;
 					break;
 				case 'O':
-					strcat (string, ps_scandcodes[2][ps.encoding]); j += strlen(ps_scandcodes[2][ps.encoding]); i++;
+					strcat (string, ps_scandcodes[2][he-1]);
+					j += strlen(ps_scandcodes[2][he-1]); i++;
 					break;
 				case 'a':
-					strcat (string, ps_scandcodes[3][ps.encoding]); j += strlen(ps_scandcodes[3][ps.encoding]); i++;
+					strcat (string, ps_scandcodes[3][he-1]);
+					j += strlen(ps_scandcodes[3][he-1]); i++;
 					break;
 				case 'e':
-					strcat (string, ps_scandcodes[4][ps.encoding]); j += strlen(ps_scandcodes[4][ps.encoding]); i++;
+					strcat (string, ps_scandcodes[4][he-1]);
+					j += strlen(ps_scandcodes[4][he-1]); i++;
 					break;
 				case 'o':
-					strcat (string, ps_scandcodes[5][ps.encoding]); j += strlen(ps_scandcodes[5][ps.encoding]); i++;
+					strcat (string, ps_scandcodes[5][he-1]);
+					j += strlen(ps_scandcodes[5][he-1]); i++;
 					break;
 				case '@':
 /*    Also now converts "@@" to the octal code for "@" = "\100".
@@ -2725,7 +2633,7 @@ unsigned char *ps_loadraster (char *file, struct rasterfile *header, BOOLEAN inv
 		}
 		if (header->ras_type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
 		
-		if (mx < mx_in) {	/* OK, here we must shuffle image to get rid of the superflous last byte per line */
+		if (mx < mx_in) {	/* OK, here we must shuffle image to get rid of the superfluous last byte per line */
 			for (j = k = ij = 0; j < ny; j++) {
 				for (i = 0; i < mx; i++) buffer[k++] = buffer[ij++];
 				ij++;	/* Skip the extra byte */
@@ -2930,7 +2838,7 @@ unsigned char * ps_1bit_to_24bit (unsigned char *pattern, struct rasterfile *h, 
 	   specified foreground and background colors.  Input image pattern has rows that
 	   are multiples of 8 bits. */
 
-	int color_choice[2][3], mx, extra, step, i, j, k, kk, id, nx, ny;
+	int color_choice[2][3], mx, extra, step, i, j, k, kk, id, nx, ny, m, my;
 	unsigned int p;
 	unsigned char *rgb;
 
@@ -2948,24 +2856,24 @@ unsigned char * ps_1bit_to_24bit (unsigned char *pattern, struct rasterfile *h, 
 	extra = nx - mx * 8;		/* Remainder of bits in the last byte in 1-bit image */
 	step = (extra) ? mx + 1: mx;	/* Number of bytes per row */
 
-	for (j = kk = 0; j < ny; j++) {		/* For each row in image */
+	for (j = kk = my = 0; j < ny; j++, my += step) {		/* For each row in image */
 
-		for (i = 0; i < mx; i++) {	/* For each chunk of full 8 bits */
+		for (i = 0, m = my; i < mx; i++, m++) {	/* For each chunk of full 8 bits */
 
 			for (k = 0; k < 8; k++) {	/* Deal with each bit */
 
 				p = (128 >> k);
-				id = (((unsigned int)(pattern[j*step+i]) & p) == 0);	/* 0 = bacground, 1 = foreground */
+				id = (((unsigned int)(pattern[m]) & p) == 0);	/* 0 = bacground, 1 = foreground */
 				rgb[kk++] = color_choice[id][0];
 				rgb[kk++] = color_choice[id][1];
 				rgb[kk++] = color_choice[id][2];
 
 			}
 		}
-		if (extra) {	/* Deal with remainder of bits in last short (i is already incremented) */
+		if (extra) {	/* Deal with remainder of bits in last short (m is already incremented) */
 			for (k = 0; k < extra; k++) {
 				p = (128 >> k);
-				id = (((unsigned int)(pattern[j*step+i]) & p) == 0);
+				id = (((unsigned int)(pattern[m]) & p) == 0);
 				rgb[kk++] = color_choice[id][0];
 				rgb[kk++] = color_choice[id][1];
 				rgb[kk++] = color_choice[id][2];
@@ -3451,15 +3359,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	/* Load PSL_text procedures from file for now */
 
 	if (PSL_first) {
-		sprintf (line, "%s%cshare%cPSL_text.ps\0", PSHOME, DIR_DELIM, DIR_DELIM);
-
-		if ((fp = fopen (line, "r")) == NULL) {
-			fprintf (stderr, "pslib: ERROR: Cannot open file %s\n", line);
-			exit (EXIT_FAILURE);
-		}
-
-		while (fgets (line, BUFSIZ, fp)) fprintf (ps.fp, "%s", line);
-		fclose (fp);
+		bulkcopy ("PSL_text");
 		PSL_first = FALSE;
 	}
 
@@ -3794,3 +3694,33 @@ int ps_comp_int_asc (const void *p1, const void *p2)
 	else
 		return (0);
 }
+
+/* This function copies a file called $GMTHOME/share/pslib/???.ps
+ * to the postscript output verbatim.
+ */
+static void bulkcopy (const char *fname)
+{
+	FILE *in;
+	ssize_t nread;
+	char buf[80];
+	char *fullname;
+	long maxnamelen;
+
+	maxnamelen = pathconf (PSHOME, _PC_PATH_MAX);
+	if (maxnamelen <= 0)
+		maxnamelen = strlen (fname) + strlen (PSHOME) + 5;
+	fullname = ps_memory (NULL, maxnamelen, sizeof (char));
+	sprintf (fullname, "%s%cshare%cpslib%c%s.ps", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, fname);
+
+	in = fopen (fullname, "r");
+	if (in == NULL)
+	{
+		fprintf (stderr, "PSL Fatal Error: ");
+		perror (fullname);
+		exit (EXIT_FAILURE);
+	}
+	while ((nread = fread (buf, 1, sizeof (buf), in)) > 0)
+		fwrite (buf, 1, nread, ps.fp);
+	fclose (in);
+	ps_free (fullname);
+ }

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.27 2001-10-01 23:26:08 pwessel Exp $
+ *	$Id: gmt.h,v 1.28 2001-10-15 17:25:05 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -68,6 +68,7 @@
 #endif
 #include <stdio.h>
 #include <stdlib.h>
+#define _XOPEN_SOURCE
 #include <string.h>
 #include <time.h>
 
@@ -322,10 +323,14 @@ struct GMTDEFAULTS {
 	int time_system;		/* Which time system is in effect */
 	int time_week_start;		/* Which day (Sun = 0, Sat = 7) is start of week */
 	char time_language[32];		/* Language file for time support */
-	int char_encoding;		/* PostScript font encoding used */
 	int Y2K_offset_year;		/* Cutoff for making 4-digit years from 2-digit years (1900 vs 2000) */
 	char field_delimeter[8];	/* Separator between output ascii data columns [tab] */
-	int degree_symbol;		/* 0 = ring [Default], 1 = degree, 2 = colon, 3 = none */
+	enum gmt_symbol { gmt_none = -1, gmt_ring, gmt_degree, gmt_colon, gmt_squote, gmt_dquote, gmt_lastsym } degree_symbol;
+	struct gmt_encoding
+	{
+		char *name;
+		int code[gmt_lastsym]; /* Codes for symbols we print. */
+	} encoding;
 };
 
 struct GMT_HASH {	/* Used to related keywords to gmtdefaults entry */

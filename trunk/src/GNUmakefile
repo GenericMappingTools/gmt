@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.14 2001-09-19 03:43:07 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.15 2001-10-15 17:25:05 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 3.5
 #			GNU make compatible
@@ -141,7 +141,7 @@ all:		init libs $(PROGS)
 init:		gmt_nan.h gmt_notposix.h gmtmath.c grdmath.c
 
 gmt_nan.h:
-		$(CC) $(CFLAGS) gmt_nan_init.c $(CDF) $(LIBS) -o gmt_nan_init
+		$(CC) $(CFLAGS) gmt_nan_init.c $(CDF) $(LIBS) $(LDFLAGS) -o gmt_nan_init
 		$(COMPRESS) gmt_nan_init$(EXE)
 		./gmt_nan_init
 
