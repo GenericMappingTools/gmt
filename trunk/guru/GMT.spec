@@ -79,6 +79,7 @@ echo "/opt/geo-data/gmtdata" > /opt/gmt/share/coastline.conf
 /opt/gmt/bin/fitcircle
 /opt/gmt/bin/gmt2bin
 /opt/gmt/bin/gmt2dat
+/opt/gmt/bin/gmt2rgb
 /opt/gmt/bin/gmtconvert
 /opt/gmt/bin/gmtdefaults
 /opt/gmt/bin/gmtinfo
@@ -289,6 +290,7 @@ echo "/opt/geo-data/gmtdata" > /opt/gmt/share/coastline.conf
 /opt/gmt/man/manl/fitcircle.l
 /opt/gmt/man/manl/gmt2bin.l
 /opt/gmt/man/manl/gmt2dat.l
+/opt/gmt/man/manl/gmt2rgb.l
 /opt/gmt/man/manl/gmtconvert.l
 /opt/gmt/man/manl/gmtdefaults.l
 /opt/gmt/man/manl/gmtinfo.l
