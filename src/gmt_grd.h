@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.3 2001-03-01 22:08:26 pwessel Exp $
+ *	$Id: gmt_grd.h,v 1.4 2001-09-07 22:14:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -78,5 +78,17 @@ struct GRD_HEADER {
 		    and represents the surface value in a box with dimensions (1,1)
 		    centered on the node.
 -------------------------------------------------------------------------------------------*/
+
+/* These macros should be used to convert between (column,row) and (x,y).  It will eliminate
+ * one source of typos and errors, and since macros are done at compilation time there is no
+ * overhead.  Note GMT_x_to_i does not use nx but we included it for symmetry reasons.
+ * GMT_y_to_j must first compute j', the number of rows in the increasing y-direction (to
+ * match the sense of truncation used for x) then we revert to row number increaseing down
+ * by flipping: j = ny - 1 - j' */
+
+#define GMT_x_to_i(x,x0,idx,off,nx) ((int)floor((((x) - (x0)) * (idx)) + (off)))
+#define GMT_y_to_j(y,y0,idy,off,ny) ((ny) - 1 - (int)floor((((y) - (y0)) * (idy)) + (off)))
+#define GMT_i_to_x(i,x0,x1,dx,off,nx) (((i) == ((nx)-1)) ? (x1) - (off) * (dx) : (x0) + ((i) + (off)) * (dx))
+#define GMT_j_to_y(j,y0,y1,dy,off,ny) (((j) == ((ny)-1)) ? (y0) + (off) * (dy) : (y1) - ((j) + (off)) * (dy))
 
 #endif /* _GMT_GRD_H */
