@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.3 2001-04-11 19:58:09 pwessel Exp $
+ *	$Id: gmt_cdf.c,v 1.4 2001-12-24 18:20:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -26,14 +26,15 @@
  *
  * Author:	Paul Wessel
  * Date:	9-SEP-1992
- * Modified:	13-JAN-2001
- * Version:	3.4
+ * Modified:	06-DEC-2001
+ * Version:	4
  *
  * Functions include:
  *
  *	GMT_cdf_read_grd_info :		Read header from file
  *	GMT_cdf_read_grd :		Read header and data set from file
- *	GMT_cdf_write_grd_info :	Update header in existing file
+ *	GMT_cdf_update_grd_info :	Update header in existing file
+ *	GMT_cdf_write_grd_info :	Write header to new file
  *	GMT_cdf_write_grd :		Write header and data set to new file
  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
@@ -43,6 +44,9 @@
 char cdf_file[BUFSIZ];
 
 int check_nc_status(int status);
+int GMT_cdf_wu_grd_info (char *file, struct GRD_HEADER *header, char w_or_u);
+
+
 int GMT_cdf_read_grd_info (char *file, struct GRD_HEADER *header)
 {
 
@@ -113,51 +117,112 @@ int GMT_cdf_read_grd_info (char *file, struct GRD_HEADER *header)
 	return (0);
 }
 
+int GMT_cdf_update_grd_info (char *file, struct GRD_HEADER *header)
+{
+	return (GMT_cdf_wu_grd_info (file, header, 'u'));
+}
+
 int GMT_cdf_write_grd_info (char *file, struct GRD_HEADER *header)
 {
+	return (GMT_cdf_wu_grd_info (file, header, 'w'));
+}
 
-	int  cdfid, nm[2];
+int GMT_cdf_wu_grd_info (char *file, struct GRD_HEADER *header, char w_or_u)
+{
+	int  cdfid, nm[2], id;
 	size_t start[2], edge[2];
 	double dummy[2];
 	char text[GRD_COMMAND_LEN+GRD_REMARK_LEN];
+	nc_type type[6] = {NC_FLOAT, NC_BYTE, NC_CHAR, NC_SHORT, NC_INT, NC_DOUBLE};
 	
+	/* dimension ids */
+	int  side_dim, xysize_dim;
+
 	/* variable ids */
 	int  x_range_id, y_range_id, z_range_id, inc_id, nm_id, z_id;
+
+	/* variable shapes */
+	int dims[1];
 
 	if (!strcmp (file,"=")) {	/* Check if piping is attempted */
 		fprintf (stderr, "%s: GMT Fatal Error: netcdf-based i/o does not support piping - exiting\n", GMT_program);
 		exit (EXIT_FAILURE);
 	}
 
+	id = GMT_grd_o_format;
+	if (id > 6) id -= 6;	/* This translates the netCDF formats 0, 7-11 into 0-5 so we can use type[id] */
 	/* Open file and get info */
 	
 	strcpy (cdf_file, file);
-	check_nc_status (nc_open (file, NC_WRITE, &cdfid));
-
-	/* Get variable ids */
-	check_nc_status (nc_inq_varid (cdfid, "x_range", &x_range_id));
-        check_nc_status (nc_inq_varid (cdfid, "y_range", &y_range_id));
-        check_nc_status (nc_inq_varid (cdfid, "z_range", &z_range_id));
-        check_nc_status (nc_inq_varid (cdfid, "spacing", &inc_id));
-        check_nc_status (nc_inq_varid (cdfid, "dimension", &nm_id));
-        check_nc_status (nc_inq_varid (cdfid, "z", &z_id));
-
-	/* rewrite attributes */
 	
-	check_nc_status (nc_redef (cdfid));
+	if (w_or_u == 'w') {	/* Create a new file by first writing the header */
+		int *k, width_out, height_out, first_col, last_col, first_row, last_row;
+		double w = 0.0, e = 0.0, s = 0.0, n = 0.0;
+		k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row);
+		GMT_free ((void *)k);
+		
+		check_nc_status (nc_create (file, NC_CLOBBER,&cdfid));
+		
+		/* define dimensions */
+		check_nc_status (nc_def_dim(cdfid, "side", 2, &side_dim));
+		check_nc_status (nc_def_dim(cdfid, "xysize", (int) (width_out * height_out), &xysize_dim));
 
-	memset ((void *)text, 0, (size_t)(GRD_COMMAND_LEN+GRD_REMARK_LEN));
+		/* define variables */
+
+		dims[0]		= side_dim;
+		check_nc_status (nc_def_var (cdfid, "x_range", NC_DOUBLE, 1, dims, &x_range_id));
+		check_nc_status (nc_def_var (cdfid, "y_range", NC_DOUBLE, 1, dims, &y_range_id));
+		check_nc_status (nc_def_var (cdfid, "z_range", NC_DOUBLE, 1, dims, &z_range_id));
+		check_nc_status (nc_def_var (cdfid, "spacing", NC_DOUBLE, 1, dims, &inc_id));
+		check_nc_status (nc_def_var (cdfid, "dimension", NC_LONG, 1, dims, &nm_id));
+
+
+		dims[0]		= xysize_dim;
+		check_nc_status (nc_def_var (cdfid, "z", type[id], 1, dims, &z_id));
+
+		/* assign attributes */
 	
-	strcpy (text, header->command);
-	strcpy (&text[GRD_COMMAND_LEN], header->remark);
-	check_nc_status (nc_put_att_text (cdfid, x_range_id, "units", GRD_UNIT_LEN, header->x_units));
-        check_nc_status (nc_put_att_text (cdfid, y_range_id, "units", GRD_UNIT_LEN, header->y_units));
-        check_nc_status (nc_put_att_text (cdfid, z_range_id, "units", GRD_UNIT_LEN, header->z_units));
-        check_nc_status (nc_put_att_double (cdfid, z_id, "scale_factor", NC_DOUBLE, 1, &header->z_scale_factor));
-        check_nc_status (nc_put_att_double (cdfid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
-        check_nc_status (nc_put_att_int (cdfid, z_id, "node_offset", NC_LONG, 1, &header->node_offset));
-        check_nc_status (nc_put_att_text (cdfid, NC_GLOBAL, "title", GRD_TITLE_LEN, header->title));
-        check_nc_status (nc_put_att_text (cdfid, NC_GLOBAL, "source", (GRD_COMMAND_LEN+GRD_REMARK_LEN), text));
+		memset ((void *)text, 0, (size_t)(GRD_COMMAND_LEN+GRD_REMARK_LEN));
+	
+		strcpy (text, header->command);
+		strcpy (&text[GRD_COMMAND_LEN], header->remark);
+		check_nc_status (nc_put_att_text (cdfid, x_range_id, "units", GRD_UNIT_LEN, header->x_units));
+		check_nc_status (nc_put_att_text (cdfid, y_range_id, "units", GRD_UNIT_LEN, header->y_units));
+		check_nc_status (nc_put_att_text (cdfid, z_range_id, "units", GRD_UNIT_LEN, header->z_units));
+		check_nc_status (nc_put_att_double (cdfid, z_id, "scale_factor", NC_DOUBLE, 1, &header->z_scale_factor));
+		check_nc_status (nc_put_att_double (cdfid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
+		check_nc_status (nc_put_att_int (cdfid, z_id, "node_offset", NC_LONG, 1, &header->node_offset));
+		check_nc_status (nc_put_att_text (cdfid, NC_GLOBAL, "title", GRD_TITLE_LEN, header->title));
+		check_nc_status (nc_put_att_text (cdfid, NC_GLOBAL, "source", (GRD_COMMAND_LEN+GRD_REMARK_LEN), text));
+	}
+	else {			/* Update the header of an existing file */
+		check_nc_status (nc_open (file, NC_WRITE, &cdfid));
+
+		/* Get variable ids */
+		check_nc_status (nc_inq_varid (cdfid, "x_range", &x_range_id));
+		check_nc_status (nc_inq_varid (cdfid, "y_range", &y_range_id));
+		check_nc_status (nc_inq_varid (cdfid, "z_range", &z_range_id));
+		check_nc_status (nc_inq_varid (cdfid, "spacing", &inc_id));
+		check_nc_status (nc_inq_varid (cdfid, "dimension", &nm_id));
+		check_nc_status (nc_inq_varid (cdfid, "z", &z_id));
+
+		/* rewrite attributes */
+	
+		check_nc_status (nc_redef (cdfid));
+
+		memset ((void *)text, 0, (size_t)(GRD_COMMAND_LEN+GRD_REMARK_LEN));
+	
+		strcpy (text, header->command);
+		strcpy (&text[GRD_COMMAND_LEN], header->remark);
+		check_nc_status (nc_put_att_text (cdfid, x_range_id, "units", GRD_UNIT_LEN, header->x_units));
+		check_nc_status (nc_put_att_text (cdfid, y_range_id, "units", GRD_UNIT_LEN, header->y_units));
+		check_nc_status (nc_put_att_text (cdfid, z_range_id, "units", GRD_UNIT_LEN, header->z_units));
+		check_nc_status (nc_put_att_double (cdfid, z_id, "scale_factor", NC_DOUBLE, 1, &header->z_scale_factor));
+		check_nc_status (nc_put_att_double (cdfid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
+		check_nc_status (nc_put_att_int (cdfid, z_id, "node_offset", NC_LONG, 1, &header->node_offset));
+		check_nc_status (nc_put_att_text (cdfid, NC_GLOBAL, "title", GRD_TITLE_LEN, header->title));
+		check_nc_status (nc_put_att_text (cdfid, NC_GLOBAL, "source", (GRD_COMMAND_LEN+GRD_REMARK_LEN), text));
+	}
 	
 	/* leave define mode */
 	check_nc_status (nc_enddef (cdfid));

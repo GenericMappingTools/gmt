@@ -3,7 +3,7 @@
 grd2xyz \- Converting a grdfile to an ASCII or binary table
 .SH SYNOPSIS
 \fBgrd2xyz\fP \fIgrdfile\fP [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-S\fP[\fBr\fP ] [ \fB\-V\fP ] [ \fB\-Z\fP[\fIflags\fP] ] [ \fB\-bo\fP[\fBs\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+[ \fB\-S\fP[\fBr\fP ] [ \fB\-V\fP ] [ \fB\-W\fP[\fIweight\fP] ] [ \fB\-Z\fP[\fIflags\fP] ] [ \fB\-bo\fP[\fBs\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBgrd2xyz\fP reads a binary 2-D grdfile and writes out xyz-triplets in ASCII [or binary] format to standard output.
 Modify the
@@ -29,6 +29,9 @@ Suppress output for nodes whose z-value equals NaN [Default outputs all nodes].
 Append \fBr\fP to reverse the suppression, i.e., only output the nodes whose
 z-value equals NaN.
 #include "explain_-V.txt" 
+.TP
+.B \-W
+Write out x,y,z,w, where w is the supplied \fIweight\fP (or 1 if not supplied) [Default writes x,y,z only].
 .TP
 .B \-Z
 Write a 1-column ASCII [or binary] table.  Output will be organized according to the specified ordering convention contained in \fIflags\fP.

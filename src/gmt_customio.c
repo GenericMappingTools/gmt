@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.6 2001-12-21 03:50:37 ben Exp $
+ *	$Id: gmt_customio.c,v 1.7 2001-12-24 18:20:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -21,27 +21,28 @@
  *
  * Takes care of all custom format gridfile input/output.  The
  * industrious user may supply his/her own code to read specific data
- * formats.  Four functions must be supplied, and they must conform
+ * formats.  Five functions must be supplied, and they must conform
  * to the GMT standard and return the same arguments as the generic
  * GMT grdio functions.  See GMT_cdf.c for details.
  *
  * To add another data format:
  *
- *	1. Write the four required routines (see below).
+ *	1. Write the five required routines (see below).
  *	2. increment parameter N_GRD_FORMATS in file GMT_grdio.h
  *	3. Append another entry in the GMT_customio.h file.
  *	4. Provide another entry in the share/gmtformats.d file
  *
  * Author:	Paul Wessel
  * Date:	9-SEP-1992
- * Modified:	05-MAR-2001
- * Version:	3.4
+ * Modified:	06-DEC-2001
+ * Version:	4
  *
  * Functions include:
  *
  *	GMT_*_read_grd_info :	Read header from file
  *	GMT_*_read_grd :	Read header and data set from file
- *	GMT_*_write_grd_info :	Update header in existing file
+ *	GMT_*_update_grd_info :	Update header in existing file
+ *	GMT_*_write_grd_info :	Write header to new file
  *	GMT_*_write_grd :	Write header and data set to new file
  *
  * where * is a tag specific to a particular data format
@@ -52,27 +53,18 @@
  *	     expects the filename to be "=" (the equal sign).  It is the
  *	     responsibility of the custom routines to test for "=" and
  *	     give error messages if piping is not supported for this format
- *	     (e.g., netCDF uses fseek and can therefore not use pipes; other
- *	     formats may have similar limitations)
+ *	     (e.g., netcdf uses fseek and can therefore not use pipes; other
+ *	     formats may have similar limitations).
+ *	  3. For most formats the write_grd_info and update_grd_info is the
+ *	     same function (but netCDF is one exception)
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 #include "gmt.h"
 
-#define GMT_N_NATIVE_FORMATS	6
-
-#define GMT_NATIVE_CHAR		0
-#define GMT_NATIVE_UCHAR	1
-#define GMT_NATIVE_SHORT	2
-#define GMT_NATIVE_INT		3
-#define GMT_NATIVE_FLOAT	4
-#define GMT_NATIVE_DOUBLE	5
-
 int GMT_read_rasheader (FILE *fp, struct rasterfile *h);
 int GMT_write_rasheader (FILE *fp, struct rasterfile *h);
-float GMT_native_decode (void *vptr, int k, int type);
-double GMT_native_encode (float z, int type);
-size_t GMT_native_write_one (FILE *fp, float z, int type);
 int GMT_native_read_grd_info (char *file, struct GRD_HEADER *header);
+int GMT_native_update_grd_info (char *file, struct GRD_HEADER *header);
 int GMT_native_write_grd_info (char *file, struct GRD_HEADER *header);
 int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex, int type);
 int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex, int type);
@@ -106,98 +98,110 @@ void GMT_grdio_init (void) {
 
 	/* FORMAT # 0: Default GMT netCDF-based grdio */
 	
-	GMT_io_readinfo[0]  = (PFI) GMT_cdf_read_grd_info;
-	GMT_io_writeinfo[0] = (PFI) GMT_cdf_write_grd_info;
-	GMT_io_readgrd[0]   = (PFI) GMT_cdf_read_grd;
-	GMT_io_writegrd[0]  = (PFI) GMT_cdf_float_write_grd;
+	GMT_io_readinfo[0]   = (PFI) GMT_cdf_read_grd_info;
+	GMT_io_updateinfo[0] = (PFI) GMT_cdf_update_grd_info;
+	GMT_io_writeinfo[0]  = (PFI) GMT_cdf_write_grd_info;
+	GMT_io_readgrd[0]    = (PFI) GMT_cdf_read_grd;
+	GMT_io_writegrd[0]   = (PFI) GMT_cdf_float_write_grd;
 	
 	/* FORMAT # 1: GMT native binary (float) grdio */
 	
 	id = 1;
-	GMT_io_readinfo[id]  = (PFI) GMT_bin_read_grd_info;
-	GMT_io_writeinfo[id] = (PFI) GMT_bin_write_grd_info;
-	GMT_io_readgrd[id]   = (PFI) GMT_bin_read_grd;
-	GMT_io_writegrd[id]  = (PFI) GMT_bin_write_grd;
+	GMT_io_readinfo[id]   = (PFI) GMT_bin_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_bin_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_bin_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_bin_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_bin_write_grd;
 	
 	/* FORMAT # 2: GMT native binary (short) grdio */
 	
 	id = 2;
-	GMT_io_readinfo[id]  = (PFI) GMT_short_read_grd_info;
-	GMT_io_writeinfo[id] = (PFI) GMT_short_write_grd_info;
-	GMT_io_readgrd[id]   = (PFI) GMT_short_read_grd;
-	GMT_io_writegrd[id]  = (PFI) GMT_short_write_grd;
+	GMT_io_readinfo[id]   = (PFI) GMT_short_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_short_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_short_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_short_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_short_write_grd;
 	
 	/* FORMAT # 3: SUN 8-bit standard rasterfile grdio */
 	
 	id = 3;
-	GMT_io_readinfo[id]  = (PFI) GMT_ras_read_grd_info;
-	GMT_io_writeinfo[id] = (PFI) GMT_ras_write_grd_info;
-	GMT_io_readgrd[id]   = (PFI) GMT_ras_read_grd;
-	GMT_io_writegrd[id]  = (PFI) GMT_ras_write_grd;
+	GMT_io_readinfo[id]   = (PFI) GMT_ras_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_ras_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_ras_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_ras_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_ras_write_grd;
 	
 	/* FORMAT # 4: GMT native binary (uchar) grdio */
 	
 	id = 4;
-	GMT_io_readinfo[id]  = (PFI) GMT_uchar_read_grd_info;
-	GMT_io_writeinfo[id] = (PFI) GMT_uchar_write_grd_info;
-	GMT_io_readgrd[id]   = (PFI) GMT_uchar_read_grd;
-	GMT_io_writegrd[id]  = (PFI) GMT_uchar_write_grd;
+	GMT_io_readinfo[id]   = (PFI) GMT_uchar_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_uchar_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_uchar_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_uchar_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_uchar_write_grd;
 
 	/* FORMAT # 5: GMT native binary (bit) grdio */
 	
 	id = 5;
-	GMT_io_readinfo[id]  = (PFI) GMT_bit_read_grd_info;
-	GMT_io_writeinfo[id] = (PFI) GMT_bit_write_grd_info;
-	GMT_io_readgrd[id]   = (PFI) GMT_bit_read_grd;
-	GMT_io_writegrd[id]  = (PFI) GMT_bit_write_grd;
+	GMT_io_readinfo[id]   = (PFI) GMT_bit_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_bit_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_bit_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_bit_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_bit_write_grd;
 
 	/* FORMAT # 6: GMT native binary (float) grdio (Surfer format) */
 	
 	id = 6;
-	GMT_io_readinfo[id]  = (PFI) GMT_srf_read_grd_info;
-	GMT_io_writeinfo[id] = (PFI) GMT_srf_write_grd_info;
-	GMT_io_readgrd[id]   = (PFI) GMT_srf_read_grd;
-	GMT_io_writegrd[id]  = (PFI) GMT_srf_write_grd;
+	GMT_io_readinfo[id]   = (PFI) GMT_srf_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_srf_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_srf_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_srf_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_srf_write_grd;
 
 	/* FORMAT # 7: GMT netCDF-based grdio (byte) */
  	
 	id = 7;
-	GMT_io_readinfo[id]  = (PFI) GMT_cdf_read_grd_info;
-	GMT_io_writeinfo[id] = (PFI) GMT_cdf_write_grd_info;
-	GMT_io_readgrd[id]   = (PFI) GMT_cdf_read_grd;
-	GMT_io_writegrd[id]  = (PFI) GMT_cdf_byte_write_grd;
+	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_cdf_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_cdf_byte_write_grd;
 	
 	/* FORMAT # 8: GMT netCDF-based grdio (char) */
  	
 	id = 8;
-	GMT_io_readinfo[id]  = (PFI) GMT_cdf_read_grd_info;
-	GMT_io_writeinfo[id] = (PFI) GMT_cdf_write_grd_info;
-	GMT_io_readgrd[id]   = (PFI) GMT_cdf_read_grd;
-	GMT_io_writegrd[id]  = (PFI) GMT_cdf_char_write_grd;
+	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_cdf_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_cdf_char_write_grd;
 	
 	/* FORMAT # 9: GMT netCDF-based grdio (short) */
  	
 	id = 9;
-	GMT_io_readinfo[id]  = (PFI) GMT_cdf_read_grd_info;
-	GMT_io_writeinfo[id] = (PFI) GMT_cdf_write_grd_info;
-	GMT_io_readgrd[id]   = (PFI) GMT_cdf_read_grd;
-	GMT_io_writegrd[id]  = (PFI) GMT_cdf_short_write_grd;
+	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_cdf_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_cdf_short_write_grd;
 	
 	/* FORMAT # 10: GMT netCDF-based grdio (int) */
  	
 	id = 10;
-	GMT_io_readinfo[id]  = (PFI) GMT_cdf_read_grd_info;
-	GMT_io_writeinfo[id] = (PFI) GMT_cdf_write_grd_info;
-	GMT_io_readgrd[id]   = (PFI) GMT_cdf_read_grd;
-	GMT_io_writegrd[id] = (PFI) GMT_cdf_int_write_grd;
+	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_cdf_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_cdf_int_write_grd;
 	
 	/* FORMAT # 11: GMT netCDF-based grdio (double) */
  	
 	id = 11;
-	GMT_io_readinfo[id]  = (PFI) GMT_cdf_read_grd_info;
-	GMT_io_writeinfo[id] = (PFI) GMT_cdf_write_grd_info;
-	GMT_io_readgrd[id]   = (PFI) GMT_cdf_read_grd;
-	GMT_io_writegrd[id] = (PFI) GMT_cdf_double_write_grd;
+	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_cdf_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_cdf_double_write_grd;
 
 	/*
 	 * ----------------------------------------------
@@ -219,13 +223,18 @@ void GMT_grdio_init (void) {
  *		programs can support piping (they may have
  *		to re-read the file or accept more than one
  *		grdfile).
- * Functions :	GMT_bin_read_grd_info, GMT_bin_write_grd_info,
- *		GMT_bin_read_grd, GMT_bin_write_grd
+ * Functions :	GMT_bin_read_grd_info, GMT_bin_update_grd_info,
+ *		GMT_bin_write_grd_info, GMT_bin_read_grd, GMT_bin_write_grd
  *-----------------------------------------------------------*/
  
 int GMT_bin_read_grd_info (char *file, struct GRD_HEADER *header)
 {
 	return (GMT_native_read_grd_info (file, header));
+}
+
+int GMT_bin_update_grd_info (char *file, struct GRD_HEADER *header)
+{
+	return (GMT_native_update_grd_info (file, header));
 }
 
 int GMT_bin_write_grd_info (char *file, struct GRD_HEADER *header)
@@ -258,13 +267,18 @@ int GMT_bin_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
  *		grdfile).  Datasets with limited range may
  *		be stored using 2-byte integers which will
  *		reduce storage space and improve throughput.
- * Functions :	GMT_short_read_grd_info, GMT_short_write_grd_info,
- *		GMT_short_read_grd, GMT_short_write_grd
+ * Functions :	GMT_short_read_grd_info, GMT_short_update_grd_info,
+ *		GMT_short_write_grd_info, GMT_short_read_grd, GMT_short_write_grd
  *-----------------------------------------------------------*/
  
 int GMT_short_read_grd_info (char *file, struct GRD_HEADER *header)
 {	
 	return (GMT_native_read_grd_info (file, header));
+}
+
+int GMT_short_update_grd_info (char *file, struct GRD_HEADER *header)
+{
+	return (GMT_native_update_grd_info (file, header));
 }
 
 int GMT_short_write_grd_info (char *file, struct GRD_HEADER *header)
@@ -300,8 +314,8 @@ int GMT_short_write_grd (char *file, struct GRD_HEADER *header, float *grid, dou
  *			dx = dy = 1
  *		Such files are always pixel registered
  *			
- * Functions :	GMT_ras_read_grd_info, GMT_ras_write_grd_info,
- *		GMT_ras_read_grd, GMT_ras_write_grd
+ * Functions :	GMT_ras_read_grd_info, GMT_ras_update_grd_info,
+ *		GMT_ras_write_grd_info, GMT_ras_read_grd, GMT_ras_write_grd
  *-----------------------------------------------------------*/
 
 #define	RAS_MAGIC	0x59a66a95
@@ -348,6 +362,11 @@ int GMT_ras_read_grd_info (char *file, struct GRD_HEADER *header)
 	header->node_offset = 1;	/* Pixel format */
 	
 	return (FALSE);
+}
+
+int GMT_ras_update_grd_info (char *file, struct GRD_HEADER *header)
+{
+	return (GMT_ras_write_grd_info (file, header));
 }
 
 int GMT_ras_write_grd_info (char *file, struct GRD_HEADER *header)
@@ -428,7 +447,7 @@ int GMT_ras_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 
-	check = !GMT_is_fnan (GMT_grd_in_nan_value);
+	check = !GMT_is_dnan (GMT_grd_in_nan_value);
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row);
 
@@ -520,7 +539,7 @@ int GMT_ras_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	n2 = (int) ceil (header->nx / 2.0) * 2;
 	tmp = (unsigned char *) GMT_memory (VNULL, (size_t)n2, sizeof (unsigned char), "GMT_ras_write_grd");
 	
-	check = !GMT_is_fnan (GMT_grd_out_nan_value);
+	check = !GMT_is_dnan (GMT_grd_out_nan_value);
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row);
 
@@ -686,12 +705,17 @@ int GMT_write_rasheader (FILE *fp, struct rasterfile *h)
  *		be stored using 1-byte unsigned characters which will
  *		reduce storage space and improve throughput.
  * Functions :	GMT_uchar_read_grd_info, GMT_uchar_write_grd_info,
- *		GMT_uchar_read_grd, GMT_uchar_write_grd
+ *		GMT_uchar_write_grd_info, GMT_uchar_read_grd, GMT_uchar_write_grd
  *-----------------------------------------------------------*/
  
 int GMT_uchar_read_grd_info (char *file, struct GRD_HEADER *header)
 {	
 	return (GMT_native_read_grd_info (file, header));
+}
+
+int GMT_uchar_update_grd_info (char *file, struct GRD_HEADER *header)
+{
+	return (GMT_native_update_grd_info (file, header));
 }
 
 int GMT_uchar_write_grd_info (char *file, struct GRD_HEADER *header)
@@ -725,12 +749,17 @@ int GMT_uchar_write_grd (char *file, struct GRD_HEADER *header, float *grid, dou
  *		like bitmasks can be stored using bits
  *		We use 4-byte integers to store 32 bits at the time
  * Functions :	GMT_bit_read_grd_info, GMT_bit_write_grd_info,
- *		GMT_bit_read_grd, GMT_bit_write_grd
+ *		GMT_bit_write_grd_info, GMT_bit_read_grd, GMT_bit_write_grd
  *-----------------------------------------------------------*/
  
 int GMT_bit_read_grd_info (char *file, struct GRD_HEADER *header)
 {	
 	return (GMT_native_read_grd_info (file, header));
+}
+
+int GMT_bit_update_grd_info (char *file, struct GRD_HEADER *header)
+{
+	return (GMT_native_update_grd_info (file, header));
 }
 
 int GMT_bit_write_grd_info (char *file, struct GRD_HEADER *header)
@@ -769,7 +798,7 @@ int GMT_bit_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 		exit (EXIT_FAILURE);
 	}
 	
-	check = !GMT_is_fnan (GMT_grd_in_nan_value);
+	check = !GMT_is_dnan (GMT_grd_in_nan_value);
 	mx = (int) ceil (header->nx / 32.0);
 	
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row);
@@ -861,7 +890,7 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 		exit (EXIT_FAILURE);
 	}
 	
-	check = !GMT_is_fnan (GMT_grd_out_nan_value);
+	check = !GMT_is_dnan (GMT_grd_out_nan_value);
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row);
 
@@ -956,6 +985,11 @@ int GMT_native_read_grd_info (char *file, struct GRD_HEADER *header)
 	if (fp != GMT_stdin) fclose (fp);
 	
 	return (FALSE);
+}
+
+int GMT_native_update_grd_info (char *file, struct GRD_HEADER *header)
+{
+	return (GMT_native_write_grd_info (file, header));
 }
 
 int GMT_native_write_grd_info (char *file, struct GRD_HEADER *header)
@@ -1292,7 +1326,7 @@ size_t GMT_native_write_one (FILE *fp, float z, int type)
  * Date :	9-SEP-1999
  * Purpose:	to transform to/from Surfer grid file format
  * Functions :	GMT_srf_read_grd_info, GMT_srf_write_grd_info,
- *		GMT_srf_read_grd, GMT_srf_write_grd	
+ *		GMT_srf_write_grd_info, GMT_srf_read_grd, GMT_srf_write_grd	
  *-----------------------------------------------------------*/
  
 struct srf_header {	/* Surfer file header structure */
@@ -1350,6 +1384,11 @@ int GMT_srf_read_grd_info (char *file, struct GRD_HEADER *header)
 
 	
 	return (FALSE);
+}
+
+int GMT_srf_update_grd_info (char *file, struct GRD_HEADER *header)
+{
+	return (GMT_srf_write_grd_info (file, header));
 }
 
 int GMT_srf_write_grd_info (char *file, struct GRD_HEADER *header)

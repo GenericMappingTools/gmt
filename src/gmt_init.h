@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.23 2001-12-21 03:50:38 ben Exp $
+ *	$Id: gmt_init.h,v 1.24 2001-12-24 18:20:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -167,6 +167,7 @@ struct GMT_IO GMT_io = {
 	"",
 	"r",
 	"w",
+	"a+",
 	(BOOLEAN *)NULL,
 	(int *)NULL,
 	(int *)NULL,
@@ -181,6 +182,7 @@ int GMT_grd_i_format = 0;		/* Default is GMT's cdf format */
 int GMT_grd_o_format = 0;
 int GMT_n_file_suffix;
 PFI GMT_io_readinfo[N_GRD_FORMATS];
+PFI GMT_io_updateinfo[N_GRD_FORMATS];
 PFI GMT_io_writeinfo[N_GRD_FORMATS];
 PFI GMT_io_readgrd[N_GRD_FORMATS];
 PFI GMT_io_writegrd[N_GRD_FORMATS];

@@ -7,7 +7,7 @@
 grdimage \- Create grayshaded or colored image from a 2-D netCDF grd file
 .SH SYNOPSIS
 \fBgrdimage\fP \fIgrd_z\fP | \fIgrd_r grd_g grd_b\fP \fB\-C\fP\fIcptfile\fP \fB\-J\fP\fIparameters\fP 
-[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-E\fP\fIdpi\fP ] [ \fB\-G\fP[\fBf|b\fP]\fIrgb\fP ] [ \fB\-I\fP\fIintensfile\fP] [ \fB\-K\fP ] 
+[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-Ei\fP|\fIdpi\fP ] [ \fB\-G\fP[\fBf|b\fP]\fIrgb\fP ] [ \fB\-I\fP\fIintensfile\fP] [ \fB\-K\fP ] 
 [ \fB\-M\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP\fIsearch_radius\fP ] 
 [ \fB\-T\fP[\fBs\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] 
 [ \fB\-c\fP\fIcopies\fP ]
@@ -39,7 +39,7 @@ No space between the option flag and the associated arguments.
 Sets the resolution of the projected grid that will be created if
 a map projection other than Linear or Mercator was selected.  By default,
 the projected grid will be of the same size (rows and columns) as the
-input file.  If a negative \fIdpi\fP is given, we use the PostScript
+input file.  Specify \fBi\fP to use the PostScript
 image operator to interpolate the image at the device resolution.
 .TP
 .B \-G

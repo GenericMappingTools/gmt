@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.20 2001-12-21 03:50:38 ben Exp $
+ *	$Id: gmt_support.c,v 1.21 2001-12-24 18:20:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3558,6 +3558,7 @@ int GMT_getscale (char *text, double *x0, double *y0, double *scale_lat, double 
 	
 	if (text[j] == 'f') *fancy = TRUE, j++;
 	if (text[j] == 'x') *gave_xy = TRUE, j++;
+	if (text[j] == 'f') *fancy = TRUE, j++;	/* in case we got xf instead of fx */
 	k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%lf", txt_a, txt_b, txt_c, length);
 	if ((*gave_xy)) {	/* Convert user's x/y to inches */
 		*x0 = GMT_convert_units (txt_a, GMT_INCH);

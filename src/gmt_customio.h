@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.h,v 1.3 2001-03-01 22:08:26 pwessel Exp $
+ *	$Id: gmt_customio.h,v 1.4 2001-12-24 18:20:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -20,50 +20,71 @@
  * Include file for gmt_customio functions.
  *
  * Author:	Paul Wessel
- * Date:	10-AUG-1995
- * Version:	3.4
+ * Date:	06-DEC-2001
+ * Version:	4
  *
  */
 
 #ifndef GMT_CUSTOMIO_H
 #define GMT_CUSTOMIO_H
 
-/* List groups of 4 integer functions for each custom i/o grd format */
+/* List groups of 5 integer functions for each custom i/o grd format */
 
 /* Format # 1 */
 EXTERN_MSC int GMT_bin_read_grd_info (char *file, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_bin_update_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_bin_write_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_bin_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 EXTERN_MSC int GMT_bin_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 
 /* Format # 2 */
 EXTERN_MSC int GMT_short_read_grd_info (char *file, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_short_update_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_short_write_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_short_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 EXTERN_MSC int GMT_short_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 
 /* Format # 3 */
 EXTERN_MSC int GMT_ras_read_grd_info (char *file, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_ras_update_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_ras_write_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_ras_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 EXTERN_MSC int GMT_ras_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 
 /* Format # 4 */
 EXTERN_MSC int GMT_uchar_read_grd_info (char *file, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_uchar_update_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_uchar_write_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_uchar_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 EXTERN_MSC int GMT_uchar_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 
 /* Format # 5 */
 EXTERN_MSC int GMT_bit_read_grd_info (char *file, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_bit_update_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_bit_write_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_bit_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 EXTERN_MSC int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 
 /* Format # 6 */
 EXTERN_MSC int GMT_srf_read_grd_info (char *file, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_srf_update_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_srf_write_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_srf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 EXTERN_MSC int GMT_srf_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
+
+#define GRD_IS_CDF(id) ((id) == 0 || ((id) >= 6 && (id) <= 11))
+#define HEADER_SIZE	892
+#define GMT_N_NATIVE_FORMATS	6
+
+#define GMT_NATIVE_CHAR		0
+#define GMT_NATIVE_UCHAR	1
+#define GMT_NATIVE_SHORT	2
+#define GMT_NATIVE_INT		3
+#define GMT_NATIVE_FLOAT	4
+#define GMT_NATIVE_DOUBLE	5
+
+EXTERN_MSC size_t GMT_native_write_one (FILE *fp, float z, int type);
+EXTERN_MSC float GMT_native_decode (void *vptr, int k, int type);
+EXTERN_MSC double GMT_native_encode (float z, int type);
 
 #endif /* GMT_CUSTOMIO_H */

@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.5 2001-12-20 02:56:01 ben Exp $
+REM	$Id: gmtinstall.bat,v 1.6 2001-12-24 18:20:29 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
@@ -19,12 +19,12 @@ REM
 REM	Contact info: www.soest.hawaii.edu/gmt
 REM --------------------------------------------------------------------
 REM This extremely lame DOS batch file will compile
-REM the GMT 3.4 suite of programs under WIN32 using
+REM the GMT 4 suite of programs under WIN32 using
 REM Microsoft Visual C/c++ tools.  It will build GMT
 REM using DLL libraries.  To make static executables
 REM you must make some edits to the setup below.
 REM
-REM Author: Paul Wessel, 18-APR-2001
+REM Author: Paul Wessel, 06-DEC-2001
 REM ----------------------------------------------------
 REM
 REM How to make and install GMT under DOS/Win95/98:
@@ -112,6 +112,7 @@ CL %COPT% blockmedian.c %LIBS%
 CL %COPT% blockmode.c %LIBS%
 CL %COPT% filter1d.c %LIBS%
 CL %COPT% fitcircle.c %LIBS%
+CL %COPT% gmt2rgb.c %LIBS%
 CL %COPT% gmtconvert.c %LIBS%
 CL %COPT% gmtdefaults.c %LIBS%
 CL %COPT% gmtmath.c %LIBS%
@@ -120,6 +121,7 @@ CL %COPT% gmtset.c %LIBS%
 CL %COPT% grdfilter.c %LIBS%
 CL %COPT% grd2cpt.c %LIBS%
 CL %COPT% grd2xyz.c %LIBS%
+CL %COPT% grdblend.c %LIBS%
 CL %COPT% grdclip.c %LIBS%
 CL %COPT% grdcontour.c %LIBS%
 CL %COPT% grdcut.c %LIBS%
@@ -151,6 +153,7 @@ CL %COPT% psclip.c %LIBS%
 CL %COPT% pscoast.c %LIBS%
 CL %COPT% pscontour.c %LIBS%
 CL %COPT% pshistogram.c %LIBS%
+CL %COPT% pslegend.c %LIBS%
 CL %COPT% psimage.c %LIBS%
 CL %COPT% psmask.c %LIBS%
 CL %COPT% psrose.c %LIBS%

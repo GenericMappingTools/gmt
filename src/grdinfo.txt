@@ -2,7 +2,7 @@
 .SH NAME
 grdinfo \- Get information about the contents of a 2-D grd file
 .SH SYNOPSIS
-\fBgrdinfo\fP \fIgrdfiles\fP [ \fB\-C\fP ] [ \fB\-D\fP ] [ \fB\-F\fP ] [ \fB\-L1\fP ] 
+\fBgrdinfo\fP \fIgrdfiles\fP [ \fB\-C\fP ] [ \fB\-F\fP ] [ \fB\-L1\fP ] 
 [ \fB\-L2\fP ] [ \fB\-M\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBgrdinfo\fP reads a 2-D binary grd file and reports various statistics for the (x,y,z) data in the
@@ -23,10 +23,6 @@ Formats the report using tab-separated fields on a single line.  The output is
 The data in brackets are output only if the corresponding options
 \fB\-M, \-L1\fP, \fB\-L2\fP, and \fB\-M are used, respectively.
 .TP
-.B \-D
-Report grid domain and x/y-increments using dd:mm:ss[.fff] notation [Default is decimal].
-Does not apply to the \fB\-C\fP option.
-.TP
 .B \-F
 Report grid domain and x/y-increments world mapping format [Default is generic].
 Does not apply to the \fB\-C\fP option.
@@ -41,6 +37,7 @@ Report mean and standard deviation of z.
 Find and report the location of min/max z-values, and count and report the number of nodes
 set to NaN, if any.
 #include "explain_-V.txt" 
+#include "explain_-f.txt"
 .SH EXAMPLES
 To obtain all the information about the data set in file hawaii_topo.grd, try
 .br

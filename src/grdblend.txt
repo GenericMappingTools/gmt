@@ -1,0 +1,63 @@
+.TH GRDBLEND l DATE
+.SH NAME
+grdblend \- Blend several partially over-lapping grids into one large grid
+.SH SYNOPSIS
+\fBgrdblend\fP \fIblendfile\fP \fB\-G\fP\fIgrdfile\fP \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] 
+\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-N\fP\fInodata\fP ] [ \fB\-Q\fP ][ \fB\-Z\fP\fIscale\fP ] 
+[ \fB\-V\fP ] [ \fB\-W\fP ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+.SH DESCRIPTION
+\fBgrdblend\fP reads a listing of gridded files and blend parameters and
+creates a binary grdfile by blending the other grids using cosine-taper weights.
+\fBgrdblend\fP will report if some of the nodes are not filled in with
+data.  Such unconstrained nodes are set to a value specified by the user [Default is NaN].
+Nodes with more than one value will be set to the weighted average value.
+.TP
+\fIblendfile\fP
+ASCII file with one record per grid file to include in the blend.  Each record must contain the gridfile name,
+the \fB\-R\fP-setting for the interior region, and the relative weight \fIwr\fP, separated by spaces or tabs.
+In the combined weighting scheme, this grid will be given weight = zero outside its domain, weight = \fIwr\fP
+inside the interior region, and a 2-D cosine-tapered weight between those end-members in the boundary strip.
+If the ASCII file is not given we will read standard input.
+.TP
+.B \-G
+\fIgrdfile\fP is the name of the binary output grdfile.
+#include "explain_-I.txt"
+#include "explain_-R.txt"
+.SH OPTIONS
+.TP
+.B \-N
+No data.  Set nodes with no input grid to this value [Default is NaN].
+TP
+.B \-Q
+Create a header-less gridfile suitable for use with grdraster.  Requires that the output gridfile
+is a native format (i.e., not netCDF).
+#include "explain_-V.txt"
+.TP
+.B \-W
+Do not blend, just output the weights used for each node.  This option is valid when only one
+input grid is provided [Default makes the blend].
+.TP
+.B \-Z
+Scale output values by \fIscale\fP before writing to file. [1].
+#include "explain_-f.txt"
+.SH EXAMPLES
+To create a grdfile from the four gridded files piece_?.grd, make the blendfile like this
+.br
+.sp
+piece_1.grd	-R<subregion_1> 1
+.br
+piece_2.grd	-R<subregion_2> 1
+.br
+piece_3.grd	-R<subregion_3> 1
+.br
+piece_4.grd	-R<subregion_4> 1
+.br
+.sp
+Then run
+.br
+sp
+grdblend blend.job \fB\-G\fPblend.grd \fB\-R\fP<full_region> \fB\-I\fP<dx/dy> \-V\fP
+.SH "SEE ALSO"
+.IR gmt (l),
+.IR grd2xyz (l),
+.IR grdedit (l)

@@ -77,7 +77,7 @@ Sets the clearance between the legend frame and the internal items [CLEARENCE_SI
 #include "explain_-K.txt"
 .TP
 .B \-L
-Ssets the linespacing factor in units of the annotation font size [1.1].
+Sets the linespacing factor in units of the current anotation font size [1.1].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
