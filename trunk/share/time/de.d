@@ -1,6 +1,6 @@
 # GMT Time language file for german mode [DE]
 #
-#	$Id: de.d,v 1.1 2002-02-22 16:09:58 pwessel Exp $
+#	$Id: de.d,v 1.2 2004-08-05 04:05:19 pwessel Exp $
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
 M	1	Januar		Jan	J
@@ -17,12 +17,12 @@ M	11	November	Nov	N
 M	12	Dezember	Dez	D
 # Name and abbreviations for the word Week in this language
 U	1	Woche		Wo	W
-# Weeknames, with 3-char and 1-char abbreviations
+# Weeknames, with 2-char and 1-char abbreviations
 # (List starts on Sunday regardless of TIME_WEEK_START)
-W	1	Sonntag		Son	S
-W	2	Montag		Mon	M
-W	3	Dienstag	Die	D
-W	4	Mittwoch	Mit	M
-W	5	Donnerstag	Don	D
-W	6	Freitag		Fre	F
-W	7	Samstag		Sam	S
+W	1	Sonntag		So	S
+W	2	Montag		Mo	M
+W	3	Dienstag	Di	D
+W	4	Mittwoch	Mi	M
+W	5	Donnerstag	Do	D
+W	6	Freitag		Fr	F
+W	7	Samstag		Sa	S
