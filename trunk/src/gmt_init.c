@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.124 2004-04-24 02:25:04 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.125 2004-04-25 03:54:19 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2939,9 +2939,8 @@ void GMT_strip_colonitem (const char *in, const char *pattern, char *item, char 
 		while (in[i]) out[k++] = in[i++];	/* Copy rest to out... */
 		out[k] = '\0';				/* .. and terminate */
 	}
-	else {	/* No such item */
+	else {	/* No item to update */
 		strcpy (out, in);
-		item[0] = '\0';
 	}
 	
 	if (error) {	/* Problems with decoding */
@@ -2954,6 +2953,10 @@ void GMT_strip_colonitem (const char *in, const char *pattern, char *item, char 
 	}
 	if (strstr (out, pattern) && !strcmp (pattern, ":,")) {	/* Problems with decoding unit */
 		fprintf (stderr, "%s: ERROR: More than one unit string in  -B component %s\n", GMT_program, in);
+		exit (EXIT_FAILURE);
+	}
+	if (strstr (out, pattern) && !strcmp (pattern, ":^")) {	/* Problems with decoding prefix */
+		fprintf (stderr, "%s: ERROR: More than one prefix string in  -B component %s\n", GMT_program, in);
 		exit (EXIT_FAILURE);
 	}
 	if (strstr (out, pattern)) {	/* Problems with decoding label */
