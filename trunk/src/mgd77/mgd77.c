@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.6 2004-09-23 21:17:42 pwessel Exp $
+ *	$Id: mgd77.c,v 1.7 2005-01-12 02:52:30 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -805,10 +805,11 @@ void MGD77_Init_Columns (struct MGD77_CONTROL *F)
 	
 	int i, j;
 
-	F->n_out_columns = 21;
+	F->n_out_columns = 25;
 	F->bit_pattern = 0;
+	F->time_format = GMT_IS_ABSTIME;	/* Default time format is calendar time */
 	for (i = 0; i < F->n_out_columns; i++) {
-		j = (i < 6) ? i + 1 : i + 6;		/* + 1 because we skip RecType.  We use 2 = time, 3 = dist, 4 = az, 5 = vel, 6 = weight */
+		j = i + 2;		/* Start at 2 since we use 2 = time, 3 = dist, 4 = az, 5 = vel, 6 = weight */
 		F->use_column[j] = TRUE;
 		F->order[i] = j;
 		F->bit_pattern |= (1 << j);		/* Turn on this bit */
@@ -886,8 +887,20 @@ void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F)
 		
 		if (!strcmp (word, "time"))		/* Special flag for col 2: time = {year, month, day, hour, min, tz} */
 			j = MGD77_TIME;
-		else if (!strcmp (word, "dist"))	/* Special flag for col 3: distance in km */
+		else if (!strcmp (word, "atime"))	/* Same */
+			j = MGD77_TIME;
+		else if (!strcmp (word, "rtime")) {	/* Time relative to EPOCH */
+			j = MGD77_TIME;
+			F->time_format = GMT_IS_RELTIME;	/* Alternate time format is time relative to EPOCH */
+		}
+		else if (!strcmp (word, "dist"))	/* Special flag for col 3: ellipsoidal distance in km */
 			j = MGD77_DISTANCE;
+		else if (!strcmp (word, "edist"))	/* Same */
+			j = MGD77_DISTANCE;
+		else if (!strcmp (word, "fdist")) {	/* Flat earth approximation (faster) */
+			j = MGD77_DISTANCE;
+			F->flat_earth = TRUE;
+		}
 		else if (!strcmp (word, "azim"))	/* Special flag for col 4: ship azimuth in degrees */
 			j = MGD77_HEADING;
 		else if (!strcmp (word, "vel"))	/* Special flag for col 5: ship velocity in m/s */

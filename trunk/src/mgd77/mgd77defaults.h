@@ -1,12 +1,12 @@
 /* MGD-77 Data Record Field Defaults:
 		   Name,                          Abbrev,     Start,  Length,  FortranCode,   Factor,   readMGD77,   order,   printMGD77,   printVALS,   Not_given    */
 		{ "DataRecordType",                "drt",         1,	   1,        "int",        1,       "%1d",       1,        "%1d",        NULL,           "9" },
-		{ "TimeZoneCorrection",           "time",        10,	   3,        "int",        1,      "%03d",       3,      "%+03d",        NULL,         "+99" },
-		{ "Year",                         "time",        13,	   4,        "int",        1,      "%04d",       4,       "%04d",        NULL,        "9999" },
-		{ "Month",                        "time",        17,	   2,        "int",        1,      "%02d",       5,       "%02d",        NULL,          "99" },
-		{ "Day",                          "time",        19,	   2,        "int",        1,      "%02d",       6,       "%02d",        NULL,          "99" },
-		{ "Hour",                         "time",        21,	   2,        "int",        1,      "%02d",       7,       "%02d",        NULL,          "99" },
-		{ "Minutes",                      "time",        23,	   5,       "real",     1000,      "%05d",       8,       "%05d",        NULL,       "99999" },
+		{ "TimeZoneCorrection",             "tz",        10,	   3,        "int",        1,      "%03d",       3,      "%+03d",        NULL,         "+99" },
+		{ "Year",                         "year",        13,	   4,        "int",        1,      "%04d",       4,       "%04d",        NULL,        "9999" },
+		{ "Month",                       "month",        17,	   2,        "int",        1,      "%02d",       5,       "%02d",        NULL,          "99" },
+		{ "Day",                           "day",        19,	   2,        "int",        1,      "%02d",       6,       "%02d",        NULL,          "99" },
+		{ "Hour",                         "hour",        21,	   2,        "int",        1,      "%02d",       7,       "%02d",        NULL,          "99" },
+		{ "Minutes",                       "min",        23,	   5,       "real",     1000,      "%05d",       8,       "%05d",        NULL,       "99999" },
 		{ "Latitude",                      "lat",        28,	   8,       "real",   100000,      "%08d",       9,      "%+08d",     "%9.5f",    "+9999999" },
 		{ "Longitude",                     "lon",        36,	   9,       "real",   100000,      "%09d",      10,      "%+09d",    "%10.5f",   "+99999999" },
 		{ "PositionTypeCode",              "ptc",        45,	   1,        "int",        1,       "%1d",      11,        "%1d",        NULL,           "9" },

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.145 2004-12-26 22:13:20 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.146 2005-01-12 02:52:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5987,14 +5987,14 @@ double GMT_cartesian_dist (double x0, double y0, double x1, double y1)
 	return (hypot ( (x1 - x0), (y1 - y0)));
 }
 
-double GMT_flatearth_dist (double x0, double y0, double x1, double y1)
+double GMT_flatearth_dist_km (double x0, double y0, double x1, double y1)
 {
 	/* Calculates the approximate flat earth distance in km */
 
 	return (hypot ( (x1 - x0) * cosd (0.5 * (y1 + y0)), (y1 - y0)) * DEG_TO_KM);
 }
 
-double GMT_km_dist (double x0, double y0, double x1, double y1)
+double GMT_great_circle_dist_km (double x0, double y0, double x1, double y1)
 {
 	/* Calculates the grdat circle distance in km */
 
