@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.181 2005-04-05 19:14:15 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.182 2005-04-05 19:19:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4751,7 +4751,7 @@ static void load_encoding (struct gmt_encoding *enc)
 	while (fgets (line, sizeof line, in))
 	{
 		pos = 0;
-		while ((GMT_strtok (line, " /\t\n", &pos, symbol))) {
+		while ((GMT_strtok (line, " /\t\n", &pos, symbol)))
 		{
 			if (strcmp (symbol, "[") == 0)	/* We have found the start of the encoding array. */
 			{
