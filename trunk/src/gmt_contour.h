@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.12 2004-06-02 03:11:13 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.13 2004-06-03 03:45:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -56,6 +56,7 @@ struct GMT_CONTOUR_LINE {
 	BOOLEAN annot;			/* TRUE if we want labels */
 	char *name;			/* Contour name */
 	struct GMT_PEN pen;		/* Pen for drawing contour */
+	int font_rgb[3];		/* Font color */
 	struct GMT_LABEL *L;		/* Pointer to array of strictures with labels */
 	int n_labels;			/* Number of labels; if 0 we just have a line segment */
 };
@@ -64,6 +65,7 @@ struct GMT_CONTOUR {
 	/* Control section */
 	char option[BUFSIZ];		/* Copy of the option string */
 	char label[BUFSIZ];		/* Fixed label */
+	char line_type[16];		/* Kind of line: contour or line */
 	char flag;			/* Char for the option key */
 	BOOLEAN annot;			/* TRUE if we want labels */
 	BOOLEAN spacing;		/* TRUE if we have spacing constraints to apply */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.107 2004-06-02 22:52:32 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.108 2004-06-03 03:45:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1628,6 +1628,7 @@ void GMT_free (void *addr)
 int GMT_contlabel_init (struct GMT_CONTOUR *G)
 {	/* Assign default values to structure */
 	memset ((void *)G, 0, sizeof (struct GMT_CONTOUR));	/* Sets all to 0 */
+	(strstr (GMT_program, "contour")) ? strcpy (G->line_type, "Contour") : strcpy (G->line_type, "Line");
 	G->spacing = TRUE;
 	G->half_width = 5;
 	G->label_font_size = 9.0;
@@ -1821,9 +1822,9 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 			L->crossing = GMT_CONTOUR_XCURVE;
 			strcpy (L->file, &txt[1]);
 			break;
-		case 'D':	/* Specify distances in in geographic units */
+		case 'D':	/* Specify distances in geographic units (km, degrees, etc) */
 			L->dist_kind = 1;
-		case 'd':	/* Specify distance settings */
+		case 'd':	/* Specify distances in plot units [cimp] */
 			j = 1;	/* Because the legacy -G option did not have a d (so j = 0) */
 		default:
 			L->spacing = TRUE;
@@ -2053,6 +2054,7 @@ void GMT_contlabel_addpath (double x[], double y[], int n, char *label, BOOLEAN 
 	memcpy ((void *)C->x, (void *)x, (size_t)(C->n * sizeof (double)));
 	memcpy ((void *)C->y, (void *)y, (size_t)(C->n * sizeof (double)));
 	memcpy ((void *)&C->pen, (void *)&G->line_pen, sizeof (struct GMT_PEN));
+	memcpy ((void *)&C->font_rgb, (void *)&G->font_rgb, (size_t)(3*sizeof (int)));
 	C->name = (char *) GMT_memory (VNULL, (size_t)(strlen (label)+1), sizeof (char), GMT_program);
 	strcpy (C->name, label);
 	C->annot = annot;
@@ -2119,12 +2121,15 @@ void GMT_contlabel_drawlines (struct GMT_CONTOUR *G, int mode)
 {
 	int i, k, *pen;
 	struct GMT_CONTOUR_LINE *C;
+	char buffer[BUFSIZ];
 	for (i = 0; i < G->n_segments; i++) {
 		C = G->segment[i];	/* Pointer to current segment */
 		if (C->annot && mode == 1) continue; /* Annotated lines done with curved text routine */
 		GMT_setpen (&C->pen);
 		pen = (int *) GMT_memory (VNULL, (size_t)C->n, sizeof (int), GMT_program);
 		for (k = 1, pen[0] = 3; k < C->n; k++) pen[k] = 2;
+		sprintf (buffer, "%s: %s", G->line_type, C->name);
+		ps_comment (buffer);
 		GMT_plot_line (C->x, C->y, pen, C->n);
 		GMT_free ((void *)pen);
 	}
@@ -2267,7 +2272,7 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode)
 			form = 8 * mode + G->curved_text + 4;	/* 8 means clip label and 4 means do not draw line */
 			if (i == first_i) form |= 64;		/* First of possibly several calls to ps_textpath */
 			if (i == last_i)  form |= 128;		/* Final call to ps_textpath */
-			ps_textpath (C->x, C->y, C->n, node, angle, txt, C->n_labels, G->label_font_size, G->clearance, just, C->pen.rgb, G->font_rgb, form);
+			ps_textpath (C->x, C->y, C->n, node, angle, txt, C->n_labels, G->label_font_size, G->clearance, just, C->pen.rgb, C->font_rgb, form);
 			GMT_free ((void *)angle);
 			GMT_free ((void *)node);
 			GMT_free ((void *)txt);

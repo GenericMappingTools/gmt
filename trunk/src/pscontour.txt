@@ -33,6 +33,7 @@ No space between the option flag and the associated arguments.
 Give - to disable all annotations.
 The optional \fIlabelinfo\fP controls the specifics of the label formatting and consists of a concatenated string
 made up of any of the following control arguments:
+.br
 #include "explain_labelinfo.txt"
 #include "explain_-B_short.txt"
 .TP
@@ -44,6 +45,9 @@ However, when \fB\-M\fP is used in conjunction with \fB\-D\fP a single multisegm
 .TP
 .B \-E
 Sets the view point by specifying azimuth and elevation in degrees. [Default is 180/90].
+#define CONTOUR
+.TP
+.B \-G
 #include "explain_contlabel.txt"
 #include "explain_-H.txt"
 .TP
