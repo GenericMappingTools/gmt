@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.52 2004-01-09 00:31:09 pwessel Exp $
+ *	$Id: gmt.h,v 1.53 2004-01-12 01:37:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -22,7 +22,7 @@
  * Author:	Paul Wessel
  * Date:	01-MAR-1991
  * Revised:	15-JUL-2001
- * Version:	4.0
+ * Version:	4.0b
  */
  
 #ifndef _GMT_H
