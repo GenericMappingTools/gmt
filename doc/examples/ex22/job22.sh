@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	GMT Example 22  $Id: job22.sh,v 1.5 2004-08-25 17:07:04 pwessel Exp $
+#	GMT Example 22  $Id: job22.sh,v 1.6 2004-09-29 05:29:16 pwessel Exp $
 #
 # Purpose:	Automatic map of last 7 days of world-wide seismicity
 # GMT progs:	gmtset, pscoast, psxy, pslegend
@@ -74,6 +74,7 @@ EOF
 # Put together a reasonable legend text, and add logo and user's name:
 
 cat << EOF >> neis.legend
+>
 T USGS/NEIS most recent earthquakes for the last seven days.  The data were
 T obtained automatically from the USGS Earthquake Hazards Program page at
 T @_http://neic/usgs.gov @_.  Interested users may also receive email alerts

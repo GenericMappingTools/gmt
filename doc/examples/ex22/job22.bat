@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 22
 REM
-REM             $Id: job22.bat,v 1.9 2004-09-29 05:22:20 pwessel Exp $
+REM             $Id: job22.bat,v 1.10 2004-09-29 05:29:16 pwessel Exp $
 REM
 REM Purpose:    Automatic map of last 7 days of world-wide seismicity
 REM
@@ -76,7 +76,7 @@ echo D 0 1p >> neis.legend
 echo N 1 >> neis.legend
 
 REM Put together a reasonable legend text, and add logo and user's name:
-
+echo ^> >> neis.legend
 echo T USGS/NEIS most recent earthquakes for the last seven days.  The data were >> neis.legend
 echo T obtained automatically from the USGS Earthquake Hazards Program page at >> neis.legend
 echo T @_http://neic/usgs.gov @_.  Interested users may also receive email alerts >> neis.legend
