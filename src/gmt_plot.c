@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.134 2004-08-14 00:24:13 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.135 2004-08-17 01:54:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1140,8 +1140,8 @@ void GMT_timex_grid (double w, double e, double s, double n, int item)
 		
 	nx = GMT_time_array (w, e, &frame_info.axis[0].item[item], &x);
 	for (i = 0; i < nx; i++) {
-		GMT_geoplot (x[i], s, 3);
-		GMT_geoplot (x[i], n, 2);
+		GMT_geoplot (x[i], s, +3);
+		GMT_geoplot (x[i], n, -2);
 	}
 	if (nx) GMT_free ((char *)x);
 }
@@ -1153,8 +1153,8 @@ void GMT_timey_grid (double w, double e, double s, double n, int item)
 		
 	ny = GMT_time_array (s, n, &frame_info.axis[1].item[item], &y);
 	for (i = 0; i < ny; i++) {
-		GMT_geoplot (w, y[i], 3);
-		GMT_geoplot (e, y[i], 2);
+		GMT_geoplot (w, y[i], +3);
+		GMT_geoplot (e, y[i], -2);
 	}
 	if (ny) GMT_free ((char *)y);
 }
@@ -1166,8 +1166,8 @@ void GMT_logx_grid (double w, double e, double s, double n, double dval)
 		
 	nx = GMT_log_array (w, e, dval, &x);
 	for (i = 0; i < nx; i++) {
-		GMT_geoplot (x[i], s, 3);
-		GMT_geoplot (x[i], n, 2);
+		GMT_geoplot (x[i], s, +3);
+		GMT_geoplot (x[i], n, -2);
 	}
 	if (nx) GMT_free ((char *)x);
 }
@@ -1179,8 +1179,8 @@ void GMT_logy_grid (double w, double e, double s, double n, double dval)
 		
 	ny = GMT_log_array (s, n, dval, &y);
 	for (i = 0; i < ny; i++) {
-		GMT_geoplot (w, y[i], 3);
-		GMT_geoplot (e, y[i], 2);
+		GMT_geoplot (w, y[i], +3);
+		GMT_geoplot (e, y[i], -2);
 	}
 	if (ny) GMT_free ((char *)y);
 }
@@ -1192,8 +1192,8 @@ void GMT_powx_grid (double w, double e, double s, double n, double dval)
 		
 	nx = GMT_pow_array (w, e, dval, 0, &x);
 	for (i = 0; i < nx; i++) {
-		GMT_geoplot (x[i], s, 3);
-		GMT_geoplot (x[i], n, 2);
+		GMT_geoplot (x[i], s, +3);
+		GMT_geoplot (x[i], n, -2);
 	}
 	if (nx) GMT_free ((char *)x);
 }
@@ -1205,8 +1205,8 @@ void GMT_powy_grid (double w, double e, double s, double n, double dval)
 		
 	ny = GMT_pow_array (s, n, dval, 1, &y);
 	for (i = 0; i < ny; i++) {
-		GMT_geoplot (w, y[i], 3);
-		GMT_geoplot (e, y[i], 2);
+		GMT_geoplot (w, y[i], +3);
+		GMT_geoplot (e, y[i], -2);
 	}
 	if (ny) GMT_free ((char *)y);
 }
@@ -3639,9 +3639,9 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 		yy[2] = yy[3] = ms->y0;
 		yy[0] = yy[1] = ms->y0 - bar_width;
 		GMT_xyz_to_xy (x_left, ms->y0 - f_len, project_info.z_level, &a, &b);
-		ps_plot (a, b, 3);
+		ps_plot (a, b, +3);
 		GMT_xyz_to_xy (x_left, ms->y0, project_info.z_level, &a, &b);
-		ps_plot (a, b, 2);
+		ps_plot (a, b, -2);
 		for (j = 0; j < n_f_ticks[i]; j++) {
 			xx[0] = xx[3] = x_left + j * dx_f;
 			xx[1] = xx[2] = xx[0] + dx_f;
@@ -3649,18 +3649,18 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 			rgb = (j%2) ? gmtdefs.foreground_rgb : gmtdefs.background_rgb;
 			ps_polygon (bx, by, 4, rgb, TRUE);
 			GMT_xyz_to_xy (xx[1], ms->y0 - f_len, project_info.z_level, &a, &b);
-			ps_plot (a, b, 3);
+			ps_plot (a, b, +3);
 			GMT_xyz_to_xy (xx[1], ms->y0, project_info.z_level, &a, &b);
-			ps_plot (a, b, 2);
+			ps_plot (a, b, -2);
 		}
 		this_label = (ms->label[0] && ms->label[0] != '-') ? ms->label : label[unit];
 		ty = ms->y0 - off;
 		for (j = 0; j <= n_a_ticks[i]; j++) {
 			tx = x_left + j * dx_a;
 			GMT_xyz_to_xy (tx, ms->y0 - a_len, project_info.z_level, &a, &b);
-			ps_plot (a, b, 3);
+			ps_plot (a, b, +3);
 			GMT_xyz_to_xy (tx, ms->y0, project_info.z_level, &a, &b);
-			ps_plot (a, b, 2);
+			ps_plot (a, b, -2);
 			if (ms->justify == 'u')
 				sprintf (txt, "%g %s", j * d_base, this_label);
 			else
@@ -3714,7 +3714,7 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 		GMT_xyz_to_xy (ms->x0 + half, ms->y0, project_info.z_level, &a, &b);
 		ps_plot (a, b, 2);
 		GMT_xyz_to_xy (ms->x0 + half, ms->y0 - gmtdefs.map_scale_height, project_info.z_level, &a, &b);
-		ps_plot (a, b, 2);
+		ps_plot (a, b, -2);
 		GMT_text3D (ms->x0, ms->y0 - off, project_info.z_level, gmtdefs.annot_font_size[0], gmtdefs.annot_font[0], txt, 0.0, 10, 0);
 	}
 }
@@ -4649,7 +4649,7 @@ void GMT_cross3D (double x, double y, double z, double size)
 	GMT_xyz_to_xy (x, yp[0], z, &plot_x, &plot_y);
 	ps_plot (plot_x, plot_y, 3);
 	GMT_xyz_to_xy (x, yp[1], z, &plot_x, &plot_y);
-	ps_plot (plot_x, plot_y, 2);
+	ps_plot (plot_x, plot_y, -2);
 }
 	
 void GMT_square3D (double x, double y, double z, double size, int rgb[], int outline)
