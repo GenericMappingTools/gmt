@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.108 2004-06-03 03:45:04 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.109 2004-06-03 07:31:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2984,7 +2984,7 @@ void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char cty
 					dist = (i + 1 - 0.5 * closed) * track_dist[nn-1] / (G->n_cont + 1 - closed);
 				while (j < nn && track_dist[j] < dist) j++;
 				if (j == nn) j--;	/* Safety precaution */
-				f = (dist - track_dist[j-1]) / (track_dist[j] - track_dist[j-1]);
+				f = ((j == 0) ? 1.0 : (dist - track_dist[j-1]) / (track_dist[j] - track_dist[j-1]));
 				if (f < 0.5) {	/* Pick the smallest fraction to minimize Taylor shortcomings */
 					new_label->x = xx[j-1] + f * (xx[j] - xx[j-1]);
 					new_label->y = yy[j-1] + f * (yy[j] - yy[j-1]);
@@ -2992,9 +2992,9 @@ void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char cty
 				}
 				else {
 					f = 1.0 - f;
-					new_label->x = xx[j] - f * (xx[j] - xx[j-1]);
-					new_label->y = yy[j] - f * (yy[j] - yy[j-1]);
-					new_label->dist = map_dist[j] - f * (map_dist[j] - map_dist[j-1]);
+					new_label->x = (j == 0) ? xx[0] : xx[j] - f * (xx[j] - xx[j-1]);
+					new_label->y = (j == 0) ? yy[0] : yy[j] - f * (yy[j] - yy[j-1]);
+					new_label->dist = (j == 0) ? 0.0 : map_dist[j] - f * (map_dist[j] - map_dist[j-1]);
 				}
 				this_dist = dist;
 				if (G->label_type == 0 && label)
@@ -3005,8 +3005,8 @@ void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char cty
 					sprintf (this_label, gmtdefs.d_format, this_dist);
 				}
 				GMT_place_label (new_label, this_label, G);
-				new_label->node = j - 1;
-				GMT_contlabel_angle (xx, yy, j - 1, j, cangle, nn, new_label, G);
+				new_label->node = (j == 0) ? 0 : j - 1;
+				GMT_contlabel_angle (xx, yy, new_label->node, j, cangle, nn, new_label, G);
 				G->L[G->n_label++] = new_label;
 				if (G->n_label == n_alloc) {
 					n_alloc += GMT_SMALL_CHUNK;
