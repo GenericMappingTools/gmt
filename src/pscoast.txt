@@ -7,7 +7,7 @@
 pscoast \- To plot land-masses, water-masses, coastlines, borders, and rivers
 .SH SYNOPSIS
 \fBpscoast \-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-A\fP\fImin_area\fP[\fImin_level//max_level\fP] ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIfill\fP ] [ \fB\-D\fP\fIresolution\fP ] 
+[ \fB\-A\fP\fImin_area\fP[\fI/min_level/max_level\fP] ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIfill\fP ] [ \fB\-D\fP\fIresolution\fP ] 
 [ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-G\fP\fIfill\fP ] 
 [ \fB\-I\fP\fIriver\fP[/\fIpen\fP] ] [ \fB\-K\fP ] [ \fB\-L\fP[\fBf\fP][\fBx\fP]\fIlon0/lat0/slat/length\fP[\fBm|n|k\fP] ] 
 [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP\fIborder\fP[/\fIpen\fP] ] [ \fB\-O\fP ] 
@@ -33,7 +33,7 @@ option flags and lower case for modifiers.
 .TP
 .B \-A
 Features with an area smaller than \fImin_area\fP in km^2 or of hierarchical level that is lower than \fImin_level\fP or higher than \fImax_level\fP
-will not be plotted [Default is 0/4 (all features)]. See DATABASE INFORMATION below for more details.
+will not be plotted [Default is 0/0/4 (all features)]. See DATABASE INFORMATION below for more details.
 #include "explain_-b.txt"
 .TP
 .B \-C
