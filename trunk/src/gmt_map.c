@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.5 2001-03-07 17:51:41 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.6 2001-03-22 17:12:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2610,7 +2610,7 @@ void GMT_itm_sph (double *lon, double *lat, double x, double y)
 {
 	/* Convert TM x/y to lon/lat by spherical approximation.  */
 
-	double xx, yy, sinhxx, coshxx, sind, cosd, lambda, phi, ir;
+	double xx, yy, sinhxx, coshxx, sind, cosd, lambda, phi;
 
 	xx = x * project_info.t_ir;
 	yy = y * project_info.t_ir + project_info.t_lat0;

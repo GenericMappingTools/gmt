@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.3 2001-03-06 01:54:51 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.4 2001-03-22 17:12:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1203,6 +1203,7 @@ float GMT_native_decode (void *vptr, int k, int type)
 			fval = (float)(((double *)vptr)[k]);
 			break;
 		default:
+			fprintf (stderr, "GMT: Bad call to GMT_native_decode (gmt_customio.c)\n");
 			break;
 	}
 
@@ -1238,6 +1239,8 @@ double GMT_native_encode (float z, int type)
 			return ((double)z);
 			break;
 		default:
+			fprintf (stderr, "GMT: Bad call to GMT_native_encode (gmt_customio.c)\n");
+			return (0.0);
 			break;
 	}
 }
