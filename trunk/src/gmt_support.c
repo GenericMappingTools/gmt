@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.114 2004-06-04 23:48:23 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.115 2004-06-05 00:53:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2006,7 +2006,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 	else if (G->fixed) {
 		FILE *fp;
 		int n_col, len;
-		BOOLEAN bad_record;
+		BOOLEAN bad_record = FALSE;
 		double xy[2];
 		
 		if ((fp = GMT_fopen (G->file, "r")) == NULL) {
