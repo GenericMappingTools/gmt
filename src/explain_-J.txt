@@ -87,6 +87,9 @@ stands for Equal-Area and Conformal, respectively):
 \fBAZIMUTHAL PROJECTIONS:\fP
 .br
 .sp
+[Except for polar aspects, -Rw/e/s/n will be reset to -Rg.  Use -R<...>r for smaller regions]
+.br
+.sp
 \fB\-Ja\fP\fIlon0/lat0/scale\fP or \fB\-JA\fP\fIlon0/lat0/width\fP (Lambert \fB[E]\fP).
 .br
         \fIlon0/lat0\fP specifies the projection center.

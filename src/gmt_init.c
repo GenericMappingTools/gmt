@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.148 2004-06-24 02:07:50 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.149 2004-06-26 00:21:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -178,7 +178,7 @@ void GMT_explain_option (char option)
 			
 		case 'H':	/* Header */
 		
-			fprintf (stderr, "\t-H[i] means input/output file has %d Header record(s) [%s]\n",
+			fprintf (stderr, "\t-H[i][n_rec] means input/output file has %d Header record(s) [%s]\n",
 				gmtdefs.n_header_recs, GMT_choice[gmtdefs.io_header[GMT_IN]]);
 			fprintf (stderr, "\t   Optionally, append i for input only and/or number of header records\n");
 			break;
@@ -186,7 +186,8 @@ void GMT_explain_option (char option)
 		case 'J':	/* Map projection option */
 		
 			fprintf (stderr, "\t-J Selects the map proJection system. (<mapwidth> is in %s)\n", GMT_unit_names[gmtdefs.measure_unit]);
-			fprintf (stderr, "\t   (Append h for map width, + for max map dimension, and - for min map dimension)\n");
+			fprintf (stderr, "\t   Append h for map height, + for max map dimension, and - for min map dimension.\n");
+			fprintf (stderr, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>r is given.\n\n");
 			
 			fprintf (stderr, "\t   -Ja<lon0>/<lat0>/<scale> OR -JA<lon0>/<lat0>/<mapwidth> (Lambert Azimuthal Equal Area)\n");
 			fprintf (stderr, "\t     lon0/lat0 is the center or the projection.\n");
@@ -312,7 +313,8 @@ void GMT_explain_option (char option)
 		case 'j':	/* Condensed version of J */
 		
 			fprintf (stderr, "\t-J Selects map proJection. (<scale> in %s/degree, <mapwidth> in %s)\n", GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
-			fprintf (stderr, "\t   (Append h for map width, + for max map dimension, and - for min map dimension)\n");
+			fprintf (stderr, "\t   Append h for map height, + for max map dimension, and - for min map dimension.\n");
+			fprintf (stderr, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>r is given.\n\n");
 			
 			fprintf (stderr, "\t   -Ja|A<lon0>/<lat0>/<scale (or radius/lat)|mapwidth> (Lambert Azimuthal Equal Area)\n");
 			
