@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.3 2001-03-01 22:08:26 pwessel Exp $
+ *	$Id: gmt_shore.c,v 1.4 2001-09-22 21:12:25 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -702,7 +702,7 @@ int GMT_prep_polygons (struct POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sa
 						
 			GMT_n_plot = (*GMT_truncate) (xtmp, ytmp, n, start, -1);
 			n_use = GMT_compact_line (GMT_x_plot, GMT_y_plot, GMT_n_plot, FALSE, 0);
-			if (project_info.three_D) GMT_2D_to_3D (GMT_x_plot, GMT_y_plot, GMT_n_plot);
+			if (project_info.three_D) GMT_2D_to_3D (GMT_x_plot, GMT_y_plot, project_info.z_level, GMT_n_plot);
 			p[k].lon = (double *) GMT_memory ((void *)p[k].lon, (size_t)n_use, sizeof (double), GMT_program);
 			p[k].lat = (double *) GMT_memory ((void *)p[k].lat, (size_t)n_use, sizeof (double), GMT_program);
 			memcpy ((void *)p[k].lon, (void *)GMT_x_plot, (size_t)(n_use * sizeof (double)));
@@ -713,7 +713,7 @@ int GMT_prep_polygons (struct POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sa
 						
 			GMT_n_plot = (*GMT_truncate) (xtmp, ytmp, n, start, +1);
 			n_use = GMT_compact_line (GMT_x_plot, GMT_y_plot, GMT_n_plot, FALSE, 0);
-			if (project_info.three_D) GMT_2D_to_3D (GMT_x_plot, GMT_y_plot, GMT_n_plot);
+			if (project_info.three_D) GMT_2D_to_3D (GMT_x_plot, GMT_y_plot, project_info.z_level, GMT_n_plot);
 			p = (struct POL *) GMT_memory ((void *)p, (size_t)(np_new + 1), sizeof (struct POL), GMT_program);
 			p[np_new].lon = (double *) GMT_memory (VNULL, (size_t)n_use, sizeof (double), GMT_program);
 			p[np_new].lat = (double *) GMT_memory (VNULL, (size_t)n_use, sizeof (double), GMT_program);
@@ -726,7 +726,7 @@ int GMT_prep_polygons (struct POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sa
 		}
 		else {
 			n_use = GMT_compact_line (xtmp, ytmp, n, FALSE, 0);
-			if (project_info.three_D) GMT_2D_to_3D (xtmp, ytmp, n_use);
+			if (project_info.three_D) GMT_2D_to_3D (xtmp, ytmp, project_info.z_level, n_use);
 			if (anti_bin > 0 && step == 0.0) {	/* Must warn for donut effect */
 				if (gmtdefs.verbose) fprintf (stderr, "%s: GMT Warning: Antipodal bin # %d not filled!\n", GMT_program, anti_bin);
 				GMT_free ((void *)xtmp);

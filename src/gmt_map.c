@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.15 2001-09-21 02:25:49 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.16 2001-09-22 21:12:25 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7126,13 +7126,13 @@ void GMT_merc_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struc
 	GMT_free ((void *)tmp);
 }
 
-void GMT_2D_to_3D (double *x, double *y, int n)
+void GMT_2D_to_3D (double *x, double *y, double z, int n)
 {
 	int i;
 	
 	/* Convert from two-D to three-D coordinates */
 	
-	for (i = 0; i < n; i++) GMT_xy_do_z_to_xy (x[i], y[i], project_info.z_level, &x[i], &y[i]);
+	for (i = 0; i < n; i++) GMT_xy_do_z_to_xy (x[i], y[i], z, &x[i], &y[i]);
 }
 
 void GMT_azim_to_angle (double lon, double lat, double c, double azim, double *angle)
@@ -7407,7 +7407,7 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 	}
 	
 	if (!(*donut)) np = GMT_compact_line (work_x, work_y, np, FALSE, (int *)0);
-	if (project_info.three_D) GMT_2D_to_3D (work_x, work_y, np);
+	if (project_info.three_D) GMT_2D_to_3D (work_x, work_y, project_info.z_level, np);
 	
 	*x = work_x;
 	*y = work_y;
