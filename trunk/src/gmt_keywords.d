@@ -1,4 +1,4 @@
-#	$Id: gmt_keywords.d,v 1.4 2003-02-19 16:58:41 pwessel Exp $
+#	$Id: gmt_keywords.d,v 1.5 2004-04-12 19:51:12 pwessel Exp $
 #
 # List of all GMT defaults parameters and their case value
 # Some parameters are spelled in two different ways and will
@@ -82,6 +82,8 @@ PS_COLOR
 PSIMAGE_FORMAT
 TICK_LENGTH
 TICK_PEN
+TIME_ANNOT_FORMAT
+TIME_ANNOT_FORMAT2
 TIME_IS_INTERVAL
 TIME_EPOCH
 TIME_UNIT

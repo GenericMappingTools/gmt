@@ -84,6 +84,8 @@
 	"hh:mm:ss",		/* PLOT_CLOCK_FORMAT */
 	"yyyy-mm-dd",		/* PLOT_DATE_FORMAT */
 	"+ddd:mm:ss",		/* PLOT_DEGREE_FORMAT */
+	"full",			/* TIME_ANNOT_FORMAT */
+	"full",			/* TIME_ANNOT_FORMAT2 */
 	FALSE,			/* TIME_IS_INTERVAL */
 	FALSE,			/* WANT_LEAP_SECONDS */
 	"2000-01-01T00:00:00",	/* TIME_EPOCH */

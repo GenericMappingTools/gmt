@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.34 2004-04-10 17:19:14 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.35 2004-04-12 19:51:12 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -293,9 +293,11 @@ summary of projection syntax was given in Chapter 3.
 
 This is by far the most complicated option in \GMT, but most examples
 of its usage are actually quite simple.
-Given as \Opt{B}{\it xinfo}[/{\it yinfo}[/{\it zinfo}]][:."title string":][{\bf W}$|${\bf w}][{\bf E}$|${\bf e}][{\bf S}$|${\bf s}][{\bf N}$|${\bf n}][{\bf Z}$|${\bf z}[{\bf +}]],
+Given as \Opt{B}[{\bf p}$|${\bf s}]{\it xinfo}[/{\it yinfo}[/{\it zinfo}]][:."title string":][{\bf W}$|${\bf w}][{\bf E}$|${\bf e}][{\bf S}$|${\bf s}][{\bf N}$|${\bf n}][{\bf Z}$|${\bf z}[{\bf +}]],
 this switch specifies map boundaries (or plot axes) to be plotted by using the
-selected information. The components {\it xinfo}, {\it yinfo} and {\it zinfo} are of the form \\
+selected information. The optional flag following \Opt{B} selects {\bf p}(rimary) [Default] or {\bf s}(econdary)
+axes information (mostly used for time axes annotation; see examples below).
+The components {\it xinfo}, {\it yinfo} and {\it zinfo} are of the form \\
 
 \par {\it info}[:"axis label":][:,"unit label":] \\
 
@@ -308,66 +310,45 @@ default, all 4 map boundaries (or plot axes) are plotted (denoted {\bf W}, {\bf 
 (e.g., {\bf WSn}).  Upper case (e.g., {\bf W}) will annotate in addition to
 draw axis/tick-marks.  The title, if given, will appear centered above the plot\footnote{However,
 it is suppressed when a 3-D view is selected.}.
-
 \begin{table}[H]
 \centering
 \begin{tabular}{|c|l|} \hline
 \emph{Flag}	& \emph{Description} \\ \hline
-{\bf a}	&	(upper) tick annotation spacing \\ \hline
-{\bf A}	&	lower tick annotation spacing \\ \hline
-{\bf i}[{\it v}]	&	(upper) interval  annotation spacing\\ \hline
-{\bf I}[{\it v}]	&	lower interval  annotation spacing\\ \hline
-{\bf f}	&	frame tick spacing \\ \hline
-{\bf g}	&	grid tick spacing \\ \hline
+{\bf a}	&	Annotation tick spacing \\ \hline
+{\bf f}	&	Frame tick spacing \\ \hline
+{\bf g}	&	Frid tick spacing \\ \hline
 \end{tabular}
 \caption{Interval type codes.}
 \label{tbl:inttype}
 \end{table}
-
 \noindent
-The items {\bf A}, {\bf I}, and {\bf i} only apply to calendar time axes, while {\bf a}, {\bf f}, and {\bf g}
-can be specified for any map or plot axis.  For the {\bf i} and {\bf I} flags, an optional modifier {\it v}
-may be appended to specify further the format of the annotation.  These modifiers are explained in
-Table~\ref{tbl:modifier}.  Note that this choice is also affected by the {\bf TIME\_LANGUAGE} setting
-since annotations may require the name of months and weekdays.
+Note that the appearance of certain time annotations (month-, week-, and day-names) may be affected
+by the {\bf TIME\_LANGUAGE}, {\bf TIME\_ANNOT\_FORMAT}, and {\bf TIME\_ANNOT\_FORMAT2} settings.
 
-\begin{table}[H]
-\centering
-\begin{tabular}{|c|l|} \hline
-\emph{Modifier}	& \emph{Description} \\ \hline
-{\bf f} (or {\bf F}) 	& Full name of interval, e.g., January (or JANUARY) \\ \hline
-{\bf a} (or {\bf A})	& Short abbreviation of interval, e.g., Jan (or JAN) \\ \hline
-{\bf c} (or {\bf C}) 	& 1-char abbreviation of interval, e.g., J (or J) \\ \hline
-\end{tabular}
-\caption{{\bf I} and {\bf i} interval annotation modifiers.}
-\label{tbl:modifier}
-\end{table}
-
-\noindent
 The unit flag {\bf u} can take on one of 16 codes; these are listed in  Table~\ref{tbl:units}.
 
 \begin{table}[h]
 \centering
 \begin{tabular}{|c|l|l|} \hline
 \emph{Flag}	& \emph{Unit} & \emph{Description} \\ \hline
-{\bf Y}	&	year & Plot using all 4 digits \\ \hline
-{\bf y}	&	year & Plot using last 2 digits \\ \hline
-{\bf O}	&	month & Format annotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
-{\bf o}	&	month & Plot as 2-digit integer (1--12) \\ \hline
-{\bf U}	&	ISO week & Format annotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
-{\bf u}	&	ISO week & Plot as 2-digit integer (1--53) \\ \hline
-{\bf r}	&	Gregorian week & 7-day stride from start of week ({\bf TIME\_WEEK\_START}) \\ \hline
-{\bf K}	&	ISO weekday & Plot name of weekday in selected language \\ \hline
-{\bf k}	&	weekday & Plot number of day in the week (1-7)  {see \bf TIME\_WEEK\_START}\\ \hline
-{\bf D}	&	date & Format annotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
-{\bf d}	&	day & Plot day of month (1--31) or day of year (1--366) {see \bf PLOT\_DATE\_FORMAT} \\ \hline
-{\bf R}	&	day & Same as {\bf d}; annotations aligned with week ({\bf TIME\_WEEK\_START})\\ \hline
-{\bf H}	&	hour &	 Format annotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
-{\bf h}	&	hour &	 Plot as 2-digit integer (0--24) \\ \hline
-{\bf M}	&	minute &	 Format annotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
-{\bf m}	&	minute &	 Plot as 2-digit integer (0--60) \\ \hline
-{\bf C}	&	seconds &	 Format annotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
-{\bf c}	&	seconds &	 Plot as 2-digit integer (0--60) \\ \hline
+{\bf Y}	&	year		& Plot using all 4 digits \\ \hline
+{\bf y}	&	year		& Plot using last 2 digits \\ \hline
+{\bf O}	&	month		& Format annotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
+{\bf o}	&	month		& Plot as 2-digit integer (1--12) \\ \hline
+{\bf U}	&	ISO week	& Format annotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
+{\bf u}	&	ISO week	& Plot as 2-digit integer (1--53) \\ \hline
+{\bf r}	&	Gregorian week	& 7-day stride from start of week ({\bf TIME\_WEEK\_START}) \\ \hline
+{\bf K}	&	ISO weekday	& Plot name of weekday in selected language \\ \hline
+{\bf k}	&	weekday		& Plot number of day in the week (1-7)  {see \bf TIME\_WEEK\_START}\\ \hline
+{\bf D}	&	date		& Format annotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
+{\bf d}	&	day		& Plot day of month (1--31) or day of year (1--366) {see \bf PLOT\_DATE\_FORMAT} \\ \hline
+{\bf R}	&	day		& Same as {\bf d}; annotations aligned with week ({\bf TIME\_WEEK\_START})\\ \hline
+{\bf H}	&	hour		& Format annotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
+{\bf h}	&	hour		& Plot as 2-digit integer (0--24) \\ \hline
+{\bf M}	&	minute		& Format annotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
+{\bf m}	&	minute		& Plot as 2-digit integer (0--60) \\ \hline
+{\bf C}	&	seconds		& Format annotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
+{\bf c}	&	seconds		& Plot as 2-digit integer (0--60) \\ \hline
 \end{tabular}
 \caption{Interval unit codes.}
 \label{tbl:units}
@@ -377,16 +358,15 @@ The unit flag {\bf u} can take on one of 16 codes; these are listed in  Table~\r
 
 Almost all of these units are time-axis specific.  However, the {\bf m} and {\bf c} units will be
 interpreted as arc minutes and arc seconds, respectively, when a map projection is in effect.
-For time axes, there may be two levels of annotations.  Here, ``upper'' refers to the annotation
-that is closest to the axis (this is the primary annotation), while ``lower'' refers to the secondary
+For time axes, there may be two levels of annotations.  Here, ``primary'' refers to the annotation
+that is closest to the axis (this is the primary annotation), while ``secondary'' refers to the secondary
 annotation that is plotted further from the axis (and is specific to time axes only).  The examples below
 will clarify what is meant.
 
 \subsubsection{Geographic basemaps}
 
 Geographic basemaps may differ from regular plot axis in that some projections support a
-``fancy'' form of axis and is selected by the {\bf BASEMAP\_TYPE} setting.  Only the three
-axis items {\bf a}, {\bf f}, and {\bf g} apply.  The annotations will be formatted according to
+``fancy'' form of axis and is selected by the {\bf BASEMAP\_TYPE} setting.  The annotations will be formatted according to
 the {\bf PLOT\_DEGREE\_FORMAT} template and {\bf DEGREE\_SYMBOL} setting.  An example of part of a basemap is shown in Figure~\ref{fig:GMT_-B_geo}.
 
 \GMTfig[h]{GMT_-B_geo}{Geographic map border using separate selections for annotation,
@@ -459,10 +439,10 @@ uses the corresponding unprojected values, as in \Opt{Ba}3{\bf f}2{\bf g}1{\bf p
 \subsubsection{Cartesian time axes}
 
 What sets time axis apart from the other kinds of plot axes is the numerous ways in which we
-may want to tick and annotate the axis.  Not only do we have both upper and lower annotation
+may want to tick and annotate the axis.  Not only do we have both primary and secondary annotation
 items but we also have interval annotations versus tickmark annotations, numerous time units,
-and several ways in which to modify the plot.  We will demonstrate this flexibility with a series of examples.  While all our examples
-will only show a single $x$-axis, time-axis is supported for all axis.
+and several ways in which to modify the plot.  We will demonstrate this flexibility with a
+series of examples.  While all our examples will only show a single $x$-axis, time-axis is supported for all axes.
 
 Our first example shows a time period of almost two months in Spring 2000.  We want to annotate the month
 intervals as well as the date at the start of each week:
@@ -489,28 +469,27 @@ The third example presents two years, annotating both the years and every 3rd mo
 
 Note that while the year annotation is centered on the 1-year interval, the month annotations must be centered
 on the corresponding month and \emph{not} the 3-month interval.  The {\bf PLOT\_DATE\_FORMAT} selects month
-name only and {\bf ic}3{\bf O} says use the 1-character abbreviation of monthnames using the current language
-selected by {\bf TIME\_LANGUAGE}.
+name only and {\bf PLOT\_ANNOT\_FORMAT2} selects the 1-character, upper case abbreviation of monthnames using
+the current language selected by {\bf TIME\_LANGUAGE}.
 \GMTfig[h]{GMT_-B_time3}{Cartesian time axis, example 3.}
 
-The fourth example (Figure~\ref{fig:GMT_-B_time4}) only shows a few hours of a day.  We select both upper and lower annotations, ask for a 12-hour
-clock, and let time go from right to left:
+The fourth example (Figure~\ref{fig:GMT_-B_time4}) only shows a few hours of a day.  We select both primary and
+secondary annotations, ask for a 12-hour clock, and let time go from right to left:
 
 \input{scripts/GMT_-B_time4}
 \GMTfig[h]{GMT_-B_time4}{Cartesian time axis, example 4.}
 
-The fifth example shows a few weeks of time (Figure~\ref{fig:GMT_-B_time5}).  The lower axis shows ISO weeks with week numbers and
-abbreviated names of the weekdays.   The upper uses Gregorian weeks (which start at the day chosen by {\bf TIME\_WEEK\_START}); they
-do not have numbers.
+The fifth example shows a few weeks of time (Figure~\ref{fig:GMT_-B_time5}).  The lower axis shows ISO weeks with
+week numbers and abbreviated names of the weekdays.   The upper uses Gregorian weeks (which start at the day chosen
+by {\bf TIME\_WEEK\_START}); they do not have numbers.
 \input{scripts/GMT_-B_time5}
 \GMTfig[h]{GMT_-B_time5}{Cartesian time axis, example 5.}
 
 Our sixth example shows the first five months of 1996, and we have annotated each month with an abbreviated, upper case
-name and 2-digit year.
+name and 2-digit year.  Only the primary axes information is specified.
 \input{scripts/GMT_-B_time6}
 
 \GMTfig[h]{GMT_-B_time6}{Cartesian time axis, example 6.}
-
 
 Our seventh and final example illustrates annotation of year-days.  Unless we specify the formatting with a leading hyphen
 in  {\bf PLOT\_DATE\_FORMAT} we get 3-digit integer days.

@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_3.tex,v 1.15 2004-01-10 02:34:54 pwessel Exp $
+%	$Id: GMT_Chapter_3.tex,v 1.16 2004-04-12 19:51:12 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -277,9 +277,10 @@ for each of the 25 map projections available in \GMT. \\
 
 \begin{tabular}{|ll|} \hline
 \multicolumn{2}{|c|}{STANDARDIZED COMMAND LINE OPTIONS} \\ \hline\hline
-\multicolumn{2}{|l|}{\Opt{B}{\it xinfo}[{\it /yinfo}[{\it /zinfo}]][{\it WESNZwesnz+}][{\it :.title:}] Tickmarks. Each {\it info} is} \\
+\multicolumn{2}{|l|}{\Opt{B}[{\bf p}$|${\bf s}]{\it xinfo}[{\it /yinfo}[{\it /zinfo}]][{\it WESNZwesnz+}][{\it :.title:}] Tickmarks. Each {\it info} is} \\
 \multicolumn{2}{|l|}{\hspace{0.2in}[{\bf t}]{\it stride}[{\bf u}][{\bf l}$|${\bf p}][:"label":][:,"unit":], where {\bf l} and {\bf p} apply to $\log_{10}$ axes only, and} \\
 \multicolumn{2}{|l|}{\hspace{0.2in}type {\bf t} = \{{\bf a, A, f, g, i, I}\}; unit {\bf u} = \{{\bf c, C, d, D, h, H, K, k, m, M, o, O, r, R, u, U, y, Y}\}} \\ \hline
+\multicolumn{2}{|l|}{\hspace{0.2in}The leading {\bf p}$|${\bf s} selects primary [Default] or secondary axis items} \\ \hline
 \Opt{H}[{\it n\_headers}]		&	ASCII tables have header record[s] \\ \hline
 \Opt{J}	(upper case for width, lower case for scale) &	Map projection (see below) \\ \hline
 \hspace{0.2in}\Opt{JA}$lon_0/lat_0/width$	&	Lambert azimuthal equal area \\ \hline
