@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.8 2001-04-18 00:09:06 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.9 2001-04-21 03:13:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2058,6 +2058,8 @@ void GMT_map_gridcross (double w, double e, double s, double n)
 	
 	ps_comment ("Map gridcrosses");
 
+	GMT_map_clip_on (GMT_no_rgb, 3);
+	
 	GMT_setpen (&gmtdefs.grid_pen);
 	
 	if (project_info.xyz_projection[0] == LOG10)
@@ -2151,6 +2153,8 @@ void GMT_map_gridcross (double w, double e, double s, double n)
 	if (ny) GMT_free ((void *)y);
 
 	if (gmtdefs.grid_pen.texture) ps_setdash (CNULL, 0);
+	
+	GMT_map_clip_off ();
 }
 
 void GMT_map_tickmarks (double w, double e, double s, double n)
