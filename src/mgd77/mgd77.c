@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.1 2004-08-18 23:19:44 pwessel Exp $
+ *	$Id: mgd77.c,v 1.2 2004-08-19 04:07:36 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -470,7 +470,7 @@ int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* 
  */
 int MGD77_Read_Data_Record (FILE *fp, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will read a single MGD77 record */
 {
-	int len, i, j, k, nwords, value, rata_die, nconv;
+	int len, i, k, nwords, value, rata_die, yyyy, mm, dd, nconv;
 	char line[BUFSIZ], currentField[10];
 	BOOLEAN may_convert;
 	double secs, tz;
@@ -527,7 +527,10 @@ int MGD77_Read_Data_Record (FILE *fp, struct MGD77_DATA_RECORD *MGD77Record)	  /
 	/* Get absolute time, if all the pieces are there */
 	
 	if ((MGD77Record->bit_pattern & MGD77_YYYYMMDDHHMM_BITS) == MGD77_YYYYMMDDHHMM_BITS) {	/* Got all the time items */
-		rata_die = GMT_rd_from_gymd (MGD77Record->number[2], MGD77Record->number[3], MGD77Record->number[4]);
+		yyyy = irint (MGD77Record->number[2]);
+		mm = irint (MGD77Record->number[3]);
+		dd = irint (MGD77Record->number[4]);
+		rata_die = GMT_rd_from_gymd (yyyy, mm, dd);
 		tz = (GMT_is_dnan (MGD77Record->number[1])) ? 0.0 : MGD77Record->number[1];
 		secs = GMT_HR2SEC_I * (MGD77Record->number[5] + tz) + GMT_MIN2SEC_I * MGD77Record->number[6];
 		MGD77Record->time = GMT_rdc2dt (rata_die, secs);
@@ -549,7 +552,7 @@ int MGD77_Write_Data_Record (FILE *fp, struct MGD77_DATA_RECORD *MGD77Record)	/*
 		else if (i == 24 || i == 25) fprintf (fp, mgd77defs[i+1].printMGD77, MGD77Record->word[nwords++]);
 		else {
 			if (GMT_is_dnan (MGD77Record->number[nvalues]))	fprintf (fp, "%s", mgd77defs[nvalues].not_given);
-			else fprintf (fp, mgd77defs[nvalues].printMGD77, (int) ((rint) (MGD77Record->number[nvalues]*mgd77defs[nvalues].factor)));
+			else fprintf (fp, mgd77defs[nvalues].printMGD77, irint (MGD77Record->number[nvalues]*mgd77defs[nvalues].factor));
 			nvalues++;
 		}
 	}
@@ -620,7 +623,7 @@ float MGD77_Get_float (char *record, int pos, int length, double scale)
 	if (!strncmp (&record[pos], ALL_BLANKS, length))	/* Found just a blank string, set to NaN or equivalent */
 		value = (float) MGD77_NaN;
 	else
-		value = (float) atof (&record[pos]) * scale;
+		value = (float) (atof (&record[pos]) * scale);
 	record[pos+length] = keep;
 	return (value);
 }

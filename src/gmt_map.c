@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.63 2004-07-15 20:09:59 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.64 2004-08-19 04:07:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7398,13 +7398,13 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 			z_int = GMT_get_bcr_z (I, x_proj, y_proj, z_in, edgeinfo, &bcr);
 			
 			if (nz[ij_out] == 0)
-				z_out[ij_out] = z_int;
+				z_out[ij_out] = (float)z_int;
 			else {
 				if (GMT_is_dnan (z_int))
 					z_out[ij_out] /= nz[ij_out];		/* Plain average */
 				else {						/* Weighted average */
 					inv_nz = 1.0 / nz[ij_out];
-					z_out[ij_out] = (z_out[ij_out] + z_int * inv_nz) / (nz[ij_out] + inv_nz);
+					z_out[ij_out] = (float) (z_out[ij_out] + z_int * inv_nz) / (nz[ij_out] + inv_nz);
 				}
 			}
 		}
