@@ -1,5 +1,5 @@
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *	$Id: x_init.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: x_init.c,v 1.2 2005-03-04 00:48:32 pwessel Exp $
  *
  * XINIT will create the xx_base.b and xx_legs.b files and write out
  * the first header record (in xx_base.b) that tells which record number
@@ -14,7 +14,7 @@
 #include "gmt.h"
 #include "x_system.h"
 
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	char buffer[REC_SIZE];
 	int i;
