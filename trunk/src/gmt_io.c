@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.11 2001-08-17 21:25:48 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.12 2001-08-17 21:40:58 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1414,21 +1414,9 @@ int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd) {
 		if (ival[0] < 0 || ival[0] > 99) return (-1);
 		ival[0] = GMT_y2_to_y4_yearfix (ival[0]);
 	}
-	if (ival[1] < 1 || ival[1] > 12 || ival[2] < 1) return (-1);
-	if (ival[1] == 2) {
-		k = (GMT_is_gleap (ival[0]) ) ? 29 : 28;
-		if (ival[2] > k) return (-1);
-	}
-	else {
-		i = ival[1]%2;
-		if (ival[1] < 8) {
-			k = 30 + i;
-		}
-		else {
-			k = 31 - i;
-		}
-		if (ival[2] > k) return (-1);
-	}
+	
+	if (GMT_g_ymd_is_bad (ival[0], ival[1], ival[2]) ) return (-1);
+	
 	*rd = GMT_rd_from_gymd (ival[0], ival[1], ival[2]);
 	return (0);
 }
@@ -1667,12 +1655,121 @@ int	GMT_scanf (char *s, int expectation, double *val) {
 	return (GMT_IS_NAN);
 }
 
-int	GMT_scanf_argtime (char *s, double *val) {
+int	GMT_scanf_argtime (char *s, GMT_dtime *t) {
 
-	/* s points to a string which may be absolute or relative
-	time, but must be interpreted as time, and must be */
+	/* s is a string from a command-line argument.
+		The argument is known to refer to a time
+		variable.  For example, the argument is
+		a token from -R<t_min>/<t_max>/a/b[/c/d].
+		However, we will permit it to be in EITHER
+			-generic floating point format,
+			in which case we interpret it as
+			time relative to user units and epoch;
+		OR
+			-absolute time in a restricted format.
 		
-	fprintf (stderr, "GMT_scanf_argtime is a dummy routine.\n");
-	return (GMT_IS_NAN);
+		The absolute format must be restricted because
+		we cannot use '/' as a delimiter in an arg
+		string, but we might allow the user to use that
+		in a data file (in gmtdefs.[in/out]put_date_format.
+		Therefore we cannot use the user's date format
+		string here, and we hard-wire something here.
+		
+		The relative format must be decodable by GMT_scanf_float().
+		
+		The absolute format must have a T.  If it has a clock
+		string then it must be of the form 
+		<complete_calstring>T<clockstring>
+		or just T<clockstring>.  If it has no clockstring then
+		it must be of the form 
+		<partial or complete calstring>T.
+		
+		A <clockstring> may be partial (e.g. hh or hh:mm) or
+		complete (hh:mm:ss[.xxx]) but it must use ':' for a
+		delimiter and it must be readable with "%2d:%2d:%lf".
+		Also, it must be a 24 hour clock (00:00:00 to 23:59:59.xxx,
+		or 60.xxx on a leap second); no am/pm suffixes allowed.
+		
+		A <calstring> must be of the form
+		[-]yyyy[-mm[-dd]]T readable after first '-' with "%4d-%2d-%2dT"
+		or
+		yyyy[-Www[-d]]T
+		
+		sorry, i haven't got day of year in here yet...
+	
+	Upon failure, returns GMT_IS_NAN.  Upon success, sets
+	t and returns GMT_IS_ABSTIME.
+	We could have it return either ABSTIME or RELTIME to indicate
+	which one it thinks it decoded; however, this is inconsistent
+	with the use of GMT_scanf when RELTIME is expected and ABSTIME
+	conversion is done internal to the routine, as it is here.
+	That is, we always return an absolute time if we haven't failed,
+	so that is the returned value.
+	*/
+	
+	double	ss, x;
+	char 	*pw, *pt;
+	int	hh, mm, j, k, ival[3];
+	BOOLEAN negate_year = FALSE;
+	
+	if ( (pt = strchr (s, (int)'T') ) == CNULL) {
+		/* There is no T.  This must decode with GMT_scanf_float()
+			or we die.  */
+		if ( ( GMT_scanf_float (s, &x) ) == GMT_IS_NAN) return (GMT_IS_NAN);
+		*t = GMT_dt_from_usert (x);
+		return (GMT_IS_ABSTIME);
+	}
+	x = 0.0;	/* x will be the seconds since start of today.  */
+	if (pt[1]) {	/* There is a string following the T:  Decode a clock:  */
+		k = sscanf (&pt[1], "%2d:%2d:%lf", &hh, &mm, &ss);
+		if (k == 0) return (GMT_IS_NAN);
+		if (hh < 0 || hh >= 24) return (GMT_IS_NAN);
+		x = 3600.0 * hh;
+		if (k > 1) {
+			if (mm < 0 || mm > 59) return (GMT_IS_NAN);
+			x += 60.0*mm;
+		}
+		if (k > 2) {
+			if (ss < 0.0 || ss >= 61.0) return (GMT_IS_NAN);
+			x += ss;
+		}
+	}
+	
+	k = 0;
+	while (s[k] && s[k] == ' ') k++;
+	if (s[k] == '-') negate_year = TRUE;
+	if (s[k] == 'T') {
+		/* There is no calendar.  Set day to 1 and use that:  */
+		*t = GMT_rdc2dt ( (GMT_cal_rd)1, x);
+		return (GMT_IS_ABSTIME);
+	}
+	
+	if (!(isdigit ( (int)s[k]) ) ) return (GMT_IS_NAN);	/* Bad format */
+	
+	if ( (pw = strchr (s, (int)'W') ) ) {
+		/* There is a W.  ISO calendar or junk.  */
+		if (strlen(pw) <= strlen(pt)) {
+			/* The W is after the T.  Wrong format.  */
+			return (GMT_IS_NAN);
+		}
+		if (negate_year) {
+			/* negative years not allowed in ISO calendar  */
+			return (GMT_IS_NAN);
+		}
+		if ( (j = sscanf(&s[k], "%4d-W%2d-%1d", &ival[0], &ival[1], &ival[2]) ) == 0) return (GMT_IS_NAN);
+		for (k = j; k < 3; k++) ival[k] = 1;
+		if (ival[1] < 1 || ival[1] > 53) return (GMT_IS_NAN);
+		if (ival[2] < 1 || ival[2] > 7)  return (GMT_IS_NAN);
+		*t = GMT_rdc2dt ( GMT_rd_from_iywd (ival[0], ival[1], ival[2]), x);
+		return (GMT_IS_ABSTIME);
+	}
+	
+	/* Gregorian yyyy-mm-dd calendar:  */
+	if ( (j = sscanf(&s[k], "%4d-%2d-%2d", &ival[0], &ival[1], &ival[2]) ) == 0) return (GMT_IS_NAN);
+	for (k = j; k < 3; k++) ival[k] = 1;
+	if (negate_year) ival[0] = -ival[0];
+	if (GMT_g_ymd_is_bad (ival[0], ival[1], ival[2]) ) return (GMT_IS_NAN);
+	*t = GMT_rdc2dt ( GMT_rd_from_gymd (ival[0], ival[1], ival[2]), x);
+	return (GMT_IS_ABSTIME);
 }
 
