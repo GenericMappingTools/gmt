@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.7 2001-08-23 23:17:08 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.8 2001-08-27 17:30:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -259,6 +259,7 @@ struct TIME_AXIS_ITEM {		/* Information for one type of tick/anotation */
 	BOOLEAN active;			/* TRUE if we want to use this item */
 	double interval;		/* Distance bewteen ticks in user units */
 	int flavor;			/* Index into month/day name abbreviation array (0-2) */
+	BOOLEAN upper_case;		/* TRUE if we want upper case text (used with flavor) */
 	char type;			/* One of a, i, A, I, f, g */
 	char unit;			/* User's interval unit (y, M, u, d, h, m, c) */
 };
