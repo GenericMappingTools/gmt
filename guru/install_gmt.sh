@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.33 2004-01-09 22:53:42 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.34 2004-01-09 22:58:10 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -107,7 +107,6 @@ cat << EOF > gmt_install.ftp_gzsizes
 EOF
 cat << EOF >&2
 ====>>>> Interactive installation of GMT <<<<====
-		   Version 4
 		  
 We first need a questions and answer session to
 determine how and where GMT is to be installed.
@@ -128,7 +127,7 @@ while [ $answer -lt 0 ] || [ $answer gt 3 ]; do
 	answer=`get_def_answer "Enter GMT version to install (1-3)" "1"`
 done
 if [ $answer -eq 1 ]; then
-	VERSION=4b
+	VERSION=4.0b
 elif [ $answer -eq 2 ]; then
 	VERSION=3.4.4
 else
