@@ -1,6 +1,6 @@
-#----------------	$Id: GNUmakefile,v 1.5 2001-03-05 15:50:44 pwessel Exp $	--------------------
+#----------------	$Id: GNUmakefile,v 1.6 2001-03-09 01:56:52 pwessel Exp $	--------------------
 #
-#		Makefile for GMT Version 3.3.7
+#		Makefile for GMT Version 3.4
 #			GNU make compatible
 #	[GNU make always looks for GNUmakefile before Makefile/makefile]
 #
@@ -14,16 +14,20 @@
 #	Authors:	Paul Wessel, SOEST, University of Hawaii
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
 #
-#	Date:		27-DEC-2000
+#	Date:		07-MAR-2001
 #-------------------------------------------------------------------------------
 #	Default setup
 #-------------------------------------------------------------------------------
 
 -include makegmt.macros	# GMT specific settings created by user
 
-bindir2		= /home/pahoehoe/gmt/GMT3.3.4/bin
-libdir2		= /home/pahoehoe/gmt/GMT3.3.4/lib
-includedir2	= /home/pahoehoe/gmt/GMT3.3.4/include
+# These directories can be set to have a 2nd place to install executables
+# other than your chosen install directories.  Edit these directories
+# and say "make install2"
+
+bindir2		= /home/pahoehoe/gmt/GMT3.4/bin
+libdir2		= /home/pahoehoe/gmt/GMT3.4/lib
+includedir2	= /home/pahoehoe/gmt/GMT3.4/include
 
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
