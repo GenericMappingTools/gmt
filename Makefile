@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.4 2001-03-09 18:32:11 pwessel Exp $
+#	$Id: Makefile,v 1.5 2001-03-09 19:20:44 pwessel Exp $
 #
 #	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -70,7 +70,7 @@ all:		gmt suppl
 install-all:	install install-suppl install-data install-man install-www
 uninstall-all:	uninstall uninstall-suppl uninstall-data uninstall-man uninstall-www
 
-gmt:		
+gmt:		gmtmacros
 		cd src; \
 		$(MAKE) all; \
 		cd ..
@@ -85,7 +85,7 @@ uninstall:	gmt
 		$(MAKE) uninstall; \
 		cd ..
 
-suppl:		mex_config xgrid_config
+suppl:		gmtmacros mex_config xgrid_config
 		for d in $(SUPPL); do \
 			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
 				cd src/$$d; \
@@ -116,7 +116,13 @@ xgrid_config:
 			\rm -f config.{cache,log,status}; \
 			./configure; \
 		fi
-		
+
+gmtmacros:	
+		if [ `cat src/makegmt.macros | wc -c` = 0 ]; then \
+			echo "src/makegmt.macros is empty - you must rerun configure in the main GMT directory"; \
+			exit; \
+		fi
+
 uninstall-suppl:
 		for d in $(SUPPL); do \
 			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
