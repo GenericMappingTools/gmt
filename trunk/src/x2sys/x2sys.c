@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.6 2004-05-15 02:29:50 pwessel Exp $
+ *	$Id: x2sys.c,v 1.7 2004-05-15 02:57:07 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -133,9 +133,9 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 				if (j == 0) {
 					s->ms_next = FALSE;
 					fgets (line, BUFSIZ, fp);	/* Get new record */
-					while (s->multi_segment && line[0] == s->ms_flag) {
+					while (line[0] == '#' || line[0] == s->ms_flag) {
 						fgets (line, BUFSIZ, fp);
-						s->ms_next = TRUE;
+						if (s->multi_segment) s->ms_next = TRUE;
 					}
 				}
 				strncpy (buffer, &line[s->info[j].start_col], s->info[j].n_cols);
@@ -147,9 +147,9 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 				k = 0;
 				s->ms_next = FALSE;
 				fgets (line, BUFSIZ, fp);
-				while (s->multi_segment && line[0] == s->ms_flag) {
+				while (line[0] == '#' || line[0] == s->ms_flag) {
 					fgets (line, BUFSIZ, fp);
-					s->ms_next = TRUE;
+					if (s->multi_segment) s->ms_next = TRUE;
 				}
 				p = strtok (line, " ,\t\n");
 				while (p) {
@@ -281,6 +281,7 @@ struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G)
 	X->info = (struct X2SYS_DATA_INFO *) GMT_memory (VNULL, n_alloc, sizeof (struct X2SYS_DATA_INFO), "x2sys_initialize");
 	X->ascii_in = TRUE;
 	X->x_col = X->y_col = X->t_col = -1;
+	X->ms_flag = '>';	/* Default multisegment header flag */
 	sprintf (line, "%s%c%s.def\0", X2SYS_HOME, DIR_DELIM, fname);
 
 	fp = x2sys_fopen (line, "r");
