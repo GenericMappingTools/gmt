@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 11
 #
-#		$Id: job11.sh,v 1.2 2001-09-21 04:11:10 pwessel Exp $
+#		$Id: job11.sh,v 1.3 2001-09-24 02:30:55 pwessel Exp $
 #
 # Purpose:	Create a 3-D RGB Cube
 # GMT progs:	gmtset, grdimage, grdmath, pstext, psxy
@@ -101,4 +101,4 @@ psxy -W0.25pto -JX -R -O -X-5i << END >> example_11.ps
 255 255
 END
 
-\rm -f rgb_cube.cpt rgb_cube.grd .gmtcommands
+\rm -f rgb_cube.cpt rgb_cube.grd .gmtcommands .gmtdefaults
