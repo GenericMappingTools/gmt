@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.161 2004-11-04 03:07:06 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.162 2004-12-01 01:42:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -79,6 +79,7 @@ void GMT_set_titem (struct PLOT_AXIS *A, double val, double phase, char flag, ch
 int GMT_map_getframe (char *in);
 static void load_encoding (struct gmt_encoding *);
 void GMT_verify_encodings ();
+void GMT_prep_PS_bits ();
 
 /* Local variables to gmt_init.c */
 
@@ -1147,15 +1148,42 @@ int GMT_loaddefaults (char *file)
 
 	fclose (fp);
 	GMT_backwards_compatibility ();
-	if (gmtdefs.ps_heximage) gmtdefs.page_orientation |= 4;
-	if (gmtdefs.ps_cmykmode) gmtdefs.page_orientation |= 512;
-	gmtdefs.page_orientation |= (gmtdefs.ps_compress << 12);
-	if (gmtdefs.verbose) gmtdefs.page_orientation |= 16384;
+	GMT_prep_PS_bits ();
 	if (!strstr (GMT_program, "gmtset")) GMT_verify_encodings ();
 
 	if (error) fprintf (stderr, "GMT:  %d conversion errors in file %s!\n", error, file);
 
 	return (0);
+}
+
+void GMT_prep_PS_bits ()
+{
+	/* Because some defaults may be set more than once - like overridden with --PAR
+	 * we must be careful to set or unset the selections */
+	 
+	if (gmtdefs.ps_heximage)	/* Turn 4th bit ON */
+		gmtdefs.page_orientation |= 4;
+	else				/* Turn 4th bit OFF */
+		gmtdefs.page_orientation &= ~4;	
+	if (gmtdefs.ps_cmykmode)	/* Turn 10th bit ON */
+		gmtdefs.page_orientation |= 512;
+	else				/* Turn 10th bit OFF */
+		gmtdefs.page_orientation &= ~512;
+	
+	if (gmtdefs.ps_compress)	/* Turn 12th bit ON */
+		gmtdefs.page_orientation |= (1 << 12);
+	else				/* Turn 12th bit OFF */
+		gmtdefs.page_orientation &= ~(1 << 12);
+	if (gmtdefs.verbose)	/* Turn 16th bit ON */
+		gmtdefs.page_orientation |= 16384;
+	else			/* Turn 16th bit OFF */
+		gmtdefs.page_orientation &= ~16384;
+	gmtdefs.page_orientation &= ~(3 << 14);
+	if (gmtdefs.ps_line_cap) gmtdefs.page_orientation |= (gmtdefs.ps_line_cap << 14);
+	gmtdefs.page_orientation &= ~(3 << 16);
+	if (gmtdefs.ps_line_join) gmtdefs.page_orientation |= (gmtdefs.ps_line_join << 16);
+	gmtdefs.page_orientation &= ~(255 << 18);
+	if (gmtdefs.ps_miter_limit) gmtdefs.page_orientation |= (gmtdefs.ps_miter_limit << 18);
 }
 
 void GMT_setdefaults (int argc, char **argv)
@@ -1186,10 +1214,7 @@ void GMT_setdefaults (int argc, char **argv)
 	}
 
 	GMT_backwards_compatibility ();
-	if (gmtdefs.ps_heximage) gmtdefs.page_orientation |= 4;
-	if (gmtdefs.ps_cmykmode) gmtdefs.page_orientation |= 512;
-	gmtdefs.page_orientation |= (gmtdefs.ps_compress << 12);
-	if (gmtdefs.verbose) gmtdefs.page_orientation |= 16384;
+	GMT_prep_PS_bits ();
 
 	if (GMT_got_frame_rgb) {	/* Must enforce change of frame, tick, and grid pen rgb */
 		memcpy ((void *)gmtdefs.frame_pen.rgb, (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
@@ -1712,6 +1737,7 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
+		case GMTCASE_PS_IMAGE_COMPRESS:
 		case GMTCASE_PSIMAGE_COMPRESS:
 			if (!strcmp (lower_value, "none"))
 				gmtdefs.ps_compress = 0;
@@ -1722,6 +1748,7 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
+		case GMTCASE_PS_IMAGE_FORMAT:
 		case GMTCASE_PSIMAGE_FORMAT:
 			if (!strcmp (lower_value, "ascii"))
 				gmtdefs.ps_heximage = 1;
@@ -1729,6 +1756,33 @@ int GMT_setparameter (char *keyword, char *value)
 				gmtdefs.ps_heximage = 1;
 			else if (!strcmp (lower_value, "bin"))
 				gmtdefs.ps_heximage = 0;
+			else
+				error = TRUE;
+			break;
+		case GMTCASE_PS_LINE_CAP:
+			if (!strcmp (lower_value, "butt"))
+				gmtdefs.ps_line_cap = 0;
+			else if (!strcmp (lower_value, "round"))
+				gmtdefs.ps_line_cap = 1;
+			else if (!strcmp (lower_value, "square"))
+				gmtdefs.ps_line_cap = 2;
+			else
+				error = TRUE;
+			break;
+		case GMTCASE_PS_LINE_JOIN:
+			if (!strcmp (lower_value, "miter"))
+				gmtdefs.ps_line_join = 0;
+			else if (!strcmp (lower_value, "arc"))
+				gmtdefs.ps_line_join = 1;
+			else if (!strcmp (lower_value, "bevel"))
+				gmtdefs.ps_line_join = 2;
+			else
+				error = TRUE;
+			break;
+		case GMTCASE_PS_MITER_LIMIT:
+			ival = atoi (value);
+			if (ival >= 0 && ival <= 180)
+				gmtdefs.ps_miter_limit = ival;
 			else
 				error = TRUE;
 			break;
@@ -2101,12 +2155,25 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "N_COPIES		= %d\n", gmtdefs.n_copies);
 	(gmtdefs.ps_cmykmode) ? fprintf (fp, "PS_COLOR		= cmyk\n") : fprintf (fp, "PS_COLOR		= rgb\n");
 	if (gmtdefs.ps_compress == 1)
-		fprintf (fp, "PSIMAGE_COMPRESS	= rle\n");
+		fprintf (fp, "PS_IMAGE_COMPRESS	= rle\n");
 	else if (gmtdefs.ps_compress == 2)
-		fprintf (fp, "PSIMAGE_COMPRESS	= lzw\n");
+		fprintf (fp, "PS_IMAGE_COMPRESS	= lzw\n");
 	else
-		fprintf (fp, "PSIMAGE_COMPRESS	= none\n");
-	(gmtdefs.ps_heximage) ? fprintf (fp, "PSIMAGE_FORMAT		= ascii\n") : fprintf (fp, "PSIMAGE_FORMAT		= bin\n");
+		fprintf (fp, "PS_IMAGE_COMPRESS	= none\n");
+	(gmtdefs.ps_heximage) ? fprintf (fp, "PS_IMAGE_FORMAT		= ascii\n") : fprintf (fp, "PS_IMAGE_FORMAT		= bin\n");
+	if (gmtdefs.ps_line_cap == 0)
+		fprintf (fp, "PS_LINE_CAP		= butt\n");
+	else if (gmtdefs.ps_line_cap == 1)
+		fprintf (fp, "PS_LINE_CAP		= round\n");
+	else
+		fprintf (fp, "PS_LINE_CAP		= square\n");
+	if (gmtdefs.ps_line_join == 0)
+		fprintf (fp, "PS_LINE_JOIN		= miter\n");
+	else if (gmtdefs.ps_line_join == 1)
+		fprintf (fp, "PS_LINE_JOIN		= arc\n");
+	else
+		fprintf (fp, "PS_LINE_JOIN		= bevel\n");
+	fprintf (fp, "PS_MITER_LIMIT		= %d\n", gmtdefs.ps_miter_limit);
 	fprintf (fp, "GLOBAL_X_SCALE		= %g\n", gmtdefs.global_x_scale);
 	fprintf (fp, "GLOBAL_Y_SCALE		= %g\n", gmtdefs.global_y_scale);
 	fprintf (fp, "#-------- I/O Format Parameters -------------\n");
@@ -2712,6 +2779,7 @@ int GMT_begin (int argc, char **argv)
 	argc = j;
 	if (n) fprintf (stderr, "%s:  %d conversion errors from command-line default override settings!\n", GMT_program, n);
 
+	GMT_prep_PS_bits ();	/* In case --DPARs were given */
 	GMT_init_time_system_structure ();
 
 	GMT_io_init ();			/* Init the table i/o structure */

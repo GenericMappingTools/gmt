@@ -55,8 +55,11 @@
 	0,			/* PAGE_ORIENTATION */
 	{612, 792},		/* PAPER_MEDIA (US Letter) */
 	FALSE,			/* PS_COLOR (TRUE = CMYK, FALSE = RGB) */
-	0,			/* PSIMAGE_COMPRESS (0 = NONE, 1 = RLE, 2 = LZW) */
-	TRUE,			/* PSIMAGE_FORMAT (TRUE = HEX, FALSE = BIN) */
+	0,			/* PS_IMAGE_COMPRESS (0 = NONE, 1 = RLE, 2 = LZW) */
+	TRUE,			/* PS_IMAGE_FORMAT (TRUE = HEX, FALSE = BIN) */
+	0,			/* PS_LINE_CAP (0 = butt, 1 = round, 2 = square) */
+	0,			/* PS_LINE_JOIN (0 = miter, 1 = arc, 2 = bevel) */
+	0,			/* PS_MITER_LIMIT (0 = Default, or 1-180) */
 	0.075,			/* TICK_LENGTH */
 	{0.5, 0.0, {0, 0, 0}, ""},	/* TICK_PEN */
 	FALSE,			/* UNIX_TIME */
