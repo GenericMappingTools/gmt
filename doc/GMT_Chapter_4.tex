@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.47 2004-05-06 00:07:25 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.48 2004-05-07 22:07:08 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -232,7 +232,7 @@ formats:
 \begin{description}
 \item [Geographic coordinates:]  These are longitudes and latitudes and may be given in decimal degrees (e.g., -123.45417)
 or in the [$\pm$]{\it ddd}[:{\it mm}[:{\it ss}[{\it .xxx}]]][{\bf W}$|${\bf E}$|${\bf S}$|${\bf N}]
-format (e.g., 123:27:15W).  Note that \Opt{Rg} and \Opt{Rg} are shorthands for ``global domain'' \Opt{R}{\it 0}/{\it 360}/{\it -90}/{\it 90}
+format (e.g., 123:27:15W).  Note that \Opt{Rg} and \Opt{Rd} are shorthands for ``global domain'' \Opt{R}{\it 0}/{\it 360}/{\it -90}/{\it 90}
 and  \Opt{R}{\it -180}/{\it 180}/{\it -90}/{\it 90}, respectively.
 \item [Calendar time coordinates:]  These are absolute time coordinates referring to a Gregorian or ISO calendar.
 The general format is [{\it date}]{\bf T}[{\it clock}], where {\it date} (if present) must be in the {\it yyyy}[{\it -mm}[{\it -dd}]] (year, month, day-of-month)
@@ -300,7 +300,7 @@ selected information. The optional flag following \Opt{B} selects {\bf p}(rimary
 axes information (mostly used for time axes annotations; see examples below).
 The components {\it xinfo}, {\it yinfo} and {\it zinfo} are of the form \\
 
-\par {\it info}[:"axis label":][:\^"prefix":][:,"unit label":] \\
+\par {\it info}[:"axis label":][:\verb+^+"prefix":][:,"unit label":] \\
 
 \noindent
 where {\it info} is one or more concatenated substrings of the form
@@ -312,7 +312,7 @@ default, all 4 map boundaries (or plot axes) are plotted (denoted {\bf W}, {\bf 
 draw axis/tick-marks.  The title, if given, will appear centered above the plot\footnote{However,
 it is suppressed when a 3-D view is selected.}.  Unit label or prefix may start with a
 leading -- to suppress the space between it and the annotation.  Normally, equidistant annotations
-appear at multiple of {\it stride}; you can phase-shift this by appending $\pm${\it phase}.
+occur at multiples of {\it stride}; you can phase-shift this by appending $\pm${\it phase}.
 \begin{table}[H]
 \centering
 \begin{tabular}{|c|l|} \hline
@@ -498,7 +498,9 @@ name and 2-digit year.  Only the primary axes information is specified.
 \GMTfig[h]{GMT_-B_time6}{Cartesian time axis, example 6.}
 
 Our seventh and final example illustrates annotation of year-days.  Unless we specify the formatting with a leading hyphen
-in  {\bf PLOT\_DATE\_FORMAT} we get 3-digit integer days.
+in  {\bf PLOT\_DATE\_FORMAT} we get 3-digit integer days.  Note that in order to have the two years
+annotated we need to allow for the annotation of small fractional intervals; normally such truncated interval must
+be at least half of a full interval.
 \input{scripts/GMT_-B_time7}
 
 \GMTfig[h]{GMT_-B_time7}{Cartesian time axis, example 7.}
@@ -661,7 +663,9 @@ The \Opt{c} option specifies the number of plot copies. [Default is 1]
 
 For geographical data, the first column is expected to contain longitudes
 and the second to contain latitudes.  To reverse this expectation you must
-apply the \Opt{:} option.
+apply the \Opt{:} option.  Note that command line arguments that may take
+geographic coordinates (e.g., \Opt{R}) \emph{always} expect longitude before
+latitude.
 
 \index{Command line!standardized options|)}%
 
@@ -756,7 +760,7 @@ documentation.  For binary table data no headers are allowed.
 If filenames are given for reading, the programs will first look in the
 current directory.  If the file is not found, the programs
 will look in three other directories pointed to by environmental
-parameters.  These are {\bf GMT\_DATADIR}, {\bf GMT\_GRIDDIR}, and
+parameters (if set).  These are {\bf GMT\_DATADIR}, {\bf GMT\_GRIDDIR}, and
 {\bf GMT\_IMGDIR} and may be set by the user to point to directories
 that contain data sets of general use.  Data sets that are often needed
 may be placed in these directories, thus eliminating the need to specify
@@ -784,8 +788,8 @@ Most programs write their results, including \PS\
 plots, to standard output.  The exceptions are those which may
 create binary netCDF grd-files such as \GMTprog{surface} (due to
 the design of netCDF a filename must be provided; however,
-alternative output formats allowing piping are available).
-With \UNIX\, you can redirect standard output or pipe it
+alternative binary output formats allowing piping are available; see Section~\ref{sec:grdformats}).
+With \UNIX\, you can redirect standard output to a file or pipe it
 into another process.  Error messages, usage messages, and
 verbose comments are written to standard error in all cases.
 You can use \UNIX\ to redirect standard error as well,
@@ -800,8 +804,9 @@ a particular coordinate transformation or map projection.  However,
 there may be times when you must explicitly specify what you are
 providing as input using the \Opt{f} switch (see below). When binary data are expected (\Opt{b}) they must all
 be floating point numbers, however for ASCII input there are numerous
-ways to encode data coordinates.  Valid input data are generally of the same form as the arguments to the \Opt{R} option (see Section~\ref{sec:R}),
-with the following additional flexibility for calendar data:
+ways to encode data coordinates (which may be separated by white-space or commas).  Valid input data are generally
+of the same form as the arguments to the \Opt{R} option (see Section~\ref{sec:R}), with the following additional
+flexibility for calendar data:
 
 Because of the widespread use of incompatible and ambiguous formats, the processing of input
 date components is guided by the template {\bf INPUT\_DATE\_FORMAT} in your
@@ -1220,7 +1225,7 @@ and their octal codes is given in Appendix F.
 \index{grdfile!formats!bits}
 \index{grdfile!formats!rasterfile}
 \index{grdfile!formats!custom format}
-
+\label{sec:grdformats}
 \GMT\ has the ability to read more than one grdfile
 format.  As distributed, \GMT\ now recognizes 12 predefined file
 formats.  These are  

@@ -86,6 +86,7 @@
 	"+ddd:mm:ss",		/* PLOT_DEGREE_FORMAT */
 	{ "full", "full" },	/* TIME_FORMAT_PRIMARY, TIME_FORMAT_SECONDARY */
 	FALSE,			/* TIME_IS_INTERVAL */
+	0.5,			/* TIME_INTERVAL_FRACTION */
 	FALSE,			/* WANT_LEAP_SECONDS */
 	"2000-01-01T00:00:00",	/* TIME_EPOCH */
 	'd',			/* TIME_UNIT */

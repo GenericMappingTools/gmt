@@ -560,6 +560,11 @@ but center time on the previous interval.  For example, with \fBTIME_IS_INTERVAL
 be interpreted to mean 1999-12-15T12:00:00.0 (exactly middle of December), while if \fBTIME_IS_INTERVAL\fP = OFF then that date
 is interpreted to mean 1999-12-1T00:00:00.0 (start of December).
 .TP
+.B TIME_INTERVAL_FRACTION
+Determines if partial intervals at the start and end of an axis should be annotated.  If the range of the partial
+interval exceeds the specified fraction of the normal interval stride we will place the annotation centered on the
+partial interval [0.5].
+.TP
 .B TIME_LANGUAGE
 Language to use when plotting calendar items such as months and days.  Look in the $GMTHOME/share/time
 directory for available language files [US].

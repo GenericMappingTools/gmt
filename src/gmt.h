@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.65 2004-05-04 20:33:34 pwessel Exp $
+ *	$Id: gmt.h,v 1.66 2004-05-07 22:07:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -212,9 +212,9 @@ typedef double GMT_dtime;	/* GMT internal time representation */
  *--------------------------------------------------------------------*/
 
 #define N_UNIQUE 59		/* Number of unique options */
-#define N_KEYS 111		/* Number of gmt defaults */
+#define N_KEYS 112		/* Number of gmt defaults */
 #define GMT_N_MEDIA 29		/* Number of standard paper formats in the GMT_media_names.h include file */
-#define HASH_SIZE 111		/* Used in get_gmtdefaults, should be ~> N_KEYS */
+#define HASH_SIZE 112		/* Used in get_gmtdefaults, should be ~> N_KEYS */
 #define GMT_N_SYSTEMS 6		/* Number of time systems in gmt_time_systems.h */
 /* This structure contains default parameters for the GMT system */
 
@@ -331,6 +331,7 @@ struct GMTDEFAULTS {
 	char plot_degree_format[32];	/* Controls how degrees are plotted on maps [020 = dd:mm:ss as in old DEGREE_FORMAT = 0] */
 	char time_format[2][32];	/* Controls annotation format for Months/Weeks/Weekdays for primary and secondary axes */
 	BOOLEAN time_is_interval;	/* Does a time given as a month (or year or day) mean the middle of the interval? */
+	double time_interval_fraction;	/* How much of a partial interval is needed in order to annotate it */
 	BOOLEAN want_leap_seconds;	/* Do we need to worry about leap seconds? */
 	char time_epoch[32];		/* User-defined epoch for time */
 	char time_unit;			/* User-defined time unit */

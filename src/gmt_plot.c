@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.113 2004-04-30 17:44:18 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.114 2004-05-07 22:07:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -117,8 +117,8 @@ BOOLEAN GMT_is_fancy_boundary (void);
 void GMT_coordinate_to_x (double coord, double *x);
 void GMT_coordinate_to_y (double coord, double *y);
 int GMT_time_array (double min, double max, struct PLOT_AXIS_ITEM *T, double **array);
-void GMT_timex_grid (double w, double e, double s, double n);
-void GMT_timey_grid (double w, double e, double s, double n);
+void GMT_timex_grid (double w, double e, double s, double n, int item);
+void GMT_timey_grid (double w, double e, double s, double n, int item);
 void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct PLOT_AXIS_ITEM *T, GMT_dtime t);
 void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct PLOT_AXIS_ITEM *T, double coord);
 void GMT_get_primary_annot (struct PLOT_AXIS *A, int *primary, int *secondary);
@@ -418,7 +418,7 @@ int GMT_annot_pos (double min, double max, struct PLOT_AXIS_ITEM *T, double coor
 	 * For instance, if our interval is 3 months we do not want "January" centered
 	 * on that quarter.  If the position is outside our range we return TRUE
 	 */
-	double half_width, start, stop;
+	double range, start, stop;
 	 
 	if (GMT_interval_axis_item(T->id)) {
 		if (GMT_uneven_interval (T->unit) && T->interval != 1.0) {	/* Must find next month to get month centered correctly */
@@ -426,16 +426,16 @@ int GMT_annot_pos (double min, double max, struct PLOT_AXIS_ITEM *T, double coor
 			Inext.unit = T->unit;		/* Initialize MOMENT_INTERVAL structure members */
 			Inext.step = 1;
 			GMT_moment_interval (&Inext, coord[0], TRUE);	/* Get this one interval only */
-			half_width = 0.5 * (Inext.dt[1] - Inext.dt[0]);	/* Half width of interval in internal representation */
+			range = 0.5 * (Inext.dt[1] - Inext.dt[0]);	/* Half width of interval in internal representation */
 			start = MAX (min, Inext.dt[0]);			/* Start of interval, but not less that start of axis */
 			stop  = MIN (max, Inext.dt[1]);			/* Stop of interval,  but not beyond end of axis */
 		}
 		else {
-			half_width = 0.5 * (coord[1] - coord[0]);	/* Half width of interval in internal representation */
+			range = 0.5 * (coord[1] - coord[0]);	/* Half width of interval in internal representation */
 			start = MAX (min, coord[0]);			/* Start of interval, but not less that start of axis */
 			stop  = MIN (max, coord[1]);			/* Stop of interval,  but not beyond end of axis */
 		}
-		if ((stop - start) < half_width) return (TRUE);		/* Sorry, fraction not large enough to annotate */
+		if ((stop - start) < (gmtdefs.time_interval_fraction * range)) return (TRUE);		/* Sorry, fraction not large enough to annotate */
 		*pos = 0.5 * (start + stop);				/* Set half-way point */
 		if (((*pos) - GMT_CONV_LIMIT) < min || ((*pos) + GMT_CONV_LIMIT) > max) return (TRUE);	/* Outside axis range */
 	}
@@ -1131,12 +1131,12 @@ void GMT_lineary_grid (double w, double e, double s, double n, double dval)
 	if (ny) GMT_free ((char *)y);
 }
 
-void GMT_timex_grid (double w, double e, double s, double n)
+void GMT_timex_grid (double w, double e, double s, double n, int item)
 {
 	int i, nx;
 	double *x;
 		
-	nx = GMT_time_array (w, e, &frame_info.axis[0].item[5], &x);
+	nx = GMT_time_array (w, e, &frame_info.axis[0].item[item], &x);
 	for (i = 0; i < nx; i++) {
 		GMT_geoplot (x[i], s, 3);
 		GMT_geoplot (x[i], n, 2);
@@ -1144,12 +1144,12 @@ void GMT_timex_grid (double w, double e, double s, double n)
 	if (nx) GMT_free ((char *)x);
 }
 
-void GMT_timey_grid (double w, double e, double s, double n)
+void GMT_timey_grid (double w, double e, double s, double n, int item)
 {
 	int i, ny;
 	double *y;
 		
-	ny = GMT_time_array (s, n, &frame_info.axis[1].item[5], &y);
+	ny = GMT_time_array (s, n, &frame_info.axis[1].item[item], &y);
 	for (i = 0; i < ny; i++) {
 		GMT_geoplot (w, y[i], 3);
 		GMT_geoplot (e, y[i], 2);
@@ -2370,7 +2370,7 @@ void GMT_map_gridlines (double w, double e, double s, double n)
 		GMT_setpen (&gmtdefs.grid_pen[k]);
 
 		if (project_info.xyz_projection[0] == TIME && dx > 0.0)
-			GMT_timex_grid (w, e, s, n);
+			GMT_timex_grid (w, e, s, n, item[k]);
 		else if (dx > 0.0 && project_info.xyz_projection[0] == LOG10)
 			GMT_logx_grid (w, e, s, n, dx);
 		else if (dx > 0.0 && project_info.xyz_projection[0] == POW)
@@ -2379,7 +2379,7 @@ void GMT_map_gridlines (double w, double e, double s, double n)
 			GMT_linearx_grid (w, e, s, n, dx);
 		
 		if (project_info.xyz_projection[1] == TIME && dy > 0.0)
-			GMT_timey_grid (w, e, s, n);
+			GMT_timey_grid (w, e, s, n, item[k]);
 		else if (dy > 0.0 && project_info.xyz_projection[1] == LOG10)
 			GMT_logy_grid (w, e, s, n, dy);
 		else if (dy > 0.0 && project_info.xyz_projection[1] == POW)
