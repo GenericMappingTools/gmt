@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 
-#       $Id: gmt_form.pl,v 1.4 2001-07-10 23:43:09 pwessel Exp $
+#       $Id: gmt_form.pl,v 1.5 2002-07-24 01:48:57 pwessel Exp $
 
-$webmaster = "gmt\@soest\.hawaii\.edu";
-$registration = "gmt\@soest\.hawaii\.edu";
+$webmaster = "gmt-team\@hawaii\.edu";
+$registration = "pwessel\@hawaii\.edu";
 
 # Create return HTML Test file
 
