@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.3 2001-03-02 19:54:09 pwessel Exp $
+ *	$Id: pslib.c,v 1.4 2001-03-09 19:20:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -108,8 +108,8 @@
  *		School of Ocean and Earth Science and Technology
  *		1680 East-West Road, Honolulu, HI 96822
  *		pwessel@hawaii.edu
- * Date:	10-OCT-2000
- * Version:	2.7.1
+ * Date:	09-MAR-2001
+ * Version:	3.4
  *
  * The environmental variable GMTHOME must be set to the directory that holds the subdirectory
  *   share where all the pattern Sun raster files are stored
@@ -1295,7 +1295,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 			fprintf (ps.fp, "\n");
 		}
 		else {
-			fprintf (ps.fp, "%%%%Title: pslib v%lg document\n", Version);
+			fprintf (ps.fp, "%%%%Title: pslib v%s document\n", PSL_Version);
 			fprintf (ps.fp, "%%%%Creator: pslib\n");
 		}
 
