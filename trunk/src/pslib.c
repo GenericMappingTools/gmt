@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.56 2004-02-04 00:55:15 pwessel Exp $
+ *	$Id: pslib.c,v 1.57 2004-03-25 18:11:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -860,7 +860,7 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 int ps_imagefill_init (int image_no, char *imagefile, int invert, int image_dpi, BOOLEAN colorize, int f_rgb[], int b_rgb[])
 {
 
-	int i, nx, ny, dx, pmode, polarity, n_channels;
+	int i, nx, ny, dx, dy, pmode, polarity, n_channels;
 	char file[BUFSIZ], name[BUFSIZ];
 	char *TF[2] = {"false", "true"};
 	unsigned char *picture;
@@ -911,9 +911,11 @@ int ps_imagefill_init (int image_no, char *imagefile, int invert, int image_dpi,
 
 	if (image_dpi) {	/* Use given DPI */
 		dx = irint (h.ras_width * ps.scale / image_dpi);
+		dy = irint (h.ras_height * ps.scale / image_dpi);
 	}
 	else {	/* Use device resolution */
 		dx = h.ras_width;
+		dy = h.ras_height;
 	}
 	
 	ps_comment ("Start of user imagefill pattern definition");
@@ -939,14 +941,14 @@ int ps_imagefill_init (int image_no, char *imagefile, int invert, int image_dpi,
 				polarity = 0;
 				pmode = ps_place_color (f_rgb);
 			}
-			fprintf (ps.fp, "%c %d dup scale %d %d %s [%d 0 0 %d 0 %d] {%s} imagemask U} def\n", ps_paint_code[pmode], dx, nx, ny, TF[polarity], nx, -ny, ny, name);
+			fprintf (ps.fp, "%c %d %d scale %d %d %s [%d 0 0 %d 0 %d] {%s} imagemask U} def\n", ps_paint_code[pmode], dx, dy, nx, ny, TF[polarity], nx, -ny, ny, name);
 		}
 		else	/* Plain b/w image */
-			fprintf (ps.fp, "/fill%s { V T %d dup scale %d %d 1 [%d 0 0 %d 0 %d] {%s} image U} def\n", name, dx, nx, ny, nx, -ny, ny, name);
+			fprintf (ps.fp, "/fill%s { V T %d %d scale %d %d 1 [%d 0 0 %d 0 %d] {%s} image U} def\n", name, dx, dy, nx, ny, nx, -ny, ny, name);
 	}
 	else {
 		n_channels = (ps.cmyk_mode) ? 4 : 3;
-		fprintf (ps.fp, "/fill%s { V T %d dup scale %d %d 8 [%d 0 0 %d 0 %d] {%s} false %d colorimage U} def\n", name, dx, nx, ny, nx, -ny, ny, name, n_channels);
+		fprintf (ps.fp, "/fill%s { V T %d %d scale %d %d 8 [%d 0 0 %d 0 %d] {%s} false %d colorimage U} def\n", name, dx, dy, nx, ny, nx, -ny, ny, name, n_channels);
 	}
 
 	ps_free ((void *)picture);

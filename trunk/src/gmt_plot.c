@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.91 2004-02-25 18:06:01 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.92 2004-03-25 18:11:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4128,7 +4128,7 @@ BOOLEAN GMT_fill_is_image (char *fill) {
 
 void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struct CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, BOOLEAN outline) {
 	int n = 0, n_alloc = GMT_SMALL_CHUNK, na, i, font_no = gmtdefs.annot_font;
-	BOOLEAN flush = FALSE;
+	BOOLEAN flush = FALSE, this_outline;
 	double x, y, da, sr, sa, ca, *xx, *yy, font_size;
 	char cmd[64], *c;
 	struct CUSTOM_SYMBOL_ITEM *s;
@@ -4147,12 +4147,13 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 		
 		switch (s->action) {
 			case ACTION_MOVE:
-				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				xx[0] = x;
 				yy[0] = y;
 				n = 1;
 				p = (s->pen)  ? s->pen  : pen;
 				f = (s->fill) ? s->fill : fill;
+				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
 				break;
 				
 			case ACTION_DRAW:
@@ -4186,10 +4187,11 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				break;
 				
 			case ACTION_CROSS:
-				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
-				if (p) GMT_setpen (p);
+				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
+				if (this_outline) GMT_setpen (p);
 				(project_info.three_D) ? GMT_cross3D (x, y, z0, s->p[0] * size) : ps_cross (x, y, s->p[0] * size);
 				break;
 
@@ -4197,6 +4199,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
+				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
 				if (f->use_pattern || project_info.three_D) {
 					sr = 0.5 * s->p[0] * size;
 					na = MAX (irint (TWO_PI * sr / gmtdefs.line_step), 16);
@@ -4212,67 +4215,74 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 						yy[n] = y + sr * sa;
 						n++;
 					}
-					GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+					GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				}
 				else {	/* Clean circle - no image fill required */
-					if (p) GMT_setpen (p);
-					ps_circle (x, y, s->p[0] * size, f->rgb, outline);
+					if (this_outline) GMT_setpen (p);
+					ps_circle (x, y, s->p[0] * size, f->rgb, this_outline);
 				}
 				break;
 				
 			case ACTION_SQUARE:
-				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
-				if (p) GMT_setpen (p);
-				(project_info.three_D) ? GMT_square3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_square (x, y, s->p[0] * size, f->rgb, outline);
+				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
+				if (this_outline) GMT_setpen (p);
+				(project_info.three_D) ? GMT_square3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_square (x, y, s->p[0] * size, f->rgb, this_outline);
 				break;
 
 			case ACTION_TRIANGLE:
-				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
-				if (p) GMT_setpen (p);
-				(project_info.three_D) ? GMT_triangle3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_triangle (x, y, s->p[0] * size, f->rgb, outline);
+				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
+				if (this_outline) GMT_setpen (p);
+				(project_info.three_D) ? GMT_triangle3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_triangle (x, y, s->p[0] * size, f->rgb, this_outline);
 				break;
 
 			case ACTION_DIAMOND:
-				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
-				if (p) GMT_setpen (p);
-				(project_info.three_D) ? GMT_diamond3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_diamond (x, y, s->p[0] * size, f->rgb, outline);
+				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
+				if (this_outline) GMT_setpen (p);
+				(project_info.three_D) ? GMT_diamond3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_diamond (x, y, s->p[0] * size, f->rgb, this_outline);
 				break;
 
 			case ACTION_STAR:
-				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
-				if (p) GMT_setpen (p);
-				(project_info.three_D) ? GMT_star3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_star (x, y, s->p[0] * size, f->rgb, outline);
+				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
+				if (this_outline) GMT_setpen (p);
+				(project_info.three_D) ? GMT_star3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_star (x, y, s->p[0] * size, f->rgb, this_outline);
 				break;
 
 			case ACTION_HEXAGON:
-				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
-				if (p) GMT_setpen (p);
-				(project_info.three_D) ? GMT_hexagon3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_hexagon (x, y, s->p[0] * size, f->rgb, outline);
+				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
+				if (this_outline) GMT_setpen (p);
+				(project_info.three_D) ? GMT_hexagon3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_hexagon (x, y, s->p[0] * size, f->rgb, this_outline);
 				break;
 
 			case ACTION_ITRIANGLE:
-				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
-				if (p) GMT_setpen (p);
-				(project_info.three_D) ? GMT_itriangle3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_itriangle (x, y, s->p[0] * size, f->rgb, outline);
+				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
+				if (this_outline) GMT_setpen (p);
+				(project_info.three_D) ? GMT_itriangle3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_itriangle (x, y, s->p[0] * size, f->rgb, this_outline);
 				break;
 
 			case ACTION_TEXT:
-				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
-				if (p) GMT_setpen (p);
+				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
+				if (this_outline) GMT_setpen (p);
 
 				if ((c = strchr (s->string, '%'))) {	/* Gave font name or number, too */
 					*c = 0;		/* Replace % with the end of string NUL indicator */
@@ -4288,7 +4298,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 					ps_setfont (font_no);			/* Set the required font */
 				}
 				font_size = s->p[0] * size * 72.0;
-				if (outline && f) {
+				if (this_outline && f) {
 					ps_setpaint (f->rgb);
 					(project_info.three_D) ? GMT_text3d (x, y, z0, font_size, font_no, s->string, 0.0, 6, FALSE) : ps_text (x, y, font_size, s->string, 0.0, 6, FALSE);
 					ps_setpaint (p->rgb);
@@ -4301,43 +4311,48 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				break;
 
 			case ACTION_PENTAGON:
-				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
-				if (p) GMT_setpen (p);
-				(project_info.three_D) ? GMT_pentagon3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_pentagon (x, y, s->p[0] * size, f->rgb, outline);
+				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
+				if (this_outline) GMT_setpen (p);
+				(project_info.three_D) ? GMT_pentagon3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_pentagon (x, y, s->p[0] * size, f->rgb, this_outline);
 				break;
 
 			case ACTION_OCTAGON:
-				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
-				if (p) GMT_setpen (p);
-				(project_info.three_D) ? GMT_octagon3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_octagon (x, y, s->p[0] * size, f->rgb, outline);
+				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
+				if (this_outline) GMT_setpen (p);
+				(project_info.three_D) ? GMT_octagon3D (x, y, z0, s->p[0] * size, f->rgb, this_outline) : ps_octagon (x, y, s->p[0] * size, f->rgb, this_outline);
 				break;
 
 			case ACTION_ELLIPSE:
-				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
-				if (p) GMT_setpen (p);
-				(project_info.three_D) ? GMT_ellipse3D (x, y, z0, s->p[0], s->p[1] * size, s->p[2] * size, f->rgb, outline) : ps_ellipse (x, y, s->p[0], s->p[1] * size, s->p[1] * size, f->rgb, outline);
+				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
+				if (this_outline) GMT_setpen (p);
+				(project_info.three_D) ? GMT_ellipse3D (x, y, z0, s->p[0], s->p[1] * size, s->p[2] * size, f->rgb, this_outline) : ps_ellipse (x, y, s->p[0], s->p[1] * size, s->p[1] * size, f->rgb, this_outline);
 				break;
 
 			case ACTION_PIE:
-				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
-				if (p) GMT_setpen (p);
-				(project_info.three_D) ? GMT_pie3D (x, y, z0, s->p[0] * size, s->p[1], s->p[2], f->rgb, outline) : ps_pie (x, y, s->p[0] * size, s->p[1], s->p[2], f->rgb, outline);
+				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
+				if (this_outline) GMT_setpen (p);
+				(project_info.three_D) ? GMT_pie3D (x, y, z0, s->p[0] * size, s->p[1], s->p[2], f->rgb, this_outline) : ps_pie (x, y, s->p[0] * size, s->p[1], s->p[2], f->rgb, this_outline);
 				break;
 
 			case ACTION_RECT:
-				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
-				if (p) GMT_setpen (p);
-				(project_info.three_D) ? GMT_rect3D (x, y, z0, s->p[0] * size, s->p[1] * size, f->rgb, outline) : ps_rect (x - 0.5 * s->p[0] * size, y - 0.5 * s->p[1] * size, x + 0.5 * s->p[0] * size, y + 0.5 * s->p[1] * size, f->rgb, outline);
+				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
+				if (this_outline) GMT_setpen (p);
+				(project_info.three_D) ? GMT_rect3D (x, y, z0, s->p[0] * size, s->p[1] * size, f->rgb, this_outline) : ps_rect (x - 0.5 * s->p[0] * size, y - 0.5 * s->p[1] * size, x + 0.5 * s->p[0] * size, y + 0.5 * s->p[1] * size, f->rgb, this_outline);
 				break;
 				
 			default:
@@ -4349,7 +4364,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 		
 		s = s->next;
 	}
-	if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
+	if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 	sprintf (cmd, "End of symbol %s\n", symbol->name);
 	ps_comment (cmd);
 	
