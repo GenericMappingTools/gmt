@@ -1,4 +1,4 @@
-.TH GMTSET l DATE
+.TH GMTSET GMTMANSECTION DATE VERSION
 .SH NAME
 gmtset \- To change individual \fBGMT\fP default parameters
 .SH SYNOPSIS

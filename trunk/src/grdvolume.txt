@@ -1,4 +1,4 @@
-.TH GRDVOLUME l DATE
+.TH GRDVOLUME GMTMANSECTION DATE VERSION
 .SH NAME
 grdvolume \- Calculating volume under a surface within a contour
 .SH SYNOPSIS

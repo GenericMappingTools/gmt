@@ -1,4 +1,4 @@
-.TH GRDIMAGE l DATE
+.TH GRDIMAGE GMTMANSECTION DATE VERSION
 #define LEN_L   1.5
 #define SCALE1	\fB\-Jl\fP18/24/1.5\fBc\fP
 #define LEN_X   10

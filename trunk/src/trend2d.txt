@@ -1,4 +1,4 @@
-.TH TREND2D l DATE
+.TH TREND2D GMTMANSECTION DATE VERSION
 .SH NAME
 trend2d \- Fit a [weighted] [robust] polynomial model for z = f(x,y) to xyz[w] data.
 .SH SYNOPSIS

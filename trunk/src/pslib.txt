@@ -1,4 +1,4 @@
-.TH pslib l DATE
+.TH pslib GMTMANSECTION DATE VERSION
 .SH NAME
 pslib 4.0 \- A \fIPostScript\fP based plotting library
 .SH DESCRIPTION

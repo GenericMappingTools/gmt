@@ -1,4 +1,4 @@
-.TH GRDPROJECT l DATE
+.TH GRDPROJECT GMTMANSECTION DATE VERSION
 .SH NAME
 grdproject \- Forward and Inverse map transformation of 2-D grd files 
 .SH SYNOPSIS

@@ -1,4 +1,4 @@
-.TH MAKECPT l DATE
+.TH MAKECPT GMTMANSECTION DATE VERSION
 .SH NAME
 makecpt \- Make GMT color palette tables
 .SH SYNOPSIS

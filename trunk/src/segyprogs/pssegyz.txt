@@ -1,4 +1,4 @@
-.TH PSSEGYZ l DATE
+.TH PSSEGYZ GMTMANSECTION DATE VERSION
 .SH NAME
 pssegyz \- Create imagemasked postscript from SEGY file
 .SH SYNOPSIS

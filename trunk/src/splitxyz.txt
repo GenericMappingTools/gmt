@@ -1,4 +1,4 @@
-.TH SPLITXYZ l DATE
+.TH SPLITXYZ GMTMANSECTION DATE VERSION
 .SH NAME
 splitxyz \- filter to divide (x,y,z[,distance,heading]) data into (x,y,z) track segments.
 .SH SYNOPSIS

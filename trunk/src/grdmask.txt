@@ -1,4 +1,4 @@
-.TH GRDMASK l DATE
+.TH GRDMASK GMTMANSECTION DATE VERSION
 .SH NAME
 grdmask \- Create mask grdfiles from xy paths.
 .SH SYNOPSIS

@@ -1,4 +1,4 @@
-.TH GMTSELECT l DATE
+.TH GMTSELECT GMTMANSECTION DATE VERSION
 .SH NAME
 gmtselect \- Select data subsets based on multiple spatial criteria 
 .SH SYNOPSIS

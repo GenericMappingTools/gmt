@@ -1,4 +1,4 @@
-.TH GMTLIST l DATE
+.TH GMTLIST GMTMANSECTION DATE VERSION
 .SH NAME
 gmtlist \- A data-extractor for <legid>.gmt files
 .SH SYNOPSIS

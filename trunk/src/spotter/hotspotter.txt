@@ -1,4 +1,4 @@
-.TH HOTSPOTTER l DATE
+.TH HOTSPOTTER GMTMANSECTION DATE VERSION
 .SH NAME
 hotspotter \- Create CVA image from seamount flowlines 
 .SH SYNOPSIS

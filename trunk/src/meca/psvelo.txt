@@ -1,4 +1,4 @@
-.TH PSVELO l DATE
+.TH PSVELO GMTMANSECTION DATE VERSION
 .SH NAME
 psvelo \fR\- Plot velocity vectors, crosses, and wedges on maps
 .SH SYNOPSIS

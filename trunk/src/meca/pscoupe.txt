@@ -1,4 +1,4 @@
-.TH PSCOUPE l DATE   
+.TH PSCOUPE GMTMANSECTION DATE VERSION   
 .SH NAME
 pscoupe \fR- Plot cross-sections of focal mechanisms. 
 .SH SYNOPSIS

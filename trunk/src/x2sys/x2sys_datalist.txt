@@ -1,4 +1,4 @@
-.TH X2SYS_DATALIST l DATE
+.TH X2SYS_DATALIST GMTMANSECTION DATE VERSION
 .SH NAME
 x2sys_datalist \- A generic data-extractor ascii or binary files
 .SH SYNOPSIS

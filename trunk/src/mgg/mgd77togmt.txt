@@ -1,4 +1,4 @@
-.TH MDG77TOGMT l DATE
+.TH MDG77TOGMT GMTMANSECTION DATE VERSION
 .SH NAME
 mgd77togmt \- Convert an MGD-77 ascii file to a binary gmt file
 .SH SYNOPSIS

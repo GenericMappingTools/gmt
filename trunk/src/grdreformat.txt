@@ -1,4 +1,4 @@
-.TH GRDREFORMAT l DATE
+.TH GRDREFORMAT GMTMANSECTION DATE VERSION
 .SH NAME
 grdreformat \- Converting between different grdfile formats.
 .SH SYNOPSIS

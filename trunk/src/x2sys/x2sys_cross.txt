@@ -1,4 +1,4 @@
-.TH X2SYS_CROSS l DATE
+.TH X2SYS_CROSS GMTMANSECTION DATE VERSION
 .SH NAME
 \fBx2sys_cross\fP \- Find and compute Cross-Over Errors
 .SH SYNOPSIS

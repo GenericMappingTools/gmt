@@ -1,4 +1,4 @@
-.TH x_over l DATE
+.TH x_over GMTMANSECTION DATE VERSION
 .SH NAME
 \fBx_over\fP \- Find and compute Cross-Over Errors
 .SH SYNOPSIS

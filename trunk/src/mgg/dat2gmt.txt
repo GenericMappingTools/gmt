@@ -1,4 +1,4 @@
-.TH DAT2GMT l DATE
+.TH DAT2GMT GMTMANSECTION DATE VERSION
 .SH NAME
 dat2gmt \- Convert an ASCII file to a binary gmt file
 .SH SYNOPSIS

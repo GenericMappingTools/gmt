@@ -1,4 +1,4 @@
-.TH GMTMATH l DATE
+.TH GMTMATH GMTMANSECTION DATE VERSION
 .SH NAME
 gmtmath \- Reverse Polish Notation calculator for data tables
 .SH SYNOPSIS

@@ -1,4 +1,4 @@
-.TH PSIMAGE l DATE
+.TH PSIMAGE GMTMANSECTION DATE VERSION
 .SH NAME
 psimage \- To plot SUN rasterfiles on maps
 .SH SYNOPSIS

@@ -1,4 +1,4 @@
-.TH GMTLEGS l DATE
+.TH GMTLEGS GMTMANSECTION DATE VERSION
 .SH NAME
 gmtlegs \- Find cruises in a given region
 .SH SYNOPSIS

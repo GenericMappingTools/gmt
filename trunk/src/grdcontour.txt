@@ -1,4 +1,4 @@
-.TH GRDCONTOUR l DATE
+.TH GRDCONTOUR GMTMANSECTION DATE VERSION
 .SH NAME
 grdcontour \- contouring of 2-D gridded data sets
 .SH SYNOPSIS

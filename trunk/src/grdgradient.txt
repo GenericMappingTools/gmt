@@ -1,4 +1,4 @@
-.TH GRDGRADIENT l DATE
+.TH GRDGRADIENT GMTMANSECTION DATE VERSION
 .SH NAME
 grdgradient \- Compute directional derivative or gradient from 2-D grd file representing z(x,y)
 .SH SYNOPSIS

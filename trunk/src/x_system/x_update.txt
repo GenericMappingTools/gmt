@@ -1,4 +1,4 @@
-.TH x_update l DATE
+.TH x_update GMTMANSECTION DATE VERSION
 .SH NAME
 \fBx_update\fP \- Archiving of Cross-Over Information
 .SH SYNOPSIS
