@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.34 2001-09-17 06:45:22 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.35 2001-09-19 03:43:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3952,7 +3952,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double size, struct CUSTOM_SY
 				p = s->pen;
 				if (f->use_pattern) {
 					if (flush) GMT_flush_symbol_piece (xx, yy, &n, p, pen, f, fill, outline, &flush);
-					sr = s->r * size;
+					sr = 0.5 * s->r * size;
 					na = MAX (irint (TWO_PI * sr / gmtdefs.line_step), 16);
 					da = TWO_PI / na;
 					for (i = 0; i < na; i++) {
@@ -3978,25 +3978,6 @@ void GMT_draw_custom_symbol (double x0, double y0, double size, struct CUSTOM_SY
 			case ACTION_ARC:
 				flush = TRUE;
 				ps_arc (x, y, s->r * size, s->dir1, s->dir2, 0);
-				break;
-				
-			case 99:
-				flush = TRUE;
-				sr = s->r * size;
-				arc = s->dir2 - s->dir1;	/* Arc length in radians */
-				na = MAX (irint (fabs (arc) * sr/ gmtdefs.line_step), 16);
-				da = arc / na;
-				for (i = 0; i < na; i++) {
-					if (n >= n_alloc) {
-						n_alloc += GMT_SMALL_CHUNK;
-						xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), GMT_program);
-						yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), GMT_program);
-					}
-					sincos (s->dir1 + i * da, &sa, &ca);
-					xx[n] = x + sr * ca;
-					yy[n] = y + sr * sa;
-					n++;
-				}
 				break;
 		}
 		

@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.13 2001-09-18 01:43:10 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.14 2001-09-19 03:43:07 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 3.5
 #			GNU make compatible
@@ -14,7 +14,7 @@
 #	Authors:	Paul Wessel, SOEST, University of Hawaii
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
 #
-#	Date:		14-AUG-2001
+#	Date:		14-SEP-2001
 #-------------------------------------------------------------------------------
 #	Default setup
 #-------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ PROGS_C	= blockmean.c blockmedian.c blockmode.c filter1d.c fitcircle.c grdfilter
 	  grdgradient.c grdhisteq.c grdimage.c grdinfo.c grdlandmask.c grdmask.c grdtrack.c grdreformat.c \
 	  grdmath.c grdpaste.c grdproject.c grdsample.c grdtrend.c grdvector.c grdview.c grdvolume.c makecpt.c \
 	  mapproject.c minmax.c nearneighbor.c project.c psbasemap.c psclip.c pscoast.c pshistogram.c \
-	  psimage.c psmask.c psrose.c psscale.c pstext.c pscontour.c pswiggle.c psxy.c psxyz.c \
+	  psimage.c pslegend.c psmask.c psrose.c psscale.c pstext.c pscontour.c pswiggle.c psxy.c psxyz.c \
 	  sample1d.c spectrum1d.c splitxyz.c surface.c trend1d.c trend2d.c triangulate.c xyz2grd.c
 
 SUPPL	=	cps dbase imgsrc meca mex mgg misc segyprogs spotter x2sys x_system xgrid

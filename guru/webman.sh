@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.4 2001-09-18 01:43:10 pwessel Exp $
+#	 $Id: webman.sh,v 1.5 2001-09-19 03:43:07 pwessel Exp $
 #
 #	webman.csh - Automatic generation of the GMT web manual pages
 #
@@ -117,6 +117,7 @@ are grouped by function. For an alphabetical order, click <A HREF="#anchor_alpha
 <LI><A HREF="doc/html/pscontour.html"> pscontour</A> Direct contouring or imaging of xyz-data by triangulation</LI>
 <LI><A HREF="doc/html/pshistogram.html"> pshistogram</A> Plot a histogram</LI>
 <LI><A HREF="doc/html/psimage.html"> psimage</A> Plot Sun rasterfiles on a map</LI>
+<LI><A HREF="doc/html/pslegend.html"> pslegend</A> Plot legend on a map</LI>
 <LI><A HREF="doc/html/psmask.html"> psmask</A> Create overlay to mask specified regions of a map</LI>
 <LI><A HREF="doc/html/psrose.html"> psrose</A> Plot sector or rose diagrams</LI>
 <LI><A HREF="doc/html/psscale.html"> psscale</A> Plot grayscale or colorscale</LI>

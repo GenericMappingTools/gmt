@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.17 2001-09-10 23:56:16 pwessel Exp $
+ *	$Id: pslib.c,v 1.18 2001-09-19 03:43:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -66,6 +66,7 @@
  *	ps_command		: Writes a given PostScript statement to the plot file
  *	ps_comment		: Writes a comment statement to the plot file
  *	ps_cross		: Plots a + 
+ *	ps_dash			: Plots a short horizontal line segment (dash)
  *	ps_diamond		: Plots a diamond and [optionally] fills it
  *	ps_ellipse		: Plots an ellipse and [optionally] fills it
  *	ps_encode_font		: Reencode a font with a different encoding vector
@@ -110,7 +111,7 @@
  *		School of Ocean and Earth Science and Technology
  *		1680 East-West Road, Honolulu, HI 96822
  *		pwessel@hawaii.edu
- * Date:	30-AUG-2001
+ * Date:	15-SEP-2001
  * Version:	4.0
  *
  * The environmental variable GMTHOME must be set to the directory that holds the subdirectory
@@ -528,6 +529,24 @@ void ps_diamond (double x, double y, double diameter, int rgb[], int outline)
 void ps_diamond_ (double *x, double *y, double *diameter, int *rgb, int *outline)
 {
 	 ps_diamond (*x, *y, *diameter, rgb, *outline);
+}
+
+void ps_segment (double x0, double y0, double x1, double y1)
+{	/* Short line segment */
+	int ix, iy, dx, dy;
+	
+	ix = irint (x0 * ps.scale);
+	iy = irint (y0 * ps.scale);
+	dx = irint (x1 * ps.scale) - ix;
+	dy = irint (y1 * ps.scale) - iy;
+	fprintf (ps.fp, "%d %d M %d %d D S\n", ix, iy, dx, dy);
+	ps.npath = 0;
+}
+
+/* fortran interface */
+void ps_segment_ (double *x0, double *y0, double *x1, double *y1)
+{
+	 ps_segment (*x0, *y0, *x1, *y1);
 }
 
 void ps_star (double x, double y, double diameter, int rgb[], int outline)

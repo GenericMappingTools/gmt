@@ -344,6 +344,7 @@ echo "/opt/geo-data/gmtdata" > /opt/gmt/share/coastline.conf
 /opt/gmt/man/manl/pscoupe.l
 /opt/gmt/man/manl/pshistogram.l
 /opt/gmt/man/manl/psimage.l
+/opt/gmt/man/manl/pslegend.l
 /opt/gmt/man/manl/pslib.l
 /opt/gmt/man/manl/psmask.l
 /opt/gmt/man/manl/psmeca.l
