@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 16
 #
-#		$Id: job16.sh,v 1.7 2004-04-12 21:41:36 pwessel Exp $
+#		$Id: job16.sh,v 1.8 2004-05-26 22:59:16 pwessel Exp $
 #
 # Purpose:	Illustrates interpolation methods using same data as Example 12.
 # GMT progs:	gmtset, grdview, grdfilter, pscontour, psscale, pstext, surface, triangulate
@@ -26,7 +26,7 @@ grdview raws0.grd -R -J -Ba2f1WSne -Cex16.cpt -Qs -O -K -X3.5i >> example_16.ps
 echo "3.25 7 18 0 4 CB surface (tension = 0)" | pstext -R -J -O -K -N >> example_16.ps
 #
 surface table_5.11 -R -I0.1 -Graws5.grd -T0.5
-grdview raws5.grd -R -J -Ba2f1WSne -Cex16.cpt -Qs -O -K -Y-3.75i -X-3.5i -U"Example 16 in Cookbook" >> example_16.ps
+grdview raws5.grd -R -J -Ba2f1WSne -Cex16.cpt -Qs -O -K -Y-3.75i -X-3.5i >> example_16.ps
 echo "3.25 7 18 0 4 CB surface (tension = 0.5)" | pstext -R -J -O -K -N >> example_16.ps
 #
 triangulate table_5.11 -Grawt.grd -R -I0.1 > /dev/null
