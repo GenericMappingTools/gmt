@@ -1,13 +1,13 @@
 #!/bin/sh
-#	$Id: GMT_App_F.sh,v 1.3 2001-08-31 23:44:36 pwessel Exp $
+#	$Id: GMT_App_F.sh,v 1.4 2001-09-10 21:59:37 pwessel Exp $
 #
-#	Makes the octal code chart in Appendix F
+#	Makes the octal code charts in Appendix F
 
 
 # Use the row, col values to generate the octal code needed and
 # plot it with pstext, including the header row and left column
 
-gmtset CHAR_ENCODING GMT3.4 FRAME_PEN 1p
+gmtset CHAR_ENCODING Standard FRAME_PEN 1p
 
 # First chart for standard font
 
@@ -27,7 +27,7 @@ cat << EOF > chart.d
 12	0	1	2	3	4	5	6	7
 13	0	1	2	3	4	5	6	7
 14	0	1	2	3	4	5	6	7
-15	0	1	2	3	4	5	6
+15	0	1	2	3	4	5	6	7
 16	0	1	2	3	4	5	6	7
 17	0	1	2	3	4	5	6	7
 18	0	1	2	3	4	5	6	7
@@ -43,7 +43,7 @@ cat << EOF > chart.d
 28	0	1	2	3	4	5	6	7
 29	0	1	2	3	4	5	6	7
 30	0	1	2	3	4	5	6	7
-31	0	1	2	3	4	5	6
+31	0	1	2	3	4	5	6	7
 EOF
 
 # Use the row, col values to generate the octal code needed and
@@ -68,30 +68,121 @@ EOF
 
 $AWK -f f.awk chart.d > t
 cp t t.d
-psxy -R0/9/2/32 -Jx0.345/-0.21 -B0g1 -P -K -M -G200 -Y0.0 << EOF > GMT_App_F_1.ps
+gmtset CHAR_ENCODING Standard+
+# Then for Standard+
+# First mark uncoded entries
+psxy -R0/9/2/32 -Jx0.345/-0.21 -P -K -M -G100 -Y0.0 << EOF > GMT_App_F_stand+.ps
 >
 1	4
 2	4
 2	3
 1	3
 >
+1	21
+2	21
+2	20
+1	20
+EOF
+#Then highlight Standard+ enhancements
+psxy -R -Jx -O -K -M -B0g1 -G220 << EOF >> GMT_App_F_stand+.ps
+>
+2	4
+9	4
+9	3
+2	3
+>
 8	16
 9	16
 9	15
 8	15
 >
-1	21
-2	21
-2	20
 1	20
+9	20
+9	16
+1	16
 >
-8	32
+1	23
+2	23
+2	22
+1	22
+>
+6	23
+7	23
+7	22
+6	22
+>
+7	24
+8	24
+8	23
+7	23
+>
+1	25
+2	25
+2	24
+1	24
+>
+2	26
+3	26
+3	25
+2	25
+>
+5	26
+6	26
+6	25
+5	25
+>
+2	27
+9	27
+9	26
+2	26
+>
+1	28
+9	28
+9	27
+1	27
+>
+1	29
+2	29
+2	28
+1	28
+>
+3	29
+4	29
+4	28
+3	28
+>
+5	29
+9	29
+9	28
+5	28
+>
+5	30
+9	30
+9	29
+5	29
+>
+1	31
+2	31
+2	30
+1	30
+>
+3	31
+6	31
+6	30
+3	30
+>
+7	31
+9	31
+9	30
+7	30
+>
+5	32
 9	32
 9	31
-8	31
+5	31
 EOF
-pstext t -R -Jx -O -K >> GMT_App_F_1.ps
-psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_1.ps
+pstext t -R -Jx -O -K >> GMT_App_F_stand+.ps
+psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_stand+.ps
 >
 0	3
 9	3
@@ -100,32 +191,52 @@ psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_1.ps
 1	32
 EOF
 
-gmtset CHAR_ENCODING ISOLatin1
-# Then for ISOLatin1Encoding
-psxy -R0/9/2/32 -Jx0.345/-0.21 -B0g1 -P -K -M -G200 -Y0.0 << EOF > GMT_App_F_1a.ps
+
+gmtset CHAR_ENCODING ISOLatin1+
+# Then for ISOLatin1Encoding+
+# First the uncoded ones
+psxy -R0/9/2/32 -Jx0.345/-0.21 -B0g1 -P -K -M -G100 -Y0.0 << EOF > GMT_App_F_iso+.ps
 >
 1	4
 2	4
 2	3
 1	3
 >
+1	21
+2	21
+2	20
+1	20
+EOF
+#Then highlight ISOLatin1Encoding+ enhancements
+psxy -R -Jx -O -K -M -B0g1 -G220 << EOF >> GMT_App_F_iso+.ps
+>
+2	4
+9	4
+9	3
+2	3
+>
 8	16
 9	16
 9	15
 8	15
 >
-1	21
-2	21
-2	20
-1	20
+1	18
+9	18
+9	16
+1	16
 >
-8	32
-9	32
-9	31
-8	31
+2	20
+3	20
+3	19
+2	19
+>
+5	20
+6	20
+6	19
+5	19
 EOF
-pstext t -R -Jx -O -K >> GMT_App_F_1a.ps
-psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_1a.ps
+pstext t -R -Jx -O -K >> GMT_App_F_iso+.ps
+psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_iso+.ps
 >
 0	3
 9	3
@@ -175,15 +286,15 @@ BEGIN {
 EOF
 
 $AWK -f f.awk chart.d > t
-psxy -R0/9/3/16 -Jx0.345/-0.21 -B0g1 -P -K -M -G200 -Y2.58 << EOF > GMT_App_F_2.ps
+psxy -R0/9/3/16 -Jx0.345/-0.21 -B0g1 -P -K -M -G200 -Y2.58 << EOF > GMT_App_F_symbol.ps
 >
 8	16
 9	16
 9	15
 8	15
 EOF
-pstext t -R -Jx -O -K >> GMT_App_F_2.ps
-psxy -R -Jx -O -K -M -W1p << EOF >> GMT_App_F_2.ps
+pstext t -R -Jx -O -K >> GMT_App_F_symbol.ps
+psxy -R -Jx -O -K -M -W1p << EOF >> GMT_App_F_symbol.ps
 >
 0	4
 9	4
@@ -218,7 +329,7 @@ cat << EOF > f.awk
 EOF
 
 $AWK -f f.awk chart.d > t
-psxy -R0/9/20/32 -Jx -B0g1 -O -K -M -G200 -Y-2.58 << EOF >> GMT_App_F_2.ps
+psxy -R0/9/20/32 -Jx -B0g1 -O -K -M -G200 -Y-2.58 << EOF >> GMT_App_F_symbol.ps
 >
 1	21
 2	21
@@ -230,8 +341,8 @@ psxy -R0/9/20/32 -Jx -B0g1 -O -K -M -G200 -Y-2.58 << EOF >> GMT_App_F_2.ps
 9	31
 8	31
 EOF
-pstext t -R -Jx -B0g1 -O -K >> GMT_App_F_2.ps
-psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_2.ps
+pstext t -R -Jx -B0g1 -O -K >> GMT_App_F_symbol.ps
+psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_symbol.ps
 >
 0	21
 9	21
@@ -281,15 +392,15 @@ BEGIN {
 EOF
 
 $AWK -f f.awk chart.d > t
-psxy -R0/9/3/16 -Jx0.345/-0.21 -B0g1 -P -K -M -G200 -Y2.58 << EOF > GMT_App_F_3.ps
+psxy -R0/9/3/16 -Jx0.345/-0.21 -B0g1 -P -K -M -G200 -Y2.58 << EOF > GMT_App_F_dingbats.ps
 >
 8	16
 9	16
 9	15
 8	15
 EOF
-pstext t -R -Jx -O -K >> GMT_App_F_3.ps
-psxy -R -Jx -O -K -M -W1p << EOF >> GMT_App_F_3.ps
+pstext t -R -Jx -O -K >> GMT_App_F_dingbats.ps
+psxy -R -Jx -O -K -M -W1p << EOF >> GMT_App_F_dingbats.ps
 >
 0	4
 9	4
@@ -324,7 +435,7 @@ cat << EOF > f.awk
 EOF
 
 $AWK -f f.awk chart.d > t
-psxy -R0/9/20/32 -Jx -B0g1 -O -K -M -G200 -Y-2.58 << EOF >> GMT_App_F_3.ps
+psxy -R0/9/20/32 -Jx -B0g1 -O -K -M -G200 -Y-2.58 << EOF >> GMT_App_F_dingbats.ps
 >
 1	21
 2	21
@@ -336,8 +447,8 @@ psxy -R0/9/20/32 -Jx -B0g1 -O -K -M -G200 -Y-2.58 << EOF >> GMT_App_F_3.ps
 9	31
 8	31
 EOF
-pstext t -R -Jx -B0g1 -O -K >> GMT_App_F_3.ps
-psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_3.ps
+pstext t -R -Jx -B0g1 -O -K >> GMT_App_F_dingbats.ps
+psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_dingbats.ps
 >
 0	21
 9	21
