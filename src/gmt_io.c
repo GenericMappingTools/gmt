@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.22 2001-09-12 19:35:08 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.23 2001-09-12 21:54:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1521,13 +1521,13 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 
 	if (S->item_order[0] >= 0 && S->iso_calendar) {	/* ISO Calendar string: At least Ione item is needed */
 		k = (S->item_order[0] == 0 && !S->Y2K_year) ? 4 : 2;
-		if (mode == 2 && S->item_order[0] == 1)	/* Prepare for "Week ##" format */
+		if (S->mw_text && S->item_order[0] == 1)	/* Prepare for "Week ##" format */
 			sprintf (S->format, "%%s %%2.2d\0");
 		else					/* Numerical formatting of week or year  */
 			(mode) ? sprintf (S->format, "%%%d.%dd\0", k, k) : sprintf (S->format, "%%%dd\0", k);
 		if (S->item_order[1] >= 0) {	/* Need another item */
 			if (S->delimeter[0][0]) strcat (S->format, S->delimeter[0]);
-			if (mode == 2 && S->item_order[0] == 1)	/* Prepare for "Week ##" format */
+			if (S->mw_text && S->item_order[0] == 1)	/* Prepare for "Week ##" format */
 				sprintf (S->format, "%%s \0");
 			else
 				strcat (S->format, "W");
@@ -1543,7 +1543,7 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 	else if (S->item_order[0] >= 0) {			/* Gregorian Calendar string: At least one item is needed */
 		k = (S->item_order[0] == 0 && !S->Y2K_year) ? 4 : 2;
 		if (S->item_order[0] == 3) k = 3;	/* Day of year */
-		if (mode == 2 && S->item_order[0] == 1)	/* Prepare for "Monthname" format */
+		if (S->mw_text && S->item_order[0] == 1)	/* Prepare for "Monthname" format */
 			sprintf (S->format, "%%s\0");
 		else					/* Numerical formatting of month or year */
 			(mode) ? sprintf (S->format, "%%%d.%dd\0", k, k) : sprintf (S->format, "%%%dd\0", k);
@@ -1551,7 +1551,7 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 			if (S->delimeter[0][0]) strcat (S->format, S->delimeter[0]);
 			k = (S->item_order[1] == 0 && !S->Y2K_year) ? 4 : 2;
 			if (S->item_order[1] == 3) k = 3;	/* Day of year */
-			if (mode == 2 && S->item_order[1] == 1)	/* Prepare for "Monthname" format */
+			if (S->mw_text && S->item_order[1] == 1)	/* Prepare for "Monthname" format */
 				sprintf (fmt, "%%s");
 			else
 				(mode) ? sprintf (fmt, "%%%d.%dd\0", k, k) : sprintf (fmt, "%%%dd\0", k);
@@ -1559,7 +1559,7 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 			if (S->item_order[2] >= 0) {	/* .. and even more */
 				if (S->delimeter[1][0]) strcat (S->format, S->delimeter[1]);
 				k = (S->item_order[2] == 0 && !S->Y2K_year) ? 4 : 2;
-				if (mode == 2 && S->item_order[2] == 1)	/* Prepare for "Monthname" format */
+				if (S->mw_text && S->item_order[2] == 1)	/* Prepare for "Monthname" format */
 					sprintf (fmt, "%%s");
 				else
 					(mode) ? sprintf (fmt, "%%%d.%dd\0", k, k) : sprintf (fmt, "%%%dd\0", k);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.31 2001-09-12 21:04:58 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.32 2001-09-12 21:54:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2970,7 +2970,7 @@ int GMT_map_getframe (char *in) {
 	GMT_split_info (out2, info);					/* Chop/copy the three axis strings */
 	
 	for (i = 0; i < 3; i++) {					/* Process each axis separately */
-#ifdef DEBUG
+#ifdef DEBUGT
 		fprintf (stderr, "String %c: [%s]\n", xyz[i], info[i]);
 #endif
 		
@@ -2981,7 +2981,7 @@ int GMT_map_getframe (char *in) {
 		
 		GMT_decode_tinfo (out2, &tframe_info.axis[i]);					/* Decode the anotation intervals */
 		
-#ifdef DEBUG
+#ifdef DEBUGT
 		A = &tframe_info.axis[i];
 		fprintf (stderr, "Unit: [%s]\n", A->unit);
 		fprintf (stderr, "Label: [%s]\n", A->label);
@@ -2991,7 +2991,7 @@ int GMT_map_getframe (char *in) {
 		}
 #endif
 	}
-#ifdef DEBUG
+#ifdef DEBUGT
 	fprintf (stderr, "Title: [%s]\n", tframe_info.header);
 	if (tframe_info.draw_box)
 		fprintf (stderr, "3-D box is TRUE  ");
