@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.9 2001-08-14 15:57:24 pwessel Exp $
+ *	$Id: gmt.h,v 1.10 2001-08-16 19:12:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -179,11 +179,11 @@ typedef double (*PFD) ();	/* PFD declares a pointer to a function returning a do
  *--------------------------------------------------------------------*/
 
 #define N_UNIQUE 59		/* Number of unique options */
-#define N_KEYS 58		/* Number of gmt defaults */
+#define N_KEYS 74		/* Number of gmt defaults */
 #define N_FONTS 39		/* Number of fonts in the PS_font_names.h include file */
 #define GMT_N_MEDIA 29		/* Number of standard paper formats in the GMT_media_names.h include file */
-#define HASH_SIZE 61		/* Used in get_gmtdefaults, should be ~> N_KEYS */
-
+#define HASH_SIZE 75		/* Used in get_gmtdefaults, should be ~> N_KEYS */
+#define GMT_N_SYSTEMS 6		/* Number of time systems in gmt_time_systems.h */
 /* This structure contains default parameters for the GMT system */
 
 #define N_ELLIPSOIDS 14
@@ -273,7 +273,22 @@ struct GMTDEFAULTS {
 		double pol_radius;
 		double flattening;
 	} ellipse[N_ELLIPSOIDS];	/* Ellipsoid parameters */
-	
+	char input_clock_format[32];	/* How to decode an incoming clock string [hh:mm:ss] */
+	char input_date_format[32];	/* How to decode an incoming date string [yyyy-mm-dd] */
+	char output_clock_format[32];	/* Controls how clocks are written on output [hh:mm:ss] */
+	char output_date_format[32];	/* Controls how dates are written on output [yyyy-mm-dd] */
+	char output_degree_format[8];	/* Controls how degrees are written on output [000 = dd.xxxx] */
+	char plot_clock_format[32];	/* Controls how clocks are plotted on maps [hh:mm:ss] */
+	char plot_date_format[32];	/* Controls how dates are plotted on maps [yyyy-mm-dd] */
+	char plot_degree_format[8];	/* Controls how degrees are plotted on maps [020 = dd:mm:ss as in old DEGREE_FORMAT = 0] */
+	BOOLEAN time_is_interval;	/* Does a time given as a month (or year or day) mean the middle of the interval? */
+	BOOLEAN want_leap_seconds;	/* Do we need to worry about leap seconds? */
+	char time_epoch[32];		/* User-defined epoch for time */
+	char time_unit;			/* User-defined time unit */
+	int time_system;		/* Which time system is in effect */
+	int time_week_start;		/* Which day (Sun = 0, Sat = 7) is start of week */
+	char time_language[32];		/* Language file for time support */
+	int char_encoding;		/* PostScript font encoding used */
 };
 
 struct GMT_HASH {	/* Used to related keywords to gmtdefaults entry */
@@ -282,6 +297,18 @@ struct GMT_HASH {	/* Used to related keywords to gmtdefaults entry */
 	char *key;
 };
 
+struct GMT_TIME_SYSTEM {
+	char name[32];		/* Name of system */
+	char epoch[32];		/* Epoch time string */
+	char unit;		/* Time unit */
+	double epoch_t0;	/* Internal time representation of epoch */
+};
+
+struct GMT_TIME_LANGUAGE {
+	char month_name[12][3][16];	/* Full, short, and 1-char month names */
+	char day_name[12][3][16];	/* Full, short, and 1-char weekday names */
+};
+	
 struct GMT_FILL {	/* Holds fill attributes */
 	BOOLEAN use_pattern;	/* TRUE if pattern rather than rgb is set */
 	int rgb[3];		/* Chosen color if no pattern */
@@ -344,6 +371,9 @@ EXTERN_MSC struct GMT_MEDIA GMT_media[];
 EXTERN_MSC char **GMT_user_media_name;
 EXTERN_MSC struct GMT_MEDIA *GMT_user_media;
 EXTERN_MSC int GMT_n_user_media;
+EXTERN_MSC char *GMT_weekdays[];
+EXTERN_MSC struct GMT_TIME_SYSTEM GMT_time_system[];
+EXTERN_MSC struct GMT_TIME_LANGUAGE GMT_time_language;
 
 EXTERN_MSC float GMT_f_NaN;		/* Holds IEEE not-a-number float */
 EXTERN_MSC double GMT_d_NaN;		/* Holds IEEE not-a-number double */

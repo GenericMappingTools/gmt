@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.2 2001-03-01 22:08:26 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.3 2001-08-16 19:12:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -55,6 +55,26 @@ char *GMT_media_name[GMT_N_MEDIA] = {		/* Names of all paper formats */
 
 struct GMT_MEDIA GMT_media[GMT_N_MEDIA] = {		/* Sizes in points of all paper formats */
 #include "gmt_media_size.h"
+};
+
+struct GMT_TIME_SYSTEM GMT_time_system[GMT_N_SYSTEMS] = {	/* List of all used time systems */
+#include "gmt_time_systems.h"
+};
+
+char *GMT_weekdays[7] = {	/* Days of the week in English */
+	"Sunday",
+	"Monday",
+	"Tuesday",
+	"Wednesday",
+	"Thursday",
+	"Friday",
+	"Saturday"
+};
+
+char *GMT_char_encoding[3] = {	/* PostScript character encodings */
+	"Standard",
+	"GMT3.4",
+	"IsoLatin1"
 };
 
 char *GMT_degree_symbol[2] = {		/* Small [Default] and large degree symbols */
@@ -143,11 +163,25 @@ struct GMT_IO GMT_io = {
 	0,
 	0,
 	0,
+	0,
 	'>',
 	"",
 	"",
 	"r",
-	"w"
+	"w",
+	NULL,
+	NULL,
+	NULL,
+	0,
+	0.0,
+	FALSE,
+	FALSE,
+	FALSE,
+	{ "am", "pm" },
+	{-1, -1, -1, -1},
+	{-1, -1, -1, -1},
+	{-1, -1, -1},
+	NULL
 };
 int GMT_grd_i_format = 0;		/* Default is GMT's cdf format */
 int GMT_grd_o_format = 0;
@@ -201,3 +235,6 @@ char *GMT_oldargv[N_UNIQUE];	/* Pointers to old common arguments */
 BOOLEAN GMT_quick = FALSE;
 
 struct BCR bcr;			/* For interpolations on grid */
+
+struct GMT_TIME_LANGUAGE GMT_time_language;	/* For time axis */
+

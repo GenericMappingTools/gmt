@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.4 2001-03-07 17:51:41 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.5 2001-08-16 19:12:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -31,6 +31,7 @@
 #define LINEAR		0	/* Linear projections tagged 0-9 */
 #define LOG10		1
 #define POW		2
+#define TIME		3
 #define MERCATOR	10	/* Cylindrical projections tagged 10-99 */
 #define	CYL_EQ		11
 #define	CYL_EQDIST	12

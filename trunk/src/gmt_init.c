@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.13 2001-07-12 00:00:37 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.14 2001-08-16 19:12:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -69,6 +69,8 @@ int GMT_map_getframe(char *args);
 char *GMT_putpen (struct GMT_PEN *pen);
 int GMT_check_region (double w, double e, double s, double n);
 char *GMT_getdefpath (int get);
+int GMT_get_time_system (char *name);
+void GMT_get_time_language (char *name);
 
 /* Local variables to gmt_init.c */
 
@@ -246,6 +248,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t      -Jx<x-scale>		Linear projection\n");
 			fprintf (stderr, "\t      -Jx<x-scale>l		Log10 projection\n");
 			fprintf (stderr, "\t      -Jx<x-scale>p<power>	x^power projection\n");
+			fprintf (stderr, "\t      -Jx<x-scale>t		Calendar time projection\n");
 			fprintf (stderr, "\t      Use / to specify separate x/y scaling (e.g., -Jx0.5/0.3.).  Not allowed with 1:xxxxx\n");
 			fprintf (stderr, "\t      Append d if -R is geographic coordinates in degrees.\n");
 			fprintf (stderr, "\t      If -JX is used then give axes lengths rather than scales\n");
@@ -310,7 +313,7 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t   -Jp|P[a]<scale|mapwidth>[/<origin>] (Polar [azimuth] (theta,radius))\n");
 				
-			fprintf (stderr, "\t   -Jx|X<x-scale|mapwidth>[l|p<power>][/<y-scale|mapheight>[l|p<power>]][d] (Linear projections)\n");
+			fprintf (stderr, "\t   -Jx|X<x-scale|mapwidth>[l|p<power>|t][/<y-scale|mapheight>[l|p<power>|t][d] (Linear projections)\n");
 			fprintf (stderr, "\t   (See psbasemap for more details on projection syntax)\n");
 			break;
 			
@@ -408,6 +411,15 @@ void GMT_explain_option (char option)
 				GMT_choice[gmtdefs.xy_toggle]);
 			break;
 			
+		case 'f':	/* -f option to tell GMT which columns are time (and optionally geographical) */
+		
+			fprintf (stderr, "\t-f Special formatting of input/output columns (e.g., time or geographical)\n");
+			fprintf (stderr, "\t   Specify i(nput) or o(utput) [Default is both input and output]\n");
+			fprintf (stderr, "\t   Give one or more columns (or column ranges) separated by commas.\n");
+			fprintf (stderr, "\t   Append T (Calendar format), t (time relative to EPOCH),\n");
+			fprintf (stderr, "\t   or g (geographical, i.e., dd:mm:ss) to each col/range item.\n");
+			break;
+
 		case '.':	/* Trailer message */
 		
 			fprintf (stderr, "\t(See gmtdefaults man page for hidden GMT default parameters)\n");
@@ -585,7 +597,7 @@ void GMT_syntax (char option)
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					fprintf (stderr, "\t  Optionally, append theta value for origin [0]\n");
 				case LINEAR:
-					fprintf (stderr, "\t-Jx<x-scale>[l|p<power>][/<y-scale>[l|p<power>]][d], scale in %s/units\n",
+					fprintf (stderr, "\t-Jx<x-scale>[l|p<power>|t][/<y-scale>[l|p<power>|t]][d], scale in %s/units\n",
 						GMT_unit_names[gmtdefs.measure_unit]);
 					fprintf (stderr, "\t-Jz<z-scale>[l|p<power>], scale in %s/units\n",
 						GMT_unit_names[gmtdefs.measure_unit]);
@@ -747,6 +759,12 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			break;
 		case ':':	/* Toggle lon/lat - lat/lon */
 			gmtdefs.xy_toggle = TRUE;
+			break;
+		case 'b':	/* Binary i/o */
+			error += GMT_io_selection (&item[2]);
+			break;
+		case 'f':	/* Column type specifications */
+			error += GMT_decode_coltype (&item[2]);
 			break;
 		default:	/* Should never get here, but... */
 			error++;
@@ -1297,6 +1315,71 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
+		case 58:
+			strncpy (gmtdefs.input_clock_format, value, 32);
+			for (i = 0; gmtdefs.input_clock_format[i]; i++) gmtdefs.input_clock_format[i] = toupper ((int)gmtdefs.input_clock_format[i]);
+			break;
+		case 59:
+			strncpy (gmtdefs.input_date_format, value, 32);
+			for (i = 0; gmtdefs.input_date_format[i]; i++) gmtdefs.input_date_format[i] = toupper ((int)gmtdefs.input_date_format[i]);
+			break;
+		case 60:
+			strncpy (gmtdefs.output_clock_format, value, 32);
+			break;
+		case 61:
+			strncpy (gmtdefs.output_date_format, value, 32);
+			for (i = 0; gmtdefs.output_date_format[i]; i++) gmtdefs.output_date_format[i] = toupper ((int)gmtdefs.output_date_format[i]);
+			break;
+		case 62:
+			strncpy (gmtdefs.output_degree_format, value, 8);
+			break;
+		case 63:
+			strncpy (gmtdefs.plot_clock_format, value, 32);
+			break;
+		case 64:
+			strncpy (gmtdefs.plot_date_format, value, 32);
+			break;
+		case 65:
+			strncpy (gmtdefs.plot_degree_format, value, 8);
+			break;
+		case 66:
+			error = true_false_or_error (lower_value, &gmtdefs.time_is_interval);
+			break;
+		case 67:
+			error = true_false_or_error (lower_value, &gmtdefs.want_leap_seconds);
+			break;
+		case 68:
+			strncpy (gmtdefs.time_epoch, value, 32);
+			strncpy (GMT_time_system[GMT_N_SYSTEMS-1].epoch, value, 32);
+			break;
+		case 69:
+			gmtdefs.time_unit = GMT_time_system[GMT_N_SYSTEMS-1].unit = value[0];
+			break;
+		case 70:
+			gmtdefs.time_system = GMT_get_time_system (value);
+			if (gmtdefs.time_system < 0 || gmtdefs.time_system >= GMT_N_SYSTEMS) {
+				error = TRUE;
+				gmtdefs.time_system = 0;
+			}
+			break;
+		case 71:
+			gmtdefs.time_week_start = GMT_key_lookup (value, GMT_weekdays, 7);
+			if (gmtdefs.time_week_start < 0 || gmtdefs.time_week_start >= 7) {
+				error = TRUE;
+				gmtdefs.time_week_start = 0;
+			}
+			break;
+		case 72:
+			strncpy (gmtdefs.time_language, value, 32);
+			str_tolower (gmtdefs.time_language);
+			break;
+		case 73:
+			gmtdefs.char_encoding = GMT_key_lookup (value, GMT_char_encoding, 3);
+			if (gmtdefs.char_encoding < 0 || gmtdefs.char_encoding >= 3) {
+				error = TRUE;
+				gmtdefs.char_encoding = 0;
+			}
+			break;
 		default:
 			error = TRUE;
 			fprintf (stderr, "%s: GMT SYNTAX ERROR in GMT_setparameter:  Unrecognized keyword %s\n", 
@@ -1432,6 +1515,22 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "Y_ORIGIN		= %lg%c\n", gmtdefs.y_origin * s, u);
 	(gmtdefs.xy_toggle) ? fprintf (fp, "XY_TOGGLE	= TRUE\n") : fprintf (fp, "XY_TOGGLE		= FALSE\n");
 	(gmtdefs.y_axis_type == 1) ? fprintf (fp, "Y_AXIS_TYPE		= ver_text\n") : fprintf (fp, "Y_AXIS_TYPE		= hor_text\n");
+	fprintf (fp, "INPUT_CLOCK_FORMAT	= %s\n", gmtdefs.input_clock_format);
+	fprintf (fp, "INPUT_DATE_FORMAT	= %s\n", gmtdefs.input_date_format);
+	fprintf (fp, "OUTPUT_CLOCK_FORMAT	= %s\n", gmtdefs.output_clock_format);
+	fprintf (fp, "OUTPUT_DATE_FORMAT	= %s\n", gmtdefs.output_date_format);
+	fprintf (fp, "OUTPUT_DEGREE_FORMAT	= %s\n", gmtdefs.output_degree_format);
+	fprintf (fp, "PLOT_CLOCK_FORMAT	= %s\n", gmtdefs.plot_clock_format);
+	fprintf (fp, "PLOT_DATE_FORMAT	= %s\n", gmtdefs.plot_date_format);
+	fprintf (fp, "PLOT_DEGREE_FORMAT	= %s\n", gmtdefs.plot_degree_format);
+	(gmtdefs.time_is_interval) ? fprintf (fp, "TIME_IS_INTERVAL	= TRUE\n") : fprintf (fp, "TIME_IS_INTERVAL	= FALSE\n");
+	(gmtdefs.want_leap_seconds) ? fprintf (fp, "WANT_LEAP_SECONDS	= TRUE\n") : fprintf (fp, "WANT_LEAP_SECONDS	= FALSE\n");
+	fprintf (fp, "TIME_EPOCH		= %s\n", gmtdefs.time_epoch);
+	fprintf (fp, "TIME_UNIT		= %c\n", gmtdefs.time_unit);
+	fprintf (fp, "TIME_SYSTEM		= %s\n", GMT_time_system[gmtdefs.time_system].name);
+	fprintf (fp, "TIME_WEEK_START		= %s\n", GMT_weekdays[gmtdefs.time_week_start]);
+	fprintf (fp, "TIME_LANGUAGE		= %s\n", gmtdefs.time_language);
+	fprintf (fp, "CHAR_ENCODING		= %s\n", GMT_char_encoding[gmtdefs.char_encoding]);
 
 	if (fp != GMT_stdout) fclose (fp);
 	
@@ -1686,6 +1785,56 @@ int GMT_load_user_media (void) {	/* Load any user-specified media formats */
 	return (n);
 }
 
+int GMT_get_time_system (char *name)
+{
+	int i;
+	
+	for (i = 0; i < GMT_N_SYSTEMS && strcmp (name, GMT_time_system[i].name); i++);
+	return (i);
+}
+
+int GMT_get_char_encoding (char *name)
+{
+	int i;
+	
+	for (i = 0; i < 7 && strcmp (name, GMT_weekdays[i]); i++);
+	return (i);
+}
+
+void GMT_get_time_language (char *name)
+{
+	FILE *fp;
+	char file[BUFSIZ], line[BUFSIZ], full[16], abbrev[16], c[16], dw;
+	int i;
+	
+	sprintf (file, "%s%cshare%ctime%c%s.d\0", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, name);
+	if ((fp = fopen (file, "r")) == NULL) {
+		fprintf (stderr, "GMT Warning: Could not load %s - revert to english!\n", name);
+		sprintf (file, "%s%cshare%ctime%cenglish.d\0", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+		if ((fp = fopen (file, "r")) == NULL) {
+			fprintf (stderr, "GMT Error: Could not find %s!\n", file);
+			exit (EXIT_FAILURE);
+		}
+		strcpy (gmtdefs.time_language, "english");
+	}
+	
+	while (fgets (line, BUFSIZ, fp)) {
+		if (line[0] == '#' || line[0] == '\n') continue;
+		sscanf (line, "%c %d %s %s %s", &dw, &i, full, abbrev, c);
+		if (dw == 'M') {	/* Month record */
+			strncpy (GMT_time_language.month_name[i][0], full, 16);
+			strncpy (GMT_time_language.month_name[i][1], abbrev, 16);
+			strncpy (GMT_time_language.month_name[i][2], c, 16);
+		}
+		else {			/* Weekday record */
+			strncpy (GMT_time_language.day_name[i][0], full, 16);
+			strncpy (GMT_time_language.day_name[i][1], abbrev, 16);
+			strncpy (GMT_time_language.day_name[i][2], c, 16);
+		}
+	}
+	fclose (fp);
+}
+	
 void GMT_setshorthand (void) {/* Read user's .gmt_io file and initialize shorthand notation */
 	int n = 0, n_alloc;
 	char file[BUFSIZ], line[BUFSIZ], *homedir, a[10], b[20], c[20], d[20], e[20];
@@ -1787,7 +1936,6 @@ int GMT_begin (int argc, char **argv)
 	for (i = 0; i < N_UNIQUE; i++) GMT_oldargv[i] = CNULL;
 	for (i = strlen(argv[0]); i >= 0 && argv[0][i] != '/'; i--);
 	GMT_program = &argv[0][i+1];
-	GMT_io_init ();
 	GMT_grd_in_nan_value = GMT_grd_out_nan_value = GMT_d_NaN;
 	
 	/* Set the gmtdefault parameters from the $HOME/.gmtdefaults (if any) */
@@ -1807,6 +1955,10 @@ int GMT_begin (int argc, char **argv)
 
 	GMT_getdefaults (this);
 
+	GMT_io_init ();			/* Init the table i/o structure */
+	
+	GMT_get_time_language (gmtdefs.time_language);
+	
 	if (gmtdefs.gridfile_shorthand) GMT_setshorthand ();
 	
 	/* Copy various colors to GMT_BFN_COLOR stucture */
@@ -1822,6 +1974,7 @@ int GMT_begin (int argc, char **argv)
 
 	for (i = 1, j = k = n = 0; i < argc; i++) {
 		if (!strncmp (argv[i], "-b", 2)) GMT_io_selection (&argv[i][2]);
+		if (!strncmp (argv[i], "-f", 2)) GMT_decode_coltype (&argv[i][2]);
 		if (!strncmp (argv[i], "-J", 2)) j = i;
 		if (!strncmp (argv[i], "-R", 2)) k = i;
 		if (!strncmp (argv[i], "-I", 2)) n = i;
@@ -2266,14 +2419,16 @@ int GMT_map_getproject (char *args)
 	 * project_info structure.  The function returns TRUE if an error is encountered.
 	 */
 	 
-	int i, j, k, n, slash, l_pos[2], p_pos[2], id, project = -1, n_slashes = 0;
+	int i, j, k, n, slash, l_pos[2], p_pos[2], t_pos[2], id, project = -1, n_slashes = 0;
 	BOOLEAN error = FALSE, skip = FALSE;
 	double o_x, o_y, b_x, b_y, c, az;
 	double GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
 	char type, args_cp[BUFSIZ], txt_a[32], txt_b[32], txt_c[32], txt_d[32], txt_e[32];
 	
-	l_pos[0] = l_pos[1] = p_pos[0] = p_pos[1] = 0;
+	l_pos[0] = l_pos[1] = p_pos[0] = p_pos[1] = t_pos[0] = t_pos[1] = 0;
 	type = args[0];
+	GMT_io.in_col_type[0] = GMT_IS_LON;	GMT_io.in_col_type[1] = GMT_IS_LAT;	/* This may be overridden in -Jx, -Jp */
+	GMT_io.out_col_type[0] = GMT_io.out_col_type[1] = GMT_IS_UNKNOWN;		/* This may be overridden by mapproject -I */
 
 	if (strchr ("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz", (int)type) == NULL) return (TRUE);	/* NO valid projection specified */
 	args++;
@@ -2303,16 +2458,23 @@ int GMT_map_getproject (char *args)
 	 		}
 	 		
 	 	case 'x':		/* Linear x/y scaling */
-	 		project_info.pars[4] = (strchr (args, 'd')) ? 1.0 : 0.0;	/* TRUE if input is degrees and d is appended */
+	 		if (strchr (args, 'd')) {	/* TRUE if input is degrees and d is appended */
+	 			project_info.pars[4] = 1.0;
+			}
+			else {	/* Not involving geographical coordinates */
+	 			project_info.pars[4] = 0.0;
+				GMT_io.in_col_type[0] = GMT_io.in_col_type[1] = GMT_IS_UNKNOWN;
+			}
 			error = (n_slashes > 1);
 			if (!strncmp (args, "1:", 2)) k = 1;	/* Special check for linear proj with 1:xxx scale */
 	 		
-	 		/* Find occurrences of /, l, or p */
+	 		/* Find occurrences of /, l, p, or t */
 	 		for (j = 0, slash = 0; args[j] && slash == 0; j++) if (args[j] == '/') slash = j;
 	 		for (j = id = 0; args[j]; j++) {
 	 			if (args[j] == '/') id = 1;
 	 			if (args[j] == 'L' || args[j] == 'l') l_pos[id] = j;
 	 			if (args[j] == 'P' || args[j] == 'p') p_pos[id] = j;
+	 			if (args[j] == 'T' || args[j] == 't') t_pos[id] = j;
 	 		}
 	 		
 			if (n_slashes && k >= 0) error = TRUE;	/* Cannot have 1:xxx separately for x/y */
@@ -2335,6 +2497,8 @@ int GMT_map_getproject (char *args)
 			if (slash) args_cp[slash] = 0;	/* Chop off y part */
 			if ((i = MAX (l_pos[0], p_pos[0])) > 0)
 				args_cp[i] = 0;	/* Chop off log or power part */
+			else if (t_pos[0] > 0)
+				args_cp[t_pos[0]] = 0;	/* Chop off time part */
 			else if (project_info.pars[4] == 1.0 && !slash)	/* Chop of trailing 'd' */
 				args_cp[strlen(args_cp)-1] = 0;
 	 		if (!skip) {
@@ -2349,11 +2513,17 @@ int GMT_map_getproject (char *args)
 	 			project_info.xyz_projection[0] = POW;
 	 			project_info.pars[2] = atof (&args[p_pos[0]+1]);	/* pow to raise x */
 	 		}
+	 		else if (t_pos[0] > 0) {	/* Add option to append time_systems or epoch/unit later */
+	 			project_info.xyz_projection[0] = TIME;
+				GMT_io.in_col_type[0] = GMT_IS_ABSTIME;
+	 		}
 	 		
 	 		if (slash) {	/* Separate y-scaling desired */
 				strcpy (args_cp, &args[slash+1]);	/* Since GMT_convert_units modifies the string */
 				if ((i = MAX (l_pos[1], p_pos[1])) > 0)
 					args_cp[i-slash-1] = 0;	/* Chop off log or power part */
+				else if (t_pos[1] > 0)
+					args_cp[t_pos[1]-slash-1] = 0;	/* Chop off log or power part */
 				else if (project_info.pars[4] == 1.0)
 					args_cp[strlen(args_cp)-1] = 0;	/* Chop of trailing 'd' part */
 	 			if (!skip) project_info.pars[1] = GMT_convert_units (args_cp, GMT_INCH);	/* y-scale */
@@ -2363,6 +2533,10 @@ int GMT_map_getproject (char *args)
 	 			else if (p_pos[1] > 0) {
 	 				project_info.xyz_projection[1] = POW;
 	 				project_info.pars[3] = atof (&args[p_pos[1]+1]);	/* pow to raise y */
+	 			}
+	 			else if (t_pos[1] > 0) {	/* Add option to append time_systems or epoch/unit later */
+	 				project_info.xyz_projection[1] = TIME;
+					GMT_io.in_col_type[1] = GMT_IS_ABSTIME;
 	 			}
 	 		}
 	 		else {	/* Just copy x parameters */
@@ -2378,10 +2552,12 @@ int GMT_map_getproject (char *args)
 	 	case 'z':
 	 		
 			error = (n_slashes > 0);
+			GMT_io.in_col_type[2] = GMT_IS_UNKNOWN;
 
-	 		/* Find occurrences of l or p */
+	 		/* Find occurrences of l, p, or t */
 	 		for (j = 0; args[j]; j++) if (args[j] == 'L' || args[j] == 'l') l_pos[0] = j;
 	 		for (j = 0; args[j]; j++) if (args[j] == 'P' || args[j] == 'p') p_pos[0] = j;
+	 		for (j = 0; args[j]; j++) if (args[j] == 'T' || args[j] == 't') t_pos[0] = j;
 	 		
 			/* Distinguish between p for points and p<power> for scaling */
 
@@ -2396,7 +2572,10 @@ int GMT_map_getproject (char *args)
 	 		/* Get arguments */
 	 		
 			strcpy (args_cp, args);	/* Since GMT_convert_units modifies the string */
-			if ((i = MAX (l_pos[0], p_pos[0])) > 0) args_cp[i] = 0;
+			if ((i = MAX (l_pos[0], p_pos[0])) > 0)
+				args_cp[i] = 0;
+			else if (t_pos[0] > 0)
+				args_cp[t_pos[0]] = 0;
 	 		project_info.z_pars[0] = GMT_convert_units (args_cp, GMT_INCH);	/* z-scale */
 	 		
 	 		if (l_pos[0] > 0)
@@ -2405,11 +2584,16 @@ int GMT_map_getproject (char *args)
 	 			project_info.xyz_projection[2] = POW;
 	 			project_info.z_pars[1] = atof (&args[p_pos[0]+1]);	/* pow to raise z */
 	 		}
+	 		else if (t_pos[0] > 0) {
+	 			project_info.xyz_projection[2] = TIME;
+				GMT_io.in_col_type[2] = GMT_IS_ABSTIME;
+	 		}
 	 		if (project_info.z_pars[0] == 0.0) error = TRUE;
 	 		break;
 	 	case 'P':		/* Polar (theta,r) */
 	 		project_info.gave_map_width = TRUE;
 	 	case 'p':
+			GMT_io.in_col_type[0] = GMT_IS_LON;	GMT_io.in_col_type[1] = GMT_IS_UNKNOWN;
 			if (args[0] == 'a' || args[0] == 'A') {
 				project_info.got_azimuths = TRUE;	/* using azimuths instead of directions */
 				i = 1;

@@ -79,4 +79,20 @@
 		{ "Bessel", 1841, 6377397.2, 6356079.0, 1.0/299.15 },
 		{ "Everest-1830", 1830, 6377276.3, 6356075.4, 1.0/300.80 },
 		{ "Sphere", 1980, 6371008.7714, 6371008.7714, 0.0 }
-	}
+	},
+	"hh:mm:ss",		/* INPUT_CLOCK_FORMAT */
+	"yyyy-mm-dd",		/* INPUT_DATE_FORMAT */
+	"hh:mm:ss",		/* OUTPUT_CLOCK_FORMAT */
+	"yyyy-mm-dd",		/* OUTPUT_DATE_FORMAT */
+	"000",			/* OUTPUT_DEGREE_FORMAT */
+	"hh:mm:ss",		/* PLOT_CLOCK_FORMAT */
+	"yyyy-mm-dd",		/* PLOT_DATE_FORMAT */
+	"020",			/* PLOT_DEGREE_FORMAT */
+	FALSE,			/* TIME_IS_INTERVAL */
+	FALSE,			/* WANT_LEAP_SECONDS */
+	"2000-01-01T00:00:00",	/* TIME_EPOCH */
+	'd',			/* TIME_UNIT */
+	0,			/* TIME_SYSTEM */
+	0,			/* TIME_WEEK_START */
+	"english",		/* TIME_LANGUAGE */
+	0			/* CHAR_ENCODING */
