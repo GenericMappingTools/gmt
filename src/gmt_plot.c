@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.41 2001-09-24 22:08:59 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.42 2001-09-25 22:46:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3016,35 +3016,47 @@ void GMT_textbox3d (double x, double y, double z, int size, int font, char *labe
 
 void GMT_vector3d (double x0, double y0, double x1, double y1, double z0, double tailwidth, double headlength, double headwidth, double shape, int rgb[], BOOLEAN outline)
 {
-	int i;
-	double xx[7], yy[7], dx, dy, angle, length, s, c;
+	if (project_info.three_D) {	/* Fill in local xx, yy cordinates for vector starting at (0,0) aligned horizontally */
+		int i, n;
+		double xx[10], yy[10], dx, dy, angle, length, s, c, L, xp, yp;
 	
-	if (project_info.three_D) {
 		angle = atan2 (y1 - y0, x1 - x0);
 		length = hypot (y1 - y0, x1 - x0);
 		sincos (angle, &s, &c);
-		xx[3] = x0 + length * c;
-		yy[3] = y0 + length * s;
-		dx = 0.5 * tailwidth * s;
-		dy = 0.5 * tailwidth * c;
-		xx[0] = x0 + dx;	xx[6] = x0 - dx;
-		yy[0] = y0 - dy;	yy[6] = y0 + dy;
-		dx = (length - (1.0 - 0.5 * shape) * headlength) * c;
-		dy = (length - (1.0 - 0.5 * shape) * headlength) * s;
-		xx[1] = xx[0] + dx;	xx[5] = xx[6] + dx;
-		yy[1] = yy[0] + dy;	yy[5] = yy[6] + dy;
-		x0 += (length - headlength) * c;
-		y0 += (length - headlength) * s;
-		dx = headwidth * s;
-		dy = headwidth * c;
-		xx[2] = x0 + dx;	xx[4] = x0 - dx;
-		yy[2] = y0 - dy;	yy[4] = y0 + dy;
-		for (i = 0; i < 7; i++) {
-			GMT_xyz_to_xy (xx[i], yy[i], z0, &x0, &y0);
-			xx[i] = x0;
-			yy[i] = y0;
+		L = (1.0 - 0.5 * shape) * headlength;
+		if (outline & 8) {	/* Double-headed vector */
+			outline -= 8;	/* Remove the flag */
+			n = 10;
+			xx[0] = 0.0;
+			xx[1] = xx[9] = headlength;
+			xx[2] = xx[8] = L;
+			xx[3] = xx[7] = length - L;
+			xx[4] = xx[6] = length - headlength;
+			yy[0] = yy[5] = 0.0;
+			yy[1] = yy[4] = -headwidth;
+			yy[6] = yy[9] = headwidth;
+			yy[2] = yy[3] = -0.5 * tailwidth;
+			yy[7] = yy[8] = 0.5 * tailwidth;
+			xx[5] = length;
 		}
-		ps_polygon (xx, yy, 7, rgb, outline);
+		else {
+			n = 7;
+			xx[0] = xx[6] = 0.0;
+			xx[1] = xx[5] = length - L;
+			xx[2] = xx[4] = length - headlength;
+			xx[3] = length;
+			yy[0] = yy[1] = -0.5 * tailwidth;
+			yy[5] = yy[6] = 0.5 * tailwidth;
+			yy[2] = -headwidth;
+			yy[4] = headwidth;
+			yy[3] = 0.0;
+		}
+		for (i = 0; i < n; i++) {	/* Coordinate transformation */
+			xp = x0 + xx[i] * c - yy[i] * s;	/* Rotate and add actual (x0, y0) origin */	
+			yp = y0 + xx[i] * s + yy[i] * c;
+			GMT_xyz_to_xy (xp, yp, z0, &xx[i], &yy[i]);	/* Then do 3-D projection */
+		}
+		ps_polygon (xx, yy, n, rgb, outline);
 	}
 	else
 		ps_vector (x0, y0, x1, y1, tailwidth, headlength, headwidth, gmtdefs.vector_shape, rgb, outline);
