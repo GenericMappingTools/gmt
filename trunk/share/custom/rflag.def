@@ -1,9 +1,9 @@
-#	$Id: rflag.def,v 1.1 2004-08-13 00:53:31 pwessel Exp $
+#	$Id: rflag.def,v 1.2 2004-08-13 01:06:31 pwessel Exp $
 #
 #	Definition file a right-pointing flag symbol.
 #
 0	0	M
-0	1	D
-0.5	0.75	D
 0	0.5	D
+0.25	0.375	D
+0	0.25	D
 0	0	D
