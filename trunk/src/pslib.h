@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.29 2005-02-15 16:50:21 pwessel Exp $
+ *	$Id: pslib.h,v 1.30 2005-03-02 18:55:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -140,6 +140,7 @@ EXTERN_MSC void ps_set_length (char *param, double value);
 EXTERN_MSC void ps_set_height (char *param, double fontsize);
 EXTERN_MSC void ps_define_rgb (char *param, int rgb[]);
 EXTERN_MSC void ps_define_pen (char *param, int width, char *texture, int offset, int rgb[]);
+EXTERN_MSC void ps_rgb_to_mono (unsigned char *buffer, struct imageinfo *h);
 
 /* For Encapsulated PostScript Headers:
 
