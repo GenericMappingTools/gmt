@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtsite.macros,v 1.9 2004-01-13 05:15:03 pwessel Exp $
+#	$Id: gmtsite.macros,v 1.10 2004-09-24 21:43:50 pwessel Exp $
 #
 #	Original GMT Site Makefile Macro for Makefile.site
 #-------------------------------------------------------------------------------
@@ -8,9 +8,10 @@
 # the official web and ftp directories on the main server.  These are
 # then mirrored by other sites
 #
-# Below, indicate the FTP and WWW directories:
+# Below, indicate the FTP and WWW directories.  There are two sets; one
+# for harmless testing and one for the live directories.
 
-FTPDIR		= /home/gmt/ftp/pub/gmt/4
-#FTPDIR		= /home/gmt/ftp/pub/pwessel/gmttest/4
-WWWDIR		= /home/gmt/gmt/www
-#WWWDIR		= /home/gmt/gmt/www/gmttest
+LIVEFTPDIR	= /home/gmt/ftp/pub/gmt/4
+TESTFTPDIR	= /home/gmt/ftp/pub/pwessel/gmttest/4
+LIVEWWWDIR	= /home/gmt/gmt/www
+TESTWWWDIR	= /home/gmt/gmt/www/gmttest
