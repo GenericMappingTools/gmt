@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.142 2004-10-28 22:28:39 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.143 2004-10-31 04:50:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4038,7 +4038,8 @@ int GMT_delaunay (double *x_in, double *y_in, int n, int **link)
 		In.pointlist[j++] = y_in[i];
 	}
 
-	/* Call Jonathan Shewchuk's triangulate algorithm */
+	/* Call Jonathan Shewchuk's triangulate algorithm.  This is 64-bit safe since
+	 * all the structures use 4-byte ints (longs are used internally). */
 
 	triangulate ("zIQB", &In, &Out, &vorOut);
 

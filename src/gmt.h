@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.85 2004-10-17 08:57:03 pwessel Exp $
+ *	$Id: gmt.h,v 1.86 2004-10-31 04:50:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -188,12 +188,12 @@
 #define d_swap(x, y) {double tmp; tmp = x, x = y, y = tmp;}
 #define f_swap(x, y) {float tmp; tmp = x, x = y, y = tmp;}
 
-/* Macros for byte-order swapping (From John M. Kuhn, NOAA) */
+/* Macros for byte-order swapping 2- and 4-byte values(From John M. Kuhn, NOAA) */
 
 #define GMT_swab2(data) ((((data) & 0xff) << 8) | ((unsigned short) (data) >> 8))
 #define GMT_swab4(data) \
 	(((data) << 24) | (((data) << 8) & 0x00ff0000) | \
-	(((data) >> 8) & 0x0000ff00) | ((unsigned long)(data) >> 24))
+	(((data) >> 8) & 0x0000ff00) | ((unsigned int)(data) >> 24))
 
 /* Macro to determine if the grd format is netCDF */
 
