@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.74 2004-11-26 23:13:12 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.75 2005-01-01 20:44:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8719,3 +8719,9 @@ double GMT_geodesic_dist_meter (double lonS, double latS, double lonE, double la
 	
 	return (dist);
 }
+
+double GMT_geodesic_dist_km (double lonS, double latS, double lonE, double latE)
+{
+	return (0.001 * GMT_geodesic_dist_meter (lonS, latS, lonE, latE));
+}
+
