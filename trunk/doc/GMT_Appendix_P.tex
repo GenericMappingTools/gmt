@@ -1,0 +1,37 @@
+%------------------------------------------
+%	$Id: GMT_Appendix_P.tex,v 1.1 2004-08-26 02:54:15 pwessel Exp $
+%
+%	The GMT Documentation Project
+%	Copyright 2000-2004.
+%	Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+
+\chapter{Using both \gmt\ 3 and 4}
+\index{\GMT, using 3 and 4}
+\thispagestyle{headings}
+
+Because \GMT\ 4 is backward compatible with the 3.4.x series yet maintains its parameters
+and history in separate files (e.g., \filename{.gmtdefaults4} versus \filename{.gmtdefaults})
+it is possible to install and use both versions on the same workstation.  To simplify such
+setups we supply the utility \progname{gmtswitch} which simplifies switching back and forth
+between any number of installed versions.  Place the \progname{gmtswitch} script in your
+general executable path (not in one of the \GMT\ bin directories) and run it after you have
+finished installing all \GMT\ versions of interest.  The first time you run \progname{gmtswitch}
+it will try to find all the available versions installed on your file system.  The versions
+found will be listed in the file \filename{.gmtversions} in your home directory; each line
+is the full path to the \GMT\ root directory (e.g., /usr/local/GMT3.4.2).  You may
+manually add or remove entries there at any time.  You are then instructed to make a few
+changes to your environment (shell dependent):
+\begin{enumerate}
+\item Define the environmental variable {\bf GMTHOME} to point to {\bf \$HOME}/this\_gmt.
+Here, \filename{this\_gmt} is a link that will be created by \progname{gmtswitch} to point
+to one of the installed versions. 
+\item Make sure {\bf \$GMTHOME}/bin is in your {\bf PATH}.
+\end{enumerate}
+Make those edits and logout and back in again.  The next time you run \progname{gmtswitch}
+you will be able to switch between versions.  Typing \progname{gmtswitch} will list the
+available versions and prompt you to choose one, whereas \progname{gmtswitch} {\it version}
+will immediately switch to that version ({\it version} must be a piece of unique text making
+up the full path to a verson, e.g., 3.4.2).  If you use tcsh or csh you may have to type
+``rehash'' to initiate the path changes.
