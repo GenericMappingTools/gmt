@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.18 2001-09-19 03:43:07 pwessel Exp $
+ *	$Id: pslib.c,v 1.19 2001-09-23 23:41:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -115,7 +115,7 @@
  * Version:	4.0
  *
  * The environmental variable GMTHOME must be set to the directory that holds the subdirectory
- *   share where all the pattern Sun raster files are stored
+ *   share/pattern where all the pattern Sun raster files are stored
  */
 
 #include "pslib_inc.h"
@@ -736,13 +736,14 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 	/* b_rgb:	Background color */
 
 	BOOLEAN found;
-	int i, j, ix, iy, nx, n_times = 0;
+	int i, j, ix, iy, nx, ny, n_times = 0;
 	char op[15];
-	double xx, yy, xmin, xmax, ymin, ymax, image_size;
+	double xx, yy, xmin, xmax, ymin, ymax, image_size_x, image_size_y;
 	
 	if ((image_no >= 0 && image_no < N_PATTERNS) && !ps_pattern_status[image_no][invert]) {	/* Unused predefined */
 		image_no = ps_imagefill_init (image_no, imagefile, invert, image_dpi, colorize, f_rgb, b_rgb);
 		nx = ps_pattern_nx[image_no][invert];
+		ny = ps_pattern_ny[image_no][invert];
 	}
 	else if (image_no < 0) {	/* User image, check if already used */
 		for (i = 0, found = FALSE; !found && i < ps_n_userimages; i++) found = !strcmp (ps_user_image[i].name, imagefile);
@@ -751,9 +752,12 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 		else
 			image_no = N_PATTERNS + i - 1;
 		nx = ps_user_image[image_no-N_PATTERNS].nx;
+		ny = ps_user_image[image_no-N_PATTERNS].ny;
 	}
-	else	/* Used predefined pattern */
+	else {	/* Used predefined pattern */
 		nx = ps_pattern_nx[image_no][invert];
+		ny = ps_pattern_ny[image_no][invert];
+	}
 
 	ps_comment ("Start of user imagefill pattern");
 	if (invert)
@@ -776,12 +780,13 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 		ymax = MAX (ymax, y[i]);
 	}
 	
-	image_size = (image_dpi) ? (double) nx / (double) image_dpi : nx / ps.scale;	/* Use device resolution if dpi is not set */
+	image_size_x = (image_dpi) ? (double) nx / (double) image_dpi : nx / ps.scale;	/* Use device resolution if dpi is not set */
+	image_size_y = (image_dpi) ? (double) ny / (double) image_dpi : ny / ps.scale;	/* Use device resolution if dpi is not set */
 
-	for (j = (int) floor (ymin / image_size); j <= (int) ceil (ymax / image_size); j++) {
-		yy = j * image_size;
-		for (i = (int) floor (xmin / image_size); i <= (int) ceil (xmax / image_size); i++) {
-			xx = i * image_size;
+	for (j = (int) floor (ymin / image_size_y); j <= (int) ceil (ymax / image_size_y); j++) {
+		yy = j * image_size_y;
+		for (i = (int) floor (xmin / image_size_x); i <= (int) ceil (xmax / image_size_x); i++) {
+			xx = i * image_size_x;
 			ix = irint (xx * ps.scale);
 			iy = irint (yy * ps.scale);
 			fprintf (ps.fp, "%d %d", ix, iy);
@@ -814,7 +819,7 @@ int ps_imagefill_init (int image_no, char *imagefile, int invert, int image_dpi,
 	if ((image_no >= 0 && image_no < N_PATTERNS) && ps_pattern_status[image_no][invert]) return (image_no);	/* Already done this */
 
 	if ((image_no >= 0 && image_no < N_PATTERNS)) {	/* Premade pattern yet not used */
-		sprintf (file, "%s%cshare%cps_pattern_%2.2d.ras\0", PSHOME, DIR_DELIM, DIR_DELIM, image_no);
+		sprintf (file, "%s%cshare%cpattern%cps_pattern_%2.2d.ras\0", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, image_no);
 		ps_pattern_status[image_no][invert] = 1;
 	}
 	else {	/* User image, check to see if already used */
