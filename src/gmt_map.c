@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.42 2003-12-24 02:43:22 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.43 2003-12-28 00:53:46 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -426,7 +426,7 @@ double GMT_right_robinson(double y);	/*	For Robinson maps	*/
 double GMT_left_sinusoidal(double y);	/*	For sinusoidal maps	*/
 double GMT_right_sinusoidal(double y);	/*	For sinusoidal maps	*/
 double GMT_robinson_spline (double xp, double *x, double *y, double *c);
-int GMT_set_datum (char *text, struct GMT_DATUM D);
+int GMT_set_datum (char *text, struct GMT_DATUM *D);
 
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -8050,54 +8050,64 @@ int GMT_datum_init (char *text)
 	}
 	
 	if (sscanf (&text[k], "%s/%s", from, to) == 1) {	/* to not given, set to - which means WGS-84 */
-		GMT_set_datum ("-", GMT_datum.to);
+		GMT_set_datum ("-", &GMT_datum.to);
 	}
 	else
-		if (GMT_set_datum (to, GMT_datum.to) == -1) return (-1);
-	if (GMT_set_datum (from, GMT_datum.from) == -1) return (-1);
+		if (GMT_set_datum (to, &GMT_datum.to) == -1) return (-1);
+	if (GMT_set_datum (from, &GMT_datum.from) == -1) return (-1);
 	
 	GMT_datum.da = GMT_datum.to.a - GMT_datum.from.a;
 	GMT_datum.df = GMT_datum.to.f - GMT_datum.from.f;
-	GMT_datum.dx = GMT_datum.to.x - GMT_datum.from.x;
-	GMT_datum.dy = GMT_datum.to.y - GMT_datum.from.y;
-	GMT_datum.dz = GMT_datum.to.z - GMT_datum.from.z;
+	for (k = 0; k < 3; k++) GMT_datum.dxyz[k] = -(GMT_datum.to.xyz[k] - GMT_datum.from.xyz[k]);	/* Since the X, Y, Z are Deltas relative to WGS-84 */
 	GMT_datum.one_minus_f = 1.0 - GMT_datum.from.f;
 	return 0;
 }
 
-int GMT_set_datum (char *text, struct GMT_DATUM D)
+int GMT_ECEF_init (char *text)
+{
+	/* Decode -E option (in mapproject) and initialize ECEF conv structures */
+	
+	if (GMT_set_datum (text, &GMT_datum.from) == -1) return (-1);
+	
+	return 0;
+}
+
+int GMT_set_datum (char *text, struct GMT_DATUM *D)
 {
 	int i;
+	double t;
 	
-	if (text[0] == '-') {	/* Shortcut for WGS-84 */
-		D.x = D.y = D.z = 0.0;
-		D.a = 6378137.0;
-		D.f = (1.0 / 298.2572235630);
+	if (text[0] == '\0' || text[0] == '-') {	/* Shortcut for WGS-84 */
+		memset ((void *)D->xyz, 0, (size_t)(3 * sizeof (double)));
+		D->a = 6378137.0;
+		D->f = (1.0 / 298.2572235630);
 	}
-	else if (!strchr (text, ':')) {	/* Has colons, must get ellipsoid and dr separately */
+	else if (strchr (text, ':')) {	/* Has colons, must get ellipsoid and dr separately */
 		char ellipsoid[128], dr[64];
 		if (sscanf (text, "%s:%s", ellipsoid, dr) != 2) return (-1);
-		if (sscanf (dr, "%lf,%lf,%lf", &D.x, &D.y, &D.z) != 3) return (-1);
-		if (!strchr (ellipsoid, ',')) {	/* Has major, inv_f instead of name */
-			if (sscanf (ellipsoid, "%lf,%lf", &D.a, &D.f) != 2) return (-1);
+		if (sscanf (dr, "%lf,%lf,%lf", &D->xyz[0], &D->xyz[1], &D->xyz[2]) != 3) return (-1);
+		if (strchr (ellipsoid, ',')) {	/* Has major, inv_f instead of name */
+			if (sscanf (ellipsoid, "%lf,%lf", &D->a, &D->f) != 2) return (-1);
 		}
 		else {	/* Get the ellipse # and then the parameters */
 			if ((i = GMT_get_ellipse (ellipsoid)) < 0) return (-1);
-			D.a = gmtdefs.ellipse[i].eq_radius;
-			D.f = gmtdefs.ellipse[i].flattening;
+			D->a = gmtdefs.ellipse[i].eq_radius;
+			D->f = gmtdefs.ellipse[i].flattening;
 		}
 	}
 	else {
 		int k;
-		if ((i = GMT_get_datum (text)) < 0) return (-1);
+		if (sscanf (text, "%d", &i) != 1) return (-1);
+		if (i < 0 || i >= N_DATUMS) return (-1);
 		if ((k = GMT_get_ellipse (gmtdefs.datum[i].ellipsoid)) < 0) return (-1);
-		D.a = gmtdefs.ellipse[k].eq_radius;
-		D.f = gmtdefs.ellipse[k].flattening;
-		D.x = gmtdefs.datum[i].x;
-		D.y = gmtdefs.datum[i].y;
-		D.z = gmtdefs.datum[i].z;
+		D->a = gmtdefs.ellipse[k].eq_radius;
+		D->f = gmtdefs.ellipse[k].flattening;
+		for (k = 0; k< 3; k++) D->xyz[k] = gmtdefs.datum[i].xyz[k];
 	}
-	D.e_squared = 2 * D.f - D.f * D.f;
+	D->b = D->a * (1 - D->f);
+	D->e_squared = 2 * D->f - D->f * D->f;
+	t = D->a /D->b;
+	D->ep_squared = t * t - 1.0;	/* (a^2 - b^2)/a^2 */
 	return 0;
 }
 
@@ -8115,19 +8125,59 @@ void GMT_conv_datum (double in[], double out[])
 	M = GMT_datum.from.a * (1.0 - GMT_datum.from.e_squared) / pow (1.0 - GMT_datum.from.e_squared * sin_lat2, 1.5);
 	N = GMT_datum.from.a / sqrt (1.0 - GMT_datum.from.e_squared * sin_lat2);
 	
-	tmp_1 = -GMT_datum.dx * sin_lat * cos_lon - GMT_datum.dy * sin_lat * sin_lon + GMT_datum.dz * cos_lat;
+	tmp_1 = -GMT_datum.dxyz[0] * sin_lat * cos_lon - GMT_datum.dxyz[1] * sin_lat * sin_lon + GMT_datum.dxyz[2] * cos_lat;
 	tmp_2 = GMT_datum.da * (N * GMT_datum.from.e_squared * sin_lat * cos_lat) / GMT_datum.from.a;
-	tmp_3 = GMT_datum.df * (M / GMT_datum.one_minus_f + M * GMT_datum.one_minus_f) * sin_lat * cos_lat;
+	tmp_3 = GMT_datum.df * (M / GMT_datum.one_minus_f + N * GMT_datum.one_minus_f) * sin_lat * cos_lat;
 	delta_lat = (tmp_1 + tmp_2 + tmp_3) / (M + h);
 	
-	delta_lon = (-GMT_datum.dx * sin_lon + GMT_datum.dy * cos_lon) / ((N + h) * cos_lat);
+	delta_lon = (-GMT_datum.dxyz[0] * sin_lon + GMT_datum.dxyz[1] * cos_lon) / ((N + h) * cos_lat);
 	
-	tmp_1 = GMT_datum.dx * cos_lat * cos_lon + GMT_datum.dy * cos_lat * sin_lon + GMT_datum.dz * sin_lat;
-	tmp_2 = GMT_datum.da * GMT_datum.from.a / N;
+	tmp_1 = GMT_datum.dxyz[0] * cos_lat * cos_lon + GMT_datum.dxyz[1] * cos_lat * sin_lon + GMT_datum.dxyz[2] * sin_lat;
+	tmp_2 = -GMT_datum.da * GMT_datum.from.a / N;
 	tmp_3 = GMT_datum.df * GMT_datum.one_minus_f * N * sin_lat2;
-	delta_h = tmp_1 - tmp_2 + tmp_3;
+	delta_h = tmp_1 + tmp_2 + tmp_3;
 	
 	out[0] = in[0] + delta_lon * R2D;
 	out[1] = in[1] + delta_lat * R2D;
 	if (GMT_datum.h_given) out[2] = in[2] + delta_h;
+}
+
+void GMT_ECEF_forward (double in[], double out[])
+{
+	/* Convert geodetic lon, lat, height to ECEF coordinates given the datum parameters.
+	 * GMT_datum.from is always the ellipsoid to use */
+	
+	double sin_lon, cos_lon, sin_lat, cos_lat, N, tmp;
+	
+	sincos (in[0] * D2R, &sin_lon, &cos_lon);
+	sincos (in[1] * D2R, &sin_lat, &cos_lat);
+	
+	N = GMT_datum.from.a / d_sqrt (1.0 - GMT_datum.from.e_squared * sin_lat * sin_lat);
+	tmp = (N + in[2]) * cos_lat;
+	out[0] = tmp * cos_lon + GMT_datum.from.xyz[0];
+	out[1] = tmp * sin_lon + GMT_datum.from.xyz[1];
+	out[2] = (N * (1 - GMT_datum.from.e_squared) + in[2]) * sin_lat + GMT_datum.from.xyz[2];
+}
+
+void GMT_ECEF_inverse (double in[], double out[])
+{
+	/* Convert ECEF coordinates to geodetic lon, lat, height given the datum parameters.
+	 * GMT_datum.from is always the ellipsoid to use */
+	
+	double in_p[3], sin_lon, cos_lon, sin_lat, cos_lat, N, p, theta, sin_theta, cos_theta;
+	int i;
+	
+	/* First remove the xyz shifts, us in_p to avoid changing in */
+	
+	for (i = 0; i < 3; i++) in_p[i] = in[i] - GMT_datum.from.xyz[i];
+	
+	p = hypot (in_p[0], in_p[1]);
+	theta = atan (in_p[2] * GMT_datum.from.a / (p * GMT_datum.from.b));
+	sincos (theta, &sin_theta, &cos_theta);
+	out[0] = d_atan2 (in_p[1], in_p[0]) * R2D;
+	out[1] = atan ((in_p[2] + GMT_datum.from.ep_squared * GMT_datum.from.b * pow (sin_theta, 3.0)) / (p - GMT_datum.from.e_squared * GMT_datum.from.a * pow (cos_theta, 3.0)));
+	sincos (out[1], &sin_lat, &cos_lat);
+	out[1] *= R2D;
+	N = GMT_datum.from.a / sqrt (1.0 - GMT_datum.from.e_squared * sin_lat * sin_lat);
+	out[2] = (p / cos_lat) - N;
 }

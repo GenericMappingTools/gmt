@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.22 2003-12-24 02:43:22 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.23 2003-12-28 00:53:46 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -309,8 +309,8 @@ struct THREE_D {
 };
 
 struct GMT_DATUM {	/* Main parameter for a particular datum */
-	double a, f, e_squared;
-	double x, y, z;
+	double a, b, f, e_squared, ep_squared;
+	double xyz[3];
 };
 
 struct GMT_DATUM_CONV {
@@ -319,7 +319,7 @@ struct GMT_DATUM_CONV {
 	double df;		/* Flattening */
 	double e_squared;	/* Eccentricity squared (e^2 = 2*f - f*f) */
 	double one_minus_f;	/* 1 - f */
-	double dx, dy, dz;	/* Ellipsoids offset in meter from Earth's center of mass */
+	double dxyz[3];		/* Ellipsoids offset in meter from Earth's center of mass for x,y, and z */
 	struct GMT_DATUM from, to;	/* The old and new datums */
 };
 
