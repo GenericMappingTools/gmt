@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.16 2001-09-15 02:36:01 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.17 2001-09-21 02:25:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -256,27 +256,12 @@ struct MAP_PROJECTIONS {
 
 #define GMT_interval_axis_item(k) (((k) == GMT_INTV_UPPER || (k) == GMT_INTV_LOWER) ? TRUE : FALSE)	/* TRUE for interval anotations */
 #define GMT_lower_axis_item(k) (((k) == GMT_ANOT_LOWER || (k) == GMT_INTV_LOWER) ? 1 : 0)		/* 1 if this is a lower axis anotation */
-#define GMT_upper_and_lower_items(j) (((tframe_info.axis[j].item[GMT_ANOT_UPPER].active || tframe_info.axis[j].item[GMT_INTV_UPPER].active) && \
-	(tframe_info.axis[j].item[GMT_ANOT_LOWER].active || tframe_info.axis[j].item[GMT_INTV_LOWER].active)) ? TRUE : FALSE)	/* TRUE if we have two levels of anotations (tick or interval) */
-#define GMT_two_anot_items(j) ((tframe_info.axis[j].item[GMT_ANOT_UPPER].active && tframe_info.axis[j].item[GMT_ANOT_LOWER].active) ? TRUE : FALSE)	/* TRUE if we have two levels of tick anotations */
+#define GMT_upper_and_lower_items(j) (((frame_info.axis[j].item[GMT_ANOT_UPPER].active || frame_info.axis[j].item[GMT_INTV_UPPER].active) && \
+	(frame_info.axis[j].item[GMT_ANOT_LOWER].active || frame_info.axis[j].item[GMT_INTV_LOWER].active)) ? TRUE : FALSE)	/* TRUE if we have two levels of anotations (tick or interval) */
+#define GMT_two_anot_items(j) ((frame_info.axis[j].item[GMT_ANOT_UPPER].active && frame_info.axis[j].item[GMT_ANOT_LOWER].active) ? TRUE : FALSE)	/* TRUE if we have two levels of tick anotations */
 #define GMT_uneven_interval(unit) ((unit == 'o' || unit == 'O' || unit == 'k' || unit == 'K' || unit == 'R' || unit == 'r' || unit == 'D' || unit == 'd') ? TRUE : FALSE)	/* TRUE for uneven units */
 
-struct MAP_FRAME {		/* Various parameters for plotting of linear and map boundaries */
-	double frame_int[3];	/* Frame tick intervals, for each axis (x,y,z) */
-	double grid_int[3];	/* Gridline interval, --"-- */
-	double anot_int[3];	/* Anotation interval (upper, i.e. closest to axis), --"-- */
-	char label[3][256];	/* Axis label */
-	char unit[3][32];	/* Axis unit appended to anotations */
-	char header[256];	/* Plot title */
-	int side[5];		/* Which sides to plot. 2 is anot/draw, 1 is draw, 0 is not */
-	int anot_type[3];	/* For log10 and pow anotations only */
-	BOOLEAN plot;		/* TRUE if frame is desired */
-	BOOLEAN draw_box;	/* TRUE if 3-D supporting frame is desired */
-	BOOLEAN check_side;	/* TRUE if lon and lat anotations should be on x and y axis only */
-	BOOLEAN horizontal;	/* TRUE is S/N anotations should be parallel to axes */
-};
-
-struct TIME_AXIS_ITEM {		/* Information for one type of tick/anotation */
+struct PLOT_AXIS_ITEM {		/* Information for one type of tick/anotation */
 	int parent;			/* Id of axis this item belongs to (0,1,2) */
 	int id;				/* Id of this item (0-5) */
 	BOOLEAN active;			/* TRUE if we want to use this item */
@@ -287,15 +272,15 @@ struct TIME_AXIS_ITEM {		/* Information for one type of tick/anotation */
 	char unit;			/* User's interval unit (y, M, u, d, h, m, c) */
 };
 
-struct TIME_AXIS {		/* Informatino for one time axis */
-	struct TIME_AXIS_ITEM item[6];	/* see above defines for which is which */
+struct PLOT_AXIS {		/* Informatino for one time axis */
+	struct PLOT_AXIS_ITEM item[6];	/* see above defines for which is which */
 	int type;			/* LINEAR, LOG10, POW, or TIME */
 	char label[256];		/* Label of the axis */
 	char unit[32];			/* Axis unit appended to annotations */
 };
 
-struct TIME_FRAME {		/* Various parameters for plotting of time axis boundaries */
-	struct TIME_AXIS axis[3];	/* One each for x, y, and z */
+struct PLOT_FRAME {		/* Various parameters for plotting of time axis boundaries */
+	struct PLOT_AXIS axis[3];	/* One each for x, y, and z */
 	char header[256];		/* Plot title */
 	BOOLEAN plot;			/* TRUE if -B was used */
 	BOOLEAN draw_box;		/* TRUE is a 3-D Z-box is desired */

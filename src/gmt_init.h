@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.19 2001-09-15 22:57:30 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.20 2001-09-21 02:25:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -109,8 +109,7 @@ char *GMT_second_symbol[4][2] = {			/* Second symbol for each encoding */
 /*	For plotting purposes */
 /*--------------------------------------------------------------------*/
 
-struct MAP_FRAME frame_info;
-struct TIME_FRAME tframe_info;
+struct PLOT_FRAME frame_info;
 struct GMT_PLOT_CALCLOCK GMT_plot_calclock;
 double *GMT_x_plot = 0;		/* Holds the x/y (inches) of a line to be plotted */
 double *GMT_y_plot = 0;
