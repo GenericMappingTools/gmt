@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.8 2001-09-24 07:51:57 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.9 2001-09-25 01:09:26 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2001.
@@ -9,8 +9,8 @@
 \chapter{General features}
 \thispagestyle{headings}
 
-This section explains a few features common to all the programs
-in \GMT.  It summarizes the philosophy behind the system.  Some
+This section explains features common to all the programs
+in \GMT and summarizes the philosophy behind the system.  Some
 of the features described here may make more sense once you reach
 the cook-book section where we present actual examples of their use. 
 
@@ -45,6 +45,8 @@ you always supply the desired unit explicitly.
 \index{GMT@\GMT!defaults|(}
 \index{Default settings|(}
 
+\GMTfig[h]{GMT_Defaults_1a}{Some \gmt\ parameters that affect plot appearance}
+
 There are more than 75 parameters which can be adjusted individually
 to modify the appearance of plots or affect the manipulation of data.
 When a program is run, it initializes all parameters to the \GMT\
@@ -75,8 +77,6 @@ values.  E.g., if your \filename{.gmtdefaults} file has {\it x}
 offset = 1{\bf i} as default, the \Opt{X}1.5{\bf i} option will override the
 default and set the offset to 1.5 inches.  Default values
 may also be changed from the command line with the utility \GMTprog{gmtset}. 
-
-\GMTfig[h]{GMT_Defaults_1a}{Some \gmt\ parameters that affect plot appearance}
 
 There are at least two good reasons why the \GMT\ default options
 are placed in a separate parameter file:
@@ -151,7 +151,7 @@ sometimes a number or character string immediately after the letter.
 
 \vspace{\baselineskip} 
 
-\texttt{pscoast -R0/20/0/20 -G200 -JM6i -W0.25p -B5 -V $>$ map.ps}
+\texttt{pscoast -R0/20/0/20 -G200 -JM6i -W0.25p -B5 -V -P $>$ map.ps}
 
 \section{Standardized command line options} 
 \index{Standardized command line options}%
@@ -216,15 +216,16 @@ as is vital that you understand how to use these options.
 This is by far the most complicated option in \GMT, but most examples
 of its usage are actually quite simple.
 Given as \Opt{B}{\it xinfo}[/{\it yinfo}[/{\it zinfo}]][:."title string":][{\bf W}$|${\bf w}][{\bf E}$|${\bf e}][{\bf S}$|${\bf s}][{\bf N}$|${\bf n}][{\bf Z}$|${\bf z}[{\bf +}]],
-this switch specifies a map boundary (or plot axis) to be plotted by using the
-selected information. {\it xinfo}, {\it yinfo} and {\it zinfo} are of the form \\
+this switch specifies a map boundary (or plot axes) to be plotted by using the
+selected information. The components {\it xinfo}, {\it yinfo} and {\it zinfo} are of the form \\
 
 \par {\it info}[:"axis label":][:,"unit label":] \\
 
+\noindent
 where {\it info} is one or more concatenated substrings of the form
 [{\bf t}]{\it stride}[{\bf u}].  The {\bf t} flag sets the axis item of interest, and the
 available items are listed in Table~\ref{tbl:inttype}.  By
-default, all 4 boundaries are plotted (denoted {\bf W}, {\bf E}, {\bf S},
+default, all 4 map boundaries (or plot axes) are plotted (denoted {\bf W}, {\bf E}, {\bf S},
 {\bf N}).  To change this selection, append the codes for those you want
 (e.g., {\bf WSn}).  Upper case (e.g., {\bf W}) will annotate in addition to
 draw axis/tick-marks.  The title, if given, will appear centered above the plot\footnote{However,
@@ -233,7 +234,7 @@ it is suppressed when a 3-D view is selected.}.
 \begin{table}[H]
 \centering
 \begin{tabular}{|c|l|} \hline
-Flag	& Description \\ \hline
+\emph{Flag}	& \emph{Description} \\ \hline
 {\bf a}	&	(upper) tick annotation spacing \\ \hline
 {\bf A}	&	lower tick annotation spacing \\ \hline
 {\bf i}[v]	&	(upper) interval  annotation spacing\\ \hline
@@ -255,10 +256,10 @@ since annotations may require the name of months and weekdays.
 \begin{table}[H]
 \centering
 \begin{tabular}{|c|l|} \hline
-Modifier	& Description \\ \hline
-{\bf f} (or {\bf F} 	& Full name of interval, e.g., January (or JANUARY) \\ \hline
-{\bf a} (or {\bf A}	& Short abbreviation of interval, e.g., Jan (or JAN) \\ \hline
-{\bf c} (or {\bf C} 	& 1-char abbreviation of interval, e.g., J (or J) \\ \hline
+\emph{Modifier}	& \emph{Description} \\ \hline
+{\bf f} (or {\bf F}) 	& Full name of interval, e.g., January (or JANUARY) \\ \hline
+{\bf a} (or {\bf A})	& Short abbreviation of interval, e.g., Jan (or JAN) \\ \hline
+{\bf c} (or {\bf C}) 	& 1-char abbreviation of interval, e.g., J (or J) \\ \hline
 \end{tabular}
 \caption{{\bf I} and {\bf i} interval annotation modifiers}
 \label{tbl:modifier}
@@ -270,7 +271,7 @@ The unit flag {\bf u} can take on one of 16 codes; these are listed in  Table~\r
 \begin{table}[H]
 \centering
 \begin{tabular}{|c|l|l} \hline
-Flag	& Unit & Description \\ \hline
+\emph{Flag}	& \emph{Unit} & \emph{Description} \\ \hline
 {\bf Y}	&	year & Plot using all 4 digits \\ \hline
 {\bf y}	&	year & Plot using last 2 digits \\ \hline
 {\bf O}	&	month & Format anotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
@@ -280,8 +281,8 @@ Flag	& Unit & Description \\ \hline
 {\bf r}	&	Gregorian week & 7-day stride from start of week \\ \hline
 {\bf K}	&	ISO weekday & Format anotation using {\bf PLOT\_DATE\_FORMAT} \\ \hline
 {\bf k}	&	weekday & Plot name of weekday in selected language \\ \hline
-{\bf D}	&	day & Format anotation using {\bf PLOT\_DATE\_FORMAT}, which also \\ \hline
-	&		& determines if we plot day of month (1--31) or day of year (1--366) \\ \hline
+{\bf D}	&	day & Format anotation using {\bf PLOT\_DATE\_FORMAT} which \\ \hline
+	&		& selects day of month (1--31) or day of year (1--366) \\ \hline
 {\bf H}	&	hour &	 Format anotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
 {\bf h}	&	hour &	 Plot as 2-digit integer (0--24) \\ \hline
 {\bf M}	&	minute &	 Format anotation using {\bf PLOT\_CLOCK\_FORMAT} \\ \hline
@@ -304,6 +305,11 @@ will clarify what is meant.
 
 \subsubsection{Geographic basemaps}
 
+Geographic basemaps may differ from regular plot axis in that some projections support a
+``fancy'' form of axis and is selected by the {\bf BASEMAP\_TYPE} setting.  Only the three
+axis items {\bf a}, {\bf f}, and {\bf g} apply.  The anotations will be formatted according to
+the {\bf PLOT\_DEGREE\_SYMBOL} template.  An example of part of a basemap is shown in Figure~\ref{fig:GMT_-B_geo}.
+
 \GMTfig[h]{GMT_-B_geo}{Geographic map border using separate selections for anotation,
 frame, and grid intervals.  Formatting of the anotation is controlled by
 the parameter PLOT\_DEGREE\_FORMAT in your \filename{.gmtdefaults} file.}
@@ -313,18 +319,21 @@ anotations, shorter ticks indicate frame interval.  The axis label is
 optional.  We used \Opt{R}0/12/0/1 \Opt{JX}3/0.4
 \Opt{Ba}4{\bf f}2{\bf g}1:Frequency::,\%:.}
 \
-\subsubsection{Options for log$_{10}$ axes}
+\subsubsection{Cartesian log$_{10}$ axes}
 \index{log$_{10}$ axes}
 \index{Logarithmic axes}
 
+Due to the logarithmic nature of anotation spacings, the {\it stride} parameter take on specific
+meanings.  The following concerns as specific to log axes:
+
 \begin{enumerate}
-\item {\it tick} must be 1, 2, or 3.  Annotations/ticks will
-then occur at 1, 1--2--5, or 1,2,3,4,...,9, respectively.
+\item {\it stride} must be 1, 2, or 3.  Annotations/ticks will
+then occur at 1, 1--2--5, or 1,2,3,4,...,9, respectively, for each magnitude range.
 
-\item Append {\bf l} to {\it tick}. Then, log$_{10}$ of the annotation
-is plotted at every integer log$_{10}$ value.
+\item Append {\bf l} to {\it stride}. Then, log$_{10}$ of the annotation
+is plotted at every integer log$_{10}$ value (e.g., $x = 100$ will be annotated as ``2'').
 
-\item Append {\bf p} to {\it tick}.  Then, annotations appear as 10
+\item Append {\bf p} to {\it stride}.  Then, annotations appear as 10
 raised to log$_{10}$ of the value (e.g., $10^{-5}$).
 
 \end{enumerate}
@@ -340,10 +349,13 @@ anotate log$_{10}$ of the actual values, with \Opt{Ba}1{\bf f}2{\bf g}3{\bf l}.
 as exponents, with \Opt{Ba}1{\bf f}2{\bf g}3{\bf p}.}
 
 \index{Exponential axis}
-\subsubsection{Options for exponential axes}
-Append {\bf p }to {\it tick}, and the annotation
-interval is expected to be in transformed units, but annotation will be plotted
-as un-transformed units.  E.g., if {\it tick} = 1 and power = 0.5 (i.e., sqrt),
+\subsubsection{Cartesian exponential axes}
+Normally, {\it stride} will be used to create equidistant (in the user's unit) annotations
+or ticks, but because of the exponential nature of the axis, such anotations may converge
+on each other at one end of the axis.  To avoid this problem, you can
+append {\bf p }to {\it stride}, and the annotation
+interval is expected to be in transformed units, yet the annotation itself will be plotted
+as un-transformed units.  E.g., if {\it stride} = 1 and power = 0.5 (i.e., sqrt),
 then equidistant annotations labeled 1, 4, 9, ... will appear.
 
 \GMTfig[h]{GMT_-B_pow}{Exponential or power projection axis.  (top) Using an exponent of 0.5
@@ -353,7 +365,7 @@ yields a $\sqrt{x}$ axis.  Here, intervals refer to actual data values, in
 uses the corresponding unprojected values, as in \Opt{Ba}3{\bf f}2{\bf g}1{\bf p}.}
 
 \index{Time axis}
-\subsubsection{Options for time axes}
+\subsubsection{Cartesian time axes}
 
 \subsection{The \Opt{c} option}
 \index{\Opt{c}}
