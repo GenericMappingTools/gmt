@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.32 2005-01-05 03:12:39 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.33 2005-02-04 16:19:46 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -48,16 +48,24 @@ GMT_dtime GMT_rdc2dt (GMT_cal_rd rd, double secs) {
 	return ((GMT_dtime)(GMT_DAY2SEC_F*(rd-GMT_GCAL_EPOCH) + secs));
 }
 
+int	splitinteger(double value, int epsilon, double *doublepart) {
+/*	split value into integer and and floating part for date usage. */
+	int i;
+
+	i = (int) (value/(double)epsilon);
+	*doublepart = value - ((double) i)*((double)epsilon);
+	return i;
+}
+
 void	GMT_dt2rdc (GMT_dtime t, GMT_cal_rd *rd, double *s) {
-/*	Given GMT_dtime value t, load rata die day of that t
+/*	Given GMT_dtime value t, load calendar data of that day
 	in rd and the seconds since the start of that day in
 	s.  */
 
-	double	x;
-	
-	x = floor(t * GMT_SEC2DAY);
-	*s = t - GMT_DAY2SEC_F * x;
-	*rd = (GMT_cal_rd)(x+GMT_GCAL_EPOCH);
+	int i;
+
+	i = splitinteger(t, 86400, s);
+	*rd = (GMT_cal_rd)(i+GMT_GCAL_EPOCH);
 }
 
 
@@ -620,9 +628,7 @@ void	GMT_gcal_from_dt (GMT_dtime t, struct GMT_gcal *cal) {
 	GMT_dt2rdc (t, &rd, &x);
 	GMT_gcal_from_rd (rd, cal);
 	/* split double seconds and integer time */
-	cal->sec = 60.0*modf(x/60.0, &x);
-	/* do the last two calculations as int to reduce trouble */
-	i = (int) x;
+	i = splitinteger(x, 60, &cal->sec);
 	cal->hour = i/60;
 	cal->min  = i%60;
 	return;
