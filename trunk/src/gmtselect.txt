@@ -75,7 +75,7 @@ Multiple segment file.  Segments are separated by a record whose first character
 .TP
 .B \-N
 Pass all records whose location is inside specified geographical features.
-Specify if records should be \fBs\fPkipped or \fBk\fPept using 1 of 2 formats:
+Specify if records should be skipped (s) or kept (k) using 1 of 2 formats:
 .br
 	\fB\-N\fP\fIwet/dry\fP.
 .br
