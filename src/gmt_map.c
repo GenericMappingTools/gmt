@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.41 2003-11-07 20:51:37 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.42 2003-12-24 02:43:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -426,6 +426,7 @@ double GMT_right_robinson(double y);	/*	For Robinson maps	*/
 double GMT_left_sinusoidal(double y);	/*	For sinusoidal maps	*/
 double GMT_right_sinusoidal(double y);	/*	For sinusoidal maps	*/
 double GMT_robinson_spline (double xp, double *x, double *y, double *c);
+int GMT_set_datum (char *text, struct GMT_DATUM D);
 
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -8032,4 +8033,101 @@ void GMT_set_polar (double plat)
 		project_info.n_polar = project_info.north_pole;
 		project_info.s_polar = !project_info.n_polar;
 	}
+}
+
+/* Datum conversion routines */
+
+int GMT_datum_init (char *text)
+{
+	/* Decode -T option (in mapproject) and initialize datum conv structures */
+	
+	int k = 0;
+	char from[128], to[128];
+	
+	if (text[0] == 'h') {	/* We will process lon, lat, height data */
+		k = 1;
+		GMT_datum.h_given = TRUE;	/* If FALSE we set height = 0 */
+	}
+	
+	if (sscanf (&text[k], "%s/%s", from, to) == 1) {	/* to not given, set to - which means WGS-84 */
+		GMT_set_datum ("-", GMT_datum.to);
+	}
+	else
+		if (GMT_set_datum (to, GMT_datum.to) == -1) return (-1);
+	if (GMT_set_datum (from, GMT_datum.from) == -1) return (-1);
+	
+	GMT_datum.da = GMT_datum.to.a - GMT_datum.from.a;
+	GMT_datum.df = GMT_datum.to.f - GMT_datum.from.f;
+	GMT_datum.dx = GMT_datum.to.x - GMT_datum.from.x;
+	GMT_datum.dy = GMT_datum.to.y - GMT_datum.from.y;
+	GMT_datum.dz = GMT_datum.to.z - GMT_datum.from.z;
+	GMT_datum.one_minus_f = 1.0 - GMT_datum.from.f;
+	return 0;
+}
+
+int GMT_set_datum (char *text, struct GMT_DATUM D)
+{
+	int i;
+	
+	if (text[0] == '-') {	/* Shortcut for WGS-84 */
+		D.x = D.y = D.z = 0.0;
+		D.a = 6378137.0;
+		D.f = (1.0 / 298.2572235630);
+	}
+	else if (!strchr (text, ':')) {	/* Has colons, must get ellipsoid and dr separately */
+		char ellipsoid[128], dr[64];
+		if (sscanf (text, "%s:%s", ellipsoid, dr) != 2) return (-1);
+		if (sscanf (dr, "%lf,%lf,%lf", &D.x, &D.y, &D.z) != 3) return (-1);
+		if (!strchr (ellipsoid, ',')) {	/* Has major, inv_f instead of name */
+			if (sscanf (ellipsoid, "%lf,%lf", &D.a, &D.f) != 2) return (-1);
+		}
+		else {	/* Get the ellipse # and then the parameters */
+			if ((i = GMT_get_ellipse (ellipsoid)) < 0) return (-1);
+			D.a = gmtdefs.ellipse[i].eq_radius;
+			D.f = gmtdefs.ellipse[i].flattening;
+		}
+	}
+	else {
+		int k;
+		if ((i = GMT_get_datum (text)) < 0) return (-1);
+		if ((k = GMT_get_ellipse (gmtdefs.datum[i].ellipsoid)) < 0) return (-1);
+		D.a = gmtdefs.ellipse[k].eq_radius;
+		D.f = gmtdefs.ellipse[k].flattening;
+		D.x = gmtdefs.datum[i].x;
+		D.y = gmtdefs.datum[i].y;
+		D.z = gmtdefs.datum[i].z;
+	}
+	D.e_squared = 2 * D.f - D.f * D.f;
+	return 0;
+}
+
+void GMT_conv_datum (double in[], double out[])
+{
+	/* Evaluate J^-1 and B on from ellipsoid */
+	
+	double sin_lon, cos_lon, sin_lat, cos_lat, sin_lat2, M, N, h, tmp_1, tmp_2, tmp_3;
+	double delta_lat, delta_lon, delta_h;
+	
+	h = (GMT_datum.h_given) ? in[2] : 0.0;
+	sincos (in[0] * D2R, &sin_lon, &cos_lon);
+	sincos (in[1] * D2R, &sin_lat, &cos_lat);
+	sin_lat2 = sin_lat * sin_lat;
+	M = GMT_datum.from.a * (1.0 - GMT_datum.from.e_squared) / pow (1.0 - GMT_datum.from.e_squared * sin_lat2, 1.5);
+	N = GMT_datum.from.a / sqrt (1.0 - GMT_datum.from.e_squared * sin_lat2);
+	
+	tmp_1 = -GMT_datum.dx * sin_lat * cos_lon - GMT_datum.dy * sin_lat * sin_lon + GMT_datum.dz * cos_lat;
+	tmp_2 = GMT_datum.da * (N * GMT_datum.from.e_squared * sin_lat * cos_lat) / GMT_datum.from.a;
+	tmp_3 = GMT_datum.df * (M / GMT_datum.one_minus_f + M * GMT_datum.one_minus_f) * sin_lat * cos_lat;
+	delta_lat = (tmp_1 + tmp_2 + tmp_3) / (M + h);
+	
+	delta_lon = (-GMT_datum.dx * sin_lon + GMT_datum.dy * cos_lon) / ((N + h) * cos_lat);
+	
+	tmp_1 = GMT_datum.dx * cos_lat * cos_lon + GMT_datum.dy * cos_lat * sin_lon + GMT_datum.dz * sin_lat;
+	tmp_2 = GMT_datum.da * GMT_datum.from.a / N;
+	tmp_3 = GMT_datum.df * GMT_datum.one_minus_f * N * sin_lat2;
+	delta_h = tmp_1 - tmp_2 + tmp_3;
+	
+	out[0] = in[0] + delta_lon * R2D;
+	out[1] = in[1] + delta_lat * R2D;
+	if (GMT_datum.h_given) out[2] = in[2] + delta_h;
 }

@@ -6,7 +6,7 @@ mapproject \- Forward and Inverse map transformation of 2-D coordinates
 .SH SYNOPSIS
 \fBmapproject\fP \fIinfiles\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
 [ \fB\-C\fP ] [ \fB\-Dc|i|m|p\fP ] [ \fB\-F\fP[\fBk|m|n|i|c|p\fP] ] [ \fB\-G\fP[\fIx0/y0/\fP][\fIunit\fP] ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] 
-[ \fB\-M\fP[\fIflag\fP] ] [ \fB\-S\fP ] [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] 
+[ \fB\-M\fP[\fIflag\fP] ] [ \fB\-Q\fp[\fBd|e\fP] [ \fB\-S\fP ] [ \fB\-T\fP[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] 
 [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBmapproject\fP reads (longitude, latitude) positions from \fIinfiles\fP [or standard input] and
@@ -14,7 +14,8 @@ computes (x,y) coordinates using the specified map projection and scales.
 Optionally, it can read (x,y) positions and compute (longitude, latitude) values
 doing the inverse transformation.  This can be used to transform linear (x,y) points
 obtained by digitizing a map of known projection to geographical coordinates.  May also
-calculate distances along track or to a fixed point.
+calculate distances along track or to a fixed point.  Finally, can be used to perform
+datum conversions.
 Additional data fields are permitted after the first 2 columns which must have (longitude,latitude) or (x,y).
 See option \fB\-:\fP on how to read (latitude,longitude) files.
 .br
@@ -53,8 +54,17 @@ last unit requires \fB\-R\fP and \fB\-J\fP to be set.
 Do the Inverse transformation, i.e. get (longitude,latitude) from (x,y) data.
 #include "explain_-M.txt"
 .TP
+.B \-Q
+List all projection parameters.  To only list datums, use \fB\-Qd\fP.  To only list ellipsoids, use \fB\-Qe\fP.
+.TP
 .B \-S
 Suppress points that fall outside the region.
+.TP
+.B \-T
+Coordinate conversions between datums \fIfrom\fP and \fIto\fP.  Use \fB\-Th\fP if 3rd column has
+height above ellipsoid [Default assumes heigh = 0, i.e., on ellipsoid].  Specify datums using the
+ID (see \fB\-Q\fP) or give \fIellipsoid\fP:\fIdx,dy,dz\fP, where \fIellipsoid\fP may be an ellipsoid
+ID (see \fB\-Q\fP) or given as \fIa,1/f\fP.  If \fIdatum\fP is - or not given we use WGS-84.
 #include "explain_-V.txt"
 #include "explain_-t.txt"
 #include "explain_-i.txt"

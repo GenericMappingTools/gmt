@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.94 2003-12-18 20:24:33 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.95 2003-12-24 02:43:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2220,6 +2220,15 @@ int GMT_get_ellipse (char *name)
 		}
 	}
 			
+	return (i);
+}
+
+int GMT_get_datum (char *name)
+{
+	int i, n;
+	
+	for (i = 0; i < N_DATUMS && strcmp (name, gmtdefs.datum[i].name); i++);
+	if (i == N_DATUMS) return (-1);	/* Error */
 	return (i);
 }
 
