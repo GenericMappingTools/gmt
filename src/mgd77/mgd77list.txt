@@ -172,7 +172,6 @@ To extract the locations of depths exceeding 9000 meter that were not interpolat
 .sp
 \fBmgd77list\fP `cat cruises.lis` \fB\-F\fP'depth,DEPTH>9000,BTC!=1' > really_deep.d
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION),
-.IR x2sys (GMTMANSECTION)
-.IR xsystem (GMTMANSECTION)
+.IR mgd77info (GMTMANSECTION),
+.IR mgd77track (GMTMANSECTION)
 #include "refs.i"

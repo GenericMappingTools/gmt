@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.3 2004-08-19 21:52:40 pwessel Exp $
+ *	$Id: mgd77.h,v 1.4 2004-08-27 04:38:31 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -40,6 +40,13 @@
  * so on for powers of 2.  We add these bit powers together to get the bit patterns
  * for a selection of columns.  E.g., field 0, 3, 5 has pattern 1 + 8 + 32 = 41.
  * Some combinations of columns have precalculated bit patterns given below */
+#define MGD77_TWT_BIT		(1 << 10)
+#define MGD77_DEPTH_BIT		(1 << 11)
+#define MGD77_MTF1_BIT		(1 << 14)
+#define MGD77_MTF2_BIT		(1 << 15)
+#define MGD77_MAG_BIT		(1 << 16)
+#define MGD77_GOBS_BIT		(1 << 20)
+#define MGD77_FAA_BIT		(1 << 22)
 #define MGD77_GEOPHYSICAL_BITS	5360640	/* 1010  0011  1001  1000  0000  0000*/
 #define MGD77_CORRECTION_BITS	2883584	/*  101  1000  0000  0000  0000  0000*/
 #define MGD77_FLOAT_BITS	(MGD77_GEOPHYSICAL_BITS + MGD77_CORRECTION_BITS)
