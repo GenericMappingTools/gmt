@@ -1,5 +1,5 @@
 <HTML>
-<!--  $Id: gmt_cvs.html,v 1.1 2001-03-08 20:42:41 pwessel Exp $  -->
+<!--  $Id: gmt_cvs.html,v 1.2 2004-11-23 19:42:42 pwessel Exp $  -->
 <title>GMT CVS Services</title>
 <body bgcolor="#ffffff">
 <center><h1>GMT CVS Services</center></h1><p>
@@ -9,17 +9,18 @@ As of GMT version 3.4, the entire GMT package and supporting scaffolding is
 under version control using the Concurrent Version Systems (CVS) program.
 Unlike the previous version control system used by GMT (SCCS), CVS is Open
 Source and supports access across networks.  Two kinds of access are given:
-Read-only and read/write.  Read-only lets you check out the latest GMT
+Read-only and read/write.  Read-only lets you check out the latest GMT 4
 tree, while read/write allows you to check back in your modifications.
 Both types will allow you to completely recreate the GMT directory tree
-that the developers are using and you may generate the web-examples
+that the developers are using and you may even generate the web-examples
 and tar archives on your own machine.
 <h2>Requirements</h2>
 To take full advantage of the CVS access you need to have several utilities
 installed in your default path.  While most Linux systems come with all of
 them preinstalled (assuming you installed all the utilities), commercial Unix
-workstations usually do not and you must install them separately, either from
-source of from premade packages.  The tools are:
+workstations or Mac OS X usually do not and you must install them separately,
+either from source of from premade packages (Mac OS X user must first install
+the developer tools and X11 - the rest can be obtained via fink).  The tools are:
 <UL>
 <LI><U>CVS.</U>  You will not get far if you do not have CVS on your system.
 <LI><U>ghostscript.</U>  Needed to generate bitmaps from PostScript files.
@@ -39,12 +40,12 @@ HTML for the web section.
 See links below to obtain any of these utilities.
 <h2>Initiation of CVS service</h2>
 The initial process of starting to use GMT with CVS is done by the utility cshell
-script newgmtguru.  However, here we will go through the steps manually to
-indicate the process.
+script <A HREF="newgmtguru">newgmtguru</A>.  However, here we will go through the
+steps manually to indicate the process.
 <OL>
 <LI><B>Make a GMTdev directory.</B>  This directory will contain all GMT development,
 including the main GMT directory tree (in which you can work on GMT programs)
-as well as previously released versions, e.g., the GMT3.3.6 release tree.  Those
+as well as previously released versions, e.g., the GMT3.4.5 release tree.  Those
 directories should be treated as read-only; all your GMT-related development should
 take place in the GMT tree.  Change directory to where you want to place GMTdev and type<br>
 <p>
@@ -86,8 +87,8 @@ will take effect.  Next, copy gmtguru.macros.orig to gmtguru.macros and edit the
 file.  Again, follow instructions on what to do.<P>
 <LI><B>Get Coastlines data sets.</B>  Because the GMT coastline files (*.cdf) are themselves created
 from more primitive forms and this process is not in CVS yet, you must install the coastline
-files separately.  If you already have a recent version (e.g., 3.3.6) on your workstation
-you can simply copy *.cdf from GMT3.3.6/share to your GMT/share.  If not, you can get the
+files separately.  If you already have a recent version (e.g., 3.4.5) on your workstation
+you can simply copy *.cdf from GMT3.4.5/share to your GMT/share.  If not, you can get the
 coastlines by anonymous ftp simply by running<br>
 <P>
 gurumake get_coast
