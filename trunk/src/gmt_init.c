@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.87 2003-04-11 22:57:15 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.88 2003-04-12 00:22:55 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -100,7 +100,7 @@ struct GMT_BACKWARD {	/* Used to ensure backwards compatibility */
 BOOLEAN GMT_force_resize = FALSE, GMT_annot_special = FALSE;
 double save_annot_size2, save_label_size, save_header_size;
 double save_annot_offset, save_annot_offset2, save_label_offset, save_header_offset, save_tick_length, save_frame_width;
-BOOLEAN GMT_getuserpath (char *stem, *path);
+BOOLEAN GMT_getuserpath (char *stem, char *path);
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 	
@@ -1938,7 +1938,7 @@ void GMT_getdefaults (char *this_file)	/* Read user's .gmtdefaults4 file and ini
 	
 }
 
-BOOLEAN GMT_getuserpath (char *stem, *path)
+BOOLEAN GMT_getuserpath (char *stem, char *path)
 {
 	/* Stem is the name of the file, e.g., .gmtdefaults4 or .gmtdefaults */
 	/* path is the full path to the file in question */
