@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.14 2004-04-20 18:29:36 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.15 2004-04-25 09:10:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -343,7 +343,7 @@ int GMT_ras_read_grd_info (char *file, struct GRD_HEADER *header)
 	
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
-		GMT_setmode (0);
+		GMT_setmode (GMT_IN);
 #endif
 		fp = GMT_stdin;
 	}
@@ -391,7 +391,7 @@ int GMT_ras_write_grd_info (char *file, struct GRD_HEADER *header)
 	if (!strcmp (file, "="))
 	{
 #ifdef SET_IO_MODE
-		GMT_setmode (1);
+		GMT_setmode (GMT_OUT);
 #endif
 		fp = GMT_stdout;
 	}
@@ -439,7 +439,7 @@ int GMT_ras_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
-		GMT_setmode (0);
+		GMT_setmode (GMT_IN);
 #endif
 		fp = GMT_stdin;
 		piping = TRUE;
@@ -532,7 +532,7 @@ int GMT_ras_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
-		GMT_setmode (1);
+		GMT_setmode (GMT_OUT);
 #endif
 		fp = GMT_stdout;
 	}
@@ -804,7 +804,7 @@ int GMT_bit_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
-		GMT_setmode (0);
+		GMT_setmode (GMT_IN);
 #endif
 		fp = GMT_stdin;
 		piping = TRUE;
@@ -900,7 +900,7 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
-		GMT_setmode (1);
+		GMT_setmode (GMT_OUT);
 #endif
 		fp = GMT_stdout;
 	}
@@ -991,7 +991,7 @@ int GMT_native_read_grd_info (char *file, struct GRD_HEADER *header)
 	
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
-		GMT_setmode (0);
+		GMT_setmode (GMT_IN);
 #endif
 		fp = GMT_stdin;
 	}
@@ -1024,7 +1024,7 @@ int GMT_native_write_grd_info (char *file, struct GRD_HEADER *header)
 	
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
-		GMT_setmode (1);
+		GMT_setmode (GMT_OUT);
 #endif
 		fp = GMT_stdout;
 	}
@@ -1069,7 +1069,7 @@ int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, dou
 
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
-		GMT_setmode (0);
+		GMT_setmode (GMT_IN);
 #endif
 		fp = GMT_stdin;
 		piping = TRUE;
@@ -1173,7 +1173,7 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 	
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
-		GMT_setmode (1);
+		GMT_setmode (GMT_OUT);
 #endif
 		fp = GMT_stdout;
 	}
@@ -1377,7 +1377,7 @@ int GMT_srf_read_grd_info (char *file, struct GRD_HEADER *header)
 	
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
-		GMT_setmode (0);
+		GMT_setmode (GMT_IN);
 #endif
 		fp = GMT_stdin;
 	}
@@ -1427,7 +1427,7 @@ int GMT_srf_write_grd_info (char *file, struct GRD_HEADER *header)
 	if (!strcmp (file, "="))
 	{
 #ifdef SET_IO_MODE
-	GMT_setmode (1);
+	GMT_setmode (GMT_OUT);
 #endif
 		fp = GMT_stdout;
 	}
@@ -1493,7 +1493,7 @@ int GMT_surfer_read_grd (char *file, struct GRD_HEADER *header, float *grid, int
 
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
-		GMT_setmode (0);
+		GMT_setmode (GMT_IN);
 #endif
 		fp = GMT_stdin;
 		piping = TRUE;
@@ -1552,7 +1552,7 @@ int GMT_surfer_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 	
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
-		GMT_setmode (1);
+		GMT_setmode (GMT_OUT);
 #endif
 		fp = GMT_stdout;
 	}
