@@ -2,7 +2,7 @@
 .SH NAME
 grdfilter \- Filter a \fI.grd\fP file in the Time domain
 .SH SYNOPSIS
-\fBgrdfilter\fP \fIinput_file.grd\fP \fB\-D\fP\fIflag\fP \fB\-F\fP\fI<type><width>\fP \fB\-G\fP\fIoutput_file.grd\fP 
+\fBgrdfilter\fP \fIinput_file.grd\fP \fB\-D\fP\fIflag\fP \fB\-F\fP\fI<type><width>\fP[\fImode\fP] \fB\-G\fP\fIoutput_file.grd\fP 
 [ \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fIr\fP] ] [ \fB\-T\fP ] [ \fB\-V\fP ] 
 .SH DESCRIPTION
 \fBgrdfilter\fP will filter a \fI.grd\fP file in the time domain using one
@@ -49,6 +49,9 @@ Non-convolution filters are:
 (\fBm\fP) Median: Returns median value.
 .br
 (\fBp\fP) Maximum likelihood probability (a mode estimator): Return modal value.
+If more than one mode is found we return their average value.  Append - or + to
+the filter width if you rather want to return the smallest or largest of the modal
+values.
 .br
 (\fBl\fP) Lower: Return the minimum of all values.
 .br
