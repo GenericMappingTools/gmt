@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.3 2001-04-25 03:34:58 pwessel Exp $
+ *	$Id: pslib.h,v 1.4 2001-07-16 00:49:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -44,6 +44,8 @@
 
 /* So unless DLL_PSL is defined, EXTERN_MSC is simply extern */
 
+#endif	/* _PSLIB_INC_H */
+
 struct EPS {    /* Holds info for eps files */
         int x0, x1, y0, y1;     /* Bounding box values in points */
 	int portrait;		/* TRUE if start of plot was portrait */
@@ -73,8 +75,6 @@ struct rasterfile {
 #define RT_FORMAT_RGB	3	/* [X]RGB instead of [X]BGR Sun rasterfile */
 #define RMT_NONE	0       /* ras_maplength is expected to be 0 */
 #define RMT_EQUAL_RGB	1       /* red[ras_maplength/3], green[], blue[] follow */
-
-#endif	/* _PSLIB_INC_H */
 
 EXTERN_MSC int ps_line(double *x, double *y, int n, int type, int close, int split);
 EXTERN_MSC int ps_plotinit(char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, int *page_width, int *rgb, struct EPS *eps);
