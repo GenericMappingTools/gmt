@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_J.sh,v 1.6 2004-04-12 21:41:36 pwessel Exp $
+#	$Id: GMT_App_J.sh,v 1.7 2004-08-18 04:53:48 pwessel Exp $
 #
 # Script to draw the impulse responses and transfer functions
 # for GMT cookbook Appendix_J.
@@ -60,7 +60,7 @@
 #
 # I tried to compute the Hankel transform numerically on the HP, and
 # found that the -lm library routines j0(x) and j1(x) give wrong answers.
-# I used an old Sun to compute "r_tr_fns" for plotting here.
+# I used an old Sun to compute "$$.r_tr_fns" for plotting here.
 # PW: I included that file into the script below
 #
 #
@@ -74,9 +74,11 @@
 # graphs of h(x) can be interpreted as also = the graphs of h(r).
 #
 #---------------------------------------------------
-# Here is the r_tr_fns file:
+# Here is the $$.r_tr_fns file:
 
-cat << EOF > r_tr_fns
+trap 'rm -f $$.*; exit 1' 1 2 3 15
+
+cat << EOF > $$.r_tr_fns
 0	1	1	1
 0.01	0.99987664	0.99994254	0.99994517
 0.02	0.9995066	0.99977019	0.9997807
@@ -581,14 +583,14 @@ cat << EOF > r_tr_fns
 EOF
 #---------------------------------------------------
 
-echo "-0.5	0" > temp
-gmtmath -T-0.5/0.5/0.01 1 = >> temp
-echo "0.5	0" >> temp
+echo "-0.5	0" > $$.tmp
+gmtmath -T-0.5/0.5/0.01 1 = >> $$.tmp
+echo "0.5	0" >> $$.tmp
 #
 #
 #
 gmtset ANNOT_FONT_PRIMARY Times-Roman ANNOT_FONT_SIZE_PRIMARY 10 HEADER_FONT Times-Roman HEADER_FONT_SIZE 14 LABEL_FONT Times-Roman LABEL_FONT_SIZE 12
-psxy temp -R-0.6/0.6/-0.1/1.1 -JX4i/2i -P -Ba0.5f0.1:"Distance (units of filter width)":/a0.2f0.1g1:"Relative amplitude":WeSn -K -W1p > GMT_imp_res.ps
+psxy $$.tmp -R-0.6/0.6/-0.1/1.1 -JX4i/2i -P -Ba0.5f0.1:"Distance (units of filter width)":/a0.2f0.1g1:"Relative amplitude":WeSn -K -W1p > GMT_imp_res.ps
 gmtmath -T-0.5/0.5/0.01 T PI 2 MUL MUL COS 1 ADD 0.5 MUL = | psxy -R -JX -O -K -W1p,- >> GMT_imp_res.ps
 gmtmath -T-0.5/0.5/0.01 T T MUL 18 MUL NEG EXP = | psxy -R -JX -O -K -W1p,. >> GMT_imp_res.ps
 pstext -R -JX -O << END >> GMT_imp_res.ps
@@ -617,10 +619,10 @@ END
 # These were pre-computed because of the need to do a numerical Hankel transform.
 # Also, I found that j0(x) and j1(x) are not reliable on some machines....
 #
-cut -f1,2 r_tr_fns | psxy -R -JX -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -W1p > GMT_r_tr_fns.ps
-cut -f1,3 r_tr_fns | psxy -R -JX -O -K -W1p,- >> GMT_r_tr_fns.ps
-cut -f1,4 r_tr_fns | psxy -R -JX -O -K -W1p,. >> GMT_r_tr_fns.ps
-pstext -R -JX -O << END >> GMT_r_tr_fns.ps
+cut -f1,2 $$.r_tr_fns | psxy -R -JX -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -W1p > GMT_$$.r_tr_fns.ps
+cut -f1,3 $$.r_tr_fns | psxy -R -JX -O -K -W1p,- >> GMT_$$.r_tr_fns.ps
+cut -f1,4 $$.r_tr_fns | psxy -R -JX -O -K -W1p,. >> GMT_$$.r_tr_fns.ps
+pstext -R -JX -O << END >> GMT_$$.r_tr_fns.ps
 2.2	0.6	9	0	4	5	Solid Line:
 2.2	0.5	9	0	4	5	Dotted Line:
 2.2	0.4	9	0	4	5	Dashed Line:
@@ -628,4 +630,4 @@ pstext -R -JX -O << END >> GMT_r_tr_fns.ps
 3.8	0.5	9	0	4	7	Gaussian
 3.8	0.4	9	0	4	7	Cosine
 END
-\rm -f temp r_tr_fns
+rm -f $$.*

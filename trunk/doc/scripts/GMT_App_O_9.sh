@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_O_9.sh,v 1.2 2004-06-24 02:07:50 pwessel Exp $
+#	$Id: GMT_App_O_9.sh,v 1.3 2004-08-18 04:53:48 pwessel Exp $
 #
 #	Makes Fig 9 for Appendix O (labeled lines)
 #
@@ -37,3 +37,4 @@ cat << EOF | pstext -R -J -O -K -WwhiteOthin -Dj0.1i/0.1i >> GMT_App_O_9.ps
 17W	28N	8	0	17	CT	Canaries
 EOF
 psxy -R -J -O /dev/null >> GMT_App_O_9.ps
+rm -f great_NY_Canaries.d great_NY_Paris.d ttt.cpt

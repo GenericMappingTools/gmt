@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_O.sh,v 1.2 2004-06-12 08:15:27 pwessel Exp $
+#	$Id: GMT_App_O.sh,v 1.3 2004-08-18 04:53:48 pwessel Exp $
 #
 #	Makes the inserts for Appendix O (labeled lines)
 #	This first script just gets the data ready
@@ -48,5 +48,3 @@ grdraster $ID $R -G$$.grd
 echo "# Geoid Extrema Separation is $dist km" > transect.d
 grdtrack $$.d -Ggeoid.grd | grdtrack -G$$.grd >> transect.d
 rm -f $$*
-
-

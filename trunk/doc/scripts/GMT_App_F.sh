@@ -1,8 +1,9 @@
 #!/bin/sh
-#	$Id: GMT_App_F.sh,v 1.7 2004-04-10 17:19:14 pwessel Exp $
+#	$Id: GMT_App_F.sh,v 1.8 2004-08-18 04:53:48 pwessel Exp $
 #
 #	Makes the octal code charts in Appendix F
 
+trap 'rm -f $$.*; exit 1' 1 2 3 15
 
 # Use the row, col values to generate the octal code needed and
 # plot it with pstext, including the header row and left column
@@ -14,7 +15,7 @@ gmtset CHAR_ENCODING Standard FRAME_PEN 1p
 # First col is row number, the remaining cols are col number in table
 # that has a printable character
 
-cat << EOF > chart.d
+cat << EOF > $$.txt
 3		1	2	3	4	5	6	7
 4	0	1	2	3	4	5	6	7
 5	0	1	2	3	4	5	6	7
@@ -49,7 +50,7 @@ EOF
 # Use the row, col values to generate the octal code needed and
 # plot it with pstext, including the header row and left column
 
-cat << EOF > f.awk
+cat << EOF > $$.awk
 BEGIN {
 	printf "0.5 2.5 10 0 4 MC octal\n"
 	for (i = 0; i < 8; i++)
@@ -66,7 +67,7 @@ BEGIN {
 }
 EOF
 
-$AWK -f f.awk chart.d > t
+$AWK -f $$.awk $$.txt > $$.d
 gmtset CHAR_ENCODING Standard+
 # Then for Standard+
 # First mark uncoded entries
@@ -180,7 +181,7 @@ psxy -R -Jx -O -K -M -B0g1 -Glightgray << EOF >> GMT_App_F_stand+.ps
 9	31
 5	31
 EOF
-pstext t -R -Jx -O -K >> GMT_App_F_stand+.ps
+pstext $$.d -R -Jx -O -K >> GMT_App_F_stand+.ps
 psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_stand+.ps
 >
 0	3
@@ -234,7 +235,7 @@ psxy -R -Jx -O -K -M -B0g1 -Glightgray << EOF >> GMT_App_F_iso+.ps
 6	19
 5	19
 EOF
-pstext t -R -Jx -O -K >> GMT_App_F_iso+.ps
+pstext $$.d -R -Jx -O -K >> GMT_App_F_iso+.ps
 psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_iso+.ps
 >
 0	3
@@ -249,7 +250,7 @@ EOF
 # First col is row number, the remaining cols are col number in table
 # that has a printable character
 
-cat << EOF > chart.d
+cat << EOF > $$.txt
 4	0	1	2	3	4	5	6	7
 5	0	1	2	3	4	5	6	7
 6	0	1	2	3	4	5	6	7
@@ -267,7 +268,7 @@ EOF
 # Use the row, col values to generate the octal code needed and
 # plot it with pstext, including the header row and left column
 
-cat << EOF > f.awk
+cat << EOF > $$.awk
 BEGIN {
 	printf "0.5 3.5 10 0 4 MC octal\n"
 	for (i = 0; i < 8; i++)
@@ -284,7 +285,7 @@ BEGIN {
 }
 EOF
 
-$AWK -f f.awk chart.d > t
+$AWK -f $$.awk $$.txt > $$.d
 psxy -R0/9/3/16 -Jx0.345i/-0.21i -B0g1 -P -K -M -Glightgray -Y2.58i << EOF > GMT_App_F_symbol.ps
 >
 8	16
@@ -292,7 +293,7 @@ psxy -R0/9/3/16 -Jx0.345i/-0.21i -B0g1 -P -K -M -Glightgray -Y2.58i << EOF > GMT
 9	15
 8	15
 EOF
-pstext t -R -Jx -O -K >> GMT_App_F_symbol.ps
+pstext $$.d -R -Jx -O -K >> GMT_App_F_symbol.ps
 psxy -R -Jx -O -K -M -W1p << EOF >> GMT_App_F_symbol.ps
 >
 0	4
@@ -302,7 +303,7 @@ psxy -R -Jx -O -K -M -W1p << EOF >> GMT_App_F_symbol.ps
 1	16
 EOF
 
-cat << EOF > chart.d
+cat << EOF > $$.txt
 20	0	1	2	3	4	5	6	7
 21	0	1	2	3	4	5	6	7
 22	0	1	2	3	4	5	6	7
@@ -317,7 +318,7 @@ cat << EOF > chart.d
 31	0	1	2	3	4	5	6
 EOF
 
-cat << EOF > f.awk
+cat << EOF > $$.awk
 {
 	printf "0.5 %lg 10 0 4 MC \\\\\\\%2.2ox\n", \$1+0.5, \$1
 	for (i = 2; i <= NF; i++)
@@ -327,7 +328,7 @@ cat << EOF > f.awk
 }
 EOF
 
-$AWK -f f.awk chart.d > t
+$AWK -f $$.awk $$.txt > $$.d
 psxy -R0/9/20/32 -Jx -B0g1 -O -K -M -Glightgray -Y-2.58i << EOF >> GMT_App_F_symbol.ps
 >
 1	21
@@ -340,7 +341,7 @@ psxy -R0/9/20/32 -Jx -B0g1 -O -K -M -Glightgray -Y-2.58i << EOF >> GMT_App_F_sym
 9	31
 8	31
 EOF
-pstext t -R -Jx -B0g1 -O -K >> GMT_App_F_symbol.ps
+pstext $$.d -R -Jx -B0g1 -O -K >> GMT_App_F_symbol.ps
 psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_symbol.ps
 >
 0	21
@@ -355,7 +356,7 @@ EOF
 # First col is row number, the remaining cols are col number in table
 # that has a printable character
 
-cat << EOF > chart.d
+cat << EOF > $$.txt
 4	0	1	2	3	4	5	6	7
 5	0	1	2	3	4	5	6	7
 6	0	1	2	3	4	5	6	7
@@ -373,7 +374,7 @@ EOF
 # Use the row, col values to generate the octal code needed and
 # plot it with pstext, including the header row and left column
 
-cat << EOF > f.awk
+cat << EOF > $$.awk
 BEGIN {
 	printf "0.5 3.5 10 0 4 MC octal\n"
 	for (i = 0; i < 8; i++)
@@ -390,7 +391,7 @@ BEGIN {
 }
 EOF
 
-$AWK -f f.awk chart.d > t
+$AWK -f $$.awk $$.txt > $$.d
 psxy -R0/9/3/16 -Jx0.345i/-0.21i -B0g1 -P -K -M -Glightgray -Y2.58i << EOF > GMT_App_F_dingbats.ps
 >
 8	16
@@ -398,7 +399,7 @@ psxy -R0/9/3/16 -Jx0.345i/-0.21i -B0g1 -P -K -M -Glightgray -Y2.58i << EOF > GMT
 9	15
 8	15
 EOF
-pstext t -R -Jx -O -K >> GMT_App_F_dingbats.ps
+pstext $$.d -R -Jx -O -K >> GMT_App_F_dingbats.ps
 psxy -R -Jx -O -K -M -W1p << EOF >> GMT_App_F_dingbats.ps
 >
 0	4
@@ -408,7 +409,7 @@ psxy -R -Jx -O -K -M -W1p << EOF >> GMT_App_F_dingbats.ps
 1	16
 EOF
 
-cat << EOF > chart.d
+cat << EOF > $$.txt
 20		1	2	3	4	5	6	7
 21	0	1	2	3	4	5	6	7
 22	0	1	2	3	4	5	6	7
@@ -423,7 +424,7 @@ cat << EOF > chart.d
 31	0	1	2	3	4	5	6
 EOF
 
-cat << EOF > f.awk
+cat << EOF > $$.awk
 {
 	printf "0.5 %lg 10 0 4 MC \\\\\\\%2.2ox\n", \$1+0.5, \$1
 	for (i = 2; i <= NF; i++)
@@ -433,7 +434,7 @@ cat << EOF > f.awk
 }
 EOF
 
-$AWK -f f.awk chart.d > t
+$AWK -f $$.awk $$.txt > $$.d
 psxy -R0/9/20/32 -Jx -B0g1 -O -K -M -Glightgray -Y-2.58i << EOF >> GMT_App_F_dingbats.ps
 >
 1	21
@@ -446,7 +447,7 @@ psxy -R0/9/20/32 -Jx -B0g1 -O -K -M -Glightgray -Y-2.58i << EOF >> GMT_App_F_din
 9	31
 8	31
 EOF
-pstext t -R -Jx -B0g1 -O -K >> GMT_App_F_dingbats.ps
+pstext $$.d -R -Jx -B0g1 -O -K >> GMT_App_F_dingbats.ps
 psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_dingbats.ps
 >
 0	21
@@ -456,6 +457,6 @@ psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_dingbats.ps
 1	32
 EOF
 
-\rm -f chart.d f.awk t
+rm -f $$.*
 
 gmtset FRAME_PEN 1.25p
