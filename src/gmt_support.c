@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.134 2004-07-19 02:36:13 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.135 2004-07-19 16:54:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4736,7 +4736,7 @@ double	GMT_get_bcr_z(struct GRD_HEADER *grd, double xx, double yy, float *data, 
 				wsum += bcr->bl_basis[vertex];
 			}
 		}
-		return ( (wsum >= bcr->threshold) ? retval / wsum : GMT_d_NaN);
+		return ( ((wsum + GMT_CONV_LIMIT - bcr->threshold) > 0.0) ? retval / wsum : GMT_d_NaN);
 	}
 	
 	/* Only get here for bicubic interpolation */
