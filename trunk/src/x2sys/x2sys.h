@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.13 2004-08-19 18:56:00 pwessel Exp $
+ *	$Id: x2sys.h,v 1.14 2004-08-20 20:43:38 pwessel Exp $
  *
  *      Copyright (c) 1999-2004 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -76,7 +76,7 @@ extern int _chmod (const char *path, int mode);
 #define X2SYS_VERSION "1.1"
 
 #define MGD77_DATA_COLS 13	/* There are 13 columns of continuously varyiing fields */
-struct MGD77_CONTROL M;
+
 /* Make sure structure sizes are multiples of 8 */
 
 struct X2SYS_TRK_INFO {			/* Structure with info about one track */
@@ -209,6 +209,7 @@ EXTERN_MSC double *x2sys_Y;
 EXTERN_MSC char *x2sys_xover_format;
 EXTERN_MSC char *x2sys_xover_header;
 EXTERN_MSC char *x2sys_header;
+EXTERN_MSC struct MGD77_CONTROL M;
 
 /* Function prototypes.  These can be accessed in user programs */
 
