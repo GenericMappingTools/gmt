@@ -41,13 +41,13 @@ by any number of data records with 6 columns (lat, lon, time, obs1, obs2, obs3).
 We will call this the "line" format.  First we create the line.def file:
 .br
 .sp
-# Define file for the line format
+\fB\fP# Define file for the line format
 .br
-#ASCII		# File is ascii
+\fB\fP#ASCII		# File is ascii
 .br
-#SKIP 2		# Skip 2 header records
+\fB\fP#SKIP 2		# Skip 2 header records
 .br
-#name	intype NaN-proxy?	NaN-proxy	scale offset oformat
+\fB\fP#name	intype NaN-proxy?	NaN-proxy	scale offset oformat
 .br
 lon	a	N	0	1	0	%10.5lf
 .br
@@ -74,7 +74,7 @@ Assuming these are geographic and that we want to keep track of the
 data distribution at a 1 x 1 degree resolution, we may run
 .br
 .sp
-\fBx2sys_init\fP LINE \fB\-V \-G \-D\fPline \fB\R\-R\fP0/360/-90/90 \fB\-I\fP1/1 
+\fBx2sys_init\fP LINE \fB\-V \-G \-D\fPline \fB\-R\fP0/360/-90/90 \fB\-I\fP1/1 
 .br
 .sp
 where we have call the tag LINE.  When x2sys tools will try to read your
@@ -82,7 +82,7 @@ line data files they will look in the file TAG_paths.txt for a list of
 all the directories to examine.  Therefore, create such a file (here
 LINE_paths.txt) and stick the full paths to your data directories there.
 All TAG-related files will be expected to be in the directory pointed
-to by $X2SYS_HOME.
+to by \fB$X2SYS_HOME\fP.
 .br
 .TP
 .B create tbf file(s)
@@ -106,7 +106,7 @@ Definition files already exist for MGD77 files, the old
 To initiate new track databases to be used with MGD77 data from NGDC, try
 .br
 .sp
-\fBx2sys_init\fP MGD77 \fB\-V \-D\fPmgd77 \fB\R\-R\fP0/360/-90/90 \fB\-I\fP1/1
+\fBx2sys_init\fP MGD77 \fB\-V \-D\fPmgd77 \fB\-R\fP0/360/-90/90 \fB\-I\fP1/1
 .br
 .sp
 and the other steps are similar.
@@ -121,13 +121,13 @@ no data.
 All that is needed is a different line.def file:
 .br
 .sp
-# Define file for the line format
+\fB\fP# Define file for the line format
 .br
-#BINARY		# File is now binary
+\fB\fP#BINARY		# File is now binary
 .br
-#SKIP 128	# Skip 128 bytes
+\fB\fP#SKIP 128	# Skip 128 bytes
 .br
-#name	intype NaN-proxy?	NaN-proxy	scale offset oformat
+\fB\fP#name	intype NaN-proxy?	NaN-proxy	scale offset oformat
 .br
 lon	d	N	0	1	0	%10.5lf
 .br

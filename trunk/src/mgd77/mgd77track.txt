@@ -39,6 +39,7 @@ Do not plot data collected after \fIstopdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss]). [
 .B \-M
 To put time/distance Marks on the track. E.g. \fBa\fP500\fBka\fP24\fBht\fP6\fBh\fP means (\fBa\fP)nnotate
 every 500 km (\fBk\fP) and 24 \fBh\fP(ours), with (\fBt\fP)ickmarks every 500 km and 6 hours.
+Alternatively you may use the modifiers \fBd\fP (days) and \fBn\fP (nautical miles).
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
