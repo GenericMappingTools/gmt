@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.7 2001-04-02 19:32:11 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.8 2001-04-02 19:32:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6664,8 +6664,6 @@ int GMT_geo_to_xy_line (double *lon, double *lat, int n)
 		GMT_pen[np++] = 3;
 	}
 	for (j = 1; j < n; j++) {
-		if (j == 350)
-			j = 350;
 		GMT_geo_to_xy (lon[j], lat[j], &this_x, &this_y);
 		this = GMT_map_outside (lon[j], lat[j]);
 		nx = 0;
