@@ -34,8 +34,8 @@ Limit range of cptfile to \fIminlimit/maxlimit\fP, and don't count data
 outside range when estimating CDF(Z).  [Default uses min and max of data.] 
 .TP
 .B \-Q
-Selects a logarithmic interpolation scheme [Default is linear].  \fB\-Qi\fP expects input z-values to be log10(z).  Assign color
-but write out z [Default].  \fB\-Qo\fP will take log10(z) first, assign colors, but write out z.
+Selects a logarithmic interpolation scheme [Default is linear].  \fB\-Qi\fP expects input z-values to be log10(z), assigns colors, and writes out z [Default].
+\fB\-Qo\fP takes log10(z) first, assigns colors, and writes out z.
 .TP
 .B \-S
 Set steps in cpt file.  Calculate entries in cptfile from \fIzstart\fP to \fIzstop\fP
