@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.57 2002-01-04 22:30:53 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.58 2002-01-05 00:22:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2103,7 +2103,7 @@ void GMT_map_symbol (double *xx, double *yy, int *sides, double *line_angles, ch
 			xsize = size * xshrink;
 			ysize = size * yshrink;
 			/* Temporarily modify meaning of F0 */
-			sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch 0.01 mul scalefont setfont} bind def %% GMT_map_symbol\0",
+			sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch 0.01 mul scalefont setfont} bind def\0",
 				GMT_font_name[gmtdefs.annot_font], xsize, ysize * tilt, ysize);
 			ps_command (cmd);
 			ps_setfont (0);
@@ -2479,12 +2479,16 @@ void GMT_map_annotate (double w, double e, double s, double n)
 			size = gmtdefs.header_font_size * gmtdefs.dpi * GMT_u2u[GMT_PT][GMT_INCH];
 			xsize = size * z_project.xshrink[0];
 			ysize = size * z_project.yshrink[0];
-			sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch 0.01 mul scalefont setfont} bind def %% GMT_map_annotate\0",
+			sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch 0.01 mul scalefont setfont} bind def\0",
 				GMT_font_name[gmtdefs.header_font], xsize, ysize * z_project.tilt[0], ysize);
+			ps_command (cmd);
+			sprintf (cmd, "/F12 {/Symbol findfont [%lg 0 %lg %lg 0 0] makefont exch 0.01 mul scalefont setfont} bind def\0",
+				xsize, ysize * z_project.tilt[0], ysize);
 			ps_command (cmd);
 			
 			ps_text (x, y, gmtdefs.header_font_size, frame_info.header, z_project.phi[0], -2, 0);
 			ps_command ("/F0 {/Helvetica Y} bind def");	/* Reset F0 */
+			ps_command ("/F12 {/Symbol Y} bind def");	/* Reset F12 */
 			ps_setfont (gmtdefs.header_font);
 		}
 		else if (!project_info.three_D) {
@@ -2572,6 +2576,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	}
 	
 	if (project_info.three_D) ps_command ("/F0 {/Helvetica Y} bind def");	/* Reset definition of F0 */
+	if (project_info.three_D) ps_command ("/F12 {/Symbol Y} bind def");	/* Reset definition of F12 */
 	
 	GMT_on_border_is_outside = FALSE;	/* Reset back to default */
 	if (project_info.region) GMT_world_map = GMT_world_map_save;
@@ -2849,6 +2854,10 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 	sprintf (cmd, "/F0 {pop /%s findfont [%lg 0 %lg %lg 0 0] makefont setfont} bind def %% GMT_xyz_axis 3D 1\0",
 		GMT_font_name[gmtdefs.annot_font], xsize, ysize * z_project.tilt[id], ysize);
 	ps_command (cmd);
+	/* Temporarily redefine /F12 for tilted text */
+	sprintf (cmd, "/F12 {/Symbol findfont [%lg 0 %lg %lg 0 0] makefont exch 0.01 mul scalefont setfont} bind def\0",
+		xsize, ysize * z_project.tilt[id], ysize);
+	ps_command (cmd);
 	ps_setfont (0);
 	justify = (id == 2) ? 2 : 10;
 	dy = sign * gmtdefs.tick_length;
@@ -2898,7 +2907,9 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 		GMT_xyz_to_xy (pp[0], pp[1], pp[2], &xp, &yp);
 		if (annotate && (id < 2 || knots[i] != project_info.z_level)) ps_text (xp, yp, gmtdefs.annot_font_size, annotation, phi, 2, 0);
 	}
-	ps_command ("/F0 {/Helvetica Y} bind def");  /* Reset F0 */
+	ps_command ("/F0 {/Helvetica Y} bind def");	/* Reset F0 */
+	ps_command ("/F12 {/Symbol Y} bind def");	/* Reset F12 */
+	
 	GMT_free ((void *)knots);
 
 	/* Now do frame tickmarks */
@@ -3249,11 +3260,11 @@ void GMT_text3d (double x, double y, double z, double fsize, int fontno, char *t
 		xsize = size * xshrink;
 		ysize = size * yshrink;
 		/* Temporarily modify meaning of F0 */
-		sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch 0.01 mul scalefont setfont} bind def %% GMT_text3d\0",
+		sprintf (cmd, "/F0 {/%s findfont [%lg 0 %lg %lg 0 0] makefont exch 0.01 mul scalefont setfont} bind def\0",
 			GMT_font_name[fontno], xsize, ysize * tilt, ysize);
 		ps_command (cmd);
 		/* Temporarily modify meaning of F12 */
-		sprintf (cmd, "/F12 {/Symbol findfont [%lg 0 %lg %lg 0 0] makefont exch 0.01 mul scalefont setfont} bind def %% GMT_text3d\0",
+		sprintf (cmd, "/F12 {/Symbol findfont [%lg 0 %lg %lg 0 0] makefont exch 0.01 mul scalefont setfont} bind def\0",
 			xsize, ysize * tilt, ysize);
 		ps_command (cmd);
                 ps_text (xt1, yt1, fsize, text, angle + baseline_shift, justify, form);
