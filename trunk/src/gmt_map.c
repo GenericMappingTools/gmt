@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.48 2004-01-11 23:04:56 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.49 2004-01-13 01:53:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5627,7 +5627,7 @@ int GMT_great_circle_intersection (double A[], double B[], double C[], double X[
 	 * between A,B or outside.
 	 */
 
-	double P[3], E[3], cos_AB, cos_test, cos_dist;
+	double P[3], E[3], cos_AB, cos_test;
 	
 	GMT_cross3v (A, B, P);			/* Get pole position of plane through A and B (and origin O) */
 	GMT_normalize3v (P);			/* Make sure P has unit length */
@@ -8190,7 +8190,7 @@ void GMT_ECEF_inverse (double in[], double out[])
 	/* Convert ECEF coordinates to geodetic lon, lat, height given the datum parameters.
 	 * GMT_datum.from is always the ellipsoid to use */
 	
-	double in_p[3], sin_lon, cos_lon, sin_lat, cos_lat, N, p, theta, sin_theta, cos_theta;
+	double in_p[3], sin_lat, cos_lat, N, p, theta, sin_theta, cos_theta;
 	int i;
 	
 	/* First remove the xyz shifts, us in_p to avoid changing in */

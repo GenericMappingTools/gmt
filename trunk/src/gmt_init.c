@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.99 2004-01-09 00:31:09 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.100 2004-01-13 01:53:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -59,7 +59,6 @@
 #define USER_MEDIA_OFFSET 1000
 
 int GMT_setparameter(char *keyword, char *value);
-int GMT_get_ellipsoid(char *name);
 int GMT_load_user_media (void);
 BOOLEAN true_false_or_error (char *value, int *answer);
 void GMT_get_history(int argc, char **argv);
@@ -2224,7 +2223,7 @@ int GMT_get_ellipsoid (char *name)
 
 int GMT_get_datum (char *name)
 {
-	int i, n;
+	int i;
 	
 	for (i = 0; i < N_DATUMS && strcmp (name, gmtdefs.datum[i].name); i++);
 	if (i == N_DATUMS) return (-1);	/* Error */

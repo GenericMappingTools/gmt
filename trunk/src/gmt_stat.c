@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.14 2004-01-02 22:45:13 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.15 2004-01-13 01:53:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1549,6 +1549,7 @@ double GMT_tcrit (double alpha, double nu)
 {
 	/* Critical values for Student t-distribution */
 
+	int NU;
 	BOOLEAN done = FALSE;
 	double t_low, t_high, t_mid, p_high, p_mid, p, sign;
 	
@@ -1562,17 +1563,18 @@ double GMT_tcrit (double alpha, double nu)
 	}
 	t_low = GMT_zcrit (alpha);
 	t_high = 5.0;
-	GMT_student_t_a (t_high, nu, &p_high);
+	NU = irint(nu);
+	GMT_student_t_a (t_high, NU, &p_high);
 	while (p_high < p) {	/* Must pick higher starting point */
 		t_high *= 2.0;
-		GMT_student_t_a (t_high, nu, &p_high);
+		GMT_student_t_a (t_high, NU, &p_high);
 	}
 	
 	/* Now, (t_low, p_low) and (t_high, p_high) are bracketing the desired (t,p) */
 	
 	while (!done) {
 		t_mid = 0.5 * (t_low + t_high);
-		GMT_student_t_a (t_mid, nu, &p_mid);
+		GMT_student_t_a (t_mid, NU, &p_mid);
 		if (fabs (p_mid - p) < GMT_CONV_LIMIT) {
 			done = TRUE;
 		}
@@ -1624,6 +1626,7 @@ double GMT_Fcrit (double alpha, double nu1, double nu2)
 {
 	/* Critical values for F-distribution */
 
+	int NU1, NU2;
 	BOOLEAN done = FALSE;
 	double F_low, F_high, F_mid, p_high, p_mid, p, chisq1, chisq2;
 	void F_to_ch1_ch2 (double F, double nu1, double nu2, double *chisq1, double *chisq2);
@@ -1632,11 +1635,13 @@ double GMT_Fcrit (double alpha, double nu1, double nu2)
 	p = 1.0 - alpha;
 	F_low = 0.0;
 	F_to_ch1_ch2 (F_high, nu1, nu2, &chisq1, &chisq2);
-	GMT_f_q (chisq1, nu1, chisq2, nu2, &p_high);
+	NU1 = irint (nu1);
+	NU2 = irint (nu2);
+	GMT_f_q (chisq1, NU1, chisq2, NU2, &p_high);
 	while (p_high > p) {	/* Must pick higher starting point */
 		F_high *= 2.0;
 		F_to_ch1_ch2 (F_high, nu1, nu2, &chisq1, &chisq2);
-		GMT_f_q (chisq1, nu1, chisq2, nu2, &p_high);
+		GMT_f_q (chisq1, NU1, chisq2, NU2, &p_high);
 	}
 	
 	/* Now, (F_low, p_low) and (F_high, p_high) are bracketing the desired (F,p) */
@@ -1644,7 +1649,7 @@ double GMT_Fcrit (double alpha, double nu1, double nu2)
 	while (!done) {
 		F_mid = 0.5 * (F_low + F_high);
 		F_to_ch1_ch2 (F_mid, nu1, nu2, &chisq1, &chisq2);
-		GMT_f_q (chisq1, nu1, chisq2, nu2, &p_mid);
+		GMT_f_q (chisq1, NU1, chisq2, NU2, &p_mid);
 		if (fabs (p_mid - p) < GMT_CONV_LIMIT) {
 			done = TRUE;
 		}

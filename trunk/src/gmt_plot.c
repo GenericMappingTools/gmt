@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.88 2004-01-12 18:57:37 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.89 2004-01-13 01:53:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -97,7 +97,6 @@ void GMT_basemap_3D(int mode);
 void GMT_xyz_axis3D(int axis_no, char axis, struct PLOT_AXIS *A, int annotate);
 int GMT_coordinate_array (double min, double max, struct PLOT_AXIS_ITEM *T, double **array);
 int GMT_linear_array (double min, double max, double delta, double **array);
-int GMT_log_array (double min, double max, double delta, double **array);
 int GMT_pow_array (double min, double max, double delta, int x_or_y, double **array);
 int GMT_grid_clip_path (struct GRD_HEADER *h, double **x, double **y, BOOLEAN *donut);
 void GMT_wesn_map_boundary (double w, double e, double s, double n);
@@ -507,8 +506,6 @@ void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct PLOT_
 void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct PLOT_AXIS_ITEM *T, double coord)
 {
 	/* Returns the formatted annotation string for the non-geographic axes */
-	
-	double tmp;
 	
 	switch (frame_info.axis[T->parent].type) {
 		case LINEAR:
@@ -1052,7 +1049,7 @@ int GMT_time_array (double min, double max, struct PLOT_AXIS_ITEM *T, double **a
 	if (T->interval == 0.0) return (0);
 	val = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_time_array");
 	I.unit = T->unit;
-	I.step = T->interval;
+	I.step = (int)T->interval;
 	interval = (T->id == 2 || T->id == 3);	/* Only for I/i axis items */
 	GMT_moment_interval (&I, min, TRUE);	/* First time we pass TRUE for initialization */
 	while (I.dt[0] <= max) {		/* As long as we are not gone way past the end time */
@@ -3276,7 +3273,7 @@ void GMT_text3d (double x, double y, double z, double fsize, int fontno, char *t
 	}
 }
 
-void GMT_textbox3d (double x, double y, double z, int size, int font, char *label, double angle, int just, BOOLEAN outline, double dx, double dy, int rgb[])
+void GMT_textbox3d (double x, double y, double z, double size, int font, char *label, double angle, int just, BOOLEAN outline, double dx, double dy, int rgb[])
 {
         if (project_info.three_D) {
         	int i, len, ndig = 0, ndash = 0, nperiod = 0;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.57 2004-01-02 22:45:13 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.58 2004-01-13 01:53:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1029,7 +1029,7 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode)
 		S->compact = TRUE;
 		i++;
 	}
-	for (order = 0; i < strlen (text); i++) {
+	for (order = 0; i < (int)strlen (text); i++) {
 		switch (text[i]) {
 			case 'y':	/* Year */
 				if (S->item_pos[0] < 0)		/* First time we encounter a y */
