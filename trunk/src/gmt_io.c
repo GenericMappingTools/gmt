@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.35 2002-01-04 21:18:51 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.36 2002-01-13 23:00:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1651,11 +1651,11 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 			strcat (GMT_plot_format[2][0], fmt);
 			strcat (GMT_plot_format[2][1], fmt);
 		}
-	}
-
-	/* Finally add %c for the W,E,S,N char (or NULL) */
+		
+		/* Finally add %c for the W,E,S,N char (or NULL) */
 	
-	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) strcat (GMT_plot_format[i][j], "%c\0");
+		for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) strcat (GMT_plot_format[i][j], "%c\0");
+	}
 }
 
 int GMT_decode_coltype (char *arg)
