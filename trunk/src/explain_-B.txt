@@ -8,15 +8,15 @@ use \fBA\fP, \fBI\fP, and \fBi\fP):
 .sp
 	\fBa\fP: (upper) tick anotation stride (upper means anotations closest to the axis)
 .br
-	f: (upper) frame tick stride.
+	\fBf\fP: (upper) frame tick stride.
 .br
-	g: grid line stride.
+	\fBg\fP: grid line stride.
 .br
-	A: lower tick anotation stride (lower means anotations farthest from the axis).\
+	\fBA\fP: lower tick anotation stride (lower means anotations farthest from the axis).
 .br
-	i: upper interval anotation stride (interval means anotation is centered on the interval).
+	\fBi\fP: upper interval anotation stride (interval means anotation is centered on the interval).
 .br
-	I: lower interval anotation stride.
+	\fBI\fP: lower interval anotation stride.
 .br
 	   i or I may be immediately followed by \fImod\fP which controls interval anotations:
 .br
@@ -28,7 +28,7 @@ use \fBA\fP, \fBI\fP, and \fBi\fP):
 .br
 	   Use F, A, C to force upper case anotation.
 .br
-	If \fBitem\fP is not given, it defaults to a (upper tick anotations).
+	If \fBitem\fP is not given, it defaults to \fBa\fP (upper tick anotations).
 .br
 	If frame tick stride is not set, it is assumed to be the same as the upper annotation stride.
 .br
