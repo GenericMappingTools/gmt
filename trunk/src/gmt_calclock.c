@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.10 2001-08-27 17:22:01 wsmith Exp $
+ *	$Id: gmt_calclock.c,v 1.11 2001-08-27 18:34:02 wsmith Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -664,18 +664,19 @@ int	GMT_verify_time_step (int step, char unit) {
 			break;
 		case 'd':
 		case 'D':
-			/* If step is longer than 31 it is probably an error. */
-			if (step > 31) {
-				fprintf (stderr, "GMT SYNTAX ERROR:  time steps in days of the month must be <= 31\n");
-				retval = -1;
+			/* The letter d is used for both days of the month and days of the (gregorian) year */
+			if (GMT_plot_calclock.date.day_of_year) {
+				if (step > 365) {	/* This is probably an error.  */
+					fprintf (stderr, "GMT SYNTAX ERROR:  time steps in year days must be <= 365\n");
+					retval = -1;
+				}
 			}
-			break;
-		case 'j':
-		case 'J':
-			/* If step is longer than 365 it is probably an error. */
-			if (step > 365) {
-				fprintf (stderr, "GMT SYNTAX ERROR:  time steps in year days must be <= 365\n");
-				retval = -1;
+			else {
+				/* If step is longer than 31 it is probably an error. */
+				if (step > 31) {
+					fprintf (stderr, "GMT SYNTAX ERROR:  time steps in days of the month must be <= 31\n");
+					retval = -1;
+				}
 			}
 			break;
 		case 'k':
@@ -786,14 +787,38 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 		case 'd':
 		case 'D':
 			if (p->step == 1) {
-				/* Here we want every day (of the Gregorian month)
+				/* Here we want every day (of the Gregorian month or year)
 					so the stepping is easy.  */
 				k = 86400;
 				GMT_small_moment_interval (p, k, init);
 			}
+			else if (GMT_plot_calclock.date.day_of_year) {
+				/* Select every n'th day of the Gregorian year  */
+				if (init) {
+					/* Simple mod works on positive ints  */
+					k = (p->cc[0].day_y - 1)%(p->step);
+					if (k) {
+						p->rd[0] -= k;	/* Floor to n'th day  */
+						GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
+					}
+					p->sd[0] = 0.0;
+					p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
+				}
+				kyd = (GMT_is_gleap (p->cc[0].year)) ? 366 : 365;
+				k = p->cc[0].day_y + p->step;
+				if (k > kyd) {
+					/* Go to 1st day of next year:  */
+					p->rd[1] = GMT_rd_from_gymd (p->cc[0].year+1, 1, 1);
+				}
+				else {
+					p->rd[1] = p->rd[0] + p->step;
+				}
+				GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
+				p->sd[1] = 0.0;
+				p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
+			}
 			else {
-				/* Here we have code to select every n'th day of 
-					the Gregorian months  */
+				/* Select every n'th day of the Gregorian month  */
 				if (init) {
 					/* Simple mod works on positive ints  */
 					k = (p->cc[0].day_m - 1)%(p->step);
@@ -827,41 +852,6 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 			}
 			break;
 		
-		case 'j':
-		case 'J':
-			if (p->step == 1) {
-				/* Here we want every day (of the Gregorian year)
-					so the stepping is easy.  */
-				k = 86400;
-				GMT_small_moment_interval (p, k, init);
-			}
-			else {
-				/* Use n'th day of the year.  */
-				if (init) {
-					/* Simple mod works on positive ints  */
-					k = (p->cc[0].day_y - 1)%(p->step);
-					if (k) {
-						p->rd[0] -= k;	/* Floor to n'th day  */
-						GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
-					}
-					p->sd[0] = 0.0;
-					p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
-				}
-				kyd = (GMT_is_gleap (p->cc[0].year)) ? 366 : 365;
-				k = p->cc[0].day_y + p->step;
-				if (k > kyd) {
-					/* Go to 1st day of next year:  */
-					p->rd[1] = GMT_rd_from_gymd (p->cc[0].year+1, 1, 1);
-				}
-				else {
-					p->rd[1] = p->rd[0] + p->step;
-				}
-				GMT_gcal_from_rd (p->rd[1], &(p->cc[1]) );
-				p->sd[1] = 0.0;
-				p->dt[1] = GMT_rdc2dt (p->rd[1], p->sd[1]);
-			}
-			break;
-			
 		case 'k':
 		case 'K':
 			/* Here we need to know: how do you define the n'th day 
@@ -873,7 +863,7 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 			base, base+n, base+2n, etc. until base+kn would equal day 7 
 			or more. When that happens, we truncate to start of next week.
 			*/
-			kws = (want_iso) ? 1 : gmtdefs.time_week_start;
+			kws = (GMT__plot_calclock.date.iso_calendar) ? 1 : gmtdefs.time_week_start;
 			if (init) {
 				/* Floor to the n'th day of the week from the week start:  */
 				/* a simple mod will work here since both are positive ints  */
@@ -965,7 +955,7 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 		case 'Y':
 			if (init) {
 				/* Floor to the step'th year, either ISO or Gregorian, depending on... */
-				if (want_iso) {
+				if (GMT__plot_calclock.date.iso_calendar) {
 					p->sd[0] = 0.0;
 					if (p->step > 1) p->cc[0].iso_y -= GMT_cal_imod (p->cc[0].iso_y, p->step);
 					p->rd[0] = GMT_rd_from_iywd (p->cc[0].iso_y, 1, 1);
@@ -979,7 +969,7 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 				p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
 			}
 			/* Now step ahead step years, depending on calendar type:  */
-			if (want_iso) {
+			if (GMT__plot_calclock.date.iso_calendar) {
 				p->cc[1].iso_y = p->cc[0].iso_y + p->step;
 				p->rd[1] = GMT_rd_from_iywd (p->cc[1].iso_y, 1, 1);
 			}
