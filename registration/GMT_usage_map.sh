@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.3 2001-02-09 00:44:10 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.4 2001-02-09 20:15:20 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -35,7 +35,7 @@ MAIL=/home/aa1/wessel/nsmail/GMT.sbd/Registrations	# Where incoming registration
 REGHOME=/home/koolina/wessel/GMTdev/GMT/registration	# Where to do the work
 
 cd $REGHOME
-if [ ! $?GMTHOME ]; then	# Must set environment
+if [ "X$GMTHOME" = "X" ]; then	# Must set environment
 	export GMTHOME=/opt/gmt
 	export PATH=$GMTHOME/bin:$PATH
 fi
