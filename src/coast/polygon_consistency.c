@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.3 2004-09-10 04:28:46 pwessel Exp $
+ *	$Id: polygon_consistency.c,v 1.4 2004-09-10 17:13:44 pwessel Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -13,8 +13,8 @@ double lon[N_LONGEST], lat[N_LONGEST];
 main (int argc, char **argv)
 {
 	FILE	*fp;
-	int	i, n_id, this_n, nx, n_x_problems, n_c_problems, n_r_problems, ix0, iy0;
-	int w, e, s, n, ixmin, ixmax, iymin, iymax, ANTARCTICA;
+	int	i, n_id, nd, this_n, nx, n_x_problems, n_c_problems, n_r_problems, n_d_problems, ix0, iy0;
+	int w, e, s, n, ixmin, ixmax, iymin, iymax, ANTARCTICA, last_x, last_y;
 	struct GMT_XSEGMENT *ylist;
 	struct GMT_XOVER XC;
 	struct GMT3_POLY h;
@@ -27,7 +27,7 @@ main (int argc, char **argv)
 
 	fp = fopen(argv[1], "r");
 	
-	n_id = n_c_problems = n_x_problems = n_r_problems = 0;
+	n_id = n_c_problems = n_x_problems = n_r_problems = n_d_problems = 0;
 	while (pol_readheader (&h, fp) == 1) {
 		ANTARCTICA = (fabs (h.east - h.west) == 360.0);
 		ixmin = iymin = M360;
@@ -36,7 +36,7 @@ main (int argc, char **argv)
 		e = irint (h.east * 1e6);
 		s = irint (h.south * 1e6);
 		n = irint (h.north * 1e6);
-		for (i = 0; i < h.n; i++) {
+		for (i = nd = 0; i < h.n; i++) {
 			if (pol_fread (&p, 1, fp) != 1) {
 				fprintf(stderr,"polygon_consistency:  ERROR  reading file.\n");
 				exit(-1);
@@ -52,8 +52,15 @@ main (int argc, char **argv)
 			if (p.x > ixmax) ixmax = p.x;
 			if (p.y < iymin) iymin = p.y;
 			if (p.y > iymax) iymax = p.y;
+			if (i > 0 && last_x == p.x && last_y == p.y) {
+				printf ("%d\tduplicate point line %d\n", h.id, i);
+				nd++;
+			}
+			last_x = p.x;
+			last_y = p.y;
 		}
 		
+		if (nd) n_d_problems++;
 		if (ANTARCTICA) iymin = -M90;
 		if (! (p.x == ix0 && p.y == iy0)) {
 			printf ("%d\tnot closed\n", h.id);
@@ -79,8 +86,8 @@ main (int argc, char **argv)
 		n_id++;
 	}
 	
-	fprintf (stderr, "polygon_consistency: Got %d polygons from file %s. %d has closure problems. %d has crossing problems. %d has region problems\n",
-		n_id, argv[1], n_c_problems, n_x_problems, n_r_problems);
+	fprintf (stderr, "polygon_consistency: Got %d polygons from file %s. %d has closure problems. %d has crossing problems. %d has region problems. %d has duplicate points\n",
+		n_id, argv[1], n_c_problems, n_x_problems, n_r_problems, n_d_problems);
 
 	fclose(fp);
 
