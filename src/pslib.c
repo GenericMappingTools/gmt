@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.40 2002-02-23 03:39:58 pwessel Exp $
+ *	$Id: pslib.c,v 1.41 2002-05-09 17:23:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1270,6 +1270,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 			return (-1);
 		}
 	}
+	memset ((void *)ps.font_used, 0, N_FONTS * sizeof (BOOLEAN));
 
 #ifdef WIN32
 	/* 
@@ -2503,13 +2504,15 @@ void ps_encode_font (int font_no)
 {
 	if (ps.encoding == 0) return;	/* Already have StandardEncoding by default */
 	/* Reencode fonts except for Symbol, Dingbats, and the Japanese fonts */
-	if (font_no >= PS_FIRST_JAPANESE_FONT) return;
+	if (font_no < 0 || font_no >= PS_FIRST_JAPANESE_FONT) return;
+	if (ps.font_used[font_no]) return;	/* Already reencoded */
 	if (!(strcmp (ps_font_name[font_no], "Symbol") && strcmp (ps_font_name[font_no], "ZapfDingbats"))) return;
 
 	/* Reencode fonts with Standard+ or ISOLatin1[+] encodings */
 	fprintf (ps.fp, "PSL_font_encode %d get 0 eq { %% Set this font\n", font_no);
 	fprintf (ps.fp, "\t%s_Encoding /%s /%s PSL_reencode\n", ps.encoding, ps_font_name[font_no], ps_font_name[font_no]);
 	fprintf (ps.fp, "\tPSL_font_encode %d 1 put\n} if\n", font_no);
+	ps.font_used[font_no] = TRUE;
 }
 
 void init_font_encoding (struct EPS *eps)
@@ -2543,7 +2546,7 @@ char *ps_prepare_text (char *text)
 	allocated by string */
 {
 	char *string;
-	int i=0, j=0;
+	int i=0, j=0, font;
 	int he = 0;		/* GMT Historical Encoding (if any) */
 
 	if (strcmp ("Standard", ps.encoding) == 0)
@@ -2593,6 +2596,15 @@ char *ps_prepare_text (char *text)
 
 					strcat (string, "\\100"); j += 4; i++;
 					break;
+				case '%':	/* Font switcher */
+					if (isdigit (text[i+1])) {	/* Got a font */
+						font = atoi (&text[i+1]);
+						ps_encode_font (font);
+					}
+					string[j++] = '@';
+					string[j++] = text[i++];	/* Just copy over the rest */
+					while (text[i] != '%') string[j++] = text[i++];
+					break; 
 				default:
 					string[j++] = '@';
 					string[j++] = text[i++];
