@@ -13,7 +13,13 @@ Only report pairs where at least one of the legs are present in the \fIlegfile\f
 .TP
 .B \-R
 The region of interrest.  [Default is world]
-.SH   
+.SH BEWARE
 The \fB\-L\fP option is useful when one wants to check out a handful of new cruises. Obviously we
 only need to compute COEs for the pairs that involve one or two of the new cruises, since all the
 other combinations have already been done.
+.SH SEE ALSO
+.IR gmt (GMTMANSECTION),
+.IR x_system (GMTMANSECTION)
+.SH REFERENCES
+Wessel, P. XOVER: A Cross-over Error Detector for Track Data,
+\fIComputers & Geosciences, 15\fP, 333-346.

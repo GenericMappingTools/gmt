@@ -49,7 +49,7 @@ No space between the option flag and the associated arguments.
 .TP
 .B \-C
 Sets the clearance between the text and the surrounding box [15%].
-Only used if \fB\-W\fP is specified.  Append the unit you want (\fBc\fPm, \fBi\fPnch, \fBm\Peter.
+Only used if \fB\-W\fP is specified.  Append the unit you want (\fBc\fPm, \fBi\fPnch, \fBm\fPeter.
 or \fBp\fPoint; if not given we consult MEASURE_UNIT) or % for a percentage of the font size.
 .TP
 .B \-D

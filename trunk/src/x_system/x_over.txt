@@ -39,7 +39,7 @@ Specify how many points to use in the interpolation [Default is 6].
 .B \-V
 Verbose, report the number of cross-overs for this pair of legs.
 .br
-.SH   
+.SH BEWARE
 The COEs found are printed out to standard output in ASCII format. The first record contains the
 leg names and their start year, whereas subsequent records have the data for each COE
 encountered. The fields written out are lat, lon, time along track #1, time along track #2,
