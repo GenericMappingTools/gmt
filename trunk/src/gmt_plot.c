@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.7 2001-04-17 23:48:36 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.8 2001-04-18 00:09:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -570,7 +570,7 @@ void GMT_y_axis (double x0, double y0, double length, double val0, double val1, 
 	axis_scale = length / (v1 - v0);
 	
 	tmp_offset = GMT_get_anot_offset (&flip);
-	if (unit[0] && gmtdefs.y_axis_type == 0) {	/* Accomodate extra width of anotation */
+	if (unit && unit[0] && gmtdefs.y_axis_type == 0) {	/* Accomodate extra width of anotation */
 		int i, u_len, n_comp, len;
 		i = u_len = n_comp = 0;
 		len = strlen (unit);
