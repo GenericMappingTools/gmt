@@ -31,7 +31,7 @@ search, i.e., \fIsectors\fP = 4].  Note that only the nearest value per sector e
 .TP
 .B \-S
 Sets the \fIsearch_radius\fP in same units as the grid spacing; append \fBm\fP to indicate minutes
-or \fBc\fP to indicate seconds.  Append \fBk\fP to indicated km (implies \fB\-R \-I\fP are in degrees);
+or \fBc\fP to indicate seconds.  Append \fBk\fP to indicated km (implies \fB\-R\fP and \fB\-I\fP are in degrees);
 use uppercase \fBK\fP if distances should be calculated using great circles [\fBk\fP uses flat Earth].
 .SH OPTIONS
 .TP
@@ -60,16 +60,16 @@ with the geometrical weight factor to determine the actual weights used in the c
 .SH EXAMPLES
 .sp
 To create a gridded data set from the file seaMARCII_bathy.lon_lat_z using a 0.5 min grid,
-a 5 km search radius, using an octant search, and set empty nodes to -9999, try
+a 5 km search radius, using an octant search, and set empty nodes to -9999:
 .sp
-nearneighbor seaMARCII_bathy.lon_lat_z \fB\-R\fP242/244/-22/-20 \fB\-I\fP.5\fBm \-E\fP-9999 \fB\-G\fPbathymetry.grd
+\fBnearneighbor\fP seaMARCII_bathy.lon_lat_z \fB\-R\fP242/244/-22/-20 \fB\-I\fP.5\fBm \-E\fP-9999 \fB\-G\fPbathymetry.grd
 \fB\-S\fP5k \fB\-N\fP8
 .br
 .sp
 To make a global gridded file from the data in geoid.xyz using a 1 degree grid,
-a 200 km search radius, spherical distances, using an quadrant search, and set empty nodes to NaN, try
+a 200 km search radius, spherical distances, using an quadrant search, and set empty nodes to NaN, run
 .sp
-nearneighbor geoid.xyz \fB\-R\fP0/360/-90/90 \fB\-I\fP1 \fB\-L\fPg \fB\-G\fPgeoid.grd
+\fBnearneighbor\fP geoid.xyz \fB\-R\fP0/360/-90/90 \fB\-I\fP1 \fB\-L\fPg \fB\-G\fPgeoid.grd
 \fB\-S\fP20K \fB\-N\fP4
 .SH "SEE ALSO"
 .IR blockmean (l),

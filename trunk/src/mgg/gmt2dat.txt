@@ -4,14 +4,14 @@ gmt2dat \- Convert a binary gmt file to an ASCII file
 .SH SYNOPSIS
 \fBgmt2dat\fP \fIgmtfile\fP
 .SH DESCRIPTION
-gmt2dat reads a <legid>.gmt file and converts it to a regular ASCII text file that can be edited
+\fBgmt2dat\fP reads a <legid>.gmt file and converts it to a regular ASCII text file that can be edited
 using the text editor. The ASCII text is sent to standard output and can be redirected to a
-file/program/printer etc.
+file/program/printer, etc.
 .SH EXAMPLES
-To edit the data in c2104.gmt, try
+To convert c2104.gmt to ASCII:
 .br
 .sp
-gmt2dat c2104.gmt > c2104.ascii
+\fBgmt2dat\fP c2104.gmt > c2104.ascii
 .SH "SEE ALSO"
 .IR dat2gmt (l),
 .IR gmt (l)

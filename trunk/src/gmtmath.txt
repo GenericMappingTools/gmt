@@ -24,7 +24,7 @@ the output is sent to stdout.
 .B OPERATORS
 Choose among the following operators:
 .br
-Operator		n_args	Returns
+Operator	n_args	Returns
 .br
 .sp
 #include "gmtmath_man.i"
@@ -58,7 +58,7 @@ Quick mode for scalar calculation.  Shorthand for \fB\-Ca \-N\fP1/0 \fB\-T\fP0/0
 .TP
 .B \-S
 Only report the first row of the results [Default is all rows].  This is useful if
-you have computed a statistic (say the MODE) and only want to report a single number
+you have computed a statistic (say the \fBMODE\fP) and only want to report a single number
 instead of numerous records with identical values.
 .TP
 .B \-T
@@ -81,28 +81,33 @@ boundary conditions.
 .SH EXAMPLES
 To take log10 of the average of 2 data files, use
 .br
-	gmtmath file1.d file2.d \fBADD\fP 0.5 \fBMUL LOG10 =\fP file3.d
+.sp
+\fBgmtmath\fP file1.d file2.d \fBADD\fP 0.5 \fBMUL LOG10 =\fP file3.d
 .br
 .sp
 Given the file samples.d, which holds seafloor ages in m.y. and seafloor depth in m, use the relation
 depth(in m) = 2500 + 350 * sqrt (age) to print the depth anomalies:
 .br
-	gmtmath samples.d T \fBSQRT\fP 350 \fBMUL \fP2500 \fBADD SUB =\fP | lpr
+.sp
+\fBgmtmath\fP samples.d T \fBSQRT\fP 350 \fBMUL \fP2500 \fBADD SUB =\fP | lpr
 .br
 .sp
 To take the average of columns 1 and 4-6 in the three data sets sizes.1, sizes.2, and sizes.3, use
 .br
-	gmtmath \fB\-C\fP1,4-6 sizes.1 sizes.2 \fBADD\fP sizes.3 \fBADD 3 DIV =\fP ave.d
+.sp
+\fBgmtmath\fP \fB\-C\fP1,4-6 sizes.1 sizes.2 \fBADD\fP sizes.3 \fBADD 3 DIV =\fP ave.d
 .br
 .sp
 To take the 1-column data set ages.d and calculate the modal value and assign it to a variable, try
 .br
-	set mode_age = `gmtmath \fB\-S \-T\fP ages.d \fBMODE\fP \fB=\fP`
+.sp
+set mode_age = `\fBgmtmath\fP \fB\-S \-T\fP ages.d \fBMODE\fP \fB=\fP`
 .br
 .sp
-To evaluate the dilog(x) function for coordinates given in the file t.d, try
+To evaluate the dilog(x) function for coordinates given in the file t.d:
 .br
-	gmtmath \-T\fPt.d \fBT DILOG\fP \fB=\fP dilog.d
+.sp
+\fBgmtmath\fP \fB\-T\fPt.d \fBT DILOG\fP \fB=\fP dilog.d
 .br
 .sp
 To use gmtmath as a RPN Hewlett-Packard calculator on scalars (i.e., no input
@@ -111,7 +116,7 @@ As an example, we will calculate the value of Kei (((1 + 1.75)/2.2) + cos (60))
 and store the result in the shell variable z:
 .br
 .sp
-	set z = `gmtmath \fB\-Q\fP 1 1.75 \fBADD\fP 2.2 \fBDIV\fP 60 \fBCOSD ADD KEI =\fP`
+set z = `\fBgmtmath\fP \fB\-Q\fP 1 1.75 \fBADD\fP 2.2 \fBDIV\fP 60 \fBCOSD ADD KEI =\fP`
 .br
 .sp
 To use \fBgmtmath\fP as a general least squares equation solver, imagine that the current table is the
@@ -122,7 +127,8 @@ like to fit a the model y(t) = a + b*t + c*H(t-t0), where H is the Heaviside ste
 Then, you need a 4-column augmented table loaded with t in column 1 and your observed y(t) in column 3.
 The calculation becomes
 .br
-	gmtmath \fB\-N\fP4/1 \fB\-A\fPty.d -C0 1 ADD -C2 1.55 STEPT ADD -Ca LSQFIT = solution.d
+.sp
+\fBgmtmath\fP \fB\-N\fP4/1 \fB\-A\fPty.d -C0 1 ADD -C2 1.55 STEPT ADD -Ca LSQFIT = solution.d
 .br
 Note we use the \fB\-C\fP option to select which columns we are working on, then make active all the
 columns we need (here all of them, with \fB\-Ca\fP) before calling \fBLSQFIT\fP.  The second and forth
@@ -130,13 +136,14 @@ columns are preloaded with t and y(t), respectively, the other columns are zero.
 a precalculated table with the augmented matrix [ A | b ] in a file (say lsqsys.d), the least squares
 solution is simply
 .br
-	gmtmath \fB\-T\fP lsqsys.d LSQFIT = solution.d
+.sp
+\fBgmtmath\fP \fB\-T\fP lsqsys.d LSQFIT = solution.d
 .SH BUGS
 Files that have the same name as some operators, e.g., ADD, SIGN, =, etc. cannot be read
 and must not be present in the current directory.  Piping of files is not allowed on input, but the output can be sent to stdout.
 The stack limit is hard-wired to 50.
-All functions expecting a positive radius (e.g., log, kei, etc.) are passed the
-absolute value of their argument.  The DDT and D2DT2 functions only works on regularly spaced data.
+All functions expecting a positive radius (e.g., \fBLOG\fP, \fBKEI\fP, etc.) are passed the
+absolute value of their argument.  The \fBDDT\fP and \fBD2DT2\fP functions only work on regularly spaced data.
 .SH REFERENCES
 Abramowitz, M., and I. A. Stegun, 1964, \fIHandbook of Mathematical
 Functions\fP, Applied Mathematics Series, vol. 55, Dover, New York.

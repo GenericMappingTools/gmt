@@ -18,13 +18,13 @@ use \fBA\fP, \fBI\fP, and \fBi\fP):
 .br
 	\fBI\fP: lower interval annotation stride.
 .br
-	   i or I may be immediately followed by \fImod\fP which controls interval annotations:
+	   \fBi\fP or \fBI\fP may be immediately followed by \fImod\fP which controls interval annotations:
 .br
-	     f: Annotate full calendar-item name (e.g., "January").
+         f: Annotate full calendar-item name (e.g., "January").
 .br
-	     a: Annotate abbreviated calendar-item name (e.g., "Jan").
+         a: Annotate abbreviated calendar-item name (e.g., "Jan").
 .br
-	     c: Annotate 1-char calendar-item name (e.g., "J").
+         c: Annotate 1-char calendar-item name (e.g., "J").
 .br
 	   Use F, A, C to force upper case annotation.
 .br
@@ -33,48 +33,50 @@ use \fBA\fP, \fBI\fP, and \fBi\fP):
 	If frame tick stride is not set, it is assumed to be the same as the upper annotation stride.
 .br
 .sp
-	The optional \fBunit\fP modifies \fIstride\fP accordingly.  For maps, you may use
+	The optional \fBunit\fP modifies \fIstride\fP accordingly.
 .br
-	  m: arc minutes [Default unit is degree].
+	For maps, you may use
 .br
-	  c: arc seconds.
+        m: arc minutes [Default unit is degree].
+.br
+        c: arc seconds.
 .br
 	For time axes, several units are recognized:
 .br
-	  Y: year - plot using all 4 digits.
+        Y: year - plot using all 4 digits.
 .br
-	  y: year - plot only last 2 digits.
+        y: year - plot only last 2 digits.
 .br
-	  O: month - format annotation according to PLOT_DATE_FORMAT.;
+        O: month - format annotation according to PLOT_DATE_FORMAT.;
 .br
-	  o: month - plot as 2-digit integer (1-12).
+        o: month - plot as 2-digit integer (1-12).
 .br
-	  U: ISO week - format annotation according to PLOT_DATE_FORMAT.
+        U: ISO week - format annotation according to PLOT_DATE_FORMAT.
 .br
-	  u: ISO week - plot as 2-digit integer (1-53).
+        u: ISO week - plot as 2-digit integer (1-53).
 .br
-	  r: Gregorian week - 7-day stride from chosen start of week (Sunday).
+        r: Gregorian week - 7-day stride from chosen start of week (Sunday).
 .br
-	  K: ISO weekday - format annotation according to PLOT_DATE_FORMAT.
+        K: ISO weekday - format annotation according to PLOT_DATE_FORMAT.
 .br
-	  k: weekday - plot name of weekdays in selected language [English].
+        k: weekday - plot name of weekdays in selected language [English].
 .br
-	  D: day  - format annotation according to PLOT_DATE_FORMAT, which also determines whether
+        D: day  - format annotation according to PLOT_DATE_FORMAT, which also determines whether
 we should plot day of month (1-31) or day of year (1-366).
 .br
-	  d: day - plot as 2- (day of month) or 3- (day of year) integer.
+        d: day - plot as 2- (day of month) or 3- (day of year) integer.
 .br
-	  H: hour - format annotation according to PLOT_CLOCK_FORMAT.
+        H: hour - format annotation according to PLOT_CLOCK_FORMAT.
 .br
-	  h: hour - plot as 2-digit integer (0-23).
+        h: hour - plot as 2-digit integer (0-23).
 .br
-	  M: minute - format annotation according to PLOT_CLOCK_FORMAT.
+        M: minute - format annotation according to PLOT_CLOCK_FORMAT.
 .br
-	  m: minute - plot as 2-digit integer (0-59).
+        m: minute - plot as 2-digit integer (0-59).
 .br
-	  C: second - format annotation according to PLOT_CLOCK_FORMAT.
+        C: second - format annotation according to PLOT_CLOCK_FORMAT.
 .br
-	  c: second - plot as 2-digit integer (0-59; 60-61 if leap seconds are enabled).
+        c: second - plot as 2-digit integer (0-59; 60-61 if leap seconds are enabled).
 .br
 .sp
 Specify an axis label by surrounding it with colons (e.g., :"my x label":).
@@ -97,8 +99,8 @@ Upper case (e.g., \fBW\fP) means draw axis/tickmarks AND annotate it, whereas lo
 of the vertical axis.  Append '+' to draw the outline of the cube defined by \fB\-R\fP.  Note
 that for 3-D views the title, if given, will be suppressed.)
 .br
-Log10 axis: Append l to annotate log10 (x) or p for 10^(log10(x)) [Default annotates x].
-Power axis: append p to annotate x at equidistant pow increments [Default will yield nonlinear
+Log10 axis: Append \fBl\fP to annotate log10 (x) or \fBp\fP for 10^(log10(x)) [Default annotates x].
+Power axis: append \fBp\fP to annotate x at equidistant pow increments [Default will yield nonlinear
 spacing between annotations due to the nonlinear projection].
 
 .br
@@ -116,9 +118,9 @@ the annotation interval is expected to be in transformed units, but the annotati
 will be plotted as untransformed units.  E.g., if \fIstride\fP = 1 and \fIpower\fP = 0.5 (i.e., sqrt),
 then equidistant annotations labeled 1\-4\-9... will appear.
 .br
-These GMT parameters can affect the appearance of the map boundary: ANNOT_MIN_ANGLE, ANNOT_MIN_SPACING,
+These \fBGMT\fP parameters can affect the appearance of the map boundary: ANNOT_MIN_ANGLE, ANNOT_MIN_SPACING,
 ANNOT_FONT, ANNOT_FONT_SIZE, ANNOT_OFFSET, BASEMAP_AXES, BASEMAP_FRAME_RGB, BASEMAP_TYPE, DEGREE_SYMBOL,
 FRAME_PEN, FRAME_WIDTH, GRID_CROSS_SIZE, GRID_PEN, HEADER_FON, HEADER_FONT_SIZE, LABEL_FONT,
 LABEL_FONT_SIZE, LINE_STEP, OBLIQUE_ANNOTATION, PLOT_DEGREE_FORMAT, TICK_LENGTH, TICK_PEN, and Y_AXIS_TYPE.  In addition,
-time axes can also be affected by:  ANNOT_FONT2, ANNOT_FONT2_SIZE, PLOT_CLOCK_FORMAT, PLOT_DATE_FORMAT,
+time axes can also be affected by:  ANNOT_FONT2, ANNOT_FONT2_SIZE, ANNOT_OFFSET2, PLOT_CLOCK_FORMAT, PLOT_DATE_FORMAT,
 TIME_LANGUAGE, and TIME_WEEK_START; see the \fBgmtdefaults\fP man page for details.

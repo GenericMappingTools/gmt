@@ -43,17 +43,17 @@ Not used with binary data.
 Weighted modifier[s].  Unweighted input and output has 3 columns x,y,z; Weighted i/o has 4 columns x,y,z,w.
 Weights can be used in input to construct weighted modal values in blocks.  Weight sums can be reported in
 output for later combining several runs, etc.  Use \fB\-W\fP for weighted i/o, \fB\-Wi\fP for weighted input
-only, \fB\-Wo\fP for weighted output only.  [Default uses unweighted i/o]
+only, \fB\-Wo\fP for weighted output only.  [Default uses unweighted i/o].
 #include "explain_-t.txt"
 #include "explain_-i.txt"
 #include "explain_-n.txt"
-[Default is 3 (or 4 if \fP\-W\fP is set) columns].
+[Default is 3 (or 4 if \fB\-W\fP is set) columns].
 #include "explain_-o.txt"
 #include "explain_-f.txt"
 .SH EXAMPLES
-To find 5 by 5 minute block mode estimates from the double precision binary data in hawaii_b.xyg and output an ASCII table, try
+To find 5 by 5 minute block mode estimates from the double precision binary data in hawaii_b.xyg and output an ASCII table, run:
 .sp
-blockmode hawaii_b.xyg \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm \-bi\fP3 > hawaii_5x5.xyg
+\fBblockmode\fP hawaii_b.xyg \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm \-bi\fP3 > hawaii_5x5.xyg
 .SH "SEE ALSO"
 .IR blockmean (l),
 .IR blockmedian (l),

@@ -17,7 +17,7 @@ ASCII file with one record per grid file to include in the blend.  Each record m
 the \fB\-R\fP-setting for the interior region, and the relative weight \fIwr\fP, separated by spaces or tabs.
 In the combined weighting scheme, this grid will be given weight = zero outside its domain, weight = \fIwr\fP
 inside the interior region, and a 2-D cosine-tapered weight between those end-members in the boundary strip.
-If the ASCII file is not given we will read standard input.
+If the ASCII file is not given \fBgrdblend\fP will read standard input.
 .TP
 .B \-G
 \fIgrdfile\fP is the name of the binary output grdfile.

@@ -24,7 +24,7 @@ The data in brackets are output only if the corresponding options
 \fB\-M, \-L1\fP, \fB\-L2\fP, and \fB\-M\fP are used, respectively.
 .TP
 .B \-F
-Report grid domain and x/y-increments world mapping format [Default is generic].
+Report grid domain and x/y-increments in world mapping format [Default is generic].
 Does not apply to the \fB\-C\fP option.
 .TP
 .B \-L1
@@ -39,10 +39,10 @@ set to NaN, if any.
 #include "explain_-V.txt" 
 #include "explain_-f.txt"
 .SH EXAMPLES
-To obtain all the information about the data set in file hawaii_topo.grd, try
+To obtain all the information about the data set in file hawaii_topo.grd:
 .br
 .sp
-grdinfo \fB\-L1 \-L2 \-M\fP hawaii_topo.grd
+\fBgrdinfo\fP \fB\-L1 \-L2 \-M\fP hawaii_topo.grd
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR grd2cpt (l),

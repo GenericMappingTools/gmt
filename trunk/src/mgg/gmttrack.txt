@@ -15,13 +15,13 @@ gmttrack \- A shiptrack plotting program
 [ \fB\-P\fP ] [ \fB\-O\fP ] [ \fB\-K\fP ]  [ \fB\-U\fP[\fIdx/dy/\fP][\fIlabel\fP] ] [ \fB\-X\fP\fIx-shift\fP ] 
 [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-V \fP ]
 .SH DESCRIPTION
-\fBgmttrack\fP reads gmt cruises and creates PostScript code that will plot one or more ship tracks on a
-map using the specified projection.  The PostScript code is written to standard output.
+\fBgmttrack\fP reads gmt cruises and creates \fIPostScript\fP code that will plot one or more ship tracks on a
+map using the specified projection.  The \fIPostScript\fP code is written to standard output.
 .TP
 \fIleg-ids\fP
 Can be one or more gmtleg-names, like c2104 v3206 etc.
-#include "explain_-R.txt"
 #include "explain_-j.txt"
+#include "explain_-R.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 #include "explain_-b.txt"
@@ -51,18 +51,18 @@ Do not plot data that are more than \fIstopdist\fP km along track from port of d
 .TP
 .B \-W
 \fIpen\fP is thickness of the trackline. [Default is 1].  Optionally, specify the rgb combination
-to obtain a colored trackline [Default is black]. Append O for dOtted line, a for dAshed. 
-[Default is solid]
+to obtain a colored trackline [Default is black].  Append \fBo\fP for d\fBo\fPtted line, \fBa\fP for d\fBa\fPshed. 
+[Default is solid].
 #include "explain_-XY.txt"
 #include "explain_-V.txt"
 #include "explain_-c.txt"
 .SH EXAMPLES
 To generate a Mercator plot of the track of cruises C2610 and V1512 in the area 150E to
 154E, 18N to 23N, using a Mercator scale of SCALE1, label the tracks with 10 points characters, annotate
-the boundaries every degree, and draw gridlines every 30', enter the following command:
+the boundaries every degree, and draw gridlines every 30', and send the plot to the default printer, enter the following command:
 .br
 .sp
-gmttrack c2610 v1512 \fB\-R\fP150/154/18/23 SCALE2 \fB\-B\fP1\fBg\fP30\fBm \-A\fP10 | lpr
+\fBgmttrack\fP c2610 v1512 \fB\-R\fP150/154/18/23 SCALE2 \fB\-B\fP1\fBg\fP30\fBm \-A\fP10 | lpr
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR psbasemap (l)

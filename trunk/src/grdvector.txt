@@ -63,7 +63,7 @@ which will cause vectors shorter than \fIsize\fP to have their appearance scaled
 Specify a subset of the grid.
 .TP
 .B \-S
-Sets scale for vector length in data units per distance measurement unit [1].  Append c, i, m, p
+Sets scale for vector length in data units per distance measurement unit [1].  Append \fBc\fP, \fBi\fP, \fBm\fP, \fBp\fP
 to indicate the measurement unit (cm, inch, m, point).  Prepend \fBl\fP to indicate a fixed length for
 all vectors.
 .TP
@@ -83,10 +83,10 @@ Means the angles provided are azimuths rather than direction (requires \fB\-A\fP
 To draw the vector field given by the files r.grd and theta.grd on a linear plot
 with scale LEN1 cm per data unit,
 using vector rather than stick plot, and scale vector magnitudes so that LEN2 units
-equal 1 inch, try 
+equal 1 inch, run 
 .br
 .sp
-grdvector r.grd theta.grd SCALE \fB\-A \-Q\fP OPT > gradient.ps
+\fBgrdvector\fP r.grd theta.grd SCALE \fB\-A \-Q\fP OPT > gradient.ps
 .br
 .sp
 .SH "SEE ALSO"

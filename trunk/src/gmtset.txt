@@ -4,9 +4,9 @@ gmtset \- To change individual \fBGMT\fP default parameters
 .SH SYNOPSIS
 \fBgmtset\fP [ \fB\-GfP\fIdefaultsfile\fP ] PARAMETER1 [=] \fIvalue1\fP PARAMETER2 [=] \fIvalue2\fP PARAMETER3 [=] \fIvalue3\fP ...
 .SH DESCRIPTION
-\fBgmtset\fP will adjust individual GMT defaults settings in the current directory's .gmtdefaults
+\fBgmtset\fP will adjust individual \fBGMT\fP defaults settings in the current directory's .gmtdefaults
 file.  If no such file exists one will be created.  The main purpose of \fBgmtset\fP is
-temporarily to change certain parameters inside a shellscript, e.g., set the dots-per-inch
+temporarily to change certain parameters inside a shell script, e.g., set the dots-per-inch
 to 600, run the script, and reset to 300 dpi.
 .TP
 PARAMETER \fIvalue\fP
@@ -19,10 +19,10 @@ Name of specific .gmtdefaults file to modify [Default looks first in current dir
 home directory, and finally in the system defaults].
 .SH EXAMPLES
 To change the dpi to 600, set annotation font to Helvetica, and select grid-crosses of size 0.1 inch,
-and set annotation offset to 0.2 cm, try
+and set annotation offset to 0.2 cm:
 .br
 .sp
-	gmtset DOTS_PR_INCH 600 ANNOT_FONT Helvetica GRID_CROSS_SIZE 0.1\fBi\fP ANNOT_OFFSET 0.2\fBc\fP
+\fBgmtset\fP DOTS_PR_INCH 600 ANNOT_FONT Helvetica GRID_CROSS_SIZE 0.1\fBi\fP ANNOT_OFFSET 0.2\fBc\fP
 .br
 .sp
 .SH "SEE ALSO"

@@ -6,10 +6,10 @@ grdvolume \- Calculating volume under a surface within a contour
 [ \fB\-L\fP\fIbase\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP[\fBk\fP] ] [ \fB\-T\fP ] [ \fB\-V\fP[\fBl\fP] ] [ \fB\-Z\fP\fIfact\fP[/\fIdelta\fP] ]
 .SH DESCRIPTION
 \fBgrdvolume\fP reads a 2-D binary grd file and calculates the volume contained
-between the surface and the plane specified by the given contour (or zero if not given).
+between the surface and the plane specified by the given contour (or zero if not given) and reports the area, volume, and maximum mean height (volume/area).
 Alternatively, specify a range of contours to be tried and \fBgrdvolume\fP will determine
 the volume and area inside the contour for all contour values.  The contour that produced
-the maximum mean height (volume/area) is reported as well.  This feature may be used with
+the maximum mean height is reported as well.  This feature may be used with
 \fBgrdfilter\fP in designing an Optimal Robust Separator [\fIWessel\fP, 1998].
 .TP
 \fIgrdfile\fP
@@ -43,26 +43,26 @@ Optionally subtract \fIshift\fP before scaling data by \fIfact\fP. [Default is n
 To determine the volume in km^3 under the surface hawaii_topo.grd (height in km), use
 .br
 .sp
-grdvolume hawaii_topo.grd \fB\-Sk\fP
+\fBgrdvolume\fP hawaii_topo.grd \fB\-Sk\fP
 .br
 .sp
 To find the volume between the surface peaks.grd and the contour z = 250, use
 .br
 .sp
-grdvolume peaks.grd \fB\-Sk\fP \fB\-C\fP250
+\fBgrdvolume\fP peaks.grd \fB\-Sk\fP \fB\-C\fP250
 .br
 .sp
 To search for the contour, between 100 and 300 in steps of 10, that maximizes the ratio of volume
 to surface area for the file peaks.grd, use
 .br
 .sp
-grdvolume peaks.grd \fB\-Sk\fP \fB\-C\fP100/300/10 > results.d
+\fBgrdvolume\fP peaks.grd \fB\-Sk\fP \fB\-C\fP100/300/10 > results.d
 .br
 .sp
 To see the areas and volumes for all the contours in the previous example, use
 .br
 .sp
-grdvolume peaks.grd \fB\-Sk \-Vl\fP \fB\-C\fP100/300/10 > results.d
+\fBgrdvolume\fP peaks.grd \fB\-Sk \-Vl\fP \fB\-C\fP100/300/10 > results.d
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR grdfilter (l)

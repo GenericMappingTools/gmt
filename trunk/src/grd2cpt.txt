@@ -35,7 +35,8 @@ outside range when estimating CDF(Z).  [Default uses min and max of data.]
 .TP
 .B \-S
 Set steps in cpt file.  Calculate entries in cptfile from \fIzstart\fP to \fIzstop\fP
-in steps of (\fIzinc\fP).  [Default chooses arbitrary values by a crazy scheme.] .TP
+in steps of (\fIzinc\fP).  [Default chooses arbitrary values by a crazy scheme.]
+.TP
 .B \-V
 Verbose operation.  This will write CDF(Z) estimates to stderr.  [Default is silent.] 
 .SH EXAMPLES
@@ -45,15 +46,15 @@ learn from \fBgrdinfo\fP.  So you can do this to see some points on the
 CDF(Z) curve (use \fB\-V\fP option to see more):
 .br
 .sp
-grd2cpt mydata.grd \fB\-V\fP > /dev/null
+\fBgrd2cpt\fP mydata.grd \fB\-V\fP > /dev/null
 .br
 .sp
 To make a cpt file with entries from 0 to 200 in steps of 20, and ignore
 data below zero in computing CDF(Z), and use the built-in master cptfile
-relief, try
+relief, run
 .br
 .sp
-grd2cpt mydata.grd \fB\-C\fP\fIrelief\fP \fB-L\fP0/10000 \fB-S\fP0/200/20 > mydata.cpt
+\fBgrd2cpt\fP mydata.grd \fB\-C\fP\fIrelief\fP \fB-L\fP0/10000 \fB-S\fP0/200/20 > mydata.cpt
 .SH "SEE ALSO"
 .IR gmtdefaults (l),
 .IR gmt (l),

@@ -58,7 +58,7 @@ Suppose that north_pacific_dbdb5.grd is a file of 5 minute bathymetry from 140E 
 the medians of values within a 300km radius (600km full width) of the output points, which you choose to be from 150E to 250E
 and 10N to 40N, and you want the output values every 0.5 degree.  Using spherical distance calculations, you need:
 .sp
-grdfilter north_pacific_dbdb5.grd \fB\-G\fPfiltered_pacific.grd \fB\-Fm\fP600 \fB\-D\fP4 \fB\-R\fP150/250/10/40 \fB\-I\fP0.5 \fB\-V\fP
+\fBgrdfilter\fP north_pacific_dbdb5.grd \fB\-G\fPfiltered_pacific.grd \fB\-Fm\fP600 \fB\-D\fP4 \fB\-R\fP150/250/10/40 \fB\-I\fP0.5 \fB\-V\fP
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR grdfft (l)

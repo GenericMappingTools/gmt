@@ -68,16 +68,17 @@ Note that \fB\-Z\fP only applies to 1-column output.
 This option only applies to xyz output; see \fB\-Z\fP for z table output.
 #include "explain_-f.txt"
 .SH EXAMPLES
-To edit individual values in the 5' by 5' hawaii_grv.grd file, try
+To edit individual values in the 5' by 5' hawaii_grv.grd file, dump the .grd
+to ASCII:
 .br
 .sp
-grd2xyz hawaii_grv.grd > hawaii_grv.xyz
+\fBgrd2xyz\fP hawaii_grv.grd > hawaii_grv.xyz
 .br
 .sp
-To write a single precision binary file without the x,y positions from the file raw_data.grd file, using scanline orientation, try
+To write a single precision binary file without the x,y positions from the file raw_data.grd file, using scanline orientation, run
 .br
 .sp
-grd2xyz raw_data.grd \fB\-ZTLf\fP > hawaii_grv.b
+\fBgrd2xyz\fP raw_data.grd \fB\-ZTLf\fP > hawaii_grv.b
 .SH "SEE ALSO"
 .IR gmtdefaults (l),
 .IR gmt (l),

@@ -62,7 +62,7 @@ Suggest grid dimensions which have a highly composite greatest
 common factor. This allows surface to use several intermediate steps in the
 solution, yielding faster run times and better results. The sizes suggested by
 \fB\-Q\fP can be achieved by altering \fB\-R\fP and/or \fB\-I\fP. You can
-recover the \fB\-R\fP and \fB\-I\fP you want later by using grdsample or grdcut on the output of surface.
+recover the \fB\-R\fP and \fB\-I\fP you want later by using \fBgrdsample\fP or \fBgrdcut\fP on the output of \fBsurface\fP.
 .TP
 .B \-S
 Search radius.  Enter \fIsearch_radius\fP in same units as x,y data; append \fBm\fP to indicate minutes.
@@ -95,7 +95,7 @@ with the \fB\-Vl\fP option.  [Default = 1.4 converges quickly and is almost alwa
 .SH EXAMPLES
 .sp
 To grid 5 by 5 minute gravity block means from the ASCII data in hawaii_5x5.xyg, using a \fItension_factor\fP = 0.25,
-a \fIconvergence_limit\fP = 0.1 milligal, writing the result to a file called \fIhawaii_grd.grd\fP, 
+a \fIconvergence_limit\fP = 0.1 milligal, writing the result to a file called hawaii_grd.grd, 
 and monitoring each iteration, try:
 .sp
 \fBsurface\fP hawaii_5x5.xyg \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm \-G\fPhawaii_grd.grd \fB\-T\fP0.25 \fB\-C\fP0.1 \fB\-VL\fP

@@ -21,7 +21,7 @@ as a numerical constant or a special symbol (see below).
 .B OPERATORS
 Choose among the following operators:
 .br
-Operator		n_args	Returns
+Operator	n_args	Returns
 .br
 .sp
 #include "grdmath_man.i"
@@ -39,11 +39,11 @@ The following symbols have special meaning:
 \fBY \fP	Grid with y-coordinates
 .br
 .SH OPTIONS
-#include "explain_-I.txt"
-#include "explain_-R.txt"
 .TP
 .B \-F
 Select pixel registration.  [Default is grid registration].
+#include "explain_-I.txt"
+#include "explain_-R.txt"
 #include "explain_-V.txt"
 .SH BEWARE
 The operator \fBGDIST\fP calculates spherical distances bewteen the (lon, lat)
@@ -62,38 +62,43 @@ boundary conditions.
 .SH EXAMPLES
 To take log10 of the average of 2 files, use
 .br
-	grdmath file1.grd file2.grd \fBADD\fP 0.5 \fBMUL LOG10 =\fP file3.grd
+.sp
+\fBgrdmath\fP file1.grd file2.grd \fBADD\fP 0.5 \fBMUL LOG10 =\fP file3.grd
 .br
 .sp
 Given the file ages.grd, which holds seafloor ages in m.y., use the relation
 depth(in m) = 2500 + 350 * sqrt (age) to estimate normal seafloor depths:
 .br
-	grdmath ages.grd \fBSQRT\fP 350 \fBMUL \fP2500 \fBADD =\fP depths.grd
+.sp
+\fBgrdmath\fP ages.grd \fBSQRT\fP 350 \fBMUL \fP2500 \fBADD =\fP depths.grd
 .br
 .sp
 To find the angle a (in degrees) of the largest principal stress from the stress tensor given by the
-three files s_xx.grd s_yy.grd, and s_xy.grd from the relation tan (2*a) = 2 * s_xy / (s_xx - s_yy), try
+three files s_xx.grd s_yy.grd, and s_xy.grd from the relation tan (2*a) = 2 * s_xy / (s_xx - s_yy), use
 .br
-	grdmath 2 s_xy.grd \fBMUL\fP s_xx.grd s_yy.grd \fBSUB DIV ATAN2\fP 2 \fBDIV =\fP direction.grd
+.sp
+\fBgrdmath\fP 2 s_xy.grd \fBMUL\fP s_xx.grd s_yy.grd \fBSUB DIV ATAN2\fP 2 \fBDIV =\fP direction.grd
 .br
 .sp
 To calculate the fully normalized spherical harmonic of degree 8 and order
 4 on a 1 by 1 degree world map, using the real amplitude 0.4 and the
-imaginary amplitude 1.1, try
-.br
-	grdmath \fB\-R\fP0/360/-90/90 \fB\-I\fP1 8 4 \fBYML\fP 1.1 \fBMUL EXCH\fP 0.4 \fBMUL ADD\fP = harm.grd
+imaginary amplitude 1.1:
 .br
 .sp
-To extract the locations of local maxima that exceed 100 mGal in the file faa.grd, try
+\fBgrdmath\fP \fB\-R\fP0/360/-90/90 \fB\-I\fP1 8 4 \fBYML\fP 1.1 \fBMUL EXCH\fP 0.4 \fBMUL ADD\fP = harm.grd
 .br
-	grdmath faa.grd \fBDUP EXTREMA\fP 2 \fBEQ MUL DUP\fP 100 \fBGT NAN MUL\fP = z.grd
+.sp
+To extract the locations of local maxima that exceed 100 mGal in the file faa.grd:
 .br
-	grd2xyz z.grd \fB\-S\fP > max.xyz
+.sp
+\fBgrdmath\fP faa.grd \fBDUP EXTREMA\fP 2 \fBEQ MUL DUP\fP 100 \fBGT NAN MUL\fP = z.grd
+.br
+\fBgrd2xyz\fP z.grd \fB\-S\fP > max.xyz
 .SH BUGS
 Files that has the same name as some operators, e.g., ADD, SIGN, =, etc. cannot be read
 and must not be present in the current directory.  Piping of files are not allowed.
 The stack limit is hard-wired to 50.
-All functions expecting a positive radius (e.g., log, kei, etc.) are passed the
+All functions expecting a positive radius (e.g., \fBLOG\fP, \fBKEI\fP, etc.) are passed the
 absolute value of their argument.
 .SH REFERENCES
 Abramowitz, M., and I. A. Stegun, 1964, \fIHandbook of Mathematical

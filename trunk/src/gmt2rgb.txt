@@ -30,17 +30,17 @@ Output only the specified layer (r, g, or b).  [Default outputs all 3 layers].
 To use the color palette topo.cpt to create r, g, b component grids from hawaii_grv.grd file, use
 .br
 .sp
-gmt2rgb hawaii_grv.grd \fB\-C\fPtopo.cpt \fB\-G\fPhawaii_grv_%c.grd
+\fBgmt2rgb\fP hawaii_grv.grd \fB\-C\fPtopo.cpt \fB\-G\fPhawaii_grv_%c.grd
 .br
 .sp
 To output the red component from the Sun raster radiation.ras file, use
 .br
 .sp
-gmt2rgb radiation.ras \fB\-L\fPr \fB\-G\fPcomp_%c.grd
+\fBgmt2rgb\fP radiation.ras \fB\-L\fPr \fB\-G\fPcomp_%c.grd
 .SH "SEE ALSO"
 .IR gmtdefaults (l),
 .IR gmt (l),
 .IR grdedit (l),
-.IR grdimage (l)
-.IR grdmath (l)
+.IR grdimage (l),
+.IR grdmath (l),
 .IR grdview (l)

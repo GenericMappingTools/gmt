@@ -195,7 +195,7 @@ Implicitly draws the outline of symbols with selected pen.
 .SH EXAMPLES
 To plot solid red circles (diameter = LEN_1 cm) at the positions listed in the file DSDP.xy on a
 Mercator map at LEN_2 cm/degree of the area 150E to 154E, 18N to 23N, with tickmarks every 1 degree
-and gridlines every 15 minutes, use:
+and gridlines every 15 minutes, use
 .br
 .sp
 \fBpsxy\fP DSDP.xy \fB\-R\fP150/154/18/23 OPT_1 \fB\-G\fP255/0/0 \fB\-B\fP1\fBg\fP15\fBm\fP | lpr

@@ -29,7 +29,7 @@ use the command \fBgmtset\fP or use any texteditor to edit the file .gmtdefaults
 or current directory.  If you do not have this file in your home or current directory, run 
 \fBgmtdefaults\fP -D > ~/.gmtdefaults to get the system settings.
 \fBGMT\fP can provide default values in US or SI units.  This choice is determined by the contents of the
-gmt.conf file in GMT's share directory.
+gmt.conf file in \fBGMT\fP's share directory.
 .TP
 .B \-D
 Print the system \fBGMT\fP defaults to standard output.  Append \fBu\fP for US
@@ -37,7 +37,8 @@ defaults or \fBs\fP for SI defaults. [\fB\-D\fP alone gives current choice in gm
 .TP
 .B \-L
 Print the user's currently active defaults to standard output.
-.SH
+.br
+.sp
 Your currently active defaults come from the .gmtdefaults file in the 
 current working directory, if present; else from the .gmtdefaults file 
 in your home directory, if present; else from the
@@ -49,10 +50,10 @@ case-insensitive unless otherwise noted.  The
 system defaults are given in brackets [ for SI (and US) ].  Those marked \fB*\fP can be set on the command
 line as well (the corresponding option is given in parentheses).  Note that default distances and
 lengths below are given in both cm or inch; the chosen default depends on your choice of default
-unit (see MEASURE_UNIT).  You can explicitly specify the unit used for distances and
-lengths by appending \fBc\fP (cm), \fBi\fP (inch), \fBm\fP (meter), or \fBp\fP {points).
+unit (see \fBMEASURE_UNIT\fP).  You can explicitly specify the unit used for distances and
+lengths by appending \fBc\fP (cm), \fBi\fP (inch), \fBm\fP (meter), or \fBp\fP (points).
 When no unit is indicated the value will be assumed to be in the unit set by \fBMEASURE_UNIT\fP.
-Note that the printer resolution DOTS_PR_INCH is always the number of dots or pixels per inch.
+Note that the printer resolution \fBDOTS_PR_INCH\fP is always the number of dots or pixels per inch.
 Several parameters take only TRUE or FALSE.
 .TP
 .B ANNOT_MIN_ANGLE
@@ -65,7 +66,7 @@ If an annotation would be plotted less than this minimum distance from its close
 annotation is not plotted (this may occur for certain oblique projections.) [0]
 .TP
 .B ANNOT_FONT
-Font used for upper annotations etc [Helvetica].  Specify either the font number or
+Font used for upper annotations, etc. [Helvetica].  Specify either the font number or
 the font name (case sensitive!).  The 39 available fonts are:
 .br
 	0  Helvetica
@@ -150,7 +151,7 @@ the font name (case sensitive!).  The 39 available fonts are:
 Font size (> 0) in points for map annotations.  [14]
 .TP
 .B ANNOT_FONT2
-Font to use for time axis lower annotations.  See ANNOT_FONT for available fonts  [Helvetica].
+Font to use for time axis lower annotations.  See \fBANNOT_FONT\fP for available fonts  [Helvetica].
 .TP
 .B ANNOT_FONT2_SIZE
 Font size (> 0) for time axis lower annotations in points  [16].
@@ -193,7 +194,7 @@ Give a red/green/blue triplet, with each element in the 0\-255 range. [255/255/2
 .TP
 .B COLOR_IMAGE
 Selects which operator to use when rendering bit-mapped color images.  Due to the
-lack of the colorimage operator in some PostScript implementations, \fBGMT\fP offers 2 different
+lack of the colorimage operator in some \fIPostScript\fP implementations, \fBGMT\fP offers 2 different
 options:
 .br
 .sp
@@ -220,7 +221,7 @@ ring, degree, colon, none [ring].
 .TP
 .B DOTS_PR_INCH
 Resolution of the plotting device (dpi).  Note that in order to be as compact as possible,
-\fBGMT\fP PostScript output uses integer formats only so the resolution should be
+\fBGMT\fP \fIPostScript\fP output uses integer formats only so the resolution should be
 set depending on what output device you are using.  E.g, using 300 and sending the output to
 a Linotype 300 phototypesetter (2470 dpi) will not take advantage of the extra resolution (i.e.,
 positioning on the page and line thicknesses are still only done in steps of 1/300 inch; of course, text will look smoother)  [300].
@@ -249,7 +250,7 @@ Clarke-1880	1880 Most of Africa, France
 .br
 Clarke-1866	1866 North America, the Philippines
 .br
-Airy		1830 Great Britain
+Airy			1830 Great Britain
 .br
 Bessel		1841 Central Europe, Chile, Indonesia
 .br
@@ -267,7 +268,7 @@ the first record, where the fields must be separated by white-space (not commas)
 custom ellipsoid (e.g., those used for other planets) may be used.
 .TP
 .B FIELD_DELIMITER
-This setting determines what character will separate ascii output data columns written by \fBGMT\fP.  Choose
+This setting determines what character will separate ASCII output data columns written by \fBGMT\fP.  Choose
 from tab, space, comma, and none [tab].
 .TP
 .B FRAME_PEN
@@ -292,11 +293,11 @@ Pen thickness used to draw grid lines in dpi units or points (append p) [1].
 .TP
 .B GRIDFILE_SHORTHAND
 If TRUE, all gridfile names are examined to see if they use the file extension
-shorthand discussed in Section 4.17 of the GMT Technical Reference and Cookbook.
+shorthand discussed in Section 4.17 of the \fBGMT\fP Technical Reference and Cookbook.
 If FALSE, no filename expansion is done [FALSE].
 .TP
 .B HEADER_FONT
-Font to use when plotting headers.  See ANNOT_FONT for available fonts  [Helvetica].
+Font to use when plotting headers.  See \fBANNOT_FONT\fP for available fonts  [Helvetica].
 .TP
 .B HEADER_FONT_SIZE
 Font size (> 0) for header in points  [36].
@@ -344,7 +345,7 @@ Specifies whether input/output ASCII files have header record(s) or not  [FALSE]
 Specifies how many header records to expect if \fB\-H\fP is turned on  [1].
 .TP
 .B LABEL_FONT
-Font to use when plotting labels below axes.  See ANNOT_FONT for available fonts  [Helvetica].
+Font to use when plotting labels below axes.  See \fBANNOT_FONT\fP for available fonts  [Helvetica].
 .TP
 .B LABEL_FONT_SIZE
 Font size (> 0) for labels in points  [24].
@@ -434,7 +435,7 @@ The default is +D.
 .TP
 .B PAGE_COLOR
 Sets the color of the imaging background, i.e., the paper.
-Give a red/green/blue triplet, with each element in the 0\-255 range. [255/255/255] (white)
+Give a red/green/blue triplet, with each element in the 0\-255 range. [255/255/255] (white).
 .TP
 .B PAGE_ORIENTATION * (\-P)
 Sets the orientation of the page.  Choose portrait or landscape  [landscape].
@@ -446,65 +447,65 @@ site-specific formats may be specified in
 the gmtmedia.d file in $GMTHOME/share; see that file for details):
 .br
 .sp
-	Media	width	height
+	Media		width	height
 .br
-	A0	2380	3368
+	A0			2380		3368
 .br
-	A1	1684	2380
+	A1			1684		2380
 .br
-	A2	1190	1684
+	A2			1190		1684
 .br
-	A3	842	1190
+	A3			842		1190
 .br
-	A4	595	842
+	A4			595		842
 .br
-	A5	421	595
+	A5			421		595
 .br
-	A6	297	421
+	A6			297		421
 .br
-	A7	210	297
+	A7			210		297
 .br
-	A8	148	210
+	A8			148		210
 .br
-	A9	105	148
+	A9			105		148
 .br
-	A10	74	105
+	A10			74		105
 .br
-	B0	2836	4008
+	B0			2836		4008
 .br
-	B1	2004	2836
+	B1			2004		2836
 .br
-	B2	1418	2004
+	B2			1418		2004
 .br
-	B3	1002	1418
+	B3			1002		1418
 .br
-	B4	709	1002
+	B4			709		1002
 .br
-	B5	501	709
+	B5			501		709
 .br
-	archA	648	864
+	archA		648		864
 .br
-	archB	864	1296
+	archB		864		1296
 .br
-	archC	1296	1728
+	archC		1296		1728
 .br
-	archD	1728	2592
+	archD		1728		2592
 .br
-	archE	2592	3456
+	archE		2592		3456
 .br
-	flsa	612	936
+	flsa			612		936
 .br
-	halfletter	396	612
+	halfletter	396		612
 .br
-	note	540	720
+	note			540		720
 .br
-	letter	612	792
+	letter		612		792
 .br
-	legal	612	1008
+	legal		612		1008
 .br
-	11x17	792	1224
+	11x17		792		1224
 .br
-	ledger	1224	792
+	ledger		1224		792
 .br
 .sp
 For a completely custom format (e.g., for large format plotters) you may also
@@ -512,7 +513,7 @@ specify Custom_WxH, where W and H are in points.
 To force the printer to request a manual paper feed, append '-' to the media
 name, e.g., A3- will require the user to insert a A3 paper into the printer's
 manual feed slot.  To indicate you are making an EPS file, append '+' to the
-media name.  Then, GMT will attempt to issue a tight bounding box [Default 
+media name.  Then, \fBGMT\fP will attempt to issue a tight bounding box [Default 
 Bounding Box is the paper dimension].
 .TP
 .B PLOT_CLOCK_FORMAT
@@ -582,7 +583,7 @@ units of relative time data.  Choose y (year), d (day), h (hour), m (minute), or
 .B TIME_WEEK_START
 When weeks are indicated on time axes, this parameter determines the first day of the week
 for Gregorian calendars.  (The ISO weekly calendar always begins weeks with Monday.)
-[Monday (or Sunday)]
+[Monday (or Sunday)].
 .TP
 .B UNIX_TIME * (\-U)
 Specifies if a UNIX system time stamp should be plotted
@@ -617,10 +618,10 @@ Sets the y-coordinate of the origin on the paper for a new plot [DEF_XY_SI (or D
 For an overlay, the default offset is 0.
 .TP
 .B Y2K_OFFSET_YEAR
-When 2-digit years are used to represent 4-digit years (see various DATE_FORMATs), Y2K_OFFSET_YEAR 
-gives the first year in a 100-year sequence.  For example, if Y2K_OFFSET_YEAR is 1729, then numbers 
+When 2-digit years are used to represent 4-digit years (see various \fBDATE_FORMAT\fPs), \fBY2K_OFFSET_YEAR\fP 
+gives the first year in a 100-year sequence.  For example, if \fBY2K_OFFSET_YEAR\fP is 1729, then numbers 
 29 through 99 correspond to 1729 through 1799, while numbers 00 through 28 correspond to 1800 through 
-1828. [1950]
+1828. [1950].
 .TP
 .B XY_TOGGLE * (\-:)
 Set if the first two columns of input files contain (latitude,longitude) or (y,x) rather than the expected
@@ -633,7 +634,7 @@ or vertically (ver_text)  [hor_text].
 To get a copy of the \fBGMT\fP parameter defaults in your home directory, run
 .br
 .sp
-gmtdefaults \fB\-D\fP > ~/.gmtdefaults
+\fBgmtdefaults\fP \fB\-D\fP > ~/.gmtdefaults
 .br
 .sp
 You may now change the settings by editing this file using a text editor of your choice, or

@@ -22,16 +22,16 @@ ASCII (or binary, see \fB\-bi\fP) file(s) holding a number of data columns.
 #include "explain_-o.txt"
 #include "explain_-f.txt"
 .SH EXAMPLES
-To convert the binary file test.b (single precision) with 4 columns to ASCII, try
+To convert the binary file test.b (single precision) with 4 columns to ASCII:
 .br
 .sp
-gmtconvert test.b \fB\-bis\fP4 > test.dat
+\fBgmtconvert\fP test.b \fB\-bis\fP4 > test.dat
 .br
 .sp
-To convert the multiple segment ASCII table test.d to a double precision binary file, try
+To convert the multiple segment ASCII table test.d to a double precision binary file:
 .br
 .sp
-gmtconvert test.d \fB\-M \-bo\fP > test.b
+\fBgmtconvert\fP test.d \fB\-M \-bo\fP > test.b
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR minmax (l)

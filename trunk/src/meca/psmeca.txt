@@ -307,7 +307,7 @@ END
 .sp
 .SH "SEE ALSO"
 .IR gmt (l),
-.IR psbasemap (l)
+.IR psbasemap (l),
 .IR psxy (l)
 .SH REFERENCES
 .br

@@ -31,23 +31,23 @@ Creates a continuous cpt file [Default is discontinuous, i.e. constant colors
 for each interval].
 .SH EXAMPLES
 To make a cpt file with z-values from -200 to 200, with discrete color changes every
-25, and using a polar blue-white-red colortable, try
+25, and using a polar blue-white-red colortable:
 .br
 .sp
-makecpt \fB\-C\fP\fIpolar\fP \fB\-T\fP-200/200/25 > colors.cpt
+\fBmakecpt\fP \fB\-C\fP\fIpolar\fP \fB\-T\fP-200/200/25 > colors.cpt
 .br
 .sp
 To make an equidistant cpt file from z = -2 to 6, in steps of 1, using
-continuous default rainbow colors, try
+continuous default rainbow colors:
 .br
 .sp
-makecpt \fB\-T\fP-2/6/1 \fB\-Z\fP > rainbow.cpt
+\fBmakecpt\fP \fB\-T\fP-2/6/1 \fB\-Z\fP > rainbow.cpt
 .br
 .sp
-To make a GEBCO look-alike cpt file for bathymetry, try
+To make a GEBCO look-alike cpt file for bathymetry, run
 .br
 .sp
-makecpt \fB\-C\fPgebco > my_gebco.cpt
+\fBmakecpt\fP \fB\-C\fPgebco > my_gebco.cpt
 .SH BUGS
 Since \fBmakecpt\fP will also interpolate from any existing .cpt file you
 may have in your directory, you cannot use one of the listed cpt names

@@ -8,14 +8,14 @@ psimage \- To plot SUN rasterfiles on maps
 [ \fB\-V\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ]
 .SH DESCRIPTION
 \fBpsimage\fP reads a 1, 8, 24, or 32-bit Sun rasterfile and plots it on a map.
-Image can be scaled arbitrarily, and 1-bit images can be (1) inverted, i.e.,
+The image can be scaled arbitrarily, and 1-bit images can be (1) inverted, i.e.,
 black pixels (on) becomes white (off) and vice versa, or (2) colorized, by
 assigning different foreground and background colors, and (3) made transparent
 where one of back- or foreground is painted only. As an option,
 the user may choose to convert colorimages to grayscale using TV's YIQ-transformation.
 The user may also choose to replicate the image which, when preceded by appropriate clip
 paths, may allow larger custom-designed fill patterns to be implemented (the \fB\-Gp\fP
-mechanism offered in most GMT programs is limited to rasters smaller than 146 by 146).
+mechanism offered in most \fBGMT\fP programs is limited to rasters smaller than 146 by 146).
 .TP
 \fIrasterfile\fP
 This must be a Sun rasterfile.  Depth can be 1, 8, 24, or 32-bit. Old-style, Standard, Run-length-encoded, and
@@ -67,16 +67,16 @@ Replicate the image \fInxrep\fP in x and \fInyrep\fP in y [Default is 1/1].
 #include "explain_-c.txt"
 .SH EXAMPLES
 To plot the image contained in the 8-bit rasterfile scanned_face.ras, scaling
-it to 8 by 10 cm, try
+it to 8 by 10 cm, use
 .br
 .sp
-psimage scanned_face.ras \fB\-W\fP8\fBc\fP/10\fBc\fP > image.ps
+\fBpsimage\fP scanned_face.ras \fB\-W\fP8\fBc\fP/10\fBc\fP > image.ps
 .br
 .sp
 To replicate the image template 1_bit.ras over a 5 by 5 inch area, colorize it, and setting
-each piece to be 1 by 1 cm, try
+each piece to be 1 by 1 cm, use
 .br
 .sp
-psimage 1_bit.ras \fB\-Gb\fP200/150/100 \fB\-Gf\fP100/50/30 \fB\-N\fP5\fBi\fP/5\fBi\fP \fB\-W\fP1\fBc\fP > image.ps
+\fBpsimage\fP 1_bit.ras \fB\-Gb\fP200/150/100 \fB\-Gf\fP100/50/30 \fB\-N\fP5\fBi\fP/5\fBi\fP \fB\-W\fP1\fBc\fP > image.ps
 .SH "SEE ALSO"
 .IR gmt (l)

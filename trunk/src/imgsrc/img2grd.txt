@@ -39,7 +39,7 @@ $GMT_IMGDIR, or the current directory if not defined.  Ignored if other options 
 present on the command line.
 .TP
 .B \-M
-Output a Spherical Mercator grid [Default is a geographic lon/lat grid]
+Output a Spherical Mercator grid [Default is a geographic lon/lat grid].
 .TP
 .B \-N
 Average the values in the input img pixels into \fInavg\fP by \fInavg\fP squares, and 
@@ -60,22 +60,22 @@ Particularly recommended here, as it is helpful to see how the coordinates are a
 .TP
 .B \-m
 Indicate \fIminutes\fP as the width of an input img pixel in minutes of longitude.  
-[Default is 2.0]
+[Default is 2.0].
 .TP
 .B \-x
 Indicate \fImaxlon\fP as the maximum longitude extent of the input img file.  Versions 
 since 1995 have had \fImaxlon\fP = 360.0, while some earlier files had \fImaxlon\fP = 
-390.0.  [Default is 360.0]
+390.0.  [Default is 360.0].
 .TP
 .B \-y
 Indicate \fIminlat/maxlat\fP as the latitude extent of the input img file.  All versions 
-to date have used -72.006/72.006.  [Default is -72.006/72.006]
+to date have used -72.006/72.006.  [Default is -72.006/72.006].
 .SH EXAMPLES
 To extract data in the region \fB\-R\fP-40/40/-70/-30 from \fIworld_grav.img.7.2\fP and preserve
-the Mercator gridding, try
+the Mercator gridding:
 .br
 .sp
-img2grd world_grav.img.7.2 \fB\-G\fPmerc_grav.grd \fB\-R\fP-40/40/-70/-30 \fB\-M \-T\fP1 \fB\-V\fP
+\fBimg2grd\fP world_grav.img.7.2 \fB\-G\fPmerc_grav.grd \fB\-R\fP-40/40/-70/-30 \fB\-M \-T\fP1 \fB\-V\fP
 .br
 .sp
 Without the \fB\-M\fP option the same command will yield a geographic grid.

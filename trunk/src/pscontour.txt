@@ -15,7 +15,7 @@ pscontour \- Contour xyz-data by direct triangulation
 .SH DESCRIPTION
 \fBpscontour\fP reads an ASCII [or binary] xyz-file and produces a raw contour plot by triangulation.  By default, the
 optimal Delaunay triangulation is performed (using either Shewchuk's [1996]
-or Watson's [1982] method as selected during GMT installation), but the user
+or Watson's [1982] method as selected during \fBGMT\fP installation), but the user
 may optionally provide a second file with
 network information, such as a triangular mesh used for finite element modeling.  In addition to contours, the area between contours may be painted according to
 the color palette file.
@@ -34,7 +34,7 @@ No space between the option flag and the associated arguments.
 .B \-A
 Several annotation formatting options can be set to modify the form of the annotation.  Give - to disable all annotations.
 Append f\fIfont_size\fP to change font size [9], append \fI/r/g/b\fP to change color of text fill box
-[PAGE_COLOR], append a\fIangle\fP to fix annotation angle [Default follows contour], and append \fBo\fP to draw the outline of the surrounding text box [Default is no outline].
+[PAGE_COLOR], append \fBa\fP\fIangle\fP to fix annotation angle [Default follows contour], and append \fBo\fP to draw the outline of the surrounding text box [Default is no outline].
 #include "explain_-b.txt"
 .TP
 .B \-D
@@ -44,7 +44,7 @@ files will be named \fIdumpfile_cont_segment[_i]\fP.xyz, where \fIcont\fP is the
 However, when \fB\-M\fP is used in conjunction with \fB\-D\fP a single multisegment file is created instead.
 .TP
 .B \-E
-Sets the view point by specifying azimuth and elevation in degrees. [Default is 180/90]
+Sets the view point by specifying azimuth and elevation in degrees. [Default is 180/90].
 .TP
 .B \-G
 \fIgap\fP is distance between each annotation along the same contour [Default is G_OPT_SI (or G_OPT_US)].
@@ -63,7 +63,7 @@ each contour section is preceded by a header record whose first column is \fIfla
 followed by the contour level.
 .TP
 .B \-N
-Do NOT clip contours or image at the boundaries [Defaults will clip to fit inside region \fB\-R\fP).
+Do NOT clip contours or image at the boundaries [Default will clip to fit inside region \fB\-R\fP].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
@@ -87,18 +87,18 @@ Use 4-byte integer triplets for node ids (\fB\-T\fP).
 .SH EXAMPLES
 To make a raw contour plot from the file topo.xyz and drawing the contours (pen = 2)
 given in the color palette file topo.cpt on a Lambert map
-at LEN_L inch/degree along the standard parallels 18 and 24, try 
+at LEN_L inch/degree along the standard parallels 18 and 24, use 
 .br
 .sp
-pscontour topo.xyz \fB\-R\fP320/330/20/30 SCALE_L \fB\-C\fPtopo.cpt \fB\-W\fP0.5\fBp\fP > topo.ps
+\fBpscontour\fP topo.xyz \fB\-R\fP320/330/20/30 SCALE_L \fB\-C\fPtopo.cpt \fB\-W\fP0.5\fBp\fP > topo.ps
 .br
 .sp
 To create a color \fIPostScript\fP plot of the numerical temperature solution obtained on a triangular mesh
 whose node coordinates and temperatures are stored in temp.xyz and mesh arrangement is given by the file mesh.ijk, using
-the colors in temp.cpt, try
+the colors in temp.cpt, run
 .br
 .sp
-pscontour temp.xyz \fB\-R\fP0/150/0/100 \fB\-Jx\fP0.1 \fB\-C\fPtemp.cpt \fB\-G \-W\fP0.25\fBp\fP > temp.ps
+\fBpscontour\fP temp.xyz \fB\-R\fP0/150/0/100 \fB\-Jx\fP0.1 \fB\-C\fPtemp.cpt \fB\-G \-W\fP0.25\fBp\fP > temp.ps
 .SH BUGS
 Sometimes there will appear to be thin lines of the wrong color in the image.
 This is a round-off problem which may be remedied by using a higher value of

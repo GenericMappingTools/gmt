@@ -44,7 +44,7 @@ Selects the resolution of the data set to use ((\fBf\fP)ull, (\fBh\fP)igh, (\fBi
 resolution drops off by 80% between data sets. [Default is \fBl\fP].
 .TP
 .B \-E
-Sets the viewpoint's azimuth and elevation (for perspective view) [180/90]
+Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].
 .TP
 .B \-G
 Select painting or clipping of "dry" areas.  Append a shade, color, pattern, or \fBc\fP for clipping.
@@ -127,27 +127,27 @@ width = 1, color = 0/0/0, texture = solid].
 #include "explain_-o.txt"
 .SH EXAMPLES
 To plot a green Africa with white outline on blue background, with permanent major rivers in thick blue pen, additional major rivers in thin blue pen, and national borders as dashed lines
-on a Mercator map at scale LEN_1 inch/degree, try
+on a Mercator map at scale LEN_1 inch/degree, use
 .br
 .sp
-pscoast \fB\-R\fP-30/30/-40/40 SCALE_M1 \fB\-B\fP5 \fB\-I\fP1/1\fBp\fP/0/0/255 \fB\-I\fP2/0.25\fBp\fP/0/0/255 \fB\-N\fP1/0.25\fBtap\fP \fB\-W\fP0.25\fBp\fP/255/255/255 \fB\-G\fP0/255/0 \fB\-S\fP0/0/255 \fB\-P\fP > africa.ps
+\fBpscoast\fP \fB\-R\fP-30/30/-40/40 SCALE_M1 \fB\-B\fP5 \fB\-I\fP1/1\fBp\fP/0/0/255 \fB\-I\fP2/0.25\fBp\fP/0/0/255 \fB\-N\fP1/0.25\fBtap\fP \fB\-W\fP0.25\fBp\fP/255/255/255 \fB\-G\fP0/255/0 \fB\-S\fP0/0/255 \fB\-P\fP > africa.ps
 .br
 .sp
-To plot Iceland using the lava pattern (# 28) at 100 dots per inch, on a Mercator map at scale LEN_2 cm/degree, try
+To plot Iceland using the lava pattern (# 28) at 100 dots per inch, on a Mercator map at scale LEN_2 cm/degree, run
 .br
 .sp
-pscoast \fB\-R\fP-30/-10/60/65 SCALE_M2 \fB\-B\fP5 \fB\-Gp\fP100/28 > iceland.ps
+\fBpscoast\fP \fB\-R\fP-30/-10/60/65 SCALE_M2 \fB\-B\fP5 \fB\-Gp\fP100/28 > iceland.ps
 .br
 .sp
 To initiate a clip path for Africa so that the subsequent colorimage of gridded topography is only
-seen over land, using a Mercator map at scale LEN_1 inch/degree, try
+seen over land, using a Mercator map at scale LEN_1 inch/degree, use
 .br
 .sp
-pscoast \fB\-R\fP-30/30/-40/40 SCALE_M1 \fB\-B\fP5 \fB\-Gc \-P \-K\fP > africa.ps
+\fBpscoast\fP \fB\-R\fP-30/30/-40/40 SCALE_M1 \fB\-B\fP5 \fB\-Gc \-P \-K\fP > africa.ps
 .br
-grdimage SCALE_M1 etopo5.grd -Ccolors.cpt \fB\-O \-K\fP >> africa.ps
+\fBgrdimage\fP SCALE_M1 etopo5.grd \fB\-C\fPcolors.cpt \fB\-O \-K\fP >> africa.ps
 .br
-pscoast \fB\-Q \-O\fP >> africa.ps
+\fBpscoast\fP \fB\-Q \-O\fP >> africa.ps
 .SH DATABASE INFORMATION
 The coastline database is compiled from two sources: World Vector Shorelines (WVS) and CIA World Data Bank II (WDBII).
 In particular, all level-1 polygons (ocean-land boundary) are derived from the more accurate WVS while all higher level polygons
@@ -161,6 +161,7 @@ database using the Douglas-Peucker line-simplification algorithm.  The classific
 that of the WDBII.  See the \fBGMT\fP Cookbook and Technical Reference Appendix K for
 further details.
 .br
+.sp
 \fBpscoast\fP will first look for coastline files in directory $GMTHOME/share (where $GMTHOME is
 an environmental variable).  If the desired file is not found, it will look for the file
 coastline.conf in the same directory.  This file may contain any number of records that
@@ -185,7 +186,7 @@ boundaries, there are also ice grounding lines where ice goes from
 floating on the sea to sitting on land, and lines delimiting areas 
 of rock outcrop.  For consistency's sake, we have used the World
 Vector Shoreline throughout the world in pscoast, as described in
-the GMT cookbook Appendix K. Users who need specific boundaries
+the \fBGMT\fP Cookbook Appendix K. Users who need specific boundaries
 in Antarctica should get the Antarctic Digital Database, prepared
 by the British Antarctic Survey, Scott Polar Research Institute,
 World Conservation Monitoring Centre, under the auspices of the

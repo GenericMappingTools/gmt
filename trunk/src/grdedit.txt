@@ -39,14 +39,14 @@ to change the boundaries from geodetic longitudes to geographic and put a new ti
 the header.  We accomplish this by
 .br
 .sp
-grdedit data.grd \fB\-R\fP-60/-50/10/30 \fB\-D\fP=/=/=/=/=/"Gravity Anomalies"/=
+\fBgrdedit\fP data.grd \fB\-R\fP-60/-50/10/30 \fB\-D\fP=/=/=/=/=/"Gravity Anomalies"/=
 .br
 .sp
 The grid world.grd has the limits 0/360/-72/72.  To shift the
 data so that the limits would be -180/180/-72/72, use
 .br
 .sp
-grdedit world.grd \fB\-R\fP-180/180/-72/72 \fB\-S\fP
+\fBgrdedit\fP world.grd \fB\-R\fP-180/180/-72/72 \fB\-S\fP
 .br
 .sp
 The file junk.grd was created prior to GMT 3.1 with incompatible
@@ -54,7 +54,7 @@ The file junk.grd was created prior to GMT 3.1 with incompatible
 we run
 .br
 .sp
-grdedit junk.grd \fB\-A\fP
+\fBgrdedit\fP junk.grd \fB\-A\fP
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR grd2xyz (l),

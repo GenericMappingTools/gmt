@@ -39,7 +39,7 @@ textstring NaN  [Default is 0/0/1].
 .TP
 .B \-S
 Set nodes depending on their distance from the nearest data point.  Nodes within \fIradius\fP [0] from
-a data point are considered inside.  Append \fBk\fP to indicate map units (e.g., \fB\-R \-I\fP in
+a data point are considered inside.  Append \fBk\fP to indicate map units (e.g., \fB\-R\fB and \fB\-I\fP in
 degrees and \fIradius\fP in km).
 #include "explain_-V.txt"
 #include "explain_-i.txt"
@@ -50,12 +50,12 @@ degrees and \fIradius\fP in km).
 To set all nodes inside and on the polygons coastline_*.xy to 0, and outside points
 to 1, do
 .sp
-grdmask coastline_*.xy \fB\-R\fP-60/-40/-40/-30 \fB\-I\fP5\fBm \-N\fP1/0/0 \fB\-G\fPland_mask.grd  \fB\-V\fP
+\fBgrdmask\fP coastline_*.xy \fB\-R\fP-60/-40/-40/-30 \fB\-I\fP5\fBm \-N\fP1/0/0 \fB\-G\fPland_mask.grd  \fB\-V\fP
 .br
 .sp
 To set nodes within 50 km of data points to 1 and other nodes to NaN, do
 .sp
-grdmask data.xyz \fB\-R\fP-60/-40/-40/-30 \fB\-I\fP5m \fB\-N\fPNaN/1/1 \fB\-S\fP50\fBk\fP \fB\-G\fPdata_mask.grd  \fB\-V\fP
+\fBgrdmask\fP data.xyz \fB\-R\fP-60/-40/-40/-30 \fB\-I\fP5m \fB\-N\fPNaN/1/1 \fB\-S\fP50\fBk\fP \fB\-G\fPdata_mask.grd  \fB\-V\fP
 .SH "SEE ALSO"
 .IR gmt (l),
 .IR grdlandmask (l),
