@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.8 2001-04-25 03:34:58 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.9 2001-05-29 21:02:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -307,9 +307,11 @@ int GMT_getpen (char *line, struct GMT_PEN *pen)
 int GMT_getinc (char *line, double *dx, double *dy)
 {
 	int t_pos, i;
+	BOOLEAN got_nxny;
 	char xstring[128], ystring[128];
 	
 	for (t_pos = -1, i = 0; line[i] && t_pos < 0; i++) if (line[i] == '/') t_pos = i;
+	got_nxny = (line[0] == 'n' || line[0] == 'N');	/* Got nx and not dx */
 	
 	if (t_pos != -1) {	/* Got -I<xstring>/<ystring> */
 		strcpy (xstring, line);
