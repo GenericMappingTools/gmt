@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.69 2004-09-14 21:59:35 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.70 2004-09-16 18:12:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7108,7 +7108,11 @@ void GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 	idx = 1.0 / r_head->x_inc;
 	idy = 1.0 / r_head->y_inc;
 	lon = (double *) GMT_memory (VNULL, (size_t)g_head->nx, sizeof (double), "GMT_grd_forward");
-	for (i = 0; i < g_head->nx; i++) lon[i] = g_head->x_min + i * g_head->x_inc + dx2;
+	for (i = 0; i < g_head->nx; i++) {
+		lon[i] = g_head->x_min + i * g_head->x_inc + dx2;
+		if (lon[i] < project_info.w && (lon[i] + 360.0) <= project_info.e) lon[i] += 360.0;
+		if (lon[i] > project_info.e && (lon[i] - 360.0) >= project_info.w) lon[i] -= 360.0;
+	}
 	x = (double *) GMT_memory (VNULL, (size_t)r_head->nx, sizeof (double), "GMT_grd_forward");
 	y = (double *) GMT_memory (VNULL, (size_t)r_head->ny, sizeof (double), "GMT_grd_forward");
 	for (i = 0; i < r_head->nx; i++) x[i] = r_head->x_min + i * r_head->x_inc + xinc2;
