@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.21 2004-07-14 00:46:17 pwessel Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.22 2004-08-25 17:07:04 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -138,7 +138,7 @@ the two plots a) and b) completes the illustration
 \GMTfig[ht]{GMT_example_02}{Color images from gridded data.}
 
 \section{Spectral estimation and xy-plots}
-\index{Example!Spectral estimation|(}
+\index{Example!spectral estimation|(}
 \index{Example!xy plots|(}
 
 In this example we will show how to use the \GMT\ programs
@@ -182,7 +182,7 @@ short wavelengths and that the coherency between the two
 signals improves dramatically for wavelengths $>$ 20 km.
 \GMTfig[ht]{GMT_example_03}{Spectral estimation and $x/y$-plots.}
 
-\index{Example!Spectral estimation|)}
+\index{Example!spectral estimation|)}
 \index{Example!xy plots|)}
 
 \section{A 3-D perspective mesh plot}
@@ -787,10 +787,11 @@ better hold on to those stocks for a while longer...
 \index{Example!RedHat stock price|)}
 
 \section{World-wide seismicity the last 7 days}
-\index{Example!World-wide seismicity|(}
+\index{Example!world-wide seismicity|(}
 
 The next example uses the command-line tool \progname{wget} to obtain a data file
-from a specified URL.  In the example script this line is commented out so the
+from a specified URL\footnote{You can also use the utility \progname{curl}}.
+In the example script this line is commented out so the
 example will run even if you do not have \progname{wget} (we use the supplied
 \filename{neic\_quakes.d} which normally would be created by \progname{wget}); remove the comment to
 get the actual current seismicity plot using the live data.  The main purpose of
@@ -808,10 +809,10 @@ to spice up the legend.
 The script produces the plot in Figure~\ref{fig:GMT_example_22}, giving the URL
 where these and similar data can be obtained.
 
-\index{Example!World-wide seismicity|)}
+\index{Example!world-wide seismicity|)}
 
 \section{All great-circle paths lead to Rome}
-\index{Example!Paths to Rome|(}
+\index{Example!paths to Rome|(}
 
 While motorists recenty have started to question the old saying ``all roads lead to Rome'',
 aircraft pilots have known from the start that only one great-circle path connects the
@@ -832,10 +833,10 @@ interesting the path to Seattle appears in this particular projection (Hammer).
 We also note that Rome's antipode lies somewhere near the Chatham plateau (antipodes
 will be revisited in Example 25).
 
-\index{Example!Paths to Rome|)}
+\index{Example!paths to Rome|)}
 
 \section{Data selection based on geospatial criteria}
-\index{Example!Geospatial criteria|(}
+\index{Example!geospatial criteria|(}
 
 Allthough we are not seismologists, we have yet another example involving seismicity.
 We use seismicity data for the Australia/New Zealand region to demonstrate how we can
@@ -862,10 +863,10 @@ which remains constant at 1000 km.
 
 \GMTfig[ht]{GMT_example_24}{Data selection based on geospatial criteria.}
 
-\index{Example!Geospatial criteria|)}
+\index{Example!geospatial criteria|)}
 
 \section{Global distribution of antipodes}
-\index{Example!Distribution of antipodes|(}
+\index{Example!distribution of antipodes|(}
 
 As promised in Example 23, we will study antipodes.  The antipode of a point at
 $(\phi, \lambda)$ is the point at $(-\phi, \lambda + 180)$.  We seek an answer
@@ -878,19 +879,21 @@ equations below, note that we first calculate a grid that is +1 when a point and
 antipode is on land, -1 if both are in the ocean, and 0 elsewhere.  We then
 seek to calculate the area distribution of dry antipodes by only pulling out the nodes
 that equal +1.  As each point represent an area approximated by $\Delta \phi \times \Delta \lambda$
-and the $\Delta \lambda$ term's actual dimension depends on $\cos (\phi)$, we need
-to allow for that shrinkage and then normalize our sum to that of the whole area of the Earth,
-and convert that ratio to percent.  Since the $\Delta \lambda$, $\Delta \phi$ terms appear twice they cancel out, leaving the
-intractable expressions below where the sum of $cos(\phi)$ for all $\phi$ is known to equal $2N_y / \pi$:
+where the $\Delta \lambda$ term's actual dimension depends on $\cos (\phi)$, we need
+to allow for that shrinkage, normalize our sum to that of the whole area of the Earth,
+and finally convert that ratio to percent.  Since the $\Delta \lambda$, $\Delta \phi$ terms
+appear twice in these expressions they cancel out, leaving the somewhat
+intractable expressions below where the sum of $\cos (\phi)$ for all $\phi$ is known to equal $2N_y / \pi$:
 
 \input{scripts/GMT_example_25}
 
 In the end we obtain a funny-looking map depicting the antipodal distribution as
 well as displaying in legend form the requested percentages (Figure~\ref{fig:GMT_example_25}).
-Note that the script is set to evaluate a global 30 minute grid for expediency ($D = 30$); if you want
+Note that the script is set to evaluate a global 30 minute grid for expediency ($D = 30$), hence
+several smaller landmasses that do have terrestrial antipodes do not show up.  If you want
 a more accurate map you can set the parameter $D$ to a smaller increment (try 5 and wait a
 few minutes).
 
 \GMTfig[ht]{GMT_example_25}{Global distribution of antipodes.}
 
-\index{Example!Distribution of antipodes|)}
+\index{Example!distribution of antipodes|)}

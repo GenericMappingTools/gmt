@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.54 2004-08-17 03:09:34 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.55 2004-08-25 17:07:04 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -409,6 +409,8 @@ for grid lines and grid crosses, see Figure~\ref{fig:GMT_-B_geo_2}.
 
 
 \subsubsection{Cartesian linear axes}
+\index{linear axes}
+\index{Axes!linear}
 
 For non-geographic axes, the {\bf BASEMAP\_TYPE} setting is implicitly set to plain.  Other than that,
 cartesian linear axes are very similar to geographic axes.  The annotation format may be controlled with
@@ -428,6 +430,8 @@ optional.  We used \Opt{R}0/12/0/1 \Opt{JX}3/0.4
 \subsubsection{Cartesian log$_{10}$ axes}
 \index{log$_{10}$ axes}
 \index{Logarithmic axes}
+\index{Axes!log$_{10}$}
+\index{Axes!Logarithmic}
 
 Due to the logarithmic nature of annotation spacings, the {\it stride} parameter takes on specific
 meanings.  The following concerns are specific to log axes:
@@ -456,6 +460,8 @@ annotate log$_{10}$ of the actual values, with \Opt{Ba}1{\bf f}2{\bf g}3{\bf l}.
 as exponents, with \Opt{Ba}1{\bf f}2{\bf g}3{\bf p}.}
 
 \index{Exponential axis}
+\index{Axes!exponential}
+\index{Axes!power}
 \subsubsection{Cartesian exponential axes}
 Normally, {\it stride} will be used to create equidistant (in the user's unit) annotations
 or ticks, but because of the exponential nature of the axis, such annotations may converge
@@ -472,6 +478,7 @@ yields a $\sqrt{x}$ axis.  Here, intervals refer to actual data values, in
 uses the corresponding unprojected values, as in \Opt{Ba}3{\bf f}2{\bf g}1{\bf p}.}
 
 \index{Time axis}
+\index{Axes!time}
 \subsubsection{Cartesian time axes}
 
 What sets time axis apart from the other kinds of plot axes is the numerous ways in which we
@@ -616,7 +623,7 @@ plot the current command string (Figure~\ref{fig:GMT_-U}).
 
 \subsection{Verbose Feedback: The \Opt{V} option} 
 \index{\Opt{V} (verbose mode)}
-\index{Verbose}
+\index{Verbose (\Opt{V})}
 \label{sec:verbose}
 \Opt{V} selects verbose mode, which will send progress reports to
 \emph{stderr} [Default runs ``silently''].  The interpretation of
@@ -812,7 +819,7 @@ a full path to the file.  Program output is always written to the
 current directory unless a full path has been specified.
 
 \section{Verbose Operation}
-\index{Verbose operation\Opt{V}}
+\index{Verbose (\Opt{V})}
 \index{\Opt{V} (verbose mode)}
 
 Most of the programs take an optional \Opt{V} argument
@@ -849,12 +856,12 @@ there may be times when you must explicitly specify what you are
 providing as input using the \Opt{f} switch. When binary data are expected (\Opt{b}) they must all
 be floating point numbers, however for ASCII input there are numerous
 ways to encode data coordinates (which may be separated by white-space or commas).  Valid input data are generally
-of the same form as the arguments to the \Opt{R} option (see Section~\ref{sec:R}), with the following additional
-flexibility for calendar data:
+of the same form as the arguments to the \Opt{R} option (see Section~\ref{sec:R}), with additional
+flexibility for calendar data.
 
 Because of the widespread use of incompatible and ambiguous formats, the processing of input
 date components is guided by the template {\bf INPUT\_DATE\_FORMAT} in your
-\filename{.gmtdefaults4} file and by default set to {\it yyyy-mm-dd}.  Y2K-challenged input data such as 29/05/89 can be processed by setting {\bf INPUT\_DATE\_FORMAT}
+\filename{.gmtdefaults4} file; it is by default set to {\it yyyy-mm-dd}.  Y2K-challenged input data such as 29/05/89 can be processed by setting {\bf INPUT\_DATE\_FORMAT}
 to dd/mm/yy.  A complete discription of possible formats is given in the \GMTprog{gmtdefaults}
 man page.  The {\it clock} string is more standardized but issues like 12- or 24-hour clocks complicate matters
 as well as the presence or absence of delimiters between fields.  Thus, the processing of input
@@ -976,7 +983,7 @@ two take on the range 0--1\footnote{For an overview of color systems such as HSV
 \item Name.  Specify one of 663 valid color names as defined in the X11 color table\footnote{On most \UNIX-type systems
 you can find the file \filename{rgb.txt} in /usr/X11R6/lib/X11 or thereabouts, or use the command \progname{showrgb}.}.
 A very small yet versatile subset consists of the 29 choices {\it white}, {\it black}, and [light$|$dark]\{{\it red,
-orange, yellow, green, cyan, blue, magenta, gray, brown}\}.
+orange, yellow, green, cyan, blue, magenta, gray$|$grey, brown}\}.
 \end{enumerate}
 
 \index{Pen!texture}
@@ -1131,7 +1138,7 @@ Thus, for each ``{\it z}-slice'', defined as the interval between two boundaries
 (e.g., {\it z$_0$} to {\it z$_1$}), the color can be constant (by letting R$_{min}$
 = R$_{max}$, G$_{min}$ = G$_{max}$, and B$_{min}$ = B$_{max}$) or a continuous,
 linear function of {\it z}.  The optional flag {\bf A} is used to indicate annotation
-of the colorscale when plotted using \GMTprog{psscale}.  {\bf A} may be {\bf L},
+of the colorscale when plotted using \GMTprog{psscale}.  The optional {\bf A} may be {\bf L},
 {\bf U}, or {\bf B} to select annotation of the lower, upper, or both limits
 of the particular $z$-slice.  However, the standard \Opt{B} option can be used
 by \GMTprog{psscale} to affect annotation and ticking of colorscales.  The
@@ -1154,7 +1161,7 @@ which can be inserted into the beginning or end of the cpt-file.  If
 you prefer the HSV system, set the
 \filename{.gmtdefaults4} parameter accordingly and replace red, green,
 blue with hue, saturation, value.  Color palette tables that contain
-grayshades only may replace the r/g/b triplets with a single grayshade
+grayshades only may replace the {\it r/g/b} triplets with a single grayshade
 in the 0--255 range.  For CMYK, give four values in the 0--100 range.
 Both the min and max color specifications in one {\it z}-slice must use
 the same color system, i.e., you cannot mix ``red'' and 0/255/100 on the
