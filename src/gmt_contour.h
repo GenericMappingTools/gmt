@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.11 2004-06-01 02:28:31 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.12 2004-06-02 03:11:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -55,7 +55,7 @@ struct GMT_CONTOUR_LINE {
 	int n;				/* Length of the contour */
 	BOOLEAN annot;			/* TRUE if we want labels */
 	char *name;			/* Contour name */
-	struct GMT_PEN pen;		/* Pen for drawing box */
+	struct GMT_PEN pen;		/* Pen for drawing contour */
 	struct GMT_LABEL *L;		/* Pointer to array of strictures with labels */
 	int n_labels;			/* Number of labels; if 0 we just have a line segment */
 };
@@ -89,13 +89,17 @@ struct GMT_CONTOUR {
 	double label_font_size;		/* Font size for labels */
 	double label_angle;		/* For fixed-angle labels only */
 	double clearance[2];		/* Spacing between text and textbox */
-	int box;			/* Textbox [0 = transparent, 1 = filled, 2 = filled + outline */
+	int box;			/* Textbox bits [0 = transparent, 1 = outline, 2 = rect, 4 = rounded rect] */
 	BOOLEAN curved_text;		/* TRUE for text to follow curved lines */
 	int rgb[3];			/* Opaque box color */
-	struct GMT_PEN pen;		/* Pen for drawing box */
+	int font_rgb[3];		/* Font color */
+	BOOLEAN got_font_rgb;		/* TRUE if +k was specified */
+	struct GMT_PEN pen;		/* Pen for drawing textbox outline */
+	struct GMT_PEN line_pen;	/* Pen for drawing the contour line */
 	struct GMT_LABEL **L;		/* Pointers to sorted list of labels */
 	int n_label;			/* Length of list */
 	char unit[32];			/* Unit for labels */
+	char prefix[32];		/* prefix for labels */
 	int just;			/* Label justification */
 	int end_just[2];		/* Justification for end of lines */
 	int angle_type;			/* 0 = contour-parallel, 1 = contour-normal, 2 = fixed angle */

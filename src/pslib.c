@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.66 2004-06-01 19:49:34 pwessel Exp $
+ *	$Id: pslib.c,v 1.67 2004-06-02 03:11:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2164,10 +2164,12 @@ void ps_pathtext (double x[], double y[], int n, int node[], double angle[], cha
 	 * just		Justification of text relative to label coordinates
 	 * p_rgb	Line color
 	 * t_rgb	Font color
-	 * form		bits: 0 = straigth text, 1 = curved text, 2 = just place gap, 4 = skip line, 8 = clip path, 16 = paint clip path, 32 = just call labelline
+	 * form		bits: 0 = straigth text, 1 = curved text, 2 = just place gap, 4 = skip line
+	 *		      8 = clip path, 16 = paint clip path, 32 = just call labelline and reuse last set of parameters
+	 *		     64 = first time called, 128 = final time called
 	 */
 	 
-	int i = 0, j, k, place;
+	int i = 0, j, k, place, first;
 	double height;
 	char *string;
 	
@@ -2184,6 +2186,8 @@ void ps_pathtext (double x[], double y[], int n, int node[], double angle[], cha
 		PSL_label_first = FALSE;
 	}
 
+	first = (form & 64);
+	
 	for (i = 0; i < m; i++) {
 		if (justify < 0)  {	/* Strip leading and trailing blanks */
 			for (k = 0; label[i][k] == ' '; k++);	/* Count # of leading blanks */
@@ -2201,6 +2205,26 @@ void ps_pathtext (double x[], double y[], int n, int node[], double angle[], cha
 	}
 	justify =  abs (justify);
 
+	if (first) {	/* Do this only once */
+		ps_set_integer ("PSL_just", justify);
+		ps_set_length ("PSL_gap_x", offset[0]);
+		ps_set_length ("PSL_gap_y", offset[1]);
+		fprintf (ps.fp, "/PSL_setpenrgb { ");
+		k = ps_place_color (p_rgb);
+		fprintf (ps.fp, "%c } def\n", ps_paint_code[k]);
+		fprintf (ps.fp, "/PSL_settxtrgb { ");
+		k = ps_place_color (t_rgb);
+		fprintf (ps.fp, "%c } def\n", ps_paint_code[k]);
+ 		if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
+ 			if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
+			ps_textdim ("PSL_dimx", "PSL_height", fabs (pointsize), ps.font_no, label[0], 0);		/* Set the string dimensions in PS */
+ 			if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
+		}
+		fprintf (ps.fp, "%d F%d\n", (int) irint ((fabs (pointsize) / ps.points_pr_unit) * ps.scale), ps.font_no);	/* Set font */
+	}
+	
+	/* Set these each time */
+	
 	ps_set_integer ("PSL_n", n);
 	ps_set_integer ("PSL_m", m);
 	ps_set_length_array ("PSL_x", x, n);
@@ -2208,23 +2232,7 @@ void ps_pathtext (double x[], double y[], int n, int node[], double angle[], cha
 	ps_set_real_array ("PSL_angle", angle, m);
 	ps_set_int_array ("PSL_node", node, m);
 	ps_set_txt_array ("PSL_str", label, m);
-	ps_set_integer ("PSL_just", justify);
-	ps_set_length ("PSL_gap_x", offset[0]);
-	ps_set_length ("PSL_gap_y", offset[1]);
-	fprintf (ps.fp, "/PSL_setpenrgb { ");
-	k = ps_place_color (p_rgb);
-	fprintf (ps.fp, "%c } def\n", ps_paint_code[k]);
-	fprintf (ps.fp, "/PSL_settxtrgb { ");
-	k = ps_place_color (t_rgb);
-	fprintf (ps.fp, "%c } def\n", ps_paint_code[k]);
-		
- 	if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
- 		if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
-		ps_textdim ("PSL_dimx", "PSL_height", fabs (pointsize), ps.font_no, label[0], 0);		/* Set the string dimensions in PS */
- 		if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
-	}
 	
-	fprintf (ps.fp, "%d F%d\n", (int) irint ((fabs (pointsize) / ps.points_pr_unit) * ps.scale), ps.font_no);	/* Set font */
 	fprintf (ps.fp, "%d PSL_labelline\n", form);
 	
   	ps.npath = 0;

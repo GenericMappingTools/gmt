@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.133 2004-05-27 04:05:50 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.134 2004-06-02 03:11:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -483,6 +483,22 @@ void GMT_explain_option (char option)
 		case '.':	/* Trailer message */
 		
 			fprintf (stderr, "\t(See gmtdefaults man page for hidden GMT default parameters)\n");
+			break;
+
+		case 'A':	/* Contour/line specifications in *contour and psxy[z] */
+		
+			fprintf (stderr, "\t   Append +a<angle> for annotations at a fixed angle, +an for line-normal, or +ap for line-parallel [Default]\n");
+			fprintf (stderr, "\t   Append +c<dx>[/<dy>] to change the clearance between label and text box [0.05i/0.05i]\n");
+			fprintf (stderr, "\t   Append +f followed by desired label font [Default is %d].\n", gmtdefs.annot_font[0]);
+			fprintf (stderr, "\t   Append +g<color> to set color of opaque text box [Default is white]\n");
+			fprintf (stderr, "\t   Append +j<just> to set label justification [Default is CM]\n");
+			fprintf (stderr, "\t   Append +o|O to draw opaque rectangular or rounded rectangular text box [Default is transparent]\n");
+			fprintf (stderr, "\t   Append +p<pen> to change pen for text box [Default is no outline]\n");
+			fprintf (stderr, "\t   Append +s followed by desired font size in points [Default is 9].\n");
+			fprintf (stderr, "\t   Append +t for transparent text box [Default]\n");
+			fprintf (stderr, "\t   Append +T for transparent text box and texted curved along path\n");
+			fprintf (stderr, "\t   Append +^<prefix> to labels; Start prefix with hyphen (-) for no space between annotation and prefix.\n");
+			fprintf (stderr, "\t   Append +u<unit> to labels; Start unit with hyphen (-) for no space between annotation and unit.\n");
 			break;
 
 		default:

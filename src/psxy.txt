@@ -185,6 +185,10 @@ great-circle arcs.
 The optional \fIlabelinfo\fP controls the specifics of the label formatting and consists of a concatenated string
 made up of any of the following control arguments:
 #include "explain_labelinfo.txt"
+.br
+\fB+l\fP\fIlabel\fP sets the label text.  If "h" we take the label from the current multisegment header (first looking
+for \fB\-\fPlabel\fP option, if not the first word after segment flag). If "d" we take the distance along the line
+as the label.
 .B \-Sr
 \fBr\fPectangle.  No size needs to be specified, but the x- and y-dimensions must be found in columns 3 and 4.
 .TP
