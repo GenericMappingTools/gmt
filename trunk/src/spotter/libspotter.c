@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.11 2001-12-24 18:13:26 pwessel Exp $
+ *	$Id: libspotter.c,v 1.12 2002-04-05 22:12:01 pwessel Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -48,13 +48,12 @@
 
 /* Internal functions */
 
-void spotter_forward_poles (struct EULER p[], int ns);
-void spotter_rotate_fwd (double lon, double lat, double *tlon, double *tlat, struct EULER *p);
-void spotter_rotate_inv (double *lon, double *lat, double tlon, double tlat, struct EULER *p);
 void matrix_to_pole (double T[3][3], double *plon, double *plat, double *w);
 void matrix_transpose (double At[3][3], double A[3][3]);
 void matrix_mult (double a[3][3], double b[3][3], double c[3][3]);
 void make_rot_matrix (double lonp, double latp, double w, double R[3][3]);
+
+void spotter_finite_to_fwstages (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates);
 
 int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in, BOOLEAN finite_out, double *t_max)
 {
@@ -135,33 +134,15 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 		(*t_max) = e[0].t_start;
 
 	e = (struct EULER *) GMT_memory ((void *)e, n, sizeof (struct EULER), "libspotter");
-	if (flowline) spotter_forward_poles (e, n);
+
+	if (flowline) {
+		spotter_finite_to_fwstages (e, n, TRUE, TRUE);
+		(*t_max) = e[0].t_start;
+	}
+
 	*p = e;
 
 	return (n);
-}
-
-void spotter_forward_poles (struct EULER p[], int ns)
-{
-	int i, j;
-	double d_lon, tlon, tlat;
-
-	for (i = ns-1; i > 0; i--) {	/* From current to previous stages */
-		for (j = 0; j < i; j++) {	/* Rotate the older stage poles */
-			d_lon = p[i].omega_r * p[i].duration;
-			spotter_rotate_fwd (p[j].lon_r, p[j].lat_r, &tlon, &tlat, &p[i]);
-			tlon += d_lon;
-			spotter_rotate_inv (&p[j].lon_r, &p[j].lat_r, tlon, tlat, &p[i]);
-		}
-	}
-	for (i = 0; i < ns; i++) {
-		p[i].lon = p[i].lon_r * R2D;
-		p[i].lat = p[i].lat_r * R2D;
-		p[i].sin_lat = sin (p[i].lat_r);
-		p[i].cos_lat = cos (p[i].lat_r);
-		p[i].omega = -p[i].omega;
-		p[i].omega_r = -p[i].omega_r;
-	}
 }
 
 /* spotter_backtrack: Given a seamount location and age, trace the
@@ -479,50 +460,83 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 	return (np);
 }
 
-void spotter_rotate_fwd (double lon, double lat, double *tlon, double *tlat, struct EULER *p)
-{
-	/* Given the pole position in p, oblique coordinates
-	 * are computed from geographical coordinates assuming a spherical earth.
-	 * All values in RADIANS
-	 */
-	 
-	double dlon, cc, test, s_lat, c_lat, c_lon, s_lon;
-	 
-	dlon = lon - p->lon_r;
-	sincos (lat, &s_lat, &c_lat);
-	sincos (dlon, &s_lon, &c_lon);
-	cc = c_lat * c_lon;
-	test = p->sin_lat * s_lat + p->cos_lat * cc;
-	*tlat = d_asin (test);
-	*tlon = d_atan2 (c_lat * s_lon, p->sin_lat * cc - p->cos_lat * s_lat);
-}
-	 
-void spotter_rotate_inv (double *lon, double *lat, double tlon, double tlat, struct EULER *p)
-{
-	/* Given the pole position in project_info, geographical coordinates 
-	 * are computed from oblique coordinates assuming a spherical earth.
-	 * All values in RADIANS
-	 */
-	 
-	double dlon, test, s_lat, c_lat, c_lon, s_lon, cc;
-	 
-	dlon = tlon;
-	sincos (tlat, &s_lat, &c_lat);
-	sincos (dlon, &s_lon, &c_lon);
-	cc = c_lat * c_lon;
-	test = p->sin_lat * s_lat - p->cos_lat * cc;
-	*lat = d_asin (test);
-	*lon = p->lon_r + d_atan2 (c_lat * s_lon, p->sin_lat * cc + p->cos_lat * s_lat);
-}
-
-/* Converts a set of total reconstruction poles to stage poles
+/* Converts a set of total reconstruction poles to forward stage poles for flowlines
  *
  * Based partly on Cox and Hart, 1986
  */
 
+void spotter_finite_to_fwstages (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates)
+{
+	/* Convert finite rotations to forward stage rotations for flowlines */
+	/* p[]		: Array of structure elements with rotation parameters
+	 * n		: Number of rotations
+	 * finite_rates	: TRUE if finite rotations given in degree/my [else we have opening angle]
+	 * stage_rates	: TRUE if stage rotations should be returned in degree/my [else we return opening angle]
+	 */
+	 
+	int i, j;
+	double *elon, *elat, *ew, t_old;
+	double R_new[3][3], R_old[3][3], R_stage[3][3];
+	struct EULER e_tmp;
+
+	/* Expects total reconstruction models to have youngest poles first */
+	
+	elon = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
+	elat = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
+	ew   = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "libspotter");
+	
+	memset ((void *)R_new, 0, (size_t)(9 * sizeof (double)));
+	R_new[0][0] = R_new[1][1] = R_new[2][2] = 1.0;
+	
+	/* First forward stage pole is the youngest total reconstruction pole */
+
+	t_old = 0.0;
+	for (i = 0; i < n; i++) {
+		if (finite_rates) p[i].omega *= p[i].duration;	/* Convert opening rate to opening angle */
+		make_rot_matrix (p[i].lon, p[i].lat, p[i].omega, R_old);
+		matrix_mult (R_old, R_new, R_stage);
+		matrix_to_pole (R_stage, &elon[i], &elat[i], &ew[i]);
+		if (elon[i] > 180.0) elon[i] -= 360.0;
+		matrix_transpose (R_new, R_old);
+		p[i].t_stop = t_old;
+		t_old = p[i].t_start;
+	}
+	
+	/* Time to put back */
+	
+	for (i = 0; i < n; i++) {
+		p[i].lon = elon[i];
+		p[i].lat = elat[i];
+		p[i].duration = p[i].t_start - p[i].t_stop;
+		p[i].omega = -ew[i];				/* Reverse direction */
+		if (stage_rates) p[i].omega /= p[i].duration;	/* Convert opening angle to opening rate */
+		p[i].omega_r = p[i].omega * D2R;
+		p[i].sin_lat = sin (p[i].lat * D2R);
+		p[i].cos_lat = cos (p[i].lat * D2R);
+		p[i].lon_r = p[i].lon * D2R;	
+		p[i].lat_r = p[i].lat * D2R;
+	}
+
+	GMT_free ((void *)elon);
+	GMT_free ((void *)elat);
+	GMT_free ((void *)ew);
+	
+	/* Flip order */
+	
+	for (i = 0; i < n/2; i++) {
+		j = n - i - 1;
+		if (i != j) {
+			e_tmp = p[i];
+			p[i] = p[j];
+			p[j] = e_tmp;
+		}
+	}
+}
+
+
 void spotter_finite_to_stages (struct EULER p[], int n, BOOLEAN finite_rates, BOOLEAN stage_rates)
 {
-	/* Convert finite rotations to stage rotations */
+	/* Convert finite rotations to backwards stage rotations for backtracking */
 	/* p[]		: Array of structure elements with rotation parameters
 	 * n		: Number of rotations
 	 * finite_rates	: TRUE if finite rotations given in degree/my [else we have opening angle]
