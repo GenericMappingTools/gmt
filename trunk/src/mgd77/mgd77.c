@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.10 2005-04-05 19:14:15 pwessel Exp $
+ *	$Id: mgd77.c,v 1.11 2005-04-05 19:38:11 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -577,7 +577,7 @@ int MGD77_View_Line (FILE *fp, char *MGD77line)	/* View a single MGD77 string */
  */
 int MGD77_Convert_To_New_Format(char *oldFormatLine, char *newFormatLine)
 {
-	double tz; int yy; char legid[9], s_tz[6], s_year[5];
+	int tz; int yy; char legid[9], s_tz[6], s_year[5];
 	
 	if (oldFormatLine[0] != '3') return FALSE;
 	strncpy (legid, &oldFormatLine[mgd77defs[1].start-1], mgd77defs[1].length);
@@ -587,7 +587,7 @@ int MGD77_Convert_To_New_Format(char *oldFormatLine, char *newFormatLine)
 		yy += 2000;
 	else
 		yy += 1900;
-	sprintf (newFormatLine,"5%s%+03d%4d%s", legid, tz, yy, *(oldFormatLine + mgd77defs[4].start-1));
+	sprintf (newFormatLine,"5%s%+03d%4d%s", legid, tz, yy, (oldFormatLine + mgd77defs[4].start-1));
 	return TRUE;
 }
 
@@ -607,7 +607,7 @@ int MGD77_Convert_To_Old_Format(char *newFormatLine, char *oldFormatLine)
 	strncpy(s_year, &newFormatLine[mgd77defs[3].start-1], mgd77defs[3].length);
 	if (tz == 99) tz = 9999;  /* Handle the empty case */
 	else tz *= 100;
-	sprintf (oldFormatLine,"3%s%+05d%2d%s", legid, tz, *(s_year + 2), *(newFormatLine + mgd77defs[4].start-1));
+	sprintf (oldFormatLine,"3%s%+05d%2d%s", legid, tz, *(s_year + 2), (newFormatLine + mgd77defs[4].start-1));
 	return TRUE;
 }
 
