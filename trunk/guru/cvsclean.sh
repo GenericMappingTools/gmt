@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: cvsclean.sh,v 1.1 2004-05-12 19:11:27 pwessel Exp $
+#	$Id: cvsclean.sh,v 1.2 2004-06-15 05:26:48 lloyd Exp $
 
 # create the killfile
 cat /dev/null >killfiles
@@ -11,11 +11,11 @@ do
 done
 
 # remove backup files
-find -name "*~" >>killfiles
-find -name ".*~" >>killfiles
-find -name "*.bak" >>killfiles
-find -name ".*.bak" >>killfiles
-find -name ".#*" >>killfiles
+find . -name "*~" >>killfiles
+find . -name ".*~" >>killfiles
+find . -name "*.bak" >>killfiles
+find . -name ".*.bak" >>killfiles
+find . -name ".#*" >>killfiles
 
 # remove the exceptions from the list
 # these are non-cvs files, we nevertheless want to keep
