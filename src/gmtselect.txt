@@ -5,7 +5,7 @@ gmtselect \- Select data subsets based on multiple spatial criteria
 \fBgmtselect\fP [ \fIinfiles\fP ] [ \fB\-A\fP\fImin_area\fP[/\fImin_level/max_level\fP] ] 
 [ \fB\-C\fP[\fBf\fP]\fIdist/ptfile\fP ] [ \fB\-D\fP\fIresolution\fP ] [ \fB\-F\fP\fIpolygonfile\fP ] 
 [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP[\fBcflrs\fP] ] [ \fB\-J\fP\fIparameters\fP ] 
-[ \fB\-L\fP[\fIdist/linefile\fP] ] [ \fB\-M\fP[\fIflag\fP] ] 
+[ \fB\-L\fP\fIdist/linefile\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
 [ \fB\-N\fP\fImaskvalues\fP[\fBo\fP] ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] 
 [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ]
 [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
@@ -30,8 +30,9 @@ in km^2 or of hierarchical level that is lower than \fImin_level\fP or higher th
 will be ignored [Default is 0/4 (all features)]. See DATABASE INFORMATION in the \fBpscoast\fP man-pages for more details.
 .TP
 .B \-C
-Pass all records whose location is within \fIdist\fP km of any of the points in the ascii file \fIptfile\fP.  If \fIdist\fP
-is zero then the 3rd column of \fIptfile\fP must have each point's individual radius of influence.  Prepend \fBf\fP to indicate you want approximate flat
+Pass all records whose location is within \fIdist\fP of any of the points in the ascii file \fIptfile\fP.  If \fIdist\fP
+is zero then the 3rd column of \fIptfile\fP must have each point's individual radius of influence.  Distances are in user units; specify
+\fB\-fg\fP or a map projection to indicate distances in km.  Prepend \fBf\fP to indicate you want approximate flat
 earth distance calculations (faster) than exact great circle calculations (slower).
 .TP
 .B \-D
@@ -58,10 +59,9 @@ Reverses the sense of the test for each of the criteria specified:
 #include "explain_-j.txt"
 .TP
 .B \-L
-Pass all records whose location is within \fIdist\fP km of any of the line segments in the multiple-segment ascii
+Pass all records whose location is within \fIdist\fP of any of the line segments in the multiple-segment ascii
 file \fIlinefile\fP.  If \fIdist\fP is zero then the 2nd column of each sub-header in the \fIptfile\fP must have each lines's individual distance value.
-If no arguments are given, it means instead that the x column contains longitudes, which may differ from the region
-in \fB\-R\fP by [multiples of] 360 degrees [Default assumes no periodicity].
+Distances are in user units; specify \fB\-fg\fP or a map projection to indicate distances in km. 
 .TP
 .B \-M
 Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP.
