@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.97 2004-04-14 20:33:53 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.98 2004-04-15 18:02:28 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3706,12 +3706,12 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 				break;
 			case 't':	/* top */
 				x_label = ms->x0;
-				y_label = ms->y0 + f_len;
+				y_label = ms->y0 + fabs(gmtdefs.label_offset);
 				jj = 2;
 				break;
 			case 'b':	/* bottom */
 				x_label = ms->x0;
-				y_label = ms->y0 - off - fabs(gmtdefs.annot_offset_primary) - gmtdefs.annot_font_size_primary / 72.0;
+				y_label = ms->y0 - a_len - fabs(gmtdefs.label_offset) - 0.85 * gmtdefs.annot_font_size_primary / 72.0;
 				jj = 10;
 				break;
 		}
