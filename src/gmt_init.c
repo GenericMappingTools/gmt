@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.126 2004-04-25 08:43:17 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.127 2004-04-25 20:00:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3343,7 +3343,7 @@ int GMT_map_getframe (char *in) {
 	
 	info[0] = one;	info[1] = two;	info[2] = three;
 	if (!frame_info.plot) {	/* First time we initialize stuff */
-		for (i = 0; GMT_primary && i < 3; i++) {
+		for (i = 0; i < 3; i++) {
 			memset ((void *)&frame_info.axis[i], 0, sizeof (struct PLOT_AXIS));
 			for (j = 0; j < 8; j++) {
 				frame_info.axis[i].item[j].parent = i;
