@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.59 2004-07-01 17:57:13 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.60 2004-07-01 18:08:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7274,9 +7274,10 @@ int GMT_grd_forward_new (char *infile, float *z_out, double west, double east, d
 	int i_in, j_in, ij_in, i_out, j_out, ij_out, mx, my;
 	short int *nz;
 	float *z_in;
-	double x_proj, y_proj, I_off, O_off, *x_in, *y_in, *x_in_proj, *y_in_proj, *x_out, *y_out, *x_out_proj, *y_out_proj;
+	double x_proj, y_proj, I_off, O_off, z_int, inv_nz, *x_in, *y_in, *x_in_proj, *y_in_proj, *x_out, *y_out, *x_out_proj, *y_out_proj;
 	struct GMT_BCR bcr;
 	struct GRD_HEADER I;
+	BOOLEAN bilinear;
 	
 	if (GMT_read_grd_info (infile, &I)) {
 		fprintf (stderr, "%s: Error opening file %s\n", GMT_program, infile);
@@ -7311,7 +7312,7 @@ int GMT_grd_forward_new (char *infile, float *z_out, double west, double east, d
 
 	/* Set boundary conditions  */
 	
-	GMT_boundcond_set (&I, &edgeinfo, GMT_pad, z_in);
+	GMT_boundcond_set (&I, edgeinfo, GMT_pad, z_in);
 
 	nz = (short int *) GMT_memory (VNULL, (size_t)(O->nx * O->ny), sizeof (short int), "GMT_grd_forward");
 	x_in = (double *) GMT_memory (VNULL, (size_t)I.nx, sizeof (double), "GMT_grd_forward");
@@ -7350,9 +7351,9 @@ int GMT_grd_forward_new (char *infile, float *z_out, double west, double east, d
 				
 			/* Here, (x_proj, y_proj) is the projected grid point.  Now find nearest node on the output grid */
 			
-			j_out = GMT_y_to_j (y_proj, O->y_min, O->y_max, O->y_inc, r_off, O->ny);
+			j_out = GMT_y_to_j (y_proj, O->y_min, O->y_inc, O_off, O->ny);
 			if (j_out < 0 || j_out >= O->ny) continue;	/* Outside our grid region */
-			i_out = GMT_x_to_i (x_proj, O->x_min, O->x_max, O->x_inc, r_off, O->nx);
+			i_out = GMT_x_to_i (x_proj, O->x_min, O->x_inc, O_off, O->nx);
 			if (i_out < 0 || i_out >= O->nx) continue;	/* Outside our grid region */
 
 			/* OK, this projected point falls inside the projected grid's rectangular domain */
@@ -7362,9 +7363,9 @@ int GMT_grd_forward_new (char *infile, float *z_out, double west, double east, d
 			if (nz[ij_out] == 0) z_out[ij_out] = 0.0;	/* First time, override the NaN */
 			z_out[ij_out] += z_in[ij_in];			/* Add up the z-sum inside this rect... */
 			nz[ij_out]++;					/* ..and how many points there were */
-			if (nz[ij_out] == SHORT_MAX) {			/* This bin is getting way to many points... */
-				fprintf (stderr, %s: ERROR: Number of projected points inside a bin exceeds %d\n", GMT_program, SHORT_MAX);
-				fprintf (stderr, %s: ERROR: Incorrect -R -I -J or insanely large grid?\n", GMT_program);
+			if (nz[ij_out] == SHRT_MAX) {			/* This bin is getting way to many points... */
+				fprintf (stderr, "%s: ERROR: Number of projected points inside a bin exceeds %d\n", GMT_program, SHRT_MAX);
+				fprintf (stderr, "%s: ERROR: Incorrect -R -I -J or insanely large grid?\n", GMT_program);
 				exit (EXIT_FAILURE);
 			}
 		}
@@ -7382,10 +7383,10 @@ int GMT_grd_forward_new (char *infile, float *z_out, double west, double east, d
 				
 			/* Here, (x_proj, y_proj) is the inversely projected grid point.  Now find nearest node on the input grid */
 			
-			z_int = GMT_get_bcr_z (I, x_proj, y_proj, z_in, &edgeinfo, &bcr);
+			z_int = GMT_get_bcr_z (&I, x_proj, y_proj, z_in, edgeinfo, &bcr);
 			
 			if (nz[ij_out] == 0)
-				z[ij_out] = z_int;
+				z_out[ij_out] = z_int;
 			else {
 				if (GMT_is_dnan (z_int))
 					z_out[ij_out] /= nz[ij_out];		/* Plain average */
@@ -7405,7 +7406,7 @@ int GMT_grd_forward_new (char *infile, float *z_out, double west, double east, d
 	GMT_free ((void *)y_in);		
 	GMT_free ((void *)x_out);		
 	GMT_free ((void *)y_out);		
-	if (RECT_GRATICULE)
+	if (RECT_GRATICULE) {
 		GMT_free ((void *)x_in_proj);		
 		GMT_free ((void *)y_in_proj);		
 		GMT_free ((void *)x_out_proj);		
