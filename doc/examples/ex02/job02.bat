@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 02
 REM
-REM		$Id: job02.bat,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+REM		$Id: job02.bat,v 1.2 2001-09-13 06:31:24 pwessel Exp $
 REM
 REM Purpose:	Make two color images based gridded data
 REM GMT progs:	gmtset, grd2cpt, grdgradient, grdimage, makecpt, psscale, pstext
@@ -10,7 +10,7 @@ echo GMT EXAMPLE 02
 set master=y
 if exist job02.bat set master=n
 if %master%==y cd ex02
-gmtset HEADER_FONT_SIZE 30 OBLIQUE_ANOTATION 0 DEGREE_FORMAT 0
+gmtset HEADER_FONT_SIZE 30 OBLIQUE_ANOTATION 0
 REM get gridded data using GMT supplemental program grdraster
 REM grdraster 1 -R160/20/220/30r -JOc190/25.5/292/69/4.5i -GHI_topo2.grd=0/0.001/0
 REM grdraster 4 -R -JO -GHI_geoid2.grd
