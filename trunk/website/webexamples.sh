@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.4 2002-02-27 23:15:24 pwessel Exp $
+#	 $Id: webexamples.sh,v 1.5 2003-10-21 18:13:01 pwessel Exp $
 #
 #	webexamples.csh - Automatic generation of the GMT examples pages
 #
@@ -61,8 +61,7 @@ set.</A></LI>
 plots.</A></LI>
 
 <LI>
-<A HREF="examples/ex04/gmt_example_04.html">3-D perspective, artificially
-illuminated color image</A></LI>
+<A HREF="examples/ex04/gmt_example_04.html">3-D perspective, mesh-line surface</A></LI>
 
 <LI>
 <A HREF="examples/ex05/gmt_example_05.html">3-D perspective, artificially
