@@ -5585,10 +5585,12 @@ double GMT_great_circle_dist(double lon1, double lat1, double lon2, double lat2)
 int GMT_wesn_outside (double lon, double lat)
 {
 	
-	if (GMT_world_map) {
+	/* if (GMT_world_map) {
 		while (lon < project_info.w) lon += 360.0;
 		while (lon > project_info.e) lon -= 360.0;
-	}
+	} */
+	while (lon < project_info.w && (lon + 360.0) <= project_info.e) lon += 360.0;
+	while (lon > project_info.e && (lon - 360.0) >= project_info.w) lon -= 360.0;
 	
 	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < SMALL )
 		GMT_x_status_new = -1;
