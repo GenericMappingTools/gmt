@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.90 2005-02-15 23:03:58 pwessel Exp $
+ *	$Id: pslib.c,v 1.91 2005-02-23 02:16:21 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -190,7 +190,7 @@ unsigned char *ps_rle_encode (int *nbytes, unsigned char *input);
 unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input);
 byte_stream_t ps_lzw_putcode (byte_stream_t stream, short int incode);
 void ps_stream_dump (unsigned char *buffer, int nx, int ny, int depth, int compress, int encode, int mask);
-void ps_a85_encode (unsigned char quad[]);
+void ps_a85_encode (unsigned char quad[], int nbytes);
 void *ps_memory (void *prev_addr, size_t nelem, size_t size);
 int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy);
 int ps_comp_int_asc (const void *p1, const void *p2);
@@ -1287,7 +1287,10 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 			ps.bb[3] = eps->y1;
 		}
 		else { 			/* Plot originated as Landscape */
-			ps.bb[0] = ps.p_width - eps->y1; ps.bb[1] = eps->x0; ps.bb[2] = ps.p_width - eps->y0; ps.bb[3] = eps->x1;
+			ps.bb[0] = ps.p_width - eps->y1;
+			ps.bb[1] = eps->x0;
+			ps.bb[2] = ps.p_width - eps->y0;
+			ps.bb[3] = eps->x1;
 		}
 	}
 	else {		/* No info is available, default to Current Media Size */
@@ -1583,18 +1586,19 @@ void ps_rotatetrans (double x, double y, double angle)
 {
 	int go = FALSE;
 
+	if (fabs(angle) < 1e-9) angle = 0.0;
 	if (angle != 0.0) {
-		if (fabs(angle) < 1e-9) angle = 0.0;
 		fprintf (ps.fp, "%g R", angle);
 		go = TRUE;
 	}
+	if (fabs(x) < 1e-9) x = 0.0;
+	if (fabs(y) < 1e-9) y = 0.0;
 	if (x != 0.0 || y != 0.0) {
-		if (fabs(x) < 1e-9) x = 0.0;
-		if (fabs(y) < 1e-9) y = 0.0;
 		if (go) fputc (' ', ps.fp);
 		fprintf (ps.fp, "%g %g T", x * ps.scale, y * ps.scale);
+		go = TRUE;
 	}
-	fputc ('\n', ps.fp);
+	if (go) fputc ('\n', ps.fp);
 }
 
 /* fortran interface */
@@ -2307,18 +2311,19 @@ void ps_transrotate (double x, double y, double angle)
 {
 	int go = FALSE;
 
+	if (fabs(x) < 1e-9) x = 0.0;
+	if (fabs(y) < 1e-9) y = 0.0;
 	if (x != 0.0 || y != 0.0) {
-		if (fabs(x) < 1e-9) x = 0.0;
-		if (fabs(y) < 1e-9) y = 0.0;
 		fprintf (ps.fp, "%g %g T", x * ps.scale, y * ps.scale);
 		go = TRUE;
 	}
+	if (fabs(angle) < 1e-9) angle = 0.0;
 	if (angle != 0.0) {
-		if (fabs(angle) < 1e-9) angle = 0.0;
 		if (go) fputc (' ', ps.fp);
 		fprintf (ps.fp, "%g R", angle);
+		go = TRUE;
 	}
-	fputc ('\n', ps.fp);
+	if (go) fputc ('\n', ps.fp);
 }
 
 /* fortran interface */
@@ -3729,7 +3734,7 @@ void ps_stream_dump (unsigned char *buffer, int nx, int ny, int nbits, int compr
 	}
 	if (encode == 1) {
 		/* Write each 4-tuple as ASCII85 5-tuple */
-		for (i = 0; i < nbytes; i += 4) ps_a85_encode (&buffer[i]);
+		for (i = 0; i < nbytes; i += 4) ps_a85_encode (&buffer[i], (int)nbytes-i);
 		fprintf (ps.fp, "~>\n");
 	}
 	else if (encode == 2) {
@@ -3746,20 +3751,43 @@ void ps_stream_dump (unsigned char *buffer, int nx, int ny, int nbits, int compr
 	if (mask == 2) fprintf (ps.fp, "%s", kind_compress[compress]);
 }
 
-void ps_a85_encode (unsigned char quad[])
+void ps_a85_encode (unsigned char quad[], int nbytes)
 {
+	/* Encode 4-byte binary to 5-byte ASCII
+	 * Special cases:	#00000000 is encoded as z
+	 *			When n < 4, output only n+1 bytes */
 	unsigned int n, j;
 	unsigned char c[5];
+
+	for (j = nbytes; j < 4; j++) quad[j] = 0;
+
 	n = (quad[0] << 24) + (quad[1] << 16) + (quad[2] << 8) + quad[3];
-	if ( n == 0 ) {
+
+	if ( n == 0 && nbytes > 3) {
 		fprintf (ps.fp, "z");
 		PSL_len++;
 	}
 	else {
 		for (j = 0; j < 4; j++) { c[j] = (n % 85) + 33; n = n / 85; }
 		c[4] = n + 33 ;
-		fprintf (ps.fp, "%c%c%c%c%c", c[4], c[3], c[2], c[1], c[0]);
-		PSL_len += 5;
+
+		switch (nbytes) {
+		case 1:
+			fprintf (ps.fp, "%c%c", c[4], c[3]);
+			PSL_len += 2;
+			break;
+		case 2:
+			fprintf (ps.fp, "%c%c%c", c[4], c[3], c[2]);
+			PSL_len += 3;
+			break;
+		case 3:
+			fprintf (ps.fp, "%c%c%c%c", c[4], c[3], c[2], c[1]);
+			PSL_len += 4;
+			break;
+		default:
+			fprintf (ps.fp, "%c%c%c%c%c", c[4], c[3], c[2], c[1], c[0]);
+			PSL_len += 5;
+		}
 	}
 	if (PSL_len > 91) { fprintf (ps.fp, "\n"); PSL_len = 0; }
 }
