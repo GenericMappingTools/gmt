@@ -2,8 +2,8 @@
 .SH NAME
 gmtconvert \- Converts, Pastes, and/or Extracts columns from ASCII and binary 1-D tables
 .SH SYNOPSIS
-\fBgmtconvert\fP [ \fIinputfiles\fP] [ \fB\-A\fP ] [ \fB\-E\fP ] [\fB\-F\fIcols\fP ] [ \fB\-H\fP[\fInrec\fP] ] 
-[ \fB\-L\fP ] [ \fB\-I\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-S\fP\fI"search string"\fP ] [ \fB\-V\fP ] 
+\fBgmtconvert\fP [ \fIinputfiles\fP] [ \fB\-A\fP ] [ \fB\-E\fP ] [ \fB\-F\fIcols\fP ] [ \fB\-H\fP[\fInrec\fP] ] 
+[ \fB\-L\fP ] [ \fB\-I\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N ] [ \fB\-S\fP\fI"search string"\fP ] [ \fB\-V\fP ] 
 [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP]\fIn\fP ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBgmtconvert\fP reads its standard input [or inputfiles] and writes out
@@ -39,6 +39,9 @@ up with the first input row [Default goes forward].
 .B \-L
 Only output a listing of all multisegment header records and no data records (requires \fB\-M\fP and ascii data).
 #include "explain_-M.txt"
+.TP
+.B \-N
+Do not write records that only contain NaNs in every field [Default writes all records].
 .TP
 .B \-S
 Only output those segments whose header record contains the specified text string [Default output all segments].

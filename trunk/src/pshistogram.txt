@@ -4,15 +4,15 @@
 .SH NAME
 pshistogram \- Bin data and plot histograms
 .SH SYNOPSIS
-\fBpshistogram\fB \fIfile\fP \fB\-Jx\fP\fIxscale[/yscale]\fP \fB\-W\fP\fIbin_width\fP [ \fB\-2\fP ] [ \fB\-A\fP ] [ \fB\-B\fP\fItickinfo\fP ] 
+\fBpshistogram\fB \fIfile\fP \fB\-Jx\fP\fIxscale[/yscale]\fP \fB\-W\fP\fIbin_width\fP [ \fB\-A\fP ] [ \fB\-B\fP\fItickinfo\fP ] 
 [ \fB\-C\fP ] [ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-G\fP\fIfill\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP[\fBo\fP] ] 
 [ \fB\-K\fP ] [ \fB\-L\fP\fIpen\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-Q\fP ] 
-[ \fB\-R\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ]  
+[ \fB\-R\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP ] [ \fB\-T\fP\fIcol\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ]  
 [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fItype\fP ] [ \fB\-c\fP\fIcopies\fP ] 
 [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
-\fBpshistogram\fP reads the first column from \fIfile\fP [or standard input] and
-calculates histogram parameters based on the bin-width provided.  Using these parameters,
+\fBpshistogram\fP reads \fIfile\fP [or standard input] and examines data column \fIcol\fP to
+calculate histogram parameters based on the bin-width provided.  Using these parameters,
 scaling, and optional range parameters it will generate \fIPostScript\fP code that plots a histogram.
 A cumulative histogram may also be specified.  
 .TP
@@ -26,9 +26,6 @@ ASCII [or binary, see \fB\-b\fP] datafile. If no file is given, \fBpshistogram\f
 Sets the bin width used for histogram calculations.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-.TP
-.B \-2
-Read second rather than first column.
 .TP
 .B \-A
 Plot the histogram horizontally from x = 0 [Default is vertically from y = 0].
@@ -62,6 +59,9 @@ If not given, \fBpshistogram\fP will automatically find reasonable values for th
 .TP
 .B \-S
 Draws a stairs-step diagram instead of histogram.
+.TP
+.B \-T
+Specify which column to use for the histogram data.  First column is 0 [0].
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
@@ -89,8 +89,8 @@ bin width, plot from -10 to +10 meters @ LEN cm/m, annotate every 2 m and 100 co
 and use black bars, run:
 .br
 .sp
-cut -f2 errors.xy | \fBpshistogram\fP \fB\-W\fP1 \fB\-R\fP-10/10/0/0 SCALE
-\fB\-B\fP2:Error:/100:Counts: \fB\-G\fP0 \fB\-V\fP > plot.ps
+\fBpshistogram\fP errors.xy \fB\-W\fP1 \fB\-R\fP-10/10/0/0 SCALE
+\fB\-B\fP2:Error:/100:Counts: \fB\-G\fP0 \fB\-T\fP1 \fB\-V\fP > plot.ps
 .br
 .sp
 Since no y-range was specified, pshistogram will calculate ymax in even increments of 100.
