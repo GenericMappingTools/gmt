@@ -1,0 +1,23 @@
+.TH MGD77PATH GMTMANSECTION DATE VERSION VERSION
+.SH NAME
+mgd77path \- Get full pathname for MGD77 files
+.SH SYNOPSIS
+\fBmgd77path\fP \fIcruises\fP
+.SH DESCRIPTION
+\fBmgd77path\fP returns the full pathname to one or more MGD77 files. The pathname returned for a given
+cruise may change with time due to reshuffling of disks/subdirectories.
+.TP
+\fIleg-ids\fP
+Can be one or more MGD77 cruise names, like 01010008.  Use `cat legs.lis` to pass all the legnames
+in the file legs.lis. 
+.SH EXAMPLES
+To obtain pathnames for cruises 01010008 and 01010007, run
+.br
+.sp
+\fBmgd77path\fP 01010008 01010007
+.SH "SEE ALSO"
+.IR gmt (GMTMANSECTION)
+.IR mgd77info (GMTMANSECTION)
+.IR mgd77list (GMTMANSECTION)
+.IR mgd77track (GMTMANSECTION)
+#include "refs.i"

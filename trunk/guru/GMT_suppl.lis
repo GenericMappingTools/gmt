@@ -71,6 +71,9 @@ src/mgd77/mgd77info.html
 src/mgd77/mgd77list.c
 src/mgd77/mgd77list.man
 src/mgd77/mgd77list.html
+src/mgd77/mgd77path.c
+src/mgd77/mgd77path.man
+src/mgd77/mgd77path.html
 src/mgd77/mgd77track.c
 src/mgd77/mgd77track.man
 src/mgd77/mgd77track.html

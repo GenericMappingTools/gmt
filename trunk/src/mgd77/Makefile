@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.6 2004-08-27 04:38:31 pwessel Exp $
+#	$Id: Makefile,v 1.7 2004-08-27 17:43:26 pwessel Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -23,7 +23,7 @@ CDF	= -L$(NETCDF)/lib -lnetcdf
 
 MGD77_H	= mgd77.h mgd77defaults.h
 
-MGD77_C	= mgd77list.c mgd77track.c mgd77info.c
+MGD77_C	= mgd77info.c mgd77list.c mgd77path.c mgd77track.c
 
 LIB_C	= mgd77.c
 LIB_H	= mgd77.h mgd77defaults.h
