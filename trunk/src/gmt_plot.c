@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.24 2001-09-14 03:46:09 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.25 2001-09-14 03:47:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -178,14 +178,14 @@ void GMT_x_axis (double x0, double y0, double length, double val0, double val1, 
 	int primary = 0;		/* Axis item number of anotation with largest interval/unit */
 	int secondary = 0;		/* Axis item number of anotation with smallest interval/unit */
 	BOOLEAN flip;			/* TRUE if we want to anotate on the opposite side of the axis instead */
-	BOLLEAN is_interval;		/* TRUE when the anotation is interval anotation and not tick anotation */
-	BOLLEAN both;			/* TRUE if we have both upper and lower anotations on one axis */
-	BOLLEAN check_anotation;	/* TRUE is we have two levels of tick anotations that can overprint */
+	BOOLEAN is_interval;		/* TRUE when the anotation is interval anotation and not tick anotation */
+	BOOLEAN both;			/* TRUE if we have both upper and lower anotations on one axis */
+	BOOLEAN check_anotation;	/* TRUE is we have two levels of tick anotations that can overprint */
 	double *knots, *knots_p;	/* Array pointers with tick/anotation knots, the latter for primary anotations */
 	double tick_len[5];		/* Ticklengths for each of the 5 axis items */
 	double anot_off[2];		/* Distances from the axis for upper (0) and lower (1) anotations */
 	double label_off;		/* Distance from the axis for axis label */
-	double x, sign, anot_off[2], len, t_use;	/* Misc. variables */
+	double x, sign, len, t_use;	/* Misc. variables */
 	struct TIME_AXIS_ITEM *T;	/* Pointer to the current axis item */
 	char string[GMT_CALSTRING_LENGTH];	/* Anotation string */
 	char format[32];		/* format used for non-time anotations */
