@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.101 2004-02-20 08:50:15 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.102 2004-02-24 17:39:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -188,6 +188,7 @@ void GMT_explain_option (char option)
 		case 'J':	/* Map projection option */
 		
 			fprintf (stderr, "\t-J Selects the map proJection system. (<mapwidth> is in %s)\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   (Append h for map width, + for max map dimension, and - for min map dimension)\n");
 			
 			fprintf (stderr, "\t   -Ja<lon0>/<lat0>/<scale> OR -JA<lon0>/<lat0>/<mapwidth> (Lambert Azimuthal Equal Area)\n");
 			fprintf (stderr, "\t     lon0/lat0 is the center or the projection.\n");
@@ -313,6 +314,7 @@ void GMT_explain_option (char option)
 		case 'j':	/* Condensed version of J */
 		
 			fprintf (stderr, "\t-J Selects map proJection. (<scale> in %s/degree, <mapwidth> in %s)\n", GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   (Append h for map width, + for max map dimension, and - for min map dimension)\n");
 			
 			fprintf (stderr, "\t   -Ja|A<lon0>/<lat0>/<scale (or radius/lat)|mapwidth> (Lambert Azimuthal Equal Area)\n");
 			
@@ -2436,7 +2438,7 @@ int GMT_begin (int argc, char **argv)
 	GMT_oldargc = 0;
 	frame_info.plot = FALSE;
 	project_info.projection = -1;
-	project_info.gave_map_width = FALSE;
+	project_info.gave_map_width = 0;
 	project_info.region = TRUE;
 	project_info.compute_scale[0] =  project_info.compute_scale[1] = project_info.compute_scale[2] = FALSE;
 	project_info.x_off_supplied = project_info.y_off_supplied = FALSE;
@@ -3181,7 +3183,7 @@ int GMT_map_getproject (char *args)
 	 * project_info structure.  The function returns TRUE if an error is encountered.
 	 */
 	 
-	int i, j, k, n, slash, l_pos[2], p_pos[2], t_pos[2], d_pos[2], id, project = -1, n_slashes = 0;
+	int i, j, k, n, slash, l_pos[2], p_pos[2], t_pos[2], d_pos[2], id, project = -1, n_slashes = 0, width_given;
 	BOOLEAN error = FALSE, skip = FALSE;
 	double o_x, o_y, b_x, b_y, c, az;
 	double GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
@@ -3189,6 +3191,22 @@ int GMT_map_getproject (char *args)
 	
 	l_pos[0] = l_pos[1] = p_pos[0] = p_pos[1] = t_pos[0] = t_pos[1] = d_pos[0] = d_pos[1] = 0;
 	type = args[0];
+	i = strlen (args) - 1;	/* Position of last character in this string */
+	switch (args[i]) {	/* Check for what kind of width is given (only used if upper case is given below */
+		case 'h':	/* Want map HEIGHT instead */
+			width_given = 2;
+			break;
+		case '+':	/* Want this to be the MAX dimension of map */
+			width_given = 3;
+			break;
+		case '-':	/* Want this to be the MIN dimension of map */
+			width_given = 4;
+			break;
+		default:	/* Default is map WIDTH */
+			width_given = 1;
+			break;
+	}
+			
 	GMT_io.in_col_type[0] = GMT_IS_LON;	GMT_io.in_col_type[1] = GMT_IS_LAT;	/* This may be overridden in -Jx, -Jp */
 	GMT_io.out_col_type[0] = GMT_io.out_col_type[1] = GMT_IS_FLOAT;		/* This may be overridden by mapproject -I */
 	project_info.degree[0] = project_info.degree[1] = TRUE;			/* May be overridden if not geographic projection */
@@ -3366,7 +3384,7 @@ int GMT_map_getproject (char *args)
 	 		if (project_info.z_pars[0] == 0.0) error = TRUE;
 	 		break;
 	 	case 'P':		/* Polar (theta,r) */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'p':
 			GMT_io.in_col_type[0] = GMT_IS_LON;	GMT_io.in_col_type[1] = GMT_IS_FLOAT;
 			if (args[0] == 'a' || args[0] == 'A') {
@@ -3396,7 +3414,7 @@ int GMT_map_getproject (char *args)
 	 	/* Map projections */
 
 	 	case 'A':	/* Lambert Azimuthal Equal-Area */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'a':
 	 		if (k >= 0) {	/* Scale entered as 1:mmmmm */
 	 			n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &project_info.pars[2]);
@@ -3420,7 +3438,7 @@ int GMT_map_getproject (char *args)
 	 		project = LAMB_AZ_EQ;
 	 		break;
 	 	case 'B':		/* Albers Equal-area Conic */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'b':
 	 		if (k >= 0) {	/* Scale entered as 1:mmmmm */
 	 			n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, txt_d, &project_info.pars[4]);
@@ -3441,7 +3459,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'C':	/* Cassini */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'c':
 	 		if (k >= 0) {	/* Scale entered as 1:mmmmm */
 	 			n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &project_info.pars[2]);
@@ -3459,7 +3477,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'D':		/* Equidistant Conic */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'd':
 	 		if (k >= 0) {	/* Scale entered as 1:mmmmm */
 	 			n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, txt_d, &project_info.pars[4]);
@@ -3480,7 +3498,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'E':		/* Azimuthal equal-distant */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'e':
 	 		if (k >= 0) {	/* Scale entered as 1:mmmmm */
 	 			n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &project_info.pars[2]);
@@ -3505,7 +3523,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'F':		/* Gnomonic */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'f':		/* Gnomonic */
 	 		if (k >= 0) {	/* Scale entered as 1:mmmmm */
 	 			n = sscanf (args, "%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, &project_info.pars[3]);
@@ -3531,7 +3549,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'G':		/* Orthographic */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'g':		/* Orthographic */
 	 		if (k >= 0) {	/* Scale entered as 1:mmmmm */
 	 			n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &project_info.pars[2]);
@@ -3556,7 +3574,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'H':	/* Hammer-Aitoff Equal-Area */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'h':
 	 		if (k >= 0) {
 	 			n = sscanf (args, "%[^/]/1:%lf", txt_a, &project_info.pars[1]);
@@ -3573,7 +3591,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'I':	/* Sinusoidal Equal-Area */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'i':
 	 		if (k >= 0) {
 	 			n = sscanf (args, "%[^/]/1:%lf", txt_a, &project_info.pars[1]);
@@ -3590,7 +3608,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'J':	/* Miller cylindrical */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'j':
 	 		if (k >= 0) {
 	 			n = sscanf (args, "%[^/]/1:%lf", txt_a, &project_info.pars[1]);
@@ -3607,7 +3625,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'K':	/* Eckert IV or VI projection */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'k':
 			if (args[0] == 'f' || args[0] == 'F') {
 				project = ECKERT4;
@@ -3636,7 +3654,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'L':		/* Lambert Conformal Conic */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'l':
 	 		if (k >= 0) {	/* Scale entered as 1:mmmmm */
 	 			n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, txt_d, &project_info.pars[4]);
@@ -3656,7 +3674,7 @@ int GMT_map_getproject (char *args)
 	 		project = LAMBERT;
 	 		break;
 	 	case 'M':		/* Mercator */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'm':
 			if (n_slashes == 2) {	/* -JM|m<lon0/lat0/width|scale>, store w/s in [2] */
 				project_info.m_got_parallel = TRUE;
@@ -3690,7 +3708,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'N':	/* Robinson Projection */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'n':
 	 		if (k >= 0) {
 	 			n = sscanf (args, "%[^/]/1:%lf", txt_a, &project_info.pars[1]);
@@ -3707,7 +3725,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'O':		/* Oblique Mercator */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'o':
 	 		if (args[0] == 'a') {	/* Origin and azimuth specified */
 	 			if (k >= 0) {
@@ -3777,7 +3795,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'Q':	/* Equidistant Cylindrical (Plate Carree) */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'q':
 	 		if (k >= 0) {
 	 			n = sscanf (args, "%[^/]/1:%lf", txt_a, &project_info.pars[1]);
@@ -3794,7 +3812,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'R':	/* Winkel Tripel Modified azimuthal */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'r':
 	 		if (k >= 0) {
 	 			n = sscanf (args, "%[^/]/1:%lf", txt_a, &project_info.pars[1]);
@@ -3811,7 +3829,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'S':		/* Stereographic */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 's':
 	 		if (k >= 0) {	/* Scale entered as 1:mmmmm */
 	 			if (n_slashes == 3) {	/* with true scale at specified latitude */
@@ -3846,7 +3864,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'T':	/* Transverse Mercator */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 't':
 			if (n_slashes == 1) {	/* -JT<lon>/<width> */
 	 			if (k >= 0) {
@@ -3879,7 +3897,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'U':	/* Universal Transverse Mercator */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'u':
 	 		if (k >= 0) {
 	 			n = sscanf (args, "%lf/1:%lf", &project_info.pars[0], &project_info.pars[1]);
@@ -3907,7 +3925,7 @@ int GMT_map_getproject (char *args)
 	 		project = UTM;
 	 		break;
 	 	case 'V':	/* Van der Grinten */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'v':
 	 		if (k >= 0) {
 	 			n = sscanf (args, "%[^/]/1:%lf", txt_a, &project_info.pars[1]);
@@ -3924,7 +3942,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 
 	 	case 'W':	/* Mollweide Equal-Area */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'w':
 	 		if (k >= 0) {
 	 			n = sscanf (args, "%[^/]/1:%lf", txt_a, &project_info.pars[1]);
@@ -3941,7 +3959,7 @@ int GMT_map_getproject (char *args)
 	 		break;
 	 		
 	 	case 'Y':		/* Cylindrical Equal Area */
-	 		project_info.gave_map_width = TRUE;
+	 		project_info.gave_map_width = width_given;
 	 	case 'y':
 	 		if (k >= 0) {	/* Scale entered as 1:mmmmm */
 	 			n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &project_info.pars[2]);
