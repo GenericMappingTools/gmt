@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.6 2001-12-24 18:23:20 pwessel Exp $
+#	 $Id: webman.sh,v 1.7 2002-01-10 18:36:27 pwessel Exp $
 #
 #	webman.csh - Automatic generation of the GMT web manual pages
 #
@@ -287,6 +287,7 @@ packages actually installed on your system will be accessible.
 <LI><A HREF="doc/html/backtracker.html"> backtracker</A> Forward and backward flowlines or hotspot tracks</LI>
 <LI><A HREF="doc/html/hotspotter.html"> hotspotter</A> Make CVA grids by convolving flowlines and seamount shapes</LI>
 <LI><A HREF="doc/html/originator.html"> originator</A> Associate seamounts with hotspot point sources</LI>
+<LI><A HREF="doc/html/rotconverter.html"> rotconverter</A> Manipulate finite and stage rotations</LI>
 </UL>
 <HR>
 <h3>The X2SYS package</h3>
