@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.93 2004-03-26 17:58:41 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.94 2004-04-05 18:50:18 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3594,10 +3594,10 @@ double GMT_get_angle (double lon1, double lat1, double lon2, double lat2)
 
 void GMT_draw_map_scale (struct MAP_SCALE *ms)
 {
-	int i, j, k, *rgb, n_a_ticks[9], n_f_ticks[9], unit;
-	double dlon, x1, x2, dummy, a, b, tx, ty, off, f_len, a_len, x_left, bar_length;
+	int i, j, jj, k, *rgb, n_a_ticks[9], n_f_ticks[9], unit;
+	double dlon, x1, x2, dummy, a, b, tx, ty, off, f_len, a_len, x_left, bar_length, x_label, y_label;
 	double xx[4], yy[4], bx[4], by[4], base, d_base, width, half, bar_width, dx_f, dx_a;
-	char txt[256];
+	char txt[256], *this_label;
 	char label[3][16];
 	strcpy (label[0], "km");
 	strcpy (label[1], "miles");
@@ -3678,6 +3678,7 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 			GMT_xyz_to_xy (xx[1], ms->y0, project_info.z_level, &a, &b);
 			ps_plot (a, b, 2);
 		}
+		this_label = (ms->label[0] && ms->label[0] != '-') ? ms->label : label[unit];
 		ty = ms->y0 - off;
 		for (j = 0; j <= n_a_ticks[i]; j++) {
 			tx = x_left + j * dx_a;
@@ -3685,11 +3686,36 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 			ps_plot (a, b, 3);
 			GMT_xyz_to_xy (tx, ms->y0, project_info.z_level, &a, &b);
 			ps_plot (a, b, 2);
-			sprintf (txt, "%g", j * d_base);
+			if (ms->justify == 'u')
+				sprintf (txt, "%g %s", j * d_base, this_label);
+			else
+				sprintf (txt, "%g", j * d_base);
 			GMT_text3d (tx, ty, project_info.z_level, gmtdefs.annot_font_size, gmtdefs.annot_font, txt, 0.0, 10, 0);
 		}
-		GMT_xyz_to_xy (ms->x0, ms->y0 + f_len, project_info.z_level, &tx, &ty);
-		GMT_text3d (tx, ty, project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, label[unit], 0.0, 2, 0);
+		switch (ms->justify) {
+			case 'l':	/* Left */
+				x_label = x_left - f_len;
+				y_label = ms->y0 - a_len;
+				jj = 3;
+				break;
+			case 'r':	/* right */
+				x_label = x_left + width + f_len;
+				y_label = ms->y0 - a_len;
+				jj = 1;
+				break;
+			case 't':	/* top */
+				x_label = ms->x0;
+				y_label = ms->y0 + f_len;
+				jj = 2;
+				break;
+			case 'b':	/* bottom */
+				x_label = ms->x0;
+				y_label = ms->y0 - off - fabs(gmtdefs.annot_offset) - gmtdefs.annot_font_size / 72.0;
+				jj = 10;
+				break;
+		}
+		GMT_xyz_to_xy (x_label, y_label, project_info.z_level, &tx, &ty);
+		GMT_text3d (tx, ty, project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, this_label, 0.0, jj, 0);
 	}
 	else {	/* Simple scale */
 	
