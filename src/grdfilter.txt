@@ -5,9 +5,9 @@ grdfilter \- Filter a \fI.grd\fP file in the Time domain
 \fBgrdfilter\fP \fIinput_file.grd\fP \fB\-D\fP\fIflag\fP \fB\-F\fP\fI<type><width>\fP \fB\-G\fP\fIoutput_file.grd\fP 
 [ \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fIr\fP] ] [ \fB\-T\fP ] [ \fB\-V\fP ] 
 .SH DESCRIPTION
-\fBgrdfilter\fP will filter a \fI.grd\fP file in the time domain using a
-boxcar, cosine arch, gaussian, median, or mode filter and
-computing distances using Cartesian or Spherical geometries.
+\fBgrdfilter\fP will filter a \fI.grd\fP file in the time domain using one
+of the selected convolution or non-convolution filters and
+compute distances using Cartesian or Spherical geometries.
 The output \fI.grd\fP file can optionally be generated as a
 sub\fB\-R\fPegion of the input and/or with a new \fB\-I\fPncrement.  In this
 way, one may have "extra space" in the input data so that the
@@ -35,7 +35,31 @@ The next two options are slower because they recompute weights for each East-Wes
 \fIflag\fP = 4:  grid (x,y) in degrees, \fIwidth\fP in km, Spherical distance calculation.
 .TP
 .B \-F
-Choose one only of \fBbcgmp\fP for (\fBb\fP)oxcar, (\fBc\fP)osine Arch, (\fBg\fP)aussian, (\fBm\fP)edian, or maximum likelihood (\fBp\fP)robability (a mode estimator) filter and specify full \fIwidth\fP.
+Sets the filter type.  Choose among convolution and non-convolution filters.  Append the filter code followed
+by the full diameter \fIwidth\fP. Available convolution filters are:
+.br
+(\fBb\fP) Boxcar: All weights are equal.
+.br
+(\fBc\fP) Cosine Arch: Weights follow a cosine arch curve.
+.br
+(\fBg\fP) Gaussian: Weights are given by the Gaussian function.
+.br
+Non-convolution filters are:
+.br
+(\fBm\fP) Median: Returns median value.
+.br
+(\fBp\fP) Maximum likelihood probability (a mode estimator): Return modal value.
+.br
+(\fBl\fP) Lower: Return the minimum of all values.
+.br
+(\fBL\fP) Lower: Return minimum of all positive values only.
+.br
+(\fBu\fP) Upper: Return maximum of all values.
+.br
+(\fBU\fP) Upper: Return maximum or all negative values only.
+.br
+In the case of \fBL|U\fP it is possible that no data passes the initial sign test; in that case
+the filter will return 0.0.
 .TP
 .B \-G
 \fIoutput_file.grd\fP is the output of the filter.
