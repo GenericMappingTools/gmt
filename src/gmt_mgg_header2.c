@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.1 2004-01-12 00:37:22 pwessel Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.2 2004-01-13 01:53:26 pwessel Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	This is the README file:
@@ -93,8 +93,8 @@ static void GMT2MGG2(struct GRD_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 	mgg->precision   = DEFAULT_PREC;
 	mgg->nanValue    = MGG_NAN_VALUE;
 	mgg->numType     = sizeof(long);
-	mgg->minValue    = rint(gmt->z_min * mgg->precision);
-	mgg->maxValue    = rint(gmt->z_max * mgg->precision);
+	mgg->minValue    = (long)rint(gmt->z_min * mgg->precision);
+	mgg->maxValue    = (long)rint(gmt->z_max * mgg->precision);
 
 	/* Data fits in two byte boundry */
 	if ((-32767 <= mgg->minValue) && (mgg->maxValue <= 32767)) {
@@ -310,7 +310,7 @@ int mgg2_read_grd (
 		tShort = (short *) tLong;
 		tChar  = (char *) tLong;
 
-		if (fread ((char *)tLong, mggHeader.numType, nm, fp) != nm) {
+		if (fread ((char *)tLong, mggHeader.numType, nm, fp) != (size_t)nm) {
 			fprintf (stderr, "GMT Fatal Error: Error reading file %s! (%s)", file);
 			exit (-1);
 		}
@@ -318,20 +318,20 @@ int mgg2_read_grd (
 			/* 4-byte values */
 			if (mggHeader.numType == sizeof(long)) {
                 swap_long(&tLong[i]);
-				if (tLong[i] == mggHeader.nanValue) grid[i] = GMT_d_NaN;
+				if (tLong[i] == mggHeader.nanValue) grid[i] = GMT_f_NaN;
 				else grid[i] = (float) tLong[i] / (float) mggHeader.precision;
 			}
 
 			/* 2-byte values */
 			else if (mggHeader.numType == sizeof(short)) {
                 swap_word(&tShort[i]);
-				if (tShort[i] == mggHeader.nanValue) grid[i] = GMT_d_NaN;
+				if (tShort[i] == mggHeader.nanValue) grid[i] = GMT_f_NaN;
 				else grid[i] = (float) tShort[i] / (float) mggHeader.precision;;
 			}
 			
 			/* 1-byte values */
 			else if (mggHeader.numType == sizeof(char)) {
-				if (tChar[i] == mggHeader.nanValue) grid[i] = GMT_d_NaN;
+				if (tChar[i] == mggHeader.nanValue) grid[i] = GMT_f_NaN;
 				else grid[i] = (float) tChar[i] / (float) mggHeader.precision;;
 
 			}
@@ -355,17 +355,17 @@ int mgg2_read_grd (
 	
 	/* Get dimension of subregion */
 	
-	width_in  = rint ((e - w) / header->x_inc) + one_or_zero;
-	height_in = rint ((n - s) / header->y_inc) + one_or_zero;
+	width_in  = irint ((e - w) / header->x_inc) + one_or_zero;
+	height_in = irint ((n - s) / header->y_inc) + one_or_zero;
 	
 	/* Get first and last row and column numbers */
 	
 	small = 0.1 * header->x_inc;
-	first_col = floor ((w - header->x_min + small) / header->x_inc);
-	last_col  = ceil ((e - header->x_min - small) / header->x_inc) - 1 + one_or_zero;
+	first_col = (int)floor ((w - header->x_min + small) / header->x_inc);
+	last_col  = (int)ceil ((e - header->x_min - small) / header->x_inc) - 1 + one_or_zero;
 	small = 0.1 * header->y_inc;
-	first_row = floor ((header->y_max - n + small) / header->y_inc);
-	last_row  = ceil ((header->y_max - s - small) / header->y_inc) - 1 + one_or_zero;
+	first_row = (int)floor ((header->y_max - n + small) / header->y_inc);
+	last_row  = (int)ceil ((header->y_max - s - small) / header->y_inc) - 1 + one_or_zero;
 
 	if ((last_col - first_col + 1) > width_in) last_col--;
 	if ((last_row - first_row + 1) > height_in) last_row--;
@@ -398,7 +398,7 @@ int mgg2_read_grd (
 		}
 		if (piping)	{ /* Skip data by reading it */
 			for (j = 0; j < first_row; j++) {
-				if (fread ((char *) tLong, mggHeader.numType, header->nx, fp) != header->nx) {
+				if (fread ((char *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
 					fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
 					exit (-1);
 				}
@@ -408,7 +408,7 @@ int mgg2_read_grd (
 		}
 		
 		for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
-			if (fread ((char *) tLong, mggHeader.numType, header->nx, fp) != header->nx) {
+			if (fread ((char *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
 				fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
 				exit (-1);
 			}
@@ -418,18 +418,18 @@ int mgg2_read_grd (
 				kk = ij+i*inc;
 				if (mggHeader.numType == sizeof(long)) {
 					swap_long(&tLong[k[i]]);
-					if (tLong[k[i]] == mggHeader.nanValue) grid[kk] = GMT_d_NaN;
+					if (tLong[k[i]] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = (float) tLong[k[i]] / (float) mggHeader.precision;
 				}
 				
 				else if (mggHeader.numType == sizeof(short)) {
 					swap_word(&tShort[k[i]]);
-					if (tShort[k[i]] == mggHeader.nanValue) grid[kk] = GMT_d_NaN;
+					if (tShort[k[i]] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = (float) tShort[k[i]] / (float) mggHeader.precision;;
 				}
 				
 				else if (mggHeader.numType == sizeof(char)) {
-					if (tChar[k[i]] == mggHeader.nanValue) grid[kk] = GMT_d_NaN;
+					if (tChar[k[i]] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = (float) tChar[k[i]] / (float) mggHeader.precision;;
 				}
 
@@ -441,7 +441,7 @@ int mgg2_read_grd (
 		}
 		if (piping)	{ /* Skip data by reading it */
 			for (j = last_row + 1; j < header->ny; j++) {
-				if (fread ((char *) tLong, mggHeader.numType, header->nx, fp) != header->nx) {
+				if (fread ((char *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
 					fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
 					exit (-1);
 				}
@@ -457,7 +457,7 @@ int mgg2_read_grd (
 
 		if (piping)	{ /* Skip data by reading it */
 			for (j = 0; j < first_row; j++) {
-				if (fread ((char *) tLong, mggHeader.numType, header->nx, fp) != header->nx) {
+				if (fread ((char *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
 					fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
 					exit (-1);
 				}
@@ -468,7 +468,7 @@ int mgg2_read_grd (
 		
 		for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 			ij = (j2 + pad[3]) * width_out + i_0_out;
-			if (fread ((char *) tLong, mggHeader.numType, header->nx, fp) != header->nx) {
+			if (fread ((char *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
 				fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
 				exit (-1);
 			}
@@ -478,20 +478,20 @@ int mgg2_read_grd (
 				/* 4-byte values */
 				if (mggHeader.numType == sizeof(long)) {
 					swap_long(&tLong[first_col + i]);
-					if (tLong[first_col + i] == mggHeader.nanValue) grid[kk] = GMT_d_NaN;
+					if (tLong[first_col + i] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = (float)tLong[first_col + i] / (float) mggHeader.precision;
 				}
 				
 				/* 2-byte values */
 				else if (mggHeader.numType == sizeof(short)) {
 					swap_word(&tShort[first_col + i]);
-					if (tShort[first_col + i] == mggHeader.nanValue) grid[kk] = GMT_d_NaN;
+					if (tShort[first_col + i] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = (float) tShort[first_col + i] / (float) mggHeader.precision;;
 				} 
 				
 				/* 1-byte values */
 				else if (mggHeader.numType == sizeof(char)) {
-					if (tChar[first_col + i] == mggHeader.nanValue) grid[kk] = GMT_d_NaN;
+					if (tChar[first_col + i] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = (float) tChar[first_col + i] / (float) mggHeader.precision;;
 				}
 
@@ -601,19 +601,19 @@ int mgg2_write_grd(
 			       tLong[i]  = mggHeader.nanValue;
 			       swap_long(&tLong[i]);
 				} else if (mggHeader.numType == sizeof(short)) {
-					tShort[i] = mggHeader.nanValue;
+					tShort[i] = (short)mggHeader.nanValue;
 					swap_word(&tShort[i]);
 				} else if (mggHeader.numType == sizeof(char)) {
-					tChar[i]  = mggHeader.nanValue;
+					tChar[i]  = (char)mggHeader.nanValue;
 				} else {
 					fprintf(stderr, "GMT Fatal Error: Unknown numType %d\n", mggHeader.numType);
 					exit(-1);
 				}
 			} else {
-				if (grid[i] > -0.1 && grid[i] < 0.0) grid[i] = -0.1;
+				if (grid[i] > -0.1 && grid[i] < 0.0) grid[i] = (float)(-0.1);
 
 				if (mggHeader.numType == sizeof(long)) {
-					tLong[i] = rint((double)grid[i] * mggHeader.precision);
+					tLong[i] = (long)rint((double)grid[i] * mggHeader.precision);
 					swap_long(&tLong[i]);
 				}
 				
@@ -632,7 +632,7 @@ int mgg2_write_grd(
 				}
 			}
 		}
-		if (fwrite (tLong, mggHeader.numType, nm, fp) != nm) {
+		if (fwrite (tLong, mggHeader.numType, nm, fp) != (size_t)nm) {
 			fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
 			exit (-1);
 		}
@@ -647,17 +647,17 @@ int mgg2_write_grd(
 	
 	/* Get dimension of subregion to write */
 	
-	width_out  = rint ((e - w) / header->x_inc) + one_or_zero;
-	height_out = rint ((n - s) / header->y_inc) + one_or_zero;
+	width_out  = irint ((e - w) / header->x_inc) + one_or_zero;
+	height_out = irint ((n - s) / header->y_inc) + one_or_zero;
 	
 	/* Get first and last row and column numbers */
 	
 	small     = 0.1 * header->x_inc;
-	first_col = floor ((w - header->x_min + small) / header->x_inc);
-	last_col  = ceil ((e - header->x_min - small) / header->x_inc) -1 + one_or_zero;
+	first_col = (int)floor ((w - header->x_min + small) / header->x_inc);
+	last_col  = (int)ceil ((e - header->x_min - small) / header->x_inc) -1 + one_or_zero;
 	small     = 0.1 * header->y_inc;
-	first_row = floor ((header->y_max - n + small) / header->y_inc);
-	last_row  = ceil ((header->y_max - s - small) / header->y_inc) -1 + one_or_zero;
+	first_row = (int)floor ((header->y_max - n + small) / header->y_inc);
+	last_row  = (int)ceil ((header->y_max - s - small) / header->y_inc) -1 + one_or_zero;
 	
 	if ((last_col - first_col + 1) > width_out) last_col--;
 	if ((last_row - first_row + 1) > height_out) last_row--;
@@ -718,17 +718,17 @@ int mgg2_write_grd(
 				kk = ij+k[i];
 				if (GMT_is_fnan ((double)grid[kk])) {
 					if (mggHeader.numType == sizeof(long))       tLong[i]  = mggHeader.nanValue;
-					else if (mggHeader.numType == sizeof(short)) tShort[i] = mggHeader.nanValue;
-					else if (mggHeader.numType == sizeof(char))  tChar[i] = mggHeader.nanValue;
+					else if (mggHeader.numType == sizeof(short)) tShort[i] = (short)mggHeader.nanValue;
+					else if (mggHeader.numType == sizeof(char))  tChar[i] = (char)mggHeader.nanValue;
 					else {
 						fprintf(stderr, "GMT Fatal Error: Unknown numType %d\n", mggHeader.numType);
 						exit(-1);
 					}
 				} else {
-					if (grid[kk] > -0.1 && grid[kk] < 0) grid[kk] = -0.1;
+					if (grid[kk] > -0.1 && grid[kk] < 0) grid[kk] = (float)(-0.1);
 
 					if (mggHeader.numType == sizeof(long)) {
-						tLong[i] = rint ((double)grid[kk] * mggHeader.precision);
+						tLong[i] = (long)rint ((double)grid[kk] * mggHeader.precision);
 					}
 					
 					else if (mggHeader.numType == sizeof(short)) {
@@ -759,14 +759,14 @@ int mgg2_write_grd(
 				kk = ij+i;
 				if (GMT_is_fnan ((double)grid[kk])) {
 					if (mggHeader.numType == sizeof(long))       tLong[i]  = mggHeader.nanValue;
-					else if (mggHeader.numType == sizeof(short)) tShort[i] = mggHeader.nanValue;
-					else if (mggHeader.numType == sizeof(char))  tChar[i] = mggHeader.nanValue;
+					else if (mggHeader.numType == sizeof(short)) tShort[i] = (short)mggHeader.nanValue;
+					else if (mggHeader.numType == sizeof(char))  tChar[i] = (char)mggHeader.nanValue;
 					else {
 						fprintf(stderr, "GMT Fatal Error: Unknown numType %d\n", mggHeader.numType);
 						exit(-1);
 					}
 				} else {
-					if (grid[kk] > -0.1 && grid[kk] < 0) grid[kk] = -0.1;
+					if (grid[kk] > -0.1 && grid[kk] < 0) grid[kk] = (float)(-0.1);
 					if (mggHeader.numType == sizeof(long)) {
 						tLong[i] = (long) rint ((double)grid[kk] * mggHeader.precision);
 					}

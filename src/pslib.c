@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.54 2004-01-12 18:57:37 pwessel Exp $
+ *	$Id: pslib.c,v 1.55 2004-01-13 01:53:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -861,7 +861,7 @@ int ps_imagefill_init (int image_no, char *imagefile, int invert, int image_dpi,
 {
 
 	int i, nx, ny, dx, pmode, polarity, n_channels;
-	char file[BUFSIZ], name[BUFSIZ], color[64];
+	char file[BUFSIZ], name[BUFSIZ];
 	char *TF[2] = {"false", "true"};
 	unsigned char *picture;
 	struct rasterfile h;
@@ -3866,7 +3866,6 @@ void ps_cmyk_to_rgb (int rgb[], double cmyk[])
 	/* Plain conversion; no undercolor removal or blackgeneration */
 	
 	int i;
-	double frgb[3];
 	
 	/* CMYK is in 0-1, RGB will be in 0-255 range */
 	

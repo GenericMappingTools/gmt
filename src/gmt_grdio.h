@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.9 2004-01-10 19:41:03 pwessel Exp $
+ *	$Id: gmt_grdio.h,v 1.10 2004-01-13 01:53:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -96,7 +96,7 @@ struct GMT_GRDFILE {
 
 EXTERN_MSC void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode);
 EXTERN_MSC void GMT_close_grd (struct GMT_GRDFILE *G);
-EXTERN_MSC int GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row);
-EXTERN_MSC int GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row);
+EXTERN_MSC void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row);
+EXTERN_MSC void GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row);
 
 #endif /* GMT_GRDIO_H */

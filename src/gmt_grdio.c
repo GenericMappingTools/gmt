@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.14 2004-01-10 19:41:03 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.15 2004-01-13 01:53:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -529,7 +529,7 @@ void GMT_close_grd (struct GMT_GRDFILE *G)
 		fclose (G->fp);
 }
 
-int GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
+void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 {	/* Reads the entire row vector form the grdfile */
 	/* If row_no is negative it is interpreted to mean that we want to
 	 * fseek to the start of the abs(row_no) record and no reading takes place.
@@ -549,23 +549,23 @@ int GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 				break;
 			case 7:
 				check_nc_status (nc_get_vara_uchar (G->fid, G->z_id, G->start, G->edge, G->b_row));
-				for (i = 0; i < G->edge[0]; i++) row[i] = (float)G->b_row[i];
+				for (i = 0; i < (int)G->edge[0]; i++) row[i] = (float)G->b_row[i];
 				break;
 			case 8:
 				check_nc_status (nc_get_vara_schar (G->fid, G->z_id, G->start, G->edge, G->c_row));
-				for (i = 0; i < G->edge[0]; i++) row[i] = (float)G->c_row[i];
+				for (i = 0; i < (int)G->edge[0]; i++) row[i] = (float)G->c_row[i];
 				break;
 			case 9:
 				check_nc_status (nc_get_vara_short (G->fid, G->z_id, G->start, G->edge, G->s_row));
-				for (i = 0; i < G->edge[0]; i++) row[i] = (float)G->s_row[i];
+				for (i = 0; i < (int)G->edge[0]; i++) row[i] = (float)G->s_row[i];
 				break;
 			case 10:
 				check_nc_status (nc_get_vara_int (G->fid, G->z_id, G->start, G->edge, G->i_row));
-				for (i = 0; i < G->edge[0]; i++) row[i] = (float)G->i_row[i];
+				for (i = 0; i < (int)G->edge[0]; i++) row[i] = (float)G->i_row[i];
 				break;
 			case 11:
 				check_nc_status (nc_get_vara_double (G->fid, G->z_id, G->start, G->edge, G->d_row));
-				for (i = 0; i < G->edge[0]; i++) row[i] = (float)G->d_row[i];
+				for (i = 0; i < (int)G->edge[0]; i++) row[i] = (float)G->d_row[i];
 				break;
 			default:
 				break;
@@ -595,7 +595,7 @@ int GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 	return (0);
 }
 
-int GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
+void GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 {	/* Writes the entire row vector to the grdfile */
 	
 	int i;
