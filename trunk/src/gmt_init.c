@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.149 2004-06-26 00:21:35 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.150 2004-07-03 01:41:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -477,7 +477,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t-f Special formatting of input/output columns (e.g., time or geographical)\n");
 			fprintf (stderr, "\t   Specify i(nput) or o(utput) [Default is both input and output]\n");
 			fprintf (stderr, "\t   Give one or more columns (or column ranges) separated by commas.\n");
-			fprintf (stderr, "\t   Append T (Calendar format), t (time relative to TIME_EPOCH), f (plain floating point\n");
+			fprintf (stderr, "\t   Append T (Calendar format), t (time relative to TIME_EPOCH), f (plain floating point)\n");
 			fprintf (stderr, "\t   x (longitude), y (latitude) to each col/range item.\n");
 			fprintf (stderr, "\t   -f[i|o]g means -f[i|o]0x,1y (geographic coordinates).\n");
 			break;

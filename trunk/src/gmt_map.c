@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.61 2004-07-01 21:00:08 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.62 2004-07-03 01:41:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7263,12 +7263,23 @@ void GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 	if (gmtdefs.verbose && not_used) fprintf (stderr, "%s: Some geographical nodes not loaded (%d)\n", GMT_program, not_used);
 }
 
-int GMT_grd_forward_new (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD_HEADER *O, struct GMT_EDGEINFO *edgeinfo, BOOLEAN bilinear)
+int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD_HEADER *O, struct GMT_EDGEINFO *edgeinfo, BOOLEAN bilinear, BOOLEAN inverse)
 {
 
-	/* Generalized forward grid projection that deals with both interpolation and averaging effects.
+	/* Generalized grid projection that deals with both interpolation and averaging effects.
 	 * It assumes that the incoming grid was read with 2 boundary rows/cols so that the bcr functions can be used.
-	 * Therefore, we need to add these rows/cols when accessing the grid directly.
+	 * Therefore, we need to add these rows/cols when accessing the grid directly.  The I and z_in represents
+	 * the input grid which is either in original (i.e., lon/lat) coordinates or projected x/y (if inverse = TRUE).
+	 *
+	 * z_in:	Array with input grid on a padded grid with 2 extra rows/columns
+	 * I:		Grid header for input grid
+	 * z_out:	Array with output grid, no padding needed
+	 * O:		Grid header for output grid
+	 * edgeinfo:	Structure with information about boundary conditions on input grid
+	 * bilinear:	TRUE if we just want to use bilinear interpolation [Default is bicubic]
+	 * inverse:	TRUE if input is x/y and we want to invert for a lon/lat grid
+	 * 
+	 * We assume the calling program has initialized the z_out array to any default empty value (NaN etc).
 	 */
 	
 	int i_in, j_in, ij_in, i_out, j_out, ij_out, mx, my;
@@ -7312,12 +7323,20 @@ int GMT_grd_forward_new (float *z_in, struct GRD_HEADER *I, float *z_out, struct
 	if (RECT_GRATICULE) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
 		x_in_proj = (double *) GMT_memory (VNULL, (size_t)I->nx, sizeof (double), "GMT_grd_forward");
 		y_in_proj = (double *) GMT_memory (VNULL, (size_t)I->ny, sizeof (double), "GMT_grd_forward");
-		for (i_in = 0; i_in < I->nx; i_in++) GMT_geo_to_xy (x_in[i_in], I->y_min, &x_in_proj[i_in], &y_proj);
-		for (j_in = 0; j_in < I->ny; j_in++) GMT_geo_to_xy (I->x_min, y_in[j_in], &x_proj, &y_in_proj[j_in]);
 		x_out_proj = (double *) GMT_memory (VNULL, (size_t)O->nx, sizeof (double), "GMT_grd_forward");
 		y_out_proj = (double *) GMT_memory (VNULL, (size_t)O->ny, sizeof (double), "GMT_grd_forward");
-		for (i_out = 0; i_out < O->nx; i_out++) GMT_xy_to_geo (&x_out_proj[i_out], &y_proj, x_out[i_out], I->y_min);
-		for (j_out = 0; j_out < O->ny; j_out++) GMT_xy_to_geo (&x_proj, &y_out_proj[j_out], I->y_min, y_out[j_out]);
+		if (inverse) {
+			for (i_in = 0; i_in < I->nx; i_in++) GMT_xy_to_geo (&x_in_proj[i_in], &y_proj, x_in[i_in], I->y_min);
+			for (j_in = 0; j_in < I->ny; j_in++) GMT_xy_to_geo (&x_proj, &y_in_proj[j_in], I->x_min, y_in[j_in]);
+			for (i_out = 0; i_out < O->nx; i_out++) GMT_geo_to_xy (x_out[i_out], I->y_min, &x_out_proj[i_out], &y_proj);
+			for (j_out = 0; j_out < O->ny; j_out++) GMT_geo_to_xy (I->y_min, y_out[j_out], &x_proj, &y_out_proj[j_out]);
+		}
+		else {
+			for (i_in = 0; i_in < I->nx; i_in++) GMT_geo_to_xy (x_in[i_in], I->y_min, &x_in_proj[i_in], &y_proj);
+			for (j_in = 0; j_in < I->ny; j_in++) GMT_geo_to_xy (I->x_min, y_in[j_in], &x_proj, &y_in_proj[j_in]);
+			for (i_out = 0; i_out < O->nx; i_out++) GMT_xy_to_geo (&x_out_proj[i_out], &y_proj, x_out[i_out], I->y_min);
+			for (j_out = 0; j_out < O->ny; j_out++) GMT_xy_to_geo (&x_proj, &y_out_proj[j_out], I->y_min, y_out[j_out]);
+		}
 	}
 	
 	/* PART 1: Project input grid points and do a blockmean operation */
@@ -7327,6 +7346,8 @@ int GMT_grd_forward_new (float *z_in, struct GRD_HEADER *I, float *z_out, struct
 		for (i_in = 0; i_in < I->nx; i_in++) {
 			if (RECT_GRATICULE)
 				x_proj = x_in_proj[i_in];
+			else if (inverse)
+				GMT_xy_to_geo (&x_proj, &y_proj, x_in[i_in], y_in[j_in]);
 			else
 				GMT_geo_to_xy (x_in[i_in], y_in[j_in], &x_proj, &y_proj);
 				
@@ -7359,6 +7380,8 @@ int GMT_grd_forward_new (float *z_in, struct GRD_HEADER *I, float *z_out, struct
 		for (i_out = 0; i_out < O->nx; i_out++, ij_out++) {
 			if (RECT_GRATICULE)
 				x_proj = x_out_proj[i_out];
+			else if (inverse)
+				GMT_geo_to_xy (x_out[i_out], y_out[j_out], &x_proj, &y_proj);
 			else
 				GMT_xy_to_geo (&x_proj, &y_proj, x_out[i_out], y_out[j_out]);
 			
