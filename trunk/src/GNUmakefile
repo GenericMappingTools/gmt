@@ -1,4 +1,4 @@
-#----------------	$Id: GNUmakefile,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $	--------------------
+#----------------	$Id: GNUmakefile,v 1.2 2000-12-30 01:42:14 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 3.3.7
 #			GNU make compatible
@@ -18,8 +18,6 @@
 #-------------------------------------------------------------------------------
 #	Default setup
 #-------------------------------------------------------------------------------
-
-# Assumes the environmental variable SCCS_GET has been set in .cshrc
 
 include makegmt.macros	# GMT specific settings created by user
 
@@ -135,7 +133,6 @@ all:		init libs $(PROGS)
 init:		gmt_nan.h gmt_notposix.h gmtmath.c grdmath.c
 
 gmt_nan.h:
-		$(SCCS_GET) gmt_nan_init.c
 		$(CC) $(CFLAGS) gmt_nan_init.c $(CDF) -lm -o gmt_nan_init
 		$(COMPRESS) gmt_nan_init$(EXE)
 		./gmt_nan_init
@@ -148,13 +145,9 @@ gmt_notposix.h:
 # Must create g[rd|mt]math.c from g[rd|mt]math_main.c and g[rd|mt]math.func
 
 gmtmath.c:
-		cd ../guru; \
-		$(SCCS_GET) make_gmtmath.csh
 		csh -f ../guru/make_gmtmath.csh
 
 grdmath.c:
-		cd ../guru; \
-		$(SCCS_GET) make_grdmath.csh
 		csh -f ../guru/make_grdmath.csh
 
 install:	all
