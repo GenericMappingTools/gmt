@@ -1,4 +1,4 @@
-# $Id: Datums.txt,v 1.6 2004-09-04 00:49:06 pwessel Exp $
+# $Id: Datums.txt,v 1.7 2005-02-16 19:20:02 pwessel Exp $
 #
 # List of Datums available in GMT
 # The (Dx,Dy,Dz) values are in meters relative to WGS-84
@@ -81,7 +81,7 @@ European 1979	International-1924	-86	-98	-119	MEAN FOR Austria; Finland; Netherl
 Fort Thomas 1955	Clarke-1880	-7	215	225	Nevis; St. Kitts (Leeward Islands)
 Gan 1970	International-1924	-133	-321	50	Republic of Maldives
 Geodetic Datum 1949	International-1924	84	-22	209	New Zealand
-Graciosa Base SW 1948	International-1924	-104	167	-38	Azores (Faial; Graciosa; Pico; Sao Jorge; Terceira)
+Graciosa Base SW 1948	International-1924	-111.789	154.869	-44.765	Azores (Faial; Graciosa; Pico; Sao Jorge; Terceira)
 Guam 1963	Clarke-1866	-100	-248	259	Guam
 Gunung Segara	Bessel	-403	684	41	Indonesia (Kalimantan)
 GUX 1 Astro	International-1924	252	-209	-751	Guadalcanal Island
@@ -169,7 +169,7 @@ Pico de las Nieves	International-1924	-307	-92	127	Canary Islands
 Pitcairn Astro 1967	International-1924	185	165	42	Pitcairn Island
 Point 58	Clarke-1880	-106	-129	165	MEAN FOR Burkina Faso & Niger
 Pointe Noire 1948	Clarke-1880	-148	51	-291	Congo
-Porto Santo 1936	International-1924	-499	-249	314	Porto Santo; Madeira Islands
+Porto Santo 1936	International-1924	-503.362	-247.604	312.651	Porto Santo; Madeira Islands
 Provisional South American 1956	International-1924	-270	188	-388	Bolivia
 Provisional South American 1956	International-1924	-270	183	-390	Chile (Northern; Near 19S)
 Provisional South American 1956	International-1924	-305	243	-442	Chile (Southern; Near 43S)
