@@ -24,11 +24,11 @@ int version;			/* Polygon version, set to 3
 short int greenwich;		/* Greenwich is 1 if Greenwich is crossed */
 short int source;		/* 0 = CIA WDBII, 1 = WVS */
 
-We remind users that the polygon is sorted by polygon length (not
-area), and that the w/e/s/n values for each polygon are based on
-the full resolution and are simply copied to the other resolutions;
-however, the decimated polygons will in general have a different
-w/e/s/n set.
+We remind users that the polygons are sorted by polygon length (not
+area), and that the w/e/s/n values for each polygon are those based on
+the full resolution and are simply copied to the other resolutions.
+The decimated polygons will in general have a different w/e/s/n set
+which you can find if you calculate the actual w/e/s/n values.
 
 Version 1.4 Sept 5, 2000
 
