@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.79 2004-05-04 20:33:34 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.80 2004-05-08 02:10:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4155,6 +4155,74 @@ int GMT_getscale (char *text, struct MAP_SCALE *ms)
 		error++;
 	}
 	
+	ms->plot = TRUE;
+	return (error);
+}
+
+int GMT_getrose (char *text, struct MAP_ROSE *ms)
+{
+	/* Pass text as &argv[i][2] */
+	
+	int j = 0, i,error = 0, colon, plus, k;
+	char txt_a[32], txt_b[32], txt_c[32];
+	
+	ms->fancy = ms->gave_xy = FALSE;
+	ms->size = 0.0;
+	
+	/* First deal with possible prefixes f and x (i.e., f, x, xf, fx( */
+	if (text[j] == 'f') ms->fancy = TRUE, j++;
+	if (text[j] == 'x') ms->gave_xy = TRUE, j++;
+	if (text[j] == 'f') ms->fancy = TRUE, j++;	/* in case we got xf instead of fx */
+	
+	
+	/* Determine if we have the optional label components specified */
+	
+	for (colon = -1, i = j; text[i] && colon < 0; i++) if (text[i] == ':') colon = i+1;
+	
+	/* -L[f][x]<x0>/<y0>/<size>[/<kind>][:label:] */
+	k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%d", txt_a, txt_b, txt_c, &ms->kind);
+	if (k == 3) ms->kind = 1;
+	if (k < 3 || k > 4) {	/* Wrong number of parameters */
+		fprintf (stderr, "%s: GMT SYNTAX ERROR -T option:  Correct syntax\n", GMT_program);
+		fprintf (stderr, "\t-T[f][x]<x0>/<y0>/<size>[/<kind>][:wesnlabels]\n");
+		error++;
+	}
+	if (colon > 0) {	/* Get labels */
+		sscanf (&text[colon], "%[^,],%[^,],%[^,],%[^,]", ms->label[3], ms->label[1], ms->label[0], ms->label[2]);
+	}
+	else {			/* Set Default */
+		strcpy (ms->label[0], "S");
+		strcpy (ms->label[1], "E");
+		strcpy (ms->label[2], "N");
+		strcpy (ms->label[3], "W");
+	}
+	if (ms->gave_xy) {	/* Convert user's x/y to inches */
+		ms->x0 = GMT_convert_units (txt_a, GMT_INCH);
+		ms->y0 = GMT_convert_units (txt_b, GMT_INCH);
+	}
+	else {	/* Read geographical coordinates */
+		error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_a, GMT_IS_LON, &ms->x0), txt_a);
+		error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_b, GMT_IS_LAT, &ms->y0), txt_b);
+		if (fabs (ms->y0) > 90.0) {
+			fprintf (stderr, "%s: GMT SYNTAX ERROR -T option:  Position latitude is out of range\n", GMT_program);
+			error++;
+		}
+		if (fabs (ms->x0) > 360.0) {
+			fprintf (stderr, "%s: GMT SYNTAX ERROR -T option:  Position longitude is out of range\n", GMT_program);
+			error++;
+		}
+	}
+	ms->size = GMT_convert_units (txt_c, GMT_INCH);
+	if (ms->size <= 0.0) {
+		fprintf (stderr, "%s: GMT SYNTAX ERROR -T option:  Size must be positive\n", GMT_program);
+		error++;
+	}
+	if (ms->kind < 1 || ms->kind > 3) {
+		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  <kind> must be 1, 2, or 3\n", GMT_program);
+		error++;
+	}
+	
+	ms->plot = TRUE;
 	return (error);
 }
 
