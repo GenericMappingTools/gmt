@@ -1,9 +1,9 @@
 .TP
 .B \-T
-Draws a simple map directional rose centered on \fIlon0/lat0\fP.  Use \fB\-Lx\fP to specify x/y position instead.
+Draws a simple map directional rose centered on \fIlon0/lat0\fP.  Use \fB\-Tx\fP to specify x/y position instead.
 The \fIsize\fP is the diameter of the rose, and the optional label information can be specified to override
 the default values of W, E, S, and N.  Use \fB\-Tf\fP to get a "fancy" rose [Default is plain], and specify what
-\fIkind\fP of rose you want drawn.  The default [1] draws the two principal E-W, N-S orientations, and 2 adds the
+\fIkind\fP of rose you want drawn.  The default [1] draws the two principal E-W, N-S orientations, 2 adds the
 two intermediate NW-SE and NE-SW orientations, while 3 adds the eight minor orientations WNW-ESE, NNW-SSE, NNE-SSW,
 and ENE-WSW.  For Magnetic compass rose, specify \fB\-Tm\fP.  If given, \fIinfo\fP must be the two paramters
 \fIdec/dlabel\fP, where \fIdec\fP is the magnetic declination and \fIdlabel\fP is a label for the magnetic compass
