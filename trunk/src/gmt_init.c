@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.104 2004-04-01 17:05:08 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.105 2004-04-01 22:24:56 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1078,7 +1078,7 @@ void GMT_setdefaults (int argc, char **argv)
 		memcpy ((void *)gmtdefs.grid_pen.rgb,  (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
 	}
 	
-	if (error) fprintf (stderr, "gmtset:  %d conversion errors\n", error);
+	if (error) fprintf (stderr, "%s:  %d conversion errors\n", GMT_program, error);
 }
 
 void GMT_backwards_compatibility () {
@@ -2462,7 +2462,7 @@ int GMT_begin (int argc, char **argv)
 
 	/* Set the gmtdefault parameters from the $HOME/.gmtdefaults4 (if any) */
 	
-        /* See if user specified +optional_defaults_file */
+        /* See if user specified +optional_defaults_file.  If so, assign filename to this and remove option from argv */
         
 	for (i = j = 1; i < argc; i++) {
 		argv[j] = argv[i];
@@ -2477,6 +2477,22 @@ int GMT_begin (int argc, char **argv)
 
 	GMT_getdefaults (this);
 	
+	/* See if user specified -- defaults on the command line [Pr Dave Ball's suggestion].
+	 * If found, apply option and remove from argv.  These options only apply to current process. */
+
+	for (i = j = 1, n = 0; i < argc; i++) {
+		if (argv[i][0] == '-' && argv[i][1] == '-' && argv[i][2] ) {
+			if ((this = strchr (argv[i], '=')))	/* Got --PAR=VALUE */
+				n += GMT_setparameter (&argv[i][2], &this[1]);
+			else				/* Got --PAR */
+				n += GMT_setparameter (&argv[i][2], "TRUE");
+		}
+		else
+			argv[j++] = argv[i];
+	}
+	argc = j;
+	if (n) fprintf (stderr, "%s:  %d conversion errors from command-line default override settings!\n", GMT_program, n);
+
 	GMT_init_time_system_structure ();
 
 	GMT_io_init ();			/* Init the table i/o structure */

@@ -24,10 +24,14 @@ gmtdefaults \- To list current \fBGMT\fP defaults
 \fBgmtdefaults\fP \fB\-D\fP[\fBu|s\fP] | \fB\-L\fP
 .SH DESCRIPTION
 \fBgmtdefaults\fP lists the 
-\fBGMT\fP parameter defaults if the option \fB\-D\fP is used.  To change some of the settings,
-use the command \fBgmtset\fP or use any texteditor to edit the file \.gmtdefaults4 in your home
-or current directory.  If you do not have this file in your home or current directory, run 
-\fBgmtdefaults\fP -D > ~/.gmtdefaults4 to get the system settings.
+\fBGMT\fP parameter defaults if the option \fB\-D\fP is used.  There are three ways to change some of the settings:
+(1) Use the command \fBgmtset\fP, (2) use any texteditor to edit the file \.gmtdefaults4 in your home
+or current directory (if you do not have this file, run 
+\fBgmtdefaults\fP -D > ~/.gmtdefaults4 to get one with the system default settings), or (3) overrid any parameter
+by specifying one or more \fB\-\-PARAMETER=VALUE\fP statements on the commandline of any \fBGMT\fP command
+(\fBPARAMETER\fP and \fBVALUE\fP are any combination listed below).  The
+first two options are permanent changes until explicitly changed back, while the last option is emphemeral
+and only applies to the single \fBGMT\fP command that received the override.
 \fBGMT\fP can provide default values in US or SI units.  This choice is determined by the contents of the
 gmt.conf file in \fBGMT\fP's share directory.
 .TP
