@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.82 2004-05-11 01:07:16 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.83 2004-05-11 17:08:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4213,7 +4213,7 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", txt_a, txt_b, txt_c, txt_d, &ms->dlabel);
 		if (! (k == 3 || k == 5)) {	/* Wrong number of parameters */
 			fprintf (stderr, "%s: GMT SYNTAX ERROR -T option:  Correct syntax\n", GMT_program);
-			fprintf (stderr, "\t-T[f|m][x]<x0>/<y0>/<size>[/<info>][:wesnlabels]\n");
+			fprintf (stderr, "\t-T[f|m][x]<x0>/<y0>/<size>[/<info>][:wesnlabels:][+<gint>[/<mint>]]\n");
 			error++;
 		}
 		if (k == 3) {	/* No magnetic north directions */
@@ -4231,7 +4231,7 @@ int GMT_getrose (char *text, struct MAP_ROSE *ms)
 		if (k == 3) ms->kind = 1;
 		if (k < 3 || k > 4) {	/* Wrong number of parameters */
 			fprintf (stderr, "%s: GMT SYNTAX ERROR -T option:  Correct syntax\n", GMT_program);
-			fprintf (stderr, "\t-T[f|m][x]<x0>/<y0>/<size>[/<info>][:wesnlabels]\n");
+			fprintf (stderr, "\t-T[f|m][x]<x0>/<y0>/<size>[/<info>][:wesnlabels:][+<gint>[/<mint>]]\n");
 			error++;
 		}
 	}
