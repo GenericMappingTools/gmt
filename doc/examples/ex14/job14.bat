@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 14
 REM
-REM		$Id: job14.bat,v 1.5 2004-04-10 17:19:14 pwessel Exp $
+REM		$Id: job14.bat,v 1.6 2004-04-12 21:41:47 pwessel Exp $
 REM
 REM Purpose:	Showing simple gridding, contouring, and resampling along tracks
 REM GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, minmax, project
@@ -12,7 +12,7 @@ echo GMT EXAMPLE 14
 set master=y
 if exist job14.bat set master=n
 if %master%==y cd ex14
-gmtset GRID_PEN 0.25pta
+gmtset GRID_PEN_PRIMARY 0.25p,-
 psxy table_5.11 -R0/7/0/7 -JX3.06i/3.15i -B2f1WSNe -Sc0.05i -Gblack -P -K -Y6.45i > example_14.ps
 gawk "{print $1+0.08, $2, 6, 0, 0, 5, $3}" table_5.11 | pstext -R -J -O -K -N >> example_14.ps
 blockmean table_5.11 -R0/7/0/7 -I1 > mean.xyz

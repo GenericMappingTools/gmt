@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.35 2004-04-12 19:51:12 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.36 2004-04-12 21:41:36 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2004.
@@ -120,7 +120,7 @@ undo the changes at the end of the script.  To change some of the
 be used.  E.g., to change the annotation font to 12 point Times-Bold
 we run \\
 
-\texttt{gmtset ANNOT\_FONT Times-Bold ANNOT\_FONT\_SIZE 12} \\
+\texttt{gmtset ANNOT\_FONT\_PRIMARY Times-Bold ANNOT\_FONT\_SIZE\_PRIMARY 12} \\
 
 In addition to those parameters
 that directly affect the plot there are numerous parameters than
@@ -323,7 +323,7 @@ it is suppressed when a 3-D view is selected.}.
 \end{table}
 \noindent
 Note that the appearance of certain time annotations (month-, week-, and day-names) may be affected
-by the {\bf TIME\_LANGUAGE}, {\bf TIME\_ANNOT\_FORMAT}, and {\bf TIME\_ANNOT\_FORMAT2} settings.
+by the {\bf TIME\_LANGUAGE}, {\bf TIME\_FORMAT\_PRIMARY}, and {\bf TIME\_FORMAT\_SECONDARY} settings.
 
 The unit flag {\bf u} can take on one of 16 codes; these are listed in  Table~\ref{tbl:units}.
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_coverlogo.sh,v 1.2 2004-01-23 17:52:47 pwessel Exp $
+#	$Id: GMT_coverlogo.sh,v 1.3 2004-04-12 21:41:47 pwessel Exp $
 #
 # Creates the cover page GMT logo
 #
@@ -7,7 +7,7 @@
 #
 
 dpi=`gmtget DOTS_PR_INCH`
-../../bin/gmtset GRID_PEN 0.25p DOTS_PR_INCH 1200
+../../bin/gmtset GRID_PEN_PRIMARY 0.25p DOTS_PR_INCH 1200
 psxy -R0/1/0/1 -Jx1i -P -K -X0 -Y0 /dev/null > GMT_coverlogo.ps
 ../../bin/gmtlogo 0 0 2.580645 >> GMT_coverlogo.ps
 cat << EOF >> GMT_coverlogo.ps
