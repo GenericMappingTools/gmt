@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.7 2004-08-19 04:34:25 pwessel Exp $
+ *	$Id: gmt_mgg.c,v 1.8 2005-03-04 21:00:54 remko Exp $
  *
  *    Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -457,11 +457,11 @@ int carter_get_bin (int lat, int lon, int *bin)
 	int latdeg, londeg;
 
 	if (lat < -90000000 || lat > 90000000) {
-		fprintf (stderr, "GMT ERROR: in carter_get_bin:  Latitude domain error (%lg)\n", 1e-6 * lat);
+		fprintf (stderr, "GMT ERROR: in carter_get_bin:  Latitude domain error (%g)\n", 1e-6 * lat);
 		return (-1);
 	}
 	if (lon < 0 || lon > 360000000) {
-		fprintf (stderr, "GMT ERROR: in carter_get_bin:  Longitude domain error (%lg)\n", 1e-6 * lon);
+		fprintf (stderr, "GMT ERROR: in carter_get_bin:  Longitude domain error (%g)\n", 1e-6 * lon);
 		return (-1);
 	}
 	latdeg = (lat + 90000000)/1000000;

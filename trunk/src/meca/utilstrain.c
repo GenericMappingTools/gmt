@@ -1,5 +1,6 @@
-/*	$Id: utilstrain.c,v 1.2 2000-12-29 22:10:37 pwessel Exp $	*/
-#include "gmt.h"
+/*	$Id: utilstrain.c,v 1.3 2005-03-04 21:00:54 remko Exp $	*/
+#include "gmt.h"	/* to have gmt environment */
+#include "pslib.h"	/* to have pslib environment */
 #include "utilvelo.h"
 #define veclen(x, y) sqrt((x) * (x) + (y) * (y))
 
