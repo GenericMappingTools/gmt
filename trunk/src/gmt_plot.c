@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.23 2001-09-14 03:08:26 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.24 2001-09-14 03:46:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -170,11 +170,50 @@ void GMT_linear_map_boundary (double w, double e, double s, double n)
 
 void GMT_x_axis (double x0, double y0, double length, double val0, double val1, struct TIME_AXIS *A, int below, int anotate)
 {
-	int k, i, nx, np = 0, flip, justify, label_justify, anot_pos, font_size, primary = 0, secondary = 0;
-	BOOLEAN is_interval, both, check_anotation;
-	double t_mid, *knots, *knots_p, x, tick_len[5], sign, anot_off[2], label_off, len, t_use;
-	struct TIME_AXIS_ITEM *T;
-	char string[GMT_CALSTRING_LENGTH], format[32];
+	int k, i, nx, np = 0;		/* Misc. variables */
+	int justify;			/* Text justification of anotations */
+	int label_justify;		/* Text justification of axis label */
+	int anot_pos;			/* Either 0 for upper anotation or 1 for lower anotation */
+	int font_size;			/* Anotation font size (ANOT_FONT_SIZE or ANOT_FONT2_SIZE) */
+	int primary = 0;		/* Axis item number of anotation with largest interval/unit */
+	int secondary = 0;		/* Axis item number of anotation with smallest interval/unit */
+	BOOLEAN flip;			/* TRUE if we want to anotate on the opposite side of the axis instead */
+	BOLLEAN is_interval;		/* TRUE when the anotation is interval anotation and not tick anotation */
+	BOLLEAN both;			/* TRUE if we have both upper and lower anotations on one axis */
+	BOLLEAN check_anotation;	/* TRUE is we have two levels of tick anotations that can overprint */
+	double *knots, *knots_p;	/* Array pointers with tick/anotation knots, the latter for primary anotations */
+	double tick_len[5];		/* Ticklengths for each of the 5 axis items */
+	double anot_off[2];		/* Distances from the axis for upper (0) and lower (1) anotations */
+	double label_off;		/* Distance from the axis for axis label */
+	double x, sign, anot_off[2], len, t_use;	/* Misc. variables */
+	struct TIME_AXIS_ITEM *T;	/* Pointer to the current axis item */
+	char string[GMT_CALSTRING_LENGTH];	/* Anotation string */
+	char format[32];		/* format used for non-time anotations */
+	
+	/* Initialize parameters for this axis */
+	
+	if (A->type != TIME) GMT_get_format (GMT_get_map_interval (0, 'a'), A->unit, format);	/* Set the anotation format template */
+	both = GMT_upper_and_lower_items(0);							/* Two levels of anotations? */
+	if ((check_anotation = GMT_two_anot_items(0))) {					/* Must worry about anotation overlap */
+		GMT_get_primary_anot (A, &primary, &secondary);					/* Find primary and secondary axis items */
+		np = GMT_coordinate_array (val0, val1, &A->item[primary], &knots_p);		/* Get all the primary tick anotation knots */
+	}
+	len = (gmtdefs.tick_length > 0.0) ? gmtdefs.tick_length : 0.0;				/* Tick length if directed outward */
+	sign = (below) ? -1.0 : 1.0;								/* since anotations go either below or above */
+	anot_off[0] = GMT_get_anot_offset (&flip);						/* Set upper anotation offset and flip depending on anot_offset */
+	anot_off[1] = anot_off[0] + (gmtdefs.anot_font_size * GMT_u2u[GMT_PT][GMT_INCH]) + 0.5 * fabs (gmtdefs.anot_offset);	/* Lower anotation offset */
+	justify = label_justify = (below) ? 10 : 2;						/* Justification of anotation and label strings */
+	if (flip) justify = GMT_flip_justify (justify);						/* flip is TRUE so flip the justification */
+	if (both)										/* Must move label farther from axis given both anotation levels */
+		label_off = sign * (((flip) ? len : anot_off[1] + (gmtdefs.anot_font2_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font_height[gmtdefs.anot_font2]) + 1.5 * fabs (gmtdefs.anot_offset));
+	else											/* Just one level of anotation to clear */
+		label_off = sign * (((flip) ? len : anot_off[0] + (gmtdefs.anot_font_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font_height[gmtdefs.anot_font]) + 1.5 * fabs (gmtdefs.anot_offset));
+	anot_off[0] *= sign;		/* Change sign according to which axis we are doing */
+	anot_off[1] *= sign;
+	tick_len[0] = tick_len[2] = sign * gmtdefs.tick_length;					/* Initialize the tick lengths */
+	tick_len[1] = 3.0 * sign * gmtdefs.tick_length;
+	tick_len[3] = (A->item[GMT_ANOT_UPPER].active) ? tick_len[0] : 3.0 * sign * gmtdefs.tick_length;
+	tick_len[4] = 0.5 * sign * gmtdefs.tick_length;
 	
 	/* Ready to draw axis */
 	
@@ -186,52 +225,27 @@ void GMT_x_axis (double x0, double y0, double length, double val0, double val1, 
 	ps_plot (length, 0.0, -2);
 	GMT_setpen (&gmtdefs.tick_pen);
 
-	if (A->type != TIME) GMT_get_format (GMT_get_map_interval (0, 'a'), A->unit, format);
-	both = GMT_upper_and_lower_items(0);		/* Two levels of anotations */
-	check_anotation = GMT_two_anot_items(0);	/* If both are tick anotations we must sometimes skip the lower unit anotation when they overlap */
-	if (check_anotation) {	/* Precalculate both sets of knots */
-		GMT_get_primary_anot (A, &primary, &secondary);
-		np = GMT_coordinate_array (val0, val1, &A->item[primary], &knots_p);	/* Get all the primary tick anotation knots */
-	}
-
-	len = (gmtdefs.tick_length > 0.0) ? gmtdefs.tick_length : 0.0;
-	sign = (below) ? -1.0 : 1.0;
-	anot_off[0] = GMT_get_anot_offset (&flip);
-	anot_off[1] = anot_off[0] + (gmtdefs.anot_font_size * GMT_u2u[GMT_PT][GMT_INCH]) + 0.5 * fabs (gmtdefs.anot_offset);
-	justify = label_justify = (below) ? 10 : 2;
-	if (flip) justify = GMT_flip_justify (justify);
-	if (both)
-		label_off = sign * (((flip) ? len : anot_off[1] + (gmtdefs.anot_font2_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font_height[gmtdefs.anot_font2]) + 1.5 * fabs (gmtdefs.anot_offset));
-	else
-		label_off = sign * (((flip) ? len : anot_off[0] + (gmtdefs.anot_font_size * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font_height[gmtdefs.anot_font]) + 1.5 * fabs (gmtdefs.anot_offset));
-	anot_off[0] *= sign;
-	anot_off[1] *= sign;
-	tick_len[0] = tick_len[2] = sign * gmtdefs.tick_length;
-	tick_len[1] = 3.0 * sign * gmtdefs.tick_length;
-	tick_len[3] = (A->item[GMT_ANOT_UPPER].active) ? tick_len[0] : 3.0 * sign * gmtdefs.tick_length;
-	tick_len[4] = 0.5 * sign * gmtdefs.tick_length;
-	
 	for (k = 0; k < GMT_GRID_UPPER; k++) {	/* For each one of the 5 axis items (gridlines are done separately) */
 		
 		T = &A->item[k];		/* Get pointer to this item */
 		if (!T->active) continue;	/* Don't want this item plotted - goto next item */
 		
-		is_interval = GMT_interval_axis_item(k);
-		nx = GMT_coordinate_array (val0, val1, &A->item[k], &knots);	/* Get all the tick knots */
+		is_interval = GMT_interval_axis_item(k);			/* Interval or tick mark anotation? */
+		nx = GMT_coordinate_array (val0, val1, &A->item[k], &knots);	/* Get all the anotation tick knots */
 		
 		/* First plot all the tick marks */
 		
 		for (i = 0; i < nx; i++) {
-			if (knots[i] < (val0 - GMT_CONV_LIMIT) || knots[i] > (val1 + GMT_CONV_LIMIT)) continue;
-			GMT_coordinate_to_x (knots[i], &x);
-			ps_plot (x, 0.0, 3);
+			if (knots[i] < (val0 - GMT_CONV_LIMIT) || knots[i] > (val1 + GMT_CONV_LIMIT)) continue;	/* Outside the range */
+			GMT_coordinate_to_x (knots[i], &x);							/* Convert to inches on the page */
+			ps_plot (x, 0.0, 3);									/* Draw tick mark */
 			ps_plotr (0.0, tick_len[k], -2);
 		}
 		
-		if (k < GMT_TICK_UPPER && anotate) {	/* Then do anotations */
+		if (k < GMT_TICK_UPPER && anotate) {	/* Then do anotations too */
 		
-			anot_pos = GMT_lower_axis_item(k);						/* 1 means lower anotation, 0 means upper (close to axis) */
-			font_size = (anot_pos == 1) ? gmtdefs.anot_font2_size : gmtdefs.anot_font_size;
+			anot_pos = GMT_lower_axis_item(k);							/* 1 means lower anotation, 0 means upper (close to axis) */
+			font_size = (anot_pos == 1) ? gmtdefs.anot_font2_size : gmtdefs.anot_font_size;		/* Set the id of the font to use */
 		
 			for (i = 0; k < 4 && i < (nx - is_interval); i++) {
 				if (GMT_anot_pos (val0, val1, T, &knots[i], &t_use)) continue;				/* Outside range */
@@ -246,7 +260,7 @@ void GMT_x_axis (double x0, double y0, double length, double val0, double val1, 
 	}
 	if (np) GMT_free ((void *)knots_p);
 	
-	/* Finally do label */
+	/* Finally do axis label */
 	
 	ps_setfont (gmtdefs.label_font);
 	if (A->label[0] && anotate) ps_text (0.5 * length, label_off, gmtdefs.label_font_size, A->label, 0.0, label_justify, 0);
