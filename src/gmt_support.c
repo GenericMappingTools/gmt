@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.59 2004-02-06 17:46:35 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.60 2004-03-05 18:57:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -648,6 +648,8 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 	double *x, *z_out, a, b, h1, h2, v1, v2, s1, s2, f, x_inc, cmyk_low[4], cmyk_high[4];
 	char format[BUFSIZ], code[3] = {'B', 'F', 'N'};
 	struct GMT_LUT *lut;
+
+	if (!GMT_continuous && continuous) fprintf (stderr, "%s: Warning: Making a continous cpt from a discrete cpt may give unexpected results!\n", GMT_program);
 
 	if (nz < 0) {	/* Called from grd2cpt which want equal area colors */
 		nz = -nz;
