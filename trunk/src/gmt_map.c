@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.55 2004-06-01 02:28:31 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.56 2004-06-09 06:23:28 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6225,6 +6225,89 @@ int GMT_eqdist_crossing (double lon1, double lat1, double lon2, double lat2, dou
 	return (1);
 }
 
+int *GMT_split_line (double **xx, double **yy, int *nn, BOOLEAN add_crossings)
+{	/* Accepts x/y array for a line in projected inches and looks for
+	 * map jumps.  If found it will insert the boundary crossing points and
+	 * build a split integer array with the nodes of the first point
+	 * for each segment.  The number of segments is returned.  If
+	 * no jumps are found then NULL is returned.  This function is needed
+	 * so that the new PS contouring machinery only sees lines that do no
+	 * jump across the map.
+	 * add_crossings is TRUE if we need to find the crossings; FALSE means
+	 * they are already part of the line. */
+	 
+	double *x, *y, *xin, *yin, xc[2], yc[2];
+	int i, j, k, n, n_seg, *split, *pos;
+	short int *way;
+	size_t n_alloc = GMT_SMALL_CHUNK;
+	
+	/* First quick scan to see how many jumps there are */
+	
+	xin = *xx;	yin = *yy;
+	pos = (int *) GMT_memory (VNULL, n_alloc, sizeof (int), GMT_program);
+	way = (short int *) GMT_memory (VNULL, n_alloc, sizeof (short int), GMT_program);
+	for (n_seg = 0, i = 1; i < *nn; i++) {
+		if ((k = GMT_map_jump_x (xin[i], yin[i], xin[i-1], yin[i-1]))) {
+			pos[n_seg] = i;		/* 2nd of the two points that generate the jump */
+			way[n_seg] = k;		/* Which way we jump : +1 is right to left, -1 is left to right */
+			n_seg++;
+			if (n_seg == n_alloc) {
+				n_alloc += GMT_SMALL_CHUNK;
+				pos = (int *) GMT_memory ((void *)pos, n_alloc, sizeof (int), GMT_program);
+				way = (short int *) GMT_memory ((void *)way, n_alloc, sizeof (short int), GMT_program);
+			}
+		}
+	}
+	
+	if (n_seg == 0) {	/* No jumps, just return NULL */
+		GMT_free ((void *)pos);
+		GMT_free ((void *)way);
+		return ((int *)NULL);
+	}
+	
+	/* Here we have one or more jumps so we need to split the line */
+	
+	n = *nn;				/* Original line count */
+	if (add_crossings) n += 2 * n_seg;	/* Must add 2 crossing points per jump */
+	x = (double *) GMT_memory (VNULL, n, sizeof (double), GMT_program);
+	y = (double *) GMT_memory (VNULL, n, sizeof (double), GMT_program);
+	split = (int *) GMT_memory (VNULL, n_seg+2, sizeof (int), GMT_program);
+	split[0] = n_seg;
+	
+	x[0] = xin[0];
+	y[0] = yin[0];
+	for (i = j = 1, k = 0; i < *nn; i++, j++) {
+		if (k < n_seg && i == pos[k]) {	/* At jump point */
+			if (add_crossings) {	/* Find and insert the crossings */
+				GMT_get_crossings_x (xc, yc, xin[i], yin[i], xin[i-1], yin[i-1]);
+				if (way[k] == 1) {	/* Add right border point first */
+					d_swap (xc[0], xc[1]);
+					d_swap (yc[0], yc[1]);
+				}
+				x[j] = xc[0];	y[j++] = yc[0];	/* End of one segment */
+				x[j] = xc[1];	y[j++] = yc[1];	/* Start of another */
+			}
+			split[++k] = j;		/* Node of first point in new segment */
+		}
+		/* Then copy the regular points */		
+		x[j] = xin[i];
+		y[j] = yin[i];
+	}
+	split[++k] = j;		/* End of last segment */
+	
+	/* Time to return the pointers to new data */
+	
+	GMT_free ((void *)pos);
+	GMT_free ((void *)way);
+	GMT_free ((void *)xin);
+	GMT_free ((void *)yin);
+	*xx = x;
+	*yy = y;
+	*nn = j;
+	
+	return (split);
+}
+	
 /*  Routines to add pieces of parallels or meridians */
 
 int GMT_graticule_path (double **x, double **y, int dir, double w, double e, double s, double n)

@@ -48,8 +48,9 @@ No space between the option flag and the associated arguments.
 #include "explain_-B_short.txt"
 .TP
 .B \-C
-Sets the clearance between the text and the surrounding box [CLEARANCE_SI (or CLEARANCE_US)].
-Only used if \fB\-W\fP is specified.
+Sets the clearance between the text and the surrounding box [15%].
+Only used if \fB\-W\fP is specified.  Append the unit you want (\fBc\fPm, \fBi\fPnch, \fBm\Peter.
+or \fBp\fPoint; if not given we consult MEASURE_UNIT) or % for a percentage of the font size.
 .TP
 .B \-D
 Offsets the text from the projected (\fIx,y\fP) point by \fIdx,dy\fP [0/0].

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.15 2004-06-04 19:43:14 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.16 2004-06-09 06:23:28 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -65,11 +65,12 @@ struct GMT_CONTOUR {
 	/* Control section */
 	char option[BUFSIZ];		/* Copy of the option string */
 	char label[BUFSIZ];		/* Fixed label */
-	char line_type[16];		/* Kind of line: contour or line */
+	char line_name[16];		/* Name of line: contour or line */
 	char flag;			/* Char for the option key */
 	BOOLEAN annot;			/* TRUE if we want labels */
 	BOOLEAN spacing;		/* TRUE if we have spacing constraints to apply */
 	double label_dist_spacing;	/* Min distance between labels */
+	int line_type;			/* Kind of line: contour (1) or line (0) */
 	int label_font;			/* Which font */
 	int dist_kind;			/* What kind of distance [0 = xy, 1 = map ] */
 	int dist_unit;			/* Units for labelled distances along tracks [cimp] */
@@ -99,6 +100,7 @@ struct GMT_CONTOUR {
 	double label_font_size;		/* Font size for labels */
 	double label_angle;		/* For fixed-angle labels only */
 	double clearance[2];		/* Spacing between text and textbox */
+	int clearance_flag;		/* 1 if spacing given in % of labelfont size, 0 otherwise */
 	BOOLEAN transparent;		/* TRUE for transparent textbox, FALSE for opaque */
 	int box;			/* Textbox bits [1 = outline, 2 = rect box shape, 4 = rounded rect shape] */
 	BOOLEAN curved_text;		/* TRUE for text to follow curved lines */
