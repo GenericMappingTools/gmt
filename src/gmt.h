@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.11 2001-08-16 23:30:53 pwessel Exp $
+ *	$Id: gmt.h,v 1.12 2001-08-17 14:03:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -302,7 +302,8 @@ struct GMT_TIME_SYSTEM {
 	char name[32];		/* Name of system */
 	char epoch[32];		/* Epoch time string */
 	char unit;		/* Time unit */
-	double epoch_t0;	/* Internal time representation of epoch */
+	double epoch_t0;	/* Internal time representation of epoch in seconds*/
+	double scale;		/* Converts user units to seconds */
 };
 
 struct GMT_TIME_LANGUAGE {
