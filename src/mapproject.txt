@@ -73,7 +73,6 @@ Determine the shortest distance from the input data points to the line(s) given 
 Append the distance unit; choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile), \fBn\fP (nautical mile), \fBd\fP (spherical degree),
 \fBc\fP (Cartesian distance using input coordinates) or \fBC\fP (Cartesian distance using projected coordinates).  The
 last unit requires \fB\-R\fP and \fB\-J\fP to be set.  A spherical approximation is used for geographic data.
-
 #include "explain_-M.txt"
 .TP
 .B \-Q
