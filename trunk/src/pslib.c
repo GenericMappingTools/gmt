@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.27 2001-10-15 17:25:06 pwessel Exp $
+ *	$Id: pslib.c,v 1.28 2001-10-15 18:02:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3701,16 +3701,11 @@ int ps_comp_int_asc (const void *p1, const void *p2)
 static void bulkcopy (const char *fname)
 {
 	FILE *in;
-	ssize_t nread;
+	size_t nread;
 	char buf[80];
-	char *fullname;
-	long maxnamelen;
+	char fullname[BUFSIZ];
 
-	maxnamelen = pathconf (PSHOME, _PC_PATH_MAX);
-	if (maxnamelen <= 0)
-		maxnamelen = strlen (fname) + strlen (PSHOME) + 5;
-	fullname = ps_memory (NULL, maxnamelen, sizeof (char));
-	sprintf (fullname, "%s%cshare%cpslib%c%s.ps", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, fname);
+	sprintf (fullname, "%s%cshare%cpslib%c%s.ps\0", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, fname);
 
 	in = fopen (fullname, "r");
 	if (in == NULL)
@@ -3722,5 +3717,4 @@ static void bulkcopy (const char *fname)
 	while ((nread = fread (buf, 1, sizeof (buf), in)) > 0)
 		fwrite (buf, 1, nread, ps.fp);
 	fclose (in);
-	ps_free (fullname);
  }
