@@ -69,16 +69,16 @@ Do NOT skip symbols that fall outside map border [Default plots points inside bo
 .TP
 .B \-S
 Plot symbols.  \fIsize\fP is symbol size in the unit set in \.gmtdefaults4
-(unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).   The uppercase symbols
-\fBA, C, D, H, I, N, S, T\fP are normalized to have the same area as a circle of given size,
+(unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).   If the symbol
+code (see below) is not given it will be read from the last column in the input data;
+this cannot be used in conjunction with \fB\-b\fP.  Optionally, append
+c, i, m, p to indicate that the size information in the
+input data is in units of cm, inch, meter, or point,
+respectively. [Default is MEASURE_UNIT].
+The uppercase symbols
+\fBA, C, D, G, H, I, N, S, T\fP are normalized to have the same area as a circle of given size,
 while the corresponding lowercase symbols are circumscribed by the circle.
 Choose between:
-.TP
-.B \-S
-Read symbol code (see below) from last column in the input data.  Cannot be used in
-conjunction with \fB\-b\fP.  Optionally, append \fBc\fP, \fBi\fP, \fBm\fP, \fBp\fP to
-indicate that the size information in the input data is in units of cm, inch, meter,
-or point, respectively. [Default is MEASURE_UNIT].
 .TP
 .B \-S-
 x-dash.  \fIsize\fP is the length of a short horizontal (x-dir) line segment.
@@ -133,7 +133,7 @@ Users may add their own custom *.def files; see CUSTOM SYMBOLS in the \fBpsxy\fP
 .B \-Sl
 \fBl\fPetter or text string (less than 64 characters).  Give size, and append /\fIstring\fP after the size.  Note that the size is only approximate; no individual scaling
 is done for different characters.  Remember to escape special characters like *.  Optionally, you may append %\fIfont\fP
-to select a particular font [Default is ANNOT_FONT].
+to select a particular font [Default is ANNOT_FONT_PRIMARY].
 .TP
 .B \-Sn
 pe\fBn\fPtagon.  \fIsize\fP is diameter of circumscribing circle.

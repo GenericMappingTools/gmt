@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.130 2004-06-24 02:07:50 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.131 2004-06-25 22:39:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -720,66 +720,51 @@ void GMT_gettexture (char *line, int unit, double scale, struct GMT_PEN *P) {
 }
 
 int GMT_getinc (char *line, double *dx, double *dy)
-{
-	int t_pos, i;
-	BOOLEAN got_nxny;
-	char xstring[128], ystring[128];
-	
-	for (t_pos = -1, i = 0; line[i] && t_pos < 0; i++) if (line[i] == '/') t_pos = i;
-	got_nxny = (line[0] == 'n' || line[0] == 'N');	/* Got nx and not dx */
-	
-	if (t_pos != -1) {	/* Got -I<xstring>/<ystring> */
-		strcpy (xstring, line);
-		xstring[t_pos] = 0;
-		if (t_pos > 0 && (xstring[t_pos-1] == 'm' || xstring[t_pos-1] == 'M') ) {
-			xstring[t_pos-1] = 0;
-			if ( (sscanf(xstring, "%lf", dx)) != 1) return(1);
-			(*dx) /= 60.0;
-		}
-		else if (t_pos > 0 && (xstring[t_pos-1] == 'c' || xstring[t_pos-1] == 'C') ) {
-			xstring[t_pos-1] = 0;
-			if ( (sscanf(xstring, "%lf", dx)) != 1) return(1);
-			(*dx) /= 3600.0;
-		}
-		else {
-			if ( (sscanf(xstring, "%lf", dx)) != 1) return(1);
-		}
+{	/* Special case of getincn use where n is two. */
 
-		strcpy (ystring, &line[t_pos+1]);
-		t_pos = strlen(ystring);
-		if (t_pos > 0 && (ystring[t_pos-1] == 'm' || ystring[t_pos-1] == 'M') ) {
-			ystring[t_pos-1] = 0;
-			if ( (sscanf(ystring, "%lf", dy)) != 1) return(1);
-			(*dy) /= 60.0;
+	double inc[2];
+	
+	*dy = (GMT_getincn (line, inc, 2) == 1) ? inc[0] : inc[1];
+	*dx = inc[0];
+	
+	return (0);
+}
+
+int GMT_getincn (char *line, double inc[], int n)
+{
+	int last, i;
+	char tmpstring[BUFSIZ], *p;
+	double scale;
+	
+	/* Dechipers dx/dy/dz/dw/du/dv/... increment strings with n items */
+	
+	memset ((void *)inc, 0, (size_t)(n * sizeof (double)));
+	strcpy (tmpstring, line);	/* Since strtok clobbers the string */
+	
+	p = strtok (tmpstring, "/");
+	i = 0;
+	while (p && i < n) {
+		last = strlen (p) - 1;
+		if (p[last] == 'm' || p[last] == 'M') {	/* Gave arc minutes */
+			p[last] = 0;
+			scale = GMT_MIN2DEG;
 		}
-		else if (t_pos > 0 && (ystring[t_pos-1] == 'c' || ystring[t_pos-1] == 'C') ) {
-			ystring[t_pos-1] = 0;
-			if ( (sscanf(ystring, "%lf", dy)) != 1) return(1);
-			(*dy) /= 3600.0;
+		else if (p[last] == 'c' || p[last] == 'C') {	/* Gave arc seconds */
+			p[last] = 0;
+			scale = GMT_SEC2DEG;
 		}
-		else {
-			if ( (sscanf(ystring, "%lf", dy)) != 1) return(1);
+		else	/*  No units given */
+			scale = 1.0;
+		if ( (sscanf(p, "%lf", &inc[i])) != 1) {
+			fprintf (stderr, "%s: ERROR: Unable to decode %s as a floating point number\n", GMT_program, p);
+			exit (EXIT_FAILURE);
 		}
+		inc[i] *= scale;
+		p = strtok (NULL, "/");
+		i++;	/* Goto next increment */
 	}
-	else {		/* Got -I<string> */
-		strcpy (xstring, line);
-		t_pos = strlen(xstring);
-		if (t_pos > 0 && (xstring[t_pos-1] == 'm' || xstring[t_pos-1] == 'M') ) {
-			xstring[t_pos-1] = 0;
-			if ( (sscanf(xstring, "%lf", dx)) != 1) return(1);
-			(*dx) /= 60.0;
-		}
-		else if (t_pos > 0 && (xstring[t_pos-1] == 'c' || xstring[t_pos-1] == 'C') ) {
-			xstring[t_pos-1] = 0;
-			if ( (sscanf(xstring, "%lf", dx)) != 1) return(1);
-			(*dx) /= 3600.0;
-		}
-		else {
-			if ( (sscanf(xstring, "%lf", dx)) != 1) return(1);
-		}
-		*dy = (*dx);
-	}
-	return(0);
+
+	return (i);	/* Returns the number of increments found */
 }
 
 void GMT_read_cpt (char *cpt_file)

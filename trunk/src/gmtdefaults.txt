@@ -155,7 +155,7 @@ the font name (case sensitive!).  The 39 available fonts are:
 Font size (> 0) in points for map annotations.  [14]
 .TP
 .B ANNOT_FONT_SECONDARY
-Font to use for time axis secondary annotations.  See \fBANNOT_FONT\fP for available fonts  [Helvetica].
+Font to use for time axis secondary annotations.  See \fBANNOT_FONT_PRIMARY\fP for available fonts  [Helvetica].
 .TP
 .B ANNOT_FONT_SIZE_SECONDARY
 Font size (> 0) for time axis secondary annotations in points  [16].
@@ -282,7 +282,7 @@ shorthand discussed in Section 4.17 of the \fBGMT\fP Technical Reference and Coo
 If FALSE, no filename expansion is done [FALSE].
 .TP
 .B HEADER_FONT
-Font to use when plotting headers.  See \fBANNOT_FONT\fP for available fonts  [Helvetica].
+Font to use when plotting headers.  See \fBANNOT_FONT_PRIMARY\fP for available fonts  [Helvetica].
 .TP
 .B HEADER_FONT_SIZE
 Font size (> 0) for header in points  [36].
@@ -331,7 +331,7 @@ Specifies whether input/output ASCII files have header record(s) or not  [FALSE]
 Specifies how many header records to expect if \fB\-H\fP is turned on  [1].
 .TP
 .B LABEL_FONT
-Font to use when plotting labels below axes.  See \fBANNOT_FONT\fP for available fonts  [Helvetica].
+Font to use when plotting labels below axes.  See \fBANNOT_FONT_PRIMARY\fP for available fonts  [Helvetica].
 .TP
 .B LABEL_FONT_SIZE
 Font size (> 0) for labels in points  [24].
