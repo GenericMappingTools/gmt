@@ -14,7 +14,7 @@ grdimage \- Create grayshaded or colored image from a 2-D netCDF grd file
 .SH DESCRIPTION
 \fBgrdimage\fP reads one 2-D gridded file and produces a gray-shaded (or colored) map by assigning
 each z-value a gray-shade (or color). 
-Alternatively, fBgrdimage\fP reads three 2-D gridded files with the red, green, and blue components
+Alternatively, \fBgrdimage\fP reads three 2-D gridded files with the red, green, and blue components
 directly (all must be in the 0-255 range). Optionally, illumination may be added by providing
 a file with intensities in the (-1,+1) range.  Values outside this range will be clipped.
 Such intensity files can be created from the
@@ -45,7 +45,7 @@ image operator to interpolate the image at the device resolution.
 .B \-G
 This option only applies when the resulting image otherwise would consist
 of only two colors: black (0) and white (255).  If so, this option will
-instead use the image as a transparent mask and point the mask (or its
+instead use the image as a transparent mask and paint the mask (or its
 inverse, with \fB\-Gb\fP) with the given color combination.
 .TP
 .B \-I
