@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.20 2004-06-13 19:58:22 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.21 2004-06-19 03:06:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -70,6 +70,7 @@ struct GMT_CONTOUR {
 	BOOLEAN annot;			/* TRUE if we want labels */
 	BOOLEAN spacing;		/* TRUE if we have spacing constraints to apply */
 	double label_dist_spacing;	/* Min distance between labels */
+	double label_dist_frac;		/* Fraction of Min distance between labels offset for closed labels [0.25] */
 	int line_type;			/* Kind of line: contour (1) or line (0) */
 	int label_font;			/* Which font */
 	int dist_kind;			/* What kind of distance [0 = xy, 1 = map ] */
@@ -132,7 +133,7 @@ struct GMT_CONTOUR {
 };
 
 EXTERN_MSC int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *G);
-EXTERN_MSC int GMT_contlabel_init (struct GMT_CONTOUR *G);
+EXTERN_MSC void GMT_contlabel_init (struct GMT_CONTOUR *G);
 EXTERN_MSC int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G);
 EXTERN_MSC int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode);
 EXTERN_MSC void GMT_contlabel_angle (double x[], double y[], int start, int stop, double cangle, int n, struct GMT_LABEL *L, struct GMT_CONTOUR *G);

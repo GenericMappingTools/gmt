@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.124 2004-06-16 03:02:16 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.125 2004-06-19 03:06:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1629,7 +1629,7 @@ void GMT_free (void *addr)
 	free (addr);
 }
 
-int GMT_contlabel_init (struct GMT_CONTOUR *G)
+void GMT_contlabel_init (struct GMT_CONTOUR *G)
 {	/* Assign default values to structure */
 	memset ((void *)G, 0, sizeof (struct GMT_CONTOUR));	/* Sets all to 0 */
 	if (strstr (GMT_program, "contour")) {
@@ -1645,6 +1645,7 @@ int GMT_contlabel_init (struct GMT_CONTOUR *G)
 	G->half_width = 5;
 	G->label_font_size = 9.0;
 	G->label_dist_spacing = 4.0;	/* Inches */
+	G->label_dist_frac = 0.25;	/* Fraction of above head start for closed labels */
 	G->box = 2;			/* Rect box shape is Default */
 	if (gmtdefs.measure_unit == GMT_CM) G->label_dist_spacing = 10.0 / 2.54;
 	G->clearance[0] = G->clearance[1] = 15.0;	/* 15 % */
@@ -1813,8 +1814,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 
 int GMT_contlabel_specs_old (char *txt, struct GMT_CONTOUR *G)
 {	/* For backwards compatibility with 3.4.x */
-	int j, k, bad;
-	char txt_a[32], txt_b[32];
+	int j, bad;
 	
 	G->transparent = FALSE;
 	for (j = 0, bad = 0; txt[j] && txt[j] != 'f'; j++);
@@ -1884,14 +1884,16 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 			L->dist_kind = 1;
 		case 'd':	/* Specify distances in plot units [cimp] */
 			L->spacing = TRUE;
+			k = sscanf (&txt[j], "%[^/]/%lf", txt_a, &L->label_dist_frac);
+			if (k == 1) L->label_dist_frac = 0.25;
 			if (L->dist_kind == 1) {	/* Distance units other than xy specified */
-				k = strlen (txt) - 1;
-				c = (isdigit ((int)txt[k]) || txt[k] == '.') ? 0 : txt[k];
-				L->label_dist_spacing = atof (&txt[1]);
+				k = strlen (txt_a) - 1;
+				c = (isdigit ((int)txt_a[k]) || txt_a[k] == '.') ? 0 : txt_a[k];
+				L->label_dist_spacing = atof (&txt_a[1]);
 				error += GMT_get_dist_scale (c, &L->d_scale, &L->proj_type, &L->dist_func);
 			}
 			else
-				L->label_dist_spacing = GMT_convert_units (&txt[1], GMT_INCH);
+				L->label_dist_spacing = GMT_convert_units (&txt_a[1], GMT_INCH);
 			if (L->label_dist_spacing <= 0.0) {
 				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c.  Spacing between labels must exceed 0.0\n", GMT_program, L->flag);
 				error++;
@@ -2027,7 +2029,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 			}
 			p = strtok (NULL, ",");
 			G->n_xp++;
-			if (G->n_xp == n_alloc) {
+			if (G->n_xp == (int)n_alloc) {
 				n_alloc += GMT_SMALL_CHUNK;
 				G->xp = (struct GMT_LINES *) GMT_memory ((void *)G->xp, (size_t)n_alloc, sizeof (struct GMT_LINES), GMT_program);
 			}
@@ -2090,7 +2092,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 				strcpy (G->f_label[G->f_n], txt_c);
 			}
 			G->f_n++;
-			if (G->f_n == n_alloc) {
+			if (G->f_n == (int)n_alloc) {
 				n_alloc += GMT_SMALL_CHUNK;
 				G->f_xy[0] = (double *) GMT_memory ((void *)G->f_xy[0], (size_t)n_alloc, sizeof (double), GMT_program);
 				G->f_xy[1] = (double *) GMT_memory ((void *)G->f_xy[1], (size_t)n_alloc, sizeof (double), GMT_program);
@@ -2196,7 +2198,7 @@ void GMT_contlabel_addpath (double x[], double y[], int n, char *label, BOOLEAN 
 	struct GMT_CONTOUR_LINE *C;
 	/* Adds this segment to the list of contour lines */
 	
-	if (G->n_segments == G->n_alloc) {
+	if (G->n_segments == (int)G->n_alloc) {
 		G->n_alloc += GMT_SMALL_CHUNK;
 		G->segment = (struct GMT_CONTOUR_LINE **) GMT_memory ((void *)G->segment, G->n_alloc, sizeof (struct GMT_CONTOUR_LINE *), GMT_program);
 	}
@@ -2231,7 +2233,6 @@ void GMT_contlabel_addpath (double x[], double y[], int n, char *label, BOOLEAN 
 	
 int sort_label_struct (const void *p_1, const void *p_2)
 {
-	int bad_1, bad_2;
 	struct GMT_LABEL **point_1, **point_2;
 	
 	point_1 = (struct GMT_LABEL **)p_1;
@@ -3138,7 +3139,7 @@ void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char cty
 	 * If there are jumps we find them and call the main GMT_hold_contour_sub for each segment
 	 */
 
-	int k, seg, first, n, *split;
+	int seg, first, n, *split;
 	double *xs, *ys, *xin, *yin;
 	
 	if ((split = GMT_split_line (xxx, yyy, &nn, G->line_type)) == NULL) {	/* Just one long line */
@@ -3168,8 +3169,8 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 {	/* The xx, yy are expected to be projected x/y inches */
 	int i, j, start = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
-	double angle, dx, dy, width, sum_x2, sum_xy, one = 1.0, f, this_dist, step, stept, *track_dist, *map_dist, *value_dist, *radii;
-	double x, y, this_value_dist, lon[2], lat[2], *xx, *yy;
+	double dx, dy, width, f, this_dist, step, stept, *track_dist, *map_dist, *value_dist, *radii;
+	double this_value_dist, lon[2], lat[2], *xx, *yy;
 	struct GMT_LABEL *new_label;
 	char format[128], this_label[BUFSIZ];
 	
@@ -3238,7 +3239,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 		if (G->spacing) {	/* Place labels based on distance along contours */
 			double last_label_dist, dist_offset, dist;
 			
-			dist_offset = (closed && G->dist_kind == 0) ? G->label_dist_spacing - one : 0.0;	/* Label closed contours longer than 1 inch */
+			dist_offset = (closed && G->dist_kind == 0) ? (1.0 - G->label_dist_frac) * G->label_dist_spacing : 0.0;	/* Label closed contours longer than frac of dist_spacing */
 			last_label_dist = 0.0;
 			for (i = 1; i < nn; i++) {
 
@@ -3277,7 +3278,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 					dist_offset = 0.0;
 					last_label_dist = this_dist;
 					G->L[G->n_label++] = new_label;
-					if (G->n_label == n_alloc) {
+					if (G->n_label == (int)n_alloc) {
 						n_alloc += GMT_SMALL_CHUNK;
 						G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 					}
@@ -3338,7 +3339,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 					new_label->node = (j == 0) ? 0 : j - 1;
 					GMT_contlabel_angle (xx, yy, new_label->node, j, cangle, nn, new_label, G);
 					G->L[G->n_label++] = new_label;
-					if (G->n_label == n_alloc) {
+					if (G->n_label == (int)n_alloc) {
 						n_alloc += GMT_SMALL_CHUNK;
 						G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 					}
@@ -3395,7 +3396,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 					GMT_place_label (new_label, this_label, G, TRUE);
 					GMT_contlabel_angle (xx, yy, left, right, cangle, nn, new_label, G);
 					G->L[G->n_label++] = new_label;
-					if (G->n_label == n_alloc) {
+					if (G->n_label == (int)n_alloc) {
 						n_alloc += GMT_SMALL_CHUNK;
 						G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 					}
@@ -3439,7 +3440,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 					GMT_place_label (new_label, this_label, G, TRUE);
 					GMT_contlabel_angle (xx, yy, start, start, cangle, nn, new_label, G);
 					G->L[G->n_label++] = new_label;
-					if (G->n_label == n_alloc) {
+					if (G->n_label == (int)n_alloc) {
 						n_alloc += GMT_SMALL_CHUNK;
 						G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 					}

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.128 2004-06-15 17:02:41 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.129 2004-06-19 03:06:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4056,7 +4056,7 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 void GMT_draw_map_rose (struct MAP_ROSE *mr)
 {
 	int i, kind, just[4] = {10, 5, 2, 7};
-	double angle, L[4], R[4], px, py, x[8], y[8], xp[8], yp[8], tx[3], ty[3], s, c, rot[4] = {0.0, 45.0, 22.5, -22.5};
+	double angle, L[4], R[4], x[8], y[8], xp[8], yp[8], tx[3], ty[3], s, c, rot[4] = {0.0, 45.0, 22.5, -22.5};
 	
 	if (!mr->plot) return;
 
