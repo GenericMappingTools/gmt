@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.45 2001-10-02 21:32:52 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.46 2001-10-02 23:01:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2392,18 +2392,15 @@ void GMT_map_anotate (double w, double e, double s, double n)
 
 	ps_setpaint (gmtdefs.basemap_frame_rgb);
 
-	if (frame_info.header[0]) {	/* Make plot header */
-		move_up = (MAPPING || frame_info.side[2] == 2);
-		ps_setfont (gmtdefs.header_font);
-		x = project_info.xmax * 0.5;
-		y = project_info.ymax + ((gmtdefs.tick_length > 0.0) ? gmtdefs.tick_length : 0.0) + gmtdefs.header_offset;
-		del = ((gmtdefs.tick_length > 0.0) ? gmtdefs.tick_length : 0.0) + gmtdefs.header_offset;
-		del += ((move_up) ? (gmtdefs.anot_font_size + gmtdefs.label_font_size) * GMT_u2u[GMT_PT][GMT_INCH] : 0.0) + gmtdefs.header_offset;
+	if (frame_info.header[0]) {	/* Make plot header for geographic maps*/
 		if (project_info.three_D && fabs (project_info.z_scale) < GMT_CONV_LIMIT) {	/* Only do this if flat 2-D plot */
 			double size, xsize, ysize;
 			
+			move_up = (MAPPING || frame_info.side[2] == 2);
 			ps_setfont (0);
-			GMT_xy_do_z_to_xy (x, y+del, project_info.z_level, &x, &y);
+			del = ((gmtdefs.tick_length > 0.0) ? gmtdefs.tick_length : 0.0) + gmtdefs.header_offset;
+			del += ((move_up) ? (gmtdefs.anot_font_size) * GMT_u2u[GMT_PT][GMT_INCH] : 0.0);
+			GMT_xy_do_z_to_xy (project_info.xmax * 0.5, project_info.ymax+del, project_info.z_level, &x, &y);
 			size = gmtdefs.header_font_size * gmtdefs.dpi * GMT_u2u[GMT_PT][GMT_INCH];
 			xsize = size * z_project.xshrink[0];
 			ysize = size * z_project.yshrink[0];
@@ -2416,10 +2413,16 @@ void GMT_map_anotate (double w, double e, double s, double n)
 			ps_setfont (gmtdefs.header_font);
 		}
 		else if (!project_info.three_D) {
-			if (MAPPING || frame_info.side[2] == 0) ps_set_length ("PSL_H_y", del);	/* PSL_H was not set by linear axis */
-			ps_set_length ("PSL_x", x);
-			ps_set_length ("PSL_y", y);
-			ps_set_height ("PSL_HF", gmtdefs.header_font_size);
+			ps_setfont (gmtdefs.header_font);
+			if (MAPPING || frame_info.side[2] == 0) {
+				ps_set_length ("PSL_TL", gmtdefs.tick_length);
+				ps_set_length ("PSL_AO0", gmtdefs.anot_offset);
+				ps_set_length ("PSL_HO", gmtdefs.header_offset);
+				ps_textdim ("PSL_dimx", "PSL_AF0", gmtdefs.anot_font_size, gmtdefs.anot_font, "100\\312", 0);			/* Get and set typical anotation dimensions in PostScript */
+				ps_command ("/PSL_H_y PSL_TL PSL_AO0 add PSL_AF0 add PSL_HO add def");						/* PSL_H was not set by linear axis */
+			}
+			ps_set_length ("PSL_x", project_info.xmax * 0.5);
+			ps_set_length ("PSL_y", project_info.ymax);
 			ps_textdim ("PSL_dimx", "PSL_dimy", gmtdefs.header_font_size, gmtdefs.header_font, frame_info.header, 0);			/* Get and set string dimensions in PostScript */
 			ps_command ("PSL_x PSL_dimx -0.5 mul add PSL_y PSL_H_y add M");
 			ps_setfont (gmtdefs.header_font);
