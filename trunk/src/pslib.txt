@@ -588,7 +588,7 @@ Draws a vector of size and appearance as specified by the various parameters.  \
 take on values from 0-1 and specifies how far the intersection point between the base of a
 straight vector head and the vector line is moved toward the tip.  0 gives a triangular
 head, 1.0 gives an arrow shaped head. If \fIoutline\fP == 1, the outline will be drawn using
-current penwidth.
+current penwidth.  Add 8 to \fIoutline\fP for a double-headed vector.
 .RE
 .IP
 void \fBps_words\fR (\fIx, y, text, n_words, line_space, par_width, par_just, font, font_size, angle, rgb, justify, draw_box, x_off, y_off, x_gap, y_gap, boxpen_width, boxpen_texture, boxpen_offset, boxpen_rgb, vecpen_width, vecpen_texture, vecpen_offset, vecpen_rgb, boxfill_rgb\fP)

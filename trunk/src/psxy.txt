@@ -159,8 +159,9 @@ if present, will be interpreted as arrowwidth/headlength/headwidth [Default is P
 By default arrow attributes remains invariant to the length
 of the arrow.  To have the size of the vector scale down with decreasing size,
 append \fBn\fP\fInorm\fP, where vectors shorter than \fInorm\fP will have their
-attributes scaled by length/\fInorm\fP.  To center vector on point, use \fB\-Sv+\fP; to align point with the vector head,
-use \fB\-Svh\fP; to align point with the vector tail, use \fB\-Svt\fP [Default].
+attributes scaled by length/\fInorm\fP.  To center vector on balance point, use \fB\-Svb\fP; to align point with the vector head,
+use \fB\-Svh\fP; to align point with the vector tail, use \fB\-Svt\fP [Default].  To give the head point's coordinates
+instead of direction and length, use \fB\-Svs\fP.  Upper case \fBB, H, T, S\fP will draw a double-headed vector [Default is single head].
 .TP
 .B \-SV
 Same as \fB\-Sv\fP, except azimuth (in degrees east of north) should be given instead of direction.  The azimuth will
