@@ -150,6 +150,8 @@ examples/ex21/RHAT_price.csv
 examples/ex22/job22.sh
 examples/ex22/job22.bat
 examples/ex22/job22.csh
+examples/ex22/neic_quakes.d
+examples/ex22/USGS.ras
 examples/ex23/job23.sh
 examples/ex23/job23.bat
 examples/ex23/job23.csh
