@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.74 2002-08-26 17:24:57 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.75 2002-08-26 19:22:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -80,7 +80,6 @@ void GMT_set_titem (struct PLOT_AXIS *A, double val, char flag, char unit, char 
 int GMT_map_getframe (char *in);
 static void load_encoding (struct gmt_encoding *);
 void GMT_verify_encodings ();
-static void GMT_init_fonts (int *n_fonts);
 
 /* Local variables to gmt_init.c */
 
@@ -4103,7 +4102,7 @@ void GMT_verify_encodings () {
 	}
 }
 
-static void GMT_init_fonts (int *n_fonts)
+void GMT_init_fonts (int *n_fonts)
 {
 	FILE *in;
 	int i = 0, n_GMT_fonts, n_alloc = 50;
