@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.59 2004-05-22 00:01:48 pwessel Exp $
+ *	$Id: pslib.c,v 1.60 2004-05-25 04:59:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2395,6 +2395,57 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	
 	ps_free ((void *)piece);
 	ps_free ((void *)piece2);
+	ps_free ((void *)string);
+}
+
+void ps_pathtext (double x[], double y[], int n, double pointsize, char *text, double offset, int justify, int form)
+{
+	int i = 0, j;
+	double height;
+	char *string;
+	
+	/* form is currently ignored */
+	
+	if (strlen (text) >= (BUFSIZ-1)) {	/* We gotta have some limit on how long a single string can be... */
+		fprintf (stderr, "pslib: text_item > %d long - text not plotted!\n", BUFSIZ);
+		return;
+	}
+	if (strchr (string, '@')) {	/* Cannot handle special tricks */
+		fprintf (stderr, "pslib: text_item contains escape code - cannot be plotted along path!\n", BUFSIZ);
+		return;
+	}
+	
+	if (PSL_first) {
+		bulkcopy ("PSL_text");
+		PSL_first = FALSE;
+	}
+
+	if (justify < 0)  {	/* Strip leading and trailing blanks */
+		for (i = 0; text[i] == ' '; i++);
+		for (j = strlen (text) - 1; text[j] == ' '; j--) text[j] = 0;
+		justify = -justify;
+	}
+ 
+ 	if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
+ 		if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
+		ps_textdim ("PSL_dimx", "PSL_dimy", fabs (pointsize), ps.font_no, &text[i], 0);			/* Set the string dimensions in PS */
+ 		if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
+	}
+	
+	string = ps_prepare_text (&text[i]);	/* Check for escape sequences */
+	
+ 	height = fabs (pointsize) / ps.points_pr_unit;
+  	
+ 	ps.npath = 0;
+	
+	fprintf (ps.fp, "%d F%d\n", (int) irint (height * ps.scale), ps.font_no);	/* Set font */
+	ps_line (x, y, n, 1, FALSE, FALSE);					/* Lay down path for text */	
+	
+	if (justify > 1)
+		fprintf (ps.fp, "(%s) %d %d PSL_dimy PSL_pathtext\n", string, (int) irint (offset * ps.scale), justify);
+	else
+		fprintf (ps.fp, "(%s) %d 1 0 PSL_pathtext\n", string, (int) irint (offset * ps.scale));
+		
 	ps_free ((void *)string);
 }
 

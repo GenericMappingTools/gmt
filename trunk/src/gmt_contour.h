@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.7 2004-05-23 02:41:37 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.8 2004-05-25 04:59:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -42,9 +42,10 @@ struct GMT_XSEGMENT {
 };
 
 struct GMT_LABEL {	/* Contains information on contour/lineation labels */
-	double x, y;
-	double angle;
-	double line_angle;
+	double *x, *y;		/* Either 1 point where label goes OR a path along which to place label */
+	int n;			/* Length of path or 1 */
+	double angle;		/* Angle of text unless curved text */
+	double line_angle;	/* ANgle of line at label unless curved text */
 	double dist;
 	int node;
 	char label[32];
@@ -80,6 +81,7 @@ struct GMT_CONTOUR {
 	double label_angle;		/* For fixed-angle labels only */
 	double clearance[2];		/* Spacing between text and textbox */
 	int box;			/* Textbox [0 = transparent, 1 = filled, 2 = filled + outline */
+	BOOLEAN curved_text;		/* TRUE for text to follow curved lines */
 	int rgb[3];			/* Opaque box color */
 	struct GMT_PEN pen;		/* Pen for drawing box */
 	struct GMT_LABEL *anchor, *old_label;	/* Linked list of contours */

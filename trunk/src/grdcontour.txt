@@ -48,7 +48,7 @@ No space between the option flag and the associated arguments.
 [Default is no annotations].   Give \fB-\fP to disable all annotations implied by \fB\-C\fP.
 The optional \fIlabelinfo\fP controls the specifics of the label formatting and consists of a concatenated string
 made up of any of the following control arguments:
-#include "explain_labeinfo.txt"
+#include "explain_labelinfo.txt"
 If no name is specified, the unit given in the \fIgrdfile\fP will be used.  
 #include "explain_-B_short.txt"
 .TP

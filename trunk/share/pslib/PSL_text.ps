@@ -1,5 +1,5 @@
 %-------------------------------------------------------------------------------------------
-%	$Id: PSL_text.ps,v 1.1 2001-10-15 17:25:05 pwessel Exp $
+%	$Id: PSL_text.ps,v 1.2 2004-05-25 04:59:47 pwessel Exp $
 %
 %	P. Wessel, version 1
 %	Text justification for paragraphs.
@@ -47,7 +47,7 @@
   } if
 } bind def
 
-/PSL_wordheight {	% Gets word from stac, and calculates any adjustment to box height
+/PSL_wordheight {	% Gets word from stack, and calculates any adjustment to box height
   0 0 moveto false charpath flattenpath pathbbox /up exch def pop /down exch def pop newpath
   down PSL_ymin lt {/PSL_ymin down def} if
   up PSL_ymax gt {/PSL_ymax up def} if
@@ -275,3 +275,164 @@
   /PSL_parheight PSL_ybase neg PSL_top add PSL_bottom sub def
 } def % PSL_textjustifier
 
+% Cookbook Example Program from First Printing, Revised 7 Jan 1985
+% Program: Placing Text Along an Arbitrary Path     Number: 17
+% Modified for use in GMT's pslib.
+%-----------------------------------------------------------------------------
+%
+/PSL_pathtextdict 26 dict def			% Local storage for the procedure PSL_pathtext.
+							   
+/PSL_pathtext					% PSL_pathtext'' will place a string
+  { PSL_pathtextdict begin			% of text along any path. It takes
+    /textheight exch def                          % a string and starting offset
+    /just exch def                          % a string and starting offset
+    /offset exch def				% a string and starting offset
+    /str exch def				% distance from the beginning of
+						% the path as its arguments. Note
+						% that PSL_pathtext assumes that a
+						% path has already been defined
+						% and after it places the text
+						% along the path, it clears the
+						% current path like the ``stroke''
+						% and ``fill'' operators; it also
+						% assumes that a font has been
+						% set. ``pathtext'' begins placing
+						% the characters along the current
+						% path, starting at the offset
+						% distance and continuing until
+						% either the path length is
+						% exhausted or the entire string
+						% has been printed, whichever
+						% occurs first. The results will
+						% be more effective when a small
+						% point size font is used with
+						% sharp curves in the path.
+								       
+    /pathdist 0 def				% Initialize the distance we have
+						% travelled along the path.
+    /setdist offset def				% Initialize the distance we have
+						% covered by setting characters.
+    /charcount 0 def				% Initialize the character count.
+    /justx just 4 mod 2 sub 2 div def
+    /justy just 4 idiv 2 sub textheight mul 2 div def
+    gsave
+      flattenpath				% Reduce the path to a series of
+						% straight line segments. The
+						% characters will be placed along
+						% the line segments in the
+						% ``linetoproc.''
+      {movetoproc} {linetoproc}			% The basic strategy is to process
+	{curvetoproc} {closepathproc}		% the segments of the path,
+	pathforall				% keeping a running total of the
+						% distance we have travelled so
+						% far (pathdist). We also keep
+						% track of the distance taken up
+						% by the characters that have been
+						% set so far (setdist). When the
+						% distance we have travelled along
+						% the path is greater than the
+						% distance taken up by the set
+						% characters, we are ready to set
+						% the next character (if there are
+						% any left to be set). This
+						% process continues until we have
+						% exhausted the full length of the
+						% path.
+    grestore
+    newpath					% Clear the current path.
+    end
+  } def
+       
+PSL_pathtextdict begin
+/movetoproc					% ``movetoproc'' is executed when
+  { /newy exch def /newx exch def		% a moveto component has been
+						% encountered in the pathforall
+						% operation.
+    /firstx newx def /firsty newy def		% Remember the ``first point'' in
+						% the path so that when we get a
+						% ``closepath'' component we can
+						% properly handle the text.
+    /ovr 0 def
+    newx newy transform
+    /cpy exch def /cpx exch def			% Explicitly keep track of the
+						% current position in device
+						% space.
+  } def
+       
+/linetoproc					% ``linetoproc'' is executed when
+						% a lineto component has been
+						% encountered in the pathforall
+						% operation.
+  { /oldx newx def /oldy newy def		% Update the old point.
+    /newy exch def /newx exch def		% Get the new point.
+    /dx newx oldx sub def
+    /dy newy oldy sub def
+    /dist dx dup mul dy dup mul add		% Calculate the distance between
+						% the old and the new point.
+      sqrt def
+    /dsx dx dist div ovr mul def		% dsx and dsy are used to update
+    /dsy dy dist div ovr mul def		% the current position to be just
+						% beyond the width of the previous
+						% character.
+    oldx dsx add oldy dsy add transform
+    /cpy exch def /cpx exch def			% Update the current position.
+    /pathdist pathdist dist add def		% Increment the distance we have
+						% travelled along the path.
+    { setdist pathdist le			% Keep setting characters along
+						% this path segment until we have
+						% exhausted its length.
+	{ charcount str length lt		% As long as there are still
+	    {setchar} {exit} ifelse }		% characters left in the string,
+						% set them.
+	{ /ovr setdist pathdist sub def		% Keep track of how much we have
+	  exit }				% overshot the path segment by
+	ifelse					% setting the previous character.
+						% This enables us to position the
+						% origin of the following
+						% characters properly on the path.
+    } loop
+  } def
+       
+/curvetoproc					% ``curvetoproc'' is executed when
+  { (ERROR: No curveto's after flattenpath!)	% a curveto component has been
+    print					% encountered in the pathforall
+  } def						% operation. It prints an error
+						% message since there shouldn't be
+						% any curveto's in a path after
+						% the flattenpath operator has
+						% been executed.
+							    
+/closepathproc					% ``closepathproc'' is executed
+  { firstx firsty linetoproc			% when a closepath component has
+    firstx firsty movetoproc			% been encountered in the
+  } def						% pathforall operation. It
+						% simulates the action of the
+						% operator ``closepath'' by
+						% executing ``linetoproc'' with
+						% the coordinates of the most
+						% recent ``moveto'' and then
+						% executing ``movetoproc'' to the
+						% same point.
+							 
+/setchar					% ``setchar'' sets the next
+  { /char str charcount 1 getinterval def	% character in the string along
+						% the path and then updates the
+						% amount of path we have
+						% exhausted.
+    /charcount charcount 1 add def		% Increment the character count.
+    /charwidth char stringwidth pop def		% Find the width of the character.
+    gsave
+      cpx cpy itransform translate		% Translate to the current
+						% position in user space.
+      dy dx atan rotate				% Rotate the x-axis to coincide
+						% with the current segment.
+      0 justy moveto
+      char show
+      0 justy neg rmoveto
+      currentpoint transform
+      /cpy exch def /cpx exch def		% Update the current position
+    grestore					% before we restore ourselves to
+						% the untransformed state.
+    /setdist setdist charwidth add def		% Increment the distance we have
+  } def						% covered by setting characters.
+end
