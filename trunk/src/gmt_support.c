@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.33 2002-08-26 17:24:57 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.34 2002-11-10 03:13:43 lloyd Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -265,12 +265,12 @@ int GMT_getpen (char *line, struct GMT_PEN *pen)
 		t_pos++;
 		if (line[t_pos] == 'o') {	/* Default Dotted */
 			width = (pen->width < SMALL) ? GMT_PENWIDTH : pen->width;
-			sprintf (pen->texture, "%lg %lg\0", width, 4.0 * width);
+			sprintf (pen->texture, "%g %g", width, 4.0 * width);
 			pen->offset = 0.0;
 		}
 		else if (line[t_pos] == 'a') {	/* Default Dashed */
 			width = (pen->width < SMALL) ? GMT_PENWIDTH : pen->width;
-			sprintf (pen->texture, "%lg %lg\0", 8.0 * width, 8.0 * width);
+			sprintf (pen->texture, "%g %g", 8.0 * width, 8.0 * width);
 			pen->offset = 4.0 * width;
 		}
 		else {	/* Specified pattern */
@@ -286,7 +286,7 @@ int GMT_getpen (char *line, struct GMT_PEN *pen)
 				ptr = strtok (pen->texture, " ");
 				memset ((void *)string, 0, (size_t)BUFSIZ);
 				while (ptr) {
-					sprintf (tmp, "%lg \0", (atof (ptr) * dpi_to_pt));
+					sprintf (tmp, "%g ", (atof (ptr) * dpi_to_pt));
 					strcat (string, tmp);
 					ptr = strtok (CNULL, " ");
 				}
@@ -704,10 +704,10 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 	fprintf (GMT_stdout, "#\n");
 
 	if (gmtdefs.color_model == GMT_HSV) {
-		sprintf(format, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n\0", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
+		sprintf(format, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
 	}
 	else {
-		sprintf(format, "%s\t%%d\t%%d\t%%d\t%s\t%%d\t%%d\t%%d\n\0", gmtdefs.d_format, gmtdefs.d_format);
+		sprintf(format, "%s\t%%d\t%%d\t%%d\t%s\t%%d\t%%d\t%%d\n", gmtdefs.d_format, gmtdefs.d_format);
 	}
 
 	for (i = 0; i < nz-1; i++) {
@@ -754,7 +754,7 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 	}
 	
 	if (gmtdefs.color_model == GMT_HSV) {
-		sprintf(format, "%%c\t%s\t%s\t%s\n\0", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
+		sprintf(format, "%%c\t%s\t%s\t%s\n", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
 		GMT_rgb_to_hsv(GMT_bfn.background_rgb, &h1, &s1, &v1);
 		GMT_rgb_to_hsv(GMT_bfn.foreground_rgb, &h2, &s2, &v2);
 		GMT_rgb_to_hsv(GMT_bfn.nan_rgb, &h3, &s3, &v3);
@@ -1166,7 +1166,7 @@ void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname)
 	if (nelem == 0) return(VNULL); /* Take care of n = 0 */
 	
 	if (nelem < 0) { /* This is illegal and caused by upstream bugs in GMT */
-		fprintf (stderr, "GMT Fatal Error: %s requesting memory for a negative number of items [n_items = %d]\n", progname, nelem);
+		fprintf (stderr, "GMT Fatal Error: %s requesting memory for a negative number of items [n_items = %d]\n", progname, (int)nelem);
 		exit (EXIT_FAILURE);
 	}
 	
@@ -1175,7 +1175,7 @@ void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname)
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			fprintf (stderr, "GMT Fatal Error: %s could not reallocate memory [%.2lf %s, n_items = %d]\n", progname, mem, m_unit[k], nelem);
+			fprintf (stderr, "GMT Fatal Error: %s could not reallocate memory [%.2f %s, n_items = %d]\n", progname, mem, m_unit[k], (int)nelem);
 			exit (EXIT_FAILURE);
 		}
 	}
@@ -1184,7 +1184,7 @@ void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname)
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			fprintf (stderr, "GMT Fatal Error: %s could not allocate memory [%.2lf %s, n_items = %d]\n", progname, mem, m_unit[k], nelem);
+			fprintf (stderr, "GMT Fatal Error: %s could not allocate memory [%.2f %s, n_items = %d]\n", progname, mem, m_unit[k], (int)nelem);
 			exit (EXIT_FAILURE);
 		}
 	}
@@ -1857,7 +1857,7 @@ struct EPS *GMT_epsinfo (char *program)
 		if (new->clip_level < 0) fprintf (stderr, "%s: Warning: %d extra terminations of external clip operations!\n", GMT_program, -new->clip_level);
 	}
 	else if ((fp = fopen (".GMT_bb_info", "w")) != NULL) {	/* Update the .GMT_bb_info file */
-		fprintf (fp, "%d %d %lg %lg %d %d %d %d\n", new->portrait, new->clip_level, x0, y0, new->x0, new->y0, new->x1, new->y1);
+		fprintf (fp, "%d %d %g %g %d %d %d %d\n", new->portrait, new->clip_level, x0, y0, new->x0, new->y0, new->x1, new->y1);
 		fclose (fp);
 	}
 
@@ -1900,7 +1900,7 @@ struct EPS *GMT_epsinfo (char *program)
 		new->name = (char *) GMT_memory (VNULL, (size_t)8, sizeof (char), "GMT_epsinfo");
 		strcpy (new->name, "unknown");
 	}	
-	sprintf (title, "GMT v%s Document from %s\0", GMT_VERSION, program);
+	sprintf (title, "GMT v%s Document from %s", GMT_VERSION, program);
 	new->title = (char *) GMT_memory (VNULL, (size_t)(strlen (title) + 1), sizeof (char), "GMT_epsinfo");
 	strcpy (new->title, title);
 	
@@ -1916,7 +1916,7 @@ int GMT_get_format (double interval, char *unit, char *format)
 
 		/* Find number of decimals needed in the format statement */
 	
-		sprintf (text, "%.12lg\0", interval);
+		sprintf (text, "%.12g", interval);
 		for (i = 0; text[i] && text[i] != '.'; i++);
 		if (text[i]) {	/* Found a decimal point */
 			for (j = i + 1; text[j]; j++);
@@ -1936,20 +1936,20 @@ int GMT_get_format (double interval, char *unit, char *format)
 		}
 		if (text[0] == '-') {	/* No space between annotation and unit */
 			if (ndec > 0)
-				sprintf (format, "%%.%dlf%s\0", ndec, &text[1]);
+				sprintf (format, "%%.%df%s", ndec, &text[1]);
 			else
-				sprintf (format, "%s%s\0", gmtdefs.d_format, &text[1]);
+				sprintf (format, "%s%s", gmtdefs.d_format, &text[1]);
 		}
 		else {			/* 1 space between annotation and unit */
 			if (ndec > 0)
-				sprintf (format, "%%.%dlf %s\0", ndec, text);
+				sprintf (format, "%%.%df %s", ndec, text);
 			else
-				sprintf (format, "%s %s\0", gmtdefs.d_format, text);
+				sprintf (format, "%s %s", gmtdefs.d_format, text);
 		}
 		if (ndec == 0) ndec = 1;	/* To avoid resetting format later */
 	}
 	else if (ndec > 0)
-		sprintf (format, "%%.%dlf\0", ndec);
+		sprintf (format, "%%.%df", ndec);
 	else
 		strcpy (format, gmtdefs.d_format);
 
@@ -3511,7 +3511,7 @@ BOOLEAN GMT_getpathname (char *name, char *path) {
 
 	/* First check the $GMTHOME/share directory */
 	
-	sprintf (path, "%s%cshare%c%s\0", GMTHOME, DIR_DELIM, DIR_DELIM, name);
+	sprintf (path, "%s%cshare%c%s", GMTHOME, DIR_DELIM, DIR_DELIM, name);
 	if (!access (path, R_OK)) return (TRUE);	/* File exists and is readable, return with name */
 	
 	/* File was not readable.  Now check if it exists */
@@ -3525,7 +3525,7 @@ BOOLEAN GMT_getpathname (char *name, char *path) {
 	 * It is not an error if we cannot find the named file, only if it is found
 	 * but cannot be read due to permission problems */
 	
-	sprintf (dir, "%s%cshare%ccoastline.conf\0", GMTHOME, DIR_DELIM, DIR_DELIM);
+	sprintf (dir, "%s%cshare%ccoastline.conf", GMTHOME, DIR_DELIM, DIR_DELIM);
 	if (!access (dir, F_OK))  { /* File exists... */
 		if (access (dir, R_OK)) {	/* ...but cannot be read */
 			fprintf (stderr, "%s: Error: GMT does not have permission to open %s!\n", GMT_program, dir);
@@ -3549,7 +3549,7 @@ BOOLEAN GMT_getpathname (char *name, char *path) {
 		if (dir[0] == '#' || dir[0] == '\n') continue;	/* Comment or blank */
 		
 		dir[strlen(dir)-1] = '\0';			/* Chop off linefeed */
-		sprintf (path, "%s%c%s\0", dir, DIR_DELIM, name);
+		sprintf (path, "%s%c%s", dir, DIR_DELIM, name);
 		if (!access (path, F_OK)) {	/* TRUE if file exists */
 			if (!access (path, R_OK)) {	/* TRUE if file is readable */
 				found = TRUE;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.18 2002-04-20 03:40:58 pwessel Exp $
+ *	$Id: libspotter.c,v 1.19 2002-11-10 03:13:43 lloyd Exp $
  *
  *   Copyright (c) 1999-2001 by P. Wessel
  *
@@ -139,7 +139,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	/* Extend oldest stage pole back to t_max Ma */
 
 	if ((*t_max) > 0.0 && e[0].t_start < (*t_max)) {
-		if (verbose) fprintf (stderr, "libspotter: Extending oldest stage pole back to %lg Ma\n", (*t_max));
+		if (verbose) fprintf (stderr, "libspotter: Extending oldest stage pole back to %g Ma\n", (*t_max));
 
 		e[0].t_start = (*t_max);
 		e[0].duration = e[0].t_start - e[0].t_stop;
@@ -211,7 +211,7 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 			j = 0;
 			while (j < ns && t <= p[j].t_stop) j++;	/* Find first applicable stage pole */
 			if (j == ns) {
-				fprintf (stderr, "libspotter: (spotter_backtrack) Ran out of stage poles for t = %lg\n", t);
+				fprintf (stderr, "libspotter: (spotter_backtrack) Ran out of stage poles for t = %g\n", t);
 				exit (EXIT_FAILURE);
 			}
 			dt = MIN (p[j].duration, t - MAX(p[j].t_stop, t_zero));
@@ -425,7 +425,7 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 			while (j && (t + GMT_CONV_LIMIT) > p[j].t_start) j--;
 			/* while (j < ns && (t + GMT_CONV_LIMIT) < p[j].t_stop) j++; */	/* Find first applicable stage pole */
 			if (j == ns) {
-				fprintf (stderr, "libspotter: (spotter_forthtrack) Ran out of stage poles for t = %lg\n", t);
+				fprintf (stderr, "libspotter: (spotter_forthtrack) Ran out of stage poles for t = %g\n", t);
 				exit (EXIT_FAILURE);
 			}
 			dt = MIN (tp[i], p[j].t_start) - t;	/* Time interval to rotate */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.7 2002-01-17 22:57:17 pwessel Exp $
+ *	$Id: gmt_shore.c,v 1.8 2002-11-10 03:13:43 lloyd Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -100,7 +100,7 @@ int GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, double s,
 	size_t start[1], count[1];
 	char file[32], path[BUFSIZ];
 	
-	sprintf (file, "binned_GSHHS_%c.cdf\0", res);
+	sprintf (file, "binned_GSHHS_%c.cdf", res);
 	
         if (!GMT_getpathname (file, path)) return (-1);	/* Failed to find file */
         
@@ -284,9 +284,9 @@ int GMT_init_br (char which, char res, struct GMT_BR *c, double w, double e, dou
 	char file[32], path[BUFSIZ];
 	
 	if (which == 'r')
-		sprintf (file, "binned_river_%c.cdf\0", res);
+		sprintf (file, "binned_river_%c.cdf", res);
 	else
-		sprintf (file, "binned_border_%c.cdf\0", res);
+		sprintf (file, "binned_border_%c.cdf", res);
 	
         if (!GMT_getpathname (file, path)) return (-1);	/* Failed to find file */
 

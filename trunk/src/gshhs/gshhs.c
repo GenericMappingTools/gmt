@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+/*	$Id: gshhs.c,v 1.2 2002-11-10 03:13:43 lloyd Exp $
  *
  * PROGRAM:	gshhs.c
  * AUTHOR:	Paul Wessel (pwessel@hawaii.edu)
@@ -72,7 +72,7 @@ main (int argc, char **argv)
 		source = (h.source == 1) ? 'W' : 'C';
 		area = 0.1 * h.area;
 
-		printf ("P %6d%8d%2d%2c%13.3lf%10.5lf%10.5lf%10.5lf%10.5lf\n", h.id, h.n, h.level, source, area, w, e, s, n);
+		printf ("P %6d%8d%2d%2c%13.3f%10.5f%10.5f%10.5f%10.5f\n", h.id, h.n, h.level, source, area, w, e, s, n);
 
 		if (info) {	/* Skip data, only want headers */
 			fseek (fp, (long)(h.n * sizeof(struct POINT)), SEEK_CUR);
@@ -90,7 +90,7 @@ main (int argc, char **argv)
 				}
 				lon = (h.greenwich && p.x > max_east) ? p.x * 1.0e-6 - 360.0 : p.x * 1.0e-6;
 				lat = p.y * 1.0e-6;
-				printf ("%10.5lf%10.5lf\n", lon, lat);
+				printf ("%10.5f%10.5f\n", lon, lat);
 			}
 		}
 		max_east = 180000000;	/* Only Eurasiafrica needs 270 */

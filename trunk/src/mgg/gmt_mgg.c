@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.2 2001-12-21 03:50:38 ben Exp $
+ *	$Id: gmt_mgg.c,v 1.3 2002-11-10 03:13:43 lloyd Exp $
  *
  *    Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -156,7 +156,7 @@ void gmtmggpath_init (void) {
 		exit (EXIT_FAILURE);
 	}
 
-	sprintf (file, "%s%cshare%cmgg%cgmtfile_paths\0", SHAREDIR, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+	sprintf (file, "%s%cshare%cmgg%cgmtfile_paths", SHAREDIR, DIR_DELIM, DIR_DELIM, DIR_DELIM);
 	
 	n_gmtmgg_paths = 0;
 
@@ -194,7 +194,7 @@ int gmtmggpath_func (char *leg_path, char *leg)
 	
 	/* First look in current directory */
 	
-	sprintf (geo_path, "%s.gmt\0", leg);
+	sprintf (geo_path, "%s.gmt", leg);
 	if (!access(geo_path, R_OK)) {
 		strcpy(leg_path, geo_path);
 		return (0);
@@ -203,7 +203,7 @@ int gmtmggpath_func (char *leg_path, char *leg)
 	/* Then look elsewhere */
 	
 	for (id = 0; id < n_gmtmgg_paths; id++) {
-		sprintf (geo_path, "%s%c%s.gmt\0", gmtmgg_path[id], DIR_DELIM, leg);
+		sprintf (geo_path, "%s%c%s.gmt", gmtmgg_path[id], DIR_DELIM, leg);
 		if (!access (geo_path, R_OK)) {
 			strcpy (leg_path, geo_path);
 			return (0);

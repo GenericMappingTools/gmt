@@ -1,4 +1,4 @@
-/*	$Id: gshhs_dp.c,v 1.2 2001-12-21 03:50:38 ben Exp $
+/*	$Id: gshhs_dp.c,v 1.3 2002-11-10 03:13:43 lloyd Exp $
  *
  * gshhs_dp applies the Douglas-Peucker algorithm to simplify a line
  * segment given a tolerance.  The algorithm is based on the paper
@@ -60,7 +60,7 @@ main (int argc, char **argv)
 
 	verbose = (argc == 5);
 	tolerance = atof (argv[2]);
-	if (verbose) fprintf (stderr,"gshhs_dp: Tolerance used is %lg km\n", tolerance);
+	if (verbose) fprintf (stderr,"gshhs_dp: Tolerance used is %g km\n", tolerance);
 	fp_in  = fopen(argv[1], "rb");
 	fp_out = fopen(argv[3], "wb");
 	
@@ -136,7 +136,7 @@ main (int argc, char **argv)
 		}
 		else
 			redux = 0.0;
-		if (verbose) fprintf (stderr, "\t%.1lf %% retained\n", redux);
+		if (verbose) fprintf (stderr, "\t%.1f %% retained\n", redux);
 		
 		n_id++;
 
@@ -152,7 +152,7 @@ main (int argc, char **argv)
 
 	redux = 100.0 * (1.0 - (double) n_tot_out / (double) n_tot_in);
 	redux2 = 100.0 * (1.0 - (double) n_out / (double) n_id);
-	printf ("gshhs_dp at %lg km:\n# of points reduced by %.1lf%% (out %d, in %d)\n# of polygons reduced by %.1lf%% out (%d, in %d)\n", tolerance, redux, n_tot_out, n_tot_in, redux2, n_out, n_id);
+	printf ("gshhs_dp at %g km:\n# of points reduced by %.1f%% (out %d, in %d)\n# of polygons reduced by %.1f%% out (%d, in %d)\n", tolerance, redux, n_tot_out, n_tot_in, redux2, n_out, n_id);
 
 	exit (EXIT_SUCCESS);
 }

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.11 2002-06-27 03:58:47 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.12 2002-11-10 03:13:43 lloyd Exp $
  *
  *	Copyright (c) 1991-2002 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -165,7 +165,7 @@ void GMT_expand_filename (char *file, char *fname)
 		}
 		if (found) {
 			i--;
-			sprintf (fname, "%s=%d/%lg/%lg/%lg\0", file, GMT_file_id[i], GMT_file_scale[i], GMT_file_offset[i], GMT_file_nan[i]);
+			sprintf (fname, "%s=%d/%g/%g/%g", file, GMT_file_id[i], GMT_file_scale[i], GMT_file_offset[i], GMT_file_nan[i]);
 		}
 		else
 			strcpy (fname, file);
@@ -260,7 +260,7 @@ void GMT_grd_RI_verify (struct GRD_HEADER *h, int mode)
 			error++;
 			break;
 		case 1:
-			(void) fprintf (stderr, "%s: GMT ERROR: (x_max-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %lg.\n", GMT_program, SMALL);
+			(void) fprintf (stderr, "%s: GMT ERROR: (x_max-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_program, SMALL);
 			error++;
 		default:
 			/* Everything is OK */
@@ -277,7 +277,7 @@ void GMT_grd_RI_verify (struct GRD_HEADER *h, int mode)
 			error++;
 			break;
 		case 1:
-			(void) fprintf (stderr, "%s: GMT ERROR: (y_max-y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %lg.\n", GMT_program, SMALL);
+			(void) fprintf (stderr, "%s: GMT ERROR: (y_max-y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_program, SMALL);
 			error++;
 		default:
 			/* Everything is OK */
