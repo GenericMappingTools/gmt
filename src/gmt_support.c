@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.157 2005-04-05 19:14:15 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.158 2005-04-09 02:53:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6520,7 +6520,8 @@ int GMT_annot_pos (double min, double max, struct PLOT_AXIS_ITEM *T, double coor
 	double range, start, stop;
 	 
 	if (GMT_interval_axis_item(T->id)) {
-		if (GMT_uneven_interval (T->unit) && T->interval != 1.0) {	/* Must find next month to get month centered correctly */
+		/* if (GMT_uneven_interval (T->unit) && T->interval != 1.0) { */	/* Must find next month to get month centered correctly */
+		if (GMT_uneven_interval (T->unit) || T->interval != 1.0) {	/* Must find next month to get month centered correctly */
 			struct GMT_MOMENT_INTERVAL Inext;
 			Inext.unit = T->unit;		/* Initialize MOMENT_INTERVAL structure members */
 			Inext.step = 1;
