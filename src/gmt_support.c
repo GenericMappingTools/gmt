@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.158 2005-04-09 02:53:02 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.159 2005-04-09 15:51:04 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -991,7 +991,7 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 	 * New cpt may be continuous and/or reversed.
 	 * We write the new cpt table to stdout */
 
-	int i, j, k, nx, upper, lower, rgb_low[3], rgb_high[3];
+	int i, j, k, upper, lower, rgb_low[3], rgb_high[3];
 	BOOLEAN even = FALSE;	/* TRUE when nz is passed as negative */
 	double *x, *z_out, a, b, h1, h2, v1, v2, s1, s2, f, x_inc, cmyk_low[4], cmyk_high[4];
 	char format[BUFSIZ], code[3] = {'B', 'F', 'N'};
@@ -1030,7 +1030,6 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 
 	/* Then set up normalized output locations x */
 
-	nx = (continuous) ? nz : nz - 1;
 	x = (double *) GMT_memory (VNULL, (size_t)nz, sizeof(double), GMT_program);
 	if (log_mode) {	/* Our z values are actually log10(z), need array with z for output */
 		z_out = (double *) GMT_memory (VNULL, (size_t)nz, sizeof(double), GMT_program);
@@ -1039,20 +1038,19 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 	else
 		z_out = z;	/* Just point to the incoming z values */
 
-	if (nx == 1) {	/* Want a single color point, assume 1/2 way */
-		x[0] = 0.5;
-	}
+	if (nz < 2) 	/* Want a single color point, assume range 0-1 */
+		nz = 2;
 	else if (even) {
-		x_inc = 1.0 / (nx - 1);
+		x_inc = 1.0 / (nz - 1);
 		for (i = 0; i < nz; i++) x[i] = i * x_inc;	/* Normalized z values 0-1 */
-		x[nz-1] = 1.0;	/* To prevent bad roundoff */
 	}
 	else {	/* As with LUT, translate users z-range to 0-1 range */
 		b = 1.0 / (z[nz-1] - z[0]);
 		a = -z[0] * b;
 		for (i = 0; i < nz; i++) x[i] = a + b * z[i];	/* Normalized z values 0-1 */
-		x[nz-1] = 1.0;	/* To prevent bad roundoff */
 	}
+	x[0] = 0.0;	/* Prevent bad roundoff */
+	x[nz-1] = 1.0;
 
 	/* Start writing cpt file info to stdout */
 
@@ -1075,21 +1073,21 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 		sprintf(format, "%s\t%%d\t%%d\t%%d\t%s\t%%d\t%%d\t%%d\n", gmtdefs.d_format, gmtdefs.d_format);
 	}
 
+	/* Determine color at lower and upper limit of each interval */
+
 	for (i = 0; i < nz-1; i++) {
 
 		lower = i;
 		upper = i + 1;
 
-		/* Interpolate lower color */
+		if (continuous) { /* Interpolate color at lower and upper value */
 
-		for (j = 0; j < GMT_n_colors && x[lower] >= lut[j].z_high; j++);
-		if (j == GMT_n_colors) j--;
+			for (j = 0; j < GMT_n_colors && x[lower] >= lut[j].z_high; j++);
+			if (j == GMT_n_colors) j--;
 
-		f = 1.0 / (lut[j].z_high - lut[j].z_low);
+			f = 1.0 / (lut[j].z_high - lut[j].z_low);
 
-		for (k = 0; k < 3; k++) rgb_low[k] = lut[j].rgb_low[k] + irint ((lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (x[lower] - lut[j].z_low));
-
-		if (continuous) {	/* Interpolate upper color */
+			for (k = 0; k < 3; k++) rgb_low[k] = lut[j].rgb_low[k] + irint ((lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (x[lower] - lut[j].z_low));
 
 			while (j < GMT_n_colors && x[upper] > lut[j].z_high) j++;
 
@@ -1097,8 +1095,16 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 
 			for (k = 0; k < 3; k++) rgb_high[k] = lut[j].rgb_low[k] + irint ((lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (x[upper] - lut[j].z_low));
 		}
-		else	/* Just copy lower */
-			for (k = 0; k < 3; k++) rgb_high[k] = rgb_low[k];
+		else {	 /* Interpolate central value and assign color to both lower and upper limit */
+
+			a = (x[lower] + x[upper]) / 2;
+			for (j = 0; j < GMT_n_colors && a >= lut[j].z_high; j++);
+			if (j == GMT_n_colors) j--;
+
+			f = 1.0 / (lut[j].z_high - lut[j].z_low);
+
+			for (k = 0; k < 3; k++) rgb_low[k] = rgb_high[k] = lut[j].rgb_low[k] + irint ((lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (a - lut[j].z_low));
+		}
 
 		if (gmtdefs.color_model == GMT_HSV) {
 			GMT_rgb_to_hsv(rgb_low, &h1, &s1, &v1);
@@ -6520,7 +6526,6 @@ int GMT_annot_pos (double min, double max, struct PLOT_AXIS_ITEM *T, double coor
 	double range, start, stop;
 	 
 	if (GMT_interval_axis_item(T->id)) {
-		/* if (GMT_uneven_interval (T->unit) && T->interval != 1.0) { */	/* Must find next month to get month centered correctly */
 		if (GMT_uneven_interval (T->unit) || T->interval != 1.0) {	/* Must find next month to get month centered correctly */
 			struct GMT_MOMENT_INTERVAL Inext;
 			Inext.unit = T->unit;		/* Initialize MOMENT_INTERVAL structure members */
