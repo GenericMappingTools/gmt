@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.11 2005-04-05 19:38:11 pwessel Exp $
+ *	$Id: mgd77.c,v 1.12 2005-04-13 03:29:54 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -479,6 +479,8 @@ int MGD77_Read_Data_Record (FILE *fp, struct MGD77_DATA_RECORD *MGD77Record)	  /
 
 	if (!(line[0] == '3' || line[0] == '5')) return FALSE;			/* Only process data records */
 
+	GMT_chop (line);	/* Get rid of CR or LF */
+	
 	if ((len = (int)strlen(line)) != MGD77_RECORD_LENGTH-1) {
 		fprintf (stderr, "Incorrect record length (%d), skipped\n",len);
 		return FALSE;
@@ -763,6 +765,7 @@ int MGD77_Read_Header_Sequence (FILE *fp, char *record, int seq)
 		fprintf (stderr, "MGD77_Read_Header: Failure to read sequence %2.2d.  Aborting\n", seq);
 		return (-1);
 	}
+	GMT_chop (record);
 	got = atoi (&record[78]);
 	if (got != seq) {
 		fprintf (stderr, "MGD77_Read_Header: Expected sequence %2.2d says it is %2.2d.  Aborting\n", seq, got);
@@ -1008,8 +1011,8 @@ void MGD77_Path_Init (struct MGD77_CONTROL *F)
 	while (fgets (line, BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Comments */
 		if (line[0] == ' ' || line[0] == '\0') continue;	/* Blank line, \n included in count */
-		F->MGD77_datadir[F->n_MGD77_paths] = GMT_memory (VNULL, (size_t)1, (size_t)(strlen (line)), "MGD77_path_init");
-		line[strlen (line)-1] = 0;
+		GMT_chop (line);
+		F->MGD77_datadir[F->n_MGD77_paths] = GMT_memory (VNULL, (size_t)1, (size_t)(strlen (line)+1), "MGD77_path_init");
 #if _WIN32
 		for (i = 0; line[i]; i++) if (line[i] == '/') line[i] = DIR_DELIM;
 #else
