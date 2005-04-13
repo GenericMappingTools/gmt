@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.27 2005-04-05 19:14:15 pwessel Exp $
+ *	$Id: x2sys.c,v 1.28 2005-04-13 03:29:54 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -172,6 +172,7 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 						fgets (line, BUFSIZ, fp);
 						if (s->multi_segment) s->ms_next = TRUE;
 					}
+					GMT_chop (line);	/* Remove trailing CR or LF */
 				}
 				strncpy (buffer, &line[s->info[j].start_col], s->info[j].n_cols);
 				buffer[s->info[j].n_cols] = 0;
@@ -186,6 +187,7 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 					fgets (line, BUFSIZ, fp);
 					if (s->multi_segment) s->ms_next = TRUE;
 				}
+				GMT_chop (line);	/* Remove trailing CR or LF */
 				pos = 0;
 				while ((GMT_strtok (line, " ,\t\n", &pos, p))) {
 					GMT_scanf (p, G->in_col_type[k], &data[k]);
@@ -358,6 +360,7 @@ struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G)
 			}
 			continue;
 		}
+		GMT_chop (line);	/* Remove trailing CR or LF */
 
 		sscanf (line, "%s %c %c %lf %lf %lf %s %s", X->info[i].name, &X->info[i].intype, &yes_no, &X->info[i].nan_proxy, &X->info[i].scale, &X->info[i].offset, X->info[i].format, cardcol);
 		if (X->info[i].intype == 'A') {	/* ASCII Card format */
@@ -745,6 +748,7 @@ int x2sys_read_list (char *file, char ***list)
 	p = (char **) GMT_memory (VNULL, n_alloc, sizeof (char *), "x2sys_read_list");
 
 	while (fgets (line, BUFSIZ, fp)) {
+		GMT_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s", name);
 		p[n] = (char *) GMT_memory (VNULL, (size_t)(strlen(name)+1), sizeof (char), "x2sys_read_list");
 		strcpy (p[n], name);
@@ -901,6 +905,7 @@ int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode)
 
 	fgets (line, BUFSIZ, ftrack);	/* Skip header record */
 	while (fgets (line, BUFSIZ, ftrack)) {
+		GMT_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s %d %d", name, &id, &flag);
 		if (mode == 1) {
 			if (id >= (int)n_alloc) {
@@ -1007,8 +1012,8 @@ void x2sys_path_init (char *TAG)
 	while (fgets (line, BUFSIZ, fp) && n_x2sys_paths < MAX_DATA_PATHS) {
 		if (line[0] == '#') continue;	/* Comments */
 		if (line[0] == ' ' || line[0] == '\0') continue;	/* Blank line */
-		x2sys_datadir[n_x2sys_paths] = GMT_memory (VNULL, (size_t)1, (size_t)(strlen (line)), "x2sys_path_init");
-		line[strlen (line)-1] = 0;
+		GMT_chop (line);	/* Remove trailing CR or LF */
+		x2sys_datadir[n_x2sys_paths] = GMT_memory (VNULL, (size_t)1, (size_t)(strlen (line)+1), "x2sys_path_init");
 #if _WIN32
 		for (i = 0; line[i]; i++) if (line[i] == '/') line[i] = DIR_DELIM;
 #else
