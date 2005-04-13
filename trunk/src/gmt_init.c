@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.182 2005-04-05 19:19:22 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.183 2005-04-13 17:37:19 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2843,10 +2843,33 @@ void GMT_end (int argc, char **argv)
 	/* GMT_end will clean up after us. */
 
 	int i;
+	struct GMT_HASH *p, *current;
 
 	for (i = 0; i < N_UNIQUE; i++) if (GMT_oldargv[i]) GMT_free ((void *)GMT_oldargv[i]);
 	if (GMT_lut) GMT_free ((void *)GMT_lut);
 	GMT_free_plot_array ();
+	/* Remove allocated hash structures */
+	for (i = 0; i < 12; i++) {
+		p = GMT_month_hashnode[i].next;
+		while ((current = p)) {
+			p = p->next;
+			GMT_free ((void *)current);
+		}
+	}
+	for (i = 0; i < GMT_N_COLOR_NAMES; i++) {
+		p = GMT_rgb_hashnode[i].next;
+		while ((current = p)) {
+			p = p->next;
+			GMT_free ((void *)current);
+		}
+	}
+	for (i = 0; i < HASH_SIZE; i++) {
+		p = hashnode[i].next;
+		while ((current = p)) {
+			p = p->next;
+			GMT_free ((void *)current);
+		}
+	}
 
 #ifdef __FreeBSD__
 	fpresetsticky (FP_X_DZ | FP_X_INV);
