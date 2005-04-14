@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.6 2005-01-12 02:52:30 pwessel Exp $
+ *	$Id: mgd77.h,v 1.7 2005-04-14 03:03:04 mtchandl Exp $
  * 
  *  File:	MGD77.h
  *
@@ -17,8 +17,8 @@
 
 #include "gmt.h"
 
-#define MGD77_RECORD_LENGTH	122
-#define MGD77_HEADER_LENGTH	82
+#define MGD77_RECORD_LENGTH	120
+#define MGD77_HEADER_LENGTH	80
 #define MGD77_N_HEADER_RECORDS	24
 #define MGD77_METERS_PER_NM     1852		/* meters per nautical mile */
 #define MGD77_METERS_PER_M      1609.344	/* meters per statute mile */
@@ -71,7 +71,7 @@ typedef char* Text;	/* Used to indicate character strings */
  */
 
 struct MGD77_HEADER_RECORD {		/* See MGD-77 Documentation from NGDC for details */
-	char	record[MGD77_N_HEADER_RECORDS][MGD77_HEADER_LENGTH];	/* Keep all 24 header records in memory */
+	char	record[MGD77_N_HEADER_RECORDS][MGD77_HEADER_LENGTH+1];	/* Keep all 24 header records in memory */
 	/* Sequence No 01: */
 	byte	Record_Type;
 	Text	Cruise_Identifier;
