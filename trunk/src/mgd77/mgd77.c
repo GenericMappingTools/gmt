@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.12 2005-04-13 03:29:54 pwessel Exp $
+ *	$Id: mgd77.c,v 1.13 2005-04-14 03:07:07 mtchandl Exp $
  *
  *  File:	MGD77.c
  * 
@@ -296,7 +296,7 @@ int MGD77_Write_Header_Record_Orig (FILE *fp, struct MGD77_HEADER_RECORD *H)  /*
 {
 	int i;
 	
-	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) fprintf (fp, "%s", H->record[i]);
+	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) fprintf (fp, "%s\n", H->record[i]);
 	return (TRUE);	/* Success is guaranteed */
 }
 
@@ -481,7 +481,7 @@ int MGD77_Read_Data_Record (FILE *fp, struct MGD77_DATA_RECORD *MGD77Record)	  /
 
 	GMT_chop (line);	/* Get rid of CR or LF */
 	
-	if ((len = (int)strlen(line)) != MGD77_RECORD_LENGTH-1) {
+	if ((len = (int)strlen(line)) != MGD77_RECORD_LENGTH) {
 		fprintf (stderr, "Incorrect record length (%d), skipped\n",len);
 		return FALSE;
 	}
