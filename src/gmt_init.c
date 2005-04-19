@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.183 2005-04-13 17:37:19 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.184 2005-04-19 14:21:02 remko Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2792,6 +2792,13 @@ int GMT_begin (int argc, char **argv)
 
 	GMT_prep_PS_bits ();	/* In case --DPARs were given */
 	GMT_init_time_system_structure ();
+
+	if (GMT_got_frame_rgb) {	/* Must enforce change of frame, tick, and grid pen rgb */
+		memcpy ((void *)gmtdefs.frame_pen.rgb, (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
+		memcpy ((void *)gmtdefs.tick_pen.rgb,  (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
+		memcpy ((void *)gmtdefs.grid_pen[0].rgb,   (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
+		memcpy ((void *)gmtdefs.grid_pen[1].rgb, (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
+	}
 
 	GMT_io_init ();			/* Init the table i/o structure */
 
