@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.13 2005-04-14 03:07:07 mtchandl Exp $
+ *	$Id: mgd77.c,v 1.14 2005-04-21 03:05:08 mtchandl Exp $
  *
  *  File:	MGD77.c
  * 
@@ -485,6 +485,9 @@ int MGD77_Read_Data_Record (FILE *fp, struct MGD77_DATA_RECORD *MGD77Record)	  /
 		fprintf (stderr, "Incorrect record length (%d), skipped\n",len);
 		return FALSE;
 	}
+	
+	/* Convert old format to new if necessary */
+	if (line[0] == '3')	MGD77_Convert_To_New_Format (line);
 
 	MGD77Record->bit_pattern = 0;
 
@@ -571,34 +574,27 @@ int MGD77_View_Line (FILE *fp, char *MGD77line)	/* View a single MGD77 string */
 	return TRUE;
 }
 
-/*
- * This function converts a single 120 character old format MGD77 data record to the
- * newer Y2K Compliant format.
- * @param oldFormatLine - a single old format 120 character MGD77 data record
- * @return newFormatLine - a single new format 120 character MGD77 data record
- */
-int MGD77_Convert_To_New_Format(char *oldFormatLine, char *newFormatLine)
+int MGD77_Convert_To_New_Format(char *line)
 {
 	int tz; int yy; char legid[9], s_tz[6], s_year[5];
 	
-	if (oldFormatLine[0] != '3') return FALSE;
-	strncpy (legid, &oldFormatLine[mgd77defs[1].start-1], mgd77defs[1].length);
-	tz = atoi (strncpy(s_tz, &oldFormatLine[mgd77defs[2].start-1], mgd77defs[2].length+2)) / 100.0;
-	yy = atoi (strncpy(s_year, &oldFormatLine[mgd77defs[3].start-1], mgd77defs[3].length-2));
-	if (yy < MGD77_OLDEST_YY)   /* Paul Wessel's "Y2K Kludge Fix" */
-		yy += 2000;
-	else
-		yy += 1900;
-	sprintf (newFormatLine,"5%s%+03d%4d%s", legid, tz, yy, (oldFormatLine + mgd77defs[4].start-1));
+	if (line[0] != '3') return FALSE;
+
+	/* Fix DRT and Time Zone Corrector */
+	line[0] = '5';
+	line[10] = line[12]; line[11] = line[13];
+
+	/* Fix year - Y2K Kludge Fix */
+	if (yy < MGD77_OLDEST_YY) {
+		line[12] = '2';
+		line[13] = '0';
+	} else {
+		line[12] = '1';
+		line[13] = '9';
+	}
 	return TRUE;
 }
 
-/*
- * This method converts a 120 character Y2K compliant MGD77 data record to the
- * old non-Y2K Compliant format.
- * @param newFormatLine - a single new format 120 character MGD77 data record
- * @return oldFormatLine - a single old format 120 character MGD77 data record
- */
 int MGD77_Convert_To_Old_Format(char *newFormatLine, char *oldFormatLine)
 {
 	int tz; char legid[9], s_tz[6], s_year[5];
