@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.184 2005-04-19 14:21:02 remko Exp $
+ *	$Id: gmt_init.c,v 1.185 2005-04-27 23:04:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2849,7 +2849,7 @@ void GMT_end (int argc, char **argv)
 {
 	/* GMT_end will clean up after us. */
 
-	int i;
+	int i, j;
 	struct GMT_HASH *p, *current;
 
 	for (i = 0; i < N_UNIQUE; i++) if (GMT_oldargv[i]) GMT_free ((void *)GMT_oldargv[i]);
@@ -2882,6 +2882,12 @@ void GMT_end (int argc, char **argv)
 	fpresetsticky (FP_X_DZ | FP_X_INV);
 	fpsetmask (FP_X_DZ | FP_X_INV);
 #endif
+
+	GMT_free ((void *)GMT_io.skip_if_NaN);
+	GMT_free ((void *)GMT_io.in_col_type);
+	GMT_free ((void *)GMT_io.out_col_type);
+	
+	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) if (GMT_plot_format[i][j]) GMT_free ((void *)GMT_plot_format[i][j]);
 
 	fflush (GMT_stdout);	/* Make sure output buffer is flushed */
 
