@@ -6,11 +6,11 @@ sample1d \- Resampling of 1-D data sets
 [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP\fIknotfile\fP ] [ \fB\-S\fP\fIxstart\fP ] [ \fB\-T\fP\fIx-col\fP] 
 [ \fB\-V ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
-\fBsample1d\fP reads a multi-column ASCII [or binary] data set from file [or standard input] and resamples the
+\fBsample1d\fP reads a multi-column ASCII [or binary] data set from file [or standard input] and interpolates the
 timeseries/profile at locations where the user needs the values.  The user must provide
 the column number of the independent (monotonically increasing \fBor\fP decreasing) variable.  Equidistant or arbitrary sampling can
 be selected.  All columns are resampled based on the new sampling interval.
-Several interpolation schemes are available.
+Several interpolation schemes are available.  Extrapolation outside the range of the input data is not supported.
 .TP
 \fIinfile\fP
 This is a multi-column ASCII [of binary, see \fB\-b\fP] file with one column containing the independent variable (which must
