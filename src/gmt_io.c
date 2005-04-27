@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.81 2005-04-05 19:14:15 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.82 2005-04-27 22:25:12 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -169,9 +169,7 @@ void GMT_io_init (void)
 
 	GMT_io.give_report = TRUE;
 
-	GMT_io.skip_if_NaN = (BOOLEAN *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (BOOLEAN), GMT_program);
-	GMT_io.in_col_type  = (int *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (int), GMT_program);
-	GMT_io.out_col_type = (int *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (int), GMT_program);
+	memset ((void *)GMT_io.skip_if_NaN, 0, BUFSIZ * sizeof (BOOLEAN));
 	for (i = 0; i < 2; i++) GMT_io.skip_if_NaN[i] = TRUE;						/* x/y must be non-NaN */
 	for (i = 0; i < 2; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = GMT_IS_UNKNOWN;	/* Must be told [or find out] what x/y are */
 	for (i = 2; i < BUFSIZ; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = GMT_IS_FLOAT;	/* Other columns default to floats */
@@ -2717,4 +2715,25 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 	*p = e;
 
 	return (i);
+}
+
+void GMT_points_delete (double *xp, double *yp, double *dp)
+{
+	/* Free memory allocated by GMT_points_init */
+	
+	GMT_free ((void *)xp);
+	GMT_free ((void *)yp);
+	GMT_free ((void *)dp);
+}
+
+void GMT_lines_delete (struct GMT_LINES *p, int n_lines)
+{
+	/* Free memory allocated by GMT_lines_init */
+
+	int i;
+	for (i = 0; i < n_lines; i++) {
+		GMT_free ((void *) p[i].lon);
+		GMT_free ((void *) p[i].lat);
+	}
+	GMT_free ((void *) p);
 }
