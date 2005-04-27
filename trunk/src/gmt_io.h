@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.29 2005-02-15 23:03:58 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.30 2005-04-27 22:25:12 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -135,9 +135,9 @@ struct GMT_IO {	/* Used to process input data records */
 	char r_mode[4];			/* Current file opening mode for reading (r or rb) */
 	char w_mode[4];			/* Current file opening mode for writing (w or wb) */
 	char a_mode[4];			/* Current file append mode for writing (a+ or ab+) */
-	BOOLEAN *skip_if_NaN;		/* TRUE if column j cannot be NaN and we must skip the record */
-	int *in_col_type;		/* Type of column on input: Time, geographic, etc, see GMT_IS_<TYPE> */
-	int *out_col_type;		/* Type of column on output: Time, geographic, etc, see GMT_IS_<TYPE> */
+	BOOLEAN skip_if_NaN[BUFSIZ];	/* TRUE if column j cannot be NaN and we must skip the record */
+	int in_col_type[BUFSIZ];	/* Type of column on input: Time, geographic, etc, see GMT_IS_<TYPE> */
+	int out_col_type[BUFSIZ];	/* Type of column on output: Time, geographic, etc, see GMT_IS_<TYPE> */
 	struct GMT_DATE_IO date_input;	/* Has all info on how to decode input dates */
 	struct GMT_DATE_IO date_output;	/* Has all info on how to write output dates */
 	struct GMT_CLOCK_IO clock_input;	/* Has all info on how to decode input clocks */
@@ -183,3 +183,5 @@ EXTERN_MSC void GMT_set_z_io (struct GMT_Z_IO *r, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_check_z_io (struct GMT_Z_IO *r, float *a);
 EXTERN_MSC int GMT_points_init (char *file, double **xp, double **yp, double **dp, double dist, BOOLEAN greenwich, BOOLEAN use_GMT_io);
 EXTERN_MSC int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN greenwich, BOOLEAN use_GMT_io);
+EXTERN_MSC void GMT_points_delete (double *xp, double *yp, double *dp);
+EXTERN_MSC void GMT_lines_delete (struct GMT_LINES *p, int n_lines);
