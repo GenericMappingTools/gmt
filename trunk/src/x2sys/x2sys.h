@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.15 2005-03-13 23:43:53 pwessel Exp $
+ *	$Id: x2sys.h,v 1.16 2005-04-29 04:07:39 pwessel Exp $
  *
  *      Copyright (c) 1999-2004 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -174,6 +174,7 @@ struct X2SYS_BIX {
 	double i_bin_x;		/* 1/dx */
 	double i_bin_y;		/* 1/dy */
 	double time_gap;	/* We have a data-gap if two records differ by this amount in time */
+	double dist_gap;	/* We have a data-gap if two records differ by this amount in distance [if there is no time column] */
 	int nx_bin;		/* Number of x bins */
 	int ny_bin;		/* Number of y bins */
 	int nm_bin;		/* Total number of bins */
