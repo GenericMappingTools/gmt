@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.30 2005-04-29 01:07:57 pwessel Exp $
+ *	$Id: x2sys.c,v 1.31 2005-04-29 04:07:39 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -770,7 +770,8 @@ int x2sys_read_list (char *file, char ***list)
 void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, struct GMT_IO *G)
 {
 	char tag_file[BUFSIZ], line[BUFSIZ], p[BUFSIZ], sfile[BUFSIZ];
-	int geodetic = 0, pos = 0;
+	int geodetic = 0, pos = 0, n;
+	double dist;
 	BOOLEAN geographic = FALSE;
 	FILE *fp;
 
@@ -779,7 +780,7 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 	memset ((void *)B, 0, sizeof (struct X2SYS_BIX));
 	B->bin_x = B->bin_y = 1.0;
 	B->x_min = 0.0;	B->x_max = 360.0;	B->y_min = -90.0;	B->y_max = +90.0;
-	B->time_gap = DBL_MAX;	/* Default is no data gap */
+	B->time_gap = B->dist_gap = dist = DBL_MAX;	/* Default is no data gap */
 	B->periodic = sfile[0] = 0;
 
 	sprintf (tag_file, "%s.tag", TAG);
@@ -819,7 +820,8 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 						exit (EXIT_FAILURE);
 					}
 				case 'W':
-					B->time_gap = atof (&p[2]);
+					n = sscanf (&p[2], "%lf/%lf", &B->time_gap, &dist);
+					if (n == 2) B->dist_gap = dist;
 					break;
 				default:
 					fprintf (stderr, "%s: Bad arg in x2sys_set_system! (%s)\n", X2SYS_program, p);
