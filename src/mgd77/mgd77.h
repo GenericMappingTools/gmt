@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.8 2005-04-21 03:05:08 mtchandl Exp $
+ *	$Id: mgd77.h,v 1.9 2005-04-29 03:55:06 mtchandl Exp $
  * 
  *  File:	MGD77.h
  *
@@ -22,6 +22,7 @@
 #define MGD77_N_HEADER_RECORDS	24
 #define MGD77_METERS_PER_NM     1852		/* meters per nautical mile */
 #define MGD77_METERS_PER_M      1609.344	/* meters per statute mile */
+#define MGD77_OLDEST_YY		39
 #define MGD77_N_DATA_FIELDS	27
 #define MGD77_N_NUMBER_FIELDS	24
 #define MGD77_TIME		2
