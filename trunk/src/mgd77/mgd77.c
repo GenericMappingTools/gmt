@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.14 2005-04-21 03:05:08 mtchandl Exp $
+ *	$Id: mgd77.c,v 1.15 2005-04-29 03:55:06 mtchandl Exp $
  *
  *  File:	MGD77.c
  * 
@@ -576,21 +576,28 @@ int MGD77_View_Line (FILE *fp, char *MGD77line)	/* View a single MGD77 string */
 
 int MGD77_Convert_To_New_Format(char *line)
 {
-	int tz; int yy; char legid[9], s_tz[6], s_year[5];
-	
+	int yy, nconv;
+
 	if (line[0] != '3') return FALSE;
 
 	/* Fix DRT and Time Zone Corrector */
 	line[0] = '5';
-	line[10] = line[12]; line[11] = line[13];
+	line[10] = line[12]; 
+	line[11] = line[13];
 
 	/* Fix year - Y2K Kludge Fix */
-	if (yy < MGD77_OLDEST_YY) {
-		line[12] = '2';
-		line[13] = '0';
-	} else {
-		line[12] = '1';
+	if ((nconv = sscanf (&line[14], "%2d", &yy)) != 1)	return FALSE;
+	if (yy == 99 && !strncmp(&line[16],"99999999999",11)) {
+		line[12] = '9';
 		line[13] = '9';
+	} else {
+		if (yy < MGD77_OLDEST_YY) {
+			line[12] = '2';
+			line[13] = '0';
+		} else {
+			line[12] = '1';
+			line[13] = '9';
+		}
 	}
 	return TRUE;
 }
