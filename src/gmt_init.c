@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.185 2005-04-27 23:04:06 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.186 2005-05-15 03:07:26 lloyd Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1959,17 +1959,17 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case GMTCASE_DEGREE_SYMBOL:
 			if (value[0] == '\0' || !strcmp (lower_value, "ring"))	/* DEFAULT */
-				gmtdefs.degree_symbol = 0;
+				gmtdefs.degree_symbol = gmt_ring;
 			else if (!strcmp (lower_value, "degree"))
-				gmtdefs.degree_symbol = 1;
+				gmtdefs.degree_symbol = gmt_degree;
 			else if (!strcmp (lower_value, "colon"))
-				gmtdefs.degree_symbol = 2;
+				gmtdefs.degree_symbol = gmt_colon;
 			else if (!strcmp (lower_value, "none"))
-				gmtdefs.degree_symbol = 3;
+				gmtdefs.degree_symbol = gmt_none;
 			else
 				error = TRUE;
-			break;
 			GMT_backward.got_new_degree_symbol = TRUE;
+			break;
 		case GMTCASE_ANNOT_FONT_SECONDARY:
 		case GMTCASE_ANOT_FONT_SECONDARY:
 		case GMTCASE_ANNOT_FONT2:
