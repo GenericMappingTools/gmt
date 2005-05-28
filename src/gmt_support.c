@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.159 2005-04-09 15:51:04 remko Exp $
+ *	$Id: gmt_support.c,v 1.160 2005-05-28 02:45:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -165,7 +165,7 @@ int GMT_getfill (char *line, struct GMT_FILL *fill)
 	/* Syntax:   -G<gray>, -G<rgb>, -G<cmyk>, -G<hsv> or -Gp|P<dpi>/<image>[:F<rgb>B<rgb>]   */
 	/* Note, <rgb> can be r/g/b, gray, or - for masks */
 
-	GMT_chop (line);	/* Remove trailing CR, LF and propoerly NULL-terminate the string */
+	GMT_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 
 	if ((line[0] == 'p' || line[0] == 'P') && isdigit((int)line[1])) {	/* Image specified */
 		n = sscanf (&line[1], "%d/%s", &fill->dpi, fill->pattern);
@@ -5002,7 +5002,7 @@ BOOLEAN GMT_getpathname (char *name, char *path) {
 	while (!found && fgets (dir, BUFSIZ, fp)) {	/* Loop over all input lines until found or done */
 		if (dir[0] == '#' || dir[0] == '\n') continue;	/* Comment or blank */
 
-		dir[strlen(dir)-1] = '\0';			/* Chop off linefeed */
+		GMT_chop (dir);		/* Chop off LF or CR/LF */
 		sprintf (path, "%s%c%s", dir, DIR_DELIM, name);
 		if (!access (path, F_OK)) {	/* TRUE if file exists */
 			if (!access (path, R_OK)) {	/* TRUE if file is readable */
