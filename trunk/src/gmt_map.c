@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.88 2005-06-20 03:29:08 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.89 2005-06-20 05:45:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3763,7 +3763,7 @@ void GMT_vwinkel (double lon0, double scale)
 	/* Set up Winkel Tripel projection */
 
 	GMT_check_R_J (&lon0);
-	project_info.r_cosphi1 = cosd (50.467);
+	project_info.r_cosphi1 = cosd (50.0+(28.0/60.0));
 	project_info.central_meridian = lon0;
 	project_info.w_r = 0.25 * (scale * project_info.M_PR_DEG * 360.0);	/* = Half the minor axis */
 }
@@ -3805,21 +3805,49 @@ void GMT_winkel (double lon, double lat, double *x, double *y)
 void GMT_iwinkel (double *lon, double *lat, double x, double y)
 {
 	/* Convert Winkel Tripel x/y to lon/lat */
-	/* Only works if point is on perimeter */
+	/* Based on iterative solution published by:
+	 * Ipbuker, 2002, Cartography & Geographical Information Science, 20, 1, 37-42.
+	 */
 
-	double phi;
+	int n_iter = 0;
+	double phi0, lambda0, sp, cp, s2p, sl, cl, sl2, cl2, C, D, sq_C, C_32;
+	double f1, f2, df1dp, df1dl, df2dp, df2dl, denom, delta;
 
-	GMT_iwinkel_sub (y, &phi);
-	*lat = phi * R2D;
-	*lon = project_info.central_meridian + copysign (180.0, x - GMT_half_map_size);
+	x *= project_info.i_EQ_RAD;
+	y *= project_info.i_EQ_RAD;
+	*lat = y / M_PI;	/* Initial guesses for lon and lat */
+	*lon = x / M_PI;
+	do {
+		phi0 = *lat;
+		lambda0 = *lon;
+		sincos (phi0, &sp, &cp);
+		sincos (lambda0, &sl, &cl);
+		sincos (0.5 * lambda0, &sl2, &cl2);
+		s2p = sin (2.0 * phi0);
+		D = acos (cp * cl2);
+		C = 1.0 - cp * cp * cl2 * cl2;
+		sq_C = sqrt (C);
+		C_32 = C * sq_C;
+		f1 = 0.5 * ((2.0 * D * cp * sl2) / sq_C + lambda0 * project_info.r_cosphi1) - x;
+		f2 = 0.5 * (D * sp / sq_C + phi0) - y;
+		df1dp = (0.25 * (sl * s2p) / C) - ((D * sp * sl2) / C_32);
+		df1dl = 0.5 * ((cp * cp * sl2 * sl2) / C + (D * cp * cl2 * sp * sp) / C_32 + project_info.r_cosphi1);
+		df2dp = 0.5 * ((sp * sp * cl2) / C + (D * (1.0 - cl2 * cl2) * cp) / C_32 + 1.0);
+		df2dl = 0.125 * ((s2p * sl2) / C - (D * sp * cp * cp * sl) / C_32);
+		denom = df1dp * df2dl - df2dp * df1dl;
+		*lat = phi0 - (f1 * df2dl - f2 * df1dl) / denom;
+		*lon = lambda0 - (f2 * df1dp - f1 * df2dp) / denom;
+		delta = fabs (*lat - phi0) + fabs (*lon - lambda0);
+		n_iter++;
+	}
+	while (delta > 1e-12 && n_iter < 100);
+	*lat *= R2D;
+	*lon = project_info.central_meridian + (*lon) * R2D;
+	if (fabs (*lon) > 180.0) *lon = copysign (180.0, *lon);
 }
 
-/*
- *	TRANSFORMATION ROUTINES FOR THE ECKERT IV PROJECTION
- */
-
 void GMT_iwinkel_sub (double y, double *phi)
-{
+{	/* Valid only along meridian 180 degree from central meridian.  Used in left/right_winkel only */
 	int n_iter = 0;
 	double c, phi0, delta, sp, cp;
 
@@ -3834,6 +3862,10 @@ void GMT_iwinkel_sub (double y, double *phi)
 	}
 	while (delta > GMT_CONV_LIMIT && n_iter < 100);
 }
+
+/*
+ *	TRANSFORMATION ROUTINES FOR THE ECKERT IV PROJECTION
+ */
 
 int GMT_map_init_eckert4 (void) {
 	int search;
@@ -5144,29 +5176,6 @@ double GMT_left_winkel (double y)
 	y -= project_info.y0;
 	y *= project_info.i_y_scale;
 	GMT_iwinkel_sub (y, &phi);
-	GMT_geo_to_xy (project_info.central_meridian-180.0, phi * R2D, &x, &c);
-	return (x);
-}
-
-double GMT_left_winkel_old (double y)
-{
-	int n_iter = 0;
-	double c, phi, phi0, delta, x, y0, sp, cp;
-
-/*	y0 = 0.5 * project_info.ymax;
-	y -= y0; */
-	y -= project_info.y0;
-	y *= project_info.i_y_scale;
-	c = 2.0 * y * project_info.i_EQ_RAD;
-	phi = y * project_info.i_EQ_RAD;
-	do {
-		phi0 = phi;
-		sincos (phi0, &sp, &cp);
-		phi = phi0 - (phi0 + M_PI_2 * sp - c) / (1.0 + M_PI_2 * cp);
-		delta = fabs (phi - phi0);
-		n_iter++;
-	}
-	while (delta > GMT_CONV_LIMIT && n_iter < 100);
 	GMT_geo_to_xy (project_info.central_meridian-180.0, phi * R2D, &x, &c);
 	return (x);
 }
