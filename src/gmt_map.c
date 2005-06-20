@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.87 2005-03-04 05:14:20 remko Exp $
+ *	$Id: gmt_map.c,v 1.88 2005-06-20 03:29:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -294,6 +294,7 @@ void GMT_utm_sph(double lon, double lat, double *x, double *y);		/*	Convert lon/
 void GMT_iutm_sph(double *lon, double *lat, double x, double y);		/*	Convert x/y (UTM Spherical) to lon/lat 	*/
 void GMT_winkel(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Winkel)	*/
 void GMT_iwinkel(double *lon, double *lat, double x, double y);		/*	Convert x/y (Winkel) to lon/lat	*/
+void GMT_iwinkel_sub (double y, double *phi);				/*	Used by GMT_iwinkel */
 void GMT_eckert4(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Eckert IV)	*/
 void GMT_ieckert4(double *lon, double *lat, double x, double y);		/*	Convert x/y (Eckert IV) to lon/lat	*/
 void GMT_eckert6(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Eckert VI)	*/
@@ -3806,25 +3807,33 @@ void GMT_iwinkel (double *lon, double *lat, double x, double y)
 	/* Convert Winkel Tripel x/y to lon/lat */
 	/* Only works if point is on perimeter */
 
-	int n_iter = 0;
-	double c, phi, phi0, delta, sp, cp;
+	double phi;
 
-	c = 2.0 * y * project_info.i_EQ_RAD;
-	phi = y * project_info.i_EQ_RAD;
-	do {
-		phi0 = phi;
-		sincos (phi0, &sp, &cp);
-		phi = phi0 - (phi0 + M_PI_2 * sp - c) / (1.0 + M_PI_2 * cp);
-		delta = fabs (phi - phi0);
-		n_iter++;
-	}
-	while (delta > GMT_CONV_LIMIT && n_iter < 100);
+	GMT_iwinkel_sub (y, &phi);
 	*lat = phi * R2D;
 	*lon = project_info.central_meridian + copysign (180.0, x - GMT_half_map_size);
 }
+
 /*
  *	TRANSFORMATION ROUTINES FOR THE ECKERT IV PROJECTION
  */
+
+void GMT_iwinkel_sub (double y, double *phi)
+{
+	int n_iter = 0;
+	double c, phi0, delta, sp, cp;
+
+	c = 2.0 * y * project_info.i_EQ_RAD;
+	*phi = y * project_info.i_EQ_RAD;
+	do {
+		phi0 = *phi;
+		sincos (phi0, &sp, &cp);
+		*phi = phi0 - (phi0 + M_PI_2 * sp - c) / (1.0 + M_PI_2 * cp);
+		delta = fabs (*phi - phi0);
+		n_iter++;
+	}
+	while (delta > GMT_CONV_LIMIT && n_iter < 100);
+}
 
 int GMT_map_init_eckert4 (void) {
 	int search;
@@ -5130,11 +5139,23 @@ double GMT_left_ellipse (double y)
 
 double GMT_left_winkel (double y)
 {
+	double c, phi, x;
+
+	y -= project_info.y0;
+	y *= project_info.i_y_scale;
+	GMT_iwinkel_sub (y, &phi);
+	GMT_geo_to_xy (project_info.central_meridian-180.0, phi * R2D, &x, &c);
+	return (x);
+}
+
+double GMT_left_winkel_old (double y)
+{
 	int n_iter = 0;
 	double c, phi, phi0, delta, x, y0, sp, cp;
 
-	y0 = 0.5 * project_info.ymax;
-	y -= y0;
+/*	y0 = 0.5 * project_info.ymax;
+	y -= y0; */
+	y -= project_info.y0;
 	y *= project_info.i_y_scale;
 	c = 2.0 * y * project_info.i_EQ_RAD;
 	phi = y * project_info.i_EQ_RAD;
@@ -5232,22 +5253,11 @@ double GMT_right_ellipse (double y)
 
 double GMT_right_winkel (double y)
 {
-	int n_iter = 0;
-	double c, phi, phi0, delta, x, y0, sp, cp;
+	double c, phi, x;
 
-	y0 = 0.5 * project_info.ymax;
-	y -= y0;
+	y -= project_info.y0;
 	y *= project_info.i_y_scale;
-	c = 2.0 * y * project_info.i_EQ_RAD;
-	phi = y * project_info.i_EQ_RAD;
-	do {
-		phi0 = phi;
-		sincos (phi0, &sp, &cp);
-		phi = phi0 - (phi0 + M_PI_2 * sp - c) / (1.0 + M_PI_2 * cp);
-		delta = fabs (phi - phi0);
-		n_iter++;
-	}
-	while (delta > GMT_CONV_LIMIT && n_iter < 100);
+	GMT_iwinkel_sub (y, &phi);
 	GMT_geo_to_xy (project_info.central_meridian+180.0, phi * R2D, &x, &c);
 	return (x);
 }
