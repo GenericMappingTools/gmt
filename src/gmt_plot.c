@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.145 2005-03-07 16:59:12 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.146 2005-06-24 02:56:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1675,7 +1675,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 {
 	double *val, dx[2], dy[2], w2, s2, x, y, del;
 	int i, k, nx, ny, remove[2];
-	int do_minutes, do_seconds, move_up, done_zero = FALSE, annot, GMT_world_map_save;
+	int do_minutes, do_seconds, move_up, done_Greenwich_or_Dateline = FALSE, annot, GMT_world_map_save;
 	char label[GMT_LONG_TEXT], cmd[GMT_LONG_TEXT];
 	BOOLEAN full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual;
 	PFI GMT_outside_save = VNULL;
@@ -1778,14 +1778,14 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	}
 	for (k = 0; k < 1 + dual; k++) {
 		if (dx[k] > 0.0) {	/* Annotate the S and N boundaries */
-			done_zero = FALSE;
+			done_Greenwich_or_Dateline = FALSE;
 			do_minutes = (fabs (fmod (dx[k], 1.0)) > SMALL);
 			do_seconds = (fabs (60.0 * fmod (fmod (dx[k], 1.0) * 60.0, 1.0)) >= 1.0);
 			nx = GMT_linear_array (w, e, dx[k], frame_info.axis[0].phase, &val);
-			for (i = 0; i < nx; i++) {
-				if (fabs (val[i]) < GMT_CONV_LIMIT) done_zero = TRUE;
+			for (i = 0; i < nx; i++) {	/* Worry that we do not try to plot 0 and 360 OR -180 and +180 on top of each other */
+				if (fabs (val[i]) < GMT_CONV_LIMIT || fabs (180.0 + val[i]) < GMT_CONV_LIMIT) done_Greenwich_or_Dateline = TRUE;
 				GMT_get_annot_label (val[i], label, do_minutes, do_seconds, 0, GMT_world_map_save);
-				annot = annot_0_and_360 || !(done_zero && fabs (val[i] - 360.0) < GMT_CONV_LIMIT);
+				annot = annot_0_and_360 || !(done_Greenwich_or_Dateline && (fabs (val[i] - 360.0) < GMT_CONV_LIMIT || fabs (val[i] - 180.0) < GMT_CONV_LIMIT));
 				if (dual && k == 0) {
 					del = fmod (val[i] - w2, dx[1]);
 					if (fabs (del) < GMT_CONV_LIMIT || fabs (del - dx[1]) < GMT_CONV_LIMIT)
