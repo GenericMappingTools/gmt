@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.20 2005-03-03 21:53:42 remko Exp $
+ *	$Id: gmt_customio.c,v 1.21 2005-06-27 07:12:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -64,6 +64,9 @@
 
 int GMT_read_rasheader (FILE *fp, struct rasterfile *h);
 int GMT_write_rasheader (FILE *fp, struct rasterfile *h);
+void GMT_native_read_grd_header (char *file, FILE *fp, struct GRD_HEADER *header);
+void GMT_native_write_grd_header (char *file, FILE *fp, struct GRD_HEADER *header);
+void GMT_native_skip_grd_header (char *file, FILE *fp, struct GRD_HEADER *header);
 int GMT_native_read_grd_info (char *file, struct GRD_HEADER *header);
 int GMT_native_update_grd_info (char *file, struct GRD_HEADER *header);
 int GMT_native_write_grd_info (char *file, struct GRD_HEADER *header);
@@ -820,7 +823,9 @@ int GMT_bit_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 		piping = TRUE;
 	}
 	else if ((fp = GMT_fopen (file, "rb")) != NULL)	/* Skip header */
-		fseek (fp, (long) sizeof (struct GRD_HEADER), SEEK_SET);
+	{
+		GMT_native_skip_grd_header (file, fp, header);
+	}
 	else {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", file);
 		exit (EXIT_FAILURE);
@@ -958,10 +963,7 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 
 	/* store header information and array */
 
-	if (do_header && fwrite ((void *)header, sizeof (struct GRD_HEADER), (size_t)1, fp) != 1) {
-		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
-		exit (EXIT_FAILURE);
-	}
+	if (do_header) GMT_native_write_grd_header (file, fp, header);
 
 	mx = (int) ceil (width_out / 32.0);
 	tmp = (unsigned int *) GMT_memory (VNULL, (size_t)mx, sizeof (unsigned int), "GMT_bit_write_grd");
@@ -992,6 +994,64 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 /* Here are the generic routines for dealing with native binary files
  * where the grid values are stored as 1-, 2-, 4-, or 8-byte items */
 
+/* GMT 64-bit Modification:
+ *
+ * Read/write GRD header structure from native binary file.  This is
+ * used by all the native binary formats in GMT.  We isolate the i/o of
+ * the header structure here because of 32/64 bit issues of alignment.
+ * Basically, one 64-bit systems the first three 4-bit integers of the
+ * GRD_HEADER structure will be followed by a 4-byte padding to get
+ * correct 64-bit alignment; this does not occur on 32-bit systems.
+ * The upshot is that sizeof (struct GRD_HEADER) is 892 on 32-bit and
+ * 896 on 64-bit.  We must thus be careful when using sizeof on this
+ * structure in fseek, fread, and fwrite calls.
+ */
+
+void GMT_native_read_grd_header (char *file, FILE *fp, struct GRD_HEADER *header)
+{
+#ifdef _LP64	/* Because GRD_HEADER is not 64bit aligned we must read it in parts */
+	if (fread ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || fread ((void *)&header->x_min, sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx), (size_t)1, fp) != 1) {
+                fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
+                exit (EXIT_FAILURE);
+        }
+#else
+	if (fread ((void *)header, sizeof (struct GRD_HEADER), (size_t)1, fp) != 1) {
+		fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
+		exit (EXIT_FAILURE);
+	}
+#endif
+}
+
+void GMT_native_write_grd_header (char *file, FILE *fp, struct GRD_HEADER *header)
+{
+#ifdef _LP64	/* Because GRD_HEADER is not 64bit aligned we must write it in parts */
+	if (fwrite ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || fwrite ((void *)&header->x_min, sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx), (size_t)1, fp) != 1) {
+                fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
+                exit (EXIT_FAILURE);
+        }
+#else
+	if (fwrite ((void *)header, sizeof (struct GRD_HEADER), (size_t)1, fp) != 1) {
+		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
+		exit (EXIT_FAILURE);
+	}
+#endif
+}
+
+void GMT_native_skip_grd_header (char *file, FILE *fp, struct GRD_HEADER *header)
+{
+#ifdef _LP64	/* Adjust for the 4-byte internal padding */
+	if (!fseek (fp, (long) (sizeof (struct GRD_HEADER) - 4), SEEK_SET)) {
+		fprintf (stderr, "GMT Fatal Error: Error seeking past header file %s!\n", file);
+		exit (EXIT_FAILURE);
+	}
+#else
+	if (!fseek (fp, (long) sizeof (struct GRD_HEADER), SEEK_SET)) {
+		fprintf (stderr, "GMT Fatal Error: Error seeking past header file %s!\n", file);
+		exit (EXIT_FAILURE);
+	}
+#endif
+}
+
 int GMT_native_read_grd_info (char *file, struct GRD_HEADER *header)
 {
 	/* Read GRD header structure from native binary file.  This is used by
@@ -1009,11 +1069,8 @@ int GMT_native_read_grd_info (char *file, struct GRD_HEADER *header)
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
-
-	if (fread ((void *)header, sizeof (struct GRD_HEADER), (size_t)1, fp) != 1) {
-		fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
-		exit (EXIT_FAILURE);
-	}
+	
+	GMT_native_read_grd_header (file, fp, header);
 
 	if (fp != GMT_stdin) GMT_fclose (fp);
 
@@ -1042,11 +1099,8 @@ int GMT_native_write_grd_info (char *file, struct GRD_HEADER *header)
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
-
-	if (fwrite ((void *)header, sizeof (struct GRD_HEADER), (size_t)1, fp) != 1) {
-		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
-		exit (EXIT_FAILURE);
-	}
+	
+	GMT_native_write_grd_header (file, fp, header);
 
 	if (fp != GMT_stdout) GMT_fclose (fp);
 
@@ -1085,7 +1139,7 @@ int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, dou
 		piping = TRUE;
 	}
 	else if ((fp = GMT_fopen (file, "rb")) != NULL)	/* Skip header */
-		fseek (fp, (long) sizeof (struct GRD_HEADER), SEEK_SET);
+		GMT_native_skip_grd_header (file, fp, header);
 	else {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", file);
 		exit (EXIT_FAILURE);
@@ -1232,10 +1286,7 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 
 	/* store header information and array */
 
-	if (do_header && fwrite ((void *)header, sizeof (struct GRD_HEADER), (size_t)1, fp) != 1) {
-		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
-		exit (EXIT_FAILURE);
-	}
+	if (do_header) GMT_native_write_grd_header (file, fp, header);
 
 	i2 = first_col + pad[0];
 	for (j = 0, j2 = first_row + pad[3]; j < height_out; j++, j2++) {
