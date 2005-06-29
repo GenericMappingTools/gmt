@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.21 2005-06-27 07:12:06 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.22 2005-06-29 00:55:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1009,47 +1009,32 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 
 void GMT_native_read_grd_header (char *file, FILE *fp, struct GRD_HEADER *header)
 {
-#ifdef _LP64	/* Because GRD_HEADER is not 64bit aligned we must read it in parts */
+	/* Because GRD_HEADER is not 64bit aligned we must read it in parts */
+	
 	if (fread ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || fread ((void *)&header->x_min, sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx), (size_t)1, fp) != 1) {
                 fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
                 exit (EXIT_FAILURE);
         }
-#else
-	if (fread ((void *)header, sizeof (struct GRD_HEADER), (size_t)1, fp) != 1) {
-		fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
-		exit (EXIT_FAILURE);
-	}
-#endif
 }
 
 void GMT_native_write_grd_header (char *file, FILE *fp, struct GRD_HEADER *header)
 {
-#ifdef _LP64	/* Because GRD_HEADER is not 64bit aligned we must write it in parts */
+	/* Because GRD_HEADER is not 64bit aligned we must write it in parts */
+
 	if (fwrite ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || fwrite ((void *)&header->x_min, sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx), (size_t)1, fp) != 1) {
                 fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
                 exit (EXIT_FAILURE);
         }
-#else
-	if (fwrite ((void *)header, sizeof (struct GRD_HEADER), (size_t)1, fp) != 1) {
-		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
-		exit (EXIT_FAILURE);
-	}
-#endif
 }
 
 void GMT_native_skip_grd_header (char *file, FILE *fp, struct GRD_HEADER *header)
 {
-#ifdef _LP64	/* Adjust for the 4-byte internal padding */
-	if (!fseek (fp, (long) (sizeof (struct GRD_HEADER) - 4), SEEK_SET)) {
+	/* Because GRD_HEADER is not 64bit aligned we must estimate the # of bytes in parts */
+	
+	if (!fseek (fp, (long)(3*sizeof (int) + sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx)), SEEK_SET)) {
 		fprintf (stderr, "GMT Fatal Error: Error seeking past header file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
-#else
-	if (!fseek (fp, (long) sizeof (struct GRD_HEADER), SEEK_SET)) {
-		fprintf (stderr, "GMT Fatal Error: Error seeking past header file %s!\n", file);
-		exit (EXIT_FAILURE);
-	}
-#endif
 }
 
 int GMT_native_read_grd_info (char *file, struct GRD_HEADER *header)
