@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.146 2005-06-24 02:56:43 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.147 2005-07-04 08:01:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -139,6 +139,8 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode);
 void GMT_textpath_init (struct GMT_PEN *LP, int Brgb[], struct GMT_PEN *BP, int Frgb[]);
 void GMT_contlabel_plotboxes (struct GMT_CONTOUR *G);
 void GMT_flush_symbol_piece (double *x, double *y, double z, int *n, struct GMT_PEN *p, struct GMT_FILL *f, BOOLEAN outline, BOOLEAN *flush);
+void GMT_define_PS_items (struct PLOT_AXIS *A, int below, int annotate);
+void GMT_define_baselines ();
 
 /* Local variables to this file */
 
@@ -324,18 +326,29 @@ void GMT_linear_map_boundary (double w, double e, double s, double n)
 	x_length = fabs (x2 - x1);
 	y_length = fabs (y2 - y1);
 
-	if (frame_info.side[3]) GMT_xy_axis (x1, y1, y_length, s, n, &frame_info.axis[1], TRUE,  frame_info.side[3]-1);	/* West or left y-axis */
-	if (frame_info.side[1]) GMT_xy_axis (x2, y1, y_length, s, n, &frame_info.axis[1], FALSE, frame_info.side[1]-1);	/* East or right y-axis */
-	if (frame_info.side[0]) GMT_xy_axis (x1, y1, x_length, w, e, &frame_info.axis[0], TRUE,  frame_info.side[0]-1);	/* South or lower x-axis */
-	if (frame_info.side[2]) GMT_xy_axis (x1, y2, x_length, w, e, &frame_info.axis[0], FALSE, frame_info.side[2]-1);	/* North or upper x-axis */
+	if (frame_info.side[3]) GMT_xy_axis (x1, y1, y_length, s, n, &frame_info.axis[1], TRUE,  frame_info.side[3] == 2);	/* West or left y-axis */
+	if (frame_info.side[1]) GMT_xy_axis (x2, y1, y_length, s, n, &frame_info.axis[1], FALSE, frame_info.side[1] == 2);	/* East or right y-axis */
+	if (frame_info.side[0]) GMT_xy_axis (x1, y1, x_length, w, e, &frame_info.axis[0], TRUE,  frame_info.side[0] == 2);	/* South or lower x-axis */
+	if (frame_info.side[2]) GMT_xy_axis (x1, y2, x_length, w, e, &frame_info.axis[0], FALSE, frame_info.side[2] == 2);	/* North or upper x-axis */
 
 	if (!frame_info.header[0]) return;	/* No header today */
 
-	if (frame_info.side[2] == 0) ps_set_length ("PSL_H_y", 0.0);	/* PSL_H was not set by GMT_xy_axis */
+	ps_comment ("Placing plot title");
+	
+	GMT_define_PS_items (&frame_info.axis[0], FALSE, frame_info.side[2] == 2);
+	
+	GMT_define_baselines ();
+
+	ps_set_length ("PSL_HO", gmtdefs.header_offset);
+
+	ps_command ("/PSL_H_y PSL_L_y PSL_LH add PSL_HO add def");	/* For title adjustment */
+
+	if (frame_info.side[2] == 0) ps_set_length ("PSL_H_y", gmtdefs.header_offset);	/* Just axis line is drawn, offset by header_offset only */
+	if (frame_info.side[2] == 1) ps_command ("/PSL_H_y PSL_L_y PSL_HO add def");	/* Allow for ticks + offset */
 	ps_set_length ("PSL_x", 0.5 * x_length);
 	ps_set_length ("PSL_y", y_length);
 	ps_set_height ("PSL_HF", gmtdefs.header_font_size);
-	ps_textdim ("PSL_dimx", "PSL_dimy", gmtdefs.header_font_size, gmtdefs.header_font, frame_info.header, 0);			/* Get and set string dimensions in PostScript */
+	ps_textdim ("PSL_dimx", "PSL_dimy", gmtdefs.header_font_size, gmtdefs.header_font, frame_info.header, 0);	/* Get and set string dimensions in PostScript */
 	ps_command ("PSL_x PSL_dimx -0.5 mul add PSL_y PSL_H_y add M");
 	ps_setfont (gmtdefs.header_font);
 	ps_text (0.0, 0.0, -gmtdefs.header_font_size, frame_info.header, 0.0, 0, 0);
@@ -393,17 +406,8 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 	}
 
 	/* Create PostScript definitions of various lengths and font sizes */
-	(below) ? ps_command ("/PSL_sign -1 def") :  ps_command ("/PSL_sign 1 def");
-	ps_set_length ("PSL_TL1", gmtdefs.tick_length);
-	ps_set_length ("PSL_AO0", gmtdefs.annot_offset[0]);
-	(A->item[GMT_ANNOT_LOWER].active || A->item[GMT_INTV_LOWER].active) ? ps_set_length ("PSL_AO1", gmtdefs.annot_offset[1]) : ps_set_length ("PSL_AO1", 0.0);
-	ps_set_length ("PSL_LO", gmtdefs.label_offset);
-	ps_set_length ("PSL_HO", gmtdefs.header_offset);
-	ps_set_length ("PSL_AH0", 0.0);
-	ps_set_length ("PSL_AH1", 0.0);
-	ps_set_height ("PSL_AF0", gmtdefs.annot_font_size[0]);
-	ps_set_height ("PSL_AF1", gmtdefs.annot_font_size[1]);
-	ps_set_height ("PSL_LF", gmtdefs.label_font_size);
+	
+	GMT_define_PS_items (A, below, annotate);
 
 	ps_comment ("Axis tick marks");
 	GMT_setpen (&gmtdefs.frame_pen);
@@ -450,17 +454,9 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 		if (nx) GMT_free ((void *)knots);
 	}
 
-	if (A->label[0] && annotate)
-		ps_textdim ("PSL_dimx", "PSL_LH", gmtdefs.label_font_size, gmtdefs.label_font, "M", 0);				/* Get and set string dimensions in PostScript */
-	else 
-		ps_command ("/PSL_LH 0 def");
+	/* Here, PSL_AH0, PSL_AH1, and PSL_LH have been defined.  We may now set the y offsets for text baselines */
 
-	/* Here, PSL_AH0, PSL_AH1, and PSL_LH have been defined.  We may now set the y offsets */
-
-	ps_command ("/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_sign 0 lt {PSL_AH0} {0} ifelse add} if PSL_sign mul def");
-	ps_command ("/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_sign 0 lt {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def");
-	ps_command ("/PSL_L_y PSL_A1_y abs PSL_LO add PSL_sign 0 lt {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def");
-	if (axis == 0 && !below) ps_command ("/PSL_H_y PSL_L_y PSL_LH add PSL_HO add def");	/* For title adjustment */
+	GMT_define_baselines ();
 
 	/* Now do annotations, if requested */
 
@@ -519,6 +515,59 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 		ps_rotatetrans  (-x0, -y0, -90.0);
 		if (below) ps_comment ("End of right y-axis"); else ps_comment ("End of left y-axis");
 	}
+}
+
+void GMT_define_PS_items (struct PLOT_AXIS *A, int below, int annotate)
+{
+	/* GMT relies on the PostScript engine to calculate dimensions of
+	 * text items.  Therefore, the calculation of text baseline offsets
+	 * (i.e., distance from axis to base of annotations) becomes a bit
+	 * tricky and must be done in PostScript language.
+	 *
+	 * Here we set PostScript definitions of various lengths and font
+	 * sizes used in the frame annotation machinery */
+	 
+	if (below) /* Axis is either lower x-axis or LEFT y-axis, with annotations "below" the axis */
+		ps_command ("/PSL_sign -1 def");
+	else
+		ps_command ("/PSL_sign 1 def");	/* Annotate "above" axis */
+	if (annotate)	/* Want annotations...  */
+		ps_command ("/PSL_do_annot 1 def");
+	else		/* ...or not */
+		ps_command ("/PSL_do_annot 0 def");
+	if (A->label[0])	/* The label is not NULL */
+		ps_command ("/PSL_do_label 1 def");
+	else			/* No label present */
+		ps_command ("/PSL_do_label 0 def");
+	if (A->item[GMT_ANNOT_LOWER].active || A->item[GMT_INTV_LOWER].active)	/* Secondary annotations requested */
+		ps_command ("/PSL_do_A1 1 def");
+	else	/* No secondary items */
+		ps_command ("/PSL_do_A1 0 def");
+	ps_set_length ("PSL_TL1", gmtdefs.tick_length);		/* Length of tickmark (could be negative) */
+	ps_set_length ("PSL_AO0", gmtdefs.annot_offset[0]);	/* Offset between tick and primary annotation */
+	ps_set_length ("PSL_AO1", gmtdefs.annot_offset[1]);	/* Offset between tick and secondary annotation */
+	ps_set_length ("PSL_LO",  gmtdefs.label_offset);	/* Offset between annotation and label */
+	ps_set_height ("PSL_AF0", gmtdefs.annot_font_size[0]);	/* Primary font size */
+	ps_set_height ("PSL_AF1", gmtdefs.annot_font_size[1]);	/* Secondary font size */
+	ps_set_height ("PSL_LF",  gmtdefs.label_font_size);	/* Label font size */
+	ps_set_length ("PSL_AH0", 0.0);	/* The loop over level 0 annotations will reset this to the tallest annotation */
+	ps_set_length ("PSL_AH1", 0.0);	/* The loop over level 1 annotations will reset this to the tallest annotation */
+	ps_textdim ("PSL_dimx", "PSL_LH", gmtdefs.label_font_size, gmtdefs.label_font, "M", 0);		/* Get and set string dimensions in PostScript */
+}
+
+void GMT_define_baselines ()
+{
+	/* Given the sizes and lengths of text, offsets, and ticks, calculate the offset from the
+	 * axis to the baseline of each annotation class:
+	 * PSL_A0_y:	Base of primary annotation
+	 * PSL_A1_y:	Base of secondary annotation
+	 * PSL_L_y:	Base of axis label
+	 * PSL_H_y:	Base of plot title (set elsewhere)
+	 */
+	
+	ps_command ("/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_sign 0 lt {PSL_AH0} {0} ifelse add} if PSL_sign mul def");
+	ps_command ("/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_sign 0 lt {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def");
+	ps_command ("/PSL_L_y PSL_A1_y abs PSL_LO add PSL_sign 0 lt {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def");
 }
 
 void GMT_linearx_grid (double w, double e, double s, double n, double dval)
