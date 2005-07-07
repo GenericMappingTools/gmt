@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtguru.macros.orig,v 1.22 2004-10-20 16:59:12 pwessel Exp $
+#	$Id: gmtguru.macros.orig,v 1.23 2005-07-07 09:17:48 pwessel Exp $
 #
 #	Original GMT Guru Makefile Macro for Makefile.guru
 #	Users should cp to gmtguru.macros and edit it instead!
@@ -14,9 +14,9 @@
 # Below, set the VERSION to be created; tar archives are placed
 # in GMT/ftp.  Also, you may want to change the DATE value.
 
-VERSION		= GMT4.0
+VERSION		= GMT4.1
 GMTBRANCH	= 4
-CPFLAGS		= -I. -DDATE="\"1 Oct 2004\"" -DVERSION="\"$(VERSION)\""
+CPFLAGS		= -I. -DDATE="\"1 Sept 2005\"" -DVERSION="\"$(VERSION)\""
 FTPSITE		= gmt.soest.hawaii.edu	# Set this to the mirror site closest to you
 AUTOCONF	= autoconf		# GNU autoconf utility (add path if not in your search path)
 GMT_SHARED_LIBS	=# --enable-shared	# --enable-shared for shared; empty for static libraries
