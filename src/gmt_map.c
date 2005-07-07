@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.89 2005-06-20 05:45:15 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.90 2005-07-07 09:17:48 pwessel Exp $
  *
- *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -7700,7 +7700,7 @@ void GMT_azim_to_angle (double lon, double lat, double c, double azim, double *a
 	/* Check for wrap-around */
 
 	dx = x1 - x0;
-	if (fabs (dx) > (width = GMT_half_map_width (y0))) {
+	if ((fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL) && fabs (dx) > (width = GMT_half_map_width (y0))) {
 		width *= 2.0;
 		dx = copysign (width - fabs (dx), -dx);
 		if (x1 < width)

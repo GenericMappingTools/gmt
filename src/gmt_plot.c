@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.147 2005-07-04 08:01:17 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.148 2005-07-07 09:17:48 pwessel Exp $
  *
- *	Copyright (c) 1991-2004 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
