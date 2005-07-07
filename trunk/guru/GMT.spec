@@ -12,7 +12,7 @@ Source0: GMT4.0_progs.tar.bz2
 Source1: GMT4.0_man.tar.bz2
 Source2: GMT4.0_web.tar.bz2
 Source3: GMT4.0_suppl.tar.bz2
-Copyright: GPL; Copyright (c) 1991-2004, P. Wessel & W. H. F. Smith
+Copyright: GPL; Copyright (c) 1991-2005, P. Wessel & W. H. F. Smith
 Group: Applications/GIS
 #URL: %PACKAGE_URL
 Packager: Paul Wessel <pwessel@hawaii.edu>
