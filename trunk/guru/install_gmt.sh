@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.52 2004-11-23 18:44:07 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.53 2005-07-11 22:13:32 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -74,7 +74,7 @@ cat << EOF > gmt_install.ftp_site
 4. IAG-USP, Dept of Geophysics, U. of Sao Paulo, BRAZIL
 5. Inst for Geologi, U of Oslo, NORWAY
 6. Goodie Domain Service, Vienna U of Techology, AUSTRIA
-7. ISV, Hokkaido U, Sapporo, JAPAN
+7. Tokai U, Shimizu, JAPAN
 8. Charles Sturt U, Albury, AUSTRALIA
 EOF
 # Order (1-12) is 1:progs, 2:share, 3:high, 4:full, 5:suppl, 6:scripts
@@ -828,7 +828,7 @@ ftp.iris.washington.edu
 ftp.iag.usp.br
 ftp.geologi.uio.no
 gd.tuwien.ac.at
-ftp.eos.hokudai.ac.jp
+ftp.scc.u-tokai.ac.jp
 life.csu.edu.au
 EOF
 
