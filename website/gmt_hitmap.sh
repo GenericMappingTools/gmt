@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: gmt_hitmap.sh,v 1.3 2004-09-30 01:40:54 pwessel Exp $
+#	$Id: gmt_hitmap.sh,v 1.4 2005-07-11 22:13:32 pwessel Exp $
 #
 # Make the GMT ftpsite hitmap PNG image and the hitmap that goes with it.
 # The files created are gmt_hitmap.png and gmt_hitmap.map
@@ -8,12 +8,12 @@ dpi=72
 yoff=1
 dia=0.2
 #-------------------------------------------------------------------------------------------------
-# ADD NEW MIRRORS HERE.
+# ADD NEW MIRRORS HERE (Also fix install script etc)
 # Remember: Only ONE TAB between fields, otherwise the next awk gets confused.
 cat << EOF > mirrors.d
 146:58	-36:0	ftp://life.csu.edu.au/pub/gmt	CT	ALBURY - AUSTRALIA
 10:44	59:55	ftp://ftp.geologi.uio.no/pub/gmt	CB	OSLO - NORWAY
-141:10	43:02	ftp://ftp.eos.hokudai.ac.jp/pub/gmt	CB	SAPPORO - JAPAN
+138:30	35:00	ftp://ftp.scc.u-tokai.ac.jp/pub/gmt	CB	SHIMIZU - JAPAN
 -77:0	38:52	ftp://falcon.grdl.noaa.gov/pub/gmt	CT	SILVER SPRING - USA
 -46:40	-23:32	ftp://ftp.iag.usp.br/pub/gmt	CT	S\303O PAULO - BRAZIL
 16:22	48:12	ftp://gd.tuwien.ac.at/pub/gmt	CT	VIENNA - AUSTRIA
@@ -60,4 +60,5 @@ width=`gmtmath -Q 6 $dpi MUL =`
 height=`gmtmath -Q $H $dpi MUL =`
 rad=`gmtmath -Q $dia $dpi MUL 2 DIV =`
 cat  mirrors.d master.d | mapproject -JN180/$width -Rd | awk '{printf "circle\t%s\t %d,%d %d,%d\n", $3, int($1+0.5), int('$height'-$2+0.5), int($1+'$rad'+0.5), int('$height'-$2+0.5)}' > gmt_hitmap.map
-rm -f mirrors.d master.d ftp.d us.d gmt_hitmap.ps
+rm -f mirrors.d master.d ftp.d us.d
+# rm -f gmt_hitmap.ps
