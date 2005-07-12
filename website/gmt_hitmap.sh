@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: gmt_hitmap.sh,v 1.4 2005-07-11 22:13:32 pwessel Exp $
+#	$Id: gmt_hitmap.sh,v 1.5 2005-07-12 03:15:18 pwessel Exp $
 #
 # Make the GMT ftpsite hitmap PNG image and the hitmap that goes with it.
 # The files created are gmt_hitmap.png and gmt_hitmap.map
@@ -60,5 +60,5 @@ width=`gmtmath -Q 6 $dpi MUL =`
 height=`gmtmath -Q $H $dpi MUL =`
 rad=`gmtmath -Q $dia $dpi MUL 2 DIV =`
 cat  mirrors.d master.d | mapproject -JN180/$width -Rd | awk '{printf "circle\t%s\t %d,%d %d,%d\n", $3, int($1+0.5), int('$height'-$2+0.5), int($1+'$rad'+0.5), int('$height'-$2+0.5)}' > gmt_hitmap.map
-rm -f mirrors.d master.d ftp.d us.d
+#rm -f mirrors.d master.d ftp.d us.d
 # rm -f gmt_hitmap.ps
