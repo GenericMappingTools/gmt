@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.31 2005-04-29 04:07:39 pwessel Exp $
+ *	$Id: x2sys.c,v 1.32 2005-07-13 23:27:32 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -911,7 +911,7 @@ int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode)
 		sscanf (line, "%s %d %d", name, &id, &flag);
 		if (mode == 1) {
 			if (id >= (int)n_alloc) {
-				while (id >= n_alloc) n_alloc += GMT_CHUNK;
+				while (id >= (int)n_alloc) n_alloc += GMT_CHUNK;
 				B->head = (struct X2SYS_BIX_TRACK_INFO *) GMT_memory ((void *)B->head, n_alloc, sizeof (struct X2SYS_BIX_TRACK_INFO), X2SYS_program);
 			}
 			B->head[id].track_id = id;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.99 2005-07-07 09:17:49 pwessel Exp $
+ *	$Id: pslib.c,v 1.100 2005-07-13 23:27:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -194,8 +194,6 @@ void ps_a85_encode (unsigned char quad[], int nbytes);
 void *ps_memory (void *prev_addr, size_t nelem, size_t size);
 int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy);
 int ps_comp_int_asc (const void *p1, const void *p2);
-int ps_read_rasheader (FILE *fp, struct imageinfo *h, int i0, int i1);
-int ps_write_rasheader (FILE *fp, struct imageinfo *h, int i0, int i1);
 static void bulkcopy (const char *);
 static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts);
 int ps_imagefill_init(int image_no, char *imagefile);
