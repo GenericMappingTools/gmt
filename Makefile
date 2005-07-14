@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.20 2005-07-07 09:27:33 pwessel Exp $
+#	$Id: Makefile,v 1.21 2005-07-14 00:59:24 pwessel Exp $
 #
 #	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -222,6 +222,7 @@ uninstall-man:
 install-www:
 		for d in $(SUPPL_M); do \
 			if [ -d src/$$d ] ; then \
+				mkdir -p $(rootdir)/www/gmt/doc/html; \
 				cp src/$$d/*.html $(rootdir)/www/gmt/doc/html; \
 			fi; \
 		done
