@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.54 2005-07-19 05:32:39 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.55 2005-07-19 05:39:04 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -230,7 +230,7 @@ if [ $answer = "n" ]; then	# Must install netcdf one way or the other
 		fi
 	fi
 else
-	def=${NETCDFHOME:-/usr/local/netcdf-3.5.1}
+	def=${NETCDFHOME:-/usr/local/netcdf-3.6.0}
 	netcdf_path=`get_def_answer "Enter directory with netcdf lib and include" "$def"`
 	netcdf_ftp=n
 	netcdf_install=n
@@ -994,7 +994,7 @@ if [ $netcdf_install = "y" ]; then
 	elif [ -f netcdf.tar.gz ] && [ $GMT_expand = "gzip" ]; then
 		$expand netcdf.tar.$suffix | tar xvf -
 	else
-		echo "?? netcdf.tar.{Z,bz2,gz} not found - must abort !!"
+		echo "?? netcdf[-beta].tar.{Z,bz2,gz} not found - must abort !!"
 		exit
 	fi
 	
