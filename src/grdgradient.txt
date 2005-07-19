@@ -94,7 +94,7 @@ imitating light sources in the north and west directions:
 To find the azimuth orientations of seafloor fabric in the file topo.grd:
 .br
 .sp
-\fBgrdgradient\fP topo.grd \fB\-Snao \-G\fPazimuths.grd \fB\-V\fP
+\fBgrdgradient\fP topo.grd \fB\-Dno \-G\fPazimuths.grd \fB\-V\fP
 .br
 .sp
 .SH "SEE ALSO"
