@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.53 2005-07-11 22:13:32 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.54 2005-07-19 05:32:39 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1034,13 +1034,22 @@ fi
 if [ x"$netcdf_path" = x ]; then	# Not explicitly set, must assign it
 	if [ ! x"$NETCDFHOME" = x ]; then	# Good, used an environmental variable for it
                 netcdf_path=$NETCDFHOME
-        elif [ $netcdf_ftp = "n" ]; then	# First see if it was already installed in $topdir
-                netcdf_path=$topdir/netcdf-3.?
-                if [ x"$netcdf_path" = x ]; then	# No, give default place
-                	echo "install_gmt: No path for netcdf provided - default is /usr/local/netcdf" >&2
-     			netcdf_path="/usr/local/netcdf"
+        elif [ $netcdf_ftp = "n" ]; then	# Next, see if it was already installed in $topdir
+		n_version=`cat netcdf*/src/VERSION | sort -r | head -1`
+ 		netcdf_path=$topdir/netcdf-${n_version}
+		if [ -d $netcdf_path ]; then	# OK, it was there
+			p=	# Dummy for empty branch
+		elif [ -d /usr/local/netcdf/lib ]; then	# No, try some standard places
+      			netcdf_path="/usr/local/netcdf"
+		elif [ -f /sw/lib/libnetcdf.a ]; then	# Mac OSX with fink
+      			netcdf_path="/sw"
+		else
+               		echo "install_gmt: No path for netcdf provided - abort" >&2
+               		echo "install_gmt: netcdf not in /usr/local, /usr/local/netcdf, or /sw" >&2
+			exit
 		fi
         fi
+	echo "install_gmt: netcdf found in $netcdf_path" >&2
 fi
 
 #--------------------------------------------------------------------------------
@@ -1239,7 +1248,7 @@ else
 fi
 
 if [ ! x"$MATDIR" = x ]; then	# MATDIR is set
-	enable_matlab=--enable_matlab=$MATDIR
+	enable_matlab=--enable-matlab=$MATDIR
 else
 	enable_matlab=
 fi
