@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.27 2005-07-07 09:17:48 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.28 2005-07-27 00:41:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -46,6 +46,7 @@
  *		09-MAY-2000 P. Wessel: Added GMT_chi2 and GMT_cumpoission
  *		18-AUG-2000 P. Wessel: Moved GMT_mode and GMT_median from gmt_support to here.
  *					Added float versions of these two functions for grd data.
+ *		27-JUL-2005 P. Wessel: Added Chebyshev polynomials Tn(x)
  *
  * PUBLIC functions:
  *
@@ -2621,4 +2622,44 @@ double GMT_extreme (double x[], int n, double x_default, int kind, int way)
 	}
 
 	return ((k) ? x_select : x_default);
+}
+
+double GMT_chebyshev (double x, int n)
+{
+	/* Calculates the n'th Chebyshev polynomial at x */
+
+	double t, x2;
+	
+	if (n < 0) {
+		fprintf (stderr, "GMT: ERROR.  GMT_chebyshev given negative degree (%d)\n", n);
+		exit (EXIT_FAILURE);
+	}
+	if (fabs (x) > 1.0) {
+		fprintf (stderr, "GMT: ERROR.  GMT_chebyshev given |x| > 1 (%lf)\n", x);
+		exit (EXIT_FAILURE);
+	}
+	
+	switch (n) {	/* Testing the order of the polynomial */
+		case 0:
+			t = 1.0;
+			break;
+		case 1:
+			t = x;
+			break;
+		case 2:
+			t = 2.0 * x * x - 1.0;
+			break;
+		case 3:
+			t = x * (4.0 * x * x - 3.0);
+			break;
+		case 4:
+			x2 = x * x;
+			t = 8.0 * x2 * (x2 - 1.0) + 1.0;
+			break;
+		default:	/* For higher degrees we do the recursion */
+			t = 2.0 * x * GMT_chebyshev (x, n-1) - GMT_chebyshev (x, n-2);
+			break;
+	}
+	
+	return (t);
 }
