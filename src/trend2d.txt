@@ -71,7 +71,7 @@ rank.  However, the solution is computed using the generalized inverse and shoul
 The user should check the results graphically if \fBtrend2d\fP shows deficient rank.  NOTE: The model 
 parameters listed with \fB\-V\fP are Chebyshev coefficients; they are not numerically equivalent to the m#s 
 in the equation described above.  The description above is to allow the user to match \fB\-N\fP with the 
-order of the polynomial surface.    
+order of the polynomial surface.  For evaluating Chebyshev polynomials, see \fBgrdmath\fP.
 .sp
 The \fB\-N\fP\fIn_model\fP\fBr\fP (robust) and \fB\-I\fP (iterative) options evaluate the significance of the improvement 
 in model misfit Chi-Squared by an F test.  The default confidence limit is set at 0.51; it can be changed 
@@ -102,6 +102,7 @@ To find out how many terms (up to 10) in a robust interpolant are significant in
 \fBtrend2d\fP data.xyz \fB\-N\fP10\fBr \-I\fP \fB\-V\fP
 .SH "SEE ALSO"
 .IR gmt (GMTMANSECTION),
+.IR grdmath (GMTMANSECTION),
 .IR grdtrend (GMTMANSECTION),
 .IR trend1d (GMTMANSECTION)
 .SH REFERENCES

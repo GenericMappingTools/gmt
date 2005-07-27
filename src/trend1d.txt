@@ -61,7 +61,8 @@ The Chebyshev polynomial of degree n has n+1 extrema in [-1, 1], at all of which
 or +1.  Therefore the magnitude of the polynomial model coefficients can be directly compared.  NOTE: 
 The stable model coefficients are Chebyshev coefficients.  The corresponding polynomial coefficients in
 a + bx + cxx + ...  are also given in Verbose mode but users must realize that they are NOT stable beyond
-degree 7 or 8. See Numerical Recipes for more discussion.
+degree 7 or 8. See Numerical Recipes for more discussion.  For evaluating Chebyshev polynomials,
+see \fBgmtmath\fP.
 .sp
 The \fB\-Nr\fP (robust) and \fB\-I\fP (iterative) options evaluate the significance of the improvement 
 in model misfit Chi-Squared by an F test.  The default confidence limit is set at 0.51; it can be changed 
@@ -92,6 +93,7 @@ To find out how many terms (up to 20, say) in a robust Fourier interpolant are s
 \fBtrend1d\fP data.xy \fB\-Nf\fP20\fBr \-I\fP \fB\-V\fP
 .SH "SEE ALSO"
 .IR gmt (GMTMANSECTION),
+.IR gmtmath (GMTMANSECTION),
 .IR grdtrend (GMTMANSECTION),
 .IR trend2d (GMTMANSECTION)
 .SH REFERENCES
