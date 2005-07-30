@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.15 2005-04-29 03:55:06 mtchandl Exp $
+ *	$Id: mgd77.c,v 1.16 2005-07-30 11:36:25 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -844,7 +844,7 @@ void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F)
 	 */
 
 	char p[BUFSIZ], word[GMT_LONG_TEXT], value[GMT_LONG_TEXT];
-	int i, j, k, constraint, n, pos, ne_alloc = 0, nc_alloc = 0;
+	int i, j, k, constraint, n, pos = 0, ne_alloc = 0, nc_alloc = 0;
 	BOOLEAN exact;
 
 	memset ((void *)F->use_column, 0, (size_t)(32 * sizeof (int)));		/* Initialize array */
