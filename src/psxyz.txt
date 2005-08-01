@@ -11,7 +11,7 @@ psxyz \- Plot lines, polygons, and symbols in 3-D
 \fBpsxyz\fB \fIfiles\fP \fB\-J\fP\fIparameters\fP \fB\-R\fIwest/east/south/north/zmin/zmax\fP[\fBr\fP] 
 [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIcptfile\fP ] [ \fB\-E\fP\fIazimuth/elevation\fP ] 
 [ \fB\-G\fP\fIfill\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-K\fP ] [ \fB\-L\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
-[ \fB\-N\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-S\fP[\fIsymbol\fP][\fIsize\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
+[ \fB\-N\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-Q\fP ] [ \fB\-S\fP[\fIsymbol\fP][\fIsize\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
 [ \fB\-V\fP ] [ \fB\-W\fP[\fIpen\fP] ] 
 [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fIzlevel\fP ] [ \fB\-:\fP ] [ \fB\-c\fP\fIcopies\fP ] 
 [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
@@ -66,6 +66,10 @@ Multiple segment file.  Segments are separated by a record whose first character
 Do NOT skip symbols that fall outside map border [Default plots points inside border only]. 
 #include "explain_-O.txt"
 #include "explain_-P.txt"
+.TP
+.B \-Q
+Turn off the automatic sorting of items based on their distance from the viewer.  The default is
+to sort the items so that items in the foreground are plotted after items in the background.
 .TP
 .B \-S
 Plot symbols.  \fIsize\fP is symbol size in the unit set in \.gmtdefaults4
