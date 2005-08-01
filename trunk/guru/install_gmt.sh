@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.55 2005-07-19 05:39:04 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.56 2005-08-01 03:28:13 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -844,7 +844,14 @@ cat << EOF > gmt_install.ftp_dns
 EOF
 #--------------------------------------------------------------------------------
 
-if [ $# -gt 0 ] && [ $1 = "-h" ]; then
+give_help=0
+if [ $# -gt 0 ]; then
+	if [ "X$1" = "X-h" ] || [ "X$1" = "X-help" ] || [ "X$1" = "X--help" ]; then
+		give_help=1
+	fi
+fi
+
+if [ $give_help -eq 1 ]; then
 	cat << EOF >&2
 install_gmt - Automatic installation of GMT
 
