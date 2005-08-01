@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.57 2005-08-01 04:05:06 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.58 2005-08-01 21:28:21 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1014,9 +1014,9 @@ if [ $netcdf_install = "y" ]; then
 	if [ $os = "Windows_NT" ] || [ $os = "Rhapsody" ] || [ $os = "Darwin" ]; then
 		touch ncgen/values.h
 	fi
+	FC=${FC=}
 	if [ $os = "Interix" ]; then	# Windows SFU
 		CC=${CC=gcc}
-		FC=${FC=}
 	fi
 	netcdf_path=${netcdf_path:-$topdir/netcdf-${n_version}}
 	if [ $os = "Linux" ]; then
@@ -1026,7 +1026,7 @@ if [ $netcdf_install = "y" ]; then
 	rm -f config.{cache,log,status}
 	./configure --prefix=$netcdf_path
 	$GMT_make || exit
-	$GMT_make test || exit
+#	$GMT_make test || exit
 	$GMT_make install || exit
 	$GMT_make clean || exit
 	if [ $os = "Windows_NT" ] || [ $os = "Rhapsody" ] || [ $os = "Darwin" ]; then	# Lord giveth, lord taketh away
