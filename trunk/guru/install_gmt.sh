@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.56 2005-08-01 03:28:13 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.57 2005-08-01 04:05:06 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1058,6 +1058,8 @@ if [ x"$netcdf_path" = x ]; then	# Not explicitly set, must assign it
         fi
 	echo "install_gmt: netcdf found in $netcdf_path" >&2
 fi
+NETCDFHOME=$netcdf_path
+export NETCDFHOME
 
 #--------------------------------------------------------------------------------
 #	GMT FTP SECTION
