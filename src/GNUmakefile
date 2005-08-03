@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.36 2005-02-15 21:15:18 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.37 2005-08-03 17:14:21 remko Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -50,6 +50,7 @@ LIB_C	= fourt.c \
 	  gmt_init.c \
 	  gmt_io.c \
 	  gmt_map.c \
+	  gmt_nc.c \
 	  gmt_shore.c \
 	  gmt_stat.c \
 	  gmt_support.c \
