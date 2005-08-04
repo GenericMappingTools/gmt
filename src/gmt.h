@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.91 2005-07-07 09:17:48 pwessel Exp $
+ *	$Id: gmt.h,v 1.92 2005-08-04 08:25:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -448,8 +448,20 @@ struct GMT_LINES {		/* For holding multisegment lines in memory */
 	int np;			/* Number of points in this segment */
 	int polar;		/* TRUE if a polygon and enclosing N or S pole */
 	char *label;		/* Label string (if applicable) */
+	/* For spherical polygons only */
+	struct GMT_SPHPOL_INFO *S;	/* structure with info needed for the in/out problem */
+	int set_ref;			/* The ref point is inside (0) or outside (1) the polygon */
+	double lon_ref;			/* Reference point coordinates */
+	double lat_ref;
 };
 
+struct GMT_SPHPOL_INFO {	/* Structure that carries temporary information needed for spherical inside/outside test */
+ 	int n;				/* Number of vertices */
+	int x_kind;			/* Kind of reference point X: inside (0) or outside (1) the polygon */
+	double *vlon_c, *vlat_c;	/* Pointer to original array of n vertices */
+	double *tlonv;			/* New array with 'longitudes' relative to X */
+	double xlon_c, xlat_c;		/* Coordinates of X */
+};
 
 /*--------------------------------------------------------------------*/
 /*	External variables for misc purposes */
