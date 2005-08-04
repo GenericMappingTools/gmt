@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.161 2005-07-07 09:17:48 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.162 2005-08-04 08:25:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -82,6 +82,9 @@
 #define I_255	(1.0 / 255.0)
 #define DEG_TO_KM (6371.0087714 * D2R)
 #define KM_TO_DEG (1.0 / DEG_TO_KM)
+#define GMT_INSIDE_POLYGON	2
+#define GMT_OUTSIDE_POLYGON	0
+#define GMT_ONSIDE_POLYGON	1
 
 int GMT_polar_adjust(int side, double angle, double x, double y);
 int GMT_start_trace(float first, float second, int *edge, int edge_word, int edge_bit, unsigned int *bit);
@@ -122,6 +125,9 @@ int GMT_label_is_OK (char *this_label, char *label, double this_dist, double thi
 int GMT_contlabel_specs_old (char *txt, struct GMT_CONTOUR *G);
 struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name);
 int GMT_get_label_parameters(int side, double line_angle, int type, double *text_angle, int *justify);
+int EastOrWest (const double clon, const double dlon);
+double TrnsfmLon (const double plon, const double plat, const double qlon, const double qlat);
+
 
 double *GMT_x2sys_Y;
 
@@ -2028,7 +2034,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 		}
 	}
 	else if (G->crossing == GMT_CONTOUR_XCURVE) {
-		G->n_xp = GMT_lines_init (G->option, &G->xp, 0.0, FALSE, FALSE);
+		G->n_xp = GMT_lines_init (G->option, &G->xp, 0.0, FALSE, FALSE, FALSE);
 		for (k = 0; k < G->n_xp; k++) {
 			for (i = 0; i < G->xp[k].np; i++) {	/* Project */
 				GMT_geo_to_xy (G->xp[k].lon[i], G->xp[k].lat[i], &x, &y);
@@ -3392,7 +3398,7 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 	int	i, j, k, jend, crossing_count, above;
 	double	y_sect;
 
-	if (n_path < 2) return 0;	/* Cannot be inside a null set or a point so default to outside */
+	if (n_path < 2) return (GMT_OUTSIDE_POLYGON);	/* Cannot be inside a null set or a point so default to outside */
 
 	above = FALSE;
 	crossing_count = 0;
@@ -3401,13 +3407,13 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 	j = jend = n_path - 1;
 	if (x[j] == xp) {
 		/* Trouble already.  We might get lucky:  */
-		if (y[j] == yp) return(1);
+		if (y[j] == yp) return (GMT_ONSIDE_POLYGON);
 
 		/* Go backward down the polygon until x[i] != xp:  */
 		if (y[j] > yp) above = TRUE;
 		i = j - 1;
 		while (x[i] == xp && i > 0) {
-			if (y[i] == yp) return (1);
+			if (y[i] == yp) return (GMT_ONSIDE_POLYGON);
 			if (!(above) && y[i] > yp) above = TRUE;
 			i--;
 		}
@@ -3415,14 +3421,14 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 		/* Now if i == 0 polygon is degenerate line x=xp;
 		   since we know xp,yp is inside bounding box,
 		   it must be on edge:  */
-		if (i == 0) return(1);
+		if (i == 0) return (GMT_ONSIDE_POLYGON);
 
 		/* Now we want to mark this as the end, for later:  */
 		jend = i;
 
 		/* Now if (j-i)>1 there are some segments the point could be exactly on:  */
 		for (k = i+1; k < j; k++) {
-			if ( (y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp) ) return (1);
+			if ( (y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp) ) return (GMT_ONSIDE_POLYGON);
 		}
 
 
@@ -3431,7 +3437,7 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 			from the origin:  */
 		j = 1;
 		while (x[j] == xp) {
-			if (y[j] == yp) return (1);
+			if (y[j] == yp) return (GMT_ONSIDE_POLYGON);
 			if (!(above) && y[j] > yp) above = TRUE;
 			j++;
 		}
@@ -3440,7 +3446,7 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 			not at x = xp.  But now it doesn't matter, that would end us at
 			the main while below.  Again, if j>=2 there are some segments to check:  */
 		for (k = 0; k < j-1; k++) {
-			if ( (y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp) ) return (1);
+			if ( (y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp) ) return (GMT_ONSIDE_POLYGON);
 		}
 
 
@@ -3458,7 +3464,7 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 		i = 0;
 		j = 1;
 		while (x[j] == xp && j < jend) {
-			if (y[j] == yp) return (1);
+			if (y[j] == yp) return (GMT_ONSIDE_POLYGON);
 			if (!(above) && y[j] > yp) above = TRUE;
 			j++;
 		}
@@ -3467,7 +3473,7 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 
 		/* if ((j-i)>2) the point could be on intermediate segments:  */
 		for (k = i+1; k < j-1; k++) {
-			if ( (y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp) ) return (1);
+			if ( (y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp) ) return (GMT_ONSIDE_POLYGON);
 		}
 
 		/* Now we have x[i] != xp and x[j] != xp.
@@ -3480,7 +3486,7 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 				crossing_count++;
 			else if ( (j-i) == 1) {
 				y_sect = y[i] + (y[j] - y[i]) * ( (xp - x[i]) / (x[j] - x[i]) );
-				if (y_sect == yp) return (1);
+				if (y_sect == yp) return (GMT_ONSIDE_POLYGON);
 				if (y_sect > yp) crossing_count++;
 			}
 		}
@@ -3489,7 +3495,7 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 				crossing_count--;
 			else if ( (j-i) == 1) {
 				y_sect = y[i] + (y[j] - y[i]) * ( (xp - x[i]) / (x[j] - x[i]) );
-				if (y_sect == yp) return (1);
+				if (y_sect == yp) return (GMT_ONSIDE_POLYGON);
 				if (y_sect > yp) crossing_count--;
 			}
 		}
@@ -3505,13 +3511,13 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 		above = FALSE;
 		j = i+1;
 		while (x[j] == xp) {
-			if (y[j] == yp) return (1);
+			if (y[j] == yp) return (GMT_ONSIDE_POLYGON);
 			if (!(above) && y[j] > yp) above = TRUE;
 			j++;
 		}
 		/* if ((j-i)>2) the point could be on intermediate segments:  */
 		for (k = i+1; k < j-1; k++) {
-			if ( (y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp) ) return (1);
+			if ( (y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp) ) return (GMT_ONSIDE_POLYGON);
 		}
 
 		/* Now we have x[i] != xp and x[j] != xp.
@@ -3524,7 +3530,7 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 				crossing_count++;
 			else if ( (j-i) == 1) {
 				y_sect = y[i] + (y[j] - y[i]) * ( (xp - x[i]) / (x[j] - x[i]) );
-				if (y_sect == yp) return (1);
+				if (y_sect == yp) return (GMT_ONSIDE_POLYGON);
 				if (y_sect > yp) crossing_count++;
 			}
 		}
@@ -3533,7 +3539,7 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 				crossing_count--;
 			else if ( (j-i) == 1) {
 				y_sect = y[i] + (y[j] - y[i]) * ( (xp - x[i]) / (x[j] - x[i]) );
-				if (y_sect == yp) return (1);
+				if (y_sect == yp) return (GMT_ONSIDE_POLYGON);
 				if (y_sect > yp) crossing_count--;
 			}
 		}
@@ -3546,9 +3552,192 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 	/* End of MAIN WHILE.  Get here when we have gone all around without landing on edge.  */
 
 	if (crossing_count)
-		return(2);
+		return (GMT_INSIDE_POLYGON);
 	else
-		return(0);
+		return (GMT_OUTSIDE_POLYGON);
+}
+
+/* Testing if inside/outside spherical polygons (i.e., lon, lat polygons) */
+
+/*
+ * These functions are translations from Fortran based on a paper
+ * Bevis, M, and Chatelain, J.-L., 1989, Locating a point on a
+ *   spherical surface relative to a spherical polygon of arbitrary
+ *   shape, Math. Geol., 21 (), 811-828.
+ *
+ * Paul Wessel, August 2005
+ *
+ * Given some spherical polygon S and some point X known to be located inside S,
+ * these routines will deterine if an arbitrary point P lies inside S, outside S,
+ * or on its boundary.  The calling program must first call GMT_init_sphpol to
+ * define the boundary of S and the point X.  Any subsequent call to function
+ * GMT_inonout_sphpol will determine if some point P lies inside or outside S; or on
+ * its boundary.
+ */
+ 
+struct GMT_SPHPOL_INFO *GMT_init_sphpol (double vlon[], double vlat[], const int nv, const double xlon, const double xlat, const int kind)
+/* Main setup function.
+ * vlon, vlat are the nv vertex coordinates of polygon.
+ * xlon, xlat is the known point.
+ * kind is -1 if X is inside or +1 if outside polygon
+ * All quantities are in degrees.
+ */
+{
+	int i, ip;
+	double lon, min_lon, max_lon, min_lat, max_lat;
+	struct GMT_SPHPOL_INFO *P;
+	
+	P = (struct GMT_SPHPOL_INFO *) GMT_memory (VNULL, 1, sizeof (struct GMT_SPHPOL_INFO), GMT_program);
+	P->tlonv  = (double *) GMT_memory (VNULL, nv, sizeof (double), GMT_program);
+	P->vlon_c = vlon;
+	P->vlat_c = vlat;
+	
+	/* Copy some information */
+	
+	P->n = nv;
+
+	if (kind == -1) {	/* No fixed point relative to the polygon given */
+		min_lon = min_lat = DBL_MAX;
+		max_lon = max_lat = -DBL_MAX;
+	}
+	for (i = 0; i < nv; i++) {
+		if (kind == -1) {	/* Must determine extent of polygon */
+		{
+			lon = vlon[i];
+			GMT_lon_range_adjust (2, &lon);
+			if (lon < min_lon) min_lon = lon;
+			if (lon > max_lon) max_lon = lon;
+			if (vlat[i] < min_lat) min_lat = vlat[i];
+			if (vlat[i] > max_lat) max_lat = vlat[i];
+		}
+		P->tlonv[i] = TrnsfmLon (xlon, xlat, vlon[i], vlat[i]);
+		ip = (i == 0) ? nv - 1: i + 1;	/* Previous point index */
+		if (vlon[i] == vlon[ip] && vlat[i] == vlat[ip]) {
+			fprintf (stderr, "%s: GMT ERROR: GMT_init_sphpol: Vertices %d and %d are not distinct!\n", GMT_program, i, ip);
+			exit (EXIT_FAILURE);
+		}
+		if (P->tlonv[i] == P->tlonv[ip]) {
+			fprintf (stderr, "%s: GMT ERROR: GMT_init_sphpol: Vertices %d and %d on same arc as X!\n", GMT_program, i, ip);
+			exit (EXIT_FAILURE);
+		}
+		if (GMT_points_are_antipodal (vlon[i], vlat[i], vlon[ip], vlat[ip])) {
+			fprintf (stderr, "%s: GMT ERROR: GMT_init_sphpol: Vertices %d and %d are antipodal!\n", GMT_program, i, ip);
+			exit (EXIT_FAILURE);
+		}
+	}
+	if (kind == -1) {	/* Must determine a reasonable, external point to the polygon */
+		P->x_kind = 1;
+		if (fabs (fabs (max_lon - min_lon) - 360.0) < GMT_CONV_LIMIT) {	/* Includes a pole, pick pole in larger cap */
+			P->xlon_c = 0.0;
+			if (min_lat > 0.0) {
+				P->xlat_c = min_lat;
+			}
+		}
+		else {	/* Not a polar cap, pick a lon outside range */
+			P->xlon_c = 180.0 + 0.5 * (min_lon + max_lon);
+			GMT_lon_range_adjust (2, &P->xlon_c);
+			P->xlat_c = 0.5 * (min_lat + max_lat);
+		}
+	}
+	else
+		P->x_kind = kind;	/* Use whatever was passed */
+		P->xlon_c = xlon;
+		P->xlat_c = xlat;
+	}
+
+	return (P);
+}
+
+int GMT_inonout_sphpol (const double plon, const double plat, const struct GMT_SPHPOL_INFO *P)
+/* This function is used to see if some point P is located inside, outside, or on the boundary of the
+ * spherical polygon S previously defined by a call to subroutine GMT_init_sphpol.  There is a
+ * single restriction on point P; it must not be antipodal to the point X defined in the call to
+ * GMT_init_sphpol (i.e., P and X cannot be separated by exactly 180).
+ * Returns the following values:
+ *	0:	P is outside of S
+ *	1:	P is inside of S
+ *	2:	P is on boundary of S
+ *	3:	undefined, P is antipodal to X
+ */
+{
+	int i, in, strike, cross, EoW;
+	double tlonP, tlon_A, tlon_B, tlon_X, tlon_P;
+	
+	if (P == NULL) {	/* Not set yet */
+		fprintf (stderr, "%s: GMT ERROR: GMT_inonout_sphpol: GMT_init_sphpol not called first!\n", GMT_program);
+		exit (EXIT_FAILURE);
+	}
+	
+	if (GMT_points_are_antipodal (plon, plat, P->xlon_c, P->xlat_c)) {
+		fprintf (stderr, "%s: GMT ERROR: GMT_inonout_sphpol: Points P and X are antipodal!\n", GMT_program);
+		exit (EXIT_FAILURE);
+	}
+	
+	if (plon == P->xlon_c && plat == P->xlat_c) return ((P->x_kind == 0) ? GMT_INSIDE_POLYGON : GMT_OUTSIDE_POLYGON);	/* Trivial if P == X */
+	
+	cross = 0;
+	
+	tlonP = TrnsfmLon (P->xlon_c, P->xlat_c, plon, plat);
+	
+	for (i = 0; i < P->n; i++) {
+		in = (i == (P->n-1)) ? 0 : i + 1;	/* Next index */
+		
+		strike = 0;
+		
+		if (tlonP == P->tlonv[i]) {
+			strike = 1;
+		}
+		else {
+			EoW = EastOrWest (P->tlonv[i], P->tlonv[in]);
+			if (EastOrWest (P->tlonv[i], tlonP) == EoW && EastOrWest (tlonP, P->tlonv[in]) == EoW) strike = 1;
+		}
+		
+		if (strike == 1) {
+			if (plon == P->vlon_c[i] && plat == P->vlat_c[i]) return (GMT_ONSIDE_POLYGON);	/* P on a vertex of S */
+			tlon_B = TrnsfmLon (P->vlon_c[i], P->vlat_c[i], P->vlon_c[in], P->vlat_c[in]);
+			tlon_P = TrnsfmLon (P->vlon_c[i], P->vlat_c[i], plon, plat);
+			if (tlon_P == tlon_B) return (GMT_ONSIDE_POLYGON);	/* P lies on side of S */
+			tlon_X = TrnsfmLon (P->vlon_c[i], P->vlat_c[i], P->xlon_c, P->xlat_c);
+			if (EastOrWest (tlon_B, tlon_X) == -EastOrWest (tlon_B, tlon_P)) cross++;
+		}
+	}
+	
+	/* If the arc XP crosses the boundary S and even number of times then P is in S */
+	
+	return (((cross + P->x_kind) % 2) ? GMT_OUTSIDE_POLYGON : GMT_INSIDE_POLYGON);
+}
+
+double TrnsfmLon (const double plon, const double plat, const double qlon, const double qlat)
+/* This function is required by functions GMT_init_sphpol and GMT_inonout_sphpol.  It finds the
+ * 'longitude' of point Q in a geographic coordinate system for which point P acts as a
+ * 'north pole'.  All items in degrees */
+{
+	double sq, cq, sp, cp, sl, cl;
+	
+	if (plat == 90.0) return (qlon);
+	
+	sincos (qlat * D2R, &sq, &cq);
+	sincos (plat * D2R, &sp, &cp);
+	sincos ((qlon - plon) * D2R, &sl, &cl);
+
+	return (R2D * d_atan2 (sl * cq, sq * cp - cq * sp * cl));
+}
+
+int EastOrWest (const double clon, const double dlon)
+/* This function is required by function GMT_inonout_sphpol.  It determines if in travelling
+ * the shortest path from point C (at longitude clon) to point D (at longitude dlon)
+ * one is heading east, west, or neither.
+ * Returns: -1 for west, +1 for east, 0 if neither.
+ */
+{
+	double dellon;
+	
+	dellon = dlon - clon;
+	GMT_lon_range_adjust (2, &dellon);
+
+	if (dellon > 0.0 && dellon != 180.0) return (-1);	/* D is west of C */
+	if (dellon < 0.0 && dellon != -180.0) return (+1);	/* D is east of C */
+	return (0);						/* D is north or south of C */
 }
 
 /* GMT can either compile with its standard Delaunay triangulation routine

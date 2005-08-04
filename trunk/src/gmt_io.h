@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.32 2005-07-07 09:17:48 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.33 2005-08-04 08:25:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -69,6 +69,7 @@ EXTERN_MSC void GMT_format_geo_output (BOOLEAN is_lat, double geo, char *text);	
 EXTERN_MSC int GMT_ascii_output_one (FILE *fp, double x, int col);
 EXTERN_MSC void GMT_ascii_format_one (char *text, double x, int type);
 EXTERN_MSC void GMT_lon_range_adjust (int range, double *lon);		/* Adjust the longitude given the desired range */
+EXTERN_MSC BOOLEAN GMT_points_are_antipodal (double lonA, double latA, double lonB, double latB);
 EXTERN_MSC BOOLEAN GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  int *s,  int *ix);
 
 struct GMT_CLOCK_IO {
@@ -182,6 +183,6 @@ EXTERN_MSC int GMT_parse_z_io (char *txt, struct GMT_Z_IO *r, BOOLEAN input);
 EXTERN_MSC void GMT_set_z_io (struct GMT_Z_IO *r, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_check_z_io (struct GMT_Z_IO *r, float *a);
 EXTERN_MSC int GMT_points_init (char *file, double **xp, double **yp, double **dp, double dist, BOOLEAN greenwich, BOOLEAN use_GMT_io);
-EXTERN_MSC int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN greenwich, BOOLEAN use_GMT_io);
+EXTERN_MSC int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN greenwich, BOOLEAN poly, BOOLEAN use_GMT_io);
 EXTERN_MSC void GMT_points_delete (double *xp, double *yp, double *dp);
 EXTERN_MSC void GMT_lines_delete (struct GMT_LINES *p, int n_lines);
