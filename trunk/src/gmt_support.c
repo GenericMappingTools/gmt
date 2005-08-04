@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.162 2005-08-04 08:25:20 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.163 2005-08-04 08:39:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3626,17 +3626,24 @@ struct GMT_SPHPOL_INFO *GMT_init_sphpol (double vlon[], double vlat[], const int
 		}
 	}
 	if (kind == -1) {	/* Must determine a reasonable, external point to the polygon */
-		P->x_kind = 1;
-		if (fabs (fabs (max_lon - min_lon) - 360.0) < GMT_CONV_LIMIT) {	/* Includes a pole, pick pole in larger cap */
-			P->xlon_c = 0.0;
-			if (min_lat > 0.0) {
-				P->xlat_c = min_lat;
+		P->x_kind = 1;	/* External point will be computed */
+		if (fabs (fabs (max_lon - min_lon) - 360.0) < GMT_CONV_LIMIT) {	/* Includes a pole, pick point in the other, larger cap */
+			P->xlon_c = 99.9;
+			if (min_lat >= 0.0 && max_lat > 0.0) {	/* Assume polygon contains N polar cap */
+				P->xlat_c = 0.5 * (min_lat - 90.0);
+			}
+			else if (min_lat < 0.0 && max_lat <= 0.0) {	/* Assume polygon contains S polar cap */
+				P->xlat_c = 0.5 * (max_lat + 90.0);
+			}
+			else {	/* Crosses equator, pick pole furthest from extreme N or S edge */
+				P->xlat_c = (fabs (min_lat) > fabs (max_lat)) ? +90.0 : -90.0;
 			}
 		}
-		else {	/* Not a polar cap, pick a lon outside range */
+		else {	/* Not a polar cap, pick a lon outside range and lat halfway between smallest abs lat and corresponding pole */
 			P->xlon_c = 180.0 + 0.5 * (min_lon + max_lon);
 			GMT_lon_range_adjust (2, &P->xlon_c);
 			P->xlat_c = 0.5 * (min_lat + max_lat);
+			P->xlat_c = (fabs (min_lat) < fabs (max_lat)) ? 0.5 * (min_lat + copysign (90.0, min_lat)) : 0.5 * (max_lat + copysign (90.0, max_lat));
 		}
 	}
 	else
