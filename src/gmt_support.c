@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.163 2005-08-04 08:39:36 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.164 2005-08-04 11:04:12 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3583,7 +3583,7 @@ struct GMT_SPHPOL_INFO *GMT_init_sphpol (double vlon[], double vlat[], const int
  * All quantities are in degrees.
  */
 {
-	int i, ip;
+	int i, ip, last;
 	double lon, min_lon, max_lon, min_lat, max_lat;
 	struct GMT_SPHPOL_INFO *P;
 	
@@ -3600,9 +3600,11 @@ struct GMT_SPHPOL_INFO *GMT_init_sphpol (double vlon[], double vlat[], const int
 		min_lon = min_lat = DBL_MAX;
 		max_lon = max_lat = -DBL_MAX;
 	}
-	for (i = 0; i < nv; i++) {
+	
+	last = (vlon[0] == vlon[nv-1] && vlat[0] == vlat[nv-1]) ? nv - 1 : nv;	/* Skip repeated point that closed the polygon */
+	
+	for (i = 0; i < last; i++) {
 		if (kind == -1) {	/* Must determine extent of polygon */
-		{
 			lon = vlon[i];
 			GMT_lon_range_adjust (2, &lon);
 			if (lon < min_lon) min_lon = lon;
@@ -3611,7 +3613,7 @@ struct GMT_SPHPOL_INFO *GMT_init_sphpol (double vlon[], double vlat[], const int
 			if (vlat[i] > max_lat) max_lat = vlat[i];
 		}
 		P->tlonv[i] = TrnsfmLon (xlon, xlat, vlon[i], vlat[i]);
-		ip = (i == 0) ? nv - 1: i + 1;	/* Previous point index */
+		ip = (i == 0) ? last - 1: i + 1;	/* Previous point index */
 		if (vlon[i] == vlon[ip] && vlat[i] == vlat[ip]) {
 			fprintf (stderr, "%s: GMT ERROR: GMT_init_sphpol: Vertices %d and %d are not distinct!\n", GMT_program, i, ip);
 			exit (EXIT_FAILURE);
@@ -3628,25 +3630,24 @@ struct GMT_SPHPOL_INFO *GMT_init_sphpol (double vlon[], double vlat[], const int
 	if (kind == -1) {	/* Must determine a reasonable, external point to the polygon */
 		P->x_kind = 1;	/* External point will be computed */
 		if (fabs (fabs (max_lon - min_lon) - 360.0) < GMT_CONV_LIMIT) {	/* Includes a pole, pick point in the other, larger cap */
-			P->xlon_c = 99.9;
+			P->xlon_c = 99.893411798;	/* Unlikely to be a regular grid longitude */
 			if (min_lat >= 0.0 && max_lat > 0.0) {	/* Assume polygon contains N polar cap */
-				P->xlat_c = 0.5 * (min_lat - 90.0);
+				P->xlat_c = 0.500001 * (min_lat - 90.0);
 			}
 			else if (min_lat < 0.0 && max_lat <= 0.0) {	/* Assume polygon contains S polar cap */
-				P->xlat_c = 0.5 * (max_lat + 90.0);
+				P->xlat_c = 0.500001 * (max_lat + 90.0);
 			}
 			else {	/* Crosses equator, pick pole furthest from extreme N or S edge */
 				P->xlat_c = (fabs (min_lat) > fabs (max_lat)) ? +90.0 : -90.0;
 			}
 		}
 		else {	/* Not a polar cap, pick a lon outside range and lat halfway between smallest abs lat and corresponding pole */
-			P->xlon_c = 180.0 + 0.5 * (min_lon + max_lon);
+			P->xlon_c = 180.000001 + 0.5 * (min_lon + max_lon);
 			GMT_lon_range_adjust (2, &P->xlon_c);
-			P->xlat_c = 0.5 * (min_lat + max_lat);
-			P->xlat_c = (fabs (min_lat) < fabs (max_lat)) ? 0.5 * (min_lat + copysign (90.0, min_lat)) : 0.5 * (max_lat + copysign (90.0, max_lat));
+			P->xlat_c = (fabs (min_lat) < fabs (max_lat)) ? 0.500001 * (min_lat + copysign (90.0, -min_lat)) : 0.500001 * (max_lat + copysign (90.0, -max_lat));
 		}
 	}
-	else
+	else {
 		P->x_kind = kind;	/* Use whatever was passed */
 		P->xlon_c = xlon;
 		P->xlat_c = xlat;
@@ -3667,7 +3668,7 @@ int GMT_inonout_sphpol (const double plon, const double plat, const struct GMT_S
  *	3:	undefined, P is antipodal to X
  */
 {
-	int i, in, strike, cross, EoW;
+	int i, in, last, strike, cross, EoW;
 	double tlonP, tlon_A, tlon_B, tlon_X, tlon_P;
 	
 	if (P == NULL) {	/* Not set yet */
@@ -3686,8 +3687,10 @@ int GMT_inonout_sphpol (const double plon, const double plat, const struct GMT_S
 	
 	tlonP = TrnsfmLon (P->xlon_c, P->xlat_c, plon, plat);
 	
-	for (i = 0; i < P->n; i++) {
-		in = (i == (P->n-1)) ? 0 : i + 1;	/* Next index */
+	last = (P->vlon_c[0] == P->vlon_c[P->n-1] && P->vlat_c[0] == P->vlat_c[P->n-1]) ? P->n-1 : P->n;	/* Skip repeated point that closed the polygon */
+	
+	for (i = 0; i < last; i++) {
+		in = (i == (last - 1)) ? 0 : i + 1;	/* Next index */
 		
 		strike = 0;
 		
