@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.5 2005-08-05 19:46:48 remko Exp $
+ *	$Id: gmt_nc.c,v 1.6 2005-08-05 22:28:06 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -29,7 +29,7 @@
  * There functions are only called indirectly via the GMT_* grdio functions.
  *
  * Author:	Remko Scharroo
- * Date:	2-AUG-2005
+ * Date:	04-AUG-2005
  * Version:	1
  *
  * Functions include:
@@ -71,7 +71,7 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 	int  ncid, id, i;
 	double dummy[2];
 	char text[GRD_COMMAND_LEN+GRD_REMARK_LEN];
-	nc_type type[6] = {NC_BYTE, NC_CHAR, NC_SHORT, NC_INT, NC_FLOAT, NC_DOUBLE};
+	nc_type type[5] = {NC_BYTE, NC_SHORT, NC_INT, NC_FLOAT, NC_DOUBLE};
 	float *tmp = VNULL;
 
 	/* Dimension ids, variable ids, etc.. */
@@ -83,8 +83,6 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 		exit (EXIT_FAILURE);
 	}
 	strcpy (nc_file, file);
-
-	id = GMT_grd_o_format - 15;	/* Converts 15-20 range to 0-5 to use with type[id] */
 
 	memset ((void *)text, 0, (size_t)(GRD_COMMAND_LEN+GRD_REMARK_LEN));
 
@@ -107,6 +105,8 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 		check_nc_status (nc_def_var (ncid, "y", NC_FLOAT, 1, &y_dim, &y_id));
 		dims[0]	= y_dim;
 		dims[1]	= x_dim;
+
+		id = GMT_grd_o_format - 14;	/* Converts 14-18 range to 0-4 to use with type[id] */
 		check_nc_status (nc_def_var (ncid, "z", type[id], 2, dims, &z_id));
 	}
 	else {
