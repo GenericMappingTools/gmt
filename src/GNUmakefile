@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.37 2005-08-03 17:14:21 remko Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.38 2005-08-05 20:02:56 remko Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -175,10 +175,10 @@ gmt_notposix.h:
 
 # Must create g[rd|mt]math.c from g[rd|mt]math_main.c and g[rd|mt]math.func
 
-gmtmath.c:
+gmtmath.c:	gmtmath_main.c
 		(cd ..; sh guru/make_math.sh gmt)
 
-grdmath.c:
+grdmath.c:	grdmath_main.c
 		(cd ..; sh guru/make_math.sh grd)
 
 gmt_keywords.h:
