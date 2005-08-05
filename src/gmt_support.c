@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.164 2005-08-04 11:04:12 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.165 2005-08-05 08:11:25 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -125,9 +125,6 @@ int GMT_label_is_OK (char *this_label, char *label, double this_dist, double thi
 int GMT_contlabel_specs_old (char *txt, struct GMT_CONTOUR *G);
 struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name);
 int GMT_get_label_parameters(int side, double line_angle, int type, double *text_angle, int *justify);
-int EastOrWest (const double clon, const double dlon);
-double TrnsfmLon (const double plon, const double plat, const double qlon, const double qlat);
-
 
 double *GMT_x2sys_Y;
 
@@ -3575,179 +3572,79 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
  * its boundary.
  */
  
-struct GMT_SPHPOL_INFO *GMT_init_sphpol (double vlon[], double vlat[], const int nv, const double xlon, const double xlat, const int kind)
+struct GMT_SPHPOL_INFO *GMT_init_sphpol (double vlon[], double vlat[], const int nv)
 /* Main setup function.
  * vlon, vlat are the nv vertex coordinates of polygon.
- * xlon, xlat is the known point.
- * kind is -1 if X is inside or +1 if outside polygon
- * All quantities are in degrees.
  */
 {
 	int i, ip, last;
-	double lon, min_lon, max_lon, min_lat, max_lat;
+	BOOLEAN jump = FALSE;
+	double lon, min_lat, max_lat, lon_sum = 0.0, dlon, r, c, s;
 	struct GMT_SPHPOL_INFO *P;
 	
 	P = (struct GMT_SPHPOL_INFO *) GMT_memory (VNULL, 1, sizeof (struct GMT_SPHPOL_INFO), GMT_program);
-	P->tlonv  = (double *) GMT_memory (VNULL, nv, sizeof (double), GMT_program);
-	P->vlon_c = vlon;
-	P->vlat_c = vlat;
 	
 	/* Copy some information */
 	
 	P->n = nv;
 
-	if (kind == -1) {	/* No fixed point relative to the polygon given */
-		min_lon = min_lat = DBL_MAX;
-		max_lon = max_lat = -DBL_MAX;
-	}
-	
 	last = (vlon[0] == vlon[nv-1] && vlat[0] == vlat[nv-1]) ? nv - 1 : nv;	/* Skip repeated point that closed the polygon */
 	
+	min_lat = DBL_MAX;	max_lat = -DBL_MAX;
 	for (i = 0; i < last; i++) {
-		if (kind == -1) {	/* Must determine extent of polygon */
-			lon = vlon[i];
-			GMT_lon_range_adjust (2, &lon);
-			if (lon < min_lon) min_lon = lon;
-			if (lon > max_lon) max_lon = lon;
-			if (vlat[i] < min_lat) min_lat = vlat[i];
-			if (vlat[i] > max_lat) max_lat = vlat[i];
+		ip = (i == 0) ? last - 1: i - 1;	/* Previous point index */
+		lon = vlon[i];
+		if (vlat[i] < min_lat) min_lat = vlat[i];
+		if (vlat[i] > max_lat) max_lat = vlat[i];
+		dlon = vlon[i] - vlon[ip];
+		if (fabs (dlon) > 180.0) {	/* Crossed Greenwhich */
+			dlon = copysign (360.0 - fabs (dlon), -dlon);
+			jump = TRUE;
 		}
-		P->tlonv[i] = TrnsfmLon (xlon, xlat, vlon[i], vlat[i]);
-		ip = (i == 0) ? last - 1: i + 1;	/* Previous point index */
-		if (vlon[i] == vlon[ip] && vlat[i] == vlat[ip]) {
-			fprintf (stderr, "%s: GMT ERROR: GMT_init_sphpol: Vertices %d and %d are not distinct!\n", GMT_program, i, ip);
-			exit (EXIT_FAILURE);
-		}
-		if (P->tlonv[i] == P->tlonv[ip]) {
-			fprintf (stderr, "%s: GMT ERROR: GMT_init_sphpol: Vertices %d and %d on same arc as X!\n", GMT_program, i, ip);
-			exit (EXIT_FAILURE);
-		}
-		if (GMT_points_are_antipodal (vlon[i], vlat[i], vlon[ip], vlat[ip])) {
-			fprintf (stderr, "%s: GMT ERROR: GMT_init_sphpol: Vertices %d and %d are antipodal!\n", GMT_program, i, ip);
-			exit (EXIT_FAILURE);
+		lon_sum += dlon;
+	}
+	if (fabs (fabs (lon_sum) - 360.0) < GMT_CONV_LIMIT) {	/* Contains a pole */
+		P->polar = (fabs (max_lat) > fabs (min_lat)) ? copysign (1.0, max_lat) : copysign (1.0, min_lat);	/* S or N pole */
+		P->x = (double *) GMT_memory (VNULL, nv, sizeof (double), GMT_program);
+		P->y = (double *) GMT_memory (VNULL, nv, sizeof (double), GMT_program);
+		for (i = 0; i < nv; i++) {
+			r = 90.0 - vlat[i] * P->polar;	/* Radius */
+			sincos (vlon[i] * D2R, &s, &c);	/* sin, cos of azimuth (= longitude) */
+			P->x[i] = r * s;
+			P->y[i] = r * c;
 		}
 	}
-	if (kind == -1) {	/* Must determine a reasonable, external point to the polygon */
-		P->x_kind = 1;	/* External point will be computed */
-		if (fabs (fabs (max_lon - min_lon) - 360.0) < GMT_CONV_LIMIT) {	/* Includes a pole, pick point in the other, larger cap */
-			P->xlon_c = 99.893411798;	/* Unlikely to be a regular grid longitude */
-			if (min_lat >= 0.0 && max_lat > 0.0) {	/* Assume polygon contains N polar cap */
-				P->xlat_c = 0.500001 * (min_lat - 90.0);
-			}
-			else if (min_lat < 0.0 && max_lat <= 0.0) {	/* Assume polygon contains S polar cap */
-				P->xlat_c = 0.500001 * (max_lat + 90.0);
-			}
-			else {	/* Crosses equator, pick pole furthest from extreme N or S edge */
-				P->xlat_c = (fabs (min_lat) > fabs (max_lat)) ? +90.0 : -90.0;
-			}
-		}
-		else {	/* Not a polar cap, pick a lon outside range and lat halfway between smallest abs lat and corresponding pole */
-			P->xlon_c = 180.000001 + 0.5 * (min_lon + max_lon);
-			GMT_lon_range_adjust (2, &P->xlon_c);
-			P->xlat_c = (fabs (min_lat) < fabs (max_lat)) ? 0.500001 * (min_lat + copysign (90.0, -min_lat)) : 0.500001 * (max_lat + copysign (90.0, -max_lat));
-		}
-	}
-	else {
-		P->x_kind = kind;	/* Use whatever was passed */
-		P->xlon_c = xlon;
-		P->xlat_c = xlat;
+	else {	/* Just give links */
+		P->x = vlon;
+		P->y = vlat;
 	}
 
 	return (P);
 }
 
-int GMT_inonout_sphpol (const double plon, const double plat, const struct GMT_SPHPOL_INFO *P)
+int GMT_inonout_sphpol (double plon, double plat, const struct GMT_SPHPOL_INFO *P)
 /* This function is used to see if some point P is located inside, outside, or on the boundary of the
- * spherical polygon S previously defined by a call to subroutine GMT_init_sphpol.  There is a
- * single restriction on point P; it must not be antipodal to the point X defined in the call to
- * GMT_init_sphpol (i.e., P and X cannot be separated by exactly 180).
+ * spherical polygon S previously defined by a call to subroutine GMT_init_sphpol.
  * Returns the following values:
  *	0:	P is outside of S
  *	1:	P is inside of S
  *	2:	P is on boundary of S
- *	3:	undefined, P is antipodal to X
  */
 {
-	int i, in, last, strike, cross, EoW;
-	double tlonP, tlon_A, tlon_B, tlon_X, tlon_P;
-	
 	if (P == NULL) {	/* Not set yet */
 		fprintf (stderr, "%s: GMT ERROR: GMT_inonout_sphpol: GMT_init_sphpol not called first!\n", GMT_program);
 		exit (EXIT_FAILURE);
 	}
 	
-	if (GMT_points_are_antipodal (plon, plat, P->xlon_c, P->xlat_c)) {
-		fprintf (stderr, "%s: GMT ERROR: GMT_inonout_sphpol: Points P and X are antipodal!\n", GMT_program);
-		exit (EXIT_FAILURE);
+	if (P->polar) {	/* Project the point to local (polar) coordinates */
+		double r, c, s;
+		r = 90.0 - plat * P->polar;	/* Radius */
+		sincos (plon * D2R, &s, &c);				/* sin, cos of azimuth (= longitude) */
+		plon = r * s;
+		plat = r * c;
 	}
 	
-	if (plon == P->xlon_c && plat == P->xlat_c) return ((P->x_kind == 0) ? GMT_INSIDE_POLYGON : GMT_OUTSIDE_POLYGON);	/* Trivial if P == X */
-	
-	cross = 0;
-	
-	tlonP = TrnsfmLon (P->xlon_c, P->xlat_c, plon, plat);
-	
-	last = (P->vlon_c[0] == P->vlon_c[P->n-1] && P->vlat_c[0] == P->vlat_c[P->n-1]) ? P->n-1 : P->n;	/* Skip repeated point that closed the polygon */
-	
-	for (i = 0; i < last; i++) {
-		in = (i == (last - 1)) ? 0 : i + 1;	/* Next index */
-		
-		strike = 0;
-		
-		if (tlonP == P->tlonv[i]) {
-			strike = 1;
-		}
-		else {
-			EoW = EastOrWest (P->tlonv[i], P->tlonv[in]);
-			if (EastOrWest (P->tlonv[i], tlonP) == EoW && EastOrWest (tlonP, P->tlonv[in]) == EoW) strike = 1;
-		}
-		
-		if (strike == 1) {
-			if (plon == P->vlon_c[i] && plat == P->vlat_c[i]) return (GMT_ONSIDE_POLYGON);	/* P on a vertex of S */
-			tlon_B = TrnsfmLon (P->vlon_c[i], P->vlat_c[i], P->vlon_c[in], P->vlat_c[in]);
-			tlon_P = TrnsfmLon (P->vlon_c[i], P->vlat_c[i], plon, plat);
-			if (tlon_P == tlon_B) return (GMT_ONSIDE_POLYGON);	/* P lies on side of S */
-			tlon_X = TrnsfmLon (P->vlon_c[i], P->vlat_c[i], P->xlon_c, P->xlat_c);
-			if (EastOrWest (tlon_B, tlon_X) == -EastOrWest (tlon_B, tlon_P)) cross++;
-		}
-	}
-	
-	/* If the arc XP crosses the boundary S and even number of times then P is in S */
-	
-	return (((cross + P->x_kind) % 2) ? GMT_OUTSIDE_POLYGON : GMT_INSIDE_POLYGON);
-}
-
-double TrnsfmLon (const double plon, const double plat, const double qlon, const double qlat)
-/* This function is required by functions GMT_init_sphpol and GMT_inonout_sphpol.  It finds the
- * 'longitude' of point Q in a geographic coordinate system for which point P acts as a
- * 'north pole'.  All items in degrees */
-{
-	double sq, cq, sp, cp, sl, cl;
-	
-	if (plat == 90.0) return (qlon);
-	
-	sincos (qlat * D2R, &sq, &cq);
-	sincos (plat * D2R, &sp, &cp);
-	sincos ((qlon - plon) * D2R, &sl, &cl);
-
-	return (R2D * d_atan2 (sl * cq, sq * cp - cq * sp * cl));
-}
-
-int EastOrWest (const double clon, const double dlon)
-/* This function is required by function GMT_inonout_sphpol.  It determines if in travelling
- * the shortest path from point C (at longitude clon) to point D (at longitude dlon)
- * one is heading east, west, or neither.
- * Returns: -1 for west, +1 for east, 0 if neither.
- */
-{
-	double dellon;
-	
-	dellon = dlon - clon;
-	GMT_lon_range_adjust (2, &dellon);
-
-	if (dellon > 0.0 && dellon != 180.0) return (-1);	/* D is west of C */
-	if (dellon < 0.0 && dellon != -180.0) return (+1);	/* D is east of C */
-	return (0);						/* D is north or south of C */
+	return (GMT_non_zero_winding (plon, plat, P->x, P->y, P->n));	
 }
 
 /* GMT can either compile with its standard Delaunay triangulation routine

@@ -2,7 +2,7 @@
 .SH NAME
 gmtmath \- Reverse Polish Notation calculator for data tables
 .SH SYNOPSIS
-\fBgmtmath\fP [ \fB\-A\fP\fIt_f(t).d\fP ] [ \fB\-C\fP\fIcols\fP ] [ \fB\-H\fP\fInrec\fP ] [ \fB\-N\fP\fIn_col\fP/\fIt_col\fP ] [ \fB\-Q\fP ] 
+\fBgmtmath\fP [ \fB\-A\fP\fIt_f(t).d\fP ] [ \fB\-C\fP\fIcols\fP ] [ \fB\-H\fP\fInrec\fP ] [ \fB\-I\fP ] [ \fB\-N\fP\fIn_col\fP/\fIt_col\fP ] [ \fB\-Q\fP ] 
  [ \fB\-S\fP[\fBf|l\fP] ][ \fB\-T\fP\fIt_min/t_max/t_inc\fP|\fItfile\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
 [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] 
 \fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] \fBOPERATOR\fP ... \fB=\fP [ \fIoutfile\fP ]
@@ -53,6 +53,9 @@ List columns separated by commas; ranges like 1,3-5,7 are allowed.  \fB\-C\fP
 \fB\-Ca\fP selects all columns, including time column, while \fB\-Cr\fP reverses (toggles) the current
 choices.
 #include "explain_-H.txt"
+.TP
+.B \-I
+Reverses the output row sequence from ascending time to descending [ascending].
 .TP
 .B \-N
 Select the number of columns and the column number that contains the
