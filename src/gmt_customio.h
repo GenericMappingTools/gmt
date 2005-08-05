@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.h,v 1.14 2005-08-05 19:38:17 remko Exp $
+ *	$Id: gmt_customio.h,v 1.15 2005-08-05 19:46:48 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
