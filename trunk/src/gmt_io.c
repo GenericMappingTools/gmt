@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.85 2005-08-04 08:25:20 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.86 2005-08-05 08:11:25 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2615,7 +2615,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 		psave = GMT_input;
 		GMT_input = GMT_input_ascii;
 	}
-	check_cap = (poly && MAPPING);
+	check_cap = (poly && (MAPPING || GMT_io.in_col_type[0] & GMT_IS_GEO));
 
 	e = (struct GMT_LINES *) GMT_memory (VNULL, (size_t)i_alloc, sizeof (struct GMT_LINES), GMT_program);
 
@@ -2642,37 +2642,17 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 			/* To use different line-distances for each segment, place the distance in the segment header */
 			if (i == -1 || e[i].np > 0) i++;	/* Only advance segment if last had any points or was the first one */
 			n_read++;
-			e[i].set_ref = -1;	/* Not set */
 			if (ascii) {	/* Only ascii files can have info stored in multi-seg header record */
-				if ((t = strstr (GMT_io.segment_header, " -P")) || (t = strstr (GMT_io.segment_header, "	-P"))) {
-					if (! (t[3] == 'i' || t[3] == 'e')) {
-						fprintf (stderr, "%s: GMT SYNTAX ERROR.  For point inside/outside spherical polygon, specify -Pi|e<lon>/<lat> in multisegment header\n", GMT_program);
-						exit (EXIT_FAILURE);
-					}
-					if (sscanf (&t[4], "%[^/]/%c", txt_a, txt_b) < 2) {
-						fprintf (stderr, "%s: GMT SYNTAX ERROR.  For point inside/outside spherical polygon, specify -Pi|e<lon>/<lat> in multisegment header\n", GMT_program);
-						exit (EXIT_FAILURE);
-					}
-					if (GMT_verify_expectations (GMT_io.in_col_type[0], GMT_scanf_arg (txt_a, GMT_io.in_col_type[0], &e[i].lon_ref), txt_a)) {
-						fprintf (stderr, "%s: GMT SYNTAX ERROR.  Longitude decoding error for point inside/outside spherical polygon!\n", GMT_program);
-						exit (EXIT_FAILURE);
-					}
-					if (GMT_verify_expectations (GMT_io.in_col_type[1], GMT_scanf_arg (txt_b, GMT_io.in_col_type[1], &e[i].lat_ref), txt_b)) {
-						fprintf (stderr, "%s: GMT SYNTAX ERROR.  Latitude decoding error for point inside/outside spherical polygon!\n", GMT_program);
-						exit (EXIT_FAILURE);
-					}
-					e[i].set_ref = (t[3] == 'i') ? 0 : 1;
-				}
-				else {
-					n = sscanf (&GMT_io.segment_header[1], "%lg", &d);
-					e[i].dist = (n == 1 && dist == 0.0) ? d : dist;
-				}
+				n = sscanf (&GMT_io.segment_header[1], "%lg", &d);
+				e[i].dist = (n == 1 && dist == 0.0) ? d : dist;
 			}
 			else
 				e[i].dist = dist;
 			j_alloc = GMT_CHUNK;
 			j = 0;
 			lon_sum = 0.0;
+			e[i].min_lon = e[i].min_lat = DBL_MAX;
+			e[i].max_lon = e[i].max_lat = -DBL_MAX;
 			n_fields = GMT_input (fp, &n_expected_fields, &in);
 		}
 		if ((GMT_io.status & GMT_IO_EOF)) continue;	/* At EOF */
@@ -2706,6 +2686,11 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 				if (!greenwich && e[i].lon[j] < 0.0) e[i].lon[j] += 360.0;
 			}
 
+			if (e[i].lon[j] < e[i].min_lon) e[i].min_lon = e[i].lon[j];
+			if (e[i].lat[j] < e[i].min_lat) e[i].min_lat = e[i].lat[j];
+			if (e[i].lon[j] > e[i].max_lon) e[i].max_lon = e[i].lon[j];
+			if (e[i].lat[j] > e[i].max_lat) e[i].max_lat = e[i].lat[j];
+			
 			if (check_cap && j > 0) {	/* Keep track of sum (dlon) */
 				dlon = e[i].lon[j] - e[i].lon[j-1];
 				if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
@@ -2721,7 +2706,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 		}
 		e[i].np = j;
 
-		/* If dist = -9999.0 then file is a polygon and we must close it if needed */
+		/* If file is a polygon and we must close it if needed */
 
 		if (poly && !(e[i].lon[0] == e[i].lon[j-1] && e[i].lat[0] == e[i].lat[j-1])) {
 			e[i].lon[j] = e[i].lon[0];
@@ -2777,7 +2762,10 @@ void GMT_lines_delete (struct GMT_LINES *p, int n_lines)
 		GMT_free ((void *) p[i].lon);
 		GMT_free ((void *) p[i].lat);
 		if (p[i].S) {	/* Had spherical polygon information structure loaded */
-			GMT_free ((void *) p[i].S->tlonv);
+			if (p[i].S->polar) {	/* Had x/y arrays created */
+				GMT_free ((void *) p[i].S->x);
+				GMT_free ((void *) p[i].S->y);
+			}
 			GMT_free ((void *) p[i].S);
 		}
 	}
