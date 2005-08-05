@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.25 2005-08-03 17:14:21 remko Exp $
+ *	$Id: gmt_customio.c,v 1.26 2005-08-05 19:38:17 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -124,8 +124,8 @@ void GMT_grdio_init (void) {
 	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
 	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
 	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_cdf_float_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_cdf_float_write_grd;
+	GMT_io_readgrd[id]    = (PFI) GMT_cdf_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_cdf_write_grd;
 
 	/* FORMAT # 1: GMT native binary (float) grdio */
 
@@ -181,50 +181,15 @@ void GMT_grdio_init (void) {
 	GMT_io_readgrd[id]    = (PFI) GMT_srf_read_grd;
 	GMT_io_writegrd[id]   = (PFI) GMT_srf_write_grd;
 
-	/* FORMAT # 7: GMT netCDF-based grdio (byte) */
+	/* FORMAT # 7: GMT netCDF-based grdio */
  
-	id = 7;
-	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_cdf_byte_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_cdf_byte_write_grd;
-
-	/* FORMAT # 8: GMT netCDF-based grdio (char) */
- 
-	id = 8;
-	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_cdf_char_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_cdf_char_write_grd;
-
-	/* FORMAT # 9: GMT netCDF-based grdio (short) */
- 
-	id = 9;
-	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_cdf_short_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_cdf_short_write_grd;
-
-	/* FORMAT # 10: GMT netCDF-based grdio (int) */
- 
-	id = 10;
-	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_cdf_int_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_cdf_int_write_grd;
-
-	/* FORMAT # 11: GMT netCDF-based grdio (double) */
- 
-	id = 11;
-	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_cdf_double_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_cdf_double_write_grd;
+	for (id = 7; id < 11; id++) {
+		GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
+		GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
+		GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
+		GMT_io_readgrd[id]    = (PFI) GMT_cdf_read_grd;
+		GMT_io_writegrd[id]   = (PFI) GMT_cdf_write_grd;
+	}
 
 	/* FORMAT # 12: NOAA NGDC MGG grid format */
 
@@ -249,62 +214,18 @@ void GMT_grdio_init (void) {
 	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
 	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
 	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_cdf_float_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_cdf_float_write_grd;
+	GMT_io_readgrd[id]    = (PFI) GMT_cdf_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_cdf_write_grd;
 
-	/* FORMAT # 15: GMT netCDF-based grdio (byte, v2) */
+	/* FORMAT # 15-20: GMT netCDF-based grdio (v2) */
 
-	id = 15;
-	GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_nc_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_nc_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_nc_byte_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_nc_byte_write_grd;
-
-	/* FORMAT # 16: GMT netCDF-based grdio (char, v2) */
-
-	id = 16;
-	GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_nc_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_nc_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_nc_char_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_nc_char_write_grd;
-
-	/* FORMAT # 17: GMT netCDF-based grdio (short, v2) */
-
-	id = 17;
-	GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_nc_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_nc_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_nc_short_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_nc_short_write_grd;
-
-	/* FORMAT # 18: GMT netCDF-based grdio (int, v2) */
-
-	id = 18;
-	GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_nc_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_nc_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_nc_int_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_nc_int_write_grd;
-
-	/* FORMAT # 19: GMT netCDF-based grdio (float, v2) */
-
-	id = 19;
-	GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_nc_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_nc_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_nc_float_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_nc_float_write_grd;
-
-	/* FORMAT # 20: GMT netCDF-based grdio (double, v2) */
-
-	id = 20;
-	GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_nc_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_nc_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_nc_double_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_nc_double_write_grd;
+	for (id = 15; id < 20; id++) {
+		GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
+		GMT_io_updateinfo[id] = (PFI) GMT_nc_update_grd_info;
+		GMT_io_writeinfo[id]  = (PFI) GMT_nc_write_grd_info;
+		GMT_io_readgrd[id]    = (PFI) GMT_nc_read_grd;
+		GMT_io_writegrd[id]   = (PFI) GMT_nc_write_grd;
+	}
 
 	/*
 	 * ----------------------------------------------
@@ -1778,89 +1699,6 @@ int GMT_surfer_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 
 /* Add custom code here */
 
-/*-----------------------------------------------------------
- * Format # :	7 - 10, 0, 11
- * Type :	netCDF-based format
- * Prefix :	GMT_cdf_
- * Date :	21-MAY-2000
- * Author :	Masakazu Higaki (m-higaki@naps.kishou.go.jp)
- * Purpose:	Read/Write netCDF with non-float data types
- * Functions :	GMT_cdf_{byte,char,short,int,float,double}_{read,write}_grd
- *
- *-----------------------------------------------------------*/
- 
-/* 7: BYTE */
-
-int GMT_cdf_byte_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_cdf_read_grd (file, header, grid, w, e, s, n, pad, complex, NC_BYTE));
-}
- 
-int GMT_cdf_byte_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_cdf_write_grd (file, header, grid, w, e, s, n, pad, complex, NC_BYTE));
-}
-
-/* 8: CHAR */
-
-int GMT_cdf_char_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_cdf_read_grd (file, header, grid, w, e, s, n, pad, complex, NC_CHAR));
-}
- 
-int GMT_cdf_char_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_cdf_write_grd (file, header, grid, w, e, s, n, pad, complex, NC_CHAR));
-}
-
-/* 9: SHORT */
-
-int GMT_cdf_short_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_cdf_read_grd (file, header, grid, w, e, s, n, pad, complex, NC_SHORT));
-}
- 
-int GMT_cdf_short_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_cdf_write_grd (file, header, grid, w, e, s, n, pad, complex, NC_SHORT));
-}
-
-/* 10: INT */
-
-int GMT_cdf_int_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_cdf_read_grd (file, header, grid, w, e, s, n, pad, complex, NC_INT));
-}
- 
-int GMT_cdf_int_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_cdf_write_grd (file, header, grid, w, e, s, n, pad, complex, NC_INT));
-}
-
-/* 0: FLOAT */
-
-int GMT_cdf_float_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_cdf_read_grd (file, header, grid, w, e, s, n, pad, complex, NC_FLOAT));
-}
- 
-int GMT_cdf_float_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_cdf_write_grd (file, header, grid, w, e, s, n, pad, complex, NC_FLOAT));
-}
-
-/* 11: DOUBLE */
-
-int GMT_cdf_double_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_cdf_read_grd (file, header, grid, w, e, s, n, pad, complex, NC_DOUBLE));
-}
-
-int GMT_cdf_double_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_cdf_write_grd (file, header, grid, w, e, s, n, pad, complex, NC_DOUBLE));
-}
-
 /* 12: NOAA NGDC MGG Format */
 #include "gmt_mgg_header2.c"
 
@@ -1906,86 +1744,4 @@ int GMT_int_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 int GMT_int_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
 {
 	return (GMT_native_write_grd (file, header, grid, w, e, s, n, pad, complex, GMT_NATIVE_INT));
-}
-
-/*-----------------------------------------------------------
- * Format # :	14 - 19
- * Type :	netCDF-based format (version 2)
- * Prefix :	GMT_nc_
- * Date :	02-AUG-2005
- * Author :	Remko Scharroo (remko.scharroo@noaa.gov)
- * Purpose:	Read/Write netCDF data tyes conform conventions
- * Functions :	GMT_nc_{byte,char,short,int,float,double}_{read,write}_grd
- *-----------------------------------------------------------*/
- 
-/* 14: BYTE */
-
-int GMT_nc_byte_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_nc_read_grd (file, header, grid, w, e, s, n, pad, complex, NC_BYTE));
-}
- 
-int GMT_nc_byte_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_nc_write_grd (file, header, grid, w, e, s, n, pad, complex, NC_BYTE));
-}
-
-/* 15: CHAR */
-
-int GMT_nc_char_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_nc_read_grd (file, header, grid, w, e, s, n, pad, complex, NC_CHAR));
-}
- 
-int GMT_nc_char_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_nc_write_grd (file, header, grid, w, e, s, n, pad, complex, NC_CHAR));
-}
-
-/* 16: SHORT */
-
-int GMT_nc_short_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_nc_read_grd (file, header, grid, w, e, s, n, pad, complex, NC_SHORT));
-}
- 
-int GMT_nc_short_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_nc_write_grd (file, header, grid, w, e, s, n, pad, complex, NC_SHORT));
-}
-
-/* 17: INT */
-
-int GMT_nc_int_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_nc_read_grd (file, header, grid, w, e, s, n, pad, complex, NC_INT));
-}
- 
-int GMT_nc_int_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_nc_write_grd (file, header, grid, w, e, s, n, pad, complex, NC_INT));
-}
-
-/* 18: FLOAT */
-
-int GMT_nc_float_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_nc_read_grd (file, header, grid, w, e, s, n, pad, complex, NC_FLOAT));
-}
- 
-int GMT_nc_float_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_nc_write_grd (file, header, grid, w, e, s, n, pad, complex, NC_FLOAT));
-}
-
-/* 19: DOUBLE */
-
-int GMT_nc_double_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_nc_read_grd (file, header, grid, w, e, s, n, pad, complex, NC_DOUBLE));
-}
-
-int GMT_nc_double_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_nc_write_grd (file, header, grid, w, e, s, n, pad, complex, NC_DOUBLE));
 }

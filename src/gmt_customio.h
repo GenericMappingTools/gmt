@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.h,v 1.13 2005-08-03 17:14:21 remko Exp $
+ *	$Id: gmt_customio.h,v 1.14 2005-08-05 19:38:17 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -30,12 +30,12 @@
 
 /* List groups of 5 integer functions for each custom i/o grd format */
 
-/* Format # 0 (default) and # 7-11 */
+/* Format # 0 (default) and # 7-11 and # 14 */
 EXTERN_MSC int GMT_cdf_read_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_cdf_update_grd_info (char *file, struct GRD_HEADER *header);
-EXTERN_MSC int GMT_cdf_write_grd_info  (char *file, struct GRD_HEADER *header);
-EXTERN_MSC int GMT_cdf_read_grd  (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex, nc_type nc_type);
-EXTERN_MSC int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex, nc_type nc_type);
+EXTERN_MSC int GMT_cdf_write_grd_info (char *file, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
+EXTERN_MSC int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 
 /* Format # 1 */
 EXTERN_MSC int GMT_bin_read_grd_info (char *file, struct GRD_HEADER *header);
@@ -79,6 +79,9 @@ EXTERN_MSC int GMT_srf_write_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_srf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 EXTERN_MSC int GMT_srf_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 
+/* Format # 12 */
+#include "gmt_mgg_header2.h"
+
 /* Format # 13 */
 EXTERN_MSC int GMT_int_read_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_int_update_grd_info (char *file, struct GRD_HEADER *header);
@@ -86,12 +89,12 @@ EXTERN_MSC int GMT_int_write_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_int_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 EXTERN_MSC int GMT_int_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 
-/* Format # 14-19 */
+/* Format # 15-20 */
 EXTERN_MSC int GMT_nc_read_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_nc_update_grd_info (char *file, struct GRD_HEADER *header);
-EXTERN_MSC int GMT_nc_write_grd_info  (char *file, struct GRD_HEADER *header);
-EXTERN_MSC int GMT_nc_read_grd  (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex, nc_type nc_type);
-EXTERN_MSC int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex, nc_type nc_type);
+EXTERN_MSC int GMT_nc_write_grd_info (char *file, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
+EXTERN_MSC int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 
 #define HEADER_SIZE	892
 #define GMT_N_NATIVE_FORMATS	6
@@ -106,9 +109,6 @@ EXTERN_MSC int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *g
 EXTERN_MSC size_t GMT_native_write_one (FILE *fp, float z, int type);
 EXTERN_MSC float GMT_native_decode (void *vptr, int k, int type);
 EXTERN_MSC double GMT_native_encode (float z, int type);
-
-/* NOAA NGDC MGG format dealt with via includes: */
-#include "gmt_mgg_header2.h"
 
 /* Definition for Sun rasterfiles */
 struct rasterfile {
