@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.86 2005-08-05 08:11:25 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.87 2005-08-05 19:49:45 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2600,7 +2600,6 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 	BOOLEAN check_cap, save, ascii;
 	double d, dlon, lon_sum = 0.0, *in;
 	char buffer[BUFSIZ], *t, mode[4];
-	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT];
 	PFI psave = VNULL;
 
 	if (use_GMT_io) {	/* Use GMT_io to determine if input is ascii/binary, else it is ascii */
