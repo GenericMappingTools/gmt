@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.93 2005-08-05 08:11:25 pwessel Exp $
+ *	$Id: gmt.h,v 1.94 2005-08-06 14:47:36 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -197,9 +197,9 @@
 	(((data) << 24) | (((data) << 8) & 0x00ff0000) | \
 	(((data) >> 8) & 0x0000ff00) | ((unsigned int)(data) >> 24))
 
-/* Macro to determine if the grd format is netCDF */
+/* Macro to determine if the grd format is netCDF (version 1 or 2) */
 
-#define GRD_IS_CDF(id) ((id) == 0 || ((id) >= 6 && (id) <= 11))
+#define GRD_IS_CDF(id) ((id)==0 ? 1 : (id) < 7 ? 0 : (id) < 12 ? 1 : (id) < 14 ? 0 : 2)
 
 /*--------------------------------------------------------------------
  *			GMT TYPEDEF DEFINITIONS
