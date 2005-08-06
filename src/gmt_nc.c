@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.6 2005-08-05 22:28:06 remko Exp $
+ *	$Id: gmt_nc.c,v 1.7 2005-08-06 11:46:05 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -262,7 +262,7 @@ int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double 
 	size_t start[2], edge[2];
 	int first_col, last_col, first_row, last_row;
 	int i, j, ij, j2, width_in, width_out, height_in, i_0_out, kk, inc = 1;
-	int *k;
+	int *k, nvars, ndims;
 	BOOLEAN check = !GMT_is_fnan (GMT_grd_in_nan_value);
 	float *tmp = VNULL;
 
@@ -276,8 +276,15 @@ int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double 
 
  	check_nc_status (nc_open (file, NC_NOWRITE, &ncid));
 
-	/* Get variable id */
-	check_nc_status (nc_inq_varid (ncid, "z", &z_id));
+	/* Need to make this step easier ... */
+		/* Find the id of the first 2-dimensional (z) variable */
+		check_nc_status (nc_inq_nvars (ncid, &nvars));
+		i = 0; z_id = -1;
+		while (i < nvars && z_id < 0) {
+			check_nc_status (nc_inq_varndims (ncid, i, &ndims));
+			if (ndims == 2) z_id = i;
+			i++;
+		}
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row);
 
