@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.22 2005-07-07 09:17:48 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.23 2005-08-06 14:50:38 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -446,12 +446,20 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 		G->check = !GMT_is_dnan (GMT_grd_out_nan_value);
 	}
 	G->scale = G->header.z_scale_factor;	G->offset = G->header.z_add_offset;
-	if (GRD_IS_CDF (G->id)) {		/* Open netCDF file */
+	G->is_cdf = GRD_IS_CDF (G->id);
+	if (G->is_cdf == 1) {		/* Open netCDF file version 1 */
 		check_nc_status (nc_open (G->name, cdf_mode[r_w], &G->fid));
 		check_nc_status (nc_inq_varid (G->fid, "z", &G->z_id));	/* Get variable id */
-		G->is_cdf = TRUE;
 		G->edge[0] = G->header.nx;
 		G->start[0] = 0;
+	}
+	else if (G->is_cdf == 2) {		/* Open netCDF file version 2 */
+		check_nc_status (nc_open (G->name, cdf_mode[r_w], &G->fid));
+		check_nc_status (nc_inq_varid (G->fid, "z", &G->z_id));	/* Get variable id */
+		G->edge[0] = 1;
+		G->edge[1] = G->header.nx;
+		G->start[0] = G->header.ny-1;
+		G->start[1] = 0;
 	}
 	else {				/* Regular binary file with/w.o standard GMT header */
 		if ((G->fp = GMT_fopen (G->name, bin_mode[r_w])) == NULL) {
@@ -459,19 +467,21 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 			exit (EXIT_FAILURE);
 		}
 		if (header) fseek (G->fp, (long)HEADER_SIZE, SEEK_SET);
-		G->is_cdf = FALSE;
 	}
 
 	switch (G->id) {
 		case 0:	/* 4-byte floats */
 		case 1:
 		case 6:
+		case 10:
+		case 17:
 			G->size = sizeof (float);
 			G->n_byte = G->header.nx * G->size;
 			G->type = GMT_NATIVE_FLOAT;
 			break;
 		case 2:	/* 2-byte shorts */
-		case 9:
+		case 8:
+		case 15:
 			G->size = sizeof (short int);
 			G->n_byte = G->header.nx * G->size;
 			G->type = GMT_NATIVE_SHORT;
@@ -483,7 +493,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 			break;
 		case 4:	/* 1-byte unsigned chars */
 		case 7:
-		case 8:
+		case 14:
 			G->size = sizeof (unsigned char);
 			G->n_byte = G->header.nx * G->size;
 			G->type = GMT_NATIVE_UCHAR;
@@ -493,12 +503,15 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 			G->n_byte = irint (ceil (G->header.nx / 32.0)) * G->size;
 			G->type = GMT_NATIVE_INT;
 			break;
-		case 10:	/* 4-byte signed int */
+		case 9:	/* 4-byte signed int */
+		case 13:
+		case 16:
 			G->size = sizeof (int);
 			G->n_byte = G->header.nx * G->size;
 			G->type = GMT_NATIVE_INT;
 			break;
 		case 11:	/* 8-byte double */
+		case 18:
 			G->size = sizeof (double);
 			G->n_byte = G->header.nx * G->size;
 			G->type = GMT_NATIVE_DOUBLE;
@@ -508,13 +521,6 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	}
 			
 	G->v_row = (void *) GMT_memory (VNULL, G->n_byte, 1, GMT_program);
-	G->b_row = (unsigned char *)G->v_row;
-	G->c_row = (signed char *)G->v_row;
-	G->s_row = (short int *)G->v_row;
-	G->u_row = (unsigned int *)G->v_row;
-	G->i_row = (int *)G->v_row;
-	G->f_row = (float *)G->v_row;
-	G->d_row = (double *)G->v_row;
 	
 	G->row = 0;
 	G->auto_advance = TRUE;	/* Default is to read sequential rows */
@@ -536,40 +542,23 @@ void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 	 
 	int i;
 
-	if (G->is_cdf) {	/* Get one cdf row */
+	if (G->is_cdf == 1) {	/* Get one NetCDF v.1 row */
 		if (row_no < 0) {	/* Special seek instruction */
 			G->row = abs (row_no);
 			G->start[0] = G->row * G->edge[0];
 			return;
 		}
-		switch (G->id) {
-			case 0:
-				check_nc_status (nc_get_vara_float (G->fid, G->z_id, G->start, G->edge, row));
-				break;
-			case 7:
-				check_nc_status (nc_get_vara_uchar (G->fid, G->z_id, G->start, G->edge, G->b_row));
-				for (i = 0; i < (int)G->edge[0]; i++) row[i] = (float)G->b_row[i];
-				break;
-			case 8:
-				check_nc_status (nc_get_vara_schar (G->fid, G->z_id, G->start, G->edge, G->c_row));
-				for (i = 0; i < (int)G->edge[0]; i++) row[i] = (float)G->c_row[i];
-				break;
-			case 9:
-				check_nc_status (nc_get_vara_short (G->fid, G->z_id, G->start, G->edge, G->s_row));
-				for (i = 0; i < (int)G->edge[0]; i++) row[i] = (float)G->s_row[i];
-				break;
-			case 10:
-				check_nc_status (nc_get_vara_int (G->fid, G->z_id, G->start, G->edge, G->i_row));
-				for (i = 0; i < (int)G->edge[0]; i++) row[i] = (float)G->i_row[i];
-				break;
-			case 11:
-				check_nc_status (nc_get_vara_double (G->fid, G->z_id, G->start, G->edge, G->d_row));
-				for (i = 0; i < (int)G->edge[0]; i++) row[i] = (float)G->d_row[i];
-				break;
-			default:
-				break;
-		}
+		check_nc_status (nc_get_vara_float (G->fid, G->z_id, G->start, G->edge, row));
 		if (G->auto_advance) G->start[0] += G->edge[0];
+	}
+	else if (G->is_cdf == 2) {	/* Get one NetCDF v.2 row */
+		if (row_no < 0) {	/* Special seek instruction */
+			G->row = abs (row_no);
+			G->start[0] = G->header.ny - 1 - G->row;
+			return;
+		}
+		check_nc_status (nc_get_vara_float (G->fid, G->z_id, G->start, G->edge, row));
+		if (G->auto_advance) G->start[0] --;
 	}
 	else {			/* Get a binary row */
 		if (row_no < 0) {	/* Special seek instruction */
@@ -600,35 +589,13 @@ void GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 	GMT_grd_do_scaling (row, G->header.nx, G->scale, G->offset);
 	for (i = 0; i < G->header.nx; i++) if (GMT_is_fnan (row[i]) && G->check) row[i] = (float)GMT_grd_out_nan_value;
 	
-	if (G->is_cdf) {	/* Get one cdf row */
-		switch (G->id) {
-			case 0:
-				check_nc_status (nc_put_vara_float (G->fid, G->z_id, G->start, G->edge, row));
-				break;
-			case 7:
-				for (i = 0; i < G->header.nx; i++) G->b_row[i] = (unsigned char)GMT_native_encode (row[i], G->type);
-				check_nc_status (nc_put_vara_uchar (G->fid, G->z_id, G->start, G->edge, G->b_row));
-				break;
-			case 8:
-				for (i = 0; i < G->header.nx; i++) G->c_row[i] = (signed char)GMT_native_encode (row[i], G->type);
-				check_nc_status (nc_put_vara_schar (G->fid, G->z_id, G->start, G->edge, G->c_row));
-				break;
-			case 9:
-				for (i = 0; i < G->header.nx; i++) G->s_row[i] = (short int)GMT_native_encode (row[i], G->type);
-				check_nc_status (nc_put_vara_short (G->fid, G->z_id, G->start, G->edge, G->s_row));
-				break;
-			case 10:
-				for (i = 0; i < G->header.nx; i++) G->i_row[i] = (int)GMT_native_encode (row[i], G->type);
-				check_nc_status (nc_put_vara_int (G->fid, G->z_id, G->start, G->edge, G->i_row));
-				break;
-			case 11:
-				for (i = 0; i < G->header.nx; i++) G->d_row[i] = GMT_native_encode (row[i], G->type);
-				check_nc_status (nc_put_vara_double (G->fid, G->z_id, G->start, G->edge, G->d_row));
-				break;
-			default:
-				break;
-		}
+	if (G->is_cdf == 1) {	/* Get one NetCDF v.1 row */
+		check_nc_status (nc_put_vara_float (G->fid, G->z_id, G->start, G->edge, row));
 		if (G->auto_advance) G->start[0] += G->edge[0];
+	}
+	else if (G->is_cdf == 2) {	/* Get one NetCDF v.2 row */
+		check_nc_status (nc_put_vara_float (G->fid, G->z_id, G->start, G->edge, row));
+		if (G->auto_advance) G->start[0] --;
 	}
 	else {			/* Get a binary row */
 		if (!G->auto_advance) fseek (G->fp, (long)(HEADER_SIZE + G->row * G->n_byte), SEEK_SET);

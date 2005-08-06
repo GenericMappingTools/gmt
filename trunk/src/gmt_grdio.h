@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.16 2005-08-05 22:28:05 remko Exp $
+ *	$Id: gmt_grdio.h,v 1.17 2005-08-06 14:50:38 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -61,8 +61,8 @@ struct GMT_GRDFILE {
 	int n_byte;		/* Number of bytes for row */
 	int type;		/* Which GMT NATIVE type */
 	int row;		/* Current row */
-	
-	BOOLEAN is_cdf;		/* TRUE for netCDF files */
+	int is_cdf;		/* 1 or 2 for netCDF files v.1 or v.2 */
+
 	BOOLEAN check;		/* TRUE if we must replace NaNs with another representation on i/o */
 	BOOLEAN auto_advance;	/* TRUE if we want to read file sequentially */
 	
@@ -71,13 +71,6 @@ struct GMT_GRDFILE {
 	
 	FILE *fp;		/* File pointer for native files */
 	
-	signed char *c_row;	/* Row pointer for character files */
-	unsigned char *b_row;	/* Row pointer for unsiged character (byte) files */
-	short int *s_row;	/* Row pointer for short int files */
-	int *i_row;		/* Row pointer for integer files */
-	unsigned int *u_row;	/* Row pointer for unsigned int files */
-	float *f_row;		/* Row pointer for float files */
-	double *d_row;		/* Row pointer for double format */
 	void *v_row;		/* Void Row pointer for any format */
 	
 	struct GRD_HEADER header;	/* Full GMT header for the file */
