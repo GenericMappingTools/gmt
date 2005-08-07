@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.23 2005-08-06 14:50:38 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.24 2005-08-07 07:39:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -51,6 +51,8 @@
 
 void GMT_grd_do_scaling (float *grid, int nm, double scale, double offset);
 int check_nc_status (int status);
+int grd_format_decoder (const char *code);
+int grd_type_decoder (const char code);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
 
@@ -179,6 +181,7 @@ void GMT_expand_filename (char *file, char *fname)
 int GMT_grd_get_i_format (char *file, char *fname, double *scale, double *offset)
 {
 	int i = 0, j, id = 0;
+	char code[GMT_TEXT_LEN];
 
 	GMT_expand_filename (file, fname);
 	
@@ -186,11 +189,8 @@ int GMT_grd_get_i_format (char *file, char *fname, double *scale, double *offset
 	
 	if (fname[i]) {	/* Check format id */
 		i++;
-		sscanf (&fname[i], "%d/%lf/%lf/%lf", &id, scale, offset, &GMT_grd_in_nan_value);
- 		if (id < 0 || id >= N_GRD_FORMATS) {
-			fprintf (stderr, "GMT Warning: grdfile format option (%d) unknown, reset to 0\n", id);
-			id = 0;
-		}
+		sscanf (&fname[i], "%s/%lf/%lf/%lf", code, scale, offset, &GMT_grd_in_nan_value);
+		id = grd_format_decoder (code);
 		j = (i == 1) ? i : i - 1;
 		fname[j] = 0;
 	}
@@ -200,6 +200,7 @@ int GMT_grd_get_i_format (char *file, char *fname, double *scale, double *offset
 int GMT_grd_get_o_format (char *file, char *fname, double *scale, double *offset)
 {
 	int i = 0, j, id = 0;
+	char code[GMT_TEXT_LEN];
 
 	GMT_expand_filename (file, fname);
 	
@@ -207,11 +208,8 @@ int GMT_grd_get_o_format (char *file, char *fname, double *scale, double *offset
 	
 	if (fname[i]) {	/* Check format id */
 		i++;
-		sscanf (&fname[i], "%d/%lf/%lf/%lf", &id, scale, offset, &GMT_grd_out_nan_value);
-		if (id < 0 || id >= N_GRD_FORMATS) {
-			fprintf (stderr, "GMT Warning: grdfile format option (%d) unknown, reset to 0\n", id);
-			id = 0;
-		}
+		sscanf (&fname[i], "%s/%lf/%lf/%lf", code, scale, offset, &GMT_grd_out_nan_value);
+		id = grd_format_decoder (code);
                 j = (i == 1) ? i : i - 1;
                 fname[j] = 0;
 	}
@@ -220,6 +218,84 @@ int GMT_grd_get_o_format (char *file, char *fname, double *scale, double *offset
 		fprintf (stderr, "GMT Warning: scale_factor should not be 0, reset to 1.\n");
  	}
 	return (id);
+}
+
+int grd_format_decoder (const char *code)
+{
+	int id;
+
+	if (isdigit ((int)code)) {	/* File format number given, convert directly */
+		id = atoi (code);
+ 		if (id < 0 || id >= N_GRD_FORMATS) {
+			fprintf (stderr, "GMT Warning: grdfile format option (%d) unknown, reset to 0\n", id);
+			id = 0;
+		}
+	}
+	else {	/* Character code given */
+		int type;
+		
+		type = grd_type_decoder (code[1]);
+		
+		switch (code[0]) {
+			case 'b':	/* Native binary */
+				switch (type) {
+					case 0:	/* Byte */
+						id = 4;
+						break;
+					case 1:	/* Short */
+						id = 2;
+						break;
+					case 2:	/* Int */
+						id = 13;
+						break;
+					case 3:	/* Float */
+						id = 1;
+						break;
+					default:	/* i.e., double (not defined yet) */
+						id = 0;
+						fprintf (stderr, "GMT Warning: grdfile format option (%s) unknown, reset to GMT default (cf)\n", code);
+						break;
+				}
+				break;
+			case 'c':	/* Old GMT 3-4 netCDF format */
+				id = 7 + type;
+				break;
+			case 'n':	/* New COARDS-compliant netCDF format */
+				id = 14 + type;
+				break;
+			default:	/* Unknow code */
+				fprintf (stderr, "GMT Warning: grdfile format option (%s) unknown, reset to GMT default (cf)\n", code);
+				id = 0;
+				break;
+		}
+	}
+	
+	return (id);
+}
+
+int grd_type_decoder (const char code)
+{
+	int off;
+
+	switch (code) {
+		case 'b':	/* byte */
+			off = 0;
+			break;
+		case 's':	/* short */
+			off = 1;
+			break;
+		case 'i':	/* int */
+			off = 2;
+			break;
+		case 'f':	/* float */
+			off = 3;
+			break;
+		case 'd':	/* double */
+			off = 4;
+			break;
+	}
+
+	return (off);
 }
 
 /* Routine that scales and offsets the data if specified */
