@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.28 2005-08-05 22:28:05 remko Exp $
+ *	$Id: gmt_customio.c,v 1.29 2005-08-07 01:53:21 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -159,7 +159,7 @@ void GMT_grdio_init (void) {
 
 	/* FORMAT # 7-11: GMT netCDF-based grdio */
  
-	for (id = 7; id < 11; id++) {
+	for (id = 7; id <= 11; id++) {
 		GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
 		GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
 		GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
@@ -186,7 +186,7 @@ void GMT_grdio_init (void) {
 
 	/* FORMAT # 14-18: GMT netCDF-based grdio (v2) */
 
-	for (id = 14; id < 18; id++) {
+	for (id = 14; id <= 18; id++) {
 		GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
 		GMT_io_updateinfo[id] = (PFI) GMT_nc_update_grd_info;
 		GMT_io_writeinfo[id]  = (PFI) GMT_nc_write_grd_info;
