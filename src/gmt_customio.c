@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.29 2005-08-07 01:53:21 remko Exp $
+ *	$Id: gmt_customio.c,v 1.30 2005-08-08 04:11:21 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -184,9 +184,18 @@ void GMT_grdio_init (void) {
 	GMT_io_readgrd[id]    = (PFI) GMT_int_read_grd;
 	GMT_io_writegrd[id]   = (PFI) GMT_int_write_grd;
 
-	/* FORMAT # 14-18: GMT netCDF-based grdio (v2) */
+	/* FORMAT # 14: GMT native binary (double) grdio */
 
-	for (id = 14; id <= 18; id++) {
+	id = 14;
+	GMT_io_readinfo[id]   = (PFI) GMT_double_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_double_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_double_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_double_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_double_write_grd;
+
+	/* FORMAT # 15-19: GMT netCDF-based grdio (COARDS compliant) */
+
+	for (id = 15; id <= 19; id++) {
 		GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
 		GMT_io_updateinfo[id] = (PFI) GMT_nc_update_grd_info;
 		GMT_io_writeinfo[id]  = (PFI) GMT_nc_write_grd_info;
@@ -1711,4 +1720,46 @@ int GMT_int_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 int GMT_int_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
 {
 	return (GMT_native_write_grd (file, header, grid, w, e, s, n, pad, complex, GMT_NATIVE_INT));
+}
+
+/*-----------------------------------------------------------
+ * Format # :	14
+ * Type :	Native binary (double) C file
+ * Prefix :	GMT_double_
+ * Author :	Paul Wessel, SOEST
+ * Date :	8-AUG-2005
+ * Purpose:	The native binary output format is used
+ *		primarily for piped i/o between programs
+ *		that otherwise would use temporary, large
+ *		intermediate grdfiles.  Note that not all
+ *		programs can support piping (they may have
+ *		to re-read the file or accept more than one
+ *		grdfile).
+ * Functions :	GMT_double_read_grd_info, GMT_double_update_grd_info,
+ *		GMT_double_write_grd_info, GMT_double_read_grd, GMT_double_write_grd
+ *-----------------------------------------------------------*/
+ 
+int GMT_double_read_grd_info (char *file, struct GRD_HEADER *header)
+{
+	return (GMT_native_read_grd_info (file, header));
+}
+
+int GMT_double_update_grd_info (char *file, struct GRD_HEADER *header)
+{
+	return (GMT_native_update_grd_info (file, header));
+}
+
+int GMT_double_write_grd_info (char *file, struct GRD_HEADER *header)
+{
+	return (GMT_native_write_grd_info (file, header));
+}
+
+int GMT_double_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+{
+	return (GMT_native_read_grd (file, header, grid, w, e, s, n, pad, complex, GMT_NATIVE_DOUBLE));
+}
+
+int GMT_double_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+{
+	return (GMT_native_write_grd (file, header, grid, w, e, s, n, pad, complex, GMT_NATIVE_DOUBLE));
 }
