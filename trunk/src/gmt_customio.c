@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.30 2005-08-08 04:11:21 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.31 2005-08-08 18:04:50 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -970,14 +970,16 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 /* GMT 64-bit Modification:
  *
  * Read/write GRD header structure from native binary file.  This is
- * used by all the native binary formats in GMT.  We isolate the i/o of
+ * used by all the native binary formats in GMT.  We isolate the I/O of
  * the header structure here because of 32/64 bit issues of alignment.
- * Basically, one 64-bit systems the first three 4-bit integers of the
- * GRD_HEADER structure will be followed by a 4-byte padding to get
- * correct 64-bit alignment; this does not occur on 32-bit systems.
- * The upshot is that sizeof (struct GRD_HEADER) is 892 on 32-bit and
- * 896 on 64-bit.  We must thus be careful when using sizeof on this
- * structure in fseek, fread, and fwrite calls.
+ * The GRD header is 892 bytes long, three 4-byte integers followed
+ * by ten 8-byte doubles and six character strings. This created a
+ * problem on 64-bit systems, where the GRD_HEADER structure was
+ * automatically padded with 4-bytes before the doubles. Taking
+ * advantage of the code developed to deal with the 32/64-bit anomaly
+ * (below), we have permanently added a 4-byte integer to the
+ * GRD_HEADER structure, but skip it when reading or writing the
+ * header.
  */
 
 void GMT_native_read_grd_header (char *file, FILE *fp, struct GRD_HEADER *header)
