@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.24 2005-08-07 07:39:01 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.25 2005-08-08 04:11:21 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8,7 +8,7 @@
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation; version 2 of the License.
  *
- *	This program is distributed in the hope that it will be useful,
+ *	This program is distributed in the hope that it will be u237seful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU General Public License for more details.
@@ -49,10 +49,13 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 
+short int GMT_grdformats[N_GRD_FORMATS][3] = {
+#include "gmt_grdformats.h"
+};
+
 void GMT_grd_do_scaling (float *grid, int nm, double scale, double offset);
 int check_nc_status (int status);
 int grd_format_decoder (const char *code);
-int grd_type_decoder (const char code);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
 
@@ -215,88 +218,47 @@ int GMT_grd_get_o_format (char *file, char *fname, double *scale, double *offset
 	}
 	if (*scale == 0.0) {
 		*scale = 1.0;
-		fprintf (stderr, "GMT Warning: scale_factor should not be 0, reset to 1.\n");
+		fprintf (stderr, "%s: GMT WARNING: scale_factor should not be 0, reset to 1.\n", GMT_program);
  	}
 	return (id);
 }
 
 int grd_format_decoder (const char *code)
 {
-	int id;
+	/* Returns the integer grid format ID that coes with the specified 2-character code */
 
+	int id;
+	
 	if (isdigit ((int)code)) {	/* File format number given, convert directly */
 		id = atoi (code);
  		if (id < 0 || id >= N_GRD_FORMATS) {
-			fprintf (stderr, "GMT Warning: grdfile format option (%d) unknown, reset to 0\n", id);
-			id = 0;
+			fprintf (stderr, "%s: GMT ERROR: grdfile format number (%d) unknown!\n", GMT_program, id);
+			exit (EXIT_FAILURE);
 		}
 	}
 	else {	/* Character code given */
-		int type;
-		
-		type = grd_type_decoder (code[1]);
-		
-		switch (code[0]) {
-			case 'b':	/* Native binary */
-				switch (type) {
-					case 0:	/* Byte */
-						id = 4;
-						break;
-					case 1:	/* Short */
-						id = 2;
-						break;
-					case 2:	/* Int */
-						id = 13;
-						break;
-					case 3:	/* Float */
-						id = 1;
-						break;
-					default:	/* i.e., double (not defined yet) */
-						id = 0;
-						fprintf (stderr, "GMT Warning: grdfile format option (%s) unknown, reset to GMT default (cf)\n", code);
-						break;
+		int i, group;
+		for (i = group = 0, id = -1; id < 0 && i < N_GRD_FORMATS; i++) {
+			if (GMT_grdformats[i][0] == (short)code[0]) {
+				group = code[0];
+				if (GMT_grdformats[i][1] == (short)code[1]) {
+					id = GMT_grdformats[i][2];
 				}
-				break;
-			case 'c':	/* Old GMT 3-4 netCDF format */
-				id = 7 + type;
-				break;
-			case 'n':	/* New COARDS-compliant netCDF format */
-				id = 14 + type;
-				break;
-			default:	/* Unknow code */
-				fprintf (stderr, "GMT Warning: grdfile format option (%s) unknown, reset to GMT default (cf)\n", code);
-				id = 0;
-				break;
+			}
+		}
+		
+		if (!group) {
+			fprintf (stderr, "%s: GMT ERROR: grdfile format type (%c) for group %c is unknown!\n", GMT_program, code[1], group);
+			exit (EXIT_FAILURE);
+		}
+		else if (id == -1) {
+			fprintf (stderr, "%s: GMT ERROR: grdfile format code %c unknown!\n", GMT_program, code);
+			exit (EXIT_FAILURE);
 		}
 	}
-	
+
 	return (id);
-}
-
-int grd_type_decoder (const char code)
-{
-	int off;
-
-	switch (code) {
-		case 'b':	/* byte */
-			off = 0;
-			break;
-		case 's':	/* short */
-			off = 1;
-			break;
-		case 'i':	/* int */
-			off = 2;
-			break;
-		case 'f':	/* float */
-			off = 3;
-			break;
-		case 'd':	/* double */
-			off = 4;
-			break;
-	}
-
-	return (off);
-}
+}	
 
 /* Routine that scales and offsets the data if specified */
 
@@ -455,17 +417,17 @@ void GMT_decode_grd_h_info (char *input, struct GRD_HEADER *h) {
 			switch (entry) {
 				case 0:
 					memset ( (void *)h->x_units, 0, (size_t)80);
-					if (strlen(ptr) >= GRD_UNIT_LEN) fprintf (stderr, "%s: Warning: X unit string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_UNIT_LEN);
+					if (strlen(ptr) >= GRD_UNIT_LEN) fprintf (stderr, "%s: GMT WARNING: X unit string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_UNIT_LEN);
 					strncpy (h->x_units, ptr, GRD_UNIT_LEN);
 					break;
 				case 1:
 					memset ( (void *)h->y_units, 0, (size_t)80);
-					if (strlen(ptr) >= GRD_UNIT_LEN) fprintf (stderr, "%s: Warning: Y unit string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_UNIT_LEN);
+					if (strlen(ptr) >= GRD_UNIT_LEN) fprintf (stderr, "%s: GMT WARNING: Y unit string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_UNIT_LEN);
 					strncpy (h->y_units, ptr, GRD_UNIT_LEN);
 					break;
 				case 2:
 					memset ( (void *)h->z_units, 0, (size_t)80);
-					if (strlen(ptr) >= GRD_UNIT_LEN) fprintf (stderr, "%s: Warning: Z unit string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_UNIT_LEN);
+					if (strlen(ptr) >= GRD_UNIT_LEN) fprintf (stderr, "%s: GMT WARNING: Z unit string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_UNIT_LEN);
 					strncpy (h->z_units, ptr, GRD_UNIT_LEN);
 					break;
 				case 3:
@@ -475,11 +437,11 @@ void GMT_decode_grd_h_info (char *input, struct GRD_HEADER *h) {
 					h->z_add_offset = atof (ptr);
 					break;
 				case 5:
-					if (strlen(ptr) >= GRD_TITLE_LEN) fprintf (stderr, "%s: Warning: Title string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_TITLE_LEN);
+					if (strlen(ptr) >= GRD_TITLE_LEN) fprintf (stderr, "%s: GMT WARNING: Title string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_TITLE_LEN);
 					strncpy (h->title, ptr, GRD_TITLE_LEN);
 					break;
 				case 6:
-					if (strlen(ptr) >= GRD_REMARK_LEN) fprintf (stderr, "%s: Warning: Remark string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_REMARK_LEN);
+					if (strlen(ptr) >= GRD_REMARK_LEN) fprintf (stderr, "%s: GMT WARNING: Remark string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_REMARK_LEN);
 					strncpy (h->remark, ptr, GRD_REMARK_LEN);
 					break;
 				default:
@@ -550,14 +512,14 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 		case 1:
 		case 6:
 		case 10:
-		case 17:
+		case 18:
 			G->size = sizeof (float);
 			G->n_byte = G->header.nx * G->size;
 			G->type = GMT_NATIVE_FLOAT;
 			break;
 		case 2:	/* 2-byte shorts */
 		case 8:
-		case 15:
+		case 16:
 			G->size = sizeof (short int);
 			G->n_byte = G->header.nx * G->size;
 			G->type = GMT_NATIVE_SHORT;
@@ -569,7 +531,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 			break;
 		case 4:	/* 1-byte unsigned chars */
 		case 7:
-		case 14:
+		case 15:
 			G->size = sizeof (unsigned char);
 			G->n_byte = G->header.nx * G->size;
 			G->type = GMT_NATIVE_UCHAR;
@@ -581,13 +543,14 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 			break;
 		case 9:	/* 4-byte signed int */
 		case 13:
-		case 16:
+		case 17:
 			G->size = sizeof (int);
 			G->n_byte = G->header.nx * G->size;
 			G->type = GMT_NATIVE_INT;
 			break;
 		case 11:	/* 8-byte double */
-		case 18:
+		case 14:
+		case 19:
 			G->size = sizeof (double);
 			G->n_byte = G->header.nx * G->size;
 			G->type = GMT_NATIVE_DOUBLE;
