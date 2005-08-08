@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.25 2005-08-08 04:11:21 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.26 2005-08-08 05:45:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -229,7 +229,7 @@ int grd_format_decoder (const char *code)
 
 	int id;
 	
-	if (isdigit ((int)code)) {	/* File format number given, convert directly */
+	if (isdigit ((int)code[0])) {	/* File format number given, convert directly */
 		id = atoi (code);
  		if (id < 0 || id >= N_GRD_FORMATS) {
 			fprintf (stderr, "%s: GMT ERROR: grdfile format number (%d) unknown!\n", GMT_program, id);
