@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.7 2005-08-06 11:46:05 remko Exp $
+ *	$Id: gmt_nc.c,v 1.8 2005-08-08 18:04:50 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -106,7 +106,7 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 		dims[0]	= y_dim;
 		dims[1]	= x_dim;
 
-		id = GMT_grd_o_format - 14;	/* Converts 14-18 range to 0-4 to use with type[id] */
+		id = GMT_grd_o_format - 15;	/* Converts 15-19 range to 0-4 to use with type[id] */
 		check_nc_status (nc_def_var (ncid, "z", type[id], 2, dims, &z_id));
 	}
 	else {
@@ -148,6 +148,7 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 		header->nx = (int) lens[0];
 		header->ny = (int) lens[1];
 	}
+	header->z_id = z_id;
 
 	/* Get or assign attributes */
 
@@ -258,7 +259,7 @@ int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double 
 	 * not the physical size (i.e., the padding is not counted in nx and ny)
 	 */
 	 
-	int  ncid, z_id;
+	int  ncid;
 	size_t start[2], edge[2];
 	int first_col, last_col, first_row, last_row;
 	int i, j, ij, j2, width_in, width_out, height_in, i_0_out, kk, inc = 1;
@@ -275,16 +276,6 @@ int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double 
 	strcpy (nc_file, file);
 
  	check_nc_status (nc_open (file, NC_NOWRITE, &ncid));
-
-	/* Need to make this step easier ... */
-		/* Find the id of the first 2-dimensional (z) variable */
-		check_nc_status (nc_inq_nvars (ncid, &nvars));
-		i = 0; z_id = -1;
-		while (i < nvars && z_id < 0) {
-			check_nc_status (nc_inq_varndims (ncid, i, &ndims));
-			if (ndims == 2) z_id = i;
-			i++;
-		}
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row);
 
@@ -313,7 +304,7 @@ int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double 
 	for (j = last_row, j2 = 0; j >= first_row; j--, j2++) {
 		start[0] = j;
 		ij = (j2 + pad[3]) * width_out + i_0_out;	/* Already has factor of 2 in it if complex */
-		check_nc_status (nc_get_vara_float (ncid, z_id, start, edge, tmp));	/* Get one row */
+		check_nc_status (nc_get_vara_float (ncid, header->z_id, start, edge, tmp));	/* Get one row */
 		for (i = 0; i < header->nx; i++) {	/* Check for and handle NaN proxies */
 			kk = ij+i*inc;
 			grid[kk] = tmp[k[i]];
@@ -343,7 +334,7 @@ int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	 */
 
 	size_t start[2], edge[2];
-	int ncid, z_id;
+	int ncid;
 	int i, i2, inc = 1, *k;
 	int j, ij, j2, width_in, width_out, height_out;
 	int first_col, last_col, first_row, last_row;
@@ -390,15 +381,13 @@ int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *grid, double
 
 	tmp = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_nc_write_grd");
 
-	check_nc_status (nc_inq_varid (ncid, "z", &z_id));
-
 	edge[0] = 1; edge[1] = header->nx; start[1] = 0;
 	i2 = first_col + pad[0];
 	for (j = header->ny-1, j2 = first_row + pad[3]; j >= 0; j--, j2++) {
 		ij = j2 * width_in + i2;
 		start[0] = j;
 		for (i = 0; i < header->nx; i++) tmp[i] = grid[inc * (ij+k[i])];
-		check_nc_status (nc_put_vara_float (ncid, z_id, start, edge, tmp));
+		check_nc_status (nc_put_vara_float (ncid, header->z_id, start, edge, tmp));
 	}
 
 	/* Close grid, free memory */
