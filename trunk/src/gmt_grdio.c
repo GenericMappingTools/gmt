@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.27 2005-08-08 18:02:37 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.28 2005-08-08 19:45:35 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -192,7 +192,10 @@ int GMT_grd_get_i_format (char *file, char *fname, double *scale, double *offset
 	
 	if (fname[i]) {	/* Check format id */
 		i++;
-		sscanf (&fname[i], "%s/%lf/%lf/%lf", code, scale, offset, &GMT_grd_in_nan_value);
+		j = i;
+		while (fname[j] && fname[j] != '/') j++;
+		if (fname[j]) fname[j] = ' ';
+		sscanf (&fname[i], "%s %lf/%lf/%lf", code, scale, offset, &GMT_grd_in_nan_value);
 		id = grd_format_decoder (code);
 		j = (i == 1) ? i : i - 1;
 		fname[j] = 0;
@@ -211,7 +214,10 @@ int GMT_grd_get_o_format (char *file, char *fname, double *scale, double *offset
 	
 	if (fname[i]) {	/* Check format id */
 		i++;
-		sscanf (&fname[i], "%s/%lf/%lf/%lf", code, scale, offset, &GMT_grd_out_nan_value);
+		j = i;
+		while (fname[j] && fname[j] != '/') j++;
+		if (fname[j]) fname[j] = ' ';
+		sscanf (&fname[i], "%s %lf/%lf/%lf", code, scale, offset, &GMT_grd_out_nan_value);
 		id = grd_format_decoder (code);
                 j = (i == 1) ? i : i - 1;
                 fname[j] = 0;
