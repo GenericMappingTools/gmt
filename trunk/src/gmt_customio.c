@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.31 2005-08-08 18:04:50 remko Exp $
+ *	$Id: gmt_customio.c,v 1.32 2005-08-08 18:58:53 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -972,7 +972,7 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
  * Read/write GRD header structure from native binary file.  This is
  * used by all the native binary formats in GMT.  We isolate the I/O of
  * the header structure here because of 32/64 bit issues of alignment.
- * The GRD header is 892 bytes long, three 4-byte integers followed
+ * The GRD header is 896 bytes long, three 4-byte integers followed
  * by ten 8-byte doubles and six character strings. This created a
  * problem on 64-bit systems, where the GRD_HEADER structure was
  * automatically padded with 4-bytes before the doubles. Taking
