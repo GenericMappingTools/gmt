@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.26 2005-08-08 05:45:11 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.27 2005-08-08 18:02:37 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -247,12 +247,9 @@ int grd_format_decoder (const char *code)
 			}
 		}
 		
-		if (!group) {
-			fprintf (stderr, "%s: GMT ERROR: grdfile format type (%c) for group %c is unknown!\n", GMT_program, code[1], group);
-			exit (EXIT_FAILURE);
-		}
-		else if (id == -1) {
-			fprintf (stderr, "%s: GMT ERROR: grdfile format code %c unknown!\n", GMT_program, code);
+		if (id == -1) {
+			if (group) fprintf (stderr, "%s: GMT ERROR: grdfile format type (%c) for group %c is unknown!\n", GMT_program, code[1], code[0]);
+			else fprintf (stderr, "%s: GMT ERROR: grdfile format code %s unknown!\n", GMT_program, code);
 			exit (EXIT_FAILURE);
 		}
 	}
