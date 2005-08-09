@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.8 2005-08-08 18:04:50 remko Exp $
+ *	$Id: gmt_nc.c,v 1.9 2005-08-09 20:42:23 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -47,7 +47,7 @@
 
 char nc_file[BUFSIZ];
 
-int check_nc_status(int status);
+int check_nc_status (int status);
 int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job);
 
 
@@ -71,7 +71,7 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 	int  ncid, id, i;
 	double dummy[2];
 	char text[GRD_COMMAND_LEN+GRD_REMARK_LEN];
-	nc_type type[5] = {NC_BYTE, NC_SHORT, NC_INT, NC_FLOAT, NC_DOUBLE};
+	nc_type z_type, type[5] = {NC_BYTE, NC_SHORT, NC_INT, NC_FLOAT, NC_DOUBLE};
 	float *tmp = VNULL;
 
 	/* Dimension ids, variable ids, etc.. */
@@ -107,7 +107,8 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 		dims[1]	= x_dim;
 
 		id = GMT_grd_o_format - 15;	/* Converts 15-19 range to 0-4 to use with type[id] */
-		check_nc_status (nc_def_var (ncid, "z", type[id], 2, dims, &z_id));
+		z_type = type[id];
+		check_nc_status (nc_def_var (ncid, "z", z_type, 2, dims, &z_id));
 	}
 	else {
 		/* Find the id of the first 2-dimensional (z) variable */
@@ -123,7 +124,8 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 			exit (EXIT_FAILURE);
 		}
 
-		/* Get the two dimensions */
+		/* Get the data type and the two dimensions */
+		check_nc_status (nc_inq_vartype (ncid, z_id, &z_type));
 		check_nc_status (nc_inq_vardimid (ncid, z_id, dims));
 		y_dim = dims[0]; x_dim = dims[1];
 
@@ -195,7 +197,7 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 
         	if (nc_get_att_double (ncid, z_id, "actual_range", dummy) &&
 		    nc_get_att_double (ncid, z_id, "valid_range", dummy)) {
-			dummy[0] = -1e30; dummy [1] = 1e30;
+			dummy[0] = -DBL_MAX; dummy [1] = DBL_MAX;
 		}
 		header->z_min = dummy[0];
 		header->z_max = dummy[1];
@@ -206,23 +208,23 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 		check_nc_status (nc_put_att_text (ncid, x_id, "units", GRD_UNIT_LEN, header->x_units));
         	check_nc_status (nc_put_att_text (ncid, y_id, "units", GRD_UNIT_LEN, header->y_units));
         	check_nc_status (nc_put_att_text (ncid, z_id, "units", GRD_UNIT_LEN, header->z_units));
-        	check_nc_status (nc_put_att_text (ncid, z_id, "axis", 2, "YX"));
         	check_nc_status (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1, &header->z_scale_factor));
         	check_nc_status (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
         	check_nc_status (nc_put_att_int (ncid, z_id, "node_offset", NC_LONG, 1, &header->node_offset));
+		check_nc_status (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1, &GMT_grd_out_nan_value));
 		if (strcmp (header->title,"    ")) strcpy (header->title, file);
         	check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "title", GRD_TITLE_LEN, header->title));
         	check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "source", (GRD_COMMAND_LEN+GRD_REMARK_LEN), text));
 	
 		dummy[0] = header->x_min;
 		dummy[1] = header->x_max;
-        	check_nc_status (nc_put_att_double (ncid, x_id, "actual_range", NC_DOUBLE, 2, dummy));
+        	check_nc_status (nc_put_att_double (ncid, x_id, "valid_range", NC_DOUBLE, 2, dummy));
 		dummy[0] = header->y_min;
 		dummy[1] = header->y_max;
-        	check_nc_status (nc_put_att_double (ncid, y_id, "actual_range", NC_DOUBLE, 2, dummy));
+        	check_nc_status (nc_put_att_double (ncid, y_id, "valid_range", NC_DOUBLE, 2, dummy));
 		dummy[0] = header->z_min;
 		dummy[1] = header->z_max;
-        	check_nc_status (nc_put_att_double (ncid, z_id, "actual_range", NC_DOUBLE, 2, dummy));
+        	check_nc_status (nc_put_att_double (ncid, z_id, "valid_range", z_type, 2, dummy));
 
 		check_nc_status (nc_enddef (ncid));
 
@@ -263,8 +265,8 @@ int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double 
 	size_t start[2], edge[2];
 	int first_col, last_col, first_row, last_row;
 	int i, j, ij, j2, width_in, width_out, height_in, i_0_out, kk, inc = 1;
-	int *k, nvars, ndims;
-	BOOLEAN check = !GMT_is_fnan (GMT_grd_in_nan_value);
+	int *k;
+	BOOLEAN check;
 	float *tmp = VNULL;
 
 	/* Open file and get info */
@@ -296,6 +298,14 @@ int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double 
 	header->x_max = e;
 	header->y_min = s;
 	header->y_max = n;
+
+	/* Get the value of the missing data that will be converted to NaN */
+
+        if (nc_get_att_double (ncid, header->z_id, "_FillValue", &GMT_grd_in_nan_value))
+            nc_get_att_double (ncid, header->z_id, "missing_value", &GMT_grd_in_nan_value);
+	check = !GMT_is_dnan (GMT_grd_in_nan_value);
+
+	/* Load the data row by row */
 
 	tmp = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_nc_read_grd");
 
@@ -339,8 +349,20 @@ int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	int j, ij, j2, width_in, width_out, height_out;
 	int first_col, last_col, first_row, last_row;
 	float *tmp = VNULL;
+	BOOLEAN check = FALSE;
 
-	BOOLEAN check = !GMT_is_fnan (GMT_grd_out_nan_value);
+	/* Determine the value to be assigned to missing data, if not already done so */
+
+	if (!GMT_is_dnan (GMT_grd_out_nan_value))
+		check = TRUE;
+	else if (GMT_grd_o_format == 15) {
+		GMT_grd_out_nan_value = -128;
+		check = TRUE;
+	}
+	else if (GMT_grd_o_format == 16) {
+		GMT_grd_out_nan_value = -32768;
+		check = TRUE;
+	}
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row);
 
@@ -407,7 +429,7 @@ int check_nc_status (int status)/*
 int status;*/
 {
 	if (status != NC_NOERR) {
-		fprintf (stderr, "%s: %s [%s]\n", GMT_program, nc_strerror(status), nc_file);
+		fprintf (stderr, "%s: %s [%s]\n", GMT_program, nc_strerror (status), nc_file);
 		exit (EXIT_FAILURE);
 	}
 	return 0;

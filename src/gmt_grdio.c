@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.29 2005-08-08 23:49:47 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.30 2005-08-09 20:42:23 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -65,6 +65,7 @@ int GMT_read_grd_info (char *file, struct GRD_HEADER *header)
 	char fname[BUFSIZ];
 	double scale = GMT_d_NaN, offset = 0.0;
 
+	GMT_grd_in_nan_value = GMT_d_NaN;
 	GMT_grd_i_format = GMT_grd_get_i_format (file, fname, &scale, &offset);
 	status = (*GMT_io_readinfo[GMT_grd_i_format]) (fname, header);
 	if (GMT_is_dnan(scale))
@@ -86,6 +87,7 @@ int GMT_write_grd_info (char *file, struct GRD_HEADER *header)
 	char fname[BUFSIZ];
 	double scale = header->z_scale_factor, offset = header->z_add_offset;
 	
+	GMT_grd_out_nan_value = GMT_d_NaN;
 	GMT_grd_o_format = GMT_grd_get_o_format (file, fname, &scale, &offset);
 	header->z_scale_factor = scale, header->z_add_offset = offset;
 	header->z_min = (header->z_min - offset) / scale;
@@ -100,6 +102,7 @@ int GMT_update_grd_info (char *file, struct GRD_HEADER *header)
 	char fname[BUFSIZ];
 	double scale = header->z_scale_factor, offset = header->z_add_offset;
 	
+	GMT_grd_out_nan_value = GMT_d_NaN;
 	GMT_grd_o_format = GMT_grd_get_o_format (file, fname, &scale, &offset);
 	header->z_scale_factor = scale, header->z_add_offset = offset;
 	header->z_min = (header->z_min - offset) / scale;
@@ -122,6 +125,7 @@ int GMT_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, 
 	char fname[BUFSIZ];
 	double scale = GMT_d_NaN, offset = 0.0;
 
+	GMT_grd_in_nan_value = GMT_d_NaN;
 	GMT_grd_i_format = GMT_grd_get_i_format (file, fname, &scale, &offset);
 	status = (*GMT_io_readgrd[GMT_grd_i_format]) (fname, header, grid, w, e, s, n, pad, complex);
 	if (GMT_is_dnan(scale))
@@ -149,9 +153,9 @@ int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w,
 	char fname[BUFSIZ];
 	double scale = header->z_scale_factor, offset = header->z_add_offset;
 
+	GMT_grd_out_nan_value = GMT_d_NaN;
 	GMT_grd_o_format = GMT_grd_get_o_format (file, fname, &scale, &offset);
 	header->z_scale_factor = scale, header->z_add_offset = offset;
-	/* old: GMT_grd_do_scaling (grid, (header->nx * header->ny), scale, offset); */
 	GMT_grd_do_scaling (grid, (header->nx * header->ny), 1.0/scale, -offset/scale);
 	status = (*GMT_io_writegrd[GMT_grd_o_format]) (fname, header, grid, w, e, s, n, pad, complex);
 	return (status);
@@ -192,7 +196,7 @@ int GMT_grd_get_i_format (char *file, char *fname, double *scale, double *offset
 	
 	if (fname[i]) {	/* Check format id */
 		i++;
-		sscanf (&fname[i], "%[^/]%lf/%lf/%lf", code, scale, offset, &GMT_grd_in_nan_value);
+		sscanf (&fname[i], "%[^/]/%lf/%lf/%lf", code, scale, offset, &GMT_grd_in_nan_value);
 		id = grd_format_decoder (code);
 		j = (i == 1) ? i : i - 1;
 		fname[j] = 0;
@@ -211,7 +215,7 @@ int GMT_grd_get_o_format (char *file, char *fname, double *scale, double *offset
 	
 	if (fname[i]) {	/* Check format id */
 		i++;
-		sscanf (&fname[i], "%[^/]%lf/%lf/%lf", code, scale, offset, &GMT_grd_out_nan_value);
+		sscanf (&fname[i], "%[^/]/%lf/%lf/%lf", code, scale, offset, &GMT_grd_out_nan_value);
 		id = grd_format_decoder (code);
                 j = (i == 1) ? i : i - 1;
                 fname[j] = 0;
@@ -467,6 +471,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	if (mode == 'r' || mode == 'R') {	/* Open file for reading */
 		if (mode == 'R') header = FALSE;
 		r_w = 0;
+		GMT_grd_in_nan_value = GMT_d_NaN;
 		G->id = GMT_grd_get_i_format (file, G->name, &G->scale, &G->offset);
 		G->check = !GMT_is_dnan (GMT_grd_in_nan_value);
 	}
@@ -477,6 +482,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 		}
 		else
 			r_w = 1;
+		GMT_grd_out_nan_value = GMT_d_NaN;
 		G->id = GMT_grd_get_o_format (file, G->name, &G->scale, &G->offset);
 		G->check = !GMT_is_dnan (GMT_grd_out_nan_value);
 	}
