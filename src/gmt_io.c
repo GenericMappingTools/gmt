@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.87 2005-08-05 19:49:45 remko Exp $
+ *	$Id: gmt_io.c,v 1.88 2005-08-09 22:49:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2597,8 +2597,8 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 	struct GMT_LINES *e;
 	int i = -1, j = 0, n, i_alloc = GMT_CHUNK, n_read = 0, j_alloc = GMT_CHUNK;
 	int n_fields, n_expected_fields;
-	BOOLEAN check_cap, save, ascii;
-	double d, dlon, lon_sum = 0.0, *in;
+	BOOLEAN save, ascii;
+	double d, *in;
 	char buffer[BUFSIZ], *t, mode[4];
 	PFI psave = VNULL;
 
@@ -2614,7 +2614,6 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 		psave = GMT_input;
 		GMT_input = GMT_input_ascii;
 	}
-	check_cap = (poly && (MAPPING || GMT_io.in_col_type[0] & GMT_IS_GEO));
 
 	e = (struct GMT_LINES *) GMT_memory (VNULL, (size_t)i_alloc, sizeof (struct GMT_LINES), GMT_program);
 
@@ -2649,7 +2648,6 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 				e[i].dist = dist;
 			j_alloc = GMT_CHUNK;
 			j = 0;
-			lon_sum = 0.0;
 			e[i].min_lon = e[i].min_lat = DBL_MAX;
 			e[i].max_lon = e[i].max_lat = -DBL_MAX;
 			n_fields = GMT_input (fp, &n_expected_fields, &in);
@@ -2680,7 +2678,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 			}
 			e[i].lon[j] = in[0];
 			e[i].lat[j] = in[1];
-			if (MAPPING) {
+			if (GMT_io.in_col_type[0] & GMT_IS_GEO) {
 				if (greenwich && e[i].lon[j] > 180.0) e[i].lon[j] -= 360.0;
 				if (!greenwich && e[i].lon[j] < 0.0) e[i].lon[j] += 360.0;
 			}
@@ -2690,11 +2688,6 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 			if (e[i].lon[j] > e[i].max_lon) e[i].max_lon = e[i].lon[j];
 			if (e[i].lat[j] > e[i].max_lat) e[i].max_lat = e[i].lat[j];
 			
-			if (check_cap && j > 0) {	/* Keep track of sum (dlon) */
-				dlon = e[i].lon[j] - e[i].lon[j-1];
-				if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
-				lon_sum += dlon;
-			}
 			j++;
 			if (j == (j_alloc-1)) {	/* -1 because we may have to close the polygon and hence need 1 more cell */
 				j_alloc += GMT_CHUNK;
@@ -2711,21 +2704,12 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 			e[i].lon[j] = e[i].lon[0];
 			e[i].lat[j] = e[i].lat[0];
 			e[i].np++;
-			if (check_cap) {	/* Keep track of sum (dlon) */
-				dlon = e[i].lon[j] - e[i].lon[j-1];
-				if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
-				lon_sum += dlon;
-			}
 		}
 
 		/* Reallocate to free up some memory */
 
 		e[i].lon = (double *) GMT_memory ((void *)e[i].lon, (size_t)e[i].np, sizeof (double), GMT_program);
 		e[i].lat = (double *) GMT_memory ((void *)e[i].lat, (size_t)e[i].np, sizeof (double), GMT_program);
-
-		if (check_cap && fabs (fabs (lon_sum) - 360.0) < GMT_CONV_LIMIT) {	/* Contains a pole */
-			e[i].polar = (e[i].lat[0] < 0.0) ? -1 : +1;	/* S or N pole */
-		}
 
 		if (i == (i_alloc-1)) {
 			i_alloc += GMT_CHUNK;
