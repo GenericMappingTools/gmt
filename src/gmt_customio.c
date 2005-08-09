@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.32 2005-08-08 18:58:53 remko Exp $
+ *	$Id: gmt_customio.c,v 1.33 2005-08-09 21:20:07 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -68,10 +68,9 @@ void GMT_native_read_grd_header (char *file, FILE *fp, struct GRD_HEADER *header
 void GMT_native_write_grd_header (char *file, FILE *fp, struct GRD_HEADER *header);
 void GMT_native_skip_grd_header (char *file, FILE *fp, struct GRD_HEADER *header);
 int GMT_native_read_grd_info (char *file, struct GRD_HEADER *header);
-int GMT_native_update_grd_info (char *file, struct GRD_HEADER *header);
 int GMT_native_write_grd_info (char *file, struct GRD_HEADER *header);
-int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex, int type);
-int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex, int type);
+int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
+int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 
 int GMT_native_size[GMT_N_NATIVE_FORMATS] = {
 	sizeof(char),
@@ -103,48 +102,40 @@ void GMT_grdio_init (void) {
 	GMT_io_readgrd[id]    = (PFI) GMT_cdf_read_grd;
 	GMT_io_writegrd[id]   = (PFI) GMT_cdf_write_grd;
 
-	/* FORMAT # 1: GMT native binary (float) grdio */
+	/* FORMAT # 1-2: GMT native binary (float, short) grdio */
 
-	id = 1;
-	GMT_io_readinfo[id]   = (PFI) GMT_bin_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_bin_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_bin_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_bin_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_bin_write_grd;
-
-	/* FORMAT # 2: GMT native binary (short) grdio */
-
-	id = 2;
-	GMT_io_readinfo[id]   = (PFI) GMT_short_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_short_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_short_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_short_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_short_write_grd;
+	for (id = 1; id <= 2; id++) {
+		GMT_io_readinfo[id]   = (PFI) GMT_native_read_grd_info;
+		GMT_io_updateinfo[id] = (PFI) GMT_native_write_grd_info;
+		GMT_io_writeinfo[id]  = (PFI) GMT_native_write_grd_info;
+		GMT_io_readgrd[id]    = (PFI) GMT_native_read_grd;
+		GMT_io_writegrd[id]   = (PFI) GMT_native_write_grd;
+	}
 
 	/* FORMAT # 3: SUN 8-bit standard rasterfile grdio */
 
 	id = 3;
 	GMT_io_readinfo[id]   = (PFI) GMT_ras_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_ras_update_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_ras_write_grd_info;
 	GMT_io_writeinfo[id]  = (PFI) GMT_ras_write_grd_info;
 	GMT_io_readgrd[id]    = (PFI) GMT_ras_read_grd;
 	GMT_io_writegrd[id]   = (PFI) GMT_ras_write_grd;
 
-	/* FORMAT # 4: GMT native binary (uchar) grdio */
+	/* FORMAT # 4: GMT native binary (byte) grdio */
 
 	id = 4;
-	GMT_io_readinfo[id]   = (PFI) GMT_uchar_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_uchar_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_uchar_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_uchar_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_uchar_write_grd;
+	GMT_io_readinfo[id]   = (PFI) GMT_native_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_native_write_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_native_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_native_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_native_write_grd;
 
 	/* FORMAT # 5: GMT native binary (bit) grdio */
 
 	id = 5;
-	GMT_io_readinfo[id]   = (PFI) GMT_bit_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_bit_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_bit_write_grd_info;
+	GMT_io_readinfo[id]   = (PFI) GMT_native_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_native_write_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_native_write_grd_info;
 	GMT_io_readgrd[id]    = (PFI) GMT_bit_read_grd;
 	GMT_io_writegrd[id]   = (PFI) GMT_bit_write_grd;
 
@@ -152,7 +143,7 @@ void GMT_grdio_init (void) {
 
 	id = 6;
 	GMT_io_readinfo[id]   = (PFI) GMT_srf_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_srf_update_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_srf_write_grd_info;
 	GMT_io_writeinfo[id]  = (PFI) GMT_srf_write_grd_info;
 	GMT_io_readgrd[id]    = (PFI) GMT_srf_read_grd;
 	GMT_io_writegrd[id]   = (PFI) GMT_srf_write_grd;
@@ -170,28 +161,21 @@ void GMT_grdio_init (void) {
 	/* FORMAT # 12: NOAA NGDC MGG grid format */
 
 	id = 12; 
-	GMT_io_readinfo[id]  = (PFI) mgg2_read_grd_info;
-	GMT_io_writeinfo[id] = (PFI) mgg2_write_grd_info;
-	GMT_io_readgrd[id]   = (PFI) mgg2_read_grd;
-	GMT_io_writegrd[id]  = (PFI) mgg2_write_grd;
+	GMT_io_readinfo[id]   = (PFI) mgg2_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) mgg2_write_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) mgg2_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) mgg2_read_grd;
+	GMT_io_writegrd[id]   = (PFI) mgg2_write_grd;
 
-	/* FORMAT # 13: GMT native binary (int) grdio */
+	/* FORMAT # 13-14: GMT native binary (int, double) grdio */
 
-	id = 13;
-	GMT_io_readinfo[id]   = (PFI) GMT_int_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_int_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_int_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_int_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_int_write_grd;
-
-	/* FORMAT # 14: GMT native binary (double) grdio */
-
-	id = 14;
-	GMT_io_readinfo[id]   = (PFI) GMT_double_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_double_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_double_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_double_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_double_write_grd;
+	for (id = 13; id <= 14; id++) {
+		GMT_io_readinfo[id]   = (PFI) GMT_native_read_grd_info;
+		GMT_io_updateinfo[id] = (PFI) GMT_native_write_grd_info;
+		GMT_io_writeinfo[id]  = (PFI) GMT_native_write_grd_info;
+		GMT_io_readgrd[id]    = (PFI) GMT_native_read_grd;
+		GMT_io_writegrd[id]   = (PFI) GMT_native_write_grd;
+	}
 
 	/* FORMAT # 15-19: GMT netCDF-based grdio (COARDS compliant) */
 
@@ -211,92 +195,6 @@ void GMT_grdio_init (void) {
 /* CUSTOM I/O FUNCTIONS FOR GRIDDED DATA FILES */
 
 /*-----------------------------------------------------------
- * Format # :	1
- * Type :	Native binary (float) C file
- * Prefix :	GMT_bin_
- * Author :	Paul Wessel, SOEST
- * Date :	17-JUN-1999
- * Purpose:	The native binary output format is used
- *		primarily for piped i/o between programs
- *		that otherwise would use temporary, large
- *		intermediate grdfiles.  Note that not all
- *		programs can support piping (they may have
- *		to re-read the file or accept more than one
- *		grdfile).
- * Functions :	GMT_bin_read_grd_info, GMT_bin_update_grd_info,
- *		GMT_bin_write_grd_info, GMT_bin_read_grd, GMT_bin_write_grd
- *-----------------------------------------------------------*/
- 
-int GMT_bin_read_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_read_grd_info (file, header));
-}
-
-int GMT_bin_update_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_update_grd_info (file, header));
-}
-
-int GMT_bin_write_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_write_grd_info (file, header));
-}
-
-int GMT_bin_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_native_read_grd (file, header, grid, w, e, s, n, pad, complex, GMT_NATIVE_FLOAT));
-}
-
-int GMT_bin_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_native_write_grd (file, header, grid, w, e, s, n, pad, complex, GMT_NATIVE_FLOAT));
-}
-
-/*-----------------------------------------------------------
- * Format # :	2
- * Type :	Native binary (short) C file
- * Prefix :	GMT_short_
- * Author :	Paul Wessel, SOEST
- * Date :	17-JUN-1999
- * Purpose:	The native binary output format is used
- *		primarily for piped i/o between programs
- *		that otherwise would use temporary, large
- *		intermediate grdfiles.  Note that not all
- *		programs can support piping (they may have
- *		to re-read the file or accept more than one
- *		grdfile).  Datasets with limited range may
- *		be stored using 2-byte integers which will
- *		reduce storage space and improve throughput.
- * Functions :	GMT_short_read_grd_info, GMT_short_update_grd_info,
- *		GMT_short_write_grd_info, GMT_short_read_grd, GMT_short_write_grd
- *-----------------------------------------------------------*/
- 
-int GMT_short_read_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_read_grd_info (file, header));
-}
-
-int GMT_short_update_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_update_grd_info (file, header));
-}
-
-int GMT_short_write_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_write_grd_info (file, header));
-}
-
-int GMT_short_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_native_read_grd (file, header, grid, w, e, s, n, pad, complex, GMT_NATIVE_SHORT));
-}
-
-int GMT_short_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_native_write_grd (file, header, grid, w, e, s, n, pad, complex, GMT_NATIVE_SHORT));
-}
-
-/*-----------------------------------------------------------
  * Format # :	3
  * Type :	Standard 8-bit Sun rasterfiles
  * Prefix :	GMT_ras_
@@ -314,7 +212,7 @@ int GMT_short_write_grd (char *file, struct GRD_HEADER *header, float *grid, dou
  *			dx = dy = 1
  *		Such files are always pixel registered
  *
- * Functions :	GMT_ras_read_grd_info, GMT_ras_update_grd_info,
+ * Functions :	GMT_ras_read_grd_info,
  *		GMT_ras_write_grd_info, GMT_ras_read_grd, GMT_ras_write_grd
  *-----------------------------------------------------------*/
 
@@ -362,11 +260,6 @@ int GMT_ras_read_grd_info (char *file, struct GRD_HEADER *header)
 	header->node_offset = 1;	/* Pixel format */
 
 	return (FALSE);
-}
-
-int GMT_ras_update_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_ras_write_grd_info (file, header));
 }
 
 int GMT_ras_write_grd_info (char *file, struct GRD_HEADER *header)
@@ -694,50 +587,6 @@ int GMT_write_rasheader (FILE *fp, struct rasterfile *h)
 }
 
 /*-----------------------------------------------------------
- * Format # :	4
- * Type :	Native binary (uchar) C file
- * Prefix :	GMT_uchar_
- * Author :	Paul Wessel, SOEST
- * Date :	27-JUN-1994
- * Purpose:	The native binary output format is used
- *		primarily for piped i/o between programs
- *		that otherwise would use temporary, large
- *		intermediate grdfiles.  Note that not all
- *		programs can support piping (they may have
- *		to re-read the file or accept more than one
- *		grdfile).  Datasets with limited range may
- *		be stored using 1-byte unsigned characters which will
- *		reduce storage space and improve throughput.
- * Functions :	GMT_uchar_read_grd_info, GMT_uchar_write_grd_info,
- *		GMT_uchar_write_grd_info, GMT_uchar_read_grd, GMT_uchar_write_grd
- *-----------------------------------------------------------*/
- 
-int GMT_uchar_read_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_read_grd_info (file, header));
-}
-
-int GMT_uchar_update_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_update_grd_info (file, header));
-}
-
-int GMT_uchar_write_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_write_grd_info (file, header));
-}
-
-int GMT_uchar_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_native_read_grd (file, header, grid, w, e, s, n, pad, complex, GMT_NATIVE_UCHAR));
-}
-
-int GMT_uchar_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_native_write_grd (file, header, grid, w, e, s, n, pad, complex, GMT_NATIVE_UCHAR));
-}
-
-/*-----------------------------------------------------------
  * Format # :	5
  * Type :	Native binary (bit) C file
  * Prefix :	GMT_bit_
@@ -752,24 +601,8 @@ int GMT_uchar_write_grd (char *file, struct GRD_HEADER *header, float *grid, dou
  *		grdfile).  Datasets containing ON/OFF information
  *		like bitmasks can be stored using bits
  *		We use 4-byte integers to store 32 bits at the time
- * Functions :	GMT_bit_read_grd_info, GMT_bit_write_grd_info,
- *		GMT_bit_write_grd_info, GMT_bit_read_grd, GMT_bit_write_grd
+ * Functions :	GMT_bit_read_grd, GMT_bit_write_grd
  *-----------------------------------------------------------*/
- 
-int GMT_bit_read_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_read_grd_info (file, header));
-}
-
-int GMT_bit_update_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_update_grd_info (file, header));
-}
-
-int GMT_bit_write_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_write_grd_info (file, header));
-}
 
 int GMT_bit_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
 {	/* file:	File name	*/
@@ -964,15 +797,30 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	return (FALSE);
 }
 
-/* Here are the generic routines for dealing with native binary files
- * where the grid values are stored as 1-, 2-, 4-, or 8-byte items */
+/*-----------------------------------------------------------
+ * Format # :	1, 2, 4, 13, 14
+ * Type :	Native binary C file
+ * Prefix :	GMT_native_
+ * Author :	Paul Wessel, SOEST
+ * Date :	17-JUN-1999
+ * Purpose:	The native binary output format is used
+ *		primarily for piped i/o between programs
+ *		that otherwise would use temporary, large
+ *		intermediate grdfiles.  Note that not all
+ *		programs can support piping (they may have
+ *		to re-read the file or accept more than one
+ *		grdfile).  Datasets with limited range may
+ *		be stored using 1-, 2-, or 4-byte integers
+ *		which will reduce storage space and improve
+ *		throughput.
+ *-----------------------------------------------------------*/
 
 /* GMT 64-bit Modification:
  *
  * Read/write GRD header structure from native binary file.  This is
  * used by all the native binary formats in GMT.  We isolate the I/O of
  * the header structure here because of 32/64 bit issues of alignment.
- * The GRD header is 896 bytes long, three 4-byte integers followed
+ * The GRD header is 892 bytes long, three 4-byte integers followed
  * by ten 8-byte doubles and six character strings. This created a
  * problem on 64-bit systems, where the GRD_HEADER structure was
  * automatically padded with 4-bytes before the doubles. Taking
@@ -984,7 +832,7 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 
 void GMT_native_read_grd_header (char *file, FILE *fp, struct GRD_HEADER *header)
 {
-	/* Because GRD_HEADER is not 64bit aligned we must read it in parts */
+	/* Because GRD_HEADER is not 64-bit aligned we must read it in parts */
 	
 	if (fread ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || fread ((void *)&header->x_min, sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx), (size_t)1, fp) != 1) {
                 fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
@@ -1037,11 +885,6 @@ int GMT_native_read_grd_info (char *file, struct GRD_HEADER *header)
 	return (FALSE);
 }
 
-int GMT_native_update_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_write_grd_info (file, header));
-}
-
 int GMT_native_write_grd_info (char *file, struct GRD_HEADER *header)
 {
 	/* Write GRD header structure to native binary file.  This is used by
@@ -1067,7 +910,7 @@ int GMT_native_write_grd_info (char *file, struct GRD_HEADER *header)
 	return (FALSE);
 }
 
-int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex, int type)
+int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
 {	/* file:	File name	*/
 	/* header:	grid structure header */
 	/* grid:	array with final grid */
@@ -1076,7 +919,6 @@ int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, dou
 	/* complex:	TRUE if array is to hold real and imaginary parts (read in real only) */
 	/*		Note: The file has only real values, we simply allow space in the array */
 	/*		for imaginary parts when processed by grdfft etc. */
-	/* type:	Data type (int, short, float, etc) */
 
 	int first_col, last_col;	/* First and last column to deal with */
 	int first_row, last_row;	/* First and last row to deal with */
@@ -1086,6 +928,7 @@ int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, dou
 	int inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
 	int kk, i, j, j2, ij, i_0_out;	/* Misc. counters */
 	int *k;				/* Array with indices */
+	int type;			/* Data type */
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
@@ -1103,6 +946,32 @@ int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, dou
 	else {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", file);
 		exit (EXIT_FAILURE);
+	}
+
+	/* Determine data type (byte, short, int, float, double)
+	 * Also, set the appropriate missing value when not yet done so (char and short only) */
+
+	switch (GMT_grd_i_format) {
+		case 1:
+			type = GMT_NATIVE_FLOAT;
+			break;
+		case 2:
+			type = GMT_NATIVE_SHORT;
+			if (GMT_is_dnan (GMT_grd_in_nan_value)) GMT_grd_in_nan_value = -32768;
+			break;
+		case 4:
+			type = GMT_NATIVE_CHAR;
+			if (GMT_is_dnan (GMT_grd_in_nan_value)) GMT_grd_in_nan_value = -128;
+			break;
+		case 13:
+			type = GMT_NATIVE_INT;
+			break;
+		case 14:
+			type = GMT_NATIVE_DOUBLE;
+			break;
+		default:
+			fprintf (stderr, "Unknown Native Grid Format: %i\n", GMT_grd_i_format);
+			exit (EXIT_FAILURE);
 	}
 
 	check = !GMT_is_dnan (GMT_grd_in_nan_value);
@@ -1153,7 +1022,7 @@ int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, dou
 	header->y_min = s;
 	header->y_max = n;
 
-	/* Update zmin, zmaz */
+	/* Update z_min, z_maz */
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = 0; j < header->ny; j++) {
@@ -1172,7 +1041,7 @@ int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, dou
 	return (FALSE);
 }
 
-int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex, int type)
+int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
 {	/* file:	File name	*/
 	/* header:	grid structure header */
 	/* grid:	array with final grid */
@@ -1181,7 +1050,6 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 	/* complex:	TRUE if array is to hold real and imaginary parts (read in real only) */
 	/*		Note: The file has only real values, we simply allow space in the array */
 	/*		for imaginary parts when processed by grdfft etc.  If 64 is added we write no header */
-	/* type:	Data type (int, short, float, etc) */
 
 	int first_col, last_col;	/* First and last column to deal with */
 	int first_row, last_row;	/* First and last row to deal with */
@@ -1191,6 +1059,7 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 	int inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
 	int i, j, i2, j2, ij;		/* Misc. counters */
 	int *k;				/* Array with indices */
+	int type;			/* Data type */
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	BOOLEAN do_header = TRUE;	/* TRUE if we should write the header first */
@@ -1204,6 +1073,32 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 	else if ((fp = GMT_fopen (file, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", file);
 		exit (EXIT_FAILURE);
+	}
+
+	/* Determine data type (byte, short, int, float, double)
+	 * Also, set the appropriate missing value when not yet done so (char and short only) */
+
+	switch (GMT_grd_o_format) {
+		case 1:
+			type = GMT_NATIVE_FLOAT;
+			break;
+		case 2:
+			type = GMT_NATIVE_SHORT;
+			if (GMT_is_dnan (GMT_grd_out_nan_value)) GMT_grd_out_nan_value = -32768;
+			break;
+		case 4:
+			type = GMT_NATIVE_CHAR;
+			if (GMT_is_dnan (GMT_grd_out_nan_value)) GMT_grd_out_nan_value = -128;
+			break;
+		case 13:
+			type = GMT_NATIVE_INT;
+			break;
+		case 14:
+			type = GMT_NATIVE_DOUBLE;
+			break;
+		default:
+			fprintf (stderr, "Unknown Native Grid Format: %i\n", GMT_grd_o_format);
+			exit (EXIT_FAILURE);
 	}
 
 	check = !GMT_is_dnan (GMT_grd_out_nan_value);
@@ -1224,7 +1119,7 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 	header->y_min = s;
 	header->y_max = n;
 
-	/* Find xmin/zmax */
+	/* Find z_min/z_max */
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = pad[3]; j <= last_row; j++, j2++) {
@@ -1244,7 +1139,7 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 	header->z_min = GMT_native_encode ((float)header->z_min, type);
 	header->z_max = GMT_native_encode ((float)header->z_max, type);
 
-	/* store header information and array */
+	/* Store header information and array */
 
 	if (do_header) GMT_native_write_grd_header (file, fp, header);
 
@@ -1433,11 +1328,6 @@ int GMT_srf_read_grd_info (char *file, struct GRD_HEADER *header)
 
 
 	return (FALSE);
-}
-
-int GMT_srf_update_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_srf_write_grd_info (file, header));
 }
 
 int GMT_srf_write_grd_info (char *file, struct GRD_HEADER *header)
@@ -1679,89 +1569,3 @@ int GMT_surfer_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 
 /* 12: NOAA NGDC MGG Format */
 #include "gmt_mgg_header2.c"
-
-/*-----------------------------------------------------------
- * Format # :	13
- * Type :	Native binary (int) C file
- * Prefix :	GMT_int_
- * Author :	Paul Wessel, SOEST
- * Date :	1-JAN-2005
- * Purpose:	The native binary output format is used
- *		primarily for piped i/o between programs
- *		that otherwise would use temporary, large
- *		intermediate grdfiles.  Note that not all
- *		programs can support piping (they may have
- *		to re-read the file or accept more than one
- *		grdfile).  Datasets with limited range may
- *		be stored using 4-byte integers which will
- *		reduce storage space and improve throughput.
- * Functions :	GMT_int_read_grd_info, GMT_int_update_grd_info,
- *		GMT_int_write_grd_info, GMT_int_read_grd, GMT_int_write_grd
- *-----------------------------------------------------------*/
- 
-int GMT_int_read_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_read_grd_info (file, header));
-}
-
-int GMT_int_update_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_update_grd_info (file, header));
-}
-
-int GMT_int_write_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_write_grd_info (file, header));
-}
-
-int GMT_int_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_native_read_grd (file, header, grid, w, e, s, n, pad, complex, GMT_NATIVE_INT));
-}
-
-int GMT_int_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_native_write_grd (file, header, grid, w, e, s, n, pad, complex, GMT_NATIVE_INT));
-}
-
-/*-----------------------------------------------------------
- * Format # :	14
- * Type :	Native binary (double) C file
- * Prefix :	GMT_double_
- * Author :	Paul Wessel, SOEST
- * Date :	8-AUG-2005
- * Purpose:	The native binary output format is used
- *		primarily for piped i/o between programs
- *		that otherwise would use temporary, large
- *		intermediate grdfiles.  Note that not all
- *		programs can support piping (they may have
- *		to re-read the file or accept more than one
- *		grdfile).
- * Functions :	GMT_double_read_grd_info, GMT_double_update_grd_info,
- *		GMT_double_write_grd_info, GMT_double_read_grd, GMT_double_write_grd
- *-----------------------------------------------------------*/
- 
-int GMT_double_read_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_read_grd_info (file, header));
-}
-
-int GMT_double_update_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_update_grd_info (file, header));
-}
-
-int GMT_double_write_grd_info (char *file, struct GRD_HEADER *header)
-{
-	return (GMT_native_write_grd_info (file, header));
-}
-
-int GMT_double_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_native_read_grd (file, header, grid, w, e, s, n, pad, complex, GMT_NATIVE_DOUBLE));
-}
-
-int GMT_double_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{
-	return (GMT_native_write_grd (file, header, grid, w, e, s, n, pad, complex, GMT_NATIVE_DOUBLE));
-}
