@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.166 2005-08-08 18:04:50 remko Exp $
+ *	$Id: gmt_support.c,v 1.167 2005-08-09 22:49:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -125,6 +125,7 @@ int GMT_label_is_OK (char *this_label, char *label, double this_dist, double thi
 int GMT_contlabel_specs_old (char *txt, struct GMT_CONTOUR *G);
 struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name);
 int GMT_get_label_parameters(int side, double line_angle, int type, double *text_angle, int *justify);
+void rtheta_transform (double lon, double lat, double *x, double *y, int pole);
 
 double *GMT_x2sys_Y;
 
@@ -3557,69 +3558,49 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 /* Testing if inside/outside spherical polygons (i.e., lon, lat polygons) */
 
 /*
- * These functions are translations from Fortran based on a paper
- * Bevis, M, and Chatelain, J.-L., 1989, Locating a point on a
- *   spherical surface relative to a spherical polygon of arbitrary
- *   shape, Math. Geol., 21 (), 811-828.
- *
- * Paul Wessel, August 2005
- *
- * Given some spherical polygon S and some point X known to be located inside S,
- * these routines will deterine if an arbitrary point P lies inside S, outside S,
- * or on its boundary.  The calling program must first call GMT_init_sphpol to
- * define the boundary of S and the point X.  Any subsequent call to function
- * GMT_inonout_sphpol will determine if some point P lies inside or outside S; or on
- * its boundary.
+ * The following approach should work for all spherical polygons except those
+ * that contain BOTH poles.  If this is the case, the user is advised to break
+ * the polygon into two section, containing one pole each.
  */
  
-struct GMT_SPHPOL_INFO *GMT_init_sphpol (double vlon[], double vlat[], const int nv)
-/* Main setup function.
- * vlon, vlat are the nv vertex coordinates of polygon.
+ void GMT_init_sphpol (struct GMT_LINES *P)
+/* Special setup function.for spherical polygons.
  */
 {
 	int i, ip, last;
-	BOOLEAN jump = FALSE;
-	double lon, min_lat, max_lat, lon_sum = 0.0, dlon, r, c, s;
-	struct GMT_SPHPOL_INFO *P;
+	double lon_sum = 0.0, dlon;
 	
-	P = (struct GMT_SPHPOL_INFO *) GMT_memory (VNULL, 1, sizeof (struct GMT_SPHPOL_INFO), GMT_program);
+	P->S = (struct GMT_SPHPOL_INFO *) GMT_memory (VNULL, 1, sizeof (struct GMT_SPHPOL_INFO), GMT_program);
 	
 	/* Copy some information */
 	
-	P->n = nv;
-
-	last = (vlon[0] == vlon[nv-1] && vlat[0] == vlat[nv-1]) ? nv - 1 : nv;	/* Skip repeated point that closed the polygon */
+	last = (P->lon[0] == P->lon[P->np-1] && P->lat[0] == P->lat[P->np-1]) ? P->np - 1 : P->np;	/* Skip repeated point that closed the polygon */
 	
-	min_lat = DBL_MAX;	max_lat = -DBL_MAX;
 	for (i = 0; i < last; i++) {
 		ip = (i == 0) ? last - 1: i - 1;	/* Previous point index */
-		lon = vlon[i];
-		if (vlat[i] < min_lat) min_lat = vlat[i];
-		if (vlat[i] > max_lat) max_lat = vlat[i];
-		dlon = vlon[i] - vlon[ip];
-		if (fabs (dlon) > 180.0) {	/* Crossed Greenwhich */
-			dlon = copysign (360.0 - fabs (dlon), -dlon);
-			jump = TRUE;
-		}
+		dlon = P->lon[i] - P->lon[ip];
+		if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);	/* Crossed Greenwhich or Dateline, pick the shortest distance */
 		lon_sum += dlon;
 	}
-	if (fabs (fabs (lon_sum) - 360.0) < GMT_CONV_LIMIT) {	/* Contains a pole */
-		P->polar = (fabs (max_lat) > fabs (min_lat)) ? copysign (1.0, max_lat) : copysign (1.0, min_lat);	/* S or N pole */
-		P->x = (double *) GMT_memory (VNULL, nv, sizeof (double), GMT_program);
-		P->y = (double *) GMT_memory (VNULL, nv, sizeof (double), GMT_program);
-		for (i = 0; i < nv; i++) {
-			r = 90.0 - vlat[i] * P->polar;	/* Radius */
-			sincos (vlon[i] * D2R, &s, &c);	/* sin, cos of azimuth (= longitude) */
-			P->x[i] = r * s;
-			P->y[i] = r * c;
-		}
-	}
-	else {	/* Just give links */
-		P->x = vlon;
-		P->y = vlat;
-	}
+	P->S->pole = (fabs (P->max_lat) > fabs (P->min_lat)) ? copysign (1.0, P->max_lat) : copysign (1.0, P->min_lat);	/* Pick must suitable pole: S or N */
+	P->S->polar = (fabs (fabs (lon_sum) - 360.0) < GMT_CONV_LIMIT);	/* TRUE if contains a pole */
+	
+	/* Set up the r-theta projection of the polygon */
+	
+	P->S->x = (double *) GMT_memory (VNULL, P->np, sizeof (double), GMT_program);
+	P->S->y = (double *) GMT_memory (VNULL, P->np, sizeof (double), GMT_program);
+	
+	for (i = 0; i < P->np; i++) rtheta_transform (P->lon[i], P->lat[i], &P->S->x[i], &P->S->y[i], P->S->pole);
+}
 
-	return (P);
+void rtheta_transform (double lon, double lat, double *x, double *y, int pole)
+{	/* Use r as colatitude from the selected pole and theta as longitude */
+	double r, c, s;
+	
+	r = 90.0 - lat * pole;
+	sincos (lon * D2R, &s, &c);				/* sin, cos of azimuth (= longitude) */
+	*x = r * c;
+	*y = r * s;
 }
 
 int GMT_inonout_sphpol (double plon, double plat, const struct GMT_SPHPOL_INFO *P)
@@ -3636,13 +3617,7 @@ int GMT_inonout_sphpol (double plon, double plat, const struct GMT_SPHPOL_INFO *
 		exit (EXIT_FAILURE);
 	}
 	
-	if (P->polar) {	/* Project the point to local (polar) coordinates */
-		double r, c, s;
-		r = 90.0 - plat * P->polar;	/* Radius */
-		sincos (plon * D2R, &s, &c);				/* sin, cos of azimuth (= longitude) */
-		plon = r * s;
-		plat = r * c;
-	}
+	rtheta_transform (plon, plat, &plon, &plat, P->pole);	/* Project the point to local (polar) coordinates */
 	
 	return (GMT_non_zero_winding (plon, plat, P->x, P->y, P->n));	
 }

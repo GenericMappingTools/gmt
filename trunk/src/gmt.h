@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.95 2005-08-09 21:43:59 remko Exp $
+ *	$Id: gmt.h,v 1.96 2005-08-09 22:49:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -444,18 +444,20 @@ struct GMT_FONT {		/* Information for each font */
 struct GMT_LINES {		/* For holding multisegment lines in memory */
 	double *lon, *lat;	/* Coordinates x,y */
 	double dist;		/* Distance from a point to this feature */
-	double min_lon, min_lat, max_lon, max_lat;	/* Extreme coordinates */
+	double min_lon, max_lon;	/* Extreme lon coordinates */
+	double min_lat, max_lat;	/* Extreme lat coordinates */
 	int *seg;		/* Segment number information */
 	int np;			/* Number of points in this segment */
-	int polar;		/* TRUE if a polygon and enclosing N or S pole */
 	char *label;		/* Label string (if applicable) */
+	int polar;		/* TRUE if a polygon and enclosing N or S pole */
 	/* For spherical polygons only */
 	struct GMT_SPHPOL_INFO *S;	/* structure with info needed for the in/out problem */
 };
 
 struct GMT_SPHPOL_INFO {	/* Structure that carries temporary information needed for spherical inside/outside test */
  	int n;			/* Number of vertices */
-	int polar;		/* -1 if contains S pole, +1 if N pole, 0 otherwise */
+	int polar;		/* TRUE if a polygon and enclosing N or S pole */
+	int pole;		/* -1 of +1, depending on which pole that serves as projection origin */
 	double *x, *y;		/* Pointer to original array of n vertices, or x,y polar coordinates */
 };
 
