@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.16 2005-08-05 22:28:05 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.17 2005-08-09 20:42:23 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,7 +43,7 @@
 #include "gmt.h"
 
 EXTERN_MSC char nc_file[BUFSIZ];
-int check_nc_status(int status);
+int check_nc_status (int status);
 int GMT_cdf_grd_info (char *file, struct GRD_HEADER *header, char job);
 
 int GMT_cdf_read_grd_info (char *file, struct GRD_HEADER *header)
@@ -66,7 +66,7 @@ int GMT_cdf_grd_info (char *file, struct GRD_HEADER *header, char job)
 	int  ncid, nm[2], id;
 	double dummy[2];
 	char text[GRD_COMMAND_LEN+GRD_REMARK_LEN];
-	nc_type type[5] = {NC_BYTE, NC_SHORT, NC_INT, NC_FLOAT, NC_DOUBLE};
+	nc_type z_type, type[5] = {NC_BYTE, NC_SHORT, NC_INT, NC_FLOAT, NC_DOUBLE};
 
 	/* Dimension ids, varibale ids, etc. */
 	int side_dim, xysize_dim, x_range_id, y_range_id, z_range_id, inc_id, nm_id, z_id, dims[1];
@@ -91,8 +91,8 @@ int GMT_cdf_grd_info (char *file, struct GRD_HEADER *header, char job)
 	/* Define and get dimensions and variables */
 
 	if (job == 'w' || job == 'W') {
-		check_nc_status (nc_def_dim(ncid, "side", 2, &side_dim));
-		check_nc_status (nc_def_dim(ncid, "xysize", (int) (header->nx * header->ny), &xysize_dim));
+		check_nc_status (nc_def_dim (ncid, "side", 2, &side_dim));
+		check_nc_status (nc_def_dim (ncid, "xysize", (int) (header->nx * header->ny), &xysize_dim));
 
 		dims[0]	= side_dim;
 		check_nc_status (nc_def_var (ncid, "x_range", NC_DOUBLE, 1, dims, &x_range_id));
@@ -104,8 +104,10 @@ int GMT_cdf_grd_info (char *file, struct GRD_HEADER *header, char job)
 		id = GMT_grd_o_format;
 		if (id == 0) id = 3;
 		if (id > 6) id -= 7;	/* This translates the netCDF formats 0, 7-11 into 0-4 so we can use type[id] */
+		z_type = type[id];
+
 		dims[0]	= xysize_dim;
-		check_nc_status (nc_def_var (ncid, "z", type[id], 1, dims, &z_id));
+		check_nc_status (nc_def_var (ncid, "z", z_type, 1, dims, &z_id));
 	}
 	else {
 		check_nc_status (nc_inq_varid (ncid, "x_range", &x_range_id));
@@ -114,6 +116,7 @@ int GMT_cdf_grd_info (char *file, struct GRD_HEADER *header, char job)
         	check_nc_status (nc_inq_varid (ncid, "spacing", &inc_id));
         	check_nc_status (nc_inq_varid (ncid, "dimension", &nm_id));
         	check_nc_status (nc_inq_varid (ncid, "z", &z_id));
+		check_nc_status (nc_inq_vartype (ncid, z_id, &z_type));
 	}
 
 	/* Get or assign attributes */
@@ -124,33 +127,33 @@ int GMT_cdf_grd_info (char *file, struct GRD_HEADER *header, char job)
 		memset ((void *)header->x_units, 0, (size_t)GRD_UNIT_LEN);
 		memset ((void *)header->y_units, 0, (size_t)GRD_UNIT_LEN);
 		memset ((void *)header->z_units, 0, (size_t)GRD_UNIT_LEN);
-		check_nc_status (nc_get_att_text  (ncid, x_range_id, "units", header->x_units));
-        	check_nc_status (nc_get_att_text  (ncid, y_range_id, "units", header->y_units));
-		check_nc_status (nc_get_att_text  (ncid, z_range_id, "units", header->z_units));
+		check_nc_status (nc_get_att_text (ncid, x_range_id, "units", header->x_units));
+        	check_nc_status (nc_get_att_text (ncid, y_range_id, "units", header->y_units));
+		check_nc_status (nc_get_att_text (ncid, z_range_id, "units", header->z_units));
 		if (!header->x_units[0]) strcpy (header->x_units, "user_x_unit");	/* Set defaults if nothing given in file */
 		if (!header->y_units[0]) strcpy (header->y_units, "user_y_unit");
 		if (!header->z_units[0]) strcpy (header->z_units, "user_z_unit");
-        	check_nc_status (nc_get_att_double  (ncid, z_id, "scale_factor", &header->z_scale_factor));
-        	check_nc_status (nc_get_att_double  (ncid, z_id, "add_offset", &header->z_add_offset));
-        	check_nc_status (nc_get_att_int  (ncid, z_id, "node_offset", &header->node_offset));
-        	check_nc_status (nc_get_att_text  (ncid, NC_GLOBAL, "title", header->title));
-        	check_nc_status (nc_get_att_text  (ncid, NC_GLOBAL, "source", text));
+        	check_nc_status (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor));
+        	check_nc_status (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset));
+        	check_nc_status (nc_get_att_int (ncid, z_id, "node_offset", &header->node_offset));
+        	check_nc_status (nc_get_att_text (ncid, NC_GLOBAL, "title", header->title));
+        	check_nc_status (nc_get_att_text (ncid, NC_GLOBAL, "source", text));
 		strncpy (header->command, text, GRD_COMMAND_LEN);
 		strncpy (header->remark, &text[GRD_COMMAND_LEN], GRD_REMARK_LEN);
 
-		check_nc_status (nc_get_var_double(ncid, x_range_id, dummy));
+		check_nc_status (nc_get_var_double (ncid, x_range_id, dummy));
 		header->x_min = dummy[0];
 		header->x_max = dummy[1];
-		check_nc_status (nc_get_var_double(ncid, y_range_id, dummy));
+		check_nc_status (nc_get_var_double (ncid, y_range_id, dummy));
 		header->y_min = dummy[0];
 		header->y_max = dummy[1];
-		check_nc_status (nc_get_var_double(ncid, inc_id, dummy));
+		check_nc_status (nc_get_var_double (ncid, inc_id, dummy));
 		header->x_inc = dummy[0];
 		header->y_inc = dummy[1];
-		check_nc_status (nc_get_var_int(ncid, nm_id, nm));
+		check_nc_status (nc_get_var_int (ncid, nm_id, nm));
 		header->nx = nm[0];
 		header->ny = nm[1];
-		check_nc_status (nc_get_var_double(ncid, z_range_id, dummy));
+		check_nc_status (nc_get_var_double (ncid, z_range_id, dummy));
 		header->z_min = dummy[0];
 		header->z_max = dummy[1];
 	}
@@ -162,6 +165,7 @@ int GMT_cdf_grd_info (char *file, struct GRD_HEADER *header, char job)
 		check_nc_status (nc_put_att_text (ncid, z_range_id, "units", GRD_UNIT_LEN, header->z_units));
 		check_nc_status (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1, &header->z_scale_factor));
 		check_nc_status (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
+		check_nc_status (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1, &GMT_grd_out_nan_value));
 		check_nc_status (nc_put_att_int (ncid, z_id, "node_offset", NC_LONG, 1, &header->node_offset));
 		check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "title", GRD_TITLE_LEN, header->title));
 		check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "source", (GRD_COMMAND_LEN+GRD_REMARK_LEN), text));
@@ -170,19 +174,19 @@ int GMT_cdf_grd_info (char *file, struct GRD_HEADER *header, char job)
 
 		dummy[0] = header->x_min;
 		dummy[1] = header->x_max;
-		check_nc_status (nc_put_var_double(ncid, x_range_id, dummy));
+		check_nc_status (nc_put_var_double (ncid, x_range_id, dummy));
 		dummy[0] = header->y_min;
 		dummy[1] = header->y_max;
-		check_nc_status (nc_put_var_double(ncid, y_range_id, dummy));
+		check_nc_status (nc_put_var_double (ncid, y_range_id, dummy));
 		dummy[0] = header->x_inc;
 		dummy[1] = header->y_inc;
-		check_nc_status (nc_put_var_double(ncid, inc_id, dummy));
+		check_nc_status (nc_put_var_double (ncid, inc_id, dummy));
 		nm[0] = header->nx;
 		nm[1] = header->ny;
-		check_nc_status (nc_put_var_int(ncid, nm_id, nm));
+		check_nc_status (nc_put_var_int (ncid, nm_id, nm));
 		dummy[0] = header->z_min;
 		dummy[1] = header->z_max;
-		check_nc_status (nc_put_var_double(ncid, z_range_id, dummy));
+		check_nc_status (nc_put_var_double (ncid, z_range_id, dummy));
 	}
 
 	/* Return file id when job is capital letter, otherwise close file and retrun 0 */
@@ -215,7 +219,7 @@ int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	int first_col, last_col, first_row, last_row;
 	int i, j, ij, j2, width_in, width_out, height_in, i_0_out, kk, inc = 1;
 	int *k;
-	BOOLEAN check = !GMT_is_fnan (GMT_grd_in_nan_value);
+	BOOLEAN check;
 	float *tmp = VNULL;
 
 	/* Open file and get info */
@@ -250,6 +254,11 @@ int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	header->x_max = e;
 	header->y_min = s;
 	header->y_max = n;
+
+	/* Get the value of the missing data that will be converted to NaN */
+
+        nc_get_att_double (ncid, z_id, "_FillValue", &GMT_grd_in_nan_value);
+	check = !GMT_is_dnan (GMT_grd_in_nan_value);
 
 	tmp = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_cdf_read_grd");
 
@@ -293,8 +302,20 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	int j, ij, j2, width_in, width_out, height_out;
 	int first_col, last_col, first_row, last_row;
 	float *tmp = VNULL;
+	BOOLEAN check = FALSE;
 
-	BOOLEAN check = !GMT_is_fnan (GMT_grd_out_nan_value);
+	/* Determine the value to be assigned to missing data, if not already done so */
+
+	if (!GMT_is_dnan (GMT_grd_out_nan_value))
+		check = TRUE;
+	else if (GMT_grd_o_format == 8) {
+		GMT_grd_out_nan_value = -128;
+		check = TRUE;
+	}
+	else if (GMT_grd_o_format == 9) {
+		GMT_grd_out_nan_value = -32768;
+		check = TRUE;
+	}
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row);
 
