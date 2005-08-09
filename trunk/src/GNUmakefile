@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.38 2005-08-05 20:02:56 remko Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.39 2005-08-09 01:52:53 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -83,6 +83,7 @@ GMT_H	= gmt.h \
 	  gmt_notposix.h \
 	  gmt_notunix.h \
 	  gmt_version.h \
+	  gmt_grdformats.h \
 	  gmt_ellipsoids.h \
 	  gmt_datums.h
 
@@ -313,7 +314,7 @@ clean:
 
 spotless:	clean
 		rm -f $(GMTLIB) gmt_nan.h gmt_notposix.h grdmath.c gmtmath.c
-		rm -f gmt_keywords.h gmt_keycases.h gmt_datums.h gmt_ellipsoids.h *.man
+		rm -f gmt_keywords.h gmt_keycases.h gmt_datums.h gmt_ellipsoids.h gmt_grdformats.h *.man
 
 distclean:	spotless
 
