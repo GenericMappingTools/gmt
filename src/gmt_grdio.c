@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.30 2005-08-09 20:42:23 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.31 2005-08-10 13:26:35 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -49,7 +49,7 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 
-short int GMT_grdformats[N_GRD_FORMATS][3] = {
+short int GMT_grdformats[N_GRD_FORMATS][2] = {
 #include "gmt_grdformats.h"
 };
 
@@ -245,9 +245,7 @@ int grd_format_decoder (const char *code)
 		for (i = group = 0, id = -1; id < 0 && i < N_GRD_FORMATS; i++) {
 			if (GMT_grdformats[i][0] == (short)code[0]) {
 				group = code[0];
-				if (GMT_grdformats[i][1] == (short)code[1]) {
-					id = GMT_grdformats[i][2];
-				}
+				if (GMT_grdformats[i][1] == (short)code[1]) id = i;
 			}
 		}
 		
