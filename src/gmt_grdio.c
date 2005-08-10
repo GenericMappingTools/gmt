@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.31 2005-08-10 13:26:35 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.32 2005-08-10 19:03:16 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -49,7 +49,7 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 
-short int GMT_grdformats[N_GRD_FORMATS][2] = {
+int GMT_grdformats[N_GRD_FORMATS][2] = {
 #include "gmt_grdformats.h"
 };
 
@@ -225,6 +225,36 @@ int GMT_grd_get_o_format (char *file, char *fname, double *scale, double *offset
 		fprintf (stderr, "%s: GMT WARNING: scale_factor should not be 0, reset to 1.\n", GMT_program);
  	}
 	return (id);
+}
+
+int GMT_grd_data_size (int format, double *nan_value)
+{
+	/* Determine size of data type and set NaN value, if not yet done so (byte and short only) */
+
+	switch (GMT_grdformats[format][1]) {
+		case 'b':
+			if (GMT_is_dnan (*nan_value)) *nan_value = -128;
+			return (sizeof(char));
+			break;
+		case 's':
+			if (GMT_is_dnan (*nan_value)) *nan_value = -32768;
+			return (sizeof(short int));
+			break;
+		case 'i':
+			if (GMT_is_dnan (*nan_value)) *nan_value = -2147483648;
+		case 'm':
+			return (sizeof(int));
+			break;
+		case 'f':
+			return (sizeof(float));
+			break;
+		case 'd':
+			return (sizeof(double));
+			break;
+		default:
+			fprintf (stderr, "Unknown grid data type: %c\n", GMT_grdformats[format][1]);
+			exit (EXIT_FAILURE);
+	}
 }
 
 int grd_format_decoder (const char *code)
@@ -508,57 +538,15 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 		if (header) fseek (G->fp, (long)HEADER_SIZE, SEEK_SET);
 	}
 
-	switch (G->id) {
-		case 0:	/* 4-byte floats */
-		case 1:
-		case 6:
-		case 10:
-		case 18:
-			G->size = sizeof (float);
-			G->n_byte = G->header.nx * G->size;
-			G->type = GMT_NATIVE_FLOAT;
-			break;
-		case 2:	/* 2-byte shorts */
-		case 8:
-		case 16:
-			G->size = sizeof (short int);
-			G->n_byte = G->header.nx * G->size;
-			G->type = GMT_NATIVE_SHORT;
-			break;
-		case 3:	/* Pairs of 1-byte unsigned chars */
-			G->size = sizeof (unsigned char);
-			G->n_byte = irint (ceil (G->header.nx / 2.0)) * 2 * G->size;
-			G->type = GMT_NATIVE_UCHAR;
-			break;
-		case 4:	/* 1-byte unsigned chars */
-		case 7:
-		case 15:
-			G->size = sizeof (unsigned char);
-			G->n_byte = G->header.nx * G->size;
-			G->type = GMT_NATIVE_UCHAR;
-			break;
-		case 5:	/* bit masks */
-			G->size = sizeof (unsigned int);
-			G->n_byte = irint (ceil (G->header.nx / 32.0)) * G->size;
-			G->type = GMT_NATIVE_INT;
-			break;
-		case 9:	/* 4-byte signed int */
-		case 13:
-		case 17:
-			G->size = sizeof (int);
-			G->n_byte = G->header.nx * G->size;
-			G->type = GMT_NATIVE_INT;
-			break;
-		case 11:	/* 8-byte double */
-		case 14:
-		case 19:
-			G->size = sizeof (double);
-			G->n_byte = G->header.nx * G->size;
-			G->type = GMT_NATIVE_DOUBLE;
-			break;
-		default:
-			break;
-	}
+	G->type = GMT_grdformats[G->id][1];
+	G->size = GMT_grd_data_size (G->id, &GMT_grd_in_nan_value);
+
+	if (G->type == 'm')	/* Bit mask */
+		G->n_byte = irint (ceil (G->header.nx / 32.0)) * G->size;
+	else if (G->type == 'b' && GMT_grdformats[G->id][0] == 'r')	/* Sun Raster */
+		G->n_byte = irint (ceil (G->header.nx / 2.0)) * 2 * G->size;
+	else	/* All other */
+		G->n_byte = G->header.nx * G->size;
 			
 	G->v_row = (void *) GMT_memory (VNULL, G->n_byte, 1, GMT_program);
 	
@@ -639,6 +627,6 @@ void GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 	}
 	else {			/* Get a binary row */
 		if (!G->auto_advance) fseek (G->fp, (long)(HEADER_SIZE + G->row * G->n_byte), SEEK_SET);
-		for (i = 0; i < G->header.nx; i++) GMT_native_write_one (G->fp, row[i], G->type);
+		for (i = 0; i < G->header.nx; i++) GMT_native_write_one (G->fp, row[i], GMT_grdformats[G->id][1]);
 	}
 }

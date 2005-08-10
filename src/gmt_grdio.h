@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.18 2005-08-08 04:11:21 pwessel Exp $
+ *	$Id: gmt_grdio.h,v 1.19 2005-08-10 19:03:16 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -29,6 +29,7 @@
 #define GMT_GRDIO_H
 
 #define N_GRD_FORMATS	20	/* Number of supported grd file formats */
+EXTERN_MSC int GMT_grdformats [N_GRD_FORMATS][2];
 
 EXTERN_MSC int GMT_read_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_update_grd_info (char *file, struct GRD_HEADER *header);
@@ -38,6 +39,7 @@ EXTERN_MSC int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid
 
 EXTERN_MSC int GMT_grd_i_format;
 EXTERN_MSC int GMT_grd_o_format;
+EXTERN_MSC int GMT_grd_data_size (int format, double *nan_value);
 EXTERN_MSC int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s, double *n, int *width, int *height, int *first_col, int *last_col, int *first_row, int *last_row);
 
 /* These are pointers to the various functions and are set in GMT_grdio_init() */
