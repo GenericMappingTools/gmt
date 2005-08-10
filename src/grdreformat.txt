@@ -10,13 +10,21 @@ user may select a subset of the data to be written and to specify scaling, trans
 .TP
 \fIingrdfile\fP
 The grdfile to be read.  Append format =\fIid\fP code if not a standard \fBGMT\fP netCDF-based grdfile.
-If \fIid\fP is set, you may optionally append \fIscale\fP and \fIoffset\fP to scale the data and then add an offset.  If \fIscale\fP and \fIoffset\fP
+If \fIid\fP is set, you may optionally append \fIscale\fP and \fIoffset\fP.  These options will scale the data
+and then offset them with the specified amounts after reading.
+.br
+If \fIscale\fP and \fIoffset\fP
 are supplied you may also append a value that represent 'not-a-number' (for floating-point grids this
 is unnecessary since the IEEE NaN is used; however short integers need a value which means no data available.)
 .TP
 \fIoutgrdfile\fP
 The grdfile to be written.  Append format =\fIid\fP code if not a standard \fBGMT\fP netCDF-based grdfile.
-If \fIid\fP is set, you may optionally append \fIscale\fP and \fIoffset\fP to scale the data and then add an offset.  If \fIscale\fP and \fIoffset\fP
+If \fIid\fP is set, you may optionally append \fIscale\fP and \fIoffset\fP.  These options are particularly 
+practical when storing the data as integers, first removing an offset and then scaling down the values.
+Since the scale and offset are applied in reverse order when reading, this does not affect the data
+values (except for round-offs).
+.br
+If \fIscale\fP and \fIoffset\fP
 are supplied you may also append a value that represent 'not-a-number' (for floating-point grids this
 is unnecessary since the IEEE NaN is used; however short integers need a value which means no data available.)
 For binary native GMT files the size of the \fBGMT\fP grdheader block is \fIhsize\fP = 896 bytes, and the total size of the file
