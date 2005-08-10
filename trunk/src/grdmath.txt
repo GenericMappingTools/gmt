@@ -40,6 +40,10 @@ The following symbols have special meaning:
 .br
 \fBY \fP	Grid with y-coordinates
 .br
+\fBXn \fP	Grid with normalized [-1 to +1] x-coordinates
+.br
+\fBYn \fP	Grid with normalized [-1 to +1] y-coordinates
+.br
 .SH OPTIONS
 .TP
 .B \-F

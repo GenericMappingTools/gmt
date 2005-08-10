@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.167 2005-08-09 22:49:57 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.168 2005-08-10 07:38:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -125,7 +125,7 @@ int GMT_label_is_OK (char *this_label, char *label, double this_dist, double thi
 int GMT_contlabel_specs_old (char *txt, struct GMT_CONTOUR *G);
 struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name);
 int GMT_get_label_parameters(int side, double line_angle, int type, double *text_angle, int *justify);
-void rtheta_transform (double lon, double lat, double *x, double *y, int pole);
+int GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LINES *P, int count[]);
 
 double *GMT_x2sys_Y;
 
@@ -3555,55 +3555,7 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 		return (GMT_OUTSIDE_POLYGON);
 }
 
-/* Testing if inside/outside spherical polygons (i.e., lon, lat polygons) */
-
-/*
- * The following approach should work for all spherical polygons except those
- * that contain BOTH poles.  If this is the case, the user is advised to break
- * the polygon into two section, containing one pole each.
- */
- 
- void GMT_init_sphpol (struct GMT_LINES *P)
-/* Special setup function.for spherical polygons.
- */
-{
-	int i, ip, last;
-	double lon_sum = 0.0, dlon;
-	
-	P->S = (struct GMT_SPHPOL_INFO *) GMT_memory (VNULL, 1, sizeof (struct GMT_SPHPOL_INFO), GMT_program);
-	
-	/* Copy some information */
-	
-	last = (P->lon[0] == P->lon[P->np-1] && P->lat[0] == P->lat[P->np-1]) ? P->np - 1 : P->np;	/* Skip repeated point that closed the polygon */
-	
-	for (i = 0; i < last; i++) {
-		ip = (i == 0) ? last - 1: i - 1;	/* Previous point index */
-		dlon = P->lon[i] - P->lon[ip];
-		if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);	/* Crossed Greenwhich or Dateline, pick the shortest distance */
-		lon_sum += dlon;
-	}
-	P->S->pole = (fabs (P->max_lat) > fabs (P->min_lat)) ? copysign (1.0, P->max_lat) : copysign (1.0, P->min_lat);	/* Pick must suitable pole: S or N */
-	P->S->polar = (fabs (fabs (lon_sum) - 360.0) < GMT_CONV_LIMIT);	/* TRUE if contains a pole */
-	
-	/* Set up the r-theta projection of the polygon */
-	
-	P->S->x = (double *) GMT_memory (VNULL, P->np, sizeof (double), GMT_program);
-	P->S->y = (double *) GMT_memory (VNULL, P->np, sizeof (double), GMT_program);
-	
-	for (i = 0; i < P->np; i++) rtheta_transform (P->lon[i], P->lat[i], &P->S->x[i], &P->S->y[i], P->S->pole);
-}
-
-void rtheta_transform (double lon, double lat, double *x, double *y, int pole)
-{	/* Use r as colatitude from the selected pole and theta as longitude */
-	double r, c, s;
-	
-	r = 90.0 - lat * pole;
-	sincos (lon * D2R, &s, &c);				/* sin, cos of azimuth (= longitude) */
-	*x = r * c;
-	*y = r * s;
-}
-
-int GMT_inonout_sphpol (double plon, double plat, const struct GMT_SPHPOL_INFO *P)
+int GMT_inonout_sphpol (double plon, double plat, const struct GMT_LINES *P)
 /* This function is used to see if some point P is located inside, outside, or on the boundary of the
  * spherical polygon S previously defined by a call to subroutine GMT_init_sphpol.
  * Returns the following values:
@@ -3612,14 +3564,103 @@ int GMT_inonout_sphpol (double plon, double plat, const struct GMT_SPHPOL_INFO *
  *	2:	P is on boundary of S
  */
 {
-	if (P == NULL) {	/* Not set yet */
-		fprintf (stderr, "%s: GMT ERROR: GMT_inonout_sphpol: GMT_init_sphpol not called first!\n", GMT_program);
-		exit (EXIT_FAILURE);
+	/* Algorithm:
+	 * Case 1: The polygon S contains a geographical pole
+	 *	   a) if P is beyond the lower latitude then P is outside
+	 *	   b) Draw meridian from P to N pole and count intersections:
+	 *		odd: P is outside; even: P is inside
+	 * Case 2: S does not contain a pole
+	 *	   a) If P is outside range of latitudes then P is outside
+	 *	   c) Draw meridian from P to N pole and count intersections:
+	 *		odd: P is inside; even: P is outside
+	 * In all cases, we check if P is on the outline of S
+	 */
+	
+	int count[2];
+		
+	if (P->polar) {	/* Case 1 of an enclosed polar cap */
+		if (P->pole == +1) {	/* N polar cap */
+			if (plat < P->min_lat) return (GMT_OUTSIDE_POLYGON);	/* South of a N polar cap */
+			if (plat > P->max_lat) return (GMT_INSIDE_POLYGON);	/* Clearly inside of a N polar cap */
+		}
+		if (P->pole == -1) {	/* S polar cap */
+			if (plat > P->max_lat) return (GMT_OUTSIDE_POLYGON);	/* North of a S polar cap */
+			if (plat < P->min_lat) return (GMT_INSIDE_POLYGON);	/* North of a S polar cap */
+		}
+	
+		/* Tally up number of intersections between polygon and meridian through P */
+		
+		if (GMT_inonout_sphpol_count (plon, plat, P, count)) return (GMT_ONSIDE_POLYGON);	/* Found P is on S */
+	
+		if (P->pole == +1 && count[0] % 2 == 0) return (GMT_INSIDE_POLYGON);
+		if (P->pole == -1 && count[1] % 2 == 0) return (GMT_INSIDE_POLYGON);
+	
+		return (GMT_OUTSIDE_POLYGON);
 	}
 	
-	rtheta_transform (plon, plat, &plon, &plat, P->pole);	/* Project the point to local (polar) coordinates */
+	/* Here is Case 2.  First check latitude range */
 	
-	return (GMT_non_zero_winding (plon, plat, P->x, P->y, P->n));	
+	if (plat < P->min_lat || plat > P->max_lat) return (GMT_OUTSIDE_POLYGON);
+	
+	/* Longitudes are tricker and are tested within the tallying of intersections */
+	
+	if (GMT_inonout_sphpol_count (plon, plat, P, count)) return (GMT_ONSIDE_POLYGON);	/* Found P is on S */
+
+	if (count[0] % 2) return (GMT_INSIDE_POLYGON);
+	
+	return (GMT_OUTSIDE_POLYGON);	/* Nothing triggered the tests; we are outside */
+}
+
+int GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LINES *P, int count[])
+{	/* Case of a polar cap */
+	int i, in;
+	double W, E, S, N, lon, lon1, lon2, dlon, x_lat;
+	
+	/* Draw meridian through P and count all the crossings with S */
+	
+	for (i = count[0] = count[1] = 0; i < P->np - 1; i++) {	/* -1, since we now last point repeats the first */
+		in = i + 1;		/* Next point index */
+		lon1 = P->lon[i];	/* Copy the two longitudes since we need to mess with them */
+		lon2 = P->lon[in];
+		dlon = lon2 - lon1;
+		if (dlon > 180.0)		/* Jumped across Greenwhich going westward */
+			lon2 -= 360.0;	
+		else if (dlon < -180.0)		/* Jumped across Greenwhich going eastward */
+			lon1 -= 360.0;
+		if (lon1 <= lon2) {	/* Segment goes W to E (or N-S) */
+			W = lon1;
+			E = lon2;
+		}
+		else {			/* Segment goes E to W */
+			W = lon2;
+			E = lon1;
+		}
+		lon = plon;	/* Local copy of plon, below adjusted given the segment lon range */
+		while (lon > W) lon -= 360.0;	/* Make sure we rewind way west for starters */
+		while (lon < W) lon += 360.0;	/* Then make sure we wind to inside the lon range or way east */
+		if (lon > E) continue;	/* Not crossing this segment */
+		if (dlon == 0.0) {	/* Special case of N-S segment: does P lie on it? */
+			if (P->lat[in] < P->lat[i]) {	/* Get N and S limits for segment */
+				S = P->lat[in];
+				N = P->lat[i];
+			}
+			else {
+				N = P->lat[in];
+				S = P->lat[i];
+			}
+			if (plat < S || plat > N) continue;	/* P is not on this segment */
+			return (1);	/* P is on segment boundary; we are done*/
+		}
+		/* Calculate latitude at intersection */
+		x_lat = P->lat[i] + ((P->lat[in] - P->lat[i]) / (lon2 - lon1)) * (lon - lon1);
+		if (fabs (x_lat - plat) < GMT_CONV_LIMIT) return (1);	/* P is on S boundary */
+		if (lon == lon1) continue;	/* Only allow cutting a vertex at end of a segment to avoid duplicates */
+		if (x_lat > plat)	/* Cut is north of P */
+			count[0]++;
+		else			/* Cut is south of P */
+			count[1]++;
+	}
+	return (0);	/* This means no special cases were detected that warrant an immediate return */
 }
 
 /* GMT can either compile with its standard Delaunay triangulation routine
