@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.88 2005-08-09 22:49:57 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.89 2005-08-10 07:38:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2700,10 +2700,31 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 
 		/* If file is a polygon and we must close it if needed */
 
-		if (poly && !(e[i].lon[0] == e[i].lon[j-1] && e[i].lat[0] == e[i].lat[j-1])) {
-			e[i].lon[j] = e[i].lon[0];
-			e[i].lat[j] = e[i].lat[0];
-			e[i].np++;
+		if (poly) {
+			if (GMT_io.in_col_type[0] & GMT_IS_GEO) {	/* Must check for polar cap */
+				double dlon, lon_sum = 0.0, lat_sum = 0.0;
+				dlon = e[i].lon[0] - e[i].lon[j-1];
+				if (!((fabs (dlon) == 0.0 || fabs (dlon) == 360.0) && e[i].lat[0] == e[i].lat[j-1])) {
+					e[i].lon[j] = e[i].lon[0];
+					e[i].lat[j] = e[i].lat[0];
+					e[i].np++;
+				}
+				for (j = 0; j < e[i].np - 1; j++) {
+					dlon = e[i].lon[j+1] - e[i].lon[j];
+					if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);	/* Crossed Greenwhich or Dateline, pick the shortest distance */
+					lon_sum += dlon;
+					lat_sum += e[i].lat[j];
+				}
+				if (fabs (fabs (lon_sum) - 360.0) < GMT_CONV_LIMIT) {	/* TRUE if contains a pole */
+					e[i].polar = TRUE;
+					e[i].pole = copysign (1.0, lat_sum);
+				}
+			}
+			else if (!(e[i].lon[0] == e[i].lon[j-1] && e[i].lat[0] == e[i].lat[j-1])) {	/* Cartesian closure */
+				e[i].lon[j] = e[i].lon[0];
+				e[i].lat[j] = e[i].lat[0];
+				e[i].np++;
+			}
 		}
 
 		/* Reallocate to free up some memory */
@@ -2744,13 +2765,6 @@ void GMT_lines_delete (struct GMT_LINES *p, int n_lines)
 	for (i = 0; i < n_lines; i++) {
 		GMT_free ((void *) p[i].lon);
 		GMT_free ((void *) p[i].lat);
-		if (p[i].S) {	/* Had spherical polygon information structure loaded */
-			if (p[i].S->polar) {	/* Had x/y arrays created */
-				GMT_free ((void *) p[i].S->x);
-				GMT_free ((void *) p[i].S->y);
-			}
-			GMT_free ((void *) p[i].S);
-		}
 	}
 	GMT_free ((void *) p);
 }
