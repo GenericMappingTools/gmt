@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.9 2005-08-09 20:42:23 remko Exp $
+ *	$Id: gmt_nc.c,v 1.10 2005-08-10 19:03:16 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -46,10 +46,8 @@
 #include "gmt.h"
 
 char nc_file[BUFSIZ];
-
 int check_nc_status (int status);
 int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job);
-
 
 int GMT_nc_read_grd_info (char *file, struct GRD_HEADER *header)
 {
@@ -68,10 +66,10 @@ int GMT_nc_write_grd_info (char *file, struct GRD_HEADER *header)
 
 int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 {
-	int  ncid, id, i;
+	int  ncid, i;
 	double dummy[2];
 	char text[GRD_COMMAND_LEN+GRD_REMARK_LEN];
-	nc_type z_type, type[5] = {NC_BYTE, NC_SHORT, NC_INT, NC_FLOAT, NC_DOUBLE};
+	nc_type z_type;
 	float *tmp = VNULL;
 
 	/* Dimension ids, variable ids, etc.. */
@@ -103,11 +101,24 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 
 		check_nc_status (nc_def_var (ncid, "x", NC_FLOAT, 1, &x_dim, &x_id));
 		check_nc_status (nc_def_var (ncid, "y", NC_FLOAT, 1, &y_dim, &y_id));
+
+		switch (GMT_grdformats[GMT_grd_o_format][1]) {
+			case 'b':
+				z_type = NC_BYTE; break;
+			case 's':
+				z_type = NC_SHORT; break;
+			case 'i':
+				z_type = NC_INT; break;
+			case 'f':
+				z_type = NC_FLOAT; break;
+			case 'd':
+				z_type = NC_DOUBLE; break;
+			default:
+				z_type = NC_NAT;
+		}
+
 		dims[0]	= y_dim;
 		dims[1]	= x_dim;
-
-		id = GMT_grd_o_format - 15;	/* Converts 15-19 range to 0-4 to use with type[id] */
-		z_type = type[id];
 		check_nc_status (nc_def_var (ncid, "z", z_type, 2, dims, &z_id));
 	}
 	else {
@@ -355,11 +366,11 @@ int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *grid, double
 
 	if (!GMT_is_dnan (GMT_grd_out_nan_value))
 		check = TRUE;
-	else if (GMT_grd_o_format == 15) {
+	else if (GMT_grdformats[GMT_grd_o_format][1] == 'b') {
 		GMT_grd_out_nan_value = -128;
 		check = TRUE;
 	}
-	else if (GMT_grd_o_format == 16) {
+	else if (GMT_grdformats[GMT_grd_o_format][1] == 's') {
 		GMT_grd_out_nan_value = -32768;
 		check = TRUE;
 	}

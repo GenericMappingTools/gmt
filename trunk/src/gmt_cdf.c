@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.17 2005-08-09 20:42:23 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.18 2005-08-10 19:03:16 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -63,10 +63,10 @@ int GMT_cdf_write_grd_info (char *file, struct GRD_HEADER *header)
 
 int GMT_cdf_grd_info (char *file, struct GRD_HEADER *header, char job)
 {
-	int  ncid, nm[2], id;
+	int  ncid, nm[2];
 	double dummy[2];
 	char text[GRD_COMMAND_LEN+GRD_REMARK_LEN];
-	nc_type z_type, type[5] = {NC_BYTE, NC_SHORT, NC_INT, NC_FLOAT, NC_DOUBLE};
+	nc_type z_type;
 
 	/* Dimension ids, varibale ids, etc. */
 	int side_dim, xysize_dim, x_range_id, y_range_id, z_range_id, inc_id, nm_id, z_id, dims[1];
@@ -101,10 +101,20 @@ int GMT_cdf_grd_info (char *file, struct GRD_HEADER *header, char job)
 		check_nc_status (nc_def_var (ncid, "spacing", NC_DOUBLE, 1, dims, &inc_id));
 		check_nc_status (nc_def_var (ncid, "dimension", NC_LONG, 1, dims, &nm_id));
 
-		id = GMT_grd_o_format;
-		if (id == 0) id = 3;
-		if (id > 6) id -= 7;	/* This translates the netCDF formats 0, 7-11 into 0-4 so we can use type[id] */
-		z_type = type[id];
+		switch (GMT_grdformats[GMT_grd_o_format][1]) {
+			case 'b':
+				z_type = NC_BYTE; break;
+			case 's':
+				z_type = NC_SHORT; break;
+			case 'i':
+				z_type = NC_INT; break;
+			case 'f':
+				z_type = NC_FLOAT; break;
+			case 'd':
+				z_type = NC_DOUBLE; break;
+			default:
+				z_type = NC_NAT;
+		}
 
 		dims[0]	= xysize_dim;
 		check_nc_status (nc_def_var (ncid, "z", z_type, 1, dims, &z_id));
@@ -308,11 +318,11 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 
 	if (!GMT_is_dnan (GMT_grd_out_nan_value))
 		check = TRUE;
-	else if (GMT_grd_o_format == 8) {
+	else if (GMT_grdformats[GMT_grd_o_format][1] == 'b') {
 		GMT_grd_out_nan_value = -128;
 		check = TRUE;
 	}
-	else if (GMT_grd_o_format == 9) {
+	else if (GMT_grdformats[GMT_grd_o_format][1] == 's') {
 		GMT_grd_out_nan_value = -32768;
 		check = TRUE;
 	}
