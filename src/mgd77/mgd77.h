@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.10 2005-05-18 05:28:52 mtchandl Exp $
+ *	$Id: mgd77.h,v 1.11 2005-08-12 05:13:39 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -36,6 +36,10 @@
 #define MGD77_ID		24
 #define MGD77_SLN		25
 #define MGD77_SSPN		26
+
+#define MGD77_FORMAT_ANY	0
+#define MGD77_FORMAT_ASC	1
+#define MGD77_FORMAT_BIN	2
 
 /* We will use bit flags to keep track of which data column we are referring to.
  * field 0 is rightmost bit (1), field 1 is the next bit (2), field 2 is 4 and
@@ -174,6 +178,7 @@ struct MGD77_HEADER_RECORD {		/* See MGD-77 Documentation from NGDC for details 
  */
 
 struct MGD77_DATA_RECORD {	/* See MGD-77 Documentation from NGDC for details */
+	/* This is the classic MGD77 portion of the data record */
 	double number[24];
 	double time;		/* Time using current GMT absolute time conventions */
 	char word[3][10];
@@ -214,10 +219,12 @@ struct MGD77_CONTROL {
 	char *MGD77_HOME;				/* Directory where paths are stored */
 	char **MGD77_datadir;				/* Directories where MGD77 data may live */
 	int n_MGD77_paths;				/* Number of these directories */
-
+	FILE *fp;
 	int n_out_columns;				/* Number of output columns requested */
 	int order[32];					/* Gives the output order of each column */
 	BOOLEAN use_column[32];				/* TRUE for columns we are interested in outputting */
+	int format[2];					/* 0 if any file format, 1 if ascii, and 2 if binary */
+	BOOLEAN binary[2];				/* TRUE if a binary MGD77+ file [0] is input, [1] is output */
 	int time_format;				/* Either GMT_IS_ABSTIME or GMT_IS_RELTIME */
 	BOOLEAN flat_earth;				/* TRUE if we want quick distance calcuations */
 	unsigned int bit_pattern;			/* 27 bit flags, one for each parameter desired */
@@ -229,11 +236,11 @@ struct MGD77_CONTROL {
 };
 
 EXTERN_MSC void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks);		/* Initialize the MGD77 machinery */
-EXTERN_MSC int  MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H);	/* Will read the entire 24-section header structure */
-EXTERN_MSC int  MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H);	/* Will write the entire 24-section header structure based on variables */
-EXTERN_MSC int  MGD77_Write_Header_Record_Orig (FILE *fp, struct MGD77_HEADER_RECORD *H);	/* Will write the entire 24-section header structure by echoing text records */
-EXTERN_MSC int  MGD77_Read_Data_Record (FILE *fp, struct MGD77_DATA_RECORD *H);		/* Will read a single data record */
-EXTERN_MSC int  MGD77_Write_Data_Record_ew (FILE *fp, struct MGD77_DATA_RECORD *H);	/* Will write a single data record */
+EXTERN_MSC int  MGD77_Read_Header_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER_RECORD *H);	/* Will read the entire 24-section header structure */
+EXTERN_MSC int  MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H, int format);	/* Will write the entire 24-section header structure based on variables */
+EXTERN_MSC int  MGD77_Write_Header_Record_Orig (FILE *fp, struct MGD77_HEADER_RECORD *H, int format);	/* Will write the entire 24-section header structure by echoing text records */
+EXTERN_MSC int  MGD77_Read_Data_Record (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *H);		/* Will read a single data record */
+EXTERN_MSC int  MGD77_Write_Data_Record_new (FILE *fp, struct MGD77_DATA_RECORD *H);	/* Will write a single data record */
 EXTERN_MSC int  MGD77_View_Line (FILE *fp, char *line);					/* View a single MGD77 string */
 EXTERN_MSC int  MGD77_Convert_To_Old_Format(char *newFormatLine, char *oldFormatLine);	/* Will convert a single record from new to old MGD77 format */
 EXTERN_MSC int  MGD77_Convert_To_New_Format(char *oldFormatLine);			/* Will convert a single record from old to new MGD77 format */
@@ -241,6 +248,8 @@ EXTERN_MSC int  MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONT
 EXTERN_MSC void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F);		/* Decode the -F option */
 EXTERN_MSC BOOLEAN MGD77_pass_record (struct MGD77_DATA_RECORD *H, struct MGD77_CONTROL *F);	/* Compare record to specified constraints */
 EXTERN_MSC void MGD77_set_unit (char *dist, double *scale);
+EXTERN_MSC int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw);  /* Opens a MGD77[+] file */
+EXTERN_MSC int MGD77_Close_File (struct MGD77_CONTROL *F);  /* Closes a MGD77[+] file */
 
 EXTERN_MSC struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_FIELDS];
 
