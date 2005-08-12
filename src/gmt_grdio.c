@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.33 2005-08-12 08:45:45 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.34 2005-08-12 15:54:04 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -229,7 +229,7 @@ int GMT_grd_get_o_format (char *file, char *fname, double *scale, double *offset
 
 int GMT_grd_data_size (int format, double *nan_value)
 {
-	/* Determine size of data type and set NaN value, if not yet done so (byte and short only) */
+	/* Determine size of data type and set NaN value, if not yet done so (integers only) */
 
 	switch (GMT_grdformats[format][1]) {
 		case 'b':
@@ -241,7 +241,7 @@ int GMT_grd_data_size (int format, double *nan_value)
 			return (sizeof(short int));
 			break;
 		case 'i':
-			if (GMT_is_dnan (*nan_value)) *nan_value = -2147483647 - 1;	/* Keeps gcc from complaining that 2147483648 is too big (it isn't) */
+			if (GMT_is_dnan (*nan_value)) *nan_value = -2147483647 - 1;	/* Keeps gcc from complaining that -2147483648 is too big (it isn't) */
 		case 'm':
 			return (sizeof(int));
 			break;
@@ -289,12 +289,11 @@ int grd_format_decoder (const char *code)
 	return (id);
 }	
 
-/* Routine that scales and offsets the data if specified */
-
 void GMT_grd_do_scaling (float *grid, int nm, double scale, double offset)
 {
+	/* Routine that scales and offsets the data if specified */
 	int i;
-	
+
 	if (scale == 1.0 && offset == 0.0) return;
 	
 	if (scale == 1.0)
