@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.16 2005-07-30 11:36:25 pwessel Exp $
+ *	$Id: mgd77.c,v 1.17 2005-08-12 05:13:39 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -31,6 +31,10 @@ BOOLEAN MGD77_ceq_test (char *value, char *match);
 BOOLEAN MGD77_cneq_test (char *value, char *match);
 BOOLEAN MGD77_cgt_test (char *value, char *match);
 BOOLEAN MGD77_cge_test (char *value, char *match);
+int MGD77_Read_Header_Record_ASCII (struct MGD77_CONTROL *F, struct MGD77_HEADER_RECORD *H);
+int MGD77_Read_Header_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_HEADER_RECORD *H);
+int MGD77_Read_Data_Record_ASCII (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *H);
+int MGD77_Read_Data_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *H);
 
 struct MGD77_DATA_RECORD *MGD77Record;
  
@@ -89,20 +93,69 @@ void MGD77_Put_short (FILE *fp, short s, int length, double scale, int sign);
 void MGD77_Put_byte (FILE *fp, byte b, int length, double scale, int sign);
 void MGD77_Put_char (FILE *fp, char c, int length, double scale, int sign);
 void MGD77_Put_Text (FILE *fp, Text t, int length, double scale, int sign);
-int MGD77_Read_Header_Sequence (FILE *fp, char *record, int seq);
+int MGD77_Read_Header_Sequence (FILE *fp, char *record, int seq, int format);
 int MGD77_Read_Data_Sequence (FILE *fp, char *record);
-void MGD77_Write_Sequence (FILE *fp, int seq);
-  
-int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will read the entire 24-section header structure */
-{
-	char record[MGD77_HEADER_LENGTH];
-	int i, sequence = 0;
+void MGD77_Write_Sequence (FILE *fp, int seq, int format);
+void MGG77_Fatal_Error (char *error);
 
-	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) H->record[i][0] = '\0';
+int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw)  /* Opens a MGD77[+] file */
+{
+	char path[BUFSIZ], mode[3];
+	
+	mode[2] = '\0';
+	
+	if (rw == 0) {	/* Reading a file */
+		mode[0] = 'r';
+		if (MGD77_Get_Path (path, leg, F)) {
+   			fprintf (stderr, "%s : Cannot find leg %s\n", GMT_program, leg);
+     			return (-1);
+  		}
+	}
+	else {		/* Writing to a new file; leg is assumed to be complete name */
+		mode[0] = 'w';
+		strcpy (path, leg);
+	}
+	mode[1] = (F->binary[rw]) ? 'b' : '\0';
+	if ((F->fp = GMT_fopen (path, mode)) == NULL) {
+		fprintf (stderr, "%s: Could not open %s\n", GMT_program, path);
+		return (-1);
+	}
+
+	return (0);
+}
+
+int MGD77_Close_File (struct MGD77_CONTROL *F)  /* Closes a MGD77[+] file */
+{
+	return (GMT_fclose (F->fp));
+}
+
+int MGD77_Read_Header_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER_RECORD *H)  /* Will read the entire 24-section header structure */
+{
+	int error;
+	
+	error = MGD77_Read_Header_Record_ASCII (F, H);			 	/* Will read the ascii MGD77 header record block */
+	if (error) MGD77_Fatal_Error ("Could not read MGD77 original header block");
+	if (F->binary[0]) return (MGD77_Read_Header_Record_Binary (F, H));	  /* Will read the binary MGD77+ header record block */
+}
+
+int MGD77_Read_Data_Record (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will read a single MGD77 record */
+{
+	if (F->binary[0]) return (MGD77_Read_Data_Record_Binary (F, MGD77Record));	  /* Will read a single binary MGD77+ record */
+	return (MGD77_Read_Data_Record_ASCII (F, MGD77Record));				  /* Will read a single ascii MGD77 record */
+}
+
+int MGD77_Read_Header_Record_ASCII (struct MGD77_CONTROL *F, struct MGD77_HEADER_RECORD *H)  /* Will read the entire 24-section header structure */
+{
+	char record[MGD77_HEADER_LENGTH+1];
+	int i, sequence = 0, fmt;
+
+	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) H->record[i][0] = H->record[i][80] = '\0';
+	
+	fmt = (F->binary) ? MGD77_FORMAT_BIN : MGD77_FORMAT_ASC;
 	
 	/* Process Sequence No 01: */
 
-	if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+	if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 	strncpy (H->record[0], record, MGD77_HEADER_LENGTH);
 
 	H->Record_Type                         = MGD77_Get_byte (record, 1, 1, 1);
@@ -120,7 +173,7 @@ int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will 
 
 	/* Process Sequence No 02: */
 
-	if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+	if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 	strncpy (H->record[1], record, MGD77_HEADER_LENGTH);
 
 	H->Country                             = MGD77_Get_Text (record, 1, 18, 1);
@@ -131,7 +184,7 @@ int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will 
 
 	/* Process Sequence No 03: */
 
-	if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+	if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 	strncpy (H->record[2], record, MGD77_HEADER_LENGTH);
 
 	H->Project_Cruise_Leg                  = MGD77_Get_Text (record, 1, 58, 1);
@@ -139,7 +192,7 @@ int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will 
 
 	/* Process Sequence No 04: */
 
-	if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+	if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 	strncpy (H->record[3], record, MGD77_HEADER_LENGTH);
 
 	H->Survey_Departure_Year               = MGD77_Get_short (record, 1, 4, 1);
@@ -153,7 +206,7 @@ int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will 
 
 	/* Process Sequence No 05: */
 
-	if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+	if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 	strncpy (H->record[4], record, MGD77_HEADER_LENGTH);
 
 	H->Navigation_Instrumentation          = MGD77_Get_Text (record, 1, 40, 1);
@@ -161,7 +214,7 @@ int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will 
 
 	/* Process Sequence No 06: */
 
-	if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+	if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 	strncpy (H->record[5], record, MGD77_HEADER_LENGTH);
 
 	H->Bathymetry_Instrumentation          = MGD77_Get_Text (record, 1, 40, 1);
@@ -169,7 +222,7 @@ int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will 
 
 	/* Process Sequence No 07: */
 
-	if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+	if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 	strncpy (H->record[6], record, MGD77_HEADER_LENGTH);
 
 	H->Magnetics_Instrumentation           = MGD77_Get_Text (record, 1, 40, 1);
@@ -177,7 +230,7 @@ int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will 
 
 	/* Process Sequence No 08: */
 
-	if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+	if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 	strncpy (H->record[7], record, MGD77_HEADER_LENGTH);
 
 	H->Gravity_Instrumentation             = MGD77_Get_Text (record, 1, 40, 1);
@@ -185,7 +238,7 @@ int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will 
 
 	/* Process Sequence No 09: */
 
-	if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+	if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 	strncpy (H->record[8], record, MGD77_HEADER_LENGTH);
 
 	H->Seismic_Instrumentation             = MGD77_Get_Text (record, 1, 40, 1);
@@ -193,7 +246,7 @@ int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will 
 
 	/* Process Sequence No 10: */
 
-	if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+	if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 	strncpy (H->record[9], record, MGD77_HEADER_LENGTH);
 
 	H->Format_Type                         = MGD77_Get_char (record, 1, 1, 1);
@@ -202,7 +255,7 @@ int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will 
 
 	/* Process Sequence No 11: */
 
-	if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+	if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 	strncpy (H->record[10], record, MGD77_HEADER_LENGTH);
 
 	H->Format_Description_2                = MGD77_Get_Text (record, 1, 17, 1);
@@ -215,7 +268,7 @@ int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will 
 
 	/* Process Sequence No 12: */
 
-	if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+	if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 	strncpy (H->record[11], record, MGD77_HEADER_LENGTH);
 
 	H->Bathymetry_Digitizing_Rate          = MGD77_Get_float (record, 1, 3, 0.1);
@@ -226,7 +279,7 @@ int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will 
 
 	/* Process Sequence No 13: */
 
-	if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+	if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 	strncpy (H->record[12], record, MGD77_HEADER_LENGTH);
 
 	H->Magnetics_Digitizing_Rate           = MGD77_Get_float (record, 1, 3, 0.1);
@@ -240,7 +293,7 @@ int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will 
 
 	/* Process Sequence No 14: */
 
-	if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+	if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 	strncpy (H->record[13], record, MGD77_HEADER_LENGTH);
 
 	H->Gravity_Digitizing_Rate             = MGD77_Get_float (record, 1, 3, 0.1);
@@ -253,7 +306,7 @@ int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will 
 
 	/* Process Sequence No 15: */
 
-	if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+	if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 	strncpy (H->record[14], record, MGD77_HEADER_LENGTH);
 
 	H->Gravity_Departure_Base_Station      = MGD77_Get_float (record, 1, 7, 0.1);
@@ -263,7 +316,7 @@ int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will 
 
 	/* Process Sequence No 16: */
 
-	if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+	if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 	strncpy (H->record[15], record, MGD77_HEADER_LENGTH);
 
 	H->Number_of_Ten_Degree_Identifiers    = MGD77_Get_byte (record, 1, 2, 1);
@@ -274,7 +327,7 @@ int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will 
 
 	/* Process Sequence No 17: */
 
-	if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+	if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 	strncpy (H->record[16], record, MGD77_HEADER_LENGTH);
 
 	for (i = 0; i < 15; i++) {
@@ -285,22 +338,27 @@ int MGD77_Read_Header_Record (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will 
 	/* Process Sequence No 18-24: */
 
 	for (i = 0; i < 7; i++) {
-		if (MGD77_Read_Header_Sequence (fp, record, ++sequence)) return FALSE;
+		if (MGD77_Read_Header_Sequence (F->fp, record, ++sequence, fmt)) return FALSE;
 		strncpy (H->record[17+i], record, MGD77_HEADER_LENGTH);
 		H->Additional_Documentation[i] = MGD77_Get_Text (record, 1, 78, 1);
 	}
 	return (TRUE);	/* Success, it seems */
 }
 
-int MGD77_Write_Header_Record_Orig (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will echo the original 24 records */
+int MGD77_Write_Header_Record_Orig (FILE *fp, struct MGD77_HEADER_RECORD *H, int format)  /* Will echo the original 24 records */
 {
 	int i;
 	
-	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) fprintf (fp, "%s\n", H->record[i]);
+	if (format == MGD77_FORMAT_ASC) {
+		for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) fprintf (fp, "%80s\n", H->record[i]);
+	}
+	else {
+		for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) fwrite (H->record[i], MGD77_HEADER_LENGTH, sizeof (char), fp);
+	}
 	return (TRUE);	/* Success is guaranteed */
 }
 
-int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* Will write the entire 24-section header structure */
+int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H, int fmt)  /* Will write the entire 24-section header structure */
 {
 	int i, sequence = 0;
 
@@ -322,7 +380,7 @@ int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* 
 
 	/* Write Sequence No 02: */
 
-	MGD77_Write_Sequence (fp, ++sequence);
+	MGD77_Write_Sequence (fp, ++sequence, fmt);
 	MGD77_Put_Text (fp, H->Country, 18, 1, 0);
 	MGD77_Put_Text (fp, H->Platform_Name, 21, 1, 0);
 	MGD77_Put_byte (fp, H->Platform_Type_Code, 1, 1, 0);
@@ -331,13 +389,13 @@ int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* 
 
 	/* Write Sequence No 03: */
 
-	MGD77_Write_Sequence (fp, ++sequence);
+	MGD77_Write_Sequence (fp, ++sequence, fmt);
 	MGD77_Put_Text (fp, H->Project_Cruise_Leg, 58, 1, 0);
 	MGD77_Put_Text (fp, H->Funding, 20, 1, 0);
 
 	/* Write Sequence No 04: */
 
-	MGD77_Write_Sequence (fp, ++sequence);
+	MGD77_Write_Sequence (fp, ++sequence, fmt);
 	MGD77_Put_short (fp, H->Survey_Departure_Year, 4, 1, 0);
 	MGD77_Put_byte (fp, H->Survey_Departure_Month, 2, 1, 0);
 	MGD77_Put_byte (fp, H->Survey_Departure_Day, 2, 1, 0);
@@ -349,44 +407,44 @@ int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* 
 
 	/* Write Sequence No 05: */
 
-	MGD77_Write_Sequence (fp, ++sequence);
+	MGD77_Write_Sequence (fp, ++sequence, fmt);
 	MGD77_Put_Text (fp, H->Navigation_Instrumentation, 40, 1, 0);
 	MGD77_Put_Text (fp, H->Position_Determination_Method, 38, 1, 0);
 
 	/* Write Sequence No 06: */
 
-	MGD77_Write_Sequence (fp, ++sequence);
+	MGD77_Write_Sequence (fp, ++sequence, fmt);
 	MGD77_Put_Text (fp, H->Bathymetry_Instrumentation, 40, 1, 0);
 	MGD77_Put_Text (fp, H->Bathymetry_Add_Forms_of_Data, 38, 1, 0);
 
 	/* Write Sequence No 07: */
 
-	MGD77_Write_Sequence (fp, ++sequence);
+	MGD77_Write_Sequence (fp, ++sequence, fmt);
 	MGD77_Put_Text (fp, H->Magnetics_Instrumentation, 40, 1, 0);
 	MGD77_Put_Text (fp, H->Magnetics_Add_Forms_of_Data, 38, 1, 0);
 
 	/* Write Sequence No 08: */
 
-	MGD77_Write_Sequence (fp, ++sequence);
+	MGD77_Write_Sequence (fp, ++sequence, fmt);
 	MGD77_Put_Text (fp, H->Gravity_Instrumentation, 40, 1, 0);
 	MGD77_Put_Text (fp, H->Gravity_Add_Forms_of_Data, 38, 1, 0);
 
 	/* Write Sequence No 09: */
 
-	MGD77_Write_Sequence (fp, ++sequence);
+	MGD77_Write_Sequence (fp, ++sequence, fmt);
 	MGD77_Put_Text (fp, H->Seismic_Instrumentation, 40, 1, 0);
 	MGD77_Put_Text (fp, H->Seismic_Add_Forms_of_Data, 38, 1, 0);
 
 	/* Write Sequence No 10: */
 
-	MGD77_Write_Sequence (fp, ++sequence);
+	MGD77_Write_Sequence (fp, ++sequence, fmt);
 	MGD77_Put_char (fp, H->Format_Type, 1, 1, 0);
 	MGD77_Put_Text (fp, H->Format_Description_1, 74, 1, 0);
 	MGD77_Put_Text (fp, H->Blank_2, 3, 1, 0);
 
 	/* Write Sequence No 11: */
 
-	MGD77_Write_Sequence (fp, ++sequence);
+	MGD77_Write_Sequence (fp, ++sequence, fmt);
 	MGD77_Put_Text (fp, H->Format_Description_2, 17, 1, 0);
 	MGD77_Put_Text (fp, H->Blank_3, 23, 1, 0);
 	MGD77_Put_short (fp, H->Topmost_Latitude, 3, 1, 1);
@@ -398,7 +456,7 @@ int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* 
 	/* Write Sequence No 12: */
 
 	MGD77_fmt_no = 1;
-	MGD77_Write_Sequence (fp, ++sequence);
+	MGD77_Write_Sequence (fp, ++sequence, fmt);
 	MGD77_Put_float (fp, H->Bathymetry_Digitizing_Rate, 3, 0.1, 0);
 	MGD77_Put_Text (fp, H->Bathymetry_Sampling_Rate, 12, 1, 0);
 	MGD77_Put_float (fp, H->Bathymetry_Assumed_Sound_Velocity, 5, 0.1, 0);
@@ -407,7 +465,7 @@ int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* 
 
 	/* Write Sequence No 13: */
 
-	MGD77_Write_Sequence (fp, ++sequence);
+	MGD77_Write_Sequence (fp, ++sequence, fmt);
 	MGD77_Put_float (fp, H->Magnetics_Digitizing_Rate, 3, 0.1, 0);
 	MGD77_Put_byte (fp, H->Magnetics_Sampling_Rate, 2, 1, 0);
 	MGD77_Put_short (fp, H->Magnetics_Sensor_Tow_Distance, 4, 1, 0);
@@ -419,7 +477,7 @@ int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* 
 
 	/* Write Sequence No 14: */
 
-	MGD77_Write_Sequence (fp, ++sequence);
+	MGD77_Write_Sequence (fp, ++sequence, fmt);
 	MGD77_Put_float (fp, H->Gravity_Digitizing_Rate, 3, 0.1, 0);
 	MGD77_Put_byte (fp, H->Gravity_Sampling_Rate, 2, 1, 0);
 	MGD77_Put_byte (fp, H->Gravity_Theoretical_Formula_Code, 1, 1, 0);
@@ -430,7 +488,7 @@ int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* 
 
 	/* Write Sequence No 15: */
 
-	MGD77_Write_Sequence (fp, ++sequence);
+	MGD77_Write_Sequence (fp, ++sequence, fmt);
 	MGD77_Put_float (fp, H->Gravity_Departure_Base_Station, 7, 0.1, 0);
 	MGD77_Put_Text (fp, H->Gravity_Departure_Base_Station_Name, 33, 1, 0);
 	MGD77_Put_float (fp, H->Gravity_Arrival_Base_Station, 7, 0.1, 0);
@@ -438,7 +496,7 @@ int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* 
 
 	/* Write Sequence No 16: */
 
-	MGD77_Write_Sequence (fp, ++sequence);
+	MGD77_Write_Sequence (fp, ++sequence, fmt);
 	MGD77_Put_byte (fp, H->Number_of_Ten_Degree_Identifiers, 2, 1, 0);
 	MGD77_Put_char (fp, H->Blank_5, 1, 1, 0);
 	for (i = 0; i < 15; i++) {
@@ -447,7 +505,7 @@ int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* 
 
 	/* Write Sequence No 17: */
 
-	MGD77_Write_Sequence (fp, ++sequence);
+	MGD77_Write_Sequence (fp, ++sequence, fmt);
 	for (i = 0; i < 15; i++) {
 		MGD77_Put_short (fp, H->Ten_Degree_Identifier_2[i], 5, 1, 2);
 	}
@@ -455,27 +513,27 @@ int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H)  /* 
 
 	/* Process Sequence No 18-24: */
 
-	MGD77_Write_Sequence (fp, ++sequence);
+	MGD77_Write_Sequence (fp, ++sequence, fmt);
 	for (i = 0; i < 7; i++) {
 		MGD77_Put_Text (fp, H->Additional_Documentation[i], 78, 1, 0);
-		MGD77_Write_Sequence (fp, ++sequence);
+		MGD77_Write_Sequence (fp, ++sequence, fmt);
 	}
 	MGD77_fmt_no = 0;
 	
 	return (TRUE);	/* Success is assured */
 }
 
-/* MGD77_Read_Record decodes the MGD77 data record, storing values in a structure of type
+/* MGD77_Read_Record_ASCII decodes the MGD77 data record, storing values in a structure of type
  * MGD77_DATA_RECORD (see MGD77.h for structure definition).
  */
-int MGD77_Read_Data_Record (FILE *fp, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will read a single MGD77 record */
+int MGD77_Read_Data_Record_ASCII (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will read a single MGD77 record */
 {
 	int len, i, k, nwords, value, rata_die, yyyy, mm, dd, nconv;
 	char line[BUFSIZ], currentField[10];
 	BOOLEAN may_convert;
 	double secs, tz;
 
-	if (!(fgets (line, BUFSIZ, fp))) return FALSE;				/* Read one line from the file */
+	if (!(fgets (line, BUFSIZ, F->fp))) return FALSE;				/* Read one line from the file */
 
 	if (!(line[0] == '3' || line[0] == '5')) return FALSE;			/* Only process data records */
 
@@ -548,20 +606,20 @@ int MGD77_Read_Data_Record (FILE *fp, struct MGD77_DATA_RECORD *MGD77Record)	  /
 
 /* MGD77_Write_Data_Record reads the MGD77_DATA_RECORD structure, printing stored values in original MGD77 format.
  */
-int MGD77_Write_Data_Record (FILE *fp, struct MGD77_DATA_RECORD *MGD77Record)	/* Will write a single MGD77 record */
+int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	/* Will write a single MGD77 record */
 {
 	int nwords = 0, nvalues = 0, i;
 
 	for (i = 0; i < MGD77_N_DATA_FIELDS; i++) {
-		if (i == 1) fprintf (fp, mgd77defs[24].printMGD77, MGD77Record->word[nwords++]);
-		else if (i == 24 || i == 25) fprintf (fp, mgd77defs[i+1].printMGD77, MGD77Record->word[nwords++]);
+		if (i == 1) fprintf (F->fp, mgd77defs[24].printMGD77, MGD77Record->word[nwords++]);
+		else if (i == 24 || i == 25) fprintf (F->fp, mgd77defs[i+1].printMGD77, MGD77Record->word[nwords++]);
 		else {
-			if (GMT_is_dnan (MGD77Record->number[nvalues]))	fprintf (fp, "%s", mgd77defs[nvalues].not_given);
-			else fprintf (fp, mgd77defs[nvalues].printMGD77, irint (MGD77Record->number[nvalues]*mgd77defs[nvalues].factor));
+			if (GMT_is_dnan (MGD77Record->number[nvalues]))	fprintf (F->fp, "%s", mgd77defs[nvalues].not_given);
+			else fprintf (F->fp, mgd77defs[nvalues].printMGD77, irint (MGD77Record->number[nvalues]*mgd77defs[nvalues].factor));
 			nvalues++;
 		}
 	}
-	fprintf (fp, "\n");
+	fprintf (F->fp, "\n");
 	return TRUE;
 }
 
@@ -761,14 +819,24 @@ void MGD77_Put_Text (FILE *fp, Text t, int length, double scale, int sign)
 }
 
 
-int MGD77_Read_Header_Sequence (FILE *fp, char *record, int seq)
+int MGD77_Read_Header_Sequence (FILE *fp, char *record, int seq, int format)
 {
 	int got;
-	if (fgets (record, MGD77_RECORD_LENGTH, fp) == NULL) {
-		fprintf (stderr, "MGD77_Read_Header: Failure to read sequence %2.2d.  Aborting\n", seq);
-		return (-1);
+	
+	if (format == MGD77_FORMAT_ASC) {
+		if (fgets (record, MGD77_RECORD_LENGTH, fp) == NULL) {
+			fprintf (stderr, "MGD77_Read_Header: Failure to read sequence %2.2d.  Aborting\n", seq);
+			return (-1);
+		}
+		GMT_chop (record);
 	}
-	GMT_chop (record);
+	else {
+		if (fread (record, MGD77_RECORD_LENGTH, sizeof (char), fp) != MGD77_RECORD_LENGTH) {
+			return (-1);
+		}
+		record[MGD77_RECORD_LENGTH] = '\0';
+	}
+	
 	got = atoi (&record[78]);
 	if (got != seq) {
 		fprintf (stderr, "MGD77_Read_Header: Expected sequence %2.2d says it is %2.2d.  Aborting\n", seq, got);
@@ -784,10 +852,18 @@ int MGD77_Read_Data_Sequence (FILE *fp, char *record)
 	return (0);
 }
 
-void MGD77_Write_Sequence (FILE *fp, int seq)
+void MGD77_Write_Sequence (FILE *fp, int seq, int format)
 {
-	if (seq > 0) fprintf (fp, "%2.2d", seq);
-	fprintf (fp, "\n");
+	if (format == MGD77_FORMAT_ASC) {
+		if (seq > 0) fprintf (fp, "%2.2d", seq);
+		fprintf (fp, "\n");
+	}
+	else {
+		char txt[3];
+		sprintf (txt, "%2.2d", seq);
+		txt[2] = '\0';
+		fwrite ((void *)txt, 2, sizeof (char), fp);
+	}
 }
 
 void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks)
@@ -1038,37 +1114,70 @@ void MGD77_Path_Init (struct MGD77_CONTROL *F)
  */
  
 int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F)
-{
-	int id;
+{	/* Assemple proper path to READ a mgd77 file.
+	 * track may be:
+	 *  a) a complete hardpath, which is copied verbatim to track_path
+	 *  b) a local file with extension, which is copied to track_path
+	 *  c) a leg name (no extension), in which we try
+	 *	- append .mgd77+ and see if we can find it in listed directories
+	 *      - append .mgd77 and see if we can find it in listed directories
+	 */
+	int id, fmt, f_start, f_stop;
 	BOOLEAN append = FALSE;
-	char geo_path[BUFSIZ];
+	char geo_path[BUFSIZ], *suffix[2] = {"mgd77+", "mgd77"};
 	
-	if (!strstr (track, ".mgd77")) {	/* Must append .mgd77 */
-		append = TRUE;
-		sprintf (geo_path, "%s.mgd77", track);
+	switch (F->format[0]) {
+		case 1:	/* Look for MGD77 ASCII files only */
+			f_start = f_stop = 0;
+			break;
+		case 2:	/* Look for MGD77+ binary files only */
+			f_start = f_stop = 1;
+			break;
+		default:
+			f_start = 0;
+			f_stop = 1;
+			break;
 	}
-	else
-		strcpy (track_path, track);
-		
-	/* First look in current directory */
-	
-	if (!access (geo_path, R_OK)) {
-		strcpy (track_path, geo_path);
-		return (0);
-	}
-	
-	/* Then look elsewhere */
-	
-	for (id = 0; id < F->n_MGD77_paths; id++) {
-		if (append)
-			sprintf (geo_path, "%s%c%s.mgd77", F->MGD77_datadir[id], DIR_DELIM, track);
+	for (fmt = f_start; fmt <= f_stop; fmt++) {	/* Try either on or both formats */
+		if (!strstr (track, ".mgd77")) {	/* No extension, must append .mgd77 or .mgd77+ */
+			append = TRUE;
+			sprintf (geo_path, "%s.%s", track, suffix[fmt]);
+		}
 		else
-			sprintf (geo_path, "%s%c%s", F->MGD77_datadir[id], DIR_DELIM, track);
-		if (!access (geo_path, R_OK)) {
+			strcpy (geo_path, track);	/* Extension already there */
+	
+		F->binary[0] = (geo_path[strlen(geo_path)-1] == '+') ? TRUE : FALSE;
+	
+		if (geo_path[0] == '/' || geo_path[1] == ':') {	/* Hard path given */
+			if (!access (geo_path, R_OK)) {	/* OK, found it */
+				strcpy (track_path, geo_path);
+				return (0);
+			}
+			else
+				return (-1);	/* Hard path did not work */
+		}
+	
+		/* Here we have a relative path.  First look in current directory */
+	
+		if (!access (geo_path, R_OK)) {	/* OK, found it */
 			strcpy (track_path, geo_path);
 			return (0);
 		}
+	
+		/* Then look elsewhere */
+	
+		for (id = 0; id < F->n_MGD77_paths; id++) {
+			if (append)
+				sprintf (geo_path, "%s%c%s.%s", F->MGD77_datadir[id], DIR_DELIM, track, suffix[fmt]);
+			else
+				sprintf (geo_path, "%s%c%s", F->MGD77_datadir[id], DIR_DELIM, track);
+			if (!access (geo_path, R_OK)) {
+				strcpy (track_path, geo_path);
+				return (0);
+			}
+		}
 	}
+	
 	return (1);	/* No luck */
 }
 
@@ -1235,4 +1344,31 @@ void MGD77_set_unit (char *dist, double *scale)
 	}
 }
 
-			
+void MGD77_Fatal_Error (char *error)
+{
+	fprintf (stderr, "%s: %s\n", GMT_program, error);
+	exit (EXIT_FAILURE);
+}
+
+/* MGD77+ functions will be added down here */
+
+int MGD77_Read_Data_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *H)
+{
+	char char_block[25];
+	short short_block[6];
+	int int_block[8];
+	
+	if (fread ((void *)&char_block, 25, sizeof (char),  F->fp) != 25) MGD77_Fatal_Error ("Error reading data record text items");
+	if (fread ((void *)&short_block, 6, sizeof (short), F->fp) !=  6) MGD77_Fatal_Error ("Error reading data record short items");
+	if (fread ((void *)&int_block,   8, sizeof (int),   F->fp) !=  8) MGD77_Fatal_Error ("Error reading data record int items");
+	
+	/* Populate variables */
+	
+	strncpy (H->word[0], &char_block[0], 8);
+	strncpy (H->word[1], &char_block[8], 5);
+	strncpy (H->word[2], &char_block[13], 6);
+}
+
+int MGD77_Read_Header_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_HEADER_RECORD *H)
+{
+}
