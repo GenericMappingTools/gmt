@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.10 2005-08-10 19:03:16 remko Exp $
+ *	$Id: gmt_nc.c,v 1.11 2005-08-12 15:52:00 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -45,28 +45,45 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 
+EXTERN_MSC int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job);
 char nc_file[BUFSIZ];
-int check_nc_status (int status);
-int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job);
+void check_nc_status (int status);
+void nc_nopipe (char *file);
+int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job);
 
 int GMT_nc_read_grd_info (char *file, struct GRD_HEADER *header)
 {
-	return (GMT_nc_grd_info (file, header, 'r'));
+	int ncid;
+	nc_nopipe (file);
+	check_nc_status (nc_open (file, NC_NOWRITE, &ncid));
+	GMT_nc_grd_info (ncid, header, 'r');
+	check_nc_status (nc_close (ncid));
+	return (0);
 }
 
 int GMT_nc_update_grd_info (char *file, struct GRD_HEADER *header)
 {
-	return (GMT_nc_grd_info (file, header, 'u'));
+	int ncid;
+	nc_nopipe (file);
+	check_nc_status (nc_open (file, NC_WRITE, &ncid));
+	GMT_nc_grd_info (ncid, header, 'u');
+	check_nc_status (nc_close (ncid));
+	return (0);
 }
 
 int GMT_nc_write_grd_info (char *file, struct GRD_HEADER *header)
 {
-	return (GMT_nc_grd_info (file, header, 'w'));
+	int ncid;
+	nc_nopipe (file);
+	check_nc_status (nc_create (file, NC_CLOBBER, &ncid));
+	GMT_nc_grd_info (ncid, header, 'w');
+	check_nc_status (nc_close (ncid));
+	return (0);
 }
 
-int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
+int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 {
-	int  ncid, i;
+	int i;
 	double dummy[2];
 	char text[GRD_COMMAND_LEN+GRD_REMARK_LEN];
 	nc_type z_type;
@@ -76,26 +93,9 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 	int x_dim, y_dim, x_id, y_id, z_id, dims[2], nvars, ndims;
 	size_t lens[2];
 
-	if (!strcmp (file,"=")) {	/* Check if piping is attempted */
-		fprintf (stderr, "%s: GMT Fatal Error: netcdf-based i/o does not support piping - exiting\n", GMT_program);
-		exit (EXIT_FAILURE);
-	}
-	strcpy (nc_file, file);
-
-	memset ((void *)text, 0, (size_t)(GRD_COMMAND_LEN+GRD_REMARK_LEN));
-
-	/* Open file for reading or writing */
-
-	if (job == 'w' || job == 'W')
-		check_nc_status (nc_create (file, NC_CLOBBER,&ncid));
-	else if (job == 'u' || job == 'U')
-		check_nc_status (nc_open (file, NC_WRITE, &ncid));
-	else
-		check_nc_status (nc_open (file, NC_NOWRITE, &ncid));
-
 	/* Define and get dimensions and variables */
 		
-	if (job == 'w' || job == 'W') {
+	if (job == 'w') {
 		check_nc_status (nc_def_dim (ncid, "x", (size_t) header->nx, &x_dim));
 		check_nc_status (nc_def_dim (ncid, "y", (size_t) header->ny, &y_dim));
 
@@ -122,6 +122,9 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 		check_nc_status (nc_def_var (ncid, "z", z_type, 2, dims, &z_id));
 	}
 	else {
+		/* First see if this is an old NetCDF formatted file */
+		if (!nc_inq_dimid (ncid, "xysize", &i)) return (GMT_cdf_grd_info (ncid, header, job));
+
 		/* Find the id of the first 2-dimensional (z) variable */
 		check_nc_status (nc_inq_nvars (ncid, &nvars));
 		i = 0; z_id = -1;
@@ -131,7 +134,7 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 			i++;
 		}
 		if (z_id < 0) {
-			fprintf (stderr, "%s: Could not find 2-dimensional variable [%s]\n", GMT_program, file);
+			fprintf (stderr, "%s: Could not find 2-dimensional variable [%s]\n", GMT_program, nc_file);
 			exit (EXIT_FAILURE);
 		}
 
@@ -139,6 +142,7 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 		check_nc_status (nc_inq_vartype (ncid, z_id, &z_type));
 		check_nc_status (nc_inq_vardimid (ncid, z_id, dims));
 		y_dim = dims[0]; x_dim = dims[1];
+		GMT_grd_i_format = ((z_type == NC_BYTE) ? 2 : z_type) + 13;
 
 		/* Get the ids of the x and y variables */
 		i = 0; x_id = -1; y_id = -1;
@@ -152,7 +156,7 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 			}
 		}
 		if (x_id < 0 || y_id < 0) {
-			fprintf (stderr, "%s: Could not find the x or y variables [%s]\n", GMT_program, file);
+			fprintf (stderr, "%s: Could not find the x or y variables [%s]\n", GMT_program, nc_file);
 			exit (EXIT_FAILURE);
 		}
 
@@ -165,9 +169,11 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 
 	/* Get or assign attributes */
 
-	if (job == 'u' || job == 'U') check_nc_status (nc_redef (ncid));
+	memset ((void *)text, 0, (size_t)(GRD_COMMAND_LEN+GRD_REMARK_LEN));
 
-	if (job == 'r' || job == 'R') {
+	if (job == 'u') check_nc_status (nc_redef (ncid));
+
+	if (job == 'r') {
 		memset ((void *)header->x_units, 0, (size_t)GRD_UNIT_LEN);
 		memset ((void *)header->y_units, 0, (size_t)GRD_UNIT_LEN);
 		memset ((void *)header->z_units, 0, (size_t)GRD_UNIT_LEN);
@@ -223,7 +229,7 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
         	check_nc_status (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
         	check_nc_status (nc_put_att_int (ncid, z_id, "node_offset", NC_LONG, 1, &header->node_offset));
 		check_nc_status (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1, &GMT_grd_out_nan_value));
-		if (strcmp (header->title,"    ")) strcpy (header->title, file);
+		if (strcmp (header->title,"    ")) strcpy (header->title, nc_file);
         	check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "title", GRD_TITLE_LEN, header->title));
         	check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "source", (GRD_COMMAND_LEN+GRD_REMARK_LEN), text));
 	
@@ -246,15 +252,7 @@ int GMT_nc_grd_info (char *file, struct GRD_HEADER *header, char job)
 		check_nc_status (nc_put_var_float (ncid, y_id, tmp));
 		GMT_free ((void *)tmp);
 	}
-
-	/* Return file id when job is capital letter, otherwise close file and retrun 0 */
-
-	if (job == 'W' || job == 'U' || job == 'R')
-		return (ncid);
-	else {
-		check_nc_status (nc_close (ncid));
-		return (0);
-	}
+	return (0);
 }
 
 int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
@@ -280,15 +278,14 @@ int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double 
 	BOOLEAN check;
 	float *tmp = VNULL;
 
-	/* Open file and get info */
+	/* Check z_id: is file in old NetCDF format or not at all? */
 
-	if (!strcmp (file,"=")) {	/* Check if piping is attempted */
-		fprintf (stderr, "%s: GMT Fatal Error: netcdf-based i/o does not support piping - exiting\n", GMT_program);
+	if (header->z_id < 0) {
+		fprintf (stderr, "%s: File is not in NetCDF format [%s]\n", GMT_program, file);
 		exit (EXIT_FAILURE);
 	}
-	strcpy (nc_file, file);
-
- 	check_nc_status (nc_open (file, NC_NOWRITE, &ncid));
+	else if (header->z_id / 1000 == 1)
+		return (GMT_cdf_read_grd (file, header, grid, w, e, s, n, pad, complex));
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row);
 
@@ -312,6 +309,8 @@ int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double 
 
 	/* Get the value of the missing data that will be converted to NaN */
 
+	nc_nopipe (file);
+ 	check_nc_status (nc_open (file, NC_NOWRITE, &ncid));
         if (nc_get_att_double (ncid, header->z_id, "_FillValue", &GMT_grd_in_nan_value))
             nc_get_att_double (ncid, header->z_id, "missing_value", &GMT_grd_in_nan_value);
 	check = !GMT_is_dnan (GMT_grd_in_nan_value);
@@ -391,7 +390,7 @@ int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	header->nx = width_out;
 	header->ny = height_out;
 
-	/* Find Z_min/Z_max */
+	/* Find z_min/z_max */
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = pad[3]; j <= last_row; j++, j2++) {
@@ -408,15 +407,17 @@ int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *grid, double
 
 	/* Write grid header */
 
-	ncid = GMT_nc_grd_info (file, header, 'W');
+	nc_nopipe (file);
+	check_nc_status (nc_create (file, NC_CLOBBER, &ncid));
+	GMT_nc_grd_info (ncid, header, 'w');
 
-	/* Store Z variable */
+	/* Store z-variable */
 
 	tmp = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_nc_write_grd");
 
 	edge[0] = 1; edge[1] = header->nx; start[1] = 0;
 	i2 = first_col + pad[0];
-	for (j = header->ny-1, j2 = first_row + pad[3]; j >= 0; j--, j2++) {
+	for (j = header->ny - 1, j2 = first_row + pad[3]; j >= 0; j--, j2++) {
 		ij = j2 * width_in + i2;
 		start[0] = j;
 		for (i = 0; i < header->nx; i++) tmp[i] = grid[inc * (ij+k[i])];
@@ -436,12 +437,21 @@ int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *grid, double
  * appropriate action if the status != NC_NOERR
  */
 
-int check_nc_status (int status)/*
-int status;*/
+void check_nc_status (int status)
 {
 	if (status != NC_NOERR) {
 		fprintf (stderr, "%s: %s [%s]\n", GMT_program, nc_strerror (status), nc_file);
 		exit (EXIT_FAILURE);
 	}
-	return 0;
+}
+
+/* This function checks if file was called as a pipe */
+
+void nc_nopipe (char *file)
+{
+	if (!strcmp (file,"=")) {	/* Check if piping is attempted */
+		fprintf (stderr, "%s: GMT Fatal Error: NetCDF-based I/O does not support piping - Exiting\n", GMT_program);
+		exit (EXIT_FAILURE);
+	}
+	strcpy (nc_file, file);
 }
