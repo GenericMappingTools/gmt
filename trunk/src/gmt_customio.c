@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.34 2005-08-10 19:03:16 remko Exp $
+ *	$Id: gmt_customio.c,v 1.35 2005-08-12 15:53:32 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -78,10 +78,10 @@ void GMT_grdio_init (void) {
 	/* FORMAT # 0: DEFAULT: GMT netCDF-based grdio (float), same as # 10 */
 
 	id = 0;
-	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
-	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
+	GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_nc_update_grd_info;
 	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
-	GMT_io_readgrd[id]    = (PFI) GMT_cdf_read_grd;
+	GMT_io_readgrd[id]    = (PFI) GMT_nc_read_grd;
 	GMT_io_writegrd[id]   = (PFI) GMT_cdf_write_grd;
 
 	/* FORMAT # 1-2: GMT native binary (float, short) grdio */
@@ -240,6 +240,7 @@ int GMT_ras_read_grd_info (char *file, struct GRD_HEADER *header)
 	header->y_max = header->ny = h.height;
 	header->x_inc = header->y_inc = 1.0;
 	header->node_offset = 1;	/* Pixel format */
+	header->z_scale_factor = 1;	header->z_add_offset = 0;
 
 	return (FALSE);
 }
@@ -731,7 +732,7 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	header->y_min = s;
 	header->y_max = n;
 
-	/* Find xmin/zmax */
+	/* Find z_min/z_max */
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = pad[3]; j <= last_row; j++, j2++) {
@@ -749,7 +750,7 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 		}
 	}
 
-	/* store header information and array */
+	/* Store header information and array */
 
 	if (do_header) GMT_native_write_grd_header (file, fp, header);
 
@@ -1250,8 +1251,8 @@ int GMT_srf_read_grd_info (char *file, struct GRD_HEADER *header)
 	header->z_min = h.z_min;	 header->z_max = h.z_max;
 	header->x_inc = (h.x_max - h.x_min) / (h.nx - 1);
 	header->y_inc = (h.y_max - h.y_min) / (h.ny - 1);
-	header->node_offset = 0;	/* Grid format */
-
+	header->node_offset = 0;	/* Grid node registration */
+	header->z_scale_factor = 1;	header->z_add_offset = 0;
 
 	return (FALSE);
 }
@@ -1451,7 +1452,7 @@ int GMT_srf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	header->y_min = s;
 	header->y_max = n;
 
-	/* Find xmin/zmax */
+	/* Find z_min/z_max */
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = pad[3]; j <= last_row; j++, j2++) {
