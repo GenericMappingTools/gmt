@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.32 2005-08-10 19:03:16 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.33 2005-08-12 08:45:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -241,7 +241,7 @@ int GMT_grd_data_size (int format, double *nan_value)
 			return (sizeof(short int));
 			break;
 		case 'i':
-			if (GMT_is_dnan (*nan_value)) *nan_value = -2147483648;
+			if (GMT_is_dnan (*nan_value)) *nan_value = -2147483647 - 1;	/* Keeps gcc from complaining that 2147483648 is too big (it isn't) */
 		case 'm':
 			return (sizeof(int));
 			break;
