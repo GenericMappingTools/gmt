@@ -15,7 +15,8 @@ legend-related information from an input file [or stdin].  Because all the eleme
 of the legend can already be created with other tools (\fBpsxy\fP, \fBpstext\fP) we
 use those tools by creating a batch job of commands that are executed to make the final
 \fIPostScript\fP overlay.  Because of this process, the option exists to just output the script which
-can then be fine-tuned manually.
+can then be fine-tuned manually.  Unless otherwise noted, annotations will be made using the
+annotation font and size in effect.
 .TP
 \fItextfile\fP
 This file contains instruction for the layout of items in the legend.  Each legend item is described by
