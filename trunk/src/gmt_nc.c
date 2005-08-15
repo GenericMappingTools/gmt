@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.11 2005-08-12 15:52:00 remko Exp $
+ *	$Id: gmt_nc.c,v 1.12 2005-08-15 17:34:32 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -182,7 +182,7 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		if (nc_get_att_text (ncid, z_id, "units", header->z_units)) strcpy (header->z_units, "user_z_unit");
         	if (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor)) header->z_scale_factor = 1.0;
         	if (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset)) header->z_add_offset = 0.0;
-        	if (nc_get_att_int (ncid, z_id, "node_offset", &header->node_offset)) header->node_offset = 0;
+        	if (nc_get_att_int (ncid, NC_GLOBAL, "node_offset", &header->node_offset)) header->node_offset = 0;
         	if (nc_get_att_text (ncid, NC_GLOBAL, "title", header->title) &&
 		    nc_get_att_text (ncid, z_id, "long_name", header->title)) strcpy (header->title, "");
         	if (nc_get_att_text (ncid, NC_GLOBAL, "source", text) &&
@@ -227,7 +227,7 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
         	check_nc_status (nc_put_att_text (ncid, z_id, "units", GRD_UNIT_LEN, header->z_units));
         	check_nc_status (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1, &header->z_scale_factor));
         	check_nc_status (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
-        	check_nc_status (nc_put_att_int (ncid, z_id, "node_offset", NC_LONG, 1, &header->node_offset));
+        	check_nc_status (nc_put_att_int (ncid, NC_GLOBAL, "node_offset", NC_LONG, 1, &header->node_offset));
 		check_nc_status (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1, &GMT_grd_out_nan_value));
 		if (strcmp (header->title,"    ")) strcpy (header->title, nc_file);
         	check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "title", GRD_TITLE_LEN, header->title));
