@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.12 2005-08-15 17:34:32 remko Exp $
+ *	$Id: gmt_nc.c,v 1.13 2005-08-16 02:23:41 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -229,7 +229,6 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
         	check_nc_status (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
         	check_nc_status (nc_put_att_int (ncid, NC_GLOBAL, "node_offset", NC_LONG, 1, &header->node_offset));
 		check_nc_status (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1, &GMT_grd_out_nan_value));
-		if (strcmp (header->title,"    ")) strcpy (header->title, nc_file);
         	check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "title", GRD_TITLE_LEN, header->title));
         	check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "source", (GRD_COMMAND_LEN+GRD_REMARK_LEN), text));
 	
