@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notposix.h.in,v 1.7 2005-07-07 09:17:48 pwessel Exp $
+ *	$Id: gmt_notposix.h.in,v 1.8 2005-08-17 11:52:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -32,8 +32,8 @@
  * Version:	3.4
  */
 
-#ifndef _GMT_HOTPOSIX_H
-#define _GMT_HOTPOSIX_H
+#ifndef _GMT_NOTPOSIX_H
+#define _GMT_NOTPOSIX_H
 
 #ifndef SET_IN_NOTUNIX	/* Start of configure control */
 
@@ -71,4 +71,4 @@
 
 #endif	/* End of configure control */
 
-#endif /* _GMT_HOTPOSIX_H */
+#endif /* _GMT_NOTPOSIX_H */
