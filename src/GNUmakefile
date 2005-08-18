@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.39 2005-08-09 01:52:53 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.40 2005-08-18 03:47:29 remko Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -307,7 +307,7 @@ examples:
 		fi
 
 clean:
-		rm -f *.o gmt_nan_init$(EXE)
+		rm -f *.o *.a *.$(SL) gmt_nan_init$(EXE)
 		for i in $(ALLPROGS); do \
 			rm -f $$i$(EXE); \
 		done
