@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.19 2005-08-12 15:52:00 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.20 2005-08-18 03:50:10 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -169,6 +169,7 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		check_nc_status (nc_get_var_double (ncid, z_range_id, dummy));
 		header->z_min = dummy[0];
 		header->z_max = dummy[1];
+		header->y_order = -1;
 	}
 	else {
 		strcpy (text, header->command);
@@ -255,6 +256,9 @@ int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
  	check_nc_status (nc_open (file, NC_NOWRITE, &ncid));
         nc_get_att_double (ncid, z_id, "_FillValue", &GMT_grd_in_nan_value);
 	check = !GMT_is_dnan (GMT_grd_in_nan_value);
+
+	/* Load data row by row. The data in the file is stored in the same
+	 * "upside down" fashion as within GMT. The first row is the top row */
 
 	tmp = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_cdf_read_grd");
 
