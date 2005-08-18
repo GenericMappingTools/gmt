@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.168 2005-08-10 07:38:07 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.169 2005-08-18 03:50:10 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3926,14 +3926,15 @@ void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, BOOLEAN upd
 
 	/* Here we initialize the variables to default settings */
 
-	header->x_min = header->x_max = 0.0;
-	header->y_min = header->y_max = 0.0;
-	header->z_min = header->z_max = 0.0;
+	header->x_min = header->x_max	= 0.0;
+	header->y_min = header->y_max	= 0.0;
+	header->z_min = header->z_max	= 0.0;
 	header->x_inc = header->y_inc	= 0.0;
 	header->z_scale_factor		= 1.0;
 	header->z_add_offset		= 0.0;
 	header->nx = header->ny		= 0;
 	header->node_offset		= 0;
+	header->y_order			= 1;
 	header->z_id			= -1;
 
 	memset ((void *)header->x_units, 0, (size_t)GRD_UNIT_LEN);
