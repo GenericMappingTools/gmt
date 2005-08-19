@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.35 2005-08-12 15:53:32 remko Exp $
+ *	$Id: gmt_customio.c,v 1.36 2005-08-19 23:24:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -84,15 +84,23 @@ void GMT_grdio_init (void) {
 	GMT_io_readgrd[id]    = (PFI) GMT_nc_read_grd;
 	GMT_io_writegrd[id]   = (PFI) GMT_cdf_write_grd;
 
-	/* FORMAT # 1-2: GMT native binary (float, short) grdio */
+	/* FORMAT # 1: GMT native binary (float) grdio [No loop over 1 &2 due to MS bug]*/
 
-	for (id = 1; id <= 2; id++) {
-		GMT_io_readinfo[id]   = (PFI) GMT_native_read_grd_info;
-		GMT_io_updateinfo[id] = (PFI) GMT_native_write_grd_info;
-		GMT_io_writeinfo[id]  = (PFI) GMT_native_write_grd_info;
-		GMT_io_readgrd[id]    = (PFI) GMT_native_read_grd;
-		GMT_io_writegrd[id]   = (PFI) GMT_native_write_grd;
-	}
+	id = 1;
+	GMT_io_readinfo[id]   = (PFI) GMT_native_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_native_write_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_native_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_native_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_native_write_grd;
+
+	/* FORMAT # 2: GMT native binary (short) grdio */
+
+	id = 2;
+	GMT_io_readinfo[id]   = (PFI) GMT_native_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_native_write_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_native_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_native_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_native_write_grd;
 
 	/* FORMAT # 3: SUN 8-bit standard rasterfile grdio */
 
