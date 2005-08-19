@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.15 2005-07-07 09:17:48 pwessel Exp $
+REM	$Id: gmtinstall.bat,v 1.16 2005-08-19 23:24:53 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
@@ -99,7 +99,7 @@ CL %COPT% gmt_nan_init.c netcdf.lib
 gmt_nan_init
 del gmt_nan_init.obj
 del gmt_nan_init.exe
-CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_DEFAULT_PATH=%GMT_PATH% gmt_cdf.c gmt_customio.c gmt_grdio.c gmt_init.c
+CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_DEFAULT_PATH=%GMT_PATH% gmt_cdf.c gmt_nc.c gmt_customio.c gmt_grdio.c gmt_init.c
 CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_DEFAULT_PATH=%GMT_PATH% gmt_io.c gmt_map.c gmt_plot.c gmt_shore.c gmt_stat.c
 CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_DEFAULT_PATH=%GMT_PATH% gmt_calclock.c gmt_support.c gmt_vector.c fourt.c
 IF %TRIANGLE%=="yes" CL %COPT% /c /DNO_TIMER /DTRILIBRARY /DREDUCED /DCDT_ONLY triangle.c
