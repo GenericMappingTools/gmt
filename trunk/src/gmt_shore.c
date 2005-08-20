@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.12 2005-07-07 09:17:48 pwessel Exp $
+ *	$Id: gmt_shore.c,v 1.13 2005-08-20 22:35:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -56,7 +56,7 @@ void GMT_br_to_degree (struct GMT_BR *c, short int dx, short int dy, double *lon
 void shore_prepare_sides(struct GMT_SHORE *c, int dir);
 int GMT_shore_asc_sort (const void *a, const void *b);
 int GMT_shore_desc_sort(const void *a, const void *b);
-int check_nc_status (int status);
+EXTERN_MSC void check_nc_status (int status);
 
 int GMT_set_resolution (char *res, char opt)
 {
