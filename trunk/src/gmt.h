@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.97 2005-08-10 07:38:07 pwessel Exp $
+ *	$Id: gmt.h,v 1.98 2005-08-22 02:19:44 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -217,9 +217,9 @@ typedef double GMT_dtime;	/* GMT internal time representation */
  *--------------------------------------------------------------------*/
 
 #define N_UNIQUE 59		/* Number of unique options */
-#define N_KEYS 118		/* Number of gmt defaults */
+#define N_KEYS 119		/* Number of gmt defaults */
 #define GMT_N_MEDIA 29		/* Number of standard paper formats in the GMT_media_names.h include file */
-#define HASH_SIZE 118		/* Used in get_gmtdefaults, should be ~> N_KEYS */
+#define HASH_SIZE 119		/* Used in get_gmtdefaults, should be ~> N_KEYS */
 #define GMT_N_SYSTEMS 6		/* Number of time systems in gmt_time_systems.h */
 /* This structure contains default parameters for the GMT system */
 
@@ -266,6 +266,7 @@ struct GMTDEFAULTS {
 	double global_x_scale;		/* Scaling of x just before plotting [1] */
 	double global_y_scale;		/* Scaling of y just before plotting [1] */
 	double grid_cross_size[2];	/* Size of primary & secondary gridcrosses.  0 means draw continuous gridlines */
+	char grid_format[GMT_TEXT_LEN];	/* Default grid format */
 	struct GMT_PEN grid_pen[2];	/* Pen attributes for primary and secondary gridlines [1] */
 	BOOLEAN gridfile_shorthand;	/* Use shorthand suffix notation for embedded formats [FALSE] */
 	int header_font;		/* Font for headers [Helvetica] */

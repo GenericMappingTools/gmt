@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.36 2005-08-19 23:24:53 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.37 2005-08-22 02:19:44 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -75,14 +75,14 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 void GMT_grdio_init (void) {
 	int id;
 
-	/* FORMAT # 0: DEFAULT: GMT netCDF-based grdio (float), same as # 10 */
+	/* FORMAT # 0: DEFAULT: GMT netCDF-based grdio (float), same as # 18 */
 
 	id = 0;
 	GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
 	GMT_io_updateinfo[id] = (PFI) GMT_nc_update_grd_info;
-	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_nc_write_grd_info;
 	GMT_io_readgrd[id]    = (PFI) GMT_nc_read_grd;
-	GMT_io_writegrd[id]   = (PFI) GMT_cdf_write_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_nc_write_grd;
 
 	/* FORMAT # 1: GMT native binary (float) grdio [No loop over 1 &2 due to MS bug]*/
 

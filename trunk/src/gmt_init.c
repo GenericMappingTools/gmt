@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.187 2005-07-07 09:17:48 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.188 2005-08-22 02:19:44 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1518,6 +1518,9 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
+		case GMTCASE_GRID_FORMAT:
+			strcpy (gmtdefs.grid_format, value);
+			break;
 		case GMTCASE_GRID_PEN_PRIMARY:
 		case GMTCASE_GRID_PEN:
 			error = GMT_getpen (value, &gmtdefs.grid_pen[0]);
@@ -2182,6 +2185,7 @@ int GMT_savedefaults (char *file)
 	else
 		fprintf (fp, "FIELD_DELIMITER		= %s\n", gmtdefs.field_delimiter);
 	(gmtdefs.gridfile_shorthand) ? fprintf (fp, "GRIDFILE_SHORTHAND	= TRUE\n") : fprintf (fp, "GRIDFILE_SHORTHAND	= FALSE\n");
+	fprintf (fp, "GRID_FORMAT       	= %s\n", gmtdefs.grid_format);
 	fprintf (fp, "INPUT_CLOCK_FORMAT	= %s\n", gmtdefs.input_clock_format);
 	fprintf (fp, "INPUT_DATE_FORMAT	= %s\n", gmtdefs.input_date_format);
 	(gmtdefs.io_header[GMT_IN]) ? fprintf (fp, "IO_HEADER		= TRUE\n") : fprintf (fp, "IO_HEADER		= FALSE\n");

@@ -20,6 +20,7 @@
 	1.0,			/* GLOBAL_X_SCALE */
 	1.0,			/* GLOBAL_Y_SCALE */
 	{0.0, 0.0},		/* GRID_CROSS_SIZE P/S */
+	"nf",			/* GRID_FORMAT */
 	{
 	  {0.25, 0.0, {0, 0, 0}, ""},	/* GRID_PEN_PRIMARY */
 	  {0.5,  0.0, {0, 0, 0}, ""}	/* GRID_PEN_SECONDARY */
