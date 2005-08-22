@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.17 2005-08-12 05:13:39 pwessel Exp $
+ *	$Id: mgd77.c,v 1.18 2005-08-22 03:15:09 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -96,7 +96,7 @@ void MGD77_Put_Text (FILE *fp, Text t, int length, double scale, int sign);
 int MGD77_Read_Header_Sequence (FILE *fp, char *record, int seq, int format);
 int MGD77_Read_Data_Sequence (FILE *fp, char *record);
 void MGD77_Write_Sequence (FILE *fp, int seq, int format);
-void MGG77_Fatal_Error (char *error);
+void MGD77_Fatal_Error (char *error);
 
 int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw)  /* Opens a MGD77[+] file */
 {

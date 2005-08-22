@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.32 2005-07-13 23:27:32 pwessel Exp $
+ *	$Id: x2sys.c,v 1.33 2005-08-22 03:15:23 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -674,26 +674,28 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 	FILE *fp;
 	struct MGD77_DATA_RECORD D;
 	struct MGD77_HEADER_RECORD H;
+	struct MGD77_CONTROL M;
 	double NaN;
 
 	GMT_make_dnan(NaN);
+	MGD77_Init (&M, TRUE);			/* Initialize MGD77 Machinery */
 
   	if (n_x2sys_paths) {
   		if (x2sys_get_data_path (path, fname)) {
    			fprintf (stderr, "x2sys_read_mgd77file : Cannot find leg %s\n", fname);
      			return (-1);
   		}
-  		if ((fp = fopen (path, "r")) == NULL) {
+		if (MGD77_Open_File (path, &M, 0)) {
    			fprintf (stderr, "x2sys_read_mgd77file : Cannot find file %s\n", path);
      			return (-1);
   		}
 	}
-	else if ((fp = fopen (fname, "r")) == NULL) {
+	else if (MGD77_Open_File (fname, &M, 0)) {
    		fprintf (stderr, "x2sys_read_mgd77file : Cannot find file %s\n", fname);
      		return (-1);
   	}
 
-	if (!MGD77_Read_Header_Record (fp, &H)) {
+	if (!MGD77_Read_Header_Record (&M, &H)) {
 		fprintf (stderr, "%s: Error reading header sequence for cruise %s\n", X2SYS_program, fname);
 		exit (EXIT_FAILURE);
 	}
@@ -702,7 +704,7 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 	for (i = 0; i < MGD77_DATA_COLS; i++) z[i] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "x2sys_read_mgd77file");
 
 	j = 0;
-	while (MGD77_Read_Data_Record (fp, &D)) {		/* While able to read a data record */
+	while (MGD77_Read_Data_Record (&M, &D)) {		/* While able to read a data record */
 		z[0][j] = D.time;
 		GMT_lon_range_adjust (s->geodetic, &D.number[MGD77_LONGITUDE]);
 		for (i = 1; i < MGD77_DATA_COLS; i++) z[i][j] = D.number[MGD77_items[i]];
@@ -713,7 +715,7 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 			for (i = 0; i < MGD77_DATA_COLS; i++) z[i] = (double *) GMT_memory ((void *)z[i], (size_t)n_alloc, sizeof (double), "x2sys_read_mgd77file");
 		}
 	}
-	fclose (fp);
+	MGD77_Close_File (&M);
 
 	strncpy (p->name, fname, 32);
 	p->n_rows = j;
