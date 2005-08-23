@@ -1,9 +1,9 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_B.tex,v 1.11 2005-07-12 04:13:24 pwessel Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.12 2005-08-23 08:04:34 pwessel Exp $
 %
-%	The GMT Documentation Project
-%	Copyright 2000-2005.
-%	Paul Wessel and Walter H. F. Smith
+%       The GMT Documentation Project
+%       Copyright 2000-2005.
+%       Paul Wessel and Walter H. F. Smith
 %------------------------------------------
 %
 
@@ -52,7 +52,7 @@ specify the \Opt{M} option.  The unique character is by default
 to the M option.  E.g., \Opt{MH} will look for subheaders starting
 with H, whereas \Opt{M'*'} will check for asterisks (The quotes
 are necessary since * has special meaning to \UNIX).  Some programs
-such as \GMTpog{psxy} will examine the subheaders to see if they
+such as \GMTprog{psxy} will examine the subheaders to see if they
 contain \Opt{W} and \Opt{G} options for specifying pen and
 fill attributes for individual segments, \Opt{Z} to change
 color via a cpt-file, or \Opt{L} for label specifications.  These settings
@@ -89,27 +89,27 @@ is not part of the header structure, but makes up the rest of the file).
 \begin{table}
 \centering
 \begin{tabular}{|l|l|} \hline
-\multicolumn{1}{|c}{\emph{Parameter}}	&	\multicolumn{1}{|c|}{\emph{Description}}	\\ \hline
-{\bf int} {\it nx}			&	Number of nodes in the $x$-dimension	\\ \hline
-{\bf int} {\it ny}			&	Number of nodes in the y-dimension	\\ \hline
-{\bf int} {\it node\_offset}	&	0 for grid line registration, 1 for pixel registration  \\ \hline
-{\bf double} {\it x\_min}		&	Minimum $x$-value of region	\\ \hline
-{\bf double} {\it x\_max}		&	Maximum $x$-value of region  \\ \hline
-{\bf double} {\it y\_min}		&	Minimum $y$-value of region  \\ \hline
-{\bf double} {\it y\_max}		&	Maximum $y$-value of region  \\ \hline
-{\bf double} {\it z\_min}		&	Minimum $z$-value in data set  \\ \hline
-{\bf double} {\it z\_max}		&	Maximum $z$-value in data set  \\ \hline
-{\bf double} {\it x\_inc}		&	Node spacing in $x$-dimension  \\ \hline
-{\bf double} {\it y\_inc}		&	Node spacing in $y$-dimension  \\ \hline
-{\bf double} {\it z\_scale\_factor}	&	Factor to multiply $z$-values after read  \\ \hline
-{\bf double} {\it z\_add\_offset}	&	Offset to add to scaled $z$-values  \\ \hline
-{\bf char} {\it x\_units}[80]	&	Units of the $x$-dimension	\\ \hline
-{\bf char} {\it y\_units}[80]	&	Units of the $y$-dimension	\\ \hline
-{\bf char} {\it z\_units}[80]	&	Units of the $z$-dimension	\\ \hline 
-{\bf char} {\it title}[80]	&	Descriptive title of the data set	\\ \hline
-{\bf char} {\it command}[320]	&	Command line that produced the grdfile	\\ \hline
-{\bf char} {\it remark}[160]	&	Any additional comments	\\ \hline \hline
-{\bf float} {\it z}[nx*ny]	&	1-D array with $z$-values in scanline format \\ \hline
+\multicolumn{1}{|c}{\emph{Parameter}}   &       \multicolumn{1}{|c|}{\emph{Description}}        \\ \hline
+{\bf int} {\it nx}                      &       Number of nodes in the $x$-dimension    \\ \hline
+{\bf int} {\it ny}                      &       Number of nodes in the y-dimension      \\ \hline
+{\bf int} {\it node\_offset}    &       0 for grid line registration, 1 for pixel registration  \\ \hline
+{\bf double} {\it x\_min}               &       Minimum $x$-value of region     \\ \hline
+{\bf double} {\it x\_max}               &       Maximum $x$-value of region  \\ \hline
+{\bf double} {\it y\_min}               &       Minimum $y$-value of region  \\ \hline
+{\bf double} {\it y\_max}               &       Maximum $y$-value of region  \\ \hline
+{\bf double} {\it z\_min}               &       Minimum $z$-value in data set  \\ \hline
+{\bf double} {\it z\_max}               &       Maximum $z$-value in data set  \\ \hline
+{\bf double} {\it x\_inc}               &       Node spacing in $x$-dimension  \\ \hline
+{\bf double} {\it y\_inc}               &       Node spacing in $y$-dimension  \\ \hline
+{\bf double} {\it z\_scale\_factor}     &       Factor to multiply $z$-values after read  \\ \hline
+{\bf double} {\it z\_add\_offset}       &       Offset to add to scaled $z$-values  \\ \hline
+{\bf char} {\it x\_units}[80]   &       Units of the $x$-dimension      \\ \hline
+{\bf char} {\it y\_units}[80]   &       Units of the $y$-dimension      \\ \hline
+{\bf char} {\it z\_units}[80]   &       Units of the $z$-dimension      \\ \hline 
+{\bf char} {\it title}[80]      &       Descriptive title of the data set       \\ \hline
+{\bf char} {\it command}[320]   &       Command line that produced the grdfile  \\ \hline
+{\bf char} {\it remark}[160]    &       Any additional comments \\ \hline \hline
+{\bf float} {\it z}[nx*ny]      &       1-D array with $z$-values in scanline format \\ \hline
 
 \end{tabular} 
 
@@ -159,8 +159,8 @@ In the case of grid line registration the number of nodes are
 related to region and grid spacing by \\
 
 \[ \begin{array}{ccl} 
-nx & =	&	(x_{max} - x_{min}) / x_{inc} + 1	\\ 
-ny & =	&	(y_{max} - y_{min}) / y_{inc} + 1
+nx & =  &       (x_{max} - x_{min}) / x_{inc} + 1       \\ 
+ny & =  &       (y_{max} - y_{min}) / y_{inc} + 1
 \end{array} \]
 
 which for the example in Figure~\ref{fig:GMT_gridreg} yields $nx = ny = 4$.
@@ -179,8 +179,8 @@ In the case of pixel registration the number of nodes are related
 to region and grid spacing by \\
 
 \[ \begin{array}{ccl} 
-nx & =	&	(x_{max} - x_{min}) / x_{inc}	\\ 
-ny & =	&	(y_{max} - y_{min}) / y_{inc}
+nx & =  &       (x_{max} - x_{min}) / x_{inc}   \\ 
+ny & =  &       (y_{max} - y_{min}) / y_{inc}
 \end{array} \]
 
 Thus, given the same region (\Opt{R}), the pixel registered grids have one less
@@ -278,16 +278,16 @@ is outline in Table~\ref{tbl:sunheader}.
 \begin{table}[H]
 \centering
 
-\begin{tabular}{|l|l|}	\hline
-\multicolumn{1}{|c}{\emph{Parameter}}	&	\multicolumn{1}{|c|}{\emph{Description}}	\\ \hline
-{\bf int} {\it ras\_magic}	&	Magic number  \\ \hline
-{\bf int} {\it ras\_width}	&	Width (pixels) of image  \\ \hline
-{\bf int} {\it ras\_height}	&	Height (pixels) of image  \\ \hline
-{\bf int} {\it ras\_depth}	&	Depth (1, 8, 24, 32 bits) of pixel  \\ \hline
-{\bf int} {\it ras\_length}	&	Length (bytes) of image  \\ \hline
-{\bf int} {\it ras\_type}	&	Type of file; see RT\_* below  \\ \hline
-{\bf int} {\it ras\_maptype}	&	Type of colormap; see RMT\_* below  \\ \hline
-{\bf int} {\it ras\_maplength}	&	Length (bytes) of following map  \\ \hline
+\begin{tabular}{|l|l|}  \hline
+\multicolumn{1}{|c}{\emph{Parameter}}   &       \multicolumn{1}{|c|}{\emph{Description}}        \\ \hline
+{\bf int} {\it ras\_magic}      &       Magic number  \\ \hline
+{\bf int} {\it ras\_width}      &       Width (pixels) of image  \\ \hline
+{\bf int} {\it ras\_height}     &       Height (pixels) of image  \\ \hline
+{\bf int} {\it ras\_depth}      &       Depth (1, 8, 24, 32 bits) of pixel  \\ \hline
+{\bf int} {\it ras\_length}     &       Length (bytes) of image  \\ \hline
+{\bf int} {\it ras\_type}       &       Type of file; see RT\_* below  \\ \hline
+{\bf int} {\it ras\_maptype}    &       Type of colormap; see RMT\_* below  \\ \hline
+{\bf int} {\it ras\_maplength}  &       Length (bytes) of following map  \\ \hline
 \end{tabular}
 
 \caption{Structure of a Sun rasterfile.}
@@ -301,15 +301,15 @@ follows for {\it ras\_maplength} bytes, followed by an image of
 \begin{table}[H]
 \index{Rasterfile!definitions}
 \centering
-\begin{tabular}{|l|l|}	\hline
+\begin{tabular}{|l|l|}  \hline
 
-\multicolumn{1}{|c}{\emph{Macro name}}	&	\multicolumn{1}{|c|}{\emph{Description}}	\\ \hline
-RAS\_MAGIC	&	0x59a66a95  \\ \hline
-RT\_STANDARD	&	1 (Raw pixrect image in 68000 byte order)  \\ \hline
-RT\_BYTE\_ENCODED	&	2 (Run-length compression of bytes)  \\ \hline
-RT\_FORMAT\_RGB	&	3 ([X]RGB instead of [X]BGR)  \\ \hline
-RMT\_NONE	&	0 (ras\_maplength is expected to be 0)  \\ \hline
-RMT\_EQUAL\_RGB	&	1 (red[ras\_maplength/3],green[],blue[])  \\ \hline
+\multicolumn{1}{|c}{\emph{Macro name}}  &       \multicolumn{1}{|c|}{\emph{Description}}        \\ \hline
+RAS\_MAGIC      &       0x59a66a95  \\ \hline
+RT\_STANDARD    &       1 (Raw pixrect image in 68000 byte order)  \\ \hline
+RT\_BYTE\_ENCODED       &       2 (Run-length compression of bytes)  \\ \hline
+RT\_FORMAT\_RGB &       3 ([X]RGB instead of [X]BGR)  \\ \hline
+RMT\_NONE       &       0 (ras\_maplength is expected to be 0)  \\ \hline
+RMT\_EQUAL\_RGB &       1 (red[ras\_maplength/3],green[],blue[])  \\ \hline
 
 \end{tabular}
 
