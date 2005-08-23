@@ -1,36 +1,79 @@
 %------------------------------------------
-%	$Id: GMT_Tutorial.tex,v 1.28 2005-07-19 05:32:39 pwessel Exp $
+%       $Id: GMT_Tutorial.tex,v 1.29 2005-08-23 08:04:34 pwessel Exp $
 %
-%	The GMT Documentation Project
-%	Copyright 2000-2005.
-%	Paul Wessel and Walter H. F. Smith
+%       The GMT Documentation Project
+%       Copyright 2000-2005.
+%       Paul Wessel and Walter H. F. Smith
 %------------------------------------------
 %
 \documentclass{report}
-\usepackage{epsfig}
+
+\usepackage{ifpdf}
+%\usepackage{epsfig}
+\usepackage{graphicx}
 \usepackage{makeidx}
 \usepackage{a4wide}
 \usepackage{float}
 \usepackage{html}
 \usepackage{GMT}
 \usepackage{times}
-\usepackage[dvips]{color}
+\usepackage{color}
 \usepackage{mathptm}
+
+\ifpdf
+%  \usepackage[pdftex, linkbordercolor={1 1 0}, bookmarksnumbered=true,
+%  boolmarksopenlevel=3, urlbordercolor={1 0 0}]{hyperref}
+  \usepackage[pdftex]{hyperref}
+  \pdfcompresslevel=9
+  \DeclareGraphicsExtensions{.pdf}
+
+ \hypersetup{%
+    pdftitle={The Generic Mapping Tools Version 4---A Map-making Tutorial},
+    pdfauthor={Paul Wessel,  Walter H. F. Smith},
+    pdfkeywords={GMT, projections, mapping},
+    book,arksopen=true,
+    bookmarksnumbered,
+    %pdfstartview={FitH},
+    %linkbordercolor={1 1 0},
+    %urlbordercolor={1 0 0},
+  }%
+
+\else
+   \DeclareGraphicsExtensions{.eps}
+\fi
+
+
 
 % Special commands & environments for GMT documentation
 %
-%	GMTfig will insert an eps file, add a label, and set a caption
+%       GMTfig will insert an eps file, add a label, and set a caption
 %
-\newcommand{\GMTfig}[3][tbp]{\begin{figure}[#1] \centering \epsfig{figure=eps/#2.eps} \caption{#3} \label{fig:#2} \end{figure}}
+%\newcommand{\GMTfig}[3][tbp]{\begin{figure}[#1] \centering \epsfig{figure=eps/#2.eps} \caption{#3} \label{fig:#2} \end{figure}}
+
+\newcommand{\GMTfig}[3][tbp]{\begin{figure}[#1] \centering \includegraphics{eps/#2} \caption{#3} \label{fig:#2}  \end{figure}}
 
 \newcommand{\PS}{\textit{PostScript}}
 \newcommand{\UNIX}{\textit{UNIX}}
+
+
+\ifpdf
+\newcommand{\GMTprog}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../html/#1.html}\index{#1@{\textsf{\textbf{#1}}}}}
+\newcommand{\GMTprogi}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../html/#1.html}}
+\else
 \newcommand{\GMTprog}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../#1.html}\index{#1@{\textsf{\textbf{#1}}}}}
 \newcommand{\GMTprogi}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../#1.html}}
+\fi
+
 \newcommand{\filename}[1]{\underline{#1}}
 \newcommand{\gmt}{\htmladdnormallink{\textbf{GMT}}{http://gmt.soest.hawaii.edu}}
 %%------------ THESE COMMANDS WILL BE EXCLUDED WHEN HTML VERSION IS MADE--------
-\newcommand{\GMT}{\htmladdnormallink{\epsfig{figure=eps/GMT_glyph10.eps}}{http://gmt.soest.hawaii.edu}}%DVIGMT
+
+\ifpdf%DVIGMT
+\newcommand{\GMT}{\textit{GMT}}%DVIGMT
+\else%DVIGMT
+\newcommand{\GMT}{\htmladdnormallink{\includegraphics{eps/GMT_glyph10.eps}}{http://gmt.soest.hawaii.edu}}%DVIGMT
+\fi%DVIGMT
+
 \newcommand{\DS}{$^{\circ}$}%DVIGMT
 \newcommand{\progname}[1]{{\textsl{\textbf{#1}}}\index{#1@{\textsl{\textbf{#1}}}}}%DVIGMT
 \newcommand{\Opt}[1]{{\bf --#1}}%DVIGMT
@@ -69,7 +112,8 @@
 \textbf{The Generic Mapping Tools}\par 
 \vspace{0.5\baselineskip}
 
-\epsfig{figure=eps/GMT_covertext.eps} 
+%\epsfig{figure=eps/GMT_covertext.eps} 
+\includegraphics{eps/GMT_covertext} 
 
 \Huge
 \textbf{\GMTDOCVERSION}\par 
@@ -109,7 +153,9 @@
 \textbf{\GMTDOCDATE}\par 
 \vspace{\baselineskip}
 
-\epsfig{figure=eps/GMT_coverlogo.eps}
+%\epsfig{figure=eps/GMT_coverlogo.eps}
+\includegraphics{eps/GMT_coverlogo}
+
 \end{center}
 \clearpage
 
@@ -436,10 +482,10 @@ on name patterns (Table~\ref{tbl:wildcard}):
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Code}} & \multicolumn{1}{c|}{\emph{Meaning}} \\ \hline
-*	&	Matches anything \\ \hline
-?	&	Matches any single character \\ \hline
-[\emph{list}]	&	Matches characters in the list \\ \hline
-[\emph{range}]	&	Matches characters in the given range \\ \hline
+*       &       Matches anything \\ \hline
+?       &       Matches any single character \\ \hline
+[\emph{list}]   &       Matches characters in the list \\ \hline
+[\emph{range}]  &       Matches characters in the given range \\ \hline
 \end{tabular}
 \caption{\UNIX\ wildcards.} \label{tbl:wildcard}
 \end{table}
@@ -1078,17 +1124,17 @@ fonts.  The escape sequences that are recognized by \GMT\ are given in Table~\re
 \small
 \centering
 \begin{tabular}{|l|l|} \hline
-\multicolumn{1}{|c|}{\emph{Code}}	&	\multicolumn{1}{c|}{\emph{Effect}} \\ \hline
-@\~	&	Turns symbol font on or off \\ \hline 
-@\%{\it fontno}\%	&	Switches to another font; @\%\% resets to previous font \\ \hline 
-@+	&	Turns superscript on or off \\ \hline 
-@-	&	Turns subscript on or off \\ \hline 
-@\#	&	Turns small caps on or off \\ \hline 
-@!	&	Creates one composite character of the next two characters \\ \hline 
-@@	&	Prints the @ sign itself \\ \hline 
-@E @e	&  \AE\ \ae \\  \hline
-@O @o	&  \O\ \o \\  \hline
-@A @a	&  \AA\ \aa \\ \hline
+\multicolumn{1}{|c|}{\emph{Code}}       &       \multicolumn{1}{c|}{\emph{Effect}} \\ \hline
+@\~     &       Turns symbol font on or off \\ \hline 
+@\%{\it fontno}\%       &       Switches to another font; @\%\% resets to previous font \\ \hline 
+@+      &       Turns superscript on or off \\ \hline 
+@-      &       Turns subscript on or off \\ \hline 
+@\#     &       Turns small caps on or off \\ \hline 
+@!      &       Creates one composite character of the next two characters \\ \hline 
+@@      &       Prints the @ sign itself \\ \hline 
+@E @e   &  \AE\ \ae \\  \hline
+@O @o   &  \O\ \o \\  \hline
+@A @a   &  \AA\ \aa \\ \hline
 \end{tabular}
 \caption{\gmt\ text escape sequences.}
 \label{tbl:escape}
@@ -1104,10 +1150,10 @@ We will demonstrate \GMTprog{pstext} with the following script:
 
 \begin{verbatim} 
 cat << EOF | pstext -R0/7/0/5 -Jx1i -P -B1g1 -G255/128/0 | ghostview -
-1	1	30	0	4	BL	It's P@al, not Pal!
-1	2	30	0	4	BL	Try @%33%ZapfChancery@%% today
-1	3	30	0	4	BL	@~D@~g@-b@- = 2@~pr@~G@~D@~h.
-1	4	30	0	4	BL	University of Hawaii at M@!a\225noa
+1       1       30      0       4       BL      It's P@al, not Pal!
+1       2       30      0       4       BL      Try @%33%ZapfChancery@%% today
+1       3       30      0       4       BL      @~D@~g@-b@- = 2@~pr@~G@~D@~h.
+1       4       30      0       4       BL      University of Hawaii at M@!a\225noa
 EOF
 \end{verbatim} 
 
@@ -1243,9 +1289,9 @@ All \GMT\ gridding programs have in common the requirement that the
 user must specify the grid domain and output filename: \\
 
 \begin{tabular}{ll}
-\Opt{R}{\it xmin}/{\it xmax}/{\it ymin}/{\it ymax}	& The desired grid extent \\
-\Opt{I}{\it xinc}[{\bf m}$|${\bf c}][/{\it yinc}[{\bf m}$|${\bf c}]]	& The grid spacing (append {\bf m} or {\bf c} for minutes or seconds of arc) \\
-\Opt{G}{\it gridfile}	& The output grid filename \\
+\Opt{R}{\it xmin}/{\it xmax}/{\it ymin}/{\it ymax}      & The desired grid extent \\
+\Opt{I}{\it xinc}[{\bf m}$|${\bf c}][/{\it yinc}[{\bf m}$|${\bf c}]]    & The grid spacing (append {\bf m} or {\bf c} for minutes or seconds of arc) \\
+\Opt{G}{\it gridfile}   & The output grid filename \\
 \end{tabular} 
 
 \subsection{Nearest neighbor gridding}
@@ -1293,7 +1339,7 @@ ship observations of bathymetry off Baja California.  We desire to
 make a 5' by 5' grid.  Running \GMTprog{minmax} on the file yields
 
 \begin{verbatim}
-ship.xyz: N = 82970	<245/254.705>	<20/29.99131>	<-7708/-9>
+ship.xyz: N = 82970     <245/254.705>   <20/29.99131>   <-7708/-9>
 \end{verbatim} 
 
 so we choose the region accordingly:
@@ -1331,8 +1377,8 @@ $z(x, y)$ that satisfies the following constraints: \\
 \index{Minimum curcature}
 
 \( \begin{array}{ll}
-z(x_k, y_k) = z_k,	&	\mbox{for all data $(x_k, y_k, z_k), k =1,n$} \\
-(1-t)\nabla^4 z -  t \nabla^2 z = 0	&	\mbox{elsewhere}
+z(x_k, y_k) = z_k,      &       \mbox{for all data $(x_k, y_k, z_k), k =1,n$} \\
+(1-t)\nabla^4 z -  t \nabla^2 z = 0     &       \mbox{elsewhere}
 \end{array} \) \\
 
 \noindent
@@ -1525,7 +1571,7 @@ and grid-line intervals for the colorbars.)
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
 \Opt{C}{\it cptfile} & The required cpt file \\ \hline
 \Opt{D}{\it xpos}/{\it ypos}/{\it length}/{\it width}[{\bf h}] & Sets the position of the center/left and dimensions of scale bar. \\ \hline
-	& Append {\bf h} to get horizontal bar and give center/top instead \\ \hline
+        & Append {\bf h} to get horizontal bar and give center/top instead \\ \hline
 \Opt{I}{\it max\_intensity} & Add illumination effects \\ \hline
 \end{tabular}
 \caption{The main switches and options in \GMTprog{psscale}.}
@@ -1661,8 +1707,8 @@ required input and output filenames, the available options are
 \Opt{A}{\it azimuth} & Azimuthal direction for gradients \\ \hline
 \Opt{M} & Indicates that this is a geographic grid \\ \hline
 \Opt{N}[{\bf t}$|${\bf e}][{\it norm}[/{\it offset}]] & Normalize gradients by {\it norm/offset} [= 1/0 by default]. \\
-	& Insert {\bf t} to normalize by the $tan^{-1}$ transformation. \\
-	& Insert {\bf e} to normalize by the cumulative Laplace distribution. \\ \hline
+        & Insert {\bf t} to normalize by the $tan^{-1}$ transformation. \\
+        & Insert {\bf e} to normalize by the cumulative Laplace distribution. \\ \hline
 \end{tabular}
 \caption{The \GMTprog{grdgradient} options.}
 \label{tbl:grdgradient}
