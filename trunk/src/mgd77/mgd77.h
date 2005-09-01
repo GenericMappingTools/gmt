@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.11 2005-08-12 05:13:39 pwessel Exp $
+ *	$Id: mgd77.h,v 1.12 2005-09-01 02:02:00 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -40,6 +40,21 @@
 #define MGD77_FORMAT_ANY	0
 #define MGD77_FORMAT_ASC	1
 #define MGD77_FORMAT_BIN	2
+
+#define MGD77_FILE_NOT_FOUND			1
+#define MGD77_ERROR_OPEN_FILE		1
+#define MGD77_NO_HEADER_REC		1
+#define MGD77_ERROR_READ_HEADER_REC	2
+#define MGD77_ERROR_WRITE_HEADER_REC	3
+#define MGD77_WRONG_HEADER_REC		4
+#define MGD77_NO_DATA_REC		5
+#define MGD77_ERROR_READ_DATA_REC	6
+#define MGD77_ERROR_WRITE_DATA_REC	7
+#define MGD77_WRONG_DATA_REC_LEN	8
+#define MGD77_ERROR_CONV_DATA_REC	9
+#define MGD77_ERROR_BIN_DATA_REC_TEXT	10
+#define MGD77_ERROR_BIN_DATA_REC_SHORT	11
+#define MGD77_ERROR_BIN_DATA_REC_INT	12
 
 /* We will use bit flags to keep track of which data column we are referring to.
  * field 0 is rightmost bit (1), field 1 is the next bit (2), field 2 is 4 and
@@ -250,6 +265,7 @@ EXTERN_MSC BOOLEAN MGD77_pass_record (struct MGD77_DATA_RECORD *H, struct MGD77_
 EXTERN_MSC void MGD77_set_unit (char *dist, double *scale);
 EXTERN_MSC int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw);  /* Opens a MGD77[+] file */
 EXTERN_MSC int MGD77_Close_File (struct MGD77_CONTROL *F);  /* Closes a MGD77[+] file */
+EXTERN_MSC void MGD77_Fatal_Error (int error);	/* Print message for this error and exit */
 
 EXTERN_MSC struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_FIELDS];
 
