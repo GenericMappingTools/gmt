@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.37 2005-08-22 02:19:44 remko Exp $
+ *	$Id: gmt_customio.c,v 1.38 2005-09-01 01:57:25 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -75,7 +75,7 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 void GMT_grdio_init (void) {
 	int id;
 
-	/* FORMAT # 0: DEFAULT: GMT netCDF-based grdio (float), same as # 18 */
+	/* FORMAT # 0: DEFAULT: GMT netCDF-based (float) grdio, same as # 18 */
 
 	id = 0;
 	GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
@@ -138,15 +138,50 @@ void GMT_grdio_init (void) {
 	GMT_io_readgrd[id]    = (PFI) GMT_srf_read_grd;
 	GMT_io_writegrd[id]   = (PFI) GMT_srf_write_grd;
 
-	/* FORMAT # 7-11: GMT netCDF-based grdio */
+	/* FORMAT # 7: GMT netCDF-based (byte) grdio */
  
-	for (id = 7; id <= 11; id++) {
-		GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
-		GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
-		GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
-		GMT_io_readgrd[id]    = (PFI) GMT_cdf_read_grd;
-		GMT_io_writegrd[id]   = (PFI) GMT_cdf_write_grd;
-	}
+	id = 7;
+	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_cdf_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_cdf_write_grd;
+
+	/* FORMAT # 8: GMT netCDF-based (short) grdio */
+ 
+	id = 8;
+	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_cdf_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_cdf_write_grd;
+
+	/* FORMAT # 9: GMT netCDF-based (int) grdio */
+ 
+	id = 9;
+	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_cdf_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_cdf_write_grd;
+
+	/* FORMAT # 10: GMT netCDF-based (float) grdio */
+ 
+	id = 10;
+	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_cdf_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_cdf_write_grd;
+
+	/* FORMAT # 11: GMT netCDF-based (double) grdio */
+ 
+	id = 11;
+	GMT_io_readinfo[id]   = (PFI) GMT_cdf_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_cdf_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_cdf_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_cdf_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_cdf_write_grd;
 
 	/* FORMAT # 12: NOAA NGDC MGG grid format */
 
@@ -157,25 +192,68 @@ void GMT_grdio_init (void) {
 	GMT_io_readgrd[id]    = (PFI) mgg2_read_grd;
 	GMT_io_writegrd[id]   = (PFI) mgg2_write_grd;
 
-	/* FORMAT # 13-14: GMT native binary (int, double) grdio */
+	/* FORMAT # 13: GMT native binary (int) grdio */
 
-	for (id = 13; id <= 14; id++) {
-		GMT_io_readinfo[id]   = (PFI) GMT_native_read_grd_info;
-		GMT_io_updateinfo[id] = (PFI) GMT_native_write_grd_info;
-		GMT_io_writeinfo[id]  = (PFI) GMT_native_write_grd_info;
-		GMT_io_readgrd[id]    = (PFI) GMT_native_read_grd;
-		GMT_io_writegrd[id]   = (PFI) GMT_native_write_grd;
-	}
+	id = 13;
+	GMT_io_readinfo[id]   = (PFI) GMT_native_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_native_write_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_native_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_native_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_native_write_grd;
 
-	/* FORMAT # 15-19: GMT netCDF-based grdio (COARDS compliant) */
+	/* FORMAT # 14: GMT native binary (double) grdio */
 
-	for (id = 15; id <= 19; id++) {
-		GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
-		GMT_io_updateinfo[id] = (PFI) GMT_nc_update_grd_info;
-		GMT_io_writeinfo[id]  = (PFI) GMT_nc_write_grd_info;
-		GMT_io_readgrd[id]    = (PFI) GMT_nc_read_grd;
-		GMT_io_writegrd[id]   = (PFI) GMT_nc_write_grd;
-	}
+	id = 14;
+	GMT_io_readinfo[id]   = (PFI) GMT_native_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_native_write_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_native_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_native_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_native_write_grd;
+
+	/* FORMAT # 15: GMT netCDF-based (byte) grdio (COARDS compliant) */
+
+	id = 15;
+	GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_nc_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_nc_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_nc_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_nc_write_grd;
+
+	/* FORMAT # 16: GMT netCDF-based (short) grdio (COARDS compliant) */
+
+	id = 16;
+	GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_nc_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_nc_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_nc_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_nc_write_grd;
+
+	/* FORMAT # 17: GMT netCDF-based (int) grdio (COARDS compliant) */
+
+	id = 17;
+	GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_nc_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_nc_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_nc_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_nc_write_grd;
+
+	/* FORMAT # 18: GMT netCDF-based (float) grdio (COARDS compliant) */
+
+	id = 18;
+	GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_nc_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_nc_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_nc_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_nc_write_grd;
+
+	/* FORMAT # 19: GMT netCDF-based (double) grdio (COARDS compliant) */
+
+	id = 19;
+	GMT_io_readinfo[id]   = (PFI) GMT_nc_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_nc_update_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_nc_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_nc_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_nc_write_grd;
 
 	/*
 	 * ----------------------------------------------
@@ -1202,29 +1280,79 @@ size_t GMT_native_write_one (FILE *fp, float z, int type)
  * Type :	Native binary (float) C file
  * Prefix :	GMT_srf_
  * Author :	Joaquim Luis
- * Date :	9-SEP-1999
+ * Date :	09-SEP-1999
+ * 		27-AUG-2005	Added minimalist support to GS format 7
+ * 				Type :	Native binary (double) C file
  * Purpose:	to transform to/from Surfer grid file format
  * Functions :	GMT_srf_read_grd_info, GMT_srf_write_grd_info,
  *		GMT_srf_write_grd_info, GMT_srf_read_grd, GMT_srf_write_grd
  *-----------------------------------------------------------*/
  
-struct srf_header {	/* Surfer file header structure */
-	char id[4];			/* ASCII Binary identifier (DSBB) */
-	short int nx;			/* Number of columns */
-	short int ny;			/* Number of rows */
-	double x_min;			/* Minimum x coordinate */
-	double x_max;			/* Maximum x coordinate */
-	double y_min;			/* Minimum y coordinate */
-	double y_max;			/* Maximum y coordinate */
-	double z_min;			/* Minimum z value */
-	double z_max;			/* Maximum z value */
+struct srf_header6 {	/* Surfer 6 file header structure */
+	char id[4];		/* ASCII Binary identifier (DSBB) */
+	short int nx;		/* Number of columns */
+	short int ny;		/* Number of rows */
+	double x_min;		/* Minimum x coordinate */
+	double x_max;		/* Maximum x coordinate */
+	double y_min;		/* Minimum y coordinate */
+	double y_max;		/* Maximum y coordinate */
+	double z_min;		/* Minimum z value */
+	double z_max;		/* Maximum z value */
 };
+
+/* The format 7 is rather more complicated. It has now headers that point to "sections"
+   that may either be also headers or have real data. Besides that, is follows also the
+   stupidity of storing the grid using doubles (I would bat that there are no more than 0-1
+   Surfer users that really need to save their grids in doubles). The following header
+   does not strictly follow the GS format description, but its enough for reading grids
+   that do not contain break-lines (again my estimate is that it covers (100 - 1e4)% users).
+
+   Note: I had significant troubles to be able to read correctly the Surfer 7 format. 
+   In its basic and mostly used form (that is, without break-lines info) what we normally
+   call a header, can be described by the srf_header7 structure bellow (but including
+   the three commented lines). This would make that the hader is composed of 2 char[4] and
+   and 5 ints followed by doubles. The problem was that after the ints the doubles were not
+   read correctly. It looked like everything was displaced by 4 bytes.
+   I than found the note about the GMT 64-bit Modification and tried the same trick.
+   While that worked with gcc compiled code, it crashed whith the VC6 compiler. 
+   Since of the first 3 variables, only the first is important to find out which Surfer
+   grid format we are dealing with, I removed them from the header definition (and jump
+   12 bytes before reading the header). As a result the header has now one 4 byte char +
+   trhee 4-bytes ints followed by 8-bytes doubles. With this organization the header is
+   read correctly by GMT_read_srfheader7. Needless to say that I don't understand why the
+   even number of 4-bytes variables before the 8-bytes caused that the doubles we incorrectly read. 
+
+   Joaquim Luis 08-2005. */
+
+struct srf_header7 {	/* Surfer 7 file header structure */
+	/*char id[4];		 * ASCII Binary identifier (DSRB) */
+	/*int idumb1;		 * Size of Header in bytes (is == 1) */
+	/*int idumb2;		 * Version number of the file format. Currently must be set to 1*/
+	char id2[4];		/* Tag ID indicating a grid section (GRID) */
+	int len_g;		/* Length in bytes of the grid section (72) */
+	int ny;			/* Number of rows */
+	int nx;			/* Number of columns */
+	double x_min;		/* Minimum x coordinate */
+	double y_min;		/* Minimum y coordinate */
+	double x_inc;		/* Spacing between columns */
+	double y_inc;		/* Spacing between rows */
+	double z_min;		/* Minimum z value */
+	double z_max;		/* Maximum z value */
+	double rotation;	/* not currently used */
+	double no_value;	/* If GS were cleverer this would be NaN */
+	char id3[4];		/* Tag ID idicating a data section (DATA) */
+	int len_d;		/* Length in bytes of the DATA section */
+};
+
+int srf_fmt;	/* To hold which Surfer format. = 6 for format 6 or = 7 for format 7.*/
 
 int GMT_srf_read_grd_info (char *file, struct GRD_HEADER *header)
 {
 	FILE *fp;
-	struct srf_header h;
-	int GMT_read_srfheader (FILE *fp, struct srf_header *h);
+	struct srf_header6 h6;
+	struct srf_header7 h7;
+	int GMT_read_srfheader6 (FILE *fp, struct srf_header6 *h);
+	int GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h);
 	char id[5];
 
 	if (!strcmp (file, "=")) {
@@ -1238,27 +1366,56 @@ int GMT_srf_read_grd_info (char *file, struct GRD_HEADER *header)
 		exit (EXIT_FAILURE);
 	}
 
-	if (GMT_read_srfheader (fp, &h)) {
-		fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
+	fread (id, sizeof (char), (size_t)4, fp); 
+	rewind(fp);
+	if (strncmp (id, "DSBB",4) && strncmp (id, "DSRB",4)) {
+		fprintf (stderr, "GMT Fatal Error: %s is not a valid Surfer 6|7 grid\n", file);
 		exit (EXIT_FAILURE);
 	}
-	sprintf (id, "%.4s", h.id);
-	if (strcmp (id, "DSBB")) {
-		fprintf (stderr, "GMT Fatal Error: %s is not a valid Surfer grid\n", file);
-		exit (EXIT_FAILURE);
+
+	if (!strncmp (id, "DSBB",4)) {		/* Version 6 format */
+		if (GMT_read_srfheader6 (fp, &h6)) {
+			fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
+			exit (EXIT_FAILURE);
+		}
+		srf_fmt = 6;
+	}
+	else {					/* Version 7 format */
+		if (GMT_read_srfheader7 (fp, &h7)) {
+			fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
+			exit (EXIT_FAILURE);
+		}
+		if ( (h7.len_d != (h7.nx * h7.ny * 8)) || (!strcmp (h7.id2, "GRID")) ) {
+			fprintf (stderr, "GMT Fatal Error: The %s Surfer 7 grid appears\n", file);
+			fprintf (stderr, "to have break lines or otherwise it uses the full\n");
+			fprintf (stderr, "extent of version 7 format. That is not supported.\n");
+			exit (EXIT_FAILURE);
+		}
+		srf_fmt = 7;
 	}
 
 	if (fp != GMT_stdin) GMT_fclose (fp);
 
 	GMT_grd_init (header, 0, (char **)NULL, FALSE);
 
-	strcpy (header->title, "Grid originally from Surfer");
-	header->nx = (int)h.nx;		 header->ny = (int)h.ny;
-	header->x_min = h.x_min;	 header->x_max = h.x_max;
-	header->y_min = h.y_min;	 header->y_max = h.y_max;
-	header->z_min = h.z_min;	 header->z_max = h.z_max;
-	header->x_inc = (h.x_max - h.x_min) / (h.nx - 1);
-	header->y_inc = (h.y_max - h.y_min) / (h.ny - 1);
+	if (srf_fmt == 6) {
+		strcpy (header->title, "Grid originally in Surfer 6 format");
+		header->nx = (int)h6.nx;	header->ny = (int)h6.ny;
+		header->x_min = h6.x_min;	header->x_max = h6.x_max;
+		header->y_min = h6.y_min;	header->y_max = h6.y_max;
+		header->z_min = h6.z_min;	header->z_max = h6.z_max;
+		header->x_inc = (h6.x_max - h6.x_min) / (h6.nx - 1);
+		header->y_inc = (h6.y_max - h6.y_min) / (h6.ny - 1);
+	}
+	else {			/* Format 7 */
+		strcpy (header->title, "Grid originally in Surfer 7 format");
+		header->nx = h7.nx;		header->ny = h7.ny;
+		header->x_min = h7.x_min;	header->y_min = h7.y_min;
+		header->x_max = h7.x_min + h7.x_inc * (h7.nx - 1);
+		header->y_max = h7.y_min + h7.y_inc * (h7.ny - 1);
+		header->z_min = h7.z_min;	header->z_max = h7.z_max;
+		header->x_inc = h7.x_inc;	header->y_inc = h7.y_inc;
+	}
 	header->node_offset = 0;	/* Grid node registration */
 	header->z_scale_factor = 1;	header->z_add_offset = 0;
 
@@ -1268,8 +1425,8 @@ int GMT_srf_read_grd_info (char *file, struct GRD_HEADER *header)
 int GMT_srf_write_grd_info (char *file, struct GRD_HEADER *header)
 {
 	FILE *fp;
-	struct srf_header h;
-	int GMT_write_srfheader (FILE *fp, struct srf_header *h);
+	struct srf_header6 h;
+	int GMT_write_srfheader (FILE *fp, struct srf_header6 *h);
 
 	if (!strcmp (file, "="))
 	{
@@ -1299,17 +1456,26 @@ int GMT_srf_write_grd_info (char *file, struct GRD_HEADER *header)
 	return (FALSE);
 }
 
-int GMT_read_srfheader (FILE *fp, struct srf_header *h)
+int GMT_read_srfheader6 (FILE *fp, struct srf_header6 *h)
 {
-	/* Reads the header of a Surfer gridfile */
+	/* Reads the header of a Surfer 6 gridfile */
 
-	fread ((void *)h, sizeof (struct srf_header), (size_t)1, fp); 
+	fread ((void *)h, sizeof (struct srf_header6), (size_t)1, fp); 
 	return (0);
 }
 
-int GMT_write_srfheader (FILE *fp, struct srf_header *h)
+int GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h)
 {
-	fwrite ((void *)h, sizeof (struct srf_header), (size_t)1, fp); 
+	/* Reads the header of a Surfer 7 gridfile */
+
+	fseek (fp, 3*sizeof(int), SEEK_SET);	/* skip the first 12 bytes */
+	fread ((void *)h, sizeof (struct srf_header7), (size_t)1, fp);
+	return (0);
+}
+
+int GMT_write_srfheader (FILE *fp, struct srf_header6 *h)
+{
+	fwrite ((void *)h, sizeof (struct srf_header6), (size_t)1, fp); 
 	return (0);
 }
 
@@ -1343,7 +1509,10 @@ int GMT_srf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 		piping = TRUE;
 	}
 	else if ((fp = GMT_fopen (file, "rb")) != NULL)	/* Skip header */
-		fseek (fp, (long) sizeof (struct srf_header), SEEK_SET);
+		if (srf_fmt == 6)	/* Version 6 */
+			fseek (fp, (long) sizeof (struct srf_header6), SEEK_SET);
+		else 			/* Version 7  (skip also the first 12 bytes) */
+			fseek (fp, (long) (3*sizeof(int) + sizeof (struct srf_header7)), SEEK_SET);
 	else {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", file);
 		exit (EXIT_FAILURE);
@@ -1359,6 +1528,11 @@ int GMT_srf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 
 	type = GMT_grdformats[GMT_grd_i_format][1];
 	size = GMT_grd_data_size (GMT_grd_i_format, &GMT_grd_in_nan_value);
+
+	if (srf_fmt == 7) {
+		size *= 2;	/* Format uses doubles, so we must duplicate "size" */
+		type = 'd';
+	}
 
 	/* Allocate memory for one row of data (for reading purposes) */
 
@@ -1431,7 +1605,7 @@ int GMT_srf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	int type;			/* Data type */
 	int size;			/* Length of data type */
 	FILE *fp;			/* File pointer to data or pipe */
-	struct srf_header h;
+	struct srf_header6 h;
 
 	GMT_grd_out_nan_value = 0.1701410e39;	/* Test value in Surfer grids */
 
@@ -1483,7 +1657,7 @@ int GMT_srf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	h.y_min = header->y_min;	 h.y_max = header->y_max;
 	h.z_min = header->z_min;	 h.z_max = header->z_max;
 
-	if (fwrite ((void *)&h, sizeof (struct srf_header), (size_t)1, fp) != 1) {
+	if (fwrite ((void *)&h, sizeof (struct srf_header6), (size_t)1, fp) != 1) {
 		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
