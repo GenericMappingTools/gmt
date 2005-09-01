@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.12 2005-09-01 02:02:00 pwessel Exp $
+ *	$Id: mgd77.h,v 1.13 2005-09-01 08:46:09 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -25,6 +25,8 @@
 #define MGD77_OLDEST_YY		39
 #define MGD77_N_DATA_FIELDS	27
 #define MGD77_N_NUMBER_FIELDS	24
+#define MGD77_RECTYPE		0
+#define MGD77_TZ		1
 #define MGD77_TIME		2
 #define MGD77_DISTANCE		3
 #define MGD77_HEADING		4
@@ -32,7 +34,21 @@
 #define MGD77_WEIGHT		6
 #define MGD77_LATITUDE		7
 #define MGD77_LONGITUDE		8
+#define MGD77_PTC		9
+#define MGD77_TWT		10
 #define MGD77_DEPTH		11
+#define MGD77_BCC		12
+#define MGD77_BTC		13
+#define MGD77_MTF1		14
+#define MGD77_MTF2		15
+#define MGD77_MAG		16
+#define MGD77_MSENS		17
+#define MGD77_DIUR		18
+#define MGD77_MSD		19
+#define MGD77_GOBS		20
+#define MGD77_EOT		21
+#define MGD77_FAA		22
+#define MGD77_NQC		23
 #define MGD77_ID		24
 #define MGD77_SLN		25
 #define MGD77_SSPN		26
@@ -41,20 +57,21 @@
 #define MGD77_FORMAT_ASC	1
 #define MGD77_FORMAT_BIN	2
 
-#define MGD77_FILE_NOT_FOUND			1
-#define MGD77_ERROR_OPEN_FILE		1
-#define MGD77_NO_HEADER_REC		1
-#define MGD77_ERROR_READ_HEADER_REC	2
-#define MGD77_ERROR_WRITE_HEADER_REC	3
-#define MGD77_WRONG_HEADER_REC		4
-#define MGD77_NO_DATA_REC		5
-#define MGD77_ERROR_READ_DATA_REC	6
-#define MGD77_ERROR_WRITE_DATA_REC	7
-#define MGD77_WRONG_DATA_REC_LEN	8
-#define MGD77_ERROR_CONV_DATA_REC	9
-#define MGD77_ERROR_BIN_DATA_REC_TEXT	10
-#define MGD77_ERROR_BIN_DATA_REC_SHORT	11
-#define MGD77_ERROR_BIN_DATA_REC_INT	12
+#define MGD77_FILE_NOT_FOUND		1
+#define MGD77_ERROR_OPEN_FILE		2
+#define MGD77_NO_HEADER_REC		3
+#define MGD77_ERROR_READ_HEADER_ASC	4
+#define MGD77_ERROR_WRITE_HEADER_ASC	5
+#define MGD77_ERROR_READ_ASC_DATA	6
+#define MGD77_ERROR_WRITE_ASC_DATA	7
+#define MGD77_WRONG_HEADER_REC		8
+#define MGD77_NO_DATA_REC		9
+#define MGD77_WRONG_DATA_REC_LEN	10
+#define MGD77_ERROR_CONV_DATA_REC	11
+#define MGD77_ERROR_READ_HEADER_BIN	12
+#define MGD77_ERROR_WRITE_HEADER_BIN	13
+#define MGD77_ERROR_READ_BIN_DATA	14
+#define MGD77_ERROR_WRITE_BIN_DATA	15
 
 /* We will use bit flags to keep track of which data column we are referring to.
  * field 0 is rightmost bit (1), field 1 is the next bit (2), field 2 is 4 and
@@ -234,12 +251,13 @@ struct MGD77_CONTROL {
 	char *MGD77_HOME;				/* Directory where paths are stored */
 	char **MGD77_datadir;				/* Directories where MGD77 data may live */
 	int n_MGD77_paths;				/* Number of these directories */
-	FILE *fp;
+	char NGDC_id[16];				/* Current NGDC tag id */
+	FILE *fp;					/* File pointer to current open file */
 	int n_out_columns;				/* Number of output columns requested */
 	int order[32];					/* Gives the output order of each column */
 	BOOLEAN use_column[32];				/* TRUE for columns we are interested in outputting */
-	int format[2];					/* 0 if any file format, 1 if ascii, and 2 if binary */
-	BOOLEAN binary[2];				/* TRUE if a binary MGD77+ file [0] is input, [1] is output */
+	int format;					/* 0 if any file format, 1 if ascii, and 2 if binary */
+	BOOLEAN binary;					/* TRUE if a binary MGD77+ file */
 	int time_format;				/* Either GMT_IS_ABSTIME or GMT_IS_RELTIME */
 	BOOLEAN flat_earth;				/* TRUE if we want quick distance calcuations */
 	unsigned int bit_pattern;			/* 27 bit flags, one for each parameter desired */
@@ -252,10 +270,10 @@ struct MGD77_CONTROL {
 
 EXTERN_MSC void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks);		/* Initialize the MGD77 machinery */
 EXTERN_MSC int  MGD77_Read_Header_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER_RECORD *H);	/* Will read the entire 24-section header structure */
+EXTERN_MSC int  MGD77_Write_Header_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER_RECORD *H);	/* Will write the entire 24-section header structure by echoing text records */
+EXTERN_MSC int  MGD77_Read_Data_Record (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *D);		/* Will read a single data record */
+EXTERN_MSC int  MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *D);		/* Will write a single MGD77 record */
 EXTERN_MSC int  MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H, int format);	/* Will write the entire 24-section header structure based on variables */
-EXTERN_MSC int  MGD77_Write_Header_Record_Orig (FILE *fp, struct MGD77_HEADER_RECORD *H, int format);	/* Will write the entire 24-section header structure by echoing text records */
-EXTERN_MSC int  MGD77_Read_Data_Record (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *H);		/* Will read a single data record */
-EXTERN_MSC int  MGD77_Write_Data_Record_new (FILE *fp, struct MGD77_DATA_RECORD *H);	/* Will write a single data record */
 EXTERN_MSC int  MGD77_View_Line (FILE *fp, char *line);					/* View a single MGD77 string */
 EXTERN_MSC int  MGD77_Convert_To_Old_Format(char *newFormatLine, char *oldFormatLine);	/* Will convert a single record from new to old MGD77 format */
 EXTERN_MSC int  MGD77_Convert_To_New_Format(char *oldFormatLine);			/* Will convert a single record from old to new MGD77 format */
