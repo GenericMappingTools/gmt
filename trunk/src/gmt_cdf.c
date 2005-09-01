@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.20 2005-08-18 03:50:10 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.21 2005-09-01 00:23:19 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -309,11 +309,11 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	if (!GMT_is_dnan (GMT_grd_out_nan_value))
 		check = TRUE;
 	else if (GMT_grdformats[GMT_grd_o_format][1] == 'b') {
-		GMT_grd_out_nan_value = -128;
+		GMT_grd_out_nan_value = INT8_MIN;
 		check = TRUE;
 	}
 	else if (GMT_grdformats[GMT_grd_o_format][1] == 's') {
-		GMT_grd_out_nan_value = -32768;
+		GMT_grd_out_nan_value = INT16_MIN;
 		check = TRUE;
 	}
 
