@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.20 2005-09-01 08:46:09 pwessel Exp $
+ *	$Id: mgd77.c,v 1.21 2005-09-01 23:49:02 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -15,7 +15,6 @@
 #define MGD77_OLDEST_YY		39
 #define ALL_NINES		"9999999999"
 #define ALL_BLANKS "                      "	/* 32 blanks */
-#define SHORT_MAX	32767
 
 void MGD77_Set_Home (struct MGD77_CONTROL *F);
 void MGD77_Init_Columns (struct MGD77_CONTROL *F);
@@ -1553,7 +1552,7 @@ int MGD77_fwrite_short (double value, double scale, FILE *fp)
 {
 	short s;
 	
-	s = (GMT_is_dnan (value)) ? SHORT_MAX : (short) irint (value * scale);
+	s = (GMT_is_dnan (value)) ? SHRT_MAX : (short) irint (value * scale);
 	if (fwrite ((void *)&s, sizeof (short), 1, fp) != 1) return (1);
 	return (0);
 }
@@ -1581,7 +1580,7 @@ int MGD77_fread_short (double *value, double scale, FILE *fp)
 	short s;
 	
 	if (fread ((void *)&s, sizeof (short), 1, fp) != 1) return (1);
-	*value = (s == SHORT_MAX) ? MGD77_NaN : ((double)s) * scale;
+	*value = (s == SHRT_MAX) ? MGD77_NaN : ((double)s) * scale;
 	return (0);
 }
 
