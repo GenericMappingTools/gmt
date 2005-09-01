@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.21 2004-10-28 22:28:39 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.22 2005-09-01 22:12:10 pwessel Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.21 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.22 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -124,8 +124,8 @@ avoid using the GMT shorthands in commands that are piped together.</I><BR>
 <CENTER><H3>B. NetCDF Setup</H3></CENTER>
 <B>1. Select the appropriate netCDF library option:</B><BR>
 
-<INPUT TYPE="radio" VALUE="have" NAME="radio_netcdf" CHECKED="true"> netCDF 3.5 (or 3.4) is already installed<BR>
-<INPUT TYPE="radio" VALUE="get" NAME="radio_netcdf"> Please get and install netCDF 3.5<BR>
+<INPUT TYPE="radio" VALUE="have" NAME="radio_netcdf" CHECKED="true"> netCDF 3.6 is already installed<BR>
+<INPUT TYPE="radio" VALUE="get" NAME="radio_netcdf"> Please get and install netCDF 3.6<BR>
 <INPUT TYPE="radio" VALUE="install" NAME="radio_netcdf"> I already have the netcdf.tar.Z archive, just install it for me<BR>
 
 Give full pathname to the netCDF directory: <INPUT NAME="netcdf_dir" TYPE="text" SIZE="30"><BR>
