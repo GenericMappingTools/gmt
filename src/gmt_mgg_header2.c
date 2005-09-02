@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.7 2005-09-01 00:23:19 remko Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.8 2005-09-02 01:42:27 remko Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	This is the README file:
@@ -95,9 +95,9 @@ static void GMT2MGG2(struct GRD_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 	mgg->maxValue    = (int)rint(gmt->z_max * mgg->precision);
 
 	/* Data fits in two byte boundry */
-	if ((-INT16_MAX <= mgg->minValue) && (mgg->maxValue <= INT16_MAX)) {
+	if ((-INT16_MAX <= mgg->minValue) && (mgg->maxValue <= SHRT_MAX)) {
 		mgg->numType = sizeof(short);
-		mgg->nanValue = (short)INT16_MIN;
+		mgg->nanValue = (short)SHRT_MIN;
 	}
 #ifdef BYTE_SIZE
 	/* Data fits in one byte boundry */
