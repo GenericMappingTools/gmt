@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.14 2005-09-02 04:15:40 pwessel Exp $
+ *	$Id: mgd77.h,v 1.15 2005-09-02 05:11:51 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -78,6 +78,7 @@
 #define MGD77_ERROR_WRITE_HEADER_BIN	13
 #define MGD77_ERROR_READ_BIN_DATA	14
 #define MGD77_ERROR_WRITE_BIN_DATA	15
+#define MGD77_ERROR_NOT_MGD77PLUS	16
 
 /* We will use bit flags to keep track of which data column we are referring to.
  * field 0 is rightmost bit (1), field 1 is the next bit (2), field 2 is 4 and
@@ -217,10 +218,11 @@ struct MGD77_HEADER_RECORD {		/* See MGD-77 Documentation from NGDC for details 
 
 struct MGD77_DATA_RECORD {	/* See MGD-77 Documentation from NGDC for details */
 	/* This is the classic MGD77 portion of the data record */
-	double number[24];
-	double time;		/* Time using current GMT absolute time conventions */
-	char word[3][10];
-	unsigned int bit_pattern;
+	double number[24];		/* 24 fields that express numeric values */
+	double time;			/* Time using current GMT absolute time conventions */
+	char word[3][10];		/* The 3 text strings in MGD77 records */
+	unsigned int bit_pattern;	/* bit pattern indicating which of the 27 fields are present in current record */
+	double *extra;			/* Pointer to array with additional[optional] columns in MGD77+ records */
 };
 
 struct MGD77_RECORD_DEFAULTS {
@@ -254,9 +256,19 @@ struct MGD77_COLINFO {
 	char comment[128];
 	double scale;
 	double offset;
-	int size;
+	char size;
 };
-	
+
+struct MGD77_EXTRA {
+	char author[32];	/* Name of auhtor of this binary file */
+	char date[32];		/* Time stamp of creation/modification */
+	char comment[64];	/* Comment regarding this file */
+	short n_extra;		/* Number of extra columns in this MGD77+ file */
+	struct MGD77_COLINFO *extra;	/* List of info per extra column */
+	unsigned int bit_pattern;	/* Up to 32 bit flags, one for each parameter desired */
+	int swap;			/* 1 for swap input, 0 if not. */
+};
+
 struct MGD77_CONTROL {
 	/* Programs that need to write out MGD77 data columns in a certain order will need
 	 * to declare this structure and use the MGD77_Init function to get going
@@ -280,6 +292,7 @@ struct MGD77_CONTROL {
 	int *exact;					/* List of columns to match exactly */
 	BOOLEAN no_checking;				/* TRUE if there are no complicated checking to do */
 	struct MGD77_CONSTRAINT *Constraint;		/* List of constraints, if any */
+	struct MGD77_EXTRA E;				/* Info regarding extra columns */
 };
 
 EXTERN_MSC void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks);		/* Initialize the MGD77 machinery */

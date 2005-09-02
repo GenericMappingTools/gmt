@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.22 2005-09-02 04:15:40 pwessel Exp $
+ *	$Id: mgd77.c,v 1.23 2005-09-02 05:11:51 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -369,19 +369,74 @@ int MGD77_Read_Header_Record_ASCII (struct MGD77_CONTROL *F, struct MGD77_HEADER
 int MGD77_Read_Header_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_HEADER_RECORD *H)  /* Will read the entire 24-section header structure */
 {
 	int i;
+	unsigned int swap_flag, got;
+	char string[16];
+	
+	/* First get swap-detector flag */
+	swap_flag = 8 << 24 + 4 << 16 + 2 << 8 + 1;
+	if (fread ((void *)&got, sizeof (unsigned int), 1, F->fp) != 1) return (MGD77_ERROR_READ_HEADER_BIN);
+	if (got != swap_flag) {	/* Could mean one of two things */
+		got = GMT_swab4 (got);	/* Try swapping bytes */
+		if (got != swap_flag) return (MGD77_ERROR_NOT_MGD77PLUS);	/* Not a MGD77+ file */
+		F->E.swap = TRUE;	/* Else we need to swap on input */
+	}
+	else
+		F->E.swap = FALSE;	/* No worries... */
+	
+	/* THen deal with the original header records */
 	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) {
 		memset ((void *)H->record[i], '\0', MGD77_HEADER_LENGTH+1);
-		if (fread (H->record[i], sizeof (char), MGD77_HEADER_LENGTH, F->fp) != MGD77_HEADER_LENGTH) return (MGD77_ERROR_READ_HEADER_BIN);
+		if (fread ((void *)H->record[i], sizeof (char), MGD77_HEADER_LENGTH, F->fp) != MGD77_HEADER_LENGTH) return (MGD77_ERROR_READ_HEADER_BIN);
 	}
+	/* Then author/date/comment block */
+	if (fread ((void *)&F->E.author, sizeof (char), 32, F->fp) != 32) return (MGD77_ERROR_READ_HEADER_BIN);
+	if (fread ((void *)&F->E.date, sizeof (char), 32, F->fp) != 32) return (MGD77_ERROR_READ_HEADER_BIN);
+	if (fread ((void *)&F->E.comment, sizeof (char), 64, F->fp) != 64) return (MGD77_ERROR_READ_HEADER_BIN);
+	/* Then extra columns counter */
+	if (fread ((void *)&F->E.n_extra, sizeof (short), 1, F->fp) != 1) return (MGD77_ERROR_READ_HEADER_BIN);
+	if (F->E.swap) F->E.n_extra = GMT_swab2 (F->E.n_extra);
+	/* Then info for each extra column */
+	for (i = 0; i < F->E.n_extra; i++) {
+		if (fread ((void *)&F->E.extra[i].name, sizeof (char), 16, F->fp) != 16) return (MGD77_ERROR_READ_HEADER_BIN);
+		if (fread ((void *)&F->E.extra[i].size, sizeof (char), 1, F->fp) != 1) return (MGD77_ERROR_READ_HEADER_BIN);
+		if (fread ((void *)string, sizeof (char), 16, F->fp) != 16) return (MGD77_ERROR_READ_HEADER_BIN);
+		F->E.extra[i].scale =  atof (string);
+		if (fread ((void *)string, sizeof (char), 16, F->fp) != 16) return (MGD77_ERROR_READ_HEADER_BIN);
+		F->E.extra[i].offset =  atof (string);
+		if (fread ((void *)&F->E.extra[i].comment, sizeof (char), 128, F->fp) != 128) return (MGD77_ERROR_READ_HEADER_BIN);
+	}
+	
 	return (0);	/* Success, it seems */
 }
 
 int MGD77_Write_Header_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER_RECORD *H)  /* Will echo the original 24 records */
 {	/* Writes records using original text records directly */
 	int i, err;
+	unsigned int swap_flag;
+	char string[16];
 	
-	if (F->binary) {
-		for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) if (fwrite (H->record[i], sizeof (char), MGD77_HEADER_LENGTH, F->fp) != MGD77_HEADER_LENGTH) return (MGD77_ERROR_WRITE_HEADER_BIN);
+	if (F->binary) {	/* Write extended MGD77+ header structure */
+		/* First swap-detector flag */
+		swap_flag = 8 << 24 + 4 << 16 + 2 << 8 + 1;
+		if (fwrite ((void *)&swap_flag, sizeof (unsigned int), 1, F->fp) != 1) return (MGD77_ERROR_WRITE_HEADER_BIN);
+		/* Then original 24 MGD77 records */
+		for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) if (fwrite ((void *)H->record[i], sizeof (char), MGD77_HEADER_LENGTH, F->fp) != MGD77_HEADER_LENGTH) return (MGD77_ERROR_WRITE_HEADER_BIN);
+		/* Then author/date/comment block */
+		if (fwrite ((void *)&F->E.author, sizeof (char), 32, F->fp) != 32) return (MGD77_ERROR_WRITE_HEADER_BIN);
+		if (fwrite ((void *)&F->E.date, sizeof (char), 32, F->fp) != 32) return (MGD77_ERROR_WRITE_HEADER_BIN);
+		if (fwrite ((void *)&F->E.comment, sizeof (char), 64, F->fp) != 64) return (MGD77_ERROR_WRITE_HEADER_BIN);
+		/* Then extra columns counter */
+		if (fwrite ((void *)&F->E.n_extra, sizeof (short), 1, F->fp) != 1) return (MGD77_ERROR_WRITE_HEADER_BIN);
+		/* Then info for each extra column */
+		for (i = 0; i < F->E.n_extra; i++) {
+			if (fwrite ((void *)&F->E.extra[i].name, sizeof (char), 16, F->fp) != 16) return (MGD77_ERROR_WRITE_HEADER_BIN);
+			if (fwrite ((void *)&F->E.extra[i].size, sizeof (char), 1, F->fp) != 1) return (MGD77_ERROR_WRITE_HEADER_BIN);
+			sprintf (string, "%16lg", F->E.extra[i].scale);
+			if (fwrite ((void *)string, sizeof (char), 16, F->fp) != 16) return (MGD77_ERROR_WRITE_HEADER_BIN);
+			sprintf (string, "%16lg", F->E.extra[i].offset);
+			if (fwrite ((void *)string, sizeof (char), 16, F->fp) != 16) return (MGD77_ERROR_WRITE_HEADER_BIN);
+			if (fwrite ((void *)&F->E.extra[i].comment, sizeof (char), 128, F->fp) != 128) return (MGD77_ERROR_WRITE_HEADER_BIN);
+		}
 	}
 	else {
 		for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) if (fprintf (F->fp, "%80s\n", H->record[i]) < 0) return (MGD77_ERROR_WRITE_HEADER_ASC);
@@ -1459,6 +1514,9 @@ void MGD77_Fatal_Error (int error)
 			break;
 		case MGD77_ERROR_CONV_DATA_REC:
 			fprintf (stderr, "Error converting a field in current data record");
+			break;
+		case MGD77_ERROR_NOT_MGD77PLUS:
+			fprintf (stderr, "File is not in MGD77+ format");
 			break;
 		default:
 			fprintf (stderr, "Unrecognized error");
