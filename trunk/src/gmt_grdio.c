@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.37 2005-09-01 00:23:19 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.38 2005-09-02 01:42:27 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -241,15 +241,15 @@ int GMT_grd_data_size (int format, double *nan_value)
 
 	switch (GMT_grdformats[format][1]) {
 		case 'b':
-			if (GMT_is_dnan (*nan_value)) *nan_value = INT8_MIN;
+			if (GMT_is_dnan (*nan_value)) *nan_value = CHAR_MIN;
 			return (sizeof(char));
 			break;
 		case 's':
-			if (GMT_is_dnan (*nan_value)) *nan_value = INT16_MIN;
+			if (GMT_is_dnan (*nan_value)) *nan_value = SHRT_MIN;
 			return (sizeof(short int));
 			break;
 		case 'i':
-			if (GMT_is_dnan (*nan_value)) *nan_value = INT32_MIN;
+			if (GMT_is_dnan (*nan_value)) *nan_value = INT_MIN;
 		case 'm':
 			return (sizeof(int));
 			break;

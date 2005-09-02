@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.100 2005-09-01 23:57:24 remko Exp $
+ *	$Id: gmt.h,v 1.101 2005-09-02 01:42:27 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -113,29 +113,6 @@
 #ifndef M_LN2_INV
 #define	M_LN2_INV	(1.0 / 0.69314718055994530942)
 #endif
-
-#ifndef INT8_MAX
-#define INT8_MAX	127
-#endif
-#ifndef INT8_MIN
-#define INT8_MIN	-128
-#endif
-#ifndef INT16_MAX
-#define INT16_MAX	32767
-#endif
-#ifndef INT16_MIN
-#define INT16_MIN	-32768
-#endif
-#ifndef INT32_MAX
-#define INT32_MAX        2147483647
-#endif
-#ifndef INT32_MIN
-#define INT32_MIN        (-INT32_MAX-1)
-#endif
-/*	Note:  the literal "most negative int" cannot be written in C --
-	the rules in the standard (section 6.4.4.1 in C99) will give it
-	an unsigned type, so INT32_MIN (and the most negative member of
-	any larger signed type) must be written via a constant expression.  */
 
 #define GMT_CONV_LIMIT	1.0e-8	/* Fairly tight convergence limit or "close to zero" limit */
 #define SMALL		1.0e-4	/* Needed when results aren't exactly zero but close */
