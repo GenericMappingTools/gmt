@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.38 2005-09-01 01:57:25 remko Exp $
+ *	$Id: gmt_customio.c,v 1.39 2005-09-02 18:59:40 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1018,8 +1018,8 @@ int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, dou
 		exit (EXIT_FAILURE);
 	}
 
-	type = GMT_grdformats[GMT_grd_i_format][1];
-	size = GMT_grd_data_size (GMT_grd_i_format, &GMT_grd_in_nan_value);
+	type = GMT_grdformats[header->type][1];
+	size = GMT_grd_data_size (header->type, &GMT_grd_in_nan_value);
 	check = !GMT_is_dnan (GMT_grd_in_nan_value);
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row);
@@ -1122,8 +1122,8 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 		exit (EXIT_FAILURE);
 	}
 
-	type = GMT_grdformats[GMT_grd_o_format][1];
-	size = GMT_grd_data_size (GMT_grd_o_format, &GMT_grd_out_nan_value);
+	type = GMT_grdformats[header->type][1];
+	size = GMT_grd_data_size (header->type, &GMT_grd_out_nan_value);
 	check = !GMT_is_dnan (GMT_grd_out_nan_value);
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row);
@@ -1526,8 +1526,8 @@ int GMT_srf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 
 	i_0_out = pad[0];		/* Edge offset in output */
 
-	type = GMT_grdformats[GMT_grd_i_format][1];
-	size = GMT_grd_data_size (GMT_grd_i_format, &GMT_grd_in_nan_value);
+	type = GMT_grdformats[header->type][1];
+	size = GMT_grd_data_size (header->type, &GMT_grd_in_nan_value);
 
 	if (srf_fmt == 7) {
 		size *= 2;	/* Format uses doubles, so we must duplicate "size" */
@@ -1620,8 +1620,8 @@ int GMT_srf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 		exit (EXIT_FAILURE);
 	}
 
-	type = GMT_grdformats[GMT_grd_o_format][1];
-	size = GMT_grd_data_size (GMT_grd_o_format, &GMT_grd_out_nan_value);
+	type = GMT_grdformats[header->type][1];
+	size = GMT_grd_data_size (header->type, &GMT_grd_out_nan_value);
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row);
 

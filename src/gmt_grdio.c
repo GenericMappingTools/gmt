@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.38 2005-09-02 01:42:27 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.39 2005-09-02 18:59:40 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -66,8 +66,8 @@ int GMT_read_grd_info (char *file, struct GRD_HEADER *header)
 	double scale = GMT_d_NaN, offset = 0.0;
 
 	GMT_grd_in_nan_value = GMT_d_NaN;
-	GMT_grd_i_format = GMT_grd_get_i_format (file, fname, &scale, &offset);
-	status = (*GMT_io_readinfo[GMT_grd_i_format]) (fname, header);
+	header->type = GMT_grd_get_i_format (file, fname, &scale, &offset);
+	status = (*GMT_io_readinfo[header->type]) (fname, header);
 	if (GMT_is_dnan(scale))
 		scale = header->z_scale_factor, offset = header->z_add_offset;
 	else
@@ -88,11 +88,11 @@ int GMT_write_grd_info (char *file, struct GRD_HEADER *header)
 	double scale = header->z_scale_factor, offset = header->z_add_offset;
 	
 	GMT_grd_out_nan_value = GMT_d_NaN;
-	GMT_grd_o_format = GMT_grd_get_o_format (file, fname, &scale, &offset);
+	header->type = GMT_grd_get_o_format (file, fname, &scale, &offset);
 	header->z_scale_factor = scale, header->z_add_offset = offset;
 	header->z_min = (header->z_min - offset) / scale;
 	header->z_max = (header->z_max - offset) / scale;
-	status = (*GMT_io_writeinfo[GMT_grd_o_format]) (fname, header);
+	status = (*GMT_io_writeinfo[header->type]) (fname, header);
 	return (status);
 }
 
@@ -103,11 +103,11 @@ int GMT_update_grd_info (char *file, struct GRD_HEADER *header)
 	double scale = header->z_scale_factor, offset = header->z_add_offset;
 	
 	GMT_grd_out_nan_value = GMT_d_NaN;
-	GMT_grd_o_format = GMT_grd_get_o_format (file, fname, &scale, &offset);
+	header->type = GMT_grd_get_o_format (file, fname, &scale, &offset);
 	header->z_scale_factor = scale, header->z_add_offset = offset;
 	header->z_min = (header->z_min - offset) / scale;
 	header->z_max = (header->z_max - offset) / scale;
-	status = (*GMT_io_updateinfo[GMT_grd_o_format]) (fname, header);
+	status = (*GMT_io_updateinfo[header->type]) (fname, header);
 	return (status);
 }
 
@@ -126,8 +126,8 @@ int GMT_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, 
 	double scale = GMT_d_NaN, offset = 0.0;
 
 	GMT_grd_in_nan_value = GMT_d_NaN;
-	GMT_grd_i_format = GMT_grd_get_i_format (file, fname, &scale, &offset);
-	status = (*GMT_io_readgrd[GMT_grd_i_format]) (fname, header, grid, w, e, s, n, pad, complex);
+	status = GMT_grd_get_i_format (file, fname, &scale, &offset);
+	status = (*GMT_io_readgrd[header->type]) (fname, header, grid, w, e, s, n, pad, complex);
 	if (GMT_is_dnan(scale))
 		scale = header->z_scale_factor, offset = header->z_add_offset;
 	else
@@ -154,10 +154,10 @@ int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w,
 	double scale = header->z_scale_factor, offset = header->z_add_offset;
 
 	GMT_grd_out_nan_value = GMT_d_NaN;
-	GMT_grd_o_format = GMT_grd_get_o_format (file, fname, &scale, &offset);
+	status = GMT_grd_get_o_format (file, fname, &scale, &offset);
 	header->z_scale_factor = scale, header->z_add_offset = offset;
 	GMT_grd_do_scaling (grid, (header->nx * header->ny), 1.0/scale, -offset/scale);
-	status = (*GMT_io_writegrd[GMT_grd_o_format]) (fname, header, grid, w, e, s, n, pad, complex);
+	status = (*GMT_io_writegrd[header->type]) (fname, header, grid, w, e, s, n, pad, complex);
 	return (status);
 }
 

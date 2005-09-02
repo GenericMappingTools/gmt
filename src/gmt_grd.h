@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.10 2005-08-18 03:50:10 remko Exp $
+ *	$Id: gmt_grd.h,v 1.11 2005-09-02 18:59:40 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -44,7 +44,7 @@ struct GRD_HEADER {
 	int nx;				/* Number of columns */
 	int ny;				/* Number of rows */
 	int node_offset;		/* 0 for node grids, 1 for pixel grids */
-	int padding;			/* Padding (not used) */
+	int type;			/* Grid format */
 	int y_order;			/* NetCDF: 1 if S->N, -1 if N->S */
 	int z_id;			/* NetCDF: id of z field */
 	double x_min;			/* Minimum x coordinate */
