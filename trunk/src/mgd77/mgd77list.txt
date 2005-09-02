@@ -37,32 +37,32 @@ Comma-separated list of parameter abbreviations in the desired output order.  Th
 given in UPPER case must be present in all output records.  Unless indicated, the
 output format is controlled by \fBD_FORMAT\fP. The available abbreviations are:
 .TP
+.B drt
+The digital record type (usually 3 or 5 (for Y2K-compliant cruises))
+.TP
 .B id
 The 8-character cruise ID string
 .TP
-.B time
-Choose between Absolute calendar time (\fBataim\fP, the default) in the format dictated by the GMT default settings  \fBOUTPUT_DATE_FORMAT\fP
-and \fBOUTPUT_CLOCK_FORMAT\fP, or Relative time (\fBrtime\fP) in the format dictated by the GMT default settings  \fBD_FORMAT\fP
-and \fBTIME_SYSTEM\fP (or fBTIME_EPOCH\fPand fBTIME_UNIT\fP).
+.B year
+The year of each record.
+.TP
+.B month
+The month of each record.
+.TP
+.B day
+The day of the month of each record.
+.TP
+.B hour
+The hour of each record.
+.TP
+.B min
+The decimal minutes of each record.
 .TP
 .B lon
 Longitude in the format dictated by the GMT default \fBOUTPUT_DEGREE_FORMAT\fP.
 .TP
 .B lat
 Longitude in the format dictated by the GMT default \fBOUTPUT_DEGREE_FORMAT\fP.
-.TP
-.B dist
-Choose between ellipsoidal, along-track distances (\fBedist\fP, the default) or quick, flat-earth approximate along-track distances (\fBfdist\fP).
-Distances are reported in km (or nautical miles; see \fB\-N\fP).
-.TP
-.B az
-Ship azimuth (heading) in degrees.
-.TP
-.B vel
-Ship speed in m/s or knots (see \fB\-N\fP).
-.TP
-.B weight
-Weight assigned to this data set (see \fB\-W\fP).
 .TP
 .B twt
 Two-way travel time (in s).
@@ -121,6 +121,36 @@ Seismic shot point number string.
 Navigation quality Code (5 = suspected, by source institution, 6 = suspected, by NGDC, 90 = no problems identified).
 .br
 .sp
+In addition, the following derived quantities can be requested:
+.TP
+.B time
+Choose between Absolute calendar time (\fBataim\fP, the default) in the format dictated by the GMT default settings  \fBOUTPUT_DATE_FORMAT\fP
+and \fBOUTPUT_CLOCK_FORMAT\fP, or Relative time (\fBrtime\fP) in the format dictated by the GMT default settings  \fBD_FORMAT\fP
+and \fBTIME_SYSTEM\fP (or fBTIME_EPOCH\fPand fBTIME_UNIT\fP).
+.TP
+.B dist
+Choose between ellipsoidal, along-track distances (\fBedist\fP, the default) or quick, flat-earth approximate along-track distances (\fBfdist\fP).
+Distances are reported in km (or nautical miles; see \fB\-N\fP).
+.TP
+.B az
+Ship azimuth (heading) in degrees.
+.TP
+.B vel
+Ship speed in m/s or knots (see \fB\-N\fP).
+.TP
+.B weight
+Weight assigned to this data set (see \fB\-W\fP).
+.br
+.sp
+The following short-hand flags are also recognized:
+.TP
+.B mgd77
+This results in all 27 MGD77 fields being written out in the offical MGD77 order [Default].
+.TP
+.B all
+In addition to the MGD77 fields, we append the 5 derived quantities listed above.
+.br
+.sp
 Logical tests may be added for any of the parameters by appending one or more comma-separated instructions
 of the form \fIpar\fP\fBOP\fP\fIvalue\fP, where \fIpar\fP is one of the parameters listed above, \fBOP\fP is
 a logical operator (<. <=, =, !=, >=, >), and \fIvalue\fP is used in the comparison.  Floating point
@@ -158,7 +188,7 @@ Append the sign you want for depth values (\fB\-Z-\fP gives negative bathymetry)
 .TP
 .B \-bo
 Selects binary output mode (single precision; append \fBd\fP for double precision) [Default is ASCII].
-\fB\-H\fP and \fB\-M\fP are ignored if \fB\-bo\fP is selected.
+\fB\-H\fP and \fB\-M\fP are ignored if \fB\-bo\fP is selected.  Likewise, string-fields cannot be selected.
 .SH EXAMPLES
 To get a (distance, heading, gravity, bathymetry) listing from 01010047.mgd77,
 starting at June 3 1971 20:45 and ending at distance = 5000 km, use the following command:

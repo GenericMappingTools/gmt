@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.13 2005-09-01 08:46:09 pwessel Exp $
+ *	$Id: mgd77.h,v 1.14 2005-09-02 04:15:40 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -25,13 +25,14 @@
 #define MGD77_OLDEST_YY		39
 #define MGD77_N_DATA_FIELDS	27
 #define MGD77_N_NUMBER_FIELDS	24
+/* The 32 MGD77 standard types (27 original + 5 derived) */
 #define MGD77_RECTYPE		0
 #define MGD77_TZ		1
-#define MGD77_TIME		2
-#define MGD77_DISTANCE		3
-#define MGD77_HEADING		4
-#define MGD77_SPEED		5
-#define MGD77_WEIGHT		6
+#define MGD77_YEAR		2
+#define MGD77_MONTH		3
+#define MGD77_DAY		4
+#define MGD77_HOUR		5
+#define MGD77_MIN		6
 #define MGD77_LATITUDE		7
 #define MGD77_LONGITUDE		8
 #define MGD77_PTC		9
@@ -52,6 +53,11 @@
 #define MGD77_ID		24
 #define MGD77_SLN		25
 #define MGD77_SSPN		26
+#define MGD77_TIME		27
+#define MGD77_DISTANCE		28
+#define MGD77_HEADING		29
+#define MGD77_SPEED		30
+#define MGD77_WEIGHT		31
 
 #define MGD77_FORMAT_ANY	0
 #define MGD77_FORMAT_ASC	1
@@ -243,6 +249,14 @@ struct MGD77_CONSTRAINT {
 	PFB string_test;	/* Pointer to function performing the chosen limit test on a string */
 };
 
+struct MGD77_COLINFO {
+	char name[16];
+	char comment[128];
+	double scale;
+	double offset;
+	int size;
+};
+	
 struct MGD77_CONTROL {
 	/* Programs that need to write out MGD77 data columns in a certain order will need
 	 * to declare this structure and use the MGD77_Init function to get going

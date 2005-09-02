@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.21 2005-09-01 23:49:02 pwessel Exp $
+ *	$Id: mgd77.c,v 1.22 2005-09-02 04:15:40 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -73,7 +73,11 @@ char *MGD77_fmt[2][11] = {
 }
 };
 
-int MGD77_out_order[27] = { 0, 24, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 25, 26, 23 };
+int MGD77_Output_Order[32] = { MGD77_RECTYPE, MGD77_ID, MGD77_TZ, MGD77_YEAR, MGD77_MONTH, MGD77_DAY,
+   MGD77_HOUR, MGD77_MIN, MGD77_LATITUDE, MGD77_LONGITUDE, MGD77_PTC, MGD77_TWT, MGD77_DEPTH, MGD77_BCC,
+   MGD77_BTC, MGD77_MTF1, MGD77_MTF2, MGD77_MAG, MGD77_MSENS, MGD77_DIUR, MGD77_MSD, MGD77_GOBS,
+   MGD77_EOT, MGD77_FAA, MGD77_SLN, MGD77_SSPN, MGD77_NQC, MGD77_TIME, MGD77_DISTANCE, MGD77_HEADING,
+   MGD77_SPEED, MGD77_WEIGHT };
 int MGD77_rec_no = 0;
 int MGD77_fmt_no = 1;	/* 0 for %x.xd, 1 for %xd */
 BOOLEAN MGD77_Strip_Blanks = FALSE;
@@ -104,6 +108,7 @@ int MGD77_fwrite_int (double value, double scale, FILE *fp);
 int MGD77_fread_char (double *value, double scale, FILE *fp);
 int MGD77_fread_short (double *value, double scale, FILE *fp);
 int MGD77_fread_int (double *value, double scale, FILE *fp);
+void MGD77_Init_Columns_sub (struct MGD77_CONTROL *F, int n);
 
 int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw)  /* Opens a MGD77[+] file */
 {
@@ -931,15 +936,8 @@ void MGD77_Init_Columns (struct MGD77_CONTROL *F)
 	
 	int i, j;
 
-	F->n_out_columns = 25;
-	F->bit_pattern = 0;
-	F->time_format = GMT_IS_ABSTIME;	/* Default time format is calendar time */
-	for (i = 0; i < F->n_out_columns; i++) {
-		j = i + 2;		/* Start at 2 since we use 2 = time, 3 = dist, 4 = az, 5 = vel, 6 = weight */
-		F->use_column[j] = TRUE;
-		F->order[i] = j;
-		F->bit_pattern |= (1 << j);		/* Turn on this bit */
-	}
+	MGD77_Init_Columns_sub (F, 27);	/* Default is to return entire MGD77 column set */
+
 	/* Initialize pointers to limit tests */
 	
 	MGD77_column_test_double[MGD77_EQ]   = MGD77_eq_test;
@@ -956,6 +954,27 @@ void MGD77_Init_Columns (struct MGD77_CONTROL *F)
 	MGD77_column_test_string[MGD77_GT]   = MGD77_cgt_test;
 }
 
+void MGD77_Init_Columns_sub (struct MGD77_CONTROL *F, int n)
+{
+	/* Initializes the output columns to equal all the input columns
+	 * and using the original order.  To change this the program must
+	 * call MGD77_Select_Columns.
+	 */
+	
+	int i, j;
+
+	memset ((void *)F->use_column, 0, (size_t)(32 * sizeof (int)));		/* Initialize array */
+	memset ((void *)F->order, 0, (size_t)(32 * sizeof (int)));		/* Initialize array */
+	F->n_out_columns = n;
+	F->bit_pattern = 0;
+	F->time_format = GMT_IS_ABSTIME;	/* Default time format is calendar time */
+	for (i = 0; i < n; i++) {
+		F->use_column[i] = TRUE;
+		F->order[i] = MGD77_Output_Order[i];
+		F->bit_pattern |= (1 << i);		/* Turn on this bit */
+	}
+}
+
 void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F)
 {
 	/* Scan the -Fstring and select which columns to use and which order
@@ -967,6 +986,16 @@ void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F)
 	int i, j, k, constraint, n, pos = 0, ne_alloc = 0, nc_alloc = 0;
 	BOOLEAN exact;
 
+	/* Special test for keywords mgd77 and all */
+	
+	if (!strcmp (string, "mgd77")) return;	/* This is the default anyway */
+	if (!strcmp (string, "all")) {	/* Return everything */
+		MGD77_Init_Columns_sub (F, 32);	/* MGD77 + 5 derived quantities (time, dist, heading, speed, weight) */
+		return;
+	}
+	
+	/* Otherwise: */
+	
 	memset ((void *)F->use_column, 0, (size_t)(32 * sizeof (int)));		/* Initialize array */
 	memset ((void *)F->order, 0, (size_t)(32 * sizeof (int)));		/* Initialize array */
 	F->bit_pattern = 0;
@@ -1008,15 +1037,15 @@ void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F)
 		}
 		exact = (k == n);			/* TRUE if this constraint must match exactly */
 		
-		if (!strcmp (word, "time"))		/* Special flag for col 2: time = {year, month, day, hour, min, tz} */
+		if (!strcmp (word, "time"))		/* Special flag for col 27: time = {year, month, day, hour, min, tz} */
 			j = MGD77_TIME;
-		else if (!strcmp (word, "atime"))	/* Same */
+		else if (!strcmp (word, "atime"))	/* Same (time = atime) */
 			j = MGD77_TIME;
 		else if (!strcmp (word, "rtime")) {	/* Time relative to EPOCH */
 			j = MGD77_TIME;
 			F->time_format = GMT_IS_RELTIME;	/* Alternate time format is time relative to EPOCH */
 		}
-		else if (!strcmp (word, "dist"))	/* Special flag for col 3: ellipsoidal distance in km */
+		else if (!strcmp (word, "dist"))	/* Special flag for col 28: ellipsoidal distance in km */
 			j = MGD77_DISTANCE;
 		else if (!strcmp (word, "edist"))	/* Same */
 			j = MGD77_DISTANCE;
@@ -1024,11 +1053,11 @@ void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F)
 			j = MGD77_DISTANCE;
 			F->flat_earth = TRUE;
 		}
-		else if (!strcmp (word, "azim"))	/* Special flag for col 4: ship azimuth in degrees */
+		else if (!strcmp (word, "azim"))	/* Special flag for col 29: ship azimuth in degrees */
 			j = MGD77_HEADING;
-		else if (!strcmp (word, "vel"))	/* Special flag for col 5: ship velocity in m/s */
+		else if (!strcmp (word, "vel"))	/* Special flag for col 30: ship velocity in m/s */
 			j = MGD77_SPEED;
-		else if (!strcmp (word, "weight"))	/* Special flag for col 6: Data set weight */
+		else if (!strcmp (word, "weight"))	/* Special flag for col 31: Data set weight */
 			j = MGD77_WEIGHT;
 		else {
 			j = 0;	/* Search for the matching abbreviation in our list */
