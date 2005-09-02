@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.17 2005-09-02 01:55:59 remko Exp $
+ *	$Id: gmt_nc.c,v 1.18 2005-09-02 18:59:40 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -102,7 +102,7 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		check_nc_status (nc_def_var (ncid, "x", NC_FLOAT, 1, &x_dim, &x_id));
 		check_nc_status (nc_def_var (ncid, "y", NC_FLOAT, 1, &y_dim, &y_id));
 
-		switch (GMT_grdformats[GMT_grd_o_format][1]) {
+		switch (GMT_grdformats[header->type][1]) {
 			case 'b':
 				z_type = NC_BYTE; break;
 			case 's':
@@ -142,7 +142,7 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		check_nc_status (nc_inq_vartype (ncid, z_id, &z_type));
 		check_nc_status (nc_inq_vardimid (ncid, z_id, dims));
 		y_dim = dims[0]; x_dim = dims[1];
-		GMT_grd_i_format = ((z_type == NC_BYTE) ? 2 : z_type) + 13;
+		header->type = ((z_type == NC_BYTE) ? 2 : z_type) + 13;
 
 		/* Get the ids of the x and y variables */
 		i = 0; x_id = -1; y_id = -1;
@@ -281,14 +281,14 @@ int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double 
 	BOOLEAN check;
 	float *tmp = VNULL;
 
-	/* Check z_id: is file in old NetCDF format or not at all? */
+	/* Check type: is file in old NetCDF format or not at all? */
 
-	if (header->z_id < 0) {
+	if (GMT_grdformats[header->type][0] == 'c')
+		return (GMT_cdf_read_grd (file, header, grid, w, e, s, n, pad, complex));
+	else if (GMT_grdformats[header->type][0] != 'n') {
 		fprintf (stderr, "%s: File is not in NetCDF format [%s]\n", GMT_program, file);
 		exit (EXIT_FAILURE);
 	}
-	else if (header->z_id / 1000 == 1)
-		return (GMT_cdf_read_grd (file, header, grid, w, e, s, n, pad, complex));
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row);
 
@@ -374,11 +374,11 @@ int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *grid, double
 
 	if (!GMT_is_dnan (GMT_grd_out_nan_value))
 		check = TRUE;
-	else if (GMT_grdformats[GMT_grd_o_format][1] == 'b') {
+	else if (GMT_grdformats[header->type][1] == 'b') {
 		GMT_grd_out_nan_value = CHAR_MIN;
 		check = TRUE;
 	}
-	else if (GMT_grdformats[GMT_grd_o_format][1] == 's') {
+	else if (GMT_grdformats[header->type][1] == 's') {
 		GMT_grd_out_nan_value = SHRT_MIN;
 		check = TRUE;
 	}

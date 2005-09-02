@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.22 2005-09-02 01:42:27 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.23 2005-09-02 18:59:40 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -100,7 +100,7 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		check_nc_status (nc_def_var (ncid, "spacing", NC_DOUBLE, 1, dims, &inc_id));
 		check_nc_status (nc_def_var (ncid, "dimension", NC_LONG, 1, dims, &nm_id));
 
-		switch (GMT_grdformats[GMT_grd_o_format][1]) {
+		switch (GMT_grdformats[header->type][1]) {
 			case 'b':
 				z_type = NC_BYTE; break;
 			case 's':
@@ -126,7 +126,7 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
         	check_nc_status (nc_inq_varid (ncid, "dimension", &nm_id));
         	check_nc_status (nc_inq_varid (ncid, "z", &z_id));
 		check_nc_status (nc_inq_vartype (ncid, z_id, &z_type));
-		GMT_grd_i_format = ((z_type == NC_BYTE) ? 2 : z_type) + 5;
+		header->type = ((z_type == NC_BYTE) ? 2 : z_type) + 5;
 	}
 	header->z_id = z_id + 1000;	/* Add 1000 to identify old NetCDF format */
 
@@ -308,11 +308,11 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 
 	if (!GMT_is_dnan (GMT_grd_out_nan_value))
 		check = TRUE;
-	else if (GMT_grdformats[GMT_grd_o_format][1] == 'b') {
+	else if (GMT_grdformats[header->type][1] == 'b') {
 		GMT_grd_out_nan_value = CHAR_MIN;
 		check = TRUE;
 	}
-	else if (GMT_grdformats[GMT_grd_o_format][1] == 's') {
+	else if (GMT_grdformats[header->type][1] == 's') {
 		GMT_grd_out_nan_value = SHRT_MIN;
 		check = TRUE;
 	}
