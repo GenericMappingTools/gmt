@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.16 2005-09-02 01:42:27 remko Exp $
+ *	$Id: gmt_nc.c,v 1.17 2005-09-02 01:55:59 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -249,9 +249,9 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		check_nc_status (nc_enddef (ncid));
 
 		tmp = (float *) GMT_memory (VNULL, (size_t) MAX (header->nx,header->ny), sizeof (float), "GMT_nc_grd_info");
-		for (i = 0; i < header->nx; i++) tmp[i] = (float) header->x_min + (i + 0.5 * header->node_offset) * header->x_inc;
+		for (i = 0; i < header->nx; i++) tmp[i] = (float) (header->x_min + (i + 0.5 * header->node_offset) * header->x_inc);
 		check_nc_status (nc_put_var_float (ncid, x_id, tmp));
-		for (i = 0; i < header->ny; i++) tmp[i] = (float) dummy[0] + (i + 0.5 * header->node_offset) * header->y_inc * header->y_order;
+		for (i = 0; i < header->ny; i++) tmp[i] = (float) (dummy[0] + (i + 0.5 * header->node_offset) * header->y_inc * header->y_order);
 		check_nc_status (nc_put_var_float (ncid, y_id, tmp));
 		GMT_free ((void *)tmp);
 	}
