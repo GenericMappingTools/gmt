@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.30 2005-09-01 00:23:19 remko Exp $
+ *	$Id: gmt_stat.c,v 1.31 2005-09-02 01:55:59 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1900,7 +1900,7 @@ void sincos (double a, double *s, double *c)
 
 #define GMT_RAND_IQ 127773
 #define GMT_RAND_IA 16807
-#define GMT_RAND_IM INT32_MAX
+#define GMT_RAND_IM INT_MAX
 #define GMT_RAND_AM (1.0 / GMT_RAND_IM)
 #define GMT_RAND_IR 2836
 #define GMT_RAND_NTAB 32
