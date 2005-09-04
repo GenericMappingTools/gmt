@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.22 2005-09-02 01:28:48 pwessel Exp $
+#	$Id: Makefile,v 1.23 2005-09-04 23:48:55 pwessel Exp $
 #
 #	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -269,7 +269,7 @@ clean:		clean-suppl
 		cd src; $(MAKE) clean
 
 suppl-clean:	clean-suppl
-s
+
 clean-suppl:
 		for d in $(SUPPL); do \
 			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
