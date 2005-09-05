@@ -14,7 +14,10 @@ to initialize the tag before you can run the indexing.
 .TP
 \fIfiles\fP
 Can be one or more binary or ASCII data files. To give a list of names,
-use `cat list_of_files`.
+use `cat list_of_files`.  If the names are missing the suffix we will
+append the suffix that goes with this TAG.  If the file TAG_paths.txt
+exist in $X2SYS_HOME then we will search for the specified files in the directories
+contained in that path file.
 .SH OPTIONS
 No space between the option flag and the associated arguments
 .TP
