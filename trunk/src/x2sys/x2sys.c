@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.33 2005-08-22 03:15:23 pwessel Exp $
+ *	$Id: x2sys.c,v 1.34 2005-09-05 00:46:16 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -552,16 +552,21 @@ double *x2sys_distances (double x[], double y[], int n, int dist_flag)
 				d[this] = d[prev] + hypot (x[this] - x[prev], y[this] - y[prev]);
 			break;
 
-		case 1:	/* Flat earth distances */
+		case 1:	/* Flat earth distances in km*/
 
 			for (this = 1, prev = 0; this < n; this++, prev++)
-				d[this] = d[prev] + hypot ((x[this] - x[prev]) * cosd (0.5 * (y[this] + y[prev])), y[this] - y[prev]) * km_pr_deg;
+				d[this] = d[prev] + GMT_flatearth_dist_km (x[this], y[this], x[prev], y[prev]);
 			break;
 
-		case 2:	/* Great circle distances */
+		case 2:	/* Great circle distances in km */
 
 			for (this = 1, prev = 0; this < n; this++, prev++)
-				d[this] = d[prev] + GMT_great_circle_dist (x[this], y[this], x[prev], y[prev]) * km_pr_deg;
+				d[this] = d[prev] + GMT_great_circle_dist_km (x[this], y[this], x[prev], y[prev]);
+			break;
+		case 3:	/* Geodesic distances in km */
+
+			for (this = 1, prev = 0; this < n; this++, prev++)
+				d[this] = d[prev] + GMT_geodesic_dist_km (x[this], y[this], x[prev], y[prev]);
 			break;
 		default:
 			fprintf (stderr, "x2sys: Error: Wrong flag passed to x2sys_distances (%d)\n", dist_flag);
@@ -695,7 +700,7 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
      		return (-1);
   	}
 
-	if (!MGD77_Read_Header_Record (&M, &H)) {
+	if (MGD77_Read_Header_Record (&M, &H)) {
 		fprintf (stderr, "%s: Error reading header sequence for cruise %s\n", X2SYS_program, fname);
 		exit (EXIT_FAILURE);
 	}
@@ -704,7 +709,7 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 	for (i = 0; i < MGD77_DATA_COLS; i++) z[i] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "x2sys_read_mgd77file");
 
 	j = 0;
-	while (MGD77_Read_Data_Record (&M, &D)) {		/* While able to read a data record */
+	while (!MGD77_Read_Data_Record (&M, &D)) {		/* While able to read a data record */
 		z[0][j] = D.time;
 		GMT_lon_range_adjust (s->geodetic, &D.number[MGD77_LONGITUDE]);
 		for (i = 1; i < MGD77_DATA_COLS; i++) z[i][j] = D.number[MGD77_items[i]];
