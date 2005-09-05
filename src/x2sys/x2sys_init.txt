@@ -31,10 +31,10 @@ at Greenwhich (makes longitude go from 0 to 360 [Default]).
 #include "explain_-V.txt"
 .TP
 .B \-W
-Sets maximum time gap (in user units) allowed between points on either
-side of a crossover [Default is Infinity].  Optionally, give a separate
-distance gap for those data sets that do not have time information
-[Default is Infinity].
+Sets maximum time gap (in user units; this is typically seconds) allowed between
+points on either side of a crossover [Default is Infinity].  Optionally, give a
+separate distance gap (in user units; this is typically km) for those data sets
+that do not have time information [Default is Infinity].
 .SH EXAMPLES
 If you have a large set of track data files you can organize them using the
 x2sys tools.  Here we will outline the steps.  Let us assume that your track
@@ -108,10 +108,11 @@ Definition files already exist for MGD77 files, the old
 To initiate new track databases to be used with MGD77 data from NGDC, try
 .br
 .sp
-\fBx2sys_init\fP MGD77 \fB\-V \-D\fPmgd77 \fB\-R\fP0/360/-90/90 \fB\-I\fP1/1
+\fBx2sys_init\fP MGD77 \fB\-V \-D\fPmgd77 \fB\-Rd \fB\-I\fP1/1 \fB\-W\fP900/2.5
 .br
 .sp
-and the other steps are similar.
+where we choose a 15 minute (900 sec) or 2.5 km threshold to indicate a data gap;
+the other steps are similar.
 .TP
 .B binary files
 Let us pretend that your line files actually were binary files with a
