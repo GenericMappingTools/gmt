@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.23 2005-09-02 05:11:51 pwessel Exp $
+ *	$Id: mgd77.c,v 1.24 2005-09-05 05:51:34 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -1680,3 +1680,259 @@ int MGD77_fread_int (double *value, double scale, FILE *fp)
 	return (0);
 }
 
+/* CARTER TABLE ROUTINES */
+
+int MGD77_carter_init (struct MGD77_CARTER *C)
+{
+	/* This routine must be called once before using carter table stuff.
+	It reads the carter.d file and loads the appropriate arrays.
+	It sets carter_not_initialized = FALSE upon successful completion
+	and returns 0.  If failure occurs, it returns -1.  */
+
+	FILE *fp = NULL;
+	char buffer [BUFSIZ], *SHAREDIR;
+	int  i;
+
+	memset ((void *)C, 0, sizeof (struct MGD77_CARTER));
+	
+	/* Read the correction table:  */
+
+	if ((SHAREDIR = getenv ("GMTHOME")) == (char *)NULL) {
+		fprintf (stderr, "MGD77_carter_init: Environment variable GMTHOME not set!\n");
+                return (-1);
+	}
+
+	sprintf (buffer, "%s%cshare%cmgg%ccarter.d", SHAREDIR, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+	if ( (fp = fopen (buffer, "r")) == NULL) {
+                fprintf (stderr,"MGD77_carter_init:  Cannot open r %s\n", buffer);
+                return (-1);
+        }
+
+	for (i = 0; i < 4; i++) fgets (buffer, BUFSIZ, fp);	/* Skip 4 headers */
+	fgets (buffer, BUFSIZ, fp);
+
+	if ((i = atoi (buffer)) != N_CARTER_CORRECTIONS) {
+		fprintf (stderr, "MGD77_carter_init:  Incorrect correction key (%d), should be %d\n", i, N_CARTER_CORRECTIONS);
+                return(-1);
+	}
+
+        for (i = 0; i < N_CARTER_CORRECTIONS; i++) {
+                if (!fgets (buffer, BUFSIZ, fp)) {
+			fprintf (stderr, "MGD77_carter_init:  Could not read correction # %d\n", i);
+			return (-1);
+		}
+                C->carter_correction[i] = atoi (buffer);
+        }
+
+	/* Read the offset table:  */
+
+	fgets (buffer, BUFSIZ, fp);	/* Skip header */
+	fgets (buffer, BUFSIZ, fp);
+
+	if ((i = atoi (buffer)) != N_CARTER_OFFSETS) {
+		fprintf (stderr, "MGD77_carter_init:  Incorrect offset key (%d), should be %d\n", i, N_CARTER_OFFSETS);
+                return (-1);
+	}
+
+        for (i = 0; i < N_CARTER_OFFSETS; i++) {
+                 if (!fgets (buffer, BUFSIZ, fp)) {
+			fprintf (stderr, "MGD77_carter_init:  Could not read offset # %d\n", i);
+			return (-1);
+		}
+                C->carter_offset[i] = atoi (buffer);
+        }
+
+	/* Read the zone table:  */
+
+	fgets (buffer, BUFSIZ, fp);	/* Skip header */
+	fgets (buffer, BUFSIZ, fp);
+
+	if ((i = atoi (buffer)) != N_CARTER_BINS) {
+		fprintf (stderr, "MGD77_carter_init:  Incorrect zone key (%d), should be %d\n", i, N_CARTER_BINS);
+                return (-1);
+	}
+
+        for (i = 0; i < N_CARTER_BINS; i++) {
+                 if (!fgets (buffer, BUFSIZ, fp)) {
+			fprintf (stderr, "MGD77_carter_init:  Could not read offset # %d\n", i);
+			return (-1);
+		}
+                C->carter_zone[i] = atoi (buffer);
+        }
+        fclose (fp);
+
+	/* Get here when all is well.  */
+
+	C->initialized = TRUE;
+	
+	return (0);
+}
+
+int carter_get_bin (double lon, double lat, int *bin)
+{
+	/* Calculate Carter bin #.  Returns 0 if OK, -1 if error.  */
+
+	int latdeg, londeg;
+
+	if (lat < -90.0 || lat > 90.0) {
+		fprintf (stderr, "MGD77 ERROR: in carter_get_bin:  Latitude domain error (%g)\n", lat);
+		return (-1);
+	}
+	while (lon >= 360.0) lon -= 360.0;
+	while (lon < 0.0) lon += 360.0;
+	latdeg = (int)floor (lat + 90.0);
+	if (latdeg == 180) latdeg = 179;	/* Map north pole to previous row  */
+
+	londeg = (int)floor (lon);
+	*bin = 360 * latdeg + londeg;
+
+	return (0);
+}
+
+int carter_get_zone (int bin, struct MGD77_CARTER *C, int *zone)
+{
+	/* Sets value pointed to by zone to the Carter zone corresponding to
+		the bin "bin".  Returns 0 if successful, -1 if bin out of
+		range.  */
+
+	if (!C->initialized && MGD77_carter_init(C) ) {
+		fprintf (stderr, "MGD77 ERROR: in carter_get_zone:  Initialization failure.\n");
+		return (-1);
+	}
+
+	if (bin < 0 || bin >= N_CARTER_BINS) {
+		fprintf (stderr, "MGD77 ERROR: in carter_get_zone:  Input bin out of range [0-%d]: %d.\n", N_CARTER_BINS, bin);
+		return (-1);
+	}
+	*zone = C->carter_zone[bin];
+	return (0);
+}
+
+int MGD77_carter_depth_from_xytwt (double lon, double lat, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m)
+{
+	int bin, zone, ierr;
+	
+	if ((ierr = carter_get_bin (lon, lat, &bin))) return (ierr);
+	if ((ierr = carter_get_zone (bin, C, &zone))) return (ierr);
+	if ((ierr = carter_depth_from_twt (zone, twt_in_msec, C, depth_in_corr_m))) return (ierr);
+	return (0);
+}
+
+int MGD77_carter_twt_from_xydepth (double lon, double lat, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec)
+{
+	int bin, zone, ierr;
+	
+	if ((ierr = carter_get_bin (lon, lat, &bin))) return (ierr);
+	if ((ierr = carter_get_zone (bin, C, &zone))) return (ierr);
+	if ((ierr = carter_depth_from_twt (zone, twt_in_msec, C, depth_in_corr_m))) return (ierr);
+	return (0);
+}
+
+int carter_depth_from_twt (int zone, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m)
+{
+	/* Given two-way travel time of echosounder in milliseconds, and
+		Carter Zone number, finds depth in Carter corrected meters.
+		Returns (0) if OK, -1 if error condition.  */
+
+	int	i, nominal_z1500, low_hundred, part_in_100;
+
+	if (!C->initialized && MGD77_carter_init(C) ) {
+		fprintf (stderr,"MGD77 ERROR: in MGD77_carter_depth_from_twt:  Initialization failure.\n");
+		return (-1);
+	}
+	if (zone < 1 || zone > N_CARTER_ZONES) {
+		fprintf (stderr,"MGD77 ERROR: in MGD77_carter_depth_from_twt:  Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
+		return (-1);
+	}
+	if (twt_in_msec < 0.0) {
+		fprintf (stderr,"MGD77 ERROR: in MGD77_carter_depth_from_twt:  Negative twt: %g msec\n", twt_in_msec);
+		return (-1);
+	}
+
+	nominal_z1500 = 0.75 * twt_in_msec;
+
+	if (nominal_z1500 <= 100.0) {	/* There is no correction in water this shallow.  */
+		*depth_in_corr_m = nominal_z1500;
+		return (0);
+	}
+
+	low_hundred = (int) floor (nominal_z1500 / 100.0);
+	i = C->carter_offset[zone-1] + low_hundred - 1;	/* -1 'cause .f indices */
+	
+	if (i >= (C->carter_offset[zone] - 1) ) {
+		fprintf (stderr, "MGD77 ERROR: in MGD77_carter_depth_from_twt:  twt too big: %g msec\n", twt_in_msec);
+		return (-1);
+	}
+
+	part_in_100 = fmod (nominal_z1500, 100.0);
+
+	if (part_in_100 > 0.0) {	/* We have to interpolate the table  */
+
+		if ( i == (C->carter_offset[zone] - 2) ) {
+			fprintf (stderr, "GMT ERROR: in MGD77_carter_depth_from_twt:  twt too big: %g msec\n", twt_in_msec);
+			return (-1);
+		}
+
+		*depth_in_corr_m = (double)C->carter_correction[i] + 0.01 * part_in_100 * (C->carter_correction[i+1] - C->carter_correction[i]);
+		return (0);
+	}
+	else {
+		*depth_in_corr_m = (double)C->carter_correction[i];
+		return (0);
+	}
+}
+
+
+int MGD77_carter_twt_from_depth (int zone, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec)
+{
+	/*  Given Carter zone and depth in Carter corrected meters,
+	finds the two-way travel time of the echosounder in milliseconds.
+	Returns -1 upon error, 0 upon success.  */
+
+	int	min, max, guess;
+	double	fraction;
+
+	if (!C->initialized && MGD77_carter_init(C) ) {
+		fprintf(stderr,"MGD77 ERROR: in MGD77_carter_twt_from_depth:  Initialization failure.\n");
+		return (-1);
+	}
+	if (zone < 1 || zone > N_CARTER_ZONES) {
+		fprintf (stderr,"MGD77 ERROR: in MGD77_carter_twt_from_depth:  Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
+		return (-1);
+	}
+	if (depth_in_corr_m < 0.0) {
+		fprintf(stderr,"MGD77 ERROR: in MGD77_carter_twt_from_depth:  Negative depth: %g m\n", depth_in_corr_m);
+		return(-1);
+	}
+
+	if (depth_in_corr_m <= 100.0) {	/* No correction applies.  */
+		*twt_in_msec = 1.33333 * depth_in_corr_m;
+		return (0);
+	}
+
+	max = C->carter_offset[zone] - 2;
+	min = C->carter_offset[zone-1] - 1;
+
+	if (depth_in_corr_m > C->carter_correction[max]) {
+		fprintf (stderr, "MGD77 ERROR: in MGD77_carter_twt_from_depth:  Depth too big: %g m.\n", depth_in_corr_m);
+		return (-1);
+	}
+
+	if (depth_in_corr_m == C->carter_correction[max]) {	/* Hit last entry in table exactly  */
+		*twt_in_msec = 133.333 * (max - min);
+		return (0);
+	}
+
+	guess = (depth_in_corr_m / 100.0) + min;
+	if (guess > max) guess = max;
+	while (guess < max && C->carter_correction[guess] < depth_in_corr_m) guess++;
+	while (guess > min && C->carter_correction[guess] > depth_in_corr_m) guess--;
+
+	if (depth_in_corr_m == C->carter_correction[guess]) {	/* Hit a table value exactly  */
+		*twt_in_msec = 133.333 * (guess - min) ;
+		return (0);
+	}
+	fraction = ((double)(depth_in_corr_m - C->carter_correction[guess]) / (double)(C->carter_correction[guess+1] - C->carter_correction[guess]));
+	*twt_in_msec = 133.333 * (guess - min + fraction);
+	return (0);
+}
