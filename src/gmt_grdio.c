@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.39 2005-09-02 18:59:40 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.40 2005-09-05 13:18:56 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -154,7 +154,7 @@ int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w,
 	double scale = header->z_scale_factor, offset = header->z_add_offset;
 
 	GMT_grd_out_nan_value = GMT_d_NaN;
-	status = GMT_grd_get_o_format (file, fname, &scale, &offset);
+	header->type = GMT_grd_get_o_format (file, fname, &scale, &offset);
 	header->z_scale_factor = scale, header->z_add_offset = offset;
 	GMT_grd_do_scaling (grid, (header->nx * header->ny), 1.0/scale, -offset/scale);
 	status = (*GMT_io_writegrd[header->type]) (fname, header, grid, w, e, s, n, pad, complex);
