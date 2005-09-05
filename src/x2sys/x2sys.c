@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.37 2005-09-05 07:31:11 pwessel Exp $
+ *	$Id: x2sys.c,v 1.38 2005-09-05 07:44:41 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -347,7 +347,6 @@ struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G)
 	}
 	else
 		X->read_file = (PFI) x2sys_read_file;
-	strcpy (X->suffix, fname);
 	while (fgets (line, BUFSIZ, fp)) {
 		if (line[0] == '\0') continue;
 		if (line[0] == '#') {
@@ -787,7 +786,7 @@ int x2sys_read_list (char *file, char ***list)
 
 void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, struct GMT_IO *G)
 {
-	char tag_file[BUFSIZ], line[BUFSIZ], p[BUFSIZ], sfile[BUFSIZ];
+	char tag_file[BUFSIZ], line[BUFSIZ], p[BUFSIZ], sfile[BUFSIZ], suffix[16];
 	int geodetic = 0, pos = 0, n;
 	double dist;
 	BOOLEAN geographic = FALSE;
@@ -799,7 +798,7 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 	B->bin_x = B->bin_y = 1.0;
 	B->x_min = 0.0;	B->x_max = 360.0;	B->y_min = -90.0;	B->y_max = +90.0;
 	B->time_gap = B->dist_gap = dist = DBL_MAX;	/* Default is no data gap */
-	B->periodic = sfile[0] = 0;
+	B->periodic = sfile[0] = suffix[0] = 0;
 
 	sprintf (tag_file, "%s.tag", TAG);
 	if ((fp = x2sys_fopen (tag_file, "r")) == NULL) {
@@ -826,6 +825,9 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 
 				case 'D':
 					strcpy (sfile, &p[2]);
+					break;
+				case 'E':
+					strcpy (suffix, &p[2]);
 					break;
 				case 'G':	/* Geographical coordinates, set discontinuity */
 					geographic = TRUE;
@@ -866,6 +868,11 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 		(*s)->geodetic = geodetic;	/* Override setting */
 		if (fabs (fabs (B->x_max - B->x_min) - 360.0) <= GMT_CONV_LIMIT) B->periodic = 1;
 	}
+	if (suffix[0])
+		strcpy ((*s)->suffix, suffix);
+	else
+		strcpy ((*s)->suffix, sfile);
+		
 	x2sys_path_init (TAG);		/* Prepare directory paths to data */
 }
 

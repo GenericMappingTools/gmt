@@ -117,7 +117,7 @@ Definition files already exist for MGD77 files, the old
 To initiate new track databases to be used with MGD77 data from NGDC, try
 .br
 .sp
-\fBx2sys_init\fP MGD77 \fB\-V \-D\fPmgd77 \fB\-Rd \-I\fP1/1 \fB\-W\fP900/2.5
+\fBx2sys_init\fP MGD77 \fB\-V \-D\fPmgd77 \-E\fPmgd77 \fB\-Rd \-I\fP1/1 \fB\-W\fP900/2.5
 .br
 .sp
 where we choose a 15 minute (900 sec) or 2.5 km threshold to indicate a data gap;
