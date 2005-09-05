@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.16 2005-04-29 04:07:39 pwessel Exp $
+ *	$Id: x2sys.h,v 1.17 2005-09-05 07:04:51 pwessel Exp $
  *
  *      Copyright (c) 1999-2004 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -138,6 +138,7 @@ struct X2SYS_INFO {
 	BOOLEAN geographic;		/* TRUE if x/y data are lon/lat */
 	BOOLEAN ms_next;		/* TRUE if we just read 1st record in a new segments in this file */
 	char ms_flag;			/* Multi-segment header flag */
+	char suffix[16];		/* Suffix for these data files */
 	struct X2SYS_DATA_INFO *info;	/* Array of info for each data field */
 };
 
@@ -249,4 +250,4 @@ EXTERN_MSC void x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B);
 EXTERN_MSC int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B);
 
 EXTERN_MSC void x2sys_path_init (char *TAG);
-EXTERN_MSC int x2sys_get_data_path (char *track_path, char *track);
+EXTERN_MSC int x2sys_get_data_path (char *track_path, char *track, char *suffix);

@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.16 2005-09-05 05:51:34 pwessel Exp $
+ *	$Id: mgd77.h,v 1.17 2005-09-05 07:04:36 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -324,6 +324,10 @@ EXTERN_MSC int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw);  /*
 EXTERN_MSC int MGD77_Close_File (struct MGD77_CONTROL *F);  /* Closes a MGD77[+] file */
 EXTERN_MSC void MGD77_Fatal_Error (int error);	/* Print message for this error and exit */
 EXTERN_MSC int MGD77_carter_init (struct MGD77_CARTER *C);
+EXTERN_MSC int MGD77_carter_get_bin (double lon, double lat, int *bin);
+EXTERN_MSC int MGD77_carter_get_zone (int bin, struct MGD77_CARTER *C, int *zone);
+EXTERN_MSC int MGD77_carter_depth_from_twt (int zone, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m);
+EXTERN_MSC int MGD77_carter_twt_from_depth (int zone, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec);
 EXTERN_MSC int MGD77_carter_depth_from_xytwt (double lon, double lat, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m);
 EXTERN_MSC int MGD77_carter_twt_from_xydepth (double lon, double lat, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec);
 

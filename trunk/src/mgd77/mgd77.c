@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.24 2005-09-05 05:51:34 pwessel Exp $
+ *	$Id: mgd77.c,v 1.25 2005-09-05 07:04:36 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -1768,14 +1768,14 @@ int MGD77_carter_init (struct MGD77_CARTER *C)
 	return (0);
 }
 
-int carter_get_bin (double lon, double lat, int *bin)
+int MGD77_carter_get_bin (double lon, double lat, int *bin)
 {
 	/* Calculate Carter bin #.  Returns 0 if OK, -1 if error.  */
 
 	int latdeg, londeg;
 
 	if (lat < -90.0 || lat > 90.0) {
-		fprintf (stderr, "MGD77 ERROR: in carter_get_bin:  Latitude domain error (%g)\n", lat);
+		fprintf (stderr, "MGD77 ERROR: in MGD77_carter_get_bin:  Latitude domain error (%g)\n", lat);
 		return (-1);
 	}
 	while (lon >= 360.0) lon -= 360.0;
@@ -1789,19 +1789,19 @@ int carter_get_bin (double lon, double lat, int *bin)
 	return (0);
 }
 
-int carter_get_zone (int bin, struct MGD77_CARTER *C, int *zone)
+int MGD77_carter_get_zone (int bin, struct MGD77_CARTER *C, int *zone)
 {
 	/* Sets value pointed to by zone to the Carter zone corresponding to
 		the bin "bin".  Returns 0 if successful, -1 if bin out of
 		range.  */
 
 	if (!C->initialized && MGD77_carter_init(C) ) {
-		fprintf (stderr, "MGD77 ERROR: in carter_get_zone:  Initialization failure.\n");
+		fprintf (stderr, "MGD77 ERROR: in MGD77_carter_get_zone:  Initialization failure.\n");
 		return (-1);
 	}
 
 	if (bin < 0 || bin >= N_CARTER_BINS) {
-		fprintf (stderr, "MGD77 ERROR: in carter_get_zone:  Input bin out of range [0-%d]: %d.\n", N_CARTER_BINS, bin);
+		fprintf (stderr, "MGD77 ERROR: in MGD77_carter_get_zone:  Input bin out of range [0-%d]: %d.\n", N_CARTER_BINS, bin);
 		return (-1);
 	}
 	*zone = C->carter_zone[bin];
@@ -1812,23 +1812,23 @@ int MGD77_carter_depth_from_xytwt (double lon, double lat, double twt_in_msec, s
 {
 	int bin, zone, ierr;
 	
-	if ((ierr = carter_get_bin (lon, lat, &bin))) return (ierr);
-	if ((ierr = carter_get_zone (bin, C, &zone))) return (ierr);
-	if ((ierr = carter_depth_from_twt (zone, twt_in_msec, C, depth_in_corr_m))) return (ierr);
+	if ((ierr = MGD77_carter_get_bin (lon, lat, &bin))) return (ierr);
+	if ((ierr = MGD77_carter_get_zone (bin, C, &zone))) return (ierr);
+	if ((ierr = MGD77_carter_depth_from_twt (zone, twt_in_msec, C, depth_in_corr_m))) return (ierr);
 	return (0);
 }
 
-int MGD77_carter_twt_from_xydepth (double lon, double lat, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec)
+int MGD77_carter_twt_from_xydepth (double lon, double lat, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m)
 {
 	int bin, zone, ierr;
 	
-	if ((ierr = carter_get_bin (lon, lat, &bin))) return (ierr);
-	if ((ierr = carter_get_zone (bin, C, &zone))) return (ierr);
-	if ((ierr = carter_depth_from_twt (zone, twt_in_msec, C, depth_in_corr_m))) return (ierr);
+	if ((ierr = MGD77_carter_get_bin (lon, lat, &bin))) return (ierr);
+	if ((ierr = MGD77_carter_get_zone (bin, C, &zone))) return (ierr);
+	if ((ierr = MGD77_carter_depth_from_twt (zone, twt_in_msec, C, depth_in_corr_m))) return (ierr);
 	return (0);
 }
 
-int carter_depth_from_twt (int zone, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m)
+int MGD77_carter_depth_from_twt (int zone, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m)
 {
 	/* Given two-way travel time of echosounder in milliseconds, and
 		Carter Zone number, finds depth in Carter corrected meters.
