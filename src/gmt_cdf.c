@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.24 2005-09-05 17:59:24 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.25 2005-09-05 21:30:41 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -223,7 +223,7 @@ int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	int  ncid;
 	size_t start[1], edge[1];
 	int first_col, last_col, first_row, last_row;
-	int i, j, ij, j2, width_in, width_out, height_in, i_0_out, kk, inc = 1;
+	int i, j, ij, width_in, width_out, height_in, i_0_out, kk, inc = 1;
 	int *k;
 	BOOLEAN check;
 	float *tmp = VNULL;
@@ -261,19 +261,22 @@ int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	tmp = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_cdf_read_grd");
 
 	edge[0] = header->nx;
-	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
-	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
+	ij = pad[3] * width_out + i_0_out;
+	header->z_min =  DBL_MAX;
+	header->z_max = -DBL_MAX;
+
+	for (j = first_row; j <= last_row; j++) {
 		start[0] = j * header->nx;
-		ij = (j2 + pad[3]) * width_out + i_0_out;	/* Already has factor of 2 in it if complex */
 		check_nc_status (nc_get_vara_float (ncid, header->z_id, start, edge, tmp));	/* Get one row */
 		for (i = 0; i < header->nx; i++) {	/* Check for and handle NaN proxies */
 			kk = ij+i*inc;
 			grid[kk] = tmp[k[i]];
 			if (check && grid[kk] == GMT_grd_in_nan_value) grid[kk] = GMT_f_NaN;
 			if (GMT_is_fnan (grid[kk])) continue;
-			header->z_min = MIN (header->z_min, (double)grid[ij]);
-			header->z_max = MAX (header->z_max, (double)grid[ij]);
+			header->z_min = MIN (header->z_min, (double)grid[kk]);
+			header->z_max = MAX (header->z_max, (double)grid[kk]);
 		}
+		ij += width_out;
 	}
 
 	check_nc_status (nc_close (ncid));
@@ -297,7 +300,7 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	size_t start[1], edge[1];
 	int ncid, z_id;
 	int i, inc = 1, *k, nr_oor = 0;
-	int j, ij, j2, width_in, width_out, height_out;
+	int j, ij, width_in, width_out, height_out;
 	int first_col, last_col, first_row, last_row;
 	float *tmpf = VNULL;
 	int *tmpi = VNULL;
@@ -355,20 +358,21 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	/* Set start position for writing grid */
 
 	edge[0] = header->nx;
-	ij = first_col + pad[0];
+	ij = first_col + pad[0] + (first_row + pad[3]) * width_in;
 	header->z_min =  DBL_MAX;
 	header->z_max = -DBL_MAX;
 
 	/* Store z-variable */
 
-	if (z_type >= NC_FLOAT) {
-		tmpf = (float *) GMT_memory (VNULL, (size_t)width_in, sizeof (float), "GMT_cdf_write_grd");
-		for (j = 0, j2 = first_row + pad[3]; j < height_out; j++, ij+=width_in) {
+	if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
+		tmpf = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_cdf_write_grd");
+		for (j = 0; j < header->ny; j++, ij += width_in) {
 			start[0] = j * header->nx;
-			for (i = 0; i < width_out; i++) {
+			for (i = 0; i < header->nx; i++) {
 				tmpf[i] = grid[inc*(ij+k[i])];
-				if (GMT_is_fnan (tmpf[i]))
+				if (GMT_is_fnan (tmpf[i])) {
 					if (check) tmpf[i] = (float)GMT_grd_out_nan_value;
+				}
 				else {
 					header->z_min = MIN (header->z_min, (double)tmpf[i]);
 					header->z_max = MAX (header->z_max, (double)tmpf[i]);
@@ -381,9 +385,9 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 
 	else {
 		tmpi = (int *) GMT_memory (VNULL, (size_t)header->nx, sizeof (int), "GMT_nc_write_grd");
-		for (j = 0, j2 = first_row + pad[3]; j < height_out; j++, ij+=width_in) {
+		for (j = 0; j < header->ny; j++, ij += width_in) {
 			start[0] = j * header->nx;
-			for (i = 0; i < width_out; i++) {
+			for (i = 0; i < header->nx; i++) {
 				value = grid[inc*(ij+k[i])];
 				if (GMT_is_fnan (value))
 					tmpi[i] = GMT_grd_out_nan_value;
