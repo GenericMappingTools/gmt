@@ -2,7 +2,7 @@
 .SH NAME
 mgd77info \- Get information about MGD77 files
 .SH SYNOPSIS
-\fBmgd77info\fP \fIleg-ids\fP \fB\-I\fP|\fBL\fP [ \fB\-V\fP ]
+\fBmgd77info\fP \fIleg-ids\fP \fB\-I\fP|\fBL\fP|\fBP\fP [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBmgd77info\fP reads <legid>.mgd77 files and produces a single record of information
 about each cruise specified.  The information includes beginning and end time, total
@@ -22,7 +22,10 @@ in the current directory and in all directories listed in \fB$MGD77_DIR\fP/MGD77
 Give a one-line summary for each cruise listed, OR
 .TP
 .B \-L
-Give the long MGD77 header section for each cruise listed.
+Give the long MGD77 header section for each cruise listed, OR
+.TP
+.B \-P
+Instead of cruise listings, just show the directory paths currently used in the search.
 .SH OPTIONS
 No space between the option flag and the associated arguments
 #include "explain_-V.txt"
