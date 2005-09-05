@@ -11,8 +11,8 @@ of track data.  These data and their associated data bases are given a short-han
 notation called a system TAG.   The TAG remembers settings such as file format,
 whether the data are geographic or not, and the binning resolution for track indexes.
 Running \fBx2sys_init\fP is a prerequisite to running \fBx2sys_binlist\fP which will
-create a crude representation of where data track go; this serves as input to the
-\fBx2sys_put\fP too which updates the track data base. Then, \fBx2sys_get\fP can
+create a crude representation of where data track go; this serves as input to
+\fBx2sys_put\fP which updates the track data base. Then, \fBx2sys_get\fP can
 be used to find which tracks and data are available inside a given region.
 .TP
 \fITAG\fP
@@ -23,10 +23,14 @@ No space between the option flag and the associated arguments
 .B \-D
 Definition file for this data set. [x2sys.def]
 .TP
+.B \-F
+Force creating new files if old ones are present [Default will abort if old files are found].
+.TP
 .B \-G
 Selects geographical coordinates.  Append \fBd\fP for discontinuity at the
 Dateline (makes longitude go from -180 to + 180) or \fBg\fP for discontinuity
 at Greenwhich (makes longitude go from 0 to 360 [Default]).
+#include "explain_-I.txt"
 #include "explain_-R.txt"
 #include "explain_-V.txt"
 .TP
@@ -91,7 +95,8 @@ to by \fB$X2SYS_HOME\fP.
 Once the (empty) TAG database have been initialize we go through a two-
 step process to populate them.  First we run \fBx2sys_binlist\fP on
 all our track files to create one (or more) multi-segment track binindex
-files (tbf).  These contain information on which 1x1 degree bins each
+files (tbf).  These contain information on which 1x1 degree bins (or any
+other blocksize; see \fB\-I\fP) each
 track has visited and which observations (in your case obs1, obs2, obs3)
 where actually observed (not all tracks may have all the kinds of
 observations).  Next, the track binindex files are fed to \fBx2sys_put\fP
@@ -148,7 +153,7 @@ obs3	h	N	0	0.1	0	%6.1lf
 The rest of the steps are identical.  The accepted intype flags are
 \fBc\fP fur signed 1-byte character (-127,+128), \fBu\fP for unsigned
 byte (0-255), \fBh\fP for signed 2-byte integers (-32767,+32767),
-\fBi\fP for  signed 4-byte integers (-2,147,483,648,+2,147,483,648),
+\fBi\fP for  signed 4-byte integers (-2,147,483,647,+2,147,483,647),
 \fBf\fP for 4-byte floating points and \fBd\fP for 8-byte double
 precision floating points.
 .SH "SEE ALSO"

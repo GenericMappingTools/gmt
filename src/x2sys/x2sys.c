@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.34 2005-09-05 00:46:16 pwessel Exp $
+ *	$Id: x2sys.c,v 1.35 2005-09-05 07:04:51 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -264,16 +264,16 @@ int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X
 	char path[BUFSIZ];
 
  	if (n_x2sys_paths) {
-  		if (x2sys_get_data_path (path, fname)) {
+  		if (x2sys_get_data_path (path, fname, s->suffix)) {
    			fprintf (stderr, "x2sys_read_file : Cannot find track %s\n", fname);
      			return (-1);
   		}
-  		if ((fp = fopen (path, "rb")) == NULL) {
-   			fprintf (stderr, "x2sys_read_mgd77file : Cannot open file %s\n", path);
+  		if ((fp = fopen (path, G->r_mode)) == NULL) {
+   			fprintf (stderr, "x2sys_read_file : Cannot open file %s\n", path);
      			return (-1);
   		}
 	}
-	else if ((fp = fopen (fname, "rb")) == NULL) {
+	else if ((fp = fopen (fname, G->r_mode)) == NULL) {
 		fprintf (stderr, "x2sys_read_file: Could not open %s\n", fname);
 		return (-1);
 	}
@@ -347,7 +347,7 @@ struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G)
 	}
 	else
 		X->read_file = (PFI) x2sys_read_file;
-
+	strcpy (X->suffix, fname);
 	while (fgets (line, BUFSIZ, fp)) {
 		if (line[0] == '\0') continue;
 		if (line[0] == '#') {
@@ -387,6 +387,11 @@ struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G)
 	if (i < (int)n_alloc) X->info = (struct X2SYS_DATA_INFO *) GMT_memory ((void *)X->info, i, sizeof (struct X2SYS_DATA_INFO), "x2sys_initialize");
 	X->n_fields = X->n_out_columns = i;
 
+	if (!X->ascii_in) {	/* Binary mode needed */
+		strcpy (G->r_mode, "rb");
+		strcpy (G->w_mode, "wb");
+		strcpy (G->a_mode, "ab+");
+	}
 	X->out_order  = (int *) GMT_memory (VNULL, sizeof (int), (size_t)X->n_fields, "x2sys_initialize");
 	X->use_column = (int *) GMT_memory (VNULL, sizeof (int), (size_t)X->n_fields, "x2sys_initialize");
 	for (i = 0; i < X->n_fields; i++) {	/* Default is same order and use all columns */
@@ -686,7 +691,7 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 	MGD77_Init (&M, TRUE);			/* Initialize MGD77 Machinery */
 
   	if (n_x2sys_paths) {
-  		if (x2sys_get_data_path (path, fname)) {
+  		if (x2sys_get_data_path (path, fname, s->suffix)) {
    			fprintf (stderr, "x2sys_read_mgd77file : Cannot find leg %s\n", fname);
      			return (-1);
   		}
@@ -1039,26 +1044,43 @@ void x2sys_path_init (char *TAG)
  * to where this data file can be found.  x2sys_path_init must be called first.
  */
  
-int x2sys_get_data_path (char *track_path, char *track)
+int x2sys_get_data_path (char *track_path, char *track, char *suffix)
 {
 	int id;
+	BOOLEAN add_suffix;
 	char geo_path[BUFSIZ];
+
+	if (track[0] == '/' || track[1] == ':') {	/* Full path given, just return it */
+		strcpy(track_path, track);
+		return (0);
+	}
+	
+	/* Check if we need to append suffix */
+	
+	add_suffix = strncmp (&track[strlen(track)-strlen(suffix)], suffix, strlen(suffix));	/* Need to add suffix? */
 
 	/* First look in current directory */
 
-	if (!access(track, R_OK)) {
-		strcpy(track_path, track);
+	if (add_suffix)
+		sprintf (geo_path, "%s.%s", track, suffix);
+	else
+		strcpy (geo_path, track);
+	if (!access(geo_path, R_OK)) {
+		strcpy(track_path, geo_path);
 		return (0);
 	}
 
 	/* Then look elsewhere */
 
 	for (id = 0; id < n_x2sys_paths; id++) {
-		sprintf (geo_path, "%s%c%s", x2sys_datadir[id], DIR_DELIM, track);
+		if (add_suffix)
+			sprintf (geo_path, "%s%c%s.%s", x2sys_datadir[id], DIR_DELIM, track, suffix);
+		else
+			sprintf (geo_path, "%s%c%s", x2sys_datadir[id], DIR_DELIM, track);
 		if (!access (geo_path, R_OK)) {
 			strcpy (track_path, geo_path);
 			return (0);
 		}
 	}
-	return(1);
+	return(1);	/* Schwinehund! */
 }
