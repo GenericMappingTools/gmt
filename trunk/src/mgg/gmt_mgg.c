@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.8 2005-03-04 21:00:54 remko Exp $
+ *	$Id: gmt_mgg.c,v 1.9 2005-09-05 10:05:20 pwessel Exp $
  *
  *    Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -362,6 +362,8 @@ int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, str
 	}
 	return (0);
 }
+
+/* CARTER TABLE ROUTINES */
 
 int carter_setup (void)
 {
