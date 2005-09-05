@@ -2,7 +2,7 @@
 .SH NAME
 x2sys_get \- Get track listing from track index databases
 .SH SYNOPSIS
-\fBx2sys_get\fP \fB\-T\fP\fITAG\fP [ \fB\-F\fP\fIflags\fP ] 
+\fBx2sys_get\fP \fB\-T\fP\fITAG\fP [ \fB\-C\fP ] [ \fB\-F\fP\fIflags\fP ] 
 [ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-S\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBx2sys_get\fP will return the track data files that match the given
@@ -13,6 +13,10 @@ only for tracks that meet certain data criteria.
 The unique name of this data type system.
 .SH OPTIONS
 No space between the option flag and the associated arguments
+.TP
+.B \-C
+Instead of reporting the cruise ids, just output the coordinates of the
+center of each bin that has at least one cruise with the specified data.
 .TP
 .B \-F
 Give a comma-separated list of column names as defined in the definition
