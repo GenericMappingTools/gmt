@@ -146,7 +146,7 @@ obs3	h	N	0	0.1	0	%6.1lf
 .br
 .sp
 The rest of the steps are identical.  The accepted intype flags are
-\fBc\fP fir sugned 1-byte character (-127,+128), \fBu\fP for unsigned
+\fBc\fP fur signed 1-byte character (-127,+128), \fBu\fP for unsigned
 byte (0-255), \fBh\fP for signed 2-byte integers (-32767,+32767),
 \fBi\fP for  signed 4-byte integers (-2,147,483,648,+2,147,483,648),
 \fBf\fP for 4-byte floating points and \fBd\fP for 8-byte double
