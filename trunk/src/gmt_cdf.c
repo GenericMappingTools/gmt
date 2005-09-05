@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.23 2005-09-02 18:59:40 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.24 2005-09-05 17:59:24 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -128,7 +128,7 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		check_nc_status (nc_inq_vartype (ncid, z_id, &z_type));
 		header->type = ((z_type == NC_BYTE) ? 2 : z_type) + 5;
 	}
-	header->z_id = z_id + 1000;	/* Add 1000 to identify old NetCDF format */
+	header->z_id = z_id;
 
 	/* Get or assign attributes */
 
@@ -220,15 +220,13 @@ int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	 * not the physical size (i.e., the padding is not counted in nx and ny)
 	 */
 	 
-	int  ncid, z_id;
+	int  ncid;
 	size_t start[1], edge[1];
 	int first_col, last_col, first_row, last_row;
 	int i, j, ij, j2, width_in, width_out, height_in, i_0_out, kk, inc = 1;
 	int *k;
 	BOOLEAN check;
 	float *tmp = VNULL;
-
-	z_id = header->z_id - 1000;
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row);
 
@@ -254,7 +252,7 @@ int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 
 	nc_nopipe (file);
  	check_nc_status (nc_open (file, NC_NOWRITE, &ncid));
-        nc_get_att_double (ncid, z_id, "_FillValue", &GMT_grd_in_nan_value);
+        nc_get_att_double (ncid, header->z_id, "_FillValue", &GMT_grd_in_nan_value);
 	check = !GMT_is_dnan (GMT_grd_in_nan_value);
 
 	/* Load data row by row. The data in the file is stored in the same
@@ -267,14 +265,14 @@ int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 		start[0] = j * header->nx;
 		ij = (j2 + pad[3]) * width_out + i_0_out;	/* Already has factor of 2 in it if complex */
-		check_nc_status (nc_get_vara_float (ncid, z_id, start, edge, tmp));	/* Get one row */
+		check_nc_status (nc_get_vara_float (ncid, header->z_id, start, edge, tmp));	/* Get one row */
 		for (i = 0; i < header->nx; i++) {	/* Check for and handle NaN proxies */
 			kk = ij+i*inc;
 			grid[kk] = tmp[k[i]];
 			if (check && grid[kk] == GMT_grd_in_nan_value) grid[kk] = GMT_f_NaN;
 			if (GMT_is_fnan (grid[kk])) continue;
-			if ((double)grid[kk] < header->z_min) header->z_min = (double)grid[kk];
-			if ((double)grid[kk] > header->z_max) header->z_max = (double)grid[kk];
+			header->z_min = MIN (header->z_min, (double)grid[ij]);
+			header->z_max = MAX (header->z_max, (double)grid[ij]);
 		}
 	}
 
@@ -298,23 +296,38 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 
 	size_t start[1], edge[1];
 	int ncid, z_id;
-	int i, i2, inc = 1, *k;
+	int i, inc = 1, *k, nr_oor = 0;
 	int j, ij, j2, width_in, width_out, height_out;
 	int first_col, last_col, first_row, last_row;
-	float *tmp = VNULL;
+	float *tmpf = VNULL;
+	int *tmpi = VNULL;
 	BOOLEAN check = FALSE;
+	double limit[2] = {FLT_MIN, FLT_MAX}, value;
+	nc_type z_type;
 
 	/* Determine the value to be assigned to missing data, if not already done so */
 
-	if (!GMT_is_dnan (GMT_grd_out_nan_value))
-		check = TRUE;
-	else if (GMT_grdformats[header->type][1] == 'b') {
-		GMT_grd_out_nan_value = CHAR_MIN;
-		check = TRUE;
-	}
-	else if (GMT_grdformats[header->type][1] == 's') {
-		GMT_grd_out_nan_value = SHRT_MIN;
-		check = TRUE;
+	switch (GMT_grdformats[header->type][1]) {
+		case 'b':
+			if (!GMT_is_dnan (GMT_grd_out_nan_value)) GMT_grd_out_nan_value = CHAR_MIN;
+			limit[0] = CHAR_MIN - 0.5; limit[1] = CHAR_MAX + 0.5;
+			z_type = NC_BYTE; break;
+		case 's':
+			if (!GMT_is_dnan (GMT_grd_out_nan_value)) GMT_grd_out_nan_value = SHRT_MIN;
+			limit[0] = SHRT_MIN - 0.5; limit[1] = SHRT_MAX + 0.5;
+			z_type = NC_SHORT; break;
+		case 'i':
+			if (!GMT_is_dnan (GMT_grd_out_nan_value)) GMT_grd_out_nan_value = INT_MIN;
+			limit[0] = INT_MIN - 0.5; limit[1] = INT_MAX + 0.5;
+			z_type = NC_INT; break;
+		case 'f':
+			check = !GMT_is_dnan (GMT_grd_out_nan_value);
+			z_type = NC_FLOAT; break;
+		case 'd':
+			check = !GMT_is_dnan (GMT_grd_out_nan_value);
+			z_type = NC_DOUBLE; break;
+		default:
+			z_type = NC_NAT;
 	}
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row);
@@ -333,43 +346,77 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	header->nx = width_out;
 	header->ny = height_out;
 
-	/* Find z_min/z_max */
-
-	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
-	for (j = first_row, j2 = pad[3]; j <= last_row; j++, j2++) {
-		for (i = first_col, i2 = pad[0]; i <= last_col; i++, i2++) {
-			ij = (j2 * width_in + i2) * inc;
-			if (GMT_is_fnan (grid[ij])) {
-				if (check) grid[ij] = (float)GMT_grd_out_nan_value;
-				continue;
-			}
-			header->z_min = MIN (header->z_min, grid[ij]);
-			header->z_max = MAX (header->z_max, grid[ij]);
-		}
-	}
-
 	/* Write grid header */
 
 	nc_nopipe (file);
 	check_nc_status (nc_create (file, NC_CLOBBER, &ncid));
 	GMT_cdf_grd_info (ncid, header, 'w');
 
-	/* Store z-variable */
-
-	tmp = (float *) GMT_memory (VNULL, (size_t)width_in, sizeof (float), "GMT_cdf_write_grd");
-	z_id = header->z_id - 1000;
+	/* Set start position for writing grid */
 
 	edge[0] = header->nx;
-	i2 = first_col + pad[0];
-	for (j = 0, j2 = first_row + pad[3]; j < height_out; j++, j2++) {
-		ij = j2 * width_in + i2;
-		start[0] = j * header->nx;
-		for (i = 0; i < width_out; i++) tmp[i] = grid[inc * (ij+k[i])];
-		check_nc_status (nc_put_vara_float (ncid, z_id, start, edge, tmp));
+	ij = first_col + pad[0];
+	header->z_min =  DBL_MAX;
+	header->z_max = -DBL_MAX;
+
+	/* Store z-variable */
+
+	if (z_type >= NC_FLOAT) {
+		tmpf = (float *) GMT_memory (VNULL, (size_t)width_in, sizeof (float), "GMT_cdf_write_grd");
+		for (j = 0, j2 = first_row + pad[3]; j < height_out; j++, ij+=width_in) {
+			start[0] = j * header->nx;
+			for (i = 0; i < width_out; i++) {
+				tmpf[i] = grid[inc*(ij+k[i])];
+				if (GMT_is_fnan (tmpf[i]))
+					if (check) tmpf[i] = (float)GMT_grd_out_nan_value;
+				else {
+					header->z_min = MIN (header->z_min, (double)tmpf[i]);
+					header->z_max = MAX (header->z_max, (double)tmpf[i]);
+				}
+			}
+			check_nc_status (nc_put_vara_float (ncid, header->z_id, start, edge, tmpf));
+		}
+		GMT_free ((void *)tmpf);
 	}
-	check_nc_status (nc_close (ncid));
+
+	else {
+		tmpi = (int *) GMT_memory (VNULL, (size_t)header->nx, sizeof (int), "GMT_nc_write_grd");
+		for (j = 0, j2 = first_row + pad[3]; j < height_out; j++, ij+=width_in) {
+			start[0] = j * header->nx;
+			for (i = 0; i < width_out; i++) {
+				value = grid[inc*(ij+k[i])];
+				if (GMT_is_fnan (value))
+					tmpi[i] = GMT_grd_out_nan_value;
+				else if (value <= limit[0] || value >= limit[1]) {
+					tmpi[i] = GMT_grd_out_nan_value;
+					nr_oor++;
+				}
+				else {
+					tmpi[i] = floor (value + 0.5);
+					header->z_min = MIN (header->z_min, (double)tmpi[i]);
+					header->z_max = MAX (header->z_max, (double)tmpi[i]);
+				}
+			}
+			check_nc_status (nc_put_vara_int (ncid, header->z_id, start, edge, tmpi));
+		}
+		GMT_free ((void *)tmpi);
+	}
+
+	if (nr_oor > 0) fprintf (stderr, "%s: Warning: %d out-of-range grid values converted to _FillValue [%s]\n", GMT_program, nr_oor, nc_file);
 
 	GMT_free ((void *)k);
-	GMT_free ((void *)tmp);
+
+	if (header->z_min <= header->z_max) {
+		limit[0] = header->z_min;
+		limit[1] = header->z_max;
+		check_nc_status (nc_put_var_double (ncid, header->z_id - 3, limit));
+	}
+	else
+		fprintf (stderr, "%s: Warning: No valid values in grid [%s]\n", GMT_program, nc_file);
+
+	/* Close grid */
+
+	check_nc_status (nc_close (ncid));
+
 	return (0);
 }
