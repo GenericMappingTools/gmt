@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.15 2005-09-02 05:11:51 pwessel Exp $
+ *	$Id: mgd77.h,v 1.16 2005-09-05 05:51:34 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -295,6 +295,18 @@ struct MGD77_CONTROL {
 	struct MGD77_EXTRA E;				/* Info regarding extra columns */
 };
 
+#define N_CARTER_BINS 64800             /* Number of 1x1 degree bins */
+#define N_CARTER_ZONES 85               /* Number of Carter zones */
+#define N_CARTER_OFFSETS 86             /* Number of Carter offsets */
+#define N_CARTER_CORRECTIONS 5812       /* Number of Carter corrections */
+
+struct MGD77_CARTER {
+	int initialized;
+	short int carter_zone[N_CARTER_BINS];
+	short int carter_offset[N_CARTER_OFFSETS];
+	short int carter_correction[N_CARTER_CORRECTIONS];
+};
+	
 EXTERN_MSC void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks);		/* Initialize the MGD77 machinery */
 EXTERN_MSC int  MGD77_Read_Header_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER_RECORD *H);	/* Will read the entire 24-section header structure */
 EXTERN_MSC int  MGD77_Write_Header_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER_RECORD *H);	/* Will write the entire 24-section header structure by echoing text records */
@@ -311,6 +323,9 @@ EXTERN_MSC void MGD77_set_unit (char *dist, double *scale);
 EXTERN_MSC int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw);  /* Opens a MGD77[+] file */
 EXTERN_MSC int MGD77_Close_File (struct MGD77_CONTROL *F);  /* Closes a MGD77[+] file */
 EXTERN_MSC void MGD77_Fatal_Error (int error);	/* Print message for this error and exit */
+EXTERN_MSC int MGD77_carter_init (struct MGD77_CARTER *C);
+EXTERN_MSC int MGD77_carter_depth_from_xytwt (double lon, double lat, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m);
+EXTERN_MSC int MGD77_carter_twt_from_xydepth (double lon, double lat, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec);
 
 EXTERN_MSC struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_FIELDS];
 
