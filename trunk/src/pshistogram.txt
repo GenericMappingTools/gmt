@@ -44,7 +44,7 @@ Select filling of bars.  [Default is no fill].
 .TP
 .B \-I
 Inquire about min/max x and y after binning.  No plotting is done.  Append \fBo\fP
-to output an ASCII table of the resulting x,y data.
+to output an ASCII table of the resulting x,y data to stdout.
 #include "explain_-K.txt"
 .TP
 .B \-L

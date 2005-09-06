@@ -153,9 +153,10 @@ In addition to the MGD77 fields, we append the 5 derived quantities listed above
 .sp
 Logical tests may be added for any of the parameters by appending one or more comma-separated instructions
 of the form \fIpar\fP\fBOP\fP\fIvalue\fP, where \fIpar\fP is one of the parameters listed above, \fBOP\fP is
-a logical operator (<. <=, =, !=, >=, >), and \fIvalue\fP is used in the comparison.  Floating point
+a logical operator (<. <=, =, !=, >=, >, |), and \fIvalue\fP is used in the comparison.  Floating point
 parameters are compared numerically; character parameters are compared lexically (after leading and trailing
-blanks have been removed).  At least one of the tests must be true for the record to be output, expect for
+blanks have been removed).  The bit comparison (|) means that at least one of the bits in the \fIvalue\fP
+must be turned on in the \fIpar\fP.  At least one of the tests must be true for the record to be output, expect for
 tests using UPPER case parameters in which case the test must be true for output to occur.  Note that
 specifying a test does not imply that the corresponding column will be included in the output stream;
 you must specify the dataflag for that to occur.
