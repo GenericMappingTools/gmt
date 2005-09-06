@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.17 2005-09-05 07:04:36 pwessel Exp $
+ *	$Id: mgd77.h,v 1.18 2005-09-06 06:40:33 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -103,6 +103,7 @@
 #define MGD77_LE		3
 #define MGD77_GT		4
 #define MGD77_GE		5
+#define MGD77_BIT		6
 #define MGD77_NEQ		8
 
 typedef char byte;	/* Used to indicate 1-byte long integer */

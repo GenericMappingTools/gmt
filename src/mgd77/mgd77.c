@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.26 2005-09-06 04:55:39 pwessel Exp $
+ *	$Id: mgd77.c,v 1.27 2005-09-06 06:40:33 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -22,6 +22,7 @@ void MGD77_Path_Init (struct MGD77_CONTROL *F);
 BOOLEAN MGD77_lt_test (double value, double limit);
 BOOLEAN MGD77_le_test (double value, double limit);
 BOOLEAN MGD77_eq_test (double value, double limit);
+BOOLEAN MGD77_bit_test (double value, double limit);
 BOOLEAN MGD77_neq_test (double value, double limit);
 BOOLEAN MGD77_gt_test (double value, double limit);
 BOOLEAN MGD77_ge_test (double value, double limit);
@@ -1045,6 +1046,7 @@ void MGD77_Init_Columns (struct MGD77_CONTROL *F)
 	MGD77_column_test_double[MGD77_LE]   = MGD77_le_test;
 	MGD77_column_test_double[MGD77_GE]   = MGD77_ge_test;
 	MGD77_column_test_double[MGD77_GT]   = MGD77_gt_test;
+	MGD77_column_test_double[MGD77_BIT]  = MGD77_bit_test;
 	MGD77_column_test_string[MGD77_EQ]   = MGD77_ceq_test;
 	MGD77_column_test_string[MGD77_NEQ]  = MGD77_cneq_test;
 	MGD77_column_test_string[MGD77_LT]   = MGD77_clt_test;
@@ -1113,6 +1115,9 @@ void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F)
 			}
 			else if (p[k] == '=') {
 				constraint = MGD77_EQ;
+			}
+			else if (p[k] == '|') {
+				constraint = MGD77_BIT;
 			}
 			else if (p[k] == '!' && p[k+1] == '=') {
 				constraint = MGD77_NEQ;
@@ -1407,6 +1412,20 @@ BOOLEAN MGD77_eq_test (double value, double limit)
 	if (GMT_is_dnan (value) && GMT_is_dnan (limit)) return (TRUE);	/* Matching two NaNs is OK... */
 	if (GMT_is_dnan (value) || GMT_is_dnan (limit)) return (FALSE);	/* ...but if only one of them is NaN we fail */
 	return (value == limit);
+}
+
+BOOLEAN MGD77_bit_test (double value, double limit)
+{
+	unsigned int ivalue, ilimit;
+	
+	/* Test that checks for (value & limit) > 0 */
+	/* We except both value and limit to be integers encoded as doubles, but we first check for NaNs anyway */
+	
+	if (GMT_is_dnan (value)) return (FALSE);	/* Cannot pass a test with a NaN */
+	if (GMT_is_dnan (limit)) return (FALSE);	/* Cannot pass a test with a NaN */
+	ivalue = (unsigned int) irint (value);
+	ilimit = (unsigned int) irint (limit)
+	return (ivalue & ilimit);			/* TRUE if any of the bits in limit line up with value */
 }
 
 BOOLEAN MGD77_neq_test (double value, double limit)
