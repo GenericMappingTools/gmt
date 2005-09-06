@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.27 2005-09-06 06:40:33 pwessel Exp $
+ *	$Id: mgd77.c,v 1.28 2005-09-06 07:40:27 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -1424,7 +1424,7 @@ BOOLEAN MGD77_bit_test (double value, double limit)
 	if (GMT_is_dnan (value)) return (FALSE);	/* Cannot pass a test with a NaN */
 	if (GMT_is_dnan (limit)) return (FALSE);	/* Cannot pass a test with a NaN */
 	ivalue = (unsigned int) irint (value);
-	ilimit = (unsigned int) irint (limit)
+	ilimit = (unsigned int) irint (limit);
 	return (ivalue & ilimit);			/* TRUE if any of the bits in limit line up with value */
 }
 
