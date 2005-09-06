@@ -4,7 +4,7 @@ mgd77list \- A data-extractor for <legid>.mgd77 files
 .SH SYNOPSIS
 \fBmgd77list\fP \fIleg-ids\fP [ \fB\-Da\fP\fIstartdate\fP ] [ \fB\-Db\fP\fIstopdate\fP ] 
 [ \fB\-E\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-H\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP ] 
-[ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-Sa\fP\fIstartdist\fP ] [ \fB\-Sb\fP\fIstopdist\fP ] 
+[ \fB\-P\fP[\fIcode\fP] ][ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-Sa\fP\fIstartdist\fP ] [ \fB\-Sb\fP\fIstopdist\fP ] 
 [ \fB\-V\fP ] [ \fB\-W\fP\fIweight\fP ] [ \fB\-bo\fP ]
 .SH DESCRIPTION
 \fBmgd77list\fP reads <legid>.mgd77 files and produces an ASCII [or binary] table.
@@ -168,6 +168,10 @@ Issue a multisegment header record with cruise ID for each cruise.
 .TP
 .B \-N
 Use nautical units for distance (nautical miles) and speed (knots) [Default is km and m/s].
+.TP
+.B \-P
+Output the NGDC identifier as first column (in addition to what is set with \fB\-F\fP).  Optionally,
+append a 2-character institution code.  Then, only files from this institution will be processed.
 .TP
 .B \-Sa
 Do not list data that are less than \fIstartdist\fP km (or nautical miles; see \fB\-N\fP) along

@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.25 2005-09-05 07:04:36 pwessel Exp $
+ *	$Id: mgd77.c,v 1.26 2005-09-06 04:55:39 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -37,6 +37,8 @@ int MGD77_Read_Data_Record_ASCII (struct MGD77_CONTROL *F, struct MGD77_DATA_REC
 int MGD77_Read_Data_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *H);
 int MGD77_Write_Data_Record_ASCII (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *H);
 int MGD77_Write_Data_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *H);
+int MGD77_Read_Data_Record_ASCII_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);	  /* Will read a single tabular MGD77 record */
+int MGD77_Write_Data_Record_ASCII_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);	  /* Will read a single tabular MGD77 record */
 
 struct MGD77_DATA_RECORD *MGD77Record;
  
@@ -161,7 +163,10 @@ int MGD77_Read_Data_Record (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *M
 {
 	int error;
 
-	error = (F->binary) ? MGD77_Read_Data_Record_Binary (F, MGD77Record) : MGD77_Read_Data_Record_ASCII (F, MGD77Record);	/* Will read a single ascii or binary MGD77 record */
+	if (F->format == 11)
+		error = MGD77_Read_Data_Record_ASCII_tbl (F, MGD77Record);	/* Will read a single ascii table MGD77 record */
+	else
+		error = (F->binary) ? MGD77_Read_Data_Record_Binary (F, MGD77Record) : MGD77_Read_Data_Record_ASCII (F, MGD77Record);	/* Will read a single ascii or binary MGD77 record */
 	return (error);
 }
 
@@ -690,11 +695,50 @@ int MGD77_Read_Data_Record_ASCII (struct MGD77_CONTROL *F, struct MGD77_DATA_REC
 	return (0);
 }
 
+int MGD77_Read_Data_Record_ASCII_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will read a single tabular MGD77 record */
+{
+	int i, nwords, k, pos;
+	char line[BUFSIZ], p[BUFSIZ];
+
+	if (!(fgets (line, BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);			/* Try to read one line from the file */
+
+	for (i = pos = k = nwords = 0; i < MGD77_N_DATA_FIELDS; i++) {
+		if (!GMT_strtok (line, ", \t", &pos, p)) return (MGD77_ERROR_READ_ASC_DATA);	/* Premature record end */
+		if (i == 1 || i == 24 || i == 25)
+			strcpy (MGD77Record->word[nwords++], p);		/* Just copy text without changing it at all */
+		else {
+			MGD77Record->number[k++] = (p[0] == 'N') ? MGD77_NaN : atof (p);
+			if (i == 0 && !(p[0] == '5' || p[0] == '3')) return (MGD77_NO_DATA_REC);
+		}
+	}		
+	return (0);
+}
+
+int MGD77_Write_Data_Record_ASCII_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will read a single tabular MGD77 record */
+{
+	int i, nwords, k;
+	char line[BUFSIZ];
+
+	for (i = nwords = k = 0; i < MGD77_N_DATA_FIELDS; i++) {
+		if (i == 1 || i == 24 || i == 25) {
+			fprintf (F->fp, "%s", MGD77Record->word[nwords++]);
+		}
+		else
+			GMT_ascii_output_one (F->fp, MGD77Record->number[k++], 2);
+		if (i < (MGD77_N_DATA_FIELDS-1)) fprintf (F->fp, "%s", gmtdefs.field_delimiter);
+	}
+	fprintf (F->fp, "\n");
+	return (0);
+}
+
 int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	/* Will write a single MGD77 record */
 {
 	int error;
-	
-	error = (F->binary) ? MGD77_Write_Data_Record_Binary (F, MGD77Record) : MGD77_Write_Data_Record_ASCII (F, MGD77Record);
+
+	if (F->format == 11)
+		error = MGD77_Write_Data_Record_ASCII_tbl (F, MGD77Record);
+	else
+		error = (F->binary) ? MGD77_Write_Data_Record_Binary (F, MGD77Record) : MGD77_Write_Data_Record_ASCII (F, MGD77Record);
 	return (error);
 }
 
@@ -1250,15 +1294,17 @@ int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F)
 	 *	- append .mgd77+ and see if we can find it in listed directories
 	 *      - append .mgd77 and see if we can find it in listed directories
 	 */
-	int id, fmt, f_start, f_stop;
+	int id, fmt, f_start, f_stop, k;
 	BOOLEAN append = FALSE;
-	char geo_path[BUFSIZ], *suffix[2] = {"mgd77", "mgd77+"};
+	char geo_path[BUFSIZ], *suffix[3] = {"mgd77", "mgd77+", "dat"};
 	
 	switch (F->format) {
-		case 1:	/* Look for MGD77 ASCII files only */
+		case 1:		/* Look for MGD77 ASCII files only */
+		case 11:	/* Look for MGD77 ASCII plain table only */
 			f_start = f_stop = 0;
 			break;
-		case 2:	/* Look for MGD77+ binary files only */
+		case 2:		/* Look for MGD77+ binary files only */
+		case 12:	/* Look for MGD77+ binary files only */
 			f_start = f_stop = 1;
 			break;
 		default:
@@ -1267,9 +1313,10 @@ int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F)
 			break;
 	}
 	for (fmt = f_start; fmt <= f_stop; fmt++) {	/* Try either on or both formats */
-		if (!strstr (track, ".mgd77")) {	/* No extension, must append .mgd77 or .mgd77+ */
+		k = (F->format > 10) ? 2 : fmt;
+		if (!strstr (track, suffix[k])) {	/* No extension, must append extension */
 			append = TRUE;
-			sprintf (geo_path, "%s.%s", track, suffix[fmt]);
+			sprintf (geo_path, "%s.%s", track, suffix[k]);
 		}
 		else
 			strcpy (geo_path, track);	/* Extension already there */
