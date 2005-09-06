@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.25 2005-09-05 21:30:41 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.26 2005-09-06 01:06:30 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -79,7 +79,7 @@ int GMT_cdf_write_grd_info (char *file, struct GRD_HEADER *header)
 
 int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 {
-	int nm[2];
+	int nm[2], i;
 	double dummy[2];
 	char text[GRD_COMMAND_LEN+GRD_REMARK_LEN];
 	nc_type z_type;
@@ -179,7 +179,12 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		check_nc_status (nc_put_att_text (ncid, z_range_id, "units", GRD_UNIT_LEN, header->z_units));
 		check_nc_status (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1, &header->z_scale_factor));
 		check_nc_status (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
-		check_nc_status (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1, &GMT_grd_out_nan_value));
+		if (z_type == NC_FLOAT || z_type == NC_DOUBLE)
+			check_nc_status (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1, &GMT_grd_out_nan_value));
+		else {
+			i = irint (GMT_grd_out_nan_value);
+			check_nc_status (nc_put_att_int (ncid, z_id, "_FillValue", z_type, 1, &i));
+		}
 		check_nc_status (nc_put_att_int (ncid, z_id, "node_offset", NC_LONG, 1, &header->node_offset));
 		check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "title", GRD_TITLE_LEN, header->title));
 		check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "source", (GRD_COMMAND_LEN+GRD_REMARK_LEN), text));
@@ -302,8 +307,8 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	int i, inc = 1, *k, nr_oor = 0;
 	int j, ij, width_in, width_out, height_out;
 	int first_col, last_col, first_row, last_row;
-	float *tmpf = VNULL;
-	int *tmpi = VNULL;
+	float *tmp_f = VNULL;
+	int *tmp_i = VNULL;
 	BOOLEAN check = FALSE;
 	double limit[2] = {FLT_MIN, FLT_MAX}, value;
 	nc_type z_type;
@@ -365,45 +370,45 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	/* Store z-variable */
 
 	if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
-		tmpf = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_cdf_write_grd");
+		tmp_f = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_cdf_write_grd");
 		for (j = 0; j < header->ny; j++, ij += width_in) {
 			start[0] = j * header->nx;
 			for (i = 0; i < header->nx; i++) {
-				tmpf[i] = grid[inc*(ij+k[i])];
-				if (GMT_is_fnan (tmpf[i])) {
-					if (check) tmpf[i] = (float)GMT_grd_out_nan_value;
+				tmp_f[i] = grid[inc*(ij+k[i])];
+				if (GMT_is_fnan (tmp_f[i])) {
+					if (check) tmp_f[i] = (float)GMT_grd_out_nan_value;
 				}
 				else {
-					header->z_min = MIN (header->z_min, (double)tmpf[i]);
-					header->z_max = MAX (header->z_max, (double)tmpf[i]);
+					header->z_min = MIN (header->z_min, (double)tmp_f[i]);
+					header->z_max = MAX (header->z_max, (double)tmp_f[i]);
 				}
 			}
-			check_nc_status (nc_put_vara_float (ncid, header->z_id, start, edge, tmpf));
+			check_nc_status (nc_put_vara_float (ncid, header->z_id, start, edge, tmp_f));
 		}
-		GMT_free ((void *)tmpf);
+		GMT_free ((void *)tmp_f);
 	}
 
 	else {
-		tmpi = (int *) GMT_memory (VNULL, (size_t)header->nx, sizeof (int), "GMT_nc_write_grd");
+		tmp_i = (int *) GMT_memory (VNULL, (size_t)header->nx, sizeof (int), "GMT_nc_write_grd");
 		for (j = 0; j < header->ny; j++, ij += width_in) {
 			start[0] = j * header->nx;
 			for (i = 0; i < header->nx; i++) {
 				value = grid[inc*(ij+k[i])];
 				if (GMT_is_fnan (value))
-					tmpi[i] = GMT_grd_out_nan_value;
+					tmp_i[i] = irint (GMT_grd_out_nan_value);
 				else if (value <= limit[0] || value >= limit[1]) {
-					tmpi[i] = GMT_grd_out_nan_value;
+					tmp_i[i] = irint (GMT_grd_out_nan_value);
 					nr_oor++;
 				}
 				else {
-					tmpi[i] = floor (value + 0.5);
-					header->z_min = MIN (header->z_min, (double)tmpi[i]);
-					header->z_max = MAX (header->z_max, (double)tmpi[i]);
+					tmp_i[i] = irint (value);
+					header->z_min = MIN (header->z_min, (double)tmp_i[i]);
+					header->z_max = MAX (header->z_max, (double)tmp_i[i]);
 				}
 			}
-			check_nc_status (nc_put_vara_int (ncid, header->z_id, start, edge, tmpi));
+			check_nc_status (nc_put_vara_int (ncid, header->z_id, start, edge, tmp_i));
 		}
-		GMT_free ((void *)tmpi);
+		GMT_free ((void *)tmp_i);
 	}
 
 	if (nr_oor > 0) fprintf (stderr, "%s: Warning: %d out-of-range grid values converted to _FillValue [%s]\n", GMT_program, nr_oor, nc_file);
