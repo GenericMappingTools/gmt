@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.21 2005-09-06 01:06:30 remko Exp $
+ *	$Id: gmt_nc.c,v 1.22 2005-09-08 19:58:44 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -245,6 +245,7 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		dummy[0] = header->x_min;
 		dummy[1] = header->x_max;
         	check_nc_status (nc_put_att_double (ncid, x_id, "actual_range", NC_DOUBLE, 2, dummy));
+		header->y_order = 1;
 		dummy[(1-header->y_order)/2] = header->y_min;
 		dummy[(1+header->y_order)/2] = header->y_max;
         	check_nc_status (nc_put_att_double (ncid, y_id, "actual_range", NC_DOUBLE, 2, dummy));
@@ -306,13 +307,6 @@ int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double 
 		inc = 2;
 	}
 
-	header->nx = width_in;
-	header->ny = height_in;
-	header->x_min = w;
-	header->x_max = e;
-	header->y_min = s;
-	header->y_max = n;
-
 	/* Get the value of the missing data that will be converted to NaN */
 
 	nc_nopipe (file);
@@ -335,10 +329,10 @@ int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double 
 	header->z_min =  DBL_MAX;
 	header->z_max = -DBL_MAX;
 
-	for (j = first_row; j <= last_row; j++) {
+	for (j = first_row; j <= last_row; j++, ij -= header->y_order * width_out) {
 		start[0] = j;
 		check_nc_status (nc_get_vara_float (ncid, header->z_id, start, edge, tmp));	/* Get one row */
-		for (i = 0; i < header->nx; i++) {	/* Check for and handle NaN proxies */
+		for (i = 0; i < width_in; i++) {	/* Check for and handle NaN proxies */
 			kk = ij+i*inc;
 			grid[kk] = tmp[k[i]];
 			if (check && grid[kk] == GMT_grd_in_nan_value) grid[kk] = GMT_f_NaN;
@@ -346,8 +340,14 @@ int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double 
 			header->z_min = MIN (header->z_min, (double)grid[kk]);
 			header->z_max = MAX (header->z_max, (double)grid[kk]);
 		}
-		ij -= header->y_order * width_out;
 	}
+
+	header->nx = width_in;
+	header->ny = height_in;
+	header->x_min = w;
+	header->x_max = e;
+	header->y_min = s;
+	header->y_max = n;
 
 	check_nc_status (nc_close (ncid));
 
@@ -427,7 +427,7 @@ int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *grid, double
 
 	/* Set start position for writing grid */
 
-	edge[0] = 1; edge[1] = header->nx; start[1] = 0;
+	edge[0] = 1; edge[1] = width_out; start[1] = 0;
 	ij = first_col + pad[0] + (last_row + pad[3]) * width_in;
 	header->z_min =  DBL_MAX;
 	header->z_max = -DBL_MAX;
@@ -435,10 +435,10 @@ int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	/* Store z-variable. Distinguish between floats and integers */
 
 	if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
-		tmp_f = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_nc_write_grd");
-		for (j = 0; j < header->ny; j++, ij -= width_in) {
+		tmp_f = (float *) GMT_memory (VNULL, (size_t)width_in, sizeof (float), "GMT_nc_write_grd");
+		for (j = 0; j < height_out; j++, ij -= width_in) {
 			start[0] = j;
-			for (i = 0; i < header->nx; i++) {
+			for (i = 0; i < width_out; i++) {
 				tmp_f[i] = grid[inc*(ij+k[i])];
 				if (GMT_is_fnan (tmp_f[i])) {
 					if (check) tmp_f[i] = (float)GMT_grd_out_nan_value;
@@ -454,10 +454,10 @@ int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	}
 
 	else {
-		tmp_i = (int *) GMT_memory (VNULL, (size_t)header->nx, sizeof (int), "GMT_nc_write_grd");
-		for (j = 0; j < header->ny; j++, ij -= width_in) {
+		tmp_i = (int *) GMT_memory (VNULL, (size_t)width_in, sizeof (int), "GMT_nc_write_grd");
+		for (j = 0; j < height_out; j++, ij -= width_in) {
 			start[0] = j;
-			for (i = 0; i < header->nx; i++) {
+			for (i = 0; i < width_out; i++) {
 				value = grid[inc*(ij+k[i])];
 				if (GMT_is_fnan (value))
 					tmp_i[i] = irint (GMT_grd_out_nan_value);
