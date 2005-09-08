@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.31 2005-09-02 01:55:59 remko Exp $
+ *	$Id: gmt_stat.c,v 1.32 2005-09-08 00:36:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -47,6 +47,7 @@
  *		18-AUG-2000 P. Wessel: Moved GMT_mode and GMT_median from gmt_support to here.
  *					Added float versions of these two functions for grd data.
  *		27-JUL-2005 P. Wessel: Added Chebyshev polynomials Tn(x)
+ *		07-SEP-2005 P. Wessel: Added GMT_corrcoeff (x,y)
  *
  * PUBLIC functions:
  *
@@ -76,6 +77,7 @@
  *	GMT_erfinv:	The inverse error function
  *	GMT_rand:	Uniformly distributed random numbers 0 < x < 1
  *	GMT_nrand:	Normally distributed random numbers from N(0,1)
+ *	GMT_corrcoeff:	Correlation coefficient.
  */
 
 #define GMT_WITH_NO_PS
@@ -2662,4 +2664,74 @@ double GMT_chebyshev (double x, int n)
 	}
 	
 	return (t);
+}
+
+double GMT_corrcoeff (double *x, double *y, int n, int mode)
+{
+	/* Returns plain correlation coefficient, r.
+	 * If mode = 1 we assume mean(x) = mean(y) = 0.
+	 */
+
+	int i, n_use;
+	double xmean = 0.0, ymean = 0.0, dx, dy, vx, vy, vxy, r;
+	
+	if (mode == 0) {
+		for (i = n_use = 0; i < n; i++) {
+			if (GMT_is_dnan (x[i]) || GMT_is_dnan (y[i])) continue;
+			xmean += x[i];
+			ymean += y[i];
+			n_use++;
+		}
+		if (n_use == 0) return (GMT_d_NaN);
+		xmean /= n_use;	
+		ymean /= n_use;
+	}
+	
+	vx = vy = vxy = 0.0;
+	for (i = n_use = 0; i < n; i++) {
+		if (GMT_is_dnan (x[i]) || GMT_is_dnan (y[i])) continue;
+		dx = x[i] - xmean;
+		dy = y[i] - ymean;
+		vx += dx * dx;
+		vy += dy * dy;
+		vxy += dx * dy;
+	}
+	
+	r = vxy / sqrt (vx * vy);
+	return (r);
+}
+
+double GMT_corrcoeff_f (float *x, float *y, int n, int mode)
+{
+	/* Returns plain correlation coefficient, r.
+	 * If mode = 1 we assume mean(x) = mean(y) = 0.
+	 */
+
+	int i, n_use;
+	double xmean = 0.0, ymean = 0.0, dx, dy, vx, vy, vxy, r;
+	
+	if (mode == 0) {
+		for (i = n_use = 0; i < n; i++) {
+			if (GMT_is_fnan (x[i]) || GMT_is_fnan (y[i])) continue;
+			xmean += (double)x[i];
+			ymean += (double)y[i];
+			n_use++;
+		}
+		if (n_use == 0) return (GMT_d_NaN);
+		xmean /= n_use;	
+		ymean /= n_use;
+	}
+	
+	vx = vy = vxy = 0.0;
+	for (i = n_use = 0; i < n; i++) {
+		if (GMT_is_fnan (x[i]) || GMT_is_fnan (y[i])) continue;
+		dx = (double)x[i] - xmean;
+		dy = (double)y[i] - ymean;
+		vx += dx * dx;
+		vy += dy * dy;
+		vxy += dx * dy;
+	}
+	
+	r = vxy / sqrt (vx * vy);
+	return (r);
 }
