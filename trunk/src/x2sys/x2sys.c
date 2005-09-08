@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.39 2005-09-05 10:04:53 pwessel Exp $
+ *	$Id: x2sys.c,v 1.40 2005-09-08 21:17:19 remko Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -543,7 +543,7 @@ double *x2sys_distances (double x[], double y[], int n, int dist_flag)
 {
 	int this, prev;
 	BOOLEAN cumulative = TRUE;
-	double *d, inc;
+	double *d, inc = 0;
 
 	if (dist_flag < 0) {	/* Want increments and not cumulative distances */
 		dist_flag = abs (dist_flag);
@@ -686,7 +686,6 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 	int i, j, n_alloc = GMT_CHUNK;
 	char path[BUFSIZ];
 	double **z;
-	FILE *fp;
 	struct MGD77_DATA_RECORD D;
 	struct MGD77_HEADER_RECORD H;
 	struct MGD77_CONTROL M;

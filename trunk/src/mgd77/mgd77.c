@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.28 2005-09-06 07:40:27 pwessel Exp $
+ *	$Id: mgd77.c,v 1.29 2005-09-08 21:17:19 remko Exp $
  *
  *  File:	MGD77.c
  * 
@@ -379,7 +379,7 @@ int MGD77_Read_Header_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_HEADE
 	char string[16];
 	
 	/* First get swap-detector flag */
-	swap_flag = 8 << 24 + 4 << 16 + 2 << 8 + 1;
+	swap_flag = (8 << 24) + (4 << 16) + (2 << 8) + 1;
 	if (fread ((void *)&got, sizeof (unsigned int), 1, F->fp) != 1) return (MGD77_ERROR_READ_HEADER_BIN);
 	if (got != swap_flag) {	/* Could mean one of two things */
 		got = GMT_swab4 (got);	/* Try swapping bytes */
@@ -417,13 +417,13 @@ int MGD77_Read_Header_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_HEADE
 
 int MGD77_Write_Header_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER_RECORD *H)  /* Will echo the original 24 records */
 {	/* Writes records using original text records directly */
-	int i, err;
+	int i;
 	unsigned int swap_flag;
 	char string[16];
 	
 	if (F->binary) {	/* Write extended MGD77+ header structure */
 		/* First swap-detector flag */
-		swap_flag = 8 << 24 + 4 << 16 + 2 << 8 + 1;
+		swap_flag = (8 << 24) + (4 << 16) + (2 << 8) + 1;
 		if (fwrite ((void *)&swap_flag, sizeof (unsigned int), 1, F->fp) != 1) return (MGD77_ERROR_WRITE_HEADER_BIN);
 		/* Then original 24 MGD77 records */
 		for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) if (fwrite ((void *)H->record[i], sizeof (char), MGD77_HEADER_LENGTH, F->fp) != MGD77_HEADER_LENGTH) return (MGD77_ERROR_WRITE_HEADER_BIN);
@@ -718,7 +718,6 @@ int MGD77_Read_Data_Record_ASCII_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA
 int MGD77_Write_Data_Record_ASCII_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will read a single tabular MGD77 record */
 {
 	int i, nwords, k;
-	char line[BUFSIZ];
 
 	for (i = nwords = k = 0; i < MGD77_N_DATA_FIELDS; i++) {
 		if (i == 1 || i == 24 || i == 25) {
@@ -1034,8 +1033,6 @@ void MGD77_Init_Columns (struct MGD77_CONTROL *F)
 	 * call MGD77_Select_Columns.
 	 */
 	
-	int i, j;
-
 	MGD77_Init_Columns_sub (F, 27);	/* Default is to return entire MGD77 column set */
 
 	/* Initialize pointers to limit tests */
@@ -1062,7 +1059,7 @@ void MGD77_Init_Columns_sub (struct MGD77_CONTROL *F, int n)
 	 * call MGD77_Select_Columns.
 	 */
 	
-	int i, j;
+	int i;
 
 	memset ((void *)F->use_column, 0, (size_t)(32 * sizeof (int)));		/* Initialize array */
 	memset ((void *)F->order, 0, (size_t)(32 * sizeof (int)));		/* Initialize array */
@@ -1640,7 +1637,7 @@ int MGD77_Write_Data_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_DATA_R
 
 int MGD77_Read_Data_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *H)
 {	/* Not written yet */
-	double dt, t;
+	double dt;
 	time_t this_t;
 	struct tm *T;
 	

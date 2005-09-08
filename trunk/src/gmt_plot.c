@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.148 2005-07-07 09:17:48 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.149 2005-09-08 21:17:19 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1723,7 +1723,7 @@ void GMT_map_tickitem (double w, double e, double s, double n, int item)
 void GMT_map_annotate (double w, double e, double s, double n)
 {
 	double *val, dx[2], dy[2], w2, s2, x, y, del;
-	int i, k, nx, ny, remove[2];
+	int i, k, nx, ny, remove[2] = {0,0};
 	int do_minutes, do_seconds, move_up, done_Greenwich_or_Dateline = FALSE, annot, GMT_world_map_save;
 	char label[GMT_LONG_TEXT], cmd[GMT_LONG_TEXT];
 	BOOLEAN full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual;
