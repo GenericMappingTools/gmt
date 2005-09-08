@@ -3,7 +3,8 @@
 grdgradient \- Compute directional derivative or gradient from 2-D grd file representing z(x,y)
 .SH SYNOPSIS
 \fBgrdgradient\fP \fIin_grdfile\fP \fB\-G\fP\fIout_grdfile\fP [ \fB\-A\fP\fIazim\fP[/\fIazim2\fP] ] 
-[ \fB\-D\fP[\fBc\fP][\fBo\fP][\fBn\fP] ] [ \fB\-L\fP\fIflag\fP ] [ \fB\-M\fP ] [ \fB\-N\fP[\fBe\fP][\fBt\fP][\fIamp\fP][/\fIsigma\fP[/\fIoffset\fP]] ]  [ \fB\-S\fP\fIslopefile\fP ] 
+[ \fB\-D\fP[\fBc\fP][\fBo\fP][\fBn\fP] ] [ \fB\-E\fP[\fBp\fP]\fIazim/elev\fP ] [ \fB\-L\fP\fIflag\fP ] 
+[ \fB\-M\fP ] [ \fB\-N\fP[\fBe\fP][\fBt\fP][\fIamp\fP][/\fIsigma\fP[/\fIoffset\fP]] ]  [ \fB\-S\fP\fIslopefile\fP ] 
 [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBgrdgradient\fP may be used to compute the directional derivative in a given direction (\fB\-A\fP), 
@@ -40,6 +41,12 @@ are measured clockwise from north, as \fIazim\fP in \fB\-A\fP above.  Append
 the positive x (east) direction.  Append \fBo\fP to report orientations (0-180) 
 rather than directions (0-360).  Append \fBn\fP to add 90 degrees to all angles 
 (e.g., to give orientation of lineated features).
+.TP
+.B \-E
+Compute Lambertian radiance appropriate to use with \fBgrdimage\fP and \fBgrdview\fP.
+Append \fBp\fP to use the Peucker picewise linear  approximation (simpler but faster algorithm;
+in this case the \fIazim\fP and \fIelev\fP are hardwired to 315 and 45 degrees.
+This means that even if you provide other values they will be ignored.
 .TP
 .B \-L
 Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of 
@@ -97,6 +104,9 @@ To find the azimuth orientations of seafloor fabric in the file topo.grd:
 \fBgrdgradient\fP topo.grd \fB\-Dno \-G\fPazimuths.grd \fB\-V\fP
 .br
 .sp
+.SH REFERENCES
+Horn, B.K.P., Hill-Shading and the Reflectance Map, Proceedings of the IEEE,
+Vol. 69, No. 1, January 1981, pp. 14-47. (http://people.csail.mit.edu/bkph/papers/Hill-Shading.pdf)
 .SH "SEE ALSO"
 .IR gmt (GMTMANSECTION),
 .IR gmtdefaults (GMTMANSECTION),
