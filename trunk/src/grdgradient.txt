@@ -44,6 +44,8 @@ rather than directions (0-360).  Append \fBn\fP to add 90 degrees to all angles
 .TP
 .B \-E
 Compute Lambertian radiance appropriate to use with \fBgrdimage\fP and \fBgrdview\fP.
+The Lambertian Reflection assumes an ideal surface that reflects all the light that
+strikes it and the surface appears equally bright from all viewing directions.
 Append \fBp\fP to use the Peucker picewise linear  approximation (simpler but faster algorithm;
 in this case the \fIazim\fP and \fIelev\fP are hardwired to 315 and 45 degrees.
 This means that even if you provide other values they will be ignored.
