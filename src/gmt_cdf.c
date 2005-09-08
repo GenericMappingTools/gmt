@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.27 2005-09-08 19:58:44 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.28 2005-09-08 21:17:19 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -302,7 +302,7 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	 */
 
 	size_t start[1], edge[1];
-	int ncid, z_id;
+	int ncid;
 	int i, inc = 1, *k, nr_oor = 0;
 	int j, ij, width_in, width_out, height_out;
 	int first_col, last_col, first_row, last_row;
