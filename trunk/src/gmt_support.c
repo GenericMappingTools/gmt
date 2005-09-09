@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.170 2005-09-02 18:59:40 remko Exp $
+ *	$Id: gmt_support.c,v 1.171 2005-09-09 02:05:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5397,6 +5397,78 @@ int GMT_minmaxinc_verify (double min, double max, double inc, double slop)
 	checkval = (fmod (max - min, inc)) / inc;
 	if (checkval > slop && checkval < (1.0 - slop)) return 1;
 	return 0;
+}
+
+void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct GRD_HEADER *header)
+{
+	/* used to ensure that sloppy w,e,s,n values are rounded to proper multiples */
+	
+	int i;
+	double half_or_zero, val;
+	
+	half_or_zero = (header->node_offset) ? 0.5 : 0.0;
+
+	switch (GMT_minmaxinc_verify (*w, *e, header->x_inc, SMALL)) {	/* Check if range is compatible with x_inc */
+		case 3:
+			(void) fprintf (stderr, "%s: GMT ERROR: grid x increment <= 0.0\n", GMT_program);
+			exit (EXIT_FAILURE);
+			break;
+		case 2:
+			(void) fprintf (stderr, "%s: GMT ERROR: subset x range <= 0.0\n", GMT_program);
+			exit (EXIT_FAILURE);
+			break;
+		default:
+			/* Everything is seemingly OK */
+			break;
+	}
+	
+	i = 0;
+	while (*w > (val = header->x_min + (i + half_or_zero) * header->x_inc) && i < header->nx) i++;
+	if (header->node_offset) val -= 0.5 * header->x_inc;
+	if (fabs (*w - val) > SMALL) {
+		*w = val;
+		(void) fprintf (stderr, "%s: GMT WARNING: (w-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_program, SMALL);
+		(void) fprintf (stderr, "%s: GMT WARNING: w reset to %g\n", GMT_program, *w);
+	}
+	i = header->nx - 1;
+	while (*e < (val = header->x_min + (i + half_or_zero) * header->x_inc) && i > 0) i--;
+	if (header->node_offset) val += 0.5 * header->x_inc;
+	if (fabs (*e - val) > SMALL) {
+		*e = val;
+		(void) fprintf (stderr, "%s: GMT WARNING: (e-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_program, SMALL);
+		(void) fprintf (stderr, "%s: GMT WARNING: e reset to %g\n", GMT_program, *e);
+	}
+	
+	switch (GMT_minmaxinc_verify (*s, *n, header->y_inc, SMALL)) {	/* Check if range is compatible with y_inc */
+		case 3:
+			(void) fprintf (stderr, "%s: GMT ERROR: grid y increment <= 0.0\n", GMT_program);
+			exit (EXIT_FAILURE);
+			break;
+		case 2:
+			(void) fprintf (stderr, "%s: GMT ERROR: subset y range <= 0.0\n", GMT_program);
+			exit (EXIT_FAILURE);
+			break;
+		default:
+			/* Everything is OK */
+			break;
+	}
+	/* Check if s,n are a multiple of y_inc offset from y_min - if not adjust s, n */
+	i = 0;
+	while (*s > (val = header->y_min + (i + half_or_zero) * header->y_inc) && i < header->ny) i++;
+	if (header->node_offset) val -= 0.5 * header->y_inc;
+	if (fabs (*s - val) > SMALL) {
+		*s = val;
+		(void) fprintf (stderr, "%s: GMT WARNING: (s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_program, SMALL);
+		(void) fprintf (stderr, "%s: GMT WARNING: s reset to %g\n", GMT_program, *s);
+	}
+	i = header->ny - 1;
+	while (*n < (val = header->y_min + (i + half_or_zero) * header->y_inc) && i > 0) i--;
+	if (header->node_offset) val += 0.5 * header->y_inc;
+	if (fabs (*n - val) > SMALL) {
+		*n = val;
+		(void) fprintf (stderr, "%s: GMT WARNING: (n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_program, SMALL);
+		(void) fprintf (stderr, "%s: GMT WARNING: n reset to %g\n", GMT_program, *n);
+	}
 }
 
 void GMT_str_tolower (char *value)
