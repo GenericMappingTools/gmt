@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.40 2005-09-05 13:18:56 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.41 2005-09-09 02:05:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -377,6 +377,8 @@ int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s
 	BOOLEAN geo = FALSE;
 	double small,off, half_or_zero, x;
 
+	off = (header->node_offset) ? 0.0 : 0.5;
+	half_or_zero = (header->node_offset) ? 0.5 : 0.0;
 
 	if (*w == 0.0 && *e == 0.0) {	/* Get entire file */
 		*width  = header->nx;
@@ -389,7 +391,7 @@ int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s
 	}
 	else {				/* Must deal with a subregion */
 
-		if (*w < header->x_min || *e > header->x_max) geo = TRUE;	/* Dealing with periodic grid */
+		if (*w < header->x_min || *e > header->x_max) geo = TRUE;	/* Probably dealing with periodic grid */
 
 		if (*s < header->y_min || *n > header->y_max) {	/* Calling program goofed... */
 			fprintf (stderr, "%s: GMT ERROR: Trying to read beyond grid domain - abort!!\n", GMT_program);
@@ -397,6 +399,10 @@ int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s
 		}
 		one_or_zero = (header->node_offset) ? 0 : 1;
 
+		/* Make sure w,e,s,n are proper multiples of dx,dy away from w, s */
+
+		GMT_adjust_loose_wesn (w, e, s, n, header);
+		
 		/* Get dimension of subregion */
 	
 		*width  = irint ((*e - *w) / header->x_inc) + one_or_zero;
@@ -419,8 +425,6 @@ int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s
 
 	k = (int *) GMT_memory (VNULL, (size_t)(*width), sizeof (int), "GMT_bin_write_grd");
 	if (geo) {
-		off = (header->node_offset) ? 0.0 : 0.5;
-		half_or_zero = (header->node_offset) ? 0.5 : 0.0;
 		small = 0.1 * header->x_inc;	/* Anything smaller than 0.5 dx will do */
 		for (i = 0; i < (*width); i++) {
 			x = *w + (i + half_or_zero) * header->x_inc;
