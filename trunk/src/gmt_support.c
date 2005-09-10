@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.171 2005-09-09 02:05:34 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.172 2005-09-10 02:25:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3999,6 +3999,12 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 	BOOLEAN region_straddle, grid_straddle, global;
 	double shift_x;
 
+	if (!project_info.region && !RECT_GRATICULE) {	/* Used -R... with oblique boundaries - return entire grid */
+		*xmin = h->x_min;	*xmax = h->x_max;
+		*ymin = h->y_min;	*ymax = h->y_max;
+		return (0);
+	}
+	
 	/* Round off to nearest multiple of the grid spacing.  This should only
 	   affect the numbers when oblique projections or -R...r has been used */
 
