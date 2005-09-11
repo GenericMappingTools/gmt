@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.28 2005-09-08 21:17:19 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.29 2005-09-11 16:06:19 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -316,15 +316,15 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 
 	switch (GMT_grdformats[header->type][1]) {
 		case 'b':
-			if (!GMT_is_dnan (GMT_grd_out_nan_value)) GMT_grd_out_nan_value = CHAR_MIN;
+			if (GMT_is_dnan (GMT_grd_out_nan_value)) GMT_grd_out_nan_value = CHAR_MIN;
 			limit[0] = CHAR_MIN - 0.5; limit[1] = CHAR_MAX + 0.5;
 			z_type = NC_BYTE; break;
 		case 's':
-			if (!GMT_is_dnan (GMT_grd_out_nan_value)) GMT_grd_out_nan_value = SHRT_MIN;
+			if (GMT_is_dnan (GMT_grd_out_nan_value)) GMT_grd_out_nan_value = SHRT_MIN;
 			limit[0] = SHRT_MIN - 0.5; limit[1] = SHRT_MAX + 0.5;
 			z_type = NC_SHORT; break;
 		case 'i':
-			if (!GMT_is_dnan (GMT_grd_out_nan_value)) GMT_grd_out_nan_value = INT_MIN;
+			if (GMT_is_dnan (GMT_grd_out_nan_value)) GMT_grd_out_nan_value = INT_MIN;
 			limit[0] = INT_MIN - 0.5; limit[1] = INT_MAX + 0.5;
 			z_type = NC_INT; break;
 		case 'f':
