@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.39 2005-09-02 18:59:40 remko Exp $
+ *	$Id: gmt_customio.c,v 1.40 2005-09-11 16:09:24 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -255,6 +255,15 @@ void GMT_grdio_init (void) {
 	GMT_io_readgrd[id]    = (PFI) GMT_nc_read_grd;
 	GMT_io_writegrd[id]   = (PFI) GMT_nc_write_grd;
 
+	/* FORMAT # 20: GMT native binary (double) grdio (Surfer format) */
+
+	id = 20;
+	GMT_io_readinfo[id]   = (PFI) GMT_srf_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_srf_write_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_srf_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_srf_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_srf_write_grd;
+
 	/*
 	 * ----------------------------------------------
 	 * ADD CUSTOM FORMATS BELOW AS THEY ARE NEEDED */
@@ -316,8 +325,6 @@ int GMT_ras_read_grd_info (char *file, struct GRD_HEADER *header)
 	for (i = 0; i < h.maplength; i++) fread ((void *)&u, sizeof (unsigned char *), (size_t)1, fp);	/* Skip colormap */
 
 	if (fp != GMT_stdin) GMT_fclose (fp);
-
-	GMT_grd_init (header, 0, (char **)NULL, FALSE);
 
 	/* Since we have no info on boundary values, just use integer size and steps = 1 */
 
@@ -436,8 +443,8 @@ int GMT_ras_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 			grid[kk] = (float) tmp[k[i]];
 			if (check && grid[kk] == GMT_grd_in_nan_value) grid[kk] = GMT_f_NaN;
 			if (GMT_is_fnan (grid[kk])) continue;
-			if ((double)grid[kk] < header->z_min) header->z_min = (double)grid[kk];
-			if ((double)grid[kk] > header->z_max) header->z_max = (double)grid[kk];
+			header->z_min = MIN (header->z_min, (double)grid[kk]);
+			header->z_max = MAX (header->z_max, (double)grid[kk]);
 		}
 	}
 	if (piping)	/* Skip data by reading it */
@@ -756,9 +763,9 @@ int GMT_bit_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	for (j = 0; j < header->ny; j++) {
 		for (i = 0; i < header->nx; i++) {
 			ij = inc * ((j + pad[3]) * width_out + i + pad[0]);
-			if (GMT_is_fnan ( grid[ij])) continue;
-			if ((double)grid[ij] < header->z_min) header->z_min = (double)grid[ij];
-			if ((double)grid[ij] > header->z_max) header->z_max = (double)grid[ij];
+			if (GMT_is_fnan (grid[ij])) continue;
+			header->z_min = MIN (header->z_min, (double)grid[ij]);
+			header->z_max = MAX (header->z_max, (double)grid[ij]);
 		}
 	}
 	if (fp != GMT_stdin) GMT_fclose (fp);
@@ -830,8 +837,8 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 			else {
 				ival = (unsigned int) irint ((double)grid[ij]);
 				if (ival > 1) ival = 1;	/* Truncate to 1 */
-				if ((double)ival < header->z_min) header->z_min = (double)ival;
-				if ((double)ival > header->z_max) header->z_max = (double)ival;
+				header->z_min = MIN (header->z_min, (double)ival);
+				header->z_max = MAX (header->z_max, (double)ival);
 			}
 		}
 	}
@@ -1075,8 +1082,8 @@ int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, dou
 		for (i = 0; i < header->nx; i++) {
 			ij = inc * ((j + pad[3]) * width_out + i + pad[0]);
 			if (GMT_is_fnan (grid[ij])) continue;
-			if ((double)grid[ij] < header->z_min) header->z_min = (double)grid[ij];
-			if ((double)grid[ij] > header->z_max) header->z_max = (double)grid[ij];
+			header->z_min = MIN (header->z_min, (double)grid[ij]);
+			header->z_max = MAX (header->z_max, (double)grid[ij]);
 		}
 	}
 	if (fp != GMT_stdin) GMT_fclose (fp);
@@ -1152,8 +1159,8 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 				if (check) grid[ij] = (float)GMT_grd_out_nan_value;
 			}
 			else {
-				if ((double)grid[ij] < header->z_min) header->z_min = (double)grid[ij];
-				if ((double)grid[ij] > header->z_max) header->z_max = (double)grid[ij];
+				header->z_min = MIN (header->z_min, (double)grid[ij]);
+				header->z_max = MAX (header->z_max, (double)grid[ij]);
 			}
 		}
 	}
@@ -1276,7 +1283,7 @@ size_t GMT_native_write_one (FILE *fp, float z, int type)
 }
 
 /*-----------------------------------------------------------
- * Format # :	6
+ * Format # :	6, 20
  * Type :	Native binary (float) C file
  * Prefix :	GMT_srf_
  * Author :	Joaquim Luis
@@ -1344,8 +1351,6 @@ struct srf_header7 {	/* Surfer 7 file header structure */
 	int len_d;		/* Length in bytes of the DATA section */
 };
 
-int srf_fmt;	/* To hold which Surfer format. = 6 for format 6 or = 7 for format 7.*/
-
 int GMT_srf_read_grd_info (char *file, struct GRD_HEADER *header)
 {
 	FILE *fp;
@@ -1378,7 +1383,7 @@ int GMT_srf_read_grd_info (char *file, struct GRD_HEADER *header)
 			fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
 			exit (EXIT_FAILURE);
 		}
-		srf_fmt = 6;
+		header->type = 6;
 	}
 	else {					/* Version 7 format */
 		if (GMT_read_srfheader7 (fp, &h7)) {
@@ -1391,14 +1396,12 @@ int GMT_srf_read_grd_info (char *file, struct GRD_HEADER *header)
 			fprintf (stderr, "extent of version 7 format. That is not supported.\n");
 			exit (EXIT_FAILURE);
 		}
-		srf_fmt = 7;
+		header->type = 20;
 	}
 
 	if (fp != GMT_stdin) GMT_fclose (fp);
 
-	GMT_grd_init (header, 0, (char **)NULL, FALSE);
-
-	if (srf_fmt == 6) {
+	if (header->type == 6) {
 		strcpy (header->title, "Grid originally in Surfer 6 format");
 		header->nx = (int)h6.nx;	header->ny = (int)h6.ny;
 		header->x_min = h6.x_min;	header->x_max = h6.x_max;
@@ -1442,8 +1445,14 @@ int GMT_srf_write_grd_info (char *file, struct GRD_HEADER *header)
 
 	strcpy (h.id,"DSBB");
 	h.nx = (short int)header->nx;	 h.ny = (short int)header->ny;
-	h.x_min = header->x_min;	 h.x_max = header->x_max;
-	h.y_min = header->y_min;	 h.y_max = header->y_max;
+	if (header->node_offset) {
+		h.x_min = header->x_min + header->x_inc/2;	 h.x_max = header->x_max - header->x_inc/2;
+		h.y_min = header->y_min + header->y_inc/2;	 h.y_max = header->y_max - header->y_inc/2;
+	}
+	else {
+		h.x_min = header->x_min;	 h.x_max = header->x_max;
+		h.y_min = header->y_min;	 h.y_max = header->y_max;
+	}
 	h.z_min = header->z_min;	 h.z_max = header->z_max;
 
 	if (GMT_write_srfheader (fp, &h)) {
@@ -1509,7 +1518,7 @@ int GMT_srf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 		piping = TRUE;
 	}
 	else if ((fp = GMT_fopen (file, "rb")) != NULL)	/* Skip header */
-		if (srf_fmt == 6)	/* Version 6 */
+		if (header->type == 6)	/* Version 6 */
 			fseek (fp, (long) sizeof (struct srf_header6), SEEK_SET);
 		else 			/* Version 7  (skip also the first 12 bytes) */
 			fseek (fp, (long) (3*sizeof(int) + sizeof (struct srf_header7)), SEEK_SET);
@@ -1529,7 +1538,7 @@ int GMT_srf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	type = GMT_grdformats[header->type][1];
 	size = GMT_grd_data_size (header->type, &GMT_grd_in_nan_value);
 
-	if (srf_fmt == 7) {
+	if (header->type == 20) {
 		size *= 2;	/* Format uses doubles, so we must duplicate "size" */
 		type = 'd';
 	}
@@ -1567,15 +1576,15 @@ int GMT_srf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	header->y_min = s;
 	header->y_max = n;
 
-	/* Update zmin, zmaz */
+	/* Update z_min, z_maz */
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = 0; j < header->ny; j++) {
 		for (i = 0; i < header->nx; i++) {
 			ij = (j + pad[3]) * width_out + i + pad[0];
 			if (GMT_is_fnan (grid[ij])) continue;
-			if ((double)grid[ij] < header->z_min) header->z_min = (double)grid[ij];
-			if ((double)grid[ij] > header->z_max) header->z_max = (double)grid[ij];
+			header->z_min = MIN (header->z_min, (double)grid[ij]);
+			header->z_max = MAX (header->z_max, (double)grid[ij]);
 		}
 	}
 
@@ -1641,10 +1650,10 @@ int GMT_srf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 		for (i = first_col, i2 = pad[0]; i <= last_col; i++, i2++) {
 			ij = (j2 * width_in + i2);
 			if (GMT_is_fnan (grid[ij])) 
-				grid[i] = (float)GMT_grd_out_nan_value;
+				grid[ij] = (float)GMT_grd_out_nan_value;
 			else {
-				if ((double)grid[ij] < header->z_min) header->z_min = (double)grid[ij];
-				if ((double)grid[ij] > header->z_max) header->z_max = (double)grid[ij];
+				header->z_min = MIN (header->z_min, (double)grid[ij]);
+				header->z_max = MAX (header->z_max, (double)grid[ij]);
 			}
 		}
 	}
@@ -1653,8 +1662,14 @@ int GMT_srf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 
 	strcpy (h.id,"DSBB");
 	h.nx = (short int)header->nx;	 h.ny = (short int)header->ny;
-	h.x_min = header->x_min;	 h.x_max = header->x_max;
-	h.y_min = header->y_min;	 h.y_max = header->y_max;
+	if (header->node_offset) {
+		h.x_min = header->x_min + header->x_inc/2;	 h.x_max = header->x_max - header->x_inc/2;
+		h.y_min = header->y_min + header->y_inc/2;	 h.y_max = header->y_max - header->y_inc/2;
+	}
+	else {
+		h.x_min = header->x_min;	 h.x_max = header->x_max;
+		h.y_min = header->y_min;	 h.y_max = header->y_max;
+	}
 	h.z_min = header->z_min;	 h.z_max = header->z_max;
 
 	if (fwrite ((void *)&h, sizeof (struct srf_header6), (size_t)1, fp) != 1) {
