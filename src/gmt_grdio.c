@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.42 2005-09-12 01:41:05 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.43 2005-09-12 03:42:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -507,7 +507,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 		check_nc_status (nc_open (G->name, cdf_mode[r_w], &G->fid));
 		check_nc_status (nc_inq_varid (G->fid, "z", &G->z_id));	/* Get variable id */
 		G->edge[0] = G->header.nx;
-		G->start[0] = 0;
+		G->start[0] = G->start[1] = G->edge[1] = 0;
 	}
 	else if (G->is_cdf == 2) {		/* Open netCDF file version 2 */
 		check_nc_status (nc_open (G->name, cdf_mode[r_w], &G->fid));
