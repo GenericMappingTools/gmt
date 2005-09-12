@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.59 2005-07-12 04:13:24 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.60 2005-09-12 03:42:57 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2005.
@@ -1334,80 +1334,112 @@ and their octal codes is given in Appendix F.
 \index{grdfile!formats!rasterfile}
 \index{grdfile!formats!custom format}
 \label{sec:grdformats}
-\GMT\ has the ability to read more than one grdfile
-format.  As distributed, \GMT\ now recognizes 13 predefined file
-formats.  These are  
+\GMT\ has the ability to read and write grids using more than one gridfile
+format (see Table \ref{tbl:grdformats} for format IDs).  To do so, you will normally have
+to append {\it =ID} to the filename so that \GMT\ can determine which format
+should be used.
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c|}{\emph{ID}}	&	\multicolumn{1}{c|}{\emph{GMT 3 netCDF legacy formats}} \\ \hline \hline
+cb & GMT netCDF format (byte)	 \\ \hline
+cs & GMT netCDF format (short)	 \\ \hline
+ci & GMT netCDF format (int)	 \\ \hline
+cf & GMT netCDF format (float)	 \\ \hline
+cd & GMT netCDF format (double)	 \\ \hline \hline
+\multicolumn{1}{|c|}{\emph{ID}}	&	\multicolumn{1}{c|}{\emph{GMT native binary formats}} \\ \hline \hline
+bm & GMT native, C-binary format (bit-mask)	\\ \hline
+bb & GMT native, C-binary format (byte)		\\ \hline
+bs & GMT native, C-binary format (short)	\\ \hline
+bi & GMT native, C-binary format (int)		\\ \hline
+bf & GMT native, C-binary format (float)	\\ \hline
+bd & GMT native, C-binary format (double)	\\ \hline \hline
+\multicolumn{1}{|c|}{\emph{ID}}	&	\multicolumn{1}{c|}{\emph{GMT 4 netCDF standard}} \\ \hline \hline
+nb & GMT netCDF format (byte)   (COARDS-compliant)		\\ \hline
+ns & GMT netCDF format (short)  (COARDS-compliant)		\\ \hline
+ni & GMT netCDF format (int)    (COARDS-compliant)		\\ \hline
+nf & GMT netCDF format (float)  (COARDS-compliant)		\\ \hline
+nd & GMT netCDF format (double) (COARDS-compliant) 		\\ \hline \hline
+\multicolumn{1}{|c|}{\emph{ID}}	&	\multicolumn{1}{c|}{\emph{Miscellaneous gridformats}} \\ \hline \hline
+rb & SUN rasterfile format (8-bit standard)	\\ \hline
+rf & GEODAS grid format GRD98 (NGDC)		\\ \hline
+sf & Golden Software Surfer format 6 (float)	\\ \hline
+sd & Golden Software Surfer format 7 (double)	\\ \hline
+\end{tabular}
+\caption{\gmt\ grid file formats.}
+\label{tbl:grdformats}
+\end{table}
 
-\begin{description} 
-\item[ 0.] \GMT\ netCDF 4-byte float format [Default] 
-\item[ 1.] Native binary single precision floats in scanlines with leading grd header 
-\item[ 2.] Native binary short integers in scanlines with leading grd header 
-\item[ 3.] 8-bit standard Sun rasterfile (colormap ignored) 
-\item[ 4.] Native binary unsigned char in scanlines with leading grd header 
-\item[ 5.] Native binary bits in scanlines with leading grd header 
-\item[ 6.] Native binary ``surfer'' grid files
-\item[ 7.] netCDF 1-byte byte format
-\item[ 8.] netCDF 1-byte char format
-\item[ 9.] netCDF 2-byte int format
-\item[10.] netCDF 4-byte int format
-\item[11.] netCDF 8-byte double format
-\item[12.] NOAA/NGDC MGG grid format
-\end{description} 
+By default, \GMT\ will create new gridfiles using the {\bf nf} format; however,
+this behavior can be overridden by setting the {\bf GRID\_FORMAT} defaults parameter
+to any of the other recognized values (or by appending {\it =ID}).
+When reading grid files, \GMT\ can automatically
+determine which one of the many netCDF formats has been used, but for all other formats
+the user must append the appropriate {\it = ID} specification.
+
+\GMT\ can also read netCDF gridfiles produced by other software packages, provided the grid files
+satisfy the COARDS and Hadley Centre conventions for NetCDF grids. Thus, products created under
+those conventions (provided the grid is 2-dimensional) can be read directly by \GMT\ and the netCDF grids
+written by \GMT\ can be read by other programs that conform to those conventions. Two such programs are
+\htmladdnormallink{\progname{ncview}}{http://meteora.ucsd.edu/~pierce/ncview_home_page.html}
+and
+\htmladdnormallink{\progname{ncBrowse}}{http://www.epic.noaa.gov/java/ncBrowse/}.
 
 In addition, users with some C-programming experience may add
 their own read/write functions and link them with the \GMT\ library
 to extend the number of predefined formats.  Technical information
 on this topic can be found in the source file \filename{gmt\_customio.c}. 
 
-Because of these new formats it is sometimes necessary to provide more
-than simply the name of the file on the command line.  For instance,
-a short integer file may use a unique value to signify an empty node
+Because some formats have limitations on the range of values they can store
+it is sometimes necessary to provide more
+than simply the name of the file and its ID on the command line.  For instance,
+a native short integer file may use a unique value to signify an empty node
 or NaN, and the data may need translation and scaling prior to use.
 Therefore, all \GMT\ programs that read or write grdfiles will decode
 the given filename as follows:
 
 \vspace{\baselineskip} 
 
-\par 	name[={\it id}[/{\it scale}/{\it offset}[/{\it nan}]]]\par 
+\par 	name[={\it ID}[/{\it scale}/{\it offset}[/{\it nan}]]]\par 
 
 \vspace{\baselineskip} 
 
 \noindent
 where everything in brackets is optional.  If you only use the default
-netCDF file format then no options are needed: just continue to pass
+grid file format then no options are needed: just continue to pass
 the name of the grdfile.  However, if you use another format you must
-append the ={\it id} string, where {\it id} is the format id number
-listed above.  In addition, should you want to multiply the data by
-a scale factor, then add a constant offset you may append the
+append the ={\it ID} string, where {\it ID} is the format code
+listed above.  In addition, should you want to (1) multiply the data by
+a scale factor, and(2) add a constant offset you must append the
 /{\it scale}/{\it offset} modifier.  Finally, if you need to indicate
 that a certain data value should be interpreted as a NaN (not-a-number)
-you may append the /{\it nan} suffix to the scaling string (it cannot
+you must append the /{\it nan} suffix to the scaling string (it cannot
 go by itself; note the nesting of the brackets!). 
 
-Some of the grd formats allow writing to standard output and reading
+Some of the grid formats allow writing to standard output and reading
 from standard input which means you can connect \GMT\ programs that
 operate on grdfiles with pipes, thereby speeding up execution and
 eliminating the need for large, intermediate grdfiles.  You specify
 standard input/output by leaving out the filename entirely.
 That means the ``filename'' will begin with
-``={\it id}\,'' since the \GMT\ default netCDF format does
+``={\it ID}\,'' since the \GMT\ default netCDF format does
 not allow piping (due to the design of netCDF). 
 
 Everything looks more obvious after a few examples: 
 
 \begin{enumerate}
-\item To write a binary float grd file, specify the name as \filename{my\_file.grd=1}.
+\item To write a binary float grd file, specify the name as \filename{my\_file.grd=bf}.
 
 \item To read a short integer grd file, multiply the data by 10 and then
 add 32000, but first let values that equal 32767 be set to NaN,
-use the filename \filename{my\_file.grd=2/10/32000/32767}. 
+use the filename \filename{my\_file.grd=bs/10/32000/32767}. 
 
 \item To read a 8-bit standard Sun rasterfile (with values in the 0--255 range)
 and convert it to a $\pm$1 range, give the name as
-\filename{rasterfile=3/7.84313725e-3/-1} (i.e., 1/127.5).
+\filename{rasterfile=rb/7.84313725e-3/-1} (i.e., 1/127.5).
 
 \item To write a short integer grd file to standard output after subtracting
-32000 and dividing its values by 10, give filename as =2/0.1/-3200. 
+32000 and dividing its values by 10, give filename as =bs/0.1/-3200. 
 
 \end{enumerate} 
 
@@ -1435,23 +1467,23 @@ MMM\=\# suffix \=format\_id \=scale \=offset \=NaNxxx\=Comments \kill
 \>\# GMT i/o shorthand file \\ 
 \>\# It can have any number of comment lines like this one anywhere \\
 \>\# suffix \> format\_id	\> scale \> offset \>NaN\>Comments \\ 
-\>grd \> 0 \> - \> - \> - \>Default format \\ 
-\>b \> 1 \> - \> - \> - \> Native binary floats \\ 
-\>i2 \> 2 \> - \> - \> 32767 \> 2-byte integers \\ 
-\>ras \> 3 \> - \> - \> - \> Sun rasterfiles \\ 
-\>byte \> 4 \> - \> - \> 255 \> 1-byte grids \\ 
-\>bit \> 5 \> - \> - \> - \> 0 or 1 grids \\ 
-\>mask \> 5 \> - \> - \> 0 \> 1 or NaN masks \\ 
-\>faa \> 2 \> 0.1 \> - \> 32767 \> Gravity in 0.1 mGal
+\>grd \> nf \> - \> - \> - \>Default format \\ 
+\>b \> bf \> - \> - \> - \> Native binary floats \\ 
+\>i2 \> bs \> - \> - \> 32767 \> 2-byte integers \\ 
+\>ras \> rb \> - \> - \> - \> Sun rasterfiles \\ 
+\>byte \> bb \> - \> - \> 255 \> Native binary 1-byte grids \\ 
+\>bit \> bm \> - \> - \> - \> Native binary 0 or 1 grids \\ 
+\>mask \> bm \> - \> - \> 0 \> Native binary 1 or NaN masks \\ 
+\>faa \> bs \> 0.1 \> - \> 32767 \> Native binary gravity in 0.1 mGal
 \end{tabbing} 
 
 These suffices can be anything that make sense to the user.  To
 activate this mechanism, set parameter {\bf GRIDFILE\_SHORTHAND} to TRUE in
 your \filename{.gmtdefaults4} file.  Then, using the filename
-\filename{stuff.i2} is equivalent to saying \filename{stuff.i2=2/1/0/32767},
-and the filename \filename{wet.mask} means wet.mask=5/1/0/0.  For a
+\filename{stuff.i2} is equivalent to saying \filename{stuff.i2=bs/1/0/32767},
+and the filename \filename{wet.mask} means wet.mask=bm/1/0/0.  For a
 file intended for masking, i.e., the nodes are either 1 or NaN,
-the bit or mask format file may as small as 1/32 the size of the
+the bit or mask format file may be as small as 1/32 the size of the
 corresponding grd format file. 
 \index{grdfile!embedded format|)}
 
