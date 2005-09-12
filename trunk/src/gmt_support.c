@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.172 2005-09-10 02:25:42 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.173 2005-09-12 01:41:05 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3937,6 +3937,9 @@ void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, BOOLEAN upd
 	header->type			= -1;
 	header->y_order			= 1;
 	header->z_id			= -1;
+	header->nan_value		= GMT_d_NaN;
+
+	memset ((void *)header->name, 0, (size_t)GMT_LONG_TEXT);
 
 	memset ((void *)header->x_units, 0, (size_t)GRD_UNIT_LEN);
 	memset ((void *)header->y_units, 0, (size_t)GRD_UNIT_LEN);

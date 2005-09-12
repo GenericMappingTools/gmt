@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.40 2005-09-11 16:09:24 remko Exp $
+ *	$Id: gmt_customio.c,v 1.41 2005-09-12 01:41:05 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -416,7 +416,7 @@ int GMT_ras_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 
-	check = !GMT_is_dnan (GMT_grd_in_nan_value);
+	check = !GMT_is_dnan (header->nan_value);
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row);
 
@@ -441,7 +441,7 @@ int GMT_ras_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 		for (i = 0; i < width_in; i++) {
 			kk = ij + inc * i;
 			grid[kk] = (float) tmp[k[i]];
-			if (check && grid[kk] == GMT_grd_in_nan_value) grid[kk] = GMT_f_NaN;
+			if (check && grid[kk] == header->nan_value) grid[kk] = GMT_f_NaN;
 			if (GMT_is_fnan (grid[kk])) continue;
 			header->z_min = MIN (header->z_min, (double)grid[kk]);
 			header->z_max = MAX (header->z_max, (double)grid[kk]);
@@ -508,7 +508,7 @@ int GMT_ras_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	n2 = (int) ceil (header->nx / 2.0) * 2;
 	tmp = (unsigned char *) GMT_memory (VNULL, (size_t)n2, sizeof (unsigned char), "GMT_ras_write_grd");
 
-	check = !GMT_is_dnan (GMT_grd_out_nan_value);
+	check = !GMT_is_dnan (header->nan_value);
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row);
 
@@ -543,7 +543,7 @@ int GMT_ras_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 		ij = j2 * width_in + i2;
 		for (i = 0; i < width_out; i++) {
 			kk = inc * (ij + k[i]);
-			if (check && GMT_is_fnan (grid[kk])) grid[kk] = (float)GMT_grd_out_nan_value;
+			if (check && GMT_is_fnan (grid[kk])) grid[kk] = (float)header->nan_value;
 			tmp[i] = (unsigned char) grid[kk];
 		}
 		fwrite ((void *)tmp, sizeof (unsigned char), (size_t)width_out, fp);
@@ -713,7 +713,7 @@ int GMT_bit_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 		exit (EXIT_FAILURE);
 	}
 
-	check = !GMT_is_dnan (GMT_grd_in_nan_value);
+	check = !GMT_is_dnan (header->nan_value);
 	mx = (int) ceil (header->nx / 32.0);
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row);
@@ -745,7 +745,7 @@ int GMT_bit_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 			bit = k[i] % 32;
 			ival = (tmp[word] >> bit) & 1;
 			grid[kk] = (float) ival;
-			if (check && grid[kk] == GMT_grd_in_nan_value) grid[kk] = GMT_f_NaN;
+			if (check && grid[kk] == header->nan_value) grid[kk] = GMT_f_NaN;
 		}
 	}
 	if (piping) {	/* Skip data by reading it */
@@ -806,7 +806,7 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 		exit (EXIT_FAILURE);
 	}
 
-	check = !GMT_is_dnan (GMT_grd_out_nan_value);
+	check = !GMT_is_dnan (header->nan_value);
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row);
 
@@ -832,7 +832,7 @@ int GMT_bit_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 		for (i = first_col, i2 = pad[0]; i <= last_col; i++, i2++) {
 			ij = inc * (j2 * width_in + i2);
 			if (GMT_is_fnan (grid[ij])) {
-				if (check) grid[ij] = (float)GMT_grd_out_nan_value;
+				if (check) grid[ij] = (float)header->nan_value;
 			}
 			else {
 				ival = (unsigned int) irint ((double)grid[ij]);
@@ -1026,8 +1026,8 @@ int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, dou
 	}
 
 	type = GMT_grdformats[header->type][1];
-	size = GMT_grd_data_size (header->type, &GMT_grd_in_nan_value);
-	check = !GMT_is_dnan (GMT_grd_in_nan_value);
+	size = GMT_grd_data_size (header->type, &header->nan_value);
+	check = !GMT_is_dnan (header->nan_value);
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row);
 
@@ -1045,7 +1045,7 @@ int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, dou
 
 	/* Allocate memory for one row of data (for reading purposes) */
 
-	tmp = (void *) GMT_memory (VNULL, (size_t)header->nx, size, "GMT_native_read");
+	tmp = (void *) GMT_memory (VNULL, (size_t)header->nx, size, "GMT_native_read_grd");
 
 	/* Now deal with skipping */
 
@@ -1055,17 +1055,18 @@ int GMT_native_read_grd (char *file, struct GRD_HEADER *header, float *grid, dou
 	else {		/* Simply seek over it */
 		fseek (fp, (long) (first_row * header->nx * size), SEEK_CUR);
 	}
+
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
-		fread (tmp, size, (size_t)header->nx, fp);	/* Get one row */
+		fread (tmp, (size_t)size, (size_t)header->nx, fp);	/* Get one row */
 		ij = (j2 + pad[3]) * width_out + i_0_out;	/* Already has factor of 2 in it if complex */
 		for (i = 0; i < width_in; i++) {
 			kk = ij + inc * i;
-			grid[kk] = GMT_native_decode (tmp, k[i], type);	/* Convert whatever to float */
-			if (check && grid[kk] == GMT_grd_in_nan_value) grid[kk] = GMT_f_NaN;
+			grid[kk] = GMT_decode (tmp, k[i], type);	/* Convert whatever to float */
+			if (check && grid[kk] == header->nan_value) grid[kk] = GMT_f_NaN;
 		}
 	}
 	if (piping) {	/* Skip remaining data by reading it */
-		for (j = last_row + 1; j < header->ny; j++) fread (tmp, size, (size_t)header->nx, fp);
+		for (j = last_row + 1; j < header->ny; j++) fread (tmp, (size_t)size, (size_t)header->nx, fp);
 	}
 
 	header->nx = width_in;
@@ -1117,6 +1118,7 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	BOOLEAN do_header = TRUE;	/* TRUE if we should write the header first */
+	void *tmp;			/* Array pointer for writing in rows of data */
 
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
@@ -1130,8 +1132,8 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 	}
 
 	type = GMT_grdformats[header->type][1];
-	size = GMT_grd_data_size (header->type, &GMT_grd_out_nan_value);
-	check = !GMT_is_dnan (GMT_grd_out_nan_value);
+	size = GMT_grd_data_size (header->type, &header->nan_value);
+	check = !GMT_is_dnan (header->nan_value);
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row);
 
@@ -1156,7 +1158,7 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 		for (i = first_col, i2 = pad[0]; i <= last_col; i++, i2++) {
 			ij = (j2 * width_in + i2) * inc;
 			if (GMT_is_fnan (grid[ij])) {
-				if (check) grid[ij] = (float)GMT_grd_out_nan_value;
+				if (check) grid[ij] = (float)header->nan_value;
 			}
 			else {
 				header->z_min = MIN (header->z_min, (double)grid[ij]);
@@ -1167,26 +1169,62 @@ int GMT_native_write_grd (char *file, struct GRD_HEADER *header, float *grid, do
 
 	/* Round off to chosen type */
 
-	header->z_min = GMT_native_encode ((float)header->z_min, type);
-	header->z_max = GMT_native_encode ((float)header->z_max, type);
+	if (type != 'f' && type != 'd') {
+		header->z_min = irint (header->z_min);
+		header->z_max = irint (header->z_max);
+	}
 
 	/* Store header information and array */
 
 	if (do_header) GMT_native_write_grd_header (file, fp, header);
 
+	/* Allocate memory for one row of data (for writing purposes) */
+
+	tmp = (void *) GMT_memory (VNULL, (size_t)header->nx, size, "GMT_native_write_grd");
+
 	i2 = first_col + pad[0];
 	for (j = 0, j2 = first_row + pad[3]; j < height_out; j++, j2++) {
 		ij = j2 * width_in + i2;
-		for (i = 0; i < width_out; i++) GMT_native_write_one (fp, grid[inc*(ij+k[i])], type);
+		for (i = 0; i < width_out; i++) GMT_encode (tmp, i, grid[inc*(ij+k[i])], type);
+		fwrite ((void *)tmp, (size_t)size, (size_t)header->nx, fp);
 	}
+
 	GMT_free ((void *)k);
+	GMT_free ((void *)tmp);
+
 	if (fp != GMT_stdout) GMT_fclose (fp);
 
 	return (FALSE);
-
 }
 
-float GMT_native_decode (void *vptr, int k, int type)
+void GMT_encode (void *vptr, int k, float z, int type)
+{
+
+	switch (type) {
+		case 'b':
+			((char *)vptr)[k] = (char)irint (z);
+			break;
+		case 's':
+			((short int *)vptr)[k] = (short int)irint (z);
+			break;
+		case 'i':
+		case 'm':
+			((int *)vptr)[k] = (int)irint (z);
+			break;
+		case 'f':
+			((float *)vptr)[k] = z;
+			break;
+		case 'd':
+			((double *)vptr)[k] = (double)z;
+			break;
+		default:
+			fprintf (stderr, "GMT: Bad call to GMT_encode (gmt_customio.c)\n");
+			break;
+	}
+}
+
+
+float GMT_decode (void *vptr, int k, int type)
 {
 	float fval;
 
@@ -1208,78 +1246,12 @@ float GMT_native_decode (void *vptr, int k, int type)
 			fval = (float)(((double *)vptr)[k]);
 			break;
 		default:
-			fprintf (stderr, "GMT: Bad call to GMT_native_decode (gmt_customio.c)\n");
+			fprintf (stderr, "GMT: Bad call to GMT_decode (gmt_customio.c)\n");
 			fval = GMT_f_NaN;
 			break;
 	}
 
 	return (fval);
-}
-
-double GMT_native_encode (float z, int type)
-{
-	char c;
-	short int h;
-	int i;
-
-	switch (type) {
-		case 'b':
-			c = (char)irint ((double)z);
-			return ((double)c);
-			break;
-		case 's':
-			h = (short int)irint ((double)z);
-			return ((double)h);
-			break;
-		case 'm':
-		case 'i':
-			i = (int)irint ((double)z);
-			return ((double)i);
-			break;
-		case 'f':
-		case 'd':
-			return ((double)z);
-			break;
-		default:
-			fprintf (stderr, "GMT: Bad call to GMT_native_encode (gmt_customio.c)\n");
-			return (0.0);
-			break;
-	}
-}
-
-size_t GMT_native_write_one (FILE *fp, float z, int type)
-{
-	char c;
-	short int h;
-	int i;
-	double d;
-
-	switch (type) {
-		case 'b':
-			c = (char)irint ((double)z);
-			return (fwrite ((void *)&c, sizeof(char), (size_t)1, fp));
-			break;
-		case 's':
-			h = (short int)irint ((double)z);
-			return (fwrite ((void *)&h, sizeof(short int), (size_t)1, fp));
-			break;
-		case 'm':
-		case 'i':
-			i = (int)irint ((double)z);
-			return (fwrite ((void *)&i, sizeof(int), (size_t)1, fp));
-			break;
-		case 'f':
-			return (fwrite ((void *)&z, sizeof(float), (size_t)1, fp));
-			break;
-		case 'd':
-			d = (double)z;
-			return (fwrite ((void *)&d, sizeof(double), (size_t)1, fp));
-			break;
-		default:
-			break;
-	}
-
-	return (-1);	/* Should never get here */
 }
 
 /*-----------------------------------------------------------
@@ -1494,13 +1466,16 @@ int GMT_srf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	/* grid:	array with final grid */
 	/* w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex:	-IGNORED- */
+	/* complex:	TRUE if array is to hold real and imaginary parts (read in real only) */
+	/*		Note: The file has only real values, we simply allow space in the array */
+	/*		for imaginary parts when processed by grdfft etc. */
 
 	int first_col, last_col;	/* First and last column to deal with */
 	int first_row, last_row;	/* First and last row to deal with */
 	int width_in;			/* Number of items in one row of the subregion */
 	int width_out;			/* Width of row as return (may include padding) */
 	int height_in;			/* Number of columns in subregion */
+	int inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
 	int kk, i, j, j2, ij, i_0_out; 	/* Misc. counters */
 	int *k;				/* Array with indices */
 	int type;			/* Data type */
@@ -1508,7 +1483,7 @@ int GMT_srf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
 	void *tmp;			/* Array pointer for reading in rows of data */
-	GMT_grd_in_nan_value = 0.1701410e39;	/* Test value in Surfer grids */
+	header->nan_value = 0.1701410e39;	/* Test value in Surfer grids */
 
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
@@ -1527,6 +1502,9 @@ int GMT_srf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 		exit (EXIT_FAILURE);
 	}
 
+	type = GMT_grdformats[header->type][1];
+	size = GMT_grd_data_size (header->type, &header->nan_value);
+
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row);
 
 	width_out = width_in;		/* Width of output array */
@@ -1535,8 +1513,11 @@ int GMT_srf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 
 	i_0_out = pad[0];		/* Edge offset in output */
 
-	type = GMT_grdformats[header->type][1];
-	size = GMT_grd_data_size (header->type, &GMT_grd_in_nan_value);
+	if (complex) {	/* Need twice as much output space since we load every 2nd cell */
+		width_out *= 2;
+		i_0_out *= 2;
+		inc = 2;
+	}
 
 	if (header->type == 20) {
 		size *= 2;	/* Format uses doubles, so we must duplicate "size" */
@@ -1560,9 +1541,9 @@ int GMT_srf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 		fread (tmp, size, (size_t)header->nx, fp);	/* Get one row */
 		ij = (j2 + pad[3]) * width_out + i_0_out;
 		for (i = 0; i < width_in; i++) {
-			kk = ij + i;
-			grid[kk] = GMT_native_decode (tmp, k[i], type);	/* Convert whatever to float */
-			if (grid[kk] >= GMT_grd_in_nan_value) grid[kk] = GMT_f_NaN;
+			kk = ij + inc * i;
+			grid[kk] = GMT_decode (tmp, k[i], type);	/* Convert whatever to float */
+			if (grid[kk] >= header->nan_value) grid[kk] = GMT_f_NaN;
 		}
 	}
 	if (piping) {	/* Skip remaining data by reading it */
@@ -1602,21 +1583,25 @@ int GMT_srf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	/* grid:	array with final grid */
 	/* w,e,s,n:	Sub-region to write out  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex:	-IGNORED- */
+	/* complex:	TRUE if array is to hold real and imaginary parts (read in real only) */
+	/*		Note: The file has only real values, we simply allow space in the array */
+	/*		for imaginary parts when processed by grdfft etc. */
 
 	int first_col, last_col;	/* First and last column to deal with */
 	int first_row, last_row;	/* First and last row to deal with */
 	int width_in;			/* Number of items in one row of the subregion */
 	int width_out;			/* Width of row as return (may include padding) */
 	int height_out;			/* Number of columns in subregion */
+	int inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
 	int i, j, i2, j2, ij;		/* Misc. counters */
 	int *k;				/* Array with indices */
 	int type;			/* Data type */
 	int size;			/* Length of data type */
 	FILE *fp;			/* File pointer to data or pipe */
+	void *tmp;			/* Array pointer for writing in rows of data */
 	struct srf_header6 h;
 
-	GMT_grd_out_nan_value = 0.1701410e39;	/* Test value in Surfer grids */
+	header->nan_value = 0.1701410e39;	/* Test value in Surfer grids */
 
 	if (!strcmp (file, "=")) {
 #ifdef SET_IO_MODE
@@ -1630,13 +1615,15 @@ int GMT_srf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	}
 
 	type = GMT_grdformats[header->type][1];
-	size = GMT_grd_data_size (header->type, &GMT_grd_out_nan_value);
+	size = GMT_grd_data_size (header->type, &header->nan_value);
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row);
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[0] > 0) width_in += pad[0];
 	if (pad[1] > 0) width_in += pad[1];
+	complex %= 64;
+	if (complex) inc = 2;
 
 	header->x_min = w;
 	header->x_max = e;
@@ -1650,7 +1637,7 @@ int GMT_srf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 		for (i = first_col, i2 = pad[0]; i <= last_col; i++, i2++) {
 			ij = (j2 * width_in + i2);
 			if (GMT_is_fnan (grid[ij])) 
-				grid[ij] = (float)GMT_grd_out_nan_value;
+				grid[ij] = (float)header->nan_value;
 			else {
 				header->z_min = MIN (header->z_min, (double)grid[ij]);
 				header->z_max = MAX (header->z_max, (double)grid[ij]);
@@ -1677,12 +1664,20 @@ int GMT_srf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 		exit (EXIT_FAILURE);
 	}
 
+	/* Allocate memory for one row of data (for writing purposes) */
+
+	tmp = (void *) GMT_memory (VNULL, (size_t)header->nx, size, "GMT_srf_write_grd");
+
 	i2 = first_col + pad[0];
 	for (j = 0, j2 = last_row + pad[3]; j < height_out; j++, j2--) {
 		ij = j2 * width_in + i2;
-		for (i = 0; i < width_out; i++) GMT_native_write_one (fp, grid[(ij+k[i])], type);
+		for (i = 0; i < width_out; i++) GMT_encode (tmp, i, grid[inc*(ij+k[i])], type);
+		fwrite ((void *)tmp, (size_t)size, (size_t)header->nx, fp);
 	}
+
 	GMT_free ((void *)k);
+	GMT_free ((void *)tmp);
+
 	if (fp != GMT_stdout) GMT_fclose (fp);
 
 	return (FALSE);

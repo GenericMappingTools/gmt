@@ -60,7 +60,6 @@ int main (argc, argv)
   GMT_grdio_init ();
   GMT_program = argv[0];
   GMT_make_dnan (GMT_d_NaN);
-  GMT_grd_in_nan_value = GMT_grd_out_nan_value = GMT_d_NaN;
 
   /* This is a pretty simple application, so don't bother
      with WM_TAKE_FOCUS messages.	*/
