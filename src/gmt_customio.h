@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.h,v 1.18 2005-08-10 19:03:16 remko Exp $
+ *	$Id: gmt_customio.h,v 1.19 2005-09-12 01:41:05 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -74,9 +74,8 @@ EXTERN_MSC int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *g
 
 #define HEADER_SIZE	892
 
-EXTERN_MSC size_t GMT_native_write_one (FILE *fp, float z, int type);
-EXTERN_MSC float GMT_native_decode (void *vptr, int k, int type);
-EXTERN_MSC double GMT_native_encode (float z, int type);
+EXTERN_MSC float GMT_decode (void *vptr, int k, int type);
+EXTERN_MSC void GMT_encode (void *vptr, int k, float z, int type);
 
 /* Definition for Sun rasterfiles */
 struct rasterfile {

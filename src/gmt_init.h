@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.47 2005-09-02 18:59:40 remko Exp $
+ *	$Id: gmt_init.h,v 1.48 2005-09-12 01:41:05 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -208,7 +208,6 @@ PFI GMT_io_updateinfo[N_GRD_FORMATS];
 PFI GMT_io_writeinfo[N_GRD_FORMATS];
 PFI GMT_io_readgrd[N_GRD_FORMATS];
 PFI GMT_io_writegrd[N_GRD_FORMATS];
-double GMT_grd_in_nan_value, GMT_grd_out_nan_value;
 double *GMT_file_scale, *GMT_file_offset, *GMT_file_nan;
 int *GMT_file_id;
 char **GMT_file_suffix;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.101 2005-09-02 01:42:27 remko Exp $
+ *	$Id: gmt.h,v 1.102 2005-09-12 01:41:05 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -504,7 +504,6 @@ EXTERN_MSC PFI GMT_input, GMT_output, GMT_input_ascii;
 EXTERN_MSC BOOLEAN GMT_geographic_in;	/*TRUE if input data is long/lat */
 EXTERN_MSC BOOLEAN GMT_geographic_out;	/*TRUE if output data is long/lat */
 EXTERN_MSC double GMT_data[BUFSIZ];
-EXTERN_MSC double GMT_grd_in_nan_value, GMT_grd_out_nan_value;
 EXTERN_MSC int GMT_n_file_suffix;
 EXTERN_MSC int *GMT_file_id;
 EXTERN_MSC double *GMT_file_scale, *GMT_file_offset, *GMT_file_nan;

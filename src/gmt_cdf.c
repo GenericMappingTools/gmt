@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.29 2005-09-11 16:06:19 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.30 2005-09-12 01:41:05 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -180,9 +180,9 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		check_nc_status (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1, &header->z_scale_factor));
 		check_nc_status (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
 		if (z_type == NC_FLOAT || z_type == NC_DOUBLE)
-			check_nc_status (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1, &GMT_grd_out_nan_value));
+			check_nc_status (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1, &header->nan_value));
 		else {
-			i = irint (GMT_grd_out_nan_value);
+			i = irint (header->nan_value);
 			check_nc_status (nc_put_att_int (ncid, z_id, "_FillValue", z_type, 1, &i));
 		}
 		check_nc_status (nc_put_att_int (ncid, z_id, "node_offset", NC_LONG, 1, &header->node_offset));
@@ -250,8 +250,8 @@ int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 
 	nc_nopipe (file);
  	check_nc_status (nc_open (file, NC_NOWRITE, &ncid));
-        nc_get_att_double (ncid, header->z_id, "_FillValue", &GMT_grd_in_nan_value);
-	check = !GMT_is_dnan (GMT_grd_in_nan_value);
+        nc_get_att_double (ncid, header->z_id, "_FillValue", &header->nan_value);
+	check = !GMT_is_dnan (header->nan_value);
 
 	/* Load data row by row. The data in the file is stored in the same
 	 * "upside down" fashion as within GMT. The first row is the top row */
@@ -269,7 +269,7 @@ int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 		for (i = 0; i < width_in; i++) {	/* Check for and handle NaN proxies */
 			kk = ij+i*inc;
 			grid[kk] = tmp[k[i]];
-			if (check && grid[kk] == GMT_grd_in_nan_value) grid[kk] = GMT_f_NaN;
+			if (check && grid[kk] == header->nan_value) grid[kk] = GMT_f_NaN;
 			if (GMT_is_fnan (grid[kk])) continue;
 			header->z_min = MIN (header->z_min, (double)grid[kk]);
 			header->z_max = MAX (header->z_max, (double)grid[kk]);
@@ -316,22 +316,22 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 
 	switch (GMT_grdformats[header->type][1]) {
 		case 'b':
-			if (GMT_is_dnan (GMT_grd_out_nan_value)) GMT_grd_out_nan_value = CHAR_MIN;
+			if (GMT_is_dnan (header->nan_value)) header->nan_value = CHAR_MIN;
 			limit[0] = CHAR_MIN - 0.5; limit[1] = CHAR_MAX + 0.5;
 			z_type = NC_BYTE; break;
 		case 's':
-			if (GMT_is_dnan (GMT_grd_out_nan_value)) GMT_grd_out_nan_value = SHRT_MIN;
+			if (GMT_is_dnan (header->nan_value)) header->nan_value = SHRT_MIN;
 			limit[0] = SHRT_MIN - 0.5; limit[1] = SHRT_MAX + 0.5;
 			z_type = NC_SHORT; break;
 		case 'i':
-			if (GMT_is_dnan (GMT_grd_out_nan_value)) GMT_grd_out_nan_value = INT_MIN;
+			if (GMT_is_dnan (header->nan_value)) header->nan_value = INT_MIN;
 			limit[0] = INT_MIN - 0.5; limit[1] = INT_MAX + 0.5;
 			z_type = NC_INT; break;
 		case 'f':
-			check = !GMT_is_dnan (GMT_grd_out_nan_value);
+			check = !GMT_is_dnan (header->nan_value);
 			z_type = NC_FLOAT; break;
 		case 'd':
-			check = !GMT_is_dnan (GMT_grd_out_nan_value);
+			check = !GMT_is_dnan (header->nan_value);
 			z_type = NC_DOUBLE; break;
 		default:
 			z_type = NC_NAT;
@@ -375,7 +375,7 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 			for (i = 0; i < width_out; i++) {
 				tmp_f[i] = grid[inc*(ij+k[i])];
 				if (GMT_is_fnan (tmp_f[i])) {
-					if (check) tmp_f[i] = (float)GMT_grd_out_nan_value;
+					if (check) tmp_f[i] = (float)header->nan_value;
 				}
 				else {
 					header->z_min = MIN (header->z_min, (double)tmp_f[i]);
@@ -394,9 +394,9 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 			for (i = 0; i < width_out; i++) {
 				value = grid[inc*(ij+k[i])];
 				if (GMT_is_fnan (value))
-					tmp_i[i] = irint (GMT_grd_out_nan_value);
+					tmp_i[i] = irint (header->nan_value);
 				else if (value <= limit[0] || value >= limit[1]) {
-					tmp_i[i] = irint (GMT_grd_out_nan_value);
+					tmp_i[i] = irint (header->nan_value);
 					nr_oor++;
 				}
 				else {
