@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.48 2005-09-12 01:41:05 remko Exp $
+ *	$Id: gmt_init.h,v 1.49 2005-09-13 08:42:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -219,6 +219,7 @@ BOOLEAN GMT_lock = TRUE;
 #endif
 double GMT_data[BUFSIZ];
 int GMT_pad[4] = {0, 0, 0, 0};
+int GMT_inc_code = 0;
 
 /*--------------------------------------------------------------------*/
 /*	For misc purposes */
