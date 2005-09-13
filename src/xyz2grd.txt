@@ -4,7 +4,7 @@ xyz2grd \- Converting an ASCII or binary table to grd file format
 .SH SYNOPSIS
 \fBxyz2grd\fP \fIxyzfile\fP \fB\-G\fP\fIgrdfile\fP \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] 
 \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-A\fP[\fBn|z|u|l\fP] ] [ \fB\-D\fP\fIxunit/yunit/zunit/scale/offset/title/remark\fP ] 
-[ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-N\fP\fInodata\fP ] [ \fB\-S\fP[\fIzfile\fP] ] [ \fB\-V\fP ] 
+[ \fB\-E\fP[\fInodata\fP] ] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-N\fP\fInodata\fP ] [ \fB\-S\fP[\fIzfile\fP] ] [ \fB\-V\fP ] 
 [ \fB\-Z\fP[\fIflags\fP] ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBxyz2grd\fP reads a z or xyz table and
@@ -34,6 +34,11 @@ Append \fBl\fP or \fBu\fP to find the lowest (minimum) or upper (maximum) value 
 .B \-D
 Give values for \fIxunit, yunit, zunit, scale, offset, title,\fP and \fIremark\fP.
 To leave some of these values untouched, specify = as the value.
+.TP
+.B \-E
+Convert an ESRI ArcInfo ASCII interchange grid format file to a GMT grid.  Append \fInodata\fP which is a data
+value that should be set to NaN in the grid [Default is to read the optional 6th record in the file and get \fInodata\fP].
+The values normally given by \fB\-R\fP, \fB\-I\fP, and \fB\-F\fP are determined from the ESRI header instead.
 .TP
 .B \-F
 Force pixel registration [Default is grid registration].
