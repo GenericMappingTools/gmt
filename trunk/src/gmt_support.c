@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.173 2005-09-12 01:41:05 remko Exp $
+ *	$Id: gmt_support.c,v 1.174 2005-09-13 05:20:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3938,7 +3938,7 @@ void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, BOOLEAN upd
 	header->y_order			= 1;
 	header->z_id			= -1;
 	header->nan_value		= GMT_d_NaN;
-
+	
 	memset ((void *)header->name, 0, (size_t)GMT_LONG_TEXT);
 
 	memset ((void *)header->x_units, 0, (size_t)GRD_UNIT_LEN);
@@ -5413,7 +5413,7 @@ void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct G
 	/* used to ensure that sloppy w,e,s,n values are rounded to proper multiples */
 	
 	int i;
-	double half_or_zero, val;
+	double half_or_zero, val, start, dx;
 	
 	half_or_zero = (header->node_offset) ? 0.5 : 0.0;
 
@@ -5431,21 +5431,28 @@ void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct G
 			break;
 	}
 	
-	i = 0;
-	while (*w > (val = header->x_min + (i + half_or_zero) * header->x_inc) && i < header->nx) i++;
-	if (header->node_offset) val -= 0.5 * header->x_inc;
-	if (fabs (*w - val) > SMALL) {
-		*w = val;
-		(void) fprintf (stderr, "%s: GMT WARNING: (w-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_program, SMALL);
-		(void) fprintf (stderr, "%s: GMT WARNING: w reset to %g\n", GMT_program, *w);
-	}
-	i = header->nx - 1;
-	while (*e < (val = header->x_min + (i + half_or_zero) * header->x_inc) && i > 0) i--;
-	if (header->node_offset) val += 0.5 * header->x_inc;
-	if (fabs (*e - val) > SMALL) {
-		*e = val;
-		(void) fprintf (stderr, "%s: GMT WARNING: (e-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_program, SMALL);
-		(void) fprintf (stderr, "%s: GMT WARNING: e reset to %g\n", GMT_program, *e);
+	if (GMT_io.in_col_type[0] != GMT_IS_LON || fabs (fabs (*e - *w) - 360.0) > GMT_CONV_LIMIT) {	/* Do this unless a 360 longitude wrap */
+		i = 0;
+		start = (GMT_io.in_col_type[0] == GMT_IS_LON && fabs (fabs (header->x_min - *w) - 360.0) < GMT_CONV_LIMIT) ? *w : header->x_min;
+		while (*w > (val = start + (i + half_or_zero) * header->x_inc) && i < header->nx) i++;
+		if (header->node_offset) val -= 0.5 * header->x_inc;
+		dx = fabs (*w - val);
+		if (GMT_io.in_col_type[0] == GMT_IS_LON) dx = fmod (dx, 360.0);
+		if (dx > SMALL) {
+			*w = val;
+			(void) fprintf (stderr, "%s: GMT WARNING: (w-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_program, SMALL);
+			(void) fprintf (stderr, "%s: GMT WARNING: w reset to %g\n", GMT_program, *w);
+		}
+		i = header->nx - 1;
+		while (*e < (val = start + (i + half_or_zero) * header->x_inc) && i > 0) i--;
+		if (header->node_offset) val += 0.5 * header->x_inc;
+		dx = fabs (*e - val);
+		if (GMT_io.in_col_type[0] == GMT_IS_LON) dx = fmod (dx, 360.0);
+		if (dx > SMALL) {
+			*e = val;
+			(void) fprintf (stderr, "%s: GMT WARNING: (e-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_program, SMALL);
+			(void) fprintf (stderr, "%s: GMT WARNING: e reset to %g\n", GMT_program, *e);
+		}
 	}
 	
 	switch (GMT_minmaxinc_verify (*s, *n, header->y_inc, SMALL)) {	/* Check if range is compatible with y_inc */
