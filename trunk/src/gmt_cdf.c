@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.30 2005-09-12 01:41:05 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.31 2005-09-13 12:33:35 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -203,8 +203,12 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		nm[0] = header->nx;
 		nm[1] = header->ny;
 		check_nc_status (nc_put_var_int (ncid, nm_id, nm));
-		dummy[0] = header->z_min;
-		dummy[1] = header->z_max;
+		if (header->z_min <= header->z_max) {
+			dummy[0] = header->z_min; dummy[1] = header->z_max;
+		}
+		else {
+			dummy[0] = 0.0; dummy[1] = 0.0;
+		}
 		check_nc_status (nc_put_var_double (ncid, z_range_id, dummy));
 	}
 	return (0);
@@ -415,12 +419,13 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	GMT_free ((void *)k);
 
 	if (header->z_min <= header->z_max) {
-		limit[0] = header->z_min;
-		limit[1] = header->z_max;
-		check_nc_status (nc_put_var_double (ncid, header->z_id - 3, limit));
+		limit[0] = header->z_min; limit[1] = header->z_max;
 	}
-	else
+	else {
 		fprintf (stderr, "%s: Warning: No valid values in grid [%s]\n", GMT_program, nc_file);
+		limit[0] = 0.0; limit[1] = 0.0;
+	}
+	check_nc_status (nc_put_var_double (ncid, header->z_id - 3, limit));
 
 	/* Close grid */
 
