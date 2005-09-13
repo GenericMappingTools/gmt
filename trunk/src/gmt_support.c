@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.175 2005-09-13 08:42:01 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.176 2005-09-13 12:04:34 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -724,7 +724,7 @@ void GMT_gettexture (char *line, int unit, double scale, struct GMT_PEN *P) {
 int GMT_getinc (char *line, double *dx, double *dy)
 {	/* Special case of getincn use where n is two. */
 
-	int save, last;
+	int save = 0, last;
 	double inc[2];
 
 	GMT_inc_code = 0;	/* Global flag needed to reset w/e/s/n or dx/dy later */
@@ -805,7 +805,7 @@ int GMT_getincn (char *line, double inc[], int n)
 void GMT_RI_prepare (struct GRD_HEADER *h)
 {
 	int one_or_zero;
-	double s, f, m_pr_degree;
+	double s = 1.0, f, m_pr_degree;
 	
 	/* May have to adjust -R -I depending on how GMT_inc_code was set */
 	
@@ -818,7 +818,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 		h->ny = irint (h->y_inc);
 		h->x_inc = (h->x_max - h->x_min) / (h->nx - one_or_zero);
 		h->y_inc = (h->y_max - h->y_min) / (h->ny - one_or_zero);
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Given nx/ny implies x_inc = %lg and y_inc = %lg\n", h->nx, h->ny, h->x_inc, h->y_inc);
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Given nx/ny implies x_inc = %lg and y_inc = %lg\n", GMT_program, h->x_inc, h->y_inc);
 		return;
 	}
 	
@@ -848,8 +848,8 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 		h->x_min += s;	h->x_max -= s;
 		s = 0.5 * ((h->y_max - h->y_min) - h->y_inc * (h->ny - one_or_zero));
 		h->y_min += s;	h->y_max -= s;
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion implies x_inc = %lg and y_inc = %lg\n", h->x_inc, h->y_inc);
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Domain adjusted to %lg/%lg/%lg/%lg\n", h->x_min, h->x_max, h->y_min, h->y_max);
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion implies x_inc = %lg and y_inc = %lg\n", GMT_program, h->x_inc, h->y_inc);
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Domain adjusted to %lg/%lg/%lg/%lg\n", GMT_program, h->x_min, h->x_max, h->y_min, h->y_max);
 	}
 	else {	/* Adjust -I to exactly fit -R */
 		s = h->x_max - h->x_min;
@@ -860,7 +860,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 		h->ny = irint (s / h->y_inc);
 		h->y_inc = s / h->ny;
 		h->ny += one_or_zero;
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion and given domain implies x_inc = %lg and y_inc = %lg\n", h->x_inc, h->y_inc);
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion and given domain implies x_inc = %lg and y_inc = %lg\n", GMT_program, h->x_inc, h->y_inc);
 	}
 }
 
