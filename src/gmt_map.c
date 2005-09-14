@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.90 2005-07-07 09:17:48 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.91 2005-09-14 05:56:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7061,6 +7061,7 @@ void GMT_grdproject_init (struct GRD_HEADER *head, double x_inc, double y_inc, i
 	}
 	head->node_offset = offset;
 
+	GMT_RI_prepare (head);	/* Ensure -R -I consistency and set nx, ny */
 	GMT_grd_RI_verify (head, 1);
 
 	if (gmtdefs.verbose) fprintf (stderr, "%s: New grid size (nx,ny) %d by %d\n", GMT_program, head->nx, head->ny);
