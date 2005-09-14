@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.189 2005-09-12 01:41:05 remko Exp $
+ *	$Id: gmt_init.c,v 1.190 2005-09-14 02:34:26 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1798,7 +1798,7 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case GMTCASE_VECTOR_SHAPE:
 			dval = atof (value);
-			if (dval < 0.0 || dval > 1.0)
+			if (dval < -2.0 || dval > 2.0)
 				error = TRUE;
 			else
 				gmtdefs.vector_shape = dval;
