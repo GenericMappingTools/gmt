@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.13 2005-08-20 22:35:13 pwessel Exp $
+ *	$Id: gmt_shore.c,v 1.14 2005-09-14 08:21:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -659,7 +659,7 @@ void GMT_br_cleanup (struct GMT_BR *c)
 	
 }
 
-int GMT_prep_polygons (struct POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sample, double step, int anti_bin)
+int GMT_prep_polygons (struct POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sample, double step, int anti_bin, BOOLEAN close)
 {
 	/* This function will go through each of the polygons and determine
 	 * if the polygon is clipped by the map boundary, and if so if it
@@ -673,6 +673,7 @@ int GMT_prep_polygons (struct POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sa
 	 * sample is TRUE if we need to resample the polygons to reduce point spacing
 	 * step is the new maximum point separation in degrees
 	 * anti_bin, if >= 0, indicates a possible problem bin at the antipole using -JE only
+	 * close is TRUE: Explicitly close the polygons [needed for inside/outside tests]
 	 */
 
 	int k, np_new, n_use, n, start;
@@ -686,7 +687,15 @@ int GMT_prep_polygons (struct POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sa
 	for (k = 0; k < np; k++) {
 			
 		if (sample) p[k].n = GMT_fix_up_path (&p[k].lon, &p[k].lat, p[k].n, greenwich, step);
-				
+		
+		if (!(p[k].lon[0] == p[k].lon[p[k].n-1] && p[k].lat[0] == p[k].lat[p[k].n-1]) && close) {	/* Must close explicitly */
+			p[k].lon = (double *) GMT_memory ((void *)p[k].lon, (size_t)p[k].n+1, sizeof (double), GMT_program);
+			p[k].lat = (double *) GMT_memory ((void *)p[k].lat, (size_t)p[k].n+1, sizeof (double), GMT_program);
+			p[k].lon[p[k].n] = p[k].lon[0];
+			p[k].lat[p[k].n] = p[k].lat[0];
+			p[k].n++;
+		}
+		
 		/* Clip polygon against map boundary if necessary and return plot x,y in inches */
 				
 		if ((n = GMT_clip_to_map (p[k].lon, p[k].lat, p[k].n, &xtmp, &ytmp)) == 0) {	/* Completely outside */
