@@ -693,8 +693,8 @@ Sets the position of the UNIX time stamp relative to the current plots lower lef
 .TP
 .B VECTOR_SHAPE
 Determines the shape of the head of a vector.   Normally (i.e., for vector_shape = 0),
-the head will be triangular, but can be changed to an arrow (1).  Intermediate
-settings gives something in between  [0].
+the head will be triangular, but can be changed to an arrow (1) or an open V (2).
+Intermediate settings give something in between. Negative values (up to -2) are allowed as well  [0].
 .TP
 .B VERBOSE * (\-V)
 Determines if \fBGMT\fP programs should display run-time information or run silently  [FALSE].
