@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.178 2005-09-14 06:31:34 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.179 2005-09-14 10:26:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3608,6 +3608,11 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 
 	if (n_path < 2) return (GMT_OUTSIDE_POLYGON);	/* Cannot be inside a null set or a point so default to outside */
 
+	if (!(x[n_path-1] == x[0] && y[n_path-1] == y[0])) {
+		fprintf (stderr, "%s: GMT_non_zero_winding given non-closed polygon\n", GMT_program);
+		exit (EXIT_FAILURE);
+	}
+	
 	above = FALSE;
 	crossing_count = 0;
 
