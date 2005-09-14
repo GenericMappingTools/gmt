@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.176 2005-09-13 12:04:34 remko Exp $
+ *	$Id: gmt_support.c,v 1.177 2005-09-14 05:56:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -721,50 +721,46 @@ void GMT_gettexture (char *line, int unit, double scale, struct GMT_PEN *P) {
 	}
 }
 
+#define GMT_INC_IS_M		1
+#define GMT_INC_IS_KM		2
+#define GMT_INC_IS_MILES	4
+#define GMT_INC_IS_NMILES	8
+#define GMT_INC_IS_NNODES	16
+#define GMT_INC_IS_EXACT	32
+#define GMT_INC_UNITS		15
+
 int GMT_getinc (char *line, double *dx, double *dy)
 {	/* Special case of getincn use where n is two. */
 
-	int save = 0, last;
+	int n;
 	double inc[2];
 
-	GMT_inc_code = 0;	/* Global flag needed to reset w/e/s/n or dx/dy later */
-	last = strlen (line) - 1;
-	switch (line[last]) {	/* Check if there are units and other flags */
-		case 'E':	/* Meter, use exact inc */
-			GMT_inc_code |= 32;
-		case 'e':
-			GMT_inc_code |= 1;
-			break;
-		case 'K':	/* km, use exact inc */
-			GMT_inc_code |= 32;
-		case 'k':
-			GMT_inc_code |= 2;
-			break;
-		case 'M':	/* Miles, use exact inc */
-			GMT_inc_code |= 32;
-		case 'm':
-			GMT_inc_code |= 4;
-			break;
-		case 'N':	/* Nautical miles, use exact inc */
-			GMT_inc_code |= 32;
-		case 'n':
-			GMT_inc_code |= 8;
-			break;
-		case '+':	/* Number of nodes given, determine inc from domain */
-			GMT_inc_code |= 16;
-			break;
-		default:	/* No special flags */
-			GMT_inc_code = 0;
-			break;
+	/* Syntax: -I<xinc>[m|c|e|i|k|n|+|!][/<yinc>][m|c|e|i|k|n|+|!]
+	 * Units: m = minutes
+	 *	  c = seconds
+	 *	  e = meter [Convert to degrees]
+	 *	  i = miles [Convert to degrees]
+	 *	  k = km [Convert to degrees]
+	 *	  n = nautical miles [Convert to degrees]
+	 * Flags: + = Adjust -R to fit exact -I [Default modifies -I to fit -R]
+	 *	  - = incs are actually nx/ny - convert to get xinc/yinc
+	 */
+	 
+	n = GMT_getincn (line, inc, 2);
+	*dx = *dy = inc[0];
+	if (n == 1) {	/* Must copy y info from x */
+		*dy = *dx;
+		GMT_inc_code[1] = GMT_inc_code[0];	/* Use exact inc codes for both x and y */
 	}
-	if (GMT_inc_code) {	/* Temporarily remove the trailing code */
-		save = line[last];
-		line[last] = '\0';
-	}
-	*dy = (GMT_getincn (line, inc, 2) == 1) ? inc[0] : inc[1];
-	*dx = inc[0];
-	if (GMT_inc_code) line[last] = save;	/* Restore the code */
 
+	if (GMT_inc_code[0] & GMT_INC_IS_NNODES && GMT_inc_code[0] & GMT_INC_UNITS) {
+		fprintf (stderr, "%s: ERROR: number of x nodes cannot have units\n", GMT_program);
+		exit (EXIT_FAILURE);
+	}
+	if (GMT_inc_code[1] & GMT_INC_IS_NNODES && GMT_inc_code[1] & GMT_INC_UNITS) {
+		fprintf (stderr, "%s: ERROR: number of y nodes cannot have units\n", GMT_program);
+		exit (EXIT_FAILURE);
+	}
 	return (0);
 }
 
@@ -772,25 +768,61 @@ int GMT_getincn (char *line, double inc[], int n)
 {
 	int last, i, pos;
 	char p[BUFSIZ];
-	double scale;
+	double scale = 1.0;
 
 	/* Dechipers dx/dy/dz/dw/du/dv/... increment strings with n items */
 
 	memset ((void *)inc, 0, (size_t)(n * sizeof (double)));
 
-	i = pos = 0;
+	i = pos = GMT_inc_code[0] = GMT_inc_code[1] = 0;
+	
 	while (i < n && (GMT_strtok (line, "/", &pos, p))) {
 		last = strlen (p) - 1;
-		if (p[last] == 'm' || p[last] == 'M') {	/* Gave arc minutes */
+		if (p[last] == '!') {	/* Let -I override -R */
 			p[last] = 0;
-			scale = GMT_MIN2DEG;
+			if (i < 2) GMT_inc_code[i] |= GMT_INC_IS_EXACT;
+			last--;
 		}
-		else if (p[last] == 'c' || p[last] == 'C') {	/* Gave arc seconds */
+		else if (p[last] == '+') {	/* Number of nodes given, determine inc from domain */
 			p[last] = 0;
-			scale = GMT_SEC2DEG;
+			if (i < 2) GMT_inc_code[i] |= GMT_INC_IS_NNODES;
+			last--;
 		}
-		else	/*  No units given */
-			scale = 1.0;
+		switch (p[last]) {
+			case 'm':
+			case 'M':	/* Gave arc minutes */
+				p[last] = 0;
+				scale = GMT_MIN2DEG;
+				break;
+			case 'c':
+			case 'C':	/* Gave arc seconds */
+				p[last] = 0;
+				scale = GMT_SEC2DEG;
+				break;
+			case 'e':
+			case 'E':	/* Gave meters along mid latitude */
+				p[last] = 0;
+				if (i < 2) GMT_inc_code[i] |= GMT_INC_IS_M;
+				break;
+			case 'K':	/* Gave km along mid latitude */
+			case 'k':
+				p[last] = 0;
+				if (i < 2) GMT_inc_code[i] |= GMT_INC_IS_KM;
+				break;
+			case 'I':	/* Gave miles along mid latitude */
+			case 'i':
+				p[last] = 0;
+				if (i < 2) GMT_inc_code[i] |= GMT_INC_IS_MILES;
+				break;
+			case 'N':	/* Gave nautical miles along mid latitude */
+			case 'n':
+				p[last] = 0;
+				if (i < 2) GMT_inc_code[i] |= GMT_INC_IS_NMILES;
+				break;
+			default:	/* No special flags or units */
+				scale = 1.0;
+				break;
+		}
 		if ( (sscanf(p, "%lf", &inc[i])) != 1) {
 			fprintf (stderr, "%s: ERROR: Unable to decode %s as a floating point number\n", GMT_program, p);
 			exit (EXIT_FAILURE);
@@ -802,6 +834,40 @@ int GMT_getincn (char *line, double inc[], int n)
 	return (i);	/* Returns the number of increments found */
 }
 
+double GMT_getradius (char *line)
+{
+	int last, save = 0;
+	double radius, scale = 1.0;
+
+	/* Dechipers a single radius argument */
+
+	last = strlen (line) - 1;
+	switch (line[last]) {
+		case 'm':
+		case 'M':	/* Gave arc minutes */
+			save = line[last];
+			line[last] = 0;
+			scale = GMT_MIN2DEG;
+			break;
+		case 'c':
+		case 'C':	/* Gave arc seconds */
+			save = line[last];
+			line[last] = 0;
+			scale = GMT_SEC2DEG;
+			break;
+		default:	/* No special flags or units */
+			scale = 1.0;
+			break;
+	}
+	if ( (sscanf(line, "%lf", &radius)) != 1) {
+		fprintf (stderr, "%s: ERROR: Unable to decode %s as a floating point number\n", GMT_program, line);
+		exit (EXIT_FAILURE);
+	}
+	if (save) line[last] = save;
+
+	return (radius * scale);
+}
+
 void GMT_RI_prepare (struct GRD_HEADER *h)
 {
 	int one_or_zero;
@@ -809,58 +875,104 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 	
 	/* May have to adjust -R -I depending on how GMT_inc_code was set */
 	
-	if (GMT_inc_code == 0) return;	/* Standard -R -I given */
-	
 	one_or_zero = !h->node_offset;
-	
-	if (GMT_inc_code == 16) {	/* Got nx/ny */
-		h->nx = irint (h->x_inc);
-		h->ny = irint (h->y_inc);
-		h->x_inc = (h->x_max - h->x_min) / (h->nx - one_or_zero);
-		h->y_inc = (h->y_max - h->y_min) / (h->ny - one_or_zero);
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Given nx/ny implies x_inc = %lg and y_inc = %lg\n", GMT_program, h->x_inc, h->y_inc);
-		return;
-	}
-	
-	/* Here we got xinc/yinc in a distance unit other than degrees */
-	
 	m_pr_degree = 2.0 * M_PI * gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius / 360.0;
-	f = cosd (0.5 * (h->y_max + h->y_min));	/* Latitude scaling of E-W distances */
-	switch (GMT_inc_code & 15) {
-		case 1:	/* Meter */
-			s = 1.0;
-			break;
-		case 2:	/* km */
-			s = 1000.0;
-			break;
-		case 4:	/* miles */
-			s = 1609.433;
-			break;
-		case 8:	/* nmiles */
-			s = 1852.0;
-			break;
-	}
-	h->x_inc = h->x_inc * s * f / m_pr_degree;
-	h->y_inc = (h->y_inc == 0.0) ? h->x_inc : s * h->y_inc / m_pr_degree;
 	
-	if (GMT_inc_code & 32) {	/* Want to keep dx/dy exactly as given; adjust -R */
-		s = 0.5 * ((h->x_max - h->x_min) - h->x_inc * (h->nx - one_or_zero));
-		h->x_min += s;	h->x_max -= s;
-		s = 0.5 * ((h->y_max - h->y_min) - h->y_inc * (h->ny - one_or_zero));
-		h->y_min += s;	h->y_max -= s;
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion implies x_inc = %lg and y_inc = %lg\n", GMT_program, h->x_inc, h->y_inc);
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Domain adjusted to %lg/%lg/%lg/%lg\n", GMT_program, h->x_min, h->x_max, h->y_min, h->y_max);
+	/* XINC AND XMIN/XMAX CHECK FIRST */
+	
+	if (GMT_inc_code[0] == 0) {	/* Standard -R -I given, just set nx */
+		h->nx = irint ((h->x_max - h->x_min) / h->x_inc) + one_or_zero;
 	}
-	else {	/* Adjust -I to exactly fit -R */
+	else if (GMT_inc_code[0] & GMT_INC_IS_NNODES) {	/* Got nx */
+		h->nx = irint (h->x_inc);
+		h->x_inc = (h->x_max - h->x_min) / (h->nx - one_or_zero);
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Given nx implies x_inc = %lg\n", GMT_program, h->x_inc);
+	}
+	else {	/* Got funny units */
+		switch (GMT_inc_code[0] & GMT_INC_UNITS) {
+			case GMT_INC_IS_M:	/* Meter */
+				s = 1.0;
+				break;
+			case GMT_INC_IS_KM:	/* km */
+				s = 1000.0;
+				break;
+			case GMT_INC_IS_MILES:	/* miles */
+				s = 1609.433;
+				break;
+			case GMT_INC_IS_NMILES:	/* nmiles */
+				s = 1852.0;
+				break;
+		}
+		f = cosd (0.5 * (h->y_max + h->y_min));	/* Latitude scaling of E-W distances */
+		h->x_inc = h->x_inc * s * f / m_pr_degree;
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion implies x_inc = %lg\n", GMT_program, h->x_inc);
+		h->nx = irint ((h->x_max - h->x_min) / h->x_inc) + one_or_zero;
+	}
+	if (GMT_inc_code[0] & GMT_INC_IS_EXACT) {	/* Want to keep dx exactly as given; adjust x_max accordingly */
+		s = (h->x_max - h->x_min) - h->x_inc * (h->nx - one_or_zero);
+		if (fabs (s) > 0.0) {
+			h->x_max -= s;
+			if (gmtdefs.verbose) fprintf (stderr, "%s: x_max adjusted to %lg\n", GMT_program, h->x_max);
+		}
+	}
+	else if (!GMT_inc_code[0] & GMT_INC_IS_NNODES) {	/* Adjust x_inc to exactly fit west/east */
 		s = h->x_max - h->x_min;
 		h->nx = irint (s / h->x_inc);
-		h->x_inc = s / h->nx;
+		f = s / h->nx;
 		h->nx += one_or_zero;
+		if (fabs (f - h->x_inc) > 0.0) {
+			h->x_inc = f;
+			if (gmtdefs.verbose) fprintf (stderr, "%s: Given domain implies x_inc = %lg\n", GMT_program, h->x_inc);
+		}
+	}
+
+	/* YINC AND YMIN/YMAX CHECK SECOND */
+	
+	if (GMT_inc_code[1] == 0) {	/* Standard -R -I given, just set ny */
+		h->ny = irint ((h->y_max - h->y_min) / h->y_inc) + one_or_zero;
+	}
+	else if (GMT_inc_code[1] & GMT_INC_IS_NNODES) {	/* Got ny */
+		h->ny = irint (h->y_inc);
+		h->y_inc = (h->y_max - h->y_min) / (h->ny - one_or_zero);
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Given ny implies y_inc = %lg\n", GMT_program, h->y_inc);
+		return;
+	}
+	else {	/* Got funny units */
+		switch (GMT_inc_code[1] & GMT_INC_UNITS) {
+			case GMT_INC_IS_M:	/* Meter */
+				s = 1.0;
+				break;
+			case GMT_INC_IS_KM:	/* km */
+				s = 1000.0;
+				break;
+			case GMT_INC_IS_MILES:	/* miles */
+				s = 1609.433;
+				break;
+			case GMT_INC_IS_NMILES:	/* nmiles */
+				s = 1852.0;
+				break;
+		}
+		h->y_inc = (h->y_inc == 0.0) ? h->x_inc : h->y_inc * s / m_pr_degree;
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion implies y_inc = %lg\n", GMT_program, h->y_inc);
+		h->ny = irint ((h->y_max - h->y_min) / h->y_inc) + one_or_zero;
+	}
+	
+	if (GMT_inc_code[1] & GMT_INC_IS_EXACT) {	/* Want to keep dy exactly as given; adjust y_max accordingly */
+		s = (h->y_max - h->y_min) - h->y_inc * (h->ny - one_or_zero);
+		if (fabs (s) > 0.0) {
+			h->y_max -= s;
+			if (gmtdefs.verbose) fprintf (stderr, "%s: y_max adjusted to %lg\n", GMT_program, h->y_max);
+		}
+	}
+	else if (!GMT_inc_code[1] & GMT_INC_IS_NNODES) {	/* Adjust y_inc to exactly fit south/north */
 		s = h->y_max - h->y_min;
 		h->ny = irint (s / h->y_inc);
-		h->y_inc = s / h->ny;
+		f = s / h->ny;
 		h->ny += one_or_zero;
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion and given domain implies x_inc = %lg and y_inc = %lg\n", GMT_program, h->x_inc, h->y_inc);
+		if (fabs (f - h->y_inc) > 0.0) {
+			h->y_inc = f;
+			if (gmtdefs.verbose) fprintf (stderr, "%s: Given domain implies y_inc = %lg\n", GMT_program, h->y_inc);
+		}
 	}
 }
 

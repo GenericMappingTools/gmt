@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.190 2005-09-14 02:34:26 remko Exp $
+ *	$Id: gmt_init.c,v 1.191 2005-09-14 05:56:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -564,6 +564,16 @@ void GMT_cont_syntax (int indent, int kind)
 	fprintf (stderr, "%s   Append /<min_dist> to enfore a minimum distance between succesive labels [0]\n", pad);
 	fprintf (stderr, "%sx|X<xfile.d> reads the multi-segment file <xfile.d> and places labels at the intersections\n", pad);
 	fprintf (stderr, "%s   between the %ss and the lines in <xfile.d>.  X: Resample the lines first.\n", pad, type[kind]);
+}
+
+void GMT_inc_syntax (char option, int error)
+{
+	if (error) fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
+	fprintf (stderr, "\t-%c<xinc>[m|c|e|k|i|n|+][!][/<yinc>[m|c|e|k|i|n|+][!]]\n", option);
+	fprintf (stderr, "\t  Give increment and append unit (m)inute, se(c)ond, m(e)ter, (k)ilometer, m(i)les, (n)autical miles.\n");
+	fprintf (stderr, "\t  Append ! to adjust the domain to fit the increment [Default adjusts increment to fit domain].\n");
+	fprintf (stderr, "\t  Alternatively, specify number of nodes by appending +. Then, the increments are calculated\n");
+	fprintf (stderr, "\t  from the given domain and grid-registration settings (see Appendix B for details).\n");
 }
 
 void GMT_fill_syntax (char option)

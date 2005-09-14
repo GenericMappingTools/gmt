@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 19
 REM
-REM		$Id: job19.bat,v 1.6 2004-09-29 01:29:02 pwessel Exp $
+REM		$Id: job19.bat,v 1.7 2005-09-14 05:56:51 pwessel Exp $
 REM
 REM Purpose:	Illustrates various color pattern effects for maps
 REM GMT progs:	gmtset, grdimage, grdmath, makecpt, pscoast, pstext
@@ -22,9 +22,9 @@ pscoast -R -J -O -K -Dc -A5000 -Gc >> example_19.ps
 grdimage lon.grd -J -Clon.cpt -O -K >> example_19.ps
 pscoast -R -J -O -K -Q >> example_19.ps
 pscoast -R -J -O -K -Dc -A5000 -W0.25p >> example_19.ps
-echo 0 20 32 0 1 CM FIRST INTERNATIONAL | pstext -R -J -O -K -Gred -S0.5p >> example_19.ps
+echo 0 20 32 0 1 CM 4TH INTERNATIONAL | pstext -R -J -O -K -Gred -S0.5p >> example_19.ps
 echo 0 -10 32 0 1 CM GMT CONFERENCE | pstext -R -J -O -K -Gred -S0.5p >> example_19.ps
-echo 0 -30 18 0 1 CM Honolulu, Hawaii, April 1, 2000 | pstext -R -J -O -K -Ggreen -S0.25p >> example_19.ps
+echo 0 -30 18 0 1 CM Honolulu, Hawaii, April 1, 2006 | pstext -R -J -O -K -Ggreen -S0.25p >> example_19.ps
 
 REM Then show example of color patterns
 
@@ -39,9 +39,9 @@ pscoast -R -J -O -K -Dc -A5000 -Gc >> example_19.ps
 grdimage lat.grd -J -Clat.cpt -O -K >> example_19.ps
 pscoast -R -J -O -K -Q >> example_19.ps
 pscoast -R -J -O -K -Dc -A5000 -W0.25p >> example_19.ps
-echo 0 20 32 0 1 CM 3RD INTERNATIONAL | pstext -R -J -O -K -Gred -S0.5p >> example_19.ps
+echo 0 20 32 0 1 CM 4TH INTERNATIONAL | pstext -R -J -O -K -Gred -S0.5p >> example_19.ps
 echo 0 -10 32 0 1 CM GMT CONFERENCE | pstext -R -J -O -K -Gred -S0.5p >> example_19.ps
-echo 0 -30 18 0 1 CM Honolulu, Hawaii, April 1, 2005 | pstext -R -J -O -Ggreen -S0.25p >> example_19.ps
+echo 0 -30 18 0 1 CM Honolulu, Hawaii, April 1, 2006 | pstext -R -J -O -Ggreen -S0.25p >> example_19.ps
 
 del l*.grd
 del l*.cpt

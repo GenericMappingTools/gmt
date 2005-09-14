@@ -37,7 +37,7 @@ Not used with binary data.
 .B \-S
 Use \fB\-Sz\fP tp report the sum of all z-values inside a block, or \fB\-Sw\fP to report the
 sum of weights [Default reports mean value]. If \fB\-Sw\fP is selected and no weights are
-supplied (i.e., no \fB\-W\fp given), then the weight sum simply equals the number of points
+supplied (i.e., no \fB\-W\fP given), then the weight sum simply equals the number of points
 inside each block.
 #include "explain_-V.txt"
 .TP

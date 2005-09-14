@@ -1,4 +1,14 @@
 .TP
 .B \-I
 \fIx_inc\fP [and optionally \fIy_inc\fP] is the grid spacing. Append \fBm\fP to
-indicate minutes or \fBc\fP to indicate seconds.
+indicate minutes or \fBc\fP to indicate seconds.  If one of the units \fBe\fP, \fBk\fP, \fBi\fP,
+or \fBe\fP is appended instead, the increment will be assumed to be in meter, km, miles, or
+nautical miles, respectively, and will be converted to the equivalent degrees longitude at
+the middle latitude of the region.  If /\fIy_inc\fP is given but set to 0 it will be reset equal to
+\fIx_inc\fP; otherwise it will be converted to degrees latitude.  If \fB!\fP is appended then
+the corresponding max x (east) or y (north) may be slightly adjusted to fit exactly the given increment
+[by default the increment may be adjusted slightly to fit the given domain].  Finally, instead
+of giving an increment you may specify the \fInumber of nodes\fP desired by appending \fB+\fP to
+the supplied increment; the increment is then recalculated from the number of nodes and the domain.
+The resulting increment value depends on whether you have selected a gridline-registered or pixel-
+registered grid; see Appendix B for details.
