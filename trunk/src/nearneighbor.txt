@@ -31,8 +31,10 @@ search, i.e., \fIsectors\fP = 4].  Note that only the nearest value per sector e
 .TP
 .B \-S
 Sets the \fIsearch_radius\fP in same units as the grid spacing; append \fBm\fP to indicate minutes
-or \fBc\fP to indicate seconds.  Append \fBk\fP to indicated km (implies \fB\-R\fP and \fB\-I\fP are in degrees);
-use uppercase \fBK\fP if distances should be calculated using great circles [\fBk\fP uses flat Earth].
+or \fBc\fP to indicate seconds.  Append \fBk\fP to indicate km (implies \fB\-R\fP and \fB\-I\fP are in degrees, and
+we will use a fast flat Earth approximation to calculate distance).  For more accuracy, use uppercase \fBK\fP
+if distances should be calculated along geodesics.
+However, if the current ELLIPSOID is set to Sphere then spherical great circle calculations are used.
 .SH OPTIONS
 .TP
 .B \-E

@@ -37,7 +37,7 @@ is zero then the 3rd column of \fIptfile\fP must have each point's\"'
 individual radius of influence.  Distances are in user units; specify
 \fB\-fg\fP or a map projection to indicate distances in km.  Prepend \fBf\fP to indicate you want approximate flat
 earth distance calculations (faster) rather than exact geodesic distances (slower).  However, if the current ELLIPSOID
-is set the Sphere the spherical great circle calculations are used.
+is set to Sphere then spherical great circle calculations are used.
 .TP
 .B \-D
 Ignored unless \fB\-N\fP is set.  Selects the resolution of the coastline data set to use ((\fBf\fP)ull, (\fBh\fP)igh, (\fBi\fP)ntermediate, (\fBl\fP)ow, or (\fBc\fP)rude).  The
