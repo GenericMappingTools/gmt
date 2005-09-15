@@ -15,7 +15,7 @@ pscoast \- To plot land-masses, water-masses, coastlines, borders, and rivers
 [ \fB\-P\fP ] [ \fB\-Q\fP ] [ \fB\-S\fP\fIfill\fP ] 
 [ \fB\-T\fP[\fBf|m\fP][\fBx\fP]\fIlon0/lat0/size\fP[/\fIinfo\fP][:w,e,s,n:][+\fIgint\fP[/\fImint\fP]] ] 
 [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] 
-[ \fB\-W\fP\fIpen\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] 
+[ \fB\-W\fP\fIpen\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fIzlevel\fP ] 
 [ \fB\-c\fP\fIcopies\fP ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ]
 .SH DESCRIPTION
 \fBpscoast\fP plots grayshaded, colored, or textured land-masses [or water-masses] on maps and [optionally]
@@ -123,6 +123,9 @@ Select painting or clipping of "wet" areas.  Append the shade (0\-255), color (r
 Draw coastlines. [Default is no coastlines].  Append pen attributes  [Defaults:
 width = 1, color = 0/0/0, texture = solid].
 #include "explain_-XY.txt"
+.TP
+.B \-Z
+For 3-D projections:  Sets the z-level of the coastlines [0].
 #include "explain_-c.txt"
 #include "explain_-o_binary.txt"
 #include "explain_-n.txt"
