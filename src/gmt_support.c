@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.180 2005-09-15 00:08:02 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.181 2005-09-15 17:38:29 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4914,7 +4914,6 @@ int GMT_boundcond_set (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo, int 
 	ieo1k = ieo1 - edgeinfo->nxp;
 	ieo2k = ieo2 - edgeinfo->nxp;
 
-
 	/* Check poles for grid case.  It would be nice to have done this
 		in GMT_boundcond_param_prep() but at that point the data
 		array isn't passed into that routine, and may not have been
@@ -4925,30 +4924,34 @@ int GMT_boundcond_set (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo, int 
 	if (h->node_offset == 0) {
 		if (edgeinfo->gn) {
 			bok = 0;
-			for (i = iw+1; i <= ie; i++) {
-				if (a[jn + i] != a[jn + iw]) 	/* This maybe fails if they are NaNs ? */
-					bok++;
+			if (GMT_is_fnan (a[jn + iw])) {
+				for (i = iw+1; i <= ie; i++) {
+					if (!GMT_is_fnan (a[jn + i])) bok++;
+				}
 			}
-			if (bok > 0) {
-				fprintf (stderr, "GMT ERROR:  Inconsistent grid values at North pole.\n");
-				return (-1);
+			else {
+				for (i = iw+1; i <= ie; i++) {
+					if (a[jn + i] != a[jn + iw]) bok++;
+				}
 			}
+			if (bok > 0) fprintf (stderr, "GMT Warning: Inconsistent grid values at North pole.\n");
 		}
 
 		if (edgeinfo->gs) {
 			bok = 0;
-			for (i = iw+1; i <= ie; i++) {
-				if (a[js + i] != a[js + iw]) 	/* This maybe fails if they are NaNs ? */
-					bok++;
+			if (GMT_is_fnan (a[js + iw])) {
+				for (i = iw+1; i <= ie; i++) {
+					if (!GMT_is_fnan (a[js + i])) bok++;
+				}
 			}
-			if (bok > 0) {
-				fprintf (stderr, "GMT ERROR:  Inconsistent grid values at South pole.\n");
-				return (-1);
+			else {
+				for (i = iw+1; i <= ie; i++) {
+					if (a[js + i] != a[js + iw]) bok++;
+				}
 			}
+			if (bok > 0) fprintf (stderr, "GMT Warning: Inconsistent grid values at South pole.\n");
 		}
 	}
-
-
 
 	/* Start with the case that x is not periodic, because in that
 		case we also know that y cannot be polar.  */
