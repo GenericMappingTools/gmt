@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.179 2005-09-14 10:26:17 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.180 2005-09-15 00:08:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4230,9 +4230,12 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 	 * We infer the grid is global (in longitude) and geographic if w-e == 360 && |s,n| <= 90 */
 
 	/* First set and check latitudes since they have no complications */
-
+#ifdef SHIT
 	*ymin = MAX (h->y_min, floor (project_info.s / h->y_inc) * h->y_inc);
 	*ymax = MIN (h->y_max,  ceil (project_info.n / h->y_inc) * h->y_inc);
+#endif
+	*ymin = MAX (h->y_min, h->y_min + floor ((project_info.s - h->y_min) / h->y_inc) * h->y_inc);
+	*ymax = MIN (h->y_max, h->y_min + ceil  ((project_info.n - h->y_min) / h->y_inc) * h->y_inc);
 
 	if ((*ymax) <= (*ymin)) {	/* Grid must be outside chosen -R */
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid y's or latitudes appear to be outside the map region and will be skipped.\n", GMT_program);
@@ -4240,8 +4243,12 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 	}
 
 	if (GMT_io.in_col_type[0] != GMT_IS_LON) {	/* Regular Cartesian stuff is easy... */
+#ifdef SHIT
 		*xmin = MAX (h->x_min, floor (project_info.w / h->x_inc) * h->x_inc);
 		*xmax = MIN (h->x_max,  ceil (project_info.e / h->x_inc) * h->x_inc);
+#endif
+		*xmin = MAX (h->x_min, h->x_min + floor ((project_info.w - h->x_min) / h->x_inc) * h->x_inc);
+		*xmax = MIN (h->x_max, h->x_min + ceil  ((project_info.e - h->x_min) / h->x_inc) * h->x_inc);
 		if ((*xmax) <= (*xmin)) {	/* Grid is outside chosen -R */
 			if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid x-range appear to be outside the plot region and will be skipped.\n", GMT_program);
 			return (1);
@@ -4288,8 +4295,12 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 
 	h->x_min += shift_x;
 	h->x_max += shift_x;
+#ifdef SHIT
 	*xmin = MAX (h->x_min, floor (project_info.w / h->x_inc) * h->x_inc);
 	*xmax = MIN (h->x_max, ceil  (project_info.e / h->x_inc) * h->x_inc);
+#endif
+	*xmin = MAX (h->x_min, h->x_min + floor ((project_info.w - h->x_min) / h->x_inc) * h->x_inc);
+	*xmax = MIN (h->x_max, h->x_min + ceil  ((project_info.e - h->x_min) / h->x_inc) * h->x_inc);
 	while (*xmin <= -360) (*xmin) += 360.0;
 	while (*xmax <= -360) (*xmax) += 360.0;
 
