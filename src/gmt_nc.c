@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.26 2005-09-13 12:33:35 remko Exp $
+ *	$Id: gmt_nc.c,v 1.27 2005-09-15 03:52:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -334,6 +334,7 @@ int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double 
 
 	for (j = first_row; j <= last_row; j++, ij -= header->y_order * width_out) {
 		start[0] = j;
+		start[0] = header->ny - 1 - last_row + j;	/* <----!!!!!?? */
 		check_nc_status (nc_get_vara_float (ncid, header->z_id, start, edge, tmp));	/* Get one row */
 		for (i = 0; i < width_in; i++) {	/* Check for and handle NaN proxies */
 			kk = ij+i*inc;
