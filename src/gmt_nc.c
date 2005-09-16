@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.28 2005-09-15 15:42:24 remko Exp $
+ *	$Id: gmt_nc.c,v 1.29 2005-09-16 12:58:31 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -183,8 +183,9 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
         	if (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor)) header->z_scale_factor = 1.0;
         	if (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset)) header->z_add_offset = 0.0;
         	if (nc_get_att_int (ncid, NC_GLOBAL, "node_offset", &header->node_offset)) header->node_offset = 0;
-        	if (nc_get_att_text (ncid, NC_GLOBAL, "title", header->title) &&
-		    nc_get_att_text (ncid, z_id, "long_name", header->title)) strcpy (header->title, "");
+        	if (nc_get_att_text (ncid, NC_GLOBAL, "title", text) &&
+		    nc_get_att_text (ncid, z_id, "long_name", text)) strcpy (text, "");
+		strncpy (header->title, text, GRD_TITLE_LEN);
         	if (nc_get_att_text (ncid, NC_GLOBAL, "source", text) &&
 		    nc_get_att_text (ncid, NC_GLOBAL, "history", text)) strcpy (text, "");
 		strncpy (header->command, text, GRD_COMMAND_LEN);
@@ -216,7 +217,7 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 
         	if (nc_get_att_double (ncid, z_id, "actual_range", dummy) &&
 		    nc_get_att_double (ncid, z_id, "valid_range", dummy)) {
-			dummy[0] = -DBL_MAX; dummy [1] = DBL_MAX;
+			dummy[0] = 0; dummy [1] = 0;
 		}
 		header->z_min = dummy[0];
 		header->z_max = dummy[1];
@@ -238,6 +239,7 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		}
         	check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "title", GRD_TITLE_LEN, header->title));
         	check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "source", (GRD_COMMAND_LEN+GRD_REMARK_LEN), text));
+
 		if (header->z_min <= header->z_max) {
 			dummy[0] = header->z_min; dummy[1] = header->z_max;
 		}
@@ -245,9 +247,11 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 			dummy[0] = 0.0; dummy[1] = 0.0;
 		}
         	check_nc_status (nc_put_att_double (ncid, z_id, "actual_range", z_type, 2, dummy));
+
 		dummy[0] = header->x_min;
 		dummy[1] = header->x_max;
         	check_nc_status (nc_put_att_double (ncid, x_id, "actual_range", NC_DOUBLE, 2, dummy));
+
 		header->y_order = 1;
 		dummy[(1-header->y_order)/2] = header->y_min;
 		dummy[(1+header->y_order)/2] = header->y_max;
