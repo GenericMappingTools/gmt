@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.9 2005-09-01 08:46:09 pwessel Exp $
+#	$Id: Makefile,v 1.10 2005-09-16 06:51:39 pwessel Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -23,7 +23,7 @@ CDF	= -L$(NETCDF)/lib -lnetcdf
 
 MGD77_H	= mgd77.h mgd77defaults.h
 
-MGD77_C	= mgd77convert.c mgd77info.c mgd77list.c mgd77path.c mgd77track.c
+MGD77_C	= mgd77convert.c mgd77info.c mgd77list.c mgd77path.c mgd77sample.c mgd77track.c
 
 LIB_C	= mgd77.c
 LIB_H	= mgd77.h mgd77defaults.h
@@ -49,6 +49,14 @@ install:	all
 		for i in $(MGD77); do \
 			$(INSTALL) $$i$(EXE) $(bindir); \
 		done
+		if [ ! -d $(includedir) ]; then \
+			mkdir -p $(includedir); \
+		fi
+		if [ ! $(includedir) = $(srcdir) ]; then \
+			for i in $(LIB_H); do \
+				$(INSTALL) -m 444 $$i $(includedir); \
+			done; \
+		fi
 		if [ ! -d $(libdir) ]; then \
 			mkdir -p $(libdir); \
 		fi
@@ -63,6 +71,11 @@ uninstall:
 		for i in $(MGD77); do \
 			\rm -f $(bindir)/$$i$(EXE); \
 		done
+		if [ ! $(includedir) = $(srcdir) ]; then \
+			for i in $(LIB_H); do \
+				\rm -f $(includedir)/$$i; \
+			done; \
+		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			\rm -f $(libdir)/libmgd77.a; \
 			if [ -f libmgd77.$(SL) ]; then \
