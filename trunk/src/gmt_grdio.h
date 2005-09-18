@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.22 2005-09-11 16:06:58 remko Exp $
+ *	$Id: gmt_grdio.h,v 1.23 2005-09-18 16:00:17 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -52,17 +52,12 @@ EXTERN_MSC PFI GMT_io_writegrd[N_GRD_FORMATS];
 #include "gmt_customio.h"
 
 struct GMT_GRDFILE {
-	char name[GMT_LONG_TEXT];	/* Actual name of the file after any =<stuff> has been removed */
-	int id;			/* Gridfile format id (0-N_GRD_FORMATS) */
-	int fid;		/* NetCDF file number */
-	int z_id;		/* NetCDF z array ID */
-	size_t edge[2];		/* Dimension arrays for netCDF files */
-	size_t start[2];	/* same */
 	int size;		/* Bytes per item */
 	int n_byte;		/* Number of bytes for row */
-	int type;		/* Which GMT NATIVE type */
 	int row;		/* Current row */
-	int is_cdf;		/* 1 or 2 for netCDF files v.1 or v.2 */
+	int fid;		/* NetCDF file number */
+	size_t edge[2];		/* Dimension arrays for netCDF files */
+	size_t start[2];	/* same */
 
 	BOOLEAN check;		/* TRUE if we must replace NaNs with another representation on i/o */
 	BOOLEAN auto_advance;	/* TRUE if we want to read file sequentially */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.43 2005-09-12 03:42:57 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.44 2005-09-18 16:00:17 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -488,7 +488,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	if (mode == 'r' || mode == 'R') {	/* Open file for reading */
 		if (mode == 'R') header = FALSE;
 		r_w = 0;
-		G->id = GMT_grd_get_format (file, G->name, &G->scale, &G->offset, &G->header.nan_value);
+		G->header.type = GMT_grd_get_format (file, G->header.name, &G->scale, &G->offset, &G->header.nan_value);
 		G->check = !GMT_is_dnan (G->header.nan_value);
 	}
 	else {
@@ -498,39 +498,37 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 		}
 		else
 			r_w = 1;
-		G->id = GMT_grd_get_format (file, G->name, &G->scale, &G->offset, &G->header.nan_value);
+		G->header.type = GMT_grd_get_format (file, G->header.name, &G->scale, &G->offset, &G->header.nan_value);
 		G->check = !GMT_is_dnan (G->header.nan_value);
 	}
 	G->scale = G->header.z_scale_factor;	G->offset = G->header.z_add_offset;
-	G->is_cdf = GRD_IS_CDF (G->id);
-	if (G->is_cdf == 1) {		/* Open netCDF file version 1 */
-		check_nc_status (nc_open (G->name, cdf_mode[r_w], &G->fid));
-		check_nc_status (nc_inq_varid (G->fid, "z", &G->z_id));	/* Get variable id */
+	if (GMT_grdformats[G->header.type][0] == 'c') {		/* Open netCDF file, old format */
+		check_nc_status (nc_open (G->header.name, cdf_mode[r_w], &G->fid));
+		check_nc_status (nc_inq_varid (G->fid, "z", &G->header.z_id));	/* Get variable id */
 		G->edge[0] = G->header.nx;
 		G->start[0] = G->start[1] = G->edge[1] = 0;
 	}
-	else if (G->is_cdf == 2) {		/* Open netCDF file version 2 */
-		check_nc_status (nc_open (G->name, cdf_mode[r_w], &G->fid));
-		check_nc_status (nc_inq_varid (G->fid, "z", &G->z_id));	/* Get variable id */
+	else if (GMT_grdformats[G->header.type][0] == 'n') {		/* Open netCDF file, COARDS-compliant format */
+		check_nc_status (nc_open (G->header.name, cdf_mode[r_w], &G->fid));
+		check_nc_status (nc_inq_varid (G->fid, "z", &G->header.z_id));	/* Get variable id */
 		G->edge[0] = 1;
 		G->edge[1] = G->header.nx;
 		G->start[0] = G->header.ny-1;
 		G->start[1] = 0;
 	}
 	else {				/* Regular binary file with/w.o standard GMT header */
-		if ((G->fp = GMT_fopen (G->name, bin_mode[r_w])) == NULL) {
-			fprintf (stderr, "%s: Error opening file %s\n", GMT_program, G->name);
+		if ((G->fp = GMT_fopen (G->header.name, bin_mode[r_w])) == NULL) {
+			fprintf (stderr, "%s: Error opening file %s\n", GMT_program, G->header.name);
 			exit (EXIT_FAILURE);
 		}
 		if (header) fseek (G->fp, (long)HEADER_SIZE, SEEK_SET);
 	}
 
-	G->type = GMT_grdformats[G->id][1];
-	G->size = GMT_grd_data_size (G->id, &G->header.nan_value);
+	G->size = GMT_grd_data_size (G->header.type, &G->header.nan_value);
 
-	if (G->type == 'm')	/* Bit mask */
+	if (GMT_grdformats[G->header.type][1] == 'm')	/* Bit mask */
 		G->n_byte = irint (ceil (G->header.nx / 32.0)) * G->size;
-	else if (G->type == 'b' && GMT_grdformats[G->id][0] == 'r')	/* Sun Raster */
+	else if (GMT_grdformats[G->header.type][0] == 'r' && GMT_grdformats[G->header.type][1] == 'b')	/* Sun Raster */
 		G->n_byte = irint (ceil (G->header.nx / 2.0)) * 2 * G->size;
 	else	/* All other */
 		G->n_byte = G->header.nx * G->size;
@@ -543,7 +541,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 
 void GMT_close_grd (struct GMT_GRDFILE *G)
 {
-	if (G->is_cdf)
+	if (GMT_grdformats[G->header.type][0] == 'c' || GMT_grdformats[G->header.type][0] == 'n')
 		check_nc_status (nc_close (G->fid));
 	else
 		GMT_fclose (G->fp);
@@ -557,22 +555,22 @@ void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 	 
 	int i;
 
-	if (G->is_cdf == 1) {	/* Get one NetCDF v.1 row */
+	if (GMT_grdformats[G->header.type][0] == 'c') {		/* Get one NetCDF row, old format */
 		if (row_no < 0) {	/* Special seek instruction */
 			G->row = abs (row_no);
 			G->start[0] = G->row * G->edge[0];
 			return;
 		}
-		check_nc_status (nc_get_vara_float (G->fid, G->z_id, G->start, G->edge, row));
+		check_nc_status (nc_get_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
 		if (G->auto_advance) G->start[0] += G->edge[0];
 	}
-	else if (G->is_cdf == 2) {	/* Get one NetCDF v.2 row */
+	else if (GMT_grdformats[G->header.type][0] == 'n') {	/* Get one NetCDF row, COARDS-compliant format */
 		if (row_no < 0) {	/* Special seek instruction */
 			G->row = abs (row_no);
 			G->start[0] = G->header.ny - 1 - G->row;
 			return;
 		}
-		check_nc_status (nc_get_vara_float (G->fid, G->z_id, G->start, G->edge, row));
+		check_nc_status (nc_get_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
 		if (G->auto_advance) G->start[0] --;
 	}
 	else {			/* Get a binary row */
@@ -584,11 +582,11 @@ void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 		if (!G->auto_advance) fseek (G->fp, (long)(HEADER_SIZE + G->row * G->n_byte), SEEK_SET);
 
 		if (fread (G->v_row, G->size, (size_t)G->header.nx, G->fp) != (size_t)G->header.nx) {	/* Get one row */
-			fprintf (stderr, "%s: Read error for file %s near row %d\n", GMT_program, G->name, G->row);
+			fprintf (stderr, "%s: Read error for file %s near row %d\n", GMT_program, G->header.name, G->row);
 			exit (EXIT_FAILURE);
 		}
 		for (i = 0; i < G->header.nx; i++) {
-			row[i] = GMT_decode (G->v_row, i, G->type);	/* Convert whatever to float */
+			row[i] = GMT_decode (G->v_row, i, GMT_grdformats[G->header.type][1]);	/* Convert whatever to float */
 			if (G->check && row[i] == G->header.nan_value) row[i] = GMT_f_NaN;
 		}
 	}
@@ -611,11 +609,11 @@ void GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 	
 	switch (GMT_grdformats[G->header.type][0]) {
 		case 'c':
-			check_nc_status (nc_put_vara_float (G->fid, G->z_id, G->start, G->edge, row));
+			check_nc_status (nc_put_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
 			if (G->auto_advance) G->start[0] += G->edge[0];
 			break;
 		case 'n':
-			check_nc_status (nc_put_vara_float (G->fid, G->z_id, G->start, G->edge, row));
+			check_nc_status (nc_put_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
 			if (G->auto_advance) G->start[0] --;
 			break;
 		default:
