@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.30 2005-09-20 07:23:51 pwessel Exp $
+ *	$Id: mgd77.c,v 1.31 2005-09-20 07:28:48 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -1735,7 +1735,7 @@ int MGD77_Read_Data_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_DATA_RE
 	
 	MGD77Record->bit_pattern = MGD77Record->extra_pattern = 0;
 	for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Do the numerical fields first */
-		if (!GMT_is_dNaN (H->number[i])) MGD77Record->bit_pattern |= (1 << i);	/* Turn on this bit */
+		if (!GMT_is_dnan (H->number[i])) MGD77Record->bit_pattern |= (1 << i);	/* Turn on this bit */
 	}
 	for (i = MGD77_N_NUMBER_FIELDS, nwords = 0; i < MGD77_N_DATA_FIELDS; i++, nwords++) {	/* Do the last 3 string fields */
 		if (strncmp(H->word[nwords], ALL_NINES, mgd77defs[i].length)) MGD77Record->bit_pattern |= (1 << i);
@@ -1753,7 +1753,7 @@ int MGD77_Read_Data_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_DATA_RE
 				if (MGD77_fread_int (&H->extra[i], F->E.extra[i].scale, F->E.extra[i].offset, F->fp, F->E.swap)) return (MGD77_ERROR_READ_BIN_DATA);
 				break;
 		}
-		if (!GMT_is_dNaN (H->extra[i])) MGD77Record->extra_pattern |= (1 << i);	/* Turn on this bit */
+		if (!GMT_is_dnan (H->extra[i])) MGD77Record->extra_pattern |= (1 << i);	/* Turn on this bit */
 	}
 				
 	return (0);
@@ -2078,5 +2078,5 @@ void double_swab (double *x)
 	
 	p = (unsigned int *)x;				/* Now, p[0] and p[1] are the two 4-byte words */
 	save = p[0];	p[0] = p[1];	p[1] = save;	/* Exchange the two words */
-	p[0] = swab_4 (p[0]);	p[1] = swab_4 (p[1]);	/* Swab the byte order, and x is now swabed too */
+	p[0] = GMT_swab4 (p[0]);	p[1] = GMT_swab4 (p[1]);	/* Swab the byte order, and x is now swabed too */
 }

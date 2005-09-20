@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.18 2005-09-06 06:40:33 pwessel Exp $
+ *	$Id: mgd77.h,v 1.19 2005-09-20 07:23:51 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -222,8 +222,9 @@ struct MGD77_DATA_RECORD {	/* See MGD-77 Documentation from NGDC for details */
 	double number[24];		/* 24 fields that express numeric values */
 	double time;			/* Time using current GMT absolute time conventions */
 	char word[3][10];		/* The 3 text strings in MGD77 records */
-	unsigned int bit_pattern;	/* bit pattern indicating which of the 27 fields are present in current record */
-	double *extra;			/* Pointer to array with additional[optional] columns in MGD77+ records */
+	unsigned int bit_pattern;	/* bit pattern indicating which of the 27 fields are present in current record [+32 in extra columns] */
+	double extra[32];		/* Array with additional[optional] columns in MGD77+ records */
+	unsigned int extra_pattern;	/* bit pattern indicating which of the opional 32 in extra columns */
 };
 
 struct MGD77_RECORD_DEFAULTS {
@@ -253,7 +254,8 @@ struct MGD77_CONSTRAINT {
 };
 
 struct MGD77_COLINFO {
-	char name[16];
+	char abbrev[16];
+	char name[64];
 	char comment[128];
 	double scale;
 	double offset;
@@ -281,8 +283,8 @@ struct MGD77_CONTROL {
 	char NGDC_id[16];				/* Current NGDC tag id */
 	FILE *fp;					/* File pointer to current open file */
 	int n_out_columns;				/* Number of output columns requested */
-	int order[32];					/* Gives the output order of each column */
-	BOOLEAN use_column[32];				/* TRUE for columns we are interested in outputting */
+	int order[64];					/* Gives the output order of each column */
+	BOOLEAN use_column[64];				/* TRUE for columns we are interested in outputting */
 	int format;					/* 0 if any file format, 1 if ascii, and 2 if binary */
 	BOOLEAN binary;					/* TRUE if a binary MGD77+ file */
 	int time_format;				/* Either GMT_IS_ABSTIME or GMT_IS_RELTIME */
@@ -318,7 +320,7 @@ EXTERN_MSC int  MGD77_View_Line (FILE *fp, char *line);					/* View a single MGD
 EXTERN_MSC int  MGD77_Convert_To_Old_Format(char *newFormatLine, char *oldFormatLine);	/* Will convert a single record from new to old MGD77 format */
 EXTERN_MSC int  MGD77_Convert_To_New_Format(char *oldFormatLine);			/* Will convert a single record from old to new MGD77 format */
 EXTERN_MSC int  MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F);	/* Returns full path to cruise */
-EXTERN_MSC void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F);		/* Decode the -F option */
+EXTERN_MSC void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F, BOOLEAN preliminary);		/* Decode the -F option */
 EXTERN_MSC BOOLEAN MGD77_pass_record (struct MGD77_DATA_RECORD *H, struct MGD77_CONTROL *F);	/* Compare record to specified constraints */
 EXTERN_MSC void MGD77_set_unit (char *dist, double *scale);
 EXTERN_MSC int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw);  /* Opens a MGD77[+] file */
