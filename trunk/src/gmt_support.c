@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.181 2005-09-15 17:38:29 remko Exp $
+ *	$Id: gmt_support.c,v 1.182 2005-09-20 19:49:15 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -747,7 +747,7 @@ int GMT_getinc (char *line, double *dx, double *dy)
 	 */
 	 
 	n = GMT_getincn (line, inc, 2);
-	*dx = *dy = inc[0];
+	*dx = inc[0] ; *dy = inc[1];
 	if (n == 1) {	/* Must copy y info from x */
 		*dy = *dx;
 		GMT_inc_code[1] = GMT_inc_code[0];	/* Use exact inc codes for both x and y */
