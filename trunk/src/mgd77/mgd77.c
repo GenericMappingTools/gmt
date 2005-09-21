@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.32 2005-09-21 05:39:39 pwessel Exp $
+ *	$Id: mgd77.c,v 1.33 2005-09-21 05:42:24 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -396,7 +396,7 @@ int MGD77_Read_Header_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_HEADE
 	}
 	/* Then author/command block */
 	if (fread ((void *)&F->E.author, sizeof (char), MGD77_AUTHOR_LEN, F->fp) != MGD77_AUTHOR_LEN) return (MGD77_ERROR_READ_HEADER_BIN);
-	if (fread ((void *)&F->E.command, sizeof (char), MGD77_COMMAND_LEN, F->fp) != MGD77_COMMENT_LEN) return (MGD77_ERROR_READ_HEADER_BIN);
+	if (fread ((void *)&F->E.command, sizeof (char), MGD77_COMMAND_LEN, F->fp) != MGD77_COMMAND_LEN) return (MGD77_ERROR_READ_HEADER_BIN);
 	/* Then extra columns counter */
 	if (fread ((void *)&F->E.n_extra, sizeof (short), 1, F->fp) != 1) return (MGD77_ERROR_READ_HEADER_BIN);
 	if (F->E.swap) F->E.n_extra = GMT_swab2 (F->E.n_extra);
@@ -429,7 +429,7 @@ int MGD77_Write_Header_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER_RECO
 		for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) if (fwrite ((void *)H->record[i], sizeof (char), MGD77_HEADER_LENGTH, F->fp) != MGD77_HEADER_LENGTH) return (MGD77_ERROR_WRITE_HEADER_BIN);
 		/* Then author/command block */
 		if (fwrite ((void *)&F->E.author, sizeof (char), MGD77_AUTHOR_LEN, F->fp) != MGD77_AUTHOR_LEN) return (MGD77_ERROR_WRITE_HEADER_BIN);
-		if (fwrite ((void *)&F->E.command, sizeof (char), MGD77_COMMAND_LEN, F->fp) != MGD77_COMMENT_LEN) return (MGD77_ERROR_WRITE_HEADER_BIN);
+		if (fwrite ((void *)&F->E.command, sizeof (char), MGD77_COMMAND_LEN, F->fp) != MGD77_COMMAND_LEN) return (MGD77_ERROR_WRITE_HEADER_BIN);
 		/* Then extra columns counter */
 		if (fwrite ((void *)&F->E.n_extra, sizeof (short), 1, F->fp) != 1) return (MGD77_ERROR_WRITE_HEADER_BIN);
 		for (i = 0; i < F->E.n_extra; i++) {	/* Then info for each extra column */
@@ -1014,6 +1014,8 @@ void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks)
 {
 	/* Initialize MGD77 control system */
 	int i;
+	struct passwd *pw;
+
 	memset ((void *)F, 0, sizeof (struct MGD77_CONTROL));		/* Initialize structure */
 	MGD77_Path_Init (F);
 	MGD77_Init_Columns (F);
