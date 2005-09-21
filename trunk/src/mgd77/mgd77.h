@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.19 2005-09-20 07:23:51 pwessel Exp $
+ *	$Id: mgd77.h,v 1.20 2005-09-21 05:39:39 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -253,23 +253,29 @@ struct MGD77_CONSTRAINT {
 	PFB string_test;	/* Pointer to function performing the chosen limit test on a string */
 };
 
+#define MGD77_COL_ABBREV_LEN	16
+#define MGD77_COL_NAME_LEN	64
+#define MGD77_COL_COMMENT_LEN	128
+
 struct MGD77_COLINFO {
-	char abbrev[16];
-	char name[64];
-	char comment[128];
+	char abbrev[MGD77_COL_ABBREV_LEN];
+	char name[MGD77_COL_NAME_LEN];
+	char comment[MGD77_COL_COMMENT_LEN];
 	double scale;
 	double offset;
 	char size;
 };
 
+#define MGD77_AUTHOR_LEN	32
+#define MGD77_COMMENT_LEN	256
+
 struct MGD77_EXTRA {
-	char author[32];	/* Name of auhtor of this binary file */
-	char date[32];		/* Time stamp of creation/modification */
-	char comment[64];	/* Comment regarding this file */
-	short n_extra;		/* Number of extra columns in this MGD77+ file */
-	struct MGD77_COLINFO *extra;	/* List of info per extra column */
-	unsigned int bit_pattern;	/* Up to 32 bit flags, one for each parameter desired */
-	int swap;			/* 1 for swap input, 0 if not. */
+	char author[MGD77_AUTHOR_LEN];		/* Name of author of last creation/modification */
+	char command[MGD77_COMMAND_LEN];	/* Comment regarding last creation/modification */
+	short n_extra;				/* Number of extra columns in this MGD77+ file */
+	struct MGD77_COLINFO extra[32];		/* List of info per extra column */
+	unsigned int bit_pattern;		/* Up to 32 bit flags, one for each parameter desired */
+	int swap;				/* 1 for swap input, 0 if not. */
 };
 
 struct MGD77_CONTROL {

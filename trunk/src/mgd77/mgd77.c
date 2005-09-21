@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.31 2005-09-20 07:28:48 pwessel Exp $
+ *	$Id: mgd77.c,v 1.32 2005-09-21 05:39:39 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -377,7 +377,6 @@ int MGD77_Read_Header_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_HEADE
 {
 	int i;
 	unsigned int swap_flag, got;
-	char string[16];
 	
 	/* First get swap-detector flag */
 	swap_flag = (8 << 24) + (4 << 16) + (2 << 8) + 1;
@@ -395,20 +394,19 @@ int MGD77_Read_Header_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_HEADE
 		memset ((void *)H->record[i], '\0', MGD77_HEADER_LENGTH+1);
 		if (fread ((void *)H->record[i], sizeof (char), MGD77_HEADER_LENGTH, F->fp) != MGD77_HEADER_LENGTH) return (MGD77_ERROR_READ_HEADER_BIN);
 	}
-	/* Then author/date/comment block */
-	if (fread ((void *)&F->E.author, sizeof (char), 32, F->fp) != 32) return (MGD77_ERROR_READ_HEADER_BIN);
-	if (fread ((void *)&F->E.date, sizeof (char), 32, F->fp) != 32) return (MGD77_ERROR_READ_HEADER_BIN);
-	if (fread ((void *)&F->E.comment, sizeof (char), 64, F->fp) != 64) return (MGD77_ERROR_READ_HEADER_BIN);
+	/* Then author/command block */
+	if (fread ((void *)&F->E.author, sizeof (char), MGD77_AUTHOR_LEN, F->fp) != MGD77_AUTHOR_LEN) return (MGD77_ERROR_READ_HEADER_BIN);
+	if (fread ((void *)&F->E.command, sizeof (char), MGD77_COMMAND_LEN, F->fp) != MGD77_COMMENT_LEN) return (MGD77_ERROR_READ_HEADER_BIN);
 	/* Then extra columns counter */
 	if (fread ((void *)&F->E.n_extra, sizeof (short), 1, F->fp) != 1) return (MGD77_ERROR_READ_HEADER_BIN);
 	if (F->E.swap) F->E.n_extra = GMT_swab2 (F->E.n_extra);
 	for (i = 0; i < F->E.n_extra; i++) {	/* Then info for each extra column */
-		if (fread ((void *)&F->E.extra[i].abbrev, sizeof (char), 16, F->fp) != 16) return (MGD77_ERROR_READ_HEADER_BIN);
-		if (fread ((void *)&F->E.extra[i].name, sizeof (char), 64, F->fp) != 16) return (MGD77_ERROR_READ_HEADER_BIN);
+		if (fread ((void *)&F->E.extra[i].abbrev, sizeof (char), MGD77_COL_ABBREV_LEN, F->fp) != MGD77_COL_ABBREV_LEN) return (MGD77_ERROR_READ_HEADER_BIN);
+		if (fread ((void *)&F->E.extra[i].name, sizeof (char), MGD77_COL_NAME_LEN, F->fp) != MGD77_COL_NAME_LEN) return (MGD77_ERROR_READ_HEADER_BIN);
 		if (fread ((void *)&F->E.extra[i].size, sizeof (char), 1, F->fp) != 1) return (MGD77_ERROR_READ_HEADER_BIN);
 		if (fread ((void *)&F->E.extra[i].scale, sizeof (double), 1, F->fp) != 1) return (MGD77_ERROR_READ_HEADER_BIN);
 		if (fread ((void *)&F->E.extra[i].offset, sizeof (double), 1, F->fp) != 1) return (MGD77_ERROR_READ_HEADER_BIN);
-		if (fread ((void *)&F->E.extra[i].comment, sizeof (char), 128, F->fp) != 128) return (MGD77_ERROR_READ_HEADER_BIN);
+		if (fread ((void *)&F->E.extra[i].comment, sizeof (char), MGD77_COL_COMMENT_LEN, F->fp) != MGD77_COL_COMMENT_LEN) return (MGD77_ERROR_READ_HEADER_BIN);
 		if (F->E.swap) {
 			double_swab (&F->E.extra[i].scale);
 			double_swab (&F->E.extra[i].offset);
@@ -429,19 +427,18 @@ int MGD77_Write_Header_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER_RECO
 		if (fwrite ((void *)&swap_flag, sizeof (unsigned int), 1, F->fp) != 1) return (MGD77_ERROR_WRITE_HEADER_BIN);
 		/* Then original 24 MGD77 records */
 		for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) if (fwrite ((void *)H->record[i], sizeof (char), MGD77_HEADER_LENGTH, F->fp) != MGD77_HEADER_LENGTH) return (MGD77_ERROR_WRITE_HEADER_BIN);
-		/* Then author/date/comment block */
-		if (fwrite ((void *)&F->E.author, sizeof (char), 32, F->fp) != 32) return (MGD77_ERROR_WRITE_HEADER_BIN);
-		if (fwrite ((void *)&F->E.date, sizeof (char), 32, F->fp) != 32) return (MGD77_ERROR_WRITE_HEADER_BIN);
-		if (fwrite ((void *)&F->E.comment, sizeof (char), 64, F->fp) != 64) return (MGD77_ERROR_WRITE_HEADER_BIN);
+		/* Then author/command block */
+		if (fwrite ((void *)&F->E.author, sizeof (char), MGD77_AUTHOR_LEN, F->fp) != MGD77_AUTHOR_LEN) return (MGD77_ERROR_WRITE_HEADER_BIN);
+		if (fwrite ((void *)&F->E.command, sizeof (char), MGD77_COMMAND_LEN, F->fp) != MGD77_COMMENT_LEN) return (MGD77_ERROR_WRITE_HEADER_BIN);
 		/* Then extra columns counter */
 		if (fwrite ((void *)&F->E.n_extra, sizeof (short), 1, F->fp) != 1) return (MGD77_ERROR_WRITE_HEADER_BIN);
 		for (i = 0; i < F->E.n_extra; i++) {	/* Then info for each extra column */
-			if (fwrite ((void *)&F->E.extra[i].abbrev, sizeof (char), 16, F->fp) != 16) return (MGD77_ERROR_WRITE_HEADER_BIN);
-			if (fwrite ((void *)&F->E.extra[i].name, sizeof (char), 64, F->fp) != 16) return (MGD77_ERROR_WRITE_HEADER_BIN);
+			if (fwrite ((void *)&F->E.extra[i].abbrev, sizeof (char), MGD77_COL_ABBREV_LEN, F->fp) != MGD77_COL_ABBREV_LEN) return (MGD77_ERROR_WRITE_HEADER_BIN);
+			if (fwrite ((void *)&F->E.extra[i].name, sizeof (char), MGD77_COL_NAME_LEN, F->fp) != MGD77_COL_NAME_LEN) return (MGD77_ERROR_WRITE_HEADER_BIN);
 			if (fwrite ((void *)&F->E.extra[i].size, sizeof (char), 1, F->fp) != 1) return (MGD77_ERROR_WRITE_HEADER_BIN);
 			if (fwrite ((void *)&F->E.extra[i].scale, sizeof (double), 1, F->fp) != 1) return (MGD77_ERROR_WRITE_HEADER_BIN);
 			if (fwrite ((void *)&F->E.extra[i].offset, sizeof (double), 1, F->fp) != 1) return (MGD77_ERROR_WRITE_HEADER_BIN);
-			if (fwrite ((void *)&F->E.extra[i].comment, sizeof (char), 128, F->fp) != 128) return (MGD77_ERROR_WRITE_HEADER_BIN);
+			if (fwrite ((void *)&F->E.extra[i].comment, sizeof (char), MGD77_COL_COMMENT_LEN, F->fp) != MGD77_COL_COMMENT_LEN) return (MGD77_ERROR_WRITE_HEADER_BIN);
 		}
 	}
 	else {
@@ -1024,6 +1021,9 @@ void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks)
 	for (i = 0; i < 32; i++) MGD77_this_bit[i] = 1 << i;
 	MGD77_Strip_Blanks = remove_blanks;
 	gmtdefs.time_system = 4;	/* Use UNIX time as rtime */
+	if ((pw = getpwuid (getuid ())) != NULL) {
+		strcpy (F->user, pw->pw_name);
+	}
 }
 
 void MGD77_Init_Columns (struct MGD77_CONTROL *F)
@@ -1666,11 +1666,14 @@ int MGD77_Write_Data_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_DATA_R
 			case 'b':	/* Byte */
 				if (MGD77_fwrite_char (H->extra[i], F->E.extra[i].scale, F->E.extra[i].offset, F->fp)) return (MGD77_ERROR_READ_BIN_DATA);
 				break;
-			case 'h':	/* Short int */
+			case 's':	/* Short int */
 				if (MGD77_fwrite_short (H->extra[i], F->E.extra[i].scale, F->E.extra[i].offset, F->fp)) return (MGD77_ERROR_READ_BIN_DATA);
 				break;
 			case 'i':	/* Int */
 				if (MGD77_fwrite_int (H->extra[i], F->E.extra[i].scale, F->E.extra[i].offset, F->fp)) return (MGD77_ERROR_READ_BIN_DATA);
+				break;
+			default:
+				fprintf (stderr, "%s: Unrecognized size (%c) for column in binary data record", GMT_program, F->E.extra[i].size);
 				break;
 		}
 	}
