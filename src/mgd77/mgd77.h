@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.20 2005-09-21 05:39:39 pwessel Exp $
+ *	$Id: mgd77.h,v 1.21 2005-09-21 05:42:24 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -267,7 +267,7 @@ struct MGD77_COLINFO {
 };
 
 #define MGD77_AUTHOR_LEN	32
-#define MGD77_COMMENT_LEN	256
+#define MGD77_COMMAND_LEN	256
 
 struct MGD77_EXTRA {
 	char author[MGD77_AUTHOR_LEN];		/* Name of author of last creation/modification */
@@ -286,6 +286,7 @@ struct MGD77_CONTROL {
 	char *MGD77_HOME;				/* Directory where paths are stored */
 	char **MGD77_datadir;				/* Directories where MGD77 data may live */
 	int n_MGD77_paths;				/* Number of these directories */
+	char user[16];					/* Current user id */
 	char NGDC_id[16];				/* Current NGDC tag id */
 	FILE *fp;					/* File pointer to current open file */
 	int n_out_columns;				/* Number of output columns requested */
