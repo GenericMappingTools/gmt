@@ -2,7 +2,7 @@
 .SH NAME
 mgd77info \- Get information about MGD77 files
 .SH SYNOPSIS
-\fBmgd77info\fP \fIleg-ids\fP \fB\-I\fP|\fBL\fP|\fBP\fP [ \fB\-V\fP ]
+\fBmgd77info\fP \fIleg-ids\fP \fB\-E\fP\|fB\-I\fP|\fBL\fP|\fBP\fP [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBmgd77info\fP reads <legid>.mgd77 files and produces a single record of information
 about each cruise specified.  The information includes beginning and end time, total
@@ -17,6 +17,9 @@ a tracks index data base.
 Can be one or more MGD77 8-character cruise identifiers. To give a list of names, use `cat cruises.lis`.
 The ".mgd77" extension will automatically be appended, if needed.  Cruise files will be looked for
 in the current directory and in all directories listed in \fB$MGD77_DIR\fP/MGD77_paths.txt.
+.TP
+.B \-E
+Display information about any extra columns in a mgd77+ file, OR
 .TP
 .B \-I
 Give a one-line summary for each cruise listed, OR
