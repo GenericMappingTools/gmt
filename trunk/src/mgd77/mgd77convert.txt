@@ -1,0 +1,41 @@
+.TH MGD77CONVERT GMTMANSECTION DATE VERSION VERSION
+.SH NAME
+mgd77convert \- Translate between different formats of MGD77 files
+.SH SYNOPSIS
+\fBmgd77convert\fP \fIleg-ids\fP \fB\-Fa|b|t \-Ta|b|t\fP [ \fB\-V\fP ]
+.SH DESCRIPTION
+\fBmgd77convert\fP reads versions of MGD77 files and writes out the same
+data in another format.
+.TP
+\fIleg-ids\fP
+Can be one or more MGD77 8-character cruise identifiers. To give a list of names, use `cat cruises.lis`.
+The extension will automatically be appended, if needed.  Cruise files will be looked for
+in the current directory and in all directories listed in \fB$MGD77_DIR\fP/MGD77_paths.txt.
+.TP
+.B \-F
+Specifies the format of the input (From) files.  Choose from \fBa\fP for standard MGD77 ASCII table,
+\fBb\fP for the new MGD77+ binary table, and \fBt\fPr a plain ASCII table dump.
+.TP
+.B \-T
+Specifies the format of the output (To) files.  Choose from \fBa\fP for standard MGD77 ASCII table,
+\fBb\fP for the new MGD77+ binary table, and \fBt\fPr a plain ASCII table dump.
+.SH OPTIONS
+No space between the option flag and the associated arguments
+#include "explain_-V.txt"
+.SH EXAMPLES
+To convert 01010047.mgd77 and 01010008.mgd77 to new binary .mgd77+ files, try
+.br
+.sp
+\fBmgd77convert\fP 01010047 01010008 \fB\-Fa \-Tb \-V\fP > listing.lis
+.br
+.sp
+To convert 01010047.mgd77+ to a plain ASCII table, try
+.br
+.sp
+\fBmgd77convert\fP 01010047 \fB\-Fb \-Tt \-V\fP
+.SH "SEE ALSO"
+.IR mgd77list (GMTMANSECTION),
+.IR mgd77sample (GMTMANSECTION),
+.IR mgd77track (GMTMANSECTION)
+.IR x2sys_init (GMTMANSECTION)
+#include "refs.i"
