@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.100 2005-07-13 23:27:32 pwessel Exp $
+ *	$Id: pslib.c,v 1.101 2005-09-22 14:37:41 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4332,6 +4332,9 @@ void ps_rgb_to_cmyk (int rgb[], double cmyk[])
 	for (i = 0; i < 3; i++) cmyk[i] = 1.0 - (rgb[i] * I_255);
 	cmyk[3] = MIN (cmyk[0], MIN (cmyk[1], cmyk[2]));	/* Black */
 	for (i = 0; i < 3; i++) cmyk[i] -= cmyk[3];
+	for (i = 0; i < 4; i++) {
+	    if (cmyk[i] < 0.0005) cmyk[i] = 0;
+	}
 }
 
 void ps_cmyk_to_rgb (int rgb[], double cmyk[])
