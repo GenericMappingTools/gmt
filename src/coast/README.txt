@@ -1,9 +1,9 @@
-#	$Id: README.txt,v 1.1 2005-09-23 04:47:57 pwessel Exp $
+#	$Id: README.txt,v 1.2 2005-09-26 03:18:03 pwessel Exp $
 
 README for coast supplement:
 
 Updated:	Sept 23, 2005
-AuthorL		Paul Wessel
+Author:		Paul Wessel
 
 The following is based on Paul Wessel's memory and by peeking into
 all the source files.  I believe the following to be true:
@@ -170,6 +170,16 @@ coast_io.c:
 	Set of subroutines used by other programs
 string_check_subs.c:
 	Subroutines for checking segments.
+
+The makefile will create a libcoast.a out of those three files.
+THe makefile will do alot of the steps.  One should study the makefile
+and see what the options are.  For instance, to bin all the polygons
+after the cleaning is completed one can do "make bin".
+While most of this code might compile under Windows there is no guarantee
+it will work well there and it is strongly recommended to do all these
+steps under a Unix-like OS such as Linux, SOlaris, Mac OS X etc.
+
+THe makefile assumes that GMT 4 is installed and that GMTHOME is set.
 
 The file HOWTO.fix discusses what I learned in 2004 when trying to update a portion of
 the coastline and adding some new lakes etc.

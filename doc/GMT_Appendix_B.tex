@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.12 2005-08-23 08:04:34 pwessel Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.13 2005-09-26 03:18:03 pwessel Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2005.
@@ -70,10 +70,12 @@ segment headers are assumed to be records where all the fields equal
 NaN.  Flags appended to \Opt{M} are ignored.  The format and number
 of fields are specified with the
 \Opt{b} option.  Thus, for input you may set \Opt{bi}[{\bf s}][{\it n}],
-where {\bf s} designates single precision (default is double) and
+where {\bf s} designates single precision (default is {\bf d} for double) and
 {\it n} is the number of fields.  For output, use \Opt{bo}[{\bf s}] 
 (the programs know how many columns to write, unless you use \Opt{M} in which
-case we need to know the number of output columns up front).
+case we need to know the number of output columns up front).  If you need
+to swap the byte-order on either input or output you must use upper case
+{\bf S} or {\bf D} instead.
 
 \section{2-D grdfiles} 
 
@@ -127,7 +129,8 @@ functions and linking these with the \GMT\ libraries.
 The source file \filename{gmt\_customio.c} has the information that
 programmers will need to augment \GMT\ to read custom grdfiles.  We
 anticipate that the number of pre-programmed formats will increase as
-enterprising users implement what they need.
+enterprising users implement what they need.  See Section \ref{sec:grdformats}
+for more information.
 
 \subsection{Grid line and Pixel registration} 
 \index{grdfile!registration|(}
