@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.8 2004-09-28 18:50:03 pwessel Exp $
+#	$Id: Makefile,v 1.9 2005-09-26 03:18:03 pwessel Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -22,7 +22,7 @@
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
-include ../makegmt.macros
+include $(GMTHOME)/makegmt.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf

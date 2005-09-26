@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.60 2005-09-12 03:42:57 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.61 2005-09-26 03:18:03 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2005.
@@ -475,7 +475,7 @@ then equidistant annotations labeled 1, 4, 9, ... will appear.
 \GMTfig[h]{GMT_-B_pow}{Exponential or power projection axis.  (top) Using an exponent of 0.5
 yields a $\sqrt{x}$ axis.  Here, intervals refer to actual data values, in
 \Opt{R}0/100/0/1 \Opt{JX}3{\bf p}0.5/0.4\ \Opt{Ba}20{\bf f}10{\bf g}5.
-(bottom) Here, intervals refer to projected values, although the annotation
+(bottom) Here, intervals refer to projected values, allthough the annotation
 uses the corresponding unprojected values, as in \Opt{Ba}3{\bf f}2{\bf g}1{\bf p}.}
 
 \index{Time axis}
@@ -909,7 +909,7 @@ themselves should they need to edit the file (e.g., \% Start
 of x-axis).  All \GMT\ programs create \PS\ code by
 calling the {\bf pslib} plot library (The user may call these
 functions from his/her own C or FORTRAN plot programs. See the
-manual pages for {\bf pslib} syntax).  Although \GMT\ programs
+manual pages for {\bf pslib} syntax).  Allthough \GMT\ programs
 can create very individualized plot code, there will always be
 cases not covered by these programs.  Some knowledge of
 \PS\ will enable the user to add such features
@@ -1410,7 +1410,7 @@ grid file format then no options are needed: just continue to pass
 the name of the grdfile.  However, if you use another format you must
 append the ={\it ID} string, where {\it ID} is the format code
 listed above.  In addition, should you want to (1) multiply the data by
-a scale factor, and(2) add a constant offset you must append the
+a scale factor, and (2) add a constant offset you must append the
 /{\it scale}/{\it offset} modifier.  Finally, if you need to indicate
 that a certain data value should be interpreted as a NaN (not-a-number)
 you must append the /{\it nan} suffix to the scaling string (it cannot
@@ -1422,15 +1422,15 @@ operate on grdfiles with pipes, thereby speeding up execution and
 eliminating the need for large, intermediate grdfiles.  You specify
 standard input/output by leaving out the filename entirely.
 That means the ``filename'' will begin with
-``={\it ID}\,'' since the \GMT\ default netCDF format does
-not allow piping (due to the design of netCDF). 
+``={\it ID}\,'' since no \GMT\  netCDF format 
+allow piping (due to the design of netCDF). 
 
 Everything looks more obvious after a few examples: 
 
 \begin{enumerate}
-\item To write a binary float grd file, specify the name as \filename{my\_file.grd=bf}.
+\item To write a native binary float grd file, specify the name as \filename{my\_file.grd=bf}.
 
-\item To read a short integer grd file, multiply the data by 10 and then
+\item To read a native short integer grd file, multiply the data by 10 and then
 add 32000, but first let values that equal 32767 be set to NaN,
 use the filename \filename{my\_file.grd=bs/10/32000/32767}. 
 
@@ -1438,7 +1438,7 @@ use the filename \filename{my\_file.grd=bs/10/32000/32767}.
 and convert it to a $\pm$1 range, give the name as
 \filename{rasterfile=rb/7.84313725e-3/-1} (i.e., 1/127.5).
 
-\item To write a short integer grd file to standard output after subtracting
+\item To write a native binary short integer grd file to standard output after subtracting
 32000 and dividing its values by 10, give filename as =bs/0.1/-3200. 
 
 \end{enumerate} 
@@ -1469,7 +1469,7 @@ MMM\=\# suffix \=format\_id \=scale \=offset \=NaNxxx\=Comments \kill
 \>\# suffix \> format\_id	\> scale \> offset \>NaN\>Comments \\ 
 \>grd \> nf \> - \> - \> - \>Default format \\ 
 \>b \> bf \> - \> - \> - \> Native binary floats \\ 
-\>i2 \> bs \> - \> - \> 32767 \> 2-byte integers \\ 
+\>i2 \> bs \> - \> - \> 32767 \> 2-byte integers with NaN value \\ 
 \>ras \> rb \> - \> - \> - \> Sun rasterfiles \\ 
 \>byte \> bb \> - \> - \> 255 \> Native binary 1-byte grids \\ 
 \>bit \> bm \> - \> - \> - \> Native binary 0 or 1 grids \\ 
@@ -1477,14 +1477,14 @@ MMM\=\# suffix \=format\_id \=scale \=offset \=NaNxxx\=Comments \kill
 \>faa \> bs \> 0.1 \> - \> 32767 \> Native binary gravity in 0.1 mGal
 \end{tabbing} 
 
-These suffices can be anything that make sense to the user.  To
+These suffices can be anything that makes sense to the user.  To
 activate this mechanism, set parameter {\bf GRIDFILE\_SHORTHAND} to TRUE in
 your \filename{.gmtdefaults4} file.  Then, using the filename
 \filename{stuff.i2} is equivalent to saying \filename{stuff.i2=bs/1/0/32767},
 and the filename \filename{wet.mask} means wet.mask=bm/1/0/0.  For a
 file intended for masking, i.e., the nodes are either 1 or NaN,
 the bit or mask format file may be as small as 1/32 the size of the
-corresponding grd format file. 
+corresponding grd float format file. 
 \index{grdfile!embedded format|)}
 
 \section{The NaN data value}
