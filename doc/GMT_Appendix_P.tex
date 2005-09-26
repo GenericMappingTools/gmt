@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_P.tex,v 1.5 2005-07-12 04:13:24 pwessel Exp $
+%	$Id: GMT_Appendix_P.tex,v 1.6 2005-09-26 23:09:01 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2005.
@@ -13,15 +13,16 @@
 
 We encourage all \GMT\ users to start using version 4 immediately; it has been tested extensively by
 the \GMT\ team and has benefitted from bug reports for the 3.4.x versions.  Users who still worry about the
-new version breaking things may install both \GMT\ 3.4.5 and 4 and use our utility \progname{gmtswitch}
+new version breaking things may install \GMT\ 3.4.x versions and 4.x and use our utility \progname{gmtswitch}
 to select their current version should the need to switch arises.  You will find \progname{gmtswitch}
-in the top-level \GMT 4 directory; install as explained below.
+in the top-level \GMT 4.x directory; install as explained below.
 
-Because \GMT\ 4 is backwards compatible with the 3.4.x series yet maintains its parameters
+Because \GMT\ 4.x is backwards compatible with the 3.4.x series yet maintains its parameters
 and history in separate hidden files (e.g., \filename{.gmtdefaults4} versus \filename{.gmtdefaults})
 it is possible to install and use both versions on the same workstation.  To simplify such
 setups we supply the utility \progname{gmtswitch} which simplifies switching back and forth
-between any number of installed \GMT\ 3-versions and \GMT\ 4.  Place the \progname{gmtswitch} Bourne shell script in your
+between any number of installed \GMT\ 3-versions and \GMT\ 4.x.  Place the \progname{gmtswitch} Bourne
+shell script in your
 general executable path (not in one of the \GMT\ bin directories) and run it after you have
 finished installing all \GMT\ versions of interest.  The first time you run \progname{gmtswitch}
 it will try to find all the available versions installed on your file system.  The versions
