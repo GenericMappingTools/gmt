@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_O.tex,v 1.14 2005-09-26 23:09:01 pwessel Exp $
+%	$Id: GMT_Appendix_O.tex,v 1.15 2005-09-27 03:55:30 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2005.
@@ -92,9 +92,10 @@ plotting programs these attributes are appended to the \Opt{Sq} option following
 that separates the label codes from the placement algorithm.  Several of the attributes do not
 apply to contours so we start off with listing those that apply universially.  These codes are:
 \begin{description}
-\item [+a:]  Controls the angle of the label relative to the angle of the line.  Append {\bf p}
-for parallel [Default], {\bf n} for normal, or a fixed {\it angle} measured counter-clockwise
-relative to the horizontal.
+\item [+a:]  Controls the angle of the label relative to the angle of the line.  Append {\bf n}
+for normal to the line, give a fixed {\it angle} measured counter-clockwise relative to the
+horizontal. or append {\bf p} for parallel to the line [Default].  For the latter you may further
+append {\bf u} or {\bf d} to get annotations whose upper edge always face the next higher or lower contour line.
 \item [+c:] Surrounding each label is an imaginary label ``textbox'' which defines a region in
 which no segment lines should be visible.  The initial box provides an exact fit to the enclosed
 text but clearance may be extended in both the horizontal and vertical directions (relative to the label

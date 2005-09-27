@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.191 2005-09-14 05:56:51 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.192 2005-09-27 03:55:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -506,6 +506,7 @@ void GMT_label_syntax (int indent, int kind)
 
 	pad[0] = '\t';	for (i = 1; i <= indent; i++) pad[i] = ' ';	pad[i] = '\0';
 	fprintf (stderr, "%s +a<angle> for annotations at a fixed angle, +an for line-normal, or +ap for line-parallel [Default]\n", pad);
+	fprintf (stderr, "%s   For +ap, optionally append u for up-hill and d for down-hill cartographic annotations\n", pad);
 	fprintf (stderr, "%s +c<dx>[/<dy>] to change the clearance between label and text box [15%%]\n", pad);
 	fprintf (stderr, "%s +f followed by desired label font [Default is %d].\n", pad, gmtdefs.annot_font[0]);
 	fprintf (stderr, "%s +g[<color>] for opaque text box [Default is transparent]; optionally give color [white]\n", pad);
