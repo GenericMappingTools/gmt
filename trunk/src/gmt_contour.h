@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.24 2005-07-07 09:17:48 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.25 2005-09-27 03:55:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -52,6 +52,7 @@ struct GMT_LABEL {	/* Contains information on contour/lineation labels */
 
 struct GMT_CONTOUR_LINE {
 	double *x, *y;			/* Coordinates of the contour */
+	double z;			/* Datum of this contour (z-value) */
 	int n;				/* Length of the contour */
 	BOOLEAN annot;			/* TRUE if we want labels */
 	char *name;			/* Contour name */
@@ -122,6 +123,7 @@ struct GMT_CONTOUR {
 	int just;			/* Label justification */
 	int end_just[2];		/* Justification for end of lines */
 	int angle_type;			/* 0 = contour-parallel, 1 = contour-normal, 2 = fixed angle */
+	int hill_label;			/* -1/+1 = make label readable when looking down/up gradient, 0 = no special treatment  */
 	BOOLEAN no_gap;			/* Clip contour or not depends on label placement */
 	int label_type;			/* 0 = what is passed, 1 = fixed label above , 2 = multiseg header, 3 = distances */
 	double z_level;			/* When plotted in 3-D we must have z = z_level (i.e., all points have fixed z) */
@@ -141,7 +143,7 @@ EXTERN_MSC int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int 
 EXTERN_MSC void GMT_contlabel_angle (double x[], double y[], int start, int stop, double cangle, int n, struct GMT_LABEL *L, struct GMT_CONTOUR *G);
 EXTERN_MSC void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_CONTOUR *G);
 EXTERN_MSC void GMT_contlabel_plot (struct GMT_CONTOUR *G);
-EXTERN_MSC void GMT_hold_contour (double **xx, double **yy, int nn, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G);
+EXTERN_MSC void GMT_hold_contour (double **xx, double **yy, int nn, double zval, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G);
 EXTERN_MSC int GMT_code_to_lonlat (char *code, double *lon, double *lat);
 EXTERN_MSC void GMT_x_free (struct GMT_XOVER *X);
 EXTERN_MSC struct GMT_XSEGMENT *GMT_init_track (double x[], double y[], int n);
