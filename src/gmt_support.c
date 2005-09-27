@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.182 2005-09-20 19:49:15 remko Exp $
+ *	$Id: gmt_support.c,v 1.183 2005-09-27 00:51:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7873,4 +7873,10 @@ void GMT_NaN_pen_up (double x[], double y[], int pen[], int n)
 			if (i < n1) pen[i+1] = 3;	/* Since the next point must become the new anchor */
 		}
 	}
+}
+
+BOOLEAN GMT_polygon_is_open (double x[], double y[], int n)
+{	/* Returns TRUE if the first and last point is not identical */
+
+	return (!(x[0] == x[n-1] && y[0] == y[n-1]));
 }
