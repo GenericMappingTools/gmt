@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.14 2005-09-14 08:21:59 pwessel Exp $
+ *	$Id: gmt_shore.c,v 1.15 2005-09-27 00:51:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -659,7 +659,7 @@ void GMT_br_cleanup (struct GMT_BR *c)
 	
 }
 
-int GMT_prep_polygons (struct POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sample, double step, int anti_bin, BOOLEAN close)
+int GMT_prep_polygons (struct POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sample, double step, int anti_bin)
 {
 	/* This function will go through each of the polygons and determine
 	 * if the polygon is clipped by the map boundary, and if so if it
@@ -673,10 +673,11 @@ int GMT_prep_polygons (struct POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sa
 	 * sample is TRUE if we need to resample the polygons to reduce point spacing
 	 * step is the new maximum point separation in degrees
 	 * anti_bin, if >= 0, indicates a possible problem bin at the antipole using -JE only
-	 * close is TRUE: Explicitly close the polygons [needed for inside/outside tests]
+	 * We also explicitly close all polygons if they are not so already.
 	 */
 
-	int k, np_new, n_use, n, start;
+	int k, np_new, n_use, n, start, n_alloc;
+	BOOLEAN close;
 	double *xtmp, *ytmp;
 	struct POL *p;
 
@@ -687,14 +688,6 @@ int GMT_prep_polygons (struct POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sa
 	for (k = 0; k < np; k++) {
 			
 		if (sample) p[k].n = GMT_fix_up_path (&p[k].lon, &p[k].lat, p[k].n, greenwich, step);
-		
-		if (!(p[k].lon[0] == p[k].lon[p[k].n-1] && p[k].lat[0] == p[k].lat[p[k].n-1]) && close) {	/* Must close explicitly */
-			p[k].lon = (double *) GMT_memory ((void *)p[k].lon, (size_t)p[k].n+1, sizeof (double), GMT_program);
-			p[k].lat = (double *) GMT_memory ((void *)p[k].lat, (size_t)p[k].n+1, sizeof (double), GMT_program);
-			p[k].lon[p[k].n] = p[k].lon[0];
-			p[k].lat[p[k].n] = p[k].lat[0];
-			p[k].n++;
-		}
 		
 		/* Clip polygon against map boundary if necessary and return plot x,y in inches */
 				
@@ -712,11 +705,17 @@ int GMT_prep_polygons (struct POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sa
 			GMT_n_plot = (*GMT_truncate) (xtmp, ytmp, n, start, -1);
 			n_use = GMT_compact_line (GMT_x_plot, GMT_y_plot, GMT_n_plot, FALSE, 0);
 			if (project_info.three_D) GMT_2D_to_3D (GMT_x_plot, GMT_y_plot, project_info.z_level, GMT_n_plot);
-			p[k].lon = (double *) GMT_memory ((void *)p[k].lon, (size_t)n_use, sizeof (double), GMT_program);
-			p[k].lat = (double *) GMT_memory ((void *)p[k].lat, (size_t)n_use, sizeof (double), GMT_program);
+			close = GMT_polygon_is_open (GMT_x_plot, GMT_y_plot, n_use);
+			n_alloc = (close) ? n_use + 1 : n_use;
+			p[k].lon = (double *) GMT_memory ((void *)p[k].lon, (size_t)n_alloc, sizeof (double), GMT_program);
+			p[k].lat = (double *) GMT_memory ((void *)p[k].lat, (size_t)n_alloc, sizeof (double), GMT_program);
 			memcpy ((void *)p[k].lon, (void *)GMT_x_plot, (size_t)(n_use * sizeof (double)));
 			memcpy ((void *)p[k].lat, (void *)GMT_y_plot, (size_t)(n_use * sizeof (double)));
-			p[k].n = n_use;
+			if (close) {	/* Must explicitly close the polygon */
+				p[k].lon[n_use] = p[k].lon[0];
+				p[k].lat[n_use] = p[k].lat[0];
+			}
+			p[k].n = n_alloc;
 								
 			/* Then truncate agains right border */
 						
@@ -724,11 +723,17 @@ int GMT_prep_polygons (struct POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sa
 			n_use = GMT_compact_line (GMT_x_plot, GMT_y_plot, GMT_n_plot, FALSE, 0);
 			if (project_info.three_D) GMT_2D_to_3D (GMT_x_plot, GMT_y_plot, project_info.z_level, GMT_n_plot);
 			p = (struct POL *) GMT_memory ((void *)p, (size_t)(np_new + 1), sizeof (struct POL), GMT_program);
-			p[np_new].lon = (double *) GMT_memory (VNULL, (size_t)n_use, sizeof (double), GMT_program);
-			p[np_new].lat = (double *) GMT_memory (VNULL, (size_t)n_use, sizeof (double), GMT_program);
+			close = GMT_polygon_is_open (GMT_x_plot, GMT_y_plot, n_use);
+			n_alloc = (close) ? n_use + 1 : n_use;
+			p[np_new].lon = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
+			p[np_new].lat = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
 			memcpy ((void *)p[np_new].lon, (void *)GMT_x_plot, (size_t)(n_use * sizeof (double)));
 			memcpy ((void *)p[np_new].lat, (void *)GMT_y_plot, (size_t)(n_use * sizeof (double)));
-			p[np_new].n = n_use;
+			if (close) {	/* Must explicitly close the polygon */
+				p[np_new].lon[n_use] = p[np_new].lon[0];
+				p[np_new].lat[n_use] = p[np_new].lat[0];
+			}
+			p[np_new].n = n_alloc;
 			p[np_new].interior = p[k].interior;
 			p[np_new].level = p[k].level;
 			np_new++;
@@ -744,11 +749,17 @@ int GMT_prep_polygons (struct POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sa
 			}
 					
 			else {
-				p[k].lon = (double *) GMT_memory ((void *)p[k].lon, (size_t)n_use, sizeof (double), GMT_program);
-				p[k].lat = (double *) GMT_memory ((void *)p[k].lat, (size_t)n_use, sizeof (double), GMT_program);
+				close = GMT_polygon_is_open (xtmp, ytmp, n_use);
+				n_alloc = (close) ? n_use + 1 : n_use;
+				p[k].lon = (double *) GMT_memory ((void *)p[k].lon, (size_t)n_alloc, sizeof (double), GMT_program);
+				p[k].lat = (double *) GMT_memory ((void *)p[k].lat, (size_t)n_alloc, sizeof (double), GMT_program);
 				memcpy ((void *)p[k].lon, (void *)xtmp, (size_t)(n_use * sizeof (double)));
 				memcpy ((void *)p[k].lat, (void *)ytmp, (size_t)(n_use * sizeof (double)));
-				p[k].n = n_use;
+				if (close) {	/* Must explicitly close the polygon */
+					p[k].lon[n_use] = p[k].lon[0];
+					p[k].lat[n_use] = p[k].lat[0];
+				}
+				p[k].n = n_alloc;
 			}
 		}
 				
