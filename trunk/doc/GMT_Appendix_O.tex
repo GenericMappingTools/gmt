@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_O.tex,v 1.15 2005-09-27 03:55:30 pwessel Exp $
+%	$Id: GMT_Appendix_O.tex,v 1.16 2005-09-27 03:59:55 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2005.
@@ -94,8 +94,9 @@ apply to contours so we start off with listing those that apply universially.  T
 \begin{description}
 \item [+a:]  Controls the angle of the label relative to the angle of the line.  Append {\bf n}
 for normal to the line, give a fixed {\it angle} measured counter-clockwise relative to the
-horizontal. or append {\bf p} for parallel to the line [Default].  For the latter you may further
-append {\bf u} or {\bf d} to get annotations whose upper edge always face the next higher or lower contour line.
+horizontal. or append {\bf p} for parallel to the line [Default].  If using \GMTprog{grdcontour}
+the latter option you may further append {\bf u} or {\bf d} to get annotations whose upper edge
+always face the next higher or lower contour line.
 \item [+c:] Surrounding each label is an imaginary label ``textbox'' which defines a region in
 which no segment lines should be visible.  The initial box provides an exact fit to the enclosed
 text but clearance may be extended in both the horizontal and vertical directions (relative to the label

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.183 2005-09-27 00:51:01 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.184 2005-09-27 03:55:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -118,8 +118,8 @@ int sort_label_struct (const void *p_1, const void *p_2);
 struct GMT_LABEL * GMT_contlabel_new (void);
 void GMT_place_label (struct GMT_LABEL *L, char *txt, struct GMT_CONTOUR *G, BOOLEAN use_unit);
 void GMT_contlabel_fixpath (double **xin, double **yin, double d[], int *n, struct GMT_CONTOUR *G);
-void GMT_contlabel_addpath (double x[], double y[], int n, char *label, BOOLEAN annot, struct GMT_CONTOUR *G);
-void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G);
+void GMT_contlabel_addpath (double x[], double y[], int n, double zval, char *label, BOOLEAN annot, struct GMT_CONTOUR *G);
+void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G);
 void GMT_get_radii_of_curvature (double x[], double y[], int n, double r[]);
 int GMT_label_is_OK (char *this_label, char *label, double this_dist, double this_value_dist, int xl, int fj, struct GMT_CONTOUR *G);
 int GMT_contlabel_specs_old (char *txt, struct GMT_CONTOUR *G);
@@ -1870,7 +1870,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 	BOOLEAN g_set = FALSE;
 	char txt_cpy[BUFSIZ], p[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], c;
 
-	/* Decode [+a<angle>][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+o][+v][+r<min_rc>][+s<size>][+p[<pen>]][+u<unit>][+w<width>][+=<prefix>] strings */
+	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+o][+v][+r<min_rc>][+s<size>][+p[<pen>]][+u<unit>][+w<width>][+=<prefix>] strings */
 
 	for (k = 0; txt[k] && txt[k] != '+'; k++);
 	if (!txt[k]) return (GMT_contlabel_specs_old (txt, G));	/* Old-style info strings */
@@ -1881,8 +1881,13 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 	while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'a':	/* Angle specification */
-				if (p[1] == 'p' || p[1] == 'P')		/* Line-parallel label */
-					G->angle_type = 0;
+				if (p[1] == 'p' || p[1] == 'P')	{	/* Line-parallel label */
+					G->angle_type = G->hill_label = 0;
+					if (p[2] == 'u' || p[2] == 'U')		/* Line-parallel label readable when looking up hill */
+						G->hill_label = +1;
+					else if (p[2] == 'd' || p[2] == 'D')	/* Line-parallel label readable when looking down hill */
+						G->hill_label = -1;
+				}
 				else if (p[1] == 'n' || p[1] == 'N')	/* Line-normal label */
 					G->angle_type = 1;
 				else {					/* Label at a fixed angle */
@@ -2398,7 +2403,7 @@ void GMT_contlabel_fixpath (double **xin, double **yin, double d[], int *n, stru
 	*n = np;		/* and the new length */
 }
 
-void GMT_contlabel_addpath (double x[], double y[], int n, char *label, BOOLEAN annot, struct GMT_CONTOUR *G)
+void GMT_contlabel_addpath (double x[], double y[], int n, double zval, char *label, BOOLEAN annot, struct GMT_CONTOUR *G)
 {
 	int i;
 	struct GMT_CONTOUR_LINE *C;
@@ -2420,6 +2425,7 @@ void GMT_contlabel_addpath (double x[], double y[], int n, char *label, BOOLEAN 
 	C->name = (char *) GMT_memory (VNULL, (size_t)(strlen (label)+1), sizeof (char), GMT_program);
 	strcpy (C->name, label);
 	C->annot = annot;
+	C->z = zval;
 	if (G->n_label) {	/* There are labels */
 		C->n_labels = G->n_label;
 		C->L = (struct GMT_LABEL *) GMT_memory (VNULL, (size_t)C->n_labels, sizeof (struct GMT_LABEL), GMT_program);
@@ -3056,7 +3062,7 @@ void GMT_dump_contour (double *xx, double *yy, int nn, double cval, int id, BOOL
 	GMT_fclose (fp);
 }
 
-void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G)
+void GMT_hold_contour (double **xxx, double **yyy, int nn, double zval, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G)
 {	/* The xx, yy are expected to be projected x/y inches.
 	 * This function just makes sure that the xxx/yyy are continuous and do not have map jumps.
 	 * If there are jumps we find them and call the main GMT_hold_contour_sub for each segment
@@ -3066,7 +3072,7 @@ void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char cty
 	double *xs, *ys, *xin, *yin;
 
 	if ((split = GMT_split_line (xxx, yyy, &nn, G->line_type)) == NULL) {	/* Just one long line */
-		GMT_hold_contour_sub (xxx, yyy, nn, label, ctype, cangle, closed, G);
+		GMT_hold_contour_sub (xxx, yyy, nn, zval, label, ctype, cangle, closed, G);
 		return;
 	}
 
@@ -3080,7 +3086,7 @@ void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char cty
 		ys = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), GMT_program);
 		memcpy ((void *)xs, (void *)&xin[first], (size_t)(n * sizeof (double)));
 		memcpy ((void *)ys, (void *)&yin[first], (size_t)(n * sizeof (double)));
-		GMT_hold_contour_sub (&xs, &ys, n, label, ctype, cangle, closed, G);
+		GMT_hold_contour_sub (&xs, &ys, n, zval, label, ctype, cangle, closed, G);
 		GMT_free ((void *)xs);
 		GMT_free ((void *)ys);
 		first = n;	/* First point in next segment */
@@ -3088,7 +3094,7 @@ void GMT_hold_contour (double **xxx, double **yyy, int nn, char *label, char cty
 	GMT_free ((void *)split);
 }
 
-void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G)
+void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G)
 {	/* The xx, yy are expected to be projected x/y inches */
 	int i, j, start = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
@@ -3333,7 +3339,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 
 		}
 		GMT_contlabel_fixpath (&xx, &yy, map_dist, &nn, G);	/* Inserts the label x,y into path */
-		GMT_contlabel_addpath (xx, yy, nn, label, TRUE, G);		/* Appends this path and the labels to list */
+		GMT_contlabel_addpath (xx, yy, nn, zval, label, TRUE, G);		/* Appends this path and the labels to list */
 
 		GMT_free ((void *)track_dist);
 		GMT_free ((void *)map_dist);
@@ -3341,7 +3347,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, char *label, char
 		GMT_free ((void *)G->L);
 	}
 	else {   /* just one line, no holes for labels */
-		GMT_contlabel_addpath (xx, yy, nn, label, FALSE, G);		/* Appends this path to list */
+		GMT_contlabel_addpath (xx, yy, nn, zval, label, FALSE, G);		/* Appends this path to list */
 	}
 	*xxx = xx;
 	*yyy = yy;
