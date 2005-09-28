@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.19 2004-08-27 21:22:21 pwessel Exp $
+#	 $Id: webman.sh,v 1.20 2005-09-28 23:06:52 pwessel Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -27,6 +27,10 @@ if [ $#argv = 1 ]; then	# If -s is given we run silently with defaults
 else			# else we make alot of noise
 	gush=1
 fi
+
+# Get man2html program and settings:
+
+MAN2HTML=`grep '^MAN2HTML' guru/gmtguru.macros | awk -F= '{print $2}' | awk -F# '{print $1}'`
 
 mkdir -p www/gmt/doc/html
 
@@ -62,7 +66,7 @@ done
 
 # Gurus who have their own supplemental packages can have them processed too by
 # defining an environmental parameter MY_GMT_SUPPL which contains a list of these
-# supplements.  THey must all be in src of course
+# supplements.  They must all be in src of course
 
 MY_SUPPL=${MY_GMT_SUPPL:-""}
 cd src
