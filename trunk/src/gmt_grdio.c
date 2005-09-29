@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.46 2005-09-29 19:32:44 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.47 2005-09-29 20:38:30 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -32,8 +32,8 @@
  *	GMT_grd_get_format :	Get format id, scale, offset and missing value for grdfile
  *
  *	GMT_read_grd_info :	Read header from file
- *	GMT_read_grd :		Read header and data set from file
- *	GMT_update_grd_info :	Update header in existing file
+ *	GMT_read_grd :		Read data set from file (must be preceded by GMT_read_grd_info)
+ *	GMT_update_grd_info :	Update header in existing file (must be preceded by GMT_read_grd_info)
  *	GMT_write_grd_info :	Write header to new file
  *	GMT_write_grd :		Write header and data set to new file
  *
@@ -59,8 +59,9 @@ int grd_format_decoder (const char *code);
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
 
 int GMT_read_grd_info (char *file, struct GRD_HEADER *header)
-{	/* file:	- IGNORED - */
-	/* header:	grid structure header */
+{	/* file:	File name
+	 * header:	grid structure header
+	 */
 
 	int status;
 	double scale = GMT_d_NaN, offset = 0.0;
@@ -81,8 +82,9 @@ int GMT_read_grd_info (char *file, struct GRD_HEADER *header)
 }
 
 int GMT_write_grd_info (char *file, struct GRD_HEADER *header)
-{	/* file:	File name	*/
-	/* header:	grid structure header */
+{	/* file:	File name
+	 * header:	grid structure header
+	 */
 
 	int status;
 	
@@ -99,8 +101,9 @@ int GMT_write_grd_info (char *file, struct GRD_HEADER *header)
 }
 
 int GMT_update_grd_info (char *file, struct GRD_HEADER *header)
-{	/* file:	- IGNORED - */
-	/* header:	grid structure header */
+{	/* file:	- IGNORED -
+	 * header:	grid structure header
+	 */
 
 	int status;
 	
@@ -111,14 +114,15 @@ int GMT_update_grd_info (char *file, struct GRD_HEADER *header)
 }
 
 int GMT_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{	/* file:	- IGNORED - */
-	/* header:	grid structure header */
-	/* grid:	array with final grid */
-	/* w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0] */
-	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex:	TRUE if array is to hold real and imaginary parts (read in real only) */
-	/*		Note: The file has only real values, we simply allow space in the array */
-	/*		for imaginary parts when processed by grdfft etc. */
+{	/* file:	- IGNORED -
+	 * header:	grid structure header
+	 * grid:	array with final grid
+	 * w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0]
+	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
+	 * complex:	TRUE if array is to hold real and imaginary parts (read in real only)
+	 *		Note: The file has only real values, we simply allow space in the array
+	 *		for imaginary parts when processed by grdfft etc.
+	 */
 
 	int status;
 
@@ -131,14 +135,15 @@ int GMT_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, 
 }
 
 int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{	/* file:	File name	*/
-	/* header:	grid structure header */
-	/* grid:	array with final grid */
-	/* w,e,s,n:	Sub-region to write out  [Use entire file if 0,0,0,0] */
-	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex:	TRUE if array is to hold real and imaginary parts (read in real only) */
-	/*		Note: The file has only real values, we simply allow space in the array */
-	/*		for imaginary parts when processed by grdfft etc. */
+{	/* file:	File name
+	 * header:	grid structure header
+	 * grid:	array with final grid
+	 * w,e,s,n:	Sub-region to write out  [Use entire file if 0,0,0,0]
+	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
+	 * complex:	TRUE if array is to hold real and imaginary parts (read in real only)
+	 *		Note: The file has only real values, we simply allow space in the array
+	 *		for imaginary parts when processed by grdfft etc.
+	 */
 
 	int status;
 
@@ -537,8 +542,8 @@ void GMT_close_grd (struct GMT_GRDFILE *G)
 }
 
 void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
-{	/* Reads the entire row vector form the grdfile */
-	/* If row_no is negative it is interpreted to mean that we want to
+{	/* Reads the entire row vector form the grdfile
+	 * If row_no is negative it is interpreted to mean that we want to
 	 * fseek to the start of the abs(row_no) record and no reading takes place.
 	 */
 	 
