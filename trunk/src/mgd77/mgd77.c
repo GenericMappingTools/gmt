@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.33 2005-09-21 05:42:24 pwessel Exp $
+ *	$Id: mgd77.c,v 1.34 2005-09-29 07:46:53 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -1243,6 +1243,18 @@ void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F, BOOLEAN prelim
 	F->n_out_columns = i;
 	if (F->n_constraints > 0) F->Constraint = (struct MGD77_CONSTRAINT *)GMT_memory ((void *)F->Constraint, F->n_constraints, sizeof (struct MGD77_CONSTRAINT), "MGD77_Select_Columns");
 	F->no_checking = (F->n_constraints == 0 && F->n_exact == 0);	/* Easy street */
+}
+
+int MGD77_Get_Custom_Column (char *word, struct MGD77_CONTROL *F)
+{
+	int j, column;
+	
+	/* Search for the matching abbreviation in our extra list */
+	
+	for (j = 0, column = -1; j < F->E.n_extra && column == -1; j++) {
+		if (!strcmp (word, F->E.extra[j].abbrev)) column = j;
+	}
+	return (column);
 }
 
 void MGD77_Set_Home (struct MGD77_CONTROL *F)
