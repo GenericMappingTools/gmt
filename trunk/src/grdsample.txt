@@ -43,7 +43,7 @@ nodes may be NaN].
 .B \-T
 Translate between grid and pixel registration while keeping \fB\-R\fP and \fB\-I\fP the same; if input is 
 grid-registered, output will be pixel-registered and vice-versa.  The input file determines \fB\-R\fP, 
-\fB\-I\fP and \fB\-N\fP so no other options are necessary (except possibly \fB\-L\fP or \fB\-Q\fP).
+and \fB\-I\fP so no other options are necessary (except possibly \fB\-L\fP or \fB\-Q\fP).
 #include "explain_-V.txt"
 .SH HINTS
 If an interpolation point is not on a node of the input grid, then a NaN at any node in the neighborhood 
