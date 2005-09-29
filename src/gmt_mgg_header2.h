@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.h,v 1.2 2004-09-28 19:24:13 pwessel Exp $	*/
+/*	$Id: gmt_mgg_header2.h,v 1.3 2005-09-29 19:32:44 remko Exp $	*/
 
 #ifndef _H_MGG_HEADER_2
 #define _H_MGG_HEADER_2
@@ -43,12 +43,9 @@ typedef struct {
 	int    unused11;
 } MGG_GRID_HEADER_2;
 
-int mgg2_read_grd_info(char *file, struct GRD_HEADER *header);
-int mgg2_write_grd_info(char *file, struct GRD_HEADER *header);
-int mgg2_read_grd(char *file, struct GRD_HEADER *header, float *grid, 
-	double w, double e, double s, double n, int *pad, BOOLEAN complex);
-	
-int mgg2_write_grd(char *file, struct GRD_HEADER *header, float *grid,
-	double w, double e, double s, double n, int *pad, BOOLEAN complex);
+int mgg2_read_grd_info (struct GRD_HEADER *header);
+int mgg2_write_grd_info (struct GRD_HEADER *header);
+int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
+int mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
 
 #endif

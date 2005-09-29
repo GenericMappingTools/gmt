@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.45 2005-09-29 18:12:52 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.46 2005-09-29 19:32:44 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -59,12 +59,14 @@ int grd_format_decoder (const char *code);
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
 
 int GMT_read_grd_info (char *file, struct GRD_HEADER *header)
-{
+{	/* file:	- IGNORED - */
+	/* header:	grid structure header */
+
 	int status;
 	double scale = GMT_d_NaN, offset = 0.0;
 
 	header->type = GMT_grd_get_format (file, header->name, &scale, &offset, &header->nan_value);
-	status = (*GMT_io_readinfo[header->type]) (header->name, header);
+	status = (*GMT_io_readinfo[header->type]) (header);
 	if (GMT_is_dnan(scale))
 		scale = header->z_scale_factor, offset = header->z_add_offset;
 	else
@@ -92,7 +94,7 @@ int GMT_write_grd_info (char *file, struct GRD_HEADER *header)
 	}
 	header->z_min = (header->z_min - header->z_add_offset) / header->z_scale_factor;
 	header->z_max = (header->z_max - header->z_add_offset) / header->z_scale_factor;
-	status = (*GMT_io_writeinfo[header->type]) (header->name, header);
+	status = (*GMT_io_writeinfo[header->type]) (header);
 	return (status);
 }
 
@@ -104,7 +106,7 @@ int GMT_update_grd_info (char *file, struct GRD_HEADER *header)
 	
 	header->z_min = (header->z_min - header->z_add_offset) / header->z_scale_factor;
 	header->z_max = (header->z_max - header->z_add_offset) / header->z_scale_factor;
-	status = (*GMT_io_updateinfo[header->type]) (header->name, header);
+	status = (*GMT_io_updateinfo[header->type]) (header);
 	return (status);
 }
 
@@ -120,7 +122,7 @@ int GMT_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, 
 
 	int status;
 
-	status = (*GMT_io_readgrd[header->type]) (header->name, header, grid, w, e, s, n, pad, complex);
+	status = (*GMT_io_readgrd[header->type]) (header, grid, w, e, s, n, pad, complex);
 	if (header->z_scale_factor == 0.0) fprintf (stderr, "GMT Warning: scale_factor should not be 0.\n");
 	GMT_grd_do_scaling (grid, ((header->nx + pad[0] + pad[1]) * (header->ny + pad[2] + pad[3])), header->z_scale_factor, header->z_add_offset);
 	header->z_min = header->z_min * header->z_scale_factor + header->z_add_offset;
@@ -147,7 +149,7 @@ int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w,
 		fprintf (stderr, "GMT Warning: scale_factor should not be 0. Reset to 1.\n");
 	}
 	GMT_grd_do_scaling (grid, (header->nx * header->ny), 1.0/header->z_scale_factor, -header->z_add_offset/header->z_scale_factor);
-	status = (*GMT_io_writegrd[header->type]) (header->name, header, grid, w, e, s, n, pad, complex);
+	status = (*GMT_io_writegrd[header->type]) (header, grid, w, e, s, n, pad, complex);
 	return (status);
 }
 

@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.9 2005-09-02 01:55:59 remko Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.10 2005-09-29 19:32:44 remko Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	This is the README file:
@@ -192,22 +192,22 @@ static void swap_header(MGG_GRID_HEADER_2 *header)
    swap_long(&header->unused11);
 }
 
-int mgg2_read_grd_info(char *file, struct GRD_HEADER *header)
+int mgg2_read_grd_info (struct GRD_HEADER *header)
 {
 	FILE			*fp = NULL;
 	MGG_GRID_HEADER_2	mggHeader;
 
-	if (!strcmp(file, "=")) {
+	if (!strcmp(header->name, "=")) {
 		fp = stdin;
-/*	} else if ((fp = fopen(file, "rb")) == NULL) { */
-	} else if ((fp = GMT_fopen(file, GMT_io.r_mode)) == NULL) {
-		fprintf(stderr, "GMT Fatal Error: Could not open file %s!\n", file);
+/*	} else if ((fp = fopen(header->name, "rb")) == NULL) { */
+	} else if ((fp = GMT_fopen(header->name, GMT_io.r_mode)) == NULL) {
+		fprintf(stderr, "GMT Fatal Error: Could not open file %s!\n", header->name);
 		exit (-1);
 	}
 
 	memset(&mggHeader, '\0', sizeof(MGG_GRID_HEADER_2));
 	if (fread(&mggHeader, sizeof(MGG_GRID_HEADER_2), 1, fp) != 1) {
-		fprintf(stderr, "GMT Fatal Error: Error reading file %s!\n", file);
+		fprintf(stderr, "GMT Fatal Error: Error reading file %s!\n", header->name);
 		exit (-1);
 	}
 
@@ -232,16 +232,16 @@ int mgg2_read_grd_info(char *file, struct GRD_HEADER *header)
 	return FALSE;
 }
 
-int mgg2_write_grd_info(char *file, struct GRD_HEADER *header)
+int mgg2_write_grd_info (struct GRD_HEADER *header)
 {
 	FILE			*fp;
 	MGG_GRID_HEADER_2	mggHeader;
 	
-	if (!strcmp(file, "=")) {
+	if (!strcmp(header->name, "=")) {
 		fp = stdout;
-/*	} else if ((fp = fopen(file, "wb")) == NULL) {       */
-	} else if ((fp = GMT_fopen(file, GMT_io.w_mode)) == NULL) {
-		fprintf(stderr, "GMT Fatal Error: Could not create file %s!\n", file);
+/*	} else if ((fp = fopen(header->name, "wb")) == NULL) {       */
+	} else if ((fp = GMT_fopen(header->name, GMT_io.w_mode)) == NULL) {
+		fprintf(stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
 		exit (-1);
 	}
 	
@@ -251,7 +251,7 @@ int mgg2_write_grd_info(char *file, struct GRD_HEADER *header)
     swap_header(&mggHeader);
 
 	if (fwrite (&mggHeader, sizeof(MGG_GRID_HEADER_2), 1, fp) != 1) {
-		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
+		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", header->name);
 		exit (-1);
 	}
 
@@ -260,16 +260,7 @@ int mgg2_write_grd_info(char *file, struct GRD_HEADER *header)
 	return FALSE;
 }
 
-int mgg2_read_grd (
-	char *file,
-	struct GRD_HEADER *header,
-	float *grid,
-	double w, 
-	double e, 
-	double s, 
-	double n,
-	int pad[],
-	BOOLEAN complex)
+int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int pad[], BOOLEAN complex)
 {
 	MGG_GRID_HEADER_2	mggHeader;
 	FILE  *fp     = NULL;
@@ -283,23 +274,23 @@ int mgg2_read_grd (
 	long long_offset;	/* For fseek only */
 	
 	if (complex) {
-		fprintf (stderr, "GMT Fatal Error: MGG grdfile %s cannot hold complex data!\n", file);
+		fprintf (stderr, "GMT Fatal Error: MGG grdfile %s cannot hold complex data!\n", header->name);
 		exit (-1);
 	}
 
-	if (!strcmp (file, "=")) {
+	if (!strcmp (header->name, "=")) {
 		fp = stdin;
 		piping = TRUE;
 	}
-/*	else if ((fp = fopen (file, "rb")) != NULL) {  */
-	else if ((fp = GMT_fopen (file, GMT_io.r_mode)) != NULL) {
+/*	else if ((fp = fopen (header->name, "rb")) != NULL) {  */
+	else if ((fp = GMT_fopen (header->name, GMT_io.r_mode)) != NULL) {
 		fread(&mggHeader, 1, sizeof(MGG_GRID_HEADER_2), fp);
         swap_header(&mggHeader);
 		if (mggHeader.numType == 0) mggHeader.numType = sizeof(int);
 	}
 
 	else {
-		fprintf (stderr, "GMT Fatal Error: Could not open file! (%s)", file);
+		fprintf (stderr, "GMT Fatal Error: Could not open file! (%s)", header->name);
 		exit (-1);
 	}
 	
@@ -310,7 +301,7 @@ int mgg2_read_grd (
 		tChar  = (char *) tLong;
 
 		if (fread ((void *)tLong, mggHeader.numType, nm, fp) != (size_t)nm) {
-			fprintf (stderr, "GMT Fatal Error: Error reading file! (%s)", file);
+			fprintf (stderr, "GMT Fatal Error: Error reading file! (%s)", header->name);
 			exit (-1);
 		}
 		for (i = 0; i < nm; i++) {
@@ -398,7 +389,7 @@ int mgg2_read_grd (
 		if (piping)	{ /* Skip data by reading it */
 			for (j = 0; j < first_row; j++) {
 				if (fread ((void *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
-					fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
+					fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", header->name);
 					exit (-1);
 				}
 			}
@@ -409,7 +400,7 @@ int mgg2_read_grd (
 		
 		for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 			if (fread ((void *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
-				fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
+				fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", header->name);
 				exit (-1);
 			}
 			
@@ -442,7 +433,7 @@ int mgg2_read_grd (
 		if (piping)	{ /* Skip data by reading it */
 			for (j = last_row + 1; j < header->ny; j++) {
 				if (fread ((void *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
-					fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
+					fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", header->name);
 					exit (-1);
 				}
 			}
@@ -458,7 +449,7 @@ int mgg2_read_grd (
 		if (piping)	{ /* Skip data by reading it */
 			for (j = 0; j < first_row; j++) {
 				if (fread ((void *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
-					fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
+					fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", header->name);
 					exit (-1);
 				}
 			}
@@ -470,7 +461,7 @@ int mgg2_read_grd (
 		for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 			ij = (j2 + pad[3]) * width_out + i_0_out;
 			if (fread ((void *) tLong, mggHeader.numType, header->nx, fp) != (size_t)header->nx) {
-				fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
+				fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", header->name);
 				exit (-1);
 			}
 			
@@ -506,7 +497,7 @@ int mgg2_read_grd (
 		if (piping)	{/* Skip data by reading it */
 			for (j = last_row + 1; j < header->ny; j++) {
 				if (fread ((void *) tLong, mggHeader.numType, header->nx, fp)) {
-					fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
+					fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", header->name);
 					exit (-1);
 				}
 			}
@@ -536,16 +527,7 @@ int mgg2_read_grd (
 }
 
 	
-int mgg2_write_grd(
-	char *file, 
-	struct GRD_HEADER *header, 
-	float *grid,
-	double w, 
-	double e, 
-	double s, 
-	double n, 
-	int *pad, 
-	BOOLEAN complex)
+int mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
 {
 	MGG_GRID_HEADER_2	mggHeader;
 	int i, i2, nm, kk, *k;
@@ -561,15 +543,15 @@ int mgg2_write_grd(
 	FILE *fp;
 	
 	if (complex) {
-		fprintf (stderr, "GMT Fatal Error: MGG grdfile %s cannot hold complex data!\n", file);
+		fprintf (stderr, "GMT Fatal Error: MGG grdfile %s cannot hold complex data!\n", header->name);
 		exit (-1);
 	}
-	if (!strcmp (file, "=")) {
+	if (!strcmp (header->name, "=")) {
 		fp = stdout;
 	}
-/*	else if ((fp = fopen (file, "wb")) == NULL) {      */
-	else if ((fp = GMT_fopen (file, GMT_io.w_mode)) == NULL) {
-		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", file);
+/*	else if ((fp = fopen (header->name, "wb")) == NULL) {      */
+	else if ((fp = GMT_fopen (header->name, GMT_io.w_mode)) == NULL) {
+		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
 		exit (-1);
 	}
 	
@@ -587,7 +569,7 @@ int mgg2_write_grd(
 		GMT2MGG2(header, &mggHeader);
 		swap_header(&mggHeader);
 		if (fwrite (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1, fp) != 1) {
-			fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
+			fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", header->name);
 			exit (-1);
 		}
 		swap_header(&mggHeader);
@@ -634,7 +616,7 @@ int mgg2_write_grd(
 			}
 		}
 		if (fwrite (tLong, mggHeader.numType, nm, fp) != (size_t)nm) {
-			fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
+			fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", header->name);
 			exit (-1);
 		}
 		GMT_free ((void *)tLong);
@@ -690,7 +672,7 @@ int mgg2_write_grd(
 	GMT2MGG2(header, &mggHeader);
 	swap_header(&mggHeader);
 	if (fwrite (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1, fp) != 1) {
-		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", file);
+		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", header->name);
 		exit (-1);
 	}
 	swap_header(&mggHeader);
