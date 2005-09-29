@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.193 2005-09-27 03:59:55 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.194 2005-09-29 01:41:12 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1192,7 +1192,7 @@ void GMT_prep_PS_bits ()
 
 void GMT_setdefaults (int argc, char **argv)
 {
-	int j, k, error = 0;
+	int j, k, p, error = 0;
 
 	/* Set up hash table */
 
@@ -1203,17 +1203,35 @@ void GMT_setdefaults (int argc, char **argv)
 	j = 1;
 	while (j < argc) {	/* j points to parameter, k to value */
 		k = j + 1;
-		if (k == argc) {	/* Ran out of arguments, error */
-			error++;
-			break;
+		if (strchr (argv[j], '=')) {	/* User forgot and gave parameter=value (1 word) */
+			p = 0;
+			while (argv[j][p] && argv[j][p] != '=') p++;
+			if (argv[j][p] == '=') {
+				argv[j][p] = '\0';
+				error += GMT_setparameter (argv[j], &argv[j][p+1]);
+				argv[j][p] = '=';
+				k = j;
+			}
+			else {
+				error++;
+				break;
+			}
+		}	
+		else if (!strcmp (argv[k], "=")) {	/* User forgot and gave parameter = value */
+			k++;
+			if (k >= argc) {
+				error++;
+				break;
+			}
+			error += GMT_setparameter (argv[j], argv[k]);
 		}
-		if (!strcmp (argv[k], "=")) k++;	/* User forgot and gave parameter = value */
-		if (k == argc) {
-			error++;
-			break;
+		else {
+			if (k >= argc) {	/* Ran out of arguments, error */
+				error++;
+				break;
+			}
+			error += GMT_setparameter (argv[j], argv[k]);
 		}
-
-		error += GMT_setparameter (argv[j], argv[k]);
 		j = k + 1;	/* Goto next parameter */
 	}
 
