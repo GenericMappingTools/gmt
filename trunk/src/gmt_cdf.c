@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.31 2005-09-13 12:33:35 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.32 2005-09-29 19:32:44 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -42,36 +42,35 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 
-EXTERN_MSC char nc_file[BUFSIZ];
 EXTERN_MSC void check_nc_status (int status);
 EXTERN_MSC void nc_nopipe (char *file);
 int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job);
 
-int GMT_cdf_read_grd_info (char *file, struct GRD_HEADER *header)
+int GMT_cdf_read_grd_info (struct GRD_HEADER *header)
 {
 	int ncid;
-	nc_nopipe (file);
-	check_nc_status (nc_open (file, NC_NOWRITE, &ncid));
+	nc_nopipe (header->name);
+	check_nc_status (nc_open (header->name, NC_NOWRITE, &ncid));
 	GMT_cdf_grd_info (ncid, header, 'r');
 	check_nc_status (nc_close (ncid));
 	return (0);
 }
 
-int GMT_cdf_update_grd_info (char *file, struct GRD_HEADER *header)
+int GMT_cdf_update_grd_info (struct GRD_HEADER *header)
 {
 	int ncid;
-	nc_nopipe (file);
-	check_nc_status (nc_open (file, NC_WRITE, &ncid));
+	nc_nopipe (header->name);
+	check_nc_status (nc_open (header->name, NC_WRITE, &ncid));
 	GMT_cdf_grd_info (ncid, header, 'u');
 	check_nc_status (nc_close (ncid));
 	return (0);
 }
 
-int GMT_cdf_write_grd_info (char *file, struct GRD_HEADER *header)
+int GMT_cdf_write_grd_info (struct GRD_HEADER *header)
 {
 	int ncid;
-	nc_nopipe (file);
-	check_nc_status (nc_create (file, NC_CLOBBER, &ncid));
+	nc_nopipe (header->name);
+	check_nc_status (nc_create (header->name, NC_CLOBBER, &ncid));
 	GMT_cdf_grd_info (ncid, header, 'w');
 	check_nc_status (nc_close (ncid));
 	return (0);
@@ -214,9 +213,8 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 	return (0);
 }
 
-int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{	/* file:	File name
-	 * header:	grid structure header
+int GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+{	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0]
 	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
@@ -252,8 +250,8 @@ int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 
 	/* Get the value of the missing data that will be converted to NaN */
 
-	nc_nopipe (file);
- 	check_nc_status (nc_open (file, NC_NOWRITE, &ncid));
+	nc_nopipe (header->name);
+ 	check_nc_status (nc_open (header->name, NC_NOWRITE, &ncid));
         nc_get_att_double (ncid, header->z_id, "_FillValue", &header->nan_value);
 	check = !GMT_is_dnan (header->nan_value);
 
@@ -294,9 +292,8 @@ int GMT_cdf_read_grd (char *file, struct GRD_HEADER *header, float *grid, double
 	return (0);
 }
 
-int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{	/* file:	File name
-	 * header:	grid structure header
+int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+{	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * w,e,s,n:	Sub-region to write out  [Use entire file if 0,0,0,0]
 	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
@@ -359,8 +356,8 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 
 	/* Write grid header */
 
-	nc_nopipe (file);
-	check_nc_status (nc_create (file, NC_CLOBBER, &ncid));
+	nc_nopipe (header->name);
+	check_nc_status (nc_create (header->name, NC_CLOBBER, &ncid));
 	GMT_cdf_grd_info (ncid, header, 'w');
 
 	/* Set start position for writing grid */
@@ -414,7 +411,7 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 		GMT_free ((void *)tmp_i);
 	}
 
-	if (nr_oor > 0) fprintf (stderr, "%s: Warning: %d out-of-range grid values converted to _FillValue [%s]\n", GMT_program, nr_oor, nc_file);
+	if (nr_oor > 0) fprintf (stderr, "%s: Warning: %d out-of-range grid values converted to _FillValue [%s]\n", GMT_program, nr_oor, header->name);
 
 	GMT_free ((void *)k);
 
@@ -422,7 +419,7 @@ int GMT_cdf_write_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 		limit[0] = header->z_min; limit[1] = header->z_max;
 	}
 	else {
-		fprintf (stderr, "%s: Warning: No valid values in grid [%s]\n", GMT_program, nc_file);
+		fprintf (stderr, "%s: Warning: No valid values in grid [%s]\n", GMT_program, header->name);
 		limit[0] = 0.0; limit[1] = 0.0;
 	}
 	check_nc_status (nc_put_var_double (ncid, header->z_id - 3, limit));

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.29 2005-09-16 12:58:31 remko Exp $
+ *	$Id: gmt_nc.c,v 1.30 2005-09-29 19:32:44 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -51,31 +51,31 @@ void check_nc_status (int status);
 void nc_nopipe (char *file);
 int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job);
 
-int GMT_nc_read_grd_info (char *file, struct GRD_HEADER *header)
+int GMT_nc_read_grd_info (struct GRD_HEADER *header)
 {
 	int ncid;
-	nc_nopipe (file);
-	check_nc_status (nc_open (file, NC_NOWRITE, &ncid));
+	nc_nopipe (header->name);
+	check_nc_status (nc_open (header->name, NC_NOWRITE, &ncid));
 	GMT_nc_grd_info (ncid, header, 'r');
 	check_nc_status (nc_close (ncid));
 	return (0);
 }
 
-int GMT_nc_update_grd_info (char *file, struct GRD_HEADER *header)
+int GMT_nc_update_grd_info (struct GRD_HEADER *header)
 {
 	int ncid;
-	nc_nopipe (file);
-	check_nc_status (nc_open (file, NC_WRITE, &ncid));
+	nc_nopipe (header->name);
+	check_nc_status (nc_open (header->name, NC_WRITE, &ncid));
 	GMT_nc_grd_info (ncid, header, 'u');
 	check_nc_status (nc_close (ncid));
 	return (0);
 }
 
-int GMT_nc_write_grd_info (char *file, struct GRD_HEADER *header)
+int GMT_nc_write_grd_info (struct GRD_HEADER *header)
 {
 	int ncid;
-	nc_nopipe (file);
-	check_nc_status (nc_create (file, NC_CLOBBER, &ncid));
+	nc_nopipe (header->name);
+	check_nc_status (nc_create (header->name, NC_CLOBBER, &ncid));
 	GMT_nc_grd_info (ncid, header, 'w');
 	check_nc_status (nc_close (ncid));
 	return (0);
@@ -134,7 +134,7 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 			i++;
 		}
 		if (z_id < 0) {
-			fprintf (stderr, "%s: Could not find 2-dimensional variable [%s]\n", GMT_program, nc_file);
+			fprintf (stderr, "%s: Could not find 2-dimensional variable [%s]\n", GMT_program, header->name);
 			exit (EXIT_FAILURE);
 		}
 
@@ -156,7 +156,7 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 			}
 		}
 		if (x_id < 0 || y_id < 0) {
-			fprintf (stderr, "%s: Could not find the x or y variables [%s]\n", GMT_program, nc_file);
+			fprintf (stderr, "%s: Could not find the x or y variables [%s]\n", GMT_program, header->name);
 			exit (EXIT_FAILURE);
 		}
 
@@ -269,9 +269,8 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 	return (0);
 }
 
-int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{	/* file:	File name
-	 * header:	grid structure header
+int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+{	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0]
 	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
@@ -295,9 +294,9 @@ int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double 
 	/* Check type: is file in old NetCDF format or not at all? */
 
 	if (GMT_grdformats[header->type][0] == 'c')
-		return (GMT_cdf_read_grd (file, header, grid, w, e, s, n, pad, complex));
+		return (GMT_cdf_read_grd (header, grid, w, e, s, n, pad, complex));
 	else if (GMT_grdformats[header->type][0] != 'n') {
-		fprintf (stderr, "%s: File is not in NetCDF format [%s]\n", GMT_program, file);
+		fprintf (stderr, "%s: File is not in NetCDF format [%s]\n", GMT_program, header->name);
 		exit (EXIT_FAILURE);
 	}
 
@@ -316,8 +315,8 @@ int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double 
 
 	/* Get the value of the missing data that will be converted to NaN */
 
-	nc_nopipe (file);
- 	check_nc_status (nc_open (file, NC_NOWRITE, &ncid));
+	nc_nopipe (header->name);
+ 	check_nc_status (nc_open (header->name, NC_NOWRITE, &ncid));
         if (nc_get_att_double (ncid, header->z_id, "_FillValue", &header->nan_value))
             nc_get_att_double (ncid, header->z_id, "missing_value", &header->nan_value);
 	check = !GMT_is_dnan (header->nan_value);
@@ -367,9 +366,8 @@ int GMT_nc_read_grd (char *file, struct GRD_HEADER *header, float *grid, double 
 	return (0);
 }
 
-int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
-{	/* file:	File name
-	 * header:	grid structure header
+int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+{	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * w,e,s,n:	Sub-region to write out  [Use entire file if 0,0,0,0]
 	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
@@ -432,8 +430,8 @@ int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *grid, double
 
 	/* Write grid header */
 
-	nc_nopipe (file);
-	check_nc_status (nc_create (file, NC_CLOBBER, &ncid));
+	nc_nopipe (header->name);
+	check_nc_status (nc_create (header->name, NC_CLOBBER, &ncid));
 	GMT_nc_grd_info (ncid, header, 'w');
 
 	/* Set start position for writing grid */
@@ -487,7 +485,7 @@ int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *grid, double
 		GMT_free ((void *)tmp_i);
 	}
 
-	if (nr_oor > 0) fprintf (stderr, "%s: Warning: %d out-of-range grid values converted to _FillValue [%s]\n", GMT_program, nr_oor, nc_file);
+	if (nr_oor > 0) fprintf (stderr, "%s: Warning: %d out-of-range grid values converted to _FillValue [%s]\n", GMT_program, nr_oor, header->name);
 
 	GMT_free ((void *)k);
 
@@ -495,7 +493,7 @@ int GMT_nc_write_grd (char *file, struct GRD_HEADER *header, float *grid, double
 		limit[0] = header->z_min; limit[1] = header->z_max;
 	}
 	else {
-		fprintf (stderr, "%s: Warning: No valid values in grid [%s]\n", GMT_program, nc_file);
+		fprintf (stderr, "%s: Warning: No valid values in grid [%s]\n", GMT_program, header->name);
 		limit[0] = 0.0; limit[1] = 0.0;
 	}
        	check_nc_status (nc_put_att_double (ncid, header->z_id, "actual_range", z_type, 2, limit));
