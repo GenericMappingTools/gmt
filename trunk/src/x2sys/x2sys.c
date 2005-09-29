@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.40 2005-09-08 21:17:19 remko Exp $
+ *	$Id: x2sys.c,v 1.41 2005-09-29 03:05:39 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -791,6 +791,11 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 	BOOLEAN geographic = FALSE;
 	FILE *fp;
 
+	if (!TAG) {
+		fprintf (stderr,"%s: TAG not set\n", X2SYS_program);
+		exit (EXIT_FAILURE);
+	}
+	
 	x2sys_set_home ();
 
 	memset ((void *)B, 0, sizeof (struct X2SYS_BIX));
