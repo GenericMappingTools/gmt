@@ -1,0 +1,102 @@
+.TH MGD77MANAGE GMTMANSECTION DATE VERSION VERSION
+.SH NAME
+mgd77manage \- Manage extra columns in MGD77+ files
+.SH SYNOPSIS
+\fBmgd77manage\fP \fIleg-ids\fP [ \fP\-A\fP[\fP!\fP]\fBa|A|c|d|D|g|i|n|t|T\fB\fIfileinfo\fP ] 
+[ \fP\-C\fPabbrev/"name"/size/scale/offset/"comment"\fP ] [ \fB\-D\fP\fIabbrev1,abbrev2,...\fP ] 
+[ \fB\-F\fP ] [ \fB\-Q\fP[\fIvalue\fP] [ \fB\-V\fP ] [ \fB\-bi\fP\fIn\fP[\fBs|d\fP] ]
+.SH DESCRIPTION
+\fBmgd77manage\fP deals with maintaining the extra custom columns in mgd77 files.
+You can either delete one or more columns, add a new column, or update an existing
+column with new data.  New data may come from a table (ASCII unless \fB\-b\fp) is
+used or be obtained by sampling a grid (choose between GMT grid or a Sandwell/Smith
+Mercator *.img grid) along track.  The new data will be appended to the mgd77+ file
+in the form of an extra data column.  The output file will be written to the current
+directory.  However, the file will not be written if a file with the same name already
+exists.  You can force the file to be overwritten using the program options.  Below,
+only one of \fB\-A\fP or \fB\-D\fP can be selected at the same time.
+.TP
+\fIleg-ids\fP
+Can be one or more MGD77[+] 8-character cruise identifiers. To give a list of names, use `cat cruises.lis`.
+The ".mgd77" or ".mgd77+" extension will automatically be appended, if needed.  Cruise files will be looked for
+in the current directory and in all directories listed in \fB$MGD77_DIR\fP/MGD77_paths.txt.
+.SH OPTIONS
+No space between the option flag and the associated arguments
+.TP
+.B \-A
+Add a new data column.  If an existing column with the same abbreviation already exists in the file
+we will cowardly refuse to update the file. Specifying \fB\-A!\fP overcomes this reluctance.
+Select a column source among the following choices:
+.br
+\fBa\fP Append filename of a double column table with first column holding absolute times along track,
+with data values in second column.  Use - if we are to read from stdin instead.  Records with matching
+times in the mgd77 file will be assigned the new values; at other times we set them to NaN.
+Alternatively, give upper case \fBA\fP instead and we will interpolate the column at all records.
+.br
+\fBc\fP Append filename of a single column table with same number of rows as the mgd77file.  Use - if
+we are to read from stdin instead.
+.br
+\fBd\fP  Append filename of a double column table with first column holding distances in km along track,
+with data values in second column.  Use - if we are to read from stdin instead.  Records with matching
+distances in the mgd77 file will be assigned the new values; at other distances we set them to NaN.
+Alternatively, give upper case \fBD\fP instead and we will interpolate the column at all records.
+.br
+\fBg\fP Give full path to a GMT geographic (lon,lat) grid.  We will sample this grid along the
+track given by the mgd77 file.
+.br
+\fBi\fP Give full path to a Sandwell/Smith Mercator *.img file and furthermore append the grid spacing
+in minutes (1 or 2), the data scale (typically 1 or 10), and the img file mode (0-3; see \fBimg2mercgrd\fP
+for a description of modes).  We will sample this grid along the track given by the mgd77 file.
+.br
+\fBn\fP Append filename of a double column table with first column holding the record number (0 to nrows - 1),
+with data values in second column.  Use - if we are to read from stdin instead.  Records with matching
+record numbers in the mgd77 file will be assigned the new values; at other times we set them to NaN.
+.br
+\fBt\fP Append filename of a double column table with first column holding relative times along track,
+with data values in second column.  Use - if we are to read from stdin instead.  Records with matching
+times in the mgd77 file will be assigned the new values; at other times we set them to NaN.
+Alternatively, give upper case \fBT\fP instead and we will interpolate the column at all records.
+Relative time is converted to absolute time using the chosen TIME_SYSTEM in your .gmtdefaults4 file.
+.TP
+.B \-C
+In addition to file information we must specify several attributes of the extra column.
+Specify a short (16 char or less) abbreviation for the selected data, its more descriptive name,
+the data type (\fBb\fPyte, \fBs\fPhort, or \fBi\fPnt), any scale and offset applied before writing,
+and a general comment (< 128 characters) regarding what this data represents.
+.TP
+.B \-D
+Give a comma-separated list of column abbrebiations that you want to delete from the mgd77 files.
+.TP
+.B \-F
+Force creation of output even if an older file is present in the current directory [Default refuses
+to overwrite existing files].
+.TP
+.B \-Q
+Quick mode, use bilinear rather than bicubic interpolation.  optionally, append \fIvalue\fP in the
+0 < \fIvalue\fP <= 1 range.  This parameter controls how close to nodes with NaN values the
+interpolation will go.  E.g., a \fIvalue\fP of 0.5 will interpolate about 1/2-way from a non-NaN to a
+NaN node, whereas 0.1 will go about 90% of the way, etc. [Default is 1, which means none of the four nearby
+nodes may be NaN].  Requires \fB\-Ag|i\fP.
+#include "explain_-V.txt"
+#include "explain_-bi.txt"
+.SH EXAMPLES
+To append Geosat/ERS-1 gravity as an extra data columns for the cruises 01010047.mgd77 and 01010008.mgd77,
+and force new mgd77+ files to be written in the current directory, try
+.br
+.sp
+\fBmgd77manage\fP 01010047 01010008 \fB\-Ai\fPgrav.11.2.img/2/10 \fB\-C\fPsatgrav/"Geosat/ERS-1 gravity"/s/10/0/"Sandwell/Smith version 11.2" \fB\-F\fP
+To append a filtered version of magnetics as an extra data columns for the cruise 01010047.mgd77, and
+interpolate the filtered data at the times given in the mgd77 file, try
+.br
+.sp
+\fBmgd77manage\fP 01010047 \fB\-AA\fPmymag.tm \fB\-C\fPfiltmag/"Intermediate-wavelength magnetic residuals"/s/1/0/"Useful for looking for isochrons" \fB\-F\fP
+To delete the existing extra columns satfaa, coastdist, and satvgg from all mgd77 files, try
+.br
+.sp
+\fBmgd77manage\fP `cat allmgd77.lis` \fB\-D\fPsatfaa,coastdist,satvgg \fB\-V\fP
+.SH "SEE ALSO"
+.IR mgd77convert (GMTMANSECTION),
+.IR mgd77list (GMTMANSECTION),
+.IR mgd77track (GMTMANSECTION)
+.IR x2sys_init (GMTMANSECTION)
+#include "refs.i"
