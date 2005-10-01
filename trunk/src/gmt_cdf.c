@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.32 2005-09-29 19:32:44 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.33 2005-10-01 18:14:08 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -148,6 +148,7 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
         	check_nc_status (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor));
         	check_nc_status (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset));
         	check_nc_status (nc_get_att_int (ncid, z_id, "node_offset", &header->node_offset));
+        	nc_get_att_double (ncid, z_id, "_FillValue", &header->nan_value);
         	check_nc_status (nc_get_att_text (ncid, NC_GLOBAL, "title", header->title));
         	check_nc_status (nc_get_att_text (ncid, NC_GLOBAL, "source", text));
 		strncpy (header->command, text, GRD_COMMAND_LEN);
@@ -248,11 +249,10 @@ int GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 		inc = 2;
 	}
 
-	/* Get the value of the missing data that will be converted to NaN */
+	/* Open the NetCDF file */
 
 	nc_nopipe (header->name);
  	check_nc_status (nc_open (header->name, NC_NOWRITE, &ncid));
-        nc_get_att_double (ncid, header->z_id, "_FillValue", &header->nan_value);
 	check = !GMT_is_dnan (header->nan_value);
 
 	/* Load data row by row. The data in the file is stored in the same

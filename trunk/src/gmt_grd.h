@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.12 2005-09-12 01:41:05 remko Exp $
+ *	$Id: gmt_grd.h,v 1.13 2005-10-01 18:14:08 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -47,9 +47,12 @@ struct GRD_HEADER {
 	int node_offset;		/* 0 for node grids, 1 for pixel grids */
 /* This section is flexible. Its not copied to any grid header */
 	int type;			/* Grid format */
+	char name[GMT_LONG_TEXT];	/* Actual name of the file after any =<stuff> has been removed */
 	int y_order;			/* NetCDF: 1 if S->N, -1 if N->S */
 	int z_id;			/* NetCDF: id of z field */
-	char name[GMT_LONG_TEXT];	/* Actual name of the file after any =<stuff> has been removed */
+	int padding;			/* Padding to secure proper alignment of doubles */
+	int t_index;			/* NetCDF: index of "time" coordinate */
+	double t_value;			/* NetCDF: value of "time" coordinate */
 	double nan_value;		/* Missing value as stored in grid file */
 /* The following elements should not be changed. They are copied verbatim to the native grid header */
 	double x_min;			/* Minimum x coordinate */
