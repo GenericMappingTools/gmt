@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.30 2005-09-29 19:32:44 remko Exp $
+ *	$Id: gmt_nc.c,v 1.31 2005-10-01 18:14:08 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -83,15 +83,15 @@ int GMT_nc_write_grd_info (struct GRD_HEADER *header)
 
 int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 {
-	int i;
+	int i, j;
 	double dummy[2];
 	char text[GRD_COMMAND_LEN+GRD_REMARK_LEN];
 	nc_type z_type;
 	float *tmp = VNULL;
 
 	/* Dimension ids, variable ids, etc.. */
-	int x_dim, y_dim, x_id, y_id, z_id, dims[2], nvars, ndims;
-	size_t lens[2];
+	int x_dim, y_dim, t_dim, x_id = -1, y_id = -1, t_id = -1, z_id = -1, dims[3], nvars, ndims;
+	size_t lens[3];
 
 	/* Define and get dimensions and variables */
 		
@@ -125,12 +125,12 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		/* First see if this is an old NetCDF formatted file */
 		if (!nc_inq_dimid (ncid, "xysize", &i)) return (GMT_cdf_grd_info (ncid, header, job));
 
-		/* Find the id of the first 2-dimensional (z) variable */
+		/* Find the id of the first 2- or 3-dimensional (z) variable */
 		check_nc_status (nc_inq_nvars (ncid, &nvars));
-		i = 0; z_id = -1;
+		i = 0;
 		while (i < nvars && z_id < 0) {
 			check_nc_status (nc_inq_varndims (ncid, i, &ndims));
-			if (ndims == 2) z_id = i;
+			if (ndims == 2 || ndims == 3) z_id = i;
 			i++;
 		}
 		if (z_id < 0) {
@@ -141,27 +141,30 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		/* Get the data type and the two dimensions */
 		check_nc_status (nc_inq_vartype (ncid, z_id, &z_type));
 		check_nc_status (nc_inq_vardimid (ncid, z_id, dims));
-		y_dim = dims[0]; x_dim = dims[1];
+		x_dim = dims[ndims-1], y_dim = dims[ndims-2], t_dim = y_dim;
+		if (ndims == 3) t_dim = dims[0];
 		header->type = ((z_type == NC_BYTE) ? 2 : z_type) + 13;
 
 		/* Get the ids of the x and y variables */
-		i = 0; x_id = -1; y_id = -1;
-		while (i < nvars && (x_id < 0 || y_id < 0)) {
-			check_nc_status (nc_inq_varndims (ncid, i, &ndims));
-			if (ndims == 1) {
+		i = 0;
+		while (i < nvars && (x_id < 0 || y_id < 0 || t_id < 0)) {
+			check_nc_status (nc_inq_varndims (ncid, i, &j));
+			if (j == 1) {
 				check_nc_status (nc_inq_vardimid (ncid, i, dims));
 				if (dims[0] == x_dim) x_id = i;
 				if (dims[0] == y_dim) y_id = i;
+				if (dims[0] == t_dim) t_id = i;
 				i++;
 			}
 		}
-		if (x_id < 0 || y_id < 0) {
-			fprintf (stderr, "%s: Could not find the x or y variables [%s]\n", GMT_program, header->name);
+		if (x_id < 0 || y_id < 0 || t_id < 0) {
+			fprintf (stderr, "%s: Could not find variables associated with dimensions [%s]\n", GMT_program, header->name);
 			exit (EXIT_FAILURE);
 		}
 
 		check_nc_status (nc_inq_dimlen (ncid, x_dim, &lens[0]));
 		check_nc_status (nc_inq_dimlen (ncid, y_dim, &lens[1]));
+		check_nc_status (nc_inq_dimlen (ncid, t_dim, &lens[2]));
 		header->nx = (int) lens[0];
 		header->ny = (int) lens[1];
 	}
@@ -182,6 +185,8 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		if (nc_get_att_text (ncid, z_id, "units", header->z_units)) strcpy (header->z_units, "user_z_unit");
         	if (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor)) header->z_scale_factor = 1.0;
         	if (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset)) header->z_add_offset = 0.0;
+        	if (nc_get_att_double (ncid, z_id, "_FillValue", &header->nan_value))
+		    nc_get_att_double (ncid, z_id, "missing_value", &header->nan_value);
         	if (nc_get_att_int (ncid, NC_GLOBAL, "node_offset", &header->node_offset)) header->node_offset = 0;
         	if (nc_get_att_text (ncid, NC_GLOBAL, "title", text) &&
 		    nc_get_att_text (ncid, z_id, "long_name", text)) strcpy (text, "");
@@ -191,18 +196,18 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		strncpy (header->command, text, GRD_COMMAND_LEN);
 		strncpy (header->remark, &text[GRD_COMMAND_LEN], GRD_REMARK_LEN);
 
+		lens[0] = 0;
         	if (nc_get_att_double (ncid, x_id, "actual_range", dummy)) {
-			lens[0] = 0; lens[1] = header->nx-1;
+			lens[1] = header->nx-1;
 			check_nc_status (nc_get_var1_double (ncid, x_id, &lens[0], &dummy[0]));
 			check_nc_status (nc_get_var1_double (ncid, x_id, &lens[1], &dummy[1]));
-			header->node_offset = 0;
 		}
 		header->x_min = dummy[0];
 		header->x_max = dummy[1];
 		header->x_inc = (header->x_max - header->x_min) / (header->nx + header->node_offset - 1);
 
         	if (nc_get_att_double (ncid, y_id, "actual_range", dummy)) {
-			lens[0] = 0; lens[1] = header->ny-1;
+			lens[1] = header->ny-1;
 			check_nc_status (nc_get_var1_double (ncid, y_id, &lens[0], &dummy[0]));
 			check_nc_status (nc_get_var1_double (ncid, y_id, &lens[1], &dummy[1]));
 			header->node_offset = 0;
@@ -221,6 +226,19 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		}
 		header->z_min = dummy[0];
 		header->z_max = dummy[1];
+
+		if (ndims == 3 && !GMT_is_dnan(header->t_value)) {
+			lens[2]--;
+        		if (nc_get_att_double (ncid, t_id, "actual_range", dummy)) {
+				check_nc_status (nc_get_var1_double (ncid, t_id, &lens[0], &dummy[0]));
+				check_nc_status (nc_get_var1_double (ncid, t_id, &lens[2], &dummy[1]));
+			}
+			header->t_index = irint((header->t_value - dummy[0]) / (dummy[1] - dummy[0]) * lens[2]);
+			if (header->t_index < 0 || header->t_index > lens[2]) {
+				fprintf (stderr, "%s: requested t coordinate out of range [%s]\n", GMT_program, header->name);
+				exit (EXIT_FAILURE);
+			}
+		}
 	}
 	else {
 		strcpy (text, header->command);
@@ -284,10 +302,10 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 	 */
 	 
 	int  ncid;
-	size_t start[2], edge[2];
+	size_t start[3] = {0,0,0}, edge[3] = {1,1,1};
 	int first_col, last_col, first_row, last_row;
 	int i, j, ij, width_in, width_out, height_in, i_0_out, kk, inc = 1;
-	int *k;
+	int *k, ndims;
 	BOOLEAN check;
 	float *tmp = VNULL;
 
@@ -313,21 +331,21 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 		inc = 2;
 	}
 
-	/* Get the value of the missing data that will be converted to NaN */
+	/* Open the NetCDF file */
 
 	nc_nopipe (header->name);
  	check_nc_status (nc_open (header->name, NC_NOWRITE, &ncid));
-        if (nc_get_att_double (ncid, header->z_id, "_FillValue", &header->nan_value))
-            nc_get_att_double (ncid, header->z_id, "missing_value", &header->nan_value);
 	check = !GMT_is_dnan (header->nan_value);
+	check_nc_status (nc_inq_varndims (ncid, header->z_id, &ndims));
+
+	tmp = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_nc_read_grd");
 
 	/* Load the data row by row. The data in the file is stored either "upside down"
 	 * (y_order < 0, the first row is the top row) or "upside up" (y_order > 0, the first
 	 * row is the bottom row). GMT will store the data in "upside down" mode. */
 
-	tmp = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_nc_read_grd");
-
-	edge[0] = 1; edge[1] = header->nx; start[1] = 0;
+	if (ndims == 3 && header->t_index >= 0) start[0] = header->t_index;
+	edge[ndims-1] = header->nx;
 	if (header->y_order < 0)
 		ij = pad[3] * width_out + i_0_out;
 	else {		/* Flip around the meaning of first and last row */
@@ -340,7 +358,7 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 	header->z_max = -DBL_MAX;
 
 	for (j = first_row; j <= last_row; j++, ij -= header->y_order * width_out) {
-		start[0] = j;
+		start[ndims-2] = j;
 		check_nc_status (nc_get_vara_float (ncid, header->z_id, start, edge, tmp));	/* Get one row */
 		for (i = 0; i < width_in; i++) {	/* Check for and handle NaN proxies */
 			kk = ij+i*inc;
@@ -376,7 +394,7 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
 
-	size_t start[2], edge[2];
+	size_t start[2] = {0,0}, edge[2] = {1,1};
 	int ncid;
 	int i, inc = 1, *k, nr_oor = 0;
 	int j, ij, width_in, width_out, height_out;
@@ -436,7 +454,7 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 
 	/* Set start position for writing grid */
 
-	edge[0] = 1; edge[1] = width_out; start[1] = 0;
+	edge[1] = width_out;
 	ij = first_col + pad[0] + (last_row + pad[3]) * width_in;
 	header->z_min =  DBL_MAX;
 	header->z_max = -DBL_MAX;
@@ -505,23 +523,19 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	return (0);
 }
 
-/* This function checks the return status of a netcdf function and takes
- * appropriate action if the status != NC_NOERR
- */
-
 void check_nc_status (int status)
-{
+{	/* This function checks the return status of a netcdf function and takes
+	 * appropriate action if the status != NC_NOERR
+	 */
 	if (status != NC_NOERR) {
 		fprintf (stderr, "%s: %s [%s]\n", GMT_program, nc_strerror (status), nc_file);
 		exit (EXIT_FAILURE);
 	}
 }
 
-/* This function checks if file was called as a pipe */
-
 void nc_nopipe (char *file)
-{
-	if (!strcmp (file,"=")) {	/* Check if piping is attempted */
+{	/* This function checks if file was called as a pipe */
+	if (!strcmp (file,"=")) {
 		fprintf (stderr, "%s: GMT Fatal Error: NetCDF-based I/O does not support piping - Exiting\n", GMT_program);
 		exit (EXIT_FAILURE);
 	}
