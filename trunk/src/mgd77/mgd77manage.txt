@@ -41,12 +41,12 @@ with data values in second column.  Use - if we are to read from stdin instead. 
 distances in the mgd77 file will be assigned the new values; at other distances we set them to NaN.
 Alternatively, give upper case \fBD\fP instead and we will interpolate the column at all records.
 .br
-\fBg\fP Give full path to a GMT geographic (lon,lat) grid.  We will sample this grid along the
-track given by the mgd77 file.
+\fBg\fP Sample a GMT geographic (lon,lat) grid along the track given by the mgd77 file.  Append
+name of a GMT grid file.
 .br
-\fBi\fP Give full path to a Sandwell/Smith Mercator *.img file and furthermore append the grid spacing
-in minutes (1 or 2), the data scale (typically 1 or 10), and the img file mode (0-3; see \fBimg2mercgrd\fP
-for a description of modes).  We will sample this grid along the track given by the mgd77 file.
+\fBi\fP Sample a Sandwell/Smith Mercator *.img grid along the track given by the mgd77 file.  Append
+grid spacing in minutes (1 or 2), the data scale (typically 1 or 10), the img file mode (0-3; see \fBimg2mercgrd\fP
+for a description of modes), and finally the grid filename.
 .br
 \fBn\fP Append filename of a double column table with first column holding the record number (0 to nrows - 1),
 with data values in second column.  Use - if we are to read from stdin instead.  Records with matching
@@ -76,7 +76,8 @@ Quick mode, use bilinear rather than bicubic interpolation.  optionally, append 
 0 < \fIvalue\fP <= 1 range.  This parameter controls how close to nodes with NaN values the
 interpolation will go.  E.g., a \fIvalue\fP of 0.5 will interpolate about 1/2-way from a non-NaN to a
 NaN node, whereas 0.1 will go about 90% of the way, etc. [Default is 1, which means none of the four nearby
-nodes may be NaN].  Requires \fB\-Ag|i\fP.
+nodes may be NaN].  Requires \fB\-Ag|i\fP.  Note: If \fB\-Q\fP0 is given we will not interpolate but
+base the output on the nearest grid node.
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
 .SH EXAMPLES

@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.34 2005-09-29 07:46:53 pwessel Exp $
+ *	$Id: mgd77.c,v 1.35 2005-10-01 08:31:30 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -1183,7 +1183,7 @@ void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F, BOOLEAN prelim
 				else {				/* Search for extra columns */
 					j = 0;	/* Search for the matching abbreviation in our extra list */
 					while (j < F->E.n_extra && strcmp (word, F->E.extra[j].abbrev)) j++;
-					if (j == MGD77_N_DATA_FIELDS) {		/* No match, either en extra column or a typo. */
+					if (j == F->E.n_extra) {		/* No match, either en extra column or a typo. */
 						fprintf (stderr, "MGD77_Select_Columns: ERROR: Unknown extra column abbreviation \"%s\"\n", word);
 						exit (EXIT_FAILURE);
 					}
@@ -1750,12 +1750,12 @@ int MGD77_Read_Data_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_DATA_RE
 	
 	/* Determine bit pattern for this record */
 	
-	MGD77Record->bit_pattern = MGD77Record->extra_pattern = 0;
+	H->bit_pattern = H->extra_pattern = 0;
 	for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Do the numerical fields first */
-		if (!GMT_is_dnan (H->number[i])) MGD77Record->bit_pattern |= (1 << i);	/* Turn on this bit */
+		if (!GMT_is_dnan (H->number[i])) H->bit_pattern |= (1 << i);	/* Turn on this bit */
 	}
 	for (i = MGD77_N_NUMBER_FIELDS, nwords = 0; i < MGD77_N_DATA_FIELDS; i++, nwords++) {	/* Do the last 3 string fields */
-		if (strncmp(H->word[nwords], ALL_NINES, mgd77defs[i].length)) MGD77Record->bit_pattern |= (1 << i);
+		if (strncmp(H->word[nwords], ALL_NINES, mgd77defs[i].length)) H->bit_pattern |= (1 << i);
 	}
 
 	for (i = 0; i < F->E.n_extra; i++) {	/* Loop over all additional columns */
@@ -1763,14 +1763,14 @@ int MGD77_Read_Data_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_DATA_RE
 			case 'b':	/* Byte */
 				if (MGD77_fread_char (&H->extra[i], F->E.extra[i].scale, F->E.extra[i].offset, F->fp)) return (MGD77_ERROR_READ_BIN_DATA);
 				break;
-			case 'h':	/* Short int */
+			case 's':	/* Short int */
 				if (MGD77_fread_short (&H->extra[i], F->E.extra[i].scale, F->E.extra[i].offset, F->fp, F->E.swap)) return (MGD77_ERROR_READ_BIN_DATA);
 				break;
 			case 'i':	/* Int */
 				if (MGD77_fread_int (&H->extra[i], F->E.extra[i].scale, F->E.extra[i].offset, F->fp, F->E.swap)) return (MGD77_ERROR_READ_BIN_DATA);
 				break;
 		}
-		if (!GMT_is_dnan (H->extra[i])) MGD77Record->extra_pattern |= (1 << i);	/* Turn on this bit */
+		if (!GMT_is_dnan (H->extra[i])) H->extra_pattern |= (1 << i);	/* Turn on this bit */
 	}
 				
 	return (0);
