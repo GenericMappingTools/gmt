@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.35 2005-10-01 08:31:30 pwessel Exp $
+ *	$Id: mgd77.c,v 1.36 2005-10-04 08:27:43 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -11,6 +11,14 @@
  *-------------------------------------------------------------------------*/
 
 #include "mgd77.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#if defined(WIN32) || defined(__EMX__)  /* Some definitions and includes are different under Windows or OS/2 */
+#define STAT _stat
+#else                                   /* Here for Unix, Linux, Cygwin, Interix, etc */
+#define STAT stat
+#endif
 
 #define MGD77_OLDEST_YY		39
 #define ALL_NINES		"9999999999"
@@ -77,6 +85,44 @@ char *MGD77_fmt[2][11] = {
 }
 };
 
+struct MGD77_cdf {
+	int type;
+	int len;
+	double scale;
+	double offset;
+	char *units;
+};
+
+struct MGD77_cdf mgd77cdf[MGD77_N_DATA_FIELDS] = {
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" },
+	{ NC_CHAR,	1,	1.0,	0.0, "" }
+};	
+	
 int MGD77_Output_Order[32] = { MGD77_RECTYPE, MGD77_ID, MGD77_TZ, MGD77_YEAR, MGD77_MONTH, MGD77_DAY,
    MGD77_HOUR, MGD77_MIN, MGD77_LATITUDE, MGD77_LONGITUDE, MGD77_PTC, MGD77_TWT, MGD77_DEPTH, MGD77_BCC,
    MGD77_BTC, MGD77_MTF1, MGD77_MTF2, MGD77_MAG, MGD77_MSENS, MGD77_DIUR, MGD77_MSD, MGD77_GOBS,
@@ -176,6 +222,13 @@ int MGD77_Read_Header_Record_ASCII (struct MGD77_CONTROL *F, struct MGD77_HEADER
 {
 	char record[MGD77_HEADER_LENGTH+1];
 	int i, sequence = 0, fmt, err;
+	struct STAT buf;
+	
+	if (stat (F->path, &buf)) {
+		fprintf (stderr, "%s: Unable to stat file %s\n", GMT_program, F->path);
+		exit (EXIT_FAILURE);
+	}
+	F->n_records = irint ((double)(buf.st_size - MGD77_N_HEADER_RECORDS * MGD77_HEADER_LENGTH) / (double)MGD77_RECORD_LENGTH);
 
 	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) memset ((void *)H->record[i], '\0', MGD77_HEADER_LENGTH + 1);
 	
@@ -612,6 +665,18 @@ int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER_RECORD *H, int 
 	return (0);	/* Success is assured */
 }
 
+int MGD77_Read_Data_ASCII (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD MGD77Record[])	  /* Will read all MGD77 records in current file */
+{
+	int i, err;
+	
+	for (i = 0; i < F->n_records; i++) {
+		err = MGD77_Read_Data_Record_ASCII (F, &MGD77Record[i]);
+		if (err) return (err);
+	}
+	return (0);
+}
+
+
 /* MGD77_Read_Record_ASCII decodes the MGD77 data record, storing values in a structure of type
  * MGD77_DATA_RECORD (see MGD77.h for structure definition).
  */
@@ -693,6 +758,17 @@ int MGD77_Read_Data_Record_ASCII (struct MGD77_CONTROL *F, struct MGD77_DATA_REC
 	return (0);
 }
 
+int MGD77_Read_Data_ASCII_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD MGD77Record[])	  /* Will read all MGD77 records in current file */
+{
+	int i, err;
+	
+	for (i = 0; i < F->n_records; i++) {
+		err = MGD77_Read_Data_Record_ASCII_tbl (F, &MGD77Record[i]);
+		if (err) return (err);
+	}
+	return (0);
+}
+
 int MGD77_Read_Data_Record_ASCII_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will read a single tabular MGD77 record */
 {
 	int i, nwords, k, pos;
@@ -710,6 +786,16 @@ int MGD77_Read_Data_Record_ASCII_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA
 		}
 	}		
 	return (0);
+}
+
+int MGD77_Write_Data_ASCII_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD MGD77Record[])	  /* Will read all tabular MGD77 record */
+{
+	int i;
+	
+	for (i = 0; i < F->n_records; i++) MGD77_Write_Data_Record_ASCII_tbl (F, &MGD77Record[i]);
+	
+	return (0);
+
 }
 
 int MGD77_Write_Data_Record_ASCII_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will read a single tabular MGD77 record */
@@ -1773,6 +1859,82 @@ int MGD77_Read_Data_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_DATA_RE
 		if (!GMT_is_dnan (H->extra[i])) H->extra_pattern |= (1 << i);	/* Turn on this bit */
 	}
 				
+	return (0);
+}
+
+int MGD77_Create_File (struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
+{
+	int i, k, rec_id;
+	size_t start[1] = {0}, count[1];
+	double val;
+	
+	check_nc_status (nc_create (F->path, NC_NOCLOBBER, &F->nc_id));	/* Create the file */
+	
+	check_nc_status (nc_def_dim (F->nc_id, "records", NC_UNLIMITED, &rec_id));	/* Define record dimension */
+	
+	for (i = 0; i < MGD77_N_DATA_FIELDS; i++) {
+		if (! (F->bit_pattern & (1 << i))) continue;	/* No values for this data field */
+		
+		check_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 1, &rec_id, &F->cdfvar_id[i]));				/* Define a variable */
+		check_nc_status (nc_put_att_text (F->nc_id, F->cdfvar_id[i], "long_name", strlen (mgd77defs[i].fieldID), mgd77defs[i].fieldID));	/* Place attributes */
+		check_nc_status (nc_put_att_text (F->nc_id, F->cdfvar_id[i], "units", strlen (mgd77cdf[i].units), mgd77cdf[i].units));		/* Place attributes */
+		check_nc_status (nc_put_att_double (F->nc_id, F->cdfvar_id[i], "scale_factor", NC_DOUBLE, 1, &mgd77cdf[i].scale));		/* Place attributes */
+		check_nc_status (nc_put_att_double (F->nc_id, F->cdfvar_id[i], "add_offset", NC_DOUBLE, 1, &mgd77cdf[i].offset));		/* Place attributes */
+		switch (mgd77cdf[i].type) {
+			case NC_FLOAT:
+			case NC_DOUBLE:
+				val = GMT_d_NaN;
+				break;
+			case NC_INT:
+				val = INT_MAX;
+				break;
+			case NC_SHORT:
+				val = SHRT_MAX;
+				break;
+			case NC_BYTE:
+				val = CHAR_MAX;
+				break;
+		}
+		check_nc_status (nc_put_att_double (F->nc_id, F->cdfvar_id[i], "_FillValue", mgd77cdf[i].type, 1, &val));
+	}
+	
+	check_nc_status (nc_enddef (F->nc_id));
+	
+	count[0] = F->n_records;
+	
+	for (i = 0; i < MGD77_N_DATA_FIELDS; i++) {
+		if (! (F->bit_pattern & (1 << i))) continue;	/* No values for this data field */
+		if (! (mgd77cdf[i].scale == 1.0 && mgd77cdf[i].offset == 0.0)) {
+			if (mgd77cdf[i].offset == 0.0) {
+				for (k = 0; k < F->n_records; k++) S->values[i][k] /= mgd77cdf[i].scale;
+			}
+			else if (mgd77cdf[i].scale == 1.0) {
+				for (k = 0; k < F->n_records; k++) S->values[i][k] -= mgd77cdf[i].offset;
+			}
+			else {
+				for (k = 0; k < F->n_records; k++) S->values[i][k] = (S->values[i][k] - mgd77cdf[i].offset) / mgd77cdf[i].scale;
+			}
+		}
+		switch (mgd77cdf[i].type) {
+			case NC_DOUBLE:
+				check_nc_status (nc_put_vara_double (F->nc_id, F->cdfvar_id[i], start, count, S->values[i]));
+				break;
+			case NC_FLOAT:
+				check_nc_status (nc_put_vara_float (F->nc_id, F->cdfvar_id[i], start, count, (float *)S->values[i]));
+				break;
+			case NC_INT:
+				check_nc_status (nc_put_vara_int (F->nc_id, F->cdfvar_id[i], start, count, (int *)S->values[i]));
+				break;
+			case NC_SHORT:
+				check_nc_status (nc_put_vara_short (F->nc_id, F->cdfvar_id[i], start, count, (short *)S->values[i]));
+				break;
+			case NC_BYTE:
+				check_nc_status (nc_put_vara_schar (F->nc_id, F->cdfvar_id[i], start, count, (signed char *)S->values[i]));
+				break;
+		}
+	}
+	check_nc_status (nc_close (F->nc_id));
+
 	return (0);
 }
 
