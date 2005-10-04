@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.22 2005-09-29 07:46:53 pwessel Exp $
+ *	$Id: mgd77.h,v 1.23 2005-10-04 08:27:43 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -227,6 +227,12 @@ struct MGD77_DATA_RECORD {	/* See MGD-77 Documentation from NGDC for details */
 	unsigned int extra_pattern;	/* bit pattern indicating which of the opional 32 in extra columns */
 };
 
+struct MGD77_DATASET {	/* Info for an entire MGD77+ data set */
+	struct MGD77_HEADER_RECORD H;
+	double **values;	/* 2-D table of necessary number of columns and rows */
+	int *id;		/* Relates column numbers to MGD77 field ids */
+};
+
 struct MGD77_RECORD_DEFAULTS {
 	char *fieldID;     /* variable names for the different MGD77 data fields */
 	char *abbrev ;     /* acronyms for the 27 MGD77 data fields */
@@ -288,10 +294,14 @@ struct MGD77_CONTROL {
 	int n_MGD77_paths;				/* Number of these directories */
 	char user[16];					/* Current user id */
 	char NGDC_id[16];				/* Current NGDC tag id */
+	char path[BUFSIZ];				/* Full path to current file */
 	FILE *fp;					/* File pointer to current open file */
+	int nc_id;					/* netCDF ID for current open file (if netCDF) */
+	int n_records;					/* Number of MGD77 data records */
 	int n_out_columns;				/* Number of output columns requested */
 	int order[64];					/* Gives the output order of each column */
 	BOOLEAN use_column[64];				/* TRUE for columns we are interested in outputting */
+	int cdfvar_id[64];				/* netCDF variable ID */
 	int format;					/* 0 if any file format, 1 if ascii, and 2 if binary */
 	BOOLEAN binary;					/* TRUE if a binary MGD77+ file */
 	int time_format;				/* Either GMT_IS_ABSTIME or GMT_IS_RELTIME */
