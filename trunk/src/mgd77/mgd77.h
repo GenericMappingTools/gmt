@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.23 2005-10-04 08:27:43 pwessel Exp $
+ *	$Id: mgd77.h,v 1.24 2005-10-05 04:16:08 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -229,7 +229,8 @@ struct MGD77_DATA_RECORD {	/* See MGD-77 Documentation from NGDC for details */
 
 struct MGD77_DATASET {	/* Info for an entire MGD77+ data set */
 	struct MGD77_HEADER_RECORD H;
-	double **values;	/* 2-D table of necessary number of columns and rows */
+	double *values[64];	/* 2-D table of necessary number of columns and rows */
+	char  *text[3];		/* 2-D table of necessary text of columns and rows */
 	int *id;		/* Relates column numbers to MGD77 field ids */
 };
 
@@ -351,6 +352,10 @@ EXTERN_MSC int MGD77_carter_depth_from_twt (int zone, double twt_in_msec, struct
 EXTERN_MSC int MGD77_carter_twt_from_depth (int zone, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec);
 EXTERN_MSC int MGD77_carter_depth_from_xytwt (double lon, double lat, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m);
 EXTERN_MSC int MGD77_carter_twt_from_xydepth (double lon, double lat, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec);
+
+EXTERN_MSC int MGD77_Read_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
+EXTERN_MSC int MGD77_Create_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
+EXTERN_MSC void MGD77_Free (struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
 
 EXTERN_MSC struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_FIELDS];
 
