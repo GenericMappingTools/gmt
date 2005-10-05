@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.37 2005-10-05 04:16:08 pwessel Exp $
+ *	$Id: mgd77.c,v 1.38 2005-10-05 22:29:55 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -2026,7 +2026,7 @@ int MGD77_Read_Data_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_DATA_RE
 
 int MGD77_Create_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 {
-	int i, k, rec_id, dims[2], Cdim_id[3], Clength[3] = {8, 5, 6};
+	int i, k, rec_id, header_id, dims[2], Cdim_id[3], Clength[3] = {8, 5, 6};
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
 	double val;
 	char *Cname[3] = {"C8", "C5", "C6"};
@@ -2035,14 +2035,17 @@ int MGD77_Create_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DAT
 	
 	check_nc_status (nc_create (F->path, NC_NOCLOBBER, &F->nc_id));	/* Create the file */
 	
+	count[0] = MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + 1);
 	check_nc_status (nc_def_dim (F->nc_id, "records", NC_UNLIMITED, &rec_id));	/* Define unlimited record dimension */
+	check_nc_status (nc_def_dim (F->nc_id, "headers", count[0], &header_id));	/* Define unlimited record dimension */
 	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {			/* Loop over the 3 MGD77 text fields */
 		k = i - MGD77_N_NUMBER_FIELDS;
 		check_nc_status (nc_def_dim (F->nc_id, Cname[k], Clength[k], &Cdim_id[k]));			/* Define character length dimension */
 	}
 	
-	dims[0] = rec_id;
+	check_nc_status (nc_def_var (F->nc_id, "headers", NC_BYTE, 1, &header_id, &F->cdfheader_id));				/* Define a variable */
 
+	dims[0] = rec_id;
 	for (i = 1; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Loop over all MGD77 number fields (except Rec-type)*/
 		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;	/* The 5 time-related columns are not written separately but as MGD77_TIME */
 		if (i >= MGD77_ID && i <= MGD77_SSPN) continue;		/* The 3 text columns are written below */
@@ -2087,6 +2090,8 @@ int MGD77_Create_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DAT
 	
 	/* Now write data */
 	
+	check_nc_status (nc_put_vara_schar (F->nc_id, F->cdfheader_id, start, count, (signed char *)S->H.record));
+
 	count[0] = F->n_records;
 	
 	for (i = 1; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Loop over all MGD77 number fields (except Rec-type)*/
@@ -2157,8 +2162,9 @@ int MGD77_Read_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 	
 	F->n_records = count[0];
 	for (i = 0; i < 32; i++) S->values[i] = NULL;
+	for (i = 0; i < 3; i++) S->text[i] = NULL;
 	
-	for (i = 1; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Loop over all MGD77 number fields (except Rec-type)*/
+	for (i = 1; i < MGD77_N_NUMBER_FIELDS + 1; i++) {	/* Loop over all MGD77 number fields + time (except Rec-type)*/
 		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;	/* The 5 time-related columns are not read separately but as MGD77_TIME */
 		if (i >= MGD77_ID && i <= MGD77_SSPN) continue;		/* The 3 text columns are read below */
 		
@@ -2226,6 +2232,11 @@ int MGD77_Read_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			S->values[MGD77_HOUR][k] = cal.hour;
 			S->values[MGD77_MIN][k] = cal.min + cal.sec / 60.0;
 		}
+		F->bit_pattern |= (1 << MGD77_YEAR);		/* Set all the time pieces */
+		F->bit_pattern |= (1 << MGD77_MONTH);		/* Set all the time pieces */
+		F->bit_pattern |= (1 << MGD77_DAY);		/* Set all the time pieces */
+		F->bit_pattern |= (1 << MGD77_HOUR);		/* Set all the time pieces */
+		F->bit_pattern |= (1 << MGD77_MIN);		/* Set all the time pieces */
 	}
 	
 	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {	/* Loop over the 3 MGD77 text fields */

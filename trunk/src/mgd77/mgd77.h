@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.24 2005-10-05 04:16:08 pwessel Exp $
+ *	$Id: mgd77.h,v 1.25 2005-10-05 22:29:55 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -303,6 +303,7 @@ struct MGD77_CONTROL {
 	int order[64];					/* Gives the output order of each column */
 	BOOLEAN use_column[64];				/* TRUE for columns we are interested in outputting */
 	int cdfvar_id[64];				/* netCDF variable ID */
+	int cdfheader_id;				/* netCDF variable ID */
 	int format;					/* 0 if any file format, 1 if ascii, and 2 if binary */
 	BOOLEAN binary;					/* TRUE if a binary MGD77+ file */
 	int time_format;				/* Either GMT_IS_ABSTIME or GMT_IS_RELTIME */
