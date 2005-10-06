@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.38 2005-10-05 22:29:55 pwessel Exp $
+ *	$Id: mgd77.c,v 1.39 2005-10-06 03:05:45 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -48,6 +48,10 @@ int MGD77_Write_Data_Record_ASCII (struct MGD77_CONTROL *F, struct MGD77_DATA_RE
 int MGD77_Write_Data_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *H);
 int MGD77_Read_Data_Record_ASCII_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);	  /* Will read a single tabular MGD77 record */
 int MGD77_Write_Data_Record_ASCII_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);	  /* Will read a single tabular MGD77 record */
+int texts_are_constant (char *txt, int n, int width);
+int numbers_are_constant (double x[], int n);
+void apply_scale_offset_after_read (double x[], int n, double scale, double offset);
+void apply_scale_offset_before_write (double x[], int n, double scale, double offset);
 
 void double_swab (double *x);
 
@@ -700,7 +704,7 @@ int MGD77_Read_File_ASCII (char *file, struct MGD77_CONTROL *F, struct MGD77_DAT
 		if (err) return (err);
 		F->bit_pattern |= MGD77Record.bit_pattern;
 		for (k = 0; k < MGD77_N_NUMBER_FIELDS; k++) S->values[k][i] = MGD77Record.number[k];
-		S->values[MGD77_TIME][i] = MGD77Record.number[MGD77_TIME];
+		S->values[MGD77_TIME][i] = MGD77Record.time;
 		for (k = 0; k < 3; k++) strncpy (&S->text[k][i*Clength[k]], MGD77Record.word[k], Clength[k]);
 	}
 	MGD77_Close_File (F);
@@ -720,13 +724,14 @@ int MGD77_Read_File_Binary (char *file, struct MGD77_CONTROL *F, struct MGD77_DA
 	for (k = 0; k < 32; k++) S->values[k] = (double *)GMT_memory (VNULL, F->n_records, sizeof (double), "MGD77_Read_File_Binary");
 	for (k = 0; k < 3; k++) S->text[k] = (char *)GMT_memory (VNULL, F->n_records*Clength[k], sizeof (char), "MGD77_Read_File_ASCII");
 	
+	memset ((void *)&MGD77Record, 0, sizeof (struct MGD77_DATA_RECORD));
 	F->bit_pattern = 0;
 	for (i = 0; i < F->n_records; i++) {
 		err = MGD77_Read_Data_Record_Binary (F, &MGD77Record);
 		if (err) return (err);
 		F->bit_pattern |= MGD77Record.bit_pattern;
 		for (k = 0; k < MGD77_N_NUMBER_FIELDS; k++) S->values[k][i] = MGD77Record.number[k];
-		S->values[MGD77_TIME][i] = MGD77Record.number[MGD77_TIME];
+		S->values[MGD77_TIME][i] = MGD77Record.time;
 		for (k = 0; k < 3; k++) strncpy (&S->text[k][i*Clength[k]], MGD77Record.word[k], Clength[k]);
 	}
 	MGD77_Close_File (F);
@@ -744,11 +749,12 @@ int MGD77_Create_File_Binary (char *file, struct MGD77_CONTROL *F, struct MGD77_
 	err = MGD77_Write_Header_Record (F, &S->H);  /* Will write the entire 24-section header structure */
 	if (err) return (err);
 	
+	memset ((void *)&MGD77Record, 0, sizeof (struct MGD77_DATA_RECORD));
 	for (i = 0; i < F->n_records; i++) {
 		for (k = 0; k < MGD77_N_NUMBER_FIELDS; k++) {
 			MGD77Record.number[k] = (S->values[k]) ? S->values[k][i] : GMT_d_NaN;
 		}
-		MGD77Record.number[MGD77_TIME] = (S->values[MGD77_TIME]) ? S->values[MGD77_TIME][i] : GMT_d_NaN;
+		MGD77Record.time = (S->values[MGD77_TIME]) ? S->values[MGD77_TIME][i] : GMT_d_NaN;
 		for (k = 0; k < 3; k++) {
 			if (S->text[k])
 				strncpy (MGD77Record.word[k], &S->text[k][i*Clength[k]], Clength[k]);
@@ -773,11 +779,12 @@ int MGD77_Create_File_ASCII (char *file, struct MGD77_CONTROL *F, struct MGD77_D
 	err = MGD77_Write_Header_Record (F, &S->H);  /* Will write the entire 24-section header structure */
 	if (err) return (err);
 	
+	memset ((void *)&MGD77Record, 0, sizeof (struct MGD77_DATA_RECORD));
 	for (i = 0; i < F->n_records; i++) {
 		for (k = 0; k < MGD77_N_NUMBER_FIELDS; k++) {
 			MGD77Record.number[k] = (S->values[k]) ? S->values[k][i] : GMT_d_NaN;
 		}
-		MGD77Record.number[MGD77_TIME] = (S->values[MGD77_TIME]) ? S->values[MGD77_TIME][i] : GMT_d_NaN;
+		MGD77Record.time = (S->values[MGD77_TIME]) ? S->values[MGD77_TIME][i] : GMT_d_NaN;
 		for (k = 0; k < 3; k++) {
 			if (S->text[k])
 				strncpy (MGD77Record.word[k], &S->text[k][i*Clength[k]], Clength[k]);
@@ -866,6 +873,7 @@ int MGD77_Read_Data_Record_ASCII (struct MGD77_CONTROL *F, struct MGD77_DATA_REC
 		tz = (GMT_is_dnan (MGD77Record->number[MGD77_TZ])) ? 0.0 : MGD77Record->number[MGD77_TZ];
 		secs = GMT_HR2SEC_I * (MGD77Record->number[MGD77_HOUR] + tz) + GMT_MIN2SEC_I * MGD77Record->number[MGD77_MIN];
 		MGD77Record->time = GMT_rdc2dt (rata_die, secs);
+		MGD77Record->bit_pattern |= (1 << MGD77_TIME);	/* Turn on this bit */
 	}
 	else	/* Not present or incomplete, assign NaN */
 		MGD77Record->time = MGD77_NaN;
@@ -895,6 +903,7 @@ int MGD77_Read_File_ASCII_tbl (char *file, struct MGD77_CONTROL *F, struct MGD77
 	for (k = 0; k < 32; k++) S->values[k] = (double *)GMT_memory (VNULL, F->n_records, sizeof (double), "MGD77_Read_File_ASCII");
 	
 	F->bit_pattern = 0;
+	memset ((void *)&MGD77Record, 0, sizeof (struct MGD77_DATA_RECORD));
 	for (i = 0; i < F->n_records; i++) {
 		err = MGD77_Read_Data_Record_ASCII_tbl (F, &MGD77Record);
 		if (err) return (err);
@@ -936,6 +945,7 @@ int MGD77_Create_File_ASCII_tbl (char *file, struct MGD77_CONTROL *F, struct MGD
 	err = MGD77_Write_Header_Record (F, &S->H);  /* Will write the entire 24-section header structure */
 	if (err) return (err);
 	
+	memset ((void *)&MGD77Record, 0, sizeof (struct MGD77_DATA_RECORD));
 	for (i = 0; i < F->n_records; i++) {
 		for (k = 0; k < MGD77_N_NUMBER_FIELDS; k++) {
 			MGD77Record.number[k] = (S->values[k]) ? S->values[k][i] : GMT_d_NaN;
@@ -2026,64 +2036,78 @@ int MGD77_Read_Data_Record_Binary (struct MGD77_CONTROL *F, struct MGD77_DATA_RE
 
 int MGD77_Create_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 {
-	int i, k, rec_id, header_id, dims[2], Cdim_id[3], Clength[3] = {8, 5, 6};
+	int i, k, rec_id, header_recnumber, header_reclength, dims[2], Cdim_id[3], Clength[3] = {8, 5, 6}, n_dim;
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
-	double val;
+	double val[7];
 	char *Cname[3] = {"C8", "C5", "C6"};
 	
 	if (MGD77_Open_File (file, F, 3)) return (-1);	/* Basically sets the path */
 	
 	check_nc_status (nc_create (F->path, NC_NOCLOBBER, &F->nc_id));	/* Create the file */
 	
-	count[0] = MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + 1);
+	count[0] = MGD77_N_HEADER_RECORDS;
+	count[1] = MGD77_HEADER_LENGTH + 1;
 	check_nc_status (nc_def_dim (F->nc_id, "records", NC_UNLIMITED, &rec_id));	/* Define unlimited record dimension */
-	check_nc_status (nc_def_dim (F->nc_id, "headers", count[0], &header_id));	/* Define unlimited record dimension */
+	check_nc_status (nc_def_dim (F->nc_id, "headerno", count[0], &header_recnumber));	/* Define # of header records dimension */
+	check_nc_status (nc_def_dim (F->nc_id, "headerlen", count[1], &header_reclength));	/* Define length of header rec dimension */
 	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {			/* Loop over the 3 MGD77 text fields */
 		k = i - MGD77_N_NUMBER_FIELDS;
 		check_nc_status (nc_def_dim (F->nc_id, Cname[k], Clength[k], &Cdim_id[k]));			/* Define character length dimension */
 	}
 	
-	check_nc_status (nc_def_var (F->nc_id, "headers", NC_BYTE, 1, &header_id, &F->cdfheader_id));				/* Define a variable */
+	dims[0] = header_recnumber;
+	dims[1] = header_reclength;
+	check_nc_status (nc_def_var (F->nc_id, "headers", NC_BYTE, 2, dims, &F->cdfheader_id));				/* Define a variable */
+	val[NC_BYTE] = val[NC_CHAR] = CHAR_MAX;
+	val[NC_SHORT] = SHRT_MAX;
+	val[NC_INT] = INT_MAX;
+	val[NC_FLOAT] = val[NC_DOUBLE] = GMT_d_NaN;
 
-	dims[0] = rec_id;
+	dims[0] = rec_id;	dims[1] = 0;
 	for (i = 1; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Loop over all MGD77 number fields (except Rec-type)*/
 		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;	/* The 5 time-related columns are not written separately but as MGD77_TIME */
-		if (i >= MGD77_ID && i <= MGD77_SSPN) continue;		/* The 3 text columns are written below */
 		if (! (F->bit_pattern & (1 << i))) continue;		/* No values for this data field */
+		if (numbers_are_constant (S->values[i], F->n_records)) {	/* Simply store one value */
+			F->cdfvar_constant[i] = TRUE;
+			check_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 0, NULL, &F->cdfvar_id[i]));		/* Define a variable */
+		}
+		else {	/* Must store array */
+			F->cdfvar_constant[i] = FALSE;
+			check_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 1, dims, &F->cdfvar_id[i]));		/* Define a variable */
+		}
 		
-		check_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 1, dims, &F->cdfvar_id[i]));				/* Define a variable */
 		check_nc_status (nc_put_att_text (F->nc_id, F->cdfvar_id[i], "long_name", strlen (mgd77defs[i].fieldID), mgd77defs[i].fieldID));	/* Place attributes */
 		check_nc_status (nc_put_att_text (F->nc_id, F->cdfvar_id[i], "units", strlen (mgd77cdf[i].units), mgd77cdf[i].units));		/* Place attributes */
 		check_nc_status (nc_put_att_double (F->nc_id, F->cdfvar_id[i], "scale_factor", NC_DOUBLE, 1, &mgd77cdf[i].scale));		/* Place attributes */
 		check_nc_status (nc_put_att_double (F->nc_id, F->cdfvar_id[i], "add_offset", NC_DOUBLE, 1, &mgd77cdf[i].offset));		/* Place attributes */
-		switch (mgd77cdf[i].type) {
-			case NC_FLOAT:
-			case NC_DOUBLE:
-				val = GMT_d_NaN;
-				break;
-			case NC_INT:
-				val = INT_MAX;
-				break;
-			case NC_SHORT:
-				val = SHRT_MAX;
-				break;
-			case NC_BYTE:
-				val = CHAR_MAX;
-				break;
-		}
-		check_nc_status (nc_put_att_double (F->nc_id, F->cdfvar_id[i], "_FillValue", mgd77cdf[i].type, 1, &val));
+		check_nc_status (nc_put_att_double (F->nc_id, F->cdfvar_id[i], "_FillValue", mgd77cdf[i].type, 1, &val[mgd77cdf[i].type]));
+	}
+	
+	if (F->bit_pattern & (1 << MGD77_TIME)) {	/* Do absolute time separately */
+		
+		check_nc_status (nc_def_var (F->nc_id, "time", NC_DOUBLE, 1, dims, &F->cdfvar_id[MGD77_TIME]));					/* Define a variable */
+		check_nc_status (nc_put_att_text (F->nc_id, F->cdfvar_id[MGD77_TIME], "long_name", 14, "GMT J2000 Time"));			/* Place attributes */
+		check_nc_status (nc_put_att_text (F->nc_id, F->cdfvar_id[MGD77_TIME], "units", strlen (mgd77cdf[MGD77_TIME].units), mgd77cdf[MGD77_TIME].units));	/* Place attributes */
+		check_nc_status (nc_put_att_double (F->nc_id, F->cdfvar_id[MGD77_TIME], "scale_factor", NC_DOUBLE, 1, &mgd77cdf[MGD77_TIME].scale));			/* Place attributes */
+		check_nc_status (nc_put_att_double (F->nc_id, F->cdfvar_id[MGD77_TIME], "add_offset", NC_DOUBLE, 1, &mgd77cdf[MGD77_TIME].offset));			/* Place attributes */
+		check_nc_status (nc_put_att_double (F->nc_id, F->cdfvar_id[MGD77_TIME], "_FillValue", NC_DOUBLE, 1, &GMT_d_NaN));
 	}
 	
 	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {	/* Loop over the 3 MGD77 text fields */
 		if (! (F->bit_pattern & (1 << i))) continue;		/* No values for this data field */
+		k = i - MGD77_N_NUMBER_FIELDS;
 		dims[1] = Cdim_id[i - MGD77_N_NUMBER_FIELDS];
-		check_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 2, dims, &F->cdfvar_id[i]));				/* Define a variable */
+		if (texts_are_constant (S->text[k], F->n_records, Clength[k])) {	/* Simply store one value */
+			F->cdfvar_constant[i] = TRUE;
+			check_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 1, &dims[1], &F->cdfvar_id[i]));		/* Define a variable */
+		}
+		else {	/* Must store array */
+			F->cdfvar_constant[i] = FALSE;
+			check_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 2, dims, &F->cdfvar_id[i]));				/* Define a variable */
+		}
 		check_nc_status (nc_put_att_text (F->nc_id, F->cdfvar_id[i], "long_name", strlen (mgd77defs[i].fieldID), mgd77defs[i].fieldID));	/* Place attributes */
 		check_nc_status (nc_put_att_text (F->nc_id, F->cdfvar_id[i], "units", strlen (mgd77cdf[i].units), mgd77cdf[i].units));		/* Place attributes */
-		check_nc_status (nc_put_att_double (F->nc_id, F->cdfvar_id[i], "scale_factor", NC_DOUBLE, 1, &mgd77cdf[i].scale));		/* Place attributes */
-		check_nc_status (nc_put_att_double (F->nc_id, F->cdfvar_id[i], "add_offset", NC_DOUBLE, 1, &mgd77cdf[i].offset));		/* Place attributes */
-		val = CHAR_MAX;
-		check_nc_status (nc_put_att_double (F->nc_id, F->cdfvar_id[i], "_FillValue", mgd77cdf[i].type, 1, &val));
+		check_nc_status (nc_put_att_double (F->nc_id, F->cdfvar_id[i], "_FillValue", mgd77cdf[i].type, 1, &val[mgd77cdf[i].type]));
 	}
 	
 	check_nc_status (nc_enddef (F->nc_id));
@@ -2092,48 +2116,32 @@ int MGD77_Create_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DAT
 	
 	check_nc_status (nc_put_vara_schar (F->nc_id, F->cdfheader_id, start, count, (signed char *)S->H.record));
 
-	count[0] = F->n_records;
+	count[0] = F->n_records;	count[1] = 0;
 	
 	for (i = 1; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Loop over all MGD77 number fields (except Rec-type)*/
 		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;	/* The 5 time-related columns are not written separately but as MGD77_TIME */
-		if (i >= MGD77_ID && i <= MGD77_SSPN) continue;		/* The 3 text columns are written below */
 		if (! (F->bit_pattern & (1 << i))) continue;		/* No values for this data field */
 		
-		if (! (mgd77cdf[i].scale == 1.0 && mgd77cdf[i].offset == 0.0)) {	/* Must do data scaling */
-			if (mgd77cdf[i].offset == 0.0) {	/*  Just do scaling */
-				for (k = 0; k < F->n_records; k++) S->values[i][k] /= mgd77cdf[i].scale;
-			}
-			else if (mgd77cdf[i].scale == 1.0) {	/* Just do offset */
-				for (k = 0; k < F->n_records; k++) S->values[i][k] -= mgd77cdf[i].offset;
-			}
-			else {					/* Scaling and offset */
-				for (k = 0; k < F->n_records; k++) S->values[i][k] = (S->values[i][k] - mgd77cdf[i].offset) / mgd77cdf[i].scale;
-			}
+		if (F->cdfvar_constant[i]) {	/* Onlly scale one element and write it */
+			apply_scale_offset_before_write (S->values[i], 1, mgd77cdf[i].scale, mgd77cdf[i].offset);
+			check_nc_status (nc_put_var1_double (F->nc_id, F->cdfvar_id[i], start, &S->values[i][0]));
 		}
-		switch (mgd77cdf[i].type) {
-			case NC_DOUBLE:
-				check_nc_status (nc_put_vara_double (F->nc_id, F->cdfvar_id[i], start, count, S->values[i]));
-				break;
-			case NC_FLOAT:
-				check_nc_status (nc_put_vara_float (F->nc_id, F->cdfvar_id[i], start, count, (float *)S->values[i]));
-				break;
-			case NC_INT:
-				check_nc_status (nc_put_vara_int (F->nc_id, F->cdfvar_id[i], start, count, (int *)S->values[i]));
-				break;
-			case NC_SHORT:
-				check_nc_status (nc_put_vara_short (F->nc_id, F->cdfvar_id[i], start, count, (short *)S->values[i]));
-				break;
-			case NC_BYTE:
-				check_nc_status (nc_put_vara_schar (F->nc_id, F->cdfvar_id[i], start, count, (signed char *)S->values[i]));
-				break;
+		else {
+			apply_scale_offset_before_write (S->values[i], F->n_records, mgd77cdf[i].scale, mgd77cdf[i].offset);
+			check_nc_status (nc_put_vara_double (F->nc_id, F->cdfvar_id[i], start, count, S->values[i]));
 		}
 	}
 	
+	if (F->bit_pattern & (1 << MGD77_TIME)) check_nc_status (nc_put_vara_double (F->nc_id, F->cdfvar_id[MGD77_TIME], start, count, S->values[MGD77_TIME]));
+
 	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {	/* Loop over the 3 MGD77 text fields */
 		if (! (F->bit_pattern & (1 << i))) continue;		/* No values for this data field */
 		k = i - MGD77_N_NUMBER_FIELDS;
 		count[1] = Clength[k];
-		check_nc_status (nc_put_vara_schar (F->nc_id, F->cdfvar_id[i], start, count, (signed char *)S->text[k]));
+		if (F->cdfvar_constant[i])
+			check_nc_status (nc_put_vara_schar (F->nc_id, F->cdfvar_id[i], start, &count[1], (signed char *)S->text[k]));	/* Just write one text string */
+		else
+			check_nc_status (nc_put_vara_schar (F->nc_id, F->cdfvar_id[i], start, count, (signed char *)S->text[k]));
 	}
 
 	check_nc_status (nc_close (F->nc_id));
@@ -2143,7 +2151,7 @@ int MGD77_Create_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DAT
 
 int MGD77_Read_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 {
-	int i, k, rec_id, dims[2], Cdim_id[3], Clength[3] = {8, 5, 6}, status;
+	int i, j, k, rec_id, dims[2], Cdim_id[3], Clength[3] = {8, 5, 6}, status, n_dims;
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
 	char *Cname[3] = {"C8", "C5", "C6"}, name[BUFSIZ];
 	double scale = 1.0, offset = 0.0, tz;
@@ -2155,18 +2163,23 @@ int MGD77_Read_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 	
 	check_nc_status (nc_inq_dimid (F->nc_id, "records", &rec_id));		/* Get unlimited record dimension */
 	check_nc_status (nc_inq_dimlen (F->nc_id, rec_id, &count[0]));	/* Get number of data records */
+	F->n_records = count[0];
 	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {	/* Loop over the 3 MGD77 text fields */
 		k = i - MGD77_N_NUMBER_FIELDS;
 		check_nc_status (nc_inq_dimid (F->nc_id, Cname[k], &Cdim_id[k]));		/* Get character length dimensions */
 	}
 	
-	F->n_records = count[0];
+	count[0] = MGD77_N_HEADER_RECORDS;
+	count[1] = MGD77_HEADER_LENGTH + 1;
+	check_nc_status (nc_inq_varid (F->nc_id, "headers", &F->cdfheader_id));
+	check_nc_status (nc_get_vara_schar (F->nc_id, F->cdfheader_id, start, count, (signed char *)S->H.record));
+	
 	for (i = 0; i < 32; i++) S->values[i] = NULL;
 	for (i = 0; i < 3; i++) S->text[i] = NULL;
 	
-	for (i = 1; i < MGD77_N_NUMBER_FIELDS + 1; i++) {	/* Loop over all MGD77 number fields + time (except Rec-type)*/
+	count[0] = F->n_records;	count[1] = 0;
+	for (i = 1; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Loop over all MGD77 number fields (except Rec-type)*/
 		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;	/* The 5 time-related columns are not read separately but as MGD77_TIME */
-		if (i >= MGD77_ID && i <= MGD77_SSPN) continue;		/* The 3 text columns are read below */
 		
 		if ((status = nc_inq_varid (F->nc_id, mgd77defs[i].abbrev, &F->cdfvar_id[i])) == NC_ENOTVAR) continue;	/* No such column in this file */
 		
@@ -2187,37 +2200,35 @@ int MGD77_Read_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 		check_nc_status (nc_get_att_double (F->nc_id, F->cdfvar_id[i], "scale_factor", &scale));	/* Get attributes */
 		check_nc_status (nc_get_att_double (F->nc_id, F->cdfvar_id[i], "add_offset", &offset));	/* Get attributes */
 		
-		switch (mgd77cdf[i].type) {
-			case NC_DOUBLE:
-				check_nc_status (nc_get_vara_double (F->nc_id, F->cdfvar_id[i], start, count, S->values[i]));
-				break;
-			case NC_FLOAT:
-				check_nc_status (nc_get_vara_float (F->nc_id, F->cdfvar_id[i], start, count, (float *)S->values[i]));
-				break;
-			case NC_INT:
-				check_nc_status (nc_get_vara_int (F->nc_id, F->cdfvar_id[i], start, count, (int *)S->values[i]));
-				break;
-			case NC_SHORT:
-				check_nc_status (nc_get_vara_short (F->nc_id, F->cdfvar_id[i], start, count, (short *)S->values[i]));
-				break;
-			case NC_BYTE:
-				check_nc_status (nc_get_vara_schar (F->nc_id, F->cdfvar_id[i], start, count, (signed char *)S->values[i]));
-				break;
+		check_nc_status (nc_inq_varndims (F->nc_id, F->cdfvar_id[i], &n_dims));	/* Get number of dimensions */
+		
+		if (n_dims == 0) {	/* Scalar, must read one and then replicate */
+			check_nc_status (nc_get_var1_double (F->nc_id, F->cdfvar_id[i], start, &S->values[i][0]));
+			apply_scale_offset_after_read (S->values[i], 1, scale, offset);	/* Just modify one point */
+			for (k = 1; k < F->n_records; k++) S->values[i][k] = S->values[i][0];
 		}
-		if (! (mgd77cdf[i].scale == 1.0 && mgd77cdf[i].offset == 0.0)) {	/* Must do data scaling */
-			if (mgd77cdf[i].offset == 0.0) {	/*  Just do scaling */
-				for (k = 0; k < F->n_records; k++) S->values[i][k] *= scale;
-			}
-			else if (mgd77cdf[i].scale == 1.0) {	/* Just do offset */
-				for (k = 0; k < F->n_records; k++) S->values[i][k] += offset;
-			}
-			else {					/* Scaling and offset */
-				for (k = 0; k < F->n_records; k++) S->values[i][k] = (S->values[i][k] * scale) + offset;
-			}
+		else {	/* Read entire array */
+			check_nc_status (nc_get_vara_double (F->nc_id, F->cdfvar_id[i], start, count, S->values[i]));
+			apply_scale_offset_after_read (S->values[i], F->n_records, scale, offset);
 		}
 	}
 	
-	if (F->bit_pattern & (MGD77_TIME << i)) {		/* Break time into fields */
+	if ((status = nc_inq_varid (F->nc_id, "time", &F->cdfvar_id[MGD77_TIME])) != NC_ENOTVAR) {	/* Have time */
+		F->bit_pattern |= (1 << MGD77_TIME);		/* We do have this data field */
+		check_nc_status (nc_get_att_text (F->nc_id, F->cdfvar_id[MGD77_TIME], "long_name", name));	/* Get attributes */
+		if (strncmp (name, "GMT J2000 Time", 14)) {
+			fprintf (stderr, "%s: Col was expected to have %s but we found %s\n", GMT_program, "GMT J2000 Time", name);
+			exit (EXIT_FAILURE);
+		}
+		check_nc_status (nc_get_att_text (F->nc_id, F->cdfvar_id[MGD77_TIME], "units", name));		/* Get attributes */
+		if (strncmp (name, mgd77cdf[MGD77_TIME].units, strlen (mgd77cdf[MGD77_TIME].units))) {
+			fprintf (stderr, "%s: Col was expected to have %s but we found %s\n", GMT_program, mgd77cdf[MGD77_TIME].units, name);
+			exit (EXIT_FAILURE);
+		}
+		check_nc_status (nc_get_att_double (F->nc_id, F->cdfvar_id[MGD77_TIME], "scale_factor", &scale));	/* Get attributes */
+		check_nc_status (nc_get_att_double (F->nc_id, F->cdfvar_id[MGD77_TIME], "add_offset", &offset));	/* Get attributes */
+		S->values[MGD77_TIME] = (double *) GMT_memory (VNULL, F->n_records, sizeof (double), "MGD77_Read_File_cdf");
+		check_nc_status (nc_get_vara_double (F->nc_id, F->cdfvar_id[MGD77_TIME], start, count, S->values[MGD77_TIME]));
 		S->values[MGD77_YEAR] = (double *) GMT_memory (VNULL, F->n_records, sizeof (double), "MGD77_Read_File_cdf");
 		S->values[MGD77_MONTH] = (double *) GMT_memory (VNULL, F->n_records, sizeof (double), "MGD77_Read_File_cdf");
 		S->values[MGD77_DAY] = (double *) GMT_memory (VNULL, F->n_records, sizeof (double), "MGD77_Read_File_cdf");
@@ -2225,7 +2236,7 @@ int MGD77_Read_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 		S->values[MGD77_MIN] = (double *) GMT_memory (VNULL, F->n_records, sizeof (double), "MGD77_Read_File_cdf");
 		for (k = 0; k < F->n_records; k++) {
 			tz = (GMT_is_dnan (S->values[MGD77_TZ][k])) ? 0.0 : S->values[MGD77_TZ][k];
-			GMT_gcal_from_dt (S->values[MGD77_TZ][k] - tz * 3600.0, &cal);	/* Adjust for TZ to get local calendar */
+			GMT_gcal_from_dt (S->values[MGD77_TIME][k] - tz * 3600.0, &cal);	/* Adjust for TZ to get local calendar */
 			S->values[MGD77_YEAR][k] = cal.year;
 			S->values[MGD77_MONTH][k] = cal.month;
 			S->values[MGD77_DAY][k] = cal.day_m;
@@ -2245,12 +2256,22 @@ int MGD77_Read_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 		
 		k = i - MGD77_N_NUMBER_FIELDS;
 
+		check_nc_status (nc_inq_varndims (F->nc_id, F->cdfvar_id[i], &n_dims));	/* Get number of dimensions */
 		S->text[k] = (char *) GMT_memory (VNULL, F->n_records * Clength[k], sizeof (char), "MGD77_Read_File_cdf");
 		count[1] = Clength[k];
-		check_nc_status (nc_get_vara_schar (F->nc_id, F->cdfvar_id[i], start, count, (signed char *)S->text[k]));
+		if (n_dims == 1) {	/* single text item, must read one and then replicate */
+			check_nc_status (nc_get_vara_schar (F->nc_id, F->cdfvar_id[i], start, &count[1], (signed char *)S->text[k]));
+			for (j = 1; j < F->n_records; j++) strncpy (&S->text[k][j*Clength[k]], S->text[k], Clength[k]);
+		}
+		else
+			check_nc_status (nc_get_vara_schar (F->nc_id, F->cdfvar_id[i], start, count, (signed char *)S->text[k]));
 	}
 
-
+	/* Create the dummy rectype field = 5 */
+	
+	S->values[MGD77_RECTYPE] = (double *) GMT_memory (VNULL, F->n_records, sizeof (double), "MGD77_Read_File_cdf");
+	for (k = 0; k < F->n_records; k++) S->values[MGD77_RECTYPE][k] = 5.0;
+	
 	check_nc_status (nc_close (F->nc_id));
 
 	return (0);
@@ -2640,4 +2661,58 @@ void double_swab (double *x)
 	p = (unsigned int *)x;				/* Now, p[0] and p[1] are the two 4-byte words */
 	save = p[0];	p[0] = p[1];	p[1] = save;	/* Exchange the two words */
 	p[0] = GMT_swab4 (p[0]);	p[1] = GMT_swab4 (p[1]);	/* Swab the byte order, and x is now swabed too */
+}
+
+int numbers_are_constant (double x[], int n)
+{
+	int i = 0;
+	double dx;
+	
+	if (n == 1) return (TRUE);
+	
+	dx = x[1] - x[0];
+	for (i = 2; i < n; i++) if ((x[i] - x[i-1]) != dx) return (FALSE);
+	return (TRUE);
+}
+
+int texts_are_constant (char *txt, int n, int width)
+{
+	int i = 0;
+	
+	if (n == 1) return (TRUE);
+	
+	for (i = 2; i < n; i++) if (strncmp (&txt[i*width], &txt[(i-1)*width], width)) return (FALSE);
+	return (TRUE);
+}
+
+void apply_scale_offset_after_read (double x[], int n, double scale, double offset)
+{
+	int k;
+	if (! (scale == 1.0 && offset == 0.0)) {	/* Must do our own data scaling to ensure healthy rounding */
+		if (offset == 0.0) {	/*  Just do scaling */
+			for (k = 0; k < n; k++) x[k] *= scale;
+		}
+		else if (scale == 1.0) {	/* Just do offset */
+			for (k = 0; k < n; k++) x[k] += offset;
+		}
+		else {					/* Scaling and offset */
+			for (k = 0; k < n; k++) x[k] = (x[k] * scale) + offset;
+		}
+	}
+}
+
+void apply_scale_offset_before_write (double x[], int n, double scale, double offset)
+{
+	int k;
+	if (! (scale == 1.0 && offset == 0.0)) {	/* Must do data scaling */
+		if (offset == 0.0) {	/*  Just do scaling */
+			for (k = 0; k < n; k++) x[k] = rint (x[k] / scale);
+		}
+		else if (scale == 1.0) {	/* Just do offset */
+			for (k = 0; k < n; k++) x[k] = rint (x[k] - offset);
+		}
+		else {					/* Scaling and offset */
+			for (k = 0; k < n; k++) x[k] = rint ((x[k] - offset) / scale);
+		}
+	}
 }
