@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.58 2005-08-01 21:28:21 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.59 2005-10-07 23:50:31 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -981,7 +981,7 @@ if [ $netcdf_install = "y" ]; then
 
 		echo "Getting netcdf by anonymous ftp (be patient)..." >&2
 		before=`du -sk . | cut -f1`
-		ftp -dn$p unidata.ucar.edu < $$ || ( echo "ftp failed - try again later" >&2; exit )
+		ftp -dn$p ftp.unidata.ucar.edu < $$ || ( echo "ftp failed - try again later" >&2; exit )
 		after=`du -sk . | cut -f1`
 		newstuff=`echo $before $after | awk '{print $2 - $1}'`
 		echo "Got $newstuff kb ... done" >&2
