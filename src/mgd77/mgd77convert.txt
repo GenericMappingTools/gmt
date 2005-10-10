@@ -2,38 +2,45 @@
 .SH NAME
 mgd77convert \- Translate between different formats of MGD77 files
 .SH SYNOPSIS
-\fBmgd77convert\fP \fIleg-ids\fP \fB\-Fa|b|t \-Ta|b|t\fP [ \fB\-V\fP ]
+\fBmgd77convert\fP \fIleg-ids\fP \fB\-Fa|b|t \-T\fP[\fB!\fP]\fBa|b|t\fP [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBmgd77convert\fP reads versions of MGD77 files and writes out the same
-data in another format.
+data in (probably) another format.
 .TP
 \fIleg-ids\fP
-Can be one or more MGD77 8-character cruise identifiers. To give a list of names, use `cat cruises.lis`.
-The extension will automatically be appended, if needed.  Cruise files will be looked for
-in the current directory and in all directories listed in \fB$MGD77_DIR\fP/MGD77_paths.txt.
+Can be one or more MGD77 8-character cruise identifiers. To give a list of names,
+use `cat cruises.lis`.  The extension will automatically be appended, if needed.
+Cruise files will be looked for in the current directory and in all directories
+listed in \fB$MGD77_DIR\fP/MGD77_paths.txt. Output files are written in the current
+directory.
 .TP
 .B \-F
-Specifies the format of the input (From) files.  Choose from \fBa\fP for standard MGD77 ASCII table,
-\fBb\fP for the new MGD77+ binary table, and \fBt\fPr a plain ASCII table dump.
+Specifies the format of the input (From) files.  Choose from \fBa\fP for standard
+MGD77 ASCII table (with extension .mgd77), \fBb\fP for the new MGD77+ netCDF format
+(with extension .nc), and \fBt\fP for a plain ASCII table dump (with extension .dat).
 .TP
 .B \-T
-Specifies the format of the output (To) files.  Choose from \fBa\fP for standard MGD77 ASCII table,
-\fBb\fP for the new MGD77+ binary table, and \fBt\fPr a plain ASCII table dump.
+Specifies the format of the ounput (To) files.  Choose from \fBa\fP for standard
+MGD77 ASCII table (with extension .mgd77), \fBb\fP for the new MGD77+ netCDF format
+(with extension .nc), and \fBt\fP for a plain ASCII table dump (with extension .dat).
+We will refuse to create the file(s) if they already exist in the current directory.
+Prepend \fB!\fP to override this policy.
 .SH OPTIONS
 No space between the option flag and the associated arguments
 #include "explain_-V.txt"
 .SH EXAMPLES
-To convert 01010047.mgd77 and 01010008.mgd77 to new binary .mgd77+ files, try
+To convert 01010047.mgd77 and 01010008.mgd77 to new netCDF .nc files, try
 .br
 .sp
-\fBmgd77convert\fP 01010047 01010008 \fB\-Fa \-Tb \-V\fP > listing.lis
+\fBmgd77convert\fP 01010047 01010008 \fB\-Fa \-Tc \-V\fP > listing.lis
 .br
 .sp
-To convert 01010047.mgd77+ to a plain ASCII table, try
+To convert 01010047.nc to a plain ASCII table, overwriting any existing table, try
 .br
 .sp
-\fBmgd77convert\fP 01010047 \fB\-Fb \-Tt \-V\fP
+\fBmgd77convert\fP 01010047 \fB\-Fc \-T!t \-V\fP
 .SH "SEE ALSO"
+.IR mgd77manage (GMTMANSECTION),
 .IR mgd77list (GMTMANSECTION),
 .IR mgd77sample (GMTMANSECTION),
 .IR mgd77track (GMTMANSECTION)
