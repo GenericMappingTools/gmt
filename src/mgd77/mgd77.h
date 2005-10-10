@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.29 2005-10-10 06:19:10 pwessel Exp $
+ *	$Id: mgd77.h,v 1.30 2005-10-10 23:24:47 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -66,6 +66,11 @@
 
 #define ALL_NINES               "9999999999"
 
+#define MGD77_RESET_CONSTRAINT		1
+#define MGD77_RESET_EXACT		2
+#define MGD77_SET_ALLEXACT		4
+
+#define MGD77_N_FORMATS		3
 #define MGD77_NOT_SET		-1
 #define MGD77_FORMAT_M77	0
 #define MGD77_FORMAT_CDF	1
@@ -254,6 +259,7 @@ struct MGD77_COLINFO {
 	char text;				/* length if this is a text string, else 0 */
 	int var_id;				/* netCDF variable ID */
 	BOOLEAN constant;			/* TRUE if column is constant and only 1 row is/should be stored */
+	BOOLEAN present;			/* TRUE if column is present in the file (NaN or otherwise) */
 };
 
 #define MGD77_AUTHOR_LEN	32
@@ -385,9 +391,8 @@ EXTERN_MSC int MGD77_Write_Data (char *file, struct MGD77_CONTROL *F, struct MGD
 EXTERN_MSC int MGD77_Read_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);		/* Read a single data record (selected columns only) */
 EXTERN_MSC int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);	/* Write a single data record (selected columns only) */
 EXTERN_MSC void MGD77_Free (struct MGD77_CONTROL *F, struct MGD77_DATASET *S);							/* Free memory allocated by MGD77_Read_File/MGD77_Read_Data */
-EXTERN_MSC void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F, BOOLEAN exact);					/* Decode the -F option specifying the desired columns */
+EXTERN_MSC void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F, int option);					/* Decode the -F option specifying the desired columns */
 EXTERN_MSC int MGD77_Get_Column (char *word, struct MGD77_CONTROL *F);								/* Get column number from column name (or -1 if not present) */
-EXTERN_MSC void MGD77_Order_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H);						/* Internal rearrangement of columns after -F set and header read */
 EXTERN_MSC void MGD77_Fatal_Error (int error);											/* Print message for this error and exit */
 EXTERN_MSC BOOLEAN MGD77_pass_record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec);				/* Tests if a record passes all specified logical & exact tests */
 EXTERN_MSC void MGD77_set_unit (char *dist, double *scale);									/* Convert appended distance unit to a numerical scale to give meters */
