@@ -1,4 +1,4 @@
-	$Id: README.mgd77,v 1.6 2005-09-29 07:46:53 pwessel Exp $
+	$Id: README.mgd77,v 1.7 2005-10-10 02:12:40 pwessel Exp $
 
 README file for GMT supplemental mgd77 programs
 
@@ -11,14 +11,18 @@ data files known as MGD77 files.  These data files are NOT supplied with
 GMT; they are the MGD-77 standard exchange format files provided by the
 National Geophysical Data Center*.  The programs provide similar function-
 ality to those of the mgg supplement but uses the actual MGD77 data files.
+We also introduce a new format for such data using the netCDF library.
+Unlike the original MGD77 files, the netCDF-based versions (called
+mgd77+ files) can hold additional columns supplied by the user.
 The following is a list of the programs and a short description of what
 they do:
 
-	mgd77list	A data extractor for .mgd77 files
-	mgd77info	An information extractor for .mgd77 files
-	mgd77path	Gets the full pathnames for .mgd77 files
+	mgd77convert	A utility to create .mgd77+ files fro MGD77 files
+	mgd77list	A data extractor for .mgd77[+] files
+	mgd77info	An information extractor for .mgd77[+] files
+	mgd77path	Gets the full pathnames for .mgd77[+] files
 	mgd77manage	A utility to manage extra columns in .mgd77+ files
-	mgd77track	A track plotter for .mgd77 files
+	mgd77track	A track plotter for .mgd77[+] files
 
 man-files for all the above programs can be found in the manl subdirectory.
 
