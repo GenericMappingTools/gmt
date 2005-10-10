@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.27 2005-10-09 12:59:11 pwessel Exp $
+ *	$Id: mgd77.h,v 1.28 2005-10-10 02:12:40 pwessel Exp $
  * 
  *  File:	MGD77.h
  *
@@ -384,7 +384,7 @@ EXTERN_MSC int MGD77_carter_depth_from_xytwt (double lon, double lat, double twt
 EXTERN_MSC int MGD77_carter_twt_from_xydepth (double lon, double lat, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec);
 
 EXTERN_MSC int MGD77_Read_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
-EXTERN_MSC int MGD77_Create_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
+EXTERN_MSC int MGD77_Write_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
 EXTERN_MSC void MGD77_Free (struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
 EXTERN_MSC int MGD77_info_from_abbrev (char *name, struct MGD77_HEADER *H, int *key);
 EXTERN_MSC int MGD77_Read_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);
@@ -395,6 +395,7 @@ EXTERN_MSC void MGD77_Order_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADE
 EXTERN_MSC void MGD77_nc_status (int status);
 
 EXTERN_MSC struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_FIELDS];
+EXTERN_MSC double MGD77_NaN_val[7];
 
 
 #endif	/* _MGD77_H */

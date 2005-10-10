@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.40 2005-10-09 12:59:11 pwessel Exp $
+ *	$Id: mgd77.c,v 1.41 2005-10-10 02:12:40 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -2075,11 +2075,18 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "header", MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + 1), (const char *)H->record));
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "author", MGD77_AUTHOR_LEN, H->author));
-	(void) time (&now);
-	sprintf (history, "%s Initial conversion from MGD77 to MGD77+ netCDF format", ctime(&now));
-	for (i = 0; i < strlen (history); i++) if (history[i] == '\n') history[i] = ' ';	/* Remove the \n returned by ctime() */
-	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "history", strlen(history), history));
-
+	if (!H->history) {	/* Blank history, set initial message */
+		(void) time (&now);
+		sprintf (history, "%s Initial conversion from MGD77 to MGD77+ netCDF format", ctime(&now));
+		k = strlen (history);
+		for (i = 0; i < k; i++) if (history[i] == '\n') history[i] = ' ';	/* Remove the \n returned by ctime() */
+		history[k++] = '\n';	history[k] = '\0';	/* Add LF at end of line */
+		H->history = (char *)GMT_memory (VNULL, k, sizeof (char), GMT_program);
+		strcpy (H->history, history);
+	}
+	/* History already filled out, use as is */
+	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "history", strlen (H->history), H->history));
+	
 	MGD77_nc_status (nc_def_dim (F->nc_id, "records", NC_UNLIMITED, &rec_id));	/* Define unlimited record dimension */
 	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {			/* Loop over the 3 MGD77 text fields */
 		k = i - MGD77_N_NUMBER_FIELDS;
@@ -2089,49 +2096,56 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	dims[0] = rec_id;	dims[1] = 0;
 	for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Loop over all MGD77 number fields */
 		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;	/* The 5 time-related columns are not written separately but as MGD77_TIME */
-		if (! (H->info[0].bit_pattern & MGD77_this_bit[i])) continue;		/* No values for this data field */
+		if (! (H->info[0].bit_pattern & MGD77_this_bit[i])) {
+			if (gmtdefs.verbose) fprintf (stderr, "%s: Field %s in data set %s are all NaN.  One value stored\n", mgd77defs[i].abbrev, file);
+		}
 		if (H->info[0].col[i].constant)	/* Simply store one value */
-			MGD77_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 0, NULL, &var_id));		/* Define a variable */
+			MGD77_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 0, NULL, &var_id));	/* Define a variable */
 		else	/* Must store array */
-			MGD77_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 1, dims, &var_id));		/* Define a variable */
+			MGD77_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 1, dims, &var_id));	/* Define a variable */
 		
 		MGD77_nc_status (nc_put_att_schar  (F->nc_id, var_id, "col_type", NC_BYTE, 1, &M));	/* Place attributes */
-		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "long_name", strlen (mgd77defs[i].fieldID), mgd77defs[i].fieldID));	/* Place attributes */
-		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "units", strlen (mgd77cdf[i].units), mgd77cdf[i].units));		/* Place attributes */
-		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "scale_factor", NC_DOUBLE, 1, &mgd77cdf[i].scale));		/* Place attributes */
-		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "add_offset", NC_DOUBLE, 1, &mgd77cdf[i].offset));		/* Place attributes */
-		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "comment", strlen (mgd77cdf[i].comment), mgd77cdf[i].comment));		/* Place attributes */
+		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "long_name", strlen (mgd77defs[i].fieldID), mgd77defs[i].fieldID));
+		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "units", strlen (mgd77cdf[i].units), mgd77cdf[i].units));
+		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "scale_factor", NC_DOUBLE, 1, &mgd77cdf[i].scale));
+		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "add_offset", NC_DOUBLE, 1, &mgd77cdf[i].offset));
+		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "comment", strlen (mgd77cdf[i].comment), mgd77cdf[i].comment));
 		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "_FillValue", mgd77cdf[i].type, 1, &MGD77_NaN_val[mgd77cdf[i].type]));
 		MGD77_nc_status (nc_put_att_schar  (F->nc_id, var_id, "textlength", NC_BYTE, 1, &LEN));
 		H->info[0].col[i].var_id = var_id;
 	}
 	
-	if (H->info[0].bit_pattern & MGD77_this_bit[MGD77_TIME]) {	/* Do absolute time separately */
-		MGD77_nc_status (nc_def_var        (F->nc_id, "time", NC_DOUBLE, 1, dims, &var_id));					/* Define a variable */
-		MGD77_nc_status (nc_put_att_schar  (F->nc_id, var_id, "col_type", NC_BYTE, 1, &M));	/* Place attributes */
-		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "long_name", 14, "GMT J2000 Time"));			/* Place attributes */
-		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "units", strlen (mgd77cdf[MGD77_TIME].units), mgd77cdf[MGD77_TIME].units));	/* Place attributes */
-		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "scale_factor", NC_DOUBLE, 1, &mgd77cdf[MGD77_TIME].scale));			/* Place attributes */
-		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "add_offset", NC_DOUBLE, 1, &mgd77cdf[MGD77_TIME].offset));			/* Place attributes */
-		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "comment", strlen (mgd77cdf[MGD77_TIME].comment), mgd77cdf[MGD77_TIME].comment));		/* Place attributes */
-		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "_FillValue", NC_DOUBLE, 1, &MGD77_NaN_val[mgd77cdf[MGD77_TIME].type]));
-		MGD77_nc_status (nc_put_att_schar  (F->nc_id, var_id, "textlength", NC_BYTE, 1, &LEN));
-		H->info[0].col[MGD77_TIME].var_id = var_id;
+	/* Do absolute time separately */
+		
+	if (! (H->info[0].bit_pattern & MGD77_this_bit[MGD77_TIME])) {
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Field %s in data set %s are all NaN.  One value stored\n", "time", file);
 	}
+	MGD77_nc_status (nc_def_var        (F->nc_id, "time", NC_DOUBLE, 1, dims, &var_id));	/* Define a variable */
+	MGD77_nc_status (nc_put_att_schar  (F->nc_id, var_id, "col_type", NC_BYTE, 1, &M));	/* Place attributes */
+	MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "long_name", 14, "GMT J2000 Time"));
+	MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "units", strlen (mgd77cdf[MGD77_TIME].units), mgd77cdf[MGD77_TIME].units));
+	MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "scale_factor", NC_DOUBLE, 1, &mgd77cdf[MGD77_TIME].scale));
+	MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "add_offset", NC_DOUBLE, 1, &mgd77cdf[MGD77_TIME].offset));
+	MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "comment", strlen (mgd77cdf[MGD77_TIME].comment), mgd77cdf[MGD77_TIME].comment));
+	MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "_FillValue", NC_DOUBLE, 1, &MGD77_NaN_val[mgd77cdf[MGD77_TIME].type]));
+	MGD77_nc_status (nc_put_att_schar  (F->nc_id, var_id, "textlength", NC_BYTE, 1, &LEN));
+	H->info[0].col[MGD77_TIME].var_id = var_id;
 	
 	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {	/* Loop over the 3 MGD77 text fields */
-		if (! (H->info[0].bit_pattern & MGD77_this_bit[i])) continue;		/* No values for this data field */
+		if (! (H->info[0].bit_pattern & MGD77_this_bit[i])) {		/* No values for this data field */
+			if (gmtdefs.verbose) fprintf (stderr, "%s: Field %s in data set %s are all %s.  One value stored\n", mgd77defs[i].abbrev, file, mgd77defs[i].not_given);
+		}		/* No values for this data field */
 		k = i - MGD77_N_NUMBER_FIELDS;
 		LEN = Clength[k];
 		dims[1] = Cdim_id[i - MGD77_N_NUMBER_FIELDS];
 		if (H->info[0].col[i].constant)	/* Simply store one value */
-			MGD77_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 1, &dims[1], &var_id));		/* Define a variable */
+			MGD77_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 1, &dims[1], &var_id));	/* Define a variable */
 		else	/* Must store array */
-			MGD77_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 2, dims, &var_id));				/* Define a variable */
+			MGD77_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 2, dims, &var_id));		/* Define a variable */
 		MGD77_nc_status (nc_put_att_schar  (F->nc_id, var_id, "col_type", NC_BYTE, 1, &M));	/* Place attributes */
-		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "long_name", strlen (mgd77defs[i].fieldID), mgd77defs[i].fieldID));	/* Place attributes */
-		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "units", strlen (mgd77cdf[i].units), mgd77cdf[i].units));		/* Place attributes */
-		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "comment", strlen (mgd77cdf[i].comment), mgd77cdf[i].comment));		/* Place attributes */
+		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "long_name", strlen (mgd77defs[i].fieldID), mgd77defs[i].fieldID));
+		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "units", strlen (mgd77cdf[i].units), mgd77cdf[i].units));
+		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "comment", strlen (mgd77cdf[i].comment), mgd77cdf[i].comment));
 		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "_FillValue", mgd77cdf[i].type, 1, &MGD77_NaN_val[mgd77cdf[i].type]));
 		MGD77_nc_status (nc_put_att_schar  (F->nc_id, var_id, "textlength", NC_BYTE, 1, &LEN));
 		H->info[0].col[i].var_id = var_id;
