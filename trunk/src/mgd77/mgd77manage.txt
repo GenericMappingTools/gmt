@@ -88,7 +88,7 @@ NaN node, whereas 0.1 will go about 90% of the way, etc. [Default is 1, which me
 nodes may be NaN].  Requires \fB\-Ag|i\fP.  Note: If \fB\-Q\fP0 is given we will not interpolate but
 base the output on the nearest grid node.
 #include "explain_-V.txt"
-#include "explain_-bi.txt"
+#include "explain_-i_binary.txt"
 .SH EXAMPLES
 To append Geosat/ERS-1 gravity as an extra data columns in the cruises 01010047.nc and 01010008.nc, try
 .br
