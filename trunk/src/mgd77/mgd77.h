@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.30 2005-10-10 23:24:47 pwessel Exp $
+ *	$Id: mgd77.h,v 1.31 2005-10-11 04:14:21 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -394,8 +394,8 @@ EXTERN_MSC void MGD77_Free (struct MGD77_CONTROL *F, struct MGD77_DATASET *S);		
 EXTERN_MSC void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F, int option);					/* Decode the -F option specifying the desired columns */
 EXTERN_MSC int MGD77_Get_Column (char *word, struct MGD77_CONTROL *F);								/* Get column number from column name (or -1 if not present) */
 EXTERN_MSC void MGD77_Fatal_Error (int error);											/* Print message for this error and exit */
-EXTERN_MSC BOOLEAN MGD77_pass_record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec);				/* Tests if a record passes all specified logical & exact tests */
-EXTERN_MSC void MGD77_set_unit (char *dist, double *scale);									/* Convert appended distance unit to a numerical scale to give meters */
+EXTERN_MSC BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec);				/* Tests if a record passes all specified logical & exact tests */
+EXTERN_MSC void MGD77_Set_Unit (char *dist, double *scale);									/* Convert appended distance unit to a numerical scale to give meters */
 EXTERN_MSC void MGD77_nc_status (int status);											/* Checks for netCDF errors and aborts with error message */
 EXTERN_MSC void MGD77_Ignore_Format (int format);										/* Dissallow some formats for consideration */
 

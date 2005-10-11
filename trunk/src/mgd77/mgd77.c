@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.44 2005-10-11 00:59:54 pwessel Exp $
+ *	$Id: mgd77.c,v 1.45 2005-10-11 04:14:21 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -140,19 +140,13 @@ struct MGD77_cdf mgd77cdf[MGD77_SET_COLS] = {
 	{ NC_BYTE,	8,	1.0,	0.0, "", "Identical to ID in header" },
 	{ NC_BYTE,	5,	1.0,	0.0, "", "For cross-referencing with seismic data" },
 	{ NC_BYTE,	6,	1.0,	0.0, "", "For cross-referencing with seismic data" },
-	{ NC_DOUBLE,	1,	1.0,	0.0, "seconds since 2000-01-01 00:00:00 GMT", "UTC GMT Time, correct for TZ to get ship time" },
+	{ NC_DOUBLE,	1,	1.0,	0.0, "seconds since 2000-01-01 00:00:00 GMT", "UTC GMT time, correct for TZ to get ship time" },
 	{ NC_BYTE,	1,	1.0,	0.0, "", "" },	/* Unused entries */
 	{ NC_BYTE,	1,	1.0,	0.0, "", "" },
 	{ NC_BYTE,	1,	1.0,	0.0, "", "" },
 	{ NC_BYTE,	1,	1.0,	0.0, "", "" }
 };	
-	
-int MGD77_Output_Order[MGD77_SET_COLS] = { MGD77_RECTYPE, MGD77_ID, MGD77_TZ, MGD77_YEAR, MGD77_MONTH, MGD77_DAY,
-   MGD77_HOUR, MGD77_MIN, MGD77_LATITUDE, MGD77_LONGITUDE, MGD77_PTC, MGD77_TWT, MGD77_DEPTH, MGD77_BCC,
-   MGD77_BTC, MGD77_MTF1, MGD77_MTF2, MGD77_MAG, MGD77_MSENS, MGD77_DIUR, MGD77_MSD, MGD77_GOBS,
-   MGD77_EOT, MGD77_FAA, MGD77_SLN, MGD77_SSPN, MGD77_NQC, MGD77_TIME, MGD77_DISTANCE, MGD77_HEADING,
-   MGD77_SPEED, MGD77_WEIGHT };
-int MGD77_rec_no = 0;
+
 int MGD77_fmt_no = 1;	/* 0 for %x.xd, 1 for %xd */
 BOOLEAN MGD77_Strip_Blanks = FALSE;
 double MGD77_NaN;
@@ -160,6 +154,15 @@ PFB MGD77_column_test_double[9];
 PFB MGD77_column_test_string[9];
 unsigned int MGD77_this_bit[MGD77_SET_COLS];
 
+int MGD77_Write_File_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
+int MGD77_Write_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
+int MGD77_Read_File_Binary (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
+int MGD77_Read_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
+int MGD77_Read_File_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
+int MGD77_Read_Header_Sequence (FILE *fp, char *record, int seq);
+int MGD77_Read_Data_Sequence (FILE *fp, char *record);
+int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER *H, int format);
+void MGD77_Write_Sequence (FILE *fp, int seq);
 float MGD77_Get_float (char *record, int pos, int length, double scale);
 short MGD77_Get_short (char *record, int pos, int length, double scale);
 int MGD77_Get_int (char *record, int pos, int length, double scale);
@@ -173,22 +176,7 @@ void MGD77_Put_short (FILE *fp, short s, int length, double scale, int sign);
 void MGD77_Put_byte (FILE *fp, byte b, int length, double scale, int sign);
 void MGD77_Put_char (FILE *fp, char c, int length, double scale, int sign);
 void MGD77_Put_Text (FILE *fp, Text t, int length, double scale, int sign);
-int MGD77_Read_Header_Sequence (FILE *fp, char *record, int seq);
-int MGD77_Read_Data_Sequence (FILE *fp, char *record);
-void MGD77_Write_Sequence (FILE *fp, int seq);
-int MGD77_fwrite_char (double value, double scale, double offset, FILE *fp);
-int MGD77_fwrite_short (double value, double scale, double offset, FILE *fp);
-int MGD77_fwrite_int (double value, double scale, double offset, FILE *fp);
-int MGD77_fread_char (double *value, double scale, double offset, FILE *fp);
-int MGD77_fread_short (double *value, double scale, double offset, FILE *fp, int swap);
-int MGD77_fread_int (double *value, double scale, double offset, FILE *fp, int swap);
-int MGD77_Write_File_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
-int MGD77_Write_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
-int MGD77_Read_File_Binary (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
-int MGD77_Read_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
-int MGD77_Read_File_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
-int MGD77_info_from_abbrev (char *name, struct MGD77_HEADER *H, int *key);
-int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER *H, int format);	/* Will write the entire 24-section header structure based on variables */
+int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, int *key);
 
 int MGD77_Write_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 {
@@ -1250,7 +1238,7 @@ int MGD77_View_Line (FILE *fp, char *MGD77line)	/* View a single MGD77 string */
 	return TRUE;
 }
 
-int MGD77_Convert_To_New_Format(char *line)
+int MGD77_Convert_To_New_Format (char *line)
 {
 	int yy, nconv;
 
@@ -1278,7 +1266,7 @@ int MGD77_Convert_To_New_Format(char *line)
 	return TRUE;
 }
 
-int MGD77_Convert_To_Old_Format(char *newFormatLine, char *oldFormatLine)
+int MGD77_Convert_To_Old_Format (char *newFormatLine, char *oldFormatLine)
 {
 	int tz; char legid[9], s_tz[6], s_year[5];
 	
@@ -1465,7 +1453,6 @@ int MGD77_Read_Header_Sequence (FILE *fp, char *record, int seq)
 
 int MGD77_Read_Data_Sequence (FILE *fp, char *record)
 {
-	MGD77_rec_no++;
 	if (fgets (record, MGD77_RECORD_LENGTH, fp)) return (1);
 	return (0);
 }
@@ -1548,7 +1535,7 @@ void MGD77_Order_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 	MGD77_Select_All_Columns (F, H);	/* Make sure n_out_columns is set */
 
 	for (i = 0; i < F->n_out_columns; i++) {	/* This is not really needed if MGD77_Select_All_Columns did things, but just in case */
-		if ((k = MGD77_info_from_abbrev (F->desired_column[i], H, &dummy)) == MGD77_NOT_SET) {
+		if ((k = MGD77_Info_from_Abbrev (F->desired_column[i], H, &dummy)) == MGD77_NOT_SET) {
 			fprintf (stderr, "%s: Requested column %s not in data set!\n", GMT_program, F->desired_column[i]);
 			exit (EXIT_FAILURE);
 		}
@@ -1577,7 +1564,7 @@ void MGD77_Order_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 	}
 }
 
-int MGD77_info_from_abbrev (char *name, struct MGD77_HEADER *H, int *key)
+int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, int *key)
 {
 	int i, c;
 	
@@ -1862,7 +1849,7 @@ int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F)
 	return (MGD77_FILE_NOT_FOUND);	/* No luck */
 }
 
-BOOLEAN MGD77_pass_record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec)
+BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec)
 {
 	int i, c, id, col, n_passed;
 	BOOLEAN pass;
@@ -2008,7 +1995,7 @@ BOOLEAN MGD77_cgt_test (char *value, char *match, int len)
 	return (strncmp (value, match, len) > 0);
 }
 
-void MGD77_set_unit (char *dist, double *scale)
+void MGD77_Set_Unit (char *dist, double *scale)
 {
 	switch (dist[strlen(dist)-1]) {
 		case 'k':	/* km */
