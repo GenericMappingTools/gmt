@@ -2,7 +2,7 @@
 .SH NAME
 mgd77manage \- Manage extra columns in MGD77+ files
 .SH SYNOPSIS
-\fBmgd77manage\fP \fIleg-ids\fP [ \fP\-A\fP[\fB!\fP]\fBa|A|c|d|D|g|i|n|t|T\fB\fIfileinfo\fP ] 
+\fBmgd77manage\fP \fIleg-ids\fP [ \fP\-A\fP[\fB!\fP]\fBa|A|c|d|D|e|g|i|n|t|T\fB\fIfileinfo\fP ] 
 [ \fP\-C\fPabbrev/"name"/size/scale/offset/"comment"\fP ] [ \fB\-D\fP\fIabbrev1,abbrev2,...\fP ] 
 [ \fB\-F\fP ] [ \fB\-Q\fP[\fIvalue\fP] [ \fB\-V\fP ] [ \fB\-bi\fP\fIn\fP[\fBs|d\fP] ]
 .SH DESCRIPTION
@@ -39,6 +39,10 @@ with data values in second column.  Use - if we are to read from stdin instead. 
 distances in the MGD77 file will be assigned the new values; at other distances we set them to NaN.
 Alternatively, give upper case \fBD\fP instead and we will interpolate the column at all records.
 .br
+\fBe\fP Read the e77 error/correction log from \fBmgd77sniffer\fP and add the new column \fBflag\fP
+which will hold bitflags (0 = OK, 1 = BAD) for each data field in the standard MGD77 data set.  Any
+correction terms found (such as needing to scale a field by 0.1 or 10 because the source agency made
+a mistake) will be written as attributes to the netCDF mgd77+ file and applied when the data is read.
 \fBg\fP Sample a GMT geographic (lon,lat) grid along the track given by the MGD77 file.  Append
 name of a GMT grid file.
 .br

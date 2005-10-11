@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.43 2005-10-10 23:24:47 pwessel Exp $
+ *	$Id: mgd77.c,v 1.44 2005-10-11 00:59:54 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -114,33 +114,33 @@ struct MGD77_cdf {
 
 struct MGD77_cdf mgd77cdf[MGD77_SET_COLS] = {
 	{ NC_BYTE,	1,	1.0,	0.0, "", "Normally 5" },
-	{ NC_BYTE,	1,	1.0,	0.0, "hours", "Time Zone -13 to +12" },
-	{ NC_BYTE,	1,	1.0,	0.0, "year", "Year" },
-	{ NC_BYTE,	1,	1.0,	0.0, "month", "Month" },
-	{ NC_BYTE,	1,	1.0,	0.0, "day", "Day of the Month" },
-	{ NC_BYTE,	1,	1.0,	0.0, "hour", "Hour" },
-	{ NC_BYTE,	1,	1.0,	0.0, "min", "Decimal Minutes" },
-	{ NC_INT,	1,	1.0e-6,	0.0, "degrees_north", "Latitude (signed)" },
-	{ NC_INT,	1,	1.0e-6,	0.0, "degrees_east", "Longitude (signed)" },
+	{ NC_BYTE,	1,	1.0,	0.0, "hours", "-13 to +12 inclusive" },
+	{ NC_BYTE,	1,	1.0,	0.0, "year", "Year of the survey" },
+	{ NC_BYTE,	1,	1.0,	0.0, "month", "" },
+	{ NC_BYTE,	1,	1.0,	0.0, "day", "" },
+	{ NC_BYTE,	1,	1.0,	0.0, "hour", "" },
+	{ NC_BYTE,	1,	1.0,	0.0, "min", "Decimal minutes with 0.001 precision" },
+	{ NC_INT,	1,	1.0e-6,	0.0, "degrees_north", "Negative if south of Equator" },
+	{ NC_INT,	1,	1.0e-6,	0.0, "degrees_east", "Negative if west of Greenwich" },
 	{ NC_BYTE,	1,	1.0,	0.0, "", "Observed (1), Interpolated (3), or Unspecified (9)" },
-	{ NC_INT,	1,	1.0e-4,	0.0, "sec", "Vertical 2-way Travel Time" },
-	{ NC_INT,	1,	1.0e-1,	0.0, "meter", "Corrected for sound velocity variations" },
-	{ NC_BYTE,	1,	1.0,	0.0, "", "Code for bathymetric correction procedure" },
+	{ NC_INT,	1,	1.0e-4,	0.0, "sec", "Corrected for transducer depth, etc." },
+	{ NC_INT,	1,	1.0e-1,	0.0, "meter", "Corrected for sound velocity variations, if known" },
+	{ NC_BYTE,	1,	1.0,	0.0, "", "01-55 (Matthews), 59-62 (Misc) 63 (Carter), 88 (Other), 98 (Unknown), or 99 (Unspecified)" },
 	{ NC_BYTE,	1,	1.0,	0.0, "", "Observed (1), Interpolated (3), or Unspecified (9)" },
-	{ NC_INT,	1,	1.0e-1,	0.0, "nTesla", "Magnetic Total Field Sensor 1 (leading)" },
-	{ NC_INT,	1,	1.0e-1,	0.0, "nTesla", "Magnetic Total Field Sensor 2 (trailing)" },
-	{ NC_SHORT,	1,	1.0e-1,	0.0, "nTesla", "Magnetic Anomaly" },
-	{ NC_BYTE,	1,	1.0,	0.0, "", "Magnetic Sensor used: 1, 2, or Unspecified (9)" },
-	{ NC_SHORT,	1,	1.0e-1,	0.0, "nTesla", "Applied to data if present" },
-	{ NC_SHORT,	1,	1.0,	0.0, "meter", "Magnetic Sensor Depth (+ve down)" },
+	{ NC_INT,	1,	1.0e-1,	0.0, "nTesla", "Leading sensor" },
+	{ NC_INT,	1,	1.0e-1,	0.0, "nTesla", "Trailing sensor" },
+	{ NC_SHORT,	1,	1.0e-1,	0.0, "nTesla", "Corrected for reference field (see header)" },
+	{ NC_BYTE,	1,	1.0,	0.0, "", "Magnetic sensor used: 1, 2, or Unspecified (9)" },
+	{ NC_SHORT,	1,	1.0e-1,	0.0, "nTesla", "Already applied to data" },
+	{ NC_SHORT,	1,	1.0,	0.0, "meter", "Positive below sealevel" },
 	{ NC_INT,	1,	1.0e-1,	0.0, "mGal", "Corrected for Eotvos, drift, and tares" },
-	{ NC_SHORT,	1,	1.0e-1,	0.0, "mGal", "Compensating for ship motion" },
-	{ NC_SHORT,	1,	1.0e-1,	0.0, "mGal", "Observed - Theoretical" },
-	{ NC_BYTE,	1,	1.0,	0.0, "", "Suspected by (5) source, (6) NGDC, or no probles (9)" },
-	{ NC_BYTE,	8,	1.0,	0.0, "", "Survey ID" },
-	{ NC_BYTE,	5,	1.0,	0.0, "", "Seismic Line Number" },
-	{ NC_BYTE,	6,	1.0,	0.0, "", "Seismic Shot Point Number" },
-	{ NC_DOUBLE,	1,	1.0,	0.0, "seconds since 2000-01-01 00:00:00 GMT", "UTC GMT Time" },
+	{ NC_SHORT,	1,	1.0e-1,	0.0, "mGal", "7.5 V cos (lat) sin (azim) + 0.0042 V*V" },
+	{ NC_SHORT,	1,	1.0e-1,	0.0, "mGal", "Observed - theoretical" },
+	{ NC_BYTE,	1,	1.0,	0.0, "", "Suspected by (5) source agency, (6) NGDC, or no problems found (9)" },
+	{ NC_BYTE,	8,	1.0,	0.0, "", "Identical to ID in header" },
+	{ NC_BYTE,	5,	1.0,	0.0, "", "For cross-referencing with seismic data" },
+	{ NC_BYTE,	6,	1.0,	0.0, "", "For cross-referencing with seismic data" },
+	{ NC_DOUBLE,	1,	1.0,	0.0, "seconds since 2000-01-01 00:00:00 GMT", "UTC GMT Time, correct for TZ to get ship time" },
 	{ NC_BYTE,	1,	1.0,	0.0, "", "" },	/* Unused entries */
 	{ NC_BYTE,	1,	1.0,	0.0, "", "" },
 	{ NC_BYTE,	1,	1.0,	0.0, "", "" },
@@ -2135,7 +2135,7 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Loop over all MGD77 number fields */
 		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;	/* The 5 time-related columns are not written separately but as MGD77_TIME */
 		if (! (H->info[MGD77_M77_SET].bit_pattern & MGD77_this_bit[i])) {
-			if (gmtdefs.verbose) fprintf (stderr, "%s: Field %s in data set %s are all NaN.  One value stored\n", GMT_program, mgd77defs[i].abbrev, file);
+			if (gmtdefs.verbose == 2) fprintf (stderr, "%s: Field %s in data set %s are all NaN.  One value stored\n", GMT_program, mgd77defs[i].abbrev, file);
 		}
 		if (H->info[MGD77_M77_SET].col[i].constant)	/* Simply store one value */
 			MGD77_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 0, NULL, &var_id));	/* Define a variable */
@@ -2156,7 +2156,7 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	/* Do absolute time separately */
 		
 	if (! (H->info[MGD77_M77_SET].bit_pattern & MGD77_this_bit[MGD77_TIME])) {
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Field %s in data set %s are all NaN.  One value stored\n", GMT_program, "time", file);
+		if (gmtdefs.verbose == 2) fprintf (stderr, "%s: Field %s in data set %s are all NaN.  One value stored\n", GMT_program, "time", file);
 	}
 	MGD77_nc_status (nc_def_var        (F->nc_id, "time", NC_DOUBLE, 1, dims, &var_id));	/* Define a variable */
 	MGD77_nc_status (nc_put_att_schar  (F->nc_id, var_id, "col_type", NC_BYTE, 1, &M));	/* Place attributes */
@@ -2171,7 +2171,7 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	
 	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {	/* Loop over the 3 MGD77 text fields */
 		if (! (H->info[MGD77_M77_SET].bit_pattern & MGD77_this_bit[i])) {		/* No values for this data field */
-			if (gmtdefs.verbose) fprintf (stderr, "%s: Field %s in data set %s are all %s.  One value stored\n", GMT_program, mgd77defs[i].abbrev, file, mgd77defs[i].not_given);
+			if (gmtdefs.verbose == 2) fprintf (stderr, "%s: Field %s in data set %s are all %s.  One value stored\n", GMT_program, mgd77defs[i].abbrev, file, mgd77defs[i].not_given);
 		}		/* No values for this data field */
 		k = i - MGD77_N_NUMBER_FIELDS;
 		LEN = Clength[k];
@@ -2199,7 +2199,7 @@ int MGD77_Write_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 	 * columns are considered.  Such columns may be added/deleted by mgd77manage.  We assume
 	 * that the dataset was read by MGD77_Read_File_asc which will return the entire set
 	 * of columns so that we can assume S->values[MGD77_TWT] etc is in the right column.
-	 * Only columns that are all non-NaN are written, and columns with constant values are
+	 * All MGD77 columns are written, but those with constant values (or all NaN) are
 	 * written as scalars.  The read routine will replicate these to columns.
 	 */
 	 
@@ -2210,14 +2210,12 @@ int MGD77_Write_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 	/* Determine if any fields are constant for all records */
 	for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Loop over all MGD77 number fields */
 		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;		/* The 5 time-related columns are not written separately but as MGD77_TIME */
-		if (! (S->H.info[MGD77_M77_SET].bit_pattern & MGD77_this_bit[i])) continue;		/* No values for this data field */
 		values = (double *)S->values[i];
 		S->H.info[MGD77_M77_SET].col[i].constant = (numbers_are_constant (values, S->H.n_records));	/* Do we need to store 1 or n values? */
 	}
 	values = (double *)S->values[MGD77_TIME];
 	S->H.info[MGD77_M77_SET].col[MGD77_TIME].constant = (numbers_are_constant (values, S->H.n_records));	/* Do we need to store 1 or n values? */
 	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {	/* Loop over the 3 MGD77 text fields */
-		if (! (S->H.info[MGD77_M77_SET].bit_pattern & MGD77_this_bit[i])) continue;		/* No values for this data field */
 		k = i - MGD77_N_NUMBER_FIELDS;
 		text = (char *)S->values[i];
 		S->H.info[MGD77_M77_SET].col[i].constant = (texts_are_constant (text, S->H.n_records, Clength[k]));	/* Do we need to store 1 or n strings? */
@@ -2239,7 +2237,7 @@ int MGD77_Write_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 	 * columns are considered.  Such columns may be added/deleted by mgd77manage.  We assume
 	 * that the dataset was read by MGD77_Read_File_asc which will return the entire set
 	 * of columns so that we can assume S->values[MGD77_TWT] etc is in the right column.
-	 * Only columns that are all non-NaN are written, and columns with constant values are
+	 * All columns are written, but columns with constant values (or all NaNs) are
 	 * written as scalars.  The read routine will replicate these to columns.
 	 */
 	 
@@ -2252,7 +2250,6 @@ int MGD77_Write_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 	
 	for (i = 1; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Loop over all MGD77 number fields (except Rec-type)*/
 		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;	/* The 5 time-related columns are not written separately but as MGD77_TIME */
-		if (! (S->H.info[MGD77_M77_SET].bit_pattern & MGD77_this_bit[i])) continue;		/* No values for this data field */
 		
 		values = (double *)S->values[i];
 		if (S->H.info[MGD77_M77_SET].col[i].constant) {	/* Only scale one element and write it */
@@ -2265,13 +2262,17 @@ int MGD77_Write_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 		}
 	}
 	
-	if (S->H.info[MGD77_M77_SET].bit_pattern & MGD77_this_bit[MGD77_TIME]) {
-		values = (double *)S->values[MGD77_TIME];
-		MGD77_nc_status (nc_put_vara_double (F->nc_id, S->H.info[MGD77_M77_SET].col[MGD77_TIME].var_id, start, count, S->values[MGD77_TIME]));
+	values = (double *)S->values[MGD77_TIME];
+	if (S->H.info[MGD77_M77_SET].col[MGD77_TIME].constant) {	/* Only scale one element and write it */
+		apply_scale_offset_before_write (values, 1, mgd77cdf[MGD77_TIME].scale, mgd77cdf[MGD77_TIME].offset, MGD77_NaN_val[mgd77cdf[MGD77_TIME].type]);
+		MGD77_nc_status (nc_put_var1_double (F->nc_id, S->H.info[MGD77_M77_SET].col[MGD77_TIME].var_id, start, &values[0]));
+	}
+	else {
+		apply_scale_offset_before_write (values, S->H.n_records, mgd77cdf[MGD77_TIME].scale, mgd77cdf[MGD77_TIME].offset, MGD77_NaN_val[mgd77cdf[MGD77_TIME].type]);
+		MGD77_nc_status (nc_put_vara_double (F->nc_id, S->H.info[MGD77_M77_SET].col[MGD77_TIME].var_id, start, count, values));
 	}
 
 	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {	/* Loop over the 3 MGD77 text fields */
-		if (! (S->H.info[MGD77_M77_SET].bit_pattern & MGD77_this_bit[i])) continue;		/* No values for this data field */
 		k = i - MGD77_N_NUMBER_FIELDS;
 		count[1] = Clength[k];
 		text = (char *)S->values[i];
