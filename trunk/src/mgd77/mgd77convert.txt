@@ -2,7 +2,7 @@
 .SH NAME
 mgd77convert \- Translate between different formats of MGD77 files
 .SH SYNOPSIS
-\fBmgd77convert\fP \fIleg-ids\fP \fB\-Fa|b|t \-T\fP[\fB!\fP]\fBa|b|t\fP [ \fB\-V\fP ]
+\fBmgd77convert\fP \fIleg-ids\fP \fB\-Fa|b|t \-T\fP[\fB+\fP]\fBa|b|t\fP [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBmgd77convert\fP reads versions of MGD77 files and writes out the same
 data in (probably) another format.
@@ -24,7 +24,7 @@ Specifies the format of the ounput (To) files.  Choose from \fBa\fP for standard
 MGD77 ASCII table (with extension .mgd77), \fBb\fP for the new MGD77+ netCDF format
 (with extension .nc), and \fBt\fP for a plain ASCII table dump (with extension .dat).
 We will refuse to create the file(s) if they already exist in the current directory.
-Prepend \fB!\fP to override this policy.
+Prepend \fB+\fP to override this policy.
 .SH OPTIONS
 No space between the option flag and the associated arguments
 #include "explain_-V.txt"
@@ -38,7 +38,7 @@ To convert 01010047.mgd77 and 01010008.mgd77 to new netCDF .nc files, try
 To convert 01010047.nc to a plain ASCII table, overwriting any existing table, try
 .br
 .sp
-\fBmgd77convert\fP 01010047 \fB\-Fc \-T!t \-V\fP
+\fBmgd77convert\fP 01010047 \fB\-Fc \-T+t \-V\fP
 .SH "SEE ALSO"
 .IR mgd77manage (GMTMANSECTION),
 .IR mgd77list (GMTMANSECTION),
