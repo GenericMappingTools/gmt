@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.45 2005-10-11 04:14:21 pwessel Exp $
+ *	$Id: mgd77.c,v 1.46 2005-10-11 12:10:45 pwessel Exp $
  *
  *  File:	MGD77.c
  * 
@@ -54,7 +54,7 @@ int MGD77_Write_Header_Record_m77 (char *file, struct MGD77_CONTROL *F, struct M
 int texts_are_constant (char *txt, int n, int width);
 int numbers_are_constant (double x[], int n);
 void apply_scale_offset_after_read (double x[], int n, double scale, double offset, double nan_val);
-void apply_scale_offset_before_write (double x[], int n, double scale, double offset, double nan_val);
+int apply_scale_offset_before_write (double x[], int n, double scale, double offset, int type);
 void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H);
 void MGD77_Select_All_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H);
 int MGD77_Read_Data_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
@@ -71,7 +71,7 @@ struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_FIELDS] = {
 
 BOOLEAN MGD77_format_allowed[MGD77_N_FORMATS] = {TRUE, TRUE, TRUE};	/* By default we allow opening of files in any format.  See MGD77_Ignore_Format() */
 
-double MGD77_NaN_val[7];
+double MGD77_NaN_val[7], MGD77_Low_val[7], MGD77_High_val[7];
 char *MGD77_suffix[MGD77_N_FORMATS] = {"mgd77", "nc", "dat"};
 
 char *MGD77_fmt[2][11] = {
@@ -651,6 +651,8 @@ void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 {
 	int i;
 	
+	/* When reading a plain ASCII MGD77 file we must set the information structure manually here */
+	
 	for (i = 0; i < MGD77_SET_COLS; i++) H->info[MGD77_M77_SET].col[i].present = H->info[MGD77_CDF_SET].col[i].present = FALSE;
 
 	for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {
@@ -696,6 +698,7 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 	int id, c, c_id[2], n_dims, n_vars, rec_id;
 	size_t count[2] = {0, 0};
 	signed char M;
+	double corr_factor, corr_offset;
 	
 	if (MGD77_Open_File (file, F, MGD77_READ_MODE)) return (-1);			/* Basically sets the path */
 	
@@ -733,7 +736,16 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 		if (nc_get_att_double (F->nc_id, id, "add_offset",   &H->info[c].col[c_id[c]].offset) == NC_ENOTATT) H->info[c].col[c_id[c]].offset = 0.0;	/* Get offset for reading */
 		if (nc_get_att_text   (F->nc_id, id, "comment", H->info[c].col[c_id[c]].comment) == NC_ENOTATT) H->info[c].col[c_id[c]].comment[0] = 0;		/* Get comment */
 		if (nc_get_att_schar  (F->nc_id, id, "textlength", (signed char *)&H->info[c].col[c_id[c]].text) == NC_ENOTATT) H->info[c].col[c_id[c]].text = 0;		/* Length of a text field */
-		
+		/* In addition to scale_factor/offset, which are used to temporarily scale data to fit in the given nc_type format,
+		 * it may have been discovered that the stored data are in the wrong unit (e.g., fathoms instead of meters, mGal instead of 0.1 mGal).
+		 * Two optional terms, corr_factor and corr_offset, if present, are used to correct such mistakes (since original data wont be changed).
+		 */
+		if (nc_get_att_double (F->nc_id, id, "corr_factor",   &corr_factor) == NC_ENOTATT) corr_factor = 1.0;
+		if (nc_get_att_double (F->nc_id, id, "corr_factor",   &corr_offset) == NC_ENOTATT) corr_offset = 0.0;
+		if (F->use_corrections[c]) {	/* TRUE by default, but this can be turned off by changing this parameter in F */
+			H->info[c].col[c_id[c]].scale *= corr_factor;	/* Combine effect of main and 2nd scale factors */
+			H->info[c].col[c_id[c]].offset = H->info[c].col[c_id[c]].offset * corr_factor + corr_offset;	/* Combine effect of 2nd scale and 2nd offset into one offset */
+		}
 		H->info[c].col[c_id[c]].var_id = id;
 		MGD77_nc_status (nc_inq_varndims (F->nc_id, id, &n_dims));	/* Get number of dimensions */
 		H->info[c].col[c_id[c]].constant = (n_dims == 0 || (n_dims == 1 && H->info[c].col[c_id[c]].text));	/* Field is constant for all records */
@@ -997,9 +1009,9 @@ int MGD77_Read_Data_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 		S->H.info[MGD77_M77_SET].bit_pattern |= MGD77Record.bit_pattern;
 	}
 
-	for (col = n_txt = n_val = 0; col < F->n_out_columns; col++)
-		S->values[col] = ((S->H.info[MGD77_M77_SET].col[F->order[col].item].text) ? (void *)text[n_txt++] : (void *)values[n_val++]);
-
+	for (col = n_txt = n_val = 0; col < F->n_out_columns; col++) S->values[col] = ((S->H.info[MGD77_M77_SET].col[F->order[col].item].text) ? (void *)text[n_txt++] : (void *)values[n_val++]);
+	S->n_fields = F->n_out_columns;
+	
 	return (0);
 }
 
@@ -1486,6 +1498,8 @@ void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks)
 	memset ((void *)F, 0, sizeof (struct MGD77_CONTROL));		/* Initialize structure */
 	MGD77_Path_Init (F);
 	MGD77_Init_Columns (F, NULL);
+	F->use_flags[MGD77_M77_SET] = F->use_flags[MGD77_CDF_SET] = TRUE;		/* TRUE means programs will use error bitflags (if present) when returning data */
+	F->use_corrections[MGD77_M77_SET] = F->use_corrections[MGD77_CDF_SET] = TRUE;	/* TRUE means we will apply correction factors (if present) when reading data */
 	GMT_make_dnan (MGD77_NaN);
 	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1 << i;
 	MGD77_Strip_Blanks = remove_blanks;
@@ -1493,11 +1507,20 @@ void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks)
 	if ((pw = getpwuid (getuid ())) != NULL) {
 		strcpy (F->user, pw->pw_name);
 	}
-	MGD77_NaN_val[NC_BYTE] = MGD77_NaN_val[NC_CHAR] = CHAR_MAX;
-	MGD77_NaN_val[NC_SHORT] = SHRT_MAX;
-	MGD77_NaN_val[NC_INT] = INT_MAX;
+	MGD77_NaN_val[NC_BYTE] = MGD77_NaN_val[NC_CHAR] = CHAR_MIN;
+	MGD77_NaN_val[NC_SHORT] = SHRT_MIN;
+	MGD77_NaN_val[NC_INT] = INT_MIN;
 	MGD77_NaN_val[NC_FLOAT] = MGD77_NaN_val[NC_DOUBLE] = MGD77_NaN;
-
+	MGD77_Low_val[NC_BYTE] = MGD77_Low_val[NC_CHAR] = CHAR_MIN;
+	MGD77_Low_val[NC_SHORT] = SHRT_MIN;
+	MGD77_Low_val[NC_INT] = INT_MIN;
+	MGD77_Low_val[NC_FLOAT] = FLT_MIN;
+	MGD77_Low_val[NC_DOUBLE] = DBL_MIN;
+	MGD77_High_val[NC_BYTE] = MGD77_High_val[NC_CHAR] = CHAR_MAX;
+	MGD77_High_val[NC_SHORT] = SHRT_MAX;
+	MGD77_High_val[NC_INT] = INT_MAX;
+	MGD77_High_val[NC_FLOAT] = FLT_MAX;
+	MGD77_High_val[NC_DOUBLE] = DBL_MAX;
 }
 
 void MGD77_Init_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
@@ -1545,15 +1568,15 @@ void MGD77_Order_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 	}
 	
 	for (i = 0; i < F->n_exact; i++) {	/* Determine column and info numbers from column name */
-		F->exact[i].col = MGD77_Get_Column (F->exact[i].name, F);
+		F->Exact[i].col = MGD77_Get_Column (F->Exact[i].name, F);
 	}
 	
-	/* F->exact[] now holds F->n_exact values that refer to the output column order */
+	/* F->Exact[] now holds F->n_exact values that refer to the output column order */
 	
 	for (i = 0; i < F->n_constraints; i++) {	/* Determine column and info numbers from column name */
 		F->Constraint[i].col = MGD77_Get_Column (F->Constraint[i].name, F);
-		c  = F->Constraint[i].col / MGD77_SET_COLS;
-		id = F->Constraint[i].col % MGD77_SET_COLS;
+		c = F->order[F->Constraint[i].col].set;
+		id = F->order[F->Constraint[i].col].item;
 		if (H->info[c].col[id].text) {
 			F->Constraint[i].string_test = MGD77_column_test_string[F->Constraint[i].code];
 		}
@@ -1561,6 +1584,12 @@ void MGD77_Order_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 			F->Constraint[i].d_constraint = (!strcmp (F->Constraint[i].c_constraint, "NaN")) ? MGD77_NaN : atof (F->Constraint[i].c_constraint);
 			F->Constraint[i].double_test = MGD77_column_test_double[F->Constraint[i].code];
 		}
+	}
+	
+	for (i = 0; i < F->n_bit_tests; i++) {	/* Determine column and info numbers from column name */
+		F->Bit_test[i].col = MGD77_Get_Column (F->Bit_test[i].name, F);
+		F->Bit_test[i].set  = F->Bit_test[i].col / MGD77_SET_COLS;
+		F->Bit_test[i].item = F->Bit_test[i].col % MGD77_SET_COLS;
 	}
 }
 
@@ -1588,10 +1617,18 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 	 * they should appear on output.  columns given in upper case must
 	 * be non-NaN on records to be output.  Use the argument all_exact to set
 	 * all columns to upper case status.
+	 *
+	 * arg :== [<col1>,<col2>,col3>,...][<cola>OP<val>,<colb>OP<val>,...][:+|-<colx>,+|-<coly>,+|-...]
+	 *
+	 * First [set] are columns to be output. Upper case columns MUST be non-NaN to pass
+	 * Second [set] are logical tests on columns.  One or more tests must be passed. ALL
+	 *	UPPER CASE test MUST be passed.
+	 * Third [set] are list of comumns whose bitflag must be either be 1 (+) or 0 (-).
+	 * The presence of the : also turns the automatic use of ALL flags off.
 	 */
 
-	char p[BUFSIZ], string[BUFSIZ], word[GMT_LONG_TEXT], value[GMT_LONG_TEXT];
-	int i, j, k, constraint, n, pos = 0;
+	char p[BUFSIZ], cstring[BUFSIZ], bstring[BUFSIZ], word[GMT_LONG_TEXT], value[GMT_LONG_TEXT];
+	int i, j, k, constraint, n, pos;
 	BOOLEAN exact, all_exact;
 
 	/* Special test for keywords mgd77 and all */
@@ -1601,14 +1638,27 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 	memset ((void *)F->use_column, 0, (size_t)(MGD77_MAX_COLS * sizeof (int)));	/* Initialize array */
 	memset ((void *)F->order, 0, (size_t)(MGD77_MAX_COLS * sizeof (int)));		/* Initialize array */
 	F->bit_pattern[MGD77_M77_SET] = F->bit_pattern[MGD77_CDF_SET] = 0;
-	strcpy (string, arg);	/* Work on a copy of the arguments */
+	
+	if (strchr (arg, ':')) {	/* Have specific bit-flag conditions */
+		i = j = 0;
+		while (arg[i] != ':') cstring[i] = arg[i++];
+		cstring[i] = '\0';
+		i++;
+		while (arg[i]) bstring[j++] = arg[i++];
+		bstring[j] = '\0';
+		if (!bstring[0]) F->use_flags[MGD77_M77_SET] = F->use_flags[MGD77_CDF_SET] = FALSE;	/* Turn use of flag bits OFF */
+	}
+	else {	/* No bit-flag conditions */
+		strcpy (cstring, arg);
+		bstring[0] = '\0';
+	}
 
 	if (option & MGD77_RESET_CONSTRAINT) F->n_constraints = 0;
 	if (option & MGD77_RESET_EXACT) F->n_exact = 0;
 	all_exact = (option & MGD77_SET_ALLEXACT);
 
-	i = 0;		/* Start at the first ouput column */
-	while ((GMT_strtok (string, ",", &pos, p))) {	/* Until we run out of abbreviations */
+	i = pos = 0;		/* Start at the first ouput column */
+	while ((GMT_strtok (cstring, ",", &pos, p))) {	/* Until we run out of abbreviations */
 		/* Must check if we need to break this word into flag[=|<=|>=|<|>value] */
 		for (k = constraint = 0; p[k] && constraint == 0; k++) {
 			if (p[k] == '>') {
@@ -1675,7 +1725,7 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 			}
 			strcpy (F->desired_column[i], word);
 			if (exact) {		/* This geophysical column must be != NaN for us to output record */
-				strcpy (F->exact[F->n_exact].name, word);
+				strcpy (F->Exact[F->n_exact].name, word);
 				F->n_exact++;
 			}
 			i++;					/* Move to the next output column */
@@ -1683,7 +1733,23 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 	}
 
 	F->n_out_columns = i;
-	F->no_checking = (F->n_constraints == 0 && F->n_exact == 0);	/* Easy street */
+	
+	i = pos = 0;		/* Start at the first ouput column */
+	while ((GMT_strtok (bstring, ",", &pos, p))) {	/* Until we run out of abbreviations */
+		if (p[0] == '+')
+			F->Bit_test[i].val = 1;
+		else if (p[0] == '-')
+			F->Bit_test[i].val = 0;
+		else {
+			fprintf (stderr, "%s: Error: Bit-test flag (%s) is not in +<col> or -<col> format.\n", GMT_program, p);
+			exit (EXIT_FAILURE);
+		}
+		strcpy (F->Bit_test[i].name, &p[1]);
+		i++;
+	}
+	F->n_bit_tests = i;
+	
+	F->no_checking = (F->n_constraints == 0 && F->n_exact == 0 || F->n_bit_tests == 0);	/* Easy street */
 }
 
 
@@ -1851,7 +1917,7 @@ int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F)
 
 BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec)
 {
-	int i, c, id, col, n_passed;
+	int i, col, c, id, match, n_passed;
 	BOOLEAN pass;
 	double *value;
 	char *text;
@@ -1860,7 +1926,7 @@ BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int
 	
 	if (F->n_exact) {	/* Must make sure that none of these key geophysical columnss are NaN */
 		for (i = 0; i < F->n_exact; i++) {
-			value = (double *)S->values[F->exact[i].col];
+			value = (double *)S->values[F->Exact[i].col];
 			if (GMT_is_dnan (value[rec])) return (FALSE);	/* Sorry, one NaN and you're history */
 		}
 	}
@@ -1886,6 +1952,13 @@ BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int
 		return (n_passed > 0);	/* Pass if we passed at least one test, since failing any exact test would have returned by now */
 	}
 		
+	if (F->n_bit_tests) {	/* Must pass ALL bit tests */
+		for (i = 0; i < F->n_bit_tests; i++) {
+			match = (S->flags[F->Bit_test[i].set][rec] & MGD77_this_bit[F->Bit_test[i].item]);	/* TRUE if flags bit #item is set */
+			if (match != F->Bit_test[i].val) return (FALSE);				/* Sorry, one missed test and you're history */
+		}
+	}
+	
 	return (TRUE);	/* We live to fight another day (i.e., record) */
 }
 
@@ -2083,7 +2156,9 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	 * Only columns that are all non-NaN are written, and columns with constant values are
 	 * written as scalars.  The read routine will replicate these to columns.
 	 * This function simply defines the file and header attributes and is called by
-	 * MGD77_Write_File_cdf which also writes the data.
+	 * MGD77_Write_File_cdf which also writes the data.  Note that no optional factors
+	 * such as 2ndary correction scale and offset are defined since they do not exist
+	 * for MGD77 standard files.  Such terms can be added by mgd77manage.
 	 * 
 	 */
 	 
@@ -2098,6 +2173,7 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	
 	/* Put attributes header, author, and history */
 	
+	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "version", strlen(MGD77_CDF_VERSION), (const char *)MGD77_CDF_VERSION));
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "header", MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + 1), (const char *)H->record));
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "author", MGD77_AUTHOR_LEN, H->author));
 	if (!H->history) {	/* Blank history, set initial message */
@@ -2228,7 +2304,7 @@ int MGD77_Write_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 	 * written as scalars.  The read routine will replicate these to columns.
 	 */
 	 
-	int i, k, Clength[3] = {8, 5, 6};
+	int i, k, n_bad, Clength[3] = {8, 5, 6};
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
 	double *values;
 	char *text;
@@ -2240,22 +2316,27 @@ int MGD77_Write_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 		
 		values = (double *)S->values[i];
 		if (S->H.info[MGD77_M77_SET].col[i].constant) {	/* Only scale one element and write it */
-			apply_scale_offset_before_write (values, 1, mgd77cdf[i].scale, mgd77cdf[i].offset, MGD77_NaN_val[mgd77cdf[i].type]);
+			n_bad = apply_scale_offset_before_write (values, 1, mgd77cdf[i].scale, mgd77cdf[i].offset, mgd77cdf[i].type);
 			MGD77_nc_status (nc_put_var1_double (F->nc_id, S->H.info[MGD77_M77_SET].col[i].var_id, start, &values[0]));
 		}
 		else {
-			apply_scale_offset_before_write (values, S->H.n_records, mgd77cdf[i].scale, mgd77cdf[i].offset, MGD77_NaN_val[mgd77cdf[i].type]);
+			n_bad = apply_scale_offset_before_write (values, S->H.n_records, mgd77cdf[i].scale, mgd77cdf[i].offset, mgd77cdf[i].type);
 			MGD77_nc_status (nc_put_vara_double (F->nc_id, S->H.info[MGD77_M77_SET].col[i].var_id, start, count, values));
+		}
+		if (n_bad) {
+			fprintf (stderr, "%s: %s [%s] had %d values outside valid range <%g,%g> for the chosen type (set to NaN = %g)\n",
+				GMT_program, F->NGDC_id, S->H.info[MGD77_M77_SET].col[i].abbrev, n_bad, MGD77_Low_val[mgd77cdf[i].type],
+				MGD77_High_val[mgd77cdf[i].type], MGD77_NaN_val[mgd77cdf[i].type]);
 		}
 	}
 	
 	values = (double *)S->values[MGD77_TIME];
 	if (S->H.info[MGD77_M77_SET].col[MGD77_TIME].constant) {	/* Only scale one element and write it */
-		apply_scale_offset_before_write (values, 1, mgd77cdf[MGD77_TIME].scale, mgd77cdf[MGD77_TIME].offset, MGD77_NaN_val[mgd77cdf[MGD77_TIME].type]);
+		apply_scale_offset_before_write (values, 1, mgd77cdf[MGD77_TIME].scale, mgd77cdf[MGD77_TIME].offset, mgd77cdf[MGD77_TIME].type);
 		MGD77_nc_status (nc_put_var1_double (F->nc_id, S->H.info[MGD77_M77_SET].col[MGD77_TIME].var_id, start, &values[0]));
 	}
 	else {
-		apply_scale_offset_before_write (values, S->H.n_records, mgd77cdf[MGD77_TIME].scale, mgd77cdf[MGD77_TIME].offset, MGD77_NaN_val[mgd77cdf[MGD77_TIME].type]);
+		apply_scale_offset_before_write (values, S->H.n_records, mgd77cdf[MGD77_TIME].scale, mgd77cdf[MGD77_TIME].offset, mgd77cdf[MGD77_TIME].type);
 		MGD77_nc_status (nc_put_vara_double (F->nc_id, S->H.info[MGD77_M77_SET].col[MGD77_TIME].var_id, start, count, values));
 	}
 
@@ -2293,7 +2374,8 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 {
 	int i, k, c, id;
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
-	char *text;
+	unsigned int *flags;
+	char *text, *flagname[MGD77_N_SETS] = {"MGD77_flags", "CDF_flags"};
 	double *values;
 	
 	if (MGD77_Open_File (file, F, MGD77_READ_MODE)) return (-1);	/* Basically sets the path */
@@ -2330,6 +2412,17 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			S->values[i] = (void *)values;
 		}
 	}
+
+	/* Look for optional bit flags to read */
+	
+	for (k = 0; k < MGD77_N_SETS; k++) {
+		if (F->use_flags[k] && nc_inq_varid (F->nc_id, flagname[k], &id) == NC_NOERR) {	/* There are bitflags for this set and we want them */
+			flags = (unsigned int *) GMT_memory (VNULL, count[0], sizeof (unsigned int), "MGD77_Read_File_cdf");
+			MGD77_nc_status (nc_get_vara_int (F->nc_id, id, start, count, (int *)flags));
+			S->flags[k] = flags;
+		}
+	}
+	S->n_fields = F->n_out_columns;
 
 	return (0);
 }
@@ -2377,18 +2470,27 @@ int MGD77_Write_Data_Record_cdf (struct MGD77_CONTROL *F, struct MGD77_HEADER *H
 			MGD77_nc_status (nc_put_vara_schar (F->nc_id, H->info[c].col[id].var_id, &start, (size_t *)&H->info[c].col[id].text, (signed char *)tvals[n_txt++]));
 		}
 		else {
-			apply_scale_offset_before_write (&dvals[n_val], 1, H->info[c].col[id].scale, H->info[c].col[id].offset, MGD77_NaN_val[H->info[c].col[id].type]);
+			apply_scale_offset_before_write (&dvals[n_val], 1, H->info[c].col[id].scale, H->info[c].col[id].offset, H->info[c].col[id].type);
 			MGD77_nc_status (nc_put_var1_double (F->nc_id, H->info[c].col[id].var_id, &start, &dvals[n_val++]));
 		}
 	}
 	return (0);
 }
 
-void MGD77_Free (struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
+void MGD77_Free (struct MGD77_DATASET *S)
 {
 	int i;
 	
-	for (i = 0; i < F->n_out_columns; i++) GMT_free ((void *)S->values[i]);
+	for (i = 0; i < S->n_fields; i++) GMT_free ((void *)S->values[i]);
+	for (i = 0; i < MGD77_N_SETS; i++) if (S->flags[i]) GMT_free ((void *)S->flags[i]);
+}
+
+struct MGD77_DATASET *MGD77_Create_Dataset ()
+{
+	struct MGD77_DATASET *S;
+	
+	S = (struct MGD77_DATASET *) GMT_memory (VNULL, 1, sizeof (struct MGD77_DATASET), GMT_program);
+	return (S);
 }
 
 int numbers_are_constant (double x[], int n)
@@ -2442,23 +2544,71 @@ void apply_scale_offset_after_read (double x[], int n, double scale, double offs
 	
 }
 
-void apply_scale_offset_before_write (double x[], int n, double scale, double offset, double nan_val)
-{
-	int k;
+int apply_scale_offset_before_write (double x[], int n, double scale, double offset, int type)
+{	/* Here we apply the various scale/offsets to fit the data in a smaller data type.
+	 * We also replace NaNs with special values that represent NaNs for the saved data
+	 * type, and finally replace transformed values that fall outside the valid range
+	 * with NaN, and report the number of such problems.
+	 */
+	int k, n_crap = 0;
+	double nan_val, lo_val, hi_val;
+	
+	nan_val = MGD77_NaN_val[type];
+	lo_val = MGD77_Low_val[type];
+	hi_val = MGD77_High_val[type];
 	
 	if (! (scale == 1.0 && offset == 0.0)) {	/* Must do data scaling */
 		if (offset == 0.0) {	/*  Just do scaling */
-			for (k = 0; k < n; k++) x[k] = (GMT_is_dnan (x[k])) ? nan_val : rint (x[k] / scale);
+			for (k = 0; k < n; k++) {
+				if (GMT_is_dnan (x[k]))
+					x[k] = nan_val;
+				else {
+					x[k] = rint (x[k] / scale);
+					if (x[k] < lo_val || x[k] > hi_val) {
+						x[k] = nan_val;
+						n_crap++;
+					}
+				}
+			}
 		}
 		else if (scale == 1.0) {	/* Just do offset */
-			for (k = 0; k < n; k++) x[k] = (GMT_is_dnan (x[k])) ? nan_val : rint (x[k] - offset);
+			for (k = 0; k < n; k++) {
+				if (GMT_is_dnan (x[k]))
+					x[k] = nan_val;
+				else {
+					x[k] = rint (x[k] - offset);
+					if (x[k] < lo_val || x[k] > hi_val) {
+						x[k] = nan_val;
+						n_crap++;
+					}
+				}
+			}
 		}
 		else {					/* Scaling and offset */
-			for (k = 0; k < n; k++) x[k] = (GMT_is_dnan (x[k])) ? nan_val : rint ((x[k] - offset) / scale);
+			for (k = 0; k < n; k++) {
+				if (GMT_is_dnan (x[k]))
+					x[k] = nan_val;
+				else {
+					x[k] = rint ((x[k] - offset) / scale);
+					if (x[k] < lo_val || x[k] > hi_val) {
+						x[k] = nan_val;
+						n_crap++;
+					}
+				}
+			}
 		}
 	}
-	else
-		for (k = 0; k < n; k++) if (GMT_is_dnan (x[k])) x[k] = nan_val;
+	else {	/* Just replace NaNs and check range */
+		for (k = 0; k < n; k++) {
+			if (GMT_is_dnan (x[k]))
+				x[k] = nan_val;
+			else if (x[k] < lo_val || x[k] > hi_val) {
+				x[k] = nan_val;
+				n_crap++;
+			}
+		}
+	}
+	return (n_crap);
 }
 
 void MGD77_nc_status (int status)

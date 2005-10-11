@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.40 2005-08-18 03:47:29 remko Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.41 2005-10-11 12:10:45 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -219,6 +219,9 @@ install:	all
 			for i in $(GMT_H); do \
 				$(INSTALL) -m 444 $$i $(includedir); \
 			done; \
+			for i in $(PS_H); do \
+				$(INSTALL) -m 444 $$i $(includedir); \
+			done; \
 		fi
 
 uninstall:
@@ -236,6 +239,9 @@ uninstall:
 		fi
 		if [ ! $(includedir) = $(srcdir) ]; then \
 			for i in $(GMT_H); do \
+				\rm -f $(includedir)/$$i; \
+			done; \
+			for i in $(PS_H); do \
 				\rm -f $(includedir)/$$i; \
 			done; \
 		fi

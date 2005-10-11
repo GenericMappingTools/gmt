@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.184 2005-09-27 03:55:30 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.185 2005-10-11 12:10:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -126,6 +126,7 @@ int GMT_contlabel_specs_old (char *txt, struct GMT_CONTOUR *G);
 struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name);
 int GMT_get_label_parameters(int side, double line_angle, int type, double *text_angle, int *justify);
 int GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LINES *P, int count[]);
+void GMT_near_zero_roundoff_fixer_upper (double *ww, int axis);
 
 double *GMT_x2sys_Y;
 
@@ -7000,6 +7001,7 @@ void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *
 	switch (frame_info.axis[T->parent].type) {
 		case LINEAR:
 			/* if (fabs (coord) < 1.0e-15) coord = 0.0; */	/* Intel chip zero issue */
+			GMT_near_zero_roundoff_fixer_upper (&coord, T->parent);	/* Try to adjust those ~0 "gcc -O" values to exact 0 */
 			sprintf (string, format, coord);
 			break;
 		case LOG10:
@@ -7019,6 +7021,29 @@ void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *
 			exit (EXIT_FAILURE);
 			break;
 	}
+}
+
+void GMT_near_zero_roundoff_fixer_upper (double *ww, int axis)
+{	/* Try to adjust those pesky ~0 "gcc -O" values to exact 0 */
+	double almost_zero_proj, exact_zero_proj;
+	
+	if (strcmp (gmtdefs.d_format, "%lg")) return;	/* Only try to fix it if format is %lg */
+	
+	switch (axis) {
+		case 0:	/* X-axis */
+			GMT_x_to_xx (*ww, &almost_zero_proj);
+			GMT_x_to_xx (0.0, &exact_zero_proj);
+			break;
+		case 1:	/* Y-axis */
+			GMT_y_to_yy (*ww, &almost_zero_proj);
+			GMT_y_to_yy (0.0, &exact_zero_proj);
+			break;
+		case 2:	/* Z-axis */
+			GMT_z_to_zz (*ww, &almost_zero_proj);
+			GMT_z_to_zz (0.0, &exact_zero_proj);
+			break;
+	}
+	if (fabs (*ww) < GMT_CONV_LIMIT && fabs (almost_zero_proj - exact_zero_proj) < GMT_CONV_LIMIT) *ww = 0.0;
 }
 
 double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AXIS *A, int below, double annot_off[], double *label_off, int *annot_justify, int *label_justify, char *format)
