@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.194 2005-09-29 01:41:12 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.195 2005-10-12 10:34:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -67,7 +67,6 @@ void GMT_prepare_3D(void);
 void GMT_free_plot_array(void);
 char *GMT_putpen (struct GMT_PEN *pen);
 char *GMT_getdefpath (int get);
-int GMT_get_time_system (char *name);
 void GMT_get_time_language (char *name);
 void GMT_init_time_system_structure ();
 int GMT_scanf_epoch (char *s, double *t0);
