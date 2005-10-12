@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.185 2005-10-11 12:10:45 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.186 2005-10-12 13:58:15 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -126,7 +126,9 @@ int GMT_contlabel_specs_old (char *txt, struct GMT_CONTOUR *G);
 struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name);
 int GMT_get_label_parameters(int side, double line_angle, int type, double *text_angle, int *justify);
 int GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LINES *P, int count[]);
+#if 0
 void GMT_near_zero_roundoff_fixer_upper (double *ww, int axis);
+#endif
 
 double *GMT_x2sys_Y;
 
@@ -6684,7 +6686,10 @@ int GMT_linear_array (double min, double max, double delta, double phase, double
 
 	n = irint ((max - first) / delta) + 1;
 	val = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "GMT_linear_array");
-	for (i = 0; i < n; i++) val[i] = first + i * delta;
+	for (i = 0; i < n; i++) {
+		val[i] = first + i * delta;
+		if (fabs(val[i] - phase) < small) val[i] = phase;	/* Kill small numbers when phase==0 */
+	}
 	while (n && val[n-1] > max) n--;	/* In case of over-run */
 
 	*array = val;
@@ -7000,8 +7005,9 @@ void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *
 
 	switch (frame_info.axis[T->parent].type) {
 		case LINEAR:
-			/* if (fabs (coord) < 1.0e-15) coord = 0.0; */	/* Intel chip zero issue */
+#if 0
 			GMT_near_zero_roundoff_fixer_upper (&coord, T->parent);	/* Try to adjust those ~0 "gcc -O" values to exact 0 */
+#endif
 			sprintf (string, format, coord);
 			break;
 		case LOG10:
@@ -7023,6 +7029,7 @@ void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *
 	}
 }
 
+#if 0
 void GMT_near_zero_roundoff_fixer_upper (double *ww, int axis)
 {	/* Try to adjust those pesky ~0 "gcc -O" values to exact 0 */
 	double almost_zero_proj, exact_zero_proj;
@@ -7045,6 +7052,7 @@ void GMT_near_zero_roundoff_fixer_upper (double *ww, int axis)
 	}
 	if (fabs (*ww) < GMT_CONV_LIMIT && fabs (almost_zero_proj - exact_zero_proj) < GMT_CONV_LIMIT) *ww = 0.0;
 }
+#endif
 
 double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AXIS *A, int below, double annot_off[], double *label_off, int *annot_justify, int *label_justify, char *format)
 {
