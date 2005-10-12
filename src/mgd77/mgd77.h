@@ -1,17 +1,17 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.32 2005-10-11 12:10:45 pwessel Exp $
+ *	$Id: mgd77.h,v 1.33 2005-10-12 04:07:21 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
  *
  *  File:	mgd77.h
  *
- *	Include file for programs that plan to read/write MGD77[+] files
+ *  Include file for programs that plan to read/write MGD77[+] files
  *
  *  Authors:    Paul Wessel, Primary Investigator, SOEST, U. of Hawaii
  *		Michael Chandler, Master's Candidate, SOEST, U. of Hawaii
  *		
- * 
+ *  Version:	1.1
  *  Revised:	10-OCT-2005
  * 
  *-------------------------------------------------------------------------*/
@@ -21,17 +21,19 @@
 
 #include "gmt.h"
 
-#define MGD77_CDF_VERSION	"2005.11.1"
-#define MGD77_RECORD_LENGTH	120
-#define MGD77_HEADER_LENGTH	80
-#define MGD77_N_HEADER_RECORDS	24
+#define MGD77_CDF_VERSION	"2005.11.1"	/* Current version of MGD77+ files created */
+#define MGD77_RECORD_LENGTH	120		/* Length of MGD77 ASCII data records */
+#define MGD77_HEADER_LENGTH	80		/* Length of MGD77 ASCII header records */
+#define MGD77_N_HEADER_RECORDS	24		/* Number of MGD77 header records */
 #define MGD77_METERS_PER_NM     1852		/* meters per nautical mile */
 #define MGD77_METERS_PER_M      1609.344	/* meters per statute mile */
-#define MGD77_OLDEST_YY		39
-#define MGD77_N_DATA_FIELDS	27
-#define MGD77_N_NUMBER_FIELDS	24
-#define MGD77_N_STRING_FIELDS	3
-/* The 32 MGD77 standard types (27 original + 5 derived) */
+#define MGD77_OLDEST_YY		39		/* Y2K says YY < 39 is 20YY */
+#define MGD77_N_DATA_FIELDS	27		/* Original 27 data columns in MGD77 */
+#define MGD77_N_DATA_EXTENDED	28		/* The 27 plus time */
+#define MGD77_N_NUMBER_FIELDS	24		/* Original 24 numerical data columns in MGD77 */
+#define MGD77_N_STRING_FIELDS	3		/* Original 3 text data columns in MGD77 */
+
+/* The 28 MGD77 standard types (27 original + 1 conglomerate (time)) */
 #define MGD77_RECTYPE		0
 #define MGD77_TZ		1
 #define MGD77_YEAR		2
@@ -60,19 +62,15 @@
 #define MGD77_SLN		25
 #define MGD77_SSPN		26
 #define MGD77_TIME		27
-#define MGD77_DISTANCE		28
-#define MGD77_HEADING		29
-#define MGD77_SPEED		30
-#define MGD77_WEIGHT		31
 
-#define ALL_NINES               "9999999999"
+#define ALL_NINES               "9999999999"	/* Typical text value meaning no-data */
+#define MGD77_NOT_SET		-1
 
-#define MGD77_RESET_CONSTRAINT		1
-#define MGD77_RESET_EXACT		2
-#define MGD77_SET_ALLEXACT		4
+#define MGD77_RESET_CONSTRAINT	1
+#define MGD77_RESET_EXACT	2
+#define MGD77_SET_ALLEXACT	4
 
 #define MGD77_N_FORMATS		3
-#define MGD77_NOT_SET		-1
 #define MGD77_FORMAT_M77	0
 #define MGD77_FORMAT_CDF	1
 #define MGD77_FORMAT_TBL	2
@@ -86,6 +84,8 @@
 #define MGD77_CDF_SET		1
 #define MGD77_SET_COLS		32
 #define MGD77_MAX_COLS		64
+
+/* Return error numbers */
 
 #define MGD77_NO_ERROR			0
 #define MGD77_FILE_NOT_FOUND		1
@@ -249,21 +249,19 @@ struct MGD77_HEADER_PARAMS {		/* See MGD-77 Documentation from NGDC for details 
 #define MGD77_COL_COMMENT_LEN	128
 
 struct MGD77_COLINFO {
-	char abbrev[MGD77_COL_ABBREV_LEN];
-	char name[MGD77_COL_NAME_LEN];
-	char units[MGD77_COL_UNIT_LEN];
-	char comment[MGD77_COL_COMMENT_LEN];
-	double scale;
-	double offset;
-	int pos;				/* Position in output record */
-	nc_type type;
+	char abbrev[MGD77_COL_ABBREV_LEN];	/* Short name that identifies this column */
+	char name[MGD77_COL_NAME_LEN];		/* Longer, descriptive name for column */
+	char units[MGD77_COL_UNIT_LEN];		/* Units of the data type in this column */
+	char comment[MGD77_COL_COMMENT_LEN];	/* Comment regarding this data column */
+	double scale;				/* factor to multiply data immediately after reading from file */
+	double offset;				/* offset to add after reading and multiplying by scale */
+	int pos;				/* Position in output record [0 - n_columns-1]*/
+	nc_type type;				/* Type of representation of this data in the netCDF file (NC_SHORT, NC_INT, NC_BYTE, etc) */
 	char text;				/* length if this is a text string, else 0 */
 	int var_id;				/* netCDF variable ID */
 	BOOLEAN constant;			/* TRUE if column is constant and only 1 row is/should be stored */
 	BOOLEAN present;			/* TRUE if column is present in the file (NaN or otherwise) */
 };
-
-#define MGD77_AUTHOR_LEN	32
 
 struct MGD77_DATA_INFO {
 	short n_col;					/* Number of active columns in this MGD77+ file */
@@ -274,9 +272,9 @@ struct MGD77_DATA_INFO {
 struct MGD77_HEADER {	
 	char record[MGD77_N_HEADER_RECORDS][MGD77_HEADER_LENGTH+1];	/* Keep all raw 24 header records in memory */
 	struct MGD77_HEADER_PARAMS mgd77_header;	/* See MGD-77 Documentation from NGDC for details */
-	char author[MGD77_AUTHOR_LEN];			/* Name of author of last creation/modification */
+	char *author;					/* Name of author of last creation/modification */
 	char *history;					/* History of creation/modifications */
-	int n_records;					/* Number of MGD77 data records */
+	int n_records;					/* Number of MGD77 data records found */
 	int n_fields;					/* Number of columns returned */
 	struct MGD77_DATA_INFO info[MGD77_N_SETS];	/* Info regarding [0] standard MGD77 columns and [1] any extra columns (max 32 each) */
 };
@@ -287,16 +285,16 @@ struct MGD77_HEADER {
  * The two i/o functions MGD77_read_record and MGD77_write_record will do exactly what they say.
  */
 
-struct MGD77_DATA_RECORD {	/* See MGD-77 Documentation from NGDC for details */
+struct MGD77_DATA_RECORD {	/* See MGD77 Documentation from NGDC for details */
 	/* This is the classic MGD77 portion of the data record */
-	double number[MGD77_N_NUMBER_FIELDS];	/* 24 fields that express numeric values */
-	double time;				/* Time using current GMT absolute time conventions */
+	double number[MGD77_N_NUMBER_FIELDS];	/* 24 fields that express numerical values */
+	double time;				/* Time using current GMT absolute time conventions (J2000 UTC) */
 	char word[MGD77_N_STRING_FIELDS][10];	/* The 3 text strings in MGD77 records */
-	unsigned int bit_pattern;		/* bit pattern indicating which of the 27 fields are present in current record */
+	unsigned int bit_pattern;		/* Bit pattern indicating which of the 27 fields are present in current record */
 };
 
 struct MGD77_DATASET {	/* Info for an entire MGD77+ data set */
-	int n_fields;				/* Number of colums in the values table */
+	int n_fields;				/* Number of active colums in the values table */
 	struct MGD77_HEADER H;			/* The file's header information */
 	void *values[MGD77_MAX_COLS];		/* 2-D table of necessary number of columns and rows (mix of double and char pointers) */
 	unsigned int *flags[MGD77_N_SETS];	/* Optional arrays of custom error bit flags for each set */
@@ -330,8 +328,8 @@ struct MGD77_CONSTRAINT {
 struct MGD77_PAIR {
 	char name[MGD77_COL_ABBREV_LEN];	/* Name of data col that is to match exactly */
 	int col;				/* Number of data col that is constrained */
-	int val;				/* Value for use */
-	int set, item;				/* Entries into info structure */
+	int match;				/* 1 if we want the bit to be 1 or 0 if we want it to be 0 to indicate a match*/
+	int set, item;				/* Entries into corresponding info structure column */
 };
 
 struct MGD77_ORDER {	/* Info on a single desired output column */
@@ -343,31 +341,33 @@ struct MGD77_CONTROL {
 	/* Programs that need to write out MGD77 data columns in a certain order will need
 	 * to declare this structure and use the MGD77_Init function to get going
 	 */
-	 
-	char *MGD77_HOME;				/* Directory where paths are stored */
+	
+	/* File path information */
+	char *MGD77_HOME;				/* Directory where paths are stored [$GMTHOME/share/mgd77] */
 	char **MGD77_datadir;				/* Directories where MGD77 data may live */
-	int n_MGD77_paths;				/* Number of these directories */
+	int n_MGD77_paths;				/* Number of such directories */
 	char user[MGD77_COL_ABBREV_LEN];		/* Current user id */
-	char NGDC_id[MGD77_COL_ABBREV_LEN];		/* Current NGDC tag id */
+	char NGDC_id[MGD77_COL_ABBREV_LEN];		/* Current NGDC file tag id */
 	char path[BUFSIZ];				/* Full path to current file */
-	FILE *fp;					/* File pointer to current open file */
-	int nc_id;					/* netCDF ID for current open file (if netCDF) */
+	FILE *fp;					/* File pointer to current open file (not used by MGD77+) */
+	int nc_id;					/* netCDF ID for current open file (MGD77+ only) */
 	int rec_no;					/* Current record to read/write for record-based i/o */
+	int format;					/* 0 if any file format, 1 if MGD77, and 2 if netCDF, 3 if ascii table */
+	/* Format-related issues */
+	int time_format;				/* Either GMT_IS_ABSTIME or GMT_IS_RELTIME */
+	BOOLEAN flat_earth;				/* TRUE if we want quick distance calcuations */
+	/* Data use information */
 	BOOLEAN use_flags[MGD77_N_SETS];		/* TRUE means programs will use error bitflags (if present) when returning data */
 	BOOLEAN use_corrections[MGD77_N_SETS];		/* TRUE means we will apply correction factors (if present) when reading data */
 	struct MGD77_ORDER order[MGD77_MAX_COLS];	/* Gives the output order (set, item) of each desired column */
-	BOOLEAN use_column[MGD77_MAX_COLS];		/* TRUE for columns we are interested in outputing */
-	int format;					/* 0 if any file format, 1 if MGD77, and 2 if netCDF, 3 if ascii table */
-	int time_format;				/* Either GMT_IS_ABSTIME or GMT_IS_RELTIME */
-	BOOLEAN flat_earth;				/* TRUE if we want quick distance calcuations */
 	unsigned int bit_pattern[2];			/* 64 bit flags, one for each parameter desired */
-	int n_constraints;				/* Number of constraints selected */
+	int n_constraints;				/* Number of constraints specified */
 	int n_exact;					/* Number of exact columns to match */
 	int n_bit_tests;				/* Number of bit tests to match */
-	BOOLEAN no_checking;				/* TRUE if there are no complicated checking to do */
+	BOOLEAN no_checking;				/* TRUE if there are no constraints, extact-tests, or bit-tests to pass */
 	struct MGD77_CONSTRAINT Constraint[MGD77_MAX_COLS];		/* List of constraints, if any */
-	char desired_column[MGD77_MAX_COLS][MGD77_COL_ABBREV_LEN];	/* List of desired column names in output order */
-	struct MGD77_PAIR Exact[MGD77_MAX_COLS];	/* List of exact matchings, if any */
+	char desired_column[MGD77_MAX_COLS][MGD77_COL_ABBREV_LEN];	/* List of desired column names in final output order */
+	struct MGD77_PAIR Exact[MGD77_MAX_COLS];	/* List of column names whose values must be !NaN to be output, if any */
 	struct MGD77_PAIR Bit_test[MGD77_MAX_COLS];	/* List of bit-tests, if any */
 	int n_out_columns;				/* Number of output columns requested */
 };
@@ -432,7 +432,7 @@ EXTERN_MSC int MGD77_carter_get_zone (int bin, struct MGD77_CARTER *C, int *zone
 
 EXTERN_MSC struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_FIELDS];
 EXTERN_MSC double MGD77_NaN_val[7];
-EXTERN_MSC char *MGD77_suffix[3];
-EXTERN_MSC BOOLEAN MGD77_format_allowed[3];	/* By default we allow opening of files in any format.  See MGD77_Ignore_Format() */
+EXTERN_MSC char *MGD77_suffix[MGD77_N_FORMATS];
+EXTERN_MSC BOOLEAN MGD77_format_allowed[MGD77_N_FORMATS];	/* By default we allow opening of files in any format.  See MGD77_Ignore_Format() */
 
 #endif	/* _MGD77_H */
