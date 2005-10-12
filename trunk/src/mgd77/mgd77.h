@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.33 2005-10-12 04:07:21 pwessel Exp $
+ *	$Id: mgd77.h,v 1.34 2005-10-12 07:42:34 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -434,5 +434,6 @@ EXTERN_MSC struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_FIELDS];
 EXTERN_MSC double MGD77_NaN_val[7];
 EXTERN_MSC char *MGD77_suffix[MGD77_N_FORMATS];
 EXTERN_MSC BOOLEAN MGD77_format_allowed[MGD77_N_FORMATS];	/* By default we allow opening of files in any format.  See MGD77_Ignore_Format() */
+EXTERN_MSC double MGD77_Epoch_zero;
 
 #endif	/* _MGD77_H */
