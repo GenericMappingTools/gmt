@@ -1,12 +1,18 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.46 2005-10-11 12:10:45 pwessel Exp $
+ *	$Id: mgd77.c,v 1.47 2005-10-12 04:07:21 pwessel Exp $
  *
- *  File:	MGD77.c
- * 
+ *    Copyright (c) 2005 by P. Wessel
+ *    See README file for copying and redistribution conditions.
+ *
+ *  File:	mgd77.c
+ *
+ *  Functino library for programs that plan to read/write MGD77[+] files
+ *
  *  Authors:    Paul Wessel, Primary Investigator, SOEST, U. of Hawaii
- *              Michael Chandler, Master's Candidate, SOEST, U. of Hawaii
- * 
- *  Date:	21-June-2004
+ *		Michael Chandler, Master's Candidate, SOEST, U. of Hawaii
+ *		
+ *  Version:	1.1
+ *  Revised:	10-OCT-2005
  * 
  *-------------------------------------------------------------------------*/
 
@@ -20,7 +26,6 @@
 #define STAT stat
 #endif
 
-#define MGD77_OLDEST_YY		39
 #define ALL_BLANKS "                      "	/* 32 blanks */
 
 /* PRIVATE FUNCTIONS TO MGD77.C */
@@ -61,7 +66,8 @@ int MGD77_Read_Data_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
 int MGD77_Write_Data_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
 int MGD77_Write_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
-EXTERN_MSC void MGD77_Order_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H);
+void MGD77_Order_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H);
+int MGD77_Convert_To_New_Format (char *line);
 
 struct MGD77_DATA_RECORD *MGD77Record;
  
@@ -104,15 +110,15 @@ char *MGD77_fmt[2][11] = {
 };
 
 struct MGD77_cdf {
-	int type;
-	int len;
-	double scale;
-	double offset;
-	char *units;
-	char *comment;
+	int type;		/* netCDF variable type */
+	int len;		/* # of characters (if text), 1 otherwise */
+	double scale;		/* scale to multiply stored data to get correct magnitude */
+	double offset;		/* offset to add after multiplication */
+	char *units;		/* Units of this data */
+	char *comment;		/* Comments regarding this data */
 };
 
-struct MGD77_cdf mgd77cdf[MGD77_SET_COLS] = {
+struct MGD77_cdf mgd77cdf[MGD77_N_DATA_EXTENDED] = {
 	{ NC_BYTE,	1,	1.0,	0.0, "", "Normally 5" },
 	{ NC_BYTE,	1,	1.0,	0.0, "hours", "-13 to +12 inclusive" },
 	{ NC_BYTE,	1,	1.0,	0.0, "year", "Year of the survey" },
@@ -124,7 +130,7 @@ struct MGD77_cdf mgd77cdf[MGD77_SET_COLS] = {
 	{ NC_INT,	1,	1.0e-6,	0.0, "degrees_east", "Negative if west of Greenwich" },
 	{ NC_BYTE,	1,	1.0,	0.0, "", "Observed (1), Interpolated (3), or Unspecified (9)" },
 	{ NC_INT,	1,	1.0e-4,	0.0, "sec", "Corrected for transducer depth, etc." },
-	{ NC_INT,	1,	1.0e-1,	0.0, "meter", "Corrected for sound velocity variations, if known" },
+	{ NC_INT,	1,	1.0e-1,	0.0, "m", "Corrected for sound velocity variations (if known)" },
 	{ NC_BYTE,	1,	1.0,	0.0, "", "01-55 (Matthews), 59-62 (Misc) 63 (Carter), 88 (Other), 98 (Unknown), or 99 (Unspecified)" },
 	{ NC_BYTE,	1,	1.0,	0.0, "", "Observed (1), Interpolated (3), or Unspecified (9)" },
 	{ NC_INT,	1,	1.0e-1,	0.0, "nTesla", "Leading sensor" },
@@ -132,7 +138,7 @@ struct MGD77_cdf mgd77cdf[MGD77_SET_COLS] = {
 	{ NC_SHORT,	1,	1.0e-1,	0.0, "nTesla", "Corrected for reference field (see header)" },
 	{ NC_BYTE,	1,	1.0,	0.0, "", "Magnetic sensor used: 1, 2, or Unspecified (9)" },
 	{ NC_SHORT,	1,	1.0e-1,	0.0, "nTesla", "Already applied to data" },
-	{ NC_SHORT,	1,	1.0,	0.0, "meter", "Positive below sealevel" },
+	{ NC_SHORT,	1,	1.0,	0.0, "m", "Positive below sealevel" },
 	{ NC_INT,	1,	1.0e-1,	0.0, "mGal", "Corrected for Eotvos, drift, and tares" },
 	{ NC_SHORT,	1,	1.0e-1,	0.0, "mGal", "7.5 V cos (lat) sin (azim) + 0.0042 V*V" },
 	{ NC_SHORT,	1,	1.0e-1,	0.0, "mGal", "Observed - theoretical" },
@@ -140,11 +146,7 @@ struct MGD77_cdf mgd77cdf[MGD77_SET_COLS] = {
 	{ NC_BYTE,	8,	1.0,	0.0, "", "Identical to ID in header" },
 	{ NC_BYTE,	5,	1.0,	0.0, "", "For cross-referencing with seismic data" },
 	{ NC_BYTE,	6,	1.0,	0.0, "", "For cross-referencing with seismic data" },
-	{ NC_DOUBLE,	1,	1.0,	0.0, "seconds since 2000-01-01 00:00:00 GMT", "UTC GMT time, correct for TZ to get ship time" },
-	{ NC_BYTE,	1,	1.0,	0.0, "", "" },	/* Unused entries */
-	{ NC_BYTE,	1,	1.0,	0.0, "", "" },
-	{ NC_BYTE,	1,	1.0,	0.0, "", "" },
-	{ NC_BYTE,	1,	1.0,	0.0, "", "" }
+	{ NC_DOUBLE,	1,	1.0,	0.0, "seconds since 2000-01-01 00:00:00 GMT", "UTC GMT time, subtract TZ to get ship local time" }
 };	
 
 int MGD77_fmt_no = 1;	/* 0 for %x.xd, 1 for %xd */
@@ -709,8 +711,10 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 	memset ((void *)H, 0, sizeof (struct MGD77_HEADER));
 	
 	MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, "header",  (char *)H->record));
+	MGD77_nc_status (nc_inq_attlen (F->nc_id, NC_GLOBAL, "author", count));					/* Get length of author */
+	H->author = (char *) GMT_memory (VNULL, count[0] + 1, sizeof (char), "MGD77_Read_Header_Record_cdf");	/* Get memory for author */
 	MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, "author",  H->author));
-	MGD77_nc_status (nc_inq_attlen (F->nc_id, NC_GLOBAL, "history", count));					/* Get length of history */
+	MGD77_nc_status (nc_inq_attlen (F->nc_id, NC_GLOBAL, "history", count));				/* Get length of history */
 	H->history = (char *) GMT_memory (VNULL, count[0] + 1, sizeof (char), "MGD77_Read_Header_Record_cdf");	/* Get memory for history */
 	MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, "history", H->history));
 	H->history[count[0]] = '\0';
@@ -1635,13 +1639,12 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 	
 	if (!arg || !arg[0]) return;	/* Return when nothing is passed to us */
 	
-	memset ((void *)F->use_column, 0, (size_t)(MGD77_MAX_COLS * sizeof (int)));	/* Initialize array */
 	memset ((void *)F->order, 0, (size_t)(MGD77_MAX_COLS * sizeof (int)));		/* Initialize array */
 	F->bit_pattern[MGD77_M77_SET] = F->bit_pattern[MGD77_CDF_SET] = 0;
 	
 	if (strchr (arg, ':')) {	/* Have specific bit-flag conditions */
 		i = j = 0;
-		while (arg[i] != ':') cstring[i] = arg[i++];
+		while (arg[i] != ':') cstring[i] = arg[i], i++;
 		cstring[i] = '\0';
 		i++;
 		while (arg[i]) bstring[j++] = arg[i++];
@@ -1737,9 +1740,9 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 	i = pos = 0;		/* Start at the first ouput column */
 	while ((GMT_strtok (bstring, ",", &pos, p))) {	/* Until we run out of abbreviations */
 		if (p[0] == '+')
-			F->Bit_test[i].val = 1;
+			F->Bit_test[i].match = 1;
 		else if (p[0] == '-')
-			F->Bit_test[i].val = 0;
+			F->Bit_test[i].match = 0;
 		else {
 			fprintf (stderr, "%s: Error: Bit-test flag (%s) is not in +<col> or -<col> format.\n", GMT_program, p);
 			exit (EXIT_FAILURE);
@@ -1749,7 +1752,7 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 	}
 	F->n_bit_tests = i;
 	
-	F->no_checking = (F->n_constraints == 0 && F->n_exact == 0 || F->n_bit_tests == 0);	/* Easy street */
+	F->no_checking = (F->n_constraints == 0 && F->n_exact == 0 && F->n_bit_tests == 0);	/* Easy street */
 }
 
 
@@ -1955,7 +1958,7 @@ BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int
 	if (F->n_bit_tests) {	/* Must pass ALL bit tests */
 		for (i = 0; i < F->n_bit_tests; i++) {
 			match = (S->flags[F->Bit_test[i].set][rec] & MGD77_this_bit[F->Bit_test[i].item]);	/* TRUE if flags bit #item is set */
-			if (match != F->Bit_test[i].val) return (FALSE);				/* Sorry, one missed test and you're history */
+			if (match != F->Bit_test[i].match) return (FALSE);				/* Sorry, one missed test and you're history */
 		}
 	}
 	
@@ -2175,7 +2178,7 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "version", strlen(MGD77_CDF_VERSION), (const char *)MGD77_CDF_VERSION));
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "header", MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + 1), (const char *)H->record));
-	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "author", MGD77_AUTHOR_LEN, H->author));
+	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "author", strlen (H->author), H->author));
 	if (!H->history) {	/* Blank history, set initial message */
 		(void) time (&now);
 		sprintf (history, "%s Initial conversion from MGD77 to MGD77+ netCDF format", ctime(&now));
