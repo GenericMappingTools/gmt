@@ -1,10 +1,10 @@
 #!/bin/sh
-#	$Id: GMT_Defaults_1b.sh,v 1.6 2004-04-13 21:32:27 pwessel Exp $
+#	$Id: GMT_Defaults_1b.sh,v 1.7 2005-10-13 22:16:02 pwessel Exp $
 #
-gmtset BASEMAP_TYPE plain PLOT_DEGREE_FORMAT ddd:mm:ssF GRID_CROSS_SIZE_PRIMARY 0i \
+../../bin/gmtset BASEMAP_TYPE plain PLOT_DEGREE_FORMAT ddd:mm:ssF GRID_CROSS_SIZE_PRIMARY 0i \
 ANNOT_FONT_SIZE_PRIMARY +8p OBLIQUE_ANNOTATION 1
-psbasemap -R-90/20/-55/25r -JOc-80/25.5/2/69/2.25i -Ba10f5g5 -P -K > GMT_Defaults_1b.ps
-pstext -R0/2.25/0/2 -Jx1i -O -K -N << EOF >> GMT_Defaults_1b.ps
+../../bin/psbasemap -R-90/20/-55/25r -JOc-80/25.5/2/69/2.25i -Ba10f5g5 -P -K > GMT_Defaults_1b.ps
+../../bin/pstext -R0/2.25/0/2 -Jx1i -O -K -N << EOF >> GMT_Defaults_1b.ps
 -0.05 0.15 7 0 1 RB X_ORIGIN
 0.28 -0.2 7 0 1 LM Y_ORIGIN
 -0.2 1.2 7 0 1 RB FRAME_PEN
@@ -19,12 +19,12 @@ pstext -R0/2.25/0/2 -Jx1i -O -K -N << EOF >> GMT_Defaults_1b.ps
 1.5 1.8 7 0 1 LB ANNOT_FONT_SIZE_PRIMARY
 EOF
 echo -0.4 -0.4 | psxy -R -Jx -O -K -Sc0.04 -Gblack -N >> GMT_Defaults_1b.ps
-psxy -R -Jx -O -K -SvS0.005i/0.04i/0.03i -N -Gblack << EOF >> GMT_Defaults_1b.ps
+../../bin/psxy -R -Jx -O -K -SvS0.005i/0.04i/0.03i -N -Gblack << EOF >> GMT_Defaults_1b.ps
 0 0.1 -0.4 0.1
 0.25 0 0.25 -0.4
 2.3 0.1 2.3 0.9
 EOF
-psxy -R -Jx -O -K -Svs0.005i/0.04i/0.03i -N -Gblack << EOF >> GMT_Defaults_1b.ps
+../../bin/psxy -R -Jx -O -K -Svs0.005i/0.04i/0.03i -N -Gblack << EOF >> GMT_Defaults_1b.ps
 -0.2 1.15 -0.03 1
 2.35 -0.2 2.0 -0.05
 2.35 1.2 1.95 1.1

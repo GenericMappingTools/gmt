@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.41 2005-09-29 03:05:39 pwessel Exp $
+ *	$Id: x2sys.c,v 1.42 2005-10-13 22:16:02 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -687,7 +687,7 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 	char path[BUFSIZ];
 	double **z;
 	struct MGD77_DATA_RECORD D;
-	struct MGD77_HEADER_RECORD H;
+	struct MGD77_HEADER H;
 	struct MGD77_CONTROL M;
 	double NaN;
 
@@ -709,7 +709,7 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
      		return (-1);
   	}
 
-	if (MGD77_Read_Header_Record (&M, &H)) {
+	if (MGD77_Read_Header_Record (fname, &M, &H)) {
 		fprintf (stderr, "%s: Error reading header sequence for cruise %s\n", X2SYS_program, fname);
 		exit (EXIT_FAILURE);
 	}
@@ -718,7 +718,7 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 	for (i = 0; i < MGD77_DATA_COLS; i++) z[i] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "x2sys_read_mgd77file");
 
 	j = 0;
-	while (!MGD77_Read_Data_Record (&M, &D)) {		/* While able to read a data record */
+	while (!MGD77_Read_Data_Record (&M, &H,0,0)) {		/* While able to read a data record */
 		z[0][j] = D.time;
 		GMT_lon_range_adjust (s->geodetic, &D.number[MGD77_LONGITUDE]);
 		for (i = 1; i < MGD77_DATA_COLS; i++) z[i][j] = D.number[MGD77_items[i]];
