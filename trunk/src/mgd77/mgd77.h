@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.34 2005-10-12 07:42:34 pwessel Exp $
+ *	$Id: mgd77.h,v 1.35 2005-10-13 10:16:49 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -64,7 +64,7 @@
 #define MGD77_TIME		27
 
 #define ALL_NINES               "9999999999"	/* Typical text value meaning no-data */
-#define MGD77_NOT_SET		-1
+#define MGD77_NOT_SET		(-1)
 
 #define MGD77_RESET_CONSTRAINT	1
 #define MGD77_RESET_EXACT	2
@@ -106,6 +106,7 @@
 #define MGD77_ERROR_NOT_MGD77PLUS	16
 #define MGD77_UNKNOWN_FORMAT		17
 #define MGD77_UNKNOWN_MODE		18
+#define MGD77_ERROR_NOSUCHCOLUMN	19
 
 /* We will use bit flags to keep track of which data column we are referring to.
  * field 0 is rightmost bit (1), field 1 is the next bit (2), field 2 is 4 and
@@ -276,6 +277,7 @@ struct MGD77_HEADER {
 	char *history;					/* History of creation/modifications */
 	int n_records;					/* Number of MGD77 data records found */
 	int n_fields;					/* Number of columns returned */
+	BOOLEAN no_time;				/* TRUE for those few cruises that have no time values */
 	struct MGD77_DATA_INFO info[MGD77_N_SETS];	/* Info regarding [0] standard MGD77 columns and [1] any extra columns (max 32 each) */
 };
 
@@ -351,6 +353,7 @@ struct MGD77_CONTROL {
 	char path[BUFSIZ];				/* Full path to current file */
 	FILE *fp;					/* File pointer to current open file (not used by MGD77+) */
 	int nc_id;					/* netCDF ID for current open file (MGD77+ only) */
+	int nc_recid;					/* netCDF ID for dimension of records (time) */
 	int rec_no;					/* Current record to read/write for record-based i/o */
 	int format;					/* 0 if any file format, 1 if MGD77, and 2 if netCDF, 3 if ascii table */
 	/* Format-related issues */
@@ -387,6 +390,7 @@ struct MGD77_CARTER {
 /* Primary user functions */
 
 EXTERN_MSC void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks);							/* Initialize the MGD77 machinery */
+EXTERN_MSC void MGD77_Reset (struct MGD77_CONTROL *F);										/* Reset after finishing a file */
 EXTERN_MSC int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F);						/* Returns full path to cruise */
 EXTERN_MSC int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw);							/* Opens a MGD77[+] file */
 EXTERN_MSC int MGD77_Close_File (struct MGD77_CONTROL *F);									/* Closes a MGD77[+] file */
@@ -401,6 +405,7 @@ EXTERN_MSC int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HE
 EXTERN_MSC void MGD77_Free (struct MGD77_DATASET *S);										/* Free memory allocated by MGD77_Read_File/MGD77_Read_Data */
 EXTERN_MSC void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F, int option);					/* Decode the -F option specifying the desired columns */
 EXTERN_MSC int MGD77_Get_Column (char *word, struct MGD77_CONTROL *F);								/* Get column number from column name (or -1 if not present) */
+EXTERN_MSC int MGD77_Get_Set (char *abbrev);											/* Returns 0 if abbrev is in the MGD77 set, else 1 */
 EXTERN_MSC void MGD77_Fatal_Error (int error);											/* Print message for this error and exit */
 EXTERN_MSC BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec);				/* Tests if a record passes all specified logical & exact tests */
 EXTERN_MSC void MGD77_Set_Unit (char *dist, double *scale);									/* Convert appended distance unit to a numerical scale to give meters */
