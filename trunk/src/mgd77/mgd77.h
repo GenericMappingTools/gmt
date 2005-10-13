@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.35 2005-10-13 10:16:49 pwessel Exp $
+ *	$Id: mgd77.h,v 1.36 2005-10-13 12:40:52 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -250,18 +250,18 @@ struct MGD77_HEADER_PARAMS {		/* See MGD-77 Documentation from NGDC for details 
 #define MGD77_COL_COMMENT_LEN	128
 
 struct MGD77_COLINFO {
-	char abbrev[MGD77_COL_ABBREV_LEN];	/* Short name that identifies this column */
-	char name[MGD77_COL_NAME_LEN];		/* Longer, descriptive name for column */
-	char units[MGD77_COL_UNIT_LEN];		/* Units of the data type in this column */
-	char comment[MGD77_COL_COMMENT_LEN];	/* Comment regarding this data column */
-	double scale;				/* factor to multiply data immediately after reading from file */
-	double offset;				/* offset to add after reading and multiplying by scale */
-	int pos;				/* Position in output record [0 - n_columns-1]*/
-	nc_type type;				/* Type of representation of this data in the netCDF file (NC_SHORT, NC_INT, NC_BYTE, etc) */
-	char text;				/* length if this is a text string, else 0 */
-	int var_id;				/* netCDF variable ID */
-	BOOLEAN constant;			/* TRUE if column is constant and only 1 row is/should be stored */
-	BOOLEAN present;			/* TRUE if column is present in the file (NaN or otherwise) */
+	char *abbrev;		/* Short name that identifies this column */
+	char *name;		/* Longer, descriptive name for column */
+	char *units;		/* Units of the data type in this column */
+	char *comment;		/* Comment regarding this data column */
+	double scale;		/* factor to multiply data immediately after reading from file */
+	double offset;		/* offset to add after reading and multiplying by scale */
+	int pos;		/* Position in output record [0 - n_columns-1]*/
+	nc_type type;		/* Type of representation of this data in the netCDF file (NC_SHORT, NC_INT, NC_BYTE, etc) */
+	char text;		/* length if this is a text string, else 0 */
+	int var_id;		/* netCDF variable ID */
+	BOOLEAN constant;	/* TRUE if column is constant and only 1 row is/should be stored */
+	BOOLEAN present;	/* TRUE if column is present in the file (NaN or otherwise) */
 };
 
 struct MGD77_DATA_INFO {
