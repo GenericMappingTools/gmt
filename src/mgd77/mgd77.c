@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.50 2005-10-13 10:16:49 pwessel Exp $
+ *	$Id: mgd77.c,v 1.51 2005-10-13 12:40:52 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -59,6 +59,8 @@ int MGD77_Write_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECO
 int MGD77_Write_Header_Record_m77 (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);
 int texts_are_constant (char *txt, int n, int width);
 int numbers_are_constant (double x[], int n);
+char *copy_text (char *txt);
+char *alloc_text (int len);
 void apply_scale_offset_after_read (double x[], int n, double scale, double offset, double nan_val);
 int apply_scale_offset_before_write (double new[], const double x[], int n, double scale, double offset, int type);
 void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H);
@@ -473,7 +475,7 @@ void MGD77_Decode_Header (struct MGD77_HEADER *H)
 	k = 0;
 	H->mgd77_header.Record_Type                         = MGD77_Get_byte  (H->record[k], 1, 1, 1);
 	H->mgd77_header.Cruise_Identifier                   = MGD77_Get_Text  (H->record[k], 2, 8, 1);
-	H->mgd77_header.Format_Acronym                      = MGD77_Get_Text ( H->record[k], 10, 5, 1);
+	H->mgd77_header.Format_Acronym                      = MGD77_Get_Text  (H->record[k], 10, 5, 1);
 	H->mgd77_header.Data_Center_File_Number             = MGD77_Get_int   (H->record[k], 15, 8, 1);
 	H->mgd77_header.Blank_1                             = MGD77_Get_Text  (H->record[k], 23, 4, 1);
 	for (i = 0; i < 5; i++) {
@@ -622,6 +624,23 @@ void MGD77_Decode_Header (struct MGD77_HEADER *H)
 		H->mgd77_header.Additional_Documentation[i] = MGD77_Get_Text (H->record[k], 1, 78, 1);
 }
 
+char *copy_text (char *txt)
+{
+	int len;
+	char *t;
+	len = strlen (txt);
+	t = (char *)GMT_memory (VNULL, (size_t)(strlen (txt)+1), sizeof (char), GMT_program);
+	strcpy (t, txt);
+	return (t);
+}
+
+char *alloc_text (int len)
+{
+	char *t;
+	t = (char *)GMT_memory (VNULL, (size_t)len, sizeof (char), GMT_program);
+	return (t);
+}
+
 void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 {
 	int i;
@@ -631,10 +650,10 @@ void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 	for (i = 0; i < MGD77_SET_COLS; i++) H->info[MGD77_M77_SET].col[i].present = H->info[MGD77_CDF_SET].col[i].present = FALSE;
 
 	for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {
-		strcpy (H->info[MGD77_M77_SET].col[i].abbrev, mgd77defs[i].abbrev);
-		strcpy (H->info[MGD77_M77_SET].col[i].name, mgd77defs[i].fieldID);
-		strcpy (H->info[MGD77_M77_SET].col[i].units, mgd77cdf[i].units);
-		strcpy (H->info[MGD77_M77_SET].col[i].comment, mgd77cdf[i].comment);
+		H->info[MGD77_M77_SET].col[i].abbrev = copy_text (mgd77defs[i].abbrev);
+		H->info[MGD77_M77_SET].col[i].name = copy_text (mgd77defs[i].fieldID);
+		H->info[MGD77_M77_SET].col[i].units = copy_text (mgd77cdf[i].units);
+		H->info[MGD77_M77_SET].col[i].comment = copy_text (mgd77cdf[i].comment);
 		H->info[MGD77_M77_SET].col[i].scale = mgd77cdf[i].scale;
 		H->info[MGD77_M77_SET].col[i].offset = mgd77cdf[i].offset;
 		H->info[MGD77_M77_SET].col[i].type = mgd77cdf[i].type;
@@ -643,10 +662,10 @@ void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 		H->info[MGD77_M77_SET].col[i].present = TRUE;
 	}
 	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {
-		strcpy (H->info[MGD77_M77_SET].col[i].abbrev, mgd77defs[i].abbrev);
-		strcpy (H->info[MGD77_M77_SET].col[i].name, mgd77defs[i].fieldID);
-		strcpy (H->info[MGD77_M77_SET].col[i].units, mgd77cdf[i].units);
-		strcpy (H->info[MGD77_M77_SET].col[i].comment, mgd77cdf[i].comment);
+		H->info[MGD77_M77_SET].col[i].abbrev = copy_text (mgd77defs[i].abbrev);
+		H->info[MGD77_M77_SET].col[i].name = copy_text (mgd77defs[i].fieldID);
+		H->info[MGD77_M77_SET].col[i].units = copy_text (mgd77cdf[i].units);
+		H->info[MGD77_M77_SET].col[i].comment = copy_text (mgd77cdf[i].comment);
 		H->info[MGD77_M77_SET].col[i].scale = 1.0;
 		H->info[MGD77_M77_SET].col[i].offset = 0.0;
 		H->info[MGD77_M77_SET].col[i].type = mgd77cdf[i].type;
@@ -655,10 +674,10 @@ void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 		H->info[MGD77_M77_SET].col[i].present = TRUE;
 	}
 	/* Finally, do the time field */
-	strcpy (H->info[MGD77_M77_SET].col[MGD77_TIME].abbrev, "time");
-	strcpy (H->info[MGD77_M77_SET].col[MGD77_TIME].name, "GMT J2000 Time");
-	strcpy (H->info[MGD77_M77_SET].col[MGD77_TIME].units, mgd77cdf[MGD77_TIME].units);
-	strcpy (H->info[MGD77_M77_SET].col[MGD77_TIME].comment, mgd77cdf[MGD77_TIME].comment);
+	H->info[MGD77_M77_SET].col[MGD77_TIME].abbrev = copy_text ("time");
+	H->info[MGD77_M77_SET].col[MGD77_TIME].name = copy_text ("GMT J2000 Time");
+	H->info[MGD77_M77_SET].col[MGD77_TIME].units = copy_text (mgd77cdf[MGD77_TIME].units);
+	H->info[MGD77_M77_SET].col[MGD77_TIME].comment = copy_text (mgd77cdf[MGD77_TIME].comment);
 	H->info[MGD77_M77_SET].col[MGD77_TIME].scale = mgd77cdf[MGD77_TIME].scale;
 	H->info[MGD77_M77_SET].col[MGD77_TIME].offset = mgd77cdf[MGD77_TIME].offset;
 	H->info[MGD77_M77_SET].col[MGD77_TIME].type = mgd77cdf[MGD77_TIME].type;
@@ -671,7 +690,7 @@ void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)  /* Will read the entire 24-section header structure */
 {
 	int id, c, c_id[2], n_dims, err, n_vars, dims[2];
-	size_t count[2] = {0, 0};
+	size_t count[2] = {0, 0}, length;
 	char name[32];
 	double corr_factor, corr_offset;
 	
@@ -708,20 +727,26 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 	nc_inq_nvars (F->nc_id, &n_vars);			/* Total number of variables in this file */
 	for (id = c_id[MGD77_M77_SET] = c_id[MGD77_CDF_SET] = 0; id < n_vars && c_id[MGD77_M77_SET] < MGD77_SET_COLS && c_id[MGD77_CDF_SET] < MGD77_SET_COLS; id++) {	/* Keep checking for extra columns until all are found */
 		
-		/* if (nc_get_att_schar (F->nc_id, id, "col_type", (signed char *)&M) == NC_ENOTATT || !(M == 'M' || M == 'E')) continue; */	/* Not a column variable */
-		
-		/* c = (M == 'M') ? 0 : 1; */  /* 0: A standard MGD77 column is found  1: An extra column is found */
-		
 		MGD77_nc_status (nc_inq_varname    (F->nc_id, id, name));	/* Get column abbreviation */
-		c = MGD77_Get_Set (name);	/* Determine which set this column belongs to */
-		strcpy (H->info[c].col[c_id[c]].abbrev, name);
+		c = MGD77_Get_Set (name);					/* Determine which set this column belongs to */
+		H->info[c].col[c_id[c]].abbrev = copy_text (name);
 		MGD77_nc_status (nc_inq_vartype    (F->nc_id, id, &H->info[c].col[c_id[c]].type));	/* Get data type */
 		/* Look for optional attributes */
-		if (nc_get_att_text   (F->nc_id, id, "long_name", H->info[c].col[c_id[c]].name) == NC_ENOTATT) strcpy (H->info[c].col[c_id[c]].name, H->info[c].col[c_id[c]].abbrev);		/* Get long name */
-		if (nc_get_att_text   (F->nc_id, id, "units", H->info[c].col[c_id[c]].units) == NC_ENOTATT) H->info[c].col[c_id[c]].units[0] = 0;		/* Get units */
+		if (nc_inq_attlen   (F->nc_id, id, "long_name", &length) != NC_ENOTATT) {		/* Get long name */
+			H->info[c].col[c_id[c]].name = alloc_text (length);
+			MGD77_nc_status (nc_get_att_text   (F->nc_id, id, "long_name", H->info[c].col[c_id[c]].name));
+		}
+		if (nc_inq_attlen   (F->nc_id, id, "units", &length) != NC_ENOTATT) {	/* Get units */
+			H->info[c].col[c_id[c]].units = alloc_text (length);
+			MGD77_nc_status (nc_get_att_text   (F->nc_id, id, "units", H->info[c].col[c_id[c]].units));
+		}
+		if (nc_inq_attlen   (F->nc_id, id, "comment", &length) != NC_ENOTATT) {	/* get comments */
+			H->info[c].col[c_id[c]].comment = alloc_text (length);
+			MGD77_nc_status (nc_get_att_text   (F->nc_id, id, "comment", H->info[c].col[c_id[c]].comment));
+		}
 		if (nc_get_att_double (F->nc_id, id, "scale_factor", &H->info[c].col[c_id[c]].scale)  == NC_ENOTATT) H->info[c].col[c_id[c]].scale = 1.0;	/* Get scale for reading */
 		if (nc_get_att_double (F->nc_id, id, "add_offset",   &H->info[c].col[c_id[c]].offset) == NC_ENOTATT) H->info[c].col[c_id[c]].offset = 0.0;	/* Get offset for reading */
-		if (nc_get_att_text   (F->nc_id, id, "comment", H->info[c].col[c_id[c]].comment) == NC_ENOTATT) H->info[c].col[c_id[c]].comment[0] = 0;		/* Get comment */
+
 		/* In addition to scale_factor/offset, which are used to temporarily scale data to fit in the given nc_type format,
 		 * it may have been discovered that the stored data are in the wrong unit (e.g., fathoms instead of meters, mGal instead of 0.1 mGal).
 		 * Two optional terms, corr_factor and corr_offset, if present, are used to correct such mistakes (since original data wont be changed).
@@ -764,7 +789,11 @@ int MGD77_Write_Header_Record_m77 (char *file, struct MGD77_CONTROL *F, struct M
 {
 	int i;
 	
+#if 1
+	MGD77_Write_Header_Record_New (F->fp, H, 0);  /* Will write the entire 24-section header structure from its parts */
+#else
 	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) fprintf (F->fp, "%s\n", H->record[i]);
+#endif
 	return (MGD77_NO_ERROR);
 }
 
@@ -2246,9 +2275,9 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 			MGD77_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 1, dims, &var_id));	/* Define a variable */
 		
 		/* MGD77_nc_status (nc_put_att_schar  (F->nc_id, var_id, "col_type", NC_BYTE, 1, &M)); */	/* Place attributes */
-		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "long_name", strlen (mgd77defs[i].fieldID), mgd77defs[i].fieldID));
+		if (mgd77defs[i].fieldID[0] && strcmp (mgd77defs[i].fieldID, mgd77defs[i].abbrev)) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "long_name", strlen (mgd77defs[i].fieldID), mgd77defs[i].fieldID));
 		if (mgd77cdf[i].units[0]) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "units", strlen (mgd77cdf[i].units), mgd77cdf[i].units));
-		if (mgd77cdf[i].comment) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "comment", strlen (mgd77cdf[i].comment), mgd77cdf[i].comment));
+		if (mgd77cdf[i].comment[0]) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "comment", strlen (mgd77cdf[i].comment), mgd77cdf[i].comment));
 		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "_FillValue", mgd77cdf[i].type, 1, &MGD77_NaN_val[mgd77cdf[i].type]));
 		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "missing_value", mgd77cdf[i].type, 1, &MGD77_NaN_val[mgd77cdf[i].type]));
 		if (mgd77cdf[i].scale  != 1.0) MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "scale_factor", NC_DOUBLE, 1, &mgd77cdf[i].scale));
@@ -2285,9 +2314,9 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 		else	/* Must store array */
 			MGD77_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 2, dims, &var_id));		/* Define a variable */
 		/* MGD77_nc_status (nc_put_att_schar  (F->nc_id, var_id, "col_type", NC_BYTE, 1, &M)); */	/* Place attributes */
-		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "long_name", strlen (mgd77defs[i].fieldID), mgd77defs[i].fieldID));
-		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "units", strlen (mgd77cdf[i].units), mgd77cdf[i].units));
-		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "comment", strlen (mgd77cdf[i].comment), mgd77cdf[i].comment));
+		if (mgd77defs[i].fieldID[0] && strcmp (mgd77defs[i].fieldID, mgd77defs[i].abbrev)) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "long_name", strlen (mgd77defs[i].fieldID), mgd77defs[i].fieldID));
+		if (mgd77cdf[i].units[0]) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "units", strlen (mgd77cdf[i].units), mgd77cdf[i].units));
+		if (mgd77cdf[i].comment[0]) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "comment", strlen (mgd77cdf[i].comment), mgd77cdf[i].comment));
 		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "_FillValue", mgd77cdf[i].type, 1, &MGD77_NaN_val[mgd77cdf[i].type]));
 		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "missing_value", mgd77cdf[i].type, 1, &MGD77_NaN_val[mgd77cdf[i].type]));
 		H->info[MGD77_M77_SET].col[i].var_id = var_id;
