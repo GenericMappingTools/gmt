@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.36 2005-10-13 12:40:52 pwessel Exp $
+ *	$Id: mgd77.h,v 1.37 2005-10-14 05:12:14 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -64,6 +64,7 @@
 #define MGD77_TIME		27
 
 #define ALL_NINES               "9999999999"	/* Typical text value meaning no-data */
+#define ALL_BLANKS "                      "	/* 32 blanks */
 #define MGD77_NOT_SET		(-1)
 
 #define MGD77_RESET_CONSTRAINT	1
@@ -84,6 +85,9 @@
 #define MGD77_CDF_SET		1
 #define MGD77_SET_COLS		32
 #define MGD77_MAX_COLS		64
+
+#define MGD77_FROM_HEADER	1
+#define MGD77_TO_HEADER		2
 
 /* Return error numbers */
 
@@ -107,6 +111,7 @@
 #define MGD77_UNKNOWN_FORMAT		17
 #define MGD77_UNKNOWN_MODE		18
 #define MGD77_ERROR_NOSUCHCOLUMN	19
+#define MGD77_BAD_ARG			20
 
 /* We will use bit flags to keep track of which data column we are referring to.
  * field 0 is rightmost bit (1), field 1 is the next bit (2), field 2 is 4 and
@@ -149,99 +154,92 @@ typedef char* Text;	/* Used to indicate character strings */
  */
 
 struct MGD77_HEADER_PARAMS {		/* See MGD-77 Documentation from NGDC for details */
+/* START OF MGD77_HEADER_PARAMS */
 	/* Sequence No 01: */
-	byte	Record_Type;
-	Text	Cruise_Identifier;
-	Text	Format_Acronym;
-	int	Data_Center_File_Number;
-	Text	Blank_1;
-	byte	Paramaters_Surveyed_Code[5];
-	short	File_Creation_Year;
-	byte	File_Creation_Month;
-	byte	File_Creation_Day;
-	Text	Contributing_Institution;
+	char	Record_Type;
+	char	Survey_Identifier[9];
+	char	Format_Acronym[5];
+	char	Data_Center_File_Number[9];
+	char	Paramaters_Surveyed_Code[5];
+	char	File_Creation_Year[5];
+	char	File_Creation_Month[3];
+	char	File_Creation_Day[3];
+	char	Source_Institution[40];
 	/* Sequence No 02: */
-	Text	Country;
-	Text	Platform_Name;
-	byte	Platform_Type_Code;
-	Text	Platform_Type;
-	Text	Chief_Scientist;
+	char	Country[19];
+	char	Platform_Name[22];
+	char	Platform_Type_Code;
+	char	Platform_Type[7];
+	char	Chief_Scientist[33];
 	/* Sequence No 03: */
-	Text	Project_Cruise_Leg;
-	Text	Funding;
+	char	Project_Cruise_Leg[59];
+	char	Funding[21];
 	/* Sequence No 04: */
-	short	Survey_Departure_Year;
-	byte	Survey_Departure_Month;
-	byte	Survey_Departure_Day;
-	Text	Port_of_Departure;
-	short	Survey_Arrival_Year;
-	byte	Survey_Arrival_Month;
-	byte	Survey_Arrival_Day;
-	Text	Port_of_Arrival;
+	char	Survey_Departure_Year[5];
+	char	Survey_Departure_Month[3];
+	char	Survey_Departure_Day[3];
+	char	Port_of_Departure[33];
+	char	Survey_Arrival_Year[5];
+	char	Survey_Arrival_Month[3];
+	char	Survey_Arrival_Day[3];
+	char	Port_of_Arrival[31];
 	/* Sequence No 05: */
-	Text	Navigation_Instrumentation;
-	Text	Position_Determination_Method;
+	char	Navigation_Instrumentation[41];
+	char	Geodetic_Datum_Position_Determination_Method[39];
 	/* Sequence No 06: */
-	Text	Bathymetry_Instrumentation;
-	Text	Bathymetry_Add_Forms_of_Data;
+	char	Bathymetry_Instrumentation[41];
+	char	Bathymetry_Add_Forms_of_Data[39];
 	/* Sequence No 07: */
-	Text	Magnetics_Instrumentation;
-	Text	Magnetics_Add_Forms_of_Data;
+	char	Magnetics_Instrumentation[41];
+	char	Magnetics_Add_Forms_of_Data[39];
 	/* Sequence No 08: */
-	Text	Gravity_Instrumentation;
-	Text	Gravity_Add_Forms_of_Data;
+	char	Gravity_Instrumentation[41];
+	char	Gravity_Add_Forms_of_Data[39];
 	/* Sequence No 09: */
-	Text	Seismic_Instrumentation;
-	Text	Seismic_Add_Forms_of_Data;
-	/* Sequence No 10: */
+	char	Seismic_Instrumentation[41];
+	char	Seismic_Add_Forms_of_Data[39];
+	/* Sequence No 10: (Format_Description is split across 10 and 11 */
 	char	Format_Type;
-	Text	Format_Description_1;
-	Text	Blank_2;
+	char	Format_Description[95];
 	/* Sequence No 11: */
-	Text	Format_Description_2;
-	Text	Blank_3;
-	short	Topmost_Latitude;
-	short	Bottommost_Latitude;
-	short	Leftmost_Longitude;
-	short	Rightmost_Longitude;
-	Text	Blank_4;
+	char	Topmost_Latitude[4];
+	char	Bottommost_Latitude[4];
+	char	Leftmost_Longitude[5];
+	char	Rightmost_Longitude[5];
 	/* Sequence No 12: */
-	float	Bathymetry_Digitizing_Rate;
-	Text	Bathymetry_Sampling_Rate;
-	float	Bathymetry_Assumed_Sound_Velocity;
-	byte	Bathymetry_Datum_Code;
-	Text	Bathymetry_Interpolation_Scheme;
+	char	Bathymetry_Digitizing_Rate[4];
+	char	Bathymetry_Sampling_Rate[13];
+	char	Bathymetry_Assumed_Sound_Velocity[6];
+	char	Bathymetry_Datum_Code[3];
+	char	Bathymetry_Interpolation_Scheme[57];
 	/* Sequence No 13: */
-	float	Magnetics_Digitizing_Rate;
-	byte	Magnetics_Sampling_Rate;
-	short	Magnetics_Sensor_Tow_Distance;
-	float	Magnetics_Sensor_Depth;
-	short	Magnetics_Sensor_Separation;
-	byte	Magnetics_Ref_Field_Code;
-	Text	Magnetics_Ref_Field;
-	Text	Magnetics_Method_Applying_Res_Field;
+	char	Magnetics_Digitizing_Rate[4];
+	char	Magnetics_Sampling_Rate[3];
+	char	Magnetics_Sensor_Tow_Distance[5];
+	char	Magnetics_Sensor_Depth[6];
+	char	Magnetics_Sensor_Separation[4];
+	char	Magnetics_Ref_Field_Code[3];
+	char	Magnetics_Ref_Field[13];
+	char	Magnetics_Method_Applying_Res_Field[48];
 	/* Sequence No 14: */
-	float	Gravity_Digitizing_Rate;
-	byte	Gravity_Sampling_Rate;
-	byte	Gravity_Theoretical_Formula_Code;
-	Text	Gravity_Theoretical_Formula;
-	byte	Gravity_Reference_System_Code;
-	Text	Gravity_Reference_System;
-	Text	Gravity_Corrections_Applied;
+	char	Gravity_Digitizing_Rate[4];
+	char	Gravity_Sampling_Rate[3];
+	char	Gravity_Theoretical_Formula_Code;
+	char	Gravity_Theoretical_Formula[18];
+	char	Gravity_Reference_System_Code;
+	char	Gravity_Reference_System[17];
+	char	Gravity_Corrections_Applied[39];
 	/* Sequence No 15: */
-	float	Gravity_Departure_Base_Station;
-	Text	Gravity_Departure_Base_Station_Name;
-	float	Gravity_Arrival_Base_Station;
-	Text	Gravity_Arrival_Base_Station_Name;
-	/* Sequence No 16: */
-	byte	Number_of_Ten_Degree_Identifiers;
-	char	Blank_5;
-	short	Ten_Degree_Identifier_1[15];
-	/* Sequence No 17: */
-	short	Ten_Degree_Identifier_2[15];
-	Text	Blank_6;
-	/* Sequences No 18-24: */
-	Text	Additional_Documentation[7];
+	char	Gravity_Departure_Base_Station[8];
+	char	Gravity_Departure_Base_Station_Name[34];
+	char	Gravity_Arrival_Base_Station[8];
+	char	Gravity_Arrival_Base_Station_Name[32];
+	/* Sequence No 16+17: */
+	char	Number_of_Ten_Degree_Identifiers[3];
+	char	Ten_Degree_Identifier[30][5];
+	/* Sequence No 18-24: */
+	char	Additional_Documentation[7][79];
+/* END OF MGD77_HEADER_PARAMS */
 };
 
 #define MGD77_COL_ABBREV_LEN	16
@@ -271,8 +269,7 @@ struct MGD77_DATA_INFO {
 };
 
 struct MGD77_HEADER {	
-	char record[MGD77_N_HEADER_RECORDS][MGD77_HEADER_LENGTH+1];	/* Keep all raw 24 header records in memory */
-	struct MGD77_HEADER_PARAMS mgd77_header;	/* See MGD-77 Documentation from NGDC for details */
+	struct MGD77_HEADER_PARAMS *mgd77;		/* See MGD-77 Documentation from NGDC for details */
 	char *author;					/* Name of author of last creation/modification */
 	char *history;					/* History of creation/modifications */
 	int n_records;					/* Number of MGD77 data records found */

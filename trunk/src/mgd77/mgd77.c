@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.51 2005-10-13 12:40:52 pwessel Exp $
+ *	$Id: mgd77.c,v 1.52 2005-10-14 05:12:14 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -26,7 +26,6 @@
 #define STAT stat
 #endif
 
-#define ALL_BLANKS "                      "	/* 32 blanks */
 #define MGD77_CDF_CONVENTION	"COARDS"	/* MGD77+ files are COARDS-compliant */
 
 /* PRIVATE FUNCTIONS TO MGD77.C */
@@ -57,8 +56,8 @@ int MGD77_Write_Data_Record_cdf (struct MGD77_CONTROL *F, struct MGD77_HEADER *H
 int MGD77_Read_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);	  /* Will read a single tabular MGD77 record */
 int MGD77_Write_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);	  /* Will read a single tabular MGD77 record */
 int MGD77_Write_Header_Record_m77 (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);
-int texts_are_constant (char *txt, int n, int width);
-int numbers_are_constant (double x[], int n);
+BOOLEAN texts_are_constant (char *txt, int n, int width);
+BOOLEAN numbers_are_constant (double x[], int n, double limits[2]);
 char *copy_text (char *txt);
 char *alloc_text (int len);
 void apply_scale_offset_after_read (double x[], int n, double scale, double offset, double nan_val);
@@ -71,7 +70,8 @@ int MGD77_Write_Data_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 int MGD77_Write_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
 int MGD77_Order_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H);
 int MGD77_Convert_To_New_Format (char *line);
-void MGD77_Decode_Header (struct MGD77_HEADER *H);
+void MGD77_Decode_Header (struct MGD77_HEADER_PARAMS *P, char *record[], int dir);
+void MGD77_Place_Text (int dir, char *struct_member, char *header_record, int start_pos, int n_char);
 
 struct MGD77_DATA_RECORD *MGD77Record;
  
@@ -85,8 +85,12 @@ double MGD77_NaN_val[7], MGD77_Low_val[7], MGD77_High_val[7];
 double MGD77_Epoch_zero;
 char *MGD77_suffix[MGD77_N_FORMATS] = {"mgd77", "nc", "dat"};
 
+struct MGD77_LIMITS {
+	double limit[2];	/* Upper and lower range */
+} mgd77_range[MGD77_N_DATA_EXTENDED];
+
 char *MGD77_fmt[2][11] = {
-	{
+	{	/* Integers with leading zeros */
 	"%0.0d",
 	"%1.1d",
 	"%2.2d",
@@ -99,7 +103,7 @@ char *MGD77_fmt[2][11] = {
 	"%9.9d",
 	"%10.10d",
 },
-{
+{	/* Integers without leading zeros */
 	"%0d",
 	"%1d",
 	"%2d",
@@ -183,6 +187,9 @@ void MGD77_Put_byte (FILE *fp, byte b, int length, double scale, int sign);
 void MGD77_Put_char (FILE *fp, char c, int length, double scale, int sign);
 void MGD77_Put_Text (FILE *fp, Text t, int length, double scale, int sign);
 int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, int *key);
+
+
+#include "mgd77_functions.h"	/* Get netCDF MGD77 header attribute i/o functions */
 
 int MGD77_Write_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 {
@@ -427,15 +434,15 @@ int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, do
 
 int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {	/* Applies to MGD77 files */
-	char record[MGD77_HEADER_LENGTH+1], line[BUFSIZ];
+	char *MGD77_header[MGD77_N_HEADER_RECORDS];
 	int sequence, err;
 	struct STAT buf;
 	
 	/* argument file is generally ignored since file is already open */
 	
-	memset ((void *)H, '\0', sizeof (struct MGD77_HEADER));
-	if (F->format == MGD77_FORMAT_M77) {	/* Can compute # records from file size because format is fixed */
-		if (stat (F->path, &buf)) {
+	memset ((void *)H, '\0', sizeof (struct MGD77_HEADER));	/* Completely wipe existing header */
+	if (F->format == MGD77_FORMAT_M77) {			/* Can compute # records from file size because format is fixed */
+		if (stat (F->path, &buf)) {	/* Inquiry about file failed somehow */
 			fprintf (stderr, "%s: Unable to stat file %s\n", GMT_program, F->path);
 			exit (EXIT_FAILURE);
 		}
@@ -443,20 +450,24 @@ int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MG
 		H->n_records = irint ((double)(buf.st_size - (MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + 1))) / (double)(MGD77_RECORD_LENGTH + 1));
 	}
 	else {
+		char line[BUFSIZ];
 		/* Since we do not know the number of records, we must quickly count lines */
-		while (fgets (line, BUFSIZ, F->fp)) H->n_records++;
-		rewind (F->fp);	/* Go back to beginning of file */
-		H->n_records -= MGD77_N_HEADER_RECORDS;	/* Adjust for header block */
+		while (fgets (line, BUFSIZ, F->fp)) H->n_records++;	/* Count every line */
+		rewind (F->fp);						/* Go back to beginning of file */
+		H->n_records -= MGD77_N_HEADER_RECORDS;			/* Adjust for the 24 records in the header block */
 	}
 	
 	/* Read Sequences No 01-24: */
 
 	for (sequence = 0; sequence < MGD77_N_HEADER_RECORDS; sequence++) {
-		if ((err = MGD77_Read_Header_Sequence (F->fp, record, sequence+1))) return (err);
-		strncpy (H->record[sequence], record, MGD77_HEADER_LENGTH);
+		MGD77_header[sequence] = (char *)GMT_memory (VNULL, MGD77_HEADER_LENGTH + 1, sizeof (char), GMT_program);
+		if ((err = MGD77_Read_Header_Sequence (F->fp, MGD77_header[sequence], sequence+1))) return (err);
 	}
 	
-	MGD77_Decode_Header (H);	/* Decode individual items in the text headers */
+	H->mgd77 = (struct MGD77_HEADER_PARAMS *) GMT_memory (VNULL, 1, sizeof (struct MGD77_HEADER_PARAMS), GMT_program);	/* Allocate parameter header */
+	
+	MGD77_Decode_Header (H->mgd77, MGD77_header, MGD77_FROM_HEADER);	/* Decode individual items in the text headers */
+	for (sequence = 0; sequence < MGD77_N_HEADER_RECORDS; sequence++) GMT_free ((void *)MGD77_header[sequence]);
 
 	/* Fill in info in F */
 	
@@ -466,162 +477,186 @@ int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MG
 	return (MGD77_NO_ERROR);	/* Success, it seems */
 }
 
-void MGD77_Decode_Header (struct MGD77_HEADER *H)
+void MGD77_Decode_Header (struct MGD77_HEADER_PARAMS *P, char *record[], int dir)
 {
+	/* Copies information between the header structure and the header records */
 	int i, k;
+
+	if (dir == MGD77_TO_HEADER) {	/* Set all records to space-filled records */
+		for (k = 0; k < MGD77_N_HEADER_RECORDS; k++) {
+			memset ((void *)record[k], ' ', MGD77_HEADER_LENGTH);
+			sprintf (&record[k][78], "%2.2d", k + 1);	/* Place sequence number */
+		}
+	}
 	
 	/* Process Sequence No 01: */
 
 	k = 0;
-	H->mgd77_header.Record_Type                         = MGD77_Get_byte  (H->record[k], 1, 1, 1);
-	H->mgd77_header.Cruise_Identifier                   = MGD77_Get_Text  (H->record[k], 2, 8, 1);
-	H->mgd77_header.Format_Acronym                      = MGD77_Get_Text  (H->record[k], 10, 5, 1);
-	H->mgd77_header.Data_Center_File_Number             = MGD77_Get_int   (H->record[k], 15, 8, 1);
-	H->mgd77_header.Blank_1                             = MGD77_Get_Text  (H->record[k], 23, 4, 1);
-	for (i = 0; i < 5; i++) {
-		H->mgd77_header.Paramaters_Surveyed_Code[i] = MGD77_Get_byte  (H->record[k], 27 + i, 1, 1);
-	}
-	H->mgd77_header.File_Creation_Year                  = MGD77_Get_short (H->record[k], 32, 4, 1);
-	H->mgd77_header.File_Creation_Month                 = MGD77_Get_byte  (H->record[k], 36, 2, 1);
-	H->mgd77_header.File_Creation_Day                   = MGD77_Get_byte  (H->record[k], 38, 2, 1);
-	H->mgd77_header.Contributing_Institution            = MGD77_Get_Text  (H->record[k], 40, 39, 1);
+	MGD77_Place_Text (dir, &P->Record_Type, record[k], 1, 1);
+	MGD77_Place_Text (dir, P->Survey_Identifier, record[k], 2, 8);
+	MGD77_Place_Text (dir, P->Format_Acronym, record[k], 10, 5);
+	MGD77_Place_Text (dir, P->Data_Center_File_Number, record[k], 15, 8);
+	MGD77_Place_Text (dir, P->Paramaters_Surveyed_Code, record[k], 27, 5);
+	MGD77_Place_Text (dir, P->File_Creation_Year, record[k], 32, 4);
+	MGD77_Place_Text (dir, P->File_Creation_Month, record[k], 36, 2);
+	MGD77_Place_Text (dir, P->File_Creation_Day, record[k], 38, 2);
+	MGD77_Place_Text (dir, P->Source_Institution, record[k], 40, 39);
 
 	/* Process Sequence No 02: */
 
 	k = 1;
-	H->mgd77_header.Country                             = MGD77_Get_Text (H->record[k], 1, 18, 1);
-	H->mgd77_header.Platform_Name                       = MGD77_Get_Text (H->record[k], 19, 21, 1);
-	H->mgd77_header.Platform_Type_Code                  = MGD77_Get_byte (H->record[k], 40, 1, 1);
-	H->mgd77_header.Platform_Type                       = MGD77_Get_Text (H->record[k], 41, 6, 1);
-	H->mgd77_header.Chief_Scientist                     = MGD77_Get_Text (H->record[k], 47, 32, 1);
+	MGD77_Place_Text (dir, P->Country, record[k], 1, 18);
+	MGD77_Place_Text (dir, P->Platform_Name, record[k], 19, 21);
+	MGD77_Place_Text (dir, &P->Platform_Type_Code, record[k], 40, 1);
+	MGD77_Place_Text (dir, P->Platform_Type, record[k], 41, 6);
+	MGD77_Place_Text (dir, P->Chief_Scientist, record[k], 47, 32);
 
 	/* Process Sequence No 03: */
 
 	k = 2;
-	H->mgd77_header.Project_Cruise_Leg                  = MGD77_Get_Text (H->record[k], 1, 58, 1);
-	H->mgd77_header.Funding                             = MGD77_Get_Text (H->record[k], 59, 20, 1);
+	MGD77_Place_Text (dir, P->Project_Cruise_Leg, record[k], 1, 58);
+	MGD77_Place_Text (dir, P->Funding, record[k], 59, 20);
 
 	/* Process Sequence No 04: */
 
 	k = 3;
-	H->mgd77_header.Survey_Departure_Year               = MGD77_Get_short (H->record[k], 1, 4, 1);
-	H->mgd77_header.Survey_Departure_Month              = MGD77_Get_byte  (H->record[k], 5, 2, 1);
-	H->mgd77_header.Survey_Departure_Day                = MGD77_Get_byte  (H->record[k], 7, 2, 1);
-	H->mgd77_header.Port_of_Departure                   = MGD77_Get_Text  (H->record[k], 9, 32, 1);
-	H->mgd77_header.Survey_Arrival_Year                 = MGD77_Get_short (H->record[k], 41, 4, 1);
-	H->mgd77_header.Survey_Arrival_Month                = MGD77_Get_byte  (H->record[k], 45, 2, 1);
-	H->mgd77_header.Survey_Arrival_Day                  = MGD77_Get_byte  (H->record[k], 47, 2, 1);
-	H->mgd77_header.Port_of_Arrival                     = MGD77_Get_Text  (H->record[k], 49, 30, 1);
+	MGD77_Place_Text (dir, P->Survey_Departure_Year, record[k], 1, 4);
+	MGD77_Place_Text (dir, P->Survey_Departure_Month, record[k], 5, 2);
+	MGD77_Place_Text (dir, P->Survey_Departure_Day, record[k], 7, 2);
+	MGD77_Place_Text (dir, P->Port_of_Departure, record[k], 9, 32);
+	MGD77_Place_Text (dir, P->Survey_Arrival_Year, record[k], 41, 4);
+	MGD77_Place_Text (dir, P->Survey_Arrival_Month, record[k], 45, 2);
+	MGD77_Place_Text (dir, P->Survey_Arrival_Day, record[k], 47, 2);
+	MGD77_Place_Text (dir, P->Port_of_Arrival, record[k], 49, 30);
 
 	/* Process Sequence No 05: */
 
 	k = 4;
-	H->mgd77_header.Navigation_Instrumentation          = MGD77_Get_Text (H->record[k], 1, 40, 1);
-	H->mgd77_header.Position_Determination_Method       = MGD77_Get_Text (H->record[k], 41, 38, 1);
+	MGD77_Place_Text (dir, P->Navigation_Instrumentation, record[k], 1, 40);
+	MGD77_Place_Text (dir, P->Geodetic_Datum_Position_Determination_Method, record[k], 41, 38);
 
 	/* Process Sequence No 06: */
 
 	k = 5;
-	H->mgd77_header.Bathymetry_Instrumentation          = MGD77_Get_Text (H->record[k], 1, 40, 1);
-	H->mgd77_header.Bathymetry_Add_Forms_of_Data        = MGD77_Get_Text (H->record[k], 41, 38, 1);
+	MGD77_Place_Text (dir, P->Bathymetry_Instrumentation, record[k], 1, 40);
+	MGD77_Place_Text (dir, P->Bathymetry_Add_Forms_of_Data, record[k], 41, 38);
 
 	/* Process Sequence No 07: */
 
 	k = 6;
-	H->mgd77_header.Magnetics_Instrumentation           = MGD77_Get_Text (H->record[k], 1, 40, 1);
-	H->mgd77_header.Magnetics_Add_Forms_of_Data         = MGD77_Get_Text (H->record[k], 41, 38, 1);
+	MGD77_Place_Text (dir, P->Magnetics_Instrumentation, record[k], 1, 40);
+	MGD77_Place_Text (dir, P->Magnetics_Add_Forms_of_Data, record[k], 41, 38);
 
 	/* Process Sequence No 08: */
 
 	k = 7;
-	H->mgd77_header.Gravity_Instrumentation             = MGD77_Get_Text (H->record[k], 1, 40, 1);
-	H->mgd77_header.Gravity_Add_Forms_of_Data           = MGD77_Get_Text (H->record[k], 41, 38, 1);
+	MGD77_Place_Text (dir, P->Gravity_Instrumentation, record[k], 1, 40);
+	MGD77_Place_Text (dir, P->Gravity_Add_Forms_of_Data, record[k], 41, 38);
 
 	/* Process Sequence No 09: */
 
 	k = 8;
-	H->mgd77_header.Seismic_Instrumentation             = MGD77_Get_Text (H->record[k], 1, 40, 1);
-	H->mgd77_header.Seismic_Add_Forms_of_Data           = MGD77_Get_Text (H->record[k], 41, 38, 1);
+	MGD77_Place_Text (dir, P->Seismic_Instrumentation, record[k], 1, 40);
+	MGD77_Place_Text (dir, P->Seismic_Add_Forms_of_Data, record[k], 41, 38);
 
 	/* Process Sequence No 10: */
 
 	k = 9;
-	H->mgd77_header.Format_Type                         = MGD77_Get_char (H->record[k], 1, 1, 1);
-	H->mgd77_header.Format_Description_1                = MGD77_Get_Text (H->record[k], 2, 74, 1);
-	H->mgd77_header.Blank_2                             = MGD77_Get_Text (H->record[k], 76, 3, 1);
+	MGD77_Place_Text (dir, &P->Format_Type, record[k], 1, 1);
+	MGD77_Place_Text (dir | 32, P->Format_Description, record[k], 2, 75);	/* The 32 prevents removal of trailing spaces just yet */
 
 	/* Process Sequence No 11: */
 
 	k = 10;
-	H->mgd77_header.Format_Description_2                = MGD77_Get_Text  (H->record[k], 1, 17, 1);
-	H->mgd77_header.Blank_3                             = MGD77_Get_Text  (H->record[k], 18, 23, 1);
-	H->mgd77_header.Topmost_Latitude                    = MGD77_Get_short (H->record[k], 41, 3, 1);
-	H->mgd77_header.Bottommost_Latitude                 = MGD77_Get_short (H->record[k], 44, 3, 1);
-	H->mgd77_header.Leftmost_Longitude                  = MGD77_Get_short (H->record[k], 47, 4, 1);
-	H->mgd77_header.Rightmost_Longitude                 = MGD77_Get_short (H->record[k], 51, 4, 1);
-	H->mgd77_header.Blank_4                             = MGD77_Get_Text  (H->record[k], 55, 24, 1);
+	MGD77_Place_Text (dir, &P->Format_Description[75], record[k], 1, 19);	/* Now we can remove spaces */
+	MGD77_Place_Text (dir, P->Topmost_Latitude, record[k], 41, 3);
+	MGD77_Place_Text (dir, P->Bottommost_Latitude, record[k], 44, 3);
+	MGD77_Place_Text (dir, P->Leftmost_Longitude, record[k], 47, 4);
+	MGD77_Place_Text (dir, P->Rightmost_Longitude, record[k], 51, 4);
 
 	/* Process Sequence No 12: */
 
 	k = 11;
-	H->mgd77_header.Bathymetry_Digitizing_Rate          = MGD77_Get_float (H->record[k], 1, 3, 0.1);
-	H->mgd77_header.Bathymetry_Sampling_Rate            = MGD77_Get_Text  (H->record[k], 4, 12, 1);
-	H->mgd77_header.Bathymetry_Assumed_Sound_Velocity   = MGD77_Get_float (H->record[k], 16, 5, 0.1);
-	H->mgd77_header.Bathymetry_Datum_Code               = MGD77_Get_byte  (H->record[k], 21, 2, 1);
-	H->mgd77_header.Bathymetry_Interpolation_Scheme     = MGD77_Get_Text  (H->record[k], 23, 56, 1);
+	MGD77_Place_Text (dir, P->Bathymetry_Digitizing_Rate, record[k], 1, 3);
+	MGD77_Place_Text (dir, P->Bathymetry_Sampling_Rate, record[k], 4, 12);
+	MGD77_Place_Text (dir, P->Bathymetry_Assumed_Sound_Velocity, record[k], 16, 5);
+	MGD77_Place_Text (dir, P->Bathymetry_Datum_Code, record[k], 21, 2);
+	MGD77_Place_Text (dir, P->Bathymetry_Interpolation_Scheme, record[k], 23, 56);
 
 	/* Process Sequence No 13: */
 
 	k = 12;
-	H->mgd77_header.Magnetics_Digitizing_Rate           = MGD77_Get_float (H->record[k], 1, 3, 0.1);
-	H->mgd77_header.Magnetics_Sampling_Rate             = MGD77_Get_byte  (H->record[k], 4, 2, 1);
-	H->mgd77_header.Magnetics_Sensor_Tow_Distance       = MGD77_Get_short (H->record[k], 6, 4, 1);
-	H->mgd77_header.Magnetics_Sensor_Depth              = MGD77_Get_float (H->record[k], 10, 5, 0.1);
-	H->mgd77_header.Magnetics_Sensor_Separation         = MGD77_Get_short (H->record[k], 15, 3, 1);
-	H->mgd77_header.Magnetics_Ref_Field_Code            = MGD77_Get_byte  (H->record[k], 18, 2, 1);
-	H->mgd77_header.Magnetics_Ref_Field                 = MGD77_Get_Text  (H->record[k], 20, 12, 1);
-	H->mgd77_header.Magnetics_Method_Applying_Res_Field = MGD77_Get_Text  (H->record[k], 32, 47, 1);
+	MGD77_Place_Text (dir, P->Magnetics_Digitizing_Rate, record[k], 1, 3);
+	MGD77_Place_Text (dir, P->Magnetics_Sampling_Rate, record[k], 4, 2);
+	MGD77_Place_Text (dir, P->Magnetics_Sensor_Tow_Distance, record[k], 6, 4);
+	MGD77_Place_Text (dir, P->Magnetics_Sensor_Depth, record[k], 10, 5);
+	MGD77_Place_Text (dir, P->Magnetics_Sensor_Separation, record[k], 15, 3);
+	MGD77_Place_Text (dir, P->Magnetics_Ref_Field_Code, record[k], 18, 2);
+	MGD77_Place_Text (dir, P->Magnetics_Ref_Field, record[k], 20, 12);
+	MGD77_Place_Text (dir, P->Magnetics_Method_Applying_Res_Field, record[k], 32, 47);
 
 	/* Process Sequence No 14: */
 
 	k = 13;
-	H->mgd77_header.Gravity_Digitizing_Rate             = MGD77_Get_float (H->record[k], 1, 3, 0.1);
-	H->mgd77_header.Gravity_Sampling_Rate               = MGD77_Get_byte  (H->record[k], 4, 2, 1);
-	H->mgd77_header.Gravity_Theoretical_Formula_Code    = MGD77_Get_byte  (H->record[k], 6, 1, 1);
-	H->mgd77_header.Gravity_Theoretical_Formula         = MGD77_Get_Text  (H->record[k], 7, 17, 1);
-	H->mgd77_header.Gravity_Reference_System_Code       = MGD77_Get_byte  (H->record[k], 24, 1, 1);
-	H->mgd77_header.Gravity_Reference_System            = MGD77_Get_Text  (H->record[k], 25, 16, 1);
-	H->mgd77_header.Gravity_Corrections_Applied         = MGD77_Get_Text  (H->record[k], 41, 38, 1);
+	MGD77_Place_Text (dir, P->Gravity_Digitizing_Rate, record[k], 1, 3);
+	MGD77_Place_Text (dir, P->Gravity_Sampling_Rate, record[k], 4, 2);
+	MGD77_Place_Text (dir, &P->Gravity_Theoretical_Formula_Code, record[k], 6, 1);
+	MGD77_Place_Text (dir, P->Gravity_Theoretical_Formula, record[k], 7, 17);
+	MGD77_Place_Text (dir, &P->Gravity_Reference_System_Code, record[k], 24, 1);
+	MGD77_Place_Text (dir, P->Gravity_Reference_System, record[k], 25, 16);
+	MGD77_Place_Text (dir, P->Gravity_Corrections_Applied, record[k], 41, 38);
 
 	/* Process Sequence No 15: */
 
 	k = 14;
-	H->mgd77_header.Gravity_Departure_Base_Station      = MGD77_Get_float (H->record[k], 1, 7, 0.1);
-	H->mgd77_header.Gravity_Departure_Base_Station_Name = MGD77_Get_Text  (H->record[k], 8, 33, 1);
-	H->mgd77_header.Gravity_Arrival_Base_Station        = MGD77_Get_float (H->record[k], 41, 7, 0.1);
-	H->mgd77_header.Gravity_Arrival_Base_Station_Name   = MGD77_Get_Text  (H->record[k], 48, 31, 1);
+	MGD77_Place_Text (dir, P->Gravity_Departure_Base_Station, record[k], 1, 7);
+	MGD77_Place_Text (dir, P->Gravity_Departure_Base_Station_Name, record[k], 8, 33);
+	MGD77_Place_Text (dir, P->Gravity_Arrival_Base_Station, record[k], 41, 7);
+	MGD77_Place_Text (dir, P->Gravity_Arrival_Base_Station_Name, record[k], 48, 31);
 
 	/* Process Sequence No 16: */
 
 	k = 15;
-	H->mgd77_header.Number_of_Ten_Degree_Identifiers    = MGD77_Get_byte (H->record[k], 1, 2, 1);
-	H->mgd77_header.Blank_5                             = MGD77_Get_char (H->record[k], 3, 1, 1);
+	MGD77_Place_Text (dir, P->Number_of_Ten_Degree_Identifiers, record[k], 1, 2);
 	for (i = 0; i < 15; i++) {
-		H->mgd77_header.Ten_Degree_Identifier_1[i] = MGD77_Get_short (H->record[k], 4 + (i * 5), 5, 1);
+		MGD77_Place_Text (dir, P->Ten_Degree_Identifier[i], record[k], 4 + (i * 5), 5);
 	}
 
 	/* Process Sequence No 17: */
 
 	k = 16;
 	for (i = 0; i < 15; i++) {
-		H->mgd77_header.Ten_Degree_Identifier_2[i] = MGD77_Get_short (H->record[k], 1 + (i * 5), 5, 1);
+		MGD77_Place_Text (dir, P->Ten_Degree_Identifier[i+15], record[k], 1 + (i * 5), 5);
 	}
-	H->mgd77_header.Blank_6                            = MGD77_Get_Text  (H->record[k], 76, 3, 1);
 
 	/* Process Sequence No 18-24: */
 
 	for (i = 0, k = 17; i < 7; i++, k++)
-		H->mgd77_header.Additional_Documentation[i] = MGD77_Get_Text (H->record[k], 1, 78, 1);
+		MGD77_Place_Text (dir, P->Additional_Documentation[i], record[k], 1, 78);
+}
+
+void MGD77_Place_Text (int dir, char *struct_member, char *header_record, int start_pos, int n_char)
+{	/* Pos refers to position in the Fortran punch card, ranging from 1-80.
+	 * We either copy from header to structure member or the other way. */
+	int i;
+	BOOLEAN strip_trailing_spaces;
+	
+	strip_trailing_spaces = !(dir & 32);
+	dir &= 31;	/* Knowck of 32 flag if present */
+	start_pos--;	/* C starts at 0, not 1 */
+	if (dir == MGD77_FROM_HEADER) {
+		for (i = 0; i < n_char; i++) struct_member[i] = header_record[start_pos+i];
+		if (strip_trailing_spaces) {	/* start at end and go to beginning while space */
+			i = n_char - 1;
+			while (i >= 0 && struct_member[i] == ' ') i--;
+			struct_member[++i] = '\0';
+		}
+	}
+	else if (dir == MGD77_TO_HEADER) {	/* Copy up to end of string */
+		for (i = 0; struct_member[i] && i < n_char; i++) header_record[start_pos+i] = struct_member[i];
+	}
+	else
+		MGD77_Fatal_Error (MGD77_BAD_ARG);
 }
 
 char *copy_text (char *txt)
@@ -702,7 +737,6 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 	
 	memset ((void *)H, 0, sizeof (struct MGD77_HEADER));
 	
-	MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, "MGD77_header",  (char *)H->record));
 	MGD77_nc_status (nc_inq_attlen (F->nc_id, NC_GLOBAL, "Author", count));					/* Get length of author */
 	H->author = (char *) GMT_memory (VNULL, count[0] + 1, sizeof (char), "MGD77_Read_Header_Record_cdf");	/* Get memory for author */
 	MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, "Author",  H->author));
@@ -710,6 +744,9 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 	H->history = (char *) GMT_memory (VNULL, count[0] + 1, sizeof (char), "MGD77_Read_Header_Record_cdf");	/* Get memory for history */
 	MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, "history", H->history));
 	H->history[count[0]] = '\0';
+	H->mgd77 = (struct MGD77_HEADER_PARAMS *) GMT_memory (VNULL, 1, sizeof (struct MGD77_HEADER_PARAMS), GMT_program);	/* Allocate parameter header */
+	MGD77_Read_Header_Params (F, H->mgd77);	/* Get all the MGD77 header attributes */
+
 	MGD77_nc_status (nc_inq_unlimdim (F->nc_id, &F->nc_recid));		/* Get id of unlimited dimension */
 	if (F->nc_recid == -1) {	/* We are in deep trouble */
 		fprintf (stderr, "%s: No record dimension in file %s - cannot read contents\n", GMT_program, file);
@@ -719,8 +756,6 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 	H->no_time = (strcmp (name, "time"));				/* True if data set has no time column */
 	MGD77_nc_status (nc_inq_dimlen (F->nc_id, F->nc_recid, count));	/* Get number of records */
 	H->n_records = count[0];
-
-	MGD77_Decode_Header (H);	/* Decode individual items in the text headers */
 
 	/* Get information of all columns and store in header structure */
 	
@@ -788,178 +823,17 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 int MGD77_Write_Header_Record_m77 (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)  /* Will write the entire 24-section header structure */
 {
 	int i;
+	char *MGD77_header[MGD77_N_HEADER_RECORDS];
 	
-#if 1
-	MGD77_Write_Header_Record_New (F->fp, H, 0);  /* Will write the entire 24-section header structure from its parts */
-#else
-	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) fprintf (F->fp, "%s\n", H->record[i]);
-#endif
+	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) MGD77_header[i] = (char *)GMT_memory (VNULL, MGD77_HEADER_LENGTH + 1, sizeof (char), GMT_program);
+	MGD77_Decode_Header (H->mgd77, MGD77_header, MGD77_TO_HEADER);	/* Encode individual header attributes in the text headers */
+
+	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) {
+		fprintf (F->fp, "%s\n", MGD77_header[i]);
+		GMT_free ((void *)MGD77_header[i]);
+	}
+
 	return (MGD77_NO_ERROR);
-}
-
-int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER *H, int fmt)  /* Will write the entire 24-section header structure */
-{	/* Writes records from content of structure members */
-	int i, sequence = 0;
-
-	/* Write Sequence No 01: */
-
-	MGD77_fmt_no = 0;
-	MGD77_Put_byte (fp, H->mgd77_header.Record_Type, 1, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Cruise_Identifier, 8, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Format_Acronym, 5, 1, 0);
-	MGD77_Put_int (fp, H->mgd77_header.Data_Center_File_Number, 8, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Blank_1, 4, 1, 0);
-	for (i = 0; i < 5; i++) {
-		MGD77_Put_byte (fp, H->mgd77_header.Paramaters_Surveyed_Code[i], 1, 1, 0);
-	}
-	MGD77_Put_short (fp, H->mgd77_header.File_Creation_Year, 4, 1, 0);
-	MGD77_Put_byte (fp, H->mgd77_header.File_Creation_Month, 2, 1, 0);
-	MGD77_Put_byte (fp, H->mgd77_header.File_Creation_Day, 2, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Contributing_Institution, 39, 1, 0);
-
-	/* Write Sequence No 02: */
-
-	MGD77_Write_Sequence (fp, ++sequence);
-	MGD77_Put_Text (fp, H->mgd77_header.Country, 18, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Platform_Name, 21, 1, 0);
-	MGD77_Put_byte (fp, H->mgd77_header.Platform_Type_Code, 1, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Platform_Type, 6, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Chief_Scientist, 32, 1, 0);
-
-	/* Write Sequence No 03: */
-
-	MGD77_Write_Sequence (fp, ++sequence);
-	MGD77_Put_Text (fp, H->mgd77_header.Project_Cruise_Leg, 58, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Funding, 20, 1, 0);
-
-	/* Write Sequence No 04: */
-
-	MGD77_Write_Sequence (fp, ++sequence);
-	MGD77_Put_short (fp, H->mgd77_header.Survey_Departure_Year, 4, 1, 0);
-	MGD77_Put_byte (fp, H->mgd77_header.Survey_Departure_Month, 2, 1, 0);
-	MGD77_Put_byte (fp, H->mgd77_header.Survey_Departure_Day, 2, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Port_of_Departure, 32, 1, 0);
-	MGD77_Put_short (fp, H->mgd77_header.Survey_Arrival_Year, 4, 1, 0);
-	MGD77_Put_byte (fp, H->mgd77_header.Survey_Arrival_Month, 2, 1, 0);
-	MGD77_Put_byte (fp, H->mgd77_header.Survey_Arrival_Day, 2, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Port_of_Arrival, 30, 1, 0);
-
-	/* Write Sequence No 05: */
-
-	MGD77_Write_Sequence (fp, ++sequence);
-	MGD77_Put_Text (fp, H->mgd77_header.Navigation_Instrumentation, 40, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Position_Determination_Method, 38, 1, 0);
-
-	/* Write Sequence No 06: */
-
-	MGD77_Write_Sequence (fp, ++sequence);
-	MGD77_Put_Text (fp, H->mgd77_header.Bathymetry_Instrumentation, 40, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Bathymetry_Add_Forms_of_Data, 38, 1, 0);
-
-	/* Write Sequence No 07: */
-
-	MGD77_Write_Sequence (fp, ++sequence);
-	MGD77_Put_Text (fp, H->mgd77_header.Magnetics_Instrumentation, 40, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Magnetics_Add_Forms_of_Data, 38, 1, 0);
-
-	/* Write Sequence No 08: */
-
-	MGD77_Write_Sequence (fp, ++sequence);
-	MGD77_Put_Text (fp, H->mgd77_header.Gravity_Instrumentation, 40, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Gravity_Add_Forms_of_Data, 38, 1, 0);
-
-	/* Write Sequence No 09: */
-
-	MGD77_Write_Sequence (fp, ++sequence);
-	MGD77_Put_Text (fp, H->mgd77_header.Seismic_Instrumentation, 40, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Seismic_Add_Forms_of_Data, 38, 1, 0);
-
-	/* Write Sequence No 10: */
-
-	MGD77_Write_Sequence (fp, ++sequence);
-	MGD77_Put_char (fp, H->mgd77_header.Format_Type, 1, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Format_Description_1, 74, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Blank_2, 3, 1, 0);
-
-	/* Write Sequence No 11: */
-
-	MGD77_Write_Sequence (fp, ++sequence);
-	MGD77_Put_Text (fp, H->mgd77_header.Format_Description_2, 17, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Blank_3, 23, 1, 0);
-	MGD77_Put_short (fp, H->mgd77_header.Topmost_Latitude, 3, 1, 1);
-	MGD77_Put_short (fp, H->mgd77_header.Bottommost_Latitude, 3, 1, 1);
-	MGD77_Put_short (fp, H->mgd77_header.Leftmost_Longitude, 4, 1, 1);
-	MGD77_Put_short (fp, H->mgd77_header.Rightmost_Longitude, 4, 1, 1);
-	MGD77_Put_Text (fp, H->mgd77_header.Blank_4, 24, 1, 0);
-
-	/* Write Sequence No 12: */
-
-	MGD77_fmt_no = 1;
-	MGD77_Write_Sequence (fp, ++sequence);
-	MGD77_Put_float (fp, H->mgd77_header.Bathymetry_Digitizing_Rate, 3, 0.1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Bathymetry_Sampling_Rate, 12, 1, 0);
-	MGD77_Put_float (fp, H->mgd77_header.Bathymetry_Assumed_Sound_Velocity, 5, 0.1, 0);
-	MGD77_Put_byte (fp, H->mgd77_header.Bathymetry_Datum_Code, 2, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Bathymetry_Interpolation_Scheme, 56, 1, 0);
-
-	/* Write Sequence No 13: */
-
-	MGD77_Write_Sequence (fp, ++sequence);
-	MGD77_Put_float (fp, H->mgd77_header.Magnetics_Digitizing_Rate, 3, 0.1, 0);
-	MGD77_Put_byte (fp, H->mgd77_header.Magnetics_Sampling_Rate, 2, 1, 0);
-	MGD77_Put_short (fp, H->mgd77_header.Magnetics_Sensor_Tow_Distance, 4, 1, 0);
-	MGD77_Put_float (fp, H->mgd77_header.Magnetics_Sensor_Depth, 5, 0.1, 0);
-	MGD77_Put_short (fp, H->mgd77_header.Magnetics_Sensor_Separation, 3, 1, 0);
-	MGD77_Put_byte (fp, H->mgd77_header.Magnetics_Ref_Field_Code, 2, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Magnetics_Ref_Field, 12, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Magnetics_Method_Applying_Res_Field, 47, 1, 0);
-
-	/* Write Sequence No 14: */
-
-	MGD77_Write_Sequence (fp, ++sequence);
-	MGD77_Put_float (fp, H->mgd77_header.Gravity_Digitizing_Rate, 3, 0.1, 0);
-	MGD77_Put_byte (fp, H->mgd77_header.Gravity_Sampling_Rate, 2, 1, 0);
-	MGD77_Put_byte (fp, H->mgd77_header.Gravity_Theoretical_Formula_Code, 1, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Gravity_Theoretical_Formula, 17, 1, 0);
-	MGD77_Put_byte (fp, H->mgd77_header.Gravity_Reference_System_Code, 1, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Gravity_Reference_System, 16, 1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Gravity_Corrections_Applied, 38, 1, 0);
-
-	/* Write Sequence No 15: */
-
-	MGD77_Write_Sequence (fp, ++sequence);
-	MGD77_Put_float (fp, H->mgd77_header.Gravity_Departure_Base_Station, 7, 0.1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Gravity_Departure_Base_Station_Name, 33, 1, 0);
-	MGD77_Put_float (fp, H->mgd77_header.Gravity_Arrival_Base_Station, 7, 0.1, 0);
-	MGD77_Put_Text (fp, H->mgd77_header.Gravity_Arrival_Base_Station_Name, 31, 1, 0);
-
-	/* Write Sequence No 16: */
-
-	MGD77_Write_Sequence (fp, ++sequence);
-	MGD77_Put_byte (fp, H->mgd77_header.Number_of_Ten_Degree_Identifiers, 2, 1, 0);
-	MGD77_Put_char (fp, H->mgd77_header.Blank_5, 1, 1, 0);
-	for (i = 0; i < 15; i++) {
-		MGD77_Put_short (fp, H->mgd77_header.Ten_Degree_Identifier_1[i], 5, 1, 2);
-	}
-
-	/* Write Sequence No 17: */
-
-	MGD77_Write_Sequence (fp, ++sequence);
-	for (i = 0; i < 15; i++) {
-		MGD77_Put_short (fp, H->mgd77_header.Ten_Degree_Identifier_2[i], 5, 1, 2);
-	}
-	MGD77_Put_Text (fp, H->mgd77_header.Blank_6, 3, 1, 0);
-
-	/* Process Sequence No 18-24: */
-
-	MGD77_Write_Sequence (fp, ++sequence);
-	for (i = 0; i < 7; i++) {
-		MGD77_Put_Text (fp, H->mgd77_header.Additional_Documentation[i], 78, 1, 0);
-		MGD77_Write_Sequence (fp, ++sequence);
-	}
-	MGD77_fmt_no = 0;
-	
-	return (MGD77_NO_ERROR);	/* Success is assured */
 }
 
 void MGD77_Select_All_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
@@ -1529,6 +1403,7 @@ void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks)
 	F->use_corrections[MGD77_M77_SET] = F->use_corrections[MGD77_CDF_SET] = TRUE;	/* TRUE means we will apply correction factors (if present) when reading data */
 	t_index = GMT_get_time_system ("unix");			/* Get index for GMT's Unix time */
 	MGD77_Epoch_zero = GMT_time_system[t_index].epoch_t0;	/* Unix time's epoch t0 in GMT */
+	memset ((void *)mgd77_range, 0, (size_t)(MGD77_N_DATA_EXTENDED * sizeof (struct MGD77_LIMITS)));
 	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1 << i;
 	MGD77_Strip_Blanks = remove_blanks;
 	gmtdefs.time_system = 4;	/* Use UNIX time as rtime */
@@ -2200,6 +2075,9 @@ void MGD77_Fatal_Error (int error)
 		case MGD77_ERROR_NOSUCHCOLUMN:
 			fprintf (stderr, "Column not in present file");
 			break;
+		case MGD77_BAD_ARG:
+			fprintf (stderr, "Bad arument given to MGD77_Place_Text");
+			break;
 		default:
 			fprintf (stderr, "Unrecognized error");
 			break;
@@ -2226,30 +2104,32 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	 
 	int i, k, dims[2], Cdim_id[3], Clength[3] = {8, 5, 6}, var_id;
 	time_t now;
-	char *Cname[3] = {"id_dim", "sln_dim", "sspn_dim"}, history[128];
+	char *Cname[3] = {"id_dim", "sln_dim", "sspn_dim"}, string[128];
 	BOOLEAN no_time;
 	
 	if (MGD77_Open_File (file, F, MGD77_WRITE_MODE)) return (-1);	/* Basically creates the full path */
 	
 	MGD77_nc_status (nc_create (F->path, NC_NOCLOBBER, &F->nc_id));	/* Create the file */
 	
-	/* Put attributes header, author, and history */
+	/* Put attributes header, author, title and history */
 	
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "Conventions", strlen (MGD77_CDF_CONVENTION) + 1, (const char *)MGD77_CDF_CONVENTION));
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "Version", strlen(MGD77_CDF_VERSION), (const char *)MGD77_CDF_VERSION));
-	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "MGD77_header", MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + 1), (const char *)H->record));
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "Author", strlen (H->author), H->author));
+	sprintf (string, "Cruise %s (NGDC ID %s)", H->mgd77->Survey_Identifier, F->NGDC_id);
+	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "title", strlen (string), string));
 	if (!H->history) {	/* Blank history, set initial message */
 		(void) time (&now);
-		sprintf (history, "%s Conversion from MGD77 ASCII to MGD77+ netCDF format", ctime(&now));
-		k = strlen (history);
-		for (i = 0; i < k; i++) if (history[i] == '\n') history[i] = ' ';	/* Remove the \n returned by ctime() */
-		history[k++] = '\n';	history[k] = '\0';	/* Add LF at end of line */
+		sprintf (string, "%s Conversion from MGD77 ASCII to MGD77+ netCDF format", ctime(&now));
+		k = strlen (string);
+		for (i = 0; i < k; i++) if (string[i] == '\n') string[i] = ' ';	/* Remove the \n returned by ctime() */
+		string[k++] = '\n';	string[k] = '\0';	/* Add LF at end of line */
 		H->history = (char *)GMT_memory (VNULL, k, sizeof (char), GMT_program);
-		strcpy (H->history, history);
+		strcpy (H->history, string);
 	}
-	/* History already filled out, use as is */
+	/* else, history already filled out, use as is */
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "history", strlen (H->history), H->history));
+	MGD77_Write_Header_Params (F, H->mgd77);	/* Write all the MGD77 header attributes */
 	
 	no_time = !(H->info[MGD77_M77_SET].bit_pattern & MGD77_this_bit[MGD77_TIME]);	/* Some cruises do not have time */
 	
@@ -2274,10 +2154,11 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 		else	/* Must store array */
 			MGD77_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 1, dims, &var_id));	/* Define a variable */
 		
-		/* MGD77_nc_status (nc_put_att_schar  (F->nc_id, var_id, "col_type", NC_BYTE, 1, &M)); */	/* Place attributes */
 		if (mgd77defs[i].fieldID[0] && strcmp (mgd77defs[i].fieldID, mgd77defs[i].abbrev)) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "long_name", strlen (mgd77defs[i].fieldID), mgd77defs[i].fieldID));
 		if (mgd77cdf[i].units[0]) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "units", strlen (mgd77cdf[i].units), mgd77cdf[i].units));
+		if (!H->info[MGD77_M77_SET].col[i].constant) MGD77_nc_status (nc_put_att_double   (F->nc_id, var_id, "actual_range", NC_DOUBLE, 2, mgd77_range[i].limit));
 		if (mgd77cdf[i].comment[0]) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "comment", strlen (mgd77cdf[i].comment), mgd77cdf[i].comment));
+		if (i == MGD77_DEPTH || i == MGD77_MSD) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "positive", 4, "down"));
 		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "_FillValue", mgd77cdf[i].type, 1, &MGD77_NaN_val[mgd77cdf[i].type]));
 		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "missing_value", mgd77cdf[i].type, 1, &MGD77_NaN_val[mgd77cdf[i].type]));
 		if (mgd77cdf[i].scale  != 1.0) MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "scale_factor", NC_DOUBLE, 1, &mgd77cdf[i].scale));
@@ -2292,9 +2173,9 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	}
 	else {	/* We do have time, store them */
 		MGD77_nc_status (nc_def_var        (F->nc_id, "time", NC_DOUBLE, 1, dims, &var_id));	/* Define a variable */
-		/* MGD77_nc_status (nc_put_att_schar  (F->nc_id, var_id, "col_type", NC_BYTE, 1, &M)); */	/* Place attributes */
-		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "long_name", 14, "GMT J2000 Time"));
+		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "long_name", 4, "Time"));
 		if (mgd77cdf[MGD77_TIME].units[0]) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "units", strlen (mgd77cdf[MGD77_TIME].units), mgd77cdf[MGD77_TIME].units));
+		MGD77_nc_status (nc_put_att_double   (F->nc_id, var_id, "actual_range", NC_DOUBLE, 2, mgd77_range[MGD77_TIME].limit));
 		if (mgd77cdf[MGD77_TIME].comment[0]) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "comment", strlen (mgd77cdf[MGD77_TIME].comment), mgd77cdf[MGD77_TIME].comment));
 		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "_FillValue", NC_DOUBLE, 1, &MGD77_NaN_val[mgd77cdf[MGD77_TIME].type]));
 		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "missing_value", NC_DOUBLE, 1, &MGD77_NaN_val[mgd77cdf[MGD77_TIME].type]));
@@ -2344,10 +2225,13 @@ int MGD77_Write_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 	for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Loop over all MGD77 number fields */
 		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;		/* The 5 time-related columns are not written separately but as MGD77_TIME */
 		values = (double *)S->values[i];
-		S->H.info[MGD77_M77_SET].col[i].constant = (numbers_are_constant (values, S->H.n_records));	/* Do we need to store 1 or n values? */
+		/* Determine actual data range and if we need to store 1 or n values */
+		S->H.info[MGD77_M77_SET].col[i].constant = (numbers_are_constant (values, S->H.n_records, mgd77_range[i].limit));
 	}
 	values = (double *)S->values[MGD77_TIME];
-	S->H.info[MGD77_M77_SET].col[MGD77_TIME].constant = (numbers_are_constant (values, S->H.n_records));	/* Do we need to store 1 or n values? */
+	S->H.info[MGD77_M77_SET].col[MGD77_TIME].constant = (numbers_are_constant (values, S->H.n_records, mgd77_range[MGD77_TIME].limit));
+	mgd77_range[MGD77_TIME].limit[0] -= MGD77_Epoch_zero;	/* Make UNIX time for storage */ 
+	mgd77_range[MGD77_TIME].limit[1] -= MGD77_Epoch_zero;	/* Make UNIX time for storage */ 
 	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {	/* Loop over the 3 MGD77 text fields */
 		k = i - MGD77_N_NUMBER_FIELDS;
 		text = (char *)S->values[i];
@@ -2572,6 +2456,7 @@ void MGD77_Free (struct MGD77_DATASET *S)
 	
 	for (i = 0; i < S->n_fields; i++) GMT_free ((void *)S->values[i]);
 	for (i = 0; i < MGD77_N_SETS; i++) if (S->flags[i]) GMT_free ((void *)S->flags[i]);
+	GMT_free ((void *)S->H.mgd77);
 }
 
 struct MGD77_DATASET *MGD77_Create_Dataset ()
@@ -2582,26 +2467,30 @@ struct MGD77_DATASET *MGD77_Create_Dataset ()
 	return (S);
 }
 
-int numbers_are_constant (double x[], int n)
-{	/* Determine if the values in x[] are all the same */
+BOOLEAN numbers_are_constant (double x[], int n, double limits[2])
+{	/* Determine if the values in x[] are all the same, and sets actual range limits */
 	int i;
-	double dx;
+	BOOLEAN constant = TRUE;
+	double last;
 	
-	if (n == 1) return (TRUE);
+	limits[0] = limits[1] = x[0];
+	if (n == 1) return (constant);
 	
 	i = 0;
 	while (i < n && GMT_is_dnan (x[i])) i++;	/* i is now at first non-NaN value (if any) */
-	if (i == n) return (TRUE);	/* All are NaN */
-	if (i > 0) return (FALSE);	/* Some are NaN */
-	/* So below we know there are no NaNs */
-	dx = x[1] - x[0];
-	for (i = 2; i < n; i++) {
-		if ((x[i] - x[i-1]) != dx) return (FALSE);
+	if (i == n) return (constant);			/* All are NaN */
+	last = limits[0] = limits[1] = x[i];
+	for (i++; i < n; i++) {
+		if (GMT_is_dnan (x[i])) continue;
+		if (x[i] != last) constant = FALSE;
+		if (x[i] < limits[0]) limits[0] = x[i];	/* New lower value */
+		if (x[i] > limits[1]) limits[1] = x[i];	/* New upper value */
+		last = x[i];
 	}
-	return (TRUE);
+	return (constant);
 }
 
-int texts_are_constant (char *txt, int n, int width)
+BOOLEAN texts_are_constant (char *txt, int n, int width)
 {
 	int i = 0;
 	
