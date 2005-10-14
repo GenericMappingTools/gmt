@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.54 2005-10-14 08:11:29 pwessel Exp $
+ *	$Id: mgd77.c,v 1.55 2005-10-14 11:13:27 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -614,19 +614,19 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 		if (P->Paramaters_Surveyed_Code[i] == '1') continue;
 		if (P->Paramaters_Surveyed_Code[i] == '3') continue;
 		if (P->Paramaters_Surveyed_Code[i] == '5') continue;
-		printf ("%s: Unknown Parameter Survey Code: %c\n", F->NGDC_id, P->Paramaters_Surveyed_Code[i]);
+		printf ("%s: Unknown Parameter Survey Code: (%c)\n", F->NGDC_id, P->Paramaters_Surveyed_Code[i]);
 		err++;
 	}
 	if (P->File_Creation_Year[0] && ((i = atoi (P->File_Creation_Year)) < (1900 + MGD77_OLDEST_YY) || i > (1900 + T->tm_year))) {
-		printf ("%s: File Creation Year outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: File Creation Year outside range: (%s)\n", F->NGDC_id, P->File_Creation_Year);
 		err++;
 	}
 	if (P->File_Creation_Month[0] && ((i = atoi (P->File_Creation_Month)) < 1 || i > 12)) {
-		printf ("%s: File Creation Month outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: File Creation Month outside range: (%s)\n", F->NGDC_id, P->File_Creation_Month);
 		err++;
 	}
 	if (P->File_Creation_Day[0] && ((i = atoi (P->File_Creation_Day)) < 1 || i > 31)) {
-		printf ("%s: File Creation Day outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: File Creation Day outside range: (%s)\n", F->NGDC_id, P->File_Creation_Day);
 		err++;
 	}
 
@@ -634,7 +634,7 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 
 	k = 1;
 	if (P->Platform_Type_Code < '0' || P->Platform_Type_Code > '9') {
-		printf ("%s: Unknown Platform Type Code: %c\n", F->NGDC_id, P->Platform_Type_Code);
+		printf ("%s: Unknown Platform Type Code: (%c)\n", F->NGDC_id, P->Platform_Type_Code);
 		err++;
 	}
 
@@ -642,27 +642,27 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 
 	k = 3;
 	if (P->Survey_Departure_Year[0] && ((i = atoi (P->Survey_Departure_Year)) < (1900 + MGD77_OLDEST_YY) || i > (1900 + T->tm_year))) {
-		printf ("%s: Survey Departure Year outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Survey Departure Year outside range: (%s)\n", F->NGDC_id, P->Survey_Departure_Year);
 		err++;
 	}
 	if (P->Survey_Departure_Month[0] && ((i = atoi (P->Survey_Departure_Month)) < 1 || i > 12)) {
-		printf ("%s: Survey Departure Month outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Survey Departure Month outside range: (%s)\n", F->NGDC_id, P->Survey_Departure_Month);
 		err++;
 	}
 	if (P->Survey_Departure_Day[0] && ((i = atoi (P->Survey_Departure_Day)) < 1 || i > 31)) {
-		printf ("%s: Survey Departure Day outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Survey Departure Day outside range: (%s)\n", F->NGDC_id, P->Survey_Departure_Day);
 		err++;
 	}
 	if (P->Survey_Arrival_Year[0] && ((i = atoi (P->Survey_Arrival_Year)) < (1900 + MGD77_OLDEST_YY) || i > (1900 + T->tm_year))) {
-		printf ("%s: Survey Arrival Year outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Survey Arrival Year outside range: (%s)\n", F->NGDC_id, P->Survey_Arrival_Year);
 		err++;
 	}
 	if (P->Survey_Arrival_Month[0] && ((i = atoi (P->Survey_Arrival_Month)) < 1 || i > 12)) {
-		printf ("%s: Survey Arrival Month outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Survey Arrival Month outside range: (%s)\n", F->NGDC_id, P->Survey_Arrival_Month);
 		err++;
 	}
-	if (P->Port_of_Arrival[0] && ((i = atoi (P->Port_of_Arrival)) < 1 || i > 31)) {
-		printf ("%s: Survey Arrival Day outside range: %d\n", F->NGDC_id, i);
+	if (P->Survey_Arrival_Day[0] && ((i = atoi (P->Survey_Arrival_Day)) < 1 || i > 31)) {
+		printf ("%s: Survey Arrival Day outside range: (%s)\n", F->NGDC_id, P->Survey_Arrival_Day);
 		err++;
 	}
 
@@ -670,10 +670,12 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 
 	k = 9;
 	if (P->Format_Type != 'A') {
-		printf ("%s: Unknown Format Type: %c\n", F->NGDC_id, P->Format_Type);
+		printf ("%s: Unknown Format Type: (%c)\n", F->NGDC_id, P->Format_Type);
 		err++;
 	}
-	if (strcmp (P->Format_Description, "(I1,A8,I3,I4,3I2,F5.3,F8.5,F9.5,I1,F6.4,F6.1,I2,I1,3F6.1,I1,F5.1,F6.0,F7.1,F6.1,F5.1,A5,A6,I1)")) {
+	strcpy (copy, P->Format_Description);
+	GMT_str_toupper (copy);
+	if (strcmp (copy, "(I1,A8,I3,I4,3I2,F5.3,F8.5,F9.5,I1,F6.4,F6.1,I2,I1,3F6.1,I1,F5.1,F6.0,F7.1,F6.1,F5.1,A5,A6,I1)")) {
 		printf ("%s: Unknown Format Description: %s\n", F->NGDC_id, P->Format_Description);
 		err++;
 	}
@@ -681,20 +683,29 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 	/* Process Sequence No 11: */
 
 	k = 10;
+	w = e = s = n = 9999;
 	if (P->Topmost_Latitude[0] && ((n = atoi (P->Topmost_Latitude)) < -90 || n > +90)) {
-		printf ("%s: Topmost Latitude outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Topmost Latitude outside range: (%s)\n", F->NGDC_id, P->Topmost_Latitude);
 		err++;
 	}
 	if (P->Bottommost_Latitude[0] && ((s = atoi (P->Bottommost_Latitude)) < -90 || s > +90)) {
-		printf ("%s: Bottommost Latitude outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Bottommost Latitude outside range: (%s)\n", F->NGDC_id, P->Bottommost_Latitude);
+		err++;
+	}
+	if (!(s == 9999 || n == 9999) && s > n) {
+		printf ("%s: Bottommost Latitude exceeds Topmost Latitude\n", F->NGDC_id);
 		err++;
 	}
 	if (P->Leftmost_Longitude[0] && ((w = atoi (P->Leftmost_Longitude)) < -180 || w > +180)) {
-		printf ("%s: Leftmost Longitude outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Leftmost Longitude outside range: (%s)\n", F->NGDC_id, P->Leftmost_Longitude);
 		err++;
 	}
 	if (P->Rightmost_Longitude[0] && ((e = atoi (P->Rightmost_Longitude)) < -180 || e > +180)) {
-		printf ("%s:Rightmost Longitude outside range: %d\n", F->NGDC_id, i);
+		printf ("%s:Rightmost Longitude outside range: (%s)\n", F->NGDC_id, P->Rightmost_Longitude);
+		err++;
+	}
+	if (!(w == 9999 || e == 9999) && w > e) {
+		printf ("%s: Leftmost Longitude exceeds Rightmost Longitude\n", F->NGDC_id);
 		err++;
 	}
 
@@ -702,17 +713,17 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 
 	k = 11;
 	if (P->Bathymetry_Digitizing_Rate[0] && ((i = atoi (P->Bathymetry_Digitizing_Rate)) <= 0)) {
-		printf ("%s: Bathymetry Digitizing Rate outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Bathymetry Digitizing Rate outside range: (%s)\n", F->NGDC_id, P->Bathymetry_Digitizing_Rate);
 		err++;
 	}
 	if (P->Bathymetry_Assumed_Sound_Velocity[0] && ((i = atoi (P->Bathymetry_Assumed_Sound_Velocity)) < 0 || i > 15000)) {
-		printf ("%s: Bathymetry Assumed Sound Velocity outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Bathymetry Assumed Sound Velocity outside range: (%s)\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity);
 		err++;
 	}
 	if (P->Bathymetry_Datum_Code[0]) {
 		i = atoi (P->Bathymetry_Datum_Code);
 		if (!((i >= 0 && i <= 11) || i == 88)) {
-			printf ("%s: Unknown Bathymetry Datum Code: %s\n", F->NGDC_id, P->Bathymetry_Datum_Code);
+			printf ("%s: Unknown Bathymetry Datum Code: (%s)\n", F->NGDC_id, P->Bathymetry_Datum_Code);
 			err++;
 		}
 	}
@@ -721,29 +732,29 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 
 	k = 12;
 	if (P->Magnetics_Digitizing_Rate[0] && ((i = atoi (P->Magnetics_Digitizing_Rate)) < 0)) {
-		printf ("%s: Magnetics Digitizing Rate outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Magnetics Digitizing Rate outside range: (%s)\n", F->NGDC_id, P->Magnetics_Digitizing_Rate);
 		err++;
 	}
 	if (P->Magnetics_Sampling_Rate[0] && ((i = atoi (P->Magnetics_Sampling_Rate)) < 0)) {
-		printf ("%s: Magnetics Sampling Rate outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Magnetics Sampling Rate outside range: (%s)\n", F->NGDC_id, P->Magnetics_Sampling_Rate);
 		err++;
 	}
 	if (P->Magnetics_Sensor_Tow_Distance[0] && ((i = atoi (P->Magnetics_Sensor_Tow_Distance)) < 0)) {
-		printf ("%s: Magnetics Sensor Tow Distance outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Magnetics Sensor Tow Distance outside range: (%s)\n", F->NGDC_id, P->Magnetics_Sensor_Tow_Distance);
 		err++;
 	}
 	if (P->Magnetics_Sensor_Depth[0] && ((i = atoi (P->Magnetics_Sensor_Depth)) < 0)) {
-		printf ("%s: Magnetics Sensor Depth outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Magnetics Sensor Depth outside range: (%s)\n", F->NGDC_id, P->Magnetics_Sensor_Depth);
 		err++;
 	}
 	if (P->Magnetics_Sensor_Separation[0] && ((i = atoi (P->Magnetics_Sensor_Separation)) < 0)) {
-		printf ("%s: Magnetics Sensor Separation outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Magnetics Sensor Separation outside range: (%s)\n", F->NGDC_id, P->Magnetics_Sensor_Separation);
 		err++;
 	}
 	if (P->Magnetics_Ref_Field_Code[0]) {
 		i = atoi (P->Magnetics_Ref_Field_Code);
 		if (!((i >= 0 && i <= 13) || i == 88)) {
-			printf ("%s: Unknown Magnetics Reference Field Code: %s\n", F->NGDC_id, P->Magnetics_Ref_Field_Code);
+			printf ("%s: Unknown Magnetics Reference Field Code: (%s)\n", F->NGDC_id, P->Magnetics_Ref_Field_Code);
 			err++;
 		}
 	}
@@ -752,33 +763,35 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 
 	k = 13;
 	if (P->Gravity_Digitizing_Rate[0] && ((i = atoi (P->Gravity_Digitizing_Rate)) < 0)) {
-		printf ("%s: Gravity Digitizing Rate outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Gravity Digitizing Rate outside range: (%s)\n", F->NGDC_id, P->Gravity_Digitizing_Rate);
 		err++;
 	}
 	if (P->Gravity_Sampling_Rate[0] && ((i = atoi (P->Gravity_Sampling_Rate)) < 0)) {
-		printf ("%s: Gravity Sampling Rate outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Gravity Sampling Rate outside range: (%s)\n", F->NGDC_id, P->Gravity_Sampling_Rate);
 		err++;
 	}
 	i = P->Gravity_Theoretical_Formula_Code - '0';
-	if (!((i >= 1 && i <= 4) || i == 8)) {
-		printf ("%s: Unknown Gravity Theoretical Formula Code: %c\n", F->NGDC_id, P->Gravity_Theoretical_Formula_Code);
+	if (P->Gravity_Theoretical_Formula_Code && !((i >= 1 && i <= 4) || i == 8)) {
+		printf ("%s: Unknown Gravity Theoretical Formula Code: (%c)\n", F->NGDC_id, P->Gravity_Theoretical_Formula_Code);
 		err++;
 	}
 	i = P->Gravity_Reference_System_Code - '0';
-	if (!((i >= 1 && i <= 3) || i == 9)) {
-		printf ("%s: Unknown Gravity Reference System Code: %c\n", F->NGDC_id, P->Gravity_Reference_System_Code);
+	if (P->Gravity_Reference_System_Code && !((i >= 1 && i <= 3) || i == 9)) {
+		printf ("%s: Unknown Gravity Reference System Code: (%c)\n", F->NGDC_id, P->Gravity_Reference_System_Code);
 		err++;
 	}
 
 	/* Process Sequence No 15: */
 
 	k = 14;
-	if (P->Gravity_Departure_Base_Station[0] && ((i = atoi (P->Gravity_Departure_Base_Station)) < 9700000)) {
-		printf ("%s: Gravity Departure Base Station Value outside range: %d\n", F->NGDC_id, i);
+	if (P->Gravity_Departure_Base_Station[0] && strcmp (P->Gravity_Departure_Base_Station, "0000000") 
+	  && strcmp (P->Gravity_Departure_Base_Station, "9999999") && ((i = atoi (P->Gravity_Departure_Base_Station)) < 9700000 || i > 9820000)) {
+		printf ("%s: Gravity Departure Base Station Value outside range: (%s)\n", F->NGDC_id, P->Gravity_Departure_Base_Station);
 		err++;
 	}
-	if (P->Gravity_Arrival_Base_Station[0] && ((i = atoi (P->Gravity_Arrival_Base_Station)) < 9700000)) {
-		printf ("%s: Gravity Arrival Base Station Value outside range: %d\n", F->NGDC_id, i);
+	if (P->Gravity_Arrival_Base_Station[0] && strcmp (P->Gravity_Arrival_Base_Station, "0000000")
+	  && strcmp (P->Gravity_Arrival_Base_Station, "9999999") && ((i = atoi (P->Gravity_Arrival_Base_Station)) < 9700000 || i > 9820000)) {
+		printf ("%s: Gravity Arrival Base Station Value outside range: (%s)\n", F->NGDC_id, P->Gravity_Arrival_Base_Station);
 		err++;
 	}
 
@@ -786,23 +799,24 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 
 	k = 15;
 	if (P->Number_of_Ten_Degree_Identifiers[0] && ((i = atoi (P->Number_of_Ten_Degree_Identifiers)) < 1 || i > 30)) {
-		printf ("%s: Number of Ten Degree Identifiers outside range: %d\n", F->NGDC_id, i);
+		printf ("%s: Number of Ten Degree Identifiers outside range: (%s)\n", F->NGDC_id, P->Number_of_Ten_Degree_Identifiers);
 		err++;
 	}
 	pos = 0;
 	strcpy (copy, P->Ten_Degree_Identifier);
 	while (GMT_strtok (copy,",", &pos, p)) {
-		if (!strcpy (p, "9999")) continue;
+		if (!strcmp (p, "9999")) continue;
+		if (!strcmp (p, "   0")) continue;
 		if (!(p[0] == '1' || p[0] == '3' || p[0] == '5' || p[0] == '7')) {
-			printf ("%s: Unknown Ten Degree Identifier quadrant: %c\n", F->NGDC_id, p[0]);
+			printf ("%s: Unknown Ten Degree Identifier quadrant: (%s)\n", F->NGDC_id, p);
 			err++;
 		}
 		if (!(p[1] >= '0' && p[1] <= '9')) {
-			printf ("%s: Unknown Ten Degree Identifier latitude value: %c\n", F->NGDC_id, p[1]);
+			printf ("%s: Unknown Ten Degree Identifier latitude value: (%s)\n", F->NGDC_id, p);
 			err++;
 		}
 		if ((i = atoi (&p[2])) < 0 || i > 18) {
-			printf ("%s: Unknown Ten Degree Identifier lonitude value: %d\n", F->NGDC_id, i);
+			printf ("%s: Unknown Ten Degree Identifier lonitude value: (%s)\n", F->NGDC_id, p);
 			err++;
 		}
 	}
