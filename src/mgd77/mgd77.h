@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.38 2005-10-14 06:12:18 pwessel Exp $
+ *	$Id: mgd77.h,v 1.39 2005-10-14 23:31:51 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -157,7 +157,7 @@ struct MGD77_HEADER_PARAMS {		/* See MGD-77 Documentation from NGDC for details 
 /* START OF MGD77_HEADER_PARAMS */
 	/* Sequence No 01: */
 	char	Survey_Identifier[9];
-	char	Format_Acronym[5];
+	char	Format_Acronym[6];
 	char	Data_Center_File_Number[9];
 	char	Paramaters_Surveyed_Code[5];
 	char	File_Creation_Year[5];
