@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.37 2005-10-14 05:12:14 pwessel Exp $
+ *	$Id: mgd77.h,v 1.38 2005-10-14 06:12:18 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -156,7 +156,6 @@ typedef char* Text;	/* Used to indicate character strings */
 struct MGD77_HEADER_PARAMS {		/* See MGD-77 Documentation from NGDC for details */
 /* START OF MGD77_HEADER_PARAMS */
 	/* Sequence No 01: */
-	char	Record_Type;
 	char	Survey_Identifier[9];
 	char	Format_Acronym[5];
 	char	Data_Center_File_Number[9];
@@ -236,7 +235,7 @@ struct MGD77_HEADER_PARAMS {		/* See MGD-77 Documentation from NGDC for details 
 	char	Gravity_Arrival_Base_Station_Name[32];
 	/* Sequence No 16+17: */
 	char	Number_of_Ten_Degree_Identifiers[3];
-	char	Ten_Degree_Identifier[30][5];
+	char	Ten_Degree_Identifier[151];
 	/* Sequence No 18-24: */
 	char	Additional_Documentation[7][79];
 /* END OF MGD77_HEADER_PARAMS */
