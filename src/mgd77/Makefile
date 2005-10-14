@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.12 2005-10-12 04:07:21 pwessel Exp $
+#	$Id: Makefile,v 1.13 2005-10-14 05:12:14 pwessel Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -10,7 +10,7 @@
 #
 #	Authors:	Paul Wessel & Mike Chandler, SOEST, U. of Hawaii
 #
-#	Date:	18-AUG-2004
+#	Date:	14-OCT-2005
 #
 
 #-------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ MGD77_H	= mgd77.h mgd77defaults.h
 MGD77_C	= mgd77convert.c mgd77info.c mgd77list.c mgd77path.c mgd77manage.c mgd77track.c
 
 LIB_C	= mgd77.c
-LIB_H	= mgd77.h mgd77defaults.h
+LIB_H	= mgd77.h mgd77_functions.h mgd77defaults.h
 LIB_O	= ${LIB_C:.c=.o}
 
 $(LIB_O):	$(LIB_H)
@@ -111,3 +111,6 @@ $(MGD77):	$(MGD77_O) libmgd77.a
 
 .c.o:
 		$(CC) -c $(CFLAGS) $<
+
+mgd77_functions.h:	
+		$(SHELL) mgd77netcdfhelper.sh

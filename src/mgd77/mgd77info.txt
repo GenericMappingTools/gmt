@@ -2,7 +2,8 @@
 .SH NAME
 mgd77info \- Get information about MGD77 files
 .SH SYNOPSIS
-\fBmgd77info\fP \fIleg-ids\fP \fB\-E\fP\|fB\-I\fP|\fBL\fP|\fBP\fP [ \fB\-V\fP ]
+\fBmgd77info\fP \fIleg-ids\fP [ \fB\-C\fP[\fBm|e\fP] ] [ \fB\-E\fP[\fBm|e\fP] ] [ \fB\-L\fP ] 
+[ \fB\-I\fP\fIignore\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBmgd77info\fP reads <legid>.mgd77 files and produces a single record of information
 about each cruise specified.  The information includes beginning and end time, total
@@ -17,34 +18,45 @@ a tracks index data base.
 Can be one or more MGD77 8-character cruise identifiers. To give a list of names, use `cat cruises.lis`.
 The ".mgd77" extension will automatically be appended, if needed.  Cruise files will be looked for
 in the current directory and in all directories listed in \fB$MGD77_DIR\fP/MGD77_paths.txt.
-.TP
-.B \-E
-Display information about any extra columns in a mgd77+ file, OR
-.TP
-.B \-I
-Give a one-line summary for each cruise listed, OR
-.TP
-.B \-L
-Give the long MGD77 header section for each cruise listed, OR
-.TP
-.B \-P
-Instead of cruise listings, just show the directory paths currently used in the search.
 .SH OPTIONS
 No space between the option flag and the associated arguments
+.TP
+.B \-C
+List abbreviations for all columns present in the mgd77(+) files.
+Append \fBm\fP or \fBe\fP to limit the display to the MGD77 or MGD77+ extended set only.
+.TP
+.B \-E
+Give a one-line summary for each cruise listed, OR
+.TP
+.B \-I
+Ignore certain data file formats from consideration. Append \fBa|c|t\fP to ignore
+MGD77 ASCII, MGD77+ netCDF, or plain table files, respectively. The option may
+be repreated to ignore more than one format.  [Default ignores none].
+.TP
+.B \-L
+Give the long MGD77 header section for each cruise listed and history, if present.
 #include "explain_-V.txt"
 .SH EXAMPLES
 To get one-line summary information about the cruises 01010047.mgd77 and 01010008.mgd77, try
 .br
 .sp
-\fBmgd77info\fP 01010047 01010008 \fB\-I\fP > listing.lis
+\fBmgd77info\fP 01010047 01010008 \fB\-E\fP > listing.lis
 .br
 .sp
 To see the MGD77 header for cruise 01010047.mgd77, run
 .br
 .sp
 \fBmgd77info\fP 01010047 \fB\-L\fP
+.br
+.sp
+To all the columns that the MGD77+ cruise 01010047.nc contains, run
+.br
+.sp
+\fBmgd77info\fP 01010047.nc \fB\-C\fP
 .SH "SEE ALSO"
 .IR mgd77list (GMTMANSECTION),
+.IR mgd77manage (GMTMANSECTION),
+.IR mgd77path (GMTMANSECTION),
 .IR mgd77track (GMTMANSECTION)
 .IR x2sys_init (GMTMANSECTION)
 #include "refs.i"

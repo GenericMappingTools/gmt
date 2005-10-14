@@ -2,7 +2,7 @@
 .SH NAME
 mgd77path \- Get full pathname for MGD77 files
 .SH SYNOPSIS
-\fBmgd77path\fP \fIcruises\fP
+\fBmgd77path\fP \fIcruises\fP [ \fB\-D\fP ] [ \fB\-I\fP\fIignore\fP ] 
 .SH DESCRIPTION
 \fBmgd77path\fP returns the full pathname to one or more MGD77 files. The pathname returned for a given
 cruise may change with time due to reshuffling of disks/subdirectories.
@@ -10,11 +10,29 @@ cruise may change with time due to reshuffling of disks/subdirectories.
 \fIleg-ids\fP
 Can be one or more MGD77 cruise names, like 01010008.  Use `cat legs.lis` to pass all the legnames
 in the file legs.lis. 
+.SH OPTIONS
+No space between the option flag and the associated arguments
+.TP
+.B \-D
+Instead of cruise listings, just show the directory paths currently used in the search.
+.TP
+.B \-I
+Ignore certain data file formats from consideration. Append \fBa|c|t\fP to ignore
+MGD77 ASCII, MGD77+ netCDF, or plain table files, respectively. The option may
+be repreated to ignore more than one format.  [Default ignores none].
 .SH EXAMPLES
 To obtain pathnames for cruises 01010008 and 01010007, run
 .br
 .sp
 \fBmgd77path\fP 01010008 01010007
+To obtain pathnames for cruises 01010008 and 01010007, but only if there are MGD77+ version in netCDF, run
+.br
+.sp
+\fBmgd77path\fP 01010008 01010007 \fB\-Ia \-It\fP
+To see the list of active directories where MGD77 files might be stored, run
+.br
+.sp
+\fBmgd77path\fP \fB\-D\fP
 .SH "SEE ALSO"
 .IR gmt (GMTMANSECTION)
 .IR mgd77info (GMTMANSECTION)
