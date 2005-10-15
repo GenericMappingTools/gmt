@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.56 2005-10-15 02:17:19 pwessel Exp $
+ *	$Id: mgd77.c,v 1.57 2005-10-15 06:26:32 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -814,14 +814,21 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 
 	/* Process Sequence No 16: */
 
-	if (P->Number_of_Ten_Degree_Identifiers[0] && ((i = atoi (P->Number_of_Ten_Degree_Identifiers)) < 1 || i > 30)) {
+	n = 0;
+	if (P->Number_of_Ten_Degree_Identifiers[0] && ((n = atoi (P->Number_of_Ten_Degree_Identifiers)) < 1 || n > 30)) {
 		fprintf (fp, "#H-%s-16-01: Number of Ten Degree Identifiers: Found (%s) : Expected :(       )\n", F->NGDC_id, P->Number_of_Ten_Degree_Identifiers);
 		err++;
 	}
 	pos = 0;
 	strcpy (copy, P->Ten_Degree_Identifier);
 	while (GMT_strtok (copy,",", &pos, p)) {
-		if (!strcmp (p, "9999")) continue;
+		if (!strcmp (p, "9999")) {
+			if (n && (pos-1) != n) {
+				fprintf (fp, "#H-%s-16: Number of Ten Degree Identifiers: Found (%d) : Expected :(%d)\n", F->NGDC_id, pos - 1, n);
+				n = 0;
+			}
+			continue;
+		}
 		if (!strcmp (p, "   0")) continue;
 		k = 0;
 		if (!(p[0] == '1' || p[0] == '3' || p[0] == '5' || p[0] == '7')) {
@@ -1840,16 +1847,30 @@ int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F)
 	BOOLEAN append = FALSE;
 	char geo_path[BUFSIZ];
 	
-	for (k = 0; k < MGD77_FORMAT_ANY; k++) {
+	for (k = 0; k < MGD77_FORMAT_ANY; k++) {	/* Determine if given track name contains one of the 3 possible extensions */
 		if ((strlen(track)-strlen(MGD77_suffix[k])) > 0 && !strncmp (&track[strlen(track)-strlen(MGD77_suffix[k])], MGD77_suffix[k], strlen(MGD77_suffix[k]))) has_suffix = k;
-		if (has_suffix == k && !MGD77_format_allowed[k]) {
-			fprintf (stderr, "%s: Error: Format (%d) set to be ignored yet file argument has the corresponding suffix (%s)!\n", GMT_program, k, MGD77_suffix[k]);
-		}
 	}
 
-	if (has_suffix != MGD77_NOT_SET) F->format = has_suffix;
+	if (has_suffix != MGD77_NOT_SET && !MGD77_format_allowed[has_suffix]) {	/* Filename clashes with allowed extensions */
+		fprintf (stderr, "%s: Error: File has suffix (%s) that is set to be ignored!\n", GMT_program, MGD77_suffix[has_suffix]);
+		return (MGD77_FILE_NOT_FOUND);
+	}
+	if (has_suffix == MGD77_NOT_SET && (track[0] == '/' || track[1] == ':')) {	/* Hard path given without extension */
+		fprintf (stderr, "%s: Error: Hard path (%s) has no recognized extension!\n", GMT_program, track);
+		return (MGD77_FILE_NOT_FOUND);
+	}
 	
-	switch (F->format) {
+	if (track[0] == '/' || track[1] == ':') {	/* Hard path given (assumes X: is beginning of DOS path for arbitrary drive letter X) */
+		if (!access (track, R_OK)) {	/* OK, found it */
+			F->format = has_suffix;	/* Set this format */
+			strcpy (track_path, track);
+			return (MGD77_NO_ERROR);
+		}
+		else
+			return (MGD77_FILE_NOT_FOUND);	/* Hard path did not work */
+	}
+	
+	switch (((has_suffix == MGD77_NOT_SET) ? MGD77_FORMAT_ANY : has_suffix)) {
 		case MGD77_FORMAT_M77:		/* Look for MGD77 ASCII files only */
 			f_start = f_stop = MGD77_FORMAT_M77;
 			break;
@@ -1868,42 +1889,39 @@ int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F)
 			exit (EXIT_FAILURE);
 			break;
 	}
+	
+	append = (has_suffix == MGD77_NOT_SET);		/* No extension, must append extension */
+	
+	/* First look in current directory using all allowed suffices */
+	
 	for (fmt = f_start; fmt <= f_stop; fmt++) {	/* Try either one or any of three formats... */
 		if (!MGD77_format_allowed[fmt]) continue;		/* ...but not this one, apparently */
-		if (has_suffix == MGD77_NOT_SET) {	/* No extension, must append extension */
-			append = TRUE;
+		if (append)	/* No extension, must append extension */
 			sprintf (geo_path, "%s.%s", track, MGD77_suffix[fmt]);
-			F->format = fmt;
-		}
-		else {
+		else 
 			strcpy (geo_path, track);	/* Extension already there */
-		}
-	
-		if (geo_path[0] == '/' || geo_path[1] == ':') {	/* Hard path given (assumes X: is beginning of DOS path for arbitrary drive letter X) */
-			if (!access (geo_path, R_OK)) {	/* OK, found it */
-				strcpy (track_path, geo_path);
-				return (MGD77_NO_ERROR);
-			}
-			else
-				return (MGD77_FILE_NOT_FOUND);	/* Hard path did not work */
-		}
 	
 		/* Here we have a relative path.  First look in current directory */
 	
 		if (!access (geo_path, R_OK)) {	/* OK, found it */
 			strcpy (track_path, geo_path);
+			F->format = fmt;
 			return (MGD77_NO_ERROR);
 		}
+	}
 	
-		/* Then look elsewhere */
+	/* Not in current directory.  Now look in the MGD77 list of directories */
 	
-		for (id = 0; id < F->n_MGD77_paths; id++) {
+	for (fmt = f_start; fmt <= f_stop; fmt++) {	/* Try either one or any of three formats... */
+		if (!MGD77_format_allowed[fmt]) continue;		/* ...but not this one, apparently */
+		for (id = 0; id < F->n_MGD77_paths; id++) {	/* try each directory */
 			if (append)
 				sprintf (geo_path, "%s%c%s.%s", F->MGD77_datadir[id], DIR_DELIM, track, MGD77_suffix[fmt]);
 			else
 				sprintf (geo_path, "%s%c%s", F->MGD77_datadir[id], DIR_DELIM, track);
 			if (!access (geo_path, R_OK)) {
 				strcpy (track_path, geo_path);
+				F->format = fmt;
 				return (MGD77_NO_ERROR);
 			}
 		}
