@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.39 2005-10-14 23:31:51 pwessel Exp $
+ *	$Id: mgd77.h,v 1.40 2005-10-15 02:17:19 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -156,6 +156,7 @@ typedef char* Text;	/* Used to indicate character strings */
 struct MGD77_HEADER_PARAMS {		/* See MGD-77 Documentation from NGDC for details */
 /* START OF MGD77_HEADER_PARAMS */
 	/* Sequence No 01: */
+	char	Record_Type;
 	char	Survey_Identifier[9];
 	char	Format_Acronym[6];
 	char	Data_Center_File_Number[9];
@@ -363,7 +364,8 @@ struct MGD77_CONTROL {
 	int n_constraints;				/* Number of constraints specified */
 	int n_exact;					/* Number of exact columns to match */
 	int n_bit_tests;				/* Number of bit tests to match */
-	BOOLEAN no_checking;				/* TRUE if there are no constraints, extact-tests, or bit-tests to pass */
+	BOOLEAN header_verify_level;			/* 0 = none, 1 = to stdout, 2 = to stderr (reports of errors in MGD77 header */
+	int no_checking;				/* TRUE if there are no constraints, extact-tests, or bit-tests to pass */
 	struct MGD77_CONSTRAINT Constraint[MGD77_MAX_COLS];		/* List of constraints, if any */
 	char desired_column[MGD77_MAX_COLS][MGD77_COL_ABBREV_LEN];	/* List of desired column names in final output order */
 	struct MGD77_PAIR Exact[MGD77_MAX_COLS];	/* List of column names whose values must be !NaN to be output, if any */

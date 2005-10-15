@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: mgd77netcdfhelper.sh,v 1.2 2005-10-14 06:12:18 pwessel Exp $
+#	$Id: mgd77netcdfhelper.sh,v 1.3 2005-10-15 02:17:19 pwessel Exp $
 #
 #	Author:	P. Wessel
 #	Date:	2005-OCT-14
@@ -24,8 +24,8 @@ void MGD77_Read_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARA
 	/* Read the netCDF-encoded MGD77 header parameters as attributes of the data set */
 	
 EOF
-# 1. strip out the structure members only, then replace brackets and ; with space to simplify processing in the loop below */
-sed -n '/START OF MGD77_HEADER_PARAMS/,/END OF MGD77_HEADER_PARAMS/p' mgd77.h | egrep -v 'OF MGD77_HEADER_PARAMS|Sequence No' | tr '[];' '   ' > $$.1
+# 1. strip out the structure members only (except Record_Type), then replace brackets and ; with space to simplify processing in the loop below */
+sed -n '/START OF MGD77_HEADER_PARAMS/,/END OF MGD77_HEADER_PARAMS/p' mgd77.h | egrep -v 'OF MGD77_HEADER_PARAMS|Sequence No|Record_Type' | tr '[];' '   ' > $$.1
 while read type name L M; do		# We need a separate read/write statement for each attribute
 	pre=""				# Normally, no prefix for character arrays
 	cast=""
