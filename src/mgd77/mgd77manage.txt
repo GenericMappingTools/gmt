@@ -2,7 +2,7 @@
 .SH NAME
 mgd77manage \- Manage extra columns in MGD77+ files
 .SH SYNOPSIS
-\fBmgd77manage\fP \fIleg-ids\fP [ \fP\-A\fP[\fB!\fP]\fBa|A|c|d|D|e|g|i|n|t|T\fB\fIfileinfo\fP ] 
+\fBmgd77manage\fP \fIleg-ids\fP [ \fP\-A\fP[\fB!\fP]\fBc|d|D|e|g|i|n|t|T\fB\fIfileinfo\fP ] 
 [ \fP\-C\fPabbrev/"name"/size/scale/offset/"comment"\fP ] [ \fB\-D\fP\fIabbrev1,abbrev2,...\fP ] 
 [ \fB\-E\fP\fIempty\fP ] [ \fB\-F\fP ] [ \fB\-Ne\fP|\fBk\fP|\fBm\fP|\fBn\fP[\fB+\fP|\fB-\fP] 
 [ \fB\-Q\fP[\fIvalue\fP] [ \fB\-V\fP ] [ \fB\-bi\fP\fIn\fP[\fBs|d\fP] ]
@@ -27,11 +27,6 @@ Add a new data column.  If an existing column with the same abbreviation already
 we will cowardly refuse to update the file. Specifying \fB\-A!\fP overcomes this reluctance.
 Select a column source among the following choices:
 .br
-\fBa\fP Append filename of a double column table with first column holding absolute times along track,
-with data values in second column.  Use - if we are to read from stdin instead.  Records with matching
-times in the mgd77 file will be assigned the new values; at other times we set them to NaN.
-Alternatively, give upper case \fBA\fP instead and we will interpolate the column at all records.
-.br
 \fBc\fP Append filename of a single column table with same number of rows as the mgd77file.  Use - if
 we are to read from stdin instead.
 .br
@@ -55,11 +50,10 @@ grid spacing in minutes (1 or 2), the data scale (typically 1 or 10), the IMG fi
 with data values in second column.  Use - if we are to read from stdin instead.  Records with matching
 record numbers in the MGD77 file will be assigned the new values; at other times we set them to NaN.
 .br
-\fBt\fP Append filename of a double column table with first column holding relative times along track,
+\fBt\fP Append filename of a double column table with first column holding absolute times along track,
 with data values in second column.  Use - if we are to read from stdin instead.  Records with matching
-times in the MGD77 file will be assigned the new values; at other times we set them to NaN.
+times in the mgd77 file will be assigned the new values; at other times we set them to NaN.
 Alternatively, give upper case \fBT\fP instead and we will interpolate the column at all records.
-Relative time is converted to absolute time using the chosen TIME_SYSTEM in your .gmtdefaults4 file.
 .TP
 .B \-C
 In addition to file information we must specify several attributes of the extra column.
@@ -110,7 +104,7 @@ To append a filtered version of magnetics as an extra data columns for the cruis
 interpolate the filtered data at the times given in the MGD77 file, try
 .br
 .sp
-\fBmgd77manage\fP 01010047 \fB\-AA\fPmymag.tm \fB\-C\fPfiltmag/"Intermediate-wavelength magnetic residuals"/"nTesla"/s/1/0/"Useful for looking for isochrons" \fB\-F\fP
+\fBmgd77manage\fP 01010047 \fB\-AT\fPmymag.tm \fB\-C\fPfiltmag/"Intermediate-wavelength magnetic residuals"/"nTesla"/s/1/0/"Useful for looking for isochrons" \fB\-F\fP
 .br
 .sp
 To delete the existing extra columns satfaa, coastdist, and satvgg from all MGD77 files, try
