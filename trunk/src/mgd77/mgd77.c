@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.58 2005-10-16 09:17:53 pwessel Exp $
+ *	$Id: mgd77.c,v 1.59 2005-10-16 14:20:11 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1079,7 +1079,7 @@ void MGD77_Select_All_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 			F->order[k].set = c;
 			F->order[k].item = i;
 			H->info[c].col[i].pos = k;
-			strcpy (F->desired_column[i], H->info[c].col[i].abbrev);
+			strcpy (F->desired_column[k], H->info[c].col[i].abbrev);
 			k++;
 		}
 	}
