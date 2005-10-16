@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.42 2005-10-13 22:16:02 pwessel Exp $
+ *	$Id: x2sys.c,v 1.43 2005-10-16 09:17:53 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -27,7 +27,6 @@
  * x2sys_read_gmtfile	: Specifically reads an old .gmt file
  * x2sys_read_mgd77file : Specifically reads an MGD77 file
  * x2sys_read_list	: Read an ascii list of track names
- * x2sys_distances	: Calculate cumulative distances along track
  * x2sys_dummytimes	: Make dummy times for tracks missing times
  * x2sys_n_data_cols	: Gives number of data columns in this data set
  * x2sys_fopen		: Opening files with error message and exit
@@ -537,54 +536,6 @@ void x2sys_free_data (double **data, int n)
 
 	for (i = 0; i < n; i++) GMT_free ((void *)data[i]);
 	GMT_free ((void *)data);
-}
-
-double *x2sys_distances (double x[], double y[], int n, int dist_flag)
-{
-	int this, prev;
-	BOOLEAN cumulative = TRUE;
-	double *d, inc = 0;
-
-	if (dist_flag < 0) {	/* Want increments and not cumulative distances */
-		dist_flag = abs (dist_flag);
-		cumulative = FALSE;
-	}
-	
-	if (dist_flag < 0 || dist_flag > 3) {
-		fprintf (stderr, "x2sys: Error: Wrong flag passed to x2sys_distances (%d)\n", dist_flag);
-		exit (EXIT_FAILURE);
-	}
-	
-	d = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "x2sys_distances");
-
-	for (this = 1, prev = 0; this < n; this++, prev++) {
-		switch (dist_flag) {
-
-			case 0:	/* Cartesian distances */
-
-				inc = hypot (x[this] - x[prev], y[this] - y[prev]);
-				break;
-
-			case 1:	/* Flat earth distances in km*/
-
-				inc = GMT_flatearth_dist_km (x[this], y[this], x[prev], y[prev]);
-				break;
-
-			case 2:	/* Great circle distances in km */
-
-				inc = GMT_great_circle_dist_km (x[this], y[this], x[prev], y[prev]);
-				break;
-				
-			case 3:	/* Geodesic distances in km */
-
-				inc = GMT_geodesic_dist_km (x[this], y[this], x[prev], y[prev]);
-				break;
-		}
-		
-		d[this] = (cumulative) ? d[prev] + inc : inc;
-	}
-
-	return (d);
 }
 
 double *x2sys_dummytimes (int n)

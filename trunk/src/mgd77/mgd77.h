@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.40 2005-10-15 02:17:19 pwessel Exp $
+ *	$Id: mgd77.h,v 1.41 2005-10-16 09:17:53 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -430,6 +430,7 @@ EXTERN_MSC int MGD77_carter_twt_from_xydepth (double lon, double lat, double dep
 EXTERN_MSC int MGD77_carter_init (struct MGD77_CARTER *C);
 EXTERN_MSC int MGD77_carter_get_bin (double lon, double lat, int *bin);
 EXTERN_MSC int MGD77_carter_get_zone (int bin, struct MGD77_CARTER *C, int *zone);
+EXTERN_MSC double *MGD77_Distances (double x[], double y[], int n, int dist_flag);
 
 /* Global variables used by MGD77 programs */
 

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.17 2005-09-05 07:04:51 pwessel Exp $
+ *	$Id: x2sys.h,v 1.18 2005-10-16 09:17:53 pwessel Exp $
  *
  *      Copyright (c) 1999-2004 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -230,7 +230,6 @@ EXTERN_MSC int x2sys_n_data_cols (struct X2SYS_INFO *s);
 EXTERN_MSC int x2sys_read_list (char *file, char ***list);
 EXTERN_MSC int x2sys_output_record (FILE *fp, double data[], struct X2SYS_INFO *s);
 
-EXTERN_MSC double *x2sys_distances (double x[], double y[], int n, int dist_flag);
 EXTERN_MSC double *x2sys_dummytimes (int n);
 
 EXTERN_MSC void x2sys_skip_header (FILE *fp, struct X2SYS_INFO *s);
