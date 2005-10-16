@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.41 2005-10-16 09:17:53 pwessel Exp $
+ *	$Id: mgd77.h,v 1.42 2005-10-16 23:45:54 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -349,6 +349,7 @@ struct MGD77_CONTROL {
 	char NGDC_id[MGD77_COL_ABBREV_LEN];		/* Current NGDC file tag id */
 	char path[BUFSIZ];				/* Full path to current file */
 	FILE *fp;					/* File pointer to current open file (not used by MGD77+) */
+	FILE *fp_err;					/* File pointer error stream [stdout or stderr, usually) */
 	int nc_id;					/* netCDF ID for current open file (MGD77+ only) */
 	int nc_recid;					/* netCDF ID for dimension of records (time) */
 	int rec_no;					/* Current record to read/write for record-based i/o */
