@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.57 2005-10-15 06:26:32 pwessel Exp $
+ *	$Id: mgd77.c,v 1.58 2005-10-16 09:17:53 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -245,8 +245,19 @@ int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw)  /* Opens a MGD
   		}
 	}
 	else if (rw == MGD77_WRITE_MODE) {		/* Writing to a new file; leg is assumed to be complete name */
+		int k, has_suffix = MGD77_NOT_SET;
+		if (F->format == MGD77_FORMAT_ANY || F->format == MGD77_NOT_SET) {
+			fprintf (stderr, "%s: Format type not set for output file %s\n", GMT_program, leg);
+			return (MGD77_ERROR_OPEN_FILE);
+		}
 		mode[0] = 'w';
-		strcpy (F->path, leg);
+		for (k = 0; k < MGD77_FORMAT_ANY; k++) {	/* Determine if given leg name contains one of the 3 possible extensions */
+			if ((strlen(leg)-strlen(MGD77_suffix[k])) > 0 && !strncmp (&leg[strlen(leg)-strlen(MGD77_suffix[k])], MGD77_suffix[k], strlen(MGD77_suffix[k]))) has_suffix = k;
+		}
+		if (has_suffix == MGD77_NOT_SET)	/* file name given without extension */
+			sprintf (F->path, "%s.%s", leg, MGD77_suffix[F->format]);
+		else
+			strcpy (F->path, leg);
 	}
 	else
 		return (MGD77_UNKNOWN_MODE);
@@ -261,7 +272,7 @@ int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw)  /* Opens a MGD
 	/* Strip out Prefix and store in control structure */
 	
 	start = stop = MGD77_NOT_SET;
-	for (start = strlen (F->path) - 1; stop == MGD77_NOT_SET && start >= 0; start--) if (F->path[start] == '.') stop = start;
+	for (start = strlen (F->path) - 1; stop == MGD77_NOT_SET && start > 0; start--) if (F->path[start] == '.') stop = start;
 	while (start >= 0 && F->path[start] != '/') start--;
 	start++;
 	strncpy (F->NGDC_id, &F->path[start], stop - start);
@@ -1691,7 +1702,11 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 		}
 		exact = (all_exact || k == n);			/* TRUE if this constraint must match exactly */
 		
-		if (!strcmp (word, "rtime")) {	/* Time relative to EPOCH */
+		if (!strcmp (word, "atime")) {		/* Same as time */
+			strcpy (word, "time");
+			F->time_format = GMT_IS_ABSTIME;
+		}
+		else if (!strcmp (word, "rtime")) {	/* Time relative to EPOCH */
 			strcpy (word, "time");
 			F->time_format = GMT_IS_RELTIME;	/* Alternate time format is time relative to EPOCH */
 		}
@@ -2084,7 +2099,7 @@ BOOLEAN MGD77_cgt_test (char *value, char *match, int len)
 }
 
 void MGD77_Set_Unit (char *dist, double *scale)
-{
+{	/* Return scale needed to convert a unit distance in the given unit to meter */
 	switch (dist[strlen(dist)-1]) {
 		case 'k':	/* km */
 			*scale = 1000.0;

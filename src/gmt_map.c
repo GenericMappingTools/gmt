@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.91 2005-09-14 05:56:51 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.92 2005-10-16 09:17:52 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8789,6 +8789,54 @@ double GMT_geodesic_dist_km (double lonS, double latS, double lonE, double latE)
 	return (0.001 * GMT_geodesic_dist_meter (lonS, latS, lonE, latE));
 }
 
+double *GMT_distances (double x[], double y[], int n, double scale, int dist_flag)
+{	/* Returns distances in meter; use scale to get other units */
+	int this, prev;
+	BOOLEAN cumulative = TRUE, do_scale;
+	double *d, inc = 0;
+
+	if (dist_flag < 0) {	/* Want increments and not cumulative distances */
+		dist_flag = abs (dist_flag);
+		cumulative = FALSE;
+	}
+	
+	if (dist_flag < 0 || dist_flag > 3) {
+		fprintf (stderr, "%s: Error: Wrong flag passed to GMT_distances (%d)\n", GMT_program, dist_flag);
+		exit (EXIT_FAILURE);
+	}
+	
+	do_scale = (scale != 1,0);
+	d = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "GMT_distances");
+
+	for (this = 1, prev = 0; this < n; this++, prev++) {
+		switch (dist_flag) {
+
+			case 0:	/* Cartesian distances */
+
+				inc = hypot (x[this] - x[prev], y[this] - y[prev]);
+				break;
+
+			case 1:	/* Flat earth distances in meter */
+
+				inc = GMT_flatearth_dist_meter (x[this], y[this], x[prev], y[prev]);
+				break;
+
+			case 2:	/* Great circle distances in meter */
+
+				inc = GMT_great_circle_dist_meter (x[this], y[this], x[prev], y[prev]);
+				break;
+				
+			case 3:	/* Geodesic distances in meter */
+
+				inc = GMT_geodesic_dist_meter (x[this], y[this], x[prev], y[prev]);
+				break;
+		}
+		if (do_scale) inc *= scale;
+		d[this] = (cumulative) ? d[prev] + inc : inc;
+	}
+
+	return (d);
+}
 
 int GMT_map_latcross (double lat, double west, double east, struct XINGS **xings)
 {

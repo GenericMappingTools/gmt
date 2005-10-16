@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.186 2005-10-12 13:58:15 remko Exp $
+ *	$Id: gmt_support.c,v 1.187 2005-10-16 09:17:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -80,6 +80,7 @@
 #include "gmt.h"
 
 #define I_255	(1.0 / 255.0)
+#define DEG_TO_METER (6371008.7714 * D2R)
 #define DEG_TO_KM (6371.0087714 * D2R)
 #define KM_TO_DEG (1.0 / DEG_TO_KM)
 #define GMT_INSIDE_POLYGON	2
@@ -6026,7 +6027,7 @@ double GMT_cartesian_dist (double x0, double y0, double x1, double y1)
 	return (hypot ( (x1 - x0), (y1 - y0)));
 }
 
-double GMT_flatearth_dist_km (double x0, double y0, double x1, double y1)
+double GMT_flatearth_dist_meter (double x0, double y0, double x1, double y1)
 {
 	/* Calculates the approximate flat earth distance in km.
 	   If difference in longitudes exceeds 180 we pick the other
@@ -6037,7 +6038,17 @@ double GMT_flatearth_dist_km (double x0, double y0, double x1, double y1)
 	dlon = x1 - x0;
 	if (fabs (dlon) > 180.0) dlon = copysign ((360.0 - fabs (dlon)), dlon);
 
-	return (hypot ( dlon * cosd (0.5 * (y1 + y0)), (y1 - y0)) * DEG_TO_KM);
+	return (hypot ( dlon * cosd (0.5 * (y1 + y0)), (y1 - y0)) * DEG_TO_METER);
+}
+
+double GMT_flatearth_dist_km (double x0, double y0, double x1, double y1)
+{
+	/* Calculates the approximate flat earth distance in km.
+	   If difference in longitudes exceeds 180 we pick the other
+	   offset (360 - offset)
+	 */
+
+	return (0.001 * GMT_flatearth_dist_meter (x0, y0, x1, y1));
 }
 
 double GMT_great_circle_dist_km (double x0, double y0, double x1, double y1)
@@ -6045,6 +6056,13 @@ double GMT_great_circle_dist_km (double x0, double y0, double x1, double y1)
 	/* Calculates the grdat circle distance in km */
 
 	return (GMT_great_circle_dist (x0, y0, x1, y1) * DEG_TO_KM);
+}
+
+double GMT_great_circle_dist_meter (double x0, double y0, double x1, double y1)
+{
+	/* Calculates the grdat circle distance in meter */
+
+	return (GMT_great_circle_dist (x0, y0, x1, y1) * DEG_TO_METER);
 }
 
 /* Functions involving distance from arbitrary points to a line */

@@ -4,7 +4,8 @@ mgd77manage \- Manage extra columns in MGD77+ files
 .SH SYNOPSIS
 \fBmgd77manage\fP \fIleg-ids\fP [ \fP\-A\fP[\fB!\fP]\fBa|A|c|d|D|e|g|i|n|t|T\fB\fIfileinfo\fP ] 
 [ \fP\-C\fPabbrev/"name"/size/scale/offset/"comment"\fP ] [ \fB\-D\fP\fIabbrev1,abbrev2,...\fP ] 
-[ \fB\-F\fP ] [ \fB\-Q\fP[\fIvalue\fP] [ \fB\-V\fP ] [ \fB\-bi\fP\fIn\fP[\fBs|d\fP] ]
+[ \fB\-E\fP\fIempty\fP ] [ \fB\-F\fP ] [ \fB\-Ne\fP|\fBk\fP|\fBm\fP|\fBn\fP[\fB+\fP|\fB-\fP] 
+[ \fB\-Q\fP[\fIvalue\fP] [ \fB\-V\fP ] [ \fB\-bi\fP\fIn\fP[\fBs|d\fP] ]
 .SH DESCRIPTION
 \fBmgd77manage\fP deals with maintaining the extra custom columns in MGD77+ files.
 You can either delete one or more columns, add a new column, or update an existing
@@ -77,12 +78,17 @@ to be deleted.  Once the file is successfully created we temporarily rename the 
 the new filename to the old filename, and finally remove the old, renamed file.
 In some cases, however, we must do it that way (and \fBmgd77manage\fP will tell you about it).
 .TP
+.B \-E
+Give a single character that will be repeated to fill empty string values [9]
+.TP
 .B \-F
 Force creation of output even if an older file is present in the current directory [Default refuses
 to overwrite existing files].
 .TP
 .B \-N
-Give a single character that will be repeated to fill empty/missing string columns [9]
+Specify how distances will be calculated by appending \fBe\fP (meter), \fBk\fP (km), \fBm\fP (miles),
+or \fBn\fP (nautical miles).  Great circle distances will be used.  Append \fB+\fP or \fB-\fP to
+instead select geodesic (using current GMT ellipsoid) or flat Earth distances [Default is \fB\-Nk\fP].
 .TP
 .B \-Q
 Quick mode, use bilinear rather than bicubic interpolation.  optionally, append \fIvalue\fP in the
