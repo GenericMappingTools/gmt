@@ -8,4 +8,5 @@
 {"thickest",	2.00},
 {"fat",		3.00},
 {"fatter",	6.00},
-{"fattest",	10.0}
+{"fattest",	10.0},
+{"obese",	18.0}
