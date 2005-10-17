@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.62 2005-09-26 23:09:01 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.63 2005-10-17 22:59:16 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2005.
@@ -948,23 +948,18 @@ Note that a pen thickness of 5 will be of different physical width
 depending on your dpi setting, whereas a thickness of 5{\bf p} will
 always be 5/72 of an inch.  Minimum-thickness pens can be achieved by
 giving zero width, but the result is device-dependent.  Finally, a few
-predefined pen names can be used: default, faint, and \{thin, thick, fat\}[er$|$est].
-Table~\ref{tbl:pennames} shows this list and the corresponding pen widths.
+predefined pen names can be used: default, faint, and \{thin, thick, fat\}[er$|$est],
+and obese.  Table~\ref{tbl:pennames} shows this list and the corresponding pen widths.
 \begin{table}[h]
 \centering
-\begin{tabular}{|l|c|} \hline
-\multicolumn{1}{|c|}{\emph{Pen name}}	&	\multicolumn{1}{c|}{\emph{Width}} \\ \hline
-faint		&	0 \\ \hline 
-default		&	0.25p \\ \hline 
-thinnest	&	0.25p \\ \hline 
-thinner		&	0.50p \\ \hline 
-thin		&	0.75p \\ \hline 
-thick		&	1.0p \\ \hline 
-thicker		&	1.5p \\ \hline 
-thickest	&	2p \\ \hline 
-fat		&	3p \\ \hline 
-fatter		&	6p \\ \hline 
-fattest		&	12p \\ \hline 
+\begin{tabular}{|l|c||l|c} \hline
+\multicolumn{1}{|c|}{\emph{Pen name}}	&	\multicolumn{1}{c|}	&	{\emph{Width}} \multicolumn{1}{|c|}{\emph{Pen name}}	&	\multicolumn{1}{c|}{\emph{Width}} \\ \hline
+faint		&	0	&	thicker		&	1.5p \\ \hline 
+default		&	0.25p	&	thickest	&	2p \\ \hline
+thinnest	&	0.25p	&	fat		&	3p \\ \hline
+thinner		&	0.50p	&	fatter		&	6p \\ \hline 
+thin		&	0.75p	&	fattest		&	12p \\ \hline  
+thick		&	1.0p	&	obese		&	18p \\	\hline 
 \end{tabular}
 \caption{\gmt\ predefined pen widths.}
 \label{tbl:pennames}
