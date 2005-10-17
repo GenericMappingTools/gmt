@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.60 2005-10-16 23:45:54 pwessel Exp $
+ *	$Id: mgd77.c,v 1.61 2005-10-17 08:16:28 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -73,6 +73,7 @@ int MGD77_Convert_To_New_Format (char *line);
 int MGD77_Decode_Header (struct MGD77_HEADER_PARAMS *P, char *record[], int dir);
 void MGD77_Place_Text (int dir, char *struct_member, char *header_record, int start_pos, int n_char);
 int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P);
+BOOLEAN MGD77_entry_in_MGD77record (char *name, int *entry);
 
 struct MGD77_DATA_RECORD *MGD77Record;
  
@@ -904,48 +905,58 @@ char *MGD77_alloc_txt (int len)
 
 void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 {
-	int i;
+	int i, k;
 	
-	/* When reading a plain ASCII MGD77 file we must set the information structure manually here */
+	/* When reading a plain ASCII MGD77 file we must set the information structure manually here.
+	 * We will fill in information for all columns in the MGD77 ASCII file except for drt and
+	 * we will use time & tz instead of year, month, day, hour, min. */
 	
 	for (i = 0; i < MGD77_SET_COLS; i++) H->info[MGD77_M77_SET].col[i].present = H->info[MGD77_CDF_SET].col[i].present = FALSE;
 
-	for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {
-		H->info[MGD77_M77_SET].col[i].abbrev = MGD77_cp_txt (mgd77defs[i].abbrev);
-		H->info[MGD77_M77_SET].col[i].name = MGD77_cp_txt (mgd77defs[i].fieldID);
-		H->info[MGD77_M77_SET].col[i].units = MGD77_cp_txt (mgd77cdf[i].units);
-		H->info[MGD77_M77_SET].col[i].comment = MGD77_cp_txt (mgd77cdf[i].comment);
-		H->info[MGD77_M77_SET].col[i].scale = mgd77cdf[i].scale;
-		H->info[MGD77_M77_SET].col[i].offset = mgd77cdf[i].offset;
-		H->info[MGD77_M77_SET].col[i].type = mgd77cdf[i].type;
-		H->info[MGD77_M77_SET].col[i].text = 0;
-		H->info[MGD77_M77_SET].col[i].pos = i;
-		H->info[MGD77_M77_SET].col[i].present = TRUE;
+	/* Start with the time field */
+	
+	k = 0;
+	H->info[MGD77_M77_SET].col[k].abbrev = MGD77_cp_txt ("time");
+	H->info[MGD77_M77_SET].col[k].name = MGD77_cp_txt ("Time");
+	H->info[MGD77_M77_SET].col[k].units = MGD77_cp_txt (mgd77cdf[MGD77_TIME].units);
+	H->info[MGD77_M77_SET].col[k].comment = MGD77_cp_txt (mgd77cdf[MGD77_TIME].comment);
+	H->info[MGD77_M77_SET].col[k].scale = mgd77cdf[MGD77_TIME].scale;
+	H->info[MGD77_M77_SET].col[k].offset = mgd77cdf[MGD77_TIME].offset;
+	H->info[MGD77_M77_SET].col[k].type = mgd77cdf[MGD77_TIME].type;
+	H->info[MGD77_M77_SET].col[k].text = 0;
+	H->info[MGD77_M77_SET].col[k].pos = MGD77_TIME;
+	H->info[MGD77_M77_SET].col[k].present = TRUE;
+	k++;
+	
+	for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Do all the numerical fields */
+		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;	/* Skip these as time + tz represent the same information */
+		H->info[MGD77_M77_SET].col[k].abbrev = MGD77_cp_txt (mgd77defs[i].abbrev);
+		H->info[MGD77_M77_SET].col[k].name = MGD77_cp_txt (mgd77defs[i].fieldID);
+		H->info[MGD77_M77_SET].col[k].units = MGD77_cp_txt (mgd77cdf[i].units);
+		H->info[MGD77_M77_SET].col[k].comment = MGD77_cp_txt (mgd77cdf[i].comment);
+		H->info[MGD77_M77_SET].col[k].scale = mgd77cdf[i].scale;
+		H->info[MGD77_M77_SET].col[k].offset = mgd77cdf[i].offset;
+		H->info[MGD77_M77_SET].col[k].type = mgd77cdf[i].type;
+		H->info[MGD77_M77_SET].col[k].text = 0;
+		H->info[MGD77_M77_SET].col[k].pos = i;
+		H->info[MGD77_M77_SET].col[k].present = TRUE;
+		k++;
 	}
-	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {
-		H->info[MGD77_M77_SET].col[i].abbrev = MGD77_cp_txt (mgd77defs[i].abbrev);
-		H->info[MGD77_M77_SET].col[i].name = MGD77_cp_txt (mgd77defs[i].fieldID);
-		H->info[MGD77_M77_SET].col[i].units = MGD77_cp_txt (mgd77cdf[i].units);
-		H->info[MGD77_M77_SET].col[i].comment = MGD77_cp_txt (mgd77cdf[i].comment);
-		H->info[MGD77_M77_SET].col[i].scale = 1.0;
-		H->info[MGD77_M77_SET].col[i].offset = 0.0;
-		H->info[MGD77_M77_SET].col[i].type = mgd77cdf[i].type;
-		H->info[MGD77_M77_SET].col[i].text = mgd77cdf[i].len;
-		H->info[MGD77_M77_SET].col[i].pos = i;
-		H->info[MGD77_M77_SET].col[i].present = TRUE;
+	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {	/* Do the three text fields */
+		H->info[MGD77_M77_SET].col[k].abbrev = MGD77_cp_txt (mgd77defs[i].abbrev);
+		H->info[MGD77_M77_SET].col[k].name = MGD77_cp_txt (mgd77defs[i].fieldID);
+		H->info[MGD77_M77_SET].col[k].units = MGD77_cp_txt (mgd77cdf[i].units);
+		H->info[MGD77_M77_SET].col[k].comment = MGD77_cp_txt (mgd77cdf[i].comment);
+		H->info[MGD77_M77_SET].col[k].scale = 1.0;
+		H->info[MGD77_M77_SET].col[k].offset = 0.0;
+		H->info[MGD77_M77_SET].col[k].type = mgd77cdf[i].type;
+		H->info[MGD77_M77_SET].col[k].text = mgd77cdf[i].len;
+		H->info[MGD77_M77_SET].col[k].pos = i;
+		H->info[MGD77_M77_SET].col[k].present = TRUE;
+		k++;
 	}
-	/* Finally, do the time field */
-	H->info[MGD77_M77_SET].col[MGD77_TIME].abbrev = MGD77_cp_txt ("time");
-	H->info[MGD77_M77_SET].col[MGD77_TIME].name = MGD77_cp_txt ("GMT J2000 Time");
-	H->info[MGD77_M77_SET].col[MGD77_TIME].units = MGD77_cp_txt (mgd77cdf[MGD77_TIME].units);
-	H->info[MGD77_M77_SET].col[MGD77_TIME].comment = MGD77_cp_txt (mgd77cdf[MGD77_TIME].comment);
-	H->info[MGD77_M77_SET].col[MGD77_TIME].scale = mgd77cdf[MGD77_TIME].scale;
-	H->info[MGD77_M77_SET].col[MGD77_TIME].offset = mgd77cdf[MGD77_TIME].offset;
-	H->info[MGD77_M77_SET].col[MGD77_TIME].type = mgd77cdf[MGD77_TIME].type;
-	H->info[MGD77_M77_SET].col[MGD77_TIME].text = 0;
-	H->info[MGD77_M77_SET].col[MGD77_TIME].pos = MGD77_TIME;
-	H->info[MGD77_M77_SET].col[MGD77_TIME].present = TRUE;
-	H->n_fields = H->info[MGD77_M77_SET].n_col = MGD77_N_DATA_FIELDS + 1;
+
+	H->n_fields = H->info[MGD77_M77_SET].n_col = k;
 }
 
 int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)  /* Will read the entire 24-section header structure */
@@ -1107,7 +1118,7 @@ int MGD77_Read_File_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 
 int MGD77_Read_Data_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)	  /* Will read all MGD77 records in current file */
 {
-	int i, k, col, n_txt, n_val, id, err, n_nan_times, Clength[3] = {8, 5, 6};
+	int i, k, col, n_txt, n_val, id, err, n_nan_times, entry, mgd77_col[MGD77_SET_COLS], Clength[3] = {8, 5, 6};
 	struct MGD77_DATA_RECORD MGD77Record;
 	double *values[MGD77_N_NUMBER_FIELDS+1];
 	char *text[3];
@@ -1119,11 +1130,16 @@ int MGD77_Read_Data_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 	for (k = 0; k < n_txt; k++) text[k] = (char *)GMT_memory (VNULL, S->H.n_records*Clength[k], sizeof (char), "MGD77_Read_File_asc");
 	S->H.info[MGD77_M77_SET].bit_pattern = S->H.info[MGD77_CDF_SET].bit_pattern = 0;
 	
+	for (col = 0; col < F->n_out_columns; col++) {
+		if (!MGD77_entry_in_MGD77record (F->desired_column[col], &entry)) continue;
+		mgd77_col[col] = entry;
+	}
+
 	for (i = n_nan_times = 0; i < S->H.n_records; i++) {
 		err = (F->format == MGD77_FORMAT_TBL) ? MGD77_Read_Data_Record_tbl (F, &MGD77Record) : MGD77_Read_Data_Record_m77 (F, &MGD77Record);
 		if (err) return (err);
 		for (col = n_txt = n_val = 0; col < F->n_out_columns; col++) {
-			id = F->order[col].item;
+			id = mgd77_col[col];
 			if (id >= MGD77_ID && id <= MGD77_SSPN) {
 				k = id - MGD77_N_NUMBER_FIELDS;
 				strncpy (&text[n_txt++][i*Clength[k]], MGD77Record.word[k], Clength[k]);
@@ -1615,6 +1631,31 @@ int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, int *key)
 	}
 	*key = MGD77_NOT_SET;
 	return (MGD77_NOT_SET);
+}
+
+BOOLEAN MGD77_entry_in_MGD77record (char *name, int *entry)
+{
+	int i;
+	
+	/* Returns the number in the MGD77 Datarecord number[x] and text[y] arrays */
+
+	*entry = MGD77_NOT_SET;
+	
+	if (MGD77_Get_Set (name) == MGD77_CDF_SET) return (FALSE);	/* Wrong set entirely */
+	
+	/* Try time */
+	if (!strcmp (name, "time")) {
+		*entry = MGD77_TIME;
+		return (TRUE);
+	}
+	
+	/* Try theother fields */
+	for (i = MGD77_RECTYPE; i <= MGD77_SSPN; i++) if (!strcmp (name, mgd77defs[i].abbrev)) {
+		*entry = i;
+		return (TRUE);
+	}
+	
+	return (FALSE);
 }
 
 void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
@@ -2184,6 +2225,52 @@ void MGD77_Fatal_Error (int error)
 
 /* MGD77+ functions will be added down here */
 
+void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
+{	/* Must determine which columns are present and if time is available, etc.
+	 * 
+	 */
+	 
+	int i, t_id, set, t_set = MGD77_NOT_SET, entry;
+	char *text;
+	double *values;
+	
+	t_id = MGD77_Info_from_Abbrev ("time", &S->H, &entry);
+	if (t_id != MGD77_NOT_SET) {	/* Supposedly has time, but we we'll check */
+		t_set = t_id / MGD77_SET_COLS;
+		t_id -= t_set * MGD77_SET_COLS;
+		values = (double *)S->values[entry];
+		if (MGD77_dbl_are_constant (values, S->H.n_records, S->H.info[t_set].col[t_id].limit)) {	/* If constant time it means NaNs */
+			S->H.no_time = TRUE;
+			S->H.info[t_set].col[t_id].present = FALSE;
+			for (i = entry; i < S->H.n_fields; i++) S->values[i] = S->values[i+1];	/* Shuffle fields one up */
+			S->H.n_fields--;
+		}
+		else
+			S->H.no_time = FALSE;
+	}
+	else
+		S->H.no_time = TRUE;	/* Some cruises do not have time */
+	
+	for (set = entry = 0; set < MGD77_N_SETS; set++) {	/* For both sets */
+		for (i = 0; i < MGD77_SET_COLS; i++) {
+			if (!S->H.info[set].col[i].present) continue;	/* No such field, move on */
+			if (S->H.info[set].col[i].text) {			/* This variable is a text string */
+				text = (char *)S->values[entry];
+				S->H.info[set].col[i].constant = (MGD77_txt_are_constant (text, S->H.n_records, S->H.info[set].col[i].text));	/* Do we need to store 1 or n strings? */
+			}
+			else {					/* This variable is a numerical field */
+				values = (double *)S->values[entry];
+				S->H.info[set].col[i].constant = (MGD77_dbl_are_constant (values, S->H.n_records, S->H.info[set].col[i].limit));
+				if (set == t_set && i == t_id) {	/* Adjust limits for time column since we will store Unix time, not GMT epoch time */
+					S->H.info[set].col[i].limit[0] -= MGD77_Epoch_zero;	/* Make UNIX time for storage */ 
+					S->H.info[set].col[i].limit[1] -= MGD77_Epoch_zero;	/* Make UNIX time for storage */
+				}
+			}
+			entry++;
+		}
+	}
+}
+
 int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {	/* This function will create a netCDF version of a standard MGD77 file.  No additional
 	 * columns are considered.  Such columns may be added/deleted by mgd77manage.  We assume
@@ -2198,10 +2285,9 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	 * 
 	 */
 	 
-	int i, k, dims[2], Cdim_id[3], Clength[3] = {8, 5, 6}, var_id;
+	int i, k, set, entry, dims[2] = {0, 0}, var_id;
 	time_t now;
-	char *Cname[3] = {"id_dim", "sln_dim", "sspn_dim"}, string[128];
-	BOOLEAN no_time;
+	char string[128];
 	
 	if (MGD77_Open_File (file, F, MGD77_WRITE_MODE)) return (-1);	/* Basically creates the full path */
 	
@@ -2212,8 +2298,8 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	/* Put attributes header, author, title and history */
 	
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "Conventions", strlen (MGD77_CDF_CONVENTION) + 1, (const char *)MGD77_CDF_CONVENTION));
-	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "Version", strlen(MGD77_CDF_VERSION), (const char *)MGD77_CDF_VERSION));
-	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "Author", strlen (H->author), H->author));
+	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "Version",     strlen(MGD77_CDF_VERSION), (const char *)MGD77_CDF_VERSION));
+	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "Author",      strlen (H->author), H->author));
 	sprintf (string, "Cruise %s (NGDC ID %s)", H->mgd77->Survey_Identifier, F->NGDC_id);
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "title", strlen (string), string));
 	if (!H->history) {	/* Blank history, set initial message */
@@ -2229,78 +2315,53 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "history", strlen (H->history), H->history));
 	MGD77_Write_Header_Params (F, H->mgd77);	/* Write all the MGD77 header attributes */
 	
-	no_time = !(H->info[MGD77_M77_SET].bit_pattern & MGD77_this_bit[MGD77_TIME]);	/* Some cruises do not have time */
+	/* It is assumed that MGD77_Prep_Header_cdf has been called */
 	
-	if (no_time)
-		MGD77_nc_status (nc_def_dim (F->nc_id, "record_no", NC_UNLIMITED, &F->nc_recid));	/* Define unlimited record dimension */
-	else
-		MGD77_nc_status (nc_def_dim (F->nc_id, "time", NC_UNLIMITED, &F->nc_recid));	/* Define unlimited time dimension */
-		
-	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {			/* Loop over the 3 MGD77 text fields */
-		k = i - MGD77_N_NUMBER_FIELDS;
-		MGD77_nc_status (nc_def_dim (F->nc_id, Cname[k], Clength[k], &Cdim_id[k]));	/* Define character length dimension */
-	}
-
-	dims[0] = F->nc_recid;	dims[1] = 0;
-	for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Loop over all MGD77 number fields */
-		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;	/* The 5 time-related columns are not written separately but as MGD77_TIME */
-		if (! (H->info[MGD77_M77_SET].bit_pattern & MGD77_this_bit[i])) {
-			if (gmtdefs.verbose == 2) fprintf (F->fp_err, "%s: Field %s in data set %s are all NaN.  One value stored\n", GMT_program, mgd77defs[i].abbrev, file);
-		}
-		if (H->info[MGD77_M77_SET].col[i].constant)	/* Simply store one value */
-			MGD77_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 0, NULL, &var_id));	/* Define a variable */
-		else	/* Must store array */
-			MGD77_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 1, dims, &var_id));	/* Define a variable */
-		
-		if (mgd77defs[i].fieldID[0] && strcmp (mgd77defs[i].fieldID, mgd77defs[i].abbrev)) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "long_name", strlen (mgd77defs[i].fieldID), mgd77defs[i].fieldID));
-		if (mgd77cdf[i].units[0]) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "units", strlen (mgd77cdf[i].units), mgd77cdf[i].units));
-		if (!H->info[MGD77_M77_SET].col[i].constant) MGD77_nc_status (nc_put_att_double   (F->nc_id, var_id, "actual_range", NC_DOUBLE, 2, mgd77_range[i].limit));
-		if (mgd77cdf[i].comment[0]) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "comment", strlen (mgd77cdf[i].comment), mgd77cdf[i].comment));
-		if (i == MGD77_DEPTH || i == MGD77_MSD) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "positive", 4, "down"));
-		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "_FillValue", mgd77cdf[i].type, 1, &MGD77_NaN_val[mgd77cdf[i].type]));
-		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "missing_value", mgd77cdf[i].type, 1, &MGD77_NaN_val[mgd77cdf[i].type]));
-		if (mgd77cdf[i].scale  != 1.0) MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "scale_factor", NC_DOUBLE, 1, &mgd77cdf[i].scale));
-		if (mgd77cdf[i].offset != 0.0) MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "add_offset", NC_DOUBLE, 1, &mgd77cdf[i].offset));
-		H->info[MGD77_M77_SET].col[i].var_id = var_id;
-	}
-	
-	/* Do absolute time separately */
-		
-	if (no_time) {
+	if (H->no_time) {
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Data set %s has no time values\n", GMT_program, file);
+		MGD77_nc_status (nc_def_dim (F->nc_id, "record_no", NC_UNLIMITED, &F->nc_recid));	/* Define unlimited record dimension */
 	}
-	else {	/* We do have time, store them */
-		MGD77_nc_status (nc_def_var        (F->nc_id, "time", NC_DOUBLE, 1, dims, &var_id));	/* Define a variable */
-		MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "long_name", 4, "Time"));
-		if (mgd77cdf[MGD77_TIME].units[0]) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "units", strlen (mgd77cdf[MGD77_TIME].units), mgd77cdf[MGD77_TIME].units));
-		MGD77_nc_status (nc_put_att_double   (F->nc_id, var_id, "actual_range", NC_DOUBLE, 2, mgd77_range[MGD77_TIME].limit));
-		if (mgd77cdf[MGD77_TIME].comment[0]) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "comment", strlen (mgd77cdf[MGD77_TIME].comment), mgd77cdf[MGD77_TIME].comment));
-		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "_FillValue", NC_DOUBLE, 1, &MGD77_NaN_val[mgd77cdf[MGD77_TIME].type]));
-		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "missing_value", NC_DOUBLE, 1, &MGD77_NaN_val[mgd77cdf[MGD77_TIME].type]));
-		if (mgd77cdf[MGD77_TIME].scale  != 1.0) MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "scale_factor", NC_DOUBLE, 1, &mgd77cdf[MGD77_TIME].scale));
-		if (mgd77cdf[MGD77_TIME].offset != 0.0) MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "add_offset", NC_DOUBLE, 1, &mgd77cdf[MGD77_TIME].offset));
-		H->info[MGD77_M77_SET].col[MGD77_TIME].var_id = var_id;
+	else
+		MGD77_nc_status (nc_def_dim (F->nc_id, "time", NC_UNLIMITED, &F->nc_recid));		/* Define unlimited time dimension */
+
+	dims[0] = F->nc_recid;	/* Number of points in all arrays */
+	for (set = entry = 0; set < MGD77_N_SETS; set++) {	/* For both sets */
+		for (i = 0; i < MGD77_SET_COLS; i++) {
+			if (!H->info[set].col[i].present) continue;	/* No such field, move on */
+			if (H->info[set].col[i].text) {			/* This variable is a text string */
+				sprintf (string, "%s_dim", H->info[set].col[i].abbrev);
+				MGD77_nc_status (nc_def_dim (F->nc_id, string, H->info[set].col[i].text, &dims[1]));	/* Define character length dimension */
+				if (H->info[set].col[i].constant) {	/* Simply store one value */
+					if (gmtdefs.verbose == 2) fprintf (F->fp_err, "%s: Field %s in data set %s are all constant.  One value stored\n", GMT_program, H->info[set].col[i].abbrev, file);
+					MGD77_nc_status (nc_def_var (F->nc_id, H->info[set].col[i].abbrev, H->info[set].col[i].type, 1, &dims[1], &var_id));	/* Define a 1-text variable */
+				}
+				else {	/* Must store array */
+					MGD77_nc_status (nc_def_var (F->nc_id, H->info[set].col[i].abbrev, H->info[set].col[i].type, 2, dims, &var_id));	/* Define a n-text variable */
+				}
+			}
+			else {					/* This variable is a numerical field */
+				if (H->info[set].col[i].constant) {	/* Simply store one value */
+					if (gmtdefs.verbose == 2) fprintf (F->fp_err, "%s: Field %s in data set %s are all constant.  One value stored\n", GMT_program, H->info[set].col[i].abbrev, file);
+					MGD77_nc_status (nc_def_var (F->nc_id, H->info[set].col[i].abbrev, H->info[set].col[i].type, 0, NULL, &var_id));	/* Define a scalar variable */
+				}
+				else {	/* Must store array */
+					MGD77_nc_status (nc_def_var (F->nc_id, H->info[set].col[i].abbrev, H->info[set].col[i].type, 1, dims, &var_id));	/* Define an array variable */
+				}
+			}
+			if (H->info[set].col[i].name && strcmp (H->info[set].col[i].name, H->info[set].col[i].abbrev)) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "long_name", strlen (H->info[set].col[i].name), H->info[set].col[i].name));
+			if (H->info[set].col[i].units) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "units", strlen (H->info[set].col[i].units), H->info[set].col[i].units));
+			if (!H->info[set].col[i].constant) MGD77_nc_status (nc_put_att_double   (F->nc_id, var_id, "actual_range", NC_DOUBLE, 2, H->info[set].col[i].limit));
+			if (H->info[set].col[i].comment) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "comment", strlen (H->info[set].col[i].comment), H->info[set].col[i].comment));
+			if (set == MGD77_M77_SET && (!strcmp (H->info[set].col[i].abbrev, "depth") || !strcmp (H->info[set].col[i].abbrev, "msd"))) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "positive", 4, "down"));
+			MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "_FillValue", H->info[set].col[i].type, 1, &MGD77_NaN_val[H->info[set].col[i].type]));
+			MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "missing_value", H->info[set].col[i].type, 1, &MGD77_NaN_val[H->info[set].col[i].type]));
+			if (H->info[set].col[i].scale  != 1.0) MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "scale_factor", NC_DOUBLE, 1, &H->info[set].col[i].scale));
+			if (H->info[set].col[i].offset != 0.0) MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "add_offset", NC_DOUBLE, 1, &H->info[set].col[i].offset));
+			H->info[set].col[i].var_id = var_id;
+			entry++;
+		}
 	}
 	
-	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {	/* Loop over the 3 MGD77 text fields */
-		if (! (H->info[MGD77_M77_SET].bit_pattern & MGD77_this_bit[i])) {		/* No values for this data field */
-			if (gmtdefs.verbose == 2) fprintf (F->fp_err, "%s: Field %s in data set %s are all %s.  One value stored\n", GMT_program, mgd77defs[i].abbrev, file, mgd77defs[i].not_given);
-		}		/* No values for this data field */
-		k = i - MGD77_N_NUMBER_FIELDS;
-		dims[1] = Cdim_id[k];
-		if (H->info[MGD77_M77_SET].col[i].constant)	/* Simply store one value */
-			MGD77_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 1, &dims[1], &var_id));	/* Define a variable */
-		else	/* Must store array */
-			MGD77_nc_status (nc_def_var (F->nc_id, mgd77defs[i].abbrev, mgd77cdf[i].type, 2, dims, &var_id));		/* Define a variable */
-		/* MGD77_nc_status (nc_put_att_schar  (F->nc_id, var_id, "col_type", NC_BYTE, 1, &M)); */	/* Place attributes */
-		if (mgd77defs[i].fieldID[0] && strcmp (mgd77defs[i].fieldID, mgd77defs[i].abbrev)) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "long_name", strlen (mgd77defs[i].fieldID), mgd77defs[i].fieldID));
-		if (mgd77cdf[i].units[0]) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "units", strlen (mgd77cdf[i].units), mgd77cdf[i].units));
-		if (mgd77cdf[i].comment[0]) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "comment", strlen (mgd77cdf[i].comment), mgd77cdf[i].comment));
-		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "_FillValue", mgd77cdf[i].type, 1, &MGD77_NaN_val[mgd77cdf[i].type]));
-		MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "missing_value", mgd77cdf[i].type, 1, &MGD77_NaN_val[mgd77cdf[i].type]));
-		H->info[MGD77_M77_SET].col[i].var_id = var_id;
-	}
-
 	MGD77_nc_status (nc_enddef (F->nc_id));
 	
 	return (MGD77_NO_ERROR);
@@ -2315,26 +2376,9 @@ int MGD77_Write_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 	 * written as scalars.  The read routine will replicate these to columns.
 	 */
 	 
-	int err, i, k, Clength[3] = {8, 5, 6};
-	double *values;
-	char *text;
+	int err;
 	
-	/* Determine if any fields are constant for all records */
-	for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Loop over all MGD77 number fields */
-		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;		/* The 5 time-related columns are not written separately but as MGD77_TIME */
-		values = (double *)S->values[i];
-		/* Determine actual data range and if we need to store 1 or n values */
-		S->H.info[MGD77_M77_SET].col[i].constant = (MGD77_dbl_are_constant (values, S->H.n_records, mgd77_range[i].limit));
-	}
-	values = (double *)S->values[MGD77_TIME];
-	S->H.info[MGD77_M77_SET].col[MGD77_TIME].constant = (MGD77_dbl_are_constant (values, S->H.n_records, mgd77_range[MGD77_TIME].limit));
-	mgd77_range[MGD77_TIME].limit[0] -= MGD77_Epoch_zero;	/* Make UNIX time for storage */ 
-	mgd77_range[MGD77_TIME].limit[1] -= MGD77_Epoch_zero;	/* Make UNIX time for storage */ 
-	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {	/* Loop over the 3 MGD77 text fields */
-		k = i - MGD77_N_NUMBER_FIELDS;
-		text = (char *)S->values[i];
-		S->H.info[MGD77_M77_SET].col[i].constant = (MGD77_txt_are_constant (text, S->H.n_records, Clength[k]));	/* Do we need to store 1 or n strings? */
-	}
+	MGD77_Prep_Header_cdf (F, S);
 
 	err = MGD77_Write_Header_Record_cdf (file, F, &S->H);	/* Upon successful return the netcdf file is in open mode */
 	if (err) return (err);
@@ -2356,61 +2400,63 @@ int MGD77_Write_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 	 * written as scalars.  The read routine will replicate these to columns.
 	 */
 	 
-	int i, k, n_bad = 0, Clength[3] = {8, 5, 6};
+	int i, set, entry, n_bad = 0;
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
-	double *values, *x, *xtmp = NULL, single_val;
+	double *values, *x, *xtmp = NULL, single_val, scale, offset;
 	char *text;
 	BOOLEAN transform, not_allocated = TRUE;
 	
-	count[0] = S->H.n_records;	count[1] = 0;
+	count[0] = S->H.n_records;
 	
-	for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Loop over all MGD77 number fields (except Rec-type)*/
-		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;	/* The 5 time-related columns are not written separately but as MGD77_TIME */
-		transform = (! (mgd77cdf[i].scale == 1.0 && mgd77cdf[i].offset == 0.0));	/* TRUE if we must transform before writing */
-		values = (double *)S->values[i];						/* Pointer to current double array */
-		if (S->H.info[MGD77_M77_SET].col[i].constant) {	/* Only write a single value (after possibly transforming) */
-			n_bad = MGD77_do_scale_offset_before_write (&single_val, values, 1, mgd77cdf[i].scale, mgd77cdf[i].offset, mgd77cdf[i].type);
-			MGD77_nc_status (nc_put_var1_double (F->nc_id, S->H.info[MGD77_M77_SET].col[i].var_id, start, &single_val));
-		}
-		else {	/* Must write the entire array */
-			if (transform) {	/* Must use temprary storage for scalings so that original values in S->values remain unchanged */
-				if (not_allocated) xtmp = (double *) GMT_memory (VNULL, count[0], sizeof (double), "MGD77_Write_Data_cdf");	/* Get mem the first time */
-				not_allocated = FALSE;	/* No longer the first time */
-				n_bad = MGD77_do_scale_offset_before_write (xtmp, values, S->H.n_records, mgd77cdf[i].scale, mgd77cdf[i].offset, mgd77cdf[i].type);	/* mod copy */
-				x = xtmp;	/* Points to modified copy */
+	for (set = entry = 0; set < MGD77_N_SETS; set++) {	/* For both sets */
+		for (i = 0; i < MGD77_SET_COLS; i++) {
+			if (!S->H.info[set].col[i].present) continue;	/* No such field, move on */
+			if (S->H.info[set].col[i].text) {			/* This variable is a text string */
+				count[1] = S->H.info[set].col[i].text;
+				text = (char *)S->values[entry];
+				if (S->H.info[set].col[i].constant)
+					MGD77_nc_status (nc_put_vara_schar (F->nc_id, S->H.info[set].col[i].var_id, start, &count[1], (signed char *)text));	/* Just write one text string */
+				else
+					MGD77_nc_status (nc_put_vara_schar (F->nc_id, S->H.info[set].col[i].var_id, start, count, (signed char *)text));
 			}
-			else {	/* Save as is */
-				x = values;	/* Points to original values */
-				n_bad = 0;
+			else {
+				if (!S->H.no_time && set == MGD77_M77_SET && !strcmp (S->H.info[set].col[i].abbrev, "time")) {	/* Special time treatment */
+					scale = 1.0;
+					offset = MGD77_Epoch_zero;
+				}
+				else {
+					scale = S->H.info[set].col[i].scale;
+					offset = S->H.info[set].col[i].offset;
+				}
+				transform = (! (scale == 1.0 && offset == 0.0));	/* TRUE if we must transform before writing */
+				values = (double *)S->values[entry];						/* Pointer to current double array */
+				if (S->H.info[set].col[i].constant) {	/* Only write a single value (after possibly transforming) */
+					n_bad = MGD77_do_scale_offset_before_write (&single_val, values, 1, scale, offset, S->H.info[set].col[i].type);
+					MGD77_nc_status (nc_put_var1_double (F->nc_id, S->H.info[set].col[i].var_id, start, &single_val));
+				}
+				else {	/* Must write the entire array */
+					if (transform) {	/* Must use temprary storage for scalings so that original values in S->values remain unchanged */
+						if (not_allocated) xtmp = (double *) GMT_memory (VNULL, count[0], sizeof (double), "MGD77_Write_Data_cdf");	/* Get mem the first time */
+						not_allocated = FALSE;	/* No longer the first time */
+						n_bad = MGD77_do_scale_offset_before_write (xtmp, values, S->H.n_records, scale, offset, S->H.info[set].col[i].type);	/* mod copy */
+						x = xtmp;	/* Points to modified copy */
+					}
+					else {	/* Save as is */
+						x = values;	/* Points to original values */
+						n_bad = 0;
+					}
+					MGD77_nc_status (nc_put_vara_double (F->nc_id, S->H.info[set].col[i].var_id, start, count, x));
+				}
+				if (n_bad) {
+					fprintf (stderr, "%s: %s [%s] had %d values outside valid range <%g,%g> for the chosen type (set to NaN = %g)\n",
+						GMT_program, F->NGDC_id, S->H.info[set].col[i].abbrev, n_bad, MGD77_Low_val[S->H.info[set].col[i].type],
+						MGD77_High_val[S->H.info[set].col[i].type], MGD77_NaN_val[S->H.info[set].col[i].type]);
+				}
 			}
-			MGD77_nc_status (nc_put_vara_double (F->nc_id, S->H.info[MGD77_M77_SET].col[i].var_id, start, count, x));
-		}
-		if (n_bad) {
-			fprintf (stderr, "%s: %s [%s] had %d values outside valid range <%g,%g> for the chosen type (set to NaN = %g)\n",
-				GMT_program, F->NGDC_id, S->H.info[MGD77_M77_SET].col[i].abbrev, n_bad, MGD77_Low_val[mgd77cdf[i].type],
-				MGD77_High_val[mgd77cdf[i].type], MGD77_NaN_val[mgd77cdf[i].type]);
+			entry++;
 		}
 	}
 	
-	/* Time: Store in Unix seconds since 1970 so we supply the required offset here directly */
-	if (!S->H.info[MGD77_M77_SET].col[MGD77_TIME].constant) {	/* Time is available */
-		values = (double *)S->values[MGD77_TIME];
-		if (not_allocated) xtmp = (double *) GMT_memory (VNULL, count[0], sizeof (double), "MGD77_Write_Data_cdf");	/* Get mem the first time */
-		not_allocated = FALSE;	/* No longer the first time for sure */
-		MGD77_do_scale_offset_before_write (xtmp, values, S->H.n_records, 1.0, MGD77_Epoch_zero, mgd77cdf[MGD77_TIME].type);
-		MGD77_nc_status (nc_put_vara_double (F->nc_id, S->H.info[MGD77_M77_SET].col[MGD77_TIME].var_id, start, count, xtmp));
-	}
-
-	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {	/* Loop over the 3 MGD77 text fields */
-		k = i - MGD77_N_NUMBER_FIELDS;
-		count[1] = Clength[k];
-		text = (char *)S->values[i];
-		if (S->H.info[MGD77_M77_SET].col[i].constant)
-			MGD77_nc_status (nc_put_vara_schar (F->nc_id, S->H.info[MGD77_M77_SET].col[i].var_id, start, &count[1], (signed char *)text));	/* Just write one text string */
-		else
-			MGD77_nc_status (nc_put_vara_schar (F->nc_id, S->H.info[MGD77_M77_SET].col[i].var_id, start, count, (signed char *)text));
-	}
-
 	if (xtmp) GMT_free ((void *)xtmp);
 	
 	return (MGD77_NO_ERROR);

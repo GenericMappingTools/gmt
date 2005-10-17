@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.42 2005-10-16 23:45:54 pwessel Exp $
+ *	$Id: mgd77.h,v 1.43 2005-10-17 08:16:28 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -254,6 +254,7 @@ struct MGD77_COLINFO {
 	char *comment;		/* Comment regarding this data column */
 	double scale;		/* factor to multiply data immediately after reading from file */
 	double offset;		/* offset to add after reading and multiplying by scale */
+	double limit[2];	/* Lower and upper limits on this data column */
 	int pos;		/* Position in output record [0 - n_columns-1]*/
 	nc_type type;		/* Type of representation of this data in the netCDF file (NC_SHORT, NC_INT, NC_BYTE, etc) */
 	char text;		/* length if this is a text string, else 0 */
@@ -411,6 +412,7 @@ EXTERN_MSC void MGD77_Set_Unit (char *dist, double *scale);									/* Convert a
 EXTERN_MSC void MGD77_nc_status (int status);											/* Checks for netCDF errors and aborts with error message */
 EXTERN_MSC void MGD77_Ignore_Format (int format);										/* Dissallow some formats for consideration */
 EXTERN_MSC struct MGD77_DATASET *MGD77_Create_Dataset ();									/* Create an empty data set structure */
+EXTERN_MSC void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
 
 /* Secondary user functions */
 
