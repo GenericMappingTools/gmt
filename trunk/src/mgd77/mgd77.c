@@ -1,18 +1,18 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.62 2005-10-18 00:21:35 pwessel Exp $
+ *	$Id: mgd77.c,v 1.63 2005-10-18 00:52:06 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
  *
  *  File:	mgd77.c
  *
- *  Functino library for programs that plan to read/write MGD77[+] files
+ *  Function library for programs that plan to read/write MGD77[+] files
  *
  *  Authors:    Paul Wessel, Primary Investigator, SOEST, U. of Hawaii
  *		Michael Chandler, Master's Candidate, SOEST, U. of Hawaii
  *		
  *  Version:	1.1
- *  Revised:	10-OCT-2005
+ *  Revised:	18-OCT-2005
  * 
  *-------------------------------------------------------------------------*/
 
