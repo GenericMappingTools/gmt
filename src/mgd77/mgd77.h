@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.43 2005-10-17 08:16:28 pwessel Exp $
+ *	$Id: mgd77.h,v 1.44 2005-10-18 00:21:35 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -252,8 +252,10 @@ struct MGD77_COLINFO {
 	char *name;		/* Longer, descriptive name for column */
 	char *units;		/* Units of the data type in this column */
 	char *comment;		/* Comment regarding this data column */
-	double scale;		/* factor to multiply data immediately after reading from file */
+	double factor;		/* factor to multiply data immediately after reading from file */
 	double offset;		/* offset to add after reading and multiplying by scale */
+	double corr_factor;	/* Extra correction factor/offset to follow scale/offset; */
+	double corr_offset;	/* this is used to correct wrong units, etc. */
 	double limit[2];	/* Lower and upper limits on this data column */
 	int pos;		/* Position in output record [0 - n_columns-1]*/
 	nc_type type;		/* Type of representation of this data in the netCDF file (NC_SHORT, NC_INT, NC_BYTE, etc) */
