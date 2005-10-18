@@ -2,109 +2,118 @@
 .SH NAME
 mgd77manage \- Manage extra columns in MGD77+ files
 .SH SYNOPSIS
-\fBmgd77manage\fP \fIleg-ids\fP [ \fP\-A\fP[\fB!\fP]\fBc|d|D|e|g|i|n|t|T\fB\fIfileinfo\fP ] 
+\fBmgd77manage\fP \fIleg-ids\fP [ \fB\-A\fP[\fB+\fP]\fBc|d|D|e|g|i|n|t|T\fB\fIfileinfo\fP ] 
 [ \fP\-C\fPabbrev/"name"/size/scale/offset/"comment"\fP ] [ \fB\-D\fP\fIabbrev1,abbrev2,...\fP ] 
-[ \fB\-E\fP\fIempty\fP ] [ \fB\-F\fP ] [ \fB\-Ne\fP|\fBk\fP|\fBm\fP|\fBn\fP[\fB+\fP|\fB-\fP] 
+[ \fB\-E\fP\fIempty\fP ] [ \fB\-Ne\fP|\fBk\fP|\fBm\fP|\fBn\fP[\fB+\fP|\fB-\fP] 
 [ \fB\-Q\fP[\fIvalue\fP] [ \fB\-V\fP ] [ \fB\-bi\fP\fIn\fP[\fBs|d\fP] ]
 .SH DESCRIPTION
-\fBmgd77manage\fP deals with maintaining the extra custom columns in MGD77+ files.
-You can either delete one or more columns, add a new column, or update an existing
-column with new data.  New data may come from a table (ASCII unless \fB\-b\fP) is
-used, or they may be obtained by sampling a grid (choose between GMT grid or a Sandwell/Smith
-Mercator *.img grid) along track.  The new data will be appended to the MGD77+ file
-in the form of an extra data column.  The data file will be modified; no new file will
-be created.  For the big issues, see discussion below.
+\fBmgd77manage\fP deals with maintaining extra custom columns in MGD77+ netCDF files.
+You can either delete one or more columns, add a new column, update an existing
+column with new data, or supply error correction information (*.e77 files).  New data may come
+from a table (ASCII unless \fB\-b\fP is used), or they may be obtained by sampling a grid
+(choose between GMT grid or a Sandwell/Smith Mercator *.img grid) along track.  The new data
+will be appended to the MGD77+ file in the form of an extra data column of specified type.
+The data file will be modified; no new file will be created.  For the big issues, see DISCUSSION
+below.
 .TP
 \fIleg-ids\fP
 Can be one or more MGD77[+] 8-character cruise identifiers. To give a list of names, use `cat cruises.lis`.
 The ".nc" extension will automatically be appended, if needed.  Cruise files will be looked for
-in the current directory and in all directories listed in \fB$MGD77_DIR\fP/MGD77_paths.txt.
+first in the current directory and second in all directories listed in the \fB$MGD77_DIR\fP/MGD77_paths.txt
+file.
 .SH OPTIONS
 No space between the option flag and the associated arguments
 .TP
 .B \-A
 Add a new data column.  If an existing column with the same abbreviation already exists in the file
-we will cowardly refuse to update the file. Specifying \fB\-A!\fP overcomes this reluctance.
+we will cowardly refuse to update the file. Specifying \fB\-A+\fP overcomes this reluctance (However,
+sometimes an existing column cannot be upgraded without first deleting it; if so you will be warned).
 Select a column source among the following choices:
 .br
-\fBc\fP Append filename of a single column table with same number of rows as the mgd77file.  Use - if
+\fBc\fP Append filename of a single column table with same number of rows as the MGD77+ file.  Use - if
 we are to read from stdin instead.
 .br
 \fBd\fP  Append filename of a double column table with first column holding distances in km along track,
 with data values in second column.  Use - if we are to read from stdin instead.  Records with matching
 distances in the MGD77 file will be assigned the new values; at other distances we set them to NaN.
 Alternatively, give upper case \fBD\fP instead and we will interpolate the column at all records.
+See \fB\-N\fP for chosing distance units and how distances are created.
 .br
-\fBe\fP Read the e77 error/correction log from \fBmgd77sniffer\fP and add the new column \fBflag\fP
-which will hold bitflags (0 = OK, 1 = BAD) for each data field in the standard MGD77 data set.  Any
-correction terms found (such as needing to scale a field by 0.1 or 10 because the source agency made
-a mistake) will be written as attributes to the netCDF mgd77+ file and applied when the data is read.
-\fBg\fP Sample a GMT geographic (lon,lat) grid along the track given by the MGD77 file.  Append
+\fBe\fP Read the e77 error/correction log from \fBmgd77sniffer\fP and add or update the new column
+\fBflag\fP which will hold bitflags (0 = GOOD, 1 = BAD) for each data field in the standard MGD77 data
+set.  Any correction terms found (such as needing to scale a field by 0.1 or 10 because the source
+agency made a mistake) will be written as attributes to the netCDF MGD77+ file and applied when the
+data is read.
+\fBg\fP Sample a GMT geographic (lon,lat) grid along the track given by the MGD77+ file.  Append
 name of a GMT grid file.
 .br
-\fBi\fP Sample a Sandwell/Smith Mercator *.img grid along the track given by the MGD77 file.  Append
-grid spacing in minutes (1 or 2), the data scale (typically 1 or 10), the IMG file mode (0-3; see
-\fBimg2mercgrd\fP for a description of modes), and finally the grid filename.
+\fBi\fP Sample a Sandwell/Smith Mercator *.img grid along the track given by the MGD77+ file.  Append
+grid spacing in minutes (1 or 2), the data scale (typically 1 or 10), the IMG file mode (0-3), and
+finally the grid filename.  The modes stand for the following: (0) Obsolete img files wtih no constraint
+code, returns data, (1) New img file with constraints coded, return data at all points, (2) new img file
+with constraints coded, return data only at constrained points and NaN elsewhere, and (3) new img file
+with constraints coded, return 1 at constraints and 0 elsewhere.
 .br
 \fBn\fP Append filename of a double column table with first column holding the record number (0 to nrows - 1),
 with data values in second column.  Use - if we are to read from stdin instead.  Records with matching
-record numbers in the MGD77 file will be assigned the new values; at other times we set them to NaN.
+record numbers in the MGD77+ file will be assigned the new values; at other records we set them to NaN.
 .br
 \fBt\fP Append filename of a double column table with first column holding absolute times along track,
 with data values in second column.  Use - if we are to read from stdin instead.  Records with matching
-times in the mgd77 file will be assigned the new values; at other times we set them to NaN.
+times in the MGD77+ file will be assigned the new values; at other times we set them to NaN.
 Alternatively, give upper case \fBT\fP instead and we will interpolate the column at all records.
 .TP
 .B \-C
 In addition to file information we must specify several attributes of the extra column.
 Specify a short (16 char or less) abbreviation for the selected data, its more descriptive name,
-the data unit, the data type (\fBb\fPyte, \fBs\fPhort, \fBi\fPnt, or \fBt\fPext), any scale and offset
-applied before writing, and a general comment (< 128 characters) regarding what this data represents.
-Note: If text data type is selected then the terms "values" in the \fB\-A\fP discussion refers
-to your text data.  Also, the discussion on interpolation does not apply and the NaN value becomes
-a "no string" value (see \fB\-N\fP for what this is).
+the data unit, the data type (\fBb\fPyte, \fBs\fPhort, \fBf\fPloat, \fBi\fPnt, \fBd\fPouble, or
+\fBt\fPext), any scale and offset applied before writing, and a general comment (< 128 characters)
+regarding what this data represent.  Note: If text data type is selected then the terms "values" in
+the \fB\-A\fP discussion refers to your text data.  Also, the discussion on interpolation does not
+apply and the NaN value becomes a "no string" value (see \fB\-E\fP for what this is).
 .TP
 .B \-D
-Give a comma-separated list of column abbrebiations that you want to delete from the mgd77 files.
-Do NOT use this option to remove columns that you will replace with new data (use \fB\A!\fP instead).
+Give a comma-separated list of column abbreviations that you want to delete from the MGD77+ files.
+Do NOT use this option to remove columns that you will replace with new data (use \fB\A+\fP instead).
 Because we cannot remove variables from netCDF files we must create a new file without the columns
 to be deleted.  Once the file is successfully created we temporarily rename the old file, change
 the new filename to the old filename, and finally remove the old, renamed file.
-In some cases, however, we must do it that way (and \fBmgd77manage\fP will tell you about it).
 .TP
 .B \-E
-Give a single character that will be repeated to fill empty string values [9]
+Give a single character that will be repeated to fill empty string values, e.g., '9' will yield
+a string like "99999..." [9].
 .TP
 .B \-F
 Force creation of output even if an older file is present in the current directory [Default refuses
 to overwrite existing files].
 .TP
 .B \-N
-Specify how distances will be calculated by appending \fBe\fP (meter), \fBk\fP (km), \fBm\fP (miles),
+Specify the distance unit by appending \fBe\fP (meter), \fBk\fP (km), \fBm\fP (miles),
 or \fBn\fP (nautical miles).  Great circle distances will be used.  Append \fB+\fP or \fB-\fP to
 instead select geodesic (using current GMT ellipsoid) or flat Earth distances [Default is \fB\-Nk\fP].
 .TP
 .B \-Q
-Quick mode, use bilinear rather than bicubic interpolation.  optionally, append \fIvalue\fP in the
-0 < \fIvalue\fP <= 1 range.  This parameter controls how close to nodes with NaN values the
-interpolation will go.  E.g., a \fIvalue\fP of 0.5 will interpolate about 1/2-way from a non-NaN to a
-NaN node, whereas 0.1 will go about 90% of the way, etc. [Default is 1, which means none of the four nearby
-nodes may be NaN].  Requires \fB\-Ag|i\fP.  Note: If \fB\-Q\fP0 is given we will not interpolate but
-base the output on the nearest grid node.
+Quick mode, use bilinear rather than bicubic interpolation.  Requires \fB\-Ag\fP|\fBi\fP.  Optionally,
+append \fIvalue\fP in the 0 < \fIvalue\fP <= 1 range.  This parameter controls how close to nodes with
+NaN values the interpolation will go.  E.g., a \fIvalue\fP of 0.5 will interpolate about 1/2-way from
+a non-NaN to a NaN node, whereas 0.1 will go about 90% of the way, etc. [Default is 1, which means none
+of the four nearby nodes may be NaN].  Note: If \fB\-Q\fP0 is given we will not interpolate but base
+the output on the nearest grid node.
 #include "explain_-V.txt"
 #include "explain_-i_binary.txt"
+Only suitable for numerical data columns.
 .SH EXAMPLES
 To append Geosat/ERS-1 gravity as an extra data columns in the cruises 01010047.nc and 01010008.nc, try
 .br
 .sp
-\fBmgd77manage\fP 01010047 01010008 \fB\-Ai\fPgrav.11.2.img/2/10 \fB\-C\fPsatgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version 11.2" \fB\-F\fP
+\fBmgd77manage\fP 01010047 01010008 \fB\-Ai\fP2/10/1/grav.11.2.img \fB\-C\fPsatgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version 11.2" \fB\-V\fP
 .br
 .sp
 To append a filtered version of magnetics as an extra data columns for the cruise 01010047.nc, and
-interpolate the filtered data at the times given in the MGD77 file, try
+interpolate the filtered data at the times given in the MGD77+ file, try
 .br
 .sp
-\fBmgd77manage\fP 01010047 \fB\-AT\fPmymag.tm \fB\-C\fPfiltmag/"Intermediate-wavelength magnetic residuals"/"nTesla"/s/1/0/"Useful for looking for isochrons" \fB\-F\fP
+\fBmgd77manage\fP 01010047 \fB\-AT\fPmymag.tm \fB\-C\fPfiltmag/"Intermediate-wavelength magnetic residuals"/"nTesla"/s/1/0/"Useful for looking for isochrons" \fB\-V\fP
 .br
 .sp
 To delete the existing extra columns satfaa, coastdist, and satvgg from all MGD77 files, try
@@ -114,11 +123,11 @@ To delete the existing extra columns satfaa, coastdist, and satvgg from all MGD7
 .SH DISCUSSION
 \fB1. Preamble\fP
 .br
-The mgd77 supplement is an attempt to (1) improve on the limited functionality of the mgg
-supplement, (2) incorporate some of the ideas from Scripps' gmt+ supplement, and (3) add
-new capabilities for managing marine geophysical trackline data stored in an architecture-
-independent COARDS-compliant netCDF file format.  Here are some of the underlying ideas and
-steps you need to take to maintain your files.
+The mgd77 supplement is an attempt to (1) improve on the limited functionality of the
+existing mgg supplement, (2) incorporate some of the ideas from Scripps' gmt+ supplement, and
+(3) add new capabilities for managing marine geophysical trackline data stored in an
+architecture-independent COARDS-compliant netCDF file format.  Here are some of the
+underlying ideas and steps you need to take to maintain your files.
 .br
 .sp
 \fB2. Introduction\fP
@@ -127,66 +136,69 @@ Our starting point is the MGD77 ASCII data files distributed from NGDC on CD-ROM
 and via FTP.  Using Geodas to install the files locally we choose the "Carter corrected depth"
 option which will fill in the depth column using the two-way traveltimes and the Carter tables
 if twt is present.  This step yields ~5000 individual cruise files.  Place these in one or
-more directories of your choice, list the directories (one per line) in the file mgd77_paths.txt,
-and place this file in the directory pointed to by $MGD77_HOME; if not set this variable defaults
-to $GMTHOME/share/mgd77.
+more sub-directories of your choice, list these sub-directories (one per line) in the file
+mgd77_paths.txt, and place that file in the directory pointed to by $MGD77_HOME; if not set
+this variable defaults to $GMTHOME/share/mgd77.
 .br
 .sp
 \fB3. Conversion\fP
 .br
-Convert the ASCII MGD77 files to the new netCDF format using \fBmgd77convert\fP.  Typically,
-you will make a list of all the cruises to be converted (with or without extension), and you
-then run
+Convert the ASCII MGD77 files to the new netCDF MGD77+ format using \fBmgd77convert\fP.
+Typically, you will make a list of all the cruises to be converted (with or without
+extension), and you then run
 .br
 .sp
-\fBmgd77convert \-Fa \-Tc \-Vl+\fP `cat cruises.lis`
+	\fBmgd77convert \-Fa \-Tc \-Vl+\fP `cat cruises.lis`
 .br
 .sp
 The verbose setting will ensure that any problems found in the file will be reported.
-The new *.nc files may be placed in a separate subdirectory (one or more) and these
+The new *.nc files may also be placed in one or more separate sub-directories and these
 should also be listed in the mgd77_paths.txt file.  We suggest you place the directories
 with *.nc files ahead of the *.mgd77 directories.  When you later want to limit a search
-to files of a certain extension you should use the \fB\-\fP option.
+to files of a certain extension you should use the \fB\-I\fP option.
 .br
 .sp
-\fB4. Enhancement\fP
+\fB4. Adding new columns\fP
 .br
 \fBmgd77manage\fP will allow you to add additional data columns to your *.nc files.  These
-can be anything but most likely are values sampled along the track from a supplied grid
-or an existing column that have been filtered or manipulated for a particular purpose.
-The format supports up to 32 such extra columns.  See this man page for how to do this.
-You may later decide to remove some of these columns or update the data associated with
-a certain column.  Data extraction tools such as \fBmgd77list\fP can be used to extract
-a mix of standard MGD77 columns (navigation, time, and the usual geophysical observations)
-and your custom columns.
+can be anything, including text strings, but most likely are numerical values sampled along
+the track from a supplied grid or an existing column that have been filtered or manipulated
+for a particular purpose.  The format supports up to 32 such extra columns.  See this man
+page for how to add columns.  You may later decide to remove some of these columns or update
+the data associated with a certain column.  Data extraction tools such as \fBmgd77list\fP
+can be used to extract a mix of standard MGD77 columns (navigation, time, and the usual
+geophysical observations) and your custom columns.
 .br
 .sp
 \fB5. Error sources\fP
+.br
 Before we discuss how to correct errors we will first list the different classes of errors
 associated with MGD77 data: (1) Header record errors occur when some of the information fields
-in the header do not comply with the MGD77 specification.  \fBmgd77convert\fB will list these
-errors when the extended verbose setting is selected.  These errors typically do not affect
-the data and are instead errors in the meta data. (2) Fixed systematic errors occur when a
-particular data column, despite the MGD77 specification, has been encoded incorrectly.  This
-usually means the data will be off by a constant factor such as 10 or 0.1, or in some cases
-1.8288 which converts fathoms to meters.  (3) Flexible systematic errors occur when the
-instrument that recorded the data or the processing that followed introduces signals that
-appear to be functions of time along track, latitude, heading, or some other combination
-of terms that have a physical explanation.  These terms may sometimes be resolved by data
-analysis techniques such as along-track and across-track investigations, and will result
-in correction terms that when applied to the data will remove these unwanted signals in
-an optimal way.  Because the correction terms may change when new data are considered in
-their determination, such corrections are consider emphemeral. (4) Individual data points
-or sequences of data may violate rules such as being outside of possible ranges or in other
-ways violate sanity.  Furthermore, sequences of points that may be within valid ranges may
-give rise to data gradients that are unreasonable.  The status of every point can therefore
-be estimated and gives rise to bitflags GOOD or BAD.  Our policy is that error sources
-1, 2, and 4 will be corrected by suppliying the information as meta-date in the relevant
-*.nc files, whereas the corrections for error source 3 (because they will constantly
-be improved) will be maintained in a separate list of corrections.
+in the header do not comply with the MGD77 specification or required information is missing.
+\fBmgd77convert\fP will list these errors when the extended verbose setting is selected.
+These errors typically do not affect the data and are instead errors in the \fImeta-data\fP
+(2) Fixed systematic errors occur when a particular data column, despite the MGD77
+specification, has been encoded incorrectly.  This usually means the data will be off by
+a constant factor such as 10 or 0.1, or in some cases even 1.8288 which converts fathoms to
+meters.  (3) Unknown systematic errors occur when the instrument that recorded the data or
+the processing that followed introduced signals that appear to be systematic functions of
+time along track, latitude, heading, or some other combination of terms that have a physical
+or logical explanation.  These terms may sometimes be resolved by data analysis techniques
+such as along-track and across-track investigations, and will result in correction terms
+that when applied to the data will remove these unwanted signals in an optimal way.  Because
+these correction terms may change when new data are considered in their determination, such
+corrections are consider emphemeral. (4) Individual data points or sequences of data may
+violate rules such as being outside of possible ranges or in other ways violate sanity.
+Furthermore, sequences of points that may be within valid ranges may give rise to data
+gradients that are unreasonable.  The status of every point can therefore be determined and
+this gives rise to bitflags GOOD or BAD.  Our policy is that error sources 1, 2, and 4 will
+be corrected by suppliying the information as meta-data in the relevant *.nc files, whereas
+the corrections for error source 3 (because they will constantly be improved) will be
+maintained in a separate list of corrections.
 .br
 .sp
 \fB6. Finding errors\fP
+.br
 The \fBmgd77sniffer\fP is a tool that does a thorough along-track sanity check of the
 original MGD77 ASCII files and produces a corresponding *.e77 error log.  All sorts of
 problems found are encoded in the error log, and recommended fixed correction terms
@@ -195,17 +207,18 @@ valid (we only want to correct truly obvious unit errors), edit these error logs
 modify such correction terms and activate them by changing the relevant code key.
 \fBmgd77manage\fP can ingest these error logs and (1) correct bad header records given
 the suggestions in the log, (2) insert fixed correction terms to be used when reading
-these columns, and (2) insert the bit-flags found.  Rerun this step if you later find
+certain columns, and (3) insert the bit-flags found.  Rerun this step if you later find
 other problems as all flags will be recreated.
 .br
 .sp
 \fB7. Error corrections\fP
-The mgd77 extraction program \fBmgd77list\fP therefore allows for corrections to be made
+.br
+The extraction program \fBmgd77list\fP allows for corrections to be applied on-the-fly
 when data are requested.  First, data with BAD bitflags are suppressed.  Second, data with
-fixed systematic correction terms are corrected.  Third, data with ephemeral correction
-terms will have that correction applied is a correction table is supplied.  All of these
-steps requires the presence of the relevant meta-data and all can be overruled by the user.
-In addition, users may add their own bitflags as separate data columns and use
+fixed systematic correction terms are corrected accordingly.  Third, data with ephemeral
+correction terms will have those corrections applied (if a correction table is supplied).
+All of these steps requires the presence of the relevant meta-data and all can be overruled
+by the user. In addition, users may add their own bitflags as separate data columns and use
 \fBmgd77list\fP's logical tests to further dictate which data are suppressed from output.
 .SH "SEE ALSO"
 .IR mgd77convert (GMTMANSECTION),
