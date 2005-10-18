@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.44 2005-10-18 00:21:35 pwessel Exp $
+ *	$Id: mgd77.h,v 1.45 2005-10-18 00:52:06 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -12,7 +12,7 @@
  *		Michael Chandler, Master's Candidate, SOEST, U. of Hawaii
  *		
  *  Version:	1.1
- *  Revised:	10-OCT-2005
+ *  Revised:	18-OCT-2005
  * 
  *-------------------------------------------------------------------------*/
 
