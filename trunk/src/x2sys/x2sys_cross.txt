@@ -5,8 +5,8 @@
 \fBx2sys_cross\fP \fIfile(s)\fP OR \fB\-L\fP\fIflist\fP [ \fB\-A\fP\fIgap\fP ] 
 [ \fB\-Cc|f|g\fP ] [ \fB\-D\fP\fIdeffile\fP ] [ \fB\-F\fP\fIflags\fP ] 
 [ \fB\-Gd|g\fP ] [ \fB\-Il|a|c\fP ] [ \fB\-J\fP\fIparams\fP ] [\fB\-K\fP\fIcombi.lis\fP] [ \fB\-M\fP[\fIflag\fP] 
-[ \fB\-N\fP\fIwindow\fP ] [ \fB\-O\fP ] [ \fB\-Qe|i\fP ] [ \fB\-Sl|u\fP\fIspeed\fP ] 
-[ \fB\-T\fP\fITAG\fP ] [ \fB\-W\fP\fIsize\fP ] [ \fB\-V\fP ] 
+[ \fB\-Nd|s\fP\fIunit\fP ] [ \fB\-O\fP ] [ \fB\-Qe|i\fP ] [ \fB\-Sl|u\fP\fIspeed\fP ] 
+[ \fB\-T\fP\fITAG\fP ] [ \fB\-Wt\fP|\fBd\fP|\fBn\fP\fIsize\fP ] [ \fB\-V\fP ] 
 [ \fB\-2\fP ] [ \fB\-bo\fP[\fBs\fP] ]
 .SH DESCRIPTION
 \fBx2sys_cross\fP is used to determine all intersections between or within
@@ -35,8 +35,8 @@ Select procedure for along-track distance calculation:
 Give the definition file for this data format [x2sys].
 .TP
 .B \-F
-Sets which columns to use.  Give a comma-separated list of column names [Default
-is all columns].
+Sets which columns to use.  Give a comma-separated list of column names;
+this list must include x,y or lon,lat [Default is all columns].
 .TP
 .B \-G
 Selects geographical coordinates.  Append \fBd\fP for discontinuity at the
@@ -61,7 +61,9 @@ Suitable option for passing old \fBx_setup\fP output.
 #include "explain_-M.txt"
 .TP
 .B \-N
-Maximum number of points to use in the interpolation [6].
+Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
+\fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles and miles/hr), or
+\fBn\fP (nautical miles and knots).  [Default is \fB\-Ndk \-Nse\fP (km and m/s)].
 .TP
 .B \-O
 Output results using the old XOVER format [Default is X2SYS format].
@@ -85,8 +87,10 @@ Sets the data set \fITAG\fP which among other things sets the definition file.
 #include "explain_-V.txt"
 .TP
 .B \-W
-Sets maximum time gap (in user units) allowed between points on either
-side of a crossover [Default is Infinity].
+Give \fBt\fP, \fBd\fP, or \fBn\fP and append the corresponding
+maximum time gap [Infinity], or distance gap [Infinity] (both in user units) allowed between
+the two points immediately on either side of a crossover or the maximum number of points to
+use in the interpolation [6].
 .TP
 .B \-2
 Report the values of each track at the crossover [Default is the crossover value and the mean value].
@@ -101,10 +105,10 @@ written out are lat, lon, time along track #1, time along track #2,
 x_gravity, x_magnetics, x_bathymetry, average gravity, average magnetics,
 average bathymetry, heading along track #1, and heading along track #2. If
 the default format is chosen then the header record starts with "> ", and
-the output format for crossovers are first 8 columns that contain
-x, y, time along track #1, time along track #2, distance along track #1,
-distance along track #2, heading along track #1, and heading along track #2,
-and then pairs of (COE, average value) for each data type.  Sign convention:
+the output format for crossovers are first 10 columns that contain
+x, y, time along track #1 and track #2, distance along track #1 and track #2,
+heading along track #1 and track #2, velocity along track #1 and #2, and
+then pairs of (COE, average value) for each data type.  Sign convention:
 If lega and legb are passed on the command line, then the COE value is Value
 (lega) - Value (legb).  It is recommended that the Akima spline is used
 instead of the natural cubic spline, since it is less sensitive to outliers
