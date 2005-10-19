@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.92 2005-10-16 09:17:52 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.93 2005-10-19 12:45:37 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8547,6 +8547,27 @@ void GMT_ECEF_inverse (double in[], double out[])
 	out[1] *= R2D;
 	N = GMT_datum.from.a / sqrt (1.0 - GMT_datum.from.e_squared * sin_lat * sin_lat);
 	out[2] = (p / cos_lat) - N;
+}
+
+double GMT_az_backaz_cartesian (double lonE, double latE, double lonS, double latS, BOOLEAN baz)
+{
+	/* Calculate azimuths or backazimuths.  Cartesian case.
+	 * First point is considered "Event" and second "Station". */
+
+	double az, dx, dy, dlon;
+
+	latE *= D2R;	lonE *= D2R;
+        latS *= D2R;	lonS *= D2R;
+
+	if (baz) {	/* exchange point one and two */
+		d_swap (lonS, lonE);
+		d_swap (latS, latE);
+	}
+	dx = lonE - lonS;
+	dy = latE - latS;
+	az = (dx == 0.0 && dy == 0.0) ? GMT_d_NaN : 90.0 - R2D * atan2 (dy, dx);
+	if (az < 0.0) az += 360.0;
+	return (az);
 }
 
 double GMT_az_backaz_flatearth (double lonE, double latE, double lonS, double latS, BOOLEAN baz)

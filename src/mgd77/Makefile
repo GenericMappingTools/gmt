@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.14 2005-10-14 06:12:18 pwessel Exp $
+#	$Id: Makefile,v 1.15 2005-10-19 12:45:37 pwessel Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -90,7 +90,7 @@ clean:
 		done
 
 spotless:	clean
-		rm -f *.a
+		rm -f *.a mgd77_functions.h
 
 #-------------------------------------------------------------------------------
 #	library

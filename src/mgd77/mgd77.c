@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.67 2005-10-19 08:56:13 pwessel Exp $
+ *	$Id: mgd77.c,v 1.68 2005-10-19 12:45:37 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -86,7 +86,7 @@ BOOLEAN MGD77_format_allowed[MGD77_N_FORMATS] = {TRUE, TRUE, TRUE};	/* By defaul
 double MGD77_NaN_val[7], MGD77_Low_val[7], MGD77_High_val[7];
 double MGD77_Epoch_zero;
 char *MGD77_suffix[MGD77_N_FORMATS] = {"mgd77", "nc", "dat"};
-
+int MGD77_pos[MGD77_N_DATA_EXTENDED];	/* Used to translate the positions 0-27 into MGD77_TIME, MGD77_LONGITUDE, etc */
 struct MGD77_LIMITS {
 	double limit[2];	/* Upper and lower range */
 } mgd77_range[MGD77_N_DATA_EXTENDED];
@@ -354,8 +354,8 @@ int MGD77_Read_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, dou
 	switch (F->format) {
 		case MGD77_FORMAT_M77:		/* Will read a single MGD77 record */
 			error = MGD77_Read_Data_Record_m77 (F, &MGD77Record);
-			for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) dvals[i] = MGD77Record.number[i];
-			dvals[MGD77_TIME] = MGD77Record.time;
+			dvals[0] = MGD77Record.time;
+			for (i = 1; i < MGD77_N_NUMBER_FIELDS; i++) dvals[i] = MGD77Record.number[MGD77_pos[i]];
 			for (i = MGD77_N_NUMBER_FIELDS, k = 0; i < MGD77_N_DATA_FIELDS; i++, k++) strcpy (tvals[k], MGD77Record.word[k]);
 			break;
 		case MGD77_FORMAT_CDF:		/* Will read a single MGD77+ netCDF record */
@@ -363,7 +363,8 @@ int MGD77_Read_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, dou
 			break;
 		case MGD77_FORMAT_TBL:		/* Will read a single ascii table record */
 			error = MGD77_Read_Data_Record_tbl (F, &MGD77Record);
-			for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) dvals[i] = MGD77Record.number[i];
+			dvals[0] = MGD77Record.time;
+			for (i = 1; i < MGD77_N_NUMBER_FIELDS; i++) dvals[i] = MGD77Record.number[MGD77_pos[i]];
 			dvals[MGD77_TIME] = MGD77Record.time;
 			for (i = MGD77_N_NUMBER_FIELDS, k = 0; i < MGD77_N_DATA_FIELDS; i++, k++) strcpy (tvals[k], MGD77Record.word[k]);
 			break;
@@ -382,8 +383,8 @@ int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, do
 
 	switch (F->format) {
 		case MGD77_FORMAT_M77:		/* Will write a single MGD77 record; first fill out MGD77_RECORD structure */
-			for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) MGD77Record.number[i] = dvals[i];
-			MGD77Record.time = dvals[MGD77_TIME];
+			MGD77Record.time = dvals[0];
+			for (i = 1; i < MGD77_N_NUMBER_FIELDS; i++) MGD77Record.number[MGD77_pos[i]] = dvals[i];
 			for (i = MGD77_N_NUMBER_FIELDS, k = 0; i < MGD77_N_DATA_FIELDS; i++, k++) strcpy (MGD77Record.word[k], tvals[k]);
 			error = MGD77_Write_Data_Record_m77 (F, &MGD77Record);
 			break;
@@ -391,8 +392,8 @@ int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, do
 			error = MGD77_Write_Data_Record_cdf (F, H, dvals, tvals);
 			break;
 		case MGD77_FORMAT_TBL:		/* Will write a single ascii table record; first fill out MGD77_RECORD structure */
-			for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) MGD77Record.number[i] = dvals[i];
-			MGD77Record.time = dvals[MGD77_TIME];
+			MGD77Record.time = dvals[0];
+			for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) MGD77Record.number[MGD77_pos[i]] = dvals[i];
 			for (i = MGD77_N_NUMBER_FIELDS, k = 0; i < MGD77_N_DATA_FIELDS; i++, k++) strcpy (MGD77Record.word[k], tvals[k]);
 			error = MGD77_Write_Data_Record_tbl (F, &MGD77Record);
 			break;
@@ -1498,7 +1499,7 @@ void MGD77_Ignore_Format (int format)
 void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks)
 {
 	/* Initialize MGD77 control system */
-	int i, t_index;
+	int i, k, t_index;
 	struct passwd *pw;
 
 	memset ((void *)F, 0, sizeof (struct MGD77_CONTROL));		/* Initialize structure */
@@ -1530,6 +1531,16 @@ void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks)
 	MGD77_High_val[NC_INT] = INT_MAX;
 	MGD77_High_val[NC_FLOAT] = FLT_MAX;
 	MGD77_High_val[NC_DOUBLE] = DBL_MAX;
+	MGD77_pos[0] = MGD77_TIME;
+	for (i = 0, k = 1; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Do all the numerical fields */
+		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;	/* Skip these as time + tz represent the same information */
+		MGD77_pos[k] = i;
+		k++;
+	}
+	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++, k++) {	/* Do the three text fields */
+		MGD77_pos[k] = i;
+	}
+
 }
 
 void MGD77_Init_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
