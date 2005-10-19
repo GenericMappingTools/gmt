@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.43 2005-10-16 09:17:53 pwessel Exp $
+ *	$Id: x2sys.c,v 1.44 2005-10-19 08:10:09 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -337,6 +337,12 @@ struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G)
 		X->read_file = (PFI) x2sys_read_gmtfile;
 		X->geographic = TRUE;
 		X->geodetic = 0;
+	}
+	else if (!strcmp (fname, "mgd77+")) {
+		X->read_file = (PFI) x2sys_read_ncfile;
+		X->geographic = TRUE;
+		X->geodetic = 0;
+		MGD77_Init (&M, TRUE);			/* Initialize MGD77 Machinery */
 	}
 	else if (!strcmp (fname, "mgd77")) {
 		X->read_file = (PFI) x2sys_read_mgd77file;
@@ -688,6 +694,52 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 
 	p->ms_rec = NULL;
 	p->n_segments = 0;
+
+	*data = z;
+
+	return (p->n_rows);
+}
+
+int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G)
+{
+	int i;
+	double **z;
+	struct MGD77_DATASET *S;
+	struct MGD77_CONTROL M;
+
+	MGD77_Init (&M, TRUE);		/* Initialize MGD77 Machinery */
+	M.format  = 1;			/* Set input file's format to netCDF */
+	for (i = 0; i < MGD77_N_FORMATS; i++) MGD77_format_allowed[i] = (M.format == i) ? TRUE : FALSE;	/* Only allow the specified input format */
+
+	for (i = 0; i < s->n_fields; i++) strcpy (M.desired_column[i], s->info[i].name);	/* Set all the required fields */
+	M.n_out_columns = s->n_fields;
+	
+	S = MGD77_Create_Dataset ();	/* Get data structure w/header */
+
+	if (MGD77_Open_File (fname, &M, 0)) {
+   		fprintf (stderr, "x2sys_read_nc77file : Cannot find file %s\n", fname);
+     		return (-1);
+  	}
+	if (MGD77_Read_Header_Record (fname, &M, &S->H)) {	/* Returns info on all columns */
+		fprintf (stderr, "x2sys_read_nc77file: Error reading header sequence for cruise %s\n", fname);
+     		return (-1);
+	}
+
+	if (MGD77_Read_Data (fname, &M, S)) {	/* Only gets the specified columns and barfs otherwise */
+		fprintf (stderr, "x2sys_read_nc77file: Error reading data set for cruise %s\n", fname);
+     		return (-1);
+	}
+	MGD77_Close_File (&M);
+
+	z = (double **) GMT_memory (VNULL, (size_t)M.n_out_columns, sizeof (double *), "x2sys_read_nc77file");
+	for (i = 0; i < M.n_out_columns; i++) z[i] = (double *) S->values[i];
+
+	strncpy (p->name, fname, 32);
+	p->n_rows = S->H.n_records;
+	p->ms_rec = NULL;
+	p->n_segments = 0;
+	for (i = 0; i < MGD77_N_SETS; i++) if (S->flags[i]) GMT_free ((void *)S->flags[i]);
+	GMT_free ((void *)S->H.mgd77);
 
 	*data = z;
 

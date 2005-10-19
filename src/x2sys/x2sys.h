@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.18 2005-10-16 09:17:53 pwessel Exp $
+ *	$Id: x2sys.h,v 1.19 2005-10-19 08:10:09 pwessel Exp $
  *
- *      Copyright (c) 1999-2004 by P. Wessel
+ *      Copyright (c) 1999-2005 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -19,8 +19,9 @@
  * used in the XSYSTEM programs
  *
  * Author:	Paul Wessel
- * Date:	18-MAY-2004
+ * Date:	18-OCT-2005
  * Version:	1.1, based on the spirit of the old xsystem code
+ *		1.2 Includes support for MGD77+
  *
  */
 
@@ -225,6 +226,7 @@ EXTERN_MSC int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, 
 EXTERN_MSC int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
 EXTERN_MSC int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
 EXTERN_MSC int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
+EXTERN_MSC int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
 EXTERN_MSC int x2sys_xover_output (FILE *fp, int n, double out[]);
 EXTERN_MSC int x2sys_n_data_cols (struct X2SYS_INFO *s);
 EXTERN_MSC int x2sys_read_list (char *file, char ***list);
