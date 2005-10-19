@@ -3,7 +3,7 @@
 mgd77manage \- Manage extra columns in MGD77+ files
 .SH SYNOPSIS
 \fBmgd77manage\fP \fIleg-ids\fP [ \fB\-A\fP[\fB+\fP]\fBc|d|D|e|g|i|n|t|T\fP\fIfileinfo\fP ] 
-[ \fP\-C\fPabbrev/name/unit/type/scale/offset/comment\fP ] [ \fB\-D\fP\fIabbrev1,abbrev2,...\fP ] 
+[ \fB\-C\fP\fIabbrev/name/unit/type/scale/offset/comment\fP ] [ \fB\-D\fP\fIabbrev1,abbrev2,...\fP ] 
 [ \fB\-E\fP\fIempty\fP ] [ \fB\-Ne\fP|\fBk\fP|\fBm\fP|\fBn\fP[\fB+\fP|\fB-\fP] 
 [ \fB\-Q\fP[\fIvalue\fP] [ \fB\-V\fP ] [ \fB\-bi\fP\fIn\fP[\fBs|d\fP] ]
 .SH DESCRIPTION
