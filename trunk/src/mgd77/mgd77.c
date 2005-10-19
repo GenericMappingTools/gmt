@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.66 2005-10-19 08:06:49 pwessel Exp $
+ *	$Id: mgd77.c,v 1.67 2005-10-19 08:56:13 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -356,7 +356,7 @@ int MGD77_Read_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, dou
 			error = MGD77_Read_Data_Record_m77 (F, &MGD77Record);
 			for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) dvals[i] = MGD77Record.number[i];
 			dvals[MGD77_TIME] = MGD77Record.time;
-			for (i = MGD77_N_NUMBER_FIELDS, k = 0; i < MGD77_N_DATA_FIELDS; i++, k++) strcpy (tvals[i], MGD77Record.word[k]);
+			for (i = MGD77_N_NUMBER_FIELDS, k = 0; i < MGD77_N_DATA_FIELDS; i++, k++) strcpy (tvals[k], MGD77Record.word[k]);
 			break;
 		case MGD77_FORMAT_CDF:		/* Will read a single MGD77+ netCDF record */
 			error = MGD77_Read_Data_Record_cdf (F, H, dvals, tvals);
@@ -365,7 +365,7 @@ int MGD77_Read_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, dou
 			error = MGD77_Read_Data_Record_tbl (F, &MGD77Record);
 			for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) dvals[i] = MGD77Record.number[i];
 			dvals[MGD77_TIME] = MGD77Record.time;
-			for (i = MGD77_N_NUMBER_FIELDS, k = 0; i < MGD77_N_DATA_FIELDS; i++, k++) strcpy (tvals[i], MGD77Record.word[k]);
+			for (i = MGD77_N_NUMBER_FIELDS, k = 0; i < MGD77_N_DATA_FIELDS; i++, k++) strcpy (tvals[k], MGD77Record.word[k]);
 			break;
 		default:
 			error = MGD77_UNKNOWN_FORMAT;
@@ -384,7 +384,7 @@ int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, do
 		case MGD77_FORMAT_M77:		/* Will write a single MGD77 record; first fill out MGD77_RECORD structure */
 			for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) MGD77Record.number[i] = dvals[i];
 			MGD77Record.time = dvals[MGD77_TIME];
-			for (i = MGD77_N_NUMBER_FIELDS, k = 0; i < MGD77_N_DATA_FIELDS; i++, k++) strcpy (MGD77Record.word[k], tvals[i]);
+			for (i = MGD77_N_NUMBER_FIELDS, k = 0; i < MGD77_N_DATA_FIELDS; i++, k++) strcpy (MGD77Record.word[k], tvals[k]);
 			error = MGD77_Write_Data_Record_m77 (F, &MGD77Record);
 			break;
 		case MGD77_FORMAT_CDF:		/* Will write a single MGD77+ netCDF record */
@@ -393,7 +393,7 @@ int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, do
 		case MGD77_FORMAT_TBL:		/* Will write a single ascii table record; first fill out MGD77_RECORD structure */
 			for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) MGD77Record.number[i] = dvals[i];
 			MGD77Record.time = dvals[MGD77_TIME];
-			for (i = MGD77_N_NUMBER_FIELDS, k = 0; i < MGD77_N_DATA_FIELDS; i++, k++) strcpy (MGD77Record.word[k], tvals[i]);
+			for (i = MGD77_N_NUMBER_FIELDS, k = 0; i < MGD77_N_DATA_FIELDS; i++, k++) strcpy (MGD77Record.word[k], tvals[k]);
 			error = MGD77_Write_Data_Record_tbl (F, &MGD77Record);
 			break;
 		default:
