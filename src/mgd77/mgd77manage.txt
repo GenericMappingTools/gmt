@@ -73,7 +73,7 @@ Alternatively, give upper case \fBT\fP instead and we will interpolate the colum
 .TP
 .B \-C
 In addition to file information we must specify several attributes of the extra column.
-Specify a short (16 char or less) abbreviation for the selected data, its more descriptive name,
+Specify a short (16 char or less, using letters, digits, or underscores only) abbreviation for the selected data, its more descriptive name,
 the data unit, the data type (\fBb\fPyte, \fBs\fPhort, \fBf\fPloat, \fBi\fPnt, \fBd\fPouble, or
 \fBt\fPext) you want used for storage in the netCDF file, any scale and offset applied to the data
 to make it fit inside the range implied by the chosen storage type, and a general comment (< 128

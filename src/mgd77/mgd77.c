@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.64 2005-10-19 02:06:00 pwessel Exp $
+ *	$Id: mgd77.c,v 1.65 2005-10-19 07:45:14 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -145,7 +145,7 @@ int MGD77_Read_Header_Sequence (FILE *fp, char *record, int seq);
 int MGD77_Read_Data_Sequence (FILE *fp, char *record);
 int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER *H, int format);
 void MGD77_Write_Sequence (FILE *fp, int seq);
-int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, int *key);
+int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, int *set, int *item);
 
 #include "mgd77_functions.h"	/* Get netCDF MGD77 header attribute i/o functions */
 
@@ -1576,18 +1576,18 @@ int MGD77_Order_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {	/* Having processed -F and read the file's header, we can organize which
 	 * columns must be read and in what order.  If -F was never set we call
 	 * MGD77_Select_All_Columns to select every column for output. */
-	int i, k, set, id, dummy;
+	int i, id, set, item;
 	
 	MGD77_Select_All_Columns (F, H);	/* Make sure n_out_columns is set */
 
 	for (i = 0; i < F->n_out_columns; i++) {	/* This is not really needed if MGD77_Select_All_Columns did things, but just in case */
-		if ((k = MGD77_Info_from_Abbrev (F->desired_column[i], H, &dummy)) == MGD77_NOT_SET) {
+		if (MGD77_Info_from_Abbrev (F->desired_column[i], H, &set, &item) == MGD77_NOT_SET) {
 			fprintf (stderr, "%s: Requested column %s not in data set!\n", GMT_program, F->desired_column[i]);
 			return (MGD77_ERROR_NOSUCHCOLUMN);
 		}
-		F->order[i].item = k % MGD77_SET_COLS;
-		F->order[i].set  = k / MGD77_SET_COLS;
-		H->info[F->order[i].set].col[F->order[i].item].pos = i;
+		F->order[i].item = item;
+		F->order[i].set  = set;
+		H->info[set].col[item].pos = i;
 	}
 	
 	for (i = 0; i < F->n_exact; i++) {	/* Determine column and info numbers from column name */
@@ -1617,21 +1617,22 @@ int MGD77_Order_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 	return (MGD77_NO_ERROR);
 }
 
-int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, int *key)
+int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, int *set, int *item)
 {
-	int id, set;
+	int id, c;
 	
-	/* Returns the number in the output list AND passes key as the entry in H */
+	/* Returns the number in the output list AND passes set,item as the entry in H */
 	
-	for (set = 0; set < MGD77_N_SETS; set++) {
-		for (id = 0; id < H->info[set].n_col; id++) {
-			if (!strcmp (name, H->info[set].col[id].abbrev)) {
-				*key = H->info[set].col[id].pos;
-				return (id + set * MGD77_SET_COLS);
+	for (c = 0; c < MGD77_N_SETS; c++) {
+		for (id = 0; id < H->info[c].n_col; id++) {
+			if (!strcmp (name, H->info[c].col[id].abbrev)) {
+				*item = id;
+				*set = c;
+				return (H->info[c].col[id].pos);
 			}
 		}
 	}
-	*key = MGD77_NOT_SET;
+	*set = *item = MGD77_NOT_SET;
 	return (MGD77_NOT_SET);
 }
 
@@ -2237,10 +2238,8 @@ void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 	char *text;
 	double *values;
 	
-	t_id = MGD77_Info_from_Abbrev ("time", &S->H, &entry);
-	if (t_id != MGD77_NOT_SET) {	/* Supposedly has time, but we we'll check again */
-		t_set = t_id / MGD77_SET_COLS;
-		t_id -= t_set * MGD77_SET_COLS;
+	entry = MGD77_Info_from_Abbrev ("time", &S->H, &t_set, &t_id);
+	if (entry != MGD77_NOT_SET) {	/* Supposedly has time, but we we'll check again */
 		values = (double *)S->values[entry];
 		if (MGD77_dbl_are_constant (values, S->H.n_records, S->H.info[t_set].col[t_id].limit)) {	/* If constant time it means NaNs */
 			S->H.no_time = TRUE;
@@ -2288,7 +2287,7 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	 * 
 	 */
 	 
-	int id, j, k, set, entry, dims[2] = {0, 0}, var_id;
+	int id, j, k, set, entry, time_id, dims[2] = {0, 0}, var_id;
 	time_t now;
 	char string[128];
 	
@@ -2323,9 +2322,12 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	if (H->no_time) {
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Data set %s has no time values\n", GMT_program, file);
 		MGD77_nc_status (nc_def_dim (F->nc_id, "record_no", NC_UNLIMITED, &F->nc_recid));	/* Define unlimited record dimension */
+		time_id = MGD77_NOT_SET;
 	}
-	else
+	else {
 		MGD77_nc_status (nc_def_dim (F->nc_id, "time", NC_UNLIMITED, &F->nc_recid));		/* Define unlimited time dimension */
+		entry = MGD77_Info_from_Abbrev ("time", H, &set, &time_id);
+	}
 
 	dims[0] = F->nc_recid;	/* Number of points in all arrays */
 	for (set = entry = 0; set < MGD77_N_SETS; set++) {	/* For both sets */
@@ -2356,8 +2358,10 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 			if (!H->info[set].col[id].constant) MGD77_nc_status (nc_put_att_double   (F->nc_id, var_id, "actual_range", NC_DOUBLE, 2, H->info[set].col[id].limit));
 			if (H->info[set].col[id].comment) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "comment", strlen (H->info[set].col[id].comment), H->info[set].col[id].comment));
 			if (set == MGD77_M77_SET && (!strcmp (H->info[set].col[id].abbrev, "depth") || !strcmp (H->info[set].col[id].abbrev, "msd"))) MGD77_nc_status (nc_put_att_text   (F->nc_id, var_id, "positive", 4, "down"));
-			MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "_FillValue", H->info[set].col[id].type, 1, &MGD77_NaN_val[H->info[set].col[id].type]));
-			MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "missing_value", H->info[set].col[id].type, 1, &MGD77_NaN_val[H->info[set].col[id].type]));
+			if (!(set == MGD77_M77_SET && id == time_id)) {	/* Time coordinate value cannot have missing values */
+				MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "_FillValue", H->info[set].col[id].type, 1, &MGD77_NaN_val[H->info[set].col[id].type]));
+				MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "missing_value", H->info[set].col[id].type, 1, &MGD77_NaN_val[H->info[set].col[id].type]));
+			}
 			if (H->info[set].col[id].factor != 1.0) MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "scale_factor", NC_DOUBLE, 1, &H->info[set].col[id].factor));
 			if (H->info[set].col[id].offset != 0.0) MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "add_offset", NC_DOUBLE, 1, &H->info[set].col[id].offset));
 			if (H->info[set].col[id].corr_factor  != 1.0) MGD77_nc_status (nc_put_att_double (F->nc_id, var_id, "corr_factor", NC_DOUBLE, 1, &H->info[set].col[id].corr_factor));
