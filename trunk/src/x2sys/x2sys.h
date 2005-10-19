@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.19 2005-10-19 08:10:09 pwessel Exp $
+ *	$Id: x2sys.h,v 1.20 2005-10-19 08:26:35 pwessel Exp $
  *
  *      Copyright (c) 1999-2005 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -140,6 +140,7 @@ struct X2SYS_INFO {
 	BOOLEAN ms_next;		/* TRUE if we just read 1st record in a new segments in this file */
 	char ms_flag;			/* Multi-segment header flag */
 	char suffix[16];		/* Suffix for these data files */
+	char fflags[BUFSIZ];		/* Text copy of selected columns */
 	struct X2SYS_DATA_INFO *info;	/* Array of info for each data field */
 };
 

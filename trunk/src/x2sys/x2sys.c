@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.44 2005-10-19 08:10:09 pwessel Exp $
+ *	$Id: x2sys.c,v 1.45 2005-10-19 08:26:35 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -485,7 +485,8 @@ void x2sys_pick_fields (char *string, struct X2SYS_INFO *s)
 	char line[BUFSIZ], p[BUFSIZ];
 	int i = 0, j, pos = 0;
 
-	strncpy (line, string, BUFSIZ);
+	strncpy (s->fflags, string, BUFSIZ);
+	strncpy (line, string, BUFSIZ);	/* Make copy for later use */
 	memset ((void *)s->use_column, 0, (size_t)(s->n_fields * sizeof (int)));
 
 	while ((GMT_strtok (line, ",", &pos, p))) {
