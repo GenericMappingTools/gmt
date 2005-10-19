@@ -18,7 +18,7 @@ a tracks index data base (see \fBx2sys_init\fP for more information).
 Can be one or more MGD77 8-character cruise identifiers. To give a list of names, use `cat cruises.lis`.
 The ".mgd77" extension will automatically be appended, if needed.  Cruise files will be looked for
 in the current directory and in all directories listed in \fB$MGD77_DIR\fP/mgd77_paths.txt
-[Default is \FB$GMTHOME/share/mgd77/mgd77_paths.txt].
+[Default is \fB$GMTHOME\fP/share/mgd77/mgd77_paths.txt].
 .SH OPTIONS
 No space between the option flag and the associated arguments
 .TP

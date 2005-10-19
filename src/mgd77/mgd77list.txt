@@ -254,7 +254,7 @@ from all the cruises listed in the file cruises.lis:
 .br
 .sp
 \fBmgd77list\fP `cat cruises.lis` \fB\-F\fP"depth,DEPTH>9000,BTC!=1" > really_deep.d
-.br.
+.br
 .sp
 To extract dist, faa, and grav12.2 from records whose depths are shallower than 3 km
 and where none of the requested fields are NaN, from all the MGD77+ netCDF files whose
