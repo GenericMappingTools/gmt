@@ -30,24 +30,29 @@ we will cowardly refuse to update the file. Specifying \fB\-A+\fP overcomes this
 sometimes an existing column cannot be upgraded without first deleting it; if so you will be warned).
 Select a column source among the following choices:
 .br
+.sp
 \fBc\fP Append filename of a single column table with same number of rows as the MGD77+ file. If
 no file is given we read from stdin instead.
 .br
+.sp
 \fBd\fP  Append filename of a double column table with first column holding distances along track,
 with data values in second column.  If no file is given we read from stdin instead.  Records with matching
 distances in the MGD77+ file will be assigned the new values; at other distances we set them to NaN.
 Alternatively, give upper case \fBD\fP instead and we will interpolate the column at all records.
 See \fB\-N\fP for chosing distance units and how distances are created.
 .br
+.sp
 \fBe\fP Read the e77 error/correction log from \fBmgd77sniffer\fP and add or update the special column
 \fBflag\fP which will hold bitflags (0 = GOOD, 1 = BAD) for each data field in the standard MGD77 data
 set.  Any correction terms found (such as needing to scale a field by 0.1 or 10 because the source
 agency used incorrect units) will be written as attributes to the netCDF MGD77+ file and applied when the
 data is read.
 .br
+.sp
 \fBg\fP Sample a GMT geographic (lon,lat) grid along the track given by the MGD77+ file.  Append
 name of a GMT grid file.
 .br
+.sp
 \fBi\fP Sample a Sandwell/Smith Mercator *.img grid along the track given by the MGD77+ file.  Append
 grid spacing in minutes (1 or 2), the data scale (typically 1 or 10), the IMG file mode (0-3), and
 finally the grid filename.  The modes stand for the following: (0) Obsolete img files with no constraint
@@ -55,10 +60,12 @@ code, returns data, (1) New img file with constraints coded, return data at all 
 with constraints coded, return data only at constrained points and NaN elsewhere, and (3) new img file
 with constraints coded, return 1 at constraints and 0 elsewhere.
 .br
+.sp
 \fBn\fP Append filename of a double column table with first column holding the record number (0 to nrows - 1),
 with data values in second column.  If no file is given we read from stdin instead.  Records with matching
 record numbers in the MGD77+ file will be assigned the new values; at other records we set them to NaN.
 .br
+.sp
 \fBt\fP Append filename of a double column table with first column holding absolute times along track,
 with data values in second column.  If no file is given we read from stdin instead.  Records with matching
 times in the MGD77+ file will be assigned the new values; at other times we set them to NaN.
