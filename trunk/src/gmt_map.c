@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.93 2005-10-19 12:45:37 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.94 2005-10-19 13:41:56 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8826,7 +8826,7 @@ double *GMT_distances (double x[], double y[], int n, double scale, int dist_fla
 		exit (EXIT_FAILURE);
 	}
 	
-	do_scale = (scale != 1,0);
+	do_scale = (scale != 1.0);
 	d = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "GMT_distances");
 
 	for (this = 1, prev = 0; this < n; this++, prev++) {
