@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.65 2005-10-19 07:45:14 pwessel Exp $
+ *	$Id: mgd77.c,v 1.66 2005-10-19 08:06:49 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -922,6 +922,8 @@ void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 	H->info[MGD77_M77_SET].col[k].comment = MGD77_cp_txt (mgd77cdf[MGD77_TIME].comment);
 	H->info[MGD77_M77_SET].col[k].factor = mgd77cdf[MGD77_TIME].factor;
 	H->info[MGD77_M77_SET].col[k].offset = mgd77cdf[MGD77_TIME].offset;
+	H->info[MGD77_M77_SET].col[k].corr_factor = 1.0;
+	H->info[MGD77_M77_SET].col[k].corr_offset = 0.0;
 	H->info[MGD77_M77_SET].col[k].type = mgd77cdf[MGD77_TIME].type;
 	H->info[MGD77_M77_SET].col[k].text = 0;
 	H->info[MGD77_M77_SET].col[k].pos = MGD77_TIME;
@@ -936,6 +938,8 @@ void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 		H->info[MGD77_M77_SET].col[k].comment = MGD77_cp_txt (mgd77cdf[i].comment);
 		H->info[MGD77_M77_SET].col[k].factor = mgd77cdf[i].factor;
 		H->info[MGD77_M77_SET].col[k].offset = mgd77cdf[i].offset;
+		H->info[MGD77_M77_SET].col[k].corr_factor = 1.0;
+		H->info[MGD77_M77_SET].col[k].corr_offset = 0.0;
 		H->info[MGD77_M77_SET].col[k].type = mgd77cdf[i].type;
 		H->info[MGD77_M77_SET].col[k].text = 0;
 		H->info[MGD77_M77_SET].col[k].pos = i;
@@ -949,6 +953,8 @@ void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 		H->info[MGD77_M77_SET].col[k].comment = MGD77_cp_txt (mgd77cdf[i].comment);
 		H->info[MGD77_M77_SET].col[k].factor = 1.0;
 		H->info[MGD77_M77_SET].col[k].offset = 0.0;
+		H->info[MGD77_M77_SET].col[k].corr_factor = 1.0;
+		H->info[MGD77_M77_SET].col[k].corr_offset = 0.0;
 		H->info[MGD77_M77_SET].col[k].type = mgd77cdf[i].type;
 		H->info[MGD77_M77_SET].col[k].text = mgd77cdf[i].len;
 		H->info[MGD77_M77_SET].col[k].pos = i;
@@ -2425,6 +2431,7 @@ int MGD77_Write_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 				text = (char *)S->values[entry];
 				if (S->H.info[set].col[id].constant)	/* Only need to store one text string */
 					MGD77_nc_status (nc_put_vara_schar (F->nc_id, S->H.info[set].col[id].var_id, start, &count[1], (signed char *)text));
+				else
 					MGD77_nc_status (nc_put_vara_schar (F->nc_id, S->H.info[set].col[id].var_id, start, count, (signed char *)text));
 			}
 			else {						/* Numerical data */
