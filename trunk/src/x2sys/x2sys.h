@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.20 2005-10-19 08:26:35 pwessel Exp $
+ *	$Id: x2sys.h,v 1.21 2005-10-19 12:45:37 pwessel Exp $
  *
  *      Copyright (c) 1999-2005 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -75,8 +75,6 @@ extern int _chmod (const char *path, int mode);
 #define S_RDONLY 0000444
 
 #define X2SYS_VERSION "1.1"
-
-#define MGD77_DATA_COLS 13	/* There are 13 columns of continuously varyiing fields */
 
 /* Make sure structure sizes are multiples of 8 */
 
@@ -231,7 +229,6 @@ EXTERN_MSC int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO
 EXTERN_MSC int x2sys_xover_output (FILE *fp, int n, double out[]);
 EXTERN_MSC int x2sys_n_data_cols (struct X2SYS_INFO *s);
 EXTERN_MSC int x2sys_read_list (char *file, char ***list);
-EXTERN_MSC int x2sys_output_record (FILE *fp, double data[], struct X2SYS_INFO *s);
 
 EXTERN_MSC double *x2sys_dummytimes (int n);
 

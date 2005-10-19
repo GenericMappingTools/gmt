@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.45 2005-10-19 08:26:35 pwessel Exp $
+ *	$Id: x2sys.c,v 1.46 2005-10-19 12:45:37 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -33,7 +33,6 @@
  * x2sys_fclose		: Closes files and gives error messages
  * x2sys_skip_header	: Skips the header record(s) in the open file
  * x2sys_read_record	: Reads and returns one record from the open file
- * x2sys_output_record	: Writes one data record to stdout
  * x2sys_pick_fields	: Decodes the -F<fields> flag of desired columns
  * x2sys_free_info	: Frees the information structure
  * x2sys_free_data	: Frees the data matrix
@@ -71,7 +70,6 @@ struct MGD77_CONTROL M;
 
 void x2sys_set_home (void);
 int x2sys_record_length (struct X2SYS_INFO *s);
-int MGD77_items[MGD77_DATA_COLS] = { 0, MGD77_LONGITUDE, MGD77_LATITUDE, 10, 11, 14, 15, 16, 18, 19, 20, 21, 22};
 
 #define MAX_DATA_PATHS 32
 char *x2sys_datadir[MAX_DATA_PATHS];	/* Directories where track data may live */
@@ -441,7 +439,7 @@ int x2sys_n_data_cols (struct X2SYS_INFO *s)
 {
 	int i, n = 0;
 
-	for (i = 0; i < s->n_fields; i++) {
+	for (i = 0; i < s->n_out_columns; i++) {
 		if (i == s->x_col) continue;
 		if (i == s->y_col) continue;
 		if (i == s->t_col) continue;
@@ -450,29 +448,6 @@ int x2sys_n_data_cols (struct X2SYS_INFO *s)
 	}
 
 	return (n);
-}
-
-int x2sys_output_record (FILE *fp, double data[], struct X2SYS_INFO *s)
-{
-	int i, k;
-
-	if (s->ascii_out) {
-		for (i = 0; i < s->n_out_columns-1; i++) {
-			k = s->out_order[i];
-			(GMT_is_dnan (data[k])) ? fprintf (fp, "NaN") : fprintf (fp, s->info[k].format, data[k]);
-			fputc ('\t', fp);
-		}
-		k = s->out_order[i];
-		(GMT_is_dnan (data[k])) ? fprintf (fp, "NaN") : fprintf (fp, s->info[k].format, data[k]);
-		fputc ('\n', fp);
-	}
-	else {	/* Binary */
-		for (i = 0; i < s->n_out_columns; i++) {
-			k = s->out_order[i];
-			fwrite ((void *)&data[k], sizeof (double), (size_t)1, fp);
-		}
-	}
-	return (s->n_out_columns);
 }
 
 void x2sys_pick_fields (char *string, struct X2SYS_INFO *s)
@@ -489,12 +464,17 @@ void x2sys_pick_fields (char *string, struct X2SYS_INFO *s)
 	strncpy (line, string, BUFSIZ);	/* Make copy for later use */
 	memset ((void *)s->use_column, 0, (size_t)(s->n_fields * sizeof (int)));
 
+	s->x_col = s->y_col = s->t_col = -1;	/* Need to reset this to match data order */
 	while ((GMT_strtok (line, ",", &pos, p))) {
 		j = 0;
 		while (j < s->n_fields && strcmp (p, s->info[j].name)) j++;
 		if (j < s->n_fields) {
 			s->out_order[i] = j;
 			s->use_column[j] = 1;
+			/* Reset x,y,t indeces */
+			if (!strcmp (s->info[j].name, "x") || !strcmp (s->info[j].name, "lon"))  s->x_col = i;
+			if (!strcmp (s->info[j].name, "y") || !strcmp (s->info[j].name, "lat"))  s->y_col = i;
+			if (!strcmp (s->info[j].name, "t") || !strcmp (s->info[j].name, "time")) s->t_col = i;
 		}
 		else {
 			fprintf (stderr, "X2SYS: ERROR: Unknown column name %s\n", p);
@@ -641,9 +621,9 @@ int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struc
 
 int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G)
 {
-	int i, j, n_alloc = GMT_CHUNK;
-	char path[BUFSIZ];
-	double **z;
+	int i, j, col[MGD77_N_DATA_EXTENDED], n_alloc = GMT_CHUNK;
+	char path[BUFSIZ], *tvals[MGD77_N_STRING_FIELDS];
+	double **z, dvals[MGD77_N_DATA_EXTENDED];
 	struct MGD77_DATA_RECORD D;
 	struct MGD77_HEADER H;
 	struct MGD77_CONTROL M;
@@ -672,29 +652,33 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 		exit (EXIT_FAILURE);
 	}
 
-	z = (double **) GMT_memory (VNULL, (size_t)MGD77_DATA_COLS, sizeof (double *), "x2sys_read_mgd77file");
-	for (i = 0; i < MGD77_DATA_COLS; i++) z[i] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "x2sys_read_mgd77file");
+	for (i = 0; i < MGD77_N_STRING_FIELDS; i++) tvals[i] = (char *) GMT_memory (VNULL, 9, sizeof (char), "x2sys_read_mgd77file");
+	z = (double **) GMT_memory (VNULL, (size_t)s->n_fields, sizeof (double *), "x2sys_read_mgd77file");
+	for (i = 0; i < s->n_fields; i++) z[i] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "x2sys_read_mgd77file");
+	for (i = 0; i < s->n_out_columns; i++) {
+		col[i] = MGD77_Get_Column (s->info[s->out_order[i]].name, &M);
+	}
 
 	j = 0;
-	while (!MGD77_Read_Data_Record (&M, &H,0,0)) {		/* While able to read a data record */
-		z[0][j] = D.time;
-		GMT_lon_range_adjust (s->geodetic, &D.number[MGD77_LONGITUDE]);
-		for (i = 1; i < MGD77_DATA_COLS; i++) z[i][j] = D.number[MGD77_items[i]];
+	while (!MGD77_Read_Data_Record (&M, &H, dvals, tvals)) {		/* While able to read a data record */
+		GMT_lon_range_adjust (s->geodetic, &dvals[MGD77_LONGITUDE]);
+		for (i = 0; i < s->n_out_columns; i++) z[i][j] = dvals[col[i]];
 
 		j++;
 		if (j == n_alloc) {
 			n_alloc += GMT_CHUNK;
-			for (i = 0; i < MGD77_DATA_COLS; i++) z[i] = (double *) GMT_memory ((void *)z[i], (size_t)n_alloc, sizeof (double), "x2sys_read_mgd77file");
+			for (i = 0; i < s->n_fields; i++) z[i] = (double *) GMT_memory ((void *)z[i], (size_t)n_alloc, sizeof (double), "x2sys_read_mgd77file");
 		}
 	}
 	MGD77_Close_File (&M);
 
 	strncpy (p->name, fname, 32);
 	p->n_rows = j;
-	for (i = 0; i < MGD77_DATA_COLS; i++) z[i] = (double *) GMT_memory ((void *)z[i], (size_t)p->n_rows, sizeof (double), "x2sys_read_mgd77file");
+	for (i = 0; i < s->n_fields; i++) z[i] = (double *) GMT_memory ((void *)z[i], (size_t)p->n_rows, sizeof (double), "x2sys_read_mgd77file");
 
 	p->ms_rec = NULL;
 	p->n_segments = 0;
+	for (i = 0; i < MGD77_N_STRING_FIELDS; i++) GMT_free ((void *)tvals[i]);
 
 	*data = z;
 
@@ -712,8 +696,8 @@ int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct
 	M.format  = 1;			/* Set input file's format to netCDF */
 	for (i = 0; i < MGD77_N_FORMATS; i++) MGD77_format_allowed[i] = (M.format == i) ? TRUE : FALSE;	/* Only allow the specified input format */
 
-	for (i = 0; i < s->n_fields; i++) strcpy (M.desired_column[i], s->info[i].name);	/* Set all the required fields */
-	M.n_out_columns = s->n_fields;
+	for (i = 0; i < s->n_out_columns; i++) strcpy (M.desired_column[i], s->info[s->out_order[i]].name);	/* Set all the required fields */
+	M.n_out_columns = s->n_out_columns;
 	
 	S = MGD77_Create_Dataset ();	/* Get data structure w/header */
 
