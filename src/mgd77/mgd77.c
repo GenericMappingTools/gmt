@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.63 2005-10-18 00:52:06 pwessel Exp $
+ *	$Id: mgd77.c,v 1.64 2005-10-19 02:06:00 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1766,9 +1766,9 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 		
 		if (constraint) {	/* Got a column constraint, just key it by name for now */
 			strcpy (F->Constraint[F->n_constraints].name, word);
-			strcpy (F->Constraint[k].c_constraint, value);
-			F->Constraint[k].code = constraint;
-			F->Constraint[k].exact = exact;
+			strcpy (F->Constraint[F->n_constraints].c_constraint, value);
+			F->Constraint[F->n_constraints].code = constraint;
+			F->Constraint[F->n_constraints].exact = exact;
 			F->n_constraints++;
 		}
 		else {	/* Desired output column */
