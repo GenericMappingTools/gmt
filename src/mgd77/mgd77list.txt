@@ -1,26 +1,31 @@
 .TH MGD77LIST GMTMANSECTION DATE VERSION VERSION
 .SH NAME
-mgd77list \- A data-extractor for <legid>.mgd77 files
+mgd77list \- A data-extractor for MGD77[+] files
 .SH SYNOPSIS
 \fBmgd77list\fP \fIleg-ids\fP [ \fB\-Da\fP\fIstartdate\fP ] [ \fB\-Db\fP\fIstopdate\fP ] 
 [ \fB\-E\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-H\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
-[ \fB\-Nd|s\fP\fIunit\fP ] [ \fB\-P\fP[\fIcode\fP] ][ \fB\-R\fIwest/east/south/north\fP ] 
+[ \fB\-Nd|s\fP\fIunit\fP ] [ \fB\-P\fP[\fIcode\fP] ] [ \fB\-R\fIwest/east/south/north\fP ] 
 [ \fB\-Sa\fP\fIstartdist\fP[unit] ] [ \fB\-Sb\fP\fIstopdist\fP[unit] ] [ \fB\-V\fP ] 
 [ \fB\-W\fP\fIweight\fP ] [ \fB\-bo\fP ]
 .SH DESCRIPTION
 \fBmgd77list\fP reads <legid>.[mgd77|nc] files and produces an ASCII [or binary] table.
 The <legid>.[mgd77|nc] files contain track information such as time and position, geophysical
 observables such as gravity, magnetics, and bathymetry, and control codes and corrections
-such as Eotvos or diurnal corrections.  MGD77+ extended netCDF files may also contain
-additional user columns (for a listing, use \fBmgd77info\fP).  The user may extract any
-combination of these parameters plus the three computed quantities distance, heading, and velocity
-and finally a specified weight (see \fB\-W\fP).  A sub-section can be specified by passing
-time- or distance-intervals along track or by selecting a geographical region.
+such as Eotvos or diurnal corrections.  The MGD77+ extended netCDF files may also contain
+additional user columns (for a listing of available columns, use \fBmgd77info \-C\fP).  The
+user may extract any combination of these parameters plus three computed quantities (distance,
+heading, and velocity), calendar sub-units of time (year, month, day, hour, min, sec), the NGDC id,
+and finally a preset weight (see \fB\-W\fP).  A sub-section can be specified by passing
+time- or distance-intervals along track or by selecting a geographical region.  Finally,
+records may be required to pass any number of logical tests involving the data values for
+each record.
 .TP
 \fIleg-ids\fP
 Can be one or more MGD77 8-character cruise identifiers. To give a list of names, use `cat cruises.lis`.
-The ".mgd77" or ".nc" extensions will automatically be appended, if needed.  Cruise files will be looked for
-in the current directory and in all directories listed in \fB$MGD77_DIR\fP/MGD77_paths.txt.
+The ".mgd77" or ".nc" extensions will automatically be appended, if needed (use \fB\-I\fP
+to ignore certain file types).  Cruise files will be looked for first in the current directory
+and second in all directories listed in \fB$MGD77_DIR\fP/mgd77_paths.txt [Default is
+\fB$GMTHOME\fP/share/mgd77/mgd77_paths.txt].
 .SH OPTIONS
 No space between the option flag and the associated arguments
 .TP
@@ -31,13 +36,13 @@ Do not list data collected before \fIstartdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss]) 
 Do not list data collected after \fIstopdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss]). [Default is end of cruise].
 .TP
 .B \-E
-Exact match: Only output records that matches all the requested geophysical columns [Default outputs records that matches
-at least one of the observed columns].
+Exact match: Only output records that matches all the requested geophysical columns
+[Default outputs records that matches at least one of the observed columns].
 .TP
 .B \-F
 Comma-separated list of parameter abbreviations in the desired output order.  Those parameters
-given in UPPER case must be present in all output records.  Unless indicated, the
-output format is controlled by \fBD_FORMAT\fP. The available abbreviations are:
+given in UPPER case must be present in all output records.  The output format
+(if ASCII) is controlled by \fBD_FORMAT\fP. The available abbreviations are:
 .TP
 .B drt
 The digital record type (usually 3 or 5 (for Y2K-compliant cruises))
@@ -45,20 +50,11 @@ The digital record type (usually 3 or 5 (for Y2K-compliant cruises))
 .B id
 The 8-character cruise ID string
 .TP
-.B year
-The year of each record.
-.TP
-.B month
-The month of each record.
-.TP
-.B day
-The day of the month of each record.
-.TP
-.B hour
-The hour of each record.
-.TP
-.B min
-The decimal minutes of each record.
+.B time
+Choose between Absolute calendar time (\fBatime\fP, the default) in the format dictated by the GMT
+default settings  \fBOUTPUT_DATE_FORMAT\fP and \fBOUTPUT_CLOCK_FORMAT\fP, or Relative time (\fBrtime\fP)
+in the format dictated by the GMT default settings  \fBD_FORMAT\fP and \fBTIME_SYSTEM\fP (or
+\fBTIME_EPOCH\fP and \fBTIME_UNIT\fP).
 .TP
 .B lon
 Longitude in the format dictated by the GMT default \fBOUTPUT_DEGREE_FORMAT\fP.
@@ -92,7 +88,7 @@ Position Type Code (1 = fix, 3 = interpolated, 9 = unspecified).
 .TP
 .B bcc
 Bathymetric Correction Code, indicating the procedure used to convert travel time to depth.
-(01-55 = Matthews' zone - use only if Matthews' zones were used to correct depth, 59 = Matthews'\"'
+(01-55 = Matthews' zone - used only if Matthews' zones were used to correct depth, 59 = Matthews'\"'
 corrections used but zones unspecified in data record, 60 = S. Kuwahara formula, 61 = Wilson
 formula, 62 = Del Grosso formula, 63 = Carter's tables, 88 = Other, described in header sections,\"'
 99 = unspecified).
@@ -105,7 +101,7 @@ Bathymetric Type Code, indicating how the bathymetry value was obtained (1 = obs
 Magnetic sensor for residual field (1 = 1st or leading sensor, 2 = 2nd or trailing sensor, 9 = unspecified).
 .TP
 .B msd
-Depth (or altitutde) of the magnetic sensor (m, positive below sealevel).
+Depth (or altitude) of the magnetic sensor (m, positive below sealevel).
 .TP
 .B diur
 Magnetic diurnal correction (nTesla).
@@ -120,25 +116,39 @@ Seismic line number string.
 Seismic shot point number string.
 .TP
 .B nqc
-Navigation quality Code (5 = suspected, by source institution, 6 = suspected, by NGDC, 90 = no problems identified).
+Navigation Quality Code (5 = suspected, by source institution, 6 = suspected, by NGDC, 9 = no problems identified).
 .br
 .sp
 In addition, the following derived quantities can be requested:
 .TP
-.B time
-Choose between Absolute calendar time (\fBataim\fP, the default) in the format dictated by the GMT default settings  \fBOUTPUT_DATE_FORMAT\fP
-and \fBOUTPUT_CLOCK_FORMAT\fP, or Relative time (\fBrtime\fP) in the format dictated by the GMT default settings  \fBD_FORMAT\fP
-and \fBTIME_SYSTEM\fP (or fBTIME_EPOCH\fPand fBTIME_UNIT\fP).
+.B year
+The year of each record.
+.TP
+.B month
+The month of each record.
+.TP
+.B day
+The day of the month of each record.
+.TP
+.B hour
+The hour of each record.
+.TP
+.B min
+The minutes of each record.
+.TP
+.B sec
+The decimal seconds of each record.
 .TP
 .B dist
-Choose between ellipsoidal, along-track distances (\fBedist\fP, the default) or quick, flat-earth approximate along-track distances (\fBfdist\fP).
-Distances are reported in km (or nautical miles; see \fB\-N\fP).
+Choose between ellipsoidal, along-track distances (\fBedist\fP, the default) or quick,
+flat-earth approximate along-track distances (\fBfdist\fP).
+For distance units, see \fB\-N\fP [km].
 .TP
 .B az
-Ship azimuth (heading) in degrees.
+Ship azimuth (heading) in degrees, measured clockwise from north.
 .TP
 .B vel
-Ship speed in m/s or knots (see \fB\-N\fP).
+Ship speed; see \fB\-N\fP for units [m/s]. 
 .TP
 .B weight
 Weight assigned to this data set (see \fB\-W\fP).
@@ -150,20 +160,27 @@ The following short-hand flags are also recognized:
 This results in all 27 MGD77 fields being written out in the offical MGD77 order [Default].
 .TP
 .B geo
-This limits the output to 11 fields (ID, time, lon, lat plus geophysical observations)
-By appending \fB+\fP to either set will will also append the 3 derived quantities and the
-weight listed above.
+This limits the output to 11 fields (ID, time, lon, lat plus the seven geophysical observations
+twt, depth, mtf1, mtf2, mag, gobs, faa).
+By appending \fB+\fP to either set we will also append \fBdist\fP, \fBazim\fP, \fBvel\fP, and
+\fBweight\fP as listed above.
 .br
 .sp
 Logical tests may be added for any of the parameters by appending one or more comma-separated instructions
 of the form \fIpar\fP\fBOP\fP\fIvalue\fP, where \fIpar\fP is one of the parameters listed above, \fBOP\fP is
-a logical operator (<. <=, =, !=, >=, >, |), and \fIvalue\fP is used in the comparison.  Floating point
+a logical operator (<, <=, =, !=, >=, >, |), and \fIvalue\fP is a constant used in the comparison.  Floating point
 parameters are compared numerically; character parameters are compared lexically (after leading and trailing
-blanks have been removed).  The bit comparison (|) means that at least one of the bits in the \fIvalue\fP
-must be turned on in the \fIpar\fP.  At least one of the tests must be true for the record to be output, expect for
-tests using UPPER case parameters in which case the test must be true for output to occur.  Note that
+blanks have been removed).  The bit comparison (|) means that at least one of the bits in \fIvalue\fP
+must be turned on in \fIpar\fP.  At least one of the tests must be true for the record to be output, expect for
+tests using UPPER case parameters which all must be true for output to occur.  Note that
 specifying a test does not imply that the corresponding column will be included in the output stream;
-you must specify the dataflag for that to occur.
+you must specify the dataflag for that to occur. Note: some of the operators are special UNIX characters
+and you are advised to place quotes around the entire argument to \fB\-F\fP.
+Finally, for MGD77+ files you may optionally append : (a colon) followed by one or more comma-separated
++|-\fIcol\fP terms.  This compares specific bitflags only for each listed column.  Here, + means the chosen bit must
+be 1 (ON) whereas - means it must be 0 (OFF).  All bit tests given must be passed.  By default, MGD77+
+files that have the special \fBflag\fP column present will use those flags; append : with no trailing information
+to turn this behavior off.
 .TP
 .B \-H
 Issue a header record with names for each data field.
@@ -178,29 +195,41 @@ Issue a multisegment header record with cruise ID for each cruise.
 .TP
 .B \-N
 Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
-\fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles and miles/hr), pr
+\fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles and miles/hr), or
 \fBn\fP (nautical miles and knots).  [Default is \fB\-Ndk \-Nse\fP (km and m/s)].
 .TP
 .B \-P
 Output the NGDC identifier as first column (in addition to what is set with \fB\-F\fP).  Optionally,
 append a 2-character institution code.  Then, only files from this institution will be processed.
+The following is the list of NGDC institution codes:
+(01) LAMONT (LDEO), (02) WOODS HOLE O.I., (03) NOAA, (04) US ARMY, (05) NEW ZEALAND,
+(06) US GEOL. SURVEY, (07) OREGON ST. UNIV, (08) U.HAWAII SOEST, (09) US NAVY, (10) UNIV OF TEXAS,
+(11) RICE UNIV., (12) CANADA, (13) UNIV OF CONN., (14) U.MIAMI (RSMAS), (15) SCRIPPS INST.OC,
+(16) CHINA, (17) U RHODE ISLAND, (18) DUKE UNIVERSITY, (19) UNITED KINGDOM, (20) U.WASHINGTON,
+(22) WESTERN GEOPHY., (23) TEXAS A&M UNIV., (24) AUSTRALIA, (25) MONACO, (29) RUSSIA, (30) SPAIN,
+(35) NIMA, (58) NETHERLANDS, (60) MIN MGMT SVC, (63) ISRAEL, (67) FRANCE, (71) SOUTH AFRICA,
+(75) US COAST GUARD, (76) BRAZIL, (77) INT. GRAV. BUR, (83) GERMANY, (84) ORSTOM NEW CAL,
+(86) CUBA, (87) ARGENTINA, (88) US NSF, (89) INDIA, (90) PORTUGAL, (92) FINLAND, (93) CHILE,
+(J1) HYDR DEPT JAPAN, (J2) GEOL SRVY JAPAN, (J4) UNIV TOKYO, (J5) KOBE UNIV, (J7) UNIV OF RYUKYUS,
+(J8) J.O.D.C. JAPAN, (J9) CHIBA UNIV, (JA) INST.POLAR RES., (ZZ) INST NOT CODED.
 .TP
 .B \-Sa
-Do not list data that are less than \fIstartdist\fP km (or nautical miles; see \fB\-N\fP) along
-track from port of departure. [Default is 0].
+Do not list data that are less than \fIstartdist\fP km (see \fB\-N\fP for other units) along
+track from port of departure. [Default is 0 km].
 .TP
 .B \-Sb
-Do not list data that are more than \fIstopdist\fP km (or nautical miles; see \fB\-N\fP) along
+Do not list data that are more than \fIstopdist\fP km (see \fB\-N\fP for other units) along
 track from port of departure. [Default is length of track].
 #include "explain_-V.txt"
 .TP
 .B \-W
 Set the weight for these data.  Weight output option must be set in \fB\-F\fP.  This is
 useful if the data are to be processed with the weighted averaging techniques offered by
-\fBblockmean\fP, \fBblockmedian\fP, and \fBblockmode\fP.
+\fBblockmean\fP, \fBblockmedian\fP, and \fBblockmode\fP [1].
 .TP
 .B \-Z
-Append the sign you want for depth values (\fB\-Z-\fP gives negative bathymetry).
+Append the sign you want for depth values (\fB\-Z-\fP gives negative bathymetry) [Default
+is positive down].
 .TP
 .B \-bo
 Selects binary output mode (single precision; append \fBd\fP for double precision) [Default is ASCII].
@@ -225,6 +254,14 @@ from all the cruises listed in the file cruises.lis:
 .br
 .sp
 \fBmgd77list\fP `cat cruises.lis` \fB\-F\fP"depth,DEPTH>9000,BTC!=1" > really_deep.d
+.br.
+.sp
+To extract dist, faa, and grav12.2 from records whose depths are shallower than 3 km
+and where none of the requested fields are NaN, from all the MGD77+ netCDF files whose
+cruise ids are listed in the file cruises.lis, we try
+.br
+.sp
+\fBmgd77list\fP `cat cruises.lis` \fB\-E \-Ia \-F\fP"dist,faa,grav12,2,depth<3000" > shallow_grav.d
 .SH "SEE ALSO"
 .IR mgd77convert (GMTMANSECTION),
 .IR mgd77info (GMTMANSECTION),
