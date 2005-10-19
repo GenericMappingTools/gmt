@@ -11,7 +11,7 @@ data in (probably) another format.
 Can be one or more MGD77 8-character cruise identifiers. To give a list of names,
 use `cat cruises.lis`.  The extension will automatically be appended, if needed.
 Cruise files will be looked for first in the current directory and second in all
-directories listed in \fB$MGD77_DIR\fP/MGD77_paths.txt [Default location is
+directories listed in \fB$MGD77_DIR\fP/mgd77_paths.txt [Default location is
 \fB$GMTHOME/share/mgd77\fP]. Output files are written to the current directory.
 .TP
 .B \-F
