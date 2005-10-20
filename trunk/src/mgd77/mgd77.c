@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.70 2005-10-20 06:15:58 pwessel Exp $
+ *	$Id: mgd77.c,v 1.71 2005-10-20 06:19:55 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -745,13 +745,13 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 		err++;
 	}
 	if (P->Bathymetry_Assumed_Sound_Velocity[0] && !((i = atoi (P->Bathymetry_Assumed_Sound_Velocity)) == 14630 || i == 15000)) {
-		fprintf (F->fp_err, "#H-%s-12-03: Bathymetry Assumed Sound Velocity: Found (%s) : Expected :(15000)\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity);
+		fprintf (F->fp_err, "#H-%s-12-03: Bathymetry Assumed Sound Velocity: Found (%s) : Expected :(     )\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity);
 		err++;
 	}
 	if (P->Bathymetry_Datum_Code[0]) {
 		i = atoi (P->Bathymetry_Datum_Code);
 		if (!((i >= 0 && i <= 11) || i == 88)) {
-			fprintf (F->fp_err, "#H-%s-12-04: Bathymetry Datum Code: Found (%s) : Expected :(00)\n", F->NGDC_id, P->Bathymetry_Datum_Code);
+			fprintf (F->fp_err, "#H-%s-12-04: Bathymetry Datum Code: Found (%s) : Expected :(  )\n", F->NGDC_id, P->Bathymetry_Datum_Code);
 			err++;
 		}
 	}
