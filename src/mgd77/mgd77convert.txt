@@ -2,7 +2,8 @@
 .SH NAME
 mgd77convert \- Translate between different formats of MGD77 files
 .SH SYNOPSIS
-\fBmgd77convert\fP \fINGDC-ids\fP \fB\-Fa|b|t \-T\fP[\fB+\fP]\fBa|b|t\fP [ \fB\-V\fP[\fBl\fP][\fB+\fP] ]
+\fBmgd77convert\fP \fINGDC-ids\fP \fB\-Fa|b|t \-T\fP[\fB+\fP]\fBa|b|t\fP 
+[ \fB\-L\fP[\fBw\fP][\fBe\fP][\fB+\fP] ] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBmgd77convert\fP reads versions of MGD77 files and writes out the same
 data in (probably) another format.
@@ -27,16 +28,21 @@ MGD77 ASCII table (with extension .mgd77), \fBb\fP for the new MGD77+ netCDF for
 (with extension .dat).  We will refuse to create the file(s) if they already
 exist in the current directory.  Prepend \fB+\fP to override this policy.
 .SH OPTIONS
-No space between the option flag and the associated arguments
+No space between the option flag and the associated arguments.
+.TP
+.B \-L
+Set the level of verification reporting and where to send such reports.  Append
+a combination of \fBw\fP for warnings, \fBe\fP for errors, and \fB+\fP to send
+such log information to stdout [ Default is stderr].
 #include "explain_-V.txt"
 Append \fBl\fP for more details on header errors and missing fields, and append \fB+\fP
 to send info to stdout [Default is stderr].
 .SH EXAMPLES
 To convert 01010047.mgd77 and 01010008.mgd77 to new netCDF .nc files, and
-capture all error messages, try
+capture all verification messages, try
 .br
 .sp
-\fBmgd77convert\fP 01010047 01010008 \fB\-Fa \-Tc \-Vl+\fP > log.lis
+\fBmgd77convert\fP 01010047 01010008 \fB\-Fa \-Tc \-V \-Lew+\fP > log.lis
 .br
 .sp
 To convert 01010047.nc to a plain ASCII table, overwriting any existing table, try
