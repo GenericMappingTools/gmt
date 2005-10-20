@@ -3,8 +3,8 @@
 mgd77manage \- Manage extra columns in MGD77+ files
 .SH SYNOPSIS
 \fBmgd77manage\fP \fIleg-ids\fP [ \fB\-A\fP[\fB+\fP]\fBc|d|D|e|g|i|n|t|T\fP\fIfileinfo\fP ] 
-[ \fB\-C\fP\fIabbrev/name/unit/type/scale/offset/comment\fP ] [ \fB\-D\fP\fIabbrev1,abbrev2,...\fP ] 
-[ \fB\-E\fP\fIempty\fP ] [ \fB\-Ne\fP|\fBk\fP|\fBm\fP|\fBn\fP[\fB+\fP|\fB-\fP] 
+[ \fB\-C\fP\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-D\fP\fIabbrev1,abbrev2,...\fP ] [ \fB\-E\fP\fIempty\fP ] 
+[ \fB\-I\fP\fIabbrev/name/unit/type/scale/offset/comment\fP ] [ \fB\-Ne\fP|\fBk\fP|\fBm\fP|\fBn\fP[\fB+\fP|\fB-\fP] 
 [ \fB\-Q\fP[\fIvalue\fP] [ \fB\-V\fP ] [ \fB\-bi\fP\fIn\fP[\fBs|d\fP] ]
 .SH DESCRIPTION
 \fBmgd77manage\fP deals with maintaining extra custom columns in MGD77+ netCDF files.
@@ -72,15 +72,14 @@ times in the MGD77+ file will be assigned the new values; at other times we set 
 Alternatively, give upper case \fBT\fP instead and we will interpolate the column at all records.
 .TP
 .B \-C
-In addition to file information we must specify several attributes of the extra column.
-Specify a short (16 char or less, using letters, digits, or underscores only) abbreviation for the selected data, its more descriptive name,
-the data unit, the data type (\fBb\fPyte, \fBs\fPhort, \fBf\fPloat, \fBi\fPnt, \fBd\fPouble, or
-\fBt\fPext) you want used for storage in the netCDF file, any scale and offset applied to the data
-to make it fit inside the range implied by the chosen storage type, and a general comment (< 128
-characters) regarding what this data represent.  Note: If text data type is selected then the terms
-"values" in the \fB\-A\fP discussion refers to your text data.  Furthermore, the discussion on
-interpolation does not apply and the NaN value becomes a "no string" value (see \fB\-E\fP for
-what this is).  Place quotes around terms with more than one word (e.g., "Corrected Depth").
+Append a one-letter code to select the procedure for along-track distance
+calculation when using \fB\-Ad\fP|\fBD\fP (see \fB\-N\fP for selecting units):
+.br
+	\fBf\fP Flat earth distances.
+.br
+	\fBg\fP Great circle distances [Default].
+.br
+	\fBe\fP Geodesic distances on current GMT ellipsoid.
 .TP
 .B \-D
 Give a comma-separated list of column abbreviations that you want to delete from the MGD77+ files.
@@ -93,10 +92,21 @@ the new filename to the old filename, and finally remove the old, renamed file.
 Give a single character that will be repeated to fill empty string values, e.g., '9' will yield
 a string like "99999..." [9].
 .TP
+.B \-I
+In addition to file information we must specify additional information about the extra column.
+Specify a short (16 char or less, using letters, digits, or underscores only) abbreviation for the
+selected data, its more descriptive name, the data unit, the data type (\fBb\fPyte, \fBs\fPhort,
+\fBf\fPloat, \fBi\fPnt, \fBd\fPouble, or \fBt\fPext) you want used for storage in the netCDF file,
+any scale and offset applied to the data to make it fit inside the range implied by the chosen
+storage type, and a general comment (< 128 characters) regarding what this data represent.  Note:
+If text data type is selected then the terms "values" in the \fB\-A\fP discussion refers to your
+text data.  Furthermore, the discussion on interpolation does not apply and the NaN value becomes
+a "no string" value (see \fB\-E\fP for what this is).  Place quotes around terms with more than
+one word (e.g., "Corrected Depth").
+.TP
 .B \-N
-Specify the distance unit by appending \fBe\fP (meter), \fBk\fP (km), \fBm\fP (miles),
-or \fBn\fP (nautical miles).  Great circle distances will be used.  Append \fB+\fP or \fB-\fP to
-instead select geodesic (using current GMT ellipsoid) or flat Earth distances [Default is \fB\-Nk\fP].
+Specify the distance unit when using \fB\-Ad\fP|\fBD\fP by appending \fBe\fP (meter), \fBk\fP (km),
+\fBm\fP (miles), or \fBn\fP (nautical miles). [Default is \fB\-Nk\fP (km)].
 .TP
 .B \-Q
 Quick mode, use bilinear rather than bicubic interpolation.  Requires \fB\-Ag\fP|\fBi\fP.  Optionally,
@@ -113,14 +123,14 @@ To append Geosat/ERS-1 gravity version 11.2 as an extra data columns in the crui
 01010047.nc and 01010008.nc, storing the values as mGal*10 in a 2-byte short integer, try
 .br
 .sp
-\fBmgd77manage\fP 01010047 01010008 \fB\-Ai\fP2/10/1/grav.11.2.img \fB\-C\fPsatgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version 11.2" \fB\-V\fP
+\fBmgd77manage\fP 01010047 01010008 \fB\-Ai\fP2/10/1/grav.11.2.img \fB\-I\fPsatgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version 11.2" \fB\-V\fP
 .br
 .sp
 To append a filtered version of magnetics as an extra data column of type float for the cruise 01010047.nc, and
 interpolate the filtered data at the times given in the MGD77+ file, try
 .br
 .sp
-\fBmgd77manage\fP 01010047 \fB\-AT\fPmymag.tm \fB\-C\fPfiltmag/"Intermediate-wavelength magnetic residuals"/"nTesla"/f/1/0/"Useful for looking for isochrons" \fB\-V\fP
+\fBmgd77manage\fP 01010047 \fB\-AT\fPmymag.tm \fB\-I\fPfiltmag/"Intermediate-wavelength magnetic residuals"/"nTesla"/f/1/0/"Useful for looking for isochrons" \fB\-V\fP
 .br
 .sp
 To delete the existing extra columns satfaa, coastdist, and satvgg from all MGD77+ files, try

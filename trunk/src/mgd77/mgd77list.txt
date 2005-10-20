@@ -2,7 +2,7 @@
 .SH NAME
 mgd77list \- A data-extractor for MGD77[+] files
 .SH SYNOPSIS
-\fBmgd77list\fP \fIleg-ids\fP [ \fB\-C\fP[\fBf\fP|\fBg\fP|\fBe\fP] ] [ \fB\-Da\fP\fIstartdate\fP ] [ \fB\-Db\fP\fIstopdate\fP ] 
+\fBmgd77list\fP \fIleg-ids\fP [ \fB\-C\fP\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-Da\fP\fIstartdate\fP ] [ \fB\-Db\fP\fIstopdate\fP ] 
 [ \fB\-E\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-H\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
 [ \fB\-Nd|s\fP\fIunit\fP ] [ \fB\-P\fP[\fIcode\fP] ] [ \fB\-R\fIwest/east/south/north\fP ] 
 [ \fB\-Sa\fP\fIstartdist\fP[unit] ] [ \fB\-Sb\fP\fIstopdist\fP[unit] ] [ \fB\-V\fP ] 
