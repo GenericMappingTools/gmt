@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.51 2005-10-20 08:27:56 pwessel Exp $
+ *	$Id: mgd77.h,v 1.52 2005-10-20 12:38:06 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -416,6 +416,7 @@ EXTERN_MSC void MGD77_nc_status (int status);											/* Checks for netCDF err
 EXTERN_MSC void MGD77_Ignore_Format (int format);										/* Dissallow some formats for consideration */
 EXTERN_MSC struct MGD77_DATASET *MGD77_Create_Dataset ();									/* Create an empty data set structure */
 EXTERN_MSC void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
+EXTERN_MSC void MGD77_Dump_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P);							/* Dump of header items, one per line */
 
 /* Secondary user functions */
 
