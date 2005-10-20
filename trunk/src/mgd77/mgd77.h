@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.50 2005-10-20 06:30:00 pwessel Exp $
+ *	$Id: mgd77.h,v 1.51 2005-10-20 08:27:56 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -354,7 +354,8 @@ struct MGD77_CONTROL {
 	char NGDC_id[MGD77_COL_ABBREV_LEN];		/* Current NGDC file tag id */
 	char path[BUFSIZ];				/* Full path to current file */
 	FILE *fp;					/* File pointer to current open file (not used by MGD77+) */
-	FILE *fp_err;					/* File pointer error stream [stdout or stderr, usually) */
+	int verbose_level;				/* 0 = none, 1 = warnings, 2 = errors (combined 3 for both) */
+	int verbose_dest;				/* 1 = to stdout, 2 = to stderr */
 	int nc_id;					/* netCDF ID for current open file (MGD77+ only) */
 	int nc_recid;					/* netCDF ID for dimension of records (time) */
 	int rec_no;					/* Current record to read/write for record-based i/o */
@@ -369,7 +370,6 @@ struct MGD77_CONTROL {
 	int n_constraints;				/* Number of constraints specified */
 	int n_exact;					/* Number of exact columns to match */
 	int n_bit_tests;				/* Number of bit tests to match */
-	BOOLEAN header_verify_level;			/* 0 = none, 1 = to stdout, 2 = to stderr (reports of errors in MGD77 header */
 	int no_checking;				/* TRUE if there are no constraints, extact-tests, or bit-tests to pass */
 	struct MGD77_CONSTRAINT Constraint[MGD77_MAX_COLS];		/* List of constraints, if any */
 	char desired_column[MGD77_MAX_COLS][MGD77_COL_ABBREV_LEN];	/* List of desired column names in final output order */
