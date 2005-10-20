@@ -2,11 +2,11 @@
 .SH NAME
 mgd77list \- A data-extractor for MGD77[+] files
 .SH SYNOPSIS
-\fBmgd77list\fP \fIleg-ids\fP [ \fB\-Da\fP\fIstartdate\fP ] [ \fB\-Db\fP\fIstopdate\fP ] 
+\fBmgd77list\fP \fIleg-ids\fP [ \fB\-C\fP[\fBf\fP|\fBg\fP|\fBe\fP] ] [ \fB\-Da\fP\fIstartdate\fP ] [ \fB\-Db\fP\fIstopdate\fP ] 
 [ \fB\-E\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-H\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
 [ \fB\-Nd|s\fP\fIunit\fP ] [ \fB\-P\fP[\fIcode\fP] ] [ \fB\-R\fIwest/east/south/north\fP ] 
 [ \fB\-Sa\fP\fIstartdist\fP[unit] ] [ \fB\-Sb\fP\fIstopdist\fP[unit] ] [ \fB\-V\fP ] 
-[ \fB\-W\fP\fIweight\fP ] [ \fB\-bo\fP ]
+[ \fB\-W\fP\fIweight\fP ] [ \fB\-X\fP[\fIcorrtable\fP] ] [ \fB\-Z\fP\fI+\fP|\fB-\fP ] [ \fB\-bo\fP ]
 .SH DESCRIPTION
 \fBmgd77list\fP reads <legid>.[mgd77|nc] files and produces an ASCII [or binary] table.
 The <legid>.[mgd77|nc] files contain track information such as time and position, geophysical
@@ -27,7 +27,17 @@ to ignore certain file types).  Cruise files will be looked for first in the cur
 and second in all directories listed in \fB$MGD77_DIR\fP/mgd77_paths.txt [Default is
 \fB$GMTHOME\fP/share/mgd77/mgd77_paths.txt].
 .SH OPTIONS
-No space between the option flag and the associated arguments
+No space between the option flag and the associated arguments.
+.TP
+.B \-C
+Append a one-letter code to select the procedure for along-track distance
+calculation (see \fB\-N\fP for selecting units):
+.br
+	\fBf\fP Flat earth distances.
+.br
+	\fBg\fP Great circle distances [Default].
+.br
+	\fBe\fP Geodesic distances on current GMT ellipsoid.
 .TP
 .B \-Da
 Do not list data collected before \fIstartdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss])  [Default is start of cruise].
@@ -226,6 +236,10 @@ track from port of departure. [Default is length of track].
 Set the weight for these data.  Weight output option must be set in \fB\-F\fP.  This is
 useful if the data are to be processed with the weighted averaging techniques offered by
 \fBblockmean\fP, \fBblockmedian\fP, and \fBblockmode\fP [1].
+.TP
+.B \-X
+Apply optimal corrections to columns where such corrections are avaiable.  Append the correction
+table to use [Default uses the correction table in the $MGD77_HOME directory].
 .TP
 .B \-Z
 Append the sign you want for depth values (\fB\-Z-\fP gives negative bathymetry) [Default
