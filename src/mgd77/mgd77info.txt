@@ -2,13 +2,14 @@
 .SH NAME
 mgd77info \- Get information about MGD77[+] files
 .SH SYNOPSIS
-\fBmgd77info\fP \fINGDC-ids\fP [ \fB\-C\fP[\fBm|e\fP] ] [ \fB\-E\fP[\fBm|e\fP] ] [ \fB\-L\fP ] 
-[ \fB\-I\fP\fIignore\fP ] [ \fB\-V\fP ]
+\fBmgd77info\fP \fINGDC-ids\fP [ \fB\-C\fP[\fBm|e\fP] ] [ \fB\-E\fP[\fBm|e\fP] ] [ \fB\-H\fP ] 
+[ \fB\-I\fP\fIignore\fP ] [ \fB\-L\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBmgd77info\fP reads <legid>.[mgd77|nc] files and produces a single record of information
 about each cruise specified.  The information includes beginning and end time, total
 track distance in km, min and max regional extent, and the total number of geophysical
-observations.  Optionally, choose instead to see the original MGD77 header section.
+observations.  Optionally, choose instead to see the original MGD77 header section or
+its individual members.
 .br
 If you need to know which tracks are crossing through a given region and what kinds
 of geogphysical observations are available, consider using the x2sys tools to set up
@@ -28,6 +29,10 @@ Append \fBm\fP or \fBe\fP to limit the display to the MGD77 or MGD77+ extended s
 .TP
 .B \-E
 Give a one-line summary for each cruise listed.
+.TP
+.B \-H
+List all the header parameters and their values, one entry per output line, in a format
+that can be searched using standard UNIX text tools.
 .TP
 .B \-I
 Ignore certain data file formats from consideration. Append \fBa|c|t\fP to ignore
