@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.69 2005-10-20 00:21:09 pwessel Exp $
+ *	$Id: mgd77.c,v 1.70 2005-10-20 06:15:58 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1516,6 +1516,7 @@ void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks)
 	if ((pw = getpwuid (getuid ())) != NULL) {
 		strcpy (F->user, pw->pw_name);
 	}
+	F->fp_err = stderr;
 	F->format = MGD77_FORMAT_ANY;
 	MGD77_NaN_val[NC_BYTE] = MGD77_NaN_val[NC_CHAR] = CHAR_MIN;
 	MGD77_NaN_val[NC_SHORT] = SHRT_MIN;
@@ -2474,7 +2475,7 @@ int MGD77_Write_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 					MGD77_nc_status (nc_put_vara_double (F->nc_id, S->H.info[set].col[id].var_id, start, count, x));
 				}
 				if (n_bad) {	/* Report what we found */
-					fprintf (stderr, "%s: %s [%s] had %d values outside valid range <%g,%g> for the chosen type (set to NaN = %g)\n",
+					fprintf (F->fp_err, "%s: %s [%s] had %d values outside valid range <%g,%g> for the chosen type (set to NaN = %g)\n",
 						GMT_program, F->NGDC_id, S->H.info[set].col[id].abbrev, n_bad, MGD77_Low_val[S->H.info[set].col[id].type],
 						MGD77_High_val[S->H.info[set].col[id].type], MGD77_NaN_val[S->H.info[set].col[id].type]);
 				}
