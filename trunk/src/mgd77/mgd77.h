@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.46 2005-10-19 12:45:37 pwessel Exp $
+ *	$Id: mgd77.h,v 1.47 2005-10-20 00:21:09 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -359,7 +359,6 @@ struct MGD77_CONTROL {
 	int format;					/* 0 if any file format, 1 if MGD77, and 2 if netCDF, 3 if ascii table */
 	/* Format-related issues */
 	int time_format;				/* Either GMT_IS_ABSTIME or GMT_IS_RELTIME */
-	BOOLEAN flat_earth;				/* TRUE if we want quick distance calcuations */
 	/* Data use information */
 	BOOLEAN use_flags[MGD77_N_SETS];		/* TRUE means programs will use error bitflags (if present) when returning data */
 	BOOLEAN use_corrections[MGD77_N_SETS];		/* TRUE means we will apply correction factors (if present) when reading data */
@@ -410,7 +409,7 @@ EXTERN_MSC int MGD77_Get_Column (char *word, struct MGD77_CONTROL *F);								/*
 EXTERN_MSC int MGD77_Get_Set (char *abbrev);											/* Returns 0 if abbrev is in the MGD77 set, else 1 */
 EXTERN_MSC void MGD77_Fatal_Error (int error);											/* Print message for this error and exit */
 EXTERN_MSC BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec);				/* Tests if a record passes all specified logical & exact tests */
-EXTERN_MSC void MGD77_Set_Unit (char *dist, double *scale);									/* Convert appended distance unit to a numerical scale to give meters */
+EXTERN_MSC void MGD77_Set_Unit (char *dist, double *scale, int way);									/* Convert appended distance unit to a numerical scale to give meters */
 EXTERN_MSC void MGD77_nc_status (int status);											/* Checks for netCDF errors and aborts with error message */
 EXTERN_MSC void MGD77_Ignore_Format (int format);										/* Dissallow some formats for consideration */
 EXTERN_MSC struct MGD77_DATASET *MGD77_Create_Dataset ();									/* Create an empty data set structure */

@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.68 2005-10-19 12:45:37 pwessel Exp $
+ *	$Id: mgd77.c,v 1.69 2005-10-20 00:21:09 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1771,14 +1771,6 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 			strcpy (word, "time");
 			F->time_format = GMT_IS_RELTIME;	/* Alternate time format is time relative to EPOCH */
 		}
-		else if (!strcmp (word, "fdist")) {	/* Flat earth approximation (faster) */
-			strcpy (word, "dist");
-			F->flat_earth = TRUE;
-		}
-		else if (!strcmp (word, "edist")) {	/* Geodesic distances */
-			strcpy (word, "dist");
-			F->flat_earth = FALSE;
-		}
 
 		/* OK, here we are ready to update the structures */
 		
@@ -2159,8 +2151,10 @@ BOOLEAN MGD77_cgt_test (char *value, char *match, int len)
 	return (strncmp (value, match, len) > 0);
 }
 
-void MGD77_Set_Unit (char *dist, double *scale)
-{	/* Return scale needed to convert a unit distance in the given unit to meter */
+void MGD77_Set_Unit (char *dist, double *scale, int way)
+{	/* Return scale needed to convert a unit distance in the given unit to meter.
+	 * If way is -1 we return the inverse (convert meters to given unit) */
+	
 	switch (dist[strlen(dist)-1]) {
 		case 'k':	/* km */
 			*scale = 1000.0;
@@ -2175,6 +2169,7 @@ void MGD77_Set_Unit (char *dist, double *scale)
 			*scale = 1.0;
 			break;
 	}
+	if (way == -1) *scale = 1.0 / *scale;
 }
 
 void MGD77_Fatal_Error (int error)
