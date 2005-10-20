@@ -2,10 +2,11 @@
 .SH NAME
 x2sys_binlist \- Create bin-index files from track data files
 .SH SYNOPSIS
-\fBx2sys_binlist\fP \fIfile(s)\fP [ \fB\-T\fP\fITAG\fP ] [ \fB\-D\fP[\fBf\fP] ] [ \fB\-V\fP ]
+\fBx2sys_binlist\fP \fIfile(s)\fP [ \fB\-T\fP\fITAG\fP ] [ \fB\-D\fP[\fBc\fP|\fBf\fP|\fBg\fP|\fBe\fP] ] 
+[ \fB\-N\fP\fIunit\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBx2sys_binlist\fP reads one or more track data files and produces a multi-
-segment ascii track bin index listing. 
+segment ASCII track bin index listing. 
 The input files can be of any format, which must be described and passed with the
 \fB\-T\fP option.  The bin index listing is a crude representation of where
 the track goes and is used by the data archivist to determine which tracks
@@ -23,23 +24,36 @@ No space between the option flag and the associated arguments
 .TP
 .B \-D
 Calculate the length of trackline segments per bin [Default skips this step].
-Append \fBf\fP to use faster, "Flat-earth" calculations {Default uses great-circle
-distances or geodesics depending on the current ELLIPSOID setting in GMT].
+Append a one-letter code to select the procedure for along-track distance
+calculation (see \fB\-N\fP for selecting units):
+.br
+	\fBc\fP Cartesian distances in user units [Default].
+.br
+	\fBf\fP Flat earth distances.
+.br
+	\fBg\fP Great circle distances.
+.br
+	\fBe\fP Geodesic distances on current GMT ellipsoid.
+.TP
+.B \-N
+Append the desired distance \fIunit\fP as \fBe\fP (meter), \fBk\fP (km),
+\fBm\fP (miles), or \fBn\fP (nautical miles).  [Default is \fB\-Nk (km)].
+Requires \fB\-D\fP.
 .TP
 .B \-T
 Sets the data set \fITAG\fP which among other things sets the definition file.
 #include "explain_-V.txt"
 .SH EXAMPLES
-To create a bin index table from the old-style GMT MGG file c2104.gmt using a global, 1x1 degree bin system, do
+To create a bin index table from the MGD77 file 01030061.mgd77 using a global, 1x1 degree bin system, do
 .br
 .sp
-\fBx2sys_binlist\fP c2104.gmt \fB\-T\fPGMT > index.d
+\fBx2sys_binlist\fP 01030061.mgd77 \fB\-T\fPMGD77 > index.d
 .br
 .sp
-To create a bin index list of all MGD77 files residing in the current directory at a bin resolution
-of 30x30 minutes, run
+To create a bin index list of all MGD77+ files residing in the current directory at a bin resolution
+of 30x30 minutes, calculating the great-circle distance lengths for each bin in km, run
 .br
 .sp
-\fBx2sys_binlist\fP *.mgd77 \fB\-T\fPMGD77 > index.d
+\fBx2sys_binlist\fP *.nc \fB\-T\fPMGD77+ \fB\-Dg\fP > index.d
 .SH "SEE ALSO"
 .IR x2sys_init (GMTMANSECTION)
