@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.47 2005-10-20 00:47:33 pwessel Exp $
+ *	$Id: x2sys.c,v 1.48 2005-10-20 06:01:44 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -624,7 +624,6 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 	int i, j, col[MGD77_N_DATA_EXTENDED], n_alloc = GMT_CHUNK;
 	char path[BUFSIZ], *tvals[MGD77_N_STRING_FIELDS];
 	double **z, dvals[MGD77_N_DATA_EXTENDED];
-	struct MGD77_DATA_RECORD D;
 	struct MGD77_HEADER H;
 	struct MGD77_CONTROL M;
 	double NaN;
