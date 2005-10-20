@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.78 2005-10-20 08:27:56 pwessel Exp $
+ *	$Id: mgd77.c,v 1.79 2005-10-20 08:39:54 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -740,7 +740,7 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 
 	if (P->Bathymetry_Digitizing_Rate[0] && ((i = atoi (P->Bathymetry_Digitizing_Rate)) <= 0 || i >= 300)) {	/* 30 min */
 		kind = (i == 999) ? 1 : 2;
-		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-12-01-%c: Invalid Bathymetry Digitizing Rate: Found (%s) : Expected : (   )\n", F->NGDC_id, kind, P->Bathymetry_Digitizing_Rate);
+		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-12-01-%c: Invalid Bathymetry Digitizing Rate: Found (%s) : Expected : (   )\n", F->NGDC_id, we[kind], P->Bathymetry_Digitizing_Rate);
 		err++;
 	}
 	if (P->Bathymetry_Assumed_Sound_Velocity[0] && !((i = atoi (P->Bathymetry_Assumed_Sound_Velocity)) == 14630 || i == 15000)) {
@@ -749,14 +749,14 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 			if (F->verbose_level | 2) fprintf (fp_err, "#H-%s-12-03-E: Invalid Bathymetry Assumed Sound Velocity: Found (%s) : Expected : (%d0)\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity, i);
 		}
 		else if (F->verbose_level | kind)
-			fprintf (fp_err, "#H-%s-12-03-%c: Invalid Bathymetry Assumed Sound Velocity: Found (%s) : Expected : (     )\n", F->NGDC_id, kind, P->Bathymetry_Assumed_Sound_Velocity);
+			fprintf (fp_err, "#H-%s-12-03-%c: Invalid Bathymetry Assumed Sound Velocity: Found (%s) : Expected : (     )\n", F->NGDC_id, we[kind], P->Bathymetry_Assumed_Sound_Velocity);
 		err++;
 	}
 	if (P->Bathymetry_Datum_Code[0]) {
 		i = atoi (P->Bathymetry_Datum_Code);
 		if (!((i >= 0 && i <= 11) || i == 88)) {
 			kind = (i == 99) ? 1 : 2;
-			if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-12-04-%c: Invalid Bathymetry Datum Code: Found (%s) : Expected : (  )\n", F->NGDC_id, kind, P->Bathymetry_Datum_Code);
+			if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-12-04-%c: Invalid Bathymetry Datum Code: Found (%s) : Expected : (  )\n", F->NGDC_id, we[kind], P->Bathymetry_Datum_Code);
 			err++;
 		}
 	}
@@ -765,27 +765,27 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 
 	if (P->Magnetics_Digitizing_Rate[0] && ((i = atoi (P->Magnetics_Digitizing_Rate)) < 0 || i >= 300)) {	/* 30 m */
 		kind = (i == 999) ? 1 : 2;
-		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-13-01-%c: Invalid Magnetics Digitizing Rate: Found (%s) : Expected : (   )\n", F->NGDC_id, kind, P->Magnetics_Digitizing_Rate);
+		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-13-01-%c: Invalid Magnetics Digitizing Rate: Found (%s) : Expected : (   )\n", F->NGDC_id, we[kind], P->Magnetics_Digitizing_Rate);
 		err++;
 	}
 	if (P->Magnetics_Sampling_Rate[0] && ((i = atoi (P->Magnetics_Sampling_Rate)) < 0 || i >= 30)) {
 		kind = (i == 99) ? 1 : 2;
-		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-13-02-%c: Invalid Magnetics Sampling Rate: Found (%s) : Expected : (  )\n", F->NGDC_id, kind, P->Magnetics_Sampling_Rate);
+		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-13-02-%c: Invalid Magnetics Sampling Rate: Found (%s) : Expected : (  )\n", F->NGDC_id, we[kind], P->Magnetics_Sampling_Rate);
 		err++;
 	}
 	if (P->Magnetics_Sensor_Tow_Distance[0] && ((i = atoi (P->Magnetics_Sensor_Tow_Distance)) < 0)) {
 		kind = (i == 9999) ? 1 : 2;
-		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-13-03-%c: Invalid Magnetics Sensor Tow Distance: Found (%s) : Expected : (    )\n", F->NGDC_id, kind, P->Magnetics_Sensor_Tow_Distance);
+		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-13-03-%c: Invalid Magnetics Sensor Tow Distance: Found (%s) : Expected : (    )\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Tow_Distance);
 		err++;
 	}
 	if (P->Magnetics_Sensor_Depth[0] && ((i = atoi (P->Magnetics_Sensor_Depth)) < 0)) {
 		kind = (i == 99999) ? 1 : 2;
-		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-13-04-%c: Invalid Magnetics Sensor Depth: Found (%s) : Expected : (     )\n", F->NGDC_id, kind, P->Magnetics_Sensor_Depth);
+		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-13-04-%c: Invalid Magnetics Sensor Depth: Found (%s) : Expected : (     )\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Depth);
 		err++;
 	}
 	if (P->Magnetics_Sensor_Separation[0] && ((i = atoi (P->Magnetics_Sensor_Separation)) < 0)) {
 		kind = (i == 999) ? 1 : 2;
-		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-13-05-%c: Invalid Magnetics Sensor Separation: Found (%s) : Expected : (   )\n", F->NGDC_id, kind, P->Magnetics_Sensor_Separation);
+		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-13-05-%c: Invalid Magnetics Sensor Separation: Found (%s) : Expected : (   )\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Separation);
 		err++;
 	}
 	i = 0;
@@ -793,7 +793,7 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 		i = atoi (P->Magnetics_Ref_Field_Code);
 		if (!((i >= 0 && i <= 13) || i == 88)) {
 			kind = (i == 99) ? 1 : 2;
-			if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-13-06-%c: Invalid Magnetics Reference Field Code: Found (%s) : Expected : (00)\n", F->NGDC_id, kind, P->Magnetics_Ref_Field_Code);
+			if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-13-06-%c: Invalid Magnetics Reference Field Code: Found (%s) : Expected : (00)\n", F->NGDC_id, we[kind], P->Magnetics_Ref_Field_Code);
 			err++;
 		}
 	}
@@ -806,18 +806,18 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 
 	if (P->Gravity_Digitizing_Rate[0] && ((i = atoi (P->Gravity_Digitizing_Rate)) < 0 || i > 300)) {	/* 30 m */
 		kind = (i == 999) ? 1 : 2;
-		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-14-01-%c: Invalid Gravity Digitizing Rate: Found (%s) : Expected : (   )\n", F->NGDC_id, kind, P->Gravity_Digitizing_Rate);
+		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-14-01-%c: Invalid Gravity Digitizing Rate: Found (%s) : Expected : (   )\n", F->NGDC_id, we[kind], P->Gravity_Digitizing_Rate);
 		err++;
 	}
 	if (P->Gravity_Sampling_Rate[0] && ((i = atoi (P->Gravity_Sampling_Rate)) < 0 || i > 98)) {
 		kind = (i == 99) ? 1 : 2;
-		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-14-02-%c: Invalid Gravity Sampling Rate: Found (%s) : Expected : (00)\n", F->NGDC_id, kind, P->Gravity_Sampling_Rate);
+		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-14-02-%c: Invalid Gravity Sampling Rate: Found (%s) : Expected : (00)\n", F->NGDC_id, we[kind], P->Gravity_Sampling_Rate);
 		err++;
 	}
 	i = P->Gravity_Theoretical_Formula_Code - '0';
 	if (P->Gravity_Theoretical_Formula_Code && !((i >= 1 && i <= 4) || i == 8)) {
 		kind = (i == 9) ? 1 : 2;
-		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-14-03-%c: Invalid Gravity Theoretical Formula Code: Found (%c) : Expected : ( )\n", F->NGDC_id, kind, P->Gravity_Theoretical_Formula_Code);
+		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-14-03-%c: Invalid Gravity Theoretical Formula Code: Found (%c) : Expected : ( )\n", F->NGDC_id, we[kind], P->Gravity_Theoretical_Formula_Code);
 		err++;
 	}
 	i = P->Gravity_Reference_System_Code - '0';
@@ -830,12 +830,12 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 
 	if (P->Gravity_Departure_Base_Station[0] && ((i = atoi (P->Gravity_Departure_Base_Station)) < 9700000 || i > 9820000)) {
 		kind = (i == 9999999) ? 1 : 2;
-		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-15-01-%c: Invalid Gravity Departure Base Station Value: Found (%s) : Expected : (       )\n", F->NGDC_id, kind, P->Gravity_Departure_Base_Station);
+		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-15-01-%c: Invalid Gravity Departure Base Station Value: Found (%s) : Expected : (       )\n", F->NGDC_id, we[kind], P->Gravity_Departure_Base_Station);
 		err++;
 	}
 	if (P->Gravity_Arrival_Base_Station[0] && ((i = atoi (P->Gravity_Arrival_Base_Station)) < 9700000 || i > 9820000)) {
 		kind = (i == 9999999) ? 1 : 2;
-		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-15-03-%c: Invalid Gravity Arrival Base Station Value: Found (%s) : Expected : (       )\n", F->NGDC_id, kind, P->Gravity_Arrival_Base_Station);
+		if (F->verbose_level | kind) fprintf (fp_err, "#H-%s-15-03-%c: Invalid Gravity Arrival Base Station Value: Found (%s) : Expected : (       )\n", F->NGDC_id, we[kind], P->Gravity_Arrival_Base_Station);
 		err++;
 	}
 
