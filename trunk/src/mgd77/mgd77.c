@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.75 2005-10-20 06:44:21 pwessel Exp $
+ *	$Id: mgd77.c,v 1.76 2005-10-20 06:45:16 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -741,8 +741,8 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 		err++;
 	}
 	if (P->Bathymetry_Assumed_Sound_Velocity[0] && !((i = atoi (P->Bathymetry_Assumed_Sound_Velocity)) == 14630 || i == 15000)) {
-		if (i == 1463 || i = 1500)
-			fprintf (F->fp_err, "#H-%s-12-03: Bathymetry Assumed Sound Velocity: Found (%s) : Expected :(%s0)\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity);
+		if (i == 1463 || i == 1500)
+			fprintf (F->fp_err, "#H-%s-12-03: Bathymetry Assumed Sound Velocity: Found (%s) : Expected :(%s0)\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity, P->Bathymetry_Assumed_Sound_Velocity);
 		else
 			fprintf (F->fp_err, "#H-%s-12-03: Bathymetry Assumed Sound Velocity: Found (%s) : Expected :(     )\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity);
 		err++;
