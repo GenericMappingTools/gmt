@@ -123,10 +123,10 @@ mgg supplements, and plain x,y[,z] and lon,lat[,z] tracks.
 To initiate new track databases to be used with MGD77 data from NGDC, try
 .br
 .sp
-\fBx2sys_init\fP MGD77 \fB\-V \-D\fPmgd77 \fB\-E\fPmgd77 \fB\-Rd \-Gd \-I\fP1/1 \fB\-Wt\fP900  \fB\-Wd\fP2.5
+\fBx2sys_init\fP MGD77 \fB\-V \-D\fPmgd77 \fB\-E\fPmgd77 \fB\-Rd \-Gd \-I\fP1/1 \fB\-Wt\fP900  \fB\-Wd\fP5
 .br
 .sp
-where we choose a 15 minute (900 sec) or 2.5 km threshold to indicate a data gap;
+where we choose a 15 minute (900 sec) or 5 km threshold to indicate a data gap;
 the other steps are similar.
 .TP
 .B binary files

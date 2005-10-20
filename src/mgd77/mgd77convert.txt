@@ -35,8 +35,6 @@ Set the level of verification reporting and where to send such reports.  Append
 a combination of \fBw\fP for warnings, \fBe\fP for errors, and \fB+\fP to send
 such log information to stdout [ Default is stderr].
 #include "explain_-V.txt"
-Append \fBl\fP for more details on header errors and missing fields, and append \fB+\fP
-to send info to stdout [Default is stderr].
 .SH EXAMPLES
 To convert 01010047.mgd77 and 01010008.mgd77 to new netCDF .nc files, and
 capture all verification messages, try
