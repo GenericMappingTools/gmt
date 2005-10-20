@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.74 2005-10-20 06:36:21 pwessel Exp $
+ *	$Id: mgd77.c,v 1.75 2005-10-20 06:44:21 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -733,10 +733,6 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 		fprintf (F->fp_err, "#H-%s-11-05: Rightmost Longitude: Found (%s) : Expected :(    )\n", F->NGDC_id, P->Rightmost_Longitude);
 		err++;
 	}
-	if (!(w == 9999 || e == 9999) && w > e) {
-		fprintf (F->fp_err, "#H-%s-11: Leftmost Longitude %d exceeds Rightmost Longitude %d\n", F->NGDC_id, w, e);
-		err++;
-	}
 
 	/* Process Sequence No 12: */
 
@@ -745,7 +741,10 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 		err++;
 	}
 	if (P->Bathymetry_Assumed_Sound_Velocity[0] && !((i = atoi (P->Bathymetry_Assumed_Sound_Velocity)) == 14630 || i == 15000)) {
-		fprintf (F->fp_err, "#H-%s-12-03: Bathymetry Assumed Sound Velocity: Found (%s) : Expected :(     )\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity);
+		if (i == 1463 || i = 1500)
+			fprintf (F->fp_err, "#H-%s-12-03: Bathymetry Assumed Sound Velocity: Found (%s) : Expected :(%s0)\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity);
+		else
+			fprintf (F->fp_err, "#H-%s-12-03: Bathymetry Assumed Sound Velocity: Found (%s) : Expected :(     )\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity);
 		err++;
 	}
 	if (P->Bathymetry_Datum_Code[0]) {
