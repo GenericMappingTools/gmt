@@ -25,10 +25,14 @@ To obtain pathnames for cruises 01010008 and 01010007, run
 .br
 .sp
 \fBmgd77path\fP 01010008 01010007
+.br
+.sp
 To obtain pathnames for cruises 01010008 and 01010007, but only if there are MGD77+ version in netCDF, run
 .br
 .sp
 \fBmgd77path\fP 01010008 01010007 \fB\-Ia \-It\fP
+.br
+.sp
 To see the list of active directories where MGD77 files might be stored, run
 .br
 .sp
@@ -37,5 +41,6 @@ To see the list of active directories where MGD77 files might be stored, run
 .IR gmt (GMTMANSECTION)
 .IR mgd77info (GMTMANSECTION)
 .IR mgd77list (GMTMANSECTION)
+.IR mgd77manage (GMTMANSECTION)
 .IR mgd77track (GMTMANSECTION)
 #include "refs.i"
