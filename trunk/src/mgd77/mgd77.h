@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.49 2005-10-20 06:25:51 pwessel Exp $
+ *	$Id: mgd77.h,v 1.50 2005-10-20 06:30:00 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -298,6 +298,7 @@ struct MGD77_DATA_RECORD {	/* See MGD77 Documentation from NGDC for details */
 
 struct MGD77_DATASET {	/* Info for an entire MGD77+ data set */
 	int n_fields;				/* Number of active colums in the values table */
+	int errors;				/* Number of errors encountered when writing this data */
 	struct MGD77_HEADER H;			/* The file's header information */
 	void *values[MGD77_MAX_COLS];		/* 2-D table of necessary number of columns and rows (mix of double and char pointers) */
 	unsigned int *flags[MGD77_N_SETS];	/* Optional arrays of custom error bit flags for each set */
