@@ -37,7 +37,7 @@ calculation (see \fB\-N\fP for selecting units):
 .TP
 .B \-N
 Append the desired distance \fIunit\fP as \fBe\fP (meter), \fBk\fP (km),
-\fBm\fP (miles), or \fBn\fP (nautical miles).  [Default is \fB\-Nk (km)].
+\fBm\fP (miles), or \fBn\fP (nautical miles).  [Default is \fB\-Nk\fP (km)].
 Requires \fB\-D\fP.
 .TP
 .B \-T
