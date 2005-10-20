@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.73 2005-10-20 06:30:00 pwessel Exp $
+ *	$Id: mgd77.c,v 1.74 2005-10-20 06:36:21 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -641,6 +641,7 @@ int MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 		err++;
 	}
 	for (i = 0; i < 5; i++) {
+		if (P->Paramaters_Surveyed_Code[i] == '\0') continue;	/* A string might get terminated if there are trailing blanks */
 		if (P->Paramaters_Surveyed_Code[i] == ' ') continue;	/* Skip the OK codes */
 		if (P->Paramaters_Surveyed_Code[i] == '0') continue;
 		if (P->Paramaters_Surveyed_Code[i] == '1') continue;
@@ -2349,7 +2350,6 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 				sprintf (string, "%s_dim", H->info[set].col[id].abbrev);
 				MGD77_nc_status (nc_def_dim (F->nc_id, string, H->info[set].col[id].text, &dims[1]));	/* Define character length dimension */
 				if (H->info[set].col[id].constant) {	/* Simply store one value */
-					if (gmtdefs.verbose == 2) fprintf (F->fp_err, "%s: Field %s in data set %s are all constant.  One value stored\n", GMT_program, H->info[set].col[id].abbrev, file);
 					MGD77_nc_status (nc_def_var (F->nc_id, H->info[set].col[id].abbrev, H->info[set].col[id].type, 1, &dims[1], &var_id));	/* Define a 1-text variable */
 				}
 				else {	/* Must store array */
@@ -2358,7 +2358,6 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 			}
 			else {					/* This variable is a numerical field */
 				if (H->info[set].col[id].constant) {	/* Simply store one value */
-					if (gmtdefs.verbose == 2) fprintf (F->fp_err, "%s: Field %s in data set %s are all constant.  One value stored\n", GMT_program, H->info[set].col[id].abbrev, file);
 					MGD77_nc_status (nc_def_var (F->nc_id, H->info[set].col[id].abbrev, H->info[set].col[id].type, 0, NULL, &var_id));	/* Define a scalar variable */
 				}
 				else {	/* Must store array */
