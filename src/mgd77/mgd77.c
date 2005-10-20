@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.72 2005-10-20 06:25:51 pwessel Exp $
+ *	$Id: mgd77.c,v 1.73 2005-10-20 06:30:00 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2480,6 +2480,7 @@ int MGD77_Write_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 				}
 			}
 			entry++;
+			S->errors += n_bad;
 		}
 	}
 	
