@@ -2,7 +2,7 @@
 .SH NAME
 mgd77manage \- Manage extra columns in MGD77+ files
 .SH SYNOPSIS
-\fBmgd77manage\fP \fIleg-ids\fP [ \fB\-A\fP[\fB+\fP]\fBc|d|D|e|g|i|n|t|T\fP\fIfileinfo\fP ] 
+\fBmgd77manage\fP \fINGDC-ids\fP [ \fB\-A\fP[\fB+\fP]\fBc|d|D|e|g|i|n|t|T\fP\fIfileinfo\fP ] 
 [ \fB\-C\fP\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-D\fP\fIabbrev1,abbrev2,...\fP ] [ \fB\-E\fP\fIempty\fP ] 
 [ \fB\-I\fP\fIabbrev/name/unit/type/scale/offset/comment\fP ] [ \fB\-Ne\fP|\fBk\fP|\fBm\fP|\fBn\fP[\fB+\fP|\fB-\fP] 
 [ \fB\-Q\fP[\fIvalue\fP] ] [ \fB\-V\fP ] [ \fB\-bi\fP\fIn\fP[\fBs|d\fP] ]
@@ -16,8 +16,8 @@ will be appended to the MGD77+ file in the form of an extra data column of speci
 The data file will be modified; no new file will be created.  For the big issues, see DISCUSSION
 below.
 .TP
-\fIleg-ids\fP
-Can be one or more MGD77[+] 8-character cruise identifiers. To give a list of names, use `cat cruises.lis`.
+\fINGDC-ids\fP
+Can be one or more MGD77[+] 8-character NGDC cruise identifiers. To give a list of names, use `cat cruises.lis`.
 The ".nc" extension will automatically be appended, if needed.  Cruise files will be looked for
 first in the current directory and second in all directories listed in the \fB$MGD77_DIR\fP/mgd77_paths.txt
 file [If \fB$MGD77_DIR\fP is not set it defaults to \fB$GMTHOME\fP/share/mgd77].
