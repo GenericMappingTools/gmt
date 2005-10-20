@@ -2,8 +2,8 @@
 .SH NAME
 \fBx2sys_cross\fP \- Find and compute Cross-Over Errors
 .SH SYNOPSIS
-\fBx2sys_cross\fP \fIfile(s)\fP OR \fB\-L\fP\fIflist\fP [ \fB\-A\fP\fIgap\fP ] 
-[ \fB\-Cc|f|g\fP ] [ \fB\-D\fP\fIdeffile\fP ] [ \fB\-F\fP\fIflags\fP ] 
+\fBx2sys_cross\fP \fIfile(s)\fP OR \fB\-L\fP\fIflist\fP 
+[ \fB\-Cc\fP|\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-D\fP\fIdeffile\fP ] [ \fB\-F\fP\fIflags\fP ] 
 [ \fB\-Gd|g\fP ] [ \fB\-Il|a|c\fP ] [ \fB\-J\fP\fIparams\fP ] [\fB\-K\fP\fIcombi.lis\fP] [ \fB\-M\fP[\fIflag\fP] 
 [ \fB\-Nd|s\fP\fIunit\fP ] [ \fB\-O\fP ] [ \fB\-Qe|i\fP ] [ \fB\-Sl|u\fP\fIspeed\fP ] 
 [ \fB\-T\fP\fITAG\fP ] [ \fB\-Wt\fP|\fBd\fP|\fBn\fP\fIsize\fP ] [ \fB\-V\fP ] 
@@ -18,9 +18,6 @@ If they are identical or only one name is passed, then
 \fBx2sys_cross\fP will also look for internal cross-overs.  The optional
 parameters are:
 .TP
-.B \-A
-Ignore crossovers on segments of length > \fIgap\fP [no gap checking].
-.TP
 .B \-C
 Select procedure for along-track distance calculation:
 .br
@@ -30,6 +27,7 @@ Select procedure for along-track distance calculation:
 .br
 	\fBg\fP Great circle distances.
 .br
+	\fBe\fP Geodesic distances on current GMT ellipsoid.
 .TP
 .B \-D
 Give the definition file for this data format [x2sys].
@@ -89,8 +87,9 @@ Sets the data set \fITAG\fP which among other things sets the definition file.
 .B \-W
 Give \fBt\fP, \fBd\fP, or \fBn\fP and append the corresponding
 maximum time gap [Infinity], or distance gap [Infinity] (both in user units) allowed between
-the two points immediately on either side of a crossover or the maximum number of points to
-use in the interpolation [6].
+the two points immediately on either side of a crossover.  If the gap exceeds this maximum
+gap we skip the crossover calculation.  For \fB\-Wn\fP give the maximum number of points on
+either side to use in the interpolation [3].
 .TP
 .B \-2
 Report the values of each track at the crossover [Default is the crossover value and the mean value].

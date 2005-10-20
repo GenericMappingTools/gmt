@@ -242,7 +242,7 @@ Apply optimal corrections to columns where such corrections are avaiable.  Appen
 table to use [Default uses the correction table in the $MGD77_HOME directory].
 .TP
 .B \-Z
-Append the sign you want for depth values (\fB\-Z-\fP gives negative bathymetry) [Default
+Append the sign you want for depth and msd values below sea level (\fB\-Z-\fP gives negative bathymetry) [Default
 is positive down].
 .TP
 .B \-bo

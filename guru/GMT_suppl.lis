@@ -77,6 +77,7 @@ src/mgd77/mgd77list.html
 src/mgd77/mgd77manage.c
 src/mgd77/mgd77manage.man
 src/mgd77/mgd77manage.html
+src/mgd77/mgd77netcdfhelper.sh
 src/mgd77/mgd77path.c
 src/mgd77/mgd77path.man
 src/mgd77/mgd77path.html
@@ -198,8 +199,11 @@ src/x2sys/x2sys_put.c
 src/x2sys/x2sys_put.man
 src/x2sys/x2sys_put.html
 src/x2sys/makefile
+src/x2sys/geo.def
+src/x2sys/geoz.def
 src/x2sys/gmt.def
 src/x2sys/mgd77.def
+src/x2sys/mgd77+.def
 src/x2sys/xy.def
 src/x2sys/xyz.def
 src/x_system/README.x_system

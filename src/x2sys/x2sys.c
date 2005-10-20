@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.46 2005-10-19 12:45:37 pwessel Exp $
+ *	$Id: x2sys.c,v 1.47 2005-10-20 00:47:33 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -833,8 +833,18 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 					}
 					break;
 				case 'W':
-					n = sscanf (&p[2], "%lf/%lf", &B->time_gap, &dist);
-					if (n == 2) B->dist_gap = dist;
+					switch (p[2]) {
+						case 't':
+							B->time_gap = atof (&p[3]);
+							break;
+						case 'd':
+							B->dist_gap = atof (&p[3]);
+							break;
+						default:	/* Backwards compatible with old -Wtgap/dgap option */
+							n = sscanf (&p[2], "%lf/%lf", &B->time_gap, &dist);
+							if (n == 2) B->dist_gap = dist;
+						break;
+					}
 					break;
 				default:
 					fprintf (stderr, "%s: Bad arg in x2sys_set_system! (%s)\n", X2SYS_program, p);

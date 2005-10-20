@@ -1,10 +1,10 @@
 .TH X2SYS_INIT GMTMANSECTION DATE VERSION VERSION
 .SH NAME
-x2sys_init \- Initialize data baes for track data files
+x2sys_init \- Initialize data base for track data files
 .SH SYNOPSIS
 \fBx2sys_init\fP \fITAG\fP [ \fB\-D\fP\fIdeffile\fP ] [ \fB\-E\fP\fIsuffix\fP ] 
 [ \fB\-F\fP ] [ \fB\-Gd|g\fP ] [ \fB\-I\fP\fIdx\fP[\fIdy\fP] ] 
-[ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-V\fP ] [ \fB\-W\fP\fItgap\fP[/\fIdgap\fP] ]
+[ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-V\fP ] [ \fB\-Wt\fP|\fBd\fP\fIgap\fP ]
 .SH DESCRIPTION
 \fBx2sys_init\fP initializes a set of data bases that are particular to one kind
 of track data.  These data and their associated data bases are given a short-hand
@@ -39,10 +39,10 @@ at Greenwhich (makes longitude go from 0 to 360 [Default]).
 #include "explain_-V.txt"
 .TP
 .B \-W
-Sets maximum time gap (in user units; this is typically seconds) allowed between
-points on either side of a crossover [Default is Infinity].  Optionally, give a
-separate distance gap (in user units; this is typically km) for those data sets
-that do not have time information [Default is Infinity].
+Give \fBt\fP or \fBd\fP and append the corresponding
+maximum time gap (in user units; this is typically seconds [Infinity]), or distance gap
+(in user units; this is typically km [Infinity] ) allowed between
+the two points immediately on either side of a crossover.
 .SH EXAMPLES
 If you have a large set of track data files you can organize them using the
 x2sys tools.  Here we will outline the steps.  Let us assume that your track
@@ -53,31 +53,36 @@ We will call this the "line" format.  First we create the line.def file:
 .sp
 \fB\fP# Define file for the line format
 .br
-\fB\fP#ASCII		# File is ascii
+\fB\fP#ASCII		# File is ASCII
 .br
 \fB\fP#SKIP 2		# Skip 2 header records
 .br
 \fB\fP#name	intype NaN-proxy?	NaN-proxy	scale offset oformat
 .br
-lon	a	N	0	1	0	%10.5lf
+lon	a	N	0	1	0	%10.5f
 .br
-lat	a	N	0	1	0	%9.5lf
+lat	a	N	0	1	0	%9.5f
 .br
-time	a	N	0	1	0	%7.1lf
+time	a	N	0	1	0	%7.1f
 .br
-obs1	a	N	0	1	0	%7.2lf
+obs1	a	N	0	1	0	%7.2f
 .br
-obs2	a	N	0	1	0	%7.2lf
+obs2	a	N	0	1	0	%7.2f
 .br
-obs3	a	N	0	1	0	%7.2lf
+obs3	a	N	0	1	0	%7.2f
 .br
 .sp
-For ascii data the intype format is always a, Nan-proxy? should be Y
+For ASCII data the intype format is always a, Nan-proxy? should be Y
 if there are certain values (e.g., -9999) that is used to represent
 missing data (NaNs).  If so, the NaN-proxy values should be set
 accordingly (otherwise it is ignored).  The scale and offset is
 applied to the data after it is read (first scaled, then offset), 
 whereas the oformat is used by some programs for formatted output.
+Some file formats already have definition files premade.  These include
+mgd77 (for plain ASCII MGD77 data files), mgd77+ (for enhanced MGD77+
+netCDF files), gmt (for old mgg supplement binary files), xy (for plain ASCII
+x, y tables), xyz (same, with z-column), geo (for plain ASCII longitude,
+latitude files), and geoz (same, with z-column).
 .br
 Next we create the TAG and the databases for these line track files.
 Assuming these are geographic and that we want to keep track of the
@@ -111,13 +116,14 @@ Now you may use \fBx2sys_get\fP to find all the tracks within a certain
 sub-region, and optionally limit the search to those tracks that have
 a particular combination of observables.
 .TP
-.B MGD77 or GMT
-Definition files already exist for MGD77 files, the old
-*.gmt files manipulated by the mgg supplements, and plain x,y,z tracks.
+.B MGD77[+] or GMT
+Definition files already exist for MGD77 files (both standard ASCII and
+net netCDF-based MGD77+ files), the old *.gmt files manipulated by the
+mgg supplements, and plain x,y[,z] and lon,lat[,z] tracks.
 To initiate new track databases to be used with MGD77 data from NGDC, try
 .br
 .sp
-\fBx2sys_init\fP MGD77 \fB\-V \-D\fPmgd77 \fB\-E\fPmgd77 \fB\-Rd \-Gd \-I\fP1/1 \fB\-W\fP900/2.5
+\fBx2sys_init\fP MGD77 \fB\-V \-D\fPmgd77 \fB\-E\fPmgd77 \fB\-Rd \-Gd \-I\fP1/1 \fB\-Wt\fP900  \fB\-Wd\fP2.5
 .br
 .sp
 where we choose a 15 minute (900 sec) or 2.5 km threshold to indicate a data gap;
@@ -141,21 +147,21 @@ All that is needed is a different line.def file:
 .br
 \fB\fP#name	intype NaN-proxy?	NaN-proxy	scale offset oformat
 .br
-lon	d	N	0	1	0	%10.5lf
+lon	d	N	0	1	0	%10.5f
 .br
-lat	d	N	0	1	0	%9.5lf
+lat	d	N	0	1	0	%9.5f
 .br
-time	d	N	0	1	0	%7.1lf
+time	d	N	0	1	0	%7.1f
 .br
-obs1	h	Y	32000	0.1	0	%6.1lf
+obs1	h	Y	32000	0.1	0	%6.1f
 .br
-obs2	h	Y	32000	0.1	0	%6.1lf
+obs2	h	Y	32000	0.1	0	%6.1f
 .br
-obs3	h	N	0	0.1	0	%6.1lf
+obs3	h	N	0	0.1	0	%6.1f
 .br
 .sp
 The rest of the steps are identical.  The accepted intype flags are
-\fBc\fP fur signed 1-byte character (-127,+128), \fBu\fP for unsigned
+\fBc\fP for signed 1-byte character (-127,+128), \fBu\fP for unsigned
 byte (0-255), \fBh\fP for signed 2-byte integers (-32767,+32767),
 \fBi\fP for  signed 4-byte integers (-2,147,483,647,+2,147,483,647),
 \fBf\fP for 4-byte floating points and \fBd\fP for 8-byte double
