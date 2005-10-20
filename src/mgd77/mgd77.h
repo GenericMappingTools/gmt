@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.48 2005-10-20 05:50:46 pwessel Exp $
+ *	$Id: mgd77.h,v 1.49 2005-10-20 06:25:51 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -277,6 +277,7 @@ struct MGD77_HEADER {
 	char *history;					/* History of creation/modifications */
 	int n_records;					/* Number of MGD77 data records found */
 	int n_fields;					/* Number of columns returned */
+	int errors;					/* Number of errors found when reading this header */
 	BOOLEAN no_time;				/* TRUE for those few cruises that have no time values */
 	struct MGD77_DATA_INFO info[MGD77_N_SETS];	/* Info regarding [0] standard MGD77 columns and [1] any extra columns (max 32 each) */
 };

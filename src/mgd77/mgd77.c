@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.71 2005-10-20 06:19:55 pwessel Exp $
+ *	$Id: mgd77.c,v 1.72 2005-10-20 06:25:51 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -305,7 +305,7 @@ int MGD77_Close_File (struct MGD77_CONTROL *F)  /* Closes a MGD77[+] file */
 
 int MGD77_Read_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {	/* Reads the header structgure form a MGD77[+] file */
-	int error, k;
+	int error;
 	
 	switch (F->format) {
 		case MGD77_FORMAT_M77:	/* Will read MGD77 headers from MGD77 files or ascii tables */
@@ -320,8 +320,7 @@ int MGD77_Read_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_
 			break;
 	}
 	
-	k = MGD77_Verify_Header (F, H->mgd77);
-	if (k) fprintf (stderr, "%s: %d header errors found\n", GMT_program, k);
+	H->errors = MGD77_Verify_Header (F, H->mgd77);
 	
 	return (error);
 }
