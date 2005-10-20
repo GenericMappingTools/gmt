@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.15 2005-10-19 12:45:37 pwessel Exp $
+#	$Id: Makefile,v 1.16 2005-10-20 05:58:12 pwessel Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -112,5 +112,5 @@ $(MGD77):	$(MGD77_O) libmgd77.a
 .c.o:
 		$(CC) -c $(CFLAGS) $<
 
-mgd77_functions.h:	mgd77netcdfhelper.sh
+mgd77_functions.h:	mgd77netcdfhelper.sh mgd77.h
 		$(SHELL) mgd77netcdfhelper.sh
