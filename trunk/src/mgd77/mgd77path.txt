@@ -2,13 +2,13 @@
 .SH NAME
 mgd77path \- Get full pathname for MGD77 files
 .SH SYNOPSIS
-\fBmgd77path\fP \fIcruises\fP [ \fB\-D\fP ] [ \fB\-I\fP\fIignore\fP ] 
+\fBmgd77path\fP \fINGDC-ids\fP [ \fB\-D\fP ] [ \fB\-I\fP\fIignore\fP ] 
 .SH DESCRIPTION
 \fBmgd77path\fP returns the full pathname to one or more MGD77 files. The pathname returned for a given
 cruise may change with time due to reshuffling of disks/subdirectories.
 .TP
-\fIleg-ids\fP
-Can be one or more MGD77 cruise names, like 01010008.  Use `cat legs.lis` to pass all the legnames
+\fINGDC-ids\fP
+Can be one or more MGD77 NGDC cruise names, like 01010008.  Use `cat legs.lis` to pass all the legnames
 in the file legs.lis. 
 .SH OPTIONS
 No space between the option flag and the associated arguments
