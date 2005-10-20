@@ -5,7 +5,7 @@ mgd77manage \- Manage extra columns in MGD77+ files
 \fBmgd77manage\fP \fIleg-ids\fP [ \fB\-A\fP[\fB+\fP]\fBc|d|D|e|g|i|n|t|T\fP\fIfileinfo\fP ] 
 [ \fB\-C\fP\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-D\fP\fIabbrev1,abbrev2,...\fP ] [ \fB\-E\fP\fIempty\fP ] 
 [ \fB\-I\fP\fIabbrev/name/unit/type/scale/offset/comment\fP ] [ \fB\-Ne\fP|\fBk\fP|\fBm\fP|\fBn\fP[\fB+\fP|\fB-\fP] 
-[ \fB\-Q\fP[\fIvalue\fP] [ \fB\-V\fP ] [ \fB\-bi\fP\fIn\fP[\fBs|d\fP] ]
+[ \fB\-Q\fP[\fIvalue\fP] ] [ \fB\-V\fP ] [ \fB\-bi\fP\fIn\fP[\fBs|d\fP] ]
 .SH DESCRIPTION
 \fBmgd77manage\fP deals with maintaining extra custom columns in MGD77+ netCDF files.
 You can either delete one or more columns, add a new column, update an existing
@@ -20,7 +20,7 @@ below.
 Can be one or more MGD77[+] 8-character cruise identifiers. To give a list of names, use `cat cruises.lis`.
 The ".nc" extension will automatically be appended, if needed.  Cruise files will be looked for
 first in the current directory and second in all directories listed in the \fB$MGD77_DIR\fP/mgd77_paths.txt
-file [Default is \fB$GMTHOME\fP/share/mgd77/mgd77_paths.txt].
+file [If \fB$MGD77_DIR\fP is not set it defaults to \fB$GMTHOME\fP/share/mgd77].
 .SH OPTIONS
 No space between the option flag and the associated arguments
 .TP
@@ -54,11 +54,11 @@ name of a GMT grid file.
 .br
 .sp
 \fBi\fP Sample a Sandwell/Smith Mercator *.img grid along the track given by the MGD77+ file.  Append
-grid spacing in minutes (1 or 2), the data scale (typically 1 or 10), the IMG file mode (0-3), and
-finally the grid filename.  The modes stand for the following: (0) Obsolete img files with no constraint
+grid spacing in minutes (1 or 2), the gridded data scale (typically 1 or 10), the IMG file mode (0-3), and
+finally the img grid filename.  The modes stand for the following: (0) Obsolete img files with no constraint
 code, returns data, (1) New img file with constraints coded, return data at all points, (2) new img file
 with constraints coded, return data only at constrained points and NaN elsewhere, and (3) new img file
-with constraints coded, return 1 at constraints and 0 elsewhere.
+with constraints coded, return 1 at constraints and 0 elsewhere.  The modes
 .br
 .sp
 \fBn\fP Append filename of a double column table with first column holding the record number (0 to nrows - 1),
@@ -137,7 +137,10 @@ To delete the existing extra columns satfaa, coastdist, and satvgg from all MGD7
 .br
 .sp
 \fBmgd77manage\fP `cat allmgd77.lis` \fB\-D\fPsatfaa,coastdist,satvgg \fB\-V\fP
+.br
+.sp
 .SH DISCUSSION
+.sp
 \fB1. Preamble\fP
 .br
 The mgd77 supplement is an attempt to (1) improve on the limited functionality of the

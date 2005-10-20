@@ -43,6 +43,9 @@ To convert 01010047.nc to a plain ASCII table, overwriting any existing table, t
 .br
 .sp
 \fBmgd77convert\fP 01010047 \fB\-Fc \-T+t \-V\fP
+.SH OTHER TOOLS
+The MGD77+ netCDF files are COARDS compliant and can be examined with general-purpose
+tools such as ncBrowse and ncView.
 .SH "SEE ALSO"
 .IR mgd77manage (GMTMANSECTION),
 .IR mgd77list (GMTMANSECTION),
@@ -50,3 +53,7 @@ To convert 01010047.nc to a plain ASCII table, overwriting any existing table, t
 .IR mgd77track (GMTMANSECTION)
 .IR x2sys_init (GMTMANSECTION)
 #include "refs.i"
+ncBrowse, see \fIhttp://www.epic.noaa.gov/java/ncBrowse/\fP
+.br
+ncView, see \fIhttp://meteora.ucsd.edu/~pierce/ncview_home_page.html\fP
+.br

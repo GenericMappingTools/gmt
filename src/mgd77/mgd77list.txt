@@ -4,7 +4,7 @@ mgd77list \- A data-extractor for MGD77[+] files
 .SH SYNOPSIS
 \fBmgd77list\fP \fIleg-ids\fP [ \fB\-C\fP\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-Da\fP\fIstartdate\fP ] [ \fB\-Db\fP\fIstopdate\fP ] 
 [ \fB\-E\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-H\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
-[ \fB\-Nd|s\fP\fIunit\fP ] [ \fB\-P\fP[\fIcode\fP] ] [ \fB\-R\fIwest/east/south/north\fP ] 
+[ \fB\-Nd|s\fP\fIunit\fP ] [ \fB\-P\fP\fIcode\fP ] [ \fB\-R\fIwest/east/south/north\fP ] 
 [ \fB\-Sa\fP\fIstartdist\fP[unit] ] [ \fB\-Sb\fP\fIstopdist\fP[unit] ] [ \fB\-V\fP ] 
 [ \fB\-W\fP\fIweight\fP ] [ \fB\-X\fP[\fIcorrtable\fP] ] [ \fB\-Z\fP\fI+\fP|\fB-\fP ] [ \fB\-bo\fP ]
 .SH DESCRIPTION
@@ -24,8 +24,8 @@ each record.
 Can be one or more MGD77 8-character cruise identifiers. To give a list of names, use `cat cruises.lis`.
 The ".mgd77" or ".nc" extensions will automatically be appended, if needed (use \fB\-I\fP
 to ignore certain file types).  Cruise files will be looked for first in the current directory
-and second in all directories listed in \fB$MGD77_DIR\fP/mgd77_paths.txt [Default is
-\fB$GMTHOME\fP/share/mgd77/mgd77_paths.txt].
+and second in all directories listed in \fB$MGD77_DIR\fP/mgd77_paths.txt [If \fB$MGD77_DIR\fP
+is not set it defaults to \fB$GMTHOME\fP/share/mgd77].
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -58,7 +58,10 @@ given in UPPER case must be present in all output records.  The output format
 The digital record type (usually 3 or 5 (for Y2K-compliant cruises))
 .TP
 .B id
-The 8-character cruise ID string
+The survey ID string (leg name)
+.TP
+.B ngdcid
+The 8-character NGDC cruise ID string (usually the file prefix)
 .TP
 .B time
 Choose between Absolute calendar time (\fBatime\fP, the default) in the format dictated by the GMT
@@ -150,9 +153,8 @@ The minutes of each record.
 The decimal seconds of each record.
 .TP
 .B dist
-Choose between ellipsoidal, along-track distances (\fBedist\fP, the default) or quick,
-flat-earth approximate along-track distances (\fBfdist\fP).
-For distance units, see \fB\-N\fP [km].
+For method of calculation, see \fB\-C\fP [spherical great circle distances], and
+for distance units, see \fB\-N\fP [km].
 .TP
 .B az
 Ship azimuth (heading) in degrees, measured clockwise from north.
@@ -170,8 +172,8 @@ The following short-hand flags are also recognized:
 This results in all 27 MGD77 fields being written out in the offical MGD77 order [Default].
 .TP
 .B geo
-This limits the output to 11 fields (ID, time, lon, lat plus the seven geophysical observations
-twt, depth, mtf1, mtf2, mag, gobs, faa).
+This limits the output to 11 fields (\fBid\fP, \fBtime\fP, \fBlon\fP, \fBlat\fP plus the seven geophysical observations
+\fBtwt\fP, \fBdepth\fP, \fBmtf1\fP, \fBmtf2\fP, \fBmag\fP, \fBgobs\fP, and \fBfaa\fP).
 By appending \fB+\fP to either set we will also append \fBdist\fP, \fBazim\fP, \fBvel\fP, and
 \fBweight\fP as listed above.
 .br
@@ -181,7 +183,7 @@ of the form \fIpar\fP\fBOP\fP\fIvalue\fP, where \fIpar\fP is one of the paramete
 a logical operator (<, <=, =, !=, >=, >, |), and \fIvalue\fP is a constant used in the comparison.  Floating point
 parameters are compared numerically; character parameters are compared lexically (after leading and trailing
 blanks have been removed).  The bit comparison (|) means that at least one of the bits in \fIvalue\fP
-must be turned on in \fIpar\fP.  At least one of the tests must be true for the record to be output, expect for
+must be turned on in \fIpar\fP.  At least one of the tests must be true for the record to be output, except for
 tests using UPPER case parameters which all must be true for output to occur.  Note that
 specifying a test does not imply that the corresponding column will be included in the output stream;
 you must specify the dataflag for that to occur. Note: some of the operators are special UNIX characters
@@ -197,11 +199,11 @@ Issue a header record with names for each data field.
 .TP
 .B \-I
 Ignore certain data file formats from consideration. Append \fBa|c|t\fP to ignore
-MGD77 ASCII, MGD77+ netCDF, or plain table files, respectively. The option may
+MGD77 ASCII, MGD77+ netCDF, or plain tab-separated ASCII table files, respectively. The option may
 be repreated to ignore more than one format.  [Default ignores none].
 .TP
 .B \-M
-Issue a multisegment header record with cruise ID for each cruise.
+Issue a multi-segment header record with cruise ID for each cruise.
 .TP
 .B \-N
 Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
@@ -209,8 +211,7 @@ Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\
 \fBn\fP (nautical miles and knots).  [Default is \fB\-Ndk \-Nse\fP (km and m/s)].
 .TP
 .B \-P
-Output the NGDC identifier as first column (in addition to what is set with \fB\-F\fP).  Optionally,
-append a 2-character institution code.  Then, only files from this institution will be processed.
+Append a 2-character institution code.  Only files from this institution will be processed.
 The following is the list of NGDC institution codes:
 (01) LAMONT (LDEO), (02) WOODS HOLE O.I., (03) NOAA, (04) US ARMY, (05) NEW ZEALAND,
 (06) US GEOL. SURVEY, (07) OREGON ST. UNIV, (08) U.HAWAII SOEST, (09) US NAVY, (10) UNIV OF TEXAS,
@@ -239,10 +240,10 @@ useful if the data are to be processed with the weighted averaging techniques of
 .TP
 .B \-X
 Apply optimal corrections to columns where such corrections are avaiable.  Append the correction
-table to use [Default uses the correction table in the $MGD77_HOME directory].
+table to use [Default uses the correction table in the \fB$MGD77_HOME\fP directory].
 .TP
 .B \-Z
-Append the sign you want for depth and msd values below sea level (\fB\-Z-\fP gives negative bathymetry) [Default
+Append the sign you want for \fBdepth\fP and \fBmsd\fP values below sea level (\fB\-Z-\fP gives negative bathymetry) [Default
 is positive down].
 .TP
 .B \-bo
@@ -270,12 +271,12 @@ from all the cruises listed in the file cruises.lis:
 \fBmgd77list\fP `cat cruises.lis` \fB\-F\fP"depth,DEPTH>9000,BTC!=1" > really_deep.d
 .br
 .sp
-To extract dist, faa, and grav12.2 from records whose depths are shallower than 3 km
+To extract dist, faa, and grav12_2 from records whose depths are shallower than 3 km
 and where none of the requested fields are NaN, from all the MGD77+ netCDF files whose
 cruise ids are listed in the file cruises.lis, we try
 .br
 .sp
-\fBmgd77list\fP `cat cruises.lis` \fB\-E \-Ia \-F\fP"dist,faa,grav12,2,depth<3000" > shallow_grav.d
+\fBmgd77list\fP `cat cruises.lis` \fB\-E \-Ia \-F\fP"dist,faa,grav12_2,depth<3000" > shallow_grav.d
 .SH "SEE ALSO"
 .IR mgd77convert (GMTMANSECTION),
 .IR mgd77info (GMTMANSECTION),

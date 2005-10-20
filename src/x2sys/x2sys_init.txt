@@ -101,15 +101,15 @@ to by \fB$X2SYS_HOME\fP.
 .br
 .TP
 .B create tbf file(s)
-Once the (empty) TAG database have been initialize we go through a two-
-step process to populate them.  First we run \fBx2sys_binlist\fP on
+Once the (empty) TAG database have been initialized we go through a
+two-step process to populate them.  First we run \fBx2sys_binlist\fP on
 all our track files to create one (or more) multi-segment track binindex
 files (tbf).  These contain information on which 1x1 degree bins (or any
 other blocksize; see \fB\-I\fP) each
 track has visited and which observations (in your case obs1, obs2, obs3)
 where actually observed (not all tracks may have all the kinds of
 observations).  Next, the track binindex files are fed to \fBx2sys_put\fP
-which will insert the information into the tag databases.
+which will insert the information into the TAG databases.
 .TP
 .B search
 Now you may use \fBx2sys_get\fP to find all the tracks within a certain
@@ -118,7 +118,7 @@ a particular combination of observables.
 .TP
 .B MGD77[+] or GMT
 Definition files already exist for MGD77 files (both standard ASCII and
-net netCDF-based MGD77+ files), the old *.gmt files manipulated by the
+enhanced netCDF-based MGD77+ files), the old *.gmt files manipulated by the
 mgg supplements, and plain x,y[,z] and lon,lat[,z] tracks.
 To initiate new track databases to be used with MGD77 data from NGDC, try
 .br

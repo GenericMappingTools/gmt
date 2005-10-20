@@ -4,19 +4,18 @@
 .SH SYNOPSIS
 \fBx2sys_cross\fP \fIfile(s)\fP OR \fB\-L\fP\fIflist\fP 
 [ \fB\-Cc\fP|\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-D\fP\fIdeffile\fP ] [ \fB\-F\fP\fIflags\fP ] 
-[ \fB\-Gd|g\fP ] [ \fB\-Il|a|c\fP ] [ \fB\-J\fP\fIparams\fP ] [\fB\-K\fP\fIcombi.lis\fP] [ \fB\-M\fP[\fIflag\fP] 
+[ \fB\-Gd|g\fP ] [ \fB\-Il|a|c\fP ] [ \fB\-J\fP\fIparams\fP ] [\fB\-K\fP\fIcombi.lis\fP] [ \fB\-M\fP[\fIflag\fP] ] 
 [ \fB\-Nd|s\fP\fIunit\fP ] [ \fB\-O\fP ] [ \fB\-Qe|i\fP ] [ \fB\-Sl|u\fP\fIspeed\fP ] 
 [ \fB\-T\fP\fITAG\fP ] [ \fB\-Wt\fP|\fBd\fP|\fBn\fP\fIsize\fP ] [ \fB\-V\fP ] 
 [ \fB\-2\fP ] [ \fB\-bo\fP[\fBs\fP] ]
 .SH DESCRIPTION
-\fBx2sys_cross\fP is used to determine all intersections between or within
-tracks, and report the time, position, discrepancies in all observables, the
+\fBx2sys_cross\fP is used to determine all intersections between ("external cross-overs") or within
+("internal cross-overs") tracks, and report the time, position, discrepancies in all observables, the
 mean values of the observables, heading along each tracksegment, and the
 distance along track at the cross-over point. The names of the files are passed
 on the command line, or as a list of files with the \fB\-L\fP option.
-If they are identical or only one name is passed, then
-\fBx2sys_cross\fP will also look for internal cross-overs.  The optional
-parameters are:
+By default, \fBx2sys_cross\fP will  look for both external and internal cross-overs.
+The optional parameters are:
 .TP
 .B \-C
 Select procedure for along-track distance calculation:
@@ -55,7 +54,6 @@ Sets the interpolation mode. Choose among:
 .B \-K
 Only process the pair-combinations found in the file \fIcombi.lis\fP
 [Default process all possible combinations among the specified files].
-Suitable option for passing old \fBx_setup\fP output.
 #include "explain_-M.txt"
 .TP
 .B \-N
@@ -88,7 +86,7 @@ Sets the data set \fITAG\fP which among other things sets the definition file.
 Give \fBt\fP, \fBd\fP, or \fBn\fP and append the corresponding
 maximum time gap [Infinity], or distance gap [Infinity] (both in user units) allowed between
 the two points immediately on either side of a crossover.  If the gap exceeds this maximum
-gap we skip the crossover calculation.  For \fB\-Wn\fP give the maximum number of points on
+gap we skip the crossover calculation.  For \fB\-Wn\fP, give the maximum number of points on
 either side to use in the interpolation [3].
 .TP
 .B \-2
@@ -100,9 +98,9 @@ The COEs found are printed out to standard output in ASCII format (unless
 whether or not old-style XOVER output (\fB\-O\fP) has been selected.
 If so, then the first record contains the file names and their start year,
 whereas subsequent records have the data for each COE encountered.  The fields
-written out are lat, lon, time along track #1, time along track #2,
+written out are lat, lon, time along track #1 and track #2,
 x_gravity, x_magnetics, x_bathymetry, average gravity, average magnetics,
-average bathymetry, heading along track #1, and heading along track #2. If
+average bathymetry, heading along track #1 and track #2. If
 the default format is chosen then the header record starts with "> ", and
 the output format for crossovers are first 10 columns that contain
 x, y, time along track #1 and track #2, distance along track #1 and track #2,
@@ -124,7 +122,7 @@ To find the crossover locations with bathymetry between the two MGD77
 files A13232.mgd77 and A99938.mgd77, try
 .br
 .sp
-\fBx2sys_cross\fP A13232.mgd77 A99938.mgd77 \fB\-Qe \-D\fPmgd77 \fB\-F\fPlon,lat,top > crossovers.d
+\fBx2sys_cross\fP A13232.mgd77 A99938.mgd77 \fB\-Qe \-D\fPmgd77 \fB\-F\fPlon,lat,depth > crossovers.d
 .SH "SEE ALSO"
 .IR gmt (GMTMANSECTION),
 .IR x2sys_datalist (GMTMANSECTION)
