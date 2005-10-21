@@ -2,7 +2,7 @@
 .SH NAME
 mgd77manage \- Manage extra columns in MGD77+ files
 .SH SYNOPSIS
-\fBmgd77manage\fP \fINGDC-ids\fP [ \fB\-A\fP[\fB+\fP]\fBc|d|D|e|g|i|n|t|T\fP\fIfileinfo\fP ] 
+\fBmgd77manage\fP \fINGDC-ids\fP [ \fB\-A\fP[\fB+\fP]\fBa|c|d|D|e|g|i|n|t|T\fP\fIfileinfo\fP ] 
 [ \fB\-C\fP\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-D\fP\fIabbrev1,abbrev2,...\fP ] [ \fB\-E\fP\fIempty\fP ] 
 [ \fB\-I\fP\fIabbrev/name/unit/type/scale/offset/comment\fP ] [ \fB\-Ne\fP|\fBk\fP|\fBm\fP|\fBn\fP[\fB+\fP|\fB-\fP] 
 [ \fB\-Q\fP[\fIvalue\fP] ] [ \fB\-V\fP ] [ \fB\-bi\fP\fIn\fP[\fBs|d\fP] ]
@@ -10,17 +10,13 @@ mgd77manage \- Manage extra columns in MGD77+ files
 \fBmgd77manage\fP deals with maintaining extra custom columns in MGD77+ netCDF files.
 You can either delete one or more columns, add a new column, update an existing
 column with new data, or supply error correction information (*.e77 files).  New data may come
-from a table (ASCII unless \fB\-b\fP is used), or they may be obtained by sampling a grid
+from a table (ASCII unless \fB\-b\fP is used), be based on existing columns and certain
+theoretical expressions, or they may be obtained by sampling a grid
 (choose between GMT grid or a Sandwell/Smith Mercator *.img grid) along track.  The new data
 will be appended to the MGD77+ file in the form of an extra data column of specified type.
 The data file will be modified; no new file will be created.  For the big issues, see DISCUSSION
 below.
-.TP
-\fINGDC-ids\fP
-Can be one or more MGD77[+] 8-character NGDC cruise identifiers. To give a list of names, use `cat cruises.lis`.
-The ".nc" extension will automatically be appended, if needed.  Cruise files will be looked for
-first in the current directory and second in all directories listed in the \fB$MGD77_DIR\fP/mgd77_paths.txt
-file [If \fB$MGD77_DIR\fP is not set it defaults to \fB$GMTHOME\fP/share/mgd77].
+#include "mgd77/explain_ncid.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments
 .TP
@@ -31,8 +27,17 @@ sometimes an existing column cannot be upgraded without first deleting it; if so
 Select a column source among the following choices:
 .br
 .sp
-\fBc\fP Append filename of a single column table with same number of rows as the MGD77+ file. If
-no file is given we read from stdin instead.
+\fBa\fP Append filename of a single column table to add.  File must have the same number of rows as
+the MGD77+ file. If no file is given we read from stdin instead.
+.br
+.sp
+\fBc\fP Create a new column that derives from existing data and formulas for corrections and reference
+fields.  Append \fBm\fP for the IGRF total field magnetic reference field, \fBc\fP for the Carter
+corrections to uncorrected depths, and \fBg\fP for the IGF gravity reference field (a.k.a "normal
+gravity").  For the latter we choose the reference field based on the parameter Gravity Theoretical
+Formula Code in the cruise's MGD77 header.  If this is not set or invalid we default to the IGF 1980.
+You can override this behaviour by appending the desired code: 1 = Heiskanen 1924, 2 = International
+1930, 3 = IGF1967, or 4 = IGF1980.
 .br
 .sp
 \fBd\fP  Append filename of a double column table with first column holding distances along track,
@@ -55,10 +60,10 @@ name of a GMT grid file.
 .sp
 \fBi\fP Sample a Sandwell/Smith Mercator *.img grid along the track given by the MGD77+ file.  Append
 grid spacing in minutes (1 or 2), the gridded data scale (typically 1 or 10), the IMG file mode (0-3), and
-finally the img grid filename.  The modes stand for the following: (0) Obsolete img files with no constraint
-code, returns data, (1) New img file with constraints coded, return data at all points, (2) new img file
-with constraints coded, return data only at constrained points and NaN elsewhere, and (3) new img file
-with constraints coded, return 1 at constraints and 0 elsewhere.  The modes
+finally the img grid filename.  The modes stand for the following: (0) Img files with no constraint
+code, returns data, (1) Img file with constraints coded, return data at all points, (2) Img file
+with constraints coded, return data only at constrained points and NaN elsewhere, and (3) Img file
+with constraints coded, return 1 at constraints and 0 elsewhere.
 .br
 .sp
 \fBn\fP Append filename of a double column table with first column holding the record number (0 to nrows - 1),
@@ -107,17 +112,12 @@ one word (e.g., "Corrected Depth").
 .B \-N
 Specify the distance unit when using \fB\-Ad\fP|\fBD\fP by appending \fBe\fP (meter), \fBk\fP (km),
 \fBm\fP (miles), or \fBn\fP (nautical miles). [Default is \fB\-Nk\fP (km)].
-.TP
-.B \-Q
-Quick mode, use bilinear rather than bicubic interpolation.  Requires \fB\-Ag\fP|\fBi\fP.  Optionally,
-append \fIvalue\fP in the 0 < \fIvalue\fP <= 1 range.  This parameter controls how close to nodes with
-NaN values the interpolation will go.  E.g., a \fIvalue\fP of 0.5 will interpolate about 1/2-way from
-a non-NaN to a NaN node, whereas 0.1 will go about 90% of the way, etc. [Default is 1, which means none
-of the four nearby nodes may be NaN].  Note: If \fB\-Q\fP0 is given we will not interpolate but base
-the output on the nearest grid node.
+#include "explain_-Q.txt"
+Only relevant when \fB\-Ag\fP|\fBi\fP is selected.  
 #include "explain_-V.txt"
 #include "explain_-i_binary.txt"
-Only suitable for numerical data columns.
+This applies to the input 1- or 2-column data files specified under some of the \fB\-A\fP options.
+The binary input option is only available for numerical data columns.
 .SH EXAMPLES
 To append Geosat/ERS-1 gravity version 11.2 as an extra data columns in the cruises
 01010047.nc and 01010008.nc, storing the values as mGal*10 in a 2-byte short integer, try
@@ -137,6 +137,12 @@ To delete the existing extra columns satfaa, coastdist, and satvgg from all MGD7
 .br
 .sp
 \fBmgd77manage\fP `cat allmgd77.lis` \fB\-D\fPsatfaa,coastdist,satvgg \fB\-V\fP
+.br
+.sp
+To create a 4-byte float column with the correct IGRF reference field in all MGD77+ files, try
+.br
+.sp
+\fBmgd77manage\fP `cat allmgd77.lis` \fB\-Acm \-I\fPigrf/"IGRF reference field"/"nTesla"/f/1/0/"IGRF version 10 for 1990-2010" \fB\-V\fP
 .br
 .sp
 .SH DISCUSSION
@@ -207,7 +213,7 @@ or logical explanation.  These terms may sometimes be resolved by data analysis 
 such as along-track and across-track investigations, and will result in correction terms
 that when applied to the data will remove these unwanted signals in an optimal way.  Because
 these correction terms may change when new data are considered in their determination, such
-corrections are considered to be emphemeral. (4) Individual data points or sequences of data may
+corrections are considered to be ephemeral. (4) Individual data points or sequences of data may
 violate rules such as being outside of possible ranges or in other ways violate sanity.
 Furthermore, sequences of points that may be within valid ranges may give rise to data
 gradients that are unreasonable.  The status of every point can therefore be determined and
@@ -237,7 +243,7 @@ The extraction program \fBmgd77list\fP allows for corrections to be applied on-t
 when data are requested.  First, data with BAD bitflags are suppressed.  Second, data with
 fixed systematic correction terms are corrected accordingly.  Third, data with ephemeral
 correction terms will have those corrections applied (if a correction table is supplied).
-All of these steps requires the presence of the relevant meta-data and all can be overruled
+All of these steps require the presence of the relevant meta-data and all can be overruled
 by the user. In addition, users may add their own bitflags as separate data columns and use
 \fBmgd77list\fP's logical tests to further dictate which data are suppressed from output.
 .SH "SEE ALSO"
@@ -247,3 +253,6 @@ by the user. In addition, users may add their own bitflags as separate data colu
 .IR mgd77track (GMTMANSECTION)
 .IR x2sys_init (GMTMANSECTION)
 #include "refs.i"
+The Marine Geophysical Data Exchange Format - "MGD77", see
+\fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
+.br

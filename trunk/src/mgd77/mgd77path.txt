@@ -6,10 +6,7 @@ mgd77path \- Get full pathname for MGD77 files
 .SH DESCRIPTION
 \fBmgd77path\fP returns the full pathname to one or more MGD77 files. The pathname returned for a given
 cruise may change with time due to reshuffling of disks/subdirectories.
-.TP
-\fINGDC-ids\fP
-Can be one or more MGD77 NGDC cruise names, like 01010008.  Use `cat legs.lis` to pass all the legnames
-in the file legs.lis. 
+#include "mgd77/explain_ncid.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments
 .TP
@@ -44,3 +41,6 @@ To see the list of active directories where MGD77 files might be stored, run
 .IR mgd77manage (GMTMANSECTION)
 .IR mgd77track (GMTMANSECTION)
 #include "refs.i"
+The Marine Geophysical Data Exchange Format - "MGD77", see
+\fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
+.br

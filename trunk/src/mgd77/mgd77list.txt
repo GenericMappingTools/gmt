@@ -2,8 +2,9 @@
 .SH NAME
 mgd77list \- A data-extractor for MGD77[+] files
 .SH SYNOPSIS
-\fBmgd77list\fP \fINGDC-ids\fP [ \fB\-C\fP\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-Da\fP\fIstartdate\fP ] [ \fB\-Db\fP\fIstopdate\fP ] 
-[ \fB\-E\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-H\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
+\fBmgd77list\fP \fINGDC-ids\fP [ \fB\-C\fP\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-Da\fP\fIstartdate\fP ] 
+[ \fB\-Db\fP\fIstopdate\fP ] [ \fB\-E\fP ] [ \fB\-F\fP\fIcolumns\fP[,\fIlogic\fP][:\fIbittests\fP] ] 
+[ \fB\-H\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
 [ \fB\-Nd|s\fP\fIunit\fP ] [ \fB\-P\fP\fIcode\fP ] [ \fB\-R\fIwest/east/south/north\fP ] 
 [ \fB\-Sa\fP\fIstartdist\fP[unit] ] [ \fB\-Sb\fP\fIstopdist\fP[unit] ] [ \fB\-V\fP ] 
 [ \fB\-W\fP\fIweight\fP ] [ \fB\-X\fP[\fIcorrtable\fP] ] [ \fB\-Z\fP\fI+\fP|\fB-\fP ] [ \fB\-bo\fP ]
@@ -13,19 +14,14 @@ The <NGDC-id>.[mgd77|nc] files contain track information such as time and positi
 observables such as gravity, magnetics, and bathymetry, and control codes and corrections
 such as Eotvos or diurnal corrections.  The MGD77+ extended netCDF files may also contain
 additional user columns (for a listing of available columns, use \fBmgd77info \-C\fP).  The
-user may extract any combination of these parameters plus three computed quantities (distance,
-heading, and velocity), calendar sub-units of time (year, month, day, hour, min, sec), the NGDC id,
+user may extract any combination of these parameters plus any of siz computed quantities (distance,
+heading, velocity, Carter correction, and gravity and magnetic reference fields), calendar sub-units
+of time (year, month, day, hour, min, sec), the NGDC id,
 and finally a preset weight (see \fB\-W\fP).  A sub-section can be specified by passing
 time- or distance-intervals along track or by selecting a geographical region.  Finally,
 records may be required to pass any number of logical tests involving the data values for
 each record.
-.TP
-\fINGDC-ids\fP
-Can be one or more MGD77 8-character cruise identifiers. To give a list of names, use `cat cruises.lis`.
-The ".mgd77" or ".nc" extensions will automatically be appended, if needed (use \fB\-I\fP
-to ignore certain file types).  Cruise files will be looked for first in the current directory
-and second in all directories listed in \fB$MGD77_DIR\fP/mgd77_paths.txt [If \fB$MGD77_DIR\fP
-is not set it defaults to \fB$GMTHOME\fP/share/mgd77].
+#include "mgd77/explain_ncid.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -50,9 +46,10 @@ Exact match: Only output records that matches all the requested geophysical colu
 [Default outputs records that matches at least one of the observed columns].
 .TP
 .B \-F
-Comma-separated list of parameter abbreviations in the desired output order.  Those parameters
-given in UPPER case must be present in all output records.  The output format
-(if ASCII) is controlled by \fBD_FORMAT\fP. The available abbreviations are:
+The required \fIcolumns\fP string must be a comma-separated list of parameter abbreviations
+given in the desired output order.  Any parameters given in UPPER case must all be present in
+a record for output to occur.  The output format (if ASCII) is controlled by \fBD_FORMAT\fP.
+The available abbreviations are:
 .TP
 .B drt
 The digital record type (usually 3 or 5 (for Y2K-compliant cruises))
@@ -164,6 +161,17 @@ Ship speed; see \fB\-N\fP for units [m/s].
 .TP
 .B weight
 Weight assigned to this data set (see \fB\-W\fP).
+.TP
+.B carter
+Carter depth correction, if \fBtwt\fP is present in file (in m)
+.TP
+.B igrf
+International geomagnetic reference field (total field) (in nTesla).
+.TP
+.B ngrav
+International gravity reference field ("normal gravity") (in mGal).
+Field selected based on MGD77 header information; if not present
+or invalid we default to IGF 1980.
 .br
 .sp
 The following short-hand flags are also recognized:
@@ -178,7 +186,8 @@ By appending \fB+\fP to either set we will also append \fBdist\fP, \fBazim\fP, \
 \fBweight\fP as listed above.
 .br
 .sp
-Logical tests may be added for any of the parameters by appending one or more comma-separated instructions
+As an option, logical tests may be added for any of the parameters by appending ,\fIlogic\fP,
+which is one or more comma-separated instructions
 of the form \fIpar\fP\fBOP\fP\fIvalue\fP, where \fIpar\fP is one of the parameters listed above, \fBOP\fP is
 a logical operator (<, <=, =, !=, >=, >, |), and \fIvalue\fP is a constant used in the comparison.  Floating point
 parameters are compared numerically; character parameters are compared lexically (after leading and trailing
@@ -188,7 +197,9 @@ tests using UPPER case parameters which all must be true for output to occur.  N
 specifying a test does not imply that the corresponding column will be included in the output stream;
 you must specify the dataflag for that to occur. Note: some of the operators are special UNIX characters
 and you are advised to place quotes around the entire argument to \fB\-F\fP.
-Finally, for MGD77+ files you may optionally append : (a colon) followed by one or more comma-separated
+.br
+.sp
+Finally, for MGD77+ files you may optionally append :\fIbittests\fP which is : (a colon) followed by one or more comma-separated
 +|-\fIcol\fP terms.  This compares specific bitflags only for each listed column.  Here, + means the chosen bit must
 be 1 (ON) whereas - means it must be 0 (OFF).  All bit tests given must be passed.  By default, MGD77+
 files that have the special \fBflag\fP column present will use those flags; append : with no trailing information
@@ -277,9 +288,20 @@ cruise ids are listed in the file cruises.lis, we try
 .br
 .sp
 \fBmgd77list\fP `cat cruises.lis` \fB\-E \-Ia \-F\fP"dist,faa,grav12_2,depth<3000" > shallow_grav.d
+.br
+.sp
+To extract dist, faa, and grav12_2 from all the MGD77+ netCDF files whose
+cruise ids are listed in the file cruises.lis, but only retrieve records
+whose bitflag for faa indicates BAD values, we try
+.br
+.sp
+\fBmgd77list\fP `cat cruises.lis` \fB\-E \-Ia \-F\fP"dist,faa,grav12_2:+faa" > bad_grav.d
 .SH "SEE ALSO"
 .IR mgd77convert (GMTMANSECTION),
 .IR mgd77info (GMTMANSECTION),
 .IR mgd77manage (GMTMANSECTION),
 .IR mgd77track (GMTMANSECTION)
 #include "refs.i"
+The Marine Geophysical Data Exchange Format - "MGD77", see
+\fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
+.br

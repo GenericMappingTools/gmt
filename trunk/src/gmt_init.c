@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.195 2005-10-12 10:34:36 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.196 2005-10-21 06:22:12 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2728,13 +2728,13 @@ int GMT_begin (int argc, char **argv)
 
 	int i, j, k, n;
 	char *this;
-	double f;
+	double f, r;
 
 #ifdef __FreeBSD__
 	/* allow divide by zero -- Inf */
 	fpsetmask (fpgetmask () & ~(FP_X_DZ | FP_X_INV));
 #endif
-	/* Initialize parameters */
+	/* Initialize parameters that don'd depend on .gmtdefaults */
 
 	GMT_stdin  = stdin;
 	GMT_stdout = stdout;
@@ -2765,26 +2765,10 @@ int GMT_begin (int argc, char **argv)
 	for (i = 0; i < N_UNIQUE; i++) GMT_oldargv[i] = CNULL;
 	for (i = strlen(argv[0]); i >= 0 && argv[0][i] != '/'; i--);
 	GMT_program = &argv[0][i+1];
-	
-	/* Set up ellipsoid parameters for the selected ellipsoid */
-	
 	frame_info.check_side = frame_info.horizontal = FALSE;
-	project_info.EQ_RAD = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius;
-	project_info.i_EQ_RAD = 1.0 / project_info.EQ_RAD;
-	f = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening;
-	project_info.ECC2 = 2 * f - f * f;
-	project_info.ECC4 = project_info.ECC2 * project_info.ECC2;
-	project_info.ECC6 = project_info.ECC2 * project_info.ECC4;
-	project_info.one_m_ECC2 = 1.0 - project_info.ECC2;
-	project_info.i_one_m_ECC2 = 1.0 / project_info.one_m_ECC2;
-	project_info.ECC = d_sqrt (project_info.ECC2);
-	project_info.half_ECC = 0.5 * project_info.ECC;
-	project_info.i_half_ECC = 0.5 / project_info.ECC;
-	project_info.M_PR_DEG = TWO_PI * project_info.EQ_RAD / 360.0;
 	project_info.f_horizon = 90.0;
-	DEG2M = 2.0 * M_PI * gmtdefs.ref_ellipsoid[N_ELLIPSOIDS-1].eq_radius / 360.0;	/* GRS-80 sphere degree->m  */
-	DEG2KM = 0.001 * DEG2M;								/* GRS-80 sphere degree->km */
 	GMT_distance_func = (PFD) GMT_great_circle_dist_km;
+	
 
 	/* Set the gmtdefault parameters from the $HOME/.gmtdefaults4 (if any) */
 
@@ -2822,6 +2806,32 @@ int GMT_begin (int argc, char **argv)
 	if (n) fprintf (stderr, "%s:  %d conversion errors from command-line default override settings!\n", GMT_program, n);
 
 	GMT_prep_PS_bits ();	/* In case --DPARs were given */
+
+	/* Now set up ellipsoid parameters for the selected ellipsoid since .gmtdefaults could have changed them */
+	
+	project_info.EQ_RAD = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius;
+	project_info.i_EQ_RAD = 1.0 / project_info.EQ_RAD;
+	f = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening;
+	project_info.ECC2 = 2 * f - f * f;
+	project_info.ECC4 = project_info.ECC2 * project_info.ECC2;
+	project_info.ECC6 = project_info.ECC2 * project_info.ECC4;
+	project_info.one_m_ECC2 = 1.0 - project_info.ECC2;
+	project_info.i_one_m_ECC2 = 1.0 / project_info.one_m_ECC2;
+	project_info.ECC = d_sqrt (project_info.ECC2);
+	project_info.half_ECC = 0.5 * project_info.ECC;
+	project_info.i_half_ECC = 0.5 / project_info.ECC;
+	project_info.M_PR_DEG = TWO_PI * project_info.EQ_RAD / 360.0;
+	if (gmtdefs.ref_ellipsoid[N_ELLIPSOIDS-1].flattening != 0.0 ) {	/* Give warning that custom ellipsoid is not a sphere */
+		fprintf (stderr, "%s:  Your custom ellipsoid has a != b!\n", GMT_program, n);
+		fprintf (stderr, "%s:  Must compute sphere radius from custom ellipsoid that yields same surface area!\n", GMT_program, n);
+		r = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius * d_sqrt ((1.0 + (1.0 - project_info.ECC2) * atanh (project_info.ECC) / project_info.ECC)/2.0);
+	}
+	else {	/* Most likely GRS-80 or a custom sphere */
+		r = gmtdefs.ref_ellipsoid[N_ELLIPSOIDS-1].eq_radius;
+	}
+	DEG2M = 2.0 * M_PI * r / 360.0;		/* Sphere degree -> m  */
+	DEG2KM = 0.001 * DEG2M;			/* Sphere degree -> km */
+
 	GMT_init_time_system_structure ();
 
 	if (GMT_got_frame_rgb) {	/* Must enforce change of frame, tick, and grid pen rgb */

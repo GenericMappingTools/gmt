@@ -7,13 +7,7 @@ mgd77convert \- Translate between different formats of MGD77 files
 .SH DESCRIPTION
 \fBmgd77convert\fP reads versions of MGD77 files and writes out the same
 data in (probably) another format.
-.TP
-\fINGDC-ids\fP
-Can be one or more MGD77 8-character NGDC cruise identifiers. To give a list of names,
-use `cat cruises.lis`.  The extension will automatically be appended, if needed.
-Cruise files will be looked for first in the current directory and second in all
-directories listed in \fB$MGD77_DIR\fP/mgd77_paths.txt [Default location is
-\fB$GMTHOME\fP/share/mgd77]. Output files are written to the current directory.
+#include "mgd77/explain_ncid.txt"
 .TP
 .B \-F
 Specifies the format of the input (From) files.  Choose from \fBa\fP for standard
@@ -43,10 +37,29 @@ capture all verification messages, try
 \fBmgd77convert\fP 01010047 01010008 \fB\-Fa \-Tc \-V \-Lew+\fP > log.lis
 .br
 .sp
+To convert 01010047.nc back to MGD77 ASCII and make sure it is identical to the
+original file (here /Users/pwessel/NGDC/01010047.mgd77), try
+.br
+.sp
+\fBmgd77convert\fP 01010047 \fB\-Fc \-Ta \-V\fP
+.br
+diff /Users/pwessel/NGDC/01010047.mgd77 01010047.mgd77
+.br
+.sp
 To convert 01010047.nc to a plain ASCII table, overwriting any existing table, try
 .br
 .sp
 \fBmgd77convert\fP 01010047 \fB\-Fc \-T+t \-V\fP
+.SH FILE FORMATS
+\fBmgd77convert\fP handles three different formats. (1) The MGD77 ASCII tables are
+the extablished standard for distribution of underway geophysical data to and from the
+NGDC data center.  Normally, only the ship-operations people and the cruise PI might
+be involved in \fImaking\fP an MGD77 ASCII file for transmission to NGDC; the rest of us
+are more interested in \fIreading\fP such files. (2) The MGD77+ netCDF format was
+developed to fascilitate the use of MGD77 data by scientists. (3) The plain ASCII
+tab-separated dump is available for users who need to manually edit the content of
+a MGD77 file.  This is usually easier to do when the columns are tab-separated than
+when they are all crunched together in the MGD77 punch-card format.
 .SH OTHER TOOLS
 The MGD77+ netCDF files are COARDS compliant and can be examined with general-purpose
 tools such as ncBrowse and ncView.
@@ -60,4 +73,7 @@ tools such as ncBrowse and ncView.
 ncBrowse, see \fIhttp://www.epic.noaa.gov/java/ncBrowse/\fP
 .br
 ncView, see \fIhttp://meteora.ucsd.edu/~pierce/ncview_home_page.html\fP
+.br
+The Marine Geophysical Data Exchange Format - "MGD77", see
+\fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
 .br
