@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.188 2005-10-21 07:34:32 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.189 2005-10-21 09:09:19 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3782,7 +3782,7 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 
 int GMT_inonout_sphpol (double plon, double plat, const struct GMT_LINES *P)
 /* This function is used to see if some point P is located inside, outside, or on the boundary of the
- * spherical polygon S previously defined by a call to subroutine GMT_init_sphpol.
+ * spherical polygon S read by GMT_lines_init.
  * Returns the following values:
  *	0:	P is outside of S
  *	1:	P is inside of S
@@ -3791,12 +3791,12 @@ int GMT_inonout_sphpol (double plon, double plat, const struct GMT_LINES *P)
 {
 	/* Algorithm:
 	 * Case 1: The polygon S contains a geographical pole
-	 *	   a) if P is beyond the lower latitude then P is outside
-	 *	   b) Draw meridian from P to N pole and count intersections:
+	 *	   a) if P is beyond the far latitude then P is outside
+	 *	   b) Draw meridian through P and count intersections:
 	 *		odd: P is outside; even: P is inside
 	 * Case 2: S does not contain a pole
 	 *	   a) If P is outside range of latitudes then P is outside
-	 *	   c) Draw meridian from P to N pole and count intersections:
+	 *	   c) Draw meridian through P and count intersections:
 	 *		odd: P is inside; even: P is outside
 	 * In all cases, we check if P is on the outline of S
 	 */
@@ -3827,7 +3827,7 @@ int GMT_inonout_sphpol (double plon, double plat, const struct GMT_LINES *P)
 	
 	if (plat < P->min_lat || plat > P->max_lat) return (GMT_OUTSIDE_POLYGON);
 	
-	/* Longitudes are tricker and are tested within the tallying of intersections */
+	/* Longitudes are tricker and are tested with the tallying of intersections */
 	
 	if (GMT_inonout_sphpol_count (plon, plat, P, count)) return (GMT_ONSIDE_POLYGON);	/* Found P is on S */
 
@@ -3885,7 +3885,7 @@ int GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LINES *
 		else			/* Cut is south of P */
 			count[1]++;
 	}
-	return (0);	/* This means no special cases were detected that warrant an immediate return */
+	return (0);	/* This means no special cases were detected that warranted an immediate return */
 }
 
 /* GMT can either compile with its standard Delaunay triangulation routine

@@ -296,6 +296,10 @@ whose bitflag for faa indicates BAD values, we try
 .br
 .sp
 \fBmgd77list\fP `cat cruises.lis` \fB\-E \-Ia \-F\fP"dist,faa,grav12_2:+faa" > bad_grav.d
+.SH CREDITS
+The IGRF calculations are based on a Fortran program written by Susan Macmillan,
+British Geological Survey, translated to C via f2c by Joaquim Luis, and adapted to
+GMT style by Paul Wessel.
 .SH "SEE ALSO"
 .IR mgd77convert (GMTMANSECTION),
 .IR mgd77info (GMTMANSECTION),
@@ -304,4 +308,6 @@ whose bitflag for faa indicates BAD values, we try
 #include "refs.i"
 The Marine Geophysical Data Exchange Format - "MGD77", see
 \fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
+.br
+IGRF, see \fIhttp://www.ngdc.noaa.gov/IAGA/vmod/igrf.html\fP
 .br
