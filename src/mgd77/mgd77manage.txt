@@ -246,6 +246,10 @@ correction terms will have those corrections applied (if a correction table is s
 All of these steps require the presence of the relevant meta-data and all can be overruled
 by the user. In addition, users may add their own bitflags as separate data columns and use
 \fBmgd77list\fP's logical tests to further dictate which data are suppressed from output.
+.SH CREDITS
+The IGRF calculations are based on a Fortran program written by Susan Macmillan,
+British Geological Survey, translated to C via f2c by Joaquim Luis, and adapted to
+GMT style by Paul Wessel.
 .SH "SEE ALSO"
 .IR mgd77convert (GMTMANSECTION),
 .IR mgd77list (GMTMANSECTION),
@@ -255,4 +259,6 @@ by the user. In addition, users may add their own bitflags as separate data colu
 #include "refs.i"
 The Marine Geophysical Data Exchange Format - "MGD77", see
 \fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
+.br
+IGRF, see \fIhttp://www.ngdc.noaa.gov/IAGA/vmod/igrf.html\fP
 .br
