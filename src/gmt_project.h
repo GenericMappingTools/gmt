@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.34 2005-09-15 06:12:39 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.35 2005-10-21 07:34:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -109,11 +109,11 @@ struct MAP_PROJECTIONS {
 	double central_meridian;	/* Central meridian for projection */
 	double central_meridian_rad;	/* Same, in radians */
 	double pole;			/* +90 pr -90, depending on which pole */
-	double EQ_RAD, ECC, ECC2, ECC4, ECC6, M_PR_DEG;	/* Current ellipsoid parameters */
-	double half_ECC;		/* 0.5 * ECC */
-	double i_half_ECC;		/* 0.5 / ECC */
-	double one_m_ECC2;		/* 1.0 - ECC2 */
-	double i_EQ_RAD, i_one_m_ECC2;		/* Inverse value */
+	double EQ_RAD, i_EQ_RAD;	/* Current ellipsoid parameters */
+	double ECC, ECC2, ECC4, ECC6;	/* Powers of eccentricity */
+	double M_PR_DEG, KM_PR_DEG;	/* Current spherical approximations to convert degrees to dist */
+	double half_ECC, i_half_ECC;	/* 0.5 * ECC and 0.5 / ECC */
+	double one_m_ECC2, i_one_m_ECC2; /* 1.0 - ECC2 and inverse */
 	
 	int gave_map_width;		/* nonzero if map width (1), height (2), max dim (3) or min dim (4) is given instead of scale.  0 for 1:xxxxx */
 
