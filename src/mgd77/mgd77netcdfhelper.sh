@@ -1,14 +1,15 @@
 #!/bin/sh
 #
-#	$Id: mgd77netcdfhelper.sh,v 1.4 2005-10-20 12:38:06 pwessel Exp $
+#	$Id: mgd77netcdfhelper.sh,v 1.5 2005-10-21 11:22:02 pwessel Exp $
 #
 #	Author:	P. Wessel
 #	Date:	2005-OCT-14
 #
-# This script will create three functions from info in mgd77.h:
+# This script will automatically create three functions from info in mgd77.h:
 #
 # MGD77_Read_Header_Params	: Read the MGD77 header attributes from the netCDF file
-# MGD77_Write_Header_Params	: Write the MGD77 header attributes from the netCDF file
+# MGD77_Write_Header_Params	: Write the MGD77 header attributes to the netCDF file
+# MGD77_Dump_Header_Params	: Display individual header attributes, one per line
 #
 # Code is placed in the file mgd77_functions.h which is included in mgd77.c
 #
