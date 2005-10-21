@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.52 2005-10-20 12:38:06 pwessel Exp $
+ *	$Id: mgd77.h,v 1.53 2005-10-21 06:22:12 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -89,6 +89,19 @@
 #define MGD77_FROM_HEADER	1
 #define MGD77_TO_HEADER		2
 
+#define MGD77_IGRF_F		0
+#define MGD77_IGRF_H		1
+#define MGD77_IGRF_X		2
+#define MGD77_IGRF_Y		3
+#define MGD77_IGRF_Z		4
+#define MGD77_IGRF_D		5
+#define MGD77_IGRF_I		6
+
+#define MGD77_IGF_HEISKANEN	1
+#define MGD77_IGF_1930		2
+#define MGD77_IGF_1967		3
+#define MGD77_IGF_1980		4
+
 /* Return error numbers */
 
 #define MGD77_NO_ERROR			0
@@ -112,6 +125,7 @@
 #define MGD77_UNKNOWN_MODE		18
 #define MGD77_ERROR_NOSUCHCOLUMN	19
 #define MGD77_BAD_ARG			20
+#define MGD77_BAD_IGRFDATE		21
 
 /* We will use bit flags to keep track of which data column we are referring to.
  * field 0 is rightmost bit (1), field 1 is the next bit (2), field 2 is 4 and
@@ -431,6 +445,12 @@ EXTERN_MSC int MGD77_carter_depth_from_twt (int zone, double twt_in_msec, struct
 EXTERN_MSC int MGD77_carter_twt_from_depth (int zone, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec);
 EXTERN_MSC int MGD77_carter_depth_from_xytwt (double lon, double lat, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m);
 EXTERN_MSC int MGD77_carter_twt_from_xydepth (double lon, double lat, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec);
+EXTERN_MSC double MGD77_carter_correction (double lon, double lat, double twt_in_msec, struct MGD77_CARTER *C);
+
+/* User functions for direct use of IGRF corrections, theoretical gravity */
+
+EXTERN_MSC int MGD77_igrf10syn (int isv, double date, int itype, double alt, double lon, double lat, double *out);
+EXTERN_MSC double MGD77_Theoretical_Gravity (double lon, double lat, int version);
 
 /* These are called indirectly but remain accessible for specialist programs */
 
