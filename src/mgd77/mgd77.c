@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.82 2005-10-21 06:22:12 pwessel Exp $
+ *	$Id: mgd77.c,v 1.83 2005-10-21 06:39:06 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -3133,10 +3133,11 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
   *	Converted to C (with help of f2c, which explains the ugliness)
   */
 
-     /* Initialized data */
-     static struct {
+     struct IGRF {
 	double e_1[3060];
-	} equiv_22 =
+     };
+     /* Initialized data */
+     static struct IGRF equiv_22 = {
        {-31543.,-2298., 5922., -677., 2905.,-1061.,  924., 1121., /* g0 (1900) */
          1022.,-1469., -330., 1256.,    3.,  572.,  523.,  876.,
           628.,  195.,  660.,  -69., -361., -210.,  134.,  -75.,
@@ -3527,7 +3528,8 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
            0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
            0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
            0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
-           0.0,   0.0,   0.0 };
+           0.0,   0.0,   0.0}
+	 };
 #define gh ((double *)&equiv_22)
 
 	int i, j, k, l, m, n, ll, lm, kmx, nmx, nc;
