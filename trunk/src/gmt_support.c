@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.187 2005-10-16 09:17:53 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.188 2005-10-21 07:34:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6637,35 +6637,35 @@ int GMT_get_dist_scale (char c, double *d_scale, int *proj_type, PFD *distance_f
 		case '\0':	/* Spherical m along great circle */
 		case 'e':
 			*distance_func = GMT_great_circle_dist;
-			*d_scale = DEG2M;
+			*d_scale = project_info.M_PR_DEG;
 			break;
 		case 'E':	/* m along geodesic */
 			*distance_func = (SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
-			*d_scale = (SPHERICAL) ? DEG2M : 1.0;
+			*d_scale = (SPHERICAL) ? project_info.M_PR_DEG : 1.0;
 			break;
 		case 'k':	/* km along great circle */
 			*distance_func = GMT_great_circle_dist;
-			*d_scale = DEG2KM;
+			*d_scale = project_info.KM_PR_DEG;
 			break;
 		case 'K':	/* km along geodesic */
 			*distance_func = (SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
-			*d_scale = (SPHERICAL) ? DEG2KM : 0.001;
+			*d_scale = (SPHERICAL) ? project_info.KM_PR_DEG : 0.001;
 			break;
 		case 'm':	/* Miles along great circle */
 			*distance_func = GMT_great_circle_dist;
-			*d_scale = DEG2M / 1609.334;
+			*d_scale = project_info.M_PR_DEG / 1609.334;
 			break;
 		case 'M':	/* Miles along geodesic */
 			*distance_func = (SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
-			*d_scale = ((SPHERICAL) ? DEG2M : 1.0) / 1609.334;
+			*d_scale = ((SPHERICAL) ? project_info.M_PR_DEG : 1.0) / 1609.334;
 			break;
 		case 'n':	/* Nautical miles along great circle */
 			*distance_func = GMT_great_circle_dist;
-			*d_scale = DEG2M / 1852.0;
+			*d_scale = project_info.M_PR_DEG / 1852.0;
 			break;
 		case 'N':	/* Nautical miles along geodesic */
 			*distance_func = (SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
-			*d_scale = ((SPHERICAL) ? DEG2M : 1.0) / 1852.0;
+			*d_scale = ((SPHERICAL) ? project_info.M_PR_DEG : 1.0) / 1852.0;
 			break;
 		case 'C':	/* Cartesian distances in projected units */
 			*d_scale = 1.0;
