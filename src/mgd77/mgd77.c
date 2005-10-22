@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.84 2005-10-21 11:22:02 pwessel Exp $
+ *	$Id: mgd77.c,v 1.85 2005-10-22 09:24:03 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -17,6 +17,7 @@
  *-------------------------------------------------------------------------*/
 
 #include "mgd77.h"
+#include "mgd77_IGF_coeffs.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -2969,6 +2970,10 @@ int MGD77_carter_depth_from_twt (int zone, double twt_in_msec, struct MGD77_CART
 
 	int	i, nominal_z1500, low_hundred, part_in_100;
 
+	if (GMT_is_dnan (twt_in_msec)) {
+		*depth_in_corr_m = GMT_d_NaN;
+		return (0);
+	}
 	if (!C->initialized && MGD77_carter_init(C) ) {
 		fprintf (stderr,"MGD77 ERROR: in MGD77_carter_depth_from_twt:  Initialization failure.\n");
 		return (-1);
@@ -3025,6 +3030,10 @@ int MGD77_carter_twt_from_depth (int zone, double depth_in_corr_m, struct MGD77_
 	int	min, max, guess;
 	double	fraction;
 
+	if (GMT_is_dnan (depth_in_corr_m)) {
+		*twt_in_msec = GMT_d_NaN;
+		return (0);
+	}
 	if (!C->initialized && MGD77_carter_init(C) ) {
 		fprintf(stderr,"MGD77 ERROR: in MGD77_carter_twt_from_depth:  Initialization failure.\n");
 		return (-1);
@@ -3683,6 +3692,28 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
 	return (MGD77_NO_ERROR);
 }
 
+void MGD77_IGF_text (FILE *fp, int version)
+{	
+	switch (version) {
+		case 1:	/* Heiskanen 1924 model */
+			fprintf (fp, "g = %.12g * [1 + %.6f * sin^2(lat) - %.7f * sin^2(2*lat) + %.6f * cos^2(lat) * cos^2(lon-18)]\n", 
+				MGD77_IGF24_G0, MGD77_IGF24_G1, MGD77_IGF24_G2, MGD77_IGF24_G3);
+			break;
+		case 2:	/* International 1930 model */
+			fprintf (fp, "g = %.12g * [1 + %.7f * sin^2(lat) - %.7f * sin^2(2*lat)]\n", MGD77_IGF30_G0, MGD77_IGF30_G1, MGD77_IGF30_G2 );
+			break;
+		case 3:	/* IAG 1967 model */
+			fprintf (fp, "g = %.12g * [1 + %.7f * sin^2(lat) - %.7f * sin^2(2*lat)]\n", MGD77_IGF67_G0, MGD77_IGF67_G1, MGD77_IGF67_G2);
+			break;
+		case 4:	/* IAG 1980 model */
+			fprintf (fp, "g = %.12g * [(1 + %.14g * sin^2(lat)) / sqrt (1 - %.14g * sin^2(lat))]\n", MGD77_IGF80_G0, MGD77_IGF80_G1, MGD77_IGF80_G2);
+			break;
+		default:	/* Unrecognized */
+			fprintf (fp, "Unrecognized theoretical gravity formula code (%d)\n", version);
+			break;
+	}
+}
+
 double MGD77_Theoretical_Gravity (double lon, double lat, int version)
 {
 	/* Calculates theoretical gravity given latitude and which formulae to use.
@@ -3707,20 +3738,20 @@ double MGD77_Theoretical_Gravity (double lon, double lat, int version)
 			s2lat = sin (2.0 * lat);	/* sin of 2*lat */
 			s2lat *= s2lat		;	/* Squared sin of 2*lat */
 			clat2 = 1.0 - slat2;		/* Squared cos (latitude) */
-			g = 978052.0 * (1.0 + 0.005285 * slat2 - 0.0000070 * s2lat + 0.000027 * clat2 * clon2);
+			g = MGD77_IGF24_G0 * (1.0 + MGD77_IGF24_G1 * slat2 - MGD77_IGF24_G2 * s2lat + MGD77_IGF24_G3 * clat2 * clon2);
 			break;
 		case 2:	/* International 1930 model */
 			s2lat = sin (2.0 * lat);	/* sin of 2*lat */
 			s2lat *= s2lat		;	/* Squared sin of 2*lat */
-			g = 978049.0 * (1.0 + 0.0052884 * slat2 - 0.0000059 * s2lat);
+			g = MGD77_IGF30_G0 * (1.0 + MGD77_IGF30_G1 * slat2 - MGD77_IGF30_G2 * s2lat);
 			break;
 		case 3:	/* IAG 1967 model */
 			s2lat = sin (2.0 * lat);	/* sin of 2*lat */
 			s2lat *= s2lat		;	/* Squared sin of 2*lat */
-			g = 978031.846 * (1.0 + 0.0053024 * slat2 - 0.0000058 * s2lat);
+			g = MGD77_IGF67_G0 * (1.0 + MGD77_IGF67_G1 * slat2 - MGD77_IGF67_G2 * s2lat);
 			break;
 		case 4:	/* IAG 1980 model */
-			g = 978032.67714 * ((1.0 + 0.00193185138639 * slat2) / sqrt (1.0 - 0.00669437999013 * slat2));
+			g = MGD77_IGF80_G0 * ((1.0 + MGD77_IGF80_G1 * slat2) / sqrt (1.0 - MGD77_IGF80_G2 * slat2));
 			break;
 		default:	/* Unrecognized */
 			g = GMT_d_NaN;

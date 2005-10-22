@@ -2,48 +2,28 @@
 .SH NAME
 mgd77list \- A data-extractor for MGD77[+] files
 .SH SYNOPSIS
-\fBmgd77list\fP \fINGDC-ids\fP [ \fB\-C\fP\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-Da\fP\fIstartdate\fP ] 
-[ \fB\-Db\fP\fIstopdate\fP ] [ \fB\-E\fP ] [ \fB\-F\fP\fIcolumns\fP[,\fIlogic\fP][:\fIbittests\fP] ] 
-[ \fB\-H\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
-[ \fB\-Nd|s\fP\fIunit\fP ] [ \fB\-P\fP\fIcode\fP ] [ \fB\-R\fIwest/east/south/north\fP ] 
-[ \fB\-Sa\fP\fIstartdist\fP[unit] ] [ \fB\-Sb\fP\fIstopdist\fP[unit] ] [ \fB\-V\fP ] 
+\fBmgd77list\fP \fINGDC-ids\fP \fB\-F\fP\fIcolumns\fP[,\fIlogic\fP][:\fIbittests\fP] 
+[ \fB\-Ac|d|g|m\fP\fIcode\fP ] [ \fB\-C\fP\fBf\fP|\fBg\fP|\fBe\fP ] 
+[ \fB\-Da\fP\fIstartdate\fP ] [ \fB\-Db\fP\fIstopdate\fP ] [ \fB\-E\fP ] 
+[ \fB\-H\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-Nd|s\fP\fIunit\fP ] 
+[ \fB\-P\fP\fIcode\fP ] [ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-Sa\fP\fIstartdist\fP[unit] ] 
+[ \fB\-Sb\fP\fIstopdist\fP[unit] ] [ \fB\-T\fP[\fBm|c\fP] ]  [ \fB\-V\fP ] 
 [ \fB\-W\fP\fIweight\fP ] [ \fB\-X\fP[\fIcorrtable\fP] ] [ \fB\-Z\fP\fI+\fP|\fB-\fP ] [ \fB\-bo\fP ]
 .SH DESCRIPTION
 \fBmgd77list\fP reads <NGDC-id>.[mgd77|nc] files and produces an ASCII [or binary] table.
-The <NGDC-id>.[mgd77|nc] files contain track information such as time and position, geophysical
-observables such as gravity, magnetics, and bathymetry, and control codes and corrections
-such as Eotvos or diurnal corrections.  The MGD77+ extended netCDF files may also contain
-additional user columns (for a listing of available columns, use \fBmgd77info \-C\fP).  The
-user may extract any combination of these parameters plus any of siz computed quantities (distance,
-heading, velocity, Carter correction, and gravity and magnetic reference fields), calendar sub-units
-of time (year, month, day, hour, min, sec), the NGDC id,
-and finally a preset weight (see \fB\-W\fP).  A sub-section can be specified by passing
-time- or distance-intervals along track or by selecting a geographical region.  Finally,
-records may be required to pass any number of logical tests involving the data values for
-each record.
+The <NGDC-id>.[mgd77|nc] files contain track information such as leg-id, time and position,
+geophysical observables such as gravity, magnetics, and bathymetry, and control codes and
+corrections such as Eotvos or diurnal corrections.  The MGD77+ extended netCDF files may
+also contain additional user columns (for a listing of available columns, use \fBmgd77info
+\-C\fP, and to learn how to add your own custom columns, see \fBmgd77manage\fP).  The
+user may extract any combination of these parameters, any of six computed quantities (distance,
+heading, velocity, Carter correction, and gravity and magnetic global reference fields),
+calendar sub-units of time (year, month, day, hour, min, sec), the NGDC id, and finally a
+preset weight (see \fB\-W\fP).  A sub-section can be specified by passing time- or
+distance-intervals along track or by selecting a geographical region.  Finally, each output
+records may be required to pass any number of logical tests involving data values or bit flags.
+#include "mgd77/mgd77_IGF_coeffs.h"
 #include "mgd77/explain_ncid.txt"
-.SH OPTIONS
-No space between the option flag and the associated arguments.
-.TP
-.B \-C
-Append a one-letter code to select the procedure for along-track distance
-calculation (see \fB\-N\fP for selecting units):
-.br
-	\fBf\fP Flat earth distances.
-.br
-	\fBg\fP Great circle distances [Default].
-.br
-	\fBe\fP Geodesic distances on current GMT ellipsoid.
-.TP
-.B \-Da
-Do not list data collected before \fIstartdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss])  [Default is start of cruise].
-.TP
-.B \-Db
-Do not list data collected after \fIstopdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss]). [Default is end of cruise].
-.TP
-.B \-E
-Exact match: Only output records that matches all the requested geophysical columns
-[Default outputs records that matches at least one of the observed columns].
 .TP
 .B \-F
 The required \fIcolumns\fP string must be a comma-separated list of parameter abbreviations
@@ -52,13 +32,13 @@ a record for output to occur.  The output format (if ASCII) is controlled by \fB
 The available abbreviations are:
 .TP
 .B drt
-The digital record type (usually 3 or 5 (for Y2K-compliant cruises))
+The digital record type, usually 3 or 5 (for Y2K-compliant cruises).
 .TP
 .B id
-The survey ID string (leg name)
+The survey ID string (leg name).
 .TP
 .B ngdcid
-The 8-character NGDC cruise ID string (usually the file prefix)
+The 8-character NGDC cruise ID string (usually the file prefix).
 .TP
 .B time
 Choose between Absolute calendar time (\fBatime\fP, the default) in the format dictated by the GMT
@@ -98,26 +78,26 @@ Position Type Code (1 = fix, 3 = interpolated, 9 = unspecified).
 .TP
 .B bcc
 Bathymetric Correction Code, indicating the procedure used to convert travel time to depth.
-(01-55 = Matthews' zone - used only if Matthews' zones were used to correct depth, 59 = Matthews'\"'
-corrections used but zones unspecified in data record, 60 = S. Kuwahara formula, 61 = Wilson
-formula, 62 = Del Grosso formula, 63 = Carter's tables, 88 = Other, described in header sections,\"'
-99 = unspecified).
+(01-55 = Matthews' zone used to correct the depth,\"'
+59 = Matthews' corrections used but the zones is unspecified in the data record, 60 = S. Kuwahara formula\"'
+for T-S, 61 = Wilson formula for T-S, 62 = Del Grosso formula for T-S, 63 = Carter's tables,\"'
+88 = Other, described in header sections, 99 = unspecified).
 .TP
 .B btc
 Bathymetric Type Code, indicating how the bathymetry value was obtained (1 = observed,
 3 = interpolated, 9 = unspecified).
 .TP
 .B msens
-Magnetic sensor for residual field (1 = 1st or leading sensor, 2 = 2nd or trailing sensor, 9 = unspecified).
+Magnetic sensor for used to evaluate the residual field (1 = 1st or leading sensor, 2 = 2nd or trailing sensor, 9 = unspecified).
 .TP
 .B msd
-Depth (or altitude) of the magnetic sensor (m, positive below sealevel).
+Depth (or altitude) of the magnetic sensor (in m, positive below sealevel).
 .TP
 .B diur
-Magnetic diurnal correction (nTesla).
+Magnetic diurnal correction (in nTesla).
 .TP
 .B eot
-Eotvos correction (mGal).
+Eotvos correction (in mGal).
 .TP
 .B sln
 Seismic line number string.
@@ -150,11 +130,11 @@ The minutes of each record.
 The decimal seconds of each record.
 .TP
 .B dist
-For method of calculation, see \fB\-C\fP [spherical great circle distances], and
+Along-track distance from start of leg.  For method of calculation, see \fB\-C\fP [spherical great circle distances], and
 for distance units, see \fB\-N\fP [km].
 .TP
 .B az
-Ship azimuth (heading) in degrees, measured clockwise from north.
+Ship azimuth (heading) measured clockwise from north (in degrees).
 .TP
 .B vel
 Ship speed; see \fB\-N\fP for units [m/s]. 
@@ -169,20 +149,24 @@ Carter depth correction, if \fBtwt\fP is present in file (in m)
 International geomagnetic reference field (total field) (in nTesla).
 .TP
 .B ngrav
-International gravity reference field ("normal gravity") (in mGal).
+International Gravity reference Field ("normal gravity") (in mGal).
 Field selected based on MGD77 header information; if not present
-or invalid we default to IGF 1980.
+or invalid we default to IGF 1980.  Alternatively, specify the field
+directly using \fB\-Ag\fP (see that option for more details).
 .br
 .sp
 The following short-hand flags are also recognized:
 .TP
+.B all
+This returns all data columns in the file.
+.TP
 .B mgd77
-This results in all 27 MGD77 fields being written out in the offical MGD77 order [Default].
+This results in all 27 MGD77 fields being written out in the offical MGD77 order.
 .TP
 .B geo
 This limits the output to 11 fields (\fBid\fP, \fBtime\fP, \fBlon\fP, \fBlat\fP plus the seven geophysical observations
 \fBtwt\fP, \fBdepth\fP, \fBmtf1\fP, \fBmtf2\fP, \fBmag\fP, \fBgobs\fP, and \fBfaa\fP).
-By appending \fB+\fP to either set we will also append \fBdist\fP, \fBazim\fP, \fBvel\fP, and
+By appending \fB+\fP to either of these set we will also append \fBdist\fP, \fBazim\fP, \fBvel\fP, and
 \fBweight\fP as listed above.
 .br
 .sp
@@ -204,6 +188,106 @@ Finally, for MGD77+ files you may optionally append :\fIbittests\fP which is : (
 be 1 (ON) whereas - means it must be 0 (OFF).  All bit tests given must be passed.  By default, MGD77+
 files that have the special \fBflag\fP column present will use those flags; append : with no trailing information
 to turn this behavior off.
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+.TP
+.B \-A
+By default, 2-way travel time (\fBtwt\fP), corrected depth (\fBdepth\fP),
+magnetic residual anomaly (\fBmag\fP), free-air gravity anomaly (\fBfaa\fP),
+and the derived quantity Carter depth correction (\fBcarter\fP) are all
+output as is (if selected in \fB\-F\fP).  This option adjusts that behavior.
+For each of these columns there are 2-4 ways to adjust the data.  Append
+\fBc\fP, \fBd\fP, \fBg\fP, or \fBm\fP and select the \fIcode\fP for the
+procedure you want applied.  You may select more than one procedure for a
+column or combine procedures by summing their numerical \fIcode\fPs (1, 2,
+4, and 8). E.g., \fB\-Ac\fP3 will try method \fB\-Ac\fP1 to estimate a
+Carter correction but if \fBdepth\fP is NaN we will next try \fB\-Ac\fP2
+which only uses \fBtwt\fP.  In all cases, if any of the values required
+by the adjustment procedure is NaN then the result will be NaN.
+.TP
+.B \-Ac
+Determines how the Carter correction term is calculated.  Below, 
+C(\fBtwt\fP) stands for the Carter-corrected depth (which also depends on
+\fBlon\fP, \fBlat\fP), U(\fBtwt\fP, \fIv\fP) is the uncorrected depth
+(= \fBtwt\fP * \fIv\fP / 2) using as \fIv\fP the "Assumed Sound Velocity"
+parameter in the MGD77 header (if valid, else we use 1500 m/s); alternatively,
+append your preferred velocity \fIv\fP in m/s, TU(\fBdepth\fP, \fIv\fP) is the
+2-way travel time estimated from (presumably) uncorrected \fBdepth\fP, and TC(\fBdepth\fP) is the
+2-way travel time obtained by inverting the Carter correction.  Select from
+.br
+\fB\-Ac1\fP[,\fIv\fP]
+returns difference between U(\fBtwt\fP, \fIv\fP) and \fBdepth\fP [Default].
+.br
+\fB\-Ac2\fP[,\fIv\fP]
+returns difference between U(\fBtwt\fP, \fIv\fP) and Carter (\fBtwt\fP).
+.br
+\fB\-Ac4\fP[,\fIv\fP]
+returns difference between (assumed uncorrected) \fBdepth\fP and Carter (TU(\fBdepth\fP)).
+.br
+\fB\-Ac8\fP[,\fIv\fP]
+returns difference between U(TC(\fBdepth\fP), \fIv\fP) and \fBdepth\fP.
+.TP
+.B \-Ad
+Determines how the \fBdepth\fP column output is obtained.
+.br
+\fB\-Ad1\fP
+returns \fBdepth\fP as stored in the data set [Default].
+.br
+\fB\-Ad2\fP[,\fIv\fP]
+returns calculated uncorrected depth U(\fBtwt\fP, \fIv\fP).
+.br
+\fB\-Ad4\fP
+returns calculated corrected depth C(\fBtwt\fP).
+.TP
+.B \-Ag
+Determines how the \fBfaa\fP column output is obtained. Where \fBngrav\fP
+is used (i.e., the International Gravity reference Field (IGF), or "normal gravity")
+it is selected based on the MGD77 header parameter "Theoretical Gravity Formula Code";
+if not present or invalid we default to 4.  Alternatively, append the preferred \fIfield\fP
+1-4 to select \fB1\fP (Heiskanen 1924), \fB2\fP (IGF 1930),
+\fB3\fP (IGF 1967) or \fB4\fP (IGF 1980).  Select from
+.br
+\fB\-Ag1\fP[,\fIfield\fP]
+returns \fBfaa\fP as stored in the data set [Default]. Optionally, sets the IGF \fIfield\fP.
+.br
+\fB\-Ag2\fP[,\fIfield\fP]
+returns the difference between \fBgobs\fP and \fBngrav\fP.
+.TP
+.B \-Am
+Determines how the \fBmag\fP column output is obtained.  Select from
+.br
+\fB\-Am1\fP
+returns \fBmag\fP as stored in the data set [Default].
+.br
+\fB\-Am2\fP
+returns the difference between \fBmgfx\fP and \fBigrf\fP, where
+\fBx\fP is the leading sensor (\fB1\fP or \fB2\fP) indicated by the \fBmsens\fP data field
+(defaults to \fB1\fP if unspecified).
+.br
+\fB\-Am4\fP
+returns the difference between \fBmgfx\fP and \fBigrf\fP, where
+\fBx\fP is the sensor (\fB2\fP or \fB1\fP) \fInot\fP indicated by the \fBmsens\fP data field
+(defaults to \fB2\fP if unspecified).
+.TP
+.B \-C
+Append a one-letter code to select the procedure for along-track distance
+calculation (see \fB\-N\fP for selecting units):
+.br
+	\fBf\fP Flat earth distances.
+.br
+	\fBg\fP Great circle distances [Default].
+.br
+	\fBe\fP Geodesic distances on current GMT ellipsoid.
+.TP
+.B \-Da
+Do not list data collected before \fIstartdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss])  [Default is start of cruise].
+.TP
+.B \-Db
+Do not list data collected after \fIstopdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss]). [Default is end of cruise].
+.TP
+.B \-E
+Exact match: Only output records that matches all the requested geophysical columns
+[Default outputs records that matches at least one of the observed columns].
 .TP
 .B \-H
 Issue a header record with names for each data field.
@@ -242,6 +326,13 @@ track from port of departure. [Default is 0 km].
 .B \-Sb
 Do not list data that are more than \fIstopdist\fP km (see \fB\-N\fP for other units) along
 track from port of departure. [Default is length of track].
+.TP
+.B \-T
+Turns OFF the otherwise automatic adjustment of values based on correction terms that are
+stored in the mgd77+ file and used to counteract such things as wrong units used by the source
+institution when creating the original MGD77 file from which the MGD77+ file derives (the
+option has no effect on plain MGD77 ASCII files).  Append \fBm\fc or \fBc\fC to limit the
+option to the MGD77 data set or the extended columns set only [Default is both].
 #include "explain_-V.txt"
 .TP
 .B \-W
@@ -254,8 +345,8 @@ Apply optimal corrections to columns where such corrections are avaiable.  Appen
 table to use [Default uses the correction table in the \fB$MGD77_HOME\fP directory].
 .TP
 .B \-Z
-Append the sign you want for \fBdepth\fP and \fBmsd\fP values below sea level (\fB\-Z-\fP gives negative bathymetry) [Default
-is positive down].
+Append the sign you want for \fBdepth\fP, \fBcarter\fP, and \fBmsd\fP values below sea level
+(\fB\-Z-\fP gives negative bathymetry) [Default is positive down].
 .TP
 .B \-bo
 Selects binary output mode (single precision; append \fBd\fP for double precision) [Default is ASCII].
@@ -296,10 +387,27 @@ whose bitflag for faa indicates BAD values, we try
 .br
 .sp
 \fBmgd77list\fP `cat cruises.lis` \fB\-E \-Ia \-F\fP"dist,faa,grav12_2:+faa" > bad_grav.d
-.SH CREDITS
+.br
+.sp
+To output lon, lat, mag, and faa from all the cruises listed in the file cruises.lis,
+but recalculate the two residuals based on the latest reference fields, try:
+.br
+.sp
+\fBmgd77list\fP `cat cruises.lis` \fB\-F\fPlon,lat,mag,faa \fB\-Ag\fP2,4 \fB\-Am\fP2 > data.d
+.SH IGRF
 The IGRF calculations are based on a Fortran program written by Susan Macmillan,
 British Geological Survey, translated to C via f2c by Joaquim Luis, and adapted to
 GMT style by Paul Wessel.
+.SH IGF
+The equations used are reproduced here using coefficients extracted from the source code (let us know if you find errors):
+.br
+(1) g = MGD77_IGF24_G0 * [1 + MGD77_IGF24_G1 * sin^2(lat) - MGD77_IGF24_G2 * sin^2(2*lat) + MGD77_IGF24_G3 * cos^2(lat) * cos^2(lon-18)]
+.br
+(2) g = MGD77_IGF30_G0 * [1 + MGD77_IGF30_G1 * sin^2(lat) - MGD77_IGF30_G2 * sin^2(2*lat)]
+.br
+(3) g = MGD77_IGF67_G0 * [1 + MGD77_IGF67_G1 * sin^2(lat) - MGD77_IGF67_G2 * sin^2(2*lat)]
+.br
+(4) g = MGD77_IGF80_G0 * [(1 + MGD77_IGF80_G1 * sin^2(lat)) / sqrt (1 - MGD77_IGF80_G2 * sin^2(lat))]
 .SH "SEE ALSO"
 .IR mgd77convert (GMTMANSECTION),
 .IR mgd77info (GMTMANSECTION),

@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.53 2005-10-21 06:22:12 pwessel Exp $
+ *	$Id: mgd77.h,v 1.54 2005-10-22 09:24:03 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -451,6 +451,7 @@ EXTERN_MSC double MGD77_carter_correction (double lon, double lat, double twt_in
 
 EXTERN_MSC int MGD77_igrf10syn (int isv, double date, int itype, double alt, double lon, double lat, double *out);
 EXTERN_MSC double MGD77_Theoretical_Gravity (double lon, double lat, int version);
+EXTERN_MSC void MGD77_IGF_text (FILE *fp, int version);
 
 /* These are called indirectly but remain accessible for specialist programs */
 
