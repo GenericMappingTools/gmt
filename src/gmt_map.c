@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.94 2005-10-19 13:41:56 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.95 2005-10-22 17:08:20 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8554,7 +8554,7 @@ double GMT_az_backaz_cartesian (double lonE, double latE, double lonS, double la
 	/* Calculate azimuths or backazimuths.  Cartesian case.
 	 * First point is considered "Event" and second "Station". */
 
-	double az, dx, dy, dlon;
+	double az, dx, dy;
 
 	latE *= D2R;	lonE *= D2R;
         latS *= D2R;	lonS *= D2R;
