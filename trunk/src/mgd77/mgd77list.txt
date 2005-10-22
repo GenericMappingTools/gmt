@@ -331,7 +331,7 @@ track from port of departure. [Default is length of track].
 Turns OFF the otherwise automatic adjustment of values based on correction terms that are
 stored in the mgd77+ file and used to counteract such things as wrong units used by the source
 institution when creating the original MGD77 file from which the MGD77+ file derives (the
-option has no effect on plain MGD77 ASCII files).  Append \fBm\fc or \fBc\fC to limit the
+option has no effect on plain MGD77 ASCII files).  Append \fBm\fP or \fBc\fP to limit the
 option to the MGD77 data set or the extended columns set only [Default is both].
 #include "explain_-V.txt"
 .TP
