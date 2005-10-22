@@ -206,7 +206,7 @@ which only uses \fBtwt\fP.  In all cases, if any of the values required
 by the adjustment procedure is NaN then the result will be NaN.
 .TP
 .B \-Ac
-Determines how the Carter correction term is calculated.  Below, 
+Determines how the \fBcarter\fP correction term is calculated.  Below, 
 C(\fBtwt\fP) stands for the Carter-corrected depth (which also depends on
 \fBlon\fP, \fBlat\fP), U(\fBtwt\fP, \fIv\fP) is the uncorrected depth
 (= \fBtwt\fP * \fIv\fP / 2) using as \fIv\fP the "Assumed Sound Velocity"
@@ -308,16 +308,16 @@ Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\
 .B \-P
 Append a 2-character institution code.  Only files from this institution will be processed.
 The following is the list of NGDC institution codes:
-(01) LAMONT (LDEO), (02) WOODS HOLE O.I., (03) NOAA, (04) US ARMY, (05) NEW ZEALAND,
-(06) US GEOL. SURVEY, (07) OREGON ST. UNIV, (08) U.HAWAII SOEST, (09) US NAVY, (10) UNIV OF TEXAS,
-(11) RICE UNIV., (12) CANADA, (13) UNIV OF CONN., (14) U.MIAMI (RSMAS), (15) SCRIPPS INST.OC,
-(16) CHINA, (17) U RHODE ISLAND, (18) DUKE UNIVERSITY, (19) UNITED KINGDOM, (20) U.WASHINGTON,
-(22) WESTERN GEOPHY., (23) TEXAS A&M UNIV., (24) AUSTRALIA, (25) MONACO, (29) RUSSIA, (30) SPAIN,
-(35) NIMA, (58) NETHERLANDS, (60) MIN MGMT SVC, (63) ISRAEL, (67) FRANCE, (71) SOUTH AFRICA,
-(75) US COAST GUARD, (76) BRAZIL, (77) INT. GRAV. BUR, (83) GERMANY, (84) ORSTOM NEW CAL,
-(86) CUBA, (87) ARGENTINA, (88) US NSF, (89) INDIA, (90) PORTUGAL, (92) FINLAND, (93) CHILE,
-(J1) HYDR DEPT JAPAN, (J2) GEOL SRVY JAPAN, (J4) UNIV TOKYO, (J5) KOBE UNIV, (J7) UNIV OF RYUKYUS,
-(J8) J.O.D.C. JAPAN, (J9) CHIBA UNIV, (JA) INST.POLAR RES., (ZZ) INST NOT CODED.
+(01) Lamont (LDEO), (02) Woods Hole, (03) NOAA, (04) US Army, (05) New Zealand,
+(06) US Geol. Survey, (07) Oregon State U., (08) U. Hawaii SOEST, (09) US Navy, (10) U. of Texas,
+(11) Rice U., (12) Canada, (13) U. of Connecticut, (14) U. Miami (RSMAS), (15) Scripps,
+(16) China, (17) U. Rhode Island, (18) Duke U., (19) United Kingdom, (20) U. Washington,
+(22) Western Geophysics, (23) Texas A&M U., (24) Australia, (25) Monaco, (29) Russia, (30) Spain,
+(35) NIMA, (58) Netherlands, (60) Min. Mgmt Svc., (63) Israel, (67) France, (71) South Africa,
+(75) US Coast Guard, (76) Brazil, (77) Int. Grav. Bur, (83) Germany, (84) ORSTOM New Caledonia,
+(86) Cuba, (87) Argentina, (88) US NSF, (89) India, (90) Portugal, (92) Finland, (93) Chile,
+(J1) Hydr. Dept. Japan, (J2) Geol. Survey Japan, (J4) U. Tokyo, (J5) Kobe U., (J7) U. of Ryukyus,
+(J8) JODC. Japan, (J9) Chiba U., (JA) Inst. Polar Res., (ZZ) Inst. not coded.
 .TP
 .B \-Sa
 Do not list data that are less than \fIstartdist\fP km (see \fB\-N\fP for other units) along
