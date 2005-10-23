@@ -29,11 +29,12 @@ Select procedure for along-track distance calculation:
 	\fBe\fP Geodesic distances on current GMT ellipsoid.
 .TP
 .B \-D
-Give the definition file for this data format [x2sys].
+Give the definition file for this data format.
 .TP
 .B \-F
 Sets which columns to use.  Give a comma-separated list of column names;
-this list must include x,y or lon,lat [Default is all columns].
+this list must include \fBx\fP, \fBfP or \fBlon\fP, \fBlat\fP and ideally
+\fBtime\fP [Default is all columns].
 .TP
 .B \-G
 Selects geographical coordinates.  Append \fBd\fP for discontinuity at the
@@ -79,7 +80,7 @@ Defines window of track speed within which to calculate crossovers.
 .br
 .TP
 .B \-T
-Sets the data set \fITAG\fP which among other things sets the definition file.
+Sets the data set \fITAG\fP which, among other things, sets the definition file.
 #include "explain_-V.txt"
 .TP
 .B \-W
@@ -125,5 +126,8 @@ files A13232.mgd77 and A99938.mgd77, try
 \fBx2sys_cross\fP A13232.mgd77 A99938.mgd77 \fB\-Qe \-D\fPmgd77 \fB\-F\fPlon,lat,depth > crossovers.d
 .SH "SEE ALSO"
 .IR gmt (GMTMANSECTION),
+.IR x2sys_init (GMTMANSECTION)
 .IR x2sys_datalist (GMTMANSECTION)
+.IR x2sys_get (GMTMANSECTION)
+.IR x2sys_put (GMTMANSECTION)
 
