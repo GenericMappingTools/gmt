@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.85 2005-10-22 09:24:03 pwessel Exp $
+ *	$Id: mgd77.c,v 1.86 2005-10-23 06:22:52 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1039,6 +1039,23 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 	
 	nc_inq_nvars (F->nc_id, &n_vars);			/* Total number of variables in this file */
 	c_id[MGD77_M77_SET] = c_id[MGD77_CDF_SET] = 0;		/* Start with zero columns for both sets */
+	
+	if (H->no_time) {	/* Create an artificial NaN entry anyway */
+		H->info[MGD77_M77_SET].col[0].abbrev = MGD77_cp_txt ("time");
+		H->info[MGD77_M77_SET].col[0].name = MGD77_cp_txt ("Time");
+		H->info[MGD77_M77_SET].col[0].units = MGD77_cp_txt (mgd77cdf[MGD77_TIME].units);
+		H->info[MGD77_M77_SET].col[0].comment = MGD77_cp_txt (mgd77cdf[MGD77_TIME].comment);
+		H->info[MGD77_M77_SET].col[0].factor = mgd77cdf[MGD77_TIME].factor;
+		H->info[MGD77_M77_SET].col[0].offset = mgd77cdf[MGD77_TIME].offset;
+		H->info[MGD77_M77_SET].col[0].corr_factor = 1.0;
+		H->info[MGD77_M77_SET].col[0].corr_offset = 0.0;
+		H->info[MGD77_M77_SET].col[0].type = mgd77cdf[MGD77_TIME].type;
+		H->info[MGD77_M77_SET].col[0].text = 0;
+		H->info[MGD77_M77_SET].col[0].pos = MGD77_TIME;
+		H->info[MGD77_M77_SET].col[0].present = TRUE;
+		c_id[MGD77_M77_SET]++;	/* Move to next position in the set */
+	}
+	
 	for (id = 0; id < n_vars && c_id[MGD77_M77_SET] < MGD77_SET_COLS && c_id[MGD77_CDF_SET] < MGD77_SET_COLS; id++) {	/* Keep checking for extra columns until all are found */
 		
 		MGD77_nc_status (nc_inq_varname    (F->nc_id, id, name));	/* Get column abbreviation */
@@ -2577,6 +2594,11 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			else	/* Get all individual strings */
 				MGD77_nc_status (nc_get_vara_schar (F->nc_id, S->H.info[c].col[id].var_id, start, count, (signed char *)text));
 			S->values[i] = (void *)text;
+		}
+		else if (S->H.no_time && !strcmp (S->H.info[c].col[id].abbrev, "time")) {	/* Fake NaN time */
+			values = (double *) GMT_memory (VNULL, count[0], sizeof (double), "MGD77_Read_File_cdf");
+			for (k = 0; k < count[0]; k++) values[k] = GMT_d_NaN;
+			S->values[i] = (void *)values;
 		}
 		else {
 			values = (double *) GMT_memory (VNULL, count[0], sizeof (double), "MGD77_Read_File_cdf");
