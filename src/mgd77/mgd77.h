@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.55 2005-10-22 22:03:15 pwessel Exp $
+ *	$Id: mgd77.h,v 1.56 2005-10-23 22:21:39 pwessel Exp $
  * 
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -291,7 +291,7 @@ struct MGD77_HEADER {
 	char *history;					/* History of creation/modifications */
 	int n_records;					/* Number of MGD77 data records found */
 	int n_fields;					/* Number of columns returned */
-	int errors;					/* Number of errors found when reading this header */
+	int errors[3];					/* Number of total errors, (warnings, errors) found when reading this header */
 	BOOLEAN no_time;				/* TRUE for those few cruises that have no time values */
 	struct MGD77_DATA_INFO info[MGD77_N_SETS];	/* Info regarding [0] standard MGD77 columns and [1] any extra columns (max 32 each) */
 };
@@ -429,8 +429,9 @@ EXTERN_MSC void MGD77_Set_Unit (char *dist, double *scale, int way);									/* 
 EXTERN_MSC void MGD77_nc_status (int status);											/* Checks for netCDF errors and aborts with error message */
 EXTERN_MSC void MGD77_Ignore_Format (int format);										/* Dissallow some formats for consideration */
 EXTERN_MSC struct MGD77_DATASET *MGD77_Create_Dataset ();									/* Create an empty data set structure */
-EXTERN_MSC void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
-EXTERN_MSC void MGD77_Dump_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P);							/* Dump of header items, one per line */
+EXTERN_MSC void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Prepare header before we write */
+EXTERN_MSC void MGD77_Dump_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P);				/* Dump of header items, one per line */
+EXTERN_MSC void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P, int err[]);			/* Verify content of header per MGD77 docs */
 
 /* Secondary user functions */
 
