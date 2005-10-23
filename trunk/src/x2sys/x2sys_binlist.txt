@@ -6,7 +6,11 @@ x2sys_binlist \- Create bin-index files from track data files
 [ \fB\-D\fP ] [ \fB\-N\fP\fIunit\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBx2sys_binlist\fP reads one or more track data files and produces a multi-
-segment ASCII track bin index listing. 
+segment ASCII track bin index listing with the cruise id in the header and
+one data record per bin crossed; these record contain \fIlon, lat, index, flags\fP[, \fIdist\fP],
+where \fIlon, lat\fP is the coordinates of the center of the bin, the \fIindex\fP is
+the 1-D number of the bin, and \fIflags\fP is a bitflag that describes which data
+fields were available in each bin.  The optional \fIdist\fP requires \fB\-D\fP.
 The input files can be of any format, which must be described and passed with the
 \fB\-T\fP option.  The bin index listing is a crude representation of where
 the track goes and is used by the data archivist to determine which tracks
@@ -36,7 +40,8 @@ calculation selected with \fB\-D\fP (see \fB\-N\fP for selecting units):
 .TP
 .B \-D
 Calculate the length of trackline segments per bin [Default skips this step].
-See \fB\-C\fP for method and \fB\-N\fP for units.
+See \fB\-C\fP for method and \fB\-N\fP for units.  The length fragments are
+given as the 5th output column (after the \fIflags\fP).
 .TP
 .B \-N
 Append the desired distance \fIunit\fP as \fBe\fP (meter), \fBk\fP (km),
