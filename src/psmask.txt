@@ -29,7 +29,7 @@ is given, standard input is read.  For binary files, see \fB\-b\fP.
 #include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
-No space between the option flag and the associated arguments
+No space between the option flag and the associated arguments.
 .sp
 #include "explain_-B_short.txt"
 .TP

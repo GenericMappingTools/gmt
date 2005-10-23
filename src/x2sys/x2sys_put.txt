@@ -12,7 +12,7 @@ inquire about the data base content, use \fBx2sys_get\fP.
 .B \-T
 Give \fITAG\fP, the unique name of this data type system.
 .SH OPTIONS
-No space between the option flag and the associated arguments
+No space between the option flag and the associated arguments.
 .TP
 \fIinfo.tbf\fP
 Name of a single track bin file.  If not given, stdin will be read.

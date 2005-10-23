@@ -24,7 +24,7 @@ append the suffix that goes with this TAG.  If the file TAG_paths.txt
 exist in $X2SYS_HOME then we will search for the specified files in the directories
 contained in that path file.
 .SH OPTIONS
-No space between the option flag and the associated arguments
+No space between the option flag and the associated arguments.
 .TP
 .B \-C
 Append a one-letter code to select the procedure for along-track distance
