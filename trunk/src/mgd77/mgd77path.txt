@@ -8,7 +8,7 @@ mgd77path \- Get full pathname for MGD77 files
 cruise may change with time due to reshuffling of disks/subdirectories.
 #include "mgd77/explain_ncid.txt"
 .SH OPTIONS
-No space between the option flag and the associated arguments
+No space between the option flag and the associated arguments.
 .TP
 .B \-D
 Instead of cruise listings, just show the directory paths currently used in the search.

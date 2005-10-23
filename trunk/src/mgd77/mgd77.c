@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.86 2005-10-23 06:22:52 pwessel Exp $
+ *	$Id: mgd77.c,v 1.87 2005-10-23 07:05:03 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2570,7 +2570,6 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 	for (i = 0; i < F->n_out_columns; i++) {	/* Only loop over columns that are desired */
 		c  = F->order[i].set;	/* Determine set and item */
 		id = F->order[i].item;
-		S->H.info[c].bit_pattern |= MGD77_this_bit[id];		/* We return this data field */
 		if (!strcmp (S->H.info[c].col[id].abbrev, "time")) {	/* The time variable, select conversion from Unix time to GMT epoch time */
 			scale = 1.0;
 			offset = MGD77_Epoch_zero;
@@ -2594,8 +2593,9 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			else	/* Get all individual strings */
 				MGD77_nc_status (nc_get_vara_schar (F->nc_id, S->H.info[c].col[id].var_id, start, count, (signed char *)text));
 			S->values[i] = (void *)text;
+			S->H.info[c].bit_pattern |= MGD77_this_bit[id];		/* We return this data field */
 		}
-		else if (S->H.no_time && !strcmp (S->H.info[c].col[id].abbrev, "time")) {	/* Fake NaN time */
+		else if (S->H.no_time && !strcmp (S->H.info[c].col[id].abbrev, "time")) {	/* Fake NaN time and bit_pattern not set */
 			values = (double *) GMT_memory (VNULL, count[0], sizeof (double), "MGD77_Read_File_cdf");
 			for (k = 0; k < count[0]; k++) values[k] = GMT_d_NaN;
 			S->values[i] = (void *)values;
@@ -2612,6 +2612,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 				MGD77_do_scale_offset_after_read (values, count[0], scale, offset, MGD77_NaN_val[S->H.info[c].col[id].type]);
 			}
 			S->values[i] = (void *)values;
+			S->H.info[c].bit_pattern |= MGD77_this_bit[id];		/* We return this data field */
 		}
 	}
 

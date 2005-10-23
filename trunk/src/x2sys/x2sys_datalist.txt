@@ -17,7 +17,7 @@ Only the named data fields will be output [Default is all columns].
 Can be one or more binary or ASCII data files. To give a list of names,
 use `cat list_of_files`.
 .SH OPTIONS
-No space between the option flag and the associated arguments
+No space between the option flag and the associated arguments.
 .TP
 .B \-D
 Definition file for this data set.

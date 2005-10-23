@@ -16,7 +16,7 @@ of geogphysical observations are available, consider using the x2sys tools to se
 a tracks index data base (see \fBx2sys_init\fP for more information).
 #include "mgd77/explain_ncid.txt"
 .SH OPTIONS
-No space between the option flag and the associated arguments
+No space between the option flag and the associated arguments.
 .TP
 .B \-C
 List abbreviations for all columns present in the MGD77[+] files.

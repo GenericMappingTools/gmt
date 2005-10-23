@@ -18,7 +18,7 @@ be used to find which tracks and data are available inside a given region.
 \fITAG\fP
 The unique name of this data type system.
 .SH OPTIONS
-No space between the option flag and the associated arguments
+No space between the option flag and the associated arguments.
 .TP
 .B \-D
 Definition file for this data set.
