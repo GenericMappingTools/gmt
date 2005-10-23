@@ -2,8 +2,8 @@
 .SH NAME
 x2sys_get \- Get track listing from track index databases
 .SH SYNOPSIS
-\fBx2sys_get\fP \fB\-T\fP\fITAG\fP [ \fB\-C\fP ] [ \fB\-F\fP\fIflags\fP ] 
-[ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-S\fP ] [ \fB\-V\fP ] [ \fB\-X\fP[\fIlist\fP] ] 
+\fBx2sys_get\fP \fB\-T\fP\fITAG\fP [ \fB\-C\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-N\fP\fIflags\fP ] 
+[ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-V\fP ] [ \fB\-X\fP[\fIlist\fP] ] 
 .SH DESCRIPTION
 \fBx2sys_get\fP will return the track data files that match the given
 requirements.  You may choose a geographic region and optionally ask
@@ -11,21 +11,22 @@ only for tracks that meet certain data criteria.  Finally, you may
 select an option to list all possible pairs that might generate crossovers.
 .TP
 \fITAG\fP
-The unique name of this data type system.
+The unique tag name of this data type system.
 .SH OPTIONS
-No space between the option flag and the associated arguments
+No space between the option flag and the associated arguments.
 .TP
 .B \-C
 Instead of reporting the cruise ids, just output the coordinates of the
 center of each bin that has at least one cruise with the specified data.
 .TP
 .B \-F
-Give a comma-separated list of column names as defined in the definition
-file. [Default is all data columns].
-#include "explain_-R.txt"
+Give a comma-separated list of column names (as described in the definition
+file) that should be present. [Default is all data columns].
 .TP
-.B \-S
-Strip off the filename suffix when reporting.
+.B \-N
+Give a comma-separated list of column names (as described in the definition
+file) that must be absent.
+#include "explain_-R.txt"
 #include "explain_-V.txt"
 .TP
 .B \-X
@@ -37,21 +38,29 @@ list of cruises if you want the pair output to be limited to those that involve
 at least one of the cruises in your list.  The output is suitable for the \fB\-K\fP
 option in \fBx2sys_Cross\fP.
 .SH EXAMPLES
-To find all the tracks associated with the tag MGD77, restricted to occupy
+To find all the tracks associated with the tag mgd77, restricted to occupy
 a certain region in the south Pacific, and have at least free air anomalies
 and bathymetry, try
 .br
 .sp
-\fBx2sys_get\fP \fB\-V \-T\fPMGD77 \fB\-R\fP180/240/-60/-30 \fB\-F\fPfaa,depth 
+\fBx2sys_get\fP \fB\-V \-T\fPmgd77 \fB\-R\fP180/240/-60/-30 \fB\-F\fPfaa,depth 
 .br
 .sp
-To find all the pairs associated with the tag MGD77 that might intersect each
+To find all the tracks associated with the tag mgd77 that have depth but not
+twt, try
+.br
+.sp
+\fBx2sys_get\fP \fB\-V \-T\fPmgd77 \fB\-F\fPdepth \fB\-N\fPtwt
+.br
+.sp
+To find all the pairs associated with the tag mgd77 that might intersect each
 other, but only those pairs which involves cruises in your list new.lis, try
 .br
 .sp
-\fBx2sys_get\fP \fB\-V \-T\fPMGD77 \fB\-X\fPnew.lis > xpairs.lis 
+\fBx2sys_get\fP \fB\-V \-T\fPmgd77 \fB\-X\fPnew.lis > xpairs.lis 
 .SH "SEE ALSO"
 .IR x2sys_binlist (GMTMANSECTION)
 .IR x2sys_cross (GMTMANSECTION)
+.IR x2sys_datalist (GMTMANSECTION)
 .IR x2sys_init (GMTMANSECTION)
 .IR x2sys_put (GMTMANSECTION)
