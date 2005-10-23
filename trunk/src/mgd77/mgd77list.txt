@@ -164,7 +164,7 @@ This returns all data columns in the file.
 This results in all 27 MGD77 fields being written out in the offical MGD77 order.
 .TP
 .B geo
-This limits the output to 11 fields (\fBid\fP, \fBtime\fP, \fBlon\fP, \fBlat\fP plus the seven geophysical observations
+This limits the output to 10 fields (\fBtime\fP, \fBlon\fP, \fBlat\fP plus the seven geophysical observations
 \fBtwt\fP, \fBdepth\fP, \fBmtf1\fP, \fBmtf2\fP, \fBmag\fP, \fBgobs\fP, and \fBfaa\fP).
 By appending \fB+\fP to either of these set we will also append \fBdist\fP, \fBazim\fP, \fBvel\fP, and
 \fBweight\fP as listed above.
