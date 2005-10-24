@@ -1,6 +1,6 @@
-#	$Id: Makefile,v 1.18 2005-10-24 07:57:30 pwessel Exp $
+#	$Id: GNUmakefile,v 1.1 2005-10-24 07:57:30 pwessel Exp $
 #
-#		Makefile for GMT mgd77 supplements
+#		GNU Makefile for GMT mgd77 supplements
 #
 #	The mgd77 supplements are assumed to be installed in a subdirectory
 #	under the main gmt/src directory and will refer to the gmt libraries
@@ -26,7 +26,7 @@ MGD77_H	= mgd77.h mgd77defaults.h mgd77_IGF_coeffs.h
 MGD77_C	= mgd77convert.c mgd77info.c mgd77list.c mgd77path.c mgd77manage.c mgd77track.c
 
 LIB_C	= mgd77.c
-LIB_H	= mgd77.h mgd77defaults.h
+LIB_H	= mgd77.h mgd77_functions.h mgd77defaults.h
 LIB_O	= ${LIB_C:.c=.o}
 
 $(LIB_O):	$(LIB_H)
@@ -90,7 +90,7 @@ clean:
 		done
 
 spotless:	clean
-		rm -f *.a
+		rm -f *.a mgd77_functions.h
 
 #-------------------------------------------------------------------------------
 #	library
@@ -111,3 +111,6 @@ $(MGD77):	$(MGD77_O) libmgd77.a
 
 .c.o:
 		$(CC) -c $(CFLAGS) $<
+
+mgd77_functions.h:	mgd77netcdfhelper.sh mgd77.h
+		$(SHELL) mgd77netcdfhelper.sh

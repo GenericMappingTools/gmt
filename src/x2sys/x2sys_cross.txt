@@ -2,7 +2,7 @@
 .SH NAME
 \fBx2sys_cross\fP \- Find and compute Cross-Over Errors
 .SH SYNOPSIS
-\fBx2sys_cross\fP \fIfile(s)\fP OR \fB\-L\fP\fIflist\fP 
+\fBx2sys_cross\fP \fItrack(s)\fP OR \fB\-L\fP\fIflist\fP 
 [ \fB\-Cc\fP|\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-D\fP\fIdeffile\fP ] [ \fB\-F\fP\fIflags\fP ] 
 [ \fB\-Gd|g\fP ] [ \fB\-Il|a|c\fP ] [ \fB\-J\fP\fIparams\fP ] [\fB\-K\fP\fIcombi.lis\fP] [ \fB\-M\fP[\fIflag\fP] ] 
 [ \fB\-Nd|s\fP\fIunit\fP ] [ \fB\-O\fP ] [ \fB\-Qe|i\fP ] [ \fB\-Sl|u\fP\fIspeed\fP ] 
@@ -15,7 +15,10 @@ mean values of the observables, heading along each tracksegment, and the
 distance along track at the cross-over point. The names of the files are passed
 on the command line, or as a list of files with the \fB\-L\fP option.
 By default, \fBx2sys_cross\fP will  look for both external and internal cross-overs.
-The optional parameters are:
+#include "x2sys/explain_tracks.txt
+Alternatively, see \fB\-L\fP
+.SH OPTIONS
+No space between the option flag and the associated arguments.
 .TP
 .B \-C
 Select procedure for along-track distance calculation:
@@ -33,8 +36,8 @@ Give the definition file for this data format.
 .TP
 .B \-F
 Sets which columns to use.  Give a comma-separated list of column names;
-this list must include \fBx\fP, \fBfP or \fBlon\fP, \fBlat\fP and ideally
-\fBtime\fP [Default is all columns].
+this list must include \fBx\fP, \fBy\fP or \fBlon\fP, \fBlat\fP and ideally
+\fBtime\fP [Default selects all columns].
 .TP
 .B \-G
 Selects geographical coordinates.  Append \fBd\fP for discontinuity at the
@@ -55,6 +58,9 @@ Sets the interpolation mode. Choose among:
 .B \-K
 Only process the pair-combinations found in the file \fIcombi.lis\fP
 [Default process all possible combinations among the specified files].
+.TP
+.B \-L
+Supply a list with track names (one per line).
 #include "explain_-M.txt"
 .TP
 .B \-N
