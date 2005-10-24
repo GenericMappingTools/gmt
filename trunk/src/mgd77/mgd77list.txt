@@ -3,7 +3,7 @@
 mgd77list \- A data-extractor for MGD77[+] files
 .SH SYNOPSIS
 \fBmgd77list\fP \fINGDC-ids\fP \fB\-F\fP\fIcolumns\fP[,\fIlogic\fP][:\fIbittests\fP] 
-[ \fB\-Ac|d|g|m\fP\fIcode\fP ] [ \fB\-C\fP\fBf\fP|\fBg\fP|\fBe\fP ] 
+[ \fB\-Ac|d|f|m\fP\fIcode\fP ] [ \fB\-C\fP\fBf\fP|\fBg\fP|\fBe\fP ] 
 [ \fB\-Da\fP\fIstartdate\fP ] [ \fB\-Db\fP\fIstopdate\fP ] [ \fB\-E\fP ] 
 [ \fB\-H\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-Nd|s\fP\fIunit\fP ] 
 [ \fB\-P\fP\fIcode\fP ] [ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-Sa\fP\fIstartdist\fP[unit] ] 
@@ -192,28 +192,31 @@ to turn this behavior off.
 No space between the option flag and the associated arguments.
 .TP
 .B \-A
-By default, 2-way travel time (\fBtwt\fP), corrected depth (\fBdepth\fP),
+By default, corrected depth (\fBdepth\fP),
 magnetic residual anomaly (\fBmag\fP), free-air gravity anomaly (\fBfaa\fP),
 and the derived quantity Carter depth correction (\fBcarter\fP) are all
-output as is (if selected in \fB\-F\fP).  This option adjusts that behavior.
-For each of these columns there are 2-4 ways to adjust the data.  Append
-\fBc\fP, \fBd\fP, \fBg\fP, or \fBm\fP and select the \fIcode\fP for the
-procedure you want applied.  You may select more than one procedure for a
-column or combine procedures by summing their numerical \fIcode\fPs (1, 2,
-4, and 8). E.g., \fB\-Ac\fP3 will try method \fB\-Ac\fP1 to estimate a
-Carter correction but if \fBdepth\fP is NaN we will next try \fB\-Ac\fP2
-which only uses \fBtwt\fP.  In all cases, if any of the values required
-by the adjustment procedure is NaN then the result will be NaN.
+output as is (if selected in \fB\-F\fP); this option adjusts that behavior.
+For each of these columns there are 2\-4 ways to adjust the data.  Append
+\fBc\fP(arter), \fBd\fP(epth), \fBf\fP(aa), or \fBm\fP(ag) and select the
+\fIcode\fP for the procedure you want applied.  You may select more than
+one procedure for a data column or you combine procedures by summing their
+numerical \fIcode\fPs (1, 2, 4, and 8). E.g., \fB\-Ac\fP3 will first try
+method \fB\-Ac\fP1 to estimate a Carter correction but if \fBdepth\fP is
+NaN we will next try \fB\-Ac\fP2 which only uses \fBtwt\fP.  In all cases,
+if any of the values required by the adjustment procedure is NaN then the
+result will be NaN.
 .TP
 .B \-Ac
 Determines how the \fBcarter\fP correction term is calculated.  Below, 
-C(\fBtwt\fP) stands for the Carter-corrected depth (which also depends on
+C(\fBtwt\fP) stands for the Carter-corrected depth (it also depends on
 \fBlon\fP, \fBlat\fP), U(\fBtwt\fP, \fIv\fP) is the uncorrected depth
 (= \fBtwt\fP * \fIv\fP / 2) using as \fIv\fP the "Assumed Sound Velocity"
-parameter in the MGD77 header (if valid, else we use 1500 m/s); alternatively,
-append your preferred velocity \fIv\fP in m/s, TU(\fBdepth\fP, \fIv\fP) is the
-2-way travel time estimated from (presumably) uncorrected \fBdepth\fP, and TC(\fBdepth\fP) is the
-2-way travel time obtained by inverting the Carter correction.  Select from
+parameter in the MGD77 header (if it is a valid velocity, else we default to
+1500 m/s); alternatively, append your preferred velocity \fIv\fP in m/s,
+TU(\fBdepth\fP, \fIv\fP) is the 2-way travel time estimated from the
+(presumably) uncorrected \fBdepth\fP, and TC(\fBdepth\fP) is the
+2-way travel time obtained by inverting the Carter correction formula.
+Select from
 .br
 \fB\-Ac1\fP[,\fIv\fP]
 returns difference between U(\fBtwt\fP, \fIv\fP) and \fBdepth\fP [Default].
@@ -228,7 +231,7 @@ returns difference between (assumed uncorrected) \fBdepth\fP and Carter (TU(\fBd
 returns difference between U(TC(\fBdepth\fP), \fIv\fP) and \fBdepth\fP.
 .TP
 .B \-Ad
-Determines how the \fBdepth\fP column output is obtained.
+Determines how the \fBdepth\fP column output is obtained:
 .br
 \fB\-Ad1\fP
 returns \fBdepth\fP as stored in the data set [Default].
@@ -239,22 +242,25 @@ returns calculated uncorrected depth U(\fBtwt\fP, \fIv\fP).
 \fB\-Ad4\fP
 returns calculated corrected depth C(\fBtwt\fP).
 .TP
-.B \-Ag
-Determines how the \fBfaa\fP column output is obtained. Where \fBngrav\fP
-is used (i.e., the International Gravity reference Field (IGF), or "normal gravity")
+.B \-Af
+Determines how the \fBfaa\fP column output is obtained. If \fBngrav\fP is
+required(i.e., the International Gravity reference Field (IGF), or "normal gravity")
 it is selected based on the MGD77 header parameter "Theoretical Gravity Formula Code";
 if not present or invalid we default to 4.  Alternatively, append the preferred \fIfield\fP
-1-4 to select \fB1\fP (Heiskanen 1924), \fB2\fP (IGF 1930),
+1\-4 to select \fB1\fP (Heiskanen 1924), \fB2\fP (IGF 1930),
 \fB3\fP (IGF 1967) or \fB4\fP (IGF 1980).  Select from
 .br
-\fB\-Ag1\fP[,\fIfield\fP]
-returns \fBfaa\fP as stored in the data set [Default]. Optionally, sets the IGF \fIfield\fP.
+\fB\-Af1\fP[,\fIfield\fP]
+returns \fBfaa\fP as stored in the data set [Default]. Optionally, sets the IGF \fIfield\fP
+used if you also have requested \fBngrav\fp in \fB\-F.
 .br
-\fB\-Ag2\fP[,\fIfield\fP]
-returns the difference between \fBgobs\fP and \fBngrav\fP.
+\fB\-Af2\fP[,\fIfield\fP]
+returns the difference between \fBgobs\fP and \fBngrav\fP (with optional \fIfield\fP directive).
 .TP
 .B \-Am
-Determines how the \fBmag\fP column output is obtained.  Select from
+Determines how the \fBmag\fP column output is obtained.  There may be one or two
+total field measurements in the file (\fBmtf1\fP and \fBmtf2\fP), and the column \fBmsens\fP
+may state which one is the leading sensor (1 or 2; it may also be undefined).  Select from
 .br
 \fB\-Am1\fP
 returns \fBmag\fP as stored in the data set [Default].
@@ -308,16 +314,16 @@ Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\
 .B \-P
 Append a 2-character institution code.  Only files from this institution will be processed.
 The following is the list of NGDC institution codes:
-(01) Lamont (LDEO), (02) Woods Hole, (03) NOAA, (04) US Army, (05) New Zealand,
-(06) US Geol. Survey, (07) Oregon State U., (08) U. Hawaii SOEST, (09) US Navy, (10) U. of Texas,
-(11) Rice U., (12) Canada, (13) U. of Connecticut, (14) U. Miami (RSMAS), (15) Scripps,
-(16) China, (17) U. Rhode Island, (18) Duke U., (19) United Kingdom, (20) U. Washington,
-(22) Western Geophysics, (23) Texas A&M U., (24) Australia, (25) Monaco, (29) Russia, (30) Spain,
-(35) NIMA, (58) Netherlands, (60) Min. Mgmt Svc., (63) Israel, (67) France, (71) South Africa,
-(75) US Coast Guard, (76) Brazil, (77) Int. Grav. Bur, (83) Germany, (84) ORSTOM New Caledonia,
+(01) Lamont-Doherty (LDEO), (02) Woods Hole, (03) NOAA, (04) US Army, (05) New Zealand,
+(06) US Geological Survey, (07) Oregon State U, (08) U of Hawaii (SOEST), (09) US Navy, (10) U of Texas,
+(11) Rice U, (12) Canada, (13) U of Connecticut, (14) U of Miami (RSMAS), (15) Scripps,
+(16) China, (17) U of Rhode Island, (18) Duke U, (19) United Kingdom, (20) U of Washington,
+(22) Western Geophysics, (23) Texas A&M U, (24) Australia, (25) Monaco, (29) Russia, (30) Spain,
+(35) NIMA, (58) Netherlands, (60) Mineral Management Services, (63) Israel, (67) France, (71) South Africa,
+(75) US Coast Guard, (76) Brazil, (77) International Gravimetric Bureau (83) Germany, (84) New Caledonia (ORSTOM),
 (86) Cuba, (87) Argentina, (88) US NSF, (89) India, (90) Portugal, (92) Finland, (93) Chile,
-(J1) Hydr. Dept. Japan, (J2) Geol. Survey Japan, (J4) U. Tokyo, (J5) Kobe U., (J7) U. of Ryukyus,
-(J8) JODC. Japan, (J9) Chiba U., (JA) Inst. Polar Res., (ZZ) Inst. not coded.
+(J1) Hydrographic Deptartment Japan, (J2) Geological Survey Japan, (J4) U of Tokyo, (J5) Kobe U, (J7) U of Ryukyus,
+(J8) JODC. Japan, (J9) Chiba U, (JA) Institute of Polar Research, (ZZ) Institute not coded.
 .TP
 .B \-Sa
 Do not list data that are less than \fIstartdist\fP km (see \fB\-N\fP for other units) along
@@ -393,11 +399,11 @@ To output lon, lat, mag, and faa from all the cruises listed in the file cruises
 but recalculate the two residuals based on the latest reference fields, try:
 .br
 .sp
-\fBmgd77list\fP `cat cruises.lis` \fB\-F\fPlon,lat,mag,faa \fB\-Ag\fP2,4 \fB\-Am\fP2 > data.d
+\fBmgd77list\fP `cat cruises.lis` \fB\-F\fPlon,lat,mag,faa \fB\-Af\fP2,4 \fB\-Am\fP2 > data.d
 .SH IGRF
 The IGRF calculations are based on a Fortran program written by Susan Macmillan,
-British Geological Survey, translated to C via f2c by Joaquim Luis, and adapted to
-GMT style by Paul Wessel.
+British Geological Survey, translated to C via f2c by Joaquim Luis U Algarve, and adapted to
+GMT-style by Paul Wessel.
 .SH IGF
 The equations used are reproduced here using coefficients extracted from the source code (let us know if you find errors):
 .br

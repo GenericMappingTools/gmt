@@ -55,7 +55,7 @@ To determine the Magnetic sampling rate used during cruise 01010047.mgd77, run
 \fBmgd77info\fP 01010047 \fB\-Hf\fP | grep "Magnetics Sampling Rate"
 .br
 .sp
-To all the columns that the MGD77+ cruise 01010047.nc contains, run
+To see all the columns that the MGD77+ cruise 01010047.nc contains, run
 .br
 .sp
 \fBmgd77info\fP 01010047.nc \fB\-C\fP
