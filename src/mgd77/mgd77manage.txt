@@ -24,7 +24,8 @@ No space between the option flag and the associated arguments
 Add a new data column.  If an existing column with the same abbreviation already exists in the file
 we will cowardly refuse to update the file. Specifying \fB\-A+\fP overcomes this reluctance (However,
 sometimes an existing column cannot be upgraded without first deleting it; if so you will be warned).
-Select a column source among the following choices:
+Select a column source code among \fBa\fP, \fBc\fP, \fBd\fP, \fBD\fP, \fBe\fP, \fBg\fP, \fBi\fP,
+\fBn\fP, \fBt\fP, or \fBT\fP; detailed descriptions for each choice follow:
 .br
 .sp
 \fBa\fP Append filename of a single column table to add.  File must have the same number of rows as
@@ -32,8 +33,8 @@ the MGD77+ file. If no file is given we read from stdin instead.
 .br
 .sp
 \fBc\fP Create a new column that derives from existing data and formulas for corrections and reference
-fields.  Append \fBm\fP for the IGRF total field magnetic reference field, \fBc\fP for the Carter
-corrections to uncorrected depths, and \fBg\fP for the IGF gravity reference field (a.k.a "normal
+fields.  Append \fBc\fP for the Carter corrections subtracted from uncorrected depths, \fBm\fP for the
+IGRF total field magnetic reference field, and \fBg\fP for the IGF gravity reference field (a.k.a "normal
 gravity").  For the latter we choose the reference field based on the parameter Gravity Theoretical
 Formula Code in the cruise's MGD77 header.  If this is not set or invalid we default to the IGF 1980.
 You can override this behaviour by appending the desired code: 1 = Heiskanen 1924, 2 = International
