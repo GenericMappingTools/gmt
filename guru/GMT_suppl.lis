@@ -78,7 +78,6 @@ src/mgd77/mgd77list.html
 src/mgd77/mgd77manage.c
 src/mgd77/mgd77manage.man
 src/mgd77/mgd77manage.html
-src/mgd77/mgd77netcdfhelper.sh
 src/mgd77/mgd77path.c
 src/mgd77/mgd77path.man
 src/mgd77/mgd77path.html

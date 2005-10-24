@@ -3,7 +3,7 @@
 x2sys_datalist \- A generic data-extractor for ASCII or binary files
 .SH SYNOPSIS
 \fBx2sys_datalist\fP \fItrack(s)\fP [ \fB\-D\fP\fIdeffile\fP ] 
-[ \fB\-F\fP\fIname1,name2,...\fP ] [ \fB\-H\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
+[ \fB\-F\fP\fIname1,name2,...\fP ] [ \fB\-H\fP ]  
 [ \fB\-R\fIwest/east/south/north\fP ]  [ \fB\-S\fP ] [ \fB\-T\fP\fITAG\fP ] [ \fB\-V\fP ] [ \fB\-bo\fP ]
 .SH DESCRIPTION
 \fBx2sys_datalist\fP reads one or more files and produces a single ASCII [or binary] table. 
