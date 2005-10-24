@@ -32,7 +32,7 @@ The leg annotation font is controlled by \fBLABEL_FONT\fP.
 .B \-C
 Select procedure for along-track distance calculation:
 .br
-	\fBf\fP Flat earth distances.
+	\fBf\fP Flat Earth distances.
 .br
 	\fBg\fP Great circle distances [Default].
 .br
@@ -58,12 +58,12 @@ Alternatively you may use the modifiers \fBd\fP (days) and \fBn\fP (nautical mil
 #include "explain_-P.txt"
 .TP
 .B \-Sa
-Do not plot data that are less than \fIstartdist\fP meter along track from port of departure.  Append
-\fBk\fP for km, \fBm\fP for miles, or \fBn\fP for nautical miles [Default is 0 meters].
+Do not plot data that are less than \fIstartdist\fP meter along track from port of departure.
+Append \fBk\fP for km, \fBm\fP for miles, or \fBn\fP for nautical miles [Default is 0 meters].
 .TP
 .B \-Sb
-Do not plot data that are more than \fIstopdist\fP meter along track from port of departure.   Append
-\fBk\fP for km, \fBm\fP for miles, or \fBn\fP for nautical miles [Default is length of track].
+Do not plot data that are more than \fIstopdist\fP meter along track from port of departure.
+Append \fBk\fP for km, \fBm\fP for miles, or \fBn\fP for nautical miles [Default is end of track].
 .TP
 .B \-T
 Controlls the attributes of the three kinds of markers (\fBT\fP for the first time marker in a new

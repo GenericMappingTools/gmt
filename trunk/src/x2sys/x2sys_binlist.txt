@@ -32,7 +32,7 @@ calculation selected with \fB\-D\fP (see \fB\-N\fP for selecting units):
 .br
 	\fBc\fP Cartesian distances in user units [Default].
 .br
-	\fBf\fP Flat earth distances.
+	\fBf\fP Flat Earth distances.
 .br
 	\fBg\fP Great circle distances.
 .br

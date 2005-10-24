@@ -279,7 +279,7 @@ returns the difference between \fBmgfx\fP and \fBigrf\fP, where
 Append a one-letter code to select the procedure for along-track distance
 calculation (see \fB\-N\fP for selecting units):
 .br
-	\fBf\fP Flat earth distances.
+	\fBf\fP Flat Earth distances.
 .br
 	\fBg\fP Great circle distances [Default].
 .br
@@ -326,12 +326,12 @@ The following is the list of NGDC institution codes:
 (J8) JODC Japan, (J9) Chiba U, (JA) Institute of Polar Research, (ZZ) Institute not coded.
 .TP
 .B \-Sa
-Do not list data that are less than \fIstartdist\fP km (see \fB\-N\fP for other units) along
-track from port of departure. [Default is 0 km].
+Do not list data that are less than \fIstartdist\fP meter along track from port of departure.
+Append \fBk\fP for km, \fBm\fP for miles, or \fBn\fP for nautical miles [Default is 0 meters]
 .TP
 .B \-Sb
-Do not list data that are more than \fIstopdist\fP km (see \fB\-N\fP for other units) along
-track from port of departure. [Default is length of track].
+Do not list data that are more than \fIstopdist\fP meters along track from port of departure.
+Append \fBk\fP for km, \fBm\fP for miles, or \fBn\fP for nautical miles [Default is end of track].
 .TP
 .B \-T
 Turns OFF the otherwise automatic adjustment of values based on correction terms that are
