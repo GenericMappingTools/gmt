@@ -40,7 +40,7 @@ polarity:
 \fIfiles\fR
 List one or more file-names. If no files are given, pspolar will read standard input.
 #include "explain_-J_short.txt"
-#include "explain_-R.txt"
+#include "explain_-Rgeo.txt"
 .TP
 \fB\-D\fIlongitude/latitude\fR
 Maps the bubble at given longitude and latitude point.

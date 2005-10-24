@@ -25,7 +25,7 @@ been replaced by \fBpsvelo\fP and \fBpsmeca\fP.
 \fIfiles\fP
 List one or more file-names. If no files are given, \fBpsvelo\fP will read standard input.
 #include "explain_-J_short.txt"
-#include "explain_-R.txt"
+#include "explain_-Rgeo.txt"
 .br
 .sp
 \fB\-S\fRSelects the meaning of the columns in the data file and the
