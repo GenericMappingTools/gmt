@@ -2,21 +2,22 @@
 .SH NAME
 \fBx2sys_cross\fP \- Find and compute Cross-Over Errors
 .SH SYNOPSIS
-\fBx2sys_cross\fP \fItrack(s)\fP [ \fB\-L\fP\fIflist\fP ] [ \fB\-Cc\fP|\fBf\fP|\fBg\fP|\fBe\fP ] 
-[ \fB\-D\fP\fIdeffile\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-Gd|g\fP ] [ \fB\-Il|a|c\fP ] 
+\fBx2sys_cross\fP \fItrack(s)\fP \fB\-T\fP\fITAG\fP 
+[ \fB\-Cc\fP|\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-Gd|g\fP ] [ \fB\-Il|a|c\fP ] 
 [ \fB\-J\fP\fIparams\fP ] [\fB\-K\fP\fIcombi.lis\fP] [ \fB\-L\fP\fIflist\fP ] 
 [ \fB\-Nd|s\fP\fIunit\fP ] [ \fB\-O\fP ] [ \fB\-Qe|i\fP ] [ \fB\-Sl|u\fP\fIspeed\fP ] 
-[ \fB\-T\fP\fITAG\fP ] [ \fB\-Wt\fP|\fBd\fP|\fBn\fP\fIsize\fP ] [ \fB\-V\fP ] 
-[ \fB\-2\fP ] [ \fB\-bo\fP[\fBs\fP] ]
+[ \fB\-V\fP ][ \fB\-Wt\fP|\fBd\fP|\fBn\fP\fIsize\fP ] [ \fB\-2\fP ] [ \fB\-bo\fP[\fBs\fP] ]
 .SH DESCRIPTION
 \fBx2sys_cross\fP is used to determine all intersections between ("external cross-overs") or within
-("internal cross-overs") tracks, and report the time, position, discrepancies in all observables, the
-mean values of the observables, heading along each tracksegment, and the
-distance along track at the cross-over point. The names of the files are passed
-on the command line, or as a list of files with the \fB\-L\fP option.
-By default, \fBx2sys_cross\fP will  look for both external and internal cross-overs.
+("internal cross-overs") tracks, and report the time, position, distance along track,
+heading and speed along each tracksegment, and the crossover and mean values for all observables.
+The names of the tracks are passed on the command line.
+By default, \fBx2sys_cross\fP will look for both external and internal cross-overs.  As an option,
+you may choose to project all data using one of the map-projections prior to calculating the crossovers.
 #include "x2sys/explain_track.txt"
-Alternatively, see \fB\-L\fP
+.TP
+.B \-T
+Sets the data set \fITAG\fP which, among other things, sets the definition file.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -30,9 +31,6 @@ Select procedure for along-track distance calculation:
 	\fBg\fP Great circle distances.
 .br
 	\fBe\fP Geodesic distances on current GMT ellipsoid.
-.TP
-.B \-D
-Give the definition file for this data format.
 .TP
 .B \-F
 Sets which columns to use.  Give a comma-separated list of column names;
@@ -59,10 +57,6 @@ Sets the interpolation mode. Choose among:
 Only process the pair-combinations found in the file \fIcombi.lis\fP
 [Default process all possible combinations among the specified files].
 .TP
-.B \-L
-Instead of givin track names on the command line directly, supply a list with
-all the track names you want (one per line).
-.TP
 .B \-N
 Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
 \fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles and miles/hr), or
@@ -75,18 +69,16 @@ This option should only be used with *.gmt-formatted MGD77 files.
 .B \-Q
 Append \fBe\fP for external crossovers only, and \fBi\fP for internal
 crossovers only [Default is all crossovers].
-#include "explain_-R.txt"
+#include "explain_-Rgeo.txt"
 .TP
 .B \-S
-Defines window of track speed within which to calculate crossovers.
+Defines window of track speeds.  If speeds are outside this window we do not
+calculate a crossover. Specify
 .br
 	\fB\-Sl\fP sets lower speed [Default is 0].
 .br
 	\fB\-Su\fP sets upper speed [Default is Infinity].
 .br
-.TP
-.B \-T
-Sets the data set \fITAG\fP which, among other things, sets the definition file.
 #include "explain_-V.txt"
 .TP
 .B \-W
@@ -97,7 +89,7 @@ gap we skip the crossover calculation.  For \fB\-Wn\fP, give the maximum number 
 either side to use in the interpolation [3].
 .TP
 .B \-2
-Report the values of each track at the crossover [Default is the crossover value and the mean value].
+Report the values of each track at the crossover [Default reports the crossover value and the mean value].
 #include "explain_-o_binary.txt"
 .SH REMARKS
 The COEs found are printed out to standard output in ASCII format (unless
@@ -112,24 +104,26 @@ the default format is chosen then the header record starts with "> ", and
 the output format for crossovers are first 10 columns that contain
 x, y, time along track #1 and track #2, distance along track #1 and track #2,
 heading along track #1 and track #2, velocity along track #1 and #2, and
-then pairs of (COE, average value) for each data type.  Sign convention:
-If lega and legb are passed on the command line, then the COE value is Value
-(lega) - Value (legb).  It is recommended that the Akima spline is used
+then pairs of (COE, average value) for each data type (or track-values; see \fB\-2\fP).
+It is recommended that the Akima spline is used
 instead of the natural cubic spline, since it is less sensitive to outliers
 that tend to introduce wild oscillations in the interpolation.
+.SH SIGN CONVENTION
+If lega and legb are passed on the command line, then the COE value is Value
+(lega) - Value (legb).
 .SH EXAMPLES
 To compute all internal crossovers in the gmt-formatted file c2104.gmt, and
-output in the old XOVER format, use
+output in the old XOVER format, using the tag MGG, try
 .br
 .sp
-\fBx2sys_cross\fP c2104.gmt \fB\-O \-D\fPgmt > c2104.d
+\fBx2sys_cross\fP c2104.gmt \fB\-O \-T\fPMGG > c2104.d
 .br
 .sp
 To find the crossover locations with bathymetry between the two MGD77
-files A13232.mgd77 and A99938.mgd77, try
+files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try
 .br
 .sp
-\fBx2sys_cross\fP A13232.mgd77 A99938.mgd77 \fB\-Qe \-D\fPmgd77 \fB\-F\fPlon,lat,depth > crossovers.d
+\fBx2sys_cross\fP A13232.mgd77 A99938.mgd77 \fB\-Qe \-T\fPNGD77 \fB\-F\fPlon,lat,depth > crossovers.d
 .SH "SEE ALSO"
 .IR gmt (GMTMANSECTION),
 .IR x2sys_init (GMTMANSECTION)

@@ -12,7 +12,7 @@ observations.  Optionally, choose instead to see the original MGD77 header secti
 its individual members.
 .br
 If you need to know which tracks are crossing through a given region and what kinds
-of geogphysical observations are available, consider using the x2sys tools to set up
+of geophysical observations are available, consider using the x2sys tools to set up
 a tracks index data base (see \fBx2sys_init\fP for more information).
 #include "mgd77/explain_ncid.txt"
 .SH OPTIONS
@@ -26,7 +26,7 @@ Append \fBm\fP or \fBe\fP to limit the display to the MGD77 or MGD77+ extended s
 Give a one-line summary for each cruise listed.
 .TP
 .B \-H
-List all the header and (if present) the MGD77+ history.  Append \fBf\fP to list individual
+List the header and (if present) the MGD77+ history for each cruise.  Append \fBf\fP to list individual
 parameters and their values, one entry per output line, in a format
 that can be searched using standard UNIX text tools, or \fBr\fP to see the raw, punchcard-formatted
 MGD77 original header block.

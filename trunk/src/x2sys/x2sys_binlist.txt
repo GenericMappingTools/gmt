@@ -5,15 +5,16 @@ x2sys_binlist \- Create bin-index files from track data files
 \fBx2sys_binlist\fP \fItrack(s)\fP [ \fB\-T\fP\fITAG\fP ] [ \fB\-Cc\fP|\fBf\fP|\fBg\fP|\fBe\fP ] 
 [ \fB\-D\fP ] [ \fB\-N\fP\fIunit\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
-\fBx2sys_binlist\fP reads one or more track data files and produces a multi-
-segment ASCII track binindex file (tbf) with the cruise id in the header and
-one data record per bin crossed; these record contain \fIlon, lat, index, flags\fP[, \fIdist\fP],
+\fBx2sys_binlist\fP reads one or more track data files and produces a
+multi-segment ASCII track bin-index file (tbf) with the track id in the header and
+one data record per bin crossed; these records contain \fIlon, lat, index, flags\fP[, \fIdist\fP],
 where \fIlon, lat\fP is the coordinates of the center of the bin, the \fIindex\fP is
 the 1-D number of the bin, and \fIflags\fP is a bitflag that describes which data
 fields were available in each bin.  The optional \fIdist\fP requires \fB\-D\fP.
 The input files can be of any format, which must be described and passed with the
 \fB\-T\fP option.  The bin index listing is a crude representation of where
-the track goes and is used by the data archivist to determine which tracks
+the track goes and is used by the data archivist to build a track data base for
+track queries such as to determining which tracks
 need to be compared for crossover analysis.  You must run \fBx2ys_init\fP
 to initialize the tag before you can run the indexing.
 #include "x2sys/explain_track.txt"

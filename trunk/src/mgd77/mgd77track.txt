@@ -11,7 +11,7 @@ mgd77track \- A shiptrack plotting program
 .SH SYNOPSIS
 \fBmgd77track\fP \fINGDC-ids\fP \fB\-R\fIwest/east/south/north\fP \fB\-J\fP\fIparameters\fP 
 [ \fB\-A\fP[\fBc\fP][\fIsize\fP] ]  [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-Cf\fP|\fBg\fP|\fBe\fP ] [ \fB\-Da\fP\fIstartdate\fP ] [ \fB\-Db\fP\fIstopdate\fP ] 
-[ \fB\-I\fP\fIignore\fP ] [ \fB\-K\fP ] [ \fB\-M\fP\fItrackticks\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-Sa\fP\fIstartdist\fP[unit] ] 
+[ \fB\-I\fP\fIignore\fP ] [ \fB\-K\fP ] [ \fB\-L\fP\fItrackticks\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-Sa\fP\fIstartdist\fP[unit] ] 
 [ \fB\-Sb\fP\fIstopdist\fP[unit] ] [ \fB\-TT|t|d\fP\fIms,mc,mfs,mf,mfc\fP ] [ \fB\-U\fP[\fIdx/dy/\fP][\fIlabel\fP] ] 
 [ \fB\-V \fP ] [ \fB\-W\fP\fIpen\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ]
 .SH DESCRIPTION
@@ -19,7 +19,7 @@ mgd77track \- A shiptrack plotting program
 map using the specified projection.  The \fIPostScript\fP code is written to standard output.
 #include "mgd77/explain_ncid.txt"
 #include "explain_-J_short.txt"
-#include "explain_-R.txt"
+#include "explain_-Rgeo.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -50,8 +50,8 @@ MGD77 ASCII, MGD77+ netCDF, or plain table files, respectively. The option may
 be repreated to ignore more than one format.  [Default ignores none].
 #include "explain_-K.txt"
 .TP
-.B \-M
-To put time/distance Marks on the track. E.g. \fBa\fP500\fBka\fP24\fBht\fP6\fBh\fP means (\fBa\fP)nnotate
+.B \-L
+To put time/distance log-marks on the track. E.g. \fBa\fP500\fBka\fP24\fBht\fP6\fBh\fP means (\fBa\fP)nnotate
 every 500 km (\fBk\fP) and 24 \fBh\fP(ours), with (\fBt\fP)ickmarks every 500 km and 6 hours.
 Alternatively you may use the modifiers \fBd\fP (days) and \fBn\fP (nautical miles).
 #include "explain_-O.txt"
@@ -87,7 +87,7 @@ with ticks every 6 hours and 250 km, and send the plot to the default printer,
 enter the following command:
 .br
 .sp
-\fBmgd77track\fP 01010007 \fB\-R\fP70W/20E/40S/20N SCALE2 \fB\-B\fP10\fBg\fP5 \fB\-A\fP10 \fB\-M\fPa1da1000kf6hf250k | lpr
+\fBmgd77track\fP 01010007 \fB\-R\fP70W/20E/40S/20N SCALE2 \fB\-B\fP10\fBg\fP5 \fB\-A\fP10 \fB\-L\fPa1da1000kf6hf250k | lpr
 .SH "SEE ALSO"
 .IR mgd77info (GMTMANSECTION),
 .IR psbasemap (GMTMANSECTION)

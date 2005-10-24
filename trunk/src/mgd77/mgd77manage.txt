@@ -32,7 +32,7 @@ Select a column source code among \fBa\fP, \fBc\fP, \fBd\fP, \fBD\fP, \fBe\fP, \
 the MGD77+ file. If no file is given we read from stdin instead.
 .br
 .sp
-\fBc\fP Create a new column that derives from existing data and formulas for corrections and reference
+\fBc\fP Create a new column that derives from existing data or formulas for corrections and reference
 fields.  Append \fBc\fP for the Carter corrections subtracted from uncorrected depths, \fBm\fP for the
 IGRF total field magnetic reference field, and \fBg\fP for the IGF gravity reference field (a.k.a "normal
 gravity").  For the latter we choose the reference field based on the parameter Gravity Theoretical
@@ -41,25 +41,26 @@ You can override this behaviour by appending the desired code: 1 = Heiskanen 192
 1930, 3 = IGF1967, or 4 = IGF1980.
 .br
 .sp
-\fBd\fP  Append filename of a double column table with first column holding distances along track,
-with data values in second column.  If no file is given we read from stdin instead.  Records with matching
+\fBd\fP  Append filename of a double column table with the first column holding distances along track,
+with data values in the second column.  If no file is given we read from stdin instead.  Records with matching
 distances in the MGD77+ file will be assigned the new values; at other distances we set them to NaN.
 Alternatively, give upper case \fBD\fP instead and we will interpolate the column at all records.
-See \fB\-N\fP for chosing distance units and how distances are created.
+See \fB\-N\fP for chosing distance units and \fB\-C\fP for chosing how distances are calculated.
 .br
 .sp
 \fBe\fP Read the e77 error/correction log from \fBmgd77sniffer\fP and add or update the special column
 \fBflag\fP which will hold bitflags (0 = GOOD, 1 = BAD) for each data field in the standard MGD77 data
 set.  Any correction terms found (such as needing to scale a field by 0.1 or 10 because the source
 agency used incorrect units) will be written as attributes to the netCDF MGD77+ file and applied when the
-data is read.
+data are read.
 .br
 .sp
-\fBg\fP Sample a GMT geographic (lon,lat) grid along the track given by the MGD77+ file.  Append
-name of a GMT grid file.
+\fBg\fP Sample a GMT geographic (lon, lat) grid along the track given by the MGD77+ file using
+bicubic interpolation (however, see \fB\-Q\fP).  Append name of a GMT grid file.
 .br
 .sp
-\fBi\fP Sample a Sandwell/Smith Mercator *.img grid along the track given by the MGD77+ file.  Append
+\fBi\fP Sample a Sandwell/Smith Mercator *.img grid along the track given by the MGD77+ file using
+bicubic interpolation (however, see \fB\-Q\fP).  Append
 grid spacing in minutes (1 or 2), the gridded data scale (typically 1 or 10), the IMG file mode (0-3), and
 finally the img grid filename.  The modes stand for the following: (0) Img files with no constraint
 code, returns data, (1) Img file with constraints coded, return data at all points, (2) Img file
@@ -67,19 +68,19 @@ with constraints coded, return data only at constrained points and NaN elsewhere
 with constraints coded, return 1 at constraints and 0 elsewhere.
 .br
 .sp
-\fBn\fP Append filename of a double column table with first column holding the record number (0 to nrows - 1),
-with data values in second column.  If no file is given we read from stdin instead.  Records with matching
+\fBn\fP Append filename of a double column table with the first column holding the record number (0 to nrows - 1),
+with data values in the second column.  If no file is given we read from stdin instead.  Records with matching
 record numbers in the MGD77+ file will be assigned the new values; at other records we set them to NaN.
 .br
 .sp
-\fBt\fP Append filename of a double column table with first column holding absolute times along track,
-with data values in second column.  If no file is given we read from stdin instead.  Records with matching
+\fBt\fP Append filename of a double column table with the first column holding absolute times along track,
+with data values in the second column.  If no file is given we read from stdin instead.  Records with matching
 times in the MGD77+ file will be assigned the new values; at other times we set them to NaN.
 Alternatively, give upper case \fBT\fP instead and we will interpolate the column at all records.
 .TP
 .B \-C
 Append a one-letter code to select the procedure for along-track distance
-calculation when using \fB\-Ad\fP|\fBD\fP (see \fB\-N\fP for selecting units):
+calculation when using \fB\-Ad\fP|\fBD\fP (see \fB\-N\fP for selecting distance units):
 .br
 	\fBf\fP Flat Earth distances.
 .br
@@ -89,7 +90,7 @@ calculation when using \fB\-Ad\fP|\fBD\fP (see \fB\-N\fP for selecting units):
 .TP
 .B \-D
 Give a comma-separated list of column abbreviations that you want to delete from the MGD77+ files.
-Do NOT use this option to remove columns that you will replace with new data (use \fB\A+\fP instead).
+Do NOT use this option to remove columns that you will replace with new data (use \fB\-A+\fP instead).
 Because we cannot remove variables from netCDF files we must create a new file without the columns
 to be deleted.  Once the file is successfully created we temporarily rename the old file, change
 the new filename to the old filename, and finally remove the old, renamed file.
@@ -101,17 +102,17 @@ a string like "99999..." [9].
 .B \-I
 In addition to file information we must specify additional information about the extra column.
 Specify a short (16 char or less, using letters, digits, or underscores only) abbreviation for the
-selected data, its more descriptive name, the data unit, the data type (\fBb\fPyte, \fBs\fPhort,
+selected data, its more descriptive name, the data unit, the data type 1-character code (\fBb\fPyte, \fBs\fPhort,
 \fBf\fPloat, \fBi\fPnt, \fBd\fPouble, or \fBt\fPext) you want used for storage in the netCDF file,
 any scale and offset applied to the data to make it fit inside the range implied by the chosen
 storage type, and a general comment (< 128 characters) regarding what this data represent.  Note:
-If text data type is selected then the terms "values" in the \fB\-A\fP discussion refers to your
+If text data type is selected then the terms "values" in the \fB\-A\fP discussion refer to your
 text data.  Furthermore, the discussion on interpolation does not apply and the NaN value becomes
 a "no string" value (see \fB\-E\fP for what this is).  Place quotes around terms with more than
 one word (e.g., "Corrected Depth").
 .TP
 .B \-N
-Specify the distance unit when using \fB\-Ad\fP|\fBD\fP by appending \fBe\fP (meter), \fBk\fP (km),
+Specify the distance unit used when using \fB\-Ad\fP|\fBD\fP by appending \fBe\fP (meter), \fBk\fP (km),
 \fBm\fP (miles), or \fBn\fP (nautical miles). [Default is \fB\-Nk\fP (km)].
 #include "explain_-Q.txt"
 Only relevant when \fB\-Ag\fP|\fBi\fP is selected.  
