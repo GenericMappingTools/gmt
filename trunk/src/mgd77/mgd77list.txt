@@ -252,7 +252,7 @@ if not present or invalid we default to 4.  Alternatively, append the preferred 
 .br
 \fB\-Af1\fP[,\fIfield\fP]
 returns \fBfaa\fP as stored in the data set [Default]. Optionally, sets the IGF \fIfield\fP
-used if you also have requested \fBngrav\fp in \fB\-F.
+used if you also have requested \fBngrav\fP in \fB\-F.
 .br
 \fB\-Af2\fP[,\fIfield\fP]
 returns the difference between \fBgobs\fP and \fBngrav\fP (with optional \fIfield\fP directive).

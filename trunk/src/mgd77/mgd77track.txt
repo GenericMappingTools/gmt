@@ -69,7 +69,7 @@ k for km, m for miles, or n for nautical miles [Default is length of track].
 Controlls the attributes of the three kinds of markers (\fBT\fP for the first time marker in a new
 day, \fBt\fP for additional time markers in the same day, and \fBd\fP for distance markers).  For each
 of these you can specify the 5 comma-separated attributes \fImarkersize\fP, \fImarkercolor\fP,
-\fImarkerfontsize\fP, \fImarkerfont\fP, and \fImarkerconfcolor\fP.  Repeat the \fB\-T\fP option for
+\fImarkerfontsize\fP, \fImarkerfont\fP, and \fImarkerfontcolor\fP.  Repeat the \fB\-T\fP option for
 each marker type.
 #include "explain_-U.txt"
 .TP
