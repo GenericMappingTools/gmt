@@ -199,12 +199,11 @@ output as is (if selected in \fB\-F\fP); this option adjusts that behavior.
 For each of these columns there are 2\-4 ways to adjust the data.  Append
 \fBc\fP(arter), \fBd\fP(epth), \fBf\fP(aa), or \fBm\fP(ag) and select the
 \fIcode\fP for the procedure you want applied.  You may select more than
-one procedure for a data column or you combine procedures by summing their
-numerical \fIcode\fPs (1, 2, 4, and 8). E.g., \fB\-Ac\fP3 will first try
-method \fB\-Ac\fP1 to estimate a Carter correction but if \fBdepth\fP is
-NaN we will next try \fB\-Ac\fP2 which only uses \fBtwt\fP.  In all cases,
-if any of the values required by the adjustment procedure is NaN then the
-result will be NaN.
+one procedure for a data column by summing their numerical \fIcode\fPs
+(1, 2, 4, and 8). E.g., \fB\-Ac\fP3 will first try method \fB\-Ac\fP1 to
+estimate a Carter correction but if \fBdepth\fP is NaN we will next try
+\fB\-Ac\fP2 which only uses \fBtwt\fP.  In all cases, if any of the values
+required by the adjustment procedure is NaN then the result will be NaN.
 .TP
 .B \-Ac
 Determines how the \fBcarter\fP correction term is calculated.  Below, 
@@ -215,7 +214,8 @@ parameter in the MGD77 header (if it is a valid velocity, else we default to
 1500 m/s); alternatively, append your preferred velocity \fIv\fP in m/s,
 TU(\fBdepth\fP, \fIv\fP) is the 2-way travel time estimated from the
 (presumably) uncorrected \fBdepth\fP, and TC(\fBdepth\fP) is the
-2-way travel time obtained by inverting the Carter correction formula.
+2-way travel time obtained by converting the (presumably) corrected \fBdepth\fP
+by inverting the Carter correction formula.
 Select from
 .br
 \fB\-Ac1\fP[,\fIv\fP]
