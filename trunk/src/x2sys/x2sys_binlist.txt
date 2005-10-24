@@ -6,7 +6,7 @@ x2sys_binlist \- Create bin-index files from track data files
 [ \fB\-D\fP ] [ \fB\-N\fP\fIunit\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBx2sys_binlist\fP reads one or more track data files and produces a multi-
-segment ASCII track bin index listing with the cruise id in the header and
+segment ASCII track binindex file (tbf) with the cruise id in the header and
 one data record per bin crossed; these record contain \fIlon, lat, index, flags\fP[, \fIdist\fP],
 where \fIlon, lat\fP is the coordinates of the center of the bin, the \fIindex\fP is
 the 1-D number of the bin, and \fIflags\fP is a bitflag that describes which data
@@ -49,14 +49,14 @@ Sets the data set \fITAG\fP which among other things sets the definition file.
 To create a bin index table from the MGD77 file 01030061.mgd77 using a global, 1x1 degree bin system, do
 .br
 .sp
-\fBx2sys_binlist\fP 01030061.mgd77 \fB\-T\fPMGD77 > index.d
+\fBx2sys_binlist\fP 01030061.mgd77 \fB\-T\fPMGD77 > 01030061.tbf
 .br
 .sp
-To create a bin index list of all MGD77+ files residing in the current directory at a bin resolution
+To create a track bin index file of all MGD77+ files residing in the current directory at a bin resolution
 of 30x30 minutes, calculating the geodesic distance lengths for each bin in km, run
 .br
 .sp
-\fBx2sys_binlist\fP *.nc \fB\-T\fPMGD77+ \fB\-Ce \-D\fP > index.d
+\fBx2sys_binlist\fP *.nc \fB\-T\fPMGD77+ \fB\-Ce \-D\fP > all.tbf
 .SH "SEE ALSO"
 .IR gmtdefaults (GMTMANSECTION)
 .IR x2sys_init (GMTMANSECTION)

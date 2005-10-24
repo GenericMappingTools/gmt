@@ -3,7 +3,7 @@
 x2sys_init \- Initialize data base for track data files
 .SH SYNOPSIS
 \fBx2sys_init\fP \fITAG\fP [ \fB\-D\fP\fIdeffile\fP ] [ \fB\-E\fP\fIsuffix\fP ] 
-[ \fB\-F\fP ] [ \fB\-Gd|g\fP ] [ \fB\-I\fP\fIdx\fP[/\fIdy\fP] ] 
+[ \fB\-F\fP ] [ \fB\-Gd|g\fP ] [ \fB\-I\fP\fIdx\fP[/\fIdy\fP] ] [ \fB\-M\fP[\fIflag\fP] ] 
 [ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-V\fP ] [ \fB\-Wt\fP|\fBd\fP\fIgap\fP ]
 .SH DESCRIPTION
 \fBx2sys_init\fP initializes a set of data bases that are particular to one kind
@@ -35,6 +35,7 @@ Selects geographical coordinates.  Append \fBd\fP for discontinuity at the
 Dateline (makes longitude go from -180 to + 180) or \fBg\fP for discontinuity
 at Greenwhich (makes longitude go from 0 to 360 [Default]).
 #include "explain_-I.txt"
+#include "explain_-M.txt"
 #include "explain_-R.txt"
 #include "explain_-V.txt"
 .TP
@@ -43,6 +44,66 @@ Give \fBt\fP or \fBd\fP and append the corresponding
 maximum time gap (in user units; this is typically seconds [Infinity]), or distance gap
 (in user units; this is typically km [Infinity] ) allowed between
 the two points immediately on either side of a crossover.
+.SH DEFINE FILES
+The *.def files contain information about the data file format.  The *.def files
+have two sections: (a) header information and (b) column information.  All
+header information starts with the character # in the first column, immediately
+follewed by a upper-case directive.  If the directive takes an argument it is
+separated by white-space.  Following that you can append # comments.
+Five directives are recognized:
+.br
+\fBASCII\fP states that the data files are ASCII files.
+.br
+\fBBINARY\fP states that the data files are binary files.
+.br
+\fBSKIP\fP takes an integer argument which is either number of lines to
+skip when reading ASCII files or number of bytes to skip when reading
+binary files.
+.br
+\fBGEO\fP indicates that this is a geographic data set
+.br
+\fBMULTISEG\fP means each track consists of multiple segments separated
+by a GMT multisegment header (alternatively,
+use \fB\-M\fP when defining the system TAG).
+.br
+.sp
+The column inforation consists of one line per column in the order the
+columns appear in the data file.  For each column you must provide  seven
+attributes:
+.br
+\fIname type NaN NaN-proxy scale offset oformat\fP
+.br
+\fIname\fP is the name of the column variable.
+.br
+\fItype\fP is one of \fBa\fP for ASCII representation of a number,
+\fBc\fP for signed 1-byte character (-127,+128), \fBu\fP for unsigned
+byte (0-255), \fBh\fP for signed 2-byte integers (-32767,+32767),
+\fBi\fP for  signed 4-byte integers (-2,147,483,647,+2,147,483,647),
+\fBf\fP for 4-byte floating points and \fBd\fP for 8-byte double
+precision floating points..
+.br
+\fINaN\fP is Y is a special value is to be replaced by NAN, and N otherwise.
+.br
+\fINaN-proxy\fP is that special value.
+.br
+\fIscale\fP is used to multiply the data after reading.
+br
+\fIoffset\fP is used to add to the scaled data.
+.br
+\fIoformat\fP is a C-style format string used to print values from this column.
+.br
+.sp
+For ASCII data the \fItype\fP format is always a, \fINaN\fP should be Y
+if there are certain values (e.g., -9999) that is used to represent
+missing data (NaNs).  If so, the \fINaN-proxy\fP values should be set
+accordingly (otherwise it is ignored).  The \fIscale\fP and fIoffset\fP is
+applied to the data after it is read (first scaled, then offset), 
+whereas the \fIoformat\fP is used by some programs for formatted output.
+Some file formats already have definition files premade.  These include
+mgd77 (for plain ASCII MGD77 data files), mgd77+ (for enhanced MGD77+
+netCDF files), gmt (for old mgg supplement binary files), xy (for plain ASCII
+x, y tables), xyz (same, with z-column), geo (for plain ASCII longitude,
+latitude files), and geoz (same, with z-column).
 .SH EXAMPLES
 If you have a large set of track data files you can organize them using the
 x2sys tools.  Here we will outline the steps.  Let us assume that your track
@@ -57,7 +118,7 @@ We will call this the "line" format.  First we create the line.def file:
 .br
 \fB\fP#SKIP 2		# Skip 2 header records
 .br
-\fB\fP#name	intype NaN-proxy?	NaN-proxy	scale offset oformat
+\fB\fP#name	type 	NaN	NaN-proxy	scale offset oformat
 .br
 lon	a	N	0	1	0	%10.5f
 .br
@@ -72,20 +133,6 @@ obs2	a	N	0	1	0	%7.2f
 obs3	a	N	0	1	0	%7.2f
 .br
 .sp
-Other format directives, in addition to ASCII, BINARY, and SKIP, are
-GEO for geographic coordinates and MULTISEG for ASCII files with
-multisegment headers separating sections of tracks.
-For ASCII data the intype format is always a, Nan-proxy? should be Y
-if there are certain values (e.g., -9999) that is used to represent
-missing data (NaNs).  If so, the NaN-proxy values should be set
-accordingly (otherwise it is ignored).  The scale and offset is
-applied to the data after it is read (first scaled, then offset), 
-whereas the oformat is used by some programs for formatted output.
-Some file formats already have definition files premade.  These include
-mgd77 (for plain ASCII MGD77 data files), mgd77+ (for enhanced MGD77+
-netCDF files), gmt (for old mgg supplement binary files), xy (for plain ASCII
-x, y tables), xyz (same, with z-column), geo (for plain ASCII longitude,
-latitude files), and geoz (same, with z-column).
 .br
 Next we create the TAG and the databases for these line track files.
 Assuming these are geographic and that we want to keep track of the
@@ -137,7 +184,7 @@ Let us pretend that your line files actually were binary files with a
 128-byte header structure (to be skipped) followed by the data records
 and where lon, lat, time are double precision numbers while the three
 observations are 2-byte integers which must be multiplied by 0.1.
-Finally, the first two observations may be 32000 which means there is
+Finally, the first two observations may be -32768 which means there is
 no data.
 All that is needed is a different line.def file:
 .br
@@ -148,7 +195,7 @@ All that is needed is a different line.def file:
 .br
 \fB\fP#SKIP 128	# Skip 128 bytes
 .br
-\fB\fP#name	intype NaN-proxy?	NaN-proxy	scale offset oformat
+\fB\fP#name	type	 NaN?	NaN-proxy	scale offset oformat
 .br
 lon	d	N	0	1	0	%10.5f
 .br
@@ -156,19 +203,14 @@ lat	d	N	0	1	0	%9.5f
 .br
 time	d	N	0	1	0	%7.1f
 .br
-obs1	h	Y	32000	0.1	0	%6.1f
+obs1	h	Y	-32768	0.1	0	%6.1f
 .br
-obs2	h	Y	32000	0.1	0	%6.1f
+obs2	h	Y	-32768	0.1	0	%6.1f
 .br
 obs3	h	N	0	0.1	0	%6.1f
 .br
 .sp
-The rest of the steps are identical.  The accepted intype flags are
-\fBc\fP for signed 1-byte character (-127,+128), \fBu\fP for unsigned
-byte (0-255), \fBh\fP for signed 2-byte integers (-32767,+32767),
-\fBi\fP for  signed 4-byte integers (-2,147,483,647,+2,147,483,647),
-\fBf\fP for 4-byte floating points and \fBd\fP for 8-byte double
-precision floating points.
+The rest of the steps are identical.  
 .SH "SEE ALSO"
 .IR x2sys_binlist (GMTMANSECTION)
 .IR x2sys_get (GMTMANSECTION)

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.48 2005-10-20 06:01:44 pwessel Exp $
+ *	$Id: x2sys.c,v 1.49 2005-10-24 08:42:03 pwessel Exp $
  *
  *      Copyright (c) 1999-2001 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -831,6 +831,9 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 						exit (EXIT_FAILURE);
 					}
 					break;
+				case 'M':	/* Multisegment files */
+					GMT_multisegment (&p[2]);
+					break;
 				case 'W':
 					switch (p[2]) {
 						case 't':
@@ -868,6 +871,10 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 		(*s)->geographic = TRUE;
 		(*s)->geodetic = geodetic;	/* Override setting */
 		if (fabs (fabs (B->x_max - B->x_min) - 360.0) <= GMT_CONV_LIMIT) B->periodic = 1;
+	}
+	if (GMT_io.multi_segments) {	/* Files have multiple segments; make sure this is also set in s */
+		(*s)->multi_segment = TRUE;
+		(*s)->ms_flag = GMT_io.EOF_flag;
 	}
 	if (suffix[0])
 		strcpy ((*s)->suffix, suffix);
