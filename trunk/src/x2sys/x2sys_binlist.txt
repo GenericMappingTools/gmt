@@ -16,7 +16,7 @@ The input files can be of any format, which must be described and passed with th
 the track goes and is used by the data archivist to determine which tracks
 need to be compared for crossover analysis.  You must run \fBx2ys_init\fP
 to initialize the tag before you can run the indexing.
-#include "x2sys/explain_tracks.txt
+#include "x2sys/explain_tracks.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
