@@ -23,11 +23,7 @@ have to be sorted (for binary triplets, see \fB\-b\fP). 1-column z tables must b
 .TP
 .B \-I
 \fIx_inc\fP [and optionally \fIy_inc\fP] is the grid spacing. Append \fBm\fP to indicate minutes or \fBc\fP to indicate seconds.
-.TP
-.B \-R
-\fIwest, east, south,\fP and \fInorth\fP specify the Region of interest. To specify boundaries
-in degrees and minutes [and seconds], use the dd:mm[:ss] format. Append \fBr\fP if lower left and upper right
-map coordinates are given instead of wesn.
+#include "explain_-Rgeo.txt"
 .SH OPTIONS
 .TP
 .B \-A

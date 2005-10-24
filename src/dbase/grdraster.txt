@@ -30,7 +30,7 @@ If an integer matching one of the files listed in the \fIgrdraster.info\fP file
 is given we will use that data set, else we will match the given text pattern
 with the data set description in order to determine the data set.
 .sp
-#include "explain_-R.txt"
+#include "explain_-Rgeo.txt"
 If \fBr\fP is appended, you may also specify a map projection to define the shape of
 your region.  The output region will be rounded off to the nearest whole grid-step
 in both dimensions.

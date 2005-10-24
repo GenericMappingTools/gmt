@@ -18,10 +18,7 @@ will try to open \fIimgfile\fP directly.
 .TP
 .B \-G
 \fIgrdfile\fP is the name of the output grdfile.
-.TP
-.B \-R
-\fIwest, east, south,\fP and \fInorth\fP specify the Region of interest.  To specify boundaries
-in degrees and minutes, use the dd:mm format.
+#include "explain_-Rgeo.txt"
 .TP
 .B \-T
 \fItype\fP handles the encoding of constraint information.  \fItype\fP = 0 indicates that no 

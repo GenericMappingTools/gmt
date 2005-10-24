@@ -32,6 +32,11 @@ one record for each stage; each record must be of the following format:
 where tstart and tstop are in Ma and the rest is in degrees.  The oldest stage
 must be listed first.  tstart (tstop) is the age of the old (young) end of the
 stage.  Blank lines and records whose first column contains # will be ignored.
+.TP
+.B \-G
+Specify name for output grid file.
+#include "explain_-I.txt"
+#include "explain_-Rgeo.txt"
 .SH OPTIONS
 .TP
 .B \-C

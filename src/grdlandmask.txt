@@ -15,7 +15,7 @@ data from land [or water] areas.
 .B \-G
 Name of resulting output mask grd file.
 #include "explain_-I.txt"
-#include "explain_-R.txt"
+#include "explain_-Rgeo.txt"
 .SH OPTIONS
 .TP
 .B \-A

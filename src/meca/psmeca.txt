@@ -26,7 +26,7 @@ The \fIPostScript\fR code is written to standard output.
 \fIfiles\fR
 List one or more file-names. If no files are given, \fBpsmeca\fP will read standard input.
 #include "explain_-J_short.txt"
-#include "explain_-R.txt"
+#include "explain_-Rgeo.txt"
 .TP
 \fB\-S\fR
 Selects the meaning of the columns in the data file 

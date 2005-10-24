@@ -41,6 +41,7 @@ Force Geographical longitudes (-180/+180) rather than geodetic (0-360) [Default]
 .TP
 .B \-H
 Issue a header record with names for each data field.
+#include "explain_-Rgeo.txt"
 .TP
 .B \-Sa
 Do not list data that are less than \fIstartdist\fP km along track from port of departure. [Default is 0].

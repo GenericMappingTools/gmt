@@ -39,7 +39,7 @@ is defined in (-u^s, -u, s) system.
 A \fI file\fR  is created with extracted events.
 .sp 
 #include "explain_-J_short.txt"
-#include "explain_-R.txt"
+#include "explain_-Rgeo.txt"
 If frame is defined from cross-section parameters (see \fB-A\fR) this option is not taken into account,
 but must be present.
 .TP

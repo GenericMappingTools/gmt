@@ -8,7 +8,7 @@ gmtlegs \- Find cruises in a given region
 \fBgmtlegs\fP will report the name of all the cruises that happened to be wholly or partially inside the
 specified region. As an option, only those cruises that collected a certain type of data can be
 reported.
-#include "explain_-R.txt"
+#include "explain_-Rgeo.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments
 .TP
