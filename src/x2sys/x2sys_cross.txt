@@ -22,7 +22,7 @@ Select procedure for along-track distance calculation:
 .br
 	\fBc\fP Cartesian distances [Default].
 .br
-	\fBf\fP Flat earth distances.
+	\fBf\fP Flat Earth distances.
 .br
 	\fBg\fP Great circle distances.
 .br

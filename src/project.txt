@@ -47,7 +47,7 @@ only those points with \fIl_min\fP < p < \fIl_max\fP.  If the \fB\-E\fP option
 has been used to define the projection, then \fB\-Lw\fP may be selected to window 
 the length of the projection to exactly the span from \fBO\fP to \fBB\fP.
 .br
-Flat earth (Cartesian) coordinate transformations can also be made.  Set \fB\-N\fP  
+Flat Earth (Cartesian) coordinate transformations can also be made.  Set \fB\-N\fP  
 and remember that \fIazimuth\fP is clockwise from North (the \fIy\fP axis), NOT 
 the usual cartesian theta, which is counterclockwise from the \fIx\fP axis.  \fIazimuth\fP = 90 - theta. 
 .br
@@ -101,7 +101,7 @@ If \fB\-E\fP has been set, then you may use \fB\-Lw\fP to stay within the distan
 #include "explain_-M.txt"
 .TP
 .B \-N
-Flat earth.  Make a Cartesian coordinate transformation in the plane.  [Default uses spherical trigonometry.]
+Flat Earth.  Make a Cartesian coordinate transformation in the plane.  [Default uses spherical trigonometry.]
 .TP
 .B \-Q
 Map type units, i.e., project assumes \fIx, y, r, s\fP are in degrees while

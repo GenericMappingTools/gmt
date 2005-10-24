@@ -81,7 +81,7 @@ Alternatively, give upper case \fBT\fP instead and we will interpolate the colum
 Append a one-letter code to select the procedure for along-track distance
 calculation when using \fB\-Ad\fP|\fBD\fP (see \fB\-N\fP for selecting units):
 .br
-	\fBf\fP Flat earth distances.
+	\fBf\fP Flat Earth distances.
 .br
 	\fBg\fP Great circle distances [Default].
 .br
