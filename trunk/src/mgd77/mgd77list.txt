@@ -7,7 +7,7 @@ mgd77list \- A data-extractor for MGD77[+] files
 [ \fB\-Da\fP\fIstartdate\fP ] [ \fB\-Db\fP\fIstopdate\fP ] [ \fB\-E\fP ] 
 [ \fB\-H\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-Nd|s\fP\fIunit\fP ] 
 [ \fB\-P\fP\fIcode\fP ] [ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-Sa\fP\fIstartdist\fP[unit] ] 
-[ \fB\-Sb\fP\fIstopdist\fP[unit] ] [ \fB\-T\fP[\fBm|c\fP] ]  [ \fB\-V\fP ] 
+[ \fB\-Sb\fP\fIstopdist\fP[unit] ] [ \fB\-T\fP[\fBm|e\fP] ]  [ \fB\-V\fP ] 
 [ \fB\-W\fP\fIweight\fP ] [ \fB\-X\fP[\fIcorrtable\fP] ] [ \fB\-Z\fP\fI+\fP|\fB-\fP ] [ \fB\-bo\fP ]
 .SH DESCRIPTION
 \fBmgd77list\fP reads <NGDC-id>.[mgd77|nc] files and produces an ASCII [or binary] table.
@@ -27,7 +27,7 @@ records may be required to pass any number of logical tests involving data value
 .TP
 .B \-F
 The required \fIcolumns\fP string must be a comma-separated list of parameter abbreviations
-given in the desired output order.  Any parameters given in UPPER case must all be present in
+given in the desired output order.  Any parameters given in UPPER case must not be NaN in
 a record for output to occur.  The output format (if ASCII) is controlled by \fBD_FORMAT\fP.
 The available abbreviations are:
 .TP
@@ -152,7 +152,7 @@ International geomagnetic reference field (total field) (in nTesla).
 International Gravity reference Field ("normal gravity") (in mGal).
 Field selected based on MGD77 header information; if not present
 or invalid we default to IGF 1980.  Alternatively, specify the field
-directly using \fB\-Ag\fP (see that option for more details).
+directly using \fB\-Af\fP (see that option for more details).
 .br
 .sp
 The following short-hand flags are also recognized:
@@ -252,7 +252,7 @@ if not present or invalid we default to 4.  Alternatively, append the preferred 
 .br
 \fB\-Af1\fP[,\fIfield\fP]
 returns \fBfaa\fP as stored in the data set [Default]. Optionally, sets the IGF \fIfield\fP
-used if you also have requested \fBngrav\fP in \fB\-F.
+used if you also have requested \fBngrav\fP in \fB\-F\fP.
 .br
 \fB\-Af2\fP[,\fIfield\fP]
 returns the difference between \fBgobs\fP and \fBngrav\fP (with optional \fIfield\fP directive).
@@ -292,7 +292,7 @@ Do not list data collected before \fIstartdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss]) 
 Do not list data collected after \fIstopdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss]). [Default is end of cruise].
 .TP
 .B \-E
-Exact match: Only output records that matches all the requested geophysical columns
+Exact match: Only output records that match all the requested geophysical columns
 [Default outputs records that matches at least one of the observed columns].
 .TP
 .B \-H
@@ -323,7 +323,7 @@ The following is the list of NGDC institution codes:
 (75) US Coast Guard, (76) Brazil, (77) International Gravimetric Bureau (83) Germany, (84) New Caledonia (ORSTOM),
 (86) Cuba, (87) Argentina, (88) US NSF, (89) India, (90) Portugal, (92) Finland, (93) Chile,
 (J1) Hydrographic Deptartment Japan, (J2) Geological Survey Japan, (J4) U of Tokyo, (J5) Kobe U, (J7) U of Ryukyus,
-(J8) JODC. Japan, (J9) Chiba U, (JA) Institute of Polar Research, (ZZ) Institute not coded.
+(J8) JODC Japan, (J9) Chiba U, (JA) Institute of Polar Research, (ZZ) Institute not coded.
 .TP
 .B \-Sa
 Do not list data that are less than \fIstartdist\fP km (see \fB\-N\fP for other units) along
@@ -335,10 +335,10 @@ track from port of departure. [Default is length of track].
 .TP
 .B \-T
 Turns OFF the otherwise automatic adjustment of values based on correction terms that are
-stored in the mgd77+ file and used to counteract such things as wrong units used by the source
+stored in the MGD77+ file and used to counteract such things as wrong units used by the source
 institution when creating the original MGD77 file from which the MGD77+ file derives (the
-option has no effect on plain MGD77 ASCII files).  Append \fBm\fP or \fBc\fP to limit the
-option to the MGD77 data set or the extended columns set only [Default is both].
+option has no effect on plain MGD77 ASCII files).  Append \fBm\fP or \fBe\fP to limit the
+option to the MGD77 or extended columns set only [Default applies to both].
 #include "explain_-V.txt"
 .TP
 .B \-W
