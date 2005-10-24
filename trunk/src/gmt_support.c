@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.189 2005-10-21 09:09:19 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.190 2005-10-24 22:23:56 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -739,7 +739,7 @@ int GMT_getinc (char *line, double *dx, double *dy)
 	int n;
 	double inc[2];
 
-	/* Syntax: -I<xinc>[m|c|e|i|k|n|+|!][/<yinc>][m|c|e|i|k|n|+|!]
+	/* Syntax: -I<xinc>[m|c|e|i|k|n|+|!][/<yinc>][m|c|e|i|k|n|+|=]
 	 * Units: m = minutes
 	 *	  c = seconds
 	 *	  e = meter [Convert to degrees]
@@ -748,6 +748,7 @@ int GMT_getinc (char *line, double *dx, double *dy)
 	 *	  n = nautical miles [Convert to degrees]
 	 * Flags: + = Adjust -R to fit exact -I [Default modifies -I to fit -R]
 	 *	  - = incs are actually nx/ny - convert to get xinc/yinc
+	 *	  = = Adjust xmax, ymax to exactly fit given increments
 	 */
 	 
 	n = GMT_getincn (line, inc, 2);
@@ -782,7 +783,7 @@ int GMT_getincn (char *line, double inc[], int n)
 	
 	while (i < n && (GMT_strtok (line, "/", &pos, p))) {
 		last = strlen (p) - 1;
-		if (p[last] == '!') {	/* Let -I override -R */
+		if (p[last] == '=') {	/* Let -I override -R */
 			p[last] = 0;
 			if (i < 2) GMT_inc_code[i] |= GMT_INC_IS_EXACT;
 			last--;
