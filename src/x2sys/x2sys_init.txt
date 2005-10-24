@@ -72,6 +72,9 @@ obs2	a	N	0	1	0	%7.2f
 obs3	a	N	0	1	0	%7.2f
 .br
 .sp
+Other format directives, in addition to ASCII, BINARY, and SKIP, are
+GEO for geographic coordinates and MULTISEG for ASCII files with
+multisegment headers separating sections of tracks.
 For ASCII data the intype format is always a, Nan-proxy? should be Y
 if there are certain values (e.g., -9999) that is used to represent
 missing data (NaNs).  If so, the NaN-proxy values should be set
