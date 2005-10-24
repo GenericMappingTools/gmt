@@ -2,9 +2,9 @@
 .SH NAME
 \fBx2sys_cross\fP \- Find and compute Cross-Over Errors
 .SH SYNOPSIS
-\fBx2sys_cross\fP \fItrack(s)\fP OR \fB\-L\fP\fIflist\fP 
-[ \fB\-Cc\fP|\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-D\fP\fIdeffile\fP ] [ \fB\-F\fP\fIflags\fP ] 
-[ \fB\-Gd|g\fP ] [ \fB\-Il|a|c\fP ] [ \fB\-J\fP\fIparams\fP ] [\fB\-K\fP\fIcombi.lis\fP] [ \fB\-M\fP[\fIflag\fP] ] 
+\fBx2sys_cross\fP \fItrack(s)\fP [ \fB\-L\fP\fIflist\fP ] [ \fB\-Cc\fP|\fBf\fP|\fBg\fP|\fBe\fP ] 
+[ \fB\-D\fP\fIdeffile\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-Gd|g\fP ] [ \fB\-Il|a|c\fP ] 
+[ \fB\-J\fP\fIparams\fP ] [\fB\-K\fP\fIcombi.lis\fP] [ \fB\-L\fP\fIflist\fP ] 
 [ \fB\-Nd|s\fP\fIunit\fP ] [ \fB\-O\fP ] [ \fB\-Qe|i\fP ] [ \fB\-Sl|u\fP\fIspeed\fP ] 
 [ \fB\-T\fP\fITAG\fP ] [ \fB\-Wt\fP|\fBd\fP|\fBn\fP\fIsize\fP ] [ \fB\-V\fP ] 
 [ \fB\-2\fP ] [ \fB\-bo\fP[\fBs\fP] ]
@@ -60,8 +60,8 @@ Only process the pair-combinations found in the file \fIcombi.lis\fP
 [Default process all possible combinations among the specified files].
 .TP
 .B \-L
-Supply a list with track names (one per line).
-#include "explain_-M.txt"
+Instead of givin track names on the command line directly, supply a list with
+all the track names you want (one per line).
 .TP
 .B \-N
 Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
