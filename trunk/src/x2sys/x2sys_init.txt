@@ -44,23 +44,25 @@ Give \fBt\fP or \fBd\fP and append the corresponding
 maximum time gap (in user units; this is typically seconds [Infinity]), or distance gap
 (in user units; this is typically km [Infinity] ) allowed between
 the two points immediately on either side of a crossover.
-.SH DEFINE FILES
+.SH DEFINITION FILES
 The *.def files contain information about the data file format.  The *.def files
-have two sections: (a) header information and (b) column information.  All
+have two sections: (1) header information and (2) column information.  All
 header information starts with the character # in the first column, immediately
 follewed by a upper-case directive.  If the directive takes an argument it is
 separated by white-space.  Following that you can append # comments.
 Five directives are recognized:
 .br
+.sp
 \fBASCII\fP states that the data files are ASCII files.
 .br
 \fBBINARY\fP states that the data files are binary files.
 .br
-\fBSKIP\fP takes an integer argument which is either number of lines to
-skip when reading ASCII files or number of bytes to skip when reading
+\fBSKIP\fP takes an integer argument which is either the number of lines to
+skip when reading ASCII files or the number of bytes to skip when reading
 binary files.
 .br
-\fBGEO\fP indicates that this is a geographic data set
+\fBGEO\fP indicates that this is a geographic data set, with periodicities in
+the \fIx\fP-coordinate.
 .br
 \fBMULTISEG\fP means each track consists of multiple segments separated
 by a GMT multisegment header (alternatively,
@@ -70,24 +72,28 @@ use \fB\-M\fP when defining the system TAG).
 The column inforation consists of one line per column in the order the
 columns appear in the data file.  For each column you must provide  seven
 attributes:
+.sp
 .br
 \fIname type NaN NaN-proxy scale offset oformat\fP
 .br
-\fIname\fP is the name of the column variable.
+.sp
+\fIname\fP is the name of the column variable.  It is expected that you will use
+the special names lon (or x if Cartesian) and lat (or y) for the two required
+coordinate columns, and time when optional time data are present.
 .br
 \fItype\fP is one of \fBa\fP for ASCII representation of a number,
 \fBc\fP for signed 1-byte character (-127,+128), \fBu\fP for unsigned
-byte (0-255), \fBh\fP for signed 2-byte integers (-32767,+32767),
-\fBi\fP for  signed 4-byte integers (-2,147,483,647,+2,147,483,647),
+byte (0-255), \fBh\fP for signed 2-byte integers (-32768,+32767),
+\fBi\fP for  signed 4-byte integers (-2,147,483,648,+2,147,483,647),
 \fBf\fP for 4-byte floating points and \fBd\fP for 8-byte double
 precision floating points..
 .br
-\fINaN\fP is Y is a special value is to be replaced by NAN, and N otherwise.
+\fINaN\fP is Y if certain values are to be replaced by NAN, and N otherwise.
 .br
 \fINaN-proxy\fP is that special value.
 .br
 \fIscale\fP is used to multiply the data after reading.
-br
+.br
 \fIoffset\fP is used to add to the scaled data.
 .br
 \fIoformat\fP is a C-style format string used to print values from this column.
@@ -96,7 +102,7 @@ br
 For ASCII data the \fItype\fP format is always a, \fINaN\fP should be Y
 if there are certain values (e.g., -9999) that is used to represent
 missing data (NaNs).  If so, the \fINaN-proxy\fP values should be set
-accordingly (otherwise it is ignored).  The \fIscale\fP and fIoffset\fP is
+accordingly (otherwise it is ignored).  The \fIscale\fP and \fIoffset\fP is
 applied to the data after it is read (first scaled, then offset), 
 whereas the \fIoformat\fP is used by some programs for formatted output.
 Some file formats already have definition files premade.  These include
@@ -180,7 +186,7 @@ where we choose a 15 minute (900 sec) or 5 km threshold to indicate a data gap;
 the other steps are similar.
 .TP
 .B binary files
-Let us pretend that your line files actually were binary files with a
+Let us pretend that your line files actually are binary files with a
 128-byte header structure (to be skipped) followed by the data records
 and where lon, lat, time are double precision numbers while the three
 observations are 2-byte integers which must be multiplied by 0.1.
