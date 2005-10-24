@@ -28,8 +28,8 @@ records may be required to pass any number of logical tests involving data value
 .B \-F
 The required \fIcolumns\fP string must be a comma-separated list of parameter abbreviations
 given in the desired output order.  Any parameters given in UPPER case must not be NaN in
-a record for output to occur.  The output format (if ASCII) is controlled by \fBD_FORMAT\fP.
-The available abbreviations are:
+a record for output to occur.  Unless specified separately, the output format (if ASCII) is
+controlled by \fBD_FORMAT\fP.  The available abbreviations are:
 .TP
 .B drt
 The digital record type, usually 3 or 5 (for Y2K-compliant cruises).
@@ -53,7 +53,7 @@ Longitude in the format dictated by the GMT default \fBOUTPUT_DEGREE_FORMAT\fP.
 Longitude in the format dictated by the GMT default \fBOUTPUT_DEGREE_FORMAT\fP.
 .TP
 .B twt
-Two-way travel time (in s).
+Two-Way Travel time (in s).
 .TP
 .B depth
 Corrected bathymetry (in m).
@@ -100,10 +100,10 @@ Magnetic diurnal correction (in nTesla).
 Eotvos correction (in mGal).
 .TP
 .B sln
-Seismic line number string.
+Seismic Line Number string.
 .TP
 .B sspn
-Seismic shot point number string.
+Seismic Shot Point Number string.
 .TP
 .B nqc
 Navigation Quality Code (5 = suspected, by source institution, 6 = suspected, by NGDC, 9 = no problems identified).
@@ -150,9 +150,9 @@ International geomagnetic reference field (total field) (in nTesla).
 .TP
 .B ngrav
 International Gravity reference Field ("normal gravity") (in mGal).
-Field selected based on MGD77 header information; if not present
-or invalid we default to IGF 1980.  Alternatively, specify the field
-directly using \fB\-Af\fP (see that option for more details).
+Field selected based on the parameter Gravity Theoretical
+Formula Code in the cruise's MGD77 header.  If this is not set or invalid we default to the IGF 1980.
+Alternatively, specify the field directly using \fB\-Af\fP (see that option for more details).
 .br
 .sp
 The following short-hand flags are also recognized:
@@ -210,12 +210,12 @@ Determines how the \fBcarter\fP correction term is calculated.  Below,
 C(\fBtwt\fP) stands for the Carter-corrected depth (it also depends on
 \fBlon\fP, \fBlat\fP), U(\fBtwt\fP, \fIv\fP) is the uncorrected depth
 (= \fBtwt\fP * \fIv\fP / 2) using as \fIv\fP the "Assumed Sound Velocity"
-parameter in the MGD77 header (if it is a valid velocity, else we default to
+parameter in the MGD77 header (if it is a valid velocity, otherwise we default to
 1500 m/s); alternatively, append your preferred velocity \fIv\fP in m/s,
 TU(\fBdepth\fP, \fIv\fP) is the 2-way travel time estimated from the
 (presumably) uncorrected \fBdepth\fP, and TC(\fBdepth\fP) is the
-2-way travel time obtained by converting the (presumably) corrected \fBdepth\fP
-by inverting the Carter correction formula.
+2-way travel time obtained by inverting the (presumably) corrected \fBdepth\fP
+using the Carter correction formula.
 Select from
 .br
 \fB\-Ac1\fP[,\fIv\fP]
@@ -247,8 +247,7 @@ Determines how the \fBfaa\fP column output is obtained. If \fBngrav\fP is
 required(i.e., the International Gravity reference Field (IGF), or "normal gravity")
 it is selected based on the MGD77 header parameter "Theoretical Gravity Formula Code";
 if not present or invalid we default to 4.  Alternatively, append the preferred \fIfield\fP
-1\-4 to select \fB1\fP (Heiskanen 1924), \fB2\fP (IGF 1930),
-\fB3\fP (IGF 1967) or \fB4\fP (IGF 1980).  Select from
+1\-4 to select 1 (Heiskanen 1924), 2 (IGF 1930), 3 (IGF 1967) or 4 (IGF 1980).  Select from
 .br
 \fB\-Af1\fP[,\fIfield\fP]
 returns \fBfaa\fP as stored in the data set [Default]. Optionally, sets the IGF \fIfield\fP
@@ -324,6 +323,7 @@ The following is the list of NGDC institution codes:
 (86) Cuba, (87) Argentina, (88) US NSF, (89) India, (90) Portugal, (92) Finland, (93) Chile,
 (J1) Hydrographic Deptartment Japan, (J2) Geological Survey Japan, (J4) U of Tokyo, (J5) Kobe U, (J7) U of Ryukyus,
 (J8) JODC Japan, (J9) Chiba U, (JA) Institute of Polar Research, (ZZ) Institute not coded.
+#include "explain_-Rgeo.txt"
 .TP
 .B \-Sa
 Do not list data that are less than \fIstartdist\fP meter along track from port of departure.
@@ -402,7 +402,7 @@ but recalculate the two residuals based on the latest reference fields, try:
 \fBmgd77list\fP `cat cruises.lis` \fB\-F\fPlon,lat,mag,faa \fB\-Af\fP2,4 \fB\-Am\fP2 > data.d
 .SH IGRF
 The IGRF calculations are based on a Fortran program written by Susan Macmillan,
-British Geological Survey, translated to C via f2c by Joaquim Luis U Algarve, and adapted to
+British Geological Survey, translated to C via f2c by Joaquim Luis, U Algarve, and adapted to
 GMT-style by Paul Wessel.
 .SH IGF
 The equations used are reproduced here using coefficients extracted from the source code (let us know if you find errors):

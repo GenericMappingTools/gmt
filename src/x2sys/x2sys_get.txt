@@ -5,7 +5,7 @@ x2sys_get \- Get track listing from track index databases
 \fBx2sys_get\fP \fB\-T\fP\fITAG\fP [ \fB\-C\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-N\fP\fIflags\fP ] 
 [ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-V\fP ] [ \fB\-X\fP[\fIlist\fP] ] 
 .SH DESCRIPTION
-\fBx2sys_get\fP will return the track data files that match the given
+\fBx2sys_get\fP will return the names of the track data files that match the given
 requirements.  You may choose a geographic region and optionally ask
 only for tracks that meet certain data criteria.  Finally, you may
 select an option to list all possible pairs that might generate crossovers.
@@ -16,26 +16,26 @@ The unique tag name of this data type system.
 No space between the option flag and the associated arguments.
 .TP
 .B \-C
-Instead of reporting the cruise ids, just output the coordinates of the
-center of each bin that has at least one cruise with the specified data.
+Instead of reporting the track names, just output the coordinates of the
+center of each bin that has at least one track with the specified data.
 .TP
 .B \-F
 Give a comma-separated list of column names (as described in the definition
-file) that should be present. [Default is all data columns].
+file) that should be present. [Default selects all data columns].
 .TP
 .B \-N
 Give a comma-separated list of column names (as described in the definition
 file) that must be absent.
-#include "explain_-R.txt"
+#include "explain_-Rgeo.txt"
 #include "explain_-V.txt"
 .TP
 .B \-X
-Crossover mode.  Return a list of cruise pairs that should be checked for possible
-crossovers.  The list is determined from the bin index table on the assumption
-that cruises occupying the same bin are very likely to intersect.  By default we
+Crossover mode.  Return a list of track pairs that should be checked for possible
+crossovers.  The list is determined from the bin-index data base on the assumption
+that tracks occupying the same bin are very likely to intersect.  By default we
 return all possible pairs in the data base.  Append the name of a file with a
-list of cruises if you want the output pairs to be limited to those that involve
-at least one of the cruises in your list.  The output is suitable for the \fB\-K\fP
+list of tracks if you want the output pairs to be limited to those that involve
+at least one of the track names in your list.  The output is suitable for the \fB\-K\fP
 option in \fBx2sys_Cross\fP.
 .SH EXAMPLES
 To find all the tracks associated with the tag mgd77, restricted to occupy
@@ -54,7 +54,7 @@ twt, try
 .br
 .sp
 To find all the pairs associated with the tag mgd77 that might intersect each
-other, but only those pairs which involves cruises in your list new.lis, try
+other, but only those pairs which involves tracks in your list new.lis, try
 .br
 .sp
 \fBx2sys_get\fP \fB\-V \-T\fPmgd77 \fB\-X\fPnew.lis > xpairs.lis 
