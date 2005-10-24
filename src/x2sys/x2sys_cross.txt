@@ -15,7 +15,7 @@ mean values of the observables, heading along each tracksegment, and the
 distance along track at the cross-over point. The names of the files are passed
 on the command line, or as a list of files with the \fB\-L\fP option.
 By default, \fBx2sys_cross\fP will  look for both external and internal cross-overs.
-#include "x2sys/explain_tracks.txt"
+#include "x2sys/explain_track.txt"
 Alternatively, see \fB\-L\fP
 .SH OPTIONS
 No space between the option flag and the associated arguments.
