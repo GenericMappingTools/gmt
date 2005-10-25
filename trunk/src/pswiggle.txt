@@ -69,13 +69,14 @@ Draws a simple vertical scale centered on \fIlon0/lat0\fP.  Use \fB\-Sx\fP to sp
 \fIlength\fP is in z units, append unit name for labeling
 .TP
 .B \-T
-Draw track  [Default is no track].  Append pen attributes to use [Defaults: width = 1, color = 0/0/0, texture = solid].
+Draw track  [Default is no track].  Append pen attributes to use [Defaults: width = 1, color = black, texture = solid].
+#include "explain_pen.txt"
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
 .B \-W
 Draw wiggle outline  [Default is no outline].  Append pen attributes to use
-[Defaults: width = 1, color = 0/0/0, texture = solid].
+[Defaults: width = 1, color = black, texture = solid].
 #include "explain_-XY.txt"
 #include "explain_-t.txt"
 #include "explain_-i_binary.txt"

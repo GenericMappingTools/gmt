@@ -69,6 +69,7 @@ Specifies that the input data is orientation data (has a 180 degree ambiguity) i
 .TP
 .B \-W
 Set pen attributes for sector outline or rose plot.  [Default is no outline].
+#include "explain_pen.txt"
 #include "explain_-XY.txt"
 .TP
 .B \-Z

@@ -91,10 +91,11 @@ your liking.
 .TP
 .B \-Wc
 Draw contour lines on top of surface or mesh (not image).  Append pen attributes used for the contours.
-[Default: width = 3, color = 0/0/0, texture = solid].
+[Default: width = 3, color = black, texture = solid].
+#include "explain_pen.txt"
 .TP
 .B \-Wm
-Sets the pen attributes used for the mesh. [Default: width = 1, color = 0/0/0, texture = solid].
+Sets the pen attributes used for the mesh. [Default: width = 1, color = black, texture = solid].
 You must also select \fB\-Qm\fP or \fB\-Qsm\fP for meshlines to be drawn.
 #include "explain_-XY.txt"
 .TP

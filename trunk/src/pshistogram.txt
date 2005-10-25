@@ -49,6 +49,7 @@ to output an ASCII table of the resulting x,y data to stdout.
 .TP
 .B \-L
 Draw bar outline using the specified pen thickness.  [Default is no outline].
+#include "explain_pen.txt"
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
