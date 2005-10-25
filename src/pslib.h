@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.32 2005-07-13 23:27:32 pwessel Exp $
+ *	$Id: pslib.h,v 1.33 2005-10-25 03:33:36 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -99,7 +99,7 @@ EXTERN_MSC void ps_flush (void);
 EXTERN_MSC void ps_free (void *addr);
 EXTERN_MSC void ps_hexagon (double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_image (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits);
-EXTERN_MSC void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, int invert, int image_dpi, int outline, BOOLEAN colorize, int f_rgb[], int b_rgb[]);
+EXTERN_MSC void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, int invert, int image_dpi, int outline, int f_rgb[], int b_rgb[]);
 EXTERN_MSC void ps_imagemask (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int polarity, int rgb[]);
 EXTERN_MSC void ps_bitimage (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int invert, int f_rgb[], int b_rgb[]);
 EXTERN_MSC void ps_itriangle (double x, double y, double side, int rgb[], int outline);

@@ -236,11 +236,11 @@ void \fBps_image\fR (\fIxpos, ypos, xlength, ylength, buffer, nx, ny, bits\fP)
 Obsolete, simply passes arguments to \fBps_colorimage\fP.
 .RE
 .IP
-void \fBps_imagefill\fR (\fIx, y, n, image, imagefile, invert, imagedpi, outline, template, r_rgb, b_rgb\fP)
+void \fBps_imagefill\fR (\fIx, y, n, image, imagefile, invert, dpi, outline, f_rgb, b_rgb\fP)
 .br
 \fBdouble\fR \fIx[], y[], x0, y0\fP;
 .br
-\fBint\fR \fIn, image, invert, imagedpi, outline, template, f_rgb[3], b_rgb[3]\fP;
+\fBint\fR \fIn, image, invert, dpi, outline, f_rgb[3], b_rgb[3]\fP;
 .br
 \fBchar\fR \fIimagefile\fP;
 .RS 10
@@ -248,11 +248,17 @@ Similar to \fBps_polygon\fP, but fills the area with an image pattern rather tha
 or grayshade.  \fIx\fP and \fIy\fP hold the arrays of \fIn\fP points.  90 predefined
 patterns are available  (See GMT Appendix E).  \fIimage\fP gives the image number (1-90).  If set to 0,
 \fIimagefile\fP must be the name to the user's image, which must be stored as a\"'
-SUN 1-, 8-, or 24-bit rasterfile.  1-bit images only: (i) If \fIinvert\fP is TRUE (1), the black and
-white pixels are interchanged before plotting.  (ii) If template is TRUE (1), the set
-pixels are colored using the RGB combination in \fIf_rgb\fP, while the unset are painted
-with \fPb_rgb\fP.  The unit size of the image is
-controlled by \fIimagedpi\fP.  If set to zero, the image is plotted at the device
+SUN 1-, 8-, or 24-bit rasterfile.
+.br
+1-bit images only:
+(i) The unset pixels (0) are colored using the RGB combination in \fIf_rgb\fP,
+while the set pixels (1) are painted with \fPb_rgb\fP.
+Set the f_rgb[0] to -1 to make unset pixels transparent.
+Set b_rgb[0] to -1 to make the set pixels transparent.
+(ii) If \fIinvert\fP is TRUE (1), the set and unset pixels are interchanged before plotting. 
+.br
+The unit size of the image is
+controlled by \fIdpi\fP (in dots-per-inch).  If set to zero, the image is plotted at the device
 resolution.  If \fIoutline\fP is TRUE, the current penwidth is used to draw the
 polygon outline.
 .RE

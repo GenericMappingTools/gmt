@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.150 2005-09-27 01:12:29 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.151 2005-10-25 03:33:36 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2324,7 +2324,7 @@ void GMT_fill (double x[], double y[], int n, struct GMT_FILL *fill, BOOLEAN out
 	if (!fill)	/* NO fill pointer = no fill */
 		ps_polygon (x, y, n, GMT_no_rgb, outline);
 	else if (fill->use_pattern)
-		ps_imagefill (x, y, n, fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->colorize, fill->f_rgb, fill->b_rgb);
+		ps_imagefill (x, y, n, fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
 	else
 		ps_polygon (x, y, n, fill->rgb, outline);
 }

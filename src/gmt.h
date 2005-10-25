@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.107 2005-10-17 22:59:16 pwessel Exp $
+ *	$Id: gmt.h,v 1.108 2005-10-25 03:33:36 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -380,9 +380,8 @@ struct GMT_FILL {	/* Holds fill attributes */
 	int rgb[3];		/* Chosen color if no pattern */
 	int pattern_no;		/* Number of predefined pattern, if set */
 	int dpi;		/* Desired dpi of image building-block */
-	BOOLEAN inverse;	/* TRUE if -bit pattern should be reversed */
-	BOOLEAN colorize;	/* TRUE if 1-bit pattern should -> 24bit */
-	int f_rgb[3], b_rgb[3];	/* Color when using a 1-bit colorize image */
+	BOOLEAN inverse;	/* TRUE if 1-bit pattern should be reversed */
+	int f_rgb[3], b_rgb[3];	/* Colors applied to unset and set bits in 1-bit image */
 	char pattern[BUFSIZ];	/* Full filename of user-define raster */
 };
 
