@@ -318,11 +318,12 @@ The following is the list of NGDC institution codes:
 (11) Rice U, (12) Canada, (13) U of Connecticut, (14) U of Miami (RSMAS), (15) Scripps,
 (16) China, (17) U of Rhode Island, (18) Duke U, (19) United Kingdom, (20) U of Washington,
 (22) Western Geophysics, (23) Texas A&M U, (24) Australia, (25) Monaco, (29) Russia, (30) Spain,
-(35) NIMA, (58) Netherlands, (60) Mineral Management Services, (63) Israel, (67) France, (71) South Africa,
+(35) NIMA, (58) Netherlands, (60) US Mineral Management Services, (63) Israel, (67) France, (71) South Africa,
 (75) US Coast Guard, (76) Brazil, (77) International Gravimetric Bureau (83) Germany, (84) New Caledonia (ORSTOM),
 (86) Cuba, (87) Argentina, (88) US NSF, (89) India, (90) Portugal, (92) Finland, (93) Chile,
 (J1) Hydrographic Deptartment Japan, (J2) Geological Survey Japan, (J4) U of Tokyo, (J5) Kobe U, (J7) U of Ryukyus,
-(J8) JODC Japan, (J9) Chiba U, (JA) Institute of Polar Research, (ZZ) Institute not coded.
+(J8) Oceanographic Data Center, Japan (JODC), (J9) Chiba U, (JA) Institute of Polar Research, Japan,
+(ZZ) Institute not coded.
 #include "explain_-Rgeo.txt"
 .TP
 .B \-Sa
@@ -356,7 +357,7 @@ Append the sign you want for \fBdepth\fP, \fBcarter\fP, and \fBmsd\fP values bel
 .TP
 .B \-bo
 Selects binary output mode (single precision; append \fBd\fP for double precision) [Default is ASCII].
-\fB\-H\fP and \fB\-M\fP are ignored if \fB\-bo\fP is selected.  Likewise, string-fields cannot be selected.
+\fB\-H\fP is ignored if \fB\-bo\fP is selected.  Likewise, string-fields cannot be selected.
 .SH EXAMPLES
 To get a (distance, heading, gravity, bathymetry) listing from 01010047.mgd77,
 starting at June 3 1971 20:45 and ending at distance = 5000 km, use the following command:
