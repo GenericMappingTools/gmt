@@ -16,7 +16,7 @@ MGD77 ASCII table (with extension .mgd77), \fBb\fP for the new MGD77+ netCDF for
 (with extension .dat).
 .TP
 .B \-T
-Specifies the format of the ounput (To) files.  Choose from \fBa\fP for standard
+Specifies the format of the output (To) files.  Choose from \fBa\fP for standard
 MGD77 ASCII table (with extension .mgd77), \fBb\fP for the new MGD77+ netCDF format
 (with extension .nc), and \fBt\fP for a plain ASCII tab-separated table dump
 (with extension .dat).  We will refuse to create the file(s) if they already
@@ -41,9 +41,11 @@ To convert 01010047.nc back to MGD77 ASCII and make sure it is identical to the
 original file (here /Users/pwessel/NGDC/01010047.mgd77), try
 .br
 .sp
+orig=`\fBmgd77path\fP 01010047 \fB\-Ic`
+.br
 \fBmgd77convert\fP 01010047 \fB\-Fc \-Ta \-V\fP
 .br
-diff /Users/pwessel/NGDC/01010047.mgd77 01010047.mgd77
+diff $orig 01010047.mgd77
 .br
 .sp
 To convert 01010047.nc to a plain ASCII table, overwriting any existing table, try
