@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.65 2005-10-25 15:48:22 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.66 2005-10-25 20:33:03 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2005.
@@ -505,7 +505,7 @@ The lower example (Figure~\ref{fig:GMT_-B_time2}) chooses to annotate the weekda
 example choses dates (by specifying {\bf a}1{\bf D}).  Note how the clock format only selects hours and minutes (no seconds) and
 the date format selects a month name, followed by one space and a two-digit day-of-month number.
 
-\GMTfig[h]{GMT_-B_time2}{Cartesian time axis, example 2.}
+\GMTfig[h!]{GMT_-B_time2}{Cartesian time axis, example 2.}
 
 The third example presents two years, annotating both the years and every 3rd month.
 
@@ -515,25 +515,25 @@ Note that while the year annotation is centered on the 1-year interval, the mont
 on the corresponding month and \emph{not} the 3-month interval.  The {\bf PLOT\_DATE\_FORMAT} selects month
 name only and {\bf PLOT\_FORMAT\_PRIMARY} selects the 1-character, upper case abbreviation of month names using
 the current language (selected by {\bf TIME\_LANGUAGE}).
-\GMTfig[h]{GMT_-B_time3}{Cartesian time axis, example 3.}
+\GMTfig[h!]{GMT_-B_time3}{Cartesian time axis, example 3.}
 
 The fourth example (Figure~\ref{fig:GMT_-B_time4}) only shows a few hours of a day.  We select both primary and
 secondary annotations, ask for a 12-hour clock, and let time go from right to left:
 
 \input{scripts/GMT_-B_time4}
-\GMTfig[h]{GMT_-B_time4}{Cartesian time axis, example 4.}
+\GMTfig[h!]{GMT_-B_time4}{Cartesian time axis, example 4.}
 
 The fifth example shows a few weeks of time (Figure~\ref{fig:GMT_-B_time5}).  The lower axis shows ISO weeks with
 week numbers and abbreviated names of the weekdays.   The upper uses Gregorian weeks (which start at the day chosen
 by {\bf TIME\_WEEK\_START}); they do not have numbers.
 \input{scripts/GMT_-B_time5}
-\GMTfig[h]{GMT_-B_time5}{Cartesian time axis, example 5.}
+\GMTfig[h!]{GMT_-B_time5}{Cartesian time axis, example 5.}
 
 Our sixth example shows the first five months of 1996, and we have annotated each month with an abbreviated, upper case
 name and 2-digit year.  Only the primary axes information is specified.
 \input{scripts/GMT_-B_time6}
 
-\GMTfig[h]{GMT_-B_time6}{Cartesian time axis, example 6.}
+\GMTfig[h!]{GMT_-B_time6}{Cartesian time axis, example 6.}
 
 Our seventh and final example illustrates annotation of year-days.  Unless we specify the formatting with a leading hyphen
 in  {\bf PLOT\_DATE\_FORMAT} we get 3-digit integer days.  Note that in order to have the two years
@@ -541,7 +541,7 @@ annotated we need to allow for the annotation of small fractional intervals; nor
 be at least half of a full interval.
 \input{scripts/GMT_-B_time7}
 
-\GMTfig[h]{GMT_-B_time7}{Cartesian time axis, example 7.}
+\GMTfig[h!]{GMT_-B_time7}{Cartesian time axis, example 7.}
 
 \subsection{Header data records: The \Opt{H} option}
 \index{\Opt{H} (header records)}
@@ -594,7 +594,7 @@ when using different media, such as 11" x 17" or large format plotters
 \index{\Opt{K} (continue plot)}
 \index{\Opt{O} (overlay plot)}
 
-\GMTfig[h]{GMT_-OK}{A final \PS\ file consists of a stack of individual pieces.}
+\GMTfig[h]{GMT_-OK}{A final \PS\ file consists of any number of individual pieces.}
 
 The \Opt{K} and \Opt{O} options control the generation of \PS\ code for multiple
 overlay plots.  All \PS\ files must have a header (for initializations),
