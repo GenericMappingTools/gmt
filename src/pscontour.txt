@@ -57,6 +57,7 @@ Color the triangles using the color palette table.
 .TP
 .B \-L
 Draw the underlying triangular mesh using the specified pen attributes [Default is no mesh].
+#include "explain_pen.txt"
 .TP
 .B \-M
 When used in conjunction with \fB\-D\fP a single multisegment file is created, and

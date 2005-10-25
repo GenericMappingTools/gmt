@@ -55,6 +55,7 @@ only makes sense for opaque text boxes.
 .TP
 \fB+p\fP[\fIpen\fP]
 Draws the outline of text boxsets [Default is no outline]; optionally specify pen for outline [Default is width = 0.25p, color = black, texture = solid].
+#include "explain_pen.txt"
 .TP
 \fB+r\fP\fImin_rad\fP
 Will not place labels where the line's radius of curvature is less than \fImin_rad\fP [Default is 0].\"'

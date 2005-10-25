@@ -35,9 +35,9 @@ of the hardcopy device so that the output file is kept as compact as possible.
 .LP
 A wide variety of output devices that support \fIPostScript\fR exist, including laserwriters
 (color or monochrome) and workstations running \fIPostScript\fR based window systems
-like SUNs OpenWindows.  xnews (part of OpenWindows) or ghostscript (public domain) can be used to create rasterfiles at a
+like Sun's OpenWindows.  xnews (part of OpenWindows) or ghostscript (public domain) can be used to create rasterfiles at a
 user-defined resolution (DPI), making it possible to render \fIPostScript\fR on a Versatec
-and other non-\fIPostScript\fR raster devices.  Regular SUN rasterfiles created under NeWS
+and other non-\fIPostScript\fR raster devices.  Regular Sun rasterfiles created under NeWS
 from \fIPostScript\fR files can be sent to a variety of color hardcopy units.  Check
 the devices available on your network.
 .SH FUNCTION CALLS
@@ -248,13 +248,13 @@ Similar to \fBps_polygon\fP, but fills the area with an image pattern rather tha
 or grayshade.  \fIx\fP and \fIy\fP hold the arrays of \fIn\fP points.  90 predefined
 patterns are available  (See GMT Appendix E).  \fIimage\fP gives the image number (1-90).  If set to 0,
 \fIimagefile\fP must be the name to the user's image, which must be stored as a\"'
-SUN 1-, 8-, or 24-bit rasterfile.
+Sun 1-, 8-, or 24-bit rasterfile.
 .br
 1-bit images only:
-(i) The unset pixels (0) are colored using the RGB combination in \fIf_rgb\fP,
-while the set pixels (1) are painted with \fPb_rgb\fP.
-Set the f_rgb[0] to -1 to make unset pixels transparent.
-Set b_rgb[0] to -1 to make the set pixels transparent.
+(i) The set pixels (1) are colored using the RGB combination in \fIf_rgb\fP,
+while the unset pixels (0) are painted with \fPb_rgb\fP.
+Set the f_rgb[0] to -1 to make set pixels transparent.
+Set b_rgb[0] to -1 to make the unset pixels transparent.
 (ii) If \fIinvert\fP is TRUE (1), the set and unset pixels are interchanged before plotting. 
 .br
 The unit size of the image is
@@ -407,7 +407,7 @@ faster.
 \fIxscl,yscl\fP are used to scale the entire plot (Usually set to 1.0, 1.0).  Set \fIncopies\fP to get
 more than 1 copy.  \fIdpi\fP sets the hardcopy resolution in dots pr units.  For optimum plot
 quality and processing speed, choose \fIdpi\fP to match the intended plotter resolution.  Examples are
-300 for most laserwriters, 2540 for Linotype-300, and ~85 for SUN screens.  When in
+300 for most laserwriters, 2540 for Linotype-300, and ~85 for Sun screens.  When in
 doubt, use 300.  \fIunit\fP can be any of 0 (CM), 1 (INCH), or 2 (M), telling the plot system
 what units are used for distance and sizes.  Note that, regardless of choice of unit, dpi is still in
 dots-pr-inch.  \fIpagesize\fP means the physical width and height of the plotting media in points, (typically 612 by 792 for

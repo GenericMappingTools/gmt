@@ -1,6 +1,6 @@
 .TH PSIMAGE GMTMANSECTION DATE VERSION VERSION
 .SH NAME
-psimage \- To plot images (EPS files or SUN rasterfiles) on maps
+psimage \- To plot images (EPS files or Sun rasterfiles) on maps
 .SH SYNOPSIS
 \fBpsimage\fP \fIimagefile\fP [ \fB\-W\fP[-]\fIxlength[/ylength]\fP | \fB\-E\fIdpi\fP ] [ \fB\-C\fIxpos/ypos\fP[/\fIjustify\fP] ] 
 [ \fB\-F\fP\fIpen\fP ] [ \fB\-G\fP[\fBf|b\fP]\fIr/g/b\fP ] [ \fB\-I\fP ] [ \fB\-K\fP ] [ \fB\-M\fP ] 
@@ -43,6 +43,7 @@ Sets position of lower left corner of image, and optionally append justification
 .TP
 .B \-F
 Draws a rectangular frame around the image with the given pen [no frame].
+#include "explain_pen.txt"
 .TP
 .B \-Gb
 Sets background color (replace white pixel) for 1-bit image templates.

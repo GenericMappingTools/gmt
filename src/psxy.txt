@@ -58,15 +58,18 @@ Offset the plot symbol locations by the given amounts \fIdx/dy\fP [Default is no
 Draw error bars.  Append \fBx\fP and/or \fBy\fP to indicate which bars you want to draw (Default is both x and y).  The x and/or
 y errors must be stored in the columns after the (x,y) pair [or (x,y,size) triplet].  The
 \fIcap\fP parameter indicates the length of the end-cap on the error bars [CAP_SI (or CAP_US)].  Pen
-attributes for error bars may also be set.  [Defaults: width = 1, color = 0/0/0, texture = solid].  If upper case
+attributes for error bars may also be set.  [Defaults: width = 1, color = black, texture = solid].  If upper case
 \fBX\fP and/or \fBY\fP is used we will instead draw "box-and-whisker" (or "stem-and-leaf") symbols.  The x (or y)
 coordinate is then taken as the median value, and 4 more columns are expected to contain the minimum (0% quartile), the 25%
 quartile, the 75% quartile, and the maximum (100% quartile) values.  The 25-75% box may be filled by using \fB\-G\fP.
 .TP
 .B \-G
-Select filling of polygons and symbols.
-Append the shade (0\-255), color (r/g/b), or \fBP\fP|\fBp\fP\fIdpi\fP/\fIpattern\fP (polygons only) [Default is no fill].
-Note when \fB\-M\fP is chosen, \fBpsxy\fP will search for \fB\-G\fP and \fB\-W\fP strings in all the subheaders and let any found values over-ride the command line settings.
+Select color for filling of symbols or select color or pattern for filling of polygons [Default is no fill].
+.br
+#include "explain_-G.txt"
+.br
+Note when \fB\-M\fP is chosen, \fBpsxy\fP will search for \fB\-G\fP and \fB\-W\fP
+strings in all the subheaders and let any found values over-ride the command line settings.
 #include "explain_-H.txt"
 #include "explain_-K.txt"
 .TP
@@ -208,8 +211,8 @@ y-dash.  \fIsize\fP is the length of a short vertical line segment.
 #include "explain_-V.txt"
 .TP
 .B \-W
-Set pen attributes.  [Defaults: width = 1, color = 0/0/0, texture = solid].
-Implicitly draws the outline of symbols with selected pen. 
+Set pen attributes for lines or the outline of symbols.  [Defaults: width = 1, color = black, texture = solid].
+#include "explain_pen.txt"
 #include "explain_-XY.txt"
 #include "explain_-t.txt"
 #include "explain_-i_binary.txt"
@@ -223,7 +226,7 @@ Mercator map at LEN_2 cm/degree of the area 150E to 154E, 18N to 23N, with tickm
 and gridlines every 15 minutes, use
 .br
 .sp
-\fBpsxy\fP DSDP.xy \fB\-R\fP150/154/18/23 OPT_1 \fB\-G\fP255/0/0 \fB\-B\fP1\fBg\fP15\fBm\fP | lpr
+\fBpsxy\fP DSDP.xy \fB\-R\fP150/154/18/23 OPT_1 \fB\-G\fPred \fB\-B\fP1\fBg\fP15\fBm\fP | lpr
 .br
 .sp
 To plot the xyz values in the file quakes.xyzm as circles with size given by the magnitude in the
@@ -237,7 +240,7 @@ To plot the file trench.xy on a Mercator map, with white triangles with sides LE
 side of the line, spaced every LEN_3 inch, use
 .br
 .sp
-\fBpsxy\fP trench.xy \fB\-R\fP150/200/20/50 OPT_3 \fB\-G\fP255 \fB\-W \-B\fP10 | lpr
+\fBpsxy\fP trench.xy \fB\-R\fP150/200/20/50 OPT_3 \fB\-G\fPwhite \fB\-W \-B\fP10 | lpr
 br
 .sp
 To plot the data in the file misc.d as symbols determined by the code in the last column, and with size given

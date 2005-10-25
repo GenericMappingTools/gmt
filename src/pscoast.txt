@@ -55,7 +55,10 @@ Select painting or clipping of "dry" areas.  Append a shade, color, pattern, or 
 .TP
 .B \-I
 Draw rivers.  Specify the type of rivers and [optionally] append pen attributes  [Default pen:
-width = 1, color = 0/0/0, texture = solid].  Choose from the list of river types below.
+width = 1, color = black, texture = solid].
+#include "explain_pen.txt"
+.br
+Choose from the list of river types below.
 Repeat option \fB\-I\fP as often as necessary.
 .br
 	 1 = Permanent major rivers
@@ -96,7 +99,10 @@ Specify any combination of \fB\-W, \-I, \-N\fP.  Optionally, you may append the
 .TP
 .B \-N
 Draw political boundaries.  Specify the type of boundary and [optionally] append pen attributes  [Default pen:
-width = 1, color = 0/0/0, texture = solid].  Choose from the list of boundaries below.
+width = 1, color = black, texture = solid].
+#include "explain_pen.txt"
+.br
+Choose from the list of boundaries below.
 Repeat option \fB\-N\fP as often as necessary.
 .br
 	1 = National boundaries
@@ -121,7 +127,7 @@ Select painting or clipping of "wet" areas.  Append the shade (0\-255), color (r
 .TP
 .B \-W
 Draw coastlines. [Default is no coastlines].  Append pen attributes  [Defaults:
-width = 1, color = 0/0/0, texture = solid].
+width = 1, color = black, texture = solid].
 #include "explain_-XY.txt"
 .TP
 .B \-Z
