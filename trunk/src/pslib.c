@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.101 2005-09-22 14:37:41 remko Exp $
+ *	$Id: pslib.c,v 1.102 2005-10-25 03:33:36 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -757,22 +757,21 @@ void ps_imagefill_cleanup (void) {
 }
 
 /* fortran interface */
-void ps_imagefill_ (double *x, double *y, int *n, int *image_no, char *imagefile, int *invert, int *image_dpi, int *outline, BOOLEAN *colorize, int *f_rgb, int *b_rgb, int nlen)
+void ps_imagefill_ (double *x, double *y, int *n, int *image_no, char *imagefile, int *invert, int *image_dpi, int *outline, int *f_rgb, int *b_rgb, int nlen)
 {
-	 ps_imagefill (x, y, *n, *image_no, imagefile, *invert, *image_dpi, *outline, *colorize, f_rgb, b_rgb);
+	 ps_imagefill (x, y, *n, *image_no, imagefile, *invert, *image_dpi, *outline, f_rgb, b_rgb);
 }
 
-void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, int invert, int image_dpi, int outline, BOOLEAN colorize, int f_rgb[], int b_rgb[])
+void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, int invert, int image_dpi, int outline, int f_rgb[], int b_rgb[])
 {
 	/* x,y:		Array of enclosing path
 	 * image_dpi:	Resolution of image on the page
 	 * n:		No of points in path
 	 * imagefile:	Name of image file
-	 * invert:	If TRUE exchange white and black pixels (1-bit only)
+	 * invert:	If TRUE exchange set and unset pixels (1-bit only)
 	 * outline:	TRUE will draw outline, -1 means clippath already in place
-	 * colorize:	If FALSE, black/white colors are forced
-	 * f_rgb:	Foreground color
-	 * b_rgb:	Background color
+	 * f_rgb:	Foreground color used for set bits (1) (1-bit only)
+	 * b_rgb:	Background color used for unset bits (0) (1-bit only)
 	 */
 
 	BOOLEAN found;
@@ -801,12 +800,6 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 	name = (ps_pattern[image_no].depth == 1 && (f_rgb[0] < 0 || b_rgb[0] < 0)) ? "imagemask" : "image";
 
 	fprintf (ps.fp, "\n%% Start of %s fill pattern\n", name);
-
-	/* If colorize is FALSE, force black/white colors */
-
-	if (!colorize) {
-		for (i = 0; i < 3; i++) { f_rgb[i] = 0; b_rgb[i] = 255; }
-	}
 
 	/* When DPI or colors have changed, the /fillimage procedure needs to be rewritten */
 
@@ -3997,9 +3990,10 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 	 * 0 = Paint 0 bits foreground color, leave 1 bits transparent
 	 * 1 = Paint 1 bits background color, leave 0 bits transparent
 	 * 2 = Paint 0 bits foreground color, paint 1 bits background color
+	 * 3 = No coloring, but invert bits (i.e., 0 bits white, 1 bits black)
 	 * 4 = Paint 0 bits black, leave 1 bits transparent
 	 * 5 = Paint 1 bits black, leave 0 bits transparent
-	 * 6 = No coloring (i.e., 0 bits black, 1 bits white)
+	 * 6 = No coloring, no inversion (i.e., 0 bits black, 1 bits white)
 	 */
 	int polarity, f_cmyk[4], b_cmyk[4];
 
@@ -4025,7 +4019,15 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 		else
 			fprintf (ps.fp, "[/Indexed /DeviceRGB 0 <%02X%02X%02X>] setcolorspace\n", b_rgb[0], b_rgb[1], b_rgb[2]);
 	}
-	else if (f_rgb[0] != 0 || f_rgb[1] != 0 || f_rgb[2] != 0 || b_rgb[0] != 255 || b_rgb[1] !=255 || b_rgb[1] != 255) {
+	else if (b_rgb[0] == 0 && b_rgb[1] == 0 && b_rgb[2] == 0 && f_rgb[0] == 255 && f_rgb[1] == 255 && f_rgb[1] == 255) {
+		fprintf (ps.fp, "\n");
+		polarity = 3;
+	}
+	else if (f_rgb[0] == 0 && f_rgb[1] == 0 && f_rgb[2] == 0 && b_rgb[0] == 255 && b_rgb[1] == 255 && b_rgb[1] == 255) {
+		fprintf (ps.fp, "\n");
+		polarity = 6;
+	}
+	else {
 		polarity = 2;
 		if (ps.cmyk_mode) {
 			ps_rgb_to_cmyk_int (f_rgb, f_cmyk);
@@ -4034,10 +4036,6 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 		}
 		else
 			fprintf (ps.fp, "[/Indexed /DeviceRGB 1 <%02X%02X%02X%02X%02X%02X>] setcolorspace\n", f_rgb[0], f_rgb[1], f_rgb[2], b_rgb[0], b_rgb[1], b_rgb[2]);
-	}
-	else {
-		fprintf (ps.fp, "\n");
-		polarity = 6;
 	}
 
 	return (polarity);

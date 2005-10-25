@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.190 2005-10-24 22:23:56 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.191 2005-10-25 03:33:36 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -155,13 +155,13 @@ void GMT_init_fill (struct GMT_FILL *fill, int r, int g, int b)
 {	/* Initialize FILL structure */
 	int i;
 
-	fill->use_pattern = fill->inverse = fill->colorize = FALSE;
+	fill->use_pattern = fill->inverse = FALSE;
 	fill->pattern[0] = 0;
 	fill->pattern_no = 0;
 	fill->dpi = 0;
 	for (i = 0; i < 3; i++) fill->f_rgb[i] = 0;
 	for (i = 0; i < 3; i++) fill->b_rgb[i] = 255;
-	fill->rgb[0] = r;	fill->rgb[1] = g; fill->rgb[2] = b;
+	fill->rgb[0] = r; fill->rgb[1] = g; fill->rgb[2] = b;
 }
 
 int GMT_getfill (char *line, struct GMT_FILL *fill)
@@ -191,13 +191,10 @@ int GMT_getfill (char *line, struct GMT_FILL *fill)
 		pos++;
 
 		if (pos > 0 && line[pos]) {	/* Gave colors */
-			fill->colorize = TRUE;
 			while (line[pos]) {
 				f = line[pos++];
-				if (line[pos] == '-') {	/* Signal for transpacency masking */
+				if (line[pos] == '-')	/* Signal for transpacency masking */
 					fb_rgb[0] = fb_rgb[1] = fb_rgb[2] = -1;
-					fill->colorize = FALSE;
-				}
 				else {
 					end = pos;
 					while (line[end] && !(line[end] == 'F' || line[end] == 'B')) end++;
