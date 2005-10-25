@@ -38,10 +38,10 @@ capture all verification messages, try
 .br
 .sp
 To convert 01010047.nc back to MGD77 ASCII and make sure it is identical to the
-original file (here /Users/pwessel/NGDC/01010047.mgd77), try
+original file (here /Users/pwessel/NGDC/01010047.mgd77), try (Bourne shell syntax)
 .br
 .sp
-orig=`\fBmgd77path\fP 01010047 \fB\-Ic`
+orig=`\fBmgd77path\fP 01010047 \fB\-Ic\fP`
 .br
 \fBmgd77convert\fP 01010047 \fB\-Fc \-Ta \-V\fP
 .br
