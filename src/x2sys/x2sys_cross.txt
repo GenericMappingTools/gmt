@@ -3,7 +3,7 @@
 \fBx2sys_cross\fP \- Find and compute Cross-Over Errors
 .SH SYNOPSIS
 \fBx2sys_cross\fP \fItrack(s)\fP \fB\-T\fP\fITAG\fP 
-[ \fB\-Cc\fP|\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-Gd|g\fP ] [ \fB\-Il|a|c\fP ] 
+[ \fB\-Cc\fP|\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-Il|a|c\fP ] 
 [ \fB\-J\fP\fIparams\fP ] [\fB\-K\fP\fIcombi.lis\fP] [ \fB\-L\fP\fIflist\fP ] 
 [ \fB\-Nd|s\fP\fIunit\fP ] [ \fB\-O\fP ] [ \fB\-Qe|i\fP ] [ \fB\-Sl|u\fP\fIspeed\fP ] 
 [ \fB\-V\fP ][ \fB\-Wt\fP|\fBd\fP|\fBn\fP\fIsize\fP ] [ \fB\-2\fP ] [ \fB\-bo\fP[\fBs\fP] ]
@@ -37,11 +37,6 @@ Sets which columns to use.  Give a comma-separated list of column names;
 this list must include \fBx\fP, \fBy\fP or \fBlon\fP, \fBlat\fP and ideally
 \fBtime\fP [Default selects all columns].
 .TP
-.B \-G
-Selects geographical coordinates.  Append \fBd\fP for discontinuity at the
-Dateline (makes longitude go from -180 to + 180) or \fBg\fP for discontinuity
-at Greenwhich (makes longitude go from 0 to 360 [Default]).
-.TP
 .B \-I
 Sets the interpolation mode. Choose among:
 .br
@@ -59,8 +54,8 @@ Only process the pair-combinations found in the file \fIcombi.lis\fP
 .TP
 .B \-N
 Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
-\fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles and miles/hr), or
-\fBn\fP (nautical miles and knots).  [Default is \fB\-Ndk \-Nse\fP (km and m/s)].
+\fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles or miles/hr), or
+\fBn\fP (nautical miles or knots).  [Default is \fB\-Ndk \-Nse\fP (km and m/s)].
 .TP
 .B \-O
 Output results using the old XOVER format [Default is X2SYS format].
@@ -97,13 +92,13 @@ The COEs found are printed out to standard output in ASCII format (unless
 whether or not old-style XOVER output (\fB\-O\fP) has been selected.
 If so, then the first record contains the file names and their start year,
 whereas subsequent records have the data for each COE encountered.  The fields
-written out are lat, lon, time along track #1 and track #2,
+written out are lat, lon, time along track #1 and #2,
 x_gravity, x_magnetics, x_bathymetry, average gravity, average magnetics,
-average bathymetry, heading along track #1 and track #2. If
+average bathymetry, heading along track #1 and #2. If
 the default format is chosen then the header record starts with "> ", and
 the output format for crossovers are first 10 columns that contain
-x, y, time along track #1 and track #2, distance along track #1 and track #2,
-heading along track #1 and track #2, velocity along track #1 and #2, and
+x, y, time along track #1 and #2, distance along track #1 and #2,
+heading along track #1 and #2, velocity along track #1 and #2, and
 then pairs of (COE, average value) for each data type (or track-values; see \fB\-2\fP).
 It is recommended that the Akima spline is used
 instead of the natural cubic spline, since it is less sensitive to outliers

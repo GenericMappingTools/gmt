@@ -5,8 +5,8 @@ mgd77convert \- Translate between different formats of MGD77 files
 \fBmgd77convert\fP \fINGDC-ids\fP \fB\-Fa|b|t \-T\fP[\fB+\fP]\fBa|b|t\fP 
 [ \fB\-L\fP[\fBw\fP][\fBe\fP][\fB+\fP] ] [ \fB\-V\fP ]
 .SH DESCRIPTION
-\fBmgd77convert\fP reads versions of MGD77 files and writes out the same
-data in (probably) another format.
+\fBmgd77convert\fP reads versions of MGD77 files and writes the same
+data in (probably) another format to a new file in the current directory.
 #include "mgd77/explain_ncid.txt"
 .TP
 .B \-F
@@ -25,9 +25,9 @@ exist in the current directory.  Prepend \fB+\fP to override this policy.
 No space between the option flag and the associated arguments.
 .TP
 .B \-L
-Set the level of verification reporting and where to send such reports.  Append
-a combination of \fBw\fP for warnings, \fBe\fP for errors, and \fB+\fP to send
-such log information to stdout [ Default is stderr].
+Set the level of verification reporting [none] and where to send such reports [stderr].
+Append a combination of \fBw\fP for warnings, \fBe\fP for errors, and \fB+\fP to send
+such log information to stdout.
 #include "explain_-V.txt"
 .SH EXAMPLES
 To convert 01010047.mgd77 and 01010008.mgd77 to new netCDF .nc files, and
@@ -38,7 +38,7 @@ capture all verification messages, try
 .br
 .sp
 To convert 01010047.nc back to MGD77 ASCII and make sure it is identical to the
-original file (here /Users/pwessel/NGDC/01010047.mgd77), try (Bourne shell syntax)
+original file, try (Bourne shell syntax)
 .br
 .sp
 orig=`\fBmgd77path\fP 01010047 \fB\-Ic\fP`
@@ -48,15 +48,15 @@ orig=`\fBmgd77path\fP 01010047 \fB\-Ic\fP`
 diff $orig 01010047.mgd77
 .br
 .sp
-To convert 01010047.nc to a plain ASCII table, overwriting any existing table, try
+To convert 01010047.nc to a plain ASCII table for manual editing, overwriting any existing table, try
 .br
 .sp
 \fBmgd77convert\fP 01010047 \fB\-Fc \-T+t \-V\fP
 .SH FILE FORMATS
 \fBmgd77convert\fP handles three different formats. (1) The MGD77 ASCII tables are
-the extablished standard for distribution of underway geophysical data to and from the
+the established standard for distribution of underway geophysical data to and from the
 NGDC data center.  Normally, only the ship-operations people and the cruise PI might
-be involved in \fImaking\fP an MGD77 ASCII file for transmission to NGDC; the rest of us
+be involved in \fImaking\fP an MGD77 ASCII file for transmission to NGDC; users
 are more interested in \fIreading\fP such files. (2) The MGD77+ netCDF format was
 developed to fascilitate the use of MGD77 data by scientists.  It contains all the information
 of the original MGD77 file and if you convert back and forth you end up with the original.

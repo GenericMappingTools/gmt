@@ -15,7 +15,7 @@ mgd77track \- A shiptrack plotting program
 [ \fB\-Sb\fP\fIstopdist\fP[unit] ] [ \fB\-TT|t|d\fP\fIms,mc,mfs,mf,mfc\fP ] [ \fB\-U\fP[\fIdx/dy/\fP][\fIlabel\fP] ] 
 [ \fB\-V \fP ] [ \fB\-W\fP\fIpen\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ]
 .SH DESCRIPTION
-\fBmgd77track\fP reads NGDC MGD-77 cruises and creates \fIPostScript\fP code that will plot one or more ship tracks on a
+\fBmgd77track\fP reads NGDC MGD77 cruises and creates \fIPostScript\fP code that will plot one or more ship tracks on a
 map using the specified projection.  The \fIPostScript\fP code is written to standard output.
 #include "mgd77/explain_ncid.txt"
 #include "explain_-J_short.txt"
@@ -74,7 +74,7 @@ each marker type.
 #include "explain_-U.txt"
 .TP
 .B \-W
-\fIpen\fP is the pen used for the trackline. [Default is 0.25p,black]. 
+Append \fIpen\fP used for the trackline. [Default is 0.25p,black]. 
 [Default is solid].
 #include "explain_-XY.txt"
 #include "explain_-V.txt"
