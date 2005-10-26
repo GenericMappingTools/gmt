@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.192 2005-10-25 17:22:06 remko Exp $
+ *	$Id: gmt_support.c,v 1.193 2005-10-26 21:18:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4270,6 +4270,13 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 	if (global) {	/* Periodic grid with 360 degree range is easy */
 		*xmin = project_info.w;
 		*xmax = project_info.e;
+		return (0);
+	}
+
+	global = (fabs (project_info.e - project_info.w - 360.0) < SMALL && project_info.s >= -90.0 && project_info.n <= +90.0);	/* A global -R selected */
+	if (global) {	/* Global map with full 360 degree range is easy */
+		*xmin = h->x_min;
+		*xmax = h->x_max;
 		return (0);
 	}
 
