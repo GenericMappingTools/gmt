@@ -7,7 +7,7 @@ x2sys_init \- Initialize data base for track data files
 [ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-V\fP ] [ \fB\-Wt\fP|\fBd\fP\fIgap\fP ]
 .SH DESCRIPTION
 \fBx2sys_init\fP initializes a set of data bases that are particular to one kind
-of track data.  These data and their associated data bases are given a short-hand
+of track data.  These data, their associated data bases, and key parameters are given a short-hand
 notation called a system TAG.   The TAG remembers settings such as file format,
 whether the data are geographic or not, and the binning resolution for track indexes.
 Running \fBx2sys_init\fP is a prerequisite to running \fBx2sys_binlist\fP which will
@@ -43,7 +43,7 @@ indicate minutes or \fBc\fP to indicate seconds.
 .B \-M
 Multiple segment file(s).  Segments are separated by a special record.
 For ASCII files the first character must be \fIflag\fP [Default is '>'].
-For binary files all fields must be NaN
+For binary files all fields must be NaN.
 #include "explain_-Rgeo.txt"
 #include "explain_-V.txt"
 .TP
@@ -178,13 +178,27 @@ files (tbf).  These contain information on which 1 x 1 degree bins (or any
 other blocksize; see \fB\-I\fP) each
 track has visited and which observations (in your case obs1, obs2, obs3)
 were actually observed (not all tracks may have all three kinds of
-observations everywhere).  Next, the track bin-index files are fed to \fBx2sys_put\fP
-which will insert the information into the TAG databases.
+observations everywhere).  For instance, if your tracks are listed in
+the file tracks.lis we may run this command:
+.br
+.sp
+\fBx2sys_binlist\fP \fB\-V \-T\fPLINE `cat tracks.lis` > tracks.tbf
+.TP
+.B Update index data base:
+Next, the track bin-index files are fed to \fBx2sys_put\fP
+which will insert the information into the TAG databases:
+.br
+.sp
+\fBx2sys_put\fP \fB\-V \-T\fPLINE tracks.tbf
 .TP
 .B Search for data:
 You may now use \fBx2sys_get\fP to find all the tracks within a certain
 sub-region, and optionally limit the search to those tracks that have
-a particular combination of observables.
+a particular combination of observables.  E.g., to find all the tracks
+which has both obs1 and obs3 inside the specified region, run
+.br
+.sp
+\fBx2sys_get\fP \fB\-V \-T\fPLINE \fB\-R\fP20/40/-40/-20 \fB\-F\fPobs1,obs3 > tracks.tbf
 .TP
 .B MGD77[+] or GMT:
 Definition files already exist for MGD77 files (both standard ASCII and

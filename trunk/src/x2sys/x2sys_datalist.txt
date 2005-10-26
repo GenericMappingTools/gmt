@@ -8,8 +8,7 @@ x2sys_datalist \- A generic data-extractor for ASCII or binary files
 .SH DESCRIPTION
 \fBx2sys_datalist\fP reads one or more files and produces a single ASCII [or binary] table. 
 The files can be of any format, which must be descriped and passed with the
-\fB\-D\fP option (or, alternatively, the \fB\-T\fP option).  You may limit the output
-to a geographic region, and insist
+\fB\-T\fP option.  You may limit the output to a geographic region, and insist
 that the output from several files be separated by a multiple segment header.
 Only the named data fields will be output [Default selects all columns].
 #include "x2sys/explain_track.txt"
@@ -21,7 +20,7 @@ No space between the option flag and the associated arguments.
 .TP
 .B \-F
 Give a comma-separated sub-set list of column names defined in the definition
-file. [Default is all data columns].
+file. [Default selects all data columns].
 #include "explain_-H.txt"
 .TP
 .B \-M

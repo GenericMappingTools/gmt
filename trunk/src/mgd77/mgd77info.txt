@@ -6,8 +6,8 @@ mgd77info \- Get information about MGD77[+] files
 [ \fB\-Hf\fP|\fBr\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBmgd77info\fP reads <legid>.[mgd77|nc] files and produces a single record of information
-about each cruise specified.  The information includes beginning and end time, total
-track distance in km, min and max regional extent, and the total number of geophysical
+about each cruise specified.  The information includes beginning and end times, total
+track distances in km, longitude and latitude range, and the total number of geophysical
 observations.  Optionally, choose instead to see the original MGD77 header section or
 its individual members.
 .br
@@ -20,7 +20,7 @@ No space between the option flag and the associated arguments.
 .TP
 .B \-C
 List abbreviations for all columns present in the MGD77[+] files.
-Append \fBm\fP or \fBe\fP to limit the display to the MGD77 or MGD77+ extended set only.
+Append \fBm\fP or \fBe\fP to limit the display to the MGD77 standard or MGD77+ extended set only.
 .TP
 .B \-E
 Give a one-line summary for each cruise listed.

@@ -34,9 +34,9 @@ Crossover mode.  Return a list of track pairs that should be checked for possibl
 crossovers.  The list is determined from the bin-index data base on the assumption
 that tracks occupying the same bin are very likely to intersect.  By default we
 return all possible pairs in the data base.  Append the name of a file with a
-list of tracks if you want the output pairs to be limited to those that involve
+list of tracks if you want to limit the output to those pairs that involve
 at least one of the track names in your list.  The output is suitable for the \fB\-K\fP
-option in \fBx2sys_Cross\fP.
+option in \fBx2sys_cross\fP.
 .SH EXAMPLES
 To find all the tracks associated with the tag mgd77, restricted to occupy
 a certain region in the south Pacific, and have at least free air anomalies

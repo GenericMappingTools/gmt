@@ -12,9 +12,9 @@ where \fIlon, lat\fP is the coordinates of the center of the bin, the \fIindex\f
 the 1-D number of the bin, and \fIflags\fP is a bitflag that describes which data
 fields were available in each bin.  The optional \fIdist\fP requires \fB\-D\fP.
 The input files can be of any format, which must be described and passed with the
-\fB\-T\fP option.  The bin index listing is a crude representation of where
+\fB\-T\fP option.  The bin-index listing is a crude representation of where
 the track goes and is used by the data archivist to build a track data base for
-track queries such as to determining which tracks
+track queries such as to determine which tracks
 need to be compared for crossover analysis.  You must run \fBx2ys_init\fP
 to initialize the tag before you can run the indexing.
 #include "x2sys/explain_track.txt"
@@ -54,7 +54,7 @@ To create a bin index table from the MGD77 file 01030061.mgd77 using a global, 1
 .br
 .sp
 To create a track bin index file of all MGD77+ files residing in the current directory at a bin resolution
-of 30x30 minutes, calculating the geodesic distance lengths for each bin in km, run
+of 30 x 30 minutes, calculating the geodesic distance lengths for each bin in km, run
 .br
 .sp
 \fBx2sys_binlist\fP *.nc \fB\-T\fPMGD77+ \fB\-Ce \-D\fP > all.tbf

@@ -8,12 +8,12 @@ mgd77list \- A data-extractor for MGD77[+] files
 [ \fB\-H\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-Nd|s\fP\fIunit\fP ] 
 [ \fB\-P\fP\fIcode\fP ] [ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-Sa\fP\fIstartdist\fP[unit] ] 
 [ \fB\-Sb\fP\fIstopdist\fP[unit] ] [ \fB\-T\fP[\fBm|e\fP] ]  [ \fB\-V\fP ] 
-[ \fB\-W\fP\fIweight\fP ] [ \fB\-X\fP[\fIcorrtable\fP] ] [ \fB\-Z\fP\fI+\fP|\fB-\fP ] [ \fB\-bo\fP ]
+[ \fB\-W\fP\fIweight\fP ] [ \fB\-X\fP[\fIcorrtable\fP] ] [ \fB\-Z\fP\fI+\fP|\fB-\fP ] [ \fB\-bo\fP[\fBs|d\fP] ]
 .SH DESCRIPTION
 \fBmgd77list\fP reads <NGDC-id>.[mgd77|nc] files and produces an ASCII [or binary] table.
 The <NGDC-id>.[mgd77|nc] files contain track information such as leg-id, time and position,
 geophysical observables such as gravity, magnetics, and bathymetry, and control codes and
-corrections such as Eotvos or diurnal corrections.  The MGD77+ extended netCDF files may
+corrections such as Eotvos and diurnal corrections.  The MGD77+ extended netCDF files may
 also contain additional user columns (for a listing of available columns, use \fBmgd77info
 \-C\fP, and to learn how to add your own custom columns, see \fBmgd77manage\fP).  The
 user may extract any combination of these parameters, any of six computed quantities (distance,
@@ -21,7 +21,7 @@ heading, velocity, Carter correction, and gravity and magnetic global reference 
 calendar sub-units of time (year, month, day, hour, min, sec), the NGDC id, and finally a
 preset weight (see \fB\-W\fP).  A sub-section can be specified by passing time- or
 distance-intervals along track or by selecting a geographical region.  Finally, each output
-records may be required to pass any number of logical tests involving data values or bit flags.
+record may be required to pass any number of logical tests involving data values or bit flags.
 #include "mgd77/mgd77_IGF_coeffs.h"
 #include "mgd77/explain_ncid.txt"
 .TP
@@ -29,7 +29,7 @@ records may be required to pass any number of logical tests involving data value
 The required \fIcolumns\fP string must be a comma-separated list of parameter abbreviations
 given in the desired output order.  Any parameters given in UPPER case must not be NaN in
 a record for output to occur.  Unless specified separately, the output format (if ASCII) is
-controlled by \fBD_FORMAT\fP.  The available abbreviations are:
+controlled by the GMT parameter \fBD_FORMAT\fP.  The available abbreviations are:
 .TP
 .B drt
 The digital record type, usually 3 or 5 (for Y2K-compliant cruises).
@@ -42,27 +42,27 @@ The 8-character NGDC cruise ID string (usually the file prefix).
 .TP
 .B time
 Choose between Absolute calendar time (\fBatime\fP, the default) in the format dictated by the GMT
-default settings  \fBOUTPUT_DATE_FORMAT\fP and \fBOUTPUT_CLOCK_FORMAT\fP, or Relative time (\fBrtime\fP)
-in the format dictated by the GMT default settings  \fBD_FORMAT\fP and \fBTIME_SYSTEM\fP (or
+parameters  \fBOUTPUT_DATE_FORMAT\fP and \fBOUTPUT_CLOCK_FORMAT\fP, or Relative time (\fBrtime\fP)
+in the format dictated by the GMT parameters  \fBD_FORMAT\fP and \fBTIME_SYSTEM\fP (or
 \fBTIME_EPOCH\fP and \fBTIME_UNIT\fP).
 .TP
 .B lon
-Longitude in the format dictated by the GMT default \fBOUTPUT_DEGREE_FORMAT\fP.
+Longitude in the format dictated by the GMT parameter \fBOUTPUT_DEGREE_FORMAT\fP.
 .TP
 .B lat
-Longitude in the format dictated by the GMT default \fBOUTPUT_DEGREE_FORMAT\fP.
+Longitude in the format dictated by the GMT parameter \fBOUTPUT_DEGREE_FORMAT\fP.
 .TP
 .B twt
 Two-Way Travel time (in s).
 .TP
 .B depth
-Corrected bathymetry (in m).
+Corrected bathymetry (in m, positive below sealevel).
 .TP
 .B mtf1
-Total magnetic field intensity from sensor 1 (in nTesla).
+Magnetic Total Field intensity from sensor 1 (in nTesla).
 .TP
 .B mtf2
-Total magnetic field intensity from sensor 2 (in nTesla).
+Magnetic Total Field intensity from sensor 2 (in nTesla).
 .TP
 .B mag
 Residual magnetic anomaly (in nTesla).
@@ -143,15 +143,16 @@ Ship speed; see \fB\-N\fP for units [m/s].
 Weight assigned to this data set (see \fB\-W\fP).
 .TP
 .B carter
-Carter depth correction, if \fBtwt\fP is present in file (in m)
+Carter depth correction, if \fBtwt\fP is present in file (in m).  Sign: Correction
+is to be subtracted from uncorrected depths to yield a corrected depth.
 .TP
 .B igrf
 International geomagnetic reference field (total field) (in nTesla).
 .TP
 .B ngrav
 International Gravity reference Field ("normal gravity") (in mGal).
-Field selected based on the parameter Gravity Theoretical
-Formula Code in the cruise's MGD77 header.  If this is not set or invalid we default to the IGF 1980.
+Field is selected based on the parameter Gravity Theoretical
+Formula Code in the cruise's MGD77 header.  If this is not set or is invalid we default to the IGF 1980.
 Alternatively, specify the field directly using \fB\-Af\fP (see that option for more details).
 .br
 .sp
@@ -171,7 +172,7 @@ By appending \fB+\fP to either of these set we will also append \fBdist\fP, \fBa
 .br
 .sp
 As an option, logical tests may be added for any of the parameters by appending ,\fIlogic\fP,
-which is one or more comma-separated instructions
+which is itself composed of one or more comma-separated instructions
 of the form \fIpar\fP\fBOP\fP\fIvalue\fP, where \fIpar\fP is one of the parameters listed above, \fBOP\fP is
 a logical operator (<, <=, =, !=, >=, >, |), and \fIvalue\fP is a constant used in the comparison.  Floating point
 parameters are compared numerically; character parameters are compared lexically (after leading and trailing
@@ -179,12 +180,12 @@ blanks have been removed).  The bit comparison (|) means that at least one of th
 must be turned on in \fIpar\fP.  At least one of the tests must be true for the record to be output, except for
 tests using UPPER case parameters which all must be true for output to occur.  Note that
 specifying a test does not imply that the corresponding column will be included in the output stream;
-you must specify the dataflag for that to occur. Note: some of the operators are special UNIX characters
+it must be present in \fIcolumns\fP for that to occur. Note: some of the operators are special UNIX characters
 and you are advised to place quotes around the entire argument to \fB\-F\fP.
 .br
 .sp
 Finally, for MGD77+ files you may optionally append :\fIbittests\fP which is : (a colon) followed by one or more comma-separated
-+|-\fIcol\fP terms.  This compares specific bitflags only for each listed column.  Here, + means the chosen bit must
++-\fIcol\fP terms.  This compares specific bitflags only for each listed column.  Here, + means the chosen bit must
 be 1 (ON) whereas - means it must be 0 (OFF).  All bit tests given must be passed.  By default, MGD77+
 files that have the special \fBflag\fP column present will use those flags; append : with no trailing information
 to turn this behavior off.
@@ -203,7 +204,7 @@ one procedure for a data column by summing their numerical \fIcode\fPs
 (1, 2, 4, and 8). E.g., \fB\-Ac\fP3 will first try method \fB\-Ac\fP1 to
 estimate a Carter correction but if \fBdepth\fP is NaN we will next try
 \fB\-Ac\fP2 which only uses \fBtwt\fP.  In all cases, if any of the values
-required by the adjustment procedure is NaN then the result will be NaN.
+required by an adjustment procedure is NaN then the result will be NaN.
 .TP
 .B \-Ac
 Determines how the \fBcarter\fP correction term is calculated.  Below, 
@@ -243,15 +244,15 @@ returns calculated uncorrected depth U(\fBtwt\fP, \fIv\fP).
 returns calculated corrected depth C(\fBtwt\fP).
 .TP
 .B \-Af
-Determines how the \fBfaa\fP column output is obtained. If \fBngrav\fP is
-required(i.e., the International Gravity reference Field (IGF), or "normal gravity")
+Determines how the \fBfaa\fP column output is obtained. If \fBngrav\fP (i.e., the International
+Gravity reference Field (IGF), or "normal gravity") is required
 it is selected based on the MGD77 header parameter "Theoretical Gravity Formula Code";
-if not present or invalid we default to 4.  Alternatively, append the preferred \fIfield\fP
-1\-4 to select 1 (Heiskanen 1924), 2 (IGF 1930), 3 (IGF 1967) or 4 (IGF 1980).  Select from
+if this code is not present or is invalid we default to 4.  Alternatively, append the preferred \fIfield\fP
+(1\-4) to select 1 (Heiskanen 1924), 2 (IGF 1930), 3 (IGF 1967) or 4 (IGF 1980).  Select from
 .br
 \fB\-Af1\fP[,\fIfield\fP]
 returns \fBfaa\fP as stored in the data set [Default]. Optionally, sets the IGF \fIfield\fP
-used if you also have requested \fBngrav\fP in \fB\-F\fP.
+to use if you also have requested \fBngrav\fP as an output column in \fB\-F\fP.
 .br
 \fB\-Af2\fP[,\fIfield\fP]
 returns the difference between \fBgobs\fP and \fBngrav\fP (with optional \fIfield\fP directive).
@@ -307,8 +308,8 @@ Issue a multi-segment header record with cruise ID for each cruise.
 .TP
 .B \-N
 Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
-\fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles and miles/hr), or
-\fBn\fP (nautical miles and knots).  [Default is \fB\-Ndk \-Nse\fP (km and m/s)].
+\fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles or miles/hr), or
+\fBn\fP (nautical miles or knots).  [Default is \fB\-Ndk \-Nse\fP (km and m/s)].
 .TP
 .B \-P
 Append a 2-character institution code.  Only files from this institution will be processed.
@@ -328,7 +329,7 @@ The following is the list of NGDC institution codes:
 .TP
 .B \-Sa
 Do not list data that are less than \fIstartdist\fP meter along track from port of departure.
-Append \fBk\fP for km, \fBm\fP for miles, or \fBn\fP for nautical miles [Default is 0 meters]
+Append \fBk\fP for km, \fBm\fP for miles, or \fBn\fP for nautical miles [Default is 0 meters].
 .TP
 .B \-Sb
 Do not list data that are more than \fIstopdist\fP meters along track from port of departure.
@@ -348,7 +349,7 @@ useful if the data are to be processed with the weighted averaging techniques of
 \fBblockmean\fP, \fBblockmedian\fP, and \fBblockmode\fP [1].
 .TP
 .B \-X
-Apply optimal corrections to columns where such corrections are avaiable.  Append the correction
+Apply optimal corrections to columns where such corrections are available.  Append the correction
 table to use [Default uses the correction table in the \fB$MGD77_HOME\fP directory].
 .TP
 .B \-Z
@@ -406,7 +407,7 @@ The IGRF calculations are based on a Fortran program written by Susan Macmillan,
 British Geological Survey, translated to C via f2c by Joaquim Luis, U Algarve, and adapted to
 GMT-style by Paul Wessel.
 .SH IGF
-The equations used are reproduced here using coefficients extracted from the source code (let us know if you find errors):
+The equations used are reproduced here using coefficients extracted directly from the source code (let us know if you find errors):
 .br
 (1) g = MGD77_IGF24_G0 * [1 + MGD77_IGF24_G1 * sin^2(lat) - MGD77_IGF24_G2 * sin^2(2*lat) + MGD77_IGF24_G3 * cos^2(lat) * cos^2(lon-18)]
 .br
