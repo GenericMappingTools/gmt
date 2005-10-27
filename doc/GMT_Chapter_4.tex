@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.66 2005-10-25 20:33:03 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.67 2005-10-27 03:37:22 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2005.
@@ -1127,10 +1127,10 @@ Using the RGB system\footnote{For CMYK the format obviously involves two extra c
 the format of the cpt-file is: 
 
 \begin{center}
-\begin{tabular}{lllllllll}
-z$_0$ &  R$_{min}$ &  G$_{min}$ &  B$_{min}$ &  z$_1$ & R$_{max}$ &  G$_{max}$ &  B$_{max}$ &  [{\bf A}] \\ 
-\ldots & & & & & & & & \\ 
-z$_{n-2}$ &  R$_{min}$ &  G$_{min}$ &  B$_{min}$ &  z$_{n-1}$ &  R$_{max}$ &  G$_{max}$ &  B$_{max}$ &  [{\bf A}] \\
+\begin{tabular}{llllllllll}
+z$_0$ &  R$_{min}$ &  G$_{min}$ &  B$_{min}$ &  z$_1$ & R$_{max}$ &  G$_{max}$ &  B$_{max}$ &  [{\bf A}] & [:{\it label}] \\ 
+\ldots & & & & & & & & & \\ 
+z$_{n-2}$ &  R$_{min}$ &  G$_{min}$ &  B$_{min}$ &  z$_{n-1}$ &  R$_{max}$ &  G$_{max}$ &  B$_{max}$ &  [{\bf A}] & [:{\it label}]\\
 \end{tabular} 
 \end{center}
 
@@ -1138,11 +1138,14 @@ Thus, for each ``{\it z}-slice'', defined as the interval between two boundaries
 (e.g., {\it z$_0$} to {\it z$_1$}), the color can be constant (by letting R$_{min}$
 = R$_{max}$, G$_{min}$ = G$_{max}$, and B$_{min}$ = B$_{max}$) or a continuous,
 linear function of {\it z}.  The optional flag {\bf A} is used to indicate annotation
-of the colorscale when plotted using \GMTprog{psscale}.  The optional {\bf A} may be {\bf L},
+of the colorscale when plotted using \GMTprog{psscale}.  The optional code {\bf A} may be {\bf L},
 {\bf U}, or {\bf B} to select annotation of the lower, upper, or both limits
 of the particular $z$-slice.  However, the standard \Opt{B} option can be used
-by \GMTprog{psscale} to affect annotation and ticking of colorscales.  The
-background color (for {\it z}-values $<$ {\it z$_0$}), foreground color
+by \GMTprog{psscale} to affect annotation and ticking of colorscales.  The optional
+colon followed by a text label will make \GMTprog{psscale}, when used with the \Opt{L} option,
+place the supplied label instead of formatted {\it z}-values.
+
+The background color (for {\it z}-values $<$ {\it z$_0$}), foreground color
 (for {\it z}-values $>$ {\it z$_{n-1}$}), and not-a-number (NaN) color (for
 {\it z}-values = NaN) are all defined in the \filename{.gmtdefaults4}
 file, but can be overridden by the statements
