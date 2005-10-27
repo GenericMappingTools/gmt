@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.193 2005-10-26 21:18:30 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.194 2005-10-27 01:17:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1069,14 +1069,23 @@ void GMT_read_cpt (char *cpt_file)
 
 		/* Here we have regular z-slices.  Allowable formats are
 		 *
-		 * z0 - z1 - [LUB]
-		 * z0 pattern z1 - [LUB]
-		 * z0 r0 z1 r1 [LUB]
-		 * z0 r0 g0 b0 z1 r1 g1 b1 [LUB]
-		 * z0 h0 s0 v0 z1 h1 s1 v1 [LUB]
-		 * z0 c0 m0 y0 k0 z1 c1 m1 y1 k1 [LUB]
+		 * z0 - z1 - [LUB] :<label>
+		 * z0 pattern z1 - [LUB] :<label>
+		 * z0 r0 z1 r1 [LUB] :<label>
+		 * z0 r0 g0 b0 z1 r1 g1 b1 [LUB] :<label>
+		 * z0 h0 s0 v0 z1 h1 s1 v1 [LUB] :<label>
+		 * z0 c0 m0 y0 k0 z1 c1 m1 y1 k1 [LUB] :<label>
 		 */
 
+		/* First determine if a label is given */
+		
+		if ((i = (int)strchr (line, ':'))) {	/* OK, find the label and chop it off */
+			i -= (int)line;	/* Position of the column */
+			GMT_lut[n].label = (char *)GMT_memory (VNULL, strlen (line) - i, sizeof (char), GMT_program);
+			strcpy (GMT_lut[n].label, &line[i+1]);
+			line[i] = '\0';	/* Chop it off */
+		}
+		
 		/* Determine if psscale need to label these steps by examining for the optional L|U|B character at the end */
 
 		c = line[strlen(line)-2]; 
