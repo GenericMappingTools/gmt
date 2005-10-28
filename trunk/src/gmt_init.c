@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.198 2005-10-24 22:23:56 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.199 2005-10-28 17:25:45 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2516,8 +2516,8 @@ int GMT_get_ellipsoid (char *name)
 			}
 			/* else check consistency: */
 			else if (gmtdefs.ref_ellipsoid[i].pol_radius > 0.0 && fabs(gmtdefs.ref_ellipsoid[i].flattening - 1.0 + (gmtdefs.ref_ellipsoid[i].pol_radius/gmtdefs.ref_ellipsoid[i].eq_radius)) > 1.0e-11) {
-				fprintf (stderr, "GMT: Possible inconsistency in user ellipsoid parameters (%s)\n", line);
-				exit (EXIT_FAILURE);
+				fprintf (stderr, "GMT Warning: Possible inconsistency in user ellipsoid parameters (%s)\n", line);
+				/* exit (EXIT_FAILURE); */
 			}
 		}
 	}
