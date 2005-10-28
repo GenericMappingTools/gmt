@@ -73,6 +73,9 @@ Force a monochrome graybar using the (television) YIQ transformation.
 Effective dots-per-inch for the rectangular image making up the color scale [300].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
+.TP
+.B \-S
+Do not separate different colour intervals with black lines.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
