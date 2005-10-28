@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.194 2005-10-27 01:17:20 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.195 2005-10-28 17:23:04 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7120,8 +7120,8 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 		switch (project_info.xyz_projection[axis]) {
 			case POW:
 				if (as_is) {
-					sprintf (text_l, format, fabs (val0));
-					sprintf (text_u, format, fabs (val1));
+					sprintf (text_l, format, val0);
+					sprintf (text_u, format, val1);
 				}
 				else {
 					sprintf (text_l, "%d", (int)floor (val0));
@@ -7137,8 +7137,8 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 				}
 				else {
 					if (as_is) {
-						sprintf (text_l, format, fabs (val0));
-						sprintf (text_u, format, fabs (val1));
+						sprintf (text_l, format, val0);
+						sprintf (text_u, format, val1);
 					}
 					else if (A->type == 1) {
 						sprintf (text_l, "%d", (int)floor (v0));
@@ -7152,12 +7152,12 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 				break;
 			case LINEAR:
 				if (as_is) {
-					sprintf (text_l, format, fabs (val0));
-					sprintf (text_u, format, fabs (val1));
+					sprintf (text_l, format, val0);
+					sprintf (text_u, format, val1);
 				}
 				else {
-					sprintf (text_l, "%d", (int)floor (fabs (val0)));
-					sprintf (text_u, "%d", (int)ceil (fabs (val1)));
+					sprintf (text_l, "%d", (int)floor (val0));
+					sprintf (text_u, "%d", (int)ceil (val1));
 				}
 				break;
 			case TIME:
@@ -7169,7 +7169,7 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 
 		/* Find offset based on no of digits before and after a period, if any */
 
-		off = ((MAX ((int)strlen (text_l), (int)strlen (text_u)) + ndec) * 0.49 + ((ndec > 0) ? 0.3 : 0.0) + ((val0 < 0.0) ? 0.3 : 0.0))
+		off = ((MAX ((int)strlen (text_l), (int)strlen (text_u)) + ndec) * GMT_DEC_SIZE + ((ndec > 0) ? GMT_PER_SIZE : 0.0))
 			* gmtdefs.annot_font_size[0] * GMT_u2u[GMT_PT][GMT_INCH];
 
 		tmp_offset = GMT_get_annot_offset (&flip, 0);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.108 2005-10-25 03:33:36 remko Exp $
+ *	$Id: gmt.h,v 1.109 2005-10-28 17:23:04 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -155,6 +155,9 @@
 #define GMT_MIN2HR	(1.0 / GMT_HR2MIN_F)
 #define GMT_CLIP_ON	1024
 #define GMT_CLIP_OFF	2048
+
+#define GMT_DEC_SIZE	0.54	/* Size of a decimal number compared to point size */
+#define GMT_PER_SIZE	0.30	/* Size of a decimal point compared to point size */
 
 /*--------------------------------------------------------------------
  *			GMT FUNCTION MACRO DEFINITIONS
