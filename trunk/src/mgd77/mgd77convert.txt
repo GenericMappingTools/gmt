@@ -65,7 +65,7 @@ operate on. (3) The plain ASCII tab-separated dump is available for users who ne
 manually edit the content of a MGD77 file.  This is usually easier to do when the columns
 are tab-separated than when they are all crunched together in the MGD77 punch-card format.
 .SH OTHER TOOLS
-The MGD77+ netCDF files are COARDS compliant and can be examined with general-purpose
+The MGD77+ netCDF files are CF-1.0 and COARDS compliant and can be examined with general-purpose
 tools such as ncBrowse and ncView.
 .SH "SEE ALSO"
 .IR mgd77manage (GMTMANSECTION),

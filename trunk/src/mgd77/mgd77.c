@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.89 2005-11-05 01:18:07 pwessel Exp $
+ *	$Id: mgd77.c,v 1.90 2005-11-05 01:23:24 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -27,7 +27,7 @@
 #define STAT stat
 #endif
 
-#define MGD77_CDF_CONVENTION	"COARDS"	/* MGD77+ files are COARDS-compliant */
+#define MGD77_CDF_CONVENTION	"CF-1.0"	/* MGD77+ files are CF-1.0 and hence COARDS-compliant */
 
 /* PRIVATE FUNCTIONS TO MGD77.C */
 
