@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.90 2005-11-05 01:23:24 pwessel Exp $
+ *	$Id: mgd77.c,v 1.91 2005-11-05 01:42:27 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2307,8 +2307,9 @@ void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 	 */
 	 
 	int id, t_id, set, t_set = MGD77_NOT_SET, entry;
+	BOOLEAN crossed_dateline = FALSE, crossed_greenwich = FALSE;
 	char *text;
-	double *values;
+	double *values, dx;
 	
 	entry = MGD77_Info_from_Abbrev ("time", &S->H, &t_set, &t_id);
 	if (entry != MGD77_NOT_SET) {	/* Supposedly has time, but we we'll check again */
@@ -2325,6 +2326,37 @@ void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 	else
 		S->H.no_time = TRUE;	/* Some cruises do not have time */
 	
+	entry = MGD77_Info_from_Abbrev ("lon", &S->H, &t_set, &t_id);
+	if (entry == MGD77_NOT_SET) {	/* Not good */
+		fprintf (stderr, "%s: Longitude not present!\n", GMT_program);
+		exit (EXIT_FAILURE);
+	}
+	
+	/* Determine if there is a longitude jump and if so shift longitudes to avoid it.
+	   This is done to be in compliance with COARDS which says there should be no jump in longitude.
+	 */
+
+	values = (double *)S->values[entry];
+	for (i = 1; i < S->H.n_records; i++) {	/* Look at pairs of longitudes for jumps */
+		dx = values[i] - values[i-1];
+		if (fabs (dx) > 180.0) {	/* Crossed Greenwich or Dateline, depending on range */
+			if (MIN (values[i], values[i-1]) < 0.0) /* Crossed Dateline with lons in -180 and +180 format */
+				crossed_dateline = TRUE;
+			else
+				crossed_greenwich = TRUE;
+		}
+	}
+	if (crossed_dateline && crossed_greenwich)
+		fprintf (stderr, "%s: Warning: Longitude crossing both Dateline and Greenwich; not adjusted!\n", GMT_program);
+	else if (crossed_dateline) {	/* Cruise is crossing Dateline; switch to 0-360 format for COARDS compliancy */
+		fprintf (stderr, "%s: Warning: Longitude crossing Dateline; adjusted to 0-360\n", GMT_program);
+		for (i = 0; i < S->H.n_records; i++) if (values[i] < 0.0) values[i] += 360.0;
+	}
+	else if (crossed_greenwich) {	/* Cruise is crossing Greenwich; switch to -180/+180 format for COARDS compliancy */
+		fprintf (stderr, "%s: Warning: Longitude crossing Greenwich; adjusted to -180/+180\n", GMT_program);
+		for (i = 0; i < S->H.n_records; i++) if (values[i] > 180.0) values[i] -= 360.0;
+	}
+
 	for (set = entry = 0; set < MGD77_N_SETS; set++) {	/* For both sets */
 		for (id = 0; id < MGD77_SET_COLS; id++) {
 			if (!S->H.info[set].col[id].present) continue;	/* No such field, move on */
