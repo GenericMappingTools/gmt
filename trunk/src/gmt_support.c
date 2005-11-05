@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.195 2005-10-28 17:23:04 remko Exp $
+ *	$Id: gmt_support.c,v 1.196 2005-11-05 00:49:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5731,7 +5731,11 @@ void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct G
 		(void) fprintf (stderr, "%s: GMT WARNING: s reset to %g\n", GMT_program, *s);
 	}
 	i = header->ny - 1;
-	while (*n < (val = header->y_min + (i + half_or_zero) * header->y_inc) && i > 0) i--;
+	val = header->y_max - half_or_zero * header->y_inc;
+	while (*n < val && i > 0) {
+		val -= header->y_inc;
+		i--;
+	}
 	if (header->node_offset) val += 0.5 * header->y_inc;
 	if (fabs (*n - val) > SMALL) {
 		*n = val;
