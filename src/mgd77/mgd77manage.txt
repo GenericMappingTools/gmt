@@ -155,7 +155,7 @@ The mgd77 supplement is an attempt to (1) improve on the limited functionality o
 existing mgg supplement, (2) incorporate some of the ideas from Scripps' gmt+ supplement
 by allowing extra data columns, and
 (3) add new capabilities for managing marine geophysical trackline data stored in an
-architecture-independent COARDS-compliant netCDF file format.  Here are some of the
+architecture-independent CF-1.0- and COARDS-compliant netCDF file format.  Here are some of the
 underlying ideas and steps you need to take to maintain your files.
 .br
 .sp
