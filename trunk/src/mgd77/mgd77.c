@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.91 2005-11-05 01:42:27 pwessel Exp $
+ *	$Id: mgd77.c,v 1.92 2005-11-05 01:42:58 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2306,7 +2306,7 @@ void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 	 * 
 	 */
 	 
-	int id, t_id, set, t_set = MGD77_NOT_SET, entry;
+	int i, id, t_id, set, t_set = MGD77_NOT_SET, entry;
 	BOOLEAN crossed_dateline = FALSE, crossed_greenwich = FALSE;
 	char *text;
 	double *values, dx;
