@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.88 2005-10-23 22:21:39 pwessel Exp $
+ *	$Id: mgd77.c,v 1.89 2005-11-05 01:18:07 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -115,11 +115,11 @@ struct MGD77_cdf mgd77cdf[MGD77_N_DATA_EXTENDED] = {
 	{ NC_INT,	1,	1.0e-1,	0.0, "meter", "Corrected for sound velocity variations (if known)" },
 	{ NC_BYTE,	1,	1.0,	0.0, "", "01-55 (= Matthew's zone), 59 (Matthew's zone unknown), 60 (Kuwahara), 61 (Wilson), 62 (Del Grosso) 63 (Carter), 88 (Other; see header), 98 (Unknown), or 99 (Unspecified)" },
 	{ NC_BYTE,	1,	1.0,	0.0, "", "Observed (1), Interpolated (3), or Unspecified (9)" },
-	{ NC_INT,	1,	1.0e-1,	0.0, "nTesla", "Leading sensor" },
-	{ NC_INT,	1,	1.0e-1,	0.0, "nTesla", "Trailing sensor" },
-	{ NC_SHORT,	1,	1.0e-1,	0.0, "nTesla", "Corrected for reference field (see header)" },
+	{ NC_INT,	1,	1.0e-1,	0.0, "gamma", "Leading sensor" },
+	{ NC_INT,	1,	1.0e-1,	0.0, "gamma", "Trailing sensor" },
+	{ NC_SHORT,	1,	1.0e-1,	0.0, "gamma", "Corrected for reference field (see header)" },
 	{ NC_BYTE,	1,	1.0,	0.0, "", "Magnetic sensor used: 1, 2, or Unspecified (9)" },
-	{ NC_SHORT,	1,	1.0e-1,	0.0, "nTesla", "Already applied to data" },
+	{ NC_SHORT,	1,	1.0e-1,	0.0, "gamma", "Already applied to data" },
 	{ NC_SHORT,	1,	1.0,	0.0, "meter", "Positive below sealevel" },
 	{ NC_INT,	1,	1.0e-1,	0.0, "mGal", "Corrected for Eotvos, drift, and tares" },
 	{ NC_SHORT,	1,	1.0e-1,	0.0, "mGal", "7.5 V cos (lat) sin (azim) + 0.0042 V*V" },
