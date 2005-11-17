@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.197 2005-11-05 00:54:43 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.198 2005-11-17 04:33:05 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -983,6 +983,7 @@ void GMT_read_cpt (char *cpt_file)
 	/* Opens and reads a color palette file in RGB, HSV, or CMYK of arbitrary length */
 
 	int n = 0, i, nread, annot, n_alloc = GMT_SMALL_CHUNK, color_model, id;
+	long k;
 	double dz;
 	BOOLEAN gap, error = FALSE;
 	char T0[GMT_TEXT_LEN], T1[GMT_TEXT_LEN], T2[GMT_TEXT_LEN], T3[GMT_TEXT_LEN], T4[GMT_TEXT_LEN];
@@ -1079,11 +1080,11 @@ void GMT_read_cpt (char *cpt_file)
 
 		/* First determine if a label is given */
 		
-		if ((i = (int)strchr (line, ':'))) {	/* OK, find the label and chop it off */
-			i -= (int)line;	/* Position of the column */
-			GMT_lut[n].label = (char *)GMT_memory (VNULL, strlen (line) - i, sizeof (char), GMT_program);
-			strcpy (GMT_lut[n].label, &line[i+1]);
-			line[i] = '\0';	/* Chop it off */
+		if ((k = (long)strchr (line, ':'))) {	/* OK, find the label and chop it off */
+			k -= (long)line;	/* Position of the column */
+			GMT_lut[n].label = (char *)GMT_memory (VNULL, strlen (line) - k, sizeof (char), GMT_program);
+			strcpy (GMT_lut[n].label, &line[k+1]);
+			line[k] = '\0';	/* Chop it off */
 		}
 		
 		/* Determine if psscale need to label these steps by examining for the optional L|U|B character at the end */
@@ -1209,14 +1210,15 @@ void GMT_read_cpt (char *cpt_file)
 	gmtdefs.color_model = color_model;	/* Reset to what it was before */
 }
 
-void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, int log_mode, BOOLEAN no_BFN)
+void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, int log_mode, int cpt_flag)
 {
 	/* Resamples the current cpt table based on new z-array.
 	 * Old cpt is normalized to 0-1 range and scaled to fit new z range.
 	 * New cpt may be continuous and/or reversed.
-	 * We write the new cpt table to stdout */
+	 * We write the new cpt table to stdout.
+	 * cpt_flag: bitflags, with 1 meaning do not write out BFN, and 2 meaning use low/high rgb as BF */
 
-	int i, j, k, upper, lower, rgb_low[3], rgb_high[3];
+	int i, j, k, upper, lower, rgb_low[3], rgb_high[3], rgb_fore[3], rgb_back[3];
 	BOOLEAN even = FALSE;	/* TRUE when nz is passed as negative */
 	double *x, *z_out, a, b, h1, h2, v1, v2, s1, s2, f, x_inc, cmyk_low[4], cmyk_high[4];
 	char format[BUFSIZ], code[3] = {'B', 'F', 'N'};
@@ -1331,6 +1333,10 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 			for (k = 0; k < 3; k++) rgb_low[k] = rgb_high[k] = lut[j].rgb_low[k] + irint ((lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (a - lut[j].z_low));
 		}
 
+		if (lower == 0) memcpy ((void *)rgb_back, (void *)rgb_low, (size_t)(3 * sizeof (int)));
+		if (upper == (nz-1)) memcpy ((void *)rgb_fore, (void *)rgb_high, (size_t)(3 * sizeof (int)));
+
+			
 		if (gmtdefs.color_model == GMT_HSV) {
 			GMT_rgb_to_hsv(rgb_low, &h1, &s1, &v1);
 			GMT_rgb_to_hsv(rgb_high, &h2, &s2, &v2);
@@ -1352,8 +1358,13 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 
 	/* Background, foreground, and nan colors */
 
-	if (no_BFN) return;
+	if (cpt_flag & 1) return;	/* Do not want to write BFN to the cpt file */
 
+	if (cpt_flag & 2) {	/* Use low and high colors as back and foreground */
+		memcpy ((void *)GMT_bfn[GMT_BGD].rgb, (void *)rgb_back, (size_t)(3 * sizeof (int)));
+		memcpy ((void *)GMT_bfn[GMT_FGD].rgb, (void *)rgb_fore, (size_t)(3 * sizeof (int)));
+	}
+	
 	if (reverse) {	/* Flip foreground and background colors */
 		memcpy ((void *)rgb_low, (void *)GMT_bfn[GMT_BGD].rgb, (size_t)(3 * sizeof (int)));
 		memcpy ((void *)GMT_bfn[GMT_BGD].rgb, (void *)GMT_bfn[GMT_FGD].rgb, (size_t)(3 * sizeof (int)));
