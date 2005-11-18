@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.51 2005-11-10 21:49:28 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.52 2005-11-18 22:30:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -230,6 +230,7 @@ struct GMT_MEDIA *GMT_user_media = (struct GMT_MEDIA *)NULL;
 int GMT_n_user_media = 0;
 
 char *GMTHOME = CNULL;
+char *GMT_CPTDIR = CNULL;
 char *GMT_DATADIR = CNULL;
 char *GMT_GRIDDIR = CNULL;
 char *GMT_IMGDIR = CNULL;

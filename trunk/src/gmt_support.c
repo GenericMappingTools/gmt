@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.198 2005-11-17 04:33:05 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.199 2005-11-18 22:30:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -976,6 +976,47 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 			if (gmtdefs.verbose) fprintf (stderr, "%s: Given domain implies y_inc = %lg\n", GMT_program, h->y_inc);
 		}
 	}
+}
+
+int GMT_set_cpt_path (char *CPT_file, char *table)
+{
+	int ok;
+
+	/* First try current directory */
+
+	if (table) {
+		if (strstr (table, ".cpt"))
+			strcpy (CPT_file, table);
+		else
+			sprintf (CPT_file, "%s.cpt", table);
+
+		ok = !access (CPT_file, R_OK);
+		if (ok && gmtdefs.verbose) fprintf (stderr, "%s: Reading %s in current directory\n", GMT_program, CPT_file);
+	}
+
+	if (!ok && GMT_CPTDIR) {	/* No table in current dir, try $GMT_CPTDIR if set */
+		if (strstr (table, ".cpt"))
+			sprintf (CPT_file, "%s%cGMT_%s", GMT_CPTDIR, DIR_DELIM, table);
+		else
+			sprintf (CPT_file, "%s%cGMT_%s.cpt", GMT_CPTDIR, DIR_DELIM, table);
+
+		ok = !access (CPT_file, R_OK);
+		if (ok && gmtdefs.verbose) fprintf (stderr, "%s: Reading %s in %s\n", GMT_program, CPT_file, GMT_CPTDIR);
+	}
+
+	if (!ok) {	/* No table in current dir, try /share */
+		if (table)
+			sprintf (CPT_file, "%s%cshare%ccpt%cGMT_%s.cpt", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, table);
+		else	/* Default to rainbow colors */
+			sprintf (CPT_file, "%s%cshare%ccpt%cGMT_rainbow.cpt", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+
+		ok = !access (CPT_file, R_OK);
+		if (!ok)
+			fprintf (stderr, "%s: ERROR: Cannot find colortable %s\n", GMT_program, CPT_file);
+		else if (gmtdefs.verbose)
+			fprintf (stderr, "%s: Reading %s\n", GMT_program, CPT_file);
+	}
+	return (!ok);
 }
 
 void GMT_read_cpt (char *cpt_file)

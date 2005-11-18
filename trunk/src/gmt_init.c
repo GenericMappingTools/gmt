@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.199 2005-10-28 17:25:45 remko Exp $
+ *	$Id: gmt_init.c,v 1.200 2005-11-18 22:30:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2945,6 +2945,10 @@ void GMT_set_home (void)
 	else {	/* Use user's default path */
 		GMTHOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
 		strcpy (GMTHOME, this);
+	}
+	if ((this = getenv ("GMT_CPTDIR")) != CNULL) {	/* GMT_CPTDIR was set */
+		GMT_CPTDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
+		strcpy (GMT_CPTDIR, this);
 	}
 	if ((this = getenv ("GMT_DATADIR")) != CNULL) {	/* GMT_DATADIR was set */
 		GMT_DATADIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
