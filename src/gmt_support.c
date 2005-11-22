@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.200 2005-11-20 06:22:53 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.201 2005-11-22 15:00:39 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -980,7 +980,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 
 int GMT_set_cpt_path (char *CPT_file, char *table)
 {
-	int ok;
+	int ok = FALSE;
 
 	/* First try current directory */
 
