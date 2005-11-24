@@ -121,7 +121,7 @@ to standard output, or optionally to the file \fIscript\fP.
 To add an example of a legend to a Mercator plot (map.ps) with the given specifications, use
 .br
 .sp
-\fBpslegend\fP \fB\-R \-JM \-O \-G\fP255 << EOF >> map.ps
+\fBpslegend\fP \fB\-R-10/10/-10/10 \-JM4i \-G\fP255 \-D0/0/4i/3i/BL << EOF >> map.ps
 .br
 \# Legend test for pslegend
 .br
@@ -145,11 +145,11 @@ V 0 1p
 .br
 S 0.1i c 0.15i p300/12 0.25p 0.3i This circle is hachured
 .br
-S 0.1i t 0.15i 255/255/0 0.25p 0.3i This triangle is yellow
+S 0.1i t 0.15i yellow 0.25p 0.3i This triangle is yellow
 .br
-S 0.1i h 0.15i 0/255/0 0.25p 0.3i This hexagon is green
+S 0.1i h 0.15i green 0.25p 0.3i This hexagon is green
 .br
-S 0.1i d 0.15i 0/0/255 0.25p 0.3i This diamond is blue
+S 0.1i d 0.15i blue 0.25p 0.3i This diamond is blue
 .br
 S 0.1i - 0.15i - 0.25tap 0.3i A contour
 .br
@@ -157,13 +157,13 @@ V 0 1p
 .br
 D 0.2i 1p
 .br
-M 5 5 500:km:u f
+N 1
 .br
 I SOEST_logo.ras 3 CT
 .br
 L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
 .br
-G 0.15i
+G 0.5i
 .br
 >
 .br
@@ -172,6 +172,12 @@ T Let us just try some simple text that can go on a few lines.
 T There is no easy way to predetermine how many lines will be required,
 .br
 T so we may need to adjust the box height to get the right size.
+.br
+G -0.3i
+.br
+M 5 5 1000:km:l f
+.br
+EOF
 .br
 .SH "SEE ALSO"
 .IR gmt (GMTMANSECTION),
