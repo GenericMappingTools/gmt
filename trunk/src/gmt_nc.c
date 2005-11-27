@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.31 2005-10-01 18:14:08 remko Exp $
+ *	$Id: gmt_nc.c,v 1.32 2005-11-27 23:04:10 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -83,7 +83,7 @@ int GMT_nc_write_grd_info (struct GRD_HEADER *header)
 
 int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 {
-	int i, j;
+	int i;
 	double dummy[2];
 	char text[GRD_COMMAND_LEN+GRD_REMARK_LEN];
 	nc_type z_type;
@@ -138,33 +138,20 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 			exit (EXIT_FAILURE);
 		}
 
-		/* Get the data type and the two dimensions */
+		/* Get the data type and the two (or three) dimensions */
 		check_nc_status (nc_inq_vartype (ncid, z_id, &z_type));
 		check_nc_status (nc_inq_vardimid (ncid, z_id, dims));
 		x_dim = dims[ndims-1], y_dim = dims[ndims-2], t_dim = y_dim;
 		if (ndims == 3) t_dim = dims[0];
 		header->type = ((z_type == NC_BYTE) ? 2 : z_type) + 13;
 
-		/* Get the ids of the x and y variables */
-		i = 0;
-		while (i < nvars && (x_id < 0 || y_id < 0 || t_id < 0)) {
-			check_nc_status (nc_inq_varndims (ncid, i, &j));
-			if (j == 1) {
-				check_nc_status (nc_inq_vardimid (ncid, i, dims));
-				if (dims[0] == x_dim) x_id = i;
-				if (dims[0] == y_dim) y_id = i;
-				if (dims[0] == t_dim) t_id = i;
-				i++;
-			}
-		}
-		if (x_id < 0 || y_id < 0 || t_id < 0) {
-			fprintf (stderr, "%s: Could not find variables associated with dimensions [%s]\n", GMT_program, header->name);
-			exit (EXIT_FAILURE);
-		}
-
-		check_nc_status (nc_inq_dimlen (ncid, x_dim, &lens[0]));
-		check_nc_status (nc_inq_dimlen (ncid, y_dim, &lens[1]));
-		check_nc_status (nc_inq_dimlen (ncid, t_dim, &lens[2]));
+		/* Get the ids of the x and y (and t) variables */
+		check_nc_status (nc_inq_dim (ncid, x_dim, text, &lens[0]));
+		if (nc_inq_varid (ncid, text, &x_id)) x_id = -1;
+		check_nc_status (nc_inq_dim (ncid, y_dim, text, &lens[1]));
+		if (nc_inq_varid (ncid, text, &y_id)) y_id = -1;
+		check_nc_status (nc_inq_dim (ncid, t_dim, text, &lens[2]));
+		if (nc_inq_varid (ncid, text, &t_id)) t_id = -1;
 		header->nx = (int) lens[0];
 		header->ny = (int) lens[1];
 	}
@@ -178,10 +165,41 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 
 	if (job == 'r') {
 		memset ((void *)header->x_units, 0, (size_t)GRD_UNIT_LEN);
-		memset ((void *)header->y_units, 0, (size_t)GRD_UNIT_LEN);
-		memset ((void *)header->z_units, 0, (size_t)GRD_UNIT_LEN);
 		if (nc_get_att_text (ncid, x_id, "units", header->x_units)) strcpy (header->x_units, "user_x_unit");
+		lens[0] = 0;
+		if (x_id < 0) {
+			dummy[0] = 0.0; dummy[1] = (double) header->nx-1;
+		}
+        	else if (nc_get_att_double (ncid, x_id, "actual_range", dummy)) {
+			lens[1] = header->nx-1;
+			check_nc_status (nc_get_var1_double (ncid, x_id, &lens[0], &dummy[0]));
+			check_nc_status (nc_get_var1_double (ncid, x_id, &lens[1], &dummy[1]));
+		}
+		header->x_min = dummy[0];
+		header->x_max = dummy[1];
+		header->x_inc = (header->x_max - header->x_min) / (header->nx + header->node_offset - 1);
+
+		memset ((void *)header->y_units, 0, (size_t)GRD_UNIT_LEN);
 		if (nc_get_att_text (ncid, y_id, "units", header->y_units)) strcpy (header->y_units, "user_y_unit");
+		if (y_id < 0) {
+			dummy[0] = 0.0; dummy[1] = (double) header->ny-1;
+			header->node_offset = 0;
+		}
+        	else if (nc_get_att_double (ncid, y_id, "actual_range", dummy)) {
+			lens[1] = header->ny-1;
+			check_nc_status (nc_get_var1_double (ncid, y_id, &lens[0], &dummy[0]));
+			check_nc_status (nc_get_var1_double (ncid, y_id, &lens[1], &dummy[1]));
+			header->node_offset = 0;
+		}
+		if (dummy[0] > dummy[1])
+			header->y_order = -1;
+		else
+			header->y_order = 1;
+		header->y_min = dummy[(1-header->y_order)/2];
+		header->y_max = dummy[(1+header->y_order)/2];
+		header->y_inc = (header->y_max - header->y_min) / (header->ny + header->node_offset - 1);
+
+		memset ((void *)header->z_units, 0, (size_t)GRD_UNIT_LEN);
 		if (nc_get_att_text (ncid, z_id, "units", header->z_units)) strcpy (header->z_units, "user_z_unit");
         	if (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor)) header->z_scale_factor = 1.0;
         	if (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset)) header->z_add_offset = 0.0;
@@ -195,30 +213,6 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		    nc_get_att_text (ncid, NC_GLOBAL, "history", text)) strcpy (text, "");
 		strncpy (header->command, text, GRD_COMMAND_LEN);
 		strncpy (header->remark, &text[GRD_COMMAND_LEN], GRD_REMARK_LEN);
-
-		lens[0] = 0;
-        	if (nc_get_att_double (ncid, x_id, "actual_range", dummy)) {
-			lens[1] = header->nx-1;
-			check_nc_status (nc_get_var1_double (ncid, x_id, &lens[0], &dummy[0]));
-			check_nc_status (nc_get_var1_double (ncid, x_id, &lens[1], &dummy[1]));
-		}
-		header->x_min = dummy[0];
-		header->x_max = dummy[1];
-		header->x_inc = (header->x_max - header->x_min) / (header->nx + header->node_offset - 1);
-
-        	if (nc_get_att_double (ncid, y_id, "actual_range", dummy)) {
-			lens[1] = header->ny-1;
-			check_nc_status (nc_get_var1_double (ncid, y_id, &lens[0], &dummy[0]));
-			check_nc_status (nc_get_var1_double (ncid, y_id, &lens[1], &dummy[1]));
-			header->node_offset = 0;
-		}
-		if (dummy[0] > dummy[1])
-			header->y_order = -1;
-		else
-			header->y_order = 1;
-		header->y_min = dummy[(1-header->y_order)/2];
-		header->y_max = dummy[(1+header->y_order)/2];
-		header->y_inc = (header->y_max - header->y_min) / (header->ny + header->node_offset - 1);
 
         	if (nc_get_att_double (ncid, z_id, "actual_range", dummy) &&
 		    nc_get_att_double (ncid, z_id, "valid_range", dummy)) {
