@@ -2,15 +2,16 @@
 .SH NAME
 grd2xyz \- Converting grdfile(s) to ASCII or binary data
 .SH SYNOPSIS
-\fBgrd2xyz\fP \fIgrdfile(s)\fP [ \fB\-E\fP[\fInodata\fP] ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-S\fP[\fBr\fP ] [ \fB\-V\fP ] [ \fB\-W\fP[\fIweight\fP] ] [ \fB\-Z\fP[\fIflags\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBgrd2xyz\fP \fIgrdfiles\fP [ \fB\-E\fP[\fInodata\fP] ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
+[ \fB\-S\fP[\fBr\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP[\fIweight\fP] ] [ \fB\-Z\fP[\fIflags\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fIcolinfo\fP ]
 .SH DESCRIPTION
-\fBgrd2xyz\fP reads one or more binary 2-D grdfile and writes out xyz-triplets in ASCII [or binary] format to standard output.
-Modify the precision of the ASCII output format by editing the D_FORMAT parameter in your \.gmtdefaults4 file, or
+\fBgrd2xyz\fP reads one or more binary 2-D grdfiles and writes out xyz-triplets in ASCII [or binary] format to standard output.
+Modify the precision of the ASCII output format by editing the D_FORMAT parameter in your \.gmtdefaults4 file or
+use \fB--D_FORMAT=\fP\fIformat\fP on the command line, or
 choose binary output using single or double precision storage.  As an option you may output
 z-values without the (x,y) in a number of formats, see \fB\-E\fP or \fB\-Z\fP below.
 .TP
-\fIgrdfile\fP
+\fIgrdfiles\fP
 Names of 2-D binary grd files to be converted.
 .SH OPTIONS
 .TP
