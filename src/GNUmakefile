@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.42 2005-11-28 22:13:18 remko Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.43 2005-12-09 20:03:58 remko Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -102,7 +102,7 @@ PROGS_C	= blockmean.c blockmedian.c blockmode.c filter1d.c fitcircle.c grdfilter
 	  gmtdefaults.c gmtmath.c gmtselect.c gmtset.c grd2cpt.c grd2xyz.c grdblend.c grdcut.c \
 	  grdclip.c grdedit.c grdfft.c grdgradient.c grdhisteq.c grdinfo.c grdlandmask.c grdmask.c \
 	  grdtrack.c grdreformat.c grdmath.c grdpaste.c grdproject.c grdsample.c grdtrend.c grdvolume.c \
-	  makecpt.c mapproject.c minmax.c nc2xy.c nearneighbor.c project.c sample1d.c spectrum1d.c splitxyz.c \
+	  makecpt.c mapproject.c minmax.c nearneighbor.c project.c sample1d.c spectrum1d.c splitxyz.c \
 	  surface.c trend1d.c trend2d.c triangulate.c xyz2grd.c
 
 PROGSPS_C	= gmt2rgb.c grdcontour.c grdimage.c grdvector.c grdview.c psbasemap.c psclip.c \
