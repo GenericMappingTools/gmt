@@ -49,7 +49,7 @@ third column.  Additional fields are
 shifted over by one column (optional size would be 4th rather than 3rd field, etc.).
 If \fB\-S\fP is not set, \fBpsxy\fP expects the user to supply a multisegment line or polygon file
 (requires \fB\-M\fP) and will look for \fB\-Z\fP\fIval\fP strings in each multisegment header.  The \fIval\fP
-will control the color of the line or polygon (use \fB\-L\fP) via the cpt file.
+will control the color of either the line or polygon (if \fB\-L\fP is set) via the cpt file.
 .TP
 .B \-D
 Offset the plot symbol locations by the given amounts \fIdx/dy\fP [Default is no offset].  Only applies to symbols.
@@ -69,12 +69,14 @@ Select color for filling of symbols or select color or pattern for filling of po
 #include "explain_-G.txt"
 .br
 Note when \fB\-M\fP is chosen, \fBpsxy\fP will search for \fB\-G\fP and \fB\-W\fP
-strings in all the subheaders and let any found values over-ride the command line settings.
+strings in all the subheaders and let any values thus found over-ride the command line settings.
 #include "explain_-H.txt"
 #include "explain_-K.txt"
 .TP
 .B \-L
-Force closed polygons: connect the endpoints of the line-segment(s) and draw polygons.
+Force closed polygons: connect the endpoints of the line-segment(s) and draw polygons.  Also, in
+concert with \fB\-C\fP, \fB\-M\fP, and \fB\-Z\fP settings in the headers will use the implied
+color for polygon fill [Default is polygon pen color].
 .TP
 .B \-M
 Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP.
