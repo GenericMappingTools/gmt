@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.6 2005-02-15 21:15:18 pwessel Exp $
+#	$Id: Makefile,v 1.7 2005-12-09 18:18:28 remko Exp $
 #	makefile for misc directory
 #
 
@@ -12,7 +12,7 @@ CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 
 MISC_H		=
 
-MISC_C		= psmegaplot.c makepattern.c
+MISC_C		= psmegaplot.c makepattern.c nc2xy.c
 
 #-------------------------------------------------------------------------------
 #       object file dependencies
