@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.48 2005-10-01 18:14:08 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.49 2005-12-09 20:05:35 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -194,7 +194,6 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header)
 
 	/* Set default values */
 	header->z_scale_factor = GMT_d_NaN, header->z_add_offset = 0.0, header->nan_value = GMT_d_NaN;
-	header->t_value = GMT_d_NaN, header->t_index = -1;
 
 	while (header->name[i] && header->name[i] != '=') i++;
 
@@ -209,15 +208,6 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header)
 		sscanf (gmtdefs.grid_format, "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
 		id = grd_format_decoder (code);
 	}
-
-	/* If code contains T, read "time" value or "time" index*/
-	i = 0;
-	while (code[i] && code[i] != 'T') i++;
-	i++;
-	if (code[i] == 'i')
-		sscanf (&code[i+1], "%d", &header->t_index);
-	else if (code[i])
-		sscanf (&code[i], "%lf", &header->t_value);
 
 	return (id);
 }
