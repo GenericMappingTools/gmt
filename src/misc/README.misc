@@ -1,14 +1,19 @@
-	$Id: README.misc,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+	$Id: README.misc,v 1.2 2005-12-09 18:18:27 remko Exp $
 
 This directory contains some miscellaneous programs
 that may come in handy for some users.
 
 	makepattern - create Sun rasterfiles from patterns
 	psmageplot - blow up plots over several pages
+	nc2xy - convert 1-D netCDF files to ASCII
 
 makepattern can read the user's Sun 1-bit raster files or
 Sun icon files (of the type used for patterns in GMT3.0)
 and colorize it into an 8-bit Sun rasterfile that can be
 used for patterns in GMT 3.x (x > 1).
+
 psmegaplot takes a page-sized PS plot and magnifies it by
 tiling.
+
+nc2xy lists the contents of 1-D netCDF files as columns
+in ASCII format. Output is send to standard output.
