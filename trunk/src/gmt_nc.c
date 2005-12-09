@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.32 2005-11-27 23:04:10 remko Exp $
+ *	$Id: gmt_nc.c,v 1.33 2005-12-09 20:05:35 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -49,53 +49,110 @@ EXTERN_MSC int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job);
 char nc_file[BUFSIZ];
 void check_nc_status (int status);
 void nc_nopipe (char *file);
-int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job);
+int GMT_nc_grd_info (struct GRD_HEADER *header, char job);
 
 int GMT_nc_read_grd_info (struct GRD_HEADER *header)
 {
-	int ncid;
-	nc_nopipe (header->name);
-	check_nc_status (nc_open (header->name, NC_NOWRITE, &ncid));
-	GMT_nc_grd_info (ncid, header, 'r');
-	check_nc_status (nc_close (ncid));
+	GMT_nc_grd_info (header, 'r');
 	return (0);
 }
 
 int GMT_nc_update_grd_info (struct GRD_HEADER *header)
 {
-	int ncid;
-	nc_nopipe (header->name);
-	check_nc_status (nc_open (header->name, NC_WRITE, &ncid));
-	GMT_nc_grd_info (ncid, header, 'u');
-	check_nc_status (nc_close (ncid));
+	GMT_nc_grd_info (header, 'u');
 	return (0);
 }
 
 int GMT_nc_write_grd_info (struct GRD_HEADER *header)
 {
-	int ncid;
-	nc_nopipe (header->name);
-	check_nc_status (nc_create (header->name, NC_CLOBBER, &ncid));
-	GMT_nc_grd_info (ncid, header, 'w');
-	check_nc_status (nc_close (ncid));
+	GMT_nc_grd_info (header, 'w');
 	return (0);
 }
 
-int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
+int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 {
 	int i;
 	double dummy[2];
 	char text[GRD_COMMAND_LEN+GRD_REMARK_LEN];
 	nc_type z_type;
 	float *tmp = VNULL;
+	double t_value;
+
+	t_value = GMT_d_NaN, header->t_index = -1;
 
 	/* Dimension ids, variable ids, etc.. */
-	int x_dim, y_dim, t_dim, x_id = -1, y_id = -1, t_id = -1, z_id = -1, dims[3], nvars, ndims;
+	int ncid, x_dim, y_dim, t_dim, x_id = -1, y_id = -1, t_id = -1, z_id = -1, dims[3], nvars, ndims;
 	size_t lens[3];
 
-	/* Define and get dimensions and variables */
-		
-	if (job == 'w') {
+	/* If the file name contains a ?, extract the name of the variable following it */
+
+	i = 0;
+	text[0] = '\0';
+	while (header->name[i] && header->name[i] != '?') i++;
+	if (header->name[i]) {
+		strcpy (text, &header->name[i+1]);
+		header->name[i] = '\0';
+		i++;
+		while (header->name[i] && header->name[i] != '(' && header->name[i] != '[') i++;
+		if (header->name[i] == '(')
+			sscanf (&header->name[i+1], "%lf)", &t_value);
+		else if (header->name[i] == '[')
+			sscanf (&header->name[i+1], "%d]", &header->t_index);
+	}
+
+	/* Open NetCDF file */
+
+	nc_nopipe (header->name);
+	switch (job) {
+		case 'r':
+			check_nc_status (nc_open (header->name, NC_NOWRITE, &ncid)); break;
+		case 'u':
+			check_nc_status (nc_open (header->name, NC_WRITE, &ncid)); break;
+		default:
+			check_nc_status (nc_create (header->name, NC_CLOBBER, &ncid)); break;
+	}
+
+	/* Retrieve or define dimensions and variables */
+
+	if (job == 'r' || job == 'u') {
+		/* First see if this is an old NetCDF formatted file */
+		if (!nc_inq_dimid (ncid, "xysize", &i)) return (GMT_cdf_grd_info (ncid, header, job));
+
+		/* Find the id of named variable or the first 2- or 3-dimensional (z) variable */
+		if (nc_inq_varid (ncid, text, &z_id) == NC_NOERR)
+			check_nc_status (nc_inq_varndims (ncid, z_id, &ndims));
+		else {
+			check_nc_status (nc_inq_nvars (ncid, &nvars));
+			i = 0;
+			while (i < nvars && z_id < 0) {
+				check_nc_status (nc_inq_varndims (ncid, i, &ndims));
+				if (ndims == 2 || ndims == 3) z_id = i;
+				i++;
+			}
+		}
+		if (z_id < 0) {
+			fprintf (stderr, "%s: Could not find 2-dimensional variable [%s]\n", GMT_program, header->name);
+			exit (EXIT_FAILURE);
+		}
+
+		/* Get the data type and the two (or three) dimensions */
+		check_nc_status (nc_inq_vartype (ncid, z_id, &z_type));
+		check_nc_status (nc_inq_vardimid (ncid, z_id, dims));
+		x_dim = dims[ndims-1], y_dim = dims[ndims-2], t_dim = y_dim;
+		if (ndims == 3) t_dim = dims[0];
+		header->type = ((z_type == NC_BYTE) ? 2 : z_type) + 13;
+
+		/* Get the ids of the x and y (and t) variables */
+		check_nc_status (nc_inq_dim (ncid, x_dim, text, &lens[0]));
+		if (nc_inq_varid (ncid, text, &x_id)) x_id = -1;
+		check_nc_status (nc_inq_dim (ncid, y_dim, text, &lens[1]));
+		if (nc_inq_varid (ncid, text, &y_id)) y_id = -1;
+		check_nc_status (nc_inq_dim (ncid, t_dim, text, &lens[2]));
+		if (nc_inq_varid (ncid, text, &t_id)) t_id = -1;
+		header->nx = (int) lens[0];
+		header->ny = (int) lens[1];
+	}
+	else {
 		check_nc_status (nc_def_dim (ncid, "x", (size_t) header->nx, &x_dim));
 		check_nc_status (nc_def_dim (ncid, "y", (size_t) header->ny, &y_dim));
 
@@ -121,49 +178,31 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		dims[1]	= x_dim;
 		check_nc_status (nc_def_var (ncid, "z", z_type, 2, dims, &z_id));
 	}
-	else {
-		/* First see if this is an old NetCDF formatted file */
-		if (!nc_inq_dimid (ncid, "xysize", &i)) return (GMT_cdf_grd_info (ncid, header, job));
-
-		/* Find the id of the first 2- or 3-dimensional (z) variable */
-		check_nc_status (nc_inq_nvars (ncid, &nvars));
-		i = 0;
-		while (i < nvars && z_id < 0) {
-			check_nc_status (nc_inq_varndims (ncid, i, &ndims));
-			if (ndims == 2 || ndims == 3) z_id = i;
-			i++;
-		}
-		if (z_id < 0) {
-			fprintf (stderr, "%s: Could not find 2-dimensional variable [%s]\n", GMT_program, header->name);
-			exit (EXIT_FAILURE);
-		}
-
-		/* Get the data type and the two (or three) dimensions */
-		check_nc_status (nc_inq_vartype (ncid, z_id, &z_type));
-		check_nc_status (nc_inq_vardimid (ncid, z_id, dims));
-		x_dim = dims[ndims-1], y_dim = dims[ndims-2], t_dim = y_dim;
-		if (ndims == 3) t_dim = dims[0];
-		header->type = ((z_type == NC_BYTE) ? 2 : z_type) + 13;
-
-		/* Get the ids of the x and y (and t) variables */
-		check_nc_status (nc_inq_dim (ncid, x_dim, text, &lens[0]));
-		if (nc_inq_varid (ncid, text, &x_id)) x_id = -1;
-		check_nc_status (nc_inq_dim (ncid, y_dim, text, &lens[1]));
-		if (nc_inq_varid (ncid, text, &y_id)) y_id = -1;
-		check_nc_status (nc_inq_dim (ncid, t_dim, text, &lens[2]));
-		if (nc_inq_varid (ncid, text, &t_id)) t_id = -1;
-		header->nx = (int) lens[0];
-		header->ny = (int) lens[1];
-	}
 	header->z_id = z_id;
+	header->ncid = ncid;
 
-	/* Get or assign attributes */
+	/* Query or assign attributes */
 
 	memset ((void *)text, 0, (size_t)(GRD_COMMAND_LEN+GRD_REMARK_LEN));
 
 	if (job == 'u') check_nc_status (nc_redef (ncid));
 
 	if (job == 'r') {
+		memset ((void *)header->z_units, 0, (size_t)GRD_UNIT_LEN);
+		if (nc_get_att_text (ncid, z_id, "units", header->z_units)) strcpy (header->z_units, "user_z_unit");
+        	if (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor)) header->z_scale_factor = 1.0;
+        	if (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset)) header->z_add_offset = 0.0;
+        	if (nc_get_att_double (ncid, z_id, "_FillValue", &header->nan_value))
+		    nc_get_att_double (ncid, z_id, "missing_value", &header->nan_value);
+        	if (nc_get_att_int (ncid, NC_GLOBAL, "node_offset", &header->node_offset)) header->node_offset = 0;
+        	if (nc_get_att_text (ncid, NC_GLOBAL, "title", text) &&
+		    nc_get_att_text (ncid, z_id, "long_name", text)) strcpy (text, "");
+		strncpy (header->title, text, GRD_TITLE_LEN);
+        	if (nc_get_att_text (ncid, NC_GLOBAL, "source", text) &&
+		    nc_get_att_text (ncid, NC_GLOBAL, "history", text)) strcpy (text, "");
+		strncpy (header->command, text, GRD_COMMAND_LEN);
+		strncpy (header->remark, &text[GRD_COMMAND_LEN], GRD_REMARK_LEN);
+
 		memset ((void *)header->x_units, 0, (size_t)GRD_UNIT_LEN);
 		if (nc_get_att_text (ncid, x_id, "units", header->x_units)) strcpy (header->x_units, "user_x_unit");
 		lens[0] = 0;
@@ -178,6 +217,7 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		header->x_min = dummy[0];
 		header->x_max = dummy[1];
 		header->x_inc = (header->x_max - header->x_min) / (header->nx + header->node_offset - 1);
+		if (GMT_is_dnan(header->x_inc)) header->x_inc = 1.0;
 
 		memset ((void *)header->y_units, 0, (size_t)GRD_UNIT_LEN);
 		if (nc_get_att_text (ncid, y_id, "units", header->y_units)) strcpy (header->y_units, "user_y_unit");
@@ -198,21 +238,7 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		header->y_min = dummy[(1-header->y_order)/2];
 		header->y_max = dummy[(1+header->y_order)/2];
 		header->y_inc = (header->y_max - header->y_min) / (header->ny + header->node_offset - 1);
-
-		memset ((void *)header->z_units, 0, (size_t)GRD_UNIT_LEN);
-		if (nc_get_att_text (ncid, z_id, "units", header->z_units)) strcpy (header->z_units, "user_z_unit");
-        	if (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor)) header->z_scale_factor = 1.0;
-        	if (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset)) header->z_add_offset = 0.0;
-        	if (nc_get_att_double (ncid, z_id, "_FillValue", &header->nan_value))
-		    nc_get_att_double (ncid, z_id, "missing_value", &header->nan_value);
-        	if (nc_get_att_int (ncid, NC_GLOBAL, "node_offset", &header->node_offset)) header->node_offset = 0;
-        	if (nc_get_att_text (ncid, NC_GLOBAL, "title", text) &&
-		    nc_get_att_text (ncid, z_id, "long_name", text)) strcpy (text, "");
-		strncpy (header->title, text, GRD_TITLE_LEN);
-        	if (nc_get_att_text (ncid, NC_GLOBAL, "source", text) &&
-		    nc_get_att_text (ncid, NC_GLOBAL, "history", text)) strcpy (text, "");
-		strncpy (header->command, text, GRD_COMMAND_LEN);
-		strncpy (header->remark, &text[GRD_COMMAND_LEN], GRD_REMARK_LEN);
+		if (GMT_is_dnan(header->y_inc)) header->y_inc = 1.0;
 
         	if (nc_get_att_double (ncid, z_id, "actual_range", dummy) &&
 		    nc_get_att_double (ncid, z_id, "valid_range", dummy)) {
@@ -221,13 +247,13 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		header->z_min = dummy[0];
 		header->z_max = dummy[1];
 
-		if (ndims == 3 && !GMT_is_dnan(header->t_value)) {
+		if (ndims == 3 && !GMT_is_dnan(t_value)) {
 			lens[2]--;
         		if (nc_get_att_double (ncid, t_id, "actual_range", dummy)) {
 				check_nc_status (nc_get_var1_double (ncid, t_id, &lens[0], &dummy[0]));
 				check_nc_status (nc_get_var1_double (ncid, t_id, &lens[2], &dummy[1]));
 			}
-			header->t_index = irint((header->t_value - dummy[0]) / (dummy[1] - dummy[0]) * lens[2]);
+			header->t_index = irint((t_value - dummy[0]) / (dummy[1] - dummy[0]) * lens[2]);
 			if (header->t_index < 0 || header->t_index > lens[2]) {
 				fprintf (stderr, "%s: requested t coordinate out of range [%s]\n", GMT_program, header->name);
 				exit (EXIT_FAILURE);
@@ -278,6 +304,10 @@ int GMT_nc_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		check_nc_status (nc_put_var_float (ncid, y_id, tmp));
 		GMT_free ((void *)tmp);
 	}
+
+	/* Close NetCDF file, unless job == 'W' */
+
+	if (job != 'W') check_nc_status (nc_close (ncid));
 	return (0);
 }
 
@@ -389,7 +419,6 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	 */
 
 	size_t start[2] = {0,0}, edge[2] = {1,1};
-	int ncid;
 	int i, inc = 1, *k, nr_oor = 0;
 	int j, ij, width_in, width_out, height_out;
 	int first_col, last_col, first_row, last_row;
@@ -440,11 +469,9 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	header->nx = width_out;
 	header->ny = height_out;
 
-	/* Write grid header */
+	/* Write grid header without closing file afterwards */
 
-	nc_nopipe (header->name);
-	check_nc_status (nc_create (header->name, NC_CLOBBER, &ncid));
-	GMT_nc_grd_info (ncid, header, 'w');
+	GMT_nc_grd_info (header, 'W');
 
 	/* Set start position for writing grid */
 
@@ -469,7 +496,7 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 					header->z_max = MAX (header->z_max, (double)tmp_f[i]);
 				}
 			}
-			check_nc_status (nc_put_vara_float (ncid, header->z_id, start, edge, tmp_f));
+			check_nc_status (nc_put_vara_float (header->ncid, header->z_id, start, edge, tmp_f));
 		}
 		GMT_free ((void *)tmp_f);
 	}
@@ -492,7 +519,7 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 					header->z_max = MAX (header->z_max, (double)tmp_i[i]);
 				}
 			}
-			check_nc_status (nc_put_vara_int (ncid, header->z_id, start, edge, tmp_i));
+			check_nc_status (nc_put_vara_int (header->ncid, header->z_id, start, edge, tmp_i));
 		}
 		GMT_free ((void *)tmp_i);
 	}
@@ -508,11 +535,11 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 		fprintf (stderr, "%s: Warning: No valid values in grid [%s]\n", GMT_program, header->name);
 		limit[0] = 0.0; limit[1] = 0.0;
 	}
-       	check_nc_status (nc_put_att_double (ncid, header->z_id, "actual_range", z_type, 2, limit));
+       	check_nc_status (nc_put_att_double (header->ncid, header->z_id, "actual_range", z_type, 2, limit));
 
 	/* Close grid */
 
-	check_nc_status (nc_close (ncid));
+	check_nc_status (nc_close (header->ncid));
 
 	return (0);
 }
