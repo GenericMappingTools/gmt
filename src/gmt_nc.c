@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.33 2005-12-09 20:05:35 remko Exp $
+ *	$Id: gmt_nc.c,v 1.34 2005-12-11 14:29:45 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,6 +43,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 #define GMT_WITH_NO_PS
+#define GMT_CDF_CONVENTION    "COARDS"        /* grd files are COARDS-compliant */
 #include "gmt.h"
 
 EXTERN_MSC int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job);
@@ -268,7 +269,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
         	check_nc_status (nc_put_att_text (ncid, z_id, "units", GRD_UNIT_LEN, header->z_units));
         	check_nc_status (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1, &header->z_scale_factor));
         	check_nc_status (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
-        	check_nc_status (nc_put_att_int (ncid, NC_GLOBAL, "node_offset", NC_LONG, 1, &header->node_offset));
+		check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen (GMT_CDF_CONVENTION) + 1, (const char *) GMT_CDF_CONVENTION));
 		if (z_type == NC_FLOAT || z_type == NC_DOUBLE)
 			check_nc_status (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1, &header->nan_value));
 		else {
@@ -277,6 +278,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		}
         	check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "title", GRD_TITLE_LEN, header->title));
         	check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "source", (GRD_COMMAND_LEN+GRD_REMARK_LEN), text));
+        	check_nc_status (nc_put_att_int (ncid, NC_GLOBAL, "node_offset", NC_LONG, 1, &header->node_offset));
 
 		if (header->z_min <= header->z_max) {
 			dummy[0] = header->z_min; dummy[1] = header->z_max;
