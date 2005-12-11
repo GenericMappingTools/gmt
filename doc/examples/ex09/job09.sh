@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 09
 #
-#		$Id: job09.sh,v 1.6 2004-04-10 17:19:14 pwessel Exp $
+#		$Id: job09.sh,v 1.7 2005-12-11 06:23:08 pwessel Exp $
 #
 # Purpose:	Make wiggle plot along track from geoid deflections
 # GMT progs:	pswiggle, pstext, psxy
@@ -16,7 +16,7 @@ fi
 # Make label file
 for file in track_*.xys
 do
-	tail -1 $file >> tmp
+	tail -n 1 $file >> tmp
 done
 ls -1 track_*.xys | $AWK -F. '{print $2}' > tracks.lis
 paste tmp tracks.lis | $AWK '{print $1, $2, 10, 50, 1, "RM", $4}' | pstext -R -J -D-0.05i/-0.05i -O >> example_09.ps
