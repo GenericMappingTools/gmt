@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.34 2005-12-11 14:29:45 remko Exp $
+ *	$Id: gmt_nc.c,v 1.35 2005-12-13 20:03:50 remko Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -190,7 +190,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 
 	if (job == 'r') {
 		memset ((void *)header->z_units, 0, (size_t)GRD_UNIT_LEN);
-		if (nc_get_att_text (ncid, z_id, "units", header->z_units)) strcpy (header->z_units, "user_z_unit");
+		if (nc_get_att_text (ncid, z_id, "long_name", header->z_units)) strcpy (header->z_units, "z");
         	if (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor)) header->z_scale_factor = 1.0;
         	if (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset)) header->z_add_offset = 0.0;
         	if (nc_get_att_double (ncid, z_id, "_FillValue", &header->nan_value))
@@ -205,7 +205,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		strncpy (header->remark, &text[GRD_COMMAND_LEN], GRD_REMARK_LEN);
 
 		memset ((void *)header->x_units, 0, (size_t)GRD_UNIT_LEN);
-		if (nc_get_att_text (ncid, x_id, "units", header->x_units)) strcpy (header->x_units, "user_x_unit");
+		if (nc_get_att_text (ncid, x_id, "long_name", header->x_units)) strcpy (header->x_units, "x");
 		lens[0] = 0;
 		if (x_id < 0) {
 			dummy[0] = 0.0; dummy[1] = (double) header->nx-1;
@@ -221,7 +221,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		if (GMT_is_dnan(header->x_inc)) header->x_inc = 1.0;
 
 		memset ((void *)header->y_units, 0, (size_t)GRD_UNIT_LEN);
-		if (nc_get_att_text (ncid, y_id, "units", header->y_units)) strcpy (header->y_units, "user_y_unit");
+		if (nc_get_att_text (ncid, y_id, "long_name", header->y_units)) strcpy (header->y_units, "y");
 		if (y_id < 0) {
 			dummy[0] = 0.0; dummy[1] = (double) header->ny-1;
 			header->node_offset = 0;
@@ -264,9 +264,9 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 	else {
 		strcpy (text, header->command);
 		strcpy (&text[GRD_COMMAND_LEN], header->remark);
-		check_nc_status (nc_put_att_text (ncid, x_id, "units", GRD_UNIT_LEN, header->x_units));
-        	check_nc_status (nc_put_att_text (ncid, y_id, "units", GRD_UNIT_LEN, header->y_units));
-        	check_nc_status (nc_put_att_text (ncid, z_id, "units", GRD_UNIT_LEN, header->z_units));
+		check_nc_status (nc_put_att_text (ncid, x_id, "long_name", GRD_UNIT_LEN, header->x_units));
+        	check_nc_status (nc_put_att_text (ncid, y_id, "long_name", GRD_UNIT_LEN, header->y_units));
+        	check_nc_status (nc_put_att_text (ncid, z_id, "long_name", GRD_UNIT_LEN, header->z_units));
         	check_nc_status (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1, &header->z_scale_factor));
         	check_nc_status (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
 		check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen (GMT_CDF_CONVENTION) + 1, (const char *) GMT_CDF_CONVENTION));

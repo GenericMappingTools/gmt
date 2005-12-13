@@ -2,7 +2,7 @@
 .SH NAME
 grdedit \- Modifying the header in a 2-D grdfile
 .SH SYNOPSIS
-\fBgrdedit\fP \fIgrdfile\fP [ \fB\-A\fP ] [ \fB\-D\fP\fIxunit/yunit/zunit/scale/offset/title/remark\fP ] 
+\fBgrdedit\fP \fIgrdfile\fP [ \fB\-A\fP ] [ \fB\-D\fP\fIxname/yname/zname/scale/offset/title/remark\fP ] 
 [ \fB\-N\fP\fIxyzfile\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP ] [ \fB\-V\fP ] 
  [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
@@ -27,7 +27,7 @@ prior to GMT 3.1) often had excessive slop in
 \fIx_inc, y_inc\fP and an adjustment is necessary.  Newer files are created correctly.
 .TP
 .B \-D
-Give new values for \fIxunit, yunit, zunit, scale, offset, title,\fP and \fIremark\fP.
+Give new values for \fIxname, yname, zname, scale, offset, title,\fP and \fIremark\fP.
 To leave some of the values untouched, specify = as the new value.
 #include "explain_-H.txt"
 .TP
