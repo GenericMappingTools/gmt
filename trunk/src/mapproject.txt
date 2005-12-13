@@ -102,6 +102,7 @@ ID (see \fB\-Qe\fP) or given as \fIa,1/f\fP.  If \fIdatum\fP is - or not given w
 #include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
+#include "explain_precision.txt"
 .SH EXAMPLES
 To transform a file with (longitude,latitude) into (x,y) positions in cm on
 a Mercator grid for a given scale of LEN1 cm per degree, run

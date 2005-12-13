@@ -52,6 +52,7 @@ Only output those segments whose header record contains the specified text strin
 #include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
+#include "explain_precision.txt"
 .SH EXAMPLES
 To convert the binary file test.b (single precision) with 4 columns to ASCII:
 .br

@@ -78,6 +78,7 @@ Data have x,y only (no z-column).
 #include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
+#include "explain_precision.txt"
 .SH EXAMPLES
 .sp
 Suppose you want to make a wiggle plot of magnetic anomalies on segments oriented 

@@ -53,6 +53,7 @@ only, \fB\-Wo\fP for weighted output only.  [Default uses unweighted i/o].
 #include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
+#include "explain_precision.txt"
 .SH EXAMPLES
 .sp
 To find 5 by 5 minute block mean values from the ASCII data in hawaii.xyg, run

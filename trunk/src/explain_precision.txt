@@ -1,0 +1,9 @@
+.SH PRECISION
+The ASCII output formats of numerical data are controlled by parameters in
+your .gmtdefaults4 file.  Longitude and latitude are formatted according to
+the \fBOUTPUT_DEGREE_FORMAT\fP, whereas other values are formatted according
+to \fBD_FORMAT\fP.  Be aware that the format in effect can lead to loss of
+precision in the output, which can lead to various problems downstream.  If
+you find the output is not written with enough precision, consider switching
+to binary output (\fB\-bo\fP if available) or specify more decimals using
+the \fBD_FORMAT\fP setting.

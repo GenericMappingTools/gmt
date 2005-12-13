@@ -84,6 +84,7 @@ Write Wavelength rather than frequency in column 1 of the output file[s] [Defaul
 #include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
+#include "explain_precision.txt"
 .SH EXAMPLES
 Suppose data.g is gravity data in mGal, sampled every 1.5 km.  To write its power spectrum, in mGal**2-km, 
 to the file data.xpower, use  

@@ -71,6 +71,7 @@ Note that \fB\-Z\fP only applies to 1-column output.
 #include "explain_-n.txt"
 This option only applies to xyz output; see \fB\-Z\fP for z table output.
 #include "explain_-f.txt"
+#include "explain_precision.txt"
 .SH EXAMPLES
 To edit individual values in the 5' by 5' hawaii_grv.grd file, dump the .grd
 to ASCII:

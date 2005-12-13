@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.21 2005-10-20 02:09:38 pwessel Exp $
+#	 $Id: webman.sh,v 1.22 2005-12-13 00:57:50 pwessel Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -58,7 +58,8 @@ for prog in `cat $$.programs.lis`; do
 	grep -v ${prog} $$.w1.sed > $$.t1.sed
 	grep -v ${prog} $$.w2.sed > $$.t2.sed
 	grep -v ${prog} $$.w3.sed > $$.t3.sed
-	nroff -man man/manl/${prog}.l | $MAN2HTML -topm 4 -pgsize 5000 | sed -f $$.t1.sed | sed -f $$.t2.sed | sed -f $$.t3.sed > www/gmt/doc/html/${prog}.html
+#	nroff -man man/manl/${prog}.l | $MAN2HTML -topm 4 -pgsize 5000 | sed -f $$.t1.sed | sed -f $$.t2.sed | sed -f $$.t3.sed > www/gmt/doc/html/${prog}.html
+	groff -man -T html man/manl/${prog}.l | sed -f $$.t1.sed | sed -f $$.t2.sed | sed -f $$.t3.sed > www/gmt/doc/html/${prog}.html
 	echo '<BODY bgcolor="#ffffff">' >> www/gmt/doc/html/${prog}.html
 done
 
@@ -76,7 +77,8 @@ for package in dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
 		if [ $gush = 1 ]; then
 			echo "Making ${prog}.html"
 		fi
-		nroff -man $f | $MAN2HTML -topm 4 | sed -f ../$$.w1.sed | sed -f ../$$.w2.sed | sed -f ../$$.w3.sed > $package/${prog}.html
+#		nroff -man $f | $MAN2HTML -topm 4 | sed -f ../$$.w1.sed | sed -f ../$$.w2.sed | sed -f ../$$.w3.sed > $package/${prog}.html
+		groff -man -T html $f | sed -f ../$$.w1.sed | sed -f ../$$.w2.sed | sed -f ../$$.w3.sed > $package/${prog}.html
 		echo '<BODY bgcolor="#ffffff">' >> $package/${prog}.html
 		cp -f $package/${prog}.html ../www/gmt/doc/html
 	done
