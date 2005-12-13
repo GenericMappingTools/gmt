@@ -40,9 +40,9 @@ static void clear (grid)
   grid->header.ny = 0;
   grid->header.node_offset = GridCoordNodes;
 
-  strcpy(grid->header.x_units, "X units");
-  strcpy(grid->header.y_units, "Y units");
-  strcpy(grid->header.z_units, "Z units");
+  strcpy(grid->header.x_units, "x");
+  strcpy(grid->header.y_units, "y");
+  strcpy(grid->header.z_units, "z");
   strcpy(grid->header.title, "Untitled");
   memset(grid->header.command, 0, sizeof(grid->header.command));
   memset(grid->header.remark, 0, sizeof(grid->header.remark));

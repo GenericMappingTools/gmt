@@ -3,7 +3,7 @@
 segy2grd \- Converting SEGY file to grd file format
 .SH SYNOPSIS
 \fBsegy2grd\fP \fIsegyfile\fP \fB\-G\fP\fIgrdfile\fP \fB\-I\fP\fIx_inc\fP[/\fIy_inc\fP]
-\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-A\fP[\fBn|z\fP] ] [ \fB\-D\fP\fIxunit/yunit/zunit/scale/offset/title/remark\fP ]
+\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-A\fP[\fBn|z\fP] ] [ \fB\-D\fP\fIxname/yname/zname/scale/offset/title/remark\fP ]
 [ \fB\-F\fP ]   [ \fB\-N\fP\fInodata\fP ] [ \fB\-S\fP[\fIzfile\fP] ] [ \fB\-V\fP ]
 [ \fB\-Z\fP[\fIflags\fP] ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
 .SH DESCRIPTION
@@ -32,7 +32,7 @@ Append \fBn\fP to simply count the number of data points that were assigned to e
 [Default (no \fB\-A\fP option) will calculate mean value]. Not used for simple mapping.
 .TP
 .B \-D
-Give values for \fIxunit, yunit, zunit, scale, offset, title,\fP and \fIremark\fP.
+Give values for \fIxname, yname, zname, scale, offset, title,\fP and \fIremark\fP.
 To leave some of these values untouched, specify = as the value.
 .TP
 .B \-F
