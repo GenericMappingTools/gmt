@@ -1,4 +1,4 @@
-.SH PRECISION
+.SH ASCII FORMAT PRECISION
 The ASCII output formats of numerical data are controlled by parameters in
 your .gmtdefaults4 file.  Longitude and latitude are formatted according to
 the \fBOUTPUT_DEGREE_FORMAT\fP, whereas other values are formatted according
