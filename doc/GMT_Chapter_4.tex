@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.67 2005-10-27 03:37:22 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.68 2005-12-13 19:59:17 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2005.
@@ -7,6 +7,7 @@
 %------------------------------------------
 %
 \chapter{General features}
+\label{ch:4}
 \thispagestyle{headings}
 
 This section explains features common to all the programs
@@ -304,8 +305,8 @@ height is automatically computed from the implied map scale and region).
 
 The projections avaiable in \GMT\ are presented in Figure~\ref{fig:GMT_-J}.
 For details on all \GMT\ projections and the required parameters, see the \GMTprog{psbasemap} man page.
-We will also show examples of every projection in the next chapter, and a quick
-summary of projection syntax was given in Chapter 3.
+We will also show examples of every projection in the next Chapters, and a quick
+summary of projection syntax was given in Chapter~\ref{ch:3}.
 
 \subsection{Map frame and axes annotations: The \Opt{B} option}
 \index{\Opt{B} (set annotations and ticks)}
@@ -673,7 +674,7 @@ Note that {\it n} may be larger than {\it m}, the number of
 columns that the \GMT\ program requires to do its task.  If
 {\it n} is not given then it defaults to {\it m}.  If
 {\it n} $<$ {\it m} an error is generated.  For more information,
-see Appendix B.
+see Appendix~\ref{app:B}.
 
 \subsection{Data type selection: The \Opt{f} option}
 \index{Table!format}
@@ -803,7 +804,7 @@ records, you must use the \Opt{H} option (see Section~\ref{sec:header}).
 For binary table data no headers are allowed.
 ASCII files may in many cases also contain sub-headers
 separating data segments.  These are called ``multi-segment files''
-and requires a special option (typically \Opt{M}); see Appendix B for complete
+and requires a special option (typically \Opt{M}); see Appendix~\ref{app:B} for complete
 documentation. 
 
 If filenames are given for reading, \GMT\ programs will first look for them in the
@@ -814,7 +815,7 @@ parameters (if set).  These are {\bf GMT\_GRIDDIR}, {\bf GMT\_IMGDIR}, and
 that contain data sets of general use.  Normally, the first directory will
 hold gridded data sets accessible via the supplemental program \GMTprog{grdraster}
 whereas the second will hold the binary Mercator data images accessible via
-the supplemental program \GMTprog{img2grd}; see Appendix A for information
+the supplemental program \GMTprog{img2grd}; see Appendix~\ref{app:A} for information
 about these supplemental programs.  The third directory may hold miscellaneous
 data sets such as lines, points, and text plottable directly with \GMTprog{psxy}
 or \GMTprog{pstext}.  Data sets that the user finds are often needed
@@ -918,7 +919,7 @@ freeform \PS\ output with embedded printer directives.  To
 produce Encapsulated \PS\ (EPS) that can be imported into graphics programs such as
 \progname{IslandDraw}, \progname{CorelDraw}, \progname{Illustrator} or \progname{Freehand} for further
 embellishment, change the {\bf PAPER\_MEDIA} setting in the \filename{.gmtdefaults4}
-file.  See Appendix C and the \GMTprog{gmtdefaults} man page for more details.
+file.  See Appendix~\ref{app:C} and the \GMTprog{gmtdefaults} man page for more details.
 
 \section{Specifying pen attributes}
 
@@ -977,7 +978,7 @@ thick		&	1.0p	&	obese		&	18p \\	\hline
 \item RGB. Specify {\it r}/{\it g}/{\it b}, each ranging from 0--255.  Here 0/0/0 is black, 255/255/255 is white,
 255/0/0 is red, etc.
 \item HSV. Specify {\it hue}-{\it saturation}-{\it value}, with the former in the 0--360 degree range while the latter
-two take on the range 0--1\footnote{For an overview of color systems such as HSV, see Appendix I.}.
+two take on the range 0--1\footnote{For an overview of color systems such as HSV, see Appendix~\ref{app:I}.}.
 \item CMYK. Specify {\it cyan}/{\it magenta}/{\it yellow}/{\it black}, each ranging from 0--100\%.
 \item Name.  Specify one of 663 valid color names as defined in the X11 color table\footnote{On most \UNIX-type systems
 you can find the file \filename{rgb.txt} in /usr/X11R6/lib/X11 or thereabouts, or use the command \progname{showrgb}.}.
@@ -1055,7 +1056,7 @@ to specifying the pen color settings (see pen color discussion under Section~\re
 The second form allows us to use a predefined bit-image pattern.
 {\it pattern} can either be a number in the range 1--90 or the name of a 1-,
 8-, or 24-bit Sun raster file.  The former will result in one of the 90
-predefined 64 x 64 bit-patterns provided with \GMT\ and reproduced in Appendix E.
+predefined 64 x 64 bit-patterns provided with \GMT\ and reproduced in Appendix~\ref{app:E}.
 The latter allows the user to create customized, repeating images using
 standard Sun rasterfiles\footnote{Convert other graphics formats to Sun ras format using
 ImageMagick's \progname{convert} program.}.  The {\it dpi} parameter sets the resolution of
@@ -1074,7 +1075,7 @@ back- \emph{or} foreground pixels will be painted.
 
 Due to \PS\ implementation limitations the rasterimages used with
 \Opt{G} must be less than 146 x 146 pixels in size; for larger images see
-\GMTprog{psimage}.  The format of Sun raster files is outlined in Appendix B.
+\GMTprog{psimage}.  The format of Sun raster files is outlined in Appendix~\ref{app:B}.
 Note that under \PS\ Level 1 the patterns are filled by using
 the polygon as a \emph{clip path}.  Complex clip paths may require
 more memory than the \PS\ interpreter has been assigned.
@@ -1210,7 +1211,7 @@ distribution on the interval [-1,+1].  These intensities are used
 to add ``white'' or ``black'' to the color as defined by the {\it z}-values
 and the cpt-file.  An intensity of zero leaves the color unchanged.
 Higher values will brighten the color, lower values will darken it,
-all without changing the original hue of the color (see Appendix I
+all without changing the original hue of the color (see Appendix~\ref{app:I}
 for more details).  The illumination is decoupled from the data
 grd-file in that a separate grdfile holding intensities in the
 [-1,+1] range must be provided.  Such intensity files can be
@@ -1319,12 +1320,10 @@ XXX\=\verb|2@~p@~r@+2@+h@-0@- E\363tv\363s|XXXX \== XXXX\=text \kill
 
 The option in \GMTprog{pstext} to draw a rectangle surrounding the text
 will not work for strings with escape sequences.  A chart of characters
-and their octal codes is given in Appendix F. 
+and their octal codes is given in Appendix~\ref{app:F}. 
 
-\section{Embedded grdfile format specifications}
-\index{Embedded grdfile format}
-\index{grdfile!embedded format|(}
-\index{grdfile!formats}
+\section{Grdfile format specifications}
+\index{grdfile!formats|(}
 \index{grdfile!formats!netCDF}
 \index{grdfile!formats!floats}
 \index{grdfile!formats!shorts}
@@ -1378,7 +1377,7 @@ the user must append the appropriate {\it = ID} specification.
 
 \GMT\ can also read netCDF gridfiles produced by other software packages, provided the grid files
 satisfy the COARDS and Hadley Centre conventions for NetCDF grids. Thus, products created under
-those conventions (provided the grid is 2-dimensional) can be read directly by \GMT\ and the netCDF grids
+those conventions (provided the grid is 2- or 3-dimensional) can be read directly by \GMT\ and the netCDF grids
 written by \GMT\ can be read by other programs that conform to those conventions. Two such programs are
 \htmladdnormallink{\progname{ncview}}{http://meteora.ucsd.edu/~pierce/ncview_home_page.html}
 and
@@ -1438,7 +1437,7 @@ and convert it to a $\pm$1 range, give the name as
 \filename{rasterfile=rb/7.84313725e-3/-1} (i.e., 1/127.5).
 
 \item To write a native binary short integer grd file to standard output after subtracting
-32000 and dividing its values by 10, give filename as =bs/0.1/-3200. 
+32000 and dividing its values by 10, give filename as \filename{=bs/0.1/-3200}. 
 
 \end{enumerate} 
 
@@ -1484,7 +1483,29 @@ and the filename \filename{wet.mask} means wet.mask=bm/1/0/0.  For a
 file intended for masking, i.e., the nodes are either 1 or NaN,
 the bit or mask format file may be as small as 1/32 the size of the
 corresponding grd float format file. 
-\index{grdfile!embedded format|)}
+\index{grdfile!formats|)}
+
+\section{Options for COARDS-compliant netCDF files}
+\label{sec:netcdf}
+\index{grdfile!formats!netCDF|(}
+
+When the netCDF file contains more than one 2-D or 3-D variable, the user can select the
+required variable by adding the suffix ``?\emph{varname}'' to the file name. For example,
+to get information on the variable ``slp'' in file \filename{file.nc}, use:
+\begin{verbatim}
+	grdinfo file.nc?slp
+\end{verbatim}
+Since COARDS-compliant netCDF files are the default, the additional suffix ``=nf'' can be omitted.
+
+In case a variable is 3-dimensional and a layer other than the first is required, either add
+``[\emph{index}]'' or ``(\emph{level})'', where \emph{index} is
+the index of the third (depth) variable (starting at 0 for the first layer) and \emph{level}
+is the numerical value of the third (depth) variable associated with the requested layer.
+To indicate the second layer of the 3-D variable ``slp'' use as file name: \filename{file.nc?slp[1]}.
+
+When you supply the numerical value for the layer, \GMT\ will pick the layer closest to that value.
+No interpolation is performed.
+\index{grdfile!formats!netCDF|)}
 
 \section{The NaN data value}
 \index{NaN}
