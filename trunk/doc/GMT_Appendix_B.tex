@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.13 2005-09-26 03:18:03 pwessel Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.14 2005-12-13 19:59:17 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2005.
@@ -8,6 +8,7 @@
 %
 
 \chapter{\gmt\ file formats}
+\label{app:B}
 \thispagestyle{headings}
 
 \section{Table data} 
@@ -77,49 +78,56 @@ case we need to know the number of output columns up front).  If you need
 to swap the byte-order on either input or output you must use upper case
 {\bf S} or {\bf D} instead.
 
-\section{2-D grdfiles} 
+\section{Grid files} 
 
-\subsection{File contents}
-\index{grdfile!contents|(}
+\subsection{NetCDF files}
+\index{grdfile!formats!netCDF|(}
 
-The default 2-D binary netCDF grdfile in \GMT\ has several attributes.
-The \GMTprog{grdedit} utility program will allow you to edit parts of
-the header of an existing grdfile.  The attributes listed in Table~\ref{tbl:grdheader}
-are contained within the header record in the order given (except the $z$-array which
-is not part of the header structure, but makes up the rest of the file).
+By default, \GMT\ stores 2-D grids as COARD-compliant netCDF files.
+COARDS (Cooperative Ocean/Atmosphere Research Data Service) is a convention used by
+many agencies distributing gridded data for ocean and atmosphere research. Sticking to
+this convention allows \GMT\ to read gridded data provided by other institutes
+and other programs. Conversely, other general domain programs
+will be able to read grids created by \GMT.
+
+The netCDF grdfile in \GMT\ has several attributes (See Table~\ref{tbl:netcdf-format})
+to describe the content. The routine
+that deals with netCDF grdfiles is sufficiently flexible so that grdfiles slightly deviating
+from the standards used by \GMT\ can also be read.
 
 \begin{table}
 \centering
 \begin{tabular}{|l|l|} \hline
-\multicolumn{1}{|c}{\emph{Parameter}}   &       \multicolumn{1}{|c|}{\emph{Description}}        \\ \hline
-{\bf int} {\it nx}                      &       Number of nodes in the $x$-dimension    \\ \hline
-{\bf int} {\it ny}                      &       Number of nodes in the y-dimension      \\ \hline
-{\bf int} {\it node\_offset}    &       0 for grid line registration, 1 for pixel registration  \\ \hline
-{\bf double} {\it x\_min}               &       Minimum $x$-value of region     \\ \hline
-{\bf double} {\it x\_max}               &       Maximum $x$-value of region  \\ \hline
-{\bf double} {\it y\_min}               &       Minimum $y$-value of region  \\ \hline
-{\bf double} {\it y\_max}               &       Maximum $y$-value of region  \\ \hline
-{\bf double} {\it z\_min}               &       Minimum $z$-value in data set  \\ \hline
-{\bf double} {\it z\_max}               &       Maximum $z$-value in data set  \\ \hline
-{\bf double} {\it x\_inc}               &       Node spacing in $x$-dimension  \\ \hline
-{\bf double} {\it y\_inc}               &       Node spacing in $y$-dimension  \\ \hline
-{\bf double} {\it z\_scale\_factor}     &       Factor to multiply $z$-values after read  \\ \hline
-{\bf double} {\it z\_add\_offset}       &       Offset to add to scaled $z$-values  \\ \hline
-{\bf char} {\it x\_units}[80]   &       Units of the $x$-dimension      \\ \hline
-{\bf char} {\it y\_units}[80]   &       Units of the $y$-dimension      \\ \hline
-{\bf char} {\it z\_units}[80]   &       Units of the $z$-dimension      \\ \hline 
-{\bf char} {\it title}[80]      &       Descriptive title of the data set       \\ \hline
-{\bf char} {\it command}[320]   &       Command line that produced the grdfile  \\ \hline
-{\bf char} {\it remark}[160]    &       Any additional comments \\ \hline \hline
-{\bf float} {\it z}[nx*ny]      &       1-D array with $z$-values in scanline format \\ \hline
-
+\multicolumn{1}{|c}{\emph{Attribute}}   &       \multicolumn{1}{|c|}{\emph{Description}}        \\ \hline
+\multicolumn{2}{|c|}{\emph{Global attributes}} \\ \hline
+Conventions			& COARDS (optional) \\ \hline
+title				& Title (optional) \\ \hline
+source				& How file was created (optional) \\ \hline
+node\_offset			& 0 for grid line registration (default), 1 for pixel registration \\ \hline
+\multicolumn{2}{|c|}{\emph{$x$- and $y$-variable attributes}} \\ \hline
+long\_name			& Variable name (and unit) (default: ``x'' and ``y'') \\ \hline
+actual\_range			& Minimum and maximum $x$ and $y$ of region; if absent \\
+(or valid\_range)		& the first and last $x$- and $y$-values are queried \\ \hline
+\multicolumn{2}{|c|}{\emph{$z$-variable attributes}} \\ \hline
+long\_name			& Variable name (and unit) (default: ``z'') \\ \hline
+scale\_factor			& Factor to multiply $z$ with (default: 1) \\ \hline
+add\_offset			& Offset to add to scaled $z$ (default: 0) \\ \hline
+actual\_range			& Minimum and maximum $z$ (optional) \\ \hline
+\_FillValue			& Value associated with missing data points; if absent an\\
+(or missing\_value)		& approriate default value is assumed, depending on data type. \\ \hline
 \end{tabular} 
-
-\caption{\gmt\ gridded file header record.}
-\label{tbl:grdheader}
+\caption{Attributes of default \gmt\ gridded file in COARDS-compliant netCDF format.}
+\label{tbl:netcdf-format}
 \end{table}
 
-\index{grdfile!contents|)}
+By default, the first 2-D or 3-D variable in a netCDF file will by read as the $z$ variable
+and the coordinate axes $x$ and $y$ will be determined from the dimensions of the $z$ variable.
+\GMT\ will recognise whether the $y$ (latitude) variable increases or decreases. Both forms of
+data storage are handled appropriately. When the $z$ variable is 3-dimensional, such as
+is the case of longitude-latitude-depth grids, only the first ``layer'' will be loaded.
+For more information on the use of COARDS-compliant netCDF files, read Section~\ref{sec:netcdf}.
+
+\index{grdfile!formats!netCDF|)}
 
 \GMT\ also allows other formats to be read.  In addition to
 the default netCDF format it can use binary floating points, short
@@ -129,7 +137,7 @@ functions and linking these with the \GMT\ libraries.
 The source file \filename{gmt\_customio.c} has the information that
 programmers will need to augment \GMT\ to read custom grdfiles.  We
 anticipate that the number of pre-programmed formats will increase as
-enterprising users implement what they need.  See Section \ref{sec:grdformats}
+enterprising users implement what they need.  See Section~\ref{sec:grdformats}
 for more information.
 
 \subsection{Grid line and Pixel registration} 
@@ -266,6 +274,47 @@ is the two-dimensional Laplacian operator.
 
 \end{description}
 \index{grdfile!boundary conditions|)}
+
+\subsection{Generic grid files}
+\index{grdfile!old style generic}
+
+The old style generic grid file format that was common in earlier version of \GMT\ is still
+supported, although the use of netCDF files is strongly recommended.
+The file starts with a header containing a number of attributes defining the content.
+The \GMTprog{grdedit} utility program will allow you to edit parts of
+the header of an existing grdfile.  The attributes listed in Table~\ref{tbl:grdheader}
+are contained within the header record in the order given (except the $z$-array which
+is not part of the header structure, but makes up the rest of the file).
+
+\begin{table}
+\centering
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c}{\emph{Parameter}}   &       \multicolumn{1}{|c|}{\emph{Description}}        \\ \hline
+{\bf int} {\it nx}                      &       Number of nodes in the $x$-dimension    \\ \hline
+{\bf int} {\it ny}                      &       Number of nodes in the y-dimension      \\ \hline
+{\bf int} {\it node\_offset}    &       0 for grid line registration, 1 for pixel registration  \\ \hline
+{\bf double} {\it x\_min}               &       Minimum $x$-value of region     \\ \hline
+{\bf double} {\it x\_max}               &       Maximum $x$-value of region  \\ \hline
+{\bf double} {\it y\_min}               &       Minimum $y$-value of region  \\ \hline
+{\bf double} {\it y\_max}               &       Maximum $y$-value of region  \\ \hline
+{\bf double} {\it z\_min}               &       Minimum $z$-value in data set  \\ \hline
+{\bf double} {\it z\_max}               &       Maximum $z$-value in data set  \\ \hline
+{\bf double} {\it x\_inc}               &       Node spacing in $x$-dimension  \\ \hline
+{\bf double} {\it y\_inc}               &       Node spacing in $y$-dimension  \\ \hline
+{\bf double} {\it z\_scale\_factor}     &       Factor to multiply $z$-values after read  \\ \hline
+{\bf double} {\it z\_add\_offset}       &       Offset to add to scaled $z$-values  \\ \hline
+{\bf char} {\it x\_units}[80]   &       Units of the $x$-dimension      \\ \hline
+{\bf char} {\it y\_units}[80]   &       Units of the $y$-dimension      \\ \hline
+{\bf char} {\it z\_units}[80]   &       Units of the $z$-dimension      \\ \hline 
+{\bf char} {\it title}[80]      &       Descriptive title of the data set       \\ \hline
+{\bf char} {\it command}[320]   &       Command line that produced the grdfile  \\ \hline
+{\bf char} {\it remark}[160]    &       Any additional comments \\ \hline \hline
+{\bf TYPE} {\it z}[nx*ny]      &       1-D array with $z$-values in scanline format \\ \hline
+\end{tabular} 
+\caption{\gmt\ gridded file header record. {\bf TYPE} can be {\bf char}, {\bf short}, {\bf int}, {\bf float}, or {\bf
+double}.}
+\label{tbl:grdheader}
+\end{table}
 
 \section{Sun raster files}
 \index{Rasterfile!format}
