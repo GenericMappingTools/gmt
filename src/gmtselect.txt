@@ -98,6 +98,7 @@ If no map projection is supplied we implicitly set \fB\-Jx\fP1.
 #include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
+#include "explain_precision.txt"
 .SH EXAMPLES
 To extract the subset of data set that is within 300 km of any of the points in pts.d but more than
 100 km away from the lines in lines.d, run

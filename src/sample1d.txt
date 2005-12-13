@@ -48,6 +48,7 @@ Sets the column number of the independent variable [Default is 0 (first)].
 #include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
+#include "explain_precision.txt"
 .SH EXAMPLES
 To resample the file profiles.tdgmb, which contains (time,distance,gravity,magnetics,bathymetry) records,
 at 1km equidistant intervals using Akima's spline, use\"'

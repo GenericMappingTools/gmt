@@ -94,6 +94,7 @@ Make evenly spaced timesteps from \fIstart\fP to \fIstop\fP by \fIint\fP [Defaul
 #include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
+#include "explain_precision.txt"
 .SH EXAMPLES
 To filter the data set in the file cruise.gmtd containing evenly spaced gravity, magnetics, topography,
 and distance (in m) with a 10 km Gaussian filter, removing outliers, and output a filtered

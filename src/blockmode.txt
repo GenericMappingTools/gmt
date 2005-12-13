@@ -51,6 +51,7 @@ only, \fB\-Wo\fP for weighted output only.  [Default uses unweighted i/o].
 #include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
+#include "explain_precision.txt"
 .SH EXAMPLES
 To find 5 by 5 minute block mode estimates from the double precision binary data in hawaii_b.xyg and output an ASCII table, run:
 .sp

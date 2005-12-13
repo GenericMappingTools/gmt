@@ -50,6 +50,7 @@ and the mean location of the data.
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-f.txt"
+#include "explain_precision.txt"
 .SH EXAMPLES
 Suppose you have lon,lat,grav data along a twisty ship track in the file ship.xyg.  You want to 
 project this data onto a great circle and resample it in distance, in order to filter it or check its spectrum.  Do the following:

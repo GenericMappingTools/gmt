@@ -52,6 +52,7 @@ when doing the iterative robust fit].  [Default reads only the first 2 columns.]
 #include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
+#include "explain_precision.txt"
 .SH REMARKS
 If a Fourier model is selected, the domain of x will be shifted and scaled to [-pi, pi] and the basis functions 
 used will be 1, cos(x), sin(x), cos(2x), sin(2x), ...   If a polynomial model is selected, the domain of x 

@@ -50,6 +50,7 @@ Only works when \fB\-I\fP is selected.
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-f.txt"
+#include "explain_precision.txt"
 .SH EXAMPLES
 To find the extreme values in the file ship_gravity.xygd:
 .br

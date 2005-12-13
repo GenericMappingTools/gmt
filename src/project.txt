@@ -123,6 +123,7 @@ Width controls.  Project only those points whose \fIq\fP coordinate is within \f
 #include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_-f.txt"
+#include "explain_precision.txt"
 .SH EXAMPLES
 To generate points every 10km along a great circle from 10N,50W to 30N,10W:
 .sp

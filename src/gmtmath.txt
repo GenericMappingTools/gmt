@@ -82,6 +82,7 @@ contains the desired t-coordinates which may be irregular.
 #include "explain_-n.txt"
 #include "explain_-o_binary.txt"
 #include "explain_-n.txt"
+#include "explain_precision.txt"
 .SH BEWARE
 The operator \fBPLM\fP calculates the associated Legendre polynomial
 of degree L and order M, and its argument is the cosine of the colatitude

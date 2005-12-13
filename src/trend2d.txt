@@ -88,6 +88,7 @@ efficient when the model residuals have an outlier-free normal distribution.  Th
 influence of outliers is reduced only slightly at each iteration; consequently the reduction in 
 Chi-Squared is not very significant.  If the procedure needs a few iterations to successfully 
 attenuate their effect, the significance level of the F test must be kept low.
+#include "explain_precision.txt"
 .SH EXAMPLES
 To remove a planar trend from data.xyz by ordinary least squares, use:  
 .sp
