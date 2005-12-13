@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.25 2005-09-27 00:51:01 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.26 2005-12-13 20:04:08 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2005.
@@ -7,6 +7,7 @@
 %------------------------------------------
 %
 \chapter{Preface} 
+\label{ch:1}
 \thispagestyle{headings}
 
 While \GMT\ has served the map-making and data processing needs of scientists since 1988\footnote{Version
@@ -150,9 +151,10 @@ regular floating-point numbers.
 \item [\GMTprogi{grdvolume.c}]: \Opt{C}{\it low/high/delta} did not check for {\it low} < {\it high}, etc.
 \item [\GMTprogi{pscoast.c}]: Recursive painting could get tricked when boundaries were curved.
 \item [\GMTprogi{pslegend.c}]: Did not pass +\filename{gmtdefaults} and --{\bf PAR}={\it val} onto system calls.
-\item [\GMTprogi{psscale.c}]: Vertical annotations w/custom {\bf D\_FORMAT} were not aligned.
+\item [\GMTprogi{psscale.c}]: Vertical annotations w/custom {\bf D\_FORMAT} were not aligned. Now uses more optimal means
+to display the color bar, leading to smaller \PS\ files.
 \item [\GMTprogi{psxy.c}]: \Opt{Sp} is now a true point, but can also take an optional size.
-\item [\GMTprogi{psxyz.c	}]: Wrong index used in assigning color from cpt and in updating vector lengths.
+\item [\GMTprogi{psxyz.c}]: Wrong index used in assigning color from cpt and in updating vector lengths.
 \item [\GMTprogi{spectrum1d.c}]: Bugs in error expressions for admittance, gain, and phase have been corrected.
 \item [\GMTprogi{x2sys \& mgd77}]: Made DOS-format (CR/LF) tolerant.  Both supplements are now undergoing rapid
 development.
@@ -245,7 +247,7 @@ triangle only (\Opt{E}[{\bf b$|$f}] ).  Also, draw discrete color-key table with
 {\it gap} to the \Opt{L} option. 
 \item \GMTprog{pstext}: 	New option \Opt{A} should azimuths rather than angles be given,
 \item \GMTprog{psxy}: 	Line color control (via \Opt{C}), symbol position offset (with \Opt{D}), custom symbols access 
-(with \Opt{Sk}; use any of the 35 (Appendix N) that come with \GMT\ or design your own), many new symbols (horizontal and vertical dashes,
+(with \Opt{Sk}; use any of the 35 (Appendix~\ref{app:N}) that come with \GMT\ or design your own), many new symbols (horizontal and vertical dashes,
 pentagon, octagon, rectangle, double-headed and centered vectors), and annotated (``quoted'') lines with \Opt{Sq}.
 \item \GMTprog{psxyz}: 	Same, plus a vertical dash symbol.
 \item \GMTprog{xyz2grd}: 	Added \Opt{Au$|$l} for upper/lower value at each node.
