@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.24 2005-09-26 03:18:03 pwessel Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.25 2005-12-13 20:04:08 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2005.
@@ -7,6 +7,7 @@
 %------------------------------------------
 %
 \chapter{Cook-book}
+\label{ch:7}
 \thispagestyle{headings}
 
 In this section we will be giving several examples of
@@ -34,7 +35,7 @@ the timestamp (\Opt{U}).
 A detailed discussion of each command is not given;
 we refer you to the manual pages for command line
 syntax, etc.  We encourage you to run these scripts for yourself.
-See Appendix D if you would like an electronic version
+See Appendix~\ref{app:D} if you would like an electronic version
 of all the shell-scripts (both \progname{csh} and \progname{sh} scripts
 are available; only the \progname{csh}-scripts are discussed here) and support
 data used below.  Note that all examples explicitly specifies the
@@ -108,7 +109,7 @@ corners.  We use \GMTprog{grdimage} to make the illustration:
 
 The first step extracts the 2-D data sets from the local
 data base using \GMTprog{grdraster}, which is a supplemental
-utility program (see Appendix A) that may be adapted to
+utility program (see Appendix~\ref{app:A}) that may be adapted to
 reflect the nature of your data base format.  It
 automatically figures out the required extent of the region
 given the two corners points and the projection.  The extreme
@@ -747,8 +748,8 @@ the cone and caldera and the other with the bubbles.  These
 would be plotted consecutively using the desired colors.
 Alternatively, like in \filename{bullseye.def}, we may
 specify colors directly for the various segments.  Note that
-the custom symbols (Appendix N), unlike the built-in symbols in \GMT, can
-be used with the built-in patterns (Appendix E).  Other
+the custom symbols (Appendix~\ref{app:N}), unlike the built-in symbols in \GMT, can
+be used with the built-in patterns (Appendix~\ref{app:E}).  Other
 approaches are also possible, of course.
 \index{Example!custom map symbols|)}
 
