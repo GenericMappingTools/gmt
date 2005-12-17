@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.h,v 1.20 2005-09-29 19:32:44 remko Exp $
+ *	$Id: gmt_customio.h,v 1.21 2005-12-17 05:59:21 pwessel Exp $
  *
- *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify

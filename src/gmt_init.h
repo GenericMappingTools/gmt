@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.52 2005-11-18 22:30:42 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.53 2005-12-17 05:59:21 pwessel Exp $
  *
- *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
