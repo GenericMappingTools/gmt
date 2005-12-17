@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.69 2005-12-17 05:59:21 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.70 2005-12-17 22:57:57 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -1129,9 +1129,9 @@ the format of the cpt-file is:
 
 \begin{center}
 \begin{tabular}{llllllllll}
-z$_0$ &  R$_{min}$ &  G$_{min}$ &  B$_{min}$ &  z$_1$ & R$_{max}$ &  G$_{max}$ &  B$_{max}$ &  [{\bf A}] & [:{\it label}] \\ 
+z$_0$ &  R$_{min}$ &  G$_{min}$ &  B$_{min}$ &  z$_1$ & R$_{max}$ &  G$_{max}$ &  B$_{max}$ &  [{\bf A}] & [;{\it label}] \\ 
 \ldots & & & & & & & & & \\ 
-z$_{n-2}$ &  R$_{min}$ &  G$_{min}$ &  B$_{min}$ &  z$_{n-1}$ &  R$_{max}$ &  G$_{max}$ &  B$_{max}$ &  [{\bf A}] & [:{\it label}]\\
+z$_{n-2}$ &  R$_{min}$ &  G$_{min}$ &  B$_{min}$ &  z$_{n-1}$ &  R$_{max}$ &  G$_{max}$ &  B$_{max}$ &  [{\bf A}] & [;{\it label}]\\
 \end{tabular} 
 \end{center}
 
@@ -1143,7 +1143,7 @@ of the colorscale when plotted using \GMTprog{psscale}.  The optional code {\bf 
 {\bf U}, or {\bf B} to select annotation of the lower, upper, or both limits
 of the particular $z$-slice.  However, the standard \Opt{B} option can be used
 by \GMTprog{psscale} to affect annotation and ticking of colorscales.  The optional
-colon followed by a text label will make \GMTprog{psscale}, when used with the \Opt{L} option,
+semicolon followed by a text label will make \GMTprog{psscale}, when used with the \Opt{L} option,
 place the supplied label instead of formatted {\it z}-values.
 
 The background color (for {\it z}-values $<$ {\it z$_0$}), foreground color
