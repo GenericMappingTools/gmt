@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtguru.macros.orig,v 1.26 2005-10-20 02:15:14 pwessel Exp $
+#	$Id: gmtguru.macros.orig,v 1.27 2005-12-17 05:52:41 pwessel Exp $
 #
 #	Original GMT Guru Makefile Macro for Makefile.guru
 #	Users should cp to gmtguru.macros and edit it instead!
@@ -16,8 +16,8 @@
 
 VERSION		= GMT4.1
 GMTBRANCH	= 4
-MANDATE		= 1 Nov 2005
-DOCDATE		= November 2005
+MANDATE		= 1 Jan 2006
+DOCDATE		= January 2006
 CPFLAGS		= -I. -DDATE="\"$(MANDATE)\"" -DVERSION="\"$(VERSION)\""
 FTPSITE		= gmt.soest.hawaii.edu	# Set this to the mirror site closest to you
 AUTOCONF	= autoconf		# GNU autoconf utility (add path if not in your search path)
@@ -40,13 +40,3 @@ GMT_EXDIST	= #--exec_prefix=/usr/local/gmt/linux	# Uncomment for alternate insta
 TXT2MAN		= /usr/bin/cpp -w -P -nostdinc			# Linux/gcc
 #TXT2MAN	= /usr/ccs/lbin/cpp				# HPUX preprocessor
 #TXT2MAN	= cc -E -Xs					# Solaris Workshop
-#
-# Converting Man pages to HTML:
-# There seems to be two tools called man2html that does this task.  In the past I was
-# using man2html the Perl script written by Earl Hood and it had some special options
-# for Suns and I had to mess with the options for the HP.  Under Linux, man2html is
-# an executable program with completely other options.  The options below are for the
-# Perl script only.
-MAN2HTML	= man2html -topm 4 -pgsize 5000			# Use this for Mac OSX or Linux
-#MAN2HTML	= man2html -leftm 1 -topm 8 -botm 6 -pgsize 65	# Use this for HPUX
-#MAN2HTML 	= man2html -sun					# Use this for Sun/Solaris
