@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.204 2005-12-17 05:59:22 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.205 2005-12-17 22:57:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -173,6 +173,7 @@ int GMT_getfill (char *line, struct GMT_FILL *fill)
 	/* Syntax:   -G<gray>, -G<rgb>, -G<cmyk>, -G<hsv> or -Gp|P<dpi>/<image>[:F<rgb>B<rgb>]   */
 	/* Note, <rgb> can be r/g/b, gray, or - for masks */
 
+	GMT_init_fill (fill, -1, -1, -1);	/* Initialize fill structure */
 	GMT_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 
 	if ((line[0] == 'p' || line[0] == 'P') && isdigit((int)line[1])) {	/* Image specified */
@@ -1111,17 +1112,17 @@ void GMT_read_cpt (char *cpt_file)
 
 		/* Here we have regular z-slices.  Allowable formats are
 		 *
-		 * z0 - z1 - [LUB] :<label>
-		 * z0 pattern z1 - [LUB] :<label>
-		 * z0 r0 z1 r1 [LUB] :<label>
-		 * z0 r0 g0 b0 z1 r1 g1 b1 [LUB] :<label>
-		 * z0 h0 s0 v0 z1 h1 s1 v1 [LUB] :<label>
-		 * z0 c0 m0 y0 k0 z1 c1 m1 y1 k1 [LUB] :<label>
+		 * z0 - z1 - [LUB] ;<label>
+		 * z0 pattern z1 - [LUB] ;<label>
+		 * z0 r0 z1 r1 [LUB] ;<label>
+		 * z0 r0 g0 b0 z1 r1 g1 b1 [LUB] ;<label>
+		 * z0 h0 s0 v0 z1 h1 s1 v1 [LUB] ;<label>
+		 * z0 c0 m0 y0 k0 z1 c1 m1 y1 k1 [LUB] ;<label>
 		 */
 
 		/* First determine if a label is given */
 		
-		if ((k = (long)strchr (line, ':'))) {	/* OK, find the label and chop it off */
+		if ((k = (long)strchr (line, ';'))) {	/* OK, find the label and chop it off */
 			k -= (long)line;	/* Position of the column */
 			GMT_lut[n].label = (char *)GMT_memory (VNULL, strlen (line) - k, sizeof (char), GMT_program);
 			strcpy (GMT_lut[n].label, &line[k+1]);

@@ -41,6 +41,8 @@ every color level (which may be overridden by ULB flags in the cpt file).
 Note that since vertical labels will be plotted as a column
 of individual characters, no octal escape characters embedded in the label are allowed.
 Text with such characters will be plotted horizontally (relative to the color scale).
+BY default, labels are generated from the numerical entries.  To specify custom text
+labels for intervals, you must append ;\fIlabel\fP to each z-slice in the cpt file.
 .TP
 .B \-C
 \fIcpt_file\fP is the color palette file to be used.
