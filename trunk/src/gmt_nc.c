@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.35 2005-12-13 20:03:50 remko Exp $
+ *	$Id: gmt_nc.c,v 1.36 2005-12-17 04:44:55 pwessel Exp $
  *
  *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -79,11 +79,11 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 	float *tmp = VNULL;
 	double t_value;
 
-	t_value = GMT_d_NaN, header->t_index = -1;
-
 	/* Dimension ids, variable ids, etc.. */
 	int ncid, x_dim, y_dim, t_dim, x_id = -1, y_id = -1, t_id = -1, z_id = -1, dims[3], nvars, ndims;
 	size_t lens[3];
+
+	t_value = GMT_d_NaN, header->t_index = -1;
 
 	/* If the file name contains a ?, extract the name of the variable following it */
 
