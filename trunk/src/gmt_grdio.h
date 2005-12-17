@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.23 2005-09-18 16:00:17 remko Exp $
+ *	$Id: gmt_grdio.h,v 1.24 2005-12-17 05:59:21 pwessel Exp $
  *
- *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify

@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.34 2005-12-13 20:03:50 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.35 2005-12-17 05:59:21 pwessel Exp $
  *
- *	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
