@@ -4,7 +4,7 @@ binlegs \- Maintain the \fBGMT-SYSTEM\fP index files
 .SH SYNOPSIS
 \fBbinlegs \fIleglistfile\fP [ \fB\-R\fP ] [ \fB\-D\fP ] [ \fB\-P\fP\fIpath\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
-\fBbinlegs\fP will make changes to the \fBGMT-SYSTEM\fP files \fIgmt_legs.d\fP and \fIgmt_index.b\fP
+\fBbinlegs\fP will make changes to the \fBmgg\fP supplement data base files \fIgmt_legs.d\fP and \fIgmt_index.b\fP
 for the legs listed in the \fIleglistfile\fP.  Normally, only the data archivist will need to
 be concerned with these operations.
 .TP

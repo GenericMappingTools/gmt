@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.112 2005-12-17 05:59:21 pwessel Exp $
+ *	$Id: gmt.h,v 1.113 2005-12-18 05:10:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -500,8 +500,6 @@ EXTERN_MSC BOOLEAN GMT_processed_option[N_UNIQUE];	/* TRUE if option has been pr
 
 EXTERN_MSC FILE *GMT_stdin, *GMT_stdout;
 EXTERN_MSC PFI GMT_input, GMT_output, GMT_input_ascii;
-EXTERN_MSC BOOLEAN GMT_geographic_in;	/*TRUE if input data is long/lat */
-EXTERN_MSC BOOLEAN GMT_geographic_out;	/*TRUE if output data is long/lat */
 EXTERN_MSC double GMT_data[BUFSIZ];
 EXTERN_MSC int GMT_n_file_suffix;
 EXTERN_MSC int *GMT_file_id;

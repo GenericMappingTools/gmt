@@ -36,17 +36,18 @@ input file(s) with 2 or more columns. If no file(s) is given, \fBmapproject\fP w
 .B \-A
 .TP
 \fB\-Af\fP calculates the (forward) azimuth from fixed point \fIlon/lat\fP to each data point.  Use \fB\-Ab\fP to get
-backazimuth from data points to fixed point.  Upper case \fBF\fP or \fBB\fP will convert from geodetic to
+back-azimuth from data points to fixed point.  Upper case \fBF\fP or \fBB\fP will convert from geodetic to
 geocentric latitudes and estimate azimuth of geodesics (assuming the current ellipsoid is not a sphere).
+.TP
 .B \-C
 Set center of projected coordinates to be at map projection center [Default is lower left corner].
 Optionally, add offsets in the projected units to be added (or subtracted when \fB\-I\fP is set) to (from)
 the projected coordinates, such as false eastings and northings for particular projection zones [0/0].
-The unit used for the offsets is the plot distance unit in effect (see MEASURE_UNIT) unless \fB\-F\fP is used,
+The unit used for the offsets is the plot distance unit in effect (see \fBMEASURE_UNIT\fP) unless \fB\-F\fP is used,
 in which case the offsets are in meters.
 .TP
 .B \-D
-Temporarily override MEASURE_UNIT and use \fBc\fP (cm), \fBi\fP (inch),
+Temporarily override \fBMEASURE_UNIT\fP and use \fBc\fP (cm), \fBi\fP (inch),
 \fBm\fP (meter), or \fBp\fP (points) instead.  Cannot be used with \fB\-F\fP.
 .TP
 .B \-E
@@ -58,7 +59,7 @@ given we assume WGS-84.
 .B \-F
 Force 1:1 scaling, i.e., output (or input, see \fB\-I\fP) data are in actual projected meters.  To specify other units,
 append \fBk\fP (km), \fBm\fP (mile), \fBn\fP (nautical mile), \fBi\fP (inch), \fBc\fP (cm), or \fBp\fP (points).
-Without \fB\-F\fP, the output (or input, see \fB\-I\fP) are in the units specified by MEASURE_UNIT (but see \fB\-D\fP).
+Without \fB\-F\fP, the output (or input, see \fB\-I\fP) are in the units specified by \fBMEASURE_UNIT\fP (but see \fB\-D\fP).
 .TP
 .B \-G
 Calculate distances along track OR to the optional point set with \fB\-G\fP\fIx0/y0\fP.  Append the distance unit;
@@ -124,6 +125,8 @@ To convert the geodetic coordinates (lon, lat, height) in the file old.dat from 
 .br
 .sp
 \fBmapproject\fP old.dat \fB\-Th\fP131 > new.dat
+.br
+.sp
 To compute the closest distance (in km) between each point in the input file quakes.dat and the
 line segments given in the multi-segment ASCII file coastline.xy, run
 .br

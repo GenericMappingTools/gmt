@@ -43,7 +43,7 @@ outside range when estimating CDF(Z).  [Default uses min and max of data.]
 .TP
 .B \-N
 Do Not write out the background, foreground, and NaN-color fields [Default will write the parameters
-COLOR_BACKGROUND, COLOR_FOREGROUND, and COLOR_NAN in your .gmtdefaults4 file.
+\fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\fP in your .gmtdefaults4 file.
 .TP
 .B \-Q
 Selects a logarithmic interpolation scheme [Default is linear].  \fB\-Qi\fP expects input z-values to be log10(z), assigns colors, and writes out z [Default].

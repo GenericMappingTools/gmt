@@ -1,6 +1,6 @@
 \fIpen\fP is a comma delimetered list of \fIwidth\fP, \fIcolor\fP and \fItexture\fP, each of which is optional.
-\fIwidth\fP can be indicated as a measure (points, centimeters, inches) or as \fBfaint\fP, \fBthin\fP or
-\fBfat\fP.
+\fIwidth\fP can be indicated as a measure (points, centimeters, inches) or as \fBfaint\fP, \fBthin\fP[\fBer\fP|\fBest\fP],
+\fBfat\fP[\fBer\fP|\fBest\fP], or \fBobese\fP.
 \fIcolor\fP specifies a grey shade (0\-255) or color (r/g/b, each in range 0\-255; h-s-v, ranges
 0\-360, 0\-1, 0\-1; or c/m/y/k, each in range 0\-100%; or valid color name).
 \fItexture\fP is a combination of dashes `-' and dots `.'.

@@ -36,7 +36,7 @@ Pass all records whose location is within \fIdist\fP of any of the points in the
 is zero then the 3rd column of \fIptfile\fP must have each point's\"'
 individual radius of influence.  Distances are in user units; specify
 \fB\-fg\fP or a map projection to indicate distances in km.  Prepend \fBf\fP to indicate you want approximate flat
-earth distance calculations (faster) rather than exact geodesic distances (slower).  However, if the current ELLIPSOID
+earth distance calculations (faster) rather than exact geodesic distances (slower).  However, if the current \fBELLIPSOID\fP
 is set to Sphere then spherical great circle calculations are used.
 .TP
 .B \-D
@@ -46,7 +46,7 @@ resolution drops off by ~80% between data sets. [Default is \fBl\fP].  Note that
 .B \-F
 Pass all records whose location is within one of the closed polygons in the multiple-segment
 ASCII file \fIpolygonfile\fP.  For spherical polygons (lon, lat), make sure no consecutive points
-are separated by 180 degrees or more.
+are separated by 180 degrees or more in longitude.
 #include "explain_-H.txt"
 .TP
 .B \-I
@@ -117,8 +117,8 @@ coastlines), use
 .sp
 \fBgmtselect\fP data.d \fB\-R\fP120/121/22/24 \fB\-Dh\fP \fB\-Ns\fP/\fBk\fP > subset
 .br
+.sp
 To return all points in quakes.d that are inside the spherical polygon lonlatpath.d, try
-coastlines), use
 .br
 .sp
 \fBgmtselect\fP quakes.d \fB\-F\fPlonlatpath.d \fB\-fg\fP > subset

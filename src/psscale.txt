@@ -7,9 +7,10 @@
 .SH NAME
 psscale \- Create grayscale or colorscale for maps
 .SH SYNOPSIS
-\fBpsscale\fP \fB\-D\fP\fIxpos/ypos/length/width[h]\fP 
- [ \fB\-A \fP ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIcpt_file\fP ] [ \fB\-E\fP[\fBb|f\fP][\fIlength\fP] ] 
-[ \fB\-I\fP[\fImax_intens\fP] ] [ \fB\-K\fP ] [ \fB\-L\fP[\fBi\fP][\fIgap\fP] ]  [ \fB\-M\fP ] [ \fB\-N\fP\fIdpi\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
+\fBpsscale\fP \fB\-D\fP\fIxpos/ypos/length/width\fP[\fBh\fP] [ \fB\-A \fP ] [ \fB\-B\fP\fItickinfo\fP ] 
+[ \fB\-C\fP\fIcpt_file\fP ] [ \fB\-E\fP[\fBb|f\fP][\fIlength\fP] ] 
+[ \fB\-I\fP[\fImax_intens\fP] ] [ \fB\-K\fP ] [ \fB\-L\fP[\fBi\fP][\fIgap\fP] ]  [ \fB\-M\fP ] 
+[ \fB\-N\fP\fIdpi\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
 [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-X\fP\fIx-shift\fP ] 
 [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fIzfile\fP ] [ \fB\-c\fP\fIcopies\fP ]
 .SH DESCRIPTION
@@ -41,7 +42,7 @@ every color level (which may be overridden by ULB flags in the cpt file).
 Note that since vertical labels will be plotted as a column
 of individual characters, no octal escape characters embedded in the label are allowed.
 Text with such characters will be plotted horizontally (relative to the color scale).
-BY default, labels are generated from the numerical entries.  To specify custom text
+By default, labels are generated from the numerical entries.  To specify custom text
 labels for intervals, you must append ;\fIlabel\fP to each z-slice in the cpt file.
 .TP
 .B \-C

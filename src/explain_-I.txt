@@ -4,7 +4,7 @@
 indicate minutes or \fBc\fP to indicate seconds.  If one of the units \fBe\fP, \fBk\fP, \fBi\fP,
 or \fBn\fP is appended instead, the increment will be assumed to be in meter, km, miles, or
 nautical miles, respectively, and will be converted to the equivalent degrees longitude at
-the middle latitude of the region.  If /\fIy_inc\fP is given but set to 0 it will be reset equal to
+the middle latitude of the region (the conversion depends on \fBELLIPSOID\fP).  If /\fIy_inc\fP is given but set to 0 it will be reset equal to
 \fIx_inc\fP; otherwise it will be converted to degrees latitude.  If \fB=\fP is appended then
 the corresponding max \fIx\fP (\fIeast\fP) or \fIy\fP (\fInorth\fP) may be slightly adjusted to fit exactly the given increment
 [by default the increment may be adjusted slightly to fit the given domain].  Finally, instead

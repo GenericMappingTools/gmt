@@ -47,8 +47,7 @@ x_gravity, x_magnetics, x_bathymetry, average gravity, average magnetics, averag
 heading along track #1, and heading along track #2. Sign convention: If lega and legb are passed
 on the command line, then the COE value is Value (lega) - Value (legb).  It is recommended that
 the Akima spline is used instead of the natural cubic spline, since it is less sensitive to
-outliers that tend to introduce wild oscillations in the interpolation.  A version of \fBx_over\fP
-compiled for a SUN with FPA board is provided (\fBx_over\fP).
+outliers that tend to introduce wild oscillations in the interpolation.
 .SH SEE ALSO
 .IR gmt (GMTMANSECTION),
 .IR x_system (GMTMANSECTION)

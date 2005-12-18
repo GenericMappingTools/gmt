@@ -27,7 +27,7 @@ option flags and lower case for modifiers.
 .B \-A
 Force 1:1 scaling, i.e., output (or input, see \fB\-I\fP) data are in actual projected meters.  To specify other units,
 append \fBk\fP (km), \fBm\fP (mile),\fBn\fP (nautical mile), \fBi\fP (inch), \fBc\fP (cm), or \fBp\fP (points).
-Without \fB\-A\fP, the output (or input, see \fB\-I\fP) are in the units specified by MEASURE_UNIT (but see \fB\-M\fP).
+Without \fB\-A\fP, the output (or input, see \fB\-I\fP) are in the units specified by \fBMEASURE_UNIT\fP (but see \fB\-M\fP).
 .TP
 .B \-C
 Let projected coordinates be relative to projection center [Default is relative to lower left corner].
@@ -51,7 +51,7 @@ Do the Inverse transformation, from rectangular to geographical.
 .TP
 .B \-M
 Append \fBc\fP, \fBi\fP, or \fBm\fP to indicate that cm, inch, or meter should be the projected measure unit
-[Default is set by MEASURE_UNIT in \.gmtdefaults4].  Cannot be used with \fB\-A\fP.
+[Default is set by \fBMEASURE_UNIT\fP in \.gmtdefaults4].  Cannot be used with \fB\-A\fP.
 .TP
 .B \-N
 Set the number of grid nodes in the new grid.

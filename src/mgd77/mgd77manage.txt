@@ -33,7 +33,7 @@ the MGD77+ file. If no file is given we read from stdin instead.
 .br
 .sp
 \fBc\fP Create a new column that derives from existing data or formulas for corrections and reference
-fields.  Append \fBc\fP for the Carter corrections subtracted from uncorrected depths, fBg\fP for the
+fields.  Append \fBc\fP for the Carter corrections subtracted from uncorrected depths, \fBg\fP for the
 IGF gravity reference field (a.k.a "normal gravity"), and \fBm\fP for the IGRF total field magnetic
 reference field.  For gravity we choose the reference field based on the parameter Gravity Theoretical
 Formula Code in the cruise's MGD77 header.  If this is not set or is invalid we default to the IGF 1980.

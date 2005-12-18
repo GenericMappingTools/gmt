@@ -142,14 +142,6 @@ the font name (case sensitive!).  The 39 available fonts are:
 	33 ZapfChancery-MediumItalic
 .br
 	34 ZapfDingbats
-.br
-	35 Ryumin-Light-EUC-H
-.br
-	36 Ryumin-Light-EUC-V
-.br
-	37 GothicBBB-Medium-EUC-H
-.br
-	38 GothicBBB-Medium-EUC-V
 .TP
 .B ANNOT_FONT_SIZE_PRIMARY
 Font size (> 0) in points for map annotations.  [14]
@@ -160,11 +152,11 @@ Font to use for time axis secondary annotations.  See \fBANNOT_FONT_PRIMARY\fP f
 .B ANNOT_FONT_SIZE_SECONDARY
 Font size (> 0) for time axis secondary annotations in points  [16].
 .TP
-.B ANNOT_OFFSET_PRIMARY	
+.B ANNOT_OFFSET_PRIMARY
 Distance from end of tickmark to start of annotation [LEN_1_SI (or LEN_1_US)].  A negative
 offset will place the annotation inside the map border.
 .TP
-.B ANNOT_OFFSET_SECONDARY		
+.B ANNOT_OFFSET_SECONDARY
 Distance from base of primary annotation to the top of the secondary annotation [LEN_1_SI (or LEN_1_US)] (Only
 applies to time axes with both primary and secondary annotations).
 .TP
@@ -209,7 +201,8 @@ options:
 .TP
 .B COLOR_MODEL
 Selects if color palette files contain rgb values (r,g,b in 0-255 range) or HSV values
-(h in 0-360, s,v in 0-1 range)  [rgb].
+(h in 0-360, s,v in 0-1 range).  A \fBCOLOR_MODE\fP setting in the color palette file
+will override this setting.  [rgb].
 .TP
 .B COLOR_NAN
 Color used for the non-defined areas of images (i.e., where z == NaN).
@@ -221,7 +214,7 @@ For geographic coordinates, see \fBOUTPUT_DEGREE_FORMAT\fP. [%lg].
 .TP
 .B DEGREE_SYMBOL
 Determines what symbol is used to plot the degree symbol on geographic map annotations.  Choose between
-ring, degree, colon, none [ring].
+ring, degree, colon, or none [ring].
 .TP
 .B DOTS_PR_INCH
 Resolution of the plotting device (dpi).  Note that in order to be as compact as possible,
@@ -295,7 +288,7 @@ Font to use when plotting headers.  See \fBANNOT_FONT_PRIMARY\fP for available f
 .B HEADER_FONT_SIZE
 Font size (> 0) for header in points  [36].
 .TP
-.B HEADER_OFFSET		
+.B HEADER_OFFSET
 Distance from top of axis annotations (or axis label, if present) to base of plot header [LEN_6_SI (or LEN_6_US)].
 .TP
 .B HSV_MIN_SATURATION
@@ -344,7 +337,7 @@ Font to use when plotting labels below axes.  See \fBANNOT_FONT_PRIMARY\fP for a
 .B LABEL_FONT_SIZE
 Font size (> 0) for labels in points  [24].
 .TP
-.B LABEL_OFFSET		
+.B LABEL_OFFSET
 Distance from base of axis annotations to the top of the axis label [LEN_5_SI (or LEN_5_US)].
 .TP
 .B LINE_STEP
@@ -584,14 +577,15 @@ of the form yyyy-mm-ddThh:mm:ss (Gregorian) or yyyy-Www-ddThh:mm:ss (ISO) indica
 the value of the calendar and clock at the origin (zero point) of relative time units.
 .TP
 .B TIME_IS_INTERVAL
-Used when input calendar data should be truncated and adjusted to the middle of the relevant interval.  In the following discussion,
-the unit \fBu\fP can be one of these time units: (\fBy\fP year, \fBo\fP month, \fBu\fP ISO week, \fBd\fP day, \fBh\fP hour,
-\fBm\fP minute, and \fBc\fP second).  \fBTIME_IS_INTERVAL\fP
-can have any of the following three values: 1. OFF [Default].  No adjustment, time is decoded as given. 2. +\fIn\fP\fBu\fP.  Activate interval
-adjustment for input by truncate to previous whole number of \fIn\fP units and then center time on the following interval.  3. -\fIn\fP\fBu\fP.  Same,
-but center time on the previous interval.  For example, with \fBTIME_IS_INTERVAL\fP = +1o, an input data string like 1999-12 will
-be interpreted to mean 1999-12-15T12:00:00.0 (exactly middle of December), while if \fBTIME_IS_INTERVAL\fP = OFF then that date
-is interpreted to mean 1999-12-1T00:00:00.0 (start of December).
+Used when input calendar data should be truncated and adjusted to the middle of the relevant interval.
+In the following discussion, the unit \fBu\fP can be one of these time units: (\fBy\fP year, \fBo\fP month,
+\fBu\fP ISO week, \fBd\fP day, \fBh\fP hour, \fBm\fP minute, and \fBc\fP second).  \fBTIME_IS_INTERVAL\fP
+can have any of the following three values: (1) OFF [Default].  No adjustment, time is decoded as given.
+(2) +\fIn\fP\fBu\fP.  Activate interval adjustment for input by truncate to previous whole number of \fIn\fP
+units and then center time on the following interval.  (3) -\fIn\fP\fBu\fP.  Same, but center time on the
+previous interval.  For example, with \fBTIME_IS_INTERVAL\fP = +1o, an input data string like 1999-12 will
+be interpreted to mean 1999-12-15T12:00:00.0 (exactly middle of December), while if \fBTIME_IS_INTERVAL\fP = OFF
+then that date is interpreted to mean 1999-12-1T00:00:00.0 (start of December).
 .TP
 .B TIME_INTERVAL_FRACTION
 Determines if partial intervals at the start and end of an axis should be annotated.  If the range of the partial

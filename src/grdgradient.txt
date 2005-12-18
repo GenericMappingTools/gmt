@@ -48,7 +48,7 @@ The Lambertian Reflection assumes an ideal surface that reflects all the light t
 strikes it and the surface appears equally bright from all viewing directions.
 Append \fBp\fP to use the Peucker picewise linear  approximation (simpler but faster algorithm;
 in this case the \fIazim\fP and \fIelev\fP are hardwired to 315 and 45 degrees.
-This means that even if you provide other values they will be ignored.
+This means that even if you provide other values they will be ignored.)
 .TP
 .B \-L
 Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of 

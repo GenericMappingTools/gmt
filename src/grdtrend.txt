@@ -53,7 +53,7 @@ Legendre polynomials.  These have a numerical advantage in the form of the matri
 inverted and allow more accurate solutions.  NOTE: The model parameters listed with \fB\-V\fP are 
 Legendre polynomial coefficients; they are not numerically equivalent to the m#s in the equation 
 described above.  The description above is to allow the user to match \fB\-N\fP with the order of the 
-polynomial surface.    
+polynomial surface.  See \fBgrdmath\fP if you need to evaluate the trend using the reported coefficients. 
 .SH EXAMPLES
 To remove a planar trend from hawaii_topo.grd and write result in hawaii_residual.grd:
 .br

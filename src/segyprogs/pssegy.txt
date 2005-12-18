@@ -2,8 +2,8 @@
 .SH NAME
 pssegy \- Create imagemasked postscript from SEGY file
 .SH SYNOPSIS
-\fBpssegy\fP \fISEGYfile\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP \fB\-D\fP\fIdeviation 
-\fB\-F\fP[\fBrgb|gray\fP]|\fB\-W\fP 
+\fBpssegy\fP \fISEGYfile\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP \fB\-D\fP\fIdeviation\fP 
+\fB\-F\fP[\fBrgb\fP|\fBgray\fP]|\fB\-W\fP 
 [ \fB\-B\fP\fIbias\fP ] [ \fB\-C\fP\fIclip\fP ] [ \fB-E\fP\fIerror\fP ] [ \fB\-I\fP ]
 [ \fB\-K\fP ] [ \fB\-L\fP\fInsamp\fP ] [ \fB\-M\fP\fIntrace\fP ] [ \fB\-N\fP ] [ \fB\-O\fP ]
 [ \fB\-P\fP ] [ \fB\-S\fP\fIheader\fP ] [ \fB-T\fP\fIfilename\fP ] [ \fB\-U\fP\fIredvel\fP ]
@@ -18,7 +18,7 @@ The bitmap resolution is taken from the current \fBGMT\fP defaults.
 The seismic traces may be plotted at their true locations using information
 in the trace headers (in which case order of the
 traces in the file is not significant).
- Standard \fBGMT\fP geometry routines are used so that
+Standard \fBGMT\fP geometry routines are used so that
 in principle any map projection may be used, however it is likely that the
 geographic projections will lead to unexpected results. Beware also
 that some parameters have non-standard meanings.
@@ -50,7 +50,7 @@ the color with which the imagemask is filled.
 .B \-W
 Draw wiggle trace.
 .TP
-\fI Must specify at least one of -W and -F.\fP
+You \fImust\fP specify at least one of \fB\-W\fP and \fB\-F\fP.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP

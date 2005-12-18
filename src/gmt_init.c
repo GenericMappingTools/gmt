@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.201 2005-12-17 05:59:21 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.202 2005-12-18 05:10:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2855,6 +2855,7 @@ int GMT_begin (int argc, char **argv)
 	/* Make sure -b options are parsed first in case filenames are given
 	 * before -b options on the command line.  This would only cause grief
 	 * under WIN32. Also make -J come first and -R before -I, if present.
+	 * We also run -f through in case -: is given.
 	 * Finally, we look for -V so verbose is set prior to testing arguments */
 
 	for (i = 1, j = k = n = 0; i < argc; i++) {
