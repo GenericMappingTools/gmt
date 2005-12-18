@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.15 2005-12-17 05:59:21 pwessel Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.16 2005-12-18 15:56:05 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2006.
@@ -83,7 +83,7 @@ to swap the byte-order on either input or output you must use upper case
 \subsection{NetCDF files}
 \index{grdfile!formats!netCDF|(}
 
-By default, \GMT\ stores 2-D grids as COARD-compliant netCDF files.
+By default, \GMT\ stores 2-D grids as COARDS-compliant netCDF files.
 COARDS (Cooperative Ocean/Atmosphere Research Data Service) is a convention used by
 many agencies distributing gridded data for ocean and atmosphere research. Sticking to
 this convention allows \GMT\ to read gridded data provided by other institutes
@@ -275,10 +275,10 @@ is the two-dimensional Laplacian operator.
 \end{description}
 \index{grdfile!boundary conditions|)}
 
-\subsection{Generic grid files}
-\index{grdfile!old style generic}
+\subsection{Native binary grid files}
+\index{grdfile!native binary|(}
 
-The old style generic grid file format that was common in earlier version of \GMT\ is still
+The old style native grid file format that was common in earlier version of \GMT\ is still
 supported, although the use of netCDF files is strongly recommended.
 The file starts with a header containing a number of attributes defining the content.
 The \GMTprog{grdedit} utility program will allow you to edit parts of
@@ -310,11 +310,12 @@ is not part of the header structure, but makes up the rest of the file).
 {\bf char} {\it command}[320]   &       Command line that produced the grdfile  \\ \hline
 {\bf char} {\it remark}[160]    &       Any additional comments \\ \hline \hline
 {\bf TYPE} {\it z}[nx*ny]      &       1-D array with $z$-values in scanline format \\ \hline
-\end{tabular} 
+\end{tabular}
 \caption{\gmt\ gridded file header record. {\bf TYPE} can be {\bf char}, {\bf short}, {\bf int}, {\bf float}, or {\bf
 double}.}
 \label{tbl:grdheader}
 \end{table}
+\index{grdfile!native binary|)}
 
 \section{Sun raster files}
 \index{Rasterfile!format}
