@@ -32,7 +32,7 @@ Suppress output records where all the data columns are NaN [Default will output 
 #include "explain_-V.txt"
 #include "explain_-o_binary.txt"
 .SH EXAMPLES
-To extract all data from the old-style GMT MGG file c2104.gmt, recognized by the tag MGG:
+To extract all data from the old-style MGG supplement file c2104.gmt, recognized by the tag MGG:
 .br
 .sp
 \fBx2sys_datalist\fP c2104.gmt \fB\-T\fPmgg > myfile

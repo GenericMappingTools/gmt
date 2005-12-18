@@ -73,7 +73,7 @@ binary files).
 the \fIx\fP-coordinate (longitudes).
 .br
 \fBMULTISEG\fP means each track consists of multiple segments separated
-by a GMT multisegment header (alternatively,
+by a \fBGMT\fP multisegment header (alternatively,
 use \fB\-M\fP when defining the system TAG).
 .br
 .sp
@@ -115,8 +115,8 @@ missing data (NaNs).  If so, the \fINaN-proxy\fP value should be set
 accordingly (otherwise it is ignored).  The \fIscale\fP and \fIoffset\fP are
 applied to the data values after they are read (first scaled, then offset), 
 whereas the \fIoformat\fP is used by some programs for formatted output.
-If you give - as the \fIoformat\fP then GMT's formatting machinery will be used
-instead (i.e., PLOT_\fBDEGREE_FORMAT\fP, \fBPLOT_DATE_FORMAT\fP, \fBPLOT_CLOCK_FORMAT\fP).
+If you give - as the \fIoformat\fP then \fBGMT\fP's formatting machinery will be used
+instead (i.e., \fBPLOT_DEGREE_FORMAT\fP, \fBPLOT_DATE_FORMAT\fP, \fBPLOT_CLOCK_FORMAT\fP).
 Some file formats already have definition files premade.  These include
 mgd77 (for plain ASCII MGD77 data files), mgd77+ (for enhanced MGD77+
 netCDF files), gmt (for old mgg supplement binary files), xy (for plain ASCII

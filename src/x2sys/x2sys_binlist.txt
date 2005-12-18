@@ -31,7 +31,7 @@ calculation selected with \fB\-D\fP (see \fB\-N\fP for selecting units):
 .br
 	\fBg\fP Great circle distances.
 .br
-	\fBe\fP Geodesic distances on current GMT ellipsoid.
+	\fBe\fP Geodesic distances on current \fBGMT\fP ellipsoid.
 .TP
 .B \-D
 Calculate the length of trackline segments per bin [Default skips this step].

@@ -1,6 +1,6 @@
 .TH BINLEGS GMTMANSECTION DATE VERSION VERSION
 .SH NAME
-binlegs \- Maintain the \fBGMT-SYSTEM\fP index files
+binlegs \- Maintain the \fBGMT\fP index files for mgg supplement
 .SH SYNOPSIS
 \fBbinlegs \fIleglistfile\fP [ \fB\-R\fP ] [ \fB\-D\fP ] [ \fB\-P\fP\fIpath\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
@@ -21,7 +21,7 @@ Replace the current information if a leg already is in the system.  [Default is 
 Delete information for these legs from the system index files.
 .TP
 .B \-P
-Set the path to where the \fIgmt_legs.d\fP and \fIgmt_index.b\fP files reside.  [Default is the $GMTHOME/lib.mgg directory].
+Set the path to where the \fIgmt_legs.d\fP and \fIgmt_index.b\fP files reside.  [Default is the \fB$GMTHOME\fP/lib.mgg directory].
 #include "explain_-V.txt"
 .SH EXAMPLES
 To add new cruises to the system:

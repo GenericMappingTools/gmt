@@ -30,7 +30,7 @@ Select procedure for along-track distance calculation:
 .br
 	\fBg\fP Great circle distances.
 .br
-	\fBe\fP Geodesic distances on current GMT ellipsoid.
+	\fBe\fP Geodesic distances on current \fBGMT\fP ellipsoid.
 .TP
 .B \-F
 Sets which columns to use.  Give a comma-separated list of column names;
