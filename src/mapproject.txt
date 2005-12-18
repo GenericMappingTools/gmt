@@ -33,8 +33,7 @@ Data file(s) to be transformed.  If not given, standard input is read.
 \fIinfile(s)\fP
 input file(s) with 2 or more columns. If no file(s) is given, \fBmapproject\fP will read the standard input.
 .TP
-.B \-A
-.TP
+\fB\-A\fP[\fBf\fP|\fBb\fP]
 \fB\-Af\fP calculates the (forward) azimuth from fixed point \fIlon/lat\fP to each data point.  Use \fB\-Ab\fP to get
 back-azimuth from data points to fixed point.  Upper case \fBF\fP or \fBB\fP will convert from geodetic to
 geocentric latitudes and estimate azimuth of geodesics (assuming the current ellipsoid is not a sphere).

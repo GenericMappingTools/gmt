@@ -103,7 +103,7 @@ To extract the locations of local maxima that exceed 100 mGal in the file faa.gr
 \fBgrdmath\fP faa.grd \fBDUP EXTREMA\fP 2 \fBEQ MUL DUP\fP 100 \fBGT MUL\fP 0 \fBNAN\fP = z.grd
 .br
 \fBgrd2xyz\fP z.grd \fB\-S\fP > max.xyz
-.SH BUGS
+.SH REMARKS
 (1) Files that have the same names as some operators, e.g., \fBADD\fP, \fBSIGN\fP, \fB=\fP, etc. should be
 identified by prepending the current directory (i.e., ./LOG).
 .br

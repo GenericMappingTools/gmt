@@ -29,7 +29,7 @@ Use the center of the block as the output location [Default uses the modal xy lo
 .TP
 .B \-F
 Block centers have pixel registration. [Default:  grid registration.]  (Registrations are defined in 
-GMT Cookbook Appendix B on grid file formats.)  Each block is the locus of points nearest the grid value 
+\fBGMT\fP Cookbook Appendix B on grid file formats.)  Each block is the locus of points nearest the grid value 
 location.  For example, with \fB\-R\fP10/15/10/15 and and \fB\-I\fP1:  with the \fB\-F\fP option 10 <= 
 (x,y) < 11 is one of 25 blocks; without it 9.5 <= (x,y) < 10.5 is one of 36 blocks.
 #include "explain_-H.txt"

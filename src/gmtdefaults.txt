@@ -71,7 +71,7 @@ annotation is not plotted (this may occur for certain oblique projections.) [0]
 .TP
 .B ANNOT_FONT_PRIMARY
 Font used for upper annotations, etc. [Helvetica].  Specify either the font number or
-the font name (case sensitive!).  The 39 available fonts are:
+the font name (case sensitive!).  The 35 available fonts are:
 .br
 	0  Helvetica
 .br
@@ -269,7 +269,7 @@ instead [0].
 .B GRID_FORMAT
 Default file format for grids, with optional scale, offset and invalid value, written as
 ff/scale/offset/invalid. The 2-letter format indicator can be one of [bcnsr][bsifd]. The first
-letter indicates native GMT binary, old format NetCDF, COARDS-compliant NetCDF, Surfer format or Sun
+letter indicates native \fBGMT\fP binary, old format NetCDF, COARDS-compliant NetCDF, Surfer format or Sun
 Raster format. The second letter stands for byte, short, int, float and double, respectively. When
 /invalid is omitted the appropriate value for the given format is used (NaN or largest negative).
 When /scale/offset is omitted, /1.0/0.0 is used. [nf].
@@ -352,7 +352,7 @@ Sets the height (> 0) on the map of the map scale bars drawn by various programs
 .TP
 .B MEASURE_UNIT
 Sets the unit length.  Choose between cm, inch, m, and point.  [cm].  Note
-that, in GMT, one point is defined as 1/72 inch (the \fIPostScript\fP definition), while it
+that, in \fBGMT\fP, one point is defined as 1/72 inch (the \fIPostScript\fP definition), while it
 is often defined as 1/72.27 inch in the typesetting industry.  There is no
 universal definition.
 .TP
@@ -433,69 +433,71 @@ Sets the orientation of the page.  Choose portrait or landscape  [landscape].
 Sets the physical format of the current plot paper [MY_PAPER].  The following
 formats (and their widths and heights in points) are recognized (Additional
 site-specific formats may be specified in
-the gmtmedia.d file in $GMTHOME/share; see that file for details):
+the gmtmedia.d file in \fB$GMTHOME\fP/share; see that file for details):
 .br
 .sp
-	Media		width	height
+.RS
+Media	width	height
 .br
-	A0			2380		3368
+A0	2380	3368
 .br
-	A1			1684		2380
+A1	1684	2380
 .br
-	A2			1190		1684
+A2	1190	1684
 .br
-	A3			842		1190
+A3	842	1190
 .br
-	A4			595		842
+A4	595	842
 .br
-	A5			421		595
+A5	421	595
 .br
-	A6			297		421
+A6	297	421
 .br
-	A7			210		297
+A7	210	297
 .br
-	A8			148		210
+A8	148	210
 .br
-	A9			105		148
+A9	105	148
 .br
-	A10			74		105
+A10	74	105
 .br
-	B0			2836		4008
+B0	2836	4008
 .br
-	B1			2004		2836
+B1	2004	2836
 .br
-	B2			1418		2004
+B2	1418	2004
 .br
-	B3			1002		1418
+B3	1002	1418
 .br
-	B4			709		1002
+B4	709	1002
 .br
-	B5			501		709
+B5	501	709
 .br
-	archA		648		864
+archA	648	864
 .br
-	archB		864		1296
+archB	864	1296
 .br
-	archC		1296		1728
+archC	1296	1728
 .br
-	archD		1728		2592
+archD	1728	2592
 .br
-	archE		2592		3456
+archE	2592	3456
 .br
-	flsa			612		936
+flsa	612	936
 .br
-	halfletter	396		612
+halfletter	396	612
 .br
-	note			540		720
+note	540	720
 .br
-	letter		612		792
+letter	612	792
 .br
-	legal		612		1008
+legal	612	1008
 .br
-	11x17		792		1224
+11x17	792	1224
 .br
-	ledger		1224		792
+ledger	1224	792
 .br
+.RE
 .sp
 For a completely custom format (e.g., for large format plotters) you may also
 specify Custom_WxH, where W and H are in points.
@@ -650,8 +652,8 @@ Language to use when plotting calendar items such as months and days.  Select fr
 	US	US English
 .br
 .sp
-If your language is not supported, please examine the $GMTHOME/share/time/us.d file and
-make a similar file.  Please submit it to the GMT Developers for official inclusion. 
+If your language is not supported, please examine the \fB$GMTHOME\fP/share/time/us.d file and
+make a similar file.  Please submit it to the \fBGMT\fP Developers for official inclusion. 
 .TP
 .B TIME_SYSTEM
 Determines what the time epoch relative time refers to and what the units are.  Choose from one of the preset systems below

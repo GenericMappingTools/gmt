@@ -36,7 +36,7 @@ Give values for \fIxname, yname, zname, scale, offset, title,\fP and \fIremark\f
 To leave some of these values untouched, specify = as the value.
 .TP
 .B \-E
-Convert an ESRI ArcInfo ASCII interchange grid format file to a GMT grid.  Append \fInodata\fP which is a data
+Convert an ESRI ArcInfo ASCII interchange grid format file to a \fBGMT\fP grid.  Append \fInodata\fP which is a data
 value that should be set to NaN in the grid [Default is to read the optional 6th record in the file and get \fInodata\fP].
 The values normally given by \fB\-R\fP, \fB\-I\fP, and \fB\-F\fP are determined from the ESRI header instead.
 .TP
