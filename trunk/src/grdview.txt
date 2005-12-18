@@ -141,7 +141,7 @@ this image over the topography and shade the result for good measure.  The comma
 \fBgmt2rgb\fP veggies.ras \fB\-G\fPlayer_%c.grd
 .br
 \fBgrdview\fP topo.grd SCALE3 \fB\-Qi \-E\fP140/30 \fB\-I\fPtopo_intens.grd \fB\-G\fPlayer_r.grd,layer_g.grd,layer_b.grd > image.ps
-.SH BUGS
+.SH REMARKS
 For the \fB\-Qs\fP option:  \fIPostScript\fP provides no way of smoothly varying colors within a polygon, so colors can only
 vary from polygon to polygon.  To obtain smooth images this way you may resample the grdfile(s) using \fBgrdsample\fP or
 use a finer grid size when running gridding programs like \fBsurface\fP or \fBnearneighbor\fP.  Unfortunately,

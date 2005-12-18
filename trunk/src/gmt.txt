@@ -152,7 +152,7 @@ be found in the separate manual pages.
 .br
 .SH "SEE ALSO"
 Look up the individual man pages for details.  By default, these pages are
-in $GMTHOME/man/manl, depending on your installation settings.
+in \fB$GMTHOME\fP/man/manl, depending on your installation settings.
 Information is also available on the \fBGMT\fP home page gmt.soest.hawaii.edu
-or locally under $GMTHOME/www/gmt/gmt_services.html
+or locally under \fB$GMTHOME\fP/www/gmt/gmt_services.html
 #include "refs.i"

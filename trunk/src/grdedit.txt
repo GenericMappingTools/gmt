@@ -4,7 +4,7 @@ grdedit \- Modifying the header in a 2-D grdfile
 .SH SYNOPSIS
 \fBgrdedit\fP \fIgrdfile\fP [ \fB\-A\fP ] [ \fB\-D\fP\fIxname/yname/zname/scale/offset/title/remark\fP ] 
 [ \fB\-N\fP\fIxyzfile\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP ] [ \fB\-V\fP ] 
- [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+[ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBgrdedit\fP reads the header information in a binary 2-D grdfile and replaces
 the information with values provided on the command line [if any].  As an option,
@@ -23,7 +23,7 @@ Name of the 2-D grdfile to modify
 .B \-A
 If necessary, adjust the file's \fIx_inc, y_inc\fP to be compatible with\"'
 its domain (or a new domain set with \fB\-R\fP).  Older gridfiles (i.e., created
-prior to GMT 3.1) often had excessive slop in
+prior to \fBGMT\fP 3.1) often had excessive slop in
 \fIx_inc, y_inc\fP and an adjustment is necessary.  Newer files are created correctly.
 .TP
 .B \-D
@@ -62,7 +62,7 @@ data so that the limits would be -180/180/-72/72, use
 \fBgrdedit\fP world.grd \fB\-R\fP-180/180/-72/72 \fB\-S\fP
 .br
 .sp
-The file junk.grd was created prior to GMT 3.1 with incompatible
+The file junk.grd was created prior to \fBGMT\fP 3.1 with incompatible
 \fB\-R\fP and \fB\-I\fP arguments.  To reset the x- and y-increments
 we run
 .br

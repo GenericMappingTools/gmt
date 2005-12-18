@@ -28,7 +28,6 @@ are recognized, and the syntax for each of these records are presented below:
 Records starting with # and blank lines are skipped.
 .TP
 \fBB\fP \fIcptname offset height\fP [ \fIoptional arguments\fP ]
-.TP
 The B record will plot a horizontal color bar, \fBpsscale\fP-style in the middle, starting at \fIoffset\fP from
 the left edge, and of the given \fIheight\fP.  You may add any additional \fPpsscale\fP options from the list:
 \fB\-A \-B \-E \-I \-L \-M \-N \-S \fPand \fB\-Z\fP.
@@ -113,7 +112,7 @@ Sets the linespacing factor in units of the current annotation font size [1.1].
 #include "explain_-P.txt"
 .TP
 .B \-S
-Instead of writing the \fIPostScript\fP plot [Default], output the GMT script used to make the legend
+Instead of writing the \fIPostScript\fP plot [Default], output the \fBGMT\fP script used to make the legend
 to standard output, or optionally to the file \fIscript\fP.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
