@@ -45,22 +45,24 @@ skip writing the redundant row at y = ymax by appending \fBy\fP.  If the byte-or
 one of several data types (all binary except \fBa\fP):
 .br
 .sp
-	\fBa\fP  ASCII representation
+.RS
+\fBa\fP  ASCII representation
 .br
-	\fBc\fP  signed 1-byte character
+\fBc\fP  signed 1-byte character
 .br
-	\fBu\fP  unsigned 1-byte character
+\fBu\fP  unsigned 1-byte character
 .br
-	\fBh\fP  short 2-byte integer
+\fBh\fP  short 2-byte integer
 .br
-	\fBi\fP  4-byte integer
+\fBi\fP  4-byte integer
 .br
-	\fBl\fP  long (4- or 8-byte) integer
+\fBl\fP  long (4- or 8-byte) integer
 .br
-	\fBf\fP  4-byte floating point single precision
+\fBf\fP  4-byte floating point single precision
 .br
-	\fBd\fP  8-byte floating point double precision
+\fBd\fP  8-byte floating point double precision
 .br
+.RE
 .sp
 Default format is scanline orientation of ASCII numbers: \fB\-ZTLa\fP.
 Note that \fB\-Z\fP only applies to 1-column output.
