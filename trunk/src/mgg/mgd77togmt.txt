@@ -1,6 +1,6 @@
 .TH MDG77TOGMT GMTMANSECTION DATE VERSION VERSION
 .SH NAME
-mgd77togmt \- Convert an MGD-77 ascii file to a binary gmt file
+mgd77togmt \- Convert an MGD-77 ASCII file to a binary gmt file
 .SH SYNOPSIS
 \fBmgd77togmt\fP [ \fB\-L\fP\fIlist\fP ] [ \fImgd77file\fP ] \fB\-F\fP\fIlegid\fP \fB\-Y\fP\fIstart_year\fP 
 [ \fB\-A\fP\fIinformation\fP ] [ \fB\-I\fP\fItime_increment\fP ] [ \fB\-V\fP ]

@@ -104,9 +104,7 @@ awk '{ if (NR > 1) print atan2(y-$1, x-$2); y=$1; x=$2; }' yourdata.xyz | more
 Then if these numbers jump around a lot, you may do this:
 .br
 .sp
-\fBgmtset\fP D_FORMAT %.12lg
-.br
-awk '{ print NR, $0 }' yourdata.xyz | \fBfilter1d\fP \fB\-Fb\fP5 \fB\-N\fP4/0 > smoothed.xyz
+awk '{ print NR, $0 }' yourdata.xyz | \fBfilter1d\fP \fB\-Fb\fP5 \fB\-N\fP4/0 \fB\-\-D_FORMAT\fP=%.12lg > smoothed.xyz
 .br
 .sp
 and plot this data set instead.

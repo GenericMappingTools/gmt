@@ -29,7 +29,7 @@ If the ASCII file is not given \fBgrdblend\fP will read standard input.
 No data.  Set nodes with no input grid to this value [Default is NaN].
 .TP
 .B \-Q
-Create a header-less gridfile suitable for use with grdraster.  Requires that the output gridfile
+Create a header-less gridfile suitable for use with \fBgrdraster\fP.  Requires that the output gridfile
 is a native format (i.e., not netCDF).
 #include "explain_-V.txt"
 .TP

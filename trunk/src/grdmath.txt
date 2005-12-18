@@ -52,19 +52,21 @@ Select pixel registration (used with \fB\-R, \-I\fP).  [Default is grid registra
 #include "explain_-R.txt"
 #include "explain_-V.txt"
 .SH BEWARE
-The operator \fBGDIST\fP calculates spherical distances bewteen the (lon, lat)
+(1) The operator \fBSDIST\fP calculates spherical distances bewteen the (lon, lat)
 point on the stack and all node positions in the grid.  The grid domain
-and the (lon, lat) point are expected to be in degrees.  The operator
-\fBYLM\fP calculates the fully normalized spherical harmonics for degree L and
+and the (lon, lat) point are expected to be in degrees.
+.br
+(2) The operator \fBYLM\fP calculates the fully normalized spherical harmonics for degree L and
 order M for all positions in the grid, which is assumed to be in degrees.
 \fBYLM\fP returns two grids, the Real (cosine) and Imaginary (sine) component
 of the complex spherical harmonic.  Use the \fBPOP\fP operator (and \fBEXCH\fP) to
-get rid of one of them, of save both by giving two consequtive = file.grd calls.
-The operator \fBPLM\fP calculates the associated Legendre polynomial
+get rid of one of them, or save both by giving two consequtive = file.grd calls.
+.br
+(3) The operator \fBPLM\fP calculates the associated Legendre polynomial
 of degree L and order M, and its argument is the cosine of the colatitude
 which must satisfy -1 <= x <= +1. Unlike \fBYLM\fP, \fBPLM\fP is not normalized.
 .br
-All the derivatives are based on central finite differences, with natural
+(4) All the derivatives are based on central finite differences, with natural
 boundary conditions.
 .SH EXAMPLES
 To take log10 of the average of 2 files, use
@@ -102,10 +104,14 @@ To extract the locations of local maxima that exceed 100 mGal in the file faa.gr
 .br
 \fBgrd2xyz\fP z.grd \fB\-S\fP > max.xyz
 .SH BUGS
-Files that has the same name as some operators, e.g., \fBADD\fP, \fBSIGN\fP, \fB=\fP, etc. cannot be read
-and must not be present in the current directory.  Piping of files are not allowed.
-The stack limit is hard-wired to 50.
-All functions expecting a positive radius (e.g., \fBLOG\fP, \fBKEI\fP, etc.) are passed the
+(1) Files that have the same names as some operators, e.g., \fBADD\fP, \fBSIGN\fP, \fB=\fP, etc. should be
+identified by prepending the current directory (i.e., ./LOG).
+.br
+(2) Piping of files are not allowed.
+.br
+(3) The stack depth limit is hard-wired to 100.
+.br
+(4) All functions expecting a positive radius (e.g., \fBLOG\fP, \fBKEI\fP, etc.) are passed the
 absolute value of their argument.
 .SH REFERENCES
 Abramowitz, M., and I. A. Stegun, 1964, \fIHandbook of Mathematical

@@ -85,7 +85,7 @@ selects the meaning of the columns in the data file and the figure to be plotted
 Focal mechanisms in Aki and Richard convention.
 \fIscale\fP adjusts the scaling of the radius of the "beach ball",
 which will be proportional to the magnitude.  The \fIscale\fP is the size for
-magnitude = 5 in MEASURE_UNIT (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is
+magnitude = 5 in \fBMEASURE_UNIT\fP (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is
 appended to indicate that the size information is in units of cm, inches,
 meters, or points, respectively).  Use the \fB-T\fR option
 to render the beach ball transparent by drawing only the nodal planes
@@ -112,7 +112,7 @@ text string to appear above the beach ball (default) or under (add u).
 Focal mechanisms in Harvard CMT convention.  
 \fIscale\fP adjusts the scaling of the radius of the "beach ball", which will
 be proportional to the magnitude. The \fIscale\fP is the size for magnitude = 5
-(that is M0 = 4E+23 dynes-cm.) in MEASURE_UNIT (unless \fBc\fP, \fBi\fP,
+(that is M0 = 4E+23 dynes-cm.) in \fBMEASURE_UNIT\fP (unless \fBc\fP, \fBi\fP,
 \fBm\fP, or \fBp\fP is appended to indicate that the size information is in
 units of cm, inches, meters, or points, respectively).  Use the \fB-T\fR option
 to render the beach ball transparent by drawing only the nodal planes
@@ -140,7 +140,7 @@ text string to appear above the beach ball (default) or under (add u).
 Focal mechanisms given with partial data on both planes.
 \fIscale\fP adjusts the scaling of the radius of the "beach ball", which will
 be proportional to the magnitude.  The \fIscale\fP is the size for magnitude
-= 5 in MEASURE_UNIT (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended
+= 5 in \fBMEASURE_UNIT\fP (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended
 to indicate that the size information is in units of cm, inches, meters, or
 points, respectively).  The color or shade of the compressive quadrants
 can be specified with the \fB-G\fR option.  The color or shade of the extensive
@@ -167,7 +167,7 @@ text string to appear above the beach ball (default) or under (add u).
 \fB\-Sm\fIscale[/fontsize[/offset[u]]]\fR Seismic moment tensor.
 \fIscale\fP adjusts the scaling of the radius of the "beach ball", which will
 be proportional to the magnitude. The \fIscale\fR is the size for magnitude = 5
-(that is seismic scalar moment = 4E+23 dynes-cm) in MEASURE_UNIT (unless
+(that is seismic scalar moment = 4E+23 dynes-cm) in \fBMEASURE_UNIT\fP (unless
 \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended to indicate that the size
 information is in units of cm, inches, meters, or points, respectively).
 (\fB-T\fI0\fR option overlays best double couple transparently.) Put
@@ -195,7 +195,7 @@ Text string to appear above the beach ball (default) or under (add u).
 \fB\-Sx\fIscale[/fontsize[/offset[u]]]\fR  Principal axis.
 \fIscale\fP adjusts the scaling of the radius of the "beach ball", which will
 be proportional to the magnitude. The \fIscale\fR is the size for magnitude = 5
-(that is seismic scalar moment = 4*10e+23 dynes-cm) in MEASURE_UNIT (unless
+(that is seismic scalar moment = 4*10e+23 dynes-cm) in \fBMEASURE_UNIT\fP (unless
 \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended to indicate that the size
 information is in units of cm, inches, meters, or points, respectively).
 (\fB-T\fI0\fR option overlays best double couple transparently.) Put
@@ -227,7 +227,7 @@ Text string to appear above the beach ball (optional).
 selects a symbol instead of mechanism.
 Choose from the following:
 (\fIc\fP) circle, (\fPd\fP) diamond, (\fPi\fP) itriangle, (\fPs\fP) square, (\fPt\fP) triangle, (\fPx\fP) cross.
-\fIsize\fR is the symbol size in MEASURE_UNIT (unless \fBc\fP, \fBi\fP,
+\fIsize\fR is the symbol size in \fBMEASURE_UNIT\fP (unless \fBc\fP, \fBi\fP,
 \fBm\fP, or \fBp\fP is appended to indicate that the size information is in
 units of cm, inches, meters, or points, respectively).  If \fIsize\fR must be
 read, it must be in column 4 and the text string will start in column 5.

@@ -2,6 +2,9 @@
 .TP
 \fB+a\fP\fIangle\fP
 For annotations at a fixed angle, \fB+an\fP for line-normal, or \fB+ap\fP for line-parallel [Default].
+#ifdef CONTOUR
+By appending the \fBu\fP or \fBd\fP we get annotations whose top face the next upper or lower annotation, respectively.
+#endif
 .TP
 \fB+c\fP\fIdx\fP[/\fIdy\fP]
 Sets the clearance between label and optional text box.  Append \fBc|i|m|p\fP to specify

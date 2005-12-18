@@ -12,7 +12,7 @@ value for every non-empty block in a grid region defined by the \fB\-R\fP and \f
 Either \fBblockmean\fP, \fBblockmedian\fP, or \fBblockmode\fP should be used as a pre-processor before running \fBsurface\fP to avoid
 aliasing short wavelengths.  These routines are also generally useful for decimating or averaging
 (x,y,z) data.  You can modify the
-precision of the output format by editing the D_FORMAT parameter in your .gmtdefaults4 file, or
+precision of the output format by editing the \fBD_FORMAT\fP parameter in your .gmtdefaults4 file, or
 you may choose binary input and/or output using single or double precision storage.
 .TP
 \fIxyz[w]file(s)\fP
@@ -35,9 +35,9 @@ location.  For example, with \fB\-R\fP10/15/10/15 and and \fB\-I\fP1:  with the 
 Not used with binary data.
 .TP
 .B \-S
-Use \fB\-Sz\fP tp report the sum of all z-values inside a block, or \fB\-Sw\fP to report the
+Use \fB\-Sz\fP to report the sum of all z-values inside a block, or \fB\-Sw\fP to report the
 sum of weights [Default reports mean value]. If \fB\-Sw\fP is selected and no weights are
-supplied (i.e., no \fB\-W\fP given), then the weight sum simply equals the number of points
+supplied (i.e., no \fB\-W\fP given), then the weight sum will equal the number of points
 inside each block.
 #include "explain_-V.txt"
 .TP

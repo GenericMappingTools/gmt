@@ -64,7 +64,7 @@ To create a grdfile from an even spaced SEGY file test.segy, try
 .br
 .sp
 segy2grd test.segy \fB\-I\fP0.1/0.1
-\fB\-G\fPtest.grd \fB\-R\fP198/208/18/25 \-V\fP
+\fB\-G\fPtest.grd \fB\-R\fP198/208/18/25 \fB\-V\fP
 .br
 .sp
 Note that this will read in 18-25s (or km) on each trace, but the first trace will be assumed to be at

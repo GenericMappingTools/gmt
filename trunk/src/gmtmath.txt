@@ -3,7 +3,7 @@
 gmtmath \- Reverse Polish Notation calculator for data tables
 .SH SYNOPSIS
 \fBgmtmath\fP [ \fB\-A\fP\fIt_f(t).d\fP ] [ \fB\-C\fP\fIcols\fP ] [ \fB\-H\fP\fInrec\fP ] [ \fB\-I\fP ] [ \fB\-N\fP\fIn_col\fP/\fIt_col\fP ] [ \fB\-Q\fP ] 
- [ \fB\-S\fP[\fBf|l\fP] ][ \fB\-T\fP\fIt_min/t_max/t_inc\fP|\fItfile\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
+ [ \fB\-S\fP[\fBf|l\fP] ] [ \fB\-T\fP\fIt_min/t_max/t_inc\fP|\fItfile\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
 [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] 
 \fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] \fBOPERATOR\fP ... \fB=\fP [ \fIoutfile\fP ]
 .SH DESCRIPTION
@@ -18,8 +18,7 @@ expression then options \fB\-T, \-N\fP must be set (and optionally \fB\-b\fP).  
 If \fIoperand\fP can be opened as a file it will be read as an ASCII (or binary, see \fB\-bi\fP) table data file.  If not a file, it is interpreted
 as a numerical constant or a special symbol (see below).
 .TP
-\fIoutfile\fP is a table data file that will hold the final result.  If not given then
-the output is sent to stdout.
+\fIoutfile\fP is a table data file that will hold the final result.  If not given then the output is sent to stdout.
 .TP
 .B OPERATORS
 Choose among the following operators:
@@ -84,11 +83,12 @@ contains the desired t-coordinates which may be irregular.
 #include "explain_-n.txt"
 #include "explain_precision.txt"
 .SH BEWARE
-The operator \fBPLM\fP calculates the associated Legendre polynomial
+(1) The operator \fBPLM\fP calculates the associated Legendre polynomial
 of degree L and order M, and its argument is the cosine of the colatitude
 which must satisfy -1 <= x <= +1. \fBPLM\fP is not normalized.
 .br
-All derivatives are based on central finite differences, with natural
+.sp
+(2) All derivatives are based on central finite differences, with natural
 boundary conditions.
 .SH EXAMPLES
 To take log10 of the average of 2 data files, use
@@ -151,13 +151,19 @@ solution is simply
 .br
 .sp
 \fBgmtmath\fP \fB\-T\fP lsqsys.d \fBLSQFIT \=\fP solution.d
-.SH BUGS
-Files that have the same name as some operators, e.g., \fBADD\fP, \fBSIGN\fP, \fB=\fP, etc. cannot be read
-and must not be present in the current directory.  Piping of files is not allowed on input, but the output can be sent to stdout.
-The stack limit is hard-wired to 50.
-All functions expecting a positive radius (e.g., \fBLOG\fP, \fBKEI\fP, etc.) are passed the
-absolute value of their argument.  The \fBDDT\fP and \fBD2DT2\fP functions only work on regularly spaced data.
-\fBROOTS\fP must be the last operator on the stack, only followed by \fB=\fP.
+.SH BEWARE
+(1) Files that have the same names as some operators, e.g., \fBADD\fP, \fBSIGN\fP, \fB=\fP, etc. should be
+identified by prepending the current directory (i.e., ./LOG).
+.br
+(2) Piping of files is not allowed on input, but the output can be sent to stdout.
+.br
+(3) The stack depth limit is hard-wired to 100.
+.br
+(4) All functions expecting a positive radius (e.g., \fBLOG\fP, \fBKEI\fP, etc.) are passed the
+absolute value of their argument..br
+(5) The \fBDDT\fP and \fBD2DT2\fP functions only work on regularly spaced data.
+.br
+(6) \fBROOTS\fP must be the last operator on the stack, only followed by \fB=\fP.
 .SH REFERENCES
 Abramowitz, M., and I. A. Stegun, 1964, \fIHandbook of Mathematical
 Functions\fP, Applied Mathematics Series, vol. 55, Dover, New York.

@@ -25,7 +25,7 @@ Scandinavian characters.  Composite characters (overstrike) may be indicated wit
 the @!<char1><char2> sequence, which will print the two characters on top of
 each other.  To learn the octal codes for symbols not available on the keyboard
 and some accented European characters, see Section 4.16 and Appendix F in the
-\fBGMT\fP Technical Reference and Cookbook.  Note that CHAR_ENCODING must be
+\fBGMT\fP Technical Reference and Cookbook.  Note that \fBCHAR_ENCODING\fP must be
 set to and extended character set in your \.gmtdefaults4 file in order to use the accented characters.
 Using the \fB\-W\fP option, a colored rectangle underlying the text may
 be plotted  (Does not work for strings with sub/super scripts, symbols, or composite
@@ -50,7 +50,7 @@ No space between the option flag and the associated arguments.
 .B \-C
 Sets the clearance between the text and the surrounding box [15%].
 Only used if \fB\-W\fP is specified.  Append the unit you want (\fBc\fPm, \fBi\fPnch, \fBm\fPeter.
-or \fBp\fPoint; if not given we consult MEASURE_UNIT) or % for a percentage of the font size.
+or \fBp\fPoint; if not given we consult \fBMEASURE_UNIT\fP) or % for a percentage of the font size.
 .TP
 .B \-D
 Offsets the text from the projected (\fIx,y\fP) point by \fIdx,dy\fP [0/0].

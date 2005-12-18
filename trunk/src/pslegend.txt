@@ -31,7 +31,8 @@ Records starting with # and blank lines are skipped.
 .TP
 The B record will plot a horizontal color bar, \fBpsscale\fP-style in the middle, starting at \fIoffset\fP from
 the left edge, and of the given \fIheight\fP.  You may add any additional \fPpsscale\fP options from the list:
-\fB\-A \-B \-E \-I \-L \-M \-N \-S \fPand\fB \-Z\fP.
+\fB\-A \-B \-E \-I \-L \-M \-N \-S \fPand \fB\-Z\fP.
+.TP
 \fBC\fP \fItextcolor\fP
 The C record specifies the color with which the remaining text is to be printed.
 \fItextcolor\fP can be in the form \fIr/g/b\fP, \fIc/m/y/k\fP, or a named color.
@@ -121,7 +122,7 @@ to standard output, or optionally to the file \fIscript\fP.
 To add an example of a legend to a Mercator plot (map.ps) with the given specifications, use
 .br
 .sp
-\fBpslegend\fP \fB\-R-10/10/-10/10 \-JM4i \-G\fP255 \-D0/0/4i/3i/BL << EOF >> map.ps
+\fBpslegend\fP \fB\-R\fP-10/10/-10/10 \fB\-JM\fP4i \fB\-G\fP255 \-D0/0/4i/3i/BL << EOF >> map.ps
 .br
 \# Legend test for pslegend
 .br

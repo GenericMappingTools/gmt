@@ -2,8 +2,8 @@
 .SH NAME
 pssegyz \- Create imagemasked postscript from SEGY file
 .SH SYNOPSIS
-\fBpssegyz\fP \fISEGYfile\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP \fB\-D\fP\fIdeviation 
-\fB\-F\fP[\fBrgb|gray\fP]|\fB\-W\fP 
+\fBpssegyz\fP \fISEGYfile\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP \fB\-D\fP\fIdeviation\fP 
+\fB\-F\fP[\fBrgb\fP|\fBgray\fP]|\fB\-W\fP 
 [ \fB\-B\fP\fIbias\fP ] [ \fB\-C\fP\fIclip\fP ] [ \fB-E\fP\fIazimuth\fP/\fIelevation\fP ]
 [ \fB\-I\fP ] [ \fB\-K\fP ] [ \fB\-L\fP\fInsamp\fP ] [ \fB\-M\fP\fIntrace\fP ] [ \fB\-N\fP ] 
 [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-S\fP\fIheader_x\fP/\fIheader_y\fP ] [ \fB\-U\fP\fIredvel\fP ]
@@ -18,7 +18,7 @@ The bitmap resolution is taken from the current \fBGMT\fP defaults.
 The seismic traces may be plotted at their true locations using information
 in the trace headers (in which case order of the
 traces in the file is not significant).
- Standard \fBGMT\fP geometry routines are used so that
+Standard \fBGMT\fP geometry routines are used so that
 in principle any map projection may be used, however it is likely that the
 geographic projections will lead to unexpected results. Beware also
 that some parameters have non-standard meanings, and a couple of
@@ -56,7 +56,7 @@ the color with which the imagemask is filled.
 .B \-W
 Draw wiggle trace.
 .TP
-\fI Must specify at least one of -W and -F.\fP
+You \fImust\fP specify at least one of \fB\-W\fP and \fB\-F\fP.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -115,7 +115,7 @@ locations, clipped at +-3 and with wiggle trace and positive variable area
 shading in black, use
 .br
 .sp
-\fBpssegyz\fP wa1.segy \fB\-JX\fP5/\-5 \fB\-D\fP1 \fB\-Jz0.05\fP \fB\-E\fP180/5 \fB\-R\fP0/100/0/10/0/10 \fB\-C\fP3 \fB\-N\fP \fB\-S\fPo \fB\-W\fP \fB\-F\fP0 > segy.ps
+\fBpssegyz\fP wa1.segy \fB\-JX\fP5/\-5 \fB\-D\fP1 \fB\-Jz\fP0.05 \fB\-E\fP180/5 \fB\-R\fP0/100/0/10/0/10 \fB\-C\fP3 \fB\-N\fP \fB\-S\fPo \fB\-W\fP \fB\-F\fP0 > segy.ps
 .br
 .SH BUGS
 Variable area involves filling four-sided figures of distressing generality.

@@ -13,17 +13,17 @@ corresponding records from multiple files into a single file, (3)
 extract a subset of the columns, (4) only extract segments whose header
 matches a text pattern search, (5) just list all multisegment headers and no data
 records, and (6) extract first and last data record for each segment.  Input (and hence output) may have multiple
-subheaders if \fB\-M\fP is selected, and ascii tables may have regular headers as well.
+subheaders if \fB\-M\fP is selected, and ASCII tables may have regular headers as well.
 .TP
 \fIdatafile(s)\fP
 ASCII (or binary, see \fB\-bi\fP) file(s) holding a number of data columns. 
 .SH OPTIONS
 .TP
 .B \-A
-The records from the input files should be paSted horizontally, not appended vertically.  [Default
+The records from the input files should be pAsted horizontally, not appended vertically.  [Default
 processes one file at the time].  Note for binary input, all the files you want to paste must
-have the same number of columns (as set with -bi).
-TP
+have the same number of columns (as set with \fB\-bi\fP).
+.TP
 .B \-E
 Only extract the first and last record for each segment of interest [Default extracts
 all records].
@@ -37,7 +37,7 @@ Invert the order of rows, i.e., output the final records in reverse order, start
 up with the first input row [Default goes forward].
 .TP
 .B \-L
-Only output a listing of all multisegment header records and no data records (requires \fB\-M\fP and ascii data).
+Only output a listing of all multisegment header records and no data records (requires \fB\-M\fP and ASCII data).
 #include "explain_-M.txt"
 .TP
 .B \-N
@@ -84,10 +84,11 @@ You want to plot the 2nd column of the file left.d versus the first column of fi
 .sp
 \fBgmtconvert\fP left.d right.d \fB\-S \-F\fP1,2 | psxy ...
 .br
+.sp
 To extract all segments in the file big_file.d whose headers contain the string "RIDGE AXIS", try
 .br
 .sp
-\fBgmtconvert\fP big_file.d \fB\-S\fP"RIDGE AXIS" > subset.d
+\fBgmtconvert\fP big_file.d \fB\-M \-S\fP"RIDGE AXIS" > subset.d
 .br
 .SH "SEE ALSO"
 .IR gmt (GMTMANSECTION),

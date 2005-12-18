@@ -1,7 +1,7 @@
 .TP
 .B \-J
 Selects the map projection. Scale is UNIT/degree, 1:xxxxx, or width in UNIT (upper case modifier).
-UNIT is cm, inch, or m, depending on the MEASURE_UNIT setting in \.gmtdefaults4, but this can be
+UNIT is cm, inch, or m, depending on the \fBMEASURE_UNIT\fP setting in \.gmtdefaults4, but this can be
 overridden on the command line by appending \fBc\fP, \fBi\fP, or \fBm\fP to the scale/width value.
 For map height, max dimension, or min dimension, append \fBh\fP, \fB+\fP, or \fB-\fP to the width,
 respectively.

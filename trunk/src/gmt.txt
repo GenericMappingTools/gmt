@@ -32,11 +32,9 @@ be found in the separate manual pages.
 .br
 \fBfilter1d\fP		Filter 1-D data sets (time series)
 .br
-\fBfitcircle\fP		Finds the best-fitting great circle to a set
-			of points
+\fBfitcircle\fP		Finds the best-fitting great circle to a set of points
 .br
-\fBgmt2rgb\fP		Convert Sun rasterfile or grid to r, g, b
-			grids
+\fBgmt2rgb\fP		Convert Sun rasterfile or grid to r, g, b grids
 .br
 \fBgmtconvert\fP	Convert between ASCII and binary 1-D tables
 .br
@@ -46,18 +44,15 @@ be found in the separate manual pages.
 .br
 \fBgmtset\fP		Set individual default parameters
 .br
-\fBgmtselect\fP		Extract data subsets based on spatial 
-			criteria
+\fBgmtselect\fP		Extract data subsets based on spatial criteria
 .br
 \fBgrdfilter\fP		Filter 2-D data sets in the space domain
 .br
 \fBgrd2cpt\fP		Make a color palette table from a grdfile
 .br
-\fBgrd2xyz\fP		Conversion from 2-D gridded file to table
-			data
+\fBgrd2xyz\fP		Conversion from 2-D gridded file to table data
 .br
-\fBgrdblend\fP		Blend several partially over-lapping grdfiles
-			onto one grid
+\fBgrdblend\fP		Blend several partially over-lapping grdfiles onto one grid
 .br
 \fBgrdclip\fP		Limit the z-range in gridded data
 .br
@@ -65,8 +60,7 @@ be found in the separate manual pages.
 .br
 \fBgrdcut\fP		Cut a sub-region from a grd file
 .br
-\fBgrdedit\fP		Modify header information in a 2-D gridded
-			file
+\fBgrdedit\fP		Modify header information in a 2-D gridded file
 .br
 \fBgrdfft\fP		Operate on grdfiles in the frequency domain
 .br
@@ -86,13 +80,11 @@ be found in the separate manual pages.
 .br
 \fBgrdpaste\fP		Paste together grdfiles along a common edge
 .br
-\fBgrdproject\fP	Project gridded data onto a new coordinate
-			system
+\fBgrdproject\fP	Project gridded data onto a new coordinate system
 .br
 \fBgrdreformat\fP	Converting between different grdfile formats
 .br
-\fBgrdsample\fP		Resample a 2-D gridded data set onto a new
-			grid
+\fBgrdsample\fP		Resample a 2-D gridded data set onto a new grid
 .br
 \fBgrdtrend\fP		Fits polynomial trends to grdfiles
 .br
@@ -106,8 +98,7 @@ be found in the separate manual pages.
 .br
 \fBmakecpt\fP		Make \fBGMT\fP color palette tables
 .br
-\fBmapproject\fP	Forward or inverse map projections of table
-			data
+\fBmapproject\fP	Forward or inverse map projections of table data
 .br
 \fBminmax\fP		Find extreme values in data tables
 .br
@@ -145,23 +136,19 @@ be found in the separate manual pages.
 .br
 \fBsample1d\fP		Resampling of 1-D table data sets
 .br
-\fBspectrum1d\fP	Compute various spectral estimates from time-
-			series
+\fBspectrum1d\fP	Compute various spectral estimates from time-series
 .br
 \fBsplitxyz\fP		Split xyz-files into several segments
 .br
 \fBsurface\fP		A continuous curvature gridding algorithm
 .br
-\fBtrend1d\fP		Fits polynomial or Fourier trends to y = f(x)
-			data
+\fBtrend1d\fP		Fits polynomial or Fourier trends to y = f(x) data
 .br
 \fBtrend2d\fP		Fits polynomial trends to z = f(x,y) data
 .br
-\fBtriangulate\fP	Perform optimal Delaunay triangulation and
-			gridding
+\fBtriangulate\fP	Perform optimal Delaunay triangulation and gridding
 .br
-\fBxyz2grd\fP		Convert equidistant xyz data to a 2-D grd
-			file
+\fBxyz2grd\fP		Convert equidistant xyz data to a 2-D grd file
 .br
 .SH "SEE ALSO"
 Look up the individual man pages for details.  By default, these pages are

@@ -32,14 +32,14 @@ To leave some of the values untouched, specify = as the new value.
 #include "explain_-H.txt"
 .TP
 .B \-N
-Read the ascii (or binary; see \fB\-bi\fP) file \fIxyzfile\fP and replace the corresponding
+Read the ASCII (or binary; see \fB\-bi\fP) file \fIxyzfile\fP and replace the corresponding
 nodal values in the grid with these \fIz\fP values.
 #include "explain_-R.txt"
 The new w/e/s/n values will replace those in the grid, and the \fIx_inc, y_inc\fP
 values are adjusted, if necessary.
 .TP
 .B \-S
-For global, geographical grids only.  Grid values will be shifted laterally according to
+For global, geographical grids only.  Grid values will be shifted longitudionally according to
 the new borders given in \fB\-R\fP.
 #include "explain_-V.txt"
 #include "explain_-i_binary.txt"

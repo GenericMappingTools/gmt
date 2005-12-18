@@ -36,7 +36,7 @@ Only take COEs inside this region into account. [Default is world].
 Solve for corrections involving COEs from legs in the \fIuselegsfile\fP only.
 .TP
 .B \-B
-Create a binary correction file (which can be read by \fBxlist\fP and \fBgmtlist\fP).
+Create a binary correction file (which can be read by \fBx_list\fP and \fBgmtlist\fP).
 .TP
 .B \-A
 Create an ASCII correction table. At least one of \fB\-A\fP and \fB\-B\fP must be specified.
