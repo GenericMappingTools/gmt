@@ -13,7 +13,7 @@ projection of the img file is preserved.
 \fIimgfile\fP
 An img format file such as the marine gravity or seafloor topography fields estimated from 
 satellite altimeter data by Sandwell and Smith.  If the user has set an environment variable 
-GMT_IMGDIR, then \fBimg2mercgrd\fP will try to find \fIimgfile\fP in $GMT_IMGDIR; else it 
+\fB$GMT_IMGDIR\fP, then \fBimg2mercgrd\fP will try to find \fIimgfile\fP in \fB$GMT_IMGDIR\fP; else it 
 will try to open \fIimgfile\fP directly.
 .TP
 .B \-G
@@ -40,7 +40,7 @@ be used if the output grid must match the requested region and have x_inc = y_in
 .TP
 .B \-L
 With no other arguments, list all *.img files found in the directory pointed to by
-$GMT_IMGDIR, or the current directory if not defined.  Ignored if other options are
+\fB$GMT_IMGDIR\fP, or the current directory if not defined.  Ignored if other options are
 present on the command line.
 .TP
 .B \-M

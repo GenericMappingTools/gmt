@@ -4,10 +4,10 @@
 /*                                                                           */
 /*  Include file for programs that call Triangle.                            */
 /*                                                                           */
-/*  Accompanies Triangle Versions 1.3 and 1.4                                */
-/*  July 19, 1996                                                            */
+/*  Accompanies Triangle Version 1.6                                         */
+/*  July 28, 2005                                                            */
 /*                                                                           */
-/*  Copyright 1996                                                           */
+/*  Copyright 1996, 2005                                                     */
 /*  Jonathan Richard Shewchuk                                                */
 /*  2360 Woolsey #H                                                          */
 /*  Berkeley, California  94705-1927                                         */
@@ -24,7 +24,7 @@
 /*  them), you won't understand what follows.                                */
 /*                                                                           */
 /*  Triangle must be compiled into an object file (triangle.o) with the      */
-/*  TRILIBRARY symbol defined (preferably by using the -DTRILIBRARY compiler */
+/*  TRILIBRARY symbol defined (generally by using the -DTRILIBRARY compiler  */
 /*  switch).  The makefile included with Triangle will do this for you if    */
 /*  you run "make trilibrary".  The resulting object file can be called via  */
 /*  the procedure triangulate().                                             */
@@ -35,11 +35,11 @@
 /*  the -DREDUCED switch eliminates Triangle's -i, -F, -s, and -C switches.  */
 /*  The CDT_ONLY symbol gets rid of all meshing algorithms above and beyond  */
 /*  constrained Delaunay triangulation.  Specifically, the -DCDT_ONLY switch */
-/*  eliminates Triangle's -r, -q, -a, -S, and -s switches.                   */
+/*  eliminates Triangle's -r, -q, -a, -u, -D, -Y, -S, and -s switches.       */
 /*                                                                           */
 /*  IMPORTANT:  These definitions (TRILIBRARY, REDUCED, CDT_ONLY) must be    */
 /*  made in the makefile or in triangle.c itself.  Putting these definitions */
-/*  in this file will not create the desired effect.                         */
+/*  in this file (triangle.h) will not create the desired effect.            */
 /*                                                                           */
 /*                                                                           */
 /*  The calling convention for triangulate() follows.                        */
@@ -61,13 +61,14 @@
 /*  - You'll probably want to use the `Q' (quiet) switch in your final code, */
 /*    but you can take advantage of Triangle's printed output (including the */
 /*    `V' switch) while debugging.                                           */
-/*  - If you are not using the `q' or `a' switches, then the output points   */
-/*    will be identical to the input points, except possibly for the         */
-/*    boundary markers.  If you don't need the boundary markers, you should  */
-/*    use the `N' (no nodes output) switch to save memory.  (If you do need  */
-/*    boundary markers, but need to save memory, a good nasty trick is to    */
-/*    set out->pointlist equal to in->pointlist before calling triangulate(),*/
-/*    so that Triangle overwrites the input points with identical copies.)   */
+/*  - If you are not using the `q', `a', `u', `D', `j', or `s' switches,     */
+/*    then the output points will be identical to the input points, except   */
+/*    possibly for the boundary markers.  If you don't need the boundary     */
+/*    markers, you should use the `N' (no nodes output) switch to save       */
+/*    memory.  (If you do need boundary markers, but need to save memory, a  */
+/*    good nasty trick is to set out->pointlist equal to in->pointlist       */
+/*    before calling triangulate(), so that Triangle overwrites the input    */
+/*    points with identical copies.)                                         */
 /*  - The `I' (no iteration numbers) and `g' (.off file output) switches     */
 /*    have no effect when Triangle is compiled with TRILIBRARY defined.      */
 /*                                                                           */
@@ -129,7 +130,7 @@
 /*                                                                           */
 /*  `regionlist':  An array of regional attributes and area constraints.     */
 /*    The first constraint's x and y coordinates are at indices [0] and [1], */
-/*    followed by the regional attribute and index [2], followed by the      */
+/*    followed by the regional attribute at index [2], followed by the       */
 /*    maximum area at index [3], followed by the remaining area constraints. */
 /*    Four REALs per area constraint.  Note that each regional attribute is  */
 /*    used only if you select the `A' switch, and each area constraint is    */
@@ -162,7 +163,11 @@
 /*  same arrays as the input.                                                */
 /*                                                                           */
 /*  Triangle will not free() any input or output arrays, including those it  */
-/*  allocates itself; that's up to you.                                      */
+/*  allocates itself; that's up to you.  You should free arrays allocated by */
+/*  Triangle by calling the trifree() procedure defined below.  (By default, */
+/*  trifree() just calls the standard free() library procedure, but          */
+/*  applications that call triangulate() may replace trimalloc() and         */
+/*  trifree() in triangle.c to use specialized memory allocators.)           */
 /*                                                                           */
 /*  Here's a guide to help you decide which fields you must initialize       */
 /*  before you call triangulate().                                           */
@@ -277,6 +282,8 @@ struct triangulateio {
 #ifdef ANSI_DECLARATORS
 void triangulate(char *, struct triangulateio *, struct triangulateio *,
                  struct triangulateio *);
+void trifree(VOID *memptr);
 #else /* not ANSI_DECLARATORS */
 void triangulate();
+void trifree();
 #endif /* not ANSI_DECLARATORS */
