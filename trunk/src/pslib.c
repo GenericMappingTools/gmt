@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.103 2005-12-17 05:59:22 pwessel Exp $
+ *	$Id: pslib.c,v 1.104 2005-12-19 06:30:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1431,6 +1431,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		yscl *= scl;
 		if (ps.landscape) fprintf (ps.fp, "%d 0 T 90 R\n", ps.p_width);
 		fprintf (ps.fp, "%g %g scale\n", xscl, yscl);
+		fprintf (ps.fp, "/PSL_alignmode 0 def\n");
 	}
 	if (!overlay) {
 		fprintf (ps.fp, "%% End of pslib header\n");
@@ -1916,10 +1917,12 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 
 	if (!strchr (string, '@')) {	/* Plain text string */
 		fprintf (ps.fp, "0 0 M %d F%d (%s) true charpath flattenpath pathbbox N ", (int) irint (height * ps.scale), ps.font_no, string);
-		if (key == 0)
+		fprintf (ps.fp, "/%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n", ydim, xdim, ydim, xdim);
+		if (key == 0) fprintf (ps.fp, "/%s %s_ur %s_ll sub def /%s %s_ur %s_ll sub def /%s_lsb %s_ll def\n", xdim, xdim, xdim, ydim, ydim, ydim, xdim, xdim);
+	/*	if (key == 0)
 			fprintf (ps.fp, "exch 2 {3 1 roll sub abs} repeat /%s exch def /%s exch def\n", xdim, ydim);
 		else
-			fprintf (ps.fp, "/%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n", ydim, xdim, ydim, xdim);
+			fprintf (ps.fp, "/%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n", ydim, xdim, ydim, xdim); */
 		ps_free ((void *)string);
 		return;
 	}
@@ -2074,6 +2077,7 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	}
 
 	if (angle != 0.0) fprintf (ps.fp, "V %.3g R ", angle);
+	fprintf (ps.fp, "PSL_alignmode PSL_dimx_lsb mul 0 G ");
 	if (justify > 1) {
 		h_just = (justify % 4) - 1;	/* Gives 0 (left justify, i.e., do nothing), 1 (center), or 2 (right justify) */
 		v_just = justify / 4;		/* Gives 0 (bottom justify, i.e., do nothing), 1 (middle), or 2 (top justify) */
