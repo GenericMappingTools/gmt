@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.206 2005-12-18 21:49:10 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.207 2005-12-19 22:57:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6788,7 +6788,7 @@ int GMT_linear_array (double min, double max, double delta, double phase, double
 		val[i] = first + i * delta;
 		if (fabs(val[i] - phase) < small) val[i] = phase;	/* Kill small numbers when phase==0 */
 	}
-	while (n && val[n-1] > max) n--;	/* In case of over-run */
+	while (n && (val[n-1] - small) > max) n--;	/* In case of over-run */
 
 	*array = val;
 
