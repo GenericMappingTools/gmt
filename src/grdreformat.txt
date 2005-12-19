@@ -9,37 +9,38 @@ grdreformat \- Converting between different grdfile formats.
 user may select a subset of the data to be written and to specify scaling, translation, and NaN-value.
 .TP
 \fIingrdfile\fP
-The grdfile to be read.  Append format =\fIid\fP code if not a standard \fBGMT\fP netCDF-based grdfile.
-If \fIid\fP is set, you may optionally append \fIscale\fP and \fIoffset\fP.  These options will scale the data
+The grdfile to be read.  Append format =\fIid\fP code if not a standard COARDS-compliant netCDF grdfile.
+If =\fIid\fP is set, you may optionally append \fIscale\fP and \fIoffset\fP.  These options will scale the data
 and then offset them with the specified amounts after reading.
 .br
 If \fIscale\fP and \fIoffset\fP
-are supplied you may also append a value that represent 'not-a-number' (for floating-point grids this
-is unnecessary since the IEEE NaN is used; however short integers need a value which means no data available.)
+are supplied you may also append a value that represent 'Not-a-Number' (for floating-point grids this
+is unnecessary since the IEEE NaN is used; however integers need a value which means no data available.)
 .TP
 \fIoutgrdfile\fP
-The grdfile to be written.  Append format =\fIid\fP code if not a standard \fBGMT\fP netCDF-based grdfile.
-If \fIid\fP is set, you may optionally append \fIscale\fP and \fIoffset\fP.  These options are particularly 
+The grdfile to be written.  Append format =\fIid\fP code if not a standard COARDS-compliant netCDF grdfile.
+If =\fIid\fP is set, you may optionally append \fIscale\fP and \fIoffset\fP.  These options are particularly 
 practical when storing the data as integers, first removing an offset and then scaling down the values.
 Since the scale and offset are applied in reverse order when reading, this does not affect the data
 values (except for round-offs).
 .br
 If \fIscale\fP and \fIoffset\fP
-are supplied you may also append a value that represent 'not-a-number' (for floating-point grids this
-is unnecessary since the IEEE NaN is used; however short integers need a value which means no data available.)
-For binary native \fBGMT\fP files the size of the \fBGMT\fP grdheader block is \fIhsize\fP = 896 bytes, and the total size of the file
-is \fIhsize\fP + \fInx\fP * \fIny\fP * \fIitem_size\fP, where \fIitem_size\fP is the size in bytes of each element (1, 2, 4).  Bit grids
-are stored using 4-byte integers, each holding 32 bits, so for these files the size equation is modified by
-using ceil (\fInx\fP / 32) * 4 instead of \fInx\fP.  For header and grid details, see Appendix B.
+are supplied you may also append a value that represent 'Not-a-Number' (for floating-point grids this
+is unnecessary since the IEEE NaN is used; however integers need a value which means no data available.)
 .SH OPTIONS
 .TP
 .B \-N
 Suppress the writing of the \fBGMT\fP header structure.  This is useful when you want to write a native grid to
-be used by \fBgrdraster\fP.  It only applies to native grids and is skipped for netCDF output.
+be used by \fBgrdraster\fP.  It only applies to native grids and is ignored for netCDF output.
 #include "explain_-R.txt"
 #include "explain_-V.txt"
+.SH NATIVE BINARY FILES
+For binary native \fBGMT\fP files the size of the \fBGMT\fP grdheader block is \fIhsize\fP = 896 bytes, and the total size of the file
+is \fIhsize\fP + \fInx\fP * \fIny\fP * \fIitem_size\fP, where \fIitem_size\fP is the size in bytes of each element (1, 2, 4).  Bit grids
+are stored using 4-byte integers, each holding 32 bits, so for these files the size equation is modified by
+using ceil (\fInx\fP / 32) * 4 instead of \fInx\fP.  For header and grid details, see Appendix B.
 .SH EXAMPLES
-To create a 4-byte raw floating point grid from the default netCDF float file data.grd:
+To create a 4-byte native floating point grid from the COARDS-compliant netCDF file data.grd:
 .br
 .sp
 \fBgrdreformat\fP data.grd ras_data.b4=bf \fB\-V\fP
