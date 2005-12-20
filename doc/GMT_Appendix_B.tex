@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.16 2005-12-18 15:56:05 remko Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.17 2005-12-20 17:35:38 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2006.
@@ -14,9 +14,9 @@
 \section{Table data} 
 \index{Table!format}
 
-These files have {\it N} records which have {\it M} fields each.
+These files have \emph{N} records which have \emph{M} fields each.
 Most programs can read multicolumn files, but require that the
-{\it x} [and {\it y}] variable(s) be stored in the 1st [and 2nd]
+\emph{x} [and \emph{y}] variable(s) be stored in the 1st [and 2nd]
 column (There are, however, some exceptions to this rule, such as
 \GMTprog{filter1d} and \GMTprog{sample1d}).  \GMT\ can read both ASCII and
 binary table data.
@@ -27,15 +27,15 @@ binary table data.
 \subsubsection{Optional file header records}
 The first data record may be preceded by 1 or more header records.
 When using such files, make sure to use the \Opt{H} option and set
-the parameter {\bf N\_HEADER\_RECS} in the \filename{.gmtdefaults4} file
+the parameter \textbf{N\_HEADER\_RECS} in the \filename{.gmtdefaults4} file
 (System default is 1 header record if \Opt{H} is set; you may also
-use \Opt{H}{\it nrecs} directly).  Fields
+use \Opt{H}\emph{nrecs} directly).  Fields
 within a record must be separated by spaces, tabs, or commas.
 Each field can be an integer or floating-point number or a geographic
 coordinate string using the [+$|$-]dd[:mm[:ss]][W$|$S$|$N$|$E$|$w$|$s$|$n$|$e] format.
 Thus, 12:30:44.5W, 17.5S, 1:00:05, and 200:45E are all valid input strings.
 \subsubsection{Optional segment header records}
-When dealing with time- or ({\it x,y})-series it is usually
+When dealing with time- or (\emph{x,y})-series it is usually
 convenient to have each profile in separate files.
 However, this may sometimes prove impractical due to large numbers
 of profiles.  An example is files of digitized lineations where
@@ -70,13 +70,13 @@ allowed).  Multiple segment files are allowed (\Opt{M}) and the
 segment headers are assumed to be records where all the fields equal 
 NaN.  Flags appended to \Opt{M} are ignored.  The format and number
 of fields are specified with the
-\Opt{b} option.  Thus, for input you may set \Opt{bi}[{\bf s}][{\it n}],
-where {\bf s} designates single precision (default is {\bf d} for double) and
-{\it n} is the number of fields.  For output, use \Opt{bo}[{\bf s}] 
+\Opt{b} option.  Thus, for input you may set \Opt{bi}[\textbf{s}][\emph{n}],
+where \textbf{s} designates single precision (default is \textbf{d} for double) and
+\emph{n} is the number of fields.  For output, use \Opt{bo}[\textbf{s}] 
 (the programs know how many columns to write, unless you use \Opt{M} in which
 case we need to know the number of output columns up front).  If you need
 to swap the byte-order on either input or output you must use upper case
-{\bf S} or {\bf D} instead.
+\textbf{S} or \textbf{D} instead.
 
 \section{Grid files} 
 
@@ -143,14 +143,14 @@ for more information.
 \subsection{Grid line and Pixel registration} 
 \index{grdfile!registration|(}
 
-Scanline format means that the data are stored in rows ({\it y} = constant)
+Scanline format means that the data are stored in rows (\emph{y} = constant)
 going from the ``top'' ($y = y_{max}$ (north)) to the ``bottom''
 ($y = y_{min}$ (south)).  Data within each row are ordered from
 ``left'' ($x = x_{min}$ (west)) to ``right'' ($x = x_{max}$
-(east)).  The {\it node\_offset} signals how the nodes are laid out.
-The grid is always defined as the intersections of all {\it x}
+(east)).  The \emph{node\_offset} signals how the nodes are laid out.
+The grid is always defined as the intersections of all \emph{x}
 ( \( x = x_{min}, x_{min} + x_{inc}, x_{min} + 2 \cdot x_{inc}, \ldots, x_{max} \) )
-and {\it y} ( \( y = y_{min}, y_{min} + y_{inc}, y_{min} + 2 \cdot y_{inc}, \ldots, y_{max} \) )
+and \emph{y} ( \( y = y_{min}, y_{min} + y_{inc}, y_{min} + 2 \cdot y_{inc}, \ldots, y_{max} \) )
 lines.  The two scenarios differ in which area each data point
 represents.
 The default registration in \GMT\ is grid line registration.  Most
@@ -214,28 +214,28 @@ when interpolating or computing derivatives near the limits of the
 region covered by the grid. The \emph{default} boundary
 conditions used are those which are ``natural'' for the boundary
 of a minimum curvature interpolating surface.
-If the user knows that the data are periodic in {\it x} (and/or
-{\it y}), or that the data cover a sphere with {\it x},{\it y}
-representing {\it longitude},{\it latitude}, then there are better
+If the user knows that the data are periodic in \emph{x} (and/or
+\emph{y}), or that the data cover a sphere with \emph{x},\emph{y}
+representing \emph{longitude},\emph{latitude}, then there are better
 choices for the boundary conditions.
-Periodic conditions on {\it x} (and/or {\it y}) are chosen by
-specifying {\it x} (and/or {\it y}) as the boundary condition flags;
-global spherical cases are specified using the {\it g} (geographical)
+Periodic conditions on \emph{x} (and/or \emph{y}) are chosen by
+specifying \emph{x} (and/or \emph{y}) as the boundary condition flags;
+global spherical cases are specified using the \emph{g} (geographical)
 flag.  Behavior of these conditions is as follows:
 
 \begin{description}
 \index{grdfile!boundary conditions!periodic}
 
-\item[Periodic] conditions on {\it x} indicate that the data are
+\item[Periodic] conditions on $x$ indicate that the data are
 periodic in the distance ($x_{max} - x_{min}$) and thus repeat
 values after every $N = (x_{max} - x_{min})/x_{inc}$.  Note that
 this implies that in a grid-registered file the values in the first
 and last columns are equal, since these are located at $x = x_{min}$
-and $x = x_{max}$, and there are {\it N} + 1 columns in the file.
+and $x = x_{max}$, and there are $N + 1$ columns in the file.
 This is not the case in a pixel-registered file, where there are only
-{\it N} and the first and last columns are located at
-$x_{min} + x_{inc}/2$ and $x_{max} - x_{inc}/2$.  If {\it y} is
-periodic all the same holds for {\it y}.
+$N$ and the first and last columns are located at
+$x_{min} + x_{inc}/2$ and $x_{max} - x_{inc}/2$.  If $y$ is
+periodic all the same holds for $y$.
 
 \item[Geographical] conditions indicate the following:
 \index{grdfile!boundary conditions!geographical}
@@ -243,8 +243,8 @@ periodic all the same holds for {\it y}.
 \begin{enumerate}
 
 \item If $(x_{max} - x_{min}) \geq 360$ and also 180 modulo $x_{inc} = 0$
-then a periodic condition is used on {\it x} with a period of 360;
-else a default condition is used on the {\it x} boundaries.
+then a periodic condition is used on $x$ with a period of 360;
+else a default condition is used on the $x$ boundaries.
 
 \item If condition 1 is true and also $y_{max} = 90$ then a
 ``north pole condition'' is used at $y_{max}$, else a default
@@ -290,28 +290,29 @@ is not part of the header structure, but makes up the rest of the file).
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c}{\emph{Parameter}}   &       \multicolumn{1}{|c|}{\emph{Description}}        \\ \hline
-{\bf int} {\it nx}                      &       Number of nodes in the $x$-dimension    \\ \hline
-{\bf int} {\it ny}                      &       Number of nodes in the y-dimension      \\ \hline
-{\bf int} {\it node\_offset}    &       0 for grid line registration, 1 for pixel registration  \\ \hline
-{\bf double} {\it x\_min}               &       Minimum $x$-value of region     \\ \hline
-{\bf double} {\it x\_max}               &       Maximum $x$-value of region  \\ \hline
-{\bf double} {\it y\_min}               &       Minimum $y$-value of region  \\ \hline
-{\bf double} {\it y\_max}               &       Maximum $y$-value of region  \\ \hline
-{\bf double} {\it z\_min}               &       Minimum $z$-value in data set  \\ \hline
-{\bf double} {\it z\_max}               &       Maximum $z$-value in data set  \\ \hline
-{\bf double} {\it x\_inc}               &       Node spacing in $x$-dimension  \\ \hline
-{\bf double} {\it y\_inc}               &       Node spacing in $y$-dimension  \\ \hline
-{\bf double} {\it z\_scale\_factor}     &       Factor to multiply $z$-values after read  \\ \hline
-{\bf double} {\it z\_add\_offset}       &       Offset to add to scaled $z$-values  \\ \hline
-{\bf char} {\it x\_units}[80]   &       Units of the $x$-dimension      \\ \hline
-{\bf char} {\it y\_units}[80]   &       Units of the $y$-dimension      \\ \hline
-{\bf char} {\it z\_units}[80]   &       Units of the $z$-dimension      \\ \hline 
-{\bf char} {\it title}[80]      &       Descriptive title of the data set       \\ \hline
-{\bf char} {\it command}[320]   &       Command line that produced the grdfile  \\ \hline
-{\bf char} {\it remark}[160]    &       Any additional comments \\ \hline \hline
-{\bf TYPE} {\it z}[nx*ny]      &       1-D array with $z$-values in scanline format \\ \hline
+\textbf{int} \emph{nx}                      &       Number of nodes in the $x$-dimension    \\ \hline
+\textbf{int} \emph{ny}                      &       Number of nodes in the y-dimension      \\ \hline
+\textbf{int} \emph{node\_offset}    &       0 for grid line registration, 1 for pixel registration  \\ \hline
+\textbf{double} \emph{x\_min}               &       Minimum $x$-value of region     \\ \hline
+\textbf{double} \emph{x\_max}               &       Maximum $x$-value of region  \\ \hline
+\textbf{double} \emph{y\_min}               &       Minimum $y$-value of region  \\ \hline
+\textbf{double} \emph{y\_max}               &       Maximum $y$-value of region  \\ \hline
+\textbf{double} \emph{z\_min}               &       Minimum $z$-value in data set  \\ \hline
+\textbf{double} \emph{z\_max}               &       Maximum $z$-value in data set  \\ \hline
+\textbf{double} \emph{x\_inc}               &       Node spacing in $x$-dimension  \\ \hline
+\textbf{double} \emph{y\_inc}               &       Node spacing in $y$-dimension  \\ \hline
+\textbf{double} \emph{z\_scale\_factor}     &       Factor to multiply $z$-values after read  \\ \hline
+\textbf{double} \emph{z\_add\_offset}       &       Offset to add to scaled $z$-values  \\ \hline
+\textbf{char} \emph{x\_units}[80]   &       Units of the $x$-dimension      \\ \hline
+\textbf{char} \emph{y\_units}[80]   &       Units of the $y$-dimension      \\ \hline
+\textbf{char} \emph{z\_units}[80]   &       Units of the $z$-dimension      \\ \hline 
+\textbf{char} \emph{title}[80]      &       Descriptive title of the data set       \\ \hline
+\textbf{char} \emph{command}[320]   &       Command line that produced the grdfile  \\ \hline
+\textbf{char} \emph{remark}[160]    &       Any additional comments \\ \hline \hline
+\textbf{TYPE} \emph{z}[nx*ny]      &       1-D array with $z$-values in scanline format \\ \hline
 \end{tabular}
-\caption{\gmt\ gridded file header record. {\bf TYPE} can be {\bf char}, {\bf short}, {\bf int}, {\bf float}, or {\bf
+\caption{\gmt\ gridded file header record. \textbf{TYPE} can be \textbf{char}, \textbf{short}, \textbf{int},
+\textbf{float}, or {\bf
 double}.}
 \label{tbl:grdheader}
 \end{table}
@@ -333,23 +334,23 @@ is outline in Table~\ref{tbl:sunheader}.
 
 \begin{tabular}{|l|l|}  \hline
 \multicolumn{1}{|c}{\emph{Parameter}}   &       \multicolumn{1}{|c|}{\emph{Description}}        \\ \hline
-{\bf int} {\it ras\_magic}      &       Magic number  \\ \hline
-{\bf int} {\it ras\_width}      &       Width (pixels) of image  \\ \hline
-{\bf int} {\it ras\_height}     &       Height (pixels) of image  \\ \hline
-{\bf int} {\it ras\_depth}      &       Depth (1, 8, 24, 32 bits) of pixel  \\ \hline
-{\bf int} {\it ras\_length}     &       Length (bytes) of image  \\ \hline
-{\bf int} {\it ras\_type}       &       Type of file; see RT\_* below  \\ \hline
-{\bf int} {\it ras\_maptype}    &       Type of colormap; see RMT\_* below  \\ \hline
-{\bf int} {\it ras\_maplength}  &       Length (bytes) of following map  \\ \hline
+\textbf{int} \emph{ras\_magic}      &       Magic number  \\ \hline
+\textbf{int} \emph{ras\_width}      &       Width (pixels) of image  \\ \hline
+\textbf{int} \emph{ras\_height}     &       Height (pixels) of image  \\ \hline
+\textbf{int} \emph{ras\_depth}      &       Depth (1, 8, 24, 32 bits) of pixel  \\ \hline
+\textbf{int} \emph{ras\_length}     &       Length (bytes) of image  \\ \hline
+\textbf{int} \emph{ras\_type}       &       Type of file; see RT\_* below  \\ \hline
+\textbf{int} \emph{ras\_maptype}    &       Type of colormap; see RMT\_* below  \\ \hline
+\textbf{int} \emph{ras\_maplength}  &       Length (bytes) of following map  \\ \hline
 \end{tabular}
 
 \caption{Structure of a Sun rasterfile.}
 \label{tbl:sunheader}
 \end{table} 
 
-After the header, the color map (if {\it ras\_maptype} is not RMT\_NONE)
-follows for {\it ras\_maplength} bytes, followed by an image of
-{\it ras\_length} bytes.  Some related definitions are given in Table~\ref{tbl:sundef}.  
+After the header, the color map (if \emph{ras\_maptype} is not RMT\_NONE)
+follows for \emph{ras\_maplength} bytes, followed by an image of
+\emph{ras\_length} bytes.  Some related definitions are given in Table~\ref{tbl:sundef}.  
 
 \begin{table}[H]
 \index{Rasterfile!definitions}
