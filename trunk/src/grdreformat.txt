@@ -47,7 +47,20 @@ of netCDF grdfile. These can be in either COARDS-compliant or pre-4.1 format, an
 integer data. To read other types of grdfiles, append the =\fIid\fP suffix to the filename \fIingrdfile\fP.
 .br
 .sp
-\fIid\fP	\fIGMT 3 netCDF legacy format\fP
+\fIid\fP	\fIGMT 4 netCDF standard formats\fP
+.br
+nb	GMT netCDF format (byte) (COARDS-compliant)
+.br
+ns	GMT netCDF format (short) (COARDS-compliant)
+.br
+ni	GMT netCDF format (integer) (COARDS-compliant)
+.br
+nf	GMT netCDF format (float) (COARDS-compliant)
+.br
+nd	GMT netCDF format (double) (COARDS-compliant)
+.br
+.sp
+\fIid\fP	\fIGMT 3 netCDF legacy formats\fP
 .br
 cb	GMT netCDF format (byte) (depreciated)
 .br
@@ -60,7 +73,7 @@ cf	GMT netCDF format (float) (depreciated)
 cd	GMT netCDF format (double) (depreciated)
 .br
 .sp
-\fIid\fP	\fIGMT 4 native binary format\fP
+\fIid\fP	\fIGMT native binary formats\fP
 .br
 bm	GMT native, C-binary format (bit-mask)
 .br
@@ -73,19 +86,6 @@ bi	GMT native, C-binary format (integer)
 bf	GMT native, C-binary format (float)
 .br
 bd	GMT native, C-binary format (double)
-.br
-.sp
-\fIid\fP	\fIGMT 4 netCDF standard\fP
-.br
-nb	GMT netCDF format (byte) (COARDS-compliant)
-.br
-ns	GMT netCDF format (short) (COARDS-compliant)
-.br
-ni	GMT netCDF format (integer) (COARDS-compliant)
-.br
-nf	GMT netCDF format (float) (COARDS-compliant)
-.br
-nd	GMT netCDF format (double) (COARDS-compliant)
 .br
 .sp
 \fIid\fP	\fIMiscellaneous formats\fP
@@ -103,6 +103,24 @@ The standard format used for gdrfiles is based on netCDF and conforms to the COA
 in this format can be read by numerous third-party programs and are platform-independent. Some disk-space
 can be saved by storing the data as bytes or shorts in stead of integers. Use the \fIscale\fP and \fIoffset\fP
 parameters to make this work without loss of data range or significance. For more details, see Appendix B.
+.PP
+\fBMulti-variable grid files\fP
+.br
+By default, \fBGMT\fP programs will read the first 2-dimensional grid contained in a COARDS-compliant netCDF file.
+Alternatively, use \fIingrdfile\fP\fB?\fP\fIvarname\fP (ahead of any optional suffix \fB=\fP\fIid\fP)
+to specify the requested variable \fIvarname\fP.
+Since \fB?\fP has special meaning as a wildcard, escape this meaning by placing the full filename and suffix
+between quotes.
+.PP
+\fB3-Dimensional grids\fP
+.br
+To extract one \fIlayer\fP or \fIlevel\fP from a 3-dimensional grid stored in a COARDS-compliant netCDF file,
+append both the name of the variable and the index associated with the layer (starting at zero) in the form:
+\fIingrdfile\fP\fB?\fP\fIvarname\fP\fB[\fP\fIlayer\fP\fB]\fP.
+Alternatively, specify the value associated with that layer using parentheses in stead of brackets:
+\fIingridfile\fP\fB?\fP\fIvarname\fP\fB(\fP\fIlevel\fP\fB)\fP.
+Since question marks, brackets and parentheses have special meanings on the command line, escape these meanings
+by placing the full filename and suffix between quotes.
 .SH NATIVE BINARY FILES
 For binary native \fBGMT\fP files the size of the \fBGMT\fP grdheader block is \fIhsize\fP = 896 bytes, and the total size of the file
 is \fIhsize\fP + \fInx\fP * \fIny\fP * \fIitem_size\fP, where \fIitem_size\fP is the size in bytes of each element (1, 2, 4).  Bit grids
@@ -112,6 +130,13 @@ Note that these files are platform-dependent. Files written on Little Endian mac
 read on Big Endian machines (e.g. most workstations).
 For header and grid details, see Appendix B.
 .SH EXAMPLES
+To extract the second layer from a 3-dimensional grid named temp from a COARDS-compliant netCDF file
+climate.grd:
+.br
+.sp
+\fBgrdreformat\fP climate.grd?temp[1] temp.grd \fB-V\fP
+.br
+.sp
 To create a 4-byte native floating point grid from the COARDS-compliant netCDF file data.grd:
 .br
 .sp
