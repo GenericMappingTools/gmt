@@ -1,4 +1,4 @@
-	$Id: README.imgsrc,v 1.3 2003-04-11 22:57:15 pwessel Exp $
+	$Id: README.imgsrc,v 1.4 2005-12-21 05:48:25 pwessel Exp $
 
 Maintained by: W H F Smith
 
@@ -280,7 +280,7 @@ pixels_per_degree> << END
 END
 (answer:) <nx360>	<nyrow>
 These answers should be integers, and 2 * <nxcol> * <nyrow> should equal 
-the number of bytes in the img file.  In practice, <nyrow> won’t come 
+the number of bytes in the img file.  In practice, <nyrow> won't come 
 out to be exactly an integer, because the min and max latitude may not 
 have enough digits of accuracy to represent the values exactly hitting 
 an integer.  But <nyrow> should be close to an integer, and rounding 
