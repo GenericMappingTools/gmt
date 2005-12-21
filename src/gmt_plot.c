@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.154 2005-12-21 05:48:25 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.155 2005-12-21 23:19:36 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1984,9 +1984,6 @@ void GMT_map_basemap (void) {
 	if (gmtdefs.basemap_type == GMT_IS_FANCY && !GMT_is_fancy_boundary()) gmtdefs.basemap_type = GMT_IS_PLAIN;
 
 	ps_comment ("Start of basemap");
-#ifdef PSLFIX
-	ps_command ("/PSL_alignmode -1 def");
-#endif
 	ps_setdash (CNULL, 0);	/* To ensure no dashed pens are set prior */
 
 	GMT_map_gridlines (w, e, s, n);
@@ -1998,9 +1995,6 @@ void GMT_map_basemap (void) {
 
 	GMT_map_boundary (w, e, s, n);
 
-#ifdef PSLFIX
-	ps_command ("/PSL_alignmode 0 def");
-#endif
 	ps_comment ("End of basemap");
 
 	for (i = 0; i < 4; i++) {
