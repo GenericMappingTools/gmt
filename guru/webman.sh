@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.23 2005-12-17 05:23:12 pwessel Exp $
+#	 $Id: webman.sh,v 1.24 2005-12-21 12:06:08 pwessel Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -32,21 +32,32 @@ grep -v '^#' guru/GMT_programs.lis > $$.programs.lis
 echo GMT >> $$.programs.lis
 echo pslib >> $$.programs.lis
 
-# Now make sed script (actually 3, since sed seems to have trouble with long sed scripts...)
+# Now make sed script that will replace the bold and italic versions of GMT program names with
+# similarly formatted links.
 
-awk '{printf "s%%>%s<%%><A HREF=%c%s.html%c>%s</A><%%g\n", $1, 34, $1, 34, $1}' $$.programs.lis > $$.w1.sed
-awk '{printf "s%%%s,%%<A HREF=%c%s.html%c>%s</A>,%%g\n", $1, 34, $1, 34, $1}' $$.programs.lis > $$.w2.sed
-awk '{printf "s%%%s$%%<A HREF=%c%s.html%c>%s</A>%%g\n", $1, 34, $1, 34, $1}' $$.programs.lis > $$.w3.sed
+awk '{printf "s%%<b>%s</b>%%<A HREF=%c%s.html%c><b>%s</b></A>%%g\n", $1, 34, $1, 34, $1}' $$.programs.lis > $$.w0.sed
+awk '{printf "s%%<i>%s</i>%%<A HREF=%c%s.html%c><i>%s</i></A>%%g\n", $1, 34, $1, 34, $1}' $$.programs.lis >> $$.w0.sed
+
+# Make sed script that adds active links to gmtdefault for all GMT defaults parameters.
+# all.sed is run on all programs except gmtdefaults and add links to the relevant anchors in gmtdefaults.html
+# def.sed adds the anchors needed in gmtdefaults.html
+
+grep -v '^#' src/gmt_keywords.d | awk '{printf "s%%<b>%s</b>%%<A HREF=%cgmtdefaults.html#%s%c><b>%s</b></A>%%g\n", $1, 34, $1, 34, $1}' > $$.all.sed
+grep -v '^#' src/gmt_keywords.d | awk '{printf "s%%<p><b>%s</b></p></td>%%<A NAME=%c%s%c><p><b>%s</b></p></td>%%g\n", $1, 34, $1, 34, $1}' > $$.def.sed
 
 # Ok, go to source directory and make html files
 for prog in `cat $$.programs.lis`; do
 	if [ $gush = 1 ]; then
 		echo "Making ${prog}.html"
 	fi
-	grep -v ${prog} $$.w1.sed > $$.t1.sed
-	grep -v ${prog} $$.w2.sed > $$.t2.sed
-	grep -v ${prog} $$.w3.sed > $$.t3.sed
-	groff -man -T html man/manl/${prog}.l | sed -f $$.t1.sed | sed -f $$.t2.sed | sed -f $$.t3.sed > www/gmt/doc/html/${prog}.html
+	# Remove reference to current programs since no program needs active links to itself
+	grep -v "${prog}<" $$.w0.sed > $$.t0.sed
+	groff -man -T html man/manl/${prog}.l | sed -f $$.t0.sed > $$.tmp
+	if [ "X$prog" = "Xgmtdefaults" ]; then
+		sed -f $$.def.sed $$.tmp > www/gmt/doc/html/${prog}.html
+	else
+		sed -f $$.all.sed $$.tmp > www/gmt/doc/html/${prog}.html
+	fi
 	echo '<BODY bgcolor="#ffffff">' >> www/gmt/doc/html/${prog}.html
 done
 
@@ -64,7 +75,7 @@ for package in dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
 		if [ $gush = 1 ]; then
 			echo "Making ${prog}.html"
 		fi
-		groff -man -T html $f | sed -f ../$$.w1.sed | sed -f ../$$.w2.sed | sed -f ../$$.w3.sed > $package/${prog}.html
+		groff -man -T html $f | sed -f ../$$.w0.sed | sed -f ../$$.all.sed > $package/${prog}.html
 		echo '<BODY bgcolor="#ffffff">' >> $package/${prog}.html
 		cp -f $package/${prog}.html ../www/gmt/doc/html
 	done
