@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.25 2005-12-22 00:10:48 pwessel Exp $
+#	 $Id: webman.sh,v 1.26 2005-12-22 04:44:00 pwessel Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -70,7 +70,6 @@ done
 # defining an environmental parameter MY_GMT_SUPPL which contains a list of these
 # supplements.  They must all be in src of course
 
-cp $$.w0.sed save.d
 MY_SUPPL=${MY_GMT_SUPPL:-""}
 cd src
 for package in dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system $MY_SUPPL; do
