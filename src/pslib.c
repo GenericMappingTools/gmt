@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.106 2005-12-21 23:20:11 remko Exp $
+ *	$Id: pslib.c,v 1.107 2005-12-22 02:31:01 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1809,7 +1809,7 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
  *   |----------------|
  *   1	 2	 3
  */
-	char *string;
+	char *string, align[3][10] = {"0", "2 div neg", "neg"};
 	int i = 0, pmode, j, h_just, v_just, rounded;
 
 	if (strlen (text) >= (BUFSIZ-1)) {
@@ -1848,8 +1848,8 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 	if (justify > 1) {	/* Move the new origin so (0,0) is lower left of box */
 		h_just = (justify % 4) - 1;	/* Gives 0 (left justify, i.e., do nothing), 1 (center), or 2 (right justify) */
 		v_just = justify / 4;		/* Gives 0 (bottom justify, i.e., do nothing), 1 (middle), or 2 (top justify) */
-		(h_just) ? fprintf (ps.fp, "0 PSL_dimx_ur PSL_dimx_ll sub %3.1f mul ", -0.5 * h_just) : fprintf (ps.fp, "0 ") ;
-		(v_just) ? fprintf (ps.fp, "PSL_dimy_ur PSL_dimy_ll sub %3.1f mul ", -0.5 * v_just) : fprintf (ps.fp, "0 ");
+		(h_just) ? fprintf (ps.fp, "PSL_dimx_ur PSL_dimx_ll sub %s ", align[h_just]) : fprintf (ps.fp, "0 ");
+		(v_just) ? fprintf (ps.fp, "PSL_dimy_ur PSL_dimy_ll sub %s ", align[v_just]) : fprintf (ps.fp, "0 ");
 		fprintf (ps.fp, "T ");
 	}
 	/* Here, (0,0) is lower point on textbox with no clearance yet */
@@ -1917,11 +1917,11 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 	if (!strchr (string, '@')) {	/* Plain text string */
 #ifdef PSLFIX
 		if (key == 0)
-			fprintf (ps.fp, "0 0 M %d F%d (%s) E /%s exch def true charpath flattenpath pathbbox N exch 3 1 roll sub abs /%s exch def clear\n", (int) irint (height * ps.scale), ps.font_no, string, xdim, ydim);
+			fprintf (ps.fp, "0 0 M %d F%d (%s) E /%s exch def e /%s exch def\n", (int) irint (height * ps.scale), ps.font_no, string, xdim, ydim);
 		else
-			fprintf (ps.fp, "0 0 M %d F%d (%s) true charpath flattenpath pathbbox N /%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n" , (int) irint (height * ps.scale), ps.font_no, string, ydim, xdim, ydim, xdim);
+			fprintf (ps.fp, "0 0 M %d F%d (%s) f pathbbox N /%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n" , (int) irint (height * ps.scale), ps.font_no, string, ydim, xdim, ydim, xdim);
 #else
-		fprintf (ps.fp, "0 0 M %d F%d (%s) true charpath flattenpath pathbbox N ", (int) irint (height * ps.scale), ps.font_no, string);
+		fprintf (ps.fp, "0 0 M %d F%d (%s) f pathbbox N ", (int) irint (height * ps.scale), ps.font_no, string);
 		if (key == 0)
 			fprintf (ps.fp, "exch 2 {3 1 roll sub abs} repeat /%s exch def /%s exch def\n", xdim, ydim);
 		else
@@ -1955,7 +1955,7 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 	ptr = strtok (tempstring, "@");
 	fprintf (ps.fp, "N 0 0 m ");	/* Initialize currentpoint */
 	if(string[0] != '@') {
-		fprintf (ps.fp, "%d F%d (%s) true charpath flattenpath ", irint (size*ps.scale), font, ptr);
+		fprintf (ps.fp, "%d F%d (%s) f ", irint (size*ps.scale), font, ptr);
 		ptr = strtok ((char *)NULL, "@");
 	}
 
@@ -2005,7 +2005,7 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 		}
 		else	/* Not recognized or @@ for a single @ */
 			strcpy (piece, ptr);
-		if (strlen (piece) > 0) fprintf (ps.fp, "%d F%d (%s) true charpath flattenpath ", irint (size*ps.scale), font, piece);
+		if (strlen (piece) > 0) fprintf (ps.fp, "%d F%d (%s) f ", irint (size*ps.scale), font, piece);
 		ptr = strtok ((char *)NULL, "@");
 	}
 
@@ -2046,7 +2046,7 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	* form:		0 = normal text, 1 = outline of text only
 	*/
 
-	char *piece, *piece2, *ptr, *string, op[16];
+	char *piece, *piece2, *ptr, *string, op[16], align[3][10] = {"0", "2 div neg", "neg"};
 	int dy, i = 0, j, font, v_just, h_just;
 	int sub, super, small, old_font;
 	double height, small_size, size, scap_size, ustep, dstep;
@@ -2084,8 +2084,8 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	if (justify > 1) {
 		h_just = (justify % 4) - 1;	/* Gives 0 (left justify, i.e., do nothing), 1 (center), or 2 (right justify) */
 		v_just = justify / 4;		/* Gives 0 (bottom justify, i.e., do nothing), 1 (middle), or 2 (top justify) */
-		(h_just) ? fprintf (ps.fp, "0 PSL_dimx %3.1f mul ", -0.5 * h_just) : fprintf (ps.fp, "0 ") ;
-		(v_just) ? fprintf (ps.fp, "PSL_dimy %3.1f mul ", -0.5 * v_just) : fprintf (ps.fp, "0 ");
+		(h_just) ? fprintf (ps.fp, "PSL_dimx %s ", align[h_just]) : fprintf (ps.fp, "0 ");
+		(v_just) ? fprintf (ps.fp, "PSL_dimy %s ", align[v_just]) : fprintf (ps.fp, "0 ");
 		fprintf (ps.fp, "G ");
 	}
 
@@ -2877,7 +2877,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 		fprintf (ps.fp, "/PSL_y0 0 def\n");
 	}
 	else if (justify > 4) {	/* Middle row */
-		fprintf (ps.fp, "/PSL_y0 PSL_parheight 0.5 mul def\n");
+		fprintf (ps.fp, "/PSL_y0 PSL_parheight 2 div def\n");
 	}
 	else {			/* Bottom row */
 		fprintf (ps.fp, "/PSL_y0 PSL_parheight def\n");

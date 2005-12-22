@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.155 2005-12-21 23:19:36 remko Exp $
+ *	$Id: gmt_plot.c,v 1.156 2005-12-22 02:31:01 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -349,7 +349,7 @@ void GMT_linear_map_boundary (double w, double e, double s, double n)
 	ps_set_length ("PSL_y", y_length);
 	ps_set_height ("PSL_HF", gmtdefs.header_font_size);
 	ps_textdim ("PSL_dimx", "PSL_dimy", gmtdefs.header_font_size, gmtdefs.header_font, frame_info.header, 0);	/* Get and set string dimensions in PostScript */
-	ps_command ("PSL_x PSL_dimx -0.5 mul add PSL_y PSL_H_y add M");
+	ps_command ("PSL_x PSL_dimx 2 div sub PSL_y PSL_H_y add M");
 	ps_setfont (gmtdefs.header_font);
 	ps_text (0.0, 0.0, -gmtdefs.header_font_size, frame_info.header, 0.0, 0, 0);
 
@@ -479,10 +479,14 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 			(axis == 0) ? GMT_coordinate_to_x (t_use, &x) : GMT_coordinate_to_y (t_use, &x);	/* Get annotation position */
 			GMT_get_coordinate_label (string, &GMT_plot_calclock, format, T, knots[i]);		/* Get annotation string */
 			ps_set_length ("PSL_x", x);
+#ifndef PSLFIX
 			ps_textdim ("PSL_dimx", "PSL_dimy", font_size, font, string, 0);				/* Get and set string dimensions in PostScript */
+#endif
 			if (rot[annot_pos]) {	/* Rotate and adjust annotation in y direction */
-				sprintf (cmd, "/PSL_y_off PSL_dimy 0.5 mul neg def");
+#ifndef PSLFIX
+				sprintf (cmd, "/PSL_y_off PSL_dimy 2 div neg def");
 				ps_command (cmd);
+#endif
 				sprintf (cmd, "PSL_x PSL_A%d_y M", annot_pos);					/* Move to new anchor point */
 				ps_command (cmd);
 				ps_text (0.0, 0.0, -font_size, string, -90.0, 7, 0);
@@ -1773,7 +1777,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 			ps_set_length ("PSL_x", project_info.xmax * 0.5);
 			ps_set_length ("PSL_y", project_info.ymax);
 			ps_textdim ("PSL_dimx", "PSL_dimy", gmtdefs.header_font_size, gmtdefs.header_font, frame_info.header, 0);			/* Get and set string dimensions in PostScript */
-			ps_command ("PSL_x PSL_dimx -0.5 mul add PSL_y PSL_H_y add M");
+			ps_command ("PSL_x PSL_dimx 2 div sub PSL_y PSL_H_y add M");
 			ps_setfont (gmtdefs.header_font);
 			ps_text (0.0, 0.0, -gmtdefs.header_font_size, frame_info.header, 0.0, 0, 0);
 		}
