@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.37 2005-12-17 05:59:22 pwessel Exp $
+ *	$Id: gmt_nc.c,v 1.38 2005-12-22 04:09:11 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -93,12 +93,16 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 	if (header->name[i]) {
 		strcpy (text, &header->name[i+1]);
 		header->name[i] = '\0';
-		i++;
-		while (header->name[i] && header->name[i] != '(' && header->name[i] != '[') i++;
-		if (header->name[i] == '(')
-			sscanf (&header->name[i+1], "%lf)", &t_value);
-		else if (header->name[i] == '[')
-			sscanf (&header->name[i+1], "%d]", &header->t_index);
+		i = 0;
+		while (text[i] && text[i] != '(' && text[i] != '[') i++;
+		if (text[i] == '(') {
+			sscanf (&text[i+1], "%lf)", &t_value);
+			text[i] = '\0';
+		}
+		else if (text[i] == '[') {
+			sscanf (&text[i+1], "%d]", &header->t_index);
+			text[i] = '\0';
+		}
 	}
 
 	/* Open NetCDF file */
@@ -119,15 +123,20 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		/* First see if this is an old NetCDF formatted file */
 		if (!nc_inq_dimid (ncid, "xysize", &i)) return (GMT_cdf_grd_info (ncid, header, job));
 
-		/* Find the id of named variable or the first 2- or 3-dimensional (z) variable */
-		if (nc_inq_varid (ncid, text, &z_id) == NC_NOERR)
+		/* Find the id of named variable or the first 2-dimensional (z) variable */
+		if (nc_inq_varid (ncid, text, &z_id) == NC_NOERR) {
 			check_nc_status (nc_inq_varndims (ncid, z_id, &ndims));
+			if (ndims < 2 || ndims > 3) {
+				fprintf (stderr, "%s: named variable (%s) is %d-D, not 2-D or 3-D [%s]\n", GMT_program, text, ndims, header->name);
+				exit (EXIT_FAILURE);
+			}
+		}
 		else {
 			check_nc_status (nc_inq_nvars (ncid, &nvars));
 			i = 0;
 			while (i < nvars && z_id < 0) {
 				check_nc_status (nc_inq_varndims (ncid, i, &ndims));
-				if (ndims == 2 || ndims == 3) z_id = i;
+				if (ndims == 2) z_id = i;
 				i++;
 			}
 		}
