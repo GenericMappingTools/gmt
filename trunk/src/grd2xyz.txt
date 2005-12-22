@@ -85,6 +85,6 @@ To write a single precision binary file without the x,y positions from the file 
 \fBgrd2xyz\fP raw_data.grd \fB\-ZTLf\fP > hawaii_grv.b
 .SH "SEE ALSO"
 .IR gmtdefaults (GMTMANSECTION),
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR grdedit (GMTMANSECTION),
 .IR xyz2grd (GMTMANSECTION)

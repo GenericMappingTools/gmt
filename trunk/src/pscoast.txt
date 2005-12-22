@@ -207,6 +207,6 @@ Research, Scott Polar Research Institute, Lensfield Road, Cambridge
 CB2 1ER, United Kingdom.
 .SH "SEE ALSO"
 .IR gmtdefaults (GMTMANSECTION),
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR grdlandmask (GMTMANSECTION),
 .IR psbasemap (GMTMANSECTION)

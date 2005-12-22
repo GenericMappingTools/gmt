@@ -96,7 +96,7 @@ and use black bars, run:
 .sp
 Since no y-range was specified, pshistogram will calculate ymax in even increments of 100.
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR psbasemap (GMTMANSECTION),
 .IR psrose (GMTMANSECTION),
 .IR psxy (GMTMANSECTION)

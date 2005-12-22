@@ -28,5 +28,5 @@ and set annotation offset to 0.2 cm:
 .br
 .sp
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR gmtdefaults (GMTMANSECTION)

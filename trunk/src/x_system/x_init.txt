@@ -48,7 +48,7 @@ lines, i.e. the dc-shifts and drift-rates computed from the time/error data poin
 listing for complete description of record format.
 .br
 .SH SEE ALSO
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR x_system (GMTMANSECTION)
 .SH REFERENCES
 Wessel, P. XOVER: A Cross-over Error Detector for Track Data,

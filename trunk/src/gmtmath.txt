@@ -171,7 +171,7 @@ Functions\fP, Applied Mathematics Series, vol. 55, Dover, New York.
 Press, W. H.,  S. A. Teukolsky, W. T. Vetterling, B. P. Flannery, 1992, 
 \fINumerical Recipes\fP, 2nd edition, Cambridge Univ., New York.
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR grd2xyz (GMTMANSECTION),
 .IR grdedit (GMTMANSECTION),
 .IR grdinfo (GMTMANSECTION),

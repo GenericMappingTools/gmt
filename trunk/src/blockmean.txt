@@ -63,7 +63,7 @@ To find 5 by 5 minute block mean values from the ASCII data in hawaii.xyg, run
 .IR blockmedian (GMTMANSECTION),
 .IR blockmode (GMTMANSECTION),
 .IR gmtdefaults (GMTMANSECTION),
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR nearneighbor (GMTMANSECTION),
 .IR surface (GMTMANSECTION),
 .IR triangulate (GMTMANSECTION)

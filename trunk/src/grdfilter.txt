@@ -93,5 +93,5 @@ when the fiter "circle" crosses a periodic (0-360) boundary or contains a geogra
 do not use weights and thus should only be used on Cartesian grids (or at very low latitudes) only.  If you want to apply such spatial
 filters you should project your data to an equal-area projection and run grdfilter on the resulting Cartesian grid.
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR grdfft (GMTMANSECTION)

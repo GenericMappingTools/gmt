@@ -52,7 +52,7 @@ To output the red component from the Sun raster radiation.ras file, use
 \fBgmt2rgb\fP radiation.ras \fB\-L\fPr \fB\-G\fPcomp_%c.grd
 .SH "SEE ALSO"
 .IR gmtdefaults (GMTMANSECTION),
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR grdedit (GMTMANSECTION),
 .IR grdimage (GMTMANSECTION),
 .IR grdmath (GMTMANSECTION),

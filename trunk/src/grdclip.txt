@@ -28,7 +28,7 @@ To set all values > 70 to NaN and all values < 0 to 0 in file data.grd:
 .sp
 \fBgrdclip\fP data.grd \fB\-G\fPnew_data.grd \fB\-Sa\fP70/NaN \fB\-Sb\fP0/0 \fB\-V\fP
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR grdlandmask (GMTMANSECTION),
 .IR grdmask (GMTMANSECTION),
 .IR grdmath (GMTMANSECTION),

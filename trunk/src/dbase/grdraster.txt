@@ -72,7 +72,7 @@ standard output:
 .sp
 .SH "SEE ALSO"
 .IR gmtdefaults (GMTMANSECTION),
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR grdsample (GMTMANSECTION),
 .IR grdfilter (GMTMANSECTION)
 #include "refs.i"

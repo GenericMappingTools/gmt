@@ -18,7 +18,7 @@ The \fB\-L\fP option is useful when one wants to check out a handful of new crui
 only need to compute COEs for the pairs that involve one or two of the new cruises, since all the
 other combinations have already been done.
 .SH SEE ALSO
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR x_system (GMTMANSECTION)
 .SH REFERENCES
 Wessel, P. XOVER: A Cross-over Error Detector for Track Data,

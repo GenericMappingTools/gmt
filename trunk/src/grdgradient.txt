@@ -110,7 +110,7 @@ To find the azimuth orientations of seafloor fabric in the file topo.grd:
 Horn, B.K.P., Hill-Shading and the Reflectance Map, Proceedings of the IEEE,
 Vol. 69, No. 1, January 1981, pp. 14-47. (http://people.csail.mit.edu/bkph/papers/Hill-Shading.pdf)
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR gmtdefaults (GMTMANSECTION),
 .IR grdhisteq (GMTMANSECTION),
 .IR grdimage (GMTMANSECTION),

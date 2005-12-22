@@ -107,7 +107,7 @@ binary, double precision files, run
 .sp
 This file can then be plotted with \fBpsxy \-M\fP.
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR project (GMTMANSECTION),
 .IR mapproject (GMTMANSECTION),
 .IR hotspotter (GMTMANSECTION),

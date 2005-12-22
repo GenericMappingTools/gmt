@@ -35,7 +35,7 @@ To see the list of active directories where MGD77 files might be stored, run
 .sp
 \fBmgd77path\fP \fB\-D\fP
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION)
+.IR GMT (GMTMANSECTION)
 .IR mgd77info (GMTMANSECTION)
 .IR mgd77list (GMTMANSECTION)
 .IR mgd77manage (GMTMANSECTION)

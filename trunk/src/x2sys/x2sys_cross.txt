@@ -120,7 +120,7 @@ files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try
 .sp
 \fBx2sys_cross\fP A13232.mgd77 A99938.mgd77 \fB\-Qe \-T\fPNGD77 \fB\-F\fPlon,lat,depth > crossovers.d
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR x2sys_init (GMTMANSECTION)
 .IR x2sys_datalist (GMTMANSECTION)
 .IR x2sys_get (GMTMANSECTION)

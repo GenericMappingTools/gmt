@@ -290,4 +290,4 @@ The \fB\-B\fP option is somewhat complicated to explain and comprehend.  However
 most applications (see examples).
 .SH "SEE ALSO"
 .IR gmtdefaults (GMTMANSECTION),
-.IR gmt (GMTMANSECTION)
+.IR GMT (GMTMANSECTION)

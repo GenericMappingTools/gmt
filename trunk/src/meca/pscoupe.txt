@@ -327,7 +327,7 @@ pen attributes.
 #include "explain_-t.txt"
 #include "explain_-c.txt"
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR psbasemap (GMTMANSECTION),
 .IR psmeca (GMTMANSECTION),
 .IR psxy (GMTMANSECTION)

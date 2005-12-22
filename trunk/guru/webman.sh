@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.24 2005-12-21 12:06:08 pwessel Exp $
+#	 $Id: webman.sh,v 1.25 2005-12-22 00:10:48 pwessel Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -31,6 +31,9 @@ mkdir -p www/gmt/doc/html
 grep -v '^#' guru/GMT_programs.lis > $$.programs.lis
 echo GMT >> $$.programs.lis
 echo pslib >> $$.programs.lis
+
+# Then add the supplemental programs as well
+grep 'html$' guru/GMT_suppl.lis | sed -e 's/\.html$//g' | awk -F/ '{print $NF}' >> $$.programs.lis
 
 # Now make sed script that will replace the bold and italic versions of GMT program names with
 # similarly formatted links.
@@ -67,6 +70,7 @@ done
 # defining an environmental parameter MY_GMT_SUPPL which contains a list of these
 # supplements.  They must all be in src of course
 
+cp $$.w0.sed save.d
 MY_SUPPL=${MY_GMT_SUPPL:-""}
 cd src
 for package in dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system $MY_SUPPL; do
@@ -75,7 +79,9 @@ for package in dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
 		if [ $gush = 1 ]; then
 			echo "Making ${prog}.html"
 		fi
-		groff -man -T html $f | sed -f ../$$.w0.sed | sed -f ../$$.all.sed > $package/${prog}.html
+		# Remove reference to current programs since no program needs active links to itself
+		grep -v "${prog}<" ../$$.w0.sed > ../$$.t0.sed
+		groff -man -T html ../man/manl/$prog.l | sed -f ../$$.t0.sed | sed -f ../$$.all.sed > $package/${prog}.html
 		echo '<BODY bgcolor="#ffffff">' >> $package/${prog}.html
 		cp -f $package/${prog}.html ../www/gmt/doc/html
 	done

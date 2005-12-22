@@ -46,6 +46,6 @@ area, and make output binary, run
 \fBx2sys_datalist\fP `cat tracks.lis` \fB\-T\fPTRK \fB\-F\fPlon,lat,depth \fB\-R\fP-40/-30/25/35 \fB\-bo\fP > alltopo.xyz
 .SH "SEE ALSO"
 .IR blockmean (GMTMANSECTION),
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR surface (GMTMANSECTION),
 .IR x2sys_cross (GMTMANSECTION)

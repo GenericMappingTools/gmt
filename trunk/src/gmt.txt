@@ -19,7 +19,7 @@ are completely general and will handle any (x,y) or (x,y,z) data as input.
 where module is the name of a \fBGMT\fP program and the options are those that pertain to
 that particular program.
 .SH GMT OVERVIEW
-	The following is a summary of all the programs supplied with \fBGMT\fP and 
+The following is a summary of all the programs supplied with \fBGMT\fP and
 a very short description of their purpose. Detailed information about each program can
 be found in the separate manual pages.
 .br
