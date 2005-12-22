@@ -1,41 +1,62 @@
 #!/bin/sh
 
 ps=position1.ps
+font=0	# Helvetica
+#font=4	# Times-Roman
+#font=8	# Courier
+#font=15	# AvantGardeDemi
 
-psbasemap --ANNOT_FONT_SIZE=24p -JX8i/5i -R0/12/0/12 -B1g1/1SW -K > $ps
+psbasemap --ANNOT_FONT_SIZE=24p --ANNOT_FONT=$font -JX8i/5i -R0/12/0/12 -B1g1/1g1SW -K > $ps
 pstext -R -J -O -K >> $ps <<%
-1 1 24 0 0 BR 1
-1 2 24 0 0 BC 1
-1 3 24 0 0 BL 1
-2 1 24 0 0 BR 2
-2 2 24 0 0 BC 2
-2 3 24 0 0 BL 2
-3 1 24 0 0 BR 3
-3 2 24 0 0 BC 3
-3 3 24 0 0 BL 3
-4 1 24 0 0 BR BR
-4 2 24 0 0 BC BC
-4 3 24 0 0 BL BL
-6 1 24 0 0 BR 1A
-6 2 24 0 0 BC 1A
-6 3 24 0 0 BL 1A
-7 1 24 0 0 BR 2A
-7 2 24 0 0 BC 2A
-7 3 24 0 0 BL 2A
-8 1 24 0 0 BR Z1
-8 2 24 0 0 BC Z1
-8 3 24 0 0 BL Z1
-9 1 24 0 0 BR 9
-9 2 24 0 0 BC 9
-9 3 24 0 0 BL 9
-10 1 24 0 0 BR 10
-10 2 24 0 0 BC 10
-10 3 24 0 0 BL 10
-11 1 24 0 0 BR 11
-11 2 24 0 0 BC 11
-11 3 24 0 0 BL 11
+ 1 1 24 0 $font BR 1
+ 1 2 24 0 $font BC 1
+ 1 3 24 0 $font BL 1
+ 2 1 24 0 $font BR 2
+ 2 2 24 0 $font BC 2
+ 2 3 24 0 $font BL 2
+ 3 1 24 0 $font BR 3
+ 3 2 24 0 $font BC 3
+ 3 3 24 0 $font BL 3
+ 4 1 24 0 $font BR BR
+ 4 2 24 0 $font BC BC
+ 4 3 24 0 $font BL BL
+ 6 1 24 0 $font BR 1A
+ 6 2 24 0 $font BC 1A
+ 6 3 24 0 $font BL 1A
+ 7 1 24 0 $font BR 2A
+ 7 2 24 0 $font BC 2A
+ 7 3 24 0 $font BL 2A
+ 8 1 24 0 $font BR Z1
+ 8 2 24 0 $font BC Z1
+ 8 3 24 0 $font BL Z1
+ 9 1 24 0 $font BR 9
+ 9 2 24 0 $font BC 9
+ 9 3 24 0 $font BL 9
+10 1 24 0 $font BR 10
+10 2 24 0 $font BC 10
+10 3 24 0 $font BL 10
+11 1 24 0 $font BR 11
+11 2 24 0 $font BC 11
+11 3 24 0 $font BL 11
+ 1 5 24 0 $font BL 01111111111
+ 1 6 24 0 $font BL 11111111110
+ 1 7 24 0 $font BL 01234567890
+6.5 5 24 0 $font BC 01111111111
+6.5 6 24 0 $font BC 11111111110
+6.5 7 24 0 $font BC 01234567890
+12 5 24 0 $font BR 01111111111
+12 6 24 0 $font BR 11111111110
+12 7 24 0 $font BR 01234567890
 %
-psbasemap --ANNOT_FONT_SIZE=24p -J -R0/1.2/0/1.2 -B0.1/0.1NE -O >> $ps
+pstext -Wgreen -R -J -O -K >> $ps <<%
+ 1 9 24 0 $font BR 10@+-1@+
+ 5 9 24 0 $font MR 10@+-1@+
+ 9 9 24 0 $font TR 10@+-1@+
+ 2 9 24 0 $font BR oo
+ 6 9 24 0 $font MR oo
+10 9 24 0 $font TR oo
+%
+psbasemap --ANNOT_FONT_SIZE=24p --ANNOT_FONT=$font -J -R0/1.2/0/1.2 -B0.1/0.1NE -O >> $ps
 
 rm -f .gmtcommands4
 
