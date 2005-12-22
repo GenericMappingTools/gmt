@@ -19,5 +19,5 @@ Sets full path to directory with gmtfiles.  [Default is current directory].
 .SH "SEE ALSO"
 .IR binlegs (GMTMANSECTION),
 .IR dat2gmt (GMTMANSECTION),
-.IR gmt (GMTMANSECTION)
+.IR GMT (GMTMANSECTION)
 #include "refs.i"

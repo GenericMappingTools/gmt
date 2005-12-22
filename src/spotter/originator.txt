@@ -91,7 +91,7 @@ and report the 2 most likely hotspot candidates for each seamount, run
 .br
 .sp
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR project (GMTMANSECTION),
 .IR mapproject (GMTMANSECTION),
 .IR backtracker (GMTMANSECTION)

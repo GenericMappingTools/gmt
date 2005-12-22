@@ -78,7 +78,7 @@ relief, run
 \fBgrd2cpt\fP mydata.grd \fB\-C\fP\fIrelief\fP \fB-L\fP0/10000 \fB-S\fP0/200/20 > mydata.cpt
 .SH "SEE ALSO"
 .IR gmtdefaults (GMTMANSECTION),
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR grdhisteq (GMTMANSECTION),
 .IR grdinfo (GMTMANSECTION),
 .IR makecpt (GMTMANSECTION)

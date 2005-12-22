@@ -166,7 +166,7 @@ used and convert all data to a common datum you may experience mismatches of
 tens to hundreds of meters.
 .SH "SEE ALSO"
 .IR gmtdefaults (GMTMANSECTION),
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR project (GMTMANSECTION)
 .SH REFERENCES
 Bomford, G., 1952, Geodesy, Oxford U. Press.

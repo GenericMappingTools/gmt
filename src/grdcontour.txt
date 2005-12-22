@@ -142,7 +142,7 @@ plot-title, use a thick red pen for annotated contours, and a thin, dashed, blue
 The labeling of local highs and lows may plot outside the innermost contour since only the mean value
 of the contour coordinates is used to position the label.
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR gmtdefaults (GMTMANSECTION),
 .IR psbasemap (GMTMANSECTION),
 .IR grdimage (GMTMANSECTION),

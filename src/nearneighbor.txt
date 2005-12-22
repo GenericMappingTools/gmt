@@ -77,6 +77,6 @@ a 200 km search radius, spherical distances, using an quadrant search, and set e
 .IR blockmean (GMTMANSECTION),
 .IR blockmedian (GMTMANSECTION),
 .IR blockmode (GMTMANSECTION),
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR surface (GMTMANSECTION),
 .IR triangulate (GMTMANSECTION)

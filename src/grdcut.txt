@@ -29,4 +29,4 @@ do not trust the gridding near the edges, so you want to keep only the area betw
 .SH "SEE ALSO"
 .IR grdpaste (GMTMANSECTION),
 .IR grdinfo (GMTMANSECTION),
-.IR gmt (GMTMANSECTION)
+.IR GMT (GMTMANSECTION)

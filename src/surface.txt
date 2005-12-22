@@ -110,7 +110,7 @@ or choose binary input and/or output using single or double precision storage.
 .IR blockmean (GMTMANSECTION),
 .IR blockmedian (GMTMANSECTION),
 .IR blockmode (GMTMANSECTION),
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR nearneighbor (GMTMANSECTION),
 .IR triangulate (GMTMANSECTION)
 .SH REFERENCES

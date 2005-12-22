@@ -76,4 +76,4 @@ To find the min and max values for each of the first 4 columns, but rounded to i
 .sp
 \fBminmax\fP junkfile \fB\-C \-I\fP1/1/1/1
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION)
+.IR GMT (GMTMANSECTION)

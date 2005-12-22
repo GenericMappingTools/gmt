@@ -102,7 +102,7 @@ To find out how many terms (up to 10) in a robust interpolant are significant in
 .sp
 \fBtrend2d\fP data.xyz \fB\-N\fP10\fBr \-I\fP \fB\-V\fP
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR grdmath (GMTMANSECTION),
 .IR grdtrend (GMTMANSECTION),
 .IR trend1d (GMTMANSECTION)

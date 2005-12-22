@@ -125,6 +125,6 @@ To return all points in quakes.d that are inside the spherical polygon lonlatpat
 .br
 .SH "SEE ALSO"
 .IR gmtdefaults (GMTMANSECTION),
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR grdlandmask (GMTMANSECTION),
 .IR pscoast (GMTMANSECTION)

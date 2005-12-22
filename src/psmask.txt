@@ -88,7 +88,7 @@ The same example but this time we use white tiling:
 .sp
 \fBpsmask\fP africa_grav.xyg \fB\-R\fP20/40/20/40 \fB\-I\fP5\fBm \-J\fPM10\fBi\fP \fB\-T \-O \-K \-G\fP255 > mask.ps
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR grdmask (GMTMANSECTION),
 .IR surface (GMTMANSECTION),
 .IR psbasemap (GMTMANSECTION),

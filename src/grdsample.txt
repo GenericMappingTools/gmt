@@ -57,7 +57,7 @@ To translate the gridline-registered file surface.grd to pixel registration:
 .sp
 \fBgrdsample\fP surface.grd \fB\-T \-G\fPpixel.grd
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR grdedit (GMTMANSECTION),
 .IR grdfft (GMTMANSECTION),
 .IR grdfilter (GMTMANSECTION)

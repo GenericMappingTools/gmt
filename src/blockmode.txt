@@ -59,7 +59,7 @@ To find 5 by 5 minute block mode estimates from the double precision binary data
 .SH "SEE ALSO"
 .IR blockmean (GMTMANSECTION),
 .IR blockmedian (GMTMANSECTION),
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR gmtdefaults (GMTMANSECTION),
 .IR nearneighbor (GMTMANSECTION),
 .IR surface (GMTMANSECTION),

@@ -49,7 +49,7 @@ on the command line, then the COE value is Value (lega) - Value (legb).  It is r
 the Akima spline is used instead of the natural cubic spline, since it is less sensitive to
 outliers that tend to introduce wild oscillations in the interpolation.
 .SH SEE ALSO
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR x_system (GMTMANSECTION)
 .SH REFERENCES
 Wessel, P. XOVER: A Cross-over Error Detector for Track Data,

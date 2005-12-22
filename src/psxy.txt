@@ -324,6 +324,6 @@ dimensions will be scaled by the actual symbol size chosen at run-time.  To desi
 with \fBpsbasemap \-R\fP-0.5/0.5/-0.5/0.5 \fB\-JX\fP4\fBi\fP \fB\-Ba\fP0.1\gBg\gP0.05 \fB\-P\fP > grid.ps and
 draw your symbol, centering it on (0,0).  For examples of symbols, see the set supplied with \fBGMT\fP in \fB$GMTHOME\fP/share/custom.
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR psbasemap (GMTMANSECTION),
 .IR psxyz (GMTMANSECTION)

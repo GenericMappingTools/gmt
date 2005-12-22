@@ -35,7 +35,7 @@ To remove bad legs from the system:
 .sp
 \fBbinlegs\fP \fIbadlegs.lis\fP \fB\-D\fR \fB\-V\fR \fB\-P\fR\fI/usr/lib/gmt\fP
 .SH "SEE ALSO"
-.IR gmt (GMTMANSECTION),
+.IR GMT (GMTMANSECTION),
 .IR gmtlegs (GMTMANSECTION),
 .IR gmt2bin (GMTMANSECTION)
 #include "refs.i"
