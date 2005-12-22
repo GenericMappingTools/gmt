@@ -1,5 +1,5 @@
 %-------------------------------------------------------------------------------------------
-%	$Id: PSL_label.ps,v 1.9 2004-06-24 02:07:50 pwessel Exp $
+%	$Id: PSL_label.ps,v 1.10 2005-12-22 02:34:32 remko Exp $
 %
 %	P. Wessel, version 1
 %
@@ -499,7 +499,7 @@ end
   /PSL_fillbox bits 128 and 128 eq def		% true to paint box opaque before placing text, false gives transparent box
   /PSL_drawbox bits 256 and 256 eq def		% true to draw box outline before placing text, false gives no outline
   /PSL_m1 PSL_m 1 sub def
-  /PSL_justx PSL_just 4 mod 1 sub -0.5 mul def
+  /PSL_justx PSL_just 4 mod 1 sub 2 div neg def
   /PSL_justy PSL_just 4 idiv PSL_height mul 2 div neg def
   /PSL_usebox PSL_fillbox PSL_drawbox or def	% true if we need box outline for fill or stroke or both
   

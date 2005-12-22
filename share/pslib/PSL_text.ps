@@ -1,5 +1,5 @@
 %-------------------------------------------------------------------------------------------
-%	$Id: PSL_text.ps,v 1.6 2004-06-01 19:49:34 pwessel Exp $
+%	$Id: PSL_text.ps,v 1.7 2005-12-22 02:34:32 remko Exp $
 %
 %	P. Wessel, version 1
 %	Text justification for paragraphs.
@@ -106,7 +106,7 @@
   /char2 PSL_word k2 get def
   /w1 char1 stringwidth pop def
   /w2 char2 stringwidth pop def
-  /delta w1 w2 sub 0.5 mul PSL_scale mul def
+  /delta w1 w2 sub 2 div PSL_scale mul def
   delta 0.0 gt {
     /dx1 0 def
     /dx2 delta def
@@ -132,7 +132,7 @@
   /ndiv lsum ncomp sub def
   ndiv 0 eq {/ndiv 1 def} if
   PSL_parjust 4 eq {/pr_char spread ndiv div def} {/pr_char 0 def} ifelse
-  PSL_parjust 2 eq {extra 0.5 mul 0 rmoveto} if
+  PSL_parjust 2 eq {extra 2 div 0 rmoveto} if
   PSL_parjust 3 eq {extra 0 rmoveto} if
   /PSL_col 0 def
 } bind def
