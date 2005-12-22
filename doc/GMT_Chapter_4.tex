@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.73 2005-12-20 17:35:38 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.74 2005-12-22 04:19:17 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -1501,7 +1501,9 @@ corresponding grd float format file.
 \label{sec:netcdf}
 \index{grdfile!formats!netCDF|(}
 
-When the netCDF file contains more than one 2-D or 3-D variable, the user can select the
+When the netCDF file contains more than one 2-dimensional variable, \GMT\ programs
+will load the first such variable in the file and ignore all others. Alternatively,
+the user can select the
 required variable by adding the suffix ``?\emph{varname}'' to the file name. For example,
 to get information on the variable ``slp'' in file \filename{file.nc}, use:
 \begin{verbatim}
@@ -1509,8 +1511,8 @@ to get information on the variable ``slp'' in file \filename{file.nc}, use:
 \end{verbatim}
 Since COARDS-compliant netCDF files are the default, the additional suffix ``=nf'' can be omitted.
 
-In case a variable is 3-dimensional and a layer other than the first is required, either add
-``[\emph{index}]'' or ``(\emph{level})'', where \emph{index} is
+In case the named variable is 3-dimensional, \GMT\ will load first (bottom) layer. If another
+layer is required, either add ``[\emph{index}]'' or ``(\emph{level})'', where \emph{index} is
 the index of the third (depth) variable (starting at 0 for the first layer) and \emph{level}
 is the numerical value of the third (depth) variable associated with the requested layer.
 To indicate the second layer of the 3-D variable ``slp'' use as file name: \filename{file.nc?slp[1]}.
