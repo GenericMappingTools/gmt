@@ -3,7 +3,7 @@
 #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
 #   2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
-timestamp='2005-12-11'
+timestamp='2005-12-23'
 
 # This file is (in principle) common to ALL GNU software.
 # The presence of a machine in this file suggests that SOME GNU software
@@ -248,7 +248,7 @@ case $basic_machine in
 	| h8300 | h8500 | hppa | hppa1.[01] | hppa2.0 | hppa2.0[nw] | hppa64 \
 	| i370 | i860 | i960 | ia64 \
 	| ip2k | iq2000 \
-	| m32r | m32rle | m68000 | m68k | m88k | maxq | mcore \
+	| m32r | m32rle | m68000 | m68k | m88k | maxq | mb | microblaze | mcore \
 	| mips | mipsbe | mipseb | mipsel | mipsle \
 	| mips16 \
 	| mips64 | mips64el \
@@ -817,6 +817,12 @@ case $basic_machine in
 		;;
 	pc532 | pc532-*)
 		basic_machine=ns32k-pc532
+		;;
+	pc98)
+		basic_machine=i386-pc
+		;;
+	pc98-*)
+		basic_machine=i386-`echo $basic_machine | sed 's/^[^-]*-//'`
 		;;
 	pentium | p5 | k5 | k6 | nexgen | viac3)
 		basic_machine=i586-pc
