@@ -1,7 +1,7 @@
 #
 # spec file for package GMT (Version 4)
 #
-# Copyright (c) 2004 Dirk Stoecker <soft@dstoecker.de>.
+# Copyright (c) 2004-2005 Dirk Stoecker <gmt@dstoecker.de>.
 # This file and all modifications and additions to the pristine
 # package are under the same license as the package itself.
 #
@@ -23,7 +23,7 @@ Provides:     GMT
 Autoreqprov:  on
 Requires:     netcdf >= 3.4
 Version:      4.0
-Release:      18
+Release:      19
 Summary:      Generic Mapping Tools
 Summary(de):  Generic Mapping Tools - Karten- und Grafikerzeugung
 Source0:      %{sourcepath}GMT4.0_progs.tar.bz2
@@ -33,12 +33,11 @@ Source3:      %{sourcepath}GMT4.0_suppl.tar.bz2
 Source4:      %{sourcepath}GMT_full.tar.bz2
 Source5:      %{sourcepath}GMT_share.tar.bz2
 Source6:      %{sourcepath}GMT_high.tar.bz2
-#Source7:      %{sourcepath}GMT4.0_tut.tar.bz2
-#Source8:      %{sourcepath}GMT4.0_scripts.tar.bz2
+Source7:      %{sourcepath}GMT4.0_scripts.tar.bz2
+#Source8:      %{sourcepath}GMT4.0_tut.tar.bz2
 #Source9:      %{sourcepath}GMT4.0_pdf.tar.bz2
 #Source10:     %{sourcepath}GMT4.0_ps.tar.bz2
 #Source11:     %{sourcepath}triangle.tar.bz2
-#Patch:        GMT_rpm.patch
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build/
 
 %description
@@ -101,7 +100,7 @@ Requires:     %{name}
 
 %description doc
 Documentation of the Generic Mapping Tools including documentation and
-tutorial in HTML format. The dokumentation is additionally available in pdf
+tutorial in HTML format. The documentation is additionally available in pdf
 and ps as well.
 See ftp://gmt.soest.hawaii.edu/pub/gmt/4/ or http://gmt.soest.hawaii.edu/.
 
@@ -109,6 +108,18 @@ See ftp://gmt.soest.hawaii.edu/pub/gmt/4/ or http://gmt.soest.hawaii.edu/.
 Die englische HTML-Dokumentation der Generic Mapping Tools inklusive Tutorial.
 Die Dateien sind auch im PDF- und PostScript-Format erhaeltlich (siehe dazu
 ftp://gmt.soest.hawaii.edu/pub/gmt/4/ oder http://gmt.soest.hawaii.edu/).
+
+%package examples
+Summary:      Generic Mapping Tools (Documentation).
+Summary(de):  Generic Mapping Tools (Dokumentation).
+Group:        Productivity/Graphics/Visualization/Graph
+Requires:     %{name}
+
+%description examples
+Example scripts for the Generic Mapping Tools.
+
+%description examples -l de
+Beispiel-Skripte für die Generic Mapping Tools.
 
 %package coastlines
 Summary:      Generic Mapping Tools (coastlines, rivers, politcal boundaries).
@@ -128,8 +139,7 @@ welche in 5 Aufloeungen vorliegt. Die Aufloesungen "crude", "low",
 "intermediate", "full" and "high" sind in diesem Paket enthalten.
 
 %prep
-%setup -q -b1 -b2 -b3 -b4 -b5 -b6 -n %{name}%{version}
-#%patch -p1
+%setup -q -b1 -b2 -b3 -b4 -b5 -b6 -b7 -n %{name}%{version}
 CFLAGS="-O3 -s" ./configure --prefix=%{prefix} \
 	    --libdir=%{prefix}/%_lib \
             --includedir=%{incdir} \
@@ -143,6 +153,7 @@ rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT install install-all
 #make install-wrapper
 cp ../share/*.cdf $RPM_BUILD_ROOT/%{prefix}/share
+cp -r examples $RPM_BUILD_ROOT/%{prefix}
 #cp -r www/gmt $RPM_BUILD_ROOT/%{prefix}/share/doc
 gzip -9 $RPM_BUILD_ROOT/%{prefix}/man/manl/*
 mkdir -p $RPM_BUILD_ROOT/usr/local/man/manl
@@ -194,10 +205,18 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %{prefix}/www/gmt
 
+%files examples
+%defattr(-,root,root)
+%{prefix}/examples
+
 %files coastlines
 %defattr(-,root,root)
 %{prefix}/share/*_*.cdf
 
 %changelog -n GMT
-* Mon Nov 29 2004 - soft@dstoecker.de
-- first SuSE version
+* Fri Dec 23 2005 - gmt@dstoecker.de
+- added examples package
+- some minor modifications
+
+* Mon Nov 29 2004 - gmt@dstoecker.de
+- first version
