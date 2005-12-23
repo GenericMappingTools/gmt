@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.208 2005-12-23 03:29:09 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.209 2005-12-23 04:57:16 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1126,7 +1126,8 @@ void GMT_read_cpt (char *cpt_file)
 			k -= (long)line;	/* Position of the column */
 			GMT_lut[n].label = (char *)GMT_memory (VNULL, strlen (line) - k, sizeof (char), GMT_program);
 			strcpy (GMT_lut[n].label, &line[k+1]);
-			line[k] = '\0';	/* Chop it off */
+			GMT_lut[n].label[strlen(line)-k-2] = '\0';	/* Strip off trailing return */
+			line[k] = '\0';	/* Chop label off from line */
 		}
 		
 		/* Determine if psscale need to label these steps by examining for the optional L|U|B character at the end */
