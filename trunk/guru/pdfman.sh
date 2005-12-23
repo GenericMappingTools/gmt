@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: pdfman.sh,v 1.2 2005-12-23 03:29:09 pwessel Exp $
+#	 $Id: pdfman.sh,v 1.3 2005-12-23 05:04:34 pwessel Exp $
 #
 #	pdfman.sh - Automatic generation of the GMT pdf manual pages
 #
@@ -38,6 +38,7 @@ grep 'html$' guru/GMT_suppl.lis | sed -e 's/\.html$//g' | awk -F/ '{print $NF}' 
 
 # Ok, make pdf files
 add=0
+rm -f www/gmt/doc/ps/GMT_Manpages.ps www/gmt/doc/pdf/GMT_Manpages.pdf
 for prog in `cat $$.programs.lis`; do
 	if [ $gush = 1 ]; then
 		echo "Appending ${prog}.pdf"
@@ -69,6 +70,7 @@ for package in dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
 done
 cd ..
 
-# COnvert to PDF
+# Convert to PDF
 
+echo" Converting GMT_Manpages.ps  to GMT_Manpages.pdf"
 ps2pdf www/gmt/doc/ps/GMT_Manpages.ps www/gmt/doc/pdf/GMT_Manpages.pdf
