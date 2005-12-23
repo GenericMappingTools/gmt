@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.207 2005-12-19 22:57:43 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.208 2005-12-23 03:29:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -889,7 +889,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 	else if (GMT_inc_code[0] & GMT_INC_IS_NNODES) {	/* Got nx */
 		h->nx = irint (h->x_inc);
 		h->x_inc = (h->x_max - h->x_min) / (h->nx - one_or_zero);
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Given nx implies x_inc = %lg\n", GMT_program, h->x_inc);
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Given nx implies x_inc = %g\n", GMT_program, h->x_inc);
 	}
 	else {	/* Got funny units */
 		switch (GMT_inc_code[0] & GMT_INC_UNITS) {
@@ -908,14 +908,14 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 		}
 		f = cosd (0.5 * (h->y_max + h->y_min));	/* Latitude scaling of E-W distances */
 		h->x_inc = h->x_inc * s * f / m_pr_degree;
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion implies x_inc = %lg\n", GMT_program, h->x_inc);
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion implies x_inc = %g\n", GMT_program, h->x_inc);
 		h->nx = irint ((h->x_max - h->x_min) / h->x_inc) + one_or_zero;
 	}
 	if (GMT_inc_code[0] & GMT_INC_IS_EXACT) {	/* Want to keep dx exactly as given; adjust x_max accordingly */
 		s = (h->x_max - h->x_min) - h->x_inc * (h->nx - one_or_zero);
 		if (fabs (s) > 0.0) {
 			h->x_max -= s;
-			if (gmtdefs.verbose) fprintf (stderr, "%s: x_max adjusted to %lg\n", GMT_program, h->x_max);
+			if (gmtdefs.verbose) fprintf (stderr, "%s: x_max adjusted to %g\n", GMT_program, h->x_max);
 		}
 	}
 	else if (!GMT_inc_code[0] & GMT_INC_IS_NNODES) {	/* Adjust x_inc to exactly fit west/east */
@@ -925,7 +925,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 		h->nx += one_or_zero;
 		if (fabs (f - h->x_inc) > 0.0) {
 			h->x_inc = f;
-			if (gmtdefs.verbose) fprintf (stderr, "%s: Given domain implies x_inc = %lg\n", GMT_program, h->x_inc);
+			if (gmtdefs.verbose) fprintf (stderr, "%s: Given domain implies x_inc = %g\n", GMT_program, h->x_inc);
 		}
 	}
 
@@ -937,7 +937,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 	else if (GMT_inc_code[1] & GMT_INC_IS_NNODES) {	/* Got ny */
 		h->ny = irint (h->y_inc);
 		h->y_inc = (h->y_max - h->y_min) / (h->ny - one_or_zero);
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Given ny implies y_inc = %lg\n", GMT_program, h->y_inc);
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Given ny implies y_inc = %g\n", GMT_program, h->y_inc);
 		return;
 	}
 	else {	/* Got funny units */
@@ -956,7 +956,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 				break;
 		}
 		h->y_inc = (h->y_inc == 0.0) ? h->x_inc : h->y_inc * s / m_pr_degree;
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion implies y_inc = %lg\n", GMT_program, h->y_inc);
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion implies y_inc = %g\n", GMT_program, h->y_inc);
 		h->ny = irint ((h->y_max - h->y_min) / h->y_inc) + one_or_zero;
 	}
 	
@@ -964,7 +964,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 		s = (h->y_max - h->y_min) - h->y_inc * (h->ny - one_or_zero);
 		if (fabs (s) > 0.0) {
 			h->y_max -= s;
-			if (gmtdefs.verbose) fprintf (stderr, "%s: y_max adjusted to %lg\n", GMT_program, h->y_max);
+			if (gmtdefs.verbose) fprintf (stderr, "%s: y_max adjusted to %g\n", GMT_program, h->y_max);
 		}
 	}
 	else if (!GMT_inc_code[1] & GMT_INC_IS_NNODES) {	/* Adjust y_inc to exactly fit south/north */
@@ -974,7 +974,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 		h->ny += one_or_zero;
 		if (fabs (f - h->y_inc) > 0.0) {
 			h->y_inc = f;
-			if (gmtdefs.verbose) fprintf (stderr, "%s: Given domain implies y_inc = %lg\n", GMT_program, h->y_inc);
+			if (gmtdefs.verbose) fprintf (stderr, "%s: Given domain implies y_inc = %g\n", GMT_program, h->y_inc);
 		}
 	}
 }

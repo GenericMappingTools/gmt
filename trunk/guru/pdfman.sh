@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: pdfman.sh,v 1.1 2005-12-22 04:44:00 pwessel Exp $
+#	 $Id: pdfman.sh,v 1.2 2005-12-23 03:29:09 pwessel Exp $
 #
 #	pdfman.sh - Automatic generation of the GMT pdf manual pages
 #
@@ -43,10 +43,10 @@ for prog in `cat $$.programs.lis`; do
 		echo "Appending ${prog}.pdf"
 	fi
         if [ $add -eq 1 ]; then
-                echo "false 0 startjob pop" >> www/gmt/doc/ps/GMT_manpages.ps
+                echo "false 0 startjob pop" >> www/gmt/doc/ps/GMT_Manpages.ps
         fi
         add=1
-        groff -man man/manl/${prog}.l >> www/gmt/doc/ps/GMT_manpages.ps
+        groff -man man/manl/${prog}.l >> www/gmt/doc/ps/GMT_Manpages.ps
 done
 
 # Ok, then do the supplemental packages
@@ -62,8 +62,8 @@ for package in dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
 		prog=`basename $f .man`
 		if [ $gush = 1 ] && [ -f ../man/manl/$prog.l ]; then
 			echo "Appending ${prog}.pdf"
-			echo "false 0 startjob pop" >> ../www/gmt/doc/ps/GMT_manpages.ps
-			groff -man ../man/manl/$prog.l >> ../www/gmt/doc/ps/GMT_manpages.ps
+			echo "false 0 startjob pop" >> ../www/gmt/doc/ps/GMT_Manpages.ps
+			groff -man ../man/manl/$prog.l >> ../www/gmt/doc/ps/GMT_Manpages.ps
 		fi
 	done
 done
@@ -71,4 +71,4 @@ cd ..
 
 # COnvert to PDF
 
-ps2pdf www/gmt/doc/ps/GMT_manpages.ps www/gmt/doc/pdf/GMT_manpages.pdf
+ps2pdf www/gmt/doc/ps/GMT_Manpages.ps www/gmt/doc/pdf/GMT_Manpages.pdf
