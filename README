@@ -1,8 +1,8 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.25 2005-11-10 02:34:36 pwessel Exp $ 
+#		$Id: README,v 1.26 2005-12-26 23:47:53 pwessel Exp $ 
 #
-#	Copyright (c) 1991-2005, P. Wessel & W. H. F. Smith
+#	Copyright (c) 1991-2006, P. Wessel & W. H. F. Smith
 #
 #	See COPYING file for copying and redistribution conditions.
 #
@@ -62,8 +62,8 @@ Note there are several GMT tar archives available:
 
  1. GMT_progs.tar.gz		: Source code only, no documentation
  2. GMT_share.tar.gz		: Standard resolution coastline data
- 3. GMT_ps.tar.gz		: PS version of cookbook and tutorial
- 4. GMT_pdf.tar.gz		: PDF version of cookbook and tutorial
+ 3. GMT_ps.tar.gz		: PS version of cookbook, tutorial, and man pages
+ 4. GMT_pdf.tar.gz		: PDF version of cookbook, tutorial, and man pages
  5. GMT_man.tar.gz		: UNIX man pages for GMT
  6. GMT_web.tar.gz		: Web (HTML) version of docs and man pages
  7. GMT_tut.tar.gz		: Tutorial data sets
@@ -167,6 +167,7 @@ the site that is closest to you to minimize transmission times:
 --------------------------------------------------------------
 SOEST, U. of Hawaii			gmt.soest.hawaii.edu
 Lab for Satellite Altimetry, NOAA	falcon.grdl.noaa.gov
+IRIS, Washington, US			ftp.iris.washington.edu
 IAG-USP, U. of Sao Paulo, BRAZIL	ftp.iag.usp.br
 Dep. Geology, U. in Oslo, NORWAY	ftp.geologi.uio.no
 ISV, Hokkaido U, Sapporo, JAPAN		ftp.eos.hokudai.ac.jp
@@ -429,7 +430,7 @@ Currently, the supplemental archive include the directories:
 	mex	  - Matlab mex files for grdfile i/o.
 	mgg	  - Programs for MGD-77 data in .gmt format.
 	mgd77	  - Programs for handling of native MGD77 files.
-	misc	  - psmegaplot and makepattern.
+	misc	  - psmegaplot, ps2raster, makepattern, and nc2xy
 	segyprogs - Plotting SEGY seismic data sets.
 	spotter	  - Plate tectonic & kinematics applications.
 	x2sys	  - Track intersection (crossover) tools.

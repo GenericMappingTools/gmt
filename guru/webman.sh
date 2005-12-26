@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.26 2005-12-22 04:44:00 pwessel Exp $
+#	 $Id: webman.sh,v 1.27 2005-12-26 23:47:53 pwessel Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -283,7 +283,9 @@ packages actually installed on your system will be accessible.
 <UL>
 <!-- <LI><A HREF="doc/html/gmtdigitize.html"> gmtdigitize</A> Digitize features using a digitizer -->
 <LI><A HREF="doc/html/makepattern.html"> makepattern</A> Make GMT color pattern from b/w pattern
+<LI><A HREF="doc/html/ps2raster.html"> ps2raster</A> Convert PostScript to raster image
 <LI><A HREF="doc/html/psmegaplot.html"> psmegaplot</A> Make poster-size plot using tiling
+<LI><A HREF="doc/html/nc2xy.html"> nc2xy</A> Convert netCDF column file to ASCII xy data
 </UL>
 <HR>
 <H3>The SEGYPROGS package</H3>
