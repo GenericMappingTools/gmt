@@ -1,4 +1,4 @@
-	$Id: README.misc,v 1.2 2005-12-09 18:18:27 remko Exp $
+	$Id: README.misc,v 1.3 2005-12-26 21:54:46 pwessel Exp $
 
 This directory contains some miscellaneous programs
 that may come in handy for some users.
@@ -6,6 +6,7 @@ that may come in handy for some users.
 	makepattern - create Sun rasterfiles from patterns
 	psmageplot - blow up plots over several pages
 	nc2xy - convert 1-D netCDF files to ASCII
+	ps2raster - convert PostScript files to raster images
 
 makepattern can read the user's Sun 1-bit raster files or
 Sun icon files (of the type used for patterns in GMT3.0)
@@ -17,3 +18,8 @@ tiling.
 
 nc2xy lists the contents of 1-D netCDF files as columns
 in ASCII format. Output is send to standard output.
+
+ps2raster will convert GMT (and other) PostScript files to
+images in either JPG, TIFF, PNG, or PPM format, or simply
+convert the PostScript to a PDF file.  It allows recomputation
+of the bounding box to ensure a tight fit.
