@@ -399,25 +399,23 @@ is then used to guide the writing of geographical coordinates in data fields.  T
 general of the form [+|-]D or [+|-]ddd[:mm[:ss]][.xxx][F].  The various terms have the following purpose:
 .sp
 .br
-	+|-	+ means output longitude in the 0 to 360 range
++	means output longitude in the 0 to 360 range [-180/+180]
 .br
-		- means output longitude in the -360 to 0 range
+-	means output longitude in the -360 to 0 range [-180/+180]
 .br
-		If not given, use the -180 to +180 range
+D	Use \fBD_FORMAT\fP for floating point degrees.
 .br
-	D	Use \fBD_FORMAT\fP for floating point degrees.
+ddd	Fixed format integer degrees
 .br
-	ddd	Fixed format integer degrees
+:	delimiter used
 .br
-	:	delimiter
+mm	Fixed format integer arc minutes
 .br
-	mm	Fixed format integer arc minutes
+ss	Fixed format integer arc seconds
 .br
-	ss	Fixed format integer arc seconds
+.xxx	Floating fraction of previous integer field, fixed width.
 .br
-	.xxx	Floating fraction of previous integer field, fixed width.
-.br
-	F	Encode sign using WESN suffix
+F	Encode sign using WESN suffix
 .br
 .sp
 The default is +D.
@@ -436,7 +434,6 @@ site-specific formats may be specified in
 the gmtmedia.d file in \fB$GMTHOME\fP/share; see that file for details):
 .br
 .sp
-.RS
 Media	width	height
 .br
 A0	2380	3368
@@ -497,7 +494,6 @@ legal	612	1008
 .br
 ledger	1224	792
 .br
-.RE
 .sp
 For a completely custom format (e.g., for large format plotters) you may also
 specify Custom_WxH, where W and H are in points.
@@ -597,59 +593,59 @@ partial interval [0.5].
 .B TIME_LANGUAGE
 Language to use when plotting calendar items such as months and days.  Select from:
 .br
-	BR	Brazilian Portuguese
+BR	Brazilian Portuguese
 .br
-	CN1	Simplified Chinese
+CN1	Simplified Chinese
 .br
-	CN2	Traditional Chinese
+CN2	Traditional Chinese
 .br
-	DE	German
+DE	German
 .br
-	DK	Danish
+DK	Danish
 .br
-	EH	Basque
+EH	Basque
 .br
-	ES	Spanish
+ES	Spanish
 .br
-	FI	Finnish
+FI	Finnish
 .br
-	FR	French
+FR	French
 .br
-	GR	Greek
+GR	Greek
 .br
-	HU	Hungarian
+HU	Hungarian
 .br
-	IE	Irish
+IE	Irish
 .br
-	IL	Hebrew
+IL	Hebrew
 .br
-	IS	Icelandic
+IS	Icelandic
 .br
-	IT	Italian
+IT	Italian
 .br
-	JP	Japanese
+JP	Japanese
 .br
-	NL	Dutch
+NL	Dutch
 .br
-	NO	Norwegian
+NO	Norwegian
 .br
-	PL	Polish
+PL	Polish
 .br
-	PT	Portuguese
+PT	Portuguese
 .br
-	RU	Russian
+RU	Russian
 .br
-	SE	Swedish
+SE	Swedish
 .br
-	SG	Scottish Gaelic
+SG	Scottish Gaelic
 .br
-	TO	Tongan
+TO	Tongan
 .br
-	TR	Turkish
+TR	Turkish
 .br
-	UK	British English
+UK	British English
 .br
-	US	US English
+US	US English
 .br
 .sp
 If your language is not supported, please examine the \fB$GMTHOME\fP/share/time/us.d file and
@@ -659,15 +655,15 @@ make a similar file.  Please submit it to the \fBGMT\fP Developers for official 
 Determines what the time epoch relative time refers to and what the units are.  Choose from one of the preset systems below
 (epoch and units are indicated):
 .br
-	JD	Julian Date, -4713-11-25T12:00:00 d
+JD	Julian Date, -4713-11-25T12:00:00 d
 .br
-	MJD	Modified Julian Date, 1858-11-27T00:00:00 d
+MJD	Modified Julian Date, 1858-11-27T00:00:00 d
 .br
-	J2000	2000-01-01T00:00:00 d
+J2000	2000-01-01T00:00:00 d
 .br
-	S1985	1985-01-01T00:00:00 c
+S1985	1985-01-01T00:00:00 c
 .br
-	UNIX	1970-01-01T00:00:00 c
+UNIX	1970-01-01T00:00:00 c
 .br
 or specify OTHER and supply your own \fBTIME_EPOCH\fP and \fBTIME_UNIT\fP settings [J2000].
 .TP

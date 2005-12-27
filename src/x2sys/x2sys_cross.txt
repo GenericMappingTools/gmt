@@ -24,13 +24,13 @@ No space between the option flag and the associated arguments.
 .B \-C
 Select procedure for along-track distance calculation:
 .br
-	\fBc\fP Cartesian distances [Default].
+\fBc\fP Cartesian distances [Default].
 .br
-	\fBf\fP Flat Earth distances.
+\fBf\fP Flat Earth distances.
 .br
-	\fBg\fP Great circle distances.
+\fBg\fP Great circle distances.
 .br
-	\fBe\fP Geodesic distances on current \fBGMT\fP ellipsoid.
+\fBe\fP Geodesic distances on current \fBGMT\fP ellipsoid.
 .TP
 .B \-F
 Sets which columns to use.  Give a comma-separated list of column names;
@@ -40,11 +40,11 @@ this list must include \fBx\fP, \fBy\fP or \fBlon\fP, \fBlat\fP and ideally
 .B \-I
 Sets the interpolation mode. Choose among:
 .br
-	\fBl\fP Linear interpolation [Default].
+\fBl\fP Linear interpolation [Default].
 .br
-	\fBa\fP Akima spline interpolation.
+\fBa\fP Akima spline interpolation.
 .br
-	\fBc\fP Cubic spline interpolation.
+\fBc\fP Cubic spline interpolation.
 .br
 #include "explain_-J_short.txt"
 .TP

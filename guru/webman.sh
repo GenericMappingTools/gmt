@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.28 2005-12-27 01:24:03 pwessel Exp $
+#	 $Id: webman.sh,v 1.29 2005-12-27 11:39:36 pwessel Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -215,7 +215,7 @@ cat << EOF >> www/gmt/gmt_man.html
 <HR>
 For a thematic listing of GMT man pages, click <A HREF="#anchor_theme">here</A>.
 <A HREF="gmt_services.html">
-<IMG SRC="images/gmt_back.gif" ALT="RETURN">
+<IMG SRC="gmt_back.gif" ALT="RETURN">
 Return to GMT Online Services page.
 </A>
 </BODY>
@@ -332,7 +332,7 @@ packages actually installed on your system will be accessible.
 </UL>
 <P>
 <A HREF="gmt_services.html">
-<IMG SRC="images/gmt_back.gif" alt="RETURN">
+<IMG SRC="gmt_back.gif" alt="RETURN">
 Return to GMT Online Services page.
 </A>
 </BODY>
