@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.20 2005-12-27 02:40:42 pwessel Exp $
+REM	$Id: gmtsuppl.bat,v 1.21 2005-12-27 04:03:32 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
@@ -108,12 +108,12 @@ IF %CHOICE%=="dynamic" CL %COPT% %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c mgd77.c
 IF %CHOICE%=="dynamic" LINK %LOPT% /out:mgd77.dll /implib:mgd77.lib mgd77.obj %GMTLIB%
 IF %CHOICE%=="static"  CL %COPT% %DLL_NETCDF% /DDLL_EXPORT /c mgd77.c
 IF %CHOICE%=="static"  lib /out:mgd77.lib mgd77.obj
-CL %COPT% mgd77convert.c    mgd77.lib %GMTLIB%
-CL %COPT% mgd77info.c    mgd77.lib %GMTLIB%
-CL %COPT% mgd77list.c    mgd77.lib %GMTLIB%
-CL %COPT% mgd77manage.c    mgd77.lib %GMTLIB%
-CL %COPT% mgd77path.c    mgd77.lib %GMTLIB%
-CL %COPT% mgd77track.c    mgd77.lib %GMTLIB%
+CL %COPT% mgd77convert.c mgd77.lib %GMTLIB%
+CL %COPT% mgd77info.c	 mgd77.lib %GMTLIB%
+CL %COPT% mgd77list.c	 mgd77.lib %GMTLIB%
+CL %COPT% mgd77manage.c	 mgd77.lib %GMTLIB%
+CL %COPT% mgd77path.c	 mgd77.lib %GMTLIB%
+CL %COPT% mgd77track.c	 mgd77.lib %GMTLIB%
 del *.obj
 IF %CHOICE%=="dynamic" move mgd77.dll %BINDIR%
 IF %CHOICE%=="dynamic" move mgd77.exp %LIBDIR%

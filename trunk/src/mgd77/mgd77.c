@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.92 2005-11-05 01:42:58 pwessel Exp $
+ *	$Id: mgd77.c,v 1.93 2005-12-27 04:03:32 pwessel Exp $
  *
  *    Copyright (c) 2005 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -414,7 +414,7 @@ int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MG
 	
 	memset ((void *)H, '\0', sizeof (struct MGD77_HEADER));	/* Completely wipe existing header */
 	if (F->format == MGD77_FORMAT_M77) {			/* Can compute # records from file size because format is fixed */
-		if (stat (F->path, &buf)) {	/* Inquiry about file failed somehow */
+		if (STAT (F->path, &buf)) {	/* Inquiry about file failed somehow */
 			fprintf (stderr, "%s: Unable to stat file %s\n", GMT_program, F->path);
 			exit (EXIT_FAILURE);
 		}
@@ -2631,7 +2631,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			text = (char *) GMT_memory (VNULL, count[0] * count[1], sizeof (char), "MGD77_Read_File_cdf");
 			if (S->H.info[c].col[id].constant) {	/* Scalar, must read one and then replicate */
 				MGD77_nc_status (nc_get_vara_schar (F->nc_id, S->H.info[c].col[id].var_id, start, &count[1], (signed char *)text));
-				for (k = 1; k < count[0]; k++) strncpy (&text[k*count[1]], text, count[1]);	/* Replicate one string */
+				for (k = 1; k < (int)count[0]; k++) strncpy (&text[k*count[1]], text, count[1]);	/* Replicate one string */
 			}
 			else	/* Get all individual strings */
 				MGD77_nc_status (nc_get_vara_schar (F->nc_id, S->H.info[c].col[id].var_id, start, count, (signed char *)text));
@@ -2640,7 +2640,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 		}
 		else if (S->H.no_time && !strcmp (S->H.info[c].col[id].abbrev, "time")) {	/* Fake NaN time and bit_pattern not set */
 			values = (double *) GMT_memory (VNULL, count[0], sizeof (double), "MGD77_Read_File_cdf");
-			for (k = 0; k < count[0]; k++) values[k] = GMT_d_NaN;
+			for (k = 0; k < (int)count[0]; k++) values[k] = GMT_d_NaN;
 			S->values[i] = (void *)values;
 		}
 		else {
@@ -2648,7 +2648,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			if (S->H.info[c].col[id].constant) {	/* Scalar, must read one and then replicate */
 				MGD77_nc_status (nc_get_var1_double (F->nc_id, S->H.info[c].col[id].var_id, start, values));
 				MGD77_do_scale_offset_after_read (values, 1, scale, offset, MGD77_NaN_val[S->H.info[c].col[id].type]);	/* Just modify one point */
-				for (k = 1; k < count[0]; k++) values[k] = values[0];
+				for (k = 1; k < (int)count[0]; k++) values[k] = values[0];
 			}
 			else {	/* Read entire array */
 				MGD77_nc_status (nc_get_vara_double (F->nc_id, S->H.info[c].col[id].var_id, start, count, values));
@@ -3053,7 +3053,7 @@ int MGD77_carter_depth_from_twt (int zone, double twt_in_msec, struct MGD77_CART
 		return (-1);
 	}
 
-	nominal_z1500 = 0.75 * twt_in_msec;
+	nominal_z1500 = irint (0.75 * twt_in_msec);
 
 	if (nominal_z1500 <= 100.0) {	/* There is no correction in water this shallow.  */
 		*depth_in_corr_m = nominal_z1500;
@@ -3068,7 +3068,7 @@ int MGD77_carter_depth_from_twt (int zone, double twt_in_msec, struct MGD77_CART
 		return (-1);
 	}
 
-	part_in_100 = fmod (nominal_z1500, 100.0);
+	part_in_100 = irint (fmod (nominal_z1500, 100.0));
 
 	if (part_in_100 > 0.0) {	/* We have to interpolate the table  */
 
@@ -3131,7 +3131,7 @@ int MGD77_carter_twt_from_depth (int zone, double depth_in_corr_m, struct MGD77_
 		return (MGD77_NO_ERROR);
 	}
 
-	guess = (depth_in_corr_m / 100.0) + min;
+	guess = irint ((depth_in_corr_m / 100.0)) + min;
 	if (guess > max) guess = max;
 	while (guess < max && C->carter_correction[guess] < depth_in_corr_m) guess++;
 	while (guess > min && C->carter_correction[guess] > depth_in_corr_m) guess--;
