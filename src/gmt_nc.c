@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.38 2005-12-22 04:09:11 remko Exp $
+ *	$Id: gmt_nc.c,v 1.39 2005-12-27 03:10:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -40,6 +40,9 @@
  *	GMT_nc_write_grd_info :		Write header to new file
  *	GMT_nc_write_grd :		Write header and data set to new file
  *
+ *	void check_nc_status (int status)	Used for misc checks
+ *	void nc_nopipe (char *file)		---"---
+ *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 #define GMT_WITH_NO_PS
@@ -48,8 +51,6 @@
 
 EXTERN_MSC int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job);
 char nc_file[BUFSIZ];
-void check_nc_status (int status);
-void nc_nopipe (char *file);
 int GMT_nc_grd_info (struct GRD_HEADER *header, char job);
 
 int GMT_nc_read_grd_info (struct GRD_HEADER *header)
@@ -264,7 +265,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 				check_nc_status (nc_get_var1_double (ncid, t_id, &lens[2], &dummy[1]));
 			}
 			header->t_index = irint((t_value - dummy[0]) / (dummy[1] - dummy[0]) * lens[2]);
-			if (header->t_index < 0 || header->t_index > lens[2]) {
+			if (header->t_index < 0 || header->t_index > (int)lens[2]) {
 				fprintf (stderr, "%s: requested t coordinate out of range [%s]\n", GMT_program, header->name);
 				exit (EXIT_FAILURE);
 			}

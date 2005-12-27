@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.90 2005-12-17 05:59:21 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.91 2005-12-27 03:10:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2717,7 +2717,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 				}
 				if (fabs (fabs (lon_sum) - 360.0) < GMT_CONV_LIMIT) {	/* TRUE if contains a pole */
 					e[i].polar = TRUE;
-					e[i].pole = copysign (1.0, lat_sum);
+					e[i].pole = irint (copysign (1.0, lat_sum));
 				}
 			}
 			else if (!(e[i].lon[0] == e[i].lon[j-1] && e[i].lat[0] == e[i].lat[j-1])) {	/* Cartesian closure */
