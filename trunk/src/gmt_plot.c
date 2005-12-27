@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.156 2005-12-22 02:31:01 remko Exp $
+ *	$Id: gmt_plot.c,v 1.157 2005-12-27 22:27:12 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -479,14 +479,7 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 			(axis == 0) ? GMT_coordinate_to_x (t_use, &x) : GMT_coordinate_to_y (t_use, &x);	/* Get annotation position */
 			GMT_get_coordinate_label (string, &GMT_plot_calclock, format, T, knots[i]);		/* Get annotation string */
 			ps_set_length ("PSL_x", x);
-#ifndef PSLFIX
-			ps_textdim ("PSL_dimx", "PSL_dimy", font_size, font, string, 0);				/* Get and set string dimensions in PostScript */
-#endif
 			if (rot[annot_pos]) {	/* Rotate and adjust annotation in y direction */
-#ifndef PSLFIX
-				sprintf (cmd, "/PSL_y_off PSL_dimy 2 div neg def");
-				ps_command (cmd);
-#endif
 				sprintf (cmd, "PSL_x PSL_A%d_y M", annot_pos);					/* Move to new anchor point */
 				ps_command (cmd);
 				ps_text (0.0, 0.0, -font_size, string, -90.0, 7, 0);
