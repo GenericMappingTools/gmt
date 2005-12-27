@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: pdfman.sh,v 1.4 2005-12-23 05:05:33 pwessel Exp $
+#	 $Id: pdfman.sh,v 1.5 2005-12-27 01:24:03 pwessel Exp $
 #
 #	pdfman.sh - Automatic generation of the GMT pdf manual pages
 #
@@ -72,5 +72,5 @@ cd ..
 
 # Convert to PDF
 
-echo "Converting GMT_Manpages.ps  to GMT_Manpages.pdf"
+echo "Converting GMT_Manpages.ps to GMT_Manpages.pdf"
 ps2pdf www/gmt/doc/ps/GMT_Manpages.ps www/gmt/doc/pdf/GMT_Manpages.pdf
