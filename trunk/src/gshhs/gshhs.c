@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.6 2005-03-04 00:48:31 pwessel Exp $
+/*	$Id: gshhs.c,v 1.7 2005-12-27 04:28:12 pwessel Exp $
  *
  * PROGRAM:	gshhs.c
  * AUTHOR:	Paul Wessel (pwessel@hawaii.edu)
@@ -13,7 +13,7 @@
  *		1.4 05-SEPT-2000: Made a GMT supplement; FLIP no longer needed
  *		1.5 14-SEPT-2004: Updated to deal with latest GSHHS database (1.3)
  *
- *	Copyright (c) 1996-2004 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1996-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
