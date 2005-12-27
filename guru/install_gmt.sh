@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.59 2005-10-07 23:50:31 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.60 2005-12-27 06:23:25 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -67,6 +67,8 @@ echo $use
 prep_gmt()
 {
 #--------------------------------------------------------------------------------
+LATESTGMT4=4.1
+LATESTGMT3=3.4.6
 cat << EOF > gmt_install.ftp_site
 1. SOEST, U of Hawaii [GMT Home], Honolulu, Hawaii, USA
 2. NOAA, Lab for Satellite Altimetry, Silver Spring, Maryland, USA
@@ -118,8 +120,8 @@ we will run the installation (unless you chose
 
 Choose among these GMT versions:
 
-1. GMT 4.0 [Default]
-2. GMT 3.4.5
+1. GMT $LATESTGMT4 [Default]
+2. GMT $LATESTGMT3
 
 EOF
 answer=`get_def_answer "Enter GMT version to install (1-2)" "1"`
@@ -128,10 +130,10 @@ while [ ! $answer = "1" ] && [ ! $answer = "2" ]; do
 	answer=`get_def_answer "Enter GMT version to install (1-2)" "1"`
 done
 if [ $answer = "1" ]; then
-	VERSION=4.0
+	VERSION=$LATESTGMT4
 	N_EXAMPLES=25
 elif [ $answer = "2" ]; then
-	VERSION=3.4.5
+	VERSION=$LATESTGMT3
 	N_EXAMPLES=20
 fi
 echo "You chose to install verion $VERSION" >&2
