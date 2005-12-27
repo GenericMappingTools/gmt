@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.27 2005-12-26 23:47:53 pwessel Exp $
+#	 $Id: webman.sh,v 1.28 2005-12-27 01:24:03 pwessel Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -75,14 +75,14 @@ cd src
 for package in dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system $MY_SUPPL; do
 	for f in $package/*.man; do
 		prog=`basename $f .man`
-		if [ $gush = 1 ]; then
+		if [ $gush = 1 ] && [ -f ../man/manl/$prog.l ]; then
 			echo "Making ${prog}.html"
+			# Remove reference to current programs since no program needs active links to itself
+			grep -v "${prog}<" ../$$.w0.sed > ../$$.t0.sed
+			groff -man -T html ../man/manl/$prog.l | sed -f ../$$.t0.sed | sed -f ../$$.all.sed > $package/${prog}.html
+			echo '<BODY bgcolor="#ffffff">' >> $package/${prog}.html
+			cp -f $package/${prog}.html ../www/gmt/doc/html
 		fi
-		# Remove reference to current programs since no program needs active links to itself
-		grep -v "${prog}<" ../$$.w0.sed > ../$$.t0.sed
-		groff -man -T html ../man/manl/$prog.l | sed -f ../$$.t0.sed | sed -f ../$$.all.sed > $package/${prog}.html
-		echo '<BODY bgcolor="#ffffff">' >> $package/${prog}.html
-		cp -f $package/${prog}.html ../www/gmt/doc/html
 	done
 done
 cd ..
