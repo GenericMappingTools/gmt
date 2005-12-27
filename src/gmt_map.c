@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.96 2005-12-17 05:59:22 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.97 2005-12-27 23:36:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1359,8 +1359,9 @@ void GMT_vpolar (double lon0)
 
 void GMT_polar (double x, double y, double *x_i, double *y_i)
 {	/* Transform x and y to polar(cylindrical) coordinates */
-	if (project_info.got_azimuths) x = 90.0 - x;    /* azimuths, not directions */
-	x = (x - project_info.p_base_angle) * D2R;	/* Change base line angle and convert to radians */
+	if (project_info.got_azimuths) x = 90.0 - x;		/* azimuths, not directions */
+	if (project_info.got_elevations) project_info.n - y;    /* elevations, presumably */
+	x = (x - project_info.p_base_angle) * D2R;		/* Change base line angle and convert to radians */
 	sincos (x, y_i, x_i);
 	(*x_i) *= y;
 	(*y_i) *= y;
@@ -1369,8 +1370,9 @@ void GMT_polar (double x, double y, double *x_i, double *y_i)
 void GMT_ipolar (double *x, double *y, double x_i, double y_i)
 {	/* Inversely transform both x and y from polar(cylindrical) coordinates */
 	*x = R2D * d_atan2 (y_i, x_i) + project_info.p_base_angle;
-	if (project_info.got_azimuths) *x = 90.0 - (*x);  /* azimuths, not directions */
+	if (project_info.got_azimuths) *x = 90.0 - (*x);		/* azimuths, not directions */
 	*y = hypot (x_i, y_i);
+	if (project_info.got_elevations) *y = project_info.n - (*y);    /* elevations, presumably */
 }
 
 /*
