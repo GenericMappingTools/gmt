@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.93 2005-12-27 04:03:32 pwessel Exp $
+ *	$Id: mgd77.c,v 1.94 2005-12-27 04:28:12 pwessel Exp $
  *
- *    Copyright (c) 2005 by P. Wessel
+ *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
  *
  *  File:	mgd77.c
