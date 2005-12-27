@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.202 2005-12-18 05:10:27 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.203 2005-12-27 23:36:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -752,10 +752,10 @@ void GMT_syntax (char option)
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
 				case POLAR:
-					fprintf (stderr, "\t-Jp<scale>[/<origin>] OR -JP<width>[/<origin>]\n");
+					fprintf (stderr, "\t-Jp[a]<scale>[/<origin>] OR -JP[a]<width>[/<origin>]\n");
 					fprintf (stderr, "\t  <scale is %s/units, or use <width> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
-					fprintf (stderr, "\t  Optionally, append theta value for origin [0]\n");
+					fprintf (stderr, "\t  Optionally, add a for azimuths or append theta value for origin [0]\n");
 				case LINEAR:
 					fprintf (stderr, "\t-Jx<x-scale|width>[d|l|p<power>|t|T][/<y-scale|height>[d|l|p<power>|t|T]], scale in %s/units\n",
 						GMT_unit_names[gmtdefs.measure_unit]);
@@ -3894,6 +3894,13 @@ int GMT_map_getproject (char *args)
 				project_info.got_azimuths = FALSE;
 				i = 0;
 			}
+			j = strlen (args) - 1;
+			if (args[j] == 'r') {	/* Gave optional r for reverse (elevations, presumably) */
+				project_info.got_elevations = TRUE;
+				args[j] = '\0';	/* Temporarily chop off the r */
+			}
+			else
+				project_info.got_elevations = FALSE;
 	 		if (n_slashes == 1) {	/* Gave optional zero-base angle [0] */
 	 		 	n = sscanf (args, "%[^/]/%lf", txt_a, &project_info.pars[1]);
 				if (n == 2) project_info.pars[0] = GMT_convert_units (&txt_a[i], GMT_INCH);
@@ -3906,6 +3913,7 @@ int GMT_map_getproject (char *args)
 	 		}
 	 		else
 	 			error = TRUE;
+			if (project_info.got_elevations) args[j] = 'r';	/* Put the r back in the argument */
 			if (project_info.got_azimuths) project_info.pars[1] = -project_info.pars[1];	/* Because azimuths go clockwise */
 	 		project = POLAR;
 	 		break;
