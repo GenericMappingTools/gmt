@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.107 2005-12-22 02:31:01 remko Exp $
+ *	$Id: pslib.c,v 1.108 2005-12-27 22:27:12 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1915,18 +1915,10 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 	height = pointsize / ps.points_pr_unit;
 
 	if (!strchr (string, '@')) {	/* Plain text string */
-#ifdef PSLFIX
 		if (key == 0)
 			fprintf (ps.fp, "0 0 M %d F%d (%s) E /%s exch def e /%s exch def\n", (int) irint (height * ps.scale), ps.font_no, string, xdim, ydim);
 		else
 			fprintf (ps.fp, "0 0 M %d F%d (%s) f pathbbox N /%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n" , (int) irint (height * ps.scale), ps.font_no, string, ydim, xdim, ydim, xdim);
-#else
-		fprintf (ps.fp, "0 0 M %d F%d (%s) f pathbbox N ", (int) irint (height * ps.scale), ps.font_no, string);
-		if (key == 0)
-			fprintf (ps.fp, "exch 2 {3 1 roll sub abs} repeat /%s exch def /%s exch def\n", xdim, ydim);
-		else
-			fprintf (ps.fp, "/%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n", ydim, xdim, ydim, xdim);
-#endif
 		ps_free ((void *)string);
 		return;
 	}
