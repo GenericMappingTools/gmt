@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_D.tex,v 1.12 2005-12-17 05:59:21 pwessel Exp $
+%	$Id: GMT_Appendix_D.tex,v 1.13 2005-12-27 11:49:17 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -11,9 +11,9 @@
 \index{GMT@\GMT!obtaining}
 \thispagestyle{headings}
 
-All the source code, support data, \PS\,
-and HTML versions of all documentation, and \UNIX\
-(including HTML) manual pages can be obtained by anonymous
+All the source code, support data, \PS\, PDF,
+and HTML versions of all documentation (including \UNIX\
+manual pages) can be obtained by anonymous
 ftp from several mirror sites.  We also maintain a \GMT\
 page on the World Wide Web (http://gmt.soest.hawaii.edu);
 See this page for installation directions 
@@ -24,12 +24,11 @@ The \GMT\ tar archives are available both in \progname{gzip}
 and \progname{bzip2} format.  If neither of these utilities
 are installed on your system, you should know that the former
 program is available from GNU\footnote{www.gnu.org} while the
-latter can be obtained from Redat\footnote{http://sources.redhat.com/bzip2/index.html}.
+latter can be obtained from RedHat\footnote{http://sources.redhat.com/bzip2/index.html}.
 \progname{bzip2} compresses much better than \progname{gzip}:
 for example, the full resolution coastline database is only
 $\sim$29 Mb in \progname{bzip2} format compared to a hefty
-$\sim$44 Mb in \progname{gzip}.  These files have the
-.bz2 suffix. \\
+$\sim$44 Mb in \progname{gzip}.  These files have the .bz2 suffix. \\
 
 The GMT archives are as follows:
 
@@ -38,17 +37,22 @@ The GMT archives are as follows:
 \item[GMT\_progs.tar.\{gz,bz2\}] Contains all \GMT\ source code,
 cpt files, and \PS\ patterns.
 
-\item [GMT\_share.tar.\{gz,bz2\}] Contains the intermediate,
+\item[GMT\_share.tar.\{gz,bz2\}] Contains the intermediate,
 low, and crude resolutions of the coastline database.  Required
-with \_progs.tar for minimal setup needed to run \GMT.
+with GMT\_progs.tar for minimal setup needed to run \GMT.
 
-\item[GMT\_doc.tar.\{gz,bz2\}] Contains all \GMT\ documentation
-(man pages, PostScript versions of both the Cookbook and Technical
-Reference and the tutorial, and the short course material).
+\item[GMT\_man.tar.\{gz,bz2\}] Contains all the \UNIX\ manual pages.
 
-\item[GMT\_web.tar.\{gz,bz2\}] Contains all HTML versions of all
-\GMT\ documentation (man pages, Cookbook and Technical Reference,
-and tutorial).
+\item[GMT\_ps.tar.\{gz,bz2\}] Contains PostScript versions all \GMT\ documentation
+(man pages, Cookbook and Technical Reference, and the tutorial).
+
+\item[GMT\_pdf.tar.\{gz,bz2\}] Contains PDF versions all \GMT\ documentation
+(man pages, Cookbook and Technical Reference, and the tutorial).
+
+\item[GMT\_web.tar.\{gz,bz2\}] Contains HTML versions all \GMT\ documentation
+(man pages, Cookbook and Technical Reference, and the tutorial).
+
+\item[GMT\_tut.tar.\{gz,bz2\}] Contains the data files used in the tutorial.
 
 \item[GMT\_full.tar.\{gz,bz2\}] Contains the optional
 full-resolution coastline database.
@@ -56,7 +60,7 @@ full-resolution coastline database.
 \item[GMT\_high.tar.\{gz,bz2\}] Contains the optional
 high-resolution coastline database.
 
-\item[GMT\_scripts.tar.\{gz,bz2\}] Contains all the shellscripts
+\item[GMT\_scripts.tar.\{gz,bz2\}] Contains all the shell scripts
 and support data used in the Cookbook section.
 
 \item[GMT\_suppl.tar.\{gz,bz2\}] Contains several programs
@@ -64,7 +68,7 @@ written by us and \GMT\ users elsewhere. (See Appendix~\ref{app:A} for more
 details).
 
 \item[triangle.tar.\{gz,bz2\}] Contains John Shewchuk's fast Delaunay
-triangulation routine which may be installed with GMT. (See the copyright
+triangulation routine which may be installed with GMT. (See his copyright
 information first if you are a commercial user).
 
 \end{description}
