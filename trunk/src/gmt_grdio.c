@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.50 2005-12-17 05:59:21 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.51 2005-12-27 03:10:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -53,7 +53,6 @@ int GMT_grdformats[N_GRD_FORMATS][2] = {
 };
 
 void GMT_grd_do_scaling (float *grid, int nm, double scale, double offset);
-EXTERN_MSC void check_nc_status (int status);
 int grd_format_decoder (const char *code);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
