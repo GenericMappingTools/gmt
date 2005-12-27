@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.19 2005-12-17 05:59:22 pwessel Exp $
+REM	$Id: gmtsuppl.bat,v 1.20 2005-12-27 02:40:42 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
@@ -23,7 +23,7 @@ REM the GMT 4 supplemental programs under WIN32 using
 REM Microsoft Visual C/C++ tools.  Not yet set up for mex.
 REM Note: Optimizing all at /O2 except meca which seems unstable
 REM
-REM Author: Paul Wessel, 10-JAN-2004
+REM Author: Paul Wessel, 1-JAN-2006
 REM ----------------------------------------------------
 REM
 REM How to make and install GMT under Win95/98/NT/2K/XP:
@@ -108,8 +108,10 @@ IF %CHOICE%=="dynamic" CL %COPT% %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c mgd77.c
 IF %CHOICE%=="dynamic" LINK %LOPT% /out:mgd77.dll /implib:mgd77.lib mgd77.obj %GMTLIB%
 IF %CHOICE%=="static"  CL %COPT% %DLL_NETCDF% /DDLL_EXPORT /c mgd77.c
 IF %CHOICE%=="static"  lib /out:mgd77.lib mgd77.obj
+CL %COPT% mgd77convert.c    mgd77.lib %GMTLIB%
 CL %COPT% mgd77info.c    mgd77.lib %GMTLIB%
 CL %COPT% mgd77list.c    mgd77.lib %GMTLIB%
+CL %COPT% mgd77manage.c    mgd77.lib %GMTLIB%
 CL %COPT% mgd77path.c    mgd77.lib %GMTLIB%
 CL %COPT% mgd77track.c    mgd77.lib %GMTLIB%
 del *.obj
@@ -148,7 +150,9 @@ REM ----------------------------------------------------
 cd misc
 SET DIG="\"COM0:\""
 CL %COPT% psmegaplot.c %GMTLIB%
+CL %COPT% ps2raster.c %GMTLIB%
 CL %COPT% makepattern.c %GMTLIB%
+CL %COPT% nc2xy.c %GMTLIB%
 del *.obj
 move *.exe %BINDIR%
 cd ..
