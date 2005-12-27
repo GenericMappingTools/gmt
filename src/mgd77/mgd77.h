@@ -1,7 +1,7 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.56 2005-10-23 22:21:39 pwessel Exp $
+ *	$Id: mgd77.h,v 1.57 2005-12-27 04:17:25 pwessel Exp $
  * 
- *    Copyright (c) 2005 by P. Wessel
+ *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
  *
  *  File:	mgd77.h
@@ -439,6 +439,12 @@ EXTERN_MSC int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F
 EXTERN_MSC int MGD77_Read_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);			/* Hardwired read of ascii/MGD77 data record */
 EXTERN_MSC int MGD77_Write_Header_Record_m77 (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);			/* Hardwired write of ascii/MGD77 header */
 EXTERN_MSC int MGD77_Write_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);			/* Hardwired write of ascii/MGD77 data record */
+
+/* These are only for developers */
+
+EXTERN_MSC int MGD77_dbl_are_constant (double x[], int n, double limits[]);
+EXTERN_MSC int MGD77_txt_are_constant (char *txt, int n, int width);
+EXTERN_MSC int MGD77_do_scale_offset_before_write (double new[], const double x[], int n, double scale, double offset, int type);
 
 /* User functions for direct use of Carter corrections */
 

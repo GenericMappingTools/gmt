@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.21 2005-10-19 12:45:37 pwessel Exp $
+ *	$Id: x2sys.h,v 1.22 2005-12-27 04:17:25 pwessel Exp $
  *
- *      Copyright (c) 1999-2005 by P. Wessel
+ *      Copyright (c) 1999-2006 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
