@@ -157,10 +157,11 @@ Give the central meridian and scale along equator (1:xxxx or UNIT/degree).
 .PP
 \fBNON-GEOGRAPHICAL PROJECTIONS:\fP
 .TP
-\fB\-Jp\fP[\fBa\fP]\fIscale\fP[\fI/origin\fP] or \fB\-JP\fP[\fBa\fP]\fIwidth\fP[\fI/origin\fP] (Polar coordinates (theta,r))
+\fB\-Jp\fP[\fBa\fP]\fIscale\fP[\fI/origin\fP][\fBr\fP] or \fB\-JP\fP[\fBa\fP]\fIwidth\fP[\fI/origin\fP][\fBr\fP] (Polar coordinates (theta,r))
 Optionally insert \fBa\fP after \fB\-Jp\fP [ or \fB\-JP\fP] for
 azimuths CW from North instead of directions CCW from East [default].
-Optionally append /\fIorigin\fP in degrees to indicate an angular offset [0]).
+Optionally append /\fIorigin\fP in degrees to indicate an angular offset [0]),
+and append \fBr\fP if you want to reverse the direction of radial coordinates.
 Give scale in UNIT/r-unit.
 .TP
 \fB\-Jx\fP\fIx-scale\fP[\fI/y-scale\fP] or \fB\-JX\fP\fIwidth\fP[\fI/height\fP] (Linear, log, and power scaling)

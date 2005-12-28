@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.203 2005-12-27 23:36:43 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.204 2005-12-28 23:07:46 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -293,11 +293,11 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t     Give central meridian, standard parallel and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
 			fprintf (stderr, "\t     <slat> = 45 (Peters), 37.4 (Trystan Edwards), 30 (Behrmann), 0 (Lambert)\n");
 
-			fprintf (stderr, "\t   -Jp[a]<scale>[/<base>] OR -JP[a]<width>[/<base>] (Polar (theta,radius))\n");
+			fprintf (stderr, "\t   -Jp[a]<scale>[/<base>][r] OR -JP[a]<width>[/<base>][r] (Polar (theta,radius))\n");
 			fprintf (stderr, "\t     Linear scaling for polar coordinates.\n");
 			fprintf (stderr, "\t     Optionally append 'a' to -Jp or -JP to use azimuths (CW from North) instead of directions (CCW from East) [default].\n");
 			fprintf (stderr, "\t     Give scale in %s/units\n", GMT_unit_names[gmtdefs.measure_unit]);
-			fprintf (stderr, "\t     Optionally, append theta value for angular offset (base) [0]\n");
+			fprintf (stderr, "\t     Optionally, append theta value for angular offset (base) [0] or r to reverse radial direction.\n");
 
 			fprintf (stderr, "\t   -Jx<x-scale>[/<y-scale>] OR -JX<width>[/<height]> (Linear, log, power scaling)\n");
 			fprintf (stderr, "\t     Scale in %s/units (or 1:xxxx). Optionally, append to scale:\n",
@@ -370,7 +370,7 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t   -Jy|Y<lon0>/<lats>/<scale|width> (Cylindrical Equal-area)\n");
 
-			fprintf (stderr, "\t   -Jp|P[a]<scale|width>[/<origin>] (Polar [azimuth] (theta,radius))\n");
+			fprintf (stderr, "\t   -Jp|P[a]<scale|width>[/<origin>][r] (Polar [azimuth] (theta,radius))\n");
 
 			fprintf (stderr, "\t   -Jx|X<x-scale|width>[d|l|p<power>|t|T][/<y-scale|height>[d|l|p<power>|t|T]] (Linear, log, and power projections)\n");
 			fprintf (stderr, "\t   (See psbasemap for more details on projection syntax)\n");
@@ -752,10 +752,11 @@ void GMT_syntax (char option)
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
 				case POLAR:
-					fprintf (stderr, "\t-Jp[a]<scale>[/<origin>] OR -JP[a]<width>[/<origin>]\n");
+					fprintf (stderr, "\t-Jp[a]<scale>[/<origin>][r] OR -JP[a]<width>[/<origin>][r]\n");
 					fprintf (stderr, "\t  <scale is %s/units, or use <width> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
-					fprintf (stderr, "\t  Optionally, add a for azimuths or append theta value for origin [0]\n");
+					fprintf (stderr, "\t  Optionally, prepend a for azimuths, append theta as origin [0],\n");
+					fprintf (stderr, "\t  or append r to reverse radial coordinates.\n");
 				case LINEAR:
 					fprintf (stderr, "\t-Jx<x-scale|width>[d|l|p<power>|t|T][/<y-scale|height>[d|l|p<power>|t|T]], scale in %s/units\n",
 						GMT_unit_names[gmtdefs.measure_unit]);
