@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.28 2005-12-27 12:39:47 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.29 2005-12-28 23:07:46 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -62,13 +62,15 @@ given increment [by default the range is kept fixed and sloppy increments are ad
 Append {\bf e}$|${\bf k}$|${\bf i}$|${\bf n} for increments in meter, km, miles
 or nautical miles, respectively.  These increments are converted to degrees
 longitude (at the middle latitude) and degrees latitude.
-\item We now have improved PDF layout and navigation (thanks to Misha Tchernychev).
+\item The polar $r, \theta$ projection \Opt{Jp} now takes an optional suffix {\bf r} that reverses the
+radial coordinates (useful when $r$ is elevation as used by sky plots.)
 \item The \GMTprogi{misc} supplement has two new items: \GMTprog{ps2raster} uses \progname{ghostscript} to
 fascilitate the rasterization of \PS\ files, while \GMTprog{nc2xy} allows extraction of data columns from
 COARDS-compliant netCDF files.
 \item The \GMTprogi{mgd77} supplement has two new items: \GMTprog{mgd77convert} translates between different
 MGD77 formats (including a new netCDF-based format), while \GMTprog{mgd77manage} assists in the management
 of trackline data sets.
+\item We now have improved PDF layout and navigation (thanks to Misha Tchernychev).
 \item The HTML versions of all manual pages are now generated with \progname{groff}, and has active links
 for \GMT\ Default parameters as they are references in the documentation.
 \end{enumerate}

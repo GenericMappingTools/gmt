@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.74 2005-12-22 04:19:17 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.75 2005-12-28 23:07:46 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -870,7 +870,10 @@ providing as input using the \Opt{f} switch. When binary data are expected (\Opt
 be floating point numbers, however for ASCII input there are numerous
 ways to encode data coordinates (which may be separated by white-space or commas).  Valid input data are generally
 of the same form as the arguments to the \Opt{R} option (see Section~\ref{sec:R}), with additional
-flexibility for calendar data.
+flexibility for calendar data.  Geographical coordinates, for example, can be given in decimal degrees
+(e.g., -123.45417) or in the
+[$\pm$]\emph{ddd}[:\emph{mm}[:\emph{ss}[\emph{.xxx}]]][\textbf{W}$|$\textbf{E}$|$\textbf{S}$|$\textbf{N}]
+format (e.g., 123:27:15W).
 
 Because of the widespread use of incompatible and ambiguous formats, the processing of input
 date components is guided by the template \textbf{INPUT\_DATE\_FORMAT} in your
