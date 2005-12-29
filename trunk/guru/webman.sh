@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.29 2005-12-27 11:39:36 pwessel Exp $
+#	 $Id: webman.sh,v 1.30 2005-12-29 19:27:58 remko Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -57,7 +57,7 @@ for prog in `cat $$.programs.lis`; do
 	grep -v "${prog}<" $$.w0.sed > $$.t0.sed
 	groff -man -T html man/manl/${prog}.l | sed -f $$.t0.sed > $$.tmp
 	if [ "X$prog" = "Xgmtdefaults" ]; then
-		sed -f $$.def.sed $$.tmp > www/gmt/doc/html/${prog}.html
+		sed -f $$.def.sed -f $$.all.sed $$.tmp > www/gmt/doc/html/${prog}.html
 	else
 		sed -f $$.all.sed $$.tmp > www/gmt/doc/html/${prog}.html
 	fi
