@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtguru.macros.orig,v 1.27 2005-12-17 05:52:41 pwessel Exp $
+#	$Id: gmtguru.macros.orig,v 1.28 2005-12-30 01:29:01 pwessel Exp $
 #
 #	Original GMT Guru Makefile Macro for Makefile.guru
 #	Users should cp to gmtguru.macros and edit it instead!
@@ -27,6 +27,7 @@ GMT_TRIANGLE	= --enable-triangle	# --enable-triangle for Shewchuk's triangulatio
 GMT_DEBUG	= --enable-debug	# --enable-debug will use -g; else -O with compiler
 GMT_NETCDF	= --enable-netcdf=$(NETCDFHOME)		# Change if your netcdf is elsewhere
 GMT_SITE	= --enable-update=gmt.soest.hawaii.edu	# Specify your nearest GMT ftp mirror
+GMT_MATLAB	= --enable-matlab=$(MATLAB)	# To compile the mex supplement
 
 # The following two will let you tailor where GMT will install (1) machine-specific executables/libraries and
 # (2) machine-independent files such as the stuff in share, man pages etc.  By default they are all installed
