@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.62 2005-12-30 01:35:10 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.63 2005-12-30 04:20:22 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -502,7 +502,7 @@ GMT_suppl_spotter=d
 GMT_suppl_x2sys=d
 GMT_suppl_x_system=d
 GMT_suppl_xgrid=d
-MATDIR=/usr/local/matlab
+MATDIR=${MATLAB:-/usr/local/matlab}
 if [ ! $GMT_get_suppl = "n" ]; then
 
 cat << EOF >&2
