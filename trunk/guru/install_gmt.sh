@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.61 2005-12-29 05:11:38 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.62 2005-12-30 01:35:10 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1024,17 +1024,15 @@ if [ $netcdf_install = "y" ]; then
 	if [ $os = "Linux" ]; then
 		DEFINES="-Df2cFortran"
 		export DEFINES
-	elif [ $os = "Rhapsody" ] || [ $os = "Darwin" ]; then	# Special treatment with fat binaries and shared lib on Mac OSX (even if G4 only)
-		echo "Mac OSX: Make shared netCDF-library for both 32-bit and 64-bit platforms"
-		arch="-arch ppc -arch ppc64"
+	elif [ $os = "Rhapsody" ] || [ $os = "Darwin" ]; then	# Special treatment to make shared lib on Mac OSX
+		echo "Mac OSX: Make shared netCDF-library"
+		arch="-arch ppc"
 		CXX=g++-4.0
 		export CXX
 		CXXFLAGS="-O2 -fno-common $arch"
 		export CXXFLAGS
 		CFLAGS="-O2 -fno-common $arch"
 		export CFLAGS
-		FFLAGS='-O2 -Nx400 -w'
-		export FFLAGS
 		F90='' 
 		export F90
 		AR=libtool
@@ -1046,7 +1044,7 @@ if [ $netcdf_install = "y" ]; then
 	./configure --prefix=$netcdf_path
 	$GMT_make || exit
 	$GMT_make install || exit
-	if [ $os = "Rhapsody" ] || [ $os = "Darwin" ]; then	# Special treatment with fat binaries and shared lib on Mac OSX
+	if [ $os = "Rhapsody" ] || [ $os = "Darwin" ]; then	# Special treatment for shared lib on Mac OSX
 		objs="libsrc/*.o"
 		libtool -static -o $netcdf_path/lib/libnetcdf.a $objs
 		gcc $arch -dynamiclib -flat_namespace -undefined suppress -o $netcdf_path/lib/libnetcdf.3.6.dylib -install_name $netcdf_path/lib/libnetcdf.3.dylib -current_version 3.6 -compatibility_version 3.5 $objs
