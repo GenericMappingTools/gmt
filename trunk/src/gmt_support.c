@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.209 2005-12-23 04:57:16 remko Exp $
+ *	$Id: gmt_support.c,v 1.210 2005-12-30 19:33:01 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1407,8 +1407,7 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 		memcpy ((void *)GMT_bfn[GMT_BGD].rgb, (void *)rgb_back, (size_t)(3 * sizeof (int)));
 		memcpy ((void *)GMT_bfn[GMT_FGD].rgb, (void *)rgb_fore, (size_t)(3 * sizeof (int)));
 	}
-	
-	if (reverse) {	/* Flip foreground and background colors */
+	else if (reverse) {	/* Flip foreground and background colors */
 		memcpy ((void *)rgb_low, (void *)GMT_bfn[GMT_BGD].rgb, (size_t)(3 * sizeof (int)));
 		memcpy ((void *)GMT_bfn[GMT_BGD].rgb, (void *)GMT_bfn[GMT_FGD].rgb, (size_t)(3 * sizeof (int)));
 		memcpy ((void *)GMT_bfn[GMT_FGD].rgb, (void *)rgb_low, (size_t)(3 * sizeof (int)));
