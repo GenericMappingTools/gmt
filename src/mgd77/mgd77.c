@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.95 2006-01-01 05:08:23 pwessel Exp $
+ *	$Id: mgd77.c,v 1.96 2006-01-01 05:48:41 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -19,9 +19,6 @@
 #include "mgd77.h"
 #include "mgd77_IGF_coeffs.h"
 #include "mgd77_init.h"
-#ifdef WIN32
-#include "gmt_init.h"
-#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 

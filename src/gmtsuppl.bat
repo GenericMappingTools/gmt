@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.21 2005-12-27 04:03:32 pwessel Exp $
+REM	$Id: gmtsuppl.bat,v 1.22 2006-01-01 05:48:41 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
@@ -104,10 +104,8 @@ REM ----------------------------------------------------
 ECHO STEP 6: Make mgd77
 REM ----------------------------------------------------
 cd mgd77
-IF %CHOICE%=="dynamic" CL %COPT% %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c mgd77.c
-IF %CHOICE%=="dynamic" LINK %LOPT% /out:mgd77.dll /implib:mgd77.lib mgd77.obj %GMTLIB%
-IF %CHOICE%=="static"  CL %COPT% %DLL_NETCDF% /DDLL_EXPORT /c mgd77.c
-IF %CHOICE%=="static"  lib /out:mgd77.lib mgd77.obj
+CL %COPT2% /c mgd77.c
+lib /out:mgd77.lib mgd77.obj
 CL %COPT% mgd77convert.c mgd77.lib %GMTLIB%
 CL %COPT% mgd77info.c	 mgd77.lib %GMTLIB%
 CL %COPT% mgd77list.c	 mgd77.lib %GMTLIB%
@@ -115,8 +113,6 @@ CL %COPT% mgd77manage.c	 mgd77.lib %GMTLIB%
 CL %COPT% mgd77path.c	 mgd77.lib %GMTLIB%
 CL %COPT% mgd77track.c	 mgd77.lib %GMTLIB%
 del *.obj
-IF %CHOICE%=="dynamic" move mgd77.dll %BINDIR%
-IF %CHOICE%=="dynamic" move mgd77.exp %LIBDIR%
 move mgd77.lib %LIBDIR%
 move *.exe %BINDIR%
 cd ..
@@ -191,10 +187,8 @@ REM ----------------------------------------------------
 ECHO STEP 11: Make x2sys
 REM ----------------------------------------------------
 cd x2sys
-IF %CHOICE%=="dynamic" CL %COPT% /I..\mgd77 /I..\mgg %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c x2sys.c
-IF %CHOICE%=="dynamic" LINK %LOPT% /out:x2sys.dll /implib:x2sys.lib x2sys.obj %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
-IF %CHOICE%=="static"  CL %COPT% /I..\mgd77 /I..\mgg %DLL_NETCDF% /DDLL_EXPORT /c x2sys.c
-IF %CHOICE%=="static"  lib /out:x2sys.lib x2sys.obj
+CL %COPT2% /I..\mgd77 /I..\mgg /c x2sys.c
+lib /out:x2sys.lib x2sys.obj
 CL %COPT% /I..\mgd77 /I..\mgg x2sys_binlist.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
 CL %COPT% /I..\mgd77 /I..\mgg x2sys_cross.c x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
 CL %COPT% /I..\mgd77 /I..\mgg x2sys_datalist.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
@@ -202,8 +196,6 @@ CL %COPT% /I..\mgd77 /I..\mgg x2sys_get.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%
 CL %COPT% /I..\mgd77 /I..\mgg x2sys_init.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
 CL %COPT% /I..\mgd77 /I..\mgg x2sys_put.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
 del *.obj
-IF %CHOICE%=="dynamic" move x2sys.dll %BINDIR%
-IF %CHOICE%=="dynamic" move x2sys.exp %LIBDIR%
 move x2sys.lib %LIBDIR%
 move *.exe %BINDIR%
 cd ..

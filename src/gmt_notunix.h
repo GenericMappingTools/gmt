@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.11 2006-01-01 05:11:54 pwessel Exp $
+ *	$Id: gmt_notunix.h,v 1.12 2006-01-01 05:48:41 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -152,13 +152,13 @@ EXTERN_MSC int getuid (void);
 /* getcwd is usually in unistd.h; we use a macro here
  * since the same function under WIN32 is prefixed with _ */
 
-EXTERN_MSC char *_getcwd (const char *path, int len);
+extern char *_getcwd (const char *path, int len);
 #define getcwd(path, len) _getcwd(path, len)
 
 /* access is usually in unistd.h; we use a macro here
  * since the same function under WIN32 is prefixed with _ */
 
-EXTERN_MSC int _access (const char *path, int mode);
+extern int _access (const char *path, int mode);
 #define access(path, mode) _access(path, mode)
 
 /* fileno and setmode have leading _ under WIN32 */
