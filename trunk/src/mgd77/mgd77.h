@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.57 2005-12-27 04:17:25 pwessel Exp $
+ *	$Id: mgd77.h,v 1.58 2006-01-01 05:48:41 pwessel Exp $
  * 
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -406,74 +406,74 @@ struct MGD77_CARTER {
 
 /* Primary user functions */
 
-EXTERN_MSC void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks);							/* Initialize the MGD77 machinery */
-EXTERN_MSC void MGD77_Reset (struct MGD77_CONTROL *F);										/* Reset after finishing a file */
-EXTERN_MSC int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F);						/* Returns full path to cruise */
-EXTERN_MSC int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw);							/* Opens a MGD77[+] file */
-EXTERN_MSC int MGD77_Close_File (struct MGD77_CONTROL *F);									/* Closes a MGD77[+] file */
-EXTERN_MSC int MGD77_Read_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Allocate & Read entire file (selected columns only) */
-EXTERN_MSC int MGD77_Write_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Write entire file (all columns) */
-EXTERN_MSC int MGD77_Read_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);				/* Read the header record */
-EXTERN_MSC int MGD77_Write_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);				/* Write the header record */
-EXTERN_MSC int MGD77_Read_Data (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Allocate & Read all data (selected columns only); Header already read */
-EXTERN_MSC int MGD77_Write_Data (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Write all data (all columns); Header already written */
-EXTERN_MSC int MGD77_Read_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);		/* Read a single data record (selected columns only) */
-EXTERN_MSC int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);	/* Write a single data record (selected columns only) */
-EXTERN_MSC void MGD77_Free (struct MGD77_DATASET *S);										/* Free memory allocated by MGD77_Read_File/MGD77_Read_Data */
-EXTERN_MSC void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F, int option);					/* Decode the -F option specifying the desired columns */
-EXTERN_MSC int MGD77_Get_Column (char *word, struct MGD77_CONTROL *F);								/* Get column number from column name (or -1 if not present) */
-EXTERN_MSC int MGD77_Get_Set (char *abbrev);											/* Returns 0 if abbrev is in the MGD77 set, else 1 */
-EXTERN_MSC void MGD77_Fatal_Error (int error);											/* Print message for this error and exit */
-EXTERN_MSC BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec);				/* Tests if a record passes all specified logical & exact tests */
-EXTERN_MSC void MGD77_Set_Unit (char *dist, double *scale, int way);									/* Convert appended distance unit to a numerical scale to give meters */
-EXTERN_MSC void MGD77_nc_status (int status);											/* Checks for netCDF errors and aborts with error message */
-EXTERN_MSC void MGD77_Ignore_Format (int format);										/* Dissallow some formats for consideration */
-EXTERN_MSC struct MGD77_DATASET *MGD77_Create_Dataset ();									/* Create an empty data set structure */
-EXTERN_MSC void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Prepare header before we write */
-EXTERN_MSC void MGD77_Dump_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P);				/* Dump of header items, one per line */
-EXTERN_MSC void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P, int err[]);			/* Verify content of header per MGD77 docs */
+extern void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks);							/* Initialize the MGD77 machinery */
+extern void MGD77_Reset (struct MGD77_CONTROL *F);										/* Reset after finishing a file */
+extern int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F);						/* Returns full path to cruise */
+extern int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw);							/* Opens a MGD77[+] file */
+extern int MGD77_Close_File (struct MGD77_CONTROL *F);									/* Closes a MGD77[+] file */
+extern int MGD77_Read_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Allocate & Read entire file (selected columns only) */
+extern int MGD77_Write_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Write entire file (all columns) */
+extern int MGD77_Read_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);				/* Read the header record */
+extern int MGD77_Write_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);				/* Write the header record */
+extern int MGD77_Read_Data (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Allocate & Read all data (selected columns only); Header already read */
+extern int MGD77_Write_Data (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Write all data (all columns); Header already written */
+extern int MGD77_Read_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);		/* Read a single data record (selected columns only) */
+extern int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);	/* Write a single data record (selected columns only) */
+extern void MGD77_Free (struct MGD77_DATASET *S);										/* Free memory allocated by MGD77_Read_File/MGD77_Read_Data */
+extern void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F, int option);					/* Decode the -F option specifying the desired columns */
+extern int MGD77_Get_Column (char *word, struct MGD77_CONTROL *F);								/* Get column number from column name (or -1 if not present) */
+extern int MGD77_Get_Set (char *abbrev);											/* Returns 0 if abbrev is in the MGD77 set, else 1 */
+extern void MGD77_Fatal_Error (int error);											/* Print message for this error and exit */
+extern BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec);				/* Tests if a record passes all specified logical & exact tests */
+extern void MGD77_Set_Unit (char *dist, double *scale, int way);									/* Convert appended distance unit to a numerical scale to give meters */
+extern void MGD77_nc_status (int status);											/* Checks for netCDF errors and aborts with error message */
+extern void MGD77_Ignore_Format (int format);										/* Dissallow some formats for consideration */
+extern struct MGD77_DATASET *MGD77_Create_Dataset ();									/* Create an empty data set structure */
+extern void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Prepare header before we write */
+extern void MGD77_Dump_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P);				/* Dump of header items, one per line */
+extern void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P, int err[]);			/* Verify content of header per MGD77 docs */
 
 /* Secondary user functions */
 
-EXTERN_MSC int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);			/* Hardwired read of ascii/MGD77 header */
-EXTERN_MSC int MGD77_Read_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);			/* Hardwired read of ascii/MGD77 data record */
-EXTERN_MSC int MGD77_Write_Header_Record_m77 (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);			/* Hardwired write of ascii/MGD77 header */
-EXTERN_MSC int MGD77_Write_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);			/* Hardwired write of ascii/MGD77 data record */
+extern int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);			/* Hardwired read of ascii/MGD77 header */
+extern int MGD77_Read_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);			/* Hardwired read of ascii/MGD77 data record */
+extern int MGD77_Write_Header_Record_m77 (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);			/* Hardwired write of ascii/MGD77 header */
+extern int MGD77_Write_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);			/* Hardwired write of ascii/MGD77 data record */
 
 /* These are only for developers */
 
-EXTERN_MSC int MGD77_dbl_are_constant (double x[], int n, double limits[]);
-EXTERN_MSC int MGD77_txt_are_constant (char *txt, int n, int width);
-EXTERN_MSC int MGD77_do_scale_offset_before_write (double new[], const double x[], int n, double scale, double offset, int type);
+extern int MGD77_dbl_are_constant (double x[], int n, double limits[]);
+extern int MGD77_txt_are_constant (char *txt, int n, int width);
+extern int MGD77_do_scale_offset_before_write (double new[], const double x[], int n, double scale, double offset, int type);
 
 /* User functions for direct use of Carter corrections */
 
-EXTERN_MSC int MGD77_carter_depth_from_twt (int zone, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m);
-EXTERN_MSC int MGD77_carter_twt_from_depth (int zone, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec);
-EXTERN_MSC int MGD77_carter_depth_from_xytwt (double lon, double lat, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m);
-EXTERN_MSC int MGD77_carter_twt_from_xydepth (double lon, double lat, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec);
-EXTERN_MSC double MGD77_carter_correction (double lon, double lat, double twt_in_msec, struct MGD77_CARTER *C);
+extern int MGD77_carter_depth_from_twt (int zone, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m);
+extern int MGD77_carter_twt_from_depth (int zone, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec);
+extern int MGD77_carter_depth_from_xytwt (double lon, double lat, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m);
+extern int MGD77_carter_twt_from_xydepth (double lon, double lat, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec);
+extern double MGD77_carter_correction (double lon, double lat, double twt_in_msec, struct MGD77_CARTER *C);
 
 /* User functions for direct use of IGRF corrections, theoretical gravity */
 
-EXTERN_MSC int MGD77_igrf10syn (int isv, double date, int itype, double alt, double lon, double lat, double *out);
-EXTERN_MSC double MGD77_Theoretical_Gravity (double lon, double lat, int version);
-EXTERN_MSC void MGD77_IGF_text (FILE *fp, int version);
+extern int MGD77_igrf10syn (int isv, double date, int itype, double alt, double lon, double lat, double *out);
+extern double MGD77_Theoretical_Gravity (double lon, double lat, int version);
+extern void MGD77_IGF_text (FILE *fp, int version);
 
 /* These are called indirectly but remain accessible for specialist programs */
 
-EXTERN_MSC int MGD77_carter_init (struct MGD77_CARTER *C);
-EXTERN_MSC int MGD77_carter_get_bin (double lon, double lat, int *bin);
-EXTERN_MSC int MGD77_carter_get_zone (int bin, struct MGD77_CARTER *C, int *zone);
-EXTERN_MSC double *MGD77_Distances (double x[], double y[], int n, int dist_flag);
+extern int MGD77_carter_init (struct MGD77_CARTER *C);
+extern int MGD77_carter_get_bin (double lon, double lat, int *bin);
+extern int MGD77_carter_get_zone (int bin, struct MGD77_CARTER *C, int *zone);
+extern double *MGD77_Distances (double x[], double y[], int n, int dist_flag);
 
 /* Global variables used by MGD77 programs */
 
-EXTERN_MSC struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_FIELDS];
-EXTERN_MSC double MGD77_NaN_val[7], MGD77_Low_val[7], MGD77_High_val[7];
-EXTERN_MSC char *MGD77_suffix[MGD77_N_FORMATS];
-EXTERN_MSC BOOLEAN MGD77_format_allowed[MGD77_N_FORMATS];	/* By default we allow opening of files in any format.  See MGD77_Ignore_Format() */
-EXTERN_MSC double MGD77_Epoch_zero;
-EXTERN_MSC int MGD77_pos[MGD77_N_DATA_EXTENDED];
+extern struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_FIELDS];
+extern double MGD77_NaN_val[7], MGD77_Low_val[7], MGD77_High_val[7];
+extern char *MGD77_suffix[MGD77_N_FORMATS];
+extern BOOLEAN MGD77_format_allowed[MGD77_N_FORMATS];	/* By default we allow opening of files in any format.  See MGD77_Ignore_Format() */
+extern double MGD77_Epoch_zero;
+extern int MGD77_pos[MGD77_N_DATA_EXTENDED];
 
 #endif	/* _MGD77_H */
