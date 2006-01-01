@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.94 2005-12-27 04:28:12 pwessel Exp $
+ *	$Id: mgd77.c,v 1.95 2006-01-01 05:08:23 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -18,6 +18,10 @@
 
 #include "mgd77.h"
 #include "mgd77_IGF_coeffs.h"
+#include "mgd77_init.h"
+#ifdef WIN32
+#include "gmt_init.h"
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -77,19 +81,16 @@ BOOLEAN MGD77_entry_in_MGD77record (char *name, int *entry);
 
 struct MGD77_DATA_RECORD *MGD77Record;
  
-struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_FIELDS] = {
-#include "mgd77defaults.h"
-};
-
-BOOLEAN MGD77_format_allowed[MGD77_N_FORMATS] = {TRUE, TRUE, TRUE};	/* By default we allow opening of files in any format.  See MGD77_Ignore_Format() */
-
 double MGD77_NaN_val[7], MGD77_Low_val[7], MGD77_High_val[7];
 double MGD77_Epoch_zero;
-char *MGD77_suffix[MGD77_N_FORMATS] = {"mgd77", "nc", "dat"};
 int MGD77_pos[MGD77_N_DATA_EXTENDED];	/* Used to translate the positions 0-27 into MGD77_TIME, MGD77_LONGITUDE, etc */
 struct MGD77_LIMITS {
 	double limit[2];	/* Upper and lower range */
 } mgd77_range[MGD77_N_DATA_EXTENDED];
+
+struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_FIELDS] = {
+#include "mgd77defaults.h"
+};
 
 struct MGD77_cdf {
 	int type;		/* netCDF variable type */
@@ -129,9 +130,10 @@ struct MGD77_cdf mgd77cdf[MGD77_N_DATA_EXTENDED] = {
 	{ NC_BYTE,	5,	1.0,	0.0, "", "For cross-referencing with seismic data" },
 	{ NC_BYTE,	6,	1.0,	0.0, "", "For cross-referencing with seismic data" },
 	{ NC_DOUBLE,	1,	1.0,	0.0, "seconds since 1970-01-01 00:00:00 0", "GMT Unix time, subtract TZ to get ship local time" }
-};	
-
+};
+	
 BOOLEAN MGD77_Strip_Blanks = FALSE;
+
 PFB MGD77_column_test_double[9];
 PFB MGD77_column_test_string[9];
 unsigned int MGD77_this_bit[MGD77_SET_COLS];

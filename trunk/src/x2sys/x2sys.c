@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.50 2005-12-27 04:28:12 pwessel Exp $
+ *	$Id: x2sys.c,v 1.51 2006-01-01 05:08:23 pwessel Exp $
  *
  *      Copyright (c) 1999-2006 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -57,6 +57,10 @@
  */
 
 #include "x2sys.h"
+#ifdef WIN32
+#include "gmt_init.h"
+#include "mgd77_init.h"
+#endif
 
 /* Global variables used by X2SYS functions */
 

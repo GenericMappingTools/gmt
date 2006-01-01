@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.17 2005-12-17 05:59:22 pwessel Exp $
+REM	$Id: gmtinstall.bat,v 1.18 2006-01-01 05:08:23 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
@@ -69,7 +69,7 @@ REM STEP f: By default, GMT will be built dynamically  If
 REM	    you do NOT want to use Dynamic link libraries
 REM	    (DLL) change CHOICE to "static" here:
 REM
-REM SET "static"
+REM SET CHOICE="static"
 SET CHOICE="dynamic"
 REM ----------------------------------------------------
 REM STOP HERE - THE REST IS AUTOMATIC
