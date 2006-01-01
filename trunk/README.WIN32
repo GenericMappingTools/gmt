@@ -1,4 +1,4 @@
-	$Id: README.WIN32,v 1.11 2004-08-02 01:49:07 pwessel Exp $
+	$Id: README.WIN32,v 1.12 2006-01-01 20:12:49 pwessel Exp $
 
 README file for GMT 4 Distribution for Win32
 This version contains dynamic executables with the DLL support.
@@ -34,8 +34,8 @@ ADDITIONAL MATERIAL:
 ====================
 
 For complete GMT Documentation, including a Cookbook and Technical
-Reference Manual and a Tutorial and Short Course Manual in PDF
-format, get GMT_pdf.zip from gmt.soest.hawaii.edu.
+Reference Manual, a Tutorial and Short Course Manual in PDF format,
+and a PDF version of all UNIX man pages, get the GMT_pdf.zip archive.
 For the HTML-only versions, get GMT_web.zip.  After installing, make
 a bookmark for the file GMT/www/gmt/gmt_sevices.html.  Should you
 want to try the tutorial examples you will need GMT_tut.zip.
@@ -52,3 +52,4 @@ To view your GMT PostScript or EPS plots, we recommend you install gsview
 
 Paul Wessel
 Walter H. F. Smith
+The GMT Team
