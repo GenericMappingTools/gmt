@@ -1,6 +1,6 @@
-#	$Id: RELEASE.HOWTO,v 1.7 2004-09-30 03:39:15 pwessel Exp $
+#	$Id: RELEASE.HOWTO,v 1.8 2006-01-01 21:00:24 pwessel Exp $
 #
-#		FOR 3.4.x SERIES
+#		FOR 4.x SERIES
 
 PRE-RELEASE TASKS:
 
@@ -15,11 +15,12 @@ When you are ready to officially release a new GMT version you
 must ensure you do all the steps listed below:
 
 0.  Make any changes to README, README.WIN32, and CHANGES.
-    Finalize Announcements/Announce.3.*.  Make sure the macros
+    Finalize Announcements/Announce.4.*.  Make sure the macros
     in the gmtsite.macros file points to the actual FTP and WWW dirs.
 
 1.  run gurumake latest-config
     get the latest config.sub and config.guess.
+    cd website
     
 2.  Run cvs commit from the main GMT directory to check in any
     uncommitted changes.
