@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.22 2005-09-01 22:12:10 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.23 2006-01-01 21:00:24 pwessel Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.22 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.23 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -41,14 +41,14 @@ to a file named by you, and this file can be used for background installs as sho
 <HR><B>1. Select the GMT version you want to install:</B><BR>
 
 <SELECT NAME="gmt_version">
-<OPTION SELECTED>4.0
+<OPTION SELECTED>4.1
 <OPTION>3.4.5
 </SELECT><BR>
 
 <P>
-<I>Note: 4.0 and earlier versions can coexist on your system since they use
+<I>Note: 4.1 and earlier versions can coexist on your system since they use
 different default files.  In order to facilitate a simple way of switching from
-one version to another, GMT 4.0 comes with a Bourne shell utility called
+one version to another, GMT 4.1 comes with a Bourne shell utility called
 gmtswitch.  To simplify the maintenance of multiple versions we recommend that
 you install all your GMT versions you want under a parent directory called
 GMTdev.  After installing the required versions, run gmtswitch.  See the
@@ -171,8 +171,8 @@ are behind a firewall.  In that case you may want to select passive ftp mode.</I
 
 <INPUT TYPE="checkbox" NAME="checkbox_progs" CHECKED="true"> GMT source code (0.7/0.6 Mb, the main GMT programs, REQUIRED)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_libs" CHECKED="true"> GMT support data (4.0/3.7 Mb, Basic-resolution (CLI) coastlines)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_ps" CHECKED="true"> GMT Documentation 1 (4.2/3.1 Mb, PS versions of Cookbook and Tutorial)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_pdf" CHECKED="false"> GMT Documentation 2 (7.3/7.3 Mb, PDF versions of Cookbook and Tutorial)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_ps" CHECKED="true"> GMT Documentation 1 (6.1/9.0 Mb, PS versions of Cookbook and Tutorial)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_pdf" CHECKED="false"> GMT Documentation 2 (8.1/8.1 Mb, PDF versions of Cookbook and Tutorial)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_man" CHECKED="true"> GMT Documentation 3 (0.12/0.09 Mb, UNIX man pages)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_web" CHECKED="true"> GMT Web Docs (1.6/1.6 Mb, HTML versions of all GMT Documentation)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_tut" CHECKED="true"> GMT Tutorial (1.4/1.0 Mb, Tutorial data sets)<BR>
@@ -203,7 +203,7 @@ may decide that it does not need to ftp new versions of those archives.</I>
 <I>Note: The GMT libraries can be made static or shared.  The main benefit of using shared (dynamic)
 libraries is significantly reduced executable sizes (50-70% savings in disk space).  The GMT install
 procedure knows how to make shared libraries under Linux, FreeBSD, NetBSD, SunOS, Solaris, HPUX, OSF1,
-and IRIX.  For other systems capable of generating shared libraries you must manually configure the
+OSX, and IRIX.  For other systems capable of generating shared libraries you must manually configure the
 makegmt.macros file.  If you have no preferences or no idea what to do on an unlisted system, select
 the default static libraries.</I><BR>
 
@@ -263,7 +263,7 @@ Custom make program: <INPUT NAME="custom_make" TYPE="text" SIZE="30"><BR>
 <I>Note: The GMT archives will first be uncompressed, untarred, and compiled in the current working
 directory where install_gmt is run.  After those steps are successful you may want to copy
 the files to more traditional directories like /usr/local/bin, etc.  The default locations are
-subdirectories bin, lib, include, share, man, and www under GMT4.0 in the current install directory.
+subdirectories bin, lib, include, share, man, and www under GMT4.1 in the current install directory.
 Note that the man pages will be be placed in the man/man? subdirectory, where ? is the section specified
 above, e.g. "l", giving man/manl, is the default.  Do NOT specify the man dir as man/man?; the
 section directory will automatically be appended based on the chosen section unit.
@@ -320,7 +320,7 @@ separate from where the smaller files reside.  The selections below are only use
 <INPUT TYPE="checkbox" NAME="checkbox_mex"  CHECKED="false"> MEX: Matlab interface for reading/writing GMT grdfiles (REQUIRES MATLAB*)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_mgd77"  CHECKED="true"> MGD77: Programs for managing and plotting MGD77 data<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_mgg"  CHECKED="true"> MGG: Programs for making, managing, and plotting *.gmt data<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_misc"  CHECKED="true"> MISC: Make posters on laserwriters and create bit-patterns<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_misc"  CHECKED="true"> MISC: Manipulate PostScript, create bit-patterns, extract netCDF columns<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_segyprogs"  CHECKED="true"> SEGYPROGS: Plot SEGY seismic data files<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_spotter"  CHECKED="true"> SPOTTER: Plate tectonic backtracking and hotspotting<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_x2sys"  CHECKED="true"> X2SYS: Track intersection (crossover) tools (REQUIRES MGG and MGD77)<BR>
