@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.10 2005-12-17 05:59:22 pwessel Exp $
+ *	$Id: gmt_notunix.h,v 1.11 2006-01-01 05:11:54 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -146,19 +146,19 @@ struct passwd {
 /* These two functions prototypes are normally in pwd.h & unistd.h;
  * Here, they are defined as dummies at the bottom of gmt_init.c */
 
-struct passwd *getpwuid (const int uid);
-int getuid (void);
+EXTERN_MSC struct passwd *getpwuid (const int uid);
+EXTERN_MSC int getuid (void);
 
 /* getcwd is usually in unistd.h; we use a macro here
  * since the same function under WIN32 is prefixed with _ */
 
-extern char *_getcwd (const char *path, int len);
+EXTERN_MSC char *_getcwd (const char *path, int len);
 #define getcwd(path, len) _getcwd(path, len)
 
 /* access is usually in unistd.h; we use a macro here
  * since the same function under WIN32 is prefixed with _ */
 
-extern int _access (const char *path, int mode);
+EXTERN_MSC int _access (const char *path, int mode);
 #define access(path, mode) _access(path, mode)
 
 /* fileno and setmode have leading _ under WIN32 */
