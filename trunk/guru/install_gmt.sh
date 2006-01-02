@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.64 2006-01-01 21:53:56 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.65 2006-01-02 00:34:15 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -824,7 +824,7 @@ DIR=pub/gmt
 
 N_FTP_SITES=8
 cat << EOF > gmt_install.ftp_ip
-gmt.soest.hawaii.edu
+ftp.soest.hawaii.edu
 falcon.grdl.noaa.gov
 ftp.iris.washington.edu
 ftp.iag.usp.br
@@ -1106,6 +1106,9 @@ if [ $GMT_ftp = "y" ]; then
 	if [ $GMT_ftpsite -le 0 ] || [ $GMT_ftpsite -gt $N_FTP_SITES ]; then
 		GMT_ftpsite=1
 		echo " Error in assigning site, use default site $GMT_ftpsite" >&2
+	fi
+	if [ $GMT_ftpsite -eq 1 ]; then	# SOEST's server stars at / and there is no pub
+		DIR=gmt
 	fi
 	ftp_ip=`sed -n ${GMT_ftpsite}p gmt_install.ftp_ip`
 	is_dns=`sed -n ${GMT_ftpsite}p gmt_install.ftp_dns`
