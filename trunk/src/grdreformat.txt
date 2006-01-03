@@ -96,7 +96,7 @@ rf	GEODAS grid format GRD98 (NGDC)
 .br
 sf	Golden Software Surfer format 6 (float)
 .br
-sd	Golden Software Surfer format 7 (double)
+sd	Golden Software Surfer format 7 (double, read-only)
 .br
 .SH GMT STANDARD NETCDF FILES
 The standard format used for gdrfiles is based on netCDF and conforms to the COARDS conventions. Files written
