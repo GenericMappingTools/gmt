@@ -1,5 +1,5 @@
 #!/bin/csh
-#		$Id: newgmtguru,v 1.8 2001-03-21 01:27:16 pwessel Exp $
+#		$Id: newgmtguru,v 1.9 2006-01-03 05:05:50 pwessel Exp $
 #
 # newgmtguru is run to initiate a new guru site
 # and helps setting up the guru directory with
@@ -52,7 +52,7 @@ if ($usr == "") then
 	set usr = anonymous
 endif
 
-setenv CVSROOT :pserver:$usr@gmt.soest.hawaii.edu:/home/gmt/gmt/cvs
+setenv CVSROOT :pserver:$usr@aa.soest.hawaii.edu:/home/gmt/gmt/cvs
 cvs login
 if ($status) then
 	echo "Please make sure your username and password are correct and try again"
@@ -88,7 +88,7 @@ if ($myenv == "") then
 	set myenv = ${me}_env.csh
 endif
 grep -v CVSROOT guruenv.csh >! $myenv
-echo "setenv CVSROOT :pserver:$usr@gmt.soest.hawaii.edu:/home/gmt/gmt/cvs" >> $myenv
+echo "setenv CVSROOT :pserver:$usr@aa.soest.hawaii.edu:/home/gmt/gmt/cvs" >> $myenv
 if ($?EDITOR) then
 	$EDITOR $myenv
 else
