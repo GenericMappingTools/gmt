@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.157 2005-12-27 22:27:12 remko Exp $
+ *	$Id: gmt_plot.c,v 1.158 2006-01-04 21:37:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1240,7 +1240,12 @@ void GMT_theta_r_map_boundary (double w, double e, double s, double n)
 
 	GMT_setpen (&gmtdefs.frame_pen);
 
-	if (fabs (s) < GMT_CONV_LIMIT) frame_info.side[0] = 0;	/* No donuts, please */
+	if (project_info.got_elevations) {
+		if (fabs (n - 90.0) < GMT_CONV_LIMIT) frame_info.side[2] = 0;	/* No donuts, please */
+	}
+	else {
+		if (fabs (s) < GMT_CONV_LIMIT) frame_info.side[0] = 0;		/* No donuts, please */
+	}
 	if (fabs (fabs (e-w) - 360.0) < GMT_CONV_LIMIT || fabs (e - w) < GMT_CONV_LIMIT) {
 		frame_info.side[1] = FALSE;
 		frame_info.side[3] = FALSE;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.204 2005-12-28 23:07:46 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.205 2006-01-04 21:37:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -297,7 +297,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t     Linear scaling for polar coordinates.\n");
 			fprintf (stderr, "\t     Optionally append 'a' to -Jp or -JP to use azimuths (CW from North) instead of directions (CCW from East) [default].\n");
 			fprintf (stderr, "\t     Give scale in %s/units\n", GMT_unit_names[gmtdefs.measure_unit]);
-			fprintf (stderr, "\t     Optionally, append theta value for angular offset (base) [0] or r to reverse radial direction.\n");
+			fprintf (stderr, "\t     Optionally, append theta value for angular offset (base) [0] or r to reverse radial direction (s/n must be in 0-90 range).\n");
 
 			fprintf (stderr, "\t   -Jx<x-scale>[/<y-scale>] OR -JX<width>[/<height]> (Linear, log, power scaling)\n");
 			fprintf (stderr, "\t     Scale in %s/units (or 1:xxxx). Optionally, append to scale:\n",
