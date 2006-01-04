@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.32 2004-10-02 23:02:58 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.33 2006-01-04 02:39:29 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -18,7 +18,7 @@
 #	Paul Wessel
 #	30-SEPT-2002
 #
-# Typicall this script is run by cron on gmt:
+# Typicall this script is run by cron on the web server:
 #
 # 1 0 * * * /home/aa/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT/registration/GMT_usage_map.sh
 #

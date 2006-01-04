@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-#       $Id: gmt_form.pl,v 1.8 2003-09-23 18:47:49 pwessel Exp $
+#       $Id: gmt_form.pl,v 1.9 2006-01-04 02:39:29 pwessel Exp $
 
 $webmaster = "gmt-team\@hawaii\.edu";
 
@@ -47,7 +47,7 @@ The usage map is updated daily so please check back to see if your location was 
 the map.  Thank you for participating.
 <HR>
 <A HREF="http://gmt.soest.hawaii.edu">
-<IMG SRC="/gmt/gmt/images/gmt_small_logo.gif" ALT="RETURN">
+<IMG SRC="/gmt/gmt/gmt_small_logo.gif" ALT="RETURN">
 Return to GMT home page.
 </A>
 </BODY>
