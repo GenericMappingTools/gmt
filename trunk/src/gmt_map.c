@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.98 2005-12-29 22:52:58 remko Exp $
+ *	$Id: gmt_map.c,v 1.99 2006-01-04 21:37:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1315,7 +1315,16 @@ int GMT_map_init_polar (void)
 	double xmin, xmax, ymin, ymax;
 
 	GMT_vpolar (project_info.pars[1]);
-	if (fabs (project_info.s) < GMT_CONV_LIMIT) project_info.edge[0] = FALSE;
+	if (project_info.got_elevations) {	/* Requires s >=0 and n <= 90 */
+		if (project_info.s < 0.0 || project_info.n > 90.0) {
+			fprintf (stderr, "%s: ERROR: -JP...r for elevation plots requires s >= 0 and n <= 90!\n", GMT_program);
+			exit (EXIT_FAILURE);
+		}
+		if (fabs (90.0 - project_info.n) < GMT_CONV_LIMIT) project_info.edge[2] = FALSE;
+	}
+	else {
+		if (fabs (project_info.s) < GMT_CONV_LIMIT) project_info.edge[0] = FALSE;
+	}
 	if (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_CONV_LIMIT) project_info.edge[1] = project_info.edge[3] = FALSE;
 	GMT_left_edge = (PFD) GMT_left_circle;
 	GMT_right_edge = (PFD) GMT_right_circle;
@@ -1351,16 +1360,16 @@ void GMT_vpolar (double lon0)
 	project_info.p_base_angle = lon0;
 	project_info.central_meridian = 0.5 * (project_info.e + project_info.w);
 
-	/* Plus pretend that it is kind of a south polar projection */
+	/* Plus pretend that it is kind of a geographic polar projection */
 
-	project_info.north_pole = FALSE;
+	project_info.north_pole = project_info.got_elevations;
 	project_info.pole = 0.0;
 }
 
 void GMT_polar (double x, double y, double *x_i, double *y_i)
 {	/* Transform x and y to polar(cylindrical) coordinates */
 	if (project_info.got_azimuths) x = 90.0 - x;		/* azimuths, not directions */
-	if (project_info.got_elevations) y = project_info.n - y;/* elevations, presumably */
+	if (project_info.got_elevations) y = 90.0 - y;		/* elevations */
 	x = (x - project_info.p_base_angle) * D2R;		/* Change base line angle and convert to radians */
 	sincos (x, y_i, x_i);
 	(*x_i) *= y;
@@ -1372,7 +1381,7 @@ void GMT_ipolar (double *x, double *y, double x_i, double y_i)
 	*x = R2D * d_atan2 (y_i, x_i) + project_info.p_base_angle;
 	if (project_info.got_azimuths) *x = 90.0 - (*x);		/* azimuths, not directions */
 	*y = hypot (x_i, y_i);
-	if (project_info.got_elevations) *y = project_info.n - (*y);    /* elevations, presumably */
+	if (project_info.got_elevations) *y = 90.0 - (*y);    /* elevations, presumably */
 }
 
 /*
@@ -7806,7 +7815,10 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 				np = 4;
 				break;
 			case POLAR:
-				*donut = (project_info.s > 0.0 && GMT_world_map);
+				if (project_info.got_elevations)
+					*donut = (project_info.n < 90.0 && GMT_world_map);
+				else
+					*donut = (project_info.s > 0.0 && GMT_world_map);
 				np = gmtdefs.n_lon_nodes + 1;
 				if (project_info.s > 0.0)	/* Need inside circle segment */
 					np *= 2;
@@ -7909,12 +7921,22 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 				}
 				else {
 					da = fabs (project_info.e - project_info.w) / (gmtdefs.n_lon_nodes - 1);
-					for (i = j = 0; i <= gmtdefs.n_lon_nodes; i++, j++)	/* Draw outer clippath */
-						GMT_geo_to_xy (project_info.w + i * da, project_info.n, &work_x[j], &work_y[j]);
-					for (i = gmtdefs.n_lon_nodes; project_info.s > 0.0 && i >= 0; i--, j++)	/* Draw inner clippath */
-						GMT_geo_to_xy (project_info.w + i * da, project_info.s, &work_x[j], &work_y[j]);
-					if (fabs (project_info.s) < GMT_CONV_LIMIT && !GMT_world_map)	/* Add origin */
-						GMT_geo_to_xy (project_info.w, project_info.s, &work_x[j], &work_y[j]);
+					if (project_info.got_elevations) {
+						for (i = j = 0; i <= gmtdefs.n_lon_nodes; i++, j++)	/* Draw outer clippath */
+							GMT_geo_to_xy (project_info.w + i * da, project_info.s, &work_x[j], &work_y[j]);
+						for (i = gmtdefs.n_lon_nodes; project_info.n < 90.0 && i >= 0; i--, j++)	/* Draw inner clippath */
+							GMT_geo_to_xy (project_info.w + i * da, project_info.n, &work_x[j], &work_y[j]);
+						if (fabs (90.0 - project_info.n) < GMT_CONV_LIMIT && !GMT_world_map)	/* Add origin */
+							GMT_geo_to_xy (project_info.w, project_info.n, &work_x[j], &work_y[j]);
+					}
+					else {
+						for (i = j = 0; i <= gmtdefs.n_lon_nodes; i++, j++)	/* Draw outer clippath */
+							GMT_geo_to_xy (project_info.w + i * da, project_info.n, &work_x[j], &work_y[j]);
+						for (i = gmtdefs.n_lon_nodes; project_info.s > 0.0 && i >= 0; i--, j++)	/* Draw inner clippath */
+							GMT_geo_to_xy (project_info.w + i * da, project_info.s, &work_x[j], &work_y[j]);
+						if (fabs (project_info.s) < GMT_CONV_LIMIT && !GMT_world_map)	/* Add origin */
+							GMT_geo_to_xy (project_info.w, project_info.s, &work_x[j], &work_y[j]);
+					}
 				}
 				break;
 			case LAMB_AZ_EQ:

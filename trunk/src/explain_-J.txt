@@ -161,7 +161,7 @@ Give the central meridian and scale along equator (1:xxxx or UNIT/degree).
 Optionally insert \fBa\fP after \fB\-Jp\fP [ or \fB\-JP\fP] for
 azimuths CW from North instead of directions CCW from East [default].
 Optionally append /\fIorigin\fP in degrees to indicate an angular offset [0]),
-and append \fBr\fP if you want to reverse the direction of radial coordinates.
+and append \fBr\fP if r is elevations in degrees (requires s >= 0 and n <= 90).
 Give scale in UNIT/r-unit.
 .TP
 \fB\-Jx\fP\fIx-scale\fP[\fI/y-scale\fP] or \fB\-JX\fP\fIwidth\fP[\fI/height\fP] (Linear, log, and power scaling)
