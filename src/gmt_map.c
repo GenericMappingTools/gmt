@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.99 2006-01-04 21:37:26 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.100 2006-01-04 23:02:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1346,7 +1346,7 @@ int GMT_map_init_polar (void)
 	GMT_overlap = (PFI) GMT_wesn_overlap;
 	GMT_map_clip = (PFI) GMT_wesn_clip;
 	frame_info.horizontal = TRUE;
-	gmtdefs.degree_format = -1;	/* Special labeling case */
+	if (!project_info.got_elevations) gmtdefs.degree_format = -1;	/* Special labeling case */
 	gmtdefs.n_lat_nodes = 2;
 	GMT_meridian_straight = TRUE;
 
@@ -1363,7 +1363,7 @@ void GMT_vpolar (double lon0)
 	/* Plus pretend that it is kind of a geographic polar projection */
 
 	project_info.north_pole = project_info.got_elevations;
-	project_info.pole = 0.0;
+	project_info.pole = (project_info.got_elevations) ? 90.0 : 0.0;
 }
 
 void GMT_polar (double x, double y, double *x_i, double *y_i)

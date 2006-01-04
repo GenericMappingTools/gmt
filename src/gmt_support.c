@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.210 2005-12-30 19:33:01 remko Exp $
+ *	$Id: gmt_support.c,v 1.211 2006-01-04 23:02:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7514,6 +7514,11 @@ int GMT_polar_adjust (int side, double angle, double x, double y)
 		bottom = 2;
 	}
 	if (project_info.projection == POLAR && project_info.got_azimuths) i_swap (left, right);	/* Because with azimuths we get confused... */
+	if (project_info.projection == POLAR && project_info.got_elevations) {
+		i_swap (top, bottom);	/* Because with elevations we get confused... */
+		i_swap (left, right);
+		low = 2 - low;
+	}
 	if (side%2) {	/* W and E border */
 		if ((y - y0 + SMALL) > 0.0)
 			justify = (side == 1) ? left : right;
@@ -7526,6 +7531,7 @@ int GMT_polar_adjust (int side, double angle, double x, double y)
 				justify = (fabs (angle - 180.0) < GMT_CONV_LIMIT) ? bottom : top;
 			else
 				justify = (fabs (angle) < GMT_CONV_LIMIT) ? top : bottom;
+			if (project_info.got_elevations && (fabs (angle - 180.0) < GMT_CONV_LIMIT || fabs (angle) < GMT_CONV_LIMIT)) justify = (justify + 8) % 16;
 		}
 		else {
 			if (x >= x0)
@@ -7604,7 +7610,7 @@ int GMT_get_label_parameters (int side, double line_angle, int type, double *tex
 	switch (side) {
 		case 0:		/* S */
 			if (frame_info.horizontal)
-				*justify = 10;
+				*justify = (project_info.got_elevations) ? 2 : 10;
 			else
 				*justify = ((*text_angle) < 0.0) ? 5 : 7;
 			break;
@@ -7618,7 +7624,7 @@ int GMT_get_label_parameters (int side, double line_angle, int type, double *tex
 			break;
 		case 2:		/* N */
 			if (frame_info.horizontal)
-				*justify = 2;
+				*justify = (project_info.got_elevations) ? 10 : 2;
 			else
 				*justify = ((*text_angle) < 0.0) ? 7 : 5;
 			break;
