@@ -1,7 +1,7 @@
 #
 # spec file for package GMT (Version 4)
 #
-# Copyright (c) 2004-2005 Dirk Stoecker <gmt@dstoecker.de>.
+# Copyright (c) 2004-2006 Dirk Stoecker <gmt@dstoecker.de>.
 # This file and all modifications and additions to the pristine
 # package are under the same license as the package itself.
 #
@@ -15,28 +15,28 @@ BuildRequires: autoconf,automake,gcc,netcdf
 
 Name:         GMT
 %define prefix /opt/gmt
-%define sourcepath ftp://gmt.soest.hawaii.edu/pub/gmt/4/
+%define sourcepath ftp://ftp.soest.hawaii.edu/gmt/4/
 %define incdir %{prefix}/include
 License:      GPL
 Group:        Productivity/Graphics/Visualization/Graph
 Provides:     GMT 
 Autoreqprov:  on
 Requires:     netcdf >= 3.4
-Version:      4.0
-Release:      19
+Version:      4.1
+Release:      1
 Summary:      Generic Mapping Tools
 Summary(de):  Generic Mapping Tools - Karten- und Grafikerzeugung
-Source0:      %{sourcepath}GMT4.0_progs.tar.bz2
-Source1:      %{sourcepath}GMT4.0_man.tar.bz2
-Source2:      %{sourcepath}GMT4.0_web.tar.bz2
-Source3:      %{sourcepath}GMT4.0_suppl.tar.bz2
+Source0:      %{sourcepath}GMT4.1_progs.tar.bz2
+Source1:      %{sourcepath}GMT4.1_man.tar.bz2
+Source2:      %{sourcepath}GMT4.1_web.tar.bz2
+Source3:      %{sourcepath}GMT4.1_suppl.tar.bz2
 Source4:      %{sourcepath}GMT_full.tar.bz2
 Source5:      %{sourcepath}GMT_share.tar.bz2
 Source6:      %{sourcepath}GMT_high.tar.bz2
-Source7:      %{sourcepath}GMT4.0_scripts.tar.bz2
-#Source8:      %{sourcepath}GMT4.0_tut.tar.bz2
-#Source9:      %{sourcepath}GMT4.0_pdf.tar.bz2
-#Source10:     %{sourcepath}GMT4.0_ps.tar.bz2
+Source7:      %{sourcepath}GMT4.1_scripts.tar.bz2
+#Source8:      %{sourcepath}GMT4.1_tut.tar.bz2
+#Source9:      %{sourcepath}GMT4.1_pdf.tar.bz2
+#Source10:     %{sourcepath}GMT4.1_ps.tar.bz2
 #Source11:     %{sourcepath}triangle.tar.bz2
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build/
 
@@ -57,7 +57,7 @@ such as coastlines, rivers, and political boundaries.
 Authors:
 --------
     Paul Wessel <pwessel@hawaii.edu>
-    Walter H. F. Smith <walter@raptor.grdl.noaa.gov>
+    Walter H. F. Smith <Walter.HF.Smith@noaa.gov>
 
 %description -l de
 GMT ist eine frei verfuegbare Sammlung von etwa 60 UNIX programmen,
@@ -77,7 +77,7 @@ unterstuetzt.
 Autoren:
 --------
     Paul Wessel <pwessel@hawaii.edu>
-    Walter H. F. Smith <walter@raptor.grdl.noaa.gov>
+    Walter H. F. Smith <Walter.HF.Smith@noaa.gov>
 
 %package devel
 Summary:      Generic Mapping Tools (Include Files and Libraries mandatory for Development).
@@ -102,12 +102,12 @@ Requires:     %{name}
 Documentation of the Generic Mapping Tools including documentation and
 tutorial in HTML format. The documentation is additionally available in pdf
 and ps as well.
-See ftp://gmt.soest.hawaii.edu/pub/gmt/4/ or http://gmt.soest.hawaii.edu/.
+See ftp://ftp.soest.hawaii.edu/gmt/4/ or http://gmt.soest.hawaii.edu/.
 
 %description doc -l de
 Die englische HTML-Dokumentation der Generic Mapping Tools inklusive Tutorial.
 Die Dateien sind auch im PDF- und PostScript-Format erhaeltlich (siehe dazu
-ftp://gmt.soest.hawaii.edu/pub/gmt/4/ oder http://gmt.soest.hawaii.edu/).
+ftp://ftp.soest.hawaii.edu/gmt/4/ oder http://gmt.soest.hawaii.edu/).
 
 %package examples
 Summary:      Generic Mapping Tools (Documentation).
@@ -184,7 +184,7 @@ rm -rf $RPM_BUILD_ROOT
 %{prefix}/share/pattern/
 %{prefix}/share/pslib/
 %{prefix}/share/time/
-#%{prefix}/share/x2sys/
+%{prefix}/share/x2sys/
 %{prefix}/share/gmt*
 %{prefix}/share/GMT*
 %{prefix}/share/.gmtdefaults*
@@ -197,7 +197,7 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %defattr(-,root,root)
 %{incdir}/gmt*
-#%{incdir}/mgd77*
+%{incdir}/mgd77*
 %{incdir}/pslib*
 %{prefix}/lib/*.a
 
@@ -214,6 +214,9 @@ rm -rf $RPM_BUILD_ROOT
 %{prefix}/share/*_*.cdf
 
 %changelog -n GMT
+* Mon Jan 3 2006 - gmt@dstoecker.de
+- modified for final GMT 4.1 release
+
 * Fri Dec 23 2005 - gmt@dstoecker.de
 - added examples package
 - some minor modifications
