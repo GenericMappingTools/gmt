@@ -8,8 +8,6 @@
 /C /setrgbcolor load def
 /D /rlineto load def
 /E {dup stringwidth pop} bind def
-/e {f pathbbox N exch pop sub abs exch pop} bind def
-/f {true charpath flattenpath} bind def
 /F /fill load def
 /G /rmoveto load def
 /K /setcmykcolor load def
@@ -133,7 +131,7 @@
 /u {M {D} repeat P V K F U N} def
 /v {M {D} repeat P V K F U S} def
 /w {M {D} repeat P S} def
-/PSL_get_stringwidth {0 0 M f pathbbox N pop exch pop sub abs} def
-/PSL_get_stringheight {0 0 M f pathbbox N exch pop sub abs exch pop} def
+/bby {tcf pathbbox N exch pop sub abs exch pop} bind def
+/tcf {true charpath flattenpath} bind def
 
 %%EndProlog
