@@ -152,7 +152,7 @@ International geomagnetic reference field (total field) (in nTesla).
 .B ngrav
 International Gravity reference Field ("normal gravity") (in mGal).
 Field is selected based on the parameter Gravity Theoretical
-Formula Code in the cruise's MGD77 header.  If this is not set or is invalid we default to the IGF 1980.
+Formula Code in the cruise's MGD77 header.  If this is not set or is invalid we default to the IGF 1980.\"'
 Alternatively, specify the field directly using \fB\-Af\fP (see that option for more details).
 .br
 .sp

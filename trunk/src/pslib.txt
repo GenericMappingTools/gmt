@@ -35,7 +35,7 @@ of the hardcopy device so that the output file is kept as compact as possible.
 .LP
 A wide variety of output devices that support \fIPostScript\fR exist, including laserwriters
 (color or monochrome) and workstations running \fIPostScript\fR based window systems
-like Sun's OpenWindows.  xnews (part of OpenWindows) or ghostscript (public domain) can be used to create rasterfiles at a
+like Sun's OpenWindows.  xnews (part of OpenWindows) or ghostscript (public domain) can be used to create rasterfiles at a\"'
 user-defined resolution (DPI), making it possible to render \fIPostScript\fR on a Versatec
 and other non-\fIPostScript\fR raster devices.  Regular Sun rasterfiles created under NeWS
 from \fIPostScript\fR files can be sent to a variety of color hardcopy units.  Check
