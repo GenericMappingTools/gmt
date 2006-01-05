@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.108 2005-12-27 22:27:12 remko Exp $
+ *	$Id: pslib.c,v 1.109 2006-01-05 04:14:50 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1803,11 +1803,11 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
  * rgb = fill color
  *
  *
- *    9	10	11
+ *   9       10      11
  *   |----------------|
  *   5  <textstring>  7
  *   |----------------|
- *   1	 2	 3
+ *   1       2        3
  */
 	char *string, align[3][10] = {"0", "2 div neg", "neg"};
 	int i = 0, pmode, j, h_just, v_just, rounded;
@@ -1854,7 +1854,7 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 	}
 	/* Here, (0,0) is lower point on textbox with no clearance yet */
 	if (rounded) {
-		fprintf (ps.fp, "/PSL_r %d def\n", irint (MIN (dx, dy) * ps.scale));
+		fprintf (ps.fp, "\n/PSL_r %d def\n", irint (MIN (dx, dy) * ps.scale));
 		fprintf (ps.fp, "/PSL_dx2 %d def\n", irint ((dx - MIN (dx, dy)) * ps.scale));
 		fprintf (ps.fp, "/PSL_dy2 %d def\n", irint ((dy - MIN (dx, dy)) * ps.scale));
 		fprintf (ps.fp, "/PSL_x_side PSL_dimx_ur PSL_dimx_ll sub PSL_dx2 2 mul add def\n");
@@ -1864,12 +1864,13 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 		fprintf (ps.fp, "PSL_dimx_ll PSL_dx2 sub PSL_dimy_ll PSL_dy sub M PSL_x_side 0 D\n");
 		fprintf (ps.fp, "PSL_bx0 PSL_x_side add PSL_by0 PSL_r 270 360 arc\n");
 		fprintf (ps.fp, "0 PSL_y_side D PSL_bx0 PSL_x_side add PSL_by0 PSL_y_side add PSL_r 0 90 arc\n");
-		fprintf (ps.fp, "PSL_x_side neg 0 D PSL_bx0 PSL_by0 PSL_y_side add PSL_r 90 180 arc 0 PSL_y_side neg D P \n");
+		fprintf (ps.fp, "PSL_x_side neg 0 D PSL_bx0 PSL_by0 PSL_y_side add PSL_r 90 180 arc\n");
+		fprintf (ps.fp, "0 PSL_y_side neg D PSL_bx0 PSL_by0 PSL_r 180 270 arc P\n");
 	}
 	else {
-		fprintf (ps.fp, "/PSL_x_side PSL_dimx_ur PSL_dimx_ll sub PSL_dx 2 mul add def\n");
+		fprintf (ps.fp, "\n/PSL_x_side PSL_dimx_ur PSL_dimx_ll sub PSL_dx 2 mul add def\n");
 		fprintf (ps.fp, "/PSL_y_side PSL_dimy_ur PSL_dimy_ll sub PSL_dy 2 mul add def\n");
-		fprintf (ps.fp, "PSL_dimx_ll PSL_dx sub PSL_dimy_ll PSL_dy sub M PSL_x_side 0 D 0 PSL_y_side D PSL_x_side neg 0 D 0 PSL_y_side neg D P \n");
+		fprintf (ps.fp, "PSL_dimx_ll PSL_dx sub PSL_dimy_ll PSL_dy sub M PSL_x_side 0 D 0 PSL_y_side D PSL_x_side neg 0 D 0 PSL_y_side neg D P\n");
 	}
 	if (rgb[0] >= 0) {	/* Paint the textbox */
 		fprintf (ps.fp, "V ");
@@ -1916,9 +1917,9 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 
 	if (!strchr (string, '@')) {	/* Plain text string */
 		if (key == 0)
-			fprintf (ps.fp, "0 0 M %d F%d (%s) E /%s exch def e /%s exch def\n", (int) irint (height * ps.scale), ps.font_no, string, xdim, ydim);
+			fprintf (ps.fp, "0 0 M %d F%d (%s) E /%s exch def bby /%s exch def\n", (int) irint (height * ps.scale), ps.font_no, string, xdim, ydim);
 		else
-			fprintf (ps.fp, "0 0 M %d F%d (%s) f pathbbox N /%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n" , (int) irint (height * ps.scale), ps.font_no, string, ydim, xdim, ydim, xdim);
+			fprintf (ps.fp, "0 0 M %d F%d (%s) tcf pathbbox N /%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n" , (int) irint (height * ps.scale), ps.font_no, string, ydim, xdim, ydim, xdim);
 		ps_free ((void *)string);
 		return;
 	}
@@ -1947,7 +1948,7 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 	ptr = strtok (tempstring, "@");
 	fprintf (ps.fp, "N 0 0 m ");	/* Initialize currentpoint */
 	if(string[0] != '@') {
-		fprintf (ps.fp, "%d F%d (%s) f ", irint (size*ps.scale), font, ptr);
+		fprintf (ps.fp, "%d F%d (%s) tcf ", irint (size*ps.scale), font, ptr);
 		ptr = strtok ((char *)NULL, "@");
 	}
 
@@ -1997,7 +1998,7 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 		}
 		else	/* Not recognized or @@ for a single @ */
 			strcpy (piece, ptr);
-		if (strlen (piece) > 0) fprintf (ps.fp, "%d F%d (%s) f ", irint (size*ps.scale), font, piece);
+		if (strlen (piece) > 0) fprintf (ps.fp, "%d F%d (%s) tcf ", irint (size*ps.scale), font, piece);
 		ptr = strtok ((char *)NULL, "@");
 	}
 
