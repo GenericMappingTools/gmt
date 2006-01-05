@@ -28,7 +28,7 @@ Select a column source code among \fBa\fP, \fBc\fP, \fBd\fP, \fBD\fP, \fBe\fP, \
 \fBn\fP, \fBt\fP, or \fBT\fP; detailed descriptions for each choice follow:
 .br
 .sp
-\fBa\fP Append filename of a single column table to add.  File must have the same number of rows as\"'
+\fBa\fP Append filename of a single column table to add.  File must have the same number of rows as
 the MGD77+ file. If no file is given we read from stdin instead.
 .br
 .sp
@@ -36,7 +36,7 @@ the MGD77+ file. If no file is given we read from stdin instead.
 fields.  Append \fBc\fP for the Carter corrections subtracted from uncorrected depths, \fBg\fP for the
 IGF gravity reference field (a.k.a "normal gravity"), and \fBm\fP for the IGRF total field magnetic
 reference field.  For gravity we choose the reference field based on the parameter Gravity Theoretical
-Formula Code in the cruise's MGD77 header.  If this is not set or is invalid we default to the IGF 1980.
+Formula Code in the cruise's MGD77 header.  If this is not set or is invalid we default to the IGF 1980.\"'
 You can override this behaviour by appending the desired code: 1 = Heiskanen 1924, 2 = International
 1930, 3 = IGF1967, or 4 = IGF1980.
 .br
