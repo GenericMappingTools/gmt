@@ -28,7 +28,7 @@ Select a column source code among \fBa\fP, \fBc\fP, \fBd\fP, \fBD\fP, \fBe\fP, \
 \fBn\fP, \fBt\fP, or \fBT\fP; detailed descriptions for each choice follow:
 .br
 .sp
-\fBa\fP Append filename of a single column table to add.  File must have the same number of rows as
+\fBa\fP Append filename of a single column table to add.  File must have the same number of rows as\"'
 the MGD77+ file. If no file is given we read from stdin instead.
 .br
 .sp
@@ -152,7 +152,7 @@ To create a 4-byte float column with the correct IGRF reference field in all MGD
 \fB1. Preamble\fP
 .br
 The mgd77 supplement is an attempt to (1) improve on the limited functionality of the
-existing mgg supplement, (2) incorporate some of the ideas from Scripps' gmt+ supplement
+existing mgg supplement, (2) incorporate some of the ideas from Scripps' gmt+ supplement\"'
 by allowing extra data columns, and
 (3) add new capabilities for managing marine geophysical trackline data stored in an
 architecture-independent CF-1.0- and COARDS-compliant netCDF file format.  Here are some of the
@@ -249,7 +249,7 @@ fixed systematic correction terms are corrected accordingly.  Third, data with e
 correction terms will have those corrections applied (if a correction table is supplied).
 All of these steps require the presence of the relevant meta-data and all can be overruled
 by the user. In addition, users may add their own bitflags as separate data columns and use
-\fBmgd77list\fP's logical tests to further dictate which data are suppressed from output.
+\fBmgd77list\fP's logical tests to further dictate which data are suppressed from output.\"'
 .SH CREDITS
 The IGRF calculations are based on a Fortran program written by Susan Macmillan,
 British Geological Survey, translated to C via f2c by Joaquim Luis, and adapted to
