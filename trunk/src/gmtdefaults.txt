@@ -530,7 +530,7 @@ Determines if PostScript images are compressed using the Run-Length Encoding sch
 LZW compression (lzw), or not at all (none) [none].
 .TP
 .B PS_IMAGE_FORMAT
-Determines whether images created in PostScript should use ascii
+Determines whether images created in PostScript should use ASCII
 or binary format.  The latter takes up less space and executes faster but may choke
 some printers, especially those off serial ports.  Select ascii or bin [ascii].
 .TP
