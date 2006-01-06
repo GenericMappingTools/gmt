@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.26 2005-12-26 23:47:53 pwessel Exp $ 
+#		$Id: README,v 1.27 2006-01-06 01:00:09 pwessel Exp $ 
 #
 #	Copyright (c) 1991-2006, P. Wessel & W. H. F. Smith
 #
@@ -120,7 +120,7 @@ After install, place the line
 setenv NETCDFHOME /path_to_netcdf_directory
 
 in your .login file.  This path is usually something like
-/usr/local/netcdf-3.5.0 depending on where you put it.
+/usr/local/netcdf-3.6.1 depending on where you put it.
 The GMT makefiles will use $NETCDFHOME to find the library.
 
 PS! On some newer platforms, in particular MacOS X, you may have
