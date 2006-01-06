@@ -66,7 +66,7 @@ Reverses the sense of the test for each of the criteria specified:
 #include "explain_-J_short.txt"
 .TP
 .B \-L
-Pass all records whose location is within \fIdist\fP of any of the line segments in the multiple-segment ascii
+Pass all records whose location is within \fIdist\fP of any of the line segments in the multiple-segment ASCII
 file \fIlinefile\fP.  If \fIdist\fP is zero then the 2nd column of each
 sub-header in the \fIptfile\fP must have each lines's individual distance value.\"'
 Distances are in user units; specify \fB\-fg\fP or a map projection to indicate distances in km.
