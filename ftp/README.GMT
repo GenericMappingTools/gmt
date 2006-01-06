@@ -1,4 +1,4 @@
-	$Id: README.GMT,v 1.7 2006-01-01 21:00:24 pwessel Exp $
+	$Id: README.GMT,v 1.8 2006-01-06 01:00:09 pwessel Exp $
 
 Dear potential GMT users-
 
@@ -52,7 +52,7 @@ You need to ftp several zip files; some are optional:
 
 GMT_exe.zip	All executables
 GMT_share.zip	Support data and coastlines
-netcdf-3.5.0.win32bin.zip	netcdf library if you don't have it.
+netcdf-3.6.1-beta1-win32dll.zip	netcdf library if you don't have it.
 
 In addition, you may want
 
