@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 03
 #
-#		$Id: job03.sh,v 1.9 2005-12-11 06:23:08 pwessel Exp $
+#		$Id: job03.sh,v 1.10 2006-01-07 00:21:45 pwessel Exp $
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
 # GMT progs:	filter1d, fitcircle, gmtset, minmax, project, sample1d, 
@@ -76,11 +76,11 @@ $AWK '{ if (NR > 1) print $1 - last1; last1=$1; }' sat.pg  | pshistogram  -W0.1 
 # conversely.  "minmax" can't do this easily since it will return min( min(), min() ),
 # so we do a little head, paste $AWK to get what we want.
 #
-head -n 1 ship.pg > ship.pg.extr
-head -n 1 sat.pg > sat.pg.extr
+head -1 ship.pg > ship.pg.extr
+head -1 sat.pg > sat.pg.extr
 paste ship.pg.extr sat.pg.extr | $AWK '{ if ($1 > $3) print int($1); else print int($3); }' > sampr1
-tail -n 1 ship.pg > ship.pg.extr
-tail -n 1 sat.pg > sat.pg.extr 
+tail -1 ship.pg > ship.pg.extr
+tail -1 sat.pg > sat.pg.extr 
 paste ship.pg.extr sat.pg.extr | $AWK '{ if ($1 < $3) print int($1); else print int($3); }' > sampr2
 sampr1=`cat sampr1`
 sampr2=`cat sampr2`
