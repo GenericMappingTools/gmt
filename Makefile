@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.23 2005-09-04 23:48:55 pwessel Exp $
+#	$Id: Makefile,v 1.24 2006-01-07 01:55:04 pwessel Exp $
 #
 #	Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -162,7 +162,7 @@ install-manl-suppl:
 				cd src/$$d; \
 				for f in *.man; do \
 					\cp $$f $(rootdir)/man/manl; \
-					echo "\\mv $$f $$f" | sed -e 's/.man$$/.l/g' >> $(rootdir)/manjob.sh; \
+					echo "mv $$f $$f" | sed -e 's/.man$$/.l/g' >> $(rootdir)/manjob.sh; \
 				done; \
 				cd ../..; \
 			fi; \
@@ -187,9 +187,9 @@ install-man:	install-manl-suppl
 			echo "s/ l / $(mansection) /g" >> sed.tmp; \
 			for f in *.l; do \
 				echo "sed -f sed.tmp $$f > tmp" >> $(rootdir)/manjob.sh; \
-				echo "\\rm -f $$f" >> $(rootdir)/manjob.sh; \
-				echo "\\mv tmp $$f" | sed -e 's/.l$$/.$(mansection)/g' >> $(rootdir)/manjob.sh; \
-				echo "\\rm -f $$f"  | sed -e 's/.l$$/.$(mansection)/g' >> $(rootdir)/manuninstall.sh; \
+				echo "rm -f $$f" >> $(rootdir)/manjob.sh; \
+				echo "mv tmp $$f" | sed -e 's/.l$$/.$(mansection)/g' >> $(rootdir)/manjob.sh; \
+				echo "rm -f $$f"  | sed -e 's/.l$$/.$(mansection)/g' >> $(rootdir)/manuninstall.sh; \
 			done; \
 			$(SHELL) $(rootdir)/manjob.sh; \
 			rm -f $(rootdir)/manjob.sh sed.tmp; \

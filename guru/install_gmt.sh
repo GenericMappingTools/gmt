@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.65 2006-01-02 00:34:15 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.66 2006-01-07 01:55:04 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1256,7 +1256,7 @@ GMT_web=${GMT_web:-$here/www}
 
 # Are we allowed to write in $GMT_web?
 
-dir=`echo $GMT_web | sed -e 'sB/webBBg'`
+dir=`echo $GMT_web | sed -e 'sB/wwwBBg'`
 if [ -w $dir ]; then
 	write_web=1
 else
