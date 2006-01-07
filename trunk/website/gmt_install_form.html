@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.25 2006-01-02 00:25:28 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.26 2006-01-07 01:57:43 pwessel Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.25 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.26 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -132,7 +132,10 @@ Give full pathname to the netCDF directory: <INPUT NAME="netcdf_dir" TYPE="text"
 <P>
 <I>Note: In either case you must fill out the directory name.  If you already have netCDF then give the
 directory it resides in; if you need to install netCDF then give the directory you intend to install it.
-You can leave it blank if you have defined $NETCDFHOME to be the directory where you installed netcdf.</I>
+You can leave it blank if you have defined $NETCDFHOME to be the directory where you installed netcdf.
+Finally, if you have already installed netCDF as a SHARED library it is your responsibility to make sure
+these libraries are in default paths or explicitly have been added to LD_LIBRARY_PATH or similar environment
+parameters.</I>
 <HR>
 
 <!--  GMT FTP SELECTION  -->
