@@ -14,7 +14,7 @@ If =\fIid\fP is set (see below), you may optionally append \fIscale\fP and \fIof
 These options will scale the data and then offset them with the specified amounts after reading.
 .br
 If \fIscale\fP and \fIoffset\fP
-are supplied you may also append a value that represent 'Not-a-Number' (for floating-point grids this
+are supplied you may also append a value that represents 'Not-a-Number' (for floating-point grids this
 is unnecessary since the IEEE NaN is used; however integers need a value which means no data available.)
 .TP
 \fIoutgrdfile\fP
@@ -26,7 +26,7 @@ Since the scale and offset are applied in reverse order when reading, this does 
 values (except for round-offs).
 .br
 If \fIscale\fP and \fIoffset\fP
-are supplied you may also append a value that represent 'Not-a-Number' (for floating-point grids this
+are supplied you may also append a value that represents 'Not-a-Number' (for floating-point grids this
 is unnecessary since the IEEE NaN is used; however integers need a value which means no data available.)
 .SH OPTIONS
 .TP
