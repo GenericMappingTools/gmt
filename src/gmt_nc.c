@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.39 2005-12-27 03:10:13 pwessel Exp $
+ *	$Id: gmt_nc.c,v 1.40 2006-01-08 15:54:43 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -217,23 +217,21 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		memset ((void *)header->x_units, 0, (size_t)GRD_UNIT_LEN);
 		if (nc_get_att_text (ncid, x_id, "long_name", header->x_units)) strcpy (header->x_units, "x");
 		lens[0] = 0;
-		if (x_id < 0) {
-			dummy[0] = 0.0; dummy[1] = (double) header->nx-1;
-		}
+		if (x_id < 0)
+			dummy[0] = 0.0, dummy[1] = (double) header->nx-1;
         	else if (nc_get_att_double (ncid, x_id, "actual_range", dummy)) {
 			lens[1] = header->nx-1;
 			check_nc_status (nc_get_var1_double (ncid, x_id, &lens[0], &dummy[0]));
 			check_nc_status (nc_get_var1_double (ncid, x_id, &lens[1], &dummy[1]));
 		}
-		header->x_min = dummy[0];
-		header->x_max = dummy[1];
+		header->x_min = dummy[0], header->x_max = dummy[1];
 		header->x_inc = (header->x_max - header->x_min) / (header->nx + header->node_offset - 1);
 		if (GMT_is_dnan(header->x_inc)) header->x_inc = 1.0;
 
 		memset ((void *)header->y_units, 0, (size_t)GRD_UNIT_LEN);
 		if (nc_get_att_text (ncid, y_id, "long_name", header->y_units)) strcpy (header->y_units, "y");
 		if (y_id < 0) {
-			dummy[0] = 0.0; dummy[1] = (double) header->ny-1;
+			dummy[0] = 0.0, dummy[1] = (double) header->ny-1;
 			header->node_offset = 0;
 		}
         	else if (nc_get_att_double (ncid, y_id, "actual_range", dummy)) {
@@ -246,17 +244,13 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 			header->y_order = -1;
 		else
 			header->y_order = 1;
-		header->y_min = dummy[(1-header->y_order)/2];
-		header->y_max = dummy[(1+header->y_order)/2];
+		header->y_min = dummy[(1-header->y_order)/2], header->y_max = dummy[(1+header->y_order)/2];
 		header->y_inc = (header->y_max - header->y_min) / (header->ny + header->node_offset - 1);
 		if (GMT_is_dnan(header->y_inc)) header->y_inc = 1.0;
 
         	if (nc_get_att_double (ncid, z_id, "actual_range", dummy) &&
-		    nc_get_att_double (ncid, z_id, "valid_range", dummy)) {
-			dummy[0] = 0; dummy [1] = 0;
-		}
-		header->z_min = dummy[0];
-		header->z_max = dummy[1];
+		    nc_get_att_double (ncid, z_id, "valid_range", dummy)) dummy[0] = 0, dummy [1] = 0;
+		header->z_min = dummy[0], header->z_max = dummy[1];
 
 		if (ndims == 3 && !GMT_is_dnan(t_value)) {
 			lens[2]--;
@@ -290,29 +284,30 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
         	check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "source", (GRD_COMMAND_LEN+GRD_REMARK_LEN), text));
         	check_nc_status (nc_put_att_int (ncid, NC_GLOBAL, "node_offset", NC_LONG, 1, &header->node_offset));
 
-		if (header->z_min <= header->z_max) {
-			dummy[0] = header->z_min; dummy[1] = header->z_max;
-		}
-		else {
-			dummy[0] = 0.0; dummy[1] = 0.0;
-		}
+		if (header->z_min <= header->z_max)
+			dummy[0] = header->z_min, dummy[1] = header->z_max;
+		else
+			dummy[0] = 0.0, dummy[1] = 0.0;
         	check_nc_status (nc_put_att_double (ncid, z_id, "actual_range", z_type, 2, dummy));
 
-		dummy[0] = header->x_min;
-		dummy[1] = header->x_max;
+		dummy[0] = header->x_min, dummy[1] = header->x_max;
         	check_nc_status (nc_put_att_double (ncid, x_id, "actual_range", NC_DOUBLE, 2, dummy));
 
 		header->y_order = 1;
-		dummy[(1-header->y_order)/2] = header->y_min;
-		dummy[(1+header->y_order)/2] = header->y_max;
+		dummy[(1-header->y_order)/2] = header->y_min, dummy[(1+header->y_order)/2] = header->y_max;
         	check_nc_status (nc_put_att_double (ncid, y_id, "actual_range", NC_DOUBLE, 2, dummy));
 
 		check_nc_status (nc_enddef (ncid));
 
 		tmp = (float *) GMT_memory (VNULL, (size_t) MAX (header->nx,header->ny), sizeof (float), "GMT_nc_grd_info");
-		for (i = 0; i < header->nx; i++) tmp[i] = (float) (header->x_min + (i + 0.5 * header->node_offset) * header->x_inc);
+		for (i = 0; i < header->nx; i++) tmp[i] = (float) GMT_i_to_x (i, header->x_min, header->x_max, header->x_inc, 0.5 * header->node_offset, header->nx);
 		check_nc_status (nc_put_var_float (ncid, x_id, tmp));
-		for (i = 0; i < header->ny; i++) tmp[i] = (float) (dummy[0] + (i + 0.5 * header->node_offset) * header->y_inc * header->y_order);
+		if (header->y_order > 0) {
+			for (i = 0; i < header->ny; i++) tmp[i] = (float) GMT_i_to_x (i, header->y_min, header->y_max, header->y_inc, 0.5 * header->node_offset, header->ny);
+		}
+		else {
+			for (i = 0; i < header->ny; i++) tmp[i] = (float) GMT_j_to_y (i, header->y_min, header->y_max, header->y_inc, 0.5 * header->node_offset, header->ny);
+		}
 		check_nc_status (nc_put_var_float (ncid, y_id, tmp));
 		GMT_free ((void *)tmp);
 	}
@@ -445,15 +440,15 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	switch (GMT_grdformats[header->type][1]) {
 		case 'b':
 			if (GMT_is_dnan (header->nan_value)) header->nan_value = CHAR_MIN;
-			limit[0] = CHAR_MIN - 0.5; limit[1] = CHAR_MAX + 0.5;
+			limit[0] = CHAR_MIN - 0.5, limit[1] = CHAR_MAX + 0.5;
 			z_type = NC_BYTE; break;
 		case 's':
 			if (GMT_is_dnan (header->nan_value)) header->nan_value = SHRT_MIN;
-			limit[0] = SHRT_MIN - 0.5; limit[1] = SHRT_MAX + 0.5;
+			limit[0] = SHRT_MIN - 0.5, limit[1] = SHRT_MAX + 0.5;
 			z_type = NC_SHORT; break;
 		case 'i':
 			if (GMT_is_dnan (header->nan_value)) header->nan_value = INT_MIN;
-			limit[0] = INT_MIN - 0.5; limit[1] = INT_MAX + 0.5;
+			limit[0] = INT_MIN - 0.5, limit[1] = INT_MAX + 0.5;
 			z_type = NC_INT; break;
 		case 'f':
 			check = !GMT_is_dnan (header->nan_value);
@@ -540,12 +535,11 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 
 	GMT_free ((void *)k);
 
-	if (header->z_min <= header->z_max) {
-		limit[0] = header->z_min; limit[1] = header->z_max;
-	}
+	if (header->z_min <= header->z_max)
+		limit[0] = header->z_min, limit[1] = header->z_max;
 	else {
 		fprintf (stderr, "%s: Warning: No valid values in grid [%s]\n", GMT_program, header->name);
-		limit[0] = 0.0; limit[1] = 0.0;
+		limit[0] = 0.0, limit[1] = 0.0;
 	}
        	check_nc_status (nc_put_att_double (header->ncid, header->z_id, "actual_range", z_type, 2, limit));
 
