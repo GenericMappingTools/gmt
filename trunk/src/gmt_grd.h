@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.16 2005-12-17 05:59:21 pwessel Exp $
+ *	$Id: gmt_grd.h,v 1.17 2006-01-08 15:54:06 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -78,7 +78,7 @@ struct GRD_HEADER {
 	Assume x_min = y_min = 0 and x_max = y_max = 10 and x_inc = y_inc = 1.
 	For a normal node grid we have:
 		(1) nx = (x_max - x_min) / x_inc + 1 = 11
-		    ny = (y_max - y_min) / y_inc + 1 = 1
+		    ny = (y_max - y_min) / y_inc + 1 = 11
 		(2) node # 0 is at (x,y) = (x_min, y_max) = (0,10) and represents the surface
 		    value in a box with dimensions (1,1) centered on the node.
 	For a pixel grid we have:
