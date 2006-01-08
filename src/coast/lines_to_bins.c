@@ -1,5 +1,5 @@
 /*
- *	$Id: lines_to_bins.c,v 1.3 2004-09-10 23:24:48 pwessel Exp $
+ *	$Id: lines_to_bins.c,v 1.4 2006-01-08 05:13:24 pwessel Exp $
  */
 /* lines_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -91,7 +91,7 @@ main (int argc, char **argv)
 	B_WIDTH = (MILL * BSIZE) / 60;			/* Bin width in micro-degrees */
 	SHORT_FACTOR = (65535.0 / (double)B_WIDTH);	/* This must be a double.  converts microdegrees to short units  */ 
 
-	GMT_begin (argc, argv);
+	argc = GMT_begin (argc, argv);
 	
 	fp_in = fopen (argv[1], "r");
 

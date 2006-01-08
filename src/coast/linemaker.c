@@ -1,5 +1,5 @@
 /*
- *	$Id: linemaker.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: linemaker.c,v 1.2 2006-01-08 05:13:24 pwessel Exp $
  */
 /*
  *
@@ -50,7 +50,7 @@ main (int argc, char **argv)
 	
 	FILE *fp_bin, *fp_seg, *fp_pt;
 	
-	GMT_begin (argc, argv);
+	argc = GMT_begin (argc, argv);
 
 	if (argc != 2) {
 		fprintf (stderr, "usage: linemaker shore_prefix\n");

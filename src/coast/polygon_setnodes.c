@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setnodes.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_setnodes.c,v 1.2 2006-01-08 05:13:24 pwessel Exp $
  */
 /* polygon_setnodes is run on the final polygon file when all polygons
  * have had their level determined.  This program will determine
@@ -39,7 +39,7 @@ main (int argc, char **argv)
 	}
 	full = (argc != 4);
 
-	GMT_begin (argc, argv);
+	argc = GMT_begin (argc, argv);
 	
 	/* Grdfile will be grid registered so lon = 0 and 360 will be separate nodes.
 	   We must make sure we update both lons */

@@ -1,5 +1,5 @@
 /*
- *	$Id: shoremaker.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: shoremaker.c,v 1.2 2006-01-08 05:13:24 pwessel Exp $
  */
 /*
  *
@@ -29,7 +29,7 @@ char **argv; {
 	struct GMT3_BIN_HEADER bin_head;
 	struct SEGMENT_HEADER seg_head;
 	
-	GMT_begin (argc, argv);
+	argc = GMT_begin (argc, argv);
 
 	if (argc != 2) {
 		fprintf (stderr, "usage: shoremaker shore_prefix\n");
