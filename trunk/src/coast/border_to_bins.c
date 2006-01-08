@@ -1,5 +1,5 @@
 /*
- *	$Id: border_to_bins.c,v 1.3 2004-09-10 23:24:48 pwessel Exp $
+ *	$Id: border_to_bins.c,v 1.4 2006-01-08 05:13:24 pwessel Exp $
  */
 /* border_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -91,7 +91,7 @@ char **argv; {
 	
 	fprintf (stderr, "border_to_bins: Getting rank %d\n", this_level);
 
-	GMT_begin (argc, argv);
+	argc = GMT_begin (argc, argv);
 	
 	fp_in = fopen (argv[1], "r");
 

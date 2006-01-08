@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_bins.c,v 1.4 2004-09-13 17:46:16 pwessel Exp $
+ *	$Id: polygon_to_bins.c,v 1.5 2006-01-08 05:13:24 pwessel Exp $
  */
 #include "wvs.h"
 
@@ -80,7 +80,7 @@ main (int argc, char **argv) {
 		exit (-1);
 	}
 	
-	GMT_begin (argc, argv);
+	argc = GMT_begin (argc, argv);
 	
 	BSIZE = atoi (argv[2]);
 	if (! (BSIZE == 1 || BSIZE == 2 || BSIZE == 5 || BSIZE == 10 || BSIZE == 20)) {
