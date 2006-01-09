@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-#	$Id: do_examples.csh,v 1.5 2004-05-26 03:25:22 pwessel Exp $
+#	$Id: do_examples.csh,v 1.6 2006-01-09 21:51:46 remko Exp $
 #
 # csh script to test all GMT examples (csh versions).
 # If one argument is passed it is assumed to be the
@@ -67,9 +67,11 @@ foreach dir (01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 2
 	if (-e ex${dir}/job${dir}.csh ) then
 		echo -n "Doing example ${dir}..."
 		cd ex${dir}
+		cp ../.gmtdefaults4.doc .gmtdefaults4
 		csh -f job${dir}.csh
-		echo "done"
+		rm -f .gmtdefaults4
 		cd ..
+		echo "done"
 	endif
 end
 
