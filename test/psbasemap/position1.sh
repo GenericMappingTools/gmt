@@ -5,8 +5,9 @@ font=0	# Helvetica
 #font=4	# Times-Roman
 #font=8	# Courier
 #font=15	# AvantGardeDemi
+psbasemap="psbasemap --ANNOT_FONT_SIZE=24p --ANNOT_FONT=$font --BASEMAP_AXES=WESN"
 
-psbasemap --ANNOT_FONT_SIZE=24p --ANNOT_FONT=$font -JX8i/5i -R0/12/0/12 -B1g1/1g1SW -K > $ps
+$psbasemap -JX8i/5i -R0/12/0/12 -B1g1/1g1SW -K > $ps
 pstext -R -J -O -K >> $ps <<%
  1 1 24 0 $font BR 1
  1 2 24 0 $font BC 1
@@ -56,7 +57,7 @@ pstext -Wgreen -R -J -O -K >> $ps <<%
  6 9 24 0 $font MR oo
 10 9 24 0 $font TR oo
 %
-psbasemap --ANNOT_FONT_SIZE=24p --ANNOT_FONT=$font -J -R0/1.2/0/1.2 -B0.1/0.1NE -O >> $ps
+$psbasemap -J -R0/1.2/0/1.2 -B0.1/0.1NE -O >> $ps
 
 rm -f .gmtcommands4
 
