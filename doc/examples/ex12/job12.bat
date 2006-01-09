@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 12
 REM
-REM		$Id: job12.bat,v 1.6 2004-09-29 01:29:02 pwessel Exp $
+REM		$Id: job12.bat,v 1.7 2006-01-09 21:51:46 remko Exp $
 REM
 REM Purpose:	Illustrates Delaunay triangulation of points, and contouring
 REM GMT progs:	makecpt, minmax, pscontour, pstext, psxy, triangulate
@@ -14,7 +14,7 @@ set master=y
 if exist job12.bat set master=n
 if %master%==y cd ex12
 triangulate table_5.11 -M > net.xy
-psxy -R0/6.5/-0.2/6.5 -JX3.06i/3.15i -B2f1WSNe -M net.xy -W0.5p -P -K -Y4.65i > example_12.ps
+psxy -R0/6.5/-0.2/6.5 -JX3.06i/3.15i -B2f1WSNe -M net.xy -W0.5p -P -K -X0.9i -Y4.65i > example_12.ps
 psxy table_5.11 -R -J -O -K -Sc0.12i -Gwhite -W0.25p >> example_12.ps
 gawk "{print $1, $2, 6, 0, 0, 6, NR-1}" table_5.11 | pstext -R -J -O -K >> example_12.ps
 REM
