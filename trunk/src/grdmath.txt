@@ -3,7 +3,7 @@
 grdmath \- Reverse Polish Notation calculator for grd files
 .SH SYNOPSIS
 \fBgrdmath\fP [ \fB\-F\fP ] [ \fB\-I\fP\fIxinc\fP[\fBm|c\fP][/\fIyinc\fP[\fBm|c\fP]] 
-\fB\-R\fP\fIwest/east/south/north\fP \fB\-V\fP] 
+\fB\-R\fP\fIwest/east/south/north\fP \fB\-V\fP] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ] 
 \fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] \fBOPERATOR\fP ... \fB=\fP \fIoutgrdfile\fP
 .SH DESCRIPTION
 \fBgrdmath\fP will perform operations like add, subtract, multiply, and divide on one or more grd files or constants using
@@ -51,6 +51,7 @@ Select pixel registration (used with \fB\-R, \-I\fP).  [Default is grid registra
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 #include "explain_-V.txt"
+#include "explain_-f.txt"
 .SH BEWARE
 (1) The operator \fBSDIST\fP calculates spherical distances bewteen the (lon, lat)
 point on the stack and all node positions in the grid.  The grid domain
