@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.37 2005-12-27 23:36:43 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.38 2006-01-09 20:32:20 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -58,7 +58,7 @@
 #define ECKERT6		10006
 #define GRINTEN		10007
 
-#define MAPPING ((project_info.projection > 5 && project_info.projection != POLAR) || project_info.degree[0])	/* TRUE when map projections are used */
+#define MAPPING (project_info.degree[0] && project_info.degree[1])	/* TRUE when map projections are used */
 #define CYLINDRICAL (project_info.projection >= 10 && project_info.projection < 100)
 #define AZIMUTHAL (project_info.projection >= 100 && project_info.projection < 1000)
 #define CONICAL (project_info.projection >= 1000 && project_info.projection < 10000)

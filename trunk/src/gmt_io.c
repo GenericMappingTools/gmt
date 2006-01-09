@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.91 2005-12-27 03:10:13 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.92 2006-01-09 20:32:20 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2559,7 +2559,7 @@ int GMT_points_init (char *file, double **xp, double **yp, double **dp, double d
 
 		x[i] = in[0];	y[i] = in[1];
 		d[i] = (ascii && n_expected_fields >= 3 && dist == 0.0) ? in[2] : dist;
-		if (MAPPING) {
+		if (project_info.degree[0]) {
 			if (greenwich  && x[i] > 180.0) x[i] -= 360.0;
 			if (!greenwich && x[i] < 0.0)   x[i] += 360.0;
 		}

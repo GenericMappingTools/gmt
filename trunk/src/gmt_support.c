@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.211 2006-01-04 23:02:39 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.212 2006-01-09 20:32:20 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7366,7 +7366,6 @@ int GMT_prepare_label (double angle, int side, double x, double y, int type, dou
 		if (type == 1 && !(side%2)) return -1;
 	}
 
-	/* if (gmtdefs.oblique_annotation & 2 && !(side%2)) angle = -90.0; */	/* GMT_get_label_parameters will make this 0 */
 	if (gmtdefs.oblique_annotation & 16 && !(side%2)) angle = -90.0;	/* GMT_get_label_parameters will make this 0 */
 
 	if (angle < 0.0) angle += 360.0;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.158 2006-01-04 21:37:26 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.159 2006-01-09 20:32:20 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -352,7 +352,6 @@ void GMT_linear_map_boundary (double w, double e, double s, double n)
 	ps_command ("PSL_x PSL_dimx 2 div sub PSL_y PSL_H_y add M");
 	ps_setfont (gmtdefs.header_font);
 	ps_text (0.0, 0.0, -gmtdefs.header_font_size, frame_info.header, 0.0, 0, 0);
-
 }
 
 void GMT_xy_axis (double x0, double y0, double length, double val0, double val1, struct PLOT_AXIS *A, int below, int annotate)
@@ -380,7 +379,7 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 
 	axis = A->item[0].parent;
 	if ((check_annotation = GMT_two_annot_items(axis))) {					/* Must worry about annotation overlap */
-		GMT_get_primary_annot (A, &primary, &secondary);					/* Find primary and secondary axis items */
+		GMT_get_primary_annot (A, &primary, &secondary);				/* Find primary and secondary axis items */
 		np = GMT_coordinate_array (val0, val1, &A->item[primary], &knots_p);		/* Get all the primary tick annotation knots */
 	}
 	if (axis == 1) below = !below;
@@ -433,7 +432,7 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 			ps_segment (x, 0.0, x, tick_len[k]);
 		}
 
-		do_annot = ((k < GMT_TICK_UPPER && annotate) && !(T->unit == 'r'));	/* Cannot annotate a Gregorian week */
+		do_annot = ((k < GMT_TICK_UPPER && annotate && !project_info.degree[axis]) && !(T->unit == 'r'));	/* Cannot annotate a Gregorian week */
 		if (do_annot) {	/* Then do annotations too - here just set text height/width parameters in PostScript */
 
 			annot_pos = GMT_lower_axis_item(k);							/* 1 means lower annotation, 0 means upper (close to axis) */
@@ -460,7 +459,7 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 
 	/* Now do annotations, if requested */
 
-	for (k = 0; annotate && k < GMT_TICK_UPPER; k++) {	/* For each one of the 6 axis items (gridlines are done separately) */
+	for (k = 0; annotate && !project_info.degree[axis] && k < GMT_TICK_UPPER; k++) {	/* For each one of the 6 axis items (gridlines are done separately) */
 
 		T = &A->item[k];					/* Get pointer to this item */
 		if (!T->active) continue;				/* Don't want this item plotted - goto next item */
@@ -497,7 +496,7 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 
 	/* Finally do axis label */
 
-	if (A->label[0] && annotate) {
+	if (A->label[0] && annotate && !project_info.degree[axis]) {
 		ps_set_length ("PSL_x", 0.5 * length);
 		ps_textdim ("PSL_dimx", "PSL_dimy", gmtdefs.label_font_size, gmtdefs.label_font, A->label, 0);				/* Get and set string dimensions in PostScript */
 		ps_command ("PSL_x PSL_L_y M");				/* Move to new anchor point */
@@ -1731,9 +1730,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	BOOLEAN full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual;
 	PFI GMT_outside_save = VNULL;
 
-	if (!(MAPPING)) {
-		if (project_info.projection != POLAR) return;	/* Annotations and header already done by linear_axis */
-	}
+	if (!(project_info.degree[0] || project_info.degree[1] || project_info.projection == POLAR)) return;	/* Annotations and header already done by GMT_linear_map_boundary */
 
 	ps_setpaint (gmtdefs.basemap_frame_rgb);
 	GMT_world_map_save = GMT_world_map;
@@ -1828,7 +1825,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 		remove[1] = (dy[0] < (1.0/60.0)) ? 2 : 1;
 	}
 	for (k = 0; k < 1 + dual; k++) {
-		if (dx[k] > 0.0) {	/* Annotate the S and N boundaries */
+		if (dx[k] > 0.0 && (project_info.degree[0] || project_info.projection == POLAR)) {	/* Annotate the S and N boundaries */
 			done_Greenwich = done_Dateline = FALSE;
 			do_minutes = (fabs (fmod (dx[k], 1.0)) > SMALL);
 			do_seconds = (fabs (60.0 * fmod (fmod (dx[k], 1.0) * 60.0, 1.0)) >= 1.0);
@@ -1856,7 +1853,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 			if (nx) GMT_free ((void *)val);
 		}
 
-		if (dy[k] > 0.0) {	/* Annotate W and E boundaries */
+		if (dy[k] > 0.0 && (project_info.degree[1] || project_info.projection == POLAR)) {	/* Annotate W and E boundaries */
 			int lonlat;
 
 			if (MAPPING) {
