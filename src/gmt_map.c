@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.101 2006-01-04 23:29:35 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.102 2006-01-09 20:32:20 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -587,39 +587,37 @@ void GMT_map_setup (double west, double east, double south, double north)
 		exit (EXIT_FAILURE);
 	}
 
-	if (MAPPING) {	/* Special checks only applicable to geographic coordinates */
-		if (project_info.degree[0]) {
-			if (west < 0.0 && east < 0.0) {
-				while (west < 0.0) west += 360.0;
-				while (east < 0.0) east += 360.0;
-			}
-			else if (east < west)
-				east += 360.0;
+	if (project_info.degree[0]) {
+		if (west < 0.0 && east < 0.0) {
+			while (west < 0.0) west += 360.0;
+			while (east < 0.0) east += 360.0;
+		}
+		else if (east < west)
+			east += 360.0;
 
-			if ((fabs (east - west) - 360.0) > SMALL) {
-				fprintf (stderr, "%s: GMT Fatal Error: Region exceeds 360 degrees!\n", GMT_program);
-				exit (EXIT_FAILURE);
-			}
+		if ((fabs (east - west) - 360.0) > SMALL) {
+			fprintf (stderr, "%s: GMT Fatal Error: Region exceeds 360 degrees!\n", GMT_program);
+			exit (EXIT_FAILURE);
 		}
-		if (project_info.got_elevations) {
-			if (south < 0.0 || south >= 90.0) {
-				fprintf (stderr, "%s: GMT Fatal Error: \"South\" (min elevation) (%g) outside 0-90 degree range!\n", GMT_program, south);
-				exit (EXIT_FAILURE);
-			}
-			if (north <= 0.0 || north > 90.0) {
-				fprintf (stderr, "%s: GMT Fatal Error: \"North\" (max elevation) (%g) outside 0-90 degree range!\n", GMT_program, north);
-				exit (EXIT_FAILURE);
-			}
+	}
+	if (project_info.got_elevations) {
+		if (south < 0.0 || south >= 90.0) {
+			fprintf (stderr, "%s: GMT Fatal Error: \"South\" (min elevation) (%g) outside 0-90 degree range!\n", GMT_program, south);
+			exit (EXIT_FAILURE);
 		}
-		else if (project_info.degree[1]) {
-			if (south < -90.0 || south > 90.0) {
-				fprintf (stderr, "%s: GMT Fatal Error: South (%g) outside +-90 degree range!\n", GMT_program, south);
-				exit (EXIT_FAILURE);
-			}
-			if (north < -90.0 || north > 90.0) {
-				fprintf (stderr, "%s: GMT Fatal Error: North (%g) outside +-90 degree range!\n", GMT_program, north);
-				exit (EXIT_FAILURE);
-			}
+		if (north <= 0.0 || north > 90.0) {
+			fprintf (stderr, "%s: GMT Fatal Error: \"North\" (max elevation) (%g) outside 0-90 degree range!\n", GMT_program, north);
+			exit (EXIT_FAILURE);
+		}
+	}
+	if (project_info.degree[1]) {
+		if (south < -90.0 || south > 90.0) {
+			fprintf (stderr, "%s: GMT Fatal Error: South (%g) outside +-90 degree range!\n", GMT_program, south);
+			exit (EXIT_FAILURE);
+		}
+		if (north < -90.0 || north > 90.0) {
+			fprintf (stderr, "%s: GMT Fatal Error: North (%g) outside +-90 degree range!\n", GMT_program, north);
+			exit (EXIT_FAILURE);
 		}
 	}
 

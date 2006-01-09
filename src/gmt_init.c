@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.205 2006-01-04 21:37:26 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.206 2006-01-09 20:32:20 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3916,6 +3916,7 @@ int GMT_map_getproject (char *args)
 	 			error = TRUE;
 			if (project_info.got_elevations) args[j] = 'r';	/* Put the r back in the argument */
 			if (project_info.got_azimuths) project_info.pars[1] = -project_info.pars[1];	/* Because azimuths go clockwise */
+			project_info.degree[0] = project_info.degree[1] = FALSE;
 	 		project = POLAR;
 	 		break;
 
