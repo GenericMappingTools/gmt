@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.159 2006-01-09 20:32:20 remko Exp $
+ *	$Id: gmt_plot.c,v 1.160 2006-01-10 19:19:05 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -48,8 +48,6 @@
  *	GMT_basemap_3D :		Plots 3-D basemap
  *	GMT_geoplot :			As ps_plot, but using lon/lat directly
  *	GMT_fill :			Convenience function for ps_imagefill
- *	GMT_get_angle :			Sub function to get annotation angles
- *	GMT_get_annot_label :		Construct degree/minute label
  *	GMT_conic_map_boundary :	Plot basemap for conic projections
  *	GMT_linear_map_boundary :	Plot basemap for Linear projections
  *	GMT_linearx_grid :		Draw linear x grid lines
@@ -1856,7 +1854,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 		if (dy[k] > 0.0 && (project_info.degree[1] || project_info.projection == POLAR)) {	/* Annotate W and E boundaries */
 			int lonlat;
 
-			if (MAPPING) {
+			if (project_info.degree[1]) {
 				do_minutes = (fabs (fmod (dy[k], 1.0)) > SMALL);
 				do_seconds = (fabs (60.0 * fmod (fmod (dy[k], 1.0) * 60.0, 1.0)) >= 1.0);
 				lonlat = 1;
