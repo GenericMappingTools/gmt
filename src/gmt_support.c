@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.212 2006-01-09 20:32:20 remko Exp $
+ *	$Id: gmt_support.c,v 1.213 2006-01-10 19:22:24 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,13 +43,15 @@
  *	GMT_bcr_init		Initialize structure for bicubic interpolation
  *	GMT_delaunay		Performs a Delaunay triangulation
  *	GMT_epsinfo		Fill out info need for PostScript header
+ *	GMT_get_annot_label 	Construct degree/minute label
+ *	GMT_get_annot_offset	Return offset in inches for text annotation
  *	GMT_get_bcr_z		Get bicubic interpolated value
  *	GMT_get_bcr_nodal_values	Supports -"-
  *	GMT_get_bcr_cardinals	  	    "
  *	GMT_get_bcr_ij		  	    "
  *	GMT_get_bcr_xy		 	    "
  *	GMT_get_index		Return color table entry for given z
- *	GMT_get_format :	Find # of decimals and create format string
+ *	GMT_get_format		Find # of decimals and create format string
  *	GMT_get_rgb24		Return rgb for given z
  *	GMT_get_plot_array	Allocate memory for plotting arrays
  *	GMT_getfill		Decipher and check fill argument
@@ -58,10 +60,10 @@
  *	GMT_getrgb		Decipher and check color argument
  *	GMT_init_fill		Initialize fill attributes
  *	GMT_init_pen		Initialize pen attributes
- *	GMT_grd_init :		Initialize grd header structure
- *	GMT_grd_shift :		Rotates grdfiles in x-direction
- *	GMT_grd_setregion :	Determines subset coordinates for grdfiles
- *	GMT_getpathname :	Prepend directory to file name
+ *	GMT_grd_init 		Initialize grd header structure
+ *	GMT_grd_shift 		Rotates grdfiles in x-direction
+ *	GMT_grd_setregion 	Determines subset coordinates for grdfiles
+ *	GMT_getpathname		Prepend directory to file name
  *	GMT_hsv_to_rgb		Convert HSV to RGB
  *	GMT_illuminate		Add illumination effects to rgb
  *	GMT_intpol		1-D interpolation
@@ -73,7 +75,7 @@
  *	GMT_smooth_contour	Use Akima's spline to smooth contour
  *	GMT_start_trace		Subfunction used by GMT_trace_contour
  *	GMT_trace_contour	Function that trace the contours in GMT_contours
- *	GMT_polar_adjust :		Adjust label justification for polar projection
+ *	GMT_polar_adjust	Adjust label justification for polar projection
  */
  
 #define GMT_WITH_NO_PS
@@ -7419,7 +7421,7 @@ void GMT_get_annot_label (double val, char *label, int do_minutes, int do_second
 					letter = (fabs (val) < GMT_CONV_LIMIT) ? 0 : 'W';
 					break;
 				default:
-					letter = (fabs (val) < GMT_CONV_LIMIT || fabs (val - 180.0) < GMT_CONV_LIMIT) ? 0 : ((val < 0.0) ? 'W' : 'E');
+					letter = (fabs (val) < GMT_CONV_LIMIT || fabs (val - 180.0) < GMT_CONV_LIMIT || fabs (val + 180.0) < GMT_CONV_LIMIT) ? 0 : ((val < 0.0) ? 'W' : 'E');
 					break;
 			}
 		}
