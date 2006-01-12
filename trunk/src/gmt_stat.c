@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.34 2005-12-17 05:59:22 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.35 2006-01-12 06:31:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2101,11 +2101,11 @@ double	GMT_atanh (double x) {
 
 #endif
 
-int GMT_median (double *x, int n, double xmin, double xmax, double m_initial, double *med)
+int GMT_median (double *x, size_t n, double xmin, double xmax, double m_initial, double *med)
 {
 	double	lower_bound, upper_bound, m_guess, t_0, t_1, t_middle;
 	double	lub, glb, xx, temp;
-	int	i, n_above, n_below, n_equal, n_lub, n_glb;
+	size_t	i, n_above, n_below, n_equal, n_lub, n_glb;
 	int	finished = FALSE;
 	int	iteration = 0;
 
@@ -2214,11 +2214,11 @@ int GMT_median (double *x, int n, double xmin, double xmax, double m_initial, do
 	return (iteration);
 }
 
-int GMT_median_f (float *x, int n, double xmin, double xmax, double m_initial, double *med)
+int GMT_median_f (float *x, size_t n, double xmin, double xmax, double m_initial, double *med)
 {
 	double	lower_bound, upper_bound, m_guess, t_0, t_1, t_middle;
 	double	lub, glb, xx, temp;
-	int	i, n_above, n_below, n_equal, n_lub, n_glb;
+	size_t	i, n_above, n_below, n_equal, n_lub, n_glb;
 	int	finished = FALSE;
 	int	iteration = 0;
 
@@ -2327,9 +2327,10 @@ int GMT_median_f (float *x, int n, double xmin, double xmax, double m_initial, d
 	return (iteration);
 }
 
-int GMT_mode (double *x, int n, int j, int sort, int mode_selection, int *n_multiples, double *mode_est)
+int GMT_mode (double *x, size_t n, size_t j, int sort, int mode_selection, int *n_multiples, double *mode_est)
 {
-	int	i, istop, multiplicity;
+	size_t	i, istop;
+	int multiplicity;
 	double	mid_point_sum = 0.0, length, short_length = DBL_MAX, this_mode;
 
 	if (n == 0) return (0);
@@ -2381,9 +2382,10 @@ int GMT_mode (double *x, int n, int j, int sort, int mode_selection, int *n_mult
 	return (0);
 }
 
-int GMT_mode_f (float *x, int n, int j, int sort, int mode_selection, int *n_multiples, double *mode_est)
+int GMT_mode_f (float *x, size_t n, size_t j, int sort, int mode_selection, int *n_multiples, double *mode_est)
 {
-	int	i, istop, multiplicity;
+	size_t	i, istop;
+	int multiplicity;
 	double	mid_point_sum = 0.0, length, short_length = FLT_MAX, this_mode;
 
 	if (n == 0) return (0);
@@ -2436,12 +2438,12 @@ int GMT_mode_f (float *x, int n, int j, int sort, int mode_selection, int *n_mul
 
 /* Replacement slower functions until we figure out the problem with the algorithm */
 
-void GMT_getmad (double *x, int n, double location, double *scale)
+void GMT_getmad (double *x, size_t n, double location, double *scale)
 {
-	int i;
+	size_t i;
 	double *dev, med;
 
-	dev = (double *) GMT_memory (VNULL, (size_t)n, sizeof(double), GMT_program);
+	dev = (double *) GMT_memory (VNULL, n, sizeof(double), GMT_program);
 	for (i = 0; i < n; i++) dev[i] = fabs (x[i] - location);
 	qsort ((void *)dev, (size_t)n, sizeof (double), GMT_comp_double_asc);
 	for (i = n; GMT_is_dnan (dev[i-1]) && i > 1; i--);
@@ -2453,13 +2455,13 @@ void GMT_getmad (double *x, int n, double location, double *scale)
 	*scale = 1.4826 * med;
 }
 
-void GMT_getmad_f (float *x, int n, double location, double *scale)
+void GMT_getmad_f (float *x, size_t n, double location, double *scale)
 {
-	int i;
+	size_t i;
 	float *dev;
 	double med;
 
-	dev = (float *) GMT_memory (VNULL, (size_t)n, sizeof(float), GMT_program);
+	dev = (float *) GMT_memory (VNULL, n, sizeof(float), GMT_program);
 	for (i = 0; i < n; i++) dev[i] = (float) fabs ((double)(x[i] - location));
 	qsort ((void *)dev, (size_t)n, sizeof (float), GMT_comp_float_asc);
 	for (i = n; GMT_is_fnan (dev[i-1]) && i > 1; i--);
@@ -2598,7 +2600,7 @@ void GMT_getmad_f_BROKEN (float *x, int n, double location, double *scale)
 	*scale = (n%2) ? (1.4826 * error) : (0.7413 * (error + last_error));
 }
 
-double GMT_extreme (double x[], int n, double x_default, int kind, int way)
+double GMT_extreme (double x[], size_t n, double x_default, int kind, int way)
 {
 	/* Returns the extreme value in the x array according to:
 	*  kind: -1 means only consider negative values.
@@ -2610,7 +2612,7 @@ double GMT_extreme (double x[], int n, double x_default, int kind, int way)
 	* If kind == 0 we expect x_default to be set so that x[0] will reset x_select.
 	*/
 
-	int i, k;
+	size_t i, k;
 	double x_select = GMT_d_NaN;
 
 	for (i = k = 0; i < n; i++) {
@@ -2665,13 +2667,13 @@ double GMT_chebyshev (double x, int n)
 	return (t);
 }
 
-double GMT_corrcoeff (double *x, double *y, int n, int mode)
+double GMT_corrcoeff (double *x, double *y, size_t n, int mode)
 {
 	/* Returns plain correlation coefficient, r.
 	 * If mode = 1 we assume mean(x) = mean(y) = 0.
 	 */
 
-	int i, n_use;
+	size_t i, n_use;
 	double xmean = 0.0, ymean = 0.0, dx, dy, vx, vy, vxy, r;
 	
 	if (mode == 0) {
@@ -2682,8 +2684,8 @@ double GMT_corrcoeff (double *x, double *y, int n, int mode)
 			n_use++;
 		}
 		if (n_use == 0) return (GMT_d_NaN);
-		xmean /= n_use;	
-		ymean /= n_use;
+		xmean /= (double)n_use;	
+		ymean /= (double)n_use;
 	}
 	
 	vx = vy = vxy = 0.0;
@@ -2700,13 +2702,13 @@ double GMT_corrcoeff (double *x, double *y, int n, int mode)
 	return (r);
 }
 
-double GMT_corrcoeff_f (float *x, float *y, int n, int mode)
+double GMT_corrcoeff_f (float *x, float *y, size_t n, int mode)
 {
 	/* Returns plain correlation coefficient, r.
 	 * If mode = 1 we assume mean(x) = mean(y) = 0.
 	 */
 
-	int i, n_use;
+	size_t i, n_use;
 	double xmean = 0.0, ymean = 0.0, dx, dy, vx, vy, vxy, r;
 	
 	if (mode == 0) {
@@ -2717,8 +2719,8 @@ double GMT_corrcoeff_f (float *x, float *y, int n, int mode)
 			n_use++;
 		}
 		if (n_use == 0) return (GMT_d_NaN);
-		xmean /= n_use;	
-		ymean /= n_use;
+		xmean /= (double)n_use;	
+		ymean /= (double)n_use;
 	}
 	
 	vx = vy = vxy = 0.0;
