@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_math.h,v 1.15 2005-12-17 05:59:22 pwessel Exp $
+ *	$Id: gmt_math.h,v 1.16 2006-01-12 06:31:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -252,7 +252,7 @@ EXTERN_MSC double GMT_rand(void);
 EXTERN_MSC double GMT_nrand(void);
 EXTERN_MSC double GMT_lrand(void);
 EXTERN_MSC double GMT_chebyshev(double x, int n);
-EXTERN_MSC double GMT_corrcoeff (double *x, double *y, int n, int mode);
-EXTERN_MSC double GMT_corrcoeff_f (float *x, float *y, int n, int mode);
+EXTERN_MSC double GMT_corrcoeff (double *x, double *y, size_t n, int mode);
+EXTERN_MSC double GMT_corrcoeff_f (float *x, float *y, size_t n, int mode);
 
 #endif /* _GMT_MATH_H */
