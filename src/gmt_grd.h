@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.17 2006-01-08 15:54:06 remko Exp $
+ *	$Id: gmt_grd.h,v 1.18 2006-01-16 22:40:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -96,8 +96,8 @@ struct GRD_HEADER {
  * match the sense of truncation used for x) then we revert to row number increasing down
  * by flipping: j = ny - 1 - j' */
 
-#define GMT_x_to_i(x,x0,idx,off,nx) ((int)floor((((x) - (x0)) * (idx)) - (off)))
-#define GMT_y_to_j(y,y0,idy,off,ny) ((ny) - 1 - (int)floor((((y) - (y0)) * (idy)) - (off)))
+#define GMT_x_to_i(x,x0,dx,off,nx) (irint((((x) - (x0)) / (dx)) - (off)))
+#define GMT_y_to_j(y,y0,dy,off,ny) ((ny) - 1 - irint((((y) - (y0)) / (dy)) - (off)))
 #define GMT_i_to_x(i,x0,x1,dx,off,nx) (((i) == ((nx)-1)) ? (x1) - (off) * (dx) : (x0) + ((i) + (off)) * (dx))
 #define GMT_j_to_y(j,y0,y1,dy,off,ny) (((j) == ((ny)-1)) ? (y0) + (off) * (dy) : (y1) - ((j) + (off)) * (dy))
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.103 2006-01-16 21:57:27 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.104 2006-01-16 22:40:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7355,7 +7355,7 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 
 	int i_in, j_in, ij_in, i_out, j_out, ij_out, mx, my;
 	short int *nz;
-	double x_proj, y_proj, I_off, O_off, D_off, z_int, inv_nz, O_idx, O_idy;
+	double x_proj, y_proj, I_off, O_off, z_int, inv_nz;
 	double *x_in, *y_in, *x_in_proj = VNULL, *y_in_proj = VNULL, *x_out, *y_out, *x_out_proj = VNULL, *y_out_proj = VNULL;
 	struct GMT_BCR bcr;
 
@@ -7378,11 +7378,8 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 	x_out = (double *) GMT_memory (VNULL, (size_t)O->nx, sizeof (double), "GMT_grd_forward");
 	y_out = (double *) GMT_memory (VNULL, (size_t)O->ny, sizeof (double), "GMT_grd_forward");
 
-	I_off = (I->node_offset)  ? 0.5 : 0.0;
+	I_off = (I->node_offset) ? 0.5 : 0.0;
 	O_off = (O->node_offset) ? 0.5 : 0.0;
-	D_off = (!O->node_offset)  ? 0.5 : 0.0;
-	O_idx = 1.0 / O->x_inc;
-	O_idy = 1.0 / O->y_inc;
 
 	/* Precalculate grid coordinates */
 
@@ -7424,9 +7421,9 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 
 			/* Here, (x_proj, y_proj) is the projected grid point.  Now find nearest node on the output grid */
 
-			j_out = GMT_y_to_j (y_proj, O->y_min, O_idy, D_off, O->ny);
+			j_out = GMT_y_to_j (y_proj, O->y_min, O->y_inc, O_off, O->ny);
 			if (j_out < 0 || j_out >= O->ny) continue;	/* Outside our grid region */
-			i_out = GMT_x_to_i (x_proj, O->x_min, O_idx, D_off, O->nx);
+			i_out = GMT_x_to_i (x_proj, O->x_min, O->x_inc, O_off, O->nx);
 			if (i_out < 0 || i_out >= O->nx) continue;	/* Outside our grid region */
 
 			/* OK, this projected point falls inside the projected grid's rectangular domain */
