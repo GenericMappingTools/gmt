@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.51 2005-12-27 03:10:13 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.52 2006-01-16 21:40:02 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -72,7 +72,7 @@ int GMT_read_grd_info (char *file, struct GRD_HEADER *header)
 	status = (*GMT_io_readinfo[header->type]) (header);
 	if (!GMT_is_dnan(scale)) header->z_scale_factor = scale, header->z_add_offset = offset;
 	if (!GMT_is_dnan(nan_value)) header->nan_value = nan_value;
-	if (scale == 0.0) fprintf (stderr, "GMT Warning: scale_factor should not be 0.\n");
+	if (header->z_scale_factor == 0.0) fprintf (stderr, "GMT Warning: scale_factor should not be 0.\n");
 	GMT_grd_RI_verify (header, 0);
 
 	header->z_min = header->z_min * header->z_scale_factor + header->z_add_offset;
