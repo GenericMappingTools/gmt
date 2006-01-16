@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.102 2006-01-09 20:32:20 remko Exp $
+ *	$Id: gmt_map.c,v 1.103 2006-01-16 21:57:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1620,8 +1620,8 @@ void GMT_cyleqdist (double lon, double lat, double *x, double *y)
 	/* Convert lon/lat to Cylindrical equidistant x/y */
 
 	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	while (lon < project_info.w) lon += 360.0;
+	while (lon > project_info.e) lon -= 360.0;
 	*x = lon * project_info.q_r;
 	*y = lat * project_info.q_r;
 }
