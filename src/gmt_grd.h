@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.18 2006-01-16 22:40:44 pwessel Exp $
+ *	$Id: gmt_grd.h,v 1.19 2006-01-17 04:09:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -53,6 +53,7 @@ struct GRD_HEADER {
 	int ncid;			/* NetCDF: file ID */
 	int t_index;			/* NetCDF: index of "time" coordinate */
 	double nan_value;		/* Missing value as stored in grid file */
+	double xy_off;			/* 0.0 (node_offset == 0) or 0.5 ( == 1) */
 /* The following elements should not be changed. They are copied verbatim to the native grid header */
 	double x_min;			/* Minimum x coordinate */
 	double x_max;			/* Maximum x coordinate */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.52 2006-01-16 21:40:02 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.53 2006-01-17 04:09:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -77,6 +77,7 @@ int GMT_read_grd_info (char *file, struct GRD_HEADER *header)
 
 	header->z_min = header->z_min * header->z_scale_factor + header->z_add_offset;
 	header->z_max = header->z_max * header->z_scale_factor + header->z_add_offset;
+	header->xy_off = 0.5 * header->node_offset;
 
 	return (status);
 }
@@ -132,6 +133,7 @@ int GMT_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, 
 	GMT_grd_do_scaling (grid, ((header->nx + pad[0] + pad[1]) * (header->ny + pad[2] + pad[3])), header->z_scale_factor, header->z_add_offset);
 	header->z_min = header->z_min * header->z_scale_factor + header->z_add_offset;
 	header->z_max = header->z_max * header->z_scale_factor + header->z_add_offset;
+	header->xy_off = 0.5 * header->node_offset;
 	return (status);
 }
 
@@ -351,9 +353,8 @@ int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s
 
 	int one_or_zero, i, *k;
 	BOOLEAN geo = FALSE;
-	double small,off, half_or_zero, x;
+	double small, half_or_zero, x;
 
-	off = (header->node_offset) ? 0.0 : 0.5;
 	half_or_zero = (header->node_offset) ? 0.5 : 0.0;
 
 	if (*w == 0.0 && *e == 0.0) {	/* Get entire file */
@@ -408,7 +409,7 @@ int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s
 				x += 360.0;
 			else if ((x - header->x_max) > small)
 				x -= 360.0;
-			k[i] = (int) floor (((x - header->x_min) / header->x_inc) + off);
+			k[i] = GMT_x_to_i (x, header->x_min, header->x_inc, half_or_zero, header->nx);
 		}
 	}
 	else {	/* Normal ordering */
