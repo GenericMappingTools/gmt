@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.109 2006-01-05 04:14:50 remko Exp $
+ *	$Id: pslib.c,v 1.110 2006-01-17 13:40:17 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -443,14 +443,13 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	char *colorspace[3] = {"Gray", "RGB", "CMYK"};			/* What kind of image we are writing */
 	char *decode[3] = {"0 1", "0 1 0 1 0 1", "0 1 0 1 0 1 0 1"};	/* What kind of color decoding */
 	char *kind[2] = {"Binary", "Ascii"};				/* What encoding to use */
-	char *type[3] = {"1", "4 /Maskcolor[0]", "1 /Interpolate true"};
+	char *type[3] = {"1", "4 /MaskColor[0]", "1 /Interpolate true"};
 	indexed_image_t image;
 
 	lx = irint (xsize * ps.scale);
 	ly = irint (ysize * ps.scale);
 	id = (ps.cmyk_mode && abs(nbits) == 24) ? 2 : ((abs(nbits) == 24) ? 1 : 0);
 	it = (nx < 0 && abs(nbits) == 24) ? 1 : (nbits < 0 ? 2 : 0); 	/* Colormask or interpolate */
-	nx = abs (nx);
 
 	if ((image = ps_makecolormap (buffer, nx, ny, nbits))) {
 		/* Creation of colormap was successful */
@@ -479,7 +478,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 		fprintf (ps.fp, "/Device%s setcolorspace\n", colorspace[id]);
 
 		if (it == 1) {	/* Do PS Level 3 image type 4 with colormask */
-			fprintf (ps.fp, "<< /ImageType 4 /Maskcolor[%d %d %d]", buffer[0], buffer[1], buffer[2]);
+			fprintf (ps.fp, "<< /ImageType 4 /MaskColor[%d %d %d]", buffer[0], buffer[1], buffer[2]);
 			buffer += 3;
 		}
 		else		/* Do PS Level 2 image, optionally with interpolation */
@@ -508,6 +507,7 @@ void ps_colortiles (double x0, double y0, double xsize, double ysize, unsigned c
 	int i, j, k, rgb[3];
 	double x1, x2, y1, y2, dx, dy, noise, noise2;
 
+	nx = abs(nx);
 	noise = 2.0 / ps.scale;
 	noise2 = 2.0 * noise;
 	dx = xsize / nx;
@@ -3676,6 +3676,7 @@ void ps_stream_dump (unsigned char *buffer, int nx, int ny, int nbits, int compr
 	char *kind_compress[3] = {"", "/RunLengthDecode filter", "/LZWDecode filter"};
 	char *kind_mask[2] = {"", "mask"};
 
+	nx = abs(nx);
 	nbytes = (nbits * nx + 7) / 8 * ny;
 	PSL_len = 0;
 
@@ -4377,6 +4378,7 @@ int ps_bitreduce (unsigned char *buffer, int nx, int ny, int ncolors)
 
 	/* "Compress" bytes line-by-line. The number of bits per line should be multiple of 8 */
 	out = 0;
+	nx = abs(nx);
 	nout = (nx * nbits + 7) / 8;
 	for (j = 0; j < ny; j++) {
 		in = j * nx;
