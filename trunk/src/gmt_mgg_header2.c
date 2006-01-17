@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.10 2005-09-29 19:32:44 remko Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.11 2006-01-17 04:09:10 pwessel Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	This is the README file:
@@ -199,7 +199,6 @@ int mgg2_read_grd_info (struct GRD_HEADER *header)
 
 	if (!strcmp(header->name, "=")) {
 		fp = stdin;
-/*	} else if ((fp = fopen(header->name, "rb")) == NULL) { */
 	} else if ((fp = GMT_fopen(header->name, GMT_io.r_mode)) == NULL) {
 		fprintf(stderr, "GMT Fatal Error: Could not open file %s!\n", header->name);
 		exit (-1);
@@ -239,7 +238,6 @@ int mgg2_write_grd_info (struct GRD_HEADER *header)
 	
 	if (!strcmp(header->name, "=")) {
 		fp = stdout;
-/*	} else if ((fp = fopen(header->name, "wb")) == NULL) {       */
 	} else if ((fp = GMT_fopen(header->name, GMT_io.w_mode)) == NULL) {
 		fprintf(stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
 		exit (-1);
@@ -270,7 +268,7 @@ int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, d
 	int first_col, last_col, first_row, last_row, nm, kk, one_or_zero;
 	int i, j, j2, ij, width_in, width_out, height_in, i_0_out, inc = 1;
 	BOOLEAN piping = FALSE, geo = FALSE;
-	double off, half_or_zero, x, small;
+	double half_or_zero, x, small;
 	long long_offset;	/* For fseek only */
 	
 	if (complex) {
@@ -341,7 +339,6 @@ int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, d
 	if (w < header->x_min || e > header->x_max) geo = TRUE;	/* Dealing with periodic grid */
 	
 	one_or_zero = (header->node_offset) ? 0 : 1;
-	off = (header->node_offset) ? 0.0 : 0.5;
 	
 	/* Get dimension of subregion */
 	
@@ -384,7 +381,7 @@ int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, d
 				x += 360.0;
 			else if ((x - header->x_max) > small)
 				x -= 360.0;
-			k[i] = (int) floor (((x - header->x_min) / header->x_inc) + off);
+			k[i] = GMT_x_to_i (x, header->x_min, header->x_inc, half_or_zero, header->nx);
 		}
 		if (piping)	{ /* Skip data by reading it */
 			for (j = 0; j < first_row; j++) {
@@ -535,7 +532,7 @@ int mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, 
 	int first_col, last_col, first_row, last_row;
 	
 	BOOLEAN geo = FALSE;
-	double off, half_or_zero, small, x;
+	double half_or_zero, small, x;
 	
 	int  *tLong;
 	short *tShort;
@@ -626,7 +623,6 @@ int mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, 
 	if (w < header->x_min || e > header->x_max) geo = TRUE;	/* Dealing with periodic grid */
 	
 	one_or_zero = (header->node_offset) ? 0 : 1;
-	off = (header->node_offset) ? 0.0 : 0.5;
 	
 	/* Get dimension of subregion to write */
 	
@@ -692,7 +688,7 @@ int mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, 
 				x += 360.0;
 			else if ((x - header->x_max) > small)
 				x -= 360.0;
-			k[i] = (int) floor (((x - header->x_min) / header->x_inc) + off);
+			k[i] = GMT_x_to_i (x, header->x_min, header->x_inc, half_or_zero, header->nx);
 		}
 		i2 = first_col + pad[0];
 		for (j = 0, j2 = first_row + pad[3]; j < height_out; j++, j2++) {

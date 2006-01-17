@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.104 2006-01-16 22:40:44 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.105 2006-01-17 04:09:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7122,8 +7122,8 @@ void GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 {	/* Forward projection from geographical to rectangular grid */
 	int i, j, k, ij, ii, jj, i_r, j_r, nm, di, dj, not_used = 0;
 	float *weight_sum;
-	double dr, x_0, y_0, *x, *y, *lon, lat, delta, weight;
-	double dx2 = 0.0, dy2 = 0.0, xinc2 = 0.0, yinc2 = 0.0, i_max_3r, idx, idy;
+	double dr, x_0, y_0, *x, *y, *lon, lat, delta, weight, g_off, r_off;
+	double dx2, dy2, xinc2, yinc2, i_max_3r, idx, idy;
 
 	if (project_info.projection == LINEAR && (project_info.xyz_projection[0] != LINEAR && g_head->ny == r_head->ny) && (project_info.xyz_projection[1] != LINEAR && g_head->nx == r_head->nx)) {
 		GMT_transx_forward (geo, g_head, rect, r_head);						/* First transform the rows */
@@ -7157,30 +7157,28 @@ void GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 	di = (int)ceil (max_radius / r_head->x_inc);
 	dj = (int)ceil (max_radius / r_head->y_inc);
 
-	if (g_head->node_offset) {
-		dx2 = 0.5 * g_head->x_inc;
-		dy2 = 0.5 * g_head->y_inc;
-	}
-	if (r_head->node_offset) {
-		xinc2 = 0.5 * r_head->x_inc;
-		yinc2 = 0.5 * r_head->y_inc;
-	}
+	g_off = (g_head->node_offset) ? 0.5 : 0.0;
+	r_off = (r_head->node_offset) ? 0.5 : 0.0;
+	dx2 = g_off * g_head->x_inc;
+	dy2 = g_off * g_head->y_inc;
+	xinc2 = r_off * r_head->x_inc;
+	yinc2 = r_off * r_head->y_inc;
 	i_max_3r = 3.0 / max_radius;
 	idx = 1.0 / r_head->x_inc;
 	idy = 1.0 / r_head->y_inc;
 	lon = (double *) GMT_memory (VNULL, (size_t)g_head->nx, sizeof (double), "GMT_grd_forward");
 	for (i = 0; i < g_head->nx; i++) {
-		lon[i] = g_head->x_min + i * g_head->x_inc + dx2;
+		lon[i] = GMT_i_to_x (i, g_head->x_min, g_head->x_max, g_head->x_inc, g_off, g_head->nx);
 		if (lon[i] < project_info.w && (lon[i] + 360.0) <= project_info.e) lon[i] += 360.0;
 		if (lon[i] > project_info.e && (lon[i] - 360.0) >= project_info.w) lon[i] -= 360.0;
 	}
 	x = (double *) GMT_memory (VNULL, (size_t)r_head->nx, sizeof (double), "GMT_grd_forward");
 	y = (double *) GMT_memory (VNULL, (size_t)r_head->ny, sizeof (double), "GMT_grd_forward");
-	for (i = 0; i < r_head->nx; i++) x[i] = r_head->x_min + i * r_head->x_inc + xinc2;
-	for (j = 0; j < r_head->ny; j++) y[j] = r_head->y_max - j * r_head->y_inc - yinc2;
+	for (i = 0; i < r_head->nx; i++) x[i] = GMT_i_to_x (i, r_head->x_min, r_head->x_max, r_head->x_inc, r_off, r_head->nx);
+	for (j = 0; j < r_head->ny; j++) y[j] = GMT_j_to_y (j, r_head->y_min, r_head->y_max, r_head->y_inc, r_off, r_head->ny);
 
 	for (j = ij = 0; j < g_head->ny; j++) {
-		lat = g_head->y_max - j * g_head->y_inc - dy2;
+		lat = GMT_j_to_y (j, g_head->y_min, g_head->y_max, g_head->y_inc, g_off, g_head->ny);
 		if (project_info.projection == MERCATOR && fabs (lat) >= 90.0) lat = copysign (89.99, lat);
 		for (i = 0; i < g_head->nx; i++, ij++) {
 			if (GMT_is_fnan (geo[ij])) continue;
@@ -7237,8 +7235,8 @@ void GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 	int i, j, k, ij, ii, jj, i_r, j_r, nm, di, dj, not_used = 0;
 	BOOLEAN greenwich;
 	float *weight_sum;
-	double dr, lat_0, lon_0, *x_0, y_0, *lon, *lat, dlon, x, y, delta, weight;
-	double dx2 = 0.0, dy2 = 0.0, xinc2 = 0.0, yinc2 = 0.0, i_max_3r, idx, idy;
+	double dr, lat_0, lon_0, *x_0, y_0, *lon, *lat, dlon, x, y, delta, weight, g_off, r_off;
+	double dx2, dy2, xinc2, yinc2, i_max_3r, idx, idy;
 
 	if (project_info.projection == MERCATOR && g_head->nx == r_head->nx) {
 		GMT_merc_inverse (geo, g_head, rect, r_head);
@@ -7259,28 +7257,26 @@ void GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 	di = (int)ceil (max_radius / r_head->x_inc);
 	dj = (int)ceil (max_radius / r_head->y_inc);
 
-	if (g_head->node_offset) {
-		dx2 = 0.5 * g_head->x_inc;
-		dy2 = 0.5 * g_head->y_inc;
-	}
-	if (r_head->node_offset) {
-		xinc2 = 0.5 * r_head->x_inc;
-		yinc2 = 0.5 * r_head->y_inc;
-	}
+	g_off = (g_head->node_offset) ? 0.5 : 0.0;
+	r_off = (r_head->node_offset) ? 0.5 : 0.0;
+	dx2 = g_off * g_head->x_inc;
+	dy2 = g_off * g_head->y_inc;
+	xinc2 = r_off * r_head->x_inc;
+	yinc2 = r_off * r_head->y_inc;
 	i_max_3r = 3.0 / max_radius;
 	idx = 1.0 / g_head->x_inc;
 	idy = 1.0 / g_head->y_inc;
 
 	lon = (double *) GMT_memory (VNULL, (size_t)g_head->nx, sizeof (double), "GMT_grd_inverse");
 	lat = (double *) GMT_memory (VNULL, (size_t)g_head->ny, sizeof (double), "GMT_grd_inverse");
-	for (i = 0; i < g_head->nx; i++) lon[i] = g_head->x_min + i * g_head->x_inc + dx2;
-	for (j = 0; j < g_head->ny; j++) lat[j] = g_head->y_max - j * g_head->y_inc - dy2;
+	for (i = 0; i < g_head->nx; i++) lon[i] = GMT_i_to_x (i, g_head->x_min, g_head->x_max, g_head->x_inc, g_off, g_head->nx);
+	for (j = 0; j < g_head->ny; j++) lat[j] = GMT_j_to_y (j, g_head->y_min, g_head->y_max, g_head->y_inc, g_off, g_head->ny);
 	x_0 = (double *) GMT_memory (VNULL, (size_t)r_head->nx, sizeof (double), "GMT_grd_inverse");
-	for (i = 0; i < r_head->nx; i++) x_0[i] = r_head->x_min + i * r_head->x_inc + xinc2;
+	for (i = 0; i < r_head->nx; i++) x_0[i] = GMT_i_to_x (i, r_head->x_min, r_head->x_max, r_head->x_inc, r_off, r_head->nx);
 	greenwich = (g_head->x_min < 0.0);
 
 	for (j = ij = 0; j < r_head->ny; j++) {
-		y_0 = r_head->y_max - j * r_head->y_inc - yinc2;
+		y_0 = GMT_j_to_y (j, r_head->y_min, r_head->y_max, r_head->y_inc, r_off, r_head->ny);
 		for (i = 0; i < r_head->nx; i++, ij++) {
 			if (GMT_is_fnan (rect[ij])) continue;
 
@@ -7498,7 +7494,7 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 void GMT_merc_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head)
 {	/* Forward projection from geographical to mercator grid */
 	int i, j, g_last, r_last;
-	double dy, y, dummy, *lat_in, *lat_out, *hold, *value;
+	double y, dummy, g_off, r_off, *lat_in, *lat_out, *hold, *value;
 
 
 	lat_in = (double *) GMT_memory (VNULL, (size_t)g_head->ny, sizeof (double), "GMT_merc_forward");
@@ -7506,28 +7502,27 @@ void GMT_merc_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struc
 	value = (double *) GMT_memory (VNULL, (size_t)r_head->ny, sizeof (double), "GMT_merc_forward");
 	hold = (double *) GMT_memory (VNULL, (size_t)g_head->ny, sizeof (double), "GMT_merc_forward");
 
+	g_off = (g_head->node_offset) ? 0.5 : 0.0;
+	r_off = (r_head->node_offset) ? 0.5 : 0.0;
 	g_last = g_head->ny - 1;
 	r_last = r_head->ny - 1;
-	dy = (g_head->node_offset) ? 0.5 * g_head->y_inc : 0.0;
-	for (j = 0; j < g_head->ny; j++) lat_in[j] = g_head->y_min + j * g_head->y_inc + dy;
-
-	dy = (r_head->node_offset) ? 0.5 * r_head->y_inc : 0.0;
+	for (j = 0; j < g_head->ny; j++) lat_in[j] = GMT_j_to_y (j, g_head->y_min, g_head->y_max, g_head->y_inc, g_off, g_head->ny);
 
 	for (j = 0; j < r_head->ny; j++) { /* Construct merc y-grid */
-		y = r_head->y_min + j * r_head->y_inc + dy;
+		y = GMT_j_to_y (j, r_head->y_min, r_head->y_max, r_head->y_inc, r_off, r_head->ny);
 		GMT_xy_to_geo (&dummy, &lat_out[j], 0.0, y);
 	}
 
 	/* Make sure new nodes outside border are set to be on border (pixel grid only) */
 
 	j = 0;
-	while (j < r_head->ny && (lat_out[j] - lat_in[0]) < 0.0) lat_out[j++] = lat_in[0];
+	while (j < r_head->ny && (lat_out[j] - lat_in[0]) > 0.0) lat_out[j++] = lat_in[0];
 	j = r_head->ny-1;
-	while (j >= 0 && (lat_out[j] - lat_in[g_last]) > 0.0) lat_out[j--] = lat_in[g_last];
+	while (j >= 0 && (lat_out[j] - lat_in[g_last]) < 0.0) lat_out[j--] = lat_in[g_last];
 	for (i = 0; i < r_head->nx; i++) {	/* r_head->nx must == g_head->nx */
-		for (j = 0; j < g_head->ny; j++) hold[g_last-j] = (double)geo[j*g_head->nx+i];	/* Copy and reverse a column */
+		for (j = 0; j < g_head->ny; j++) hold[j] = (double)geo[j*g_head->nx+i];		/* Copy a column */
 		GMT_intpol (lat_in, hold, g_head->ny, r_head->ny, lat_out, value, gmtdefs.interpolant);
-		for (j = 0; j < r_head->ny; j++) rect[j*r_head->nx+i] = (float)value[r_last-j];	/* Reverse and load new column */
+		for (j = 0; j < r_head->ny; j++) rect[j*r_head->nx+i] = (float)value[j];	/* Load new column */
 	}
 	GMT_free ((void *)lat_in);
 	GMT_free ((void *)lat_out);
@@ -7538,7 +7533,7 @@ void GMT_merc_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struc
 void GMT_merc_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head)
 {	/* Inverse projection from mercator to geographical grid */
 	int i, j, g_last, r_last;
-	double dy, y, dummy, *lat_in, *lat_out, *tmp, *val;
+	double y, dummy, g_off, r_off, *lat_in, *lat_out, *tmp, *val;
 
 	/* Expects uncentered GMT INCHES for this logic to work */
 
@@ -7547,29 +7542,29 @@ void GMT_merc_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struc
 	tmp = (double *) GMT_memory (VNULL, (size_t)g_head->ny, sizeof (double), "GMT_merc_inverse");
 	val = (double *) GMT_memory (VNULL, (size_t)r_head->ny, sizeof (double), "GMT_merc_inverse");
 
+	g_off = (g_head->node_offset) ? 0.5 : 0.0;
+	r_off = (r_head->node_offset) ? 0.5 : 0.0;
 	g_last = g_head->ny - 1;
 	r_last = r_head->ny - 1;
-	dy = (g_head->node_offset) ? 0.5 * g_head->y_inc : 0.0;
-	for (j = 0; j < g_head->ny; j++) lat_in[j] = g_head->y_min + j * g_head->y_inc + dy;
+	for (j = 0; j < g_head->ny; j++) lat_in[j] = GMT_j_to_y (j, g_head->y_min, g_head->y_max, g_head->y_inc, g_off, g_head->ny);
 
-	dy = (r_head->node_offset) ? 0.5 * r_head->y_inc : 0.0;
 	for (j = 0; j < r_head->ny; j++) { /* Construct merc y-grid */
-		y = r_head->y_min + j * r_head->y_inc + dy;
+		y = GMT_j_to_y (j, r_head->y_min, r_head->y_max, r_head->y_inc, r_off, r_head->ny);
 		GMT_xy_to_geo (&dummy, &lat_out[j], 0.0, y);
 	}
 
 	/* Make sure new nodes outside border are set to be on border (pixel grid only) */
 
 	j = 0;
-	while (j < g_head->ny && (lat_in[j] - lat_out[0]) < 0.0) lat_in[j++] = lat_out[0];
+	while (j < g_head->ny && (lat_in[j] - lat_out[0]) > 0.0) lat_in[j++] = lat_out[0];
 	j = g_head->ny-1;
 
-	while (j >= 0 && (lat_in[j] - lat_out[r_last]) > 0.0) lat_in[j--] = lat_out[r_last];
+	while (j >= 0 && (lat_in[j] - lat_out[r_last]) < 0.0) lat_in[j--] = lat_out[r_last];
 
 	for (i = 0; i < g_head->nx; i++) {	/* r_head->nx must == g_head->nx */
-		for (j = 0; j < r_head->ny; j++) val[r_last-j] = (double)rect[j*r_head->nx+i];	/* Copy and reverse a column */
+		for (j = 0; j < r_head->ny; j++) val[j] = (double)rect[j*r_head->nx+i];	/* Copy a column */
 		GMT_intpol (lat_out, val, r_head->ny, g_head->ny, lat_in, tmp, gmtdefs.interpolant);
-		for (j = 0; j < g_head->ny; j++) geo[j*g_head->nx+i] = (float)tmp[g_last-j];	/* Copy and reverse a column */
+		for (j = 0; j < g_head->ny; j++) geo[j*g_head->nx+i] = (float)tmp[j];	/* Load new column */
 	}
 	GMT_free ((void *)lat_in);
 	GMT_free ((void *)lat_out);
@@ -7580,7 +7575,7 @@ void GMT_merc_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struc
 void GMT_transx_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head)
 {	/* Forward projection from linear in x to log10 or pow */
 	int i, ii, j, g_last, r_last;
-	double dx, x, *x_in, *x_out, *hold, *value;
+	double x, g_off, r_off, *x_in, *x_out, *hold, *value;
 
 
 	x_in  = (double *) GMT_memory (VNULL, (size_t)g_head->nx, sizeof (double), "GMT_transx_forward");
@@ -7588,15 +7583,14 @@ void GMT_transx_forward (float *geo, struct GRD_HEADER *g_head, float *rect, str
 	value = (double *) GMT_memory (VNULL, (size_t)r_head->nx, sizeof (double), "GMT_transx_forward");
 	hold  = (double *) GMT_memory (VNULL, (size_t)g_head->nx, sizeof (double), "GMT_transx_forward");
 
+	g_off = (g_head->node_offset) ? 0.5 : 0.0;
+	r_off = (r_head->node_offset) ? 0.5 : 0.0;
 	g_last = g_head->nx - 1;
 	r_last = r_head->nx - 1;
-	dx = (g_head->node_offset) ? 0.5 * g_head->x_inc : 0.0;
-	for (i = 0; i < g_head->nx; i++) x_in[i] = g_head->x_min + i * g_head->x_inc + dx;
-
-	dx = (r_head->node_offset) ? 0.5 * r_head->x_inc : 0.0;
+	for (i = 0; i < g_head->nx; i++) x_in[i] = GMT_i_to_x (i, g_head->x_min, g_head->x_max, g_head->x_inc, g_off, g_head->nx);
 
 	for (i = 0; i < r_head->nx; i++) { /* Construct log10 or pow x-grid */
-		x = r_head->x_min + i * r_head->x_inc + dx;
+		x = GMT_i_to_x (i, r_head->x_min, r_head->x_max, r_head->x_inc, r_off, r_head->nx);
 		GMT_xx_to_x (&x_out[i], x);
 	}
 
@@ -7620,11 +7614,10 @@ void GMT_transx_forward (float *geo, struct GRD_HEADER *g_head, float *rect, str
 	GMT_free ((void *)hold);
 }
 
-
 void GMT_transy_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head)
 {	/* Forward projection from linear in y to log10 or pow */
 	int i, j, jj, g_last, r_last;
-	double dy, y, *y_in, *y_out, *hold, *value;
+	double y, g_off, r_off, *y_in, *y_out, *hold, *value;
 
 
 	y_in  = (double *) GMT_memory (VNULL, (size_t)g_head->ny, sizeof (double), "GMT_transy_forward");
@@ -7632,29 +7625,28 @@ void GMT_transy_forward (float *geo, struct GRD_HEADER *g_head, float *rect, str
 	value = (double *) GMT_memory (VNULL, (size_t)r_head->ny, sizeof (double), "GMT_transy_forward");
 	hold  = (double *) GMT_memory (VNULL, (size_t)g_head->ny, sizeof (double), "GMT_transy_forward");
 
+	g_off = (g_head->node_offset) ? 0.5 : 0.0;
+	r_off = (r_head->node_offset) ? 0.5 : 0.0;
 	g_last = g_head->ny - 1;
 	r_last = r_head->ny - 1;
-	dy = (g_head->node_offset) ? 0.5 * g_head->y_inc : 0.0;
-	for (j = 0; j < g_head->ny; j++) y_in[j] = g_head->y_min + j * g_head->y_inc + dy;
-
-	dy = (r_head->node_offset) ? 0.5 * r_head->y_inc : 0.0;
+	for (j = 0; j < g_head->ny; j++) y_in[j] = GMT_j_to_y (j, g_head->y_min, g_head->y_max, g_head->y_inc, g_off, g_head->ny);
 
 	for (j = 0; j < r_head->ny; j++) { /* Construct log10 or pow y-grid */
-		y = r_head->y_min + j * r_head->y_inc + dy;
+		y = GMT_j_to_y (j, r_head->y_min, r_head->y_max, r_head->y_inc, r_off, r_head->ny);
 		GMT_yy_to_y (&y_out[j], y);
 	}
 
 	/* Make sure new nodes outside border are set to be on border (pixel grid only) */
 
 	j = 0;
-	while (j < r_head->ny && (y_out[j] - y_in[0]) < 0.0) y_out[j++] = y_in[0];
+	while (j < r_head->ny && (y_out[j] - y_in[0]) > 0.0) y_out[j++] = y_in[0];
 	j = r_head->ny-1;
-	while (j >= 0 && (y_out[j] - y_in[g_last]) > 0.0) y_out[j--] = y_in[g_last];
+	while (j >= 0 && (y_out[j] - y_in[g_last]) < 0.0) y_out[j--] = y_in[g_last];
 	for (i = 0; i < r_head->nx; i++) {	/* r_head->nx must == g_head->nx */
-		for (j = 0; j < g_head->ny; j++) hold[g_last-j] = (double)geo[j*g_head->nx+i];	/* Copy a column */
+		for (j = 0; j < g_head->ny; j++) hold[j] = (double)geo[j*g_head->nx+i];	/* Copy a column */
 		GMT_intpol (y_in, hold, g_head->ny, r_head->ny, y_out, value, gmtdefs.interpolant);
 		for (j = 0; j < r_head->ny; j++) {
-			jj = (project_info.xyz_pos[1]) ? r_last - j : j;
+			jj = (project_info.xyz_pos[1]) ? j : r_last - j;
 			rect[j*r_head->nx+i] = (float)value[jj];	/* Load new column */
 		}
 	}

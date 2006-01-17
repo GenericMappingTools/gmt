@@ -6,7 +6,7 @@ psmask \- To clip or mask areas of no data on a map
 \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-B\fP\fItickinfo\fP ]  
 [ \fB\-D\fP\fIdumpfile\fP ] [ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-F\fP ] 
 [ \fB\-G\fP\fIfill\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-K\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP ] [ \fB\-O\fP ] 
-[ \fB\-P\fP ] [ \fB\-S\fP\fIradius\fP[\fBk\fP] ] [ \fB\-T\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
+[ \fB\-P\fP ] [ \fB\-S\fP\fIsearch_radius\fP[\fBm|c|k|K\fP] ] [ \fB\-T\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
 [ \fB\-V\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ]  [ \fB\-:\fP ] 
 [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
 .br
@@ -48,7 +48,7 @@ Force pixel registration.  [Default is grid registration].
 .TP
 .B \-G
 Paint the clip polygons [or tiles] with selected fill [Default is no fill].
-#include "explain_-G_nopattern.txt"
+#include "explain_-G.txt"
 #include "explain_-H.txt"
 Not used with binary data.
 #include "explain_-K.txt"
@@ -61,12 +61,14 @@ Invert the sense of the test, i.e. clip regions where there is data coverage.
 .TP
 .B \-S
 Sets radius of influence. Grid nodes within \fIradius\fP of a data point are considered reliable. [Default is 0, which
-means that only grid cells with data in them are reliable].  Append \fBk\fP to indicate km,
-also implying that \fB\-R\fP and \fB\-I\fP are in degrees.
+means that only grid cells with data in them are reliable].  Append \fBm\fP to indicate minutes
+or \fBc\fP to indicate seconds.  Append \fBk\fP to indicate km (implies \fB\-R\fP and \fB\-I\fP are in degrees, and
+we will use a fast flat Earth approximation to calculate distance).  For more accuracy, use uppercase \fBK\fP
+if distances should be calculated along geodesics.
+However, if the current \fBELLIPSOID\fP is set to Sphere then spherical great circle calculations are used.
 .TP
 .B \-T
-Plot tiles instead of clip polygons (Only works with \fB\-Jx\fP, \fB\-Jj\fP, \fB\-Jm\fP, \fB\-Jq\fP, and \fB\-Jy\fP).
-Use \fB\-G\fP to set tile color.
+Plot tiles instead of clip polygons.  Use \fB\-G\fP to set tile color or pattern.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"

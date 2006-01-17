@@ -4,7 +4,7 @@ grdmask \- Create mask grdfiles from xy paths.
 .SH SYNOPSIS
 \fBgrdmask\fP \fIpathfiles\fP \fB\-G\fP\fImask_grd_file\fP] \fB\-I\fP\fIxinc\fP[\fBm|c\fP][/\fIyinc\fP[\fBm|c\fP]] 
 \fB\-R\fP\fIwest/east/south/north\fP[\fIr\fP] [ \fB\-A\fP ] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-M\fP[\fIflag\fP] ] 
-[ \fB\-N\fP\fIout/edge/in\fP ] [ \fB\-S\fP[\fIradius\fP][\fBk\fP] ] [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
+[ \fB\-N\fP\fIout/edge/in\fP ] [ \fB\-S\fP\fIsearch_radius\fP[\fBm|c|k|K\fP] ] [ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
 [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBgrdmask\fP can operate in 2 different modes. 1. It reads one or more xy-files that each define a closed polygon.
@@ -43,8 +43,11 @@ textstring NaN  [Default is 0/0/1].
 .TP
 .B \-S
 Set nodes depending on their distance from the nearest data point.  Nodes within \fIradius\fP [0] from
-a data point are considered inside.  Append \fBk\fP to indicate map units (e.g., \fB\-R\fP and \fB\-I\fP in
-degrees and \fIradius\fP in km).
+a data point are considered inside.  Append \fBm\fP to indicate minutes
+or \fBc\fP to indicate seconds.  Append \fBk\fP to indicate km (implies \fB\-R\fP and \fB\-I\fP are in degrees, and
+we will use a fast flat Earth approximation to calculate distance).  For more accuracy, use uppercase \fBK\fP
+if distances should be calculated along geodesics.
+However, if the current \fBELLIPSOID\fP is set to Sphere then spherical great circle calculations are used.
 #include "explain_-V.txt"
 #include "explain_-i_binary.txt"
 #include "explain_-n.txt"
