@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.105 2006-01-17 04:09:10 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.106 2006-01-23 05:27:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7939,7 +7939,6 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 			case LAMB_AZ_EQ:
 			case ORTHO:
 			case GNOMONIC:
-			case AZ_EQDIST:
 			case GRINTEN:
 			case STEREO:
 				if (project_info.polar) {
@@ -7973,6 +7972,15 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 						work_x[i] = project_info.r * (1.0 + c);
 						work_y[i] = project_info.r * (1.0 + s);
 					}
+				}
+				break;
+			case AZ_EQDIST:
+				da = TWO_PI / np;
+				for (i = 0; i < np; i++) {
+					angle = i * da;
+					sincos (angle, &s, &c);
+					work_x[i] = project_info.r * (1.0 + c);
+					work_y[i] = project_info.r * (1.0 + s);
 				}
 				break;
 			case MOLLWEIDE:

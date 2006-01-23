@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.40 2006-01-08 15:54:43 remko Exp $
+ *	$Id: gmt_nc.c,v 1.41 2006-01-23 05:27:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -335,8 +335,9 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 	int  ncid;
 	size_t start[3] = {0,0,0}, edge[3] = {1,1,1};
 	int first_col, last_col, first_row, last_row;
-	int i, j, ij, width_in, width_out, height_in, i_0_out, kk, inc = 1;
+	int i, j, width_in, width_out, height_in, i_0_out, inc = 1;
 	int *k, ndims;
+	size_t ij, kk;	/* To allow 64-bit addressing on 64-bit systems */
 	BOOLEAN check;
 	float *tmp = VNULL;
 
@@ -378,9 +379,9 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 	if (ndims == 3 && header->t_index >= 0) start[0] = header->t_index;
 	edge[ndims-1] = header->nx;
 	if (header->y_order < 0)
-		ij = pad[3] * width_out + i_0_out;
+		ij = (size_t)pad[3] * (size_t)width_out + (size_t)i_0_out;
 	else {		/* Flip around the meaning of first and last row */
-		ij = (last_row - first_row + pad[3]) * width_out + i_0_out;
+		ij = ((size_t)last_row - (size_t)first_row + (size_t)pad[3]) * (size_t)width_out + (size_t)i_0_out;
 		j = first_row;
 		first_row = header->ny - 1 - last_row;
 		last_row = header->ny - 1 - j;
@@ -388,7 +389,7 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 	header->z_min =  DBL_MAX;
 	header->z_max = -DBL_MAX;
 
-	for (j = first_row; j <= last_row; j++, ij -= header->y_order * width_out) {
+	for (j = first_row; j <= last_row; j++, ij -= ((size_t)header->y_order * (size_t)width_out)) {
 		start[ndims-2] = j;
 		check_nc_status (nc_get_vara_float (ncid, header->z_id, start, edge, tmp));	/* Get one row */
 		for (i = 0; i < width_in; i++) {	/* Check for and handle NaN proxies */
@@ -427,8 +428,9 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 
 	size_t start[2] = {0,0}, edge[2] = {1,1};
 	int i, inc = 1, *k, nr_oor = 0;
-	int j, ij, width_in, width_out, height_out;
+	int j, width_in, width_out, height_out;
 	int first_col, last_col, first_row, last_row;
+	size_t ij;	/* To allow 64-bit addressing on 64-bit systems */
 	float *tmp_f = VNULL;
 	int *tmp_i = VNULL;
 	BOOLEAN check = FALSE;
@@ -483,7 +485,7 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	/* Set start position for writing grid */
 
 	edge[1] = width_out;
-	ij = first_col + pad[0] + (last_row + pad[3]) * width_in;
+	ij = (size_t)first_col + (size_t)pad[0] + ((size_t)last_row + (size_t)pad[3]) * (size_t)width_in;
 	header->z_min =  DBL_MAX;
 	header->z_max = -DBL_MAX;
 
@@ -491,7 +493,7 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 
 	if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
 		tmp_f = (float *) GMT_memory (VNULL, (size_t)width_in, sizeof (float), "GMT_nc_write_grd");
-		for (j = 0; j < height_out; j++, ij -= width_in) {
+		for (j = 0; j < height_out; j++, ij -= (size_t)width_in) {
 			start[0] = j;
 			for (i = 0; i < width_out; i++) {
 				tmp_f[i] = grid[inc*(ij+k[i])];
@@ -510,7 +512,7 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 
 	else {
 		tmp_i = (int *) GMT_memory (VNULL, (size_t)width_in, sizeof (int), "GMT_nc_write_grd");
-		for (j = 0; j < height_out; j++, ij -= width_in) {
+		for (j = 0; j < height_out; j++, ij -= (size_t)width_in) {
 			start[0] = j;
 			for (i = 0; i < width_out; i++) {
 				value = grid[inc*(ij+k[i])];
