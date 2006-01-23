@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.110 2006-01-17 13:40:17 remko Exp $
+ *	$Id: pslib.c,v 1.111 2006-01-23 04:41:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1547,7 +1547,7 @@ void ps_polygon (double *x, double *y, int n, int rgb[], int outline)
 	if (outline > 0) mode += outline;		/* Convert a, c, or k to b, d, or l */
 	fprintf (ps.fp, "%c\n", mode);
 	if (outline < 0) {
-		fprintf (ps.fp, "\nN U\n%% Clipping is currently OFF\n");
+		if (outline == -1) fprintf (ps.fp, "\nN U\n%% Clipping is currently OFF\n");
 		ps.clip_path_length = 0;
 	}
 }
