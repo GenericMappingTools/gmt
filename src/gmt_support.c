@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.213 2006-01-10 19:22:24 remko Exp $
+ *	$Id: gmt_support.c,v 1.214 2006-01-27 20:50:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7599,11 +7599,17 @@ int GMT_get_label_parameters (int side, double line_angle, int type, double *tex
 	int ok;
 
 	*text_angle = line_angle;
+#ifdef NEW
+	if ( (*text_angle + 90.0) < GMT_CONV_LIMIT) *text_angle += 360.0;
+	if (frame_info.horizontal && !(side%2)) *text_angle += 90.0;
+	if ( (*text_angle - 270.0) > GMT_CONV_LIMIT ) *text_angle -= 360.0;
+	else if ( (*text_angle - 90.0) > GMT_CONV_LIMIT) *text_angle -= 180.0;
+#else
 	if (*text_angle < -90.0) *text_angle += 360.0;
 	if (frame_info.horizontal && !(side%2)) *text_angle += 90.0;
 	if (*text_angle > 270.0 ) *text_angle -= 360.0;
 	else if (*text_angle > 90.0) *text_angle -= 180.0;
-	/* else if (*text_angle >= 90.0) *text_angle -= 180.0; */
+#endif
 
 	if (type == 0 && gmtdefs.oblique_annotation & 2) *text_angle = 0.0;	/* Force horizontal lon annotation */
 	if (type == 1 && gmtdefs.oblique_annotation & 4) *text_angle = 0.0;	/* Force horizontal lat annotation */
