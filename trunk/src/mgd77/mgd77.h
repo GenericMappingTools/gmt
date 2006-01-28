@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.58 2006-01-01 05:48:41 pwessel Exp $
+ *	$Id: mgd77.h,v 1.59 2006-01-28 01:41:53 pwessel Exp $
  * 
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -32,7 +32,7 @@
 #define MGD77_N_DATA_EXTENDED	28		/* The 27 plus time */
 #define MGD77_N_NUMBER_FIELDS	24		/* Original 24 numerical data columns in MGD77 */
 #define MGD77_N_STRING_FIELDS	3		/* Original 3 text data columns in MGD77 */
-
+#define MGD77_N_HEADER_ITEMS	66		/* Number of individual header items in the MGD77 header */
 /* The 28 MGD77 standard types (27 original + 1 conglomerate (time)) */
 #define MGD77_RECTYPE		0
 #define MGD77_TZ		1
@@ -377,6 +377,7 @@ struct MGD77_CONTROL {
 	/* Format-related issues */
 	int time_format;				/* Either GMT_IS_ABSTIME or GMT_IS_RELTIME */
 	/* Data use information */
+	BOOLEAN Want_Header_Item[MGD77_N_HEADER_ITEMS];	/* TRUE means print this header item if dump is selected */
 	BOOLEAN use_flags[MGD77_N_SETS];		/* TRUE means programs will use error bitflags (if present) when returning data */
 	BOOLEAN use_corrections[MGD77_N_SETS];		/* TRUE means we will apply correction factors (if present) when reading data */
 	struct MGD77_ORDER order[MGD77_MAX_COLS];	/* Gives the output order (set, item) of each desired column */
@@ -422,6 +423,8 @@ extern int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER
 extern void MGD77_Free (struct MGD77_DATASET *S);										/* Free memory allocated by MGD77_Read_File/MGD77_Read_Data */
 extern void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F, int option);					/* Decode the -F option specifying the desired columns */
 extern int MGD77_Get_Column (char *word, struct MGD77_CONTROL *F);								/* Get column number from column name (or -1 if not present) */
+extern void MGD77_List_Header_Items (struct MGD77_CONTROL *F);
+extern int MGD77_Select_Header_Item (struct MGD77_CONTROL *F, char *item);
 extern int MGD77_Get_Set (char *abbrev);											/* Returns 0 if abbrev is in the MGD77 set, else 1 */
 extern void MGD77_Fatal_Error (int error);											/* Print message for this error and exit */
 extern BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec);				/* Tests if a record passes all specified logical & exact tests */
