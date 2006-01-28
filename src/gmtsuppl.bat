@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.22 2006-01-01 05:48:41 pwessel Exp $
+REM	$Id: gmtsuppl.bat,v 1.23 2006-01-28 12:09:19 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
@@ -106,12 +106,12 @@ REM ----------------------------------------------------
 cd mgd77
 CL %COPT2% /c mgd77.c
 lib /out:mgd77.lib mgd77.obj
-CL %COPT% mgd77convert.c mgd77.lib %GMTLIB%
-CL %COPT% mgd77info.c	 mgd77.lib %GMTLIB%
-CL %COPT% mgd77list.c	 mgd77.lib %GMTLIB%
-CL %COPT% mgd77manage.c	 mgd77.lib %GMTLIB%
-CL %COPT% mgd77path.c	 mgd77.lib %GMTLIB%
-CL %COPT% mgd77track.c	 mgd77.lib %GMTLIB%
+CL %COPT% mgd77convert.c mgd77.lib %GMTLIB% dirent.lib
+CL %COPT% mgd77info.c	 mgd77.lib %GMTLIB% dirent.lib
+CL %COPT% mgd77list.c	 mgd77.lib %GMTLIB% dirent.lib
+CL %COPT% mgd77manage.c	 mgd77.lib %GMTLIB% dirent.lib
+CL %COPT% mgd77path.c	 mgd77.lib %GMTLIB% dirent.lib
+CL %COPT% mgd77track.c	 mgd77.lib %GMTLIB% dirent.lib
 del *.obj
 move mgd77.lib %LIBDIR%
 move *.exe %BINDIR%

@@ -62,6 +62,8 @@ src/mex/configure
 src/mex/configure.in
 src/mgd77/README.mgd77
 src/mgd77/makefile
+src/mgd77/dirent.h
+src/mgd77/dirent.lib
 src/mgd77/mgd77.c
 src/mgd77/mgd77defaults.h
 src/mgd77/mgd77_IGF_coeffs.h
