@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.96 2006-01-01 05:48:41 pwessel Exp $
+ *	$Id: mgd77.c,v 1.97 2006-01-28 01:41:53 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1161,6 +1161,59 @@ void MGD77_Select_All_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 		}
 	}
 	F->n_out_columns = k;
+}
+
+void MGD77_List_Header_Items (struct MGD77_CONTROL *F)
+{
+	int i;
+	
+	for (i = 0; i < MGD77_N_HEADER_ITEMS; i++) fprintf (stderr, "\t\t%2d. %s\n", i+1, MGD77_Header_Item[i]);
+}
+	
+int MGD77_Select_Header_Item (struct MGD77_CONTROL *F, char *item)
+{
+	int i, id, match, pick[MGD77_N_HEADER_ITEMS];
+	
+	memset ((void *)F->Want_Header_Item, 0, MGD77_N_HEADER_ITEMS * sizeof (BOOLEAN));
+	
+	if (item && item[0] == '-') return 1;	/* Just wants a listing */
+	
+	if (!item || item[0] == '\0' || !strcmp (item, "all")) {	/* No item (or all) selected, select all */
+		for (i = 0; i < MGD77_N_HEADER_ITEMS; i++) F->Want_Header_Item[i] = TRUE;
+		return 0;
+	}
+	
+	/* Check if an item number was given */
+	
+	for (i = match = id = 0; i < (int)strlen (item); i++) if (isdigit ((int)item[i])) match++;
+	if (match == (int)strlen (item) && ((id = atoi (item)) >= 1 && id <= MGD77_N_HEADER_ITEMS)) {
+		F->Want_Header_Item[id] = TRUE;
+		return 0;
+	}
+	
+	/* Now search for matching text strings.  We only look for the first n characters where n is length of item */
+	
+	for (i = match = 0; i < MGD77_N_HEADER_ITEMS; i++) {
+		if (!strncmp (MGD77_Header_Item[i], item, strlen (item))) {
+			pick[match] = id = i;
+			match++;
+		}
+	}
+	
+	if (match == 0) {
+		fprintf (stderr, "%s: ERROR: No header item matched your string %s\n", GMT_program, item);
+		return -1;
+	}
+	if (match > 1) {
+		fprintf (stderr, "%s: ERROR: More than one item matched your string %s:\n", GMT_program, item);
+		for (i = 0; i < match; i++) fprintf (stderr, "	-> %s\n", MGD77_Header_Item[pick[i]]);
+		return -2;
+	}
+	
+	/* Here we have a unique match */
+	
+	F->Want_Header_Item[id] = TRUE;
+	return 0;
 }
 
 int MGD77_Read_File_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)	  /* Will read all MGD77 records in current file */

@@ -3,7 +3,7 @@
 mgd77info \- Get information about MGD77[+] files
 .SH SYNOPSIS
 \fBmgd77info\fP \fINGDC-ids\fP [ \fB\-C\fP[\fBm|e\fP] ] [ \fB\-E\fP[\fBm|e\fP] ] 
-[ \fB\-Hf\fP|\fBr\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-V\fP ]
+[ \fB\-Hf\fP[\fIitem\fP]|\fBr\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBmgd77info\fP reads <legid>.[mgd77|nc] files and produces a single record of information
 about each cruise specified.  The information includes beginning and end times, total
@@ -26,10 +26,13 @@ Append \fBm\fP or \fBe\fP to limit the display to the MGD77 standard or MGD77+ e
 Give a one-line summary for each cruise listed.
 .TP
 .B \-H
-List the header and (if present) the MGD77+ history for each cruise.  Append \fBf\fP to list individual
+List the header and (if present) the MGD77+ history for each cruise.  Append \fBf\fP for
+a formatted display.  This will list individual
 parameters and their values, one entry per output line, in a format
-that can be searched using standard UNIX text tools, or \fBr\fP to see the raw, punchcard-formatted
-MGD77 original header block.
+that can be searched using standard UNIX text tools.  Alternatively, append the name of a particular
+parameter (you only need to give enough characters - starting at the beginning - to uniquely identify
+the item).  Give - to display the list of all parameter names.  You may also specify the number of a parameter.
+For the raw, punchcard-formatted MGD77 original header block, append \fBr\fP instead. 
 .TP
 .B \-I
 Ignore certain data file formats from consideration. Append \fBa|c|t\fP to ignore
@@ -49,10 +52,16 @@ To see the original raw MGD77 header for cruise 01010047.mgd77, run
 \fBmgd77info\fP 01010047 \fB\-Hr\fP
 .br
 .sp
+To determine all the parameters related to Gravity during cruise 01010047.mgd77, run
+.br
+.sp
+\fBmgd77info\fP 01010047 \fB\-Hf\fP | grep Gravity
+.br
+.sp
 To determine the Magnetic sampling rate used during cruise 01010047.mgd77, run
 .br
 .sp
-\fBmgd77info\fP 01010047 \fB\-Hf\fP | grep "Magnetics Sampling Rate"
+\fBmgd77info\fP 01010047 \fB\-Hf\fPMagnetics_Sampling_Rate
 .br
 .sp
 To see all the columns that the MGD77+ cruise 01010047.nc contains, run
