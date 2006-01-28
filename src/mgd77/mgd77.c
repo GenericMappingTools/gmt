@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.99 2006-01-28 11:59:01 pwessel Exp $
+ *	$Id: mgd77.c,v 1.100 2006-01-28 21:29:05 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2100,9 +2100,10 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 			}
 			while ((entry = readdir (dir)) != NULL) {
 				if (length && strncmp (entry->d_name, argv[j], length)) continue;
-				if (n == n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
 				k = strlen (entry->d_name) - 1;
 				while (k && entry->d_name[k] != '.') k--;	/* Strip off file extension */
+				if (k < 8) continue;	/* Not a NGDC 8-char ID */
+				if (n == n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
 				L[n] = (char *)GMT_memory (VNULL, k + 1, sizeof (char), "MGD77_Path_Expand");
 				strncpy (L[n++], entry->d_name, k);
 			}
