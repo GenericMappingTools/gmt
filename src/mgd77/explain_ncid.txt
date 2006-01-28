@@ -1,6 +1,18 @@
 .TP
 \fINGDC-ids\fP
-Can be one or more MGD77 8-character cruise identifiers. To give a list of names, use `cat cruises.lis`.
+Can be one or more of five kinds of specifiers:
+.br
+1) 8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.
+.br
+2) 2-character <agency> codes which will return all cruises from each agency.
+.br
+3) 4-character <agency><vessel> codes, which will return all cruises from those vessels.
+.br
+4) =<list>, where <list> is a table with NGDC IDs, one per line.
+.br
+5) If nothing is specified we return all cruises in the data base.
+.br
+(See the documentation for agency and vessel codes).
 The ".mgd77" or ".nc" extensions will automatically be appended, if needed (use \fB\-I\fP
 to ignore certain file types).  Cruise files will be looked for first in the current directory
 and second in all directories listed in \fB$MGD77_HOME\fP/mgd77_paths.txt [If \fB$MGD77_HOME\fP
