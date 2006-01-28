@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.98 2006-01-28 08:58:16 pwessel Exp $
+ *	$Id: mgd77.c,v 1.99 2006-01-28 11:59:01 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -21,7 +21,11 @@
 #include "mgd77_init.h"
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef _WIN32
+#include "dirent.h"
+#else
 #include <dirent.h>
+#endif
 
 #if defined(WIN32) || defined(__EMX__)  /* Some definitions and includes are different under Windows or OS/2 */
 #define STAT _stat
