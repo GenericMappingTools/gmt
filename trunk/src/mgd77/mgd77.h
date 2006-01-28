@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.59 2006-01-28 01:41:53 pwessel Exp $
+ *	$Id: mgd77.h,v 1.60 2006-01-28 08:58:16 pwessel Exp $
  * 
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -407,29 +407,32 @@ struct MGD77_CARTER {
 
 /* Primary user functions */
 
-extern void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks);							/* Initialize the MGD77 machinery */
-extern void MGD77_Reset (struct MGD77_CONTROL *F);										/* Reset after finishing a file */
-extern int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F);						/* Returns full path to cruise */
-extern int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw);							/* Opens a MGD77[+] file */
+extern void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks);						/* Initialize the MGD77 machinery */
+extern void MGD77_Reset (struct MGD77_CONTROL *F);									/* Reset after finishing a file */
+extern int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***list);				/* Returns the full list of IDs */
+extern void MGD77_Cruise_Explain (void);										/* Explains how to specify IDs */
+extern int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F);					/* Returns full path to cruise */
+extern int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw);						/* Opens a MGD77[+] file */
 extern int MGD77_Close_File (struct MGD77_CONTROL *F);									/* Closes a MGD77[+] file */
-extern int MGD77_Read_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Allocate & Read entire file (selected columns only) */
-extern int MGD77_Write_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Write entire file (all columns) */
-extern int MGD77_Read_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);				/* Read the header record */
-extern int MGD77_Write_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);				/* Write the header record */
-extern int MGD77_Read_Data (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Allocate & Read all data (selected columns only); Header already read */
-extern int MGD77_Write_Data (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Write all data (all columns); Header already written */
-extern int MGD77_Read_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);		/* Read a single data record (selected columns only) */
+extern int MGD77_Read_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);				/* Allocate & Read entire file (selected columns only) */
+extern int MGD77_Write_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);				/* Write entire file (all columns) */
+extern int MGD77_Read_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);			/* Read the header record */
+extern int MGD77_Write_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);			/* Write the header record */
+extern int MGD77_Read_Data (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);				/* Allocate & Read all data (selected columns only); Header already read */
+extern int MGD77_Write_Data (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);				/* Write all data (all columns); Header already written */
+extern int MGD77_Read_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);	/* Read a single data record (selected columns only) */
 extern int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);	/* Write a single data record (selected columns only) */
-extern void MGD77_Free (struct MGD77_DATASET *S);										/* Free memory allocated by MGD77_Read_File/MGD77_Read_Data */
+extern void MGD77_Free (struct MGD77_DATASET *S);									/* Free memory allocated by MGD77_Read_File/MGD77_Read_Data */
 extern void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F, int option);					/* Decode the -F option specifying the desired columns */
-extern int MGD77_Get_Column (char *word, struct MGD77_CONTROL *F);								/* Get column number from column name (or -1 if not present) */
+extern int MGD77_Get_Column (char *word, struct MGD77_CONTROL *F);							/* Get column number from column name (or -1 if not present) */
 extern void MGD77_List_Header_Items (struct MGD77_CONTROL *F);
 extern int MGD77_Select_Header_Item (struct MGD77_CONTROL *F, char *item);
-extern int MGD77_Get_Set (char *abbrev);											/* Returns 0 if abbrev is in the MGD77 set, else 1 */
-extern void MGD77_Fatal_Error (int error);											/* Print message for this error and exit */
+extern int MGD77_Get_Set (char *abbrev);										/* Returns 0 if abbrev is in the MGD77 set, else 1 */
+extern void MGD77_Fatal_Error (int error);										/* Print message for this error and exit */
 extern BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec);				/* Tests if a record passes all specified logical & exact tests */
-extern void MGD77_Set_Unit (char *dist, double *scale, int way);									/* Convert appended distance unit to a numerical scale to give meters */
-extern void MGD77_nc_status (int status);											/* Checks for netCDF errors and aborts with error message */
+extern void MGD77_Set_Unit (char *dist, double *scale, int way);							/* Convert appended distance unit to a numerical scale to give meters */
+extern void MGD77_nc_status (int status);										/* Checks for netCDF errors and aborts with error message */
+extern void MGD77_Process_Ignore (char code, char format);								/* Process the ignre-format option */
 extern void MGD77_Ignore_Format (int format);										/* Dissallow some formats for consideration */
 extern struct MGD77_DATASET *MGD77_Create_Dataset ();									/* Create an empty data set structure */
 extern void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Prepare header before we write */
@@ -441,7 +444,7 @@ extern void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PA
 extern int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);			/* Hardwired read of ascii/MGD77 header */
 extern int MGD77_Read_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);			/* Hardwired read of ascii/MGD77 data record */
 extern int MGD77_Write_Header_Record_m77 (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);			/* Hardwired write of ascii/MGD77 header */
-extern int MGD77_Write_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);			/* Hardwired write of ascii/MGD77 data record */
+extern int MGD77_Write_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);		/* Hardwired write of ascii/MGD77 data record */
 
 /* These are only for developers */
 

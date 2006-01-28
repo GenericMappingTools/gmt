@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.97 2006-01-28 01:41:53 pwessel Exp $
+ *	$Id: mgd77.c,v 1.98 2006-01-28 08:58:16 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -21,6 +21,7 @@
 #include "mgd77_init.h"
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <dirent.h>
 
 #if defined(WIN32) || defined(__EMX__)  /* Some definitions and includes are different under Windows or OS/2 */
 #define STAT _stat
@@ -1606,6 +1607,28 @@ void MGD77_Ignore_Format (int format)
 		MGD77_format_allowed[format] = FALSE;
 }
 
+void MGD77_Process_Ignore (char code, char format)
+{
+	switch (format) {									
+		case 'a':		/* Ignore any files in Standard ASCII MGD-77 format */
+		case 'A':
+			MGD77_Ignore_Format (MGD77_FORMAT_M77);
+			break;
+		case 'c':		/* Ignore any files in Enhanced MGD77+ netCDF format */
+		case 'C':
+			MGD77_Ignore_Format (MGD77_FORMAT_CDF);
+			break;
+		case 't':		/* Ignore any files in Plain ASCII dat table format */
+		case 'T':
+			MGD77_Ignore_Format (MGD77_FORMAT_TBL);
+			break;
+		default:
+			fprintf (stderr, "%s: Option -%c Bad format (%c)!\n", GMT_program, code, format);
+			exit (EXIT_FAILURE);
+			break;
+	}
+}
+
 void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks)
 {
 	/* Initialize MGD77 control system */
@@ -2008,7 +2031,104 @@ void MGD77_Path_Init (struct MGD77_CONTROL *F)
 	GMT_fclose (fp);
 	F->MGD77_datadir = (char **) GMT_memory ((void *)F->MGD77_datadir, (size_t)F->n_MGD77_paths, sizeof (char *), "MGD77_path_init");
 }
+
+void MGD77_Cruise_Explain (void)
+{
+	fprintf (stderr, "\t<cruises> can be one of five kinds of specifiers:\n");
+	fprintf (stderr, "\t1) 8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.\n");
+	fprintf (stderr, "\t2) 2-character <agency> codes which will return all cruises from each agency.\n");
+	fprintf (stderr, "\t3) 4-character <agency><vessel> codes, which will return all cruises from those vessels.\n");
+	fprintf (stderr, "\t4) A single =<list>, where <list> is a table with NGDC IDs, one per line.\n");
+	fprintf (stderr, "\t5) If nothing is specified we return all cruises in the data base.\n");
+	fprintf (stderr, "\t   [See the documentation for agency and vessel codes].\n");
+}
+
+int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***list)
+{
+	/* Traverse the MGD77 directories in search of files matching the given arguments (or get all if none) */
 	
+	int i, k, j, n = 0, flist = 0, length, compare_L (const void *p1, const void *p2);
+	BOOLEAN all;
+	size_t n_alloc = 0;
+	char **L = NULL, line[BUFSIZ];
+	DIR *dir;
+	struct dirent *entry;
+	
+	for (j = 1; j < argc; j++) {	/* First count the number of cruise arguments, if any */
+		if (argv[j][0] == '-') continue;		/* Skip command line options */
+		if (argv[j][0] == '=') flist = j; continue;	/* Specified a file list of files */
+		n++;
+	}
+	
+	all = (flist == 0 && n == 0);	/* If nothing is specified we select everything */
+	n = 0;
+	
+	if (flist) {	/* Just read and return the list of files in the given file list; skip leading = in filename */
+		FILE *fp;
+		if ((fp = GMT_fopen (&argv[flist][1], "r")) == NULL) {
+			fprintf (stderr, "%s: WARNING: Unable to open file list %s\n", GMT_program, &argv[flist][1]);
+			exit (EXIT_FAILURE);
+		}
+		while (fgets (line, BUFSIZ, fp)) {
+			GMT_chop (line);	/* Get rid of CR/LF issues */
+			if (line[0] == '#' || line[0] == '>' || (length = strlen (line)) == 0) continue;	/* Skip comments and blank lines */
+			if (n == n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
+			L[n] = (char *)GMT_memory (VNULL, length+1, sizeof (char), "MGD77_Path_Expand");
+			strcpy (L[n++], line);
+		}
+		GMT_fclose (fp);
+	}
+
+	for (j = 1; j < argc; j++) {
+		if (!all && argv[j][0] == '-') continue;	/* Skip command line options, except first time if all */
+		length = (all) ? 0 : strlen (argv[j]);		/* length == 0 means get all */
+		if (length == 8) {	/* Full NGDC ID length, append to list */
+			if (n == n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
+			L[n] = (char *)GMT_memory (VNULL, 9, sizeof (char), "MGD77_Path_Expand");
+			strcpy (L[n++], argv[j]);
+			continue;
+		}
+		/* Here we have either <agency> or <agency><vessel> code or blank for all */	
+		for (i = 0; i < F->n_MGD77_paths; i++) {	/* Examine all directories */
+			if ((dir = opendir (F->MGD77_datadir[i])) == NULL) {
+				fprintf (stderr, "%s: WARNING: Unable to open directory %s\n", GMT_program, F->MGD77_datadir[i]);
+				continue;
+			}
+			while ((entry = readdir (dir)) != NULL) {
+				if (length && strncmp (entry->d_name, argv[j], length)) continue;
+				if (n == n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
+				k = strlen (entry->d_name) - 1;
+				while (k && entry->d_name[k] != '.') k--;	/* Strip off file extension */
+				L[n] = (char *)GMT_memory (VNULL, k + 1, sizeof (char), "MGD77_Path_Expand");
+				strncpy (L[n++], entry->d_name, k);
+			}
+			closedir (dir);
+		}
+		all = FALSE;	/* all is only TRUE once (or never) inside this loop */
+	}
+	
+	if (n) {	/* Avoid duplicates by sorting and removing them */
+		qsort ((void *)L, (size_t)n, sizeof (char *), compare_L);
+		for (i = j = 1; j < n; j++) {
+			if (i != j) L[i] = L[j];
+			if (strcmp (L[i], L[i-1])) i++;
+		}
+		n = i;
+	}
+	
+	if (n != n_alloc) L = (char **)GMT_memory ((void *)L, n, sizeof (char *), "MGD77_Path_Expand");
+	*list = L;
+	return (n);
+}
+
+int compare_L (const void *p1, const void *p2)
+{	/* Only used in MGD77_Path_Expand */
+	char **a, **b;
+	a = (char **)p1;
+	b = (char **)p2;
+	return (strcmp (*a, *b));
+}
+
 /* MGD77_Get_Path takes a track name as argument and returns the full path
  * to where this data file can be found.  MGD77_path_init must be called first.
  * Return 1 if there is a problem (not found)
