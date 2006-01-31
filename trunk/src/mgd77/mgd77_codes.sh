@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: mgd77_codes.sh,v 1.1 2006-01-31 00:14:49 pwessel Exp $
+#	$Id: mgd77_codes.sh,v 1.2 2006-01-31 00:17:51 pwessel Exp $
 #
 #	Convert the trkdas.cod file into two useable files:
 #	1. mgd77_codes.h for inclusion by mgd77info.c
@@ -15,6 +15,8 @@ n_agencies=`cat $$.1 | wc -l | awk '{printf "%d\n", $1}'`
 n_vessels=`cat $$.2 | wc -l | awk '{printf "%d\n", $1}'`
 awk -F, '{if (NR == "'${n_agencies}'") {printf "%s.\n", $1} else {printf "%s,\n", $1}}' $$.4 > mgd77_codes.txt
 cat << EOF > mgd77_codes.h
+/* Created by mgd77_codes.sh */
+
 #define MGD77_N_AGENCIES ${n_agencies}
 #define MGD77_N_VESSELS ${n_vessels}
 

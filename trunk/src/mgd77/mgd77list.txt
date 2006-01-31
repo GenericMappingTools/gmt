@@ -6,7 +6,7 @@ mgd77list \- A data-extractor for MGD77[+] files
 [ \fB\-Ac|d|f|m\fP\fIcode\fP ] [ \fB\-C\fP\fBf\fP|\fBg\fP|\fBe\fP ] 
 [ \fB\-Da\fP\fIstartdate\fP ] [ \fB\-Db\fP\fIstopdate\fP ] [ \fB\-E\fP ] 
 [ \fB\-H\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-Nd|s\fP\fIunit\fP ] 
-[ \fB\-P\fP\fIcode\fP ] [ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-Sa\fP\fIstartdist\fP[unit] ] 
+[ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-Sa\fP\fIstartdist\fP[unit] ] 
 [ \fB\-Sb\fP\fIstopdist\fP[unit] ] [ \fB\-T\fP[\fBm|e\fP] ]  [ \fB\-V\fP ] 
 [ \fB\-W\fP\fIweight\fP ] [ \fB\-X\fP[\fIcorrtable\fP] ] [ \fB\-Z\fP\fI+\fP|\fB-\fP ] [ \fB\-bo\fP[\fBs|d\fP] ]
 .SH DESCRIPTION
@@ -310,21 +310,6 @@ Issue a multi-segment header record with cruise ID for each cruise.
 Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
 \fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles or miles/hr), or
 \fBn\fP (nautical miles or knots).  [Default is \fB\-Ndk \-Nse\fP (km and m/s)].
-.TP
-.B \-P
-Append a 2-character institution code.  Only files from this institution will be processed.
-The following is the list of NGDC institution codes:
-(01) Lamont-Doherty (LDEO), (02) Woods Hole, (03) NOAA, (04) US Army, (05) New Zealand,
-(06) US Geological Survey, (07) Oregon State U, (08) U of Hawaii (SOEST), (09) US Navy, (10) U of Texas,
-(11) Rice U, (12) Canada, (13) U of Connecticut, (14) U of Miami (RSMAS), (15) Scripps,
-(16) China, (17) U of Rhode Island, (18) Duke U, (19) United Kingdom, (20) U of Washington,
-(22) Western Geophysics, (23) Texas A&M U, (24) Australia, (25) Monaco, (29) Russia, (30) Spain,
-(35) NIMA, (58) Netherlands, (60) US Mineral Management Services, (63) Israel, (67) France, (71) South Africa,
-(75) US Coast Guard, (76) Brazil, (77) International Gravimetric Bureau (83) Germany, (84) New Caledonia (ORSTOM),
-(86) Cuba, (87) Argentina, (88) US NSF, (89) India, (90) Portugal, (92) Finland, (93) Chile,
-(J1) Hydrographic Deptartment Japan, (J2) Geological Survey Japan, (J4) U of Tokyo, (J5) Kobe U, (J7) U of Ryukyus,
-(J8) Oceanographic Data Center, Japan (JODC), (J9) Chiba U, (JA) Institute of Polar Research, Japan,
-(ZZ) Institute not coded.
 #include "explain_-Rgeo.txt"
 .TP
 .B \-Sa
