@@ -3,7 +3,7 @@
 mgd77info \- Get information about MGD77[+] files
 .SH SYNOPSIS
 \fBmgd77info\fP \fINGDC-ids\fP [ \fB\-C\fP[\fBm|e\fP] ] [ \fB\-E\fP[\fBm|e\fP] ] 
-[ \fB\-Hf\fP[\fIitem\fP]|\fBr\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-V\fP ]
+[ \fB\-Hf\fP[\fIitem\fP]|\fBr\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-L\fP[\fBv\fP] [ \fB\-V\fP ]
 .SH DESCRIPTION
 \fBmgd77info\fP reads <legid>.[mgd77|nc] files and produces a single record of information
 about each cruise specified.  The information includes beginning and end times, total
@@ -38,6 +38,13 @@ For the raw, punchcard-formatted MGD77 original header block, append \fBr\fP ins
 Ignore certain data file formats from consideration. Append \fBa|c|t\fP to ignore
 MGD77 ASCII, MGD77+ netCDF, or plain tab-separated ASCII table files, respectively. The option may
 be repreated to ignore more than one format.  [Default ignores none].
+.TP
+.B \-L
+No cruise information is listed.  Instead, we just display a list of the GEODAS institution 2-character codes
+and their names.  Optionally, append \fBv\fP to also display the vessels and their 4-character codes for each
+institution.  The following is the list of institutions:
+.br
+#include "mgd77/mgd77_codes.txt"
 #include "explain_-V.txt"
 .SH EXAMPLES
 To get one-line summary information about the cruises 01010047.mgd77 and 01010008.mgd77, try
