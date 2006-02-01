@@ -336,7 +336,7 @@ useful if the data are to be processed with the weighted averaging techniques of
 .B \-X
 Apply optimal corrections to columns where such corrections are available.  Append the correction
 table to use [Default uses the correction table mgd77_corrections.d in the \fB$MGD77_HOME\fP directory].
-For the format of this file, see the technical documentation for mgd77.
+For the format of this file, see CORRECTIONS below.
 .TP
 .B \-Z
 Append the sign you want for \fBdepth\fP, \fBcarter\fP, and \fBmsd\fP values below sea level
@@ -402,6 +402,43 @@ The equations used are reproduced here using coefficients extracted directly fro
 (3) g = MGD77_IGF67_G0 * [1 + MGD77_IGF67_G1 * sin^2(lat) - MGD77_IGF67_G2 * sin^2(2*lat)]
 .br
 (4) g = MGD77_IGF80_G0 * [(1 + MGD77_IGF80_G1 * sin^2(lat)) / sqrt (1 - MGD77_IGF80_G2 * sin^2(lat))]
+.SH CORRECTIONS
+The correction table is an ASCII file with coefficients and parameters needed to carry out corrections.
+Comment records beginning with # are allowed.
+All correction records are of the form
+.br
+.sp
+\fIcruiseID observation correction\fP
+.br
+.sp
+where \fIcruiseID\fP is a NGDC prefix, \fIobservation\fP is one of the abbreviations for geophysical observations
+listed under \fB\-F\fP above, and \fIcorrection\fP consists of one or more \fIterm\fPs that will be summed up and
+then \fBsubtracted\fP from the observation before output.  Each \fIterm\fP must have this exact syntax:
+.br
+.sp
+\fIfactor\fP[*[\fIfunction\fP]([\fIscale\fP](\fIabbrev\fP[-\fIorigin\fP]))[^\fIpower\fP]]
+.br
+.sp
+where terms in brackets are optional.  No spaces are allowed. The \fIfactor\fP is the amplitude
+of the basis function, while the optional \fIfunction\fP can be one of sin, cos, or exp. The
+optional \fIscale\fP and \fIorigin\fP can be used to translate the argument before giving it to the
+function.  The argument \fIabbrev\fP is one of the abbreviations listed above.  If \fIorigin\fP is
+given as \fBT\fP it means that we should replace it with the value of \fIabbrev\fP for the very
+first record in the file (this is usually only done for \fItime\fP).  If the first record entry is
+NaN we revert \fIorigin\fP to zero.  Optionally, raise the entire expression to the given \fIpower\fP,
+before multiplying by the amplitude.  The following is an example of ficticious corrections to the
+cruise 99999999, implying the depth should have the carter correction removed, faa should have a linear
+trend removed, magnetics should be corrected by a strange dependency on ship heading and latitude, and
+gobs needs to have 10 mGal added (hence given as -10):
+.br
+.sp
+99999999 depth	1.0*((carter))
+.br
+99999999 faa	14.1	1e-5*((time-T))
+.br
+99999999 mag	0.5*cos(0.5*(azim-19))^2	1.0*exp(-1e-3(lat))^1.5
+.br
+99999999 gobs	-10
 .SH "SEE ALSO"
 .IR mgd77convert (GMTMANSECTION),
 .IR mgd77info (GMTMANSECTION),
