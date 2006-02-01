@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.60 2006-01-28 08:58:16 pwessel Exp $
+ *	$Id: mgd77.h,v 1.61 2006-02-01 01:50:01 pwessel Exp $
  * 
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -157,6 +157,8 @@
 #define MGD77_GE		5
 #define MGD77_BIT		6
 #define MGD77_NEQ		8
+
+#define N_AUX	15		/* Number of auxilliary columns in mgd77list */
 
 typedef char byte;	/* Used to indicate 1-byte long integer */
 typedef char* Text;	/* Used to indicate character strings */
@@ -405,6 +407,23 @@ struct MGD77_CARTER {
 	short int carter_correction[N_CARTER_CORRECTIONS];
 };
 
+/* Structures for emphemeral corrections */
+
+struct MGD77_CORRECTION {	/* Holds parameters for one term of a correction for one kind of observation */
+	int id;			/* The id - entry to give us the data column to use*/
+	double factor;		/* Amplitude to multiply the basis function [1] */
+	double origin;		/* Local origin to subtract from argument [0] */
+	double scale;		/* Scale to apply to (value - origin) */
+	double power;		/* Power we should raise the argument to [1] */
+	PFD modifier;		/* Pointer to function that will modify argument */
+	struct MGD77_CORRECTION *next;
+};
+
+struct MGD77_CORRTABLE {
+	struct MGD77_CORRECTION *term;
+};
+
+
 /* Primary user functions */
 
 extern void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks);						/* Initialize the MGD77 machinery */
@@ -481,5 +500,9 @@ extern char *MGD77_suffix[MGD77_N_FORMATS];
 extern BOOLEAN MGD77_format_allowed[MGD77_N_FORMATS];	/* By default we allow opening of files in any format.  See MGD77_Ignore_Format() */
 extern double MGD77_Epoch_zero;
 extern int MGD77_pos[MGD77_N_DATA_EXTENDED];
+
+void MGD77_Parse_Corrtable (struct MGD77_CONTROL *F, char *tablefile, char **cruises, int n_cruises, struct MGD77_CORRTABLE ***CORR);
+void MGD77_Init_Correction (struct MGD77_CORRTABLE *CORR, double **value);
+double MGD77_Correction (struct MGD77_CORRECTION *C, double **value, double *aux, int rec);
 
 #endif	/* _MGD77_H */

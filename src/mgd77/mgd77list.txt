@@ -335,7 +335,8 @@ useful if the data are to be processed with the weighted averaging techniques of
 .TP
 .B \-X
 Apply optimal corrections to columns where such corrections are available.  Append the correction
-table to use [Default uses the correction table in the \fB$MGD77_HOME\fP directory].
+table to use [Default uses the correction table mgd77_corrections.d in the \fB$MGD77_HOME\fP directory].
+For the format of this file, see the technical documentation for mgd77.
 .TP
 .B \-Z
 Append the sign you want for \fBdepth\fP, \fBcarter\fP, and \fBmsd\fP values below sea level

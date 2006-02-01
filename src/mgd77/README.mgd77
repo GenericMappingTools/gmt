@@ -1,9 +1,9 @@
-	$Id: README.mgd77,v 1.7 2005-10-10 02:12:40 pwessel Exp $
+	$Id: README.mgd77,v 1.8 2006-02-01 01:50:01 pwessel Exp $
 
 README file for GMT supplemental mgd77 programs
 
 AUTHORS:	Paul Wessel and Michael Chandler
-DATE:		18-AUG-2004
+DATE:		01-FEB-2006
 INSTALL INFO:	The mgd77 directory should install under GMT/src
 
 	These programs are intended for use with the marine geophysical
@@ -17,7 +17,7 @@ mgd77+ files) can hold additional columns supplied by the user.
 The following is a list of the programs and a short description of what
 they do:
 
-	mgd77convert	A utility to create .mgd77+ files fro MGD77 files
+	mgd77convert	A utility to create .mgd77+ files from MGD77 files
 	mgd77list	A data extractor for .mgd77[+] files
 	mgd77info	An information extractor for .mgd77[+] files
 	mgd77path	Gets the full pathnames for .mgd77[+] files

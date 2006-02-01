@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.101 2006-02-01 00:15:19 pwessel Exp $
+ *	$Id: mgd77.c,v 1.102 2006-02-01 01:50:01 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -60,8 +60,8 @@ int MGD77_Read_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 int MGD77_Write_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *H);
 int MGD77_Read_Data_Record_cdf (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);
 int MGD77_Write_Data_Record_cdf (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);
-int MGD77_Read_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);	  /* Will read a single tabular MGD77 record */
-int MGD77_Write_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);	  /* Will read a single tabular MGD77 record */
+int MGD77_Read_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);	 /* Will read a single tabular MGD77 record */
+int MGD77_Write_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);	 /* Will read a single tabular MGD77 record */
 int MGD77_Write_Header_Record_m77 (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);
 BOOLEAN MGD77_txt_are_constant (char *txt, int n, int width);
 BOOLEAN MGD77_dbl_are_constant (double x[], int n, double limits[2]);
@@ -80,6 +80,10 @@ int MGD77_Convert_To_New_Format (char *line);
 int MGD77_Decode_Header (struct MGD77_HEADER_PARAMS *P, char *record[], int dir);
 void MGD77_Place_Text (int dir, char *struct_member, char *header_record, int start_pos, int n_char);
 BOOLEAN MGD77_entry_in_MGD77record (char *name, int *entry);
+int MGD77_Find_Cruise_ID (char *name, char **cruises, int n_cruises);
+double MGD77_Sind (double z);
+double MGD77_Cosd (double z);
+double MGD77_Copy (double z);
 
 struct MGD77_DATA_RECORD *MGD77Record;
  
@@ -133,7 +137,25 @@ struct MGD77_cdf mgd77cdf[MGD77_N_DATA_EXTENDED] = {
 	{ NC_BYTE,	6,	1.0,	0.0, "", "For cross-referencing with seismic data" },
 	{ NC_DOUBLE,	1,	1.0,	0.0, "seconds since 1970-01-01 00:00:00 0", "GMT Unix time, subtract TZ to get ship local time" }
 };
-	
+
+char *aux_names[N_AUX] = {
+	"year",
+	"month",
+	"day",
+	"hour",
+	"min",
+	"sec",
+	"dist",
+	"azim",
+	"vel",
+	"weight",
+	"drt",
+	"igrf",
+	"carter",
+	"ngrav",
+	"ngdcid",
+};
+
 BOOLEAN MGD77_Strip_Blanks = FALSE;
 
 PFB MGD77_column_test_double[9];
@@ -4006,4 +4028,206 @@ double MGD77_Theoretical_Gravity (double lon, double lat, int version)
 	}
 	
 	return (g);
+}
+
+/* Here lies the core functions used to parse the correction table
+ * and apply the corrections to data before output in mgd77list
+ */
+
+void MGD77_Parse_Corrtable (struct MGD77_CONTROL *F, char *tablefile, char **cruises, int n_cruises, struct MGD77_CORRTABLE ***CORR)
+{
+	/* We seek to make the correction system very flexible, in particular
+	 * since it is difficult to anticipate exactly what systematic trends
+	 * will be detected via crossover analysis etc.  Thus, we build a modular
+	 * system in which various basis functions (1, time, cos(lat), etc) can
+	 * be specified and multiplied with correction constants and added together
+	 * Thus, corrections are coded in the form:
+	 *
+	 * del_z = Factor[0] * pow (conv (scale * (Basis[0] - Origin[0])), Order[0]) +  ...
+	 *
+	 * where conv converts the argument (either none, cos, or sin).
+	 * The number of terms depends on the number of factors given in the table,
+	 * thus we implement this as a chain of structures.
+	 *
+	 * This function is called after we have secured the list of cruises to use,
+	 * thus we pass the list in as an argument so we can determine the id of the
+	 * current cruise.
+	 */
+	
+	int cruise_id, id, i, pos, rec = 0;
+	BOOLEAN skip;
+	char line[BUFSIZ], name[GMT_TEXT_LEN], factor[GMT_TEXT_LEN], origin[GMT_TEXT_LEN], basis[BUFSIZ];
+	char arguments[BUFSIZ], word[BUFSIZ], *p, *f;
+	struct MGD77_CORRTABLE **C_table;
+	struct MGD77_CORRECTION *c, **previous;
+	FILE *fp;
+	
+	if (!tablefile) {	/* Try default correction table */
+		sprintf (line, "%s%cmgd77_corrections.d" , F->MGD77_HOME, DIR_DELIM);
+		if ((fp = GMT_fopen (line, "r")) == NULL) {
+			fprintf (stderr, "%s: No default MGD77 Correction table (%s) found!\n", GMT_program, line);
+			exit (EXIT_FAILURE);
+		}
+	}
+	else if ((fp = GMT_fopen (tablefile, "r")) == NULL) {
+		fprintf (stderr, "%s: Correction table %s not found!\n", GMT_program, tablefile);
+		exit (EXIT_FAILURE);
+	}
+	
+	/* Allocate empty correction table */
+	
+	C_table = (struct MGD77_CORRTABLE **)GMT_memory (VNULL, n_cruises, sizeof (struct MGD77_CORRTABLE *), "MGD77_parse_corrtable");
+	for (cruise_id = 0; cruise_id < n_cruises; cruise_id++) C_table[cruise_id] = (struct MGD77_CORRTABLE *)GMT_memory (VNULL, MGD77_SET_COLS, sizeof (struct MGD77_CORRTABLE), "MGD77_parse_corrtable");
+
+	while (fgets (line, BUFSIZ, fp)) {
+		rec++;
+		GMT_chop (line);	/* Deal with CR/LF issues */
+		if (line[0] == '#' || line[0] == '\0') continue;
+		if (line[0] == '>') {	/* Cruise specified, get ID */
+			sscanf (&line[1], "%s", name);
+			cruise_id = MGD77_Find_Cruise_ID (name, cruises, n_cruises);
+			skip = (cruise_id == -1); /* Not a cruise we are interested in at the moment */
+			continue;
+		}
+		sscanf (line, "%s %[^\0]", name, arguments);
+		if ((id = MGD77_Get_Column (name, F)) == MGD77_NOT_SET) {
+			fprintf (stderr, "%s: Column %s not found - requested by the correction table %s!\n", GMT_program, name, tablefile);
+			exit (EXIT_FAILURE);
+		}
+		pos = 0;
+		previous = &C_table[cruise_id][id].term;
+		while (GMT_strtok (arguments, " ,\t", &pos, word)) {
+			c = (struct MGD77_CORRECTION *)GMT_memory (VNULL, 1, sizeof (struct MGD77_CORRECTION), "MGD77_parse_corrtable");
+			/* Each word p will be of the form factor*[cos|sin]([<scale>](<name>[-<origin>]))[^<power>] */
+			if ((f = strchr (word, '*')) == NULL) {	/* No basis function, just a constant, the intercept term */
+				c->factor = atof (word);
+				c->modifier = (PFD) MGD77_Copy;
+				c->origin = 0.0;
+				c->power = c->scale = 1.0;
+				c->id = -1;	/* Means it is jus a constant factor - no fancy calcuations needed */
+			}
+			else {	/* factor*basis */
+				sscanf (word, "%[^*]*%s", factor, basis);
+				p = basis;
+				c->factor = atof (factor);
+				if (p[0] == 'C' || p[0] == 'c') {	/* Need cosine transformation */
+					c->modifier = (PFD) MGD77_Cosd;
+					p += 3;
+				}
+				else if (p[0] == 'S' || p[0] == 's') {	/* Need sine transformation */
+					c->modifier = (PFD) MGD77_Sind;
+					p += 3;
+				}
+				else if (p[0] == 'E' || p[0] == 'e') {	/* Need exponential transformation */
+					c->modifier = (PFD) exp;
+					p += 3;
+				}
+				else					/* Nothing, just copy value */
+					c->modifier = (PFD) MGD77_Copy;
+				if (p[0] != '(') {
+					fprintf (stderr, "%s: Correction table format error line %d, term = %s: Expected 1st opening parenthesis!\n", GMT_program, rec, arguments);
+					exit (EXIT_FAILURE);
+				}
+				p++;
+				c->scale = (p[0] == '(') ? 1.0 : atof (p);
+				while (p && *p != '(') p++;	/* Skip the opening parentheses */
+				if (p[0] != '(') {
+					fprintf (stderr, "%s: Correction table format error line %d, term = %s: Expected 2nd opening parenthesis!\n", GMT_program, rec, arguments);
+					exit (EXIT_FAILURE);
+				}
+				p++;
+				if (strchr (p, '-')) {	/* Have (value-origin) */
+					sscanf (p, "%[^-]-%[^)])", name, origin);
+					c->origin = (origin[0] == 'T') ? GMT_d_NaN : atof (origin);	/* NaN means first use value in 1st record of the cruise */
+				}
+				else {			/* Just (value), origin == 0.0 */
+					sscanf (p, "%[^)])", name);
+					c->origin = 0.0;
+				}
+				if ((c->id = MGD77_Get_Column (name, F)) == MGD77_NOT_SET) {;	/* Not a regular column, check auxilliaries */
+					for (i = 0; i < N_AUX; i++) if (!strcmp (name, aux_names[i])) c->id = i;
+					if (c->id == MGD77_NOT_SET) { /* Not an auxilliary column either */
+						fprintf (stderr, "%s: Column %s not found - requested by the correction table %s!\n", GMT_program, name, tablefile);
+						exit (EXIT_FAILURE);
+					}
+					c->id += MGD77_MAX_COLS;	/* To flag this is an aux column */
+				}
+				c->power = ((f = strchr (p, '^'))) ? atof ((f+1)) : 1.0;	/* Get specified power or 1 */
+			}
+			*previous = c;			/* Hook to linked list of terms */
+			previous = &((*previous)->next);	/* Get to end of list */
+		}
+	}
+	GMT_fclose (fp);
+	
+	*CORR = C_table;		
+}
+
+void MGD77_Init_Correction (struct MGD77_CORRTABLE *CORR, double **value)
+{	/* Call this once for each cruise to initialize parameter origin */
+	int col;
+	struct MGD77_CORRECTION *current;
+	
+	for (col = 0; col < MGD77_SET_COLS; col++) {
+		for (current = CORR[col].term; current; current = current->next) {
+			if (GMT_is_dnan (current->origin)) current->origin = value[current->id][0];
+			if (GMT_is_dnan (current->origin)) {
+				fprintf (stderr, "%s: Correction origin = T has NaN in 1st record, reset to 0!\n", GMT_program);
+				current->origin = 0.0;
+			}
+		}
+	}
+}
+
+double MGD77_Correction (struct MGD77_CORRECTION *C, double **value, double *aux, int rec)
+{	/* Calculates the correction term for a single observation */
+	double dz = 0.0, z;
+	struct MGD77_CORRECTION *current;
+	
+	for (current = C; current; current = current->next) {
+		if (current->id == -1) {	/* Just a constant */
+			dz = current->factor;
+		}
+		else {
+			z = (current->id >= MGD77_MAX_COLS) ? aux[current->id-MGD77_MAX_COLS] : value[current->id][rec];
+			dz += current->factor * pow ((current->modifier) (current->scale * (z - current->origin)), current->power);
+		}
+	}
+	return (dz);
+}
+
+double MGD77_Copy (double z) {
+	/* Just returns its argument - used when no transformation is selected */
+	return (z);
+}
+
+double MGD77_Cosd (double z) {
+	/* cosine of degrees */
+	return (cos (D2R * z));
+}
+
+double MGD77_Sind (double z) {
+	/* sine of degrees */
+	return (sin (D2R * z));
+}
+
+int MGD77_Find_Cruise_ID (char *name, char **cruises, int n_cruises)
+{
+	int low, high, mid, last = -1, way;
+	
+	low = 0;
+	high = n_cruises;
+	while (low < high) {
+		mid = (low + high) / 2;
+		if (mid == last) return (-1);	/* No such cruise */
+		way = strcmp (name, cruises[mid]);
+		if (way > 0)
+			low = mid;
+		else if (way < 0)
+			high = mid;
+		else 
+			return (mid);
+		last = mid;
+	}
+	return (low);
 }
