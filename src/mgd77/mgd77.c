@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.100 2006-01-28 21:29:05 pwessel Exp $
+ *	$Id: mgd77.c,v 1.101 2006-02-01 00:15:19 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2059,8 +2059,11 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 	struct dirent *entry;
 	
 	for (j = 1; j < argc; j++) {	/* First count the number of cruise arguments, if any */
-		if (argv[j][0] == '-') continue;		/* Skip command line options */
-		if (argv[j][0] == '=') flist = j; continue;	/* Specified a file list of files */
+		if (argv[j][0] == '-') continue;	/* Skip command line options */
+		if (argv[j][0] == '=') {		/* Specified a file list of files */
+			flist = j;
+			continue;
+		}
 		n++;
 	}
 	
