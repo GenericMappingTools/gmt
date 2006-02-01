@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.102 2006-02-01 01:50:01 pwessel Exp $
+ *	$Id: mgd77.c,v 1.103 2006-02-01 10:40:57 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -4052,12 +4052,15 @@ void MGD77_Parse_Corrtable (struct MGD77_CONTROL *F, char *tablefile, char **cru
 	 * This function is called after we have secured the list of cruises to use,
 	 * thus we pass the list in as an argument so we can determine the id of the
 	 * current cruise.
+	 *
+	 * Each record looks like this:
+	 * cruise abbrev term_1 term_2 ... term_n
 	 */
 	
 	int cruise_id, id, i, pos, rec = 0;
 	BOOLEAN skip;
 	char line[BUFSIZ], name[GMT_TEXT_LEN], factor[GMT_TEXT_LEN], origin[GMT_TEXT_LEN], basis[BUFSIZ];
-	char arguments[BUFSIZ], word[BUFSIZ], *p, *f;
+	char arguments[BUFSIZ], cruise[GMT_TEXT_LEN], word[BUFSIZ], *p, *f;
 	struct MGD77_CORRTABLE **C_table;
 	struct MGD77_CORRECTION *c, **previous;
 	FILE *fp;
@@ -4089,7 +4092,8 @@ void MGD77_Parse_Corrtable (struct MGD77_CONTROL *F, char *tablefile, char **cru
 			skip = (cruise_id == -1); /* Not a cruise we are interested in at the moment */
 			continue;
 		}
-		sscanf (line, "%s %[^\0]", name, arguments);
+		sscanf (line, "%s %s %[^\0]", cruise, name, arguments);
+		if ((cruise_id = MGD77_Find_Cruise_ID (cruise, cruises, n_cruises)) == -1) continue; /* Not a cruise we are interested in at the moment */
 		if ((id = MGD77_Get_Column (name, F)) == MGD77_NOT_SET) {
 			fprintf (stderr, "%s: Column %s not found - requested by the correction table %s!\n", GMT_program, name, tablefile);
 			exit (EXIT_FAILURE);
