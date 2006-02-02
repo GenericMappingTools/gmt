@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.19 2006-01-31 20:31:27 remko Exp $
+#	$Id: Makefile,v 1.20 2006-02-02 00:17:14 pwessel Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -29,8 +29,6 @@ LIB_C	= mgd77.c
 LIB_H	= mgd77.h mgd77defaults.h
 LIB_O	= $(LIB_C:.c=.o)
 
-all:		libmgd77.a $(MGD77)
-
 #-------------------------------------------------------------------------------
 #	object file dependencies
 #-------------------------------------------------------------------------------
@@ -43,6 +41,8 @@ $(MGD77_O):	$(MGD77_H)
 $(LIB_O):	$(LIB_H)
 
 #-------------------------------------------------------------------------------
+
+all:		libmgd77.a $(MGD77)
 
 install:	all
 		for i in $(MGD77); do \
