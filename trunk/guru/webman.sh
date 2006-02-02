@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.33 2006-01-02 00:07:16 pwessel Exp $
+#	 $Id: webman.sh,v 1.34 2006-02-02 04:49:52 pwessel Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -299,6 +299,7 @@ packages actually installed on your system will be accessible.
 <H3>The SPOTTER package</H3>
 <UL>
 <LI><A HREF="doc/html/backtracker.html"> backtracker</A> Forward and backward flowlines or hotspot tracks
+<LI><A HREF="doc/html/grdrotator.html"> grdrotator</A> Rotate entire grids using a finite rotation
 <LI><A HREF="doc/html/hotspotter.html"> hotspotter</A> Make CVA grids by convolving flowlines and seamount shapes
 <LI><A HREF="doc/html/originator.html"> originator</A> Associate seamounts with hotspot point sources
 <LI><A HREF="doc/html/rotconverter.html"> rotconverter</A> Manipulate finite and stage rotations
