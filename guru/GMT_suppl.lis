@@ -178,6 +178,9 @@ src/spotter/originator.c
 src/spotter/rotconverter.man
 src/spotter/rotconverter.html
 src/spotter/rotconverter.c
+src/spotter/grdrotater.c
+src/spotter/grdrotater.man
+src/spotter/grdrotater.html
 src/spotter/originator.man
 src/spotter/originator.html
 src/spotter/libspotter.c
