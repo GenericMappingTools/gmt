@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.214 2006-01-27 20:50:01 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.215 2006-02-02 00:17:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -909,7 +909,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 				break;
 		}
 		f = cosd (0.5 * (h->y_max + h->y_min));	/* Latitude scaling of E-W distances */
-		h->x_inc = h->x_inc * s * f / m_pr_degree;
+		h->x_inc = h->x_inc * s / (m_pr_degree * f);
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion implies x_inc = %g\n", GMT_program, h->x_inc);
 		h->nx = irint ((h->x_max - h->x_min) / h->x_inc) + one_or_zero;
 	}
@@ -920,7 +920,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 			if (gmtdefs.verbose) fprintf (stderr, "%s: x_max adjusted to %g\n", GMT_program, h->x_max);
 		}
 	}
-	else if (!GMT_inc_code[0] & GMT_INC_IS_NNODES) {	/* Adjust x_inc to exactly fit west/east */
+	else if (!(GMT_inc_code[0] & GMT_INC_IS_NNODES)) {	/* Adjust x_inc to exactly fit west/east */
 		s = h->x_max - h->x_min;
 		h->nx = irint (s / h->x_inc);
 		f = s / h->nx;
@@ -969,7 +969,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 			if (gmtdefs.verbose) fprintf (stderr, "%s: y_max adjusted to %g\n", GMT_program, h->y_max);
 		}
 	}
-	else if (!GMT_inc_code[1] & GMT_INC_IS_NNODES) {	/* Adjust y_inc to exactly fit south/north */
+	else if (!(GMT_inc_code[1] & GMT_INC_IS_NNODES)) {	/* Adjust y_inc to exactly fit south/north */
 		s = h->y_max - h->y_min;
 		h->ny = irint (s / h->y_inc);
 		f = s / h->ny;
