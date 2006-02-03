@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.53 2006-01-17 04:09:10 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.54 2006-02-03 22:45:21 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -495,7 +495,6 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	else
 		r_w = 1;
 
-	G->header.type = GMT_grd_get_format (file, &G->header);
 	G->scale = G->header.z_scale_factor, G->offset = G->header.z_add_offset;
 	if (GMT_grdformats[G->header.type][0] == 'c') {		/* Open netCDF file, old format */
 		check_nc_status (nc_open (G->header.name, cdf_mode[r_w], &G->fid));
