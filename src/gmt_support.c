@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.215 2006-02-02 00:17:14 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.216 2006-02-03 23:05:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7599,16 +7599,16 @@ int GMT_get_label_parameters (int side, double line_angle, int type, double *tex
 	int ok;
 
 	*text_angle = line_angle;
-#ifdef NEW
-	if ( (*text_angle + 90.0) < GMT_CONV_LIMIT) *text_angle += 360.0;
-	if (frame_info.horizontal && !(side%2)) *text_angle += 90.0;
-	if ( (*text_angle - 270.0) > GMT_CONV_LIMIT ) *text_angle -= 360.0;
-	else if ( (*text_angle - 90.0) > GMT_CONV_LIMIT) *text_angle -= 180.0;
-#else
+#ifdef OPT_WORKS_BADLY
 	if (*text_angle < -90.0) *text_angle += 360.0;
 	if (frame_info.horizontal && !(side%2)) *text_angle += 90.0;
 	if (*text_angle > 270.0 ) *text_angle -= 360.0;
 	else if (*text_angle > 90.0) *text_angle -= 180.0;
+#else
+	if ( (*text_angle + 90.0) < GMT_CONV_LIMIT) *text_angle += 360.0;
+	if (frame_info.horizontal && !(side%2)) *text_angle += 90.0;
+	if ( (*text_angle - 270.0) > GMT_CONV_LIMIT ) *text_angle -= 360.0;
+	else if ( (*text_angle - 90.0) > GMT_CONV_LIMIT) *text_angle -= 180.0;
 #endif
 
 	if (type == 0 && gmtdefs.oblique_annotation & 2) *text_angle = 0.0;	/* Force horizontal lon annotation */
