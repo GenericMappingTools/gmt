@@ -31,7 +31,6 @@ Report grid domain and x/y-increments in world mapping format [Default is generi
 Does not apply to the \fB\-C\fP option.
 .TP
 .B \-I
-.TP
 Report the min/max of the region to the nearest multiple of \fIdx\fP and \fIdy\fP,
 and output this in the form \fB\-R\fP\fIw/e/s/n\fP (unless \fB\-C\fP is set).
 .B \-L1
