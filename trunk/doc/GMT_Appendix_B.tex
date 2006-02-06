@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.17 2005-12-20 17:35:38 remko Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.18 2006-02-06 17:05:16 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2006.
@@ -105,11 +105,13 @@ title				& Title (optional) \\ \hline
 source				& How file was created (optional) \\ \hline
 node\_offset			& 0 for grid line registration (default), 1 for pixel registration \\ \hline
 \multicolumn{2}{|c|}{\emph{$x$- and $y$-variable attributes}} \\ \hline
-long\_name			& Variable name (and unit) (default: ``x'' and ``y'') \\ \hline
+long\_name			& Coordinate name (default: ``Longitude'' and ``Latitude'') \\ \hline
+units				& Unit of the coordinate (default: ``degrees_east'' and ``degrees_north'') \\ \hline
 actual\_range			& Minimum and maximum $x$ and $y$ of region; if absent \\
 (or valid\_range)		& the first and last $x$- and $y$-values are queried \\ \hline
 \multicolumn{2}{|c|}{\emph{$z$-variable attributes}} \\ \hline
-long\_name			& Variable name (and unit) (default: ``z'') \\ \hline
+long\_name			& Name of the variable (default: ``Value'') \\ \hline
+units				& Unit of the variable (no default) \\ \hline
 scale\_factor			& Factor to multiply $z$ with (default: 1) \\ \hline
 add\_offset			& Offset to add to scaled $z$ (default: 0) \\ \hline
 actual\_range			& Minimum and maximum $z$ (optional) \\ \hline
@@ -120,12 +122,13 @@ actual\_range			& Minimum and maximum $z$ (optional) \\ \hline
 \label{tbl:netcdf-format}
 \end{table}
 
-By default, the first 2-D or 3-D variable in a netCDF file will by read as the $z$ variable
+By default, the first 2-dimensional variable in a netCDF file will by read as the $z$ variable
 and the coordinate axes $x$ and $y$ will be determined from the dimensions of the $z$ variable.
 \GMT\ will recognise whether the $y$ (latitude) variable increases or decreases. Both forms of
-data storage are handled appropriately. When the $z$ variable is 3-dimensional, such as
-is the case of longitude-latitude-depth grids, only the first ``layer'' will be loaded.
-For more information on the use of COARDS-compliant netCDF files, read Section~\ref{sec:netcdf}.
+data storage are handled appropriately.
+
+For more information on the use of COARDS-compliant netCDF files, and on how to load
+3- or 4-dimensional grids, read Section~\ref{sec:netcdf}.
 
 \index{grdfile!formats!netCDF|)}
 

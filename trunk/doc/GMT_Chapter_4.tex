@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.75 2005-12-28 23:07:46 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.76 2006-02-06 17:05:16 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -1526,6 +1526,25 @@ When you supply the numerical value for the third variable using ``(\emph{level}
 Note that the question mark, brackets and parentheses have special meanings on Unix-based platforms. Therefore,
 you will need to either \emph{escape} these characters, by placing a backslash in front of them, or place the
 whole file name plus modifiers between single quotes or double quotes.
+
+A similar approach is followed for loading 4-dimensional grids. Consider a 4-dimensional grid with the following
+variables:
+\begin{verbatim}
+	lat(lat): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+	lon(lon): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+	depth(depth): 0, 10, 20, 30, 40, 50, 60, 70, 80, 90
+	time(time): 0, 12, 24, 36, 48
+	pressure(time,depth,lat,lon): (5000 values)
+\end{verbatim}
+To get information on the 10$\times$10 grid of pressure at depth 10 and at time 24, one would use:
+\begin{verbatim}
+	grdinfo "file.nc?pressure[2,1]"
+\end{verbatim}
+or (only in case the coordinates increase linearly):
+\begin{verbatim}
+	grdinfo "file.nc?pressure(10,24)"
+\end{verbatim}
+
 \index{grdfile!formats!netCDF|)}
 
 \section{The NaN data value}
