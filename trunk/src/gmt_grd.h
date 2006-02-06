@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.19 2006-01-17 04:09:10 pwessel Exp $
+ *	$Id: gmt_grd.h,v 1.20 2006-02-06 17:13:49 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -24,8 +24,8 @@
  *
  * Author:	Paul Wessel
  * Date:	26-MAY-1990
- * Revised:	21-OCT-1998
- * Version:	3.4
+ * Revised:	 6-FEB-2006
+ * Version:	4.1
  */
  
 #ifndef _GMT_GRD_H
@@ -51,7 +51,8 @@ struct GRD_HEADER {
 	int y_order;			/* NetCDF: 1 if S->N, -1 if N->S */
 	int z_id;			/* NetCDF: id of z field */
 	int ncid;			/* NetCDF: file ID */
-	int t_index;			/* NetCDF: index of "time" coordinate */
+	int t_index[2];			/* NetCDF: index of higher coordinates */
+	int spare;			/* Space filler */
 	double nan_value;		/* Missing value as stored in grid file */
 	double xy_off;			/* 0.0 (node_offset == 0) or 0.5 ( == 1) */
 /* The following elements should not be changed. They are copied verbatim to the native grid header */
