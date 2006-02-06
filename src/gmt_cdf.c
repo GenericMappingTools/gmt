@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.36 2005-12-27 03:10:13 pwessel Exp $
+ *	$Id: gmt_cdf.c,v 1.37 2006-02-06 16:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -134,15 +134,9 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 	if (job == 'u') check_nc_status (nc_redef (ncid));
 
 	if (job == 'r') {
-		memset ((void *)header->x_units, 0, (size_t)GRD_UNIT_LEN);
-		memset ((void *)header->y_units, 0, (size_t)GRD_UNIT_LEN);
-		memset ((void *)header->z_units, 0, (size_t)GRD_UNIT_LEN);
 		check_nc_status (nc_get_att_text (ncid, x_range_id, "units", header->x_units));
         	check_nc_status (nc_get_att_text (ncid, y_range_id, "units", header->y_units));
 		check_nc_status (nc_get_att_text (ncid, z_range_id, "units", header->z_units));
-		if (!header->x_units[0]) strcpy (header->x_units, "x");	/* Set defaults if nothing given in file */
-		if (!header->y_units[0]) strcpy (header->y_units, "y");
-		if (!header->z_units[0]) strcpy (header->z_units, "z");
         	check_nc_status (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor));
         	check_nc_status (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset));
         	check_nc_status (nc_get_att_int (ncid, z_id, "node_offset", &header->node_offset));
