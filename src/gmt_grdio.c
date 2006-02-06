@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.54 2006-02-03 22:45:21 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.55 2006-02-06 16:09:06 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -64,6 +64,9 @@ int GMT_read_grd_info (char *file, struct GRD_HEADER *header)
 
 	int status;
 	double scale, offset, nan_value;
+
+	/* Initialize grid information */
+	GMT_grd_init (header, 0, (char **)VNULL, FALSE);
 
 	/* Save parameters on file name suffix before issuing GMT_io_readinfo */
 	header->type = GMT_grd_get_format (file, header);
@@ -433,17 +436,17 @@ void GMT_decode_grd_h_info (char *input, struct GRD_HEADER *h) {
 		if (ptr[0] != '=') {
 			switch (entry) {
 				case 0:
-					memset ( (void *)h->x_units, 0, (size_t)80);
+					memset ( (void *)h->x_units, 0, (size_t)GRD_UNIT_LEN);
 					if (strlen(ptr) >= GRD_UNIT_LEN) fprintf (stderr, "%s: GMT WARNING: X unit string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_UNIT_LEN);
 					strncpy (h->x_units, ptr, GRD_UNIT_LEN);
 					break;
 				case 1:
-					memset ( (void *)h->y_units, 0, (size_t)80);
+					memset ( (void *)h->y_units, 0, (size_t)GRD_UNIT_LEN);
 					if (strlen(ptr) >= GRD_UNIT_LEN) fprintf (stderr, "%s: GMT WARNING: Y unit string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_UNIT_LEN);
 					strncpy (h->y_units, ptr, GRD_UNIT_LEN);
 					break;
 				case 2:
-					memset ( (void *)h->z_units, 0, (size_t)80);
+					memset ( (void *)h->z_units, 0, (size_t)GRD_UNIT_LEN);
 					if (strlen(ptr) >= GRD_UNIT_LEN) fprintf (stderr, "%s: GMT WARNING: Z unit string exceeds upper length of %d characters (truncated)\n", GMT_program, GRD_UNIT_LEN);
 					strncpy (h->z_units, ptr, GRD_UNIT_LEN);
 					break;
