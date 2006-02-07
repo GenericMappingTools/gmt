@@ -465,6 +465,12 @@ void \fBps_rotatetrans\fR (\fIx, y, angle\fP)
 Rotates the coordinate system by \fIangle\fP degrees, then translates origin to (\fIx,y\fP).
 .RE
 .IP
+void \fBps_segment\fR (\fIx0, y0, x1, y1\fP)
+.br
+\fBdouble\fR \fIx0, y0, x1, y1;\fP
+.RS 10
+Draws a line segment between the two points using current pen attributes.
+.IP
 void \fBps_setdash\fR (\fIpattern, offset\fP)
 .br
 \fBchar\fR \fI*pattern;\fP
