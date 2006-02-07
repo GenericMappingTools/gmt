@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.52 2006-01-01 05:48:41 pwessel Exp $
+ *	$Id: x2sys.c,v 1.53 2006-02-07 04:33:22 pwessel Exp $
  *
  *      Copyright (c) 1999-2006 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -85,20 +85,14 @@ FILE *x2sys_fopen (char *fname, char *mode)
 	FILE *fp;
 	char file[BUFSIZ];
 
-	if (mode[0] == 'w') {	/* Writing: Do this in X2SYS_HOME */
+	if (mode[0] == 'w') {	/* Writing: Do this only in X2SYS_HOME */
 		x2sys_path (fname, file);
-		if ((fp = fopen (file, mode)) == NULL) {	/* Not in X2SYS_HOME directory either */
-			fprintf (stderr, "x2sys: Error from fopen on %s using mode %s\n", file, mode);
-			exit (EXIT_FAILURE);
-		}
+		fp = fopen (file, mode);
 	}
 	else {			/* Reading: Try both current directory and X2SYS_HOME */
-		if ((fp = fopen (fname, mode)) == NULL) {	/* Not in current directory */
+		if ((fp = fopen (fname, mode)) == NULL) {	/* Not in current directory, try $X2SYS_HOME */
 			x2sys_path (fname, file);
-			if ((fp = fopen (file, mode)) == NULL) {	/* Not in X2SYS_HOME directory either */
-				fprintf (stderr, "x2sys: Error from fopen on %s using mode %s\n", fname, mode);
-				exit (EXIT_FAILURE);
-			}
+			fp = fopen (file, mode);
 		}
 	}
 	return (fp);
@@ -164,9 +158,9 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 			case 'A':	/* ASCII Card Record, must extract columns */
 				if (j == 0) {
 					s->ms_next = FALSE;
-					fgets (line, BUFSIZ, fp);	/* Get new record */
+					if (!fgets (line, BUFSIZ, fp)) return (-1);
 					while (line[0] == '#' || line[0] == s->ms_flag) {
-						fgets (line, BUFSIZ, fp);
+						if (!fgets (line, BUFSIZ, fp)) return (-1);
 						if (s->multi_segment) s->ms_next = TRUE;
 					}
 					GMT_chop (line);	/* Remove trailing CR or LF */
@@ -179,9 +173,9 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 			case 'a':	/* ASCII Record, get all columns directly */
 				k = 0;
 				s->ms_next = FALSE;
-				fgets (line, BUFSIZ, fp);
+				if (!fgets (line, BUFSIZ, fp)) return (-1);
 				while (line[0] == '#' || line[0] == s->ms_flag) {
-					fgets (line, BUFSIZ, fp);
+					if (!fgets (line, BUFSIZ, fp)) return (-1);
 					if (s->multi_segment) s->ms_next = TRUE;
 				}
 				GMT_chop (line);	/* Remove trailing CR or LF */
@@ -329,7 +323,10 @@ struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G)
 	X->ms_flag = '>';	/* Default multisegment header flag */
 	sprintf (line, "%s%c%s.def", X2SYS_HOME, DIR_DELIM, fname);
 
-	fp = x2sys_fopen (line, "r");
+	if ((fp = x2sys_fopen (line, "r")) == NULL) {
+  		fprintf (stderr, "x2sys_initialize : Cannot find format definition file %s in either current or X2SYS_HOME directories\n", line);
+     		exit (EXIT_FAILURE);
+	}
 
 	if (!strcmp (fname, "gmt")) {
 		X->read_file = (PFI) x2sys_read_gmtfile;
@@ -746,8 +743,11 @@ int x2sys_read_list (char *file, char ***list)
 	char **p, line[BUFSIZ], name[GMT_TEXT_LEN];
 	FILE *fp;
 
-	fp = x2sys_fopen (file, "r");
-
+	if ((fp = x2sys_fopen (file, "r")) == NULL) {
+  		fprintf (stderr, "x2sys_initialize : Cannot find track list file %s in either current or X2SYS_HOME directories\n", line);
+		exit (EXIT_FAILURE);
+	}
+	
 	p = (char **) GMT_memory (VNULL, n_alloc, sizeof (char *), "x2sys_read_list");
 
 	while (fgets (line, BUFSIZ, fp)) {
@@ -792,10 +792,11 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 	B->periodic = sfile[0] = suffix[0] = 0;
 
 	sprintf (tag_file, "%s.tag", TAG);
-	if ((fp = x2sys_fopen (tag_file, "r")) == NULL) {
-		fprintf (stderr,"%s: Could not open file %s\n", X2SYS_program, tag_file);
+	if ((fp = x2sys_fopen (tag_file, "r")) == NULL) {	/* Not in current directory */
+		fprintf (stderr,"%s: Could not find/open file %s either in current of X2SYS_HOME directories\n", X2SYS_program, tag_file);
 		exit (EXIT_FAILURE);
 	}
+	
 	while (fgets (line, BUFSIZ, fp) && line[0] == '#');	/* Skip comment records */
 	GMT_chop (line);	/* Remove trailing CR or LF */
 
