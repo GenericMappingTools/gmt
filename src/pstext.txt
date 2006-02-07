@@ -55,9 +55,8 @@ or \fBp\fPoint; if not given we consult \fBMEASURE_UNIT\fP) or % for a percentag
 .B \-D
 Offsets the text from the projected (\fIx,y\fP) point by \fIdx,dy\fP [0/0].
 Use \fB-Dj\fP to offset the text away from the point instead (i.e. the text's justification\"'
-will determine the direction of the shift).  In paragraph mode
-(\fB\-M\fP), one may append \fBv\fP which will draw a line from the original point to the shifted point.
-Optionally append a \fIpen\fP for this line.
+will determine the direction of the shift).  Optionally, append \fBv\fP which will draw a line
+from the original point to the shifted point; append a \fIpen\fP to change the attributes for this line.
 .TP
 .B \-E
 Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
