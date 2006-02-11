@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.106 2006-01-23 05:27:32 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.107 2006-02-11 23:03:33 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6619,6 +6619,7 @@ int GMT_clip_to_map (double *lon, double *lat, int np, double **x, double **y)
 	 * and returns the number of points to be used for plotting (in x,y units) */
 	 
 	int i, n, out, out_x, out_y, np2, total_nx = 0;
+	BOOLEAN polygon;
 	double *xx, *yy;
 
 	/* First check for trivial cases:  All points outside or all points inside */
@@ -6643,8 +6644,9 @@ int GMT_clip_to_map (double *lon, double *lat, int np, double **x, double **y)
 			n = 0;
 		else {	/* All points are outside, but they are not just to one side so lines _may_ intersect the region */
 			n = (*GMT_map_clip) (lon, lat, np, x, y, &total_nx);
+			polygon = (lon[0] == lon[np-1] && lat[0] == lat[np-1]);	/* The following can only be used on closed polygons */
 			/* Polygons that completely contains the -R region will not generate crossings, just duplicate -R box */
-			if (n > 0 && total_nx == 0) {	/* No crossings and all points outside means one of two things: */
+			if (polygon && n > 0 && total_nx == 0) {	/* No crossings and all points outside means one of two things: */
 				/* Either the polygon contains portions of the -R region including corners or it does not.  We pick the corners and check for insidedness: */
 				BOOLEAN ok = FALSE;
 				if (GMT_non_zero_winding (project_info.w, project_info.s, lon, lat, np)) ok = TRUE;		/* TRUE if inside */
