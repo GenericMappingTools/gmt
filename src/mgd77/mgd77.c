@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.103 2006-02-01 10:40:57 pwessel Exp $
+ *	$Id: mgd77.c,v 1.104 2006-02-11 21:21:38 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -356,9 +356,12 @@ int MGD77_Write_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77
 	int error;
 	
 	switch (F->format) {
-		case MGD77_FORMAT_M77:	/* Will read MGD77 headers from MGD77 files or ascii tables */
+		case MGD77_FORMAT_M77:	/* Will write MGD77 headers from MGD77 files or ascii tables */
+			error = MGD77_Write_Header_Record_m77 (file, F, H);
+			break;
 		case MGD77_FORMAT_TBL:
 			error = MGD77_Write_Header_Record_m77 (file, F, H);
+			fprintf (F->fp, "#day\tmonth\tyear\thour\tmin\tsec\tTZ\tlat\t\tlon\t\tptc\ttwt\tdepth\tbcc\tbtc\tmtf1\tmtf2\tmag\tmsens\tdiur\tmsd\tgobs\teot\tfaa\tnqc\tid\tsln\tsspn\n");
 			break;
 		case MGD77_FORMAT_CDF:	/* Will read MGD77 headers from a netCDF file */
 			error = MGD77_Write_Header_Record_cdf (file, F, H);
@@ -432,7 +435,7 @@ int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, do
 
 int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {	/* Applies to MGD77 files */
-	char *MGD77_header[MGD77_N_HEADER_RECORDS];
+	char *MGD77_header[MGD77_N_HEADER_RECORDS], line[BUFSIZ];
 	int sequence, err;
 	struct STAT buf;
 	
@@ -448,9 +451,8 @@ int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MG
 		H->n_records = irint ((double)(buf.st_size - (MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + 1))) / (double)(MGD77_RECORD_LENGTH + 1));
 	}
 	else {
-		char line[BUFSIZ];
 		/* Since we do not know the number of records, we must quickly count lines */
-		while (fgets (line, BUFSIZ, F->fp)) H->n_records++;	/* Count every line */
+		while (fgets (line, BUFSIZ, F->fp)) if (line[0] != '#') H->n_records++;	/* Count every line except comments  */
 		rewind (F->fp);						/* Go back to beginning of file */
 		H->n_records -= MGD77_N_HEADER_RECORDS;			/* Adjust for the 24 records in the header block */
 	}
@@ -461,6 +463,7 @@ int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MG
 		MGD77_header[sequence] = (char *)GMT_memory (VNULL, MGD77_HEADER_LENGTH + 1, sizeof (char), GMT_program);
 		if ((err = MGD77_Read_Header_Sequence (F->fp, MGD77_header[sequence], sequence+1))) return (err);
 	}
+	if (F->format == MGD77_FORMAT_TBL) fgets (line, BUFSIZ, F->fp);			/* Skip the column header for tables */
 	
 	H->mgd77 = (struct MGD77_HEADER_PARAMS *) GMT_memory (VNULL, 1, sizeof (struct MGD77_HEADER_PARAMS), GMT_program);	/* Allocate parameter header */
 	
@@ -684,11 +687,11 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P
 		err[2]++;
 	}
 	if (P->File_Creation_Month[0] && ((i = atoi (P->File_Creation_Month)) < 1 || i > 12)) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-01-10-E: Invalid File Creation Month: Found (%s) : Expected : (  )\n", F->NGDC_id, P->File_Creation_Month);
+		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-01-11-E: Invalid File Creation Month: Found (%s) : Expected : (  )\n", F->NGDC_id, P->File_Creation_Month);
 		err[2]++;
 	}
 	if (P->File_Creation_Day[0] && ((i = atoi (P->File_Creation_Day)) < 1 || i > 31)) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-01-10-E: Invalid File Creation Day: Found (%s) : Expected : (  )\n", F->NGDC_id, P->File_Creation_Day);
+		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-01-12-E: Invalid File Creation Day: Found (%s) : Expected : (  )\n", F->NGDC_id, P->File_Creation_Day);
 		err[2]++;
 	}
 
@@ -735,7 +738,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P
 	strcpy (copy, P->Format_Description);
 	GMT_str_toupper (copy);
 	if (strcmp (copy, "(I1,A8,I3,I4,3I2,F5.3,F8.5,F9.5,I1,F6.4,F6.1,I2,I1,3F6.1,I1,F5.1,F6.0,F7.1,F6.1,F5.1,A5,A6,I1)")) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-10-01-E: Invalid Format Description: Found (%s) : Expected : ((I1,A8,I3,I4,3I2,F5.3,F8.5,F9.5,I1,F6.4,F6.1,I2,I1,3F6.1,I1,F5.1,F6.0,F7.1,F6.1,F5.1,A5,A6,I1))\n", F->NGDC_id, P->Format_Description);
+		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-10-02-E: Invalid Format Description: Found (%s) : Expected : ((I1,A8,I3,I4,3I2,F5.3,F8.5,F9.5,I1,F6.4,F6.1,I2,I1,3F6.1,I1,F5.1,F6.0,F7.1,F6.1,F5.1,A5,A6,I1))\n", F->NGDC_id, P->Format_Description);
 		err[2]++;
 	}
 
@@ -1311,6 +1314,7 @@ int MGD77_Write_File_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 	if (MGD77_Open_File (file, F, MGD77_WRITE_MODE)) return (-1);
 	err = MGD77_Write_Header_Record_m77 (file, F, &S->H);  /* Will write the entire 24-section header structure */
 	if (err) return (err);
+	if (F->format == MGD77_FORMAT_TBL) fprintf (F->fp, "#day\tmonth\tyear\thour\tmin\tsec\tTZ\tlat\t\tlon\t\tptc\ttwt\tdepth\tbcc\tbtc\tmtf1\tmtf2\tmag\tmsens\tdiur\tmsd\tgobs\teot\tfaa\tnqc\tid\tsln\tsspn\n");
 
 	err = MGD77_Write_Data_asc (file, F, S);	  /* Will write all MGD77 records in current file */
 	if (err) return (err);
@@ -1459,8 +1463,7 @@ int MGD77_Read_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 	char line[BUFSIZ], p[BUFSIZ];
 	double tz, secs;
 
-	if (!(fgets (line, BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);			/* Try to read one line from the file */
-
+	if (!fgets (line, BUFSIZ, F->fp)) return (MGD77_ERROR_READ_ASC_DATA);		/* End of file? */
 	GMT_chop (line);	/* Get rid of CR or LF */
 
 	MGD77Record->bit_pattern = 0;
