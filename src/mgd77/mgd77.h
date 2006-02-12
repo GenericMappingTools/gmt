@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.61 2006-02-01 01:50:01 pwessel Exp $
+ *	$Id: mgd77.h,v 1.62 2006-02-12 11:12:47 pwessel Exp $
  * 
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -287,8 +287,18 @@ struct MGD77_DATA_INFO {
 	unsigned int bit_pattern;			/* Up to 32 bit flags, one for each parameter desired */
 };
 
+struct MGD77_META {	/* Information about a cruise as derived from navigation data */
+	BOOLEAN verified;	/* TRUE once MGD77_Verify_Prep has been called */
+	int n_ten_box;		/* Number of 10x10 degree boxes visited by this cruise */
+	int w, e, s, n;		/* Whole degree left/right/bottom/top coordinates */
+	int Departure[3];	/* yyyy, mm, dd of departure */
+	int Arrival[3];		/* yyyy, mm, dd of arrival */
+	char ten_box[18][36];	/* Set to 1 for each box visited */
+};
+
 struct MGD77_HEADER {	
 	struct MGD77_HEADER_PARAMS *mgd77;		/* See MGD-77 Documentation from NGDC for details */
+	struct MGD77_META meta;				/* Holds some meta-data derived directly from data records */
 	char *author;					/* Name of author of last creation/modification */
 	char *history;					/* History of creation/modifications */
 	int n_records;					/* Number of MGD77 data records found */
@@ -423,7 +433,6 @@ struct MGD77_CORRTABLE {
 	struct MGD77_CORRECTION *term;
 };
 
-
 /* Primary user functions */
 
 extern void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks);						/* Initialize the MGD77 machinery */
@@ -456,7 +465,9 @@ extern void MGD77_Ignore_Format (int format);										/* Dissallow some formats
 extern struct MGD77_DATASET *MGD77_Create_Dataset ();									/* Create an empty data set structure */
 extern void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Prepare header before we write */
 extern void MGD77_Dump_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P);				/* Dump of header items, one per line */
-extern void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P, int err[]);			/* Verify content of header per MGD77 docs */
+extern void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H);					/* Verify content of header per MGD77 docs */
+extern void MGD77_Verify_Prep (struct MGD77_CONTROL *F, struct MGD77_DATASET *D);
+extern void MGD77_Verify_Prep_m77 (struct MGD77_CONTROL *F, struct MGD77_META *C, struct MGD77_DATA_RECORD *D, int nrec);
 
 /* Secondary user functions */
 
