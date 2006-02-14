@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.108 2006-02-14 04:49:06 pwessel Exp $
+ *	$Id: mgd77.c,v 1.109 2006-02-14 04:51:48 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2842,11 +2842,9 @@ void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 	if (crossed_dateline && crossed_greenwich)
 		fprintf (stderr, "%s: Warning: Longitude crossing both Dateline and Greenwich; not adjusted!\n", GMT_program);
 	else if (crossed_dateline) {	/* Cruise is crossing Dateline; switch to 0-360 format for COARDS compliancy */
-		fprintf (stderr, "%s: Warning: Longitude crossing Dateline; adjusted to 0-360\n", GMT_program);
 		for (i = 0; i < S->H.n_records; i++) if (values[i] < 0.0) values[i] += 360.0;
 	}
 	else if (crossed_greenwich) {	/* Cruise is crossing Greenwich; switch to -180/+180 format for COARDS compliancy */
-		fprintf (stderr, "%s: Warning: Longitude crossing Greenwich; adjusted to -180/+180\n", GMT_program);
 		for (i = 0; i < S->H.n_records; i++) if (values[i] > 180.0) values[i] -= 360.0;
 	}
 
