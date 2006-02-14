@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.110 2006-02-14 05:51:56 pwessel Exp $
+ *	$Id: mgd77.c,v 1.111 2006-02-14 13:07:57 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -84,6 +84,7 @@ int MGD77_Find_Cruise_ID (char *name, char **cruises, int n_cruises);
 double MGD77_Sind (double z);
 double MGD77_Cosd (double z);
 double MGD77_Copy (double z);
+int wrong_filler (char *field, int length);
 
 struct MGD77_DATA_RECORD *MGD77Record;
  
@@ -812,9 +813,9 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 	/* Process Sequence No 12: */
 
 	if ((P->Bathymetry_Digitizing_Rate[0] && ((i = atoi (P->Bathymetry_Digitizing_Rate)) <= 0 || i >= 300)) OR_TRUE) {	/* 30 min */
-		kind = (i == 999) ? 1 : 2;
+		kind = (i == 999 || !strcmp (P->Bathymetry_Digitizing_Rate, "000")) ? 1 : 2;
 		if (F->verbose_level & kind) {
-			if (i == 999)
+			if (kind == 1)
 				fprintf (fp_err, "N-H-%s-12-01-%c: Invalid Bathymetry Digitizing Rate: (%s) [   ]\n", F->NGDC_id, we[kind], P->Bathymetry_Digitizing_Rate);
 			else
 				fprintf (fp_err, "N-H-%s-12-01-%c: Invalid Bathymetry Digitizing Rate: (%s)\n", F->NGDC_id, we[kind], P->Bathymetry_Digitizing_Rate);
@@ -822,18 +823,18 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 		H->errors[kind]++;
 	}
 	if ((P->Bathymetry_Assumed_Sound_Velocity[0] && !((i = atoi (P->Bathymetry_Assumed_Sound_Velocity)) < 140000 || i > 15500)) OR_TRUE) {
-		kind = (i == 99999) ? 1 : 2;
+		kind = (wrong_filler (P->Bathymetry_Assumed_Sound_Velocity, 5)) ? 1 : 2;
 		if (i > 1400 && i < 1550) {
-			if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-12-03-E: Invalid Bathymetry Assumed Sound Velocity: (%s) [%d0]\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity, i);
+			if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-12-03-E: Suspect Bathymetry Assumed Sound Velocity: (%s) [%d0]\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity, i);
 		}
 		else if (i == 8000 OR_TRUE) {
-			if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-12-03-E: Invalid Bathymetry Assumed Sound Velocity: (%s) [14630]\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity);
+			if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-12-03-E: Suspect Bathymetry Assumed Sound Velocity: (%s) [14630]\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity);
 		}
-		else if (i == 99999 OR_TRUE) {
+		else if (kind == 1 OR_TRUE) {
 			if (F->verbose_level | 1) fprintf (fp_err, "N-H-%s-12-03-%c: Invalid Bathymetry Assumed Sound Velocity: (%s) [     ]\n", F->NGDC_id, we[kind], P->Bathymetry_Assumed_Sound_Velocity);
 		}
 		else if (F->verbose_level & kind)
-			fprintf (fp_err, "N-H-%s-12-03-%c: Invalid Bathymetry Assumed Sound Velocity: (%s)\n", F->NGDC_id, we[kind], P->Bathymetry_Assumed_Sound_Velocity);
+			fprintf (fp_err, "N-H-%s-12-03-%c: Suspect Bathymetry Assumed Sound Velocity: (%s)\n", F->NGDC_id, we[kind], P->Bathymetry_Assumed_Sound_Velocity);
 		H->errors[kind]++;
 	}
 	if (P->Bathymetry_Datum_Code[0] OR_TRUE) {
@@ -853,52 +854,52 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 	/* Process Sequence No 13: */
 
 	if ((P->Magnetics_Digitizing_Rate[0] && ((i = atoi (P->Magnetics_Digitizing_Rate)) < 0 || i >= 300)) OR_TRUE) {	/* 30 m */
-		kind = (i == 999) ? 1 : 2;
+		kind = (wrong_filler (P->Magnetics_Digitizing_Rate, 3)) ? 1 : 2;
 		if (F->verbose_level & kind) {
-			if (i == 999)
+			if (kind == 1)
 				fprintf (fp_err, "N-H-%s-13-01-%c: Invalid Magnetics Digitizing Rate: (%s) [   ]\n", F->NGDC_id, we[kind], P->Magnetics_Digitizing_Rate);
 			else
-				fprintf (fp_err, "N-H-%s-13-01-%c: Invalid Magnetics Digitizing Rate: (%s)\n", F->NGDC_id, we[kind], P->Magnetics_Digitizing_Rate);
+				fprintf (fp_err, "N-H-%s-13-01-%c: Suspect Magnetics Digitizing Rate: (%s)\n", F->NGDC_id, we[kind], P->Magnetics_Digitizing_Rate);
 		}
 		H->errors[kind]++;
 	}
 	if ((P->Magnetics_Sampling_Rate[0] && ((i = atoi (P->Magnetics_Sampling_Rate)) < 0 || i > 60)) OR_TRUE) {
-		kind = (i == 99) ? 1 : 2;
+		kind = (wrong_filler (P->Magnetics_Sampling_Rate, 2)) ? 1 : 2;
 		if (F->verbose_level & kind) {
-			if (i == 99)
+			if (kind == 1)
 				fprintf (fp_err, "N-H-%s-13-02-%c: Invalid Magnetics Sampling Rate: (%s) [  ]\n", F->NGDC_id, we[kind], P->Magnetics_Sampling_Rate);
 			else
-				fprintf (fp_err, "N-H-%s-13-02-%c: Invalid Magnetics Sampling Rate: (%s)\n", F->NGDC_id, we[kind], P->Magnetics_Sampling_Rate);
+				fprintf (fp_err, "N-H-%s-13-02-%c: Suspect Magnetics Sampling Rate: (%s)\n", F->NGDC_id, we[kind], P->Magnetics_Sampling_Rate);
 		}
 		H->errors[kind]++;
 	}
 	if ((P->Magnetics_Sensor_Tow_Distance[0] && ((i = atoi (P->Magnetics_Sensor_Tow_Distance)) < 0)) OR_TRUE) {
-		kind = (i == 9999) ? 1 : 2;
+		kind = (wrong_filler (P->Magnetics_Sensor_Tow_Distance, 4)) ? 1 : 2;
 		if (F->verbose_level & kind) {
-			if (i == 9999)
+			if (kind == 1)
 				fprintf (fp_err, "N-H-%s-13-03-%c: Invalid Magnetics Sensor Tow Distance: (%s) [    ]\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Tow_Distance);
 			else
-				fprintf (fp_err, "N-H-%s-13-03-%c: Invalid Magnetics Sensor Tow Distance: (%s)\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Tow_Distance);
+				fprintf (fp_err, "N-H-%s-13-03-%c: Suspect Magnetics Sensor Tow Distance: (%s)\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Tow_Distance);
 		}
 		H->errors[kind]++;
 	}
 	if ((P->Magnetics_Sensor_Depth[0] && ((i = atoi (P->Magnetics_Sensor_Depth)) < 0)) OR_TRUE) {
-		kind = (i == 99999) ? 1 : 2;
+		kind = (wrong_filler (P->Magnetics_Sensor_Depth, 5)) ? 1 : 2;
 		if (F->verbose_level & kind) {
-			if (i == 99999)
+			if (kind == 1)
 				fprintf (fp_err, "N-H-%s-13-04-%c: Invalid Magnetics Sensor Depth: (%s) [     ]\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Depth);
 			else
-				fprintf (fp_err, "N-H-%s-13-04-%c: Invalid Magnetics Sensor Depth: (%s)\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Depth);
+				fprintf (fp_err, "N-H-%s-13-04-%c: Suspect Magnetics Sensor Depth: (%s)\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Depth);
 		}
 		H->errors[kind]++;
 	}
 	if ((P->Magnetics_Sensor_Separation[0] && ((i = atoi (P->Magnetics_Sensor_Separation)) < 0)) OR_TRUE) {
-		kind = (i == 999) ? 1 : 2;
+		kind = (wrong_filler (P->Magnetics_Sensor_Separation, 3)) ? 1 : 2;
 		if (F->verbose_level & kind) {
-			if (i == 999)
+			if (kind == 1)
 				fprintf (fp_err, "N-H-%s-13-05-%c: Invalid Magnetics Sensor Separation: (%s) [   ]\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Separation);
 			else
-				fprintf (fp_err, "N-H-%s-13-05-%c: Invalid Magnetics Sensor Separation: (%s)\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Separation);
+				fprintf (fp_err, "N-H-%s-13-05-%c: Suspect Magnetics Sensor Separation: (%s)\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Separation);
 		}
 		H->errors[kind]++;
 	}
@@ -935,22 +936,22 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 	/* Process Sequence No 14: */
 
 	if ((P->Gravity_Digitizing_Rate[0] && ((i = atoi (P->Gravity_Digitizing_Rate)) < 0 || i > 300)) OR_TRUE) {	/* 30 m */
-		kind = (i == 999) ? 1 : 2;
+		kind = (wrong_filler (P->Gravity_Digitizing_Rate, 3)) ? 1 : 2;
 		if (F->verbose_level & kind) {
-			if (i == 999)
+			if (kind == 1)
 				fprintf (fp_err, "N-H-%s-14-01-%c: Invalid Gravity Digitizing Rate: (%s) [   ]\n", F->NGDC_id, we[kind], P->Gravity_Digitizing_Rate);
 			else
-				fprintf (fp_err, "N-H-%s-14-01-%c: Invalid Gravity Digitizing Rate: (%s)\n", F->NGDC_id, we[kind], P->Gravity_Digitizing_Rate);
+				fprintf (fp_err, "N-H-%s-14-01-%c: Suspect Gravity Digitizing Rate: (%s)\n", F->NGDC_id, we[kind], P->Gravity_Digitizing_Rate);
 		}
 		H->errors[kind]++;
 	}
 	if ((P->Gravity_Sampling_Rate[0] && ((i = atoi (P->Gravity_Sampling_Rate)) < 0 || i > 98)) OR_TRUE) {
-		kind = (i == 99) ? 1 : 2;
+		kind = (wrong_filler (P->Gravity_Sampling_Rate, 2)) ? 1 : 2;
 		if (F->verbose_level & kind) {
-			if (i == 99)
-				fprintf (fp_err, "N-H-%s-14-02-%c: Invalid Gravity Sampling Rate: (%s) [00]\n", F->NGDC_id, we[kind], P->Gravity_Sampling_Rate);
+			if (kind == 1)
+				fprintf (fp_err, "N-H-%s-14-02-%c: Invalid Gravity Sampling Rate: (%s) [  ]\n", F->NGDC_id, we[kind], P->Gravity_Sampling_Rate);
 			else
-				fprintf (fp_err, "N-H-%s-14-02-%c: Invalid Gravity Sampling Rate: (%s)\n", F->NGDC_id, we[kind], P->Gravity_Sampling_Rate);
+				fprintf (fp_err, "N-H-%s-14-02-%c: Suspect Gravity Sampling Rate: (%s)\n", F->NGDC_id, we[kind], P->Gravity_Sampling_Rate);
 		}
 		H->errors[kind]++;
 	}
@@ -979,12 +980,12 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 	/* Process Sequence No 15: */
 
 	if ((P->Gravity_Departure_Base_Station[0] && ((i = atoi (P->Gravity_Departure_Base_Station)) < 9750000 || i > 9850000)) OR_TRUE) {
-		kind = (i == 9999999 || !strcmp (P->Gravity_Departure_Base_Station, "0000000")) ? 1 : 2;
+		kind = (wrong_filler (P->Gravity_Departure_Base_Station, 7)) ? 1 : 2;
 		if ((i > 975000 && i < 985000) OR_TRUE) {	/* Off by factor of 10? */
 			if (F->verbose_level & kind) fprintf (fp_err, "N-H-%s-15-01-%c: Invalid Gravity Departure Base Station Value: (%s) [%d0]\n", F->NGDC_id, we[kind], P->Gravity_Departure_Base_Station, i);
 		}
 		else if (F->verbose_level & kind) {
-			if (i == 9999999)
+			if (kind == 1)
 				fprintf (fp_err, "N-H-%s-15-01-%c: Invalid Gravity Departure Base Station Value: (%s) [       ]\n", F->NGDC_id, we[kind], P->Gravity_Departure_Base_Station);
 			else
 				fprintf (fp_err, "N-H-%s-15-01-%c: Invalid Gravity Departure Base Station Value: (%s)\n", F->NGDC_id, we[kind], P->Gravity_Departure_Base_Station);
@@ -992,12 +993,12 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 		H->errors[kind]++;
 	}
 	if ((P->Gravity_Arrival_Base_Station[0] && ((i = atoi (P->Gravity_Arrival_Base_Station)) < 9750000 || i > 9850000))) {
-		kind = (i == 9999999 || !strcmp (P->Gravity_Departure_Base_Station, "0000000")) ? 1 : 2;
+		kind = (wrong_filler (P->Gravity_Departure_Base_Station, 7)) ? 1 : 2;
 		if (i > 975000 && i < 985000) {	/* Off by factor of 10? */
 			if (F->verbose_level & kind) fprintf (fp_err, "N-H-%s-15-03-%c: Invalid Gravity Arrival Base Station Value: (%s) [%d0]\n", F->NGDC_id, we[kind], P->Gravity_Arrival_Base_Station, i);
 		}
 		else if (F->verbose_level & kind) {
-			if (i == 9999999)
+			if (kind == 1)
 				fprintf (fp_err, "N-H-%s-15-03-%c: Invalid Gravity Arrival Base Station Value: (%s) [       ]\n", F->NGDC_id, we[kind], P->Gravity_Arrival_Base_Station);
 			else
 				fprintf (fp_err, "N-H-%s-15-03-%c: Invalid Gravity Arrival Base Station Value: (%s)\n", F->NGDC_id, we[kind], P->Gravity_Arrival_Base_Station);
@@ -1009,7 +1010,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 
 	n = 0;
 	if ((P->Number_of_Ten_Degree_Identifiers[0] && (((n = atoi (P->Number_of_Ten_Degree_Identifiers)) < 1 || n > 30) || n != H->meta.n_ten_box)) OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-16-01-E: Invalid Number of Ten Degree Identifiers: (%s) [%2.2d]\n", F->NGDC_id, P->Number_of_Ten_Degree_Identifiers, H->meta.n_ten_box);
+		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-16-01-E: Invalid Number of Ten Degree Identifiers: (%s) [%d]\n", F->NGDC_id, P->Number_of_Ten_Degree_Identifiers, H->meta.n_ten_box);
 		H->errors[2]++;
 	}
 	pos = n_block = 0;
@@ -1017,7 +1018,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 	while (GMT_strtok (copy,",", &pos, p)) {
 		if (!strcmp (p, "9999")) {
 			if ((n && n_block != n) OR_TRUE) {
-				if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-16-02-E: Invalid Number of Ten Degree Identifiers: (%2.2d) [%d]\n", F->NGDC_id, n_block, n);
+				if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-16-02-E: Invalid Number of Ten Degree Identifiers: (%d) [%d]\n", F->NGDC_id, n_block, n);
 				n = 0;
 			}
 			continue;
@@ -1059,6 +1060,21 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 	}
 
 	H->errors[0] = H->errors[1] + H->errors[2];	/* Sum of warnings and errors */
+}
+
+int wrong_filler (char *field, int length) {
+	/* Returns TRUE if the field is completely 00000.., 9999., or ?????. */
+	int i, nines, zeros, qmarks;
+	
+	for (i = nines = zeros = qmarks = 0; field[i] && i < length; i++) {
+		if (field[i] == '0')
+			zeros++;
+		else if (field[i] == '9')
+			nines++;
+		else if (field[i] == '?')
+			qmarks++;
+	}
+	return (zeros == length || nines == length || qmarks == length);
 }
 
 int get_quadrant (int x, int y)
