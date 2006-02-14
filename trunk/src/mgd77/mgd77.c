@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.109 2006-02-14 04:51:48 pwessel Exp $
+ *	$Id: mgd77.c,v 1.110 2006-02-14 05:51:56 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1040,13 +1040,13 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 		if (k && (F->verbose_level | 2)) fprintf (fp_err, "N-H-%s-16-06-%2.2d-E: Invalid Ten Degree Identifier: (%s)\n", F->NGDC_id, n_block+1, p);
 		H->errors[2] += k;
 		n_block++;
-		if (p[0] == '1' || p[0] == '3') ix += 18;
+		if (p[0] == '1' || p[0] == '3') ix += 19;
 		iy = (p[1] - '0');
-		if (p[0] == '1' || p[0] == '7') iy += 9;
+		if (p[0] == '1' || p[0] == '7') iy += 10;
 		H->meta.ten_box[iy][ix] -= 1;	/* So if there is perfect match we should have 0s */
 	}
-	for (iy = 0; iy < 18; iy++) {
-		for (ix = 0; ix < 36; ix++) {
+	for (iy = 0; iy < 20; iy++) {
+		for (ix = 0; ix < 38; ix++) {
 			if (!H->meta.ten_box[iy][ix]) continue;
 			i = get_quadrant (ix, iy);
 			if (H->meta.ten_box[iy][ix] == 1) {
@@ -1071,13 +1071,13 @@ int get_quadrant (int x, int y)
 			value = 3;
 	}
 	else {		/* Northern hemisphere */
-		y -= 9;
+		y -= 10;
 		if (x <= 18)	/* Western hemisphere */
 			value = 7;
 		else		/* Eastern hemisphere */
 			value = 1;
 	}
-	if (x > 18) x -= 18;
+	if (x > 18) x -= 19;
 	value *= 1000;
 	value += abs(y) * 100 + abs(x);
 	return (value);
@@ -1097,10 +1097,10 @@ void MGD77_Verify_Prep_m77 (struct MGD77_CONTROL *F, struct MGD77_META *C, struc
 		lon = D[i].number[MGD77_LONGITUDE];
 		lat = D[i].number[MGD77_LATITUDE];
 		if (lon >= 180.0) lon -= 360.0;
-		ix = (int)floor (fabs(lon) / 10.0);	/* Gives 0-18 */
-		iy = (int)floor (fabs(lat) / 10.0);	/* Gives 0-9 */
-		if (lon >= 0.0) ix += 18;
-		if (lat >= 0.0) iy += 9;
+		ix = (int)floor (fabs(lon) / 10.0);	/* Gives 0-18 for 19 possible values */
+		iy = (int)floor (fabs(lat) / 10.0);	/* Gives 0-9 for 10 possible values */
+		if (lon >= 0.0) ix += 19;
+		if (lat >= 0.0) iy += 10;
 		C->ten_box[iy][ix] = 1;
 		if (lat < ymin) ymin = lat;
 		if (lat > ymax) ymax = lat;
@@ -1138,8 +1138,8 @@ void MGD77_Verify_Prep_m77 (struct MGD77_CONTROL *F, struct MGD77_META *C, struc
 		C->Arrival[1] = D[nrec-1].number[MGD77_MONTH];
 		C->Arrival[2] = D[nrec-1].number[MGD77_DAY];
 	}
-	for (iy = 0; iy < 18; iy++) {
-		for (ix = 0; ix < 36; ix++) {
+	for (iy = 0; iy < 20; iy++) {
+		for (ix = 0; ix < 38; ix++) {
 			if (!C->ten_box[iy][ix]) continue;
 			C->n_ten_box++;
 		}
@@ -1165,10 +1165,10 @@ void MGD77_Verify_Prep (struct MGD77_CONTROL *F, struct MGD77_DATASET *D)
 		lat = values[1][i];
 		lon = values[2][i];
 		if (lon > 180.0) lon -= 360.0;
-		ix = (int)floor (fabs(lon) / 10.0);	/* Gives 0-18 */
-		iy = (int)floor (fabs(lat) / 10.0);	/* Gives 0-9 */
-		if (lon >= 0.0) ix += 18;
-		if (lat >= 0.0) iy += 9;
+		ix = (int)floor (fabs(lon) / 10.0);	/* Gives 0-18 for 19 possible values */
+		iy = (int)floor (fabs(lat) / 10.0);	/* Gives 0-9 for 10 possible values */
+		if (lon >= 0.0) ix += 19;
+		if (lat >= 0.0) iy += 10;
 		C->ten_box[iy][ix] = 1;
 		if (lat < ymin) ymin = lat;
 		if (lat > ymax) ymax = lat;
@@ -1213,8 +1213,8 @@ void MGD77_Verify_Prep (struct MGD77_CONTROL *F, struct MGD77_DATASET *D)
 		C->Arrival[1] = CAL.month;
 		C->Arrival[2] = CAL.day_m;
 	}
-	for (iy = 0; iy < 18; iy++) {
-		for (ix = 0; ix < 36; ix++) {
+	for (iy = 0; iy < 20; iy++) {
+		for (ix = 0; ix < 38; ix++) {
 			if (!C->ten_box[iy][ix]) continue;
 			C->n_ten_box++;
 		}
