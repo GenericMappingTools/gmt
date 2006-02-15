@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.37 2005-12-17 05:59:21 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.38 2006-02-15 20:07:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -643,7 +643,7 @@ int	GMT_verify_time_step (int step, char unit) {
 	
 	int	retval = 0;
 	
-	if (step <= 0) {
+	if (step < 0) {
 		fprintf (stderr, "GMT SYNTAX ERROR:  time steps must be positive.\n");
 		return (-1);
 	}
