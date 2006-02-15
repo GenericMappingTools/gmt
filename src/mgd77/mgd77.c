@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.111 2006-02-14 13:07:57 pwessel Exp $
+ *	$Id: mgd77.c,v 1.112 2006-02-15 02:18:26 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -813,12 +813,12 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 	/* Process Sequence No 12: */
 
 	if ((P->Bathymetry_Digitizing_Rate[0] && ((i = atoi (P->Bathymetry_Digitizing_Rate)) <= 0 || i >= 300)) OR_TRUE) {	/* 30 min */
-		kind = (i == 999 || !strcmp (P->Bathymetry_Digitizing_Rate, "000")) ? 1 : 2;
+		kind = (wrong_filler (P->Bathymetry_Digitizing_Rate, 3)) ? 1 : 2;
 		if (F->verbose_level & kind) {
 			if (kind == 1)
 				fprintf (fp_err, "N-H-%s-12-01-%c: Invalid Bathymetry Digitizing Rate: (%s) [   ]\n", F->NGDC_id, we[kind], P->Bathymetry_Digitizing_Rate);
 			else
-				fprintf (fp_err, "N-H-%s-12-01-%c: Invalid Bathymetry Digitizing Rate: (%s)\n", F->NGDC_id, we[kind], P->Bathymetry_Digitizing_Rate);
+				fprintf (fp_err, "N-H-%s-12-01-%c: Suspect Bathymetry Digitizing Rate: (%s)\n", F->NGDC_id, we[kind], P->Bathymetry_Digitizing_Rate);
 		}
 		H->errors[kind]++;
 	}
@@ -1051,10 +1051,10 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 			if (!H->meta.ten_box[iy][ix]) continue;
 			i = get_quadrant (ix, iy);
 			if (H->meta.ten_box[iy][ix] == 1) {
-				if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-16-06-E: Ten Degree Identifier %d not marked in header but was visited\n", F->NGDC_id, i);
+				if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-16-06-E: Ten Degree Identifier %d not marked in header but block was crossed\n", F->NGDC_id, i);
 			}
 			else if (H->meta.ten_box[iy][ix] == -1) {
-				if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-16-06-E: Ten Degree Identifier %d marked in header but was not visited\n", F->NGDC_id, i);
+				if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-16-06-E: Ten Degree Identifier %d marked in header but was not crossed\n", F->NGDC_id, i);
 			}
 		}
 	}
@@ -1506,7 +1506,7 @@ void MGD77_List_Header_Items (struct MGD77_CONTROL *F)
 	
 int MGD77_Select_Header_Item (struct MGD77_CONTROL *F, char *item)
 {
-	int i, id, match, pick[MGD77_N_HEADER_ITEMS];
+	int i, id, match, length, pick[MGD77_N_HEADER_ITEMS];
 	
 	memset ((void *)F->Want_Header_Item, 0, MGD77_N_HEADER_ITEMS * sizeof (BOOLEAN));
 	
@@ -1517,10 +1517,12 @@ int MGD77_Select_Header_Item (struct MGD77_CONTROL *F, char *item)
 		return 0;
 	}
 	
+	length = (int)strlen (item);
+	
 	/* Check if an item number was given */
 	
-	for (i = match = id = 0; i < (int)strlen (item); i++) if (isdigit ((int)item[i])) match++;
-	if (match == (int)strlen (item) && ((id = atoi (item)) >= 1 && id <= MGD77_N_HEADER_ITEMS)) {
+	for (i = match = id = 0; i < length; i++) if (isdigit ((int)item[i])) match++;
+	if (match == length && ((id = atoi (item)) >= 1 && id <= MGD77_N_HEADER_ITEMS)) {
 		F->Want_Header_Item[id] = TRUE;
 		return 0;
 	}
@@ -1528,7 +1530,7 @@ int MGD77_Select_Header_Item (struct MGD77_CONTROL *F, char *item)
 	/* Now search for matching text strings.  We only look for the first n characters where n is length of item */
 	
 	for (i = match = 0; i < MGD77_N_HEADER_ITEMS; i++) {
-		if (!strncmp (MGD77_Header_Item[i], item, strlen (item))) {
+		if (!strncmp (MGD77_Header_Item[i], item, length)) {
 			pick[match] = id = i;
 			match++;
 		}
@@ -1538,10 +1540,23 @@ int MGD77_Select_Header_Item (struct MGD77_CONTROL *F, char *item)
 		fprintf (stderr, "%s: ERROR: No header item matched your string %s\n", GMT_program, item);
 		return -1;
 	}
-	if (match > 1) {
-		fprintf (stderr, "%s: ERROR: More than one item matched your string %s:\n", GMT_program, item);
-		for (i = 0; i < match; i++) fprintf (stderr, "	-> %s\n", MGD77_Header_Item[pick[i]]);
-		return -2;
+	if (match > 1) {	/* More than one.  See if any of the multiple matches is a full name */
+		int n_exact;
+		for (i = n_exact = 0; i < match; i++) {
+			if (strlen (MGD77_Header_Item[pick[i]]) == length) {
+				id = pick[i];
+				n_exact++;
+			}
+		}
+		if (n_exact == 1) {	/* Found one that matches exactly */
+			F->Want_Header_Item[id] = TRUE;
+			return 0;
+		}
+		else {
+			fprintf (stderr, "%s: ERROR: More than one item matched your string %s:\n", GMT_program, item);
+			for (i = 0; i < match; i++) fprintf (stderr, "	-> %s\n", MGD77_Header_Item[pick[i]]);
+			return -2;
+		}
 	}
 	
 	/* Here we have a unique match */
@@ -3074,7 +3089,7 @@ int MGD77_Write_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 					MGD77_nc_status (nc_put_vara_double (F->nc_id, S->H.info[set].col[id].var_id, start, count, x));
 				}
 				if (n_bad) {	/* Report what we found */
-					if (F->verbose_level | 1) fprintf (fp_err, "%s: %s [%s] had %d values outside valid range <%g,%g> for the chosen type (set to NaN = %g)\n",
+					if (F->verbose_level | 1) fprintf (stderr, "%s: %s [%s] had %d values outside valid range <%g,%g> for the chosen type (set to NaN = %g)\n",
 						GMT_program, F->NGDC_id, S->H.info[set].col[id].abbrev, n_bad, MGD77_Low_val[S->H.info[set].col[id].type],
 						MGD77_High_val[S->H.info[set].col[id].type], MGD77_NaN_val[S->H.info[set].col[id].type]);
 				}
