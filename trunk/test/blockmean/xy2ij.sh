@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: xy2ij.sh,v 1.1 2006-02-15 23:47:41 pwessel Exp $
+#	$Id: xy2ij.sh,v 1.2 2006-02-16 05:59:28 pwessel Exp $
 #
 # Test to make sure the (x,y) <--> (i,j) macros work correctly
 # We use -R0/5/0/5 -I1 for pixel and gridline registrations
@@ -7,6 +7,7 @@
 # fall exactly on tile boundaries.  One point will fall outside -R
 # but should be considered for the gridline registrated case.
 cat << EOF > pixel.d
+0.0	4.1	0
 0.65	0.7	1
 1.33	1.8	2
 0.25	2.25	3
@@ -14,7 +15,7 @@ cat << EOF > pixel.d
 2.0	3.3	5
 4.67	4.0	6
 3.0	2.0	7
-5.05	3.35	8
+5.0	3.35	8
 3.0	1.3	9
 EOF
 # blockman uses GMT_x|y_to_i|j to determine which tiles
@@ -32,6 +33,7 @@ awk '{print $1, $2, 8, 0, 0, "CM", $3}' pixel_ij.d | pstext -R -J -O -K -Gwhite 
 rm -f pixel*
 # Do gridline registration with a similar data set (mostly offset by 0.5)
 cat << EOF > grid.d
+-0.5	4.1	0
 1.15	0.2	1
 1.83	1.3	2
 0.75	2.75	3
@@ -39,7 +41,7 @@ cat << EOF > grid.d
 2.5	3.8	5
 4.167	3.5	6
 3.5	2.5	7
-5.05	3.35	8
+5.5	3.35	8
 1.5	2.8	9
 EOF
 blockmean -R0/5/0/5 -I1 -C grid.d > grid_ij.d
