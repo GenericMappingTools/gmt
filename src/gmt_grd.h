@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.22 2006-02-16 01:04:16 pwessel Exp $
+ *	$Id: gmt_grd.h,v 1.23 2006-02-16 21:05:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -97,9 +97,9 @@ struct GRD_HEADER {
  * GMT_y_to_j must first compute j', the number of rows in the increasing y-direction (to
  * match the sense of truncation used for x) then we revert to row number increasing down
  * by flipping: j = ny - 1 - j' */
-#define GMT_SLOP 1e-15
-#define GMT_x_to_i(x,x0,dx,off,nx) (irint(GMT_SLOP+((((x) - (x0)) / (dx)) - (off))))
-#define GMT_y_to_j(y,y0,dy,off,ny) ((ny) - 1 - irint(GMT_SLOP+((((y) - (y0)) / (dy)) - (off))))
+
+#define GMT_x_to_i(x,x0,dx,off,nx) (irint(((((x) - (x0)) / (dx)) - (off))))
+#define GMT_y_to_j(y,y0,dy,off,ny) ((ny) - 1 - irint(((((y) - (y0)) / (dy)) - (off))))
 #define GMT_i_to_x(i,x0,x1,dx,off,nx) (((i) == ((nx)-1)) ? (x1) - (off) * (dx) : (x0) + ((i) + (off)) * (dx))
 #define GMT_j_to_y(j,y0,y1,dy,off,ny) (((j) == ((ny)-1)) ? (y0) + (off) * (dy) : (y1) - ((j) + (off)) * (dy))
 
