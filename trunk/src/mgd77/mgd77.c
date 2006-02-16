@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.112 2006-02-15 02:18:26 pwessel Exp $
+ *	$Id: mgd77.c,v 1.113 2006-02-16 08:48:21 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -34,6 +34,18 @@
 #endif
 
 #define MGD77_CDF_CONVENTION	"CF-1.0"	/* MGD77+ files are CF-1.0 and hence COARDS-compliant */
+
+struct MGD77_MAG_RF {
+	char *model;        /* Reference field model name */
+	int code;           /* Reference field code       */
+	int start;          /* Model start year           */
+	int end;            /* Model end year             */
+};
+
+#define MGD77_N_MAG_RF 13
+struct MGD77_MAG_RF mgd77rf[MGD77_N_MAG_RF] = {
+#include "/Users/pwessel/UH/RESEARCH/PROJECTS/MGGQC/mgd77magref.h"
+};
 
 /* PRIVATE FUNCTIONS TO MGD77.C */
 
@@ -650,8 +662,9 @@ int MGD77_Decode_Header (struct MGD77_HEADER_PARAMS *P, char *record[], int dir)
 
 void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {
-	int i, k, pos, ix, iy, w, e, s, n, n_block, kind;
-	char copy[151], p[GMT_TEXT_LEN], text[GMT_TEXT_LEN], we[3] = {' ', 'W', 'E'}, *pscode[5] = {"Bathy", "Magnetics", "Gravity", "3.5 kHz", "Seismics"};
+	int i, k, pos, ix, iy, w, e, s, n, n_block, kind, ref_field_code, y, yr1, rfStart, yr2, rfEnd;
+	char copy[151], p[GMT_TEXT_LEN], text[GMT_TEXT_LEN], we[3] = {' ', 'W', 'E'};
+	char *pscode[5] = {"Bathy", "Magnetics", "Gravity", "3.5 kHz", "Seismics"};
 	time_t now;
 	struct tm *T;
 	FILE *fp_err;
@@ -724,7 +737,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 
 	/* Verify Sequence No 04: */
 
-	if ((P->Survey_Departure_Year[0] && ((i = atoi (P->Survey_Departure_Year)) < (1900 + MGD77_OLDEST_YY) || i > (1900 + T->tm_year))) OR_TRUE) {
+	if ((P->Survey_Departure_Year[0] && ((i = atoi (P->Survey_Departure_Year)) < (1900 + MGD77_OLDEST_YY) || i > (1900 + T->tm_year) || (H->meta.Departure[0] && i != H->meta.Departure[0]))) OR_TRUE) {
 		if (H->meta.Departure[0])
 			sprintf (text, "%4.4d", H->meta.Departure[0]);
 		else
@@ -732,7 +745,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-04-01-E: Invalid Survey Departure Year: (%s) [%s]\n", F->NGDC_id, P->Survey_Departure_Year, text);
 		H->errors[2]++;
 	}
-	if ((P->Survey_Departure_Month[0] && ((i = atoi (P->Survey_Departure_Month)) < 1 || i > 12)) OR_TRUE) {
+	if ((P->Survey_Departure_Month[0] && ((i = atoi (P->Survey_Departure_Month)) < 1 || i > 12 || (H->meta.Departure[1] && i != H->meta.Departure[1]))) OR_TRUE) {
 		if (H->meta.Departure[1])
 			sprintf (text, "%2.2d", H->meta.Departure[1]);
 		else
@@ -740,7 +753,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-04-02-E: Invalid Survey Departure Month: (%s) [%s]\n", F->NGDC_id, P->Survey_Departure_Month, text);
 		H->errors[2]++;
 	}
-	if ((P->Survey_Departure_Day[0] && ((i = atoi (P->Survey_Departure_Day)) < 1 || i > 31)) OR_TRUE) {
+	if ((P->Survey_Departure_Day[0] && ((i = atoi (P->Survey_Departure_Day)) < 1 || i > 31 || (H->meta.Departure[2] && i != H->meta.Departure[2]))) OR_TRUE) {
 		if (H->meta.Departure[2])
 			sprintf (text, "%2.2d", H->meta.Departure[2]);
 		else
@@ -748,7 +761,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-04-03-E: Invalid Survey Departure Day: (%s) [%s]\n", F->NGDC_id, P->Survey_Departure_Day, text);
 		H->errors[2]++;
 	}
-	if ((P->Survey_Arrival_Year[0] && ((i = atoi (P->Survey_Arrival_Year)) < (1900 + MGD77_OLDEST_YY) || i > (1900 + T->tm_year))) OR_TRUE) {
+	if ((P->Survey_Arrival_Year[0] && ((i = atoi (P->Survey_Arrival_Year)) < (1900 + MGD77_OLDEST_YY) || i > (1900 + T->tm_year) || (H->meta.Arrival[0] && i != H->meta.Arrival[0]))) OR_TRUE) {
 		if (H->meta.Arrival[0])
 			sprintf (text, "%4.4d", H->meta.Arrival[0]);
 		else
@@ -756,7 +769,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-04-04-E: Invalid Survey Arrival Year: (%s) [%s]\n", F->NGDC_id, P->Survey_Arrival_Year, text);
 		H->errors[2]++;
 	}
-	if ((P->Survey_Arrival_Month[0] && ((i = atoi (P->Survey_Arrival_Month)) < 1 || i > 12)) OR_TRUE) {
+	if ((P->Survey_Arrival_Month[0] && ((i = atoi (P->Survey_Arrival_Month)) < 1 || i > 12 || (H->meta.Arrival[1] && i != H->meta.Arrival[1]))) OR_TRUE) {
 		if (H->meta.Arrival[1])
 			sprintf (text, "%2.2d", H->meta.Arrival[1]);
 		else
@@ -764,7 +777,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-04-05-E: Invalid Survey Arrival Month: (%s) [%s]\n", F->NGDC_id, P->Survey_Arrival_Month, text);
 		H->errors[2]++;
 	}
-	if ((P->Survey_Arrival_Day[0] && ((i = atoi (P->Survey_Arrival_Day)) < 1 || i > 31)) OR_TRUE) {
+	if ((P->Survey_Arrival_Day[0] && ((i = atoi (P->Survey_Arrival_Day)) < 1 || i > 31 || (H->meta.Arrival[2] && i != H->meta.Arrival[2]))) OR_TRUE) {
 		if (H->meta.Arrival[2])
 			sprintf (text, "%2.2d", H->meta.Arrival[2]);
 		else
@@ -772,7 +785,6 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-04-06-E: Invalid Survey Arrival Day: (%s) [%s]\n", F->NGDC_id, P->Survey_Arrival_Day, text);
 		H->errors[2]++;
 	}
-
 	/* Verify Sequence No 10: */
 
 	if (P->Format_Type != 'A' OR_TRUE) {
@@ -921,6 +933,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-13-07-E: Invalid Magnetics Ref Code == 88 but no Ref Field specified\n", F->NGDC_id);
 		H->errors[2]++;
 	}
+	ref_field_code = i;
 	if (!strcmp (P->Magnetics_Ref_Field, "IGRF") OR_TRUE) {	/* Check IGRF  number if 88 was given */
 		n = i;
 		i = 0;
@@ -930,6 +943,36 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 		if (((i == 3 || i == 4 || (i >= 11 && i < 88)) && n != i) OR_TRUE) {
 			if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-13-08-W: %s Ref Field code found (%d) [%d]\n", F->NGDC_id, P->Magnetics_Ref_Field, n, i);
 			H->errors[1]++;
+		}
+	}
+
+	/* If cruise has magnetics check for correct IGRF */
+	
+	yr1 = (H->meta.Departure[0]) ? H->meta.Departure[0] : atoi (P->Survey_Departure_Year);
+	yr2 = (H->meta.Arrival[0]) ? H->meta.Arrival[0] : atoi (P->Survey_Arrival_Year);
+			
+	if (yr1 && yr2 && ref_field_code != 99) {
+		if (ref_field_code == 88) {
+			if (!strncmp(P->Magnetics_Ref_Field,"IGRF",4)) {
+				for (k = 0; P->Magnetics_Ref_Field[k] != 'F'; k++);
+				if (P->Magnetics_Ref_Field[k] == '-' || P->Magnetics_Ref_Field[k] == ' ') k++;
+				y = atoi (&P->Magnetics_Ref_Field[k]);
+				rfEnd = 1900 + y;
+				rfStart = rfEnd - 5;
+			}
+			else {
+				rfStart = 0;
+				rfEnd = INT_MAX;
+				if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-13-09-E: Unknown IGRF specified (%s)\n", F->NGDC_id, P->Magnetics_Ref_Field);
+			}
+		}
+		else {
+			rfStart = mgd77rf[ref_field_code-1].start;
+			rfEnd = mgd77rf[ref_field_code-1].end;
+		}
+		(yr1 == yr2) ? sprintf (text, "%d", yr1) : sprintf (text, "%d-%d", yr1, yr2);
+		if (yr1 < rfStart || yr2 > rfEnd) {
+			if (F->verbose_level | 1) fprintf (fp_err, "N-H-%s-13-10-W: Survey year (%s) outside magnetic reference field %s time range (%d-%d)\n", F->NGDC_id, text, P->Magnetics_Ref_Field, rfStart, rfEnd);
 		}
 	}
 
@@ -1146,14 +1189,17 @@ void MGD77_Verify_Prep_m77 (struct MGD77_CONTROL *F, struct MGD77_META *C, struc
 	C->s = irint (ymin);
 	C->n = irint (ymax);
 	
-	if (!GMT_is_fnan (D[0].time)) {	/* We have time - obtain yyyy/mm/dd of departure and arrival days */
+	/* Get the cruise time period for later checking against IGRF used, etc. */
+			
+	if (!GMT_is_fnan (D[0].time)) {	/* We have  time - obtain yyyy/mm/dd of departure and arrival days */
 		C->Departure[0] = D[0].number[MGD77_YEAR];
 		C->Departure[1] = D[0].number[MGD77_MONTH];
 		C->Departure[2] = D[0].number[MGD77_DAY];
 		C->Arrival[0] = D[nrec-1].number[MGD77_YEAR];
 		C->Arrival[1] = D[nrec-1].number[MGD77_MONTH];
-		C->Arrival[2] = D[nrec-1].number[MGD77_DAY];
+		C->Arrival[1] = D[nrec-1].number[MGD77_DAY];
 	}
+	
 	for (iy = 0; iy < 20; iy++) {
 		for (ix = 0; ix < 38; ix++) {
 			if (!C->ten_box[iy][ix]) continue;
