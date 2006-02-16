@@ -2,21 +2,29 @@
 .SH NAME
 gmtmath \- Reverse Polish Notation calculator for data tables
 .SH SYNOPSIS
-\fBgmtmath\fP [ \fB\-A\fP\fIt_f(t).d\fP ] [ \fB\-C\fP\fIcols\fP ] [ \fB\-H\fP\fInrec\fP ] [ \fB\-I\fP ] [ \fB\-N\fP\fIn_col\fP/\fIt_col\fP ] [ \fB\-Q\fP ] 
- [ \fB\-S\fP[\fBf|l\fP] ] [ \fB\-T\fP\fIt_min/t_max/t_inc\fP|\fItfile\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
-[ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] 
-\fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] \fBOPERATOR\fP ... \fB=\fP [ \fIoutfile\fP ]
+\fBgmtmath\fP [ \fB\-A\fP\fIt_f(t).d\fP ] [ \fB\-C\fP\fIcols\fP ] [ \fB\-H\fP\fInrec\fP ] [ \fB\-I\fP ] 
+[ \fB\-N\fP\fIn_col\fP/\fIt_col\fP ] [ \fB\-Q\fP ] [ \fB\-S\fP[\fBf|l\fP] ] 
+[ \fB\-T\fP\fIt_min/t_max/t_inc\fP|\fItfile\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
+[ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] \fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] 
+\fBOPERATOR\fP ... \fB=\fP [ \fIoutfile\fP ]
 .SH DESCRIPTION
-\fBgmtmath\fP will perform operations like add, subtract, multiply, and divide on one or more table data files or constants using
-Reverse Polish Notation (RPN) syntax (e.g., Hewlett-Packard calculator-style).  Arbitrarily complicated expressions may therefore
-be evaluated; the final result is written to an output file [or standard output].  When two data tables are
-on the stack, each element in file A is modified by the corresponding element in file B.
-However, some operators only require one operand (see below).  If no data tables are used in the
-expression then options \fB\-T, \-N\fP must be set (and optionally \fB\-b\fP).  By default, all columns except the "time" column are operated on, but this can be changed (see \fB\-C\fP).
+\fBgmtmath\fP will perform operations like add, subtract, multiply, and divide
+on one or more table data files or constants using Reverse Polish Notation (RPN)
+syntax (e.g., Hewlett-Packard calculator-style).  Arbitrarily complicated expressions
+may therefore be evaluated; the final result is written to an output file
+[or standard output].  When two data tables are on the stack, each element in file A
+is modified by the corresponding element in file B.  However, some operators only
+require one operand (see below).  If no data tables are used in the expression then options
+\fB\-T, \-N\fP can be set (and optionally \fB\-b\fP) to indicate the data domain.  Without files,
+or data domain options, <stdin> will be read and placed on the stack as if a file with that content
+had been given as the first argument on the command line.  By default, all columns except the
+"time" column are operated on, but this can be changed (see \fB\-C\fP).
 .TP
 \fIoperand\fP
-If \fIoperand\fP can be opened as a file it will be read as an ASCII (or binary, see \fB\-bi\fP) table data file.  If not a file, it is interpreted
-as a numerical constant or a special symbol (see below).
+If \fIoperand\fP can be opened as a file it will be read as an ASCII (or binary, see \fB\-bi\fP) table data file.
+If not a file, it is interpreted as a numerical constant or a special symbol (see below).  In the absence of
+any data files and domain options \fB\-T\fP and \fB\-N\fP, \fIstdin\fP will be read as the first argument and
+placed on the stack.
 .TP
 \fIoutfile\fP is a table data file that will hold the final result.  If not given then the output is sent to stdout.
 .TP
@@ -91,6 +99,13 @@ which must satisfy -1 <= x <= +1. \fBPLM\fP is not normalized.
 (2) All derivatives are based on central finite differences, with natural
 boundary conditions.
 .SH EXAMPLES
+To take the square root of the content of the second data column being piped through \fBgmtmath\fP
+by process1 and pipe it through a 3rd process, use
+.br
+.sp
+process1 | \fBgmtmath\fP \fBSQRT\fP \=\fP | process3
+.br
+.sp
 To take log10 of the average of 2 data files, use
 .br
 .sp
@@ -155,15 +170,13 @@ solution is simply
 (1) Files that have the same names as some operators, e.g., \fBADD\fP, \fBSIGN\fP, \fB=\fP, etc. should be
 identified by prepending the current directory (i.e., ./LOG).
 .br
-(2) Piping of files is not allowed on input, but the output can be sent to stdout.
+(2) The stack depth limit is hard-wired to 100.
 .br
-(3) The stack depth limit is hard-wired to 100.
-.br
-(4) All functions expecting a positive radius (e.g., \fBLOG\fP, \fBKEI\fP, etc.) are passed the
+(3) All functions expecting a positive radius (e.g., \fBLOG\fP, \fBKEI\fP, etc.) are passed the
 absolute value of their argument..br
-(5) The \fBDDT\fP and \fBD2DT2\fP functions only work on regularly spaced data.
+(4) The \fBDDT\fP and \fBD2DT2\fP functions only work on regularly spaced data.
 .br
-(6) \fBROOTS\fP must be the last operator on the stack, only followed by \fB=\fP.
+(5) \fBROOTS\fP must be the last operator on the stack, only followed by \fB=\fP.
 .SH REFERENCES
 Abramowitz, M., and I. A. Stegun, 1964, \fIHandbook of Mathematical
 Functions\fP, Applied Mathematics Series, vol. 55, Dover, New York.
