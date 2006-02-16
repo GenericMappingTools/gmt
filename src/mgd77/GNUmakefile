@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.4 2006-02-02 00:17:14 pwessel Exp $
+#	$Id: GNUmakefile,v 1.5 2006-02-16 12:00:10 pwessel Exp $
 #
 #		GNU Makefile for GMT mgd77 supplements
 #
@@ -21,9 +21,9 @@ include ../makegmt.macros
 CFLAGS	= $(CC_OPT) -Wall $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf
 
-MGD77_H	= mgd77.h mgd77defaults.h mgd77_IGF_coeffs.h mgd77_codes.h
+MGD77_H	= mgd77.h mgd77defaults.h mgd77_IGF_coeffs.h mgd77_codes.h mgd77sniffer.h mgd77snifferdefaults.h mgd77magref.h
 
-MGD77_C	= mgd77convert.c mgd77info.c mgd77list.c mgd77path.c mgd77manage.c mgd77track.c
+MGD77_C	= mgd77convert.c mgd77info.c mgd77list.c mgd77path.c mgd77manage.c mgd77sniffer.c mgd77track.c
 
 LIB_C	= mgd77.c
 LIB_H	= mgd77.h mgd77_functions.h mgd77defaults.h

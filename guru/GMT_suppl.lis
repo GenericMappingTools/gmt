@@ -86,6 +86,9 @@ src/mgd77/mgd77manage.html
 src/mgd77/mgd77path.c
 src/mgd77/mgd77path.man
 src/mgd77/mgd77path.html
+src/mgd77/mgd77sniffer.c
+src/mgd77/mgd77sniffer.man
+src/mgd77/mgd77sniffer.html
 src/mgd77/mgd77track.c
 src/mgd77/mgd77track.man
 src/mgd77/mgd77track.html
