@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.34 2006-02-02 04:49:52 pwessel Exp $
+#	 $Id: webman.sh,v 1.35 2006-02-16 12:03:09 pwessel Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -264,6 +264,7 @@ packages actually installed on your system will be accessible.
 <LI><A HREF="doc/html/mgd77list.html"> mgd77list</A> Extract data from MGD77 cruise files
 <LI><A HREF="doc/html/mgd77manage.html"> mgd77manage</A> Manage the enhanced MGD77+ netCDF files
 <LI><A HREF="doc/html/mgd77path.html"> mgd77path</A> Get full pathnames of MGD77 cruise files
+<LI><A HREF="doc/html/mgd77sniffer.html"> mgd77sniffer</A> Along-track quality control of MGD77 cruise files
 <LI><A HREF="doc/html/mgd77track.html"> mgd77track</A> Plot the tracks of MGD77 cruise files
 </UL>
 <HR>

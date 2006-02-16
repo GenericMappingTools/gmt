@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.1 2006-02-16 11:53:24 pwessel Exp $	
+ *	$Id: mgd77sniffer.h,v 1.2 2006-02-16 12:00:10 pwessel Exp $	
  *
  *	File:	mgd77sniffer.h
  *
@@ -32,7 +32,6 @@
 #define MGD77_FATHOMS_PER_METER     0.546805453181423
 #define MGD77_MIN_RLS_BINS          20
 #define MGD77_MIN_RLS_PTS           100
-#define MGD77_N_MAG_RF              13
 #define MGD77_MAX_SEARCH            50
 
 /* LMS Limits - Obtained from 4616 bathy and 1657 gravity cruises */
@@ -104,13 +103,6 @@ struct MGD77_SNIFFER_DEFAULTS {
 
 struct MGD77_ERROR {
 	unsigned int flags[6];
-};
-
-struct MGD77_MAG_RF {
-	char *model;        /* Reference field model name */
-	int code;           /* Reference field code       */
-	int start;          /* Model start year           */
-	int end;            /* Model end year             */
 };
 
 EXTERN_MSC struct MGD77_SNIFFER_DEFAULTS mgd77snifferdefs[MGD77_N_DATA_FIELDS];
