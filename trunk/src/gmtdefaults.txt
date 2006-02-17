@@ -167,6 +167,7 @@ means draw axis only.  [WESN].
 .B BASEMAP_FRAME_RGB
 Color used to draw map boundaries and annotations.
 Give a red/green/blue triplet, with each element in the 0\-255 range.
+Prepend '+' to replicate this color to the tick-, grid-, and frame-pens.
 [0/0/0] (black).
 .TP
 .B BASEMAP_TYPE
