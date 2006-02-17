@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.206 2006-01-09 20:32:20 remko Exp $
+ *	$Id: gmt_init.c,v 1.207 2006-02-17 21:27:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1413,12 +1413,14 @@ int GMT_setparameter (char *keyword, char *value)
 			}
 			break;
 		case GMTCASE_BASEMAP_FRAME_RGB:
-			error = GMT_getrgb (value, rgb);
+			i = (value[0] == '+') ? 1 : 0;	/* Plus means propagate color to frame, tick, and grid pens as well */
+			error = GMT_getrgb (&value[i], rgb);
 			if (GMT_check_rgb (rgb))
 				error = TRUE;
 			else {
 				memcpy ((void *)gmtdefs.basemap_frame_rgb, (void *)rgb, (size_t)(3 * sizeof (int)));
-				GMT_got_frame_rgb = TRUE;
+				memcpy ((void *)gmtdefs.frame_pen.rgb, (void *)rgb, (size_t)(3 * sizeof (int)));
+				if (i == 1) GMT_got_frame_rgb = TRUE;
 			}
 			break;
 		case GMTCASE_BASEMAP_TYPE:
