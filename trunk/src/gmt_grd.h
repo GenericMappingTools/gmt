@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.23 2006-02-16 21:05:07 pwessel Exp $
+ *	$Id: gmt_grd.h,v 1.24 2006-02-18 02:51:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -102,5 +102,13 @@ struct GRD_HEADER {
 #define GMT_y_to_j(y,y0,dy,off,ny) ((ny) - 1 - irint(((((y) - (y0)) / (dy)) - (off))))
 #define GMT_i_to_x(i,x0,x1,dx,off,nx) (((i) == ((nx)-1)) ? (x1) - (off) * (dx) : (x0) + ((i) + (off)) * (dx))
 #define GMT_j_to_y(j,y0,y1,dy,off,ny) (((j) == ((ny)-1)) ? (y0) + (off) * (dy) : (y1) - ((j) + (off)) * (dy))
+
+/* The GMT_y_is_outside macro returns TRUE if y is outside the given domain.
+ * For GMT_x_is_outside, see the function in gmt_support.c
+ */
+
+#define GMT_y_is_outside(y,bottom,top) (((y) < bottom || (y) > top) ? TRUE : FALSE)
+EXTERN_MSC BOOLEAN GMT_x_is_outside (double *x, double left, double right);
+EXTERN_MSC void GMT_set_xy_domain (double wesn_extended[], struct GRD_HEADER *h);
 
 #endif /* _GMT_GRD_H */

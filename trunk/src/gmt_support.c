@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.217 2006-02-06 14:02:58 remko Exp $
+ *	$Id: gmt_support.c,v 1.218 2006-02-18 02:51:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5385,6 +5385,46 @@ void GMT_setcontjump (float *z, int nz)
 		if (fabs (dz) > 180.0) z[i] -= (float)copysign (360.0, dz);
 		z[i] = (float)fmod (z[i], 360.0);
 	}
+}
+
+void GMT_set_xy_domain (double wesn_extended[], struct GRD_HEADER *h)
+{
+	/* Sets the domain boundaries to be used to determine if x,y coordinates
+	 * are outside the domain of a grid.  If gridline-registered then the
+	 * domain is extended by 0.5 the grid interval.  Note that points with
+	 * x == x_max and y = y_max are considered inside.
+	 */
+	 
+	if (GMT_io.in_col_type[0] == GMT_IS_LON && fabs ((h->x_max - h->x_min) - 360.0) < GMT_CONV_LIMIT) {	/* Global longitude range */
+		wesn_extended[0] = h->x_min;	wesn_extended[1] = h->x_max;
+	}
+	else {
+		wesn_extended[0] = h->x_min - h->xy_off * h->x_inc;	wesn_extended[1] = h->x_max + h->xy_off * h->x_inc;
+	}
+	/* Latitudes can be extended provided we are not at the poles */
+	wesn_extended[2] = h->y_min - h->xy_off * h->y_inc;
+	wesn_extended[3] = h->y_max + h->xy_off * h->y_inc;
+	if (GMT_io.in_col_type[1] == GMT_IS_LAT) {
+		if (wesn_extended[2] < -90.0) wesn_extended[2] = -90.0;
+		if (wesn_extended[3] > +90.0) wesn_extended[3] = +90.0;
+	}
+}
+
+BOOLEAN GMT_x_is_outside (double *x, double left, double right)
+{
+	/* Determines if this x is inside the effective x-domain.  This is normally
+	 * west to east, but when gridding is concerned it can be extended by +-0.5 * dx
+	 * for gridline-registered grids.  Also, if x is longitude we must check for
+	 * wrap-arounds by 360 degrees, and x may be modified accordingly.
+	 */
+	
+	if (GMT_io.in_col_type[0] == GMT_IS_LON) {	/* Periodic longitude test */
+		while ((*x) > left) (*x) -= 360.0;	/* Make sure we start west or west */
+		while ((*x) < left) (*x) += 360.0;	/* See if we are outside east */
+		return (((*x) > right) ? TRUE : FALSE);
+	}
+	else	/* Cartesian test */
+		return (((*x) < left || (*x) > right) ? TRUE : FALSE);
 }
 
 BOOLEAN GMT_getpathname (char *name, char *path) {
