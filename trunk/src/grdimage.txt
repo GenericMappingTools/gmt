@@ -79,6 +79,7 @@ your liking.
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
+#include "explain_-f.txt"
 .SH EXAMPLES
 To gray-shade the file hawaii_grav.grd with shades given in shades.cpt on a Lambert map
 at LEN_L cm/degree along the standard parallels 18 and 24, and using 1 degree tickmarks:
