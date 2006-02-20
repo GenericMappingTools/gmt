@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.114 2006-02-20 01:00:59 remko Exp $
+ *	$Id: mgd77.c,v 1.115 2006-02-20 06:08:15 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -660,7 +660,7 @@ int MGD77_Decode_Header (struct MGD77_HEADER_PARAMS *P, char *record[], int dir)
 #define AND_FALSE
 #endif
 
-void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
+void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE *ufp)
 {
 	int i, k, pos, ix, iy, w, e, s, n, n_block, kind, ref_field_code, y, yr1, rfStart, yr2, rfEnd;
 	char copy[151], p[GMT_TEXT_LEN], text[GMT_TEXT_LEN], we[3] = {' ', 'W', 'E'};
@@ -672,7 +672,13 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 	
 	if (!F->verbose_level) return;	/* No verbosity desired */
 	
-	fp_err = (F->verbose_dest == 1) ? GMT_stdout : stderr;
+	if (ufp) {	/* User provided alternative output pipe */
+		fp_err = ufp;
+	}
+	else {
+		fp_err = (F->verbose_dest == 1) ? GMT_stdout : stderr;
+	}
+	
 	H->errors[0] = H->errors[1] = H->errors[2] = 0;
 	
 	P = H->mgd77;

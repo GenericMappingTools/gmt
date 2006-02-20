@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.63 2006-02-14 05:51:56 pwessel Exp $
+ *	$Id: mgd77.h,v 1.64 2006-02-20 06:08:15 pwessel Exp $
  * 
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -465,7 +465,7 @@ extern void MGD77_Ignore_Format (int format);										/* Dissallow some formats
 extern struct MGD77_DATASET *MGD77_Create_Dataset ();									/* Create an empty data set structure */
 extern void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Prepare header before we write */
 extern void MGD77_Dump_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P);				/* Dump of header items, one per line */
-extern void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H);					/* Verify content of header per MGD77 docs */
+extern void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE *ufp);				/* Verify content of header per MGD77 docs */
 extern void MGD77_Verify_Prep (struct MGD77_CONTROL *F, struct MGD77_DATASET *D);
 extern void MGD77_Verify_Prep_m77 (struct MGD77_CONTROL *F, struct MGD77_META *C, struct MGD77_DATA_RECORD *D, int nrec);
 
