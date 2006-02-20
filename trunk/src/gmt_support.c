@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.218 2006-02-18 02:51:06 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.219 2006-02-20 06:08:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4290,8 +4290,27 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 	double shift_x;
 
 	if (!project_info.region && !RECT_GRATICULE) {	/* Used -R... with oblique boundaries - return entire grid */
-		*xmin = h->x_min;	*xmax = h->x_max;
-		*ymin = h->y_min;	*ymax = h->y_max;
+		/* *xmin = h->x_min;	*xmax = h->x_max;
+		*ymin = h->y_min;	*ymax = h->y_max; */
+		BOOLEAN N_outside, S_outside;
+		N_outside = GMT_outside (0.0, +90.0);	/* North pole outside map boundary? */
+		S_outside = GMT_outside (0.0, -90.0);	/* South pole outside map boundary? */
+		if (N_outside && S_outside) {	/* No polar complications, return extreme coordinates */
+			*xmin = GMT_i_to_x (GMT_x_to_i (project_info.w, h->x_min, h->x_inc, h->xy_off, h->nx), h->x_min, h->x_max, h->x_inc, h->xy_off, h->nx);
+			*xmax = GMT_i_to_x (GMT_x_to_i (project_info.e, h->x_min, h->x_inc, h->xy_off, h->nx), h->x_min, h->x_max, h->x_inc, h->xy_off, h->nx);
+			*ymin = GMT_j_to_y (GMT_y_to_j (project_info.s, h->y_min, h->y_inc, h->xy_off, h->ny), h->y_min, h->y_max, h->y_inc, h->xy_off, h->ny);
+			*ymax = GMT_j_to_y (GMT_y_to_j (project_info.n, h->y_min, h->y_inc, h->xy_off, h->ny), h->y_min, h->y_max, h->y_inc, h->xy_off, h->ny);
+		}
+		else if (!N_outside) {	/* North pole included, need all longitudes but restrict latitudes */
+			*xmin = h->x_min;	*xmax = h->x_max;
+			*ymin = GMT_j_to_y (GMT_y_to_j (project_info.s, h->y_min, h->y_inc, h->xy_off, h->ny), h->y_min, h->y_max, h->y_inc, h->xy_off, h->ny);
+			*ymax = h->y_max;
+		}
+		else {			/* South pole included, need all longitudes but restrict latitudes */	
+			*xmin = h->x_min;	*xmax = h->x_max;
+			*ymin = h->y_min;
+			*ymax = GMT_j_to_y (GMT_y_to_j (project_info.n, h->y_min, h->y_inc, h->xy_off, h->ny), h->y_min, h->y_max, h->y_inc, h->xy_off, h->ny);
+		}
 		return (0);
 	}
 	
