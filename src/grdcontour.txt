@@ -121,6 +121,7 @@ that this grid file contains z-values that are periodic in 360 degrees (e.g.,
 phase data, angular distributions) and that
 special precautions must be taken when determining 0-contours.
 #include "explain_-c.txt"
+#include "explain_-f.txt"
 #include "explain_-o_binary.txt"
 #include "explain_-n.txt"
 #include "explain_precision.txt"
