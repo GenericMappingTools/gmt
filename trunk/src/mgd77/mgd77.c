@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.113 2006-02-16 08:48:21 pwessel Exp $
+ *	$Id: mgd77.c,v 1.114 2006-02-20 01:00:59 remko Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -44,7 +44,7 @@ struct MGD77_MAG_RF {
 
 #define MGD77_N_MAG_RF 13
 struct MGD77_MAG_RF mgd77rf[MGD77_N_MAG_RF] = {
-#include "/Users/pwessel/UH/RESEARCH/PROJECTS/MGGQC/mgd77magref.h"
+#include "mgd77magref.h"
 };
 
 /* PRIVATE FUNCTIONS TO MGD77.C */
