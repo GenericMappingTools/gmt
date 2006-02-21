@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.2 2006-02-16 12:00:10 pwessel Exp $	
+ *	$Id: mgd77sniffer.h,v 1.3 2006-02-21 02:14:24 mtchandl Exp $	
  *
  *	File:	mgd77sniffer.h
  *
@@ -18,6 +18,21 @@
  #include "mgd77.h"
  #include <time.h>
  
+/*  MGD77 bit-pattern w/ E77 alpha characters
+|-------------------------------------------------|----------|
+| X W V U T S R Q P O N M L K J I H G F E D C B A | E77 Code |
+| - - - - - - - - - - - - - - - - - - - - - - - - | - - - - -|
+| n f e g m d m m m m b b d t p l l m h d m y t d | F  I     |
+| q a o o s i s a t t t c e w t o a i o a o e z r | i  D     |
+| c a t b d u e g f f c c p t c n t n u y n a   t | e        |
+|       s   r n   2 1     t           r   t r     | l        |
+|             s           h               h       | d        |
+| - - - - - - - - - - - - - - - - - - - - - - - - | - - - - -|
+| 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 | Bit place|
+| - G C G C C - G G G - - G G - - - T T T T T - - | Bit type |
+|-------------------------------------------------|----------|
+  Bit types: (G)eophysical, (C)orrection, (T)ime */
+
 /* Constants */
 #define MGD77_N_DATA_FIELDS         27
 #define MGD77_NM_PER_DEGREE         60
@@ -32,6 +47,7 @@
 #define MGD77_FATHOMS_PER_METER     0.546805453181423
 #define MGD77_MIN_RLS_BINS          20
 #define MGD77_MIN_RLS_PTS           100
+#define MGD77_N_MAG_RF              13
 #define MGD77_MAX_SEARCH            50
 
 /* LMS Limits - Obtained from 4616 bathy and 1657 gravity cruises */
@@ -45,7 +61,7 @@
 #define MGD77_MAX_FAA_MISFIT        7.98608                /* Q95 */
 
 
-/* Error Display Codes */
+/* Verbose Error Display Codes */
 #define TYPE_WARN            0
 #define TIME_WARN            1
 #define DISTANCE_WARN        2
@@ -56,30 +72,28 @@
 #define SUMMARY_WARN         7
 #define MGD77_N_WARN_TYPES   8
 
-/* Error classes */
-#define C_TIME               0
-#define C_NAV                1
-#define C_OE                 2
-#define C_RANGE              3
-#define C_SLOPE              4
-#define C_GRID               5
-#define N_ERROR_CLASSES      6
-#define N_DEFAULT_TYPES      MGD77_N_DATA_FIELDS
+/* E77 Error classes */
+#define E77_NAV                0
+#define E77_VALUE              1
+#define E77_SLOPE              2
+#define E77_GRID               3
+#define N_ERROR_CLASSES        4
+#define N_DEFAULT_TYPES      MGD77_N_NUMBER_FIELDS
 
-/* Time error types */
-#define TIME_DUPL            1          /* A */
-#define TIME_DECR            2          /* B */
-#define TIME_UNSP            4          /* C */
-#define TIME_OOR             8          /* D */
-#define N_TIME_TYPES         4
+/* E77 Nav Error Types */
+#define NAV_TIME_OOR         1          /* A */
+#define NAV_TIME_DECR        2          /* B */
+#define NAV_HISPD            4          /* C */
+#define NAV_ON_LAND          8          /* D */
+#define NAV_LAT_UNDEF       16          /* E */
+#define NAV_LON_UNDEF       32          /* F */
+#define N_NAV_TYPES          6
 
-/* Nav error types */
-#define NAV_HISPD            1          /* A */
-#define NAV_NEGSPD           2          /* B */
-#define NAV_ON_LAND          4          /* C */
-#define NAV_LAT_UNDEF        8          /* D */
-#define NAV_LON_UNDEF       16          /* E */
-#define N_NAV_TYPES          5
+/* E77 Header Errata Codes */
+#define E77_HDR_SCALE        1
+#define E77_HDR_OFFSET       2
+#define E77_HDR_BCC          3
+#define E77_HDR_PRECISION    4
 
 struct MGD77_GRID_INFO {
 	struct GRD_HEADER grdhdr;
@@ -87,7 +101,7 @@ struct MGD77_GRID_INFO {
 	struct GMT_BCR bcr;
 	int one_or_zero, nx, ny, col, sign, g_pts;
 	char abbrev[8];
-	char fname[32];	
+	char fname[32];
 };
 
 struct MGD77_SNIFFER_DEFAULTS {
@@ -105,8 +119,15 @@ struct MGD77_ERROR {
 	unsigned int flags[6];
 };
 
+struct MGD77_MAG_RF {
+	char *model;        /* Reference field model name */
+	int code;           /* Reference field code       */
+	int start;          /* Model start year           */
+	int end;            /* Model end year             */
+};
+
 EXTERN_MSC struct MGD77_SNIFFER_DEFAULTS mgd77snifferdefs[MGD77_N_DATA_FIELDS];
-EXTERN_MSC void read_grid (struct MGD77_GRID_INFO *info, float **grid);
+EXTERN_MSC void read_grid (struct MGD77_GRID_INFO *info, float **grid, double w, double e, double s, double n);
 EXTERN_MSC int sample_grid (struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, float *grid, int n_grid, int n);
 EXTERN_MSC void regress_ls (double *x, double *y, int n, double *stat, int col);
 EXTERN_MSC void regress_rls (double *x, double *y, int nvalues, double *stat, int col);
