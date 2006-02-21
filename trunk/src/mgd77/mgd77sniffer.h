@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.3 2006-02-21 02:14:24 mtchandl Exp $	
+ *	$Id: mgd77sniffer.h,v 1.4 2006-02-21 04:48:18 mtchandl Exp $	
  *
  *	File:	mgd77sniffer.h
  *
@@ -18,21 +18,6 @@
  #include "mgd77.h"
  #include <time.h>
  
-/*  MGD77 bit-pattern w/ E77 alpha characters
-|-------------------------------------------------|----------|
-| X W V U T S R Q P O N M L K J I H G F E D C B A | E77 Code |
-| - - - - - - - - - - - - - - - - - - - - - - - - | - - - - -|
-| n f e g m d m m m m b b d t p l l m h d m y t d | F  I     |
-| q a o o s i s a t t t c e w t o a i o a o e z r | i  D     |
-| c a t b d u e g f f c c p t c n t n u y n a   t | e        |
-|       s   r n   2 1     t           r   t r     | l        |
-|             s           h               h       | d        |
-| - - - - - - - - - - - - - - - - - - - - - - - - | - - - - -|
-| 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 | Bit place|
-| - G C G C C - G G G - - G G - - - T T T T T - - | Bit type |
-|-------------------------------------------------|----------|
-  Bit types: (G)eophysical, (C)orrection, (T)ime */
-
 /* Constants */
 #define MGD77_N_DATA_FIELDS         27
 #define MGD77_NM_PER_DEGREE         60
@@ -59,7 +44,6 @@
 #define MGD77_MAX_FAA_SLOPE         1.06862              /* Q97.5 */
 #define MGD77_MAX_FAA_INTERCEPT     19.1557                /* Q95 */
 #define MGD77_MAX_FAA_MISFIT        7.98608                /* Q95 */
-
 
 /* Verbose Error Display Codes */
 #define TYPE_WARN            0
@@ -95,6 +79,21 @@
 #define E77_HDR_BCC          3
 #define E77_HDR_PRECISION    4
 
+/*  MGD77 bit-pattern w/ E77 alpha characters
+|-------------------------------------------------|----------|
+| X W V U T S R Q P O N M L K J I H G F E D C B A | E77 Code |
+| - - - - - - - - - - - - - - - - - - - - - - - - | - - - - -|
+| n f e g m d m m m m b b d t p l l m h d m y t d | F  I     |
+| q a o o s i s a t t t c e w t o a i o a o e z r | i  D     |
+| c a t b d u e g f f c c p t c n t n u y n a   t | e        |
+|       s   r n   2 1     t           r   t r     | l        |
+|             s           h               h       | d        |
+| - - - - - - - - - - - - - - - - - - - - - - - - | - - - - -|
+| 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 | Bit place|
+| - G C G C C - G G G - - G G - - - T T T T T - - | Bit type |
+|-------------------------------------------------|----------|
+  Bit types: (G)eophysical, (C)orrection, (T)ime */
+
 struct MGD77_GRID_INFO {
 	struct GRD_HEADER grdhdr;
 	struct GMT_EDGEINFO edgeinfo;
@@ -129,8 +128,8 @@ struct MGD77_MAG_RF {
 EXTERN_MSC struct MGD77_SNIFFER_DEFAULTS mgd77snifferdefs[MGD77_N_DATA_FIELDS];
 EXTERN_MSC void read_grid (struct MGD77_GRID_INFO *info, float **grid, double w, double e, double s, double n);
 EXTERN_MSC int sample_grid (struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, float *grid, int n_grid, int n);
-EXTERN_MSC void regress_ls (double *x, double *y, int n, double *stat, int col);
-EXTERN_MSC void regress_rls (double *x, double *y, int nvalues, double *stat, int col);
+EXTERN_MSC void regress_ls (double *x, double *y, int n, double *stat, int col, double S_xx);
+EXTERN_MSC void regress_rls (double *x, double *y, int nvalues, double *stat, int col, double S_xx);
 EXTERN_MSC void regress_lms (double *x, double *y, int nvalues, double *stat, int gridField);
 EXTERN_MSC void regresslms_sub (double *x, double *y, double angle0, double angle1, int nvalues, int n_angle, double *stat, int gridField);
 EXTERN_MSC double lms (double *x, int n);
