@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.220 2006-02-20 20:21:22 remko Exp $
+ *	$Id: gmt_support.c,v 1.221 2006-02-21 00:50:13 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4232,9 +4232,9 @@ void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, BOOLEAN upd
 	memset ((void *)header->x_units, 0, (size_t)GRD_UNIT_LEN);
 	memset ((void *)header->y_units, 0, (size_t)GRD_UNIT_LEN);
 	memset ((void *)header->z_units, 0, (size_t)GRD_UNIT_LEN);
-	strcpy (header->x_units, "Longitude [degrees_east]");
-	strcpy (header->y_units, "Latitude [degrees_north]");
-	strcpy (header->z_units, "Value");
+	strcpy (header->x_units, "x");
+	strcpy (header->y_units, "y");
+	strcpy (header->z_units, "z");
 	memset ((void *)header->title, 0, (size_t)GRD_TITLE_LEN);
 	memset ((void *)header->remark, 0, (size_t)GRD_REMARK_LEN);
 }
