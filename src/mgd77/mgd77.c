@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.116 2006-02-22 01:32:54 pwessel Exp $
+ *	$Id: mgd77.c,v 1.117 2006-02-22 01:57:46 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -913,7 +913,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		}
 		H->errors[kind]++;
 	}
-	i = 0;
+	i = -1;
 	if (P->Magnetics_Ref_Field_Code[0] OR_TRUE) {
 		i = atoi (P->Magnetics_Ref_Field_Code);
 		if ((!((i >= 0 && i <= 13) || i == 88)) OR_TRUE) {
@@ -949,7 +949,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 	yr1 = (H->meta.Departure[0]) ? H->meta.Departure[0] : atoi (P->Survey_Departure_Year);
 	yr2 = (H->meta.Arrival[0]) ? H->meta.Arrival[0] : atoi (P->Survey_Arrival_Year);
 			
-	if (yr1 && yr2 && ref_field_code != 99) {
+	if (yr1 && yr2 && ref_field_code != -1 && ref_field_code != 99) {
 		if (ref_field_code == 88) {
 			if (!strncmp(P->Magnetics_Ref_Field,"IGRF",4)) {
 				for (k = 0; P->Magnetics_Ref_Field[k] != 'F'; k++);
@@ -1195,7 +1195,7 @@ void MGD77_Verify_Prep_m77 (struct MGD77_CONTROL *F, struct MGD77_META *C, struc
 		C->Departure[2] = D[0].number[MGD77_DAY];
 		C->Arrival[0] = D[nrec-1].number[MGD77_YEAR];
 		C->Arrival[1] = D[nrec-1].number[MGD77_MONTH];
-		C->Arrival[1] = D[nrec-1].number[MGD77_DAY];
+		C->Arrival[2] = D[nrec-1].number[MGD77_DAY];
 	}
 	
 	for (iy = 0; iy < 20; iy++) {
