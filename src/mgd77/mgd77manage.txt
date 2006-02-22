@@ -70,12 +70,11 @@ bicubic interpolation (however, see \fB\-Q\fP).  Append name of a GMT grid file.
 .br
 .sp
 \fBi\fP Sample a Sandwell/Smith Mercator *.img grid along the track given by the MGD77+ file using
-bicubic interpolation (however, see \fB\-Q\fP).  Append
-grid spacing in minutes (1 or 2), the gridded data scale (typically 1 or 10), the IMG file mode (0-3), and
-finally the img grid filename.  The modes stand for the following: (0) Img files with no constraint
-code, returns data at all points, (1) Img file with constraints coded, return data at all points, (2) Img file
-with constraints coded, return data only at constrained points and NaN elsewhere, and (3) Img file
-with constraints coded, return 1 at constraints and 0 elsewhere.
+bicubic interpolation (however, see \fB\-Q\fP).  Append the gridded data scale (typically 1 or 0.1),
+the IMG file mode (0-3), and finally the img grid filename.  The modes stand for the following:
+(0) Img files with no constraint code, returns data at all points, (1) Img file with constraints coded,
+return data at all points, (2) Img file with constraints coded, return data only at constrained points
+and NaN elsewhere, and (3) Img file with constraints coded, return 1 at constraints and 0 elsewhere.
 .br
 .sp
 \fBn\fP Append filename of a two-column table with the first column holding the record number (0 to nrows - 1)
@@ -135,7 +134,7 @@ To append Geosat/ERS-1 gravity version 11.2 as an extra data column in the cruis
 01010047.nc and 01010008.nc, storing the values as mGal*10 in a 2-byte short integer, try
 .br
 .sp
-\fBmgd77manage\fP 01010047 01010008 \fB\-Ai\fP2/10/1/grav.11.2.img \fB\-I\fPsatgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version 11.2" \fB\-V\fP
+\fBmgd77manage\fP 01010047 01010008 \fB\-Ai\fP10/1/grav.11.2.img \fB\-I\fPsatgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version 11.2" \fB\-V\fP
 .br
 .sp
 To append a filtered version of magnetics as an extra data column of type float for the cruise 01010047.nc, and

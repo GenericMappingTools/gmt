@@ -3,7 +3,8 @@
 mgd77sniffer \- Scan for errors in MGD77 data
 .SH SYNOPSIS
 \fBmgd77sniffer\fP \fINGDC-ids\fP [\fB\-C\fP\fImaxspd\fP] [\fB\-D\fP\fId|e|f|l|m|s|v\fP]
-[\fB\-G\fP\fIfieldabbrev\fP,\fIgrid\fP] [\fB\-N\fP] [\fB\-O\fP\fIcustom limits file\fP]
+[\fB\-g\fP\fIfieldabbrev\fP,\fIimggrid\fP,\fIscale\fP,\fImode\fP] [\fB\-G\fP\fIfieldabbrev\fP,\fIgrid\fP] 
+[\fB\-N\fP] [\fB\-O\fP\fIcustom limits file\fP]
 [\fB\-S\fP\fId|s|t\fP] [\fB\-T\fP\fIgap\fP] [\fB\-W\fP\fIc|g|o|s|t|v|x\fP]
 [\fB\-V\fP] [\fB\-b\fP] [-\fB\-H\fP] [\fB-R\fP\fI<west>/<east>/<south>/<north>\fP]
 
@@ -99,10 +100,18 @@ display values for the twelve position and geophysical fields for each MGD77 dat
 .sp
 See below for \fBMGD77 FIELD INFO\fP.
 .TP
+.B \-g
+Compare cruise data to the specified grid in Sandwell/Smith Mercator format. Requires a valid MGD77 field abbreviation (see 
+\fBMGD77 FIELD INFO\fP below) followed by a comma, the path (if not in current directory)
+and grid filename, a scale to multiply the data (1 or 0.1), and mode which stand for the following:
+(0) Img files with no constraint code, returns data at all points, (1) Img file with constraints coded,
+return data at all points, (2) Img file with constraints coded, return data only at constrained points
+and NaN elsewhere, and (3) Img file with constraints coded, return 1 at constraints and 0 elsewhere.
+.TP
 .B \-G
 Compare cruise data to the specified grid. Requires a valid MGD77 field abbreviation (see 
 \fBMGD77 FIELD INFO\fP below) followed by a comma, then the path (if not in current directory)
-and grid filename. Multiple grid comparison is supported by using separate \fB\-G\fP calls for each 
+and grid filename. Multiple grid comparison is supported by using separate \fB\-g\fP or \fB\-G\fP calls for each 
 grid. See \fBGRID FILE INFO\fP below.
 .br
 .sp
@@ -220,7 +229,8 @@ Free Air Anomaly        faa                     mGal
 .br
 
 .SH GRID FILE INFO
-Grid files can be of any grid type supported by GMT and therefore must contain a GMT header. 
+For \fB\-g\fP the grids must be in the format used by Sandwell & Smith, which is a spherical Mercator 2-byte grid with no header.
+For \fB\-G\fP the grid files can be of any grid type supported by GMT and therefore must contain a GMT header. 
 A correctly formatted *.i2 grid file can be generated using grdraster as shown below.
 .br
 .sp
@@ -412,10 +422,10 @@ To dump cruise gradients, try
 \fBmgd77sniffer\fP 08010001 -Ds
 .br
 .sp
-To compare cruise depth with ETOPO5 bathymetry, try
+To compare cruise depth with ETOPO5 bathymetry and gravity with Sandwell/Smith 2 min gravity version 11, try
 .br
 .sp
-\fBmgd77sniffer\fP 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2
+\fBmgd77sniffer\fP 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 -gfaa,/data/GRIDS/grav.11.2.img,0.1,1
 .br
 .sp
 
