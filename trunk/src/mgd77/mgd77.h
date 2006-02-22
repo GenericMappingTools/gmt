@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.64 2006-02-20 06:08:15 pwessel Exp $
+ *	$Id: mgd77.h,v 1.65 2006-02-22 01:32:55 pwessel Exp $
  * 
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -20,6 +20,15 @@
 #define _MGD77_H
 
 #include "gmt.h"
+
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#if defined(WIN32) || defined(__EMX__)  /* Some definitions and includes are different under Windows or OS/2 */
+#define STAT _stat
+#else                                   /* Here for Unix, Linux, Cygwin, Interix, etc */
+#define STAT stat
+#endif
 
 #define MGD77_CDF_VERSION	"2005.11.1"	/* Current version of MGD77+ files created */
 #define MGD77_RECORD_LENGTH	120		/* Length of MGD77 ASCII data records */
@@ -101,6 +110,9 @@
 #define MGD77_IGF_1930		2
 #define MGD77_IGF_1967		3
 #define MGD77_IGF_1980		4
+
+#define GMT_IMG_MINLAT -72.0059773539
+#define GMT_IMG_MAXLAT +72.0059773539
 
 /* Return error numbers */
 

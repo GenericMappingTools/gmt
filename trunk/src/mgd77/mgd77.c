@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.115 2006-02-20 06:08:15 pwessel Exp $
+ *	$Id: mgd77.c,v 1.116 2006-02-22 01:32:54 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -19,18 +19,10 @@
 #include "mgd77.h"
 #include "mgd77_IGF_coeffs.h"
 #include "mgd77_init.h"
-#include <sys/types.h>
-#include <sys/stat.h>
 #ifdef _WIN32
 #include "dirent.h"
 #else
 #include <dirent.h>
-#endif
-
-#if defined(WIN32) || defined(__EMX__)  /* Some definitions and includes are different under Windows or OS/2 */
-#define STAT _stat
-#else                                   /* Here for Unix, Linux, Cygwin, Interix, etc */
-#define STAT stat
 #endif
 
 #define MGD77_CDF_CONVENTION	"CF-1.0"	/* MGD77+ files are CF-1.0 and hence COARDS-compliant */

@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.4 2006-02-21 04:48:18 mtchandl Exp $	
+ *	$Id: mgd77sniffer.h,v 1.5 2006-02-22 01:32:55 pwessel Exp $	
  *
  *	File:	mgd77sniffer.h
  *
@@ -98,7 +98,8 @@ struct MGD77_GRID_INFO {
 	struct GRD_HEADER grdhdr;
 	struct GMT_EDGEINFO edgeinfo;
 	struct GMT_BCR bcr;
-	int one_or_zero, nx, ny, col, sign, g_pts;
+	int one_or_zero, nx, ny, col, sign, g_pts, format, mode, mx, interpolate;
+	double scale;
 	char abbrev[8];
 	char fname[32];
 };
@@ -126,7 +127,7 @@ struct MGD77_MAG_RF {
 };
 
 EXTERN_MSC struct MGD77_SNIFFER_DEFAULTS mgd77snifferdefs[MGD77_N_DATA_FIELDS];
-EXTERN_MSC void read_grid (struct MGD77_GRID_INFO *info, float **grid, double w, double e, double s, double n);
+EXTERN_MSC void read_grid (struct MGD77_GRID_INFO *info, float **grid, double w, double e, double s, double n, BOOLEAN bilinear, double threshold);
 EXTERN_MSC int sample_grid (struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, float *grid, int n_grid, int n);
 EXTERN_MSC void regress_ls (double *x, double *y, int n, double *stat, int col, double S_xx);
 EXTERN_MSC void regress_rls (double *x, double *y, int nvalues, double *stat, int col, double S_xx);
