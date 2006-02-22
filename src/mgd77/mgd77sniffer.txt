@@ -128,7 +128,7 @@ check.
 .sp
 .TP
 .B \-H
-(with -G only) disable data decimation during RLS regression.
+(with -G|g only) disable data decimation during RLS regression.
 .TP
 .B \-N
 Use nautical units.
@@ -150,23 +150,11 @@ Example custom default file contents (see below for units):
 .br
 twt     0       15      1       0
 .br
-depth   0       11000   1000    4500
+depth   0       11000   500    5000
 .br
-mtf1    19000   72000   200     0
+mag     -800    800     -     -
 .br
-mtf2    19000   72000   200     0
-.br
-mag     -800    800     200     0
-.br
-diur    -100    100     20      0
-.br
-msd     -1000   10000   1000    0
-.br
-gobs    975900  986000  100     0
-.br
-eot     -150    150     100     0
-.br
-faa     -250    250     100     2500
+faa     -300    300     100     2500
 .br
 .sp
 Use a dash '-' to retain a default limit.
@@ -195,15 +183,15 @@ zero to de-activate gap skipping.
 .B \-W
 Print out only certain warning types for verbose error messages. Comma delimit any combination of
 \fBc|g|o|s|t|v|x\fP: where (\fBc\fP) type code warnings, (\fBg\fP)radient out of range, (\fBo\fP)ffsets
-from grid (requires \fB\-G\fP), (\fBs\fP)peed out of range, (\fBt\fP)ime warnings, (\fBv\fP)alue out of 
-range, (\fBx\fP) warning summaries. By default ALL warning messages are printed. Not allowed with \fB\-D\fP
-option. Not compatible with any -D options.
+from grid (requires \fB\-G|g\fP), (\fBs\fP)peed out of range, (\fBt\fP)ime warnings, (\fBv\fP)alue out of 
+range, (\fBx\fP) warning summaries. By default ALL warning messages are printed.Not compatible with any
+\fB\-D\fP options.
 .TP
 .B \-V
 runs in verbose mode.
 .TP
 .B \-b
-output binary data for \fB\-D\fP option.
+output binary data for \fB\-D\fPd|f|s|v option.
 
 .SH MGD77 FIELD INFO
 \fIField                   Abbreviation            Units\fP
@@ -268,7 +256,7 @@ E77 header information.
 .br
 \\# Cruise 06050010 ID L476WG MGD77 FILE VERSION: 19870415 N_RECS: 27268
 .br
-\\# Examined: Mon Feb 20 00:54:37 2006
+\\# Examined: Tue Feb 21 16:33:34 2006
 .br
 \\# Examiner: mtchandl
 .br
@@ -276,13 +264,9 @@ E77 header information.
 .br
 \\# Errata: Header
 .br
-N-H-06050010-04-05-E: Invalid Survey Arrival Month: (07) [25]
+N-faa-E-01: Regression against grid gave scale 0.108643 which is statistically different from 1.0. Recommended scale: (0.100000)
 .br
-N-H-06050010-13-10-W: Survey year (1976) outside magnetic reference field  time range (1046040-1046044)
-.br
-N-faa-E-01: Regression against grid gave scale 0.108643 which is statistically not different from 0.100000. Recommended scale: (0.100000)
-.br
-N-faa-E-02: Regression against grid gave DC offset -1.319411
+N-faa-E-02: Regression against grid gave DC offset -1.319411 which is statistically different from 0.0
 .br
 I-twt-W-03: More recent bathymetry correction table available
 .br
@@ -292,7 +276,7 @@ I-depth-W-04: Integer precision in depth
 .TP
 \fBError Record\fP
 Individual error records have strict format. Included is a time or distance column followed by record number,
-a formatted error code string, and finally a verbose description of errors detected in the record. Six error
+a formatted error code string, and finally a verbose description of errors detected in the record. Four error
 classes are encoded into the error code string with different alphabetic characters representing unique error
 types. See below for error code format description.
 .br
