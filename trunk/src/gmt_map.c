@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.107 2006-02-11 23:03:33 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.108 2006-02-22 22:50:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -586,6 +586,8 @@ void GMT_map_setup (double west, double east, double south, double north)
 		fprintf (stderr, "%s: GMT Fatal Error: No region selected - Aborts!\n", GMT_program);
 		exit (EXIT_FAILURE);
 	}
+
+	GMT_init_ellipsoid ();	/* Set parameters depending on the ellipsoid since the latter could have been set explicitly */
 
 	if (project_info.degree[0]) {
 		if (west < 0.0 && east < 0.0) {
@@ -8389,6 +8391,33 @@ void GMT_scale_eqrad ()
 	project_info.i_EQ_RAD = 1.0 / project_info.EQ_RAD;
 	project_info.M_PR_DEG = TWO_PI * project_info.EQ_RAD / 360.0;
 
+}
+
+void GMT_init_ellipsoid (void)
+{
+	double f, mean_r;
+	
+	/* Now set up ellipsoid parameters for the selected ellipsoid since .gmtdefaults could have changed them */
+	
+	f = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening;
+	project_info.ECC2 = 2 * f - f * f;
+	project_info.ECC4 = project_info.ECC2 * project_info.ECC2;
+	project_info.ECC6 = project_info.ECC2 * project_info.ECC4;
+	project_info.one_m_ECC2 = 1.0 - project_info.ECC2;
+	project_info.i_one_m_ECC2 = 1.0 / project_info.one_m_ECC2;
+	project_info.ECC = d_sqrt (project_info.ECC2);
+	project_info.half_ECC = 0.5 * project_info.ECC;
+	project_info.i_half_ECC = 0.5 / project_info.ECC;
+	project_info.EQ_RAD = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius;
+	project_info.i_EQ_RAD = 1.0 / project_info.EQ_RAD;
+	/* We also need to set things that relate to spheres only.  If current ellipsoid is not a sphere
+	 * then we calculate the mean radius and derive spherical properties from it */
+	 
+	/* Must compute mean radius r = (2a + c)/3 = a - f * a /3  */
+	
+	mean_r = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius - f * gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius / 3.0;
+	project_info.M_PR_DEG = TWO_PI * mean_r / 360.0;		/* Sphere degree -> m  */
+	project_info.KM_PR_DEG = 0.001 * project_info.M_PR_DEG;		/* Sphere degree -> km */
 }
 
 void GMT_set_polar (double plat)

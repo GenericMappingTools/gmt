@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.207 2006-02-17 21:27:01 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.208 2006-02-22 22:50:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2731,7 +2731,6 @@ int GMT_begin (int argc, char **argv)
 
 	int i, j, k, n;
 	char *this;
-	double f, mean_r;
 
 #ifdef __FreeBSD__
 	/* allow divide by zero -- Inf */
@@ -2810,27 +2809,7 @@ int GMT_begin (int argc, char **argv)
 
 	GMT_prep_PS_bits ();	/* In case --DPARs were given */
 
-	/* Now set up ellipsoid parameters for the selected ellipsoid since .gmtdefaults could have changed them */
-	
-	f = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening;
-	project_info.ECC2 = 2 * f - f * f;
-	project_info.ECC4 = project_info.ECC2 * project_info.ECC2;
-	project_info.ECC6 = project_info.ECC2 * project_info.ECC4;
-	project_info.one_m_ECC2 = 1.0 - project_info.ECC2;
-	project_info.i_one_m_ECC2 = 1.0 / project_info.one_m_ECC2;
-	project_info.ECC = d_sqrt (project_info.ECC2);
-	project_info.half_ECC = 0.5 * project_info.ECC;
-	project_info.i_half_ECC = 0.5 / project_info.ECC;
-	project_info.EQ_RAD = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius;
-	project_info.i_EQ_RAD = 1.0 / project_info.EQ_RAD;
-	/* We also need to set things that relate to spheres only.  If current ellipsoid is not a sphere
-	 * then we calculate the mean radius and derive spherical properties from it */
-	 
-	/* Must compute mean radius r = (2a + c)/3 = a - f * a /3  */
-	
-	mean_r = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius - f * gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius / 3.0;
-	project_info.M_PR_DEG = TWO_PI * mean_r / 360.0;		/* Sphere degree -> m  */
-	project_info.KM_PR_DEG = 0.001 * project_info.M_PR_DEG;		/* Sphere degree -> km */
+	GMT_init_ellipsoid ();	/* Set parameters depending on the ellipsoid */
 
 	GMT_init_time_system_structure ();
 
