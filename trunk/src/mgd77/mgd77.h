@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.67 2006-02-23 05:48:13 pwessel Exp $
+ *	$Id: mgd77.h,v 1.68 2006-02-23 22:50:34 pwessel Exp $
  * 
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -471,7 +471,7 @@ extern int MGD77_Select_Header_Item (struct MGD77_CONTROL *F, char *item);
 extern int MGD77_Get_Set (char *abbrev);										/* Returns 0 if abbrev is in the MGD77 set, else 1 */
 extern void MGD77_Fatal_Error (int error);										/* Print message for this error and exit */
 extern BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec);				/* Tests if a record passes all specified logical & exact tests */
-extern void MGD77_Apply_Bitflags (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec);				/* Replaces values whose flags are ON with NaNs */
+extern void MGD77_Apply_Bitflags (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec, BOOLEAN apply_bits[]);	/* Replaces values whose flags are ON with NaNs */
 extern void MGD77_Set_Unit (char *dist, double *scale, int way);							/* Convert appended distance unit to a numerical scale to give meters */
 extern void MGD77_nc_status (int status);										/* Checks for netCDF errors and aborts with error message */
 extern void MGD77_Process_Ignore (char code, char format);								/* Process the ignre-format option */
