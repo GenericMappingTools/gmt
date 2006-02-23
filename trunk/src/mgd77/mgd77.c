@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.118 2006-02-23 02:34:39 pwessel Exp $
+ *	$Id: mgd77.c,v 1.119 2006-02-23 05:48:13 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2624,6 +2624,24 @@ int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F)
 	}
 	
 	return (MGD77_FILE_NOT_FOUND);	/* No luck */
+}
+
+void MGD77_Apply_Bitflags (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec)
+{
+	int set, i;
+	double *value;
+	
+	if (F->n_bit_tests || (F->use_flags[0] == FALSE && F->use_flags[1] == FALSE)) return; /* Separate bit-tests have been specified or bits are deactivated */
+	
+	/* We get here when we need to take action on the bitflags */
+	
+	for (i = 0; i < F->n_out_columns; i++) {
+		set = F->order[i].set;
+		if (F->use_flags[set] && S->flags[set][rec] & (1 << F->order[i].item)) {
+			value = (double *)S->values[i];
+			value[rec] = GMT_d_NaN;
+		}
+	}
 }
 
 BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec)

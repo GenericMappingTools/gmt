@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.38 2006-02-15 20:07:17 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.39 2006-02-23 05:48:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -71,86 +71,6 @@ void	GMT_dt2rdc (GMT_dtime t, GMT_cal_rd *rd, double *s) {
 
 
 /* String reading functions for parsing ISO 8601 cal and clock  */
-
-int	GMT_atoft (char *s, double *t) {
-/*	Given s, which may be a string representation of
-	a floating point number, or a calendar[and clock]
-	value, try to decode s.  Return -1 on failure.
-	Return 0 if s is a float, and store it in t.
-	Return 1 if s is a calendar[and clock]value, and
-	store the GMT_cctime value in t.
-	
-	Note that s could be a floating point representation
-	of a time, such as a double precision Julian Day number.
-	In that case, there is a GMT_cctime value which may be
-	associated with it via TIME_UNIT and TIME_EPOCH.  But
-	that association is not done in this routine.
-	
-	WHF Smith 20 April 2000.
-*/
-
-	double	secs = 0.0;
-	int	j, k, err = -1, is_float = 0, is_time = 1;
-	GMT_cal_rd	rd;
-	char	*cp;
-	
-	if ( (cp = strpbrk (s, "T")) ) {
-		k = strlen(s);
-		j = strlen(cp);
-		if (j > 1) {
-			/* A clock string lies beyond the 'T' of s[]; read it.  */
-			if (GMT_read_clock (&cp[1], &secs)) return (err);
-		}
-		/* Terminate s before the 'T' to make calendar string  */
-		
-		if (GMT_read_cal (s, &rd) ) return (err);
-		
-		*t = GMT_rdc2dt (rd, secs);
-		return (is_time);
-	}
-	else if (strpbrk (s, "W") ) {
-	
-		if (GMT_read_cal (s, &rd) ) return (err);
-		
-		*t = GMT_rdc2dt (rd, secs);
-		return (is_time);
-	}
-	else if ( (strpbrk (s, "E")) || (strpbrk (s, "e")) ) {
-		
-		if ( (sscanf (s, "%lf", t)) != 1) return (err);
-		return (is_float);
-	}
-	
-	/* Get here when string is ambiguous.  Examine last occurrence
-	of a hyphen.  If this is preceded by a digit, then it is an
-	internal hyphen, and the string is a time string.  */
-	
-	if ( (cp = strrchr (s, '-')) ) {
-		/* There is a hyphen.  If more than one, this is the last.  */
-		k = strlen(s);
-		j = strlen(cp);
-		if (j < k) {
-			/* A character precedes this hyphen.  */
-			if (isdigit ((int)s[k-j-1]) ) {
-				
-				if (GMT_read_cal (s, &rd) ) return (err);
-		
-				*t = GMT_rdc2dt (rd, secs);
-				return (is_time);
-			}
-			else if (s[k-j-1] != ' ') {
-				/* It isn't space either; this is an error.  */
-				return (err);
-			}
-		}
-	}
-	
-	/* Get here when string has no calendar-like internal hyphens.
-		Presume it is a float.  */
-	
-	if ( (sscanf (s, "%lf", t)) != 1) return (err);
-	return (is_float);
-}
 
 int	GMT_read_clock (char *s, double *t) {
 /* 	Given a clock string s, try to read the form
@@ -239,7 +159,7 @@ int	GMT_read_cal (char *s, GMT_cal_rd *rd) {
 	if ( (sscanf (s, "%d", &itemp1) ) != 1) return (-1);
 	
 	/* A null value of cj is not an error.  We might have
-		had "1985T" passed to GMT_atoft () and it might
+		had "1985T" passed to a function and it might
 		have stripped off the 'T' and passed the remaining
 		string to this routine, in which case cj is null,
 		and we should interpret this as gregorian, with
