@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.66 2006-01-07 01:55:04 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.67 2006-02-23 05:48:49 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	01-JAN-2006
+#	23-FEB-2006
 #--------------------------------------------------------------------------------
 #	FUNCTIONS
 #--------------------------------------------------------------------------------
@@ -67,8 +67,9 @@ echo $use
 prep_gmt()
 {
 #--------------------------------------------------------------------------------
-LATESTGMT4=4.1
+LATESTGMT4=4.1.1
 LATESTGMT3=3.4.5
+GSHHS=4
 cat << EOF > gmt_install.ftp_site
 1. SOEST, U of Hawaii [GMT Home], Honolulu, Hawaii, USA
 2. NOAA, Lab for Satellite Altimetry, Silver Spring, Maryland, USA
@@ -713,6 +714,8 @@ install_coast()
 	done=0
 	if [ -f GMT${VERSION}_${file}.tar.$suffix ]; then
 		this=GMT${VERSION}_${file}.tar.$suffix
+	elif [ -f GMT${GSHHS}_${file}.tar.$suffix ]; then
+		this=GMT${GSHHS}_${file}.tar.$suffix
 	elif [ -f GMT_${file}.tar.$suffix ]; then
 		this=GMT_${file}.tar.$suffix
 	else

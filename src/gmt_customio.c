@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.43 2005-12-17 05:59:21 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.44 2006-02-23 05:48:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -313,6 +313,10 @@ int GMT_ras_read_grd_info (struct GRD_HEADER *header)
 		exit (EXIT_FAILURE);
 	}
 
+	if (h.magic != RAS_MAGIC) {
+		fprintf (stderr, "GMT Fatal Error: file %s not a Sun rasterfile!\n", header->name);
+		exit (EXIT_FAILURE);
+	}
 	if (GMT_read_rasheader (fp, &h)) {
 		fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", header->name);
 		exit (EXIT_FAILURE);
@@ -322,7 +326,7 @@ int GMT_ras_read_grd_info (struct GRD_HEADER *header)
 		exit (EXIT_FAILURE);
 	}
 
-	for (i = 0; i < h.maplength; i++) fread ((void *)&u, sizeof (unsigned char *), (size_t)1, fp);	/* Skip colormap */
+	for (i = 0; i < h.maplength; i++) fread ((void *)&u, sizeof (unsigned char *), (size_t)1, fp);	/* Skip colormap by reading since fp could be stdin */
 
 	if (fp != GMT_stdin) GMT_fclose (fp);
 
