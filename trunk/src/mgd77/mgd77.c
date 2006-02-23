@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.117 2006-02-22 01:57:46 pwessel Exp $
+ *	$Id: mgd77.c,v 1.118 2006-02-23 02:34:39 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1476,7 +1476,7 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 		MGD77_nc_status (nc_inq_varndims (F->nc_id, id, &n_dims));	/* Get number of dimensions */
 		MGD77_nc_status (nc_inq_vardimid (F->nc_id, id, dims));		/* Get dimension id(s) of this variable */
 		if (n_dims == 2) {	/* Variable is a 2-D text array */
-			MGD77_nc_status (nc_inq_dimlen (F->nc_id, dims[1], count));	/* Get length of each string */
+			MGD77_nc_status (nc_inq_dimlen (F->nc_id, dims[1], &count[1]));	/* Get length of each string */
 			H->info[c].col[c_id[c]].text = count[1];
 		}
 		else {	/* Variable is a 1-d array or a single text string */
@@ -1988,7 +1988,7 @@ void MGD77_Write_Sequence (FILE *fp, int seq)
 void MGD77_Ignore_Format (int format)
 {
 	/* Allow user to turn on/off acceptance of certain formats.
-	 * Use MGD77_FORMAT_M77 to reset back to defaults (all OK) */
+	 * Use MGD77_FORMAT_ANY to reset back to defaults (all OK) */
 	 
 	 if (format == MGD77_FORMAT_ANY) {
 	 	MGD77_format_allowed[MGD77_FORMAT_M77] = TRUE;
