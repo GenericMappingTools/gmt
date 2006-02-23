@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.120 2006-02-23 22:50:34 pwessel Exp $
+ *	$Id: mgd77.c,v 1.121 2006-02-23 23:36:45 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -641,7 +641,7 @@ int MGD77_Decode_Header (struct MGD77_HEADER_PARAMS *P, char *record[], int dir)
 }
 
 /* To test parsing of the messages produced below you must compile with -DPARSE_TEST.  Then, all the messages
- * will be output regardless of there being any errors involved.
+ * will be output regardless of there being any errors involved.  Used for code testing only!
  */
  
 #ifdef PARSE_TEST
