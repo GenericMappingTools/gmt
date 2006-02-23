@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.5 2006-02-22 01:32:55 pwessel Exp $	
+ *	$Id: mgd77sniffer.h,v 1.6 2006-02-23 02:34:39 pwessel Exp $	
  *
  *	File:	mgd77sniffer.h
  *
@@ -16,7 +16,6 @@
  
  #include "gmt.h"
  #include "mgd77.h"
- #include <time.h>
  
 /* Constants */
 #define MGD77_N_DATA_FIELDS         27
