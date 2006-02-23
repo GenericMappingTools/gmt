@@ -187,8 +187,9 @@ and you are advised to place quotes around the entire argument to \fB\-F\fP.
 Finally, for MGD77+ files you may optionally append :\fIbittests\fP which is : (a colon) followed by one or more comma-separated
 +-\fIcol\fP terms.  This compares specific bitflags only for each listed column.  Here, + means the chosen bit must
 be 1 (ON) whereas - means it must be 0 (OFF).  All bit tests given must be passed.  By default, MGD77+
-files that have the special \fBflag\fP column present will use those flags; append : with no trailing information
-to turn this behavior off.
+files that have the special \fBMGD77_flags\fP column present will use those flags, and observations associated with
+ON-bits (meaning they are flagged as bad) will be set to NaN; append : with no trailing information
+to turn this behavior off (i.e., no bit flags will be consulted).
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -404,8 +405,7 @@ The equations used are reproduced here using coefficients extracted directly fro
 (4) g = MGD77_IGF80_G0 * [(1 + MGD77_IGF80_G1 * sin^2(lat)) / sqrt (1 - MGD77_IGF80_G2 * sin^2(lat))]
 .SH CORRECTIONS
 The correction table is an ASCII file with coefficients and parameters needed to carry out corrections.
-Comment records beginning with # are allowed.
-All correction records are of the form
+Comment records beginning with # are allowed.  All correction records are of the form
 .br
 .sp
 \fIcruiseID observation correction\fP
@@ -419,17 +419,18 @@ then \fBsubtracted\fP from the observation before output.  Each \fIterm\fP must 
 \fIfactor\fP[*[\fIfunction\fP]([\fIscale\fP](\fIabbrev\fP[-\fIorigin\fP]))[^\fIpower\fP]]
 .br
 .sp
-where terms in brackets are optional.  No spaces are allowed. The \fIfactor\fP is the amplitude
+where terms in brackets are optional (the brackets themselves are not used but regular parentheses must
+be used as indicated).  No spaces are allowed except between \fIterm\fPs. The \fIfactor\fP is the amplitude
 of the basis function, while the optional \fIfunction\fP can be one of sin, cos, or exp. The
-optional \fIscale\fP and \fIorigin\fP can be used to translate the argument before giving it to the
-function.  The argument \fIabbrev\fP is one of the abbreviations listed above.  If \fIorigin\fP is
+optional \fIscale\fP and \fIorigin\fP can be used to translate the argument (before giving it to the optional
+function).  The argument \fIabbrev\fP is one of the abbreviations for observations listed above.  If \fIorigin\fP is
 given as \fBT\fP it means that we should replace it with the value of \fIabbrev\fP for the very
 first record in the file (this is usually only done for \fItime\fP).  If the first record entry is
 NaN we revert \fIorigin\fP to zero.  Optionally, raise the entire expression to the given \fIpower\fP,
 before multiplying by the amplitude.  The following is an example of ficticious corrections to the
-cruise 99999999, implying the depth should have the carter correction removed, faa should have a linear
-trend removed, magnetics should be corrected by a strange dependency on ship heading and latitude, and
-gobs needs to have 10 mGal added (hence given as -10):
+cruise 99999999, implying the \fBdepth\fP should have the Carter correction removed, \fBfaa\fP should have a linear
+trend removed, the magnetic anomaly (\fBmag\fP) should be corrected by a strange dependency on ship heading and latitude, and
+\fBgob\fPs needs to have 10 mGal added (hence given as -10):
 .br
 .sp
 99999999 depth	1.0*((carter))
