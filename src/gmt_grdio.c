@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.56 2006-02-24 03:20:12 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.57 2006-02-24 11:36:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -636,14 +636,14 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 {
 	/* Function that reads an entire Sandwell/Smith Mercator grid and stores it like a regular
 	 * GMT grid.  If init is TRUE we also initialize the Mercator projection.
-	 * For now the w,e,s,n,lat arguments are ignored (we assume a global grid with  lat +-72.00xxxx.
 	 */
 	 
-	struct STAT buf;
-	int min, i, j, ij, mx, my;
+	int min, i, j, k, ij, mx, my, first_i, n_skip, n_cols;
 	short int *i2;
-	FILE *fp;
 	char file[BUFSIZ];
+	double y_max;
+	struct STAT buf;
+	FILE *fp;
 	
 	if (!access (imgfile, R_OK))	/* File is in local directory */
 		strcpy (file, imgfile);
@@ -663,8 +663,9 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 	else
 		min = 2;
 	GMT_grd_init (grd, 0, NULL, FALSE);
-	grd->nx = 21600/min;
-	grd->ny = 12672/min;
+	grd->x_inc = grd->y_inc = min / 60.0;
+	
+	
 	if ((fp = GMT_fopen (file, "rb")) == NULL) {
 		fprintf (stderr, "%s: Error opening img file %s\n", GMT_program, file);
 		exit (EXIT_FAILURE);
@@ -681,35 +682,50 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 		GMT_map_setup (0.0, 360.0, GMT_IMG_MINLAT, GMT_IMG_MAXLAT);
 	}
 		
+		
+	GMT_geo_to_xy (w, lat, &grd->x_min, &y_max);
+	GMT_geo_to_xy (w, s, &grd->x_min, &grd->y_min);
+	GMT_geo_to_xy (e, n, &grd->x_max, &grd->y_max);
+	
+	grd->x_min = floor (grd->x_min / grd->x_inc) * grd->x_inc;
+	grd->x_max = ceil (grd->x_max / grd->x_inc) * grd->x_inc;
+	grd->y_min = floor (grd->y_min / grd->y_inc) * grd->y_inc;
+	grd->y_max = ceil (grd->y_max / grd->y_inc) * grd->y_inc;
 	/* Allocate grid memory */
 	
+	grd->nx = irint ((grd->x_max - grd->x_min) / grd->x_inc);
+	grd->ny = irint ((grd->y_max - grd->y_min) / grd->y_inc);
 	mx = grd->nx + GMT_pad[0] + GMT_pad[2];	my = grd->ny + GMT_pad[1] + GMT_pad[3];
 	*grid = (float *) GMT_memory (VNULL, (size_t)(mx * my), sizeof (float), GMT_program);
-	GMT_geo_to_xy (project_info.w, project_info.s, &grd->x_min, &grd->y_min);
-	GMT_geo_to_xy (project_info.e, project_info.n, &grd->x_max, &grd->y_max);
-	grd->x_inc = grd->y_inc = min / 60.0;
 	grd->node_offset = 1;	/* These are always pixel grids */
 	grd->xy_off = 0.5;
 	
-	i2 = (short int *) GMT_memory (VNULL, (size_t)(grd->nx), sizeof (short int), GMT_program);
+	first_i = (int)floor (grd->x_min / grd->x_inc);			/* first tile partly or fully inside region */
+	n_skip = (int)floor ((y_max - grd->y_max) / grd->y_inc);	/* Number of rows clearly above y_max */
+	n_cols = min * 10800;						/* Number of columns (10800 or 21600) */
+	fseek (fp, (long)(n_skip * n_cols * 2), SEEK_SET);
+	
+	i2 = (short int *) GMT_memory (VNULL, (size_t)n_cols, sizeof (short int), GMT_program);
 	for (j = 0; j < grd->ny; j++) {	/* Read all the rows, offset by 2 boundary rows and cols */
 		ij = (j + GMT_pad[3]) * mx + GMT_pad[0];
 		fread ((void *)i2, sizeof (short int), grd->nx, fp);
-		for (i = 0; i < grd->nx; i++) {	/* Process this row's values */
+		for (i = 0, k = first_i; i < grd->nx; i++) {	/* Process this row's values */
 			switch (mode) {
 				case 0:	/* No encoded track flags, do nothing */
 					break;
 				case 1:	/* Remove the track flag on odd (constrained) points */
-					if (i2[i]%2) i2[i]--;
+					if (i2[k]%2) i2[k]--;
 					break;
 				case 2:	/* Remove the track flag on odd (constrained) points and set unconstrained to NaN */
-					i2[i] = (i2[i]%2) ? i2[i] - 1 : SHRT_MIN;
+					i2[k] = (i2[k]%2) ? i2[k] - 1 : SHRT_MIN;
 					break;
 				case 3:	/* Set odd (constrained) points to 1 and set unconstrained to 0 */
-					i2[i] %= 2;
+					i2[k] %= 2;
 					break;
 			}
-			(*grid)[ij+i] = (float)((mode == 3) ? i2[i] : (i2[i] * scale));
+			(*grid)[ij+i] = (float)((mode == 3) ? i2[k] : (i2[k] * scale));
+			k++;
+			if (k == n_cols) k = 0;	/* Wrapped around 360 */
 		}
 	}
 	GMT_free ((void *)i2);
