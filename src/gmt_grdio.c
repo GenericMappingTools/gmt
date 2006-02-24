@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.55 2006-02-06 16:09:06 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.56 2006-02-24 03:20:12 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -47,6 +47,13 @@
 
 #define GMT_WITH_NO_PS
 #include "gmt.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#if defined(WIN32) || defined(__EMX__)  /* Some definitions and includes are different under Windows or OS/2 */
+#define STAT _stat
+#else                                   /* Here for Unix, Linux, Cygwin, Interix, etc */
+#define STAT stat
+#endif
 
 int GMT_grdformats[N_GRD_FORMATS][2] = {
 #include "gmt_grdformats.h"
@@ -620,4 +627,91 @@ void GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 	}
 
 	 GMT_free (tmp);
+}
+
+#define GMT_IMG_MINLAT -72.0059773539
+#define GMT_IMG_MAXLAT +72.0059773539
+
+void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w, double e, double s, double n, double scale, int mode, double lat, BOOLEAN init)
+{
+	/* Function that reads an entire Sandwell/Smith Mercator grid and stores it like a regular
+	 * GMT grid.  If init is TRUE we also initialize the Mercator projection.
+	 * For now the w,e,s,n,lat arguments are ignored (we assume a global grid with  lat +-72.00xxxx.
+	 */
+	 
+	struct STAT buf;
+	int min, i, j, ij, mx, my;
+	short int *i2;
+	FILE *fp;
+	char file[BUFSIZ];
+	
+	if (!access (imgfile, R_OK))	/* File is in local directory */
+		strcpy (file, imgfile);
+	else if (GMT_IMGDIR)	/* Try GMT_IMGDIR */
+		sprintf (file, "%s%c%s", GMT_IMGDIR, DIR_DELIM, imgfile);
+	else {
+		fprintf (stderr, "%s: Unable to find file %s\n", GMT_program, imgfile);
+		exit (EXIT_FAILURE);
+	}
+	if (STAT (file, &buf)) {	/* Inquiry about file failed somehow */
+		fprintf (stderr, "%s: Unable to stat file %s\n", GMT_program, imgfile);
+		exit (EXIT_FAILURE);
+	}
+	
+	if (buf.st_size >= (21600*12672*2))
+		min = 1;
+	else
+		min = 2;
+	GMT_grd_init (grd, 0, NULL, FALSE);
+	grd->nx = 21600/min;
+	grd->ny = 12672/min;
+	if ((fp = GMT_fopen (file, "rb")) == NULL) {
+		fprintf (stderr, "%s: Error opening img file %s\n", GMT_program, file);
+		exit (EXIT_FAILURE);
+	}
+	if (init) {
+		/* Select plain Mercator on a sphere with -Jm1 -R0/360/-72.006/+72.006 */
+		gmtdefs.ellipsoid = N_ELLIPSOIDS - 1;
+		project_info.units_pr_degree = TRUE;
+		project_info.m_got_parallel = FALSE;
+		project_info.pars[0] = 1.0;
+		project_info.projection = MERCATOR;
+		project_info.degree[0] = project_info.degree[1] = TRUE;
+	
+		GMT_map_setup (0.0, 360.0, GMT_IMG_MINLAT, GMT_IMG_MAXLAT);
+	}
+		
+	/* Allocate grid memory */
+	
+	mx = grd->nx + GMT_pad[0] + GMT_pad[2];	my = grd->ny + GMT_pad[1] + GMT_pad[3];
+	*grid = (float *) GMT_memory (VNULL, (size_t)(mx * my), sizeof (float), GMT_program);
+	GMT_geo_to_xy (project_info.w, project_info.s, &grd->x_min, &grd->y_min);
+	GMT_geo_to_xy (project_info.e, project_info.n, &grd->x_max, &grd->y_max);
+	grd->x_inc = grd->y_inc = min / 60.0;
+	grd->node_offset = 1;	/* These are always pixel grids */
+	grd->xy_off = 0.5;
+	
+	i2 = (short int *) GMT_memory (VNULL, (size_t)(grd->nx), sizeof (short int), GMT_program);
+	for (j = 0; j < grd->ny; j++) {	/* Read all the rows, offset by 2 boundary rows and cols */
+		ij = (j + GMT_pad[3]) * mx + GMT_pad[0];
+		fread ((void *)i2, sizeof (short int), grd->nx, fp);
+		for (i = 0; i < grd->nx; i++) {	/* Process this row's values */
+			switch (mode) {
+				case 0:	/* No encoded track flags, do nothing */
+					break;
+				case 1:	/* Remove the track flag on odd (constrained) points */
+					if (i2[i]%2) i2[i]--;
+					break;
+				case 2:	/* Remove the track flag on odd (constrained) points and set unconstrained to NaN */
+					i2[i] = (i2[i]%2) ? i2[i] - 1 : SHRT_MIN;
+					break;
+				case 3:	/* Set odd (constrained) points to 1 and set unconstrained to 0 */
+					i2[i] %= 2;
+					break;
+			}
+			(*grid)[ij+i] = (float)((mode == 3) ? i2[i] : (i2[i] * scale));
+		}
+	}
+	GMT_free ((void *)i2);
+	GMT_fclose (fp);
 }
