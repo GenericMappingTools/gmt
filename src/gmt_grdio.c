@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.57 2006-02-24 11:36:26 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.58 2006-02-24 22:16:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -682,15 +682,15 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 		GMT_map_setup (0.0, 360.0, GMT_IMG_MINLAT, GMT_IMG_MAXLAT);
 	}
 		
-		
+	if (lat == 0.0) lat = GMT_IMG_MAXLAT;
 	GMT_geo_to_xy (w, lat, &grd->x_min, &y_max);
 	GMT_geo_to_xy (w, s, &grd->x_min, &grd->y_min);
 	GMT_geo_to_xy (e, n, &grd->x_max, &grd->y_max);
 	
-	grd->x_min = floor (grd->x_min / grd->x_inc) * grd->x_inc;
-	grd->x_max = ceil (grd->x_max / grd->x_inc) * grd->x_inc;
-	grd->y_min = floor (grd->y_min / grd->y_inc) * grd->y_inc;
-	grd->y_max = ceil (grd->y_max / grd->y_inc) * grd->y_inc;
+	grd->x_min = MAX (0.0, floor (grd->x_min / grd->x_inc) * grd->x_inc);
+	grd->x_max = MIN (360.0, ceil (grd->x_max / grd->x_inc) * grd->x_inc);
+	grd->y_min = MAX (0.0, floor (grd->y_min / grd->y_inc) * grd->y_inc);
+	grd->y_max = MIN (y_max, ceil (grd->y_max / grd->y_inc) * grd->y_inc);
 	/* Allocate grid memory */
 	
 	grd->nx = irint ((grd->x_max - grd->x_min) / grd->x_inc);
@@ -702,13 +702,16 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 	
 	first_i = (int)floor (grd->x_min / grd->x_inc);			/* first tile partly or fully inside region */
 	n_skip = (int)floor ((y_max - grd->y_max) / grd->y_inc);	/* Number of rows clearly above y_max */
-	n_cols = min * 10800;						/* Number of columns (10800 or 21600) */
-	fseek (fp, (long)(n_skip * n_cols * 2), SEEK_SET);
+	n_cols = 21600 / min;						/* Number of columns (10800 or 21600) */
+	if (fseek (fp, (long)(n_skip * n_cols * 2), SEEK_SET)) {
+		fprintf (stderr, "%s: Unable to seek ahead in file %s\n", GMT_program, imgfile);
+		exit (EXIT_FAILURE);
+	}
 	
 	i2 = (short int *) GMT_memory (VNULL, (size_t)n_cols, sizeof (short int), GMT_program);
 	for (j = 0; j < grd->ny; j++) {	/* Read all the rows, offset by 2 boundary rows and cols */
 		ij = (j + GMT_pad[3]) * mx + GMT_pad[0];
-		fread ((void *)i2, sizeof (short int), grd->nx, fp);
+		fread ((void *)i2, sizeof (short int), n_cols, fp);
 		for (i = 0, k = first_i; i < grd->nx; i++) {	/* Process this row's values */
 			switch (mode) {
 				case 0:	/* No encoded track flags, do nothing */
