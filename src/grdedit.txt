@@ -3,7 +3,7 @@
 grdedit \- Modifying the header in a 2-D grdfile
 .SH SYNOPSIS
 \fBgrdedit\fP \fIgrdfile\fP [ \fB\-A\fP ] [ \fB\-D\fP\fIxname/yname/zname/scale/offset/title/remark\fP ] 
-[ \fB\-N\fP\fIxyzfile\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP ] [ \fB\-V\fP ] 
+[ \fB\-N\fP\fIxyzfile\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP ] [ \fB\-T\fP ] [ \fB\-V\fP ] 
 [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
 \fBgrdedit\fP reads the header information in a binary 2-D grdfile and replaces
@@ -41,6 +41,12 @@ values are adjusted, if necessary.
 .B \-S
 For global, geographical grids only.  Grid values will be shifted longitudionally according to
 the new borders given in \fB\-R\fP.
+.TP
+.B \-T
+Make necessary changes in the header to convert a gridline-registred grid to a pixel-registered
+grid, or vice-versa.  Basically, gridline-registered grids will have their domain extended by
+half the x- and y-increments whereas pixel-registered grids will have their domain shrunk by
+the same amount.
 #include "explain_-V.txt"
 #include "explain_-i_binary.txt"
 #include "explain_-n.txt"
