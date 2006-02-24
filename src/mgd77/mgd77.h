@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.68 2006-02-23 22:50:34 pwessel Exp $
+ *	$Id: mgd77.h,v 1.69 2006-02-24 00:02:54 pwessel Exp $
  * 
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -11,7 +11,7 @@
  *  Authors:    Paul Wessel, Primary Investigator, SOEST, U. of Hawaii
  *		Michael Chandler, Master's Candidate, SOEST, U. of Hawaii
  *		
- *  Version:	1.1
+ *  Version:	1.2
  *  Revised:	18-OCT-2005
  * 
  *-------------------------------------------------------------------------*/
@@ -30,6 +30,7 @@
 #define STAT stat
 #endif
 
+#define MGD77_VERSION		"1.2"		/* Current version of MGD77 supplement */
 #define MGD77_CDF_VERSION	"2005.11.1"	/* Current version of MGD77+ files created */
 #define MGD77_RECORD_LENGTH	120		/* Length of MGD77 ASCII data records */
 #define MGD77_HEADER_LENGTH	80		/* Length of MGD77 ASCII header records */

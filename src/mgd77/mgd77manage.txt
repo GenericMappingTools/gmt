@@ -267,6 +267,7 @@ GMT style by Paul Wessel.
 .IR mgd77convert (GMTMANSECTION),
 .IR mgd77list (GMTMANSECTION),
 .IR mgd77info (GMTMANSECTION),
+.IR mgd77sniffer (GMTMANSECTION)
 .IR mgd77track (GMTMANSECTION)
 .IR x2sys_init (GMTMANSECTION)
 #include "refs.i"
