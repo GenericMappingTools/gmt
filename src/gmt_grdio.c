@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.58 2006-02-24 22:16:39 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.59 2006-02-25 12:02:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -629,19 +629,30 @@ void GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 	 GMT_free (tmp);
 }
 
-#define GMT_IMG_MINLAT -72.0059773539
-#define GMT_IMG_MAXLAT +72.0059773539
+#define GMT_IMG_MINLON		0.0
+#define GMT_IMG_MAXLON		360.0
+#define GMT_IMG_MINLAT_72	-72.0059773539
+#define GMT_IMG_MAXLAT_72	+72.0059773539
+#define GMT_IMG_MINLAT_80	-80.738
+#define GMT_IMG_MAXLAT_80	+80.738
+#define GMT_IMG_NLON_1M		21600	/* At 1 min resolution */
+#define GMT_IMG_NLON_2M		10800	/* At 2 min resolution */
+#define GMT_IMG_NLAT_1M_72	12672	/* At 1 min resolution */
+#define GMT_IMG_NLAT_1M_80	17280	/* At 1 min resolution */
+#define GMT_IMG_NLAT_2M_72	6336	/* At 1 min resolution */
+#define GMT_IMG_NLAT_2M_80	8640	/* At 1 min resolution */
+#define GMT_IMG_ITEMSIZE	2	/* Size of 2 byte short ints */
 
 void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w, double e, double s, double n, double scale, int mode, double lat, BOOLEAN init)
 {
 	/* Function that reads an entire Sandwell/Smith Mercator grid and stores it like a regular
-	 * GMT grid.  If init is TRUE we also initialize the Mercator projection.
+	 * GMT grid.  If init is TRUE we also initialize the Mercator projection.  Lat should be 0.0
+	 * if we are dealing with standard 72 or 80 img latitude; else it must be specified.
 	 */
 	 
 	int min, i, j, k, ij, mx, my, first_i, n_skip, n_cols;
 	short int *i2;
 	char file[BUFSIZ];
-	double y_max;
 	struct STAT buf;
 	FILE *fp;
 	
@@ -658,20 +669,36 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 		exit (EXIT_FAILURE);
 	}
 	
-	if (buf.st_size >= (21600*12672*2))
-		min = 1;
-	else
-		min = 2;
+	switch (buf.st_size) {	/* Known sizes are 1 or 2 min at lat_max = 72 or 80 */
+		case GMT_IMG_NLON_1M*GMT_IMG_NLAT_1M_80*GMT_IMG_ITEMSIZE:
+			if (lat == 0.0) lat = GMT_IMG_MAXLAT_80;	
+		case GMT_IMG_NLON_1M*GMT_IMG_NLAT_1M_72*GMT_IMG_ITEMSIZE:
+			if (lat == 0.0) lat = GMT_IMG_MAXLAT_72;	
+			min = 1;
+			break;
+		case GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_80*GMT_IMG_ITEMSIZE:
+			if (lat == 0.0) lat = GMT_IMG_MAXLAT_80;	
+		case GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_72*GMT_IMG_ITEMSIZE:
+			if (lat == 0.0) lat = GMT_IMG_MAXLAT_72;	
+			min = 2;
+			break;
+		default:
+			if (lat == 0.0) {	
+				fprintf (stderr, "%s: Must specify max latitude for img file %s\n", GMT_program, file);
+				exit (EXIT_FAILURE);
+			}
+			break;
+	}
+
 	GMT_grd_init (grd, 0, NULL, FALSE);
 	grd->x_inc = grd->y_inc = min / 60.0;
-	
 	
 	if ((fp = GMT_fopen (file, "rb")) == NULL) {
 		fprintf (stderr, "%s: Error opening img file %s\n", GMT_program, file);
 		exit (EXIT_FAILURE);
 	}
 	if (init) {
-		/* Select plain Mercator on a sphere with -Jm1 -R0/360/-72.006/+72.006 */
+		/* Select plain Mercator on a sphere with -Jm1 -R0/360/-lat/+lat */
 		gmtdefs.ellipsoid = N_ELLIPSOIDS - 1;
 		project_info.units_pr_degree = TRUE;
 		project_info.m_got_parallel = FALSE;
@@ -679,18 +706,19 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 		project_info.projection = MERCATOR;
 		project_info.degree[0] = project_info.degree[1] = TRUE;
 	
-		GMT_map_setup (0.0, 360.0, GMT_IMG_MINLAT, GMT_IMG_MAXLAT);
+		GMT_map_setup (GMT_IMG_MINLON, GMT_IMG_MAXLON, -lat, +lat);
 	}
-		
-	if (lat == 0.0) lat = GMT_IMG_MAXLAT;
-	GMT_geo_to_xy (w, lat, &grd->x_min, &y_max);
+	
+	if (w < 0.0 && e < 0.0) w += 360.0, e += 360.0;
+	
 	GMT_geo_to_xy (w, s, &grd->x_min, &grd->y_min);
 	GMT_geo_to_xy (e, n, &grd->x_max, &grd->y_max);
 	
-	grd->x_min = MAX (0.0, floor (grd->x_min / grd->x_inc) * grd->x_inc);
-	grd->x_max = MIN (360.0, ceil (grd->x_max / grd->x_inc) * grd->x_inc);
+	grd->x_min = MAX (GMT_IMG_MINLON, floor (grd->x_min / grd->x_inc) * grd->x_inc);
+	grd->x_max = MIN (GMT_IMG_MAXLON, ceil (grd->x_max / grd->x_inc) * grd->x_inc);
+	if (grd->x_min > grd->x_max) grd->x_min -= 360.0;
 	grd->y_min = MAX (0.0, floor (grd->y_min / grd->y_inc) * grd->y_inc);
-	grd->y_max = MIN (y_max, ceil (grd->y_max / grd->y_inc) * grd->y_inc);
+	grd->y_max = MIN (project_info.ymax, ceil (grd->y_max / grd->y_inc) * grd->y_inc);
 	/* Allocate grid memory */
 	
 	grd->nx = irint ((grd->x_max - grd->x_min) / grd->x_inc);
@@ -700,10 +728,11 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 	grd->node_offset = 1;	/* These are always pixel grids */
 	grd->xy_off = 0.5;
 	
-	first_i = (int)floor (grd->x_min / grd->x_inc);			/* first tile partly or fully inside region */
-	n_skip = (int)floor ((y_max - grd->y_max) / grd->y_inc);	/* Number of rows clearly above y_max */
-	n_cols = 21600 / min;						/* Number of columns (10800 or 21600) */
-	if (fseek (fp, (long)(n_skip * n_cols * 2), SEEK_SET)) {
+	n_cols = (min == 1) ? GMT_IMG_NLON_1M : GMT_IMG_NLON_2M;		/* Number of columns (10800 or 21600) */
+	first_i = (int)floor (grd->x_min / grd->x_inc);				/* first tile partly or fully inside region */
+	if (first_i < 0) first_i += n_cols;
+	n_skip = (int)floor ((project_info.ymax - grd->y_max) / grd->y_inc);	/* Number of rows clearly above y_max */
+	if (fseek (fp, (long)(n_skip * n_cols * GMT_IMG_ITEMSIZE), SEEK_SET)) {
 		fprintf (stderr, "%s: Unable to seek ahead in file %s\n", GMT_program, imgfile);
 		exit (EXIT_FAILURE);
 	}
