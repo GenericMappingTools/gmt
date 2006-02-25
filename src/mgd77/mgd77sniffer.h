@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.6 2006-02-23 02:34:39 pwessel Exp $	
+ *	$Id: mgd77sniffer.h,v 1.7 2006-02-25 02:17:32 pwessel Exp $	
  *
  *	File:	mgd77sniffer.h
  *
@@ -98,7 +98,7 @@ struct MGD77_GRID_INFO {
 	struct GMT_EDGEINFO edgeinfo;
 	struct GMT_BCR bcr;
 	int one_or_zero, nx, ny, col, sign, g_pts, format, mode, mx, interpolate;
-	double scale;
+	double scale, max_lat;
 	char abbrev[8];
 	char fname[32];
 };
