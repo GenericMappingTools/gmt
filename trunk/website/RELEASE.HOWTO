@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.9 2006-01-01 21:53:56 pwessel Exp $
+#	$Id: RELEASE.HOWTO,v 1.10 2006-02-27 22:19:10 pwessel Exp $
 #
 #		FOR 4.x SERIES
 
@@ -17,6 +17,7 @@ must ensure you do all the steps listed below:
 0.  Make any changes to README, README.WIN32, and CHANGES.
     Finalize Announcements/Announce.4.*.  Make sure the macros
     in the gmtsite.macros file points to the actual FTP and WWW dirs.
+    Update src/gmt_version.h
 
 1.  run gurumake latest-config
     get the latest config.sub and config.guess.
