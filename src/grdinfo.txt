@@ -33,6 +33,7 @@ Does not apply to the \fB\-C\fP option.
 .B \-I
 Report the min/max of the region to the nearest multiple of \fIdx\fP and \fIdy\fP,
 and output this in the form \fB\-R\fP\fIw/e/s/n\fP (unless \fB\-C\fP is set).
+.TP
 .B \-L1
 Report median and L1 scale of z (L1 scale = 1.4826 * Median Absolute Deviation (MAD)).
 .TP
