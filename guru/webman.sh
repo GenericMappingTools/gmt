@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.35 2006-02-16 12:03:09 pwessel Exp $
+#	 $Id: webman.sh,v 1.36 2006-02-27 22:19:10 pwessel Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -163,7 +163,7 @@ For alphabetical order, click <A HREF="#anchor_alpha">here</A>.
 </UL>
 <H3>CONVERT OR EXTRACT SUBSETS OF DATA:</H3>
 <UL>
-<LI><A HREF="doc/html/gmt2rgb.html"> gmtconvert</A> Convert Sun raster or grdfile to red, green, blue component grids
+<LI><A HREF="doc/html/gmt2rgb.html"> gmt2rgb</A> Convert Sun raster or grdfile to red, green, blue component grids
 <LI><A HREF="doc/html/gmtconvert.html"> gmtconvert</A> Convert table data from one format to another
 <LI><A HREF="doc/html/gmtmath.html"> gmtmath</A> Reverse Polish calculator for table data
 <LI><A HREF="doc/html/gmtselect.html"> gmtselect</A> Select table subsets based on multiple spatial criteria
@@ -190,7 +190,7 @@ For alphabetical order, click <A HREF="#anchor_alpha">here</A>.
 <H3>OTHER OPERATIONS ON 2-D GRIDS:</H3>
 <UL>
 <LI><A HREF="doc/html/grd2cpt.html"> grd2cpt</A> Make color palette table from grdfile
-<LI><A HREF="doc/html/grdblend.html"> grdclip</A> Blend several gridded data sets into one
+<LI><A HREF="doc/html/grdblend.html"> grdblend</A> Blend several gridded data sets into one
 <LI><A HREF="doc/html/grdclip.html"> grdclip</A> Limit the z-range in gridded data sets
 <LI><A HREF="doc/html/grdedit.html"> grdedit</A> Modify grd header information
 <LI><A HREF="doc/html/grdfft.html"> grdfft</A> Operate on grdfiles in frequency domain
