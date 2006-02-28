@@ -1,4 +1,4 @@
-	$Id: README.GMT,v 1.9 2006-02-28 00:25:01 pwessel Exp $
+	$Id: README.GMT,v 1.10 2006-02-28 04:24:30 pwessel Exp $
 
 Dear potential GMT users-
 
@@ -73,7 +73,7 @@ is geographically closest to you to improve transmission
 throughput:
 
 ----------------------------------------------------------------
-gmt.soest.hawaii.edu		Honolulu, Hawaii, USA [GMT HOME]
+ftp.soest.hawaii.edu		Honolulu, Hawaii, USA [GMT HOME]
 falcon.grdl.noaa.gov		Silver Spring, Maryland, USA
 ftp.iris.washington.edu		Seattle, Washington, USA
 ftp.geologi.uio.no		Oslo, Norway
