@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.18 2006-02-06 17:05:16 remko Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.19 2006-02-28 01:32:04 pwessel Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2006.
@@ -84,7 +84,7 @@ to swap the byte-order on either input or output you must use upper case
 \index{grdfile!formats!netCDF|(}
 
 By default, \GMT\ stores 2-D grids as COARDS-compliant netCDF files.
-COARDS (Cooperative Ocean/Atmosphere Research Data Service) is a convention used by
+COARDS (which stands for Cooperative Ocean/Atmosphere Research Data Service) is a convention used by
 many agencies distributing gridded data for ocean and atmosphere research. Sticking to
 this convention allows \GMT\ to read gridded data provided by other institutes
 and other programs. Conversely, other general domain programs
@@ -160,7 +160,8 @@ The default registration in \GMT\ is grid line registration.  Most
 programs can handle both types, and for some programs like \GMTprog{grdimage}
 a pixel registered file makes more sense.  Utility programs like
 \GMTprog{grdsample} and \GMTprog{grdproject} will allow you to convert
-from one format to the other.
+from one format to the other; \GMTprog{grdedit} can make changes to the grid header
+and convert a pixel- to a gridline-registred grid, or \emph{vice versa}.
 
 \subsubsection{Grid line registration}
 \index{grdfile!registration!grid line|(}
