@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.68 2006-02-28 00:25:01 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.69 2006-02-28 07:35:57 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -68,7 +68,7 @@ prep_gmt()
 {
 #--------------------------------------------------------------------------------
 LATESTGMT4=4.1.1
-LATESTGMT3=3.4.5
+LATESTGMT3=3.4.6
 GSHHS=4
 cat << EOF > gmt_install.ftp_site
 1. SOEST, U of Hawaii [GMT Home], Honolulu, Hawaii, USA
@@ -131,9 +131,11 @@ done
 if [ $answer = "1" ]; then
 	VERSION=$LATESTGMT4
 	N_EXAMPLES=25
+	GSHHS=4
 elif [ $answer = "2" ]; then
 	VERSION=$LATESTGMT3
 	N_EXAMPLES=20
+	GSHHS=3
 fi
 echo "You chose to install verion $VERSION" >&2
 
@@ -338,8 +340,7 @@ EOF
 	echo " " >&2
 	echo "Because of the copyright, GMT uses Watson's routine by default." >&2
 	echo " " >&2
-	size=`sed -n 12p $sizes`
-	GMT_triangle=`get_def_answer "Want optional Shewchuk's triangulation routine [$size Mb] (y/n)?" "n"`
+	GMT_triangle=`get_def_answer "Use optional Shewchuk's triangulation routine (y/n)?" "n"`
 else
 	echo " " >&2
 	echo "Since ftp mode is not selected, the install procedure will" >&2
@@ -421,9 +422,10 @@ cat << EOF >&2
 
 Building the GMT libraries as shared instead of static will
 reduce executable sizes considerably.  GMT supports shared
-libraries under Linux, Mac OS X, SunOS, Solaris, IRIX, HPUX, and FreeBSD.
-Under other systems you may have to manually configure macros
-and determine what specific options to use with ld.
+libraries under Linux, Mac OS X, SunOS, Solaris, IRIX, HPUX,
+and FreeBSD.  Under other systems you may have to manually
+configure macros and determine what specific options to use
+with ld.
 
 EOF
 GMT_sharedlib=`get_def_answer "Try to make and use shared libraries? (y/n)" "n"`
@@ -932,6 +934,14 @@ fi
 
 CONFIG_SHELL=`type sh | awk '{print $NF}'`
 export CONFIG_SHELL
+
+# Which branch?
+
+if [ `echo $VERSION | awk '{print substr($1,1,1)}'` = "3" ]; then
+	GSHHS=3
+else
+	GSHHS=4
+fi
 
 #--------------------------------------------------------------------------------
 #	NETCDF SECTION
