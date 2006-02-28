@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.30 2006-01-04 02:39:29 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.31 2006-02-28 00:25:01 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -33,6 +33,73 @@ reach a stable point from which we can initiate the \GMT\ 5 development branch. 
 will be distinguished by being completely restructured so as to allow developers to call
 high-level \GMT\ processes from a variety of programming environments.  Below is a brief
 history of the development milestones in the 4.x series.
+
+\subsection{Overview of \gmt\ 4.1.1}
+
+Changes in \GMT\ 4.1.1 are mostly minor; a brief listing include
+
+\begin{enumerate}
+\item \GMTprogi{gmt\_nc.c}: Introduced handling of 4-D COARDS compliant grids (See Chapter 4 for details).
+\item \GMTprogi{mgd77/mngd77sniffer}: New tool for along-track quality control checking of MGD77 files.
+\item \GMTprogi{spotter/grdrotater}: New module that rotates grids given a specified finite rotation.
+\item Jonathan Shewchuk's triangulation routines are now stored with the rest of the source in the GMT\_progs.tar$|$zip archives.
+(However, because his copyright is not GPL, installing it is still an option).
+\end{enumerate}
+
+A few programs or options have received minor updates and new features, such as
+
+\begin{enumerate}
+\item \GMTprogi{grdmask}: Now takes \Opt{S}{\it radius}[{\bf c$|$m$|$k$|$K}] as is done in \GMTprog{nearneighbor}.
+\item \GMTprogi{psmask}: -Now takes \Opt{S}{\it radius}[{\bf c$|$m$|$k$|$K}] as is done in \GMTprog{nearneighbor}.
+Can now plot tiles regardless of projection and use patterns.
+\item \GMTprogi{mgd77/mgd77.c}: Added mechanism to search directories for files.
+\item \GMTprogi{mgd77/mgd77list}: Activated \Opt{X} option and associated machinery for applying data corrections.
+\item \GMTprogi{grdgradient}: Implemented variation on Lambertian illumination.
+\item \GMTprogi{pstext}: \Opt{D}[...]{\bf v}{\it pen} can now be used with or without \Opt{M}.
+\item \GMTprogi{gmtmath}: If file is STDIN we read data from {\it stdin} and put the contents on the stack.
+Also added \Opt{F} to select which columns to use for output [all].
+\item \GMTprogi{grdedit}: Added option \Opt{T} to toggle between gridline and pixel registrations (header only).
+\item \GMTprogi{grdtrack}: Can now sample Sandwell/Smith IMG grids directly.
+\end{enumerate}
+
+Inevitably, when new features are added, new bugs come along with them.  Below is a list of problems
+that we have identified and corrected in the current release:.
+
+\begin{enumerate}
+\item \GMTprogi{configure.in}: Extracting VERSION from \GMTprogi{gmt\_version.h}, not \GMTprogi{gmt.h}.
+\item \GMTprogi{gmt\_init.c}: BASEMAP\_FRAME\_RGB overrode any changes to grid pens etc.  Now only
+does so if prefixed by '+'.
+\item \GMTprogi{gmt\_calclock.c}: Did not allow \Opt{B}0 for time-axis.
+\item \GMTprogi{gmt\_map.c}: \Opt{JX}...{\bf d} now plots with WESN or degrees:minutes as per PLOT\_DEGREE\_FORMAT.
+Map clip paths for \Opt{JE}{\it lon}$\pm 90$ were no good.  Under certain circumstances, \GMTfunc{GMT\_non\_zero\_winding} might be passed
+a polygon that was not closed, resulting in an error.  \Opt{JQ} would give garbage if central lon was way outside \Opt{R}.
+\item \GMTprogi{gmt\_plot.c}: \Opt{JX}...{\bf d} now plots with WESN or degrees:minutes as per PLOT\_DEGREE\_FORMAT.
+\item \GMTprogi{gmt\_grdio.c}: Changed logic to avoid false ``scale==0'' warning on Windows.
+\GMTfunc{GMT\_open\_grd} (used in \GMTprog{grdblend}) reset scale to NaN.
+Initialize header information at start of \GMTfunc{GMT\_read\_grd_info}.
+\item \GMTprogi{gmt\_support.c}: Initialize [xyz]\_unit with more appropriate values.
+Got wrong conversion for dx in meters to degrees.
+\item \GMTprogi{gmt\_grd.h}: Improved definition of \GMTfunc{GMT\_x\_to\_i} macro should reduce bugs
+\item \GMTprogi{pslib.c}: \GMTfunc{ps\_polygon}: if outline == -9 just fill and no clip.
+Fixed two bugs concerning the /MaskColor operator.
+\item ISO-8859-9.ps: Added /dotlessi per Onur Tan.
+\item \GMTprogi{blockm*.c}: Now correctly deals with periodic longitude data.
+\item \GMTprogi{grdcontour.c}: Fixed several issues at grid limits and inappropriate scaling of grid dimensions..
+\item \GMTprogi{grdfilter.c}: Used -1 as index flag instead of INT\_MIN.
+\item \GMTprogi{grdimage.c}: Fixed several issues at grid limits and inappropriate scaling of grid dimensions.
+\item \GMTprogi{grdmask.c}: Only let you change the value for outside nodes.
+\item \GMTprogi{grdmath.man}: Did not list \Opt{f} option.  Operators {\bf LT, LE, EQ, GE, GT} returned TRUE if NaNs were involved
+Now NaN is returned if any of the two operands is a NaN.
+\item \GMTprogi{grdreformat.c}: Update grd.command before writing grid
+\item \GMTprogi{grdvector.c}: Did not place vectors correctly for pixel-pregistered grids.
+\item \GMTprogi{grdview.c}: Skipped nodes outside boundary but they might be needed to draw a tile.
+\item \GMTprogi{pscoast.c}: With \Opt{JE} and \Opt{G}{\it r/g/b}, the painting of the antipodal bin would incorrectly
+turn off clipping, messing up the rest of the plot.  Now pass -9 to \GMTfunc{GMT\_fill} which means just fill and no end of clipping.
+\item \GMTprogi{xyz2grd.c}: For geographic grids with 360\DS range and gridline registration,
+the west and east bin did not get replicated properly.
+Now considers data inside the first and last tiles which might stick outside w/e/s/n.
+\item \GMTprogi{x2sys/x2sys\_cross.c}: Several problems fixed.
+\end{enumerate}
 
 \subsection{Overview of \gmt\ 4.1}
 

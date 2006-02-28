@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.27 2006-01-06 01:00:09 pwessel Exp $ 
+#		$Id: README,v 1.28 2006-02-28 00:25:01 pwessel Exp $ 
 #
 #	Copyright (c) 1991-2006, P. Wessel & W. H. F. Smith
 #
@@ -71,16 +71,6 @@ Note there are several GMT tar archives available:
  9. GMT_full.tar.gz		: Full resolution coastline data
 10. GMT_high.tar.gz		: High resolution coastline data
 11. GMT_suppl.tar.gz		: GMT Supplemental programs that link with GMT
-
-and optionally
-
-12. triangle.tar.gz		: Jonathan Shewchuk's Delauney triangulation
-
-The latter is copyrighted by Shewchuk and is not covered by the GNU Public
-License.  Installing it is optional; by default, GMT will use Dave Watson's
-routine which is much slower than Shewchuks routine.  Note that triangle.tar.gz
-must be moved into the main GMT directory before you uncompress/extract the
-files (see GMT_full and GMT_high for a similar situation)
 
 You must get 1 and 2 for a minimal GMT installation.
 All archives are available in gzip (*.gz) and bzip2 (*.bz2) format.
