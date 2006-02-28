@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.122 2006-02-28 09:46:56 pwessel Exp $
+ *	$Id: mgd77.c,v 1.123 2006-02-28 10:02:46 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -25,6 +25,7 @@
 #include <dirent.h>
 #endif
 
+#define TESTDIR 1
 #define MGD77_CDF_CONVENTION	"CF-1.0"	/* MGD77+ files are CF-1.0 and hence COARDS-compliant */
 
 struct MGD77_MAG_RF {
@@ -2426,13 +2427,19 @@ void MGD77_Path_Init (struct MGD77_CONTROL *F)
 
 void MGD77_Cruise_Explain (void)
 {
+#ifdef TESTDIR
 	fprintf (stderr, "\t<cruises> can be one of five kinds of specifiers:\n");
-	fprintf (stderr, "\t1) 8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.\n");
+	fprintf (stderr, "\t1) 8-character NGDC IDs, e.g., 01010083, JA010010, etc., etc.\n");
 	fprintf (stderr, "\t2) 2-character <agency> codes which will return all cruises from each agency.\n");
 	fprintf (stderr, "\t3) 4-character <agency><vessel> codes, which will return all cruises from those vessels.\n");
 	fprintf (stderr, "\t4) A single =<list>, where <list> is a table with NGDC IDs, one per line.\n");
 	fprintf (stderr, "\t5) If nothing is specified we return all cruises in the data base.\n");
 	fprintf (stderr, "\t   [See the documentation for agency and vessel codes].\n");
+#else
+	fprintf (stderr, "\t<cruises> can be one of two kinds of specifiers:\n");
+	fprintf (stderr, "\t1) 8-character NGDC IDs, e.g., 01010083, JA010010 etc., etc.\n");
+	fprintf (stderr, "\t2) A single =<list>, where <list> is a table with NGDC IDs, one per line.\n");
+#endif
 }
 
 int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***list)
@@ -2483,6 +2490,7 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 			strcpy (L[n++], argv[j]);
 			continue;
 		}
+#ifdef TESTDIR
 		/* Here we have either <agency> or <agency><vessel> code or blank for all */	
 		for (i = 0; i < F->n_MGD77_paths; i++) {	/* Examine all directories */
 			if ((dir = opendir (F->MGD77_datadir[i])) == NULL) {
@@ -2501,6 +2509,7 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 			closedir (dir);
 		}
 		all = FALSE;	/* all is only TRUE once (or never) inside this loop */
+#endif
 	}
 	
 	if (n) {	/* Avoid duplicates by sorting and removing them */
