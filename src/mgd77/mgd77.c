@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.123 2006-02-28 10:02:46 pwessel Exp $
+ *	$Id: mgd77.c,v 1.124 2006-02-28 21:44:33 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -11,21 +11,19 @@
  *  Authors:    Paul Wessel, Primary Investigator, SOEST, U. of Hawaii
  *		Michael Chandler, Master's Candidate, SOEST, U. of Hawaii
  *		
- *  Version:	1.1
- *  Revised:	18-OCT-2005
+ *  Version:	1.2
+ *  Revised:	1-MAR-2006
  * 
  *-------------------------------------------------------------------------*/
 
 #include "mgd77.h"
 #include "mgd77_IGF_coeffs.h"
 #include "mgd77_init.h"
-#ifdef _WIN32
-#include "dirent.h"
-#else
+#ifndef WIN32
+/* We might be able to support dirent.h on Windows in the future but for now it has problems */
 #include <dirent.h>
 #endif
 
-#define TESTDIR 1
 #define MGD77_CDF_CONVENTION	"CF-1.0"	/* MGD77+ files are CF-1.0 and hence COARDS-compliant */
 
 struct MGD77_MAG_RF {
@@ -2427,7 +2425,7 @@ void MGD77_Path_Init (struct MGD77_CONTROL *F)
 
 void MGD77_Cruise_Explain (void)
 {
-#ifdef TESTDIR
+#ifndef WIN32
 	fprintf (stderr, "\t<cruises> can be one of five kinds of specifiers:\n");
 	fprintf (stderr, "\t1) 8-character NGDC IDs, e.g., 01010083, JA010010, etc., etc.\n");
 	fprintf (stderr, "\t2) 2-character <agency> codes which will return all cruises from each agency.\n");
@@ -2450,8 +2448,10 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 	BOOLEAN all;
 	size_t n_alloc = 0;
 	char **L = NULL, line[BUFSIZ];
+#ifndef WIN32
 	DIR *dir;
 	struct dirent *entry;
+#endif
 	
 	for (j = 1; j < argc; j++) {	/* First count the number of cruise arguments, if any */
 		if (argv[j][0] == '-') continue;	/* Skip command line options */
@@ -2490,7 +2490,8 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 			strcpy (L[n++], argv[j]);
 			continue;
 		}
-#ifdef TESTDIR
+#ifndef WIN32
+		/* The directory search is only supported on Unix-like systems for now */
 		/* Here we have either <agency> or <agency><vessel> code or blank for all */	
 		for (i = 0; i < F->n_MGD77_paths; i++) {	/* Examine all directories */
 			if ((dir = opendir (F->MGD77_datadir[i])) == NULL) {

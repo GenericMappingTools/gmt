@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.23 2006-02-20 00:44:55 remko Exp $
+#	$Id: Makefile,v 1.24 2006-02-28 21:44:33 pwessel Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -10,7 +10,7 @@
 #
 #	Authors:	Paul Wessel & Mike Chandler, SOEST, U. of Hawaii
 #
-#	Date:	14-OCT-2005
+#	Date:	1-MAR-2006
 #
 
 #-------------------------------------------------------------------------------

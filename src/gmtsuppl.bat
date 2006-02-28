@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.25 2006-02-28 10:23:56 pwessel Exp $
+REM	$Id: gmtsuppl.bat,v 1.26 2006-02-28 21:44:33 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
@@ -103,19 +103,21 @@ echo Follow Matlab instructions on how to make mex files
 REM ----------------------------------------------------
 ECHO STEP 6: Make mgd77
 REM ----------------------------------------------------
+SET DIRENTLIB=
+REM SET DIRENTLIB=dirent.lib
 cd mgd77
 CL %COPT2% /c mgd77.c
 lib /out:mgd77.lib mgd77.obj
-CL %COPT% mgd77convert.c mgd77.lib %GMTLIB% dirent.lib
-CL %COPT% mgd77info.c	 mgd77.lib %GMTLIB% dirent.lib
-CL %COPT% mgd77list.c	 mgd77.lib %GMTLIB% dirent.lib
-CL %COPT% mgd77manage.c	 mgd77.lib %GMTLIB% dirent.lib
-CL %COPT% mgd77path.c	 mgd77.lib %GMTLIB% dirent.lib
-CL %COPT% mgd77sniffer.c mgd77.lib %GMTLIB% dirent.lib
-CL %COPT% mgd77track.c	 mgd77.lib %GMTLIB% dirent.lib
+CL %COPT% mgd77convert.c mgd77.lib %GMTLIB% %DIRENTLIB%
+CL %COPT% mgd77info.c	 mgd77.lib %GMTLIB% %DIRENTLIB%
+CL %COPT% mgd77list.c	 mgd77.lib %GMTLIB% %DIRENTLIB%
+CL %COPT% mgd77manage.c	 mgd77.lib %GMTLIB% %DIRENTLIB%
+CL %COPT% mgd77path.c	 mgd77.lib %GMTLIB% %DIRENTLIB%
+CL %COPT% mgd77sniffer.c mgd77.lib %GMTLIB% %DIRENTLIB%
+CL %COPT% mgd77track.c	 mgd77.lib %GMTLIB% %DIRENTLIB%
 del *.obj
 move mgd77.lib %LIBDIR%
-copy dirent.lib %LIBDIR%
+REM copy dirent.lib %LIBDIR%
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
