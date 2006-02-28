@@ -22,22 +22,21 @@ Group:        Productivity/Graphics/Visualization/Graph
 Provides:     GMT 
 Autoreqprov:  on
 Requires:     netcdf >= 3.4
-Version:      4.1
+Version:      4.1.1
 Release:      1
 Summary:      Generic Mapping Tools
 Summary(de):  Generic Mapping Tools - Karten- und Grafikerzeugung
-Source0:      %{sourcepath}GMT4.1_progs.tar.bz2
-Source1:      %{sourcepath}GMT4.1_man.tar.bz2
-Source2:      %{sourcepath}GMT4.1_web.tar.bz2
-Source3:      %{sourcepath}GMT4.1_suppl.tar.bz2
-Source4:      %{sourcepath}GMT_full.tar.bz2
-Source5:      %{sourcepath}GMT_share.tar.bz2
-Source6:      %{sourcepath}GMT_high.tar.bz2
-Source7:      %{sourcepath}GMT4.1_scripts.tar.bz2
-#Source8:      %{sourcepath}GMT4.1_tut.tar.bz2
-#Source9:      %{sourcepath}GMT4.1_pdf.tar.bz2
-#Source10:     %{sourcepath}GMT4.1_ps.tar.bz2
-#Source11:     %{sourcepath}triangle.tar.bz2
+Source0:      %{sourcepath}GMT4.1.1_progs.tar.bz2
+Source1:      %{sourcepath}GMT4.1.1_man.tar.bz2
+Source2:      %{sourcepath}GMT4.1.1_web.tar.bz2
+Source3:      %{sourcepath}GMT4.1.1_suppl.tar.bz2
+Source4:      %{sourcepath}GMT4_full.tar.bz2
+Source5:      %{sourcepath}GMT4_share.tar.bz2
+Source6:      %{sourcepath}GMT4_high.tar.bz2
+Source7:      %{sourcepath}GMT4.1.1_scripts.tar.bz2
+#Source8:      %{sourcepath}GMT4.1.1_tut.tar.bz2
+#Source9:      %{sourcepath}GMT4.1.1_pdf.tar.bz2
+#Source10:     %{sourcepath}GMT4.1.1_ps.tar.bz2
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build/
 
 %description
@@ -214,6 +213,9 @@ rm -rf $RPM_BUILD_ROOT
 %{prefix}/share/*_*.cdf
 
 %changelog -n GMT
+* Wed Mar 1 2006 - gmt@dstoecker.de
+- modified for final GMT 4.1.1 release
+
 * Mon Jan 3 2006 - gmt@dstoecker.de
 - modified for final GMT 4.1 release
 
