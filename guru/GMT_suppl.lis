@@ -88,6 +88,8 @@ src/mgd77/mgd77path.c
 src/mgd77/mgd77path.man
 src/mgd77/mgd77path.html
 src/mgd77/mgd77sniffer.c
+src/mgd77/mgd77sniffer.h
+src/mgd77/mgd77snifferdefaults.h
 src/mgd77/mgd77sniffer.man
 src/mgd77/mgd77sniffer.html
 src/mgd77/mgd77track.c
