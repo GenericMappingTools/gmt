@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.124 2006-02-28 21:44:33 pwessel Exp $
+ *	$Id: mgd77.c,v 1.125 2006-02-28 21:58:16 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2444,11 +2444,12 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 {
 	/* Traverse the MGD77 directories in search of files matching the given arguments (or get all if none) */
 	
-	int i, k, j, n = 0, flist = 0, length, compare_L (const void *p1, const void *p2);
+	int i, j, n = 0, flist = 0, length, compare_L (const void *p1, const void *p2);
 	BOOLEAN all;
 	size_t n_alloc = 0;
 	char **L = NULL, line[BUFSIZ];
 #ifndef WIN32
+	int k;
 	DIR *dir;
 	struct dirent *entry;
 #endif
