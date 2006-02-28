@@ -1,5 +1,5 @@
 #!/bin/csh
-#		$Id: newgmtguru,v 1.9 2006-01-03 05:05:50 pwessel Exp $
+#		$Id: newgmtguru,v 1.10 2006-02-28 00:41:53 pwessel Exp $
 #
 # newgmtguru is run to initiate a new guru site
 # and helps setting up the guru directory with
@@ -19,7 +19,7 @@ Given your input, this script will create the directory GMTdev and make
 it the current working directory.  We will then login to the GMT CVS server
 and, if successfull, checkout the latest GMT project directory.  The GMT
 project directory is called (what else) GMT and is a subdirectory of your
-GMTdev directory.  It is convenient to keep earlier versions like GMT3.3.6
+GMTdev directory.  It is convenient to keep earlier versions like GMT3.4.5
 as subdirectories of GMTdev.  These dirs should be considered READ-ONLY.
 Only edit files in the GMT work directory.
 

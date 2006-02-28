@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.10 2006-02-27 22:19:10 pwessel Exp $
+#	$Id: RELEASE.HOWTO,v 1.11 2006-02-28 00:44:37 pwessel Exp $
 #
 #		FOR 4.x SERIES
 
@@ -47,7 +47,7 @@ must ensure you do all the steps listed below:
 9.  In GMT/ftp, update .message, README.GMT, and VERSION
 
 10.  In GMT/website:
-    a) Update gmt.html, gmt_arrrghh.html, gmt_bugs.html, gmt_faq.html,
+    a) Update gmt_arrrghh.html, gmt_bugs.html, gmt_faq.html,
        gmt_install_form.html, gmt_news.html, gmt_releases.html
     b) create web examples:
        make -f Makefile.site web

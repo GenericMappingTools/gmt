@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.26 2006-01-07 01:57:43 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.27 2006-02-28 00:41:53 pwessel Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.26 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.27 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -41,14 +41,14 @@ to a file named by you, and this file can be used for background installs as sho
 <HR><B>1. Select the GMT version you want to install:</B><BR>
 
 <SELECT NAME="gmt_version">
-<OPTION SELECTED>4.1
+<OPTION SELECTED>4.1.1
 <OPTION>3.4.5
 </SELECT><BR>
 
 <P>
-<I>Note: 4.1 and earlier versions can coexist on your system since they use
+<I>Note: 4.1.1 and earlier versions can coexist on your system since they use
 different default files.  In order to facilitate a simple way of switching from
-one version to another, GMT 4.1 comes with a Bourne shell utility called
+one version to another, GMT 4.1.1 comes with a Bourne shell utility called
 gmtswitch.  To simplify the maintenance of multiple versions we recommend that
 you install all your GMT versions you want under a parent directory called
 GMTdev.  After installing the required versions, run gmtswitch.  See the
@@ -183,17 +183,27 @@ are behind a firewall.  In that case you may want to select passive ftp mode.</I
 <INPUT TYPE="checkbox" NAME="checkbox_suppl" CHECKED="true"> GMT Supplemental Archive (0.6/0.5 Mb, see section C.10 below for details)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_high"> GMT High-resolution coastlines (10.7/8.6 Mb)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_full"> GMT full-resolution coastlines (47.1/28.8 Mb)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_triangle"> J. Shewchuk's fast triangulation routine (0.11/0.09 Mb, faster, but not covered by GPL)<BR>
 
 <P>
 <I>Note: The first two are required for a simple GMT install (in order to run all the examples in the cookbook).
 Many users will also prefer to get the higher resolution coastline files for map making in smaller areas.  The
 example scripts are required if you want to run the test suite.  The tutorial component is needed to run
-the tutorial examples.  Finally, you may want to get the optional
-but faster triangulation routine although it is not distributed under the GNU Public License.  For-profit
-organizations should first inspect <A HREF="README.TRIANGLE" target="_blank">Shewchuk's license</A>.  Make sure you remove
-old GMT *.bz2 or *.gz archives from the working directory before you run the script; otherwise the script
-may decide that it does not need to ftp new versions of those archives.</I>
+the tutorial examples. Make sure you remove old GMT *.bz2 or *.gz archives from the working directory before you
+run the script; otherwise the script may decide that it does not need to ftp new versions of those archives.</I>
+
+<!--  OPTIONAL TRIANGLE SELECTION  -->
+
+<HR><B>3. Select which triangulation alogorithm to use:</B><BR>
+
+<INPUT TYPE="radio" VALUE="Watson" NAME="radio_triangle" CHECKED="true"> Watson's algorithm<BR>
+<INPUT TYPE="radio" VALUE="Shewchuk" NAME="radio_triangle"> Shewchuk's algorithm<BR>
+
+<P>
+<I>Note: You may want to select Shewchuk's faster triangulation routine although it is not distributed
+under the GNU Public License.  For-profit organizations should first inspect
+<A HREF="README.TRIANGLE" target="_blank">Shewchuk's license</A>.  Both functions are included in the
+source archive; your selection only affects library linking and can be reversed later by editing the
+makegmt.macros file.</I>
 
 <!--  INSTALL TOOL OPTION SELECTION  -->
 
@@ -266,7 +276,7 @@ Custom make program: <INPUT NAME="custom_make" TYPE="text" SIZE="30"><BR>
 <I>Note: The GMT archives will first be uncompressed, untarred, and compiled in the current working
 directory where install_gmt is run.  After those steps are successful you may want to copy
 the files to more traditional directories like /usr/local/bin, etc.  The default locations are
-subdirectories bin, lib, include, share, man, and www under GMT4.1 in the current install directory.
+subdirectories bin, lib, include, share, man, and www under GMT4.1.1 in the current install directory.
 Note that the man pages will be be placed in the man/man? subdirectory, where ? is the section specified
 above, e.g. "l", giving man/manl, is the default.  Do NOT specify the man dir as man/man?; the
 section directory will automatically be appended based on the chosen section unit.
