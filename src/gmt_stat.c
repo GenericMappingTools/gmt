@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.36 2006-02-28 08:55:46 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.37 2006-02-28 09:46:56 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2167,7 +2167,7 @@ int GMT_median (double *x, size_t n, double xmin, double xmax, double m_initial,
 
 		/* Now test counts, watch multiple roots, think even/odd:  */
 
-		if ( (labs(n_above - n_below)) <= n_equal) {
+		if ((labs((long)(n_above - n_below))) <= (long)n_equal) {
 
 			if (n_equal) {
 				*med = m_guess;
@@ -2177,12 +2177,12 @@ int GMT_median (double *x, size_t n, double xmin, double xmax, double m_initial,
 			}
 			finished = TRUE;
 		}
-		else if ( (labs( (n_above - n_lub) - (n_below + n_equal) ) ) < n_lub) {
+		else if ((labs ((long)((n_above - n_lub) - (n_below + n_equal)))) < (long)n_lub) {
 
 			*med = lub;
 			finished = TRUE;
 		}
-		else if ( (labs( (n_below - n_glb) - (n_above + n_equal) ) ) < n_glb) {
+		else if ((labs ((long)((n_below - n_glb) - (n_above + n_equal)))) < (long)n_glb) {
 
 			*med = glb;
 			finished = TRUE;
@@ -2280,7 +2280,7 @@ int GMT_median_f (float *x, size_t n, double xmin, double xmax, double m_initial
 
 		/* Now test counts, watch multiple roots, think even/odd:  */
 
-		if ( (labs(n_above - n_below)) <= n_equal) {
+		if ( (labs((long)(n_above - n_below))) <= (long)n_equal) {
 
 			if (n_equal) {
 				*med = m_guess;
@@ -2290,12 +2290,12 @@ int GMT_median_f (float *x, size_t n, double xmin, double xmax, double m_initial
 			}
 			finished = TRUE;
 		}
-		else if ( (labs( (n_above - n_lub) - (n_below + n_equal) ) ) < n_lub) {
+		else if ((labs((long)((n_above - n_lub) - (n_below + n_equal)))) < (long)n_lub) {
 
 			*med = lub;
 			finished = TRUE;
 		}
-		else if ( (labs( (n_below - n_glb) - (n_above + n_equal) ) ) < n_glb) {
+		else if ((labs((long)((n_below - n_glb) - (n_above + n_equal)))) < (long)n_glb) {
 
 			*med = glb;
 			finished = TRUE;

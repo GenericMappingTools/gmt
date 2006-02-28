@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.121 2006-02-23 23:36:45 pwessel Exp $
+ *	$Id: mgd77.c,v 1.122 2006-02-28 09:46:56 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1190,12 +1190,12 @@ void MGD77_Verify_Prep_m77 (struct MGD77_CONTROL *F, struct MGD77_META *C, struc
 	/* Get the cruise time period for later checking against IGRF used, etc. */
 			
 	if (!GMT_is_fnan (D[0].time)) {	/* We have  time - obtain yyyy/mm/dd of departure and arrival days */
-		C->Departure[0] = D[0].number[MGD77_YEAR];
-		C->Departure[1] = D[0].number[MGD77_MONTH];
-		C->Departure[2] = D[0].number[MGD77_DAY];
-		C->Arrival[0] = D[nrec-1].number[MGD77_YEAR];
-		C->Arrival[1] = D[nrec-1].number[MGD77_MONTH];
-		C->Arrival[2] = D[nrec-1].number[MGD77_DAY];
+		C->Departure[0] = irint (D[0].number[MGD77_YEAR]);
+		C->Departure[1] = irint (D[0].number[MGD77_MONTH]);
+		C->Departure[2] = irint (D[0].number[MGD77_DAY]);
+		C->Arrival[0] = irint (D[nrec-1].number[MGD77_YEAR]);
+		C->Arrival[1] = irint (D[nrec-1].number[MGD77_MONTH]);
+		C->Arrival[2] = irint (D[nrec-1].number[MGD77_DAY]);
 	}
 	
 	for (iy = 0; iy < 20; iy++) {
@@ -1587,7 +1587,7 @@ int MGD77_Select_Header_Item (struct MGD77_CONTROL *F, char *item)
 	if (match > 1) {	/* More than one.  See if any of the multiple matches is a full name */
 		int n_exact;
 		for (i = n_exact = 0; i < match; i++) {
-			if (strlen (MGD77_Header_Item[pick[i]]) == length) {
+			if (strlen (MGD77_Header_Item[pick[i]]) == (size_t)length) {
 				id = pick[i];
 				n_exact++;
 			}
@@ -2467,7 +2467,7 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 		while (fgets (line, BUFSIZ, fp)) {
 			GMT_chop (line);	/* Get rid of CR/LF issues */
 			if (line[0] == '#' || line[0] == '>' || (length = strlen (line)) == 0) continue;	/* Skip comments and blank lines */
-			if (n == n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
+			if (n == (int)n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
 			L[n] = (char *)GMT_memory (VNULL, length+1, sizeof (char), "MGD77_Path_Expand");
 			strcpy (L[n++], line);
 		}
@@ -2478,7 +2478,7 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 		if (!all && argv[j][0] == '-') continue;	/* Skip command line options, except first time if all */
 		length = (all) ? 0 : strlen (argv[j]);		/* length == 0 means get all */
 		if (length == 8) {	/* Full NGDC ID length, append to list */
-			if (n == n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
+			if (n == (int)n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
 			L[n] = (char *)GMT_memory (VNULL, 9, sizeof (char), "MGD77_Path_Expand");
 			strcpy (L[n++], argv[j]);
 			continue;
@@ -2494,7 +2494,7 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 				k = strlen (entry->d_name) - 1;
 				while (k && entry->d_name[k] != '.') k--;	/* Strip off file extension */
 				if (k < 8) continue;	/* Not a NGDC 8-char ID */
-				if (n == n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
+				if (n == (int)n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
 				L[n] = (char *)GMT_memory (VNULL, k + 1, sizeof (char), "MGD77_Path_Expand");
 				strncpy (L[n++], entry->d_name, k);
 			}
@@ -2512,7 +2512,7 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 		n = i;
 	}
 	
-	if (n != n_alloc) L = (char **)GMT_memory ((void *)L, n, sizeof (char *), "MGD77_Path_Expand");
+	if (n != (int)n_alloc) L = (char **)GMT_memory ((void *)L, n, sizeof (char *), "MGD77_Path_Expand");
 	*list = L;
 	return (n);
 }
