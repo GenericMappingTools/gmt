@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.26 2006-02-28 21:44:33 pwessel Exp $
+REM	$Id: gmtsuppl.bat,v 1.27 2006-02-28 23:56:18 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
@@ -178,6 +178,7 @@ IF %CHOICE%=="dynamic" LINK %LOPT% /out:spotter.dll /implib:spotter.lib libspott
 IF %CHOICE%=="static"  CL %COPT% %DLL_NETCDF% /DDLL_EXPORT /c libspotter.c
 IF %CHOICE%=="static"  lib /out:spotter.lib libspotter.obj
 CL %COPT% backtracker.c   spotter.lib %GMTLIB%
+CL %COPT% grdrotater.c    spotter.lib %GMTLIB%
 CL %COPT% hotspotter.c    spotter.lib %GMTLIB%
 CL %COPT% originator.c    spotter.lib %GMTLIB%
 CL %COPT% rotconverter.c  spotter.lib %GMTLIB%
