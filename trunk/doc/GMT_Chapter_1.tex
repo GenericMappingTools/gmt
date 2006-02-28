@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.32 2006-02-28 01:32:04 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.33 2006-02-28 03:33:36 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -41,7 +41,7 @@ Changes in \GMT\ 4.1.1 are mostly minor; a brief listing include
 \begin{enumerate}
 \item \GMTprogi{gmt\_nc.c}: Introduced handling of 4-D COARDS compliant grids (See Chapter 4 for details).
 \item \GMTprogi{mgd77/mngd77sniffer}: New tool for along-track quality control checking of MGD77 files.
-\item \GMTprogi{spotter/grdrotater}: New module that rotates grids given a specified finite rotation.
+\item \GMTprogi{spotter/grdrotater}: New tool that rotates grids given a specified finite rotation.
 \item Jonathan Shewchuk's triangulation routines are now stored with the rest of the source in the GMT\_progs.tar$|$zip archives.
 (However, because his copyright is not GPL, installing it is still an option).
 \end{enumerate}
@@ -49,17 +49,18 @@ Changes in \GMT\ 4.1.1 are mostly minor; a brief listing include
 A few programs or options have received minor updates and new features, such as
 
 \begin{description}
-\item [\GMTprogi{grdmask}]: Now takes \Opt{S}{\it radius}[{\bf c$|$m$|$k$|$K}] as is done in \GMTprog{nearneighbor}.
-\item [\GMTprogi{psmask}]: -Now takes \Opt{S}{\it radius}[{\bf c$|$m$|$k$|$K}] as is done in \GMTprog{nearneighbor}.
-Can now plot tiles regardless of projection and use patterns.
-\item [\GMTprogi{mgd77/mgd77.c}]: Added mechanism to search directories for files.
-\item [\GMTprogi{mgd77/mgd77list}]: Activated \Opt{X} option and associated machinery for applying data corrections.
+\item [\GMTprogi{grdedit}]: Added option \Opt{T} to toggle between gridline and pixel registrations (header only).
 \item [\GMTprogi{grdgradient}]: Implemented variation on Lambertian illumination.
-\item [\GMTprogi{pstext}]: \Opt{D}[...]{\bf v}{\it pen} can now be used with or without \Opt{M}.
+\item [\GMTprogi{grdmask}]: Now takes \Opt{S}{\it radius}[{\bf c$|$m$|$k$|$K}] as is done in \GMTprog{nearneighbor}.
 \item [\GMTprogi{gmtmath}]: If file is STDIN we read data from {\it stdin} and put the contents on the stack.
 Also added \Opt{F} to select which columns to use for output [all].
-\item [\GMTprogi{grdedit}]: Added option \Opt{T} to toggle between gridline and pixel registrations (header only).
 \item [\GMTprogi{grdtrack}]: Can now sample Sandwell/Smith IMG grids directly.
+\item [\GMTprogi{mgd77/mgd77.c}]: Added mechanism to search directories for files.
+\item [\GMTprogi{mgd77/mgd77list}]: Activated \Opt{X} option and associated machinery for applying data corrections.
+\item [\GMTprogi{psmask}]: -Now takes \Opt{S}{\it radius}[{\bf c$|$m$|$k$|$K}] as is done in \GMTprog{nearneighbor}.
+Can now plot tiles regardless of projection and use patterns.
+\item [\GMTprogi{pstext}]: \Opt{D}[...]{\bf v}{\it pen} can now be used with or without \Opt{M}.
+\item [\GMTprogi{psxyz.c}]: \Opt{S}{\bf O}$|${\bf U} imitate \Opt{S}{\bf o}$|${\bf u} but without the 3-D color shading.
 \end{description}
 
 Inevitably, when new features are added, new bugs come along with them.  Below is a list of problems
