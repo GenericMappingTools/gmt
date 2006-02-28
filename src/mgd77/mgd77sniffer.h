@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.7 2006-02-25 02:17:32 pwessel Exp $	
+ *	$Id: mgd77sniffer.h,v 1.8 2006-02-28 21:56:57 pwessel Exp $	
  *
  *	File:	mgd77sniffer.h
  *
@@ -125,12 +125,13 @@ struct MGD77_MAG_RF {
 	int end;            /* Model end year             */
 };
 
-EXTERN_MSC struct MGD77_SNIFFER_DEFAULTS mgd77snifferdefs[MGD77_N_DATA_FIELDS];
-EXTERN_MSC void read_grid (struct MGD77_GRID_INFO *info, float **grid, double w, double e, double s, double n, BOOLEAN bilinear, double threshold);
-EXTERN_MSC int sample_grid (struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, float *grid, int n_grid, int n);
-EXTERN_MSC void regress_ls (double *x, double *y, int n, double *stat, int col, double S_xx);
-EXTERN_MSC void regress_rls (double *x, double *y, int nvalues, double *stat, int col, double S_xx);
-EXTERN_MSC void regress_lms (double *x, double *y, int nvalues, double *stat, int gridField);
-EXTERN_MSC void regresslms_sub (double *x, double *y, double angle0, double angle1, int nvalues, int n_angle, double *stat, int gridField);
-EXTERN_MSC double lms (double *x, int n);
-EXTERN_MSC double median (double *x, int n);
+/* Local functions */
+
+void read_grid (struct MGD77_GRID_INFO *info, float **grid, double w, double e, double s, double n, BOOLEAN bilinear, double threshold);
+int sample_grid (struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, float *grid, int n_grid, int n);
+void regress_ls (double *x, double *y, int n, double *stat, int col, double S_xx);
+void regress_rls (double *x, double *y, int nvalues, double *stat, int col, double S_xx);
+void regress_lms (double *x, double *y, int nvalues, double *stat, int gridField);
+void regresslms_sub (double *x, double *y, double angle0, double angle1, int nvalues, int n_angle, double *stat, int gridField);
+double lms (double *x, int n);
+double median (double *x, int n);
