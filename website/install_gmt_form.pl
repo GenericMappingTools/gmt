@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.16 2006-02-28 00:25:01 pwessel Exp $
+#       $Id: install_gmt_form.pl,v 1.17 2006-02-28 00:41:53 pwessel Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -51,7 +51,7 @@ $get_scripts	= $gmt_form{'checkbox_scripts'};
 $get_suppl	= $gmt_form{'checkbox_suppl'};
 $get_high	= $gmt_form{'checkbox_high'};
 $get_full	= $gmt_form{'checkbox_full'};
-$use_triangle	= $gmt_form{'checkbox_triangle'};
+$use_triangle	= $gmt_form{'radio_triangle'};
 $libtype	= $gmt_form{'radio_link'};
 $cc		= $gmt_form{'cc'};
 $custom_cc	= $gmt_form{'custom_cc'};
@@ -102,7 +102,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.16 $, on
+# Processed by install_gmt_form.pl $Revision: 1.17 $, on
 #
 #	$now
 #
@@ -405,7 +405,7 @@ else {
 	print FILE "GMT_flock=n\n";
 }
 
-if ($use_triangle eq "on") {
+if ($use_triangle eq "Shewchuk") {
 	print FILE "GMT_triangle=y\n";
 }
 else {
