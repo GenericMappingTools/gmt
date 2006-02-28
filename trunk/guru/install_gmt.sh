@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.67 2006-02-23 05:48:49 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.68 2006-02-28 00:25:01 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -80,8 +80,8 @@ cat << EOF > gmt_install.ftp_site
 7. Tokai U, Shimizu, JAPAN
 8. Charles Sturt U, Albury, AUSTRALIA
 EOF
-# Order (1-12) is 1:progs, 2:share, 3:high, 4:full, 5:suppl, 6:scripts
-#		  7:ps, 8:pdf, 9:man, 10:web, 11:tut, 12:triangle
+# Order (1-11) is 1:progs, 2:share, 3:high, 4:full, 5:suppl, 6:scripts
+#		  7:ps, 8:pdf, 9:man, 10:web, 11:tut
 cat << EOF > gmt_install.ftp_bzsizes
 0.55
 3.7
@@ -94,7 +94,6 @@ cat << EOF > gmt_install.ftp_bzsizes
 0.09
 1.6
 1.0
-0.09
 EOF
 cat << EOF > gmt_install.ftp_gzsizes
 0.66
@@ -108,7 +107,6 @@ cat << EOF > gmt_install.ftp_gzsizes
 0.12
 1.6
 1.4
-0.11
 EOF
 cat << EOF >&2
 ====>>>> Interactive installation of GMT <<<<====
@@ -254,7 +252,6 @@ GMT_get_web=d
 GMT_get_tut=d
 GMT_get_high=d
 GMT_get_full=d
-GMT_get_triangle=d
 GMT_triangle=n
 GMT_ftpsite=1
 GMT_ftp=n
@@ -343,22 +340,18 @@ EOF
 	echo " " >&2
 	size=`sed -n 12p $sizes`
 	GMT_triangle=`get_def_answer "Want optional Shewchuk's triangulation routine [$size Mb] (y/n)?" "n"`
-	GMT_get_triangle=$GMT_triangle
 else
 	echo " " >&2
 	echo "Since ftp mode is not selected, the install procedure will" >&2
 	echo "assume the compressed archives are in the current directory." >&2
-	if [ -f triangle.tar.bz2 ] || [ -f triangle.tar.gz ]; then
-		echo "GMT can use two different algorithms for Delauney triangulation." >&2
-		echo " " >&2
-		echo "   Shewchuk [1996]: Modern and very fast, copyrighted." >&2
-		echo "   Watson [1982]  : Older and slower, public domain." >&2
-		echo " " >&2
-		echo "Because of the copyright, GMT uses Watson's routine by default." >&2
-		echo "However, since triangle.tar.{bz2,gz} was found in the current directory" >&2
-		echo "you probably want to use the optional Shewchuk routine." >&2
-		GMT_triangle=`get_def_answer "Use optional Shewchuk's triangulation routine (y/n)?" "y"`
-	fi
+	echo "GMT can use two different algorithms for Delauney triangulation." >&2
+	echo " " >&2
+	echo "   Shewchuk [1996]: Modern and very fast, copyrighted." >&2
+	echo "   Watson [1982]  : Older and slower, public domain." >&2
+	echo " " >&2
+	echo "Because of the copyright, GMT uses Watson's routine by default." >&2
+	echo "However, most will want to use the optional Shewchuk routine." >&2
+	GMT_triangle=`get_def_answer "Use optional Shewchuk's triangulation routine (y/n)?" "y"`
 fi
 	
 GMT_def="$topdir/GMT${VERSION}"
@@ -623,7 +616,6 @@ GMT_get_pdf=$GMT_get_pdf
 GMT_get_man=$GMT_get_man
 GMT_get_web=$GMT_get_web
 GMT_get_tut=$GMT_get_tut
-GMT_get_triangle=$GMT_get_triangle
 #---------------------------------------------
 #       GMT SUPPLEMENTS SELECT SECTION
 #---------------------------------------------
@@ -691,16 +683,6 @@ install_this_gmt()
 	fi
 	if [ $ok -eq 1 ] && [ $get_this != "n" ]; then	# File exists and we have not said no
 		$expand $this | tar xvf -
-	fi
-}
-install_triangle()
-# Get? File
-{
-	get_this=$1
-	if [ -f $2.tar.$suffix ] && [ $get_this != "n" ]; then	# File exists and we have not said no
-		cd GMT${VERSION}
-		$expand ../$2.tar.$suffix | tar xvf -
-		cd ..
 	fi
 }
 install_coast()
@@ -1140,7 +1122,6 @@ if [ $GMT_ftp = "y" ]; then
 	make_ftp_list $GMT_get_man man
 	make_ftp_list $GMT_get_web web
 	make_ftp_list $GMT_get_tut tut
-	make_ftp_list2 $GMT_get_triangle triangle
 	echo "quit" >> gmt_install.ftp_list
 	echo " " >> gmt_install.ftp_list
 
@@ -1168,7 +1149,6 @@ install_this_gmt $GMT_get_pdf pdf
 install_this_gmt $GMT_get_man man
 install_this_gmt $GMT_get_web web
 install_this_gmt $GMT_get_tut tut
-install_triangle $GMT_get_triangle triangle
 
 #--------------------------------------------------------------------------------
 # Now do coastline archives
@@ -1457,7 +1437,7 @@ fi
 
 cd $topdir
 if [ $GMT_delete = "y" ]; then
-	rm -f GMT*.tar.$suffix triangle.tar.$suffix
+	rm -f GMT*.tar.$suffix
 	if [ -f GMTfullc.bz2 ]; then	# Special files copied from CD-ROM
 		rm -f GMTfull?.bz2 GMThigh?.bz2
 	fi

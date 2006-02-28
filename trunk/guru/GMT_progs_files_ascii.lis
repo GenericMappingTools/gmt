@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.22 2005-10-13 22:16:02 pwessel Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.23 2006-02-28 00:25:01 pwessel Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_progs tar/zip files.  See GMT_progs_files_bin.lis for binary files
@@ -15,6 +15,10 @@ gmt_bench-marks
 gmtswitch
 install-sh
 Makefile
+src/TRIANGLE.HOWTO
+src/README.TRIANGLE
+src/triangle.c
+src/triangle.h
 src/Makefile
 src/makegmt.macros.in
 src/GMT.in
