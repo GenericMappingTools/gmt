@@ -66,6 +66,7 @@ src/mgd77/dirent.h
 src/mgd77/dirent.lib
 src/mgd77/mgd77.c
 src/mgd77/mgd77defaults.h
+src/mgd77/mgd77magref.h
 src/mgd77/mgd77_IGF_coeffs.h
 src/mgd77/mgd77_codes.h
 src/mgd77/mgd77_functions.h
