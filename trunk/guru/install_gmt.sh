@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.69 2006-02-28 07:35:57 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.70 2006-03-01 08:12:00 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -196,6 +196,7 @@ fi
 answer=`get_def_answer "Have you installed netcdf (version 3.4 or later)? (y/n)" "y"`
 if [ $answer = "n" ]; then	# Must install netcdf one way or the other
 	netcdf_path=""
+	netcdf_ftp=n
 	if [ $do_ftp_qa -eq 1 ]; then
 		answer=`get_def_answer "Do you want me to ftp it for you? (y/n)" "y"`
 		if [ $answer = "n" ]; then
@@ -207,8 +208,6 @@ if [ $answer = "n" ]; then	# Must install netcdf one way or the other
 		else
 			netcdf_ftp=y
 		fi
-	else
-		netcdf_ftp=n
 	fi
 	netcdf_install=y
 	if [ $netcdf_ftp = "n" ]; then	# Check that the files are actually there
