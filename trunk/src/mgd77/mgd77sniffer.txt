@@ -146,7 +146,7 @@ Dump defaults (\fB\-Dl\fP) to view syntax or to quickly create an editable custo
 .sp
 Example custom default file contents (see below for units):
 .br
-\fabbrev min     max     maxSlope    maxArea\fP
+\('## abbrev min     max     maxSlope    maxArea
 .br
 twt     0       15      1       0
 .br
@@ -228,9 +228,9 @@ gmtset GRIDFILE_SHORTHAND TRUE
 .sp
 Create/edit .gmt_io file to include the following rows:
 .br
-\fI GMT I/O shorthand file\fP
+\('## GMT I/O shorthand file
 .br
-\fI suffix   format_id scale offset       NaN\fP
+\('## suffix   format_id scale offset       NaN
 .br
 grd             0       -       -       -
 .br
@@ -254,15 +254,15 @@ E77 header information.
 .sp
 \fBSample\fP
 .br
-\\# Cruise 06050010 ID L476WG MGD77 FILE VERSION: 19870415 N_RECS: 27268
+\('## Cruise 06050010 ID L476WG MGD77 FILE VERSION: 19870415 N_RECS: 27268
 .br
-\\# Examined: Tue Feb 21 16:33:34 2006
+\('## Examined: Tue Feb 21 16:33:34 2006
 .br
-\\# Examiner: mtchandl
+\('## Examiner: mtchandl
 .br
-\\# Arguments:  -De -Gfaa,/data/GRIDS/sandwell_smith11_hdr.i2
+\('## Arguments:  -De -Gfaa,/data/GRIDS/sandwell_smith11_hdr.i2
 .br
-\\# Errata: Header
+\('## Errata: Header
 .br
 N-faa-E-01: Regression against grid gave scale 0.108643 which is statistically different from 1.0. Recommended scale: (0.100000)
 .br
@@ -288,7 +288,7 @@ types. See below for error code format description.
 .sp
 \fBSample\fP
 .br
-\\#\ Errata: Data
+\('## Errata: Data
 .br
 1971-04-28T18:27:30	345	0-0-OQ-0	 gradient: mtf1, mag excessive
 .br
