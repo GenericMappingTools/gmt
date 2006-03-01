@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spotter.h,v 1.11 2005-12-27 04:17:25 pwessel Exp $
+ *	$Id: spotter.h,v 1.12 2006-03-01 02:15:31 pwessel Exp $
  *
  *   Copyright (c) 1999-2006 by P. Wessel
  *
@@ -62,3 +62,5 @@ EXTERN_MSC void spotter_stages_to_finite (struct EULER p[], int n, BOOLEAN finit
 EXTERN_MSC void spotter_add_rotations (struct EULER a[], int n_a, struct EULER b[], int n_b, struct EULER *c[], int *n_c);
 EXTERN_MSC double spotter_t2w (struct EULER a[], int n, double t);
 EXTERN_MSC int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, int np, char conf, double out[]);
+EXTERN_MSC void matrix_vect_mult (double a[3][3], double b[3], double c[3]);
+EXTERN_MSC void make_rot_matrix (double lonp, double latp, double w, double R[3][3]);

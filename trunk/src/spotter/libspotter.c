@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.31 2005-12-27 04:28:12 pwessel Exp $
+ *	$Id: libspotter.c,v 1.32 2006-03-01 02:15:31 pwessel Exp $
  *
  *   Copyright (c) 1999-2006 by P. Wessel
  *
@@ -52,8 +52,6 @@
 void matrix_to_pole (double T[3][3], double *plon, double *plat, double *w);
 void matrix_transpose (double At[3][3], double A[3][3]);
 void matrix_mult (double a[3][3], double b[3][3], double c[3][3]);
-void matrix_vect_mult (double a[3][3], double b[3], double c[3]);
-void make_rot_matrix (double lonp, double latp, double w, double R[3][3]);
 void make_rot_matrix_sub (double E[3], double w, double R[3][3]);
 void reverse_rotation_order (struct EULER *p, int n);
 void xyw_to_struct_euler (struct EULER *p, double lon[], double lat[], double w[], int n, BOOLEAN stages, BOOLEAN convert);
