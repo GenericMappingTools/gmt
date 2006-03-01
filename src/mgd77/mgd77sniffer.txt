@@ -146,7 +146,7 @@ Dump defaults (\fB\-Dl\fP) to view syntax or to quickly create an editable custo
 .sp
 Example custom default file contents (see below for units):
 .br
-\\#\abbrev min     max     maxSlope    maxArea
+\fabbrev min     max     maxSlope    maxArea\fP
 .br
 twt     0       15      1       0
 .br
@@ -228,9 +228,9 @@ gmtset GRIDFILE_SHORTHAND TRUE
 .sp
 Create/edit .gmt_io file to include the following rows:
 .br
-\\#\ GMT I/O shorthand file
+\fI GMT I/O shorthand file\fP
 .br
-\\#\ suffix   format_id scale offset       NaN
+\fI suffix   format_id scale offset       NaN\fP
 .br
 grd             0       -       -       -
 .br
