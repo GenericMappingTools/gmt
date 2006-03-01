@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: pdfman.sh,v 1.7 2006-03-01 03:48:47 pwessel Exp $
+#	 $Id: pdfman.sh,v 1.8 2006-03-01 03:50:16 pwessel Exp $
 #
 #	pdfman.sh - Automatic generation of the GMT pdf manual pages
 #
@@ -34,6 +34,9 @@ echo GMT >> $$.programs.lis
 echo pslib >> $$.programs.lis
 
 # Ok, make pdf files
+if [ $gush = 1 ]; then
+	echo "Assembling GMT_Manpages.ps"
+fi
 add=0
 rm -f www/gmt/doc/ps/GMT_Manpages.ps www/gmt/doc/pdf/GMT_Manpages.pdf
 for prog in `cat $$.programs.lis`; do
@@ -53,6 +56,9 @@ done
 # defining an environmental parameter MY_GMT_SUPPL which contains a list of these
 # supplements.  They must all be in src of course
 
+if [ $gush = 1 ]; then
+	echo "Assembling GMT_Manpages_suppl.ps"
+fi
 MY_SUPPL=${MY_GMT_SUPPL:-""}
 cd src
 add=0
