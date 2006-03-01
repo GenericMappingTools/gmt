@@ -1,11 +1,11 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: pdfman.sh,v 1.6 2005-12-27 11:39:36 pwessel Exp $
+#	 $Id: pdfman.sh,v 1.7 2006-03-01 03:48:47 pwessel Exp $
 #
 #	pdfman.sh - Automatic generation of the GMT pdf manual pages
 #
 #	Author:	Paul Wessel
-#	Date:	17-DEC-2005
+#	Date:	1-MAR-2006
 #	Version: 1.1 Bourne shell
 #
 #	Uses groff -man
@@ -32,9 +32,6 @@ mkdir -p www/gmt/doc/pdf
 grep -v '^#' guru/GMT_programs.lis > $$.programs.lis
 echo GMT >> $$.programs.lis
 echo pslib >> $$.programs.lis
-
-# Then add the supplemental programs as well
-grep 'html$' guru/GMT_suppl.lis | sed -e 's/\.html$//g' | awk -F/ '{print $NF}' >> $$.programs.lis
 
 # Ok, make pdf files
 add=0
