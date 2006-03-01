@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.59 2006-02-25 12:02:29 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.60 2006-03-01 21:55:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -687,6 +687,8 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 				fprintf (stderr, "%s: Must specify max latitude for img file %s\n", GMT_program, file);
 				exit (EXIT_FAILURE);
 			}
+			min = (buf.st_size > GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_80*GMT_IMG_ITEMSIZE) ? 1 : 2;
+			fprintf (stderr, "%s: img file %s has unusual size - grid increment defaults to %d min\n", GMT_program, file, min);
 			break;
 	}
 
