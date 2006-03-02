@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.27 2006-02-28 00:41:53 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.28 2006-03-02 08:45:31 pwessel Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.27 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.28 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -42,7 +42,7 @@ to a file named by you, and this file can be used for background installs as sho
 
 <SELECT NAME="gmt_version">
 <OPTION SELECTED>4.1.1
-<OPTION>3.4.5
+<OPTION>3.4.6
 </SELECT><BR>
 
 <P>
@@ -193,7 +193,7 @@ run the script; otherwise the script may decide that it does not need to ftp new
 
 <!--  OPTIONAL TRIANGLE SELECTION  -->
 
-<HR><B>3. Select which triangulation alogorithm to use:</B><BR>
+<HR><B>3. Select which triangulation algorithm to use:</B><BR>
 
 <INPUT TYPE="radio" VALUE="Watson" NAME="radio_triangle" CHECKED="true"> Watson's algorithm<BR>
 <INPUT TYPE="radio" VALUE="Shewchuk" NAME="radio_triangle"> Shewchuk's algorithm<BR>
