@@ -106,7 +106,7 @@ To take the square root of the content of the second data column being piped thr
 by process1 and pipe it through a 3rd process, use
 .br
 .sp
-process1 | \fBgmtmath\fP STDIN \fBSQRT\fP \=\fP | process3
+process1 | \fBgmtmath\fP STDIN \fBSQRT \=\fP | process3
 .br
 .sp
 To take log10 of the average of 2 data files, use
