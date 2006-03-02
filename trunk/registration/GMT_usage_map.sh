@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.33 2006-01-04 02:39:29 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.34 2006-03-02 09:37:47 pwessel Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -46,13 +46,13 @@ help	Give a brief help message
 EOF
 	exit
 fi
-GS_LIB=/usr/share/ghostscript/7.05/lib
-GMTHOME=/home/aa/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT
-PATH=$GMTHOME/bin:$PATH
-export PATH
-export GS_LIB
+#GS_LIB=/usr/share/ghostscript/7.05/lib
+#GMTHOME=/home/aa/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT
+#PATH=$GMTHOME/bin:$PATH
+#export PATH
+#export GS_LIB
 REGHOME=$GMTHOME/registration	# Where to do the work
-CVSROOT=":pserver:pwessel@gmt.soest.hawaii.edu:/home/gmt/gmt/cvs"
+#CVSROOT=":pserver:pwessel@aa.soest.hawaii.edu:/home/gmt/gmt/cvs"
 
 cd $REGHOME
 if [ "X$GMTHOME" = "X" ]; then	# Must set environment
@@ -130,5 +130,5 @@ if [ $key = "all" ] || [ $key = "map" ]; then
 	convert -density 100x100 -crop 0x0 gmt_usage.ps gmt_usage.jpg
 	gmtset DOTS_PR_INCH 300 PAPER_MEDIA Letter
 	rm -f gmt_usage.ps
-	install -m 644 gmt_usage.jpg /home/gmt/gmt/www/gmt
+#	install -m 644 gmt_usage.jpg /home/gmt/gmt/www/gmt
 fi
