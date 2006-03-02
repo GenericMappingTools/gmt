@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.17 2006-02-28 00:41:53 pwessel Exp $
+#       $Id: install_gmt_form.pl,v 1.18 2006-03-02 09:11:16 pwessel Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -20,9 +20,9 @@ $webmaster = "gmt\@soest\.hawaii\.edu";
 # Create unique filename for temp file:
 
 $PID		= $$;
-$OUT          = "/export/gmt/gmt/www/gmttemp/" . $PID . "/GMTparam.txt";
+$OUT          = "/export/imina2/httpd/htdocs/gmt/gmttemp/" . $PID . "/GMTparam.txt";
 $FOUT          = $PID . "/GMTparam.txt";
-$PDIR           = "/export/gmt/gmt/www/gmttemp/" . $PID;
+$PDIR           = "/export/imina2/httpd/htdocs/gmt/gmttemp/" . $PID;
 
 mkdir $PDIR;
 
@@ -102,7 +102,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.17 $, on
+# Processed by install_gmt_form.pl $Revision: 1.18 $, on
 #
 #	$now
 #
