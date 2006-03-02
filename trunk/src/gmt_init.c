@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.208 2006-02-22 22:50:57 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.209 2006-03-02 23:18:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2690,7 +2690,7 @@ void GMT_setshorthand (void) {/* Read user's .gmt_io file and initialize shortha
 		sscanf (line, "%s %s %s %s %s", a, b, c, d, e);
 		GMT_file_suffix[n] = (char *) GMT_memory (VNULL, (size_t)(strlen(a)+1), sizeof (char), GMT_program);
 		strcpy (GMT_file_suffix[n], a);
-		GMT_file_id[n] = atoi (b);
+		GMT_file_id[n] = GMT_grd_format_decoder (b);
 		GMT_file_scale[n] = (strcmp (c, "-")) ? atof (c) : 1.0;
 		GMT_file_offset[n] = (strcmp (d, "-")) ? atof (d) : 0.0;
 		GMT_file_nan[n] = (strcmp (e, "-")) ? atof (e) : GMT_d_NaN;

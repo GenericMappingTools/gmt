@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.60 2006-03-01 21:55:09 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.61 2006-03-02 23:18:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -60,7 +60,6 @@ int GMT_grdformats[N_GRD_FORMATS][2] = {
 };
 
 void GMT_grd_do_scaling (float *grid, int nm, double scale, double offset);
-int grd_format_decoder (const char *code);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
 
@@ -211,13 +210,13 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header)
 	if (header->name[i]) {	/* Get format type, scale, offset and missing value from suffix */
 		i++;
 		sscanf (&header->name[i], "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
-		id = grd_format_decoder (code);
+		id = GMT_grd_format_decoder (code);
 		j = (i == 1) ? i : i - 1;
 		header->name[j] = 0;
 	}
 	else {			/* Get format type, scale, offset and missing value from gmtdefs.grid_format */
 		sscanf (gmtdefs.grid_format, "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
-		id = grd_format_decoder (code);
+		id = GMT_grd_format_decoder (code);
 	}
 
 	return (id);
@@ -253,7 +252,7 @@ int GMT_grd_data_size (int format, double *nan_value)
 	}
 }
 
-int grd_format_decoder (const char *code)
+int GMT_grd_format_decoder (const char *code)
 {
 	/* Returns the integer grid format ID that goes with the specified 2-character code */
 

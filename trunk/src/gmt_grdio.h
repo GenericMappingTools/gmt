@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.25 2006-02-24 03:20:12 pwessel Exp $
+ *	$Id: gmt_grdio.h,v 1.26 2006-03-02 23:18:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -40,6 +40,7 @@ EXTERN_MSC int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid
 EXTERN_MSC int GMT_grd_data_size (int format, double *nan_value);
 EXTERN_MSC int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s, double *n, int *width, int *height, int *first_col, int *last_col, int *first_row, int *last_row);
 EXTERN_MSC void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_grd_format_decoder (const char *code);
 
 /* These are pointers to the various functions and are set in GMT_grdio_init() */
 
