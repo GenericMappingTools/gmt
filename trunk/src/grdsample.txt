@@ -28,9 +28,6 @@ Force pixel registration.  [Default is grid registration].
 Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of 
 x or y or both set by \fB\-R\fP, or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
 lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero).]  
-.TP
-.B \-N
-Specify number of columns \fInx\fP and rows \fIny\fP of new grid.
 #include "explain_-Q.txt"
 #include "explain_-R.txt"
 .TP
