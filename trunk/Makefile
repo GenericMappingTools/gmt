@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.25 2006-02-28 00:25:01 pwessel Exp $
+#	$Id: Makefile,v 1.26 2006-03-03 23:51:22 pwessel Exp $
 #
 #	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -109,19 +109,22 @@ install-suppl:	suppl
 		done
 
 mex_config:	
-		if [ ! -f src/mex/makefile ]; then \
-			cd src/mex; \
-			\rm -f config.{cache,log,status}; \
-			./configure; \
+		if [ -d src/mex ]; then \
+			if [ ! -f src/mex/makefile ]; then \
+				cd src/mex; \
+				\rm -f config.{cache,log,status}; \
+				./configure; \
+			fi \
 		fi
 		
 xgrid_config:	
-		if [ ! -f src/xgrid/makefile ]; then \
-			cd src/xgrid; \
-			\rm -f config.{cache,log,status}; \
-			./configure; \
+		if [ -d src/xgrid ]; then \
+			if [ ! -f src/xgrid/makefile ]; then \
+				cd src/xgrid; \
+				\rm -f config.{cache,log,status}; \
+				./configure; \
+			fi \
 		fi
-
 gmtmacros:	
 		if [ ! -s src/makegmt.macros ]; then \
 			echo "src/makegmt.macros is empty - you must rerun configure in the main GMT directory"; \
