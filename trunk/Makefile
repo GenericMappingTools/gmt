@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.26 2006-03-03 23:51:22 pwessel Exp $
+#	$Id: Makefile,v 1.27 2006-03-04 00:18:18 pwessel Exp $
 #
 #	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -50,7 +50,7 @@
 #	Authors:	Paul Wessel, SOEST, U. of Hawaii
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
 #
-#	Date:		06-JAN-2004
+#	Date:		04-MAR-2006
 #-------------------------------------------------------------------------------
 #	Get Default Macros
 #-------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ uninstall:	gmt
 		cd ..
 
 suppl:		gmtmacros mex_config xgrid_config
-		for d in $(SUPPL); do \
+		set -e ; for d in $(SUPPL); do \
 			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
 				cd src/$$d; \
 				$(MAKE) all; \
@@ -100,7 +100,7 @@ suppl:		gmtmacros mex_config xgrid_config
 suppl-install:	install-suppl
 
 install-suppl:	suppl
-		for d in $(SUPPL); do \
+		set -e ; for d in $(SUPPL); do \
 			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
 				cd src/$$d; \
 				$(MAKE) install; \
@@ -132,7 +132,7 @@ gmtmacros:
 		fi
 
 uninstall-suppl:
-		for d in $(SUPPL); do \
+		set -e ; for d in $(SUPPL); do \
 			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
 				cd src/$$d; \
 				$(MAKE) uninstall; \
@@ -160,7 +160,7 @@ uninstall-data:
 install-manl-suppl:
 #		First create suppl *.l from *.man in the local installation tree (regular gmt *.l is already there)
 		\rm -f manjob.sh
-		for d in $(SUPPL_M); do \
+		set -e ; for d in $(SUPPL_M); do \
 			if [ -d src/$$d ] ; then \
 				cd src/$$d; \
 				for f in *.man; do \
@@ -225,7 +225,7 @@ uninstall-man:
 
 
 install-www:
-		for d in $(SUPPL_M); do \
+		set -e ; for d in $(SUPPL_M); do \
 			if [ -d src/$$d ] ; then \
 				mkdir -p $(rootdir)/www/gmt/doc/html; \
 				cp src/$$d/*.html $(rootdir)/www/gmt/doc/html; \
@@ -274,7 +274,7 @@ clean:		clean-suppl
 suppl-clean:	clean-suppl
 
 clean-suppl:
-		for d in $(SUPPL); do \
+		set -e ; for d in $(SUPPL); do \
 			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
 				cd src/$$d; \
 				$(MAKE) clean; \
@@ -285,7 +285,7 @@ clean-suppl:
 spotless:	clean
 		rm -f config.cache config.status config.log
 		cd src; $(MAKE) spotless; \
-		for d in $(SUPPL); do \
+		set -e ; for d in $(SUPPL); do \
 			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
 				cd src/$$d; \
 				$(MAKE) spotless; \

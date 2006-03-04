@@ -1,12 +1,9 @@
-#-------	$Id: GNUmakefile,v 1.45 2005-12-27 22:27:12 remko Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.46 2006-03-04 00:18:19 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
 #	[GNU make always looks for GNUmakefile before Makefile/makefile]
 #
-#	To ensure the very latest code, start with "make spotless".
-#	The gentler "make clean" will NOT remove code that is generated
-#	by GMT scripts, like gmt_notposix.h and grdmath.c
 #	To compile/link them, try "make all", then "make install".
 #	When done, clean out directory with "make clean". If the example
 #	scripst have been installed in ../examples, try "make examples".
@@ -14,7 +11,7 @@
 #	Authors:	Paul Wessel, SOEST, University of Hawaii
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
 #
-#	Date:		02-JAN-2004
+#	Date:		04-MAR-2006
 #-------------------------------------------------------------------------------
 #	Default setup
 #-------------------------------------------------------------------------------
@@ -162,7 +159,7 @@ STATIC_LIB	= libpsl.a libgmt.a libgmtps.a
 
 all:		init libs $(ALLPROGS)
 
-init:		gmt_nan.h gmt_notposix.h gmtmath.c grdmath.c
+init:		gmt_nan.h gmt_notposix.h
 
 gmt_nan.h:
 		$(CC) $(CFLAGS) gmt_nan_init.c $(CDF) $(LIBS) $(LDFLAGS) -o gmt_nan_init
@@ -173,22 +170,6 @@ gmt_notposix.h:
 		echo "Warning: You probably should rerun configure manually instead"; \
 		cd ..; \
 		./configure
-
-# Must create g[rd|mt]math.c from g[rd|mt]math_main.c and g[rd|mt]math.func
-
-gmtmath.c:	gmtmath_main.c
-		(cd ..; sh guru/make_math.sh gmt)
-
-grdmath.c:	grdmath_main.c
-		(cd ..; sh guru/make_math.sh grd)
-
-gmt_keywords.h:
-		grep -v '^#' gmt_keywords.d | awk '{printf "\"%s\",\n", $$1}' > gmt_keywords.h
-		grep '#define N_KEYS ' gmt.h
-		echo -n "Make sure N_KEYS in gmt.h is set to "; grep -v '^#' gmt_keywords.d | wc -l
-
-gmt_keycases.h:
-		grep -v '^#' gmt_keywords.d | awk '{printf "#define GMTCASE_%s\t%d\n", $$1, NR-1}' > gmt_keycases.h
 
 install:	all
 		if [ ! -d $(bindir) ]; then \
@@ -319,8 +300,7 @@ clean:
 		done
 
 spotless:	clean
-		rm -f $(GMTLIB) gmt_nan.h gmt_notposix.h grdmath.c gmtmath.c
-		rm -f gmt_keywords.h gmt_keycases.h gmt_datums.h gmt_ellipsoids.h gmt_grdformats.h *.man
+		rm -f $(GMTLIB) gmt_nan.h gmt_notposix.h
 
 distclean:	spotless
 
