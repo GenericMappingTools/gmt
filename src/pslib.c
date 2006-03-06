@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.111 2006-01-23 04:41:58 pwessel Exp $
+ *	$Id: pslib.c,v 1.112 2006-03-06 00:37:00 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1379,13 +1379,11 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 			fprintf (ps.fp, "%%%%DocumentData: Clean7Bit\n");
 		else
 			fprintf (ps.fp, "%%%%DocumentData: Binary\n");
-		if (!ps.eps_format) {
-			if (ps.landscape)
-				fprintf (ps.fp, "%%%%Orientation: Landscape\n");
-			else
-				fprintf (ps.fp, "%%%%Orientation: Portrait\n");
-			fprintf (ps.fp, "%%%%Pages: 1\n");
-		}
+		if (ps.landscape)
+			fprintf (ps.fp, "%%%%Orientation: Landscape\n");
+		else
+			fprintf (ps.fp, "%%%%Orientation: Portrait\n");
+		if (!ps.eps_format) fprintf (ps.fp, "%%%%Pages: 1\n");
 		fprintf (ps.fp, "%%%%EndComments\n\n");
 
 		bulkcopy ("PSL_prologue");
