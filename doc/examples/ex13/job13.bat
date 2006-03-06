@@ -1,9 +1,9 @@
 REM		GMT EXAMPLE 13
 REM
-REM		$Id: job13.bat,v 1.5 2004-09-29 01:29:02 pwessel Exp $
+REM		$Id: job13.bat,v 1.6 2006-03-06 09:43:48 pwessel Exp $
 REM
 REM Purpose:	Illustrate vectors and contouring
-REM GMT progs:	grdmath, grdcontour, pstext
+REM GMT progs:	grdmath, grdcontour, grdvector, pstext
 REM DOS calls:	echo, del
 REM
 echo GMT EXAMPLE 13

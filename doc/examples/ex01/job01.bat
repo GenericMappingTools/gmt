@@ -1,10 +1,10 @@
 REM
 REM		GMT EXAMPLE 01
 REM
-REM		$Id: job01.bat,v 1.8 2004-09-29 01:29:02 pwessel Exp $
+REM		$Id: job01.bat,v 1.9 2006-03-06 09:43:48 pwessel Exp $
 REM
 REM Purpose:	Make two contour maps based on the data in the file osu91a1f_16.grd
-REM GMT progs:	gmtset grdcontour psbasemap pscoast
+REM GMT progs:	gmtset, grdcontour, psbasemap, pscoast
 REM DOS calls:	del
 REM
 echo GMT EXAMPLE 01

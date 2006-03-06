@@ -1,11 +1,11 @@
 #!/bin/sh
 #		GMT EXAMPLE 03
 #
-#		$Id: job03.sh,v 1.10 2006-01-07 00:21:45 pwessel Exp $
+#		$Id: job03.sh,v 1.11 2006-03-06 09:43:48 pwessel Exp $
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
-# GMT progs:	filter1d, fitcircle, gmtset, minmax, project, sample1d, 
-# 		spectrum1d, trend1d, pshistogram, psxy, pstext
+# GMT progs:	filter1d, fitcircle, gmtset, minmax, project, sample1d
+# GMT progs:	spectrum1d, trend1d, pshistogram, psxy, pstext
 # Unix progs:	$AWK, cat, echo, head, paste, rm, tail
 #
 # This example begins with data files "ship.xyg" and "sat.xyg" which

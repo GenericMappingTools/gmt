@@ -1,10 +1,10 @@
 REM		GMT EXAMPLE 15
 REM
-REM		$Id: job15.bat,v 1.5 2004-09-29 01:29:02 pwessel Exp $
+REM		$Id: job15.bat,v 1.6 2006-03-06 09:43:48 pwessel Exp $
 REM
 REM Purpose:	Gridding and clipping when data are missing
 REM GMT progs:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo, minmax,
-REM		nearneighbor, pscoast, psmask, pstext, surface
+REM GMT progs:	nearneighbor, pscoast, psmask, pstext, surface
 REM DOS calls:	echo, del, gawk
 REM
 echo GMT EXAMPLE 15
