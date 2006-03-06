@@ -1,11 +1,11 @@
 #!/bin/sh
 #		GMT EXAMPLE 15
 #
-#		$Id: job15.sh,v 1.4 2004-04-10 17:19:14 pwessel Exp $
+#		$Id: job15.sh,v 1.5 2006-03-06 09:43:48 pwessel Exp $
 #
 # Purpose:	Gridding and clipping when data are missing
-# GMT progs:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo, minmax,
-#		nearneighbor, pscoast, psmask, pstext, surface
+# GMT progs:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo, minmax
+# GMT progs:	nearneighbor, pscoast, psmask, pstext, surface
 # Unix progs:	awk, echo, rm
 #
 gmtconvert ship.xyz -bo > ship.b

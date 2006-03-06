@@ -1,11 +1,11 @@
 #!/bin/sh
 #		GMT EXAMPLE 18
 #
-#		$Id: job18.sh,v 1.4 2004-04-10 17:19:14 pwessel Exp $
+#		$Id: job18.sh,v 1.5 2006-03-06 09:43:48 pwessel Exp $
 #
 # Purpose:	Illustrates volumes of grids inside contours and spatial
 #		selection of data
-# GMT progs:	gmtset, gmtselect, grdclip, grdcontour, grdgradient, grdimage, 
+# GMT progs:	gmtset, gmtselect, grdclip, grdcontour, grdgradient, grdimage, grdvolume
 # Unix progs:	$AWK, cat, rm
 #
 # Get Sandwell/Smith gravity for the region

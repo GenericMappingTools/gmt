@@ -1,9 +1,9 @@
 #!/bin/sh
 #
-#	GMT Example 01  $Id: job01.sh,v 1.9 2004-05-26 03:25:22 pwessel Exp $
+#	GMT Example 01  $Id: job01.sh,v 1.10 2006-03-06 09:43:48 pwessel Exp $
 #
 # Purpose:	Make two contour maps based on the data in the file osu91a1f_16.grd
-# GMT progs:	gmtset grdcontour psbasemap pscoast
+# GMT progs:	gmtset, grdcontour, psbasemap, pscoast
 # Unix progs:	rm
 #
 gmtset GRID_CROSS_SIZE 0 ANNOT_FONT_SIZE_PRIMARY 10

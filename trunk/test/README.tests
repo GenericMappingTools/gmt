@@ -1,0 +1,11 @@
+#	$Id: README.tests,v 1.1 2006-03-06 09:46:16 pwessel Exp $
+#
+# This is README for the test directory
+# Each program should have a separate directory
+# which may contain any number of Bourne (*.sh)
+# and csh (*.csh) scripts that tests one or more
+# aspects of the program.
+# The script should report a pass/fail grade so
+# that it is easy to tell which test failed.
+#
+# P. Wessel, March 2006
