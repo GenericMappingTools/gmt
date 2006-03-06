@@ -555,6 +555,11 @@ Sets the threshold angle (integer in 0-180 range) used for mitered joins.  0 and
 are special flag values that imply the PostScript default [11] and always bevels,
 respectively.  Other values sets the acute angle used to decide between mitered and bevelled.
 .TP
+.B PS_VERBOSE
+If TRUE we will issue comments in the \fIPostScript\fP file that explain the logic of operations.
+These are useful if you need to edit the file and make changes; otherwise you can set it to
+FALSE which yields a somewhat slimmer \fIPostScript\fP file [FALSE].
+.TP
 .B TICK_LENGTH
 The length of a tickmark.  Normally, tickmarks are drawn on the outside of
 the map boundaries.  To select interior tickmarks, use a negative tick_length [LEN_1_SI (or LEN_1_US)].

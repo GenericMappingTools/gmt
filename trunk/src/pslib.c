@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.114 2006-03-06 03:05:27 pwessel Exp $
+ *	$Id: pslib.c,v 1.115 2006-03-06 05:46:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -48,7 +48,7 @@
  * Updated January 12, 2004 by P. Wessel to add octagon symbol.
  * Updated June 2, 2004 by P. Wessel to add contour/line clipping & labeling machinery (PSL_label.ps).
  * Updated October 25, 2004 by R. Scharroo and L. Parkes to add image compression tricks.
- * Updated March 6, 2006 by P. Wessel to skip output of PS comments unless compiled with -DPSL_COMMENTS.
+ * Updated March 6, 2006 by P. Wessel to skip output of PS comments unless ps.commens is TRUE.
  *
  * FORTRAN considerations:
  *	All floating point data are assumed to be DOUBLE PRECISION
@@ -326,13 +326,14 @@ void ps_bitimage (double x, double y, double xsize, double ysize, unsigned char 
 	lx = irint (xsize * ps.scale);
 	ly = irint (ysize * ps.scale);
 
-	fprintf (ps.fp, "\n%% Start of %s Adobe 1-bit image\n", kind[ps.hex_image]);
+	if (ps.comments) fprintf (ps.fp, "\n%% Start of %s Adobe 1-bit image\n", kind[ps.hex_image]);
 	fprintf (ps.fp, "V N %g %g T %d %d scale\n", x * ps.scale, y * ps.scale, lx, ly);
 	inv = (ps_bitimage_cmap (f_rgb, b_rgb) + invert) % 2;
 	fprintf (ps.fp, "<< /ImageType 1 /Decode [%d %d] ", inv, 1-inv);
 	ps_stream_dump (buffer, nx, ny, 1, ps.compress, ps.hex_image, f_rgb[0] < 0 || b_rgb[0] < 0);
 
-	fprintf (ps.fp, "U\n%% End of %s Abobe 1-bit image\n", kind[ps.hex_image]);
+	fprintf (ps.fp, "U\n");
+	if (ps.comments) fprintf (ps.fp, "%% End of %s Abobe 1-bit image\n", kind[ps.hex_image]);
 }
 
 /* fortran interface */
@@ -363,7 +364,8 @@ void ps_circle_ (double *x, double *y, double *size, int *rgb, int *outline)
 }
 
 void ps_clipoff (void) {
-	fprintf (ps.fp, "S U\n%% Clipping is currently OFF\n");
+	fprintf (ps.fp, "S U\n");
+	if (ps.comments) fprintf (ps.fp, "%% Clipping is currently OFF\n");
 	ps.npath = ps.clip_path_length = 0;
 }
 
@@ -385,7 +387,8 @@ void ps_clipon (double *x, double *y, int n, int rgb[], int flag)
 
 	if (flag & 1) {	/* First segment in (possibly multi-segmented) clip-path */
 		strcpy (move, "M");
-		fprintf (ps.fp, "\n%% Start of clip path\nS V\n");
+		if (ps.comments) fprintf (ps.fp, "\n%% Start of clip path\n");
+		fprintf (ps.fp, "S V\n");
 		ps.npath = 0;
 	}
 	else
@@ -411,9 +414,10 @@ void ps_clipon (double *x, double *y, int n, int rgb[], int flag)
 			fprintf (ps.fp, "%c eofill U ", ps_paint_code[pmode]);
 		}
 		if (flag & 4)
-			fprintf (ps.fp, "eoclip\n%% End of clip path.  Clipping is currently ON\n");
+			fprintf (ps.fp, "eoclip\n");
 		else
-			fprintf (ps.fp, "eoclip N\n%% End of clip path.  Clipping is currently ON\n");
+			fprintf (ps.fp, "eoclip N\n");
+		if (ps.comments) fprintf (ps.fp, "%% End of clip path.  Clipping is currently ON\n");
 		ps.npath = 0;
 	}
 }
@@ -456,14 +460,15 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 		/* Creation of colormap was successful */
 		nbits = ps_bitreduce (image->buffer, nx, ny, image->colormap->ncolors);
 
-		fprintf (ps.fp, "\n%% Start of %s Adobe Indexed %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], nbits);
+		if (ps.comments) fprintf (ps.fp, "\n%% Start of %s Adobe Indexed %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], nbits);
 		fprintf (ps.fp, "V N %g %g T %d %d scale ", x * ps.scale, y * ps.scale, lx, ly);
 		fprintf (ps.fp, "[/Indexed /Device%s %d <\n", colorspace[id], image->colormap->ncolors - 1);
 		ps_stream_dump (&image->colormap->colors[0][0], image->colormap->ncolors, 1, 24, 0, 2, 2);
 		fprintf (ps.fp, ">] setcolorspace\n");
 		fprintf (ps.fp, "<< /ImageType %s /Decode [0 %d] ", type[it], (1<<nbits)-1);
 		ps_stream_dump (image->buffer, nx, ny, nbits, ps.compress, ps.hex_image, 0);
-		fprintf (ps.fp, "U\n%% End of %s Adobe Indexed %s image\n", kind[ps.hex_image], colorspace[id]);
+		fprintf (ps.fp, "U\n");
+		if (ps.comments) fprintf (ps.fp, "%% End of %s Adobe Indexed %s image\n", kind[ps.hex_image], colorspace[id]);
 
 		/* Clear the newly created image buffer and colormap */
 		ps_free (image->buffer);
@@ -474,7 +479,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 		/* Export full RGB or CMYK image */
 		nbits = abs(nbits);
 
-		fprintf (ps.fp, "\n%% Start of %s Adobe %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], nbits);
+		if (ps.comments) fprintf (ps.fp, "\n%% Start of %s Adobe %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], nbits);
 		fprintf (ps.fp, "V N %g %g T %d %d scale ", x * ps.scale, y * ps.scale, lx, ly);
 		fprintf (ps.fp, "/Device%s setcolorspace\n", colorspace[id]);
 
@@ -487,7 +492,8 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 
 		fprintf (ps.fp, " /Decode [%s] ", decode[id]);
 		ps_stream_dump (buffer, nx, ny, nbits, ps.compress, ps.hex_image, 0);
-		fprintf (ps.fp, "U\n%% End of %s Adobe %s image\n", kind[ps.hex_image], colorspace[id]);
+		fprintf (ps.fp, "U\n\n");
+		if (ps.comments) fprintf (ps.fp, "%% End of %s Adobe %s image\n", kind[ps.hex_image], colorspace[id]);
 	}
 }
 
@@ -551,7 +557,7 @@ void ps_command_ (char *text, int nlen)
 
 void ps_comment (char *text)
 {
-	fprintf (ps.fp, "%%\n%% %s\n%%\n", text);
+	if (ps.comments) fprintf (ps.fp, "%%\n%% %s\n%%\n", text);
 }
 
 /* fortran interface */
@@ -800,7 +806,7 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 	id = (ps.cmyk_mode) ? 2 : 1;
 	name = (ps_pattern[image_no].depth == 1 && (f_rgb[0] < 0 || b_rgb[0] < 0)) ? "imagemask" : "image";
 
-	fprintf (ps.fp, "\n%% Start of %s fill pattern\n", name);
+	if (ps.comments) fprintf (ps.fp, "\n%% Start of %s fill pattern\n", name);
 
 	/* When DPI or colors have changed, the /fillimage procedure needs to be rewritten */
 
@@ -876,7 +882,7 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 	fprintf (ps.fp, "%d {fillimage%d} repeat\n", n_times, image_no);
 	if (outline > 0) fprintf (ps.fp, "clippath S\n");
 	ps_clipoff ();
-	fprintf (ps.fp, "%% End of %s fill pattern\n", name);
+	if (ps.comments) fprintf (ps.fp, "%% End of %s fill pattern\n", name);
 }
 
 int ps_imagefill_init (int image_no, char *imagefile)
@@ -978,9 +984,11 @@ void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char 
 	 fprintf (ps.fp, "V N %g %g T %g %g scale\n", x * ps.scale, y * ps.scale, xsize * ps.scale / nx, ysize * ps.scale / ny);
 	 fprintf (ps.fp, "%d %d T\n", -ox, -oy);
 	 fprintf (ps.fp, "N %d %d m %d %d L %d %d L %d %d L P clip N\n", ox, oy, ox+nx, oy, ox+nx, oy+ny, ox, oy+ny);
-	 fprintf (ps.fp, "countdictstack\nmark\n/showpage {} def\n%% Start of imported EPS file\n");
+	 fprintf (ps.fp, "countdictstack\nmark\n/showpage {} def\n");
+	 if (ps.comments) fprintf (ps.fp, "%% Start of imported EPS file\n");
 	 fwrite (buffer, (size_t)1, (size_t)size, ps.fp);
-	 fprintf (ps.fp, "%% End of imported EPS file\ncleartomark\ncountdictstack exch sub { end } repeat\nU\n");
+	 if (ps.comments) fprintf (ps.fp, "%% End of imported EPS file\n");
+	 fprintf (ps.fp, "cleartomark\ncountdictstack exch sub { end } repeat\nU\n");
 }
 
 int ps_line (double *x, double *y, int n, int type, int close, int split)
@@ -1202,7 +1210,7 @@ void ps_plotend (int lastpage)
 			fprintf (ps.fp, "%%%%Trailer\n");
 			fprintf (ps.fp, "%%%%BoundingBox: %d %d %d %d\n", x0, y0, x1, y1);
 		}
-		fprintf (ps.fp, "%% Reset translations and scale and call showpage\n");
+		if (ps.comments) fprintf (ps.fp, "%% Reset translations and scale and call showpage\n");
 		fprintf (ps.fp, "S %g %g T", -(ps.xoff * ps.scale), -(ps.yoff * ps.scale));
 		fprintf (ps.fp, " %g %g scale",
 			ps.scale/(ps.points_pr_unit * ps.xscl), ps.scale/(ps.points_pr_unit * ps.yscl));
@@ -1240,6 +1248,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		bits 14-15 : (0,1,2) sets the line cap setting
 		bits 16-17 : (0,1,2) sets the line miter setting
 		bits 18-25 : (8 bits) sets the miter limit
+		    bit 31 : 0 = write no comments, 1 = write PS comments to PS file
    ncopies:	Number of copies for this plot
    dpi:		Plotter resolution in dots-per-inch
    unit:	0 = cm, 1 = inch, 2 = meter
@@ -1273,6 +1282,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps.line_cap = (mode >> 14) & 3;
 	ps.line_join = (mode >> 16) & 3;
 	ps.miter_limit = (mode >> 18) & 255;
+	ps.comments = (mode >> 30) & 1;
 	if (page_size[0] < 0) {		/* Want Manual Request for paper */
 		ps.p_width  = abs (page_size[0]);
 		manual = TRUE;
@@ -1410,16 +1420,17 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		else if (!ps.eps_format && ps.p_width > 0 && ps.p_height > 0)	/* Specific media selected */
 			fprintf (ps.fp, "PSLevel 1 gt { << /PageSize [%d %d] /ImagingBBox null >> setpagedevice } if\n\n", ps.p_width, ps.p_height);
 
-		fprintf (ps.fp, "%% Init coordinate system and scales\n");
+		if (ps.comments) fprintf (ps.fp, "%% Init coordinate system and scales\n");
 		scl = ps.points_pr_unit / ps.scale;
-		fprintf (ps.fp, "%% Scale is originally set to %g, which means that\n", scl);
+		if (ps.comments) fprintf (ps.fp, "%% Scale is originally set to %g, which means that\n", scl);
 		if (unit == 0) {	/* CM used as unit */
-			fprintf (ps.fp, "%% 1 cm on the paper equals %d Postscript units\n", (int)ps.scale);
+			if (ps.comments) fprintf (ps.fp, "%% 1 cm on the paper equals %d Postscript units\n", (int)ps.scale);
 		}
-		else if (unit == 1)	/* INCH used as unit */
-			fprintf (ps.fp, "%% 1 inch on the paper equals %d Postscript units\n", (int)ps.scale);
+		else if (unit == 1) {	/* INCH used as unit */
+			if (ps.comments) fprintf (ps.fp, "%% 1 inch on the paper equals %d Postscript units\n", (int)ps.scale);
+		}
 		else if (unit == 2) {	/* M used as unit */
-			fprintf (ps.fp, "%% 1 m on the paper equals %d Postscript units\n", (int)ps.scale);
+			if (ps.comments) fprintf (ps.fp, "%% 1 m on the paper equals %d Postscript units\n", (int)ps.scale);
 		}
 		else {
 			fprintf (stderr, "pslib: Measure unit not valid!\n");
@@ -1432,7 +1443,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		fprintf (ps.fp, "%g %g scale\n", xscl, yscl);
 	}
 	if (!overlay) {
-		fprintf (ps.fp, "%% End of pslib header\n");
+		if (ps.comments) fprintf (ps.fp, "%% End of pslib header\n");
 		fprintf (ps.fp, "%%%%EndSetup\n\n");
 		if (!ps.eps_format) fprintf (ps.fp, "%%%%Page: 1 1\n\n");
 		if (!(rgb[0] == rgb[1] && rgb[1] == rgb[2] && rgb[0] == 255)) {	/* Change background color */
@@ -1546,7 +1557,10 @@ void ps_polygon (double *x, double *y, int n, int rgb[], int outline)
 	if (outline > 0) mode += outline;		/* Convert a, c, or k to b, d, or l */
 	fprintf (ps.fp, "%c\n", mode);
 	if (outline < 0) {
-		if (outline == -1) fprintf (ps.fp, "\nN U\n%% Clipping is currently OFF\n");
+		if (outline == -1) {
+			fprintf (ps.fp, "\nN U\n");
+			if (ps.comments) fprintf (ps.fp, "%% Clipping is currently OFF\n");
+		} 
 		ps.clip_path_length = 0;
 	}
 }
@@ -1818,7 +1832,8 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 
 	rounded = (outline & 4 && dx > 0.0 && dy > 0.0);	/* Want rounded label boxes, assuming there is clearance */
 	outline &= 3;	/* Turn off the 4 */
-	fprintf (ps.fp, "\n%% ps_textbox begin:\nV\n");
+	if (ps.comments) fprintf (ps.fp, "\n%% ps_textbox begin:");
+	fprintf (ps.fp, "\nV\n");
 
 	if (justify < 0)  {	/* Strip leading and trailing blanks */
 		for (i = 0; text[i] == ' '; i++);
@@ -1877,7 +1892,8 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 		fprintf (ps.fp, "%c F U ", ps_paint_code[pmode]);
 	}
 	(outline) ? fprintf (ps.fp, "S U\n") : fprintf (ps.fp, "N U\n");
-	fprintf (ps.fp, "U\n%% ps_textbox end:\n\n");
+	fprintf (ps.fp, "U\n");
+	if (ps.comments) fprintf (ps.fp, "%% ps_textbox end:\n\n");
 
 	ps_free ((void *)string);
 }
@@ -2296,7 +2312,10 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 	int i = 0, j, k;
 
 	if (key & 2) {	/* Flag to terminate clipping */
-		fprintf (ps.fp, "PSL_clip_on\t\t%% If clipping is active, terminate it\n{\n  grestore\n  /PSL_clip_on false def\n} if\n");
+		if (ps.comments)
+			fprintf (ps.fp, "PSL_clip_on\t\t%% If clipping is active, terminate it\n{\n  grestore\n  /PSL_clip_on false def\n} if\n");
+		else
+			fprintf (ps.fp, "PSL_clip_on\n{\n  grestore\n  /PSL_clip_on false def\n} if\n");
 		return;
 	}
 	if (key & 8) {		/* Flag to place text already define in PSL arrays */
@@ -2748,14 +2767,16 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 		PSL_text_first = FALSE;
 	}
 
-	fprintf (ps.fp, "\n%% ps_words begin:\n\ngsave\n");
+	if (ps.comments) fprintf (ps.fp, "\n%% ps_words begin:\n");
+	fprintf (ps.fp, "\ngsave\n");
 
-	fprintf (ps.fp, "\n%% Define array of fonts:\n\n/PSL_fontname\n");
+	if (ps.comments) fprintf (ps.fp, "\n%% Define array of fonts:\n");
+	fprintf (ps.fp, "\n/PSL_fontname\n");
 	for (i = 0 ; i < n_font_unique; i++) fprintf (ps.fp, "/%s\n", ps.font[font_unique[i]].name);
 	fprintf (ps.fp, "%d array astore def\n", n_font_unique);
 	ps_free ((void *)font_unique);
 
-	fprintf (ps.fp, "\n%% Initialize variables:\n\n");
+	if (ps.comments) fprintf (ps.fp, "\n%% Initialize variables:\n\n");
 	fprintf (ps.fp, "/PSL_n %d def\n", (int)n_items);
 	fprintf (ps.fp, "/PSL_n1 %d def\n", (int)n_items - 1);
 	fprintf (ps.fp, "/PSL_y0 %d def\n", irint (y * ps.scale));
@@ -2769,7 +2790,8 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	fprintf (ps.fp, "/PSL_lastfn -1 def\n/PSL_lastfs -1 def\n/PSL_lastfc -1 def\n");
 	fprintf (ps.fp, "/PSL_UL 0 def\n/PSL_show {ashow} def\n");
 
-	fprintf (ps.fp, "\n%% Define array of words:\n\n/PSL_word\n");
+	if (ps.comments) fprintf (ps.fp, "\n%% Define array of words:\n");
+	fprintf (ps.fp, "\n/PSL_word\n");
 	for (i = n = 0 ; i < (int)n_items; i++) {
 		fprintf (ps.fp, "(%s)", word[i]->txt);
 		n += strlen (word[i]->txt) + 1;
@@ -2783,7 +2805,8 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	if (n) fputc ('\n', ps.fp);
 	fprintf (ps.fp, "%d array astore def\n", (int)n_items);
 
-	fprintf (ps.fp, "\n%% Define array of word font numbers:\n\n/PSL_fnt\n");
+	if (ps.comments) fprintf (ps.fp, "\n%% Define array of word font numbers:\n");
+	fprintf (ps.fp, "\n/PSL_fnt\n");
 	for (i = 0 ; i < (int)n_items; i++) {
 		fprintf (ps.fp, "%d", word[i]->font_no);
 		(!((i+1)%25)) ? fputc ('\n', ps.fp) : fputc (' ', ps.fp);
@@ -2791,7 +2814,8 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	if ((i%25)) fputc ('\n', ps.fp);
 	fprintf (ps.fp, "%d array astore def\n", (int)n_items);
 
-	fprintf (ps.fp, "\n%% Define array of word fontsizes:\n\n/PSL_size\n");
+	if (ps.comments) fprintf (ps.fp, "\n%% Define array of word fontsizes:\n");
+	fprintf (ps.fp, "\n/PSL_size\n");
 	for (i = 0 ; i < (int)n_items; i++) {
 		fprintf (ps.fp, "%.2f", word[i]->font_size);
 		(!((i+1)%20)) ? fputc ('\n', ps.fp) : fputc (' ', ps.fp);
@@ -2799,7 +2823,8 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	if ((i%20)) fputc ('\n', ps.fp);
 	fprintf (ps.fp, "%d array astore def\n", (int)n_items);
 
-	fprintf (ps.fp, "\n%% Define array of word spaces to follow:\n\n/PSL_flag\n");
+	if (ps.comments) fprintf (ps.fp, "\n%% Define array of word spaces to follow:\n");
+	fprintf (ps.fp, "\n/PSL_flag\n");
 	for (i = 0 ; i < (int)n_items; i++) {
 		fprintf (ps.fp, "%d", word[i]->flag);
 		(!((i+1)%25)) ? fputc ('\n', ps.fp) : fputc (' ', ps.fp);
@@ -2807,7 +2832,8 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	if ((i%25)) fputc ('\n', ps.fp);
 	fprintf (ps.fp, "%d array astore def\n", (int)n_items);
 
-	fprintf (ps.fp, "\n%% Define array of word baseline shifts:\n\n/PSL_bshift\n");
+	if (ps.comments) fprintf (ps.fp, "\n%% Define array of word baseline shifts:\n");
+	fprintf (ps.fp, "\n/PSL_bshift\n");
 	for (i = 0 ; i < (int)n_items; i++) {
 		fprintf (ps.fp, "%g", word[i]->baseshift);
 		(!((i+1)%25)) ? fputc ('\n', ps.fp) : fputc (' ', ps.fp);
@@ -2815,7 +2841,8 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	if ((i%25)) fputc ('\n', ps.fp);
 	fprintf (ps.fp, "%d array astore def\n", (int)n_items);
 
-	fprintf (ps.fp, "\n%% Define array of word colors indices:\n\n/PSL_color\n");
+	if (ps.comments) fprintf (ps.fp, "\n%% Define array of word colors indices:\n");
+	fprintf (ps.fp, "\n/PSL_color\n");
 	for (i = 0 ; i < (int)n_items; i++) {
 		fprintf (ps.fp, "%d", word[i]->rgb[0]);
 		(!((i+1)%25)) ? fputc ('\n', ps.fp) : fputc (' ', ps.fp);
@@ -2823,24 +2850,29 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	if ((i%25)) fputc ('\n', ps.fp);
 	fprintf (ps.fp, "%d array astore def\n", (int)n_items);
 
-	fprintf (ps.fp, "\n%% Define array of word colors:\n\n/PSL_rgb\n");
+	if (ps.comments) fprintf (ps.fp, "\n%% Define array of word colors:\n");
+	fprintf (ps.fp, "\n/PSL_rgb\n");
 	for (i = 0 ; i < n_rgb_unique; i++) fprintf (ps.fp, "%.3g %.3g %.3g\n", I_255 * (rgb_unique[i] >> 16), I_255 * ((rgb_unique[i] >> 8) & 0xFF), I_255 * (rgb_unique[i] & 0xFF));
 	fprintf (ps.fp, "%d array astore def\n", 3 * n_rgb_unique);
 	ps_free ((void *)rgb_unique);
 
-	fprintf (ps.fp, "\n%% Define array of word widths:\n\n");
+	if (ps.comments) fprintf (ps.fp, "\n%% Define array of word widths:\n\n");
 	fprintf (ps.fp, "/PSL_width %d array def\n", (int)n_items);
-	fprintf (ps.fp, "0 1 PSL_n1 {	%% Determine word width given the font and fontsize for each word\n");
-	fprintf (ps.fp, "  /i exch def	%% Loop index i\n");
-	fprintf (ps.fp, "  PSL_size i get PSL_fontname PSL_fnt i get get Y	%% Get and set font and size\n");
-	fprintf (ps.fp, "  PSL_width i PSL_word i get stringwidth pop put		%% Calculate and store width\n");
+	fprintf (ps.fp, "0 1 PSL_n1 {");
+	(ps.comments) ? fprintf (ps.fp, "\t%% Determine word width given the font and fontsize for each word\n") : fprintf (ps.fp, "\n");
+	fprintf (ps.fp, "  /i exch def");
+	(ps.comments) ? fprintf (ps.fp, "\t%% Loop index i\n") : fprintf (ps.fp, "\n");
+	fprintf (ps.fp, "  PSL_size i get PSL_fontname PSL_fnt i get get Y");
+	(ps.comments) ? fprintf (ps.fp, "\t%% Get and set font and size\n") : fprintf (ps.fp, "\n");
+	fprintf (ps.fp, "  PSL_width i PSL_word i get stringwidth pop put");
+	(ps.comments) ? fprintf (ps.fp, "\t\t%% Calculate and store width\n") : fprintf (ps.fp, "\n");
 	fprintf (ps.fp, "} for\n");
 
-	fprintf (ps.fp, "\n%% Define array of word char counts:\n\n");
+	if (ps.comments) fprintf (ps.fp, "\n%% Define array of word char counts:\n\n");
 	fprintf (ps.fp, "/PSL_count %d array def\n", (int)n_items);
 	fprintf (ps.fp, "0 1 PSL_n1 {PSL_count exch dup PSL_word exch get length put} for\n");
 
-	fprintf (ps.fp, "\n%% For composite chars, set width and count to zero for 2nd char:\n\n");
+	if (ps.comments) fprintf (ps.fp, "\n%% For composite chars, set width and count to zero for 2nd char:\n\n");
 	fprintf (ps.fp, "1 1 PSL_n1 {\n  /k exch def\n  PSL_flag k get 16 and 16 eq {\n");
 	fprintf (ps.fp, "    /k1 k 1 sub def\n    /w1 PSL_width k1 get def\n    /w2 PSL_width k get def\n");
 	fprintf (ps.fp, "    PSL_width k1 w1 w2 gt {w1} {w2} ifelse put\n    PSL_width k 0 put\n");
@@ -2860,11 +2892,12 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 
 	/* Do the relative horizontal justification */
 
-	fprintf (ps.fp, "0 0 M\n\n0 PSL_textjustifier %% Just get paragraph height\n\n");
+	fprintf (ps.fp, "0 0 M\n\n0 PSL_textjustifier");
+	(ps.comments) ? fprintf (ps.fp, "\t%% Just get paragraph height\n") : fprintf (ps.fp, "\n");
 
 	/* Adjust origin for box justification */
 
-	fprintf (ps.fp, "/PSL_x0 %d def\n", -irint (0.5 * ((justify - 1) % 4) * par_width * ps.scale));
+	fprintf (ps.fp, "\n/PSL_x0 %d def\n", -irint (0.5 * ((justify - 1) % 4) * par_width * ps.scale));
 	if (justify > 8) {	/* Top row */
 		fprintf (ps.fp, "/PSL_y0 0 def\n");
 	}
@@ -2881,7 +2914,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	fprintf (ps.fp, "\nPSL_x0 PSL_y0 T\n\n");
 
 	if (draw_box) {
-		fprintf (ps.fp, "%% Start PSL box beneath text block:\n");
+		if (ps.comments) fprintf (ps.fp, "%% Start PSL box beneath text block:\n");
 		ps_setline (boxpen_width);
 		ps_setpaint (boxpen_rgb);
 		if (boxpen_texture) ps_setdash (boxpen_texture, boxpen_offset);
@@ -2894,7 +2927,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 			fprintf (ps.fp, "/PSL_ry PSL_h PSL_h mul PSL_ygap PSL_ygap mul add 2 PSL_ygap mul div def\n");
 			fprintf (ps.fp, "/PSL_ax PSL_w PSL_rx PSL_xgap sub atan def\n");
 			fprintf (ps.fp, "/PSL_ay PSL_h PSL_ry PSL_ygap sub atan def\n");
-			fprintf (ps.fp, "%% PSL_path:\n");
+			if (ps.comments) fprintf (ps.fp, "%% PSL_path:\n");
 			fprintf (ps.fp, "PSL_xgap neg PSL_ygap M\n");
 			fprintf (ps.fp, "PSL_ry PSL_xgap 2 mul sub PSL_parheight 2 div neg PSL_ry 180 PSL_ay sub 180 PSL_ay add arc\n");
 			fprintf (ps.fp, "PSL_parwidth 2 div PSL_parheight 2 PSL_ygap mul add PSL_rx sub neg PSL_rx 270 PSL_ax sub 270 PSL_ax add arc\n");
@@ -2908,7 +2941,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 			fprintf (ps.fp, "/PSL_ry PSL_h PSL_h mul PSL_ygap PSL_ygap mul add 2 PSL_ygap mul div def\n");
 			fprintf (ps.fp, "/PSL_ax PSL_w PSL_rx PSL_xgap sub atan def\n");
 			fprintf (ps.fp, "/PSL_ay PSL_h PSL_ry PSL_ygap sub atan def\n");
-			fprintf (ps.fp, "%% PSL_path:\n");
+			if (ps.comments) fprintf (ps.fp, "%% PSL_path:\n");
 			fprintf (ps.fp, "PSL_xgap 2 mul neg PSL_ygap 2 mul M\n");
 			fprintf (ps.fp, "PSL_xgap PSL_ry add neg PSL_parheight 2 div neg PSL_ry PSL_ay dup neg arcn\n");
 			fprintf (ps.fp, "PSL_parwidth 2 div PSL_parheight PSL_ygap add PSL_rx add neg PSL_rx 90 PSL_ax add 90 PSL_ax sub arcn\n");
@@ -2928,7 +2961,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 			fprintf (ps.fp, "/xr PSL_parwidth PSL_dx add def\n");
 			fprintf (ps.fp, "/yt PSL_dy def\n");
 			fprintf (ps.fp, "/yb PSL_parheight PSL_dy add neg def\n");
-			fprintf (ps.fp, "%% PSL_path:\n");
+			if (ps.comments) fprintf (ps.fp, "%% PSL_path:\n");
 			fprintf (ps.fp, "XL yt M XL yb L\n");
 			fprintf (ps.fp, "xl yb PSL_r 180 270 arc xr YB L\n");
 			fprintf (ps.fp, "xr yb PSL_r 270 360 arc XR yt L\n");
@@ -2940,7 +2973,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 			fprintf (ps.fp, "/XR PSL_parwidth PSL_xgap add def\n");
 			fprintf (ps.fp, "/YT PSL_ygap def\n");
 			fprintf (ps.fp, "/YB PSL_parheight PSL_ygap add neg def\n");
-			fprintf (ps.fp, "%% PSL_path:\n");
+			if (ps.comments) fprintf (ps.fp, "%% PSL_path:\n");
 			fprintf (ps.fp, "XL YT M XL YB L XR YB L XR YT L P\n");
 		}
 		if (draw_box & 2) {	/* Fill */
@@ -2958,12 +2991,14 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 		if (boxpen_texture) ps_setdash (CNULL, 0);
 		/* Because inside gsave/grestore we must reset ps.pen and ps.rgb so that they are set next time */
 		ps.rgb[0] = ps.rgb[1] = ps.rgb[2] = ps.linewidth = -1;
-		fprintf (ps.fp, "%% End PSL box beneath text block:\n");
+		if (ps.comments) fprintf (ps.fp, "%% End PSL box beneath text block:\n");
 	}
 	/* Adjust origin so 0,0 is lower left corner of first character on baseline */
 
-	fprintf (ps.fp, "0 PSL_txt_y0 T %% Move to col 0 on first baseline\n");
-	fprintf (ps.fp, "\n0 0 M\n\n1 PSL_textjustifier %% Place the paragraph\n\n");
+	fprintf (ps.fp, "0 PSL_txt_y0 T");
+	(ps.comments) ? fprintf (ps.fp, "\t%% Move to col 0 on first baseline\n") : fprintf (ps.fp, "\n");
+	fprintf (ps.fp, "\n0 0 M\n\n1 PSL_textjustifier");
+	(ps.comments) ? fprintf (ps.fp, "\t%% Place the paragraph\n\n") : fprintf (ps.fp, "\n");
 
 	fprintf (ps.fp, "grestore\n\n");
 
@@ -3049,7 +3084,8 @@ void ps_encode_font (int font_no)
 	if (ps.font[font_no].encoded) return;	/* Already reencoded or should not be reencoded ever */
 
 	/* Reencode fonts with Standard+ or ISOLatin1[+] encodings */
-	fprintf (ps.fp, "PSL_font_encode %d get 0 eq { %% Set this font\n", font_no);
+	fprintf (ps.fp, "PSL_font_encode %d get 0 eq {", font_no);
+	(ps.comments) ? fprintf (ps.fp, "\t%% Set this font\n") : fprintf (ps.fp, "\n");
 	fprintf (ps.fp, "\t%s_Encoding /%s /%s PSL_reencode\n", ps.encoding, ps.font[font_no].name, ps.font[font_no].name);
 	fprintf (ps.fp, "\tPSL_font_encode %d 1 put\n} if\n", font_no);
 	ps.font[font_no].encoded = TRUE;
@@ -3072,7 +3108,8 @@ void def_font_encoding (void)
 
 	int i;
 
-	fprintf (ps.fp, "/PSL_reencode {\t%% To reencode one font with the provided encoding vector\n");
+	fprintf (ps.fp, "/PSL_reencode {");
+	(ps.comments) ? fprintf (ps.fp, "\t%% To reencode one font with the provided encoding vector\n") : fprintf (ps.fp, "\n");
 	fprintf (ps.fp, "\tfindfont dup length dict begin\n");
 	fprintf (ps.fp, "\t{1 index /FID ne {def} {pop pop} ifelse} forall\n");
 	fprintf (ps.fp, "\texch /Encoding exch def currentdict end definefont pop\n");
@@ -3083,13 +3120,14 @@ void def_font_encoding (void)
 
 	fprintf (ps.fp, "/PSL_font_encode ");
 	for (i = 0; i < N_PS_FONTS; i++) fprintf (ps.fp, "0 ");
-	fprintf (ps.fp, "%d array astore def	%% Initially zero\n", N_PS_FONTS);
+	fprintf (ps.fp, "%d array astore def", N_PS_FONTS);
+	(ps.comments) ? fprintf (ps.fp, "\t%% Initially zero\n") : fprintf (ps.fp, "\n");
 }
 
 char *ps_prepare_text (char *text)
 
 /*	Adds escapes for misc parenthesis, brackets etc.
-	Will also translate to some Norwegian characters from the @a, @e
+	Will also translate to some Eurpoean characters such as the @a, @e
 	etc escape sequences. Calling function must REMEMBER to free memory
 	allocated by string */
 {
@@ -4184,9 +4222,7 @@ static void bulkcopy (const char *fname)
 	FILE *in;
 	char buf[BUFSIZ];
 	char fullname[BUFSIZ];
-#ifndef PSL_COMMENTS
 	int i, j;
-#endif
 
 	sprintf (fullname, "%s%cshare%cpslib%c%s.ps", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, fname);
 
@@ -4198,23 +4234,23 @@ static void bulkcopy (const char *fname)
 		exit (EXIT_FAILURE);
 	}
 	while (fgets (buf, BUFSIZ, in)) {
-#ifdef PSL_COMMENTS
-		/* If compiled with -DPSL_COMMENTS we copy every line, including the comments */
-		fprintf (ps.fp, "%s", buf);
-#else
-		/* Default compilation removes the comment lines */
-		i = 0;
-		while (buf[i] && (buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\n')) i++;	/* Find first non-blank character */
-		if (!buf[i]) continue;								/* Blank line, skip */
-		if (buf[i] == '%' && buf[i+1] != '%') continue;					/* Comment line, skip */
-		/* Output this line, but skip trailing comments (while watching for DSC %% comments) */
-		/* Find the end of important stuff on the line (i.e., look for start of trailing comments) */
-		for (i = 1; buf[i] && !(buf[i] == '%' && buf[i-1] != '%'); i++);
-		i--;										/* buf[i] is the last character to be output */
-		while (i && (buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\n')) i--;			/* Remove white-space prior to the comment */
-		for (j = 0; j <= i; j++) fputc ((int)buf[j], ps.fp);
-		fputc ('\n', ps.fp);
-#endif
+		if (ps.comments) {	/* We copy every line, including the comments */
+			fprintf (ps.fp, "%s", buf);
+		}
+		else
+		{	/* Here we remove the comments */
+			i = 0;
+			while (buf[i] && (buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\n')) i++;	/* Find first non-blank character */
+			if (!buf[i]) continue;								/* Blank line, skip */
+			if (buf[i] == '%' && buf[i+1] != '%') continue;					/* Comment line, skip */
+			/* Output this line, but skip trailing comments (while watching for DSC %% comments) */
+			/* Find the end of important stuff on the line (i.e., look for start of trailing comments) */
+			for (i = 1; buf[i] && !(buf[i] == '%' && buf[i-1] != '%'); i++);
+			i--;										/* buf[i] is the last character to be output */
+			while (i && (buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\n')) i--;			/* Remove white-space prior to the comment */
+			for (j = 0; j <= i; j++) fputc ((int)buf[j], ps.fp);
+			fputc ('\n', ps.fp);
+		}
 	}
 	fclose (in);
 }

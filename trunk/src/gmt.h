@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.114 2005-12-27 03:10:13 pwessel Exp $
+ *	$Id: gmt.h,v 1.115 2006-03-06 05:46:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -216,9 +216,9 @@ typedef double GMT_dtime;	/* GMT internal time representation */
  *--------------------------------------------------------------------*/
 
 #define N_UNIQUE 59		/* Number of unique options */
-#define N_KEYS 119		/* Number of gmt defaults */
+#define N_KEYS 120		/* Number of gmt defaults */
 #define GMT_N_MEDIA 29		/* Number of standard paper formats in the GMT_media_names.h include file */
-#define HASH_SIZE 119		/* Used in get_gmtdefaults, should be ~> N_KEYS */
+#define HASH_SIZE 120		/* Used in get_gmtdefaults, should be ~> N_KEYS */
 #define GMT_N_SYSTEMS 6		/* Number of time systems in gmt_time_systems.h */
 /* This structure contains default parameters for the GMT system */
 
@@ -302,6 +302,7 @@ struct GMTDEFAULTS {
 	int ps_line_cap;		/* butt|round|square [butt] */
 	int ps_line_join;		/* miter|arc|bevel [miter] */
 	int ps_miter_limit;		/* acute angle (degrees) beyond which we do a bevel join [-] */
+	BOOLEAN ps_verbose;		/* TRUE writes comments in ps output, FALSE gives no comments [TRUE] */
 	double tick_length;		/* Length of tickmarks [0.075] */
 	struct GMT_PEN tick_pen;	/* Pen attributes for tickmarks [2] */
 	BOOLEAN unix_time;		/* Plot time and map projection on map [FALSE] */
