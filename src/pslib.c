@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.113 2006-03-06 02:27:22 pwessel Exp $
+ *	$Id: pslib.c,v 1.114 2006-03-06 03:05:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4184,6 +4184,9 @@ static void bulkcopy (const char *fname)
 	FILE *in;
 	char buf[BUFSIZ];
 	char fullname[BUFSIZ];
+#ifndef PSL_COMMENTS
+	int i, j;
+#endif
 
 	sprintf (fullname, "%s%cshare%cpslib%c%s.ps", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, fname);
 
@@ -4200,7 +4203,17 @@ static void bulkcopy (const char *fname)
 		fprintf (ps.fp, "%s", buf);
 #else
 		/* Default compilation removes the comment lines */
-		if (buf[0] != '%') fprintf (ps.fp, "%s", buf);
+		i = 0;
+		while (buf[i] && (buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\n')) i++;	/* Find first non-blank character */
+		if (!buf[i]) continue;								/* Blank line, skip */
+		if (buf[i] == '%' && buf[i+1] != '%') continue;					/* Comment line, skip */
+		/* Output this line, but skip trailing comments (while watching for DSC %% comments) */
+		/* Find the end of important stuff on the line (i.e., look for start of trailing comments) */
+		for (i = 1; buf[i] && !(buf[i] == '%' && buf[i-1] != '%'); i++);
+		i--;										/* buf[i] is the last character to be output */
+		while (i && (buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\n')) i--;			/* Remove white-space prior to the comment */
+		for (j = 0; j <= i; j++) fputc ((int)buf[j], ps.fp);
+		fputc ('\n', ps.fp);
 #endif
 	}
 	fclose (in);
