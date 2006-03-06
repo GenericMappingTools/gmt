@@ -61,6 +61,7 @@
 	0,			/* PS_LINE_CAP (0 = butt, 1 = round, 2 = square) */
 	0,			/* PS_LINE_JOIN (0 = miter, 1 = arc, 2 = bevel) */
 	0,			/* PS_MITER_LIMIT (0 = Default, or 1-180) */
+	FALSE,			/* PS_VERBOSE (TRUE = write comments, FALSE = no comments) */
 	0.075,			/* TICK_LENGTH */
 	{0.5, 0.0, {0, 0, 0}, ""},	/* TICK_PEN */
 	FALSE,			/* UNIX_TIME */

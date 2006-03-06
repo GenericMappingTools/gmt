@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.209 2006-03-02 23:18:24 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.210 2006-03-06 05:46:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1188,6 +1188,7 @@ void GMT_prep_PS_bits ()
 	if (gmtdefs.ps_line_cap) gmtdefs.page_orientation |= (gmtdefs.ps_line_cap << 14);
 	if (gmtdefs.ps_line_join) gmtdefs.page_orientation |= (gmtdefs.ps_line_join << 16);
 	if (gmtdefs.ps_miter_limit) gmtdefs.page_orientation |= (gmtdefs.ps_miter_limit << 18);
+	if (gmtdefs.ps_verbose) gmtdefs.page_orientation |= (1 << 30);
 }
 
 void GMT_setdefaults (int argc, char **argv)
@@ -1813,6 +1814,9 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
+		case GMTCASE_PS_VERBOSE:
+			error = true_false_or_error (lower_value, &gmtdefs.ps_verbose);
+			break;
 		case GMTCASE_TICK_LENGTH:
 			save_tick_length = gmtdefs.tick_length = GMT_convert_units (value, GMT_INCH);
 			break;
@@ -2201,6 +2205,7 @@ int GMT_savedefaults (char *file)
 	else
 		fprintf (fp, "PS_LINE_JOIN		= bevel\n");
 	fprintf (fp, "PS_MITER_LIMIT		= %d\n", gmtdefs.ps_miter_limit);
+	(gmtdefs.ps_verbose) ? fprintf (fp, "PS_VERBOSE			= TRUE\n") : fprintf (fp, "PS_VERBOSE			= FALSE\n");
 	fprintf (fp, "GLOBAL_X_SCALE		= %g\n", gmtdefs.global_x_scale);
 	fprintf (fp, "GLOBAL_Y_SCALE		= %g\n", gmtdefs.global_y_scale);
 	fprintf (fp, "#-------- I/O Format Parameters -------------\n");

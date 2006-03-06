@@ -1,4 +1,4 @@
-#	$Id: gmt_keywords.d,v 1.10 2005-08-22 02:19:44 remko Exp $
+#	$Id: gmt_keywords.d,v 1.11 2006-03-06 05:46:07 pwessel Exp $
 #
 # List of all GMT defaults parameters and their case value
 # Some parameters are spelled in two different ways and will
@@ -101,6 +101,7 @@ PS_IMAGE_FORMAT
 PS_LINE_CAP
 PS_LINE_JOIN
 PS_MITER_LIMIT
+PS_VERBOSE
 PSIMAGE_COMPRESS
 PSIMAGE_FORMAT
 TICK_LENGTH
