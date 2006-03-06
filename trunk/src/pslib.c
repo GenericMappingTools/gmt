@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.112 2006-03-06 00:37:00 remko Exp $
+ *	$Id: pslib.c,v 1.113 2006-03-06 02:27:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -48,6 +48,7 @@
  * Updated January 12, 2004 by P. Wessel to add octagon symbol.
  * Updated June 2, 2004 by P. Wessel to add contour/line clipping & labeling machinery (PSL_label.ps).
  * Updated October 25, 2004 by R. Scharroo and L. Parkes to add image compression tricks.
+ * Updated March 6, 2006 by P. Wessel to skip output of PS comments unless compiled with -DPSL_COMMENTS.
  *
  * FORTRAN considerations:
  *	All floating point data are assumed to be DOUBLE PRECISION
@@ -4181,8 +4182,7 @@ int ps_comp_int_asc (const void *p1, const void *p2)
 static void bulkcopy (const char *fname)
 {
 	FILE *in;
-	size_t nread;
-	char buf[80];
+	char buf[BUFSIZ];
 	char fullname[BUFSIZ];
 
 	sprintf (fullname, "%s%cshare%cpslib%c%s.ps", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, fname);
@@ -4194,8 +4194,15 @@ static void bulkcopy (const char *fname)
 		perror (fullname);
 		exit (EXIT_FAILURE);
 	}
-	while ((nread = fread (buf, 1, sizeof (buf), in)) > 0)
-		fwrite (buf, 1, nread, ps.fp);
+	while (fgets (buf, BUFSIZ, in)) {
+#ifdef PSL_COMMENTS
+		/* If compiled with -DPSL_COMMENTS we copy every line, including the comments */
+		fprintf (ps.fp, "%s", buf);
+#else
+		/* Default compilation removes the comment lines */
+		if (buf[0] != '%') fprintf (ps.fp, "%s", buf);
+#endif
+	}
 	fclose (in);
 }
 
