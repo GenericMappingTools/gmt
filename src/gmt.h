@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.115 2006-03-06 05:46:07 pwessel Exp $
+ *	$Id: gmt.h,v 1.116 2006-03-07 06:43:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -219,7 +219,7 @@ typedef double GMT_dtime;	/* GMT internal time representation */
 #define N_KEYS 120		/* Number of gmt defaults */
 #define GMT_N_MEDIA 29		/* Number of standard paper formats in the GMT_media_names.h include file */
 #define HASH_SIZE 120		/* Used in get_gmtdefaults, should be ~> N_KEYS */
-#define GMT_N_SYSTEMS 6		/* Number of time systems in gmt_time_systems.h */
+#define GMT_N_SYSTEMS 8		/* Number of time systems in gmt_time_systems.h */
 /* This structure contains default parameters for the GMT system */
 
 #define N_ELLIPSOIDS	63
@@ -368,7 +368,10 @@ struct GMT_TIME_SYSTEM {
 	char name[GMT_TEXT_LEN];	/* Name of system */
 	char epoch[GMT_TEXT_LEN];	/* Epoch time string */
 	char unit;			/* Time unit */
-	double epoch_t0;		/* Internal time representation of epoch in seconds*/
+#ifndef OLDCAL
+	int rata_die;			/* Rata die number of epoch */
+#endif
+	double epoch_t0;		/* epoch in seconds since start of rata_die */
 	double scale;			/* Converts user units to seconds */
 	double i_scale;			/* Converts seconds to user units (1.0/scale) */
 };

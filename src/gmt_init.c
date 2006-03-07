@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.210 2006-03-06 05:46:07 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.211 2006-03-07 06:43:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -69,7 +69,11 @@ char *GMT_putpen (struct GMT_PEN *pen);
 char *GMT_getdefpath (int get);
 void GMT_get_time_language (char *name);
 void GMT_init_time_system_structure ();
+#ifndef OLDCAL
+int GMT_scanf_epoch (char *s, int *day, double *t0);
+#else
 int GMT_scanf_epoch (char *s, double *t0);
+#endif
 void GMT_backwards_compatibility ();
 void GMT_strip_colonitem (const char *in, const char *pattern, char *item, char *out);
 void GMT_strip_wesnz (const char *in, int side[], BOOLEAN *draw_box, char *out);
@@ -1953,6 +1957,9 @@ int GMT_setparameter (char *keyword, char *value)
 		case GMTCASE_TIME_EPOCH:
 			strncpy (gmtdefs.time_epoch, value, GMT_TEXT_LEN);
 			strncpy (GMT_time_system[GMT_N_SYSTEMS-1].epoch, value, GMT_TEXT_LEN);
+#ifndef OLDCAL
+			gmtdefs.time_system = GMT_N_SYSTEMS-1;
+#endif
 			break;
 		case GMTCASE_TIME_UNIT:
 			gmtdefs.time_unit = GMT_time_system[GMT_N_SYSTEMS-1].unit = value[0];
@@ -4734,8 +4741,13 @@ void	GMT_init_time_system_structure () {
 	/* Set inverse scale and store it to avoid divisions later */
 	GMT_time_system[gmtdefs.time_system].i_scale = 1.0 / GMT_time_system[gmtdefs.time_system].scale;
 
+#ifndef OLDCAL
+	if ( GMT_scanf_epoch (GMT_time_system[gmtdefs.time_system].epoch,
+		&GMT_time_system[gmtdefs.time_system].rata_die, &GMT_time_system[gmtdefs.time_system].epoch_t0) ) {
+#else
 	if ( GMT_scanf_epoch (GMT_time_system[gmtdefs.time_system].epoch,
 		&GMT_time_system[gmtdefs.time_system].epoch_t0) ) {
+#endif
 
 		fprintf (stderr, "GMT_FATAL_ERROR:  gmtdefault TIME_EPOCH format is invalid.\n");
 		fprintf (stderr, "   A correct format has the form [-]yyyy-mm-ddThh:mm:ss[.xxx]\n");
@@ -4745,62 +4757,52 @@ void	GMT_init_time_system_structure () {
 	}
 }
 
+#ifndef OLDCAL
+int	GMT_scanf_epoch (char *s, int *rata_die, double *t0) {
+#else
 int	GMT_scanf_epoch (char *s, double *t0) {
+#endif
 
 	/* Read a string which must be in one of these forms:
 		[-]yyyy-mm-ddThh:mm:ss[.xxx]
 		[-]yyyy-Www-dThh:mm:ss[.xxx]
 	*/
 
-	double	ss;
-	int	i, j, vals[3], hh, mm;
-	BOOLEAN	neg_year = FALSE;
-	GMT_cal_rd	rd;
+	double	ss = 0.0;
+	int i, j, vals[3], hh = 0, mm = 0;
+	GMT_cal_rd rd;
 
 	i = 0;
 	while (s[i] && s[i] == ' ') i++;
 	if (!(s[i])) return (-1);
-	if (s[i] == '-') {
-		neg_year = TRUE;
-		i++;
-	}
-	if (!(s[i])) return (-1);
-	if (strchr (&s[i], (int)'W') ) {
-		if ( (sscanf (&s[i], "%4d-W%2d-%1dT%2d:%2d:%lf", &vals[0],
-			&vals[1], &vals[2], &hh, &mm, &ss) ) != 6)
-				return (-1);
-		if (neg_year) return (-1);	/* Don't allow negative ISO years.  */
-		if (vals[1] <= 0 || vals[1] > 53) return (-1);
-		if (vals[2] <= 0 || vals[2] > 7)  return (-1);
+	if (strchr (&s[i], 'W') ) {	/* ISO calendar string */
+		if (strchr (&s[i], ':') ) {	/* ISO calendar string with date and clock */
+			if ( (sscanf (&s[i], "%5d-W%2d-%1dT%2d:%2d:%lf", &vals[0], &vals[1], &vals[2], &hh, &mm, &ss) ) != 6) return (-1);
+		}
+		else {				/* ISO calendar date only */
+			if ( (sscanf (&s[i], "%5d-W%2d-%1dT", &vals[0], &vals[1], &vals[2]) ) != 3) return (-1);
+		}
+		if (GMT_iso_ywd_is_bad (vals[0], vals[1], vals[2]) ) return (-1);
 		rd = GMT_rd_from_iywd (vals[0], vals[1], vals[2]);
 	}
-	else {
-		if ( (sscanf (&s[i], "%4d-%2d-%2dT%2d:%2d:%lf", &vals[0],
-			&vals[1], &vals[2], &hh, &mm, &ss) ) != 6)
-				return (-1);
-		if (neg_year) vals[0] = -vals[0];
-		if (vals[1] <= 0 || vals[1] > 12 || vals[2] <= 0) return (-1);
-		if (vals[1] == 2) {
-			j = (GMT_is_gleap (vals[0]) ) ? 29 : 28;
-			if (vals[2] > j) return (-1);
+	else {				/* Gregorian calendar string */
+		if (strchr (&s[i], ':') ) {	/* Gregorian calendar string with date and clock */
+			if ( (sscanf (&s[i], "%5d-%2d-%2dT%2d:%2d:%lf", &vals[0], &vals[1], &vals[2], &hh, &mm, &ss) ) != 6) return (-1);
 		}
-		else {
-			i = vals[1]%2;
-			if (vals[1] <= 7) {
-				j = 30 + i;
-			}
-			else {
-				j = 31 - i;
-			}
-			if (vals[2] > j) return (-1);
+		else {				/* Gregorian calendar string with date only  */
+			if ( (sscanf (&s[i], "%5d-%2d-%2dT", &vals[0], &vals[1], &vals[2]) ) != 3) return (-1);
 		}
+		if (GMT_g_ymd_is_bad (vals[0], vals[1], vals[2]) ) return (-1);
 		rd = GMT_rd_from_gymd (vals[0], vals[1], vals[2]);
 	}
-	if (hh < 0 || hh > 23) return (-1);
-	if (mm < 0 || mm > 59) return (-1);
-	if (ss < 0.0 || ss >= 61.0) return (-1);
+	if (GMT_hms_is_bad (hh, mm, ss)) return (-1);
 
+#ifndef OLDCAL
+	*rata_die = rd;								/* Rata day number */
+	*t0 =  (GMT_HR2SEC_F * hh + GMT_MIN2SEC_F * mm + ss) * GMT_SEC2DAY;	/* Fractional day (0<= t0 < 1) since rata_die */
+#else
 	*t0 = GMT_rdc2dt (rd, 60.0*(60.0*hh + mm) + ss);
+#endif
 	return (0);
 }
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.40 2006-03-06 02:27:22 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.41 2006-03-07 06:43:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,10 +43,18 @@ and time of day (double secs):
 */
 
 GMT_dtime GMT_rdc2dt (GMT_cal_rd rd, double secs) {
+#ifndef OLDCAL
+/*	Given rata die rd and double seconds, return 
+	time in TIME_UNIT relative to chosen TIME_EPOCH  */
+	double f_days;
+	f_days = (rd - GMT_time_system[gmtdefs.time_system].rata_die - GMT_time_system[gmtdefs.time_system].epoch_t0);
+	if (gmtdefs.time_system == 6)  f_days += GMT_GCAL_EPOCH;
+	return ((f_days * GMT_DAY2SEC_F  + secs) * GMT_time_system[gmtdefs.time_system].i_scale);
+#else
 /*	Given rata die rd and double seconds, return 
 	GMT_dtime value of time  */
-	
 	return ((GMT_dtime)(GMT_DAY2SEC_F*(rd-GMT_GCAL_EPOCH) + secs));
+#endif
 }
 
 int	splitinteger(double value, int epsilon, double *doublepart) {
@@ -59,157 +67,24 @@ int	splitinteger(double value, int epsilon, double *doublepart) {
 }
 
 void	GMT_dt2rdc (GMT_dtime t, GMT_cal_rd *rd, double *s) {
-/*	Given GMT_dtime value t, load calendar data of that day
-	in rd and the seconds since the start of that day in
-	s.  */
 
 	int i;
 
+#ifndef OLDCAL
+/*	Given time in TIME_UNIT relative to TIME_EPOCH, load rata die of this day
+	in rd and the seconds since the start of that day in s.  */
+	double t_sec;
+	t_sec = (t * GMT_time_system[gmtdefs.time_system].scale + GMT_time_system[gmtdefs.time_system].epoch_t0 * GMT_DAY2SEC_F);
+	i = splitinteger(t_sec, 86400, s) + GMT_time_system[gmtdefs.time_system].rata_die;
+	if (gmtdefs.time_system == 6) i -= GMT_GCAL_EPOCH;
+	*rd = (GMT_cal_rd)(i);
+#else
+/*	Given GMT_dtime value t, load calendar data of that day
+	in rd and the seconds since the start of that day in
+	s.  */
 	i = splitinteger(t, 86400, s);
 	*rd = (GMT_cal_rd)(i+GMT_GCAL_EPOCH);
-}
-
-
-/* String reading functions for parsing ISO 8601 cal and clock  */
-
-int	GMT_read_clock (char *s, double *t) {
-/* 	Given a clock string s, try to read the form
-	hh[:mm[:ss[.xxx]]] with 0 <= hh <= 24 (yes, 24; 
-	ISO 8601 allows this), 0 <= mm <= 59, and 0 <= 
-	ss[.xxx] < 60 (floating point fractions of a 
-	second are allowed, but leap seconds are not yet
-	handled).
-	Return -1 on failure.
-	On success, store total seconds since 00:00:00 
-	in t and return 0.
-	Currently, a null string is a failure condition.
-	W H F Smith, 20 april 2000
-*/
-
-	double	dsec;
-	int	j, k;
-	char	*cm, *cs;
-	
-	/* Get hours:  */
-	cm = strpbrk (s, ":");
-	if (cm) {
-		k = strlen(s);
-		j = strlen(cm);
-		s[k-j] = '\0';
-		cm = &cm[1];	/* Move beyond colon  */
-	}
-	if ( (sscanf(s, "%d", &k)) != 1) return (-1);
-	if (k < 0 || k > 24) return (-1);
-	*t = GMT_HR2SEC_I * k;		/* t now has hours (in secs) */
-	
-	if (!(cm)) return (0);	/* This allows colon-terminated
-		strings to be treated as OK.  */
-	cs = strpbrk (cm, ":");
-	if (cs) {
-		k = strlen(cm);
-		j = strlen(cs);
-		cm[k-j] = '\0';
-		cs = &cs[1];
-	}
-	if ( (sscanf(cm, "%d", &k)) != 1) return (-1);
-	if (k < 0 || k > 59) return (-1);
-	(*t) += GMT_MIN2SEC_I * k;	/* Now add in minutes (in secs) */
-	
-	if (!(cs)) return (0);
-	if ( (sscanf(cs, "%lf", &dsec)) != 1) return (-1);
-	if (dsec < 0.0 || dsec >= 60.0) return (-1);
-	*t += dsec;			/* Finally add in seconds */
-	return (0);
-}
-
-int	GMT_read_cal (char *s, GMT_cal_rd *rd) {
-/*	Given a string thought to be a calendar string,
-	find the rata die date of the string.  The string
-	could be of the form 
-	[<space>][+/-]<year>[-[W]<j>[-<k>]]
-	where the leading hyphen, if present, negates
-	the year, and subsequent hyphens are delimiters
-	of fields for <j> and <k>.  The 'W', if present, 
-	indicates that <year>, <j>, <k> are ISO year, 
-	ISO week, and ISO day of week; else if 'W' not
-	present then <year>, <j>, <k> are (proleptic
-	gregorian) year, month, day of month.  */
-
-	int	i, j, k, itemp1, itemp2=1, itemp3=1, is_iso=0;
-	char	*cj, *ck = CNULL;
-	
-	/* A period or comma would be wrong for this format:  */
-	if ( (strpbrk (s, ".") ) || (strpbrk (s, ",") ) ) return (-1);
-	
-	/* Look for next hyphen after possible leading
-	white space and possible first hyphen  */
-	
-	i = 0;
-	while (s[i] && s[i] == ' ') i++;
-	if (s[i] == '-') i++;
-	if (s[i] == '\0') return (-1);
-	
-	cj = strpbrk (&s[i], "-");
-	if (cj != CNULL) {
-		j = strlen (cj);
-		k = strlen (s);
-		s[k-(i+j)] = '\0';
-	}
-	
-	if ( (sscanf (s, "%d", &itemp1) ) != 1) return (-1);
-	
-	/* A null value of cj is not an error.  We might have
-		had "1985T" passed to a function and it might
-		have stripped off the 'T' and passed the remaining
-		string to this routine, in which case cj is null,
-		and we should interpret this as gregorian, with
-		month = 1 and day of month = 1.  */
-	
-	if (cj) {
-		if (cj[1] == 'W') {
-			is_iso = 1;
-			cj = &cj[2];
-		}
-		else {
-			cj = &cj[1];
-		}
-		ck = strpbrk (cj, "-");
-		if (ck != CNULL) {
-			j = strlen (ck);
-			k = strlen (cj);
-			cj[k-j] = '\0';
-		}
-		if ( (sscanf (cj, "%d", &itemp2) ) != 1) return (-1);
-		if (itemp2 < 1) return (-1);
-		if (is_iso) {
-			if (itemp2 > 53) return (-1);
-		}
-		else {
-			if (itemp2 > 12) return (-1);
-		}
-		if (ck) {
-			/* Read it, skipping the leading hyphen.  */
-			if ( (sscanf (&ck[1], "%d", &itemp3) ) != 1) return (-1);
-			if (itemp3 < 1) return (-1);
-			if (is_iso) {
-				if (itemp3 > 7) return (-1);
-			}
-			else {
-				if (itemp3 > 31) return (-1);
-			}
-		}
-	}
-	
-	/* Get here when ready to make a rata die out of 3 itemp values,
-		based on value of is_iso:  */
-	
-	if (is_iso) {
-		*rd = GMT_rd_from_iywd (itemp1, itemp2, itemp3);
-	}
-	else {
-		*rd = GMT_rd_from_gymd (itemp1, itemp2, itemp3);
-	}
-	return (0);
+#endif
 }
 
 
@@ -223,14 +98,6 @@ int	GMT_read_cal (char *s, GMT_cal_rd *rd) {
 	the result is not defined.  We should probably
 	print a domain error and return something anyway.
 */
-
-double	GMT_cal_dmod (double x, double y) {
-	if (y == 0.0) {
-		fprintf (stderr, "GMT_cal_dmod:  DOMAIN ERROR.\n");
-		return (x);
-	}
-	return (x - y * floor(x/y) );
-}
 
 int	GMT_cal_imod (int x, int y) {
 	if (y == 0) {
@@ -257,13 +124,6 @@ GMT_cal_rd GMT_kday_on_or_before (GMT_cal_rd date, int kday) {
 	return ((GMT_cal_rd)(date - GMT_cal_imod((date-kday), 7)));
 }
 
-GMT_cal_rd GMT_kday_on_or_after (GMT_cal_rd date, int kday) {
-/*	Given date and kday, return the date of the nearest kday
-	on or after the given date.
-*/
-	return (GMT_kday_on_or_before(date+6, kday));
-}
-
 GMT_cal_rd GMT_kday_after (GMT_cal_rd date, int kday) {
 /*	Given date and kday, return the date of the nearest kday
 	after the given date.
@@ -276,13 +136,6 @@ GMT_cal_rd GMT_kday_before (GMT_cal_rd date, int kday) {
 	before the given date.
 */
 	return (GMT_kday_on_or_before(date-1, kday));
-}
-
-GMT_cal_rd GMT_kday_nearest (GMT_cal_rd date, int kday) {
-/*	Given date and kday, return the date of the nearest kday
-	to the given date.
-*/
-	return (GMT_kday_on_or_before(date+3, kday));
 }
 
 GMT_cal_rd GMT_nth_kday (int n, int kday, GMT_cal_rd date) {
@@ -439,9 +292,13 @@ void GMT_gcal_from_rd (GMT_cal_rd date, struct GMT_gcal *gcal) {
 double	GMT_usert_from_dt (GMT_dtime t) {
 	double x;
 	
+#ifndef OLDCAL
+	return (t);
+#else
 	x = t - GMT_time_system[gmtdefs.time_system].epoch_t0;
 	if (GMT_time_system[gmtdefs.time_system].i_scale != 1.0) x *= GMT_time_system[gmtdefs.time_system].i_scale;
 	return (x);
+#endif
 }
 
 GMT_dtime	GMT_dt_from_usert (double x) {
@@ -452,6 +309,9 @@ GMT_dtime	GMT_dt_from_usert (double x) {
 		For now, just scale and offset ?
 	*/
 	
+#ifndef OLDCAL
+	return (x);
+#else
 	if (GMT_time_system[gmtdefs.time_system].scale == 1.0) {
 		return ( (GMT_dtime) (x + GMT_time_system[gmtdefs.time_system].epoch_t0) );
 	}
@@ -459,6 +319,7 @@ GMT_dtime	GMT_dt_from_usert (double x) {
 		return ( (GMT_dtime) (x*GMT_time_system[gmtdefs.time_system].scale 
 			+ GMT_time_system[gmtdefs.time_system].epoch_t0) );
 	}
+#endif
 }
 
 int	GMT_y2_to_y4_yearfix (int y2) {
@@ -506,9 +367,9 @@ BOOLEAN	GMT_g_ymd_is_bad (int y, int m, int d) {
 	
 	if (m < 1 || m > 12 || d < 1) return (TRUE);
 	
-	k = GMT_gmonth_length (y, m);
+	k = GMT_gmonth_length (y, m);	/* Number of day in the specified month */
 	
-	if (d > k) return (TRUE);
+	if (d > k) return (TRUE);	/* More days than we've got in this month */
 	
 	return (FALSE);
 }
@@ -523,13 +384,25 @@ BOOLEAN	GMT_iso_ywd_is_bad (int y, int w, int d) {
 		I don't verify that a particular date actually
 		exists on the ISO calendar.
 		Returns TRUE if it appears something is out
-		of range.
+		of range, including negative year.
 		Returns FALSE if it looks like things are OK.
 	*/
 	
-	if (w < 1 || w > 53 || d < 1 || d > 7) return (TRUE);
+	if (y < 0 || w < 1 || w > 53 || d < 1 || d > 7) return (TRUE);
 	
 	/* Later, insert something smarter here.  */
+	
+	return (FALSE);
+}
+
+BOOLEAN	GMT_hms_is_bad (int h, int m, double s) {
+
+	/* Check range of hours, min, and seconds.
+		Returns TRUE if it appears something is out of range.
+		Returns FALSE if it looks like things are OK.
+	*/
+	
+	if (h < 0 || h > 23 || m < 0 || m > 59 || s < 0.0 || s >= 61.0) return (TRUE);
 	
 	return (FALSE);
 }
@@ -872,6 +745,10 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 				GMT_gcal_from_rd (p->rd[0], &(p->cc[0]) );
 				memcpy ( (void *)&(p->cc[1]), (void *)&(p->cc[0]), sizeof (struct GMT_gcal));	/* Set to same as first calendar */
 				p->dt[0] = GMT_rdc2dt (p->rd[0], p->sd[0]);
+				if (GMT_iso_ywd_is_bad (p->cc[0].iso_y, p->cc[0].iso_w, 1) ) {
+					fprintf (stderr, "GMT_LOGIC_BUG:  bad ywd on floor (month) in GMT_init_moment_interval()\n");
+					return;
+				}
 			}
 			/* I'm not sure how to move <step> weeks ahead.
 				I have implemented it this way:
@@ -1192,4 +1069,171 @@ void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct PLOT_
 			break;
 	}
 }
-		
+
+/* Here lies functions not in use by GMT.  We will probably delete these */
+#ifdef USE_UNUSED_GMT_FUNCTIONS
+/* String reading functions for parsing ISO 8601 cal and clock  */
+
+int	GMT_read_clock (char *s, double *t) {
+/* 	Given a clock string s, try to read the form
+	hh[:mm[:ss[.xxx]]] with 0 <= hh <= 24 (yes, 24; 
+	ISO 8601 allows this), 0 <= mm <= 59, and 0 <= 
+	ss[.xxx] < 60 (floating point fractions of a 
+	second are allowed, but leap seconds are not yet
+	handled).
+	Return -1 on failure.
+	On success, store total seconds since 00:00:00 
+	in t and return 0.
+	Currently, a null string is a failure condition.
+	W H F Smith, 20 april 2000
+*/
+
+	double	dsec;
+	int	j, k;
+	char	*cm, *cs;
+	
+	/* Get hours:  */
+	cm = strpbrk (s, ":");
+	if (cm) {
+		k = strlen(s);
+		j = strlen(cm);
+		s[k-j] = '\0';
+		cm = &cm[1];	/* Move beyond colon  */
+	}
+	if ( (sscanf(s, "%d", &k)) != 1) return (-1);
+	if (k < 0 || k > 24) return (-1);
+	*t = GMT_HR2SEC_I * k;		/* t now has hours (in secs) */
+	
+	if (!(cm)) return (0);	/* This allows colon-terminated
+		strings to be treated as OK.  */
+	cs = strpbrk (cm, ":");
+	if (cs) {
+		k = strlen(cm);
+		j = strlen(cs);
+		cm[k-j] = '\0';
+		cs = &cs[1];
+	}
+	if ( (sscanf(cm, "%d", &k)) != 1) return (-1);
+	if (k < 0 || k > 59) return (-1);
+	(*t) += GMT_MIN2SEC_I * k;	/* Now add in minutes (in secs) */
+	
+	if (!(cs)) return (0);
+	if ( (sscanf(cs, "%lf", &dsec)) != 1) return (-1);
+	if (dsec < 0.0 || dsec >= 60.0) return (-1);
+	*t += dsec;			/* Finally add in seconds */
+	return (0);
+}
+
+int	GMT_read_cal (char *s, GMT_cal_rd *rd) {
+/*	Given a string thought to be a calendar string,
+	find the rata die date of the string.  The string
+	could be of the form 
+	[<space>][+/-]<year>[-[W]<j>[-<k>]]
+	where the leading hyphen, if present, negates
+	the year, and subsequent hyphens are delimiters
+	of fields for <j> and <k>.  The 'W', if present, 
+	indicates that <year>, <j>, <k> are ISO year, 
+	ISO week, and ISO day of week; else if 'W' not
+	present then <year>, <j>, <k> are (proleptic
+	gregorian) year, month, day of month.  */
+
+	int	i, j, k, itemp1, itemp2=1, itemp3=1, is_iso=0;
+	char	*cj, *ck = CNULL;
+	
+	/* A period or comma would be wrong for this format:  */
+	if ( (strpbrk (s, ".") ) || (strpbrk (s, ",") ) ) return (-1);
+	
+	/* Look for next hyphen after possible leading
+	white space and possible first hyphen  */
+	
+	i = 0;
+	while (s[i] && s[i] == ' ') i++;
+	if (s[i] == '-') i++;
+	if (s[i] == '\0') return (-1);
+	
+	cj = strpbrk (&s[i], "-");
+	if (cj != CNULL) {
+		j = strlen (cj);
+		k = strlen (s);
+		s[k-(i+j)] = '\0';
+	}
+	
+	if ( (sscanf (s, "%d", &itemp1) ) != 1) return (-1);
+	
+	/* A null value of cj is not an error.  We might have
+		had "1985T" passed to a function and it might
+		have stripped off the 'T' and passed the remaining
+		string to this routine, in which case cj is null,
+		and we should interpret this as gregorian, with
+		month = 1 and day of month = 1.  */
+	
+	if (cj) {
+		if (cj[1] == 'W') {
+			is_iso = 1;
+			cj = &cj[2];
+		}
+		else {
+			cj = &cj[1];
+		}
+		ck = strpbrk (cj, "-");
+		if (ck != CNULL) {
+			j = strlen (ck);
+			k = strlen (cj);
+			cj[k-j] = '\0';
+		}
+		if ( (sscanf (cj, "%d", &itemp2) ) != 1) return (-1);
+		if (itemp2 < 1) return (-1);
+		if (is_iso) {
+			if (itemp2 > 53) return (-1);
+		}
+		else {
+			if (itemp2 > 12) return (-1);
+		}
+		if (ck) {
+			/* Read it, skipping the leading hyphen.  */
+			if ( (sscanf (&ck[1], "%d", &itemp3) ) != 1) return (-1);
+			if (itemp3 < 1) return (-1);
+			if (is_iso) {
+				if (itemp3 > 7) return (-1);
+			}
+			else {
+				if (itemp3 > 31) return (-1);
+			}
+		}
+	}
+	
+	/* Get here when ready to make a rata die out of 3 itemp values,
+		based on value of is_iso:  */
+	
+	if (is_iso) {
+		*rd = GMT_rd_from_iywd (itemp1, itemp2, itemp3);
+	}
+	else {
+		*rd = GMT_rd_from_gymd (itemp1, itemp2, itemp3);
+	}
+	return (0);
+}
+
+double	GMT_cal_dmod (double x, double y) {
+	if (y == 0.0) {
+		fprintf (stderr, "GMT_cal_dmod:  DOMAIN ERROR.\n");
+		return (x);
+	}
+	return (x - y * floor(x/y) );
+}
+
+GMT_cal_rd GMT_kday_on_or_after (GMT_cal_rd date, int kday) {
+/*	Given date and kday, return the date of the nearest kday
+	on or after the given date.
+*/
+	return (GMT_kday_on_or_before(date+6, kday));
+}
+
+GMT_cal_rd GMT_kday_nearest (GMT_cal_rd date, int kday) {
+/*	Given date and kday, return the date of the nearest kday
+	to the given date.
+*/
+	return (GMT_kday_on_or_before(date+3, kday));
+}
+
+#endif
