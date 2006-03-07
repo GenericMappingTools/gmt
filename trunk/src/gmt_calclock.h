@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.h,v 1.18 2006-02-23 05:48:49 pwessel Exp $
+ *	$Id: gmt_calclock.h,v 1.19 2006-03-07 06:43:44 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -76,15 +76,10 @@ struct GMT_TRUNCATE_TIME {		/* Used when TIME_IS_INTERVAL is not OFF */
 
 EXTERN_MSC GMT_dtime GMT_rdc2dt (GMT_cal_rd rd, double secs);
 EXTERN_MSC void    GMT_dt2rdc (GMT_dtime t, GMT_cal_rd *rd, double *s);
-EXTERN_MSC int     GMT_read_clock (char *s, double *t);
-EXTERN_MSC int     GMT_read_cal (char *s, GMT_cal_rd *rd);
-EXTERN_MSC double	GMT_cal_dmod (double x, double y);
 EXTERN_MSC int	GMT_cal_imod (int x, int y);
 EXTERN_MSC GMT_cal_rd GMT_kday_on_or_before (GMT_cal_rd date, int kday);
-EXTERN_MSC GMT_cal_rd GMT_kday_on_or_after (GMT_cal_rd date, int kday);
 EXTERN_MSC GMT_cal_rd GMT_kday_after (GMT_cal_rd date, int kday);
 EXTERN_MSC GMT_cal_rd GMT_kday_before (GMT_cal_rd date, int kday);
-EXTERN_MSC GMT_cal_rd GMT_kday_nearest (GMT_cal_rd date, int kday);
 EXTERN_MSC GMT_cal_rd GMT_nth_kday (int n, int kday, GMT_cal_rd date);
 EXTERN_MSC BOOLEAN	GMT_is_gleap (int gyear);
 EXTERN_MSC double GMT_cal_mod (double x, double y);
@@ -97,6 +92,7 @@ EXTERN_MSC double	GMT_usert_from_dt (GMT_dtime t); /* Converts internal abs time
 EXTERN_MSC int	GMT_y2_to_y4_yearfix (int y2);	/* Convert a 2-digit year to a 4-digit year */
 EXTERN_MSC BOOLEAN GMT_iso_ywd_is_bad (int y, int w, int d);	/* Check range of week and day for ISO W calendar.  */
 EXTERN_MSC BOOLEAN GMT_g_ymd_is_bad (int y, int m, int d);	/* Check range of month and day for Gregorian YMD calendar values  */
+EXTERN_MSC BOOLEAN GMT_hms_is_bad (int h, int m, double s);	/* Check range of hours, min, and secs */
 EXTERN_MSC void	GMT_gcal_from_dt (GMT_dtime t, struct GMT_gcal *cal);	/* Break internal time into calendar and clock struct info  */
 EXTERN_MSC struct GMT_Y2K_FIX GMT_Y2K_fix;	/* Structure holding Y2K parameters */
 EXTERN_MSC int GMT_verify_time_step (int step, char unit);	/* Check that time step and unit for time axis are OK  */
@@ -105,3 +101,11 @@ EXTERN_MSC int GMT_gmonth_length (int year,  int month);	/* Get the number of da
 EXTERN_MSC void GMT_small_moment_interval (struct GMT_MOMENT_INTERVAL *p, int step_secs, BOOLEAN init); /* Aux to GMT_moment_interval */
 EXTERN_MSC void GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *C, BOOLEAN upper, int kind, GMT_dtime dt);	/* Write formatted strings for date and clock */
 EXTERN_MSC void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct PLOT_AXIS_ITEM *T, GMT_dtime t);
+
+#ifdef USE_UNUSED_GMT_FUNCTIONS
+EXTERN_MSC int     GMT_read_clock (char *s, double *t);
+EXTERN_MSC int     GMT_read_cal (char *s, GMT_cal_rd *rd);
+EXTERN_MSC double	GMT_cal_dmod (double x, double y);
+EXTERN_MSC GMT_cal_rd GMT_kday_on_or_after (GMT_cal_rd date, int kday);
+EXTERN_MSC GMT_cal_rd GMT_kday_nearest (GMT_cal_rd date, int kday);
+#endif
