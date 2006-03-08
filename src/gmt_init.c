@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.211 2006-03-07 06:43:44 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.212 2006-03-08 01:01:54 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4719,6 +4719,15 @@ void	GMT_init_time_system_structure () {
 			a simple unit conversion. */
 			GMT_time_system[gmtdefs.time_system].scale = (365.2425 * 86400);
 			break;
+		case 'o':
+			/* This is also a kludge:  we assume all months
+			are the same length, thinking that a user
+			with decimal years doesn't care about
+			precise time.  To do this right would
+			take an entirely different scheme, not
+			a simple unit conversion. */
+			GMT_time_system[gmtdefs.time_system].scale = (365.2425 * 86400 / 12.0);
+			break;
 		case 'd':
 			GMT_time_system[gmtdefs.time_system].scale = 86400.0;
 			break;
@@ -4733,8 +4742,9 @@ void	GMT_init_time_system_structure () {
 			break;
 		default:
 			fprintf (stderr, "GMT_FATAL_ERROR:  gmtdefault TIME_UNIT is invalid.\n");
-			fprintf (stderr, "    Choose one only from y d h m s\n");
-			fprintf (stderr, "    Corresponding to year day hour minute second\n");
+			fprintf (stderr, "    Choose one only from y o d h m s\n");
+			fprintf (stderr, "    Corresponding to year month day hour minute second\n");
+			fprintf (stderr, "    Note year and month are simply defined (365.2425 days and 1/12 of a year)\n");
 			exit (EXIT_FAILURE);
 			break;
 	}
@@ -4798,8 +4808,8 @@ int	GMT_scanf_epoch (char *s, double *t0) {
 	if (GMT_hms_is_bad (hh, mm, ss)) return (-1);
 
 #ifndef OLDCAL
-	*rata_die = rd;								/* Rata day number */
-	*t0 =  (GMT_HR2SEC_F * hh + GMT_MIN2SEC_F * mm + ss) * GMT_SEC2DAY;	/* Fractional day (0<= t0 < 1) since rata_die */
+	*rata_die = rd;								/* Rata day number of epoch */
+	*t0 =  (GMT_HR2SEC_F * hh + GMT_MIN2SEC_F * mm + ss) * GMT_SEC2DAY;	/* Fractional day (0<= t0 < 1) since rata_die of epoch */
 #else
 	*t0 = GMT_rdc2dt (rd, 60.0*(60.0*hh + mm) + ss);
 #endif

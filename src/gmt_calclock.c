@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.41 2006-03-07 06:43:44 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.42 2006-03-08 01:01:54 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -193,8 +193,11 @@ GMT_cal_rd GMT_rd_from_gymd (int gy, int gm, int gd) {
 	}
 	
 	yearm1 = gy - 1;
-	
+#ifndef OLDCAL
+	rd = day_offset + gd;
+#else
 	rd = GMT_GCAL_EPOCH - 1 + day_offset + gd;
+#endif
 	rd += 365 * yearm1;
 	s = floor(yearm1/4.0) - floor(yearm1/100.0) + floor(yearm1/400.0);
 	s += floor( (367 * gm - 362)/12.0);
@@ -207,7 +210,11 @@ int	GMT_gyear_from_rd (GMT_cal_rd date) {
 
 	int d0, d1, d2, d3, d4, n400, n100, n4, n1, year;
 	
+#ifndef OLDCAL
+	d0 = date - 1;
+#else
 	d0 = date - GMT_GCAL_EPOCH;
+#endif
 	n400 = (int) floor (d0 / 146097.0);
 	d1 = GMT_cal_imod (d0, 146097);
 	n100 = (int) floor (d1 / 36524.0);

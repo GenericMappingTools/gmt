@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_D.tex,v 1.14 2006-02-28 01:32:04 pwessel Exp $
+%	$Id: GMT_Appendix_D.tex,v 1.15 2006-03-08 01:01:54 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -34,12 +34,13 @@ The GMT archives are as follows:
 
 \begin{description}
 
-\item[GMT\_progs.tar.\{gz,bz2\}] Contains all \GMT\ source code,
-cpt files, and \PS\ patterns.
+\item[GMT\_src.tar.\{gz,bz2\}] Contains all \GMT\ source code needed for compilation, cpt files, and \PS\ patterns.
 
-\item[GMT\_share.tar.\{gz,bz2\}] Contains the intermediate,
-low, and crude resolutions of the coastline database.  Required
-with GMT\_progs.tar for minimal setup needed to run \GMT.
+\item[GMT\_share.tar.\{gz,bz2\}] Contains support files needed at run-time (cpt files, and \PS\ patterns).
+
+\item[GMT\_coast.tar.\{gz,bz2\}] Contains the intermediate,
+low, and crude resolutions of the GSHHS coastline database.  Required
+with GMT\_src.tar and GMT\_share.tar for minimal setup needed to run \GMT.
 
 \item[GMT\_man.tar.\{gz,bz2\}] Contains all the \UNIX\ manual pages.
 
@@ -71,7 +72,7 @@ details).
 
 \index{GMT@\GMT!binaries for Win32}
 
-All of the above archives are also available as Windows ZIP archives, e.g., {\bf GMT\_progs.zip}.
+All of the above archives are also available as Windows ZIP archives, e.g., {\bf GMT\_src.zip}.
 For Windows users who do not want to compile themselves, there are two zip files with Win32 executables:
 
 \begin{description}

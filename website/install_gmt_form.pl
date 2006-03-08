@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.19 2006-03-02 21:33:38 pwessel Exp $
+#       $Id: install_gmt_form.pl,v 1.20 2006-03-08 01:01:54 pwessel Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -41,8 +41,9 @@ $cdf		= $gmt_form{'radio_netcdf'};
 $ftpmode	= $gmt_form{'radio_ftpmode'};
 $cdf_path	= $gmt_form{'netcdf_dir'};
 $site		= $gmt_form{'radio_site'};
-$get_progs	= $gmt_form{'checkbox_progs'};
-$get_libs	= $gmt_form{'checkbox_libs'};
+$get_src	= $gmt_form{'checkbox_src'};
+$get_share	= $gmt_form{'checkbox_share'};
+$get_coast	= $gmt_form{'checkbox_coast'};
 $get_ps		= $gmt_form{'checkbox_ps'};
 $get_pdf	= $gmt_form{'checkbox_pdf'};
 $get_man	= $gmt_form{'checkbox_man'};
@@ -103,7 +104,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.19 $, on
+# Processed by install_gmt_form.pl $Revision: 1.20 $, on
 #
 #	$now
 #
@@ -162,15 +163,22 @@ else {
 	print FILE "GMT_ftp=y\n";
 }
 print FILE "GMT_ftpsite=", $site, "\n";
-print FILE "GMT_get_progs=";
-if ($get_progs eq "on") {
+print FILE "GMT_get_src=";
+if ($get_src eq "on") {
 	print FILE "y\n";
 }
 else {
 	print FILE "n\n";
 }
 print FILE "GMT_get_share=";
-if ($get_libs eq "on") {
+if ($get_share eq "on") {
+	print FILE "y\n";
+}
+else {
+	print FILE "n\n";
+}
+print FILE "GMT_get_coast=";
+if ($get_coast eq "on") {
 	print FILE "y\n";
 }
 else {

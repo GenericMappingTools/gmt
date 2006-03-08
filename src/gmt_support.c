@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.221 2006-02-21 00:50:13 remko Exp $
+ *	$Id: gmt_support.c,v 1.222 2006-03-08 01:01:54 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -63,7 +63,6 @@
  *	GMT_grd_init 		Initialize grd header structure
  *	GMT_grd_shift 		Rotates grdfiles in x-direction
  *	GMT_grd_setregion 	Determines subset coordinates for grdfiles
- *	GMT_getpathname		Prepend directory to file name
  *	GMT_hsv_to_rgb		Convert HSV to RGB
  *	GMT_illuminate		Add illumination effects to rgb
  *	GMT_intpol		1-D interpolation
@@ -1149,14 +1148,20 @@ void GMT_read_cpt (char *cpt_file)
 		if (gmtdefs.color_model == GMT_CMYK && nread != 10) error = TRUE;			/* CMYK should results in 10 fields */
 		if (gmtdefs.color_model != GMT_CMYK && !(nread == 4 || nread == 8)) error = TRUE;	/* HSV or RGB should result in 8 fields, gray, patterns, or skips in 4 */
 
-		GMT_lut[n].z_low = atof (T0);
+		if (GMT_verify_expectations (GMT_io.in_col_type[2], GMT_scanf (T0, GMT_io.in_col_type[2], &GMT_lut[n].z_low), T0)) {
+			fprintf (stderr, "%s: GMT Fatal Error: z0 (%s) in cpt table not readable\n", GMT_program, T0);
+			exit (EXIT_FAILURE);
+		}
 		GMT_lut[n].skip = FALSE;
 		if (T1[0] == '-') {				/* Skip this slice */
 			if (nread != 4) {
 				fprintf (stderr, "%s: GMT Fatal Error: z-slice to skip not in [z0 - z1 -] format!\n", GMT_program);
 				exit (EXIT_FAILURE);
 			}
-			GMT_lut[n].z_high = atof (T2);
+			if (GMT_verify_expectations (GMT_io.in_col_type[2], GMT_scanf (T2, GMT_io.in_col_type[2], &GMT_lut[n].z_high), T2)) {
+				fprintf (stderr, "%s: GMT Fatal Error: z1 (%s) in cpt table not readable\n", GMT_program, T2);
+				exit (EXIT_FAILURE);
+			}
 			GMT_lut[n].skip = TRUE;		/* Don't paint this slice if possible*/
 			for (i = 0; i < 3; i++) GMT_lut[n].rgb_low[i] = GMT_lut[n].rgb_high[i] = gmtdefs.page_rgb[i];	/* If you must, use page color */
 		}
@@ -1170,27 +1175,36 @@ void GMT_read_cpt (char *cpt_file)
 				fprintf (stderr, "%s: GMT Fatal Error: z-slice with pattern fill not in [z0 pattern z1 -] format!\n", GMT_program);
 				exit (EXIT_FAILURE);
 			}
-			GMT_lut[n].z_high = atof (T2);
+			if (GMT_verify_expectations (GMT_io.in_col_type[2], GMT_scanf (T2, GMT_io.in_col_type[2], &GMT_lut[n].z_high), T2)) {
+				fprintf (stderr, "%s: GMT Fatal Error: z1 (%s) in cpt table not readable\n", GMT_program, T2);
+				exit (EXIT_FAILURE);
+			}
 			GMT_cpt_pattern = TRUE;
 		}
 		else {							/* Shades, RGB, HSV, or CMYK */
 			if (nread == 4) {	/* gray shades */
-				GMT_lut[n].z_high = atof (T2);
+				if (GMT_verify_expectations (GMT_io.in_col_type[2], GMT_scanf (T2, GMT_io.in_col_type[2], &GMT_lut[n].z_high), T2)) {
+					fprintf (stderr, "%s: GMT Fatal Error: z1 (%s) in cpt table not readable\n", GMT_program, T2);
+					exit (EXIT_FAILURE);
+				}
 				if (GMT_getrgb (T1, GMT_lut[n].rgb_low)) error++;
 				if (GMT_getrgb (T3, GMT_lut[n].rgb_high)) error++;
-				/* GMT_lut[n].rgb_low[0]  = GMT_lut[n].rgb_low[1]  = GMT_lut[n].rgb_low[2]  = irint (atof (T1));
-				GMT_lut[n].rgb_high[0] = GMT_lut[n].rgb_high[1] = GMT_lut[n].rgb_high[2] = irint (atof (T3));
-				if (GMT_lut[n].rgb_low[0] < 0 || GMT_lut[n].rgb_high[0] < 0) error++; */
 			}
 			else if (gmtdefs.color_model == GMT_CMYK) {
-				GMT_lut[n].z_high = atof (T5);
+				if (GMT_verify_expectations (GMT_io.in_col_type[2], GMT_scanf (T5, GMT_io.in_col_type[2], &GMT_lut[n].z_high), T5)) {
+					fprintf (stderr, "%s: GMT Fatal Error: z1 (%s) in cpt table not readable\n", GMT_program, T5);
+					exit (EXIT_FAILURE);
+				}
 				sprintf (option, "%s/%s/%s/%s", T1, T2, T3, T4);
 				if (GMT_getrgb (option, GMT_lut[n].rgb_low)) error++;
 				sprintf (option, "%s/%s/%s/%s", T6, T7, T8, T9);
 				if (GMT_getrgb (option, GMT_lut[n].rgb_high)) error++;
 			}
 			else {			/* RGB or HSV */
-				GMT_lut[n].z_high = atof (T4);
+				if (GMT_verify_expectations (GMT_io.in_col_type[2], GMT_scanf (T4, GMT_io.in_col_type[2], &GMT_lut[n].z_high), T4)) {
+					fprintf (stderr, "%s: GMT Fatal Error: z1 (%s) in cpt table not readable\n", GMT_program, T4);
+					exit (EXIT_FAILURE);
+				}
 				sprintf (option, "%s/%s/%s", T1, T2, T3);
 				if (GMT_getrgb (option, GMT_lut[n].rgb_low)) error++;
 				sprintf (option, "%s/%s/%s", T5, T6, T7);
@@ -5445,71 +5459,6 @@ BOOLEAN GMT_x_is_outside (double *x, double left, double right)
 	}
 	else	/* Cartesian test */
 		return (((*x) < left || (*x) > right) ? TRUE : FALSE);
-}
-
-BOOLEAN GMT_getpathname (char *name, char *path) {
-	/* Prepends the appropriate directory to the file name
-	 * and returns TRUE if file is readable. */
-	 
-	BOOLEAN found;
-	char dir[BUFSIZ];
-	FILE *fp;
-
-	/* First check the $GMTHOME/share directory */
-
-	sprintf (path, "%s%cshare%c%s", GMTHOME, DIR_DELIM, DIR_DELIM, name);
-	if (!access (path, R_OK)) return (TRUE);	/* File exists and is readable, return with name */
-
-	/* File was not readable.  Now check if it exists */
-
-	if (!access (path, F_OK))  { /* Kicks in if file is there, meaning it has the wrong permissions */
-		fprintf (stderr, "%s: Error: GMT does not have permission to open %s!\n", GMT_program, path);
-		exit (EXIT_FAILURE);
-	}
-
-	/* File is not there.  Thus, we check if a coastline.conf file exists
-	 * It is not an error if we cannot find the named file, only if it is found
-	 * but cannot be read due to permission problems */
-
-	sprintf (dir, "%s%cshare%ccoastline.conf", GMTHOME, DIR_DELIM, DIR_DELIM);
-	if (!access (dir, F_OK))  { /* File exists... */
-		if (access (dir, R_OK)) {	/* ...but cannot be read */
-			fprintf (stderr, "%s: Error: GMT does not have permission to open %s!\n", GMT_program, dir);
-			exit (EXIT_FAILURE);
-		}
-	}
-	else {	/* There is no coastline.conf file to use; we're out of luck */
-		fprintf (stderr, "%s: Error: No configuration file %s available!\n", GMT_program, dir);
-		exit (EXIT_FAILURE);
-	}
-
-	/* We get here if coastline.conf exists - search among its directories for the named file */
-
-	if ((fp = fopen (dir, "r")) == NULL) {	/* This shouldn't be necessary, but cannot hurt */
-		fprintf (stderr, "%s: Error: Cannot open configuration file %s\n", GMT_program, dir);
-		exit (EXIT_FAILURE);
-	}
-
-	found = FALSE;
-	while (!found && fgets (dir, BUFSIZ, fp)) {	/* Loop over all input lines until found or done */
-		if (dir[0] == '#' || dir[0] == '\n') continue;	/* Comment or blank */
-
-		GMT_chop (dir);		/* Chop off LF or CR/LF */
-		sprintf (path, "%s%c%s", dir, DIR_DELIM, name);
-		if (!access (path, F_OK)) {	/* TRUE if file exists */
-			if (!access (path, R_OK)) {	/* TRUE if file is readable */
-				found = TRUE;
-			}
-			else {
-				fprintf (stderr, "%s: Error: GMT does not have permission to open %s!\n", GMT_program, path);
-				exit (EXIT_FAILURE);
-			}
-		}
-	}
-
-	fclose (fp);
-
-	return (found);
 }
 
 int GMT_getscale (char *text, struct MAP_SCALE *ms)

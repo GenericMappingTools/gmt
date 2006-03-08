@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.17 2005-12-27 03:10:13 pwessel Exp $
+ *	$Id: gmt_shore.c,v 1.18 2006-03-08 01:01:54 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -56,6 +56,7 @@ void GMT_br_to_degree (struct GMT_BR *c, short int dx, short int dy, double *lon
 void shore_prepare_sides(struct GMT_SHORE *c, int dir);
 int GMT_shore_asc_sort (const void *a, const void *b);
 int GMT_shore_desc_sort(const void *a, const void *b);
+BOOLEAN shore_getpathname (char *name, char *path);
 
 int GMT_set_resolution (char *res, char opt)
 {
@@ -101,7 +102,7 @@ int GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, double s,
 	
 	sprintf (file, "binned_GSHHS_%c.cdf", res);
 	
-        if (!GMT_getpathname (file, path)) return (-1);	/* Failed to find file */
+        if (!shore_getpathname (file, path)) return (-1);	/* Failed to find file */
         
 	check_nc_status (nc_open (path, NC_NOWRITE,&c->cdfid));
                 
@@ -287,7 +288,7 @@ int GMT_init_br (char which, char res, struct GMT_BR *c, double w, double e, dou
 	else
 		sprintf (file, "binned_border_%c.cdf", res);
 	
-        if (!GMT_getpathname (file, path)) return (-1);	/* Failed to find file */
+        if (!shore_getpathname (file, path)) return (-1);	/* Failed to find file */
 
 	check_nc_status (nc_open (path, NC_NOWRITE, &c->cdfid));
         
@@ -944,5 +945,70 @@ void shore_prepare_sides (struct GMT_SHORE *c, int dir)
 		else
 			qsort ((void *)c->side[i], (size_t)c->nside[i], sizeof (struct SIDE), GMT_shore_desc_sort);
 	}
+}
+
+BOOLEAN shore_getpathname (char *name, char *path) {
+	/* Prepends the appropriate directory to the file name
+	 * and returns TRUE if file is readable. */
+	 
+	BOOLEAN found;
+	char dir[BUFSIZ];
+	FILE *fp;
+
+	/* First check the $GMTHOME/share directory */
+
+	sprintf (path, "%s%cshare%ccoast%c%s", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, name);
+	if (!access (path, R_OK)) return (TRUE);	/* File exists and is readable, return with name */
+
+	/* File was not readable.  Now check if it exists */
+
+	if (!access (path, F_OK))  { /* Kicks in if file is there, meaning it has the wrong permissions */
+		fprintf (stderr, "%s: Error: GMT does not have permission to open %s!\n", GMT_program, path);
+		exit (EXIT_FAILURE);
+	}
+
+	/* File is not there.  Thus, we check if a coastline.conf file exists
+	 * It is not an error if we cannot find the named file, only if it is found
+	 * but cannot be read due to permission problems */
+
+	sprintf (dir, "%s%cshare%ccoastline.conf", GMTHOME, DIR_DELIM, DIR_DELIM);
+	if (!access (dir, F_OK))  { /* File exists... */
+		if (access (dir, R_OK)) {	/* ...but cannot be read */
+			fprintf (stderr, "%s: Error: GMT does not have permission to open %s!\n", GMT_program, dir);
+			exit (EXIT_FAILURE);
+		}
+	}
+	else {	/* There is no coastline.conf file to use; we're out of luck */
+		fprintf (stderr, "%s: Error: No configuration file %s available!\n", GMT_program, dir);
+		exit (EXIT_FAILURE);
+	}
+
+	/* We get here if coastline.conf exists - search among its directories for the named file */
+
+	if ((fp = fopen (dir, "r")) == NULL) {	/* This shouldn't be necessary, but cannot hurt */
+		fprintf (stderr, "%s: Error: Cannot open configuration file %s\n", GMT_program, dir);
+		exit (EXIT_FAILURE);
+	}
+
+	found = FALSE;
+	while (!found && fgets (dir, BUFSIZ, fp)) {	/* Loop over all input lines until found or done */
+		if (dir[0] == '#' || dir[0] == '\n') continue;	/* Comment or blank */
+
+		GMT_chop (dir);		/* Chop off LF or CR/LF */
+		sprintf (path, "%s%c%s", dir, DIR_DELIM, name);
+		if (!access (path, F_OK)) {	/* TRUE if file exists */
+			if (!access (path, R_OK)) {	/* TRUE if file is readable */
+				found = TRUE;
+			}
+			else {
+				fprintf (stderr, "%s: Error: GMT does not have permission to open %s!\n", GMT_program, path);
+				exit (EXIT_FAILURE);
+			}
+		}
+	}
+
+	fclose (fp);
+
+	return (found);
 }
 
