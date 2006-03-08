@@ -3,7 +3,7 @@
 gmtmath \- Reverse Polish Notation calculator for data tables
 .SH SYNOPSIS
 \fBgmtmath\fP [ \fB\-A\fP\fIt_f(t).d\fP ] [ \fB\-C\fP\fIcols\fP ] [ \fB\-F\fIcols\fP ] [ \fB\-H\fP\fInrec\fP ] [ \fB\-I\fP ] 
-[ \fB\-N\fP\fIn_col\fP/\fIt_col\fP ] [ \fB\-Q\fP ] [ \fB\-S\fP[\fBf|l\fP] ] 
+[ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP\fIn_col\fP/\fIt_col\fP ] [ \fB\-Q\fP ] [ \fB\-S\fP[\fBf|l\fP] ] 
 [ \fB\-T\fP\fIt_min/t_max/t_inc\fP|\fItfile\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
 [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] \fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] 
 \fBOPERATOR\fP ... \fB=\fP [ \fIoutfile\fP ]
@@ -66,6 +66,7 @@ Give a comma-separated list of desired columns or ranges that should be part of 
 .TP
 .B \-I
 Reverses the output row sequence from ascending time to descending [ascending].
+#include "explain_-M.txt"
 .TP
 .B \-N
 Select the number of columns and the column number that contains the
