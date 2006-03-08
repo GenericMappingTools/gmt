@@ -576,9 +576,9 @@ Controls how secondary month-, week-, and weekday-names are formatted.  Choose a
 character.  If the leading f, a, or c are replaced with F, A, and C the entire annotation will be in upper case. 
 .TP
 .B TIME_EPOCH
-This parameter is active only when \fBTIME_SYSTEM\fP is set to OTHER.  It is a string
-of the form yyyy-mm-ddThh:mm:ss (Gregorian) or yyyy-Www-ddThh:mm:ss (ISO) indicating
-the value of the calendar and clock at the origin (zero point) of relative time units.
+Specifying this parameter also sets \fBTIME_SYSTEM\fP to OTHER.  It is a string
+of the form yyyy-mm-ddT[hh:mm:ss] (Gregorian) or yyyy-Www-ddT[hh:mm:ss] (ISO) indicating
+the value of the calendar and clock at the origin (zero point) of relative time units (see \fBTIME_UNIT\fP).
 .TP
 .B TIME_IS_INTERVAL
 Used when input calendar data should be truncated and adjusted to the middle of the relevant interval.
@@ -658,7 +658,7 @@ If your language is not supported, please examine the \fB$GMTHOME\fP/share/time/
 make a similar file.  Please submit it to the \fBGMT\fP Developers for official inclusion. 
 .TP
 .B TIME_SYSTEM
-Determines what the time epoch relative time refers to and what the units are.  Choose from one of the preset systems below
+Determines which time epoch the relative time refers to and what the units are.  Choose from one of the preset systems below
 (epoch and units are indicated):
 .br
 JD	Julian Date, -4713-11-25T12:00:00 d
@@ -671,11 +671,16 @@ S1985	1985-01-01T00:00:00 c
 .br
 UNIX	1970-01-01T00:00:00 c
 .br
+RD0001	0001-01-01T00:00:00 c
+.br
+RATA	0000-12-31T00:00:00 d
+.br
 or specify OTHER and supply your own \fBTIME_EPOCH\fP and \fBTIME_UNIT\fP settings [J2000].
 .TP
 .B TIME_UNIT
 This parameter is active only when \fBTIME_SYSTEM\fP is set to OTHER, and specifies the
-units of relative time data.  Choose y (year), d (day), h (hour), m (minute), or c (second).
+units of relative time data.  Choose y (year - assumes all years are 365.2425 days), o (month - assumes
+all months are of equal length y/12), d (day), h (hour), m (minute), or c (second).
 .TP
 .B TIME_WEEK_START
 When weeks are indicated on time axes, this parameter determines the first day of the week

@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.70 2006-03-01 08:12:00 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.71 2006-03-08 01:01:54 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -80,11 +80,12 @@ cat << EOF > gmt_install.ftp_site
 7. Tokai U, Shimizu, JAPAN
 8. Charles Sturt U, Albury, AUSTRALIA
 EOF
-# Order (1-11) is 1:progs, 2:share, 3:high, 4:full, 5:suppl, 6:scripts
-#		  7:ps, 8:pdf, 9:man, 10:web, 11:tut
+# Order (1-12) is 1:src, 2:share, 3:coast, 4:high, 5:full, 6:suppl, 7:scripts
+#		  8:ps, 9:pdf, 10:man, 11:web, 12:tut
 cat << EOF > gmt_install.ftp_bzsizes
 0.55
-3.7
+0.05
+3.5
 8.6
 28.8
 0.53
@@ -97,6 +98,7 @@ cat << EOF > gmt_install.ftp_bzsizes
 EOF
 cat << EOF > gmt_install.ftp_gzsizes
 0.66
+0.05
 4.0
 10.7
 47.1
@@ -242,8 +244,9 @@ fi
 #	GMT FTP SECTION
 #--------------------------------------------------------------------------------
 
-GMT_get_progs=d
+GMT_get_src=d
 GMT_get_share=d
+GMT_get_coast=d
 GMT_get_scripts=d
 GMT_get_suppl=d
 GMT_get_ps=d
@@ -294,40 +297,42 @@ to register your computer.
 EOF
 	fi
 
-	echo " The first two archives are required for a minimal GMT install" >&2
+	echo " The first three archives are required for a minimal GMT install" >&2
 	echo " " >&2
 
 	size=`sed -n 1p $sizes`
-	GMT_get_progs=`get_def_answer "Want the program source archive [$size Mb] (y/n)?" "y"`
+	GMT_get_src=`get_def_answer "Want the program source archive [$size Mb] (y/n)?" "y"`
 	size=`sed -n 2p $sizes`
-	GMT_get_share=`get_def_answer "Want the support data (coastlines) [$size Mb] (y/n)?" "y"`
+	GMT_get_share=`get_def_answer "Want the shared run-time files (cpt, patterns) [$size Mb] (y/n)?" "y"`
+	size=`sed -n 3p $sizes`
+	GMT_get_coast=`get_def_answer "Want the basic support data (coastlines) [$size Mb] (y/n)?" "y"`
 
 	echo " " >&2
-	echo " The next four archives are optional but recommended for a typical GMT install" >&2
+	echo " The next seven archives are optional but recommended for a typical GMT install" >&2
 	echo " " >&2
 
 	size=`sed -n 6p $sizes`
-	GMT_get_scripts=`get_def_answer "Want optional GMT example scripts and data [$size Mb] (y/n)?" "y"`
-	size=`sed -n 5p $sizes`
 	GMT_get_suppl=`get_def_answer "Want optional GMT supplemental programs [$size Mb] (y/n)?" "y"`
 	size=`sed -n 7p $sizes`
-	GMT_get_ps=`get_def_answer "Want optional GMT Documentation 1 (PS version) [$size Mb] (y/n)?" "y"`
+	GMT_get_scripts=`get_def_answer "Want optional GMT example scripts and data [$size Mb] (y/n)?" "y"`
 	size=`sed -n 8p $sizes`
-	GMT_get_pdf=`get_def_answer "Want optional GMT Documentation 2 (PDF version) [$size Mb] (y/n)?" "y"`
+	GMT_get_ps=`get_def_answer "Want optional GMT Documentation 1 (PS version) [$size Mb] (y/n)?" "y"`
 	size=`sed -n 9p $sizes`
-	GMT_get_man=`get_def_answer "Want optional GMT Documentation 3 (Unix MAN) [$size Mb] (y/n)?" "y"`
+	GMT_get_pdf=`get_def_answer "Want optional GMT Documentation 2 (PDF version) [$size Mb] (y/n)?" "y"`
 	size=`sed -n 10p $sizes`
-	GMT_get_web=`get_def_answer "Want optional GMT Web Documentation (HTML of all Docs) [$size Mb] (y/n)?" "y"`
+	GMT_get_man=`get_def_answer "Want optional GMT Documentation 3 (Unix MAN) [$size Mb] (y/n)?" "y"`
 	size=`sed -n 11p $sizes`
+	GMT_get_web=`get_def_answer "Want optional GMT Web Documentation (HTML of all Docs) [$size Mb] (y/n)?" "y"`
+	size=`sed -n 12p $sizes`
 	GMT_get_tut=`get_def_answer "Want optional GMT tutorial data sets [$size Mb] (y/n)?" "y"`
 
 	echo " " >&2
-	echo " The next two archives contain bigger and more accurate coastline data:" >&2
+	echo " The next two archives are larger and contain more accurate coastline data:" >&2
 	echo " " >&2
 
-	size=`sed -n 3p $sizes`
-	GMT_get_high=`get_def_answer "Want optional high resolution coastline data [$size Mb] (y/n)?" "y"`
 	size=`sed -n 4p $sizes`
+	GMT_get_high=`get_def_answer "Want optional high resolution coastline data [$size Mb] (y/n)?" "y"`
+	size=`sed -n 5p $sizes`
 	GMT_get_full=`get_def_answer "Want optional full resolution coastline data [$size Mb] (y/n)?" "y"`
 
 			     	
@@ -462,24 +467,24 @@ GMT_delete=`get_def_answer "Delete all tar files after install? (y/n)" "n"`
 
 cat << EOF >&2
 
-Normally, all coastline files are installed in ./GMT${VERSION}/share.
+Normally, all coastline files are installed in ./GMT${VERSION}/share/coast.
 However, you can also place some of them in separate directories.
 These dirs must exist or you must have write permission to make them.
 If alternate directories are specified then a coastline.conf file will
 be kept in ./GMT${VERSION}/share to contain the names of these directories.
-NOTE:  Do not append the final /share as that is done automatically!
+NOTE:  Do not append the final /share/coast as that is done automatically!
 
 EOF
 
 dir=${topdir}/GMT${VERSION}
-GMT_dir_cli=`get_def_answer "Directory for int, low, and crude coastline files (without /share)" "$dir"`
+GMT_dir_cli=`get_def_answer "Directory for int, low, and crude coastline files (without /share/coast)" "$dir"`
 if [ ! $GMT_get_high = n ]; then
-	GMT_dir_high=`get_def_answer "Directory for high coastline files (without /share)" "$GMT_dir_cli"`
+	GMT_dir_high=`get_def_answer "Directory for high coastline files (without /share/coast)" "$GMT_dir_cli"`
 else
 	GMT_dir_high=$GMT_dir_cli
 fi
 if [ ! $GMT_get_full = n ]; then
-	GMT_dir_full=`get_def_answer "Directory for full coastline files (without /share)" "$GMT_dir_high"`
+	GMT_dir_full=`get_def_answer "Directory for full coastline files (without /share/coast)" "$GMT_dir_high"`
 else
 	GMT_dir_full=$GMT_dir_high
 fi
@@ -606,8 +611,9 @@ passive_ftp=$passive_ftp
 #---------------------------------------------
 GMT_ftp=$GMT_ftp
 GMT_ftpsite=$GMT_ftpsite
-GMT_get_progs=$GMT_get_progs
+GMT_get_src=$GMT_get_src
 GMT_get_share=$GMT_get_share
+GMT_get_coast=$GMT_get_coast
 GMT_get_high=$GMT_get_high
 GMT_get_full=$GMT_get_full
 GMT_get_suppl=$GMT_get_suppl
@@ -1120,8 +1126,9 @@ if [ $GMT_ftp = "y" ]; then
 	fi
 	echo "cd $DIR/$sub" >> gmt_install.ftp_list
 	echo "binary" >> gmt_install.ftp_list
-	make_ftp_list $GMT_get_progs progs
+	make_ftp_list $GMT_get_src src
 	make_ftp_list $GMT_get_share share
+	make_ftp_list $GMT_get_share coast
 	make_ftp_list $GMT_get_high high
 	make_ftp_list $GMT_get_full full
 	make_ftp_list $GMT_get_suppl suppl
@@ -1150,7 +1157,8 @@ fi
 # First install source code and documentation
 #--------------------------------------------------------------------------------
 
-install_this_gmt $GMT_get_progs progs
+install_this_gmt $GMT_get_src src
+install_this_gmt $GMT_get_coast coast
 install_this_gmt $GMT_get_suppl suppl
 install_this_gmt $GMT_get_scripts scripts
 install_this_gmt $GMT_get_ps ps
@@ -1178,7 +1186,7 @@ if [ $GMT_dir_cli != $dir ]; then
 	echo $GMT_dir_cli >> $$.coast
 fi
 
-install_coast $GMT_get_share share $GMT_dir_cli
+install_coast $GMT_get_coast coast $GMT_dir_cli
 install_coast $GMT_get_high  high  $GMT_dir_high
 install_coast $GMT_get_full  full  $GMT_dir_full
 
