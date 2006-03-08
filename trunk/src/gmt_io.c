@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.94 2006-03-08 01:51:15 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.95 2006-03-08 06:09:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -269,7 +269,7 @@ void GMT_multisegment (char *text)
 	 * flag is only used for ASCII data sets */
 
 	GMT_io.multi_segments = TRUE;
-	if (text[0]) GMT_io.EOF_flag = text[0];
+	if (text && text[0]) GMT_io.EOF_flag = text[0];
 }
 
 int GMT_ascii_input (FILE *fp, int *n, double **ptr)

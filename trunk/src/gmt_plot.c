@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.161 2006-03-06 05:46:07 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.162 2006-03-08 06:09:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1385,7 +1385,7 @@ void GMT_map_symbol_ns (double lon, char *label, double south, double north, BOO
 void GMT_map_symbol (double *xx, double *yy, int *sides, double *line_angles, char *label, int nx, int type, BOOLEAN annot, int level)
 {
 	/* type = 0 for lon and 1 for lat */
-            
+	    
 	double line_angle, text_angle, div, tick_length, o_len, len, dx, dy, angle, ca, sa, xt1, yt1, zz, tick_x[2], tick_y[2];
 	int i, justify;
 	BOOLEAN flip;
@@ -2500,50 +2500,83 @@ void GMT_text3D (double x, double y, double z, double fsize, int fontno, char *t
 	double ca, sa, xshrink, yshrink, tilt, baseline_shift;
 	char cmd[GMT_LONG_TEXT];
 
-        if (project_info.three_D) {
-                ps_setfont (0);
-                justify = abs (justify);
-                del_y = 0.5 * fsize * 0.732 * (justify / 4) * GMT_u2u[GMT_PT][GMT_INCH];
-                justify %= 4;
+	ps_setfont (fontno);
+	if (project_info.three_D) {
+		int *used_fonts;
+		int i, j, n;
+		char *t = text;
+
+		used_fonts = (int *) GMT_memory (VNULL, (size_t) N_FONTS, sizeof (int), "GMT_text3D");
+
+		justify = abs (justify);
+		del_y = 0.5 * fsize * 0.732 * (justify / 4) * GMT_u2u[GMT_PT][GMT_INCH];
+		justify %= 4;
 		sincos (angle * D2R, &sa, &ca);
-                x += del_y * sa;	/* Move anchor point down on baseline */
-                y -= del_y * ca;
-                xb = x + ca;		/* Point a distance of 1.0 along baseline */
-                yb = y + sa;
-                xt = x - sa;		/* Point a distance of 1.0 normal to baseline */
-                yt = y + ca;
-                GMT_xyz_to_xy (x, y, z, &xt1, &yt1);
-                GMT_xyz_to_xy (xb, yb, z, &xt2, &yt2);
-                GMT_xyz_to_xy (xt, yt, z, &xt3, &yt3);
-		xshrink = hypot (xt2-xt1, yt2-yt1) / hypot (xb-x, yb-y);	/* How lines in baseline-direction shrink */
-		yshrink = hypot (xt3-xt1, yt3-yt1) / hypot (xt-x, yt-y);	/* How lines _|_ to baseline-direction shrink */
+		x += del_y * sa;	/* Move anchor point down on baseline */
+		y -= del_y * ca;
+		xb = x + ca;		/* Point a distance of 1.0 along baseline */
+		yb = y + sa;
+		xt = x - sa;		/* Point a distance of 1.0 normal to baseline */
+		yt = y + ca;
+		GMT_xyz_to_xy (x, y, z, &xt1, &yt1);
+		GMT_xyz_to_xy (xb, yb, z, &xt2, &yt2);
+		GMT_xyz_to_xy (xt, yt, z, &xt3, &yt3);
+		xshrink = hypot (xt2-xt1, yt2-yt1);	/* How lines in baseline-direction shrink */
+		yshrink = hypot (xt3-xt1, yt3-yt1);	/* How lines _|_ to baseline-direction shrink */
 		baseline_shift = R2D * (d_atan2 (yt2 - yt1, xt2 - xt1) - d_atan2 (yb - y, xb - x));	/* Rotation of baseline */
-		tilt = 90.0 - R2D * (d_atan2 (yt3 - yt1, xt3 - xt1) - d_atan2 (yt2 - yt1, xt2 - xt1));
-		tilt = tand (tilt);
-		/* Temporarily modify meaning of F0 */
-		sprintf (cmd, "/F0 {/%s findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
-			GMT_font[fontno].name, xshrink, yshrink * tilt, yshrink);
+		tilt = (xt2-xt1)*(xt3-xt1) + (yt2-yt1)*(yt3-yt1);	/* inner product */
+		ca = tilt / (xshrink * yshrink);
+		sa = sqrt(1. - ca*ca);
+		/* Search used fonts in the string */
+		i = 0;
+		used_fonts[i++] = fontno;	/* current font */
+		used_fonts[i++] = 12;		/* Symbol */
+
+		while(t = strstr (t, "@%")) {
+			t += 2;
+			if (*t == '%') continue;
+
+			n = atoi (t);
+			if (n < 0 || n >= N_FONTS) continue;
+
+			for (j = 0; j < i; j ++)
+				if (n == used_fonts[j]) break;
+			if (i == j)
+				used_fonts[i++] = n;
+		}
+
+		/* Temporarily modify meaning of F */
+		sprintf (cmd, "/YY {findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
+			 xshrink, yshrink * ca, yshrink * sa);
 		ps_command (cmd);
-		/* Temporarily modify meaning of F12 */
-		sprintf (cmd, "/F12 {/Symbol findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
-			xshrink, yshrink * tilt, yshrink);
-		ps_command (cmd);
-                ps_text (xt1, yt1, fsize, text, angle + baseline_shift, justify, form);
-                ps_command ("/F0 {/Helvetica Y} bind def");     /* Reset F0 */
-                ps_command ("/F12 {/Symbol Y} bind def");       /* Reset F12 */
-                ps_setfont (fontno);
-        }
-        else {
-		ps_setfont (fontno);
+
+		for (j = 0; j < i; j ++) {
+			n = used_fonts[j];
+			sprintf (cmd, "/F%d {/%s YY} bind def", n, GMT_font[n].name);
+			ps_command (cmd);
+		}
+
+		ps_text (xt1, yt1, fsize, text, angle + baseline_shift, justify, form);
+
+		/* Reset fonts */
+		for (j = 0; j < i; j ++) {
+			n = used_fonts[j];
+			sprintf (cmd, "/F%d {/%s Y} bind def", n, GMT_font[n].name);
+			ps_command (cmd);
+		}
+
+		GMT_free ((void *) used_fonts);
+	}
+	else {
 		ps_text (x, y, fsize, text, angle, justify, form);
 	}
 }
 
 void GMT_textbox3D (double x, double y, double z, double size, int font, char *label, double angle, int just, BOOLEAN outline, double dx, double dy, int rgb[])
 {
-        if (project_info.three_D) {
-        	int i, len, ndig = 0, ndash = 0, nperiod = 0;
-        	double xx[4], yy[4], h, w, xa, ya, cosa, sina;
+	if (project_info.three_D) {
+		int i, len, ndig = 0, ndash = 0, nperiod = 0;
+		double xx[4], yy[4], h, w, xa, ya, cosa, sina;
 		len = strlen (label);
 		for (i = 0; label[i]; i++) {
 			if (isdigit ((int)label[i])) ndig++;
