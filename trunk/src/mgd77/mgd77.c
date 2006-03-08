@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.125 2006-02-28 21:58:16 pwessel Exp $
+ *	$Id: mgd77.c,v 1.126 2006-03-08 01:51:15 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -92,7 +92,6 @@ int wrong_filler (char *field, int length);
 struct MGD77_DATA_RECORD *MGD77Record;
  
 double MGD77_NaN_val[7], MGD77_Low_val[7], MGD77_High_val[7];
-double MGD77_Epoch_zero;
 int MGD77_pos[MGD77_N_DATA_EXTENDED];	/* Used to translate the positions 0-27 into MGD77_TIME, MGD77_LONGITUDE, etc */
 struct MGD77_LIMITS {
 	double limit[2];	/* Upper and lower range */
@@ -1810,7 +1809,7 @@ int MGD77_Read_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 		rata_die = GMT_rd_from_gymd (yyyy, mm, dd);
 		tz = (GMT_is_dnan (MGD77Record->number[MGD77_TZ])) ? 0.0 : MGD77Record->number[MGD77_TZ];
 		secs = GMT_HR2SEC_I * (MGD77Record->number[MGD77_HOUR] + tz) + GMT_MIN2SEC_I * MGD77Record->number[MGD77_MIN];
-		MGD77Record->time = GMT_rdc2dt (rata_die, secs);	/* This gives GMT default abs time in seconds */
+		MGD77Record->time = GMT_rdc2dt (rata_die, secs);	/* This gives GMT Unix time in seconds */
 		MGD77Record->bit_pattern |= MGD77_this_bit[MGD77_TIME];	/* Turn on this bit */
 	}
 	else	/* Not present or incomplete, assign NaN */
@@ -1852,7 +1851,7 @@ int MGD77_Read_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 		rata_die = GMT_rd_from_gymd (yyyy, mm, dd);
 		tz = (GMT_is_dnan (MGD77Record->number[MGD77_TZ])) ? 0.0 : MGD77Record->number[MGD77_TZ];
 		secs = GMT_HR2SEC_I * (MGD77Record->number[MGD77_HOUR] + tz) + GMT_MIN2SEC_I * MGD77Record->number[MGD77_MIN];
-		MGD77Record->time = GMT_rdc2dt (rata_die, secs);	/* This gives GMT default abs time in seconds */
+		MGD77Record->time = GMT_rdc2dt (rata_die, secs);	/* This gives GMT Unix time in seconds */
 		MGD77Record->bit_pattern |= MGD77_this_bit[MGD77_TIME];	/* Turn on this bit */
 	}
 	else	/* Not present or incomplete, assign NaN */
@@ -2023,7 +2022,7 @@ void MGD77_Process_Ignore (char code, char format)
 void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks)
 {
 	/* Initialize MGD77 control system */
-	int i, k, t_index;
+	int i, k;
 	struct passwd *pw;
 
 	memset ((void *)F, 0, sizeof (struct MGD77_CONTROL));		/* Initialize structure */
@@ -2031,8 +2030,7 @@ void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks)
 	MGD77_Init_Columns (F, NULL);
 	F->use_flags[MGD77_M77_SET] = F->use_flags[MGD77_CDF_SET] = TRUE;		/* TRUE means programs will use error bitflags (if present) when returning data */
 	F->use_corrections[MGD77_M77_SET] = F->use_corrections[MGD77_CDF_SET] = TRUE;	/* TRUE means we will apply correction factors (if present) when reading data */
-	t_index = GMT_get_time_system ("unix");			/* Get index for GMT's Unix time */
-	MGD77_Epoch_zero = GMT_time_system[t_index].epoch_t0;	/* Unix time's epoch t0 in GMT */
+	GMT_get_time_system ("unix");							/* MGD77+ uses GMT's Unix time epoch */
 	memset ((void *)mgd77_range, 0, (size_t)(MGD77_N_DATA_EXTENDED * sizeof (struct MGD77_LIMITS)));
 	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1 << i;
 	MGD77_Strip_Blanks = remove_blanks;
@@ -2960,10 +2958,6 @@ void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 			else {					/* This variable is a numerical field */
 				values = (double *)S->values[entry];
 				S->H.info[set].col[id].constant = (MGD77_dbl_are_constant (values, S->H.n_records, S->H.info[set].col[id].limit));
-				if (set == t_set && id == t_id) {	/* Adjust limits for time column since we will store Unix time, not GMT epoch time */
-					S->H.info[set].col[id].limit[0] -= MGD77_Epoch_zero;	/* Make UNIX time for storage */ 
-					S->H.info[set].col[id].limit[1] -= MGD77_Epoch_zero;	/* Make UNIX time for storage */
-				}
 			}
 			entry++;
 		}
@@ -3127,18 +3121,12 @@ int MGD77_Write_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 					MGD77_nc_status (nc_put_vara_schar (F->nc_id, S->H.info[set].col[id].var_id, start, count, (signed char *)text));
 			}
 			else {						/* Numerical data */
-				if (!S->H.no_time && set == MGD77_M77_SET && !strcmp (S->H.info[set].col[id].abbrev, "time")) {	/* Special time treatment */
-					scale = 1.0;
-					offset = MGD77_Epoch_zero;
-				}
-				else {	/* Everybody else */
-					scale = S->H.info[set].col[id].factor;
-					offset = S->H.info[set].col[id].offset;
-					if (F->use_corrections[set]) {	/* TRUE by default, but this can be turned off by changing this parameter in F */
-						/* Combine effect of main and 2nd scale factors and 2nd scale and 2nd offset into one offset */
-						scale *= S->H.info[set].col[id].corr_factor;
-						offset = S->H.info[set].col[id].offset * S->H.info[set].col[id].corr_factor + S->H.info[set].col[id].corr_offset;
-					}
+				scale = S->H.info[set].col[id].factor;
+				offset = S->H.info[set].col[id].offset;
+				if (F->use_corrections[set]) {	/* TRUE by default, but this can be turned off by changing this parameter in F */
+					/* Combine effect of main and 2nd scale factors and 2nd scale and 2nd offset into one offset */
+					scale *= S->H.info[set].col[id].corr_factor;
+					offset = S->H.info[set].col[id].offset * S->H.info[set].col[id].corr_factor + S->H.info[set].col[id].corr_offset;
 				}
 				transform = (! (scale == 1.0 && offset == 0.0));	/* TRUE if we must transform before writing */
 				values = (double *)S->values[entry];			/* Pointer to current double array */
@@ -3206,18 +3194,13 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 	for (i = 0; i < F->n_out_columns; i++) {	/* Only loop over columns that are desired */
 		c  = F->order[i].set;	/* Determine set and item */
 		id = F->order[i].item;
-		if (!strcmp (S->H.info[c].col[id].abbrev, "time")) {	/* The time variable, select conversion from Unix time to GMT epoch time */
-			scale = 1.0;
-			offset = MGD77_Epoch_zero;
-		}
-		else {	/* Use the attribute scale & offset */
-			scale = S->H.info[c].col[id].factor;
-			offset = S->H.info[c].col[id].offset;
-			if (F->use_corrections[c]) {	/* TRUE by default, but this can be turned off by changing this parameter in F */
-				/* Combine effect of main and 2nd scale factors and 2nd scale and 2nd offset into one offset */
-				scale *= S->H.info[c].col[id].corr_factor;
-				offset = S->H.info[c].col[id].offset * S->H.info[c].col[id].corr_factor + S->H.info[c].col[id].corr_offset;
-			}
+		/* Use the attribute scale & offset to adjust the values */
+		scale = S->H.info[c].col[id].factor;
+		offset = S->H.info[c].col[id].offset;
+		if (F->use_corrections[c]) {	/* TRUE by default, but this can be turned off by changing this parameter in F */
+			/* Combine effect of main and 2nd scale factors and 2nd scale and 2nd offset into one offset */
+			scale *= S->H.info[c].col[id].corr_factor;
+			offset = S->H.info[c].col[id].offset * S->H.info[c].col[id].corr_factor + S->H.info[c].col[id].corr_offset;
 		}
 		if (S->H.info[c].col[id].text) {	/* Text variable */
 			count[1] = S->H.info[c].col[id].text;	/* Get length of each string */

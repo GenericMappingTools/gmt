@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.93 2006-03-07 06:43:44 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.94 2006-03-08 01:51:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2474,7 +2474,7 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t)
 
 int	GMT_scanf_arg (char *s, int expectation, double *val)
 {
-	/* Version of GMT_scanf used for command line arguments only (not data records).
+	/* Version of GMT_scanf used for cpt & command line arguments only (not data records).
 	 * It differs from GMT_scanf in that if the expectation is GMT_IS_UNKNOWN it will
 	 * check to see if the argument is (1) an absolute time string, (2) a geographical
 	 * location string, or if not (3) a floating point string.  To ensure backward
