@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.222 2006-03-08 01:01:54 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.223 2006-03-08 01:51:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1119,6 +1119,8 @@ void GMT_read_cpt (char *cpt_file)
 		 * z0 r0 g0 b0 z1 r1 g1 b1 [LUB] ;<label>
 		 * z0 h0 s0 v0 z1 h1 s1 v1 [LUB] ;<label>
 		 * z0 c0 m0 y0 k0 z1 c1 m1 y1 k1 [LUB] ;<label>
+		 *
+		 * z can be in any format (float, dd:mm:ss, dateTclock)
 		 */
 
 		/* First determine if a label is given */
@@ -1148,20 +1150,14 @@ void GMT_read_cpt (char *cpt_file)
 		if (gmtdefs.color_model == GMT_CMYK && nread != 10) error = TRUE;			/* CMYK should results in 10 fields */
 		if (gmtdefs.color_model != GMT_CMYK && !(nread == 4 || nread == 8)) error = TRUE;	/* HSV or RGB should result in 8 fields, gray, patterns, or skips in 4 */
 
-		if (GMT_verify_expectations (GMT_io.in_col_type[2], GMT_scanf (T0, GMT_io.in_col_type[2], &GMT_lut[n].z_low), T0)) {
-			fprintf (stderr, "%s: GMT Fatal Error: z0 (%s) in cpt table not readable\n", GMT_program, T0);
-			exit (EXIT_FAILURE);
-		}
+		GMT_scanf_arg (T0, GMT_IS_UNKNOWN, &GMT_lut[n].z_low);
 		GMT_lut[n].skip = FALSE;
 		if (T1[0] == '-') {				/* Skip this slice */
 			if (nread != 4) {
 				fprintf (stderr, "%s: GMT Fatal Error: z-slice to skip not in [z0 - z1 -] format!\n", GMT_program);
 				exit (EXIT_FAILURE);
 			}
-			if (GMT_verify_expectations (GMT_io.in_col_type[2], GMT_scanf (T2, GMT_io.in_col_type[2], &GMT_lut[n].z_high), T2)) {
-				fprintf (stderr, "%s: GMT Fatal Error: z1 (%s) in cpt table not readable\n", GMT_program, T2);
-				exit (EXIT_FAILURE);
-			}
+			GMT_scanf_arg (T2, GMT_IS_UNKNOWN, &GMT_lut[n].z_high);
 			GMT_lut[n].skip = TRUE;		/* Don't paint this slice if possible*/
 			for (i = 0; i < 3; i++) GMT_lut[n].rgb_low[i] = GMT_lut[n].rgb_high[i] = gmtdefs.page_rgb[i];	/* If you must, use page color */
 		}
@@ -1175,36 +1171,24 @@ void GMT_read_cpt (char *cpt_file)
 				fprintf (stderr, "%s: GMT Fatal Error: z-slice with pattern fill not in [z0 pattern z1 -] format!\n", GMT_program);
 				exit (EXIT_FAILURE);
 			}
-			if (GMT_verify_expectations (GMT_io.in_col_type[2], GMT_scanf (T2, GMT_io.in_col_type[2], &GMT_lut[n].z_high), T2)) {
-				fprintf (stderr, "%s: GMT Fatal Error: z1 (%s) in cpt table not readable\n", GMT_program, T2);
-				exit (EXIT_FAILURE);
-			}
+			GMT_scanf_arg (T2, GMT_IS_UNKNOWN, &GMT_lut[n].z_high);
 			GMT_cpt_pattern = TRUE;
 		}
 		else {							/* Shades, RGB, HSV, or CMYK */
 			if (nread == 4) {	/* gray shades */
-				if (GMT_verify_expectations (GMT_io.in_col_type[2], GMT_scanf (T2, GMT_io.in_col_type[2], &GMT_lut[n].z_high), T2)) {
-					fprintf (stderr, "%s: GMT Fatal Error: z1 (%s) in cpt table not readable\n", GMT_program, T2);
-					exit (EXIT_FAILURE);
-				}
+				GMT_scanf_arg (T2, GMT_IS_UNKNOWN, &GMT_lut[n].z_high);
 				if (GMT_getrgb (T1, GMT_lut[n].rgb_low)) error++;
 				if (GMT_getrgb (T3, GMT_lut[n].rgb_high)) error++;
 			}
 			else if (gmtdefs.color_model == GMT_CMYK) {
-				if (GMT_verify_expectations (GMT_io.in_col_type[2], GMT_scanf (T5, GMT_io.in_col_type[2], &GMT_lut[n].z_high), T5)) {
-					fprintf (stderr, "%s: GMT Fatal Error: z1 (%s) in cpt table not readable\n", GMT_program, T5);
-					exit (EXIT_FAILURE);
-				}
+				GMT_scanf_arg (T5, GMT_IS_UNKNOWN, &GMT_lut[n].z_high);
 				sprintf (option, "%s/%s/%s/%s", T1, T2, T3, T4);
 				if (GMT_getrgb (option, GMT_lut[n].rgb_low)) error++;
 				sprintf (option, "%s/%s/%s/%s", T6, T7, T8, T9);
 				if (GMT_getrgb (option, GMT_lut[n].rgb_high)) error++;
 			}
 			else {			/* RGB or HSV */
-				if (GMT_verify_expectations (GMT_io.in_col_type[2], GMT_scanf (T4, GMT_io.in_col_type[2], &GMT_lut[n].z_high), T4)) {
-					fprintf (stderr, "%s: GMT Fatal Error: z1 (%s) in cpt table not readable\n", GMT_program, T4);
-					exit (EXIT_FAILURE);
-				}
+				GMT_scanf_arg (T4, GMT_IS_UNKNOWN, &GMT_lut[n].z_high);
 				sprintf (option, "%s/%s/%s", T1, T2, T3);
 				if (GMT_getrgb (option, GMT_lut[n].rgb_low)) error++;
 				sprintf (option, "%s/%s/%s", T5, T6, T7);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.18 2006-03-08 01:01:54 pwessel Exp $
+ *	$Id: gmt_shore.c,v 1.19 2006-03-08 01:51:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -955,9 +955,20 @@ BOOLEAN shore_getpathname (char *name, char *path) {
 	char dir[BUFSIZ];
 	FILE *fp;
 
-	/* First check the $GMTHOME/share directory */
+	/* First check the $GMTHOME/share/coast directory */
 
 	sprintf (path, "%s%cshare%ccoast%c%s", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, name);
+	if (!access (path, R_OK)) return (TRUE);	/* File exists and is readable, return with name */
+
+	/* File was not readable.  Now check if it exists */
+
+	if (!access (path, F_OK))  { /* Kicks in if file is there, meaning it has the wrong permissions */
+		fprintf (stderr, "%s: Error: GMT does not have permission to open %s!\n", GMT_program, path);
+		exit (EXIT_FAILURE);
+	}
+	/* Nothing in share/coast; do a backwards-compatible check in the $GMTHOME/share directory */
+
+	sprintf (path, "%s%cshare%c%s", GMTHOME, DIR_DELIM, DIR_DELIM, name);
 	if (!access (path, R_OK)) return (TRUE);	/* File exists and is readable, return with name */
 
 	/* File was not readable.  Now check if it exists */
