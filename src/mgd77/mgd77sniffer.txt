@@ -29,6 +29,11 @@ and Smith's Raw Gravity grid available from Scripps Institution of Oceanography'
 
 .SH OPTIONS
 .TP
+B. \-A
+Apply scale factor and DC adjustment to specified data field. Allows adjustment of cruise data prior
+to along-track analysis. CAUTION: data must be thoroughly examined before applying these global data
+adjustments. May not be used for multiple cruises.
+.TP
 .B \-C
 Set maximum ship speed in m/s, or knots with \fB\-N\fP option. Ship speeds exceeding 10 m/s (~20 knots)
 are flagged as excessive by default.

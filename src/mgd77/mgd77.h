@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.70 2006-02-28 21:44:33 pwessel Exp $
+ *	$Id: mgd77.h,v 1.71 2006-03-09 09:05:50 mtchandl Exp $
  * 
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -157,7 +157,7 @@
 #define MGD77_FAA_BIT		(1 << 22)
 #define MGD77_GEOPHYSICAL_BITS	5360640	/* 0101 0001 1100 1100 0000 0000 */
 #define MGD77_CORRECTION_BITS	2883584	/* 0010 1100 0000 0000 0000 0000 */
-#define MGD77_TIME_BITS		    124	/* 0000 0000 0000 0000 0111 1100 */
+#define MGD77_TIME_BITS		    124	    /* 0000 0000 0000 0000 0111 1100 */
 #define MGD77_FLOAT_BITS	(MGD77_GEOPHYSICAL_BITS + MGD77_CORRECTION_BITS + MGD77_TIME_BITS)
 #define MGD77_STRING_BITS	(16777216+33554432+67108864)
 
