@@ -2,8 +2,8 @@
 .SH NAME
 project \- project data along a line or great circle, generate a profile track, or translate coordinates.
 .SH SYNOPSIS
-\fBproject\fP [ \fIinfile\fP ] \fB\-F\fP\fIflags\fP \fB\-C\fP\fIcx/cy\fP [ \fB\-A\fP\fIazimuth\fP ] 
-[ \fB\-Dd|g\fP ] [ \fB\-E\fP\fIbx/by\fP ] [ \fB\-G\fP\fIdist\fP ] [ \fB\-H\fP[\fInrec\fP] ] 
+\fBproject\fP [ \fIinfile\fP ] \fB\-C\fP\fIcx/cy\fP [ \fB\-A\fP\fIazimuth\fP ] 
+[ \fB\-Dd|g\fP ] [ \fB\-E\fP\fIbx/by\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-G\fP\fIdist\fP ] [ \fB\-H\fP[\fInrec\fP] ] 
 [ \fB\-L\fP[\fBw\fP][\fIl_min/l_max\fP] ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP ] [ \fB\-Q\fP ] [ \fB\-S\fP ] 
 [ \fB\-T\fP\fIpx/py\fP ] [ \fB\-V\fP ] [ \fB\-W\fP\fIw_min/w_max\fP ] [ \fB\-:\fP ] 
 [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
@@ -55,7 +55,7 @@ No assumptions are made regarding the units for \fIx, y, r, s, p, q, dist, l_min
 If \fB\-Q\fP is selected, map units are assumed and \fIx, y, r, s\fP must be in degrees and
 \fIp, q, dist, l_min, l_max, w_min, w_max\fP will be in km.
 .br
-Calculations of specific great-circle distances or for back-azimuths or azimuths are better done using \fBmapproject\fP.
+Calculations of specific great-circle and geodesic distances or for back-azimuths or azimuths are better done using \fBmapproject\fP.
 .br
 \fBproject\fP is CASE SENSITIVE.  Use UPPER CASE for all one-letter designators which begin optional arguments.  Use 
 lower case for the xyzpqrs letters in \fB\-flags\fP. 
@@ -75,7 +75,7 @@ If the \fB\-G\fP option is selected, no input data are read.
 .B \-F
 Specify your desired output using any combination of \fIxyzpqrs\fP, in any order.  Do not space between
 the letters.  Use lower case.  The output will be ASCII (or binary, see \fB\-bo\fP) columns of values corresponding 
-to \fIxyzpqrs\fP.  If both input and output are using ASCII format then the \fIz\fP data are treated as
+to \fIxyzpqrs\fP [Default].  If both input and output are using ASCII format then the \fIz\fP data are treated as
 textstring(s).
 If the \fB\-G\fP option is selected, the output will be \fIrsp\fP.
 .TP
