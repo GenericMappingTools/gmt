@@ -59,7 +59,8 @@ triangle height [Default is half the barwidth].
 .TP
 .B \-I
 Add illumination effects.  Optionally, set the range of intensities from
-+ to - \fImax_intens\fP.  If not specified, 1.0 is used.  [Default is no illumination].
++ to - \fImax_intens\fP.  If not specified, 1.0 is used.  Alternatively,
+append \fIlow/high\fP intensities to specify an asymmetric range [Default is no illumination].
 #include "explain_-K.txt"
 .TP
 .B \-L
