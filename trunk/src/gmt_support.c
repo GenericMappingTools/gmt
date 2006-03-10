@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.224 2006-03-10 00:18:42 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.225 2006-03-10 21:45:21 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2306,7 +2306,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 					}
 				}
 			}
-			if (G->do_interpolate) G->xp[G->n_xp].np = GMT_fix_up_path (&G->xp[G->n_xp].lon, &G->xp[G->n_xp].lat, G->xp[G->n_xp].np, greenwich, 1.0);
+			if (G->do_interpolate) G->xp[G->n_xp].np = GMT_fix_up_path (&G->xp[G->n_xp].lon, &G->xp[G->n_xp].lat, G->xp[G->n_xp].np, greenwich, gmtdefs.line_step);
 			G->xp[G->n_xp].seg = (int *) GMT_memory (VNULL, G->xp[G->n_xp].np, sizeof (int), GMT_program);	/* Initialized by default to 0 */
 			for (i = 0; i < G->xp[G->n_xp].np; i++) {	/* Project */
 				GMT_geo_to_xy (G->xp[G->n_xp].lon[i], G->xp[G->n_xp].lat[i], &x, &y);
