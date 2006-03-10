@@ -202,7 +202,7 @@ options:
 .TP
 .B COLOR_MODEL
 Selects if color palette files contain rgb values (r,g,b in 0-255 range) or HSV values
-(h in 0-360, s,v in 0-1 range).  A \fBCOLOR_MODE\fP setting in the color palette file
+(h in 0-360, s,v in 0-1 range).  A \fBCOLOR_MODEL\fP setting in the color palette file
 will override this setting.  [rgb].
 .TP
 .B COLOR_NAN
