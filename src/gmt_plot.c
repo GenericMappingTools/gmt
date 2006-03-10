@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.162 2006-03-08 06:09:43 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.163 2006-03-10 07:24:56 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3969,3 +3969,181 @@ struct EPS *GMT_epsinfo (char *program)
 
 	return (new);
 }
+
+void GMT_fill_polygon (double *x, double *y, int *pen, int n, struct GMT_FILL *F, BOOLEAN outline)
+{
+	/* When geographic data are plotted, polygons that cross the west map boundary will
+	 * sometimes appear on the area bounded by the east map boundary - they "wrap around".
+	 * This usually means we have a global map with (east-west) = 360.
+	 * This function solves this by plotting the polygon twice:
+	 * First time: Find where the polygon jumps and set all the points between jumps to
+	 *	       the point on the west boundary at the same latitude.
+	 * First time: Find where the polygon jumps and set all the points between jumps to
+	 *	       the point on the east boundary at the same latitude.
+	 * In reality it depends on the nature of the first jump in which order we do the
+	 * west and east truncation above.
+	 * The input x,y,pen shuould be the output of GNT_geo_to_xy_line.
+	 */
+	
+	BOOLEAN jump;
+	int i, first, jump_dir;
+	double *xtmp;
+	PFD x_on_border[2];
+	struct GMT_FILL G;
+#define JUMP_L 0
+#define JUMP_R 1	
+	if (!MAPPING) {	/* Not geographic data so no periodic boundary */
+		GMT_fill (x, y, n, F, outline);
+		return;
+	}
+	
+	for (first = 1, jump = FALSE; first < n && !jump; first++) jump = (pen[first] != 2);
+	if (!jump) {	/* We happen to avoid a periodic boundary */
+		GMT_fill (x, y, n, F, outline);
+		return;
+	}
+	
+	GMT_init_fill (&G, 255, 0, 0);
+
+	/* Polygon wraps and we will plot it twice by truncating the part that would wrap the wrong way */
+
+	/* Temporary array to hold the modified x values */
+	
+	xtmp = (double *) GMT_memory (VNULL, n, sizeof (double), GMT_program);
+
+	x_on_border[JUMP_R] = GMT_left_boundary;
+	x_on_border[JUMP_L] = GMT_right_boundary;
+	
+	/* Set which border we truncate towards depending on the nature of the first jump */
+	
+	/* Do the main truncation */
+	
+	for (i = 0, jump = FALSE; i < n; i++) {
+		if (pen[i] == 3 && i) {
+			jump = !jump;
+			jump_dir = (x[i] > GMT_half_map_size) ? JUMP_R : JUMP_L;
+		}
+		xtmp[i] = (jump) ? (*x_on_border[jump_dir]) (y[i]) : x[i];
+	}
+	GMT_fill (xtmp, y, n, &G, outline);	/* Paint the truncated polygon */
+	
+	/* Then do the L truncation */
+	
+	GMT_init_fill (&G, 0, 255, 0);
+	jump_dir = (x[first] > GMT_half_map_size) ? JUMP_L : JUMP_R;	/* Opposite */
+	for (i = 0, jump = TRUE; i < n; i++) {
+		if (pen[i] == 3 && i) {
+			jump = !jump;
+			jump_dir = (x[i] > GMT_half_map_size) ? JUMP_R : JUMP_L;
+		}
+		xtmp[i] = (jump || jump_dir == JUMP_R) ? (*x_on_border[JUMP_R]) (y[i]) : x[i];
+	}
+	GMT_fill (xtmp, y, n, &G, outline);	/* Paint the truncated polygon */
+	
+	/* Then do the R truncation */
+	
+	GMT_init_fill (&G, 0, 0, 255);
+	jump_dir = (x[first] > GMT_half_map_size) ? JUMP_R : JUMP_L;	/* Opposite */
+	for (i = 0, jump = TRUE; i < n; i++) {
+		if (pen[i] == 3 && i) {
+			jump = !jump;
+			jump_dir = (x[i] > GMT_half_map_size) ? JUMP_R : JUMP_L;
+		}
+		xtmp[i] = (jump || jump_dir == JUMP_L) ? (*x_on_border[JUMP_L]) (y[i]) : x[i];
+	}
+	GMT_fill (xtmp, y, n, &G, outline);	/* Paint the truncated polygon */
+	
+	GMT_free ((void *)xtmp);
+}
+#ifdef PPP
+void GMT_fill_polygon2 (double *x, double *y, int *pen, int n, struct GMT_FILL *F, BOOLEAN outline)
+{
+	/* When geographic data are plotted, polygons that cross the west map boundary will
+	 * sometimes appear on the area bounded by the east map boundary - they "wrap around".
+	 * This usually means we have a global map with (east-west) = 360.
+	 * This function solves this by plotting the polygon twice:
+	 * First time: Find where the polygon jumps and set all the points between jumps to
+	 *	       the point on the west boundary at the same latitude.
+	 * First time: Find where the polygon jumps and set all the points between jumps to
+	 *	       the point on the east boundary at the same latitude.
+	 * In reality it depends on the nature of the first jump in which order we do the
+	 * west and east truncation above.
+	 * The input x,y,pen should be the output of GNT_geo_to_xy_line.
+	 */
+	
+	BOOLEAN jump;
+	int i, first, jump_dir;
+	double *xtmp;
+	PFD x_on_border[2];
+	struct GMT_FILL G;
+#define JUMP_L 0
+#define JUMP_R 1
+	
+	if (!MAPPING) {	/* Not geographic data so no periodic boundary */
+		GMT_fill (x, y, n, F, outline);
+		return;
+	}
+	
+	for (first = 1, jump = FALSE; first < n && !jump; first++) jump = (pen[first] != 2);
+	if (!jump) {	/* We happen to avoid a periodic boundary or we exit the visible map area */
+		GMT_fill (x, y, n, F, outline);
+		return;
+	}
+	
+	/* Polygon wraps and we will plot it twice by truncating the part that would wrap the wrong way */
+
+	/* Shuffle (x,y) so x[0] is the first jump point */
+	
+	/* Temporary array to hold the modified x values */
+	tmp = (double *) GMT_memory (VNULL, n, sizeof (double), GMT_program);
+	itmp = (int *) GMT_memory (VNULL, n, sizeof (int), GMT_program);
+	memcpy ((void *)tmp, (void *)x, (size_t)(n*sizeof (double)));
+	for (i = 0, j = first; i < n; i++, j = (j+1)%n ) x[i] = tmp[j];
+	memcpy ((void *)xtmp, (void *)y, (size_t)(n*sizeof (double)));
+	for (i = 0, j = first; i < n; i++, j = (j+1)%n ) y[i] = tmp[j];
+	memcpy ((void *)itmp, (void *)pen, (size_t)(n*sizeof (int)));
+	for (i = 0, j = first; i < n; i++, j = (j+1)%n ) pen[i] = itmp[j];
+	
+	x_on_border[JUMP_R] = GMT_left_boundary;
+	x_on_border[JUMP_L] = GMT_right_boundary;
+	
+	/* Set which border we truncate towards depending on the nature of the first jump */
+	
+	/* Do the main truncation */
+	
+	for (i = 0, jump = FALSE; i < n; i++) {
+		if (pen[i] == 3 && i) {
+			jump = !jump;
+			jump_dir = (x[i] > GMT_half_map_size) ? JUMP_R : JUMP_L;
+		}
+		xtmp[i] = (jump) ? (*x_on_border[jump_dir]) (y[i]) : x[i];
+	}
+	GMT_fill (xtmp, y, n, F, outline);	/* Paint the truncated polygon */
+	
+	/* Then do the L truncation */
+	
+	jump_dir = (x[first] > GMT_half_map_size) ? JUMP_L : JUMP_R;	/* Opposite */
+	for (i = 0, jump = TRUE; i < n; i++) {
+		if (pen[i] == 3 && i) {
+			jump = !jump;
+			jump_dir = (x[i] > GMT_half_map_size) ? JUMP_R : JUMP_L;
+		}
+		xtmp[i] = (jump || jump_dir == JUMP_R) ? (*x_on_border[JUMP_R]) (y[i]) : x[i];
+	}
+	GMT_fill (xtmp, y, n, F, outline);	/* Paint the truncated polygon */
+	
+	/* Then do the R truncation */
+	
+	jump_dir = (x[first] > GMT_half_map_size) ? JUMP_R : JUMP_L;	/* Opposite */
+	for (i = 0, jump = TRUE; i < n; i++) {
+		if (pen[i] == 3 && i) {
+			jump = !jump;
+			jump_dir = (x[i] > GMT_half_map_size) ? JUMP_R : JUMP_L;
+		}
+		xtmp[i] = (jump || jump_dir == JUMP_L) ? (*x_on_border[JUMP_L]) (y[i]) : x[i];
+	}
+	GMT_fill (xtmp, y, n, F, outline);	/* Paint the truncated polygon */
+	
+	GMT_free ((void *)xtmp);
+}
+#endif

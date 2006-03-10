@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.110 2006-03-10 07:24:56 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.111 2006-03-10 07:27:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6188,9 +6188,6 @@ int GMT_radial_crossing (double lon1, double lat1, double lon2, double lat2, dou
 	clat[0] = lat1 + (lat2 - lat1) * eps;
 
 	GMT_geo_to_xy (clon[0], clat[0], &xx[0], &yy[0]);
-	
-	dist1 = GMT_great_circle_dist (project_info.central_meridian, project_info.pole, clon[0], clat[0]);
-	if (fabs (dist1-project_info.f_horizon) > GMT_CONV_LIMIT) fprintf (stderr, "Not good in GMT_radial_crossing (%g)\n", dist1);
 	
 	sides[0] = 1;
 
