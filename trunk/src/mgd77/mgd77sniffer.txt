@@ -269,7 +269,7 @@ E77 header information.
 .br
 \('## Errata: Header
 .br
-N-faa-E-01: Regression against grid gave scale 0.108643 which is statistically different from 1.0. Recommended scale: (0.100000)
+N-faa-E-01: Regression against grid gave scale 0.108643 which is statistically different from 1.0. Recommended scale: (10.0)
 .br
 N-faa-E-02: Regression against grid gave DC offset -1.319411 which is statistically different from 0.0
 .br
