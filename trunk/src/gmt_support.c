@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.223 2006-03-08 01:51:15 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.224 2006-03-10 00:18:42 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1208,6 +1208,9 @@ void GMT_read_cpt (char *cpt_file)
 			if (GMT_gray && !GMT_is_bw(GMT_lut[n].rgb_high[0])) GMT_b_and_w = FALSE;
 			for (i = 0; !GMT_continuous && i < 3; i++) if (GMT_lut[n].rgb_low[i] != GMT_lut[n].rgb_high[i]) GMT_continuous = TRUE;
 			for (i = 0; i < 3; i++) GMT_lut[n].rgb_diff[i] = GMT_lut[n].rgb_high[i] - GMT_lut[n].rgb_low[i];	/* Used in GMT_get_rgb24 */
+			GMT_rgb_to_hsv (GMT_lut[n].rgb_low, &GMT_lut[n].hsv_low[0], &GMT_lut[n].hsv_low[1], &GMT_lut[n].hsv_low[2]);
+			GMT_rgb_to_hsv (GMT_lut[n].rgb_high, &GMT_lut[n].hsv_high[0], &GMT_lut[n].hsv_high[1], &GMT_lut[n].hsv_high[2]);
+			for (i = 0; i < 3; i++) GMT_lut[n].hsv_diff[i] = GMT_lut[n].hsv_high[i] - GMT_lut[n].hsv_low[i];	/* Used in GMT_get_rgb24 */
 		}
 
 		n++;
@@ -1248,6 +1251,7 @@ void GMT_read_cpt (char *cpt_file)
 	for (id = 0; id < 3; id++) {
 		if (!GMT_is_gray (GMT_bfn[id].rgb[0], GMT_bfn[id].rgb[1],  GMT_bfn[id].rgb[2]))  GMT_gray = FALSE;
 		if (GMT_gray && !GMT_is_bw(GMT_bfn[id].rgb[0]))  GMT_b_and_w = FALSE;
+		GMT_rgb_to_hsv (GMT_bfn[id].rgb, &GMT_bfn[id].hsv[0], &GMT_bfn[id].hsv[1], &GMT_bfn[id].hsv[2]);
 	}
 	if (!GMT_gray) GMT_b_and_w = FALSE;
 	gmtdefs.color_model = color_model;	/* Reset to what it was before */
@@ -1510,10 +1514,16 @@ int GMT_get_rgb24 (double value, int *rgb)
 		memcpy ((void *)rgb, (void *)gmtdefs.page_rgb, 3 * sizeof (int));
 		GMT_cpt_skip = TRUE;
 	}
-	else {
+	else {	/* Do linear interpolation between low and high colors */
 		rel = (value - GMT_lut[index].z_low) * GMT_lut[index].i_dz;
-		for (i = 0; i < 3; i++)
-			rgb[i] = GMT_lut[index].rgb_low[i] + irint (rel * GMT_lut[index].rgb_diff[i]);
+		if (TRUE) {	/* Interpolation in RGB space */
+			for (i = 0; i < 3; i++) rgb[i] = GMT_lut[index].rgb_low[i] + irint (rel * GMT_lut[index].rgb_diff[i]);
+		}
+		else {		/* Interpolation in HSV space */
+			double hsv[3];
+			for (i = 0; i < 3; i++) hsv[i] = GMT_lut[index].hsv_low[i] + rel * GMT_lut[index].hsv_diff[i];
+			GMT_hsv_to_rgb (rgb, hsv[0], hsv[0], hsv[0]);
+		}
 		GMT_cpt_skip = FALSE;
 	}
 	return (index);
