@@ -201,9 +201,12 @@ options:
 .br
 .TP
 .B COLOR_MODEL
-Selects if color palette files contain rgb values (r,g,b in 0-255 range) or HSV values
-(h in 0-360, s,v in 0-1 range).  A \fBCOLOR_MODEL\fP setting in the color palette file
-will override this setting.  [rgb].
+Selects if color palette files contain RGB values (r,g,b in 0-255 range), HSV values
+(h in 0-360, s,v in 0-1 range), or CMYK values (c,m,y,k in 0-100% range).  A \fBCOLOR_MODEL\fP setting in the color palette file
+will override this setting.  Internally, color interpolation takes place directly
+on the rgb values which can give unexpected hues, whereas interpolation directly on the
+hsv values better preserves the hues.  Prepend the prefix "+" to force interpolation in
+the selected color system (does not apply to the CMYK system)  [rgb].
 .TP
 .B COLOR_NAN
 Color used for the non-defined areas of images (i.e., where z == NaN).

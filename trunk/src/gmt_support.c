@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.225 2006-03-10 21:45:21 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.226 2006-03-10 23:33:19 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -131,6 +131,8 @@ int GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LINES *
 #if 0
 void GMT_near_zero_roundoff_fixer_upper (double *ww, int axis);
 #endif
+int GMT_gethsv (char *line, double hsv[]);
+void GMT_cmyk_to_hsv (double hsv[], double cmyk[]);
 
 double *GMT_x2sys_Y;
 
@@ -251,7 +253,7 @@ int GMT_getrgb (char *line, int rgb[])
 	}
 
 	if (count == 2) {	/* r/g/b */
-		if (gmtdefs.color_model == GMT_RGB) {	/* r/g/b */
+		if (gmtdefs.color_model & GMT_READ_RGB) {	/* r/g/b */
 			n = sscanf (line, "%d/%d/%d", &rgb[0], &rgb[1], &rgb[2]);
 			if (n != 3 || GMT_check_rgb (rgb)) return (TRUE);
 		}
@@ -284,6 +286,65 @@ int GMT_getrgb (char *line, int rgb[])
 				exit (EXIT_FAILURE);
 			}
 			for (i = 0; i < 3; i++) rgb[i] = GMT_color_rgb[n][i];
+		}
+		return (FALSE);
+	}
+
+	/* Get here if there is a problem */
+
+	return (TRUE);
+}
+
+int GMT_gethsv (char *line, double hsv[])
+{
+	int n, i, count, hyp, rgb[3];
+
+	if (!line[0]) return (FALSE);	/* Nothing to do - accept default action */
+
+	count = GMT_char_count (line, '/');
+	hyp   = GMT_char_count (line, '-');
+
+	if (count == 3) {	/* c/m/y/k */
+		double cmyk[4];
+		n = sscanf (line, "%lf/%lf/%lf/%lf", &cmyk[0], &cmyk[1], &cmyk[2], &cmyk[3]);
+		if (n != 4 || GMT_check_cmyk (cmyk)) return (TRUE);
+		GMT_cmyk_to_hsv (hsv, cmyk);
+		return (FALSE);
+	}
+
+	if (count == 2) {	/* r/g/b */
+		if (gmtdefs.color_model & GMT_READ_RGB) {	/* r/g/b */
+			n = sscanf (line, "%d/%d/%d", &rgb[0], &rgb[1], &rgb[2]);
+			if (n != 3 || GMT_check_rgb (rgb)) return (TRUE);
+			GMT_rgb_to_hsv (rgb, &hsv[0], &hsv[1], &hsv[2]);
+		}
+		else {					/* h/s/v */
+			n = sscanf (line, "%lf/%lf/%lf", &hsv[0], &hsv[1], &hsv[2]);
+			if (n != 3 || GMT_check_hsv (hsv[0], hsv[1], hsv[2])) return (TRUE);
+		}
+		return (FALSE);
+	}
+
+	if (hyp == 2) {	/* h-s-v */
+		n = sscanf (line, "%lf-%lf-%lf", &hsv[0], &hsv[1], &hsv[2]);
+		if (n != 3 || GMT_check_hsv (hsv[0], hsv[1], hsv[2])) return (TRUE);
+		return (FALSE);
+	}
+
+	if (count == 0) {				/* gray or colorname */
+		if (isdigit((int)line[0])) {
+			n = sscanf (line, "%d", &rgb[0]);
+			rgb[1] = rgb[2] = rgb[0];
+			if (n != 1 || GMT_check_rgb (rgb)) return (TRUE);
+			GMT_rgb_to_hsv (rgb, &hsv[0], &hsv[1], &hsv[2]);
+		}
+		else {
+			if ((n = GMT_name2rgb (line)) < 0) {
+				fprintf (stderr, "%s: Colorname %s not recognized!\n", GMT_program, line);
+				exit (EXIT_FAILURE);
+			}
+			for (i = 0; i < 3; i++) rgb[i] = GMT_color_rgb[n][i];
+			GMT_rgb_to_hsv (rgb, &hsv[0], &hsv[1], &hsv[2]);
 		}
 		return (FALSE);
 	}
@@ -1050,12 +1111,18 @@ void GMT_read_cpt (char *cpt_file)
 	while (!error && fgets (line, BUFSIZ, fp)) {
 
 		if (strstr (line, "COLOR_MODEL")) {	/* cpt file overrides default color model */
-			if (strstr (line, "RGB") || strstr (line, "rgb"))
+			if (strstr (line, "+RGB") || strstr (line, "+rgb"))
 				gmtdefs.color_model = GMT_RGB;
-			else if (strstr (line, "HSV") || strstr (line, "hsv"))
+			else if (strstr (line, "RGB") || strstr (line, "rgb"))
+				gmtdefs.color_model = GMT_READ_RGB;
+			else if (strstr (line, "+HSV") || strstr (line, "+hsv"))
 				gmtdefs.color_model = GMT_HSV;
-			else if (strstr (line, "CMYK") || strstr (line, "cmyk"))
+			else if (strstr (line, "HSV") || strstr (line, "hsv"))
+				gmtdefs.color_model = GMT_READ_HSV;
+			else if (strstr (line, "+CMYK") || strstr (line, "+cmyk"))
 				gmtdefs.color_model = GMT_CMYK;
+			else if (strstr (line, "CMYK") || strstr (line, "cmyk"))
+				gmtdefs.color_model = GMT_READ_CMYK;
 			else {
 				fprintf (stderr, "%s: GMT Fatal Error: unrecognized COLOR_MODEL in color palette table %s\n", GMT_program, cpt_file);
 				exit (EXIT_FAILURE);
@@ -1098,7 +1165,7 @@ void GMT_read_cpt (char *cpt_file)
 					sprintf (option, "%s", T1);
 					if (GMT_getrgb (option, GMT_bfn[id].rgb)) error++;
 				}
-				else if (gmtdefs.color_model == GMT_CMYK) {
+				else if (gmtdefs.color_model & GMT_READ_CMYK) {
 					sprintf (option, "%s/%s/%s/%s", T1, T2, T3, T4);
 					if (GMT_getrgb (option, GMT_bfn[id].rgb)) error++;
 				}
@@ -1147,8 +1214,8 @@ void GMT_read_cpt (char *cpt_file)
 		nread = sscanf (line, "%s %s %s %s %s %s %s %s %s %s", T0, T1, T2, T3, T4, T5, T6, T7, T8, T9);	/* Hope to read 4, 8, or 10 fields */
 
 		if (nread <= 0) continue;								/* Probably a line with spaces - skip */
-		if (gmtdefs.color_model == GMT_CMYK && nread != 10) error = TRUE;			/* CMYK should results in 10 fields */
-		if (gmtdefs.color_model != GMT_CMYK && !(nread == 4 || nread == 8)) error = TRUE;	/* HSV or RGB should result in 8 fields, gray, patterns, or skips in 4 */
+		if (gmtdefs.color_model & GMT_READ_CMYK && nread != 10) error = TRUE;			/* CMYK should results in 10 fields */
+		if (!(gmtdefs.color_model & GMT_READ_CMYK) && !(nread == 4 || nread == 8)) error = TRUE;	/* HSV or RGB should result in 8 fields, gray, patterns, or skips in 4 */
 
 		GMT_scanf_arg (T0, GMT_IS_UNKNOWN, &GMT_lut[n].z_low);
 		GMT_lut[n].skip = FALSE;
@@ -1180,14 +1247,23 @@ void GMT_read_cpt (char *cpt_file)
 				if (GMT_getrgb (T1, GMT_lut[n].rgb_low)) error++;
 				if (GMT_getrgb (T3, GMT_lut[n].rgb_high)) error++;
 			}
-			else if (gmtdefs.color_model == GMT_CMYK) {
+			else if (gmtdefs.color_model & GMT_READ_CMYK) {
 				GMT_scanf_arg (T5, GMT_IS_UNKNOWN, &GMT_lut[n].z_high);
 				sprintf (option, "%s/%s/%s/%s", T1, T2, T3, T4);
 				if (GMT_getrgb (option, GMT_lut[n].rgb_low)) error++;
 				sprintf (option, "%s/%s/%s/%s", T6, T7, T8, T9);
 				if (GMT_getrgb (option, GMT_lut[n].rgb_high)) error++;
 			}
-			else {			/* RGB or HSV */
+			else if (gmtdefs.color_model & GMT_READ_HSV) {
+				GMT_scanf_arg (T4, GMT_IS_UNKNOWN, &GMT_lut[n].z_high);
+				sprintf (option, "%s/%s/%s", T1, T2, T3);
+				if (GMT_gethsv (option, GMT_lut[n].hsv_low)) error++;
+				sprintf (option, "%s/%s/%s", T5, T6, T7);
+				if (GMT_gethsv (option, GMT_lut[n].hsv_high)) error++;
+				GMT_hsv_to_rgb (GMT_lut[n].rgb_low,  GMT_lut[n].hsv_low[0],  GMT_lut[n].hsv_low[1],  GMT_lut[n].hsv_low[2]);
+				GMT_hsv_to_rgb (GMT_lut[n].rgb_high, GMT_lut[n].hsv_high[0], GMT_lut[n].hsv_high[1], GMT_lut[n].hsv_high[2]);
+			}
+			else {			/* RGB */
 				GMT_scanf_arg (T4, GMT_IS_UNKNOWN, &GMT_lut[n].z_high);
 				sprintf (option, "%s/%s/%s", T1, T2, T3);
 				if (GMT_getrgb (option, GMT_lut[n].rgb_low)) error++;
@@ -1208,8 +1284,10 @@ void GMT_read_cpt (char *cpt_file)
 			if (GMT_gray && !GMT_is_bw(GMT_lut[n].rgb_high[0])) GMT_b_and_w = FALSE;
 			for (i = 0; !GMT_continuous && i < 3; i++) if (GMT_lut[n].rgb_low[i] != GMT_lut[n].rgb_high[i]) GMT_continuous = TRUE;
 			for (i = 0; i < 3; i++) GMT_lut[n].rgb_diff[i] = GMT_lut[n].rgb_high[i] - GMT_lut[n].rgb_low[i];	/* Used in GMT_get_rgb24 */
-			GMT_rgb_to_hsv (GMT_lut[n].rgb_low, &GMT_lut[n].hsv_low[0], &GMT_lut[n].hsv_low[1], &GMT_lut[n].hsv_low[2]);
-			GMT_rgb_to_hsv (GMT_lut[n].rgb_high, &GMT_lut[n].hsv_high[0], &GMT_lut[n].hsv_high[1], &GMT_lut[n].hsv_high[2]);
+			if (! (gmtdefs.color_model & GMT_READ_HSV)) {
+				GMT_rgb_to_hsv (GMT_lut[n].rgb_low, &GMT_lut[n].hsv_low[0], &GMT_lut[n].hsv_low[1], &GMT_lut[n].hsv_low[2]);
+				GMT_rgb_to_hsv (GMT_lut[n].rgb_high, &GMT_lut[n].hsv_high[0], &GMT_lut[n].hsv_high[1], &GMT_lut[n].hsv_high[2]);
+			}
 			for (i = 0; i < 3; i++) GMT_lut[n].hsv_diff[i] = GMT_lut[n].hsv_high[i] - GMT_lut[n].hsv_low[i];	/* Used in GMT_get_rgb24 */
 		}
 
@@ -1254,7 +1332,7 @@ void GMT_read_cpt (char *cpt_file)
 		GMT_rgb_to_hsv (GMT_bfn[id].rgb, &GMT_bfn[id].hsv[0], &GMT_bfn[id].hsv[1], &GMT_bfn[id].hsv[2]);
 	}
 	if (!GMT_gray) GMT_b_and_w = FALSE;
-	gmtdefs.color_model = color_model;	/* Reset to what it was before */
+	if (!(gmtdefs.color_model & (GMT_USE_RGB | GMT_USE_HSV | GMT_USE_CMYK))) gmtdefs.color_model = color_model;	/* Reset to what it was before */
 }
 
 void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, int log_mode, int cpt_flag)
@@ -1328,19 +1406,25 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 
 	/* Start writing cpt file info to stdout */
 
-	if (gmtdefs.color_model == GMT_HSV)
+	if (gmtdefs.color_model & GMT_USE_HSV)
+		fprintf (GMT_stdout, "#COLOR_MODEL = +HSV\n");
+	else if (gmtdefs.color_model & GMT_READ_HSV)
 		fprintf (GMT_stdout, "#COLOR_MODEL = HSV\n");
-	else if (gmtdefs.color_model == GMT_CMYK)
+	else if (gmtdefs.color_model & GMT_USE_CMYK)
+		fprintf (GMT_stdout, "#COLOR_MODEL = +CMYK\n");
+	else if (gmtdefs.color_model & GMT_READ_CMYK)
 		fprintf (GMT_stdout, "#COLOR_MODEL = CMYK\n");
+	else if (gmtdefs.color_model == GMT_USE_RGB)
+		fprintf (GMT_stdout, "#COLOR_MODEL = +RGB\n");
 	else
 		fprintf (GMT_stdout, "#COLOR_MODEL = RGB\n");
 
 	fprintf (GMT_stdout, "#\n");
 
-	if (gmtdefs.color_model == GMT_HSV) {
+	if (gmtdefs.color_model & GMT_READ_HSV) {
 		sprintf(format, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
 	}
-	else if (gmtdefs.color_model == GMT_CMYK) {
+	else if (gmtdefs.color_model & GMT_READ_CMYK) {
 		sprintf(format, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
 	}
 	else {
@@ -1384,12 +1468,12 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 		if (upper == (nz-1)) memcpy ((void *)rgb_fore, (void *)rgb_high, (size_t)(3 * sizeof (int)));
 
 			
-		if (gmtdefs.color_model == GMT_HSV) {
+		if (gmtdefs.color_model & GMT_READ_HSV) {
 			GMT_rgb_to_hsv(rgb_low, &h1, &s1, &v1);
 			GMT_rgb_to_hsv(rgb_high, &h2, &s2, &v2);
 			fprintf (GMT_stdout, format, z_out[lower], h1, s1, v1, z_out[upper], h2, s2, v2);
 		}
-		else if (gmtdefs.color_model == GMT_CMYK) {
+		else if (gmtdefs.color_model & GMT_READ_CMYK) {
 			GMT_rgb_to_cmyk (rgb_low, cmyk_low);
 			GMT_rgb_to_cmyk (rgb_high, cmyk_high);
 			fprintf (GMT_stdout, format, z_out[lower], cmyk_low[0], cmyk_low[1], cmyk_low[2], cmyk_low[3],
@@ -1417,7 +1501,7 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 		memcpy ((void *)GMT_bfn[GMT_FGD].rgb, (void *)rgb_low, (size_t)(3 * sizeof (int)));
 	}
 
-	if (gmtdefs.color_model == GMT_HSV) {
+	if (gmtdefs.color_model & GMT_READ_HSV) {
 		sprintf(format, "%%c\t%s\t%s\t%s\n", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
 		for (k = 0; k < 3; k++) {
 			if (GMT_bfn[k].skip)
@@ -1428,7 +1512,7 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 			}
 		}
 	}
-	else if (gmtdefs.color_model == GMT_CMYK) {
+	else if (gmtdefs.color_model & GMT_READ_CMYK) {
 		sprintf(format, "%%c\t%s\t%s\t%s\t%s\n", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
 		for (k = 0; k < 3; k++) {
 			if (GMT_bfn[k].skip)
@@ -1516,13 +1600,13 @@ int GMT_get_rgb24 (double value, int *rgb)
 	}
 	else {	/* Do linear interpolation between low and high colors */
 		rel = (value - GMT_lut[index].z_low) * GMT_lut[index].i_dz;
-		if (TRUE) {	/* Interpolation in RGB space */
-			for (i = 0; i < 3; i++) rgb[i] = GMT_lut[index].rgb_low[i] + irint (rel * GMT_lut[index].rgb_diff[i]);
-		}
-		else {		/* Interpolation in HSV space */
+		if (gmtdefs.color_model & GMT_USE_HSV) {	/* Interpolation in HSV space */
 			double hsv[3];
 			for (i = 0; i < 3; i++) hsv[i] = GMT_lut[index].hsv_low[i] + rel * GMT_lut[index].hsv_diff[i];
-			GMT_hsv_to_rgb (rgb, hsv[0], hsv[0], hsv[0]);
+			GMT_hsv_to_rgb (rgb, hsv[0], hsv[1], hsv[2]);
+		}
+		else {	/* Interpolation in RGB space */
+			for (i = 0; i < 3; i++) rgb[i] = GMT_lut[index].rgb_low[i] + irint (rel * GMT_lut[index].rgb_diff[i]);
 		}
 		GMT_cpt_skip = FALSE;
 	}
@@ -1629,6 +1713,18 @@ void GMT_cmyk_to_rgb (int rgb[], double cmyk[])
 	/* CMYK is in 0-100, RGB will be in 0-255 range */
 
 	for (i = 0; i < 3; i++) rgb[i] = (int) floor ((100.0 - cmyk[i] - cmyk[3]) * 2.55999);
+}
+
+void GMT_cmyk_to_hsv (double hsv[], double cmyk[])
+{
+	/* Plain conversion; no undercolor removal or blackgeneration */
+
+	int i, rgb[3];
+
+	/* CMYK is in 0-100, RGB will be in 0-255 range */
+
+	for (i = 0; i < 3; i++) rgb[i] = (int) floor ((100.0 - cmyk[i] - cmyk[3]) * 2.55999);
+	GMT_rgb_to_hsv (rgb, &hsv[0], &hsv[1], &hsv[2]);
 }
 
 void GMT_illuminate (double intensity, int rgb[])

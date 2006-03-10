@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.112 2006-03-10 12:06:05 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.113 2006-03-10 23:33:19 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -238,25 +238,25 @@ void GMT_linearxy(double x, double y, double *x_i, double *y_i);	/*	Convert x/y 
 void GMT_ilinearxy(double *x, double *y, double x_i, double y_i);	/*	Convert inverse x/y as linear, log10, or power	*/
 void GMT_polar(double x, double y, double *x_i, double *y_i);		/*	Convert x/y (being theta,r) to x,y	*/
 void GMT_ipolar(double *x, double *y, double x_i, double y_i);		/*	Convert (theta,r) to x,y	*/
-void GMT_translin(double forw, double *inv);		/*	Forward linear	*/
-void GMT_translind(double forw, double *inv);	/*	Forward linear, but using 0-360 degrees	*/
-void GMT_itranslin(double *forw, double inv);	/*	Inverse linear	*/
-void GMT_itranslind(double *forw, double inv);	/*	Inverse linear, but using 0-360 degrees	*/
-void GMT_translog10(double forw, double *inv);	/*	Forward log10	*/
-void GMT_itranslog10(double *forw, double inv);	/*	Inverse log10	*/
-void GMT_transpowx(double x, double *x_in);	/*	Forward pow x	*/
-void GMT_itranspowx(double *x, double x_in);	/*	Inverse pow x	*/
-void GMT_transpowy(double y, double *y_in);	/*	Forward pow y 	*/
-void GMT_itranspowy(double *y, double y_in);	/*	Inverse pow y 	*/
-void GMT_transpowz(double z, double *z_in);	/*	Forward pow z 	*/
-void GMT_itranspowz(double *z, double z_in);	/*	Inverse pow z 	*/
+void GMT_translin(double forw, double *inv);				/*	Forward linear	*/
+void GMT_translind(double forw, double *inv);				/*	Forward linear, but using 0-360 degrees	*/
+void GMT_itranslin(double *forw, double inv);				/*	Inverse linear	*/
+void GMT_itranslind(double *forw, double inv);				/*	Inverse linear, but using 0-360 degrees	*/
+void GMT_translog10(double forw, double *inv);				/*	Forward log10	*/
+void GMT_itranslog10(double *forw, double inv);				/*	Inverse log10	*/
+void GMT_transpowx(double x, double *x_in);				/*	Forward pow x	*/
+void GMT_itranspowx(double *x, double x_in);				/*	Inverse pow x	*/
+void GMT_transpowy(double y, double *y_in);				/*	Forward pow y 	*/
+void GMT_itranspowy(double *y, double y_in);				/*	Inverse pow y 	*/
+void GMT_transpowz(double z, double *z_in);				/*	Forward pow z 	*/
+void GMT_itranspowz(double *z, double z_in);				/*	Inverse pow z 	*/
 void GMT_albers(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Albers)	*/
 void GMT_ialbers(double *lon, double *lat, double x, double y);		/*	Convert x/y (Albers) to lon/lat	*/
 void GMT_econic(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Equidistant Conic)	*/
 void GMT_ieconic(double *lon, double *lat, double x, double y);		/*	Convert x/y (Equidistant Conic) to lon/lat	*/
 void GMT_albers_sph(double lon, double lat, double *x, double *y);	/*	Convert lon/lat to x/y (Albers Spherical)	*/
 void GMT_ialbers_sph(double *lon, double *lat, double x, double y);	/*	Convert x/y (Albers Spherical) to lon/lat	*/
-void GMT_azeqdist(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Azimuthal equal-distance)	*/
+void GMT_azeqdist(double lon, double lat, double *x, double *y);	/*	Convert lon/lat to x/y (Azimuthal equal-distance)	*/
 void GMT_iazeqdist(double *lon, double *lat, double x, double y);	/*	Convert x/y (Azimuthal equal-distance) to lon/lat	*/
 void GMT_cassini(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Cassini)	*/
 void GMT_icassini(double *lon, double *lat, double x, double y);	/*	Convert x/y (Cassini) to lon/lat	*/
@@ -291,15 +291,15 @@ void GMT_itm_sph(double *lon, double *lat, double x, double y);		/*	Convert x/y 
 void GMT_utm(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (UTM)	*/
 void GMT_iutm(double *lon, double *lat, double x, double y);		/*	Convert x/y (UTM) to lon/lat 	*/
 void GMT_utm_sph(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (UTM Spherical)	*/
-void GMT_iutm_sph(double *lon, double *lat, double x, double y);		/*	Convert x/y (UTM Spherical) to lon/lat 	*/
+void GMT_iutm_sph(double *lon, double *lat, double x, double y);	/*	Convert x/y (UTM Spherical) to lon/lat 	*/
 void GMT_winkel(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Winkel)	*/
 void GMT_iwinkel(double *lon, double *lat, double x, double y);		/*	Convert x/y (Winkel) to lon/lat	*/
 void GMT_iwinkel_sub (double y, double *phi);				/*	Used by GMT_iwinkel */
 void GMT_eckert4(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Eckert IV)	*/
-void GMT_ieckert4(double *lon, double *lat, double x, double y);		/*	Convert x/y (Eckert IV) to lon/lat	*/
+void GMT_ieckert4(double *lon, double *lat, double x, double y);	/*	Convert x/y (Eckert IV) to lon/lat	*/
 void GMT_eckert6(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Eckert VI)	*/
-void GMT_ieckert6(double *lon, double *lat, double x, double y);		/*	Convert x/y (Eckert VI) to lon/lat	*/
-void GMT_robinson(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Robinson)	*/
+void GMT_ieckert6(double *lon, double *lat, double x, double y);	/*	Convert x/y (Eckert VI) to lon/lat	*/
+void GMT_robinson(double lon, double lat, double *x, double *y);	/*	Convert lon/lat to x/y (Robinson)	*/
 void GMT_irobinson(double *lon, double *lat, double x, double y);	/*	Convert x/y (Robinson) to lon/lat	*/
 void GMT_stereo1(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Stereographic)	*/
 void GMT_stereo2(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Stereographic, equatorial view)	*/
