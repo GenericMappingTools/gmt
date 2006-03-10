@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.212 2006-03-08 01:01:54 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.213 2006-03-10 12:06:05 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4779,7 +4779,7 @@ int	GMT_scanf_epoch (char *s, double *t0) {
 	*/
 
 	double	ss = 0.0;
-	int i, j, vals[3], hh = 0, mm = 0;
+	int i, vals[3], hh = 0, mm = 0;
 	GMT_cal_rd rd;
 
 	i = 0;
