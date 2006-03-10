@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_colors.h,v 1.17 2006-03-10 00:18:42 pwessel Exp $
+ *	$Id: gmt_colors.h,v 1.18 2006-03-10 23:33:19 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -29,9 +29,15 @@
 #ifndef _GMT_COLORS_H
 #define _GMT_COLORS_H
 
-#define GMT_RGB 0
-#define GMT_HSV 1
-#define GMT_CMYK 2
+#define GMT_READ_RGB	1
+#define GMT_USE_RGB	2
+#define GMT_RGB 	3
+#define GMT_READ_HSV	4
+#define GMT_USE_HSV	8
+#define GMT_HSV		12
+#define GMT_READ_CMYK	16
+#define GMT_USE_CMYK	32
+#define GMT_CMYK	48
 
 #define GMT_BGD 0
 #define GMT_FGD 1

@@ -10,7 +10,7 @@
 	{255, 255, 255},	/* COLOR_FOREGROUND */
 	{128, 128, 128},	/* COLOR_NAN */
 	0,			/* COLOR_IMAGE */
-	0,			/* COLOR_MODEL */
+	3,			/* COLOR_MODEL */
 	"%lg",			/* D_FORMAT */
 	0,			/* DEGREE_FORMAT */
 	300,			/* DOTS_PR_INCH */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.213 2006-03-10 12:06:05 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.214 2006-03-10 23:33:19 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1480,12 +1480,18 @@ int GMT_setparameter (char *keyword, char *value)
 				error = TRUE;
 			break;
 		case GMTCASE_COLOR_MODEL:
-			if (!strcmp (lower_value, "hsv"))
+			if (!strcmp (lower_value, "+hsv"))
 				gmtdefs.color_model = GMT_HSV;
-			else if (!strcmp (lower_value, "rgb"))
+			else if (!strcmp (lower_value, "hsv"))
+				gmtdefs.color_model = GMT_READ_HSV;
+			else if (!strcmp (lower_value, "+rgb"))
 				gmtdefs.color_model = GMT_RGB;
-			else if (!strcmp (lower_value, "cmyk"))
+			else if (!strcmp (lower_value, "rgb"))
+				gmtdefs.color_model = GMT_READ_RGB;
+			else if (!strcmp (lower_value, "+cmyk"))
 				gmtdefs.color_model = GMT_CMYK;
+			else if (!strcmp (lower_value, "cmyk"))
+				gmtdefs.color_model = GMT_READ_CMYK;
 			else
 				error = TRUE;
 			break;
@@ -2177,10 +2183,16 @@ int GMT_savedefaults (char *file)
 		fprintf (fp, "adobe\n");
 	else if (gmtdefs.color_image == 1)
 		fprintf (fp, "tiles\n");
-	if (gmtdefs.color_model == GMT_HSV)
+	if (gmtdefs.color_model & GMT_USE_HSV)
+		fprintf (fp, "COLOR_MODEL		= +hsv\n");
+	else if (gmtdefs.color_model & GMT_READ_HSV)
 		fprintf (fp, "COLOR_MODEL		= hsv\n");
-	else if (gmtdefs.color_model == GMT_CMYK)
+	else if (gmtdefs.color_model & GMT_USE_CMYK)
+		fprintf (fp, "COLOR_MODEL		= +cmyk\n");
+	else if (gmtdefs.color_model & GMT_READ_CMYK)
 		fprintf (fp, "COLOR_MODEL		= cmyk\n");
+	else if (gmtdefs.color_model & GMT_USE_RGB)
+		fprintf (fp, "COLOR_MODEL		= +rgb\n");
 	else
 		fprintf (fp, "COLOR_MODEL		= rgb\n");
 	fprintf (fp, "HSV_MIN_SATURATION	= %g\n", gmtdefs.hsv_min_saturation);
