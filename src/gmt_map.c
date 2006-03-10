@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.109 2006-02-28 06:39:39 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.110 2006-03-10 07:24:56 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5588,7 +5588,7 @@ int GMT_truncate_x (double *x, double *y, int n, int start, int l_or_r)
 			if (j >= GMT_n_alloc) GMT_get_plot_array ();
 		}
 		if (l_or_r == -1) /* Left */
-			GMT_x_plot[j] = (x[i] > GMT_half_map_size) ? (*x_on_border) (y[i]) : x[i];
+			GMT_x_plot[j] = (x[i] >= GMT_half_map_size) ? (*x_on_border) (y[i]) : x[i];
 		else	/* Right */
 			GMT_x_plot[j] = (x[i] < GMT_half_map_size) ? (*x_on_border) (y[i]) : x[i];
 		GMT_y_plot[j] = y[i];
@@ -5632,7 +5632,7 @@ int GMT_truncate_tm (double *x, double *y, int n, int start, int b_or_t)
 			if (j >= GMT_n_alloc) GMT_get_plot_array ();
 		}
 		if (b_or_t == -1) /* Bottom */
-			GMT_y_plot[j] = (y[i] > GMT_half_map_height) ? 0.0 : y[i];
+			GMT_y_plot[j] = (y[i] >= GMT_half_map_height) ? 0.0 : y[i];
 		else	/* Top */
 			GMT_y_plot[j] = (y[i] < GMT_half_map_height) ? GMT_map_height : y[i];
 		GMT_x_plot[j] = x[i];
@@ -6188,6 +6188,10 @@ int GMT_radial_crossing (double lon1, double lat1, double lon2, double lat2, dou
 	clat[0] = lat1 + (lat2 - lat1) * eps;
 
 	GMT_geo_to_xy (clon[0], clat[0], &xx[0], &yy[0]);
+	
+	dist1 = GMT_great_circle_dist (project_info.central_meridian, project_info.pole, clon[0], clat[0]);
+	if (fabs (dist1-project_info.f_horizon) > GMT_CONV_LIMIT) fprintf (stderr, "Not good in GMT_radial_crossing (%g)\n", dist1);
+	
 	sides[0] = 1;
 
 	return (1);
@@ -6880,7 +6884,7 @@ double GMT_y_to_corner (double y) {
 int GMT_radial_clip (double *lon, double *lat, int np, double **x, double **y, int *total_nx)
 {
 	int n = 0, this, i, sides[4], n_alloc = GMT_CHUNK;
-	double xlon[4], xlat[4], xc[4], yc[4], xr, yr, r, scale, x0, y0, *xx, *yy;
+	double xlon[4], xlat[4], xc[4], yc[4], xr, yr, r, scale, *xx, *yy;
 
 	*total_nx = 0;	/* Keep track of total of crossings */
 
@@ -6907,14 +6911,13 @@ int GMT_radial_clip (double *lon, double *lat, int np, double **x, double **y, i
 			}
 		}
 		GMT_geo_to_xy (lon[i], lat[i], &xr, &yr);
-		if (this) {	/* Project point onto perimeter */
-			GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &x0, &y0);
-			xr -= x0;	yr -= y0;
+		if (this) {	/* Project point radially onto perimeter */
+			xr -= project_info.r;	yr -= project_info.r;
 			r = hypot (xr, yr);
 			scale = project_info.r / r;
 			xr *= scale;
 			yr *= scale;
-			xr += x0;	yr += y0;
+			xr += project_info.r;	yr += project_info.r;
 		}
 		xx[n] = xr;	yy[n] = yr;
 		n++;
