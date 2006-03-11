@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.42 2006-03-08 01:01:54 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.43 2006-03-11 07:25:41 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -58,11 +58,17 @@ GMT_dtime GMT_rdc2dt (GMT_cal_rd rd, double secs) {
 }
 
 int	splitinteger(double value, int epsilon, double *doublepart) {
-/*	split value into integer and and floating part for date usage. */
+	/* Split value into integer and and floating part for date usage.
+	   While the integer can be negative, doublpart is always >= 0
+	*/
 	int i;
 
 	i = (int) (value/(double)epsilon);
 	*doublepart = value - ((double) i)*((double)epsilon);
+	if ((*doublepart) < 0.0) {	/* For negative relative time we must shift i by -1 */
+		i--;
+		(*doublepart) += (double)epsilon;
+	}
 	return i;
 }
 
