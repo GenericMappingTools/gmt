@@ -527,7 +527,8 @@ the coordinate.  The default is +ddd:mm:ss.  Not all items may be plotted as thi
 interval.
 .TP
 .B PS_COLOR
-Determines whether PostScript output should use RGB or CMYK when specifying color.  Select from rgb or cmyk [rgb].
+Determines whether PostScript output should use RGB, HSV, or CMYK when specifying color [RGB].
+Note if HSV is selected it does not apply to images which in that case uses RGB.
 .TP
 .B PS_IMAGE_COMPRESS
 Determines if PostScript images are compressed using the Run-Length Encoding scheme (rle),

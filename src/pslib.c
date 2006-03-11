@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.115 2006-03-06 05:46:07 pwessel Exp $
+ *	$Id: pslib.c,v 1.116 2006-03-11 04:19:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -201,6 +201,7 @@ int ps_imagefill_init(int image_no, char *imagefile);
 void ps_rgb_to_cmyk_char (unsigned char rgb[], unsigned char cmyk[]);
 void ps_rgb_to_cmyk_int (int rgb[], int cmyk[]);
 void ps_rgb_to_cmyk (int rgb[], double cmyk[]);
+void ps_rgb_to_hsv (int rgb[], double hsv[]);
 void ps_cmyk_to_rgb (int rgb[], double cmyk[]);
 int ps_place_color (int rgb[]);
 void ps_place_setdash (char *pattern, int offset);
@@ -453,7 +454,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 
 	lx = irint (xsize * ps.scale);
 	ly = irint (ysize * ps.scale);
-	id = (ps.cmyk_mode && abs(nbits) == 24) ? 2 : ((abs(nbits) == 24) ? 1 : 0);
+	id = ((ps.color_mode & PSL_CMYK) && abs(nbits) == 24) ? 2 : ((abs(nbits) == 24) ? 1 : 0);
 	it = (nx < 0 && abs(nbits) == 24) ? 1 : (nbits < 0 ? 2 : 0); 	/* Colormask or interpolate */
 
 	if ((image = ps_makecolormap (buffer, nx, ny, nbits))) {
@@ -803,7 +804,7 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 	nx = ps_pattern[image_no].nx;
 	ny = ps_pattern[image_no].ny;
 
-	id = (ps.cmyk_mode) ? 2 : 1;
+	id = (ps.color_mode & PSL_CMYK) ? 2 : 1;
 	name = (ps_pattern[image_no].depth == 1 && (f_rgb[0] < 0 || b_rgb[0] < 0)) ? "imagemask" : "image";
 
 	if (ps.comments) fprintf (ps.fp, "\n%% Start of %s fill pattern\n", name);
@@ -1243,7 +1244,8 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		     bit 1 : 0 = be silent, 1 = be verbose
 		     bit 2 : 0 = bin image, 1 = hex image
 		     bit 3 : 0 = rel positions, 1 = abs positions
-		     bit 9 : 0 = RGB image, 1 = CMYK image
+		     bit 9 : 0 = RGB color, 1 = CMYK color
+		    bit 10 : 1 = HSV color
 		bits 12-13 : 0 = no compression, 1 = RLE compression, 2 = LZW compression
 		bits 14-15 : (0,1,2) sets the line cap setting
 		bits 16-17 : (0,1,2) sets the line miter setting
@@ -1276,7 +1278,8 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps.eps_format = FALSE;
 	ps.verbose = (mode & 2) ? TRUE : FALSE;
 	ps.hex_image = (mode & 4) ? TRUE : FALSE;
-	ps.cmyk_mode = (mode & 512) ? TRUE : FALSE;
+	/* ps.cmyk_mode = (mode & 512) ? TRUE : FALSE; */
+	ps.color_mode = (mode >> 9) & 3;
 	ps.compress = (mode >> 12) & 3;
 	ps.absolute = (mode & 8) ? TRUE : FALSE;
 	ps.line_cap = (mode >> 14) & 3;
@@ -1332,7 +1335,8 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps.yscl = yscl;
 	ps.yoff = yoff;
 	strcpy (ps.bw_format, "%.3lg ");			/* Default format used for grayshade value */
-	strcpy (ps.rgb_format, "%.3lg %.3lg %.3lg ");		/* Same, for color triplets */
+	strcpy (ps.rgb_format, "%.3lg %.3lg %.3lg ");		/* Same, for RGB triplets */
+	strcpy (ps.hsv_format, "%.3lg %.3lg %.3lg ");		/* Same, for HSV triplets */
 	strcpy (ps.cmyk_format, "%.3lg %.3lg %.3lg %.3lg ");	/* Same, for CMYK quadruples */
 
 	/* In case this is the last overlay, set the Bounding box coordinates to be used atend */
@@ -1552,9 +1556,9 @@ void ps_polygon (double *x, double *y, int n, int rgb[], int outline)
 	}
 	else {
 		pmode = ps_place_color (rgb);
-		mode = ps_paint_code[pmode] - 'A' + 'a';	/* Convert A, C, or K to a, c, or k */
+		mode = ps_paint_code[pmode] - 'A' + 'a';	/* Convert A, C, K, or H to a, c, k, or h */
 	}
-	if (outline > 0) mode += outline;		/* Convert a, c, or k to b, d, or l */
+	if (outline > 0) mode += outline;			/* Convert a, c, k, or h to b, d, l, or i */
 	fprintf (ps.fp, "%c\n", mode);
 	if (outline < 0) {
 		if (outline == -1) {
@@ -1580,14 +1584,15 @@ void ps_patch (double *x, double *y, int np, int rgb[], int outline)
 	 * the increment)
 	 * from point i to i+1, and r,g,b in the range 0.0-1.0.  Here, n = np-1.
 	 *
-	 *	dx_n dy_n ... n x0 y0 w		(If r < 0 then outline only)
-	 *	r dx_n dy_n ... n x0 y0 q	(gray shade; use r for outline)
-	 *	r g b dx_n dy_n ... n x0 y0 s	(rgb; use t for outline)
-	 *	c m y k dx_n dy_n ... n x0 y0 u (cmyk; use v for outline)
+	 *	        dx_n dy_n ... n x0 y0 w		(If r < 0 then outline only)
+	 *	      r dx_n dy_n ... n x0 y0 q		(gray shade; use r for outline)
+	 *	  r g b dx_n dy_n ... n x0 y0 s		(rgb; use t for outline)
+	 *	c m y k dx_n dy_n ... n x0 y0 u 	(cmyk; use v for outline)
+	 *	  h s v dx_n dy_n ... n x0 y0 x 	(hsv; use y for outline)
 	 */
 
 	int i, n, pmode, n1, ix[20], iy[20];
-	char mode;
+	char mode, codes[5] = {'q', 's', 'u', 'w', 'x'};
 
 	if (np > 20) {	/* Must call ps_polygon instead */
 		ps_polygon ( x, y, np, rgb, outline);
@@ -1606,9 +1611,9 @@ void ps_patch (double *x, double *y, int np, int rgb[], int outline)
 
 	if (n < 3) return;	/* 2 points or less don't make a polygon */
 
-	pmode = ps_place_color (rgb);
-	mode = 'q' + 2 * pmode;			/* Will give q, s, u, or w */
-	if (outline && pmode < 3) mode++;	/* Will turn q -> r, s -> t, and u -> v but leave w as is */
+	pmode = ps_place_color (rgb);	/* Returns 0-4 */
+	mode = codes[pmode];			/* Will give q, s, u, w, or x */
+	if (outline && pmode != 3) mode++;	/* Will turn q -> r, s -> t, u -> v, and x -> y but leave w as is */
 
 	n--;
 	n1 = n;
@@ -1732,6 +1737,7 @@ void ps_setformat (int n_decimals)
 	else {
 		sprintf (ps.bw_format, "%%.%df ", n_decimals);
 		sprintf (ps.rgb_format, "%%.%df %%.%df %%.%df ", n_decimals, n_decimals, n_decimals);
+		sprintf (ps.hsv_format, "%%.%df %%.%df %%.%df ", n_decimals, n_decimals, n_decimals);
 		sprintf (ps.cmyk_format, "%%.%df %%.%df %%.%df %%.%df ", n_decimals, n_decimals, n_decimals, n_decimals);
 	}
 }
@@ -3718,7 +3724,7 @@ void ps_stream_dump (unsigned char *buffer, int nx, int ny, int nbits, int compr
 	PSL_len = 0;
 
 	/* Transform RGB stream to CMYK stream */
-	if (ps.cmyk_mode && nbits == 24)
+	if ((ps.color_mode & PSL_CMYK) && nbits == 24)
 		buffer1 = ps_cmyk_encode (&nbytes, buffer);
 	else
 		buffer1 = buffer;
@@ -4039,7 +4045,7 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 		polarity = 0;
 		if (f_rgb[0] == 0 && f_rgb[1] == 0 && f_rgb[2] == 0)
 			polarity = 4;
-		else if (ps.cmyk_mode) {
+		else if (ps.color_mode & PSL_CMYK) {
 			ps_rgb_to_cmyk_int (f_rgb, f_cmyk);
 			fprintf (ps.fp, "[/Indexed /DeviceCMYK 0 <%02X%02X%02X%02X>] setcolorspace\n", f_cmyk[0], f_cmyk[1], f_cmyk[2], f_cmyk[3]);
 		}
@@ -4050,7 +4056,7 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 		polarity = 1;
 		if (b_rgb[0] == 0 && b_rgb[1] == 0 && b_rgb[2] == 0)
 			polarity = 5;
-		else if (ps.cmyk_mode) {
+		else if (ps.color_mode & PSL_CMYK) {
 			ps_rgb_to_cmyk_int (b_rgb, b_cmyk);
 			fprintf (ps.fp, "[/Indexed /DeviceCMYK 0 <%02X%02X%02X%02X>] setcolorspace\n", b_cmyk[0], b_cmyk[1], b_cmyk[2], b_cmyk[3]);
 		}
@@ -4067,7 +4073,7 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 	}
 	else {
 		polarity = 2;
-		if (ps.cmyk_mode) {
+		if (ps.color_mode & PSL_CMYK) {
 			ps_rgb_to_cmyk_int (f_rgb, f_cmyk);
 			ps_rgb_to_cmyk_int (b_rgb, b_cmyk);
 			fprintf (ps.fp, "[/Indexed /DeviceCMYK 1 <%02X%02X%02X%02X%02X%02X%02X%02X>] setcolorspace\n", f_cmyk[0], f_cmyk[1], f_cmyk[2], f_cmyk[3], b_cmyk[0], b_cmyk[1], b_cmyk[2], b_cmyk[3]);
@@ -4333,15 +4339,21 @@ int ps_place_color (int rgb[])
 	if (rgb[0] < 0)	return (3);	/* Outline only, no color set */
 
 	if (iscolor (rgb)) {
-		if (ps.cmyk_mode) {
+		if (ps.color_mode == PSL_RGB) {
+			fprintf (ps.fp, ps.rgb_format, rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255);
+			pmode = 1;
+		}
+		else if (ps.color_mode & PSL_CMYK) {
 			double cmyk[4];
 			ps_rgb_to_cmyk (rgb, cmyk);
 			fprintf (ps.fp, ps.cmyk_format, cmyk[0], cmyk[1], cmyk[2], cmyk[3]);
 			pmode = 2;
 		}
 		else {
-			fprintf (ps.fp, ps.rgb_format, rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255);
-			pmode = 1;
+			double hsv[3];
+			ps_rgb_to_hsv (rgb, hsv);
+			fprintf (ps.fp, ps.hsv_format, hsv[0], hsv[1], hsv[2]);
+			pmode = 2;
 		}
 	}
 	else {
@@ -4388,6 +4400,34 @@ void ps_rgb_to_cmyk (int rgb[], double cmyk[])
 	for (i = 0; i < 4; i++) {
 	    if (cmyk[i] < 0.0005) cmyk[i] = 0;
 	}
+}
+
+void ps_rgb_to_hsv (int rgb[], double hsv[])
+{
+	double xr, xg, xb, r_dist, g_dist, b_dist, max_v, min_v, diff, idiff;
+
+	xr = rgb[0] * I_255;
+	xg = rgb[1] * I_255;
+	xb = rgb[2] * I_255;
+	max_v = MAX (MAX (xr, xg), xb);
+	min_v = MIN (MIN (xr, xg), xb);
+	diff = max_v - min_v;
+	hsv[0] = 0.0;
+	hsv[1] = (max_v == 0.0) ? 0.0 : diff / max_v;
+	hsv[2] = max_v;
+	if (hsv[1] == 0.0) return;	/* Hue is undefined */
+	idiff = 1.0 / diff;
+	r_dist = (max_v - xr) * idiff;
+	g_dist = (max_v - xg) * idiff;
+	b_dist = (max_v - xb) * idiff;
+	if (xr == max_v)
+		hsv[0] = b_dist - g_dist;
+	else if (xg == max_v)
+		hsv[0] = 2.0 + r_dist - b_dist;
+	else
+		hsv[0] = 4.0 + g_dist - r_dist;
+	hsv[0] *= 60.0;
+	if (hsv[0] < 0.0) hsv[0] += 360.0;
 }
 
 void ps_cmyk_to_rgb (int rgb[], double cmyk[])

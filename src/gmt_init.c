@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.214 2006-03-10 23:33:19 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.215 2006-03-11 04:19:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1187,7 +1187,7 @@ void GMT_prep_PS_bits ()
 	gmtdefs.page_orientation &= 1;	/* Unset all but bit 0 */
 	if (gmtdefs.verbose) gmtdefs.page_orientation |= 2;
 	if (gmtdefs.ps_heximage) gmtdefs.page_orientation |= 4;
-	if (gmtdefs.ps_cmykmode) gmtdefs.page_orientation |= 512;
+	if (gmtdefs.ps_colormode) gmtdefs.page_orientation |= (gmtdefs.ps_colormode << 8);
 	if (gmtdefs.ps_compress) gmtdefs.page_orientation |= (gmtdefs.ps_compress << 12);
 	if (gmtdefs.ps_line_cap) gmtdefs.page_orientation |= (gmtdefs.ps_line_cap << 14);
 	if (gmtdefs.ps_line_join) gmtdefs.page_orientation |= (gmtdefs.ps_line_join << 16);
@@ -1769,9 +1769,11 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case GMTCASE_PS_COLOR:
 			if (!strcmp (lower_value, "rgb"))
-				gmtdefs.ps_cmykmode = 0;
+				gmtdefs.ps_colormode = 0;
 			else if (!strcmp (lower_value, "cmyk"))
-				gmtdefs.ps_cmykmode = 1;
+				gmtdefs.ps_colormode = 1;
+			else if (!strcmp (lower_value, "hsv"))
+				gmtdefs.ps_colormode = 2;
 			else
 				error = TRUE;
 			break;
@@ -2203,7 +2205,12 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "CHAR_ENCODING		= %s\n", gmtdefs.encoding.name);
 	fprintf (fp, "DOTS_PR_INCH		= %d\n", gmtdefs.dpi);
 	fprintf (fp, "N_COPIES		= %d\n", gmtdefs.n_copies);
-	(gmtdefs.ps_cmykmode) ? fprintf (fp, "PS_COLOR		= cmyk\n") : fprintf (fp, "PS_COLOR		= rgb\n");
+	if (gmtdefs.ps_colormode == 0)
+		fprintf (fp, "PS_COLOR		= rgb\n");
+	else if (gmtdefs.ps_colormode == 1)
+		fprintf (fp, "PS_COLOR		= cmyk\n");
+	else
+		fprintf (fp, "PS_COLOR		= hsv\n");
 	if (gmtdefs.ps_compress == 1)
 		fprintf (fp, "PS_IMAGE_COMPRESS	= rle\n");
 	else if (gmtdefs.ps_compress == 2)

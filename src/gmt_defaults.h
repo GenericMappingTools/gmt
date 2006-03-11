@@ -55,7 +55,7 @@
 	{255, 255, 255},	/* PAGE_COLOR */
 	0,			/* PAGE_ORIENTATION */
 	{612, 792},		/* PAPER_MEDIA (US Letter) */
-	FALSE,			/* PS_COLOR (TRUE = CMYK, FALSE = RGB) */
+	0,			/* PS_COLOR (2 = HSV, 1 = CMYK, 0 = RGB) */
 	0,			/* PS_IMAGE_COMPRESS (0 = NONE, 1 = RLE, 2 = LZW) */
 	TRUE,			/* PS_IMAGE_FORMAT (TRUE = HEX, FALSE = BIN) */
 	0,			/* PS_LINE_CAP (0 = butt, 1 = round, 2 = square) */
