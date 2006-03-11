@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.61 2006-03-02 23:18:24 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.62 2006-03-11 07:05:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -691,6 +691,11 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 			break;
 	}
 
+	if (w == e && s == n) {	/* Default is entire grid */
+		w = GMT_IMG_MINLON;	e = GMT_IMG_MAXLON;
+		s = -lat;	n = lat;
+	}
+	
 	GMT_grd_init (grd, 0, NULL, FALSE);
 	grd->x_inc = grd->y_inc = min / 60.0;
 	
