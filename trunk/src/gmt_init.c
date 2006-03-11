@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.215 2006-03-11 04:19:16 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.216 2006-03-11 07:05:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -828,7 +828,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 	char text[BUFSIZ], string[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT];
 
 	/* GMT_get_common_args interprets the command line for the common, unique options
-	 * -B, -H, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -c, -:, -
+	 * -B, -H, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -:, -
 	 */
 
 	int i, j, icol, expect_to_read, got, nn = 0, n_slashes, error = 0, pos, j_type, col_type[2];
