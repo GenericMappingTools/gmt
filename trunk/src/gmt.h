@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.117 2006-03-10 23:33:19 pwessel Exp $
+ *	$Id: gmt.h,v 1.118 2006-03-11 04:19:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -296,7 +296,7 @@ struct GMTDEFAULTS {
 	int page_rgb[3];		/* Color of the page [255/255/255 white] */
 	int page_orientation;		/* Orientation of page [0 = Landscape, 1 = Portrait] */
 	int paper_width[2];		/* Width and height of paper to plot on in points [Letter or A4] */
-	BOOLEAN ps_cmykmode;		/* TRUE writes CMYK in PostScript, FALSE uses RGB [FALSE] */
+	BOOLEAN ps_colormode;		/* 2 writes HSV in PostScript, 1 writes CMYK, 0 uses RGB [0] */
 	int ps_compress;		/* Compression of PostScript images: 0 = no, 1 = RLE, 2 = LZW [0] */
 	BOOLEAN ps_heximage;		/* TRUE gives hex ps output image, FALSE gives binary image [TRUE] */
 	int ps_line_cap;		/* butt|round|square [butt] */

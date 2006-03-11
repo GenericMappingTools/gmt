@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.226 2006-03-10 23:33:19 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.227 2006-03-11 04:19:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1623,9 +1623,9 @@ void GMT_rgb_to_hsv (int rgb[], double *h, double *s, double *v)
 	max_v = MAX (MAX (xr, xg), xb);
 	min_v = MIN (MIN (xr, xg), xb);
 	diff = max_v - min_v;
-	*v = max_v;
-	*s = (max_v == 0.0) ? 0.0 : diff / max_v;
 	*h = 0.0;
+	*s = (max_v == 0.0) ? 0.0 : diff / max_v;
+	*v = max_v;
 	if ((*s) == 0.0) return;	/* Hue is undefined */
 	idiff = 1.0 / diff;
 	r_dist = (max_v - xr) * idiff;
