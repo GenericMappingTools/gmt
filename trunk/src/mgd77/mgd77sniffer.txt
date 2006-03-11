@@ -5,7 +5,7 @@ mgd77sniffer \- Scan for errors in MGD77 data
 \fBmgd77sniffer\fP \fINGDC-ids\fP [\fB-A\fP\fIfieldabbrev\fP,\fIscale\fP,\fIoffset\fP] [\fB\-C\fP\fImaxspd\fP]
 [\fB\-D\fP\fId|e|f|l|m|s|v\fP] [\fB\-g\fP\fIfieldabbrev\fP,\fIimggrid\fP,\fIscale\fP,\fImode\fP]
 [\fB\-G\fP\fIfieldabbrev\fP,\fIgrid\fP] [\fB\-N\fP] [\fB\-O\fP\fIcustom limits file\fP] [ \fB\-Q\fP[\fIvalue\fP]
-[\fB\-S\fP\fId|s|t\fP] [\fB\-T\fP\fIgap\fP] [\fB\-W\fP\fIc|g|o|s|t|v|x\fP] [\fB\-V\fP] [\fB\-b\fP] [-\fB\-H\fP]
+[\fB\-S\fP\fId|s|t\fP] [\fB\-T\fP\fIgap\fP] [\fB\-W\fP\fIc|g|o|s|t|v|x\fP] [\fB\-V\fP] [\fB\-b\fP[\fBs|d\fP]] [-\fB\-H\fP]
 [\fB-R\fP\fI<west>/<east>/<south>/<north>\fP]
 
 .SH DESCRIPTION
@@ -196,7 +196,8 @@ range, (\fBx\fP) warning summaries. By default ALL warning messages are printed.
 runs in verbose mode.
 .TP
 .B \-b
-output binary data for \fB\-D\fPd|f|s|v option.
+output binary data for \fB\-D\fPd|f|s|v option.  Append \fBs\fP for single and \fBd\fB for double
+precision [Default is double].
 
 .SH MGD77 FIELD INFO
 \fIField                   Abbreviation            Units\fP
