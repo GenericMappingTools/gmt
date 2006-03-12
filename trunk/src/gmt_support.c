@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.227 2006-03-11 04:19:16 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.228 2006-03-12 23:29:05 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1341,11 +1341,13 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 	 * Old cpt is normalized to 0-1 range and scaled to fit new z range.
 	 * New cpt may be continuous and/or reversed.
 	 * We write the new cpt table to stdout.
-	 * cpt_flag: bitflags, with 1 meaning do not write out BFN, and 2 meaning use low/high rgb as BF */
+	 * cpt_flag: bitflags, with 1 meaning do not write out BFN, and 2 meaning use low/high rgb/hsv as BF */
 
 	int i, j, k, upper, lower, rgb_low[3], rgb_high[3], rgb_fore[3], rgb_back[3];
 	BOOLEAN even = FALSE;	/* TRUE when nz is passed as negative */
-	double *x, *z_out, a, b, h1, h2, v1, v2, s1, s2, f, x_inc, cmyk_low[4], cmyk_high[4];
+	double *x, *z_out, a, b, f, x_inc, cmyk_low[4], cmyk_high[4];
+	double hsv_low[3], hsv_high[3], hsv_fore[3], hsv_back[3];
+
 	char format[BUFSIZ], code[3] = {'B', 'F', 'N'};
 	struct GMT_LUT *lut;
 
@@ -1370,11 +1372,15 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 			j = GMT_n_colors - i - 1;
 			memcpy ((void *)lut[i].rgb_high, (void *)GMT_lut[j].rgb_low,  (size_t)(3 * sizeof (int)));
 			memcpy ((void *)lut[i].rgb_low,  (void *)GMT_lut[j].rgb_high, (size_t)(3 * sizeof (int)));
+			memcpy ((void *)lut[i].hsv_high, (void *)GMT_lut[j].hsv_low,  (size_t)(3 * sizeof (double)));
+			memcpy ((void *)lut[i].hsv_low,  (void *)GMT_lut[j].hsv_high, (size_t)(3 * sizeof (double)));
 		}
 		else {
 			j = i;
 			memcpy ((void *)lut[i].rgb_high, (void *)GMT_lut[j].rgb_high, (size_t)(3 * sizeof (int)));
 			memcpy ((void *)lut[i].rgb_low,  (void *)GMT_lut[j].rgb_low,  (size_t)(3 * sizeof (int)));
+			memcpy ((void *)lut[i].hsv_high, (void *)GMT_lut[j].hsv_high, (size_t)(3 * sizeof (double)));
+			memcpy ((void *)lut[i].hsv_low,  (void *)GMT_lut[j].hsv_low,  (size_t)(3 * sizeof (double)));
 		}
 	}
 	lut[0].z_low = 0.0;			/* Prevent roundoff errors */
@@ -1445,13 +1451,24 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 
 			f = 1.0 / (lut[j].z_high - lut[j].z_low);
 
-			for (k = 0; k < 3; k++) rgb_low[k] = lut[j].rgb_low[k] + irint ((lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (x[lower] - lut[j].z_low));
+			if (gmtdefs.color_model & GMT_READ_HSV) {	/* Interpolation in HSV space */
+				for (k = 0; k < 3; k++) hsv_low[k] = lut[j].hsv_low[k] + (lut[j].hsv_high[k] - lut[j].hsv_low[k]) * f * (x[lower] - lut[j].z_low);
+			}
+			else {	/* Interpolation in RGB space */
+				for (k = 0; k < 3; k++) rgb_low[k] = lut[j].rgb_low[k] + irint ((lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (x[lower] - lut[j].z_low));
+			}
 
 			while (j < GMT_n_colors && x[upper] > lut[j].z_high) j++;
 
 			f = 1.0 / (lut[j].z_high - lut[j].z_low);
 
-			for (k = 0; k < 3; k++) rgb_high[k] = lut[j].rgb_low[k] + irint ((lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (x[upper] - lut[j].z_low));
+
+			if (gmtdefs.color_model & GMT_READ_HSV) {	/* Interpolation in HSV space */
+				for (k = 0; k < 3; k++) hsv_high[k] = lut[j].hsv_low[k] + (lut[j].hsv_high[k] - lut[j].hsv_low[k]) * f * (x[upper] - lut[j].z_low);
+			}
+			else {	/* Interpolation in RGB space */
+				for (k = 0; k < 3; k++) rgb_high[k] = lut[j].rgb_low[k] + irint ((lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (x[upper] - lut[j].z_low));
+			}
 		}
 		else {	 /* Interpolate central value and assign color to both lower and upper limit */
 
@@ -1461,17 +1478,26 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 
 			f = 1.0 / (lut[j].z_high - lut[j].z_low);
 
-			for (k = 0; k < 3; k++) rgb_low[k] = rgb_high[k] = lut[j].rgb_low[k] + irint ((lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (a - lut[j].z_low));
+			if (gmtdefs.color_model & GMT_READ_HSV) {	/* Interpolation in HSV space */
+				for (k = 0; k < 3; k++) hsv_low[k] = hsv_high[k] = lut[j].hsv_low[k] + (lut[j].hsv_high[k] - lut[j].hsv_low[k]) * f * (a - lut[j].z_low);
+			}
+			else {	/* Interpolation in RGB space */
+				for (k = 0; k < 3; k++) rgb_low[k] = rgb_high[k] = lut[j].rgb_low[k] + irint ((lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (a - lut[j].z_low));
+			}
 		}
 
-		if (lower == 0) memcpy ((void *)rgb_back, (void *)rgb_low, (size_t)(3 * sizeof (int)));
-		if (upper == (nz-1)) memcpy ((void *)rgb_fore, (void *)rgb_high, (size_t)(3 * sizeof (int)));
+		if (lower == 0) {
+			memcpy ((void *)rgb_back, (void *)rgb_low, (size_t)(3 * sizeof (int)));
+			memcpy ((void *)hsv_back, (void *)hsv_low, (size_t)(3 * sizeof (double)));
+		}
+		if (upper == (nz-1)) {
+			memcpy ((void *)rgb_fore, (void *)rgb_high, (size_t)(3 * sizeof (int)));
+			memcpy ((void *)hsv_fore, (void *)hsv_high, (size_t)(3 * sizeof (double)));
+		}
 
 			
 		if (gmtdefs.color_model & GMT_READ_HSV) {
-			GMT_rgb_to_hsv(rgb_low, &h1, &s1, &v1);
-			GMT_rgb_to_hsv(rgb_high, &h2, &s2, &v2);
-			fprintf (GMT_stdout, format, z_out[lower], h1, s1, v1, z_out[upper], h2, s2, v2);
+			fprintf (GMT_stdout, format, z_out[lower], hsv_low[0], hsv_low[1], hsv_low[2], z_out[upper], hsv_high[0], hsv_high[1], hsv_high[2]);
 		}
 		else if (gmtdefs.color_model & GMT_READ_CMYK) {
 			GMT_rgb_to_cmyk (rgb_low, cmyk_low);
@@ -1494,11 +1520,16 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 	if (cpt_flag & 2) {	/* Use low and high colors as back and foreground */
 		memcpy ((void *)GMT_bfn[GMT_BGD].rgb, (void *)rgb_back, (size_t)(3 * sizeof (int)));
 		memcpy ((void *)GMT_bfn[GMT_FGD].rgb, (void *)rgb_fore, (size_t)(3 * sizeof (int)));
+		memcpy ((void *)GMT_bfn[GMT_BGD].hsv, (void *)hsv_back, (size_t)(3 * sizeof (double)));
+		memcpy ((void *)GMT_bfn[GMT_FGD].hsv, (void *)hsv_fore, (size_t)(3 * sizeof (double)));
 	}
 	else if (reverse) {	/* Flip foreground and background colors */
 		memcpy ((void *)rgb_low, (void *)GMT_bfn[GMT_BGD].rgb, (size_t)(3 * sizeof (int)));
 		memcpy ((void *)GMT_bfn[GMT_BGD].rgb, (void *)GMT_bfn[GMT_FGD].rgb, (size_t)(3 * sizeof (int)));
 		memcpy ((void *)GMT_bfn[GMT_FGD].rgb, (void *)rgb_low, (size_t)(3 * sizeof (int)));
+		memcpy ((void *)hsv_low, (void *)GMT_bfn[GMT_BGD].hsv, (size_t)(3 * sizeof (double)));
+		memcpy ((void *)GMT_bfn[GMT_BGD].hsv, (void *)GMT_bfn[GMT_FGD].hsv, (size_t)(3 * sizeof (double)));
+		memcpy ((void *)GMT_bfn[GMT_FGD].hsv, (void *)hsv_low, (size_t)(3 * sizeof (double)));
 	}
 
 	if (gmtdefs.color_model & GMT_READ_HSV) {
@@ -1507,12 +1538,11 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 			if (GMT_bfn[k].skip)
 				fprintf (GMT_stdout, "%c -\n", code[k]);
 			else {
-				GMT_rgb_to_hsv(GMT_bfn[k].rgb, &h1, &s1, &v1);
-				fprintf (GMT_stdout, format, code[k], h1, s1, v1);
+				fprintf (GMT_stdout, format, code[k], GMT_bfn[k].hsv[0], GMT_bfn[k].hsv[1], GMT_bfn[k].hsv[2]);
 			}
 		}
 	}
-	else if (gmtdefs.color_model & GMT_READ_CMYK) {
+	else if (gmtdefs.color_model & GMT_USE_CMYK) {
 		sprintf(format, "%%c\t%s\t%s\t%s\t%s\n", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
 		for (k = 0; k < 3; k++) {
 			if (GMT_bfn[k].skip)
@@ -1650,6 +1680,7 @@ void GMT_hsv_to_rgb (int rgb[], double h, double s, double v)
 		rgb[0] = rgb[1] = rgb[2] = (int) floor (255.999 * v);
 	else {
 		while (h >= 360.0) h -= 360.0;
+		while (h < 0.0) h += 360.0;
 		h /= 60.0;
 		i = (int)h;
 		f = h - i;
