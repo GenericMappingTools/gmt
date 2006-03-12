@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.126 2006-03-08 01:51:15 pwessel Exp $
+ *	$Id: mgd77.c,v 1.127 2006-03-12 23:40:45 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -919,8 +919,10 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 			if (F->verbose_level & kind) {
 				if (i == 99)
 					fprintf (fp_err, "N-H-%s-13-06-%c: Invalid Magnetics Reference Field Code: (%s) [00]\n", F->NGDC_id, we[kind], P->Magnetics_Ref_Field_Code);
-				else
+				else {
 					fprintf (fp_err, "N-H-%s-13-06-%c: Invalid Magnetics Reference Field Code: (%s)\n", F->NGDC_id, we[kind], P->Magnetics_Ref_Field_Code);
+					i = 99;	/* To skip the test on time range below */
+				}
 			}
 			H->errors[kind]++;
 		}
