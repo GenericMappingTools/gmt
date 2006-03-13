@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.216 2006-03-11 07:05:29 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.217 2006-03-13 04:42:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -297,11 +297,11 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t     Give central meridian, standard parallel and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
 			fprintf (stderr, "\t     <slat> = 45 (Peters), 37.4 (Trystan Edwards), 30 (Behrmann), 0 (Lambert)\n");
 
-			fprintf (stderr, "\t   -Jp[a]<scale>[/<base>][r] OR -JP[a]<width>[/<base>][r] (Polar (theta,radius))\n");
+			fprintf (stderr, "\t   -Jp[a]<scale>[/<base>][r|z] OR -JP[a]<width>[/<base>][r|z] (Polar (theta,radius))\n");
 			fprintf (stderr, "\t     Linear scaling for polar coordinates.\n");
 			fprintf (stderr, "\t     Optionally append 'a' to -Jp or -JP to use azimuths (CW from North) instead of directions (CCW from East) [default].\n");
-			fprintf (stderr, "\t     Give scale in %s/units\n", GMT_unit_names[gmtdefs.measure_unit]);
-			fprintf (stderr, "\t     Optionally, append theta value for angular offset (base) [0] or r to reverse radial direction (s/n must be in 0-90 range).\n");
+			fprintf (stderr, "\t     Give scale in %s/units, and append theta value for angular offset (base) [0]\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t     Append r to reverse radial direction (s/n must be in 0-90 range) or z to annotate depths rather than radius [Default]\n");
 
 			fprintf (stderr, "\t   -Jx<x-scale>[/<y-scale>] OR -JX<width>[/<height]> (Linear, log, power scaling)\n");
 			fprintf (stderr, "\t     Scale in %s/units (or 1:xxxx). Optionally, append to scale:\n",
@@ -374,7 +374,7 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t   -Jy|Y<lon0>/<lats>/<scale|width> (Cylindrical Equal-area)\n");
 
-			fprintf (stderr, "\t   -Jp|P[a]<scale|width>[/<origin>][r] (Polar [azimuth] (theta,radius))\n");
+			fprintf (stderr, "\t   -Jp|P[a]<scale|width>[/<origin>][r|z] (Polar [azimuth] (theta,radius))\n");
 
 			fprintf (stderr, "\t   -Jx|X<x-scale|width>[d|l|p<power>|t|T][/<y-scale|height>[d|l|p<power>|t|T]] (Linear, log, and power projections)\n");
 			fprintf (stderr, "\t   (See psbasemap for more details on projection syntax)\n");
@@ -3912,8 +3912,12 @@ int GMT_map_getproject (char *args)
 				project_info.got_elevations = TRUE;
 				args[j] = '\0';	/* Temporarily chop off the r */
 			}
+			else if (args[j] == 'z') {	/* Gave optional z for annotating depths rather than radius */
+				project_info.z_down = TRUE;
+				args[j] = '\0';	/* Temporarily chop off the z */
+			}
 			else
-				project_info.got_elevations = FALSE;
+				project_info.got_elevations = project_info.z_down = FALSE;
 	 		if (n_slashes == 1) {	/* Gave optional zero-base angle [0] */
 	 		 	n = sscanf (args, "%[^/]/%lf", txt_a, &project_info.pars[1]);
 				if (n == 2) project_info.pars[0] = GMT_convert_units (&txt_a[i], GMT_INCH);
@@ -3927,6 +3931,7 @@ int GMT_map_getproject (char *args)
 	 		else
 	 			error = TRUE;
 			if (project_info.got_elevations) args[j] = 'r';	/* Put the r back in the argument */
+			if (project_info.z_down) args[j] = 'z';	/* Put the z back in the argument */
 			if (project_info.got_azimuths) project_info.pars[1] = -project_info.pars[1];	/* Because azimuths go clockwise */
 			project_info.degree[0] = project_info.degree[1] = FALSE;
 	 		project = POLAR;

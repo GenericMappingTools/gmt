@@ -82,7 +82,7 @@ More details can be found in the \fBpsbasemap\fP man pages.
 \fBNON-GEOGRAPHICAL PROJECTIONS:\fP
 .br
 .sp
-\fB\-Jp\fP[\fBa\fP]\fIscale\fP[\fI/origin\fP][\fBr\fP] (Polar coordinates (theta,r))
+\fB\-Jp\fP[\fBa\fP]\fIscale\fP[\fI/origin\fP][\fBr\fP|\fBz\fP] (Polar coordinates (theta,r))
 .br
 \fB\-Jx\fP\fIx-scale\fP[\fBd|l|p\fP\fIpow\fP\fB|t|T\fP][\fI/y-scale\fP[\fBd|l|p\fP\fIpow\fP\fB|t|T\fP]] (Linear, log, and power scaling)
 .br
