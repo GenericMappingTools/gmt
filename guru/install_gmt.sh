@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.71 2006-03-08 01:01:54 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.72 2006-03-13 04:42:47 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -67,7 +67,7 @@ echo $use
 prep_gmt()
 {
 #--------------------------------------------------------------------------------
-LATESTGMT4=4.1.1
+LATESTGMT4=4.1.2
 LATESTGMT3=3.4.6
 GSHHS=4
 cat << EOF > gmt_install.ftp_site
@@ -234,7 +234,7 @@ if [ $answer = "n" ]; then	# Must install netcdf one way or the other
 		fi
 	fi
 else
-	def=${NETCDFHOME:-/usr/local/netcdf-3.6.0}
+	def=${NETCDFHOME:-/usr/local/netcdf-3.6.1}
 	netcdf_path=`get_def_answer "Enter directory with netcdf lib and include" "$def"`
 	netcdf_ftp=n
 	netcdf_install=n
@@ -734,11 +734,11 @@ install_coast()
 		else
 			t=`echo $file | awk '{print substr($1,1,1)}'`
 			echo "share/binned_GSHHS_${t}.cdf"
-			$expand $here/GMT${file}c.bz2 > $dir/share/binned_GSHHS_${t}.cdf
+			$expand $here/GMT${file}c.bz2 > $dir/share/coast/binned_GSHHS_${t}.cdf
 			echo "share/binned_binned_${t}.cdf"
-			$expand $here/GMT${file}r.bz2 > $dir/share/binned_river_${t}.cdf
+			$expand $here/GMT${file}r.bz2 > $dir/share/coast/binned_river_${t}.cdf
 			echo "share/binned_river_${t}.cdf"
-			$expand $here/GMT${file}b.bz2 > $dir/share/binned_border_${t}.cdf
+			$expand $here/GMT${file}b.bz2 > $dir/share/coast/binned_border_${t}.cdf
 		fi
 	fi
 		

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.165 2006-03-10 21:45:21 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.166 2006-03-13 04:42:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1853,6 +1853,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 
 		if (dy[k] > 0.0 && (project_info.degree[1] || project_info.projection == POLAR)) {	/* Annotate W and E boundaries */
 			int lonlat;
+			double *tval;
 
 			if (project_info.degree[1]) {
 				do_minutes = (fabs (fmod (dy[k], 1.0)) > SMALL);
@@ -1864,10 +1865,18 @@ void GMT_map_annotate (double w, double e, double s, double n)
 				lonlat = 2;
 				if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Temporary swap to trick justify machinery */
 			}
-			ny = GMT_linear_array (s, n, dy[k], frame_info.axis[1].phase, &val);
+			if (project_info.z_down) {	/* Want to annotate depth rather than radius */
+				ny = GMT_linear_array (0.0, n-s, dy[k], frame_info.axis[1].phase, &tval);
+				val = (double *)GMT_memory (VNULL, ny, sizeof (double), GMT_program);
+				for (i = 0; i < ny; i++) val[i] = project_info.n - tval[i];	/* These are the radial values needed for positioning */
+			}
+			else {				/* Annotate radius */
+				ny = GMT_linear_array (s, n, dy[k], frame_info.axis[1].phase, &val);
+				tval = val;	/* Same thing */
+			}
 			for (i = 0; i < ny; i++) {
 				if ((project_info.polar || project_info.projection == GRINTEN) && fabs (fabs (val[i]) - 90.0) < GMT_CONV_LIMIT) continue;
-				GMT_get_annot_label (val[i], label, do_minutes, do_seconds, lonlat, GMT_world_map_save);
+				GMT_get_annot_label (tval[i], label, do_minutes, do_seconds, lonlat, GMT_world_map_save);
 				annot = TRUE;
 				if (dual && k == 0) {
 					del = fmod (val[i] - s2, dy[1]);
@@ -1879,6 +1888,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 				GMT_map_symbol_ew (val[i], label, w, e, annot, k);
 			}
 			if (ny) GMT_free ((void *)val);
+			if (project_info.z_down) GMT_free ((void *)tval);
 			if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Undo the temporary swap */
 		}
 	}
