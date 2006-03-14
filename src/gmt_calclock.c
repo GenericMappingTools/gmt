@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.43 2006-03-11 07:25:41 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.44 2006-03-14 22:02:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -863,7 +863,7 @@ void	GMT_small_moment_interval (struct GMT_MOMENT_INTERVAL *p, int step_secs, BO
 	if (step_secs == GMT_DAY2SEC_I) {
 		/* Special case of a 1-day step.  */
 		if (p->sd[0] != 0.0) {	/* Floor it to start of day.  */
-			p->dt[0] -= p->sd[0];
+			p->dt[0] -= (p->sd[0] * GMT_time_system[gmtdefs.time_system].i_scale);
 			p->sd[0] = 0.0;
 		}
 		/* Now we step to next day in rd first, and set dt from there.
@@ -877,7 +877,7 @@ void	GMT_small_moment_interval (struct GMT_MOMENT_INTERVAL *p, int step_secs, BO
 		if (init) {
 			x = step_secs * floor (p->sd[0] / step_secs);
 			if (x != p->sd[0]) {
-				p->dt[0] -= (p->sd[0] - x);
+				p->dt[0] -= ((p->sd[0] - x) * GMT_time_system[gmtdefs.time_system].i_scale);
 				x = p->sd[0];
 			}
 		}
@@ -896,7 +896,7 @@ void	GMT_small_moment_interval (struct GMT_MOMENT_INTERVAL *p, int step_secs, BO
 		}
 		else {
 			p->sd[1] = x;
-			p->dt[1] = p->dt[0] + step_secs;
+			p->dt[1] = p->dt[0] + step_secs * GMT_time_system[gmtdefs.time_system].i_scale;
 			/* No call here to reset cc[1] struct, as rd hasn't changed.
 				Later, if it is desired to reset struct for clock
 				changes on same day, add a call here.  */
