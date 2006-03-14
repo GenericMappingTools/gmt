@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.8 2006-02-28 21:56:57 pwessel Exp $	
+ *	$Id: mgd77sniffer.h,v 1.9 2006-03-14 04:44:25 pwessel Exp $	
  *
  *	File:	mgd77sniffer.h
  *
@@ -28,7 +28,8 @@
 #define MGD77_MAX_DT                900                   /* sec */
 #define MGD77_MAX_DS                5                     /* km */
 #define MGD77_MAX_DUPLICATES        50
-#define MGD77_FATHOMS_PER_METER     0.546805453181423
+#define MGD77_METERS_PER_FATHOM     (6 * 12 * 2.54 * 0.01)
+#define MGD77_FATHOMS_PER_METER     (1.0 / MGD77_METERS_PER_FATHOM)
 #define MGD77_MIN_RLS_BINS          20
 #define MGD77_MIN_RLS_PTS           100
 #define MGD77_N_MAG_RF              13
@@ -77,6 +78,7 @@
 #define E77_HDR_OFFSET       2
 #define E77_HDR_BCC          3
 #define E77_HDR_PRECISION    4
+#define E77_HDR_FLAGRANGE    5
 
 /*  MGD77 bit-pattern w/ E77 alpha characters
 |-------------------------------------------------|----------|
@@ -92,6 +94,14 @@
 | - G C G C C - G G G - - G G - - - T T T T T - - | Bit type |
 |-------------------------------------------------|----------|
   Bit types: (G)eophysical, (C)orrection, (T)ime */
+
+struct BAD_SECTION {	/* To flag a range of records as bad for given field */
+	char abbrev[8];	/* Field name */
+	int col;	/* Column number */
+	int start;	/* First record to flag */
+	int stop;	/* Last record to flag */
+};
+#define MAX_BAD_SECTIONS	100
 
 struct MGD77_GRID_INFO {
 	struct GRD_HEADER grdhdr;
