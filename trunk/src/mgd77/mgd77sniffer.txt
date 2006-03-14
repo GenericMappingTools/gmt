@@ -315,12 +315,12 @@ Each of the four error classes is separated by a dash '-' and described by a
 combination of alphabetic characters or 0 signifying no detected problems.
 .br
 .sp
-Error classes: NAV-VALUE-SLOPE-GRID
+Error classes: NAV-VAL-GRAD-GRID
 .br
 .sp
 \fBError Class Descriptions\fP
 .br
-NAV:
+NAV (navigation):
 .br
 0 - fine
 .br
@@ -337,7 +337,7 @@ E - lat undefined
 F - lon undefined
 .br
 .sp
-VALUE:
+VAL (value):
 .br
 0 - fine
 .br
@@ -350,7 +350,7 @@ O - mtf1 invalid
 etc.
 .br
 .sp
-SLOPE:
+GRAD (gradient):
 .br
 0 - fine
 .br
@@ -363,7 +363,7 @@ O - d[mtf1] excessive
 etc.
 .br
 .sp
-GRID:
+GRID (grid comparison):
 .br
 0 - fine
 .br
@@ -374,7 +374,7 @@ W - faa offset
 etc.
 .br
 .sp
-The NAV error class has unique cases while VALUE, SLOPE and GRID classes are
+The NAV error class has unique cases while VAL, GRAD and GRID classes are
 described by alphabetic characters for each of the 24 numeric fields in MGD77 format order.
 .sp
   MGD77 bit-pattern w/ E77 alpha characters
@@ -436,5 +436,5 @@ The Marine Geophysical Data Exchange Format - "MGD77", see
 \fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
 .br
 .sp
-Wessel, P., and W. H. F. Smith, 2004, The Generic Mapping Tools (GMT) version
-4 Technical Reference & Cookbook, SOEST/NOAA.
+Wessel, P., and W. H. F. Smith, 2006, The Generic Mapping Tools (GMT) version
+4.1.1 Technical Reference & Cookbook, SOEST/NOAA.
