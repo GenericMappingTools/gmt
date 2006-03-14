@@ -1,0 +1,80 @@
+#!/bin/sh
+#	$Id: mgd77view,v 1.1 2006-03-14 07:18:22 pwessel Exp $
+#
+# Makes a summary plot of one cruise
+#
+if [ $# -ne 1 ]; then
+	echo "usage: mgd77view cruise"
+	echo "	Creates the plot cruise.ps"
+	exit
+fi
+
+GRAVITY=grav.15.2.img,0.1,1
+RELIEF=Smith_2004_Gebco_SS_1m_grd.i2=bs
+
+# 1. Extract data from the MGD77 file
+mgd77list $1 -Flon,lat,time,faa,gobs,ngrav,eot,mag,mtf1,mtf2,diur,igrf,depth,twt -G4 -bod -Z- > $$.1
+
+# Get region to nearest degree
+Rxy=`minmax -I1 -bi14d $$.1 -fg`
+
+# 2. Sample the global gravity grid
+grdtrack -G$GRAVITY $$.1 -bi14d -bod $Rxy -fg > $$.2
+
+# 3. Sample the global topography grid
+grdtrack -G$RELIEF  $$.2 -bi15d -bod $Rxy -fg > $$.b
+
+# Lay down relief pane:
+
+gmtconvert -F2,12 -bi16d -bod $$.b > $$.depth
+gmtconvert -F2,13 -bi16d -bod $$.b > $$.twt
+gmtconvert -F2,15 -bi16d -bod $$.b > $$.s2004
+Rz=`minmax -I3600/500 $$.depth $$.s2004 -bi2d -f0T --TIME_SYSTEM=unix`
+Rt=`minmax -I3600/1 $$.twt -bi2d -f0T --TIME_SYSTEM=unix`
+
+psbasemap $Rz -JX9iT/2i -Bp7df1d/0Sn -Bs1O/0Sn -K --PLOT_DATE_FORMAT="-o yyyy" --TIME_INTERVAL_FRACTION=0.3 > $1.ps
+psbasemap -R -J -B0/a2000f500W -O -K >> $1.ps
+psxy -R -J -O -K -bi2d $$.s2004 -Wfaint  --TIME_SYSTEM=unix >> $1.ps
+psxy -R -J -O -K -bi2d $$.depth -Sc0.02i -Gred  --TIME_SYSTEM=unix >> $1.ps
+psxy $Rt -J -O -K -B0/2f1E -bi2d $$.twt -Sc0.02i -Ggreen  --TIME_SYSTEM=unix >> $1.ps
+
+# Lay down mag pane:
+
+gmtconvert -F2,7 -bi16d -bod $$.b > $$.mag
+gmtconvert -F2,8 -bi16d -bod $$.b > $$.mtf1
+gmtconvert -F2,9 -bi16d -bod $$.b > $$.mtf2
+gmtconvert -F2,10 -bi16d -bod $$.b > $$.diur
+gmtconvert -F2,11 -bi16d -bod $$.b > $$.igrf
+Rr=`minmax -I3600/500 $$.mtf? $$.igrf -bi2d -f0T --TIME_SYSTEM=unix`
+Ra=`minmax -I3600/500 $$.mag $$.diur -bi2d -f0T --TIME_SYSTEM=unix`
+
+psbasemap $Rr -JX9iT/2i -Bp7df1d/0sn -Bs1O/0sn -O -K -Y2.2i >> $1.ps
+psbasemap -R -J -B0/a5000f1000W -O -K >> $1.ps
+psxy -R -J -O -K -bi2d $$.igrf -Wfaint  --TIME_SYSTEM=unix >> $1.ps
+psxy -R -J -O -K -bi2d $$.mtf1 -Wfaint,red  --TIME_SYSTEM=unix >> $1.ps
+psxy -R -J -O -K -bi2d $$.mtf2 -Wfaint,green  --TIME_SYSTEM=unix >> $1.ps
+psxy $Ra -J -O -K -bi2d -B0/500f100E $$.mag -Sc0.02i -Gred  --TIME_SYSTEM=unix >> $1.ps
+psxy -R -J -O -K -bi2d $$.diur -Sc0.02i -Gblue  --TIME_SYSTEM=unix >> $1.ps
+
+# Lay down grav pane:
+
+gmtconvert -F2,3 -bi16d -bod $$.b > $$.faa
+gmtconvert -F2,4 -bi16d -bod $$.b > $$.gobs
+gmtconvert -F2,5 -bi16d -bod $$.b > $$.ngrav
+gmtconvert -F2,6 -bi16d -bod $$.b > $$.eot
+Rr=`minmax -I3600/500 $$.gobs $$.ngrav -bi2d -f0T --TIME_SYSTEM=unix`
+Ra=`minmax -I3600/50 $$.faa $$.eot -bi2d -f0T --TIME_SYSTEM=unix`
+
+psbasemap $Rr -JX9iT/2i -Bp7df1d/0sn -Bs1O/0sn -O -K -Y2.2i >> $1.ps
+psbasemap -R -J -B0/a500f100W -O -K >> $1.ps
+psxy -R -J -O -K -bi2d $$.ngrav -Wfaint,red --TIME_SYSTEM=unix >> $1.ps
+psxy -R -J -O -K -bi2d $$.gobs -Wfaint,green --TIME_SYSTEM=unix >> $1.ps
+psxy $Ra -J -O -K -bi2d -B0/100f50E $$.faa -Sc0.02i -Gred --TIME_SYSTEM=unix >> $1.ps
+psxy -R -J -O -K -bi2d $$.eot -Sc0.02i -Gblue --TIME_SYSTEM=unix >> $1.ps
+
+# Trailer
+psxy -R -J -O /dev/null >> $1.ps
+
+# Clean up
+
+rm -f $$.*
