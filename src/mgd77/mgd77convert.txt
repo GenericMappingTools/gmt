@@ -3,7 +3,7 @@
 mgd77convert \- Translate between different formats of MGD77 files
 .SH SYNOPSIS
 \fBmgd77convert\fP \fINGDC-ids\fP \fB\-Fa|b|t \-T\fP[\fB+\fP]\fBa|b|t\fP 
-[ \fB\-L\fP[\fBw\fP][\fBe\fP][\fB+\fP] ] [ \fB\-V\fP ]
+[ \fB\-L\fP[\fBw\fP][\fBe\fP][\fB+\fP] ] [ \fB\-V\fP ] [ \fB\-4\fP ]
 .SH DESCRIPTION
 \fBmgd77convert\fP reads versions of MGD77 files and writes the same
 data in (probably) another format to a new file in the current directory.
@@ -29,6 +29,14 @@ Set the level of verification reporting [none] and where to send such reports [s
 Append a combination of \fBw\fP for warnings, \fBe\fP for errors, and \fB+\fP to send
 such log information to stdout.
 #include "explain_-V.txt"
+.TP
+.B \-4
+By default, the storage types used in a MGD77+ netCDF file greatly exceed the precision
+imposed by the ASCII MGD77 format.  However, for the four items \fBfaa\fP, \fBeot\fP,
+\fBmag\fP, and \fBdiur\fP we use 2-byte integers with implied precisions of 0.1 mGal and
+0.1 nTesla as in the MGD77 format.  It is possible that at some point these items will
+need to be stored as 4-byte ints which would allow precisions of 1 fTesla and 1 nGal,
+respectively.  This option activates such storage [Default uses 2-byte integers].
 .SH EXAMPLES
 To convert 01010047.mgd77 and 01010008.mgd77 to new netCDF .nc files, and
 capture all verification messages, try

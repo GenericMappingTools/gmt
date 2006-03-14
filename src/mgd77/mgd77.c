@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.128 2006-03-14 03:12:53 pwessel Exp $
+ *	$Id: mgd77.c,v 1.129 2006-03-14 03:15:04 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -185,13 +185,10 @@ void MGD77_select_high_resolution ()
 	 * these entries in the mgd77cdf structure array.
 	 */
 	 
-	MGD77_cdf mgd77cdf[16].type = NC_INT;	/* MAG:  4-byte integer with 10 fTesla precision */
-	MGD77_cdf mgd77cdf[16].factor = 1.0e-5;
-	MGD77_cdf mgd77cdf[18].type = NC_INT;	/* DIUR: 4-byte integer with 10 fTesla precision */
-	MGD77_cdf mgd77cdf[18].factor = 1.0e-5;
-	MGD77_cdf mgd77cdf[21].type = NC_INT;	/* EOT:  4-byte integer with 1 nGal precision */
-	MGD77_cdf mgd77cdf[21].factor = 1.0e-6;
-	MGD77_cdf mgd77cdf[22].type = NC_INT;	/* FAA:  4-byte integer with 1 nGal precision */
+	mgd77cdf[16].type = mgd77cdf[18].type = NC_INT;		/* MAG & DIUR:  4-byte integer with 10 fTesla precision */
+	mgd77cdf[16].factor = mgd77cdf[18].factor = 1.0e-5;
+	mgd77cdf[21].type = mgd77cdf[22].type = NC_INT;		/* EOT & FAA :  4-byte integer with 1 nGal precision */
+	mgd77cdf[21].factor = mgd77cdf[22].factor = 1.0e-6;
 }
 
 int MGD77_Write_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
