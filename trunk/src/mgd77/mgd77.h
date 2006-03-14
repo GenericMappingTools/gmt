@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.71 2006-03-09 09:05:50 mtchandl Exp $
+ *	$Id: mgd77.h,v 1.72 2006-03-14 03:12:53 pwessel Exp $
  * 
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -11,8 +11,8 @@
  *  Authors:    Paul Wessel, Primary Investigator, SOEST, U. of Hawaii
  *		Michael Chandler, Master's Candidate, SOEST, U. of Hawaii
  *		
- *  Version:	1.2
- *  Revised:	1-MAR-2006
+ *  Version:	1.3
+ *  Revised:	15-MAR-2006
  * 
  *-------------------------------------------------------------------------*/
 
@@ -30,8 +30,8 @@
 #define STAT stat
 #endif
 
-#define MGD77_VERSION		"1.2"		/* Current version of MGD77 supplement */
-#define MGD77_CDF_VERSION	"2005.11.1"	/* Current version of MGD77+ files created */
+#define MGD77_VERSION		"1.3"		/* Current version of MGD77 supplement */
+#define MGD77_CDF_VERSION	"2006.01.15"	/* Current version of MGD77+ files created */
 #define MGD77_RECORD_LENGTH	120		/* Length of MGD77 ASCII data records */
 #define MGD77_HEADER_LENGTH	80		/* Length of MGD77 ASCII header records */
 #define MGD77_N_HEADER_RECORDS	24		/* Number of MGD77 header records */
@@ -496,6 +496,7 @@ extern int MGD77_Write_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DA
 extern int MGD77_dbl_are_constant (double x[], int n, double limits[]);
 extern int MGD77_txt_are_constant (char *txt, int n, int width);
 extern int MGD77_do_scale_offset_before_write (double new[], const double x[], int n, double scale, double offset, int type);
+extern void MGD77_select_high_resolution ();
 
 /* User functions for direct use of Carter corrections */
 
