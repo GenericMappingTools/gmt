@@ -4,8 +4,9 @@ mgd77sniffer \- Scan for errors in MGD77 data
 .SH SYNOPSIS
 \fBmgd77sniffer\fP \fINGDC-ids\fP [\fB-A\fP\fIfieldabbrev\fP,\fIscale\fP,\fIoffset\fP] [\fB\-C\fP\fImaxspd\fP]
 [\fB\-D\fP\fId|e|f|l|m|s|v\fP] [\fB\-g\fP\fIfieldabbrev\fP,\fIimggrid\fP,\fIscale\fP,\fImode\fP]
-[\fB\-G\fP\fIfieldabbrev\fP,\fIgrid\fP] [\fB\-N\fP] [\fB\-O\fP\fIcustom limits file\fP] [ \fB\-Q\fP[\fIvalue\fP]
-[\fB\-S\fP\fId|s|t\fP] [\fB\-T\fP\fIgap\fP] [\fB\-W\fP\fIc|g|o|s|t|v|x\fP] [\fB\-V\fP] [\fB\-b\fP[\fBs|d\fP]] [-\fB\-H\fP]
+[\fB\-G\fP\fIfieldabbrev\fP,\fIgrid\fP] [-\fB\-H\fP] [\fB-I\fP\fIfieldabbrev\fP,\fIrec1\fP,\fIrecN\fP] [\fB\-N\fP] 
+[\fB\-O\fP\fIcustom limits file\fP] [ \fB\-Q\fP[\fIvalue\fP] [\fB\-S\fP\fId|s|t\fP] [\fB\-T\fP\fIgap\fP] 
+[\fB\-W\fP\fIc|g|o|s|t|v|x\fP] [\fB\-V\fP] [\fB\-b\fP[\fBs|d\fP]]
 [\fB-R\fP\fI<west>/<east>/<south>/<north>\fP]
 
 .SH DESCRIPTION
@@ -134,6 +135,11 @@ check.
 .TP
 .B \-H
 (with -G|g only) disable data decimation during RLS regression.
+.TP
+.B \-I
+Append a field abbreviation and the first and last record in a range of records that should
+be flagged as bad (and set to NaN prior to the analysis). Repeat as many times as needed.
+May not be used for multiple cruises.
 .TP
 .B \-N
 Use nautical units.
