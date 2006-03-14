@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.127 2006-03-12 23:40:45 pwessel Exp $
+ *	$Id: mgd77.c,v 1.128 2006-03-14 03:12:53 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -118,27 +118,27 @@ struct MGD77_cdf mgd77cdf[MGD77_N_DATA_EXTENDED] = {
 	{ NC_BYTE,	1,	1.0,	0.0, "day", "1 to 31 inclusive" },
 	{ NC_BYTE,	1,	1.0,	0.0, "hour", "0 to 23 inclusive" },
 	{ NC_BYTE,	1,	1.0,	0.0, "min", "Decimal minutes with 0.001 precision, 0 to 59.999" },
-	{ NC_INT,	1,	1.0e-6,	0.0, "degrees_north", "Negative south of Equator" },
-	{ NC_INT,	1,	1.0e-6,	0.0, "degrees_east", "Negative west of Greenwich" },
+	{ NC_INT,	1,	1.0e-7,	0.0, "degrees_north", "Negative south of Equator" },	/* 1e-7 gives < 1 cm precision in position */
+	{ NC_INT,	1,	1.0e-7,	0.0, "degrees_east", "Negative west of Greenwich" },
 	{ NC_BYTE,	1,	1.0,	0.0, "", "Observed (1), Interpolated (3), or Unspecified (9)" },
-	{ NC_INT,	1,	1.0e-4,	0.0, "second", "Corrected for transducer depth, etc." },
-	{ NC_INT,	1,	1.0e-1,	0.0, "meter", "Corrected for sound velocity variations (if known)" },
+	{ NC_INT,	1,	1.0e-6,	0.0, "second", "Corrected for transducer depth, etc." },	/* 1e-6 s precision implies < 1 mm depth precision */
+	{ NC_INT,	1,	1.0e-4,	0.0, "meter", "Corrected for sound velocity variations (if known)" },	/* 1e-4m is 0.1 mm precision */
 	{ NC_BYTE,	1,	1.0,	0.0, "", "01-55 (= Matthew's zone), 59 (Matthew's zone unknown), 60 (Kuwahara), 61 (Wilson), 62 (Del Grosso) 63 (Carter), 88 (Other; see header), 98 (Unknown), or 99 (Unspecified)" },
 	{ NC_BYTE,	1,	1.0,	0.0, "", "Observed (1), Interpolated (3), or Unspecified (9)" },
-	{ NC_INT,	1,	1.0e-1,	0.0, "gamma", "Leading sensor" },
-	{ NC_INT,	1,	1.0e-1,	0.0, "gamma", "Trailing sensor" },
-	{ NC_SHORT,	1,	1.0e-1,	0.0, "gamma", "Corrected for reference field (see header)" },
+	{ NC_INT,	1,	1.0e-5,	0.0, "gamma", "Leading sensor" },	/* 1e-5 nTesla is 10 fTesla precision */
+	{ NC_INT,	1,	1.0e-5,	0.0, "gamma", "Trailing sensor" },
+	{ NC_SHORT,	1,	1.0e-1,	0.0, "gamma", "Corrected for reference field (see header)" },	/* 0.1 nTesla precision */
 	{ NC_BYTE,	1,	1.0,	0.0, "", "Magnetic sensor used: 1, 2, or Unspecified (9)" },
-	{ NC_SHORT,	1,	1.0e-1,	0.0, "gamma", "Already applied to data" },
-	{ NC_SHORT,	1,	1.0,	0.0, "meter", "Positive below sealevel" },
-	{ NC_INT,	1,	1.0e-1,	0.0, "mGal", "Corrected for Eotvos, drift, and tares" },
-	{ NC_SHORT,	1,	1.0e-1,	0.0, "mGal", "7.5 V cos (lat) sin (azim) + 0.0042 V*V" },
+	{ NC_SHORT,	1,	1.0e-1,	0.0, "gamma", "Already applied to data" },	/* 0.1 nTesla precision */
+	{ NC_SHORT,	1,	1.0e-2,	0.0, "meter", "Positive below sealevel" },	/* 1 cm precision */
+	{ NC_INT,	1,	1.0e-5,	0.0, "mGal", "Corrected for Eotvos, drift, and tares" },	/* 1e-5 is 10 nGal precision */
+	{ NC_SHORT,	1,	1.0e-1,	0.0, "mGal", "7.5 V cos (lat) sin (azim) + 0.0042 V*V" },	/* 1e-1 is 0.1 mGal precision */
 	{ NC_SHORT,	1,	1.0e-1,	0.0, "mGal", "Observed - theoretical" },
 	{ NC_BYTE,	1,	1.0,	0.0, "", "Suspected by (5) source agency, (6) NGDC, or no problems found (9)" },
 	{ NC_BYTE,	8,	1.0,	0.0, "", "Identical to ID in header" },
 	{ NC_BYTE,	5,	1.0,	0.0, "", "For cross-referencing with seismic data" },
 	{ NC_BYTE,	6,	1.0,	0.0, "", "For cross-referencing with seismic data" },
-	{ NC_DOUBLE,	1,	1.0,	0.0, "seconds since 1970-01-01 00:00:00 0", "GMT Unix time, subtract TZ to get ship local time" }
+	{ NC_DOUBLE,	1,	1.0,	0.0, "seconds since 1970-01-01 00:00:00 0", "UTC time, subtract TZ to get ship local time" }
 };
 
 char *aux_names[N_AUX] = {
@@ -178,6 +178,21 @@ int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, int *set, int *i
 int get_quadrant (int x, int y);
 
 #include "mgd77_functions.h"	/* Get netCDF MGD77 header attribute i/o functions */
+
+void MGD77_select_high_resolution ()
+{
+	/* If it becomes necessary to store mag, diur, faa, and eot using 4-byte integers we modify
+	 * these entries in the mgd77cdf structure array.
+	 */
+	 
+	MGD77_cdf mgd77cdf[16].type = NC_INT;	/* MAG:  4-byte integer with 10 fTesla precision */
+	MGD77_cdf mgd77cdf[16].factor = 1.0e-5;
+	MGD77_cdf mgd77cdf[18].type = NC_INT;	/* DIUR: 4-byte integer with 10 fTesla precision */
+	MGD77_cdf mgd77cdf[18].factor = 1.0e-5;
+	MGD77_cdf mgd77cdf[21].type = NC_INT;	/* EOT:  4-byte integer with 1 nGal precision */
+	MGD77_cdf mgd77cdf[21].factor = 1.0e-6;
+	MGD77_cdf mgd77cdf[22].type = NC_INT;	/* FAA:  4-byte integer with 1 nGal precision */
+}
 
 int MGD77_Write_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 {
