@@ -157,7 +157,7 @@ Give the central meridian and scale along equator (1:xxxx or UNIT/degree).
 .PP
 \fBNON-GEOGRAPHICAL PROJECTIONS:\fP
 .TP
-\fB\-Jp\fP[\fBa\fP]\fIscale\fP[\fI/origin\fP][\fBr\fP|\fBe\fP] or \fB\-JP\fP[\fBa\fP]\fIwidth\fP[\fI/origin\fP][\fBr\fP|\fBe\fP] (Polar coordinates (theta,r))
+\fB\-Jp\fP[\fBa\fP]\fIscale\fP[\fI/origin\fP][\fBr\fP|\fBz\fP] or \fB\-JP\fP[\fBa\fP]\fIwidth\fP[\fI/origin\fP][\fBr\fP|\fBz\fP] (Polar coordinates (theta,r))
 Optionally insert \fBa\fP after \fB\-Jp\fP [ or \fB\-JP\fP] for
 azimuths CW from North instead of directions CCW from East [default].
 Optionally append /\fIorigin\fP in degrees to indicate an angular offset [0]).
