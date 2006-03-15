@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.34 2005-12-17 05:59:21 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.35 2006-03-15 00:09:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -53,6 +53,7 @@
 #define GMT_IS_ARGTIME		32	/* To invoke GMT_scanf_argtime()  */
 #define GMT_IS_UNKNOWN		1024	/* Input type is not knowable without -f */
 
+EXTERN_MSC int GMT_access (const char* filename, int mode);		/* access wrapper */
 EXTERN_MSC FILE *GMT_fopen (const char* filename, const char* mode);	/* fopen wrapper */
 EXTERN_MSC int GMT_fclose (FILE *stream);				/* fclose wrapper */
 EXTERN_MSC void GMT_io_init (void);					/* Initialize pointers */
