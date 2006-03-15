@@ -1,5 +1,5 @@
 /*
- *	$Id: grdread.c,v 1.3 2006-01-17 04:09:10 pwessel Exp $
+ *	$Id: grdread.c,v 1.4 2006-03-15 00:09:57 pwessel Exp $
  *
  *      Copyright (c) 1999-2006 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -13,7 +13,7 @@
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU General Public License for more details.
  *
- *      Contact info: www.soest.hawaii.edu/wessel
+ *      Contact info: www.soest.hawaii.edu/pwessel
  *--------------------------------------------------------------------*/
 /* Program:	grdread.c
  * Purpose:	matlab callable routine to read a grd file
@@ -58,7 +58,7 @@ int grdread (double z_8[], double info[], char *filein, struct GRD_HEADER *grd)
  
  	/* Check for file access here since the exit returned by the read routine shuts down Matlab... */
 	
-	if (access (filein, R_OK)) return (2);
+	if (GMT_access (filein, R_OK)) return (2);
 		
 	/*  Read the grid */
  

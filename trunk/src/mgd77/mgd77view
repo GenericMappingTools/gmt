@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: mgd77view,v 1.1 2006-03-14 07:18:22 pwessel Exp $
+#	$Id: mgd77view,v 1.2 2006-03-15 00:09:57 pwessel Exp $
 #
 # Makes a summary plot of one cruise
 #
@@ -18,11 +18,24 @@ mgd77list $1 -Flon,lat,time,faa,gobs,ngrav,eot,mag,mtf1,mtf2,diur,igrf,depth,twt
 # Get region to nearest degree
 Rxy=`minmax -I1 -bi14d $$.1 -fg`
 
+pscoast $Rxy -JM6 -P -B5 -Gbrown -K > t.ps
+psxy -R -J -O -W0.25p $$.1 -bi14d >> t.ps
+gv t.ps &
+cp $$.1 t.b
+
 # 2. Sample the global gravity grid
 grdtrack -G$GRAVITY $$.1 -bi14d -bod $Rxy -fg > $$.2
 
 # 3. Sample the global topography grid
 grdtrack -G$RELIEF  $$.2 -bi15d -bod $Rxy -fg > $$.b
+
+mgd77info $1 -E > $$.info
+
+do_twt=`awk '{if (NR == 2) printf "%d\n", $14}' $$.info`
+do_mf=`awk '{if (NR == 2) printf "%d\n", $18+$19}' $$.info`
+do_ma=`awk '{if (NR == 2) printf "%d\n", $12}' $$.info`
+do_gf=`awk '{if (NR == 2) printf "%d\n", $24}' $$.info`
+do_ga=`awk '{if (NR == 2) printf "%d\n", $26}' $$.info`
 
 # Lay down relief pane:
 
@@ -32,11 +45,17 @@ gmtconvert -F2,15 -bi16d -bod $$.b > $$.s2004
 Rz=`minmax -I3600/500 $$.depth $$.s2004 -bi2d -f0T --TIME_SYSTEM=unix`
 Rt=`minmax -I3600/1 $$.twt -bi2d -f0T --TIME_SYSTEM=unix`
 
+B=
+if [ $do_twt -eq 0 ]; then
+	B=E
+fi
 psbasemap $Rz -JX9iT/2i -Bp7df1d/0Sn -Bs1O/0Sn -K --PLOT_DATE_FORMAT="-o yyyy" --TIME_INTERVAL_FRACTION=0.3 > $1.ps
-psbasemap -R -J -B0/a2000f500W -O -K >> $1.ps
+psbasemap -R -J -B0/a2000f500W${B} -O -K >> $1.ps
 psxy -R -J -O -K -bi2d $$.s2004 -Wfaint  --TIME_SYSTEM=unix >> $1.ps
 psxy -R -J -O -K -bi2d $$.depth -Sc0.02i -Gred  --TIME_SYSTEM=unix >> $1.ps
-psxy $Rt -J -O -K -B0/2f1E -bi2d $$.twt -Sc0.02i -Ggreen  --TIME_SYSTEM=unix >> $1.ps
+if [ $do_twt -gt 0 ]; then
+	psxy $Rt -J -O -K -B0/2f1E -bi2d $$.twt -Sc0.02i -Ggreen  --TIME_SYSTEM=unix >> $1.ps
+fi
 
 # Lay down mag pane:
 
@@ -48,13 +67,19 @@ gmtconvert -F2,11 -bi16d -bod $$.b > $$.igrf
 Rr=`minmax -I3600/500 $$.mtf? $$.igrf -bi2d -f0T --TIME_SYSTEM=unix`
 Ra=`minmax -I3600/500 $$.mag $$.diur -bi2d -f0T --TIME_SYSTEM=unix`
 
+B=
+if [ $do_ma -eq 0 ]; then
+	B=E
+fi
 psbasemap $Rr -JX9iT/2i -Bp7df1d/0sn -Bs1O/0sn -O -K -Y2.2i >> $1.ps
-psbasemap -R -J -B0/a5000f1000W -O -K >> $1.ps
+psbasemap -R -J -B0/a5000f1000W${B} -O -K >> $1.ps
 psxy -R -J -O -K -bi2d $$.igrf -Wfaint  --TIME_SYSTEM=unix >> $1.ps
 psxy -R -J -O -K -bi2d $$.mtf1 -Wfaint,red  --TIME_SYSTEM=unix >> $1.ps
 psxy -R -J -O -K -bi2d $$.mtf2 -Wfaint,green  --TIME_SYSTEM=unix >> $1.ps
-psxy $Ra -J -O -K -bi2d -B0/500f100E $$.mag -Sc0.02i -Gred  --TIME_SYSTEM=unix >> $1.ps
-psxy -R -J -O -K -bi2d $$.diur -Sc0.02i -Gblue  --TIME_SYSTEM=unix >> $1.ps
+if [ $do_ma -gt 0 ]; then
+	psxy $Ra -J -O -K -bi2d -B0/500f100E $$.mag -Sc0.02i -Gred  --TIME_SYSTEM=unix >> $1.ps
+	psxy -R -J -O -K -bi2d $$.diur -Sc0.02i -Gblue  --TIME_SYSTEM=unix >> $1.ps
+fi
 
 # Lay down grav pane:
 
@@ -65,12 +90,18 @@ gmtconvert -F2,6 -bi16d -bod $$.b > $$.eot
 Rr=`minmax -I3600/500 $$.gobs $$.ngrav -bi2d -f0T --TIME_SYSTEM=unix`
 Ra=`minmax -I3600/50 $$.faa $$.eot -bi2d -f0T --TIME_SYSTEM=unix`
 
+B=
+if [ $do_ga -eq 0 ]; then
+	B=E
+fi
 psbasemap $Rr -JX9iT/2i -Bp7df1d/0sn -Bs1O/0sn -O -K -Y2.2i >> $1.ps
-psbasemap -R -J -B0/a500f100W -O -K >> $1.ps
+psbasemap -R -J -B0/a500f100W${B} -O -K >> $1.ps
 psxy -R -J -O -K -bi2d $$.ngrav -Wfaint,red --TIME_SYSTEM=unix >> $1.ps
 psxy -R -J -O -K -bi2d $$.gobs -Wfaint,green --TIME_SYSTEM=unix >> $1.ps
-psxy $Ra -J -O -K -bi2d -B0/100f50E $$.faa -Sc0.02i -Gred --TIME_SYSTEM=unix >> $1.ps
-psxy -R -J -O -K -bi2d $$.eot -Sc0.02i -Gblue --TIME_SYSTEM=unix >> $1.ps
+if [ $do_ga -gt 0 ]; then
+	psxy $Ra -J -O -K -bi2d -B0/100f50E $$.faa -Sc0.02i -Gred --TIME_SYSTEM=unix >> $1.ps
+	psxy -R -J -O -K -bi2d $$.eot -Sc0.02i -Gblue --TIME_SYSTEM=unix >> $1.ps
+fi
 
 # Trailer
 psxy -R -J -O /dev/null >> $1.ps

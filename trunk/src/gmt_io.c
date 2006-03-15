@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.95 2006-03-08 06:09:43 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.96 2006-03-15 00:09:56 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -136,6 +136,7 @@ FILE *GMT_fopen (const char* filename, const char* mode)
 {
 	FILE *fp;
 	char path[BUFSIZ];
+
 	if ((fp = fopen (filename, mode))) return (fp);
 	if (mode[0] != 'r') return (NULL);	/* Only look in special diretories when reading, not writing */
 	if (GMT_DATADIR) {
@@ -151,6 +152,28 @@ FILE *GMT_fopen (const char* filename, const char* mode)
 		if ((fp = fopen (path, mode))) return (fp);
 	}
 	return (NULL);
+}
+
+int GMT_access (const char* filename, int mode)
+{	/* Like access but also checks the GMT_*DIR places */
+	FILE *fp;
+	char path[BUFSIZ];
+
+	if (!(access (filename, mode))) return (0);
+	if (mode == W_OK) return (-1);	/* Only look in special diretories when reading, not writing */
+	if (GMT_DATADIR) {
+		 sprintf (path, "%s%c%s", GMT_DATADIR, DIR_DELIM, filename);
+		 if (!(access (path, mode))) return (0);
+	}
+	if (GMT_GRIDDIR) {
+		sprintf (path, "%s%c%s", GMT_GRIDDIR, DIR_DELIM, filename);
+		 if (!(access (path, mode))) return (0);
+	}
+	if (GMT_IMGDIR) {
+		sprintf (path, "%s%c%s", GMT_IMGDIR, DIR_DELIM, filename);
+		 if (!(access (path, mode))) return (0);
+	}
+	return (-1);
 }
 
 int GMT_fclose (FILE *stream)
