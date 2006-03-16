@@ -526,6 +526,12 @@ is then used to guide the plotting of geographical coordinates in data fields.  
 the coordinate.  The default is +ddd:mm:ss.  Not all items may be plotted as this depends on the annotation 
 interval.
 .TP
+.B POLAR_CAP
+Controls the appearance of gridlines near the poles for azimuthal projections.  Specify either none (in which
+case there is no special handling) or \fIpc_lat\fP/\fIpc_dlon\fP.  In that case, normal gridlines are only drawn between
+the latitudes -\fIpc_lat\fP/+\fIpc_lat\fP, and above those latitudes the gridlines are spaced at the (presumably coarser)
+\fIpc_dlon\fP interval; the two domains are separated by a small circle drawn at the \fIpc_lat\fP latitude [85/90].
+.TP
 .B PS_COLOR
 Determines whether PostScript output should use RGB, HSV, or CMYK when specifying color [RGB].
 Note if HSV is selected it does not apply to images which in that case uses RGB.

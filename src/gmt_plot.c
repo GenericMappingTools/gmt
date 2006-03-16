@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.166 2006-03-13 04:42:47 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.167 2006-03-16 00:22:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -566,12 +566,38 @@ void GMT_define_baselines ()
 
 void GMT_linearx_grid (double w, double e, double s, double n, double dval)
 {
-	double *x;
+	double *x, ys, yn;
 	int i, nx;
+	BOOLEAN cap = FALSE;
 
+	if (AZIMUTHAL) {	/* Might have two separate domains of gridlines */
+		ys = MAX (s, -gmtdefs.polar_cap[0]);
+		yn = MIN (n, gmtdefs.polar_cap[0]);
+		cap = (fabs (gmtdefs.polar_cap[0] - 90.0) > GMT_CONV_LIMIT);
+	}
+	else {
+		ys = s;
+		yn = n;
+	}
 	nx = GMT_linear_array (w, e, dval, frame_info.axis[0].phase, &x);
-	for (i = 0; i < nx; i++) GMT_map_lonline (x[i], s, n);
-	if (nx) GMT_free ((char *)x);
+	for (i = 0; i < nx; i++) GMT_map_lonline (x[i], ys, yn);
+	if (nx) GMT_free ((void *)x);
+
+	if (cap) {	/* Also draw the polar cap(s) */
+		nx = 0;
+		if (s < -gmtdefs.polar_cap[0]) {	/* Must draw some or all of the S polar cap */
+			nx = GMT_linear_array (w, e, gmtdefs.polar_cap[1], frame_info.axis[0].phase, &x);
+			for (i = 0; i < nx; i++) GMT_map_lonline (x[i], s, -gmtdefs.polar_cap[0]);
+			GMT_map_latline (-gmtdefs.polar_cap[0], w, e);
+		}
+		if (n > gmtdefs.polar_cap[0]) {	/* Must draw some or all of the N polar cap */
+			if (nx == 0) nx = GMT_linear_array (w, e, gmtdefs.polar_cap[1], frame_info.axis[0].phase, &x);
+			for (i = 0; i < nx; i++) GMT_map_lonline (x[i], gmtdefs.polar_cap[0], n);
+			GMT_map_latline (gmtdefs.polar_cap[0], w, e);
+		}
+		if (nx) GMT_free ((void *)x);
+	}
+	
 }
 
 void GMT_lineary_grid (double w, double e, double s, double n, double dval)
@@ -581,7 +607,8 @@ void GMT_lineary_grid (double w, double e, double s, double n, double dval)
 
 	ny = GMT_linear_array (s, n, dval, frame_info.axis[1].phase, &y);
 	for (i = 0; i < ny; i++) GMT_map_latline (y[i], w, e);
-	if (ny) GMT_free ((char *)y);
+	if (ny) GMT_free ((void *)y);
+	
 }
 
 void GMT_timex_grid (double w, double e, double s, double n, int item)
@@ -594,7 +621,7 @@ void GMT_timex_grid (double w, double e, double s, double n, int item)
 		GMT_geoplot (x[i], s, +3);
 		GMT_geoplot (x[i], n, -2);
 	}
-	if (nx) GMT_free ((char *)x);
+	if (nx) GMT_free ((void *)x);
 }
 
 void GMT_timey_grid (double w, double e, double s, double n, int item)
@@ -607,7 +634,7 @@ void GMT_timey_grid (double w, double e, double s, double n, int item)
 		GMT_geoplot (w, y[i], +3);
 		GMT_geoplot (e, y[i], -2);
 	}
-	if (ny) GMT_free ((char *)y);
+	if (ny) GMT_free ((void *)y);
 }
 
 void GMT_logx_grid (double w, double e, double s, double n, double dval)
@@ -620,7 +647,7 @@ void GMT_logx_grid (double w, double e, double s, double n, double dval)
 		GMT_geoplot (x[i], s, +3);
 		GMT_geoplot (x[i], n, -2);
 	}
-	if (nx) GMT_free ((char *)x);
+	if (nx) GMT_free ((void *)x);
 }
 
 void GMT_logy_grid (double w, double e, double s, double n, double dval)
@@ -633,7 +660,7 @@ void GMT_logy_grid (double w, double e, double s, double n, double dval)
 		GMT_geoplot (w, y[i], +3);
 		GMT_geoplot (e, y[i], -2);
 	}
-	if (ny) GMT_free ((char *)y);
+	if (ny) GMT_free ((void *)y);
 }
 
 void GMT_powx_grid (double w, double e, double s, double n, double dval)
@@ -646,7 +673,7 @@ void GMT_powx_grid (double w, double e, double s, double n, double dval)
 		GMT_geoplot (x[i], s, +3);
 		GMT_geoplot (x[i], n, -2);
 	}
-	if (nx) GMT_free ((char *)x);
+	if (nx) GMT_free ((void *)x);
 }
 
 void GMT_powy_grid (double w, double e, double s, double n, double dval)
@@ -659,7 +686,7 @@ void GMT_powy_grid (double w, double e, double s, double n, double dval)
 		GMT_geoplot (w, y[i], +3);
 		GMT_geoplot (e, y[i], -2);
 	}
-	if (ny) GMT_free ((char *)y);
+	if (ny) GMT_free ((void *)y);
 }
 
 /*	FANCY RECTANGULAR PROJECTION MAP BOUNDARY	*/
@@ -1561,7 +1588,7 @@ void GMT_map_gridlines (double w, double e, double s, double n)
 void GMT_map_gridcross (double w, double e, double s, double n)
 {
 	int i, j, k, nx, ny, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
-	double x0, y0, x1, y1, xa, xb, ya, yb, *x, *y;
+	double x0, y0, x1, y1, xa, xb, ya, yb, xi, yj, *x, *y;
 	double x_angle, y_angle, xt1, xt2, yt1, yt2, C, S, L;
 
 	char *comment[2] = {"Map gridcrosses (primary)", "Map gridcrosses (secondary)"};
@@ -1588,10 +1615,16 @@ void GMT_map_gridcross (double w, double e, double s, double n)
 			for (j = 0; j < ny; j++) {
 
 				if (!GMT_map_outside (x[i], y[j])) {	/* Inside map */
-
-					GMT_geo_to_xy (x[i], y[j], &x0, &y0);
+					yj = y[j];
+					if (AZIMUTHAL && fabs (fabs (yj - 90.0)) < GMT_CONV_LIMIT) {	/* Only place one grid cross at the poles for azimuthal maps */
+						xi = project_info.central_meridian;
+						j = ny;	/* This ends the loop after this round */
+					}
+					else
+						xi = x[i];
+					GMT_geo_to_xy (xi, yj, &x0, &y0);
 					if (MAPPING) {
-						GMT_geo_to_xy (x[i] + gmtdefs.dlon, y[j], &x1, &y1);
+						GMT_geo_to_xy (xi + gmtdefs.dlon, yj, &x1, &y1);
 						x_angle = d_atan2 (y1-y0, x1-x0);
 						sincos (x_angle, &S, &C);
 						xa = x0 - L * C;
@@ -1623,7 +1656,7 @@ void GMT_map_gridcross (double w, double e, double s, double n)
 					ps_plot (xt2, yt2, -2);
 
 					if (MAPPING) {
-						GMT_geo_to_xy (x[i], y[j] - copysign (gmtdefs.dlat, y[j]), &x1, &y1);
+						GMT_geo_to_xy (xi, yj - copysign (gmtdefs.dlat, yj), &x1, &y1);
 						y_angle = d_atan2 (y1-y0, x1-x0);
 						sincos (y_angle, &S, &C);
 						xa = x0 - L * C;

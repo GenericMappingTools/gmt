@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.118 2006-03-11 04:19:16 pwessel Exp $
+ *	$Id: gmt.h,v 1.119 2006-03-16 00:22:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -216,9 +216,9 @@ typedef double GMT_dtime;	/* GMT internal time representation */
  *--------------------------------------------------------------------*/
 
 #define N_UNIQUE 59		/* Number of unique options */
-#define N_KEYS 120		/* Number of gmt defaults */
+#define N_KEYS 121		/* Number of gmt defaults */
 #define GMT_N_MEDIA 29		/* Number of standard paper formats in the GMT_media_names.h include file */
-#define HASH_SIZE 120		/* Used in get_gmtdefaults, should be ~> N_KEYS */
+#define HASH_SIZE 121		/* Used in get_gmtdefaults, should be ~> N_KEYS */
 #define GMT_N_SYSTEMS 8		/* Number of time systems in gmt_time_systems.h */
 /* This structure contains default parameters for the GMT system */
 
@@ -296,6 +296,7 @@ struct GMTDEFAULTS {
 	int page_rgb[3];		/* Color of the page [255/255/255 white] */
 	int page_orientation;		/* Orientation of page [0 = Landscape, 1 = Portrait] */
 	int paper_width[2];		/* Width and height of paper to plot on in points [Letter or A4] */
+	double polar_cap[2];		/* Latitude of polar cap and delta_lon for gridline spacing [85/90] */
 	BOOLEAN ps_colormode;		/* 2 writes HSV in PostScript, 1 writes CMYK, 0 uses RGB [0] */
 	int ps_compress;		/* Compression of PostScript images: 0 = no, 1 = RLE, 2 = LZW [0] */
 	BOOLEAN ps_heximage;		/* TRUE gives hex ps output image, FALSE gives binary image [TRUE] */
