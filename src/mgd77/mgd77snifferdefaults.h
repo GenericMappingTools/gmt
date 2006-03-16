@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77snifferdefaults.h,v 1.2 2006-02-21 02:14:24 mtchandl Exp $	
+ *	$Id: mgd77snifferdefaults.h,v 1.3 2006-03-16 07:36:49 pwessel Exp $	
  *
  *	File:	mgd77snifferdefaults.h
  *
@@ -33,7 +33,7 @@
 {   "mag",    -800,     800,     10,    .29,    200,     38,    FALSE},
 { "msens",   FALSE,   FALSE,  FALSE,  FALSE,  FALSE,  FALSE,    FALSE},
 {  "diur",    -100,     100,      2,    .05,     20,      3,    FALSE},
-{   "msd",   -1000,   10000,     10,    .33,   1000,     10,    FALSE},
+{   "msd",   -1000,   11000,     10,    .33,   1000,     10,    FALSE},
 {  "gobs",  975900,  986000,      5,   .043,    100,    3.6,    FALSE},
 {   "eot",    -150,     150,      2,   .033,    100,    2.4,    FALSE},
 {   "faa",    -250,     250,      5,   .045,    100,    4.8,     2500},
