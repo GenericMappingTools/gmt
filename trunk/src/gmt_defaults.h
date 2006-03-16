@@ -55,6 +55,7 @@
 	{255, 255, 255},	/* PAGE_COLOR */
 	0,			/* PAGE_ORIENTATION */
 	{612, 792},		/* PAPER_MEDIA (US Letter) */
+	{85.0, 90.0},		/* POLAR_CAP (controls gridlines near poles) */
 	0,			/* PS_COLOR (2 = HSV, 1 = CMYK, 0 = RGB) */
 	0,			/* PS_IMAGE_COMPRESS (0 = NONE, 1 = RLE, 2 = LZW) */
 	TRUE,			/* PS_IMAGE_FORMAT (TRUE = HEX, FALSE = BIN) */

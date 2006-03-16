@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.217 2006-03-13 04:42:47 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.218 2006-03-16 00:22:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1767,6 +1767,18 @@ int GMT_setparameter (char *keyword, char *value)
 				if (eps) gmtdefs.paper_width[1] = -gmtdefs.paper_width[1];
 			}
 			break;
+		case GMTCASE_POLAR_CAP:
+			if (!strcmp (lower_value, "none")) {	/* Means reset to no cap -> lat = 90, dlon = 0 */
+				gmtdefs.polar_cap[0] = 90.0;
+				gmtdefs.polar_cap[1] = 0.0;
+			}
+			else {
+				i = sscanf (lower_value, "%[^/]/%s", txt_a, txt_b);
+				if (i != 2) error = TRUE;
+				error = GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_a, GMT_IS_LAT, &gmtdefs.polar_cap[0]), txt_a);
+				error += GMT_getinc (txt_b, &gmtdefs.polar_cap[1], &dval);
+			}
+			break;
 		case GMTCASE_PS_COLOR:
 			if (!strcmp (lower_value, "rgb"))
 				gmtdefs.ps_colormode = 0;
@@ -2092,7 +2104,7 @@ BOOLEAN true_false_or_error (char *value, int *answer)
 int GMT_savedefaults (char *file)
 {
 	FILE *fp;
-	char u, abbrev[4] = {'c', 'i', 'm', 'p'}, pm[2] = {'+', '-'};
+	char u, abbrev[4] = {'c', 'i', 'm', 'p'}, pm[2] = {'+', '-'}, txt[GMT_TEXT_LEN];
 	double s;
 
 	if (!file)
@@ -2160,6 +2172,10 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "GRID_PEN_SECONDARY	= %s\n", GMT_putpen (&gmtdefs.grid_pen[1]));
 	fprintf (fp, "MAP_SCALE_HEIGHT	= %g%c\n", gmtdefs.map_scale_height * s, u);
 	(GMT_force_resize) ? fprintf (fp, "TICK_LENGTH		= %g%c\n", save_tick_length * s, u) :  fprintf (fp, "TICK_LENGTH		= %g%c\n", gmtdefs.tick_length * s, u);
+	if (fabs (gmtdefs.polar_cap[0] - 90.0) < GMT_CONV_LIMIT)
+		fprintf (fp, "POLAR_CAP		= none\n");
+	else
+		fprintf (fp, "POLAR_CAP		= %g/%g\n", gmtdefs.polar_cap[0], gmtdefs.polar_cap[1]);
 	fprintf (fp, "TICK_PEN		= %s\n", GMT_putpen (&gmtdefs.tick_pen));
 	fprintf (fp, "X_AXIS_LENGTH		= %g%c\n", gmtdefs.x_axis_length * s, u);
 	fprintf (fp, "Y_AXIS_LENGTH		= %g%c\n", gmtdefs.y_axis_length * s, u);
