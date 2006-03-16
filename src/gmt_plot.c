@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.167 2006-03-16 00:22:22 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.168 2006-03-16 00:53:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -570,7 +570,7 @@ void GMT_linearx_grid (double w, double e, double s, double n, double dval)
 	int i, nx;
 	BOOLEAN cap = FALSE;
 
-	if (AZIMUTHAL) {	/* Might have two separate domains of gridlines */
+	if (POLE_IS_POINT) {	/* Might have two separate domains of gridlines */
 		ys = MAX (s, -gmtdefs.polar_cap[0]);
 		yn = MIN (n, gmtdefs.polar_cap[0]);
 		cap = (fabs (gmtdefs.polar_cap[0] - 90.0) > GMT_CONV_LIMIT);
@@ -1611,14 +1611,14 @@ void GMT_map_gridcross (double w, double e, double s, double n)
 
 		L = 0.5 * gmtdefs.grid_cross_size[k];
 
-		for (i = 0; i < nx; i++) {
-			for (j = 0; j < ny; j++) {
+		for (j = 0; j < ny; j++) {
+			for (i = 0; i < nx; i++) {
 
 				if (!GMT_map_outside (x[i], y[j])) {	/* Inside map */
 					yj = y[j];
-					if (AZIMUTHAL && fabs (fabs (yj - 90.0)) < GMT_CONV_LIMIT) {	/* Only place one grid cross at the poles for azimuthal maps */
+					if (POLE_IS_POINT && fabs (fabs (yj) - 90.0) < GMT_CONV_LIMIT) {	/* Only place one grid cross at the poles for maps where the poles are points */
 						xi = project_info.central_meridian;
-						j = ny;	/* This ends the loop after this round */
+						i = nx;	/* This ends the loop for this particular latitude */
 					}
 					else
 						xi = x[i];
