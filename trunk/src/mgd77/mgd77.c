@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.130 2006-03-14 07:45:39 pwessel Exp $
+ *	$Id: mgd77.c,v 1.131 2006-03-16 07:36:49 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -111,34 +111,34 @@ struct MGD77_cdf {
 };
 
 struct MGD77_cdf mgd77cdf[MGD77_N_DATA_EXTENDED] = {
-	{ NC_BYTE,	1,	1.0,	0.0, "", "Normally 5" },
-	{ NC_BYTE,	1,	1.0,	0.0, "hours", "-13 to +12 inclusive" },
-	{ NC_BYTE,	1,	1.0,	0.0, "year", "Year of the survey" },
-	{ NC_BYTE,	1,	1.0,	0.0, "month", "1 to 12 inclusive" },
-	{ NC_BYTE,	1,	1.0,	0.0, "day", "1 to 31 inclusive" },
-	{ NC_BYTE,	1,	1.0,	0.0, "hour", "0 to 23 inclusive" },
-	{ NC_BYTE,	1,	1.0,	0.0, "min", "Decimal minutes with 0.001 precision, 0 to 59.999" },
-	{ NC_INT,	1,	1.0e-7,	0.0, "degrees_north", "Negative south of Equator" },	/* 1e-7 gives < 1 cm precision in position */
-	{ NC_INT,	1,	1.0e-7,	0.0, "degrees_east", "Negative west of Greenwich" },
-	{ NC_BYTE,	1,	1.0,	0.0, "", "Observed (1), Interpolated (3), or Unspecified (9)" },
-	{ NC_INT,	1,	1.0e-6,	0.0, "second", "Corrected for transducer depth, etc." },	/* 1e-6 s precision implies < 1 mm depth precision */
-	{ NC_INT,	1,	1.0e-4,	0.0, "meter", "Corrected for sound velocity variations (if known)" },	/* 1e-4m is 0.1 mm precision */
-	{ NC_BYTE,	1,	1.0,	0.0, "", "01-55 (= Matthew's zone), 59 (Matthew's zone unknown), 60 (Kuwahara), 61 (Wilson), 62 (Del Grosso) 63 (Carter), 88 (Other; see header), 98 (Unknown), or 99 (Unspecified)" },
-	{ NC_BYTE,	1,	1.0,	0.0, "", "Observed (1), Interpolated (3), or Unspecified (9)" },
-	{ NC_INT,	1,	1.0e-4,	0.0, "gamma", "Leading sensor" },	/* 1e-4 nTesla is 100 fTesla precision */
-	{ NC_INT,	1,	1.0e-4,	0.0, "gamma", "Trailing sensor" },
-	{ NC_SHORT,	1,	1.0e-1,	0.0, "gamma", "Corrected for reference field (see header)" },	/* 0.1 nTesla precision */
-	{ NC_BYTE,	1,	1.0,	0.0, "", "Magnetic sensor used: 1, 2, or Unspecified (9)" },
-	{ NC_SHORT,	1,	1.0e-1,	0.0, "gamma", "Already applied to data" },	/* 0.1 nTesla precision */
-	{ NC_SHORT,	1,	1.0e-2,	0.0, "meter", "Positive below sealevel" },	/* 1 cm precision */
-	{ NC_INT,	1,	1.0e-5,	980000.0, "mGal", "Corrected for Eotvos, drift, and tares" },	/* 1e-5 is 10 nGal precision */
-	{ NC_SHORT,	1,	1.0e-1,	0.0, "mGal", "7.5 V cos (lat) sin (azim) + 0.0042 V*V" },	/* 1e-1 is 0.1 mGal precision */
-	{ NC_SHORT,	1,	1.0e-1,	0.0, "mGal", "Observed - theoretical" },
-	{ NC_BYTE,	1,	1.0,	0.0, "", "Suspected by (5) source agency, (6) NGDC, or no problems found (9)" },
-	{ NC_BYTE,	8,	1.0,	0.0, "", "Identical to ID in header" },
-	{ NC_BYTE,	5,	1.0,	0.0, "", "For cross-referencing with seismic data" },
-	{ NC_BYTE,	6,	1.0,	0.0, "", "For cross-referencing with seismic data" },
-	{ NC_DOUBLE,	1,	1.0,	0.0, "seconds since 1970-01-01 00:00:00 0", "UTC time, subtract TZ to get ship local time" }
+/* DRT */	{ NC_BYTE,	1,	1.0,	0.0, "", "Normally 5" },
+/* TZ */	{ NC_BYTE,	1,	1.0,	0.0, "hours", "-13 to +12 inclusive" },
+/* YEAR */	{ NC_BYTE,	1,	1.0,	0.0, "year", "Year of the survey" },
+/* MONTH */	{ NC_BYTE,	1,	1.0,	0.0, "month", "1 to 12 inclusive" },
+/* DAY */	{ NC_BYTE,	1,	1.0,	0.0, "day", "1 to 31 inclusive" },
+/* HOUR */	{ NC_BYTE,	1,	1.0,	0.0, "hour", "0 to 23 inclusive" },
+/* MIN */	{ NC_BYTE,	1,	1.0,	0.0, "min", "Decimal minutes with 0.001 precision, 0 to 59.999" },
+/* LAT */	{ NC_INT,	1,	1.0e-7,	0.0, "degrees_north", "Negative south of Equator" },	/* 1e-7 gives < 1 cm precision in position */
+/* LON */	{ NC_INT,	1,	1.0e-7,	0.0, "degrees_east", "Negative west of Greenwich" },
+/* PTC */	{ NC_BYTE,	1,	1.0,	0.0, "", "Observed (1), Interpolated (3), or Unspecified (9)" },
+/* TWT */	{ NC_INT,	1,	1.0e-8,	0.0, "second", "Corrected for transducer depth, etc." },	/* 1e-8 s precision implies < 10 ns twt precision ~ 7.5 um */
+/* DEPTH */	{ NC_INT,	1,	1.0e-5,	0.0, "meter", "Corrected for sound velocity variations (if known)" },	/* 1e-5m is 0.01 mm precision */
+/* BCC */	{ NC_BYTE,	1,	1.0,	0.0, "", "01-55 (= Matthew's zone), 59 (Matthew's zone unknown), 60 (Kuwahara), 61 (Wilson), 62 (Del Grosso) 63 (Carter), 88 (Other; see header), 98 (Unknown), or 99 (Unspecified)" },
+/* BTC */	{ NC_BYTE,	1,	1.0,	0.0, "", "Observed (1), Interpolated (3), or Unspecified (9)" },
+/* MTF1 */	{ NC_INT,	1,	1.0e-4,	0.0, "gamma", "Leading sensor" },	/* 1e-4 nTesla is 100 fTesla precision */
+/* MTF2 */	{ NC_INT,	1,	1.0e-4,	0.0, "gamma", "Trailing sensor" },
+/* MAG */	{ NC_SHORT,	1,	1.0e-1,	0.0, "gamma", "Corrected for reference field (see header)" },	/* 0.1 nTesla precision */
+/* MSENS */	{ NC_BYTE,	1,	1.0,	0.0, "", "Magnetic sensor used: 1, 2, or Unspecified (9)" },
+/* DIUR */	{ NC_SHORT,	1,	1.0e-1,	0.0, "gamma", "Already applied to data" },	/* 0.1 nTesla precision */
+/* MSD */	{ NC_INT,	1,	1.0e-5,	0.0, "meter", "Positive below sealevel" },	/* 0.01 mmm precision */
+/* GOBS */	{ NC_INT,	1,	1.0e-5,	980000.0, "mGal", "Corrected for Eotvos, drift, and tares" },	/* 1e-5 is 10 nGal precision */
+/* EOT */	{ NC_SHORT,	1,	1.0e-1,	0.0, "mGal", "7.5 V cos (lat) sin (azim) + 0.0042 V*V" },	/* 1e-1 is 0.1 mGal precision */
+/* FAA */	{ NC_SHORT,	1,	1.0e-1,	0.0, "mGal", "Observed - theoretical" },
+/* NQC */	{ NC_BYTE,	1,	1.0,	0.0, "", "Suspected by (5) source agency, (6) NGDC, or no problems found (9)" },
+/* ID */	{ NC_BYTE,	8,	1.0,	0.0, "", "Identical to ID in header" },
+/* SLN */	{ NC_BYTE,	5,	1.0,	0.0, "", "For cross-referencing with seismic data" },
+/* SSPN */	{ NC_BYTE,	6,	1.0,	0.0, "", "For cross-referencing with seismic data" },
+/* TIME */	{ NC_DOUBLE,	1,	1.0,	0.0, "seconds since 1970-01-01 00:00:00 0", "UTC time, subtract TZ to get ship local time" }
 };
 
 char *aux_names[N_AUX] = {
