@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.228 2006-03-12 23:29:05 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.229 2006-03-17 02:35:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2583,16 +2583,21 @@ void GMT_contlabel_fixpath (double **xin, double **yin, double d[], int *n, stru
 	for (k = 0, i = j = 0; i < *n && j < np && k < G->n_label; k++) {
 		while (i < *n && d[i] < G->L[k]->dist) {	/* Not at the label point yet - just copy points */
 			xp[j] = x[i];
-			yp[j++] = y[i++];
+			yp[j] = y[i];
+			j++;
+			i++;
 		}
 		/* Add the label point */
 		G->L[k]->node = j;		/* Update node since we have been adding new points */
 		xp[j] = G->L[k]->x;
-		yp[j++] = G->L[k]->y;
+		yp[j] = G->L[k]->y;
+		j++;
 	}
 	while (i < *n) {	/* Append the rest of the path */
 		xp[j] = x[i];
-		yp[j++] = y[i++];
+		yp[j] = y[i];
+		j++;
+		i++;
 	}
 
 	GMT_free ((void *)x);	/* Get rid of old path... */
@@ -3338,7 +3343,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 		for (i = 1; i < nn; i++) {
 			/* Distance from xy */
 			dx = xx[i] - xx[i-1];
-			if (fabs (dx) > (width = GMT_half_map_width (yy[i-1]))) {
+			if (MAPPING && GMT_world_map && fabs (dx) > (width = GMT_half_map_width (yy[i-1]))) {
 				width *= 2.0;
 				dx = copysign (width - fabs (dx), -dx);
 				if (xx[i] < width)
@@ -3371,7 +3376,8 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 
 			dist_offset = (closed && G->dist_kind == 0) ? (1.0 - G->label_dist_frac) * G->label_dist_spacing : 0.0;	/* Label closed contours longer than frac of dist_spacing */
 			last_label_dist = 0.0;
-			for (i = 1; i < nn; i++) {
+			i = 1;
+			while (i < nn) {
 
 				dist = track_dist[i] + dist_offset - last_label_dist;
 				if (dist > G->label_dist_spacing) {	/* Time for label */
@@ -3404,6 +3410,8 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 					dist_offset = 0.0;
 					last_label_dist = this_dist;
 				}
+				else	/* Go to next point in line */
+					i++;
 			}
 		}
 		if (G->number) {	/* Place prescribed number of labels evenly along contours */

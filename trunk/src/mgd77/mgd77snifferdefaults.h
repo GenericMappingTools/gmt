@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77snifferdefaults.h,v 1.4 2006-03-16 22:34:09 pwessel Exp $	
+ *	$Id: mgd77snifferdefaults.h,v 1.5 2006-03-17 02:39:52 pwessel Exp $	
  *
  *	File:	mgd77snifferdefaults.h
  *
@@ -30,7 +30,7 @@
 {   "btc",   FALSE,   FALSE,  FALSE,  FALSE,  FALSE,  FALSE,    FALSE},
 {  "mtf1",   19000,   72000,    200,    .32,    200,     40,    FALSE},
 {  "mtf2",   19000,   72000,    200,    .32,    200,     40,    FALSE},
-{   "mag",    -800,     800,     10,    .29,    200,     38,    FALSE},
+{   "mag",   -1000,    1000,     10,    .29,    200,     38,    FALSE},
 { "msens",   FALSE,   FALSE,  FALSE,  FALSE,  FALSE,  FALSE,    FALSE},
 {  "diur",    -100,     100,      2,    .05,     20,      3,    FALSE},
 {   "msd",   -1000,   11000,     10,    .33,   1000,     10,    FALSE},
