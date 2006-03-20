@@ -28,7 +28,7 @@ have the same number of columns (as set with \fB\-bi\fP).
 For multiple segment data, dump each segment to a separate output file [Default writes a multiple segment
 file to stdout].  Append a format template for the individual file names; this template \fBmust\fP contain a
 C format specifier that can format an integer argument (the segment number); this is usually %d but could
-be %8.8d which gives leading zeros, etc. [Default is gmtconvert_seg_%d.d].
+be %8.8d which gives leading zeros, etc. [Default is gmtconvert_segment_%d.d].
 .TP
 .B \-E
 Only extract the first and last record for each segment of interest [Default extracts
