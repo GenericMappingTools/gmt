@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.44 2006-03-14 22:02:59 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.45 2006-03-20 23:03:54 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -303,11 +303,11 @@ void GMT_gcal_from_rd (GMT_cal_rd date, struct GMT_gcal *gcal) {
 }
 
 double	GMT_usert_from_dt (GMT_dtime t) {
-	double x;
-	
 #ifndef OLDCAL
 	return (t);
 #else
+	double x;
+
 	x = t - GMT_time_system[gmtdefs.time_system].epoch_t0;
 	if (GMT_time_system[gmtdefs.time_system].i_scale != 1.0) x *= GMT_time_system[gmtdefs.time_system].i_scale;
 	return (x);

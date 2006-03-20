@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.218 2006-03-16 00:22:22 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.219 2006-03-20 23:03:54 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2104,7 +2104,7 @@ BOOLEAN true_false_or_error (char *value, int *answer)
 int GMT_savedefaults (char *file)
 {
 	FILE *fp;
-	char u, abbrev[4] = {'c', 'i', 'm', 'p'}, pm[2] = {'+', '-'}, txt[GMT_TEXT_LEN];
+	char u, abbrev[4] = {'c', 'i', 'm', 'p'}, pm[2] = {'+', '-'};
 	double s;
 
 	if (!file)
