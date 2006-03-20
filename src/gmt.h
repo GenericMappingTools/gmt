@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.119 2006-03-16 00:22:22 pwessel Exp $
+ *	$Id: gmt.h,v 1.120 2006-03-20 02:06:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -443,19 +443,6 @@ struct MAP_ROSE {	/* Used to plot a map direction "rose" in psbasemap and pscoas
 struct GMT_FONT {		/* Information for each font */
 	char *name;			/* Name of the font */
 	double height;			/* Height of letter "A" for unit fontsize */
-};
-
-struct GMT_LINES {		/* For holding multisegment lines in memory */
-	double *lon, *lat;	/* Coordinates x,y */
-	double dist;		/* Distance from a point to this feature */
-	double min_lon, max_lon;	/* Extreme lon coordinates */
-	double min_lat, max_lat;	/* Extreme lat coordinates */
-	int *seg;		/* Segment number information */
-	int np;			/* Number of points in this segment */
-	char *label;		/* Label string (if applicable) */
-	/* For spherical polygons only */
-	int polar;		/* TRUE if a polygon and enclosing N or S pole */
-	int pole;		/* -1 of +1, depending on which pole that serves as projection origin */
 };
 
 /*--------------------------------------------------------------------*/

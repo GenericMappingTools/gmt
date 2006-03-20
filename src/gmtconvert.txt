@@ -2,7 +2,7 @@
 .SH NAME
 gmtconvert \- Converts, Pastes, and/or Extracts columns from ASCII and binary 1-D tables
 .SH SYNOPSIS
-\fBgmtconvert\fP [ \fIinputfiles\fP] [ \fB\-A\fP ] [ \fB\-E\fP ] [ \fB\-F\fIcols\fP ] [ \fB\-H\fP[\fInrec\fP] ] 
+\fBgmtconvert\fP [ \fIinputfiles\fP] [ \fB\-A\fP ] [ \fB\-D\fP[\fItemplate\fP] ] [ \fB\-E\fP ] [ \fB\-F\fIcols\fP ] [ \fB\-H\fP[\fInrec\fP] ] 
 [ \fB\-L\fP ] [ \fB\-I\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N ] [ \fB\-S\fP\fI"search string"\fP ] [ \fB\-V\fP ] 
 [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP]\fIn\fP ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
 .SH DESCRIPTION
@@ -23,6 +23,12 @@ ASCII (or binary, see \fB\-bi\fP) file(s) holding a number of data columns.
 The records from the input files should be pAsted horizontally, not appended vertically.  [Default
 processes one file at the time].  Note for binary input, all the files you want to paste must
 have the same number of columns (as set with \fB\-bi\fP).
+.TP
+.B \-D
+For multiple segment data, dump each segment to a separate output file [Default writes a multiple segment
+file to stdout].  Append a format template for the individual file names; this template \fBmust\fP contain a
+C format specifier that can format an integer argument (the segment number); this is usually %d but could
+be %8.8d which gives leading zeros, etc. [Default is gmtconvert_seg_%d.d].
 .TP
 .B \-E
 Only extract the first and last record for each segment of interest [Default extracts

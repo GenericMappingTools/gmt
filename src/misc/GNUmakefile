@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.1 2006-03-19 04:39:19 pwessel Exp $
+#	$Id: GNUmakefile,v 1.2 2006-03-20 02:06:24 pwessel Exp $
 #	makefile for misc directory
 #
 
@@ -54,4 +54,4 @@ $(MISC):	$(MISC_O)
 		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
 
 .c.o:
-		$(CC) -c $(CFLAGS) $<
+		$(CC) -c $(CFLAGS) -DDEBUG -Wall $<

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.96 2006-03-15 00:09:56 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.97 2006-03-20 02:06:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2617,7 +2617,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 {
 	FILE *fp;
 	struct GMT_LINES *e;
-	int i = -1, j = 0, n, i_alloc = GMT_CHUNK, n_read = 0, j_alloc = GMT_CHUNK;
+	int i = -1, j = 0, k, n, i_alloc = GMT_CHUNK, n_read = 0, j_alloc = GMT_CHUNK;
 	int n_fields, n_expected_fields;
 	BOOLEAN save, ascii;
 	double d, *in;
@@ -2653,7 +2653,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 		exit (EXIT_FAILURE);
 	}
 	if (!(GMT_io.status & GMT_IO_SEGMENT_HEADER)) {	/* Quick check up front that it is a -M kind of file */
-		fprintf (stderr, "%s: Files for -F or -L must be in multisegment format!\n", GMT_program);
+		fprintf (stderr, "%s: File must be in multisegment format!\n", GMT_program);
 		exit (EXIT_FAILURE);
 	}
 
@@ -2673,6 +2673,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 			e[i].min_lon = e[i].min_lat = DBL_MAX;
 			e[i].max_lon = e[i].max_lat = -DBL_MAX;
 			n_fields = GMT_input (fp, &n_expected_fields, &in);
+			e[i].ncol = n_expected_fields;
 		}
 		if ((GMT_io.status & GMT_IO_EOF)) continue;	/* At EOF */
 		if (ascii) {	/* Only ascii files can have info stored in multi-seg header record */
@@ -2684,8 +2685,13 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 			strcpy (e[i].label, buffer);
 		}
 
-		e[i].lon = (double *) GMT_memory (VNULL, (size_t)j_alloc, sizeof (double), GMT_program);
-		e[i].lat = (double *) GMT_memory (VNULL, (size_t)j_alloc, sizeof (double), GMT_program);
+		if (e[i].ncol < 2) {
+			fprintf (stderr, "%s: File %s does not have at least 2 columns (found %d)\n", GMT_program, file, e[i].ncol);
+			exit (EXIT_FAILURE);
+		}
+		
+		e[i].coord = (double **) GMT_memory (VNULL, (size_t)e[i].ncol, sizeof (double *), GMT_program);
+		for (k = 0; k < e[i].ncol; k++) e[i].coord[k] = (double *) GMT_memory (VNULL, (size_t)j_alloc, sizeof (double), GMT_program);
 
 		while (! (GMT_io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_EOF))) {	/* Keep going until FALSE or = 2 segment header */
 			if (GMT_io.status & GMT_IO_MISMATCH) {
@@ -2698,23 +2704,22 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 				fprintf (stderr, "%s: Failure to read file %s near line %d\n", GMT_program, file, n_read);
 				exit (EXIT_FAILURE);
 			}
-			e[i].lon[j] = in[0];
-			e[i].lat[j] = in[1];
+			e[i].coord[0][j] = in[0];
+			e[i].coord[1][j] = in[1];
 			if (GMT_io.in_col_type[0] & GMT_IS_GEO) {
-				if (greenwich && e[i].lon[j] > 180.0) e[i].lon[j] -= 360.0;
-				if (!greenwich && e[i].lon[j] < 0.0) e[i].lon[j] += 360.0;
+				if (greenwich && e[i].coord[0][j] > 180.0) e[i].coord[0][j] -= 360.0;
+				if (!greenwich && e[i].coord[0][j] < 0.0) e[i].coord[0][j] += 360.0;
 			}
 
-			if (e[i].lon[j] < e[i].min_lon) e[i].min_lon = e[i].lon[j];
-			if (e[i].lat[j] < e[i].min_lat) e[i].min_lat = e[i].lat[j];
-			if (e[i].lon[j] > e[i].max_lon) e[i].max_lon = e[i].lon[j];
-			if (e[i].lat[j] > e[i].max_lat) e[i].max_lat = e[i].lat[j];
+			if (e[i].coord[0][j] < e[i].min_lon) e[i].min_lon = e[i].coord[0][j];
+			if (e[i].coord[1][j] < e[i].min_lat) e[i].min_lat = e[i].coord[1][j];
+			if (e[i].coord[0][j] > e[i].max_lon) e[i].max_lon = e[i].coord[0][j];
+			if (e[i].coord[1][j] > e[i].max_lat) e[i].max_lat = e[i].coord[1][j];
 			
 			j++;
 			if (j == (j_alloc-1)) {	/* -1 because we may have to close the polygon and hence need 1 more cell */
 				j_alloc += GMT_CHUNK;
-				e[i].lon = (double *) GMT_memory ((void *)e[i].lon, (size_t)j_alloc, sizeof (double), GMT_program);
-				e[i].lat = (double *) GMT_memory ((void *)e[i].lat, (size_t)j_alloc, sizeof (double), GMT_program);
+				for (k = 0; k < e[i].ncol; k++) e[i].coord[k] = (double *) GMT_memory ((void *)e[i].coord[k], (size_t)j_alloc, sizeof (double), GMT_program);
 			}
 			n_fields = GMT_input (fp, &n_expected_fields, &in);
 		}
@@ -2725,34 +2730,33 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 		if (poly) {
 			if (GMT_io.in_col_type[0] & GMT_IS_GEO) {	/* Must check for polar cap */
 				double dlon, lon_sum = 0.0, lat_sum = 0.0;
-				dlon = e[i].lon[0] - e[i].lon[j-1];
-				if (!((fabs (dlon) == 0.0 || fabs (dlon) == 360.0) && e[i].lat[0] == e[i].lat[j-1])) {
-					e[i].lon[j] = e[i].lon[0];
-					e[i].lat[j] = e[i].lat[0];
+				dlon = e[i].coord[0][0] - e[i].coord[0][j-1];
+				if (!((fabs (dlon) == 0.0 || fabs (dlon) == 360.0) && e[i].coord[1][0] == e[i].coord[1][j-1])) {
+					e[i].coord[0][j] = e[i].coord[0][0];
+					e[i].coord[1][j] = e[i].coord[1][0];
 					e[i].np++;
 				}
 				for (j = 0; j < e[i].np - 1; j++) {
-					dlon = e[i].lon[j+1] - e[i].lon[j];
+					dlon = e[i].coord[0][j+1] - e[i].coord[0][j];
 					if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);	/* Crossed Greenwhich or Dateline, pick the shortest distance */
 					lon_sum += dlon;
-					lat_sum += e[i].lat[j];
+					lat_sum += e[i].coord[1][j];
 				}
 				if (fabs (fabs (lon_sum) - 360.0) < GMT_CONV_LIMIT) {	/* TRUE if contains a pole */
 					e[i].polar = TRUE;
 					e[i].pole = irint (copysign (1.0, lat_sum));
 				}
 			}
-			else if (!(e[i].lon[0] == e[i].lon[j-1] && e[i].lat[0] == e[i].lat[j-1])) {	/* Cartesian closure */
-				e[i].lon[j] = e[i].lon[0];
-				e[i].lat[j] = e[i].lat[0];
+			else if (!(e[i].coord[0][0] == e[i].coord[0][j-1] && e[i].coord[1][0] == e[i].coord[1][j-1])) {	/* Cartesian closure */
+				e[i].coord[0][j] = e[i].coord[0][0];
+				e[i].coord[1][j] = e[i].coord[1][0];
 				e[i].np++;
 			}
 		}
 
 		/* Reallocate to free up some memory */
 
-		e[i].lon = (double *) GMT_memory ((void *)e[i].lon, (size_t)e[i].np, sizeof (double), GMT_program);
-		e[i].lat = (double *) GMT_memory ((void *)e[i].lat, (size_t)e[i].np, sizeof (double), GMT_program);
+		for (k = 0; k < e[i].ncol; k++) e[i].coord[k] = (double *) GMT_memory ((void *)e[i].coord[k], (size_t)e[i].np, sizeof (double), GMT_program);
 
 		if (i == (i_alloc-1)) {
 			i_alloc += GMT_CHUNK;
@@ -2783,10 +2787,10 @@ void GMT_lines_delete (struct GMT_LINES *p, int n_lines)
 {
 	/* Free memory allocated by GMT_lines_init */
 
-	int i;
+	int i, k;
 	for (i = 0; i < n_lines; i++) {
-		GMT_free ((void *) p[i].lon);
-		GMT_free ((void *) p[i].lat);
+		for (k = 0; k < p[i].ncol; k++) GMT_free ((void *) p[i].coord[k]);
+		GMT_free ((void *) p[i].coord);
 	}
 	GMT_free ((void *) p);
 }
