@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.35 2006-03-15 00:09:57 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.36 2006-03-20 02:06:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -174,6 +174,20 @@ struct GMT_PLOT_CALCLOCK {
 	struct GMT_DATE_IO date;
 	struct GMT_CLOCK_IO clock;
 	struct GMT_GEO_IO geo;
+};
+
+struct GMT_LINES {		/* For holding multisegment lines in memory */
+	double **coord;		/* Coordinates x,y, and possibly other columns */
+	double dist;		/* Distance from a point to this feature */
+	double min_lon, max_lon;	/* Extreme lon coordinates */
+	double min_lat, max_lat;	/* Extreme lat coordinates */
+	int *seg;		/* Segment number information */
+	int np;			/* Number of points in this segment */
+	int ncol;		/* Number of fields in each record (>= 2) */
+	char *label;		/* Label string (if applicable) */
+	/* For spherical polygons only */
+	int polar;		/* TRUE if a polygon and enclosing N or S pole */
+	int pole;		/* -1 of +1, depending on which pole that serves as projection origin */
 };
 
 EXTERN_MSC struct GMT_IO GMT_io;

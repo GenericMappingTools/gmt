@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.168 2006-03-16 00:53:27 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.169 2006-03-20 02:06:24 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3595,7 +3595,7 @@ void GMT_contlabel_debug (struct GMT_CONTOUR *G)
 		for (j = 0; j < G->n_xp; j++) {
 			pen = (int *) GMT_memory (VNULL, (size_t)G->xp[j].np, sizeof (int), GMT_program);
 			for (i = 1, pen[0] = 3; i < G->xp[j].np; i++) pen[i] = 2;
-			GMT_plot_line (G->xp[j].lon, G->xp[j].lat, pen, G->xp[j].np);
+			GMT_plot_line (G->xp[j].coord[0], G->xp[j].coord[1], pen, G->xp[j].np);
 			GMT_free ((void *)pen);
 		}
 	}
