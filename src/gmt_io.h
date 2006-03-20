@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.36 2006-03-20 02:06:24 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.37 2006-03-20 23:03:54 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -201,3 +201,7 @@ EXTERN_MSC int GMT_points_init (char *file, double **xp, double **yp, double **d
 EXTERN_MSC int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN greenwich, BOOLEAN poly, BOOLEAN use_GMT_io);
 EXTERN_MSC void GMT_points_delete (double *xp, double *yp, double *dp);
 EXTERN_MSC void GMT_lines_delete (struct GMT_LINES *p, int n_lines);
+EXTERN_MSC void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode);
+EXTERN_MSC void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode);
+EXTERN_MSC void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S);
+EXTERN_MSC void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S);

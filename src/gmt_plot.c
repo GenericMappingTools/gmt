@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.169 2006-03-20 02:06:24 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.170 2006-03-20 23:03:54 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4032,7 +4032,7 @@ void GMT_fill_polygon2 (double *lon, double *lat, int n, struct GMT_FILL *F, BOO
 	 */
 	
 	BOOLEAN jump;
-	int i, k, first, jump_dir;
+	int i, k, first, jump_dir = JUMP_L;
 	double *x;
 	PFD x_on_border[2];
 	
@@ -4127,7 +4127,7 @@ void GMT_fill_polygon (double *lon, double *lat, int n, struct GMT_FILL *F, BOOL
 	 */
 	
 	BOOLEAN jump;
-	int i, k, first, jump_dir;
+	int i, k, first, jump_dir = JUMP_L;
 	double *x;
 	PFD x_on_border[2];
 	

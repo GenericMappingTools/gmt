@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.97 2006-03-20 02:06:24 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.98 2006-03-20 23:03:54 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -116,10 +116,6 @@ int GMT_ascii_output_one (FILE *fp, double x, int col);		/* Writes one item to o
 void GMT_adjust_periodic ();					/* Add/sub 360 as appropriate */
 void GMT_decode_calclock_formats ();
 void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode);
-void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode);
-void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode);
-void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S);
-void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S);
 void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S);
 
 int	GMT_scanf_clock (char *s, double *val);
@@ -156,7 +152,6 @@ FILE *GMT_fopen (const char* filename, const char* mode)
 
 int GMT_access (const char* filename, int mode)
 {	/* Like access but also checks the GMT_*DIR places */
-	FILE *fp;
 	char path[BUFSIZ];
 
 	if (!(access (filename, mode))) return (0);
