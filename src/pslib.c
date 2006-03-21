@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.117 2006-03-21 11:05:59 pwessel Exp $
+ *	$Id: pslib.c,v 1.118 2006-03-21 19:05:36 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3268,9 +3268,9 @@ unsigned char *ps_load_image (char *file, struct imageinfo *h)
 
 	FILE *fp = NULL;
 
-	/* Open PostScript file */
+	/* Open PostScript or Sun raster file */
 
-	if ((fp = fopen (file, "r")) == NULL) {
+	if ((fp = fopen (file, "rb")) == NULL) {
 		fprintf (stderr, "pslib: Cannot open image file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
@@ -3287,14 +3287,6 @@ unsigned char *ps_load_image (char *file, struct imageinfo *h)
 	/* Which file type */
 
 	if (h->magic == RAS_MAGIC) {
-#ifdef WIN32
-		/* Must reopen binary files in binary mode */
-		fclose(fp);
-		if ((fp = fopen (file, "rb")) == NULL) {
-			fprintf (stderr, "pslib: Cannot open image file %s!\n", file);
-			exit (EXIT_FAILURE);
-		}s
-#endif
 		return (ps_load_raster (fp, h));
 	} else if (h->magic == EPS_MAGIC) {
 		return (ps_load_eps (fp, h));
