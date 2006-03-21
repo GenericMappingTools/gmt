@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.230 2006-03-20 02:06:24 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.231 2006-03-21 01:03:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4432,36 +4432,41 @@ void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift)
 int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax)
 {
 	BOOLEAN region_straddle, grid_straddle, global;
-	double shift_x;
+	double shift_x = 0.0;
 
 	if (!project_info.region && !RECT_GRATICULE) {	/* Used -R... with oblique boundaries - return entire grid */
-		/* *xmin = h->x_min;	*xmax = h->x_max;
-		*ymin = h->y_min;	*ymax = h->y_max; */
 		BOOLEAN N_outside, S_outside;
 		N_outside = GMT_outside (0.0, +90.0);	/* North pole outside map boundary? */
 		S_outside = GMT_outside (0.0, -90.0);	/* South pole outside map boundary? */
+		/* Note: while h->xy_off might be 0.5 (pixel) or 0 (gridline), the w/e boundaries are always "gridline" hence we pass 0 as xy_off */
 		if (N_outside && S_outside) {	/* No polar complications, return extreme coordinates */
-			*xmin = GMT_i_to_x (GMT_x_to_i (project_info.w, h->x_min, h->x_inc, h->xy_off, h->nx), h->x_min, h->x_max, h->x_inc, h->xy_off, h->nx);
-			*xmax = GMT_i_to_x (GMT_x_to_i (project_info.e, h->x_min, h->x_inc, h->xy_off, h->nx), h->x_min, h->x_max, h->x_inc, h->xy_off, h->nx);
-			*ymin = GMT_j_to_y (GMT_y_to_j (project_info.s, h->y_min, h->y_inc, h->xy_off, h->ny), h->y_min, h->y_max, h->y_inc, h->xy_off, h->ny);
-			*ymax = GMT_j_to_y (GMT_y_to_j (project_info.n, h->y_min, h->y_inc, h->xy_off, h->ny), h->y_min, h->y_max, h->y_inc, h->xy_off, h->ny);
+			if (project_info.e < h->x_min)	/* Make adjustments so project_info.[w,e] jives with h->x_min|x_max */
+				shift_x = 360.0;
+			else if (project_info.w > h->x_max)
+				shift_x = -360.0;
+			*xmin = GMT_i_to_x (GMT_x_to_i (project_info.w + shift_x, h->x_min, h->x_inc, 0.0, h->nx), h->x_min, h->x_max, h->x_inc, 0.0, h->nx);
+			*xmax = GMT_i_to_x (GMT_x_to_i (project_info.e + shift_x, h->x_min, h->x_inc, 0.0, h->nx), h->x_min, h->x_max, h->x_inc, 0.0, h->nx);
+			*ymin = GMT_j_to_y (GMT_y_to_j (project_info.s, h->y_min, h->y_inc, 0.0, h->ny), h->y_min, h->y_max, h->y_inc, 0.0, h->ny);
+			*ymax = GMT_j_to_y (GMT_y_to_j (project_info.n, h->y_min, h->y_inc, 0.0, h->ny), h->y_min, h->y_max, h->y_inc, 0.0, h->ny);
+			/* Make sure we dont exceed grid domain (which can happen if project_info.w|e exceeds the grid limits) */
+			if ((*xmin) < h->x_min) *xmin = h->x_min;
+			if ((*xmax) > h->x_max) *xmax = h->x_max;
 		}
 		else if (!N_outside) {	/* North pole included, need all longitudes but restrict latitudes */
 			*xmin = h->x_min;	*xmax = h->x_max;
-			*ymin = GMT_j_to_y (GMT_y_to_j (project_info.s, h->y_min, h->y_inc, h->xy_off, h->ny), h->y_min, h->y_max, h->y_inc, h->xy_off, h->ny);
+			*ymin = GMT_j_to_y (GMT_y_to_j (project_info.s, h->y_min, h->y_inc, 0.0, h->ny), h->y_min, h->y_max, h->y_inc, 0.0, h->ny);
 			*ymax = h->y_max;
+			if ((*ymin) < h->y_min) *ymin = h->y_min;
 		}
 		else {			/* South pole included, need all longitudes but restrict latitudes */	
 			*xmin = h->x_min;	*xmax = h->x_max;
 			*ymin = h->y_min;
-			*ymax = GMT_j_to_y (GMT_y_to_j (project_info.n, h->y_min, h->y_inc, h->xy_off, h->ny), h->y_min, h->y_max, h->y_inc, h->xy_off, h->ny);
+			*ymax = GMT_j_to_y (GMT_y_to_j (project_info.n, h->y_min, h->y_inc, 0.0, h->ny), h->y_min, h->y_max, h->y_inc, 0.0, h->ny);
+			if ((*ymax) > h->y_max) *ymax = h->y_max;
 		}
 		return (0);
 	}
 	
-	/* Round off to nearest multiple of the grid spacing.  This should only
-	   affect the numbers when oblique projections or -R...r has been used */
-
 	/* Weakness in the logic below is that there is no flag in the grid to tell us it is lon/lat data.
 	 * We infer the grid is global (in longitude) and geographic if w-e == 360 && |s,n| <= 90 */
 
