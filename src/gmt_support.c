@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.231 2006-03-21 01:03:02 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.232 2006-03-21 02:35:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4451,6 +4451,8 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 			/* Make sure we dont exceed grid domain (which can happen if project_info.w|e exceeds the grid limits) */
 			if ((*xmin) < h->x_min) *xmin = h->x_min;
 			if ((*xmax) > h->x_max) *xmax = h->x_max;
+			if ((*ymin) < h->y_min) *ymin = h->y_min;
+			if ((*ymax) > h->y_max) *ymax = h->y_max;
 		}
 		else if (!N_outside) {	/* North pole included, need all longitudes but restrict latitudes */
 			*xmin = h->x_min;	*xmax = h->x_max;
