@@ -1,13 +1,19 @@
-	$Id: README.misc,v 1.4 2006-03-22 06:30:34 pwessel Exp $
+	$Id: README.misc,v 1.5 2006-03-22 07:08:53 pwessel Exp $
 
 This directory contains some miscellaneous programs
 that may come in handy for some users.
 
+	gmtdigitize - Digitize and project coordinates from dititizer
 	gmtstitch - Assemple polygons from line segments
 	makepattern - create Sun rasterfiles from patterns
 	psmageplot - blow up plots over several pages
 	nc2xy - convert 1-D netCDF files to ASCII
 	ps2raster - convert PostScript files to raster images
+
+gmtdigitize works with a Calcomp Digiboard III digitizer and will
+read coordinates from the selected port and apply inverse map projection
+to recover the map coordinates.  Users with other digitizers or users
+of an OS other than Linux may have to make changes.
 
 gmtstitch reads one or more files (including multisegment files)
 and attempts to connect segments whose endpoints are within a

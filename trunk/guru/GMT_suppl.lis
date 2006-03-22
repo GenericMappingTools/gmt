@@ -134,6 +134,9 @@ share/mgg/carter.d
 share/mgg/gmtfile_paths
 src/misc/README.misc
 src/misc/makefile
+src/misc/gmtdigitize.c
+src/misc/gmtdigitize.man
+src/misc/gmtdigitize.html
 src/misc/gmtstitch.c
 src/misc/gmtstitch.man
 src/misc/gmtstitch.html
