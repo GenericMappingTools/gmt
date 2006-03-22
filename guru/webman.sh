@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.39 2006-03-22 06:30:34 pwessel Exp $
+#	 $Id: webman.sh,v 1.40 2006-03-22 07:08:53 pwessel Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -285,7 +285,7 @@ packages actually installed on your system will be accessible.
 <HR>
 <H3>The MISC package</H3>
 <UL>
-<!-- <LI><A HREF="doc/html/gmtdigitize.html"> gmtdigitize</A> Digitize features using a digitizer -->
+<LI><A HREF="doc/html/gmtdigitize.html"> gmtdigitize</A> Digitize map features using a large-format digitizer
 <LI><A HREF="doc/html/gmtstitch.html"> gmtstitch</A> Combine line segments that share end-points
 <LI><A HREF="doc/html/makepattern.html"> makepattern</A> Make GMT color pattern from b/w pattern
 <LI><A HREF="doc/html/ps2raster.html"> ps2raster</A> Convert PostScript to raster image
