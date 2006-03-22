@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.37 2006-02-28 23:56:18 pwessel Exp $
+#	 $Id: webman.sh,v 1.38 2006-03-22 06:06:46 pwessel Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -73,7 +73,8 @@ done
 MY_SUPPL=${MY_GMT_SUPPL:-""}
 cd src
 for package in dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system $MY_SUPPL; do
-	for f in $package/*.man; do
+	ls $package/*.man > $$.lis
+	while read f; do
 		prog=`basename $f .man`
 		if [ -f ../man/manl/$prog.l ]; then
 			if [ $gush = 1 ]; then
@@ -85,7 +86,7 @@ for package in dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
 			echo '<BODY bgcolor="#ffffff">' >> $package/${prog}.html
 			cp -f $package/${prog}.html ../www/gmt/doc/html
 		fi
-	done
+	done < $$.lis
 done
 cd ..
 
