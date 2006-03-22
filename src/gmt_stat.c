@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.37 2006-02-28 09:46:56 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.38 2006-03-22 05:20:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,7 +43,7 @@
  *		07-DEC-1999 P. Wessel: Added GMT_rand and GMT_nrand
  *		29-MAR-2000 W Smith: Added GMT_hypot, GMT_log1p, and GMT_atanh for
  *					platforms without native library support.
- *		09-MAY-2000 P. Wessel: Added GMT_chi2 and GMT_cumpoission
+ *		09-MAY-2000 P. Wessel: Added GMT_chi2 and GMT_cumpoisson
  *		18-AUG-2000 P. Wessel: Moved GMT_mode and GMT_median from gmt_support to here.
  *					Added float versions of these two functions for grd data.
  *		27-JUL-2005 P. Wessel: Added Chebyshev polynomials Tn(x)
@@ -85,7 +85,6 @@
 
 int GMT_inc_beta (double a, double b, double x, double *ibeta);
 int GMT_ln_gamma_r (double x, double *lngam);
-int GMT_f_q (double chisq1, int nu1, double chisq2, int nu2, double *prob);
 int GMT_f_test_new (double chisq1, int nu1, double chisq2, int nu2, double *prob, int iside);
 int GMT_student_t_a (double t, int n, double *prob);
 double GMT_ln_gamma (double xx);
@@ -108,8 +107,7 @@ double GMT_erfinv (double y);
 double GMT_gammq (double a, double x);
 void GMT_gamma_cf (double *gammcf, double a, double x, double *gln);
 void GMT_gamma_ser (double *gamser, double a, double x, double *gln);
-void GMT_chi2 (double chi2, double nu, double *prob);
-void GMT_cumpoission (double k, double mu, double *prob);
+void GMT_cumpoisson (double k, double mu, double *prob);
 
 #if HAVE_J0 == 0
 double GMT_j0 (double x);
@@ -1999,7 +1997,7 @@ void GMT_chi2 (double chi2, double nu, double *prob) {
  	*prob = GMT_gammq (0.5 * nu, 0.5 * chi2);
 }
 
-void GMT_cumpoission (double k, double mu, double *prob) {
+void GMT_cumpoisson (double k, double mu, double *prob) {
 	/* evaluate Cumulative Poisson Distribution */
 
 	*prob = GMT_gammq (k, mu);
@@ -2183,119 +2181,6 @@ int GMT_median (double *x, size_t n, double xmin, double xmax, double m_initial,
 			finished = TRUE;
 		}
 		else if ((labs ((long)((n_below - n_glb) - (n_above + n_equal)))) < (long)n_glb) {
-
-			*med = glb;
-			finished = TRUE;
-		}
-		/* Those cases found the median; the next two will forecast a new guess:  */
-
-		else if ( n_above > (n_below + n_equal) ) {  /* Guess is too low  */
-
-			lower_bound = m_guess;
-			t_0 = n_below + n_equal - 1;
-			temp = lower_bound + (upper_bound - lower_bound) * (t_middle - t_0) / (t_1 - t_0);
-			m_guess = (temp > lub) ? temp : lub;	/* Move guess at least to lub  */
-		}
-		else if ( n_below > (n_above + n_equal) ) {  /* Guess is too high  */
-
-			upper_bound = m_guess;
-			t_1 = n_below + n_equal - 1;
-			temp = lower_bound + (upper_bound - lower_bound) * (t_middle - t_0) / (t_1 - t_0);
-			m_guess = (temp < glb) ? temp : glb;	/* Move guess at least to glb  */
-		}
-		else {	/* If we get here, I made a mistake!  */
-			fprintf (stderr,"%s: GMT Fatal Error: Internal goof - please report to developers!\n", GMT_program);
-			exit (EXIT_FAILURE);
-		}
-
-	} while (!finished);
-
-	/* That's all, folks!  */
-	return (iteration);
-}
-
-int GMT_median_f (float *x, size_t n, double xmin, double xmax, double m_initial, double *med)
-{
-	double	lower_bound, upper_bound, m_guess, t_0, t_1, t_middle;
-	double	lub, glb, xx, temp;
-	size_t	i, n_above, n_below, n_equal, n_lub, n_glb;
-	int	finished = FALSE;
-	int	iteration = 0;
-
-	if (n == 0) {
-		*med = m_initial;
-		return (1);
-	}
-	if (n == 1) {
-		*med = x[0];
-		return (1);
-	}
-	if (n == 2) {
-		*med = 0.5 * (x[0] + x[1]);
-		return (1);
-	}
-
-	m_guess = m_initial;
-	lower_bound = xmin;
-	upper_bound = xmax;
-	t_0 = 0;
-	t_1 = n - 1;
-	t_middle = 0.5 * (n - 1);
-
-	do {
-
-		n_above = n_below = n_equal = n_lub = n_glb = 0;
-		lub = xmax;
-		glb = xmin;
-
-		for (i = 0; i < n; i++) {
-
-			xx = x[i];
-			if (xx == m_guess) {
-				n_equal++;
-			}
-			else if (xx > m_guess) {
-				n_above++;
-				if (xx < lub) {
-					lub = xx;
-					n_lub = 1;
-				}
-				else if (xx == lub) {
-					n_lub++;
-				}
-			}
-			else {
-				n_below++;
-				if (xx > glb) {
-					glb = xx;
-					n_glb = 1;
-				}
-				else if (xx == glb) {
-					n_glb++;
-				}
-			}
-		}
-
-		iteration++;
-
-		/* Now test counts, watch multiple roots, think even/odd:  */
-
-		if ( (labs((long)(n_above - n_below))) <= (long)n_equal) {
-
-			if (n_equal) {
-				*med = m_guess;
-			}
-			else {
-				*med = 0.5 * (lub + glb);
-			}
-			finished = TRUE;
-		}
-		else if ((labs((long)((n_above - n_lub) - (n_below + n_equal)))) < (long)n_lub) {
-
-			*med = lub;
-			finished = TRUE;
-		}
-		else if ((labs((long)((n_below - n_glb) - (n_above + n_equal)))) < (long)n_glb) {
 
 			*med = glb;
 			finished = TRUE;

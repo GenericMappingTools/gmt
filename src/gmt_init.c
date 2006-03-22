@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.219 2006-03-20 23:03:54 remko Exp $
+ *	$Id: gmt_init.c,v 1.220 2006-03-22 05:20:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -55,9 +55,11 @@
 
 #define GMT_WITH_NO_PS
 #include "gmt.h"
-#include "gmt_init.h"
+#include "gmt_globals.h"
 
 #define USER_MEDIA_OFFSET 1000
+
+EXTERN_MSC void GMT_grdio_init (void);	/* Defined in gmt_customio.c and only used here */
 
 int GMT_setparameter(char *keyword, char *value);
 int GMT_load_user_media (void);
@@ -84,6 +86,7 @@ int GMT_map_getframe (char *in);
 static void load_encoding (struct gmt_encoding *);
 void GMT_verify_encodings ();
 void GMT_prep_PS_bits ();
+int GMT_key_lookup (char *name, char **list, int n);
 
 /* Local variables to gmt_init.c */
 

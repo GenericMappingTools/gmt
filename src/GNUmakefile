@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.46 2006-03-04 00:18:19 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.47 2006-03-22 05:20:11 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -39,8 +39,7 @@ PS	= -lpsl
 GMT	= -lgmt
 GMTPS	= -lgmtps
 
-LIB_C	= fourt.c \
-	  gmt_calclock.c \
+LIB_C	= gmt_calclock.c \
 	  gmt_cdf.c \
 	  gmt_customio.c \
 	  gmt_grdio.c \
@@ -62,8 +61,10 @@ GMT_H	= gmt.h \
 	  gmt_mgg_header2.h \
 	  gmt_nan.h \
 	  gmt_map.h \
+	  gmt_init.h \
 	  gmt_boundcond.h \
 	  gmt_shore.h \
+	  gmt_plot.h \
 	  gmt_project.h \
 	  gmt_grd.h \
 	  gmt_funcnames.h \
@@ -72,6 +73,9 @@ GMT_H	= gmt.h \
 	  gmt_customio.h \
 	  gmt_bcr.h \
 	  gmt_symbol.h \
+	  gmt_stat.h \
+	  gmt_support.h \
+	  gmt_vector.h \
 	  gmt_contour.h \
 	  gmt_unique.h \
 	  gmt_keywords.h \
@@ -84,7 +88,7 @@ GMT_H	= gmt.h \
 	  gmt_ellipsoids.h \
 	  gmt_datums.h
 
-GMT_I	= gmt_init.h \
+GMT_I	= gmt_globals.h \
 	  gmt_defaults.h \
 	  gmt_media_name.h \
 	  gmt_media_size.h \

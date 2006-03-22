@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.113 2006-03-10 23:33:19 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.114 2006-03-22 05:20:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -197,9 +197,47 @@
  
 #define GMT_WITH_NO_PS
 #include "gmt.h"
-#include "gmt_map.h"
 
 #define HALF_DBL_MAX (DBL_MAX/2.0)
+
+/* Macros, structures, and functions for conversion between different kinds
+ * of latitudes used in GMT
+ *
+ * W H F Smith, 10--13 May 1999.
+ * Version:	3.4
+ */
+
+#define GMT_LATSWAP_G2A 0	/* input = geodetic;   output = authalic   */
+#define GMT_LATSWAP_A2G 1	/* input = authalic;   output = geodetic   */
+#define GMT_LATSWAP_G2C 2	/* input = geodetic;   output = conformal  */
+#define GMT_LATSWAP_C2G 3	/* input = conformal;  output = geodetic   */
+#define GMT_LATSWAP_G2M 4	/* input = geodetic;   output = meridional */
+#define GMT_LATSWAP_M2G 5	/* input = meridional; output = geodetic   */
+#define GMT_LATSWAP_G2O 6	/* input = geodetic;   output = geocentric */
+#define GMT_LATSWAP_O2G 7	/* input = geocentric; output = geodetic   */
+#define GMT_LATSWAP_G2P 8	/* input = geodetic;   output = parametric */
+#define GMT_LATSWAP_P2G 9	/* input = parametric; output = geodetic   */
+#define GMT_LATSWAP_O2P 10	/* input = geocentric; output = parametric */
+#define GMT_LATSWAP_P2O 11	/* input = parametric; output = geocentric */
+#define GMT_LATSWAP_N	12	/* number of defined swaps  */
+
+struct GMT_LATSWAP_CONSTS {
+	double  c[GMT_LATSWAP_N][4];	/* Coefficients in 4-term series  */
+	double	ra;			/* Authalic   radius (sphere for equal-area)  */
+	double	rm;			/* Meridional radius (sphere for N-S distance)  */
+	BOOLEAN spherical;		/* True if no conversions need to be done.  */
+} GMT_lat_swap_vals;
+
+/* Some shorthand notation for GMT specific cases */
+
+#define GMT_latg_to_latc(lat) GMT_lat_swap_quick (lat, GMT_lat_swap_vals.c[GMT_LATSWAP_G2C])
+#define GMT_latg_to_lata(lat) GMT_lat_swap_quick (lat, GMT_lat_swap_vals.c[GMT_LATSWAP_G2A])
+#define GMT_latc_to_latg(lat) GMT_lat_swap_quick (lat, GMT_lat_swap_vals.c[GMT_LATSWAP_C2G])
+#define GMT_lata_to_latg(lat) GMT_lat_swap_quick (lat, GMT_lat_swap_vals.c[GMT_LATSWAP_A2G])
+
+void GMT_lat_swap_init (void);
+double	GMT_lat_swap_quick (double lat, double c[]);
+double	GMT_lat_swap (double lat, int itype);
 
 BOOLEAN GMT_convert_latitudes = FALSE;	/* TRUE if using spherical code with authalic/conformal latitudes */
 
@@ -337,6 +375,8 @@ int GMT_radial_clip(double *lon, double *lat, int np, double **x, double **y, in
 int GMT_wesn_overlap(double lon0, double lat0, double lon1, double lat1);		/*	Checks if two wesn regions overlap	*/
 int GMT_rect_overlap(double lon0, double lat0, double lon1, double lat1);		/*	Checks if two xy regions overlap	*/
 int GMT_radial_overlap(double lon0, double lat0, double lon1, double lat1);		/*	Currently a dummy routine	*/
+int GMT_break_through (double x0, double y0, double x1, double y1);
+int GMT_map_crossing (double lon1, double lat1, double lon2, double lat2, double *xlon, double *xlat, double *xx, double *yy, int *sides);
 
 int GMT_map_init_linear(void);
 int GMT_map_init_polar(void);
@@ -5642,7 +5682,7 @@ int GMT_truncate_tm (double *x, double *y, int n, int start, int b_or_t)
 	return (j);
 }
 
-double GMT_great_circle_dist(double lon1, double lat1, double lon2, double lat2)
+double GMT_great_circle_dist (double lon1, double lat1, double lon2, double lat2)
 {
 	/* great circle distance on a sphere in degrees */
 
@@ -6961,19 +7001,6 @@ int GMT_lon_inside (double lon, double w, double e)
 	if (lon < w) return (FALSE);
 	if (lon > e) return (FALSE);
 	return (TRUE);
-}
-
-void GMT_ngeo_to_xy (double *lon, double *lat, int n)
-{
-	/* Converts lon/lat array and returns x,y in same array */
-	int j;
-	double this_x, this_y;
-
-	for (j = 0; j < n; j++) {
-		GMT_geo_to_xy (lon[j], lat[j], &this_x, &this_y);
-		lon[j] = this_x;
-		lat[j] = this_y;
-	}
 }
 
 int GMT_geo_to_xy_line (double *lon, double *lat, int n)

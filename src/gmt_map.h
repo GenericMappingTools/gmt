@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.h,v 1.7 2005-12-17 05:59:22 pwessel Exp $
+ *	$Id: gmt_map.h,v 1.8 2006-03-22 05:20:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -19,43 +19,55 @@
 #ifndef _GMT_MAP_H
 #define _GMT_MAP_H
 
-/* Macros, structures, and functions for conversion between different kinds
- * of latitudes used in GMT
- *
- * W H F Smith, 10--13 May 1999.
- * Version:	3.4
- */
-
-#define GMT_LATSWAP_G2A 0	/* input = geodetic;   output = authalic   */
-#define GMT_LATSWAP_A2G 1	/* input = authalic;   output = geodetic   */
-#define GMT_LATSWAP_G2C 2	/* input = geodetic;   output = conformal  */
-#define GMT_LATSWAP_C2G 3	/* input = conformal;  output = geodetic   */
-#define GMT_LATSWAP_G2M 4	/* input = geodetic;   output = meridional */
-#define GMT_LATSWAP_M2G 5	/* input = meridional; output = geodetic   */
-#define GMT_LATSWAP_G2O 6	/* input = geodetic;   output = geocentric */
-#define GMT_LATSWAP_O2G 7	/* input = geocentric; output = geodetic   */
-#define GMT_LATSWAP_G2P 8	/* input = geodetic;   output = parametric */
-#define GMT_LATSWAP_P2G 9	/* input = parametric; output = geodetic   */
-#define GMT_LATSWAP_O2P 10	/* input = geocentric; output = parametric */
-#define GMT_LATSWAP_P2O 11	/* input = parametric; output = geocentric */
-#define GMT_LATSWAP_N	12	/* number of defined swaps  */
-
-struct GMT_LATSWAP_CONSTS {
-	double  c[GMT_LATSWAP_N][4];	/* Coefficients in 4-term series  */
-	double	ra;			/* Authalic   radius (sphere for equal-area)  */
-	double	rm;			/* Meridional radius (sphere for N-S distance)  */
-	BOOLEAN spherical;		/* True if no conversions need to be done.  */
-} GMT_lat_swap_vals;
-
-/* Some shorthand notation for GMT specific cases */
-
-#define GMT_latg_to_latc(lat) GMT_lat_swap_quick (lat, GMT_lat_swap_vals.c[GMT_LATSWAP_G2C])
-#define GMT_latg_to_lata(lat) GMT_lat_swap_quick (lat, GMT_lat_swap_vals.c[GMT_LATSWAP_G2A])
-#define GMT_latc_to_latg(lat) GMT_lat_swap_quick (lat, GMT_lat_swap_vals.c[GMT_LATSWAP_C2G])
-#define GMT_lata_to_latg(lat) GMT_lat_swap_quick (lat, GMT_lat_swap_vals.c[GMT_LATSWAP_A2G])
-
-void GMT_lat_swap_init (void);
-double	GMT_lat_swap_quick (double lat, double c[]);
-double	GMT_lat_swap (double lat, int itype);
+EXTERN_MSC double GMT_az_backaz_cartesian (double lonE, double latE, double lonS, double latS, BOOLEAN baz);
+EXTERN_MSC double GMT_az_backaz_flatearth (double lonE, double latE, double lonS, double latS, BOOLEAN baz);
+EXTERN_MSC double GMT_az_backaz_geodesic (double lonE, double latE, double lonS, double latS, BOOLEAN baz);
+EXTERN_MSC double GMT_az_backaz_sphere (double lonE, double latE, double lonS, double latS, BOOLEAN baz);
+EXTERN_MSC double GMT_geodesic_dist_degree (double lonS, double latS, double lonE, double latE);
+EXTERN_MSC double GMT_geodesic_dist_km (double lonS, double latS, double lonE, double latE);
+EXTERN_MSC double GMT_geodesic_dist_meter (double lonS, double latS, double lonE, double latE);
+EXTERN_MSC double GMT_great_circle_dist (double lon1, double lat1, double lon2, double lat2);
+EXTERN_MSC double GMT_half_map_width (double y);
+EXTERN_MSC double GMT_left_boundary (double y);
+EXTERN_MSC double GMT_right_boundary (double y);
+EXTERN_MSC int GMT_ECEF_init (char *text);
+EXTERN_MSC int GMT_clip_to_map (double *lon, double *lat, int np, double **x, double **y);
+EXTERN_MSC int GMT_compact_line (double *x, double *y, int n, BOOLEAN pen_flag, int *pen);
+EXTERN_MSC int GMT_datum_init (char *text);
+EXTERN_MSC int GMT_geo_to_xy_line (double *lon, double *lat, int n);
+EXTERN_MSC int GMT_graticule_path (double **x, double **y, int dir, double w, double e, double s, double n);
+EXTERN_MSC int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD_HEADER *O, struct GMT_EDGEINFO *edgeinfo, BOOLEAN bilinear, BOOLEAN inverse);
+EXTERN_MSC int GMT_great_circle_intersection (double A[], double B[], double C[], double X[], double *CX_dist);
+EXTERN_MSC int GMT_latpath (double lat, double lon1, double lon2, double **x, double **y);
+EXTERN_MSC int GMT_lonpath (double lon, double lat1, double lat2, double **x, double **y);
+EXTERN_MSC int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut);
+EXTERN_MSC int GMT_map_outside (double lon, double lat);
+EXTERN_MSC int GMT_map_path (double lon1, double lat1, double lon2, double lat2, double **x, double **y);
+EXTERN_MSC int GMT_wesn_outside_np (double lon, double lat);
+EXTERN_MSC void GMT_2D_to_3D (double *x, double *y, double z, int n);
+EXTERN_MSC void GMT_2Dz_to_3D (double *x, double *y, double z, int n);
+EXTERN_MSC void GMT_ECEF_forward (double in[], double out[]);
+EXTERN_MSC void GMT_ECEF_inverse (double in[], double out[]);
+EXTERN_MSC void GMT_azim_to_angle (double lon, double lat, double c, double azim, double *angle);
+EXTERN_MSC void GMT_conv_datum (double in[], double out[]);
+EXTERN_MSC void GMT_geo_to_xy (double lon, double lat, double *x, double *y);
+EXTERN_MSC void GMT_geoz_to_xy (double x, double y, double z, double *x_out, double *y_out);
+EXTERN_MSC void GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head, double max_radius);
+EXTERN_MSC void GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head, double max_radius);
+EXTERN_MSC void GMT_grdproject_init (struct GRD_HEADER *head, double x_inc, double y_inc, int nx, int ny, int dpi, int offset);
+EXTERN_MSC void GMT_init_ellipsoid (void);
+EXTERN_MSC void GMT_init_search_radius (double *radius, struct GRD_HEADER *r_head, struct GRD_HEADER *g_head, BOOLEAN inverse);
+EXTERN_MSC void GMT_map_setup (double west, double east, double south, double north);
+EXTERN_MSC void GMT_project3D (double x, double y, double z, double *x_out, double *y_out, double *z_out);
+EXTERN_MSC void GMT_x_to_xx (double x, double *xx); 
+EXTERN_MSC void GMT_xx_to_x (double *x, double xx); 
+EXTERN_MSC void GMT_xy_do_z_to_xy (double x, double y, double z, double *x_out, double *y_out);
+EXTERN_MSC void GMT_xy_to_geo (double *lon, double *lat, double x, double y);
+EXTERN_MSC void GMT_xyz_to_xy (double x, double y, double z, double *x_out, double *y_out);
+EXTERN_MSC void GMT_y_to_yy (double y, double *yy); 
+EXTERN_MSC void GMT_yy_to_y (double *y, double yy); 
+EXTERN_MSC void GMT_z_to_zz (double z, double *zz); 
+EXTERN_MSC void GMT_zz_to_z (double *z, double zz);
+EXTERN_MSC double *GMT_distances (double x[], double y[], int n, double scale, int dist_flag);
 
 #endif /* _GMT_MAP_H */
