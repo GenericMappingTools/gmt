@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: pdfman.sh,v 1.9 2006-03-21 23:18:02 pwessel Exp $
+#	 $Id: pdfman.sh,v 1.10 2006-03-22 05:20:11 pwessel Exp $
 #
 #	pdfman.sh - Automatic generation of the GMT pdf manual pages
 #
@@ -79,7 +79,7 @@ done
 # supplements.  They must all be in src of course
 
 MY_SUPPL=${MY_GMT_SUPPL:-""}
-for package $MY_SUPPL; do
+for package in $MY_SUPPL; do
 	ls $package/*.man > $$.lis
 	while read f; do
 		prog=`basename $f .man`
@@ -102,7 +102,7 @@ echo "Converting GMT_Manpages.ps to GMT_Manpages.pdf"
 ps2pdf www/gmt/doc/ps/GMT_Manpages.ps www/gmt/doc/pdf/GMT_Manpages.pdf
 echo "Converting GMT_Manpages_suppl.ps to GMT_Manpages_suppl.pdf"
 ps2pdf www/gmt/doc/ps/GMT_Manpages_suppl.ps www/gmt/doc/pdf/GMT_Manpages_suppl.pdf
-if [ -f /www/gmt/doc/ps/GMT_My_Manpages_suppl.ps ]; then
+if [ -f www/gmt/doc/ps/GMT_My_Manpages_suppl.ps ]; then
 	echo "Converting GMT_My_Manpages_suppl.ps to GMT_My_Manpages_suppl.pdf"
 	ps2pdf www/gmt/doc/ps/GMT_My_Manpages_suppl.ps www/gmt/doc/pdf/GMT_My_Manpages_suppl.pdf
 fi
