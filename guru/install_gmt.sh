@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.72 2006-03-13 04:42:47 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.73 2006-03-22 06:06:46 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1158,6 +1158,7 @@ fi
 #--------------------------------------------------------------------------------
 
 install_this_gmt $GMT_get_src src
+install_this_gmt $GMT_get_share share
 install_this_gmt $GMT_get_coast coast
 install_this_gmt $GMT_get_suppl suppl
 install_this_gmt $GMT_get_scripts scripts
