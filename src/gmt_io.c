@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.98 2006-03-20 23:03:54 remko Exp $
+ *	$Id: gmt_io.c,v 1.99 2006-03-23 07:48:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2742,7 +2742,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 					e[i].pole = irint (copysign (1.0, lat_sum));
 				}
 			}
-			else if (!(e[i].coord[0][0] == e[i].coord[0][j-1] && e[i].coord[1][0] == e[i].coord[1][j-1])) {	/* Cartesian closure */
+			else if (GMT_polygon_is_open (e[i].coord[0], e[i].coord[1], j)) {	/* Cartesian closure */
 				e[i].coord[0][j] = e[i].coord[0][0];
 				e[i].coord[1][j] = e[i].coord[1][0];
 				e[i].np++;

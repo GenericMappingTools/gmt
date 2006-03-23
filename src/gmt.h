@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.121 2006-03-22 05:20:11 pwessel Exp $
+ *	$Id: gmt.h,v 1.122 2006-03-23 07:48:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -21,8 +21,8 @@
  *
  * Author:	Paul Wessel
  * Date:	01-MAR-1991
- * Revised:	15-SEP-2004
- * Version:	4.0
+ * Revised:	22-MAR-2006
+ * Version:	4.x
  */
 
 #ifndef _GMT_H
@@ -215,11 +215,8 @@ typedef double GMT_dtime;	/* GMT internal time representation */
  *			GMT PARAMETERS DEFINITIONS
  *--------------------------------------------------------------------*/
 
-#define N_UNIQUE 59		/* Number of unique options */
 #define N_KEYS 121		/* Number of gmt defaults */
-#define GMT_N_MEDIA 29		/* Number of standard paper formats in the GMT_media_names.h include file */
 #define HASH_SIZE 121		/* Used in get_gmtdefaults, should be ~> N_KEYS */
-#define GMT_N_SYSTEMS 8		/* Number of time systems in gmt_time_systems.h */
 /* This structure contains default parameters for the GMT system */
 
 #define N_ELLIPSOIDS	63
@@ -234,11 +231,6 @@ struct GMT_PEN {	/* Holds pen attributes */
 	double offset;	/* In points */
 	int rgb[3];
 	char texture[GMT_PEN_LEN];	/* In points */
-};
-
-struct GMT_PEN_NAME {	/* Names of pens and their thicknesses */
-	char name[16];
-	double width;
 };
 
 struct GMTDEFAULTS {
@@ -393,20 +385,15 @@ struct GMT_FILL {	/* Holds fill attributes */
 	char pattern[BUFSIZ];	/* Full filename of user-define raster */
 };
 
-struct GMT_MEDIA {	/* Holds information about paper sizes in points */
-	int width;		/* Width in points */
-	int height;		/* Height in points */
-};
-
 /*  Moved from gmt_plot.c */
-struct XINGS {
+struct GMT_XINGS {
         double xx[2], yy[2];    /* Cartesian coordinates of intersection with map boundary */
         double angle[2];        /* Angles of intersection */
         int sides[2];           /* Side id of intersection */
         int nx;                 /* Number of intersections (1 or 2) */
 };
 
-struct MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */
+struct GMT_MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */
 	double lon, lat;	/* Location of top/mid point of scale on the map in lon/lat space */
 	double x0, y0;		/* Location of top/mid point of scale on the map in inches x/y */
 	double scale_lon;	/* Point where scale should apply */
@@ -424,7 +411,7 @@ struct MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */
 	struct GMT_PEN pen;	/* Pen to use for background rectangle */
 };
 
-struct MAP_ROSE {	/* Used to plot a map direction "rose" in psbasemap and pscoast */
+struct GMT_MAP_ROSE {	/* Used to plot a map direction "rose" in psbasemap and pscoast */
 	double lon, lat;	/* Location of center point of rose on the map in lon/lat space */
 	double x0, y0;		/* Location of center point of scale on the map in inches x/y */
 	double size;		/* Diameter of the rose in measure units */
@@ -460,18 +447,9 @@ EXTERN_MSC char *GMT_IMGDIR;			/* Points to the GMT img directory [if set] */
 EXTERN_MSC char *GMT_unit_names[];
 EXTERN_MSC double GMT_u2u[4][4];		/* measure unit translation matrix 4 x 4*/
 EXTERN_MSC struct GMT_FONT *GMT_font;
-EXTERN_MSC char *GMT_unique_option[];
-EXTERN_MSC char *GMT_keywords[];
-EXTERN_MSC char *GMT_media_name[];
-EXTERN_MSC struct GMT_MEDIA GMT_media[];
-EXTERN_MSC char **GMT_user_media_name;
-EXTERN_MSC struct GMT_MEDIA *GMT_user_media;
-EXTERN_MSC int GMT_n_user_media;
-EXTERN_MSC char *GMT_weekdays[];
 EXTERN_MSC struct GMT_HASH GMT_month_hashnode[12];
 EXTERN_MSC struct GMT_TIME_SYSTEM GMT_time_system[];
 EXTERN_MSC struct GMT_TIME_LANGUAGE GMT_time_language;
-EXTERN_MSC struct GMT_PEN_NAME GMT_penname[];
 
 EXTERN_MSC float GMT_f_NaN;		/* Holds IEEE not-a-number float */
 EXTERN_MSC double GMT_d_NaN;		/* Holds IEEE not-a-number double */
@@ -483,7 +461,6 @@ EXTERN_MSC char *GMT_oldargv[];		/* Pointers to old common arguments */
 EXTERN_MSC char *GMT_degree_symbol[4][3];	/* Contains the two octal codes for small and large degree symbols, for each char encoding */
 EXTERN_MSC char *GMT_minute_symbol[4][2];	/* Standard encoding minute symbol */
 EXTERN_MSC char *GMT_second_symbol[4][2];	/* Standard encoding second symbol */
-EXTERN_MSC BOOLEAN GMT_processed_option[N_UNIQUE];	/* TRUE if option has been procssed */
 
 /*--------------------------------------------------------------------*/
 /*	For i/o purposes */
@@ -578,8 +555,8 @@ EXTERN_MSC PFD GMT_scan_time_string;		/*	pointer to functions that converts time
 #include "gmt_symbol.h"		/* Custom symbol functions */
 #include "gmt_contour.h"	/* Contour label structure and functions */
 #include "gmt_map.h"      	/* extern functions defined in gmt_map.c */
-#include "gmt_init.h"      	/* extern functions defined in gmt_init.c */
 #include "gmt_plot.h"      	/* extern functions defined in gmt_plot.c */
+#include "gmt_init.h"      	/* extern functions defined in gmt_init.c */
 #include "gmt_stat.h"      	/* extern functions defined in gmt_stat.c */
 #include "gmt_support.h"      	/* extern functions defined in gmt_support.c */
 #include "gmt_vector.h"      	/* extern functions defined in gmt_vector.c */

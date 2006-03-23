@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.1 2006-03-23 00:18:55 pwessel Exp $
+ *	$Id: gmt_proj.c,v 1.2 2006-03-23 07:48:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -79,7 +79,7 @@
 void GMT_check_R_J(double *clon);
 
 void GMT_check_R_J (double *clon)	/* Make sure -R and -J agree for global plots; J given priority */
-              {
+{
 	double lon0;
 
 	lon0 = 0.5 * (project_info.w + project_info.e);
@@ -101,56 +101,56 @@ void GMT_check_R_J (double *clon)	/* Make sure -R and -J agree for global plots;
 /* LINEAR TRANSFORMATIONS */
 
 void GMT_translin (double forw, double *inv)	/* Linear forward */
-                   {
+{
 	*inv = forw;
 }
 
 void GMT_translind (double forw, double *inv)	/* Linear forward, but with degrees*/
-                   {
+{
 	while ((forw - project_info.central_meridian) < -180.0) forw += 360.0;
 	while ((forw - project_info.central_meridian) > 180.0) forw -= 360.0;
 	*inv = forw - project_info.central_meridian;
 }
 
 void GMT_itranslind (double *forw, double inv)	/* Linear inverse, but with degrees*/
-                   {
+{
 	*forw = inv + project_info.central_meridian;
 	while ((*forw - project_info.central_meridian) < -180.0) *forw += 360.0;
 	while ((*forw - project_info.central_meridian) > 180.0) *forw -= 360.0;
 }
 
 void GMT_itranslin (double *forw, double inv)	/* Linear inverse */
-                   {
+{
 	*forw = inv;
 }
 
 void GMT_translog10 (double forw, double *inv)	/* Log10 forward */
-                   {
+{
 	*inv = d_log10 (forw);
 }
 
 void GMT_itranslog10 (double *forw, double inv) /* Log10 inverse */
-                   {
+{
 	*forw = pow (10.0, inv);
 }
 
 void GMT_transpowx (double x, double *x_in)	/* pow x forward */
-                 {
+{
 	*x_in = pow (x, project_info.xyz_pow[0]);
 }
 
 void GMT_itranspowx (double *x, double x_in) /* pow x inverse */
-                 {
+{
 	*x = pow (x_in, project_info.xyz_ipow[0]);
 }
 
 void GMT_transpowy (double y, double *y_in)	/* pow y forward */
-                 {
+{
 	*y_in = pow (y, project_info.xyz_pow[1]);
 }
 
 void GMT_itranspowy (double *y, double y_in) /* pow y inverse */
-                 {
+{
 	*y = pow (y_in, project_info.xyz_ipow[1]);
 }
 

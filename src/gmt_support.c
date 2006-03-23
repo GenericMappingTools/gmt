@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.233 2006-03-22 05:20:11 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.234 2006-03-23 07:48:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -87,6 +87,19 @@
 #define GMT_INSIDE_POLYGON	2
 #define GMT_OUTSIDE_POLYGON	0
 #define GMT_ONSIDE_POLYGON	1
+
+int GMT_color_rgb[GMT_N_COLOR_NAMES][3] = {	/* r/g/b of X11 colors */
+#include "gmt_color_rgb.h"
+};
+struct GMT_PEN_NAME {	/* Names of pens and their thicknesses */
+	char name[16];
+	double width;
+};
+
+struct GMT_PEN_NAME GMT_penname[GMT_N_PEN_NAMES] = {		/* Names and widths of pens */
+#include "gmt_pennames.h"
+};
+
 
 int GMT_polar_adjust(int side, double angle, double x, double y);
 int GMT_start_trace(float first, float second, int *edge, int edge_word, int edge_bit, unsigned int *bit);
@@ -1592,7 +1605,7 @@ int GMT_get_index (double value)
 			hi = mid;
 	}
         index = lo;
-        if(value >= GMT_lut[index].z_low && value < GMT_lut[index].z_high) return (index);
+        if (value >= GMT_lut[index].z_low && value < GMT_lut[index].z_high) return (index);
 
         /* Slow search in case the table was not sorted
          * No idea whether it is possible, but it most certainly
@@ -4329,238 +4342,6 @@ int GMT_delaunay (double *x_in, double *y_in, int n, int **link)
 
 #endif
 
-/*
- * GMT_grd_init initializes a grd header to default values and copies the
- * command line to the header variable command
- */
- 
-void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, BOOLEAN update)
-{	/* TRUE if we only want to update command line */
-	int i, len;
-
-	/* Always update command line history */
-
-	memset ((void *)header->command, 0, (size_t)GRD_COMMAND_LEN);
-	if (argc > 0) {
-		strcpy (header->command, argv[0]);
-		len = strlen (header->command);
-		for (i = 1; len < GRD_COMMAND_LEN && i < argc; i++) {
-			len += strlen (argv[i]) + 1;
-			if (len > GRD_COMMAND_LEN) continue;
-			strcat (header->command, " ");
-			strcat (header->command, argv[i]);
-		}
-		header->command[len] = 0;
-	}
-
-	if (update) return;	/* Leave other variables unchanged */
-
-	/* Here we initialize the variables to default settings */
-
-	header->x_min = header->x_max	= 0.0;
-	header->y_min = header->y_max	= 0.0;
-	header->z_min = header->z_max	= 0.0;
-	header->x_inc = header->y_inc	= 0.0;
-	header->z_scale_factor		= 1.0;
-	header->z_add_offset		= 0.0;
-	header->nx = header->ny		= 0;
-	header->node_offset		= 0;
-	header->type			= -1;
-	header->y_order			= 1;
-	header->z_id			= -1;
-	header->nan_value		= GMT_d_NaN;
-	header->xy_off			= 0.0;
-	
-	memset ((void *)header->name, 0, (size_t)GMT_LONG_TEXT);
-
-	memset ((void *)header->x_units, 0, (size_t)GRD_UNIT_LEN);
-	memset ((void *)header->y_units, 0, (size_t)GRD_UNIT_LEN);
-	memset ((void *)header->z_units, 0, (size_t)GRD_UNIT_LEN);
-	strcpy (header->x_units, "x");
-	strcpy (header->y_units, "y");
-	strcpy (header->z_units, "z");
-	memset ((void *)header->title, 0, (size_t)GRD_TITLE_LEN);
-	memset ((void *)header->remark, 0, (size_t)GRD_REMARK_LEN);
-}
-
-void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift)
-                          
-            
-             		/* Rotate geographical, global grid in e-w direction */
-{
-	/* This function will shift a grid by shift degrees */
-
-	int i, j, k, ij, nc, n_shift, width;
-	float *tmp;
-
-	tmp = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_grd_shift");
-
-	n_shift = irint (shift / header->x_inc);
-	width = (header->node_offset) ? header->nx : header->nx - 1;
-	nc = header->nx * sizeof (float);
-
-	for (j = ij = 0; j < header->ny; j++, ij += header->nx) {
-		for (i = 0; i < header->nx; i++) {
-			k = (i - n_shift) % width;
-			if (k < 0) k += header->nx;
-			tmp[k] = grd[ij+i];
-		}
-		if (!header->node_offset) tmp[width] = tmp[0];
-		memcpy ((void *)&grd[ij], (void *)tmp, (size_t)nc);
-	}
-
-	/* Shift boundaries */
-
-	header->x_min += shift;
-	header->x_max += shift;
-	if (header->x_max < 0.0) {
-		header->x_min += 360.0;
-		header->x_max += 360.0;
-	}
-	else if (header->x_max > 360.0) {
-		header->x_min -= 360.0;
-		header->x_max -= 360.0;
-	}
-
-	GMT_free ((void *) tmp);
-}
-
-/* GMT_grd_setregion determines what wesn should be passed to grd_read.  It
-  does so by using project_info.w,e,s,n which have been set correctly
-  by map_setup. */
-
-int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax)
-{
-	BOOLEAN region_straddle, grid_straddle, global;
-	double shift_x = 0.0;
-
-	if (!project_info.region && !RECT_GRATICULE) {	/* Used -R... with oblique boundaries - return entire grid */
-		BOOLEAN N_outside, S_outside;
-		N_outside = GMT_outside (0.0, +90.0);	/* North pole outside map boundary? */
-		S_outside = GMT_outside (0.0, -90.0);	/* South pole outside map boundary? */
-		/* Note: while h->xy_off might be 0.5 (pixel) or 0 (gridline), the w/e boundaries are always "gridline" hence we pass 0 as xy_off */
-		if (N_outside && S_outside) {	/* No polar complications, return extreme coordinates */
-			if (project_info.e < h->x_min)	/* Make adjustments so project_info.[w,e] jives with h->x_min|x_max */
-				shift_x = 360.0;
-			else if (project_info.w > h->x_max)
-				shift_x = -360.0;
-			*xmin = GMT_i_to_x (GMT_x_to_i (project_info.w + shift_x, h->x_min, h->x_inc, 0.0, h->nx), h->x_min, h->x_max, h->x_inc, 0.0, h->nx);
-			*xmax = GMT_i_to_x (GMT_x_to_i (project_info.e + shift_x, h->x_min, h->x_inc, 0.0, h->nx), h->x_min, h->x_max, h->x_inc, 0.0, h->nx);
-			*ymin = GMT_j_to_y (GMT_y_to_j (project_info.s, h->y_min, h->y_inc, 0.0, h->ny), h->y_min, h->y_max, h->y_inc, 0.0, h->ny);
-			*ymax = GMT_j_to_y (GMT_y_to_j (project_info.n, h->y_min, h->y_inc, 0.0, h->ny), h->y_min, h->y_max, h->y_inc, 0.0, h->ny);
-			/* Make sure we dont exceed grid domain (which can happen if project_info.w|e exceeds the grid limits) */
-			if ((*xmin) < h->x_min) *xmin = h->x_min;
-			if ((*xmax) > h->x_max) *xmax = h->x_max;
-			if ((*ymin) < h->y_min) *ymin = h->y_min;
-			if ((*ymax) > h->y_max) *ymax = h->y_max;
-		}
-		else if (!N_outside) {	/* North pole included, need all longitudes but restrict latitudes */
-			*xmin = h->x_min;	*xmax = h->x_max;
-			*ymin = GMT_j_to_y (GMT_y_to_j (project_info.s, h->y_min, h->y_inc, 0.0, h->ny), h->y_min, h->y_max, h->y_inc, 0.0, h->ny);
-			*ymax = h->y_max;
-			if ((*ymin) < h->y_min) *ymin = h->y_min;
-		}
-		else {			/* South pole included, need all longitudes but restrict latitudes */	
-			*xmin = h->x_min;	*xmax = h->x_max;
-			*ymin = h->y_min;
-			*ymax = GMT_j_to_y (GMT_y_to_j (project_info.n, h->y_min, h->y_inc, 0.0, h->ny), h->y_min, h->y_max, h->y_inc, 0.0, h->ny);
-			if ((*ymax) > h->y_max) *ymax = h->y_max;
-		}
-		return (0);
-	}
-	
-	/* Weakness in the logic below is that there is no flag in the grid to tell us it is lon/lat data.
-	 * We infer the grid is global (in longitude) and geographic if w-e == 360 && |s,n| <= 90 */
-
-	/* First set and check latitudes since they have no complications */
-#ifdef SHIT
-	*ymin = MAX (h->y_min, floor (project_info.s / h->y_inc) * h->y_inc);
-	*ymax = MIN (h->y_max,  ceil (project_info.n / h->y_inc) * h->y_inc);
-#endif
-	*ymin = MAX (h->y_min, h->y_min + floor ((project_info.s - h->y_min) / h->y_inc) * h->y_inc);
-	*ymax = MIN (h->y_max, h->y_min + ceil  ((project_info.n - h->y_min) / h->y_inc) * h->y_inc);
-
-	if ((*ymax) <= (*ymin)) {	/* Grid must be outside chosen -R */
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid y's or latitudes appear to be outside the map region and will be skipped.\n", GMT_program);
-		return (1);
-	}
-
-	if (GMT_io.in_col_type[0] != GMT_IS_LON) {	/* Regular Cartesian stuff is easy... */
-#ifdef SHIT
-		*xmin = MAX (h->x_min, floor (project_info.w / h->x_inc) * h->x_inc);
-		*xmax = MIN (h->x_max,  ceil (project_info.e / h->x_inc) * h->x_inc);
-#endif
-		*xmin = MAX (h->x_min, h->x_min + floor ((project_info.w - h->x_min) / h->x_inc) * h->x_inc);
-		*xmax = MIN (h->x_max, h->x_min + ceil  ((project_info.e - h->x_min) / h->x_inc) * h->x_inc);
-		if ((*xmax) <= (*xmin)) {	/* Grid is outside chosen -R */
-			if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid x-range appear to be outside the plot region and will be skipped.\n", GMT_program);
-			return (1);
-		}
-		return (0);
-	}
-
-	/* OK, longitudes are trickier and we must make sure grid and region is on the same page as far as +-360 degrees go */
-
-	global = (fabs (h->x_max - h->x_min - 360.0) < SMALL && h->y_min >= -90.0 && h->y_max <= +90.0);	/* We believe this indicates a global (in longitude), geographic grid */
-	if (global) {	/* Periodic grid with 360 degree range is easy */
-		*xmin = project_info.w;
-		*xmax = project_info.e;
-		return (0);
-	}
-
-	global = (fabs (project_info.e - project_info.w - 360.0) < SMALL && project_info.s >= -90.0 && project_info.n <= +90.0);	/* A global -R selected */
-	if (global) {	/* Global map with full 360 degree range is easy */
-		*xmin = h->x_min;
-		*xmax = h->x_max;
-		return (0);
-	}
-
-	/* There are 4 cases depending on whether the chosen region or the grid straddles Greenwich */
-
-	region_straddle = (project_info.w < 0.0 && project_info.e >= 0.0) ? TRUE : FALSE;
-	grid_straddle   = (h->x_min < 0.0 && h->x_max >= 0.0) ? TRUE : FALSE;
-
-	if (! (region_straddle || grid_straddle)) {	/* Case 1: Neither -R nor grid straddles Greenwich */
-		/* Here we KNOW that w/e has already been forced to be positive (0-360 range).
-		 * Just make sure the grid w/e is positive too when we compare range.
-		 */
-		 shift_x = (h->x_min < 0.0 && h->x_max <= 0.0) ? 360.0 : 0.0;	/* Shift to SUBTRACT from w/e ... when comparing */
-	}
-	else if (region_straddle && grid_straddle) {	/* Case 2: Both straddle Greenwich */
-		/* Here we know both mins are -ve and both max are +ve, so there should be no complications */
-		shift_x = 0.0;
-	}
-	else if (region_straddle && !grid_straddle) {	/* Case 3a: Region straddles Greenwich but grid doesnt */
-		/* Here we know w is -ve and e is +ve.
-		 * Must make sure the grid w/e is in same range when comparing.
-		 */
-		 shift_x = (h->x_max < project_info.w) ? 360.0 : 0.0;	/* Shift to SUBTRACT from w/e ... when comparing */
-	}		 
-	else {	/* Case 3b: Grid straddles Greenwich but region doesnt */
-		/* Here we KNOW that w/e has been forced to be positive (0-360 range).
-		 * Make sure the grid w/e is in same range
-		 */
-		 shift_x = (h->x_max < project_info.w) ? 360.0 : 0.0;	/* Shift to SUBTRACT from w/e ... when comparing */
-	}
-
-	h->x_min += shift_x;
-	h->x_max += shift_x;
-#ifdef SHIT
-	*xmin = MAX (h->x_min, floor (project_info.w / h->x_inc) * h->x_inc);
-	*xmax = MIN (h->x_max, ceil  (project_info.e / h->x_inc) * h->x_inc);
-#endif
-	*xmin = MAX (h->x_min, h->x_min + floor ((project_info.w - h->x_min) / h->x_inc) * h->x_inc);
-	*xmax = MIN (h->x_max, h->x_min + ceil  ((project_info.e - h->x_min) / h->x_inc) * h->x_inc);
-	while (*xmin <= -360) (*xmin) += 360.0;
-	while (*xmax <= -360) (*xmax) += 360.0;
-
-	if ((*xmax) <= (*xmin)) {	/* Grid is outside chosen -R in longitude */
-		if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid longitudes appear to be outside the map region and will be skipped.\n", GMT_program);
-		return (1);
-	}
-	return (0);
-}
-
 /* code for bicubic rectangle and bilinear interpolation of grd files
  *
  * Author:	Walter H F Smith
@@ -4568,10 +4349,7 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 */
 
 
-void	GMT_bcr_init(struct GRD_HEADER *grd, int *pad, int bilinear, double threshold, struct GMT_BCR *bcr)
-                       
-   	      	/* padding on grid, as given to read_grd2 */
-   	         	/* T/F we only want bilinear  */
+void GMT_bcr_init (struct GRD_HEADER *grd, int *pad, int bilinear, double threshold, struct GMT_BCR *bcr)
 {
 	/* Initialize i,j so that they cannot look like they have been used:  */
 	bcr->i = -10;
@@ -4599,7 +4377,7 @@ void	GMT_bcr_init(struct GRD_HEADER *grd, int *pad, int bilinear, double thresho
 	bcr->ij_move[3] = 1 - bcr->mx;
 }
 
-void	GMT_get_bcr_cardinals (double x, double y, struct GMT_BCR *bcr)
+void GMT_get_bcr_cardinals (double x, double y, struct GMT_BCR *bcr)
 {
 	/* Given x,y compute the cardinal functions.  Note x,y should be in
 	 * normalized range, usually [0,1) but sometimes a little outside this.  */
@@ -4658,8 +4436,7 @@ void GMT_get_bcr_ij (struct GRD_HEADER *grd, double xx, double yy, int *ii, int 
 		Changed by WHFS 6 May 1998 for GMT 3.1 with two rows of BC's
 		implemented:  It used to say: 
 
-	   This 
-	   should have jj in the range 1 grd->ny-1 and ii in the range 0 to
+	   This should have jj in the range 1 grd->ny-1 and ii in the range 0 to
 	   grd->nx-2, so that the north and east edges will not have the
 	   origin on them.
 
@@ -4670,7 +4447,6 @@ void GMT_get_bcr_ij (struct GRD_HEADER *grd, double xx, double yy, int *ii, int 
 
 		I think this will correctly make interpolations match
 		boundary conditions.
-
  */
 
 	int	i, j;
@@ -4690,7 +4466,7 @@ void GMT_get_bcr_ij (struct GRD_HEADER *grd, double xx, double yy, int *ii, int 
 	*jj = j;
 }
 
-void	GMT_get_bcr_xy(struct GRD_HEADER *grd, double xx, double yy, double *x, double *y, struct GMT_BCR *bcr)
+void GMT_get_bcr_xy (struct GRD_HEADER *grd, double xx, double yy, double *x, double *y, struct GMT_BCR *bcr)
 {
 	/* Given xx, yy in user's grdfile x and y units (not normalized),
 	   use the bcr->i and bcr->j to find x,y (normalized) which are the
@@ -4705,7 +4481,7 @@ void	GMT_get_bcr_xy(struct GRD_HEADER *grd, double xx, double yy, double *x, dou
 	*y = (yy - yorigin) * bcr->ry_inc;
 }
 
-void	GMT_get_bcr_nodal_values(float *z, int ii, int jj, struct GMT_BCR *bcr)
+void GMT_get_bcr_nodal_values(float *z, int ii, int jj, struct GMT_BCR *bcr)
 {
 	/* ii, jj is the point we want to use now, which is different from
 	   the bcr->i, bcr->j point we used last time this function was called.
@@ -4868,7 +4644,7 @@ void	GMT_get_bcr_nodal_values(float *z, int ii, int jj, struct GMT_BCR *bcr)
 	return;
 }
 
-double	GMT_get_bcr_z(struct GRD_HEADER *grd, double xx, double yy, float *data, struct GMT_EDGEINFO *edgeinfo, struct GMT_BCR *bcr)
+double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data, struct GMT_EDGEINFO *edgeinfo, struct GMT_BCR *bcr)
 {
 	/* Given xx, yy in user's grdfile x and y units (not normalized),
 	   this routine returns the desired interpolated value (bilinear
@@ -4877,15 +4653,15 @@ double	GMT_get_bcr_z(struct GRD_HEADER *grd, double xx, double yy, float *data, 
 	int	i, j, vertex, value;
 	double	x, y, retval, wsum;
 
-	if (xx < grd->x_min || xx > grd->x_max) return(GMT_d_NaN);
-	if (yy < grd->y_min || yy > grd->y_max) return(GMT_d_NaN);
+	if (xx < grd->x_min || xx > grd->x_max) return (GMT_d_NaN);
+	if (yy < grd->y_min || yy > grd->y_max) return (GMT_d_NaN);
 
 	GMT_get_bcr_ij (grd, xx, yy, &i, &j, edgeinfo, bcr);
 
 	if (i != bcr->i || j != bcr->j)
-		GMT_get_bcr_nodal_values(data, i, j, bcr);
+		GMT_get_bcr_nodal_values (data, i, j, bcr);
 
-	GMT_get_bcr_xy(grd, xx, yy, &x, &y, bcr);
+	GMT_get_bcr_xy (grd, xx, yy, &x, &y, bcr);
 
 	/* See if we can copy a node value.  This saves the user
 		from getting a NaN if the node value is fine but
@@ -4895,15 +4671,15 @@ double	GMT_get_bcr_z(struct GRD_HEADER *grd, double xx, double yy, float *data, 
 
 	if ( (fabs(x)) <= SMALL) {
 		if ( (fabs(y)) <= SMALL)
-			return(bcr->nodal_value[0][0]);
+			return (bcr->nodal_value[0][0]);
 		if ( (fabs(1.0 - y)) <= SMALL)
-			return(bcr->nodal_value[2][0]);
+			return (bcr->nodal_value[2][0]);
 	}
 	if ( (fabs(1.0 - x)) <= SMALL) {
 		if ( (fabs(y)) <= SMALL)
-			return(bcr->nodal_value[1][0]);
+			return (bcr->nodal_value[1][0]);
 		if ( (fabs(1.0 - y)) <= SMALL)
-			return(bcr->nodal_value[3][0]);
+			return (bcr->nodal_value[3][0]);
 	}
 
 	GMT_get_bcr_cardinals(x, y, bcr);
@@ -4928,7 +4704,7 @@ double	GMT_get_bcr_z(struct GRD_HEADER *grd, double xx, double yy, float *data, 
 			retval += (bcr->nodal_value[vertex][value]*bcr->bcr_basis[vertex][value]);
 		}
 	}
-	return(retval);
+	return (retval);
 }
 
 /*
@@ -5039,8 +4815,6 @@ int GMT_boundcond_parse (struct GMT_EDGEINFO *edgeinfo, char *edgestring)
 	return (0);
 }
 
-
-
 int GMT_boundcond_param_prep (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo)
 {
 	/* Called when edgeinfo holds user's choices.  Sets
@@ -5125,7 +4899,6 @@ int GMT_boundcond_set (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo, int 
 		fprintf (stderr, "GMT ERROR:  GMT_boundcond_set requires nx,ny at least 2.\n");
 		return (-1);
 	}
-
 
 	/* Initialize stuff:  */
 
@@ -5598,7 +5371,7 @@ BOOLEAN GMT_x_is_outside (double *x, double left, double right)
 		return (((*x) < left || (*x) > right) ? TRUE : FALSE);
 }
 
-int GMT_getscale (char *text, struct MAP_SCALE *ms)
+int GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 {
 	/* Pass text as &argv[i][2] */
 
@@ -5708,7 +5481,7 @@ int GMT_getscale (char *text, struct MAP_SCALE *ms)
 	return (error);
 }
 
-int GMT_getrose (char *text, struct MAP_ROSE *ms)
+int GMT_getrose (char *text, struct GMT_MAP_ROSE *ms)
 {
 	/* Pass text as &argv[i][2] */
 
@@ -6500,7 +6273,6 @@ struct GMT_XSEGMENT *GMT_init_track (double x[], double y[], int n)
 
 	return (L);
 }
-
 
 int GMT_ysort (const void *p1, const void *p2)
 {
