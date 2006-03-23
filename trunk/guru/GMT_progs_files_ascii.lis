@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.25 2006-03-22 05:20:11 pwessel Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.26 2006-03-23 00:18:35 pwessel Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_progs tar/zip files.  See GMT_progs_files_bin.lis for binary files
@@ -54,6 +54,7 @@ src/gmt_notunix.h
 src/gmt_media_name.h
 src/gmt_media_size.h
 src/gmt_pennames.h
+src/gmt_proj.h
 src/gmt_plot.h
 src/gmt_shore.h
 src/gmt_stat.h
@@ -82,6 +83,7 @@ src/gmt_mgg_header2.c
 src/gmt_nan_init.c
 src/gmt_nc.c
 src/gmt_plot.c
+src/gmt_proj.c
 src/gmt_shore.c
 src/gmt_stat.c
 src/gmt_support.c
