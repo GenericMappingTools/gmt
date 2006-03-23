@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.h,v 1.1 2006-03-22 05:20:11 pwessel Exp $
+ *	$Id: gmt_plot.h,v 1.2 2006-03-23 07:48:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -19,18 +19,116 @@
 #ifndef _GMT_PLOT_H
 #define _GMT_PLOT_H
 
+/* GMT symbol identifiers */
+
+#define GMT_SYMBOL_NONE		99
+#define GMT_SYMBOL_NOT_SET	999
+
+#define GMT_SYMBOL_LINE		0
+#define GMT_SYMBOL_BAR		1
+#define GMT_SYMBOL_CROSS	2
+#define GMT_SYMBOL_POINT	3
+#define GMT_SYMBOL_CIRCLE	4
+#define GMT_SYMBOL_SQUARE	5
+#define GMT_SYMBOL_TRIANGLE	6
+#define GMT_SYMBOL_DIAMOND	7
+#define GMT_SYMBOL_STAR		8
+#define GMT_SYMBOL_HEXAGON	9
+#define GMT_SYMBOL_ITRIANGLE	10
+#define GMT_SYMBOL_CUBE		11
+#define GMT_SYMBOL_COLUMN	12
+#define GMT_SYMBOL_ELLIPSE	13
+#define GMT_SYMBOL_VECTOR	14
+#define GMT_SYMBOL_VECTOR2	15
+#define GMT_SYMBOL_PIE		16
+#define GMT_SYMBOL_RECT		17
+#define GMT_SYMBOL_XDASH	18
+#define GMT_SYMBOL_YDASH	19
+#define GMT_SYMBOL_ZDASH	20
+#define GMT_SYMBOL_TEXT		21
+#define GMT_SYMBOL_PENTAGON	22
+#define GMT_SYMBOL_OCTAGON	23
+#define GMT_SYMBOL_CUSTOM	24
+
+#define GMT_SYMBOL_FRONT	-100
+#define GMT_SYMBOL_QUOTED_LINE	-200
+
+#define GMT_POINT_SIZE 0.005	/* Size of a "dot" on a GMT PS map */
+
+/* FRONT symbols */
+
+#define GMT_FRONT_FAULT		0
+#define GMT_FRONT_TRIANGLE	1
+#define GMT_FRONT_SLIP		2
+#define GMT_FRONT_CIRCLE	3
+#define GMT_FRONT_BOX		4
+
+/* Direction of FRONT symbols: */
+
+#define GMT_FRONT_LEFT		+1
+#define GMT_FRONT_CENTERED	0
+#define GMT_FRONT_RIGHT		-1
+
+struct GMT_FRONTLINE {		/* A sub-symbol for symbols along a front */
+	double f_gap;		/* Gap between front symbols in inches */
+	double f_len;		/* Length of front symbols in inches */
+	double f_off;		/* Offset of first symbol from start of front in inches */
+	int f_sense;		/* Draw symbols to left (+1), centered (0), or right (-1) of line */
+	int f_symbol;		/* Which symbol to draw along the front line */
+};
+
+struct GMT_SYMBOL {
+	int symbol;		/* Symbol id */
+	int n_required;		/* Number of additional columns necessary to decode chosen symbol */
+	int u;			/* Measure unit id (0 = cm, 1 = inch, 2 = m, 3 = point */
+	double size_x;		/* Current symbol size in x */
+	double size_y;		/* Current symbol size in y */
+	double given_size_x;	/* Symbol size read from file or command line */
+	double given_size_y;	/* Symbol size read from file or command line */
+	BOOLEAN equal_area;	/* Symbol should be scaled to give same area as circle */
+	BOOLEAN read_size;	/* TRUE when we must read symbol size from file */
+	BOOLEAN shade3D;	/* TRUE when we should simulate shading of 3D symbols cube and column */
+	int font_no;		/* font to use for the -Sl symbol */
+
+	/* These apply to bar symbols */
+
+	double base;		/* From what level to draw the bar */
+	BOOLEAN user_unit;	/* if TRUE */
+
+	/* These apply to vectors */
+
+	int convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
+	BOOLEAN read_vector;	/* if TRUE must read vector attributes */
+	BOOLEAN shrink;		/* If TRUE, shrink vector attributes for small lengths */
+	double v_norm;		/* shrink when lengths are smaller than this */
+	double v_shrink;	/* Required scale factor */
+	double v_width;		/* Width of vector stem in inches */
+	double h_length;	/* Length of vector head in inches */
+	double h_width;		/* Width of vector head in inches */
+	int v_just;		/* How to justify vector: head point given (3), head (2), center(1), tail (0 - Default) */
+	BOOLEAN v_double_heads;		/* If TRUE, Add 8 (|= 8) to outline to specify double-headed vector (FALSE is single-headed) */
+
+	char string[GMT_TEXT_LEN];	/* Character code to plot (could be octal) */
+
+	struct GMT_FRONTLINE f;	/* parameters needed for a front */
+	struct CUSTOM_SYMBOL *custom;	/* pointer to a custom symbol */
+
+	struct GMT_CONTOUR G;	/* For labelled lines */
+};
+
 EXTERN_MSC void GMT_circle3D (double x, double y, double z, double size, int rgb[], int outline);
 EXTERN_MSC void GMT_color_image (double x0, double y0, double x_side, double y_side, unsigned char *image, int nx, int ny, int depth);
 EXTERN_MSC void GMT_cross3D (double x, double y, double z, double size);
 EXTERN_MSC void GMT_diamond3D (double x, double y, double z, double size, int rgb[], int outline);
-EXTERN_MSC void GMT_draw_map_rose (struct MAP_ROSE *mr);
-EXTERN_MSC void GMT_draw_map_scale (struct MAP_SCALE *ms);
+EXTERN_MSC void GMT_draw_map_rose (struct GMT_MAP_ROSE *mr);
+EXTERN_MSC void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms);
 EXTERN_MSC void GMT_echo_command (int argc, char **argv);
 EXTERN_MSC void GMT_ellipse3D (double x, double y, double z, double direction, double major, double minor, int rgb[], int outline);
 EXTERN_MSC void GMT_fill (double x[], double y[], int n, struct GMT_FILL *fill, BOOLEAN outline);
-EXTERN_MSC void GMT_fill_polygon (double *lon, double *lat, int n, struct GMT_FILL *F, BOOLEAN outline);
+EXTERN_MSC void GMT_fill_polygon (double *lon, double *lat, double z, int n, struct GMT_FILL *F, BOOLEAN outline);
+EXTERN_MSC void GMT_plot_ellipse (double lon, double lat, double z, double major, double minor, double azimuth, struct GMT_FILL fill, int outline);
+EXTERN_MSC void GMT_draw_fence (double x[], double y[], double z, int n, struct GMT_FRONTLINE *f, struct GMT_FILL *g, BOOLEAN outline);
 EXTERN_MSC void GMT_fill_syntax (char option);
-EXTERN_MSC void GMT_geoplot (double lon, double lat, int pen);
 EXTERN_MSC void GMT_grid_clip_off (void);
 EXTERN_MSC void GMT_grid_clip_on (struct GRD_HEADER *h, int rgb[], int flag);
 EXTERN_MSC void GMT_hexagon3D (double x, double y, double z, double size, int rgb[], int outline);

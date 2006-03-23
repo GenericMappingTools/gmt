@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.118 2006-03-21 19:05:36 remko Exp $
+ *	$Id: pslib.c,v 1.119 2006-03-23 07:48:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -277,8 +277,7 @@ void ps_axis (double x, double y, double length, double val0, double val1, doubl
 	dy = sign * annotpointsize / ps.points_pr_unit;
 
 	fprintf (ps.fp, "\nV %g %g T %g R\n", x * ps.scale, y * ps.scale, angle);
-	ps_plot (0.0, 0.0, 3);
-	ps_plot (length, 0.0, 2);
+	ps_segment (0.0, 0.0, length, 0.0);
 	if ((val1 - val0) == 0.0) {
 		fprintf (stderr, "pslib: ERROR: Axis val0 == val1!\n");
 		return;
@@ -294,8 +293,7 @@ void ps_axis (double x, double y, double length, double val0, double val1, doubl
 		i++;
 		xx = (val - val0) * scl;
 		if (left) xx = length - xx;
-		ps_plot (xx, 0.0, 3);
-		ps_plot (xx, dy, 2);
+		ps_segment (xx, 0.0, xx, dy);
 		sprintf( text, format, val);
 		ps_text (xx, annot_off, annotpointsize, text, 0.0, annot_justify, 0);
 		val = val0 + i * annotation_int;
@@ -1179,7 +1177,7 @@ void ps_plot (double x, double y, int pen)
 		fprintf (ps.fp, "%d %d M\n", idx, idy);
 		ps.npath = 1;
 	}
-	if (pen == -2) fprintf (ps.fp, "S\n");
+	if (pen == PSL_PEN_DRAW_AND_STROKE) fprintf (ps.fp, "S\n");
 	ps.ix = ix;
 	ps.iy = iy;
 	if ((ps.npath + ps.clip_path_length) > MAX_L1_PATH) {
@@ -1528,7 +1526,7 @@ void ps_plotr (double x, double y, int pen)
 		fprintf (ps.fp, "%d %d G\n", ix, iy);
 		ps.npath = 1;
 	}
-	if (pen == -2) fprintf (ps.fp, "S\n");
+	if (pen == PSL_PEN_DRAW_AND_STROKE) fprintf (ps.fp, "S\n");
 	ps.ix += ix;	/* Update absolute position */
 	ps.iy += iy;
 }

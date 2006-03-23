@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_colors.h,v 1.18 2006-03-10 23:33:19 pwessel Exp $
+ *	$Id: gmt_colors.h,v 1.19 2006-03-23 07:48:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -75,8 +75,6 @@ struct GMT_BFN_COLOR {	/* For back-, fore-, and nan-colors */
 	struct GMT_FILL *fill;
 };
 
-EXTERN_MSC char *GMT_color_name[GMT_N_COLOR_NAMES];		/* Names of X11 color names */
-EXTERN_MSC int   GMT_color_rgb[GMT_N_COLOR_NAMES][3];		/* Corresponding r/g/b values */
 EXTERN_MSC struct GMT_HASH GMT_rgb_hashnode[GMT_N_COLOR_NAMES];	/* Used to translate colornames to r/g/b */
 
 EXTERN_MSC struct GMT_LUT *GMT_lut;

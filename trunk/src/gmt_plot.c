@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.170 2006-03-20 23:03:54 remko Exp $
+ *	$Id: gmt_plot.c,v 1.171 2006-03-23 07:48:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -84,12 +84,12 @@
 #include "gmt.h"
 #include "pslib.h"
 
-void GMT_map_symbol(double *xx, double *yy, int *sides, double *line_angles, char *label, int nx, int type, BOOLEAN annotate, int level);
-void GMT_map_symbol_ew(double lat, char *label, double west, double east, BOOLEAN annotate, int level);
-void GMT_map_symbol_ns(double lon, char *label, double south, double north, BOOLEAN annotate, int level);
+void GMT_map_symbol (double *xx, double *yy, int *sides, double *line_angles, char *label, int nx, int type, BOOLEAN annotate, int level);
+void GMT_map_symbol_ew (double lat, char *label, double west, double east, BOOLEAN annotate, int level);
+void GMT_map_symbol_ns (double lon, char *label, double south, double north, BOOLEAN annotate, int level);
 void GMT_get_annot_label (double val, char *label, int do_minutes, int do_seconds, int lonlat, BOOLEAN worldmap);
-void GMT_basemap_3D(int mode);
-void GMT_xyz_axis3D(int axis_no, char axis, struct PLOT_AXIS *A, int annotate);
+void GMT_basemap_3D (int mode);
+void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate);
 int GMT_coordinate_array (double min, double max, struct PLOT_AXIS_ITEM *T, double **array);
 int GMT_linear_array (double min, double max, double delta, double phase, double **array);
 int GMT_pow_array (double min, double max, double delta, int x_or_y, double **array);
@@ -102,8 +102,6 @@ void GMT_map_lonline (double lon, double south, double north);
 void GMT_map_tick (double *xx, double *yy, int *sides, double *angles, int nx, int type, double len);
 void GMT_map_lontick (double lon, double south, double north, double len);
 void GMT_map_lattick (double lat, double west, double east, double len);
-int GMT_map_loncross (double lon, double south, double north, struct XINGS **xings);
-int GMT_map_latcross (double lat, double west, double east, struct XINGS **xings);
 int GMT_prepare_label (double angle, int side, double x, double y, int type, double *line_angle, double *text_angle, int *justify);
 BOOLEAN GMT_annot_too_crowded (double x, double y, int side);
 BOOLEAN GMT_is_fancy_boundary (void);
@@ -128,7 +126,7 @@ void GMT_fancy_frame_straightlat_checkers (double w, double e, double s, double 
 void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n, double radius_s, double radius_n, BOOLEAN secondary_too);
 void GMT_fancy_frame_straightlon_checkers (double w, double e, double s, double n, double angle_s, double angle_n, BOOLEAN secondary_too);
 void GMT_label_trim (char *label, int stage);
-void GMT_draw_mag_rose (struct MAP_ROSE *mr);
+void GMT_draw_mag_rose (struct GMT_MAP_ROSE *mr);
 void GMT_Nstar (double x0, double y0, double r);
 void GMT_contlabel_debug (struct GMT_CONTOUR *G);
 void GMT_contlabel_drawlines (struct GMT_CONTOUR *G, int mode);
@@ -139,6 +137,8 @@ void GMT_contlabel_plotboxes (struct GMT_CONTOUR *G);
 void GMT_flush_symbol_piece (double *x, double *y, double z, int *n, struct GMT_PEN *p, struct GMT_FILL *f, BOOLEAN outline, BOOLEAN *flush);
 void GMT_define_PS_items (struct PLOT_AXIS *A, int below, int annotate);
 void GMT_define_baselines ();
+void GMT_geoplot (double lon, double lat, int pen);
+void GMT_geosegment (double lon1, double lat1, double lon2, double lat2);
 
 /* Local variables to this file */
 
@@ -617,10 +617,7 @@ void GMT_timex_grid (double w, double e, double s, double n, int item)
 	double *x;
 
 	nx = GMT_time_array (w, e, &frame_info.axis[0].item[item], &x);
-	for (i = 0; i < nx; i++) {
-		GMT_geoplot (x[i], s, +3);
-		GMT_geoplot (x[i], n, -2);
-	}
+	for (i = 0; i < nx; i++) GMT_geosegment (x[i], s, x[i], n);
 	if (nx) GMT_free ((void *)x);
 }
 
@@ -630,10 +627,7 @@ void GMT_timey_grid (double w, double e, double s, double n, int item)
 	double *y;
 
 	ny = GMT_time_array (s, n, &frame_info.axis[1].item[item], &y);
-	for (i = 0; i < ny; i++) {
-		GMT_geoplot (w, y[i], +3);
-		GMT_geoplot (e, y[i], -2);
-	}
+	for (i = 0; i < ny; i++) GMT_geosegment (w, y[i], e, y[i]);
 	if (ny) GMT_free ((void *)y);
 }
 
@@ -643,10 +637,7 @@ void GMT_logx_grid (double w, double e, double s, double n, double dval)
 	double *x;
 
 	nx = GMT_log_array (w, e, dval, &x);
-	for (i = 0; i < nx; i++) {
-		GMT_geoplot (x[i], s, +3);
-		GMT_geoplot (x[i], n, -2);
-	}
+	for (i = 0; i < nx; i++) GMT_geosegment (x[i], s, x[i], n);
 	if (nx) GMT_free ((void *)x);
 }
 
@@ -656,10 +647,7 @@ void GMT_logy_grid (double w, double e, double s, double n, double dval)
 	double *y;
 
 	ny = GMT_log_array (s, n, dval, &y);
-	for (i = 0; i < ny; i++) {
-		GMT_geoplot (w, y[i], +3);
-		GMT_geoplot (e, y[i], -2);
-	}
+	for (i = 0; i < ny; i++) GMT_geosegment (w, y[i], e, y[i]);
 	if (ny) GMT_free ((void *)y);
 }
 
@@ -669,10 +657,7 @@ void GMT_powx_grid (double w, double e, double s, double n, double dval)
 	double *x;
 
 	nx = GMT_pow_array (w, e, dval, 0, &x);
-	for (i = 0; i < nx; i++) {
-		GMT_geoplot (x[i], s, +3);
-		GMT_geoplot (x[i], n, -2);
-	}
+	for (i = 0; i < nx; i++) GMT_geosegment (x[i], s, x[i], n);
 	if (nx) GMT_free ((void *)x);
 }
 
@@ -682,10 +667,7 @@ void GMT_powy_grid (double w, double e, double s, double n, double dval)
 	double *y;
 
 	ny = GMT_pow_array (s, n, dval, 1, &y);
-	for (i = 0; i < ny; i++) {
-		GMT_geoplot (w, y[i], +3);
-		GMT_geoplot (e, y[i], -2);
-	}
+	for (i = 0; i < ny; i++) GMT_geosegment (w, y[i], e, y[i]);
 	if (ny) GMT_free ((void *)y);
 }
 
@@ -783,13 +765,11 @@ void GMT_fancy_frame_straightlat_checkers (double w, double e, double s, double 
 					do_it = ((v2 - v1) > GMT_CONV_LIMIT);
 					if (do_it && frame_info.side[3]) {
 						GMT_geo_to_xy (w, v2, &x3, &y3);
-						ps_plot (x1-0.5*scale[k]*shift_w[0], y1-0.5*scale[k]*shift_w[1], +3);
-						ps_plot (x3-0.5*scale[k]*shift_w[0], y3-0.5*scale[k]*shift_w[1], -2);
+						ps_segment (x1-0.5*scale[k]*shift_w[0], y1-0.5*scale[k]*shift_w[1], x3-0.5*scale[k]*shift_w[0], y3-0.5*scale[k]*shift_w[1]);
 					}
 					if (do_it && frame_info.side[1]) {
 						GMT_geo_to_xy (e, v2, &x3, &y3);
-						ps_plot (x2+0.5*scale[k]*shift_e[0], y2+0.5*scale[k]*shift_e[1], +3);
-						ps_plot (x3+0.5*scale[k]*shift_e[0], y3+0.5*scale[k]*shift_e[1], -2);
+						ps_segment (x2+0.5*scale[k]*shift_e[0], y2+0.5*scale[k]*shift_e[1], x3+0.5*scale[k]*shift_e[0], y3+0.5*scale[k]*shift_e[1]);
 					}
 					shade = FALSE;
 				}
@@ -828,13 +808,11 @@ void GMT_fancy_frame_straightlon_checkers (double w, double e, double s, double 
 					do_it = ((v2 - v1) > GMT_CONV_LIMIT);
 					if (do_it && frame_info.side[0]) {
 						GMT_geo_to_xy (v2, s, &x3, &y3);
-						ps_plot (x1-0.5*scale[k]*shift_s[0], y1-0.5*scale[k]*shift_s[1], 3);
-						ps_plot (x3-0.5*scale[k]*shift_s[0], y3-0.5*scale[k]*shift_s[1], -2);
+						ps_segment (x1-0.5*scale[k]*shift_s[0], y1-0.5*scale[k]*shift_s[1], x3-0.5*scale[k]*shift_s[0], y3-0.5*scale[k]*shift_s[1]);
 					}
 					if (do_it && frame_info.side[2]) {
 						GMT_geo_to_xy (v2, n, &x3, &y3);
-						ps_plot (x2-0.5*scale[k]*shift_n[0], y2-0.5*scale[k]*shift_n[1], 3);
-						ps_plot (x3-0.5*scale[k]*shift_n[0], y3-0.5*scale[k]*shift_n[1], -2);
+						ps_segment (x2-0.5*scale[k]*shift_n[0], y2-0.5*scale[k]*shift_n[1], x3-0.5*scale[k]*shift_n[0], y3-0.5*scale[k]*shift_n[1]);
 					}
 					shade = FALSE;
 				}
@@ -875,11 +853,11 @@ void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n,
 						az2 = d_atan2 (y2 - project_info.c_y0, x2 - project_info.c_x0) * R2D;
 						if (project_info.north_pole) {
 							if (az1 < az2) az1 += 360.0;
-							ps_arc (project_info.c_x0, project_info.c_y0, radius_s+scale[k]*dr, az2, az1, 3);
+							ps_arc (project_info.c_x0, project_info.c_y0, radius_s+scale[k]*dr, az2, az1, PSL_ARC_DRAW);
 						}
 						else {
 							if (az2 < az1) az2 += 360.0;
-							ps_arc (project_info.c_x0, project_info.c_y0, radius_s-scale[k]*dr, az1, az2, 3);
+							ps_arc (project_info.c_x0, project_info.c_y0, radius_s-scale[k]*dr, az1, az2, PSL_ARC_DRAW);
 						}
 					}
 					if (do_it && frame_info.side[2]) {
@@ -889,11 +867,11 @@ void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n,
 						az2 = d_atan2 (y2 - project_info.c_y0, x2 - project_info.c_x0) * R2D;
 						if (project_info.north_pole) {
 							if (az1 < az2) az1 += 360.0;
-							ps_arc (project_info.c_x0, project_info.c_y0, radius_n-scale[k]*dr, az2, az1, 3);
+							ps_arc (project_info.c_x0, project_info.c_y0, radius_n-scale[k]*dr, az2, az1, PSL_ARC_DRAW);
 						}
 						else {
 							if (az2 < az1) az2 += 360.0;
-							ps_arc (project_info.c_x0, project_info.c_y0, radius_n+scale[k]*dr, az1, az2, 3);
+							ps_arc (project_info.c_x0, project_info.c_y0, radius_n+scale[k]*dr, az1, az2, PSL_ARC_DRAW);
 						}
 					}
 					shade = FALSE;
@@ -922,15 +900,13 @@ double GMT_fancy_frame_straight_outline (double lonA, double latA, double lonB, 
 	Ldy = (gmtdefs.basemap_type == GMT_IS_ROUNDED) ? 0.0 : gmtdefs.frame_width * s;
 	dx =  gmtdefs.frame_width * s;
 	dy = -gmtdefs.frame_width * c;
-	ps_plot (x[0]-Ldx, y[0]-Ldy, +3);
-	ps_plot (x[1]+Ldx, y[1]+Ldy, -2);
+	ps_segment (x[0]-Ldx, y[0]-Ldy, x[1]+Ldx, y[1]+Ldy);
 	for (k = 0; k < 1 + secondary_too; k++) {
 		x[0] += scale*dx;
 		y[0] += scale*dy;
 		x[1] += scale*dx;
 		y[1] += scale*dy;
-		ps_plot (x[0]-Ldx, y[0]-Ldy, +3);
-		ps_plot (x[1]+Ldx, y[1]+Ldy, -2);
+		ps_segment (x[0]-Ldx, y[0]-Ldy, x[1]+Ldx, y[1]+Ldy);
 	}
 	return (angle);
 }
@@ -951,9 +927,9 @@ double GMT_fancy_frame_curved_outline (double lonA, double latA, double lonB, do
 	s = ((project_info.north_pole && side == 2) || (!project_info.north_pole && side == 0)) ? -1.0 : +1.0;	/* North: needs shorter radius.  South: Needs longer radius (opposite in S hemi) */
 	r_inc = s*scale[0] * width;
 	if (fabs (360.0 - fabs (lonA - lonB)) < GMT_CONV_LIMIT) {	/* Full 360-degree cirle */
-		ps_arc (project_info.c_x0, project_info.c_y0, radius, 0.0, 360.0, 3);
-		ps_arc (project_info.c_x0, project_info.c_y0, radius + r_inc, 0.0, 360.0, 3);
-		if (secondary_too)  ps_arc (project_info.c_x0, project_info.c_y0, radius + 2.0 * r_inc, 0.0, 360.0, 3);
+		ps_arc (project_info.c_x0, project_info.c_y0, radius, 0.0, 360.0, PSL_ARC_DRAW);
+		ps_arc (project_info.c_x0, project_info.c_y0, radius + r_inc, 0.0, 360.0, PSL_ARC_DRAW);
+		if (secondary_too)  ps_arc (project_info.c_x0, project_info.c_y0, radius + 2.0 * r_inc, 0.0, 360.0, PSL_ARC_DRAW);
 	}
 	else {
 		az1 = d_atan2 (y1 - project_info.c_y0, x1 - project_info.c_x0) * R2D;
@@ -963,12 +939,12 @@ double GMT_fancy_frame_curved_outline (double lonA, double latA, double lonB, do
 		while (az2 < az1) az2 += 360.0;	/* Likewise ensure az1 > az1 and is now in the 0-720 range */
 		da0 = R2D * escl * width /radius;
 		da  = R2D * escl * width / (radius + r_inc);
-		ps_arc (project_info.c_x0, project_info.c_y0, radius, az1-da0, az2+da0, 3);
-		ps_arc (project_info.c_x0, project_info.c_y0, radius + r_inc, az1-da, az2+da, 3);
+		ps_arc (project_info.c_x0, project_info.c_y0, radius, az1-da0, az2+da0, PSL_ARC_DRAW);
+		ps_arc (project_info.c_x0, project_info.c_y0, radius + r_inc, az1-da, az2+da, PSL_ARC_DRAW);
 		if (secondary_too) {
 			r_inc *= 2.0;
 			da = R2D * escl * width / (radius + r_inc);
-			ps_arc (project_info.c_x0, project_info.c_y0, radius + r_inc, az1-da, az2+da, 3);
+			ps_arc (project_info.c_x0, project_info.c_y0, radius + r_inc, az1-da, az2+da, PSL_ARC_DRAW);
 		}
 	}
 	return (radius);
@@ -985,28 +961,28 @@ void GMT_rounded_framecorners (double w, double e, double s, double n, double an
 	for (k = 0; k < 1 + secondary_too; k++) {
 		if (frame_info.side[0] && frame_info.side[1]) {
 			GMT_geo_to_xy (e, s, &x, &y);
-			ps_arc (x, y, (k+1)*width, 180.0+anglee, 270.0+anglee, 3);
+			ps_arc (x, y, (k+1)*width, 180.0+anglee, 270.0+anglee, PSL_ARC_DRAW);
 		}
 		if (frame_info.side[1] && frame_info.side[2]) {
 			GMT_geo_to_xy (e, n, &x, &y);
-			ps_arc (x, y, (k+1)*width, 270.0+anglee, 360.0+anglee, 3);
+			ps_arc (x, y, (k+1)*width, 270.0+anglee, 360.0+anglee, PSL_ARC_DRAW);
 		}
 		if (frame_info.side[2] && frame_info.side[3]) {
 			GMT_geo_to_xy (w, n, &x, &y);
-			ps_arc (x, y, (k+1)*width, 180.0+anglew, 270.0+anglew, 3);
+			ps_arc (x, y, (k+1)*width, 180.0+anglew, 270.0+anglew, PSL_ARC_DRAW);
 		}
 		if (frame_info.side[3] && frame_info.side[0]) {
 			GMT_geo_to_xy (w, s, &x, &y);
-			ps_arc (x, y, (k+1)*width, 270.0+anglew, 360.0+anglew, 3);
+			ps_arc (x, y, (k+1)*width, 270.0+anglew, 360.0+anglew, PSL_ARC_DRAW);
 		}
 		if ((AZIMUTHAL || CONICAL) && frame_info.side[3] && frame_info.side[1]) {	/* Round off the pointy head? */
 			if (fabs (project_info.n - 90.0) < GMT_CONV_LIMIT) {
 				GMT_geo_to_xy (w, n, &x, &y);
-				ps_arc (x, y, (k+1)*width, anglee, 180.0+anglew, 3);
+				ps_arc (x, y, (k+1)*width, anglee, 180.0+anglew, PSL_ARC_DRAW);
 			}
 			else if (fabs (project_info.s + 90.0) < GMT_CONV_LIMIT) {
 				GMT_geo_to_xy (w, s, &x, &y);
-				ps_arc (x, y, (k+1)*width, anglew-90.0, anglee-90.0, 3);
+				ps_arc (x, y, (k+1)*width, anglew-90.0, anglee-90.0, PSL_ARC_DRAW);
 			}
 		}
 	}
@@ -1210,22 +1186,10 @@ void GMT_rect_map_boundary (double x0, double y0, double x1, double y1)
 
 	GMT_setpen (&gmtdefs.frame_pen);
 
-	if (frame_info.side[3]) {	/* West */
-		ps_plot (xt[0], yt[0], 3);
-		ps_plot (xt[3], yt[3], -2);
-	}
-	if (frame_info.side[1]) {	/* East */
-		ps_plot (xt[1], yt[1], 3);
-		ps_plot (xt[2], yt[2], -2);
-	}
-	if (frame_info.side[0]) {	/* South */
-		ps_plot (xt[0], yt[0], 3);
-		ps_plot (xt[1], yt[1], -2);
-	}
-	if (frame_info.side[2]) {	/* North */
-		ps_plot (xt[3], yt[3], 3);
-		ps_plot (xt[2], yt[2], -2);
-	}
+	if (frame_info.side[3]) ps_segment (xt[0], yt[0], xt[3], yt[3]);	/* West */
+	if (frame_info.side[1]) ps_segment (xt[1], yt[1], xt[2], yt[2]);	/* East */
+	if (frame_info.side[0]) ps_segment (xt[0], yt[0], xt[1], yt[1]);	/* South */
+	if (frame_info.side[2]) ps_segment (xt[3], yt[3], xt[2], yt[2]);	/* North */
 }
 
 void GMT_circle_map_boundary (double w, double e, double s, double n)
@@ -1240,6 +1204,11 @@ void GMT_circle_map_boundary (double w, double e, double s, double n)
 
 	GMT_setpen (&gmtdefs.frame_pen);
 
+	if (!project_info.three_D) {
+		ps_arc (project_info.r, project_info.r, project_info.r, 0.0, 360.0, PSL_ARC_DRAW);
+		return;
+	}
+	/* Must do 3-D squashed circle */
 	nr = gmtdefs.n_lon_nodes + gmtdefs.n_lat_nodes;
 	while (nr > GMT_n_alloc) GMT_get_plot_array ();
 	da = 2.0 * M_PI / (nr - 1);
@@ -1340,7 +1309,7 @@ void GMT_map_lonline (double lon, double south, double north)	/* Draws a line of
 void GMT_map_lontick (double lon, double south, double north, double len)
 {
 	int i, nc;
-	struct XINGS *xings;
+	struct GMT_XINGS *xings;
 
 	nc = GMT_map_loncross (lon, south, north, &xings);
 	for (i = 0; i < nc; i++) GMT_map_tick (xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, xings[i].nx, 0, len);
@@ -1351,7 +1320,7 @@ void GMT_map_lattick (double lat, double west, double east, double len)
 {
 	int i, nc;
 
-	struct XINGS *xings;
+	struct GMT_XINGS *xings;
 
 	nc = GMT_map_latcross (lat, west, east, &xings);
 	for (i = 0; i < nc; i++) GMT_map_tick (xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, xings[i].nx, 1, len);
@@ -1383,16 +1352,16 @@ void GMT_map_tick (double *xx, double *yy, int *sides, double *angles, int nx, i
 		xl = tick_length * c;
 		yl = tick_length * s;
 		GMT_xy_do_z_to_xy (xx[i], yy[i], project_info.z_level, &xt, &yt);
-		ps_plot (xt, yt, 3);
+		ps_plot (xt, yt, PSL_PEN_MOVE);
 		GMT_xy_do_z_to_xy (xx[i]+xl, yy[i]+yl, project_info.z_level, &xt, &yt);
-		ps_plot (xt, yt, -2);
+		ps_plot (xt, yt, PSL_PEN_DRAW_AND_STROKE);
 	}
 }
 
 void GMT_map_symbol_ew (double lat, char *label, double west, double east, BOOLEAN annot, int level)
 {
 	int i, nc;
-	struct XINGS *xings;
+	struct GMT_XINGS *xings;
 
 	nc = GMT_map_latcross (lat, west, east, &xings);
 	for (i = 0; i < nc; i++) GMT_map_symbol (xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, label, xings[i].nx, 1, annot, level);
@@ -1402,7 +1371,7 @@ void GMT_map_symbol_ew (double lat, char *label, double west, double east, BOOLE
 void GMT_map_symbol_ns (double lon, char *label, double south, double north, BOOLEAN annot, int level)
 {
 	int i, nc;
-	struct XINGS *xings;
+	struct GMT_XINGS *xings;
 
 	nc = GMT_map_loncross (lon, south, north, &xings);
 	for (i = 0; i < nc; i++)  GMT_map_symbol (xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, label, xings[i].nx, 0, annot, level);
@@ -1652,8 +1621,8 @@ void GMT_map_gridcross (double w, double e, double s, double n)
 
 					GMT_xy_do_z_to_xy (xa, ya, project_info.z_level, &xt1, &yt1);
 					GMT_xy_do_z_to_xy (xb, yb, project_info.z_level, &xt2, &yt2);
-					ps_plot (xt1, yt1, 3);
-					ps_plot (xt2, yt2, -2);
+					ps_plot (xt1, yt1, PSL_PEN_MOVE);
+					ps_plot (xt2, yt2, PSL_PEN_DRAW_AND_STROKE);
 
 					if (MAPPING) {
 						GMT_geo_to_xy (xi, yj - copysign (gmtdefs.dlat, yj), &x1, &y1);
@@ -1684,8 +1653,8 @@ void GMT_map_gridcross (double w, double e, double s, double n)
 
 					GMT_xy_do_z_to_xy (xa, ya, project_info.z_level, &xt1, &yt1);
 					GMT_xy_do_z_to_xy (xb, yb, project_info.z_level, &xt2, &yt2);
-					ps_plot (xt1, yt1, 3);
-					ps_plot (xt2, yt2, -2);
+					ps_plot (xt1, yt1, PSL_PEN_MOVE);
+					ps_plot (xt2, yt2, PSL_PEN_DRAW_AND_STROKE);
 				}
 			}
 		}
@@ -2184,8 +2153,8 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 	/* Ready to draw axis */
 
 	GMT_setpen (&gmtdefs.frame_pen);
-	ps_plot (x0, y0, 3);
-	ps_plot (x1, y1, -2);
+	ps_plot (x0, y0, PSL_PEN_MOVE);
+	ps_plot (x1, y1, PSL_PEN_DRAW_AND_STROKE);
 	GMT_setpen (&gmtdefs.tick_pen);
 
 	del_y = 0.5 * sign * gmtdefs.annot_font_size[0] * 0.732 * (justify/4) * GMT_u2u[GMT_PT][GMT_INCH];
@@ -2206,10 +2175,10 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 		pp[1] = w[1];
 		pp[2] = w[2];
 		GMT_xyz_to_xy (pp[0], pp[1], pp[2], &xp, &yp);
-		ps_plot (xp, yp, 3);
+		ps_plot (xp, yp, PSL_PEN_MOVE);
 		pp[j] += dy;
 		GMT_xyz_to_xy (pp[0], pp[1], pp[2], &xp, &yp);
-		ps_plot (xp, yp, -2);
+		ps_plot (xp, yp, PSL_PEN_DRAW_AND_STROKE);
 		pp[j] += annot_off -dy + del_y;
 		GMT_xyz_to_xy (pp[0], pp[1], pp[2], &xp, &yp);
 		if (annotate && (id < 2 || knots[i] != project_info.z_level)) ps_text (xp, yp, gmtdefs.annot_font_size[0], annotation, phi, 2, 0);
@@ -2239,10 +2208,10 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 		pp[1] = w[1];
 		pp[2] = w[2];
 		GMT_xyz_to_xy (pp[0], pp[1], pp[2], &xp, &yp);
-		ps_plot (xp, yp, 3);
+		ps_plot (xp, yp, PSL_PEN_MOVE);
 		pp[j] += dy;
 		GMT_xyz_to_xy (pp[0], pp[1], pp[2], &xp, &yp);
-		ps_plot (xp, yp, -2);
+		ps_plot (xp, yp, PSL_PEN_DRAW_AND_STROKE);
 	}
 	if (n) GMT_free ((void *)knots);
 
@@ -2358,6 +2327,14 @@ void GMT_geoplot (double lon, double lat, int pen)
 	ps_plot (x, y, pen);
 }
 
+void GMT_geosegment (double lon1, double lat1, double lon2, double lat2)
+{
+	/* Draws a straight line between the two points */
+
+	GMT_geoplot (lon1, lat1, PSL_PEN_MOVE);
+	GMT_geoplot (lon2, lat2, PSL_PEN_DRAW_AND_STROKE);
+}
+
 void GMT_fill (double x[], double y[], int n, struct GMT_FILL *fill, BOOLEAN outline)
 {
 	if (!fill)	/* NO fill pointer = no fill */
@@ -2392,12 +2369,7 @@ void GMT_timestamp (int argc, char **argv)
 	ps_setline (1);
 	ps_rect (0.0, 0.0, dim[0]+dim[1], dim[2], gmtdefs.foreground_rgb, TRUE);
 	ps_rect (0.0, 0.0, dim[0], dim[2], gmtdefs.background_rgb, TRUE);
-	/* ps_setfont (1);
-	ps_setpaint (gmtdefs.foreground_rgb); */
 	ps_image (0.0, 0.0, dim[0], dim[2], GMT_glyph, 220, 90, 1);
-	/* ps_text (0.5*dim[0], dim[3], 10, "GMT", 0.0, 6, 0);
-	ps_setfont (0);
-	ps_setpaint (gmtdefs.background_rgb); */
 	ps_text (dim[0]+0.5*dim[1], dim[3], 8.0, label, 0.0, 6, 0);
 	ps_setfont (1);
 	label[0] = 0;
@@ -2457,17 +2429,17 @@ void GMT_plot_line (double *x, double *y, int *pen, int n)
 	GMT_NaN_pen_up (x, y, pen, n);	/* Ensure we dont have NaNs in the coordinates */
 
 	i = 0;
-	while (i < (n-1) && pen[i+1] == 3) i++;	/* Skip repeating pen == 3 in beginning */
+	while (i < (n-1) && pen[i+1] == PSL_PEN_MOVE) i++;	/* Skip repeating pen == PSL_PEN_MOVE in beginning */
 	if ((n-i) < 2) return;
-	while (n > 1 && pen[n-1] == 3) n--;	/* Cut off repeating pen == 3 at end */
+	while (n > 1 && pen[n-1] == PSL_PEN_MOVE) n--;		/* Cut off repeating pen == PSL_PEN_MOVE at end */
 	if ((n-i) < 2) return;
 
-	for (j = i + 1; j < n && pen[j] == 2; j++);	/* j == n means no moveto's present */
+	for (j = i + 1; j < n && pen[j] == PSL_PEN_DRAW; j++);	/* j == n means no PSL_PEN_MOVEs present */
 	close = (j == n) ? (hypot (x[n-1] - x[i], y[n-1] - y[i]) < SMALL) : FALSE;
 
 	/* First see if we can use the ps_line call directly to save points */
 
-	for (j = i + 1, stop = FALSE; !stop && j < n; j++) stop = (pen[j] == 3 || (*GMT_map_jump) (x[j-1], y[j-1], x[j], y[j]));
+	for (j = i + 1, stop = FALSE; !stop && j < n; j++) stop = (pen[j] == PSL_PEN_MOVE || (*GMT_map_jump) (x[j-1], y[j-1], x[j], y[j]));
 	if (!stop) {
 		if (project_info.three_D) {	/* Must project first */
 			xx = (double *) GMT_memory (VNULL, (size_t)(n-i), sizeof (double), "GMT_plot_line");
@@ -2503,12 +2475,12 @@ void GMT_plot_line (double *x, double *y, int *pen, int n)
 				GMT_xy_do_z_to_xy (xt2, yt2, project_info.z_level, &xt2, &yt2);
 			}
 			if (way == -1) {	/* Add left border point */
-				ps_plot (xt1, yt1, 2);
-				ps_plot (xt2, yt2, 3);
+				ps_plot (xt1, yt1, PSL_PEN_DRAW);	/* Draw to left boundary... */
+				ps_plot (xt2, yt2, PSL_PEN_MOVE);	/* ...then jump to the right boundary */
 			}
 			else {
-				ps_plot (xt2, yt2, 2);
-				ps_plot (xt1, yt1, 3);
+				ps_plot (xt2, yt2, PSL_PEN_DRAW);	/* Draw to right boundary... */
+				ps_plot (xt1, yt1, PSL_PEN_MOVE);	/* ...then jump to the left boundary */
 			}
 			close = FALSE;
 		}
@@ -2703,7 +2675,7 @@ void GMT_vector3D (double x0, double y0, double x1, double y1, double z0, double
 		ps_vector (x0, y0, x1, y1, tailwidth, headlength, headwidth, gmtdefs.vector_shape, rgb, outline);
 }
 
-void GMT_draw_map_scale (struct MAP_SCALE *ms)
+void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 {
 	int i, j, jj, k, *rgb, n_a_ticks[9], n_f_ticks[9], unit;
 	double dlon, x1, x2, dummy, a, b, tx, ty, off, f_len, a_len, x_left, bar_length, x_label, y_label;
@@ -2789,9 +2761,9 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 		yy[2] = yy[3] = ms->y0;
 		yy[0] = yy[1] = ms->y0 - bar_width;
 		GMT_xyz_to_xy (x_left, ms->y0 - f_len, project_info.z_level, &a, &b);
-		ps_plot (a, b, +3);
+		ps_plot (a, b, PSL_PEN_MOVE);
 		GMT_xyz_to_xy (x_left, ms->y0, project_info.z_level, &a, &b);
-		ps_plot (a, b, -2);
+		ps_plot (a, b, PSL_PEN_DRAW_AND_STROKE);
 		for (j = 0; j < n_f_ticks[i]; j++) {
 			xx[0] = xx[3] = x_left + j * dx_f;
 			xx[1] = xx[2] = xx[0] + dx_f;
@@ -2799,18 +2771,18 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 			rgb = (j%2) ? gmtdefs.foreground_rgb : gmtdefs.background_rgb;
 			ps_polygon (bx, by, 4, rgb, TRUE);
 			GMT_xyz_to_xy (xx[1], ms->y0 - f_len, project_info.z_level, &a, &b);
-			ps_plot (a, b, +3);
+			ps_plot (a, b, PSL_PEN_MOVE);
 			GMT_xyz_to_xy (xx[1], ms->y0, project_info.z_level, &a, &b);
-			ps_plot (a, b, -2);
+			ps_plot (a, b, PSL_PEN_DRAW_AND_STROKE);
 		}
 		this_label = (ms->label[0] && ms->label[0] != '-') ? ms->label : label[unit];
 		ty = ms->y0 - off;
 		for (j = 0; j <= n_a_ticks[i]; j++) {
 			tx = x_left + j * dx_a;
 			GMT_xyz_to_xy (tx, ms->y0 - a_len, project_info.z_level, &a, &b);
-			ps_plot (a, b, +3);
+			ps_plot (a, b, PSL_PEN_MOVE);
 			GMT_xyz_to_xy (tx, ms->y0, project_info.z_level, &a, &b);
-			ps_plot (a, b, -2);
+			ps_plot (a, b, PSL_PEN_DRAW_AND_STROKE);
 			if (ms->justify == 'u')
 				sprintf (txt, "%g %s", j * d_base, this_label);
 			else
@@ -2858,13 +2830,13 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 		GMT_setpen (&gmtdefs.tick_pen);
 		sprintf (txt, "%g %s", ms->length, label[unit]);
 		GMT_xyz_to_xy (ms->x0 - half, ms->y0 - gmtdefs.map_scale_height, project_info.z_level, &a, &b);
-		ps_plot (a, b, 3);
+		ps_plot (a, b, PSL_PEN_MOVE);
 		GMT_xyz_to_xy (ms->x0 - half, ms->y0, project_info.z_level, &a, &b);
-		ps_plot (a, b, 2);
+		ps_plot (a, b, PSL_PEN_DRAW);
 		GMT_xyz_to_xy (ms->x0 + half, ms->y0, project_info.z_level, &a, &b);
-		ps_plot (a, b, 2);
+		ps_plot (a, b, PSL_PEN_DRAW);
 		GMT_xyz_to_xy (ms->x0 + half, ms->y0 - gmtdefs.map_scale_height, project_info.z_level, &a, &b);
-		ps_plot (a, b, -2);
+		ps_plot (a, b, PSL_PEN_DRAW_AND_STROKE);
 		GMT_text3D (ms->x0, ms->y0 - off, project_info.z_level, gmtdefs.annot_font_size[0], gmtdefs.annot_font[0], txt, 0.0, 10, 0);
 	}
 }
@@ -2883,7 +2855,7 @@ void GMT_draw_map_scale (struct MAP_SCALE *ms)
 
 #define DIST_TO_2ND_POINT 1.0
 
-void GMT_draw_map_rose (struct MAP_ROSE *mr)
+void GMT_draw_map_rose (struct GMT_MAP_ROSE *mr)
 {
 	int i, kind, just[4] = {10, 5, 2, 7};
 	double angle, L[4], R[4], x[8], y[8], xp[8], yp[8], tx[3], ty[3], s, c, rot[4] = {0.0, 45.0, 22.5, -22.5};
@@ -2962,7 +2934,7 @@ void GMT_draw_map_rose (struct MAP_ROSE *mr)
 #define M_HL	0.075
 #define M_HW	0.015
 
-void GMT_draw_mag_rose (struct MAP_ROSE *mr)
+void GMT_draw_mag_rose (struct GMT_MAP_ROSE *mr)
 {	/* Magnetic compass rose */
 	int i, k, level, just, ljust[4] = {10, 5, 2, 7}, n_tick;
 	double ew_angle, angle, R[2], tlen[3], L, s, c, x[5], y[5], xp[5], yp[5], offset, t_angle, scale[2], base, *val;
@@ -3382,13 +3354,13 @@ void GMT_cross3D (double x, double y, double z, double size)
 	xp[0] = x - size;	xp[1] = x + size;
 	yp[0] = y - size;	yp[1] = y + size;
 	GMT_xyz_to_xy (xp[0], y, z, &plot_x, &plot_y);
-	ps_plot (plot_x, plot_y, 3);
+	ps_plot (plot_x, plot_y, PSL_PEN_MOVE);
 	GMT_xyz_to_xy (xp[1], y, z, &plot_x, &plot_y);
-	ps_plot (plot_x, plot_y, 2);
+	ps_plot (plot_x, plot_y, PSL_PEN_DRAW);
 	GMT_xyz_to_xy (x, yp[0], z, &plot_x, &plot_y);
-	ps_plot (plot_x, plot_y, 3);
+	ps_plot (plot_x, plot_y, PSL_PEN_MOVE);
 	GMT_xyz_to_xy (x, yp[1], z, &plot_x, &plot_y);
-	ps_plot (plot_x, plot_y, -2);
+	ps_plot (plot_x, plot_y, PSL_PEN_DRAW_AND_STROKE);
 }
 
 void GMT_square3D (double x, double y, double z, double size, int rgb[], int outline)
@@ -4016,119 +3988,24 @@ struct EPS *GMT_epsinfo (char *program)
 #define JUMP_L 0
 #define JUMP_R 1	
 
-void GMT_fill_polygon2 (double *lon, double *lat, int n, struct GMT_FILL *F, BOOLEAN outline)
+void GMT_fill_polygon (double *lon, double *lat, double z, int n, struct GMT_FILL *F, BOOLEAN outline)
 {
 	/* When geographic data are plotted, polygons that cross the west map boundary will
 	 * sometimes appear on the area bounded by the east map boundary - they "wrap around".
 	 * This usually means we have a global map with (east-west) = 360.
-	 * This function solves this by plotting the polygon twice:
-	 * First time: Find where the polygon jumps and set all the points between jumps to
+	 * This function solves this by plotting the polygon three times:
+	 * First time: Truncate polygon between left and right border
+	 * Second time: Find where the polygon jumps and set all the points between jumps to
 	 *	       the point on the west boundary at the same latitude.
-	 * First time: Find where the polygon jumps and set all the points between jumps to
+	 * Third time: Find where the polygon jumps and set all the points between jumps to
 	 *	       the point on the east boundary at the same latitude.
 	 * In reality it depends on the nature of the first jump in which order we do the
 	 * west and east truncation above.
-	 * The input x,y,pen shuould be the output of GNT_geo_to_xy_line.
 	 */
 	
 	BOOLEAN jump;
 	int i, k, first, jump_dir = JUMP_L;
-	double *x;
-	PFD x_on_border[2];
-	
-	if (AZIMUTHAL) {
-		/* Because points way outside the map might get close to the antipode we must
-		 * clip the polygon first.  The new radial clip handles this by excluding points
-		 * beyond the horizon and adding arcs along the boundary between exit points
-		 */
-		double *xp, *yp;
-		if ((n = GMT_clip_to_map (lon, lat, n, &xp, &yp)) == 0) return;		/* All outside */
-		GMT_fill (xp, yp, n, F, outline);					/* Fill caresian polygon */
-		return;
-	}
-	
-	/* Here we come for all non-azimuthal projections */
-	
-	if ((n = GMT_geo_to_xy_line (lon, lat, n)) == 0) return;		/* Convert to (x,y,pen) - return if nothing to do */
-	
-	if (!MAPPING) {		/* Not geographic data so there are no periodic boundaries to worry about */
-		GMT_fill (GMT_x_plot, GMT_y_plot, n, F, outline);
-		return;
-	}
-	
-	/* Check if there are any boundary jumps in the data as evidenced by pen up [3] */
-	
-	for (first = 1, jump = FALSE; first < n && !jump; first++) jump = (GMT_pen[first] != 2);
-	if (!jump) {	/* We happened to avoid the periodic boundary - just paint and return */
-		GMT_fill (GMT_x_plot, GMT_y_plot, n, F, outline);
-		return;
-	}
-	
-	/* Polygon wraps and we will plot it up to three times by truncating the part that would wrap the wrong way */
-
-	/* Temporary array to hold the modified x values */
-	
-	x = (double *) GMT_memory (VNULL, n, sizeof (double), GMT_program);
-
-	x_on_border[JUMP_R] = GMT_left_boundary;	/* Pointers to functions that supply the x-coordinate of boundary for given y */
-	x_on_border[JUMP_L] = GMT_right_boundary;
-	
-	/* Do the main truncation of bulk of polygon */
-	
-	for (i = 0, jump = FALSE; i < n; i++) {
-		if (GMT_pen[i] == 3 && i) {
-			jump = !jump;
-			jump_dir = (GMT_x_plot[i] > GMT_half_map_size) ? JUMP_R : JUMP_L;
-		}
-		x[i] = (jump) ? (*x_on_border[jump_dir]) (GMT_y_plot[i]) : GMT_x_plot[i];
-	}
-	GMT_fill (x, GMT_y_plot, n, F, outline);	/* Paint the truncated polygon */
-	
-	/* Then do the Left truncation since some wrapped pieces might not have been plotted (k > 0 means we found a piece) */
-	
-	jump_dir = (GMT_x_plot[first] > GMT_half_map_size) ? JUMP_L : JUMP_R;	/* Opposite */
-	for (i = k = 0, jump = TRUE; i < n; i++) {
-		if (GMT_pen[i] == 3 && i) {
-			jump = !jump;
-			jump_dir = (GMT_x_plot[i] > GMT_half_map_size) ? JUMP_R : JUMP_L;
-		}
-		x[i] = (jump || jump_dir == JUMP_R) ? (*x_on_border[JUMP_R]) (GMT_y_plot[i]) : GMT_x_plot[i], k++;
-	}
-	if (k) GMT_fill (x, GMT_y_plot, n, F, outline);	/* Paint the truncated polygon */
-	
-	/* Then do the R truncation since some wrapped pieces might not have been plotted (k > 0 means we found a piece) */
-	
-	jump_dir = (GMT_x_plot[first] > GMT_half_map_size) ? JUMP_R : JUMP_L;	/* Opposite */
-	for (i = k = 0, jump = TRUE; i < n; i++) {
-		if (GMT_pen[i] == 3 && i) {
-			jump = !jump;
-			jump_dir = (GMT_x_plot[i] > GMT_half_map_size) ? JUMP_R : JUMP_L;
-		}
-		x[i] = (jump || jump_dir == JUMP_L) ? (*x_on_border[JUMP_L]) (GMT_y_plot[i]) : GMT_x_plot[i], k++;
-	}
-	if (k) GMT_fill (x, GMT_y_plot, n, F, outline);	/* Paint the truncated polygon */
-	
-	GMT_free ((void *)x);
-}
-
-void GMT_fill_polygon (double *lon, double *lat, int n, struct GMT_FILL *F, BOOLEAN outline)
-{
-	/* When geographic data are plotted, polygons that cross the west map boundary will
-	 * sometimes appear on the area bounded by the east map boundary - they "wrap around".
-	 * This usually means we have a global map with (east-west) = 360.
-	 * This function solves this by plotting the polygon twice:
-	 * First time: Find where the polygon jumps and set all the points between jumps to
-	 *	       the point on the west boundary at the same latitude.
-	 * First time: Find where the polygon jumps and set all the points between jumps to
-	 *	       the point on the east boundary at the same latitude.
-	 * In reality it depends on the nature of the first jump in which order we do the
-	 * west and east truncation above.
-	 * The input x,y,pen shuould be the output of GNT_geo_to_xy_line.
-	 */
-	
-	BOOLEAN jump;
-	int i, k, first, jump_dir = JUMP_L;
-	double *x;
+	double *x, *xp, *yp;
 	PFD x_on_border[2];
 	
 	if (AZIMUTHAL || !GMT_world_map) {
@@ -4136,9 +4013,11 @@ void GMT_fill_polygon (double *lon, double *lat, int n, struct GMT_FILL *F, BOOL
 		 * clip the polygon first.  The new radial clip handles this by excluding points
 		 * beyond the horizon and adding arcs along the boundary between exit points
 		 */
-		double *xp, *yp;
 		if ((n = GMT_clip_to_map (lon, lat, n, &xp, &yp)) == 0) return;		/* All outside */
+		if (project_info.three_D) GMT_2Dz_to_3D (xp, yp, z, n);			/* Project onto plane */
 		GMT_fill (xp, yp, n, F, outline);					/* Fill caresian polygon */
+		GMT_free ((void *)xp);
+		GMT_free ((void *)yp);
 		return;
 	}
 	
@@ -4147,14 +4026,16 @@ void GMT_fill_polygon (double *lon, double *lat, int n, struct GMT_FILL *F, BOOL
 	if ((n = GMT_geo_to_xy_line (lon, lat, n)) == 0) return;		/* Convert to (x,y,pen) - return if nothing to do */
 	
 	if (!MAPPING) {		/* Not geographic data so there are no periodic boundaries to worry about */
+		if (project_info.three_D) GMT_2Dz_to_3D (GMT_x_plot, GMT_y_plot, z, n);			/* Project onto plane */
 		GMT_fill (GMT_x_plot, GMT_y_plot, n, F, outline);
 		return;
 	}
 	
 	/* Check if there are any boundary jumps in the data as evidenced by pen up [3] */
 	
-	for (first = 1, jump = FALSE; first < n && !jump; first++) jump = (GMT_pen[first] != 2);
+	for (first = 1, jump = FALSE; first < n && !jump; first++) jump = (GMT_pen[first] != PSL_PEN_DRAW);
 	if (!jump) {	/* We happened to avoid the periodic boundary - just paint and return */
+		if (project_info.three_D) GMT_2Dz_to_3D (GMT_x_plot, GMT_y_plot, z, n);			/* Project onto plane */
 		GMT_fill (GMT_x_plot, GMT_y_plot, n, F, outline);
 		return;
 	}
@@ -4164,6 +4045,7 @@ void GMT_fill_polygon (double *lon, double *lat, int n, struct GMT_FILL *F, BOOL
 	/* Temporary array to hold the modified x values */
 	
 	x = (double *) GMT_memory (VNULL, n, sizeof (double), GMT_program);
+	yp = (project_info.three_D) ? (double *) GMT_memory (VNULL, n, sizeof (double), GMT_program) : GMT_y_plot;
 
 	x_on_border[JUMP_R] = GMT_left_boundary;	/* Pointers to functions that supply the x-coordinate of boundary for given y */
 	x_on_border[JUMP_L] = GMT_right_boundary;
@@ -4171,37 +4053,320 @@ void GMT_fill_polygon (double *lon, double *lat, int n, struct GMT_FILL *F, BOOL
 	/* Do the main truncation of bulk of polygon */
 	
 	for (i = 0, jump = FALSE; i < n; i++) {
-		if (GMT_pen[i] == 3 && i) {
+		if (GMT_pen[i] == PSL_PEN_MOVE && i) {
 			jump = !jump;
 			jump_dir = (GMT_x_plot[i] > GMT_half_map_size) ? JUMP_R : JUMP_L;
 		}
 		x[i] = (jump) ? (*x_on_border[jump_dir]) (GMT_y_plot[i]) : GMT_x_plot[i];
 	}
-	GMT_fill (x, GMT_y_plot, n, F, outline);	/* Paint the truncated polygon */
+	if (project_info.three_D) {
+		memcpy ((void *)yp, (void *)GMT_y_plot, (size_t)(n * sizeof (double)));
+		GMT_2Dz_to_3D (x, yp, z, n);		/* Project onto plane */
+	}
+	GMT_fill (x, yp, n, F, outline);	/* Paint the truncated polygon */
 	
 	/* Then do the Left truncation since some wrapped pieces might not have been plotted (k > 0 means we found a piece) */
 	
 	jump_dir = (GMT_x_plot[first] > GMT_half_map_size) ? JUMP_L : JUMP_R;	/* Opposite */
 	for (i = k = 0, jump = TRUE; i < n; i++) {
-		if (GMT_pen[i] == 3 && i) {
+		if (GMT_pen[i] == PSL_PEN_MOVE && i) {
 			jump = !jump;
 			jump_dir = (GMT_x_plot[i] > GMT_half_map_size) ? JUMP_R : JUMP_L;
 		}
 		x[i] = (jump || jump_dir == JUMP_R) ? (*x_on_border[JUMP_R]) (GMT_y_plot[i]) : GMT_x_plot[i], k++;
 	}
-	if (k) GMT_fill (x, GMT_y_plot, n, F, outline);	/* Paint the truncated polygon */
+	if (project_info.three_D) {
+		memcpy ((void *)yp, (void *)GMT_y_plot, (size_t)(n * sizeof (double)));
+		GMT_2Dz_to_3D (x, yp, z, n);		/* Project onto plane */
+	}
+	if (k) GMT_fill (x, yp, n, F, outline);	/* Paint the truncated polygon */
 	
 	/* Then do the R truncation since some wrapped pieces might not have been plotted (k > 0 means we found a piece) */
 	
 	jump_dir = (GMT_x_plot[first] > GMT_half_map_size) ? JUMP_R : JUMP_L;	/* Opposite */
 	for (i = k = 0, jump = TRUE; i < n; i++) {
-		if (GMT_pen[i] == 3 && i) {
+		if (GMT_pen[i] == PSL_PEN_MOVE && i) {
 			jump = !jump;
 			jump_dir = (GMT_x_plot[i] > GMT_half_map_size) ? JUMP_R : JUMP_L;
 		}
 		x[i] = (jump || jump_dir == JUMP_L) ? (*x_on_border[JUMP_L]) (GMT_y_plot[i]) : GMT_x_plot[i], k++;
 	}
-	if (k) GMT_fill (x, GMT_y_plot, n, F, outline);	/* Paint the truncated polygon */
+	if (project_info.three_D) {
+		memcpy ((void *)yp, (void *)GMT_y_plot, (size_t)(n * sizeof (double)));
+		GMT_2Dz_to_3D (x, yp, z, n);		/* Project onto plane */
+	}
+	if (k) GMT_fill (x, yp, n, F, outline);	/* Paint the truncated polygon */
 	
 	GMT_free ((void *)x);
+	if (project_info.three_D) GMT_free ((void *)yp);
+}
+
+#define GMT_ELLIPSE_APPROX 72
+
+void GMT_plot_ellipse (double lon, double lat, double z, double major, double minor, double azimuth, struct GMT_FILL fill, int outline)
+{
+	/* GMT_plot_ellipse takes the location, axes (in km), and azimuth of an ellipse
+	   and draws the ellipse using the chosen map projection */
+
+	int i;
+	double delta_azimuth, sin_azimuth, cos_azimuth, sinp, cosp, angle, x, y, x_prime, y_prime, rho, c;
+	double sin_c, cos_c, center, *px, *py;
+
+	px = (double *) GMT_memory (VNULL, (size_t)GMT_ELLIPSE_APPROX, sizeof (double), GMT_program);
+	py = (double *) GMT_memory (VNULL, (size_t)GMT_ELLIPSE_APPROX, sizeof (double), GMT_program);
+
+	delta_azimuth = 2.0 * M_PI / GMT_ELLIPSE_APPROX;
+	major *= 1000.0;	minor *= 1000.0;	/* Convert to meters */
+	azimuth = 90.0 - azimuth;	/* Because the code below originally used directions instead */
+	azimuth *= D2R;
+	sincos (azimuth, &sin_azimuth, &cos_azimuth);
+	sincos (lat * D2R, &sinp, &cosp);	/* Set up azimuthal equidistant projection */
+
+	center = (project_info.central_meridian < project_info.w || project_info.central_meridian > project_info.e) ? 0.5 * (project_info.w + project_info.e) :  project_info.central_meridian;
+
+	/* Approximate ellipse by a GMT_ELLIPSE_APPROX-sided polygon */
+
+	for (i = 0; i < GMT_ELLIPSE_APPROX; i++) {
+
+		angle = i * delta_azimuth;
+
+		sincos (angle, &y, &x);
+		x *= major;
+		y *= minor;
+
+		/* Get rotated coordinates in m */
+
+		x_prime = x * cos_azimuth - y * sin_azimuth;
+		y_prime = x * sin_azimuth + y * cos_azimuth;
+
+		/* Convert m back to lon lat */
+
+		rho = hypot (x_prime, y_prime);
+
+		c = rho / project_info.EQ_RAD;
+		sincos (c, &sin_c, &cos_c);
+		py[i] = d_asin (cos_c * sinp + (y_prime * sin_c * cosp / rho)) * R2D;
+		if ((lat - 90.0) > -GMT_CONV_LIMIT)	/* origin in Northern hemisphere */
+			px[i] = lon + R2D * d_atan2 (x_prime, -y_prime);
+		else if ((lat + 90.0) < GMT_CONV_LIMIT)	/* origin in SOuthern hemisphere */
+			px[i] = lon + R2D * d_atan2 (x_prime, y_prime);
+		else
+			px[i] = lon +
+				R2D * d_atan2 (x_prime * sin_c, (rho * cosp * cos_c - y_prime * sinp * sin_c));
+		while ((px[i] - center) < -180.0) px[i] += 360.0;
+		while ((px[i] - center) > +180.0) px[i] -= 360.0;
+	}
+
+	GMT_fill_polygon (px, py, z, GMT_ELLIPSE_APPROX, &fill, outline);
+
+	GMT_free ((void *)px);
+	GMT_free ((void *)py);
+}
+
+void GMT_draw_fence (double x[], double y[], double z, int n, struct GMT_FRONTLINE *f, struct GMT_FILL *g, BOOLEAN outline)
+{
+	int i, ngap;
+	BOOLEAN skip;
+	double *s, xx[4], yy[4], dist = 0.0, w, frac, dx, dy, angle, dir1, dir2;
+	double gap, x0, y0, xp, yp, len2, len3, cosa, sina, sa, ca, offx, offy;
+
+	if (n < 2) return;
+
+	s = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), GMT_program);
+	for (i = 1, s[0] = 0.0; i < n; i++) {
+		/* Watch out for longitude wraps */
+		dx = x[i] - x[i-1];
+		w = GMT_half_map_width (y[i]);
+		if (GMT_world_map && dx > w) dx = copysign (2 * w - fabs (dx), -dx);
+		s[i] = s[i-1] + hypot (dx, y[i] - y[i-1]);
+	}
+
+	if (f->f_gap > 0.0) {
+		ngap = irint (s[n-1] / f->f_gap);
+		gap = s[n-1] / (double)ngap;
+		dist = f->f_off;
+		ngap++;
+	}
+	else {
+		ngap = (int) fabs (f->f_gap);
+		gap = s[n-1] / (ngap - 1);
+		if (ngap == 1) dist = 0.5 * s[n-1];
+	}
+
+	len2 = 0.5 * f->f_len;
+	len3 = 0.866025404 * f->f_len;
+	if (f->f_sense == GMT_FRONT_CENTERED) len3 = len2;
+
+	i = 0;
+	while (i < n) {
+		while ((s[i] - dist) > -SMALL) {	/* Time for tick */
+			if (i > 0) {
+				dx = x[i] - x[i-1];
+				dy = y[i] - y[i-1];
+			}
+			else {
+				dx = x[1] - x[0];
+				dy = y[1] - y[0];
+			}
+			if (fabs (dist - s[i]) < SMALL) {
+				x0 = x[i];
+				y0 = y[i];
+			}
+			else {
+				frac = (s[i] - dist) / (s[i] - s[i-1]);
+				x0 = x[i] - dx * frac;
+				y0 = y[i] - dy * frac;
+			}
+			angle = d_atan2 (dy, dx);
+			skip = (GMT_world_map && fabs (dx) > GMT_half_map_width (y[i]));	/* Don't do ticks on jumps */
+			if (skip) {
+				dist += gap;
+				i++;
+				continue;
+			}
+	
+			switch (f->f_symbol) {
+				case GMT_FRONT_TRIANGLE:	/* Triangle */
+					switch (f->f_sense) {
+						case GMT_FRONT_CENTERED:
+							sincos (angle, &sina, &cosa);
+							xx[0] = x0 + len2 * cosa;
+							yy[0] = y0 + len2 * sina;
+							xx[1] = x0 - len3 * sina;
+							yy[1] = y0 + len3 * cosa;
+							xx[2] = x0 - len2 * cosa;
+							yy[2] = y0 - len2 * sina;
+							xx[3] = x0 + len3 * sina;
+							yy[3] = y0 - len3 * cosa;
+                              				if (project_info.three_D) GMT_2D_to_3D (xx, yy, z, 4);
+							ps_patch (xx, yy, 4, g->rgb, outline);
+							break;
+						case GMT_FRONT_RIGHT:
+							angle += M_PI;
+						case GMT_FRONT_LEFT:
+							sincos (angle, &sina, &cosa);
+							xx[0] = x0 + len2 * cosa;
+							yy[0] = y0 + len2 * sina;
+							xx[1] = x0 - len3 * sina;
+							yy[1] = y0 + len3 * cosa;
+							xx[2] = x0 - len2 * cosa;
+							yy[2] = y0 - len2 * sina;
+                              				if (project_info.three_D) GMT_2D_to_3D (xx, yy, z, 3);
+							ps_patch (xx, yy, 3, g->rgb, outline);
+							break;
+					}
+					break;
+		
+				case GMT_FRONT_CIRCLE:	/* Circles */
+					switch (f->f_sense) {
+						case GMT_FRONT_CENTERED:
+							if (project_info.three_D)
+								GMT_circle3D (x0, y0, 0.0, f->f_len, g->rgb, outline);
+							else
+								ps_circle (x0, y0, f->f_len, g->rgb, outline);
+
+							break;
+						case GMT_FRONT_RIGHT:
+							angle += M_PI;
+						case GMT_FRONT_LEFT:
+							dir1 = angle;
+							dir2 = angle + M_PI;
+							if (dir1 > dir2) dir1 -= TWO_PI;
+							if (project_info.three_D)
+								GMT_pie3D (x0, y0, 0.0, f->f_len, dir1, dir2, g->rgb, outline);
+							else
+								ps_pie (x0, y0, len2, dir1 * R2D, dir2 * R2D, g->rgb, outline);
+							break;
+					}
+					break;
+		
+				case GMT_FRONT_BOX:	/* Squares */
+					switch (f->f_sense) {
+						case GMT_FRONT_CENTERED:	/* Full square centered on line */
+							sincos (angle, &sina, &cosa);
+							xx[0] = x0 + len2 * (cosa + sina);	/* LR */
+							yy[0] = y0 + len2 * (sina - cosa);
+							xx[1] = x0 + len2 * (cosa - sina);	/* UR */
+							yy[1] = y0 + len2 * (sina + cosa);
+							xx[2] = x0 + len2 * (-cosa - sina);	/* UL */
+							yy[2] = y0 + len2 * (-sina + cosa);
+							xx[3] = x0 + len2 * (-cosa + sina);	/* LL */
+							yy[3] = y0 + len2 * (-sina - cosa);
+							break;
+						case GMT_FRONT_RIGHT:
+							angle += M_PI;
+						case GMT_FRONT_LEFT:
+							/* Half square on the chosen side */
+							sincos (angle, &sina, &cosa);
+							xx[0] = x0 + len2 * (cosa);	/* LR */
+							yy[0] = y0 + len2 * (sina);
+							xx[1] = x0 + len2 * (cosa - sina);	/* UR */
+							yy[1] = y0 + len2 * (sina + cosa);
+							xx[2] = x0 + len2 * (-cosa - sina);	/* UL */
+							yy[2] = y0 + len2 * (-sina + cosa);
+							xx[3] = x0 + len2 * (-cosa);	/* LL */
+							yy[3] = y0 + len2 * (-sina);
+							break;
+					}
+                              		if (project_info.three_D) GMT_2D_to_3D (xx, yy, z, 4);
+					ps_patch (xx, yy, 4, g->rgb, outline);
+					break;
+		
+				case GMT_FRONT_SLIP: /* draw strike-slip arrows */
+					sincos (angle, &sina, &cosa);
+				        offx = gmtdefs.annot_offset[0] * sina; /* get offsets from front line */
+					offy = gmtdefs.annot_offset[0] * cosa;
+					/* sense == GMT_FRONT_LEFT == left-lateral, R_RIGHT = right lateral */
+					/* arrow "above" line */
+					sincos (angle + (f->f_sense * 30.0 * D2R), &sa, &ca);
+					xp = x0 + f->f_sense * offx;
+					yp = y0 - f->f_sense * offy;
+					xx[0] = xp - len2 * cosa;
+					yy[0] = yp - len2 * sina;
+					xx[1] = xp + len2 * cosa;
+					yy[1] = yp + len2 * sina;
+					xx[2] = xx[1] - len2 * ca;
+					yy[2] = yy[1] - len2 * sa;
+                              		if (project_info.three_D) GMT_2D_to_3D (xx, yy, z, 3);
+					ps_line (xx, yy, 3, 3, FALSE, TRUE);
+
+					/* arrow "below" line */
+					sincos (angle - (f->f_sense * 150.0 *D2R), &sa, &ca);
+					xp = x0 - f->f_sense * offx;
+					yp = y0 + f->f_sense * offy;
+					xx[0] = xp + len2 * cosa;
+					yy[0] = yp + len2 * sina;
+					xx[1] = xp - len2 * cosa;
+					yy[1] = yp - len2 * sina;
+					xx[2] = xx[1] - len2 * ca;
+					yy[2] = yy[1] - len2 * sa;
+                              		if (project_info.three_D) GMT_2D_to_3D (xx, yy, z, 3);
+					ps_line (xx, yy, 3, 3, FALSE, TRUE);
+					break;
+			
+				case GMT_FRONT_FAULT:	/* Normal fault ticks */
+					xx[0] = xx[1] = x0;	yy[0] = yy[1] = y0;
+					if (f->f_sense == GMT_FRONT_CENTERED) {
+						angle -= M_PI_2;
+						sincos (angle, &sina, &cosa);
+						xx[0] += len2 * cosa;
+						yy[0] += len2 * sina;
+						xx[1] -= len2 * cosa;
+						yy[1] -= len2 * sina;
+					}
+					else {
+						angle += (f->f_sense * M_PI_2);
+						sincos (angle, &sina, &cosa);
+						xx[1] += len2 * cosa;
+						yy[1] += len2 * sina;
+					}
+                              		if (project_info.three_D) GMT_2D_to_3D (xx, yy, z, 2);
+					ps_line (xx, yy, 2, 3, FALSE, TRUE);
+					break;
+			}
+			dist += gap;
+		}
+		i++;
+	}
+	GMT_free ((void *)s);
 }

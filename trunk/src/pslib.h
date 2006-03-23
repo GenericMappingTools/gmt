@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.34 2005-12-17 05:59:22 pwessel Exp $
+ *	$Id: pslib.h,v 1.35 2006-03-23 07:48:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -45,6 +45,13 @@
 /* So unless DLL_PSL is defined, EXTERN_MSC is simply extern */
 
 #endif	/* _PSLIB_INC_H */
+
+#define PSL_PEN_MOVE		3
+#define PSL_PEN_DRAW		+2
+#define PSL_PEN_DRAW_AND_STROKE	-2
+#define PSL_ARC_BEGIN		1
+#define PSL_ARC_END		2
+#define PSL_ARC_DRAW		3
 
 struct EPS {    /* Holds info for eps files */
         int x0, x1, y0, y1;	/* Bounding box values in points */

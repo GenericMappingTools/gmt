@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.220 2006-03-22 05:20:11 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.221 2006-03-23 07:48:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -57,7 +57,62 @@
 #include "gmt.h"
 #include "gmt_globals.h"
 
+/*--------------------------------------------------------------------*/
+/* Load parameters from include files */
+/*--------------------------------------------------------------------*/
+
+#include "gmt_keycases.h"		/* Get all the default case values */
+
+char *GMT_unique_option[N_UNIQUE] = {	/* The common GMT commandline options */
+#include "gmt_unique.h"
+};
+ 
+char *GMT_keywords[N_KEYS] = {		/* Names of all parameters in .gmtdefaults4 */
+#include "gmt_keywords.h"
+};
+
+#define GMT_N_MEDIA 29				/* Number of standard paper formats in the GMT_media_names.h include file */
+
+char *GMT_media_name[GMT_N_MEDIA] = {		/* Names of all paper formats */
+#include "gmt_media_name.h"
+};
+
+struct GMT_MEDIA {	/* Holds information about paper sizes in points */
+	int width;		/* Width in points */
+	int height;		/* Height in points */
+};
+struct GMT_MEDIA GMT_media[GMT_N_MEDIA] = {			/* Sizes in points of all paper formats */
+#include "gmt_media_size.h"
+};
+
+/* For Custom paper types */
+
+char **GMT_user_media_name = (char **)NULL;
+struct GMT_MEDIA *GMT_user_media = (struct GMT_MEDIA *)NULL;
+int GMT_n_user_media = 0;
+
 #define USER_MEDIA_OFFSET 1000
+
+char *GMT_color_name[GMT_N_COLOR_NAMES] = {	/* Names of X11 colors */
+#include "gmt_colornames.h"
+};
+
+char *GMT_weekdays[7] = {	/* Days of the week in English */
+	"Sunday",
+	"Monday",
+	"Tuesday",
+	"Wednesday",
+	"Thursday",
+	"Friday",
+	"Saturday"
+};
+
+char *GMT_degree_choice[4] = {  /* Users choice for degree symbol */
+	"none",
+	"ring",
+	"degree",
+	"colon",
+};
 
 EXTERN_MSC void GMT_grdio_init (void);	/* Defined in gmt_customio.c and only used here */
 
@@ -4565,6 +4620,477 @@ void GMT_prepare_3D (void) {	/* Initialize 3-D parameters */
 	z_project.view_azimuth = 180.0;
 	z_project.view_elevation = 90.0;
 	project_info.z_bottom = project_info.z_top = 0.0;
+}
+
+int GMT_decode_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN cmd)
+{
+	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz) */
+	int decode_error = 0, bset = 0, j, n, k, len, slash = 0, one, colon;
+	BOOLEAN check, old_style;
+	char symbol_type, txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], text_cp[GMT_LONG_TEXT], *c;
+	static char *allowed_symbols[2] = {"-aAbCcDdeEfGgHhIiNnpqrSsTtVvwWxy", "-aAbCcDdeEfGgHhIiNnoOpqrSsTtuUVvwWxy"};
+	static char *bar_symbols[2] = {"b", "-boOuU"};
+
+	p->n_required = p->convert_angles = 0;
+	p->user_unit = p->shrink = p->read_vector = FALSE;
+
+	if (!text[0]) {	/* No symbol or size given */
+		p->size_x = p->size_y = 0.0;
+		symbol_type = '+';
+	}
+	else if (isdigit ((int)text[0]) || text[0] == '.') {	/* Size, but no symbol given */
+		n = sscanf (text, "%[^/]/%s", txt_a, txt_b);
+		p->size_x = p->given_size_x = GMT_convert_units (txt_a, GMT_INCH);
+		if (n == 2)
+			p->size_y = p->given_size_y = GMT_convert_units (txt_b, GMT_INCH);
+		else if (n == 1)
+			p->size_y = p->given_size_y = p->size_x;
+		else
+			decode_error = TRUE;
+		symbol_type = '+';
+	}
+	else if (text[0] == 'l') {	/* Letter symbol is special case */
+		strcpy (text_cp, text);
+		if ((c = strchr (text_cp, '%'))) {	/* Gave font name or number, too */
+			*c = ' ';	/* Make the % a space */
+			c++;		/* Go to next character */
+			if (c[0] >= '0' && c[0] <= '9')	/* Gave a font # */
+				p->font_no = atoi (c);
+			else
+				p->font_no = GMT_font_lookup (c, GMT_font, N_FONTS);
+			if (p->font_no >= N_FONTS) {
+				fprintf (stderr, "%s: -Sl contains bad font (set to %s (0))\n", GMT_program, GMT_font[gmtdefs.annot_font[0]].name);
+				p->font_no = gmtdefs.annot_font[0];
+			}
+		}
+		if (text[1] == '/') {	/* No size given */
+			symbol_type = 'l';
+			if (p->size_x == 0.0) p->size_x = p->given_size_x;
+			if (p->size_y == 0.0) p->size_y = p->given_size_y;
+		}
+		else {
+			n = sscanf (text_cp, "%c%[^/]/%s", &symbol_type, txt_a, p->string);
+			p->size_x = p->given_size_x = GMT_convert_units (txt_a, GMT_INCH);
+			decode_error = (n != 3);
+		}
+	}
+	else if (text[0] == 'k') {	/* Custom symbol spec */
+		for (j = strlen (text); j > 0 && text[j] != '/'; j--);;
+		if (j == 0) {	/* No slash, i.e., no symbol size given */
+			if (p->size_x == 0.0) p->size_x = p->given_size_x;
+			n = sscanf (text, "%c%s", &symbol_type, text_cp);
+		}
+		else {
+			text[j] = ' ';
+			n = sscanf (text, "%c%s %s", &symbol_type, text_cp, txt_a);
+			text[j] = '/';
+			p->given_size_x = p->size_x = GMT_convert_units (txt_a, GMT_INCH);
+		}
+	}
+	else if (strchr (allowed_symbols[mode], (int) text[0]) && strchr ("CcIiMmPp", (int) text[1])) {	/* Symbol, but no size given (size assumed given on command line), only unit information */
+		n = sscanf (text, "%c", &symbol_type);
+		if (p->size_x == 0.0) p->size_x = p->given_size_x;
+		if (p->size_y == 0.0) p->size_y = p->given_size_y;
+		if (text[1] && (p->u = GMT_get_unit (text[1])) < 0) decode_error = TRUE;
+		p->equal_area = FALSE;
+	}
+	else if (strchr (allowed_symbols[mode], (int) text[0]) && (text[1] == '\n' || text[1] == '\0')) {	/* Symbol, but no size given (size assumed given on command line) */
+		n = sscanf (text, "%c", &symbol_type);
+		if (p->size_x == 0.0) p->size_x = p->given_size_x;
+		if (p->size_y == 0.0) p->size_y = p->given_size_y;
+		p->equal_area = FALSE;
+	}
+	else if (strchr (bar_symbols[mode], (int) text[0])) {	/* Bar, column, cube with size */
+
+		/* Bar:		-Sb<size_x>[c|i|m|p|u][b<base>]				*/
+		/* Column:	-So|O<size_x>[c|i|m|p][/<ysize>[c|i|m|p]][u][b<base>]	*/
+		/* Cube:	-Su|U<size_x>[c|i|m|p|u]	*/
+
+		for (j = 0; text[j]; j++) {
+			if (text[j] == '/') slash = j;
+			if (text[j] == 'b') bset = j;
+		}
+		strcpy (text_cp, text);
+		if (bset) text_cp[bset] = 0;	/* Chop off the b<base> from copy */
+		if ((bset && text_cp[bset-1] == 'u') || (j && text[j-1] == 'u')) p->user_unit = TRUE;
+		if (slash) {	/* Separate x/y sizes */
+			n = sscanf (text_cp, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
+			decode_error = (n != 3);
+			if (p->user_unit) {
+				p->size_x = p->given_size_x = atof (txt_a);
+				p->size_y = p->given_size_y = atof (txt_b);
+			}
+			else {
+				p->size_x = p->given_size_x = GMT_convert_units (txt_a, GMT_INCH);
+				p->size_y = p->given_size_y = GMT_convert_units (txt_b, GMT_INCH);
+			}
+		}
+		else {	/* Only a single x = y size */
+			n = sscanf (text_cp, "%c%s", &symbol_type, txt_a);
+			if (n == 2) {
+				if (p->user_unit) {
+					p->size_x = p->given_size_x = atof (txt_a);
+					p->size_y = p->given_size_y = p->size_x;
+				}
+				else {
+					p->size_x = p->given_size_x = GMT_convert_units (txt_a, GMT_INCH);
+					p->size_y = p->given_size_y = p->size_x;
+				}
+			}
+			else {
+				if (p->size_x == 0.0) p->size_x = p->given_size_x;
+				if (p->size_y == 0.0) p->size_y = p->given_size_y;
+			}
+		}
+	}
+	else {
+		n = sscanf (text, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
+		p->size_x = p->given_size_x = GMT_convert_units (txt_a, GMT_INCH);
+		if (n == 3)
+			p->size_y = p->given_size_y = GMT_convert_units (txt_b, GMT_INCH);
+		else if (n == 2)
+			p->size_y = p->given_size_y = p->size_x;
+		else
+			decode_error = TRUE;
+		p->equal_area = FALSE;
+	}
+
+	check = TRUE;
+	switch (symbol_type) {
+		case '+':
+			p->symbol = GMT_SYMBOL_NOT_SET;
+			break;
+		case '-':
+			p->symbol = GMT_SYMBOL_XDASH;
+			p->size_x *= 0.5;		/* We will use +- to get full width */
+			break;
+		case 'A':
+			p->equal_area = TRUE;	/* To equal area of circle with same size */
+		case 'a':
+			p->symbol = GMT_SYMBOL_STAR;
+			break;
+		case 'b':
+			p->symbol = GMT_SYMBOL_BAR;
+			p->size_x *= 0.5;		/* We will use +- to get full width */
+			if (bset) p->base = atof (&text[bset+1]);
+			break;
+		case 'C':
+		case 'c':
+			p->symbol = GMT_SYMBOL_CIRCLE;
+			break;
+		case 'D':
+			p->equal_area = TRUE;	/* To equal area of circle with same size */
+		case 'd':
+			p->symbol = GMT_SYMBOL_DIAMOND;
+			break;
+		case 'E':	/* Expect axis in km to be scaled based on -J */
+			p->convert_angles = 1;
+		case 'e':
+			p->symbol = GMT_SYMBOL_ELLIPSE;
+			p->n_required = 3;
+			check = FALSE;
+			break;
+
+		case 'f':	/* Fronts:   -Sf<spacing>/<size>[dir][type][:<offset>]	*/
+			p->symbol = GMT_SYMBOL_FRONT;
+			p->f.f_off = 0.0;
+			strcpy (text_cp, text);
+			if ((c = strchr (text_cp, ':'))) {	/* Gave :<offset>, set it and strip it off */
+				c++;	/* Skip over the colon */
+				p->f.f_off = GMT_convert_units (c, GMT_INCH);
+				c--;	/* Go back to colon */
+				*c = 0;	/* Effectively chops off the offset modifier */
+			}
+			len = strlen (text_cp) - 1;
+	
+			old_style = FALSE;
+			switch (text_cp[len]) {
+				case 'f':	/* Fault front */
+					p->f.f_symbol = GMT_FRONT_FAULT;
+					len--;
+					break;
+				case 't':	/* Triangle front */
+					p->f.f_symbol = GMT_FRONT_TRIANGLE;
+					len--;
+					break;
+				case 's':	/* Strike-slip front */
+					p->f.f_symbol = GMT_FRONT_SLIP;
+					len--;
+					break;
+				case 'c':	/* [half-]circle front */
+					p->f.f_symbol = GMT_FRONT_CIRCLE;
+					len--;
+					break;
+				case 'b':	/* [half-]square front */
+					p->f.f_symbol = GMT_FRONT_BOX;
+					len--;
+					break;
+			
+				/* Old style (backward compatibility) */
+		
+				case 'L':	/* Left triangle */
+					p->f.f_symbol = GMT_FRONT_TRIANGLE;
+				case 'l':	/* Left ticked fault */
+					p->f.f_sense = GMT_FRONT_LEFT;
+					old_style = TRUE;
+					break;
+				case 'R':	/* Right triangle */
+					p->f.f_symbol = GMT_FRONT_TRIANGLE;
+				case 'r':	/* Right ticked fault */
+					p->f.f_sense = GMT_FRONT_RIGHT;
+					old_style = TRUE;
+					break;
+				default:
+					p->f.f_sense = GMT_FRONT_CENTERED;
+					break;
+			}
+
+			if (!old_style) {
+				switch (text_cp[len]) {	/* Get sense - default is centered */
+					case 'l':
+						p->f.f_sense = GMT_FRONT_LEFT;
+						break;
+					case 'r':
+						p->f.f_sense = GMT_FRONT_RIGHT;
+						break;
+					default:
+						len++;
+						p->f.f_sense = GMT_FRONT_CENTERED;
+						if (p->f.f_symbol == GMT_FRONT_SLIP) {
+							fprintf (stderr, "%s: Error in Option -Sf: Must specify (GMTMANSECTION)eft-lateral or (r)ight-lateral slip\n", GMT_program);
+							exit (EXIT_FAILURE);
+						}
+						break;
+				}
+			}
+
+			text_cp[len] = 0;	/* Gets rid of the [dir][type] flags, if present */
+	
+			/* Pull out and get spacing and size */
+	
+			sscanf (&text_cp[1], "%[^/]/%s", txt_a, txt_b);
+			p->f.f_gap = GMT_convert_units (txt_a, GMT_INCH);
+			p->f.f_len = GMT_convert_units (txt_b, GMT_INCH);
+			break;
+		case 'G':
+			p->equal_area = TRUE;	/* To equal area of circle with same size */
+		case 'g':
+			p->symbol = GMT_SYMBOL_OCTAGON;
+			break;
+		case 'H':
+			p->equal_area = TRUE;	/* To equal area of circle with same size */
+		case 'h':
+			p->symbol = GMT_SYMBOL_HEXAGON;
+			break;
+		case 'I':
+			p->equal_area = TRUE;	/* To equal area of circle with same size */
+		case 'i':
+			p->symbol = GMT_SYMBOL_ITRIANGLE;
+			break;
+		case 'l':
+			p->symbol = GMT_SYMBOL_TEXT;
+			/* Look for a slash that separates size and string: */
+			for (j = 1, slash = 0; text_cp[j] && !slash; j++) if (text_cp[j] == '/') slash = j;
+			/* Set j to the first char in the string: */
+			j = slash + 1;
+			/* Copy string characters */
+			k = 0;
+			while (text_cp[j] && text_cp[j] != ' ' && k < 63) p->string[k++] = text_cp[j++];
+			if (!k) {
+				fprintf (stderr, "%s: GMT SYNTAX ERROR -Sl option:  No string given\n", GMT_program);
+				decode_error++;
+			}
+			p->string[k] = 0;
+			break;
+		case 'N':
+			p->equal_area = TRUE;	/* To equal area of circle with same size */
+		case 'n':
+			p->symbol = GMT_SYMBOL_PENTAGON;
+			break;
+		case 'o':	/*3-D symbol */
+			p->shade3D = TRUE;
+		case 'O':	/* Same but disable shading */
+			p->symbol = GMT_SYMBOL_COLUMN;
+			if (bset) p->base = atof (&text[bset+1]);
+			if (mode == 0) {
+				decode_error = TRUE;
+				fprintf (stderr, "%s: GMT SYNTAX ERROR -S option:  Symbol type %c is 3-D only\n", GMT_program, symbol_type);
+			}
+			break;
+		case 'p':
+			p->symbol = GMT_SYMBOL_POINT;
+			if (p->size_x == 0.0) p->size_x = GMT_POINT_SIZE;
+			check = FALSE;
+			break;
+		case 'q':	/* Quoted lines: -Sq[d|n|l|x]<info>[:<labelinfo>] */
+			p->symbol = GMT_SYMBOL_QUOTED_LINE;
+			for (j = 1, colon = 0; text[j]; j++) if (text[j] == ':') colon = j;
+			if (colon) {	/* Gave :<labelinfo> */
+				text[colon] = 0;
+				decode_error += GMT_contlabel_info ('S', &text[1], &p->G);
+				decode_error += GMT_contlabel_specs (&text[colon+1], &p->G);
+			}
+			else
+				decode_error += GMT_contlabel_info ('S', &text[1], &p->G);
+			break;
+			check = FALSE;
+		case 'S':
+			p->equal_area = TRUE;	/* To equal area of circle with same size */
+		case 's':
+			p->symbol = GMT_SYMBOL_SQUARE;
+			break;
+		case 'T':
+			p->equal_area = TRUE;	/* To equal area of circle with same size */
+		case 't':
+			p->symbol = GMT_SYMBOL_TRIANGLE;
+			break;
+		case 'u':	/*3-D symbol */
+			p->shade3D = TRUE;
+		case 'U':	/* Same but disable shading */
+			p->symbol = GMT_SYMBOL_CUBE;
+			if (mode == 0) {
+				decode_error = TRUE;
+				fprintf (stderr, "%s: GMT SYNTAX ERROR -S option:  Symbol type %c is 3-D only\n", GMT_program, symbol_type);
+			}
+			break;
+		case 'V':
+			p->convert_angles = 1;
+		case 'v':
+			p->symbol = GMT_SYMBOL_VECTOR;
+			switch (text[1]) {	/* Check if s(egment), h(ead), b(alance center), or t(ail) have been specified */
+				case 'S':	/* Input (x,y) refers to vector head (the tip), double heads */
+					p->v_double_heads = TRUE;
+				case 's':	/* Input (x,y) refers to vector head (the tip), single head  */
+					p->v_just = 3;
+					one = 2;
+					break;
+				case 'H':	/* Input (x,y) refers to vector head (the tip), double heads */
+					p->v_double_heads = TRUE;
+				case 'h':	/* Input (x,y) refers to vector head (the tip), single head */
+					p->v_just = 2;
+					one = 2;
+					break;
+				case 'B':	/* Input (x,y) refers to balance point of vector, double heads */
+					p->v_double_heads = TRUE;
+				case 'b':	/* Input (x,y) refers to balance point of vector, single head */
+					p->v_just = 1;
+					one = 2;
+					break;
+				case 'T':	/* Input (x,y) refers to tail of vector, double heads */
+					p->v_double_heads = TRUE;
+				case 't':	/* Input (x,y) refers to tail of vector [Default], single head */
+					p->v_just = 0;
+					one = 2;
+					break;
+				default:	/* No modifier given, default to tail, single head */
+					p->v_just = 0;
+					one = 1;
+					break;
+			}
+			for (j = one; text[j] && text[j] != 'n'; j++);
+			len = strlen(text) - 1;
+			if (text[j] == 'n') {	/* Normalize option used */
+				k = GMT_get_unit (text[len]);
+				if (k >= 0) p->u = k;
+				p->v_norm = atof (&text[j+1]);
+				if (p->v_norm > 0.0) {
+					p->v_shrink = 1.0 / p->v_norm;
+					p->symbol = GMT_SYMBOL_VECTOR2;
+				}
+				text[j] = 0;	/* Chop off the shrink part */
+			}
+			if (text[one]) {
+				/* It is possible that the user have appended a unit modifier after
+				 * the <size> argument (which here are vector attributes).  We use that
+				 * to set the unit, but only if the vector attributes themselves have
+				 * units. (If not we would override MEASURE_UNIT without cause).
+				 * So, -SV0.1i/0.2i/0.3ic will expect 4th column to have length in cm
+				 * while SV0.1i/0.2i/0.3i expects data units in MEASURE_UNIT
+				 */
+
+				if (isalpha ((int)text[len]) && isalpha ((int)text[len-1])) {
+					p->u = GMT_get_unit (text[len]);
+					text[len] = 0;
+				}
+				sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+				p->v_width  = GMT_convert_units (txt_a, GMT_INCH);
+				p->h_length = GMT_convert_units (txt_b, GMT_INCH);
+				p->h_width  = GMT_convert_units (txt_c, GMT_INCH);
+			}
+			if (p->symbol == GMT_SYMBOL_VECTOR2) text[j] = 'n';	/* Put back the n<shrink> part */
+			p->read_vector = TRUE;
+			p->n_required = 2;
+			check = FALSE;
+			break;
+		case 'W':
+			p->convert_angles = 1;
+		case 'w':
+			p->symbol = GMT_SYMBOL_PIE;
+			p->n_required = 2;
+			break;
+		case 'r':
+			p->symbol = GMT_SYMBOL_RECT;
+			p->n_required = 2;
+			check = FALSE;
+			break;
+		case 'x':
+			p->symbol = GMT_SYMBOL_CROSS;
+			break;
+		case 'y':
+			p->symbol = GMT_SYMBOL_YDASH;
+			p->size_x *= 0.5;		/* We will use +- to get full width */
+			break;
+		case 'z':
+			p->symbol = GMT_SYMBOL_ZDASH;
+			p->size_x *= 0.5;		/* We will use +- to get full width */
+			break;
+		case 'k':
+			p->symbol = GMT_SYMBOL_CUSTOM;
+			p->custom = GMT_get_custom_symbol (text_cp);
+			break;
+		default:
+			decode_error = TRUE;
+			fprintf (stderr, "%s: GMT SYNTAX ERROR -S option:  Unrecognized symbol type %c\n", GMT_program, symbol_type);
+			break;
+	}
+	if (p->given_size_x == 0.0 && check) {
+		p->read_size = TRUE;
+		p->n_required++;
+	}
+	else
+		p->read_size = FALSE;
+	if (!cmd && p->symbol == GMT_SYMBOL_COLUMN) {
+		if (!bset) p->base = (project_info.xyz_projection[2] == LOG10) ? 1.0 : 0.0;
+	}
+	if (!cmd && p->symbol == GMT_SYMBOL_BAR) {
+		if (!bset) p->base = (project_info.xyz_projection[1] == LOG10) ? 1.0 : 0.0;
+	}
+
+	return (decode_error);
+}
+
+void GMT_extract_label (char *line, char *label)
+{
+	int i = 0, j, j0;
+	char *p;
+
+	if ((p = strstr (line, " -L")) || (p = strstr (line, "	-L"))) 	/* Get label specified wih -L option */
+		i = p + 3 - line;
+	else {								/* Bypass whitespace and pick first word */
+		while (line[i] && (line[i] == ' ' || line[i] == '\t')) i++;
+
+	}
+	if ((p = strchr (&line[i], '\"'))) {	/* Gave several words as label */
+		for (j0 = i, j = i + 1; line[j] != '\"'; j++);
+		if (line[j] == '\"')	/* Found the matching quote */
+			strncpy (label, &line[j0], j-j0);
+		else {			/* Missing the matching quote */
+			sscanf (&line[i], "%s", label);
+			fprintf (stderr, "%s: Warning: Label (%s) not terminated by matching quote\n", GMT_program, label);
+		}
+	}
+	else
+		sscanf (&line[i], "%s", label);
 }
 
 char *GMT_putpen (struct GMT_PEN *pen)

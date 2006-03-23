@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.h,v 1.8 2006-03-22 05:20:11 pwessel Exp $
+ *	$Id: gmt_map.h,v 1.9 2006-03-23 07:48:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -69,5 +69,7 @@ EXTERN_MSC void GMT_yy_to_y (double *y, double yy);
 EXTERN_MSC void GMT_z_to_zz (double z, double *zz); 
 EXTERN_MSC void GMT_zz_to_z (double *z, double zz);
 EXTERN_MSC double *GMT_distances (double x[], double y[], int n, double scale, int dist_flag);
+EXTERN_MSC int GMT_map_loncross (double lon, double south, double north, struct GMT_XINGS **xings);
+EXTERN_MSC int GMT_map_latcross (double lat, double west, double east, struct GMT_XINGS **xings);
 
 #endif /* _GMT_MAP_H */
