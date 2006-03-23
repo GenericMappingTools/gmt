@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.40 2006-03-16 00:53:27 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.41 2006-03-23 00:18:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -79,6 +79,15 @@
 
 #define N_ROBINSON 19
 
+#define GMT_LATSWAP_N	12	/* number of defined swaps  */
+
+struct GMT_LATSWAP_CONSTS {
+	double  c[GMT_LATSWAP_N][4];	/* Coefficients in 4-term series  */
+	double	ra;			/* Authalic   radius (sphere for equal-area)  */
+	double	rm;			/* Meridional radius (sphere for N-S distance)  */
+	BOOLEAN spherical;		/* True if no conversions need to be done.  */
+};
+
 struct MAP_PROJECTIONS {
 
 	double pars[10];		/* Raw unprocessed map-projection parameters as passed on command line */
@@ -96,7 +105,9 @@ struct MAP_PROJECTIONS {
 	BOOLEAN north_pole;		/* TRUE if projection is on northern hemisphere, FALSE on southern */
 	BOOLEAN edge[4];		/* TRUE if the edge is a map boundary */
 	BOOLEAN three_D;		/* Parameters for 3-D projections */
-
+	BOOLEAN GMT_convert_latitudes;	/* TRUE if using spherical code with authalic/conformal latitudes */
+	struct GMT_LATSWAP_CONSTS GMT_lat_swap_vals;
+	
 	double x0, y0, z0;		/* Projected values of the logical origin for the projection */
 	double xmin, xmax, ymin, ymax, zmin, zmax;	/* Extreme projected values */
 	double w, e, s, n;		/* Bounding geographical region, if applicable */
