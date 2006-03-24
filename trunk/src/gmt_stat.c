@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.39 2006-03-22 06:30:34 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.40 2006-03-24 06:33:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -48,6 +48,7 @@
  *					Added float versions of these two functions for grd data.
  *		27-JUL-2005 P. Wessel: Added Chebyshev polynomials Tn(x)
  *		07-SEP-2005 P. Wessel: Added GMT_corrcoeff (x,y)
+ *		24-MAR-2006 P. Wessel: Added GMT_zdist (x)
  *
  * PUBLIC functions:
  *
@@ -1532,6 +1533,13 @@ int	GMT_student_t_a(double t, int n, double *prob)
 	if (*prob > 1.0) *prob = 1.0;
 
 	return (0);
+}
+
+double GMT_zdist (double x)
+{
+	/* Cumulative Normal (z) distribution */
+
+	return (0.5 * (erf (x / M_SQRT2) + 1.0));
 }
 
 double GMT_zcrit (double alpha)
