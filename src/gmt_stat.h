@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.h,v 1.1 2006-03-22 05:20:11 pwessel Exp $
+ *	$Id: gmt_stat.h,v 1.2 2006-03-24 06:33:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -24,6 +24,7 @@ EXTERN_MSC double GMT_chi2crit (double alpha, double nu);
 EXTERN_MSC double GMT_extreme (double x[], size_t n, double x_default, int kind, int way);
 EXTERN_MSC double GMT_tcrit (double alpha, double nu);
 EXTERN_MSC double GMT_zcrit (double alpha);
+EXTERN_MSC double GMT_zdist (double x);
 EXTERN_MSC int GMT_f_q (double chisq1, int nu1, double chisq2, int nu2, double *prob);
 EXTERN_MSC int GMT_median (double *x, size_t n, double xmin, double xmax, double m_initial, double *med);
 EXTERN_MSC int GMT_mode (double *x, size_t n, size_t j, int sort, int mode_selection, int *n_multiples, double *mode_est);
