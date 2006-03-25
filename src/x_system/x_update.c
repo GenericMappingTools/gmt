@@ -1,4 +1,4 @@
-/*	$Id: x_update.c,v 1.4 2005-03-06 16:04:00 remko Exp $
+/*	$Id: x_update.c,v 1.5 2006-03-25 03:56:53 pwessel Exp $
  *
  * XUPDATE will read a xover.d-file that contains a series of crossovers. The first
  * record contains leg1 year1 leg2 year2, and the next n records has all the
@@ -31,24 +31,23 @@
 
 /* Global variables */
 
+void append_leg (struct LEG *leg, struct LEG*leg_head);
+int read_xx_legs (FILE *fp, struct LEG **L);
+struct LEG *make_leg (char *text);
+struct LEG *find_leg (char *text, struct LEG*leg_head);
+
+int main (int argc, char *argv[])
+{
+
 static char *xformat = "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf";
 
 struct XOVERS crossover[MAX_NR];
 
-struct LEG *leg_head;
+struct LEG *leg_head = NULL;
 
 FILE *fxb = NULL;		/* File handle for xx_base.b */
 FILE *fxl = NULL;		/* File handle for xx_legs.b file */
 
-size_t legsize = sizeof(struct LEG);
-
-void append_leg (struct LEG *leg);
-int read_xx_legs (void);
-struct LEG *make_leg (char *text);
-struct LEG *find_leg (char *text);
-
-int main (int argc, char *argv[])
-{
 
 	char lega[10], legb[10];	/* two legnames */
 	char header[REC_SIZE];		/* header buffer for xx_base.b */
@@ -128,7 +127,7 @@ int main (int argc, char *argv[])
 
 	for (i = 0; i < REC_SIZE; i++) header[i] = ' ';
 
-	n_legs = read_xx_legs();	/* Initiate list of leg structures */
+	n_legs = read_xx_legs(fxl, &leg_head);	/* Initiate list of leg structures */
 
 	fseek (fxb, 0L, SEEK_SET);		/* Go to start of file */
 	if (fread ((void *)header,REC_SIZE, 1, fxb) != 1) {	/* Get next recno to write */
@@ -149,16 +148,16 @@ int main (int argc, char *argv[])
 		if (leg1 != NULL && strcmp(leg1->name,lega) == 0)  {
 			/* Use the same leg */
 		}
-		else if ((leg1 = find_leg(lega)) == NULL) {
+		else if ((leg1 = find_leg(lega, leg_head)) == NULL) {
 			leg1 = make_leg(lega);
 			leg1->year = year1;
-			append_leg(leg1);
+			append_leg(leg1, leg_head);
 		}
       
-		if (!internal && (leg2 = find_leg(legb)) == NULL) {
+		if (!internal && (leg2 = find_leg(legb, leg_head)) == NULL) {
 			leg2 = make_leg(legb);
 			leg2->year = year2;
-			append_leg(leg2);
+			append_leg(leg2, leg_head);
 		}
 
 		/* Then, read xover info from file for this pair */
@@ -278,7 +277,7 @@ int main (int argc, char *argv[])
 	fxl = fopen("xx_legs.b","wb");
 
 	for (leg1 = leg_head->next_leg; leg1; leg1 = leg1->next_leg) {
-		if (fwrite((void *)leg1, legsize, (size_t)1, fxl) != (size_t)1) {
+		if (fwrite((void *)leg1, sizeof(struct LEG), (size_t)1, fxl) != (size_t)1) {
 			fprintf(stderr, "x_update: Write error for leg %s\n",leg1->name);
 			exit (EXIT_FAILURE);
 		}
@@ -287,7 +286,7 @@ int main (int argc, char *argv[])
 	exit (EXIT_SUCCESS);
 }
 
-void append_leg (struct LEG *leg)
+void append_leg (struct LEG *leg, struct LEG*leg_head)
 {
 	struct LEG *current;
 	/* First, search for position in list */
@@ -299,19 +298,20 @@ void append_leg (struct LEG *leg)
 	current->next_leg = leg;
 }
     
-int read_xx_legs (void) {
+int read_xx_legs (FILE *fxl, struct LEG **L) {
 	int nlegs = 0;
-	struct LEG *new_leg, *last_leg;
+	struct LEG *new_leg, *last_leg, *leg_head;
 	leg_head = make_leg("-----");
 	new_leg = make_leg("-----");
 	last_leg = leg_head;
-	while (fread((void *)new_leg, legsize, 1, fxl) == 1) {
+	while (fread((void *)new_leg, sizeof(struct LEG), 1, fxl) == 1) {
 		nlegs++;
 		last_leg->next_leg = new_leg;
 		last_leg = last_leg->next_leg;
 		new_leg = make_leg("-----");
 	}
 	free((char *) new_leg);
+	*L = leg_head;
 	return (nlegs);
 }
 
@@ -319,7 +319,7 @@ struct LEG *make_leg (char *text)
 {
 	int j;
 	struct LEG *new_leg;
-	if ((new_leg = (struct LEG *) malloc(legsize)) == NULL) {
+	if ((new_leg = (struct LEG *) malloc(sizeof(struct LEG))) == NULL) {
 		fprintf(stderr,"x_update : Could not allocate memory for leg %s\n",text);
 		exit (EXIT_FAILURE);
 	}
@@ -342,7 +342,7 @@ struct LEG *make_leg (char *text)
 	return (new_leg);
 }
 
-struct LEG *find_leg (char *text)
+struct LEG *find_leg (char *text, struct LEG*leg_head)
 {
 	struct LEG *leg;
 	int test1 = -1;

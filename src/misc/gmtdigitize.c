@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.1 2006-03-23 00:20:34 pwessel Exp $
+ *    $Id: gmtdigitize.c,v 1.2 2006-03-25 03:56:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -54,35 +54,42 @@
 #define END_BUTTON_CHAR		'F'	/* Label on this button */
 /*===========================================================================*/
 
-int get_digitize_raw (int digunit, double *xdig, double *ydig);
-int get_digitize_xy (int digunit, double *xmap, double *ymap);
-FILE *next_file (char *name, int n_segments, char *this_file);
-
-double sin_theta, cos_theta, map_x0, map_y0, map_scale, INV_LPI;
-BOOLEAN audible = FALSE;
+struct GMTDIGITIZE_CTRL {	/* Things needed while digitizing */
+	double sin_theta, cos_theta, map_x0, map_y0, map_scale, INV_LPI;
+};
 
 int main (int argc, char **argv)
 {
-	int i, j, n = 0, n_read = 0, unit = 0, n_expected_fields, n_segments = 0, digunit, type, button;
-	int val_pos = 2, key_pos = 2, m_button, LPI = DIG_LPI;
-	
-	BOOLEAN error = FALSE, suppress = FALSE, ok, output_key = FALSE, multi_files, output_val = FALSE, force_4 = FALSE;
-	
-	double west = 0.0, east = 0.0, south = 0.0, north = 0.0, out[3], mean_dig_x, mean_dig_y, z_val, d_limit = 0.0, dist;
-	double xmin, xmax, ymin, ymax, utm_correct, fwd_scale, inv_scale, xmap, ymap, X_DIG[4], Y_DIG[4], last_xmap, last_ymap;
-	double x_in_min, x_in_max, y_in_min, y_in_max, inch_to_unit, unit_to_inch, rotation, mean_map_x, mean_map_y;
-	double x_out_min, x_out_max, y_out_min, y_out_max, rms, u_scale, LON[4], LAT[4], X_MAP[4], Y_MAP[4], XP[4], YP[4];
+	BOOLEAN error = FALSE, suppress = FALSE, ok, output_key = FALSE, multi_files;
+	BOOLEAN audible = FALSE, output_val = FALSE, force_4 = FALSE;
 	
 	char line[BUFSIZ], format[BUFSIZ], unit_name[80], this_file[BUFSIZ];
 	char *control[4] = {"first", "second", "third", "fourth"};
 	char *corner[4] = {"lower left", "lower right", "upper right", "upper left"};
-	char *name = CNULL, *device = CNULL, *xname[2] = {"longitude", "x-coordinate"}, *yname[2] = {"latitude ", "y-coordinate"};
+	char *name = CNULL, *device = CNULL, *xname[2] = {"longitude", "x-coordinate"};
+	char *yname[2] = {"latitude ", "y-coordinate"};
+	
+	int i, j, n = 0, n_read = 0, unit = 0, n_expected_fields, n_segments = 0, digunit;
+	int val_pos = 2, key_pos = 2, m_button, LPI = DIG_LPI, type, button;
+	
+	gid_t gid = 0;
+	uid_t uid = 0;
+	
+	double west = 0.0, east = 0.0, south = 0.0, north = 0.0, out[3], mean_dig_x;
+	double mean_dig_y, z_val = 0.0, d_limit = 0.0, dist, xmin, xmax, ymin, ymax;
+	double utm_correct, fwd_scale, inv_scale, xmap, ymap, X_DIG[4], Y_DIG[4];
+	double last_xmap, last_ymap, x_in_min, x_in_max, y_in_min, y_in_max, inch_to_unit;
+	double unit_to_inch, rotation, mean_map_x, mean_map_y, x_out_min, x_out_max, y_out_min;
+	double y_out_max, rms, u_scale, LON[4], LAT[4], X_MAP[4], Y_MAP[4], XP[4], YP[4];
 	
 	FILE *fp = NULL;
+
+	struct GMTDIGITIZE_CTRL	C;
 	
-	gid_t gid;
-	uid_t uid;
-	
+	int get_digitize_raw (int digunit, double *xdig, double *ydig, struct GMTDIGITIZE_CTRL *C);
+	int get_digitize_xy (int digunit, double *xmap, double *ymap, struct GMTDIGITIZE_CTRL *C);
+	FILE *next_file (char *name, int n_segments, char *this_file);
+
 	argc = GMT_begin (argc, argv);
 	
 	for (i = 1; i < argc; i++) {
@@ -185,7 +192,7 @@ int main (int argc, char **argv)
 	/* OK, time to connect to digitizer */
 
 	if (!device) device = DIG_PORT;	/* Default setup */
-	INV_LPI = 1.0 / LPI;		/* To save a divide later */
+	C.INV_LPI = 1.0 / LPI;		/* To save a divide later */
 	
 #ifdef DIGTEST
 	digunit = 0;
@@ -243,7 +250,7 @@ int main (int argc, char **argv)
 			LAT[2] = LAT[3] = project_info.n;
 			for (i = 0; i < 4; i++) {
 				fprintf (stderr, "==> Please digitize the %s corner (%g/%g): ", corner[i], LON[i], LAT[i]);
-				button = get_digitize_raw (digunit, &X_DIG[i], &Y_DIG[i]);
+				button = get_digitize_raw (digunit, &X_DIG[i], &Y_DIG[i], &C);
 				fprintf (stderr, "[x:%g y:%g]\n", X_DIG[i], Y_DIG[i]);
 				GMT_geo_to_xy (LON[i], LAT[i], &X_MAP[i], &Y_MAP[i]);
 			}
@@ -252,7 +259,7 @@ int main (int argc, char **argv)
 			fprintf (stderr, "%s will request 4 arbitrary calibration points\n\n", GMT_program);
 			for (i = 0; i < 4; i++) {
 				fprintf (stderr, "==> Please digitize the %s point: ", control[i]);
-				button = get_digitize_raw (digunit, &X_DIG[i], &Y_DIG[i]);
+				button = get_digitize_raw (digunit, &X_DIG[i], &Y_DIG[i], &C);
 				fprintf (stderr, "[x:%g y:%g]\n", X_DIG[i], Y_DIG[i]);
 			}
 			fprintf (stderr, "\n");
@@ -282,14 +289,14 @@ int main (int argc, char **argv)
 			sum_dig_distance += hypot ((X_DIG[i] - X_DIG[j]), (Y_DIG[i] - Y_DIG[j]));
 			sum_map_distance += hypot ((X_MAP[i] - X_MAP[j]), (Y_MAP[i] - Y_MAP[j]));
 		}
-		map_scale = sum_map_distance / sum_dig_distance;	/* Get average scale */
+		C.map_scale = sum_map_distance / sum_dig_distance;	/* Get average scale */
 		
 		/* Then undo the scale and find mean positions */
 
 		mean_map_x = mean_map_y = mean_dig_x = mean_dig_y = 0.0;
 		for (i = 0; i < 4; i++) {
-			XP[i] = X_MAP[i] / map_scale;
-			YP[i] = Y_MAP[i] / map_scale;
+			XP[i] = X_MAP[i] / C.map_scale;
+			YP[i] = Y_MAP[i] / C.map_scale;
 			mean_map_x += XP[i];
 			mean_map_y += YP[i];
 			mean_dig_x += X_DIG[i];
@@ -309,10 +316,10 @@ int main (int argc, char **argv)
 		
 		/* Find misfit RMS */
 		
-		sincos (rotation, &sin_theta, &cos_theta);
+		sincos (rotation, &C.sin_theta, &C.cos_theta);
 		for (i = 0, rms = 0.0; i < 4; i++) {
-			new_x = (X_DIG[i] * cos_theta - Y_DIG[i] * sin_theta + mean_map_x) * map_scale;
-			new_y = (X_DIG[i] * sin_theta + Y_DIG[i] * cos_theta + mean_map_y) * map_scale;
+			new_x = (X_DIG[i] * C.cos_theta - Y_DIG[i] * C.sin_theta + mean_map_x) * C.map_scale;
+			new_y = (X_DIG[i] * C.sin_theta + Y_DIG[i] * C.cos_theta + mean_map_y) * C.map_scale;
 			dist = hypot (X_MAP[i] - new_x, Y_MAP[i] - new_y);
 			rms += dist * dist;
 		}
@@ -325,10 +332,10 @@ int main (int argc, char **argv)
 			ok = FALSE;
 		}
 	}
-	if (gmtdefs.verbose) fprintf (stderr, "\nFound: rotation = %.3f, map_scale = %g, rms = %g\n\n", rotation * R2D, map_scale, rms);
+	if (gmtdefs.verbose) fprintf (stderr, "\nFound: rotation = %.3f, map_scale = %g, rms = %g\n\n", rotation * R2D, C.map_scale, rms);
 	
-	map_x0 = (mean_map_x - mean_dig_x * cos_theta + mean_dig_y * sin_theta) * map_scale;
-	map_y0 = (mean_map_y - mean_dig_x * sin_theta - mean_dig_y * cos_theta) * map_scale;
+	C.map_x0 = (mean_map_x - mean_dig_x * C.cos_theta + mean_dig_y * C.sin_theta) * C.map_scale;
+	C.map_y0 = (mean_map_y - mean_dig_x * C.sin_theta - mean_dig_y * C.cos_theta) * C.map_scale;
 	
 	utm_correct = (project_info.projection == UTM && !project_info.north_pole) ? FALSE_NORTHING : 0.0;
 	
@@ -341,8 +348,8 @@ int main (int argc, char **argv)
 	
 		/* Set correct GMT min/max values in light of actual scale */
 	
-		xmin /= map_scale;	xmax /= map_scale;
-		ymin /= map_scale;	ymax /= map_scale;
+		xmin /= C.map_scale;	xmax /= C.map_scale;
+		ymin /= C.map_scale;	ymax /= C.map_scale;
 	
 		/* Convert inches to chosen MEASURE */
 		xmin *= inch_to_unit;
@@ -395,7 +402,7 @@ int main (int argc, char **argv)
 	}
 	
 	tcflush (digunit, TCIFLUSH);	/* Clean the muzzle */
-	while ((button = get_digitize_xy (digunit, &xmap, &ymap)) != END_BUTTON) {	/* Not yet done */
+	while ((button = get_digitize_xy (digunit, &xmap, &ymap, &C)) != END_BUTTON) {	/* Not yet done */
 
 		m_button = 0;
 		while (button == MULTISEG_BUTTON1 || button == MULTISEG_BUTTON2) {
@@ -435,7 +442,7 @@ int main (int argc, char **argv)
 			else
 				tcflush (digunit, TCIFLUSH);	/* Clean the muzzle */
 				
-			button = get_digitize_xy (digunit, &xmap, &ymap);
+			button = get_digitize_xy (digunit, &xmap, &ymap, &C);
 		}
 
 		dist = hypot (xmap - last_xmap, ymap - last_ymap);
@@ -485,7 +492,7 @@ int main (int argc, char **argv)
 	exit (EXIT_SUCCESS);
 }
 
-int get_digitize_raw (int digunit, double *xdig, double *ydig) {
+int get_digitize_raw (int digunit, double *xdig, double *ydig, struct GMTDIGITIZE_CTRL *C) {
 	int i, n, ix, iy;
 	char buffer[256], button;
 	
@@ -499,23 +506,23 @@ int get_digitize_raw (int digunit, double *xdig, double *ydig) {
 	for (i = 0; i < n; i++) if (buffer[i] == ',') buffer[i] = ' ';
 	sscanf (buffer, "%d %d %c", &ix, &iy, &button);
 	
-	*xdig = (double)(ix) * INV_LPI;	/* Convert from lines per inch to inches */
-	*ydig = (double)(iy) * INV_LPI;
+	*xdig = (double)(ix) * C->INV_LPI;	/* Convert from lines per inch to inches */
+	*ydig = (double)(iy) * C->INV_LPI;
 	
 	return ((int)(button - '0'));
 }
 
-int get_digitize_xy (int digunit, double *xmap, double *ymap) {
+int get_digitize_xy (int digunit, double *xmap, double *ymap, struct GMTDIGITIZE_CTRL *C) {
 	int button;
 	double x_raw, y_raw;
 	
-	button = get_digitize_raw (digunit, &x_raw, &y_raw);
+	button = get_digitize_raw (digunit, &x_raw, &y_raw, C);
 	if (button == END_BUTTON) return (END_BUTTON);
 
 	/* Undo rotation and scaling to give map inches */
 	
-	*xmap = (x_raw * cos_theta - y_raw * sin_theta) * map_scale + map_x0;
-	*ymap = (x_raw * sin_theta + y_raw * cos_theta) * map_scale + map_y0;
+	*xmap = (x_raw * C->cos_theta - y_raw * C->sin_theta) * C->map_scale + C->map_x0;
+	*ymap = (x_raw * C->sin_theta + y_raw * C->cos_theta) * C->map_scale + C->map_y0;
 	
 	return (button);
 }

@@ -1,4 +1,4 @@
-/*	$Id: gshhs_dp.c,v 1.7 2005-12-27 04:28:12 pwessel Exp $
+/*	$Id: gshhs_dp.c,v 1.8 2006-03-25 03:56:52 pwessel Exp $
  *
  * gshhs_dp applies the Douglas-Peucker algorithm to simplify a line
  * segment given a tolerance.  The algorithm is based on the paper
@@ -40,7 +40,6 @@
 #define VNULL (void *)NULL
 
 void *get_memory (void *prev_addr, int n, size_t size, char *progname);
-int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band, int index[]);
 
 int main (int argc, char **argv)
 {
@@ -51,6 +50,8 @@ int main (int argc, char **argv)
 	struct	GSHHS h;
 	struct	POINT p;
         
+	int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band, int index[]);
+	
 	if (argc < 2 || !(argc == 4 || argc == 5)) {
 		fprintf (stderr, "gshhs_dp v. 1.5 Line reduction using the Douglas-Peucker algorithm\n\n");
 		fprintf (stderr, "usage:  gshhs_dp input.b tolerance output.b [-v]\n");
