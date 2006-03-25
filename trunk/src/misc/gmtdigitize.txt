@@ -82,7 +82,25 @@ gmtdigitize \fB\-R\fP130/970/0/10 \fB\-Jx\fP1/-1 \fB\-M \-A \-Z\fP > interfaces.
 This applies to the Calcomp DrawingBoard III hooked up to a RedHat Linux workstation.
 We use /dev/ttyS0 as the serial port and change permissions so that it is world read/write-able.
 Then, stty -F /dev/ttyS0 evenp will set the terminal settings, which can be checked with stty -F /dev/ttyS0 -a.
-Setup of digitizer: (A)We need to make a slight modification to the Preset No 3 settings:
+Setup of digitizer: We use the CalComp 2000 ASCII (Save 3) setup, which has:
+.br
+Mode: Point
+.br
+Baud Rate: 9600
+.br
+Data Bits: 7
+.br
+Parity: Even
+.br
+Data Rate: 125 pps
+.br
+Resolution: 200 lpi
+.br
+Output Format: Format 0
+.br
+Emulation: CalComp 2000 ASCII
+.br
+(A)We need to make a slight modification to the Preset No 3 settings:
 (1) 2450 LPI instead of 200, and (2) None instead of yes for added CR.
 These modifications can be changed and saved to Preset 3 on
 the digitizer but a power outage may reset in back to the factory defaults, necessitating
