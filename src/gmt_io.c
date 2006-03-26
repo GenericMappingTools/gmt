@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.99 2006-03-23 07:48:04 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.100 2006-03-26 10:56:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2699,8 +2699,7 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 				fprintf (stderr, "%s: Failure to read file %s near line %d\n", GMT_program, file, n_read);
 				exit (EXIT_FAILURE);
 			}
-			e[i].coord[0][j] = in[0];
-			e[i].coord[1][j] = in[1];
+			for (k = 0; k < e[i].ncol; k++) e[i].coord[k][j] = in[k];
 			if (GMT_io.in_col_type[0] & GMT_IS_GEO) {
 				if (greenwich && e[i].coord[0][j] > 180.0) e[i].coord[0][j] -= 360.0;
 				if (!greenwich && e[i].coord[0][j] < 0.0) e[i].coord[0][j] += 360.0;
