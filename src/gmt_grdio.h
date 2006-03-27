@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.27 2006-03-22 05:20:11 pwessel Exp $
+ *	$Id: gmt_grdio.h,v 1.28 2006-03-27 05:36:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -54,6 +54,11 @@ EXTERN_MSC PFI GMT_io_readgrd[N_GRD_FORMATS];
 EXTERN_MSC PFI GMT_io_writegrd[N_GRD_FORMATS];
 
 #include "gmt_customio.h"
+
+struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
+	struct GRD_HEADER *header;	/* Pointer to full GMT header for the grid */
+	float *data;			/* Pointer to the float grid */
+};
 
 struct GMT_GRDFILE {
 	int size;		/* Bytes per item */

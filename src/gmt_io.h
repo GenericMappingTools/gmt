@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.37 2006-03-20 23:03:54 remko Exp $
+ *	$Id: gmt_io.h,v 1.38 2006-03-27 05:36:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -34,6 +34,17 @@
 
 #define GMT_COLUMN_FORMAT	1
 #define GMT_ROW_FORMAT		2
+
+#define GMT_IS_FILE		0
+#define GMT_IS_STREAM		1
+#define GMT_IS_FDESC		2
+#define GMT_IS_ARRAY		3
+#define GMT_IS_GRIDFILE		4
+#define GMT_IS_GRID		5
+#define GMT_IS_GMTGRID		6
+
+#define GMT_X			0	/* x or lon is in 0th column */
+#define GMT_Y			1	/* y or lat is in 1st column */
 
 /* Array indeces for input/output variables */
 
@@ -176,18 +187,16 @@ struct GMT_PLOT_CALCLOCK {
 	struct GMT_GEO_IO geo;
 };
 
-struct GMT_LINES {		/* For holding multisegment lines in memory */
-	double **coord;		/* Coordinates x,y, and possibly other columns */
-	double dist;		/* Distance from a point to this feature */
+struct GMT_LINE_SEGMENT {		/* For holding multisegment lines in memory */
+	char *label;			/* Label string (if applicable) */
+	char *header;			/* Multisegment header (if applicable) */
+	int n_rows;			/* Number of points in this segment */
+	int n_columns;			/* Number of fields in each record (>= 2) */
+	int pole;			/* Spherical polygons only: If it encloses the S (-1) or N (+1) pole, or none (0) */
+	double dist;			/* Distance from a point to this feature */
 	double min_lon, max_lon;	/* Extreme lon coordinates */
 	double min_lat, max_lat;	/* Extreme lat coordinates */
-	int *seg;		/* Segment number information */
-	int np;			/* Number of points in this segment */
-	int ncol;		/* Number of fields in each record (>= 2) */
-	char *label;		/* Label string (if applicable) */
-	/* For spherical polygons only */
-	int polar;		/* TRUE if a polygon and enclosing N or S pole */
-	int pole;		/* -1 of +1, depending on which pole that serves as projection origin */
+	double **coord;			/* Coordinates x,y, and possibly other columns */
 };
 
 EXTERN_MSC struct GMT_IO GMT_io;
@@ -198,9 +207,11 @@ EXTERN_MSC int GMT_parse_z_io (char *txt, struct GMT_Z_IO *r, BOOLEAN input);
 EXTERN_MSC void GMT_set_z_io (struct GMT_Z_IO *r, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_check_z_io (struct GMT_Z_IO *r, float *a);
 EXTERN_MSC int GMT_points_init (char *file, double **xp, double **yp, double **dp, double dist, BOOLEAN greenwich, BOOLEAN use_GMT_io);
-EXTERN_MSC int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN greenwich, BOOLEAN poly, BOOLEAN use_GMT_io);
+EXTERN_MSC int GMT_import_segments (void *source, int source_type, struct GMT_LINE_SEGMENT **p, double dist, BOOLEAN greenwich, BOOLEAN poly, BOOLEAN use_GMT_io);
+EXTERN_MSC int GMT_export_segments (void *dest, int dest_type, struct GMT_LINE_SEGMENT *S, int n_segments, BOOLEAN use_GMT_io);
+EXTERN_MSC int GMT_n_segment_points (struct GMT_LINE_SEGMENT *S, int n_segments);
 EXTERN_MSC void GMT_points_delete (double *xp, double *yp, double *dp);
-EXTERN_MSC void GMT_lines_delete (struct GMT_LINES *p, int n_lines);
+EXTERN_MSC void GMT_free_segments (struct GMT_LINE_SEGMENT *p, int n_lines);
 EXTERN_MSC void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode);
 EXTERN_MSC void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode);
 EXTERN_MSC void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.100 2006-03-26 10:56:13 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.101 2006-03-27 05:36:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -255,25 +255,25 @@ int GMT_io_selection (char *text)
 	}
 
 	if (!i_or_o) {	/* Specified neither i or o so let settings apply to both */
-		GMT_io.binary[0] = GMT_io.binary[1] = TRUE;
-		GMT_io.single_precision[1] = GMT_io.single_precision[0];
-		GMT_io.swab[1] = GMT_io.swab[0];
-		GMT_io.ncol[1] = GMT_io.ncol[0];
+		GMT_io.binary[GMT_IN] = GMT_io.binary[GMT_OUT] = TRUE;
+		GMT_io.single_precision[GMT_OUT] = GMT_io.single_precision[GMT_IN];
+		GMT_io.swab[GMT_OUT] = GMT_io.swab[GMT_IN];
+		GMT_io.ncol[GMT_OUT] = GMT_io.ncol[GMT_IN];
 	}
 
-	if (GMT_io.binary[0]) {
-		if (GMT_io.swab[0])
-			GMT_input  = (GMT_io.single_precision[0]) ? GMT_bin_float_input_swab  : GMT_bin_double_input_swab;
+	if (GMT_io.binary[GMT_IN]) {
+		if (GMT_io.swab[GMT_IN])
+			GMT_input  = (GMT_io.single_precision[GMT_IN]) ? GMT_bin_float_input_swab  : GMT_bin_double_input_swab;
 		else
-			GMT_input  = (GMT_io.single_precision[0]) ? GMT_bin_float_input  : GMT_bin_double_input;
+			GMT_input  = (GMT_io.single_precision[GMT_IN]) ? GMT_bin_float_input  : GMT_bin_double_input;
 		strcpy (GMT_io.r_mode, "rb");
 	}
 
-	if (GMT_io.binary[1]) {
-		if (GMT_io.swab[1])
-			GMT_output = (GMT_io.single_precision[1]) ? GMT_bin_float_output_swab : GMT_bin_double_output_swab;
+	if (GMT_io.binary[GMT_OUT]) {
+		if (GMT_io.swab[GMT_OUT])
+			GMT_output = (GMT_io.single_precision[GMT_OUT]) ? GMT_bin_float_output_swab : GMT_bin_double_output_swab;
 		else
-			GMT_output = (GMT_io.single_precision[1]) ? GMT_bin_float_output : GMT_bin_double_output;
+			GMT_output = (GMT_io.single_precision[GMT_OUT]) ? GMT_bin_float_output : GMT_bin_double_output;
 		strcpy (GMT_io.w_mode, "wb");
 		strcpy (GMT_io.a_mode, "ab+");
 	}
@@ -375,8 +375,8 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 	GMT_io.status = (col_no == *n || *n == BUFSIZ) ? 0 : GMT_IO_MISMATCH;
 	if (*n == BUFSIZ) *n = col_no;
 
-	if (gmtdefs.xy_toggle[0]) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
-	if (GMT_io.in_col_type[0] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
+	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_data[GMT_X], GMT_data[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
 
 	return (col_no);
 }
@@ -411,8 +411,8 @@ int GMT_bin_double_input (FILE *fp, int *n, double **ptr)
 			return (0);
 		}
 	}
-	if (gmtdefs.xy_toggle[0]) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
-	if (GMT_io.in_col_type[0] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
+	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_data[GMT_X], GMT_data[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
 
 	return (n_read);
 }
@@ -448,8 +448,8 @@ int GMT_bin_double_input_swab (FILE *fp, int *n, double **ptr)
 			return (0);
 		}
 	}
-	if (gmtdefs.xy_toggle[0]) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
-	if (GMT_io.in_col_type[0] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
+	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_data[GMT_X], GMT_data[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
 
 	return (n_read);
 }
@@ -481,8 +481,8 @@ int GMT_bin_float_input (FILE *fp, int *n, double **ptr)
 			return (0);
 		}
 	}
-	if (gmtdefs.xy_toggle[0]) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
-	if (GMT_io.in_col_type[0] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
+	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_data[GMT_X], GMT_data[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
 
 	return (n_read);
 }
@@ -518,17 +518,17 @@ int GMT_bin_float_input_swab (FILE *fp, int *n, double **ptr)
 			return (0);
 		}
 	}
-	if (gmtdefs.xy_toggle[0]) d_swap (GMT_data[0], GMT_data[1]);	/* Got lat/lon instead of lon/lat */
-	if (GMT_io.in_col_type[0] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
+	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_data[GMT_X], GMT_data[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
 
 	return (n_read);
 }
 
 void GMT_adjust_periodic (void) {
-	/* while (GMT_data[0] > project_info.e) GMT_data[0] -= 360.0;
-	while (GMT_data[0] < project_info.w) GMT_data[0] += 360.0; */
-	while (GMT_data[0] > project_info.e && (GMT_data[0] - 360.0) >= project_info.w) GMT_data[0] -= 360.0;
-	while (GMT_data[0] < project_info.w && (GMT_data[0] + 360.0) <= project_info.w) GMT_data[0] += 360.0;
+	/* while (GMT_data[GMT_X] > project_info.e) GMT_data[GMT_X] -= 360.0;
+	while (GMT_data[GMT_X] < project_info.w) GMT_data[GMT_X] += 360.0; */
+	while (GMT_data[GMT_X] > project_info.e && (GMT_data[GMT_X] - 360.0) >= project_info.w) GMT_data[GMT_X] -= 360.0;
+	while (GMT_data[GMT_X] < project_info.w && (GMT_data[GMT_X] + 360.0) <= project_info.w) GMT_data[GMT_X] += 360.0;
 	/* If data is not inside the given range it will satisfy (lon > east) */
 	/* Now it will be outside the region on the same side it started out at */
 }
@@ -537,7 +537,7 @@ int GMT_ascii_output (FILE *fp, int n, double *ptr)
 {
 	int i, last, e = 0, wn = 0;
 
-	if (gmtdefs.xy_toggle[1]) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
+	if (gmtdefs.xy_toggle[GMT_OUT]) d_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
 	last = n - 1;						/* Last record, need to output linefeed instead of delimiter */
 
 	for (i = 0; i < n && e >= 0; i++) {			/* Keep writing all fields unless there is a read error (e == -1) */
@@ -710,7 +710,7 @@ void GMT_format_abstime_output (GMT_dtime dt, char *text)
 int GMT_bin_double_output (FILE *fp, int n, double *ptr)
 {
 	int i;
-	if (gmtdefs.xy_toggle[1]) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
+	if (gmtdefs.xy_toggle[GMT_OUT]) d_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
 	for (i = 0; i < n; i++) {
 		if (GMT_io.out_col_type[i] == GMT_IS_RELTIME) ptr[i] = GMT_usert_from_dt ((GMT_dtime) ptr[i]);
 		if (GMT_io.out_col_type[i] == GMT_IS_LON) GMT_lon_range_adjust (GMT_io.geo.range, &ptr[i]);
@@ -725,7 +725,7 @@ int GMT_bin_double_output_swab (FILE *fp, int n, double *ptr)
 	unsigned int *ii, jj;
 	double d;
 
-	if (gmtdefs.xy_toggle[1]) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
+	if (gmtdefs.xy_toggle[GMT_OUT]) d_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
 	for (i = k = 0; i < n; i++) {
 		if (GMT_io.out_col_type[i] == GMT_IS_RELTIME) ptr[i] = GMT_usert_from_dt ((GMT_dtime) ptr[i]);
 		if (GMT_io.out_col_type[i] == GMT_IS_LON) GMT_lon_range_adjust (GMT_io.geo.range, &ptr[i]);
@@ -746,7 +746,7 @@ int GMT_bin_float_output (FILE *fp, int n, double *ptr)
 	int i;
 	static float GMT_f[BUFSIZ];
 
-	if (gmtdefs.xy_toggle[1]) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
+	if (gmtdefs.xy_toggle[GMT_OUT]) d_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
 	for (i = 0; i < n; i++) {
 		if (GMT_io.out_col_type[i] == GMT_IS_RELTIME)
 			GMT_f[i] = (float) GMT_usert_from_dt ((GMT_dtime) ptr[i]);
@@ -766,7 +766,7 @@ int GMT_bin_float_output_swab (FILE *fp, int n, double *ptr)
 	unsigned int *ii;
 	static float GMT_f[BUFSIZ];
 
-	if (gmtdefs.xy_toggle[1]) d_swap (ptr[0], ptr[1]);	/* Write lat/lon instead of lon/lat */
+	if (gmtdefs.xy_toggle[GMT_OUT]) d_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
 	for (i = k = 0; i < n; i++) {
 		if (GMT_io.out_col_type[i] == GMT_IS_RELTIME)
 			GMT_f[i] = (float) GMT_usert_from_dt ((GMT_dtime) ptr[i]);
@@ -789,7 +789,7 @@ void GMT_write_segmentheader (FILE *fp, int n)
 	 * ASCII header is expected to contain newline (\n) */
 
 	int i;
-	if (GMT_io.binary[1])
+	if (GMT_io.binary[GMT_OUT])
 		for (i = 0; i < n; i++) GMT_output (fp, 1, &GMT_d_NaN);
 	else if (GMT_io.segment_header[0] == '\0')	/* Most likely binary input with NaN-headers */
 		fprintf (fp, "%c\n", GMT_io.EOF_flag);
@@ -1874,11 +1874,11 @@ int GMT_decode_coltype (char *arg)
 
 	if (copy[0] == 'g') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y */
 		if (both_i_and_o) {
-			GMT_io.in_col_type[0] = GMT_io.out_col_type[0] = GMT_IS_LON;
+			GMT_io.in_col_type[GMT_X] = GMT_io.out_col_type[GMT_X] = GMT_IS_LON;
 			GMT_io.in_col_type[1] = GMT_io.out_col_type[1] = GMT_IS_LAT;
 		}
 		else {
-			col[0] = GMT_IS_LON;
+			col[GMT_X] = GMT_IS_LON;
 			col[1] = GMT_IS_LAT;
 		}
 		return (0);
@@ -2574,9 +2574,9 @@ int GMT_points_init (char *file, double **xp, double **yp, double **dp, double d
 			exit (EXIT_FAILURE);
 		}
 
-		x[i] = in[0];	y[i] = in[1];
+		x[i] = in[GMT_X];	y[i] = in[GMT_Y];
 		d[i] = (ascii && n_expected_fields >= 3 && dist == 0.0) ? in[2] : dist;
-		if (project_info.degree[0]) {
+		if (project_info.degree[GMT_X]) {
 			if (greenwich  && x[i] > 180.0) x[i] -= 360.0;
 			if (!greenwich && x[i] < 0.0)   x[i] += 360.0;
 		}
@@ -2608,38 +2608,67 @@ int GMT_points_init (char *file, double **xp, double **yp, double **dp, double d
 	return (i);
 }
 
-int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN greenwich, BOOLEAN poly, BOOLEAN use_GMT_io)
+int GMT_import_segments (void *source, int source_type, struct GMT_LINE_SEGMENT **p, double dist, BOOLEAN greenwich, BOOLEAN poly, BOOLEAN use_GMT_io)
 {
-	FILE *fp;
-	struct GMT_LINES *e;
-	int i = -1, j = 0, k, n, i_alloc = GMT_CHUNK, n_read = 0, j_alloc = GMT_CHUNK;
-	int n_fields, n_expected_fields;
-	BOOLEAN save, ascii;
+	/* Reads an entire multisegment data set into memory */
+	
+	char open_mode[4], file[BUFSIZ];
+	BOOLEAN save, ascii, close_file = FALSE, no_segments;
+	size_t n_seg_alloc = GMT_CHUNK, n_row_alloc = GMT_CHUNK, row = 0;
+	int seg = -1, k, n, n_read = 0, n_fields, n_expected_fields;
 	double d, *in;
-	char buffer[BUFSIZ], *t, mode[4];
+	FILE *fp;
+	struct GMT_LINE_SEGMENT *segment;
 	PFI psave = VNULL;
 
-	if (use_GMT_io) {	/* Use GMT_io to determine if input is ascii/binary, else it is ascii */
+	if (use_GMT_io) {	/* Use GMT_io settings to determine if input is ascii/binary, else it defaults to ascii */
 		n_expected_fields = (GMT_io.binary[GMT_IN]) ? GMT_io.ncol[GMT_IN] : BUFSIZ;
-		strcpy (mode, GMT_io.r_mode);
+		strcpy (open_mode, GMT_io.r_mode);
 		ascii = !GMT_io.binary[GMT_IN];
 	}
-	else {			/* ASCII mode */
-		n_expected_fields = BUFSIZ;
-		strcpy (mode, "r");
+	else {			/* Force ASCII mode */
+		n_expected_fields = BUFSIZ;	/* GMT_input will return the number of columns */
+		strcpy (open_mode, "r");
 		ascii = TRUE;
-		psave = GMT_input;
-		GMT_input = GMT_input_ascii;
+		psave = GMT_input;		/* Save the previous pointer since we need to change it back at the end */
+		GMT_input = GMT_input_ascii;	/* Override and use ascii mode */
 	}
 
-	e = (struct GMT_LINES *) GMT_memory (VNULL, (size_t)i_alloc, sizeof (struct GMT_LINES), GMT_program);
-
-	if ((fp = GMT_fopen (file, mode)) == NULL) {
-		fprintf (stderr, "%s: Cannot open file %s\n", GMT_program, file);
+	if (source_type == GMT_IS_FILE) {	/* source is a file name */
+		strcpy (file, (char *)source);
+		if ((fp = GMT_fopen (file, open_mode)) == NULL) {
+			fprintf (stderr, "%s: Cannot open file %s\n", GMT_program, file);
+			exit (EXIT_FAILURE);
+		}
+		close_file = TRUE;	/* We only close files we have opened here */
+	}
+	else if (source_type == GMT_IS_STREAM) {	/* Open file pointer given, just copy */
+		fp = (FILE *)source;
+		if (fp == GMT_stdin)
+			strcpy (file, "<stdin>");
+		else
+			strcpy (file, "<input stream>");
+	}
+	else if (source_type == GMT_IS_FDESC) {		/* Open file descriptor given, just convert to file pointer */
+		int *fd;
+		fd = (int *)source;
+		if ((fp = fdopen (*fd, open_mode)) == NULL) {
+			fprintf (stderr, "%s: Cannot convert file descriptor %d to stream in GMT_import_segments\n", GMT_program, *fd);
+			exit (EXIT_FAILURE);
+		}
+		if (fp == GMT_stdin)
+			strcpy (file, "<stdin>");
+		else
+			strcpy (file, "<input file descriptor>");
+	}
+	else {
+		fprintf (stderr, "%s: Unrecognized source type %d in GMT_import_segments\n", GMT_program, source_type);
 		exit (EXIT_FAILURE);
 	}
+	
+	segment = (struct GMT_LINE_SEGMENT *) GMT_memory (VNULL, n_seg_alloc, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
 
-	save = GMT_io.multi_segments;	/* Must set this to TRUE temporarily */
+	save = GMT_io.multi_segments;	/* Must set this to TRUE temporarily since GMT_input uses GMT_io.multi_segments when reading */
 	GMT_io.multi_segments = TRUE;
 
 	n_fields = GMT_input (fp, &n_expected_fields, &in);
@@ -2647,50 +2676,56 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 		fprintf (stderr, "%s: File %s is empty!\n", GMT_program, file);
 		exit (EXIT_FAILURE);
 	}
-	if (!(GMT_io.status & GMT_IO_SEGMENT_HEADER)) {	/* Quick check up front that it is a -M kind of file */
-		fprintf (stderr, "%s: File must be in multisegment format!\n", GMT_program);
-		exit (EXIT_FAILURE);
-	}
+	no_segments = (!(GMT_io.status & GMT_IO_SEGMENT_HEADER));	/* Not a multi-segment file.  We then assume file has only one segment */
 
 	while (n_fields >= 0 && !(GMT_io.status & GMT_IO_EOF)) {	/* Not yet EOF */
-		while (GMT_io.status & GMT_IO_SEGMENT_HEADER && !(GMT_io.status & GMT_IO_EOF)) {
+		while (no_segments || (GMT_io.status & GMT_IO_SEGMENT_HEADER && !(GMT_io.status & GMT_IO_EOF))) {
 			/* To use different line-distances for each segment, place the distance in the segment header */
-			if (i == -1 || e[i].np > 0) i++;	/* Only advance segment if last had any points or was the first one */
+			if (seg == -1 || segment[seg].n_rows > 0) seg++;	/* Only advance segment if last had any points or was the first one */
 			n_read++;
 			if (ascii) {	/* Only ascii files can have info stored in multi-seg header record */
-				n = sscanf (&GMT_io.segment_header[1], "%lg", &d);
-				e[i].dist = (n == 1 && dist == 0.0) ? d : dist;
+				n = sscanf (&GMT_io.segment_header[1], "%lg", &d);	/* See if we find a number in the header */
+				segment[seg].dist = (n == 1 && dist == 0.0) ? d : dist;	/* If so, assign it to dist, else go with default */
 			}
 			else
-				e[i].dist = dist;
-			j_alloc = GMT_CHUNK;
-			j = 0;
-			e[i].min_lon = e[i].min_lat = DBL_MAX;
-			e[i].max_lon = e[i].max_lat = -DBL_MAX;
+				segment[seg].dist = dist;					/* For binary files dist must be passed via arguments */
+			/* Segment initialization */
+			n_row_alloc = GMT_CHUNK;
+			row = 0;
+			segment[seg].min_lon = segment[seg].min_lat = +DBL_MAX;
+			segment[seg].max_lon = segment[seg].max_lat = -DBL_MAX;
 			n_fields = GMT_input (fp, &n_expected_fields, &in);
-			e[i].ncol = n_expected_fields;
+			segment[seg].n_columns = n_expected_fields;
+			no_segments = FALSE;	/* This has now served its purpose */
 		}
-		if ((GMT_io.status & GMT_IO_EOF)) continue;	/* At EOF */
+		if ((GMT_io.status & GMT_IO_EOF)) continue;	/* At EOF; get out of this loop */
 		if (ascii) {	/* Only ascii files can have info stored in multi-seg header record */
-			if ((t = strstr (GMT_io.segment_header, " -L")) || (t = strstr (GMT_io.segment_header, "	-L")))	/* Set specified label */
+			char buffer[BUFSIZ], *t;
+			if ((t = strstr (GMT_io.segment_header, " -L")) || (t = strstr (GMT_io.segment_header, "\t-L")))	/* Set specified label */
 				strcpy (buffer, &t[3]);
 			else
 				sscanf (&GMT_io.segment_header[1], "%s", buffer);
-			e[i].label = (char *) GMT_memory ((void *)VNULL, (size_t)(strlen(buffer)+1), sizeof (char), GMT_program);
-			strcpy (e[i].label, buffer);
+			if (strlen (buffer)) {
+				segment[seg].label = (char *) GMT_memory ((void *)VNULL, (size_t)(strlen(buffer)+1), sizeof (char), GMT_program);
+				strcpy (segment[seg].label, buffer);
+			}
+			if (strlen (GMT_io.segment_header)) {
+				segment[seg].header = (char *) GMT_memory ((void *)VNULL, (size_t)(strlen(GMT_io.segment_header)+1), sizeof (char), GMT_program);
+				strcpy (segment[seg].header, GMT_io.segment_header);
+			}
 		}
 
-		if (e[i].ncol < 2) {
-			fprintf (stderr, "%s: File %s does not have at least 2 columns (found %d)\n", GMT_program, file, e[i].ncol);
+		if (segment[seg].n_columns < 2) {
+			fprintf (stderr, "%s: File %s does not have at least 2 columns (found %d)\n", GMT_program, file, segment[seg].n_columns);
 			exit (EXIT_FAILURE);
 		}
 		
-		e[i].coord = (double **) GMT_memory (VNULL, (size_t)e[i].ncol, sizeof (double *), GMT_program);
-		for (k = 0; k < e[i].ncol; k++) e[i].coord[k] = (double *) GMT_memory (VNULL, (size_t)j_alloc, sizeof (double), GMT_program);
+		segment[seg].coord = (double **) GMT_memory (VNULL, (size_t)segment[seg].n_columns, sizeof (double *), GMT_program);
+		for (k = 0; k < segment[seg].n_columns; k++) segment[seg].coord[k] = (double *) GMT_memory (VNULL, n_row_alloc, sizeof (double), GMT_program);
 
-		while (! (GMT_io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_EOF))) {	/* Keep going until FALSE or = 2 segment header */
+		while (! (GMT_io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_EOF))) {	/* Keep going until FALSE or find a new segment header */
 			if (GMT_io.status & GMT_IO_MISMATCH) {
-				fprintf (stderr, "%s: Mismatch between actual (%d) and expected (%d) fields near line %d\n", GMT_program, n_fields, n_expected_fields, i);
+				fprintf (stderr, "%s: Mismatch between actual (%d) and expected (%d) fields near line %d\n", GMT_program, n_fields, n_expected_fields, seg);
 				exit (EXIT_FAILURE);
 			}
 
@@ -2699,73 +2734,156 @@ int GMT_lines_init (char *file, struct GMT_LINES **p, double dist, BOOLEAN green
 				fprintf (stderr, "%s: Failure to read file %s near line %d\n", GMT_program, file, n_read);
 				exit (EXIT_FAILURE);
 			}
-			for (k = 0; k < e[i].ncol; k++) e[i].coord[k][j] = in[k];
-			if (GMT_io.in_col_type[0] & GMT_IS_GEO) {
-				if (greenwich && e[i].coord[0][j] > 180.0) e[i].coord[0][j] -= 360.0;
-				if (!greenwich && e[i].coord[0][j] < 0.0) e[i].coord[0][j] += 360.0;
+			for (k = 0; k < segment[seg].n_columns; k++) segment[seg].coord[k][row] = in[k];
+			if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) {
+				if (greenwich && segment[seg].coord[GMT_X][row] > 180.0) segment[seg].coord[GMT_X][row] -= 360.0;
+				if (!greenwich && segment[seg].coord[GMT_X][row] < 0.0) segment[seg].coord[GMT_X][row] += 360.0;
 			}
 
-			if (e[i].coord[0][j] < e[i].min_lon) e[i].min_lon = e[i].coord[0][j];
-			if (e[i].coord[1][j] < e[i].min_lat) e[i].min_lat = e[i].coord[1][j];
-			if (e[i].coord[0][j] > e[i].max_lon) e[i].max_lon = e[i].coord[0][j];
-			if (e[i].coord[1][j] > e[i].max_lat) e[i].max_lat = e[i].coord[1][j];
+			if (segment[seg].coord[GMT_X][row] < segment[seg].min_lon) segment[seg].min_lon = segment[seg].coord[GMT_X][row];
+			if (segment[seg].coord[GMT_Y][row] < segment[seg].min_lat) segment[seg].min_lat = segment[seg].coord[GMT_Y][row];
+			if (segment[seg].coord[GMT_X][row] > segment[seg].max_lon) segment[seg].max_lon = segment[seg].coord[GMT_X][row];
+			if (segment[seg].coord[GMT_Y][row] > segment[seg].max_lat) segment[seg].max_lat = segment[seg].coord[GMT_Y][row];
 			
-			j++;
-			if (j == (j_alloc-1)) {	/* -1 because we may have to close the polygon and hence need 1 more cell */
-				j_alloc += GMT_CHUNK;
-				for (k = 0; k < e[i].ncol; k++) e[i].coord[k] = (double *) GMT_memory ((void *)e[i].coord[k], (size_t)j_alloc, sizeof (double), GMT_program);
+			row++;
+			if (row == (n_row_alloc-1)) {	/* -1 because we may have to close the polygon and hence need 1 more cell */
+				n_row_alloc += GMT_CHUNK;
+				for (k = 0; k < segment[seg].n_columns; k++) segment[seg].coord[k] = (double *) GMT_memory ((void *)segment[seg].coord[k], n_row_alloc, sizeof (double), GMT_program);
 			}
 			n_fields = GMT_input (fp, &n_expected_fields, &in);
 		}
-		e[i].np = j;
+		segment[seg].n_rows = row;
 
 		/* If file is a polygon and we must close it if needed */
 
 		if (poly) {
-			if (GMT_io.in_col_type[0] & GMT_IS_GEO) {	/* Must check for polar cap */
+			if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) {	/* Must check for polar cap */
 				double dlon, lon_sum = 0.0, lat_sum = 0.0;
-				dlon = e[i].coord[0][0] - e[i].coord[0][j-1];
-				if (!((fabs (dlon) == 0.0 || fabs (dlon) == 360.0) && e[i].coord[1][0] == e[i].coord[1][j-1])) {
-					e[i].coord[0][j] = e[i].coord[0][0];
-					e[i].coord[1][j] = e[i].coord[1][0];
-					e[i].np++;
+				dlon = segment[seg].coord[GMT_X][0] - segment[seg].coord[GMT_X][row-1];
+				if (!((fabs (dlon) == 0.0 || fabs (dlon) == 360.0) && segment[seg].coord[GMT_Y][0] == segment[seg].coord[GMT_Y][row-1])) {
+					segment[seg].coord[GMT_X][row] = segment[seg].coord[GMT_X][0];
+					segment[seg].coord[GMT_Y][row] = segment[seg].coord[GMT_Y][0];
+					segment[seg].n_rows++;
 				}
-				for (j = 0; j < e[i].np - 1; j++) {
-					dlon = e[i].coord[0][j+1] - e[i].coord[0][j];
+				for (row = 0; row < segment[seg].n_rows - 1; row++) {
+					dlon = segment[seg].coord[GMT_X][row+1] - segment[seg].coord[GMT_X][row];
 					if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);	/* Crossed Greenwhich or Dateline, pick the shortest distance */
 					lon_sum += dlon;
-					lat_sum += e[i].coord[1][j];
+					lat_sum += segment[seg].coord[GMT_Y][row];
 				}
 				if (fabs (fabs (lon_sum) - 360.0) < GMT_CONV_LIMIT) {	/* TRUE if contains a pole */
-					e[i].polar = TRUE;
-					e[i].pole = irint (copysign (1.0, lat_sum));
+					segment[seg].pole = irint (copysign (1.0, lat_sum));	/* So, 0 means not polar */
 				}
 			}
-			else if (GMT_polygon_is_open (e[i].coord[0], e[i].coord[1], j)) {	/* Cartesian closure */
-				e[i].coord[0][j] = e[i].coord[0][0];
-				e[i].coord[1][j] = e[i].coord[1][0];
-				e[i].np++;
+			else if (GMT_polygon_is_open (segment[seg].coord[GMT_X], segment[seg].coord[GMT_Y], row)) {	/* Cartesian closure */
+				segment[seg].coord[GMT_X][row] = segment[seg].coord[GMT_X][0];
+				segment[seg].coord[GMT_Y][row] = segment[seg].coord[GMT_Y][0];
+				segment[seg].n_rows++;
 			}
 		}
 
 		/* Reallocate to free up some memory */
 
-		for (k = 0; k < e[i].ncol; k++) e[i].coord[k] = (double *) GMT_memory ((void *)e[i].coord[k], (size_t)e[i].np, sizeof (double), GMT_program);
+		for (k = 0; k < segment[seg].n_columns; k++) segment[seg].coord[k] = (double *) GMT_memory ((void *)segment[seg].coord[k], (size_t)segment[seg].n_rows, sizeof (double), GMT_program);
 
-		if (i == (i_alloc-1)) {
-			i_alloc += GMT_CHUNK;
-			e = (struct GMT_LINES *) GMT_memory ((void *)e, (size_t)i_alloc, sizeof (struct GMT_LINES), GMT_program);
+		if (seg == (n_seg_alloc-1)) {
+			n_seg_alloc += GMT_CHUNK;
+			segment = (struct GMT_LINE_SEGMENT *) GMT_memory ((void *)segment, n_seg_alloc, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
 		}
 	}
-	GMT_fclose (fp);
+	if (close_file) GMT_fclose (fp);
 	if (!use_GMT_io) GMT_input = psave;	/* Restore former pointer */
 	GMT_io.multi_segments = save;
 
-	i++;
-	e = (struct GMT_LINES *) GMT_memory ((void *)e, (size_t)i, sizeof (struct GMT_LINES), GMT_program);
-	*p = e;
+	seg++;
+	segment = (struct GMT_LINE_SEGMENT *) GMT_memory ((void *)segment, (size_t)seg, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
+	*p = segment;
 
-	return (i);
+	return (seg);
+}
+
+int GMT_export_segments (void *dest, int dest_type, struct GMT_LINE_SEGMENT *S, int n_segments, BOOLEAN use_GMT_io)
+{
+	/* Writes an entire multisegment data set to file or wherever */
+	
+	char open_mode[4], file[BUFSIZ];
+	BOOLEAN save, ascii, close_file = FALSE;
+	size_t row = 0;
+	int seg, col;
+	double *out;
+	FILE *fp;
+	PFI psave = VNULL;
+	
+	if (use_GMT_io) {	/* Use GMT_io settings to determine if input is ascii/binary, else it defaults to ascii */
+		strcpy (open_mode, GMT_io.w_mode);
+		ascii = !GMT_io.binary[GMT_OUT];
+	}
+	else {			/* Force ASCII mode */
+		strcpy (open_mode, "w");
+		ascii = TRUE;
+		psave = GMT_output;		/* Save the previous pointer since we need to change it back at the end */
+		GMT_input = GMT_output_ascii;	/* Override and use ascii mode */
+	}
+
+	if (dest_type == GMT_IS_FILE) {	/* dest is a file name */
+		strcpy (file, (char *)dest);
+		if ((fp = GMT_fopen (file, open_mode)) == NULL) {
+			fprintf (stderr, "%s: Cannot open file %s\n", GMT_program, file);
+			exit (EXIT_FAILURE);
+		}
+		close_file = TRUE;	/* We only close files we have opened here */
+	}
+	else if (dest_type == GMT_IS_STREAM) {	/* Open file pointer given, just copy */
+		fp = (FILE *)dest;
+		if (fp == GMT_stdout)
+			strcpy (file, "<stdout>");
+		else
+			strcpy (file, "<output stream>");
+	}
+	else if (dest_type == GMT_IS_FDESC) {		/* Open file descriptor given, just convert to file pointer */
+		int *fd;
+		fd = (int *)dest;
+		if ((fp = fdopen (*fd, open_mode)) == NULL) {
+			fprintf (stderr, "%s: Cannot convert file descriptor %d to stream in GMT_export_segments\n", GMT_program, *fd);
+			exit (EXIT_FAILURE);
+		}
+		if (fp == GMT_stdout)
+			strcpy (file, "<stdout>");
+		else
+			strcpy (file, "<output file descriptor>");
+	}
+	else {
+		fprintf (stderr, "%s: Unrecognized source type %d in GMT_export_segments\n", GMT_program, dest_type);
+		exit (EXIT_FAILURE);
+	}
+	
+	out = (double *) GMT_memory (VNULL, S[0].n_columns, sizeof (double), "GMT_export_segments");
+	
+	for (seg = 0; seg < n_segments; seg++) {
+		if (GMT_io.multi_segments) {	/* Want to write segment headers */
+			if (S[seg].header) strcpy (GMT_io.segment_header, S[seg].header);
+			GMT_write_segmentheader (fp, S[seg].n_columns);
+		}
+		for (row = 0; row < S[seg].n_rows; row++) {
+			for (col = 0; col < S[seg].n_columns; col++) out[col] = S[seg].coord[col][row];
+			GMT_output (fp, S[seg].n_columns, out);
+		}
+	}
+	
+	if (close_file) GMT_fclose (fp);
+	GMT_free ((void *)out);
+	if (!use_GMT_io) GMT_output = psave;	/* Restore former pointers and values */
+	GMT_io.multi_segments = save;
+	
+	return (0);
+}
+
+int GMT_n_segment_points (struct GMT_LINE_SEGMENT *S, int n_segments)
+{	/* Returns the total number of data records for all segments */
+	int seg;
+	size_t n_records = 0;
+	for (seg = 0; seg < n_segments; seg++) n_records += (size_t)S[seg].n_rows;
+	return (n_records);
 }
 
 void GMT_points_delete (double *xp, double *yp, double *dp)
@@ -2777,14 +2895,16 @@ void GMT_points_delete (double *xp, double *yp, double *dp)
 	GMT_free ((void *)dp);
 }
 
-void GMT_lines_delete (struct GMT_LINES *p, int n_lines)
+void GMT_free_segments (struct GMT_LINE_SEGMENT *p, int n_lines)
 {
-	/* Free memory allocated by GMT_lines_init */
+	/* Free memory allocated by GMT_import_segments */
 
 	int i, k;
 	for (i = 0; i < n_lines; i++) {
-		for (k = 0; k < p[i].ncol; k++) GMT_free ((void *) p[i].coord[k]);
+		for (k = 0; k < p[i].n_columns; k++) GMT_free ((void *) p[i].coord[k]);
 		GMT_free ((void *) p[i].coord);
+		if (p[i].label) GMT_free ((void *) p[i].label);
+		if (p[i].header) GMT_free ((void *) p[i].header);
 	}
 	GMT_free ((void *) p);
 }
