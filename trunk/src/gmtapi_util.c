@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.1 2006-03-26 10:56:13 pwessel Exp $
+ *	$Id: gmtapi_util.c,v 1.2 2006-03-27 05:36:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -34,13 +34,17 @@ struct GMTAPI_CTRL *GMT_FORTRAN;	/* Global structure needed for FORTRAN */
 
 /* Private functions used by the library */
 
-void GMT_put_val (void *ptr, double val, int i, int type);
-double GMT_get_val (void *ptr, int i, int type);
-int GMT_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, int parameters[], int direction);
+void GMT_put_val (void *ptr, double val, size_t i, int type);
+double GMT_get_val (void *ptr, size_t i, int type);
+int GMT_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, double parameters[], int direction);
 size_t GMT_2D_to_index_C (int row, int col, int dim);
 void GMT_index_to_2D_C (int *row, int *col, size_t index, int dim);
 size_t GMT_2D_to_index_F (int row, int col, int dim);
 void GMT_index_to_2D_F (int *row, int *col, size_t index, int dim);
+void ** GMT_duplicate_string (char *string);
+void GMT_par_to_ipar (double par[], int ipar[]);
+void GMT_grdheader_to_info (struct GRD_HEADER *h, double info[]);
+void GMT_info_to_grdheader (struct GRD_HEADER *h, double info[]);
 
 /* Here are the GMT API utility functions */
 
@@ -80,6 +84,7 @@ int GMT_Create_Session_ (int *flags)
 int GMT_Destroy_Session (struct GMTAPI_CTRL *API)
 {
 	int i;
+	char *argv[1] = {"GMTAPI"};
 
 	/* This terminates the information for the specified session and frees memory */
 	
@@ -89,6 +94,8 @@ int GMT_Destroy_Session (struct GMTAPI_CTRL *API)
  	GMT_free ((void *)API->data);
  	GMT_free ((void *)API);
 	
+	GMT_end (1, argv);
+
 	return (GMTAPI_OK);
 }
 
@@ -109,19 +116,37 @@ void GMT_Error_ (int *error)
 	GMT_Error (*error);
 }
 
-int GMT_Register_Input (struct GMTAPI_CTRL *API, int method, void **input, int parameters[])
+int GMT_Register_Import (struct GMTAPI_CTRL *API, int method, void **input, double parameters[])
 {
 	/* The main program uses this routine to pass information about input data to GMT.
 	 * The method argument specifies what we are trying to pass:
-	 * GMTAPI_FILE
+	 * GMT_IS_FILE
 	 *	A file name is given via input.
-	 * GMTAPI_STREAM
+	 * GMT_IS_STREAM
 	 *	A file pointer to an open file is passed via input.
-	 * GMT_INPUT_GRD
-	 *	A GMT grid is passed via the pointer
-	 * GMTAPI_ARRAY
-	 *	An array of data is passed via input.  In addition, parameters
-	 *	must be passed with the following information:
+	 * GMT_IS_FDESC
+	 *	A file descriptor to an open file is passed via input.
+	 * GMT_IS_GRIDFILE
+	 *	A GMT grid file is passed via input
+	 * GMT_IS_GRID
+	 *	A 2-D user grid is passed via input, plus we need 12 parameters:
+	 *	parameter[0] = data type (GMTAPI_{BYTE|SHORT|INT|FLOAT|DOUBLE)
+	 *	parameter[1] = Dimensionality of data.  Must be 2
+	 *	parameter[2] = number_of_rows
+	 *	parameter[3] = number_of_columns
+	 *	parameter[4] = arrangment of rows/col (0 = rows (C), 1 = columns (Fortran))
+	 *	parameter[5] = dimension of row (C) or column (Fortran)
+	 *	parameter[6] = 0 to free array after use, 1 to leave alone
+	 *	parameter[7] = registration: 0 for node and 1 for pixel
+	 *	parameter[8] = x_min
+	 *	parameter[9] = x_max
+	 *	parameter[10] = y_min
+	 *	parameter[11] = y_max
+	 * GMT_IS_GMTGRID
+	 *	A structure with float grid and header is passed via input
+	 * GMT_IS_ARRAY
+	 *	An array of data is passed via input.  In addition, we need 7 parameters
+	 *	to be passed with the following information:
 	 *	parameter[0] = data type (GMTAPI_{BYTE|SHORT|INT|FLOAT|DOUBLE)
 	 *	parameter[1] = Dimensionality of data (1, 2, or 3) (GMT grids = 2 yet stored internally as 1D)
 	 *	parameter[2] = number_of_rows (or length of 1-D array)
@@ -132,29 +157,47 @@ int GMT_Register_Input (struct GMTAPI_CTRL *API, int method, void **input, int p
 	 *
 	 * Since GMT internally uses doubles in C arrangement, anything else is converted.
 	 *
-	 * GMT_Register_Input will return a unique Data ID integer and allocate and populate
+	 * GMT_Register_Import will return a unique Data ID integer and allocate and populate
 	 * a GMTAPI_DATA_OBJECT structure which is assigned to the list in GMTAPI_CTRL.
 	 */
 	
 	return (GMT_Register_IO (API, method, input, parameters, GMTAPI_INPUT));
 }
 
-int GMT_Register_Input_ (int *method, void *input, int parameters[])
+int GMT_Register_Input_ (int *method, void *input, double parameters[])
 {	/* Fortran version */
-	return (GMT_Register_Input (GMT_FORTRAN, *method, &input, parameters));
+	return (GMT_Register_Import (GMT_FORTRAN, *method, &input, parameters));
 }
 
-int GMT_Register_Output (struct GMTAPI_CTRL *API, int method, void **output, int parameters[])
+int GMT_Register_Export (struct GMTAPI_CTRL *API, int method, void **output, double parameters[])
 {
 	/* The main program uses this routine to pass information about output data from GMT.
 	 * The method argument specifies what we are trying to receive:
-	 * GMTAPI_FILE
+	 * GMT_IS_FILE
 	 *	A file name is given via output.  The program will write data to this file
-	 * GMTAPI_STREAM
+	 * GMT_IS_STREAM
 	 *	A file pointer to an open file is passed via output. --"--
-	 * GMT_OUTPUT_GRID
-	 *	A GMT grid is passed via the pointer
-	 * GMTAPI_ARRAY
+	 * GMT_IS_FDESC
+	 *	A file descriptor to an open file is passed via output. --"--
+	 * GMT_IS_GRIDFILE
+	 *	A GMT grid file is passed via output
+	 * GMT_IS_GRID
+	 *	A 2-D user grid is passed via output, plus we need 12 parameters:
+	 *	parameter[0] = data type (GMTAPI_{BYTE|SHORT|INT|FLOAT|DOUBLE)
+	 *	parameter[1] = Dimensionality of data.  Must be 2
+	 *	parameter[2] = number_of_rows
+	 *	parameter[3] = number_of_columns
+	 *	parameter[4] = arrangment of rows/col (0 = rows (C), 1 = columns (Fortran))
+	 *	parameter[5] = dimension of row (C) or column (Fortran)
+	 *	parameter[6] = 0 to free array after use, 1 to leave alone
+	 *	parameter[7] = registration: 0 for node and 1 for pixel
+	 *	parameter[8] = x_min
+	 *	parameter[9] = x_max
+	 *	parameter[10] = y_min
+	 *	parameter[11] = y_max
+	 * GMT_IS_GMTGRID
+	 *	A structure with float grid and header is passed via output
+	 * GMT_IS_ARRAY
 	 *	An array of data is passed via output.  In addition, parameters
 	 *	must be passed with the following information:
 	 *	parameter[0] = data type (GMTAPI_{BYTE|SHORT|INT|FLOAT|DOUBLE)
@@ -167,23 +210,22 @@ int GMT_Register_Output (struct GMTAPI_CTRL *API, int method, void **output, int
 	 *
 	 * Since GMT internally uses doubles in C arrangement, anything else is converted.
 	 *
-	 * GMT_Register_Input will return a unique Data ID integer and allocate and populate
+	 * GMT_Register_Import will return a unique Data ID integer and allocate and populate
 	 * a GMTAPI_DATA_OBJECT structure which is assigned to the list in GMTAPI_CTRL.
 	 */
 	 
 	return (GMT_Register_IO (API, method, output, parameters, GMTAPI_OUTPUT));
 }
 
-int GMT_Register_Output_ (struct GMTAPI_CTRL *API, int *method, void *output, int parameters[])
+int GMT_Register_Output_ (struct GMTAPI_CTRL *API, int *method, void *output, double parameters[])
 {	/* Fortran version: We pass the global GMT_FORTRAN structure*/
-	return (GMT_Register_Output (GMT_FORTRAN, *method, &output, parameters));
+	return (GMT_Register_Export (GMT_FORTRAN, *method, &output, parameters));
 }
 
-int GMT_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, int parameters[], int direction)
+int GMT_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, double parameters[], int direction)
 {
-	char **t;
 	static char *name[2] = {"Input", "Output"};
-	int i, len;
+	int i;
 	struct GMTAPI_DATA_OBJECT *S;
 
 	if (API == NULL) return (GMTAPI_NOT_A_SESSION);
@@ -193,34 +235,41 @@ int GMT_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, int para
 	S->direction = direction;
 	switch (method)
 	{
-		case GMTAPI_FILE:
-			len = strlen ((char *)(*input));
-			t = (char **) GMT_memory (VNULL, 1, sizeof (char *), "GMT_Register_IO");
-			*t = (char *) GMT_memory (VNULL, len+1, sizeof (char), "GMT_Register_IO");
-			strncpy (*t, (char *)(*input), len);
-			S->ptr = (void **)t;
-			S->method = GMTAPI_FILE;
+		case GMT_IS_FILE:
+			S->ptr = GMT_duplicate_string ((char *)(*input));
+			S->method = GMT_IS_FILE;
 			break;
 
-	 	case GMTAPI_STREAM:
+	 	case GMT_IS_STREAM:
 			S->ptr = input;
-			S->method = GMTAPI_STREAM;
+			S->method = GMT_IS_STREAM;
 			break;
 
-	 	case GMTAPI_FDESC:
+	 	case GMT_IS_FDESC:
 			S->ptr = input;
-			S->method = GMTAPI_FDESC;
+			S->method = GMT_IS_FDESC;
 			break;
 
-	 	case GMTAPI_ARRAY:
+	 	case GMT_IS_ARRAY:
 			S->ptr = input;
-			for (i = 0; i < GMTAPI_N_ARRAY_ARGS; i++) S->arg[i] = parameters[i];
-			S->method = GMTAPI_ARRAY;
+			memcpy ((void *)S->arg, (void *)parameters, GMTAPI_N_ARRAY_ARGS * sizeof (double));
+			S->method = GMT_IS_ARRAY;
 			break;
 
-	 	case GMTAPI_GRID:
+	 	case GMT_IS_GRIDFILE:
+			S->ptr = GMT_duplicate_string ((char *)(*input));
+			S->method = GMT_IS_GRIDFILE;
+			break;
+
+	 	case GMT_IS_GRID:
 			S->ptr = input;
-			S->method = GMTAPI_GRID;
+			memcpy ((void *)S->arg, (void *)parameters, GMTAPI_N_GRID_ARGS * sizeof (double));
+			S->method = GMT_IS_GRID;
+			break;
+
+	 	case GMT_IS_GMTGRID:
+			S->ptr = input;
+			S->method = GMT_IS_GMTGRID;
 			break;
 
 		default:
@@ -271,134 +320,203 @@ int GMT_Remove_Data_Object (struct GMTAPI_CTRL *API, int object_ID)
 	return (GMTAPI_OK);
 }
 
-int GMT_Input_Data (struct GMTAPI_CTRL *API, int inarg[], struct GMT_LINES **S, struct GMTAPI_ARRAY_INFO *I)
+int GMT_Import_Table (struct GMTAPI_CTRL *API, int inarg[], struct GMT_LINE_SEGMENT **S)
 {
-	int i, ID, n_segments = 0, k, item, ij, col, row, n_rows, n_cols, kind, **iptr;
-	struct GMT_LINES *segment = NULL;
-	FILE *fp;
+	int i, ID, n_segments = 0, item, col, row, n_cols, par[GMTAPI_N_ARRAY_ARGS];
+	size_t ij;
+	struct GMT_LINE_SEGMENT *segment = NULL;
 	
-	i = n_rows = n_cols = 0;
-	memset ((void *)I, 0, sizeof (struct GMTAPI_ARRAY_INFO));
+	i = n_cols = 0;
 	
 	while ((ID = inarg[i]) > 0) {	/* We end when we encounter the terminator ID == 0 */
 		item = ID - 1;
+		GMT_par_to_ipar (API->data[item]->arg, par);
 		switch (API->data[item]->method) {	/* File, array, stream etc ? */
-			case GMTAPI_FILE:
-				n_segments = GMT_lines_init ((char *)(*API->data[item]->ptr), &segment, 0.0, FALSE, FALSE, FALSE);
-				I->n_segments += n_segments;
-				for (k = 0; k < n_segments; k++) I->n_records += segment[k].np;
-				if (n_cols == 0)
-					n_cols = segment[0].ncol;
-				else if (n_cols != segment[0].ncol)
-					return (-1);
-				I->n_cols = n_cols;
+			case GMT_IS_FILE:	/* Import all the segments, then count total number of records */
+	 		case GMT_IS_STREAM:
+	 		case GMT_IS_FDESC:
+				n_segments = GMT_import_segments ((*API->data[item]->ptr), API->data[item]->method, &segment, 0.0, FALSE, FALSE, TRUE);
 				break;
-	 		case GMTAPI_STREAM:
-				/* First need to generalize GMT_lines_init to accept a file pointer */
-				break;
-	 		case GMTAPI_FDESC:
-				iptr = (int **)API->data[item]->ptr;
-				fp = fdopen (**iptr, GMT_io.r_mode);
-				/* First need to generalize GMT_lines_init to accept a file pointer */
-				break;
-	 		case GMTAPI_ARRAY:
+	 		case GMT_IS_ARRAY:
 				/* Add one more segment to a possibly empty list of segments */
-				if (n_cols == 0)
-					n_cols = API->data[item]->arg[GMTAPI_NCOL];
-				else if (n_cols != API->data[item]->arg[GMTAPI_NCOL])
-					return (-1);
-				n_rows = API->data[item]->arg[GMTAPI_NROW];
-				kind = API->data[item]->arg[GMTAPI_KIND];
-				segment = (struct GMT_LINES *)GMT_memory ((void *)segment, I->n_segments+1, sizeof (struct GMT_LINES), "GMT_Assemble_Data");
-				segment[I->n_segments].coord = (double **)GMT_memory (VNULL, n_cols, sizeof (double *), "GMT_Assemble_Data");
-				for (col = 0; col < n_cols; col++) segment[I->n_segments].coord[col] = (double *)GMT_memory (VNULL, n_rows, sizeof (double), "GMT_Assemble_Data");
-				for (row = 0; row < n_rows; row++) {
-					for (col = 0; col < n_cols; col++) {
-						ij = API->GMT_2D_to_index[kind] (row, col, API->data[item]->arg[GMTAPI_DIML]);
-						segment[I->n_segments].coord[col][row] = GMT_get_val (API->data[item]->ptr, ij, API->data[item]->arg[GMTAPI_TYPE]);
+				segment = (struct GMT_LINE_SEGMENT *)GMT_memory ((void *)segment, n_segments+1, sizeof (struct GMT_LINE_SEGMENT), "GMT_Assemble_Data");
+				segment[n_segments].coord = (double **)GMT_memory (VNULL, par[GMTAPI_NCOL], sizeof (double *), "GMT_Assemble_Data");
+				for (col = 0; col < par[GMTAPI_NCOL]; col++) segment[n_segments].coord[col] = (double *)GMT_memory (VNULL, par[GMTAPI_NROW], sizeof (double), "GMT_Assemble_Data");
+				for (row = 0; row < par[GMTAPI_NROW]; row++) {
+					for (col = 0; col < par[GMTAPI_NCOL]; col++) {
+						ij = API->GMT_2D_to_index[par[GMTAPI_KIND]] (row, col, par[GMTAPI_DIML]);
+						segment[n_segments].coord[col][row] = GMT_get_val (API->data[item]->ptr, ij, par[GMTAPI_TYPE]);
 					}
 				}
-				segment[I->n_segments].np = n_rows;
-				I->n_cols = segment[I->n_segments].ncol = n_cols;
-				I->n_segments++;
-				I->n_records += n_rows;
-				if (API->data[item]->arg[GMTAPI_FREE] == 0) GMT_free (*API->data[item]->ptr);
+				segment[n_segments].n_rows = par[GMTAPI_NROW];
+				segment[n_segments].n_columns = par[GMTAPI_NCOL];
+				n_segments++;
+				if (par[GMTAPI_FREE] == 0) GMT_free (*API->data[item]->ptr);
 				break;
 		}
+		if (n_cols == 0)	/* First time we import we set n_cols */
+			n_cols = segment[n_segments-1].n_columns;
+		else if (n_cols != segment[n_segments].n_columns)	/* Later, we check that all segments have the same # of columns */
+			return (GMTAPI_N_COLS_VARY);
+			
 		i++;	/* Check the next source */
 	}
 	*S = segment;
 
-	return (I->n_segments);		
+	return (n_segments);		
 }
 
-int GMT_Output_Data (struct GMTAPI_CTRL *API, int outarg, struct GMT_LINES *S, int n_segments, struct GMTAPI_ARRAY_INFO *I)
+int GMT_Export_Table (struct GMTAPI_CTRL *API, int outarg, struct GMT_LINE_SEGMENT *S, int n_segments)
 {
-	int i, ij, k, kind, row, col, **iptr;
-	double *out;
+	int seg, row, col, par[GMTAPI_N_ARRAY_ARGS];
+	size_t ij, offset;
 	void *ptr;
-	FILE *fp;
-	
-	i = 0;
-	out = (double *) GMT_memory (VNULL, I->n_cols, sizeof (double), "GMT_Output_Data");
+		
+	if (outarg == 0) return (GMTAPI_NOT_A_VALID_ID);
 	
 	outarg--;	/* Since IDs start at 1 */
+	GMT_par_to_ipar (API->data[outarg]->arg, par);
+	
 	switch (API->data[outarg]->method) {	/* File, array, stream etc ? */
-		case GMTAPI_FILE:
-				fp = GMT_fopen ((char *)(*API->data[outarg]->ptr), GMT_io.w_mode);
-				for (k = 0; k < n_segments; k++) {
-					if (GMT_io.multi_segments) GMT_write_segmentheader (fp, S[k].ncol);
-					for (row = 0; row < S[k].np; row++) {
-						for (col = 0; col < S[k].ncol; col++) out[col] = S[k].coord[col][row];
-						GMT_output (fp, S[k].ncol, out);
-					}
-				}
-				GMT_fclose (fp);
-				break;
-	 	case GMTAPI_STREAM:
-			fp = (FILE *)(*API->data[outarg]->ptr);
-			for (k = 0; k < n_segments; k++) {
-				if (GMT_io.multi_segments) GMT_write_segmentheader (fp, S[k].ncol);
-				for (row = 0; row < S[k].np; row++) {
-					for (col = 0; col < S[k].ncol; col++) out[col] = S[k].coord[col][row];
-					GMT_output (fp, S[k].ncol, out);
-				}
-			}
+		case GMT_IS_FILE:
+	 	case GMT_IS_STREAM:
+	 	case GMT_IS_FDESC:
+			GMT_export_segments (*API->data[outarg]->ptr, API->data[outarg]->method, S, n_segments, TRUE);
 			break;
-	 	case GMTAPI_FDESC:
-			iptr = (int **)API->data[outarg]->ptr;
-			fp = fdopen (**iptr, GMT_io.w_mode);
-			for (k = 0; k < n_segments; k++) {
-				if (GMT_io.multi_segments) GMT_write_segmentheader (fp, S[k].ncol);
-				for (row = 0; row < S[k].np; row++) {
-					for (col = 0; col < S[k].ncol; col++) out[col] = S[k].coord[col][row];
-					GMT_output (fp, S[k].ncol, out);
-				}
-			}
-			break;
-	 	case GMTAPI_ARRAY:
-			if (API->data[outarg]->arg[GMTAPI_FREE] == 0) {	/* Must allocate output space */
-				*API->data[outarg]->ptr = (void *)GMT_memory (VNULL, I->n_cols * I->n_records * API->GMTAPI_size[API->data[outarg]->arg[GMTAPI_TYPE]], sizeof (char), "GMT_Assemble_Data");
+	 	case GMT_IS_ARRAY:
+			if (par[GMTAPI_FREE] == 0) {	/* Must allocate output space */
+				size_t size;
+				void **v;
+				size = GMT_n_segment_points (S, n_segments);
+				size *= (((size_t)(S[0].n_columns)) * ((size_t)(API->GMTAPI_size[par[GMTAPI_TYPE]])));
+				v = (void **)GMT_memory (VNULL, 1, sizeof (void *), "GMT_Assemble_Data");
+				*v = GMT_memory (VNULL, size, sizeof (char), "GMT_Assemble_Data");
+				*(API->data[outarg]->ptr) = *v;
 			}
 			ptr = *API->data[outarg]->ptr;
-			kind = API->data[outarg]->arg[GMTAPI_KIND];
 				
-			for (k = 0; k < n_segments; k++) {
-				for (row = 0; row < S[k].np; row++) {
-					for (col = 0; col < S[k].ncol; col++) {
-						ij = API->GMT_2D_to_index[kind] (row, col, API->data[outarg]->arg[GMTAPI_DIML]);
-						GMT_put_val (ptr, S[k].coord[col][row], ij, API->data[outarg]->arg[GMTAPI_TYPE]);
+			for (seg = 0, offset = 0; seg < n_segments; seg++) {
+				for (row = 0; row < S[seg].n_rows; row++) {
+					for (col = 0; col < S[seg].n_columns; col++) {
+						ij = API->GMT_2D_to_index[par[GMTAPI_KIND]] (row, col, par[GMTAPI_DIML]);
+						GMT_put_val (ptr, S[seg].coord[col][row], offset+ij, par[GMTAPI_TYPE]);
 					}
 				}
+				offset += ij;	/* Since ij starts at 0 for each segment */
 			}
 			break;
 	}
-	GMT_free ((void *)out);
 	
 	return (GMTAPI_OK);		
 }
 
-double GMT_get_val (void *ptr, int i, int type)
+int GMT_Import_Grid (struct GMTAPI_CTRL *API, int inarg, struct GMT_GRID **grid)
+{
+	struct GMT_GRID *G;
+	int row, col, ij, pad[4] = {0, 0, 0, 0}, par[GMTAPI_N_ARRAY_ARGS];
+	char *argv[1] = {"GMT_Import_Grid"};
+	
+	if (inarg == 0) return (GMTAPI_NOT_A_VALID_ID);
+	inarg--;	/* Since IDs start at 1 */
+	GMT_par_to_ipar (API->data[inarg]->arg, par);
+	
+	switch (API->data[inarg]->method) {
+		case GMT_IS_GRIDFILE:	/* Name of a grid file on disk */
+			G = (struct GMT_GRID *) GMT_memory (VNULL, 1, sizeof (struct GMT_GRID), "GMT_Import_Grid");
+			G->header = (struct GRD_HEADER *) GMT_memory (VNULL, 1, sizeof (struct GRD_HEADER), "GMT_Import_Grid");
+			if (GMT_access ((char *)(*API->data[inarg]->ptr), R_OK)) {
+				fprintf (stderr, "%s: File %s not found\n", GMT_program, (char *)(*API->data[inarg]->ptr));
+				return (GMTAPI_FILE_NOT_FOUND);
+			}
+			GMT_grd_init (G->header, 1, argv, FALSE);
+			if (GMT_read_grd_info ((char *)(*API->data[inarg]->ptr), G->header)) {
+				fprintf (stderr, "%s: Error opening grid file %s\n", GMT_program, (char *)(*API->data[inarg]->ptr));
+				return (GMTAPI_BAD_PERMISSION);
+			}
+			G->data = (float *) GMT_memory (VNULL, (size_t)G->header->nx * G->header->ny, sizeof (float), GMT_program);
+			if (GMT_read_grd ((char *)(*API->data[inarg]->ptr), G->header, G->data, 0.0, 0.0, 0.0, 0.0, pad, FALSE)) {
+				fprintf (stderr, "%s: Error reading grid file %s\n", GMT_program, (char *)(*API->data[inarg]->ptr));
+				return (GMTAPI_GRID_READ_ERROR);
+			}
+			break;
+	 	case GMT_IS_GRID:	/* The user's 2-D grid array of some sort, + info in the args */
+			G = (struct GMT_GRID *) GMT_memory (VNULL, 1, sizeof (struct GMT_GRID), "GMT_Import_Grid");
+			G->header = (struct GRD_HEADER *) GMT_memory (VNULL, 1, sizeof (struct GRD_HEADER), "GMT_Import_Grid");
+			GMT_grd_init (G->header, 1, argv, FALSE);
+			GMT_info_to_grdheader (G->header, API->data[inarg]->arg);	/* Populate a GRD header structure */
+			if (par[GMTAPI_KIND] == GMT_COLUMN_FORMAT && par[GMTAPI_TYPE] == GMTAPI_FLOAT) {	/* Can just pass the pointer */
+				G->data = (float *)(*API->data[inarg]->ptr);
+			}
+			else {	/* Must convert to new array */
+				G->data = (float *) GMT_memory (VNULL, (size_t)G->header->nx * G->header->ny, sizeof (float), GMT_program);
+				for (row = 0; row < G->header->ny; row++) {
+					for (col = 0; col < G->header->nx; col++) {
+						ij = API->GMT_2D_to_index[par[GMTAPI_KIND]] (row, col, par[GMTAPI_DIML]);
+						G->data[ij] = GMT_get_val (API->data[inarg]->ptr, ij, par[GMTAPI_TYPE]);
+					}
+				}
+				if (par[GMTAPI_FREE] == 0) GMT_free (*API->data[inarg]->ptr);
+			}
+			break;
+	 	case GMT_IS_GMTGRID:	/* GMT grid and header in a GMT_GRID container object */
+			G = (struct GMT_GRID *)(*API->data[inarg]->ptr);
+			break;
+	}
+
+	*grid = G;
+	
+	return (G->header->nx * G->header->ny);		
+}
+
+int GMT_Export_Grid (struct GMTAPI_CTRL *API, int outarg, struct GMT_GRID *G)
+{
+	int row, col, pad[4] = {0, 0, 0, 0}, par[GMTAPI_N_ARRAY_ARGS];
+	size_t ij;
+	void *ptr;
+	
+	if (outarg == 0) return (GMTAPI_NOT_A_VALID_ID);
+	outarg--;	/* Since IDs start at 1 */
+	
+	switch (API->data[outarg]->method) {
+		case GMT_IS_GRIDFILE:	/* Name of a grid file on disk */
+			if (GMT_write_grd ((char *)(*API->data[outarg]->ptr), G->header, G->data, 0.0, 0.0, 0.0, 0.0, pad, FALSE)) {
+				fprintf (stderr, "%s: Error writing file %s\n", GMT_program, (char *)(*API->data[outarg]->ptr));
+				return (GMTAPI_GRID_WRITE_ERROR);
+			}
+			break;
+	 	case GMT_IS_GRID:	/* The user's 2-D grid array of some sort, + info in the args */
+			GMT_grdheader_to_info (G->header, API->data[outarg]->arg);	/* Populate an array with GRD header information */
+			GMT_par_to_ipar (API->data[outarg]->arg, par);
+			if (par[GMTAPI_KIND] == GMT_COLUMN_FORMAT && par[GMTAPI_FREE] == GMTAPI_FLOAT) {	/* Can just pass the pointer */
+				API->data[outarg]->ptr = (void **)(&(G->data));
+			}
+			else {	/* Must convert to new array */
+				if (par[GMTAPI_FREE] == 0) {	/* Must allocate output space */
+					size_t size;
+					void **v;
+					size = ((size_t)G->header->nx) * ((size_t)G->header->ny) * ((size_t)(API->GMTAPI_size[par[GMTAPI_TYPE]]));
+					v = (void **)GMT_memory (VNULL, 1, sizeof (void *), "GMT_Export_Grid");
+					*v = GMT_memory (VNULL, size, sizeof (char), "GMT_Export_Grid");
+					*(API->data[outarg]->ptr) = *v;
+				}
+				ptr = *API->data[outarg]->ptr;
+				for (row = 0; row < G->header->ny; row++) {
+					for (col = 0; col < G->header->nx; col++) {
+						ij = API->GMT_2D_to_index[par[GMTAPI_KIND]] (row, col, par[GMTAPI_DIML]);
+						GMT_put_val (ptr, (double)G->data[ij], ij, par[GMTAPI_TYPE]);
+					}
+				}
+			}
+			break;
+	 	case GMT_IS_GMTGRID:	/* GMT grid and header in a GMT_GRID container object - just pass the reference */
+			API->data[outarg]->ptr = (void **)(&G);
+			break;
+	}
+
+	return (G->header->nx * G->header->ny);		
+}
+
+double GMT_get_val (void *ptr, size_t i, int type)
 {
 	char *b;
 	short int *i2;
@@ -432,7 +550,7 @@ double GMT_get_val (void *ptr, int i, int type)
 	return (val);
 }
 
-void GMT_put_val (void *ptr, double val, int i, int type)
+void GMT_put_val (void *ptr, double val, size_t i, int type)
 {
 	char *b;
 	short int *i2;
@@ -464,6 +582,56 @@ void GMT_put_val (void *ptr, double val, int i, int type)
 	}
 }
 
+void GMT_par_to_ipar (double par[], int ipar[])
+{	/* Returns the integer values in par in integer form unless pointer is NULL */
+	if (par == NULL) return;
+	ipar[GMTAPI_TYPE] = irint (par[GMTAPI_TYPE]);
+	ipar[GMTAPI_NDIM] = irint (par[GMTAPI_NDIM]);
+	ipar[GMTAPI_NROW] = irint (par[GMTAPI_NROW]);
+	ipar[GMTAPI_NCOL] = irint (par[GMTAPI_NCOL]);
+	ipar[GMTAPI_KIND] = irint (par[GMTAPI_KIND]);
+	ipar[GMTAPI_DIML] = irint (par[GMTAPI_DIML]);
+	ipar[GMTAPI_FREE] = irint (par[GMTAPI_FREE]);
+}
+
+void GMT_grdheader_to_info (struct GRD_HEADER *h, double info[])
+{	/* Packs the necessary items of the header into a double array */
+	info[GMTAPI_NROW] = (double)h->nx;
+	info[GMTAPI_NCOL] = (double)h->ny;
+	info[GMTAPI_NODE] = (double)h->node_offset;
+	info[GMTAPI_XMIN] = h->x_min;
+	info[GMTAPI_XMAX] = h->x_max;
+	info[GMTAPI_YMIN] = h->y_min;
+	info[GMTAPI_YMAX] = h->x_min;
+}
+
+void GMT_info_to_grdheader (struct GRD_HEADER *h, double info[])
+{	/* Unpacks the necessary items into the header from a double array */
+	h->nx = irint (info[GMTAPI_NROW]);
+	h->ny = irint (info[GMTAPI_NCOL]);
+	h->node_offset = irint (info[GMTAPI_NODE]);
+	h->x_min = info[GMTAPI_XMIN];
+	h->x_max = info[GMTAPI_XMAX];
+	h->y_min = info[GMTAPI_YMIN];
+	h->x_min = info[GMTAPI_YMAX];
+	h->xy_off = (h->node_offset) ? 0.0 : 0.5;
+	h->x_inc = (h->x_max - h->x_min) / (h->nx - !h->node_offset);
+	h->y_inc = (h->y_max - h->y_min) / (h->ny - !h->node_offset);
+}
+
+void ** GMT_duplicate_string (char *string)
+{	/* Return a void** pointer to a copy of this string.  We do this
+	 * since the string might be overwritten later and change its value */
+	int len;
+	char **t_ptr;
+	
+	len = strlen (string);
+	t_ptr = (char **) GMT_memory (VNULL, 1, sizeof (char *), "GMT_duplicate_string");
+	*t_ptr = (char *) GMT_memory (VNULL, len+1, sizeof (char), "GMT_duplicate_string");
+	strncpy (*t_ptr, string, len);
+	return ((void **)t_ptr);
+}
+
 int GMT_prepare_input ()
 {
 	return (GMTAPI_OK);		
@@ -479,7 +647,7 @@ int GMT_input_record (double *record)
 	return (GMTAPI_OK);		
 }
 
-int GMT_output_record (struct GMTAPI_CTRL *API, double *record, int outarg, struct GMTAPI_ARRAY_INFO *I)
+int GMT_output_record (struct GMTAPI_CTRL *API, double *record, int outarg)
 {
 	return (GMTAPI_OK);		
 }

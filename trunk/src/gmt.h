@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.122 2006-03-23 07:48:04 pwessel Exp $
+ *	$Id: gmt.h,v 1.123 2006-03-27 05:36:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -468,7 +468,7 @@ EXTERN_MSC char *GMT_second_symbol[4][2];	/* Standard encoding second symbol */
 
 
 EXTERN_MSC FILE *GMT_stdin, *GMT_stdout;
-EXTERN_MSC PFI GMT_input, GMT_output, GMT_input_ascii;
+EXTERN_MSC PFI GMT_input, GMT_output, GMT_input_ascii, GMT_output_ascii;
 EXTERN_MSC double GMT_data[BUFSIZ];
 EXTERN_MSC int GMT_n_file_suffix;
 EXTERN_MSC int *GMT_file_id;

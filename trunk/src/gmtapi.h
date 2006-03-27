@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.1 2006-03-26 10:56:13 pwessel Exp $
+ *	$Id: gmtapi.h,v 1.2 2006-03-27 05:36:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -28,19 +28,20 @@
 #define _GMTAPI_H
 
 #include "gmt.h"
+#include <f2c.h>
 
 #define GMTAPI_N_ARRAY_ARGS	8		/* Size of array used to specify array parameters */
+#define GMTAPI_N_GRID_ARGS	12		/* Size of array used to specify grid parameters */
 
 #define GMTAPI_OK		0		/* Misc GMTAPI error codes */
 #define GMTAPI_ERROR		1
 #define GMTAPI_NOT_A_SESSION	2
 #define GMTAPI_NOT_A_VALID_ID	3
-
-#define GMTAPI_FILE		(1 <<  0)	/* Identifiers for each source|destination type */
-#define GMTAPI_STREAM		(1 <<  1)
-#define GMTAPI_FDESC		(1 <<  2)
-#define GMTAPI_ARRAY		(1 <<  3)
-#define GMTAPI_GRID		(1 <<  4)
+#define GMTAPI_FILE_NOT_FOUND	4
+#define GMTAPI_BAD_PERMISSION	5
+#define GMTAPI_GRID_READ_ERROR	6
+#define GMTAPI_GRID_WRITE_ERROR	7
+#define GMTAPI_N_COLS_VARY	8
 
 #define GMTAPI_TYPE		0		/* arg[0] = data type (GMTAPI_{BYTE|SHORT|FLOAT|INT|DOUBLE}) */
 #define GMTAPI_NDIM		1		/* arg[1] = dimensionality of data (1, 2, or 3) (GMT grids = 2 yet stored internally as 1D) */
@@ -49,6 +50,11 @@
 #define GMTAPI_KIND		4		/* arg[4] = arrangment of rows/col (0 = rows (C), 1 = columns (Fortran)) */
 #define GMTAPI_DIML		5		/* arg[5] = length of dimension for row (C) or column (Fortran) */
 #define GMTAPI_FREE		6		/* arg[6] = 1 to free array after use, 0 to leave alone */
+#define GMTAPI_NODE		7		/* arg[7] = 1 for pixel registration, 0 for node */
+#define GMTAPI_XMIN		8		/* arg[8] = x_min (west) of grid */
+#define GMTAPI_XMAX		9		/* arg[9] = x_max (east) of grid */
+#define GMTAPI_YMIN		10		/* arg[10] = y_min (south) of grid */
+#define GMTAPI_YMAX		11		/* arg[11] = y_max (north) of grid */
 
 #define GMTAPI_N_TYPES		5		/* The number of supported data types (below) */
 #define GMTAPI_BYTE		0		/* The 1-byte data integer type */
@@ -62,11 +68,17 @@
 
 struct GMTAPI_DATA_OBJECT {
 	/* Information for each input or output data entity */
-	int ID;				/* Unique identifier which is > 0 */
-	int direction;			/* 0 = in, 1 = out */
-	int method;			/* One of GMTAPI_{FILE,STREAM,FDESC,ARRAY,GRID} */
-	int arg[GMTAPI_N_ARRAY_ARGS];	/* Array/grid size/dimension parameters */
-	void **ptr;			/* Points to the source|destination */
+	int ID;					/* Unique identifier which is > 0 */
+	int direction;				/* 0 = in, 1 = out */
+	int method;				/* One of GMTAPI_{FILE,STREAM,FDESC,ARRAY,GRID} */
+	double arg[GMTAPI_N_GRID_ARGS];		/* Array/grid size/dimension/domain parameters */
+	void **ptr;				/* Points to the source|destination */
+};
+
+struct GMTAPI_IO {
+	int current_item;
+	int current_rec;
+	int n_columns;
 };
 
 struct GMTAPI_CTRL {
@@ -77,13 +89,7 @@ struct GMTAPI_CTRL {
 	struct GMTAPI_DATA_OBJECT **data;	/* List of registered data objects */
 	PFI GMT_2D_to_index[2];			/* Pointers to the row or column-order index functions */
 	PFV GMT_index_to_2D[2];			/* Pointers to the inverse index functions */
-};
-
-struct GMTAPI_ARRAY_INFO {
-	/* Information about an array data set */
-	int n_segments;		/* Number of segments in the data */
-	int n_cols;		/* Number of columns/fields */
-	int n_records;		/* Total number of records */
+	struct GMTAPI_IO IO;			/* Used when reading/writing one record at a time */
 };
 
 struct GMTAPI_GRID_OBJECT {
@@ -97,15 +103,19 @@ extern int GMT_Create_Session  (struct GMTAPI_CTRL **GMT, int flags);
 extern int GMT_Destroy_Session (struct GMTAPI_CTRL *GMT);
 extern int GMT_Add_Data_Object (struct GMTAPI_CTRL *GMT, struct GMTAPI_DATA_OBJECT *D);
 extern int GMT_Remove_Data_Object (struct GMTAPI_CTRL *GMT, int object_ID);
-extern int GMT_Register_Input  (struct GMTAPI_CTRL *GMT, int method, void **source,   int parameters[]);
-extern int GMT_Register_Output (struct GMTAPI_CTRL *GMT, int method, void **receiver, int parameters[]);
-extern int GMT_Input_Data (struct GMTAPI_CTRL *GMT, int inarg[], struct GMT_LINES **S, struct GMTAPI_ARRAY_INFO *I);
-extern int GMT_Output_Data (struct GMTAPI_CTRL *GMT, int outarg, struct GMT_LINES *S, int n_segments, struct GMTAPI_ARRAY_INFO *I);
+extern int GMT_Register_Import  (struct GMTAPI_CTRL *GMT, int method, void **source,   double parameters[]);
+extern int GMT_Register_Export (struct GMTAPI_CTRL *GMT, int method, void **receiver, double parameters[]);
+extern int GMT_Import_Table (struct GMTAPI_CTRL *GMT, int inarg[], struct GMT_LINE_SEGMENT **S);
+extern int GMT_Export_Table (struct GMTAPI_CTRL *GMT, int outarg,  struct GMT_LINE_SEGMENT *S, int n_segments);
+extern int GMT_Import_Grid (struct GMTAPI_CTRL *API, int inarg,  struct GMT_GRID **G);
+extern int GMT_Export_Grid (struct GMTAPI_CTRL *API, int outarg, struct GMT_GRID *G);
 extern int GMT_prepare_input ();
 extern int GMT_prepare_output ();
 extern int GMT_input_record (double *record);
-extern int GMT_output_record (struct GMTAPI_CTRL *GMT, double *record, int outarg, struct GMTAPI_ARRAY_INFO *I);
+extern int GMT_output_record (struct GMTAPI_CTRL *GMT, double *record, int outarg);
 extern void GMT_Error (int error);
+
+/* These are the prototype GMT "applications" that can be called */
 
 extern int GMT_copy_all (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg);
 extern int GMT_copy_line (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg);
