@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.2 2006-03-27 05:36:49 pwessel Exp $
+ *	$Id: gmtapi.h,v 1.3 2006-03-27 07:38:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -76,9 +76,16 @@ struct GMTAPI_DATA_OBJECT {
 };
 
 struct GMTAPI_IO {
+	BOOLEAN header;
+	BOOLEAN close_file;
 	int current_item;
+	int n_items;
 	int current_rec;
+	int current_method;
 	int n_columns;
+	int n_expected_fields;
+	int *ID;	/* Points to the list of IDs */
+	FILE *fp;	/* Pointer to source/destination */
 };
 
 struct GMTAPI_CTRL {
@@ -89,7 +96,6 @@ struct GMTAPI_CTRL {
 	struct GMTAPI_DATA_OBJECT **data;	/* List of registered data objects */
 	PFI GMT_2D_to_index[2];			/* Pointers to the row or column-order index functions */
 	PFV GMT_index_to_2D[2];			/* Pointers to the inverse index functions */
-	struct GMTAPI_IO IO;			/* Used when reading/writing one record at a time */
 };
 
 struct GMTAPI_GRID_OBJECT {
@@ -109,10 +115,10 @@ extern int GMT_Import_Table (struct GMTAPI_CTRL *GMT, int inarg[], struct GMT_LI
 extern int GMT_Export_Table (struct GMTAPI_CTRL *GMT, int outarg,  struct GMT_LINE_SEGMENT *S, int n_segments);
 extern int GMT_Import_Grid (struct GMTAPI_CTRL *API, int inarg,  struct GMT_GRID **G);
 extern int GMT_Export_Grid (struct GMTAPI_CTRL *API, int outarg, struct GMT_GRID *G);
-extern int GMT_prepare_input ();
-extern int GMT_prepare_output ();
-extern int GMT_input_record (double *record);
-extern int GMT_output_record (struct GMTAPI_CTRL *GMT, double *record, int outarg);
+extern int GMT_Init_Import_Record (struct GMTAPI_CTRL *API, struct GMTAPI_IO *IO, int ID[]);
+extern int GMT_Init_Export_Record (struct GMTAPI_CTRL *API, struct GMTAPI_IO *IO, int ID);
+extern int GMT_Import_Record (struct GMTAPI_CTRL *API, double **record, struct GMTAPI_IO *IO);
+extern int GMT_Export_Record (struct GMTAPI_CTRL *API, double *record, struct GMTAPI_IO *IO);
 extern void GMT_Error (int error);
 
 /* These are the prototype GMT "applications" that can be called */
