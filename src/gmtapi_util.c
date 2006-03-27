@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.2 2006-03-27 05:36:49 pwessel Exp $
+ *	$Id: gmtapi_util.c,v 1.3 2006-03-27 07:38:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -45,6 +45,7 @@ void ** GMT_duplicate_string (char *string);
 void GMT_par_to_ipar (double par[], int ipar[]);
 void GMT_grdheader_to_info (struct GRD_HEADER *h, double info[]);
 void GMT_info_to_grdheader (struct GRD_HEADER *h, double info[]);
+int GMT_Next_Import_Source (struct GMTAPI_CTRL *API, struct GMTAPI_IO *IO);
 
 /* Here are the GMT API utility functions */
 
@@ -368,8 +369,8 @@ int GMT_Import_Table (struct GMTAPI_CTRL *API, int inarg[], struct GMT_LINE_SEGM
 
 int GMT_Export_Table (struct GMTAPI_CTRL *API, int outarg, struct GMT_LINE_SEGMENT *S, int n_segments)
 {
-	int seg, row, col, par[GMTAPI_N_ARRAY_ARGS];
-	size_t ij, offset;
+	int seg, row, col, offset, par[GMTAPI_N_ARRAY_ARGS];
+	size_t ij;
 	void *ptr;
 		
 	if (outarg == 0) return (GMTAPI_NOT_A_VALID_ID);
@@ -395,14 +396,14 @@ int GMT_Export_Table (struct GMTAPI_CTRL *API, int outarg, struct GMT_LINE_SEGME
 			}
 			ptr = *API->data[outarg]->ptr;
 				
-			for (seg = 0, offset = 0; seg < n_segments; seg++) {
+			for (seg = offset = 0; seg < n_segments; seg++) {
 				for (row = 0; row < S[seg].n_rows; row++) {
 					for (col = 0; col < S[seg].n_columns; col++) {
-						ij = API->GMT_2D_to_index[par[GMTAPI_KIND]] (row, col, par[GMTAPI_DIML]);
-						GMT_put_val (ptr, S[seg].coord[col][row], offset+ij, par[GMTAPI_TYPE]);
+						ij = API->GMT_2D_to_index[par[GMTAPI_KIND]] (row + offset, col, par[GMTAPI_DIML]);
+						GMT_put_val (ptr, S[seg].coord[col][row], ij, par[GMTAPI_TYPE]);
 					}
 				}
-				offset += ij;	/* Since ij starts at 0 for each segment */
+				offset += S[seg].n_rows;	/* Since row starts at 0 for each segment */
 			}
 			break;
 	}
@@ -632,23 +633,132 @@ void ** GMT_duplicate_string (char *string)
 	return ((void **)t_ptr);
 }
 
-int GMT_prepare_input ()
+int GMT_Init_Import_Record (struct GMTAPI_CTRL *API, struct GMTAPI_IO *IO, int ID[])
 {
+	memset ((void *)IO, 0, sizeof (struct GMTAPI_IO));
+	while (ID[IO->n_items] > 0) IO->n_items++;
+	IO->ID = (int *)GMT_memory (VNULL, IO->n_items, sizeof (int), "GMT_Init_Import_Record");
+	memcpy ((void *)IO->ID, (void *)ID, IO->n_items * sizeof (int));
+	GMT_Next_Import_Source (API, IO);
+	IO->n_expected_fields = (GMT_io.ncol[GMT_IN]) ? GMT_io.ncol[GMT_IN] : BUFSIZ;
 	return (GMTAPI_OK);		
 }
 
-int GMT_prepare_output ()
+int GMT_Next_Import_Source (struct GMTAPI_CTRL *API, struct GMTAPI_IO *IO)
 {
+	int *fd, item;
+	
+	item = IO->ID[IO->current_item] - 1;
+	IO->current_method = API->data[item]->method;
+	IO->close_file = FALSE;
+	switch (API->data[item]->method) {	/* File, array, stream etc ? */
+		case GMT_IS_FILE:
+			if ((IO->fp = GMT_fopen ((char *)(*API->data[item]->ptr), GMT_io.r_mode)) == NULL) {
+				fprintf (stderr, "%s: Unable to open file %s for reading\n", GMT_program, (char *)(*API->data[item]->ptr));
+				exit (EXIT_FAILURE);
+			}
+			IO->close_file = TRUE;
+			break;
+	 	case GMT_IS_STREAM:
+			IO->fp = (FILE *)(*API->data[item]->ptr);
+			break;
+	 	case GMT_IS_FDESC:
+			fd = (int *)(*API->data[item]->ptr);
+			if ((IO->fp = fdopen (*fd, GMT_io.r_mode)) == NULL) {
+				fprintf (stderr, "%s: Unable to open file descriptor %d for reading\n", GMT_program, *fd);
+				exit (EXIT_FAILURE);
+			}
+			break;
+	 	case GMT_IS_ARRAY:
+			break;
+	}
 	return (GMTAPI_OK);		
 }
 
-int GMT_input_record (double *record)
+int GMT_Init_Export_Record (struct GMTAPI_CTRL *API, struct GMTAPI_IO *IO, int ID)
 {
+	int *fd;
+	memset ((void *)IO, 0, sizeof (struct GMTAPI_IO));
+	IO->n_items = 1;
+	IO->ID = (int *)GMT_memory (VNULL, IO->n_items, sizeof (int), "GMT_Init_Import_Record");
+	IO->ID[0] = ID;
+	ID--;
+	IO->current_method = API->data[ID]->method;
+	switch (API->data[ID]->method) {	/* File, array, stream etc ? */
+		case GMT_IS_FILE:
+			if ((IO->fp = GMT_fopen ((char *)(*API->data[ID]->ptr), GMT_io.w_mode)) == NULL) {
+				fprintf (stderr, "%s: Unable to open file %s for writing\n", GMT_program, (char *)(*API->data[ID]->ptr));
+				exit (EXIT_FAILURE);
+			}
+			break;
+	 	case GMT_IS_STREAM:
+			IO->fp = (FILE *)(*API->data[ID]->ptr);
+			break;
+	 	case GMT_IS_FDESC:
+			fd = (int *)(*API->data[ID]->ptr);
+			if ((IO->fp = fdopen (*fd, GMT_io.w_mode)) == NULL) {
+				fprintf (stderr, "%s: Unable to open file descriptor %d for writing\n", GMT_program, *fd);
+				exit (EXIT_FAILURE);
+			}
+			break;
+	 	case GMT_IS_ARRAY:
+			break;
+	}
 	return (GMTAPI_OK);		
 }
 
-int GMT_output_record (struct GMTAPI_CTRL *API, double *record, int outarg)
+int GMT_Import_Record (struct GMTAPI_CTRL *API, double **record, struct GMTAPI_IO *IO)
 {
+	BOOLEAN get_next_record = FALSE;
+	int retval = 0;
+	
+	IO->header = FALSE;
+	do {	/* We do this until we can secure the next record or run out of records (EOF) */
+		switch (IO->current_method) {	/* File, array, stream etc ? */
+			case GMT_IS_FILE:
+		 	case GMT_IS_STREAM:
+		 	case GMT_IS_FDESC:
+				IO->n_columns = GMT_input (IO->fp, &(IO->n_expected_fields), record);
+				if (GMT_io.status & GMT_IO_SEGMENT_HEADER) {	/* Found a segment header */
+					IO->header = TRUE;			/* Notify we have a header */
+				}
+				else if (GMT_io.status & GMT_IO_EOF) {		/* End-of-file in current file */
+					if (IO->close_file) GMT_fclose (IO->fp);	/* Close if it was a file we opened */
+					IO->current_item++;				/* Advance to next source item */
+					if (IO->current_item == IO->n_items)		/* That was the last source, exit */
+						retval = EOF;
+					else  {
+						GMT_Next_Import_Source (API, IO);
+						get_next_record = FALSE;
+					}
+
+				}
+				break;
+		 	case GMT_IS_ARRAY:
+				break;
+		}
+	} while (get_next_record);
+
+	return (retval);		
+}
+
+int GMT_Export_Record (struct GMTAPI_CTRL *API, double *record, struct GMTAPI_IO *IO)
+{
+	int outarg;
+	
+	outarg = IO->ID[0] - 1;
+	switch (API->data[outarg]->method) {	/* File, array, stream etc ? */
+		case GMT_IS_FILE:
+	 	case GMT_IS_STREAM:
+	 	case GMT_IS_FDESC:
+			if (IO->header)
+				GMT_write_segmentheader (IO->fp, IO->n_columns);
+			else
+				GMT_output (IO->fp, IO->n_columns, record);
+			break;
+	 	case GMT_IS_ARRAY:
+			break;
+	}
 	return (GMTAPI_OK);		
 }
 
