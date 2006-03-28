@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.64 2006-03-23 07:48:04 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.65 2006-03-28 07:33:21 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1001,4 +1001,22 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 	}
 	GMT_free ((void *)i2);
 	GMT_fclose (fp);
+}
+
+struct GMT_GRID *GMT_create_grid (char *arg)
+{	/* Allocates space for a new grid container.  No space allocated for the float grid itself */
+	struct GMT_GRID * G;
+	
+	G = (struct GMT_GRID *) GMT_memory (VNULL, 1, sizeof (struct GMT_GRID), arg);
+	G->header = (struct GRD_HEADER *) GMT_memory (VNULL, 1, sizeof (struct GRD_HEADER), arg);
+	
+	return (G);
+}
+
+void GMT_destroy_grid (struct GMT_GRID *G, BOOLEAN free_grid)
+{
+	if (!G) return;	/* Nothing to deallocate */
+	if (G->data && free_grid) GMT_free ((void *)G->data);
+	if (G->header) GMT_free ((void *)G->header);
+	GMT_free ((void *)G);
 }

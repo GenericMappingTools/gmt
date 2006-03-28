@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.53 2006-02-07 04:33:22 pwessel Exp $
+ *	$Id: x2sys.c,v 1.54 2006-03-28 07:33:22 pwessel Exp $
  *
  *      Copyright (c) 1999-2006 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -873,9 +873,9 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 		(*s)->geodetic = geodetic;	/* Override setting */
 		if (fabs (fabs (B->x_max - B->x_min) - 360.0) <= GMT_CONV_LIMIT) B->periodic = 1;
 	}
-	if (GMT_io.multi_segments) {	/* Files have multiple segments; make sure this is also set in s */
+	if (GMT_io.multi_segments[GMT_IN]) {	/* Files have multiple segments; make sure this is also set in s */
 		(*s)->multi_segment = TRUE;
-		(*s)->ms_flag = GMT_io.EOF_flag;
+		(*s)->ms_flag = GMT_io.EOF_flag[GMT_IN];
 	}
 	if (suffix[0])
 		strcpy ((*s)->suffix, suffix);

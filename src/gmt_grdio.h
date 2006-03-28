@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.28 2006-03-27 05:36:49 pwessel Exp $
+ *	$Id: gmt_grdio.h,v 1.29 2006-03-28 07:33:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -91,5 +91,10 @@ EXTERN_MSC void GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row
 /* IMG read function */
 
 EXTERN_MSC void GMT_read_img (char *imgfile, struct GRD_HEADER *h, float **grid, double w, double e, double s, double n, double scale, int mode, double lat, BOOLEAN init);
+
+/* Grid container allocation/deallocation routines */
+
+EXTERN_MSC struct GMT_GRID *GMT_create_grid (char *arg);
+EXTERN_MSC void GMT_destroy_grid (struct GMT_GRID *G, BOOLEAN free_grid);
 
 #endif /* GMT_GRDIO_H */
