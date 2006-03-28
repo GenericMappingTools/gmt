@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.6 2006-03-28 07:33:22 pwessel Exp $
+ *	$Id: gmtapi.h,v 1.7 2006-03-28 22:58:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -116,11 +116,11 @@ struct GMTAPI_CTRL {
  *=====================================================================================
  */
 
-EXTERN_MSC int GMT_Create_Session  (struct GMTAPI_CTRL **GMT, int flags);
-EXTERN_MSC int GMT_Destroy_Session (struct GMTAPI_CTRL *GMT);
-EXTERN_MSC int GMT_Register_Import  (struct GMTAPI_CTRL *GMT, int method, void **source,   double parameters[]);
-EXTERN_MSC int GMT_Register_Export (struct GMTAPI_CTRL *GMT, int method, void **receiver, double parameters[]);
-EXTERN_MSC void GMT_Error (struct GMTAPI_CTRL *GMT, int error);
+EXTERN_MSC int GMTAPI_Create_Session  (struct GMTAPI_CTRL **GMT, int flags);
+EXTERN_MSC int GMTAPI_Destroy_Session (struct GMTAPI_CTRL *GMT);
+EXTERN_MSC int GMTAPI_Register_Import  (struct GMTAPI_CTRL *GMT, int method, void **source,   double parameters[]);
+EXTERN_MSC int GMTAPI_Register_Export (struct GMTAPI_CTRL *GMT, int method, void **receiver, double parameters[]);
+EXTERN_MSC void GMTAPI_Report_Error (struct GMTAPI_CTRL *GMT, int error);
 
 /*=====================================================================================
  *	GMT API GMT FUNCTION PROTOTYPES
