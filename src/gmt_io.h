@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.38 2006-03-27 05:36:49 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.39 2006-03-28 01:37:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -199,6 +199,13 @@ struct GMT_LINE_SEGMENT {		/* For holding multisegment lines in memory */
 	double **coord;			/* Coordinates x,y, and possibly other columns */
 };
 
+struct GMT_TABLE {	/* To hold an array of line segment structures and header information in one container */
+	int n_segments;				/* Number of segments in the array */
+	int n_records;				/* Total number of data records across all segments */
+	int n_columns;				/* Number of columns (fields) in each record */
+	struct GMT_LINE_SEGMENT *segment;	/* Pointer to array of segments */
+};
+
 EXTERN_MSC struct GMT_IO GMT_io;
 EXTERN_MSC struct GMT_PLOT_CALCLOCK GMT_plot_calclock;	/* Formatting information for time axis plotting */
 
@@ -207,11 +214,12 @@ EXTERN_MSC int GMT_parse_z_io (char *txt, struct GMT_Z_IO *r, BOOLEAN input);
 EXTERN_MSC void GMT_set_z_io (struct GMT_Z_IO *r, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_check_z_io (struct GMT_Z_IO *r, float *a);
 EXTERN_MSC int GMT_points_init (char *file, double **xp, double **yp, double **dp, double dist, BOOLEAN greenwich, BOOLEAN use_GMT_io);
-EXTERN_MSC int GMT_import_segments (void *source, int source_type, struct GMT_LINE_SEGMENT **p, double dist, BOOLEAN greenwich, BOOLEAN poly, BOOLEAN use_GMT_io);
-EXTERN_MSC int GMT_export_segments (void *dest, int dest_type, struct GMT_LINE_SEGMENT *S, int n_segments, BOOLEAN use_GMT_io);
-EXTERN_MSC int GMT_n_segment_points (struct GMT_LINE_SEGMENT *S, int n_segments);
+EXTERN_MSC int GMT_import_segments (void *source, int source_type, struct GMT_TABLE **T, double dist, BOOLEAN greenwich, BOOLEAN poly, BOOLEAN use_GMT_io);
+EXTERN_MSC int GMT_export_segments (void *dest, int dest_type, struct GMT_TABLE *T, BOOLEAN use_GMT_io);
+EXTERN_MSC void GMT_alloc_segment (struct GMT_LINE_SEGMENT *S, int n_rows, int n_columns, BOOLEAN first);
 EXTERN_MSC void GMT_points_delete (double *xp, double *yp, double *dp);
 EXTERN_MSC void GMT_free_segments (struct GMT_LINE_SEGMENT *p, int n_lines);
+EXTERN_MSC void GMT_free_table (struct GMT_TABLE *table);
 EXTERN_MSC void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode);
 EXTERN_MSC void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode);
 EXTERN_MSC void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S);

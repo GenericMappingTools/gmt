@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.172 2006-03-27 05:36:49 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.173 2006-03-28 01:37:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3564,10 +3564,10 @@ void GMT_contlabel_debug (struct GMT_CONTOUR *G)
 		for (i = 0; i < G->f_n; i++) ps_circle (G->f_xy[0][i], G->f_xy[1][i], 0.025, GMT_no_rgb, 1);
 	}
 	else if (G->crossing) {	/* Draw a thin line */
-		for (j = 0; j < G->n_xp; j++) {
-			pen = (int *) GMT_memory (VNULL, (size_t)G->xp[j].n_rows, sizeof (int), GMT_program);
-			for (i = 1, pen[0] = 3; i < G->xp[j].n_rows; i++) pen[i] = 2;
-			GMT_plot_line (G->xp[j].coord[GMT_X], G->xp[j].coord[GMT_Y], pen, G->xp[j].n_rows);
+		for (j = 0; j < G->xp->n_segments; j++) {
+			pen = (int *) GMT_memory (VNULL, (size_t)G->xp->segment[j].n_rows, sizeof (int), GMT_program);
+			for (i = 1, pen[0] = 3; i < G->xp->segment[j].n_rows; i++) pen[i] = 2;
+			GMT_plot_line (G->xp->segment[j].coord[GMT_X], G->xp->segment[j].coord[GMT_Y], pen, G->xp->segment[j].n_rows);
 			GMT_free ((void *)pen);
 		}
 	}
