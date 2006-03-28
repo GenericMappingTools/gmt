@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.39 2006-03-28 01:37:39 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.40 2006-03-28 07:33:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -123,7 +123,7 @@ struct GMT_GEO_IO {	/* For geographic output and plotting */
 
 struct GMT_IO {	/* Used to process input data records */
 	
-	BOOLEAN multi_segments;		/* TRUE if current Ascii input file has multiple segments */
+	BOOLEAN multi_segments[2];	/* TRUE if current Ascii input/output file has multiple segments */
 	BOOLEAN single_precision[2];	/* TRUE if current binary input(0) or output(1) is in single precision
 					   [Default is double] */
 	BOOLEAN swab[2];		/* TRUE if current binary input(0) or output(1) must be byte-swapped */
@@ -142,7 +142,7 @@ struct GMT_IO {	/* Used to process input data records */
 					   1	Current record is segment header
 					   2	Mismatch between actual and expected fields
 					   4	EOF */
-	char EOF_flag;			/* Character signaling start of new segment in Ascii table */
+	char EOF_flag[2];		/* Character signaling start of new segment in input/output Ascii table */
 	char current_record[BUFSIZ];	/* Current ascii record */
 	char segment_header[BUFSIZ];	/* Current ascii segment header */
 	char r_mode[4];			/* Current file opening mode for reading (r or rb) */

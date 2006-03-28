@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.2 2006-03-25 03:56:53 pwessel Exp $
+ *    $Id: gmtdigitize.c,v 1.3 2006-03-28 07:33:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -219,7 +219,7 @@ int main (int argc, char **argv)
 	fprintf (stderr, "\n==>   %s version %s  Paul Wessel, SOEST, Apr 22, 2004   <==\n\n", GMT_program, GMT_VERSION);
 	fprintf (stderr, "================  HOW TO DIGITIZE ================\n\n");
 	fprintf (stderr, "To exit, click the %c button.\n", END_BUTTON_CHAR);
-	if (GMT_io.multi_segments) {
+	if (GMT_io.multi_segments[GMT_OUT]) {
 		fprintf (stderr, "To initiate a new segment, click the %c button.\n", MULTISEG_BUTTON1_CHAR);
 		fprintf (stderr, "To initiate a new segment and typing in a comment, click the %c button.\n", MULTISEG_BUTTON2_CHAR);
 	}
@@ -396,7 +396,7 @@ int main (int argc, char **argv)
 	}
 	
 	fprintf (stderr, "\n\nStart digitizing, end by clicking %c button\n\n", END_BUTTON_CHAR);
-	if (GMT_io.multi_segments) {
+	if (GMT_io.multi_segments[GMT_OUT]) {
 		fprintf (stderr, "[Remember to initialize the first segment by clicking the %c or %c buttons!]\n",
 		MULTISEG_BUTTON1_CHAR, MULTISEG_BUTTON2_CHAR);
 	}
@@ -407,7 +407,7 @@ int main (int argc, char **argv)
 		m_button = 0;
 		while (button == MULTISEG_BUTTON1 || button == MULTISEG_BUTTON2) {
 			m_button++;
-			if (m_button == 1 && GMT_io.multi_segments) {
+			if (m_button == 1 && GMT_io.multi_segments[GMT_OUT]) {
 				if (multi_files) {
 					if (fp) {
 						GMT_fclose (fp);
@@ -423,13 +423,13 @@ int main (int argc, char **argv)
 					z_val = atof (line);
 				}
 				if (button == MULTISEG_BUTTON1) {	/* Just write blank multisegment header */
-					sprintf (GMT_io.segment_header, "%c %d\n", GMT_io.EOF_flag, n_segments);
+					sprintf (GMT_io.segment_header, "%c %d\n", GMT_io.EOF_flag[GMT_OUT], n_segments);
 				}
 				else {	/* Ask for what to write out */
 					fprintf (stderr, "Enter segment header: ");
 					GMT_fgets (line, BUFSIZ, GMT_stdin);
 					GMT_chop (line);
-					sprintf (GMT_io.segment_header, "%c %d %s\n", GMT_io.EOF_flag, n_segments, line);
+					sprintf (GMT_io.segment_header, "%c %d %s\n", GMT_io.EOF_flag[GMT_OUT], n_segments, line);
 				}
 				GMT_write_segmentheader (fp, n_expected_fields);
 				if (gmtdefs.verbose) fprintf (stderr, "%s", GMT_io.segment_header);

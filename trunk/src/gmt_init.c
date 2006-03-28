@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.221 2006-03-23 07:48:04 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.222 2006-03-28 07:33:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -446,8 +446,9 @@ void GMT_explain_option (char option)
 
 		case 'M':	/* Multisegment option */
 
-			fprintf (stderr, "\t-M Input file(s) contain multiple segments separated by a record\n");
-			fprintf (stderr, "\t   whose first character is <flag> [%c]\n", GMT_io.EOF_flag);
+			fprintf (stderr, "\t-M Input/output file(s) contain multiple segments separated by a record\n");
+			fprintf (stderr, "\t   whose first character is <flag> [%c]\n", GMT_io.EOF_flag[GMT_IN]);
+			fprintf (stderr, "\t   Use -Mi or -Mo to give different settings for input and output [Same]\n");
 			break;
 
 		case 'O':	/* Overlay plot */

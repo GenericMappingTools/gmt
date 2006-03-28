@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.5 2006-03-28 03:48:48 pwessel Exp $
+ *	$Id: gmtapi.h,v 1.6 2006-03-28 07:33:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -67,7 +67,7 @@
 #define GMTAPI_NCOL		3	/* arg[3] = number_of_columns (1 for 1-D array) */
 #define GMTAPI_KIND		4	/* arg[4] = arrangment of rows/col (0 = rows (C), 1 = columns (Fortran)) */
 #define GMTAPI_DIML		5	/* arg[5] = length of dimension for row (C) or column (Fortran) */
-#define GMTAPI_FREE		6	/* arg[6] = 1 to free array after use, 0 to leave alone */
+#define GMTAPI_FREE		6	/* arg[6] = 1 to free array after use (IN) or before filling with output (OUT), 0 to leave alone */
 #define GMTAPI_NODE		7	/* arg[7] = 1 for pixel registration, 0 for node */
 #define GMTAPI_XMIN		8	/* arg[8] = x_min (west) of grid */
 #define GMTAPI_XMAX		9	/* arg[9] = x_max (east) of grid */
@@ -116,18 +116,19 @@ struct GMTAPI_CTRL {
  *=====================================================================================
  */
 
-extern int GMT_Create_Session  (struct GMTAPI_CTRL **GMT, int flags);
-extern int GMT_Destroy_Session (struct GMTAPI_CTRL *GMT);
-extern int GMT_Register_Import  (struct GMTAPI_CTRL *GMT, int method, void **source,   double parameters[]);
-extern int GMT_Register_Export (struct GMTAPI_CTRL *GMT, int method, void **receiver, double parameters[]);
-extern void GMT_Error (struct GMTAPI_CTRL *GMT, int error);
+EXTERN_MSC int GMT_Create_Session  (struct GMTAPI_CTRL **GMT, int flags);
+EXTERN_MSC int GMT_Destroy_Session (struct GMTAPI_CTRL *GMT);
+EXTERN_MSC int GMT_Register_Import  (struct GMTAPI_CTRL *GMT, int method, void **source,   double parameters[]);
+EXTERN_MSC int GMT_Register_Export (struct GMTAPI_CTRL *GMT, int method, void **receiver, double parameters[]);
+EXTERN_MSC void GMT_Error (struct GMTAPI_CTRL *GMT, int error);
 
 /*=====================================================================================
  *	GMT API GMT FUNCTION PROTOTYPES
  *=====================================================================================
  */
 
-extern int GMT_read_all_write_all_records (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg);
-extern int GMT_read_one_write_one_record  (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg);
+EXTERN_MSC int GMT_read_all_write_all_records (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg);
+EXTERN_MSC int GMT_read_one_write_one_record  (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg);
+EXTERN_MSC int GMT_read_grid_write_grdfile (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg);
 
 #endif /* _GMTAPI_H */

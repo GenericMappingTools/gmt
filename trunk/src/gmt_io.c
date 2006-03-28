@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.102 2006-03-28 01:37:39 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.103 2006-03-28 07:33:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -285,10 +285,27 @@ int GMT_io_selection (char *text)
 void GMT_multisegment (char *text)
 {
 	/* Turns multisegment on and sets flag, if given.
-	 * flag is only used for ASCII data sets */
+	 * flag is only used for ASCII data sets.
+	 * GMT 4.1.2: Added possibility separate settings for input and output */
 
-	GMT_io.multi_segments = TRUE;
-	if (text && text[0]) GMT_io.EOF_flag = text[0];
+	if (text && text[0]) {
+		switch (text[0]) {
+			case 'i':	/* -M for input files only */
+				GMT_io.multi_segments[GMT_IN] = TRUE;
+				if (text[1]) GMT_io.EOF_flag[GMT_IN] = text[1];
+				break;
+			case 'o':	/* -M for output files only */
+				GMT_io.multi_segments[GMT_OUT] = TRUE;
+				if (text[1]) GMT_io.EOF_flag[GMT_OUT] = text[1];
+				break;
+			default:	/* Applies to both input and output */
+				GMT_io.multi_segments[GMT_IN] = GMT_io.multi_segments[GMT_OUT] = TRUE;
+				if (text[0]) GMT_io.EOF_flag[GMT_IN] = GMT_io.EOF_flag[GMT_OUT] = text[0];
+				break;
+		}
+	}
+	else
+		GMT_io.multi_segments[GMT_IN] = GMT_io.multi_segments[GMT_OUT] = TRUE;
 }
 
 int GMT_ascii_input (FILE *fp, int *n, double **ptr)
@@ -309,7 +326,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 		/* First read until we get a non-blank, non-comment record, or reach EOF */
 
 		GMT_io.rec_no++;
-		while ((p = fgets (line, BUFSIZ, fp)) && (line[0] == '\n' || (line[0] == '#' && GMT_io.EOF_flag != '#'))) GMT_io.rec_no++;
+		while ((p = fgets (line, BUFSIZ, fp)) && (line[0] == '\n' || (line[0] == '#' && GMT_io.EOF_flag[GMT_IN] != '#'))) GMT_io.rec_no++;
 
 		if (!p) {
 			GMT_io.status = GMT_IO_EOF;
@@ -320,7 +337,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 			return (-1);
 		}
 
-		if (GMT_io.multi_segments && line[0] == GMT_io.EOF_flag) {	/* Got a multisegment header, take action and return */
+		if (GMT_io.multi_segments[GMT_IN] && line[0] == GMT_io.EOF_flag[GMT_IN]) {	/* Got a multisegment header, take action and return */
 			GMT_io.status = GMT_IO_SEGMENT_HEADER;
 			GMT_io.seg_no++;
 			strcpy (GMT_io.segment_header, line);
@@ -402,7 +419,7 @@ int GMT_bin_double_input (FILE *fp, int *n, double **ptr)
 
 	/* Read ok, how about multisegment? */
 
-	if (!GMT_io.status && GMT_io.multi_segments) {	/* Must have n_read NaNs */
+	if (!GMT_io.status && GMT_io.multi_segments[GMT_IN]) {	/* Must have n_read NaNs */
 		int i;
 		BOOLEAN is_bad = TRUE;
 		for (i = 0; i < n_read && is_bad; i++) is_bad = GMT_is_dnan (GMT_data[i]);
@@ -439,7 +456,7 @@ int GMT_bin_double_input_swab (FILE *fp, int *n, double **ptr)
 
 	/* Read ok, how about multisegment? */
 
-	if (!GMT_io.status && GMT_io.multi_segments) {	/* Must have n_read NaNs */
+	if (!GMT_io.status && GMT_io.multi_segments[GMT_IN]) {	/* Must have n_read NaNs */
 		int i;
 		BOOLEAN is_bad = TRUE;
 		for (i = 0; i < n_read && is_bad; i++) is_bad = GMT_is_dnan (GMT_data[i]);
@@ -473,7 +490,7 @@ int GMT_bin_float_input (FILE *fp, int *n, double **ptr)
 
 	/* Read ok, how about multisegment? */
 
-	if (!GMT_io.status && GMT_io.multi_segments) {	/* Must have n_read NaNs */
+	if (!GMT_io.status && GMT_io.multi_segments[GMT_IN]) {	/* Must have n_read NaNs */
 		BOOLEAN is_bad = TRUE;
 		for (i = 0; i < n_read && is_bad; i++) is_bad = GMT_is_dnan (GMT_data[i]);
 		if (is_bad) {
@@ -510,7 +527,7 @@ int GMT_bin_float_input_swab (FILE *fp, int *n, double **ptr)
 
 	/* Read ok, how about multisegment? */
 
-	if (!GMT_io.status && GMT_io.multi_segments) {	/* Must have n_read NaNs */
+	if (!GMT_io.status && GMT_io.multi_segments[GMT_IN]) {	/* Must have n_read NaNs */
 		BOOLEAN is_bad = TRUE;
 		for (i = 0; i < n_read && is_bad; i++) is_bad = GMT_is_dnan (GMT_data[i]);
 		if (is_bad) {
@@ -793,7 +810,7 @@ void GMT_write_segmentheader (FILE *fp, int n)
 	if (GMT_io.binary[GMT_OUT])
 		for (i = 0; i < n; i++) GMT_output (fp, 1, &GMT_d_NaN);
 	else if (GMT_io.segment_header[0] == '\0')	/* Most likely binary input with NaN-headers */
-		fprintf (fp, "%c\n", GMT_io.EOF_flag);
+		fprintf (fp, "%c\n", GMT_io.EOF_flag[GMT_OUT]);
 	else
 		fprintf (fp, "%s", GMT_io.segment_header);
 }
@@ -2672,8 +2689,8 @@ int GMT_import_segments (void *source, int source_type, struct GMT_TABLE **table
 	T = (struct GMT_TABLE *) GMT_memory (VNULL, 1, sizeof (struct GMT_TABLE), GMT_program);
 	T->segment = (struct GMT_LINE_SEGMENT *) GMT_memory (VNULL, n_seg_alloc, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
 
-	save = GMT_io.multi_segments;	/* Must set this to TRUE temporarily since GMT_input uses GMT_io.multi_segments when reading */
-	GMT_io.multi_segments = TRUE;
+	save = GMT_io.multi_segments[GMT_IN];	/* Must set this to TRUE temporarily since GMT_input uses GMT_io.multi_segments when reading */
+	GMT_io.multi_segments[GMT_IN] = TRUE;
 
 	n_fields = GMT_input (fp, &n_expected_fields, &in);
 	if (GMT_io.status & GMT_IO_EOF) {
@@ -2797,7 +2814,7 @@ int GMT_import_segments (void *source, int source_type, struct GMT_TABLE **table
 	}
 	if (close_file) GMT_fclose (fp);
 	if (!use_GMT_io) GMT_input = psave;	/* Restore former pointer */
-	GMT_io.multi_segments = save;
+	GMT_io.multi_segments[GMT_IN] = save;
 
 	seg++;
 	T->segment = (struct GMT_LINE_SEGMENT *) GMT_memory ((void *)T->segment, (size_t)seg, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
@@ -2867,7 +2884,7 @@ int GMT_export_segments (void *dest, int dest_type, struct GMT_TABLE *table, BOO
 	out = (double *) GMT_memory (VNULL, table->n_columns, sizeof (double), "GMT_export_segments");
 	
 	for (seg = 0; seg < table->n_segments; seg++) {
-		if (GMT_io.multi_segments) {	/* Want to write segment headers */
+		if (GMT_io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
 			if (table->segment[seg].header) strcpy (GMT_io.segment_header, table->segment[seg].header);
 			GMT_write_segmentheader (fp, table->segment[seg].n_columns);
 		}
