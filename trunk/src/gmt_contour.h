@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.27 2006-03-27 05:36:49 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.28 2006-03-28 01:37:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -93,8 +93,7 @@ struct GMT_CONTOUR {
 	char file[BUFSIZ];		/* File with crossing lines, if specified */
 	BOOLEAN do_interpolate;		/* TRUE if we must resample the crossing lines */
 	int crossing;			/* 1 for crossing simple lines, 2 for file with crossing lines */
-	struct GMT_LINE_SEGMENT *xp;		/* List of structures with crossing-line coordinates */
-	int n_xp;			/* Number of such lines */
+	struct GMT_TABLE *xp;		/* Table with list of structures with crossing-line coordinates */
 	struct GMT_XSEGMENT *ylist_XP;	/* Sorted y-segments for crossing-lines */
 	struct GMT_XSEGMENT *ylist;	/* y-indices sorted in increasing order */
 	struct GMT_XOVER XC;		/* Structure with resulting crossovers */
