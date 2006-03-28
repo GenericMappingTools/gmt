@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.4 2006-03-28 01:37:39 pwessel Exp $
+ *	$Id: gmtapi.h,v 1.5 2006-03-28 03:48:48 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,19 +43,21 @@
 
 	/* Misc GMTAPI error codes; can be passed to GMT_Error_Message */
 	
-#define GMTAPI_OK		0
-#define GMTAPI_ERROR		1
-#define GMTAPI_NOT_A_SESSION	2
-#define GMTAPI_NOT_A_VALID_ID	3
-#define GMTAPI_FILE_NOT_FOUND	4
-#define GMTAPI_BAD_PERMISSION	5
-#define GMTAPI_GRID_READ_ERROR	6
-#define GMTAPI_GRID_WRITE_ERROR	7
-#define GMTAPI_DATA_READ_ERROR	8
-#define GMTAPI_DATA_WRITE_ERROR	9
-#define GMTAPI_N_COLS_VARY	10
-#define GMTAPI_NO_INPUT		11
-#define GMTAPI_NO_OUTPUT	12
+#define GMTAPI_OK			0
+#define GMTAPI_ERROR			1
+#define GMTAPI_NOT_A_SESSION		2
+#define GMTAPI_NOT_A_VALID_ID		3
+#define GMTAPI_FILE_NOT_FOUND		4
+#define GMTAPI_BAD_PERMISSION		5
+#define GMTAPI_GRID_READ_ERROR		6
+#define GMTAPI_GRID_WRITE_ERROR		7
+#define GMTAPI_DATA_READ_ERROR		8
+#define GMTAPI_DATA_WRITE_ERROR		9
+#define GMTAPI_N_COLS_VARY		10
+#define GMTAPI_NO_INPUT			11
+#define GMTAPI_NO_OUTPUT		12
+#define GMTAPI_NOT_A_VALID_IO		13
+#define GMTAPI_NOT_A_VALID_IO_SESSION	14
 
 	/* Index parameters used to access the information arrays */
 
@@ -97,7 +99,12 @@ struct GMTAPI_CTRL {
 	 * GMT 5 moves from using global data to passing a GMT structure. */
 	 
 	int n_data;				/* Number of currently active data objects */
-	int n_alloc;				/* Allocation counter */
+	int n_io_sessions_alloc;		/* Allocation counter for session objects */
+	int n_data_alloc;			/* Allocation counter for data objects */
+	int verbose;				/* Level of API verbosity */
+	int n_io_sessions;			/* Number of registered line-by-line io sessions */
+	struct GMTAPI_IO **io_session;		/* List of active i/o sessions */
+	int current_io_session[2];		/* Indeces into io_session for the current i/o session */
 	int GMTAPI_size[GMTAPI_N_TYPES];	/* Size of various data types in bytes */
 	struct GMTAPI_DATA_OBJECT **data;	/* List of registered data objects */
 	PFI GMT_2D_to_index[2];			/* Pointers to the row or column-order index functions */
