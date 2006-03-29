@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.238 2006-03-28 07:33:22 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.239 2006-03-29 06:37:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -813,7 +813,7 @@ int GMT_getinc (char *line, double *dx, double *dy)
 	int n;
 	double inc[2];
 
-	/* Syntax: -I<xinc>[m|c|e|i|k|n|+|!][/<yinc>][m|c|e|i|k|n|+|=]
+	/* Syntax: -I<xinc>[m|c|e|i|k|n|+|=][/<yinc>][m|c|e|i|k|n|+|=]
 	 * Units: m = minutes
 	 *	  c = seconds
 	 *	  e = meter [Convert to degrees]
@@ -862,7 +862,7 @@ int GMT_getincn (char *line, double inc[], int n)
 			if (i < 2) GMT_inc_code[i] |= GMT_INC_IS_EXACT;
 			last--;
 		}
-		else if (p[last] == '+') {	/* Number of nodes given, determine inc from domain */
+		else if (p[last] == '+' || p[last] == '!') {	/* Number of nodes given, determine inc from domain (! added since documentation mentioned this once... */
 			p[last] = 0;
 			if (i < 2) GMT_inc_code[i] |= GMT_INC_IS_NNODES;
 			last--;
