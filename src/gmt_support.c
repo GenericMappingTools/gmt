@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.239 2006-03-29 06:37:10 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.240 2006-03-29 22:26:54 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2398,48 +2398,48 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 	if (G->crossing == GMT_CONTOUR_XLINE) {
 		strcpy (buffer, G->option);
 		G->xp = (struct GMT_TABLE *) GMT_memory (VNULL, 1, sizeof (struct GMT_TABLE), GMT_program);
-		G->xp->segment = (struct GMT_LINE_SEGMENT *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
+		G->xp->segment = (struct GMT_LINE_SEGMENT *) GMT_memory (VNULL, n_alloc, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
 		pos = 0;
 		while ((GMT_strtok (buffer, ",", &pos, p))) {
-			GMT_alloc_segment (&G->xp->segment[G->n_segments], 2, 2, TRUE);
-			G->xp->segment[G->n_segments].n_rows = 2;
+			GMT_alloc_segment (&G->xp->segment[G->xp->n_segments], 2, 2, TRUE);
+			G->xp->segment[G->xp->n_segments].n_rows = 2;
 			n = sscanf (p, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 			if (n == 4) {	/* Easy, got lon0/lat0/lon1/lat1 */
-				error += GMT_verify_expectations (GMT_io.in_col_type[GMT_X], GMT_scanf_arg (txt_a, GMT_io.in_col_type[GMT_X], &G->xp->segment[G->n_segments].coord[GMT_X][0]), txt_a);
-				error += GMT_verify_expectations (GMT_io.in_col_type[GMT_Y], GMT_scanf_arg (txt_b, GMT_io.in_col_type[GMT_Y], &G->xp->segment[G->n_segments].coord[GMT_Y][0]), txt_b);
-				error += GMT_verify_expectations (GMT_io.in_col_type[GMT_X], GMT_scanf_arg (txt_c, GMT_io.in_col_type[GMT_X], &G->xp->segment[G->n_segments].coord[GMT_X][1]), txt_c);
-				error += GMT_verify_expectations (GMT_io.in_col_type[GMT_Y], GMT_scanf_arg (txt_d, GMT_io.in_col_type[GMT_Y], &G->xp->segment[G->n_segments].coord[GMT_Y][1]), txt_d);
+				error += GMT_verify_expectations (GMT_io.in_col_type[GMT_X], GMT_scanf_arg (txt_a, GMT_io.in_col_type[GMT_X], &G->xp->segment[G->xp->n_segments].coord[GMT_X][0]), txt_a);
+				error += GMT_verify_expectations (GMT_io.in_col_type[GMT_Y], GMT_scanf_arg (txt_b, GMT_io.in_col_type[GMT_Y], &G->xp->segment[G->xp->n_segments].coord[GMT_Y][0]), txt_b);
+				error += GMT_verify_expectations (GMT_io.in_col_type[GMT_X], GMT_scanf_arg (txt_c, GMT_io.in_col_type[GMT_X], &G->xp->segment[G->xp->n_segments].coord[GMT_X][1]), txt_c);
+				error += GMT_verify_expectations (GMT_io.in_col_type[GMT_Y], GMT_scanf_arg (txt_d, GMT_io.in_col_type[GMT_Y], &G->xp->segment[G->xp->n_segments].coord[GMT_Y][1]), txt_d);
 			}
 			else if (n == 2) { /* Easy, got <code>/<code> */
-				error += GMT_code_to_lonlat (txt_a, &G->xp->segment[G->n_segments].coord[GMT_X][0], &G->xp->segment[G->n_segments].coord[GMT_Y][0]);
-				error += GMT_code_to_lonlat (txt_b, &G->xp->segment[G->n_segments].coord[GMT_X][1], &G->xp->segment[G->n_segments].coord[GMT_Y][1]);
+				error += GMT_code_to_lonlat (txt_a, &G->xp->segment[G->xp->n_segments].coord[GMT_X][0], &G->xp->segment[G->xp->n_segments].coord[GMT_Y][0]);
+				error += GMT_code_to_lonlat (txt_b, &G->xp->segment[G->xp->n_segments].coord[GMT_X][1], &G->xp->segment[G->xp->n_segments].coord[GMT_Y][1]);
 			}
 			else if (n == 3) {	/* More complicated: <code>/<lon>/<lat> or <lon>/<lat>/<code> */
-				if (GMT_code_to_lonlat (txt_a, &G->xp->segment[G->n_segments].coord[GMT_X][0], &G->xp->segment[G->n_segments].coord[GMT_Y][0])) {	/* Failed, so try the other way */
-					error += GMT_verify_expectations (GMT_io.in_col_type[GMT_X], GMT_scanf_arg (txt_a, GMT_io.in_col_type[GMT_X], &G->xp->segment[G->n_segments].coord[GMT_X][0]), txt_a);
-					error += GMT_verify_expectations (GMT_io.in_col_type[GMT_Y], GMT_scanf_arg (txt_b, GMT_io.in_col_type[GMT_Y], &G->xp->segment[G->n_segments].coord[GMT_Y][0]), txt_b);
-					error += GMT_code_to_lonlat (txt_c, &G->xp->segment[G->n_segments].coord[GMT_X][1], &G->xp->segment[G->n_segments].coord[GMT_Y][1]);
+				if (GMT_code_to_lonlat (txt_a, &G->xp->segment[G->xp->n_segments].coord[GMT_X][0], &G->xp->segment[G->xp->n_segments].coord[GMT_Y][0])) {	/* Failed, so try the other way */
+					error += GMT_verify_expectations (GMT_io.in_col_type[GMT_X], GMT_scanf_arg (txt_a, GMT_io.in_col_type[GMT_X], &G->xp->segment[G->xp->n_segments].coord[GMT_X][0]), txt_a);
+					error += GMT_verify_expectations (GMT_io.in_col_type[GMT_Y], GMT_scanf_arg (txt_b, GMT_io.in_col_type[GMT_Y], &G->xp->segment[G->xp->n_segments].coord[GMT_Y][0]), txt_b);
+					error += GMT_code_to_lonlat (txt_c, &G->xp->segment[G->xp->n_segments].coord[GMT_X][1], &G->xp->segment[G->xp->n_segments].coord[GMT_Y][1]);
 				}
 				else {	/* Worked, pick up second point */
-					error += GMT_verify_expectations (GMT_io.in_col_type[GMT_X], GMT_scanf_arg (txt_b, GMT_io.in_col_type[GMT_X], &G->xp->segment[G->n_segments].coord[GMT_X][1]), txt_b);
-					error += GMT_verify_expectations (GMT_io.in_col_type[GMT_Y], GMT_scanf_arg (txt_c, GMT_io.in_col_type[GMT_Y], &G->xp->segment[G->n_segments].coord[GMT_Y][1]), txt_c);
+					error += GMT_verify_expectations (GMT_io.in_col_type[GMT_X], GMT_scanf_arg (txt_b, GMT_io.in_col_type[GMT_X], &G->xp->segment[G->xp->n_segments].coord[GMT_X][1]), txt_b);
+					error += GMT_verify_expectations (GMT_io.in_col_type[GMT_Y], GMT_scanf_arg (txt_c, GMT_io.in_col_type[GMT_Y], &G->xp->segment[G->xp->n_segments].coord[GMT_Y][1]), txt_c);
 				}
 			}
 			for (i = 0; i < 2; i++) {	/* Reset any zmin/max settings if used and applicable */
-				if (G->xp->segment[G->n_segments].coord[GMT_X][i] == DBL_MAX) {	/* Meant zmax location */
+				if (G->xp->segment[G->xp->n_segments].coord[GMT_X][i] == DBL_MAX) {	/* Meant zmax location */
 					if (xyz) {
-						G->xp->segment[G->n_segments].coord[GMT_X][i] = xyz[1][0];
-						G->xp->segment[G->n_segments].coord[GMT_Y][i] = xyz[1][1];
+						G->xp->segment[G->xp->n_segments].coord[GMT_X][i] = xyz[1][0];
+						G->xp->segment[G->xp->n_segments].coord[GMT_Y][i] = xyz[1][1];
 					}
 					else {
 						error++;
 						fprintf (stderr, "%s: GMT SYNTAX ERROR -%c:  z+ option not applicable here\n", GMT_program, G->flag);
 					}
 				}
-				else if (G->xp->segment[G->n_segments].coord[GMT_X][i] == -DBL_MAX) {	/* Meant zmin location */
+				else if (G->xp->segment[G->xp->n_segments].coord[GMT_X][i] == -DBL_MAX) {	/* Meant zmin location */
 					if (xyz) {
-						G->xp->segment[G->n_segments].coord[GMT_X][i] = xyz[0][0];
-						G->xp->segment[G->n_segments].coord[GMT_Y][i] = xyz[0][1];
+						G->xp->segment[G->xp->n_segments].coord[GMT_X][i] = xyz[0][0];
+						G->xp->segment[G->xp->n_segments].coord[GMT_Y][i] = xyz[0][1];
 					}
 					else {
 						error++;
@@ -2447,22 +2447,26 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 					}
 				}
 			}
-			if (G->do_interpolate) G->xp->segment[G->n_segments].n_rows = GMT_fix_up_path (&G->xp->segment[G->n_segments].coord[GMT_X], &G->xp->segment[G->n_segments].coord[GMT_Y], G->xp->segment[G->n_segments].n_rows, greenwich, gmtdefs.line_step);
-			for (i = 0; i < G->xp->segment[G->n_segments].n_rows; i++) {	/* Project */
-				GMT_geo_to_xy (G->xp->segment[G->n_segments].coord[GMT_X][i], G->xp->segment[G->n_segments].coord[GMT_Y][i], &x, &y);
-				G->xp->segment[G->n_segments].coord[GMT_X][i] = x;
-				G->xp->segment[G->n_segments].coord[GMT_Y][i] = y;
+			if (G->do_interpolate) G->xp->segment[G->xp->n_segments].n_rows = GMT_fix_up_path (&G->xp->segment[G->xp->n_segments].coord[GMT_X], &G->xp->segment[G->xp->n_segments].coord[GMT_Y], G->xp->segment[G->xp->n_segments].n_rows, greenwich, gmtdefs.line_step);
+			for (i = 0; i < G->xp->segment[G->xp->n_segments].n_rows; i++) {	/* Project */
+				GMT_geo_to_xy (G->xp->segment[G->xp->n_segments].coord[GMT_X][i], G->xp->segment[G->xp->n_segments].coord[GMT_Y][i], &x, &y);
+				G->xp->segment[G->xp->n_segments].coord[GMT_X][i] = x;
+				G->xp->segment[G->xp->n_segments].coord[GMT_Y][i] = y;
 			}
-			G->n_segments++;
-			if (G->n_segments == (int)n_alloc) {
+			G->xp->n_segments++;
+			if (G->xp->n_segments == (int)n_alloc) {
 				n_alloc += GMT_SMALL_CHUNK;
-				G->xp->segment = (struct GMT_LINE_SEGMENT *) GMT_memory ((void *)G->xp->segment, (size_t)n_alloc, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
+				G->xp->segment = (struct GMT_LINE_SEGMENT *) GMT_memory ((void *)G->xp->segment, n_alloc, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
 			}
+		}
+		if (G->xp->n_segments < (int)n_alloc) {
+			n_alloc += GMT_SMALL_CHUNK;
+			G->xp->segment = (struct GMT_LINE_SEGMENT *) GMT_memory ((void *)G->xp->segment, (size_t)G->xp->n_segments, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
 		}
 	}
 	else if (G->crossing == GMT_CONTOUR_XCURVE) {
 		GMT_import_segments ((void *)G->option, GMT_IS_FILE, &G->xp, 0.0, FALSE, FALSE, FALSE);
-		for (k = 0; k < G->n_segments; k++) {
+		for (k = 0; k < G->xp->n_segments; k++) {
 			for (i = 0; i < G->xp->segment[k].n_rows; i++) {	/* Project */
 				GMT_geo_to_xy (G->xp->segment[k].coord[GMT_X][i], G->xp->segment[k].coord[GMT_Y][i], &x, &y);
 				G->xp->segment[k].coord[GMT_X][i] = x;
@@ -2481,9 +2485,9 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 			error++;
 		}
 		n_col = (G->label_type == 5) ? 3 : 2;
-		G->f_xy[0] = (double *) GMT_memory ((void *)VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
-		G->f_xy[1] = (double *) GMT_memory ((void *)VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
-		if (n_col == 3) G->f_label = (char **) GMT_memory ((void *)VNULL, (size_t)n_alloc, sizeof (char *), GMT_program);
+		G->f_xy[0] = (double *) GMT_memory ((void *)VNULL, n_alloc, sizeof (double), GMT_program);
+		G->f_xy[1] = (double *) GMT_memory ((void *)VNULL, n_alloc, sizeof (double), GMT_program);
+		if (n_col == 3) G->f_label = (char **) GMT_memory ((void *)VNULL, n_alloc, sizeof (char *), GMT_program);
 		G->f_n = 0;
 		while (fgets (buffer, BUFSIZ, fp)) {
 			if (buffer[0] == '#' || buffer[0] == '>' || buffer[0] == '\n') continue;
@@ -2519,9 +2523,9 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 			G->f_n++;
 			if (G->f_n == (int)n_alloc) {
 				n_alloc += GMT_SMALL_CHUNK;
-				G->f_xy[0] = (double *) GMT_memory ((void *)G->f_xy[0], (size_t)n_alloc, sizeof (double), GMT_program);
-				G->f_xy[1] = (double *) GMT_memory ((void *)G->f_xy[1], (size_t)n_alloc, sizeof (double), GMT_program);
-				if (n_col == 3) G->f_label = (char **) GMT_memory ((void *)G->f_label, (size_t)n_alloc, sizeof (char *), GMT_program);
+				G->f_xy[0] = (double *) GMT_memory ((void *)G->f_xy[0], n_alloc, sizeof (double), GMT_program);
+				G->f_xy[1] = (double *) GMT_memory ((void *)G->f_xy[1], n_alloc, sizeof (double), GMT_program);
+				if (n_col == 3) G->f_label = (char **) GMT_memory ((void *)G->f_label, n_alloc, sizeof (char *), GMT_program);
 			}
 		}
 		GMT_fclose (fp);
@@ -2628,7 +2632,7 @@ void GMT_contlabel_addpath (double x[], double y[], int n, double zval, char *la
 	struct GMT_CONTOUR_LINE *C;
 	/* Adds this segment to the list of contour lines */
 
-	if (G->n_segments == (int)G->n_alloc) {
+	if (G->n_alloc == 0 || G->n_segments == (int)G->n_alloc) {
 		G->n_alloc += GMT_SMALL_CHUNK;
 		G->segment = (struct GMT_CONTOUR_LINE **) GMT_memory ((void *)G->segment, G->n_alloc, sizeof (struct GMT_CONTOUR_LINE *), GMT_program);
 	}
@@ -3382,7 +3386,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 		 * GMT_contlabel_draw has been called we will free up the memory as the labels are kept in
 		 * the linked list starting at G->anchor. */
 		 
-		G->L = (struct GMT_LABEL **) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
+		G->L = (struct GMT_LABEL **) GMT_memory (VNULL, n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 
 		if (G->spacing) {	/* Place labels based on distance along contours */
 			double last_label_dist, dist_offset, dist;
@@ -3417,7 +3421,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == (int)n_alloc) {
 							n_alloc += GMT_SMALL_CHUNK;
-							G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
+							G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 						}
 					}
 					dist_offset = 0.0;
@@ -3474,7 +3478,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == (int)n_alloc) {
 							n_alloc += GMT_SMALL_CHUNK;
-							G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
+							G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 						}
 					}
 					last_dist = new_label->dist;
@@ -3486,7 +3490,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 		if (G->crossing) {	/* Determine label positions based on crossing lines */
 			int left, right, line_no;
 			G->ylist = GMT_init_track (xx, yy, nn);
-			for (line_no = 0; line_no < G->n_segments; line_no++) {	/* For each of the crossing lines */
+			for (line_no = 0; line_no < G->xp->n_segments; line_no++) {	/* For each of the crossing lines */
 				G->ylist_XP = GMT_init_track (G->xp->segment[line_no].coord[GMT_X], G->xp->segment[line_no].coord[GMT_Y], G->xp->segment[line_no].n_rows);
 				G->nx = GMT_crossover (G->xp->segment[line_no].coord[GMT_X], G->xp->segment[line_no].coord[GMT_Y], NULL, G->ylist_XP, G->xp->segment[line_no].n_rows, xx, yy, NULL, G->ylist, nn, FALSE, &G->XC);
 				GMT_free ((void *)G->ylist_XP);
@@ -3520,7 +3524,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == (int)n_alloc) {
 							n_alloc += GMT_SMALL_CHUNK;
-							G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
+							G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 						}
 					}
 				}
@@ -3553,7 +3557,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == (int)n_alloc) {
 							n_alloc += GMT_SMALL_CHUNK;
-							G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, (size_t)n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
+							G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 						}
 					}
 				}
