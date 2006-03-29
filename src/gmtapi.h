@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.7 2006-03-28 22:58:47 pwessel Exp $
+ *	$Id: gmtapi.h,v 1.8 2006-03-29 00:24:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -129,6 +129,6 @@ EXTERN_MSC void GMTAPI_Report_Error (struct GMTAPI_CTRL *GMT, int error);
 
 EXTERN_MSC int GMT_read_all_write_all_records (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg);
 EXTERN_MSC int GMT_read_one_write_one_record  (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg);
-EXTERN_MSC int GMT_read_grid_write_grdfile (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg);
+EXTERN_MSC int GMT_read_grid_write_grid (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg);
 
 #endif /* _GMTAPI_H */
