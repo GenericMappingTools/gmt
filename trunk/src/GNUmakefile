@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.49 2006-03-23 00:18:35 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.50 2006-03-29 22:26:54 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -342,6 +342,14 @@ libgmtps.$(SL):	$(LIBPS_O)
 #-------------------------------------------------------------------------------
 #	program dependencies
 #-------------------------------------------------------------------------------
+
+# Must create g[rd|mt]math.c from g[rd|mt]math_main.c and g[rd|mt]math.func
+
+gmtmath.c:	gmtmath_main.c
+		(cd ..; $(SHELL) guru/make_math.sh gmt)
+
+grdmath.c:	grdmath_main.c
+		(cd ..; $(SHELL) guru/make_math.sh grd)
 
 $(PROGS):	%:	%.o $(GMTLIB)
 		$(CC) $(CFLAGS) $< -L. $(GMT) $(CDF) $(LIBS) $(LDFLAGS) -o $@
