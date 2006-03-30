@@ -1,12 +1,15 @@
 .TH GRDVOLUME GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 grdvolume \- Calculating volume under a surface within a contour
 .SH SYNOPSIS
-\fBgrdvolume\fP \fIgrdfile\fP [ \fB\-C\fP\fIcval\fP or \fB\-C\fP\fIlow/high/delta\fP ] 
-[ \fB\-L\fP\fIbase\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP[\fBk\fP] ] [ \fB\-T\fP ] [ \fB\-V\fP[\fBl\fP] ] [ \fB\-Z\fP\fIfact\fP[/\fIdelta\fP] ]
+\fBgrdvolume\fP \fIgrdfile\fP [ OPT(C)\fIcval\fP or OPT(C)\fIlow/high/delta\fP ] 
+[ OPT(L)\fIbase\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)[\fBk\fP] ] [ OPT(T) ] [ GMT_V_OPT[\fBl\fP] ] 
+[ OPT(Z)\fIfact\fP[/\fIdelta\fP] ]
 .SH DESCRIPTION
 \fBgrdvolume\fP reads a 2-D binary grd file and calculates the volume contained
-between the surface and the plane specified by the given contour (or zero if not given) and reports the area, volume, and maximum mean height (volume/area).
+between the surface and the plane specified by the given contour (or zero if not given)
+and reports the area, volume, and maximum mean height (volume/area).
 Alternatively, specify a range of contours to be tried and \fBgrdvolume\fP will determine
 the volume and area inside the contour for all contour values.  The contour that produced
 the maximum mean height is reported as well.  This feature may be used with

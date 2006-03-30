@@ -1,19 +1,20 @@
 .TH GRDTRACK GMTMANSECTION DATE VERSION VERSION
 .SH NAME
+#include "common_options.txt"
 grdtrack \- Sampling of a 2-D grdfile along 1-D trackline (a sequence of x,y points)
 .SH SYNOPSIS
-\fBgrdtrack\fP \fIxyfile\fP \fB\-G\fP\fIgrdfile\fP [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP\fIflag\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
-[ \fB\-Q\fP[\fIvalue\fP] [ \fB\-R\fP\fIwest/east/south/north\fP ] [ \fB\-S\fP ] [ \fB\-V\fP ] [ \fB\-Z\fP ] [ \fB\-:\fP ] 
-[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ][ \fB\-bo\fP[\fBs\fP][\fIn\fP] ]
+\fBgrdtrack\fP \fIxyfile\fP OPT(G)\fIgrdfile\fP [ GMT_H_OPT ] [ OPT(L)\fIflag\fP ] [ GMT_Mo_OPT ] 
+[ OPT(Q)[\fIvalue\fP] [ GMT_Rgeo_OPT ] [ OPT(S) ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_t_OPT ] 
+[ GMT_bi_OPT ] [ GMT_bo_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBgrdtrack\fP reads a grdfile (or a Sandwell/Smith IMG file) and a table (from file or standard input) with (x,y) positions 
 in the first two columns (more columns may be present). It interpolates the grid at the positions 
 in the table and writes out the table with the interpolated values added as a new column.  A bicubic 
-[Default] or bilinear [\fB\-Q\fP] interpolation is used, requiring boundary conditions at the limits 
-of the region (see \fB\-L\fP).
+[Default] or bilinear [OPT(Q)] interpolation is used, requiring boundary conditions at the limits 
+of the region (see OPT(L)).
 .TP
 \fIxyfile\fP
-This is an ASCII [or binary, see \fB\-b\fP] file where the first 2 columns hold the (x,y) positions where the user wants to sample
+This is an ASCII [or binary, see OPT(b)] file where the first 2 columns hold the (x,y) positions where the user wants to sample
 the 2-D data set.
 .TP
 .B \-G

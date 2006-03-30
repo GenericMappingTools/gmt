@@ -1,8 +1,9 @@
 .TH GRDPASTE GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 grdpaste \- Paste together two \fI.grd\fP files along a common edge.
 .SH SYNOPSIS
-\fBgrdpaste\fP \fIfile_a.grd file_b.grd\fP \fB\-G\fP\fIoutfile.grd\fP [ \fB\-V\fP ]
+\fBgrdpaste\fP \fIfile_a.grd file_b.grd\fP OPT(G)\fIoutfile.grd\fP [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBgrdpaste\fP will combine \fIfile_a.grd\fP and \fIfile_b.grd\fP into \fIoutfile.grd\fP by pasting
 them together along their common edge.  Files \fIfile_a.grd\fP and \fIfile_b.grd\fP must have the same dx, dy and have one edge

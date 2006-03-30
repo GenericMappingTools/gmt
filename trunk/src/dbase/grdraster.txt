@@ -1,10 +1,11 @@
 .TH GRDRASTER GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 grdraster \- extract subregion from a binary raster and write a grd file
 .SH SYNOPSIS
-\fBgrdraster\fP [ \fIfilenumber\fP | \fI"text pattern"\fP ] \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-G\fP\fIgrdfilename\fP ] [ \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] ] 
-[ \fB\-J\fP\fIparams\fP ] [ \fB\-V\fP ] [ \fB\-bo\fP[\fBs\fP] ] 
+\fBgrdraster\fP [ \fIfilenumber\fP | \fI"text pattern"\fP ] GMT_Rgeo_OPT 
+[ OPT(G)\fIgrdfilename\fP ] [ GMT_Id_OPT ] [ GMT_J_OPT ] [ GMT_V_OPT ] 
+[ GMT_bo_OPT ] 
 .SH DESCRIPTION
 \fBgrdraster\fP reads a file called \fIgrdraster.info\fP from the directory  
 pointed to by the environment parameter \fB$GMT_GRIDDIR\fP (if this parameter is

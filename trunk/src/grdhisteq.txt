@@ -1,9 +1,10 @@
 .TH GRDHISTEQ GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 grdhisteq \- Histogram equalization for grd files 
 .SH SYNOPSIS
-\fBgrdhisteq\fP \fIin_grdfile\fP [ \fB\-G\fP\fIout_grdfile\fP ] 
-[ \fB\-C\fP\fIn_cells\fP ] [ \fB\-D\fP ] [ \fB\-N\fP[\fInorm\fP] ] [ \fB\-Q\fP ] [ \fB\-V\fP ]
+\fBgrdhisteq\fP \fIin_grdfile\fP [ OPT(G)\fIout_grdfile\fP ] 
+[ OPT(C)\fIn_cells\fP ] [ OPT(D) ] [ OPT(N)[\fInorm\fP] ] [ OPT(Q) ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBgrdhisteq\fP allows the user to find the data values which divide a given
 grdfile into patches of equal area.  One common use of \fBgrdhisteq\fP is in

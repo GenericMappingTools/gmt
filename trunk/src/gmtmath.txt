@@ -1,12 +1,13 @@
 .TH GMTMATH GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 gmtmath \- Reverse Polish Notation calculator for data tables
 .SH SYNOPSIS
-\fBgmtmath\fP [ \fB\-A\fP\fIt_f(t).d\fP ] [ \fB\-C\fP\fIcols\fP ] [ \fB\-F\fIcols\fP ] [ \fB\-H\fP\fInrec\fP ] [ \fB\-I\fP ] 
-[ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP\fIn_col\fP/\fIt_col\fP ] [ \fB\-Q\fP ] [ \fB\-S\fP[\fBf|l\fP] ] 
-[ \fB\-T\fP\fIt_min/t_max/t_inc\fP|\fItfile\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
-[ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] \fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] 
-\fBOPERATOR\fP ... \fB=\fP [ \fIoutfile\fP ]
+\fBgmtmath\fP [ OPT(A)\fIt_f(t).d\fP ] [ OPT(C)\fIcols\fP ] [ OPT(F)\fIcols\fP ] [ GMT_H_OPT ] [ OPT(I) ] 
+[ GMT_M_OPT ] [ OPT(N)\fIn_col\fP/\fIt_col\fP ] [ OPT(Q) ] [ OPT(S)[\fBf\fP|\fBl\fP] ] 
+[ OPT(T)\fIt_min\fP/\fIt_max\fP/\fIt_inc\fP|\fItfile\fP ] [ GMT_V_OPT ] [ GMT_bi_OPT ] 
+[ GMT_bo_OPT ] [ GMT_f_OPT ] \fIoperand\fP [ \fIoperand\fP ] MOD(OPERATOR) [ \fIoperand\fP ] 
+MOD(OPERATOR) ... \fB=\fP [ \fIoutfile\fP ]
 .SH DESCRIPTION
 \fBgmtmath\fP will perform operations like add, subtract, multiply, and divide
 on one or more table data files or constants using Reverse Polish Notation (RPN)
@@ -15,13 +16,13 @@ may therefore be evaluated; the final result is written to an output file
 [or standard output].  When two data tables are on the stack, each element in file A
 is modified by the corresponding element in file B.  However, some operators only
 require one operand (see below).  If no data tables are used in the expression then options
-\fB\-T, \-N\fP can be set (and optionally \fB\-b\fP) to indicate the data domain.  If STDIN
+OPT(T), OPT(N) can be set (and optionally OPT(b) to indicate the data domain.  If STDIN
 is given, <stdin> will be read and placed on the stack as if a file with that content
 had been given on the command line.  By default, all columns except the
-"time" column are operated on, but this can be changed (see \fB\-C\fP).
+"time" column are operated on, but this can be changed (see OPT(C)).
 .TP
 \fIoperand\fP
-If \fIoperand\fP can be opened as a file it will be read as an ASCII (or binary, see \fB\-bi\fP) table data file.
+If \fIoperand\fP can be opened as a file it will be read as an ASCII (or binary, see OPT(bi)) table data file.
 If not a file, it is interpreted as a numerical constant or a special symbol (see below).  The special argument
 STDIN means that \fIstdin\fP will be read and placed on the stack; STDIN can appear more than once if necessary.
 .TP

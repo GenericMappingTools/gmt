@@ -1,21 +1,21 @@
 .TH GRDGRADIENT GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 grdgradient \- Compute directional derivative or gradient from 2-D grd file representing z(x,y)
 .SH SYNOPSIS
-\fBgrdgradient\fP \fIin_grdfile\fP \fB\-G\fP\fIout_grdfile\fP [ \fB\-A\fP\fIazim\fP[/\fIazim2\fP] ] 
-[ \fB\-D\fP[\fBc\fP][\fBo\fP][\fBn\fP] ] [ \fB\-E\fP[\fBs|p\fP] 
-\fIazim/elev\fP[/\fIambient\fP/\fIdiffuse\fP/\fIspecular\fP/\fIshine\fP] ] 
-[ \fB\-L\fP\fIflag\fP ] [ \fB\-M\fP ] [ \fB\-N\fP[\fBe\fP][\fBt\fP] 
-[\fIamp\fP][/\fIsigma\fP[/\fIoffset\fP]] ] [ \fB\-S\fP\fIslopefile\fP ] 
-[ \fB\-V\fP ]
+\fBgrdgradient\fP \fIin_grdfile\fP OPT(G)\fIout_grdfile\fP 
+[ OPT(A)\fIazim\fP[/\fIazim2\fP] ] [ OPT(D)[\fBc\fP][\fBo\fP][\fBn\fP] ] 
+[ OPT(E)[\fBs|p\fP]\fIazim/elev\fP[/\fIambient\fP/\fIdiffuse\fP/\fIspecular\fP/\fIshine\fP] ] 
+[ OPT(L)\fIflag\fP ] [ OPT(M) ] [ OPT(N)[\fBe\fP][\fBt\fP] 
+[\fIamp\fP][/\fIsigma\fP[/\fIoffset\fP]] ] [ OPT(S)\fIslopefile\fP ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBgrdgradient\fP may be used to compute the directional derivative  
-in a given direction (\fB\-A\fP),
-or the direction (\fB\-S\fP) [and the magnitude (\fB\-D\fP)] of the  
+in a given direction (OPT(A)),
+or the direction (OPT(S)) [and the magnitude (OPT(D))] of the  
 vector gradient of the data.
 .br
 Estimated values in the first/last row/column of output depend on  
-boundary conditions (see \fB\-L\fP).
+boundary conditions (see OPT(L)).
 .br
 .TP
 \fIin_grdfile\fP

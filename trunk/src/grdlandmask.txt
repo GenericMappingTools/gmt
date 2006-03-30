@@ -1,9 +1,12 @@
 .TH GRDLANDMASK GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 grdlandmask \- Create "wet-dry" mask grdfile from shoreline data base.
 .SH SYNOPSIS
-\fBgrdlandmask\fP \fB\-G\fP\fImask_grd_file\fP] \fB\-I\fP\fIxinc\fP[\fBm|c\fP][/\fIyinc\fP[\fBm|c\fP]] 
-\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-A\fP\fImin_area\fP[/\fImin_level/max_level\fP] ] [ \fB\-D\fP\fIresolution\fP ] [ \fB\-F\fP ] [ \fB\-N\fP\fImaskvalues\fP[\fBo\fP] ] [ \fB\-V\fP ]
+\fBgrdlandmask\fP OPT(G)\fImask_grd_file\fP] GMT_I_OPT 
+GMT_Rgeo_OPT [ OPT(A)\fImin_area\fP[/\fImin_level/max_level\fP] ] 
+[ OPT(D)\fIresolution\fP ] [ OPT(F) ] [ OPT(N)\fImaskvalues\fP[\fBo\fP] ] 
+[ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBgrdlandmask\fP reads the selected shoreline database and uses that information to decide which
 nodes in the specified grid are over land or over water.  The nodes defined by

@@ -1,10 +1,11 @@
 .TH GRDBLEND GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 grdblend \- Blend several partially over-lapping grids into one large grid
 .SH SYNOPSIS
-\fBgrdblend\fP \fIblendfile\fP \fB\-G\fP\fIgrdfile\fP \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] 
-\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-N\fP\fInodata\fP ] [ \fB\-Q\fP ][ \fB\-Z\fP\fIscale\fP ] 
-[ \fB\-V\fP ] [ \fB\-W\fP ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBgrdblend\fP \fIblendfile\fP OPT(G)\fIgrdfile\fP GMT_I_OPT GMT_Rgeo_OPT 
+[ OPT(N)\fInodata\fP ] [ OPT(Q) ] [ OPT(Z)\fIscale\fP ] 
+[ GMT_V_OPT ] [ OPT(W) ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
 \fBgrdblend\fP reads a listing of gridded files and blend parameters and
 creates a binary grdfile by blending the other grids using cosine-taper weights.
