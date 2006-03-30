@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.43 2006-02-19 21:25:26 remko Exp $
+ *	$Id: gmt_nc.c,v 1.44 2006-03-30 18:42:31 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -128,15 +128,8 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		/* First see if this is an old NetCDF formatted file */
 		if (!nc_inq_dimid (ncid, "xysize", &i)) return (GMT_cdf_grd_info (ncid, header, job));
 
-		/* Find the id of named variable or the first 2-dimensional (z) variable */
-		if (nc_inq_varid (ncid, varname, &z_id) == NC_NOERR) {
-			check_nc_status (nc_inq_varndims (ncid, z_id, &ndims));
-			if (ndims < 2 || ndims > 4) {
-				fprintf (stderr, "%s: named variable (%s) is %d-D, not 2-D, 3-D or 4-D [%s]\n", GMT_program, varname, ndims, header->name);
-				exit (EXIT_FAILURE);
-			}
-		}
-		else {
+		/* Find first 2-dimensional (z) variable or specified variable */
+		if (!varname[0]) {
 			check_nc_status (nc_inq_nvars (ncid, &nvars));
 			i = 0;
 			while (i < nvars && z_id < 0) {
@@ -144,6 +137,17 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 				if (ndims == 2) z_id = i;
 				i++;
 			}
+		}
+		else if (nc_inq_varid (ncid, varname, &z_id) == NC_NOERR) {
+			check_nc_status (nc_inq_varndims (ncid, z_id, &ndims));
+			if (ndims < 2 || ndims > 4) {
+				fprintf (stderr, "%s: named variable (%s) is %d-D, not 2-D, 3-D or 4-D [%s]\n", GMT_program, varname, ndims, header->name);
+				exit (EXIT_FAILURE);
+			}
+		}
+		else {
+			fprintf (stderr, "%s: named variable (%s) does not exist in file [%s]\n", GMT_program, varname, header->name);
+			exit (EXIT_FAILURE);
 		}
 		if (z_id < 0) {
 			fprintf (stderr, "%s: Could not find 2-dimensional variable [%s]\n", GMT_program, header->name);
