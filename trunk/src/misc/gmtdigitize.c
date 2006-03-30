@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.3 2006-03-28 07:33:22 pwessel Exp $
+ *    $Id: gmtdigitize.c,v 1.4 2006-03-30 04:40:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -147,13 +147,13 @@ int main (int argc, char **argv)
 		}
 	}
 	
-	if (argc == 1 || GMT_quick) {
+	if (argc == 1 || GMT_give_synopsis_and_exit) {
 		fprintf (stderr, "gmtdigitize %s - Digitizing and inverse map transformation of map x/y coordinates\n\n", GMT_VERSION);
 		fprintf (stderr, "usage: gmtdigitize -J<parameters> -R<west/east/south/north>\n");
 		fprintf (stderr, "\t[-A] [-C<device>] [-D<limit>] [-F] [-H] [-L<lpi>] [-M[<flag>]] [-N<namestem>] [-S]\n");
 		fprintf (stderr, "\t[-V] [-Zk|v] [-bo[s|S|d|D]] [-f[i|o]<colinfo>]\n\n");
 		
-		if (GMT_quick) exit (EXIT_FAILURE);
+		if (GMT_give_synopsis_and_exit) exit (EXIT_FAILURE);
 		
 		GMT_explain_option ('j');
 		fprintf (stderr, "\tScale or width is arbitrary as %s solves for it based on calibration points\n", GMT_program);

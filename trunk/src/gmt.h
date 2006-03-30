@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.123 2006-03-27 05:36:49 pwessel Exp $
+ *	$Id: gmt.h,v 1.124 2006-03-30 04:40:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -453,7 +453,7 @@ EXTERN_MSC struct GMT_TIME_LANGUAGE GMT_time_language;
 
 EXTERN_MSC float GMT_f_NaN;		/* Holds IEEE not-a-number float */
 EXTERN_MSC double GMT_d_NaN;		/* Holds IEEE not-a-number double */
-EXTERN_MSC BOOLEAN GMT_quick;		/* TRUE if short usage message is desired (must say program - ) */
+EXTERN_MSC BOOLEAN GMT_give_synopsis_and_exit;		/* TRUE if short usage message is desired (must say program - ) */
 EXTERN_MSC char *GMT_program;		/* Name of current GMT program */
 EXTERN_MSC int GMT_no_rgb[];
 EXTERN_MSC int GMT_oldargc;
