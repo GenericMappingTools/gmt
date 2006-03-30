@@ -1,4 +1,5 @@
 .TH GRDVECTOR GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 #define PARAMS_SI	0.075\fBc\fP/0.3\fBc\fP/0.25\fBc\fP
 #define LEN1	5
 #define SCALE	\fB\-Jx\fP5\fBc\fP
@@ -8,12 +9,12 @@
 .SH NAME
 grdvector \- Plot vector fields from grdfiles
 .SH SYNOPSIS
-\fBgrdvector\fP \fIcompx.grd\fP \fIcompy.grd\fP \fB\-J\fP\fIparameters\fP [ \fB\-A\fP ] 
-[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIcptfile\fP ] [ \fB\-E\fP ]  
-[ \fB\-G\fP\fIfill\fP] [ \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] ] [ \fB\-K\fP ] [ \fB\-N\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
-[ \fB\-Q\fP\fIparameters\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP[\fBl\fP]\fIscale\fP ] 
-[ \fB\-T\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP\fIcontourpen\fP ] [ \fB\-X\fP\fIx-shift\fP ] 
-[ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP ] [ \fB\-c\fP\fIcopies\fP ]
+\fBgrdvector\fP \fIcompx.grd\fP \fIcompy.grd\fP GMT_J_OPT [ OPT(A) ] 
+[ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(E) ]  
+[ OPT(G)\fIfill\fP] [ GMT_I_OPT ] [ GMT_K_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ OPT(Q)\fIparameters\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)[\fBl\fP]\fIscale\fP ] 
+[ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)\fIcontourpen\fP ] [ GMT_X_OPT ] 
+[ GMT_Y_OPT ] [ OPT(Z) ] [ GMT_c_OPT ]
 .SH DESCRIPTION
 \fBgrdvector\fP reads two 2-D gridded files which represents the x- and y-components of a vector field and
 produces a vector field plot by 

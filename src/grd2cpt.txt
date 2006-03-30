@@ -1,10 +1,11 @@
 .TH GRD2CPT GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 grd2cpt \- Read a grdfile and make a color palette file
 .SH SYNOPSIS
-\fBgrd2cpt\fP \fIgrdfile\fP [ \fB\-C\fP\fIcptmaster\fP ] [ \fB\-D\fP ] [ \fB\-E\fP\fInlevels\fP ] [ \fB\-I\fP ] 
-[ \fB\-L\fP\fIminlimit/maxlimit\fP ] [ \fB\-N\fP ] [ \fB\-Q\fP[\fBi|o\fP] ] 
-[ \fB\-R\fP\fIw/e/s/n\fP ] [ \fB\-S\fP\fIzstart/zstop/zinc\fP ] [ \fB\-V\fP ] [ \fB\-Z\fP ]
+\fBgrd2cpt\fP \fIgrdfile\fP [ OPT(C)\fIcptmaster\fP ] [ OPT(D) ] [ OPT(E)\fInlevels\fP ] [ OPT(I) ] 
+[ OPT(L)\fIminlimit/maxlimit\fP ] [ OPT(N) ] [ OPT(Q)[\fBi|o\fP] ] 
+[ GMT_Rgeo_OPT ] [ OPT(S)\fIzstart/zstop/zinc\fP ] [ GMT_V_OPT ] [ OPT(Z) ]
 .SH DESCRIPTION
 \fBgrd2cpt\fP reads a grdfile and writes a color palette (cpt) file to
 standard output.  The cpt file is based on an existing master cptfile of

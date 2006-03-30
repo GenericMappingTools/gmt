@@ -1,9 +1,9 @@
 .TH GRDMATH GMTMANSECTION DATE VERSION VERSION
 .SH NAME
+#include "common_options.txt"
 grdmath \- Reverse Polish Notation calculator for grd files
 .SH SYNOPSIS
-\fBgrdmath\fP [ \fB\-F\fP ] [ \fB\-I\fP\fIxinc\fP[\fBm|c\fP][/\fIyinc\fP[\fBm|c\fP]] 
-\fB\-R\fP\fIwest/east/south/north\fP \fB\-V\fP] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ] 
+\fBgrdmath\fP [ OPT(F) ] [ GMT_I_OPT ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ GMT_bi_OPT ] [ GMT_f_OPT ] 
 \fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] \fBOPERATOR\fP ... \fB=\fP \fIoutgrdfile\fP
 .SH DESCRIPTION
 \fBgrdmath\fP will perform operations like add, subtract, multiply, and divide on one or more grd files or constants using
@@ -11,7 +11,7 @@ Reverse Polish Notation (RPN) syntax (e.g., Hewlett-Packard calculator-style).  
 be evaluated; the final result is written to an output grd file. When two grd files are
 on the stack, each element in file A is modified by the corresponding element in file B.
 However, some operators only require one operand (see below).  If no grdfiles are used in the
-expression then options \fB\-R, \-I\fP must be set (and optionally \fB\-F\fP).  The expression
+expression then options OPT(R), OPT(I) must be set (and optionally OPT(F)).  The expression
 \fB=\fP \fIoutgrdfile\fP can occur as many times as the depth of the stack allows.
 .TP
 \fIoperand\fP

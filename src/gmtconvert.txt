@@ -1,10 +1,12 @@
 .TH GMTCONVERT GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 gmtconvert \- Converts, Pastes, and/or Extracts columns from ASCII and binary 1-D tables
 .SH SYNOPSIS
-\fBgmtconvert\fP [ \fIinputfiles\fP] [ \fB\-A\fP ] [ \fB\-D\fP[\fItemplate\fP] ] [ \fB\-E\fP ] [ \fB\-F\fIcols\fP ] [ \fB\-H\fP[\fInrec\fP] ] 
-[ \fB\-L\fP ] [ \fB\-I\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N ] [ \fB\-S\fP\fI"search string"\fP ] [ \fB\-V\fP ] 
-[ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP]\fIn\fP ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBgmtconvert\fP [ \fIinputfiles\fP ] [ OPT(A) ] [ OPT(D)[\fItemplate\fP] ] [ OPT(E) ] 
+[ OPT(F)\fIcols\fP ] [ GMT_H_OPT ] [ OPT(L) ] [ OPT(I) ] [ GMT_M_OPT ] [ OPT(N) ] 
+[ OPT(S)\fI"search string"\fP) ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] 
+[ GMT_bo_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBgmtconvert\fP reads its standard input [or inputfiles] and writes out
 the desired information to standard output.  It can do a combination of

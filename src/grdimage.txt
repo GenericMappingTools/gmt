@@ -1,4 +1,5 @@
 .TH GRDIMAGE GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 #define LEN_L   1.5
 #define SCALE1	\fB\-Jl\fP18/24/1.5\fBc\fP
 #define LEN_X   10
@@ -6,11 +7,11 @@
 .SH NAME
 grdimage \- Create grayshaded or colored image from a 2-D netCDF grd file
 .SH SYNOPSIS
-\fBgrdimage\fP \fIgrd_z\fP | \fIgrd_r grd_g grd_b\fP \fB\-C\fP\fIcptfile\fP \fB\-J\fP\fIparameters\fP 
-[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-Ei\fP|\fIdpi\fP ] [ \fB\-G\fP[\fBf|b\fP]\fIrgb\fP ] [ \fB\-I\fP\fIintensfile\fP] 
-[ \fB\-K\fP ] [ \fB\-M\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-Q\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] 
-[ \fB\-S\fP\fIsearch_radius\fP ] [ \fB\-T\fP[\fBs\fP][\fBo\fP[\fIpen\fP]] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] 
-[ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ]
+\fBgrdimage\fP \fIgrd_z\fP | \fIgrd_r grd_g grd_b\fP OPT(C)\fIcptfile\fP GMT_J_OPT 
+[ GMT_B_OPT ] [ OPT(Ei)|\fIdpi\fP ] [ OPT(G)[\fBf|b\fP]\fIrgb\fP ] [ OPT(I)\fIintensfile\fP] 
+[ GMT_K_OPT ] [ OPT(M) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ GMT_Rgeo_OPT ] 
+[ OPT(S)\fIsearch_radius\fP ] [ OPT(T)[\fBs\fP][\fBo\fP[\fIpen\fP]] ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
+[ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ]
 .SH DESCRIPTION
 \fBgrdimage\fP reads one 2-D gridded file and produces a gray-shaded (or colored) map by assigning
 each z-value a gray-shade (or color). 
@@ -18,12 +19,12 @@ Alternatively, \fBgrdimage\fP reads three 2-D gridded files with the red, green,
 directly (all must be in the 0-255 range). Optionally, illumination may be added by providing
 a file with intensities in the (-1,+1) range.  Values outside this range will be clipped.
 Such intensity files can be created from the
-grdfile using \fBgrdgradient\fP and modified by \fBgrdmath\fP or \fBgrdhisteq\fP.  Each grid-node in the
-grdfile is represented as a shaded (or colored) rectangle centered on the grid node.  When using map projections,
-the grid is first resampled on a new rectangular grid  (This can be a time-consuming process for large grid files; but see \fB-T\fP).
-A 24-bit true color \fIPostScript\fP file is output.
-The region option can be used to select a map region larger or smaller than that implied by the extent of the
-grdfile.
+grdfile using \fBgrdgradient\fP and modified by \fBgrdmath\fP or \fBgrdhisteq\fP.  Each grid-node
+in the grdfile is represented as a shaded (or colored) rectangle centered on the grid node.  When
+using map projections, the grid is first resampled on a new rectangular grid  (This can be a
+time-consuming process for large grid files; but see OPT(T)).  A 24-bit true color \fIPostScript\fP
+file is output.  The region option can be used to select a map region larger or smaller than that
+implied by the extent of the grdfile.
 .TP
 \fIgrd_z\fP | \fIgrd_r grd_g grd_b\fP
 2-D gridded data set (or red, green, blue grids) to be imaged

@@ -1,16 +1,17 @@
 .TH GRDSAMPLE GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 grdsample \- Resample a grd file onto a new grid
 .SH SYNOPSIS
-\fBgrdsample\fP \fIin_grdfile\fP \fB\-G\fP\fIout_grdfile\fP [ \fB\-F\fP ] [ \fB\-I\fP\fIdx\fP[\fBm|c\fP][/\fIdy\fP[\fBm|c\fP]] ] 
-[ \fB\-L\fP\fIflag\fP ] [ \fB\-N\fP\fInx/ny\fP ] [ \fB\-Q\fP[\fIvalue\fP] ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-T\fP ] [ \fB\-V\fP ]
+\fBgrdsample\fP \fIin_grdfile\fP OPT(G)\fIout_grdfile\fP [ OPT(F) ] [ GMT_I_OPT ] 
+[ OPT(L)\fIflag\fP ] [ OPT(N)\fInx/ny\fP ] [ OPT(Q)[\fIvalue\fP] ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBgrdsample\fP reads a grdfile and interpolates it to create a new grdfile with either:  a different registration 
-(\fB\-T\fP); or, a new grid-spacing (\fB\-I\fP) or number of nodes (\fB\-N\fP), and perhaps also a new sub-region 
-(\fB\-R\fP).  Interpolation is bicubic [Default] or bilinear (\fB\-Q\fP) and uses boundary conditions (\fB\-L\fP).  
-Note that using (\fB\-R\fP) only is equivalent to \fBgrdcut\fP or \fBgrdedit \-S\fP.  \fBgrdsample\fP safely 
-creates a fine mesh from a coarse one; the converse may suffer aliasing unless the data are filtered using \fBgrdfft\fP or \fBgrdfilter\fP.
-
+(OPT(T)); or, a new grid-spacing (OPT(I)) or number of nodes (OPT(N)), and perhaps also a new sub-region 
+(OPT(R)).  Interpolation is bicubic [Default] or bilinear (OPT(Q)) and uses boundary conditions (OPT(L)).  
+Note that using OPT(R) only is equivalent to \fBgrdcut\fP or \fBgrdedit \-S\fP.  \fBgrdsample\fP safely 
+creates a fine mesh from a coarse one; the converse may suffer aliasing unless the data are filtered using
+\fBgrdfft\fP or \fBgrdfilter\fP.
 .TP
 \fIin_grdfile\fP
 The name of the input 2-D binary grd file.

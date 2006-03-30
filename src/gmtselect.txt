@@ -1,29 +1,28 @@
 .TH GMTSELECT GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 gmtselect \- Select data subsets based on multiple spatial criteria 
 .SH SYNOPSIS
-\fBgmtselect\fP [ \fIinfiles\fP ] [ \fB\-A\fP\fImin_area\fP[/\fImin_level/max_level\fP] ] 
-[ \fB\-C\fP[\fBf\fP]\fIdist/ptfile\fP ] [ \fB\-D\fP\fIresolution\fP ] [ \fB\-F\fP\fIpolygonfile\fP ] 
-[ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP[\fBcflrs\fP] ] [ \fB\-J\fP\fIparameters\fP ] 
-[ \fB\-L\fP\fIdist/linefile\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
-[ \fB\-N\fP\fImaskvalues\fP[\fBo\fP] ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] 
-[ \fB\-V\fP ] [ \fB\-Z\fP\fImin/max\fP] ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] 
-[ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBgmtselect\fP [ \fIinfiles\fP ] [ OPT(A)\fImin_area\fP[/\fImin_level/max_level\fP] ] 
+[ OPT(C)[\fBf\fP]\fIdist/ptfile\fP ] [ OPT(D)\fIresolution\fP ] [ OPT(F)\fIpolygonfile\fP ] 
+[ GMT_H_OPT ] [ OPT(I)[\fBcflrs\fP] ] [ GMT_J_OPT ] [ OPT(L)\fIdist/linefile\fP ] [ GMT_M_OPT ] 
+[ OPT(N)\fImaskvalues\fP[\fBo\fP] ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z)\fImin/max\fP] ] 
+[ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_bo_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBgmtselect\fP is a filter that reads (longitude, latitude) positions from the first 2 columns of
 \fIinfiles\fP [or standard input] and uses a combination of 1-6 criteria to pass or reject the records.
-Records can be selected based on whether or not they are 1) inside a rectangular region (\fB\-R\fP
-[and \fB\-J\fP]), 2) within \fIdist\fP km of any point in \fIptfile\fP, 3) within \fIdist\fP km of
+Records can be selected based on whether or not they are 1) inside a rectangular region (OPT(R)
+[and OPT(J)]), 2) within \fIdist\fP km of any point in \fIptfile\fP, 3) within \fIdist\fP km of
 any line in \fIlinefile\fP, 4) inside one of the polygons in the \fIpolygonfile\fP, 5) inside
 geographical features (based on coastlines), or 6) has z-values within a given range.
-The sense of the tests can be reversed for each of these 6 criteria by using the \fB\-I\fP option.
+The sense of the tests can be reversed for each of these 6 criteria by using the OPT(I) option.
 See option \fB\-:\fP on how to read (latitude,longitude) files.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
 .TP
 \fIinfiles\fP
-ASCII (or binary, see\fB\-b\fP) data file(s) to be operated on.  If not given, standard input is read.
+ASCII (or binary, see OPT(b)) data file(s) to be operated on.  If not given, standard input is read.
 .SH OPTIONS
 .TP
 .B \-A

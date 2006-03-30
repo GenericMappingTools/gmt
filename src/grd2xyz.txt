@@ -1,15 +1,18 @@
 .TH GRD2XYZ GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 grd2xyz \- Converting grdfile(s) to ASCII or binary data
 .SH SYNOPSIS
-\fBgrd2xyz\fP \fIgrdfiles\fP [ \fB\-E\fP[\fInodata\fP] ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-S\fP[\fBr\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP[\fIweight\fP] ] [ \fB\-Z\fP[\fIflags\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fIcolinfo\fP ]
+\fBgrd2xyz\fP \fIgrdfiles\fP [ OPT(E)[\fInodata\fP] ] [ GMT_H_OPT ] [ GMT_Rgeo_OPT ] 
+[ OPT(S)[\fBr\fP] ] [ GMT_V_OPT ] [ OPT(W)[\fIweight\fP] ] [ OPT(Z)[\fIflags\fP] ] 
+[ GMT_bo_OPT ] [ GMT_fo_OPT ]
 .SH DESCRIPTION
-\fBgrd2xyz\fP reads one or more binary 2-D grdfiles and writes out xyz-triplets in ASCII [or binary] format to standard output.
-Modify the precision of the ASCII output format by editing the \fBD_FORMAT\fP parameter in your \.gmtdefaults4 file or
-use \fB\-\-D_FORMAT=\fP\fIformat\fP on the command line, or
-choose binary output using single or double precision storage.  As an option you may output
-z-values without the (x,y) in a number of formats, see \fB\-E\fP or \fB\-Z\fP below.
+\fBgrd2xyz\fP reads one or more binary 2-D grdfiles and writes out xyz-triplets in
+ASCII [or binary] format to standard output.  Modify the precision of the ASCII
+output format by editing the \fBD_FORMAT\fP parameter in your \.gmtdefaults4 file or
+use \fB\-\-D_FORMAT=\fP\fIformat\fP on the command line, or choose binary output
+using single or double precision storage.  As an option you may output z-values
+without the (x,y) in a number of formats, see OPT(E) or OPT(Z) below.
 .TP
 \fIgrdfiles\fP
 Names of 2-D binary grd files to be converted.

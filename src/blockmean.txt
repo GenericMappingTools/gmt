@@ -1,10 +1,11 @@
 .TH BLOCKMEAN GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 blockmean \- filter to block average (x,y,z) data by L2 norm
 .SH SYNOPSIS
-\fBblockmean\fP [ \fIxyz[w]file(s)\fP ] \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]]  
-\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-C\fP ] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-S\fP[\fBw|z\fP] ] [ \fB\-V\fP ] 
-[ \fB\-W\fP[\fBio\fP] ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBblockmean\fP [ \fIxyz[w]file(s)\fP ] GMT_I_OPT  GMT_Rx_OPT 
+[ OPT(C) ] [ OPT(F) ] [ GMT_H_OPT ] [ OPT(S)[\fBw|z\fP] ] [ GMT_V_OPT ] 
+[ OPT(W)[\fBio\fP] ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_bo_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBblockmean\fP reads arbitrarily located (x,y,z) triples [or optionally weighted
 quadruples (x,y,z,w)] from standard input [or \fIxyz[w]file(s)\fP] and writes to standard output a mean position and

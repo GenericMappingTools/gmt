@@ -1,12 +1,12 @@
 .TH FILTER1D GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 filter1d \- Time domain filtering of 1-D time series
 .SH SYNOPSIS
-\fBfilter1d\fP [ \fIinfile\fP ] \fB\-F\fP\fI<type><width>\fP[\fImode\fP] [ \fB\-D\fP\fIincrement\fP ]  
-[ \fB\-E\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIignore_val\fP ] [ \fB\-L\fP\fIlack_width\fP ] 
-[ \fB\-N\fP\fIn_cols/t_col\fP ] [ \fB\-Q\fP\fIq_factor\fP ] [ \fB\-S\fP\fIsymmetry_factor\fP ] 
-[ \fB\-T\fP\fIstart/stop/int\fP ] [ \fB\-V\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] 
-[ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBfilter1d\fP [ \fIinfile\fP ] OPT(F)\fI<type><width>\fP[\fImode\fP] [ OPT(D)\fIincrement\fP ]  
+[ OPT(D) ] [ GMT_H_OPT ] [ OPT(I)\fIignore_val\fP ] [ OPT(L)\fIlack_width\fP ] 
+[ OPT(N)\fIn_cols/t_col\fP ] [ OPT(Q)\fIq_factor\fP ] [ OPT(S)\fIsymmetry_factor\fP ] 
+[ OPT(T)\fIstart/stop/int\fP ] [ GMT_V_OPT ] [ GMT_bi_OPT ] [ GMT_bo_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBfilter1d\fP is a general time domain filter for multiple column time series data.
 The user specifies the number of columns of input and which column is the time.

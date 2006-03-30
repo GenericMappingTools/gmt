@@ -1,14 +1,15 @@
 .TH GRDCLIP GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 grdclip \- Clipping of range in grdfiles.
 .SH SYNOPSIS
-\fBgrdclip\fP \fIinput_file.grd\fP \fB\-G\fP\fIoutput_file.grd\fP [ \fB\-Sa\fP\fIhigh/above\fP ] 
-[ \fB\-Sb\fP\fIlow/below\fP ] [ \fB\-V\fP ] 
+\fBgrdclip\fP \fIinput_file.grd\fP OPT(G)\fIoutput_file.grd\fP [ OPT(Sa)\fIhigh/above\fP ] 
+[ OPT(Sb)\fIlow/below\fP ] [ GMT_V_OPT ] 
 .SH DESCRIPTION
 \fBgrdclip\fP will set values < \fIlow\fP to \fIbelow\fP and/or values > \fIhigh\fP to \fIabove\fP.  Useful
 when you want all of a continent or an ocean to fall into one color or grayshade in image processing,
 or clipping of the range of data values is required.  \fIabove/below\fP can be any number or NaN (Not a Number).
-You must choose at least one of \fB\-Sa\fP or \fB\-Sb\fP.
+You must choose at least one of OPT(Sa) or OPT(Sb).
 .TP
 \fIinput_file.grd\fP
 The input 2-D binary grdfile.

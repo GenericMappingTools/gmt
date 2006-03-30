@@ -1,10 +1,11 @@
 .TH GRDEDIT GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 grdedit \- Modifying the header in a 2-D grdfile
 .SH SYNOPSIS
-\fBgrdedit\fP \fIgrdfile\fP [ \fB\-A\fP ] [ \fB\-D\fP\fIxname/yname/zname/scale/offset/title/remark\fP ] 
-[ \fB\-N\fP\fIxyzfile\fP ] [ \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP ] [ \fB\-T\fP ] [ \fB\-V\fP ] 
-[ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBgrdedit\fP \fIgrdfile\fP [ OPT(A) ] [ OPT(D)\fIxname/yname/zname/scale/offset/title/remark\fP ] 
+[ OPT(N)\fIxyzfile\fP ] [ GMT_Rgeo_OPT ] [ OPT(S) ] [ OPT(T) ] [ GMT_V_OPT ] 
+[ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBgrdedit\fP reads the header information in a binary 2-D grdfile and replaces
 the information with values provided on the command line [if any].  As an option,

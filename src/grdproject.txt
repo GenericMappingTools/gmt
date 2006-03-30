@@ -1,13 +1,14 @@
 .TH GRDPROJECT GMTMANSECTION DATE VERSION VERSION
 .SH NAME
+#include "common_options.txt"
 grdproject \- Forward and Inverse map transformation of 2-D grd files 
 .SH SYNOPSIS
-\fBgrdproject\fP \fIin_grdfile\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-A\fP[\fBk|m|n|i|c|p\fP] ] [ \fB\-C\fP[\fIdx/dy\fP] ] [ \fB\-D\fP\fIdx\fP[\fBm|c\fP][/\fIdy\fP[\fBm|c\fP]] ] 
-[ \fB\-E\fP\fIdpi\fP ] [ \fB\-F\fP ] [ \fB\-G\fP\fIout_grdfile\fP ] [ \fB\-I\fP ] 
-[ \fB\-Mc|i|m|p\fP ] [ \fB\-N\fP\fInx/ny\fP ] [ \fB\-S\fP\fIsearch_radius\fP ] [ \fB\-V\fP ]
+\fBgrdproject\fP \fIin_grdfile\fP GMT_J_OPT GMT_Rgeo_OPT 
+[ OPT(A)[\fBk|m|n|i|c|p\fP] ] [ OPT(C)[\fIdx/dy\fP] ] [ OPT(D)GMT_inc_OPT ] 
+[ OPT(E)\fIdpi\fP ] [ OPT(F) ] [ OPT(G)\fIout_grdfile\fP ] [ OPT(I) ] 
+[ OPT(Mc)|\fBi\fP|\fBm\fP|\fBp\fP ] [ OPT(N)\fInx/ny\fP ] [ OPT(S)\fIsearch_radius\fP ] [ GMT_V_OPT ]
 .SH DESCRIPTION
-\fBgrdproject\fP will do one of two things depending whether \fB\-I\fP has been set.  If set, it
+\fBgrdproject\fP will do one of two things depending whether OPT(I) has been set.  If set, it
 will transform a gridded data set from a rectangular coordinate system onto a geographical
 system by resampling the surface at the new nodes.  If not set, it will project a geographical
 gridded data set onto a rectangular grid.  The new nodes are filled based on a simple weighted

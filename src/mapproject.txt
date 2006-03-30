@@ -1,15 +1,15 @@
 .TH MAPPROJECT GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 #define	LEN1	0.5
 #define SCALE1	\fB\-Jm\fP0.5\fBc\fP
 .SH NAME
 mapproject \- Forward and Inverse map transformation of 2-D coordinates 
 .SH SYNOPSIS
-\fBmapproject\fP \fIinfiles\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
+\fBmapproject\fP \fIinfiles\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ \fB\-Ab|B|f|F\fP\fIlon0/lat0\fP ] [ \fB\-C\fP[\fIdx/dy\fP] ] [ \fB\-Dc|i|m|p\fP ] [ \fB\-E\fP[\fIdatum\fP] ] 
-[ \fB\-F\fP[\fBk|m|n|i|c|p\fP] ] [ \fB\-G\fP[\fIx0/y0\fP][/\fIunit\fP] ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] 
-[ \fB\-L\fPline.xy\fP[/\fIunit\fP] ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-Q\fP[\fBd|e\fP] [ \fB\-S\fP ] [ \fB\-T\fP[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] 
-[ \fB\-V\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] 
-[ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+[ \fB\-F\fP[\fBk|m|n|i|c|p\fP] ] [ \fB\-G\fP[\fIx0/y0\fP][/\fIunit\fP] ] [ GMT_H_OPT ] [ \fB\-I\fP ] 
+[ \fB\-L\fPline.xy\fP[/\fIunit\fP] ] [ GMT_M_OPT ] [ \fB\-Q\fP[\fBd|e\fP] [ OPT(S) ] [ \fB\-T\fP[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] 
+[ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_bo_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBmapproject\fP reads (longitude, latitude) positions from \fIinfiles\fP [or standard input] and
 computes (x,y) coordinates using the specified map projection and scales.

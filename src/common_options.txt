@@ -1,0 +1,35 @@
+/* $Id: common_options.txt,v 1.1 2006-03-30 10:52:28 pwessel Exp $
+ * These are macros for the use of common options in the synopsis
+ */
+
+#ifndef GMT_SYNOPSIS_TXT
+#define GMT_SYNOPSIS_TXT
+
+#define OPT(letter)	\fB\-letter\fP
+#define GMT_B_OPT	\fB\-B\fP[\fBp\fP|\fBs\fP]\fItickinfo\fP
+#define GMT_H_OPT	\fB\-H\fP[\fBi\fP][\fInrec\fP]
+#define GMT_I_OPT	\fB\-I\fP\fIdx\fP[\fIunit\fP][\fB=\fP|\fB+\fP][/\fIdy\fP[\fIunit\fP][\fB=\fP|\fB+\fP]]
+#define GMT_inc_OPT	\fIdx\fP[\fIunit\fP][\fB=\fP|\fB+\fP][/\fIdy\fP[\fIunit\fP][\fB=\fP|\fB+\fP]]
+#define GMT_Id_OPT	\fB\-I\fP\fIdx\fP[\fBm\fP|\fBc\fP][/\fIdy\fP[\fBm\fP|\fBc\fP]]
+#define GMT_J_OPT	\fB\-J\fP\fIparameters\fP
+#define GMT_K_OPT	\fB\-K\fP
+#define GMT_M_OPT	\fB\-M\fP[\fBi\fP|\fBo\fP][\fIflag\fP]
+#define GMT_Mo_OPT	\fB\-M\fP[\fIflag\fP]
+#define GMT_O_OPT	\fB\-O\fP
+#define GMT_P_OPT	\fB\-P\fP
+#define GMT_Rgeo_OPT	\fB\-R\fP\fIwest\fP/\fIeast\fP/\fIsouth\fP/\fInorth\fP[\fBr\fP]
+#define GMT_Rgeoz_OPT	\fB\-R\fP\fIwest\fP/\fIeast\fP/\fIsouth\fP/\fInorth\fP[/\fIzmin\fP/\fIzmax\fP][\fBr\fP]
+#define GMT_Rx_OPT	\fB\-R\fP\fIxmin\fP/\fIxmax\fP/\fIymin\fP/\fIymax\fP[\fBr\fP]
+#define GMT_U_OPT	\fB\-U\fP[/\fIdx\fP/\fIdy\fP/][\fIlabel\fP]
+#define GMT_V_OPT	\fB\-V\fP
+#define GMT_X_OPT	\fB\-X\fP\fIx-shift\fP
+#define GMT_Y_OPT	\fB\-Y\fP\fIy-shift\fP
+#define GMT_t_OPT	\fB\-:\fP
+#define GMT_c_OPT	\fB\-c\fP\fIcopies\fP
+#define GMT_bi_OPT	\fB\-bi\fP[\fBs\fP|fBS\fP|fBd\fP|fBD\fP][\fIncol\fP]
+#define GMT_bo_OPT	\fB\-bo\fP[fBs\fP|fBS\fP|fBd\fP|fBD\fP]
+#define GMT_f_OPT	\fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP
+#define GMT_fi_OPT	\fB\-fi\fP\fIcolinfo\fP
+#define GMT_fo_OPT	\fB\-fo\fP\fIcolinfo\fP
+
+#endif /* GMT_SYNOPSIS_TXT */
