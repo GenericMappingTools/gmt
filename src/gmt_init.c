@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.222 2006-03-28 07:33:22 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.223 2006-03-30 04:40:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -898,7 +898,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 		case '\0':
 			if (GMT_processed_option[0]) fprintf (stderr, "%s: Warning: Option - given more than once\n", GMT_program);
 			GMT_processed_option[0] = TRUE;
-			GMT_quick = TRUE;
+			GMT_give_synopsis_and_exit = TRUE;
 			break;
 
 		case 'B':
