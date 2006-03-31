@@ -1,0 +1,75 @@
+%	$Id: GMT_API.tex,v 1.1 2006-03-31 07:20:34 pwessel Exp $
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{epsfig}
+\usepackage{makeidx}
+\usepackage{float}
+\usepackage{times}
+\usepackage{mathptm}
+
+\begin{document}
+{\center \bf Documentation of the GMT Application Program Interface}\\
+
+This documentation serves two related purposes:
+\begin{enumerate}
+\item It will document the API library for application developers that wish
+to call functions in the API.
+\item It will document the underlying API utilities for developers of
+the API itself.
+\end{enumerate}
+Of course, many developers might be interested in learning about both sets of
+functions.\\
+
+
+{\bf 1. Overview of the GMT Application Program Interface}\\
+
+Users who wish to create their own GMT-like applications based on the API
+must make sure their program goes through these steps:
+
+\begin{enumerate}
+\item Initialize a GMT session by calling \texttt{GMTAPI\_Create\_Session} which
+will return a pointer to a GMT API control structure.  This pointer will be used
+as the first argument to all subsequent GMT API function calls.
+\item Register any input sources and output destinations with the session using
+\texttt{GMTAPI\_Register\_Import} and \texttt{GMTAPI\_Register\_Export}, respectively.
+These will typically be used to specify memory locations and open file handles;
+i/o involving files are already handled by GMT itself.
+\item Each registration will generate a unique ID number.  These numbers are to be
+used with the relevant GMT function as filenames of the form ``GMTAPI-\#-ID''.  When
+GMT  functions encounter such filenames they will extract the ID and make a connection
+to the source of destination registered under that ID.
+\item When a source or destination is no longer needed, you should free it up by calls
+to ?.
+\item Repeat steps 2--4 as many times as your application desires.  All functions
+return a status code which is 0 if all is well.  For non-zero return values, use
+\texttt{GMTAPI\_Report\_Error} to generate an error message on {\it stderr}.
+\item To terminate the GMT session, call \texttt{GMTAPI\_Destroy\_Session}.
+\end{enumerate}
+
+Normally, only one GMT session will be active at one time, but developers are free
+to initiate any number of session, each with their own internal GMT parameter base.
+Such session can run concurrently and are thread-safe.
+
+{\bf 2. The GMT Application Program Interface}\\
+
+All calls to the GMT functions themselves have identical syntax that come in two different flavors.
+They differ in how the command options are passed to the function which can be done via
+\begin{enumerate}
+\item a text-based command specification.
+\item A pointer to a GMT common option structure and a linked list of objects with individual options
+for the current program.
+\end{enumerate}
+
+The former interface is used by the stand-alone GMT applications and is expected to be used by
+FORTRAN developers; however, there are no restrictions on the use of these functions.  The
+latter interface allows developers of higher-level programming languages to pass all command
+options via a common structure with the basic GMT domain and projection options as well as a
+NULL-terminated, linked list of structures, each containing information about one program option.
+The syntax of the two formats are:
+
+\texttt{int GMT\_program\_cmd (struct GMTAPI\_CTRL *API, int n\_args, char *args[])}
+\texttt{int GMT\_program (struct GMTAPI\_CTRL *API, struct GMT\_COMMON *C, struct GMT\_OPTIONS *options)}
+
+where ``program'' is replaced by the desired application name (e.g., blockmean, psxy, grdmath).
+
+\end{document}
