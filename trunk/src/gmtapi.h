@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.8 2006-03-29 00:24:49 pwessel Exp $
+ *	$Id: gmtapi.h,v 1.9 2006-03-31 07:00:46 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -120,6 +120,7 @@ EXTERN_MSC int GMTAPI_Create_Session  (struct GMTAPI_CTRL **GMT, int flags);
 EXTERN_MSC int GMTAPI_Destroy_Session (struct GMTAPI_CTRL *GMT);
 EXTERN_MSC int GMTAPI_Register_Import  (struct GMTAPI_CTRL *GMT, int method, void **source,   double parameters[]);
 EXTERN_MSC int GMTAPI_Register_Export (struct GMTAPI_CTRL *GMT, int method, void **receiver, double parameters[]);
+EXTERN_MSC int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID);
 EXTERN_MSC void GMTAPI_Report_Error (struct GMTAPI_CTRL *GMT, int error);
 
 /*=====================================================================================

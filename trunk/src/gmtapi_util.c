@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.7 2006-03-28 22:58:47 pwessel Exp $
+ *	$Id: gmtapi_util.c,v 1.8 2006-03-31 07:00:46 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,7 +43,7 @@ int GMTAPI_Add_IO_Session (struct GMTAPI_CTRL *API);
 int GMTAPI_Init_Import_Session (struct GMTAPI_CTRL *API, int ID[]);
 int GMTAPI_Init_Export_Session (struct GMTAPI_CTRL *API, int ID);
 int GMTAPI_Add_Data_Object (struct GMTAPI_CTRL *GMT, struct GMTAPI_DATA_OBJECT *D);
-int GMTAPI_Remove_Data_Object (struct GMTAPI_CTRL *GMT, int object_ID);
+int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *GMT, int object_ID);
 size_t GMTAPI_2D_to_index_C (int row, int col, int dim);
 size_t GMTAPI_2D_to_index_F (int row, int col, int dim);
 double GMTAPI_get_val (void *ptr, size_t i, int type);
@@ -135,7 +135,7 @@ void GMTAPI_Report_Error (struct GMTAPI_CTRL *API, int error)
 	exit (EXIT_FAILURE);
 }
 
-void GMT_Error_ (int *error)
+void GMTAPI_Report_Error_ (int *error)
 {	/* Fortran version: We pass the hidden global GMT_FORTRAN structure*/
 	GMTAPI_Report_Error (GMT_FORTRAN, *error);
 }
@@ -190,7 +190,7 @@ int GMTAPI_Register_Import (struct GMTAPI_CTRL *API, int method, void **input, d
 	return (GMTAPI_Register_IO (API, method, input, parameters, GMT_IN));
 }
 
-int GMT_Register_Input_ (int *method, void *input, double parameters[])
+int GMTAPI_Register_Import_ (int *method, void *input, double parameters[])
 {	/* Fortran version */
 	return (GMTAPI_Register_Import (GMT_FORTRAN, *method, &input, parameters));
 }
@@ -245,9 +245,29 @@ int GMTAPI_Register_Export (struct GMTAPI_CTRL *API, int method, void **output, 
 	return (GMTAPI_Register_IO (API, method, output, parameters, GMT_OUT));
 }
 
-int GMT_Register_Output_ (struct GMTAPI_CTRL *API, int *method, void *output, double parameters[])
+int GMTAPI_Register_Export_ (int *method, void *output, double parameters[])
 {	/* Fortran version: We pass the global GMT_FORTRAN structure*/
 	return (GMTAPI_Register_Export (GMT_FORTRAN, *method, &output, parameters));
+}
+
+int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID)
+{	/* Remove object from internal list of objects */
+	int i;
+	
+	if (API == NULL) return (GMTAPI_NOT_A_SESSION);	/* GMT_New_Session has not been called */
+		 
+	for (i = 0; i < API->n_data_alloc && API->data[i] && API->data[i]->ID != object_ID; i++);
+	if (i == API->n_data_alloc) return (GMTAPI_NOT_A_VALID_ID);	/* No such object found */
+	GMT_free ((void *)API->data[i]);			/* Free the current object */
+	API->data[i] = NULL;					/* Flag as unused object index */
+	API->n_data--;						/* Tally of how many data sets are left */
+	
+	return (GMTAPI_OK);
+}
+
+int GMTAPI_Unregister_IO_ (int *object_ID)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure*/
+	return (GMTAPI_Unregister_IO (GMT_FORTRAN, *object_ID));
 }
 
 /*========================================================================================================
@@ -819,21 +839,6 @@ int GMTAPI_Add_Data_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *
 	API->n_data++;			/* Tally of how many data sets are currently registered */
 	
 	return (ID);
-}
-
-int GMTAPI_Remove_Data_Object (struct GMTAPI_CTRL *API, int object_ID)
-{	/* Remove object from internal list of objects */
-	int i;
-	
-	if (API == NULL) return (GMTAPI_NOT_A_SESSION);	/* GMT_New_Session has not been called */
-		 
-	for (i = 0; i < API->n_data_alloc && API->data[i] && API->data[i]->ID != object_ID; i++);
-	if (i == API->n_data_alloc) return (GMTAPI_NOT_A_VALID_ID);	/* No such object found */
-	GMT_free ((void *)API->data[i]);			/* Free the current object */
-	API->data[i] = NULL;					/* Flag as unused object index */
-	API->n_data--;						/* Tally of how many data sets are left */
-	
-	return (GMTAPI_OK);
 }
 
 int GMTAPI_Add_IO_Session (struct GMTAPI_CTRL *API)
