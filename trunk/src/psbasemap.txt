@@ -1,4 +1,5 @@
 .TH PSBASEMAP GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 #define LEN_1   25
 #define LEN_2   15
 #define SCALE_LL   \fB\-JX\fP25\fBcl\fP/15\fBcl\fP
@@ -42,12 +43,10 @@
 .SH NAME
 psbasemap \- To plot \fIPostScript\fP basemaps
 .SH SYNOPSIS
-\fBpsbasemap\fP \fB\-B\fP\fItickinfo\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-G\fP\fIfill\fP ] [ \fB\-K\fP ] 
-[ \fB\-L\fP[\fBf\fP][\fBx\fP]\fIlon0/lat0\fP[\fI/slon\fP]\fI/slat/length\fP[\fBm|n|k\fP][:\fIlabel\fP:\fIjust\fP][\fB+p\fP\fIpen\fP][\fB+f\fP\fIfill\fP] ] 
-[ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
-[ \fB\-T\fP[\fBf|m\fP][\fBx\fP]\fIlon0/lat0/size\fP[/\fIinfo\fP][:w,e,s,n:][+\fIgint\fP[/\fImint\fP]] ] 
-[ \fB\-V\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-X\fP\fIy-level\fP ] [ \fB\-Z\fP\fIzlevel\fP ] [ \fB\-c\fP\fIcopies\fP ]
+\fBpsbasemap\fP GMT_B_OPT GMT_J_OPT GMT_Rgeoz_OPT 
+[ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(G)\fIfill\fP ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] 
+[ GMT_SCALE ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ GMT_U_OPT ] 
+[ GMT_TROSE ] [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT ]
 .SH DESCRIPTION
 \fBpsbasemap\fP creates PostScript code that will produce a basemap.  Several map projections
 are available, and the user may specify separate tickmark intervals for boundary annotation,

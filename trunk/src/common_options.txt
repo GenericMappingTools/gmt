@@ -1,17 +1,21 @@
-/* $Id: common_options.txt,v 1.1 2006-03-30 10:52:28 pwessel Exp $
+/* $Id: common_options.txt,v 1.2 2006-03-31 05:38:11 pwessel Exp $
  * These are macros for the use of common options in the synopsis
  */
 
 #ifndef GMT_SYNOPSIS_TXT
 #define GMT_SYNOPSIS_TXT
 
+/* Generic option, yields -letter in bold */
 #define OPT(letter)	\fB\-letter\fP
+/* The GMT standard options */
 #define GMT_B_OPT	\fB\-B\fP[\fBp\fP|\fBs\fP]\fItickinfo\fP
 #define GMT_H_OPT	\fB\-H\fP[\fBi\fP][\fInrec\fP]
-#define GMT_I_OPT	\fB\-I\fP\fIdx\fP[\fIunit\fP][\fB=\fP|\fB+\fP][/\fIdy\fP[\fIunit\fP][\fB=\fP|\fB+\fP]]
+#define GMT_I_OPT	\fB\-I\fP\fIxinc\fP[\fIunit\fP][\fB=\fP|\fB+\fP][/\fIyinc\fP[\fIunit\fP][\fB=\fP|\fB+\fP]]
 #define GMT_inc_OPT	\fIdx\fP[\fIunit\fP][\fB=\fP|\fB+\fP][/\fIdy\fP[\fIunit\fP][\fB=\fP|\fB+\fP]]
 #define GMT_Id_OPT	\fB\-I\fP\fIdx\fP[\fBm\fP|\fBc\fP][/\fIdy\fP[\fBm\fP|\fBc\fP]]
 #define GMT_J_OPT	\fB\-J\fP\fIparameters\fP
+#define GMT_Jx_OPT	\fB\-Jx\fP|\fBX\fP\fIparameters\fP
+#define GMT_Jz_OPT	\fB\-JZ\fP|\fBz\fP\fIparameters\fP
 #define GMT_K_OPT	\fB\-K\fP
 #define GMT_M_OPT	\fB\-M\fP[\fBi\fP|\fBo\fP][\fIflag\fP]
 #define GMT_Mo_OPT	\fB\-M\fP[\fIflag\fP]
@@ -22,14 +26,26 @@
 #define GMT_Rx_OPT	\fB\-R\fP\fIxmin\fP/\fIxmax\fP/\fIymin\fP/\fIymax\fP[\fBr\fP]
 #define GMT_U_OPT	\fB\-U\fP[/\fIdx\fP/\fIdy\fP/][\fIlabel\fP]
 #define GMT_V_OPT	\fB\-V\fP
-#define GMT_X_OPT	\fB\-X\fP\fIx-shift\fP
-#define GMT_Y_OPT	\fB\-Y\fP\fIy-shift\fP
+#define GMT_X_OPT	\fB\-X\fP[\fBa\fP|\fBr\fP|\fBc\fP][\fIx-shift\fP[\fBu\fP]]
+#define GMT_Y_OPT	\fB\-X\fP[\fBa\fP|\fBr\fP|\fBc\fP][\fIy-shift\fP[\fBu\fP]]
 #define GMT_t_OPT	\fB\-:\fP
 #define GMT_c_OPT	\fB\-c\fP\fIcopies\fP
-#define GMT_bi_OPT	\fB\-bi\fP[\fBs\fP|fBS\fP|fBd\fP|fBD\fP][\fIncol\fP]
-#define GMT_bo_OPT	\fB\-bo\fP[fBs\fP|fBS\fP|fBd\fP|fBD\fP]
+/* Use b, f when applies to both i and o, else use only the bi, bo, fi, fo variants */
+#define GMT_b_OPT	\fB\-b\fP[\fBi\fP|\fBo\fP][\fBs\fP|\fBS\fP|\fBd\fP|\fBD\fP][\fIncol\fP]
+#define GMT_bi_OPT	\fB\-bi\fP[\fBs\fP|\fBS\fP|\fBd\fP|\fBD\fP][\fIncol\fP]
+#define GMT_bo_OPT	\fB\-bo\fP[\fBs\fP|\fBS\fP|\fBd\fP|\fBD\fP][\fIncol\fP]
 #define GMT_f_OPT	\fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP
-#define GMT_fi_OPT	\fB\-fi\fP\fIcolinfo\fP
-#define GMT_fo_OPT	\fB\-fo\fP\fIcolinfo\fP
+#define GMT_fi_OPT	\fB\-f\fP\fIcolinfo\fP
+#define GMT_fo_OPT	\fB\-f\fP\fIcolinfo\fP
+
+/* Options for map rose and scale, used in pscoast and psbasemap */
+#define GMT_TROSE	\fB\-T\fP[\fBf\fP|\fBm\fP][\fBx\fP]\fIlon0\fP/\fIlat0\fP/\fIsize\fP[/\fIinfo\fP][:w,e,s,n:][+\fIgint\fP[/\fImint\fP]]
+#define GMT_SCALE	\fB\-L\fP[\fBf\fP][\fBx\fP]\fIlon0\fP/\fIlat0\fP[/\fIslon\fP]/\fIslat\fP/\fIlength\fP[\fBm\fP|\fBn\fP|\fBk\fP][:\fIlabel\fP:\fIjust\fP][\fB+p\fP\fIpen\fP][\fB+f\fP\fIfill\fP] ]
+
+/* Argument to *contour programs */
+#define GMT_CONTG	\fB\-G\fP[\fBd\fP|\fBf\fP|\fBn\fP|\fBl\fP|\fBL\fP|\fBx\fP|\fBX\fP]\fIinfo\fP
+
+/* Used in tools that sets grdheader information via a -D option */
+#define GMT_GRDEDIT	\fB\-D\fP\fIxname\fP/\fIyname\fP/\fIzname\fP/\fIscale\fP/\fIoffset\fP/\fItitle\fP/\fIremark\fP
 
 #endif /* GMT_SYNOPSIS_TXT */

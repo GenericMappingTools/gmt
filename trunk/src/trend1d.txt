@@ -1,10 +1,11 @@
 .TH TREND1D GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 trend1d \- Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data.
 .SH SYNOPSIS
-\fBtrend1d\fP \fB\-F\fP\fI<xymrw>\fP \fB\-N\fP[\fBf\fP]\fIn_model\fP[\fBr\fP] [ \fIxy[w]file\fP ] 
-[ \fB\-C\fP\fIcondition_#\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP[\fIconfidence_level\fP] ] [ \fB\-V\fP ] 
-[ \fB\-W\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBtrend1d\fP OPT(F)\fBxymrw\fP OPT(N)[\fBf\fP]\fIn_model\fP[\fBr\fP] [ \fIxy[w]file\fP ] 
+[ OPT(C)\fIcondition_number\fP ] [ GMT_H_OPT ] [ OPT(I)[\fIconfidence_level\fP] ] [ GMT_V_OPT ] 
+[ OPT(W) ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBtrend1d\fP reads x,y [and w] values from the first two [three] columns on standard input 
 [or \fIxy[w]file\fP] and fits a regression model y = f(x) + e by [weighted] least squares.  The
@@ -50,7 +51,7 @@ when doing the iterative robust fit].  [Default reads only the first 2 columns.]
 #include "explain_-n.txt"
 [Default is 2 (or 3 if \fB\-W\fP is set) columns].
 #include "explain_-o_binary.txt"
-#include "explain_-n.txt"
+[Default is 1-5 columns as given by \fB\-F\fP].
 #include "explain_-f.txt"
 #include "explain_precision.txt"
 .SH REMARKS

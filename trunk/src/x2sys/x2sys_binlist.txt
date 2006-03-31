@@ -1,9 +1,10 @@
 .TH X2SYS_BINLIST GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 x2sys_binlist \- Create bin-index files from track data files
 .SH SYNOPSIS
-\fBx2sys_binlist\fP \fItrack(s)\fP [ \fB\-T\fP\fITAG\fP ] [ \fB\-Cc\fP|\fBf\fP|\fBg\fP|\fBe\fP ] 
-[ \fB\-D\fP ] [ \fB\-N\fP\fIunit\fP ] [ \fB\-V\fP ]
+\fBx2sys_binlist\fP \fItrack(s)\fP [ OPT(T)\fITAG\fP ] [ OPT(Cc)|\fBf\fP|\fBg\fP|\fBe\fP ] 
+[ OPT(D) ] [ OPT(N)\fIunit\fP ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBx2sys_binlist\fP reads one or more track data files and produces a
 multi-segment ASCII track bin-index file (tbf) with the track id in the header and

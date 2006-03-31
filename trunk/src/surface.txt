@@ -1,12 +1,12 @@
 .TH SURFACE GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 surface \- adjustable tension continuous curvature surface gridding algorithm
 .SH SYNOPSIS
-\fBsurface\fP [ \fIxyzfile\fP ] \fB\-G\fP\fIoutputfile.grd\fP \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] 
-\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-A\fP\fIaspect_ratio\fP ] 
-[ \fB\-C\fP\fIconvergence_limit\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-Ll\fP\fIlower\fP ] [ \fB\-Lu\fP\fIupper\fP ] [ \fB\-N\fP\fImax_iterations\fP ] [ \fB\-Q\fP ] 
-[ \fB\-S\fP\fIsearch_radius\fP[\fBm\fP] ] [ \fB\-T\fP\fItension_factor\fP[\fBib\fP] ] [ \fB\-V\fP[\fBl\fP] ] 
-[ \fB\-Z\fP\fIover-relaxation_factor\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBsurface\fP [ \fIxyzfile\fP ] OPT(G)\fIoutputfile.grd\fP GMT_I_OPT GMT_Rgeo_OPT [ OPT(A)\fIaspect_ratio\fP ] 
+[ OPT(C)\fIconvergence_limit\fP ] [ GMT_H_OPT ] [ OPT(Ll)\fIlower\fP ] [ OPT(Lu)\fIupper\fP ] [ OPT(N)\fImax_iterations\fP ] [ OPT(Q) ] 
+[ OPT(S)\fIsearch_radius\fP[\fBm\fP] ] [ OPT(T)\fItension_factor\fP[\fBi\fB|\fBb\fP] ] [ GMT_V_OPT ] 
+[ \fB\-Z\fP\fIover-relaxation_factor\fP ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
 \fBsurface\fP reads randomly-spaced (x,y,z) triples from standard input [or \fIxyzfile\fP] and produces
 a binary grdfile of gridded values z(x,y) by solving:

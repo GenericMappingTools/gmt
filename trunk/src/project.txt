@@ -1,12 +1,13 @@
 .TH PROJECT GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 project \- project data along a line or great circle, generate a profile track, or translate coordinates.
 .SH SYNOPSIS
-\fBproject\fP [ \fIinfile\fP ] \fB\-C\fP\fIcx/cy\fP [ \fB\-A\fP\fIazimuth\fP ] 
-[ \fB\-Dd|g\fP ] [ \fB\-E\fP\fIbx/by\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-G\fP\fIdist\fP ] [ \fB\-H\fP[\fInrec\fP] ] 
-[ \fB\-L\fP[\fBw\fP][\fIl_min/l_max\fP] ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP ] [ \fB\-Q\fP ] [ \fB\-S\fP ] 
-[ \fB\-T\fP\fIpx/py\fP ] [ \fB\-V\fP ] [ \fB\-W\fP\fIw_min/w_max\fP ] [ \fB\-:\fP ] 
-[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBproject\fP [ \fIinfile\fP ] OPT(C)\fIcx\fP/\fIcy\fP [ OPT(A)\fIazimuth\fP ] 
+[ OPT(Dd)|\fBg\fP ] [ OPT(E)\fIbx\fP/\fIby\fP ] [ OPT(F)\fIflags\fP ] [ OPT(G)\fIdist\fP ] [ GMT_H_OPT ] 
+[ OPT(L)[\fBw\fP][\fIl_min\fP/\fIl_max\fP] ] [ GMT_M_OPT ] [ OPT(N) ] [ OPT(Q) ] [ OPT(S) ] 
+[ OPT(T)\fIpx\fP/\fIpy\fP ] [ GMT_V_OPT ] [ OPT(W)\fIw_min\fP/\fIw_max\fP ] [ GMT_t_OPT ] 
+[ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBproject\fP reads arbitrary (\fIx, y\fP[,\fI z\fP]) data from standard input 
 [or \fIinfile\fP ] and writes to standard output any combination of 
@@ -121,7 +122,7 @@ Width controls.  Project only those points whose \fIq\fP coordinate is within \f
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-o_binary.txt"
-#include "explain_-n.txt"
+[Default is given by OPT(F) or OPT(G)].
 #include "explain_-f.txt"
 #include "explain_precision.txt"
 .SH EXAMPLES

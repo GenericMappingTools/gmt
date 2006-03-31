@@ -1,11 +1,12 @@
 .TH MGD77MANAGE GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 mgd77manage \- Manage extra columns in MGD77+ files
 .SH SYNOPSIS
-\fBmgd77manage\fP \fINGDC-ids\fP [ \fB\-A\fP[\fB+\fP]\fBa|c|d|D|e|g|i|n|t|T\fP\fIfileinfo\fP ] 
-[ \fB\-C\fP\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-D\fP\fIabbrev1,abbrev2,...\fP ] [ \fB\-E\fP\fIempty\fP ] 
-[ \fB\-I\fP\fIabbrev/name/unit/type/scale/offset/comment\fP ] [ \fB\-Ne\fP|\fBk\fP|\fBm\fP|\fBn\fP ] 
-[ \fB\-Q\fP[\fIvalue\fP] ] [ \fB\-V\fP ] [ \fB\-bi\fP\fIn\fP[\fBs|d\fP] ]
+\fBmgd77manage\fP \fINGDC-ids\fP [ OPT(A)[\fB+\fP]\fBa\fP|\fBc\fP|\fBd\fP|\fBD\fP|\fBe\fP|\fBg\fP|\fBi\fP|\fBn\fP|\fBt\fP|\fBT\fP\fIfileinfo\fP ] 
+[ OPT(C)\fBf\fP|\fBg\fP|\fBe\fP ] [ OPT(D)\fIabbrev1,abbrev2,...\fP ] [ OPT(E)\fIempty\fP ] 
+[ OPT(I)\fIabbrev\fP/\fIname\fP/\fIunit\fP/\fBt\fP/\fIscale\fP/\fIoffset\fP/\fIcomment\fP ] [ OPT(Ne)|\fBk\fP|\fBm\fP|\fBn\fP ] 
+[ OPT(Q)[\fIvalue\fP] ] [ GMT_V_OPT ] [ GMT_bi_OPT ]
 .SH DESCRIPTION
 \fBmgd77manage\fP deals with maintaining extra custom columns in MGD77+ netCDF files.
 You can either delete one or more columns, add a new column, update an existing

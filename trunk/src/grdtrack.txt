@@ -3,9 +3,9 @@
 #include "common_options.txt"
 grdtrack \- Sampling of a 2-D grdfile along 1-D trackline (a sequence of x,y points)
 .SH SYNOPSIS
-\fBgrdtrack\fP \fIxyfile\fP OPT(G)\fIgrdfile\fP [ GMT_H_OPT ] [ OPT(L)\fIflag\fP ] [ GMT_Mo_OPT ] 
+\fBgrdtrack\fP \fIxyfile\fP OPT(G)\fIgrdfile\fP [ GMT_H_OPT ] [ OPT(L)\fIflag\fP ] [ GMT_M_OPT ] 
 [ OPT(Q)[\fIvalue\fP] [ GMT_Rgeo_OPT ] [ OPT(S) ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_t_OPT ] 
-[ GMT_bi_OPT ] [ GMT_bo_OPT ] [ GMT_f_OPT ]
+[ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBgrdtrack\fP reads a grdfile (or a Sandwell/Smith IMG file) and a table (from file or standard input) with (x,y) positions 
 in the first two columns (more columns may be present). It interpolates the grid at the positions 
@@ -53,7 +53,7 @@ Toggles between (longitude,latitude) and (latitude,longitude) input/output.  [De
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-o_binary.txt"
-#include "explain_-n.txt"
+[Default is one more than input].
 #include "explain_-f.txt"
 #include "explain_precision.txt"
 .SH HINTS

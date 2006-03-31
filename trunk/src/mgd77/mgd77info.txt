@@ -1,15 +1,16 @@
 .TH MGD77INFO GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 mgd77info \- Get information about MGD77[+] files
 .SH SYNOPSIS
-\fBmgd77info\fP \fINGDC-ids\fP [ \fB\-C\fP[\fBm|e\fP] ] [ \fB\-E\fP[\fBm|e\fP] ] 
-[ \fB\-Hf\fP[\fIitem\fP]|\fBr\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-L\fP[\fBv\fP] [ \fB\-V\fP ]
+\fBmgd77info\fP \fINGDC-ids\fP [ OPT(C)[\fBm\fP|\fBe\fP] ] [ OPT(E)[\fBm\fP|\fBe\fP] ] 
+[ OPT(I)\fIignore\fP ] [ OPT(Mf)[\fIitem\fP]|\fBr\fP ] [ OPT(L)[\fBv\fP] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBmgd77info\fP reads <legid>.[mgd77|nc] files and produces a single record of information
 about each cruise specified.  The information includes beginning and end times, total
 track distances in km, longitude and latitude range, and the total number of geophysical
-observations.  Optionally, choose instead to see the original MGD77 header section or
-its individual members.
+observations.  Optionally, choose instead to see the original MGD77 header meta-data
+section or its individual members.
 .br
 If you need to know which tracks are crossing through a given region and what kinds
 of geophysical observations are available, consider using the x2sys tools to set up
@@ -25,8 +26,8 @@ Append \fBm\fP or \fBe\fP to limit the display to the MGD77 standard or MGD77+ e
 .B \-E
 Give a one-line summary for each cruise listed.
 .TP
-.B \-H
-List the header and (if present) the MGD77+ history for each cruise.  Append \fBf\fP for
+.B \-M
+List the meta-data (header) and (if present) the MGD77+ history for each cruise.  Append \fBf\fP for
 a formatted display.  This will list individual
 parameters and their values, one entry per output line, in a format
 that can be searched using standard UNIX text tools.  Alternatively, append the name of a particular
@@ -53,22 +54,22 @@ To get one-line summary information about the cruises 01010047.mgd77 and 0101000
 \fBmgd77info\fP 01010047 01010008 \fB\-E\fP > listing.lis
 .br
 .sp
-To see the original raw MGD77 header for cruise 01010047.mgd77, run
+To see the original raw MGD77 header meta-data for cruise 01010047.mgd77, run
 .br
 .sp
-\fBmgd77info\fP 01010047 \fB\-Hr\fP
+\fBmgd77info\fP 01010047 \fB\-Mr\fP
 .br
 .sp
 To determine all the parameters related to Gravity during cruise 01010047.mgd77, run
 .br
 .sp
-\fBmgd77info\fP 01010047 \fB\-Hf\fP | grep Gravity
+\fBmgd77info\fP 01010047 \fB\-Mf\fP | grep Gravity
 .br
 .sp
 To determine the Magnetic sampling rate used during cruise 01010047.mgd77, run
 .br
 .sp
-\fBmgd77info\fP 01010047 \fB\-Hf\fPMagnetics_Sampling_Rate
+\fBmgd77info\fP 01010047 \fB\-Mf\fPMagnetics_Sampling_Rate
 .br
 .sp
 To see all the columns that the MGD77+ cruise 01010047.nc contains, run

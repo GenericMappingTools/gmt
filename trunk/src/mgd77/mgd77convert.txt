@@ -1,9 +1,10 @@
 .TH MGD77CONVERT GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 mgd77convert \- Translate between different formats of MGD77 files
 .SH SYNOPSIS
-\fBmgd77convert\fP \fINGDC-ids\fP \fB\-Fa|b|t \-T\fP[\fB+\fP]\fBa|b|t\fP 
-[ \fB\-L\fP[\fBw\fP][\fBe\fP][\fB+\fP] ] [ \fB\-V\fP ] [ \fB\-4\fP ]
+\fBmgd77convert\fP \fINGDC-ids\fP OPT(Fa)|\fBb\fP|\fBt\fP OPT(T)[\fB+\fP]\fBa\fP|\fBb\fP|\fBt\fP 
+[ OPT(L)[\fBw\fP][\fBe\fP][\fB+\fP] ] [ GMT_V_OPT ] [ OPT(4) ]
 .SH DESCRIPTION
 \fBmgd77convert\fP reads versions of MGD77 files and writes the same
 data in (probably) another format to a new file in the current directory.

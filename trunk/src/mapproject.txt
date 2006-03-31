@@ -6,10 +6,10 @@
 mapproject \- Forward and Inverse map transformation of 2-D coordinates 
 .SH SYNOPSIS
 \fBmapproject\fP \fIinfiles\fP GMT_J_OPT GMT_Rgeo_OPT 
-[ \fB\-Ab|B|f|F\fP\fIlon0/lat0\fP ] [ \fB\-C\fP[\fIdx/dy\fP] ] [ \fB\-Dc|i|m|p\fP ] [ \fB\-E\fP[\fIdatum\fP] ] 
-[ \fB\-F\fP[\fBk|m|n|i|c|p\fP] ] [ \fB\-G\fP[\fIx0/y0\fP][/\fIunit\fP] ] [ GMT_H_OPT ] [ \fB\-I\fP ] 
-[ \fB\-L\fPline.xy\fP[/\fIunit\fP] ] [ GMT_M_OPT ] [ \fB\-Q\fP[\fBd|e\fP] [ OPT(S) ] [ \fB\-T\fP[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] 
-[ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_bo_OPT ] [ GMT_f_OPT ]
+[ OPT(Ab)|\fBB\fP|\fBf\fP|\fBF\fP\fIlon0\fP/\fIlat0\fP ] [ OPT(C)[\fIdx\fP/\fIdy\fP] ] [ OPT(Dc)|\fBi\fP|\fBm\fP|\fBp\fP ] [ OPT(E)[\fIdatum\fP] ] 
+[ OPT(F)[\fBk\fP|\fBm\fP|\fBn\fP|\fBi\fP|\fBc\fP|\fBp\fP] ] [ OPT(G)[\fIx0\fP/\fIy0\fP][/\fIunit\fP] ] [ GMT_H_OPT ] [ OPT(I) ] 
+[ OPT(L)line.xy\fP[/\fIunit\fP] ] [ GMT_M_OPT ] [ OPT(Q)[\fBd\fP|\fBe\fP] [ OPT(S) ] [ OPT(T)[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] 
+[ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBmapproject\fP reads (longitude, latitude) positions from \fIinfiles\fP [or standard input] and
 computes (x,y) coordinates using the specified map projection and scales.
@@ -100,7 +100,7 @@ ID (see \fB\-Qe\fP) or given as \fIa,1/f\fP.  If \fIdatum\fP is - or not given w
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-o_binary.txt"
-#include "explain_-n.txt"
+[Default is same as input].
 #include "explain_-f.txt"
 #include "explain_precision.txt"
 .SH EXAMPLES
@@ -141,7 +141,7 @@ digitizing in order to have the inverse transformation work correctly, or altern
 use \fBawk\fP to scale and shift the (x,y) values before transforming.
 .SH ELLIPSOIDS AND SPHEROIDS
 \fBGMT\fP will use ellipsoidal formulae if they are implemented and the user have
-selected an ellipsoid as the reference shape (see \fBgmtdefaults\fP).  The user
+selected an ellipsoid as the reference shape (see \fBELLIPSOID\fP in \fBgmtdefaults\fP).  The user
 needs to be aware of a few potential pitfalls: (1)  For some projections,
 such as Transverse Mercator, Albers, and Lamberts conformal conic we use the
 ellipsoidal expressions when the areas mapped are small, and switch to the

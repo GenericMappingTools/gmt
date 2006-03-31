@@ -1,4 +1,5 @@
 .TH PSCOAST GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 #define LEN_1   0.1
 #define SCALE_M1   \fB\-Jm\fP0.1\fBi\fP
 #define LEN_2   1
@@ -6,17 +7,13 @@
 .SH NAME
 pscoast \- To plot land-masses, water-masses, coastlines, borders, and rivers
 .SH SYNOPSIS
-\fBpscoast \-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-A\fP\fImin_area\fP[\fI/min_level/max_level\fP] ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIfill\fP ] [ \fB\-D\fP\fIresolution\fP ] 
-[ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-G\fP\fIfill\fP ] 
-[ \fB\-I\fP\fIriver\fP[/\fIpen\fP] ] [ \fB\-K\fP ] 
-[ \fB\-L\fP[\fBf\fP][\fBx\fP]\fIlon0/lat0\fP[\fI/slon\fP]\fI/slat/length\fP[\fBm|n|k\fP][:\fIlabel\fP:\fIjust\fP][\fB+p\fP\fIpen\fP][\fB+f\fP\fIfill\fP] ] 
-[ \fB\-O\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP\fIborder\fP[/\fIpen\fP] ] [ \fB\-O\fP ] 
-[ \fB\-P\fP ] [ \fB\-Q\fP ] [ \fB\-S\fP\fIfill\fP ] 
-[ \fB\-T\fP[\fBf|m\fP][\fBx\fP]\fIlon0/lat0/size\fP[/\fIinfo\fP][:w,e,s,n:][+\fIgint\fP[/\fImint\fP]] ] 
-[ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] 
-[ \fB\-W\fP\fIpen\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fIzlevel\fP ] 
-[ \fB\-c\fP\fIcopies\fP ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ]
+\fBpscoast\fP GMT_J_OPT GMT_Rgeo_OPT 
+[ OPT(A)\fImin_area\fP[\fI/min_level/max_level\fP] ] [ GMT_B_OPT ] [ OPT(C)\fIfill\fP ] [ OPT(D)\fIresolution\fP ] 
+[ OPT(E)\fIazimuth/elevation\fP ] [ OPT(G)\fIfill\fP ] 
+[ OPT(I)\fIriver\fP[/\fIpen\fP] ] [ GMT_K_OPT ] 
+[ GMT_SCALE ] [ GMT_O_OPT ] [ GMT_Mo_OPT ] [ OPT(N)\fIborder\fP[/\fIpen\fP] ] [ GMT_O_OPT ] 
+[ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)\fIfill\fP ] [ GMT_TROSE ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
+[ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBpscoast\fP plots grayshaded, colored, or textured land-masses [or water-masses] on maps and [optionally]
 draws coastlines, rivers, and political boundaries.  Alternatively, it can (1) issue clip paths that will

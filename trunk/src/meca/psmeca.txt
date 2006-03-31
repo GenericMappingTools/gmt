@@ -1,194 +1,196 @@
 .TH PSMECA GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
-psmeca \fR\- Plot focal mechanisms on maps
+psmeca \- Plot focal mechanisms on maps
 .SH SYNOPSIS
 .br
-psmeca \fIfiles\fR \fB\-J\fIparameters \fB\-R\fIwest/east/south/north\fR
-[ \fB\-B\fItickinfo\fR ] [ \fB\-C\fIpen\fR ] [ \fB\-D\fIdepmin/depmax\fR ]
-[ \fB\-E\fIfill\fR] [ \fB\-G\fIfill\fR] [ \fB\-H\fR[n] ]
-[ \fB\-K\fR ] [ \fB\-L\fI[pen]\fR ] [ \fB\-M\fR ] [ \fB\-N\fR ] [ \fB\-O\fR ]
-[ \fB\-P\fR ] 
-[ \fB\-S\fI<symbol><scale>\fR[/d]] [ \fB\-T\fInum_of_plane\fR[<pen>] ]
-[ \fB\-U\fI[label]\fR ] [ \fB\-V\fR ] [ \fB\-W\fIpen\fR ] [\fB\-X\fIx-shift\fR ]
-[ \fB\-Y\fIy-shift\fR ] [\fB\-Z\fIcptfile\fR] [ \fB\-z\fR ] 
-[ \fB\-a\fI[<size>\fR[\fIP_symbol>\fR[\fIT_symbol\fR]]] ] 
-[ \fB\-g\fIfill\fR ] [\fB\-e\fIfill\fR ] [ \fB-o\fR ] [ \fB\-p\fIpen\fR ]
-[ \fB\-t\fIpen\fR ] [ \fB\-:\fR] [\fB\-c\fIcopies\fR ]
+psmeca \fIfiles\fP GMT_J_OPT GMT_Rgeo_OPT
+[ GMT_B_OPT ] [ OPT(C)\fIpen\fP ] [ OPT(D)\fIdepmin\fP/\fIdepmax\fP ]
+[ OPT(E)\fIfill\fP] [ OPT(G)\fIfill\fP] [ GMT_H_OPT ]
+[ GMT_K_OPT ] [ OPT(L)[\fIpen\fP] ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ]
+[ GMT_P_OPT ] 
+[ OPT(S)\fI<symbol><scale>\fP[/\fBd\fP]] [ OPT(T)\fInum_of_plane\fP[\fIpen\fP] ]
+[ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ]
+[ GMT_Y_OPT ] [ OPT(Z)\fIcptfile\fP] [ OPT(z) ] 
+[ OPT(a)[\fIsize\fP[\fIP_symbol\fP[\fIT_symbol\fP]]] ] 
+[ OPT(g)\fIfill\fP ] [ OPT(e)\fIfill\fP ] [ OPT(o)\fP ] [ OPT(p)\fIpen\fP ]
+[ OPT(t)\fIpen\fP ] [ GMT_t_OPT [ GMT_c_OPT ]
 .SH DESCRIPTION
 .br
-\fBpsmeca\fR reads data values from \fIfiles\fR [or standard input]
-and generates \fIPostScript\fR code that will plot focal mechanisms
+\fBpsmeca\fP reads data values from \fIfiles\fP [or standard input]
+and generates \fIPostScript\fP code that will plot focal mechanisms
 on a map.  Most options are the same as for \fBpsxy\fP.
-The \fIPostScript\fR code is written to standard output.
+The \fIPostScript\fP code is written to standard output.
 .br
 .sp
 .SH ARGUMENTS
-\fIfiles\fR
+\fIfiles\fP
 List one or more file-names. If no files are given, \fBpsmeca\fP will read standard input.
 #include "explain_-J_short.txt"
 #include "explain_-Rgeo.txt"
 .TP
-\fB\-S\fR
+\fB\-S\fP
 Selects the meaning of the columns in the data file 
 .br
 In order to use the same file to plot cross-sections, depth is in third column.
 Nevertheless, it is possible to use "old style" \fBpsvelomeca\fP input files
-without depth in third column using the \fB-o\fR option.
+without depth in third column using the \fB-o\fP option.
 .br
 .TP
-\fB\-Sa\fIscale[c/i][/fontsize[/offset[u]]]\fR
+\fB\-Sa\fIscale[c/i][/fontsize[/offset\fP[\fBu\fP]]]
 Focal mechanisms in Aki and Richard convention.
-\fIscale\fR adjusts the scaling of the radius of the "beach ball",
+\fIscale\fP adjusts the scaling of the radius of the "beach ball",
 which will be proportional to the magnitude.  Scale is the size for 
-magnitude = 5 in inch (unless \fBc\fR, \fBi\fR, \fBm\fR, or \fBp\fR is appended).
-Use the \fB-T\fR option
+magnitude = 5 in inch (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
+Use the \fB\-T\fP option
 to render the beach ball transparent by drawing only the nodal planes
 and the circumference.  The color or shade of the compressive
-quadrants can be specified with the \fB-G\fR option.  The color or shade
-of the extensive quadrants can be specified with the \fB-E\fR option.
+quadrants can be specified with the \fB\-G\fP option.  The color or shade
+of the extensive quadrants can be specified with the \fB\-E\fP option.
 Parameters are expected to be in the following columns:
-.IP \fB1,2\fR:
-longitude, latitude of event (\fB-:\fR option interchanges order)
-.IP \fB3\fR:
+.IP \fB1,2\fP:
+longitude, latitude of event (\fB\-:\fP option interchanges order)
+.IP \fB3\fP:
 depth of event in kilometers
-.IP \fB4,5,6\fR:
+.IP \fB4,5,6\fP:
 strike, dip and rake in degrees
-.IP \fB7\fR:
+.IP \fB7\fP:
 magnitude
-.IP \fB8,9\fR:
+.IP \fB8,9\fP:
 longitude, latitude at which to place beach ball. Entries in these
-columns are necessary with the \fB\-C\fR option.  Using 0,0 in columns
+columns are necessary with the \fB\-C\fP option.  Using 0,0 in columns
 8 and 9 will plot the beach ball at the longtiude, latitude given in
-columns 1 and 2.  The \fB-:\fR option will interchange the order of
+columns 1 and 2.  The \fB\-:\fP option will interchange the order of
 columns (1,2) and (8,9).
-.IP \fB10\fR:
+.IP \fB10\fP:
 Text string to appear above the beach ball (optional).
 .br
 .sp
 .TP
-\fB\-Sc\fIscale[c/i][/fontsize[/offset[u]]]\fR
+\fB\-Sc\fP\fIscale[c/i][/fontsize[/offset\fP[\fBu\fP]]]
 Focal mechanisms in Harvard CMT convention.
-\fIscale\fR adjusts the scaling of the radius of the "beach ball",
+\fIscale\fP adjusts the scaling of the radius of the "beach ball",
 which will be proportional to the magnitude. Scale is the size for 
 magnitude = 5 (that is M0 = 4.0E23 dynes-cm) 
-in inch (unless \fBc\fR, \fBi\fR, \fBm\fR, or \fBp\fR is appended).
-Use the \fB-T\fR option
+in inch (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
+Use the \fB\-T\fP option
 to render the beach ball transparent by drawing only the nodal planes
 and the circumference. The color or shade of the compressive quadrants
-can be specified with the \fB-G\fR option.  The color or shade
-of the extensive quadrants can be specified with the \fB-E\fR option.
+can be specified with the \fB\-G\fP option.  The color or shade
+of the extensive quadrants can be specified with the \fB\-E\fP option.
 Parameters are expected to be in the following columns:
-.IP \fB1,2\fR:
-longitude, latitude of event (\fB-:\fR option interchanges order)
-.IP \fB3\fR:
+.IP \fB1,2\fP:
+longitude, latitude of event (\fB\-:\fP option interchanges order)
+.IP \fB3\fP:
 depth of event in kilometers
-.IP \fB4,5,6\fR:
+.IP \fB4,5,6\fP:
 strike, dip, and rake of plane 1
-.IP \fB7,8,9\fR:
+.IP \fB7,8,9\fP:
 strike, dip, and rake of plane 2
-.IP \fB10,11\fR:
+.IP \fB10,11\fP:
 mantissa and exponent of moment in dyne-cm
-.IP \fB12,13\fR:
+.IP \fB12,13\fP:
 longitude, latitude at which to place beach ball. Entries in these
-columns are necessary with the \fB\-C\fR option.  Using (0,0) in
+columns are necessary with the \fB\-C\fP option.  Using (0,0) in
 columns 11 and 12 will plot the beach ball at the longitude, latitude
-given in columns 1 and 2.  The \fB-:\fR option will interchange the order of
+given in columns 1 and 2.  The \fB\-:\fP option will interchange the order of
 columns (1,2) and (12,13).
-.IP \fB14\fR:
+.IP \fB14\fP:
 Text string to appear above the beach ball (optional).
 .TP
-\fB\-Sm\fIscale[c/i][/fontsize[/offset[u]]]\fR
-Seismic moment tensor (Harvard CMT, with zero trace). \fIscale\fR adjusts the
+\fB\-Sm\fP\fIscale[c/i][/fontsize[/offset\fP[\fBu\fP]]]
+Seismic moment tensor (Harvard CMT, with zero trace). \fIscale\fP adjusts the
 scaling of the radius of the "beach ball", which will be proportional 
 to the magnitude. Scale is the size for magnitude = 5 (that is scalar seismic
 moment = 4.0E23 dynes-cm)
-in inch (unless \fBc\fR, \fBi\fR, \fBm\fR, or \fBp\fR is appended).
-(\fB-T\fI0\fR option overlays best double couple transparently.)
-Put \fB\-Sd\fIscale[/fontsize[/offset[u]]]\fR to plot the only double couple part of moment tensor.
-Put \fB\-Sz\fIscale[/fontsize[/offset[u]]]\fR to plot anisotropic part of moment tensor (zero trace).
+in inch (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
+(\fB\-T\fP\fI0\fP option overlays best double couple transparently.)
+Put \fB\-Sd\fP\fIscale[/fontsize[/offset\fP[\fBu\fP]]] to plot the only double couple part of moment tensor.
+Put \fB\-Sz\fP\fIscale[/fontsize[/offset\fP[\fBu\fP]]] to plot anisotropic part of moment tensor (zero trace).
 The color or shade of the compressive quadrants
-can be specified with the \fB-G\fR option.  The color or shade
-of the extensive quadrants can be specified with the \fB-E\fR option.
+can be specified with the \fB\-G\fP option.  The color or shade
+of the extensive quadrants can be specified with the \fB\-E\fP option.
 Parameters are expected to be in the following columns
-.IP \fB1,2\fR:
-longitude, latitude of event (\fB-:\fR option interchanges order)
-.IP \fB3\fR:
+.IP \fB1,2\fP:
+longitude, latitude of event (\fB\-:\fP option interchanges order)
+.IP \fB3\fP:
 depth of event in kilometers
-.IP \fB4,5,6,7,8,9\fR:
+.IP \fB4,5,6,7,8,9\fP:
 mrr, mtt, mff, mrt, mrf, mtf in 10*exponent dynes-cm
-.IP \fB10\fR:
+.IP \fB10\fP:
 exponent
-.IP \fB11,12\fR:
+.IP \fB11,12\fP:
 longitude, latitude at which to place beach ball. Entries in these
-columns are necessary with the \fB\-C\fR option.  Using 0,0 in columns
+columns are necessary with the \fB\-C\fP option.  Using 0,0 in columns
 9 and 10 will plot the beach ball at the longitude, latitude given in
-columns 1 and 2.  The \fB-:\fR option will interchange the order of
+columns 1 and 2.  The \fB\-:\fP option will interchange the order of
 columns (1,2) and (9,10).
-.IP \fB13\fR:
+.IP \fB13\fP:
 Text string to appear above the beach ball (optional).
 .br
 .sp
 .TP
-\fB\-Sp\fIscale[c/i][/fontsize[/offset[u]]]\fR
+\fB\-Sp\fP\fIscale[c/i][/fontsize[/offset\fP[\fBu\fP]]]
 Focal mechanisms given with partial data on both planes.
-\fIscale\fR adjusts the scaling of the radius of the "beach ball",
+\fIscale\fP adjusts the scaling of the radius of the "beach ball",
 which will be proportional to the magnitude. Scale is the size
-for magnitude = 5 in inch (unless \fBc\fR, \fBi\fR, \fBm\fR, or \fBp\fR is appended).
+for magnitude = 5 in inch (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
 The color or shade of the compressive quadrants
-can be specified with the \fB-G\fR option.  The color or shade
-of the extensive quadrants can be specified with the \fB-E\fR option.
+can be specified with the \fB\-G\fP option.  The color or shade
+of the extensive quadrants can be specified with the \fB\-E\fP option.
 Parameters are expected to be in the following columns
-.IP \fB1,2\fR:
-longitude, latitude of event (\fB-:\fR option interchanges order)
-.IP \fB3\fR:
+.IP \fB1,2\fP:
+longitude, latitude of event (\fB\-:\fP option interchanges order)
+.IP \fB3\fP:
 depth of event in kilometers
-.IP \fB4,5\fR:
+.IP \fB4,5\fP:
 strike, dip of plane 1
-.IP \fB6\fR:
+.IP \fB6\fP:
 strike of plane 2
-.IP \fB7\fR:
+.IP \fB7\fP:
 must be -1/+1 for a normal/inverse fault
-.IP \fB8\fR:
+.IP \fB8\fP:
 magnitude
-.IP \fB9,10\fR:
+.IP \fB9,10\fP:
 longitude, latitude at which to place beach ball. Entries in these
-columns are necessary with the \fB\-C\fR option.  Using 0,0 in columns
+columns are necessary with the \fB\-C\fP option.  Using 0,0 in columns
 9 and 10 will plot the beach ball at the longitude, latitude given in
-columns 1 and 2.  The \fB-:\fR option will interchange the order of
+columns 1 and 2.  The \fB\-:\fP option will interchange the order of
 columns (1,2) and (9,10).
-.IP \fB11\fR:
+.IP \fB11\fP:
 Text string to appear above the beach ball (optional).
 .br
 .sp
 .TP
-\fB\-Sx\fIscale[c/i][/fontsize[/offset[u]]]\fR Principal axis.
-\fIscale\fR adjusts the scaling of the radius of the "beach ball", which will
+\fB\-Sx\fP\fIscale[c/i][/fontsize[/offset\fP[\fBu\fP]]]
+Principal axis.
+\fIscale\fP adjusts the scaling of the radius of the "beach ball", which will
 be proportional to the magnitude. Scale is the size for magnitude = 5 (that is
 seismic scalar moment = 4*10e+23 dynes-cm)
-in inch (unless \fBc\fR, \fBi\fR, \fBm\fR, or \fBp\fR is appended).
-(\fB-T\fI0\fR option overlays best double couple transparently.)
-Put \fB\-Sy\fIscale[c/i][/fontsize[/offset[u]]]\fR to plot the only double couple part of
+in inch (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
+(\fB\-T\fP\fI0\fP option overlays best double couple transparently.)
+Put \fB\-Sy\fP\fIscale[c/i][/fontsize[/offset\fP[\fBu\fP]]] to plot the only double couple part of
 moment tensor.
-Put \fB\-St\fIscale[c/i][/fontsize[/offset[u]]]\fR to plot zero trace moment tensor.
+Put \fB\-St\fP\fIscale[c/i][/fontsize[/offset\fP[\fBu\fP]]] to plot zero trace moment tensor.
 The color or shade of the compressive quadrants
-can be specified with the \fB-G\fR option.  The color or shade
-of the extensive quadrants can be specified with the \fB-E\fR option.
+can be specified with the \fB\-G\fP option.  The color or shade
+of the extensive quadrants can be specified with the \fB\-E\fP option.
 Parameters are expected to be in the following columns
-.IP \fB1,2\fR:
-longitude, latitude of event (\fB-:\fR option interchanges order)
-.IP \fB3\fR:
+.IP \fB1,2\fP:
+longitude, latitude of event (\fB\-:\fP option interchanges order)
+.IP \fB3\fP:
 depth of event in kilometers
-.IP \fB4,5,6,7,8,9,10,11,12\fR:
+.IP \fB4,5,6,7,8,9,10,11,12\fP:
 value (in 10*exponent dynes-cm), azimuth, plunge of T, N, P axis.
-.IP \fB13\fR:
+.IP \fB13\fP:
 exponent
-.IP \fB14,15\fR:
+.IP \fB14,15\fP:
 longtiude, latitude at which to place beach ball. Entries in these
-columns are necessary with the \fB\-C\fR option.  Using 0,0 in columns
+columns are necessary with the \fB\-C\fP option.  Using 0,0 in columns
 9 and 10 will plot the beach ball at the longitude, latitude given in
-columns 1 and 2.  The \fB-:\fR option will interchange the order of
+columns 1 and 2.  The \fB\-:\fP option will interchange the order of
 columns (1,2) and (9,10).
-.IP \fB16\fR:
+.IP \fB16\fP:
 Text string to appear above the beach ball (optional).
 .br
 .sp
@@ -197,26 +199,26 @@ Text string to appear above the beach ball (optional).
 No space between the option flag and the associated arguments.
 #include "explain_-B_short.txt"
 .TP
-\fB\-C\fR[\fIpen\fR][P\fIpointsize\fR]
+\fB\-C\fP[\fIpen\fP][\fIpointsize\fP]
 Offsets focal mechanisms to the longitude, latitude specified in the last
 two columns of the input file before the (optional) text string.  A small
 circle is plotted at the initial location and a line connects the beachball
-to the circle.  Specify \fIpen\fR and/or P\fIpointsize\fR to change the line
-style and/or size of the circle. [Defaults: \fIpen\fR width = 1, color = 0/0/0,
-texture = solid; \fIpointsize\fR 0].
+to the circle.  Specify \fIpen\fP and/or \fIpointsize\fP to change the line
+style and/or size of the circle. [Defaults: \fIpen\fP width = 1, color = 0/0/0,
+texture = solid; \fIpointsize\fP 0].
 .br
 .TP
 \fB\-D
-\fIdepmin/depmax\fR
+\fIdepmin/depmax\fP
 Plots events between depmin and depmax.
 .br
 .TP
-\fB\-E\fR\fIfill\fR
+\fB\-E\fP\fIfill\fP
 Selects filling of extensive quadrants. Usually white.
 Set the shade (0\-255) or color (r/g/b) [Default is 255/255/255].  
 .br
 .TP
-\fB\-G\fR\fIfill\fR
+\fB\-G\fP\fIfill\fP
 Selects filling of focal mechanisms.  By
 convention, the compressional quadrants of the focal mechanism beach
 balls are shaded.  Set the shade (0\-255) or color (r/g/b) [Default is
@@ -224,30 +226,29 @@ balls are shaded.  Set the shade (0\-255) or color (r/g/b) [Default is
 #include "explain_-H.txt"
 #include "explain_-K.txt"
 .TP
-\fB\-L\fR[\fIpen\fR]
-Draws the "beach ball" outline with \fIpen\fR attributes.
+\fB\-L\fP[\fIpen\fP]
+Draws the "beach ball" outline with \fIpen\fP attributes.
 [Defaults width = 1, color = 0/0/0, texture = solid].
 .br
 .TP
 \fB\-N
 \fRDoes \fBNOT \fRskip symbols that fall outside frame boundary specified by
-\fB\-R\fR [Default plots symbols inside frame only].
+\fB\-R\fP [Default plots symbols inside frame only].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-\fB\-T\fR[\fInum_of_planes\fR]
+\fB\-T\fP[\fInum_of_planes\fP]
 \fRPlots the nodal planes and outlines the bubble which is transparent.
-If \fInum_of_planes\fR is
+If \fInum_of_planes\fP is
 .br
-      \fI0\fR: both nodal planes are plotted;
-      \fI1\fR: only the first nodal plane is plotted;
-      \fI2\fR: only the second nodal plane is plotted.
+      \fI0\fP: both nodal planes are plotted;
+      \fI1\fP: only the first nodal plane is plotted;
+      \fI2\fP: only the second nodal plane is plotted.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
 \fB\-W
-\fRSet default pen attributes.
- [Defaults: width = 1, color = 0/0/0, texture = solid].
+#include "explain_pen.txt"
 #include "explain_-XY.txt"
 .TP
 \fB\-Z\fIcptfile
@@ -259,36 +260,36 @@ third column.
 \fROverlay zero trace moment tensor.
 .br
 .TP
-\fB\-a\fR[\fIsize\fR/[\fIP_axis_symbol\fR/[\fIT_axis_symbol\fR]]]
-Computes and plots P and T axes with symbols. Optionally specify \fIsize\fR
+\fB\-a\fP[\fIsize\fP/[\fIP_axis_symbol\fP/[\fIT_axis_symbol\fP]]]
+Computes and plots P and T axes with symbols. Optionally specify \fIsize\fP
 and (separate) P and T axis symbols from the following:
-(\fBc\fR) circle, (\fBd\fR) diamond, (\fBh\fR) hexagon,
-(\fBi\fR) inverse triangle,
-(\fBp\fR)point, (\fBs\fR) square, (\fBt\fR) triangle,
-(\fBx\fR) cross. [Defaults: \fI0.2\fBc\fI/c/c\fR or \fI0.08\fBi/\fIc/c\fR.]
+(\fBc\fP) circle, (\fBd\fP) diamond, (\fBh\fP) hexagon,
+(\fBi\fP) inverse triangle,
+(\fBp\fP)point, (\fBs\fP) square, (\fBt\fP) triangle,
+(\fBx\fP) cross. [Defaults: 0.2\fBc\fP/\fBc\fP/\fBc\fP or 0.08\fBi\fP/\fBc\fP/\fBc\fP.]
 .br
 .TP
-\fB\-e\fR\fIfill\fR
+\fB\-e\fP\fIfill\fP
 \fRSelects filling of T axis symbol.
 Set the shade (0\-255) or color (r/g/b). Default is white.  
 .br
 .TP
-\fB\-g\fR\fIfill\fR
+\fB\-g\fP\fIfill\fP
 Selects filling of P axis symbol.
 Set the shade (0\-255) or color (r/g/b). Default black.
 .br
 .TP
-\fB-o\fR
+\fB-o\fP
 Use the \fBpsvelomeca\fP input format without depth in the third column.
 .br
 .TP
-\fB\-p\fR[\fIpen\fR]
-Draws the P axis outline using default pen (see \fB\-W\fR), or sets
+\fB\-p\fP[\fIpen\fP]
+Draws the P axis outline using default pen (see \fB\-W\fP), or sets
 pen attributes.
 .br
 .TP
-\fB\-t\fR[\fIpen\fR]
-Draws the T axis outline using default pen (see \fB\-W\fR), or sets 
+\fB\-t\fP[\fIpen\fP]
+Draws the T axis outline using default pen (see \fB\-W\fP), or sets 
 pen attributes.
 #include "explain_-t.txt"
 #include "explain_-c.txt"

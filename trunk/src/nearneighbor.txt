@@ -1,11 +1,12 @@
 .TH NEARNEIGHBOR GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 nearneighbor \- A "Nearest neighbor" gridding algorithm
 .SH SYNOPSIS
-\fBnearneighbor\fP [ \fIxyzfile(s)\fP ] \fB\-G\fP\fIout_grdfile\fP \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]]  
-\fB\-N\fP\fIsectors\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] \fB\-S\fP\fIsearch_radius\fP[\fBm|c|k|K\fP] 
-[ \fB\-E\fP\fIempty\fP ] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-L\fP\fIflag\fP ] [ \fB\-V\fP ] [ \fB\-W\fP ] [ \fB\-:\fP ] 
-[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBnearneighbor\fP [ \fIxyzfile(s)\fP ] OPT(G)\fIout_grdfile\fP GMT_I_OPT  
+OPT(N)\fIsectors\fP GMT_Rgeo_OPT OPT(S)\fIsearch_radius\fP[\fBm\fP|\fBc\fP|\fBk\fP|\fBK\fP] 
+[ OPT(E)\fIempty\fP ] [ OPT(F) ] [ GMT_H_OPT ] [ OPT(L)\fIflag\fP ] [ GMT_V_OPT ] [ OPT(W) ] 
+[ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
 \fBnearneighbor\fP reads arbitrarily located (x,y,z[,w]) triples [quadruplets]
 from standard input [or \fIxyzfile(s)\fP] and uses a nearest neighbor algorithm to assign 

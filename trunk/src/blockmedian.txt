@@ -5,7 +5,7 @@ blockmedian \- filter to block average (x,y,z) data by L1 norm.
 .SH SYNOPSIS
 \fBblockmedian\fP [ \fIxyz[w]file(s)\fP ] GMT_I_OPT GMT_Rx_OPT 
 [ OPT(C) ] [ OPT(F) ] [ GMT_H_OPT ] [ OPT(Q) ] [ GMT_V_OPT ] 
-[ OPT(W)[\fBio\fP] ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_bo_OPT ] [ GMT_f_OPT ]
+[ OPT(W)[\fBio\fP] ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBblockmedian\fP reads arbitrarily located (x,y,z) triples [or optionally weighted
 quadruples (x,y,z,w)] from standard input [or \fIxyz[w]file(s)\fP] and writes to standard output a median position and
@@ -48,9 +48,9 @@ only, \fB\-Wo\fP for weighted output only.  [Default uses unweighted i/o].
 #include "explain_-t.txt"
 #include "explain_-i_binary.txt"
 #include "explain_-n.txt"
-[Default is 3 (or 4 if \fB\-W\fP is set) columns].
+[Default is 3 (or 4 if \fB\-Wi\fP is set) columns].
 #include "explain_-o_binary.txt"
-#include "explain_-n.txt"
+[Default is 3 (or 4 if \fB\-Wo\fP is set) columns].
 #include "explain_-f.txt"
 #include "explain_precision.txt"
 .SH EXAMPLES

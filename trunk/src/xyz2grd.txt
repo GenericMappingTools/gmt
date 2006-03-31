@@ -1,22 +1,23 @@
 .TH XYZ2GRD GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 xyz2grd \- Converting an ASCII or binary table to grd file format
 .SH SYNOPSIS
-\fBxyz2grd\fP \fIxyzfile\fP \fB\-G\fP\fIgrdfile\fP \fB\-I\fP\fIx_inc\fP[\fBm|c\fP][/\fIy_inc\fP[\fBm|c\fP]] 
-\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-A\fP[\fBn|z|u|l\fP] ] [ \fB\-D\fP\fIxname/yname/zname/scale/offset/title/remark\fP ] 
-[ \fB\-E\fP[\fInodata\fP] ] [ \fB\-F\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-N\fP\fInodata\fP ] [ \fB\-S\fP[\fIzfile\fP] ] [ \fB\-V\fP ] 
-[ \fB\-Z\fP[\fIflags\fP] ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBxyz2grd\fP \fIxyzfile\fP OPT(G)\fIgrdfile\fP GMT_I_OPT 
+GMT_Rgeo_OPT [ OPT(A)[\fBn|z|u|l\fP] ] [ GMT_GRDEDIT ] 
+[ OPT(E)[\fInodata\fP] ] [ OPT(F) ] [ GMT_H_OPT ] [ OPT(N)\fInodata\fP ] [ OPT(S)[\fIzfile\fP] ] [ GMT_V_OPT ] 
+[ OPT(Z)[\fIflags\fP] ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
 \fBxyz2grd\fP reads a z or xyz table and
 creates a binary grdfile.  \fBxyz2grd\fP will report if some of the nodes are not filled in with
 data.  Such unconstrained nodes are set to a value specified by the user [Default is NaN].
-Nodes with more than one value will be set to the average value.  As an option (using \fB\-Z\fP),
+Nodes with more than one value will be set to the average value.  As an option (using OPT(Z)),
 a 1-column z-table may be read assuming all nodes are present (z-tables can be in organized in a
-number of formats, see \fB\-Z\fP below.)
+number of formats, see OPT(Z) below.)
 .TP
 \fI[xy]zfile\fP
 ASCII [or binary] file holding z or (x,y,z) values.  xyz triplets do not
-have to be sorted (for binary triplets, see \fB\-b\fP).  1-column z tables must be sorted and the \fB\-Z\fP must be set). 
+have to be sorted (for binary triplets, see OPT(b)).  1-column z tables must be sorted and the \fB\-Z\fP must be set). 
 .TP
 .B \-G
 \fIgrdfile\fP is the name of the binary output grdfile.

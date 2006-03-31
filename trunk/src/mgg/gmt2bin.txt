@@ -1,8 +1,9 @@
 .TH GMT2BIN GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 gmt2bin \- Create bin-index files from gmt files
 .SH SYNOPSIS
-\fBgmt2bin\fP \fIlistfile\fP [ \fB\-P\fP\fIpath\fP ] [ \fB\-V\fP ]
+\fBgmt2bin\fP \fIlistfile\fP [ OPT(P)\fIpath\fP ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBgmt2bin\fP reads a file with a list of leg ids, opens each gmt file, and creates
 a bin-index file for each leg called <legid>.bix.  These are used by

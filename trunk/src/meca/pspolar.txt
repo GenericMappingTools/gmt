@@ -1,24 +1,24 @@
 .TH PSPOLAR GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
-\fBpspolar\fR\ - Plot polarities on the inferior focal half\-sphere on maps
+\fBpspolar\fP\ - Plot polarities on the inferior focal half\-sphere on maps
 .SH SYNOPSIS
 .br
-pspolar \fIfiles \fB\-J\fIparameters \fB\-R\fIwest/east/south/north\fR
-\fB\-D\fIlongitude/latitude\fR \fB\-M\fIsize\fR \fB\-S\fI<symbol><size>\fR
-[ \fB\-B\fItickinfo\fR ] [ \fB\-C\fIlongitude/latitude\fR[/dash_width/pointsize\fR] ] 
-[ \fB\-F\fIred/green/blue\fR ] [ \fB\-G\fIfill\fR ] [ \fB\-g\fIfill\fR ]
-[ \fB\-H\fR ] [ \fB\-h\fR ] [ \fB\-K\fR ] [ \fB\-L\fR ] [ \fB\-N\fR ]
-[ \fB\-O\fR ] [ \fB\-P\fR ]
-[ \fB\-s\fR\fIHalf-size\fB[v[\fI[<v_width/h_length/h_width/shape>]\fB][g\fI[<r/g/b>]\fB][l\fB]
-[ \fB-T\fIangle/form/justify/fontsize\fR ] [ \fB-t\fI<pen>\fR ]
-[ \fB\-U\fI[label]\fR ] [ \fB\-V\fR ] [ \fB\-W\fIpen\fR ]
-[ \fB\-X\fIx-shift\fR ] [ \fB\-Y\fIy-shift\fR ] [ \fB\-c\fIcopies\fR ]
+pspolar \fIfiles\fP GMT_J_OPT GMT_Rgeo_OPT
+OPT(D)\fIlon\fP/\fIlat\fP OPT(M)\fIsize\fP OPT(S)\fI<symbol><size>\fP
+[ GMT_B_OPT ] [ OPT(C)\fIlon\fP/\fIlat\fP[/\fIdash_width\fP/\fIpointsize\fP] ] 
+[ OPT(F)\fIcolor\fP ] [ OPT(G)\fIfill\fP ] [ OPT(g)\fIfill\fP ] 
+[ GMT_H_OPT ] [ OPT(h) ] [ GMT_K_OPT ] [ OPT(L) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ OPT(s)\fIHalf-size\fP[\fBv\fP[[\fIv_width\fP/\fIh_length\fP/\fIh_width\fP/\fIshape\fP]][\fBg\fP[\fIcolor\fP]][\fBl\fP]
+[ OPT(T)\fIangle\fP/\fIform\fP/\fIjustify\fP/\fIfontsize\fP ] [ OPT(t)\fIpen\fP ]
+[ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)\fIpen\fP ]
+[ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ]
 .SH DESCRIPTION
 .br
-\fBpspolar\fR reads data values from \fIfiles\fR [or standard input]
-and generates \fIPostScript\fR code that will plot stations on focal mechanisms
+\fBpspolar\fP reads data values from \fIfiles\fP [or standard input]
+and generates \fIPostScript\fP code that will plot stations on focal mechanisms
 on a map.
-The \fIPostScript\fR code is written to standard output.
+The \fIPostScript\fP code is written to standard output.
 .br
 .sp
 Parameters are expected to be in the following columns
@@ -37,65 +37,65 @@ polarity:
 .br
 .sp
 .SH ARGUMENTS
-\fIfiles\fR
+\fIfiles\fP
 List one or more file-names. If no files are given, pspolar will read standard input.
 #include "explain_-J_short.txt"
 #include "explain_-Rgeo.txt"
 .TP
-\fB\-D\fIlongitude/latitude\fR
+\fB\-D\fIlongitude/latitude\fP
 Maps the bubble at given longitude and latitude point.
 .br
 .TP
-\fB\-M\fIsize\fR
-Sets the size of the beach ball to plot polarities in.  \fISize\fR is in inch
-(unless \fBc\fR, \fBi\fR, \fBm\fR, or \fBp\fR is appended).
+\fB\-M\fIsize\fP
+Sets the size of the beach ball to plot polarities in.  \fISize\fP is in inch
+(unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
 .br
 .TP
-\fB\-S\fI<symbol_type><size>\fR
-Selects \fIsymbol_type\fR and symbol \fIsize\fR.  
-Size is in inch (unless \fBc\fR, \fBi\fR, \fBm\fR, or \fBp\fR is appended).
+\fB\-S\fI<symbol_type><size>\fP
+Selects \fIsymbol_type\fP and symbol \fIsize\fP.  
+Size is in inch (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
 Choose symbol type from
-st(\fIa\fR)r, (\fIc\fR)ircle, (\fId\fR)iamond, (\fIh\fR)exagon,
-(\fIi\fR)nverted triangle, (\fIp\fR)oint, (\fIs\fR)quare, (\fIt\fR)riangle,
-(\fIx\fR)cross.
+st(\fIa\fP)r, (\fIc\fP)ircle, (\fId\fP)iamond, (\fIh\fP)exagon,
+(\fIi\fP)nverted triangle, (\fIp\fP)oint, (\fIs\fP)quare, (\fIt\fP)riangle,
+(\fIx\fP)cross.
 .br
 .LP
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 #include "explain_-B_short.txt"
 .TP
-\fB\-C\fR
+\fB\-C\fP
 Offsets focal mechanisms to the latitude and longitude specified in the last
 two columns of the input file.
 .br
 .TP
-\fB\-E\fIfill\fR
+\fB\-E\fIfill\fP
 \fRSelects filling of symbols for stations in extensive quadrants.
 Set the shade (0\-255) or color (r/g/b) [Default is 250/250/250].
-If \fB-E\fIfill\fR is the same as \fB-F\fIfill\fR, use \fB-e\fR to outline.
+If \fB\-E\fP\fIfill\fP is the same as \fB\-F\fP\fIfill\fP, use \fB\-e\fP to outline.
 .br
 .TP
-\fB\-e\fI[pen]\fR
-Outline symbols in extensive quadrants using \fIpen\fR or the default pen (see
-\fB\-W\fR).
+\fB\-e\fI[pen]\fP
+Outline symbols in extensive quadrants using \fIpen\fP or the default pen (see
+\fB\-W\fP).
 .br
 .TP
-\fB\-F\fR\fIfill\fR
+\fB\-F\fP\fIfill\fP
 Sets background color of the beach ball. Default is no fill.
 .br
 .TP
-\fB\-f\fI[pen]\fR
-Outline the beach ball using \fIpen\fR or the default pen (see \fB\-W\fR).
+\fB\-f\fI[pen]\fP
+Outline the beach ball using \fIpen\fP or the default pen (see \fB\-W\fP).
 .br
 .TP
-\fB\-G\fR\fIfill\fR
+\fB\-G\fP\fIfill\fP
 Selects filling of symbols for stations in compressional quadrants.
 Set the shade (0\-255) or color (r/g/b) [Default is 0/0/0].
 .br
 .TP
-\fB\-g\fI[pen]\fR
-Outline symbols in compressional quadrants using \fIpen\fR or the default pen
-(see \fB\-W\fR).
+\fB\-g\fI[pen]\fP
+Outline symbols in compressional quadrants using \fIpen\fP or the default pen
+(see \fB\-W\fP).
 #include "explain_-H.txt"
 .TP
 \fB\-h\fP
@@ -107,29 +107,29 @@ Use special format derived from HYPO71 output
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-\fB\-s\fIhalf\-size/[V[<v_width/h_length/h_width/shape>]][G<r/g/b>][L]
+\fB\-s\fP\fIhalf\-size/[\fBV\fP[\fIv_width/h_length/h_width/shape\fP]][\fBG\fP\fIr/g/b\fP][\fBL\fP]
 .br
 Plots S polarity azimuth.
 .br
 S polarity is in last column.
-It may be a vector (V option) or a segment. 
+It may be a vector (\fBV\fP option) or a segment. 
 Give half\-size,v_width,h_length,h_width in inch
-(unless \fBc\fR, \fBi\fR, \fBm\fR, or \fBp\fR is appended).
-[L] option is for outline.
+(unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
+[\fBL\fP] option is for outline.
 .br
 .TP
-\fB\-T\fIangle/form/justify/fontsize in points\fP
+\fB\-T\fP\fIangle/form/justify/fontsize in points\fP
 .br
 To write station code. [Default is 0.0/0/5/12].
 .br
 .TP
-\fB\-t\fI<pen>
+\fB\-t\fIpen\fP
 Set pen color to write station code. Default uses the default pen (see
-\fB\-W\fR).
+\fB\-W\fP).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
-\fB\-W\fR
+\fB\-W\fP
 Set current pen attributes 
  [Defaults: width = 1, color = 0/0/0, texture = solid].
 #include "explain_-XY.txt"

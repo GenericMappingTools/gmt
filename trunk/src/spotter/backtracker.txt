@@ -1,12 +1,13 @@
 .TH BACKTRACKER GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 backtracker \- Forward and Backward flowlines and hotspot tracks 
 .SH SYNOPSIS
-\fBbacktracker\fP [\fIinfile(s)\fP] \fB\-E\fP\fIstage_file\fP 
-[ \fB\-A\fP[\fIyoung/old\fP] ] [ \fB\-C\fP ] [ \fB\-Df|b\fP ] [ \fB\-H\fP[\fInrec\fP] ] 
-[ \fB\-Lf|b\fP\fIstep\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP\fIupper_age\fP ] 
-[ \fB\-Q\fP\fIfixed_age\fP ] [ \fB\-S\fP\fIfilestem\fP ] [ \fB\-T\fP\fIzero_age\fP ] [ \fB\-V\fP ] 
-[ \fB\-W\fP[\fBa|t\fP] ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+\fBbacktracker\fP [\fIinfile(s)\fP] OPT(E)\fIstage_file\fP 
+[ OPT(A)[\fIyoung\fP/\fIold\fP] ] [ OPT(C) ] [ OPT(Df)|\fBb\fP ] [ GMT_H_OPT ] 
+[ OPT(Lf)|\fBb\fP\fIstep\fP ] [ GMT_M_OPT ] [ OPT(N)\fIupper_age\fP ] 
+[ OPT(Q)\fIfixed_age\fP ] [ OPT(S)\fIfilestem\fP ] [ OPT(T)\fIzero_age\fP ] [ GMT_V_OPT ] 
+[ OPT(W)[\fBa\fP|\fBt\fP] ] [ GMT_t_OPT ] [ GMT_b_OPT ]
 .SH DESCRIPTION
 \fBbacktracker\fP reads (longitude, latitude, age) positions from \fIinfiles\fP 
 [or standard input] and computes projected (x,y,t) coordinates using the 
@@ -90,6 +91,7 @@ lon, lat.  After these 2-3 items, we write azimuth, major, minor (in km) for the
 #include "explain_-n.txt"
 [Default is 3 input columns].
 #include "explain_-o_binary.txt"
+[Default depends on settings].
 .SH EXAMPLES
 To backtrack the (x,y,t) points in the file seamounts.d to their origin
 (presumably the hotspot), using the DC85.d Euler poles, run

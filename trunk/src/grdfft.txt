@@ -5,7 +5,7 @@ grdfft \- Perform mathematical operations on grdfiles in the frequency domain
 .SH SYNOPSIS
 \fBgrdfft\fP \fIin_grdfile\fP OPT(G)\fIout_grdfile\fP [ OPT(A)\fIazimuth\fP ] 
 [ OPT(C)\fIzlevel\fP ] [ OPT(D)[\fIscale\fP\fB|g\fP] ] [ OPT(E)[\fBx|y\fP][\fBw\fP] ] 
-[ OPT(F)[\fIx|y\fP]\fIlc/lp/hp/hc\fP ] [ OPT(I)[\fIscale\fP\fB|g\fP] ] [ OPT(L) ] [ OPT(M) ] 
+[ OPT(F)[\fBx\fP|\fBy\fP]\fIlc/lp/hp/hc\fP ] [ OPT(I)[\fIscale\fP\fB|g\fP] ] [ OPT(L) ] [ OPT(M) ] 
 [ OPT(N)\fIstuff\fP ] [ OPT(S)\fIscale\fP ] [ OPT(T)\fIte/rl/rm/rw/ri\fP ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBgrdfft\fP will take the 2-D forward Fast Fourier Transform and perform one or more mathematical
@@ -47,13 +47,13 @@ power[f], and 1 standard deviation in power[f] are written to stdout.
 Append \fBw\fP to write wavelength instead of frequency.
 .TP
 .B \-F
-Filter the data.  Place \fBx\fP or \fBy\fP immediately after \fB\-F\fP to filter x or y direction only; default is isotropic.  
+Filter the data.  Place \fBx\fP or \fBy\fP immediately after \fB\-F\fP to filter \fIx\fP or \fIy\fP direction only; default is isotropic.  
 Specify four wavelengths in correct units (see \fB\-M\fP) to design a bandpass filter: wavelengths greater than 
 \fIlc\fP or less than \fIhc\fP will be cut, wavelengths greater than \fIlp\fP and less than \fIhp\fP will be 
 passed, and wavelengths in between will be cosine-tapered.  E.g., \fB\-F\fP1000000/250000/50000/10000 \fB\-M\fP 
 will bandpass, cutting wavelengths > 1000 km and < 10 km, passing wavelengths between 250 km and 50 km.  To make 
-a highpass or lowpass filter, give hyphens (-) for \fIhp\fP/\fIhc\fP or \fIlc\fP/\fIlp\fP.  E.g., \fB\-F\fPx-/-/50/10 
-will lowpass X, passing wavelengths > 50 and rejecting wavelengths < 10.  \fB\-F\fPy1000/250/-/- will highpass Y, 
+a highpass or lowpass filter, give hyphens (-) for \fIhp\fP/\fIhc\fP or \fIlc\fP/\fIlp\fP.  E.g., \fB\-Fx\fP-/-/50/10 
+will lowpass \fIx\fP, passing wavelengths > 50 and rejecting wavelengths < 10.  \fB\-Fy\fP1000/250/-/- will highpass \fIy\fP, 
 passing wavelengths < 250 and rejecting wavelengths > 1000.
 .TP
 .B \-I

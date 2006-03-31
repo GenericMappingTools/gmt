@@ -1,8 +1,9 @@
 .TH X2SYS_PUT GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 x2sys_put \- Update track data bases
 .SH SYNOPSIS
-\fBx2sys_put\fP [ \fIinfo.tbf\fP ] \fB\-T\fP\fITAG\fP [ \fB\-V\fP ]
+\fBx2sys_put\fP [ \fIinfo.tbf\fP ] OPT(T)\fITAG\fP [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBx2sys_put\fP accepts a track bin-index file created by \fBx2sys_binlist\fP and
 adds this information about the data tracks to the relevant data base.

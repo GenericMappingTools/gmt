@@ -1,10 +1,10 @@
 .TH X2SYS_DATALIST GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 x2sys_datalist \- A generic data-extractor for ASCII or binary files
 .SH SYNOPSIS
-\fBx2sys_datalist\fP \fItrack(s)\fP \fB\-T\fP\fITAG\fP [ \fB\-F\fP\fIname1,name2,...\fP ] 
-[ \fB\-H\fP ] [ \fB\-R\fIwest/east/south/north\fP ]  [ \fB\-S\fP ] [ \fB\-V\fP ] 
-[ \fB\-bo\fP ]
+\fBx2sys_datalist\fP \fItrack(s)\fP OPT(T)\fITAG\fP [ OPT(F)\fIname1,name2,...\fP ] 
+[ GMT_H_OPT ] [ GMT_Rgeo_OPT ]  [ OPT(S) ] [ GMT_V_OPT ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBx2sys_datalist\fP reads one or more files and produces a single ASCII [or binary] table. 
 The files can be of any format, which must be descriped and passed with the

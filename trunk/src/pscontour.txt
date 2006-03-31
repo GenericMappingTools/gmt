@@ -1,15 +1,16 @@
 .TH PSCONTOUR GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 #define LEN_L 0.5
 #define SCALE_L \fB\-Jl\fP18/24/0.5\fBi\fP
 .SH NAME
 pscontour \- Contour xyz-data by direct triangulation
 .SH SYNOPSIS
-\fBpscontour\fP \fIxyzfile\fP \fB\-C\fP\fIcptfile\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-A\fP[\fB-\fP][\fIlabelinfo\fP] ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-D\fP[\fIdumpfile\fP] ] [ \fB\-E\fP\fIview_az/view_el\fP ] 
-[ \fB\-G\fP[d|f|n|l|L|x|X]\fIinfo\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] [ \fB\-K\fP ] 
-[ \fB\-L\fP\fIpen\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-S\fP ] [ \fB\-T\fP\fIindexfile\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
-[ \fB\-V\fP ] [ \fB\-W\fP[\fB+\fP]\fIpen\fP ] [ \fB\-X\fP\fIx-shift\fP ] 
-[ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ]
+\fBpscontour\fP \fIxyzfile\fP OPT(C)\fIcptfile\fP GMT_J_OPT GMT_Rgeo_OPT 
+[ OPT(A)[\fB-\fP][\fIlabelinfo\fP] ] [ GMT_B_OPT ] [ OPT(D)[\fIdumpfile\fP] ] [ OPT(E)\fIview_az\fP/\fIview_el\fP ] 
+[ GMT_CONTG ] [ GMT_H_OPT ] [ OPT(I) ] [ GMT_K_OPT ] 
+[ OPT(L)\fIpen\fP ] [ GMT_Mo_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(S) ] [ OPT(T)\fIindexfile\fP ] [ GMT_U_OPT ] 
+[ GMT_V_OPT ] [ OPT(W)[\fB+\fP]\fIpen\fP ] [ GMT_X_OPT ] 
+[ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ]
 .SH DESCRIPTION
 \fBpscontour\fP reads an ASCII [or binary] xyz-file and produces a raw contour plot by triangulation.  By default, the
 optimal Delaunay triangulation is performed (using either Shewchuk's [1996]\"'
@@ -89,7 +90,7 @@ the contour lines are colored according to the cpt file (see \fB\-C\fP).
 [Default is 3 input columns].
 Use 4-byte integer triplets for node ids (\fB\-T\fP).
 #include "explain_-o_binary.txt"
-#include "explain_-n.txt"
+[Default is 3 output columns].
 .SH EXAMPLES
 To make a raw contour plot from the file topo.xyz and drawing the contours (pen = 2)
 given in the color palette file topo.cpt on a Lambert map

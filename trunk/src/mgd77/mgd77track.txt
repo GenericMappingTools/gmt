@@ -1,4 +1,5 @@
 .TH MGD77TRACK GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 #ifdef SI
 #define SCALE1 0.25cm/degree
 #define SCALE2 \fB\-Jm\fP0.25
@@ -9,11 +10,11 @@
 .SH NAME
 mgd77track \- A shiptrack plotting program
 .SH SYNOPSIS
-\fBmgd77track\fP \fINGDC-ids\fP \fB\-R\fIwest/east/south/north\fP \fB\-J\fP\fIparameters\fP 
-[ \fB\-A\fP[\fBc\fP][\fIsize\fP] ]  [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-Cf\fP|\fBg\fP|\fBe\fP ] [ \fB\-Da\fP\fIstartdate\fP ] [ \fB\-Db\fP\fIstopdate\fP ] 
-[ \fB\-I\fP\fIignore\fP ] [ \fB\-K\fP ] [ \fB\-L\fP\fItrackticks\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-Sa\fP\fIstartdist\fP[unit] ] 
-[ \fB\-Sb\fP\fIstopdist\fP[unit] ] [ \fB\-TT|t|d\fP\fIms,mc,mfs,mf,mfc\fP ] [ \fB\-U\fP[\fIdx/dy/\fP][\fIlabel\fP] ] 
-[ \fB\-V \fP ] [ \fB\-W\fP\fIpen\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ]
+\fBmgd77track\fP \fINGDC-ids\fP GMT_Rgeo_OPT GMT_J_OPT 
+[ OPT(A)[\fBc\fP][\fIsize\fP] ]  [ GMT_B_OPT ] [ OPT(C)|\fBg\fP|\fBe\fP ] [ OPT(Da)\fIstartdate\fP ] [ OPT(Db)\fIstopdate\fP ] 
+[ OPT(I)\fIignore\fP ] [ GMT_K_OPT ] [ OPT(L)\fItrackticks\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Sa)\fIstartdist\fP[\fBu\fP] ] 
+[ OPT(Sb)\fIstopdist\fP[\fBu\fP] ] [ OPT(TT)|\fBt\fP|\fBd\fP\fIms,mc,mfs,mf,mfc\fP ] [ GMT_U_OPT ] 
+[ GMT_V_OPT ] [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ]
 .SH DESCRIPTION
 \fBmgd77track\fP reads NGDC MGD77 cruises and creates \fIPostScript\fP code that will plot one or more ship tracks on a
 map using the specified projection.  The \fIPostScript\fP code is written to standard output.

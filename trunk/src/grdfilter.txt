@@ -3,7 +3,7 @@
 .SH NAME
 grdfilter \- Filter a \fI.grd\fP file in the Time domain
 .SH SYNOPSIS
-\fBgrdfilter\fP \fIinput_file.grd\fP OPT(D)\fIflag\fP \fB\-F\fP\fI<type><width>\fP[\fImode\fP] 
+\fBgrdfilter\fP \fIinput_file.grd\fP OPT(D)\fIdistance_flag\fP \fB\-F\fP\fI<filtertype><width>\fP[\fImode\fP] 
 OPT(G)\fIoutput_file.grd\fP [ GMT_I_OPT ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] 
 .SH DESCRIPTION
 \fBgrdfilter\fP will filter a \fI.grd\fP file in the time domain using one
