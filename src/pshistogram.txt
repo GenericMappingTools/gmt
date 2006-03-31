@@ -1,15 +1,16 @@
 .TH PSHISTOGRAM GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 #define LEN 0.75
 #define SCALE \fB\-Jx\fP0.75\fBc\fP/0.01\fBc\fP
 .SH NAME
 pshistogram \- Bin data and plot histograms
 .SH SYNOPSIS
-\fBpshistogram\fB \fIfile\fP \fB\-Jx\fP\fIxscale[/yscale]\fP \fB\-W\fP\fIbin_width\fP [ \fB\-A\fP ] [ \fB\-B\fP\fItickinfo\fP ] 
-[ \fB\-C\fP ] [ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-G\fP\fIfill\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP[\fBo\fP] ] 
-[ \fB\-K\fP ] [ \fB\-L\fP\fIpen\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-Q\fP ] 
-[ \fB\-R\fIwest/east/south/north\fP[\fBr\fP] ] [ \fB\-S\fP ] [ \fB\-T\fP\fIcol\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ]  
-[ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fItype\fP ] [ \fB\-c\fP\fIcopies\fP ] 
-[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBpshistogram\fB \fIfile\fP GMT_Jx_OPT OPT(W)\fIbin_width\fP [ OPT(A) ] [ GMT_B_OPT ] 
+[ OPT(C) ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] 
+[ OPT(I)[\fBo\fP] ] [ GMT_K_OPT ] [ OPT(L)\fIpen\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ \fB\-Q\fP ] 
+[ GMT_Rx_OPT ] [ OPT(S) ] [ OPT(T)\fIcol\fP ] [ GMT_U_OPT ] [ GMT_V_OPT ]  
+[ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fItype\fP ] [ GMT_c_OPT ] 
+[ GMT_bi_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBpshistogram\fP reads \fIfile\fP [or standard input] and examines data column \fIcol\fP to
 calculate histogram parameters based on the bin-width provided.  Using these parameters,

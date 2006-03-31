@@ -1,15 +1,16 @@
 .TH PSCLIP GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 psclip \- To set up polygonal clip paths
 .SH SYNOPSIS
-\fBpsclip\fP \fIxyfiles\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-E\fP\fIaz/el\fP ] [ \fB\-K\fP ] [ \fB\-N\fP ] 
-[ \fB\-M\fP[\fIflag\fP] ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
-[ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] 
-[ \fB\-Z\fP\fIzlevel\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBpsclip\fP \fIxyfiles\fP GMT_J_OPT GMT_Rgeo_OPT 
+[ GMT_B_OPT ] [ OPT(E)\fIazim\fP/\fIelev\fP ] [ GMT_K_OPT ] [ OPT(N) ] 
+[ GMT_Mo_OPT ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] 
+[ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
 .br
 .sp
-\fBpsclip\fP \fB\-C\fP [ \fB\-K\fP ] [ \fB\-O\fP ]
+\fBpsclip\fP OPT(C) [ GMT_K_OPT ] [ GMT_O_OPT ]
 .SH DESCRIPTION
 \fBpsclip\fP reads (x,y) file(s) [or standard input] and draws polygons that are
 activated as clipping paths.  Several files may be read to create complex paths

@@ -1,4 +1,5 @@
 .TH GMTDIGITIZE GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 #define	DIG_PORT	/dev/ttyS0
 #define	DIG_LPI		2540
 #define	LEN1	0.5
@@ -6,10 +7,10 @@
 .SH NAME
 gmtdigitize \- Digitizing and Inverse map transformation of map x/y coordinates 
 .SH SYNOPSIS
-\fBgmtdigitize\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-A\fP ] [ \fB\-C\fP\fIdevice\fP ] [ \fB\-D\fP\fIlimit\fP ] [ \fB\-F\fP ] [ \fB\-H\fP ] 
-[ \fB\-L\fP\fIlpi\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP\fInamestem\fP ] [ \fB\-S\fP ] 
-[ \fB\-V\fP ] [ \fB\-Zk|v\fP ] [ \fB\-bo\fP[\fBs\fP] ] [ > output.d ]
+\fBgmtdigitize\fP GMT_J_OPT GMT_Rgeo_OPT 
+[ OPT(A) ] [ OPT(C)\fIdevice\fP ] [ OPT(D)\fIlimit\fP ] [ OPT(F) ] [ GMT_H_OPT ] 
+[ OPT(L)\fIlpi\fP ] [ GMT_Mo_OPT ] [ OPT(N)\fInamestem\fP ] [ OPT(S) ] 
+[ GMT_V_OPT ] [ OPT(Zk)|\fBv\fP ] [ GMT_bo_OPT ] [ > output.d ]
 .SH DESCRIPTION
 \fBgmtdigitize\fP digitizes points from a digitizer via a serial line connection and
 computes map coordinates using the specified map projection.  The program is interactive

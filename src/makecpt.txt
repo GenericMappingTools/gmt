@@ -1,9 +1,10 @@
 .TH MAKECPT GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 makecpt \- Make GMT color palette tables
 .SH SYNOPSIS
-\fBmakecpt\fP [ \fB\-C\fP\fItable\fP ] [ \fB\-D\fP ]  [ \fB\-I\fP ] [ \fB\-N\fP ] [ \fB\-Q\fP[\fBi|o\fP] ] 
-[ \fB\-T\fP\fIz0/z1/dz\fP | \fB\-T\fP\fIztable\fP] [ \fB\-V\fP ] [ \fB\-Z\fP ]
+\fBmakecpt\fP [ OPT(C)\fItable\fP ] [ OPT(D) ]  [ OPT(I) ] [ OPT(N) ] [ OPT(Q)[\fBi|o\fP] ] 
+[ OPT(T)\fIz0/z1/dz\fP | OPT(T)\fIztable\fP] [ GMT_V_OPT ] [ OPT(Z) ]
 .SH DESCRIPTION
 \fBmakecpt\fP is a utility that will help you make color palette tables (cpt files).  You define
 an equidistant set of contour intervals or pass your own z-table, and create a new cpt file based on

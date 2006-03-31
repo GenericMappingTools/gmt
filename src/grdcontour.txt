@@ -6,9 +6,8 @@ grdcontour \- contouring of 2-D gridded data sets
 \fBgrdcontour\fP \fIgrdfile\fP OPT(C)\fIcont_int\fP GMT_J_OPT 
 [ OPT(A)[\fB-\fP|\fIannot_int\fP][\fIlabelinfo\fP] ] 
 [ GMT_B_OPT ] [ OPT(D)\fIdumpfile\fP ] [ OPT(E)\fIazimuth/elevation\fP ] 
-[ OPT(G)[\fBd\fP|\fBf\fP|\fBn\fP|\fBl\fP|\fBL\fP|\fBx\fP|\fBX\fP]\fIinfo\fP ] 
-[ GMT_K_OPT ] [ OPT(L)\fIlow/high\fP ] [ GMT_Mo_OPT ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
-[ OPT(Q)\fIcut\fP ] [ GMT_Rgeo_OPT ] 
+[ GMT_CONTG ] [ GMT_K_OPT ] [ OPT(L)\fIlow/high\fP ] [ GMT_Mo_OPT ] 
+[ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q)\fIcut\fP ] [ GMT_Rgeo_OPT ] 
 [ OPT(S)\fIsmoothfactor\fP ] [ OPT(T)[\fB+|-\fP][\fIgap/length\fP][\fB:\fP\fILH\fP] ] 
 [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)[\fB+\fP][\fItype\fP]\fIpen\fP ] 
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)[\fIfactor\fP[/\fIshift\fP]][\fBp\fP] ] 

@@ -1,30 +1,29 @@
 .TH PSMASK GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 psmask \- To clip or mask areas of no data on a map
 .SH SYNOPSIS
-\fBpsmask\fP [\fIxyzfile\fP] \fB\-I\fP\fIdx\fP[\fBm|c\fP][\fI/dy\fP[\fBm|c\fP]] \fB\-J\fP\fIparameters\fP 
-\fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-B\fP\fItickinfo\fP ]  
-[ \fB\-D\fP\fIdumpfile\fP ] [ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-F\fP ] 
-[ \fB\-G\fP\fIfill\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-K\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP ] [ \fB\-O\fP ] 
-[ \fB\-P\fP ] [ \fB\-S\fP\fIsearch_radius\fP[\fBm|c|k|K\fP] ] [ \fB\-T\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
-[ \fB\-V\fP ] [ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ]  [ \fB\-:\fP ] 
-[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+\fBpsmask\fP [\fIxyzfile\fP] GMT_I_OPT GMT_J_OPT GMT_Rgeo_OPT [ GMT_B_OPT ]  
+[ OPT(D)\fIdumpfile\fP ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(F) ] 
+[ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_K_OPT ] [ GMT_Mo_OPT ] [ OPT(N) ] [ GMT_O_OPT ] 
+[ GMT_P_OPT ] [ OPT(S)\fIsearch_radius\fP[\fBm\fP|\fBc\fP|\fBk\fP|\fBK\fP] ] [ OPT(T) ] [ GMT_U_OPT ] 
+[ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ]  [ GMT_t_OPT ] [ GMT_bi_OPT ]
 .br
 .sp
-\fBpsmask\fP \fB\-C\fP [ \fB\-K\fP ] [ \fB\-O\fP ]
+\fBpsmask\fP OPT(C) [ GMT_K_OPT ] [ GMT_O_OPT ]
 .SH DESCRIPTION
-\fBpsmask\fP reads a (x,y,z) file [or standard input] and uses this information to find out
+\fBpsmask\fP reads a (\fIx\fP,\fIy\fP,\fIz\fP) file [or standard input] and uses this information to find out
 which grid cells are reliable.  Only gridcells which have one or more data points are considered
 reliable.  As an option, you may specify a radius of influence. Then, all gridcells that are
 within \fIradius\fP of a data point are considered reliable.  Furthermore, an option is provided to
 reverse the sense of the test.  Having found the reliable/not reliable points, \fBpsmask\fP will
-either paint tiles to mask these nodes (with the \fB\-T\fP) switch, or use contouring to create
+either paint tiles to mask these nodes (with the OPT(T) switch), or use contouring to create
 polygons that will clip out regions of no interest.  When clipping is initiated, it will stay in
-effect until turned off by a second call to \fBpsmask\fP using the \fB\-C\fP option.
+effect until turned off by a second call to \fBpsmask\fP using the OPT(C) option.
 .TP
 \fIxyzfile\fP
-File with (x,y,z) values (e.g., that was used to run \fBsurface\fP).  If no file
-is given, standard input is read.  For binary files, see \fB\-b\fP.
+File with (\fIx\fP,\fIy\fP,\fIz\fP) values (e.g., that was used to run \fBsurface\fP).  If no file
+is given, standard input is read.  For binary files, see OPT(b).
 #include "explain_-I.txt"
 #include "explain_-J_short.txt"
 #include "explain_-R.txt"

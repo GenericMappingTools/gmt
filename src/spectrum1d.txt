@@ -1,11 +1,12 @@
 .TH SPECTRUM1D GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 spectrum1d \- compute auto\- [and cross\- ] spectra from one [or two] timeseries.
 .SH SYNOPSIS
-\fBspectrum1d\fP [ \fIx[y]file\fP ] \fB\-S\fP\fIsegment_size\fP] 
-[ \fB\-C\fP[\fBxycnpago\fP] ] [ \fB\-D\fP\fIdt\fP ] 
-[ \fB\-N\fP\fIname_stem\fP ] [ \fB\-V\fP ] [ \fB\-W\fP ] 
-[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBspectrum1d\fP [ \fIx[y]file\fP ] OPT(S)\fIsegment_size\fP] 
+[ OPT(C)[\fBxycnpago\fP] ] [ OPT(D)\fIdt\fP ] 
+[ OPT(N)\fIname_stem\fP ] [ GMT_V_OPT ] [ OPT(W) ] 
+[ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBspectrum1d\fP reads X [and Y] values from the first [and second] columns on standard input 
 [or \fIx[y]file\fP].  These values are treated as timeseries X(t) [Y(t)] sampled at equal intervals 
@@ -82,7 +83,7 @@ Write Wavelength rather than frequency in column 1 of the output file[s] [Defaul
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-o_binary.txt"
-#include "explain_-n.txt"
+[Default is 2 output columns].
 #include "explain_-f.txt"
 #include "explain_precision.txt"
 .SH EXAMPLES

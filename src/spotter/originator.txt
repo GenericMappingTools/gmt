@@ -1,13 +1,13 @@
 .TH ORIGINATOR GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 originator \- Associate seamounts with hotspot point sources 
 .SH SYNOPSIS
-\fBoriginator\fP [\fIinfile(s)\fP] \fB\-E\fP\fIstage_file\fP 
-\fB\-F\fP\fIhs_file\fP 
-[ \fB\-C\fP ] [ \fB\-D\fP\fId_km\fP ] 
-[ \fB\-H\fP[\fInrec\fP] ] [ \fB\-N\fP\fIupper_age\fP ] 
-[ \fB\-S\fP[\fIn_hs\fP] ] [ \fB\-T\fP ] [ \fB\-V\fP ]  \fB\-W\fP\fImaxdist\fP ] [ \fB\-:\fP ] 
-[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+\fBoriginator\fP [\fIinfile(s)\fP] OPT(E)\fIstage_file\fP 
+OPT(F)\fIhs_file\fP 
+[ OPT(C) ] [ OPT(D)\fId_km\fP ] [ GMT_H_OPT ] [ OPT(N)\fIupper_age\fP ] 
+[ OPT(S)[\fIn_hs\fP] ] [ OPT(T) ] [ GMT_V_OPT ]  OPT(W)\fImaxdist\fP ] [ GMT_t_OPT ] 
+[ GMT_bi_OPT ]
 .SH DESCRIPTION
 \fBoriginator\fP reads (longitude, latitude, height, radius, crustal_age) records from \fIinfiles\fP 
 [or standard input] and uses the given Absolute Plate Motion (APM) stage

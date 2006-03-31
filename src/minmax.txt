@@ -1,11 +1,11 @@
 .TH MINMAX GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 minmax \- Find extreme values in data tables
 .SH SYNOPSIS
-\fBminmax\fP [ \fIfiles\fP] [ \fB\-C\fP ] [ \fB\-EL|l|H|h\fP\fIcol\fP ] 
-[ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIdx\fP[/\fIdy\fP[/\fIdz\fP...] ] 
-[ \fB\-M\fP[\fIflag\fP] ] [ \fB\-T\fP\fIdz\fP ] 
-[ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBminmax\fP [ \fIfiles\fP] [ OPT(C) ] [ OPT(EL)|\fBl\fP|\fBH\fP|\fBh\fP\fIcol\fP ] 
+[ GMT_H_OPT ] [ OPT(I)\fIdx\fP[/\fIdy\fP[/\fIdz\fP...] ] 
+[ GMT_Mo_OPT ] [ OPT(T)\fIdz\fP ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBminmax\fP reads its standard input [or from files] and finds the
 extreme values in each of the columns.  It recognizes NaNs and

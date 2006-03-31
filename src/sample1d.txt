@@ -1,10 +1,11 @@
 .TH SAMPLE1D GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 sample1d \- Resampling of 1-D data sets
 .SH SYNOPSIS
-\fBsample1d\fP \fIinfile\fP [ \fB\-Fl|a|c\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP\fIxinc\fP ] 
-[ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP\fIknotfile\fP ] [ \fB\-S\fP\fIxstart\fP ] [ \fB\-T\fP\fIx-col\fP] 
-[ \fB\-V ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBsample1d\fP \fIinfile\fP [ OPT(Fl)|\fBa\fP|\fBc\fP ] [ GMT_H_OPT ] [ OPT(I)\fIxinc\fP ] 
+[ GMT_M_OPT ] [ OPT(N)\fIknotfile\fP ] [ OPT(S)\fIxstart\fP ] [ OPT(T)\fIx_col\fP] 
+[ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBsample1d\fP reads a multi-column ASCII [or binary] data set from file [or standard input] and interpolates the
 timeseries/profile at locations where the user needs the values.  The user must provide
@@ -46,7 +47,7 @@ Sets the column number of the independent variable [Default is 0 (first)].
 #include "explain_-n.txt"
 [Default is 2 (or at least the number of columns implied by \fB\-T\fP)].
 #include "explain_-o_binary.txt"
-#include "explain_-n.txt"
+[Default is same as input].
 #include "explain_-f.txt"
 #include "explain_precision.txt"
 .SH EXAMPLES

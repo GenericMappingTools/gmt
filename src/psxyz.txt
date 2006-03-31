@@ -1,4 +1,5 @@
 .TH PSXYZ GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 #define PARAMS_SI 0.075\fBc\fP/0.3\fBc\fP/0.25\fBc\fP
 #define LEN_1 1.25
 #define OPT_1	\fB\-Jx\fP1.25\fBc \-Jz\fP0.125\fBc \-So\fP1.25\fBc\fP
@@ -8,13 +9,12 @@
 .SH NAME
 psxyz \- Plot lines, polygons, and symbols in 3-D
 .SH SYNOPSIS
-\fBpsxyz\fB \fIfiles\fP \fB\-J\fP\fIparameters\fP \fB\-R\fIwest/east/south/north/zmin/zmax\fP[\fBr\fP] 
-[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIcptfile\fP ] [ \fB\-E\fP\fIazimuth/elevation\fP ] 
-[ \fB\-G\fP\fIfill\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-K\fP ] [ \fB\-L\fP ] [ \fB\-M\fP[\fIflag\fP] ] 
-[ \fB\-N\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-Q\fP ] [ \fB\-S\fP[\fIsymbol\fP][\fIsize\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
-[ \fB\-V\fP ] [ \fB\-W\fP[\fIpen\fP] ] 
-[ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fIzlevel\fP ] [ \fB\-:\fP ] [ \fB\-c\fP\fIcopies\fP ] 
-[ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBpsxyz\fB \fIfiles\fP GMT_J_OPT GMT_Jz_OPT GMT_Rgeoz_OPT 
+[ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] 
+[ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_K_OPT ] [ OPT(L) ] [ GMT_Mo_OPT ] 
+[ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)[\fIsymbol\fP][\fIsize\fP] ] [ GMT_U_OPT ] 
+[ GMT_V_OPT ] [ OPT(W)[\fIpen\fP] ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_t_OPT ] [ GMT_c_OPT ] 
+[ GMT_bi_OPT ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
 \fBpsxyz\fP reads (x,y,z) triplets from \fIfiles\fP [or standard input] and
 generates \fIPostScript\fP code that will plot lines, polygons, or symbols at those locations in 3-D.

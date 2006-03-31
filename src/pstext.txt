@@ -1,17 +1,16 @@
 .TH PSTEXT GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 #define CLEARANCE_SI 0.1\fBc\fP/0.1\fBc\fP
 #define CLEARANCE_US 0.0254\fBi\fP/0.0254\fBi\fP
 .SH NAME
 pstext \- To plot text on maps
 .SH SYNOPSIS
-\fBpstext\fP \fItextfile\fP \fB\-J\fP\fIparameters\fP 
-\fB\-R\fIwest/east/south/north\fP[\fBr\fP] 
-[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIdx/dy\fP ]  
-\fB\-D\fP[\fBj\fP]\fIdx/dy\fP[\fBv\fP[\fIred/green/blue\fP] ] [ \fB\-E\fP\fIazimuth/elevation\fP ] 
-[ \fB\-G\fP\fIred/green/blue\fP ] [ \fB\-H\fP[\fInrec\fP] ] [ \fB\-K\fP ] [ \fB\-L\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
-[ \fB\-S\fP\fIpen\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] [ \fB\-W\fP[\fIred/green/blue\fP][\fBo|O|c|C\fP[\fIpen\fP]] ] 
-[ \fB\-X\fP\fIx-shift\fP ] [ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fIzlevel\fP ] 
-[ \fB\-c\fP\fIcopies\fP ] [ \fB\-:\fP ]
+\fBpstext\fP \fItextfile\fP GMT_J_OPT GMT_Rgeo_OPT 
+[ GMT_B_OPT ] [ OPT(C)\fIdx/dy\fP ]  
+[ OPT(D)[\fBj\fP]\fIdx\fP/\fIdy\fP[\fBv\fP[\fIcolor\fP] ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] 
+[ OPT(G)\fIcolor\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L) ] [ GMT_Mo_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ OPT(S)\fIpen\fP ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)[\fIcolor\fP][\fBo\fP|\fBO\fP|\fBc\fP|\fBC\fP[\fIpen\fP]] ] 
+[ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT ] [ GMT_t_OPT ]
 .SH DESCRIPTION
 \fBpstext\fP plots textstrings of variable size, font type, and orientation.
 Various map projections are provided, with the option to draw and annotate the

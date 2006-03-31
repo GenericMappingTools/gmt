@@ -1,13 +1,14 @@
 .TH PSSEGYZ GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 pssegyz \- Create imagemasked postscript from SEGY file
 .SH SYNOPSIS
-\fBpssegyz\fP \fISEGYfile\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP \fB\-D\fP\fIdeviation\fP 
-\fB\-F\fP[\fBrgb\fP|\fBgray\fP]|\fB\-W\fP 
-[ \fB\-B\fP\fIbias\fP ] [ \fB\-C\fP\fIclip\fP ] [ \fB-E\fP\fIazimuth\fP/\fIelevation\fP ]
-[ \fB\-I\fP ] [ \fB\-K\fP ] [ \fB\-L\fP\fInsamp\fP ] [ \fB\-M\fP\fIntrace\fP ] [ \fB\-N\fP ] 
-[ \fB\-O\fP ] [ \fB\-P\fP ] [ \fB\-S\fP\fIheader_x\fP/\fIheader_y\fP ] [ \fB\-U\fP\fIredvel\fP ]
-[ \fB\-V \fP ] [ \fB\-X\fP\fIscale\fP ] [ \fB\-Y\fP\fIsample_int\fP ] [ \fB\-Z\fP ]
+\fBpssegyz\fP \fISEGYfile\fP GMT_J_OPT GMT_Jz_OPT GMT_Rgeoz_OPT OPT(D)\fIdeviation\fP 
+OPT(F)[\fIrgb\fP|\fIgray\fP]|OPT(W) 
+[ OPT(B)\fIbias\fP ] [ OPT(C)\fIclip\fP ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] 
+[ OPT(I) ] [ GMT_K_OPT ] [ OPT(L)\fInsamp\fP ] [ OPT(M)\fIntrace\fP ] [ OPT(N) ] 
+[ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(S)\fIheader_x\fP/\fIheader_y\fP ] [ OPT(U)\fIredvel\fP ] 
+[ GMT_V_OPT ] [ OPT(X)\fIscale\fP ] [ OPT(Y)\fIsample_int\fP ] [ OPT(Z) ]
 .SH DESCRIPTION
 \fBpssegyz\fP reads a native (IEEE) format SEGY file and produces a
 \fIPostScript\fP image of the seismic data. The \fIimagemask\fP

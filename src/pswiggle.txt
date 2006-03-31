@@ -1,20 +1,21 @@
 .TH PSWIGGLE GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 #define LEN 15
 #define SCALE_S \fB\-JS\fP0/90/15\fBc\fP
 .SH NAME
 pswiggle \- Plot anomaly along track on a map
 .SH SYNOPSIS
-\fBpswiggle\fP \fIxyz_files\fP \fB\-J\fP\fIparameters\fP \fB\-R\fP\fIwest/east/south/north\fP[\fBr\fP] 
-\fB\-Z\fP\fIscale\fP [ \fB\-A\fP\fIazimuth\fP ] [ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP\fIcenter\fP ] [ \fB\-D\fP\fIgap\fP ] [ \fB\-E\fP\fIazimuth/elevation\fP ] 
-[ \fB\-G\fP\fIfillrgb\fP ] [ \fB\-H\fP[\fInrec\fP] ] 
-[ \fB\-I\fP\fIfix_az\fP ] [ \fB\-K\fP ] [ \fB\-M\fP[\fIflag\fP] ] [ \fB\-N\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
-[ \fB\-S\fP[\fBx\fP]\fIlon0/lat0/length\fP[\fIunits\fP] ] [ \fB\-T\fP\fItrack_pen\fP ] 
-[ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-W\fP\fIwiggle_pen\fP ] [ \fB\-X\fP\fIx-shift\fP ] 
-[ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-f\fP[\fBi|o\fP]\fP\fIcolinfo\fP ]
+\fBpswiggle\fP \fIxyz_files\fP GMT_J_OPT GMT_Rgeo_OPT 
+OPT(Z)\fIscale\fP [ OPT(A)\fIazimuth\fP ] [ GMT_B_OPT ] [ OPT(C)\fIcenter\fP ] [ OPT(D)\fIgap\fP ] 
+[ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(G)\fIcolor\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] 
+[ OPT(I)\fIfix_az\fP ] [ GMT_K_OPT ] [ GMT_Mo_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ OPT(S)[\fBx\fP]\fIlon0\fP/\fIlat0\fP/\fIlength\fP[\fIunits\fP] ] [ OPT(T)\fItrack_pen\fP ] 
+[ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)\fIwiggle_pen\fP ] [ GMT_X_OPT ] 
+[ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
-\fBpswiggle\fP reads (x,y,z) triplets from files [or standard input] and plots z as a function of
-distance along track.  This means that two consecutive (x,y) points define the local distance axis,
-and the local z axis is then perpendicular to the distance axis.  The user may set a preferred
+\fBpswiggle\fP reads (\fIx\fP,\fIy\fP,\fIz\fP) triplets from files [or standard input] and plots z as a function of
+distance along track.  This means that two consecutive (\fIx\fP,\fIy\fP) points define the local distance axis,
+and the local \fIz\fP axis is then perpendicular to the distance axis.  The user may set a preferred
 positive anomaly plot direction, and if the positive normal is outside
 the plus/minus 90 degree window around the preferred direction, then 180 degrees are added to the
 direction.  Either the positive or the negative wiggle may be shaded.  The resulting \fIPostScript\fP

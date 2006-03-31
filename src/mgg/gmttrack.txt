@@ -1,4 +1,5 @@
 .TH GMTTRACK GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 #ifdef SI
 #define SCALE1 4cm/degree
 #define SCALE2 \fB\-Jm\fP4
@@ -9,11 +10,10 @@
 .SH NAME
 gmttrack \- A shiptrack plotting program
 .SH SYNOPSIS
-\fBgmttrack\fP \fIleg-ids\fP \fB\-R\fIwest/east/south/north\fP \fB\-J\fP\fIparameters\fP 
-[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-M\fP\fItrackticks\fP ] [ \fB\-W\fP\fIpen\fP[\fIred/green/blue\fP][\fBOA\fP] ] 
-[ \fB\-A\fP[\fIsize\fP] ] 
-[ \fB\-P\fP ] [ \fB\-O\fP ] [ \fB\-K\fP ]  [ \fB\-U\fP[\fIdx/dy/\fP][\fIlabel\fP] ] [ \fB\-X\fP\fIx-shift\fP ] 
-[ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-V \fP ]
+\fBgmttrack\fP \fIleg-ids\fP GMT_Rgeo_OPT GMT_J_OPT 
+[ GMT_B_OPT ] [ \fB\-M\fP\fItrackticks\fP ] [ \fB\-W\fP\fIpen\fP[\fIred/green/blue\fP][\fBOA\fP] ] 
+[ \fB\-A\fP[\fIsize\fP] ] [ GMT_K_OPT ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
+[ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ]
 .SH DESCRIPTION
 \fBgmttrack\fP reads gmt cruises and creates \fIPostScript\fP code that will plot one or more ship tracks on a
 map using the specified projection.  The \fIPostScript\fP code is written to standard output.

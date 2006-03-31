@@ -1,10 +1,11 @@
 .TH GMTLIST GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 gmtlist \- A data-extractor for <legid>.gmt files
 .SH SYNOPSIS
-\fBgmtlist\fP \fIleg-ids\fP [ \fB\-C\fP\fIcorrectionfile\fP ] [ \fB\-Da\fP\fIstartdate\fP ] 
-[ \fB\-Db\fP\fIstopdate\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-G\fP ] [ \fB\-H\fP ] [ \fB\-R\fIwest/east/south/north\fP ] 
-[ \fB\-Sa\fP\fIstartdist\fP ] [ \fB\-Sb\fP\fIstopdist\fP ] [ \fB\-V\fP ] [ \fB\-W\fP\fIweight\fP ] [ \fB\-b\fP ]
+\fBgmtlist\fP \fIleg-ids\fP [ OPT(C)\fIcorrectionfile\fP ] [ OPT(Da)\fIstartdate\fP ] 
+[ OPT(Db)\fIstopdate\fP ] [ OPT(F)\fIflags\fP ] [ OPT(G) ] [ GMT_H_OPT ] [ GMT_Rgeo_OPT ] 
+[ OPT(Sa)\fIstartdist\fP ] [ OPT(Sb)\fIstopdist\fP ] [ GMT_V_OPT ] [ OPT(W)\fIweight\fP ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBgmtlist\fP reads <legid>.gmt files and produces an ASCII [or binary] table.  The <legid>.gmt files
 contain time(\fBs\fP), latitude(\fBy\fP), longitude(\fBx\fP), gravity(\fBg/G\fP),

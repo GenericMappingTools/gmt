@@ -1,4 +1,5 @@
 .TH PSSCALE GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 #define LEN_1	7.5
 #define LEN_2	1.25
 #define SCALE	\fB\-D\fP6.5\fBi\fP/2\fBi\fP/7.5\fBc\fP/1.25\fBc\fP
@@ -7,12 +8,12 @@
 .SH NAME
 psscale \- Create grayscale or colorscale for maps
 .SH SYNOPSIS
-\fBpsscale\fP \fB\-D\fP\fIxpos/ypos/length/width\fP[\fBh\fP] [ \fB\-A \fP ] [ \fB\-B\fP\fItickinfo\fP ] 
-[ \fB\-C\fP\fIcpt_file\fP ] [ \fB\-E\fP[\fBb|f\fP][\fIlength\fP] ] 
-[ \fB\-I\fP[\fImax_intens\fP] ] [ \fB\-K\fP ] [ \fB\-L\fP[\fBi\fP][\fIgap\fP] ]  [ \fB\-M\fP ] 
-[ \fB\-N\fP\fIdpi\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
-[ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V \fP ] [ \fB\-X\fP\fIx-shift\fP ] 
-[ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fIzfile\fP ] [ \fB\-c\fP\fIcopies\fP ]
+\fBpsscale\fP OPT(D)\fIxpos\fP/\fIypos\fP/\fIlength\fP/\fIwidth\fP[\fBh\fP] [ OPT(A) ] [ GMT_B_OPT ] 
+[ OPT(C)\fIcpt_file\fP ] [ OPT(E)[\fBb\fP|\fBf\fP][\fIlength\fP] ] [ OPT(I)[\fImax_intens\fP[\fIlow_i\fP/\fIhigh_i\fP]] ] 
+[ GMT_K_OPT ] [ OPT(L)[\fBi\fP][\fIgap\fP] ] [ OPT(M) ] 
+[ OPT(N)\fIdpi\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] 
+[ GMT_Y_OPT ] [ OPT(Z)\fIzfile\fP ] [ GMT_c_OPT ]
 .SH DESCRIPTION
 \fBpsscale\fP plots grayscales or colorscales on maps.  Both horizontal and vertical scales
 are supported.  For cpt_files with gradational colors (i.e., the lower and upper

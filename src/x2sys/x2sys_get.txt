@@ -1,9 +1,10 @@
 .TH X2SYS_GET GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 x2sys_get \- Get track listing from track index databases
 .SH SYNOPSIS
-\fBx2sys_get\fP \fB\-T\fP\fITAG\fP [ \fB\-C\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-N\fP\fIflags\fP ] 
-[ \fB\-R\fIwest/east/south/north\fP ] [ \fB\-V\fP ] [ \fB\-X\fP[\fIlist\fP] ] 
+\fBx2sys_get\fP OPT(T)\fITAG\fP [ OPT(C) ] [ OPT(F)\fIflags\fP ] 
+[ OPT(L)[\fIlist\fP] [ OPT(N)\fIflags\fP ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] ] 
 .SH DESCRIPTION
 \fBx2sys_get\fP will return the names of the track data files that match the given
 requirements.  You may choose a geographic region and optionally ask
@@ -23,13 +24,7 @@ center of each bin that has at least one track with the specified data.
 Give a comma-separated list of column names (as described in the definition
 file) that should be present. [Default selects all data columns].
 .TP
-.B \-N
-Give a comma-separated list of column names (as described in the definition
-file) that must be absent.
-#include "explain_-Rgeo.txt"
-#include "explain_-V.txt"
-.TP
-.B \-X
+.B \-L
 Crossover mode.  Return a list of track pairs that should be checked for possible
 crossovers.  The list is determined from the bin-index data base on the assumption
 that tracks occupying the same bin are very likely to intersect.  By default we
@@ -37,6 +32,12 @@ return all possible pairs in the data base.  Append the name of a file with a
 list of tracks if you want to limit the output to those pairs that involve
 at least one of the track names in your list.  The output is suitable for the \fB\-K\fP
 option in \fBx2sys_cross\fP.
+.TP
+.B \-N
+Give a comma-separated list of column names (as described in the definition
+file) that must be absent.
+#include "explain_-Rgeo.txt"
+#include "explain_-V.txt"
 .SH EXAMPLES
 To find all the tracks associated with the tag mgd77, restricted to occupy
 a certain region in the south Pacific, and have at least free air anomalies
@@ -57,7 +58,7 @@ To find all the pairs associated with the tag mgd77 that might intersect each
 other, but only those pairs which involves tracks in your list new.lis, try
 .br
 .sp
-\fBx2sys_get\fP \fB\-V \-T\fPmgd77 \fB\-X\fPnew.lis > xpairs.lis 
+\fBx2sys_get\fP \fB\-V \-T\fPmgd77 \fB\-L\fPnew.lis > xpairs.lis 
 .SH "SEE ALSO"
 .IR x2sys_binlist (GMTMANSECTION)
 .IR x2sys_cross (GMTMANSECTION)

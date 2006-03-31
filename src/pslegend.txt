@@ -1,14 +1,15 @@
 .TH PSLEGEND GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 #define CLEARENCE_SI 0.15\fBc\fP/0.15\fBc\fP
 #define CLEARENCE_US 0.05\fBi\fP/0.05\fBi\fP
 .SH NAME
 pslegend \- To plot a map legend
 .SH SYNOPSIS
-\fBpslegend\fP \fItextfile\fP \fB\-D\fP[\fBx\fP]\fIlon/lat/width/height/just\fP \fB\-J\fP\fIparameters\fP 
-\fB\-R\fIwest/east/south/north\fP[\fBr\fP] [ \fB\-C\fP\fIdx/dy\fP ] [ \fB\-F\fP ] 
-[ \fB\-G\fP\fIfill\fP ] [ \fB\-K\fP ] [ \fB\-L\fP\fIspacing\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
-[ \fB\-S\fP[\fIscript\fP] ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] [ \fB\-V\fP ] [ \fB\-X\fP\fIx-shift\fP ] 
-[ \fB\-Y\fP\fIy-shift\fP ]
+\fBpslegend\fP \fItextfile\fP OPT(D)[\fBx\fP]\fIlon\fP/\fIlat\fP/\fIwidth\fP/\fIheight\fP/\fIjust\fP GMT_J_OPT 
+GMT_Rgeo_OPT [ OPT(C)\fIdx\fP/\fIdy\fP ] [ OPT(F) ] 
+[ OPT(G)\fIfill\fP ] [ GMT_K_OPT ] [ OPT(L)\fIspacing\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ OPT(S)[\fIscript\fP] ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] 
+[ GMT_Y_OPT ]
 .SH DESCRIPTION
 \fBpslegend\fP will make legends that can be overlaid on maps.  It reads specific
 legend-related information from an input file [or stdin].  Because all the elements

@@ -1,9 +1,10 @@
 .TH MDG77TOGMT GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 mgd77togmt \- Convert an MGD-77 ASCII file to a binary gmt file
 .SH SYNOPSIS
-\fBmgd77togmt\fP [ \fB\-L\fP\fIlist\fP ] [ \fImgd77file\fP ] \fB\-F\fP\fIlegid\fP \fB\-Y\fP\fIstart_year\fP 
-[ \fB\-A\fP\fIinformation\fP ] [ \fB\-I\fP\fItime_increment\fP ] [ \fB\-V\fP ]
+\fBmgd77togmt\fP [ OPT(L)\fIlist\fP ] [ \fImgd77file\fP ] OPT(F)\fIlegid\fP OPT(Y)\fIstart_year\fP 
+[ OPT(A)\fIinformation\fP ] [ OPT(I)\fItime_increment\fP ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBmgd77togmt\fP reads an ASCII MGD-77 format file [or standard
 input] and creates a binary gmt file.  The 16 header records specified in

@@ -2,7 +2,7 @@
 .SH NAME
 \fBx_edit\fP \- convert between binary and ASCII crossover correction tables.
 .SH SYNOPSIS
-\fBx_edit\fP \fB\-I\fP
+\fBx_edit\fP \fB\-A\fP|\fBX\fP[\fIname\fP]  \fB\-O\fP[\fIoutname\fP]
 .SH DESCRIPTION
 The purpose of \fBx_edit\fP is to convert between ASCII and binary versions
 of the crossover correction tables.

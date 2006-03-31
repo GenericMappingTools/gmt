@@ -1,4 +1,5 @@
 .TH PSROSE GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 #define PARAM_SI 0.075\fBc\fP/0.3\fBc\fP/0.25\fBc\fP/0/0/0
 #define PARAM_US 0.03\fBi\fP/0.12\fBi\fP/0.1\fBi\fP/0/0/0
 #define LEN_1	3
@@ -8,12 +9,12 @@
 .SH NAME
 psrose \- Plot (length, azimuth) as windrose diagram or polar histogram (sector or rose diagram).
 .SH SYNOPSIS
-\fBpsrose\fP \fIfile\fP [ \fB\-A\fP\fIsector_width\fP[\fBr\fP] ] 
-[ \fB\-B\fP\fItickinfo\fP ] [ \fB\-C\fP[\fImode-file\fP] ] [ \fB\-E\fP\fIazimuth/elevation\fP ] [ \fB\-G\fP\fIfill\fP ] 
-[ \fB\-H\fP[\fInrec\fP] ] [ \fB\-I\fP ] [ \fB\-K\fP ] [ \fB\-M\fP[\fIparameters\fP ] [ \fB\-O\fP ] [ \fB\-P\fP ] 
-[ \fB\-R\fP\fIr0/r1/az_0/az_1\fP ] [ \fB\-S\fP\fIradial_scale\fP[\fBn\fP] ] [ \fB\-T\fP ] [ \fB\-U\fP[\fI/dx/dy/\fP][\fIlabel\fP] ] 
-[ \fB\-V\fP ] [ \fB\-W\fP\fIpen\fP ] [ \fB\-X\fP\fIx-shift\fP ] 
-[ \fB\-Y\fP\fIy-shift\fP ] [ \fB\-Z\fP\fIscale\fP ] [ \fB\-c\fP\fIcopies\fP ] [ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ]
+\fBpsrose\fP \fIfile\fP [ OPT(A)\fIsector_width\fP[\fBr\fP] ] 
+[ GMT_B_OPT ] [ OPT(C)[\fImode_file\fP] ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(G)\fIfill\fP ] 
+[ GMT_H_OPT ] [ OPT(I) ] [ GMT_K_OPT ] [ OPT(M)[\fIparameters\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ OPT(R)\fIr0\fP/\fIr1\fP/\fIaz_0\fP/\fIaz_1\fP ] [ OPT(S)\fIradial_scale\fP[\fBn\fP] ] [ OPT(T) ] [ GMT_U_OPT ] 
+[ GMT_V_OPT ] [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] 
+[ GMT_Y_OPT ] [ OPT(Z)\fIscale\fP ] [ GMT_c_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ]
 .SH DESCRIPTION
 \fBpsrose\fP reads (length,azimuth) pairs from \fIfile\fP [or standard input] and
 generates \fIPostScript\fP code that will plot a windrose diagram.  Optionally (with \fB\-A\fP), polar histograms

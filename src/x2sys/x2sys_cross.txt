@@ -1,12 +1,13 @@
 .TH X2SYS_CROSS GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 \fBx2sys_cross\fP \- Find and compute Cross-Over Errors
 .SH SYNOPSIS
-\fBx2sys_cross\fP \fItrack(s)\fP \fB\-T\fP\fITAG\fP 
-[ \fB\-Cc\fP|\fBf\fP|\fBg\fP|\fBe\fP ] [ \fB\-F\fP\fIflags\fP ] [ \fB\-Il|a|c\fP ] 
-[ \fB\-J\fP\fIparams\fP ] [\fB\-K\fP\fIcombi.lis\fP] [ \fB\-L\fP\fIflist\fP ] 
-[ \fB\-Nd|s\fP\fIunit\fP ] [ \fB\-O\fP ] [ \fB\-Qe|i\fP ] [ \fB\-Sl|u\fP\fIspeed\fP ] 
-[ \fB\-V\fP ][ \fB\-Wt\fP|\fBd\fP|\fBn\fP\fIsize\fP ] [ \fB\-2\fP ] [ \fB\-bo\fP[\fBs\fP] ]
+\fBx2sys_cross\fP \fItrack(s)\fP OPT(T)\fITAG\fP 
+[ OPT(Cc)|\fBf\fP|\fBg\fP|\fBe\fP ] [ OPT(F)\fIflags\fP ] [ OPT(Il)|\fBa\fP|\fBc\fP ] 
+[ GMT_J_OPT ] [ OPT(K)\fIcombi.lis\fP] [ OPT(O) ] 
+[ OPT(Nd)|\fBs\fP\fIunit\fP ] [ OPT(Qe)|\fBi\fP ] [ OPT(Sl)|\fBu\fP\fIspeed\fP ] 
+[ GMT_V_OPT ][ OPT(Wt)|\fBd\fP|\fBn\fP\fIsize\fP ] [ OPT(2) ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBx2sys_cross\fP is used to determine all intersections between ("external cross-overs") or within
 ("internal cross-overs") tracks, and report the time, position, distance along track,
@@ -52,14 +53,14 @@ Sets the interpolation mode. Choose among:
 Only process the pair-combinations found in the file \fIcombi.lis\fP
 [Default process all possible combinations among the specified files].
 .TP
+.B \-L
+Output results using the old XOVER format [Default is X2SYS format].
+This option should only be used with *.gmt-formatted MGD77 files.
+.TP
 .B \-N
 Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
 \fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles or miles/hr), or
 \fBn\fP (nautical miles or knots).  [Default is \fB\-Ndk \-Nse\fP (km and m/s)].
-.TP
-.B \-O
-Output results using the old XOVER format [Default is X2SYS format].
-This option should only be used with *.gmt-formatted MGD77 files.
 .TP
 .B \-Q
 Append \fBe\fP for external crossovers only, and \fBi\fP for internal
@@ -89,7 +90,7 @@ Report the values of each track at the crossover [Default reports the crossover 
 .SH REMARKS
 The COEs found are printed out to standard output in ASCII format (unless
 \fB\-bo\fP is set).  When ASCII is chosen, the output format depends on
-whether or not old-style XOVER output (\fB\-O\fP) has been selected.
+whether or not old-style XOVER output (\fB\-L\fP) has been selected.
 If so, then the first record contains the file names and their start year,
 whereas subsequent records have the data for each COE encountered.  The fields
 written out are lat, lon, time along track #1 and #2,
@@ -111,7 +112,7 @@ To compute all internal crossovers in the gmt-formatted file c2104.gmt, and
 output in the old XOVER format, using the tag MGG, try
 .br
 .sp
-\fBx2sys_cross\fP c2104.gmt \fB\-O \-T\fPMGG > c2104.d
+\fBx2sys_cross\fP c2104.gmt \fB\-L \-T\fPMGG > c2104.d
 .br
 .sp
 To find the crossover locations with bathymetry between the two MGD77

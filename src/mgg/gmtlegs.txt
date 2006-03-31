@@ -1,9 +1,9 @@
 .TH GMTLEGS GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 gmtlegs \- Find cruises in a given region
 .SH SYNOPSIS
-\fBgmtlegs \-R\fP\fIwest/east/south/north \fR[ \fB\-G\fP ] [ \fB\-M\fP ] [ \fB\-T\fP ] 
-[ \fB\-L\fP ] [ \fB\-V\fP ]
+\fBgmtlegs\fP GMT_Rgeo_OPT [ OPT(G) ] [ OPT(M) ] [ OPT(T) ] [ OPT(L) ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBgmtlegs\fP will report the name of all the cruises that happened to be wholly or partially inside the
 specified region. As an option, only those cruises that collected a certain type of data can be

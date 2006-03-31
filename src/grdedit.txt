@@ -3,7 +3,7 @@
 .SH NAME
 grdedit \- Modifying the header in a 2-D grdfile
 .SH SYNOPSIS
-\fBgrdedit\fP \fIgrdfile\fP [ OPT(A) ] [ OPT(D)\fIxname/yname/zname/scale/offset/title/remark\fP ] 
+\fBgrdedit\fP \fIgrdfile\fP [ OPT(A) ] [ GMT_GRDEDIT ] 
 [ OPT(N)\fIxyzfile\fP ] [ GMT_Rgeo_OPT ] [ OPT(S) ] [ OPT(T) ] [ GMT_V_OPT ] 
 [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION

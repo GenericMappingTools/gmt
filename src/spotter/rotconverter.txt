@@ -1,9 +1,11 @@
 .TH ROTCONVERTER GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 rotconverter \- Manipulate finite and stage rotations 
 .SH SYNOPSIS
-\fBrotconverter\fP [+][-] \fIrotA\fP [ [+|- \fIrotB\fP ] [ +|- \fIrotC\fP ] ... [ \fB\-D\fP ] 
-[ \-F\fP\fIin/out\fP ] [ \fB\-H\fP[\fBa|t\fP]] [ \fB\-N\fP ] [ \fB\-S\fP ] [ \fB\-T\fP ] [\fB\-V\fP ]
+\fBrotconverter\fP [ \fB+\fP|\fB-\fP ] \fIrotA\fP [ \fB+\fP|\fB-\fP \fIrotB\fP ] [ \fB+\fP|\fB-\fP \fIrotC\fP ] ... 
+[ OPT(C)[\fBa\fP|\fBt\fP]] [ OPT(D) ] [ OPT(F)\fIin\fP/\fPout\fP ] [ OPT(N) ] [ OPT(S) ] 
+[ OPT(T) ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBrotconverter\fP reads one or more plate motion models (rotations) stored in the
 given files.  If more than one plate motion model is given we will add or subtract
@@ -25,6 +27,10 @@ on the command line.  The \fItstop\fP argument is required for stage poles only.
 finite rotation without any time information, give \fIlon/lat/angle\fP only.
 .SH OPTIONS
 .TP
+.B \-C
+Write out a column header record indentifying the various columns [Default is no header record].
+Append \fBa\fP to indicate opening angles and \fBt\fP to indicate opening rates [Default].
+.TP
 .B \-D
 Report longitudes use the -180/+180 range [Default is 0/360].
 .TP
@@ -33,10 +39,6 @@ Specify both the input and output format for rotations.  The \fIin\fP and \fIout
 must be either \fBf\fP or \fBs\fP for finite or stage rotations, respectively.  Note that
 both must be specified if \fB\-F\fP is set [Default is \fB\-Fff\fP (both input and output
 are finite rotations)].
-.TP
-.B \-H
-Write out a header record indentifying the various columns [Default is no header record].
-Append \fBa\fP to indicate opening angles and \fBt\fP to indicate opening rates [Default].
 .TP
 .B \-N
 Place all output poles in the northern hemisphere [Default reports positive rotation angles].

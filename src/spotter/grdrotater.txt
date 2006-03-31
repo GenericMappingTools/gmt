@@ -1,11 +1,12 @@
 .TH GRDROTATER GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 grdrotater \- Rotate a grid using a finite rotation
 .SH SYNOPSIS
-\fBgrdrotate\fP \fIingrdfile\fP \fB\-G\fP\fIoutgrdfile\fP \fB\-T\fP\fIplon/plat/omega\fP 
-[ \fB\-F\fP\fIpolygonfile\fP ] [ \fB\-H\fP[\fInrecs\fP]] [ \fB\-M\fP[\fIflag\fP]] [ \fB\-N\fP ] 
-[ \fB\-Q\fP[\fIvalue\fP] [ \fB\-R\fP\fIwest/east/south/north\fP ] [ \fB\-S\fP ] [\fB\-V\fP ] 
-[ \fB\-:\fP ] [ \fB\-bi\fP[\fBs\fP][\fIn\fP] ] [ \fB\-bo\fP[\fBs\fP] ]
+\fBgrdrotate\fP \fIingrdfile\fP OPT(G)\fIoutgrdfile\fP OPT(T)\fIplon\fP/\fIplat\fP/\fIomega\fP 
+[ OPT(F)\fIpolygonfile\fP ] [ GMT_H_OPT ] [ GMT_Mo_OPT ] [ OPT(N) ] 
+[ OPT(Q)[\fIvalue\fP] [ GMT_Rgeo_OPT ] [ OPT(S) ] [ GMT_V_OPT ] 
+[ GMT_t_OPT ] [ GMT_b_OPT ]
 .SH DESCRIPTION
 \fBgrdrotater\fP reads a geographical grid and reconstructs it given
 a total reconstruction rotation.  Optionally, the user may supply a clipping polygon
@@ -52,6 +53,7 @@ Toggles between (longitude,latitude) and (latitude,longitude) input/output.  [De
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-o_binary.txt"
+[Default is same as input].
 .SH EXAMPLES
 To rotate the data defined by grid topo.grd and the polygon outline clip_path.d, using a finite rotation
 with pole at (135.5, -33.0) and a rotation angle of 37.3 degrees and bicubic interpolation, try

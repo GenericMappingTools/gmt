@@ -1,8 +1,9 @@
 .TH MGD77PATH GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
 .SH NAME
 mgd77path \- Get full pathname for MGD77 files
 .SH SYNOPSIS
-\fBmgd77path\fP \fINGDC-ids\fP [ \fB\-D\fP ] [ \fB\-I\fP\fIignore\fP ] [ \fB\-V\fP ]
+\fBmgd77path\fP \fINGDC-ids\fP [ OPT(D) ] [ OPT(I)\fIignore\fP ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBmgd77path\fP returns the full pathname to one or more MGD77 files. The pathname returned for a given
 cruise may change with time due to reshuffling of disks/subdirectories.
