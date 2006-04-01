@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.240 2006-03-29 22:26:54 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.241 2006-04-01 06:01:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2465,7 +2465,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 		}
 	}
 	else if (G->crossing == GMT_CONTOUR_XCURVE) {
-		GMT_import_segments ((void *)G->option, GMT_IS_FILE, &G->xp, 0.0, FALSE, FALSE, FALSE);
+		GMT_import_table ((void *)G->option, GMT_IS_FILE, &G->xp, 0.0, FALSE, FALSE, FALSE);
 		for (k = 0; k < G->xp->n_segments; k++) {
 			for (i = 0; i < G->xp->segment[k].n_rows; i++) {	/* Project */
 				GMT_geo_to_xy (G->xp->segment[k].coord[GMT_X][i], G->xp->segment[k].coord[GMT_Y][i], &x, &y);
@@ -4004,7 +4004,7 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 
 int GMT_inonout_sphpol (double plon, double plat, const struct GMT_LINE_SEGMENT *P)
 /* This function is used to see if some point P is located inside, outside, or on the boundary of the
- * spherical polygon S read by GMT_import_segments.
+ * spherical polygon S read by GMT_import_table.
  * Returns the following values:
  *	0:	P is outside of S
  *	1:	P is inside of S

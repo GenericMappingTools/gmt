@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.105 2006-04-01 02:17:27 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.106 2006-04-01 06:01:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2634,7 +2634,7 @@ int GMT_points_init (char *file, double **xp, double **yp, double **dp, double d
 	return (i);
 }
 
-int GMT_import_segments (void *source, int source_type, struct GMT_TABLE **table, double dist, BOOLEAN greenwich, BOOLEAN poly, BOOLEAN use_GMT_io)
+int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, double dist, BOOLEAN greenwich, BOOLEAN poly, BOOLEAN use_GMT_io)
 {
 	/* Reads an entire multisegment data set into memory */
 	
@@ -2679,7 +2679,7 @@ int GMT_import_segments (void *source, int source_type, struct GMT_TABLE **table
 		int *fd;
 		fd = (int *)source;
 		if ((fp = fdopen (*fd, open_mode)) == NULL) {
-			fprintf (stderr, "%s: Cannot convert file descriptor %d to stream in GMT_import_segments\n", GMT_program, *fd);
+			fprintf (stderr, "%s: Cannot convert file descriptor %d to stream in GMT_import_table\n", GMT_program, *fd);
 			exit (EXIT_FAILURE);
 		}
 		if (fp == GMT_stdin)
@@ -2688,7 +2688,7 @@ int GMT_import_segments (void *source, int source_type, struct GMT_TABLE **table
 			strcpy (file, "<input file descriptor>");
 	}
 	else {
-		fprintf (stderr, "%s: Unrecognized source type %d in GMT_import_segments\n", GMT_program, source_type);
+		fprintf (stderr, "%s: Unrecognized source type %d in GMT_import_table\n", GMT_program, source_type);
 		exit (EXIT_FAILURE);
 	}
 
@@ -2834,7 +2834,7 @@ int GMT_import_segments (void *source, int source_type, struct GMT_TABLE **table
 	return (0);
 }
 
-int GMT_export_segments (void *dest, int dest_type, struct GMT_TABLE *table, BOOLEAN use_GMT_io)
+int GMT_export_table (void *dest, int dest_type, struct GMT_TABLE *table, BOOLEAN use_GMT_io)
 {
 	/* Writes an entire multisegment data set to file or wherever */
 	
@@ -2876,7 +2876,7 @@ int GMT_export_segments (void *dest, int dest_type, struct GMT_TABLE *table, BOO
 		int *fd;
 		fd = (int *)dest;
 		if ((fp = fdopen (*fd, open_mode)) == NULL) {
-			fprintf (stderr, "%s: Cannot convert file descriptor %d to stream in GMT_export_segments\n", GMT_program, *fd);
+			fprintf (stderr, "%s: Cannot convert file descriptor %d to stream in GMT_export_table\n", GMT_program, *fd);
 			exit (EXIT_FAILURE);
 		}
 		if (fp == GMT_stdout)
@@ -2885,11 +2885,11 @@ int GMT_export_segments (void *dest, int dest_type, struct GMT_TABLE *table, BOO
 			strcpy (file, "<output file descriptor>");
 	}
 	else {
-		fprintf (stderr, "%s: Unrecognized source type %d in GMT_export_segments\n", GMT_program, dest_type);
+		fprintf (stderr, "%s: Unrecognized source type %d in GMT_export_table\n", GMT_program, dest_type);
 		exit (EXIT_FAILURE);
 	}
 	
-	out = (double *) GMT_memory (VNULL, table->n_columns, sizeof (double), "GMT_export_segments");
+	out = (double *) GMT_memory (VNULL, table->n_columns, sizeof (double), "GMT_export_table");
 	
 	for (seg = 0; seg < table->n_segments; seg++) {
 		if (GMT_io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
@@ -2933,23 +2933,30 @@ void GMT_points_delete (double *xp, double *yp, double *dp)
 	GMT_free ((void *)dp);
 }
 
-void GMT_free_tables (struct GMT_TABLE **table, int n_tables)
+void GMT_free_dataset (struct GMT_DATASET *data)
 {
 	int tbl;
-	for (tbl = 0; tbl < n_tables; tbl++) GMT_free_segments (table[tbl]->segment, table[tbl]->n_segments);
+	for (tbl = 0; tbl < data->n_tables; tbl++) {
+		GMT_free_table (data->table[tbl]);
+	}
+	GMT_free ((void *)data);
+}
+
+void GMT_free_table (struct GMT_TABLE *table)
+{
+	int seg;
+	for (seg = 0; seg < table->n_segments; seg++) GMT_free_segment (&(table->segment[seg]));
 	GMT_free ((void *)table);
 }
 
-void GMT_free_segments (struct GMT_LINE_SEGMENT *p, int n_lines)
+void GMT_free_segment (struct GMT_LINE_SEGMENT *segment)
 {
-	/* Free memory allocated by GMT_import_segments */
+	/* Free memory allocated by GMT_import_table */
 
-	int i, k;
-	for (i = 0; i < n_lines; i++) {
-		for (k = 0; k < p[i].n_columns; k++) GMT_free ((void *) p[i].coord[k]);
-		GMT_free ((void *) p[i].coord);
-		if (p[i].label) GMT_free ((void *) p[i].label);
-		if (p[i].header) GMT_free ((void *) p[i].header);
-	}
-	GMT_free ((void *) p);
+	int col;
+	for (col = 0; col < segment->n_columns; col++) GMT_free ((void *) segment->coord[col]);
+	GMT_free ((void *) segment->coord);
+	if (segment->label) GMT_free ((void *) segment->label);
+	if (segment->header) GMT_free ((void *) segment->header);
+	GMT_free ((void *)segment);
 }
