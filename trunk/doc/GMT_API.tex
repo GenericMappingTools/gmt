@@ -1,30 +1,188 @@
-%	$Id: GMT_API.tex,v 1.1 2006-03-31 07:20:34 pwessel Exp $
-\documentclass[12pt]{article}
-\usepackage{amsmath}
-\usepackage{epsfig}
+%------------------------------------------
+%       $Id: GMT_API.tex,v 1.2 2006-04-01 04:20:19 pwessel Exp $
+%
+%       The GMT Documentation Project
+%       Copyright 2000-2006.
+%       Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+\documentclass{report}
+
+\usepackage{ifpdf}
+%\usepackage{epsfig}
+\usepackage{graphicx}
 \usepackage{makeidx}
+\usepackage{a4wide}
 \usepackage{float}
+\usepackage{html}
+\usepackage{GMT}
 \usepackage{times}
+\usepackage{color}
 \usepackage{mathptm}
 
+\ifpdf
+%  \usepackage[pdftex, linkbordercolor={1 1 0}, bookmarksnumbered=true,
+%  boolmarksopenlevel=3, urlbordercolor={1 0 0}]{hyperref}
+  \usepackage[pdftex]{hyperref}
+  \pdfcompresslevel=9
+  \DeclareGraphicsExtensions{.pdf}
+
+ \hypersetup{%
+    pdftitle={The Generic Mapping Tools Version 5---The GMT API},
+    pdfauthor={Paul Wessel,  Walter H. F. Smith},
+    pdfkeywords={GMT, projections, mapping},
+    book,arksopen=true,
+    bookmarksnumbered,
+    %pdfstartview={FitH},
+    %linkbordercolor={1 1 0},
+    %urlbordercolor={1 0 0},
+  }%
+
+\else
+   \DeclareGraphicsExtensions{.eps}
+\fi
+
+
+
+% Special commands & environments for GMT documentation
+%
+%       GMTfig will insert an eps file, add a label, and set a caption
+%
+
+\newcommand{\GMTfig}[3][tbp]{\begin{figure}[#1] \centering \includegraphics{eps/#2} \caption{#3} \label{fig:#2}  \end{figure}}
+
+\newcommand{\PS}{\textit{PostScript}}
+\newcommand{\UNIX}{\textit{UNIX}}
+
+
+\ifpdf
+\newcommand{\GMTprog}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../html/#1.html}\index{#1@{\textsf{\textbf{#1}}}}}
+\newcommand{\GMTprogi}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../html/#1.html}}
+\else
+\newcommand{\GMTprog}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../#1.html}\index{#1@{\textsf{\textbf{#1}}}}}
+\newcommand{\GMTprogi}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../#1.html}}
+\fi
+
+\newcommand{\filename}[1]{\underline{#1}}
+\newcommand{\gmt}{\htmladdnormallink{\textbf{GMT}}{http://gmt.soest.hawaii.edu}}
+%%------------ THESE COMMANDS WILL BE EXCLUDED WHEN HTML VERSION IS MADE--------
+
+\ifpdf%DVIGMT
+\newcommand{\GMT}{\textit{GMT}}%DVIGMT
+\else%DVIGMT
+\newcommand{\GMT}{\htmladdnormallink{\includegraphics{eps/GMT_glyph10.eps}}{http://gmt.soest.hawaii.edu}}%DVIGMT
+\fi%DVIGMT
+
+\newcommand{\DS}{$^{\circ}$}%DVIGMT
+\newcommand{\progname}[1]{{\textsl{\textbf{#1}}}\index{#1@{\textsl{\textbf{#1}}}}}%DVIGMT
+\newcommand{\Opt}[1]{{\bf --#1}}%DVIGMT
+\newcommand{\startscript}{\scriptsize}%DVIGMT
+\newcommand{\stopscript}{\normalsize}%DVIGMT
+%%------------------------------------------------------------------------------
+
+%%------------ THESE COMMANDS WILL BE EXCLUDED WHEN DVI VERSION IS MADE---------
+\newcommand{\GMT}{\htmladdnormallink{\textbf{GMT}}{http://gmt.soest.hawaii.edu}}%HTMLGMT
+\newcommand{\progname}[1]{{\textit{#1}}\index{#1@{\textit{#1}}}}%HTMLGMT
+\newcommand{\Opt}[1]{{\bf -#1}}%HTMLGMT
+\newcommand{\DS}{$^{o}$}%HTMLGMT
+\newcommand{\startscript}{}%HTMLGMT
+\newcommand{\stopscript}{}%HTMLGMT
+\include{GMT_version}
+
+
+%--------------------------------------------------------------------------
+
+\pagecolor{white}
+
+\makeindex
+
 \begin{document}
-{\center \bf Documentation of the GMT Application Program Interface}\\
+\pagenumbering{roman}
+
+\pagestyle{headings}
+
+\thispagestyle{empty}
+
+\begin{center}
+\huge
+\textbf{The Generic Mapping Tools}\par 
+\vspace{0.5\baselineskip}
+
+\includegraphics{eps/GMT_covertext} 
+
+\huge
+\textbf{\GMTDOCVERSION}\par 
+\vspace{0.25\baselineskip}
+
+\Huge
+\textbf{Application Programming Interface}\par 
+
+\large
+\vspace{0.75\baselineskip}
+\textbf{by}\par 
+\vspace{0.75\baselineskip}
+
+\huge
+\textbf{P\aa l (Paul) Wessel}\par 
+\vspace{0.5\baselineskip}
+
+\Large
+\textbf{School of Ocean and Earth Science and Technology}\par 
+\textbf{University of Hawai'i at M\={a}noa}\par 
+
+\large
+\vspace{0.75\baselineskip}
+\textbf{and}\par 
+\vspace{0.75\baselineskip}
+
+\huge
+\textbf{Walter H. F. Smith}\par 
+\vspace{0.5\baselineskip}
+
+\Large
+\textbf{Laboratory for Satellite Altimetry}\par 
+\textbf{NOAA/NESDIS/NODC}\par 
+\vspace{0.5\baselineskip}
+
+\large
+\textbf{\GMTDOCDATE}\par 
+\vspace{\baselineskip}
+
+\includegraphics{eps/GMT_coverlogo}
+
+\end{center}
+\clearpage
+
+\thispagestyle{headings}
+
+\tableofcontents 
+\thispagestyle{headings}
+
+\chapter*{INTRODUCTION} 
+\pagenumbering{arabic}
+\thispagestyle{headings}
+\addcontentsline{toc}{chapter}{INTRODUCTION}
+\index{Purpose of API}
 
 This documentation serves two related purposes:
 \begin{enumerate}
-\item It will document the API library for application developers that wish
+\item It will document the \GMT\ API library for application developers that wish
 to call functions in the API.
-\item It will document the underlying API utilities for developers of
+\item It will document the underlying \GMT\ API utilities for developers of
 the API itself.
 \end{enumerate}
 Of course, many developers might be interested in learning about both sets of
 functions.\\
 
-
-{\bf 1. Overview of the GMT Application Program Interface}\\
+\section*{\gmt\ Overview of the GMT Application Program Interface}
+\addcontentsline{toc}{section}{\gmt\ Overview of the GMT Application Program Interface}
 
 Users who wish to create their own GMT-like applications based on the API
 must make sure their program goes through these steps:
+
+\subsection*{Historical highlights}
+\addcontentsline{toc}{subsection}{Historical highlights}
+\index{GMT@\GMT!history}
 
 \begin{enumerate}
 \item Initialize a GMT session by calling \texttt{GMTAPI\_Create\_Session} which
@@ -46,11 +204,9 @@ return a status code which is 0 if all is well.  For non-zero return values, use
 \item To terminate the GMT session, call \texttt{GMTAPI\_Destroy\_Session}.
 \end{enumerate}
 
-Normally, only one GMT session will be active at one time, but developers are free
-to initiate any number of session, each with their own internal GMT parameter base.
-Such session can run concurrently and are thread-safe.
-
-{\bf 2. The GMT Application Program Interface}\\
+\subsection*{The GMT Application Program Interface}
+\addcontentsline{toc}{subsection}{The GMT Application Program Interface}
+\index{GMT@\GMT!Interface}
 
 All calls to the GMT functions themselves have identical syntax that come in two different flavors.
 They differ in how the command options are passed to the function which can be done via
@@ -71,5 +227,56 @@ The syntax of the two formats are:
 \texttt{int GMT\_program (struct GMTAPI\_CTRL *API, struct GMT\_COMMON *C, struct GMT\_OPTIONS *options)}
 
 where ``program'' is replaced by the desired application name (e.g., blockmean, psxy, grdmath).
+
+
+\chapter{SESSION ONE} 
+\thispagestyle{headings}
+
+\section{Tutorial setup}
+\begin{enumerate}
+
+\item We assume that \GMT\ has been properly and fully
+installed and that you have the statement
+\texttt{setenv GMTHOME $<$path to \GMT\ directory$>$}
+in your \filename{.login} as
+described in the \GMT\ \filename{README} file.
+
+\item All \GMT\ man pages, documentation, and example scripts
+are available from the \GMT\ documentation web page.  It is
+assumed these pages have been installed locally at your site;
+if not they are always available from the main
+\htmladdnormallinkfoot{GMT home page}{http://gmt.soest.hawaii.edu}.
+\end{enumerate}
+
+\chapter{References} 
+\thispagestyle{headings}
+
+\begin{enumerate}
+
+\item Smith, W.H.F., and P. Wessel, Gridding with continous curvature
+splines in tension, {\it Geophysics}, {\it 55}, 293--305, 1990.
+
+\item Wessel, P., and W.H.F. Smith, Free software helps map and
+display data, {\it EOS Trans. AGU}, {\it 72}, 441, 1991.
+
+\item Wessel, P., and W.H.F. Smith, New version of the Generic
+Mapping Tools released, {\it EOS Trans. AGU}, {\it 76}, 329, 1995.
+
+\item Wessel, P., and W.H.F. Smith, A global, self-consistent,
+hierarchical, high-resolution shoreline database, {\it J. Geophys. Res.},
+{\it 101}, 8741--8743, 1996.
+
+\item Wessel, P., and W.H.F. Smith, New, improved version of the Generic
+Mapping Tools released, {\it EOS Trans. AGU}, {\it 79}, 579, 1998.
+
+\item Wessel, P., and W.H.F. Smith, The Generic Mapping Tools Technical Reference and Cookbook, {\it Version 4.0}, pp. 132, 2004.
+
+\end{enumerate}
+
+\clearpage
+\thispagestyle{headings}
+\addcontentsline{toc}{chapter}{INDEX}
+\printindex
+\thispagestyle{headings}
 
 \end{document}
