@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.40 2006-03-28 07:33:22 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.41 2006-04-01 00:19:38 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -66,6 +66,7 @@
 
 EXTERN_MSC int GMT_access (const char* filename, int mode);		/* access wrapper */
 EXTERN_MSC FILE *GMT_fopen (const char* filename, const char* mode);	/* fopen wrapper */
+EXTERN_MSC FILE *GMT_fdopen (int handle, const char *mode);		/* fdopen wrapper */
 EXTERN_MSC int GMT_fclose (FILE *stream);				/* fclose wrapper */
 EXTERN_MSC void GMT_io_init (void);					/* Initialize pointers */
 EXTERN_MSC int GMT_io_selection (char *text);				/* Decode -b option and set parameters */
