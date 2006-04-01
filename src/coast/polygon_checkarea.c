@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_checkarea.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_checkarea.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* 
  *
@@ -15,12 +15,10 @@ struct CHECK {
 	int n, level;
 } P[N_POLY];
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp_in;
-	int	n_id, i, j, k, r, start_id = 0, pos, dup, other, d, cut = 500, ndup = 0, verbose = FALSE;
+	int	n_id, i, j, k, r, start_id = 0, dup, other, d, ndup = 0, verbose = FALSE;
 	double	x, y, ratio;
 	struct	LONGPAIR p;
  	struct GMT3_POLY h3;
@@ -100,7 +98,7 @@ char **argv;
 			if (ratio == 1.0 && P[i].n == P[j].n && d == 0)
 				printf("%d exact duplicate of %d\n", dup, other);
 			else
-				printf("%d probable duplicate of %d [ %lg %d %d %d ]\n", dup, other, ratio, P[i].n, P[j].n, d);
+				printf("%d probable duplicate of %d [ %g %d %d %d ]\n", dup, other, ratio, P[i].n, P[j].n, d);
 		}
 	}
 		

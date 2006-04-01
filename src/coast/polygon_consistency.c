@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.5 2004-09-27 18:43:09 pwessel Exp $
+ *	$Id: polygon_consistency.c,v 1.6 2006-04-01 10:00:42 pwessel Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -76,12 +76,12 @@ main (int argc, char **argv)
 			printf ("%d\twesn mismatch\n", h.id);
 			n_r_problems++;
 		}
-		ylist = GMT_init_track (lon, lat, this_n);
+		ylist = GMT_init_track (lat, this_n);
 		if (fabs (h.east - h.west) > GMT_CONV_LIMIT) {
 			nx = GMT_crossover (lon, lat, NULL, ylist, this_n, lon, lat, NULL, ylist, this_n, TRUE, &XC);
 			GMT_free ((void *)ylist);
 			if (nx ) {
-				for (i = 0; i < nx; i++) printf ("%d\t%d\t%10.5lf\t%9.5lf\n", h.id, (int)floor(XC.xnode[0][i]), XC.x[i], XC.y[i]);
+				for (i = 0; i < nx; i++) printf ("%d\t%d\t%10.5f\t%9.5f\n", h.id, (int)floor(XC.xnode[0][i]), XC.x[i], XC.y[i]);
 				n_x_problems++;
 				GMT_x_free (&XC);
 			}

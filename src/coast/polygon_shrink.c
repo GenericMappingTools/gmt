@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_shrink.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_shrink.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* 
  * polygon_shrink applies the Douglas-Peucker algorithm to simplify a line
@@ -8,12 +8,10 @@
 
 #include "wvs.h"
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp_in, *fp_out;
-	int	n_id, i, n_out, n, k, verbose = FALSE, *x, *y, *index;
+	int	n_id, n_out, n, k, verbose = FALSE, *x, *y, *index;
 	int	n_tot_in, n_tot_out;
 	double	redux, redux2, tolerance = 0.0;
 	struct	GMT3_POLY h;
@@ -26,7 +24,7 @@ char **argv;
 	}
 
 	tolerance = atof (argv[2]);
-	fprintf (stderr,"polygon_shrink: Tolerance is %lg km\n", tolerance);
+	fprintf (stderr,"polygon_shrink: Tolerance is %g km\n", tolerance);
 	fp_in = fopen(argv[1], "r");
 	fp_out = fopen(argv[3], "w");
 	
@@ -85,7 +83,7 @@ char **argv;
 		}
 		else
 			redux = 0.0;
-		if (verbose) fprintf (stderr, "\t%.1lf %% retained\n", redux);
+		if (verbose) fprintf (stderr, "\t%.1f %% retained\n", redux);
 		
 		n_id++;
 	}
@@ -99,7 +97,7 @@ char **argv;
 
 	redux = 100.0 * (double) n_tot_out / (double) n_tot_in;
 	redux2 = 100.0 * (double) n_out / (double) n_id;
-	printf ("polygon_shrink at %lg: N = %.1lf%% (%d of %d) P = %.1lf%% (%d of %d)\n", tolerance, redux, n_tot_out, n_tot_in, redux2, n_out, n_id);
+	printf ("polygon_shrink at %g: N = %.1f%% (%d of %d) P = %.1f%% (%d of %d)\n", tolerance, redux, n_tot_out, n_tot_in, redux2, n_out, n_id);
 
 	exit (0);
 }

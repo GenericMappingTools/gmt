@@ -1,5 +1,5 @@
 /*
- *	$Id: segment_dump.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: segment_dump.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* 
  *	segment_dump makes a multisegment ascii-file of entire dbase
@@ -9,9 +9,7 @@
 
 #define M360		360000000
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp_in;
 	int	k, level = 0, id;
@@ -39,7 +37,7 @@ char **argv;
 				fprintf(stderr,"segment_dump:  ERROR  reading file.\n");
 				exit(-1);
 			}
-			printf ("%lg\t%lg\n", 1.0e-6 * p.x, 1.0e-6 * p.y);
+			printf ("%g\t%g\n", 1.0e-6 * p.x, 1.0e-6 * p.y);
 		}
 		id++;
 	}

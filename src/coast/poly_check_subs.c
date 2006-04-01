@@ -1,5 +1,5 @@
 /*
- *	$Id: poly_check_subs.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: poly_check_subs.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* poly_check_subs.c
  * Subroutines for testing polygon quality.
@@ -10,16 +10,21 @@
  * Walter Smith, 2 Feb, 1994.  */
 
 #include <stdio.h>
-
+#include <stdlib.h>
+#include <math.h>
+#define irint(x) (int)rint(x)
 struct PAIR {
 	int x;
 	int y;
 	int k;	/* p[i].k == i+1, and k is set negative if point is bad  */
 };
 
-int	poly_problems(p, n)
-struct PAIR	p[];
-int	*n;
+int P_intersect (double ax0, double ay0, double ax1, double ay1, double bx0, double by0, double bx1, double by1);
+int P_kill_trivial_duplicates (struct PAIR p[], int *n);
+int P_remove_spikes (struct PAIR p[], int *n);
+int P_look_for_spikes (struct PAIR p[], int n);
+
+int poly_problems (struct PAIR p[], int *n)
 {
 
 	/* Returns 0 if EITHER input polygon passes all tests OR input
@@ -46,7 +51,7 @@ int	*n;
 		don't, we close as usual.  If poly is already closed, we skip this.  */
 	bowtie = 0;
 	if (p[0].x != p[*n-1].x || p[0].y != p[*n-1].y) {
-		if (*n > 3 & P_intersect(p[0].x, p[0].y, p[1].x, p[1].y, p[*n-2].x, p[*n-2].y, p[*n-1].x, p[*n-1].y)) {
+		if (*n > 3 && P_intersect(p[0].x, p[0].y, p[1].x, p[1].y, p[*n-2].x, p[*n-2].y, p[*n-1].x, p[*n-1].y)) {
 			/* The first and last line segments cross.  If we simply say p[n] = p[0] we will create
 				a bow tie.  So we adjust p[0] = p[n-1] = average of these two.  */
 			p[0].x = irint(0.5*(p[0].x + p[*n-1].x));
@@ -68,7 +73,7 @@ int	*n;
 	ntrivial = P_kill_trivial_duplicates(p, n);
 
 	spike_total = 0;
-	while (spike = P_remove_spikes(p, n)) {
+	while ((spike = P_remove_spikes(p, n))) {
 		spike_total += spike;
 		ntrivial += P_kill_trivial_duplicates(p, n);
 	}
@@ -107,8 +112,7 @@ int	*n;
 		return(0);
 }
 
-int	P_compare_xy(p1, p2)
-struct PAIR *p1, *p2;
+int P_compare_xy (struct PAIR *p1, struct PAIR *p2)
 {
 	/* Ignore k values  */
 	if (p1->x > p2->x) return(1);
@@ -118,8 +122,7 @@ struct PAIR *p1, *p2;
 	return(0);
 }
 
-int	P_compare_k(p1, p2)
-struct PAIR *p1, *p2;
+int P_compare_k (struct PAIR *p1, struct PAIR *p2)
 {
 	/* Here, k's magnitude and sign are both important:  */
 	if (p1->k < p2->k) return(-1);
@@ -127,8 +130,7 @@ struct PAIR *p1, *p2;
 	return(0);
 }
 
-int	P_compare_absk(p1, p2)
-struct PAIR *p1, *p2;
+int P_compare_absk (struct PAIR *p1, struct PAIR *p2)
 {
 	/* Here, k's magnitude only, not sign, is important:  */
 	if (abs(p1->k) < abs(p2->k)) return(-1);
@@ -136,9 +138,7 @@ struct PAIR *p1, *p2;
 	return(0);
 }
 
-int	P_remove_spikes(p, n)
-struct PAIR p[];
-int	*n;
+int P_remove_spikes (struct PAIR p[], int *n)
 {
 	/* This routine calls P_look_for_spikes() and removes spikes if found.
 		Returns the number found.  You need to keep calling it until
@@ -148,7 +148,7 @@ int	*n;
 
 	for (j = 0; j < *n; j++) p[j].k = j + 1;
 
-	spike = P_look_for_spikes(p, *n);
+	spike = P_look_for_spikes (p, *n);
 
 	if (spike) {
 		if (p[0].k < 0) p[*n-1].k = -*n;
@@ -172,9 +172,7 @@ int	*n;
 }
 	
 
-int	P_look_for_spikes(p, n)
-struct PAIR p[];
-int	n;
+int P_look_for_spikes (struct PAIR p[], int n)
 {
 	/* This routine looks over p[], setting p[].k negative at a spike.
 		It returns the number of points deleted from the string.  */
@@ -220,9 +218,7 @@ int	n;
 	return (ndeleted);
 }
 
-P_kill_trivial_duplicates(p, n)
-struct PAIR p[];
-int	*n;
+int P_kill_trivial_duplicates (struct PAIR p[], int *n)
 {
 	/* This routine looks over p[] and removes points which are equal to
 		the previous point.  It decrements n each time it finds such
@@ -255,8 +251,8 @@ int	*n;
 	return(ndup);
 }
 
-int P_ccw (x0, y0, x1, y1, x2, y2)
-double x0, y0, x1, y1, x2, y2; {
+int P_ccw (double x0, double y0, double x1, double y1, double x2, double y2)
+{
 	double dx1, dx2, dy1, dy2;
 	
 	dx1 = x1 - x0;	dy1 = y1 - y0;
@@ -268,15 +264,14 @@ double x0, y0, x1, y1, x2, y2; {
 	return (0);
 }
 
-int P_intersect (ax0, ay0, ax1, ay1, bx0, by0, bx1, by1)
-double ax0, ay0, ax1, ay1, bx0, by0, bx1, by1; {
+int P_intersect (double ax0, double ay0, double ax1, double ay1, double bx0, double by0, double bx1, double by1)
+{
 	return ((P_ccw (ax0, ay0, ax1, ay1, bx0, by0) * P_ccw (ax0, ay0, ax1, ay1, bx1, by1)) <= 0)
 	    && ((P_ccw (bx0, by0, bx1, by1, ax0, ay0) * P_ccw (bx0, by0, bx1, by1, ax1, ay1)) <= 0);
 }
 
-int P_inside (x0, y0, x, y, n)
-double x0, y0, x[], y[];
-int n; {
+int P_inside (double x0, double y0, double x[], double y[], int n)
+{
 	int i, count = 0, j = 0;
 	x[n] = x[0];	y[n] = y[0];
 	

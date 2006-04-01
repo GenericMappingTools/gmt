@@ -1,5 +1,5 @@
 /*
- *	$Id: segment_final_dump.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: segment_final_dump.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* segment_final_dump <wvs_polygon_file.b> wvs_polygons.b
  *
@@ -11,13 +11,11 @@ struct GMT3_POLY h3;
 
 struct LONGPAIR p[N_LONGEST];
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp, *fp2;
 	struct RAWSEG_HEADER hin;
-	int	id, j, i, greenwich, iw, ie, is, in, np = 0, ranks[100];
+	int	id, i, greenwich, iw, ie, is, in, np = 0, ranks[100];
 
 	if (argc != 3) {
 		fprintf(stderr,"usage:  segment_final_dump wvs_clean_poly.b wvs_polygons.b\n");

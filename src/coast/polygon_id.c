@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_id.c,v 1.2 2004-09-09 20:17:47 pwessel Exp $
+ *	$Id: polygon_id.c,v 1.3 2006-04-01 10:00:42 pwessel Exp $
  */
 /* 
  *
@@ -13,9 +13,7 @@
 
 struct GMT3_POLY h;
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp_in;
 	int	id, k;
@@ -51,7 +49,7 @@ char **argv;
 		}
 	}
 	
-	printf ("polygon_id: Min dist = %.1lf m for polygon id %d\n", D2M * d_min, id);
+	printf ("polygon_id: Min dist = %.1f m for polygon id %d\n", D2M * d_min, id);
 	
 	fclose(fp_in);
 

@@ -1,5 +1,5 @@
 /*
- *	$Id: ciaman_fix.c,v 1.3 2004-09-05 04:14:10 pwessel Exp $
+ *	$Id: ciaman_fix.c,v 1.4 2006-04-01 10:00:42 pwessel Exp $
  */
 #include "wvs.h"
 
@@ -15,10 +15,11 @@ struct BURP {
 	int a, b, nx, src, finished;
 } x[16608];
 
-main (argc, argv)
-int argc;
-char **argv; {
-	int i = 0, ok, j, k, nk = 0, n_id, id, n_bad, np, nh, test, ncut = 100000, sort_on_np();
+void wipea (int a);
+void wipeb (int b);
+
+int main (int argc, char **argv) {
+	int i = 0, j, k, nk = 0, n_id, id, n_bad, np, ncut = 100000, sort_on_np();
 	int go[2], bad, n_skip1 = 0, n_skip2 = 0, pos, n_id1, id2, iw, ie, is, in;
 	FILE *fp, *fp_bad, *fp_in, *fp_in1, *fp_in2, *fp_fix;
 	char line[80], cmd[512], file[512], s[10];
@@ -145,7 +146,7 @@ char **argv; {
 		
 		/* Do file i */
 		
-		sprintf (file, "polygon.%d\0", go[0]);
+		sprintf (file, "polygon.%d", go[0]);
 		fp = fopen (file, "w");
 		
 		for (id = 0; id < n_id && go[0] != poly[id].h.id; id++);
@@ -174,7 +175,7 @@ char **argv; {
 		
 		/* Do file j */
 		
-		sprintf (file, "polygon.%d\0", go[1]);
+		sprintf (file, "polygon.%d", go[1]);
 		fp = fopen (file, "w");
 		
 		fseek (fp_in2, poly[id2].pos, 0);
@@ -190,7 +191,7 @@ char **argv; {
 		}
 		fclose (fp);
 		
-		sprintf (cmd, "XYX -- -X1.0e-6 -Y1.0e-6  polygon.%d polygon.%d\0", go[0], go[1]);
+		sprintf (cmd, "XYX -- -X1.0e-6 -Y1.0e-6  polygon.%d polygon.%d", go[0], go[1]);
 		system (cmd);
 		printf ("Delete new polygon %d [y]? ", go[1]);
 		s[0] = 0;
@@ -260,29 +261,26 @@ char **argv; {
 	fclose (fp_in2);
 	fclose (fp_bad);
 	fclose (fp_fix);
-	
+	exit(0);
 }
 
-int sort_on_np (a, b)
-struct BURP *a, *b; {
+int sort_on_np (struct BURP *a, struct BURP *b)
+{
 	if (a->nx > b->nx) return (-1);
 	if (a->nx < b->nx) return (1);
 	return (0);
 }
 
-int wipea (a)
-int a; {
+void wipea (int a) {
 	char file[80];
 		
-	sprintf (file, "polygon.%d\0", a);
+	sprintf (file, "polygon.%d", a);
 	unlink (file);
 }
 
-int wipeb (b)
-int b; {
+void wipeb (int b) {
 	char file[80];
 		
-	sprintf (file, "polygon.%d\0", b);
+	sprintf (file, "polygon.%d", b);
 	unlink (file);
 }
-

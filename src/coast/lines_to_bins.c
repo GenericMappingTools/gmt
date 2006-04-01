@@ -1,5 +1,5 @@
 /*
- *	$Id: lines_to_bins.c,v 1.4 2006-01-08 05:13:24 pwessel Exp $
+ *	$Id: lines_to_bins.c,v 1.5 2006-04-01 10:00:42 pwessel Exp $
  */
 /* lines_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -54,7 +54,7 @@ int *ix, *iy;
 int *xx, *yy;
 int die (int id);
 
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	BOOLEAN first, crossed_x, crossed_y;
 	
@@ -471,7 +471,7 @@ main (int argc, char **argv)
 	fprintf (stderr, "Total output points %d\n", n_final);
 	fprintf (stderr, "Total lines processed %d\n", n_id);
 	fprintf (stderr, "# of points added as duplicates at crossings = %d\n", add);
-	fprintf (stderr, "Adding edges made the database grow by %lg %%\n", (100.0 * (n_final - n_init)) / n_init);
+	fprintf (stderr, "Adding edges made the database grow by %g %%\n", (100.0 * (n_final - n_init)) / n_init);
 
 	/* Write out */
 	
@@ -495,11 +495,11 @@ main (int argc, char **argv)
 	file_head.nx_bins = BIN_NX;
 	file_head.ny_bins = BIN_NY;
 	
-	sprintf (file, "%s.bin\0", argv[3]);
+	sprintf (file, "%s.bin", argv[3]);
 	fp_bin = fopen (file, "wb");
-	sprintf (file, "%s.seg\0", argv[3]);
+	sprintf (file, "%s.seg", argv[3]);
 	fp_seg = fopen (file, "wb");
-	sprintf (file, "%s.pt\0", argv[3]);
+	sprintf (file, "%s.pt", argv[3]);
 	fp_pt = fopen (file, "wb");
 	
 	if (fwrite ((void *)&file_head, sizeof (struct GMT3_FILE_HEADER), (size_t)1, fp_bin) != 1) {

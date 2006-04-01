@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_sort.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_sort.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* polygon_sorts writes out final data in decreasing order (# points)
  *
@@ -16,9 +16,7 @@ struct BLOB {
 
 struct LONGPAIR p[N_LONGEST];
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp[2], *fp_out;
 	int	id, n_id, n_1, pos, comp_blobs();

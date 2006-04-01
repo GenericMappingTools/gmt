@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_deldups.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_deldups.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 #include "wvs.h"
 
@@ -18,13 +18,12 @@ struct Q {
 
 int *lon, *lat;
 struct LONGPAIR *pp;
+int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path);
 
-main (argc, argv)
-int argc;
-char **argv; {
-	int i, j, k, n_id, pos, i1, id, id1, id2, intest, error, equal, n;
-	int old, ix0, off;
-	double x0, west1, west2, east1, east2, size, val;
+int main (int argc, char **argv) {
+	int i, k, n_id, pos, i1, id, id1, id2, intest, n;
+	int ix0, off;
+	double x0, west1, west2, east1, east2;
 	FILE *fp, *fp2, *fpx;
 	struct LONGPAIR p;
 	char line[80];
@@ -189,9 +188,7 @@ char **argv; {
 	exit (0);
 }	
 
-int	non_zero_winding2(xp, yp, x, y, n_path)
-int	xp, yp, *x, *y;
-int	n_path;
+int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path)
 {
 	/* Routine returns (2) if (xp,yp) is inside the
 	   polygon x[n_path], y[n_path], (0) if outside,

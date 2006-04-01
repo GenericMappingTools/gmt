@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_extract_all.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_extract_all.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* 
  *
@@ -12,12 +12,10 @@ struct CHECK {
 	struct GMT3_POLY h;
 } poly[N_POLY];
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp_in, *fp;
-	int	i, j, id, n_id, k, pos, subset = 0;
+	int	i, n_id, k, pos, subset = 0;
 	double w, e, s , n, x, y;
 	struct	LONGPAIR p;
 	char file[80];
@@ -53,7 +51,7 @@ char **argv;
 		fprintf (stderr, "Extracting Polygon # %d\n", poly[i].h.id);	
 				
 		
-		sprintf (file, "polygon.%d\0", poly[i].h.id);
+		sprintf (file, "polygon.%d", poly[i].h.id);
 		fp = fopen (file, "w");
 		
 		fseek (fp_in, poly[i].pos, 0);
@@ -69,7 +67,7 @@ char **argv;
 			x = 1.0e-6*p.x;
 			y = 1.0e-6*p.y;
 			if (subset && (x < w || x > e || y < s || y > n)) continue;
-			fprintf (fp, "%.10lg\t%.10lg\n", x, y);
+			fprintf (fp, "%.10g\t%.10g\n", x, y);
 		}
 		fclose (fp);
 		

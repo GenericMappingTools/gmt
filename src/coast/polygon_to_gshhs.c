@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_gshhs.c,v 1.6 2004-09-28 18:41:08 pwessel Exp $
+ *	$Id: polygon_to_gshhs.c,v 1.7 2006-04-01 10:00:42 pwessel Exp $
  * 
  *	read polygon.b format and write a GSHHS file to stdout
  */
@@ -7,7 +7,7 @@
 #include "wvs.h"
 #include "gshhs/gshhs.h"
 
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	FILE	*fp_in;
 	int	k;

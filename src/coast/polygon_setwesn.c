@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setwesn.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_setwesn.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* polygon_setwesn updates the wesn info
  *
@@ -9,7 +9,7 @@
 
 struct LONGPAIR p[N_LONGEST];
 
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	FILE	*fp;
 	int	i, ix, ixmin, ixmax, iymin, iymax;

@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs_segment_dump.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: wvs_segment_dump.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* wvs_segment_dump <raw_wvs_segment_file.b> <prefix>
  *
@@ -8,9 +8,7 @@
 
 #include "wvs.h"
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp, *fp2;
 	struct RAWSEG_HEADER hin;
@@ -28,7 +26,7 @@ char **argv;
 	if (argc == 3) strcpy (prefix, argv[2]);
 	id = 0;
 	while (fread((char *)&hin, sizeof(struct RAWSEG_HEADER), 1, fp) == 1) {
-		sprintf(file, "%s.%d\0", prefix, id);
+		sprintf(file, "%s.%d", prefix, id);
 		fp2 = fopen (file, "w");
 		for (j = 0; j < hin.n; j++) {
 			if ((fread((char *)&ptemp, sizeof(struct LONGPAIR), 1, fp)) != 1) {

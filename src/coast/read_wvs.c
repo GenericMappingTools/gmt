@@ -1,5 +1,5 @@
 /*
- *	$Id: read_wvs.c,v 1.2 2004-09-05 04:13:30 pwessel Exp $
+ *	$Id: read_wvs.c,v 1.3 2006-04-01 10:00:42 pwessel Exp $
  */
 /***************************************************************************/
 /*WDBPLTC.C-reads and plots compressed coastlines                          */
@@ -136,9 +136,7 @@ double g_slatdd,g_nlatdd,g_wlondd,g_elondd,g_scal,g_height,g_width;
 double *latray,*lonray;
 
 int want_this_rank = -1;
-main (argc, argv)
-int argc;
-char **argv; {
+int main (int argc, char **argv) {
 	double slatd, slatm, nlatd, nlatm, wlond, wlonm, elond, elonm, scale = 1.0;
 	char ranks[100], gapin;
 	int i;
@@ -179,11 +177,10 @@ double slatd, slatm, nlatd, nlatm, wlond, wlonm, elond, elonm, scale;
   short ioff, i, j, col, go, stop, inc, slat, nlat, wlon, elon, segcnt,
     rank, cont, cnt, gap, latsec, lonsec;
     long latoff, lonoff, conbyt;
-  char eflag, first, *dirfil;
+  char eflag, first;
   double todeg, lat=0., lon=0.;
   double dummy;
   int ii,jj;
-  char filspc[40];
 
   if(debug)
   {

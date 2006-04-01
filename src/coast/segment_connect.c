@@ -1,5 +1,5 @@
 /*
- *	$Id: segment_connect.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: segment_connect.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* segment_connect clean_segment_file.b tmp_poly_segment_file.b closed_poly.b
  *
@@ -33,10 +33,10 @@ struct LINK {
 } seg[MAX_N_STR];
 
 double M_PR_DEG;
+int i_great_circle_dist(struct LONGPAIR A, struct LONGPAIR B );
+void gwrite (p, n);
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp, *fp2, *fp3;
 	struct RAWSEG_HEADER hin;
@@ -277,8 +277,7 @@ char **argv;
 	exit(0);
 }
 
-int i_great_circle_dist( A, B )
-struct LONGPAIR A, B;
+int i_great_circle_dist(struct LONGPAIR A, struct LONGPAIR B )
 {
 	/* great circle distance on a sphere in degrees */
 	double sin(), cos(), tan(), asin(), acos(), atan(), fabs();
@@ -306,9 +305,9 @@ struct LONGPAIR A, B;
 	return( (int)(c * R2D * M_PR_DEG));
 }
 
-int gwrite (p, n)
+void gwrite (p, n)
 struct LONGPAIR p[];
 int n; {
 	int i;
-	for (i = 0; i < n; i++) printf ("%lg\t%lg\n", 1.0e-6*p[i].x, 1.0e-6*p[i].y);
+	for (i = 0; i < n; i++) printf ("%g\t%g\n", 1.0e-6*p[i].x, 1.0e-6*p[i].y);
 }

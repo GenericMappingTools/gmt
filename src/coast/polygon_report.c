@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_report.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_report.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* 
  *	polygon_report makes a multisegment ascii-file of entire dbase
@@ -7,13 +7,10 @@
 
 #include "wvs.h"
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp_in;
-	int	k, i, level[100];
-	struct	LONGPAIR p;
+	int	i, level[100];
 	struct GMT3_POLY h;
         
 	if (argc != 2) {

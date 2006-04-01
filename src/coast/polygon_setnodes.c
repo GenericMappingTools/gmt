@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setnodes.c,v 1.2 2006-01-08 05:13:24 pwessel Exp $
+ *	$Id: polygon_setnodes.c,v 1.3 2006-04-01 10:00:42 pwessel Exp $
  */
 /* polygon_setnodes is run on the final polygon file when all polygons
  * have had their level determined.  This program will determine
@@ -22,10 +22,11 @@ struct BLOB {
 
 int *lon, *lat;
 int ANTARCTICA;	/* Current id of Antarctica in sorted list */
+int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path);
 
 struct GRD_HEADER grdh;
 float *grd;
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	int i, j, k, n_id, pos, n_nodes, id, intest, n, nx_minus_1, ix0, off, iy0, slow = 0;
 	int iblon, iblat, ij, i0, i1, j0, j1, ii;
@@ -62,7 +63,7 @@ main (int argc, char **argv)
         strcpy (grdh.x_units, "Longitude");
         strcpy (grdh.y_units, "Latitude");
         strcpy (grdh.z_units, "Polygon Level");
-        sprintf (grdh.title, "Polygon Levels in file %s\0", argv[1]);
+        sprintf (grdh.title, "Polygon Levels in file %s", argv[1]);
         
         nx_minus_1 = grdh.nx - 1;
         
@@ -275,9 +276,7 @@ main (int argc, char **argv)
 	exit (EXIT_SUCCESS);
 }	
 
-int	non_zero_winding2(xp, yp, x, y, n_path)
-int	xp, yp, *x, *y;
-int	n_path;
+int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path)
 {
 	/* Based on GMT_non_zero_winding, but uses integer arguments */
 	
