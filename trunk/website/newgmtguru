@@ -1,5 +1,5 @@
 #!/bin/csh
-#		$Id: newgmtguru,v 1.10 2006-02-28 00:41:53 pwessel Exp $
+#		$Id: newgmtguru,v 1.11 2006-04-01 23:18:41 pwessel Exp $
 #
 # newgmtguru is run to initiate a new guru site
 # and helps setting up the guru directory with
@@ -119,9 +119,9 @@ The GMT coastline files are NOT under CVS control since they are
 themselves created from other files and this process is not yet
 ready to be set up in CVS.   Answering y below will initiate an
 anonymous ftp to your nearest GMT mirror site and obtain all the
-coastline files and install them in GMT/share.  If you already
+coastline files and install them in GMT/share/coast.  If you already
 have these files on your system you could manually copy them to
-GMT/share and save some ftp time - answer n to do this later.
+GMT/share/coast and save some ftp time - answer n to do this later.
 
 EOF
 echo -n "==> Get the coastline files via ftp? (y/n) [y]: "

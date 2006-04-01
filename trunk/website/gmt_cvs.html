@@ -1,5 +1,5 @@
 <HTML>
-<!--  $Id: gmt_cvs.html,v 1.3 2005-12-07 23:39:47 pwessel Exp $  -->
+<!--  $Id: gmt_cvs.html,v 1.4 2006-04-01 23:18:41 pwessel Exp $  -->
 <title>GMT CVS Services</title>
 <body bgcolor="#ffffff">
 <center><h1>GMT CVS Services</center></h1><p>
@@ -87,9 +87,10 @@ will take effect.  Next, copy gmtguru.macros.orig to gmtguru.macros and edit the
 file.  Again, follow instructions on what to do.<P>
 <LI><B>Get Coastlines data sets.</B>  Because the GMT coastline files (*.cdf) are themselves created
 from more primitive forms and this process is not in CVS yet, you must install the coastline
-files separately.  If you already have a recent version (e.g., 3.4.5) on your workstation
-you can simply copy *.cdf from GMT3.4.5/share to your GMT/share.  If not, you can get the
-coastlines by anonymous ftp simply by running<br>
+files separately.  If you already have a recent version (e.g., 4.1) on your workstation
+you can simply copy *.cdf from GMT4.1/share to your GMT/share/coast.  If not, you can get the
+coastlines by anonymous ftp simply by running.  Note that starting 4.1.2 the coastlines files
+live in share/coast, not share.<br>
 <P>
 gurumake get_coast
 <P>
