@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.103 2006-03-28 07:33:22 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.104 2006-04-01 00:19:38 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -129,7 +129,7 @@ int GMT_n_segment_points (struct GMT_LINE_SEGMENT *S, int n_segments);
 
 /* Table I/O routines for ascii and binary io */
 
-FILE *GMT_fopen (const char* filename, const char* mode)
+FILE *GMT_fopen (const char* filename, const char *mode)
 {
 	FILE *fp;
 	char path[BUFSIZ];
@@ -170,6 +170,14 @@ int GMT_access (const char* filename, int mode)
 		 if (!(access (path, mode))) return (0);
 	}
 	return (-1);
+}
+
+FILE *GMT_fdopen (int handle, const char *mode)
+{	/* Wrapper for fdopen */
+	FILE *fp;
+
+	if ((fp = fdopen (handle, mode))) return (fp);
+	return (NULL);
 }
 
 int GMT_fclose (FILE *stream)
