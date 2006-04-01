@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.2 2006-03-23 07:48:04 pwessel Exp $
+ *	$Id: gmt_proj.c,v 1.3 2006-04-01 23:50:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -587,7 +587,7 @@ void GMT_ilamb (double *lon, double *lat, double x, double y)
 	dy = project_info.l_rho0 - y;
 	rho = copysign (hypot (x, dy), project_info.l_N);
 	t = pow ((rho * project_info.l_i_rF), project_info.l_i_N);
-	tphi = M_PI_2 - 2.0 * atan (t);
+	phi = tphi = M_PI_2 - 2.0 * atan (t);
 	delta = 1.0;
 	for (i = 0; i < 100 && delta > GMT_CONV_LIMIT; i++) {
 		r = project_info.ECC * sin (tphi);
