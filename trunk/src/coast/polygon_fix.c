@@ -1,20 +1,17 @@
 /*
- *	$Id: polygon_fix.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_fix.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* 
  */
 
 #include "wvs.h"
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp_in;
 	int	k, level = 0, first_id = 0;
 	struct	LONGPAIR p;
 	struct GMT3_POLY h;
-	char file[80];
         
 	if (argc == 1) {
 		fprintf(stderr,"usage:  polygon_fix file.b level first_id > new.b\n");

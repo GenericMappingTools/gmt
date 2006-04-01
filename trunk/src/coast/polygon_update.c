@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_update.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_update.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* 
  *
@@ -12,9 +12,7 @@ int bad[11001], fix[10000];
 struct	LONGPAIR p[N_LONGEST];
 struct GMT3_POLY h;
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp_in, *fp_out, *fp_bad, *fp_fix, *fp;
 	int	i, found, k, n_id, nfix, nbad, n_pol_in = 0, n_pol_out = 0, n_pt_in = 0, n_pt_out = 0;
@@ -66,7 +64,7 @@ char **argv;
 			fseek (fp_in, h.n * sizeof (struct LONGPAIR), SEEK_CUR);
 			nfix--;
 			fix[i-1] = fix[nfix];
-			sprintf (file, "pol/polygon.%d\0", h.id);
+			sprintf (file, "pol/polygon.%d", h.id);
 			fprintf (stderr, "Replacing polygon %d\n", h.id);
 			fp = fopen (file, "r");
 			k = 0;

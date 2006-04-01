@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel2.c,v 1.2 2004-09-06 02:37:43 pwessel Exp $
+ *	$Id: polygon_findlevel2.c,v 1.3 2006-04-01 10:00:42 pwessel Exp $
  */
 #include "wvs.h"
 
@@ -16,12 +16,11 @@ double *flon, *flat;
 struct LONGPAIR *pp;
 
 int debug = 1;
+int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path);
 
-main (argc, argv)
-int argc;
-char **argv; {
-	int i, j, k, n_id, pos, id, id1, id2, idmax, intest, sign, max_level, error, n, n_of_this[10];
-	int n_reset = 0, old, bad = 0, ix0, off, set, n_yikes = 0, n_id1, not_read, limfjord, island;
+int main (int argc, char **argv) {
+	int i, j, k, n_id, pos, id, id1, id2, idmax, intest, sign, max_level, n, n_of_this[10];
+	int n_reset = 0, old, bad = 0, ix0, off, set, n_yikes = 0, n_id1, not_read;
 	double x0, west1, west2, east1, east2, size, val, area_size();
 	FILE *fp, *fp2, *fp3, *fpx, *fp_in;
 	struct LONGPAIR p;
@@ -128,7 +127,7 @@ char **argv; {
 			size = 1.0e-6 * area_size (flon, flat, n, &sign); /* in km^2 */
 			blob[id].h.area = size;
 			blob[id].reverse = sign + 1;
-			fprintf (fp3, "%d\t%lg\n", id, size * sign);
+			fprintf (fp3, "%d\t%g\n", id, size * sign);
 		}
 
 	
@@ -312,7 +311,7 @@ char **argv; {
 			}
 			else if (blob[id2].h.source == 0){	/* CIA inside another polygon, check if bad duplicate */
 				if ((val = blob[id2].h.area / blob[id1].h.area) > 0.95) { 
-					fprintf (fpx, "%d is inside %d but has %.1lf %% of area. %d deleted\n", id2, id1, val * 100.0, id2);
+					fprintf (fpx, "%d is inside %d but has %.1f %% of area. %d deleted\n", id2, id1, val * 100.0, id2);
 					blob[id2].h.source = -1;
 					fflush (fpx);
 					bad++;
@@ -410,9 +409,7 @@ char **argv; {
 	exit (0);
 }	
 
-double area_size (x, y, n, sign)
-double x[], y[];
-int n, *sign; {
+double area_size (double x[], double y[], int n, int *sign) {
 	int i;
 	double west, east, south, north, lon, lat, xx, yy, size, ix, iy, area();
 	
@@ -451,9 +448,7 @@ int n, *sign; {
 	return (fabs (size));
 }
 
-double area (x, y, n)
-double x[], y[];
-int n; {
+double area (double x[], double y[], int n) {
 	int i;
 	double area, xold, yold;
 	
@@ -471,9 +466,7 @@ int n; {
 	return (0.5 * area);
 }
 
-int	non_zero_winding2(xp, yp, x, y, n_path)
-int	xp, yp, *x, *y;
-int	n_path;
+int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path)
 {
 	/* Routine returns (2) if (xp,yp) is inside the
 	   polygon x[n_path], y[n_path], (0) if outside,

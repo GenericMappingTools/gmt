@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_dump.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_dump.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* 
  *	polygon_dump makes a multisegment ascii-file of entire dbase
@@ -7,9 +7,7 @@
 
 #include "wvs.h"
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp_in, *fp = stdout;
 	int	k, level = 0, multi = 0;
@@ -33,7 +31,7 @@ char **argv;
 		}
 		
 		if (!multi) {
-			sprintf (file, "polygon.%d\0", h.id);
+			sprintf (file, "polygon.%d", h.id);
 			fp = fopen (file, "w");
 		}
 		else
@@ -46,7 +44,7 @@ char **argv;
 			}
 			if (h.greenwich && p.x > h.datelon) p.x -= M360;
 			
-			fprintf (fp, "%lg\t%lg\n", 1.0e-6 * p.x, 1.0e-6 * p.y);
+			fprintf (fp, "%g\t%g\n", 1.0e-6 * p.x, 1.0e-6 * p.y);
 		}
 		if (!multi) fclose (fp);
 	}

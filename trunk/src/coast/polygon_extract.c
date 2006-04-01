@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_extract.c,v 1.3 2004-09-13 17:46:16 pwessel Exp $
+ *	$Id: polygon_extract.c,v 1.4 2006-04-01 10:00:42 pwessel Exp $
  */
 /* 
  *
@@ -12,7 +12,7 @@ struct CHECK {
 	struct GMT3_POLY h;
 } poly[N_POLY];
 
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	FILE	*fp_in, *fp;
 	int	i, j, id, n_id, k, pos, start = 2, multi = FALSE, bin = FALSE, individual = FALSE;
@@ -71,7 +71,7 @@ main (int argc, char **argv)
 		else if (bin)
 			pol_writeheader (&poly[j].h, fp);
 		else {
-			sprintf (file, "polygon.%d\0", id);
+			sprintf (file, "polygon.%d", id);
 			fp = fopen (file, "w");
 		}
 		
@@ -87,7 +87,7 @@ main (int argc, char **argv)
 				pol_fwrite (&p, 1, fp);
 			else {
 				if (poly[j].h.greenwich && p.x > poly[j].h.datelon) p.x -= M360;
-				fprintf (fp, "%.10lg\t%.10lg\n", 1.0e-6*p.x, 1.0e-6*p.y);
+				fprintf (fp, "%.10g\t%.10g\n", 1.0e-6*p.x, 1.0e-6*p.y);
 			}
 		}
 		if (individual) fclose (fp);

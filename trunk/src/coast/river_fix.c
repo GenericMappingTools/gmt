@@ -1,20 +1,17 @@
 /*
- *	$Id: river_fix.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: river_fix.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /*  used to set all levels > 4 to level-1 (since 5 was removed)
  */
 
 #include "wvs.h"
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp_in;
 	int	k;
 	struct	LONGPAIR p;
 	struct GMT3_POLY h;
-	char file[80];
         
 	if (argc == 1) {
 		fprintf(stderr,"usage:  river_fix file.b > new.b\n");

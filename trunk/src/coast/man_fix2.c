@@ -1,5 +1,5 @@
 /*
- *	$Id: man_fix2.c,v 1.3 2004-09-05 04:13:30 pwessel Exp $
+ *	$Id: man_fix2.c,v 1.4 2006-04-01 10:00:42 pwessel Exp $
  */
 #include "wvs.h"
 
@@ -12,11 +12,9 @@ struct BURP {
 	int a, b, nx, f;
 } x[1040];
 
-main (argc, argv)
-int argc;
-char **argv; {
-	int i = 0, ok, j, k, nk = 0, n_id, id, n_bad, np, nh, test, ncut = 0, sort_on_np();
-	int go[2], bad, n_skip1 = 0, n_skip2 = 0;
+int main (int argc, char **argv) {
+	int i = 0, j, k, n_id, id, np, ncut = 0, sort_on_np();
+	int go[2];
 	int w, e, s, n;
 	FILE *fp, *fp_bad, *fp_in, *fp_fix, *fpj;
 	char line[80], cmd[512], file[512], ss[10];
@@ -44,7 +42,7 @@ char **argv; {
 		n = (ceil (poly[go[0]].h.north) + 1) * MILL;
 		for (j = 0; j < 2; j++) {
 				
-			sprintf (file, "polygon.%d\0", go[j]);
+			sprintf (file, "polygon.%d", go[j]);
 			fp = fopen (file, "w");
 		
 			for (id = 0; id < n_id && go[j] != poly[id].h.id; id++);
@@ -65,7 +63,7 @@ char **argv; {
 			fclose (fp);
 		}
 		
-		sprintf (cmd, "XYX -- -X1.0e-6 -Y1.0e-6  polygon.%d polygon.%d\0", go[1], go[0]);
+		sprintf (cmd, "XYX -- -X1.0e-6 -Y1.0e-6  polygon.%d polygon.%d", go[1], go[0]);
 		system (cmd);
 		printf ("(d)elete, (s)witch level to 2, (e)dit polygon %d (q = quit) [d]? ", go[0]);
 		ss[0] = 0;
@@ -93,5 +91,5 @@ char **argv; {
 	fclose (fp_in);
 	fclose (fp_bad);
 	fclose (fp_fix);
-	
+	exit (0);
 }

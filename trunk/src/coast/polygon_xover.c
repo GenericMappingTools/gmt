@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.4 2004-09-06 23:19:32 pwessel Exp $
+ *	$Id: polygon_xover.c,v 1.5 2006-04-01 10:00:42 pwessel Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -16,7 +16,7 @@ struct POLYGON {
 
 int nothing_in_common (struct GMT3_POLY *h1, struct GMT3_POLY *h2, double *shift);
 
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	FILE	*fp;
 	int	i, n_id, id1, id2, nx, nx_tot, ANTARCTICA, verbose, full;
@@ -64,7 +64,7 @@ main (int argc, char **argv)
 	nx_tot = 0;
 	for (id1 = 0; id1 < n_id; id1++) {
 		if (id1 == ANTARCTICA) continue;	/* Skip Antarctica */
-		ylist1 = GMT_init_track (P[id1].lon, P[id1].lat, P[id1].h.n);
+		ylist1 = GMT_init_track (P[id1].lat, P[id1].h.n);
 		if (full && id1 == 0) {	/* Eurafrica */
 			for (i = 0; i < N_EUR_O; i++) lon_o[i] = ieur_o[0][i] - 360.0;
 			for (i = 0; i < N_EUR_O; i++) lat_o[i] = ieur_o[1][i];
@@ -124,13 +124,13 @@ main (int argc, char **argv)
 			if (verbose) fprintf (stderr, "polygon_xover: %6d vs %6d [T = %6d]\r", P[id1].h.id, P[id2].h.id, nx_tot);
 			if (fabs (x_shift) > GMT_CONV_LIMIT) for (i = 0; i < P[id2].h.n; i++) P[id2].lon[i] += x_shift;
 			
-			ylist2 = GMT_init_track (P[id2].lon, P[id2].lat, P[id2].h.n);
+			ylist2 = GMT_init_track (P[id2].lat, P[id2].h.n);
 
 			nx = GMT_crossover (P[id1].lon, P[id1].lat, NULL, ylist1, P[id1].h.n, P[id2].lon, P[id2].lat, NULL, ylist2, P[id2].h.n, FALSE, &XC);
 			GMT_free ((void *)ylist2);
 			if (fabs (x_shift) > GMT_CONV_LIMIT) for (i = 0; i < P[id2].h.n; i++) P[id2].lon[i] -= x_shift;
 			if (nx) {
-				for (i = 0; i < nx; i++) printf ("%d\t%d\t%d\t%d\t%lf\t%lf\n", P[id1].h.id, P[id2].h.id, (int)floor(XC.xnode[0][i]), (int)floor(XC.xnode[1][i]), XC.x[i], XC.y[i]);
+				for (i = 0; i < nx; i++) printf ("%d\t%d\t%d\t%d\t%f\t%f\n", P[id1].h.id, P[id2].h.id, (int)floor(XC.xnode[0][i]), (int)floor(XC.xnode[1][i]), XC.x[i], XC.y[i]);
 				GMT_x_free (&XC);
 			}
 			nx_tot += nx;

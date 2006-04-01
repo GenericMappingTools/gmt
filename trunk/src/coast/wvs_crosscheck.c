@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs_crosscheck.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: wvs_crosscheck.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /*  */
    
@@ -12,9 +12,7 @@ struct GMT_XSEGMENT *ylist;
 struct LONGPAIR p[N_LONGEST];
 int no[N_LONGEST];
 
-main (argc, argv)
-int argc;
-char **argv; {
+int main (int argc, char **argv) {
 	int id = 0, i, nn = 0, k, nx, j, cut, nx_tot = 0, n_bad = 0, max_n = 0, max_id = 0;
 	int start, stop, report, n_fatal = 0, n_too_much = 0, special;
 	FILE *fp, *fp_out;
@@ -56,7 +54,7 @@ char **argv; {
 		
 		report = FALSE;
 		
-		ylist = GMT_init_track (x, y, h.n);
+		ylist = GMT_init_track (y, h.n);
 		nx = GMT_crossover (x, y, NULL, ylist, h.n, x, y, NULL, ylist, h.n, TRUE, &c);
 		
 		if (nx && special) {
@@ -117,7 +115,7 @@ char **argv; {
 			
 			if (nx) {	/* Shit... */
 				printf ("\nPolygon # %d still has %d xovers\n", h.id, nx);
-				for (i = 0; i < nx; i++) printf ("%lg\t%lg\n", c.x[i], c.y[i]);
+				for (i = 0; i < nx; i++) printf ("%g\t%g\n", c.x[i], c.y[i]);
 				free ((char *)c.x);
 				free ((char *)c.y);
 				free ((char *)c.xnode[0]);

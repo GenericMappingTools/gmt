@@ -1,5 +1,5 @@
 /*
- *	$Id: man_fix.c,v 1.2 2004-09-05 04:13:30 pwessel Exp $
+ *	$Id: man_fix.c,v 1.3 2006-04-01 10:00:42 pwessel Exp $
  */
 #include "wvs.h"
 
@@ -11,11 +11,10 @@ struct CHECK {
 struct BURP {
 	int a, b, nx, f;
 } x[1040];
+void wipe (int a, int b);
 
-main (argc, argv)
-int argc;
-char **argv; {
-	int i = 0, ok, j, k, nk = 0, n_id, id, n_bad, np, nh, test, ncut = 0, sort_on_np();
+int main (int argc, char **argv) {
+	int i = 0, j, k, nk = 0, n_id, id, n_bad, np, ncut = 0, sort_on_np();
 	int go[2], bad, n_skip1 = 0, n_skip2 = 0;
 	FILE *fp, *fp_bad, *fp_in, *fp_fix;
 	char line[80], cmd[512], file[512], s[10];
@@ -106,7 +105,7 @@ char **argv; {
 		
 		for (j = 0; j < 2; j++) {
 				
-			sprintf (file, "polygon.%d\0", go[j]);
+			sprintf (file, "polygon.%d", go[j]);
 			fp = fopen (file, "w");
 		
 			for (id = 0; id < n_id && go[j] != poly[id].h.id; id++);
@@ -125,7 +124,7 @@ char **argv; {
 			fclose (fp);
 		}
 		
-		sprintf (cmd, "XYX -- -X1.0e-6 -Y1.0e-6  polygon.%d polygon.%d\0", go[0], go[1]);
+		sprintf (cmd, "XYX -- -X1.0e-6 -Y1.0e-6  polygon.%d polygon.%d", go[0], go[1]);
 		system (cmd);
 		printf ("Delete polygon %d [y]? ", go[1]);
 		s[0] = 0;
@@ -165,23 +164,23 @@ char **argv; {
 	fclose (fp_in);
 	fclose (fp_bad);
 	fclose (fp_fix);
+	exit (0);
 	
 }
 
-int sort_on_np (a, b)
-struct BURP *a, *b; {
+int sort_on_np (struct BURP *a, struct BURP *b)
+{
 	if (a->nx > b->nx) return (-1);
 	if (a->nx < b->nx) return (1);
 	return (0);
 }
 
-int wipe (a, b)
-int a, b; {
+void wipe (int a, int b) {
 	char file[80];
 		
-	sprintf (file, "polygon.%d\0", a);
+	sprintf (file, "polygon.%d", a);
 	unlink (file);
-	sprintf (file, "polygon.%d\0", b);
+	sprintf (file, "polygon.%d", b);
 	unlink (file);
 }
 

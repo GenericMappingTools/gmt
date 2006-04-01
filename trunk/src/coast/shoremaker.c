@@ -1,5 +1,5 @@
 /*
- *	$Id: shoremaker.c,v 1.2 2006-01-08 05:13:24 pwessel Exp $
+ *	$Id: shoremaker.c,v 1.3 2006-04-01 10:00:42 pwessel Exp $
  */
 /*
  *
@@ -14,9 +14,7 @@
 
 #define NC_INT 4
 
-main (argc, argv)
-int argc;
-char **argv; {
+int main (int argc, char **argv) {
 	int i, dims;
 	size_t start, count;
 	int *bin_firstseg, *seg_info, *seg_area, *seg_start;
@@ -38,23 +36,23 @@ char **argv; {
 	
 	prefix = argv[1];
 	
-	sprintf (file, "%s.bin\0", prefix);
+	sprintf (file, "%s.bin", prefix);
 	if ((fp_bin = fopen (file, "r")) == NULL) {
 		fprintf (stderr, "shoremaker:  Cannot open shore bin file %s\n", file);
 		exit (-1);
 	}
-	sprintf (file, "%s.seg\0", prefix);
+	sprintf (file, "%s.seg", prefix);
 	if ((fp_seg = fopen (file, "r")) == NULL) {
 		fprintf (stderr, "shoremaker:  Cannot open shore seg file %s\n", file);
 		exit (-1);
 	}
-	sprintf (file, "%s.pt\0", prefix);
+	sprintf (file, "%s.pt", prefix);
 	if ((fp_pt = fopen (file, "r")) == NULL) {
 		fprintf (stderr, "shoremaker:  Cannot open shore point file %s\n", file);
 		exit (-1);
 	}
 		
-	sprintf (file, "%s.cdf\0", prefix);
+	sprintf (file, "%s.cdf", prefix);
 	check_nc_status (nc_create (file, NC_CLOBBER, &s.cdfid));
 	
 	fprintf (stderr, "shoremaker:  Process header file\n");
@@ -132,7 +130,7 @@ char **argv; {
 	if (s.bin_size == 60)
 		strcpy (s.units, "1/65535 of 1 degree relative to south-west corner of bin");
 	else
-		sprintf (s.units, "1/65535 of %d degrees relative to south-west corner of bin\0", s.bin_size/60);
+		sprintf (s.units, "1/65535 of %d degrees relative to south-west corner of bin", s.bin_size/60);
 
 	/* define variables */
 
@@ -212,4 +210,6 @@ char **argv; {
 	free ((void *)pt_dy);
 
 	GMT_end (argc, argv);
+	
+	exit(0);
 }

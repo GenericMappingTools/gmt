@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs_segment_restore2.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: wvs_segment_restore2.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* wvs_segment_restore2 <asciifiles> > <segments.b>
  *
@@ -8,9 +8,7 @@
 
 #include "wvs.h"
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp;
 	struct RAWSEG_HEADER hin;

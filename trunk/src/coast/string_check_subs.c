@@ -1,5 +1,5 @@
 /*
- *	$Id: string_check_subs.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: string_check_subs.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* string_check_subs.c
  * Subroutines for testing WVS string quality.
@@ -9,11 +9,12 @@
 
 #define COASTLIB 1
 #include "wvs.h"
+int kill_trivial_duplicates (struct FLAGPAIR p[], int *n);
+int look_for_crossings (struct FLAGPAIR p[], int n);
+int intersect (double ax0, double ay0, double ax1, double ay1, double bx0, double by0, double bx1, double by1);
+int look_for_spikes (struct FLAGPAIR p[],int n);
 
-int	stringcheck(p, work, n)
-struct LONGPAIR	p[];
-struct FLAGPAIR	work[];
-int	*n;
+int stringcheck (struct LONGPAIR p[], struct FLAGPAIR work[], int *n)
 {
 
 	/* Returns 0 if EITHER input string passes all tests OR input
@@ -23,7 +24,7 @@ int	*n;
 
 	Operates by copying p to work.  */
 
-	int i, j, spike, duplicate, ntrivial, spike_total, bowtie;
+	int i, spike, ntrivial, spike_total;
 	int	remove_spikes();
 	int	compare_xy(), compare_k(), compare_absk();
 
@@ -66,9 +67,7 @@ int	*n;
 	}
 }
 
-int	look_for_crossings(p, n)
-struct	FLAGPAIR p[];
-int	n;
+int look_for_crossings (struct FLAGPAIR p[], int n)
 {
 	/* Uses the intersect routine to see if lines cross:
 		Can't do anything unless n is at least 4:  */
@@ -90,8 +89,7 @@ int	n;
 	return(0);
 }
 
-int	compare_xy(p1, p2)
-struct FLAGPAIR *p1, *p2;
+int compare_xy (struct FLAGPAIR *p1, struct FLAGPAIR *p2)
 {
 	/* Ignore k values  */
 	if (p1->x > p2->x) return(1);
@@ -101,8 +99,7 @@ struct FLAGPAIR *p1, *p2;
 	return(0);
 }
 
-int	compare_k(p1, p2)
-struct FLAGPAIR *p1, *p2;
+int compare_k (struct FLAGPAIR *p1, struct FLAGPAIR *p2)
 {
 	/* Here, k's magnitude and sign are both important:  */
 	if (p1->k < p2->k) return(-1);
@@ -110,8 +107,7 @@ struct FLAGPAIR *p1, *p2;
 	return(0);
 }
 
-int	compare_absk(p1, p2)
-struct FLAGPAIR *p1, *p2;
+int compare_absk (struct FLAGPAIR *p1, struct FLAGPAIR *p2)
 {
 	/* Here, k's magnitude only, not sign, is important:  */
 	if (abs(p1->k) < abs(p2->k)) return(-1);
@@ -119,9 +115,7 @@ struct FLAGPAIR *p1, *p2;
 	return(0);
 }
 
-int	remove_spikes(p, n)
-struct FLAGPAIR p[];
-int	*n;
+int remove_spikes (struct FLAGPAIR p[], int *n)
 {
 	/* This routine calls look_for_spikes() and removes spikes if found.
 		Returns the number found.  You need to keep calling it until
@@ -154,9 +148,7 @@ int	*n;
 }
 	
 
-int	look_for_spikes(p, n)
-struct FLAGPAIR p[];
-int	n;
+int look_for_spikes (struct FLAGPAIR p[],int n)
 {
 	/* This routine looks over p[], setting p[].k negative at a spike.
 		It returns the number of points deleted from the string.  
@@ -188,9 +180,7 @@ int	n;
 	return (ndeleted);
 }
 
-kill_trivial_duplicates(p, n)
-struct FLAGPAIR p[];
-int	*n;
+int kill_trivial_duplicates (struct FLAGPAIR p[], int *n)
 {
 	/* This routine looks over p[] and removes points which are equal to
 		the previous point.  It decrements n each time it finds such
@@ -223,8 +213,8 @@ int	*n;
 	return(ndup);
 }
 
-int ccw (x0, y0, x1, y1, x2, y2)
-double x0, y0, x1, y1, x2, y2; {
+int ccw (double x0, double y0, double x1, double y1, double x2, double y2)
+{
 	double dx1, dx2, dy1, dy2;
 	
 	dx1 = x1 - x0;	dy1 = y1 - y0;
@@ -236,15 +226,14 @@ double x0, y0, x1, y1, x2, y2; {
 	return (0);
 }
 
-int intersect (ax0, ay0, ax1, ay1, bx0, by0, bx1, by1)
-double ax0, ay0, ax1, ay1, bx0, by0, bx1, by1; {
+int intersect (double ax0, double ay0, double ax1, double ay1, double bx0, double by0, double bx1, double by1)
+{
 	return ((ccw (ax0, ay0, ax1, ay1, bx0, by0) * ccw (ax0, ay0, ax1, ay1, bx1, by1)) <= 0)
 	    && ((ccw (bx0, by0, bx1, by1, ax0, ay0) * ccw (bx0, by0, bx1, by1, ax1, ay1)) <= 0);
 }
 
-int inside (x0, y0, x, y, n)
-double x0, y0, x[], y[];
-int n; {
+int inside (double x0, double y0, double x[], double y[], int n)
+{
 	int i, count = 0, j = 0;
 	x[n] = x[0];	y[n] = y[0];
 	
@@ -257,8 +246,7 @@ int n; {
 	return (count & 1);
 }
 
-double	ds(p1, p2)
-struct LONGPAIR p1, p2;
+double ds (struct LONGPAIR p1, struct LONGPAIR p2)
 {
 	/* Compute the distance, in meters, between two points.  */
 	double	xscale;
@@ -270,10 +258,7 @@ struct LONGPAIR p1, p2;
 	return(D2R * 6.371 * hypot(xscale * idx, (double)(p1.y - p2.y) ) );
 }
 
-int	delete_small_moves(p, n, tol)
-struct	LONGPAIR p[];
-int	n;
-double	tol;
+int delete_small_moves (struct LONGPAIR p[], int n, double tol)
 {
 	/* This routine removes points which are equal to or nearby the
 	   previous point.  "Nearby" is defined as having a distance
@@ -310,10 +295,7 @@ double	tol;
 	return(j);
 }
 
-int	delete_nearby_spikes(p, n, tol)
-struct	LONGPAIR p[];
-int	n;
-double	tol;
+int delete_nearby_spikes (struct LONGPAIR p[], int n, double tol)
 {
 	/* This routine removes two points every time it finds a "spike".
 	   Here a spike is three points i, i+1, i+2 such that the distance
@@ -367,10 +349,7 @@ double	tol;
 	return(j);
 }
 
-int	new_stringcheck(p, n, x, y, id, verbose)
-struct LONGPAIR p[];
-int	*n, id, verbose;
-double	x[], y[];
+int new_stringcheck (struct LONGPAIR p[], int *n, double x[], double y[], int id, int verbose)
 {
 	/* Returns 0 if EITHER input string passes all tests OR input
 	string had fixable problems.  (If you need to tell which, save
@@ -401,7 +380,7 @@ double	x[], y[];
 		if (p[i].x == 360000000) p[i].x = 0;
 	}
 
-	ylist = GMT_init_track (x, y, *n);
+	ylist = GMT_init_track (y, *n);
 	nx = GMT_crossover (x, y, NULL, ylist, *n, x, y, NULL, ylist, *n, TRUE, &c);
 
 	if (nx == 1 && p[0].x == p[*n-1].x && p[0].x == irint(c.x[0]) && p[0].y == p[*n-1].y && p[0].y == irint(c.y[0]) ) {
@@ -481,6 +460,3 @@ double	x[], y[];
 	}
 	return(nx);
 }
-
-
-	

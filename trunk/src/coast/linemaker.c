@@ -1,5 +1,5 @@
 /*
- *	$Id: linemaker.c,v 1.2 2006-01-08 05:13:24 pwessel Exp $
+ *	$Id: linemaker.c,v 1.3 2006-04-01 10:00:42 pwessel Exp $
  */
 /*
  *
@@ -38,7 +38,7 @@ struct GMT3_BIN_HEADER {
 	int n_segments;
 } bin_head;	
 
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	int i, dims;
 	int *bin_firstseg, *seg_start;
@@ -60,23 +60,23 @@ main (int argc, char **argv)
 	
 	prefix = argv[1];
 	
-	sprintf (file, "%s.bin\0", prefix);
+	sprintf (file, "%s.bin", prefix);
 	if ((fp_bin = fopen (file, "rb")) == NULL) {
 		fprintf (stderr, "linemaker:  Cannot open shore bin file %s\n", file);
 		exit (-1);
 	}
-	sprintf (file, "%s.seg\0", prefix);
+	sprintf (file, "%s.seg", prefix);
 	if ((fp_seg = fopen (file, "rb")) == NULL) {
 		fprintf (stderr, "linemaker:  Cannot open shore seg file %s\n", file);
 		exit (-1);
 	}
-	sprintf (file, "%s.pt\0", prefix);
+	sprintf (file, "%s.pt", prefix);
 	if ((fp_pt = fopen (file, "rb")) == NULL) {
 		fprintf (stderr, "linemaker:  Cannot open shore point file %s\n", file);
 		exit (-1);
 	}
 		
-	sprintf (file, "%s.cdf\0", prefix);
+	sprintf (file, "%s.cdf", prefix);
 	check_nc_status (nc_create (file, NC_CLOBBER, &s.cdfid));
 	
 	fprintf (stderr, "linemaker:  Process header file\n");
@@ -153,7 +153,7 @@ main (int argc, char **argv)
 	if (s.bin_size == 60)
 		strcpy (s.units, "1/65535 of 1 degree relative to south-west corner of bin");
 	else
-		sprintf (s.units, "1/65535 of %d degrees relative to south-west corner of bin\0", s.bin_size/60);
+		sprintf (s.units, "1/65535 of %d degrees relative to south-west corner of bin", s.bin_size/60);
 
 	/* define variables */
 
@@ -226,4 +226,6 @@ main (int argc, char **argv)
 	free ((void *)pt_dy);
 
 	GMT_end (argc, argv);
+	
+	exit (0);
 }

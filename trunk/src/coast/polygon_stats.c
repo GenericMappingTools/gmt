@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_stats.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: polygon_stats.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* 
  *	polygon_stats finds the average point spacing
@@ -9,15 +9,13 @@
 
 #define DEGREE_TO_KM	111.195
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
-	FILE	*fp_in, *fp = stdout;
+	FILE	*fp_in;
 	int	n = 0, k, nk[12], i_max;
 	struct	LONGPAIR p;
 	struct GMT3_POLY h;
-	double ds, sum = 0.0, sum2 = 0.0, min_ds = 1.0e100, max_ds = 0.0, x0, x1, y0, y1;
+	double ds, sum = 0.0, sum2 = 0.0, x0, x1, y0, y1;
 	double ds_min, ds_max, dx;
         
 	if (argc == 1) {
@@ -73,8 +71,8 @@ char **argv;
 
 	sum2 = sqrt ((n * sum2 - sum * sum) / (n * (n - 1.0)));
 	sum = sum / n;
-	fprintf (stderr, "Mean point separation was %10.3lf km +- %10.3lf km\n", sum, sum2);
-	fprintf (stderr, "Min/max point separation was %10.3lf km and %10.3lf km (%d)\n", ds_min, ds_max, i_max);
+	fprintf (stderr, "Mean point separation was %10.3f km +- %10.3f km\n", sum, sum2);
+	fprintf (stderr, "Min/max point separation was %10.3f km and %10.3f km (%d)\n", ds_min, ds_max, i_max);
 	for (k = 0; k < 12; k++) printf ("%d	%d\n", k - 4, nk[k]);
 
 	exit (0);

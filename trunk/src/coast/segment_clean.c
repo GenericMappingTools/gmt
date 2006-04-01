@@ -1,5 +1,5 @@
 /*
- *	$Id: segment_clean.c,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: segment_clean.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
  */
 /* segment_clean.c <raw_wvs_segment_file.b>  <clean_wvs_segment_file.b>
  *
@@ -16,17 +16,16 @@
 
 #define	MAX_STR_LEN 8192	/* I ran some stats and found 6137 as the max  */
 #define	MAX_N_STR 262144	/* I ran some stats and found 210762 actually  */
+extern int new_stringcheck (struct LONGPAIR p[], int *n, double x[], double y[], int id, int verbose);
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp, *fp2;
 	struct RAWSEG_HEADER hin, hout;
 	struct LONGPAIR p[MAX_STR_LEN], ptemp;
 	double	xx[MAX_STR_LEN], yy[MAX_STR_LEN];
-	int	id, shortest, longest, avg, minrank, maxrank, lonerr, laterr, j, k, zero = 0;
-	int	dx, dy, sig_x, sig_y, x_max, y_max, n_closed = 0, n_not_on_edge = 0, n_zero = 0;
+	int	id, shortest, longest, avg, minrank, maxrank, lonerr, laterr, j, zero = 0;
+	int	dx, dy, x_max, y_max, n_closed = 0, n_not_on_edge = 0, n_zero = 0;
 	double sum_dx = 0.0, sum_dy = 0.0, sum_dx2 = 0.0, sum_dy2 = 0.0;
 	double	ds, maxds, xscale, meanlat, avgds;
 	int	maxid = 0, nbigbad = 0, nsmallbad = 0;
@@ -96,7 +95,7 @@ char **argv;
 
 		hout.n = hin.n;
 
-		if (ncross = new_stringcheck(p, &hout.n, xx, yy, id, verbose) ) {
+		if ((ncross = new_stringcheck(p, &hout.n, xx, yy, id, verbose)) ) {
 			if (hout.n > 2) {
 				nbigbad++;
 				fprintf(stderr, "id = %d has %d crossovers.\n", id, ncross);
@@ -153,7 +152,7 @@ char **argv;
 	fprintf(stderr,"segment_clean:  %d strings have crossings\n", nbigbad);
 	fprintf(stderr,"segment_clean:  The coordinate (0,0) occured %d times\n", zero);
 	fprintf(stderr,"segment_clean:  %d strings of length 1 had (0,0) as only point\n", n_zero);
-	fprintf(stderr,"segment_clean:  Max point separation withing string %lg for segment # %d\n", maxds, maxid);
+	fprintf(stderr,"segment_clean:  Max point separation withing string %g for segment # %d\n", maxds, maxid);
 
 	fclose(fp);
 

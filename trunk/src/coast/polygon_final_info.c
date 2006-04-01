@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_final_info.c,v 1.2 2004-09-09 20:17:47 pwessel Exp $
+ *	$Id: polygon_final_info.c,v 1.3 2006-04-01 10:00:42 pwessel Exp $
  */
 /* polygon_final_info wvs_polygon_file.b
  *
@@ -9,9 +9,7 @@
 
 struct GMT3_POLY h;
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp;
 	int id, src = -1, np = 0;
@@ -34,7 +32,7 @@ char **argv;
 		}
 		
 		if (src == -1 || h.source == src)
-			printf ("%d\t%d\t%d\t%d\t%10.5lf\t%10.5lf\t%9.5lf\t%9.5lf\t%lg\n", h.id, h.n, h.level, h.source, h.west, h.east, h.south, h.north, h.area);
+			printf ("%d\t%d\t%d\t%d\t%10.5f\t%10.5f\t%9.5f\t%9.5f\t%g\n", h.id, h.n, h.level, h.source, h.west, h.east, h.south, h.north, h.area);
 		id++;
 		np += h.n;
 	}
