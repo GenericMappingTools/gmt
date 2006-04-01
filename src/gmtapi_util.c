@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.12 2006-04-01 06:01:29 pwessel Exp $
+ *	$Id: gmtapi_util.c,v 1.13 2006-04-01 08:16:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -424,16 +424,17 @@ int GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int inarg[], struct GMT_DATA
 	 		case GMT_IS_ARRAY:
 				/* Each array source becomes a separate table with one segment */
 				D->table[D->n_tables] = (struct GMT_TABLE *)GMT_memory (VNULL, 1, sizeof (struct GMT_TABLE), "GMTAPI_Import_Dataset");
-				D->table[D->n_tables]->segment = (struct GMT_LINE_SEGMENT *)GMT_memory (VNULL, 1, sizeof (struct GMT_LINE_SEGMENT), "GMTAPI_Import_Dataset");
-				GMT_alloc_segment (&D->table[D->n_tables]->segment[0], par[GMTAPI_NROW], par[GMTAPI_NCOL], TRUE);
+				D->table[D->n_tables]->segment = (struct GMT_LINE_SEGMENT **)GMT_memory (VNULL, 1, sizeof (struct GMT_LINE_SEGMENT *), "GMTAPI_Import_Dataset");
+				D->table[D->n_tables]->segment[0] = (struct GMT_LINE_SEGMENT *)GMT_memory (VNULL, 1, sizeof (struct GMT_LINE_SEGMENT), "GMTAPI_Import_Dataset");
+				GMT_alloc_segment (D->table[D->n_tables]->segment[0], par[GMTAPI_NROW], par[GMTAPI_NCOL], TRUE);
 				for (row = 0; row < par[GMTAPI_NROW]; row++) {
 					for (col = 0; col < par[GMTAPI_NCOL]; col++) {
 						ij = API->GMT_2D_to_index[par[GMTAPI_KIND]] (row, col, par[GMTAPI_DIML]);
-						D->table[D->n_tables]->segment[0].coord[col][row] = GMTAPI_get_val (API->data[item]->ptr, ij, par[GMTAPI_TYPE]);
+						D->table[D->n_tables]->segment[0]->coord[col][row] = GMTAPI_get_val (API->data[item]->ptr, ij, par[GMTAPI_TYPE]);
 					}
 				}
-				D->table[D->n_tables]->segment[0].n_rows = par[GMTAPI_NROW];
-				D->table[D->n_tables]->segment[0].n_columns = D->table[D->n_tables]->n_columns = par[GMTAPI_NCOL];
+				D->table[D->n_tables]->segment[0]->n_rows = par[GMTAPI_NROW];
+				D->table[D->n_tables]->segment[0]->n_columns = D->table[D->n_tables]->n_columns = par[GMTAPI_NCOL];
 				D->table[D->n_tables]->n_records += par[GMTAPI_NROW];
 				D->table[D->n_tables]->n_segments = 1;
 				if (par[GMTAPI_FREE] == 1) GMT_free (*API->data[item]->ptr);
@@ -491,13 +492,13 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int outarg, struct GMT_DATAS
 				
 			for (tbl = offset = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
-					for (row = 0; row < D->table[tbl]->segment[seg].n_rows; row++) {
-						for (col = 0; col < D->table[tbl]->segment[seg].n_columns; col++) {
+					for (row = 0; row < D->table[tbl]->segment[seg]->n_rows; row++) {
+						for (col = 0; col < D->table[tbl]->segment[seg]->n_columns; col++) {
 							ij = API->GMT_2D_to_index[par[GMTAPI_KIND]] (row + offset, col, par[GMTAPI_DIML]);
-							GMTAPI_put_val (ptr, D->table[tbl]->segment[seg].coord[col][row], ij, par[GMTAPI_TYPE]);
+							GMTAPI_put_val (ptr, D->table[tbl]->segment[seg]->coord[col][row], ij, par[GMTAPI_TYPE]);
 						}
 					}
-					offset += D->table[tbl]->segment[seg].n_rows;	/* Since row starts at 0 for each segment */
+					offset += D->table[tbl]->segment[seg]->n_rows;	/* Since row starts at 0 for each segment */
 				}
 			}
 			break;
@@ -1024,8 +1025,8 @@ int col_check (struct GMT_TABLE *T, int *n_cols) {
 	/* Checks that all segments in this table has the correct number of columns */
 	
 	for (seg = 0; seg < T->n_segments; seg++) {
-		if ((*n_cols) == 0 && seg == 0) *n_cols = T->segment[seg].n_columns;
-		if (T->segment[seg].n_columns != (*n_cols)) return (TRUE);
+		if ((*n_cols) == 0 && seg == 0) *n_cols = T->segment[seg]->n_columns;
+		if (T->segment[seg]->n_columns != (*n_cols)) return (TRUE);
 	}
 	return (FALSE);
 }

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.241 2006-04-01 06:01:29 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.242 2006-04-01 08:16:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2398,48 +2398,49 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 	if (G->crossing == GMT_CONTOUR_XLINE) {
 		strcpy (buffer, G->option);
 		G->xp = (struct GMT_TABLE *) GMT_memory (VNULL, 1, sizeof (struct GMT_TABLE), GMT_program);
-		G->xp->segment = (struct GMT_LINE_SEGMENT *) GMT_memory (VNULL, n_alloc, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
+		G->xp->segment = (struct GMT_LINE_SEGMENT **) GMT_memory (VNULL, n_alloc, sizeof (struct GMT_LINE_SEGMENT *), GMT_program);
 		pos = 0;
 		while ((GMT_strtok (buffer, ",", &pos, p))) {
-			GMT_alloc_segment (&G->xp->segment[G->xp->n_segments], 2, 2, TRUE);
-			G->xp->segment[G->xp->n_segments].n_rows = 2;
+			G->xp->segment[G->xp->n_segments] = (struct GMT_LINE_SEGMENT *) GMT_memory (VNULL, 1, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
+			GMT_alloc_segment (G->xp->segment[G->xp->n_segments], 2, 2, TRUE);
+			G->xp->segment[G->xp->n_segments]->n_rows = 2;
 			n = sscanf (p, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 			if (n == 4) {	/* Easy, got lon0/lat0/lon1/lat1 */
-				error += GMT_verify_expectations (GMT_io.in_col_type[GMT_X], GMT_scanf_arg (txt_a, GMT_io.in_col_type[GMT_X], &G->xp->segment[G->xp->n_segments].coord[GMT_X][0]), txt_a);
-				error += GMT_verify_expectations (GMT_io.in_col_type[GMT_Y], GMT_scanf_arg (txt_b, GMT_io.in_col_type[GMT_Y], &G->xp->segment[G->xp->n_segments].coord[GMT_Y][0]), txt_b);
-				error += GMT_verify_expectations (GMT_io.in_col_type[GMT_X], GMT_scanf_arg (txt_c, GMT_io.in_col_type[GMT_X], &G->xp->segment[G->xp->n_segments].coord[GMT_X][1]), txt_c);
-				error += GMT_verify_expectations (GMT_io.in_col_type[GMT_Y], GMT_scanf_arg (txt_d, GMT_io.in_col_type[GMT_Y], &G->xp->segment[G->xp->n_segments].coord[GMT_Y][1]), txt_d);
+				error += GMT_verify_expectations (GMT_io.in_col_type[GMT_X], GMT_scanf_arg (txt_a, GMT_io.in_col_type[GMT_X], &G->xp->segment[G->xp->n_segments]->coord[GMT_X][0]), txt_a);
+				error += GMT_verify_expectations (GMT_io.in_col_type[GMT_Y], GMT_scanf_arg (txt_b, GMT_io.in_col_type[GMT_Y], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y][0]), txt_b);
+				error += GMT_verify_expectations (GMT_io.in_col_type[GMT_X], GMT_scanf_arg (txt_c, GMT_io.in_col_type[GMT_X], &G->xp->segment[G->xp->n_segments]->coord[GMT_X][1]), txt_c);
+				error += GMT_verify_expectations (GMT_io.in_col_type[GMT_Y], GMT_scanf_arg (txt_d, GMT_io.in_col_type[GMT_Y], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y][1]), txt_d);
 			}
 			else if (n == 2) { /* Easy, got <code>/<code> */
-				error += GMT_code_to_lonlat (txt_a, &G->xp->segment[G->xp->n_segments].coord[GMT_X][0], &G->xp->segment[G->xp->n_segments].coord[GMT_Y][0]);
-				error += GMT_code_to_lonlat (txt_b, &G->xp->segment[G->xp->n_segments].coord[GMT_X][1], &G->xp->segment[G->xp->n_segments].coord[GMT_Y][1]);
+				error += GMT_code_to_lonlat (txt_a, &G->xp->segment[G->xp->n_segments]->coord[GMT_X][0], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y][0]);
+				error += GMT_code_to_lonlat (txt_b, &G->xp->segment[G->xp->n_segments]->coord[GMT_X][1], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y][1]);
 			}
 			else if (n == 3) {	/* More complicated: <code>/<lon>/<lat> or <lon>/<lat>/<code> */
-				if (GMT_code_to_lonlat (txt_a, &G->xp->segment[G->xp->n_segments].coord[GMT_X][0], &G->xp->segment[G->xp->n_segments].coord[GMT_Y][0])) {	/* Failed, so try the other way */
-					error += GMT_verify_expectations (GMT_io.in_col_type[GMT_X], GMT_scanf_arg (txt_a, GMT_io.in_col_type[GMT_X], &G->xp->segment[G->xp->n_segments].coord[GMT_X][0]), txt_a);
-					error += GMT_verify_expectations (GMT_io.in_col_type[GMT_Y], GMT_scanf_arg (txt_b, GMT_io.in_col_type[GMT_Y], &G->xp->segment[G->xp->n_segments].coord[GMT_Y][0]), txt_b);
-					error += GMT_code_to_lonlat (txt_c, &G->xp->segment[G->xp->n_segments].coord[GMT_X][1], &G->xp->segment[G->xp->n_segments].coord[GMT_Y][1]);
+				if (GMT_code_to_lonlat (txt_a, &G->xp->segment[G->xp->n_segments]->coord[GMT_X][0], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y][0])) {	/* Failed, so try the other way */
+					error += GMT_verify_expectations (GMT_io.in_col_type[GMT_X], GMT_scanf_arg (txt_a, GMT_io.in_col_type[GMT_X], &G->xp->segment[G->xp->n_segments]->coord[GMT_X][0]), txt_a);
+					error += GMT_verify_expectations (GMT_io.in_col_type[GMT_Y], GMT_scanf_arg (txt_b, GMT_io.in_col_type[GMT_Y], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y][0]), txt_b);
+					error += GMT_code_to_lonlat (txt_c, &G->xp->segment[G->xp->n_segments]->coord[GMT_X][1], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y][1]);
 				}
 				else {	/* Worked, pick up second point */
-					error += GMT_verify_expectations (GMT_io.in_col_type[GMT_X], GMT_scanf_arg (txt_b, GMT_io.in_col_type[GMT_X], &G->xp->segment[G->xp->n_segments].coord[GMT_X][1]), txt_b);
-					error += GMT_verify_expectations (GMT_io.in_col_type[GMT_Y], GMT_scanf_arg (txt_c, GMT_io.in_col_type[GMT_Y], &G->xp->segment[G->xp->n_segments].coord[GMT_Y][1]), txt_c);
+					error += GMT_verify_expectations (GMT_io.in_col_type[GMT_X], GMT_scanf_arg (txt_b, GMT_io.in_col_type[GMT_X], &G->xp->segment[G->xp->n_segments]->coord[GMT_X][1]), txt_b);
+					error += GMT_verify_expectations (GMT_io.in_col_type[GMT_Y], GMT_scanf_arg (txt_c, GMT_io.in_col_type[GMT_Y], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y][1]), txt_c);
 				}
 			}
 			for (i = 0; i < 2; i++) {	/* Reset any zmin/max settings if used and applicable */
-				if (G->xp->segment[G->xp->n_segments].coord[GMT_X][i] == DBL_MAX) {	/* Meant zmax location */
+				if (G->xp->segment[G->xp->n_segments]->coord[GMT_X][i] == DBL_MAX) {	/* Meant zmax location */
 					if (xyz) {
-						G->xp->segment[G->xp->n_segments].coord[GMT_X][i] = xyz[1][0];
-						G->xp->segment[G->xp->n_segments].coord[GMT_Y][i] = xyz[1][1];
+						G->xp->segment[G->xp->n_segments]->coord[GMT_X][i] = xyz[1][0];
+						G->xp->segment[G->xp->n_segments]->coord[GMT_Y][i] = xyz[1][1];
 					}
 					else {
 						error++;
 						fprintf (stderr, "%s: GMT SYNTAX ERROR -%c:  z+ option not applicable here\n", GMT_program, G->flag);
 					}
 				}
-				else if (G->xp->segment[G->xp->n_segments].coord[GMT_X][i] == -DBL_MAX) {	/* Meant zmin location */
+				else if (G->xp->segment[G->xp->n_segments]->coord[GMT_X][i] == -DBL_MAX) {	/* Meant zmin location */
 					if (xyz) {
-						G->xp->segment[G->xp->n_segments].coord[GMT_X][i] = xyz[0][0];
-						G->xp->segment[G->xp->n_segments].coord[GMT_Y][i] = xyz[0][1];
+						G->xp->segment[G->xp->n_segments]->coord[GMT_X][i] = xyz[0][0];
+						G->xp->segment[G->xp->n_segments]->coord[GMT_Y][i] = xyz[0][1];
 					}
 					else {
 						error++;
@@ -2447,30 +2448,30 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
 					}
 				}
 			}
-			if (G->do_interpolate) G->xp->segment[G->xp->n_segments].n_rows = GMT_fix_up_path (&G->xp->segment[G->xp->n_segments].coord[GMT_X], &G->xp->segment[G->xp->n_segments].coord[GMT_Y], G->xp->segment[G->xp->n_segments].n_rows, greenwich, gmtdefs.line_step);
-			for (i = 0; i < G->xp->segment[G->xp->n_segments].n_rows; i++) {	/* Project */
-				GMT_geo_to_xy (G->xp->segment[G->xp->n_segments].coord[GMT_X][i], G->xp->segment[G->xp->n_segments].coord[GMT_Y][i], &x, &y);
-				G->xp->segment[G->xp->n_segments].coord[GMT_X][i] = x;
-				G->xp->segment[G->xp->n_segments].coord[GMT_Y][i] = y;
+			if (G->do_interpolate) G->xp->segment[G->xp->n_segments]->n_rows = GMT_fix_up_path (&G->xp->segment[G->xp->n_segments]->coord[GMT_X], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y], G->xp->segment[G->xp->n_segments]->n_rows, greenwich, gmtdefs.line_step);
+			for (i = 0; i < G->xp->segment[G->xp->n_segments]->n_rows; i++) {	/* Project */
+				GMT_geo_to_xy (G->xp->segment[G->xp->n_segments]->coord[GMT_X][i], G->xp->segment[G->xp->n_segments]->coord[GMT_Y][i], &x, &y);
+				G->xp->segment[G->xp->n_segments]->coord[GMT_X][i] = x;
+				G->xp->segment[G->xp->n_segments]->coord[GMT_Y][i] = y;
 			}
 			G->xp->n_segments++;
 			if (G->xp->n_segments == (int)n_alloc) {
 				n_alloc += GMT_SMALL_CHUNK;
-				G->xp->segment = (struct GMT_LINE_SEGMENT *) GMT_memory ((void *)G->xp->segment, n_alloc, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
+				G->xp->segment = (struct GMT_LINE_SEGMENT **) GMT_memory ((void *)G->xp->segment, n_alloc, sizeof (struct GMT_LINE_SEGMENT *), GMT_program);
 			}
 		}
 		if (G->xp->n_segments < (int)n_alloc) {
 			n_alloc += GMT_SMALL_CHUNK;
-			G->xp->segment = (struct GMT_LINE_SEGMENT *) GMT_memory ((void *)G->xp->segment, (size_t)G->xp->n_segments, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
+			G->xp->segment = (struct GMT_LINE_SEGMENT **) GMT_memory ((void *)G->xp->segment, (size_t)G->xp->n_segments, sizeof (struct GMT_LINE_SEGMENT *), GMT_program);
 		}
 	}
 	else if (G->crossing == GMT_CONTOUR_XCURVE) {
 		GMT_import_table ((void *)G->option, GMT_IS_FILE, &G->xp, 0.0, FALSE, FALSE, FALSE);
 		for (k = 0; k < G->xp->n_segments; k++) {
-			for (i = 0; i < G->xp->segment[k].n_rows; i++) {	/* Project */
-				GMT_geo_to_xy (G->xp->segment[k].coord[GMT_X][i], G->xp->segment[k].coord[GMT_Y][i], &x, &y);
-				G->xp->segment[k].coord[GMT_X][i] = x;
-				G->xp->segment[k].coord[GMT_Y][i] = y;
+			for (i = 0; i < G->xp->segment[k]->n_rows; i++) {	/* Project */
+				GMT_geo_to_xy (G->xp->segment[k]->coord[GMT_X][i], G->xp->segment[k]->coord[GMT_Y][i], &x, &y);
+				G->xp->segment[k]->coord[GMT_X][i] = x;
+				G->xp->segment[k]->coord[GMT_Y][i] = y;
 			}
 		}
 	}
@@ -3491,8 +3492,8 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 			int left, right, line_no;
 			G->ylist = GMT_init_track (xx, yy, nn);
 			for (line_no = 0; line_no < G->xp->n_segments; line_no++) {	/* For each of the crossing lines */
-				G->ylist_XP = GMT_init_track (G->xp->segment[line_no].coord[GMT_X], G->xp->segment[line_no].coord[GMT_Y], G->xp->segment[line_no].n_rows);
-				G->nx = GMT_crossover (G->xp->segment[line_no].coord[GMT_X], G->xp->segment[line_no].coord[GMT_Y], NULL, G->ylist_XP, G->xp->segment[line_no].n_rows, xx, yy, NULL, G->ylist, nn, FALSE, &G->XC);
+				G->ylist_XP = GMT_init_track (G->xp->segment[line_no]->coord[GMT_X], G->xp->segment[line_no]->coord[GMT_Y], G->xp->segment[line_no]->n_rows);
+				G->nx = GMT_crossover (G->xp->segment[line_no]->coord[GMT_X], G->xp->segment[line_no]->coord[GMT_Y], NULL, G->ylist_XP, G->xp->segment[line_no]->n_rows, xx, yy, NULL, G->ylist, nn, FALSE, &G->XC);
 				GMT_free ((void *)G->ylist_XP);
 				if (G->nx == 0) continue;
 
@@ -3650,8 +3651,8 @@ int GMT_label_is_OK (char *this_label, char *label, double this_dist, double thi
 			break;
 
 		case 6:
-			if (G->xp->segment[xl].label && G->xp->segment[xl].label[0])
-				strcpy (this_label, G->xp->segment[xl].label);
+			if (G->xp->segment[xl]->label && G->xp->segment[xl]->label[0])
+				strcpy (this_label, G->xp->segment[xl]->label);
 			else
 				label_OK = FALSE;
 			break;
@@ -6079,68 +6080,68 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_TABLE *T, BOOL
 	if (return_mindist) *dist_min = DBL_MAX;
 	for (seg = 0; seg < T->n_segments; seg++) {	/* Loop over each line segment */
 
-		if (T->segment[seg].n_rows <= 0) continue;	/* empty; skip */
+		if (T->segment[seg]->n_rows <= 0) continue;	/* empty; skip */
 
-		if (return_mindist) T->segment[seg].dist = 0.0;	/* Explicitly set dist to zero so the shortest distance can be found */
+		if (return_mindist) T->segment[seg]->dist = 0.0;	/* Explicitly set dist to zero so the shortest distance can be found */
 
 		/* Find nearest point on this line */
 
-		for (j0 = 0; j0 < T->segment[seg].n_rows; j0++) {	/* loop over nodes on current line */
-			d = (*GMT_distance_func) (lon, lat, T->segment[seg].coord[GMT_X][j0], T->segment[seg].coord[GMT_Y][j0]);	/* Distance between our point and j'th node on seg'th line */
+		for (j0 = 0; j0 < T->segment[seg]->n_rows; j0++) {	/* loop over nodes on current line */
+			d = (*GMT_distance_func) (lon, lat, T->segment[seg]->coord[GMT_X][j0], T->segment[seg]->coord[GMT_Y][j0]);	/* Distance between our point and j'th node on seg'th line */
 			if (return_mindist && d < (*dist_min)) {	/* Update min distance */
 				*dist_min = d;
-				if (return_mindist == 2) *x_near = T->segment[seg].coord[GMT_X][j0], *y_near = T->segment[seg].coord[GMT_Y][j0];	/* Also update (x,y) of nearest point on the line */
+				if (return_mindist == 2) *x_near = T->segment[seg]->coord[GMT_X][j0], *y_near = T->segment[seg]->coord[GMT_Y][j0];	/* Also update (x,y) of nearest point on the line */
 				if (return_mindist == 3) *x_near = (double)seg, *y_near = (double)j0;		/* Also update (seg, pt) of nearest point on the line */
 			}
-			if (d <= T->segment[seg].dist) return (TRUE);		/* Node inside the critical distance; we are done */
+			if (d <= T->segment[seg]->dist) return (TRUE);		/* Node inside the critical distance; we are done */
 		}
 
-		if (T->segment[seg].n_rows < 2) continue;	/* 1-point "line" is a point; skip segment check */
+		if (T->segment[seg]->n_rows < 2) continue;	/* 1-point "line" is a point; skip segment check */
 
 		/* If we get here we must check for intermediate points along the straight lines between segment nodes.
 		 * However, since we know all nodes are outside the circle, we first check if the pair of nodes making
 		 * up the next line segment are outside of the circumscribing square before we need to solve for the
 		 * intersection between the line segment and the normal from our point. */
 
-		for (j0 = 0, j1 = 1; j1 < T->segment[seg].n_rows; j0++, j1++) {	/* loop over straight segments on current line */
+		for (j0 = 0, j1 = 1; j1 < T->segment[seg]->n_rows; j0++, j1++) {	/* loop over straight segments on current line */
 			if (!return_mindist) {
-				edge = lon - T->segment[seg].dist;
-				if (T->segment[seg].coord[GMT_X][j0] < edge && T->segment[seg].coord[GMT_X][j1] < edge) continue;	/* Left of square */
-				edge = lon + T->segment[seg].dist;
-				if (T->segment[seg].coord[GMT_X][j0] > edge && T->segment[seg].coord[GMT_X][j1] > edge) continue;	/* Right of square */
-				edge = lat - T->segment[seg].dist;
-				if (T->segment[seg].coord[GMT_Y][j0] < edge && T->segment[seg].coord[GMT_Y][j1] < edge) continue;	/* Below square */
-				edge = lat + T->segment[seg].dist;
-				if (T->segment[seg].coord[GMT_Y][j0] > edge && T->segment[seg].coord[GMT_Y][j1] > edge) continue;	/* Above square */
+				edge = lon - T->segment[seg]->dist;
+				if (T->segment[seg]->coord[GMT_X][j0] < edge && T->segment[seg]->coord[GMT_X][j1] < edge) continue;	/* Left of square */
+				edge = lon + T->segment[seg]->dist;
+				if (T->segment[seg]->coord[GMT_X][j0] > edge && T->segment[seg]->coord[GMT_X][j1] > edge) continue;	/* Right of square */
+				edge = lat - T->segment[seg]->dist;
+				if (T->segment[seg]->coord[GMT_Y][j0] < edge && T->segment[seg]->coord[GMT_Y][j1] < edge) continue;	/* Below square */
+				edge = lat + T->segment[seg]->dist;
+				if (T->segment[seg]->coord[GMT_Y][j0] > edge && T->segment[seg]->coord[GMT_Y][j1] > edge) continue;	/* Above square */
 			}
 
 			/* Here there is potential for the line segment crossing inside the circle */
 
-			dx = T->segment[seg].coord[GMT_X][j1] - T->segment[seg].coord[GMT_X][j0];
-			dy = T->segment[seg].coord[GMT_Y][j1] - T->segment[seg].coord[GMT_Y][j0];
+			dx = T->segment[seg]->coord[GMT_X][j1] - T->segment[seg]->coord[GMT_X][j0];
+			dy = T->segment[seg]->coord[GMT_Y][j1] - T->segment[seg]->coord[GMT_Y][j0];
 			if (dx == 0.0) {		/* Line segment is vertical, our normal is thus horizontal */
 				if (dy == 0.0) continue;	/* Dummy segment with no length */
-				xc = T->segment[seg].coord[GMT_X][j0];
+				xc = T->segment[seg]->coord[GMT_X][j0];
 				yc = lat;
-				if (T->segment[seg].coord[GMT_Y][j0] <= yc && T->segment[seg].coord[GMT_Y][j1] <= yc ) continue;	/* Cross point is on extension */
-				if (T->segment[seg].coord[GMT_Y][j0] >= yc && T->segment[seg].coord[GMT_Y][j1] >= yc ) continue;	/* Cross point is on extension */
+				if (T->segment[seg]->coord[GMT_Y][j0] <= yc && T->segment[seg]->coord[GMT_Y][j1] <= yc ) continue;	/* Cross point is on extension */
+				if (T->segment[seg]->coord[GMT_Y][j0] >= yc && T->segment[seg]->coord[GMT_Y][j1] >= yc ) continue;	/* Cross point is on extension */
 			}
 			else {	/* Line segment is not vertical */
 				if (dy == 0.0) {	/* Line segment is horizontal, our normal is thus vertical */
 					xc = lon;
-					yc = T->segment[seg].coord[GMT_Y][j0];
+					yc = T->segment[seg]->coord[GMT_Y][j0];
 				}
 				else {	/* General case of oblique line */
 					s = dy / dx;
 					s_inv = -1.0 / s;
-					xc = (lat - T->segment[seg].coord[GMT_Y][j0] + s * T->segment[seg].coord[GMT_X][j0] - s_inv * lon ) / (s - s_inv);
-					yc = T->segment[seg].coord[GMT_Y][j0] + s * (xc - T->segment[seg].coord[GMT_X][j0]);
+					xc = (lat - T->segment[seg]->coord[GMT_Y][j0] + s * T->segment[seg]->coord[GMT_X][j0] - s_inv * lon ) / (s - s_inv);
+					yc = T->segment[seg]->coord[GMT_Y][j0] + s * (xc - T->segment[seg]->coord[GMT_X][j0]);
 
 				}
 				/* To be inside, (xc, yc) must (1) be on the line segment and not its extension and (2) be within dist of our point */
 
-				if (T->segment[seg].coord[GMT_X][j0] <= xc && T->segment[seg].coord[GMT_X][j1] <= xc ) continue;	/* Cross point is on extension */
-				if (T->segment[seg].coord[GMT_X][j0] >= xc && T->segment[seg].coord[GMT_X][j1] >= xc ) continue;	/* Cross point is on extension */
+				if (T->segment[seg]->coord[GMT_X][j0] <= xc && T->segment[seg]->coord[GMT_X][j1] <= xc ) continue;	/* Cross point is on extension */
+				if (T->segment[seg]->coord[GMT_X][j0] >= xc && T->segment[seg]->coord[GMT_X][j1] >= xc ) continue;	/* Cross point is on extension */
 			}
 
 			/* OK, here we must check how close the crossing point is */
@@ -6151,12 +6152,12 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_TABLE *T, BOOL
 				if (return_mindist == 2) *x_near = xc, *y_near = yc;	/* Also update nearest point on the line */
 				if (return_mindist == 3) {	/* Also update (seg, pt) of nearest point on the line */
 					*x_near = (double)seg;
-					dist_AB = (*GMT_distance_func) (T->segment[seg].coord[GMT_X][j0], T->segment[seg].coord[GMT_Y][j0], T->segment[seg].coord[GMT_X][j1], T->segment[seg].coord[GMT_Y][j1]);
-					fraction = (dist_AB > 0.0) ? (*GMT_distance_func) (T->segment[seg].coord[GMT_X][j0], T->segment[seg].coord[GMT_Y][j0], xc, yc) / dist_AB : 0.0;
+					dist_AB = (*GMT_distance_func) (T->segment[seg]->coord[GMT_X][j0], T->segment[seg]->coord[GMT_Y][j0], T->segment[seg]->coord[GMT_X][j1], T->segment[seg]->coord[GMT_Y][j1]);
+					fraction = (dist_AB > 0.0) ? (*GMT_distance_func) (T->segment[seg]->coord[GMT_X][j0], T->segment[seg]->coord[GMT_Y][j0], xc, yc) / dist_AB : 0.0;
 					*y_near = (double)j0 + fraction;
 				}
 			}
-			if (d <= T->segment[seg].dist) return (TRUE);		/* Node inside the critical distance; we are done */
+			if (d <= T->segment[seg]->dist) return (TRUE);		/* Node inside the critical distance; we are done */
 		}
 	}
 	return (FALSE);	/* All tests failed, we are not close to the line(s) */
@@ -6173,33 +6174,33 @@ int GMT_near_a_line_spherical (double lon, double lat, struct GMT_TABLE *T, BOOL
 
 	for (seg = 0; seg < T->n_segments; seg++) {	/* Loop over each line segment */
 
-		if (T->segment[seg].n_rows <= 0) continue;	/* Empty ; skip */
+		if (T->segment[seg]->n_rows <= 0) continue;	/* Empty ; skip */
 
 		/* Find nearest point on this line */
 
-		if (return_mindist) T->segment[seg].dist = 0.0;	/* Explicitly set dist to zero so the shortest distance can be found */
+		if (return_mindist) T->segment[seg]->dist = 0.0;	/* Explicitly set dist to zero so the shortest distance can be found */
 
-		for (row = 0; row < T->segment[seg].n_rows; row++) {	/* loop over nodes on current line */
-			d = (*GMT_distance_func) (lon, lat, T->segment[seg].coord[GMT_X][row], T->segment[seg].coord[GMT_Y][row]);	/* Distance between our point and row'th node on seg'th line */
+		for (row = 0; row < T->segment[seg]->n_rows; row++) {	/* loop over nodes on current line */
+			d = (*GMT_distance_func) (lon, lat, T->segment[seg]->coord[GMT_X][row], T->segment[seg]->coord[GMT_Y][row]);	/* Distance between our point and row'th node on seg'th line */
 			if (return_mindist && d < (*dist_min)) {		/* Update minimum distance */
 				*dist_min = d;
-				if (return_mindist == 2) *x_near = T->segment[seg].coord[GMT_X][row], *y_near = T->segment[seg].coord[GMT_Y][row];	/* Also update (x,y) of nearest point on the line */
+				if (return_mindist == 2) *x_near = T->segment[seg]->coord[GMT_X][row], *y_near = T->segment[seg]->coord[GMT_Y][row];	/* Also update (x,y) of nearest point on the line */
 				if (return_mindist == 3) *x_near = (double)seg, *y_near = (double)row;	/* Also update (seg, pt) of nearest point on the line */
 			}
-			if (d <= T->segment[seg].dist) return (TRUE);			/* Node inside the critical distance; we are done */
+			if (d <= T->segment[seg]->dist) return (TRUE);			/* Node inside the critical distance; we are done */
 		}
 
-		if (T->segment[seg].n_rows < 2) continue;	/* 1-point "line" is a point; skip segment check */
+		if (T->segment[seg]->n_rows < 2) continue;	/* 1-point "line" is a point; skip segment check */
 
 		/* If we get here we must check for intermediate points along the great circle lines between segment nodes.*/
 
-		cos_dist = (return_mindist) ? 2.0 : cosd (T->segment[seg].dist * KM_TO_DEG);		/* Cosine of the great circle distance we are checking for. 2 ensures failure to be closer */
-		plon = T->segment[seg].coord[GMT_X][0];	plat = T->segment[seg].coord[GMT_Y][0];
+		cos_dist = (return_mindist) ? 2.0 : cosd (T->segment[seg]->dist * KM_TO_DEG);		/* Cosine of the great circle distance we are checking for. 2 ensures failure to be closer */
+		plon = T->segment[seg]->coord[GMT_X][0];	plat = T->segment[seg]->coord[GMT_Y][0];
 		GMT_geo_to_cart (&plat, &plon, B, TRUE);		/* 3-D vector of end of last segment */
 
-		for (row = 1; row < T->segment[seg].n_rows; row++) {				/* loop over great circle segments on current line */
+		for (row = 1; row < T->segment[seg]->n_rows; row++) {				/* loop over great circle segments on current line */
 			memcpy ((void *)A, (void *)B, (size_t)(3 * sizeof (double)));	/* End of last segment is start of new segment */
-			plon = T->segment[seg].coord[GMT_X][row];	plat = T->segment[seg].coord[GMT_Y][row];
+			plon = T->segment[seg]->coord[GMT_X][row];	plat = T->segment[seg]->coord[GMT_Y][row];
 			GMT_geo_to_cart (&plat, &plon, B, TRUE);	/* 3-D vector of end of this segment */
 			if (GMT_great_circle_intersection (A, B, C, X, &cx_dist)) continue;	/* X not between A and B */
 			if (return_mindist) {		/* Get lon, lat of X, calculate distance, and update min_dist if needed */
@@ -6211,8 +6212,8 @@ int GMT_near_a_line_spherical (double lon, double lat, struct GMT_TABLE *T, BOOL
 					if (return_mindist == 3) {	/* Also update (seg, pt) of nearest point on the line */
 						*x_near = (double)seg;
 						j0 = row - 1;
-						dist_AB = (*GMT_distance_func) (T->segment[seg].coord[GMT_X][j0], T->segment[seg].coord[GMT_Y][j0], T->segment[seg].coord[GMT_X][row], T->segment[seg].coord[GMT_Y][row]);
-						fraction = (dist_AB > 0.0) ? (*GMT_distance_func) (T->segment[seg].coord[GMT_X][j0], T->segment[seg].coord[GMT_Y][j0], xlon, xlat) / dist_AB : 0.0;
+						dist_AB = (*GMT_distance_func) (T->segment[seg]->coord[GMT_X][j0], T->segment[seg]->coord[GMT_Y][j0], T->segment[seg]->coord[GMT_X][row], T->segment[seg]->coord[GMT_Y][row]);
+						fraction = (dist_AB > 0.0) ? (*GMT_distance_func) (T->segment[seg]->coord[GMT_X][j0], T->segment[seg]->coord[GMT_Y][j0], xlon, xlat) / dist_AB : 0.0;
 						*y_near = (double)j0 + fraction;
 					}
 				}
