@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.10 2006-04-01 02:17:27 pwessel Exp $
+ *	$Id: gmtapi_util.c,v 1.11 2006-04-01 04:20:19 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -62,22 +62,36 @@ int GMTAPI_Create_Session (struct GMTAPI_CTRL **API, int flags)
 	struct GMTAPI_CTRL * G;
 	char *argv[1] = {"GMTAPI"};
 	
+	/* Allocate the structure */
+	
  	G = (struct GMTAPI_CTRL *) GMT_memory (VNULL, 1, sizeof (struct GMTAPI_CTRL), "GMT_New_Session");
+	
+	/* Allocate pointers to data objects */
+	
 	G->n_data_alloc = GMT_SMALL_CHUNK;
 	G->data = (struct GMTAPI_DATA_OBJECT **) GMT_memory (VNULL, G->n_data_alloc, sizeof (struct GMTAPI_DATA_OBJECT *), "GMT_New_Session");
+	
+	/* Allocate pointers to io sessions */
+	
 	G->n_io_sessions_alloc = GMT_TINY_CHUNK;
 	G->io_session = (struct GMTAPI_IO **) GMT_memory (VNULL, G->n_io_sessions_alloc, sizeof (struct GMTAPI_IO *), "GMT_New_Session");
+	
+	/* Set function pointers for the two ij index functions */
+	
 	G->GMT_2D_to_index[0] = (PFI)GMTAPI_2D_to_index_C;
 	G->GMT_2D_to_index[1] = (PFI)GMTAPI_2D_to_index_F;
 	G->GMT_index_to_2D[0] = (PFV)GMTAPI_index_to_2D_C;
 	G->GMT_index_to_2D[1] = (PFV)GMTAPI_index_to_2D_F;
+	
+	/* Store the size (in bytes) or the various data elements */
+	
 	G->GMTAPI_size[GMTAPI_BYTE]   = 1;
 	G->GMTAPI_size[GMTAPI_SHORT]  = 2;
 	G->GMTAPI_size[GMTAPI_SHORT]  = 4;
 	G->GMTAPI_size[GMTAPI_FLOAT]  = 4;
 	G->GMTAPI_size[GMTAPI_DOUBLE] = 8;
 	
-	GMT_begin (1, argv);
+	GMT_begin (1, argv);	/* Initialize GMT machinery */
 	
 	*API = G;
 
@@ -116,7 +130,7 @@ int GMTAPI_Destroy_Session (struct GMTAPI_CTRL *API)
 	
  	GMT_free ((void *)API);
 	
-	GMT_end (1, argv);
+	GMT_end (1, argv);	/* Terminate GMT machinery */
 
 	return (GMTAPI_OK);
 }
@@ -251,6 +265,9 @@ int GMTAPI_Register_Export_ (int *method, void *output, double parameters[])
 
 int GMTAPI_Unregister_Export (struct GMTAPI_CTRL *API, int object_ID)
 {
+	/* Removes a registerd export object from the list of objects.
+	 * object_ID is the registered ID of the object to be removed */
+	 
 	return (GMTAPI_Unregister_IO (API, object_ID, GMT_OUT));
 }
 
@@ -261,6 +278,9 @@ int GMTAPI_Unregister_Export_ (int *object_ID)
 
 int GMTAPI_Unregister_Import (struct GMTAPI_CTRL *API, int object_ID)
 {
+	/* Removes a registerd import object from the list of objects.
+	 * object_ID is the registered ID of the object to be removed */
+	 
 	return (GMTAPI_Unregister_IO (API, object_ID, GMT_IN));
 }
 
@@ -271,6 +291,9 @@ int GMTAPI_Unregister_Import_ (int *object_ID)
 
 int GMTAPI_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, double parameters[], int direction)
 {
+	/* Adds a new data object to the list of registered objects and returns a unique object ID.
+	 * Arguments are as listed for GMTAPI_Register_Im|Export ()
+	 */
 	static char *name[2] = {"Input", "Output"};
 	struct GMTAPI_DATA_OBJECT *S;
 
@@ -300,7 +323,7 @@ int GMTAPI_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, doubl
 			S->ptr = input;
 			if (!parameters) {
 				fprintf (stderr, "GMT: Error in GMT_Register_%s: Parameters are NULL\n", name[direction]);
-				return (-1);
+				return (GMTAPI_NO_PARAMETERS);
 			}
 			memcpy ((void *)S->arg, (void *)parameters, GMTAPI_N_ARRAY_ARGS * sizeof (double));
 			S->method = GMT_IS_ARRAY;
@@ -315,7 +338,7 @@ int GMTAPI_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, doubl
 			S->ptr = input;
 			if (!parameters) {
 				fprintf (stderr, "GMT: Error in GMT_Register_%s: Parameters are NULL\n", name[direction]);
-				return (-1);
+				return (GMTAPI_NO_PARAMETERS);
 			}
 			memcpy ((void *)S->arg, (void *)parameters, GMTAPI_N_GRID_ARGS * sizeof (double));
 			S->method = GMT_IS_GRID;
@@ -328,7 +351,7 @@ int GMTAPI_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, doubl
 
 		default:
 			fprintf (stderr, "GMT: Error in GMT_Register_%s: Unrecognized method %d\n", name[direction], method);
-			return (-1);
+			return (GMTAPI_NOT_A_VALID_METHOD);
 			break;
 	}
 
@@ -342,16 +365,18 @@ int GMTAPI_Register_IO_ (int *method, void *input, double parameters[], int *dir
 
 int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, int direction)
 {	/* Remove object from internal list of objects */
-	int i;
+	int i, k;
 	
 	if (API == NULL) return (GMTAPI_NOT_A_SESSION);	/* GMT_New_Session has not been called */
 	
 	 /* Search for the object in the list */
-	for (i = 0; i < API->n_data_alloc && API->data[i] && API->data[i]->ID != object_ID; i++);
-	if (i == API->n_data_alloc) return (GMTAPI_NOT_A_VALID_ID);	/* No such object found */
+	for (i = 0, k = -1; k == -1 && i < API->n_data_alloc; i++) {
+		 if (API->data[i] && API->data[i]->ID == object_ID) k = i;
+	}
+	if (k == -1) return (GMTAPI_NOT_A_VALID_ID);	/* No such object found */
 	
 	/* OK, we found the object; is it the right kind (input or output)? */
-	if (API->data[i]->direction != direction) {
+	if (API->data[k]->direction != direction) {
 		/* Trying to free up an input but calling it output or vice versa */
 		if (direction == GMT_IN) return (GMTAPI_NOT_INPUT_OBJECT);
 		if (direction == GMT_OUT) return (GMTAPI_NOT_OUTPUT_OBJECT);
@@ -359,8 +384,8 @@ int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, int direction)
 	
 	/* OK, now it is safe to remove the object */
 	
-	GMT_free ((void *)API->data[i]);	/* Free the current object */
-	API->data[i] = NULL;			/* Flag as unused object index */
+	GMT_free ((void *)API->data[k]);	/* Free the current object */
+	API->data[k] = NULL;			/* Flag as unused object index */
 	API->n_data--;				/* Tally of how many data sets are left */
 	
 	return (GMTAPI_OK);
@@ -398,6 +423,7 @@ int GMTAPI_Import_Table (struct GMTAPI_CTRL *API, int inarg[], struct GMT_TABLE 
 				break;
 	 		case GMT_IS_ARRAY:
 				/* Each array source becomes a separate table with one segment */
+				T[n_T] = (struct GMT_TABLE *)GMT_memory (VNULL, 1, sizeof (struct GMT_TABLE), "GMTAPI_Import_Table");
 				T[n_T]->segment = (struct GMT_LINE_SEGMENT *)GMT_memory (VNULL, 1, sizeof (struct GMT_LINE_SEGMENT), "GMTAPI_Import_Table");
 				GMT_alloc_segment (&T[n_T]->segment[0], par[GMTAPI_NROW], par[GMTAPI_NCOL], TRUE);
 				for (row = 0; row < par[GMTAPI_NROW]; row++) {
@@ -447,7 +473,7 @@ int GMTAPI_Export_Table (struct GMTAPI_CTRL *API, int outarg, struct GMT_TABLE *
 	int tbl, seg, row, col, offset, par[GMTAPI_N_ARRAY_ARGS];
 	size_t ij;
 	void *ptr;
-	int n_total_recs (struct GMT_TABLE **T, int n_tables);
+	int n_total_recs (struct GMT_TABLE **T, int n_tables, BOOLEAN header);
 		
 	if (outarg == 0) return (GMTAPI_NOT_A_VALID_ID);
 	
@@ -465,7 +491,7 @@ int GMTAPI_Export_Table (struct GMTAPI_CTRL *API, int outarg, struct GMT_TABLE *
 			if (par[GMTAPI_FREE] == 1) {	/* Must allocate output space */
 				size_t size;
 				void **v;
-				size = n_total_recs (table, n_tables);
+				size = n_total_recs (table, n_tables, GMT_io.multi_segments[GMT_OUT]);
 				size *= (((size_t)(table[0]->n_columns)) * ((size_t)(API->GMTAPI_size[par[GMTAPI_TYPE]])));
 				v = (void **)GMT_memory (VNULL, 1, sizeof (void *), "GMT_Assemble_Data");
 				*v = GMT_memory (VNULL, size, sizeof (char), "GMT_Assemble_Data");
@@ -490,11 +516,14 @@ int GMTAPI_Export_Table (struct GMTAPI_CTRL *API, int outarg, struct GMT_TABLE *
 	return (GMTAPI_OK);		
 }
 
-int n_total_recs (struct GMT_TABLE **T, int n_tables)
+int n_total_recs (struct GMT_TABLE **T, int n_tables, BOOLEAN header)
 {	/* Return total number of records cross all the tables */
 	int n_recs, tbl;
 	
-	for (tbl = n_recs = 0; tbl < n_tables; tbl++) n_recs += T[tbl]->n_records;
+	for (tbl = n_recs = 0; tbl < n_tables; tbl++) {
+		n_recs += T[tbl]->n_records;
+		if (header) n_recs += T[tbl]->n_segments;	/* For binary -M out, each segment becomes a NaN record */
+	}
 	return (n_recs);
 }
 
@@ -621,6 +650,8 @@ int GMTAPI_Destroy_IO_Session (struct GMTAPI_CTRL *API, int session_id)
 		size *= (((size_t)(GMT_io.ncol[GMT_OUT])) * ((size_t)(API->GMTAPI_size[IO->type])));
 		IO->ptr = GMT_memory (IO->ptr, size, sizeof (char), "GMTAPI_Export_Record");
 	}
+
+	if (IO->fp && IO->close_file) GMT_fclose (IO->fp);	/* File we opened that now should be closed */
 
 	/* OK, now we can delete the session */
 	
@@ -765,26 +796,6 @@ int GMTAPI_Export_Record (struct GMTAPI_CTRL *API, int io_session, int n_columns
 	return (GMTAPI_OK);		
 }
 
-int GMTAPI_Close_Streams (struct GMTAPI_CTRL *API, int io_session)
-{
-	int i, error;
-	struct GMTAPI_IO *IO;
-
-	IO = API->io_session[io_session];	/* Shorthand */
-
-	for (i = error = 0; !error && i < IO->n_items; i++) {	/* Loop over all the IO items in this session */
-		if (!IO->fp) continue;	/* File pointer not set */
-		if (IO->fp == GMT_stdin) continue;	/* We do not close stdin */
-		if (IO->fp == GMT_stdout) continue;	/* We do not close stdout */
-		if (IO->close_file || API->auto_close) {
-			error = GMT_fclose (IO->fp);
-			IO->fp = NULL;
-		}
-	}
-
-	return ((error) ? GMTAPI_ERROR_ON_CLOSE : GMTAPI_OK);
-}
-	
 /*==================================================================================================
  *		PRIVATE FUNCTIONS ONLY USED BY THIS LIBRARY FILE
  *==================================================================================================
@@ -801,11 +812,12 @@ int GMTAPI_Add_Data_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *
 	 * they are all occupied then reallocate the array to make more space.
 	 * We thus find and return the lowest available ID. */
 	 
-	for (i = 0, ID = 1; i < API->n_data_alloc && API->data[i] && API->data[i]->ID == ID; i++, ID++);
+	for (i = 0; i < API->n_data_alloc && API->data[i]; i++);
 	if (i == API->n_data_alloc) {	/* Must allocate more space for data descriptors */
 		API->n_data_alloc += GMT_SMALL_CHUNK;
 		API->data = (struct GMTAPI_DATA_OBJECT **) GMT_memory ((void *)API->data, API->n_data_alloc, sizeof (struct GMTAPI_DATA_OBJECT *), "GMTAPI_Add_Data_Object");
 	}
+	ID = i + 1;
 	object->ID = ID;		/* This is the lowest available ID */
 	API->data[i] = object;		/* Hook the current object into this spot in the list */
 	API->n_data++;			/* Tally of how many data sets are currently registered */
@@ -893,13 +905,15 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, struct GMTAPI_IO *IO, int di
 				v = (void **)GMT_memory (VNULL, 1, sizeof (void *), "GMTAPI_Next_IO_Source");
 				*v = GMT_memory (VNULL, size, sizeof (char), "GMTAPI_Next_IO_Source");
 				*(API->data[item]->ptr) = *v;
+				/* IO->n_rows is 0 which means we are allocating more space as we need it */
 			}
+			else
+				IO->n_rows = par[GMTAPI_NROW];	/* Hard-wired limit as pass in from calling program */
 			IO->ptr = (*API->data[item]->ptr);	/* Pass along the pointer */
 			IO->type = par[GMTAPI_TYPE];
 			IO->kind = par[GMTAPI_KIND];
 			IO->dimension = par[GMTAPI_DIML];
-			IO->n_rows = par[GMTAPI_NROW];
-			GMT_io.ncol[direction] = par[GMTAPI_NROW];	/* Basically, we are doing what GMT calls binary i/o */
+			GMT_io.ncol[direction] = par[GMTAPI_NCOL];	/* Basically, we are doing what GMT calls binary i/o */
 			GMT_io.binary[direction] = TRUE;
 			break;
 		default:

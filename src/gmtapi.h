@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.11 2006-04-01 02:17:27 pwessel Exp $
+ *	$Id: gmtapi.h,v 1.12 2006-04-01 04:20:19 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -47,24 +47,27 @@
 
 	/* Misc GMTAPI error codes; can be passed to GMT_Error_Message */
 	
-#define GMTAPI_OK			0
-#define GMTAPI_ERROR			1
-#define GMTAPI_NOT_A_SESSION		2
-#define GMTAPI_NOT_A_VALID_ID		3
-#define GMTAPI_FILE_NOT_FOUND		4
-#define GMTAPI_BAD_PERMISSION		5
-#define GMTAPI_GRID_READ_ERROR		6
-#define GMTAPI_GRID_WRITE_ERROR		7
-#define GMTAPI_DATA_READ_ERROR		8
-#define GMTAPI_DATA_WRITE_ERROR		9
-#define GMTAPI_N_COLS_VARY		10
-#define GMTAPI_NO_INPUT			11
-#define GMTAPI_NO_OUTPUT		12
-#define GMTAPI_NOT_A_VALID_IO		13
-#define GMTAPI_NOT_A_VALID_IO_SESSION	14
-#define GMTAPI_NOT_INPUT_OBJECT		15
-#define GMTAPI_NOT_OUTPUT_OBJECT	16
-#define GMTAPI_ERROR_ON_CLOSE		17
+#define GMTAPI_OK			  0
+#define GMTAPI_ERROR			 -1
+#define GMTAPI_NOT_A_SESSION		 -2
+#define GMTAPI_NOT_A_VALID_ID		 -3
+#define GMTAPI_FILE_NOT_FOUND		 -4
+#define GMTAPI_BAD_PERMISSION		 -5
+#define GMTAPI_GRID_READ_ERROR		 -6
+#define GMTAPI_GRID_WRITE_ERROR		 -7
+#define GMTAPI_DATA_READ_ERROR		 -8
+#define GMTAPI_DATA_WRITE_ERROR		 -9
+#define GMTAPI_N_COLS_VARY		-10
+#define GMTAPI_NO_INPUT			-11
+#define GMTAPI_NO_OUTPUT		-12
+#define GMTAPI_NOT_A_VALID_IO		-13
+#define GMTAPI_NOT_A_VALID_IO_SESSION	-14
+#define GMTAPI_NOT_INPUT_OBJECT		-15
+#define GMTAPI_NOT_OUTPUT_OBJECT	-16
+#define GMTAPI_ERROR_ON_FOPEN		-17
+#define GMTAPI_ERROR_ON_FCLOSE		-18
+#define GMTAPI_NO_PARAMETERS		-19
+#define GMTAPI_NOT_A_VALID_METHOD	-20
 
 	/* Index parameters used to access the information arrays */
 
