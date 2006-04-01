@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.41 2006-04-01 00:19:38 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.42 2006-04-01 02:17:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -201,6 +201,8 @@ struct GMT_LINE_SEGMENT {		/* For holding multisegment lines in memory */
 };
 
 struct GMT_TABLE {	/* To hold an array of line segment structures and header information in one container */
+	int n_headers;				/* Number of file header records (0 if no header) */
+	char **header;				/* Array with all file header records, if any) */
 	int n_segments;				/* Number of segments in the array */
 	int n_records;				/* Total number of data records across all segments */
 	int n_columns;				/* Number of columns (fields) in each record */
@@ -220,7 +222,7 @@ EXTERN_MSC int GMT_export_segments (void *dest, int dest_type, struct GMT_TABLE 
 EXTERN_MSC void GMT_alloc_segment (struct GMT_LINE_SEGMENT *S, int n_rows, int n_columns, BOOLEAN first);
 EXTERN_MSC void GMT_points_delete (double *xp, double *yp, double *dp);
 EXTERN_MSC void GMT_free_segments (struct GMT_LINE_SEGMENT *p, int n_lines);
-EXTERN_MSC void GMT_free_table (struct GMT_TABLE *table);
+EXTERN_MSC void GMT_free_tables (struct GMT_TABLE **table, int n_tables);
 EXTERN_MSC void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode);
 EXTERN_MSC void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode);
 EXTERN_MSC void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S);
