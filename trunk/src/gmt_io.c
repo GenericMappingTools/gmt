@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.108 2006-04-01 23:39:01 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.109 2006-04-01 23:50:51 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -297,6 +297,7 @@ void GMT_multisegment (char *text)
 	 * GMT 4.1.2: Added possibility separate settings for input and output */
 
 	if (text && text[0]) {
+		GMT_io.multi_segments[GMT_IN] = GMT_io.multi_segments[GMT_OUT] = FALSE;
 		switch (text[0]) {
 			case 'i':	/* -M for input files only */
 				GMT_io.multi_segments[GMT_IN] = TRUE;
