@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.107 2006-04-01 08:16:39 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.108 2006-04-01 23:39:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2795,7 +2795,7 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 					T->segment[seg]->coord[GMT_Y][row] = T->segment[seg]->coord[GMT_Y][0];
 					T->segment[seg]->n_rows++;
 				}
-				for (row = 0; row < T->segment[seg]->n_rows - 1; row++) {
+				for (row = 0; row < (size_t)T->segment[seg]->n_rows - 1; row++) {
 					dlon = T->segment[seg]->coord[GMT_X][row+1] - T->segment[seg]->coord[GMT_X][row];
 					if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);	/* Crossed Greenwhich or Dateline, pick the shortest distance */
 					lon_sum += dlon;
@@ -2816,7 +2816,7 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 
 		GMT_alloc_segment (T->segment[seg], T->segment[seg]->n_rows, T->segment[seg]->n_columns, FALSE);
 
-		if (seg == (n_seg_alloc-1)) {
+		if ((size_t)seg == (n_seg_alloc-1)) {
 			n_seg_alloc += GMT_CHUNK;
 			T->segment = (struct GMT_LINE_SEGMENT **) GMT_memory ((void *)T->segment, n_seg_alloc, sizeof (struct GMT_LINE_SEGMENT *), GMT_program);
 		}
@@ -2897,7 +2897,7 @@ int GMT_export_table (void *dest, int dest_type, struct GMT_TABLE *table, BOOLEA
 			if (table->segment[seg]->header) strcpy (GMT_io.segment_header, table->segment[seg]->header);
 			GMT_write_segmentheader (fp, table->segment[seg]->n_columns);
 		}
-		for (row = 0; row < table->segment[seg]->n_rows; row++) {
+		for (row = 0; row < (size_t)table->segment[seg]->n_rows; row++) {
 			for (col = 0; col < table->segment[seg]->n_columns; col++) out[col] = table->segment[seg]->coord[col][row];
 			GMT_output (fp, table->segment[seg]->n_columns, out);
 		}

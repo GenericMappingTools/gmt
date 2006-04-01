@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.28 2006-03-28 01:37:39 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.29 2006-04-01 23:39:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -138,14 +138,14 @@ struct GMT_CONTOUR {
 EXTERN_MSC int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *G);
 EXTERN_MSC void GMT_contlabel_init (struct GMT_CONTOUR *G);
 EXTERN_MSC int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G);
-EXTERN_MSC int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode);
+EXTERN_MSC int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3]);
 EXTERN_MSC void GMT_contlabel_angle (double x[], double y[], int start, int stop, double cangle, int n, struct GMT_LABEL *L, struct GMT_CONTOUR *G);
 EXTERN_MSC void GMT_contlabel_draw (double x[], double y[], double d[], int n, struct GMT_CONTOUR *G);
 EXTERN_MSC void GMT_contlabel_plot (struct GMT_CONTOUR *G);
 EXTERN_MSC void GMT_hold_contour (double **xx, double **yy, int nn, double zval, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G);
 EXTERN_MSC int GMT_code_to_lonlat (char *code, double *lon, double *lat);
 EXTERN_MSC void GMT_x_free (struct GMT_XOVER *X);
-EXTERN_MSC struct GMT_XSEGMENT *GMT_init_track (double x[], double y[], int n);
+EXTERN_MSC struct GMT_XSEGMENT *GMT_init_track (double y[], int n);
 EXTERN_MSC int GMT_crossover (double xa[], double ya[], int sa[], struct GMT_XSEGMENT A[], int na, double xb[], double yb[], int sb[], struct GMT_XSEGMENT B[], int nb, BOOLEAN internal, struct GMT_XOVER *X);
 
 #endif /* _GMT_CONTOUR_H */

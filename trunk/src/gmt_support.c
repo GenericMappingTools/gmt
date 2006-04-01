@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.242 2006-04-01 08:16:39 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.243 2006-04-01 23:39:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2023,7 +2023,7 @@ void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname)
 	}
 
 	if (prev_addr) {
-		if ((tmp = realloc ((void *) prev_addr, (size_t)(nelem * size))) == VNULL) {
+		if ((tmp = realloc ((void *) prev_addr, (nelem * size))) == VNULL) {
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
@@ -2349,13 +2349,10 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 	return (error);
 }
 
-int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3], int mode)
+int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 {
 	/* G is pointer to the LABELED CONTOUR structure
 	 * xyz, if not NULL, have the (x,y,z) min and max values for a grid
-	 * mode is a bit flag composed of these items:
-	 *  Bit 1:	On if contours, Off if lines
-	 *  Bit 2:	On if xyz is set and there thus is a grid.
 	 */
 	 
 	/* Prepares contour labeling machinery as needed */
@@ -3490,9 +3487,9 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 		}
 		if (G->crossing) {	/* Determine label positions based on crossing lines */
 			int left, right, line_no;
-			G->ylist = GMT_init_track (xx, yy, nn);
+			G->ylist = GMT_init_track (yy, nn);
 			for (line_no = 0; line_no < G->xp->n_segments; line_no++) {	/* For each of the crossing lines */
-				G->ylist_XP = GMT_init_track (G->xp->segment[line_no]->coord[GMT_X], G->xp->segment[line_no]->coord[GMT_Y], G->xp->segment[line_no]->n_rows);
+				G->ylist_XP = GMT_init_track (G->xp->segment[line_no]->coord[GMT_Y], G->xp->segment[line_no]->n_rows);
 				G->nx = GMT_crossover (G->xp->segment[line_no]->coord[GMT_X], G->xp->segment[line_no]->coord[GMT_Y], NULL, G->ylist_XP, G->xp->segment[line_no]->n_rows, xx, yy, NULL, G->ylist, nn, FALSE, &G->XC);
 				GMT_free ((void *)G->ylist_XP);
 				if (G->nx == 0) continue;
@@ -6238,9 +6235,9 @@ void GMT_rotate2D (double x[], double y[], int n, double x0, double y0, double a
 
 /* Here lies GMT Crossover core functions that previously was in X2SYS only */
 
-struct GMT_XSEGMENT *GMT_init_track (double x[], double y[], int n)
+struct GMT_XSEGMENT *GMT_init_track (double y[], int n)
 {
-	/* GMT_init_track accepts the x-y track of length n and returns an array of
+	/* GMT_init_track accepts the y components of an x-y track of length n and returns an array of
 	 * line segments that have been sorted on the minimum y-coordinate
 	 */
  
