@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.106 2006-04-01 06:01:29 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.107 2006-04-01 08:16:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2695,7 +2695,7 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 	/* Allocate the Table structure */
 
 	T = (struct GMT_TABLE *) GMT_memory (VNULL, 1, sizeof (struct GMT_TABLE), GMT_program);
-	T->segment = (struct GMT_LINE_SEGMENT *) GMT_memory (VNULL, n_seg_alloc, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
+	T->segment = (struct GMT_LINE_SEGMENT **) GMT_memory (VNULL, n_seg_alloc, sizeof (struct GMT_LINE_SEGMENT *), GMT_program);
 
 	save = GMT_io.multi_segments[GMT_IN];	/* Must set this to TRUE temporarily since GMT_input uses GMT_io.multi_segments when reading */
 	GMT_io.multi_segments[GMT_IN] = TRUE;
@@ -2710,21 +2710,22 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 	while (n_fields >= 0 && !(GMT_io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 		while (no_segments || (GMT_io.status & GMT_IO_SEGMENT_HEADER && !(GMT_io.status & GMT_IO_EOF))) {
 			/* To use different line-distances for each segment, place the distance in the segment header */
-			if (seg == -1 || T->segment[seg].n_rows > 0) seg++;	/* Only advance segment if last had any points or was the first one */
+			if (seg == -1 || T->segment[seg]->n_rows > 0) seg++;	/* Only advance segment if last had any points or was the first one */
+			T->segment[seg] = (struct GMT_LINE_SEGMENT *) GMT_memory (VNULL, 1, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
 			n_read++;
 			if (ascii) {	/* Only ascii files can have info stored in multi-seg header record */
 				n = sscanf (&GMT_io.segment_header[1], "%lg", &d);	/* See if we find a number in the header */
-				T->segment[seg].dist = (n == 1 && dist == 0.0) ? d : dist;	/* If so, assign it to dist, else go with default */
+				T->segment[seg]->dist = (n == 1 && dist == 0.0) ? d : dist;	/* If so, assign it to dist, else go with default */
 			}
 			else
-				T->segment[seg].dist = dist;					/* For binary files dist must be passed via arguments */
+				T->segment[seg]->dist = dist;					/* For binary files dist must be passed via arguments */
 			/* Segment initialization */
 			n_row_alloc = GMT_CHUNK;
 			row = 0;
-			T->segment[seg].min_lon = T->segment[seg].min_lat = +DBL_MAX;
-			T->segment[seg].max_lon = T->segment[seg].max_lat = -DBL_MAX;
+			T->segment[seg]->min_lon = T->segment[seg]->min_lat = +DBL_MAX;
+			T->segment[seg]->max_lon = T->segment[seg]->max_lat = -DBL_MAX;
 			n_fields = GMT_input (fp, &n_expected_fields, &in);
-			T->segment[seg].n_columns = n_expected_fields;
+			T->segment[seg]->n_columns = n_expected_fields;
 			no_segments = FALSE;	/* This has now served its purpose */
 		}
 		if ((GMT_io.status & GMT_IO_EOF)) continue;	/* At EOF; get out of this loop */
@@ -2735,21 +2736,21 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 			else
 				sscanf (&GMT_io.segment_header[1], "%s", buffer);
 			if (strlen (buffer)) {
-				T->segment[seg].label = (char *) GMT_memory ((void *)VNULL, (size_t)(strlen(buffer)+1), sizeof (char), GMT_program);
-				strcpy (T->segment[seg].label, buffer);
+				T->segment[seg]->label = (char *) GMT_memory ((void *)VNULL, (size_t)(strlen(buffer)+1), sizeof (char), GMT_program);
+				strcpy (T->segment[seg]->label, buffer);
 			}
 			if (strlen (GMT_io.segment_header)) {
-				T->segment[seg].header = (char *) GMT_memory ((void *)VNULL, (size_t)(strlen(GMT_io.segment_header)+1), sizeof (char), GMT_program);
-				strcpy (T->segment[seg].header, GMT_io.segment_header);
+				T->segment[seg]->header = (char *) GMT_memory ((void *)VNULL, (size_t)(strlen(GMT_io.segment_header)+1), sizeof (char), GMT_program);
+				strcpy (T->segment[seg]->header, GMT_io.segment_header);
 			}
 		}
 
-		if (T->segment[seg].n_columns < 2) {
-			fprintf (stderr, "%s: File %s does not have at least 2 columns (found %d)\n", GMT_program, file, T->segment[seg].n_columns);
+		if (T->segment[seg]->n_columns < 2) {
+			fprintf (stderr, "%s: File %s does not have at least 2 columns (found %d)\n", GMT_program, file, T->segment[seg]->n_columns);
 			exit (EXIT_FAILURE);
 		}
 
-		GMT_alloc_segment (&T->segment[seg], n_row_alloc, T->segment[seg].n_columns, TRUE);
+		GMT_alloc_segment (T->segment[seg], n_row_alloc, T->segment[seg]->n_columns, TRUE);
 		
 		while (! (GMT_io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_EOF))) {	/* Keep going until FALSE or find a new segment header */
 			if (GMT_io.status & GMT_IO_MISMATCH) {
@@ -2762,25 +2763,25 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 				fprintf (stderr, "%s: Failure to read file %s near line %d\n", GMT_program, file, n_read);
 				exit (EXIT_FAILURE);
 			}
-			for (k = 0; k < T->segment[seg].n_columns; k++) T->segment[seg].coord[k][row] = in[k];
+			for (k = 0; k < T->segment[seg]->n_columns; k++) T->segment[seg]->coord[k][row] = in[k];
 			if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) {
-				if (greenwich && T->segment[seg].coord[GMT_X][row] > 180.0) T->segment[seg].coord[GMT_X][row] -= 360.0;
-				if (!greenwich && T->segment[seg].coord[GMT_X][row] < 0.0) T->segment[seg].coord[GMT_X][row] += 360.0;
+				if (greenwich && T->segment[seg]->coord[GMT_X][row] > 180.0) T->segment[seg]->coord[GMT_X][row] -= 360.0;
+				if (!greenwich && T->segment[seg]->coord[GMT_X][row] < 0.0) T->segment[seg]->coord[GMT_X][row] += 360.0;
 			}
 
-			if (T->segment[seg].coord[GMT_X][row] < T->segment[seg].min_lon) T->segment[seg].min_lon = T->segment[seg].coord[GMT_X][row];
-			if (T->segment[seg].coord[GMT_Y][row] < T->segment[seg].min_lat) T->segment[seg].min_lat = T->segment[seg].coord[GMT_Y][row];
-			if (T->segment[seg].coord[GMT_X][row] > T->segment[seg].max_lon) T->segment[seg].max_lon = T->segment[seg].coord[GMT_X][row];
-			if (T->segment[seg].coord[GMT_Y][row] > T->segment[seg].max_lat) T->segment[seg].max_lat = T->segment[seg].coord[GMT_Y][row];
+			if (T->segment[seg]->coord[GMT_X][row] < T->segment[seg]->min_lon) T->segment[seg]->min_lon = T->segment[seg]->coord[GMT_X][row];
+			if (T->segment[seg]->coord[GMT_Y][row] < T->segment[seg]->min_lat) T->segment[seg]->min_lat = T->segment[seg]->coord[GMT_Y][row];
+			if (T->segment[seg]->coord[GMT_X][row] > T->segment[seg]->max_lon) T->segment[seg]->max_lon = T->segment[seg]->coord[GMT_X][row];
+			if (T->segment[seg]->coord[GMT_Y][row] > T->segment[seg]->max_lat) T->segment[seg]->max_lat = T->segment[seg]->coord[GMT_Y][row];
 			
 			row++;
 			if (row == (n_row_alloc-1)) {	/* -1 because we may have to close the polygon and hence need 1 more cell */
 				n_row_alloc += GMT_CHUNK;
-				GMT_alloc_segment (&T->segment[seg], n_row_alloc, T->segment[seg].n_columns, FALSE);
+				GMT_alloc_segment (T->segment[seg], n_row_alloc, T->segment[seg]->n_columns, FALSE);
 			}
 			n_fields = GMT_input (fp, &n_expected_fields, &in);
 		}
-		T->segment[seg].n_rows = row;	/* Number of records in this segment */
+		T->segment[seg]->n_rows = row;	/* Number of records in this segment */
 		T->n_records += row;		/* Total number of records so far */
 
 		/* If file is a polygon and we must close it if needed */
@@ -2788,36 +2789,36 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 		if (poly) {
 			if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) {	/* Must check for polar cap */
 				double dlon, lon_sum = 0.0, lat_sum = 0.0;
-				dlon = T->segment[seg].coord[GMT_X][0] - T->segment[seg].coord[GMT_X][row-1];
-				if (!((fabs (dlon) == 0.0 || fabs (dlon) == 360.0) && T->segment[seg].coord[GMT_Y][0] == T->segment[seg].coord[GMT_Y][row-1])) {
-					T->segment[seg].coord[GMT_X][row] = T->segment[seg].coord[GMT_X][0];
-					T->segment[seg].coord[GMT_Y][row] = T->segment[seg].coord[GMT_Y][0];
-					T->segment[seg].n_rows++;
+				dlon = T->segment[seg]->coord[GMT_X][0] - T->segment[seg]->coord[GMT_X][row-1];
+				if (!((fabs (dlon) == 0.0 || fabs (dlon) == 360.0) && T->segment[seg]->coord[GMT_Y][0] == T->segment[seg]->coord[GMT_Y][row-1])) {
+					T->segment[seg]->coord[GMT_X][row] = T->segment[seg]->coord[GMT_X][0];
+					T->segment[seg]->coord[GMT_Y][row] = T->segment[seg]->coord[GMT_Y][0];
+					T->segment[seg]->n_rows++;
 				}
-				for (row = 0; row < T->segment[seg].n_rows - 1; row++) {
-					dlon = T->segment[seg].coord[GMT_X][row+1] - T->segment[seg].coord[GMT_X][row];
+				for (row = 0; row < T->segment[seg]->n_rows - 1; row++) {
+					dlon = T->segment[seg]->coord[GMT_X][row+1] - T->segment[seg]->coord[GMT_X][row];
 					if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);	/* Crossed Greenwhich or Dateline, pick the shortest distance */
 					lon_sum += dlon;
-					lat_sum += T->segment[seg].coord[GMT_Y][row];
+					lat_sum += T->segment[seg]->coord[GMT_Y][row];
 				}
 				if (fabs (fabs (lon_sum) - 360.0) < GMT_CONV_LIMIT) {	/* TRUE if contains a pole */
-					T->segment[seg].pole = irint (copysign (1.0, lat_sum));	/* So, 0 means not polar */
+					T->segment[seg]->pole = irint (copysign (1.0, lat_sum));	/* So, 0 means not polar */
 				}
 			}
-			else if (GMT_polygon_is_open (T->segment[seg].coord[GMT_X], T->segment[seg].coord[GMT_Y], row)) {	/* Cartesian closure */
-				T->segment[seg].coord[GMT_X][row] = T->segment[seg].coord[GMT_X][0];
-				T->segment[seg].coord[GMT_Y][row] = T->segment[seg].coord[GMT_Y][0];
-				T->segment[seg].n_rows++;
+			else if (GMT_polygon_is_open (T->segment[seg]->coord[GMT_X], T->segment[seg]->coord[GMT_Y], row)) {	/* Cartesian closure */
+				T->segment[seg]->coord[GMT_X][row] = T->segment[seg]->coord[GMT_X][0];
+				T->segment[seg]->coord[GMT_Y][row] = T->segment[seg]->coord[GMT_Y][0];
+				T->segment[seg]->n_rows++;
 			}
 		}
 
 		/* Reallocate to free up some memory */
 
-		GMT_alloc_segment (&T->segment[seg], T->segment[seg].n_rows, T->segment[seg].n_columns, FALSE);
+		GMT_alloc_segment (T->segment[seg], T->segment[seg]->n_rows, T->segment[seg]->n_columns, FALSE);
 
 		if (seg == (n_seg_alloc-1)) {
 			n_seg_alloc += GMT_CHUNK;
-			T->segment = (struct GMT_LINE_SEGMENT *) GMT_memory ((void *)T->segment, n_seg_alloc, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
+			T->segment = (struct GMT_LINE_SEGMENT **) GMT_memory ((void *)T->segment, n_seg_alloc, sizeof (struct GMT_LINE_SEGMENT *), GMT_program);
 		}
 	}
 	if (close_file) GMT_fclose (fp);
@@ -2825,9 +2826,9 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 	GMT_io.multi_segments[GMT_IN] = save;
 
 	seg++;
-	T->segment = (struct GMT_LINE_SEGMENT *) GMT_memory ((void *)T->segment, (size_t)seg, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
+	T->segment = (struct GMT_LINE_SEGMENT **) GMT_memory ((void *)T->segment, (size_t)seg, sizeof (struct GMT_LINE_SEGMENT *), GMT_program);
 	T->n_segments = seg;
-	T->n_columns = T->segment[0].n_columns;
+	T->n_columns = T->segment[0]->n_columns;
 
 	*table = T;
 
@@ -2893,12 +2894,12 @@ int GMT_export_table (void *dest, int dest_type, struct GMT_TABLE *table, BOOLEA
 	
 	for (seg = 0; seg < table->n_segments; seg++) {
 		if (GMT_io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
-			if (table->segment[seg].header) strcpy (GMT_io.segment_header, table->segment[seg].header);
-			GMT_write_segmentheader (fp, table->segment[seg].n_columns);
+			if (table->segment[seg]->header) strcpy (GMT_io.segment_header, table->segment[seg]->header);
+			GMT_write_segmentheader (fp, table->segment[seg]->n_columns);
 		}
-		for (row = 0; row < table->segment[seg].n_rows; row++) {
-			for (col = 0; col < table->segment[seg].n_columns; col++) out[col] = table->segment[seg].coord[col][row];
-			GMT_output (fp, table->segment[seg].n_columns, out);
+		for (row = 0; row < table->segment[seg]->n_rows; row++) {
+			for (col = 0; col < table->segment[seg]->n_columns; col++) out[col] = table->segment[seg]->coord[col][row];
+			GMT_output (fp, table->segment[seg]->n_columns, out);
 		}
 	}
 	
@@ -2945,7 +2946,7 @@ void GMT_free_dataset (struct GMT_DATASET *data)
 void GMT_free_table (struct GMT_TABLE *table)
 {
 	int seg;
-	for (seg = 0; seg < table->n_segments; seg++) GMT_free_segment (&(table->segment[seg]));
+	for (seg = 0; seg < table->n_segments; seg++) GMT_free_segment (table->segment[seg]);
 	GMT_free ((void *)table);
 }
 

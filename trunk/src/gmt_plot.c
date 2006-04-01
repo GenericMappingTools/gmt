@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.173 2006-03-28 01:37:39 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.174 2006-04-01 08:16:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3565,9 +3565,9 @@ void GMT_contlabel_debug (struct GMT_CONTOUR *G)
 	}
 	else if (G->crossing) {	/* Draw a thin line */
 		for (j = 0; j < G->xp->n_segments; j++) {
-			pen = (int *) GMT_memory (VNULL, (size_t)G->xp->segment[j].n_rows, sizeof (int), GMT_program);
-			for (i = 1, pen[0] = 3; i < G->xp->segment[j].n_rows; i++) pen[i] = 2;
-			GMT_plot_line (G->xp->segment[j].coord[GMT_X], G->xp->segment[j].coord[GMT_Y], pen, G->xp->segment[j].n_rows);
+			pen = (int *) GMT_memory (VNULL, (size_t)G->xp->segment[j]->n_rows, sizeof (int), GMT_program);
+			for (i = 1, pen[0] = 3; i < G->xp->segment[j]->n_rows; i++) pen[i] = 2;
+			GMT_plot_line (G->xp->segment[j]->coord[GMT_X], G->xp->segment[j]->coord[GMT_Y], pen, G->xp->segment[j]->n_rows);
 			GMT_free ((void *)pen);
 		}
 	}
