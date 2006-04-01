@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.104 2006-04-01 00:19:38 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.105 2006-04-01 02:17:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2933,9 +2933,11 @@ void GMT_points_delete (double *xp, double *yp, double *dp)
 	GMT_free ((void *)dp);
 }
 
-void GMT_free_table (struct GMT_TABLE *table)
+void GMT_free_tables (struct GMT_TABLE **table, int n_tables)
 {
-	GMT_free_segments (table->segment, table->n_segments);
+	int tbl;
+	for (tbl = 0; tbl < n_tables; tbl++) GMT_free_segments (table[tbl]->segment, table[tbl]->n_segments);
+	GMT_free ((void *)table);
 }
 
 void GMT_free_segments (struct GMT_LINE_SEGMENT *p, int n_lines)

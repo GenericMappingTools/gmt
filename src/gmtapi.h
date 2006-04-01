@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.10 2006-04-01 00:19:39 pwessel Exp $
+ *	$Id: gmtapi.h,v 1.11 2006-04-01 02:17:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -64,6 +64,7 @@
 #define GMTAPI_NOT_A_VALID_IO_SESSION	14
 #define GMTAPI_NOT_INPUT_OBJECT		15
 #define GMTAPI_NOT_OUTPUT_OBJECT	16
+#define GMTAPI_ERROR_ON_CLOSE		17
 
 	/* Index parameters used to access the information arrays */
 
