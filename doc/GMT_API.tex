@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_API.tex,v 1.2 2006-04-01 04:20:19 pwessel Exp $
+%       $Id: GMT_API.tex,v 1.3 2006-04-02 01:26:19 pwessel Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2006.
@@ -158,118 +158,210 @@
 \tableofcontents 
 \thispagestyle{headings}
 
-\chapter*{INTRODUCTION} 
+\chapter{Overview of the GMT Application Program Interface} 
 \pagenumbering{arabic}
 \thispagestyle{headings}
-\addcontentsline{toc}{chapter}{INTRODUCTION}
 \index{Purpose of API}
 
 This documentation serves two related purposes:
-\begin{enumerate}
-\item It will document the \GMT\ API library for application developers that wish
-to call functions in the API.
-\item It will document the underlying \GMT\ API utilities for developers of
-the API itself.
-\end{enumerate}
+\begin{itemize}
+\item It documents the \GMT\ API library for application developers that wish
+to call functions in the API from their own programs.
+\item It documents the underlying \GMT\ API utilities for developers of
+the API library itself.
+\end{itemize}
 Of course, many developers might be interested in learning about both sets of
-functions.\\
-
-\section*{\gmt\ Overview of the GMT Application Program Interface}
-\addcontentsline{toc}{section}{\gmt\ Overview of the GMT Application Program Interface}
-
+functions.
 Users who wish to create their own GMT-like applications based on the API
 must make sure their program goes through these steps:
-
-\subsection*{Historical highlights}
-\addcontentsline{toc}{subsection}{Historical highlights}
-\index{GMT@\GMT!history}
 
 \begin{enumerate}
 \item Initialize a GMT session by calling \texttt{GMTAPI\_Create\_Session} which
 will return a pointer to a GMT API control structure.  This pointer will be used
 as the first argument to all subsequent GMT API function calls.
-\item Register any input sources and output destinations with the session using
+\item Register any input sources and output destinations not given by filenames in
+the program options with the session using
 \texttt{GMTAPI\_Register\_Import} and \texttt{GMTAPI\_Register\_Export}, respectively.
-These will typically be used to specify memory locations and open file handles;
+These will typically be used to specify memory locations and already-opened file handles;
 i/o involving files are already handled by GMT itself.
 \item Each registration will generate a unique ID number.  These numbers are to be
 used with the relevant GMT function as filenames of the form ``GMTAPI-\#-ID''.  When
 GMT  functions encounter such filenames they will extract the ID and make a connection
 to the source of destination registered under that ID.
-\item When a source or destination is no longer needed, you should free it up by calls
-to ?.
+\item Prepare the program options for the \GMT\ function you wish to call and pass
+the \GMT\ API control structure and the command options.
 \item Repeat steps 2--4 as many times as your application desires.  All functions
 return a status code which is 0 if all is well.  For non-zero return values, use
 \texttt{GMTAPI\_Report\_Error} to generate an error message on {\it stderr}.
 \item To terminate the GMT session, call \texttt{GMTAPI\_Destroy\_Session}.
 \end{enumerate}
 
-\subsection*{The GMT Application Program Interface}
-\addcontentsline{toc}{subsection}{The GMT Application Program Interface}
-\index{GMT@\GMT!Interface}
+We will now discuss these 6 steps in more detail.
+
+\section{Initializing a new \gmt\ session}
+\index{GMT@\GMT!Initializing}
+
+Most application will need to initialize only one \GMT\ session.  This is true of all
+the \GMT\ stand-alone applications since they only do one thing and then exit.  Most
+user-applications are likely to only initialize one session.  However, the \GMT\ API
+supports any number of simultaneous sessions should the programmer need to do so.  This
+might be useful when you have access to several CPUs and want to spread the load over
+more than one.  in the following discussion we will simplify our treatment to the use
+of a single session only.
+The \texttt{GMTAPI\_Create\_Session} is used to initiate the new session.  The full
+function prototype is\\
+
+\begin{verbatim}
+struct GMTAPI_CTRL * GMTAPI_Create_Session (void);
+\end{verbatim}
+
+and you will typically call it thus:
+
+\begin{verbatim}
+struct GMTAPI_CTRL *C;
+C = GMTAPI_Create_Session (void);
+\end{verbatim}
+
+where \texttt{C} is the returned pointer to the \GMT\ API control structure.  You will need to
+pass this pointer to all subsequent \GMT\ API functions.  The main task of the initialization
+is to call the main \GMT\ initialization function \texttt{GMT\_Begin} which initiates the \GMT\
+machinery and its internal variables used for map projections, plotting, etc.  The initialization
+also allocates space for pointers used to register input and output not specified by filenames.
+
+\section{Registering i/o}
+\index{GMT@\GMT!Registering i/o}
+As you probably know, when using the \GMT\ stand-alone applications, you specify input files on
+the command line or via special program options (e.g., \Opt{I}{\it intensity.grd}) and the output of
+the program is either written to standard output (which you can redirect to files or other programs)
+or to files specified by specific program options (e.g., \Opt{G}{\it output.grd}).  However, the
+\GMT\ API allows you to also specify input (and output) to come from (or go to) open file handles
+or even program memory locations.  Thus, if you want to use data already in program memory you will
+need to register this with the \GMT\ API control structure.  This is done via a call to
+\texttt{GMTAPI\_Register\_Import}.  Since the situation for output is almost identical we will only
+discuss registering input here and later discuss how output might differ.  The prototype is
+
+
+\begin{verbatim}
+int GMTAPI_Register_Import  (struct GMTAPI_CTRL *GMT, int method, \
+    void **source, double parameters[]);
+\end{verbatim}
+
+where \texttt{method} specifies what kind of input source is to be registered (see Table X),
+\texttt{source} is a pointer to the source, and \texttt{parameters} is a list of parameters needed
+when registering data already in memory (for other sources you may pass NULL for this argument).  The
+parameters are described in Table \ref{tbl:methods}.
+\begin{table}[h]
+\small
+\centering
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c|}{\emph{method}} & \multicolumn{1}{c|}{\emph{source points to}} \\ \hline
+GMT\_IS\_FILE		&       String with name or an ASCII or binary table file \\ \hline
+GMT\_IS\_STREAM		&       Pointer to an open file or process \\ \hline
+GMT\_IS\_FDESC		&       Pointer to an integer file descriptor \\ \hline
+GMT\_IS\_ARRAY		&       Pointer to a memory location (array name) \\ \hline
+GMT\_IS\_GRIDFILE	&       String with name of a \GMT\ grid file \\ \hline
+GMT\_IS\_GRID		&       Pointer to a memory location of a grid  \\ \hline
+GMT\_IS\_GMTGRID	&       Pointer to a \GMT grid container  \\ \hline
+\end{tabular}
+\caption{Integer constants defined for use when specifying input sources or output destinations.} \label{tbl:methods}
+\end{table}
+
+\section{Preparing program options}
+\index{GMT@\GMT!Preparing program options}
 
 All calls to the GMT functions themselves have identical syntax that come in two different flavors.
 They differ in how the command options are passed to the function which can be done via
 \begin{enumerate}
 \item a text-based command specification.
-\item A pointer to a GMT common option structure and a linked list of objects with individual options
+\item A pointer to a GMT Common Option structure and a linked list of objects with individual options
 for the current program.
 \end{enumerate}
 
+Below, we will use ``function'' when discussing the details of these functions; when actually using
+these functions you will substitute the actual names of the functions you need (e.g., blockmean,
+grdmath, grdimage).
 The former interface is used by the stand-alone GMT applications and is expected to be used by
-FORTRAN developers; however, there are no restrictions on the use of these functions.  The
-latter interface allows developers of higher-level programming languages to pass all command
-options via a common structure with the basic GMT domain and projection options as well as a
-NULL-terminated, linked list of structures, each containing information about one program option.
-The syntax of the two formats are:
+FORTRAN developers (due to the lack of pointer support); however, there are no restrictions on
+the use of these functions and the developer may choose either one and mix and match depending
+on how options are to be assembled.  The function prototype for this interface is
 
-\texttt{int GMT\_program\_cmd (struct GMTAPI\_CTRL *API, int n\_args, char *args[])}
-\texttt{int GMT\_program (struct GMTAPI\_CTRL *API, struct GMT\_COMMON *C, struct GMT\_OPTIONS *options)}
+\begin{verbatim}
+int GMT_function_cmd (struct GMTAPI_CTRL *API, int n_args, char *args[]);
+\end{verbatim}
 
-where ``program'' is replaced by the desired application name (e.g., blockmean, psxy, grdmath).
+In addition to the API control structure pointer, we expect a list of character strings which each
+holds a single command line argument (e.g., ``Opt{R}{\it 120:30/134:45/8S/3N}'') as well as a count
+of how many options are passed.  This, of course, is almost exactly how the stand-along \GMT\
+programs are called (and reflects how they themselves are activated internally).  Depending on how
+your program obtain the necessary program options you may find that this interface might be all
+you need.
+The latter interface allows developers using higher-level programming languages to pass all command
+options via a pointer to a \GMT\ Common Option structure (which holds the basic \GMT\ domain and projection 
+options) as well as a pointer to a NULL-terminated, linked list of structures, each containing
+information about one program option.
+The prototype for this interface is
 
+\begin{verbatim}
+int GMT_function (struct GMTAPI_CTRL *API, struct GMT_COMMON *G, \
+    struct GMT_OPTIONS *options)}
+\end{verbatim}
 
-\chapter{SESSION ONE} 
-\thispagestyle{headings}
+Here, instead of the text arguments we pass the pointers to the two structures mentioned above.  Using
+this interface is more complicated since you need to populate the command structure and generate the linked
+list of program options.  It is intended for programmers whose internal workings are better suited to
+generate such arguments when needed.  The two structures are defined in Table \ref{tbl:methods}.
+\begin{table}[h]
+\small
+\centering
+\begin{tabular}{ll} \hline
+\multicolumn{2}{l}{\texttt{struct GMT\_OPTION \{}} \\
+char option;			&       /* {\it Single character of the option (e.g., 'G' for} Opt{G} */ \\
+char *arg;			&       /* {\it Pointer to string with option arguments (NULL if option takes no argument)} */ \\
+struct GMT\_OPTION *next;	&       /* {\it Pointer to the next program option (NULL for last option)}  */\\ 
+\};	&        \\ \hline
+\end{tabular}
+\caption{Definition of structure used to hold a single program option.} \label{tbl:methods}
+\end{table}
 
-\section{Tutorial setup}
-\begin{enumerate}
+To assist programmers there are also two convenience functions that
+allows you to convert the arguments between the two formats.  They are
 
-\item We assume that \GMT\ has been properly and fully
-installed and that you have the statement
-\texttt{setenv GMTHOME $<$path to \GMT\ directory$>$}
-in your \filename{.login} as
-described in the \GMT\ \filename{README} file.
+\begin{verbatim}
+int GMTAPI_Parse_Args (int n_args, char *args[], \
+    struct GMT_COMMON *common, struct GMT_OPTIONS *options)
+\end{verbatim}
 
-\item All \GMT\ man pages, documentation, and example scripts
-are available from the \GMT\ documentation web page.  It is
-assumed these pages have been installed locally at your site;
-if not they are always available from the main
-\htmladdnormallinkfoot{GMT home page}{http://gmt.soest.hawaii.edu}.
-\end{enumerate}
+This function accepts you array of text arguments, allocates the necessary space, performs the conversion,
+and returns pointers to a commen structure and the link of program options.  These may now be passed to the
+relevant \texttt{GMT\_function}.  The inverse function prototype is
+
+\begin{verbatim}
+int GMTAPI_Generate_Args (char **args[], struct GMT_COMMON *common, \
+    struct GMT_OPTIONS *options)
+\end{verbatim}
+
+which allocates space for the text strings and performs the conversion; it returns the count of the arguments.
+
+Developers who plan to import and export \GMT\ shell script might find it convenient to use these functions.
+
+\section{Terminating the session}
+\index{GMT@\GMT!Terminating the session}
+
+Before your program exits it should properly terminate the \GMT\ session which involves a call to
+
+\begin{verbatim}
+int GMTAPI_Destroy_Session (struct GMTAPI_CTRL *GMT);
+\end{verbatim}
+
+which simply takes the \GMT\ API control structure as its arguments.  It terminates the \GMT\ machinery
+with a call to \texttt{GMT\_end} and deallocates the memory used by the \GMT\ API book-keeping.
 
 \chapter{References} 
 \thispagestyle{headings}
 
 \begin{enumerate}
 
-\item Smith, W.H.F., and P. Wessel, Gridding with continous curvature
-splines in tension, {\it Geophysics}, {\it 55}, 293--305, 1990.
-
-\item Wessel, P., and W.H.F. Smith, Free software helps map and
-display data, {\it EOS Trans. AGU}, {\it 72}, 441, 1991.
-
-\item Wessel, P., and W.H.F. Smith, New version of the Generic
-Mapping Tools released, {\it EOS Trans. AGU}, {\it 76}, 329, 1995.
-
-\item Wessel, P., and W.H.F. Smith, A global, self-consistent,
-hierarchical, high-resolution shoreline database, {\it J. Geophys. Res.},
-{\it 101}, 8741--8743, 1996.
-
-\item Wessel, P., and W.H.F. Smith, New, improved version of the Generic
-Mapping Tools released, {\it EOS Trans. AGU}, {\it 79}, 579, 1998.
-
-\item Wessel, P., and W.H.F. Smith, The Generic Mapping Tools Technical Reference and Cookbook, {\it Version 4.0}, pp. 132, 2004.
+\item Wessel, P., and W.H.F. Smith, The Generic Mapping Tools Technical Reference and Cookbook, {\it Version 5.0}, pp. 132, 2006.
 
 \end{enumerate}
 
