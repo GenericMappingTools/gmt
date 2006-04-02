@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.12 2006-04-01 04:20:19 pwessel Exp $
+ *	$Id: gmtapi.h,v 1.13 2006-04-02 08:48:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -68,6 +68,9 @@
 #define GMTAPI_ERROR_ON_FCLOSE		-18
 #define GMTAPI_NO_PARAMETERS		-19
 #define GMTAPI_NOT_A_VALID_METHOD	-20
+#define GMTAPI_PARSE_ERROR		-21
+
+#define GMTAPI_RUNTIME_ERROR		-99
 
 	/* Index parameters used to access the information arrays */
 
@@ -122,6 +125,14 @@ struct GMTAPI_CTRL {
 	PFV GMT_index_to_2D[2];			/* Pointers to the inverse index functions */
 };
 
+struct GMT_OPTION {
+	char option;			/* 1-char command line -<option> (e.g. D in -D) identifying the option (NULL if file) */
+	BOOLEAN common;			/* TRUE if it is one of the common GMT options -R -J etc */
+	char *arg;			/* If not NULL, contains the argument for this option */
+	struct GMT_OPTION *next;	/* Pointer to next option in a linked list */
+	struct GMT_OPTION *previous;	/* Pointer to previous option in a linked list */
+};
+
 /*=====================================================================================
  *	GMT API LIBRARY_SPECIFIC FUNCTION PROTOTYPES
  *=====================================================================================
@@ -145,5 +156,7 @@ EXTERN_MSC void GMTAPI_Report_Error (struct GMTAPI_CTRL *GMT, int error);
 EXTERN_MSC int GMT_read_all_write_all_records (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg);
 EXTERN_MSC int GMT_read_one_write_one_record  (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg);
 EXTERN_MSC int GMT_read_grid_write_grid (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg);
+
+#include "gmtapi_parse.h"
 
 #endif /* _GMTAPI_H */
