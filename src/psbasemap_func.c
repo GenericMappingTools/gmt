@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.1 2006-04-02 08:48:45 pwessel Exp $
+ *	$Id: psbasemap_func.c,v 1.2 2006-04-02 08:59:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -129,6 +129,7 @@ int psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL *CTRL, struc
 	 */
 
 	int n_errors = 0;
+	char *this;
 	struct GMT_OPTION *opt;
 	
 	memset ((void *)CTRL, 0, sizeof (struct PSBASEMAP_CTRL));	/* Zero the control */
@@ -158,14 +159,23 @@ int psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL *CTRL, struc
 				n_errors += GMT_get_common_args (opt->arg, &CTRL->w, &CTRL->e, &CTRL->s, &CTRL->n);
 				break;
 
+			case '-':	/* --PARAMETER[=VALUE] */
+				if ((this = strchr (opt->arg, '='))) {	/* Got --PAR=VALUE */
+					this[0] = '\0';
+					GMT_setparameter (&opt->arg[2], &this[1]);
+				}
+				else				/* Got --PAR */
+					GMT_setparameter (&opt->arg[2], "TRUE");
+				break;
+				
 			/* Supplemental options */
 
 			case 'E':
-				sscanf (opt->arg, "%lf/%lf", &z_project.view_azimuth, &z_project.view_elevation);
+				sscanf (&opt->arg[2], "%lf/%lf", &z_project.view_azimuth, &z_project.view_elevation);
 				break;
 
 			case 'G':
-				if (GMT_getfill (opt->arg, &CTRL->fill)) {
+				if (GMT_getfill (&opt->arg[2], &CTRL->fill)) {
 					GMT_fill_syntax ('G');
 					n_errors++;
 				}
@@ -173,16 +183,16 @@ int psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL *CTRL, struc
 				break;
 
 			case 'L':
-				n_errors += GMT_getscale (opt->arg, &CTRL->ms);
+				n_errors += GMT_getscale (&opt->arg[2], &CTRL->ms);
 				break;
 
 			case 'T':
-				n_errors += GMT_getrose (opt->arg, &CTRL->mr);
+				n_errors += GMT_getrose (&opt->arg[2], &CTRL->mr);
 				break;
 
 			case 'Z':
 				if (opt->arg) {
-					CTRL->new_z_level = atof (opt->arg);
+					CTRL->new_z_level = atof (&opt->arg[2]);
 					CTRL->set_z = TRUE;
 				}
 				break;
