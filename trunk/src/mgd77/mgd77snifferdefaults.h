@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77snifferdefaults.h,v 1.5 2006-03-17 02:39:52 pwessel Exp $	
+ *	$Id: mgd77snifferdefaults.h,v 1.6 2006-04-03 10:02:49 mtchandl Exp $	
  *
  *	File:	mgd77snifferdefaults.h
  *
@@ -25,7 +25,7 @@
 {   "lon",    -180,     180,  FALSE,  FALSE,  FALSE,  FALSE,    FALSE},
 {   "ptc",   FALSE,   FALSE,  FALSE,  FALSE,  FALSE,  FALSE,    FALSE},
 {   "twt",       0,      15,     .1,  .0013,      1,    .15,    FALSE},
-{ "depth",       0,   11000,     50,      1,   1000,    104,     4500},
+{ "depth",       0,   11000,     50,      1,   1000,    104,   100000},
 {   "bcc",   FALSE,   FALSE,  FALSE,  FALSE,  FALSE,  FALSE,    FALSE},
 {   "btc",   FALSE,   FALSE,  FALSE,  FALSE,  FALSE,  FALSE,    FALSE},
 {  "mtf1",   19000,   72000,    200,    .32,    200,     40,    FALSE},
@@ -36,7 +36,7 @@
 {   "msd",   -1000,   11000,     10,    .33,   1000,     10,    FALSE},
 {  "gobs",  975900,  986000,      5,   .043,    100,    3.6,    FALSE},
 {   "eot",    -150,     150,      2,   .033,    100,    2.4,    FALSE},
-{   "faa",    -400,     400,      5,   .045,    100,    4.8,     2500},
+{   "faa",    -400,     400,      5,   .045,    100,    4.8,    50000},
 {   "nqc",   FALSE,   FALSE,  FALSE,  FALSE,  FALSE,  FALSE,    FALSE},
 {    "id",   FALSE,   FALSE,  FALSE,  FALSE,  FALSE,  FALSE,    FALSE},
 {   "sln",   FALSE,   FALSE,  FALSE,  FALSE,  FALSE,  FALSE,    FALSE},

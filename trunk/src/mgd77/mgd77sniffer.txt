@@ -60,9 +60,8 @@ For multiple grid comparison, \fIcruiseZ gridZ diff\fP are repeated for each gri
 \fB\-De\fP
 output E77 error classification format. Error output is divided into (1) a header containing
 information globally applicable to the cruise and (2) individual error records summarizing all
-errors encountered in each cruise record. One error record is output for each readable cruise record.
-mgd77sniffer writes E77 directly to <ngdc_id.e77> file handle. See \fBE77 ERROR FORMAT\fP below
-for additional details.
+errors encountered in each cruise record. mgd77sniffer writes E77 directly to <ngdc_id.e77>
+file handle. See \fBE77 ERROR FORMAT\fP below for additional details.
 .br
 .sp
 \fB\-Df\fP
