@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.14 2006-04-03 05:41:02 pwessel Exp $
+ *	$Id: gmtapi_util.c,v 1.15 2006-04-03 07:25:05 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -27,6 +27,7 @@
 #include "gmtapi_util.h"
 
 struct GMTAPI_CTRL *GMT_FORTRAN;	/* Global structure needed for FORTRAN-77 */
+int is_Fortran = 0;
 
 /* Private functions used by this library */
 
@@ -105,9 +106,9 @@ int GMTAPI_Create_Session (struct GMTAPI_CTRL **API, FILE *log)
 /* Fortran binding */
 int GMT_Create_Session_ (int *fhandle)
 {	/* Fortran version: We pass the hidden global GMT_FORTRAN structure*/
-	FILE *log;
-	
-	log = GMT_fdopen (*fhandle, "w");
+	FILE *log = NULL;
+	is_Fortran = 1;
+	if (*fhandle) log = GMT_fdopen (*fhandle, "w");
 	return (GMTAPI_Create_Session (&GMT_FORTRAN, log));
 }
 
