@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.13 2006-04-02 08:48:45 pwessel Exp $
+ *	$Id: gmtapi.h,v 1.14 2006-04-03 05:41:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -40,10 +40,6 @@
 
 #define GMTAPI_N_ARRAY_ARGS	8	/* Minimum size of information array used to specify array parameters */
 #define GMTAPI_N_GRID_ARGS	12	/* Minimum size of information array used to specify grid parameters */
-
-/* Bitflag constants used when initializing a GMT API session */
-
-#define GMTAPI_AUTOCLOSE		1	/* Will automatically close streams upon exit from functions */
 
 	/* Misc GMTAPI error codes; can be passed to GMT_Error_Message */
 	
@@ -111,16 +107,16 @@ struct GMTAPI_CTRL {
 	 * It is expected that users can run several GMT sessions concurrently when
 	 * GMT 5 moves from using global data to passing a GMT structure. */
 	 
-	BOOLEAN auto_close;			/* If TRUE we automatically close open streams */
-	int n_data;				/* Number of currently active data objects */
-	int n_io_sessions_alloc;		/* Allocation counter for session objects */
-	int n_data_alloc;			/* Allocation counter for data objects */
 	int verbose;				/* Level of API verbosity */
+	FILE *log;				/* Pointer used for error reporting */
+	int n_data;				/* Number of currently active data objects */
+	int n_data_alloc;			/* Allocation counter for data objects */
+	struct GMTAPI_DATA_OBJECT **data;	/* List of registered data objects */
 	int n_io_sessions;			/* Number of registered line-by-line io sessions */
+	int n_io_sessions_alloc;		/* Allocation counter for session objects */
 	struct GMTAPI_IO **io_session;		/* List of active i/o sessions */
 	int current_io_session[2];		/* Indeces into io_session for the current i/o session */
 	int GMTAPI_size[GMTAPI_N_TYPES];	/* Size of various data types in bytes */
-	struct GMTAPI_DATA_OBJECT **data;	/* List of registered data objects */
 	PFI GMT_2D_to_index[2];			/* Pointers to the row or column-order index functions */
 	PFV GMT_index_to_2D[2];			/* Pointers to the inverse index functions */
 };
@@ -138,15 +134,15 @@ struct GMT_OPTION {
  *=====================================================================================
  */
 
-EXTERN_MSC int GMTAPI_Create_Session  (struct GMTAPI_CTRL **GMT, int flags);
-EXTERN_MSC int GMTAPI_Destroy_Session (struct GMTAPI_CTRL *GMT);
-EXTERN_MSC int GMTAPI_Register_Import  (struct GMTAPI_CTRL *GMT, int method, void **source,   double parameters[]);
-EXTERN_MSC int GMTAPI_Register_Export (struct GMTAPI_CTRL *GMT, int method, void **receiver, double parameters[]);
-EXTERN_MSC int GMTAPI_Register_IO (struct GMTAPI_CTRL *API, int method, void **ptr, double parameters[], int direction);
+EXTERN_MSC int GMTAPI_Create_Session    (struct GMTAPI_CTRL **GMT, FILE *log);
+EXTERN_MSC int GMTAPI_Destroy_Session   (struct GMTAPI_CTRL *GMT);
+EXTERN_MSC int GMTAPI_Register_Import   (struct GMTAPI_CTRL *GMT, int method, void **source,   double parameters[]);
+EXTERN_MSC int GMTAPI_Register_Export   (struct GMTAPI_CTRL *GMT, int method, void **receiver, double parameters[]);
+EXTERN_MSC int GMTAPI_Register_IO       (struct GMTAPI_CTRL *API, int method, void **resource, double parameters[], int direction);
 EXTERN_MSC int GMTAPI_Unregister_Import (struct GMTAPI_CTRL *API, int object_ID);
 EXTERN_MSC int GMTAPI_Unregister_Export (struct GMTAPI_CTRL *API, int object_ID);
-EXTERN_MSC int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, int direction);
-EXTERN_MSC void GMTAPI_Report_Error (struct GMTAPI_CTRL *GMT, int error);
+EXTERN_MSC int GMTAPI_Unregister_IO     (struct GMTAPI_CTRL *API, int object_ID, int direction);
+EXTERN_MSC int GMTAPI_Report_Error      (struct GMTAPI_CTRL *GMT, int error);
 
 /*=====================================================================================
  *	GMT API GMT FUNCTION PROTOTYPES
