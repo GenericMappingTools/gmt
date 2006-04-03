@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.13 2006-04-01 08:16:39 pwessel Exp $
+ *	$Id: gmtapi_util.c,v 1.14 2006-04-03 05:41:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -55,7 +55,7 @@ double GMTAPI_get_val (void *ptr, size_t i, int type);
 
 /*===>  Create a new GMT Session */
 
-int GMTAPI_Create_Session (struct GMTAPI_CTRL **API, int flags)
+int GMTAPI_Create_Session (struct GMTAPI_CTRL **API, FILE *log)
 {
 	/* Initializes the GMT API for a new session. */
 	
@@ -65,6 +65,10 @@ int GMTAPI_Create_Session (struct GMTAPI_CTRL **API, int flags)
 	/* Allocate the structure */
 	
  	G = (struct GMTAPI_CTRL *) GMT_memory (VNULL, 1, sizeof (struct GMTAPI_CTRL), "GMT_New_Session");
+	
+	/* Set error reporting pointer to stderr unless another destination has been provided */
+	
+	G->log = (log) ? log : stderr;
 	
 	/* Allocate pointers to data objects */
 	
@@ -99,9 +103,12 @@ int GMTAPI_Create_Session (struct GMTAPI_CTRL **API, int flags)
 }
 
 /* Fortran binding */
-int GMT_Create_Session_ (int *flags)
+int GMT_Create_Session_ (int *fhandle)
 {	/* Fortran version: We pass the hidden global GMT_FORTRAN structure*/
-	return (GMTAPI_Create_Session (&GMT_FORTRAN, *flags));
+	FILE *log;
+	
+	log = GMT_fdopen (*fhandle, "w");
+	return (GMTAPI_Create_Session (&GMT_FORTRAN, log));
 }
 
 /*===>  Destroy a registered GMT Session */
@@ -142,7 +149,7 @@ int GMT_Destroy_Session_ ()
 
 /*===>  Error message reporting */
 
-void GMTAPI_Report_Error (struct GMTAPI_CTRL *API, int error)
+int GMTAPI_Report_Error (struct GMTAPI_CTRL *API, int error)
 {
 	fprintf (stderr, "GMT: Error returned from GMT API: %d\n",error);
 	exit (EXIT_FAILURE);

@@ -1,4 +1,4 @@
-C	$Id: fprototype.f,v 1.3 2006-03-28 22:58:47 pwessel Exp $
+C	$Id: fprototype.f,v 1.4 2006-04-03 05:41:02 pwessel Exp $
 C	Example of using GMTAPI from Fortran
 C
 C	We will need some sort of include file to set the parameters later
@@ -12,7 +12,7 @@ C	integer array_par(GMTAPI_N_ARRAY_ARGS)
 	integer array_par(8)
 	integer inarg(2)
 	integer outarg
-	real matrix(3,4)
+	real*4 matrix(3,4)
 	
 	error = GMTAPI_Create_Session (0)
 	if (error .ne. 0) then

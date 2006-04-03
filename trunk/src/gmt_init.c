@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.223 2006-03-30 04:40:03 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.224 2006-04-03 05:41:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -116,7 +116,6 @@ char *GMT_degree_choice[4] = {  /* Users choice for degree symbol */
 
 EXTERN_MSC void GMT_grdio_init (void);	/* Defined in gmt_customio.c and only used here */
 
-int GMT_setparameter(char *keyword, char *value);
 int GMT_load_user_media (void);
 BOOLEAN true_false_or_error (char *value, int *answer);
 void GMT_get_history(int argc, char **argv);

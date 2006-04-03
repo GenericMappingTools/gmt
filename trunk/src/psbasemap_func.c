@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.2 2006-04-02 08:59:07 pwessel Exp $
+ *	$Id: psbasemap_func.c,v 1.3 2006-04-03 05:41:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -42,7 +42,7 @@ int GMT_psbasemap_cmd (struct GMTAPI_CTRL *API, int n_args, char *args[])
 	
 	/* Parse the command line text arguments and receive linked list of options */
 	
-	if ((error = GMTAPI_Parse_Args (n_args, args, &options))) return (error);
+	if ((error = GMTAPI_Create_Options (n_args, args, &options))) return (error);
 	
 	/* Call the GMT program via the API */
 	
@@ -234,7 +234,7 @@ int psbasemap_function (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 	
 	if (psbasemap_parse (API, &CTRL, head)) return (GMTAPI_PARSE_ERROR);
 	
-	argc = GMTAPI_Generate_Args (&argv, head);	/* For now, needed by ecfho_command and history */
+	GMTAPI_Create_Args (&argc, &argv, head);	/* For now, needed by echo_command and history */
 	
 	GMT_put_history (argc, argv);	/* Update .gmtcommands4 or pass via API */
 
@@ -271,7 +271,7 @@ int psbasemap_function (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 	if (project_info.three_D) ps_rotatetrans (z_project.xmin, z_project.ymin, 0.0);
 	ps_plotend (gmtdefs.last_page);
 
-	GMTAPI_Free_Args (argc, argv);
+	GMTAPI_Destroy_Args (argc, argv);
 
 	return (GMTAPI_OK);
 }

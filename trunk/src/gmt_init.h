@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.56 2006-03-23 07:48:04 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.57 2006-04-03 05:41:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -63,6 +63,7 @@ EXTERN_MSC void GMT_syntax (char option);
 EXTERN_MSC char *GMT_getdefpath (int get);
 EXTERN_MSC int GMT_decode_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN cmd);
 EXTERN_MSC void GMT_extract_label (char *line, char *label);
+EXTERN_MSC int GMT_setparameter(char *keyword, char *value);
 
 EXTERN_MSC BOOLEAN GMT_processed_option[];	/* TRUE if option has been procssed */
 
