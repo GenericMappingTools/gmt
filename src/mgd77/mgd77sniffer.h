@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.9 2006-03-14 04:44:25 pwessel Exp $	
+ *	$Id: mgd77sniffer.h,v 1.10 2006-04-04 04:42:38 mtchandl Exp $	
  *
  *	File:	mgd77sniffer.h
  *
@@ -80,21 +80,6 @@
 #define E77_HDR_PRECISION    4
 #define E77_HDR_FLAGRANGE    5
 
-/*  MGD77 bit-pattern w/ E77 alpha characters
-|-------------------------------------------------|----------|
-| X W V U T S R Q P O N M L K J I H G F E D C B A | E77 Code |
-| - - - - - - - - - - - - - - - - - - - - - - - - | - - - - -|
-| n f e g m d m m m m b b d t p l l m h d m y t d | F  I     |
-| q a o o s i s a t t t c e w t o a i o a o e z r | i  D     |
-| c a t b d u e g f f c c p t c n t n u y n a   t | e        |
-|       s   r n   2 1     t           r   t r     | l        |
-|             s           h               h       | d        |
-| - - - - - - - - - - - - - - - - - - - - - - - - | - - - - -|
-| 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 | Bit place|
-| - G C G C C - G G G - - G G - - - T T T T T - - | Bit type |
-|-------------------------------------------------|----------|
-  Bit types: (G)eophysical, (C)orrection, (T)ime */
-
 struct BAD_SECTION {	/* To flag a range of records as bad for given field */
 	char abbrev[8];	/* Field name */
 	int col;	/* Column number */
@@ -136,7 +121,6 @@ struct MGD77_MAG_RF {
 };
 
 /* Local functions */
-
 void read_grid (struct MGD77_GRID_INFO *info, float **grid, double w, double e, double s, double n, BOOLEAN bilinear, double threshold);
 int sample_grid (struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, float *grid, int n_grid, int n);
 void regress_ls (double *x, double *y, int n, double *stat, int col, double S_xx);
