@@ -39,21 +39,15 @@
 	0,			/* LABEL_FONT */
 	24,			/* LABEL_FONT_SIZE */
 	0.1125,			/* LABEL_OFFSET */
-	TRUE,			/* LAST_PAGE */
 	0.01,
 	-1.0,			/* MAP_SCALE_FACTOR */
 	0.075,			/* MAP_SCALE_HEIGHT */
 	1,			/* MEASURE_UNIT set to inch */
 	25,			/* MEDIA set to Letter */
 	1,			/* N_COPIES */
-	50,			/* N_LAT_NODES */
-	50,			/* N_LON_NODES */
-	0.0,			/* --SET AT RUNTIME */
-	0.0,			/* --SET AT RUNTIME */
 	1,			/* OBLIQUE_ANNOTATION */
-	FALSE,			/* OVERLAY */
 	{255, 255, 255},	/* PAGE_COLOR */
-	0,			/* PAGE_ORIENTATION */
+	FALSE,			/* PORTRAIT */
 	{612, 792},		/* PAPER_MEDIA (US Letter) */
 	{85.0, 90.0},		/* POLAR_CAP (controls gridlines near poles) */
 	0,			/* PS_COLOR (2 = HSV, 1 = CMYK, 0 = RGB) */
@@ -66,7 +60,6 @@
 	0.075,			/* TICK_LENGTH */
 	{0.5, 0.0, {0, 0, 0}, ""},	/* TICK_PEN */
 	FALSE,			/* UNIX_TIME */
-	"",			/* --SET AT RUNTIME */
 	{-0.75, -0.75},		/* UNIX_TIME_POS */
 	0.0,			/* VECTOR_SHAPE */
 	FALSE,			/* VERBOSE */

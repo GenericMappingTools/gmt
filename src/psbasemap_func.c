@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.3 2006-04-03 05:41:02 pwessel Exp $
+ *	$Id: psbasemap_func.c,v 1.4 2006-04-04 07:51:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -242,12 +242,7 @@ int psbasemap_function (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 
 	GMT_map_setup (CTRL.w, CTRL.e, CTRL.s, CTRL.n);
 
-	ps_plotinit (CNULL, gmtdefs.overlay, gmtdefs.page_orientation, gmtdefs.x_origin, gmtdefs.y_origin,
-		gmtdefs.global_x_scale, gmtdefs.global_y_scale, gmtdefs.n_copies,
-		gmtdefs.dpi, GMT_INCH, gmtdefs.paper_width, gmtdefs.page_rgb, gmtdefs.encoding.name, GMT_epsinfo (argv[0]));
-
-	GMT_echo_command (argc, argv);
-	if (gmtdefs.unix_time) GMT_timestamp (argc, argv);
+	GMT_plotinit (argc, argv);
 
 	if (project_info.three_D) ps_transrotate (-z_project.xmin, -z_project.ymin, 0.0);
 
@@ -269,7 +264,8 @@ int psbasemap_function (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 	if (CTRL.mr.plot) GMT_draw_map_rose (&CTRL.mr);
 
 	if (project_info.three_D) ps_rotatetrans (z_project.xmin, z_project.ymin, 0.0);
-	ps_plotend (gmtdefs.last_page);
+	
+	GMT_plotend ();
 
 	GMTAPI_Destroy_Args (argc, argv);
 

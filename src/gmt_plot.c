@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.174 2006-04-01 08:16:39 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.175 2006-04-04 07:51:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1209,7 +1209,7 @@ void GMT_circle_map_boundary (double w, double e, double s, double n)
 		return;
 	}
 	/* Must do 3-D squashed circle */
-	nr = gmtdefs.n_lon_nodes + gmtdefs.n_lat_nodes;
+	nr = GMT_n_lon_nodes + GMT_n_lat_nodes;
 	while (nr > GMT_n_alloc) GMT_get_plot_array ();
 	da = 2.0 * M_PI / (nr - 1);
 	for (i = 0; i < nr; i++) {
@@ -1243,7 +1243,7 @@ void GMT_theta_r_map_boundary (double w, double e, double s, double n)
 		frame_info.side[1] = FALSE;
 		frame_info.side[3] = FALSE;
 	}
-	nr = gmtdefs.n_lon_nodes;
+	nr = GMT_n_lon_nodes;
 	while (nr > GMT_n_alloc) GMT_get_plot_array ();
 	da = fabs (project_info.e - project_info.w) / (nr - 1);
 	if (frame_info.side[2]) {
@@ -1593,7 +1593,7 @@ void GMT_map_gridcross (double w, double e, double s, double n)
 						xi = x[i];
 					GMT_geo_to_xy (xi, yj, &x0, &y0);
 					if (MAPPING) {
-						GMT_geo_to_xy (xi + gmtdefs.dlon, yj, &x1, &y1);
+						GMT_geo_to_xy (xi + GMT_dlon, yj, &x1, &y1);
 						x_angle = d_atan2 (y1-y0, x1-x0);
 						sincos (x_angle, &S, &C);
 						xa = x0 - L * C;
@@ -1625,7 +1625,7 @@ void GMT_map_gridcross (double w, double e, double s, double n)
 					ps_plot (xt2, yt2, PSL_PEN_DRAW_AND_STROKE);
 
 					if (MAPPING) {
-						GMT_geo_to_xy (xi, yj - copysign (gmtdefs.dlat, yj), &x1, &y1);
+						GMT_geo_to_xy (xi, yj - copysign (GMT_dlat, yj), &x1, &y1);
 						y_angle = d_atan2 (y1-y0, x1-x0);
 						sincos (y_angle, &S, &C);
 						xa = x0 - L * C;
@@ -2345,26 +2345,23 @@ void GMT_fill (double x[], double y[], int n, struct GMT_FILL *fill, BOOLEAN out
 		ps_polygon (x, y, n, fill->rgb, outline);
 }
 
-void GMT_timestamp (int argc, char **argv)
+void GMT_timestamp (double x, double y, char *U_label)
 {
 	time_t right_now;
-	int i, plot_command = FALSE;
 	char label[BUFSIZ], time_string[GMT_LONG_TEXT], year[8];
-	double x, y, dim[5];
+	double dim[5] = {0.365, 1.15, 0.15, 0.075, 0.1};	/* God-given dimensions */
 
 	/* Plot time string in YEAR MONTH DAY HH:MM:SS format */
 
-	dim[0] = 0.365; dim[1] = 1.15; dim[2] = 0.15; dim[3] = 0.075; dim[4] = 0.1;
-	x = gmtdefs.unix_time_pos[0];
-	y = gmtdefs.unix_time_pos[1];
 	right_now = time ((time_t *)0);
-	strncpy (time_string, ctime (&right_now), 256);
-	time_string[24] = 0;
-	sscanf (time_string, "%*s %*s %*s %*s %s", year);
-	time_string[19] = 0;
-	sprintf (label, "%s %s", year, &time_string[4]);
-	for (i = 1; i < argc && argv[i][1] != 'J'; i++);
-	ps_comment ("Begin time-stamp");
+	strncpy (time_string, ctime (&right_now), GMT_LONG_TEXT);
+	/* This gives something like: Thu Nov 24 18:22:48 1986\n\0 */
+	GMT_chop (time_string);					/* Remove trailing \n */
+	sscanf (time_string, "%*s %*s %*s %*s %s", year);	/* Get year as string */
+	time_string[19] = 0;					/* Terminate the string just after the seconds */
+	sprintf (label, "%s %s", year, &time_string[4]);	/* [4] means we skip the weekday name */
+	
+	ps_comment ("Begin GMT time-stamp");
 	ps_transrotate (x, y, 0.0);
 	ps_setline (1);
 	ps_rect (0.0, 0.0, dim[0]+dim[1], dim[2], gmtdefs.foreground_rgb, TRUE);
@@ -2372,25 +2369,10 @@ void GMT_timestamp (int argc, char **argv)
 	ps_image (0.0, 0.0, dim[0], dim[2], GMT_glyph, 220, 90, 1);
 	ps_text (dim[0]+0.5*dim[1], dim[3], 8.0, label, 0.0, 6, 0);
 	ps_setfont (1);
-	label[0] = 0;
-	if (gmtdefs.unix_time_label[0] == 'c' && gmtdefs.unix_time_label[1] == 0) {
-		plot_command = TRUE;
-		gmtdefs.unix_time_label[0] = 0;
-	}
-	if (plot_command) {
-		strcpy (label, argv[0]);
-		for (i = 1; i < argc; i++) {
-			if (argv[i][0] != '-') continue;
-			strcat (label, " ");
-			strcat (label, argv[i]);
-		}
-	}
-	else if (gmtdefs.unix_time_label[0])
-		strcpy (label, gmtdefs.unix_time_label);
 
-	if (label[0]) ps_text (dim[0]+dim[1]+dim[4], dim[3], 7.0, label, 0.0, 5, 0);
+	if (U_label && U_label[0]) ps_text (dim[0]+dim[1]+dim[4], dim[3], 7.0, U_label, 0.0, 5, 0);
 	ps_rotatetrans  (-x, -y, 0.0);
-	ps_comment ("End time-stamp");
+	ps_comment ("End GMT time-stamp");
 }
 
 void GMT_echo_command (int argc, char **argv)
@@ -3833,6 +3815,64 @@ void GMT_contlabel_plot (struct GMT_CONTOUR *G)
 	GMT_free ((void *)G->segment);
 }
 
+
+int GMT_plotinit (int argc, char *argv[])
+{
+	/* Shuffles parameters and calls ps_plotinit, issues PS comments regarding the GMT options
+	 * and places a time stamp, if selected */
+	 
+	int PS_bit_settings = 0;
+	char label[BUFSIZ];
+	
+	/* Load all the bits required by ps_plotinit */
+	
+	if (GMT_ps.portrait)    PS_bit_settings |= 1;
+	if (GMT_ps.verbose)     PS_bit_settings |= 2;
+	if (GMT_ps.heximage)    PS_bit_settings |= 4;
+	if (GMT_ps.absolute)    PS_bit_settings |= 8;
+	if (GMT_ps.colormode)   PS_bit_settings |= (GMT_ps.colormode   <<  9);
+	if (GMT_ps.compress)    PS_bit_settings |= (GMT_ps.compress    << 12);
+	if (GMT_ps.line_cap)    PS_bit_settings |= (GMT_ps.line_cap    << 14);
+	if (GMT_ps.line_join)   PS_bit_settings |= (GMT_ps.line_join   << 16);
+	if (GMT_ps.miter_limit) PS_bit_settings |= (GMT_ps.miter_limit << 18);
+	if (GMT_ps.comments)    PS_bit_settings |= (1 << 30);
+
+	/* Initialize the plot header and settings */
+	
+	ps_plotinit (CNULL, GMT_ps.overlay, PS_bit_settings, GMT_ps.x_origin, GMT_ps.y_origin,
+		GMT_ps.x_scale, GMT_ps.y_scale, GMT_ps.n_copies, GMT_ps.dpi, GMT_INCH,
+		GMT_ps.paper_width, GMT_ps.page_rgb, GMT_ps.encoding_name, GMT_epsinfo (GMT_program));
+
+	/* Issue the comments that allow us to trace down what command created this layer */
+	
+	GMT_echo_command (argc, argv);
+	
+	/* If requested, place the timestamp */
+	
+	memset (label, 0, BUFSIZ);
+	if (GMT_ps.unix_time_label[0] == 'c' && GMT_ps.unix_time_label[1] == 0) {
+		int i;
+		/* -Uc was given as shorthand for "plot current command line" */
+		GMT_ps.unix_time_label[0] = 0;	/* Reset to 0 */
+		strcpy (label, argv[0]);
+		for (i = 1; i < argc; i++) {
+			if (argv[i][0] != '-') continue;	/* Skip file names */
+			strcat (label, " ");
+			strcat (label, argv[i]);
+		}
+		strcpy (GMT_ps.unix_time_label, label);		/* Update unix label */
+	}
+	else if (GMT_ps.unix_time_label[0])	/* Use the -U supplied label */
+		strcpy (label, GMT_ps.unix_time_label);
+	if (GMT_ps.unix_time) GMT_timestamp (GMT_ps.unix_time_pos[0], GMT_ps.unix_time_pos[1], label);
+	return (0);
+}
+
+int GMT_plotend (void) {
+	ps_plotend (GMT_ps.last_page);
+	return (0);
+}
+
 #define PADDING 72	/* Amount of padding room for annotations in points */
 
 struct EPS *GMT_epsinfo (char *program)
@@ -3851,29 +3891,29 @@ struct EPS *GMT_epsinfo (char *program)
 	 
 	 /* First crudely estimate the boundingbox coordinates */
 
-	if (gmtdefs.overlay && (fp = fopen (".GMT_bb_info", "r")) != NULL) {	/* Must get previous boundingbox values */
+	if (GMT_ps.overlay && (fp = fopen (".GMT_bb_info", "r")) != NULL) {	/* Must get previous boundingbox values */
 		fscanf (fp, "%d %d %lf %lf %d %d %d %d\n", &(new->portrait), &(new->clip_level), &orig_x0, &orig_y0, &old_x0, &old_y0, &old_x1, &old_y1);
 		fclose (fp);
 		x0 = orig_x0;
 		y0 = orig_y0;
-		if (gmtdefs.page_orientation & 8) {	/* Absolute */
-			x0 = gmtdefs.x_origin;
-			y0 = gmtdefs.y_origin;
+		if (GMT_ps.absolute) {	/* Absolute */
+			x0 = GMT_ps.x_origin;
+			y0 = GMT_ps.y_origin;
 		}
 		else {					/* Relative */
-			x0 += gmtdefs.x_origin;
-			y0 += gmtdefs.y_origin;
+			x0 += GMT_ps.x_origin;
+			y0 += GMT_ps.y_origin;
 		}
 	}
 	else {	/* New plot, initialize stuff */
 		old_x0 = old_y0 = old_x1 = old_y1 = 0;
-		x0 = gmtdefs.x_origin;	/* Always absolute the first time */
-		y0 = gmtdefs.y_origin;
-		new->portrait = (gmtdefs.page_orientation & 1);
+		x0 = GMT_ps.x_origin;	/* Always absolute the first time */
+		y0 = GMT_ps.y_origin;
+		new->portrait = GMT_ps.portrait;
 		new->clip_level = 0;
 	}
-	if (gmtdefs.page_orientation & GMT_CLIP_ON) new->clip_level++;		/* Initiated clipping that will extend beyond this process */
-	if (gmtdefs.page_orientation & GMT_CLIP_OFF) new->clip_level--;		/* Terminated clipping that was initiated in a prior process */
+	if (GMT_ps.clip_on)  new->clip_level++;		/* Initiated clipping that will extend beyond this process */
+	if (GMT_ps.clip_off) new->clip_level--;		/* Terminated clipping that was initiated in a prior process */
 
 	/* Estimates the bounding box for this overlay */
 
@@ -3894,8 +3934,8 @@ struct EPS *GMT_epsinfo (char *program)
 
 	/* Extend box in all directions depending on what kind of frame annotations we have */
 
-	u_dx = (gmtdefs.unix_time && gmtdefs.unix_time_pos[0] < 0.0) ? -irint (GMT_u2u[GMT_INCH][GMT_PT] * gmtdefs.unix_time_pos[0]) : 0;
-	u_dy = (gmtdefs.unix_time && gmtdefs.unix_time_pos[1] < 0.0) ? -irint (GMT_u2u[GMT_INCH][GMT_PT] * gmtdefs.unix_time_pos[1]) : 0;
+	u_dx = (GMT_ps.unix_time && GMT_ps.unix_time_pos[0] < 0.0) ? -irint (GMT_u2u[GMT_INCH][GMT_PT] * GMT_ps.unix_time_pos[0]) : 0;
+	u_dy = (GMT_ps.unix_time && GMT_ps.unix_time_pos[1] < 0.0) ? -irint (GMT_u2u[GMT_INCH][GMT_PT] * GMT_ps.unix_time_pos[1]) : 0;
 	if (frame_info.plot && !project_info.three_D) {
 		if (frame_info.side[3]) new->x0 -= MAX (u_dx, ((frame_info.side[3] == 2) ? PADDING : tick_space)); else new->x0 -= MAX (u_dx, frame_space);
 		if (frame_info.side[0]) new->y0 -= MAX (u_dy, ((frame_info.side[0] == 2) ? PADDING : tick_space)); else new->y0 -= MAX (u_dy, frame_space);
@@ -3908,28 +3948,28 @@ struct EPS *GMT_epsinfo (char *program)
 		new->x1 += PADDING/2;
 		new->y1 += PADDING/2;
 	}
-	else if (gmtdefs.unix_time) {
+	else if (GMT_ps.unix_time) {
 		new->x0 -= u_dx;
 		new->y0 -= u_dy;
 	}
 
 	/* Get the high water mark in all directions */
 
-	if (gmtdefs.overlay) {
+	if (GMT_ps.overlay) {
 		new->x0 = MIN (old_x0, new->x0);
 		new->y0 = MIN (old_y0, new->y0);
 	}
 	new->x1 = MAX (old_x1, new->x1);
 	new->y1 = MAX (old_y1, new->y1);
 
-	if (gmtdefs.page_orientation & 8) {	/* Undo Absolute */
+	if (GMT_ps.absolute) {	/* Undo Absolute */
 		x0 = orig_x0;
 		y0 = orig_y0;
 	}
 
 	/* Update the bb file or tell use */
 
-	if (gmtdefs.last_page) {	/* Clobber the .GMT_bb_info file and add label padding */
+	if (GMT_ps.last_page) {	/* Clobber the .GMT_bb_info file and add label padding */
 		(void) remove (".GMT_bb_info");	/* Don't really care if it is successful or not */
 		if (new->clip_level > 0) fprintf (stderr, "%s: Warning: %d (?) external clip operations were not terminated!\n", GMT_program, new->clip_level);
 		if (new->clip_level < 0) fprintf (stderr, "%s: Warning: %d extra terminations of external clip operations!\n", GMT_program, -new->clip_level);
@@ -3942,7 +3982,7 @@ struct EPS *GMT_epsinfo (char *program)
 	/* Get font names used */
 
 	id = 0;
-	if (gmtdefs.unix_time) {
+	if (GMT_ps.unix_time) {
 		fno[0] = 0;
 		fno[1] = 1;
 		id = 2;
