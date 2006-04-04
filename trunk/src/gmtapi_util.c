@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.15 2006-04-03 07:25:05 pwessel Exp $
+ *	$Id: gmtapi_util.c,v 1.16 2006-04-04 01:49:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -34,7 +34,6 @@ int is_Fortran = 0;
 void GMTAPI_put_val (void *ptr, double val, size_t i, int type);
 void GMTAPI_index_to_2D_C (int *row, int *col, size_t index, int dim);
 void GMTAPI_index_to_2D_F (int *row, int *col, size_t index, int dim);
-void **GMTAPI_duplicate_string (char *string);
 void GMTAPI_par_to_ipar (double par[], int ipar[]);
 void GMTAPI_grdheader_to_info (struct GRD_HEADER *h, double info[]);
 void GMTAPI_info_to_grdheader (struct GRD_HEADER *h, double info[]);
@@ -304,6 +303,7 @@ int GMTAPI_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, doubl
 	 */
 	static char *name[2] = {"Input", "Output"};
 	struct GMTAPI_DATA_OBJECT *S;
+	char *string;
 
 	if (API == NULL) return (GMTAPI_NOT_A_SESSION);
 
@@ -313,7 +313,8 @@ int GMTAPI_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, doubl
 	switch (method)
 	{
 		case GMT_IS_FILE:
-			S->ptr = GMTAPI_duplicate_string ((char *)(*input));
+			string = strdup ((char *)(*input));
+			S->ptr = (void **)&string;
 			S->method = GMT_IS_FILE;
 			break;
 
@@ -338,7 +339,8 @@ int GMTAPI_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, doubl
 			break;
 
 	 	case GMT_IS_GRIDFILE:
-			S->ptr = GMTAPI_duplicate_string ((char *)(*input));
+			string = strdup ((char *)(*input));
+			S->ptr = (void **)&string;
 			S->method = GMT_IS_GRIDFILE;
 			break;
 
@@ -1013,19 +1015,6 @@ void GMTAPI_info_to_grdheader (struct GRD_HEADER *h, double info[])
 	h->xy_off = (h->node_offset) ? 0.0 : 0.5;
 	h->x_inc = (h->x_max - h->x_min) / (h->nx - !h->node_offset);
 	h->y_inc = (h->y_max - h->y_min) / (h->ny - !h->node_offset);
-}
-
-void ** GMTAPI_duplicate_string (char *string)
-{	/* Return a void** pointer to a copy of this string.  We do this
-	 * since the string might be overwritten later and change its value */
-	int len;
-	char **t_ptr;
-	
-	len = strlen (string);
-	t_ptr = (char **) GMT_memory (VNULL, 1, sizeof (char *), "GMTAPI_duplicate_string");
-	*t_ptr = (char *) GMT_memory (VNULL, len+1, sizeof (char), "GMTAPI_duplicate_string");
-	strncpy (*t_ptr, string, len);
-	return ((void **)t_ptr);
 }
 
 int col_check (struct GMT_TABLE *T, int *n_cols) {
