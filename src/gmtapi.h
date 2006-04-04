@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.14 2006-04-03 05:41:02 pwessel Exp $
+ *	$Id: gmtapi.h,v 1.15 2006-04-04 01:49:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -32,7 +32,7 @@
 #define _GMTAPI_H
 
 #include "gmt.h"
-
+#include "f2c.h"
 /*=====================================================================================
  *	GMT API CONSTANTS DEFINITIONS
  *=====================================================================================
