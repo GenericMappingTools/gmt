@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.224 2006-04-03 05:41:02 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.225 2006-04-04 07:51:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -139,8 +139,8 @@ void GMT_set_titem (struct PLOT_AXIS *A, double val, double phase, char flag, ch
 int GMT_map_getframe (char *in);
 static void load_encoding (struct gmt_encoding *);
 void GMT_verify_encodings ();
-void GMT_prep_PS_bits ();
 int GMT_key_lookup (char *name, char **list, int n);
+void GMT_PS_init (void);
 
 /* Local variables to gmt_init.c */
 
@@ -440,7 +440,7 @@ void GMT_explain_option (char option)
 		case 'K':	/* Append-more-PostScript-later */
 
 			fprintf (stderr, "\t-K means allow for more plot code to be appended later [%s].\n",
-				GMT_choice[!gmtdefs.last_page]);
+				GMT_choice[!GMT_ps.last_page]);
 			break;
 
 		case 'M':	/* Multisegment option */
@@ -453,13 +453,13 @@ void GMT_explain_option (char option)
 		case 'O':	/* Overlay plot */
 
 			fprintf (stderr, "\t-O means Overlay plot mode [%s].\n",
-				GMT_choice[gmtdefs.overlay]);
+				GMT_choice[GMT_ps.overlay]);
 			break;
 
 		case 'P':	/* Portrait or landscape */
 
 			fprintf (stderr, "\t-P means Portrait page orientation [%s].\n",
-				GMT_choice[(gmtdefs.page_orientation & 1)]);
+				GMT_choice[GMT_ps.portrait]);
 			break;
 
 		case 'R':	/* Region option */
@@ -937,12 +937,12 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 						error++;
 					}
 					else
-						gmtdefs.n_header_recs = i;
+						GMT_io.n_header_recs = i;
 				}
 				if (j == 2)	/* Both in and out may have header records */
-					gmtdefs.io_header[GMT_IN] = gmtdefs.io_header[GMT_OUT] = (gmtdefs.n_header_recs > 0);
+					GMT_io.io_header[GMT_IN] = GMT_io.io_header[GMT_OUT] = (GMT_io.n_header_recs > 0);
 				else		/* Only input should have header records */
-					gmtdefs.io_header[GMT_IN] = (gmtdefs.n_header_recs > 0);
+					GMT_io.io_header[GMT_IN] = (GMT_io.n_header_recs > 0);
 			}
 			break;
 		case 'J':
@@ -960,17 +960,17 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 		case 'K':
 			if (GMT_processed_option[5]) fprintf (stderr, "%s: Warning: Option -K given more than once\n", GMT_program);
 			GMT_processed_option[5] = TRUE;
-			gmtdefs.last_page = FALSE;
+			GMT_ps.last_page = FALSE;
 			break;
 		case 'O':
 			if (GMT_processed_option[6]) fprintf (stderr, "%s: Warning: Option -O given more than once\n", GMT_program);
 			GMT_processed_option[6] = TRUE;
-			gmtdefs.overlay = TRUE;
+			GMT_ps.overlay = TRUE;
 			break;
 		case 'P':
 			if (GMT_processed_option[7]) fprintf (stderr, "%s: Warning: Option -P given more than once\n", GMT_program);
 			GMT_processed_option[7] = TRUE;
-			gmtdefs.page_orientation |= 1;	/* Bit arith because eurofont bit may be set */
+			GMT_ps.portrait = TRUE;
 			break;
 		case 'R':
 			if (GMT_processed_option[8]) {
@@ -1060,24 +1060,24 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				break;
 			}
 			GMT_processed_option[9] = TRUE;
-			gmtdefs.unix_time = TRUE;
+			GMT_ps.unix_time = TRUE;
 			for (i = j = n_slashes = 0; item[i]; i++) if (item[i] == '/') {
 				n_slashes++;
 				if (n_slashes < 4) j = i;
 			}
 			if (item[2] == '/' && n_slashes == 2) {	/* Gave -U/<dx>/<dy> */
 				nn = sscanf (&item[3], "%[^/]/%s", txt_a, txt_b);
-				gmtdefs.unix_time_pos[0] = GMT_convert_units (txt_a, GMT_INCH);
-				gmtdefs.unix_time_pos[1] = GMT_convert_units (txt_b, GMT_INCH);
+				GMT_ps.unix_time_pos[0] = GMT_convert_units (txt_a, GMT_INCH);
+				GMT_ps.unix_time_pos[1] = GMT_convert_units (txt_b, GMT_INCH);
 			}
 			else if (item[2] == '/' && n_slashes > 2) {	/* Gave -U/<dx>/<dy>/<string> */
 				nn = sscanf (&item[3], "%[^/]/%[^/]/%*s", txt_a, txt_b);
-				gmtdefs.unix_time_pos[0] = GMT_convert_units (txt_a, GMT_INCH);
-				gmtdefs.unix_time_pos[1] = GMT_convert_units (txt_b, GMT_INCH);
-				strcpy (gmtdefs.unix_time_label, &item[j+1]);
+				GMT_ps.unix_time_pos[0] = GMT_convert_units (txt_a, GMT_INCH);
+				GMT_ps.unix_time_pos[1] = GMT_convert_units (txt_b, GMT_INCH);
+				strcpy (GMT_ps.unix_time_label, &item[j+1]);
 			}
 			else if (item[2] && item[2] != '/')	/* Gave -U<string> */
-				strcpy (gmtdefs.unix_time_label, &item[2]);
+				strcpy (GMT_ps.unix_time_label, &item[2]);
 			if ((item[2] == '/' && n_slashes == 1) || (item[2] == '/' && n_slashes >= 2 && nn != 2)) {
 				error++;
 				GMT_syntax ('U');
@@ -1087,7 +1087,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			if (GMT_processed_option[10]) fprintf (stderr, "%s: Warning: Option -V given more than once\n", GMT_program);
 			GMT_processed_option[10] = TRUE;
 			gmtdefs.verbose = (item[2] == 'l') ? 2 : TRUE;	/* -Vl is long verbose */
-			gmtdefs.page_orientation |= 2;
+			GMT_ps.verbose = TRUE;
 			break;
 		case 'X':
 		case 'x':
@@ -1103,7 +1103,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			if (item[2] == 'c')
 				project_info.x_off_supplied = 2;	/* Must center in map_setup */
 			else {
-				gmtdefs.x_origin = GMT_convert_units (&item[i], GMT_INCH);
+				GMT_ps.x_origin = GMT_convert_units (&item[i], GMT_INCH);
 				project_info.x_off_supplied = TRUE;
 			}
 			break;
@@ -1121,7 +1121,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			if (item[2] == 'c')
 				project_info.y_off_supplied = 2;	/* Must center in map_setup */
 			else {
-				gmtdefs.y_origin = GMT_convert_units (&item[i], GMT_INCH);
+				GMT_ps.y_origin = GMT_convert_units (&item[i], GMT_INCH);
 				project_info.y_off_supplied = TRUE;
 			}
 			break;
@@ -1138,7 +1138,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				GMT_syntax ('c');
 			}
 			else
-				gmtdefs.n_copies = i;
+				GMT_ps.n_copies = i;
 			break;
 		case ':':	/* Toggle lon/lat - lat/lon */
 			if (GMT_processed_option[14]) {
@@ -1229,28 +1229,11 @@ int GMT_loaddefaults (char *file)
 
 	fclose (fp);
 	GMT_backwards_compatibility ();
-	GMT_prep_PS_bits ();
 	if (!strstr (GMT_program, "gmtset")) GMT_verify_encodings ();
 
 	if (error) fprintf (stderr, "GMT:  %d conversion errors in file %s!\n", error, file);
 
 	return (0);
-}
-
-void GMT_prep_PS_bits ()
-{
-	/* Because some defaults may be set more than once - like overridden with --PAR
-	 * we must be careful to set or unset the selections */
-	 
-	gmtdefs.page_orientation &= 1;	/* Unset all but bit 0 */
-	if (gmtdefs.verbose) gmtdefs.page_orientation |= 2;
-	if (gmtdefs.ps_heximage) gmtdefs.page_orientation |= 4;
-	if (gmtdefs.ps_colormode) gmtdefs.page_orientation |= (gmtdefs.ps_colormode << 8);
-	if (gmtdefs.ps_compress) gmtdefs.page_orientation |= (gmtdefs.ps_compress << 12);
-	if (gmtdefs.ps_line_cap) gmtdefs.page_orientation |= (gmtdefs.ps_line_cap << 14);
-	if (gmtdefs.ps_line_join) gmtdefs.page_orientation |= (gmtdefs.ps_line_join << 16);
-	if (gmtdefs.ps_miter_limit) gmtdefs.page_orientation |= (gmtdefs.ps_miter_limit << 18);
-	if (gmtdefs.ps_verbose) gmtdefs.page_orientation |= (1 << 30);
 }
 
 void GMT_setdefaults (int argc, char **argv)
@@ -1299,7 +1282,6 @@ void GMT_setdefaults (int argc, char **argv)
 	}
 
 	GMT_backwards_compatibility ();
-	GMT_prep_PS_bits ();
 
 	if (GMT_got_frame_rgb) {	/* Must enforce change of frame, tick, and grid pen rgb */
 		memcpy ((void *)gmtdefs.frame_pen.rgb, (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
@@ -1688,6 +1670,7 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case GMTCASE_IO_HEADER:
 			error = true_false_or_error (lower_value, &gmtdefs.io_header[GMT_IN]);
+			gmtdefs.io_header[GMT_OUT] = gmtdefs.io_header[GMT_IN];
 			break;
 		case GMTCASE_N_HEADER_RECS:
 			ival = atoi (value);
@@ -1774,9 +1757,9 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case GMTCASE_PAGE_ORIENTATION:
 			if (!strcmp (lower_value, "landscape"))
-				gmtdefs.page_orientation = 0;
+				GMT_ps.portrait = FALSE;
 			else if (!strcmp (lower_value, "portrait"))
-				gmtdefs.page_orientation = 1;
+				GMT_ps.portrait = TRUE;
 			else
 				error = TRUE;
 			break;
@@ -2178,7 +2161,7 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "#\n#	GMT-SYSTEM %s Defaults file\n#\n", GMT_VERSION);
 	fprintf (fp, "#-------- Plot Media Parameters -------------\n");
 	fprintf (fp, "PAGE_COLOR		= %d/%d/%d\n", gmtdefs.page_rgb[0], gmtdefs.page_rgb[1], gmtdefs.page_rgb[2]);
-	(gmtdefs.page_orientation & 1) ? fprintf (fp, "PAGE_ORIENTATION	= portrait\n") : fprintf (fp, "PAGE_ORIENTATION	= landscape\n");
+	(GMT_ps.portrait) ? fprintf (fp, "PAGE_ORIENTATION	= portrait\n") : fprintf (fp, "PAGE_ORIENTATION	= landscape\n");
 	if (gmtdefs.media == -USER_MEDIA_OFFSET)
 		fprintf (fp, "PAPER_MEDIA		= Custom_%dx%d", abs(gmtdefs.paper_width[0]), abs(gmtdefs.paper_width[1]));
 	else if (gmtdefs.media >= USER_MEDIA_OFFSET)
@@ -2849,6 +2832,7 @@ int GMT_begin (int argc, char **argv)
 	GMT_set_home ();
 
 	GMT_init_fonts (&N_FONTS);
+	memset ((void *)&GMT_ps, 0, sizeof (struct GMT_PS));
 	this = CNULL;
 	GMT_make_fnan (GMT_f_NaN);
 	GMT_make_dnan (GMT_d_NaN);
@@ -2865,8 +2849,8 @@ int GMT_begin (int argc, char **argv)
 	project_info.z_level = DBL_MAX;	/* Will be set in map_setup */
 	project_info.xyz_pos[0] = project_info.xyz_pos[1] = TRUE;
 	GMT_prepare_3D ();
-	gmtdefs.dlon = (project_info.e - project_info.w) / gmtdefs.n_lon_nodes;
-	gmtdefs.dlat = (project_info.n - project_info.s) / gmtdefs.n_lat_nodes;
+	GMT_dlon = (project_info.e - project_info.w) / GMT_n_lon_nodes;
+	GMT_dlat = (project_info.n - project_info.s) / GMT_n_lat_nodes;
 	for (i = 0; i < 4; i++) project_info.edge[i] = TRUE;
 	GMT_grdio_init ();
 	for (i = 0; i < N_UNIQUE; i++) GMT_oldargv[i] = CNULL;
@@ -2875,7 +2859,6 @@ int GMT_begin (int argc, char **argv)
 	frame_info.check_side = frame_info.horizontal = FALSE;
 	project_info.f_horizon = 90.0;
 	GMT_distance_func = (PFD) GMT_great_circle_dist_km;
-	
 
 	/* Set the gmtdefault parameters from the $HOME/.gmtdefaults4 (if any) */
 
@@ -2911,8 +2894,6 @@ int GMT_begin (int argc, char **argv)
 	}
 	argc = j;
 	if (n) fprintf (stderr, "%s:  %d conversion errors from command-line default override settings!\n", GMT_program, n);
-
-	GMT_prep_PS_bits ();	/* In case --DPARs were given */
 
 	GMT_init_ellipsoid ();	/* Set parameters depending on the ellipsoid */
 
@@ -2967,7 +2948,9 @@ int GMT_begin (int argc, char **argv)
 		argv[k] = argv[n];
 		argv[n] = p;
 	}
-	if (gmtdefs.verbose) gmtdefs.page_orientation |= 2;
+
+	GMT_PS_init ();		/* Init the PostScript-related parameters */
+	
 	return (argc);
 }
 
@@ -3070,7 +3053,7 @@ void GMT_put_history (int argc, char **argv)
 		fprintf (stderr, "%s: GMT SYNTAX ERROR: -X -Y must both be absolute or relative\n", GMT_program);
 		exit (EXIT_FAILURE);
 	}
-	if (GMT_x_abs && GMT_y_abs) gmtdefs.page_orientation |= 8;
+	if (GMT_x_abs && GMT_y_abs) GMT_ps.absolute = TRUE;
 
 	/* Ok, now update history, first rewind file pointer */
 
@@ -3279,6 +3262,35 @@ void GMT_get_history (int argc, char ** argv)
 		argv[i] = GMT_oldargv[j];
 		if (argv[i][1] == 'j') argv[i][1] = 'J';	/* Reset to upper case */
 	}
+}
+
+void GMT_PS_init (void) {		/* Init the PostScript-related parameters */
+
+	/* Some of these might be modified later by -K, -O, -P, -U, -V, -X, -Y, -c */
+	
+	GMT_ps.portrait = gmtdefs.portrait;		/* TRUE for portrait, FALSE for landscape */
+	GMT_ps.verbose = gmtdefs.verbose;		/* TRUE to give verbose feedback from pslib routines [FALSE] */
+	GMT_ps.heximage = gmtdefs.ps_heximage;		/* TRUE to write images in HEX, FALSE in BIN [TRUE] */
+	GMT_ps.overlay = FALSE;				/* Result of -O [was gmtdefs.overlay] */
+	GMT_ps.last_page = TRUE;			/* Result of -O [was gmtdefs.overlay] */
+	GMT_ps.unix_time = gmtdefs.unix_time;		/* Result of -U [gmtdefs.unix_time] */
+	GMT_ps.comments = gmtdefs.ps_verbose;		/* TRUE to write comments to PS file [FALSE] */
+	GMT_ps.clip_on = GMT_ps.clip_off = FALSE;	/* Used to manage multi-process clipping operations */
+	GMT_ps.n_copies = gmtdefs.n_copies;		/* Result of -c [gmtdefs.n_copies] */
+	GMT_ps.colormode = gmtdefs.ps_colormode;	/* 0 (RGB), 1 (CMYK), 2 (HSV) */
+	GMT_ps.compress = gmtdefs.ps_compress;		/* 0 (none), 1 (RLE), 2 (LZW) */
+	GMT_ps.line_cap = gmtdefs.ps_line_cap;		/* 0 (butt), 1 (round), 2 (square) */
+	GMT_ps.line_join = gmtdefs.ps_line_join;	/* 0 (miter), 1 (round), 2 (bevel) */
+	GMT_ps.miter_limit = gmtdefs.ps_miter_limit;	/* 0-180 degrees as whole integer */
+	GMT_ps.dpi = gmtdefs.dpi;			/* Plotter resolution in dots-per-inch */
+	memcpy ((void *)GMT_ps.paper_width, (void *)gmtdefs.paper_width, 2 * sizeof (int));	/* Physical width and height of paper used in points */
+	memcpy ((void *)GMT_ps.page_rgb, (void *)gmtdefs.page_rgb, 3*sizeof (int));		/* array with Color of page (paper) */
+	GMT_ps.x_origin = gmtdefs.x_origin;		/* Result of -X [gmtdefs.x_origin] */
+	GMT_ps.y_origin = gmtdefs.y_origin;		/* Result of -Y [gmtdefs.y_origin] */
+	GMT_ps.x_scale = gmtdefs.global_x_scale;	/* Copy of gmtdefs.global_y_scale */
+	GMT_ps.y_scale = gmtdefs.global_y_scale;	/* Copy of gmtdefs.global_y_scale */
+	memcpy ((void *)GMT_ps.unix_time_pos, (void *)gmtdefs.unix_time_pos, 2*sizeof (double));/* Result of -U [gmtdefs.unix_time_pos] */
+	GMT_ps.encoding_name = gmtdefs.encoding.name;	/* Font encoding used */
 }
 
 /* Here is the new -B parser with all its sub-functions */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.124 2006-03-30 04:40:03 pwessel Exp $
+ *	$Id: gmt.h,v 1.125 2006-04-04 07:51:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -153,8 +153,6 @@
 #define GMT_HR2MIN_F	60.0
 #define GMT_HR2MIN_I	60
 #define GMT_MIN2HR	(1.0 / GMT_HR2MIN_F)
-#define GMT_CLIP_ON	1024
-#define GMT_CLIP_OFF	2048
 
 #define GMT_DEC_SIZE	0.54	/* Size of a decimal number compared to point size */
 #define GMT_PER_SIZE	0.30	/* Size of a decimal point compared to point size */
@@ -234,6 +232,7 @@ struct GMT_PEN {	/* Holds pen attributes */
 };
 
 struct GMTDEFAULTS {
+	/* DO NOT MAKE CHANGES HERE WITHOUT CORRESPONDING CHANGES TO gmt_defaults.h !!!!!!!!!!!!!!!!!!! */
 	double annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */
 	double annot_min_spacing;	/* If an annotation is closer that this to an older annotation, the annotation is skipped [0.0] */
 	int annot_font[2];		/* Font for primary and secondary annotations [Helvetica] */
@@ -273,20 +272,15 @@ struct GMTDEFAULTS {
 	int label_font;			/* Font for labels [Helvetica] */
 	double label_font_size;		/* Font size for labels in points [24] */
 	double label_offset;		/* Distance between lowermost annotation and top of label [0.1125] */
-	BOOLEAN last_page;		/* If TRUE, terminate plot system when done [TRUE] */
 	double line_step;		/* Maximum straight linesegment length for arcuate lines */
 	double map_scale_factor;	/* Central mapscale factor, typically 0.9996-1 (or -1 for default action) */
 	double map_scale_height;	/* Height of map scale drawn on a map [0.075] */
 	int measure_unit;		/* Choose 0 (cm), 1 (inch), 2 (m) or 3 (point) [1] */
 	int media;			/* Default paper media [25(Letter)] */
 	int n_copies;			/* Number of copies pr plot [1] */
-	int n_lat_nodes;		/* No of points to use for drawing a latitudinal line [50] */
-	int n_lon_nodes;		/* No of points to use for drawing a longitudinal line [50] */
-	double dlon, dlat;		/* Corresponding increment in lon/lat */
 	int oblique_annotation;		/* Controls annotations and tick angles etc. [0] */
-	BOOLEAN overlay;		/* Make plot in overlay mode [FALSE] */
 	int page_rgb[3];		/* Color of the page [255/255/255 white] */
-	int page_orientation;		/* Orientation of page [0 = Landscape, 1 = Portrait] */
+	BOOLEAN portrait;		/* Orientation of page [FALSE = Landscape, TRUE = Portrait] */
 	int paper_width[2];		/* Width and height of paper to plot on in points [Letter or A4] */
 	double polar_cap[2];		/* Latitude of polar cap and delta_lon for gridline spacing [85/90] */
 	BOOLEAN ps_colormode;		/* 2 writes HSV in PostScript, 1 writes CMYK, 0 uses RGB [0] */
@@ -299,7 +293,6 @@ struct GMTDEFAULTS {
 	double tick_length;		/* Length of tickmarks [0.075] */
 	struct GMT_PEN tick_pen;	/* Pen attributes for tickmarks [2] */
 	BOOLEAN unix_time;		/* Plot time and map projection on map [FALSE] */
-	char unix_time_label[BUFSIZ];	/* Label to plot after time-stamp instead of command line */
 	double unix_time_pos[2];	/* Where to plot timestamp relative to origin */
 	double vector_shape;		/* 0.0 = straight vectorhead, 1.0 = arrowshape, with continuous range in between */
 	BOOLEAN verbose;		/* Give info during execution [FALSE] */
@@ -349,6 +342,34 @@ struct GMTDEFAULTS {
 		char *name;
 		int code[gmt_lastsym]; /* Codes for symbols we print. */
 	} encoding;
+};
+
+struct GMT_PS {	/* Holds the current settings that affect PS generation */
+	/* A structure pointer is passed to GMT_plotinit which calls ps_plotinit */
+	BOOLEAN portrait;			/* TRUE for portrait, FALSE for landscape */
+	BOOLEAN verbose;			/* TRUE to give verbose feedback from pslib routines [FALSE] */
+	BOOLEAN heximage;			/* TRUE to write images in HEX, FALSE in BIN [TRUE] */
+	BOOLEAN absolute;			/* TRUE if -X, -Y was absolute [FALSE] */
+	BOOLEAN last_page;			/* Result of -K [was gmtdefs.last_page] */
+	BOOLEAN overlay;			/* Result of -O [was gmtdefs.overlay] */
+	BOOLEAN unix_time;			/* Result of -U [gmtdefs.unix_time] */
+	BOOLEAN comments;			/* TRUE to write comments to PS file [FALSE] */
+	BOOLEAN clip_on;			/* TRUE if clipping will extend beyond current process */
+	BOOLEAN clip_off;			/* TRUE if we terminate clipping initiated in a prior process */
+	int n_copies;				/* Result of -c [gmtdefs.n_copies] */
+	int colormode;				/* 0 (RGB), 1 (CMYK), 2 (HSV) */
+	int compress;				/* 0 (none), 1 (RLE), 2 (LZW) */
+	int line_cap;				/* 0 (butt), 1 (round), 2 (square) */
+	int line_join;				/* 0 (miter), 1 (round), 2 (bevel) */
+	int miter_limit;			/* 0-180 degrees as whole integer */
+	int dpi;				/* Plotter resolution in dots-per-inch */
+	int paper_width[2];			/* Physical width and height of paper used in points */
+	int page_rgb[3];			/* array with Color of page (paper) */
+	double x_origin, y_origin;		/* Result of -X -Y [gmtdefs.x|y_origin] */
+	double x_scale, y_scale;		/* Copy of gmtdefs.global_x|y_scale */
+	double unix_time_pos[2];		/* Result of -U [gmtdefs.unix_time_pos] */
+	char *encoding_name;			/* POinter to font encoding used */
+	char unix_time_label[BUFSIZ];		/* was gmtdefs.unix_time_label */
 };
 
 struct GMT_HASH {	/* Used to related keywords to gmtdefaults entry */
@@ -521,6 +542,10 @@ EXTERN_MSC BOOLEAN GMT_meridian_straight;	/* TRUE if meridians plot as straight 
 EXTERN_MSC BOOLEAN GMT_parallel_straight;	/* TRUE if parallels plot as straight lines */
 EXTERN_MSC int GMT_3D_mode;			/* Determines if we draw fore and/or back 3-D box lines */
 EXTERN_MSC char *GMT_plot_format[3][2];		/* Keeps the 6 formats for dd:mm:ss plot output */
+EXTERN_MSC int GMT_n_lon_nodes;			/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
+EXTERN_MSC int GMT_n_lat_nodes;			/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
+EXTERN_MSC double GMT_dlon;			/* Steps taken in longitude along gridlines (gets reset in gmt_init.c) */
+EXTERN_MSC double GMT_dlat;			/* Steps taken in latitude along gridlines (gets reset in gmt_init.c) */
 
 /*--------------------------------------------------------------------*/
 /*	For projection purposes */

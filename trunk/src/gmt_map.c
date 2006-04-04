@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.116 2006-03-23 07:48:04 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.117 2006-04-04 07:51:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -462,7 +462,7 @@ void GMT_map_setup (double west, double east, double south, double north)
 
 	if (!GMT_z_forward) GMT_z_forward = (PFI) GMT_translin;
 	if (!GMT_z_inverse) GMT_z_inverse = (PFI) GMT_itranslin;
-	gmtdefs.n_lon_nodes = gmtdefs.n_lat_nodes = 0;
+	GMT_n_lon_nodes = GMT_n_lat_nodes = 0;
 	GMT_wrap_around_check = (PFI) GMT_wrap_around_check_x;
 	GMT_map_jump = (PFI) GMT_map_jump_x;
 	GMT_will_it_wrap = (PFB) GMT_will_it_wrap_x;
@@ -619,16 +619,16 @@ void GMT_map_setup (double west, double east, double south, double north)
 	GMT_half_map_size = 0.5 * GMT_map_width;
 	GMT_half_map_height = 0.5 * GMT_map_height;
 
-	if (!gmtdefs.n_lon_nodes) gmtdefs.n_lon_nodes = irint (GMT_map_width / gmtdefs.line_step);
-	if (!gmtdefs.n_lat_nodes) gmtdefs.n_lat_nodes = irint (GMT_map_height / gmtdefs.line_step);
+	if (!GMT_n_lon_nodes) GMT_n_lon_nodes = irint (GMT_map_width / gmtdefs.line_step);
+	if (!GMT_n_lat_nodes) GMT_n_lat_nodes = irint (GMT_map_height / gmtdefs.line_step);
 
-	gmtdefs.dlon = (project_info.e - project_info.w) / gmtdefs.n_lon_nodes;
-	gmtdefs.dlat = (project_info.n - project_info.s) / gmtdefs.n_lat_nodes;
+	GMT_dlon = (project_info.e - project_info.w) / GMT_n_lon_nodes;
+	GMT_dlat = (project_info.n - project_info.s) / GMT_n_lat_nodes;
 
 	if (search) {
 		GMT_wesn_search (project_info.xmin, project_info.xmax, project_info.ymin, project_info.ymax, &project_info.w, &project_info.e, &project_info.s, &project_info.n);
-		gmtdefs.dlon = (project_info.e - project_info.w) / gmtdefs.n_lon_nodes;
-		gmtdefs.dlat = (project_info.n - project_info.s) / gmtdefs.n_lat_nodes;
+		GMT_dlon = (project_info.e - project_info.w) / GMT_n_lon_nodes;
+		GMT_dlat = (project_info.n - project_info.s) / GMT_n_lat_nodes;
 	}
 
 	if (AZIMUTHAL && !project_info.region) GMT_horizon_search (west, east, south, north, project_info.xmin, project_info.xmax, project_info.ymin, project_info.ymax);
@@ -640,12 +640,12 @@ void GMT_map_setup (double west, double east, double south, double north)
 
 	/* Default for overlay plots is no shifting */
 
-	if (!project_info.x_off_supplied && gmtdefs.overlay) gmtdefs.x_origin = 0.0;
-	if (!project_info.y_off_supplied && gmtdefs.overlay) gmtdefs.y_origin = 0.0;
+	if (!project_info.x_off_supplied && GMT_ps.overlay) GMT_ps.x_origin = 0.0;
+	if (!project_info.y_off_supplied && GMT_ps.overlay) GMT_ps.y_origin = 0.0;
 
-	k = gmtdefs.page_orientation & 1;	/* k and !k gives 0,1 or 1,0 depending on -P */
-	if (project_info.x_off_supplied == 2) gmtdefs.x_origin = 0.5 * (fabs(gmtdefs.paper_width[!k]/72.0) - GMT_map_width);		/* Want to x center plot on current page size */
-	if (project_info.y_off_supplied == 2) gmtdefs.y_origin = 0.5 * (fabs(gmtdefs.paper_width[k]/72.0) - GMT_map_height);	/* Want to y center plot on current page size */
+	k = GMT_ps.portrait;	/* k and !k gives 0,1 or 1,0 depending on -P */
+	if (project_info.x_off_supplied == 2) GMT_ps.x_origin = 0.5 * (fabs(GMT_ps.paper_width[!k]/72.0) - GMT_map_width);	/* Want to x center plot on current page size */
+	if (project_info.y_off_supplied == 2) GMT_ps.y_origin = 0.5 * (fabs(GMT_ps.paper_width[k]/72.0) - GMT_map_height);	/* Want to y center plot on current page size */
 }
 
 void GMT_init_three_D (void) {
@@ -790,52 +790,52 @@ void GMT_init_three_D (void) {
 		z_project.corner_x[1] = z_project.corner_x[2] = (project_info.xyz_pos[0]) ? project_info.e : project_info.w;
 		z_project.corner_y[0] = z_project.corner_y[1] = (project_info.xyz_pos[1]) ? project_info.s : project_info.n;
 		z_project.corner_y[2] = z_project.corner_y[3] = (project_info.xyz_pos[1]) ? project_info.n : project_info.s;
-		for (i = 0; i < gmtdefs.n_lon_nodes; i++) {	/* S and N */
-			GMT_geoz_to_xy (project_info.w + i * gmtdefs.dlon, project_info.s, project_info.z_bottom, &x, &y);
+		for (i = 0; i < GMT_n_lon_nodes; i++) {	/* S and N */
+			GMT_geoz_to_xy (project_info.w + i * GMT_dlon, project_info.s, project_info.z_bottom, &x, &y);
 			z_project.ymin = MIN (z_project.ymin, y);
 			z_project.ymax = MAX (z_project.ymax, y);
 			z_project.xmin = MIN (z_project.xmin, x);
 			z_project.xmax = MAX (z_project.xmax, x);
 			if (project_info.z_top != project_info.z_bottom) {
-				GMT_geoz_to_xy (project_info.w + i * gmtdefs.dlon, project_info.s, project_info.z_top, &x, &y);
+				GMT_geoz_to_xy (project_info.w + i * GMT_dlon, project_info.s, project_info.z_top, &x, &y);
 				z_project.ymin = MIN (z_project.ymin, y);
 				z_project.ymax = MAX (z_project.ymax, y);
 				z_project.xmin = MIN (z_project.xmin, x);
 				z_project.xmax = MAX (z_project.xmax, x);
 			}
-			GMT_geoz_to_xy (project_info.w + i * gmtdefs.dlon, project_info.n, project_info.z_bottom, &x, &y);
+			GMT_geoz_to_xy (project_info.w + i * GMT_dlon, project_info.n, project_info.z_bottom, &x, &y);
 			z_project.ymin = MIN (z_project.ymin, y);
 			z_project.ymax = MAX (z_project.ymax, y);
 			z_project.xmin = MIN (z_project.xmin, x);
 			z_project.xmax = MAX (z_project.xmax, x);
 			if (project_info.z_top != project_info.z_bottom) {
-				GMT_geoz_to_xy (project_info.w + i * gmtdefs.dlon, project_info.n, project_info.z_top, &x, &y);
+				GMT_geoz_to_xy (project_info.w + i * GMT_dlon, project_info.n, project_info.z_top, &x, &y);
 				z_project.ymin = MIN (z_project.ymin, y);
 				z_project.ymax = MAX (z_project.ymax, y);
 				z_project.xmin = MIN (z_project.xmin, x);
 				z_project.xmax = MAX (z_project.xmax, x);
 			}
 		}
-		for (i = 0; i < gmtdefs.n_lat_nodes; i++) {	/* W and E */
-			GMT_geoz_to_xy (project_info.w, project_info.s + i * gmtdefs.dlat, project_info.z_bottom, &x, &y);
+		for (i = 0; i < GMT_n_lat_nodes; i++) {	/* W and E */
+			GMT_geoz_to_xy (project_info.w, project_info.s + i * GMT_dlat, project_info.z_bottom, &x, &y);
 			z_project.ymin = MIN (z_project.ymin, y);
 			z_project.ymax = MAX (z_project.ymax, y);
 			z_project.xmin = MIN (z_project.xmin, x);
 			z_project.xmax = MAX (z_project.xmax, x);
 			if (project_info.z_top != project_info.z_bottom) {
-				GMT_geoz_to_xy (project_info.w, project_info.s + i * gmtdefs.dlat, project_info.z_top, &x, &y);
+				GMT_geoz_to_xy (project_info.w, project_info.s + i * GMT_dlat, project_info.z_top, &x, &y);
 				z_project.ymin = MIN (z_project.ymin, y);
 				z_project.ymax = MAX (z_project.ymax, y);
 				z_project.xmin = MIN (z_project.xmin, x);
 				z_project.xmax = MAX (z_project.xmax, x);
 			}
-			GMT_geoz_to_xy (project_info.e, project_info.s + i * gmtdefs.dlat, project_info.z_bottom, &x, &y);
+			GMT_geoz_to_xy (project_info.e, project_info.s + i * GMT_dlat, project_info.z_bottom, &x, &y);
 			z_project.ymin = MIN (z_project.ymin, y);
 			z_project.ymax = MAX (z_project.ymax, y);
 			z_project.xmin = MIN (z_project.xmin, x);
 			z_project.xmax = MAX (z_project.xmax, x);
 			if (project_info.z_top != project_info.z_bottom) {
-				GMT_geoz_to_xy (project_info.e, project_info.s + i * gmtdefs.dlat, project_info.z_top, &x, &y);
+				GMT_geoz_to_xy (project_info.e, project_info.s + i * GMT_dlat, project_info.z_top, &x, &y);
 				z_project.ymin = MIN (z_project.ymin, y);
 				z_project.ymax = MAX (z_project.ymax, y);
 				z_project.xmin = MIN (z_project.xmin, x);
@@ -1127,7 +1127,7 @@ int GMT_map_init_polar (void)
 	GMT_map_clip = (PFI) GMT_wesn_clip;
 	frame_info.horizontal = TRUE;
 	if (!project_info.got_elevations) gmtdefs.degree_format = -1;	/* Special labeling case */
-	gmtdefs.n_lat_nodes = 2;
+	GMT_n_lat_nodes = 2;
 	GMT_meridian_straight = TRUE;
 
 	return (FALSE);
@@ -1163,8 +1163,8 @@ int GMT_map_init_merc (void) {
 	project_info.x_scale = project_info.y_scale = project_info.pars[0]; 
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[0]);
 	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
-	gmtdefs.n_lat_nodes = 2;
-	gmtdefs.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
+	GMT_n_lat_nodes = 2;
+	GMT_n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
 	GMT_outside = (PFI) GMT_wesn_outside;
 	GMT_crossing = (PFI) GMT_wesn_crossing;
 	GMT_overlap = (PFI) GMT_wesn_overlap;
@@ -1208,8 +1208,8 @@ int GMT_map_init_cyleq (void) {
 	if (project_info.units_pr_degree) project_info.pars[2] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[2];
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[2]);
-	gmtdefs.n_lat_nodes = 2;
-	gmtdefs.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
+	GMT_n_lat_nodes = 2;
+	GMT_n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
 	GMT_forward = (PFI)GMT_cyleq;		GMT_inverse = (PFI)GMT_icyleq;
 	GMT_outside = (PFI) GMT_wesn_outside;
 	GMT_crossing = (PFI) GMT_wesn_crossing;
@@ -1240,8 +1240,8 @@ int GMT_map_init_cyleqdist (void) {
 	if (project_info.units_pr_degree) project_info.pars[1] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[1];
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
- 	gmtdefs.n_lat_nodes = 2;
-	gmtdefs.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
+ 	GMT_n_lat_nodes = 2;
+	GMT_n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
 	GMT_forward = (PFI)GMT_cyleqdist;		GMT_inverse = (PFI)GMT_icyleqdist;
 	GMT_outside = (PFI) GMT_wesn_outside;
 	GMT_crossing = (PFI) GMT_wesn_crossing;
@@ -1272,8 +1272,8 @@ int GMT_map_init_miller (void) {
 	if (project_info.units_pr_degree) project_info.pars[1] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[1];
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
-	gmtdefs.n_lat_nodes = 2;
-	gmtdefs.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
+	GMT_n_lat_nodes = 2;
+	GMT_n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
 	GMT_forward = (PFI)GMT_miller;		GMT_inverse = (PFI)GMT_imiller;
 	GMT_outside = (PFI) GMT_wesn_outside;
 	GMT_crossing = (PFI) GMT_wesn_crossing;
@@ -1394,7 +1394,7 @@ int GMT_map_init_stereo (void) {
 			GMT_overlap = (PFI) GMT_wesn_overlap;
 			GMT_map_clip = (PFI) GMT_wesn_clip;
 			frame_info.horizontal = TRUE;
-			gmtdefs.n_lat_nodes = 2;
+			GMT_n_lat_nodes = 2;
 			GMT_xy_search (&xmin, &xmax, &ymin, &ymax, project_info.w, project_info.e, project_info.s, project_info.n);
 		}
 		else {	/* Global view only */
@@ -1470,7 +1470,7 @@ int GMT_map_init_lambert (void) {
 		search = FALSE;
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[4]);
-	gmtdefs.n_lat_nodes = 2;
+	GMT_n_lat_nodes = 2;
 	frame_info.horizontal = TRUE;
 	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &project_info.c_x0, &project_info.c_y0);
  	GMT_meridian_straight = TRUE;
@@ -1902,7 +1902,7 @@ int GMT_map_init_lambeq (void) {
 			GMT_overlap = (PFI) GMT_wesn_overlap;
 			GMT_map_clip = (PFI) GMT_wesn_clip;
 			frame_info.horizontal = TRUE;
-			gmtdefs.n_lat_nodes = 2;
+			GMT_n_lat_nodes = 2;
 			GMT_xy_search (&xmin, &xmax, &ymin, &ymax, project_info.w, project_info.e, project_info.s, project_info.n);
 		}
 		else {	/* Global view only */
@@ -1986,7 +1986,7 @@ int GMT_map_init_ortho (void) {
 			GMT_overlap = (PFI) GMT_wesn_overlap;
 			GMT_map_clip = (PFI) GMT_wesn_clip;
 			frame_info.horizontal = TRUE;
-			gmtdefs.n_lat_nodes = 2;
+			GMT_n_lat_nodes = 2;
 			GMT_xy_search (&xmin, &xmax, &ymin, &ymax, project_info.w, project_info.e, project_info.s, project_info.n);
 		}
 		else {	/* Global view only */
@@ -2070,7 +2070,7 @@ int GMT_map_init_gnomonic (void) {
 			GMT_overlap = (PFI) GMT_wesn_overlap;
 			GMT_map_clip = (PFI) GMT_wesn_clip;
 			frame_info.horizontal = TRUE;
-			gmtdefs.n_lat_nodes = 2;
+			GMT_n_lat_nodes = 2;
 			GMT_xy_search (&xmin, &xmax, &ymin, &ymax, project_info.w, project_info.e, project_info.s, project_info.n);
 		}
 		else {	/* Global view only */
@@ -2149,7 +2149,7 @@ int GMT_map_init_azeqdist (void) {
 			GMT_overlap = (PFI) GMT_wesn_overlap;
 			GMT_map_clip = (PFI) GMT_wesn_clip;
 			frame_info.horizontal = TRUE;
-			gmtdefs.n_lat_nodes = 2;
+			GMT_n_lat_nodes = 2;
 			GMT_xy_search (&xmin, &xmax, &ymin, &ymax, project_info.w, project_info.e, project_info.s, project_info.n);
 		}
 		else {	/* Global view only, force wesn = 0/360/-90/90  */
@@ -2703,7 +2703,7 @@ int GMT_map_init_albers (void) {
 		search = TRUE;
 	}
 	frame_info.horizontal = TRUE;
-	gmtdefs.n_lat_nodes = 2;
+	GMT_n_lat_nodes = 2;
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[4]);
 
 	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &project_info.c_x0, &project_info.c_y0);
@@ -2758,7 +2758,7 @@ int GMT_map_init_econic (void) {
 		search = TRUE;
 	}
 	frame_info.horizontal = TRUE;
-	gmtdefs.n_lat_nodes = 2;
+	GMT_n_lat_nodes = 2;
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[4]);
 
 	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &project_info.c_x0, &project_info.c_y0);
@@ -2784,11 +2784,11 @@ void GMT_wesn_search (double xmin, double xmax, double ymin, double ymax, double
 
 	/* Search for extreme original coordinates lon/lat */
 
-	dx = (xmax - xmin) / gmtdefs.n_lon_nodes;
-	dy = (ymax - ymin) / gmtdefs.n_lat_nodes;
+	dx = (xmax - xmin) / GMT_n_lon_nodes;
+	dy = (ymax - ymin) / GMT_n_lat_nodes;
 	w = s = DBL_MAX;	e = n = -DBL_MAX;
-	for (i = 0; i <= gmtdefs.n_lon_nodes; i++) {
-		x = (i == gmtdefs.n_lon_nodes) ? xmax : xmin + i * dx;
+	for (i = 0; i <= GMT_n_lon_nodes; i++) {
+		x = (i == GMT_n_lon_nodes) ? xmax : xmin + i * dx;
 		GMT_xy_to_geo (&lon, &lat, x, ymin);
 		if (lon < w) w = lon;
 		if (lon > e) e = lon;
@@ -2800,8 +2800,8 @@ void GMT_wesn_search (double xmin, double xmax, double ymin, double ymax, double
 		if (lat < s) s = lat;
 		if (lat > n) n = lat;
 	}
-	for (j = 0; j <= gmtdefs.n_lat_nodes; j++) {
-		y = (j == gmtdefs.n_lat_nodes) ? ymax : ymin + j * dy;
+	for (j = 0; j <= GMT_n_lat_nodes; j++) {
+		y = (j == GMT_n_lat_nodes) ? ymax : ymin + j * dy;
 		GMT_xy_to_geo (&lon, &lat, xmin, y);
 		if (lon < w) w = lon;
 		if (lon > e) e = lon;
@@ -2849,19 +2849,19 @@ void GMT_horizon_search (double w, double e, double s, double n, double xmin, do
 
 	/* Search for extreme original coordinates lon/lat and see if any fall beyond the horizon */
 
-	dx = (xmax - xmin) / gmtdefs.n_lon_nodes;
-	dy = (ymax - ymin) / gmtdefs.n_lat_nodes;
+	dx = (xmax - xmin) / GMT_n_lon_nodes;
+	dy = (ymax - ymin) / GMT_n_lat_nodes;
 	if ((d = GMT_great_circle_dist (project_info.central_meridian, project_info.pole, w, s)) > project_info.f_horizon) beyond = TRUE;
 	if ((d = GMT_great_circle_dist (project_info.central_meridian, project_info.pole, e, n)) > project_info.f_horizon) beyond = TRUE;
-	for (i = 0; !beyond && i <= gmtdefs.n_lon_nodes; i++) {
-		x = (i == gmtdefs.n_lon_nodes) ? xmax : xmin + i * dx;
+	for (i = 0; !beyond && i <= GMT_n_lon_nodes; i++) {
+		x = (i == GMT_n_lon_nodes) ? xmax : xmin + i * dx;
 		GMT_xy_to_geo (&lon, &lat, x, ymin);
 		if ((d = GMT_great_circle_dist (project_info.central_meridian, project_info.pole, lon, lat)) > project_info.f_horizon) beyond = TRUE;
 		GMT_xy_to_geo (&lon, &lat, x, ymax);
 		if ((d = GMT_great_circle_dist (project_info.central_meridian, project_info.pole, lon, lat)) > project_info.f_horizon) beyond = TRUE;
 	}
-	for (j = 0; !beyond && j <= gmtdefs.n_lat_nodes; j++) {
-		y = (j == gmtdefs.n_lat_nodes) ? ymax : ymin + j * dy;
+	for (j = 0; !beyond && j <= GMT_n_lat_nodes; j++) {
+		y = (j == GMT_n_lat_nodes) ? ymax : ymin + j * dy;
 		GMT_xy_to_geo (&lon, &lat, xmin, y);
 		if ((d = GMT_great_circle_dist (project_info.central_meridian, project_info.pole, lon, lat)) > project_info.f_horizon) beyond = TRUE;
 		GMT_xy_to_geo (&lon, &lat, xmax, y);
@@ -4309,7 +4309,7 @@ int GMT_lonpath (double lon, double lat1, double lat2, double **x, double **y)
 
 	n = 0;
 	min_gap = 0.1 * gmtdefs.line_step;
-	if ((ny = (int)ceil (fabs (lat2 - lat1) / gmtdefs.dlat)) == 0) return (0);
+	if ((ny = (int)ceil (fabs (lat2 - lat1) / GMT_dlat)) == 0) return (0);
 
 	ny++;
 	dlat0 = (lat2 - lat1) / ny;
@@ -4384,7 +4384,7 @@ int GMT_latpath (double lat, double lon1, double lon2, double **x, double **y)
 
 	n = 0;
 	min_gap = 0.1 * gmtdefs.line_step;
-	if ((nx = (int)ceil (fabs (lon2 - lon1) / gmtdefs.dlon)) == 0) return (0);
+	if ((nx = (int)ceil (fabs (lon2 - lon1) / GMT_dlon)) == 0) return (0);
 
 	nx++;
 	dlon0 = (lon2 - lon1) / nx;
@@ -5630,7 +5630,7 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 					*donut = (project_info.n < 90.0 && GMT_world_map);
 				else
 					*donut = (project_info.s > 0.0 && GMT_world_map);
-				np = gmtdefs.n_lon_nodes + 1;
+				np = GMT_n_lon_nodes + 1;
 				if (project_info.s > 0.0)	/* Need inside circle segment */
 					np *= 2;
 				else if (!GMT_world_map)	/* Need to include origin */
@@ -5645,25 +5645,25 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 			case ALBERS:
 			case ECONIC:
 			case GRINTEN:
-				np = (project_info.polar && (project_info.s <= -90.0 || project_info.n >= 90.0)) ? gmtdefs.n_lon_nodes + 2: 2 * (gmtdefs.n_lon_nodes + 1);
+				np = (project_info.polar && (project_info.s <= -90.0 || project_info.n >= 90.0)) ? GMT_n_lon_nodes + 2: 2 * (GMT_n_lon_nodes + 1);
 				break;
 			case MOLLWEIDE:
 			case SINUSOIDAL:
 			case ROBINSON:
-				np = 2 * gmtdefs.n_lat_nodes + 2;
+				np = 2 * GMT_n_lat_nodes + 2;
 				break;
 			case WINKEL:
 			case HAMMER:
 			case ECKERT4:
 			case ECKERT6:
-				np = 2 * gmtdefs.n_lat_nodes + 2;
-				if (project_info.s != -90.0) np += gmtdefs.n_lon_nodes - 1;
-				if (project_info.n != 90.0) np += gmtdefs.n_lon_nodes - 1;
+				np = 2 * GMT_n_lat_nodes + 2;
+				if (project_info.s != -90.0) np += GMT_n_lon_nodes - 1;
+				if (project_info.n != 90.0) np += GMT_n_lon_nodes - 1;
 				break;
 			case TM:
 			case UTM:
 			case CASSINI:
-				np = 2 * (gmtdefs.n_lon_nodes + gmtdefs.n_lat_nodes);
+				np = 2 * (GMT_n_lon_nodes + GMT_n_lat_nodes);
 				break;
 			default:
 				fprintf (stderr, "%s: Bad case in GMT_map_clip_path (%d)\n", GMT_program, project_info.projection);
@@ -5694,26 +5694,26 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 			case LAMBERT:
 			case ALBERS:
 			case ECONIC:
-				for (i = j = 0; i <= gmtdefs.n_lon_nodes; i++, j++) {
-					lon = (i == gmtdefs.n_lon_nodes) ? project_info.e : project_info.w + i * gmtdefs.dlon;
+				for (i = j = 0; i <= GMT_n_lon_nodes; i++, j++) {
+					lon = (i == GMT_n_lon_nodes) ? project_info.e : project_info.w + i * GMT_dlon;
 					GMT_geo_to_xy (lon, project_info.s, &work_x[j], &work_y[j]);
 				}
-				for (i = 0; i <= gmtdefs.n_lon_nodes; i++, j++) {
-					lon = (i == gmtdefs.n_lon_nodes) ? project_info.w : project_info.e - i * gmtdefs.dlon;
+				for (i = 0; i <= GMT_n_lon_nodes; i++, j++) {
+					lon = (i == GMT_n_lon_nodes) ? project_info.w : project_info.e - i * GMT_dlon;
 					GMT_geo_to_xy (lon, project_info.n, &work_x[j], &work_y[j]);
 				}
 				break;
 			case TM:
 			case UTM:
 			case CASSINI:
-				for (i = j = 0; i < gmtdefs.n_lon_nodes; i++, j++)	/* South */
-					GMT_geo_to_xy (project_info.w + i * gmtdefs.dlon, project_info.s, &work_x[j], &work_y[j]);
-				for (i = 0; i < gmtdefs.n_lat_nodes; j++, i++)	/* East */
-					GMT_geo_to_xy (project_info.e, project_info.s + i * gmtdefs.dlat, &work_x[j], &work_y[j]);
-				for (i = 0; i < gmtdefs.n_lon_nodes; i++, j++)	/* North */
-					GMT_geo_to_xy (project_info.e - i * gmtdefs.dlon, project_info.n, &work_x[j], &work_y[j]);
-				for (i = 0; i < gmtdefs.n_lat_nodes; j++, i++)	/* West */
-					GMT_geo_to_xy (project_info.w, project_info.n - i * gmtdefs.dlat, &work_x[j], &work_y[j]);
+				for (i = j = 0; i < GMT_n_lon_nodes; i++, j++)	/* South */
+					GMT_geo_to_xy (project_info.w + i * GMT_dlon, project_info.s, &work_x[j], &work_y[j]);
+				for (i = 0; i < GMT_n_lat_nodes; j++, i++)	/* East */
+					GMT_geo_to_xy (project_info.e, project_info.s + i * GMT_dlat, &work_x[j], &work_y[j]);
+				for (i = 0; i < GMT_n_lon_nodes; i++, j++)	/* North */
+					GMT_geo_to_xy (project_info.e - i * GMT_dlon, project_info.n, &work_x[j], &work_y[j]);
+				for (i = 0; i < GMT_n_lat_nodes; j++, i++)	/* West */
+					GMT_geo_to_xy (project_info.w, project_info.n - i * GMT_dlat, &work_x[j], &work_y[j]);
 				break;
 			case POLAR:
 				r0 = project_info.r * project_info.s / project_info.n;
@@ -5731,19 +5731,19 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 					}
 				}
 				else {
-					da = fabs (project_info.e - project_info.w) / (gmtdefs.n_lon_nodes - 1);
+					da = fabs (project_info.e - project_info.w) / (GMT_n_lon_nodes - 1);
 					if (project_info.got_elevations) {
-						for (i = j = 0; i <= gmtdefs.n_lon_nodes; i++, j++)	/* Draw outer clippath */
+						for (i = j = 0; i <= GMT_n_lon_nodes; i++, j++)	/* Draw outer clippath */
 							GMT_geo_to_xy (project_info.w + i * da, project_info.s, &work_x[j], &work_y[j]);
-						for (i = gmtdefs.n_lon_nodes; project_info.n < 90.0 && i >= 0; i--, j++)	/* Draw inner clippath */
+						for (i = GMT_n_lon_nodes; project_info.n < 90.0 && i >= 0; i--, j++)	/* Draw inner clippath */
 							GMT_geo_to_xy (project_info.w + i * da, project_info.n, &work_x[j], &work_y[j]);
 						if (fabs (90.0 - project_info.n) < GMT_CONV_LIMIT && !GMT_world_map)	/* Add origin */
 							GMT_geo_to_xy (project_info.w, project_info.n, &work_x[j], &work_y[j]);
 					}
 					else {
-						for (i = j = 0; i <= gmtdefs.n_lon_nodes; i++, j++)	/* Draw outer clippath */
+						for (i = j = 0; i <= GMT_n_lon_nodes; i++, j++)	/* Draw outer clippath */
 							GMT_geo_to_xy (project_info.w + i * da, project_info.n, &work_x[j], &work_y[j]);
-						for (i = gmtdefs.n_lon_nodes; project_info.s > 0.0 && i >= 0; i--, j++)	/* Draw inner clippath */
+						for (i = GMT_n_lon_nodes; project_info.s > 0.0 && i >= 0; i--, j++)	/* Draw inner clippath */
 							GMT_geo_to_xy (project_info.w + i * da, project_info.s, &work_x[j], &work_y[j]);
 						if (fabs (project_info.s) < GMT_CONV_LIMIT && !GMT_world_map)	/* Add origin */
 							GMT_geo_to_xy (project_info.w, project_info.s, &work_x[j], &work_y[j]);
@@ -5758,8 +5758,8 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 				if (project_info.polar) {
 					j = 0;
 					if (project_info.s > -90.0) {
-						for (i = 0; i <= gmtdefs.n_lon_nodes; i++, j++) {
-							lon = (i == gmtdefs.n_lon_nodes) ? project_info.e : project_info.w + i * gmtdefs.dlon;
+						for (i = 0; i <= GMT_n_lon_nodes; i++, j++) {
+							lon = (i == GMT_n_lon_nodes) ? project_info.e : project_info.w + i * GMT_dlon;
 							GMT_geo_to_xy (lon, project_info.s, &work_x[j], &work_y[j]);
 						}
 					}
@@ -5768,8 +5768,8 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 						j++;
 					}
 					if (project_info.n < 90.0) {
-						for (i = 0; i <= gmtdefs.n_lon_nodes; i++, j++) {
-							lon = (i == gmtdefs.n_lon_nodes) ? project_info.w : project_info.e - i * gmtdefs.dlon;
+						for (i = 0; i <= GMT_n_lon_nodes; i++, j++) {
+							lon = (i == GMT_n_lon_nodes) ? project_info.w : project_info.e - i * GMT_dlon;
 							GMT_geo_to_xy (lon, project_info.n, &work_x[j], &work_y[j]);
 						}
 					}
@@ -5800,12 +5800,12 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 			case MOLLWEIDE:
 			case SINUSOIDAL:
 			case ROBINSON:
-				for (i = j = 0; i <= gmtdefs.n_lat_nodes; i++, j++) {	/* Right */
-					lat = (i == gmtdefs.n_lat_nodes) ? project_info.n : project_info.s + i * gmtdefs.dlat;
+				for (i = j = 0; i <= GMT_n_lat_nodes; i++, j++) {	/* Right */
+					lat = (i == GMT_n_lat_nodes) ? project_info.n : project_info.s + i * GMT_dlat;
 					GMT_geo_to_xy (project_info.e, lat, &work_x[j], &work_y[j]);
 				}
-				for (i = gmtdefs.n_lat_nodes; i >= 0; j++, i--)	{	/* Left */
-					lat = (i == gmtdefs.n_lat_nodes) ? project_info.n : project_info.s + i * gmtdefs.dlat;
+				for (i = GMT_n_lat_nodes; i >= 0; j++, i--)	{	/* Left */
+					lat = (i == GMT_n_lat_nodes) ? project_info.n : project_info.s + i * GMT_dlat;
 					GMT_geo_to_xy (project_info.w, lat, &work_x[j], &work_y[j]);
 				}
 				break;
@@ -5813,18 +5813,18 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 			case WINKEL:
 			case ECKERT4:
 			case ECKERT6:
-				for (i = j = 0; i <= gmtdefs.n_lat_nodes; i++, j++) {	/* Right */
-					lat = (i == gmtdefs.n_lat_nodes) ? project_info.n : project_info.s + i * gmtdefs.dlat;
+				for (i = j = 0; i <= GMT_n_lat_nodes; i++, j++) {	/* Right */
+					lat = (i == GMT_n_lat_nodes) ? project_info.n : project_info.s + i * GMT_dlat;
 					GMT_geo_to_xy (project_info.e, lat, &work_x[j], &work_y[j]);
 				}
-				for (i = 1; project_info.n != 90.0 && i < gmtdefs.n_lon_nodes; i++, j++)
-					GMT_geo_to_xy (project_info.e - i * gmtdefs.dlon, project_info.n, &work_x[j], &work_y[j]);
-				for (i = gmtdefs.n_lat_nodes; i >= 0; j++, i--)	{	/* Left */
-					lat = (i == gmtdefs.n_lat_nodes) ? project_info.n : project_info.s + i * gmtdefs.dlat;
+				for (i = 1; project_info.n != 90.0 && i < GMT_n_lon_nodes; i++, j++)
+					GMT_geo_to_xy (project_info.e - i * GMT_dlon, project_info.n, &work_x[j], &work_y[j]);
+				for (i = GMT_n_lat_nodes; i >= 0; j++, i--)	{	/* Left */
+					lat = (i == GMT_n_lat_nodes) ? project_info.n : project_info.s + i * GMT_dlat;
 					GMT_geo_to_xy (project_info.w, lat, &work_x[j], &work_y[j]);
 				}
-				for (i = 1; project_info.s != -90.0 && i < gmtdefs.n_lon_nodes; i++, j++)
-					GMT_geo_to_xy (project_info.w + i * gmtdefs.dlon, project_info.s, &work_x[j], &work_y[j]);
+				for (i = 1; project_info.s != -90.0 && i < GMT_n_lon_nodes; i++, j++)
+					GMT_geo_to_xy (project_info.w + i * GMT_dlon, project_info.s, &work_x[j], &work_y[j]);
 				break;
 		}
 	}
@@ -6741,8 +6741,8 @@ int GMT_map_latcross (double lat, double west, double east, struct GMT_XINGS **x
 	lon_old = west - SMALL;
 	GMT_map_outside (lon_old, lat);
 	GMT_geo_to_xy (lon_old, lat, &last_x, &last_y);
-	for (i = 1; i <= gmtdefs.n_lon_nodes; i++) {
-		lon = (i == gmtdefs.n_lon_nodes) ? east + SMALL : west + i * gmtdefs.dlon;
+	for (i = 1; i <= GMT_n_lon_nodes; i++) {
+		lon = (i == GMT_n_lon_nodes) ? east + SMALL : west + i * GMT_dlon;
 		GMT_map_outside (lon, lat);
 		GMT_geo_to_xy (lon, lat, &this_x, &this_y);
 		nx = 0;
@@ -6799,8 +6799,8 @@ int GMT_map_loncross (double lon, double south, double north, struct GMT_XINGS *
 	if ((north + SMALL) <= 90.0) north += SMALL;
 	GMT_map_outside (lon, lat_old);
 	GMT_geo_to_xy (lon, lat_old, &last_x, &last_y);
-	for (j = 1; j <= gmtdefs.n_lat_nodes; j++) {
-		lat = (j == gmtdefs.n_lat_nodes) ? north: south + j * gmtdefs.dlat;
+	for (j = 1; j <= GMT_n_lat_nodes; j++) {
+		lat = (j == GMT_n_lat_nodes) ? north: south + j * GMT_dlat;
 		GMT_map_outside (lon, lat);
 		GMT_geo_to_xy (lon, lat, &this_x, &this_y);
 		nx = 0;

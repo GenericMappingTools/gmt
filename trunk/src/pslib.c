@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.119 2006-03-23 07:48:04 pwessel Exp $
+ *	$Id: pslib.c,v 1.120 2006-04-04 07:51:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1242,8 +1242,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		     bit 1 : 0 = be silent, 1 = be verbose
 		     bit 2 : 0 = bin image, 1 = hex image
 		     bit 3 : 0 = rel positions, 1 = abs positions
-		     bit 9 : 0 = RGB color, 1 = CMYK color
-		    bit 10 : 1 = HSV color
+		  bit 9-10 : 0 = RGB color, 1 = CMYK color, 2 = HSV color
 		bits 12-13 : 0 = no compression, 1 = RLE compression, 2 = LZW compression
 		bits 14-15 : (0,1,2) sets the line cap setting
 		bits 16-17 : (0,1,2) sets the line miter setting
@@ -1276,7 +1275,6 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps.eps_format = FALSE;
 	ps.verbose = (mode & 2) ? TRUE : FALSE;
 	ps.hex_image = (mode & 4) ? TRUE : FALSE;
-	/* ps.cmyk_mode = (mode & 512) ? TRUE : FALSE; */
 	ps.color_mode = (mode >> 9) & 3;
 	ps.compress = (mode >> 12) & 3;
 	ps.absolute = (mode & 8) ? TRUE : FALSE;

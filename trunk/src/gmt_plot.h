@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.h,v 1.2 2006-03-23 07:48:04 pwessel Exp $
+ *	$Id: gmt_plot.h,v 1.3 2006-04-04 07:51:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -116,6 +116,8 @@ struct GMT_SYMBOL {
 	struct GMT_CONTOUR G;	/* For labelled lines */
 };
 
+EXTERN_MSC struct GMT_PS GMT_ps;
+
 EXTERN_MSC void GMT_circle3D (double x, double y, double z, double size, int rgb[], int outline);
 EXTERN_MSC void GMT_color_image (double x0, double y0, double x_side, double y_side, unsigned char *image, int nx, int ny, int depth);
 EXTERN_MSC void GMT_cross3D (double x, double y, double z, double size);
@@ -147,12 +149,14 @@ EXTERN_MSC void GMT_square3D (double x, double y, double z, double size, int rgb
 EXTERN_MSC void GMT_star3D (double x, double y, double z, double size, int rgb[], int outline);
 EXTERN_MSC void GMT_text3D (double x, double y, double z, double fsize, int fontno, char *text, double angle, int justify, int form);
 EXTERN_MSC void GMT_textbox3D (double x, double y, double z, double size, int font, char *label, double angle, int just, BOOLEAN outline, double dx, double dy, int rgb[]);
-EXTERN_MSC void GMT_timestamp (int argc, char **argv);
+EXTERN_MSC void GMT_timestamp (double x, double y, char *U_label);
 EXTERN_MSC void GMT_triangle3D (double x, double y, double z, double size, int rgb[], int outline);
 EXTERN_MSC void GMT_vector3D (double x0, double y0, double x1, double y1, double z0, double tailwidth, double headlength, double headwidth, double shape, int rgb[], BOOLEAN outline);
 EXTERN_MSC void GMT_vertical_axis (int mode);
 EXTERN_MSC void GMT_xy_axis (double x0, double y0, double length, double val0, double val1, struct PLOT_AXIS *A, int below, int annotate);
 EXTERN_MSC struct EPS *GMT_epsinfo (char *program);
 EXTERN_MSC int *GMT_split_line (double **xx, double **yy, int *nn, BOOLEAN add_crossings);
+EXTERN_MSC int GMT_plotend (void);
+EXTERN_MSC int GMT_plotinit (int argc, char *argv[]);
 
 #endif /* _GMT_PLOT_H */
