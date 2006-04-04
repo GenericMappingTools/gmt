@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.120 2006-04-04 07:51:31 pwessel Exp $
+ *	$Id: pslib.c,v 1.121 2006-04-04 18:19:16 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -315,9 +315,9 @@ void ps_bitimage (double x, double y, double xsize, double ysize, unsigned char 
 	 * xsize,ysize:	Size of image (in inches)
 	 * buffer:	Image bit buffer
 	 * nx,ny:	Size of image (in pixels)
-	 * invert:	If TRUE: invert set and unset bits
-	 * f_rgb:	Foreground color for unset bits (if f_rgb[0] < 0, make transparent)
-	 * b_rgb:	Background color for set bits (if b_rgb[0] < 0, make transparent)
+	 * invert:	If TRUE: invert bits (0<->1)
+	 * f_rgb:	Foreground color for 1 bits (if f_rgb[0] < 0, make transparent)
+	 * b_rgb:	Background color for 0 bits (if b_rgb[0] < 0, make transparent)
 	 */
 	int lx, ly, inv;
 	char *kind[2] = {"Binary", "Ascii"};
@@ -812,8 +812,14 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 	refresh = 0;
 	if (ps_pattern[image_no].dpi != image_dpi) refresh++;
 	for (i = 0; !refresh && i < 3; i++) {
-		if (ps_pattern[image_no].f_rgb[i] != f_rgb[i]) refresh++;
-		if (ps_pattern[image_no].b_rgb[i] != b_rgb[i]) refresh++;
+		if (invert) {
+			if (ps_pattern[image_no].f_rgb[i] != b_rgb[i]) refresh++;
+			if (ps_pattern[image_no].b_rgb[i] != f_rgb[i]) refresh++;
+		}
+		else {
+			if (ps_pattern[image_no].f_rgb[i] != f_rgb[i]) refresh++;
+			if (ps_pattern[image_no].b_rgb[i] != b_rgb[i]) refresh++;
+		}
 	}
 
 	if (refresh) {
@@ -838,8 +844,14 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 
 		ps_pattern[image_no].dpi = image_dpi;
 		for (i = 0; i < 3; i++) {
-			ps_pattern[image_no].f_rgb[i] = f_rgb[i];
-			ps_pattern[image_no].b_rgb[i] = b_rgb[i];
+			if (invert) {
+				ps_pattern[image_no].f_rgb[i] = b_rgb[i];
+				ps_pattern[image_no].b_rgb[i] = f_rgb[i];
+			}
+			else {
+				ps_pattern[image_no].f_rgb[i] = f_rgb[i];
+				ps_pattern[image_no].b_rgb[i] = b_rgb[i];
+			}
 		}
 	}
 
@@ -940,27 +952,6 @@ int ps_imagefill_init (int image_no, char *imagefile)
 	ps_comment ("End of imagefill pattern definition");
 
 	return (image_no);
-}
-
-/* fortran interface */
-void ps_imagemask_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, int *nx, int *ny, int *polarity, int *rgb, int nlen)
-{
-	ps_imagemask (*x, *y, *xsize, *ysize, buffer, *nx, *ny, *polarity, rgb);
-}
-
-void ps_imagemask (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int polarity, int rgb[])
-{
-	/* Plots a 1-bit mask. Polarity says how to interpret the mask:
-	 * If 1 is used, then maskbits == 1 will be painted with rgb.
-	 * If 0 is used, then maskbits == 0 will be painted with rgb.
-	 * buffer width must be an integral of 8 bits.
-	 */
-	int trans[3];
-	trans[0]=-1;
-	if (polarity)
-		ps_bitimage (x, y, xsize, ysize, buffer, nx, ny, FALSE, rgb, trans);
-	else
-		ps_bitimage (x, y, xsize, ysize, buffer, nx, ny, FALSE, trans, rgb);
 }
 
 /* fortran interface */
@@ -4034,10 +4025,14 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 	 * 4 = Paint 0 bits black, leave 1 bits transparent
 	 * 5 = Paint 1 bits black, leave 0 bits transparent
 	 * 6 = No coloring, no inversion (i.e., 0 bits black, 1 bits white)
+	 * ! Note that odd return values indicate that the bitmap has to be
+	 * ! inverted before plotting, either explicitly, or through a mapping
+	 * ! function in the PostScript image definition.
 	 */
 	int polarity, f_cmyk[4], b_cmyk[4];
 
 	if (b_rgb[0] < 0) {
+		/* Backgound is transparent */
 		polarity = 0;
 		if (f_rgb[0] == 0 && f_rgb[1] == 0 && f_rgb[2] == 0)
 			polarity = 4;
@@ -4049,6 +4044,7 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 			fprintf (ps.fp, "[/Indexed /DeviceRGB 0 <%02X%02X%02X>] setcolorspace\n", f_rgb[0], f_rgb[1], f_rgb[2]);
 	}
 	else if (f_rgb[0] < 0) {
+		/* Foreground is transparent */
 		polarity = 1;
 		if (b_rgb[0] == 0 && b_rgb[1] == 0 && b_rgb[2] == 0)
 			polarity = 5;
@@ -4060,14 +4056,17 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 			fprintf (ps.fp, "[/Indexed /DeviceRGB 0 <%02X%02X%02X>] setcolorspace\n", b_rgb[0], b_rgb[1], b_rgb[2]);
 	}
 	else if (b_rgb[0] == 0 && b_rgb[1] == 0 && b_rgb[2] == 0 && f_rgb[0] == 255 && f_rgb[1] == 255 && f_rgb[1] == 255) {
+		/* 0 = White; 1 = Black */
 		fprintf (ps.fp, "\n");
 		polarity = 3;
 	}
 	else if (f_rgb[0] == 0 && f_rgb[1] == 0 && f_rgb[2] == 0 && b_rgb[0] == 255 && b_rgb[1] == 255 && b_rgb[1] == 255) {
+		/* 0 = Black; 1 = White */
 		fprintf (ps.fp, "\n");
 		polarity = 6;
 	}
 	else {
+		/* Colored foreground and background */
 		polarity = 2;
 		if (ps.color_mode & PSL_CMYK) {
 			ps_rgb_to_cmyk_int (f_rgb, f_cmyk);
