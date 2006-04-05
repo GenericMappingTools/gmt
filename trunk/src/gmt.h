@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.125 2006-04-04 07:51:31 pwessel Exp $
+ *	$Id: gmt.h,v 1.126 2006-04-05 06:03:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -213,8 +213,8 @@ typedef double GMT_dtime;	/* GMT internal time representation */
  *			GMT PARAMETERS DEFINITIONS
  *--------------------------------------------------------------------*/
 
-#define N_KEYS 121		/* Number of gmt defaults */
-#define HASH_SIZE 121		/* Used in get_gmtdefaults, should be ~> N_KEYS */
+#define N_KEYS 122		/* Number of gmt defaults */
+#define HASH_SIZE 122		/* Used in get_gmtdefaults, should be ~> N_KEYS */
 /* This structure contains default parameters for the GMT system */
 
 #define N_ELLIPSOIDS	63
@@ -342,6 +342,7 @@ struct GMTDEFAULTS {
 		char *name;
 		int code[gmt_lastsym]; /* Codes for symbols we print. */
 	} encoding;
+	BOOLEAN history;		/* TRUE to pass information via .gmtdefaults4 files */
 };
 
 struct GMT_PS {	/* Holds the current settings that affect PS generation */

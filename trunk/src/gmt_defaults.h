@@ -97,4 +97,5 @@
 	"\t",			/* FIELD_DELIMITER */
 	gmt_ring,		/* DEGREE_SYMBOL */
 	{ "Standard", 		/* CHAR_ENCODING */
-	  { 32, 32, 32, 32, 32 } } /* PostScript codes for degree, ring, colon, singlequote, and doublequote [Initialized to space] */
+	  { 32, 32, 32, 32, 32 } }, /* PostScript codes for degree, ring, colon, singlequote, and doublequote [Initialized to space] */
+	TRUE,			/* HISTORY */

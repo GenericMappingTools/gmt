@@ -296,6 +296,9 @@ Font size (> 0) for header in points  [36].
 .B HEADER_OFFSET
 Distance from top of axis annotations (or axis label, if present) to base of plot header [LEN_6_SI (or LEN_6_US)].
 .TP
+.B HISTORY
+If TRUE, passes the history of past common command options via the hidden .gmtcommands4 file [TRUE].
+.TP
 .B HSV_MIN_SATURATION
 Minimum saturation (0\-1) assigned for most negative intensity value [1.0].
 .TP

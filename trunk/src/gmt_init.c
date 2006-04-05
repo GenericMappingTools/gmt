@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.225 2006-04-04 07:51:31 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.226 2006-04-05 06:03:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2112,6 +2112,9 @@ int GMT_setparameter (char *keyword, char *value)
 		case GMTCASE_HEADER_OFFSET:
 			save_header_offset = gmtdefs.header_offset = GMT_convert_units (value, GMT_INCH);
 			break;
+		case GMTCASE_HISTORY:
+			error = true_false_or_error (lower_value, &gmtdefs.history);
+			break;
 		default:
 			error = TRUE;
 			fprintf (stderr, "%s: GMT SYNTAX ERROR in GMT_setparameter:  Unrecognized keyword %s\n",
@@ -2347,6 +2350,7 @@ int GMT_savedefaults (char *file)
 	 */
 	fprintf (fp, "Y2K_OFFSET_YEAR		= %d\n", gmtdefs.Y2K_offset_year);
 	fprintf (fp, "#-------- Miscellaneous Parameters ----------\n");
+	(gmtdefs.history) ? fprintf (fp, "HISTORY			= TRUE\n") : fprintf (fp, "HISTORY			= FALSE\n");
 	fprintf (fp, "INTERPOLANT		= ");
 	if (gmtdefs.interpolant == 0)
 		fprintf (fp, "linear\n");
@@ -3047,6 +3051,8 @@ void GMT_put_history (int argc, char **argv)
 	struct flock lock;
 #endif
 
+	if (!gmtdefs.history) return;	/* .gmtcommands4 mechanism has been disabled */
+
 	/* First check that -X -Y was done correctly */
 
 	if ((project_info.x_off_supplied && project_info.y_off_supplied) && GMT_x_abs != GMT_y_abs) {
@@ -3127,6 +3133,8 @@ void GMT_get_history (int argc, char ** argv)
 	struct flock lock;
 #endif
 
+	if (!gmtdefs.history) return;	/* .gmtcommands4 mechanism has been disabled */
+	
 	/* Open .gmtcommands4 file and retrive old argv (if any)
 	 * This is tricky since GMT programs are often hooked together
 	 * with pipes so it actually has happened that the first program
