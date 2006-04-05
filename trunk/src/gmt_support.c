@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.243 2006-04-01 23:39:01 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.244 2006-04-05 01:58:00 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -956,6 +956,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 	
 	one_or_zero = !h->node_offset;
 	m_pr_degree = 2.0 * M_PI * gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius / 360.0;
+	h->xy_off = 0.5 * h->node_offset;	/* Use to calculate mean location of block */
 	
 	/* XINC AND XMIN/XMAX CHECK FIRST */
 	
