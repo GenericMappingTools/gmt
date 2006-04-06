@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.19 2006-03-08 01:51:15 pwessel Exp $
+ *	$Id: gmt_shore.c,v 1.20 2006-04-06 07:52:37 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -443,8 +443,8 @@ int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN a
 
 {
 	struct POL *p;
-	int start_side, next_side, id, P = 0, more, p_alloc, wet_or_dry, use_this_level, high_seg_level = MAX_LEVEL;
-	int n_alloc, cid, nid, add, first_pos, entry_pos, n, low_level, high_level, nseg_at_level[MAX_LEVEL+1];
+	int start_side, next_side, id, P = 0, more, p_alloc, wet_or_dry, use_this_level, high_seg_level = GMT_MAX_GSHHS_LEVEL;
+	int n_alloc, cid, nid, add, first_pos, entry_pos, n, low_level, high_level, nseg_at_level[GMT_MAX_GSHHS_LEVEL+1];
 	BOOLEAN completely_inside;
 	double *xtmp, *ytmp, plon, plat;
 	
@@ -467,9 +467,9 @@ int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN a
 	
 	/* Check the consistency of node levels in case some features are dropped */
 	
-	memset ((void *)nseg_at_level, 0, (size_t)((MAX_LEVEL + 1) * sizeof (int)));
+	memset ((void *)nseg_at_level, 0, (size_t)((GMT_MAX_GSHHS_LEVEL + 1) * sizeof (int)));
 	for (id = 0; id < c->ns; id++) if (c->seg[id].entry != 4) nseg_at_level[c->seg[id].level]++;	/* Only count segments that crosses the bin */
-	for (n = 0; n <= MAX_LEVEL; n++) if (nseg_at_level[n]) high_seg_level = n;
+	for (n = 0; n <= GMT_MAX_GSHHS_LEVEL; n++) if (nseg_at_level[n]) high_seg_level = n;
 	
 	if (c->ns == 0) for (n = 0; n < 4; n++) high_seg_level = MIN (c->node_level[n], high_seg_level);	/* Initialize to lowest when there are no segments */
 	for (n = high_level = 0; n < 4; n++) {
@@ -491,7 +491,7 @@ int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN a
 	p_alloc = (c->ns == 0) ? 1 : GMT_SMALL_CHUNK;
 	p = (struct POL *) GMT_memory (VNULL, (size_t)p_alloc, sizeof (struct POL), "GMT_assemble_shore");
 	
-	low_level = MAX_LEVEL;
+	low_level = GMT_MAX_GSHHS_LEVEL;
 	
 	if (completely_inside && use_this_level) {	/* Must include path of this bin outline as first polygon */
 		p[0].n = GMT_graticule_path (&p[0].lon, &p[0].lat, dir, c->lon_corner[3], c->lon_corner[1], c->lat_corner[0], c->lat_corner[2]);
@@ -502,7 +502,7 @@ int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN a
 	
 	while (c->n_entries > 0) {	/* More segments to connect */
 	
-		low_level = MAX_LEVEL;
+		low_level = GMT_MAX_GSHHS_LEVEL;
 		start_side = 0;
 		id = GMT_shore_get_first_entry (c, dir, &start_side);
 		next_side = c->seg[id].exit;

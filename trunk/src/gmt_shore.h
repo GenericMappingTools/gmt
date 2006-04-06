@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.h,v 1.10 2005-12-17 05:59:22 pwessel Exp $
+ *	$Id: gmt_shore.h,v 1.11 2006-04-06 07:52:37 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -31,10 +31,10 @@
 #include "netcdf.h"
 
 #define MAX_DELTA 65535	/* Largest value to store in a unsigned short, used as largest dx or dy in bin  */
-#define MAX_LEVEL	4	/* Highest hierarchical level of coastlines */
+#define GMT_MAX_GSHHS_LEVEL	4	/* Highest hierarchical level of coastlines */
 
-#define N_BLEVELS	3	/* Number of levels for borders */
-#define N_RLEVELS	10	/* Number of levels for rivers */
+#define GMT_N_BLEVELS		3	/* Number of levels for borders */
+#define GMT_N_RLEVELS		10	/* Number of levels for rivers */
 
 struct GMT_SHORE {
 
