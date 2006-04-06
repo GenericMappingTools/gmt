@@ -10,7 +10,7 @@ pscoast \- To plot land-masses, water-masses, coastlines, borders, and rivers
 \fBpscoast\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ OPT(A)\fImin_area\fP[\fI/min_level/max_level\fP] ] [ GMT_B_OPT ] [ OPT(C)\fIfill\fP ] [ OPT(D)\fIresolution\fP ] 
 [ OPT(E)\fIazimuth/elevation\fP ] [ OPT(G)\fIfill\fP ] 
-[ OPT(I)\fIriver\fP[/\fIpen\fP] ] [ GMT_K_OPT ] 
+[ OPT(I)\fIriver\fP[/\fIpen\fP] ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] 
 [ GMT_SCALE ] [ GMT_O_OPT ] [ GMT_Mo_OPT ] [ OPT(N)\fIborder\fP[/\fIpen\fP] ] [ GMT_O_OPT ] 
 [ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)\fIfill\fP ] [ GMT_TROSE ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
 [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT ] [ GMT_bo_OPT ]
@@ -86,6 +86,7 @@ Repeat option \fB\-I\fP as often as necessary.
 .br
 	 c = All canals (8-10)
 .br
+#include "explain_-Jz.txt"
 #include "explain_-K.txt"
 #include "explain_-L_scale.txt"
 .TP

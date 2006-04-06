@@ -54,6 +54,7 @@ Sets the view point by specifying azimuth and elevation in degrees. [Default is 
 .TP
 .B \-I
 Color the triangles using the color palette table.
+#include "explain_-Jz.txt"
 #include "explain_-K.txt"
 .TP
 .B \-L

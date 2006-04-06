@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.126 2006-04-05 06:03:47 pwessel Exp $
+ *	$Id: gmt.h,v 1.127 2006-04-06 05:25:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -568,6 +568,7 @@ EXTERN_MSC PFD GMT_scan_time_string;		/*	pointer to functions that converts time
 #else
 #include "gmt_nan.h"		/* Machine-dependent macros for making and testing NaNs */
 #endif
+#include "gmt_synopsis.h"       /* Only contains macros for synopsis lines */
 #include "gmt_version.h"        /* Only contains the current GMT version number */
 #include "gmt_project.h"        /* Define project_info and frame_info structures */
 #include "gmt_grd.h"            /* Define grd file header structure */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.117 2006-04-04 07:51:31 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.118 2006-04-06 05:25:16 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6683,8 +6683,8 @@ double GMT_geodesic_dist_km (double lonS, double latS, double lonE, double latE)
 double *GMT_distances (double x[], double y[], int n, double scale, int dist_flag)
 {	/* Returns distances in meter; use scale to get other units */
 	int this, prev;
-	BOOLEAN cumulative = TRUE, do_scale;
-	double *d, inc = 0;
+	BOOLEAN cumulative = TRUE, do_scale, xy_not_NaN;
+	double *d, cum_dist = 0.0, inc = 0.0;
 
 	if (dist_flag < 0) {	/* Want increments and not cumulative distances */
 		dist_flag = abs (dist_flag);
@@ -6699,31 +6699,40 @@ double *GMT_distances (double x[], double y[], int n, double scale, int dist_fla
 	do_scale = (scale != 1.0);
 	d = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "GMT_distances");
 
-	for (this = 1, prev = 0; this < n; this++, prev++) {
-		switch (dist_flag) {
+	for (this = 0, prev = -1; this < n; this++) {
+		xy_not_NaN = !(GMT_is_dnan (x[this]) || GMT_is_dnan (y[this]));
+		if (xy_not_NaN && prev >= 0) {	/* safe to calculate inc */
+			switch (dist_flag) {
 
-			case 0:	/* Cartesian distances */
+				case 0:	/* Cartesian distances */
 
-				inc = hypot (x[this] - x[prev], y[this] - y[prev]);
-				break;
+					inc = hypot (x[this] - x[prev], y[this] - y[prev]);
+					break;
 
-			case 1:	/* Flat earth distances in meter */
+				case 1:	/* Flat earth distances in meter */
 
-				inc = GMT_flatearth_dist_meter (x[this], y[this], x[prev], y[prev]);
-				break;
+					inc = GMT_flatearth_dist_meter (x[this], y[this], x[prev], y[prev]);
+					break;
 
-			case 2:	/* Great circle distances in meter */
+				case 2:	/* Great circle distances in meter */
 
-				inc = GMT_great_circle_dist_meter (x[this], y[this], x[prev], y[prev]);
-				break;
+					inc = GMT_great_circle_dist_meter (x[this], y[this], x[prev], y[prev]);
+					break;
 				
-			case 3:	/* Geodesic distances in meter */
+				case 3:	/* Geodesic distances in meter */
 
-				inc = GMT_geodesic_dist_meter (x[this], y[this], x[prev], y[prev]);
-				break;
+					inc = GMT_geodesic_dist_meter (x[this], y[this], x[prev], y[prev]);
+					break;
+			}
+			
+			if (do_scale) inc *= scale;
+			if (cumulative) cum_dist += inc;
+			d[this] = (cumulative) ? cum_dist : inc;
 		}
-		if (do_scale) inc *= scale;
-		d[this] = (cumulative) ? d[prev] + inc : inc;
+		else if (this > 0)
+			d[this] = GMT_d_NaN;
+
+		if (xy_not_NaN) prev = this;	/* This was a record with OK x,y; make it the previous point for distance calculations */
 	}
 
 	return (d);
