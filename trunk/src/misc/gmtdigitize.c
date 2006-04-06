@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.4 2006-03-30 04:40:04 pwessel Exp $
+ *    $Id: gmtdigitize.c,v 1.5 2006-04-06 05:25:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -149,9 +149,9 @@ int main (int argc, char **argv)
 	
 	if (argc == 1 || GMT_give_synopsis_and_exit) {
 		fprintf (stderr, "gmtdigitize %s - Digitizing and inverse map transformation of map x/y coordinates\n\n", GMT_VERSION);
-		fprintf (stderr, "usage: gmtdigitize -J<parameters> -R<west/east/south/north>\n");
-		fprintf (stderr, "\t[-A] [-C<device>] [-D<limit>] [-F] [-H] [-L<lpi>] [-M[<flag>]] [-N<namestem>] [-S]\n");
-		fprintf (stderr, "\t[-V] [-Zk|v] [-bo[s|S|d|D]] [-f[i|o]<colinfo>]\n\n");
+		fprintf (stderr, "usage: gmtdigitize %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
+		fprintf (stderr, "\t[-A] [-C<device>] [-D<limit>] [-F] [-H] [-L<lpi>] [%s] [-N<namestem>] [-S]\n", GMT_Mo_OPT);
+		fprintf (stderr, "\t[-V] [-Zk|v] [%s] [%s]\n\n", GMT_bo_OPT, GMT_f_OPT);
 		
 		if (GMT_give_synopsis_and_exit) exit (EXIT_FAILURE);
 		

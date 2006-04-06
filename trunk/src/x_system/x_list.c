@@ -1,5 +1,5 @@
 /*
- *	$Id: x_list.c,v 1.4 2005-03-06 16:04:00 remko Exp $
+ *	$Id: x_list.c,v 1.5 2006-04-06 05:25:17 pwessel Exp $
  *
  * XLIST produces ASCII listings of cross-over info. The xx_base.b-file
  * contains longitude(x), latitude(y), time1(t1), time2(t2),  heading1(h),
@@ -182,7 +182,7 @@ int main (int argc, char *argv[])
 	}
 	if (argc == 1 || error) {	/* Display usage */
 		fprintf(stderr,"xlist - Extract information from xover databases\n\n");
-		fprintf(stderr,"usage: xlist [leg1] [leg2] [-<dataflags>] [-R<west>/<east>/<south>/<north>]\n");
+		fprintf(stderr,"usage: xlist [leg1] [leg2] [-<dataflags>] [%s]\n", GMT_Rgeo_OPT);
 		fprintf(stderr,"	[-X<xbase>] [-H] [-I] [-V] [-C<corrfile> -Z<ignorefile>]\n\n");
 		fprintf(stderr,"	Dataflags:\n");
 		fprintf(stderr,"	  l means legnames\n");
