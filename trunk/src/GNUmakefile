@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.51 2006-04-06 05:25:16 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.52 2006-04-07 19:22:34 remko Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -31,9 +31,8 @@ includedir2	= /home/aa/pwessel/UH/RESOURCES/SOFTWARE/sun/include
 #-------------------------------------------------------------------------------
 NETCDFLIB	= $(NETCDF)/lib
 NETCDFINC	= $(NETCDF)/include
-CFLAGS    	= -I$(NETCDFINC) -DDEBUG $(WIN32) $(CC_OPT) \
-		  -DGMT_DEFAULT_PATH=\"$(GMT_DEFAULT_PATH)\" $(TRIANGLE_D)
-CDF	  	= -L$(NETCDFLIB) -lnetcdf
+CFLAGS		= -I$(NETCDFINC) $(WIN32) $(CC_OPT) -DGMT_DEFAULT_PATH=\"$(GMT_DEFAULT_PATH)\" $(TRIANGLE_D)
+CDF		= -L$(NETCDFLIB) -lnetcdf
 
 PS	= -lpsl
 GMT	= -lgmt
@@ -46,8 +45,8 @@ LIB_C	= gmt_calclock.c \
 	  gmt_init.c \
 	  gmt_io.c \
 	  gmt_map.c \
-	  gmt_proj.c \
 	  gmt_nc.c \
+	  gmt_proj.c \
 	  gmt_shore.c \
 	  gmt_stat.c \
 	  gmt_support.c \
@@ -61,8 +60,8 @@ GMT_H	= gmt.h \
 	  gmt_math.h \
 	  gmt_mgg_header2.h \
 	  gmt_nan.h \
-	  gmt_proj.h \
 	  gmt_map.h \
+	  gmt_proj.h \
 	  gmt_init.h \
 	  gmt_boundcond.h \
 	  gmt_shore.h \
@@ -145,7 +144,7 @@ $(PROGS_O):	$(GMT_H)
 
 $(PROGSPS_O):	$(GMT_H) pslib.h
 
-# Jonathan Shewchuk's triangulation model
+# Jonathan Shewchuk's triangulation model (www.cs.cmu.edu/~quake)
 # Only used if TRIANGLE_D and TRIANGLE_O are set in makegmt.macros
 
 triangle.o:	triangle.c
@@ -165,12 +164,7 @@ STATIC_LIB	= libpsl.a libgmt.a libgmtps.a
 
 all:		init libs $(ALLPROGS)
 
-init:		gmt_nan.h gmt_notposix.h
-
-gmt_nan.h:
-		$(CC) $(CFLAGS) gmt_nan_init.c $(CDF) $(LIBS) $(LDFLAGS) -o gmt_nan_init
-		$(COMPRESS) gmt_nan_init$(EXE)
-		./gmt_nan_init
+init:		gmt_notposix.h
 
 gmt_notposix.h:
 		echo "Warning: You probably should rerun configure manually instead"; \
@@ -300,13 +294,13 @@ examples:
 		fi
 
 clean:
-		rm -f *.o *.a *.$(SL) gmt_nan_init$(EXE)
+		rm -f *.o *.a *.$(SL)
 		for i in $(ALLPROGS); do \
 			rm -f $$i$(EXE); \
 		done
 
 spotless:	clean
-		rm -f $(GMTLIB) gmt_nan.h gmt_notposix.h
+		rm -f $(GMTLIB) gmt_notposix.h
 
 distclean:	spotless
 
@@ -320,7 +314,7 @@ libpsl.a:	pslib.o
 		$(AR) cvur libpsl.a $?
 		$(RANLIB) libpsl.a
 
-pslib.o:	pslib.c $(PS_H)
+pslib.o:	pslib.c $(PS_H) gmt_notunix.h gmt_notposix.h gmt_math.h
 		$(CC) $(CFLAGS) -c pslib.c
 
 libgmt.a:	$(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O)

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.127 2006-04-06 05:25:16 pwessel Exp $
+ *	$Id: gmt.h,v 1.128 2006-04-07 19:22:34 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -562,12 +562,7 @@ EXTERN_MSC PFI GMT_z_forward, GMT_z_inverse;	/*	Pointers to the selected linear 
 EXTERN_MSC PFD GMT_scan_time_string;		/*	pointer to functions that converts timestring to secs */
 
 #include "gmt_math.h"		/* Machine-dependent macros for non-POSIX math functions */
-#ifdef WIN32
-#define GMT_make_fnan(x) (((unsigned int *) &x)[0] = 0x7fffffff)
-#define GMT_make_dnan(x) (((unsigned int *) &x)[0] = 0xffffffff, ((unsigned int *) &x)[1] = 0x7fffffff)
-#else
 #include "gmt_nan.h"		/* Machine-dependent macros for making and testing NaNs */
-#endif
 #include "gmt_synopsis.h"       /* Only contains macros for synopsis lines */
 #include "gmt_version.h"        /* Only contains the current GMT version number */
 #include "gmt_project.h"        /* Define project_info and frame_info structures */
