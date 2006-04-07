@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_math.h,v 1.16 2006-01-12 06:31:33 pwessel Exp $
+ *	$Id: gmt_math.h,v 1.17 2006-04-07 19:22:34 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -89,44 +89,6 @@ extern double rint(double x);
 #define irint(x) ((int)rint(x))
 #else
 extern int irint(double x);
-#endif
-
-#if defined(isnanf)
-#define GMT_is_fnan(x) isnanf((x))
-#elif defined(isnan)
-#define GMT_is_fnan(x) isnan((double)(x))
-#elif HAVE_ISNANF == 1
-#define GMT_is_fnan(x) isnanf(x)
-extern int isnanf(float x);
-#elif HAVE_ISNAN == 1
-#define GMT_is_fnan(x) isnan((double)(x))
-#elif HAVE_ISNAND == 1
-#define GMT_is_fnan(x) isnand((double)(x))
-#else
-#define GMT_is_fnan(x) ((x) != (x))
-#endif
-
-#if defined(isnand)
-#define GMT_is_dnan(x) isnand((x))
-#elif defined(isnan)
-#define GMT_is_dnan(x) isnan((x))
-#elif HAVE_ISNAND == 1
-#define GMT_is_dnan(x) isnand(x)
-extern int isnand(double x);
-#elif HAVE_ISNAN == 1
-#define GMT_is_dnan(x) isnan(x)
-extern int isnan(double x);
-#else
-#define GMT_is_dnan(x) ((x) != (x))
-#endif
-
-/* If your system has no IEEE support, add -DNO_IEEE to CFLAGS
- * We will then use the max double/float values to signify NaNs.
- */
-
-#ifdef NO_IEEE
-#define GMT_is_fnan(x) ((x) == FLT_MAX)
-#define GMT_is_dnan(x) ((x) == DBL_MAX)
 #endif
 
 /* Misc. ANSI-C math functions used by grdmath and gmtmath.
