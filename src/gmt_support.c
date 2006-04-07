@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.244 2006-04-05 01:58:00 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.245 2006-04-07 06:34:00 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2050,10 +2050,10 @@ void GMT_free (void *addr)
 	free (addr);
 }
 
-void GMT_contlabel_init (struct GMT_CONTOUR *G)
+void GMT_contlabel_init (struct GMT_CONTOUR *G, int mode)
 {	/* Assign default values to structure */
 	memset ((void *)G, 0, sizeof (struct GMT_CONTOUR));	/* Sets all to 0 */
-	if (strstr (GMT_program, "contour")) {
+	if (mode == 1) {
 		G->line_type = 1;
 		strcpy (G->line_name, "Contour");
 		}
