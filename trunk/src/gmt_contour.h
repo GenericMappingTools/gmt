@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.29 2006-04-01 23:39:01 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.30 2006-04-07 06:34:00 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -136,7 +136,7 @@ struct GMT_CONTOUR {
 };
 
 EXTERN_MSC int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *G);
-EXTERN_MSC void GMT_contlabel_init (struct GMT_CONTOUR *G);
+EXTERN_MSC void GMT_contlabel_init (struct GMT_CONTOUR *G, int mode);
 EXTERN_MSC int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G);
 EXTERN_MSC int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3]);
 EXTERN_MSC void GMT_contlabel_angle (double x[], double y[], int start, int stop, double cangle, int n, struct GMT_LABEL *L, struct GMT_CONTOUR *G);
