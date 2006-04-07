@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: etest.sh,v 1.1 2006-04-05 01:58:00 pwessel Exp $
+#	$Id: etest.sh,v 1.2 2006-04-07 22:13:52 pwessel Exp $
 #
 # Test to make sure the -E option works as advertised.
 # We have data that will fall in to 4 separate blocks
@@ -25,6 +25,7 @@ cat << EOF > data.d
 1.2	0.8	7
 1.9	0.18	8
 EOF
+echo "All the mean/median/mode values should be 5"
 echo "Plain means"
 blockmean -R0/2/0/2 -I1 -F data.d
 echo "Extended means"
