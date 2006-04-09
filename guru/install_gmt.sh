@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.73 2006-03-22 06:06:46 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.74 2006-04-09 21:56:31 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1320,7 +1320,7 @@ rm -f config.{cache,log,status}
 # Clean out old makegmt.macros etc if present
 
 if [ -f src/makegmt.macros ]; then
-	echo '---> Clean out old executables, *.o, *.a, gmt_nan.h, and makegmt.macros' >&2
+	echo '---> Clean out old executables, *.o, *.a, and makegmt.macros' >&2
 	$GMT_make spotless || exit
 fi
 	
@@ -1336,10 +1336,6 @@ fi
 # OK, descend into src directory
 
 cd src
-
-echo "---> Create gmt_nan.h" >&2
-
-$GMT_make init || exit
 
 echo "---> Make all" >&2
 
