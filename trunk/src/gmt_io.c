@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.110 2006-04-04 07:51:31 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.111 2006-04-09 11:20:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1904,11 +1904,11 @@ int GMT_decode_coltype (char *arg)
 	if (copy[0] == 'g') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y */
 		if (both_i_and_o) {
 			GMT_io.in_col_type[GMT_X] = GMT_io.out_col_type[GMT_X] = GMT_IS_LON;
-			GMT_io.in_col_type[1] = GMT_io.out_col_type[1] = GMT_IS_LAT;
+			GMT_io.in_col_type[GMT_Y] = GMT_io.out_col_type[GMT_Y] = GMT_IS_LAT;
 		}
 		else {
 			col[GMT_X] = GMT_IS_LON;
-			col[1] = GMT_IS_LAT;
+			col[GMT_Y] = GMT_IS_LAT;
 		}
 		return (0);
 	}

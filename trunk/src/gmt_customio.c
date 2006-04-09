@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.45 2006-02-28 08:55:46 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.46 2006-04-09 11:20:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -34,8 +34,8 @@
  *
  * Author:	Paul Wessel
  * Date:	9-SEP-1992
- * Modified:	06-DEC-2001
- * Version:	4
+ * Modified:	06-APR-2006
+ * Version:	4.1.2
  *
  * Functions include:
  *
@@ -263,6 +263,15 @@ void GMT_grdio_init (void) {
 	GMT_io_writeinfo[id]  = (PFI) GMT_srf_write_grd_info;
 	GMT_io_readgrd[id]    = (PFI) GMT_srf_read_grd;
 	GMT_io_writegrd[id]   = (PFI) GMT_srf_write_grd;
+
+	/* FORMAT # 21: GMT native binary (float) grdio (AGC format) */
+
+	id = 21;
+	GMT_io_readinfo[id]   = (PFI) GMT_agc_read_grd_info;
+	GMT_io_updateinfo[id] = (PFI) GMT_agc_write_grd_info;
+	GMT_io_writeinfo[id]  = (PFI) GMT_agc_write_grd_info;
+	GMT_io_readgrd[id]    = (PFI) GMT_agc_read_grd;
+	GMT_io_writegrd[id]   = (PFI) GMT_agc_write_grd;
 
 	/*
 	 * ----------------------------------------------
@@ -1683,3 +1692,6 @@ int GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 
 /* 12: NOAA NGDC MGG Format */
 #include "gmt_mgg_header2.c"
+
+/* 21: Atlantic Geoscience Center format */
+#include "gmt_agc_io.c"

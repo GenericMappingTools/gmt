@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.52 2006-04-07 19:22:34 remko Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.53 2006-04-09 11:20:17 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -149,6 +149,8 @@ $(PROGSPS_O):	$(GMT_H) pslib.h
 
 triangle.o:	triangle.c
 		$(CC) -c $(CFLAGS) -DNO_TIMER -DTRILIBRARY -DREDUCED -DCDT_ONLY $<
+
+gmt_customio.o: gmt_customio.c gmt_mgg_header2.c gmt_agc_io.c $(GMT_H)
 
 # Assembly wrapper for sincos on Dec Alphas
 # Only used if ALPHA_SINCOS_O are set in makegmt.macros

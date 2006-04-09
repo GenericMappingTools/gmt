@@ -4,7 +4,7 @@
 grdfilter \- Filter a \fI.grd\fP file in the Time domain
 .SH SYNOPSIS
 \fBgrdfilter\fP \fIinput_file.grd\fP OPT(D)\fIdistance_flag\fP \fB\-F\fP\fI<filtertype><width>\fP[\fImode\fP] 
-OPT(G)\fIoutput_file.grd\fP [ GMT_I_OPT ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] 
+OPT(G)\fIoutput_file.grd\fP [ GMT_I_OPT ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBgrdfilter\fP will filter a \fI.grd\fP file in the time domain using one
 of the selected convolution or non-convolution filters and
@@ -81,6 +81,7 @@ If  the new \fIx_inc, y_inc\fP are NOT integer multiples of the old ones (in the
 Toggle the node registration for the output grid so as to become the opposite of the input grid
 [Default gives the same registration as the input grid].
 #include "explain_-V.txt"
+#include "explain_-f.txt"
 .SH EXAMPLES
 Suppose that north_pacific_dbdb5.grd is a file of 5 minute bathymetry from 140E to 260E and 0N to 50N, and you want to find
 the medians of values within a 300km radius (600km full width) of the output points, which you choose to be from 150E to 250E
