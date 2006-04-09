@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.29 2006-03-28 07:33:22 pwessel Exp $
+ *	$Id: gmt_grdio.h,v 1.30 2006-04-09 11:20:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -28,7 +28,7 @@
 #ifndef GMT_GRDIO_H
 #define GMT_GRDIO_H
 
-#define N_GRD_FORMATS	21	/* Number of supported grd file formats */
+#define N_GRD_FORMATS	22	/* Number of supported grd file formats */
 EXTERN_MSC int GMT_grdformats [N_GRD_FORMATS][2];
 
 EXTERN_MSC int GMT_read_grd_info (char *file, struct GRD_HEADER *header);

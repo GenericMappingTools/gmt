@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: block_subs.c,v 1.1 2006-03-23 23:49:48 pwessel Exp $
+ *    $Id: block_subs.c,v 1.2 2006-04-09 11:20:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -60,4 +60,31 @@ int BLK_compare_sub (const void *point_1, const void *point_2, int item)
 		else
 			return (0);
 	}
+}
+
+#if defined(BLOCKMEAN)
+#define NEW New_Blockmean_Ctrl
+#define FREE Free_Blockmean_Ctrl
+#elif defined(BLOCKMEDIAN)
+#define NEW New_Blockmedian_Ctrl
+#define FREE Free_Blockmedian_Ctrl
+#else
+#define NEW New_Blockmode_Ctrl
+#define FREE Free_Blockmode_Ctrl
+#endif
+
+void * NEW () {	/* Allocate and initialize a new control structure */
+	struct BLOCK_CTRL *C;
+	
+	C = (struct BLOCK_CTRL *) GMT_memory (VNULL, 1, sizeof (struct  BLOCK_CTRL), "New_Block_Ctrl");
+	
+	/* Initialize values whose defaults are not 0/FALSE/NULL */
+#if defined(BLOCKMEDIAN)
+	C->T.quartile = 0.5;
+#endif
+	return ((void *)C);
+}
+
+void FREE (struct  BLOCK_CTRL *C) {	/* Deallocate control structure */
+	GMT_free ((void *)C);	
 }
