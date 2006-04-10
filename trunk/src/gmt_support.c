@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.246 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.247 2006-04-10 07:35:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6074,6 +6074,7 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_TABLE *T, BOOL
 {
 	int seg, j0, j1;
 	double edge, dx, dy, xc, yc, s, s_inv, d, dist_AB, fraction;
+	/* return_mindist is 1, 2, or 3.  All return the minimum distance. 2 also returns the coordinate of nearest point, 3 instead returns segment number and point number (fractional) of that point */
 
 	if (return_mindist) *dist_min = DBL_MAX;
 	for (seg = 0; seg < T->n_segments; seg++) {	/* Loop over each line segment */
@@ -6089,7 +6090,7 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_TABLE *T, BOOL
 			if (return_mindist && d < (*dist_min)) {	/* Update min distance */
 				*dist_min = d;
 				if (return_mindist == 2) *x_near = T->segment[seg]->coord[GMT_X][j0], *y_near = T->segment[seg]->coord[GMT_Y][j0];	/* Also update (x,y) of nearest point on the line */
-				if (return_mindist == 3) *x_near = (double)seg, *y_near = (double)j0;		/* Also update (seg, pt) of nearest point on the line */
+				if (return_mindist == 3) *x_near = (double)seg, *y_near = (double)j0;		/* Instead update (seg, pt) of nearest point on the line */
 			}
 			if (d <= T->segment[seg]->dist) return (TRUE);		/* Node inside the critical distance; we are done */
 		}
@@ -6148,7 +6149,7 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_TABLE *T, BOOL
 			if (return_mindist && d < (*dist_min)) {			/* Update min distance */
 				*dist_min = d;
 				if (return_mindist == 2) *x_near = xc, *y_near = yc;	/* Also update nearest point on the line */
-				if (return_mindist == 3) {	/* Also update (seg, pt) of nearest point on the line */
+				if (return_mindist == 3) {	/* Instead update (seg, pt) of nearest point on the line */
 					*x_near = (double)seg;
 					dist_AB = (*GMT_distance_func) (T->segment[seg]->coord[GMT_X][j0], T->segment[seg]->coord[GMT_Y][j0], T->segment[seg]->coord[GMT_X][j1], T->segment[seg]->coord[GMT_Y][j1]);
 					fraction = (dist_AB > 0.0) ? (*GMT_distance_func) (T->segment[seg]->coord[GMT_X][j0], T->segment[seg]->coord[GMT_Y][j0], xc, yc) / dist_AB : 0.0;

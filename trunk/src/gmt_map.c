@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.119 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.120 2006-04-10 07:35:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -261,7 +261,6 @@ double GMT_left_circle (double y);	/*	For circular maps	*/
 double GMT_right_circle (double y);	/*	For circular maps	*/
 double GMT_left_ellipse (double y);	/*	For elliptical maps	*/
 double GMT_right_ellipse (double y);	/*	For elliptical maps	*/
-int GMT_set_datum (char *text, struct GMT_DATUM *D);
 
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -6244,42 +6243,28 @@ void GMT_set_polar (double plat)
 
 /* Datum conversion routines */
 
-int GMT_datum_init (char *text)
+void GMT_datum_init (struct GMT_DATUM *from, struct GMT_DATUM *to, BOOLEAN heights)
 {
-	/* Decode -T option (in mapproject) and initialize datum conv structures */
+	/* Initialize datum conv structures based on the parsed values*/
 
-	int k = 0;
-	char from[GMT_LONG_TEXT], to[GMT_LONG_TEXT];
+	int k;
 
-	if (text[0] == 'h') {	/* We will process lon, lat, height data */
-		k = 1;
-		GMT_datum.h_given = TRUE;	/* If FALSE we set height = 0 */
-	}
+	GMT_datum.h_given = heights;
 
-	if (strchr (&text[k], '/')) {	/* Gave from/to */
-		sscanf (&text[k], "%[^/]/%s", from, to);
-	}
-	else {	/* to not given, set to - which means WGS-84 */
-		strcpy (to, "-");
-		strcpy (from, &text[k]);
-	}
-	if (GMT_set_datum (to,   &GMT_datum.to)   == -1) return (-1);
-	if (GMT_set_datum (from, &GMT_datum.from) == -1) return (-1);
+	memcpy ((void *)&GMT_datum.from, (void *)from, sizeof (struct GMT_DATUM));
+	memcpy ((void *)&GMT_datum.to,   (void *)to,   sizeof (struct GMT_DATUM));
 
 	GMT_datum.da = GMT_datum.to.a - GMT_datum.from.a;
 	GMT_datum.df = GMT_datum.to.f - GMT_datum.from.f;
 	for (k = 0; k < 3; k++) GMT_datum.dxyz[k] = -(GMT_datum.to.xyz[k] - GMT_datum.from.xyz[k]);	/* Since the X, Y, Z are Deltas relative to WGS-84 */
 	GMT_datum.one_minus_f = 1.0 - GMT_datum.from.f;
-	return 0;
 }
 
-int GMT_ECEF_init (char *text)
+void GMT_ECEF_init (struct GMT_DATUM *D)
 {
-	/* Decode -E option (in mapproject) and initialize ECEF conv structures */
+	/* Duplicate the parsed datum to the GMT from datum */
 
-	if (GMT_set_datum (text, &GMT_datum.from) == -1) return (-1);
-
-	return 0;
+	memcpy ((void *)&GMT_datum.from, (void *)D, sizeof (struct GMT_DATUM));
 }
 
 int GMT_set_datum (char *text, struct GMT_DATUM *D)
