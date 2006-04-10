@@ -1,5 +1,5 @@
 /*
- *	$Id: string_check_subs.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: string_check_subs.c,v 1.3 2006-04-10 04:53:48 pwessel Exp $
  */
 /* string_check_subs.c
  * Subroutines for testing WVS string quality.
@@ -122,7 +122,8 @@ int remove_spikes (struct FLAGPAIR p[], int *n)
 		it returns 0.  String version.  */
 
 	int	i, j, spike;
-
+	int	compare_k();
+	
 	for (j = 0; j < *n; j++) p[j].k = j + 1;
 
 	spike = look_for_spikes(p, *n);
