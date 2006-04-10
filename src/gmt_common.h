@@ -1,5 +1,33 @@
+/*--------------------------------------------------------------------
+ *	$Id: gmt_common.h,v 1.2 2006-04-10 02:43:52 pwessel Exp $
+ *
+ *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
+ *	See COPYING file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; version 2 of the License.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	Contact info: gmt.soest.hawaii.edu
+ *--------------------------------------------------------------------*/
+ 
+/*
+ * Holds current selections for the family of common GMT options.
+ *
+ * Author: Paul Wessel
+ * Date:	10-APR-2006
+ * Version:	4.1.2
+ */
+ 
+#ifndef _GMT_COMMON_H
+#define _GMT_COMMON_H
+
 struct GMT_COMMON {
-	/* Holds current selections for the family of common GMT options */
 	struct GMT_B_OPT {	/* [1]  -B<params> */
 		BOOLEAN active;
 		short int processed;
@@ -78,3 +106,5 @@ struct GMT_COMMON {
 		char col_type[2][BUFSIZ];
 	} f;
 };
+
+#endif /* _GMT_COMMON_H */
