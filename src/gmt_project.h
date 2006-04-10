@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.41 2006-03-23 00:18:35 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.42 2006-04-10 04:43:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -28,56 +28,58 @@
 #ifndef _GMT_PROJECT_H
 #define _GMT_PROJECT_H
 
-#define LINEAR		0	/* Linear projections tagged 0-9 */
-#define LOG10		1
-#define POW		2
-#define TIME		3
-#define MERCATOR	10	/* Cylindrical projections tagged 10-99 */
-#define	CYL_EQ		11
-#define	CYL_EQDIST	12
-#define MILLER		13
-#define OBLIQUE_MERC	14
-#define TM		15
-#define UTM		16
-#define CASSINI		17
-#define STEREO		100	/* Azimuthal projections tagged 100-999 */
-#define LAMB_AZ_EQ	101
-#define ORTHO		102
-#define AZ_EQDIST	103
-#define GNOMONIC	104
-#define POLAR		110
-#define LAMBERT		1000	/* Conic projections tagged 1000-9999 */
-#define ALBERS		1001
-#define ECONIC		1002
-#define MOLLWEIDE	10000	/* Misc projections tagged 10000-99999 */
-#define HAMMER		10001
-#define SINUSOIDAL	10002
-#define WINKEL		10003
-#define ROBINSON	10004
-#define ECKERT4		10005
-#define ECKERT6		10006
-#define GRINTEN		10007
+#define GMT_N_PROJECTIONS	29	/* Total number of projections in GMT */
 
-#define MAPPING (project_info.degree[0] && project_info.degree[1])	/* TRUE when map projections are used */
-#define CYLINDRICAL (project_info.projection >= 10 && project_info.projection < 100)
-#define AZIMUTHAL (project_info.projection >= 100 && project_info.projection < 1000)
-#define CONICAL (project_info.projection >= 1000 && project_info.projection < 10000)
-#define RECT_GRATICULE (project_info.projection <= MILLER)
-#define GRID_CLIP_OK (project_info.projection < 10000 && project_info.projection != OBLIQUE_MERC && !AZIMUTHAL)
-#define SPHERICAL (gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening < 1.0e-10)
-#define POLE_IS_POINT (AZIMUTHAL || project_info.projection == LAMBERT || (project_info.projection >= MOLLWEIDE && project_info.projection <= SINUSOIDAL) || project_info.projection == GRINTEN)
+#define GMT_LINEAR		0	/* Linear projections tagged 0-9 */
+#define GMT_LOG10		1
+#define GMT_POW			2
+#define GMT_TIME		3
+#define GMT_MERCATOR		10	/* Cylindrical projections tagged 10-99 */
+#define	GMT_CYL_EQ		11
+#define	GMT_CYL_EQDIST		12
+#define GMT_MILLER		13
+#define GMT_OBLIQUE_MERC	14
+#define GMT_TM			15
+#define GMT_UTM			16
+#define GMT_CASSINI		17
+#define GMT_STEREO		100	/* Azimuthal projections tagged 100-999 */
+#define GMT_LAMB_AZ_EQ		101
+#define GMT_ORTHO		102
+#define GMT_AZ_EQDIST		103
+#define GMT_GNOMONIC		104
+#define GMT_POLAR		110
+#define GMT_LAMBERT		1000	/* Conic projections tagged 1000-9999 */
+#define GMT_ALBERS		1001
+#define GMT_ECONIC		1002
+#define GMT_MOLLWEIDE		10000	/* Misc projections tagged 10000-99999 */
+#define GMT_HAMMER		10001
+#define GMT_SINUSOIDAL		10002
+#define GMT_WINKEL		10003
+#define GMT_ROBINSON		10004
+#define GMT_ECKERT4		10005
+#define GMT_ECKERT6		10006
+#define GMT_VANGRINTEN		10007
+
+#define GMT_IS_MAPPING (project_info.degree[0] && project_info.degree[1])	/* TRUE when map projections are used */
+#define GMT_IS_CYLINDRICAL (project_info.projection >= 10 && project_info.projection < 100)
+#define GMT_IS_AZIMUTHAL (project_info.projection >= 100 && project_info.projection < 1000)
+#define GMT_IS_CONICAL (project_info.projection >= 1000 && project_info.projection < 10000)
+#define GMT_IS_RECT_GRATICULE (project_info.projection <= GMT_MILLER)
+#define GMT_GRID_CLIP_OK (project_info.projection < 10000 && project_info.projection != GMT_OBLIQUE_MERC && !GMT_IS_AZIMUTHAL)
+#define GMT_IS_SPHERICAL (gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening < 1.0e-10)
+#define GMT_POLE_IS_POINT (GMT_IS_AZIMUTHAL || project_info.projection == GMT_LAMBERT || (project_info.projection >= GMT_MOLLWEIDE && project_info.projection <= GMT_SINUSOIDAL) || project_info.projection == GMT_VANGRINTEN)
 
 #define D2R (M_PI / 180.0)
 #define R2D (180.0 / M_PI)
 
-/* UTM offsets */
+/* GMT_UTM offsets */
 
-#define FALSE_EASTING    500000.0
-#define FALSE_NORTHING 10000000.0
+#define GMT_FALSE_EASTING    500000.0
+#define GMT_FALSE_NORTHING 10000000.0
 
 /* Number of nodes in Robinson interpolation */
 
-#define N_ROBINSON 19
+#define GMT_N_ROBINSON 19
 
 #define GMT_LATSWAP_N	12	/* number of defined swaps  */
 
@@ -88,7 +90,7 @@ struct GMT_LATSWAP_CONSTS {
 	BOOLEAN spherical;		/* True if no conversions need to be done.  */
 };
 
-struct MAP_PROJECTIONS {
+struct GMT_MAP_PROJECTIONS {
 
 	double pars[10];		/* Raw unprocessed map-projection parameters as passed on command line */
 	double z_pars[2];		/* Raw unprocessed z-projection parameters as passed on command line */
@@ -135,7 +137,7 @@ struct MAP_PROJECTIONS {
 	BOOLEAN xyz_pos[3];		/* TRUE if x,y,z-axis increases in normal positive direction */
 	BOOLEAN compute_scale[3];	/* TRUE if axes lengths were set rather than scales */
 	BOOLEAN degree[2];		/* TRUE if we have linear projection with geographical data */
-	double xyz_pow[3];		/* For POW projection */
+	double xyz_pow[3];		/* For GMT_POW projection */
 	double xyz_ipow[3];
 	
 	/* Mercator parameters.  (See Snyder for details on all parameters) */
@@ -161,7 +163,7 @@ struct MAP_PROJECTIONS {
 	double o_beta;		/* lon' = beta for central_meridian (In Radians) */
 	double o_FP[3], o_FC[3], o_IP[3], o_IC[3];
 	
-	/* TM and UTM Projections */
+	/* GMT_TM and GMT_UTM Projections */
 
 	double t_lat0;
 	double t_e2, t_M0;
@@ -199,7 +201,7 @@ struct MAP_PROJECTIONS {
 	
 	double n_cx, n_cy;	/* = = 0.8487R, 1.3523R */
 	double n_i_cy;
-	double n_phi[N_ROBINSON], n_X[N_ROBINSON], n_Y[N_ROBINSON];
+	double n_phi[GMT_N_ROBINSON], n_X[GMT_N_ROBINSON], n_Y[GMT_N_ROBINSON];
 	double *n_x_coeff, *n_y_coeff, *n_iy_coeff;
 	
 	/* Eckert IV Projection */
@@ -278,7 +280,7 @@ struct MAP_PROJECTIONS {
 #define GMT_two_annot_items(j) ((frame_info.axis[j].item[GMT_ANNOT_UPPER].active && frame_info.axis[j].item[GMT_ANNOT_LOWER].active) ? TRUE : FALSE)	/* TRUE if we have two levels of tick annotations */
 #define GMT_uneven_interval(unit) ((unit == 'o' || unit == 'O' || unit == 'k' || unit == 'K' || unit == 'R' || unit == 'r' || unit == 'D' || unit == 'd') ? TRUE : FALSE)	/* TRUE for uneven units */
 
-struct PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
+struct GMT_PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
 	int parent;			/* Id of axis this item belongs to (0,1,2) */
 	int id;				/* Id of this item (0-7) */
 	BOOLEAN active;			/* TRUE if we want to use this item */
@@ -289,17 +291,17 @@ struct PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
 	char unit;			/* User's interval unit (y, M, u, d, h, m, c) */
 };
 
-struct PLOT_AXIS {		/* Information for one time axis */
-	struct PLOT_AXIS_ITEM item[8];	/* see above defines for which is which */
-	int type;			/* LINEAR, LOG10, POW, or TIME */
+struct GMT_PLOT_AXIS {		/* Information for one time axis */
+	struct GMT_PLOT_AXIS_ITEM item[8];	/* see above defines for which is which */
+	int type;			/* GMT_LINEAR, GMT_LOG10, GMT_POW, or GMT_TIME */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
 	char label[GMT_LONG_TEXT];	/* Label of the axis */
 	char unit[GMT_TEXT_LEN];	/* Axis unit appended to annotations */
 	char prefix[GMT_TEXT_LEN];	/* Axis prefix starting all annotations */
 };
 
-struct PLOT_FRAME {		/* Various parameters for plotting of time axis boundaries */
-	struct PLOT_AXIS axis[3];	/* One each for x, y, and z */
+struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundaries */
+	struct GMT_PLOT_AXIS axis[3];	/* One each for x, y, and z */
 	char header[GMT_LONG_TEXT];	/* Plot title */
 	BOOLEAN plot;			/* TRUE if -B was used */
 	BOOLEAN draw_box;		/* TRUE is a 3-D Z-box is desired */
@@ -309,7 +311,7 @@ struct PLOT_FRAME {		/* Various parameters for plotting of time axis boundaries 
 };
 
 
-struct THREE_D {
+struct GMT_THREE_D {
 	double view_azimuth, view_elevation;
 	double cos_az, sin_az, cos_el, sin_el;
 	double corner_x[4], corner_y[4];

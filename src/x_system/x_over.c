@@ -1,4 +1,4 @@
-/*	$Id: x_over.c,v 1.5 2005-03-06 16:04:00 remko Exp $
+/*	$Id: x_over.c,v 1.6 2006-04-10 04:43:31 pwessel Exp $
  *
  * X_OVER will compute cross-overs between 2 legs (or internal cross-overs
  * if both legs are the same) and write out time,lat,lon,cross-over values,
@@ -10,7 +10,7 @@
  *	NPOINTS	- (int)		Total number of records following rec #1
  *	INFO	- (char)	10 character info field.
  * Rec#2-(NPOINTS+1):
- * 	TIME	- (int)  	Stored as seconds from 00:00:00 on Jan. 1, YEAR.
+ * 	GMT_TIME	- (int)  	Stored as seconds from 00:00:00 on Jan. 1, YEAR.
  *	LAT	- (float)	Stored as degrees * 1.0E6 in the interval <-90.,+90.>
  *	LON	- (float)	Stored as degrees * 1.0E6 in the interval <0.,360.>
  *	GRAV	- (int)		Gravity in mGal * 10.

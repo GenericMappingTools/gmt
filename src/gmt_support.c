@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.245 2006-04-07 06:34:00 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.246 2006-04-10 04:43:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -139,7 +139,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 void GMT_get_radii_of_curvature (double x[], double y[], int n, double r[]);
 int GMT_label_is_OK (char *this_label, char *label, double this_dist, double this_value_dist, int xl, int fj, struct GMT_CONTOUR *G);
 int GMT_contlabel_specs_old (char *txt, struct GMT_CONTOUR *G);
-struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name);
+struct GMT_CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name);
 int GMT_get_label_parameters(int side, double line_angle, int type, double *text_angle, int *justify);
 int GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SEGMENT *P, int count[]);
 #if 0
@@ -742,7 +742,7 @@ void GMT_gettexture (char *line, int unit, double scale, struct GMT_PEN *P) {
 		unit = GMT_penunit (line[n], &pen_scale);
 	}
 
-	width = (P->width < SMALL) ? GMT_PENWIDTH : P->width;
+	width = (P->width < GMT_SMALL) ? GMT_PENWIDTH : P->width;
 	if (line[0] == 'o') {	/* Default Dotted */
 		sprintf (P->texture, "%g %g", width, 4.0 * width);
 		P->offset = 0.0;
@@ -2131,8 +2131,8 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 				if (p[1] >= '0' && p[1] <= '9')
 					k = atoi (&p[1]);
 				else
-					k = GMT_font_lookup (&p[1], GMT_font, N_FONTS);
-				if (k < 0 || k >= N_FONTS)
+					k = GMT_font_lookup (&p[1], GMT_font, GMT_N_FONTS);
+				if (k < 0 || k >= GMT_N_FONTS)
 					bad++;
 				else
 					G->label_font = k;
@@ -2381,7 +2381,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 		G->L_proj_type = G->proj_type;
 		G->L_dist_func = G->dist_func;
 	}
-	if ((G->dist_kind == 1 || G->label_type == 4) && !MAPPING) {
+	if ((G->dist_kind == 1 || G->label_type == 4) && !GMT_IS_MAPPING) {
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -%c:  Map distance options requires a map projection.\n", GMT_program, G->flag);
 		error++;
 	}
@@ -3359,7 +3359,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 		for (i = 1; i < nn; i++) {
 			/* Distance from xy */
 			dx = xx[i] - xx[i-1];
-			if (MAPPING && GMT_world_map && fabs (dx) > (width = GMT_half_map_width (yy[i-1]))) {
+			if (GMT_IS_MAPPING && GMT_world_map && fabs (dx) > (width = GMT_half_map_width (yy[i-1]))) {
 				width *= 2.0;
 				dx = copysign (width - fabs (dx), -dx);
 				if (xx[i] < width)
@@ -4491,7 +4491,7 @@ void GMT_get_bcr_nodal_values(float *z, int ii, int jj, struct GMT_BCR *bcr)
 	   < 2 then we can reuse some previous results.  
 
 	Changed 22 May 98 by WHFS to load vertex values even in case of NaN,
-	so that test if (we are within SMALL of node) can return node value. 
+	so that test if (we are within GMT_SMALL of node) can return node value. 
 	This will make things a  little slower, because now we have to load
 	all the values, whether or not they are NaN, whereas before we bailed 
 	out at the first NaN we encountered. */
@@ -4671,16 +4671,16 @@ double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data,
 		x or y is almost equal to 0 or 1, and if so,
 		return a node value.  */
 
-	if ( (fabs(x)) <= SMALL) {
-		if ( (fabs(y)) <= SMALL)
+	if ( (fabs(x)) <= GMT_SMALL) {
+		if ( (fabs(y)) <= GMT_SMALL)
 			return (bcr->nodal_value[0][0]);
-		if ( (fabs(1.0 - y)) <= SMALL)
+		if ( (fabs(1.0 - y)) <= GMT_SMALL)
 			return (bcr->nodal_value[2][0]);
 	}
-	if ( (fabs(1.0 - x)) <= SMALL) {
-		if ( (fabs(y)) <= SMALL)
+	if ( (fabs(1.0 - x)) <= GMT_SMALL) {
+		if ( (fabs(y)) <= GMT_SMALL)
 			return (bcr->nodal_value[1][0]);
-		if ( (fabs(1.0 - y)) <= SMALL)
+		if ( (fabs(1.0 - y)) <= GMT_SMALL)
 			return (bcr->nodal_value[3][0]);
 	}
 
@@ -4826,7 +4826,7 @@ int GMT_boundcond_param_prep (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinf
 
 	if (edgeinfo->gn) {
 		/* User has requested geographical conditions.  */
-		if ( (h->x_max - h->x_min) < (360.0 - SMALL * h->x_inc) ) {
+		if ( (h->x_max - h->x_min) < (360.0 - GMT_SMALL * h->x_inc) ) {
 			(void) fprintf (stderr, 
 				"GMT Warning:  x range too small; g boundary condition ignored.\n");
 			edgeinfo->nxp = edgeinfo->nyp = 0;
@@ -4834,8 +4834,8 @@ int GMT_boundcond_param_prep (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinf
 			return (0);
 		}
 		xtest = fmod (180.0, h->x_inc) / h->x_inc;
-		/* xtest should be within SMALL of zero or of one.  */
-		if ( xtest > SMALL && xtest < (1.0 - SMALL) ) {
+		/* xtest should be within GMT_SMALL of zero or of one.  */
+		if ( xtest > GMT_SMALL && xtest < (1.0 - GMT_SMALL) ) {
 			/* Error.  We need it to divide into 180 so we can phase-shift at poles.  */
 			(void) fprintf (stderr, 
 				"GMT Warning:  x_inc does not divide 180; g boundary condition ignored.\n");
@@ -4845,8 +4845,8 @@ int GMT_boundcond_param_prep (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinf
 		}
 		edgeinfo->nxp = irint(360.0/h->x_inc);
 		edgeinfo->nyp = 0;
-		edgeinfo->gn = ( (fabs(h->y_max - 90.0) ) < (SMALL * h->y_inc) );
-		edgeinfo->gs = ( (fabs(h->y_min + 90.0) ) < (SMALL * h->y_inc) );
+		edgeinfo->gn = ( (fabs(h->y_max - 90.0) ) < (GMT_SMALL * h->y_inc) );
+		edgeinfo->gs = ( (fabs(h->y_min + 90.0) ) < (GMT_SMALL * h->y_inc) );
 		return (0);
 	}
 	if (edgeinfo->nxp != 0) edgeinfo->nxp = (h->node_offset) ? h->nx : h->nx - 1;
@@ -5646,7 +5646,7 @@ void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct G
 	
 	half_or_zero = (header->node_offset) ? 0.5 : 0.0;
 
-	switch (GMT_minmaxinc_verify (*w, *e, header->x_inc, SMALL)) {	/* Check if range is compatible with x_inc */
+	switch (GMT_minmaxinc_verify (*w, *e, header->x_inc, GMT_SMALL)) {	/* Check if range is compatible with x_inc */
 		case 3:
 			(void) fprintf (stderr, "%s: GMT ERROR: grid x increment <= 0.0\n", GMT_program);
 			exit (EXIT_FAILURE);
@@ -5661,7 +5661,7 @@ void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct G
 	}
 	
 	if (GMT_io.in_col_type[0] != GMT_IS_LON || fabs (fabs (*e - *w) - 360.0) > GMT_CONV_LIMIT) {	/* Do this unless a 360 longitude wrap */
-		small = SMALL * header->x_inc;
+		small = GMT_SMALL * header->x_inc;
 		start = (GMT_io.in_col_type[0] == GMT_IS_LON && fabs (fabs (header->x_min - *w) - 360.0) < GMT_CONV_LIMIT) ? *w : header->x_min;
 
 		i_d = (*w - header->x_min) / header->x_inc;
@@ -5673,7 +5673,7 @@ void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct G
 		if (GMT_io.in_col_type[0] == GMT_IS_LON) dx = fmod (dx, 360.0);
 		if (dx > small) {
 			*w = val;
-			(void) fprintf (stderr, "%s: GMT WARNING: (w-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_program, SMALL);
+			(void) fprintf (stderr, "%s: GMT WARNING: (w-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_program, GMT_SMALL);
 			(void) fprintf (stderr, "%s: GMT WARNING: w reset to %g\n", GMT_program, *w);
 		}
 
@@ -5683,14 +5683,14 @@ void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct G
 
 		dx = fabs (*e - val);
 		if (GMT_io.in_col_type[0] == GMT_IS_LON) dx = fmod (dx, 360.0);
-		if (dx > SMALL) {
+		if (dx > GMT_SMALL) {
 			*e = val;
-			(void) fprintf (stderr, "%s: GMT WARNING: (e-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_program, SMALL);
+			(void) fprintf (stderr, "%s: GMT WARNING: (e-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_program, GMT_SMALL);
 			(void) fprintf (stderr, "%s: GMT WARNING: e reset to %g\n", GMT_program, *e);
 		}
 	}
 	
-	switch (GMT_minmaxinc_verify (*s, *n, header->y_inc, SMALL)) {	/* Check if range is compatible with y_inc */
+	switch (GMT_minmaxinc_verify (*s, *n, header->y_inc, GMT_SMALL)) {	/* Check if range is compatible with y_inc */
 		case 3:
 			(void) fprintf (stderr, "%s: GMT ERROR: grid y increment <= 0.0\n", GMT_program);
 			exit (EXIT_FAILURE);
@@ -5704,7 +5704,7 @@ void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct G
 			break;
 	}
 	/* Check if s,n are a multiple of y_inc offset from y_min - if not adjust s, n */
-	small = SMALL * header->y_inc;
+	small = GMT_SMALL * header->y_inc;
 
 	i_d = (*s - header->y_min) / header->y_inc;
 	if (i_d < 0) i_d = 0;
@@ -5714,7 +5714,7 @@ void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct G
 
 	if (fabs (*s - val) > small) {
 		*s = val;
-		(void) fprintf (stderr, "%s: GMT WARNING: (s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_program, SMALL);
+		(void) fprintf (stderr, "%s: GMT WARNING: (s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_program, GMT_SMALL);
 		(void) fprintf (stderr, "%s: GMT WARNING: s reset to %g\n", GMT_program, *s);
 	}
 
@@ -5724,7 +5724,7 @@ void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct G
 
 	if (fabs (*n - val) > small) {
 		*n = val;
-		(void) fprintf (stderr, "%s: GMT WARNING: (n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_program, SMALL);
+		(void) fprintf (stderr, "%s: GMT WARNING: (n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_program, GMT_SMALL);
 		(void) fprintf (stderr, "%s: GMT WARNING: n reset to %g\n", GMT_program, *n);
 	}
 }
@@ -5885,7 +5885,7 @@ int GMT_verify_expectations (int wanted, int got, char *item)
 		switch (got) {
 			case GMT_IS_ABSTIME:	/* Found a T in the string - ABSTIME ? */
 				fprintf (stderr, "%s: GMT ERROR: %s appears to be an Absolute Time String: ", GMT_program, item);
-				if (MAPPING)
+				if (GMT_IS_MAPPING)
 					fprintf (stderr, "This is not allowed for a map projection\n");
 				else
 					fprintf (stderr, "You must specify time data type with option -f.\n");
@@ -5894,7 +5894,7 @@ int GMT_verify_expectations (int wanted, int got, char *item)
 
 			case GMT_IS_GEO:	/* Found a : in the string - GEO ? */
 				fprintf (stderr, "%s: GMT Warning:  %s appears to be a Geographical Location String: ", GMT_program, item);
-				if (project_info.projection == LINEAR)
+				if (project_info.projection == GMT_LINEAR)
 					fprintf (stderr, "You should append d to the -Jx or -JX projection for geographical data.\n");
 				else
 					fprintf (stderr, "You should specify geographical data type with option -f.\n");
@@ -5903,7 +5903,7 @@ int GMT_verify_expectations (int wanted, int got, char *item)
 
 			case GMT_IS_LON:	/* Found a : in the string and then W or E - LON ? */
 				fprintf (stderr, "%s: GMT Warning:  %s appears to be a Geographical Longitude String: ", GMT_program, item);
-				if (project_info.projection == LINEAR)
+				if (project_info.projection == GMT_LINEAR)
 					fprintf (stderr, "You should append d to the -Jx or -JX projection for geographical data.\n");
 				else
 					fprintf (stderr, "You should specify geographical data type with option -f.\n");
@@ -5912,7 +5912,7 @@ int GMT_verify_expectations (int wanted, int got, char *item)
 
 			case GMT_IS_LAT:	/* Found a : in the string and then S or N - LAT ? */
 				fprintf (stderr, "%s: GMT Warning:  %s appears to be a Geographical Latitude String: ", GMT_program, item);
-				if (project_info.projection == LINEAR)
+				if (project_info.projection == GMT_LINEAR)
 					fprintf (stderr, "You should append d to the -Jx or -JX projection for geographical data.\n");
 				else
 					fprintf (stderr, "You should specify geographical data type with option -f.\n");
@@ -5954,7 +5954,7 @@ int GMT_verify_expectations (int wanted, int got, char *item)
 
 void GMT_list_custom_symbols (void)
 {
-	/* Opens up GMT_Custom_Symbols.lis and dislays the list of custom symbols */
+	/* Opens up GMT_custom_symbols.lis and dislays the list of custom symbols */
 
 	FILE *fp;
 	char list[GMT_LONG_TEXT], buffer[GMT_LONG_TEXT];
@@ -6634,7 +6634,7 @@ int GMT_get_dist_scale (char c, double *d_scale, int *proj_type, PFD *distance_f
 {
 	int error = 0;
 
-	*distance_func = (SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
+	*distance_func = (GMT_IS_SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
 	switch (c) {
 		case '\0':	/* Spherical m along great circle */
 		case 'e':
@@ -6642,32 +6642,32 @@ int GMT_get_dist_scale (char c, double *d_scale, int *proj_type, PFD *distance_f
 			*d_scale = project_info.M_PR_DEG;
 			break;
 		case 'E':	/* m along geodesic */
-			*distance_func = (SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
-			*d_scale = (SPHERICAL) ? project_info.M_PR_DEG : 1.0;
+			*distance_func = (GMT_IS_SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
+			*d_scale = (GMT_IS_SPHERICAL) ? project_info.M_PR_DEG : 1.0;
 			break;
 		case 'k':	/* km along great circle */
 			*distance_func = GMT_great_circle_dist;
 			*d_scale = project_info.KM_PR_DEG;
 			break;
 		case 'K':	/* km along geodesic */
-			*distance_func = (SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
-			*d_scale = (SPHERICAL) ? project_info.KM_PR_DEG : 0.001;
+			*distance_func = (GMT_IS_SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
+			*d_scale = (GMT_IS_SPHERICAL) ? project_info.KM_PR_DEG : 0.001;
 			break;
 		case 'm':	/* Miles along great circle */
 			*distance_func = GMT_great_circle_dist;
 			*d_scale = project_info.M_PR_DEG / 1609.334;
 			break;
 		case 'M':	/* Miles along geodesic */
-			*distance_func = (SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
-			*d_scale = ((SPHERICAL) ? project_info.M_PR_DEG : 1.0) / 1609.334;
+			*distance_func = (GMT_IS_SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
+			*d_scale = ((GMT_IS_SPHERICAL) ? project_info.M_PR_DEG : 1.0) / 1609.334;
 			break;
 		case 'n':	/* Nautical miles along great circle */
 			*distance_func = GMT_great_circle_dist;
 			*d_scale = project_info.M_PR_DEG / 1852.0;
 			break;
 		case 'N':	/* Nautical miles along geodesic */
-			*distance_func = (SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
-			*d_scale = ((SPHERICAL) ? project_info.M_PR_DEG : 1.0) / 1852.0;
+			*distance_func = (GMT_IS_SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
+			*d_scale = ((GMT_IS_SPHERICAL) ? project_info.M_PR_DEG : 1.0) / 1852.0;
 			break;
 		case 'C':	/* Cartesian distances in projected units */
 			*d_scale = 1.0;
@@ -6683,7 +6683,7 @@ int GMT_get_dist_scale (char c, double *d_scale, int *proj_type, PFD *distance_f
 			break;
 		case 'D':	/* Degrees along geodesic */
 			*d_scale = 1.0;
-			*distance_func = (SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_degree;
+			*distance_func = (GMT_IS_SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_degree;
 			break;
 		default:
 			fprintf (stderr, "%s: GMT SYNTAX ERROR -G.  Units must be one of k|m|n|c|C|d\n", GMT_program);
@@ -6699,7 +6699,7 @@ int GMT_linear_array (double min, double max, double delta, double phase, double
 	int i, n;
 
 	if (delta <= 0.0) return (0);
-	small = SMALL * delta;
+	small = GMT_SMALL * delta;
 	first = floor ((min - delta - phase) / delta) * delta + phase;
 	while ((min - first) > small) first += delta;
 	if (first > max) return (0);
@@ -6749,7 +6749,7 @@ int GMT_log_array (double min, double max, double delta, double **array)
 	start_log = irint (floor (log10_min));
 	val[0] = (double)start_log;
 	i = 1;	/* Because val[0] is initially set to be a power or ten (i = 0), so next should be 1 */
-	while ((log10_min - val[0]) > SMALL) {
+	while ((log10_min - val[0]) > GMT_SMALL) {
 		if (i < nticks)
 			val[0] = start_log + tvals[i];
 		else {
@@ -6807,7 +6807,7 @@ int GMT_pow_array (double min, double max, double delta, int x_or_y, double **ar
 		inv = GMT_y_inverse;
 	}
 
-	small = SMALL * delta;
+	small = GMT_SMALL * delta;
 	if (annottype == 2) {
 		(*fwd) (min, &v0);
 		(*fwd) (max, &v1);
@@ -6859,7 +6859,7 @@ int GMT_pow_array (double min, double max, double delta, int x_or_y, double **ar
 	return (n);
 }
 
-int GMT_time_array (double min, double max, struct PLOT_AXIS_ITEM *T, double **array)
+int GMT_time_array (double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array)
 {	/* When interval is TRUE we must return interval start/stop even if outside min/max range */
 	struct GMT_MOMENT_INTERVAL I;
 	double *val;
@@ -6888,20 +6888,20 @@ int GMT_time_array (double min, double max, struct PLOT_AXIS_ITEM *T, double **a
 	return (n);
 }
 
-int GMT_coordinate_array (double min, double max, struct PLOT_AXIS_ITEM *T, double **array)
+int GMT_coordinate_array (double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array)
 {
 	int n;
 	switch (project_info.xyz_projection[T->parent]) {
-		case LINEAR:
+		case GMT_LINEAR:
 			n = GMT_linear_array (min, max, GMT_get_map_interval (T->parent, T->id), frame_info.axis[T->parent].phase, array);
 			break;
-		case LOG10:
+		case GMT_LOG10:
 			n = GMT_log_array (min, max, GMT_get_map_interval (T->parent, T->id), array);
 			break;
-		case POW:
+		case GMT_POW:
 			n = GMT_pow_array (min, max, GMT_get_map_interval (T->parent, T->id), T->parent, array);
 			break;
-		case TIME:
+		case GMT_TIME:
 			n = GMT_time_array (min, max, T, array);
 			break;
 		default:
@@ -6912,7 +6912,7 @@ int GMT_coordinate_array (double min, double max, struct PLOT_AXIS_ITEM *T, doub
 	return (n);
 }
 
-void GMT_get_primary_annot (struct PLOT_AXIS *A, int *primary, int *secondary)
+void GMT_get_primary_annot (struct GMT_PLOT_AXIS *A, int *primary, int *secondary)
 {	/* Return the primary and secondary annotation item numbers [== 1 if there are no unit set ]*/
 
 	int i, no[2] = {GMT_ANNOT_UPPER, GMT_ANNOT_LOWER};
@@ -6982,7 +6982,7 @@ BOOLEAN GMT_skip_second_annot (int item, double x, double x2[], int n, int prima
 	return (found);
 }
 
-int GMT_annot_pos (double min, double max, struct PLOT_AXIS_ITEM *T, double coord[], double *pos)
+int GMT_annot_pos (double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double coord[], double *pos)
 {
 	/* Calculates the location of the next annotation in user units.  This is
 	 * trivial for tick annotations but can be tricky for interval annotations
@@ -7019,27 +7019,27 @@ int GMT_annot_pos (double min, double max, struct PLOT_AXIS_ITEM *T, double coor
 	return (FALSE);
 }
 
-void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct PLOT_AXIS_ITEM *T, double coord)
+void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord)
 {
 	/* Returns the formatted annotation string for the non-geographic axes */
 
 	switch (frame_info.axis[T->parent].type) {
-		case LINEAR:
+		case GMT_LINEAR:
 #if 0
 			GMT_near_zero_roundoff_fixer_upper (&coord, T->parent);	/* Try to adjust those ~0 "gcc -O" values to exact 0 */
 #endif
 			sprintf (string, format, coord);
 			break;
-		case LOG10:
+		case GMT_LOG10:
 			sprintf (string, "%d", irint (d_log10 (coord)));
 			break;
-		case POW:
-			if (project_info.xyz_projection[T->parent] == POW)
+		case GMT_POW:
+			if (project_info.xyz_projection[T->parent] == GMT_POW)
 				sprintf (string, format, coord);
 			else
 				sprintf (string, "10@+%d@+", irint (d_log10 (coord)));
 			break;
-		case TIME:
+		case GMT_TIME:
 			GMT_get_time_label (string, P, T, coord);
 			break;
 		default:
@@ -7074,7 +7074,7 @@ void GMT_near_zero_roundoff_fixer_upper (double *ww, int axis)
 }
 #endif
 
-double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AXIS *A, int below, double annot_off[], double *label_off, int *annot_justify, int *label_justify, char *format)
+double GMT_set_label_offsets (int axis, double val0, double val1, struct GMT_PLOT_AXIS *A, int below, double annot_off[], double *label_off, int *annot_justify, int *label_justify, char *format)
 {
 	/* Determines what the offsets will be for annotations and labels */
 
@@ -7082,13 +7082,13 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 	BOOLEAN as_is, flip, both;
 	double v0, v1, tmp_offset, off, angle, sign, len;
 	char text_l[GMT_LONG_TEXT], text_u[GMT_LONG_TEXT];
-	struct PLOT_AXIS_ITEM *T;	/* Pointer to the current axis item */
+	struct GMT_PLOT_AXIS_ITEM *T;	/* Pointer to the current axis item */
 
 	both = GMT_upper_and_lower_items(axis);							/* Two levels of annotations? */
 	sign = ((below && axis == 0) || (!below && axis == 1)) ? -1.0 : 1.0;			/* since annotations go either below or above */
 	len = (gmtdefs.tick_length > 0.0) ? gmtdefs.tick_length : 0.0;
 	if (axis == 0) {
-		if (A->type != TIME) GMT_get_format (GMT_get_map_interval (axis, GMT_ANNOT_UPPER), A->unit, A->prefix, format);	/* Set the annotation format template */
+		if (A->type != GMT_TIME) GMT_get_format (GMT_get_map_interval (axis, GMT_ANNOT_UPPER), A->unit, A->prefix, format);	/* Set the annotation format template */
 		annot_off[0] = GMT_get_annot_offset (&flip, 0);										/* Set upper annotation offset and flip depending on annot_offset */
 		annot_off[1] = annot_off[0] + (gmtdefs.annot_font_size[0] * GMT_u2u[GMT_PT][GMT_INCH]) + 0.5 * fabs (gmtdefs.annot_offset[0]);	/* Lower annotation offset */
 		if (both)	/* Must move label farther from axis given both annotation levels */
@@ -7106,7 +7106,7 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 		as_is = (ndec == 0 && !strchr (format, 'g'));	/* Use the d_format as is */
 
 		switch (project_info.xyz_projection[axis]) {
-			case POW:
+			case GMT_POW:
 				if (as_is) {
 					sprintf (text_l, format, val0);
 					sprintf (text_u, format, val1);
@@ -7116,7 +7116,7 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 					sprintf (text_u, "%d", (int)ceil (val1));
 				}
 				break;
-			case LOG10:
+			case GMT_LOG10:
 				v0 = d_log10 (val0);
 				v1 = d_log10 (val1);
 				if (A->type == 2) {	/* 10 ^ pow annotations */
@@ -7138,7 +7138,7 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 					}
 				}
 				break;
-			case LINEAR:
+			case GMT_LINEAR:
 				if (as_is) {
 					sprintf (text_l, format, val0);
 					sprintf (text_u, format, val1);
@@ -7148,7 +7148,7 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 					sprintf (text_u, "%d", (int)ceil (val1));
 				}
 				break;
-			case TIME:
+			case GMT_TIME:
 				T = (A->item[GMT_ANNOT_UPPER].active) ? &A->item[GMT_ANNOT_UPPER] : &A->item[GMT_INTV_UPPER];
 				GMT_get_coordinate_label (text_l, &GMT_plot_calclock, format, T, val0);		/* Get time annotation string */
 				GMT_get_coordinate_label (text_u, &GMT_plot_calclock, format, T, val1);		/* Get time annotation string */
@@ -7234,40 +7234,40 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AX
 BOOLEAN GMT_is_fancy_boundary (void)
 {
 	switch (project_info.projection) {
-		case LINEAR:
-			return (MAPPING);
+		case GMT_LINEAR:
+			return (GMT_IS_MAPPING);
 			break;
-		case MERCATOR:
-		case CYL_EQ:
-		case CYL_EQDIST:
-		case MILLER:
+		case GMT_MERCATOR:
+		case GMT_CYL_EQ:
+		case GMT_CYL_EQDIST:
+		case GMT_MILLER:
 			return (TRUE);
 			break;
-		case ALBERS:
-		case ECONIC:
-		case LAMBERT:
+		case GMT_ALBERS:
+		case GMT_ECONIC:
+		case GMT_LAMBERT:
 			return (project_info.region);
 			break;
-		case STEREO:
-		case ORTHO:
-		case LAMB_AZ_EQ:
-		case AZ_EQDIST:
-		case GNOMONIC:
-		case GRINTEN:
+		case GMT_STEREO:
+		case GMT_ORTHO:
+		case GMT_LAMB_AZ_EQ:
+		case GMT_AZ_EQDIST:
+		case GMT_GNOMONIC:
+		case GMT_VANGRINTEN:
 			return (project_info.polar);
 			break;
-		case POLAR:
-		case OBLIQUE_MERC:
-		case HAMMER:
-		case MOLLWEIDE:
-		case SINUSOIDAL:
-		case TM:
-		case UTM:
-		case CASSINI:
-		case WINKEL:
-		case ECKERT4:
-		case ECKERT6:
-		case ROBINSON:
+		case GMT_POLAR:
+		case GMT_OBLIQUE_MERC:
+		case GMT_HAMMER:
+		case GMT_MOLLWEIDE:
+		case GMT_SINUSOIDAL:
+		case GMT_TM:
+		case GMT_UTM:
+		case GMT_CASSINI:
+		case GMT_WINKEL:
+		case GMT_ECKERT4:
+		case GMT_ECKERT6:
+		case GMT_ROBINSON:
 			return (FALSE);
 			break;
 		default:
@@ -7292,7 +7292,7 @@ int GMT_prepare_label (double angle, int side, double x, double y, int type, dou
 
 	if (angle < 0.0) angle += 360.0;
 
-	set_angle = ((project_info.region && !(AZIMUTHAL || CONICAL)) || !project_info.region);
+	set_angle = ((project_info.region && !(GMT_IS_AZIMUTHAL || GMT_IS_CONICAL)) || !project_info.region);
 	if (set_angle) {
 		if (side == 0 && angle < 180.0) angle -= 180.0;
 		if (side == 1 && (angle > 90.0 && angle < 270.0)) angle -= 180.0;
@@ -7327,7 +7327,7 @@ void GMT_get_annot_label (double val, char *label, int do_minutes, int do_second
 
 	if (lonlat < 2) {	/* i.e., for geographical data */
 		if (fabs (val - 360.0) < GMT_CONV_LIMIT && !worldmap) val = 0.0;
-		if (fabs (val - 360.0) < GMT_CONV_LIMIT && worldmap && project_info.projection == OBLIQUE_MERC) val = 0.0;
+		if (fabs (val - 360.0) < GMT_CONV_LIMIT && worldmap && project_info.projection == GMT_OBLIQUE_MERC) val = 0.0;
 	}
 
 	fmt = gmtdefs.degree_format % 100;	/* take out the optional 100 or 1000 */
@@ -7426,7 +7426,7 @@ int GMT_polar_adjust (int side, double angle, double x, double y)
 		left = 5;
 		right = 7;
 	}
-	if ((y - y0 - SMALL) > 0.0) { /* i.e., y > y0 */
+	if ((y - y0 - GMT_SMALL) > 0.0) { /* i.e., y > y0 */
 		top = 2;
 		bottom = 10;
 	}
@@ -7434,14 +7434,14 @@ int GMT_polar_adjust (int side, double angle, double x, double y)
 		top = 10;
 		bottom = 2;
 	}
-	if (project_info.projection == POLAR && project_info.got_azimuths) i_swap (left, right);	/* Because with azimuths we get confused... */
-	if (project_info.projection == POLAR && project_info.got_elevations) {
+	if (project_info.projection == GMT_POLAR && project_info.got_azimuths) i_swap (left, right);	/* Because with azimuths we get confused... */
+	if (project_info.projection == GMT_POLAR && project_info.got_elevations) {
 		i_swap (top, bottom);	/* Because with elevations we get confused... */
 		i_swap (left, right);
 		low = 2 - low;
 	}
 	if (side%2) {	/* W and E border */
-		if ((y - y0 + SMALL) > 0.0)
+		if ((y - y0 + GMT_SMALL) > 0.0)
 			justify = (side == 1) ? left : right;
 		else
 			justify = (side == 1) ? right : left;
@@ -7472,7 +7472,7 @@ double GMT_get_angle (double lon1, double lat1, double lon2, double lat2)
 	GMT_geo_to_xy (lon2, lat2, &x2, &y2);
 	dx = x2 - x1;
 	dy = y2 - y1;
-	if (fabs (dy) <= GMT_CONV_LIMIT && fabs (dx) <= GMT_CONV_LIMIT) {	/* Special case that only(?) occurs at N or S pole or r=0 for POLAR */
+	if (fabs (dy) <= GMT_CONV_LIMIT && fabs (dx) <= GMT_CONV_LIMIT) {	/* Special case that only(?) occurs at N or S pole or r=0 for GMT_POLAR */
 		if (fabs (fmod (lon1 - project_info.w + 360.0, 360.0)) > fabs (fmod (lon1 - project_info.e + 360.0, 360.0))) {	/* East */
 			GMT_geo_to_xy (project_info.e, project_info.s, &x1, &y1);
 			GMT_geo_to_xy (project_info.e, project_info.n, &x2, &y2);
@@ -7621,7 +7621,7 @@ int GMT_grid_clip_path (struct GRD_HEADER *h, double **x, double **y, BOOLEAN *d
 
 	*donut = FALSE;
 
-	if (RECT_GRATICULE) {	/* Where wesn are straight hor/ver lines */
+	if (GMT_IS_RECT_GRATICULE) {	/* Where wesn are straight hor/ver lines */
 		np = 4;
 		work_x = (double *)GMT_memory (VNULL, (size_t)np, sizeof (double), "GMT_map_clip_path");
 		work_y = (double *)GMT_memory (VNULL, (size_t)np, sizeof (double), "GMT_map_clip_path");
@@ -7707,7 +7707,7 @@ int GMT_flip_justify (int justify)
 	return (j);
 }
 
-struct CUSTOM_SYMBOL * GMT_get_custom_symbol (char *name) {
+struct GMT_CUSTOM_SYMBOL * GMT_get_custom_symbol (char *name) {
 	int i, found = -1;
 
 	/* First see if we already have loaded this symbol */
@@ -7718,20 +7718,20 @@ struct CUSTOM_SYMBOL * GMT_get_custom_symbol (char *name) {
 
 	/* Must load new symbol */
 
-	GMT_custom_symbol = (struct CUSTOM_SYMBOL **) GMT_memory ((void *)GMT_custom_symbol, (size_t)(GMT_n_custom_symbols+1), sizeof (struct CUSTOM_SYMBOL *), GMT_program);
+	GMT_custom_symbol = (struct GMT_CUSTOM_SYMBOL **) GMT_memory ((void *)GMT_custom_symbol, (size_t)(GMT_n_custom_symbols+1), sizeof (struct GMT_CUSTOM_SYMBOL *), GMT_program);
 	GMT_custom_symbol[GMT_n_custom_symbols] = GMT_init_custom_symbol (name);
 
 	return (GMT_custom_symbol[GMT_n_custom_symbols++]);
 }
 
-struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
+struct GMT_CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 	int nc, last, error = 0;
 	BOOLEAN do_fill, do_pen, first = TRUE;
 	char file[BUFSIZ], buffer[BUFSIZ], col[8][GMT_TEXT_LEN];
 	char *fill_p = VNULL, *pen_p = VNULL;
 	FILE *fp;
-	struct CUSTOM_SYMBOL *head;
-	struct CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
+	struct GMT_CUSTOM_SYMBOL *head;
+	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
 
 	sprintf (file, "%s.def", name);
 
@@ -7748,14 +7748,14 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 		exit (EXIT_FAILURE);
 	}
 
-	head = (struct CUSTOM_SYMBOL *) GMT_memory (VNULL, (size_t)1, sizeof (struct CUSTOM_SYMBOL), GMT_program);
+	head = (struct GMT_CUSTOM_SYMBOL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_CUSTOM_SYMBOL), GMT_program);
 	strcpy (head->name, name);
 	while (fgets (buffer, BUFSIZ, fp)) {
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
 
 		nc = sscanf (buffer, "%s %s %s %s %s %s %s", col[0], col[1], col[2], col[3], col[4], col[5], col[6]);
 
-		s = (struct CUSTOM_SYMBOL_ITEM *) GMT_memory (VNULL, (size_t)1, sizeof (struct CUSTOM_SYMBOL_ITEM), GMT_program);
+		s = (struct GMT_CUSTOM_SYMBOL_ITEM *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_CUSTOM_SYMBOL_ITEM), GMT_program);
 		if (first) head->first = s;
 		first = FALSE;
 
@@ -7776,12 +7776,12 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 
 			case 'M':		/* Set new anchor point */
 				if (last != 2) error++;
-				s->action = ACTION_MOVE;
+				s->action = GMT_ACTION_MOVE;
 				break;
 
 			case 'D':		/* Draw to next point */
 				if (last != 2) error++;
-				s->action = ACTION_DRAW;
+				s->action = GMT_ACTION_DRAW;
 				break;
 
 			case 'A':		/* Draw arc of a circle */
@@ -7789,7 +7789,7 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 				s->p[0] = atof (col[2]);
 				s->p[1] = atof (col[3]) * D2R;	/* Convert to radians here */
 				s->p[2] = atof (col[4]) * D2R;
-				s->action = ACTION_ARC;
+				s->action = GMT_ACTION_ARC;
 				break;
 
 			/* These are standard psxy-type symbols.  They can only be painted, not used with pattern fill.  Exception is circle which can take pattern */
@@ -7798,31 +7798,31 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 			case 'c':		/* Draw complete circle */
 				if (last != 3) error++;
 				s->p[0] = atof (col[2]);
-				s->action = ACTION_CIRCLE;
+				s->action = GMT_ACTION_CIRCLE;
 				break;
 
 			case 'a':		/* Draw star symbol */
 				if (last != 3) error++;
 				s->p[0] = atof (col[2]);
-				s->action = ACTION_STAR;
+				s->action = GMT_ACTION_STAR;
 				break;
 
 			case 'd':		/* Draw diamond symbol */
 				if (last != 3) error++;
 				s->p[0] = atof (col[2]);
-				s->action = ACTION_DIAMOND;
+				s->action = GMT_ACTION_DIAMOND;
 				break;
 
 			case 'h':		/* Draw hexagon symbol */
 				if (last != 3) error++;
 				s->p[0] = atof (col[2]);
-				s->action = ACTION_HEXAGON;
+				s->action = GMT_ACTION_HEXAGON;
 				break;
 
 			case 'i':		/* Draw inverted triangle symbol */
 				if (last != 3) error++;
 				s->p[0] = atof (col[2]);
-				s->action = ACTION_ITRIANGLE;
+				s->action = GMT_ACTION_ITRIANGLE;
 				break;
 
 			case 'l':		/* Draw letter/text symbol */
@@ -7830,44 +7830,44 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 				s->p[0] = atof (col[2]);
 				s->string = (char *)GMT_memory (VNULL, (size_t)(strlen (col[3]) + 1), sizeof (char), GMT_program);
 				strcpy (s->string, col[3]);
-				s->action = ACTION_TEXT;
+				s->action = GMT_ACTION_TEXT;
 				break;
 
 			case 'n':		/* Draw pentagon symbol */
 				if (last != 3) error++;
 				s->p[0] = atof (col[2]);
-				s->action = ACTION_PENTAGON;
+				s->action = GMT_ACTION_PENTAGON;
 				break;
 
 			case 'g':		/* Draw octagon symbol */
 				if (last != 3) error++;
 				s->p[0] = atof (col[2]);
-				s->action = ACTION_OCTAGON;
+				s->action = GMT_ACTION_OCTAGON;
 				break;
 
 			case 's':		/* Draw square symbol */
 				if (last != 3) error++;
 				s->p[0] = atof (col[2]);
-				s->action = ACTION_SQUARE;
+				s->action = GMT_ACTION_SQUARE;
 				break;
 
 			case 't':		/* Draw triangle symbol */
 				if (last != 3) error++;
 				s->p[0] = atof (col[2]);
-				s->action = ACTION_TRIANGLE;
+				s->action = GMT_ACTION_TRIANGLE;
 				break;
 
 			case 'x':		/* Draw cross symbol */
 				if (last != 3) error++;
 				s->p[0] = atof (col[2]);
-				s->action = ACTION_CROSS;
+				s->action = GMT_ACTION_CROSS;
 				break;
 
 			case 'r':		/* Draw rect symbol */
 				if (last != 4) error++;
 				s->p[0] = atof (col[2]);
 				s->p[1] = atof (col[3]);
-				s->action = ACTION_RECT;
+				s->action = GMT_ACTION_RECT;
 				break;
 
 			case 'w':		/* Draw wedge (pie) symbol */
@@ -7875,7 +7875,7 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 				s->p[0] = atof (col[2]);
 				s->p[1] = atof (col[3]);	/* Leave angles in degrees */
 				s->p[2] = atof (col[4]);
-				s->action = ACTION_PIE;
+				s->action = GMT_ACTION_PIE;
 				break;
 
 			case 'e':		/* Draw ellipse symbol */
@@ -7883,7 +7883,7 @@ struct CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 				s->p[0] = atof (col[2]);	/* Leave direction in degrees */
 				s->p[1] = atof (col[3]);
 				s->p[2] = atof (col[4]);
-				s->action = ACTION_ELLIPSE;
+				s->action = GMT_ACTION_ELLIPSE;
 				break;
 
 			default:
@@ -8005,8 +8005,8 @@ int fourt_ (float *data, int *nn, int *ndim, int *ksign, int *iform, float *work
 		DATA - COMPLEX ARRAY, LENGTH NN                            
 		NN - ARRAY OF NUMBER OF POINTS IN EACH DIMENSION           
 		NDIM - NUMBER OF DIMENSIONS (FOR OUR PURPOSES, NDIM=1)     
-		KSIGN - +1 FOR INVERSE TRANSFORM (FREQ TO TIME DOMAIN)     
-		        -1 FOR FORWARD TRANSFORM (TIME TO FREQ DOMAIN)     
+		KSIGN - +1 FOR INVERSE TRANSFORM (FREQ TO GMT_TIME DOMAIN)     
+		        -1 FOR FORWARD TRANSFORM (GMT_TIME TO FREQ DOMAIN)     
 		IFORM - 0 REAL DATA                                        
 			+1 COMPLEX DATA                                    
 		WORK - 0 IF ALL DIMENSIONS ARE RADIX 2                     

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.175 2006-04-04 07:51:31 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.176 2006-04-10 04:43:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -89,8 +89,8 @@ void GMT_map_symbol_ew (double lat, char *label, double west, double east, BOOLE
 void GMT_map_symbol_ns (double lon, char *label, double south, double north, BOOLEAN annotate, int level);
 void GMT_get_annot_label (double val, char *label, int do_minutes, int do_seconds, int lonlat, BOOLEAN worldmap);
 void GMT_basemap_3D (int mode);
-void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate);
-int GMT_coordinate_array (double min, double max, struct PLOT_AXIS_ITEM *T, double **array);
+void GMT_xyz_axis3D (int axis_no, char axis, struct GMT_PLOT_AXIS *A, int annotate);
+int GMT_coordinate_array (double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array);
 int GMT_linear_array (double min, double max, double delta, double phase, double **array);
 int GMT_pow_array (double min, double max, double delta, int x_or_y, double **array);
 int GMT_grid_clip_path (struct GRD_HEADER *h, double **x, double **y, BOOLEAN *donut);
@@ -107,13 +107,13 @@ BOOLEAN GMT_annot_too_crowded (double x, double y, int side);
 BOOLEAN GMT_is_fancy_boundary (void);
 void GMT_coordinate_to_x (double coord, double *x);
 void GMT_coordinate_to_y (double coord, double *y);
-int GMT_time_array (double min, double max, struct PLOT_AXIS_ITEM *T, double **array);
+int GMT_time_array (double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array);
 void GMT_timex_grid (double w, double e, double s, double n, int item);
 void GMT_timey_grid (double w, double e, double s, double n, int item);
-void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct PLOT_AXIS_ITEM *T, double coord);
+void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
 BOOLEAN GMT_skip_second_annot (int item, double x, double x2[], int n, int primary, int secondary);
 BOOLEAN GMT_fill_is_image (char *fill);
-double GMT_set_label_offsets (int axis, double val0, double val1, struct PLOT_AXIS *A, int below, double annot_off[], double *label_off, int *annot_justify, int *label_justify, char *format);
+double GMT_set_label_offsets (int axis, double val0, double val1, struct GMT_PLOT_AXIS *A, int below, double annot_off[], double *label_off, int *annot_justify, int *label_justify, char *format);
 
 void GMT_map_tickitem (double w, double e, double s, double n, int item);
 void GMT_NaN_pen_up (double x[], double y[], int pen[], int n);
@@ -135,7 +135,7 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode);
 void GMT_textpath_init (struct GMT_PEN *LP, int Brgb[], struct GMT_PEN *BP, int Frgb[]);
 void GMT_contlabel_plotboxes (struct GMT_CONTOUR *G);
 void GMT_flush_symbol_piece (double *x, double *y, double z, int *n, struct GMT_PEN *p, struct GMT_FILL *f, BOOLEAN outline, BOOLEAN *flush);
-void GMT_define_PS_items (struct PLOT_AXIS *A, int below, int annotate);
+void GMT_define_PS_items (struct GMT_PLOT_AXIS *A, int below, int annotate);
 void GMT_define_baselines ();
 void GMT_geoplot (double lon, double lat, int pen);
 void GMT_geosegment (double lon1, double lat1, double lon2, double lat2);
@@ -311,7 +311,7 @@ unsigned char GMT_glyph[2520] = {
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f,
 };
 
-/*	LINEAR PROJECTION MAP BOUNDARY	*/
+/*	GMT_LINEAR PROJECTION MAP BOUNDARY	*/
 
 void GMT_linear_map_boundary (double w, double e, double s, double n)
 {
@@ -352,7 +352,7 @@ void GMT_linear_map_boundary (double w, double e, double s, double n)
 	ps_text (0.0, 0.0, -gmtdefs.header_font_size, frame_info.header, 0.0, 0, 0);
 }
 
-void GMT_xy_axis (double x0, double y0, double length, double val0, double val1, struct PLOT_AXIS *A, int below, int annotate)
+void GMT_xy_axis (double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, int below, int annotate)
 {
 	int k, i, nx, np = 0;		/* Misc. variables */
 	int annot_pos;			/* Either 0 for upper annotation or 1 for lower annotation */
@@ -367,7 +367,7 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 	double tick_len[6];		/* Ticklengths for each of the 6 axis items */
 	double x, sign, len, t_use;	/* Misc. variables */
 	double font_size;			/* Annotation font size (ANNOT_FONT_SIZE_PRIMARY or ANNOT_FONT_SIZE_SECONDARY) */
-	struct PLOT_AXIS_ITEM *T;	/* Pointer to the current axis item */
+	struct GMT_PLOT_AXIS_ITEM *T;	/* Pointer to the current axis item */
 	char string[GMT_CALSTRING_LENGTH];	/* Annotation string */
 	char format[GMT_LONG_TEXT];		/* format used for non-time annotations */
 	char xy[2] = {'y', 'x'};
@@ -388,7 +388,7 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 	tick_len[3] = (A->item[GMT_ANNOT_UPPER].active) ? tick_len[0] : 3.0 * sign * gmtdefs.tick_length;
 	tick_len[4] = 0.5 * sign * gmtdefs.tick_length;
 	tick_len[5] = 0.75 * sign * gmtdefs.tick_length;
-	if (A->type != TIME) GMT_get_format (GMT_get_map_interval (axis, GMT_ANNOT_UPPER), A->unit, A->prefix, format);	/* Set the annotation format template */
+	if (A->type != GMT_TIME) GMT_get_format (GMT_get_map_interval (axis, GMT_ANNOT_UPPER), A->unit, A->prefix, format);	/* Set the annotation format template */
 
 	/* Ready to draw axis */
 
@@ -511,7 +511,7 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 	}
 }
 
-void GMT_define_PS_items (struct PLOT_AXIS *A, int below, int annotate)
+void GMT_define_PS_items (struct GMT_PLOT_AXIS *A, int below, int annotate)
 {
 	/* GMT relies on the PostScript engine to calculate dimensions of
 	 * text items.  Therefore, the calculation of text baseline offsets
@@ -570,7 +570,7 @@ void GMT_linearx_grid (double w, double e, double s, double n, double dval)
 	int i, nx;
 	BOOLEAN cap = FALSE;
 
-	if (POLE_IS_POINT) {	/* Might have two separate domains of gridlines */
+	if (GMT_POLE_IS_POINT) {	/* Might have two separate domains of gridlines */
 		ys = MAX (s, -gmtdefs.polar_cap[0]);
 		yn = MIN (n, gmtdefs.polar_cap[0]);
 		cap = (fabs (gmtdefs.polar_cap[0] - 90.0) > GMT_CONV_LIMIT);
@@ -753,7 +753,7 @@ void GMT_fancy_frame_straightlat_checkers (double w, double e, double s, double 
 			dy = GMT_get_map_interval (1, item[k]);
 			shade = ((int)floor ((s - frame_info.axis[1].phase) / dy) + 1) % 2;
 			s1 = floor((s - frame_info.axis[1].phase)/dy) * dy + frame_info.axis[1].phase;
-			ny = (s1 > n) ? -1 : (int)((n-s1) / dy + SMALL);
+			ny = (s1 > n) ? -1 : (int)((n-s1) / dy + GMT_SMALL);
 			for (i = 0; i <= ny; i++) {
 				val = s1 + i * dy;
 				v1 = (val < s) ? s : val;
@@ -796,7 +796,7 @@ void GMT_fancy_frame_straightlon_checkers (double w, double e, double s, double 
 			dx = GMT_get_map_interval (0, item[k]);
 			shade = ((int)floor ((w - frame_info.axis[0].phase)/ dx) + 1) % 2;
 			w1 = floor ((w - frame_info.axis[0].phase)/ dx) * dx + frame_info.axis[0].phase;
-			nx = (w1 > e) ? -1 : (int)((e - w1) / dx + SMALL);
+			nx = (w1 > e) ? -1 : (int)((e - w1) / dx + GMT_SMALL);
 			for (i = 0; i <= nx; i++) {
 				val = w1 + i * dx;
 				v1 = (val < w) ? w : val;
@@ -838,7 +838,7 @@ void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n,
 			dx = GMT_get_map_interval (0, item[k]);
 			shade = ((int)floor ((w - frame_info.axis[0].phase) / dx) + 1) % 2;
 			w1 = floor((w - frame_info.axis[0].phase)/dx) * dx + frame_info.axis[0].phase;
-			nx = (w1 > e) ? -1 : (int)((e-w1) / dx + SMALL);
+			nx = (w1 > e) ? -1 : (int)((e-w1) / dx + GMT_SMALL);
 			for (i = 0; i <= nx; i++) {
 				val = w1 + i * dx;
 				v1 = (val < w) ? w : val;
@@ -975,7 +975,7 @@ void GMT_rounded_framecorners (double w, double e, double s, double n, double an
 			GMT_geo_to_xy (w, s, &x, &y);
 			ps_arc (x, y, (k+1)*width, 270.0+anglew, 360.0+anglew, PSL_ARC_DRAW);
 		}
-		if ((AZIMUTHAL || CONICAL) && frame_info.side[3] && frame_info.side[1]) {	/* Round off the pointy head? */
+		if ((GMT_IS_AZIMUTHAL || GMT_IS_CONICAL) && frame_info.side[3] && frame_info.side[1]) {	/* Round off the pointy head? */
 			if (fabs (project_info.n - 90.0) < GMT_CONV_LIMIT) {
 				GMT_geo_to_xy (w, n, &x, &y);
 				ps_arc (x, y, (k+1)*width, anglee, 180.0+anglew, PSL_ARC_DRAW);
@@ -988,7 +988,7 @@ void GMT_rounded_framecorners (double w, double e, double s, double n, double an
 	}
 }
 
-/*	POLAR (S or N) PROJECTION MAP BOUNDARY	*/
+/*	GMT_POLAR (S or N) PROJECTION MAP BOUNDARY	*/
 
 void GMT_polar_map_boundary (double w, double e, double s, double n)
 {
@@ -1102,7 +1102,7 @@ void GMT_conic_map_boundary (double w, double e, double s, double n)
 	ps_setline (thin_pen);
 }
 
-/*	OBLIQUE MERCATOR PROJECTION MAP FUNCTIONS	*/
+/*	OBLIQUE GMT_MERCATOR PROJECTION MAP FUNCTIONS	*/
 
 void GMT_oblmrc_map_boundary (double w, double e, double s, double n)
 {
@@ -1110,7 +1110,7 @@ void GMT_oblmrc_map_boundary (double w, double e, double s, double n)
 	GMT_rect_map_boundary (0.0, 0.0, project_info.xmax, project_info.ymax);
 }
 
-/*	MOLLWEIDE and HAMMER-AITOFF EQUAL AREA PROJECTION MAP FUNCTIONS	*/
+/*	GMT_MOLLWEIDE and GMT_HAMMER-AITOFF EQUAL AREA PROJECTION MAP FUNCTIONS	*/
 
 void GMT_ellipse_map_boundary (double w, double e, double s, double n)
 {
@@ -1532,20 +1532,20 @@ void GMT_map_gridlines (double w, double e, double s, double n)
 
 		GMT_setpen (&gmtdefs.grid_pen[k]);
 
-		if (project_info.xyz_projection[0] == TIME && dx > 0.0)
+		if (project_info.xyz_projection[0] == GMT_TIME && dx > 0.0)
 			GMT_timex_grid (w, e, s, n, item[k]);
-		else if (dx > 0.0 && project_info.xyz_projection[0] == LOG10)
+		else if (dx > 0.0 && project_info.xyz_projection[0] == GMT_LOG10)
 			GMT_logx_grid (w, e, s, n, dx);
-		else if (dx > 0.0 && project_info.xyz_projection[0] == POW)
+		else if (dx > 0.0 && project_info.xyz_projection[0] == GMT_POW)
 			GMT_powx_grid (w, e, s, n, dx);
 		else if (dx > 0.0)	/* Draw grid lines that go E to W */
 			GMT_linearx_grid (w, e, s, n, dx);
 
-		if (project_info.xyz_projection[1] == TIME && dy > 0.0)
+		if (project_info.xyz_projection[1] == GMT_TIME && dy > 0.0)
 			GMT_timey_grid (w, e, s, n, item[k]);
-		else if (dy > 0.0 && project_info.xyz_projection[1] == LOG10)
+		else if (dy > 0.0 && project_info.xyz_projection[1] == GMT_LOG10)
 			GMT_logy_grid (w, e, s, n, dy);
-		else if (dy > 0.0 && project_info.xyz_projection[1] == POW)
+		else if (dy > 0.0 && project_info.xyz_projection[1] == GMT_POW)
 			GMT_powy_grid (w, e, s, n, dy);
 		else if (dy > 0.0)	/* Draw grid lines that go S to N */
 			GMT_lineary_grid (w, e, s, n, dy);
@@ -1585,14 +1585,14 @@ void GMT_map_gridcross (double w, double e, double s, double n)
 
 				if (!GMT_map_outside (x[i], y[j])) {	/* Inside map */
 					yj = y[j];
-					if (POLE_IS_POINT && fabs (fabs (yj) - 90.0) < GMT_CONV_LIMIT) {	/* Only place one grid cross at the poles for maps where the poles are points */
+					if (GMT_POLE_IS_POINT && fabs (fabs (yj) - 90.0) < GMT_CONV_LIMIT) {	/* Only place one grid cross at the poles for maps where the poles are points */
 						xi = project_info.central_meridian;
 						i = nx;	/* This ends the loop for this particular latitude */
 					}
 					else
 						xi = x[i];
 					GMT_geo_to_xy (xi, yj, &x0, &y0);
-					if (MAPPING) {
+					if (GMT_IS_MAPPING) {
 						GMT_geo_to_xy (xi + GMT_dlon, yj, &x1, &y1);
 						x_angle = d_atan2 (y1-y0, x1-x0);
 						sincos (x_angle, &S, &C);
@@ -1624,7 +1624,7 @@ void GMT_map_gridcross (double w, double e, double s, double n)
 					ps_plot (xt1, yt1, PSL_PEN_MOVE);
 					ps_plot (xt2, yt2, PSL_PEN_DRAW_AND_STROKE);
 
-					if (MAPPING) {
+					if (GMT_IS_MAPPING) {
 						GMT_geo_to_xy (xi, yj - copysign (GMT_dlat, yj), &x1, &y1);
 						y_angle = d_atan2 (y1-y0, x1-x0);
 						sincos (y_angle, &S, &C);
@@ -1671,7 +1671,7 @@ void GMT_map_tickmarks (double w, double e, double s, double n)
 {
 	/* Tickmarks at annotation interval has already been done except when annotations were not desired */
 
-	if (!(MAPPING || project_info.projection == POLAR)) return;	/* Tickmarks already done by linear axis */
+	if (!(GMT_IS_MAPPING || project_info.projection == GMT_POLAR)) return;	/* Tickmarks already done by linear axis */
 
 	ps_comment ("Map tickmarks");
 	GMT_setpen (&gmtdefs.tick_pen);
@@ -1730,7 +1730,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	BOOLEAN full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual;
 	PFI GMT_outside_save = VNULL;
 
-	if (!(project_info.degree[0] || project_info.degree[1] || project_info.projection == POLAR)) return;	/* Annotations and header already done by GMT_linear_map_boundary */
+	if (!(project_info.degree[0] || project_info.degree[1] || project_info.projection == GMT_POLAR)) return;	/* Annotations and header already done by GMT_linear_map_boundary */
 
 	ps_setpaint (gmtdefs.basemap_frame_rgb);
 	GMT_world_map_save = GMT_world_map;
@@ -1738,7 +1738,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	if (frame_info.header[0]) {	/* Make plot header for geographic maps*/
 		if (project_info.three_D && fabs (project_info.z_scale) < GMT_CONV_LIMIT) {	/* Only do this if flat 2-D plot */
 
-			move_up = (MAPPING || frame_info.side[2] == 2);
+			move_up = (GMT_IS_MAPPING || frame_info.side[2] == 2);
 			ps_setfont (0);
 			del = ((gmtdefs.tick_length > 0.0) ? gmtdefs.tick_length : 0.0) + gmtdefs.header_offset;
 			del += ((move_up) ? (gmtdefs.annot_font_size[0]) * GMT_u2u[GMT_PT][GMT_INCH] : 0.0);
@@ -1757,7 +1757,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 		}
 		else if (!project_info.three_D) {
 			ps_setfont (gmtdefs.header_font);
-			if (MAPPING || frame_info.side[2] == 2) {
+			if (GMT_IS_MAPPING || frame_info.side[2] == 2) {
 				ps_set_length ("PSL_TL", gmtdefs.tick_length);
 				ps_set_length ("PSL_AO0", gmtdefs.annot_offset[0]);
 				ps_set_length ("PSL_HO", gmtdefs.header_offset);
@@ -1783,13 +1783,13 @@ void GMT_map_annotate (double w, double e, double s, double n)
 		dx[1] = GMT_get_map_interval (0, GMT_ANNOT_LOWER);
 		/* Determine if we should annotate both 0 and 360 degrees */
 
-		full_lat_range = (fabs (180.0 - fabs (project_info.n - project_info.s)) < SMALL);
-		proj_A = (project_info.projection == MERCATOR || project_info.projection == OBLIQUE_MERC ||
-			project_info.projection == WINKEL || project_info.projection == ECKERT4 || project_info.projection == ECKERT6 ||
-			project_info.projection == ROBINSON || project_info.projection == CYL_EQ ||
-			project_info.projection == CYL_EQDIST || project_info.projection == MILLER || project_info.projection == LINEAR);
-		proj_B = (project_info.projection == HAMMER || project_info.projection == MOLLWEIDE ||
-			project_info.projection == SINUSOIDAL);
+		full_lat_range = (fabs (180.0 - fabs (project_info.n - project_info.s)) < GMT_SMALL);
+		proj_A = (project_info.projection == GMT_MERCATOR || project_info.projection == GMT_OBLIQUE_MERC ||
+			project_info.projection == GMT_WINKEL || project_info.projection == GMT_ECKERT4 || project_info.projection == GMT_ECKERT6 ||
+			project_info.projection == GMT_ROBINSON || project_info.projection == GMT_CYL_EQ ||
+			project_info.projection == GMT_CYL_EQDIST || project_info.projection == GMT_MILLER || project_info.projection == GMT_LINEAR);
+		proj_B = (project_info.projection == GMT_HAMMER || project_info.projection == GMT_MOLLWEIDE ||
+			project_info.projection == GMT_SINUSOIDAL);
 		annot_0_and_360 = (GMT_world_map_save && (proj_A || (!full_lat_range && proj_B)));
 	}
 	else
@@ -1825,9 +1825,9 @@ void GMT_map_annotate (double w, double e, double s, double n)
 		remove[1] = (dy[0] < (1.0/60.0)) ? 2 : 1;
 	}
 	for (k = 0; k < 1 + dual; k++) {
-		if (dx[k] > 0.0 && (project_info.degree[0] || project_info.projection == POLAR)) {	/* Annotate the S and N boundaries */
+		if (dx[k] > 0.0 && (project_info.degree[0] || project_info.projection == GMT_POLAR)) {	/* Annotate the S and N boundaries */
 			done_Greenwich = done_Dateline = FALSE;
-			do_minutes = (fabs (fmod (dx[k], 1.0)) > SMALL);
+			do_minutes = (fabs (fmod (dx[k], 1.0)) > GMT_SMALL);
 			do_seconds = (fabs (60.0 * fmod (fmod (dx[k], 1.0) * 60.0, 1.0)) >= 1.0);
 			nx = GMT_linear_array (w, e, dx[k], frame_info.axis[0].phase, &val);
 			for (i = 0; i < nx; i++) {	/* Worry that we do not try to plot 0 and 360 OR -180 and +180 on top of each other */
@@ -1853,12 +1853,12 @@ void GMT_map_annotate (double w, double e, double s, double n)
 			if (nx) GMT_free ((void *)val);
 		}
 
-		if (dy[k] > 0.0 && (project_info.degree[1] || project_info.projection == POLAR)) {	/* Annotate W and E boundaries */
+		if (dy[k] > 0.0 && (project_info.degree[1] || project_info.projection == GMT_POLAR)) {	/* Annotate W and E boundaries */
 			int lonlat;
 			double *tval;
 
 			if (project_info.degree[1]) {
-				do_minutes = (fabs (fmod (dy[k], 1.0)) > SMALL);
+				do_minutes = (fabs (fmod (dy[k], 1.0)) > GMT_SMALL);
 				do_seconds = (fabs (60.0 * fmod (fmod (dy[k], 1.0) * 60.0, 1.0)) >= 1.0);
 				lonlat = 1;
 			}
@@ -1877,7 +1877,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 				tval = val;	/* Same thing */
 			}
 			for (i = 0; i < ny; i++) {
-				if ((project_info.polar || project_info.projection == GRINTEN) && fabs (fabs (val[i]) - 90.0) < GMT_CONV_LIMIT) continue;
+				if ((project_info.polar || project_info.projection == GMT_VANGRINTEN) && fabs (fabs (val[i]) - 90.0) < GMT_CONV_LIMIT) continue;
 				GMT_get_annot_label (tval[i], label, do_minutes, do_seconds, lonlat, GMT_world_map_save);
 				annot = TRUE;
 				if (dual && k == 0) {
@@ -1910,54 +1910,54 @@ void GMT_map_boundary (double w, double e, double s, double n)
 	ps_comment ("Map boundaries");
 
 	switch (project_info.projection) {
-		case LINEAR:
-			if (MAPPING)	/* xy is lonlat */
+		case GMT_LINEAR:
+			if (GMT_IS_MAPPING)	/* xy is lonlat */
 				GMT_fancy_map_boundary (w, e, s, n);
 			else if (project_info.three_D)
 				GMT_basemap_3D (3);
 			else
 				GMT_linear_map_boundary (w, e, s, n);
 			break;
-		case POLAR:
+		case GMT_POLAR:
 			GMT_theta_r_map_boundary (w, e, s, n);
 			break;
-		case MERCATOR:
-		case CYL_EQ:
-		case CYL_EQDIST:
-		case MILLER:
+		case GMT_MERCATOR:
+		case GMT_CYL_EQ:
+		case GMT_CYL_EQDIST:
+		case GMT_MILLER:
 			GMT_fancy_map_boundary (w, e, s, n);
 			break;
-		case ALBERS:
-		case ECONIC:
-		case LAMBERT:
+		case GMT_ALBERS:
+		case GMT_ECONIC:
+		case GMT_LAMBERT:
 			GMT_conic_map_boundary (w, e, s, n);
 			break;
-		case OBLIQUE_MERC:
+		case GMT_OBLIQUE_MERC:
 			GMT_oblmrc_map_boundary (w, e, s, n);
 			break;
-		case STEREO:
-		case ORTHO:
-		case LAMB_AZ_EQ:
-		case AZ_EQDIST:
-		case GNOMONIC:
-		case GRINTEN:
+		case GMT_STEREO:
+		case GMT_ORTHO:
+		case GMT_LAMB_AZ_EQ:
+		case GMT_AZ_EQDIST:
+		case GMT_GNOMONIC:
+		case GMT_VANGRINTEN:
 			if (project_info.polar)
 				GMT_polar_map_boundary (w, e, s, n);
 			else
 				GMT_circle_map_boundary (w, e, s, n);
 			break;
-		case HAMMER:
-		case MOLLWEIDE:
-		case SINUSOIDAL:
+		case GMT_HAMMER:
+		case GMT_MOLLWEIDE:
+		case GMT_SINUSOIDAL:
 			GMT_ellipse_map_boundary (w, e, s, n);
 			break;
-		case TM:
-		case UTM:
-		case CASSINI:
-		case WINKEL:
-		case ECKERT4:
-		case ECKERT6:
-		case ROBINSON:
+		case GMT_TM:
+		case GMT_UTM:
+		case GMT_CASSINI:
+		case GMT_WINKEL:
+		case GMT_ECKERT4:
+		case GMT_ECKERT6:
+		case GMT_ROBINSON:
 			GMT_basic_map_boundary (w, e, s, n);
 			break;
 	}
@@ -2086,7 +2086,7 @@ void GMT_vertical_axis (int mode)
 	}
 }
 
-void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
+void GMT_xyz_axis3D (int axis_no, char axis, struct GMT_PLOT_AXIS *A, int annotate)
 {
 	int i, j, k, id, justify, n;
 
@@ -2198,7 +2198,7 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct PLOT_AXIS *A, int annotate)
 	n = GMT_coordinate_array (val0, val1, &A->item[GMT_TICK_UPPER], &knots);	/* Get all the frame tick knots */
 	for (i = 0; i < n; i++) {
 		val_xyz[id] = knots[i];
-		if (A->type == POW && project_info.xyz_projection[id] == POW) {
+		if (A->type == GMT_POW && project_info.xyz_projection[id] == GMT_POW) {
 			(*xyz_inverse) (&tmp, val_xyz[id]);
 			val_xyz[id] = tmp;
 		}
@@ -2417,7 +2417,7 @@ void GMT_plot_line (double *x, double *y, int *pen, int n)
 	if ((n-i) < 2) return;
 
 	for (j = i + 1; j < n && pen[j] == PSL_PEN_DRAW; j++);	/* j == n means no PSL_PEN_MOVEs present */
-	close = (j == n) ? (hypot (x[n-1] - x[i], y[n-1] - y[i]) < SMALL) : FALSE;
+	close = (j == n) ? (hypot (x[n-1] - x[i], y[n-1] - y[i]) < GMT_SMALL) : FALSE;
 
 	/* First see if we can use the ps_line call directly to save points */
 
@@ -2503,7 +2503,7 @@ void GMT_text3D (double x, double y, double z, double fsize, int fontno, char *t
 		int i, j, n;
 		char *t = text;
 
-		used_fonts = (int *) GMT_memory (VNULL, (size_t) N_FONTS, sizeof (int), "GMT_text3D");
+		used_fonts = (int *) GMT_memory (VNULL, (size_t) GMT_N_FONTS, sizeof (int), "GMT_text3D");
 
 		justify = abs (justify);
 		del_y = 0.5 * fsize * 0.732 * (justify / 4) * GMT_u2u[GMT_PT][GMT_INCH];
@@ -2534,7 +2534,7 @@ void GMT_text3D (double x, double y, double z, double fsize, int fontno, char *t
 			if (*t == '%') continue;
 
 			n = atoi (t);
-			if (n < 0 || n >= N_FONTS) continue;
+			if (n < 0 || n >= GMT_N_FONTS) continue;
 
 			for (j = 0; j < i; j ++)
 				if (n == used_fonts[j]) break;
@@ -2671,7 +2671,7 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 	strcpy (label[1], "miles");
 	strcpy (label[2], "nautical miles");
 
-	if (!MAPPING) return;	/* Only for geographic projections */
+	if (!GMT_IS_MAPPING) return;	/* Only for geographic projections */
 
 	switch (ms->measure) {
 		case 'm':	/* Statute miles instead */
@@ -2696,7 +2696,7 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 		GMT_geo_to_xy (ms->lon, ms->lat, &ms->x0, &ms->y0);
 	}
 
-	if (project_info.projection == OBLIQUE_MERC) {	/* Set latitude to the oblique latitude */
+	if (project_info.projection == GMT_OBLIQUE_MERC) {	/* Set latitude to the oblique latitude */
 		a = fabs (GMT_great_circle_dist (project_info.o_pole_lon * R2D, project_info.o_pole_lat * R2D, ms->scale_lon, ms->scale_lat));	/* Colatitude */
 		if (a > 90.0) a = 180.0 - 90.0;	/* Flip hemisphere */
 		ms->scale_lat = 90.0 - a;
@@ -2844,7 +2844,7 @@ void GMT_draw_map_rose (struct GMT_MAP_ROSE *mr)
 
 	if (!mr->plot) return;
 
-	if (!MAPPING) return;	/* Only for geographic projections */
+	if (!GMT_IS_MAPPING) return;	/* Only for geographic projections */
 
 	if (mr->gave_xy)	/* Also get lon/lat coordinates */
 		GMT_xy_to_geo (&mr->lon, &mr->lat, mr->x0, mr->y0);
@@ -3069,12 +3069,12 @@ void GMT_setpen (struct GMT_PEN *pen)
 	ps_setpaint (rgb);
 }
 
-void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struct CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, BOOLEAN outline) {
+void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, BOOLEAN outline) {
 	int n = 0, n_alloc = GMT_SMALL_CHUNK, na, i, font_no = gmtdefs.annot_font[0];
 	BOOLEAN flush = FALSE, this_outline = FALSE;
 	double x, y, da, sr, sa, ca, *xx, *yy, font_size;
 	char cmd[GMT_TEXT_LEN], *c;
-	struct CUSTOM_SYMBOL_ITEM *s;
+	struct GMT_CUSTOM_SYMBOL_ITEM *s;
 	struct GMT_FILL *f = VNULL;
 	struct GMT_PEN *p = VNULL;
 
@@ -3089,7 +3089,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 		y = y0 + s->y * size;
 
 		switch (s->action) {
-			case ACTION_MOVE:
+			case GMT_ACTION_MOVE:
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				xx[0] = x;
 				yy[0] = y;
@@ -3099,7 +3099,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
 				break;
 
-			case ACTION_DRAW:
+			case GMT_ACTION_DRAW:
 				flush = TRUE;
 				if (n >= n_alloc) {
 					n_alloc += GMT_SMALL_CHUNK;
@@ -3111,7 +3111,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				n++;
 				break;
 
-			case ACTION_ARC:
+			case GMT_ACTION_ARC:
 				flush = TRUE;
 				sr = 0.5 * s->p[0] * size;
 				na = MAX (irint (fabs (s->p[2] - s->p[1]) * sr / gmtdefs.line_step), 16);
@@ -3129,7 +3129,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				}
 				break;
 
-			case ACTION_CROSS:
+			case GMT_ACTION_CROSS:
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
@@ -3138,7 +3138,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				(project_info.three_D) ? GMT_cross3D (x, y, z0, s->p[0] * size) : ps_cross (x, y, s->p[0] * size);
 				break;
 
-			case ACTION_CIRCLE:
+			case GMT_ACTION_CIRCLE:
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
@@ -3166,7 +3166,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				}
 				break;
 
-			case ACTION_SQUARE:
+			case GMT_ACTION_SQUARE:
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
@@ -3175,7 +3175,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				(project_info.three_D) ? GMT_square3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_square (x, y, s->p[0] * size, f->rgb, this_outline);
 				break;
 
-			case ACTION_TRIANGLE:
+			case GMT_ACTION_TRIANGLE:
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
@@ -3184,7 +3184,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				(project_info.three_D) ? GMT_triangle3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_triangle (x, y, s->p[0] * size, f->rgb, this_outline);
 				break;
 
-			case ACTION_DIAMOND:
+			case GMT_ACTION_DIAMOND:
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
@@ -3193,7 +3193,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				(project_info.three_D) ? GMT_diamond3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_diamond (x, y, s->p[0] * size, f->rgb, this_outline);
 				break;
 
-			case ACTION_STAR:
+			case GMT_ACTION_STAR:
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
@@ -3202,7 +3202,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				(project_info.three_D) ? GMT_star3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_star (x, y, s->p[0] * size, f->rgb, this_outline);
 				break;
 
-			case ACTION_HEXAGON:
+			case GMT_ACTION_HEXAGON:
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
@@ -3211,7 +3211,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				(project_info.three_D) ? GMT_hexagon3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_hexagon (x, y, s->p[0] * size, f->rgb, this_outline);
 				break;
 
-			case ACTION_ITRIANGLE:
+			case GMT_ACTION_ITRIANGLE:
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
@@ -3220,7 +3220,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				(project_info.three_D) ? GMT_itriangle3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_itriangle (x, y, s->p[0] * size, f->rgb, this_outline);
 				break;
 
-			case ACTION_TEXT:
+			case GMT_ACTION_TEXT:
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
@@ -3233,8 +3233,8 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 					if (c[0] >= '0' && c[0] <= '9')	/* Gave a font # */
 						font_no = atoi (c);
 					else
-						font_no = GMT_font_lookup (c, GMT_font, N_FONTS);
-					if (font_no >= N_FONTS) {
+						font_no = GMT_font_lookup (c, GMT_font, GMT_N_FONTS);
+					if (font_no >= GMT_N_FONTS) {
 						fprintf (stderr, "%s: custom symbol subcommand l contains bad font (set to %s (0))\n", GMT_program, GMT_font[gmtdefs.annot_font[0]].name);
 						font_no = gmtdefs.annot_font[0];
 					}
@@ -3253,7 +3253,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 					(project_info.three_D) ? GMT_text3D (x, y, z0, font_size, font_no, s->string, 0.0, 6, TRUE) : ps_text (x, y, font_size, s->string, 0.0, 6, TRUE);
 				break;
 
-			case ACTION_PENTAGON:
+			case GMT_ACTION_PENTAGON:
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
@@ -3262,7 +3262,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				(project_info.three_D) ? GMT_pentagon3D (x, y, z0, s->p[0] * size, f->rgb, outline) : ps_pentagon (x, y, s->p[0] * size, f->rgb, this_outline);
 				break;
 
-			case ACTION_OCTAGON:
+			case GMT_ACTION_OCTAGON:
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
@@ -3271,7 +3271,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				(project_info.three_D) ? GMT_octagon3D (x, y, z0, s->p[0] * size, f->rgb, this_outline) : ps_octagon (x, y, s->p[0] * size, f->rgb, this_outline);
 				break;
 
-			case ACTION_ELLIPSE:
+			case GMT_ACTION_ELLIPSE:
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
@@ -3280,7 +3280,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				(project_info.three_D) ? GMT_ellipse3D (x, y, z0, s->p[0], s->p[1] * size, s->p[2] * size, f->rgb, this_outline) : ps_ellipse (x, y, s->p[0], s->p[1] * size, s->p[2] * size, f->rgb, this_outline);
 				break;
 
-			case ACTION_PIE:
+			case GMT_ACTION_PIE:
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
@@ -3289,7 +3289,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				(project_info.three_D) ? GMT_pie3D (x, y, z0, s->p[0] * size, s->p[1], s->p[2], f->rgb, this_outline) : ps_pie (x, y, s->p[0] * size, s->p[1], s->p[2], f->rgb, this_outline);
 				break;
 
-			case ACTION_RECT:
+			case GMT_ACTION_RECT:
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : fill;
 				p = (s->pen)  ? s->pen  : pen;
@@ -3925,7 +3925,7 @@ struct EPS *GMT_epsinfo (char *program)
 	tick_space = (gmtdefs.tick_length > 0.0) ? irint (GMT_u2u[GMT_INCH][GMT_PT] * gmtdefs.tick_length) : 0;
 	frame_space = irint (GMT_u2u[GMT_INCH][GMT_PT] * gmtdefs.frame_width);
 	if (frame_info.header[0]) {	/* Make space for header text */
-		move_up = (MAPPING || frame_info.side[2] == 2);
+		move_up = (GMT_IS_MAPPING || frame_info.side[2] == 2);
 		dy = ((move_up) ? (gmtdefs.annot_font_size[0] + gmtdefs.label_font_size) * GMT_u2u[GMT_PT][GMT_INCH] : 0.0) + 2.5 * gmtdefs.annot_offset[0];
 		new->y1 += tick_space + irint (GMT_u2u[GMT_INCH][GMT_PT] * dy);
 	}
@@ -4048,7 +4048,7 @@ void GMT_fill_polygon (double *lon, double *lat, double z, int n, struct GMT_FIL
 	double *x, *xp, *yp;
 	PFD x_on_border[2];
 	
-	if (AZIMUTHAL || !GMT_world_map) {
+	if (GMT_IS_AZIMUTHAL || !GMT_world_map) {
 		/* Because points way outside the map might get close to the antipode we must
 		 * clip the polygon first.  The new radial clip handles this by excluding points
 		 * beyond the horizon and adding arcs along the boundary between exit points
@@ -4065,7 +4065,7 @@ void GMT_fill_polygon (double *lon, double *lat, double z, int n, struct GMT_FIL
 	
 	if ((n = GMT_geo_to_xy_line (lon, lat, n)) == 0) return;		/* Convert to (x,y,pen) - return if nothing to do */
 	
-	if (!MAPPING) {		/* Not geographic data so there are no periodic boundaries to worry about */
+	if (!GMT_IS_MAPPING) {		/* Not geographic data so there are no periodic boundaries to worry about */
 		if (project_info.three_D) GMT_2Dz_to_3D (GMT_x_plot, GMT_y_plot, z, n);			/* Project onto plane */
 		GMT_fill (GMT_x_plot, GMT_y_plot, n, F, outline);
 		return;
@@ -4239,7 +4239,7 @@ void GMT_draw_fence (double x[], double y[], double z, int n, struct GMT_FRONTLI
 
 	i = 0;
 	while (i < n) {
-		while ((s[i] - dist) > -SMALL) {	/* Time for tick */
+		while ((s[i] - dist) > -GMT_SMALL) {	/* Time for tick */
 			if (i > 0) {
 				dx = x[i] - x[i-1];
 				dy = y[i] - y[i-1];
@@ -4248,7 +4248,7 @@ void GMT_draw_fence (double x[], double y[], double z, int n, struct GMT_FRONTLI
 				dx = x[1] - x[0];
 				dy = y[1] - y[0];
 			}
-			if (fabs (dist - s[i]) < SMALL) {
+			if (fabs (dist - s[i]) < GMT_SMALL) {
 				x0 = x[i];
 				y0 = y[i];
 			}

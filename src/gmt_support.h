@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.6 2006-03-28 07:33:22 pwessel Exp $
+ *	$Id: gmt_support.h,v 1.7 2006-04-10 04:43:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -30,7 +30,7 @@ EXTERN_MSC double GMT_getradius (char *line);
 EXTERN_MSC double GMT_great_circle_dist_km (double x0, double y0, double x1, double y1);
 EXTERN_MSC double GMT_great_circle_dist_meter (double x0, double y0, double x1, double y1);
 EXTERN_MSC int GMT_akima (double *x, double *y, int nx, double *c);
-EXTERN_MSC int GMT_annot_pos (double min, double max, struct PLOT_AXIS_ITEM *T, double coord[], double *pos);
+EXTERN_MSC int GMT_annot_pos (double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double coord[], double *pos);
 EXTERN_MSC int GMT_check_rgb (int *rgb);
 EXTERN_MSC int GMT_comp_double_asc (const void *p_1, const void *p_2);
 EXTERN_MSC int GMT_comp_float_asc (const void *p_1, const void *p_2);
@@ -68,7 +68,7 @@ EXTERN_MSC void GMT_chop (char *string);
 EXTERN_MSC void GMT_dump_contour (double *xx, double *yy, int nn, double cval, int id, BOOLEAN interior, char *file);
 EXTERN_MSC void GMT_free (void *addr);
 EXTERN_MSC void GMT_get_plot_array (void);
-EXTERN_MSC void GMT_get_primary_annot (struct PLOT_AXIS *A, int *primary, int *secondary);
+EXTERN_MSC void GMT_get_primary_annot (struct GMT_PLOT_AXIS *A, int *primary, int *secondary);
 EXTERN_MSC void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, BOOLEAN update);
 EXTERN_MSC void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift);
 EXTERN_MSC void GMT_illuminate (double intensity, int *rgb);

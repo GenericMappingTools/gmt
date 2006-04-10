@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.h,v 1.11 2006-04-06 07:52:37 pwessel Exp $
+ *	$Id: gmt_shore.h,v 1.12 2006-04-10 04:43:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -30,7 +30,7 @@
 
 #include "netcdf.h"
 
-#define MAX_DELTA 65535	/* Largest value to store in a unsigned short, used as largest dx or dy in bin  */
+#define GSHHS_MAX_DELTA 65535	/* Largest value to store in a unsigned short, used as largest dx or dy in bin  */
 #define GMT_MAX_GSHHS_LEVEL	4	/* Highest hierarchical level of coastlines */
 
 #define GMT_N_BLEVELS		3	/* Number of levels for borders */
@@ -49,7 +49,7 @@ struct GMT_SHORE {
 	int ns;			/* Number of segments to use in current bin */
 	unsigned char node_level[4];
 	struct GMT_SHORE_SEGMENT *seg;	/* Array of these segments */
-	struct SIDE *side[4];		/* Has position & id for each side exit/entry */
+	struct GSHHS_SIDE *side[4];		/* Has position & id for each side exit/entry */
 	int nside[4];			/* Number of entries per side, including corner */
 	int n_entries;
 	BOOLEAN leftmost_bin;		/* TRUE if current bin is at left edge of map */
@@ -108,7 +108,7 @@ struct GMT_SHORE_SEGMENT {
 	short *dy;		/* Array of scaled latitudes relative to SW corner */
 };
 
-struct SIDE {
+struct GSHHS_SIDE {
 	unsigned short pos;	/* Position along side in 0-65535 range */
 	short id;	/* Local segment id */
 };
@@ -174,7 +174,7 @@ struct GMT_BR_SEGMENT {
 	short *dy;		/* Array of scaled latitudes relative to SW corner */
 };
 
-struct POL {
+struct GMT_GSHHS_POL {
 	int n;
 	int interior;	/* TRUE if polygon is inside bin */
 	int level;
@@ -186,16 +186,16 @@ struct POL {
 
 EXTERN_MSC void GMT_get_shore_bin (int b, struct GMT_SHORE *c, double min_area, int min_level, int max_level);
 EXTERN_MSC void GMT_get_br_bin (int b, struct GMT_BR *c, int *level, int n_levels);
-EXTERN_MSC void GMT_free_polygons (struct POL *p, int n);
+EXTERN_MSC void GMT_free_polygons (struct GMT_GSHHS_POL *p, int n);
 EXTERN_MSC void GMT_free_shore (struct GMT_SHORE *c);
 EXTERN_MSC void GMT_free_br (struct GMT_BR *c);
 EXTERN_MSC void GMT_shore_cleanup (struct GMT_SHORE *c);
 EXTERN_MSC void GMT_br_cleanup (struct GMT_BR *c);
 EXTERN_MSC int GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, double s, double n);
 EXTERN_MSC int GMT_init_br (char which, char res, struct GMT_BR *c, double w, double e, double s, double n);
-EXTERN_MSC int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN assemble, BOOLEAN shift, double west, double east, struct POL **pol);
-EXTERN_MSC int GMT_assemble_br (struct GMT_BR *c, BOOLEAN shift, double edge, struct POL **pol);
-EXTERN_MSC int GMT_prep_polygons (struct POL **p, int np, BOOLEAN greenwich, BOOLEAN sample, double step, int anti_bin);
+EXTERN_MSC int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN assemble, BOOLEAN shift, double west, double east, struct GMT_GSHHS_POL **pol);
+EXTERN_MSC int GMT_assemble_br (struct GMT_BR *c, BOOLEAN shift, double edge, struct GMT_GSHHS_POL **pol);
+EXTERN_MSC int GMT_prep_polygons (struct GMT_GSHHS_POL **p, int np, BOOLEAN greenwich, BOOLEAN sample, double step, int anti_bin);
 EXTERN_MSC int GMT_set_resolution (char *res, char opt);
 
 #endif /* _GMT_SHORE_H */

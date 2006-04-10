@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel2.c,v 1.3 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_findlevel2.c,v 1.4 2006-04-10 04:43:31 pwessel Exp $
  */
 #include "wvs.h"
 
@@ -94,7 +94,7 @@ int main (int argc, char **argv) {
 
 		fprintf (stderr, "\n\nFind area and direction of polygons\n");
 
-		gmtdefs.ellipsoid = N_ELLIPSOIDS-1;
+		gmtdefs.ellipsoid = GMT_N_ELLIPSOIDS-1;
 		project_info.projection = LAMB_AZ_EQ;
 		project_info.unit = GMT_M;
 		project_info.pars[2] = 39.3700787401574814;

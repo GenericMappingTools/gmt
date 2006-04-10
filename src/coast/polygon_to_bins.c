@@ -1,9 +1,9 @@
 /*
- *	$Id: polygon_to_bins.c,v 1.6 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_to_bins.c,v 1.7 2006-04-10 04:43:31 pwessel Exp $
  */
 #include "wvs.h"
 
-#define MAX_DELTA 65535		/* Largest value to store in a ushort, used as largest dx or dy in bin  */
+#define GSHHS_MAX_DELTA 65535		/* Largest value to store in a ushort, used as largest dx or dy in bin  */
 
 struct GMT3_POLY h;
 
@@ -22,7 +22,7 @@ struct SEGMENT {
 };
 
 struct SHORT_PAIR {
-	ushort	dx;	/* Relative distance from SW corner of bin, units of B_WIDTH/MAX_DELTA  */
+	ushort	dx;	/* Relative distance from SW corner of bin, units of B_WIDTH/GSHHS_MAX_DELTA  */
 	ushort	dy;
 };
 
@@ -331,10 +331,10 @@ int main (int argc, char **argv) {
 			for (k = 0; k < s->n; k++) {
 				/* Don't forget that this modulo calculation for DX doesn't work when you have a right/top edge (this wont happen for this polygon though !!!   */
 				test_long = irint ((xx[k] % B_WIDTH) * SHORT_FACTOR);
-				if (test_long < 0 || test_long > MAX_DELTA) give_bad_message_and_exit (h.id, 0, k);
+				if (test_long < 0 || test_long > GSHHS_MAX_DELTA) give_bad_message_and_exit (h.id, 0, k);
 				s->p[k].dx = (ushort) test_long;
 				test_long = irint((yy[k] % B_WIDTH) * SHORT_FACTOR);
-				if (test_long < 0 || test_long > MAX_DELTA) give_bad_message_and_exit (h.id, 1, k);
+				if (test_long < 0 || test_long > GSHHS_MAX_DELTA) give_bad_message_and_exit (h.id, 1, k);
 				s->p[k].dy = (ushort) test_long;
 			}
 			
@@ -411,13 +411,13 @@ int main (int argc, char **argv) {
 				s->p = (struct SHORT_PAIR *)GMT_memory(VNULL, s->n, sizeof(struct SHORT_PAIR), "polygon_to_bins");
 				for (k = 0, kk = last_i; k < s->n; k++, kk++) {
 					if (i_x_3 == last_x_bin && xx[kk] == 0)
-						test_long = MAX_DELTA;
+						test_long = GSHHS_MAX_DELTA;
 					else
 						test_long = irint((xx[kk] - x_origin) * SHORT_FACTOR);
-					if (test_long < 0 || test_long > MAX_DELTA) give_bad_message_and_exit (h.id, 0, kk);
+					if (test_long < 0 || test_long > GSHHS_MAX_DELTA) give_bad_message_and_exit (h.id, 0, kk);
 					s->p[k].dx = (ushort) test_long;
 					test_long = irint((yy[kk] - y_origin) * SHORT_FACTOR);
-					if (test_long < 0 || test_long > MAX_DELTA) give_bad_message_and_exit (h.id, 1, kk);
+					if (test_long < 0 || test_long > GSHHS_MAX_DELTA) give_bad_message_and_exit (h.id, 1, kk);
 					s->p[k].dy = (ushort) test_long;
 				}
 				
@@ -428,10 +428,10 @@ int main (int argc, char **argv) {
 						s->p[0].dy = 0;
 						break;
 					case 1:
-						s->p[0].dx = MAX_DELTA;
+						s->p[0].dx = GSHHS_MAX_DELTA;
 						break;
 					case 2:
-						s->p[0].dy = MAX_DELTA;
+						s->p[0].dy = GSHHS_MAX_DELTA;
 						break;
 					case 3:
 						s->p[0].dx = 0;
@@ -443,10 +443,10 @@ int main (int argc, char **argv) {
 						s->p[k].dy = 0;
 						break;
 					case 1:
-						s->p[k].dx = MAX_DELTA;
+						s->p[k].dx = GSHHS_MAX_DELTA;
 						break;
 					case 2:
-						s->p[k].dy = MAX_DELTA;
+						s->p[k].dy = GSHHS_MAX_DELTA;
 						break;
 					case 3:
 						s->p[k].dx = 0;

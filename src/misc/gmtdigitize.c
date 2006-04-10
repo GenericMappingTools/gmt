@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.5 2006-04-06 05:25:17 pwessel Exp $
+ *    $Id: gmtdigitize.c,v 1.6 2006-04-10 04:43:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -227,7 +227,7 @@ int main (int argc, char **argv)
 
 	/* Get 3 control points */
 	
-	type = (MAPPING) ? 0 : 1;
+	type = (GMT_IS_MAPPING) ? 0 : 1;
 	if (output_val) key_pos = 3;	/* z-values go in 3rd column (if chosen), key values go in the next (if chosen) */
 	
 	
@@ -337,7 +337,7 @@ int main (int argc, char **argv)
 	C.map_x0 = (mean_map_x - mean_dig_x * C.cos_theta + mean_dig_y * C.sin_theta) * C.map_scale;
 	C.map_y0 = (mean_map_y - mean_dig_x * C.sin_theta - mean_dig_y * C.cos_theta) * C.map_scale;
 	
-	utm_correct = (project_info.projection == UTM && !project_info.north_pole) ? FALSE_NORTHING : 0.0;
+	utm_correct = (project_info.projection == GMT_UTM && !project_info.north_pole) ? GMT_FALSE_NORTHING : 0.0;
 	
 	if (gmtdefs.verbose) {
 		sprintf (format, "%s/%s/%s/%s", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);

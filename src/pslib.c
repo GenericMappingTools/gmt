@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.121 2006-04-04 18:19:16 remko Exp $
+ *	$Id: pslib.c,v 1.122 2006-04-10 04:43:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -289,7 +289,7 @@ void ps_axis (double x, double y, double length, double val0, double val1, doubl
 
 	i = 0;
 	val = val0;
-	while (val <= (val1+SMALL)) {
+	while (val <= (val1+PSL_SMALL)) {
 		i++;
 		xx = (val - val0) * scl;
 		if (left) xx = length - xx;
@@ -352,7 +352,7 @@ void ps_circle (double x, double y, double size, int rgb[], int outline)
 	ir = irint (0.5 * size * ps.scale);
 	fprintf (ps.fp, "N ");
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d C%d\n", ix, iy, ir, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d C%d\n", ix, iy, ir, outline + psl_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -410,7 +410,7 @@ void ps_clipon (double *x, double *y, int n, int rgb[], int flag)
 		if (rgb[0] >= 0) {	/* fill is desired */
 			fprintf (ps.fp, "V ");
 			pmode = ps_place_color (rgb);
-			fprintf (ps.fp, "%c eofill U ", ps_paint_code[pmode]);
+			fprintf (ps.fp, "%c eofill U ", psl_paint_code[pmode]);
 		}
 		if (flag & 4)
 			fprintf (ps.fp, "eoclip\n");
@@ -599,7 +599,7 @@ void ps_diamond (double x, double y, double diameter, int rgb[], int outline)
 	iy = irint ((y - diameter) * ps.scale);
 
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d D%d\n", ds, ix, iy, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d D%d\n", ds, ix, iy, outline + psl_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -636,7 +636,7 @@ void ps_star (double x, double y, double diameter, int rgb[], int outline)
 	ix = irint (x * ps.scale);
 	iy = irint (y * ps.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d E%d\n", ds, ix, iy, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d E%d\n", ds, ix, iy, outline + psl_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -655,7 +655,7 @@ void ps_hexagon (double x, double y, double diameter, int rgb[], int outline)
 	ix = irint (x * ps.scale);
 	iy = irint (y * ps.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d H%d\n", ds, ix, iy, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d H%d\n", ds, ix, iy, outline + psl_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -674,7 +674,7 @@ void ps_pentagon (double x, double y, double diameter, int rgb[], int outline)
 	ix = irint (x * ps.scale);
 	iy = irint (y * ps.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d N%d\n", ds, ix, iy, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d N%d\n", ds, ix, iy, outline + psl_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -693,7 +693,7 @@ void ps_octagon (double x, double y, double diameter, int rgb[], int outline)
 	ix = irint (x * ps.scale);
 	iy = irint (y * ps.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d O%d\n", ds, ix, iy, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d O%d\n", ds, ix, iy, outline + psl_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -719,7 +719,7 @@ void ps_ellipse (double x, double y, double angle, double major, double minor, i
 	ir = irint (major * ps.scale);
 
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "0 0 %d C%d U\n", ir, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "0 0 %d C%d U\n", ir, outline + psl_outline_offset[pmode]);
 }
 
 /* fortran interface */
@@ -754,8 +754,8 @@ void ps_image_ (double *x, double *y, double *xsize, double *ysize, unsigned cha
 void ps_imagefill_cleanup (void) {
 	int image_no;
 
-	for (image_no = 0; image_no < N_PATTERNS * 2; image_no++) {
-		if (ps_pattern[image_no].status) {
+	for (image_no = 0; image_no < PSL_N_PATTERNS * 2; image_no++) {
+		if (psl_pattern[image_no].status) {
 			fprintf (ps.fp, "currentdict /image%d undef\n", image_no);
 			fprintf (ps.fp, "currentdict /fillimage%d undef\n", image_no);
 		}
@@ -789,36 +789,36 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 
 	/* Determine if image was used before */
 
-	if ((image_no >= 0 && image_no < N_PATTERNS) && !ps_pattern[image_no].status) {	/* Unused predefined */
+	if ((image_no >= 0 && image_no < PSL_N_PATTERNS) && !psl_pattern[image_no].status) {	/* Unused predefined */
 		image_no = ps_imagefill_init (image_no, imagefile);
 	}
 	else if (image_no < 0) {	/* User image, check if already used */
-		for (i = 0, found = FALSE; !found && i < ps_n_userimages; i++) found = !strcmp (ps_user_image[i], imagefile);
+		for (i = 0, found = FALSE; !found && i < psl_n_userimages; i++) found = !strcmp (psl_user_image[i], imagefile);
 		if (!found)	/* Not found or no previous user images loaded */
 			image_no = ps_imagefill_init (image_no, imagefile);
 		else
-			image_no = N_PATTERNS + i - 1;
+			image_no = PSL_N_PATTERNS + i - 1;
 	}
-	nx = ps_pattern[image_no].nx;
-	ny = ps_pattern[image_no].ny;
+	nx = psl_pattern[image_no].nx;
+	ny = psl_pattern[image_no].ny;
 
 	id = (ps.color_mode & PSL_CMYK) ? 2 : 1;
-	name = (ps_pattern[image_no].depth == 1 && (f_rgb[0] < 0 || b_rgb[0] < 0)) ? "imagemask" : "image";
+	name = (psl_pattern[image_no].depth == 1 && (f_rgb[0] < 0 || b_rgb[0] < 0)) ? "imagemask" : "image";
 
 	if (ps.comments) fprintf (ps.fp, "\n%% Start of %s fill pattern\n", name);
 
 	/* When DPI or colors have changed, the /fillimage procedure needs to be rewritten */
 
 	refresh = 0;
-	if (ps_pattern[image_no].dpi != image_dpi) refresh++;
+	if (psl_pattern[image_no].dpi != image_dpi) refresh++;
 	for (i = 0; !refresh && i < 3; i++) {
 		if (invert) {
-			if (ps_pattern[image_no].f_rgb[i] != b_rgb[i]) refresh++;
-			if (ps_pattern[image_no].b_rgb[i] != f_rgb[i]) refresh++;
+			if (psl_pattern[image_no].f_rgb[i] != b_rgb[i]) refresh++;
+			if (psl_pattern[image_no].b_rgb[i] != f_rgb[i]) refresh++;
 		}
 		else {
-			if (ps_pattern[image_no].f_rgb[i] != f_rgb[i]) refresh++;
-			if (ps_pattern[image_no].b_rgb[i] != b_rgb[i]) refresh++;
+			if (psl_pattern[image_no].f_rgb[i] != f_rgb[i]) refresh++;
+			if (psl_pattern[image_no].b_rgb[i] != b_rgb[i]) refresh++;
 		}
 	}
 
@@ -833,31 +833,31 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 		}
 		fprintf (ps.fp, "/fillimage%d { V T %d %d scale ", image_no, dx, dy);
 
-		if (ps_pattern[image_no].depth == 1) {	/* 1-bit bitmap basis */
+		if (psl_pattern[image_no].depth == 1) {	/* 1-bit bitmap basis */
 			inv = (ps_bitimage_cmap (f_rgb, b_rgb) + invert) % 2;
 			fprintf (ps.fp, "<< /ImageType 1 /Decode [%d %d] ", inv, 1-inv);
 		}
 		else
 			fprintf (ps.fp, "/Device%s setcolorspace\n<< /ImageType 1 /Decode [%s] ", colorspace[id], decode[id]);
-		fprintf (ps.fp, "/Width %d /Height %d /BitsPerComponent %d\n", nx, ny, MIN(ps_pattern[image_no].depth,8));
+		fprintf (ps.fp, "/Width %d /Height %d /BitsPerComponent %d\n", nx, ny, MIN(psl_pattern[image_no].depth,8));
 		fprintf (ps.fp, "   /ImageMatrix [%d 0 0 %d 0 %d] /DataSource image%d\n>> %s U} def\n", nx, -ny, ny, image_no, name);
 
-		ps_pattern[image_no].dpi = image_dpi;
+		psl_pattern[image_no].dpi = image_dpi;
 		for (i = 0; i < 3; i++) {
 			if (invert) {
-				ps_pattern[image_no].f_rgb[i] = b_rgb[i];
-				ps_pattern[image_no].b_rgb[i] = f_rgb[i];
+				psl_pattern[image_no].f_rgb[i] = b_rgb[i];
+				psl_pattern[image_no].b_rgb[i] = f_rgb[i];
 			}
 			else {
-				ps_pattern[image_no].f_rgb[i] = f_rgb[i];
-				ps_pattern[image_no].b_rgb[i] = b_rgb[i];
+				psl_pattern[image_no].f_rgb[i] = f_rgb[i];
+				psl_pattern[image_no].b_rgb[i] = b_rgb[i];
 			}
 		}
 	}
 
 	/* Print out clip-path */
 
-	if (outline >= 0) ps_clipon (x, y, n, no_rgb, 3);
+	if (outline >= 0) ps_clipon (x, y, n, psl_no_rgb, 3);
 
 	/* Find extreme bounds for area */
 
@@ -904,14 +904,14 @@ int ps_imagefill_init (int image_no, char *imagefile)
 	struct imageinfo h;
 	BOOLEAN found;
 
-	if ((image_no >= 0 && image_no < N_PATTERNS) && ps_pattern[image_no].status) return (image_no);	/* Already done this */
+	if ((image_no >= 0 && image_no < PSL_N_PATTERNS) && psl_pattern[image_no].status) return (image_no);	/* Already done this */
 
-	if ((image_no >= 0 && image_no < N_PATTERNS))	/* Premade pattern yet not used */
-		sprintf (file, "%s%cshare%cpattern%cps_pattern_%2.2d.ras", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, image_no);
+	if ((image_no >= 0 && image_no < PSL_N_PATTERNS))	/* Premade pattern yet not used */
+		sprintf (file, "%s%cshare%cpattern%cps_pattern_%2.2d.ras", PSL_HOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, image_no);
 	else {	/* User image, check to see if already used */
 
-		for (i = 0, found = FALSE; !found && i < ps_n_userimages; i++) found = !strcmp (ps_user_image[i], imagefile);
-		if (found) return (N_PATTERNS + i - 1);
+		for (i = 0, found = FALSE; !found && i < psl_n_userimages; i++) found = !strcmp (psl_user_image[i], imagefile);
+		if (found) return (PSL_N_PATTERNS + i - 1);
 #ifdef WIN32
 		if (imagefile[0] == '\\' || imagefile[1] == ':')	/* Full path name, use it as is */
 #else
@@ -923,23 +923,23 @@ int ps_imagefill_init (int image_no, char *imagefile)
 			if (!access (imagefile, R_OK))
 				strcpy (file, imagefile);
 			else
-				sprintf (file, "%s%cshare%c%s", PSHOME, DIR_DELIM, DIR_DELIM, imagefile);
+				sprintf (file, "%s%cshare%c%s", PSL_HOME, DIR_DELIM, DIR_DELIM, imagefile);
 		}
-		ps_user_image[ps_n_userimages] = (char *) ps_memory (VNULL, (size_t)(strlen (imagefile)+1), sizeof (char));
-		strcpy (ps_user_image[ps_n_userimages], imagefile);
-		image_no = N_PATTERNS + ps_n_userimages;
-		ps_n_userimages++;
+		psl_user_image[psl_n_userimages] = (char *) ps_memory (VNULL, (size_t)(strlen (imagefile)+1), sizeof (char));
+		strcpy (psl_user_image[psl_n_userimages], imagefile);
+		image_no = PSL_N_PATTERNS + psl_n_userimages;
+		psl_n_userimages++;
 	}
 
 	/* Load image file. Store size, depth and bogus DPI setting */
 
 	picture = ps_load_image (file, &h);
 
-	ps_pattern[image_no].status = 1;
-	ps_pattern[image_no].nx = h.width;
-	ps_pattern[image_no].ny = h.height;
-	ps_pattern[image_no].depth = h.depth;
-	ps_pattern[image_no].dpi = -999;
+	psl_pattern[image_no].status = 1;
+	psl_pattern[image_no].nx = h.width;
+	psl_pattern[image_no].ny = h.height;
+	psl_pattern[image_no].depth = h.depth;
+	psl_pattern[image_no].dpi = -999;
 
 	ps_comment ("Start of imagefill pattern definition");
 
@@ -1028,7 +1028,7 @@ int ps_line (double *x, double *y, int n, int type, int close, int split)
 		ps.ix = ix[i];
 		ps.iy = iy[i];
 		ps.npath++;
-		if ((ps.npath + ps.clip_path_length) > MAX_L1_PATH && split) {
+		if ((ps.npath + ps.clip_path_length) > PSL_MAX_L1_PATH && split) {
 			fprintf (ps.fp, "S %d %d M\n", ps.ix, ps.iy);
 			ps.npath = 1;
 			ps.split = 1;
@@ -1139,7 +1139,7 @@ void ps_pie (double x, double y, double radius, double az1, double az2, int rgb[
 	ir = irint (radius * ps.scale);
 	fprintf (ps.fp, "%d %d M ", ix, iy);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d %g %g P%d\n", ix, iy, ir, az1, az2, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d %g %g P%d\n", ix, iy, ir, az1, az2, outline + psl_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -1171,7 +1171,7 @@ void ps_plot (double x, double y, int pen)
 	if (pen == PSL_PEN_DRAW_AND_STROKE) fprintf (ps.fp, "S\n");
 	ps.ix = ix;
 	ps.iy = iy;
-	if ((ps.npath + ps.clip_path_length) > MAX_L1_PATH) {
+	if ((ps.npath + ps.clip_path_length) > PSL_MAX_L1_PATH) {
 		fprintf (ps.fp, "S %d %d M\n", ix, iy);
 		ps.npath = 1;
 	}
@@ -1247,21 +1247,21 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
    eps:		structure with Document info.  !! Fortran version (ps_plotinit_) does not have this argument !!
 */
 {
-	int i, pmode, manual = FALSE;
+	int i, pmode, manual = FALSE, n_GMT_fonts;
 	time_t right_now;
 	char openmode[2], *this;
 	double scl;
 
 	if ((this = getenv ("GMTHOME")) == NULL) {	/* Use default GMT path */
-		PSHOME = (char *) ps_memory (VNULL, (size_t)(strlen (GMT_DEFAULT_PATH) + 1), sizeof (char));
-		strcpy (PSHOME, GMT_DEFAULT_PATH);
+		PSL_HOME = (char *) ps_memory (VNULL, (size_t)(strlen (GMT_DEFAULT_PATH) + 1), sizeof (char));
+		strcpy (PSL_HOME, GMT_DEFAULT_PATH);
 	}
 	else {	/* Set user's default path */
-		PSHOME = (char *) ps_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char));
-		strcpy (PSHOME, this);
+		PSL_HOME = (char *) ps_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char));
+		strcpy (PSL_HOME, this);
 	}
 
-	ps_init_fonts (&N_PS_FONTS, &N_GMT_FONTS);	/* Load the available font information */
+	ps_init_fonts (&PSL_N_FONTS, &n_GMT_fonts);	/* Load the available font information */
 
 	ps.eps_format = FALSE;
 	ps.verbose = (mode & 2) ? TRUE : FALSE;
@@ -1345,7 +1345,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	else {		/* No info is available, default to Current Media Size */
 		ps.bb[0] = ps.bb[1] = 0;
 		ps.bb[2] = ps.p_width;
-		ps.bb[3] = (ps.p_height == 0) ? PAGE_HEIGHT_IN_PTS : ps.p_height;
+		ps.bb[3] = (ps.p_height == 0) ? PSL_PAGE_HEIGHT_IN_PTS : ps.p_height;
 	}
 
 	if (!overlay) {
@@ -1398,7 +1398,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		/* Define font macros (see pslib.h for details on how to add fonts) */
 
 
-		for (i = 0; i < N_PS_FONTS; i++) fprintf (ps.fp, "/F%d {/%s Y} bind def\n", i, ps.font[i].name);
+		for (i = 0; i < PSL_N_FONTS; i++) fprintf (ps.fp, "/F%d {/%s Y} bind def\n", i, ps.font[i].name);
 
 		if (!ps.eps_format) fprintf (ps.fp, "/#copies %d def\n\n", ncopies);
 		bulkcopy ("PSL_label");		/* Place code for label line annotations and clipping */
@@ -1440,7 +1440,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		if (!(rgb[0] == rgb[1] && rgb[1] == rgb[2] && rgb[0] == 255)) {	/* Change background color */
 			fprintf (ps.fp, "clippath ");
 			pmode = ps_place_color (rgb);
-			fprintf (ps.fp, "%c F N\n", ps_paint_code[pmode]);
+			fprintf (ps.fp, "%c F N\n", psl_paint_code[pmode]);
 		}
 	}
 	init_font_encoding (eps);	/* Reencode fonts if necessary */
@@ -1449,14 +1449,14 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps_setlinecap (ps.line_cap);
 	ps_setlinejoin (ps.line_join);
 	ps_setmiterlimit (ps.miter_limit);
-	ps_setpaint (no_rgb);
+	ps_setpaint (psl_no_rgb);
 	if (!(xoff == 0.0 && yoff == 0.0)) fprintf (ps.fp, "%g %g T\n", xoff*ps.scale, yoff*ps.scale);
 
 	/* Initialize global variables */
 
 	ps.npath = ps.clip_path_length = ps.max_path_length = 0;
-	memset ((void *) ps_pattern, 0, (size_t)(sizeof (struct PATTERN) * N_PATTERNS * 2));
-	ps_n_userimages = 0;
+	memset ((void *) psl_pattern, 0, (size_t)(sizeof (struct PSL_PATTERN) * PSL_N_PATTERNS * 2));
+	psl_n_userimages = 0;
 	return (0);
 }
 
@@ -1543,7 +1543,7 @@ void ps_polygon (double *x, double *y, int n, int rgb[], int outline)
 	}
 	else {
 		pmode = ps_place_color (rgb);
-		mode = ps_paint_code[pmode] - 'A' + 'a';	/* Convert A, C, K, or H to a, c, k, or h */
+		mode = psl_paint_code[pmode] - 'A' + 'a';	/* Convert A, C, K, or H to a, c, k, or h */
 	}
 	if (outline > 0) mode += outline;			/* Convert a, c, k, or h to b, d, l, or i */
 	fprintf (ps.fp, "%c\n", mode);
@@ -1624,7 +1624,7 @@ void ps_rect (double x1, double y1, double x2, double y2, int rgb[], int outline
 	idx = irint (x2 * ps.scale) - ix;
 	idy = irint (y2 * ps.scale) - iy;
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d %d R%d\n", idy, idx, ix, iy, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d %d R%d\n", idy, idx, ix, iy, outline + psl_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -1704,7 +1704,7 @@ void ps_setdash_ (char *pattern, int *offset, int nlen)
 
 void ps_setfont (int font_no)
 {
-	if (font_no < 0 || font_no >= N_PS_FONTS)
+	if (font_no < 0 || font_no >= PSL_N_FONTS)
 		fprintf (stderr, "pslib: Selected font out of range (%d), ignored\n", font_no);
 	else
 		ps.font_no = font_no;
@@ -1762,7 +1762,7 @@ void ps_setpaint (int rgb[])
 
 	fprintf (ps.fp, "S ");
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%c\n", ps_paint_code[pmode]);
+	fprintf (ps.fp, "%c\n", psl_paint_code[pmode]);
 
 	/* Update the current color information */
 
@@ -1787,7 +1787,7 @@ void ps_square (double x, double y, double diameter, int rgb[], int outline)
 	ix = irint ((x - diameter) * ps.scale);
 	iy = irint ((y - diameter) * ps.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d S%d\n", ds, ix, iy, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d S%d\n", ds, ix, iy, outline + psl_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -1882,7 +1882,7 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 	if (rgb[0] >= 0) {	/* Paint the textbox */
 		fprintf (ps.fp, "V ");
 		pmode = ps_place_color (rgb);
-		fprintf (ps.fp, "%c F U ", ps_paint_code[pmode]);
+		fprintf (ps.fp, "%c F U ", psl_paint_code[pmode]);
 	}
 	(outline) ? fprintf (ps.fp, "S U\n") : fprintf (ps.fp, "N U\n");
 	fprintf (ps.fp, "U\n");
@@ -2398,7 +2398,7 @@ void ps_triangle (double x, double y, double diameter, int rgb[], int outline)
 	iy = irint ((y-0.25*diameter) * ps.scale);
 	is = irint (0.866025403784 * diameter * ps.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d T%d\n", is, ix, iy, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d T%d\n", is, ix, iy, outline + psl_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -2416,7 +2416,7 @@ void ps_itriangle (double x, double y, double diameter, int rgb[], int outline)	
 	iy = irint ((y+0.25*diameter) * ps.scale);
 	is = irint (0.866025403784 * diameter * ps.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d I%d\n", is, ix, iy, outline + ps_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d I%d\n", is, ix, iy, outline + psl_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
@@ -2449,13 +2449,13 @@ void ps_vector (double xtail, double ytail, double xtip, double ytip, double tai
 		l2 = length - 2 * hl + 2 * hl2;							/* Inside length between start of heads */
 		pmode = ps_place_color (rgb);
 		fprintf (ps.fp, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d a%d U\n",
-				hl2, hw2, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -hl2, hw2, hl, -hw, outline+ps_outline_offset[pmode]);
+				hl2, hw2, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -hl2, hw2, hl, -hw, outline+psl_outline_offset[pmode]);
 	}
 	else {			/* Single-headed vector */
 		l2 = length - hl + hl2;								/* Length from tail to start of slanted head */
 		pmode = ps_place_color (rgb);
 		fprintf (ps.fp, "%d %d %d %d %d %d %d %d %d %d %d A%d U\n",
-			-l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2, outline+ps_outline_offset[pmode]);
+			-l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2, outline+psl_outline_offset[pmode]);
 	}
 }
 
@@ -2845,7 +2845,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 
 	if (ps.comments) fprintf (ps.fp, "\n%% Define array of word colors:\n");
 	fprintf (ps.fp, "\n/PSL_rgb\n");
-	for (i = 0 ; i < n_rgb_unique; i++) fprintf (ps.fp, "%.3g %.3g %.3g\n", I_255 * (rgb_unique[i] >> 16), I_255 * ((rgb_unique[i] >> 8) & 0xFF), I_255 * (rgb_unique[i] & 0xFF));
+	for (i = 0 ; i < n_rgb_unique; i++) fprintf (ps.fp, "%.3g %.3g %.3g\n", PSL_INV_255 * (rgb_unique[i] >> 16), PSL_INV_255 * ((rgb_unique[i] >> 8) & 0xFF), PSL_INV_255 * (rgb_unique[i] & 0xFF));
 	fprintf (ps.fp, "%d array astore def\n", 3 * n_rgb_unique);
 	ps_free ((void *)rgb_unique);
 
@@ -2972,11 +2972,11 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 		if (draw_box & 2) {	/* Fill */
 			fprintf (ps.fp, "V ");
 			pmode = ps_place_color (boxfill_rgb);
-			fprintf (ps.fp, "%c F U ", ps_paint_code[pmode]);
+			fprintf (ps.fp, "%c F U ", psl_paint_code[pmode]);
 		}
 		if (draw_box & 1) {	/* Stroke */
 			pmode = ps_place_color (boxpen_rgb);
-			fprintf (ps.fp, "%c ", ps_paint_code[pmode]);
+			fprintf (ps.fp, "%c ", psl_paint_code[pmode]);
 			fprintf (ps.fp, "S\n");
 		}
 		else
@@ -3092,7 +3092,7 @@ void init_font_encoding (struct EPS *eps)
 	if (eps)
 		for (i = 0; i < 6 && eps->fontno[i] != -1; i++) ps_encode_font (eps->fontno[i]);
 	else	/* Must output all */
-		for (i = 0; i < N_PS_FONTS; i++) ps_encode_font (i);
+		for (i = 0; i < PSL_N_FONTS; i++) ps_encode_font (i);
 }
 
 void def_font_encoding (void)
@@ -3112,8 +3112,8 @@ void def_font_encoding (void)
 	 * for each font that is used */
 
 	fprintf (ps.fp, "/PSL_font_encode ");
-	for (i = 0; i < N_PS_FONTS; i++) fprintf (ps.fp, "0 ");
-	fprintf (ps.fp, "%d array astore def", N_PS_FONTS);
+	for (i = 0; i < PSL_N_FONTS; i++) fprintf (ps.fp, "0 ");
+	fprintf (ps.fp, "%d array astore def", PSL_N_FONTS);
 	(ps.comments) ? fprintf (ps.fp, "\t%% Initially zero\n") : fprintf (ps.fp, "\n");
 }
 
@@ -3142,56 +3142,56 @@ char *ps_prepare_text (char *text)
 			i++;
 			switch (text[i]) {
 				case 'A':
-					strcat (string, ps_scandcodes[0][he-1]);
-					j += strlen(ps_scandcodes[0][he-1]); i++;
+					strcat (string, psl_scandcodes[0][he-1]);
+					j += strlen(psl_scandcodes[0][he-1]); i++;
 					break;
 				case 'E':
-					strcat (string, ps_scandcodes[1][he-1]);
-					j += strlen(ps_scandcodes[1][he-1]); i++;
+					strcat (string, psl_scandcodes[1][he-1]);
+					j += strlen(psl_scandcodes[1][he-1]); i++;
 					break;
 				case 'O':
-					strcat (string, ps_scandcodes[2][he-1]);
-					j += strlen(ps_scandcodes[2][he-1]); i++;
+					strcat (string, psl_scandcodes[2][he-1]);
+					j += strlen(psl_scandcodes[2][he-1]); i++;
 					break;
 				case 'a':
-					strcat (string, ps_scandcodes[3][he-1]);
-					j += strlen(ps_scandcodes[3][he-1]); i++;
+					strcat (string, psl_scandcodes[3][he-1]);
+					j += strlen(psl_scandcodes[3][he-1]); i++;
 					break;
 				case 'e':
-					strcat (string, ps_scandcodes[4][he-1]);
-					j += strlen(ps_scandcodes[4][he-1]); i++;
+					strcat (string, psl_scandcodes[4][he-1]);
+					j += strlen(psl_scandcodes[4][he-1]); i++;
 					break;
 				case 'o':
-					strcat (string, ps_scandcodes[5][he-1]);
-					j += strlen(ps_scandcodes[5][he-1]); i++;
+					strcat (string, psl_scandcodes[5][he-1]);
+					j += strlen(psl_scandcodes[5][he-1]); i++;
 					break;
 				case 'C':
-					strcat (string, ps_scandcodes[6][he-1]);
-					j += strlen(ps_scandcodes[6][he-1]); i++;
+					strcat (string, psl_scandcodes[6][he-1]);
+					j += strlen(psl_scandcodes[6][he-1]); i++;
 					break;
 				case 'N':
-					strcat (string, ps_scandcodes[7][he-1]);
-					j += strlen(ps_scandcodes[7][he-1]); i++;
+					strcat (string, psl_scandcodes[7][he-1]);
+					j += strlen(psl_scandcodes[7][he-1]); i++;
 					break;
 				case 'U':
-					strcat (string, ps_scandcodes[8][he-1]);
-					j += strlen(ps_scandcodes[8][he-1]); i++;
+					strcat (string, psl_scandcodes[8][he-1]);
+					j += strlen(psl_scandcodes[8][he-1]); i++;
 					break;
 				case 'c':
-					strcat (string, ps_scandcodes[9][he-1]);
-					j += strlen(ps_scandcodes[9][he-1]); i++;
+					strcat (string, psl_scandcodes[9][he-1]);
+					j += strlen(psl_scandcodes[9][he-1]); i++;
 					break;
 				case 'n':
-					strcat (string, ps_scandcodes[10][he-1]);
-					j += strlen(ps_scandcodes[10][he-1]); i++;
+					strcat (string, psl_scandcodes[10][he-1]);
+					j += strlen(psl_scandcodes[10][he-1]); i++;
 					break;
 				case 's':
-					strcat (string, ps_scandcodes[11][he-1]);
-					j += strlen(ps_scandcodes[1][he-1]); i++;
+					strcat (string, psl_scandcodes[11][he-1]);
+					j += strlen(psl_scandcodes[1][he-1]); i++;
 					break;
 				case 'u':
-					strcat (string, ps_scandcodes[12][he-1]);
-					j += strlen(ps_scandcodes[12][he-1]); i++;
+					strcat (string, psl_scandcodes[12][he-1]);
+					j += strlen(psl_scandcodes[12][he-1]); i++;
 					break;
 				case '@':
 /*	Also now converts "@@" to the octal code for "@" = "\100" in both std and ISO.
@@ -4101,7 +4101,7 @@ void ps_define_pen (char *param, int width, char *texture, int offset, int rgb[]
 	/* Function to set line pen attributes */
 	fprintf (ps.fp, "/%s { ", param);
 	k = ps_place_color (rgb);
-	fprintf (ps.fp, "%c %d W ", ps_paint_code[k], width);
+	fprintf (ps.fp, "%c %d W ", psl_paint_code[k], width);
 	ps_place_setdash (texture, offset);
 	fprintf (ps.fp, " } def\n");
 }
@@ -4111,7 +4111,7 @@ void ps_define_rgb (char *param, int rgb[])
 	int k;
 	fprintf (ps.fp, "/%s { ", param);
 	k = ps_place_color (rgb);
-	fprintf (ps.fp, "%c } def\n", ps_paint_code[k]);
+	fprintf (ps.fp, "%c } def\n", psl_paint_code[k]);
 }
 
 void ps_set_length_array (char *param, double *array, int n)
@@ -4225,7 +4225,7 @@ static void bulkcopy (const char *fname)
 	char fullname[BUFSIZ];
 	int i, j;
 
-	sprintf (fullname, "%s%cshare%cpslib%c%s.ps", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, fname);
+	sprintf (fullname, "%s%cshare%cpslib%c%s.ps", PSL_HOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, fname);
 
 	in = fopen (fullname, "r");
 	if (in == NULL)
@@ -4267,7 +4267,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 
 	/* First the standard 35 PostScript fonts from Adobe */
 
-	sprintf (fullname, "%s%cshare%cpslib%cPS_font_info.d", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+	sprintf (fullname, "%s%cshare%cpslib%cPS_font_info.d", PSL_HOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
 
 	if ((in = fopen (fullname, "r")) == NULL)
 	{
@@ -4276,7 +4276,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 		exit (EXIT_FAILURE);
 	}
 
-	ps.font = (struct PS_FONT *) ps_memory (VNULL, (size_t)n_alloc, sizeof (struct PS_FONT));
+	ps.font = (struct PSL_FONT *) ps_memory (VNULL, (size_t)n_alloc, sizeof (struct PSL_FONT));
 
 	while (fgets (buf, BUFSIZ, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
@@ -4289,7 +4289,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 		i++;
 		if (i == n_alloc) {
 			n_alloc += 50;
-			ps.font = (struct PS_FONT *) ps_memory ((void *)ps.font, (size_t)n_alloc, sizeof (struct PS_FONT));
+			ps.font = (struct PSL_FONT *) ps_memory ((void *)ps.font, (size_t)n_alloc, sizeof (struct PSL_FONT));
 		}
 	}
 	fclose (in);
@@ -4297,7 +4297,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 
 	/* Then any custom fonts */
 
-	sprintf (fullname, "%s%cshare%cpslib%cCUSTOM_font_info.d", PSHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+	sprintf (fullname, "%s%cshare%cpslib%cCUSTOM_font_info.d", PSL_HOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
 
 	if (!access (fullname, R_OK)) {	/* Decode Custom font file */
 
@@ -4318,13 +4318,13 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 			i++;
 			if (i == n_alloc) {
 				n_alloc += 50;
-				ps.font = (struct PS_FONT *) ps_memory ((void *)ps.font, (size_t)n_alloc, sizeof (struct PS_FONT));
+				ps.font = (struct PSL_FONT *) ps_memory ((void *)ps.font, (size_t)n_alloc, sizeof (struct PSL_FONT));
 			}
 		}
 		fclose (in);
 		*n_fonts = i;
 	}
-	ps.font = (struct PS_FONT *) ps_memory ((void *)ps.font, (size_t)(*n_fonts), sizeof (struct PS_FONT));
+	ps.font = (struct PSL_FONT *) ps_memory ((void *)ps.font, (size_t)(*n_fonts), sizeof (struct PSL_FONT));
 }
 
 int ps_place_color (int rgb[])
@@ -4333,9 +4333,9 @@ int ps_place_color (int rgb[])
 
 	if (rgb[0] < 0)	return (3);	/* Outline only, no color set */
 
-	if (iscolor (rgb)) {
+	if (PSL_iscolor (rgb)) {
 		if (ps.color_mode == PSL_RGB) {
-			fprintf (ps.fp, ps.rgb_format, rgb[0] * I_255, rgb[1] * I_255, rgb[2] * I_255);
+			fprintf (ps.fp, ps.rgb_format, rgb[0] * PSL_INV_255, rgb[1] * PSL_INV_255, rgb[2] * PSL_INV_255);
 			pmode = 1;
 		}
 		else if (ps.color_mode & PSL_CMYK) {
@@ -4352,7 +4352,7 @@ int ps_place_color (int rgb[])
 		}
 	}
 	else {
-		fprintf (ps.fp, ps.bw_format, rgb[0] * I_255);
+		fprintf (ps.fp, ps.bw_format, rgb[0] * PSL_INV_255);
 		pmode = 0;
 	}
 	return (pmode);
@@ -4389,7 +4389,7 @@ void ps_rgb_to_cmyk (int rgb[], double cmyk[])
 
 	int i;
 
-	for (i = 0; i < 3; i++) cmyk[i] = 1.0 - (rgb[i] * I_255);
+	for (i = 0; i < 3; i++) cmyk[i] = 1.0 - (rgb[i] * PSL_INV_255);
 	cmyk[3] = MIN (cmyk[0], MIN (cmyk[1], cmyk[2]));	/* Black */
 	for (i = 0; i < 3; i++) cmyk[i] -= cmyk[3];
 	for (i = 0; i < 4; i++) {
@@ -4401,9 +4401,9 @@ void ps_rgb_to_hsv (int rgb[], double hsv[])
 {
 	double xr, xg, xb, r_dist, g_dist, b_dist, max_v, min_v, diff, idiff;
 
-	xr = rgb[0] * I_255;
-	xg = rgb[1] * I_255;
-	xb = rgb[2] * I_255;
+	xr = rgb[0] * PSL_INV_255;
+	xg = rgb[1] * PSL_INV_255;
+	xb = rgb[2] * PSL_INV_255;
 	max_v = MAX (MAX (xr, xg), xb);
 	min_v = MIN (MIN (xr, xg), xb);
 	diff = max_v - min_v;
@@ -4444,7 +4444,7 @@ void ps_rgb_to_mono (unsigned char *buffer, struct imageinfo *h)
 		for (i = j = 0; i < h->width * h->height; i++, j += 3)
 		{
 			memcpy ((void *)rgb, (void *)&buffer[j], 3 * sizeof(unsigned char));
-			buffer[i] = (unsigned char) YIQ (rgb);
+			buffer[i] = (unsigned char) PSL_YIQ (rgb);
 		}
 		h->depth = 8;
 	}

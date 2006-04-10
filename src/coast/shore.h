@@ -1,8 +1,8 @@
 /*
- *	$Id: shore.h,v 1.1 2004-09-05 04:00:51 pwessel Exp $
+ *	$Id: shore.h,v 1.2 2006-04-10 04:43:31 pwessel Exp $
  */
 #define MILL (1000000)
-#define MAX_DELTA 65535				/* Largest value to store in a ushort, used as largest dx or dy in bin  */
+#define GSHHS_MAX_DELTA 65535				/* Largest value to store in a ushort, used as largest dx or dy in bin  */
 #define M360 360000000
 #define M180 180000000
 #define M90   90000000
@@ -20,7 +20,7 @@ struct SEGMENT {
 };
 
 struct SHORT_PAIR {
-	ushort	dx;	/* Relative distance from SW corner of bin, units of B_WIDTH/MAX_DELTA  */
+	ushort	dx;	/* Relative distance from SW corner of bin, units of B_WIDTH/GSHHS_MAX_DELTA  */
 	ushort	dy;
 };
 

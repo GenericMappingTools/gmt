@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_colors.h,v 1.19 2006-03-23 07:48:04 pwessel Exp $
+ *	$Id: gmt_colors.h,v 1.20 2006-04-10 04:43:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -46,7 +46,7 @@
 #define GMT_N_COLOR_NAMES 663
 
 /* How B/W TV's convert RGB to Gray */
-#define YIQ(rgb) irint (0.299 * (rgb[0]) + 0.587 * (rgb[1]) + 0.114 * (rgb[2]))
+#define GMT_YIQ(rgb) irint (0.299 * (rgb[0]) + 0.587 * (rgb[1]) + 0.114 * (rgb[2]))
 
 /* Determine if a RGB combination is grayshade */
 #define GMT_is_gray(r,g,b) ((r) == (g) && (r) == (b))

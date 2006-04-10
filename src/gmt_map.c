@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.118 2006-04-06 05:25:16 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.119 2006-04-10 04:43:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -86,10 +86,10 @@
  *	GMT_itranspowx :		Inverse pow x projection
  *	GMT_itranspowy :		Inverse pow y projection
  *	GMT_itranspowz :		Inverse pow z projection
- *	GMT_itm :			Inverse TM projection
- *	GMT_itm_sph :			Inverse TM projection (Spherical)
- *	GMT_iutm :			Inverse UTM projection
- *	GMT_iutm_sph :			Inverse UTM projection (Spherical)
+ *	GMT_itm :			Inverse GMT_TM projection
+ *	GMT_itm_sph :			Inverse GMT_TM projection (Spherical)
+ *	GMT_iutm :			Inverse GMT_UTM projection
+ *	GMT_iutm_sph :			Inverse GMT_UTM projection (Spherical)
  *	GMT_lamb :			Lambert conformal conic projection
  *	GMT_lambeq :			Lambert azimuthal equal area projection
  *	GMT_latpath :			Return path between 2 points of equal latitide
@@ -122,7 +122,7 @@
  *	GMT_transpowx :			Linear pow x projection
  *	GMT_transpowy :			Linear pow y projection
  *	GMT_transpowz :			Linear pow z projection
- *	GMT_tm :			TM projection
+ *	GMT_tm :			GMT_TM projection
  *	GMT_xy_search :			Find xy map boundary
  *	GMT_valbers :			Initialize Albers conic equal area projection
  *	GMT_veconic :			Initialize Equidistant conic projection
@@ -134,7 +134,7 @@
  *	GMT_vortho :			Initialize Orthographic projection
  *	GMT_vgrinten :			Initialize Van der Grinten projection
  *	GMT_vstereo :			Initialize Stereographic projection
- *	GMT_vtm :			Initialize TM projection
+ *	GMT_vtm :			Initialize GMT_TM projection
  *	GMT_wesn_clip:			Clip polygon to wesn boundaries
  *	GMT_wesn_crossing :		Find crossing between line and lon/lat rectangle
  *	GMT_wesn_outside :		Determine if a point is outside a lon/lat rectangle
@@ -275,24 +275,24 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D);
  * The user must pass:
  *   w,e,s,n,parameters[0] - parameters[np-1] (np = number of parameters), and project:
  *   w,e,s,n defines the area in degrees.
- *   project == LINEAR, POLAR, MERCATOR, STEREO, LAMBERT, OBLIQUE_MERC,
- *	TM, ORTHO, AZ_EQDIST, LAMB_AZ_EQ, WINKEL, ROBINSON, CASSINI, ALBERS, ECONIC,
- *	ECKERT4, ECKERT6, CYL_EQ, CYL_EQDIST, MILLER, GRINTEN
- *	For LINEAR, we may have LINEAR, LOG10, or POW
+ *   project == GMT_LINEAR, GMT_POLAR, GMT_MERCATOR, GMT_STEREO, GMT_LAMBERT, GMT_OBLIQUE_MERC,
+ *	GMT_TM, GMT_ORTHO, GMT_AZ_EQDIST, GMT_LAMB_AZ_EQ, GMT_WINKEL, GMT_ROBINSON, GMT_CASSINI, GMT_ALBERS, GMT_ECONIC,
+ *	GMT_ECKERT4, GMT_ECKERT6, GMT_CYL_EQ, GMT_CYL_EQDIST, GMT_MILLER, GMT_VANGRINTEN
+ *	For GMT_LINEAR, we may have GMT_LINEAR, GMT_LOG10, or GMT_POW
  *
  * parameters[0] through parameters[np-1] mean different things to the various
  * projections, as explained below. (np also varies, of course)
  *
- * LINEAR projection:
+ * GMT_LINEAR projection:
  *	parameters[0] is inch (or cm)/x_user_unit.
  *	parameters[1] is inch (or cm)/y_user_unit. If 0, then yscale = xscale.
- *	parameters[2] is pow for x^pow (if POW is on).
- *	parameters[3] is pow for y^pow (if POW is on).
+ *	parameters[2] is pow for x^pow (if GMT_POW is on).
+ *	parameters[3] is pow for y^pow (if GMT_POW is on).
  *
- * POLAR (r,theta) projection:
+ * GMT_POLAR (r,theta) projection:
  *	parameters[0] is inch (or cm)/x_user_unit (radius)
  *
- * MERCATOR projection:
+ * GMT_MERCATOR projection:
  *	parameters[0] is in inch (or cm)/degree_longitude @ equator OR 1:xxxxx OR map-width
  *
  * STEREOgraphic projection:
@@ -301,12 +301,12 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D);
  *	parameters[2] is radius in inches (or cm) from pole to the latitude specified
  *	   by parameters[3] OR 1:xxxxx OR map-width.
  *
- * LAMBERT projection (Conic):
+ * GMT_LAMBERT projection (Conic):
  *	parameters[0] is first standard parallel
  *	parameters[1] is second standard parallel
  *	parameters[2] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
- * OBLIQUE MERCATOR projection:
+ * OBLIQUE GMT_MERCATOR projection:
  *	parameters[0] is longitude of origin
  *	parameters[1] is latitude of origin
  *	Definition a:
@@ -321,62 +321,62 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D);
  *		parameters[3] is latitude of pole of projection
  *		parameters[4] is scale in inch (cm)/degree along oblique equator OR 1:xxxxx OR map-width
  *
- * TRANSVERSE MERCATOR (TM) projection
+ * TRANSVERSE GMT_MERCATOR (GMT_TM) projection
  *	parameters[0] is central meridian
  *	parameters[1] is scale in inch (cm)/degree along this meridian OR 1:xxxxx OR map-width
  *
- * UNIVERSAL TRANSVERSE MERCATOR (UTM) projection
- *	parameters[0] is UTM zone (0-60, use negative for S hemisphere)
+ * UNIVERSAL TRANSVERSE GMT_MERCATOR (GMT_UTM) projection
+ *	parameters[0] is GMT_UTM zone (0-60, use negative for S hemisphere)
  *	parameters[1] is scale in inch (cm)/degree along this meridian OR 1:xxxxx OR map-width
  *
- * LAMBERT AZIMUTHAL EQUAL AREA projection:
+ * GMT_LAMBERT GMT_IS_AZIMUTHAL EQUAL AREA projection:
  *	parameters[0] is longitude of origin
  *	parameters[1] is latitude of origin
  *	parameters[2] is radius in inches (or cm) from pole to the latitude specified
  *	   by parameters[3] OR 1:xxxxx OR map-width.
  *
- * ORTHOGRAPHIC AZIMUTHAL projection:
+ * ORTHOGRAPHIC GMT_IS_AZIMUTHAL projection:
  *	parameters[0] is longitude of origin
  *	parameters[1] is latitude of origin
  *	parameters[2] is radius in inches (or cm) from pole to the latitude specified
  *	   by parameters[3] OR 1:xxxxx OR map-width.
  *
- * AZIMUTHAL EQUIDISTANCE projection:
+ * GMT_IS_AZIMUTHAL EQUIDISTANCE projection:
  *	parameters[0] is longitude of origin
  *	parameters[1] is latitude of origin
  *	parameters[2] is radius in inches (or cm) from pole to the latitude specified
  *	   by parameters[3] OR 1:xxxxx OR map-width.
  *
- * MOLLWEIDE EQUAL-AREA projection
+ * GMT_MOLLWEIDE EQUAL-AREA projection
  *	parameters[0] is longitude of origin
  *	parameters[1] is in inch (or cm)/degree_longitude @ equator OR 1:xxxxx OR map-width
  *
- * HAMMER-AITOFF EQUAL-AREA projection
+ * GMT_HAMMER-AITOFF EQUAL-AREA projection
  *	parameters[0] is longitude of origin
  *	parameters[1] is in inch (or cm)/degree_longitude @ equator OR 1:xxxxx OR map-width
  *
- * SINUSOIDAL EQUAL-AREA projection
+ * GMT_SINUSOIDAL EQUAL-AREA projection
  *	parameters[0] is longitude of origin
  *	parameters[1] is in inch (or cm)/degree_longitude @ equator OR 1:xxxxx OR map-width
  *
- * WINKEL TRIPEL MODIFIED AZIMUTHAL projection
+ * GMT_WINKEL TRIPEL MODIFIED GMT_IS_AZIMUTHAL projection
  *	parameters[0] is longitude of origin
  *	parameters[1] is in inch (or cm)/degree_longitude @ equator OR 1:xxxxx OR map-width
  *
- * ROBINSON PSEUDOCYLINDRICAL projection
+ * GMT_ROBINSON PSEUDOCYLINDRICAL projection
  *	parameters[0] is longitude of origin
  *	parameters[1] is in inch (or cm)/degree_longitude @ equator OR 1:xxxxx OR map-width
  *
- * VAN DER GRINTEN projection
+ * VAN DER GMT_VANGRINTEN projection
  *	parameters[0] is longitude of origin
  *	parameters[1] is in inch (or cm)/degree_longitude @ equator OR 1:xxxxx OR map-width
  *
- * CASSINI projection
+ * GMT_CASSINI projection
  *	parameters[0] is longitude of origin
  *	parameters[1] is latitude of origin
  *	parameters[2] is scale in inch (cm)/degree along this meridian OR 1:xxxxx OR map-width
  *
- * ALBERS projection (Conic):
+ * GMT_ALBERS projection (Conic):
  *	parameters[0] is first standard parallel
  *	parameters[1] is second standard parallel
  *	parameters[2] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
@@ -386,20 +386,20 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D);
  *	parameters[1] is second standard parallel
  *	parameters[2] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
- * ECKERT6 IV projection:
+ * GMT_ECKERT6 IV projection:
  *	parameters[0] is longitude of origin
  *	parameters[1] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
- * ECKERT6 IV projection:
+ * GMT_ECKERT6 IV projection:
  *	parameters[0] is longitude of origin
  *	parameters[1] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
- * CYLINDRICAL EQUAL-AREA projections (Behrmann, Gall, Peters):
+ * GMT_IS_CYLINDRICAL EQUAL-AREA projections (Behrmann, Gall, Peters):
  *	parameters[0] is longitude of origin
  *	parameters[1] is the standard parallel
  *	parameters[2] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
- * MILLER CYLINDRICAL projection:
+ * GMT_MILLER GMT_IS_CYLINDRICAL projection:
  *	parameters[0] is longitude of origin
  *	parameters[1] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
@@ -430,7 +430,7 @@ void GMT_map_setup (double west, double east, double south, double north)
 		else if (east < west)
 			east += 360.0;
 
-		if ((fabs (east - west) - 360.0) > SMALL) {
+		if ((fabs (east - west) - 360.0) > GMT_SMALL) {
 			fprintf (stderr, "%s: GMT Fatal Error: Region exceeds 360 degrees!\n", GMT_program);
 			exit (EXIT_FAILURE);
 		}
@@ -473,132 +473,132 @@ void GMT_map_setup (double west, double east, double south, double north)
 
 	switch (project_info.projection) {
 
-		case LINEAR:		/* Linear transformations */
+		case GMT_LINEAR:		/* Linear transformations */
 
 			search = GMT_map_init_linear ();
 			break;
 
-		case POLAR:		/* Both lon/lat are actually theta, radius */
+		case GMT_POLAR:		/* Both lon/lat are actually theta, radius */
 
 			search = GMT_map_init_polar ();
 			break;
 
-		case MERCATOR:		/* Standard Mercator projection */
+		case GMT_MERCATOR:		/* Standard Mercator projection */
 
 			search = GMT_map_init_merc ();
 			break;
 
-		case STEREO:		/* Stereographic projection */
+		case GMT_STEREO:		/* Stereographic projection */
 
 			search = GMT_map_init_stereo ();
 			break;
 
-		case LAMBERT:		/* Lambert Conformal Conic */
+		case GMT_LAMBERT:		/* Lambert Conformal Conic */
 
 			search = GMT_map_init_lambert ();
 			break;
 
-		case OBLIQUE_MERC:	/* Oblique Mercator */
+		case GMT_OBLIQUE_MERC:	/* Oblique Mercator */
 
 			search = GMT_map_init_oblique ();
 			break;
 
-		case TM:		/* Transverse Mercator */
+		case GMT_TM:		/* Transverse Mercator */
 
 			search = GMT_map_init_tm ();
 			break;
 
-		case UTM:		/* Universal Transverse Mercator */
+		case GMT_UTM:		/* Universal Transverse Mercator */
 
 			search = GMT_map_init_utm ();
 			break;
 
-		case LAMB_AZ_EQ:	/* Lambert Azimuthal Equal-Area */
+		case GMT_LAMB_AZ_EQ:	/* Lambert Azimuthal Equal-Area */
 
 			search = GMT_map_init_lambeq ();
 			break;
 
-		case ORTHO:		/* Orthographic Projection */
+		case GMT_ORTHO:		/* Orthographic Projection */
 
 			search = GMT_map_init_ortho ();
 			break;
 
-		case AZ_EQDIST:		/* Azimuthal Equal-Distance Projection */
+		case GMT_AZ_EQDIST:		/* Azimuthal Equal-Distance Projection */
 
 			search = GMT_map_init_azeqdist ();
 			break;
 
-		case GNOMONIC:		/* Azimuthal Gnomonic Projection */
+		case GMT_GNOMONIC:		/* Azimuthal Gnomonic Projection */
 
 			search = GMT_map_init_gnomonic ();
 			break;
 
-		case MOLLWEIDE:		/* Mollweide Equal-Area */
+		case GMT_MOLLWEIDE:		/* Mollweide Equal-Area */
 
 			search = GMT_map_init_mollweide ();
 			break;
 
-		case HAMMER:		/* Hammer-Aitoff Equal-Area */
+		case GMT_HAMMER:		/* Hammer-Aitoff Equal-Area */
 
 			search = GMT_map_init_hammer ();
 			break;
 
-		case GRINTEN:		/* Van der Grinten */
+		case GMT_VANGRINTEN:		/* Van der Grinten */
 
 			search = GMT_map_init_grinten ();
 			break;
 
-		case WINKEL:		/* Winkel Tripel */
+		case GMT_WINKEL:		/* Winkel Tripel */
 
 			search = GMT_map_init_winkel ();
 			break;
 
-		case ECKERT4:		/* Eckert IV */
+		case GMT_ECKERT4:		/* Eckert IV */
 
 			search = GMT_map_init_eckert4 ();
 			break;
 
-		case ECKERT6:		/* Eckert VI */
+		case GMT_ECKERT6:		/* Eckert VI */
 
 			search = GMT_map_init_eckert6 ();
 			break;
 
-		case CYL_EQ:		/* Cylindrical Equal-Area */
+		case GMT_CYL_EQ:		/* Cylindrical Equal-Area */
 
 			search = GMT_map_init_cyleq ();
 			break;
 
-		case MILLER:		/* Miller Cylindrical */
+		case GMT_MILLER:		/* Miller Cylindrical */
 
 			search = GMT_map_init_miller ();
 			break;
 
-		case CYL_EQDIST:	/* Cylindrical Equidistant */
+		case GMT_CYL_EQDIST:	/* Cylindrical Equidistant */
 
 			search = GMT_map_init_cyleqdist ();
 			break;
 
-		case ROBINSON:		/* Robinson */
+		case GMT_ROBINSON:		/* Robinson */
 
 			search = GMT_map_init_robinson ();
 			break;
 
-		case SINUSOIDAL:	/* Sinusoidal Equal-Area */
+		case GMT_SINUSOIDAL:	/* Sinusoidal Equal-Area */
 
 			search = GMT_map_init_sinusoidal ();
 			break;
 
-		case CASSINI:		/* Cassini cylindrical */
+		case GMT_CASSINI:		/* Cassini cylindrical */
 
 			search = GMT_map_init_cassini ();
 			break;
 
-		case ALBERS:		/* Albers Equal-Area Conic */
+		case GMT_ALBERS:		/* Albers Equal-Area Conic */
 
 			search = GMT_map_init_albers ();
 			break;
 
-		case ECONIC:		/* Equidistant Conic */
+		case GMT_ECONIC:		/* Equidistant Conic */
 
 			search = GMT_map_init_econic ();
 			break;
@@ -631,7 +631,7 @@ void GMT_map_setup (double west, double east, double south, double north)
 		GMT_dlat = (project_info.n - project_info.s) / GMT_n_lat_nodes;
 	}
 
-	if (AZIMUTHAL && !project_info.region) GMT_horizon_search (west, east, south, north, project_info.xmin, project_info.xmax, project_info.ymin, project_info.ymax);
+	if (GMT_IS_AZIMUTHAL && !project_info.region) GMT_horizon_search (west, east, south, north, project_info.xmin, project_info.xmax, project_info.ymin, project_info.ymax);
 
 	if (project_info.central_meridian < project_info.w && (project_info.central_meridian + 360.0) <= project_info.e) project_info.central_meridian += 360.0;
 	if (project_info.central_meridian > project_info.e && (project_info.central_meridian - 360.0) >= project_info.w) project_info.central_meridian -= 360.0;
@@ -660,14 +660,14 @@ void GMT_init_three_D (void) {
 	if (project_info.z_scale < 0.0) project_info.xyz_pos[2] = FALSE;	/* User wants z to increase down */
 	if (project_info.z_level == DBL_MAX) project_info.z_level = (project_info.xyz_pos[2]) ? project_info.z_bottom : project_info.z_top;
 
-	switch (project_info.xyz_projection[2]%3 ) {	/* Modulo 3 so that TIME (3) maps to LINEAR (0) */
-		case LINEAR:	/* Regular scaling */
+	switch (project_info.xyz_projection[2]%3 ) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
+		case GMT_LINEAR:	/* Regular scaling */
 			zmin = (project_info.xyz_pos[2]) ? project_info.z_bottom : project_info.z_top;
 			zmax = (project_info.xyz_pos[2]) ? project_info.z_top : project_info.z_bottom;
 			GMT_z_forward = (PFI) GMT_translin;
 			GMT_z_inverse = (PFI) GMT_itranslin;
 			break;
-		case LOG10:	/* Log10 transformation */
+		case GMT_LOG10:	/* Log10 transformation */
 			if (project_info.z_bottom <= 0.0 || project_info.z_top <= 0.0) {
 				fprintf (stderr, "%s: GMT SYNTAX ERROR for -Jz -JZ option: limits must be positive for log10 projection\n", GMT_program);
 				exit (EXIT_FAILURE);
@@ -677,7 +677,7 @@ void GMT_init_three_D (void) {
 			GMT_z_forward = (PFI) GMT_translog10;
 			GMT_z_inverse = (PFI) GMT_itranslog10;
 			break;
-		case POW:	/* x^y transformation */
+		case GMT_POW:	/* x^y transformation */
 			project_info.xyz_pow[2] = project_info.z_pars[1];
 			project_info.xyz_ipow[2] = 1.0 / project_info.z_pars[1];
 			positive = !(((int)project_info.xyz_pos[2] + (int)(project_info.xyz_pow[2] > 0.0)) % 2);
@@ -726,34 +726,34 @@ void GMT_init_three_D (void) {
 	   means we must search along wesn perimeter the hard way */
 	   
 	switch (project_info.projection) {
-		case LINEAR:
-		case POLAR:
-		case MERCATOR:
-		case OBLIQUE_MERC:
-		case CYL_EQ:
-		case CYL_EQDIST:
-		case MILLER:
+		case GMT_LINEAR:
+		case GMT_POLAR:
+		case GMT_MERCATOR:
+		case GMT_OBLIQUE_MERC:
+		case GMT_CYL_EQ:
+		case GMT_CYL_EQDIST:
+		case GMT_MILLER:
 			easy = TRUE;
 			break;
-		case LAMBERT:
-		case TM:
-		case UTM:
-		case CASSINI:
-		case STEREO:
-		case ALBERS:
-		case ECONIC:
-		case LAMB_AZ_EQ:
-		case ORTHO:
-		case GNOMONIC:
-		case AZ_EQDIST:
-		case SINUSOIDAL:
-		case MOLLWEIDE:
-		case HAMMER:
-		case GRINTEN:
-		case WINKEL:
-		case ECKERT4:
-		case ECKERT6:
-		case ROBINSON:
+		case GMT_LAMBERT:
+		case GMT_TM:
+		case GMT_UTM:
+		case GMT_CASSINI:
+		case GMT_STEREO:
+		case GMT_ALBERS:
+		case GMT_ECONIC:
+		case GMT_LAMB_AZ_EQ:
+		case GMT_ORTHO:
+		case GMT_GNOMONIC:
+		case GMT_AZ_EQDIST:
+		case GMT_SINUSOIDAL:
+		case GMT_MOLLWEIDE:
+		case GMT_HAMMER:
+		case GMT_VANGRINTEN:
+		case GMT_WINKEL:
+		case GMT_ECKERT4:
+		case GMT_ECKERT6:
+		case GMT_ROBINSON:
 			easy = (!project_info.region);
 			break;
 		default:
@@ -857,7 +857,7 @@ void GMT_init_three_D (void) {
 }
 
 /*
- *	GENERIC TRANSFORMATION ROUTINES FOR THE LINEAR PROJECTION
+ *	GENERIC TRANSFORMATION ROUTINES FOR THE GMT_LINEAR PROJECTION
  */
  
 void GMT_x_to_xx (double x, double *xx)
@@ -961,7 +961,7 @@ void GMT_project3D (double x, double y, double z, double *x_out, double *y_out, 
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE LINEAR PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE GMT_LINEAR PROJECTION
  */
  
 int GMT_map_init_linear (void) {
@@ -974,15 +974,15 @@ int GMT_map_init_linear (void) {
 	GMT_inverse = (PFI) GMT_ilinearxy;
 	if (project_info.degree[0]) {	/* x is longitude */
 		project_info.central_meridian = 0.5 * (project_info.w + project_info.e);
-		GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
+		GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
 	}
 	project_info.x_scale = project_info.pars[0];
 	project_info.y_scale = project_info.pars[1];
 	if (project_info.x_scale < 0.0) project_info.xyz_pos[0] = FALSE;	/* User wants x to increase left */
 	if (project_info.y_scale < 0.0) project_info.xyz_pos[1] = FALSE;	/* User wants y to increase down */
 
-	switch ( (project_info.xyz_projection[0]%3) ) {	/* Modulo 3 so that TIME (3) maps to LINEAR (0) */
-		case LINEAR:	/* Regular scaling */
+	switch ( (project_info.xyz_projection[0]%3) ) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
+		case GMT_LINEAR:	/* Regular scaling */
 			GMT_x_forward = (PFI) ((project_info.degree[0]) ? GMT_translind : GMT_translin);
 			GMT_x_inverse = (PFI) ((project_info.degree[0]) ? GMT_itranslind : GMT_itranslin);
 			if (project_info.xyz_pos[0]) {
@@ -994,7 +994,7 @@ int GMT_map_init_linear (void) {
 				(*GMT_x_forward) (project_info.w, &xmax);
 			}
 			break;
-		case LOG10:	/* Log10 transformation */
+		case GMT_LOG10:	/* Log10 transformation */
 			if (project_info.w <= 0.0 || project_info.e <= 0.0) {
 				fprintf (stderr, "%s: GMT SYNTAX ERROR -Jx option:  Limits must be positive for log10 option\n", GMT_program);
 				exit (EXIT_FAILURE);
@@ -1004,7 +1004,7 @@ int GMT_map_init_linear (void) {
 			GMT_x_forward = (PFI) GMT_translog10;
 			GMT_x_inverse = (PFI) GMT_itranslog10;
 			break;
-		case POW:	/* x^y transformation */
+		case GMT_POW:	/* x^y transformation */
 			project_info.xyz_pow[0] = project_info.pars[2];
 			project_info.xyz_ipow[0] = 1.0 / project_info.pars[2];
 			positive = !(((int)project_info.xyz_pos[0] + (int)(project_info.xyz_pow[0] > 0.0)) % 2);
@@ -1014,14 +1014,14 @@ int GMT_map_init_linear (void) {
 			GMT_x_inverse = (PFI) GMT_itranspowx;
 			break;
 	}
-	switch (project_info.xyz_projection[1]%3) {	/* Modulo 3 so that TIME (3) maps to LINEAR (0) */
-		case LINEAR:	/* Regular scaling */
+	switch (project_info.xyz_projection[1]%3) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
+		case GMT_LINEAR:	/* Regular scaling */
 			ymin = (project_info.xyz_pos[1]) ? project_info.s : project_info.n;
 			ymax = (project_info.xyz_pos[1]) ? project_info.n : project_info.s;
 			GMT_y_forward = (PFI) GMT_translin;
 			GMT_y_inverse = (PFI) GMT_itranslin;
 			break;
-		case LOG10:	/* Log10 transformation */
+		case GMT_LOG10:	/* Log10 transformation */
 			if (project_info.s <= 0.0 || project_info.n <= 0.0) {
 				fprintf (stderr, "%s: GMT SYNTAX ERROR -Jx option:  Limits must be positive for log10 option\n", GMT_program);
 				exit (EXIT_FAILURE);
@@ -1031,7 +1031,7 @@ int GMT_map_init_linear (void) {
 			GMT_y_forward = (PFI) GMT_translog10;
 			GMT_y_inverse = (PFI) GMT_itranslog10;
 			break;
-		case POW:	/* x^y transformation */
+		case GMT_POW:	/* x^y transformation */
 			project_info.xyz_pow[1] = project_info.pars[3];
 			project_info.xyz_ipow[1] = 1.0 / project_info.pars[3];
 			positive = !(((int)project_info.xyz_pos[1] + (int)(project_info.xyz_pow[1] > 0.0)) % 2);
@@ -1087,7 +1087,7 @@ void GMT_coordinate_to_y (double coord, double *y)
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR POLAR (theta,r) PROJECTION
+ *	TRANSFORMATION ROUTINES FOR GMT_POLAR (theta,r) PROJECTION
  */
  
 int GMT_map_init_polar (void)
@@ -1110,7 +1110,7 @@ int GMT_map_init_polar (void)
 	GMT_right_edge = (PFD) GMT_right_circle;
 	GMT_forward = (PFI) GMT_polar;
 	GMT_inverse = (PFI) GMT_ipolar;
-	/* GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL); */
+	/* GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL); */
 	GMT_world_map = FALSE;	/* There is no wrapping around here */
 	GMT_xy_search (&xmin, &xmax, &ymin, &ymax, project_info.w, project_info.e, project_info.s, project_info.n);
 	project_info.x_scale = project_info.y_scale = project_info.pars[0];
@@ -1134,13 +1134,13 @@ int GMT_map_init_polar (void)
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE MERCATOR PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE GMT_MERCATOR PROJECTION
  */
  
 int GMT_map_init_merc (void) {
 	double xmin, xmax, ymin, ymax, D = 1.0;
 
-	project_info.GMT_convert_latitudes = !SPHERICAL;
+	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
 	if (project_info.GMT_convert_latitudes) {	/* Set fudge factor */
 		GMT_scale_eqrad ();
 		D = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius / project_info.GMT_lat_swap_vals.rm;
@@ -1162,7 +1162,7 @@ int GMT_map_init_merc (void) {
 	if (project_info.units_pr_degree) project_info.pars[0] /= (D * project_info.M_PR_DEG);
 	project_info.x_scale = project_info.y_scale = project_info.pars[0]; 
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[0]);
-	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
+	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
 	GMT_n_lat_nodes = 2;
 	GMT_n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
 	GMT_outside = (PFI) GMT_wesn_outside;
@@ -1179,14 +1179,14 @@ int GMT_map_init_merc (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR CYLINDRICAL EQUAL-AREA PROJECTIONS (CYL_EQ)
+ *	TRANSFORMATION ROUTINES FOR GMT_IS_CYLINDRICAL EQUAL-AREA PROJECTIONS (GMT_CYL_EQ)
  */
  
 int GMT_map_init_cyleq (void) {
 	double xmin, xmax, ymin, ymax, D, k0, qp, slat, e, e2;
 
 	project_info.Dx = project_info.Dy = 0.0; 
-	project_info.GMT_convert_latitudes = !SPHERICAL;
+	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
 	if (project_info.GMT_convert_latitudes) {
 		GMT_scale_eqrad ();
 		slat = project_info.pars[1];
@@ -1201,7 +1201,7 @@ int GMT_map_init_cyleq (void) {
 	}
 	project_info.iDx = 1.0 / project_info.Dx;
 	project_info.iDy = 1.0 / project_info.Dy;
-	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
+	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
 	GMT_vcyleq (project_info.pars[0], project_info.pars[1]);
 	GMT_cyleq (project_info.w, project_info.s, &xmin, &ymin);
 	GMT_cyleq (project_info.e, project_info.n, &xmax, &ymax);
@@ -1225,7 +1225,7 @@ int GMT_map_init_cyleq (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR CYLINDRICAL EQUIDISTANT PROJECTION (CYL_EQDIST)
+ *	TRANSFORMATION ROUTINES FOR GMT_IS_CYLINDRICAL EQUIDISTANT PROJECTION (GMT_CYL_EQDIST)
  */
  
 int GMT_map_init_cyleqdist (void) {
@@ -1233,7 +1233,7 @@ int GMT_map_init_cyleqdist (void) {
 
 	GMT_set_spherical ();	/* Force spherical for now */
 
-	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
+	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
 	GMT_vcyleqdist (project_info.pars[0]);
 	GMT_cyleqdist (project_info.w, project_info.s, &xmin, &ymin);
 	GMT_cyleqdist (project_info.e, project_info.n, &xmax, &ymax);
@@ -1257,7 +1257,7 @@ int GMT_map_init_cyleqdist (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR MILLER CYLINDRICAL PROJECTION (MILLER)
+ *	TRANSFORMATION ROUTINES FOR GMT_MILLER GMT_IS_CYLINDRICAL PROJECTION (GMT_MILLER)
  */
  
 int GMT_map_init_miller (void) {
@@ -1265,7 +1265,7 @@ int GMT_map_init_miller (void) {
 
 	GMT_set_spherical ();	/* Force spherical for now */
 
-	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
+	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
 	GMT_vmiller (project_info.pars[0]);
 	GMT_miller (project_info.w, project_info.s, &xmin, &ymin);
 	GMT_miller (project_info.e, project_info.n, &xmax, &ymax);
@@ -1289,14 +1289,14 @@ int GMT_map_init_miller (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE POLAR STEREOGRAPHIC PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE GMT_POLAR STEREOGRAPHIC PROJECTION
  */
  
 int GMT_map_init_stereo (void) {
 	BOOLEAN search;
 	double xmin, xmax, ymin, ymax, dummy, radius, latg, D = 1.0;
 
-	project_info.GMT_convert_latitudes = !SPHERICAL;
+	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
 	latg = project_info.pars[1];
 
 	GMT_set_polar (project_info.pars[1]);
@@ -1306,7 +1306,7 @@ int GMT_map_init_stereo (void) {
 	/* Equatorial view has a problem with infinite loops.  Until I find a cure
 	  we set projection center latitude to 0.001 so equatorial works for now */
 
-	if (fabs (project_info.pars[1]) < SMALL) project_info.pars[1] = 0.001;
+	if (fabs (project_info.pars[1]) < GMT_SMALL) project_info.pars[1] = 0.001;
 
 	GMT_vstereo (project_info.pars[0], project_info.pars[1]);
 
@@ -1425,7 +1425,7 @@ int GMT_map_init_stereo (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE LAMBERT CONFORMAL CONIC PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE GMT_LAMBERT CONFORMAL CONIC PROJECTION
  */
 
 int GMT_map_init_lambert (void) {
@@ -1437,7 +1437,7 @@ int GMT_map_init_lambert (void) {
 	GMT_vlamb (project_info.pars[0], project_info.pars[1], project_info.pars[2], project_info.pars[3]);
 	if (project_info.units_pr_degree) project_info.pars[4] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[4];
-	if (SPHERICAL || project_info.GMT_convert_latitudes) {	/* Spherical code w/wo conformal latitudes */
+	if (GMT_IS_SPHERICAL || project_info.GMT_convert_latitudes) {	/* Spherical code w/wo conformal latitudes */
 		GMT_forward = (PFI)GMT_lamb_sph;
 		GMT_inverse = (PFI)GMT_ilamb_sph;
 	}
@@ -1480,7 +1480,7 @@ int GMT_map_init_lambert (void) {
 
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE OBLIQUE MERCATOR PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE OBLIQUE GMT_MERCATOR PROJECTION
  */
 
 int GMT_map_init_oblique (void) {
@@ -1564,7 +1564,7 @@ int GMT_map_init_oblique (void) {
 	GMT_left_edge = (PFD) GMT_left_rect;
 	GMT_right_edge = (PFD) GMT_right_rect;
 
-	GMT_world_map = (fabs (fabs (w - e) - 360.0) < SMALL);
+	GMT_world_map = (fabs (fabs (w - e) - 360.0) < GMT_SMALL);
 	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	frame_info.check_side = !(gmtdefs.oblique_annotation & 1);
 	return (TRUE);
@@ -1666,14 +1666,14 @@ void GMT_get_origin (double lon1, double lat1, double lon_p, double lat_p, doubl
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE TRANSVERSE MERCATOR PROJECTION (TM)
+ *	TRANSFORMATION ROUTINES FOR THE TRANSVERSE GMT_MERCATOR PROJECTION (GMT_TM)
  */
 
 int GMT_map_init_tm (void) {
 	BOOLEAN search = FALSE;
 	double xmin, xmax, ymin, ymax, w, e, dummy;
 
-	/* Wrap and truncations are in y, not x for TM */
+	/* Wrap and truncations are in y, not x for GMT_TM */
 
 	GMT_wrap_around_check = (PFI) GMT_wrap_around_check_tm;
 	GMT_map_jump = (PFI) GMT_map_jump_tm;
@@ -1682,13 +1682,13 @@ int GMT_map_init_tm (void) {
 	GMT_get_crossings = (PFV) GMT_get_crossings_tm;
 	GMT_truncate = (PFI) GMT_truncate_tm;
 
-	if (gmtdefs.map_scale_factor == -1.0) gmtdefs.map_scale_factor = 1.0;	/* Select default map scale for TM */
+	if (gmtdefs.map_scale_factor == -1.0) gmtdefs.map_scale_factor = 1.0;	/* Select default map scale for GMT_TM */
 	project_info.GMT_convert_latitudes = GMT_quicktm (project_info.pars[0], 10.0);
 	if (project_info.GMT_convert_latitudes) GMT_scale_eqrad ();
 	GMT_vtm (project_info.pars[0], project_info.pars[1]);
 	if (project_info.units_pr_degree) project_info.pars[2] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[2];
-	if (SPHERICAL || project_info.GMT_convert_latitudes) {	/* Spherical code w/wo conformal latitudes */
+	if (GMT_IS_SPHERICAL || project_info.GMT_convert_latitudes) {	/* Spherical code w/wo conformal latitudes */
 		GMT_forward = (PFI)GMT_tm_sph;
 		GMT_inverse = (PFI)GMT_itm_sph;
 	}
@@ -1697,7 +1697,7 @@ int GMT_map_init_tm (void) {
 		GMT_inverse = (PFI)GMT_itm;
 	}
 
-	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
+	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
 	if (GMT_world_map) {	/* Gave oblique degrees */
 		w = project_info.central_meridian + project_info.s;
 		e = project_info.central_meridian + project_info.n;
@@ -1746,7 +1746,7 @@ int GMT_map_init_tm (void) {
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = TRUE;
 		GMT_world_map_tm = FALSE;
-		GMT_world_map = (fabs (project_info.s - project_info.n) < SMALL);
+		GMT_world_map = (fabs (project_info.s - project_info.n) < GMT_SMALL);
 		search = TRUE;
 	}
 
@@ -1759,15 +1759,15 @@ int GMT_map_init_tm (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE UNIVERSAL TRANSVERSE MERCATOR PROJECTION (UTM)
+ *	TRANSFORMATION ROUTINES FOR THE UNIVERSAL TRANSVERSE GMT_MERCATOR PROJECTION (GMT_UTM)
  */
  
 int GMT_map_init_utm (void) {
 	BOOLEAN search;
 	double xmin, xmax, ymin, ymax, lon0;
 
-	if (gmtdefs.map_scale_factor == -1.0) gmtdefs.map_scale_factor = 0.9996;	/* Select default map scale for UTM */
-	lon0 = 180.0 + 6.0 * project_info.pars[0] - 3.0;	/* Central meridian for this UTM zone */
+	if (gmtdefs.map_scale_factor == -1.0) gmtdefs.map_scale_factor = 0.9996;	/* Select default map scale for GMT_UTM */
+	lon0 = 180.0 + 6.0 * project_info.pars[0] - 3.0;	/* Central meridian for this GMT_UTM zone */
 	if (lon0 >= 360.0) lon0 -= 360.0;
 	project_info.GMT_convert_latitudes = GMT_quicktm (lon0, 10.0);
 	if (project_info.GMT_convert_latitudes) GMT_scale_eqrad ();
@@ -1785,7 +1785,7 @@ int GMT_map_init_utm (void) {
 			project_info.north_pole = (project_info.s >= 0.0);
 			break;
 	}
-	if (SPHERICAL || project_info.GMT_convert_latitudes) {	/* Spherical code w/wo conformal latitudes */
+	if (GMT_IS_SPHERICAL || project_info.GMT_convert_latitudes) {	/* Spherical code w/wo conformal latitudes */
 		GMT_forward = (PFI)GMT_utm_sph;
 		GMT_inverse = (PFI)GMT_iutm_sph;
 	}
@@ -1794,7 +1794,7 @@ int GMT_map_init_utm (void) {
 		GMT_inverse = (PFI)GMT_iutm;
 	}
 
-	if (fabs (project_info.w - project_info.e) > 360.0) {	/* -R in UTM meters */
+	if (fabs (project_info.w - project_info.e) > 360.0) {	/* -R in GMT_UTM meters */
 		(*GMT_inverse) (&project_info.w, &project_info.s, project_info.w, project_info.s);
 		(*GMT_inverse) (&project_info.e, &project_info.n, project_info.e, project_info.n);
 		project_info.region = FALSE;
@@ -1832,7 +1832,7 @@ int GMT_map_init_utm (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE LAMBERT AZIMUTHAL EQUAL AREA PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE GMT_LAMBERT GMT_IS_AZIMUTHAL EQUAL AREA PROJECTION
  */
 
 int GMT_map_init_lambeq (void) {
@@ -1844,7 +1844,7 @@ int GMT_map_init_lambeq (void) {
 
 	GMT_set_polar (project_info.pars[1]);
 
-	project_info.GMT_convert_latitudes = !SPHERICAL;
+	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
 
 	if (project_info.GMT_convert_latitudes) {
 		GMT_scale_eqrad ();
@@ -2018,7 +2018,7 @@ int GMT_map_init_ortho (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE GNOMONIC PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE GMT_GNOMONIC PROJECTION
  */
 
 int GMT_map_init_gnomonic (void) {
@@ -2101,7 +2101,7 @@ int GMT_map_init_gnomonic (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE AZIMUTHAL EQUIDISTANT PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE GMT_IS_AZIMUTHAL EQUIDISTANT PROJECTION
  */
 
 int GMT_map_init_azeqdist (void) {
@@ -2181,18 +2181,18 @@ int GMT_map_init_azeqdist (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE MOLLWEIDE EQUAL AREA PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE GMT_MOLLWEIDE EQUAL AREA PROJECTION
  */
 
 int GMT_map_init_mollweide (void) {
 	int search;
 	double xmin, xmax, ymin, ymax, y, dummy;
 
-	project_info.GMT_convert_latitudes = !SPHERICAL;
+	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
 	if (project_info.GMT_convert_latitudes) GMT_scale_eqrad ();
 
 	if (project_info.pars[0] < 0.0) project_info.pars[0] += 360.0;
-	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
+	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
 	if (project_info.units_pr_degree) project_info.pars[1] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = M_PI * project_info.pars[1] / sqrt (8.0);
 	GMT_vmollweide (project_info.pars[0], project_info.pars[1]);
@@ -2237,18 +2237,18 @@ int GMT_map_init_mollweide (void) {
 
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE HAMMER-AITOFF EQUAL AREA PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE GMT_HAMMER-AITOFF EQUAL AREA PROJECTION
  */
 
 int GMT_map_init_hammer (void) {
 	int search;
 	double xmin, xmax, ymin, ymax, x, y, dummy;
 
-	project_info.GMT_convert_latitudes = !SPHERICAL;
+	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
 	if (project_info.GMT_convert_latitudes) GMT_scale_eqrad ();
 
 	if (project_info.pars[0] < 0.0) project_info.pars[0] += 360.0;
-	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
+	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
 	if (project_info.units_pr_degree) project_info.pars[1] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = 0.5 * M_PI * project_info.pars[1] / M_SQRT2;
 	GMT_vhammer (project_info.pars[0], project_info.pars[1]);
@@ -2291,7 +2291,7 @@ int GMT_map_init_hammer (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE VAN DER GRINTEN PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE VAN DER GMT_VANGRINTEN PROJECTION
  */
 
 int GMT_map_init_grinten (void) {
@@ -2301,7 +2301,7 @@ int GMT_map_init_grinten (void) {
 	GMT_set_spherical ();
 
 	if (project_info.pars[0] < 0.0) project_info.pars[0] += 360.0;
-	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
+	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
  	if (project_info.units_pr_degree) project_info.pars[1] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[1];
 	GMT_vgrinten (project_info.pars[0], project_info.pars[1]);
@@ -2345,7 +2345,7 @@ int GMT_map_init_grinten (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE WINKEL-TRIPEL MODIFIED AZIMUTHAL PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE GMT_WINKEL-TRIPEL MODIFIED GMT_IS_AZIMUTHAL PROJECTION
  */
 
 int GMT_map_init_winkel (void) {
@@ -2355,7 +2355,7 @@ int GMT_map_init_winkel (void) {
 	GMT_set_spherical ();	/* PW: Force spherical for now */
 
 	if (project_info.pars[0] < 0.0) project_info.pars[0] += 360.0;
-	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
+	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
 	if (project_info.units_pr_degree) project_info.pars[1] /= project_info.M_PR_DEG;
 	GMT_vwinkel (project_info.pars[0], project_info.pars[1]);
 	project_info.x_scale = project_info.y_scale = 2.0 * project_info.pars[1] / (1.0 + project_info.r_cosphi1);
@@ -2402,11 +2402,11 @@ int GMT_map_init_eckert4 (void) {
 	int search;
 	double xmin, xmax, ymin, ymax, y, dummy;
 
-	project_info.GMT_convert_latitudes = !SPHERICAL;
+	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
 	if (project_info.GMT_convert_latitudes) GMT_scale_eqrad ();
 
 	if (project_info.pars[0] < 0.0) project_info.pars[0] += 360.0;
-	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
+	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
 	if (project_info.units_pr_degree) project_info.pars[1] /= project_info.M_PR_DEG;
 	GMT_veckert4 (project_info.pars[0]);
 	project_info.x_scale = project_info.y_scale = project_info.pars[1];
@@ -2454,11 +2454,11 @@ int GMT_map_init_eckert6 (void) {
 	int search;
 	double xmin, xmax, ymin, ymax, y, dummy;
 
-	project_info.GMT_convert_latitudes = !SPHERICAL;
+	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
 	if (project_info.GMT_convert_latitudes) GMT_scale_eqrad ();
 
 	if (project_info.pars[0] < 0.0) project_info.pars[0] += 360.0;
-	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
+	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
 	if (project_info.units_pr_degree) project_info.pars[1] /= project_info.M_PR_DEG;
 	GMT_veckert6 (project_info.pars[0]);
 	project_info.x_scale = project_info.y_scale = 0.5 * project_info.pars[1] * sqrt (2.0 + M_PI);
@@ -2499,7 +2499,7 @@ int GMT_map_init_eckert6 (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE ROBINSON PSEUDOCYLINDRICAL PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE GMT_ROBINSON PSEUDOCYLINDRICAL PROJECTION
  */
 
 int GMT_map_init_robinson (void) {
@@ -2509,7 +2509,7 @@ int GMT_map_init_robinson (void) {
 	GMT_set_spherical ();	/* PW: Force spherical for now */
 
 	if (project_info.pars[0] < 0.0) project_info.pars[0] += 360.0;
-	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
+	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
 	if (project_info.units_pr_degree) project_info.pars[1] /= project_info.M_PR_DEG;
 	GMT_vrobinson (project_info.pars[0]);
 	project_info.x_scale = project_info.y_scale = project_info.pars[1] / 0.8487;
@@ -2550,18 +2550,18 @@ int GMT_map_init_robinson (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE SINUSOIDAL EQUAL AREA PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE GMT_SINUSOIDAL EQUAL AREA PROJECTION
  */
 
 int GMT_map_init_sinusoidal (void) {
 	int search;
 	double xmin, xmax, ymin, ymax, dummy, y;
 
-	project_info.GMT_convert_latitudes = !SPHERICAL;
+	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
 	if (project_info.GMT_convert_latitudes) GMT_scale_eqrad ();
 
 	if (project_info.pars[0] < 0.0) project_info.pars[0] += 360.0;
-	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL);
+	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
 	if (project_info.s <= -90.0) project_info.edge[0] = FALSE;
 	if (project_info.n >= 90.0) project_info.edge[2] = FALSE;
 	GMT_vsinusoidal (project_info.pars[0]);
@@ -2606,7 +2606,7 @@ int GMT_map_init_sinusoidal (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE CASSINI PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE GMT_CASSINI PROJECTION
  */
 
 int GMT_map_init_cassini (void) {
@@ -2616,7 +2616,7 @@ int GMT_map_init_cassini (void) {
 	too_big = GMT_quicktm (project_info.pars[0], 4.0);
 	if (too_big) GMT_set_spherical();	/* Cannot use ellipsoidal series for this area */
 	GMT_vcassini (project_info.pars[0], project_info.pars[1]);
-	if (SPHERICAL) {
+	if (GMT_IS_SPHERICAL) {
 		GMT_forward = (PFI)GMT_cassini_sph;
 		GMT_inverse = (PFI)GMT_icassini_sph;
 	}
@@ -2658,7 +2658,7 @@ int GMT_map_init_cassini (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE ALBERS PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE GMT_ALBERS PROJECTION
  */
 
 int GMT_map_init_albers (void) {
@@ -2667,7 +2667,7 @@ int GMT_map_init_albers (void) {
 
 	project_info.GMT_convert_latitudes = GMT_quickconic();
 	if (project_info.GMT_convert_latitudes) GMT_scale_eqrad ();
-	if (SPHERICAL || project_info.GMT_convert_latitudes) {	/* Spherical code w/wo authalic latitudes */
+	if (GMT_IS_SPHERICAL || project_info.GMT_convert_latitudes) {	/* Spherical code w/wo authalic latitudes */
 		GMT_valbers_sph (project_info.pars[0], project_info.pars[1], project_info.pars[2], project_info.pars[3]);
 		GMT_forward = (PFI)GMT_albers_sph;
 		GMT_inverse = (PFI)GMT_ialbers_sph;
@@ -2727,7 +2727,7 @@ int GMT_map_init_econic (void) {
 	BOOLEAN search;
 	double xmin, xmax, ymin, ymax, dy, az, x1, y1;
 
-	project_info.GMT_convert_latitudes = !SPHERICAL;
+	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
 	if (project_info.GMT_convert_latitudes) GMT_scale_eqrad ();
 	GMT_veconic (project_info.pars[0], project_info.pars[1], project_info.pars[2], project_info.pars[3]);
 	GMT_forward = (PFI)GMT_econic;
@@ -2821,7 +2821,7 @@ void GMT_wesn_search (double xmin, double xmax, double ymin, double ymax, double
 		w = 0.0;
 		e = 360.0;
 	}
-	/* if (project_info.projection != AZ_EQDIST && !GMT_map_outside (project_info.central_meridian, -90.0)) { why was it like this? */
+	/* if (project_info.projection != GMT_AZ_EQDIST && !GMT_map_outside (project_info.central_meridian, -90.0)) { why was it like this? */
 	if (!GMT_map_outside (project_info.central_meridian, -90.0)) {
 		s = -90.0;
 		w = 0.0;
@@ -2926,7 +2926,7 @@ int GMT_map_crossing (double lon1, double lat1, double lon2, double lat2, double
 	if (nx == 2) {	/* Must see if crossings are in correct order */
 		double da, db;
 
-		if (MAPPING) {
+		if (GMT_IS_MAPPING) {
 			da = GMT_great_circle_dist (lon1, lat1, xlon[0], xlat[0]);
 			db = GMT_great_circle_dist (lon1, lat1, xlon[1], xlat[1]);
 		}
@@ -3016,7 +3016,7 @@ int GMT_wrap_around_check_x (double *angle, double last_x, double last_y, double
 	/* width = GMT_half_map_width (this_y); */
 	width = MAX (GMT_half_map_width (this_y), GMT_half_map_width (last_y));
 
-	skip = (fabs (jump) < width || (fabs(jump) <= SMALL || fabs(width) <= SMALL));
+	skip = (fabs (jump) < width || (fabs(jump) <= GMT_SMALL || fabs(width) <= GMT_SMALL));
 	dy = this_y - last_y;
 
 	for (i = 0; i < (*nx); i++) {	/* Must check if the crossover found should wrap around */
@@ -3063,7 +3063,7 @@ int GMT_wrap_around_check_x (double *angle, double last_x, double last_y, double
 	return (wrap);
 }
 
-/* For global TM maps */
+/* For global GMT_TM maps */
 
 int GMT_wrap_around_check_tm (double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, int *sides, int *nx)
 {
@@ -3073,7 +3073,7 @@ int GMT_wrap_around_check_tm (double *angle, double last_x, double last_y, doubl
 	jump = this_y - last_y;
 	width = 0.5 * GMT_map_height;
 
-	skip = ((fabs (jump) < width) || (fabs(jump) <= SMALL));
+	skip = ((fabs (jump) < width) || (fabs(jump) <= GMT_SMALL));
 	dx = this_x - last_x;
 		     
 	for (i = 0; i < (*nx); i++) {	/* Must check if the crossover found should wrap around */
@@ -3195,10 +3195,10 @@ int GMT_map_jump_x (double x0, double y0, double x1, double y1)
 	/* TRUE if x-distance between points exceeds 1/2 map width at this y value */
 	double dx, map_half_size;
 
-	if (!MAPPING || fabs (project_info.w - project_info.e) < 90.0) return (FALSE);
+	if (!GMT_IS_MAPPING || fabs (project_info.w - project_info.e) < 90.0) return (FALSE);
 
 	map_half_size = MAX (GMT_half_map_width (y0), GMT_half_map_width (y1));
-	if (fabs (map_half_size) < SMALL) return (0);
+	if (fabs (map_half_size) < GMT_SMALL) return (0);
 
 	dx = x1 - x0;
 	if (dx > map_half_size)	/* Cross left/west boundary */
@@ -3212,7 +3212,7 @@ int GMT_map_jump_x (double x0, double y0, double x1, double y1)
 int GMT_map_jump_tm (double x0, double y0, double x1, double y1)
 {
 	/* TRUE if y-distance between points exceeds 1/2 map height at this x value */
-	/* Only used for TM world maps */
+	/* Only used for GMT_TM world maps */
 
 	double dy;
 
@@ -3248,7 +3248,7 @@ void GMT_get_crossings_x (double *xc, double *yc, double x0, double y0, double x
 }
 
 void GMT_get_crossings_tm (double *xc, double *yc, double x0, double y0, double x1, double y1)
-{	/* Finds crossings for wrap-arounds for global TM maps */
+{	/* Finds crossings for wrap-arounds for global GMT_TM maps */
 	double xa, xb, ya, yb, dy, c;
 
 	xa = x0;	xb = x1;
@@ -3279,12 +3279,12 @@ double GMT_half_map_width (double y)
 
 	switch (project_info.projection) {
 
-		case STEREO:	/* Must compute width of circular map based on y value (ASSUMES FULL CIRCLE!!!) */
-		case LAMB_AZ_EQ:
-		case ORTHO:
-		case GNOMONIC:
-		case AZ_EQDIST:
-		case GRINTEN:
+		case GMT_STEREO:	/* Must compute width of circular map based on y value (ASSUMES FULL CIRCLE!!!) */
+		case GMT_LAMB_AZ_EQ:
+		case GMT_ORTHO:
+		case GMT_GNOMONIC:
+		case GMT_AZ_EQDIST:
+		case GMT_VANGRINTEN:
 			if (project_info.region && GMT_world_map) {
 				y -= project_info.r;
 				half_width = d_sqrt (project_info.r * project_info.r - y * y);
@@ -3293,13 +3293,13 @@ double GMT_half_map_width (double y)
 				half_width = GMT_half_map_size;
 			break;
 
-		case MOLLWEIDE:		/* Must compute width of Mollweide map based on y value */
-		case HAMMER:
-		case WINKEL:
-		case SINUSOIDAL:
-		case ROBINSON:
-		case ECKERT4:
-		case ECKERT6:
+		case GMT_MOLLWEIDE:		/* Must compute width of Mollweide map based on y value */
+		case GMT_HAMMER:
+		case GMT_WINKEL:
+		case GMT_SINUSOIDAL:
+		case GMT_ROBINSON:
+		case GMT_ECKERT4:
+		case GMT_ECKERT6:
 			if (project_info.region && GMT_world_map)
 				half_width = GMT_right_boundary (y) - GMT_half_map_size;
 			else
@@ -3332,7 +3332,7 @@ BOOLEAN GMT_will_it_wrap_x (double *x, double *y, int n, int *start)
 }
 
 BOOLEAN GMT_will_it_wrap_tm (double *x, double *y, int n, int *start)
-{	/* Determines if a polygon will wrap at edges for TM global projection */
+{	/* Determines if a polygon will wrap at edges for GMT_TM global projection */
 	int i;
 	BOOLEAN wrap;
 
@@ -3363,12 +3363,12 @@ BOOLEAN GMT_this_point_wraps_x (double x0, double x1, double w_last, double w_th
 	/* Second condition deals with points near bottom/top of maps
 	   where map width may shrink to zero */
 
-	return ((dx = fabs (x1 - x0)) > w_max && w_min > SMALL);
+	return ((dx = fabs (x1 - x0)) > w_max && w_min > GMT_SMALL);
 }
 
 BOOLEAN GMT_this_point_wraps_tm (double y0, double y1)
 {
-	/* Returns TRUE if the 2 y-points implies a jump at this x-level of the TM map */
+	/* Returns TRUE if the 2 y-points implies a jump at this x-level of the GMT_TM map */
 
 	double dy;
 
@@ -3425,7 +3425,7 @@ int GMT_truncate_x (double *x, double *y, int n, int start, int l_or_r)
 }
 
 int GMT_truncate_tm (double *x, double *y, int n, int start, int b_or_t)
-{	/* Truncates a wrapping polygon agains bottom or top edge for global TM maps */
+{	/* Truncates a wrapping polygon agains bottom or top edge for global GMT_TM maps */
 
 	int i, i1, j, k;
 	double xc[4], yc[4], trunc_y;
@@ -3550,9 +3550,9 @@ int GMT_wesn_outside (double lon, double lat)
 	while (lon < project_info.w && (lon + 360.0) <= project_info.e) lon += 360.0;
 	while (lon > project_info.e && (lon - 360.0) >= project_info.w) lon -= 360.0;
 
-	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < SMALL )
+	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < GMT_SMALL )
 		GMT_x_status_new = -1;
-	else if (GMT_on_border_is_outside && fabs (lon - project_info.e) < SMALL)
+	else if (GMT_on_border_is_outside && fabs (lon - project_info.e) < GMT_SMALL)
 		GMT_x_status_new = 1;
 	else if (lon < project_info.w)
 		GMT_x_status_new = -2;
@@ -3561,9 +3561,9 @@ int GMT_wesn_outside (double lon, double lat)
 	else
 		GMT_x_status_new = 0;
 
-	if (GMT_on_border_is_outside && fabs (lat - project_info.s) < SMALL )
+	if (GMT_on_border_is_outside && fabs (lat - project_info.s) < GMT_SMALL )
 		GMT_y_status_new = -1;
-	else if (GMT_on_border_is_outside && fabs (lat - project_info.n) < SMALL)
+	else if (GMT_on_border_is_outside && fabs (lat - project_info.n) < GMT_SMALL)
 		GMT_y_status_new = 1;
 	else if (lat < project_info.s )
 		GMT_y_status_new = -2;
@@ -3586,9 +3586,9 @@ int GMT_wesn_outside_np (double lon, double lat)
 	 * pointer will be temporarily set to point to this routine during the
 	 * construction of the basemap and then reset to GMT_wesn_outside */
 
-	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < SMALL )
+	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < GMT_SMALL )
 		GMT_x_status_new = -1;
-	else if (GMT_on_border_is_outside && fabs (lon - project_info.e) < SMALL)
+	else if (GMT_on_border_is_outside && fabs (lon - project_info.e) < GMT_SMALL)
 		GMT_x_status_new = 1;
 	else if (lon < project_info.w)
 		GMT_x_status_new = -2;
@@ -3597,9 +3597,9 @@ int GMT_wesn_outside_np (double lon, double lat)
 	else
 		GMT_x_status_new = 0;
 
-	if (GMT_on_border_is_outside && fabs (lat - project_info.s) < SMALL )
+	if (GMT_on_border_is_outside && fabs (lat - project_info.s) < GMT_SMALL )
 		GMT_y_status_new = -1;
-	else if (GMT_on_border_is_outside && fabs (lat - project_info.n) < SMALL)
+	else if (GMT_on_border_is_outside && fabs (lat - project_info.n) < GMT_SMALL)
 		GMT_y_status_new = 1;
 	else if (lat < project_info.s )
 		GMT_y_status_new = -2;
@@ -3622,9 +3622,9 @@ int GMT_polar_outside (double lon, double lat)
 		while (lon > project_info.e && (lon - 360.0) > project_info.w) lon -= 360.0;
 	}
 
-	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < SMALL )
+	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < GMT_SMALL )
 		GMT_x_status_new = -1;
-	else if (GMT_on_border_is_outside && fabs (lon - project_info.e) < SMALL)
+	else if (GMT_on_border_is_outside && fabs (lon - project_info.e) < GMT_SMALL)
 		GMT_x_status_new = 1;
 	else if (lon < project_info.w)
 		GMT_x_status_new = -2;
@@ -3634,9 +3634,9 @@ int GMT_polar_outside (double lon, double lat)
 		GMT_x_status_new = 0;
 	if (!project_info.edge[1]) GMT_x_status_new = 0;	/* 360 degrees, no edge */
 
-	if (GMT_on_border_is_outside && fabs (lat - project_info.s) < SMALL )
+	if (GMT_on_border_is_outside && fabs (lat - project_info.s) < GMT_SMALL )
 		GMT_y_status_new = -1;
-	else if (GMT_on_border_is_outside && fabs (lat - project_info.n) < SMALL)
+	else if (GMT_on_border_is_outside && fabs (lat - project_info.n) < GMT_SMALL)
 		GMT_y_status_new = 1;
 	else if (lat < project_info.s )
 		GMT_y_status_new = -2;
@@ -3679,7 +3679,7 @@ int GMT_radial_outside (double lon, double lat)
 
 	GMT_x_status_new = 0;
 	dist = GMT_great_circle_dist (lon, lat, project_info.central_meridian, project_info.pole);
-	if (GMT_on_border_is_outside && fabs (dist - project_info.f_horizon) < SMALL)
+	if (GMT_on_border_is_outside && fabs (dist - project_info.f_horizon) < GMT_SMALL)
 		GMT_y_status_new = -1;
 	else if (dist > project_info.f_horizon)
 		GMT_y_status_new = -2;
@@ -3694,9 +3694,9 @@ int GMT_rect_outside (double lon, double lat)
 
 	GMT_geo_to_xy (lon, lat, &x, &y);
 
-	if (GMT_on_border_is_outside && fabs (x - project_info.xmin) < SMALL )
+	if (GMT_on_border_is_outside && fabs (x - project_info.xmin) < GMT_SMALL )
 		GMT_x_status_new = -1;
-	else if (GMT_on_border_is_outside && fabs (x - project_info.xmax) < SMALL)
+	else if (GMT_on_border_is_outside && fabs (x - project_info.xmax) < GMT_SMALL)
 		GMT_x_status_new = 1;
 	else if (x < project_info.xmin)
 		GMT_x_status_new = -2;
@@ -3705,9 +3705,9 @@ int GMT_rect_outside (double lon, double lat)
 	else
 		GMT_x_status_new = 0;
 
-	if (GMT_on_border_is_outside && fabs (y -project_info.ymin) < SMALL )
+	if (GMT_on_border_is_outside && fabs (y -project_info.ymin) < GMT_SMALL )
 		GMT_y_status_new = -1;
-	else if (GMT_on_border_is_outside && fabs (y - project_info.ymax) < SMALL)
+	else if (GMT_on_border_is_outside && fabs (y - project_info.ymax) < GMT_SMALL)
 		GMT_y_status_new = 1;
 	else if (y < project_info.ymin)
 		GMT_y_status_new = -2;
@@ -3801,7 +3801,7 @@ int GMT_wesn_crossing (double lon0, double lat0, double lon1, double lat1, doubl
 
 	for (i = 0; i < n; i++) {
 		GMT_geo_to_xy (clon[i], clat[i], &xx[i], &yy[i]);
-		if (project_info.projection == POLAR && sides[i]%2) sides[i] = 4 - sides[i];	/*  toggle 1 <-> 3 */
+		if (project_info.projection == GMT_POLAR && sides[i]%2) sides[i] = 4 - sides[i];	/*  toggle 1 <-> 3 */
 	}
 
 	/* Check for corner xover */
@@ -3900,7 +3900,7 @@ int GMT_rect_crossing (double lon0, double lat0, double lon1, double lat1, doubl
 
 	for (i = 0; i < n; i++)	GMT_xy_to_geo (&clon[i], &clat[i], xx[i], yy[i]);
 
-	if (!MAPPING) return (n);
+	if (!GMT_IS_MAPPING) return (n);
 
 	/* Check for corner xover */
 
@@ -3922,17 +3922,17 @@ int GMT_rect_crossing (double lon0, double lat0, double lon1, double lat1, doubl
 
 void GMT_x_rect_corner (double *x)
 {
-	if (fabs (*x) <= SMALL)
+	if (fabs (*x) <= GMT_SMALL)
 		*x = 0.0;
-	else if (fabs (*x - project_info.xmax) <= SMALL)
+	else if (fabs (*x - project_info.xmax) <= GMT_SMALL)
 		*x = project_info.xmax;
 }
 
 void GMT_y_rect_corner (double *y)
 {
-	if (fabs (*y) <= SMALL)
+	if (fabs (*y) <= GMT_SMALL)
 		*y = 0.0;
-	else if (fabs (*y - project_info.ymax) <= SMALL)
+	else if (fabs (*y - project_info.ymax) <= GMT_SMALL)
 		*y = project_info.ymax;
 }
 
@@ -3956,23 +3956,23 @@ int GMT_is_rect_corner (double x, double y)
 
 void GMT_x_wesn_corner (double *x)
 {
-/*	if (fabs (fmod (fabs (*x - project_info.w), 360.0)) <= SMALL)
+/*	if (fabs (fmod (fabs (*x - project_info.w), 360.0)) <= GMT_SMALL)
 		*x = project_info.w;
-	else if (fabs (fmod (fabs (*x - project_info.e), 360.0)) <= SMALL)
+	else if (fabs (fmod (fabs (*x - project_info.e), 360.0)) <= GMT_SMALL)
 		*x = project_info.e; */
 
-	if (fabs (*x - project_info.w) <= SMALL)
+	if (fabs (*x - project_info.w) <= GMT_SMALL)
 		*x = project_info.w;
-	else if (fabs (*x - project_info.e) <= SMALL)
+	else if (fabs (*x - project_info.e) <= GMT_SMALL)
 		*x = project_info.e;
 
 }
 
 void GMT_y_wesn_corner (double *y)
 {
-	if (fabs (*y - project_info.s) <= SMALL)
+	if (fabs (*y - project_info.s) <= GMT_SMALL)
 		*y = project_info.s;
-	else if (fabs (*y - project_info.n) <= SMALL)
+	else if (fabs (*y - project_info.n) <= GMT_SMALL)
 		*y = project_info.n;
 }
 
@@ -4198,7 +4198,7 @@ int GMT_graticule_path (double **x, double **y, int dir, double w, double e, dou
 
 	/* Close graticule from point 0 through point 4 */
 
-	if (RECT_GRATICULE) {	/* Simple rectangle in this projection */
+	if (GMT_IS_RECT_GRATICULE) {	/* Simple rectangle in this projection */
 		xx = (double *) GMT_memory (VNULL, 4, sizeof (double), GMT_program);
 		yy = (double *) GMT_memory (VNULL, 4, sizeof (double), GMT_program);
 		xx[0] = px0;	xx[1] = px1;	xx[2] = px2;	xx[3] = px3;
@@ -4212,7 +4212,7 @@ int GMT_graticule_path (double **x, double **y, int dir, double w, double e, dou
 
 		/* SOUTH BORDER */
 
-		if (MAPPING && s == -90.0) {	/* No path, just a point */
+		if (GMT_IS_MAPPING && s == -90.0) {	/* No path, just a point */
 			xx = (double *)GMT_memory (VNULL, 1, sizeof (double), GMT_program);
 			yy = (double *)GMT_memory (VNULL, 1, sizeof (double), GMT_program);
 			xx[0] = px1;	yy[0] = -90.0;
@@ -4235,7 +4235,7 @@ int GMT_graticule_path (double **x, double **y, int dir, double w, double e, dou
 
 		/* NORTH BORDER */
 
-		if (MAPPING && n == 90.0) {	/* No path, just a point */
+		if (GMT_IS_MAPPING && n == 90.0) {	/* No path, just a point */
 			xtmp = (double *)GMT_memory (VNULL, 1, sizeof (double), GMT_program);
 			ytmp = (double *)GMT_memory (VNULL, 1, sizeof (double), GMT_program);
 			xtmp[0] = px3;	ytmp[0] = +90.0;
@@ -4335,7 +4335,7 @@ int GMT_lonpath (double lon, double lat1, double lat2, double **x, double **y)
 		do {
 			n_try++;
 			tlat[n] = tlat[n-1] + dlat;
-			if (MAPPING && fabs (tlat[n]) > 90.0) tlat[n] = copysign (90.0, tlat[n]);
+			if (GMT_IS_MAPPING && fabs (tlat[n]) > 90.0) tlat[n] = copysign (90.0, tlat[n]);
 			GMT_geo_to_xy (tlon[n], tlat[n], &x1, &y1);
 			if ((*GMT_map_jump) (x0, y0, x1, y1) || (y0 < project_info.ymin || y0 > project_info.ymax))
 				keep_trying = FALSE;
@@ -4840,10 +4840,10 @@ int GMT_geo_to_xy_line (double *lon, double *lat, int n)
 
 int GMT_ok_xovers (int nx, double x0, double x1, int *sides)
 {
-	if (!MAPPING) return (TRUE);	/* Data is not periodic*/
+	if (!GMT_IS_MAPPING) return (TRUE);	/* Data is not periodic*/
 	if (GMT_world_map || nx < 2) return (TRUE);
 	if ((sides[0] + sides[1]) == 2) return (TRUE);	/* Crossing in the n-s direction */
-	if (fabs (fabs (x0 - x1) - GMT_map_width) < SMALL) return (TRUE);
+	if (fabs (fabs (x0 - x1) - GMT_map_width) < GMT_SMALL) return (TRUE);
 	if ((sides[0] + sides[1]) != 4) return (TRUE);	/* Not Crossing in the e-w direction */
 	return (FALSE);
 }
@@ -4930,8 +4930,8 @@ void GMT_init_search_radius (double *radius, struct GRD_HEADER *r_head, struct G
 		if (dy < r_head->y_inc) dy = r_head->y_inc;
 		*radius = MAX (dx, dy);
 	}
-	if (gmtdefs.verbose && !(project_info.projection == MERCATOR && g_head->nx == r_head->nx)) {
-		if (MAPPING) {	/* A geographic projection */
+	if (gmtdefs.verbose && !(project_info.projection == GMT_MERCATOR && g_head->nx == r_head->nx)) {
+		if (GMT_IS_MAPPING) {	/* A geographic projection */
 			if (inverse) {	/* Converting back to a geographical grid, so radius is in distance units */
 				r = (*radius) * GMT_u2u[GMT_INCH][GMT_M];	/* Get meters */
 				if (r > 1000.0) 
@@ -4959,21 +4959,21 @@ void GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 	double dr, x_0, y_0, *x, *y, *lon, lat, delta, weight, g_off, r_off;
 	double dx2, dy2, xinc2, yinc2, i_max_3r, idx, idy;
 
-	if (project_info.projection == LINEAR && (project_info.xyz_projection[0] != LINEAR && g_head->ny == r_head->ny) && (project_info.xyz_projection[1] != LINEAR && g_head->nx == r_head->nx)) {
+	if (project_info.projection == GMT_LINEAR && (project_info.xyz_projection[0] != GMT_LINEAR && g_head->ny == r_head->ny) && (project_info.xyz_projection[1] != GMT_LINEAR && g_head->nx == r_head->nx)) {
 		GMT_transx_forward (geo, g_head, rect, r_head);						/* First transform the rows */
 		memcpy ((void *)geo, (void *)rect, (size_t)(g_head->ny * g_head->nx * sizeof (float)));	/* Then store intermediate result back in geo */
 		GMT_transy_forward (geo, g_head, rect, r_head);						/* And finally transform the columns */
 		return;
 	}
-	if (project_info.projection == LINEAR && project_info.xyz_projection[0] != LINEAR && g_head->ny == r_head->ny) {
+	if (project_info.projection == GMT_LINEAR && project_info.xyz_projection[0] != GMT_LINEAR && g_head->ny == r_head->ny) {
 		GMT_transx_forward (geo, g_head, rect, r_head);
 		return;
 	}
-	if (project_info.projection == LINEAR && project_info.xyz_projection[1] != LINEAR && g_head->nx == r_head->nx) {
+	if (project_info.projection == GMT_LINEAR && project_info.xyz_projection[1] != GMT_LINEAR && g_head->nx == r_head->nx) {
 		GMT_transy_forward (geo, g_head, rect, r_head);
 		return;
 	}
-	if (project_info.projection == MERCATOR && g_head->nx == r_head->nx) {
+	if (project_info.projection == GMT_MERCATOR && g_head->nx == r_head->nx) {
 		GMT_merc_forward (geo, g_head, rect, r_head);
 		return;
 	}
@@ -5013,7 +5013,7 @@ void GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 
 	for (j = ij = 0; j < g_head->ny; j++) {
 		lat = GMT_j_to_y (j, g_head->y_min, g_head->y_max, g_head->y_inc, g_off, g_head->ny);
-		if (project_info.projection == MERCATOR && fabs (lat) >= 90.0) lat = copysign (89.99, lat);
+		if (project_info.projection == GMT_MERCATOR && fabs (lat) >= 90.0) lat = copysign (89.99, lat);
 		for (i = 0; i < g_head->nx; i++, ij++) {
 			if (GMT_is_fnan (geo[ij])) continue;
 
@@ -5072,7 +5072,7 @@ void GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 	double dr, lat_0, lon_0, *x_0, y_0, *lon, *lat, dlon, x, y, delta, weight, g_off, r_off;
 	double dx2, dy2, xinc2, yinc2, i_max_3r, idx, idy;
 
-	if (project_info.projection == MERCATOR && g_head->nx == r_head->nx) {
+	if (project_info.projection == GMT_MERCATOR && g_head->nx == r_head->nx) {
 		GMT_merc_inverse (geo, g_head, rect, r_head);
 		return;
 	}
@@ -5218,7 +5218,7 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 	for (i_out = 0; i_out < O->nx; i_out++) x_out[i_out] = GMT_i_to_x (i_out, O->x_min, O->x_max, O->x_inc, O_off, O->nx);
 	for (j_out = 0; j_out < O->ny; j_out++) y_out[j_out] = GMT_j_to_y (j_out, O->y_min, O->y_max, O->y_inc, O_off, O->ny);
 
-	if (RECT_GRATICULE) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
+	if (GMT_IS_RECT_GRATICULE) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
 		x_in_proj = (double *) GMT_memory (VNULL, (size_t)I->nx, sizeof (double), "GMT_grd_forward");
 		y_in_proj = (double *) GMT_memory (VNULL, (size_t)I->ny, sizeof (double), "GMT_grd_forward");
 		x_out_proj = (double *) GMT_memory (VNULL, (size_t)O->nx, sizeof (double), "GMT_grd_forward");
@@ -5240,9 +5240,9 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 	/* PART 1: Project input grid points and do a blockmean operation */
 
 	for (j_in = 0; j_in < I->ny; j_in++) {	/* Loop over the input grid coordinates */
-		if (RECT_GRATICULE) y_proj = y_in_proj[j_in];
+		if (GMT_IS_RECT_GRATICULE) y_proj = y_in_proj[j_in];
 		for (i_in = 0; i_in < I->nx; i_in++) {
-			if (RECT_GRATICULE)
+			if (GMT_IS_RECT_GRATICULE)
 				x_proj = x_in_proj[i_in];
 			else if (inverse)
 				GMT_xy_to_geo (&x_proj, &y_proj, x_in[i_in], y_in[j_in]);
@@ -5274,9 +5274,9 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 	/* PART 2: Create weighted average of interpolated and observed points */
 
 	for (j_out = ij_out = 0; j_out < O->ny; j_out++) {	/* Loop over the output grid coordinates */
-		if (RECT_GRATICULE) y_proj = y_out_proj[j_out];
+		if (GMT_IS_RECT_GRATICULE) y_proj = y_out_proj[j_out];
 		for (i_out = 0; i_out < O->nx; i_out++, ij_out++) {
-			if (RECT_GRATICULE)
+			if (GMT_IS_RECT_GRATICULE)
 				x_proj = x_out_proj[i_out];
 			else if (inverse)
 				GMT_geo_to_xy (x_out[i_out], y_out[j_out], &x_proj, &y_proj);
@@ -5315,7 +5315,7 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 	GMT_free ((void *)y_in);
 	GMT_free ((void *)x_out);
 	GMT_free ((void *)y_out);
-	if (RECT_GRATICULE) {
+	if (GMT_IS_RECT_GRATICULE) {
 		GMT_free ((void *)x_in_proj);
 		GMT_free ((void *)y_in_proj);
 		GMT_free ((void *)x_out_proj);
@@ -5513,7 +5513,7 @@ void GMT_azim_to_angle (double lon, double lat, double c, double azim, double *a
 {
 	double lon1, lat1, x0, x1, y0, y1, dx, width, sinc, cosc, sinaz, cosaz, sinl, cosl;
 
-	if (project_info.projection < MERCATOR) {	/* Trivial case */
+	if (project_info.projection < GMT_MERCATOR) {	/* Trivial case */
 		*angle = 90.0 - azim;
 		if (project_info.x_scale != project_info.y_scale) {
 			sincos (*angle * D2R, &sinaz, &cosaz);
@@ -5543,7 +5543,7 @@ void GMT_azim_to_angle (double lon, double lat, double c, double azim, double *a
 	/* Check for wrap-around */
 
 	dx = x1 - x0;
-	if ((fabs (fabs (project_info.e - project_info.w) - 360.0) < SMALL) && fabs (dx) > (width = GMT_half_map_width (y0))) {
+	if ((fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL) && fabs (dx) > (width = GMT_half_map_width (y0))) {
 		width *= 2.0;
 		dx = copysign (width - fabs (dx), -dx);
 		if (x1 < width)
@@ -5555,7 +5555,7 @@ void GMT_azim_to_angle (double lon, double lat, double c, double azim, double *a
 }
 
 void GMT_set_spherical (void) {	/* Force spherical solution */
-	gmtdefs.ellipsoid = N_ELLIPSOIDS - 1;	/* Use equatorial radius */
+	gmtdefs.ellipsoid = GMT_N_ELLIPSOIDS - 1;	/* Use equatorial radius */
 	project_info.EQ_RAD = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius;
 	project_info.i_EQ_RAD = 1.0 / project_info.EQ_RAD;
 	project_info.M_PR_DEG = TWO_PI * project_info.EQ_RAD / 360.0;
@@ -5617,15 +5617,15 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 		np = 4;
 	else {
 		switch (project_info.projection) {
-			case LINEAR:
-			case MERCATOR:
-			case CYL_EQ:
-			case CYL_EQDIST:
-			case MILLER:
-			case OBLIQUE_MERC:
+			case GMT_LINEAR:
+			case GMT_MERCATOR:
+			case GMT_CYL_EQ:
+			case GMT_CYL_EQDIST:
+			case GMT_MILLER:
+			case GMT_OBLIQUE_MERC:
 				np = 4;
 				break;
-			case POLAR:
+			case GMT_POLAR:
 				if (project_info.got_elevations)
 					*donut = (project_info.n < 90.0 && GMT_world_map);
 				else
@@ -5636,33 +5636,33 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 				else if (!GMT_world_map)	/* Need to include origin */
 					np++;
 				break;
-			case STEREO:
-			case LAMBERT:
-			case LAMB_AZ_EQ:
-			case ORTHO:
-			case GNOMONIC:
-			case AZ_EQDIST:
-			case ALBERS:
-			case ECONIC:
-			case GRINTEN:
+			case GMT_STEREO:
+			case GMT_LAMBERT:
+			case GMT_LAMB_AZ_EQ:
+			case GMT_ORTHO:
+			case GMT_GNOMONIC:
+			case GMT_AZ_EQDIST:
+			case GMT_ALBERS:
+			case GMT_ECONIC:
+			case GMT_VANGRINTEN:
 				np = (project_info.polar && (project_info.s <= -90.0 || project_info.n >= 90.0)) ? GMT_n_lon_nodes + 2: 2 * (GMT_n_lon_nodes + 1);
 				break;
-			case MOLLWEIDE:
-			case SINUSOIDAL:
-			case ROBINSON:
+			case GMT_MOLLWEIDE:
+			case GMT_SINUSOIDAL:
+			case GMT_ROBINSON:
 				np = 2 * GMT_n_lat_nodes + 2;
 				break;
-			case WINKEL:
-			case HAMMER:
-			case ECKERT4:
-			case ECKERT6:
+			case GMT_WINKEL:
+			case GMT_HAMMER:
+			case GMT_ECKERT4:
+			case GMT_ECKERT6:
 				np = 2 * GMT_n_lat_nodes + 2;
 				if (project_info.s != -90.0) np += GMT_n_lon_nodes - 1;
 				if (project_info.n != 90.0) np += GMT_n_lon_nodes - 1;
 				break;
-			case TM:
-			case UTM:
-			case CASSINI:
+			case GMT_TM:
+			case GMT_UTM:
+			case GMT_CASSINI:
 				np = 2 * (GMT_n_lon_nodes + GMT_n_lat_nodes);
 				break;
 			default:
@@ -5682,18 +5682,18 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 	}
 	else {
 		switch (project_info.projection) {	/* Fill in clip path */
-			case LINEAR:
-			case MERCATOR:
-			case CYL_EQ:
-			case CYL_EQDIST:
-			case MILLER:
-			case OBLIQUE_MERC:
+			case GMT_LINEAR:
+			case GMT_MERCATOR:
+			case GMT_CYL_EQ:
+			case GMT_CYL_EQDIST:
+			case GMT_MILLER:
+			case GMT_OBLIQUE_MERC:
 				work_x[0] = work_x[3] = project_info.xmin;	work_y[0] = work_y[1] = project_info.ymin;
 				work_x[1] = work_x[2] = project_info.xmax;	work_y[2] = work_y[3] = project_info.ymax;
 				break;
-			case LAMBERT:
-			case ALBERS:
-			case ECONIC:
+			case GMT_LAMBERT:
+			case GMT_ALBERS:
+			case GMT_ECONIC:
 				for (i = j = 0; i <= GMT_n_lon_nodes; i++, j++) {
 					lon = (i == GMT_n_lon_nodes) ? project_info.e : project_info.w + i * GMT_dlon;
 					GMT_geo_to_xy (lon, project_info.s, &work_x[j], &work_y[j]);
@@ -5703,9 +5703,9 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 					GMT_geo_to_xy (lon, project_info.n, &work_x[j], &work_y[j]);
 				}
 				break;
-			case TM:
-			case UTM:
-			case CASSINI:
+			case GMT_TM:
+			case GMT_UTM:
+			case GMT_CASSINI:
 				for (i = j = 0; i < GMT_n_lon_nodes; i++, j++)	/* South */
 					GMT_geo_to_xy (project_info.w + i * GMT_dlon, project_info.s, &work_x[j], &work_y[j]);
 				for (i = 0; i < GMT_n_lat_nodes; j++, i++)	/* East */
@@ -5715,7 +5715,7 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 				for (i = 0; i < GMT_n_lat_nodes; j++, i++)	/* West */
 					GMT_geo_to_xy (project_info.w, project_info.n - i * GMT_dlat, &work_x[j], &work_y[j]);
 				break;
-			case POLAR:
+			case GMT_POLAR:
 				r0 = project_info.r * project_info.s / project_info.n;
 				if (*donut) {
 					np /= 2;
@@ -5750,11 +5750,11 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 					}
 				}
 				break;
-			case LAMB_AZ_EQ:
-			case ORTHO:
-			case GNOMONIC:
-			case GRINTEN:
-			case STEREO:
+			case GMT_LAMB_AZ_EQ:
+			case GMT_ORTHO:
+			case GMT_GNOMONIC:
+			case GMT_VANGRINTEN:
+			case GMT_STEREO:
 				if (project_info.polar) {
 					j = 0;
 					if (project_info.s > -90.0) {
@@ -5788,7 +5788,7 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 					}
 				}
 				break;
-			case AZ_EQDIST:
+			case GMT_AZ_EQDIST:
 				da = TWO_PI / np;
 				for (i = 0; i < np; i++) {
 					angle = i * da;
@@ -5797,9 +5797,9 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 					work_y[i] = project_info.r * (1.0 + s);
 				}
 				break;
-			case MOLLWEIDE:
-			case SINUSOIDAL:
-			case ROBINSON:
+			case GMT_MOLLWEIDE:
+			case GMT_SINUSOIDAL:
+			case GMT_ROBINSON:
 				for (i = j = 0; i <= GMT_n_lat_nodes; i++, j++) {	/* Right */
 					lat = (i == GMT_n_lat_nodes) ? project_info.n : project_info.s + i * GMT_dlat;
 					GMT_geo_to_xy (project_info.e, lat, &work_x[j], &work_y[j]);
@@ -5809,10 +5809,10 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 					GMT_geo_to_xy (project_info.w, lat, &work_x[j], &work_y[j]);
 				}
 				break;
-			case HAMMER:
-			case WINKEL:
-			case ECKERT4:
-			case ECKERT6:
+			case GMT_HAMMER:
+			case GMT_WINKEL:
+			case GMT_ECKERT4:
+			case GMT_ECKERT6:
 				for (i = j = 0; i <= GMT_n_lat_nodes; i++, j++) {	/* Right */
 					lat = (i == GMT_n_lat_nodes) ? project_info.n : project_info.s + i * GMT_dlat;
 					GMT_geo_to_xy (project_info.e, lat, &work_x[j], &work_y[j]);
@@ -6168,26 +6168,26 @@ void GMT_scale_eqrad ()
 
 		/* Conformal projections */
 
-		case MERCATOR:
-		case TM:
-		case UTM:
-		case OBLIQUE_MERC:
-		case LAMBERT:
-		case STEREO:
+		case GMT_MERCATOR:
+		case GMT_TM:
+		case GMT_UTM:
+		case GMT_OBLIQUE_MERC:
+		case GMT_LAMBERT:
+		case GMT_STEREO:
 
 			project_info.EQ_RAD = project_info.GMT_lat_swap_vals.rm;
 			break;
 
 		/* Equal Area projections */
 
-		case LAMB_AZ_EQ:
-		/* case CYL_EQ: */
-		case ALBERS:
-		case ECKERT4:
-		case ECKERT6:
-		case HAMMER:
-		case MOLLWEIDE:
-		case SINUSOIDAL:
+		case GMT_LAMB_AZ_EQ:
+		/* case GMT_CYL_EQ: */
+		case GMT_ALBERS:
+		case GMT_ECKERT4:
+		case GMT_ECKERT6:
+		case GMT_HAMMER:
+		case GMT_MOLLWEIDE:
+		case GMT_SINUSOIDAL:
 
 			project_info.EQ_RAD = project_info.GMT_lat_swap_vals.ra;
 			break;
@@ -6321,14 +6321,14 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D)
 			D->ellipsoid_id = i;
 		}
 	}
-	else {		/* Gave a Datum ID tag [ 0-(N_DATUMS-1)] */
+	else {		/* Gave a Datum ID tag [ 0-(GMT_N_DATUMS-1)] */
 		int k;
 		if (sscanf (text, "%d", &i) != 1) {
 			fprintf (stderr, "%s: Malformed or unrecognized <datum> argument (%s)!\n", GMT_program, text);
 			return (-1);
 		}
-		if (i < 0 || i >= N_DATUMS) {
-			fprintf (stderr, "%s: Datum ID (%d) outside valid range (0-%d)!\n", GMT_program, i, N_DATUMS-1);
+		if (i < 0 || i >= GMT_N_DATUMS) {
+			fprintf (stderr, "%s: Datum ID (%d) outside valid range (0-%d)!\n", GMT_program, i, GMT_N_DATUMS-1);
 			return (-1);
 		}
 		if ((k = GMT_get_ellipsoid (gmtdefs.datum[i].ellipsoid)) < 0) {	/* This should not happen... */
@@ -6747,11 +6747,11 @@ int GMT_map_latcross (double lat, double west, double east, struct GMT_XINGS **x
 
 	X = (struct GMT_XINGS *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_XINGS), "GMT_map_latcross");
 
-	lon_old = west - SMALL;
+	lon_old = west - GMT_SMALL;
 	GMT_map_outside (lon_old, lat);
 	GMT_geo_to_xy (lon_old, lat, &last_x, &last_y);
 	for (i = 1; i <= GMT_n_lon_nodes; i++) {
-		lon = (i == GMT_n_lon_nodes) ? east + SMALL : west + i * GMT_dlon;
+		lon = (i == GMT_n_lon_nodes) ? east + GMT_SMALL : west + i * GMT_dlon;
 		GMT_map_outside (lon, lat);
 		GMT_geo_to_xy (lon, lat, &this_x, &this_y);
 		nx = 0;
@@ -6766,9 +6766,9 @@ int GMT_map_latcross (double lat, double west, double east, struct GMT_XINGS **x
 			}
 		}
 		if (GMT_world_map) (*GMT_wrap_around_check) (X[nc].angle, last_x, last_y, this_x, this_y, X[nc].xx, X[nc].yy, X[nc].sides, &nx);
-		if (nx == 2 && (fabs (X[nc].xx[1] - X[nc].xx[0]) - GMT_map_width) < SMALL && !GMT_world_map)
+		if (nx == 2 && (fabs (X[nc].xx[1] - X[nc].xx[0]) - GMT_map_width) < GMT_SMALL && !GMT_world_map)
 			go = FALSE;
-		else if (nx == 2 && (gap = fabs (X[nc].yy[1] - X[nc].yy[0])) > SMALL && (gap - GMT_map_height) < SMALL && !GMT_world_map_tm)
+		else if (nx == 2 && (gap = fabs (X[nc].yy[1] - X[nc].yy[0])) > GMT_SMALL && (gap - GMT_map_height) < GMT_SMALL && !GMT_world_map_tm)
 			go = FALSE;
 		else if (nx > 0)
 			go = TRUE;
@@ -6804,8 +6804,8 @@ int GMT_map_loncross (double lon, double south, double north, struct GMT_XINGS *
 
 	X = (struct GMT_XINGS *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_XINGS), "GMT_map_loncross");
 
-	lat_old = ((south - SMALL) >= -90.0) ? south - SMALL : south;	/* Outside */
-	if ((north + SMALL) <= 90.0) north += SMALL;
+	lat_old = ((south - GMT_SMALL) >= -90.0) ? south - GMT_SMALL : south;	/* Outside */
+	if ((north + GMT_SMALL) <= 90.0) north += GMT_SMALL;
 	GMT_map_outside (lon, lat_old);
 	GMT_geo_to_xy (lon, lat_old, &last_x, &last_y);
 	for (j = 1; j <= GMT_n_lat_nodes; j++) {
@@ -6823,9 +6823,9 @@ int GMT_map_loncross (double lon, double south, double north, struct GMT_XINGS *
 			}
 		}
 		if (GMT_world_map) (*GMT_wrap_around_check) (X[nc].angle, last_x, last_y, this_x, this_y, X[nc].xx, X[nc].yy, X[nc].sides, &nx);
-		if (nx == 2 && (fabs (X[nc].xx[1] - X[nc].xx[0]) - GMT_map_width) < SMALL && !GMT_world_map)
+		if (nx == 2 && (fabs (X[nc].xx[1] - X[nc].xx[0]) - GMT_map_width) < GMT_SMALL && !GMT_world_map)
 			go = FALSE;
-		else if (nx == 2 && (gap = fabs (X[nc].yy[1] - X[nc].yy[0])) > SMALL && (gap - GMT_map_height) < SMALL && !GMT_world_map_tm)
+		else if (nx == 2 && (gap = fabs (X[nc].yy[1] - X[nc].yy[0])) > GMT_SMALL && (gap - GMT_map_height) < GMT_SMALL && !GMT_world_map_tm)
 			go = FALSE;
 		else if (nx > 0)
 			go = TRUE;

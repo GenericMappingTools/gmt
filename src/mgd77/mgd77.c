@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.132 2006-03-16 11:40:13 pwessel Exp $
+ *	$Id: mgd77.c,v 1.133 2006-04-10 04:43:31 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -138,7 +138,7 @@ struct MGD77_cdf mgd77cdf[MGD77_N_DATA_EXTENDED] = {
 /* ID */	{ NC_BYTE,	8,	1.0,	0.0, "", "Identical to ID in header" },
 /* SLN */	{ NC_BYTE,	5,	1.0,	0.0, "", "For cross-referencing with seismic data" },
 /* SSPN */	{ NC_BYTE,	6,	1.0,	0.0, "", "For cross-referencing with seismic data" },
-/* TIME */	{ NC_DOUBLE,	1,	1.0,	0.0, "seconds since 1970-01-01 00:00:00 0", "UTC time, subtract TZ to get ship local time" }
+/* GMT_TIME */	{ NC_DOUBLE,	1,	1.0,	0.0, "seconds since 1970-01-01 00:00:00 0", "UTC time, subtract TZ to get ship local time" }
 };
 
 char *aux_names[N_AUX] = {
@@ -1425,7 +1425,7 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 	H->mgd77 = (struct MGD77_HEADER_PARAMS *) GMT_memory (VNULL, 1, sizeof (struct MGD77_HEADER_PARAMS), GMT_program);	/* Allocate parameter header */
 	MGD77_Read_Header_Params (F, H->mgd77);	/* Get all the MGD77 header attributes */
 
-	/* DTERMINE DIMENSION OF TIME-SERIES */
+	/* DTERMINE DIMENSION OF GMT_TIME-SERIES */
 	
 	MGD77_nc_status (nc_inq_unlimdim (F->nc_id, &F->nc_recid));		/* Get id of unlimited dimension */
 	if (F->nc_recid == -1) {	/* We are in deep trouble */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.32 2006-03-01 02:15:31 pwessel Exp $
+ *	$Id: libspotter.c,v 1.33 2006-04-10 04:43:31 pwessel Exp $
  *
  *   Copyright (c) 1999-2006 by P. Wessel
  *
@@ -195,8 +195,8 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 	double t, tt = 0.0, dt, d_lon, tlon, dd = 0.0, i_km = 0.0, xnew, xx, yy, next_x, next_y;
 	double s_lat, c_lat, s_lon, c_lon, cc, ss, cs, i_nd, *track = VNULL;
 
-	bend = (d_km <= (SMALL - 1.0));
-	path = (bend || d_km > SMALL);
+	bend = (d_km <= (GMT_SMALL - 1.0));
+	path = (bend || d_km > GMT_SMALL);
 	if (do_time >= 10) {	/* Restrict track sampling to given wesn box */
 		do_time -= 10;
 		box_check = TRUE;
@@ -409,8 +409,8 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 	double t, tt = 0.0, dt, d_lon, tlon, dd = 0.0, i_km = 0.0, xnew, xx, yy, *track = VNULL;
 	double s_lat, c_lat, s_lon, c_lon, cc, ss, cs, i_nd, next_x, next_y;
 
-	bend = (d_km <= (SMALL - 1.0));
-	path = (bend || d_km > SMALL);
+	bend = (d_km <= (GMT_SMALL - 1.0));
+	path = (bend || d_km > GMT_SMALL);
 	if (do_time >= 10) {	/* Restrict track sampling to given wesn box */
 		do_time -= 10;
 		box_check = TRUE;
