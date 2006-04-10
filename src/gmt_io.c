@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.111 2006-04-09 11:20:17 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.112 2006-04-10 05:47:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -29,7 +29,7 @@
  *	GMT_fopen:		Open a file
  *	GMT_fclose:		Close a file
  *	GMT_io_init:		Init GMT_IO structure
- *	GMT_io_selection:	Decode the -b switch
+ *	GMT_parse_b_option:	Decode the -b switch
  *	GMT_multisegment:	Decode the -M switch
  *	GMT_write_segmentheader	Write header record for multisegment files
  *	GMT_ascii_input:	Decode ascii input record
@@ -214,7 +214,7 @@ void GMT_io_init (void)
 	GMT_decode_calclock_formats ();
 }
 
-int GMT_io_selection (char *text)
+int GMT_parse_b_option (char *text)
 {
 	/* Syntax:	-b[i][o][s|S][d|D][#cols] */
 
@@ -1882,7 +1882,7 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 	}
 }
 
-int GMT_decode_coltype (char *arg)
+int GMT_parse_f_option (char *arg)
 {
 	/* Routine will decode the -f[i|o]<col>|<colrange>[t|T|g],... arguments */
 

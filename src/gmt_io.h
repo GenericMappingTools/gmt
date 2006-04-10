@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.46 2006-04-09 11:20:17 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.47 2006-04-10 05:47:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -69,8 +69,8 @@ EXTERN_MSC FILE *GMT_fopen (const char* filename, const char* mode);	/* fopen wr
 EXTERN_MSC FILE *GMT_fdopen (int handle, const char *mode);		/* fdopen wrapper */
 EXTERN_MSC int GMT_fclose (FILE *stream);				/* fclose wrapper */
 EXTERN_MSC void GMT_io_init (void);					/* Initialize pointers */
-EXTERN_MSC int GMT_io_selection (char *text);				/* Decode -b option and set parameters */
-EXTERN_MSC int GMT_decode_coltype (char *text);				/* Decode -i option and set parameters */
+EXTERN_MSC int GMT_parse_b_option (char *text);				/* Decode -b option and set parameters */
+EXTERN_MSC int GMT_parse_f_option (char *text);				/* Decode -i option and set parameters */
 EXTERN_MSC void GMT_multisegment (char *text);				/* Decode -M option */
 EXTERN_MSC void GMT_write_segmentheader (FILE *fp, int n);		/* Write multisegment header back out */
 EXTERN_MSC char *GMT_fgets (char *record, int maxlength, FILE *fp);	/* Does a fscanf from inside gmt_io to keep DLLs working */

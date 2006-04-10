@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.227 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.228 2006-04-10 05:47:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -26,7 +26,7 @@
  * The PUBLIC functions are:
  *
  *	GMT_explain_option ()	:	Prints explanations for the common options
- *	GMT_get_common_args ()	:	Interprets -B -H -J -K -O -P -R -U -V -X -Y -: -c
+ *	GMT_parse_common_options () :	Interprets -B -H -J -K -O -P -R -U -V -X -Y -: -c
  *	GMT_getdefaults ()	:	Initializes the GMT global parameters
  *	GMT_free_plot_array	:	Free plot memory
  *	GMT_key_lookup ()	:	Linear Key - id lookup function
@@ -39,12 +39,12 @@
  *	GMT_get_history ()	:	Read the .gmtcommands4 file
  *	GMT_putpen		:	Encode pen argument into textstring
  *	GMT_put_history ()	:	Writes updates to the .gmtcommands file
- *	GMT_map_getproject ()	:	Scans the -Jstring to set projection
+ *	GMT_parse_J_option ()	:	Scans the -Jstring to set projection
  *
  * The INTERNAL functions are:
  *
  *	GMT_loaddefaults ()	:	Reads the GMT global parameters from .gmtdefaults4
- *	GMT_map_getframe ()	:	Scans the -Bstring to set tickinfo
+ *	GMT_parse_B_option ()	:	Scans the -Bstring to set tickinfo
  *	GMT_setparameter ()	:	Sets a default value given keyword,value-pair
  *	GMT_setshorthand ()	:	Reads and initializes the suffix shorthands
  *	GMT_get_ellipsoid()	:	Returns ellipsoid id based on name
@@ -136,13 +136,17 @@ void GMT_strip_wesnz (const char *in, int side[], BOOLEAN *draw_box, char *out);
 void GMT_split_info (const char *in, char *info[]);
 void GMT_decode_tinfo (char *in, struct GMT_PLOT_AXIS *A);
 void GMT_set_titem (struct GMT_PLOT_AXIS *A, double val, double phase, char flag, char unit);
-int GMT_map_getframe (char *in);
+int GMT_parse_B_option (char *in);
 static void load_encoding (struct gmt_encoding *);
 void GMT_verify_encodings ();
 int GMT_key_lookup (char *name, char **list, int n);
 void GMT_PS_init (void);
 void *New_GMT_Ctrl ();
 void Free_GMT_Ctrl (struct GMT_COMMON *C);
+int GMT_parse_H_option (char *item);
+int GMT_parse_R_option (char *item, double *w, double *e, double *s, double *n);
+int GMT_parse_U_option (char *item);
+int GMT_parse_t_option (char *item);
 
 /* Local variables to gmt_init.c */
 
@@ -883,17 +887,13 @@ void GMT_default_error (char option)
 	fprintf (stderr, "%s: GMT SYNTAX ERROR:  Unrecognized option -%c\n", GMT_program, option);
 }
 
-int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
+int GMT_parse_common_options (char *item, double *w, double *e, double *s, double *n)
 {
-	char text[BUFSIZ], string[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT];
-
-	/* GMT_get_common_args interprets the command line for the common, unique options
+	/* GMT_parse_common_options interprets the command line for the common, unique options
 	 * -B, -H, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -:, -
 	 */
 
-	int i, j, icol, expect_to_read, got, nn = 0, n_slashes, error = 0, pos, j_type, col_type[2];
-	BOOLEAN rect_box_given = FALSE;
-	double *p[6];
+	int i, error = 0, j_type;
 
 	switch (item[1]) {
 		case '\0':
@@ -919,8 +919,10 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 					GMT_processed_option[1] |= 1;
 					break;
 			}
-			error += (i = GMT_map_getframe (&item[2]));
-			if (i) GMT_syntax ('B');
+			if (error == 0) {
+				error += (i = GMT_parse_B_option (&item[2]));
+				if (i) GMT_syntax ('B');
+			}
 			break;
 
 		case 'H':
@@ -930,21 +932,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			}
 			else {
 				GMT_processed_option[2] = TRUE;
-				j = 2;
-				if (item[j] == 'i') j = 3;	/* -Hi[nrecs] given */
-				if (item[j]) {
-					i = atoi (&item[j]);
-					if (i < 0) {
-						GMT_syntax ('H');
-						error++;
-					}
-					else
-						GMT_io.n_header_recs = i;
-				}
-				if (j == 2)	/* Both in and out may have header records */
-					GMT_io.io_header[GMT_IN] = GMT_io.io_header[GMT_OUT] = (GMT_io.n_header_recs > 0);
-				else		/* Only input should have header records */
-					GMT_io.io_header[GMT_IN] = (GMT_io.n_header_recs > 0);
+				error += GMT_parse_H_option (item);
 			}
 			break;
 		case 'J':
@@ -955,7 +943,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 			}
 			else {
 				GMT_processed_option[j_type] = TRUE;
-				error += (i = GMT_map_getproject (&item[2]));
+				error += (i = GMT_parse_J_option (&item[2]));
 				if (i) GMT_syntax ('J');
 			}
 			break;
@@ -980,80 +968,10 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				error++;
 				break;
 			}
-			GMT_processed_option[8] = TRUE;
-			if (item[2] == 'g') {	/* Shorthand for -R0/360/-90/90 */
-				*w = project_info.w = 0.0;	*e = project_info.e = 360.0;
-				*s = project_info.s = -90.0;	*n = project_info.n = +90.0;
-				GMT_io.in_col_type[0] = GMT_IS_LON;	GMT_io.in_col_type[1] = GMT_IS_LAT;
-	 			project_info.region_supplied = TRUE;
-				break;
+			else {
+				GMT_processed_option[8] = TRUE;
+				error += GMT_parse_R_option (item, w, e, s, n);
 			}
-			if (item[2] == 'd') {	/* Shorthand for -R-180/+180/-90/90 */
-				*w = project_info.w = -180.0;	*e = project_info.e = +180.0;
-				*s = project_info.s = -90.0;	*n = project_info.n = +90.0;
-				GMT_io.in_col_type[0] = GMT_IS_LON;	GMT_io.in_col_type[1] = GMT_IS_LAT;
-	 			project_info.region_supplied = TRUE;
-				break;
-			}
-
-			p[0] = w;	p[1] = e;	p[2] = s;	p[3] = n;
-			p[4] = &project_info.z_bottom;	p[5] = &project_info.z_top;
-			col_type[0] = col_type[1] = 0;
-	 		project_info.region_supplied = TRUE;
-	 		if (item[strlen(item)-1] == 'r') {
-	 			rect_box_given = TRUE;
-	 			project_info.region = FALSE;
-				item[strlen(item)-1] = '\0';	/* Temporarily removing the trailing r so GMT_scanf will work */
-	 		}
-			i = pos = 0;
-			strcpy (string, &item[2]);
-			while ((GMT_strtok (string, "/", &pos, text))) {
-				if (i > 5) {
-					error++;
-					GMT_syntax ('R');
-					return (error);		/* Have to break out here to avoid segv on *p[6]  */
-				}
-				/* Figure out what column corresponds to a token to get in_col_type flag  */
-				if (i > 3) {
-					icol = 2;
-				}
-				else if (rect_box_given) {
-					icol = i%2;
-				}
-				else {
-					icol = i/2;
-				}
-				if (icol < 2 && gmtdefs.xy_toggle[0]) icol = 1 - icol;	/* col_types were swapped */
-				/* If column is either RELTIME or ABSTIME, use ARGTIME */
-				if (GMT_io.in_col_type[icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
-					got = GMT_scanf_arg (text, GMT_io.in_col_type[icol], p[i]);
-					error += GMT_verify_expectations (GMT_io.in_col_type[icol], got, text);
-					if (got & GMT_IS_GEO) col_type[icol] = GMT_IS_GEO;		/* We will accept the implicit override only for geographical data */
-					/* However, finding an abstime here will give error > 0 and an early exit below */
-				}
-				else {	/* Things are set, do or die */
-					expect_to_read = (GMT_io.in_col_type[icol] & GMT_IS_RATIME) ? GMT_IS_ARGTIME : GMT_io.in_col_type[icol];
-					error += GMT_verify_expectations (expect_to_read, GMT_scanf (text, expect_to_read, p[i]), text);
-				}
-				if (error) {
-					GMT_syntax ('R');
-					return (error);
-				}
-
-				i++;
-			}
-			if (col_type[0]) GMT_io.in_col_type[0] = col_type[0];	/* Set to what we found */
-			if (col_type[1]) GMT_io.in_col_type[1] = col_type[1];	/* Set to what we found */
-	 		if (rect_box_given) {
-				d_swap (*p[2], *p[1]);	/* So w/e/s/n makes sense */
-				item[strlen(item)] = 'r';	/* Put back the trailing r we temporarily removed */
-			}
-			if ((i < 4 || i > 6) || (GMT_check_region (*p[0], *p[1], *p[2], *p[3]) || (i == 6 && *p[4] >= *p[5]))) {
-				error++;
-				GMT_syntax ('R');
-			}
-			project_info.w = *p[0];	project_info.e = *p[1];	/* This will probably be reset by GMT_map_setup */
-			project_info.s = *p[2];	project_info.n = *p[3];
 			break;
 		case 'U':
 			if (GMT_processed_option[9]) {
@@ -1061,28 +979,9 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				error++;
 				break;
 			}
-			GMT_processed_option[9] = TRUE;
-			GMT_ps.unix_time = TRUE;
-			for (i = j = n_slashes = 0; item[i]; i++) if (item[i] == '/') {
-				n_slashes++;
-				if (n_slashes < 4) j = i;
-			}
-			if (item[2] == '/' && n_slashes == 2) {	/* Gave -U/<dx>/<dy> */
-				nn = sscanf (&item[3], "%[^/]/%s", txt_a, txt_b);
-				GMT_ps.unix_time_pos[0] = GMT_convert_units (txt_a, GMT_INCH);
-				GMT_ps.unix_time_pos[1] = GMT_convert_units (txt_b, GMT_INCH);
-			}
-			else if (item[2] == '/' && n_slashes > 2) {	/* Gave -U/<dx>/<dy>/<string> */
-				nn = sscanf (&item[3], "%[^/]/%[^/]/%*s", txt_a, txt_b);
-				GMT_ps.unix_time_pos[0] = GMT_convert_units (txt_a, GMT_INCH);
-				GMT_ps.unix_time_pos[1] = GMT_convert_units (txt_b, GMT_INCH);
-				strcpy (GMT_ps.unix_time_label, &item[j+1]);
-			}
-			else if (item[2] && item[2] != '/')	/* Gave -U<string> */
-				strcpy (GMT_ps.unix_time_label, &item[2]);
-			if ((item[2] == '/' && n_slashes == 1) || (item[2] == '/' && n_slashes >= 2 && nn != 2)) {
-				error++;
-				GMT_syntax ('U');
+			else {
+				GMT_processed_option[9] = TRUE;
+				error += GMT_parse_U_option (item);
 			}
 			break;
 		case 'V':
@@ -1098,15 +997,17 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				error++;
 				break;
 			}
-			GMT_processed_option[11] = TRUE;
-			i = 2;
-			if (item[2] == 'r') i++;	/* Relative mode is default anyway */
-			if (item[2] == 'a') i++, GMT_x_abs = TRUE;
-			if (item[2] == 'c')
-				project_info.x_off_supplied = 2;	/* Must center in map_setup */
 			else {
-				GMT_ps.x_origin = GMT_convert_units (&item[i], GMT_INCH);
-				project_info.x_off_supplied = TRUE;
+				GMT_processed_option[11] = TRUE;
+				i = 2;
+				if (item[2] == 'r') i++;	/* Relative mode is default anyway */
+				if (item[2] == 'a') i++, GMT_x_abs = TRUE;
+				if (item[2] == 'c')
+					project_info.x_off_supplied = 2;	/* Must center in map_setup */
+				else {
+					GMT_ps.x_origin = GMT_convert_units (&item[i], GMT_INCH);
+					project_info.x_off_supplied = TRUE;
+				}
 			}
 			break;
 		case 'Y':
@@ -1116,15 +1017,17 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				error++;
 				break;
 			}
-			GMT_processed_option[12] = TRUE;
-			i = 2;
-			if (item[2] == 'r') i++;	/* Relative mode is default anyway */
-			if (item[2] == 'a') i++, GMT_y_abs = TRUE;
-			if (item[2] == 'c')
-				project_info.y_off_supplied = 2;	/* Must center in map_setup */
 			else {
-				GMT_ps.y_origin = GMT_convert_units (&item[i], GMT_INCH);
-				project_info.y_off_supplied = TRUE;
+				GMT_processed_option[12] = TRUE;
+				i = 2;
+				if (item[2] == 'r') i++;	/* Relative mode is default anyway */
+				if (item[2] == 'a') i++, GMT_y_abs = TRUE;
+				if (item[2] == 'c')
+					project_info.y_off_supplied = 2;	/* Must center in map_setup */
+				else {
+					GMT_ps.y_origin = GMT_convert_units (&item[i], GMT_INCH);
+					project_info.y_off_supplied = TRUE;
+				}
 			}
 			break;
 		case 'c':
@@ -1133,14 +1036,16 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				error++;
 				break;
 			}
-			GMT_processed_option[13] = TRUE;
-			i = atoi (&item[2]);
-			if (i < 1) {
-				error++;
-				GMT_syntax ('c');
+			else {
+				GMT_processed_option[13] = TRUE;
+				i = atoi (&item[2]);
+				if (i < 1) {
+					error++;
+					GMT_syntax ('c');
+				}
+				else
+					GMT_ps.n_copies = i;
 			}
-			else
-				GMT_ps.n_copies = i;
 			break;
 		case ':':	/* Toggle lon/lat - lat/lon */
 			if (GMT_processed_option[14]) {
@@ -1148,30 +1053,13 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				error++;
 				break;
 			}
-			GMT_processed_option[14] = TRUE;
-			switch (item[2]) {
-				case 'i':	/* Toggle on input data only */
-					gmtdefs.xy_toggle[0] = TRUE;
-					i_swap (GMT_io.in_col_type[0], GMT_io.in_col_type[1]);
-					break;
-				case 'o':	/* Toggle on output data only */
-					gmtdefs.xy_toggle[1] = TRUE;
-					i_swap (GMT_io.out_col_type[0], GMT_io.out_col_type[1]);
-					break;
-				case '\0':	/* Toggle both input and output data */
-					gmtdefs.xy_toggle[0] = gmtdefs.xy_toggle[1] = TRUE;
-					i_swap (GMT_io.in_col_type[0], GMT_io.in_col_type[1]);
-					i_swap (GMT_io.out_col_type[0], GMT_io.out_col_type[1]);
-					break;
-				default:
-					GMT_syntax (':');
-					error++;
-					break;
-
+			else {
+				GMT_processed_option[14] = TRUE;
+				error += GMT_parse_t_option (item);
 			}
 			break;
 		case 'b':	/* Binary i/o */
-			i = GMT_io_selection (&item[2]);
+			i = GMT_parse_b_option (&item[2]);
 			if (i) GMT_syntax ('b');
 			error += i;
 			break;
@@ -1181,27 +1069,191 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 				error++;
 				break;
 			}
-			switch (item[2]) {
-				case 'i':
-					GMT_processed_option[15]++;
-					break;
-				case 'o':
-					GMT_processed_option[15] += 2;
-					break;
-				default:
-					GMT_processed_option[15] += 3;
-					break;
+			else {
+				switch (item[2]) {
+					case 'i':
+						GMT_processed_option[15]++;
+						break;
+					case 'o':
+						GMT_processed_option[15] += 2;
+						break;
+					default:
+						GMT_processed_option[15] += 3;
+						break;
+				}
+				i = GMT_parse_f_option (&item[2]);
+				if (i) GMT_syntax ('f');
+				error += i;
 			}
-			i = GMT_decode_coltype (&item[2]);
-			if (i) GMT_syntax ('f');
-			error += i;
 			break;
 		default:	/* Should never get here, but... */
 			error++;
-			fprintf (stderr, "GMT: Warning: bad case in GMT_get_common_args\n");
+			fprintf (stderr, "GMT: Warning: bad case in GMT_parse_common_options (ignored)\n");
 			break;
 	}
 
+	return (error);
+}
+
+int GMT_parse_H_option (char *item) {
+	int i, j, error = 0;
+	
+	/* Parse the -H option.  Full syntax:  -H[i][<nrecs>] */
+	j = 2;
+	if (item[j] == 'i') j = 3;	/* -Hi[nrecs] given */
+	if (item[j]) {
+		i = atoi (&item[j]);
+		if (i < 0) {
+			GMT_syntax ('H');
+			error++;
+		}
+		else
+			GMT_io.n_header_recs = i;
+	}
+	if (j == 2)	/* Both in and out may have header records */
+		GMT_io.io_header[GMT_IN] = GMT_io.io_header[GMT_OUT] = (GMT_io.n_header_recs > 0);
+	else		/* Only input should have header records */
+		GMT_io.io_header[GMT_IN] = (GMT_io.n_header_recs > 0);
+	return (error);
+}
+
+int GMT_parse_R_option (char *item, double *w, double *e, double *s, double *n) {
+	int i, icol, pos, got, col_type[2], expect_to_read, error = 0;
+	char text[BUFSIZ], string[BUFSIZ];
+	double *p[6];
+
+	/* Parse the -R option.  Full syntax:  -Rg or -Rd or -Rw/e/s/n[/z0/z1][r] */
+	
+	if (item[2] == 'g') {	/* -Rg is shorthand for -R0/360/-90/90 */
+		*w = project_info.w = 0.0;	*e = project_info.e = 360.0;
+		*s = project_info.s = -90.0;	*n = project_info.n = +90.0;
+		GMT_io.in_col_type[0] = GMT_IS_LON;	GMT_io.in_col_type[1] = GMT_IS_LAT;
+		project_info.region_supplied = TRUE;
+		return (0);
+	}
+	if (item[2] == 'd') {	/* -Rd is horthand for -R-180/+180/-90/90 */
+		*w = project_info.w = -180.0;	*e = project_info.e = +180.0;
+		*s = project_info.s = -90.0;	*n = project_info.n = +90.0;
+		GMT_io.in_col_type[0] = GMT_IS_LON;	GMT_io.in_col_type[1] = GMT_IS_LAT;
+		project_info.region_supplied = TRUE;
+		return (0);
+	}
+
+	p[0] = w;	p[1] = e;	p[2] = s;	p[3] = n;
+	p[4] = &project_info.z_bottom;	p[5] = &project_info.z_top;
+	col_type[0] = col_type[1] = 0;
+	project_info.region_supplied = TRUE;
+	if (item[strlen(item)-1] == 'r') {
+		project_info.region = FALSE;
+		item[strlen(item)-1] = '\0';	/* Temporarily removing the trailing r so GMT_scanf will work */
+	}
+	i = pos = 0;
+	strcpy (string, &item[2]);
+	while ((GMT_strtok (string, "/", &pos, text))) {
+		if (i > 5) {
+			error++;
+			GMT_syntax ('R');
+			return (error);		/* Have to break out here to avoid segv on *p[6]  */
+		}
+		/* Figure out what column corresponds to a token to get in_col_type flag  */
+		if (i > 3) {
+			icol = 2;
+		}
+		else if (!project_info.region) {
+			icol = i%2;
+		}
+		else {
+			icol = i/2;
+		}
+		if (icol < 2 && gmtdefs.xy_toggle[0]) icol = 1 - icol;	/* col_types were swapped */
+		/* If column is either RELTIME or ABSTIME, use ARGTIME */
+		if (GMT_io.in_col_type[icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
+			got = GMT_scanf_arg (text, GMT_io.in_col_type[icol], p[i]);
+			error += GMT_verify_expectations (GMT_io.in_col_type[icol], got, text);
+			if (got & GMT_IS_GEO) col_type[icol] = GMT_IS_GEO;		/* We will accept the implicit override only for geographical data */
+			/* However, finding an abstime here will give error > 0 and an early exit below */
+		}
+		else {	/* Things are set, do or die */
+			expect_to_read = (GMT_io.in_col_type[icol] & GMT_IS_RATIME) ? GMT_IS_ARGTIME : GMT_io.in_col_type[icol];
+			error += GMT_verify_expectations (expect_to_read, GMT_scanf (text, expect_to_read, p[i]), text);
+		}
+		if (error) {
+			GMT_syntax ('R');
+			return (error);
+		}
+
+		i++;
+	}
+	if (col_type[0]) GMT_io.in_col_type[0] = col_type[0];	/* Set to what we found */
+	if (col_type[1]) GMT_io.in_col_type[1] = col_type[1];	/* Set to what we found */
+	if (!project_info.region) {
+		d_swap (*p[2], *p[1]);	/* So w/e/s/n makes sense */
+		item[strlen(item)] = 'r';	/* Put back the trailing r we temporarily removed */
+	}
+	if ((i < 4 || i > 6) || (GMT_check_region (*p[0], *p[1], *p[2], *p[3]) || (i == 6 && *p[4] >= *p[5]))) {
+		error++;
+		GMT_syntax ('R');
+	}
+	project_info.w = *p[0];	project_info.e = *p[1];	/* This will probably be reset by GMT_map_setup */
+	project_info.s = *p[2];	project_info.n = *p[3];
+	
+	return (error);
+}
+
+int GMT_parse_U_option (char *item) {
+	int i, j, n = 0, n_slashes, error = 0;
+	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT];
+	
+	/* Parse the -U option.  Full syntax:  -U[/xoff/yoff/][c|<label>] */
+	
+	GMT_ps.unix_time = TRUE;
+	for (i = j = n_slashes = 0; item[i]; i++) if (item[i] == '/') {	/* Count slashes to detect /xoff/yoff/ presence */
+		n_slashes++;
+		if (n_slashes < 4) j = i;
+	}
+	if (item[2] == '/' && n_slashes == 2) {	/* Gave -U/<dx>/<dy> */
+		n = sscanf (&item[3], "%[^/]/%s", txt_a, txt_b);
+		GMT_ps.unix_time_pos[0] = GMT_convert_units (txt_a, GMT_INCH);
+		GMT_ps.unix_time_pos[1] = GMT_convert_units (txt_b, GMT_INCH);
+	}
+	else if (item[2] == '/' && n_slashes > 2) {	/* Gave -U/<dx>/<dy>/<string> */
+		n = sscanf (&item[3], "%[^/]/%[^/]/%*s", txt_a, txt_b);
+		GMT_ps.unix_time_pos[0] = GMT_convert_units (txt_a, GMT_INCH);
+		GMT_ps.unix_time_pos[1] = GMT_convert_units (txt_b, GMT_INCH);
+		strcpy (GMT_ps.unix_time_label, &item[j+1]);
+	}
+	else if (item[2] && item[2] != '/')	/* Gave -U<string> */
+		strcpy (GMT_ps.unix_time_label, &item[2]);
+	if ((item[2] == '/' && n_slashes == 1) || (item[2] == '/' && n_slashes >= 2 && n != 2)) {
+		error++;
+		GMT_syntax ('U');
+	}
+	return (error);
+}
+
+int GMT_parse_t_option (char *item) {
+	int error = 0;
+	/* Parse the -: option.  Full syntax:  -:[i|o] */
+	switch (item[2]) {
+		case 'i':	/* Toggle on input data only */
+			gmtdefs.xy_toggle[0] = TRUE;
+			i_swap (GMT_io.in_col_type[0], GMT_io.in_col_type[1]);
+			break;
+		case 'o':	/* Toggle on output data only */
+			gmtdefs.xy_toggle[1] = TRUE;
+			i_swap (GMT_io.out_col_type[0], GMT_io.out_col_type[1]);
+			break;
+		case '\0':	/* Toggle both input and output data */
+			gmtdefs.xy_toggle[0] = gmtdefs.xy_toggle[1] = TRUE;
+			i_swap (GMT_io.in_col_type[0], GMT_io.in_col_type[1]);
+			i_swap (GMT_io.out_col_type[0], GMT_io.out_col_type[1]);
+			break;
+		default:
+			GMT_syntax (':');
+			error++;
+			break;
+
+	}
 	return (error);
 }
 
@@ -2934,8 +2986,8 @@ int GMT_begin (int argc, char **argv)
 
 	for (i = 1, j = k = n = 0; i < argc; i++) {
 		if (!strncmp (argv[i], "-V", 2)) gmtdefs.verbose = TRUE;
-		if (!strncmp (argv[i], "-b", 2)) GMT_io_selection (&argv[i][2]);
-		if (!strncmp (argv[i], "-f", 2)) GMT_decode_coltype (&argv[i][2]);
+		if (!strncmp (argv[i], "-b", 2)) GMT_parse_b_option (&argv[i][2]);
+		if (!strncmp (argv[i], "-f", 2)) GMT_parse_f_option (&argv[i][2]);
 		if (!strncmp (argv[i], "-J", 2)) j = i;
 		if (!strncmp (argv[i], "-R", 2)) k = i;
 		if (!strncmp (argv[i], "-I", 2)) n = i;
@@ -3676,8 +3728,8 @@ void GMT_set_titem (struct GMT_PLOT_AXIS *A, double val, double phase, char flag
 	}
 }
 
-int GMT_map_getframe (char *in) {
-	/* GMT_map_getframe scans an argument string and extract parameters that
+int GMT_parse_B_option (char *in) {
+	/* GMT_parse_B_option scans an argument string and extract parameters that
 	 * set the interval for tickmarks and annotations on the boundary.
 	 * The string must be continuous, i.e. no whitespace must be present
 	 * The string may have 1, 2,  or 3 parts, separated by a slash '/'. All
@@ -3788,9 +3840,9 @@ int GMT_map_getframe (char *in) {
 	return (0);
 }
 
-int GMT_map_getproject (char *args)
+int GMT_parse_J_option (char *args)
 {
-	/* GMT_map_getproject scans the arguments given and extracts the parameters needed
+	/* GMT_parse_J_option scans the arguments given and extracts the parameters needed
 	 * for the specified map projection. These parameters are passed through the
 	 * project_info structure.  The function returns TRUE if an error is encountered.
 	 */

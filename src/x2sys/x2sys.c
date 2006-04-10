@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.54 2006-03-28 07:33:22 pwessel Exp $
+ *	$Id: x2sys.c,v 1.55 2006-04-10 05:47:30 pwessel Exp $
  *
  *      Copyright (c) 1999-2006 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -807,7 +807,7 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 			switch (p[1]) {
 				/* Common parameters */
 				case 'R':
-					if (GMT_get_common_args (p, &B->x_min, &B->x_max, &B->y_min, &B->y_max)) {
+					if (GMT_parse_common_options (p, &B->x_min, &B->x_max, &B->y_min, &B->y_max)) {
 						fprintf (stderr, "%s: Error processing %s setting in %s!\n", X2SYS_program, &p[1], tag_file);
 						exit (EXIT_FAILURE);
 					}
