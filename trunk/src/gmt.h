@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.128 2006-04-07 19:22:34 remko Exp $
+ *	$Id: gmt.h,v 1.129 2006-04-10 04:43:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -115,7 +115,7 @@
 #endif
 
 #define GMT_CONV_LIMIT	1.0e-8	/* Fairly tight convergence limit or "close to zero" limit */
-#define SMALL		1.0e-4	/* Needed when results aren't exactly zero but close */
+#define GMT_SMALL		1.0e-4	/* Needed when results aren't exactly zero but close */
 #define GMT_CHUNK	2048
 #define GMT_SMALL_CHUNK	64
 #define GMT_TINY_CHUNK	8
@@ -213,12 +213,12 @@ typedef double GMT_dtime;	/* GMT internal time representation */
  *			GMT PARAMETERS DEFINITIONS
  *--------------------------------------------------------------------*/
 
-#define N_KEYS 122		/* Number of gmt defaults */
-#define HASH_SIZE 122		/* Used in get_gmtdefaults, should be ~> N_KEYS */
+#define GMT_N_KEYS 122		/* Number of gmt defaults */
+#define GMT_HASH_SIZE 122		/* Used in get_gmtdefaults, should be ~> GMT_N_KEYS */
 /* This structure contains default parameters for the GMT system */
 
-#define N_ELLIPSOIDS	63
-#define N_DATUMS	223
+#define GMT_N_ELLIPSOIDS	63
+#define GMT_N_DATUMS	223
 
 #define GMT_PEN_LEN	128
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
@@ -231,7 +231,7 @@ struct GMT_PEN {	/* Holds pen attributes */
 	char texture[GMT_PEN_LEN];	/* In points */
 };
 
-struct GMTDEFAULTS {
+struct GMT_DEFAULTS {
 	/* DO NOT MAKE CHANGES HERE WITHOUT CORRESPONDING CHANGES TO gmt_defaults.h !!!!!!!!!!!!!!!!!!! */
 	double annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */
 	double annot_min_spacing;	/* If an annotation is closer that this to an older annotation, the annotation is skipped [0.0] */
@@ -310,13 +310,13 @@ struct GMTDEFAULTS {
 		double eq_radius;
 		double pol_radius;
 		double flattening;
-	} ref_ellipsoid[N_ELLIPSOIDS];	/* Ellipsoid parameters */
+	} ref_ellipsoid[GMT_N_ELLIPSOIDS];	/* Ellipsoid parameters */
 	struct DATUM {	/* Information about a particular datum */
 		char name[GMT_TEXT_LEN];	/* Datum name */
 		char ellipsoid[GMT_TEXT_LEN];	/* Ellipsoid GMT ID name */
 		char region[GMT_LONG_TEXT];	/* Region of use */
 		double xyz[3];		/* Coordinate shifts in meter for x, y, and z */
-	} datum[N_DATUMS];	/* Datum parameters */
+	} datum[GMT_N_DATUMS];	/* Datum parameters */
 	char input_clock_format[GMT_TEXT_LEN];	/* How to decode an incoming clock string [hh:mm:ss] */
 	char input_date_format[GMT_TEXT_LEN];	/* How to decode an incoming date string [yyyy-mm-dd] */
 	char output_clock_format[GMT_TEXT_LEN];	/* Controls how clocks are written on output [hh:mm:ss] */
@@ -458,9 +458,11 @@ struct GMT_FONT {		/* Information for each font */
 /*	External variables for misc purposes */
 /*--------------------------------------------------------------------*/
 
-EXTERN_MSC struct GMTDEFAULTS gmtdefs;
+EXTERN_MSC struct GMT_COMMON *GMT;
 
-EXTERN_MSC int N_FONTS;				/* Number of fonts loaded from share/pslib */
+EXTERN_MSC struct GMT_DEFAULTS gmtdefs;
+
+EXTERN_MSC int GMT_N_FONTS;				/* Number of fonts loaded from share/pslib */
 EXTERN_MSC char *GMTHOME;			/* Points to the GMT home directory with lib subdir */
 EXTERN_MSC char *GMT_CPTDIR;			/* Points to the GMT cpt directory [if set] */
 EXTERN_MSC char *GMT_DATADIR;			/* Points to the GMT misc directory [if set] */
@@ -507,7 +509,7 @@ EXTERN_MSC void nc_nopipe (char *file);
 /*	For plotting purposes */
 /*--------------------------------------------------------------------*/
 
-EXTERN_MSC struct PLOT_FRAME frame_info;	/* Boundary info for linear plots and maps */
+EXTERN_MSC struct GMT_PLOT_FRAME frame_info;	/* Boundary info for linear plots and maps */
 EXTERN_MSC struct GMT_TRUNCATE_TIME GMT_truncate_time;	/* Used to round off times to mid-interval */
 EXTERN_MSC double *GMT_x_plot;			/* Holds the x/y (inches) of a line to be plotted */
 EXTERN_MSC double *GMT_y_plot;
@@ -520,7 +522,7 @@ EXTERN_MSC int GMT_x_status_old;
 EXTERN_MSC int GMT_y_status_old;
 EXTERN_MSC int GMT_corner;
 EXTERN_MSC BOOLEAN GMT_world_map;		/* TRUE if map has 360 degrees of longitude range */
-EXTERN_MSC BOOLEAN GMT_world_map_tm;		/* TRUE if TM map is global? */
+EXTERN_MSC BOOLEAN GMT_world_map_tm;		/* TRUE if GMT_TM map is global? */
 EXTERN_MSC BOOLEAN GMT_on_border_is_outside;	/* TRUE if point exactly on the map border should be considered outside */
 EXTERN_MSC double GMT_map_width;		/* Full width of this world map */
 EXTERN_MSC double GMT_map_height;		/* Full height of this world map */
@@ -552,8 +554,8 @@ EXTERN_MSC double GMT_dlat;			/* Steps taken in latitude along gridlines (gets r
 /*	For projection purposes */
 /*--------------------------------------------------------------------*/
 
-EXTERN_MSC struct MAP_PROJECTIONS project_info;
-EXTERN_MSC struct THREE_D z_project;
+EXTERN_MSC struct GMT_MAP_PROJECTIONS project_info;
+EXTERN_MSC struct GMT_THREE_D z_project;
 EXTERN_MSC struct GMT_DATUM_CONV GMT_datum;	/*	For datum conversions */
 EXTERN_MSC PFI GMT_forward, GMT_inverse;	/*	Pointers to the selected mapping functions */
 EXTERN_MSC PFI GMT_x_forward, GMT_x_inverse;	/*	Pointers to the selected linear functions */
@@ -561,6 +563,7 @@ EXTERN_MSC PFI GMT_y_forward, GMT_y_inverse;	/*	Pointers to the selected linear 
 EXTERN_MSC PFI GMT_z_forward, GMT_z_inverse;	/*	Pointers to the selected linear functions */
 EXTERN_MSC PFD GMT_scan_time_string;		/*	pointer to functions that converts timestring to secs */
 
+#include "gmt_common.h"		/* For holding the GMT common option settings */
 #include "gmt_math.h"		/* Machine-dependent macros for non-POSIX math functions */
 #include "gmt_nan.h"		/* Machine-dependent macros for making and testing NaNs */
 #include "gmt_synopsis.h"       /* Only contains macros for synopsis lines */

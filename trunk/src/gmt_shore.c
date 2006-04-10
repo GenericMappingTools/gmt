@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.20 2006-04-06 07:52:37 pwessel Exp $
+ *	$Id: gmt_shore.c,v 1.21 2006-04-10 04:43:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -434,7 +434,7 @@ void GMT_get_br_bin (int b, struct GMT_BR *c, int *level, int n_levels)
 	
 }
 
-int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN assemble, BOOLEAN shift, double west, double east, struct POL **pol)
+int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN assemble, BOOLEAN shift, double west, double east, struct GMT_GSHHS_POL **pol)
                 
                      
 /* assemble: TRUE if polygons is needed */
@@ -442,7 +442,7 @@ int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN a
 /* edge: Edge test for shifting */
 
 {
-	struct POL *p;
+	struct GMT_GSHHS_POL *p;
 	int start_side, next_side, id, P = 0, more, p_alloc, wet_or_dry, use_this_level, high_seg_level = GMT_MAX_GSHHS_LEVEL;
 	int n_alloc, cid, nid, add, first_pos, entry_pos, n, low_level, high_level, nseg_at_level[GMT_MAX_GSHHS_LEVEL+1];
 	BOOLEAN completely_inside;
@@ -450,7 +450,7 @@ int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN a
 	
 	if (!assemble) {	/* Easy, just need to scale all segments to degrees and return */
 	
-		p = (struct POL *) GMT_memory (VNULL, (size_t)c->ns, sizeof (struct POL), "GMT_assemble_shore");
+		p = (struct GMT_GSHHS_POL *) GMT_memory (VNULL, (size_t)c->ns, sizeof (struct GMT_GSHHS_POL), "GMT_assemble_shore");
 		
 		for (id = 0; id < c->ns; id++) {
 			p[id].lon = (double *) GMT_memory (VNULL, (size_t)c->seg[id].n, sizeof (double), "GMT_assemble_shore");
@@ -489,7 +489,7 @@ int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN a
 	shore_prepare_sides (c, dir);
 	
 	p_alloc = (c->ns == 0) ? 1 : GMT_SMALL_CHUNK;
-	p = (struct POL *) GMT_memory (VNULL, (size_t)p_alloc, sizeof (struct POL), "GMT_assemble_shore");
+	p = (struct GMT_GSHHS_POL *) GMT_memory (VNULL, (size_t)p_alloc, sizeof (struct GMT_GSHHS_POL), "GMT_assemble_shore");
 	
 	low_level = GMT_MAX_GSHHS_LEVEL;
 	
@@ -566,7 +566,7 @@ int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN a
 		P++;
 		if (P == p_alloc) {
 			p_alloc += GMT_SMALL_CHUNK;
-			p = (struct POL *) GMT_memory ((void *)p, (size_t)p_alloc, sizeof (struct POL), "GMT_assemble_shore");
+			p = (struct GMT_GSHHS_POL *) GMT_memory ((void *)p, (size_t)p_alloc, sizeof (struct GMT_GSHHS_POL), "GMT_assemble_shore");
 		}
 		
 	}
@@ -584,13 +584,13 @@ int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN a
 		P++;
 		if (P == p_alloc) {
 			p_alloc += GMT_SMALL_CHUNK;
-			p = (struct POL *) GMT_memory ((void *)p, (size_t)p_alloc, sizeof (struct POL), "GMT_assemble_shore");
+			p = (struct GMT_GSHHS_POL *) GMT_memory ((void *)p, (size_t)p_alloc, sizeof (struct GMT_GSHHS_POL), "GMT_assemble_shore");
 		}
 	}
 	
 	GMT_shore_pau_sides (c);
 
-	if (c->ns > 0) p = (struct POL *) GMT_memory ((void *)p, (size_t)P, sizeof (struct POL), "GMT_assemble_shore");
+	if (c->ns > 0) p = (struct GMT_GSHHS_POL *) GMT_memory ((void *)p, (size_t)P, sizeof (struct GMT_GSHHS_POL), "GMT_assemble_shore");
 	
 	for (id = 0; id < P; id++) GMT_shore_path_shift2 (p[id].lon, p[id].lat, p[id].n, west, east, c->leftmost_bin);
 
@@ -598,14 +598,14 @@ int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN a
 	return (P);
 }
 		
-int GMT_assemble_br (struct GMT_BR *c, BOOLEAN shift, double edge, struct POL **pol)
+int GMT_assemble_br (struct GMT_BR *c, BOOLEAN shift, double edge, struct GMT_GSHHS_POL **pol)
 /* shift: TRUE if longitudes may have to be shifted */
 /* edge: Edge test for shifting */       
 {
-	struct POL *p;
+	struct GMT_GSHHS_POL *p;
 	int id;
 	
-	p = (struct POL *) GMT_memory (VNULL, (size_t)c->ns, sizeof (struct POL), "GMT_assemble_br");
+	p = (struct GMT_GSHHS_POL *) GMT_memory (VNULL, (size_t)c->ns, sizeof (struct GMT_GSHHS_POL), "GMT_assemble_br");
 	
 	for (id = 0; id < c->ns; id++) {
 		p[id].lon = (double *) GMT_memory (VNULL, (size_t)c->seg[id].n, sizeof (double), "GMT_assemble_br");
@@ -659,7 +659,7 @@ void GMT_br_cleanup (struct GMT_BR *c)
 	
 }
 
-int GMT_prep_polygons (struct POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sample, double step, int anti_bin)
+int GMT_prep_polygons (struct GMT_GSHHS_POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sample, double step, int anti_bin)
 {
 	/* This function will go through each of the polygons and determine
 	 * if the polygon is clipped by the map boundary, and if so if it
@@ -679,7 +679,7 @@ int GMT_prep_polygons (struct POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sa
 	int k, np_new, n_use, n, start, n_alloc;
 	BOOLEAN close;
 	double *xtmp, *ytmp;
-	struct POL *p;
+	struct GMT_GSHHS_POL *p;
 
 	p = *p_old;
 
@@ -722,7 +722,7 @@ int GMT_prep_polygons (struct POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sa
 			GMT_n_plot = (*GMT_truncate) (xtmp, ytmp, n, start, +1);
 			n_use = GMT_compact_line (GMT_x_plot, GMT_y_plot, GMT_n_plot, FALSE, 0);
 			if (project_info.three_D) GMT_2D_to_3D (GMT_x_plot, GMT_y_plot, project_info.z_level, GMT_n_plot);
-			p = (struct POL *) GMT_memory ((void *)p, (size_t)(np_new + 1), sizeof (struct POL), GMT_program);
+			p = (struct GMT_GSHHS_POL *) GMT_memory ((void *)p, (size_t)(np_new + 1), sizeof (struct GMT_GSHHS_POL), GMT_program);
 			close = GMT_polygon_is_open (GMT_x_plot, GMT_y_plot, n_use);
 			n_alloc = (close) ? n_use + 1 : n_use;
 			p[np_new].lon = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
@@ -806,12 +806,12 @@ int GMT_shore_get_next_entry (struct GMT_SHORE *c, int dir, int side, int id)
 {
 	/* Finds the next entry point on the given side that is further away
 	 * in the <dir> direction than previous point.  It removes the info
-	 * regarding the new entry from the SIDE structure */
+	 * regarding the new entry from the GSHHS_SIDE structure */
 	 
 	int k, pos, n;
 	
 	if (id < 0)
-		pos = (dir == 1) ? 0 : MAX_DELTA;
+		pos = (dir == 1) ? 0 : GSHHS_MAX_DELTA;
 	else {
 		n = c->seg[id].n - 1;
 		pos = GMT_shore_get_position (side, c->seg[id].dx[n], c->seg[id].dy[n]);
@@ -846,15 +846,15 @@ int GMT_shore_get_first_entry (struct GMT_SHORE *c, int dir, int *side)
 
 int GMT_shore_asc_sort (const void *a, const void *b)
 {
-	if (((struct SIDE *)a)->pos < ((struct SIDE *)b)->pos) return (-1);
-	if (((struct SIDE *)a)->pos > ((struct SIDE *)b)->pos) return (1);
+	if (((struct GSHHS_SIDE *)a)->pos < ((struct GSHHS_SIDE *)b)->pos) return (-1);
+	if (((struct GSHHS_SIDE *)a)->pos > ((struct GSHHS_SIDE *)b)->pos) return (1);
 	return (0);
 }
 
 int GMT_shore_desc_sort (const void *a, const void *b)
 {
-	if (((struct SIDE *)a)->pos < ((struct SIDE *)b)->pos) return (1);
-	if (((struct SIDE *)a)->pos > ((struct SIDE *)b)->pos) return (-1);
+	if (((struct GSHHS_SIDE *)a)->pos < ((struct GSHHS_SIDE *)b)->pos) return (1);
+	if (((struct GSHHS_SIDE *)a)->pos > ((struct GSHHS_SIDE *)b)->pos) return (-1);
 	return (0);
 }
 
@@ -864,7 +864,7 @@ void GMT_shore_pau_sides (struct GMT_SHORE *c)
 	for (i = 0; i < 4; i++) GMT_free ((void *)c->side[i]);
 }
 
-void GMT_free_polygons (struct POL *p, int n)
+void GMT_free_polygons (struct GMT_GSHHS_POL *p, int n)
 {
 	int k;
 	for (k = 0; k < n; k++) {
@@ -904,7 +904,7 @@ int GMT_shore_get_position (int side, short int x, short int y)
 {
 	/* Returns the position along the given side */
 	
-	return ((side%2) ? ((side == 1) ? (unsigned short)y : MAX_DELTA - (unsigned short)y) : ((side == 0) ? (unsigned short)x : MAX_DELTA - (unsigned short)x));
+	return ((side%2) ? ((side == 1) ? (unsigned short)y : GSHHS_MAX_DELTA - (unsigned short)y) : ((side == 0) ? (unsigned short)x : GSHHS_MAX_DELTA - (unsigned short)x));
 }
 
 void shore_prepare_sides (struct GMT_SHORE *c, int dir)
@@ -925,8 +925,8 @@ void shore_prepare_sides (struct GMT_SHORE *c, int dir)
 	for (s = 0; s < c->ns; s++) if (c->seg[s].entry < 4) c->nside[c->seg[s].entry]++;
 	
 	for (i = c->n_entries = 0; i < 4; i++) {	/* Allocate memory and add corners */
-		c->side[i] = (struct SIDE *) GMT_memory (VNULL, (size_t)c->nside[i], sizeof (struct SIDE), "shore_prepare_sides");
-		c->side[i][0].pos = (dir == 1) ? MAX_DELTA : 0;
+		c->side[i] = (struct GSHHS_SIDE *) GMT_memory (VNULL, (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), "shore_prepare_sides");
+		c->side[i][0].pos = (dir == 1) ? GSHHS_MAX_DELTA : 0;
 		c->side[i][0].id = i - 4;
 		c->n_entries += c->nside[i] - 1;
 	}
@@ -941,9 +941,9 @@ void shore_prepare_sides (struct GMT_SHORE *c, int dir)
 	
 	for (i = 0; i < 4; i++)	{	/* sort on position */
 		if (dir == 1)
-			qsort ((void *)c->side[i], (size_t)c->nside[i], sizeof (struct SIDE), GMT_shore_asc_sort);
+			qsort ((void *)c->side[i], (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), GMT_shore_asc_sort);
 		else
-			qsort ((void *)c->side[i], (size_t)c->nside[i], sizeof (struct SIDE), GMT_shore_desc_sort);
+			qsort ((void *)c->side[i], (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), GMT_shore_desc_sort);
 	}
 }
 

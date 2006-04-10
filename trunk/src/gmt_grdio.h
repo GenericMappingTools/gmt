@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.30 2006-04-09 11:20:17 pwessel Exp $
+ *	$Id: gmt_grdio.h,v 1.31 2006-04-10 04:43:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -28,8 +28,8 @@
 #ifndef GMT_GRDIO_H
 #define GMT_GRDIO_H
 
-#define N_GRD_FORMATS	22	/* Number of supported grd file formats */
-EXTERN_MSC int GMT_grdformats [N_GRD_FORMATS][2];
+#define GMT_N_GRD_FORMATS	22	/* Number of supported grd file formats */
+EXTERN_MSC int GMT_grdformats [GMT_N_GRD_FORMATS][2];
 
 EXTERN_MSC int GMT_read_grd_info (char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_update_grd_info (char *file, struct GRD_HEADER *header);
@@ -47,11 +47,11 @@ EXTERN_MSC int GMT_grd_get_format (char *file, struct GRD_HEADER *header);
 
 /* These are pointers to the various functions and are set in GMT_grdio_init() */
 
-EXTERN_MSC PFI GMT_io_readinfo[N_GRD_FORMATS];
-EXTERN_MSC PFI GMT_io_updateinfo[N_GRD_FORMATS];
-EXTERN_MSC PFI GMT_io_writeinfo[N_GRD_FORMATS];
-EXTERN_MSC PFI GMT_io_readgrd[N_GRD_FORMATS];
-EXTERN_MSC PFI GMT_io_writegrd[N_GRD_FORMATS];
+EXTERN_MSC PFI GMT_io_readinfo[GMT_N_GRD_FORMATS];
+EXTERN_MSC PFI GMT_io_updateinfo[GMT_N_GRD_FORMATS];
+EXTERN_MSC PFI GMT_io_writeinfo[GMT_N_GRD_FORMATS];
+EXTERN_MSC PFI GMT_io_readgrd[GMT_N_GRD_FORMATS];
+EXTERN_MSC PFI GMT_io_writegrd[GMT_N_GRD_FORMATS];
 
 #include "gmt_customio.h"
 

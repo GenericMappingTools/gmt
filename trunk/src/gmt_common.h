@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_common.h,v 1.2 2006-04-10 02:43:52 pwessel Exp $
+ *	$Id: gmt_common.h,v 1.3 2006-04-10 04:43:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -35,12 +35,12 @@ struct GMT_COMMON {
 	struct GMT_H_OPT {	/* [2]  -H[i][<nrecs>] */
 		BOOLEAN active[2];
 		short int processed;
-		int n_header_records;
+		int n_recs;
 	} H;	
-	struct GMT_H_OPT {	/* [3-4]  -J<params> */
+	struct GMT_J_OPT {	/* [3-4]  -J<params> */
 		BOOLEAN active;
 		short int processed;
-		int projection;
+		int id;
 		double par[6];
 	} J;		
 	struct GMT_K_OPT {	/* [5]  -K */
@@ -50,11 +50,11 @@ struct GMT_COMMON {
 	struct GMT_O_OPT {	/* [6]  -O */
 		BOOLEAN active;
 		short int processed;
-	} K;
+	} O;
 	struct GMT_P_OPT {	/* [7]  -P */
 		BOOLEAN active;
 		short int processed;
-	} K;
+	} P;
 	struct GMT_R_OPT {	/* [8]  -Rw/e/s/n[/z0/z1][r] */
 		BOOLEAN active;
 		BOOLEAN corners;
@@ -76,7 +76,7 @@ struct GMT_COMMON {
 		double off;
 		char mode;	/* r, a, or c */
 	} X;
-	struct GMT_X_OPT {	/* [12] -Y */
+	struct GMT_Y_OPT {	/* [12] -Y */
 		BOOLEAN active;
 		short int processed;
 		double off;
@@ -95,7 +95,7 @@ struct GMT_COMMON {
 	struct GMT_b_OPT {	/* -b[i|o][<n>][s|S|d|D] */
 		BOOLEAN active;
 		BOOLEAN binary[2];
-		BOOLEAN precision[2];
+		BOOLEAN sincle[2];
 		BOOLEAN swab[2];
 		short int processed;
 		int ncol[2];

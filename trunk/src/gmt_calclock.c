@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.45 2006-03-20 23:03:54 remko Exp $
+ *	$Id: gmt_calclock.c,v 1.46 2006-04-10 04:43:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1015,7 +1015,7 @@ void GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct
 	return;
 }
 
-void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct PLOT_AXIS_ITEM *T, GMT_dtime t)
+void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, GMT_dtime t)
 {	/* Assemble the annotation label given the formatting options presented */
 	struct GMT_gcal calendar;
 

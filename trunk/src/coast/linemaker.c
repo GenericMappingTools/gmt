@@ -1,5 +1,5 @@
 /*
- *	$Id: linemaker.c,v 1.3 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: linemaker.c,v 1.4 2006-04-10 04:43:31 pwessel Exp $
  */
 /*
  *
@@ -15,7 +15,7 @@ typedef unsigned short ushort;
 
 struct GMT_BR s;
 struct SHORT_PAIR {
-	ushort	dx;	/* Relative distance from SW corner of bin, units of B_WIDTH/MAX_DELTA  */
+	ushort	dx;	/* Relative distance from SW corner of bin, units of B_WIDTH/GSHHS_MAX_DELTA  */
 	ushort	dy;
 } p;
 struct SEGMENT_HEADER {

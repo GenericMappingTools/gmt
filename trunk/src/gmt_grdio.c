@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.65 2006-03-28 07:33:21 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.66 2006-04-10 04:43:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -55,7 +55,7 @@
 #define STAT stat
 #endif
 
-int GMT_grdformats[N_GRD_FORMATS][2] = {
+int GMT_grdformats[GMT_N_GRD_FORMATS][2] = {
 #include "gmt_grdformats.h"
 };
 
@@ -260,14 +260,14 @@ int GMT_grd_format_decoder (const char *code)
 	
 	if (isdigit ((int)code[0])) {	/* File format number given, convert directly */
 		id = atoi (code);
- 		if (id < 0 || id >= N_GRD_FORMATS) {
+ 		if (id < 0 || id >= GMT_N_GRD_FORMATS) {
 			fprintf (stderr, "%s: GMT ERROR: grdfile format number (%d) unknown!\n", GMT_program, id);
 			exit (EXIT_FAILURE);
 		}
 	}
 	else {	/* Character code given */
 		int i, group;
-		for (i = group = 0, id = -1; id < 0 && i < N_GRD_FORMATS; i++) {
+		for (i = group = 0, id = -1; id < 0 && i < GMT_N_GRD_FORMATS; i++) {
 			if (GMT_grdformats[i][0] == (short)code[0]) {
 				group = code[0];
 				if (GMT_grdformats[i][1] == (short)code[1]) id = i;
@@ -313,7 +313,7 @@ void GMT_grd_RI_verify (struct GRD_HEADER *h, int mode)
 	
 	if (!strcmp (GMT_program, "grdedit")) return;	/* Separate handling in grdedit to allow grdedit -A */
 
-	switch (GMT_minmaxinc_verify (h->x_min, h->x_max, h->x_inc, SMALL)) {
+	switch (GMT_minmaxinc_verify (h->x_min, h->x_max, h->x_inc, GMT_SMALL)) {
 		case 3:
 			(void) fprintf (stderr, "%s: GMT ERROR: grid x increment <= 0.0\n", GMT_program);
 			error++;
@@ -323,14 +323,14 @@ void GMT_grd_RI_verify (struct GRD_HEADER *h, int mode)
 			error++;
 			break;
 		case 1:
-			(void) fprintf (stderr, "%s: GMT ERROR: (x_max-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_program, SMALL);
+			(void) fprintf (stderr, "%s: GMT ERROR: (x_max-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_program, GMT_SMALL);
 			error++;
 		default:
 			/* Everything is OK */
 			break;
 	}
 		
-	switch (GMT_minmaxinc_verify (h->y_min, h->y_max, h->y_inc, SMALL)) {
+	switch (GMT_minmaxinc_verify (h->y_min, h->y_max, h->y_inc, GMT_SMALL)) {
 		case 3:
 			(void) fprintf (stderr, "%s: GMT ERROR: grid y increment <= 0.0\n", GMT_program);
 			error++;
@@ -340,7 +340,7 @@ void GMT_grd_RI_verify (struct GRD_HEADER *h, int mode)
 			error++;
 			break;
 		case 1:
-			(void) fprintf (stderr, "%s: GMT ERROR: (y_max-y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_program, SMALL);
+			(void) fprintf (stderr, "%s: GMT ERROR: (y_max-y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_program, GMT_SMALL);
 			error++;
 		default:
 			/* Everything is OK */
@@ -525,7 +525,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 			fprintf (stderr, "%s: Error opening file %s\n", GMT_program, G->header.name);
 			exit (EXIT_FAILURE);
 		}
-		if (header) fseek (G->fp, (long)HEADER_SIZE, SEEK_SET);
+		if (header) fseek (G->fp, (long)GRD_HEADER_SIZE, SEEK_SET);
 	}
 
 	G->size = GMT_grd_data_size (G->header.type, &G->header.nan_value);
@@ -581,10 +581,10 @@ void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 	else {			/* Get a binary row */
 		if (row_no < 0) {	/* Special seek instruction */
 			G->row = abs (row_no);
-			fseek (G->fp, (long)(HEADER_SIZE + G->row * G->n_byte), SEEK_SET);
+			fseek (G->fp, (long)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET);
 			return;
 		}
-		if (!G->auto_advance) fseek (G->fp, (long)(HEADER_SIZE + G->row * G->n_byte), SEEK_SET);
+		if (!G->auto_advance) fseek (G->fp, (long)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET);
 
 		if (fread (G->v_row, G->size, (size_t)G->header.nx, G->fp) != (size_t)G->header.nx) {	/* Get one row */
 			fprintf (stderr, "%s: Read error for file %s near row %d\n", GMT_program, G->header.name, G->row);
@@ -734,7 +734,7 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 	BOOLEAN region_straddle, grid_straddle, global;
 	double shift_x = 0.0;
 
-	if (!project_info.region && !RECT_GRATICULE) {	/* Used -R... with oblique boundaries - return entire grid */
+	if (!project_info.region && !GMT_IS_RECT_GRATICULE) {	/* Used -R... with oblique boundaries - return entire grid */
 		BOOLEAN N_outside, S_outside;
 		N_outside = GMT_outside (0.0, +90.0);	/* North pole outside map boundary? */
 		S_outside = GMT_outside (0.0, -90.0);	/* South pole outside map boundary? */
@@ -801,14 +801,14 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 
 	/* OK, longitudes are trickier and we must make sure grid and region is on the same page as far as +-360 degrees go */
 
-	global = (fabs (h->x_max - h->x_min - 360.0) < SMALL && h->y_min >= -90.0 && h->y_max <= +90.0);	/* We believe this indicates a global (in longitude), geographic grid */
+	global = (fabs (h->x_max - h->x_min - 360.0) < GMT_SMALL && h->y_min >= -90.0 && h->y_max <= +90.0);	/* We believe this indicates a global (in longitude), geographic grid */
 	if (global) {	/* Periodic grid with 360 degree range is easy */
 		*xmin = project_info.w;
 		*xmax = project_info.e;
 		return (0);
 	}
 
-	global = (fabs (project_info.e - project_info.w - 360.0) < SMALL && project_info.s >= -90.0 && project_info.n <= +90.0);	/* A global -R selected */
+	global = (fabs (project_info.e - project_info.w - 360.0) < GMT_SMALL && project_info.s >= -90.0 && project_info.n <= +90.0);	/* A global -R selected */
 	if (global) {	/* Global map with full 360 degree range is easy */
 		*xmin = h->x_min;
 		*xmax = h->x_max;
@@ -938,11 +938,11 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 	}
 	if (init) {
 		/* Select plain Mercator on a sphere with -Jm1 -R0/360/-lat/+lat */
-		gmtdefs.ellipsoid = N_ELLIPSOIDS - 1;
+		gmtdefs.ellipsoid = GMT_N_ELLIPSOIDS - 1;
 		project_info.units_pr_degree = TRUE;
 		project_info.m_got_parallel = FALSE;
 		project_info.pars[0] = 1.0;
-		project_info.projection = MERCATOR;
+		project_info.projection = GMT_MERCATOR;
 		project_info.degree[0] = project_info.degree[1] = TRUE;
 	
 		GMT_map_setup (GMT_IMG_MINLON, GMT_IMG_MAXLON, -lat, +lat);

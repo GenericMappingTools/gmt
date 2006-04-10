@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.11 2006-01-17 04:09:10 pwessel Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.12 2006-04-10 04:43:31 pwessel Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	This is the README file:
@@ -6,7 +6,7 @@
  Adding MGG file format to GMT
 -----------------------------
 1) Modify gmt_grdio.h
-   - Increment N_GRD_FORMATS.
+   - Increment GMT_N_GRD_FORMATS.
      This number is one based, the formats are zero based so this
      value will be one greater than the grid number you are creating.
      

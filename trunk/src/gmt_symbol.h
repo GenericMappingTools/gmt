@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_symbol.h,v 1.16 2005-12-17 05:59:22 pwessel Exp $
+ *	$Id: gmt_symbol.h,v 1.17 2006-04-10 04:43:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -27,43 +27,43 @@
 #ifndef _GMT_SYMBOLS_H
 #define _GMT_SYMBOLS_H
 
-#define ACTION_MOVE		100
-#define ACTION_DRAW		200
-#define ACTION_ARC		300
+#define GMT_ACTION_MOVE		100
+#define GMT_ACTION_DRAW		200
+#define GMT_ACTION_ARC		300
 
-#define ACTION_CROSS		2
-#define ACTION_CIRCLE		4
-#define ACTION_SQUARE		5
-#define ACTION_TRIANGLE		6
-#define ACTION_DIAMOND		7
-#define ACTION_STAR		8
-#define ACTION_HEXAGON		9
-#define ACTION_ITRIANGLE	10
-#define ACTION_ELLIPSE		11
-#define ACTION_TEXT		14
-#define ACTION_PIE		15
-#define ACTION_RECT		17
-#define ACTION_PENTAGON		19
-#define ACTION_OCTAGON		20
+#define GMT_ACTION_CROSS	2
+#define GMT_ACTION_CIRCLE	4
+#define GMT_ACTION_SQUARE	5
+#define GMT_ACTION_TRIANGLE	6
+#define GMT_ACTION_DIAMOND	7
+#define GMT_ACTION_STAR		8
+#define GMT_ACTION_HEXAGON	9
+#define GMT_ACTION_ITRIANGLE	10
+#define GMT_ACTION_ELLIPSE	11
+#define GMT_ACTION_TEXT		14
+#define GMT_ACTION_PIE		15
+#define GMT_ACTION_RECT		17
+#define GMT_ACTION_PENTAGON	19
+#define GMT_ACTION_OCTAGON	20
 
-struct CUSTOM_SYMBOL_ITEM {
+struct GMT_CUSTOM_SYMBOL_ITEM {
 	double x, y, p[3];
 	int action;
 	struct GMT_FILL *fill;
 	struct GMT_PEN *pen;
-	struct CUSTOM_SYMBOL_ITEM *next;
+	struct GMT_CUSTOM_SYMBOL_ITEM *next;
 	char *string;
 };
 
-struct CUSTOM_SYMBOL {
+struct GMT_CUSTOM_SYMBOL {
 	char name[GMT_TEXT_LEN];
-	struct CUSTOM_SYMBOL_ITEM *first;
+	struct GMT_CUSTOM_SYMBOL_ITEM *first;
 };
 
 EXTERN_MSC int GMT_n_custom_symbols;
-EXTERN_MSC struct CUSTOM_SYMBOL **GMT_custom_symbol;
+EXTERN_MSC struct GMT_CUSTOM_SYMBOL **GMT_custom_symbol;
 
-EXTERN_MSC struct CUSTOM_SYMBOL * GMT_get_custom_symbol (char *name);
-EXTERN_MSC void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struct CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, BOOLEAN outline);
+EXTERN_MSC struct GMT_CUSTOM_SYMBOL * GMT_get_custom_symbol (char *name);
+EXTERN_MSC void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, BOOLEAN outline);
 
 #endif	/* _GMT_SYMBOLS_H */

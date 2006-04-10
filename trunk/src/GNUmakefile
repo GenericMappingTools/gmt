@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.53 2006-04-09 11:20:17 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.54 2006-04-10 04:43:31 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -55,6 +55,7 @@ LIB_C	= gmt_calclock.c \
 LIBPS_C	= gmt_plot.c
 
 GMT_H	= gmt.h \
+	  gmt_common.h \
 	  gmt_calclock.h \
 	  gmt_time_systems.h \
 	  gmt_math.h \

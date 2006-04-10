@@ -1,5 +1,5 @@
 /*
- *	$Id: lines_to_bins.c,v 1.5 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: lines_to_bins.c,v 1.6 2006-04-10 04:43:31 pwessel Exp $
  */
 /* lines_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -9,7 +9,7 @@
  
 #include "wvs.h"
 
-#define MAX_DELTA 65535		/* Largest value to store in a ushort, used as largest dx or dy in bin  */
+#define GSHHS_MAX_DELTA 65535		/* Largest value to store in a ushort, used as largest dx or dy in bin  */
 
 struct GMT3_POLY h;
 
@@ -26,7 +26,7 @@ struct SEGMENT {
 };
 
 struct SHORT_PAIR {
-	ushort	dx;	/* Relative distance from SW corner of bin, units of B_WIDTH/MAX_DELTA  */
+	ushort	dx;	/* Relative distance from SW corner of bin, units of B_WIDTH/GSHHS_MAX_DELTA  */
 	ushort	dy;
 };
 
@@ -362,10 +362,10 @@ int main (int argc, char **argv)
 			for (k = 0; k < s->n; k++) {
 				/* Don't forget that this modulo calculation for DX doesn't work when you have a right/top edge (this wont happen for this polygon though !!!   */
 				test_long = irint ((xx[k] % B_WIDTH) * SHORT_FACTOR);
-				if (test_long < 0 || test_long > MAX_DELTA) die (h.id);
+				if (test_long < 0 || test_long > GSHHS_MAX_DELTA) die (h.id);
 				s->p[k].dx = (ushort) test_long;
 				test_long = irint((yy[k] % B_WIDTH) * SHORT_FACTOR);
-				if (test_long < 0 || test_long > MAX_DELTA) die (h.id);
+				if (test_long < 0 || test_long > GSHHS_MAX_DELTA) die (h.id);
 				s->p[k].dy = (ushort) test_long;
 			}
 			
@@ -436,13 +436,13 @@ int main (int argc, char **argv)
 				s->p = (struct SHORT_PAIR *)GMT_memory(VNULL, (size_t)s->n, sizeof(struct SHORT_PAIR), "lines_to_bins");
 				for (k = 0, kk = last_i; k < s->n; k++, kk++) {
 					if (i_x_3 == last_x_bin && xx[kk] == 0)
-						test_long = MAX_DELTA;
+						test_long = GSHHS_MAX_DELTA;
 					else
 						test_long = irint((xx[kk] - x_origin) * SHORT_FACTOR);
-					if (test_long < 0 || test_long > MAX_DELTA) die (h.id);
+					if (test_long < 0 || test_long > GSHHS_MAX_DELTA) die (h.id);
 					s->p[k].dx = (ushort) test_long;
 					test_long = irint((yy[kk] - y_origin) * SHORT_FACTOR);
-					if (test_long < 0 || test_long > MAX_DELTA) die (h.id);
+					if (test_long < 0 || test_long > GSHHS_MAX_DELTA) die (h.id);
 					s->p[k].dy = (ushort) test_long;
 				}
 				
