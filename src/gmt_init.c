@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.228 2006-04-10 05:47:29 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.229 2006-04-10 07:35:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5277,56 +5277,56 @@ void GMT_init_scales (int unit, double *fwd_scale, double *inv_scale, double *in
 	*inv_scale = scales[unit];
 }
 
-int GMT_check_scalingopt (char *args, char *unit_name) {
-	int unit;
+int GMT_check_scalingopt (char option, char unit, char *unit_name) {
+	int mode;
 
-	switch (args[2]) {
+	switch (unit) {
 		case '\0':
-			unit = 0;
+			mode = 0;
 			strcpy (unit_name, "m");
 			break;
 		case 'k':
 		case 'K':
-			unit = 1;
+			mode = 1;
 			strcpy (unit_name, "km");
 			break;
 		case 'm':
 		case 'M':
-			unit = 2;
+			mode = 2;
 			strcpy (unit_name, "miles");
 			break;
 		case 'n':
 		case 'N':
-			unit = 3;
+			mode = 3;
 			strcpy (unit_name, "nautical miles");
 			break;
 		case 'I':
 		case 'i':
-			unit = 4;
+			mode = 4;
 			strcpy (unit_name, "inch");
 			break;
 		case 'c':
 		case 'C':
-			unit = 5;
+			mode = 5;
 			strcpy (unit_name, "cm");
 			break;
 		case 'p':
 		case 'P':
-			unit = 6;
+			mode = 6;
 			strcpy (unit_name, "point");
 			break;
 		default:
-			fprintf (stderr, "%s: GMT ERROR Option -%c: Only append one of cimpkn\n", GMT_program, args[1]);
+			fprintf (stderr, "%s: GMT ERROR Option -%c: Only append one of cimpkn\n", GMT_program, option);
 			exit (EXIT_FAILURE);
 	}
 
-	return (unit);
+	return (mode);
 }
 
-void GMT_set_measure_unit (char *args) {
+void GMT_set_measure_unit (char option, char unit) {
 	/* Option to override the GMT measure unit default */
 
-	switch (args[2]) {
+	switch (unit) {
 		case 'm':
 		case 'M':
 			gmtdefs.measure_unit = GMT_M;
@@ -5344,7 +5344,7 @@ void GMT_set_measure_unit (char *args) {
 			gmtdefs.measure_unit = GMT_PT;
 			break;
 		default:
-			fprintf (stderr, "%s: GMT ERROR Option -%c: Only append one of cimp\n", GMT_program, args[1]);
+			fprintf (stderr, "%s: GMT ERROR Option -%c: Only append one of cimp\n", GMT_program, option);
 			exit (EXIT_FAILURE);
 	}
 }

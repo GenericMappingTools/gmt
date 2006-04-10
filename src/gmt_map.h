@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.h,v 1.9 2006-03-23 07:48:04 pwessel Exp $
+ *	$Id: gmt_map.h,v 1.10 2006-04-10 07:35:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -30,10 +30,11 @@ EXTERN_MSC double GMT_great_circle_dist (double lon1, double lat1, double lon2, 
 EXTERN_MSC double GMT_half_map_width (double y);
 EXTERN_MSC double GMT_left_boundary (double y);
 EXTERN_MSC double GMT_right_boundary (double y);
-EXTERN_MSC int GMT_ECEF_init (char *text);
+EXTERN_MSC int GMT_set_datum (char *text, struct GMT_DATUM *D);
+EXTERN_MSC void GMT_ECEF_init (struct GMT_DATUM *D);
 EXTERN_MSC int GMT_clip_to_map (double *lon, double *lat, int np, double **x, double **y);
 EXTERN_MSC int GMT_compact_line (double *x, double *y, int n, BOOLEAN pen_flag, int *pen);
-EXTERN_MSC int GMT_datum_init (char *text);
+EXTERN_MSC void GMT_datum_init (struct GMT_DATUM *from, struct GMT_DATUM *to, BOOLEAN heights);
 EXTERN_MSC int GMT_geo_to_xy_line (double *lon, double *lat, int n);
 EXTERN_MSC int GMT_graticule_path (double **x, double **y, int dir, double w, double e, double s, double n);
 EXTERN_MSC int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD_HEADER *O, struct GMT_EDGEINFO *edgeinfo, BOOLEAN bilinear, BOOLEAN inverse);
