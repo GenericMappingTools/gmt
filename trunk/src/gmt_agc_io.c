@@ -1,11 +1,19 @@
-/*      $Id: gmt_agc_io.c,v 1.1 2006-04-09 11:20:17 pwessel Exp $	*/
+/*      $Id: gmt_agc_io.c,v 1.2 2006-04-10 01:50:29 pwessel Exp $
+ *
+ * Based on original code from Robert Helie.  That code was hard-wired
+ * in two applications (gmt2agcgrd.c and agc2gmtgrd.c) based on GMT 3.4.
+ * The following code is modified to fit within the gmt_customio style
+ * and argument passing.  Note that AGC files are assumed to be gridline-
+ * oriented.  If a pixel grid is requested to be written in AGC format
+ * we will shrink the region by 0.5 dx|dy to obtain gridline registration.
+ */
 /*-----------------------------------------------------------
  * Format # :	21
  * Type :	Atlantic Geoscience Genter (AGC) format
  * Prefix :	GMT_agc_
  * Author :	Paul Wessel, by modifying code from Robert Helie
  * Date :	09-APR-2006
- * Purpose:	to transform to/from AGC grid file format
+ * Purpose:	To transform to/from AGC grid file format
  * Functions :	GMT_agc_read_grd_info, GMT_agc_write_grd_info,
  *		GMT_agc_write_grd_info, GMT_agc_read_grd, GMT_agc_write_grd
  *-----------------------------------------------------------*/
@@ -14,22 +22,18 @@
 # define ZBLOCKHEIGHT 	40
 # define RECORDLENGTH 	1614
 # define FIRSTZ  	12
-# define REMARKSIZE	160
 # define PREHEADSIZE	12
 # define POSTHEADSIZE	2
 # define BUFFHEADSIZE	(6 + POSTHEADSIZE)
 
 # define AGCHEADINDICATOR	"agchd:"
 # define HEADINDSIZE		6
-# define PARAMSIZE	(int)((REMARKSIZE - HEADINDSIZE) / BUFFHEADSIZE)
-
-# define AGCNODATA 0.0
-
+# define PARAMSIZE		(int)((GRD_REMARK_LEN - HEADINDSIZE) / BUFFHEADSIZE)
 
 int GMT_agc_read_grd_info (struct GRD_HEADER *header)
-{
+{	/* All AGC files are assumed to be gridline-registered */
 	FILE *fp;
-	int i, one_or_zero = 0;
+	int i;
 	float recdata[RECORDLENGTH];
 	float agchead[BUFFHEADSIZE];
 	void SaveAGCHeader (char *remark, float *agchead);
@@ -45,20 +49,23 @@ int GMT_agc_read_grd_info (struct GRD_HEADER *header)
 		exit (EXIT_FAILURE);
 	}
 
-	fread (recdata, sizeof(float), RECORDLENGTH, fp);
+	fread ((void *)recdata, sizeof(float), RECORDLENGTH, fp);
 	
+	header->node_offset = 0;	/* Hardwired since no info about this in the header */
 	header->y_min = recdata[0];
 	header->y_max = recdata[1];
 	header->x_min = recdata[2];
 	header->x_max = recdata[3];
 	header->y_inc = recdata[4];
 	header->x_inc = recdata[5];
-	for (i = 6; i < FIRSTZ; agchead[i - 6] = recdata[i], i++);
-	agchead[BUFFHEADSIZE - 2] = recdata[RECORDLENGTH - 2];
-	agchead[BUFFHEADSIZE - 1] = recdata[RECORDLENGTH - 1];
-	header->nx = rint ((header->x_max - header->x_min) / header->x_inc) + 1 + one_or_zero;
-	header->ny = rint ((header->y_max - header->y_min) / header->y_inc) + 1 + one_or_zero;
-	header->y_order = (int)((header->y_max - header->y_min) / (ZBLOCKHEIGHT * header->y_inc) + 1.001);
+	header->nx = irint ((header->x_max - header->x_min) / header->x_inc) + 1;
+	header->ny = irint ((header->y_max - header->y_min) / header->y_inc) + 1;
+	header->y_order = irint (ceil ((header->y_max - header->y_min) / (ZBLOCKHEIGHT * header->y_inc)));
+	header->z_scale_factor = 1.0;
+	header->z_add_offset = 0.0;
+	for (i = 6; i < FIRSTZ; i++) agchead[i-6] = recdata[i];
+	agchead[BUFFHEADSIZE-2] = recdata[RECORDLENGTH-2];
+	agchead[BUFFHEADSIZE-1] = recdata[RECORDLENGTH-1];
 	SaveAGCHeader (header->remark, agchead);
 	
 	if (fp != GMT_stdin) GMT_fclose (fp);
@@ -68,9 +75,9 @@ int GMT_agc_read_grd_info (struct GRD_HEADER *header)
 
 int GMT_agc_write_grd_info (struct GRD_HEADER *header)
 {
-	int i;
 	FILE *fp;
 	float prez[PREHEADSIZE], postz[POSTHEADSIZE];
+	void packAGCheader (float *prez, float *postz, struct GRD_HEADER *header);
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -83,16 +90,9 @@ int GMT_agc_write_grd_info (struct GRD_HEADER *header)
 		exit (EXIT_FAILURE);
 	}
 	
-	prez[0] = (float)header->y_min;
-	prez[1] = (float)header->y_max;
-	prez[2] = (float)header->x_min;
-	prez[3] = (float)header->x_max;
-	prez[4] = (float)header->y_inc;
-	prez[5] = (float)header->x_inc;
+	packAGCheader (prez, postz, header);	/* Stuff header info into the AGC arrays */
 
-	for (i = 6; i < PREHEADSIZE; prez[i] = 0, i++);
-	prez[PREHEADSIZE - 1] = 1614;
-	postz[0] = postz[1] = 0;
+	fwrite ((void *)prez, sizeof(float), PREHEADSIZE, fp);
 
 	if (fp != GMT_stdout) GMT_fclose (fp);
 
@@ -114,15 +114,13 @@ int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	int width_out;			/* Width of row as return (may include padding) */
 	int height_in;			/* Number of columns in subregion */
 	int inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
-	int i, j, ij, i_0_out;		/* Misc. counters */
+	int i, j, ij, j_gmt, i_0_out;	/* Misc. counters */
 	int *k;				/* Array with indices */
 	int type;			/* Data type */
 	int size;			/* Length of data type */
-	int datablockcol, datablockrow, n_read, rowstart, rowend, colstart, colend, row, col;
+	int datablockcol, datablockrow, n_read = 0, rowstart, rowend, colstart, colend, row, col;
 	FILE *fp;			/* File pointer to data or pipe */
-	BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
-	void *tmp;			/* Array pointer for reading in rows of data */
 	float z[ZBLOCKWIDTH][ZBLOCKHEIGHT];
 	void ReadRecord (FILE *fpi, int recnum, float *z);
 	
@@ -131,11 +129,8 @@ int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 		GMT_setmode (GMT_IN);
 #endif
 		fp = GMT_stdin;
-		piping = TRUE;
 	}
-	else if ((fp = GMT_fopen (header->name, "rb")) != NULL)	/* Skip header */
-		fseek (fp, (long) (RECORDLENGTH * sizeof(float)), SEEK_CUR);
-	else {
+	else if ((fp = GMT_fopen (header->name, "rb")) == NULL)	{
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", header->name);
 		exit (EXIT_FAILURE);
 	}
@@ -158,39 +153,61 @@ int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 		inc = 2;
 	}
 
-	/* Allocate memory for one row of data (for reading purposes) */
-
-	tmp = (void *) GMT_memory (VNULL, (size_t)header->nx, size, "GMT_native_read_grd");
+	/* Because of the 40x40 blocks we read the entire file and only use what we need */
 
 	/* Rows are read south to north */
 	
+	header->z_min = +DBL_MAX;
+	header->z_max = -DBL_MAX;
+	
 	datablockcol = datablockrow = 0;
-	while ( !feof(fp) )  
-	{
+	while ( !feof(fp) ) {
 		ReadRecord(fp, n_read, (float *)z);
   		n_read++;
 		rowstart = datablockrow * ZBLOCKHEIGHT;
 		rowend = MIN(rowstart + ZBLOCKHEIGHT, header->ny);
-		for (i = 0, row = rowstart; row < rowend; i++, row++) 
-		{
+		for (i = 0, row = rowstart; row < rowend; i++, row++) {
+			j_gmt = header->ny - 1 - row;	/* GMT internal row number */
+			if (j_gmt < first_row || j_gmt > last_row) continue;
 			colstart = datablockcol * ZBLOCKWIDTH;
 			colend = MIN(colstart + ZBLOCKWIDTH, header->nx);
-			for (j = 0, col = colstart; col < colend; j++, col++)
-			{
-				ij = (header->ny - 1 - row + pad[2]) * header->nx + col + pad[0];
-				grid[ij] = (!(z[j][i])) ? header->nan_value : z[j][i];
+			for (j = 0, col = colstart; col < colend; j++, col++) {
+				if (col < first_col || col > last_col) continue;
+				ij = ((j_gmt - first_row) + pad[3]) * width_out + (col - first_col) + i_0_out;
+				grid[ij] = z[j][i];
+				if ((double)grid[ij] < header->z_min) header->z_min = (double)grid[ij];
+				if ((double)grid[ij] > header->z_max) header->z_max = (double)grid[ij];
 			}
 		}
 
-		if (++datablockrow >= header->y_order)
-		{
+		if (++datablockrow >= header->y_order) {
 			datablockrow = 0;
 			datablockcol++;
 		}
 	}
 
+	header->nx = width_in;
+	header->ny = height_in;
+	header->x_min = w;
+	header->x_max = e;
+	header->y_min = s;
+	header->y_max = n;
+
+	/* Update z_min, z_maz */
+
+	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
+	for (j = 0; j < header->ny; j++) {
+		for (i = 0; i < header->nx; i++) {
+			ij = inc * ((j + pad[3]) * width_out + i + pad[0]);
+			if (GMT_is_fnan (grid[ij])) continue;
+			header->z_min = MIN (header->z_min, (double)grid[ij]);
+			header->z_max = MAX (header->z_max, (double)grid[ij]);
+		}
+	}
 	if (fp != stdin) GMT_fclose (fp);
 	
+	GMT_free ((void *)k);
+
 	return (FALSE);
 }
 
@@ -203,12 +220,25 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	/*		Note: The file has only real values, we simply allow space in the array */
 	/*		for imaginary parts when processed by grdfft etc. */
 
+
+	int first_col, last_col;	/* First and last column to deal with */
+	int first_row, last_row;	/* First and last row to deal with */
+	int width_in;			/* Number of items in one row of the subregion */
+	int width_out;			/* Width of row as return (may include padding) */
+	int height_out;			/* Number of columns in subregion */
+	int inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
+	int i, j, i2, j2, ij;		/* Misc. counters */
+	int *k;				/* Array with indices */
+	int type;			/* Data type */
+	int size;			/* Length of data type */
+	FILE *fp;			/* File pointer to data or pipe */
+	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	float outz[ZBLOCKWIDTH][ZBLOCKHEIGHT];
 	int rowstart, rowend, colstart, colend, datablockcol, datablockrow;
-	int i, j, ij, row, col, nlat;
-	FILE *fp;
+	int j_gmt, row, col;
 	float prez[PREHEADSIZE], postz[POSTHEADSIZE];
 	void WriteRecord (FILE *file, float *rec, float *prerec, float *postrec);
+	void packAGCheader (float *prez, float *postz, struct GRD_HEADER *header);
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -221,38 +251,69 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 		exit (EXIT_FAILURE);
 	}
 	
-	prez[0] = (float)header->y_min;
-	prez[1] = (float)header->y_max;
-	prez[2] = (float)header->x_min;
-	prez[3] = (float)header->x_max;
-	prez[4] = (float)header->y_inc;
-	prez[5] = (float)header->x_inc;
+	type = GMT_grdformats[header->type][1];
+	size = GMT_grd_data_size (header->type, &header->nan_value);
+	check = !GMT_is_dnan (header->nan_value);
 
-	for (i = 6; i < PREHEADSIZE; prez[i] = 0, i++);
-	prez[PREHEADSIZE - 1] = 1614;
-	postz[0] = postz[1] = 0;
+	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row);
 
-	nlat = (int)((prez[1] - prez[0]) / (ZBLOCKHEIGHT * prez[4]) + 1.001);
+	width_in = width_out;		/* Physical width of input array */
+	if (pad[0] > 0) width_in += pad[0];
+	if (pad[1] > 0) width_in += pad[1];
+	if (complex) inc = 2;
+
+	header->x_min = w;
+	header->x_max = e;
+	header->y_min = s;
+	header->y_max = n;
+
+	/* Find z_min/z_max */
+
+	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
+	for (j = first_row, j2 = pad[3]; j <= last_row; j++, j2++) {
+		for (i = first_col, i2 = pad[0]; i <= last_col; i++, i2++) {
+			ij = (j2 * width_in + i2) * inc;
+			if (GMT_is_fnan (grid[ij])) {
+				if (check) grid[ij] = (float)header->nan_value;
+			}
+			else {
+				header->z_min = MIN (header->z_min, (double)grid[ij]);
+				header->z_max = MAX (header->z_max, (double)grid[ij]);
+			}
+		}
+	}
+	
+	/* Since AGC files are always gridline-registered we must change -R when a pixel grid is to be written */
+	if (header->node_offset) {
+		header->x_min += 0.5 * header->x_inc;	header->x_max -= 0.5 * header->x_inc;
+		header->y_min += 0.5 * header->y_inc;	header->y_max -= 0.5 * header->y_inc;
+		header->node_offset = 0;
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Warning: AGC grids are always gridline-registered.  Your pixel-registered grid will be converted.\n", GMT_program);
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Warning: AGC grid region in file %s reset to %g/%g/%g/%g\n", GMT_program, header->name, header->x_min, header->x_max, header->y_min, header->y_max);
+	}
+	
+	packAGCheader (prez, postz, header);	/* Stuff header info into the AGC arrays */
+
+	header->y_order = irint (ceil ((header->y_max - header->y_min) / (ZBLOCKHEIGHT * header->y_inc)));
 	datablockcol = datablockrow = 0;
-	do 
-	{
+	do {
 		rowstart = datablockrow * ZBLOCKHEIGHT;
 		rowend = MIN(rowstart + ZBLOCKHEIGHT, header->ny);
-		for (i = 0, row = rowstart; row < rowend; i++, row++) 
-		{
+		for (i = 0, row = rowstart; row < rowend; i++, row++) {
+			j_gmt = header->ny - 1 - row;	/* GMT internal row number */
+			if (j_gmt < first_row || j_gmt > last_row) continue;
 			colstart = datablockcol * ZBLOCKWIDTH;
 			colend = MIN(colstart + ZBLOCKWIDTH, header->nx);
-			for (j = 0, col = colstart; col < colend; j++, col++)
-			{
-				ij = (header->ny - 1 - row) * header->nx + col;
-				outz[j][i] = (isnan((double)grid[ij])) ? header->nan_value : grid[ij];
+			for (j = 0, col = colstart; col < colend; j++, col++) {
+				if (col < first_col || col > last_col) continue;
+				ij = ((j_gmt - first_row) + pad[3]) * width_in + (col - first_col) + pad[0];
+				outz[j][i] = grid[ij];
 			}
 		} 
 
 		WriteRecord (fp, (float*)outz, prez, postz);
 
-		if (++datablockrow >= nlat)
-		{
+		if (++datablockrow >= header->y_order) {
 			datablockrow = 0;
 			datablockcol++;
 		}
@@ -260,7 +321,24 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 
 	if (fp != GMT_stdout) GMT_fclose (fp);
 
+	GMT_free ((void *)k);
+
 	return (FALSE);
+}
+
+void packAGCheader (float *prez, float *postz, struct GRD_HEADER *header)
+{
+	int i;
+	prez[0] = (float)header->y_min;
+	prez[1] = (float)header->y_max;
+	prez[2] = (float)header->x_min;
+	prez[3] = (float)header->x_max;
+	prez[4] = (float)header->y_inc;
+	prez[5] = (float)header->x_inc;
+
+	for (i = 6; i < PREHEADSIZE; i++) prez[i] = 0.0;
+	prez[PREHEADSIZE-1] = (float)RECORDLENGTH;
+	postz[0] = postz[1] = 0.0;
 }
 
 void SaveAGCHeader (char *remark, float *agchead)
@@ -281,51 +359,17 @@ void ReadRecord (FILE *fpi, int recnum, float *z)
 	int nitems;
 	float garbage[FIRSTZ];
 
-	fread (garbage, sizeof(float), FIRSTZ, fpi);
-	nitems = fread(z, sizeof(float), ZBLOCKWIDTH * ZBLOCKHEIGHT, fpi);
+	fread ((void *)garbage, sizeof(float), FIRSTZ, fpi);
+	nitems = fread ((void *)z, sizeof(float), ZBLOCKWIDTH * ZBLOCKHEIGHT, fpi);
 
 	if (nitems != (ZBLOCKWIDTH * ZBLOCKHEIGHT) && !feof(fpi)) 	/* Bad stuff */
 		fprintf(stderr, "Bad at rec # %d\n", recnum);
-	fread (garbage, sizeof(float), RECORDLENGTH - (ZBLOCKWIDTH * ZBLOCKHEIGHT + FIRSTZ), fpi);
+	fread ((void *)garbage, sizeof(float), RECORDLENGTH - (ZBLOCKWIDTH * ZBLOCKHEIGHT + FIRSTZ), fpi);
 }
 
 void WriteRecord (FILE *file, float *rec, float *prerec, float *postrec)
 {
-	fwrite (prerec, sizeof(float), PREHEADSIZE, file);
-	fwrite (rec, sizeof(float), ZBLOCKWIDTH * ZBLOCKHEIGHT, file);
-	fwrite( postrec, sizeof(float), POSTHEADSIZE, file); 
-}
-
-void WriteData (float *inz, FILE *outfile, int nx, int ny, float *prez, float *postz, float nodata)
-{
-	float outz[ZBLOCKWIDTH][ZBLOCKHEIGHT];
-	int rowstart, rowend, colstart, colend, datablockcol, datablockrow;
-	int i, j, ij, row, col, nlat;
-	void WriteRecord (FILE *file, float *rec, float *prerec, float *postrec);
-
-	nlat = (int)((prez[1] - prez[0]) / (ZBLOCKHEIGHT * prez[4]) + 1.001);
-	datablockcol = datablockrow = 0;
-	do 
-	{
-		rowstart = datablockrow * ZBLOCKHEIGHT;
-		rowend = MIN(rowstart + ZBLOCKHEIGHT, ny);
-		for (i = 0, row = rowstart; row < rowend; i++, row++) 
-		{
-			colstart = datablockcol * ZBLOCKWIDTH;
-			colend = MIN(colstart + ZBLOCKWIDTH, nx);
-			for (j = 0, col = colstart; col < colend; j++, col++)
-			{
-				ij = (ny - 1 - row) * nx + col;
-				outz[j][i] = (isnan((double)inz[ij])) ? nodata : inz[ij];
-			}
-		} 
-
-		WriteRecord (outfile, (float*)outz, prez, postz);
-
-		if (++datablockrow >= nlat)
-		{
-			datablockrow = 0;
-			datablockcol++;
-		}
-	} while ( rowend != ny || colend != nx );
+	fwrite ((void *)prerec, sizeof(float), PREHEADSIZE, file);
+	fwrite ((void *)rec, sizeof(float), ZBLOCKWIDTH * ZBLOCKHEIGHT, file);
+	fwrite( (void *)postrec, sizeof(float), POSTHEADSIZE, file); 
 }
