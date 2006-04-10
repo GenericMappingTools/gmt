@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.6 2006-04-10 04:43:31 pwessel Exp $
+ *    $Id: gmtdigitize.c,v 1.7 2006-04-10 05:47:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -106,7 +106,7 @@ int main (int argc, char **argv)
 				case 'f':
 				case ':':
 				case '\0':
-					error += GMT_get_common_args (argv[i], &west, &east, &south, &north);
+					error += GMT_parse_common_options (argv[i], &west, &east, &south, &north);
 					break;
 				
 				/* Supplemental parameters */

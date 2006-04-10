@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.4 2006-04-04 07:51:31 pwessel Exp $
+ *	$Id: psbasemap_func.c,v 1.5 2006-04-10 05:47:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -156,7 +156,7 @@ int psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL *CTRL, struc
 			case 'y':
 			case 'c':
 			case '\0':
-				n_errors += GMT_get_common_args (opt->arg, &CTRL->w, &CTRL->e, &CTRL->s, &CTRL->n);
+				n_errors += GMT_parse_common_options (opt->arg, &CTRL->w, &CTRL->e, &CTRL->s, &CTRL->n);
 				break;
 
 			case '-':	/* --PARAMETER[=VALUE] */
