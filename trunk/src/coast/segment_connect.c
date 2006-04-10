@@ -1,5 +1,5 @@
 /*
- *	$Id: segment_connect.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: segment_connect.c,v 1.3 2006-04-10 04:53:48 pwessel Exp $
  */
 /* segment_connect clean_segment_file.b tmp_poly_segment_file.b closed_poly.b
  *
@@ -34,7 +34,7 @@ struct LINK {
 
 double M_PR_DEG;
 int i_great_circle_dist(struct LONGPAIR A, struct LONGPAIR B );
-void gwrite (p, n);
+void gwrite (struct LONGPAIR p[], int n);
 
 int main (int argc, char **argv)
 {
@@ -305,9 +305,7 @@ int i_great_circle_dist(struct LONGPAIR A, struct LONGPAIR B )
 	return( (int)(c * R2D * M_PR_DEG));
 }
 
-void gwrite (p, n)
-struct LONGPAIR p[];
-int n; {
+void gwrite (struct LONGPAIR p[], int n) {
 	int i;
 	for (i = 0; i < n; i++) printf ("%g\t%g\n", 1.0e-6*p[i].x, 1.0e-6*p[i].y);
 }

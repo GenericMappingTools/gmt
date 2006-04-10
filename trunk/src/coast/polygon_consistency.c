@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.6 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_consistency.c,v 1.7 2006-04-10 04:53:48 pwessel Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -10,7 +10,7 @@
 
 double lon[N_LONGEST], lat[N_LONGEST];
 
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	FILE	*fp;
 	int	i, n_id, nd, this_n, nx, n_x_problems, n_c_problems, n_r_problems, n_d_problems, ix0, iy0;

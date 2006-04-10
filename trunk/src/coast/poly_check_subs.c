@@ -1,5 +1,5 @@
 /*
- *	$Id: poly_check_subs.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: poly_check_subs.c,v 1.3 2006-04-10 04:53:48 pwessel Exp $
  */
 /* poly_check_subs.c
  * Subroutines for testing polygon quality.
@@ -91,7 +91,7 @@ int poly_problems (struct PAIR p[], int *n)
 
 	duplicate = 0;
 
-	qsort((char *)p, *n-1, sizeof(struct PAIR), P_compare_xy);
+	qsort((void *)p, *n-1, sizeof(struct PAIR), P_compare_xy);
 	i = 0;
 	while (i < *n-1) {
 		j = i + 1;
@@ -104,7 +104,7 @@ int poly_problems (struct PAIR p[], int *n)
 		}
 		i = j;
 	}
-	qsort((char *)p, *n, sizeof(struct PAIR), P_compare_absk);
+	qsort((void *)p, *n, sizeof(struct PAIR), P_compare_absk);
 
 	if (duplicate)
 		return(-1);
@@ -145,7 +145,8 @@ int P_remove_spikes (struct PAIR p[], int *n)
 		it returns 0.  */
 
 	int	i, j, spike;
-
+	int	P_compare_k (struct PAIR *p1, struct PAIR *p2);
+	
 	for (j = 0; j < *n; j++) p[j].k = j + 1;
 
 	spike = P_look_for_spikes (p, *n);
@@ -153,7 +154,7 @@ int P_remove_spikes (struct PAIR p[], int *n)
 	if (spike) {
 		if (p[0].k < 0) p[*n-1].k = -*n;
 		/* Shuffle the negative k points down line, and move the data back  */
-		qsort((char *)p, *n-1, sizeof(struct PAIR), P_compare_k);
+		qsort((void *)p, *n-1, sizeof(struct PAIR), P_compare_k);
 		i = 0;
 		while (i < *n-1 && p[i].k < 0) i++;
 		if (i == *n-1) {

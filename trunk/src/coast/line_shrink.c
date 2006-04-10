@@ -1,5 +1,5 @@
 /*
- *	$Id: line_shrink.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: line_shrink.c,v 1.3 2006-04-10 04:53:48 pwessel Exp $
  */
 /* 
  * line_shrink applies the Douglas-Peucker algorithm to simplify a line
@@ -9,9 +9,7 @@
 #include "wvs.h"
 #define N 100000
 
-main (argc, argv)
-int	argc;
-char **argv;
+int main (int argc, char **argv)
 {
 	FILE	*fp_in, *fp_out;
 	int	n_id, n_out, n, k, verbose = FALSE, *x, *y, *index;

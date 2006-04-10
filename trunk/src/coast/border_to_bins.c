@@ -1,5 +1,5 @@
 /*
- *	$Id: border_to_bins.c,v 1.6 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: border_to_bins.c,v 1.7 2006-04-10 04:53:48 pwessel Exp $
  */
 /* border_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -52,7 +52,7 @@ struct GMT3_BIN_HEADER {
 
 int *ix, *iy;
 int *xx, *yy;
-int die (id);
+int die (int id);
 
 int main (int argc, char **argv) {
 	BOOLEAN first, crossed_x, crossed_y;
@@ -533,8 +533,8 @@ int main (int argc, char **argv) {
 	exit (0);
 }
 
-int die (id)
-int id; {
+int die (int id)
+{
 	fprintf(stderr,"IDIOT.  SNAFU IN SHORT INTEGER MATH. id = %d\n", id);
 	exit (-1);
 }
