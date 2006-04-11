@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.72 2006-03-14 03:12:53 pwessel Exp $
+ *	$Id: mgd77.h,v 1.73 2006-04-11 04:21:27 pwessel Exp $
  * 
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -31,7 +31,7 @@
 #endif
 
 #define MGD77_VERSION		"1.3"		/* Current version of MGD77 supplement */
-#define MGD77_CDF_VERSION	"2006.01.15"	/* Current version of MGD77+ files created */
+#define MGD77_CDF_VERSION	"2006.04.15"	/* Current version of MGD77+ files created */
 #define MGD77_RECORD_LENGTH	120		/* Length of MGD77 ASCII data records */
 #define MGD77_HEADER_LENGTH	80		/* Length of MGD77 ASCII header records */
 #define MGD77_N_HEADER_RECORDS	24		/* Number of MGD77 header records */
