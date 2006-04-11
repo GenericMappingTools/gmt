@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.2 2006-04-10 01:50:29 pwessel Exp $
+/*      $Id: gmt_agc_io.c,v 1.3 2006-04-11 01:36:51 remko Exp $
  *
  * Based on original code from Robert Helie.  That code was hard-wired
  * in two applications (gmt2agcgrd.c and agc2gmtgrd.c) based on GMT 3.4.
@@ -234,7 +234,7 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	float outz[ZBLOCKWIDTH][ZBLOCKHEIGHT];
-	int rowstart, rowend, colstart, colend, datablockcol, datablockrow;
+	int rowstart, rowend, colstart, colend = 0, datablockcol, datablockrow;
 	int j_gmt, row, col;
 	float prez[PREHEADSIZE], postz[POSTHEADSIZE];
 	void WriteRecord (FILE *file, float *rec, float *prerec, float *postrec);
