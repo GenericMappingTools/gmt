@@ -1,6 +1,11 @@
-	$Id: README.imgsrc,v 1.4 2005-12-21 05:48:25 pwessel Exp $
+	$Id: README.imgsrc,v 1.5 2006-04-11 22:33:41 pwessel Exp $
 
 Maintained by: W H F Smith
+
+==> CHANGES IN GMT 4.1.2 <==
+
+Replaced -x -y options with -W and -D options to avoid conflict with GMT
+initializations.  -D with no arguments is shorthand for -D-80.738/+80.738.
 
 ==> CHANGES IN GMT 3.4 <==
 

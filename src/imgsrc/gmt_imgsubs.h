@@ -1,4 +1,4 @@
-/* $Id: gmt_imgsubs.h,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+/* $Id: gmt_imgsubs.h,v 1.2 2006-04-11 22:33:41 pwessel Exp $
  *
  * gmt_imgsubs.h -- header file supporting the GMT supplement imgsrc,
  * handling coordinate conversions for the "img" files created by
@@ -27,9 +27,12 @@
 	are for the 2-minute files currently in use (world_grav 7.2
 	and topo_polish 6.2).  */
 
-#define GMT_IMG_MAXLON 360.0
-#define GMT_IMG_MINLAT -72.0059773539
-#define GMT_IMG_MAXLAT 72.0059773539
+#define GMT_IMG_MAXLON		360.0
+#define GMT_IMG_MINLAT		-72.0059773539
+#define GMT_IMG_MAXLAT		+72.0059773539
+#define GMT_IMG_MINLAT_80	-80.738
+#define GMT_IMG_MAXLAT_80	+80.738
+
 #define GMT_IMG_MPIXEL 2.0
 
 /* The following structure contains info corresponding to 
