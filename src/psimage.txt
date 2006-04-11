@@ -5,7 +5,7 @@ psimage \- To plot images (EPS files or Sun rasterfiles) on maps
 .SH SYNOPSIS
 \fBpsimage\fP \fIimagefile\fP [ OPT(W)[\fB-\fP]\fIxlength\fP[/\fIylength\fP] | OPT(E)\fIdpi\fP ] [ OPT(C)\fIxpos\fP/\fIypos\fP[/\fIjustify\fP] ] 
 [ OPT(F)\fIpen\fP ] [ OPT(G)[\fBf\fP|\fBb\fP]\fIcolor\fP ] [ OPT(I) ] [ GMT_K_OPT ] [ OPT(M) ] 
-[ OPT(N)\fInxrep\fP/\fInyrep\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ GMT_U_OPT ] 
+[ OPT(N)\fInxrep\fP[/\fInyrep\fP] ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ GMT_U_OPT ] 
 [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ]
 .SH DESCRIPTION
 \fBpsimage\fP reads an Encapsulated \fIPostScript\fP\fR file or
