@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: img2grd,v 1.4 2005-10-17 08:19:10 pwessel Exp $
+#	$Id: img2grd,v 1.5 2006-04-11 22:33:41 pwessel Exp $
 #
 #      Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
 #      See COPYING file for copying and redistribution conditions.
@@ -30,7 +30,7 @@
 
 if [ $# = 0 ] ; then	# No arguments, give full usage message
 	echo 'usage: img2grd <world_image_filename> -R<w>/<e>/<s>/<n> -G<grdfile> -T<type>' 1>&2
-        echo '	[-E] [-L] [-M] [-N<navg>] [-S<scale>] [-V] [-m<minutes>] [-x<maxlon>] [-y<minlat>/<maxlat>]' 1>&2
+        echo '	[-D[<minlat>/<maxlat>]] [-E] [-L] [-M] [-N<navg>] [-S<scale>] [-V] [-m<minutes>] [-W<maxlon>]' 1>&2
 	img2mercgrd 2>&1 | sed -n -e '/REQUIRED/,$p' > $$	# Get the bulk of the usage message
 	cat $$ 1>&2
 	echo "	-E Resample to the specified -R [Ignored if -M is given]"  1>&2
@@ -43,7 +43,7 @@ fi
 
 if [ $# = 1 ] && [ $1 = '-' ] ; then	# Quick synopsis check
 	echo 'usage: img2grd <world_image_filename> -R<w>/<e>/<s>/<n> -G<grdfile> -T<type>' 1>&2
-        echo '	[-E] [-L] [-M] [-N<navg>] [-S<scale>] [-V] [-m<minutes>] [-x<maxlon>] [-y<minlat>/<maxlat>]' 1>&2
+        echo ' [-D[<minlat>/<maxlat>]] [-E] [-L] [-M] [-N<navg>] [-S<scale>] [-V] [-m<minutes>] [-W<maxlon>]' 1>&2
 	exit 1
 fi
 
@@ -97,9 +97,9 @@ while [ ! x"$1" = x ]; do
 			shift;;
 		-m*)	m=$1;		# The minutes argument
 			shift;;
-		-x*)	x=$1;		# The maxlon argument
+		-W*)	x=$1;		# The maxlon argument
 			shift;;
-		-y*)	y=$1;		# The minlat argument
+		-D*)	y=$1;		# The minlat argument
 			shift;;
 		-*)	echo "$0: Unrecognized option $1" 1>&2;	# Bad option argument
 			exit 1;;
