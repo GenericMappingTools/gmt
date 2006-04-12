@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.66 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.67 2006-04-12 01:36:57 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -60,6 +60,7 @@ int GMT_grdformats[GMT_N_GRD_FORMATS][2] = {
 };
 
 void GMT_grd_do_scaling (float *grid, int nm, double scale, double offset);
+void GMT_grd_set_units (struct GRD_HEADER *header);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
 
@@ -107,6 +108,7 @@ int GMT_write_grd_info (char *file, struct GRD_HEADER *header)
 	}
 	header->z_min = (header->z_min - header->z_add_offset) / header->z_scale_factor;
 	header->z_max = (header->z_max - header->z_add_offset) / header->z_scale_factor;
+	GMT_grd_set_units (header);
 	status = (*GMT_io_writeinfo[header->type]) (header);
 	return (status);
 }
@@ -166,6 +168,7 @@ int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w,
 		header->z_scale_factor = 1.0;
 		fprintf (stderr, "GMT Warning: scale_factor should not be 0. Reset to 1.\n");
 	}
+	GMT_grd_set_units (header);
 	GMT_grd_do_scaling (grid, (header->nx * header->ny), 1.0/header->z_scale_factor, -header->z_add_offset/header->z_scale_factor);
 	status = (*GMT_io_writegrd[header->type]) (header, grid, w, e, s, n, pad, complex);
 	return (status);
@@ -859,6 +862,56 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 		return (1);
 	}
 	return (0);
+}
+
+void GMT_grd_set_units (struct GRD_HEADER *header)
+{	
+	/* Set unit strings for x, y and z based on output types for columns 0, 1, and 2 */
+	int i;
+	long l;
+	char *string[3], unit[GRD_UNIT_LEN], epoch[GRD_UNIT_LEN];
+
+	/* Copy pointers to unit strings */
+	string[0] = header->x_units;
+	string[1] = header->y_units;
+	string[2] = header->z_units;
+
+	/* Set unit strings one by one */
+	for (i = 0; i < 3; i++) {
+		switch (GMT_io.out_col_type[i]) {
+		case GMT_IS_LON:
+			strcpy (string[i], "Longitude [degrees_east]"); break;
+		case GMT_IS_LAT:
+			strcpy (string[i], "Latitude [degrees_north]"); break;
+		case GMT_IS_RELTIME:
+		case GMT_IS_RATIME:
+		case GMT_IS_ABSTIME:
+			/* Determine time unit */
+			switch (GMT_time_system[gmtdefs.time_system].unit) {
+			case 'y':
+				strcpy (unit, "years"); break;
+			case 'o':
+				strcpy (unit, "months"); break;
+			case 'd':
+				strcpy (unit, "days"); break;
+			case 'h':
+				strcpy (unit, "hours"); break;
+			case 'm':
+				strcpy (unit, "minutes"); break;
+			default:
+				strcpy (unit, "seconds"); break;
+			}
+			/* Remove 'T' from epoch string */
+			strcpy (epoch, GMT_time_system[gmtdefs.time_system].epoch);
+			if ((l = (long)strchr (epoch, 'T'))) {
+				l -= (long)epoch;
+				epoch[l] = ' ';
+				if (!epoch[l+1]) epoch[l] = '\0';
+			}
+			sprintf (string[i], "Time [%s since %s]", unit, epoch);
+			break;
+		}
+	}
 }
 
 #define GMT_IMG_MINLON		0.0
