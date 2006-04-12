@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.46 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.47 2006-04-12 13:11:26 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -938,8 +938,11 @@ void GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct
 	struct GMT_gcal calendar;
 	int i_sec, m_sec, ap, ival[3];
 	char text[GMT_CALSTRING_LENGTH];
+	GMT_dtime step;
 
-	GMT_gcal_from_dt (dt, &calendar);			/* Convert dt to a complete calendar structure */
+	step = 0.5 / C->f_sec_to_int / GMT_time_system[gmtdefs.time_system].scale;	/* Precision desired in time units */
+
+	GMT_gcal_from_dt (dt + step, &calendar);			/* Convert dt to a complete calendar structure */
 	
 	if (date) {	/* Not NULL, want to format this string */
 		/* Now undo Y2K fix to make a 2-digit year here if necessary */
@@ -979,14 +982,8 @@ void GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct
 	if (!clock) return;	/* Do not want a formatted clock string - return here */
 	
 	memset ((void *)clock, 0, GMT_CALSTRING_LENGTH);			/* To set all to zero */
-	if (C->n_sec_decimals) {						/* Must get sec and fractional seconds scaled up */
-		i_sec = (int) floor (calendar.sec);
-		m_sec = irint (C->f_sec_to_int * (calendar.sec - i_sec));
-	}
-	else {
-		i_sec = irint (calendar.sec);
-		m_sec = 0;
-	}
+	i_sec = (int) floor (calendar.sec);
+	m_sec = (int) floor (C->f_sec_to_int * (calendar.sec - i_sec));
 	
 	if (C->twelve_hr_clock) {		/* Must deal with am/pm formatting */
 		if (calendar.hour < 12)
