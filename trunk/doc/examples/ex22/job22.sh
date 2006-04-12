@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	GMT Example 22  $Id: job22.sh,v 1.6 2004-09-29 05:29:16 pwessel Exp $
+#	GMT Example 22  $Id: job22.sh,v 1.7 2006-04-12 07:51:23 pwessel Exp $
 #
 # Purpose:	Automatic map of last 7 days of world-wide seismicity
 # GMT progs:	gmtset, pscoast, psxy, pslegend
@@ -43,7 +43,6 @@ EOF
 pscoast -Rg -JK180/9i -B45g30:."World-wide earthquake activity": -Gbrown -Slightblue \
   -Dc -A1000 -K -U/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > example_22.ps
 awk -F, '{ print $4, $3, $6, $5*0.02}' neic_quakes.d | psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -H >> example_22.ps
-
 # Create legend input file for NEIS quake plot
 
 cat << EOF > neis.legend
