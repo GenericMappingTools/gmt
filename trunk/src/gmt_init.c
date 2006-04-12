@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.229 2006-04-10 07:35:09 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.230 2006-04-12 13:55:18 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5364,7 +5364,7 @@ void	GMT_init_time_system_structure () {
 			precise time.  To do this right would
 			take an entirely different scheme, not
 			a simple unit conversion. */
-			GMT_time_system[gmtdefs.time_system].scale = (365.2425 * 86400);
+			GMT_time_system[gmtdefs.time_system].scale = GMT_YR2SEC_F;
 			break;
 		case 'o':
 			/* This is also a kludge:  we assume all months
@@ -5373,16 +5373,16 @@ void	GMT_init_time_system_structure () {
 			precise time.  To do this right would
 			take an entirely different scheme, not
 			a simple unit conversion. */
-			GMT_time_system[gmtdefs.time_system].scale = (365.2425 * 86400 / 12.0);
+			GMT_time_system[gmtdefs.time_system].scale = GMT_MON2SEC_F;
 			break;
 		case 'd':
-			GMT_time_system[gmtdefs.time_system].scale = 86400.0;
+			GMT_time_system[gmtdefs.time_system].scale = GMT_DAY2SEC_F;
 			break;
 		case 'h':
-			GMT_time_system[gmtdefs.time_system].scale = 3600.0;
+			GMT_time_system[gmtdefs.time_system].scale = GMT_HR2SEC_F;
 			break;
 		case 'm':
-			GMT_time_system[gmtdefs.time_system].scale = 60.0;
+			GMT_time_system[gmtdefs.time_system].scale = GMT_MIN2SEC_F;
 			break;
 		case 's':
 			GMT_time_system[gmtdefs.time_system].scale = 1.0;
