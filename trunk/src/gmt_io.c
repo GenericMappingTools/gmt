@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.112 2006-04-10 05:47:29 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.113 2006-04-12 13:09:59 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -696,28 +696,28 @@ BOOLEAN GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m
 	double sec, fsec, min, fmin, step;
 
 	minus = (val < 0.0);
-	step = (fact == 0.0) ? GMT_CONV_LIMIT : 0.5 / fact;  		/* Precision desired in seconds (or minutes); else just deal with roundoff */
+	step = (fact == 0.0) ? GMT_CONV_LIMIT : 0.5 / fact;  	/* Precision desired in seconds (or minutes); else just deal with roundoff */
 
 	if (seconds) {		/* Want dd:mm:ss[.xxx] format */
-		sec = GMT_DEG2SEC_F * fabs (val);		/* Convert to seconds */
-		isec = (int)floor (sec + step);			/* Integer seconds */
+		sec = GMT_DEG2SEC_F * fabs (val) + step;	/* Convert to seconds */
+		isec = (int)floor (sec);			/* Integer seconds */
 		fsec = sec - (double)isec;  			/* Leftover fractional second */
 		*d = isec / GMT_DEG2SEC_I;			/* Integer degrees */
 		isec -= ((*d) * GMT_DEG2SEC_I);			/* Left-over seconds in the last degree */
 		*m = isec / GMT_MIN2SEC_I;			/* Integer minutes */
 		isec -= ((*m) * GMT_MIN2SEC_I);			/* Leftover seconds in the last minute */
 		*s = isec;					/* Integer seconds */
-		*ix = irint (fsec * fact);			/* fractional seconds scaled to integer */
+		*ix = (int)floor (fsec * fact);			/* Fractional seconds scaled to integer */
 	}
 	else {		/* Want dd:mm[.xx] format */
-		min = GMT_DEG2MIN_F * fabs (val);		/* Convert to minutes */
-		imin = (int)floor (min + step);			/* Integer minutes */
+		min = GMT_DEG2MIN_F * fabs (val) + step;	/* Convert to minutes */
+		imin = (int)floor (min);			/* Integer minutes */
 		fmin = min - (double)imin;  			/* Leftover fractional minute */
 		*d = imin / GMT_DEG2MIN_I;			/* Integer degrees */
 		imin -= ((*d) * GMT_DEG2MIN_I);			/* Left-over seconds in the last degree */
 		*m = imin;					/* Integer minutes */
 		*s = 0;						/* No seconds */
-		*ix = irint (fmin * fact);			/* Fractional minutes scaled to integer */
+		*ix = (int)floor (fmin * fact);			/* Fractional minutes scaled to integer */
 	}
 	if (minus) {	/* OK, change sign, but watch for *d = 0 */
 		if (*d)	/* Non-zero degree term is easy */
