@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.67 2006-04-12 01:36:57 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.68 2006-04-12 21:24:15 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -49,6 +49,7 @@
 #include "gmt.h"
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <strings.h>
 #if defined(WIN32) || defined(__EMX__)  /* Some definitions and includes are different under Windows or OS/2 */
 #define STAT _stat
 #else                                   /* Here for Unix, Linux, Cygwin, Interix, etc */
@@ -60,6 +61,7 @@ int GMT_grdformats[GMT_N_GRD_FORMATS][2] = {
 };
 
 void GMT_grd_do_scaling (float *grid, int nm, double scale, double offset);
+void GMT_grd_get_units (struct GRD_HEADER *header);
 void GMT_grd_set_units (struct GRD_HEADER *header);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
@@ -80,6 +82,7 @@ int GMT_read_grd_info (char *file, struct GRD_HEADER *header)
 	scale = header->z_scale_factor, offset = header->z_add_offset, nan_value = header->nan_value;
 
 	status = (*GMT_io_readinfo[header->type]) (header);
+	GMT_grd_get_units (header);
 	if (!GMT_is_dnan(scale)) header->z_scale_factor = scale, header->z_add_offset = offset;
 	if (!GMT_is_dnan(nan_value)) header->nan_value = nan_value;
 	if (header->z_scale_factor == 0.0) fprintf (stderr, "GMT Warning: scale_factor should not be 0.\n");
@@ -866,10 +869,11 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 
 void GMT_grd_set_units (struct GRD_HEADER *header)
 {	
-	/* Set unit strings for x, y and z based on output types for columns 0, 1, and 2 */
+	/* Set unit strings for grid coordinates x, y and z based on
+	   output data types for columns 0, 1, and 2.
+	*/
 	int i;
-	long l;
-	char *string[3], unit[GRD_UNIT_LEN], epoch[GRD_UNIT_LEN];
+	char *string[3], unit[GRD_UNIT_LEN], date[GMT_CALSTRING_LENGTH], clock[GMT_CALSTRING_LENGTH];
 
 	/* Copy pointers to unit strings */
 	string[0] = header->x_units;
@@ -883,9 +887,9 @@ void GMT_grd_set_units (struct GRD_HEADER *header)
 			strcpy (string[i], "Longitude [degrees_east]"); break;
 		case GMT_IS_LAT:
 			strcpy (string[i], "Latitude [degrees_north]"); break;
+		case GMT_IS_ABSTIME:
 		case GMT_IS_RELTIME:
 		case GMT_IS_RATIME:
-		case GMT_IS_ABSTIME:
 			/* Determine time unit */
 			switch (GMT_time_system[gmtdefs.time_system].unit) {
 			case 'y':
@@ -901,15 +905,87 @@ void GMT_grd_set_units (struct GRD_HEADER *header)
 			default:
 				strcpy (unit, "seconds"); break;
 			}
-			/* Remove 'T' from epoch string */
-			strcpy (epoch, GMT_time_system[gmtdefs.time_system].epoch);
-			if ((l = (long)strchr (epoch, 'T'))) {
-				l -= (long)epoch;
-				epoch[l] = ' ';
-				if (!epoch[l+1]) epoch[l] = '\0';
-			}
-			sprintf (string[i], "Time [%s since %s]", unit, epoch);
+			GMT_format_calendar (date, clock, &GMT_io.date_output, &GMT_io.clock_output, FALSE, 1, 0.0);
+			sprintf (string[i], "Time [%s since %s %s]", unit, date, clock);
+			/* Warning for non-double grids */
+			if (i == 2 && GMT_grdformats[header->type][1] != 'd') fprintf (stderr, "%s: Warning: Use double precision output grid to avoid loss of significance of time coordinate.\n", GMT_program);
 			break;
+		}
+	}
+}
+
+void GMT_grd_get_units (struct GRD_HEADER *header)
+{	
+	/* Set input data types for columns 0, 1 and 2 based on unit strings for
+	   grid coordinates x, y and z.
+	   When "Time": transform the data scale and offset to match the current time system.
+	*/
+	int i;
+	char *string[3], cal[GRD_UNIT_LEN], *l;
+	double scale, offset;
+
+	/* Copy pointers to unit strings */
+	string[0] = header->x_units;
+	string[1] = header->y_units;
+	string[2] = header->z_units;
+
+	/* Parse the unit strings one by one */
+	for (i = 0; i < 3; i++) {
+		/* Skip parsing when input data type is already set */
+		if (GMT_io.in_col_type[i] & GMT_IS_GEO || GMT_io.in_col_type[i] & GMT_IS_RATIME) continue;
+
+		if (!strncasecmp (string[i], "lon", 3))
+			/* Input data type is longitude */
+			GMT_io.in_col_type[i] = GMT_IS_LON;
+
+		else if (!strncasecmp (string[i], "lat", 3))
+			/* Input data type is latitude */
+			GMT_io.in_col_type[i] = GMT_IS_LAT;
+
+		else if (!strncasecmp (string[i], "time", 4)) {
+			/* Input data type is time */
+			GMT_io.in_col_type[i] = GMT_IS_RELTIME;
+			/* Determine relative time units */
+			if (strstr (string[i], "years"))
+				scale = GMT_YR2SEC_F / GMT_time_system[gmtdefs.time_system].scale;
+			else if (strstr (string[i], "months"))
+				scale = GMT_MON2SEC_F / GMT_time_system[gmtdefs.time_system].scale;
+			else if (strstr (string[i], "days"))
+				scale = GMT_DAY2SEC_F / GMT_time_system[gmtdefs.time_system].scale;
+			else if (strstr (string[i], "hours"))
+				scale = GMT_HR2SEC_F / GMT_time_system[gmtdefs.time_system].scale;
+			else if (strstr (string[i], "minutes"))
+				scale = GMT_MIN2SEC_F / GMT_time_system[gmtdefs.time_system].scale;
+			else if (strstr (string[i], "seconds"))
+				scale = 1.0 / GMT_time_system[gmtdefs.time_system].scale;
+			else
+				fprintf (stderr, "%s: Warning: Time unit in grid not recognised; assumed %c.\n", GMT_program, GMT_time_system[gmtdefs.time_system].unit);
+				scale = 1.0;
+			/* Determine relative time epoch */
+			offset = 0.0;
+			if ((l = strstr (string[i], "since"))) {
+				l += 6;
+				strcpy (cal, l);
+				if ((l = strchr (cal, ' '))) *l = 'T';
+				if (GMT_scanf (cal, GMT_IS_ABSTIME, &offset) == GMT_IS_NAN) fprintf (stderr, "%s: Warning: Epoch in grid not recognised; assumed %s.\n", GMT_program, GMT_time_system[gmtdefs.time_system].epoch);
+			}
+			else
+				fprintf (stderr, "%s: Warning: No epoch for time in grid specified; assumed %s.\n", GMT_program, GMT_time_system[gmtdefs.time_system].epoch);
+			/* Scale data scale and extremes based on scale and offset */
+			if (i == 0) {
+				header->x_min = header->x_min * scale + offset;
+				header->x_max = header->x_max * scale + offset;
+				header->x_inc *= scale;
+			}
+			else if (i == 1) {
+				header->y_min = header->y_min * scale + offset;
+				header->y_max = header->y_max * scale + offset;
+				header->y_inc *= scale;
+			}
+			else {
+				header->z_add_offset = header->z_add_offset * scale + offset;
+				header->z_scale_factor *= scale;
+			}
 		}
 	}
 }
