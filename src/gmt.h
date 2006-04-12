@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.129 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: gmt.h,v 1.130 2006-04-12 13:55:18 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -153,6 +153,9 @@
 #define GMT_HR2MIN_F	60.0
 #define GMT_HR2MIN_I	60
 #define GMT_MIN2HR	(1.0 / GMT_HR2MIN_F)
+
+#define GMT_YR2SEC_F	(365.2425 * 86400.0)
+#define GMT_MON2SEC_F	(365.2425 * 86400.0 / 12.0)
 
 #define GMT_DEC_SIZE	0.54	/* Size of a decimal number compared to point size */
 #define GMT_PER_SIZE	0.30	/* Size of a decimal point compared to point size */
