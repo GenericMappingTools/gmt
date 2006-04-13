@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.7 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: gmt_support.h,v 1.8 2006-04-13 06:20:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -21,7 +21,7 @@
 
 EXTERN_MSC BOOLEAN GMT_polygon_is_open (double x[], double y[], int n);
 EXTERN_MSC double GMT_cartesian_dist (double x0, double y0, double x1, double y1);
-EXTERN_MSC double GMT_dist_to_point (double lon, double lat, double *xp, double *yp, int np, int *id);
+EXTERN_MSC double GMT_dist_to_point (double lon, double lat, struct GMT_TABLE *T, int *id);
 EXTERN_MSC double GMT_flatearth_dist_km (double x0, double y0, double x1, double y1);
 EXTERN_MSC double GMT_flatearth_dist_meter (double x0, double y0, double x1, double y1);
 EXTERN_MSC double GMT_get_annot_offset (BOOLEAN *flip, int level);
@@ -57,8 +57,8 @@ EXTERN_MSC int GMT_log_array (double min, double max, double delta, double **arr
 EXTERN_MSC int GMT_minmaxinc_verify (double min, double max, double inc, double slop);
 EXTERN_MSC int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_TABLE *T, BOOLEAN return_mindist, double *dist_min, double *x_near, double *y_near);
 EXTERN_MSC int GMT_near_a_line_spherical (double lon, double lat, struct GMT_TABLE *T, BOOLEAN return_mindist, double *dist_min, double *x_near, double *y_near);
-EXTERN_MSC int GMT_near_a_point (double x, double y, double *xp, double *yp, double *dp, int np);
-EXTERN_MSC int GMT_near_a_point_cart (double x, double y, double *xp, double *yp, double *dp, int np);
+EXTERN_MSC int GMT_near_a_point (double x, double y, struct GMT_TABLE *T, double dist);
+EXTERN_MSC int GMT_near_a_point_cart (double x, double y, struct GMT_TABLE *T, double dist);
 EXTERN_MSC int GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path);
 EXTERN_MSC int GMT_set_cpt_path (char *cpt_file, char *table);
 EXTERN_MSC int GMT_strtok (const char *string, const char *sep, int *start, char *token);

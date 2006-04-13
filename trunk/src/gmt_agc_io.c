@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.3 2006-04-11 01:36:51 remko Exp $
+/*      $Id: gmt_agc_io.c,v 1.4 2006-04-13 06:20:34 pwessel Exp $
  *
  * Based on original code from Robert Helie.  That code was hard-wired
  * in two applications (gmt2agcgrd.c and agc2gmtgrd.c) based on GMT 3.4.
@@ -58,8 +58,8 @@ int GMT_agc_read_grd_info (struct GRD_HEADER *header)
 	header->x_max = recdata[3];
 	header->y_inc = recdata[4];
 	header->x_inc = recdata[5];
-	header->nx = irint ((header->x_max - header->x_min) / header->x_inc) + 1;
-	header->ny = irint ((header->y_max - header->y_min) / header->y_inc) + 1;
+	header->nx = GMT_get_n (header->x_min, header->x_max, header->x_inc, header->node_offset);
+	header->ny = GMT_get_n (header->y_min, header->y_max, header->y_inc, header->node_offset);
 	header->y_order = irint (ceil ((header->y_max - header->y_min) / (ZBLOCKHEIGHT * header->y_inc)));
 	header->z_scale_factor = 1.0;
 	header->z_add_offset = 0.0;

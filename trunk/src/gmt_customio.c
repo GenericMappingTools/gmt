@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.47 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.48 2006-04-13 06:20:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1380,14 +1380,15 @@ int GMT_srf_read_grd_info (struct GRD_HEADER *header)
 
 	if (fp != GMT_stdin) GMT_fclose (fp);
 
+	header->node_offset = 0;	/* Grid node registration */
 	if (header->type == 6) {
 		strcpy (header->title, "Grid originally in Surfer 6 format");
 		header->nx = (int)h6.nx;	header->ny = (int)h6.ny;
 		header->x_min = h6.x_min;	header->x_max = h6.x_max;
 		header->y_min = h6.y_min;	header->y_max = h6.y_max;
 		header->z_min = h6.z_min;	header->z_max = h6.z_max;
-		header->x_inc = (h6.x_max - h6.x_min) / (h6.nx - 1);
-		header->y_inc = (h6.y_max - h6.y_min) / (h6.ny - 1);
+		header->x_inc = GMT_get_inc (h6.x_min, h6.x_max, h6.nx, header->node_offset);
+		header->y_inc = GMT_get_inc (h6.y_min, h6.y_max, h6.ny, header->node_offset);
 	}
 	else {			/* Format 7 */
 		strcpy (header->title, "Grid originally in Surfer 7 format");
@@ -1398,7 +1399,6 @@ int GMT_srf_read_grd_info (struct GRD_HEADER *header)
 		header->z_min = h7.z_min;	header->z_max = h7.z_max;
 		header->x_inc = h7.x_inc;	header->y_inc = h7.y_inc;
 	}
-	header->node_offset = 0;	/* Grid node registration */
 	header->z_scale_factor = 1;	header->z_add_offset = 0;
 
 	return (FALSE);

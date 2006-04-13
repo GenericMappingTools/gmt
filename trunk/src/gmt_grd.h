@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.24 2006-02-18 02:51:06 pwessel Exp $
+ *	$Id: gmt_grd.h,v 1.25 2006-04-13 06:20:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -102,6 +102,11 @@ struct GRD_HEADER {
 #define GMT_y_to_j(y,y0,dy,off,ny) ((ny) - 1 - irint(((((y) - (y0)) / (dy)) - (off))))
 #define GMT_i_to_x(i,x0,x1,dx,off,nx) (((i) == ((nx)-1)) ? (x1) - (off) * (dx) : (x0) + ((i) + (off)) * (dx))
 #define GMT_j_to_y(j,y0,y1,dy,off,ny) (((j) == ((ny)-1)) ? (y0) + (off) * (dy) : (y1) - ((j) + (off)) * (dy))
+
+/* These macros calculate the number of nodes in x or y  or the increment dx, dy*/
+
+#define GMT_get_n(min,max,inc,off) (irint (((max) - (min)) / (inc)) + 1 - (off))
+#define GMT_get_inc(min,max,n,off) (((max) - (min)) / ((n) + (off) - 1))
 
 /* The GMT_y_is_outside macro returns TRUE if y is outside the given domain.
  * For GMT_x_is_outside, see the function in gmt_support.c
