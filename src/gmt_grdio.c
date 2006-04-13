@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.68 2006-04-12 21:24:15 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.69 2006-04-13 06:20:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1089,11 +1089,11 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 	grd->y_max = MIN (project_info.ymax, ceil (grd->y_max / grd->y_inc) * grd->y_inc);
 	/* Allocate grid memory */
 	
-	grd->nx = irint ((grd->x_max - grd->x_min) / grd->x_inc);
-	grd->ny = irint ((grd->y_max - grd->y_min) / grd->y_inc);
+	grd->node_offset = 1;	/* These are always pixel grids */
+	grd->nx = GMT_get_n (grd->x_min, grd->x_max, grd->x_inc, grd->node_offset);
+	grd->ny = GMT_get_n (grd->y_min, grd->y_max, grd->y_inc, grd->node_offset);
 	mx = grd->nx + GMT_pad[0] + GMT_pad[2];	my = grd->ny + GMT_pad[1] + GMT_pad[3];
 	*grid = (float *) GMT_memory (VNULL, (size_t)(mx * my), sizeof (float), GMT_program);
-	grd->node_offset = 1;	/* These are always pixel grids */
 	grd->xy_off = 0.5;
 	
 	n_cols = (min == 1) ? GMT_IMG_NLON_1M : GMT_IMG_NLON_2M;		/* Number of columns (10800 or 21600) */

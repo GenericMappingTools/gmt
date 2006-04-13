@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.120 2006-04-10 07:35:09 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.121 2006-04-13 06:20:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4886,26 +4886,22 @@ int GMT_compact_line (double *x, double *y, int n, BOOLEAN pen_flag, int *pen)
 
 void GMT_grdproject_init (struct GRD_HEADER *head, double x_inc, double y_inc, int nx, int ny, int dpi, int offset)
 {
-	int one;
-
-	one = (offset) ? 0 : 1;
-
 	if (x_inc > 0.0 && y_inc > 0.0) {
-		head->nx = irint ((head->x_max - head->x_min) / x_inc) + one;
-		head->ny = irint ((head->y_max - head->y_min) / y_inc) + one;
-		head->x_inc = (head->x_max - head->x_min) / (head->nx - one);
-		head->y_inc = (head->y_max - head->y_min) / (head->ny - one);
+		head->nx = GMT_get_n (head->x_min, head->x_max, x_inc, offset);
+		head->ny = GMT_get_n (head->y_min, head->y_max, y_inc, offset);
+		head->x_inc = GMT_get_inc (head->x_min, head->x_max, head->nx, offset);
+		head->y_inc = GMT_get_inc (head->y_min, head->y_max, head->ny, offset);
 	}
 	else if (nx > 0 && ny > 0) {
 		head->nx = nx;	head->ny = ny;
-		head->x_inc = (head->x_max - head->x_min) / (head->nx - one);
-		head->y_inc = (head->y_max - head->y_min) / (head->ny - one);
+		head->x_inc = GMT_get_inc (head->x_min, head->x_max, head->nx, offset);
+		head->y_inc = GMT_get_inc (head->y_min, head->y_max, head->ny, offset);
 	}
 	else if (dpi > 0) {
-		head->nx = irint ((head->x_max - head->x_min) * dpi) + one;
-		head->ny = irint ((head->y_max - head->y_min) * dpi) + one;
-		head->x_inc = (head->x_max - head->x_min) / (head->nx - one);
-		head->y_inc = (head->y_max - head->y_min) / (head->ny- one);
+		head->nx = irint ((head->x_max - head->x_min) * dpi) + 1 - offset;
+		head->ny = irint ((head->y_max - head->y_min) * dpi) + 1 - offset;
+		head->x_inc = GMT_get_inc (head->x_min, head->x_max, head->nx, offset);
+		head->y_inc = GMT_get_inc (head->y_min, head->y_max, head->ny, offset);
 	}
 	else {
 		fprintf (stderr, "GMT_grdproject_init: Necessary arguments not set\n");

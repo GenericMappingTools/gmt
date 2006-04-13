@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.44 2006-03-30 18:42:31 remko Exp $
+ *	$Id: gmt_nc.c,v 1.45 2006-04-13 06:20:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -220,7 +220,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 			check_nc_status (nc_get_var1_double (ncid, ids[ndims-1], &item[1], &dummy[1]));
 		}
 		header->x_min = dummy[0], header->x_max = dummy[1];
-		header->x_inc = (header->x_max - header->x_min) / (header->nx + header->node_offset - 1);
+		header->x_inc = GMT_get_inc (header->x_min, header->x_max, header->nx, header->node_offset);
 		if (GMT_is_dnan(header->x_inc)) header->x_inc = 1.0;
 
 		/* Get information about y variable */
@@ -240,7 +240,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		else
 			header->y_order = 1;
 		header->y_min = dummy[(1-header->y_order)/2], header->y_max = dummy[(1+header->y_order)/2];
-		header->y_inc = (header->y_max - header->y_min) / (header->ny + header->node_offset - 1);
+		header->y_inc = GMT_get_inc (header->y_min, header->y_max, header->ny, header->node_offset);
 		if (GMT_is_dnan(header->y_inc)) header->y_inc = 1.0;
 
 		/* Get information about z variable */
