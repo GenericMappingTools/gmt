@@ -3,7 +3,7 @@
 .SH NAME
 grdtrend \- Fit and/or remove a polynomial trend in a grd file
 .SH SYNOPSIS
-\fBgrdtrend\fP \fIgrdfile\fP OPT(N)[\fBr\fP]\fIn_model\fP 
+\fBgrdtrend\fP \fIgrdfile\fP OPT(N)\fIn_model\fP[\fBr\fP] 
 [ OPT(D)\fIdiff.grd\fP ] [ OPT(T)\fItrend.grd\fP ] [ GMT_V_OPT ] 
 [ OPT(W)\fIweight.grd\fP ]
 .SH DESCRIPTION
@@ -30,7 +30,7 @@ No space between the option flag and the associated arguments.
 The name of a 2-D binary grd file.
 .TP
 .B \-N
-[\fBr\fP]\fIn_model\fP sets the number of model parameters to fit.  Prepend \fBr\fP for robust fit.
+[\fBr\fP]\fIn_model\fP sets the number of model parameters to fit.  Append \fBr\fP for robust fit.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -66,7 +66,7 @@ To do a robust fit of a bicubic surface to hawaii_topo.grd, writing the result i
 hawaii_trend.grd and the weights used in hawaii_weight.grd, and reporting the progress:
 .br
 .sp
-\fBgrdtrend\fP hawaii_topo.grd \fB\-Nr\fP10 \fB\-T\fPhawaii_trend.grd 
+\fBgrdtrend\fP hawaii_topo.grd \fB\-N\fP10\fBr \-T\fPhawaii_trend.grd 
 \fB\-W\fPhawaii_weight.grd \fB\-V\fP
 .SH "SEE ALSO"
 .IR GMT (GMTMANSECTION),
