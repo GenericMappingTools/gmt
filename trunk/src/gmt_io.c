@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.114 2006-04-13 06:20:34 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.115 2006-04-18 04:39:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,8 +43,6 @@
  *	GMT_bin_double_output_swab:	Write binary double precision record after first swabbing
  *	GMT_bin_float_output:	Write binary single precision record
  *	GMT_bin_float_output_swab:	Write binary single precision record after first swabbing
- *	GMT_init_z_io:		Initialize GMT_Z_IO structure
- *	GMT_parse_z_io:		Parse the -Z switch
  *	GMT_set_z_io:		Set GMT_Z_IO structure based on -Z
  *	GMT_check_z_io:		Fill in implied missing row/column
  *	GMT_a_read:		Read 1 ascii item
@@ -826,33 +824,16 @@ void GMT_write_segmentheader (FILE *fp, int n)
 		fprintf (fp, "%s", GMT_io.segment_header);
 }
 
-void GMT_init_z_io (struct GMT_Z_IO *r, BOOLEAN input)
-{
-	memset ((void *) r, 0, sizeof (struct GMT_Z_IO));
-
-	r->input = input;
-
-	/* Set default format if no arguments are given to be TLf */
-
-	if (input)
-		r->read_item = GMT_a_read;
-	else
-		r->write_item = GMT_a_write;
-	r->binary = FALSE;
-	r->format = GMT_ROW_FORMAT;
-	r->y_step = r->x_step = 1;
-}
-
-int GMT_parse_z_io (char *txt, struct GMT_Z_IO *r, BOOLEAN input)
+int GMT_init_z_io (char format[], BOOLEAN repeat[], BOOLEAN swab, int skip, char type, struct GMT_Z_IO *r)
 {
 	BOOLEAN first = TRUE;
-	int i;
+	int k;
 
-	/* BOOLEAN input:  currently unused */
+	memset ((void *)r, 0, sizeof (struct GMT_Z_IO));
+	
+	for (k = 0; k < 2; k++) {	/* Loop over the two format flags */
 
-	for (i = 0; txt[i]; i++) {	/* Loop over flags */
-
-		switch (txt[i]) {
+		switch (format[k]) {
 
 			/* These 4 cases will set the format orientation for input */
 
@@ -879,90 +860,75 @@ int GMT_parse_z_io (char *txt, struct GMT_Z_IO *r, BOOLEAN input)
 				r->x_step = -1;
 				first = FALSE;
 				break;
-
-			/* Set this if file is periodic, is grid registered, but repeating column or row is missing from input */
-
-			case 'x':
-				r->x_missing = 1;
-				break;
-
-			case 'y':
-				r->y_missing = 1;
-				break;
-
-			/* Optionally skip the given number of bytes before reading data */
-
-			case 's':
-				i++;
-				if (txt[i]) {
-					r->skip = atoi (&txt[i]);
-					while (txt[i] && isdigit ((int)txt[i])) i++;
-					i--;
-				}
-				break;
-
-			case 'w':
-				r->swab = TRUE;
-				break;
-
-			/* Set read pointer depending on data format */
-
-			case 'a':	/* ASCII */
-				r->read_item = GMT_a_read;	r->write_item = GMT_a_write;
-				r->binary = FALSE;
-				break;
-
-			case 'c':	/* Binary signed char */
-				r->read_item = GMT_c_read; 	r->write_item = GMT_c_write;
-				r->binary = TRUE;
-				break;
-
-			case 'u':	/* Binary unsigned char */
-				r->read_item = GMT_u_read; 	r->write_item = GMT_u_write;
-				r->binary = TRUE;
-				break;
-
-			case 'h':	/* Binary short 2-byte integer */
-				r->read_item = GMT_h_read; 	r->write_item = GMT_h_write;
-				r->binary = TRUE;
-				break;
-
-			case 'H':	/* Binary unsigned short 2-byte integer */
-				r->read_item = GMT_H_read;	r->write_item = GMT_H_write;
-				r->binary = TRUE;
-				break;
-
-			case 'i':	/* Binary 4-byte integer */
-				r->read_item = GMT_i_read;	r->write_item = GMT_i_write;
-				r->binary = TRUE;
-				break;
-
-			case 'I':	/* Binary 4-byte unsigned integer */
-				r->read_item = GMT_I_read;	r->write_item = GMT_I_write;
-				r->binary = TRUE;
-				break;
-
-			case 'l':	/* Binary 4(or8)-byte integer, machine dependent! */
-				r->read_item = GMT_l_read;	r->write_item = GMT_l_write;
-				r->binary = TRUE;
-				break;
-
-			case 'f':	/* Binary 4-byte float */
-				r->read_item = GMT_f_read;	r->write_item = GMT_f_write;
-				r->binary = TRUE;
-				break;
-
-			case 'd':	/* Binary 8-byte double */
-				r->read_item = GMT_d_read;	r->write_item = GMT_d_write;
-				r->binary = TRUE;
-				break;
-
-
 			default:
-				fprintf (stderr, "%s: GMT SYNTAX ERROR -Z: %c not a valid modifier!\n", GMT_program, txt[i]);
+				fprintf (stderr, "%s: GMT SYNTAX ERROR -Z: %c not a valid format specifier!\n", GMT_program, format[k]);
 				exit (EXIT_FAILURE);
 				break;
+			
 		}
+	}
+	
+	r->x_missing = repeat[GMT_X];
+	r->y_missing = repeat[GMT_Y];
+	r->skip = skip;
+	r->swab = swab;
+	
+	switch (type) {	/* Set read pointer depending on data format */
+		case 'a':	/* ASCII */
+			r->read_item = GMT_a_read;	r->write_item = GMT_a_write;
+			r->binary = FALSE;
+			break;
+
+		case 'c':	/* Binary signed char */
+			r->read_item = GMT_c_read; 	r->write_item = GMT_c_write;
+			r->binary = TRUE;
+			break;
+
+		case 'u':	/* Binary unsigned char */
+			r->read_item = GMT_u_read; 	r->write_item = GMT_u_write;
+			r->binary = TRUE;
+			break;
+
+		case 'h':	/* Binary short 2-byte integer */
+			r->read_item = GMT_h_read; 	r->write_item = GMT_h_write;
+			r->binary = TRUE;
+			break;
+
+		case 'H':	/* Binary unsigned short 2-byte integer */
+			r->read_item = GMT_H_read;	r->write_item = GMT_H_write;
+			r->binary = TRUE;
+			break;
+
+		case 'i':	/* Binary 4-byte integer */
+			r->read_item = GMT_i_read;	r->write_item = GMT_i_write;
+			r->binary = TRUE;
+			break;
+
+		case 'I':	/* Binary 4-byte unsigned integer */
+			r->read_item = GMT_I_read;	r->write_item = GMT_I_write;
+			r->binary = TRUE;
+			break;
+
+		case 'l':	/* Binary 4(or8)-byte integer, machine dependent! */
+			r->read_item = GMT_l_read;	r->write_item = GMT_l_write;
+			r->binary = TRUE;
+			break;
+
+		case 'f':	/* Binary 4-byte float */
+			r->read_item = GMT_f_read;	r->write_item = GMT_f_write;
+			r->binary = TRUE;
+			break;
+
+		case 'd':	/* Binary 8-byte double */
+			r->read_item = GMT_d_read;	r->write_item = GMT_d_write;
+			r->binary = TRUE;
+			break;
+
+
+		default:
+			fprintf (stderr, "%s: GMT SYNTAX ERROR -Z: %c not a valid data type!\n", GMT_program, type);
+			exit (EXIT_FAILURE);
+			break;
 	}
 
 	if (r->binary) {
