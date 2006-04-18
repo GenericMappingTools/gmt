@@ -153,6 +153,7 @@ src/misc/ps2raster.c
 src/misc/ps2raster.man
 src/misc/ps2raster.html
 src/segyprogs/README.segyprogs
+src/segyprogs/GNUmakefile
 src/segyprogs/makefile
 src/segyprogs/pssegy.c
 src/segyprogs/pssegy.man
