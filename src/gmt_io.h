@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.48 2006-04-13 06:20:35 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.49 2006-04-18 04:39:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -222,8 +222,7 @@ struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 EXTERN_MSC struct GMT_IO GMT_io;
 EXTERN_MSC struct GMT_PLOT_CALCLOCK GMT_plot_calclock;	/* Formatting information for time axis plotting */
 
-EXTERN_MSC void GMT_init_z_io (struct GMT_Z_IO *r, BOOLEAN input);
-EXTERN_MSC int GMT_parse_z_io (char *txt, struct GMT_Z_IO *r, BOOLEAN input);
+EXTERN_MSC int GMT_init_z_io (char format[], BOOLEAN repeat[], BOOLEAN swab, int skip, char type, struct GMT_Z_IO *r);
 EXTERN_MSC void GMT_set_z_io (struct GMT_Z_IO *r, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_check_z_io (struct GMT_Z_IO *r, float *a);
 EXTERN_MSC int GMT_import_table (void *source, int source_type, struct GMT_TABLE **T, double dist, BOOLEAN greenwich, BOOLEAN poly, BOOLEAN use_GMT_io);
