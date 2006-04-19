@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.45 2006-04-13 06:20:35 pwessel Exp $
+ *	$Id: gmt_nc.c,v 1.46 2006-04-19 01:44:15 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -154,7 +154,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 			exit (EXIT_FAILURE);
 		}
 
-		/* Get the data type and the two (or three) dimensions */
+		/* Get the z data type and determine its dimensions */
 		check_nc_status (nc_inq_vartype (ncid, z_id, &z_type));
 		check_nc_status (nc_inq_vardimid (ncid, z_id, dims));
 		header->type = ((z_type == NC_BYTE) ? 2 : z_type) + 13;
@@ -168,7 +168,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		header->ny = (int) lens[ndims-2];
 	}
 	else {
-		/* Setup dimensions of z variable */
+		/* Define dimensions of z variable */
 		ndims = 2;
 		check_nc_status (nc_def_dim (ncid, "x", (size_t) header->nx, &dims[1]));
 		check_nc_status (nc_def_var (ncid, "x", NC_FLOAT, 1, &dims[1], &ids[1]));
@@ -268,25 +268,25 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		}
 	}
 	else {
-		/* Put global information */
+		/* Store global attributes */
 		check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen (GMT_CDF_CONVENTION) + 1, (const char *) GMT_CDF_CONVENTION));
 		if (header->title[0]) check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "title", GRD_TITLE_LEN, header->title));
 		if (header->command[0]) check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "history", GRD_COMMAND_LEN, header->command));
 		if (header->remark[0]) check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "description", GRD_REMARK_LEN, header->remark));
 		check_nc_status (nc_put_att_int (ncid, NC_GLOBAL, "node_offset", NC_LONG, 1, &header->node_offset));
 
-		/* Put information about x variable */
+		/* Define x variable */
 		GMT_nc_put_units (ncid, ids[ndims-1], header->x_units);
 		dummy[0] = header->x_min, dummy[1] = header->x_max;
 		check_nc_status (nc_put_att_double (ncid, ids[ndims-1], "actual_range", NC_DOUBLE, 2, dummy));
 
-		/* Put information about y variable */
+		/* Define y variable */
 		GMT_nc_put_units (ncid, ids[ndims-2], header->y_units);
 		header->y_order = 1;
 		dummy[(1-header->y_order)/2] = header->y_min, dummy[(1+header->y_order)/2] = header->y_max;
 		check_nc_status (nc_put_att_double (ncid, ids[ndims-2], "actual_range", NC_DOUBLE, 2, dummy));
 
-		/* Put information about z variable */
+		/* Define z variable */
 		GMT_nc_put_units (ncid, z_id, header->z_units);
 		if (header->z_scale_factor != 1.0) check_nc_status (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1, &header->z_scale_factor));
 		if (header->z_add_offset != 0.0) check_nc_status (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
@@ -302,7 +302,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 			dummy[0] = 0.0, dummy[1] = 0.0;
 		check_nc_status (nc_put_att_double (ncid, z_id, "actual_range", z_type, 2, dummy));
 
-		/* Put grid buffer */
+		/* Store values along x and y axes */
 		check_nc_status (nc_enddef (ncid));
 		tmp = (float *) GMT_memory (VNULL, (size_t) MAX (header->nx,header->ny), sizeof (float), "GMT_nc_grd_info");
 		for (i = 0; i < header->nx; i++) tmp[i] = (float) GMT_i_to_x (i, header->x_min, header->x_max, header->x_inc, 0.5 * header->node_offset, header->nx);
@@ -440,7 +440,6 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	size_t ij;	/* To allow 64-bit addressing on 64-bit systems */
 	float *tmp_f = VNULL;
 	int *tmp_i = VNULL;
-	BOOLEAN check = FALSE;
 	double limit[2] = {FLT_MIN, FLT_MAX}, value;
 	nc_type z_type;
 
@@ -460,10 +459,8 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 			limit[0] = INT_MIN - 0.5, limit[1] = INT_MAX + 0.5;
 			z_type = NC_INT; break;
 		case 'f':
-			check = !GMT_is_dnan (header->nan_value);
 			z_type = NC_FLOAT; break;
 		case 'd':
-			check = !GMT_is_dnan (header->nan_value);
 			z_type = NC_DOUBLE; break;
 		default:
 			z_type = NC_NAT;
@@ -503,11 +500,15 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 		for (j = 0; j < height_out; j++, ij -= (size_t)width_in) {
 			start[0] = j;
 			for (i = 0; i < width_out; i++) {
-				tmp_f[i] = grid[inc*(ij+k[i])];
-				if (GMT_is_fnan (tmp_f[i])) {
-					if (check) tmp_f[i] = (float)header->nan_value;
+				value = grid[inc*(ij+k[i])];
+				if (GMT_is_fnan (value))
+					tmp_f[i] = (float)header->nan_value;
+				else if (fabs(value) > FLT_MAX) {
+					tmp_f[i] = (float)header->nan_value;
+					nr_oor++;
 				}
 				else {
+					tmp_f[i] = value;
 					header->z_min = MIN (header->z_min, (double)tmp_f[i]);
 					header->z_max = MAX (header->z_max, (double)tmp_f[i]);
 				}

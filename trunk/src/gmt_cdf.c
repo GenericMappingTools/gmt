@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.37 2006-02-06 16:05:18 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.38 2006-04-19 01:44:15 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -301,8 +301,7 @@ int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	int first_col, last_col, first_row, last_row;
 	float *tmp_f = VNULL;
 	int *tmp_i = VNULL;
-	BOOLEAN check = FALSE;
-	double limit[2] = {FLT_MIN, FLT_MAX}, value;
+	double limit[2] = {-FLT_MAX, FLT_MAX}, value;
 	nc_type z_type;
 
 	/* Determine the value to be assigned to missing data, if not already done so */
@@ -321,10 +320,8 @@ int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 			limit[0] = INT_MIN - 0.5; limit[1] = INT_MAX + 0.5;
 			z_type = NC_INT; break;
 		case 'f':
-			check = !GMT_is_dnan (header->nan_value);
 			z_type = NC_FLOAT; break;
 		case 'd':
-			check = !GMT_is_dnan (header->nan_value);
 			z_type = NC_DOUBLE; break;
 		default:
 			z_type = NC_NAT;
@@ -366,11 +363,15 @@ int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 		for (j = 0; j < height_out; j++, ij += width_in) {
 			start[0] = j * width_out;
 			for (i = 0; i < width_out; i++) {
-				tmp_f[i] = grid[inc*(ij+k[i])];
-				if (GMT_is_fnan (tmp_f[i])) {
-					if (check) tmp_f[i] = (float)header->nan_value;
+				value = grid[inc*(ij+k[i])];
+				if (GMT_is_fnan (value))
+					tmp_f[i] = (float)header->nan_value;
+				else if (fabs(value) > FLT_MAX) {
+					tmp_f[i] = (float)header->nan_value;
+					nr_oor++;
 				}
 				else {
+					tmp_f[i] = value;
 					header->z_min = MIN (header->z_min, (double)tmp_f[i]);
 					header->z_max = MAX (header->z_max, (double)tmp_f[i]);
 				}
