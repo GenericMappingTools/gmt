@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.69 2006-04-13 06:20:34 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.70 2006-04-22 12:18:47 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -934,11 +934,11 @@ void GMT_grd_get_units (struct GRD_HEADER *header)
 		/* Skip parsing when input data type is already set */
 		if (GMT_io.in_col_type[i] & GMT_IS_GEO || GMT_io.in_col_type[i] & GMT_IS_RATIME) continue;
 
-		if (!strncasecmp (string[i], "lon", 3))
+		if (!strncasecmp (string[i], "lon", 3) || strcasestr (string[i], "degrees_e"))
 			/* Input data type is longitude */
 			GMT_io.in_col_type[i] = GMT_IS_LON;
 
-		else if (!strncasecmp (string[i], "lat", 3))
+		else if (!strncasecmp (string[i], "lat", 3) || strcasestr (string[i], "degrees_n"))
 			/* Input data type is latitude */
 			GMT_io.in_col_type[i] = GMT_IS_LAT;
 
@@ -946,24 +946,24 @@ void GMT_grd_get_units (struct GRD_HEADER *header)
 			/* Input data type is time */
 			GMT_io.in_col_type[i] = GMT_IS_RELTIME;
 			/* Determine relative time units */
-			if (strstr (string[i], "years"))
+			if (strcasestr (string[i], "years"))
 				scale = GMT_YR2SEC_F / GMT_time_system[gmtdefs.time_system].scale;
-			else if (strstr (string[i], "months"))
+			else if (strcasestr (string[i], "months"))
 				scale = GMT_MON2SEC_F / GMT_time_system[gmtdefs.time_system].scale;
-			else if (strstr (string[i], "days"))
+			else if (strcasestr (string[i], "days"))
 				scale = GMT_DAY2SEC_F / GMT_time_system[gmtdefs.time_system].scale;
-			else if (strstr (string[i], "hours"))
+			else if (strcasestr (string[i], "hours"))
 				scale = GMT_HR2SEC_F / GMT_time_system[gmtdefs.time_system].scale;
-			else if (strstr (string[i], "minutes"))
+			else if (strcasestr (string[i], "minutes"))
 				scale = GMT_MIN2SEC_F / GMT_time_system[gmtdefs.time_system].scale;
-			else if (strstr (string[i], "seconds"))
+			else if (strcasestr (string[i], "seconds"))
 				scale = 1.0 / GMT_time_system[gmtdefs.time_system].scale;
 			else
 				fprintf (stderr, "%s: Warning: Time unit in grid not recognised; assumed %c.\n", GMT_program, GMT_time_system[gmtdefs.time_system].unit);
 				scale = 1.0;
 			/* Determine relative time epoch */
 			offset = 0.0;
-			if ((l = strstr (string[i], "since"))) {
+			if ((l = strcasestr (string[i], "since"))) {
 				l += 6;
 				strcpy (cal, l);
 				if ((l = strchr (cal, ' '))) *l = 'T';
