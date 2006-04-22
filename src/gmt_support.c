@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.247 2006-04-10 07:35:09 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.248 2006-04-22 12:32:08 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -961,11 +961,11 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 	/* XINC AND XMIN/XMAX CHECK FIRST */
 	
 	if (GMT_inc_code[0] == 0) {	/* Standard -R -I given, just set nx */
-		h->nx = irint ((h->x_max - h->x_min) / h->x_inc) + one_or_zero;
+		h->nx = GMT_get_n (h->x_min, h->x_max, h->x_inc, h->node_offset);
 	}
 	else if (GMT_inc_code[0] & GMT_INC_IS_NNODES) {	/* Got nx */
 		h->nx = irint (h->x_inc);
-		h->x_inc = (h->x_max - h->x_min) / (h->nx - one_or_zero);
+		h->x_inc = GMT_get_inc (h->x_min, h->x_max, h->nx, h->node_offset);
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Given nx implies x_inc = %g\n", GMT_program, h->x_inc);
 	}
 	else {	/* Got funny units */
@@ -986,7 +986,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 		f = cosd (0.5 * (h->y_max + h->y_min));	/* Latitude scaling of E-W distances */
 		h->x_inc = h->x_inc * s / (m_pr_degree * f);
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion implies x_inc = %g\n", GMT_program, h->x_inc);
-		h->nx = irint ((h->x_max - h->x_min) / h->x_inc) + one_or_zero;
+		h->nx = GMT_get_n (h->x_min, h->x_max, h->x_inc, h->node_offset);
 	}
 	if (GMT_inc_code[0] & GMT_INC_IS_EXACT) {	/* Want to keep dx exactly as given; adjust x_max accordingly */
 		s = (h->x_max - h->x_min) - h->x_inc * (h->nx - one_or_zero);
@@ -1009,11 +1009,11 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 	/* YINC AND YMIN/YMAX CHECK SECOND */
 	
 	if (GMT_inc_code[1] == 0) {	/* Standard -R -I given, just set ny */
-		h->ny = irint ((h->y_max - h->y_min) / h->y_inc) + one_or_zero;
+		h->ny = GMT_get_n (h->y_min, h->y_max, h->y_inc, h->node_offset);
 	}
 	else if (GMT_inc_code[1] & GMT_INC_IS_NNODES) {	/* Got ny */
 		h->ny = irint (h->y_inc);
-		h->y_inc = (h->y_max - h->y_min) / (h->ny - one_or_zero);
+		h->y_inc = GMT_get_inc (h->y_min, h->y_max, h->ny, h->node_offset);
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Given ny implies y_inc = %g\n", GMT_program, h->y_inc);
 		return;
 	}
@@ -1034,7 +1034,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 		}
 		h->y_inc = (h->y_inc == 0.0) ? h->x_inc : h->y_inc * s / m_pr_degree;
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion implies y_inc = %g\n", GMT_program, h->y_inc);
-		h->ny = irint ((h->y_max - h->y_min) / h->y_inc) + one_or_zero;
+		h->ny = GMT_get_n (h->y_min, h->y_max, h->y_inc, h->node_offset);
 	}
 	
 	if (GMT_inc_code[1] & GMT_INC_IS_EXACT) {	/* Want to keep dy exactly as given; adjust y_max accordingly */
@@ -4026,12 +4026,12 @@ int GMT_inonout_sphpol (double plon, double plat, const struct GMT_LINE_SEGMENT 
 		
 	if (P->pole) {	/* Case 1 of an enclosed polar cap */
 		if (P->pole == +1) {	/* N polar cap */
-			if (plat < P->min_lat) return (GMT_OUTSIDE_POLYGON);	/* South of a N polar cap */
-			if (plat > P->max_lat) return (GMT_INSIDE_POLYGON);	/* Clearly inside of a N polar cap */
+			if (plat < P->min[GMT_Y]) return (GMT_OUTSIDE_POLYGON);	/* South of a N polar cap */
+			if (plat > P->max[GMT_Y]) return (GMT_INSIDE_POLYGON);	/* Clearly inside of a N polar cap */
 		}
 		if (P->pole == -1) {	/* S polar cap */
-			if (plat > P->max_lat) return (GMT_OUTSIDE_POLYGON);	/* North of a S polar cap */
-			if (plat < P->min_lat) return (GMT_INSIDE_POLYGON);	/* North of a S polar cap */
+			if (plat > P->max[GMT_Y]) return (GMT_OUTSIDE_POLYGON);	/* North of a S polar cap */
+			if (plat < P->min[GMT_Y]) return (GMT_INSIDE_POLYGON);	/* North of a S polar cap */
 		}
 	
 		/* Tally up number of intersections between polygon and meridian through P */
@@ -4046,7 +4046,7 @@ int GMT_inonout_sphpol (double plon, double plat, const struct GMT_LINE_SEGMENT 
 	
 	/* Here is Case 2.  First check latitude range */
 	
-	if (plat < P->min_lat || plat > P->max_lat) return (GMT_OUTSIDE_POLYGON);
+	if (plat < P->min[GMT_Y] || plat > P->max[GMT_Y]) return (GMT_OUTSIDE_POLYGON);
 	
 	/* Longitudes are tricker and are tested with the tallying of intersections */
 	
@@ -5977,48 +5977,74 @@ void GMT_list_custom_symbols (void)
 
 /* Functions dealing with distance between points */
 
-double GMT_dist_to_point (double lon, double lat, double *xp, double *yp, int np, int *id)
+double GMT_dist_to_point (double lon, double lat, struct GMT_TABLE *T, int *id)
 {
-	int i;
+	int i, j;
 	double d, d_min;
 
 	d_min = DBL_MAX;
-	for (i = 0; i < np; i++) {
-		d = (*GMT_distance_func) (lon, lat, xp[i], yp[i]);
-		if (d < d_min) {
-			d_min = d;
-			*id = i;
+	for (i = 0; i < T->n_segments; i++) {
+		for (j = 0; j < T->segment[i]->n_rows; j++) {
+			d = (*GMT_distance_func) (lon, lat, T->segment[i]->coord[GMT_X][j], T->segment[i]->coord[GMT_Y][j]);
+			if (d < d_min) {	/* Update the shortest distance and the point responsible */
+				d_min = d;
+				id[0] = i;
+				id[1] = j;
+			}
 		}
 	}
 	return (d_min);
 }
 
-int GMT_near_a_point (double x, double y, double *xp, double *yp, double *dp, int np)
+int GMT_near_a_point (double x, double y, struct GMT_TABLE *T, double dist)
 {
-	int i = 0, inside = FALSE;
+	int i, j;
+	BOOLEAN inside = FALSE, each_point_has_distance;
 	double d;
 
-	while (i < np && !inside) {
-		d = (*GMT_distance_func) (x, y, xp[i], yp[i]);
-		inside = (d <= dp[i]);
-		i++;
+	each_point_has_distance = (dist <= 0.0 && T->segment[0]->n_columns > 2);
+	for (i = 0; !inside && i < T->n_segments; i++) {
+		for (j = 0; !inside && j < T->segment[i]->n_rows; j++) {
+			d = (*GMT_distance_func) (x, y, T->segment[i]->coord[GMT_X][j], T->segment[i]->coord[GMT_Y][j]);
+			if (each_point_has_distance) dist = T->segment[i]->coord[GMT_Z][j];
+			inside = (d <= dist);
+		}
 	}
 	return (inside);
 }
 
-int GMT_near_a_point_cart (double x, double y, double *xp, double *yp, double *dp, int np)
+int GMT_near_a_point_cart (double x, double y, struct GMT_TABLE *T, double dist)
 {
-	int i = 0, inside = FALSE;
-	double d;
+	int i, j;
+	BOOLEAN inside = FALSE, each_point_has_distance;
+	double d, x0, y0, xn, d0, dn;
 
-	if ((x < (xp[0] - dp[0])) || (x > (xp[np-1]) + dp[np-1])) return (inside);
-	while (i < np && !inside) {
-		if (fabs (x - xp[i]) <= dp[i])
-			if (fabs (y - yp[i]) <= dp[i]) {
-				d = (*GMT_distance_func) (x, y, xp[i], yp[i]);
-				inside = (d <= dp[i]);
+	each_point_has_distance = (dist <= 0.0 && T->segment[0]->n_columns > 2);
+
+	/* Assumes the points have been sorted so xp[0] is xmin and xp[n-1] is xmax] !!! */
+	
+	/* See if we are safely outside the range */
+	x0 = T->segment[0]->coord[GMT_X][0];
+	d0 = (each_point_has_distance) ? T->segment[0]->coord[GMT_Z][0] : dist;
+	xn = T->segment[T->n_segments-1]->coord[GMT_X][T->segment[T->n_segments-1]->n_rows-1];
+	dn = (each_point_has_distance) ? T->segment[T->n_segments-1]->coord[GMT_Z][T->segment[T->n_segments-1]->n_rows-1] : dist;
+	if ((x < (x0 - d0)) || (x > (xn) + dn)) return (FALSE);
+	
+	/* No, must search the points */
+	
+	for (i = 0; !inside && i < T->n_segments; i++) {
+		for (j = 0; !inside && j < T->segment[i]->n_rows; j++) {
+			x0 = T->segment[i]->coord[GMT_X][j];
+			d0 = (each_point_has_distance) ? T->segment[i]->coord[GMT_Z][j] : dist;
+			if (fabs (x - x0) <= d0) {	/* Simple x-range test first */
+				y0 = T->segment[i]->coord[GMT_Y][j];
+				if (fabs (y - y0) <= d0) {	/* Simple y-range test next */
+					/* Here we must compute distance */
+					d = (*GMT_distance_func) (x, y, x0, y0);
+					inside = (d <= d0);
+				}
 			}
-		i++;
+		}
 	}
 	return (inside);
 }
