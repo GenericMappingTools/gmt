@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.230 2006-04-12 13:55:18 remko Exp $
+ *	$Id: gmt_init.c,v 1.231 2006-04-30 04:22:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5010,8 +5010,8 @@ int GMT_decode_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEA
 			}
 			else
 				decode_error += GMT_contlabel_info ('S', &text[1], &p->G);
-			break;
 			check = FALSE;
+			break;
 		case 'S':
 			p->equal_area = TRUE;	/* To equal area of circle with same size */
 		case 's':
