@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: mgd77view,v 1.3 2006-03-15 01:04:10 pwessel Exp $
+#	$Id: mgd77view,v 1.4 2006-04-30 07:16:37 mtchandl Exp $
 #
 # Makes a summary plot of one cruise
 #
@@ -9,8 +9,8 @@ if [ $# -ne 1 ]; then
 	exit
 fi
 
-GRAVITY=grav.15.2.img,0.1,1
-RELIEF=Smith_2004_Gebco_SS_1m_grd.i2=bs
+GRAVITY=$GMT_GRIDDIR/grav.15.2.B.img,0.1,1
+RELIEF=$GMT_GRIDDIR/S2004_hdr.i2=bs
 #--------------------------------------
 size=0.015i
 
