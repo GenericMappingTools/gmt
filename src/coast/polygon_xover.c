@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.5 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_xover.c,v 1.6 2006-05-01 07:52:39 pwessel Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -21,8 +21,8 @@ int main (int argc, char **argv)
 	FILE	*fp;
 	int	i, n_id, id1, id2, nx, nx_tot, ANTARCTICA, verbose, full;
 	int np_o, np_i1, np_i2, in;
-	double x_shift = 0.0, lon_o[N_EUR_O], lat_o[N_EUR_O], lon_i1[N_EUR_I], lat_i1[N_EUR_I];
-	double lon_i2[N_EUR_I], lat_i2[N_EUR_I];
+	double x_shift = 0.0, lon_o[N_EUR_O+1], lat_o[N_EUR_O+1], lon_i1[N_EUR_I+1], lat_i1[N_EUR_I+1];
+	double lon_i2[N_EUR_I+1], lat_i2[N_EUR_I+1];
 	struct GMT_XSEGMENT *ylist1, *ylist2;
 	struct GMT_XOVER XC;
 	struct LONGPAIR p;
@@ -68,32 +68,48 @@ int main (int argc, char **argv)
 		if (full && id1 == 0) {	/* Eurafrica */
 			for (i = 0; i < N_EUR_O; i++) lon_o[i] = ieur_o[0][i] - 360.0;
 			for (i = 0; i < N_EUR_O; i++) lat_o[i] = ieur_o[1][i];
-			np_o = N_EUR_O;
+			lon_o[i] = lon_o[0];
+			lat_o[i] = lat_o[0];
+			np_o = N_EUR_O + 1;
 			for (i = 0; i < N_EUR_I; i++) lon_i1[i] = ieur_i[0][i] - 360.0;
 			for (i = 0; i < N_EUR_I; i++) lat_i1[i] = ieur_i[1][i];
-			np_i1 = N_EUR_I;
-			for (i = 0; i < N_AFR_I; i++) lon_i1[i] = iafr_i[0][i] - 360.0;
-			for (i = 0; i < N_AFR_I; i++) lat_i1[i] = iafr_i[1][i];
-			np_i2 = N_AFR_I;
+			lon_i1[i] = lon_i1[0];
+			lat_i1[i] = lat_i1[0];
+			np_i1 = N_EUR_I + 1;
+			for (i = 0; i < N_AFR_I; i++) lon_i2[i] = iafr_i[0][i] - 360.0;
+			for (i = 0; i < N_AFR_I; i++) lat_i2[i] = iafr_i[1][i];
+			lon_i2[i] = lon_i2[0];
+			lat_i2[i] = lat_i2[0];
+			np_i2 = N_AFR_I + 1;
 		}
 		else if (full && id1 == 1) {	/* Americas */
 			for (i = 0; i < N_AM_O; i++) lon_o[i] = iam_o[0][i];
 			for (i = 0; i < N_AM_O; i++) lat_o[i] = iam_o[1][i];
-			np_o = N_AM_O;
+			lon_o[i] = lon_o[0];
+			lat_o[i] = lat_o[0];
+			np_o = N_AM_O + 1;
 			for (i = 0; i < N_NAM_I; i++) lon_i1[i] = inam_i[0][i];
 			for (i = 0; i < N_NAM_I; i++) lat_i1[i] = inam_i[1][i];
-			np_i1 = N_NAM_I;
-			for (i = 0; i < N_SAM_I; i++) lon_i1[i] = isam_i[0][i];
-			for (i = 0; i < N_SAM_I; i++) lat_i1[i] = isam_i[1][i];
-			np_i2 = N_SAM_I;
+			lon_i1[i] = lon_i1[0];
+			lat_i1[i] = lat_i1[0];
+			np_i1 = N_NAM_I + 1;
+			for (i = 0; i < N_SAM_I; i++) lon_i2[i] = isam_i[0][i];
+			for (i = 0; i < N_SAM_I; i++) lat_i2[i] = isam_i[1][i];
+			lon_i2[i] = lon_i2[0];
+			lat_i2[i] = lat_i2[0];
+			np_i2 = N_SAM_I + 1;
 		}
 		else if (full && id1 == 3) {	/* Australia */
 			for (i = 0; i < N_AUS_O; i++) lon_o[i] = iaus_o[0][i];
 			for (i = 0; i < N_AUS_O; i++) lat_o[i] = iaus_o[1][i];
-			np_o = N_AUS_O;
+			lon_o[i] = lon_o[0];
+			lat_o[i] = lat_o[0];
+			np_o = N_AUS_O + 1;
 			for (i = 0; i < N_AUS_I; i++) lon_i1[i] = iaus_i[0][i];
 			for (i = 0; i < N_AUS_I; i++) lat_i1[i] = iaus_i[1][i];
-			np_i1 = N_AUS_I;
+			lon_i1[i] = lon_i1[0];
+			lat_i1[i] = lat_i1[0];
+			np_i1 = N_AUS_I + 1;
 			np_i2 = 0;
 		}
 		else
