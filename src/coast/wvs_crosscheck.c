@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs_crosscheck.c,v 1.4 2006-05-01 03:18:32 pwessel Exp $
+ *	$Id: wvs_crosscheck.c,v 1.5 2006-05-01 07:02:13 pwessel Exp $
  */
 /*  */
    
@@ -51,8 +51,8 @@ int main (int argc, char **argv) {
 		if (special) p[0].x = 360000000;
 		
 		for (i = 0; i < h.n; i++) {
-			x[i] = p[i].x;
-			y[i] = p[i].y;
+			x[i] = p[i].x * 1.0e-6;
+			y[i] = p[i].y * 1.0e-6;
 		}
 		
 		report = FALSE;
@@ -129,8 +129,8 @@ int main (int argc, char **argv) {
 			/* Make sure it worked ok */
 			
 			for (i = 0; i < h.n; i++) {
-				x[i] = p[i].x;
-				y[i] = p[i].y;
+				x[i] = p[i].x * 1.0e-6;
+				y[i] = p[i].y * 1.0e-6;
 			}
 		
 			nx = GMT_crossover (x, y, NULL, ylist, h.n, x, y, NULL, ylist, h.n, TRUE, &c);
