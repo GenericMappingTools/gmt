@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs_crosscheck.c,v 1.3 2006-05-01 00:07:38 pwessel Exp $
+ *	$Id: wvs_crosscheck.c,v 1.4 2006-05-01 03:18:32 pwessel Exp $
  */
 /*  */
    
@@ -13,7 +13,7 @@ struct LONGPAIR p[N_LONGEST];
 int no[N_LONGEST];
 
 int main (int argc, char **argv) {
-	int id = 0, i, nn = 0, k, nx, j, cut, nx_tot = 0, n_bad = 0, max_n = 0, max_id = 0, n_use;
+	int id = 0, i, nn = 0, k, nx, j, cut, nx_tot = 0, n_bad = 0, max_n = 0, max_id = 0, end, A, B, n_found;
 	int start, stop, report, n_fatal = 0, n_too_much = 0, special, update = FALSE;
 	FILE *fp, *fp_out;
 	
@@ -55,22 +55,35 @@ int main (int argc, char **argv) {
 			y[i] = p[i].y;
 		}
 		
-		n_use = (p[0].x == p[h.n-1].x && p[0].y == p[h.n-1].y) ? h.n - 1 : h.n;
-		
 		report = FALSE;
 		
-		ylist = GMT_init_track (y, n_use);
-		nx = GMT_crossover (x, y, NULL, ylist, n_use, x, y, NULL, ylist, n_use, TRUE, &c);
+		ylist = GMT_init_track (y, h.n);
+		nx = n_found = GMT_crossover (x, y, NULL, ylist, h.n, x, y, NULL, ylist, h.n, TRUE, &c);
 		
+		for (i = end = 0; i < nx; i++) {
+			A = irint (c.xnode[0][i]);
+			B = irint (c.xnode[1][i]);
+			if ((A == 0 && B == (h.n-1)) || (B == 0 && A == (h.n-1))) {
+				/* Remove the crossover caused by the duplicate start/end points */
+				end++;
+			}
+		}
+		nx -= end;
 		if (nx && special) {
-			free ((char *)c.x);
-			free ((char *)c.y);
-			free ((char *)c.xnode[0]);
-			free ((char *)c.xnode[1]);
-			nx = 0;
+			free ((void *)c.x);
+			free ((void *)c.y);
+			free ((void *)c.xnode[0]);
+			free ((void *)c.xnode[1]);
+			nx = n_found = 0;
 		}
 		if (!update && nx) {
 			printf ("%s: Polygon %d has %d crossovers\n", argv[0], h.id, nx);
+		}
+		if (!update && n_found) {
+			free ((void *)c.x);
+			free ((void *)c.y);
+			free ((void *)c.xnode[0]);
+			free ((void *)c.xnode[1]);
 			nx = 0;
 		}
 		if (nx) {	/* Must chop off the bad sections */
@@ -108,10 +121,10 @@ int main (int argc, char **argv) {
 				if (no[k] > 0) j++;
 			}
 			h.n = j;
-			free ((char *)c.x);
-			free ((char *)c.y);
-			free ((char *)c.xnode[0]);
-			free ((char *)c.xnode[1]);
+			free ((void *)c.x);
+			free ((void *)c.y);
+			free ((void *)c.xnode[0]);
+			free ((void *)c.xnode[1]);
 			
 			/* Make sure it worked ok */
 			
@@ -125,10 +138,10 @@ int main (int argc, char **argv) {
 			if (nx) {	/* Shit... */
 				printf ("\nPolygon # %d still has %d xovers\n", h.id, nx);
 				for (i = 0; i < nx; i++) printf ("%g\t%g\n", c.x[i], c.y[i]);
-				free ((char *)c.x);
-				free ((char *)c.y);
-				free ((char *)c.xnode[0]);
-				free ((char *)c.xnode[1]);
+				free ((void *)c.x);
+				free ((void *)c.y);
+				free ((void *)c.xnode[0]);
+				free ((void *)c.xnode[1]);
 				n_fatal++;
 			}
 			report = TRUE;
