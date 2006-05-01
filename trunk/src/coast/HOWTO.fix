@@ -1,4 +1,4 @@
-	$Id: HOWTO.fix,v 1.1 2004-09-05 04:19:26 pwessel Exp $
+	$Id: HOWTO.fix,v 1.2 2006-05-01 07:02:13 pwessel Exp $
 	
 How to fix mistakes in the GSHHS database
 
@@ -73,4 +73,12 @@ polygon_update NEW.b /dev/null fix.lis FINAL.b
 For the lower resolutions you need to use the DP algorithm to get decimated
 databases (see shrink_job.csh) and then repeat steps 8-10.
 	
-   
+MAY 1, 2006
+
+Several internal crossovers were still present and I updated polygon_consistency.c to
+determine these problems.  Once the polygons where found I used polygon_extract
+to make polygon.* files and then ran the Matlab function fix_coast.m which let
+me manually delete, move, or insert points, then save the result to a new file
+polygon.<ID>.new.  After comparing and making sure the problem was fixed I used
+polygon_update to update the binary file, now incremented to v4.1.
+

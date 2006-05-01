@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.7 2006-04-10 04:53:48 pwessel Exp $
+ *	$Id: polygon_consistency.c,v 1.8 2006-05-01 07:02:13 pwessel Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -13,8 +13,8 @@ double lon[N_LONGEST], lat[N_LONGEST];
 int main (int argc, char **argv)
 {
 	FILE	*fp;
-	int	i, n_id, nd, this_n, nx, n_x_problems, n_c_problems, n_r_problems, n_d_problems, ix0, iy0;
-	int w, e, s, n, ixmin, ixmax, iymin, iymax, ANTARCTICA, last_x, last_y, ant_trouble = 0;
+	int	i, n_id, this_n, nd, nx, n_x_problems, n_c_problems, n_r_problems, n_d_problems, ix0, iy0;
+	int w, e, s, n, ixmin, ixmax, iymin, iymax, ANTARCTICA, last_x, last_y, ant_trouble = 0, found, A, B, end;
 	struct GMT_XSEGMENT *ylist;
 	struct GMT_XOVER XC;
 	struct GMT3_POLY h;
@@ -68,23 +68,32 @@ int main (int argc, char **argv)
 		if (! (p.x == ix0 && p.y == iy0)) {
 			printf ("%d\tnot closed\n", h.id);
 			n_c_problems++;
-			this_n = h.n;
 		}
 		else
-			this_n = h.n - 1;
 		if (! (ixmin == w && ixmax == e && iymin == s && iymax == n)) {
 			printf ("%d\twesn mismatch\n", h.id);
 			n_r_problems++;
 		}
+		this_n = (ANTARCTICA) ? h.n - 1 : h.n;
 		ylist = GMT_init_track (lat, this_n);
 		if (fabs (h.east - h.west) > GMT_CONV_LIMIT) {
-			nx = GMT_crossover (lon, lat, NULL, ylist, this_n, lon, lat, NULL, ylist, this_n, TRUE, &XC);
+			nx = found = GMT_crossover (lon, lat, NULL, ylist, this_n, lon, lat, NULL, ylist, this_n, TRUE, &XC);
 			GMT_free ((void *)ylist);
-			if (nx ) {
+			for (i = end = 0; i < nx; i++) {
+				A = irint (XC.xnode[0][i]);
+				B = irint (XC.xnode[1][i]);
+				if ((A == 0 && B == (h.n-1)) || (B == 0 && A == (h.n-1))) {
+					/* Remove the crossover caused by the duplicate start/end points */
+					end++;
+				}
+			}
+			nx -= end;
+
+			if (nx) {
 				for (i = 0; i < nx; i++) printf ("%d\t%d\t%10.5f\t%9.5f\n", h.id, (int)floor(XC.xnode[0][i]), XC.x[i], XC.y[i]);
 				n_x_problems++;
-				GMT_x_free (&XC);
 			}
+			if (found) GMT_x_free (&XC);
 		}
 		n_id++;
 	}
@@ -97,4 +106,3 @@ int main (int argc, char **argv)
 
 	exit(0);
 }
-
