@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs_crosscheck.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: wvs_crosscheck.c,v 1.3 2006-05-01 00:07:38 pwessel Exp $
  */
 /*  */
    
@@ -13,17 +13,20 @@ struct LONGPAIR p[N_LONGEST];
 int no[N_LONGEST];
 
 int main (int argc, char **argv) {
-	int id = 0, i, nn = 0, k, nx, j, cut, nx_tot = 0, n_bad = 0, max_n = 0, max_id = 0;
-	int start, stop, report, n_fatal = 0, n_too_much = 0, special;
+	int id = 0, i, nn = 0, k, nx, j, cut, nx_tot = 0, n_bad = 0, max_n = 0, max_id = 0, n_use;
+	int start, stop, report, n_fatal = 0, n_too_much = 0, special, update = FALSE;
 	FILE *fp, *fp_out;
 	
-	if (argc != 3) {
-		fprintf (stderr, "usage: wvs_crosscheck coast.base newbase\n");
+	if (argc < 2 || argc > 3) {
+		fprintf (stderr, "usage: wvs_crosscheck coast.base [newbase]\n");
 		exit (-1);
 	}
 	
 	fp = fopen (argv[1], "r");	
-	fp_out = fopen (argv[2], "w");	
+	if (argc == 3) {
+		fp_out = fopen (argv[2], "w");
+		update = TRUE;
+	}
 	
 	while (pol_readheader (&h, fp) == 1) {
 		h.id = id;
@@ -52,16 +55,22 @@ int main (int argc, char **argv) {
 			y[i] = p[i].y;
 		}
 		
+		n_use = (p[0].x == p[h.n-1].x && p[0].y == p[h.n-1].y) ? h.n - 1 : h.n;
+		
 		report = FALSE;
 		
-		ylist = GMT_init_track (y, h.n);
-		nx = GMT_crossover (x, y, NULL, ylist, h.n, x, y, NULL, ylist, h.n, TRUE, &c);
+		ylist = GMT_init_track (y, n_use);
+		nx = GMT_crossover (x, y, NULL, ylist, n_use, x, y, NULL, ylist, n_use, TRUE, &c);
 		
 		if (nx && special) {
 			free ((char *)c.x);
 			free ((char *)c.y);
 			free ((char *)c.xnode[0]);
 			free ((char *)c.xnode[1]);
+			nx = 0;
+		}
+		if (!update && nx) {
+			printf ("%s: Polygon %d has %d crossovers\n", argv[0], h.id, nx);
 			nx = 0;
 		}
 		if (nx) {	/* Must chop off the bad sections */
@@ -129,7 +138,7 @@ int main (int argc, char **argv) {
 		free ((void *)ylist);
 		/* Write out new trimmed polygon */
 		
-		if (h.n > 2) {
+		if (update && h.n > 2) {
 			if (pol_writeheader (&h, fp_out) != 1) {
 				fprintf (stderr, "polygon_crosscheck: Failed writing header\n");
 				exit(-1);
@@ -143,20 +152,22 @@ int main (int argc, char **argv) {
 			}
 		}
 				
-		if (report || h.id%1000 == 0) fprintf (stderr, "wvs_crosscheck: processed # %d, %d has crossings\r", h.id, nn);
+		if (update && (report || h.id%1000 == 0)) fprintf (stderr, "wvs_crosscheck: processed # %d, %d has crossings\r", h.id, nn);
 		id++;
 		
 	}
 	fclose (fp);
-	fclose (fp_out);
+	if (update) {
+		fclose (fp_out);
 	
-	fprintf (stderr, "\n");
+		fprintf (stderr, "\n");
 	
-	fprintf (stderr, "wvs_crosscheck: processed %d polygons, %d polygons have total of %d crossings\n", id, nn, nx_tot);
-	fprintf (stderr, "wvs_crosscheck: %d of these crossings were easy to fix, %d were hard\n", nx_tot - n_bad, n_bad);
-	fprintf (stderr, "wvs_crosscheck: In worst case (id = %d), %d points would be chopped\n", max_id, max_n);
-	if (n_fatal) fprintf (stderr, "wvs_crosscheck: %d polygons were unfixable\n", n_fatal);
-	if (n_too_much) fprintf (stderr, "wvs_crosscheck: %d crossings would require > 50 points cut\n", n_too_much);
+		fprintf (stderr, "wvs_crosscheck: processed %d polygons, %d polygons have total of %d crossings\n", id, nn, nx_tot);
+		fprintf (stderr, "wvs_crosscheck: %d of these crossings were easy to fix, %d were hard\n", nx_tot - n_bad, n_bad);
+		fprintf (stderr, "wvs_crosscheck: In worst case (id = %d), %d points would be chopped\n", max_id, max_n);
+		if (n_fatal) fprintf (stderr, "wvs_crosscheck: %d polygons were unfixable\n", n_fatal);
+		if (n_too_much) fprintf (stderr, "wvs_crosscheck: %d crossings would require > 50 points cut\n", n_too_much);
+	}
 	
 	exit (0);
 }
