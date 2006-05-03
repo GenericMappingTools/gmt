@@ -1,8 +1,8 @@
 #!/bin/csh
 #
-#	$Id: gshhs_job.csh,v 1.1 2004-09-05 04:19:26 pwessel Exp $
+#	$Id: gshhs_job.csh,v 1.2 2006-05-03 04:22:16 pwessel Exp $
 
-set VERSION = v4.0
+set VERSION = v4.1
 
 polygon_to_gshhs res_f/${VERSION}_final_dbase.b > gshhs_f.b
 polygon_to_gshhs res_h/${VERSION}_final_dbase_0.2km.b > gshhs_h.b
