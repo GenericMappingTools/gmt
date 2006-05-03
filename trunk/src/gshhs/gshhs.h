@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.8 2006-05-03 04:22:16 pwessel Exp $
+/*	$Id: gshhs.h,v 1.9 2006-05-03 04:43:25 pwessel Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -39,6 +39,8 @@
 #ifndef SEEK_CUR	/* For really ancient systems */
 #define SEEK_CUR 1
 #endif
+
+#define GSHHS_DATA_VERSION	4	/* For v1.4 */
 
 /* For byte swapping on little-endian systems (GSHHS is defined to be bigendian) */
 

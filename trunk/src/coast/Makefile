@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.10 2006-01-23 00:34:13 pwessel Exp $
+#	$Id: Makefile,v 1.11 2006-05-03 04:42:16 pwessel Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -12,7 +12,7 @@
 #	Authors:	Paul Wessel, SOEST, U. of Hawaii
 #			Walter H. F. Smith, NOAA
 #
-#	Date:	04-SEPT-2004
+#	Date:	02-MAY-2006
 #
 #	Note: Most of these tools were last used in 1995/96 and only
 #	minor changes to make them compile have been performed.
@@ -26,7 +26,9 @@ include $(GMTHOME)/src/makegmt.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf
-VERSION = v4.0
+VERSION = v4.1
+GSHHS_DATA_VERSION	= 1.4
+GSHHS_PROG_VERSION	= 1.6
 
 COAST_H	= shore.h wvs.h
 
@@ -228,14 +230,14 @@ gshhs:
 		polygon_to_gshhs res_c/${VERSION}_final_dbase_25km.b > gshhs_c.b
 
 tar-gshhs:
-		tar cvjf gshhs_1.3.tbz gshhs_[clihf].b
+		tar cvjf gshhs_$(GSHHS_DATA_VERSION).tbz gshhs_[clihf].b
 		cd $(GMTHOME)/src; \
-		tar cvjf gshhs_1.5_src.tbz gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
+		tar cvjf gshhs_$(GSHHS_PROG_VERSION)_src.tbz gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
 
 zip-gshhs:
-		zip -r -9 -q gshhs_1.3.zip gshhs_[clihf].b
+		zip -r -9 -q gshhs_$(GSHHS_DATA_VERSION).zip gshhs_[clihf].b
 		cd $(GMTHOME)/src; \
-		zip -r -9 -q -l gshhs_1.5_src.zip gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
+		zip -r -9 -q -l gshhs_$(GSHHS_PROG_VERSION)_src.zip gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
 
 #-------------------------------------------------------------------------------
 #	library

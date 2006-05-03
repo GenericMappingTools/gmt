@@ -1,5 +1,5 @@
 /*
- *	$Id: read_wvs.c,v 1.3 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: read_wvs.c,v 1.4 2006-05-03 04:42:16 pwessel Exp $
  */
 /***************************************************************************/
 /*WDBPLTC.C-reads and plots compressed coastlines                          */
@@ -163,6 +163,8 @@ int main (int argc, char **argv) {
 	
 	wdbplt(argv[1], slatd, slatm, nlatd, nlatm, wlond, wlonm, elond, elonm,
           scale, ranks, gapin);
+	  
+	exit (0);
 }
 
 
@@ -565,6 +567,7 @@ short rank, *cont, gap;
 char penclr;
 {
   void simple(), projct(), curve(), curve2();
+  void writeout(short rank);
 
   static char color, flag = 1;
   static short npts = -1, prank = 0, count;
@@ -675,8 +678,8 @@ is greater than 10, simplify the arrays.*/
 }
 
 
-int writeout(rank)
-short rank; {
+void writeout(short rank)
+{
 	int i, r, lonlat[2];
 	static int strid = 0;
 	r = rank;
@@ -709,8 +712,8 @@ void curve(lonray,latray,count,color,rank)
 double lonray[],latray[];
 short count, rank;
 char color; {
-	int i, n, r, lonlat[2];
 	/*
+	int i, n, r, lonlat[2];
 	n = count;
 	r = rank;
 	
@@ -730,5 +733,5 @@ short count, rank;
 char color; {
 	int i;
 	printf ("> rank %d\n", (int)rank);
-	for (i = 0; i < count; i++) printf ("%lg\t%lg\n", lonray[i], latray[i]);
+	for (i = 0; i < count; i++) printf ("%g\t%g\n", lonray[i], latray[i]);
 }
