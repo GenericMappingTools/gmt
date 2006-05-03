@@ -1,4 +1,4 @@
-	$Id: HOWTO.fix,v 1.3 2006-05-03 03:53:49 pwessel Exp $
+	$Id: HOWTO.fix,v 1.4 2006-05-03 04:46:20 pwessel Exp $
 	
 How to fix mistakes in the GSHHS database
 
@@ -73,7 +73,7 @@ polygon_update NEW.b /dev/null fix.lis FINAL.b
 For the lower resolutions you need to use the DP algorithm to get decimated
 databases (see shrink_job.csh) and then repeat steps 8-10.
 	
-MAY 1, 2006
+MAY 2, 2006
 
 Several internal crossovers were still present and I updated polygon_consistency.c to
 determine these problems.  Once the polygons where found I used polygon_extract
@@ -88,7 +88,3 @@ high and intermediate resolutions.
 To summarize, there are new v4.1 version of full, high, and intermediate, whereas
 low and crude saw now changes - however since they form one set we increse even these
 to 4.1
-
-
-
-

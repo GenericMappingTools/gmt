@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_gshhs.c,v 1.8 2006-05-03 03:53:50 pwessel Exp $
+ *	$Id: polygon_to_gshhs.c,v 1.9 2006-05-03 04:42:16 pwessel Exp $
  * 
  *	read polygon.b format and write a GSHHS file to stdout
  *	For version 1.4 we standardize GSHHS header to only use 4-byte ints.
@@ -11,7 +11,7 @@
 int main (int argc, char **argv)
 {
 	FILE	*fp_in;
-	int	k, VERSION = 4;
+	int	k, version = GSHHS_DATA_VERSION;
 	struct	LONGPAIR p;
 	struct GMT3_POLY h;
 	struct GSHHS gshhs_header;
@@ -31,7 +31,7 @@ int main (int argc, char **argv)
 		gshhs_header.id		= h.id;
 		gshhs_header.n		= h.n;
 		gshhs_header.area	= irint (10.0 * h.area);
-		gshhs_header.flags	= h.level + (VERSION << 8) + (h.greenwich) << 16 + (h.source << 24);
+		gshhs_header.flag	= h.level + (version << 8) + (h.greenwich << 16) + (h.source << 24);
 #if WORDS_BIGENDIAN == 0
 		/* Must swap header explicitly on little-endian machines */
 		gshhs_header.west	= swabi4 ((unsigned int)gshhs_header.west);
@@ -41,7 +41,7 @@ int main (int argc, char **argv)
 		gshhs_header.id		= swabi4 ((unsigned int)gshhs_header.id);
 		gshhs_header.n		= swabi4 ((unsigned int)gshhs_header.n);
 		gshhs_header.area	= swabi4 ((unsigned int)gshhs_header.area);
-		gshhs_header.flags	= swabi4 ((unsigned int)gshhs_header.flags);
+		gshhs_header.flag	= swabi4 ((unsigned int)gshhs_header.flag);
 #endif
 		fwrite((char *)&gshhs_header, sizeof (struct GSHHS), 1, stdout) ;
 		for (k = 0; k < h.n; k++) {
