@@ -1,5 +1,5 @@
 /*
- *	$Id: shoremaker.c,v 1.3 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: shoremaker.c,v 1.4 2006-05-03 04:22:16 pwessel Exp $
  */
 /*
  *
@@ -159,7 +159,7 @@ int main (int argc, char **argv) {
 	/* assign attributes */
 	
 	strcpy (s.title, "Derived from World Vector Shoreline and CIA WDB-II data");
-	strcpy (s.source, "Processed by Paul Wessel and Walter H. F. Smith, 1994-2004, GSHHS v1.3");
+	strcpy (s.source, "Processed by Paul Wessel and Walter H. F. Smith, 1994-2006, GSHHS v1.4");
 
 	check_nc_status (nc_put_att_text (s.cdfid, s.pt_dx_id, "units", strlen(s.units), s.units));
 	check_nc_status (nc_put_att_text (s.cdfid, s.pt_dy_id, "units", strlen(s.units), s.units));

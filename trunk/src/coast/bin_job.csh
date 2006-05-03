@@ -1,8 +1,8 @@
 #!/bin/csh
 #
-#	$Id: bin_job.csh,v 1.2 2004-09-10 23:37:34 pwessel Exp $
+#	$Id: bin_job.csh,v 1.3 2006-05-03 04:22:16 pwessel Exp $
 
-set VERSION = "v4.0"
+set VERSION = "v4.1"
 
 polygon_to_bins res_f/${VERSION}_final_dbase.b 1 res_f/${VERSION}_final_nodes.grd res_f/binned_GSHHS_f
 polygon_to_bins res_h/${VERSION}_final_dbase_0.2km.b 2 res_h/${VERSION}_final_nodes_0.2km.grd res_h/binned_GSHHS_h

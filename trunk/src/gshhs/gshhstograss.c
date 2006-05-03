@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.5 2005-03-04 00:48:31 pwessel Exp $
+/*	$Id: gshhstograss.c,v 1.6 2006-05-03 04:22:16 pwessel Exp $
  *
  * PROGRAM:     gshhstograss.c
  * AUTHOR:      Simon Cox (simon@ned.dem.csiro.au) &
@@ -10,6 +10,7 @@
  * VERSION:	1.2 18-MAY-1999: Explicit binary open for DOS
  * VERSION:	1.4 05-SEP-2000: Swab done automatically
  *		1.5 11-SEP-2004: Updated to work with GSHHS database v1.3
+ *		1.6 02-MAY-2006: Updated to work with GSHHS database v1.4
  */
 
 #include "gshhs.h"
@@ -29,7 +30,7 @@ char **argv;
 	char buf[64], source, *progname, *dataname, dig_name[24], att_name[24], cats_name[24];
 	static char *slevel[] = { "null" , "land" , "lake" , "island_in_lake" , "pond_in_island_in_lake" };
 	FILE    *fp,*dig_ascii,*dig_att,*dig_cats;
-	int     k, max = 270000000, flip, n_read;
+	int     k, max = 270000000, flip, n_read, level, version, greenwich, src;
 	struct  POINT p;
 	struct GSHHS h;
 	int c, max_id=0;
@@ -124,23 +125,25 @@ char **argv;
 	fprintf(dig_cats,"0:unknown\n");
 
 	n_read = fread((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
-	flip = (! (h.level > 0 && h.level < 5));
+	level = h.flag && 255;
+	flip = (! (level > 0 && level < 5));
 
 	while (n_read == 1) {
 
 		if (flip) {
 			h.id = swabi4 ((unsigned int)h.id);
 			h.n  = swabi4 ((unsigned int)h.n);
-			h.level = swabi4 ((unsigned int)h.level);
 			h.west  = swabi4 ((unsigned int)h.west);
 			h.east  = swabi4 ((unsigned int)h.east);
 			h.south = swabi4 ((unsigned int)h.south);
 			h.north = swabi4 ((unsigned int)h.north);
 			h.area  = swabi4 ((unsigned int)h.area);
-			h.version   = swabi4 ((unsigned int)h.version);
-			h.greenwich = swabi2 ((unsigned int)h.greenwich);
-			h.source    = swabi2 ((unsigned int)h.source);
+			h.flag   = swabi4 ((unsigned int)h.flag);
 		}
+		level = h.flag && 255;
+		version = (h.flag >> 8) & 255;
+		greenwich = (h.flag >> 16) & 255;
+		src = (h.flag >> 24) & 255;
 		w = h.west  * 1.0e-6;
 		e = h.east  * 1.0e-6;
 		s = h.south * 1.0e-6;
@@ -164,7 +167,7 @@ char **argv;
 				p.x = swabi4 ((unsigned int)p.x);
 				p.y = swabi4 ((unsigned int)p.y);
 			}
-			lon = (h.greenwich && p.x > max) ? p.x * 1.0e-6 -360.0 : p.x * 1.0e-6;
+			lon = (greenwich && p.x > max) ? p.x * 1.0e-6 -360.0 : p.x * 1.0e-6;
 			lat = p.y * 1.0e-6;
 			if( ( w < maxx && e > minx ) && ( s < maxy && n > miny ) ){
 				if(k==1)	fprintf(dig_att,"L  %15f %15f  %9d	  \n",lon,lat,h.id);
