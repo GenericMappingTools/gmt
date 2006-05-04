@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.6 2006-05-03 04:22:16 pwessel Exp $
+/*	$Id: gshhstograss.c,v 1.7 2006-05-04 00:06:11 pwessel Exp $
  *
  * PROGRAM:     gshhstograss.c
  * AUTHOR:      Simon Cox (simon@ned.dem.csiro.au) &
@@ -125,8 +125,8 @@ char **argv;
 	fprintf(dig_cats,"0:unknown\n");
 
 	n_read = fread((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
-	level = h.flag && 255;
-	flip = (! (level > 0 && level < 5));
+	version = (h.flag >> 8) & 255;
+	flip = (version != GSHHS_DATA_VERSION);	/* Take as sign that byte-swabbing is needed */
 
 	while (n_read == 1) {
 

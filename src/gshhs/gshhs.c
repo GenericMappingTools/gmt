@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.8 2006-05-03 04:22:16 pwessel Exp $
+/*	$Id: gshhs.c,v 1.9 2006-05-04 00:06:11 pwessel Exp $
  *
  * PROGRAM:	gshhs.c
  * AUTHOR:	Paul Wessel (pwessel@hawaii.edu)
@@ -53,8 +53,8 @@ int main (int argc, char **argv)
 	}
 		
 	n_read = fread ((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
-	level = h.flag && 255;
-	flip = (! (level > 0 && level < 5));	/* Take as sign that byte-swabbing is needed */
+	version = (h.flag >> 8) & 255;
+	flip = (version != GSHHS_DATA_VERSION);	/* Take as sign that byte-swabbing is needed */
 	
 	while (n_read == 1) {
 		if (flip) {
