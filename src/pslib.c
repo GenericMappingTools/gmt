@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.122 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: pslib.c,v 1.123 2006-05-04 01:08:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1411,7 +1411,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		else if (!ps.eps_format && ps.p_width > 0 && ps.p_height > 0)	/* Specific media selected */
 			fprintf (ps.fp, "PSLevel 1 gt { << /PageSize [%d %d] /ImagingBBox null >> setpagedevice } if\n\n", ps.p_width, ps.p_height);
 
-		if (ps.comments) fprintf (ps.fp, "%% Init coordinate system and scales\n");
+		fprintf (ps.fp, "%% Init coordinate system and scales\n");
 		scl = ps.points_pr_unit / ps.scale;
 		if (ps.comments) fprintf (ps.fp, "%% Scale is originally set to %g, which means that\n", scl);
 		if (unit == 0) {	/* CM used as unit */
