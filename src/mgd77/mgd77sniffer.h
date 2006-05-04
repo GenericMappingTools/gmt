@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.10 2006-04-04 04:42:38 mtchandl Exp $	
+ *	$Id: mgd77sniffer.h,v 1.11 2006-05-04 02:18:47 mtchandl Exp $	
  *
  *	File:	mgd77sniffer.h
  *
@@ -79,6 +79,16 @@
 #define E77_HDR_BCC          3
 #define E77_HDR_PRECISION    4
 #define E77_HDR_FLAGRANGE    5
+#define E77_HDR_ANOM_FAA     6
+#define E77_HDR_ANOM_MAG     7
+
+/* MGD77 date constants */
+#define AUX_YR	0
+#define AUX_MO	1
+#define AUX_DY	2
+#define AUX_HR	3
+#define AUX_MI	4
+#define AUX_SC	5
 
 struct BAD_SECTION {	/* To flag a range of records as bad for given field */
 	char abbrev[8];	/* Field name */
