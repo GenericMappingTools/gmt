@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.59 2006-04-10 07:35:09 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.60 2006-05-04 02:37:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -33,6 +33,7 @@ EXTERN_MSC int GMT_check_region (double w, double e, double s, double n);
 EXTERN_MSC int GMT_check_scalingopt (char option, char unit, char *unit_name);
 EXTERN_MSC int GMT_font_lookup (char *name, struct GMT_FONT *list, int n);
 EXTERN_MSC int GMT_parse_common_options (char *item, double *w, double *e, double *s, double *n);
+EXTERN_MSC int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n);
 EXTERN_MSC int GMT_get_ellipsoid (char *name);
 EXTERN_MSC int GMT_get_time_system (char *name);
 EXTERN_MSC int GMT_get_unit (char c);

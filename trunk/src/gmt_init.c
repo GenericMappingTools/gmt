@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.231 2006-04-30 04:22:59 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.232 2006-05-04 02:37:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -885,6 +885,11 @@ void GMT_syntax (char option)
 void GMT_default_error (char option)
 {
 	fprintf (stderr, "%s: GMT SYNTAX ERROR:  Unrecognized option -%c\n", GMT_program, option);
+}
+
+int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
+{
+	return (GMT_parse_common_options (item, w, e, s, n));
 }
 
 int GMT_parse_common_options (char *item, double *w, double *e, double *s, double *n)
