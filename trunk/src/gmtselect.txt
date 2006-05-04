@@ -98,6 +98,11 @@ If no map projection is supplied we implicitly set \fB\-Jx\fP1.
 [Default is same as input].
 #include "explain_-f.txt"
 #include "explain_precision.txt"
+.SH NOTE
+This program has evolved over the years.  Originally, the OPT(R) and OPT(J) were mandatory in order
+to handle geographic data, but now there is full support for spherical calculations.  Thus, OPT(J)
+should only be used if you want the tests to be applied on projected data and not the original
+coordinates.
 .SH EXAMPLES
 To extract the subset of data set that is within 300 km of any of the points in pts.d but more than
 100 km away from the lines in lines.d, run
