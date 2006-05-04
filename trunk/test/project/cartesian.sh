@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: cartesian.sh,v 1.2 2006-03-09 04:08:18 pwessel Exp $
+#	$Id: cartesian.sh,v 1.3 2006-05-04 00:06:11 pwessel Exp $
 #
 # Tests project in Cartesian manipulations
 
@@ -70,4 +70,4 @@ while read az; do
 done < azim.$$
 psxy -R -J -O /dev/null >> cartesian.ps
 gv cartesian.ps &
-rm -f $$.*
+rm -f $$.* *.$$

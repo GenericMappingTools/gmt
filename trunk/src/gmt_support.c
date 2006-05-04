@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.248 2006-04-22 12:32:08 remko Exp $
+ *	$Id: gmt_support.c,v 1.249 2006-05-04 00:06:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5379,6 +5379,7 @@ int GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 
 	int j = 0, i, ns, n_slash, error = 0, colon, plus, k;
 	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_sx[GMT_LONG_TEXT], txt_sy[GMT_LONG_TEXT], txt_pf[2][GMT_LONG_TEXT];
+	BOOLEAN ok;
 
 	ms->fancy = ms->gave_xy = FALSE;
 	ms->measure = ms->label[0] = '\0';
@@ -5398,7 +5399,10 @@ int GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 
 	/* Determine if we have the optional label/justify component specified */
 
-	for (colon = -1, i = j; text[i] && colon < 0; i++) if (text[i] == ':') colon = i+1;
+	for (colon = -1, i = strlen (text), ok = TRUE; i && text[i] && colon < 0; i--) {
+		if (text[i] == ':') colon = i+1;
+		if (text[i] == '/') ok = FALSE;	/* Do not search further than to the last slash */
+	}
 	for (plus = -1, i = j; text[i] && plus < 0; i++) if (text[i] == '+') plus = i+1;
 
 	if (n_slash == 4) {		/* -L[f][x]<x0>/<y0>/<lon>/<lat>/<length>[m|n|k][:label:<just>][+p<pen>]+[f<fill>] */

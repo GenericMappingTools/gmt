@@ -1,4 +1,4 @@
-/*	$Id: gshhs_dp.c,v 1.9 2006-05-03 04:22:16 pwessel Exp $
+/*	$Id: gshhs_dp.c,v 1.10 2006-05-04 00:06:11 pwessel Exp $
  *
  * gshhs_dp applies the Douglas-Peucker algorithm to simplify a line
  * segment given a tolerance.  The algorithm is based on the paper
@@ -76,8 +76,8 @@ int main (int argc, char **argv)
 	index = (int *) get_memory (VNULL, 1, sizeof (int), "gshhs_dp");
 	
 	n_read = fread ((void *)&h, sizeof (struct GSHHS), (size_t)1, fp_in);
-	level = h.flag && 255;
-	flip = (! (level > 0 && level < 5));
+	version = (h.flag >> 8) & 255;
+	flip = (version != GSHHS_DATA_VERSION);	/* Take as sign that byte-swabbing is needed */
 	
 	while (n_read == 1) {
 	
