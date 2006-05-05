@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.249 2006-05-04 00:06:11 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.250 2006-05-05 00:21:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3794,9 +3794,11 @@ int GMT_get_format (double interval, char *unit, char *prefix, char *format)
 	}
 	else if (ndec > 0)
 		sprintf (format, "%%.%df", ndec);
-	else
+	else {	/* Pull ndec from given format if .<precision> is given */
+		for (i = 0, j = -1; j == -1 && gmtdefs.d_format[i]; i++) if (gmtdefs.d_format[i] == '.') j = i;
+		if (j > -1) ndec = atoi (&gmtdefs.d_format[j+1]);
 		strcpy (format, gmtdefs.d_format);
-
+	}
 	if (prefix && prefix[0]) {	/* Must prepend the prefix string */
 		if (prefix[0] == '-')	/* No space between annotation and unit */
 			sprintf (text, "%s%s", &prefix[1], format);
