@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.55 2006-05-05 05:17:08 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.56 2006-05-05 05:17:37 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -31,7 +31,7 @@ includedir2	= /home/aa/pwessel/UH/RESOURCES/SOFTWARE/sun/include
 #-------------------------------------------------------------------------------
 NETCDFLIB	= $(NETCDF)/lib
 NETCDFINC	= $(NETCDF)/include
-CFLAGS		= -I$(NETCDFINC) $(WIN32) $(CC_OPT) -DGMT_DEFAULT_PATH=\"$(GMT_DEFAULT_PATH)\" $(TRIANGLE_D) -DDEBUG
+CFLAGS		= -I$(NETCDFINC) $(WIN32) $(CC_OPT) -DGMT_DEFAULT_PATH=\"$(GMT_DEFAULT_PATH)\" $(TRIANGLE_D)
 CDF		= -L$(NETCDFLIB) -lnetcdf
 
 PS	= -lpsl

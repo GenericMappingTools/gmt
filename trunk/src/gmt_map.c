@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.121 2006-04-13 06:20:35 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.122 2006-05-05 05:17:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -176,7 +176,8 @@ int GMT_ellipse_crossing (double lon1, double lat1, double lon2, double lat2, do
 int GMT_eqdist_crossing (double lon1, double lat1, double lon2, double lat2, double *clon, double *clat, double *xx, double *yy, int *sides);		/*	computes the crossing point between two lon/lat points and the map boundary between them */
 int GMT_rect_clip (double *lon, double *lat, int n, double **x, double **y, int *total_nx);		/*	Clips to region based on rectangular xy coordinates	*/
 int GMT_wesn_clip (double *lon, double *lat, int n, double **x, double **y, int *total_nx);		/*	Clips to region based on rectangular wesn coordinates	*/
-int GMT_radial_clip (double *lon, double *lat, int np, double **x, double **y, int *total_nx);		/*	Clips to region based on spherical distance */
+int GMT_radial_clip_new (double *lon, double *lat, int np, double **x, double **y, int *total_nx);		/*	Clips to region based on spherical distance */
+int GMT_radial_clip_pscoast (double *lon, double *lat, int np, double **x, double **y, int *total_nx);		/*	Clips to region based on spherical distance */
 int GMT_wesn_overlap (double lon0, double lat0, double lon1, double lat1);		/*	Checks if two wesn regions overlap	*/
 int GMT_rect_overlap (double lon0, double lat0, double lon1, double lat1);		/*	Checks if two xy regions overlap	*/
 int GMT_radial_overlap (double lon0, double lat0, double lon1, double lat1);		/*	Currently a dummy routine	*/
@@ -262,6 +263,7 @@ double GMT_right_circle (double y);	/*	For circular maps	*/
 double GMT_left_ellipse (double y);	/*	For elliptical maps	*/
 double GMT_right_ellipse (double y);	/*	For elliptical maps	*/
 
+PFI GMT_radial_clip;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *
@@ -469,6 +471,8 @@ void GMT_map_setup (double west, double east, double south, double north)
 	GMT_get_crossings = (PFV) GMT_get_crossings_x;
 	GMT_truncate = (PFI) GMT_truncate_x;
 	GMT_lat_swap_init ();
+	
+	GMT_radial_clip = (strstr (GMT_program, "pscoast")) ? GMT_radial_clip_pscoast : GMT_radial_clip_new;
 
 	switch (project_info.projection) {
 
@@ -4701,9 +4705,9 @@ double GMT_y_to_corner (double y) {
 	return ( (fabs (y - project_info.ymin) < fabs (y - project_info.ymax)) ? project_info.ymin : project_info.ymax);
 }
 
-int GMT_radial_clip (double *lon, double *lat, int np, double **x, double **y, int *total_nx)
+int GMT_radial_clip_new (double *lon, double *lat, int np, double **x, double **y, int *total_nx)
 {
-	int n = 0, this, i, sides[4], n_alloc = GMT_CHUNK, n_arc, k;
+	int n = 0, this, i, sides[4], n_alloc = GMT_CHUNK, n_arc, k, pt;
 	double xlon[4], xlat[4], xc[4], yc[4], xr, yr, *xx, *yy;
 	double az1, az2, da, da_try, a, end_x[2], end_y[2];
 
@@ -4724,35 +4728,36 @@ int GMT_radial_clip (double *lon, double *lat, int np, double **x, double **y, i
 		this = GMT_map_outside (lon[i], lat[i]);
 		if (GMT_break_through (lon[i-1], lat[i-1], lon[i], lat[i])) {	/* Crossed map boundary */
 			(void) GMT_map_crossing (lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
-			end_x[k] = xc[0] - project_info.r;	end_y[k] = yc[0] - project_info.r;
-			k++;
-			(*total_nx) ++;
-			if (k == 2) {	/* Crossed twice.  Now add arc between the two crossing points */
-				az1 = d_atan2 (end_y[0], end_x[0]) * R2D;	/* azimuth form map center to 1st crossing */
-				az2 = d_atan2 (end_y[1], end_x[1]) * R2D;	/* azimuth form map center to 2nd crossing */
-				n_arc = (int)ceil (fabs (az2 - az1)/ da_try);	/* Get number of increments of da_try degree */
-				da = (az2 - az1) / (n_arc - 1);			/* Reset da to get exact steps */
-				n_arc--;
-				for (k = 1; k < n_arc; k++) {	/* Create points along arc */
-					a = az1 + k * da;
-					sincos (a * D2R, &yr, &xr);
-					xx[n] = project_info.r * (1.0 + xr);
-					yy[n] = project_info.r * (1.0 + yr);
-					n++;
-					if (n == n_alloc) {
-						n_alloc += GMT_CHUNK;
-						xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
-						yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
-					}
-				}
-				k = 0;
-			}
-			xx[n] = xc[0];	yy[n] = yc[0];
+			xx[n] = xc[0];	yy[n] = yc[0];	/* Add exit/entry point to the path */
 			n++;
 			if (n == n_alloc) {
 				n_alloc += GMT_CHUNK;
 				xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
 				yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
+			}
+			end_x[k] = xc[0] - project_info.r;	end_y[k] = yc[0] - project_info.r;
+			k++;
+			(*total_nx) ++;
+			if (k == 2) {	/* Crossed twice.  Now add arc between the two crossing points */
+				az1 = d_atan2 (end_y[0], end_x[0]) * R2D;	/* azimuth from map center to 1st crossing */
+				az2 = d_atan2 (end_y[1], end_x[1]) * R2D;	/* azimuth from map center to 2nd crossing */
+				n_arc = (int)ceil (fabs (az2 - az1)/ da_try);	/* Get number of increments of da_try degree */
+				da = (az2 - az1) / (n_arc - 1);			/* Reset da to get exact steps */
+				n_arc--;
+				while ((n + n_arc) >= n_alloc) {	/* Preallocate space if arc exceeds the allocated memory */
+					n_alloc += GMT_CHUNK;
+					xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
+					yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
+				}
+				for (k = 1; k < n_arc; k++) {	/* Create points along arc from first to second crossing point (k-loop excludes the end points) */
+					a = az1 + k * da;
+					sincos (a * D2R, &yr, &xr);
+					pt = (this) ? n_arc - k - 1 : k - 1;	/* The order we add the arc depends if we exited or entered the inside area */
+					xx[n+pt] = project_info.r * (1.0 + xr);
+					yy[n+pt] = project_info.r * (1.0 + yr);
+				}
+				k = 0;
+				n += n_arc - 1;	/* Number of arc points added (end points were done separately) */
 			}
 		}
 		GMT_geo_to_xy (lon[i], lat[i], &xr, &yr);
@@ -4760,6 +4765,62 @@ int GMT_radial_clip (double *lon, double *lat, int np, double **x, double **y, i
 			xx[n] = xr;	yy[n] = yr;
 			n++;
 		}
+		if (n == n_alloc) {
+			n_alloc += GMT_CHUNK;
+			xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
+			yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
+		}
+	}
+
+	xx = (double *) GMT_memory ((void *)xx, (size_t)n, sizeof (double), "GMT_radial_clip");
+	yy = (double *) GMT_memory ((void *)yy, (size_t)n, sizeof (double), "GMT_radial_clip");
+	*x = xx;
+	*y = yy;
+
+	return (n);
+}
+
+int GMT_radial_clip_pscoast (double *lon, double *lat, int np, double **x, double **y, int *total_nx)
+{	/* Need this until pscoast uses a different mechanism to clip the polygons */
+	int n = 0, this, i, sides[4], n_alloc = GMT_CHUNK;
+	double xlon[4], xlat[4], xc[4], yc[4], xr, yr, r, scale, x0, y0, *xx, *yy;
+
+	*total_nx = 0;	/* Keep track of total of crossings */
+
+	if (np == 0) return (0);
+
+	xx = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
+	yy = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
+
+	if (!GMT_map_outside (lon[0], lat[0])) {
+		GMT_geo_to_xy (lon[0], lat[0], &xx[0], &yy[0]);
+		n++;
+	}
+	for (i = 1; i < np; i++) {
+		this = GMT_map_outside (lon[i], lat[i]);
+		if (GMT_break_through (lon[i-1], lat[i-1], lon[i], lat[i])) {	/* Crossed map boundary */
+			(void) GMT_map_crossing (lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
+			xx[n] = xc[0];	yy[n] = yc[0];
+			n++;
+			(*total_nx) ++;
+			if (n == n_alloc) {
+				n_alloc += GMT_CHUNK;
+				xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
+				yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
+			}
+		}
+		GMT_geo_to_xy (lon[i], lat[i], &xr, &yr);
+		if (this) {	/* Project point onto perimeter */
+			GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &x0, &y0);
+			xr -= x0;	yr -= y0;
+			r = hypot (xr, yr);
+			scale = project_info.r / r;
+			xr *= scale;
+			yr *= scale;
+			xr += x0;	yr += y0;
+		}
+		xx[n] = xr;	yy[n] = yr;
+		n++;
 		if (n == n_alloc) {
 			n_alloc += GMT_CHUNK;
 			xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
