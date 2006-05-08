@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.9 2006-05-03 04:43:25 pwessel Exp $
+/*	$Id: gshhs.h,v 1.10 2006-05-08 00:24:15 pwessel Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -49,8 +49,6 @@
 struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines */
 	int id;				/* Unique polygon id number, starting at 0 */
 	int n;				/* Number of points in this polygon */
-	int west, east, south, north;	/* min/max extent in micro-degrees */
-	int area;			/* Area of polygon in 1/10 km^2 */
 	int flag;			/* = level + version << 8 + greenwich << 16 + source << 24 */
 	/* flag contains 4 items, one in each byte, as follows:
 	 * low byte:	level = flag & 255: Values: 1 land, 2 lake, 3 island_in_lake, 4 pond_in_island_in_lake
@@ -58,6 +56,8 @@ struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines
 	 * 3rd byte:	greenwich = (flag >> 16) & 255: Values: Greenwich is 1 if Greenwich is crossed
 	 * 4th byte:	source = (flag >> 24) & 255: Values: 0 = CIA WDBII, 1 = WVS
 	 */
+	int west, east, south, north;	/* min/max extent in micro-degrees */
+	int area;			/* Area of polygon in 1/10 km^2 */
 };
 
 struct	POINT {	/* Each lon, lat pair is stored in micro-degrees in 4-byte integer format */
