@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 24
 REM
-REM             $Id: job24.bat,v 1.8 2004-09-29 05:22:20 pwessel Exp $
+REM             $Id: job24.bat,v 1.9 2006-05-08 01:35:12 pwessel Exp $
 REM
 REM Purpose:    Extract subsets of data based on geospatial criteria
 REM
@@ -22,7 +22,7 @@ echo 180 -90 >> dateline.d
 set R=-R100/200/-60/0
 pscoast %R% -JM9i -K -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10WeSn -U"Example 24 in Cookbook" > example_24.ps
 psxy -R -J -O -K oz_quakes.d -Sc0.05i -Gred >> example_24.ps
-gmtselect oz_quakes.d -L1000/dateline.d -M# -Nk/s -C3000/point.d -fg -R -J -Il | psxy -R -JM -O -K -Sc0.05i -Ggreen >> example_24.ps
+gmtselect oz_quakes.d -L1000/dateline.d -M# -Nk/s -C3000/point.d -fg -R -Il | psxy -R -JM -O -K -Sc0.05i -Ggreen >> example_24.ps
 echo {print $1, $2, 0, $3, $3} > awk.txt
 gawk -f awk.txt point.d | psxy -R -J -O -K -SE -Wfat,white >> example_24.ps
 echo {print $1, $2, 14, 0, 1, "LT", $4} > awk.txt
