@@ -157,7 +157,7 @@ seen over land, using a Mercator map at scale LEN_1 inch/degree, use
 .br
 \fBpscoast\fP \fB\-Q \-O\fP >> africa.ps
 .SH DATABASE INFORMATION
-The coastline database is compiled from two sources: World Vector Shorelines (WVS) and CIA World Data Bank II (WDBII).
+The coastline database is GSHHS which is compiled from two sources: World Vector Shorelines (WVS) and CIA World Data Bank II (WDBII).
 In particular, all level-1 polygons (ocean-land boundary) are derived from the more accurate WVS while all higher level polygons
 (level 2-4, representing land/lake, lake/island-in-lake, and island-in-lake/lake-in-island-in-lake boundaries) are
 taken from WDBII.  Much processing has taken place to convert WVS and WDBII data into usable form for \fBGMT\fP:
@@ -188,7 +188,7 @@ available to us.
 .br
 Some users of \fBpscoast\fP will not be satisfied with what they find for the
 Antarctic shoreline.  In Antarctica, the boundary between ice and 
-ocean varies seasonally and interannually.  There are some areas of 
+ocean varies seasonally and inter-annually.  There are some areas of 
 permanent sea ice.  In addition to these time-varying ice-ocean 
 boundaries, there are also ice grounding lines where ice goes from 
 floating on the sea to sitting on land, and lines delimiting areas 

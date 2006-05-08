@@ -163,7 +163,9 @@ eccentricity, you should specify your own ellipsoid with the same parameters
 as Clarke 1866, but with f = 1/294.97861076.  Also, be aware that older data
 may be referenced to different datums, and unless you know which datum was
 used and convert all data to a common datum you may experience mismatches of
-tens to hundreds of meters.
+tens to hundreds of meters. (3) Finally, be aware that \fBMAP_SCALE_FACTOR\fP
+have certain default values for some projections so you may have to override
+the setting in order to match results produced with other settings.
 .SH "SEE ALSO"
 .IR gmtdefaults (GMTMANSECTION),
 .IR GMT (GMTMANSECTION),
