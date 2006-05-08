@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.74 2006-04-09 21:56:31 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.75 2006-05-08 00:19:23 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	23-FEB-2006
+#	08-MAY-2006
 #--------------------------------------------------------------------------------
 #	FUNCTIONS
 #--------------------------------------------------------------------------------
@@ -1026,7 +1026,8 @@ if [ $netcdf_install = "y" ]; then
 		export DEFINES
 	elif [ $os = "Rhapsody" ] || [ $os = "Darwin" ]; then	# Special treatment to make shared lib on Mac OSX
 		echo "Mac OSX: Make shared netCDF-library"
-		arch="-arch ppc"
+		chip=`arch`
+		arch="-arch $chip"
 		CXX=g++-4.0
 		export CXX
 		CXXFLAGS="-O2 -fno-common $arch"
