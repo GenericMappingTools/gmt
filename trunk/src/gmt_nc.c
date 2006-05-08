@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.46 2006-04-19 01:44:15 remko Exp $
+ *	$Id: gmt_nc.c,v 1.47 2006-05-08 07:49:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -508,7 +508,7 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 					nr_oor++;
 				}
 				else {
-					tmp_f[i] = value;
+					tmp_f[i] = (float)value;
 					header->z_min = MIN (header->z_min, (double)tmp_f[i]);
 					header->z_max = MAX (header->z_max, (double)tmp_f[i]);
 				}
