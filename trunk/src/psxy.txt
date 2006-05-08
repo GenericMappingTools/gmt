@@ -206,7 +206,7 @@ must be found in columns 3 and 4.
 .TP
 .B \-SW
 Same as \fB\-Sw\fP, except azimuths (in degrees east of north) should be given instead of the two directions.  The azimuths will
-be mapped into angles based on the chosen map projection (\fB\-SW\fP leaves the directions unchanged.)
+be mapped into angles based on the chosen map projection (\fB\-Sw\fP leaves the directions unchanged.)
 .TP
 .B \-Sx
 cross.  \fIsize\fP is diameter of circumscribing circle.

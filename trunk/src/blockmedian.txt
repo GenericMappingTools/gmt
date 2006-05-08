@@ -50,7 +50,7 @@ Not used with binary data.
 \fIx\fP, median \fIy\fP, median \fIz\fP].
 .TP
 .B \-T
-Sets the fIquartile\fP of the distribution to be returned [Default is 0.5 which returns the
+Sets the \fIquartile\fP of the distribution to be returned [Default is 0.5 which returns the
 median \fIz\fP].  Here, 0 < \fIquartile\fP < 1.
 #include "explain_-V.txt"
 .TP

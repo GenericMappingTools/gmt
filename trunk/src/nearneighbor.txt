@@ -12,7 +12,7 @@ OPT(N)\fIsectors\fP GMT_Rgeo_OPT OPT(S)\fIsearch_radius\fP[\fBm\fP|\fBc\fP|\fBk\
 from standard input [or \fIxyzfile(s)\fP] and uses a nearest neighbor algorithm to assign 
 an average value to each node that have one or more points within a radius centered on the node.
 The average value is computed as a weighted mean of the nearest point from each sector inside the search radius.  The
-weighting function used is w(r) = 1.0 / (1 + d ^ 2), where d = 3 * r / search_radius and r is
+weighting function used is w(r) = 1 / (1 + d ^ 2), where d = 3 * r / search_radius and r is
 distance from the node.  This weight is modulated by the observation points' weights [if supplied].\"'
 .TP
 \fIxyzfile(s)\fP
