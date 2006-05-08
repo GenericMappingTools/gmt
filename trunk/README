@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.29 2006-03-08 01:01:54 pwessel Exp $ 
+#		$Id: README,v 1.30 2006-05-08 00:04:18 pwessel Exp $ 
 #
 #	Copyright (c) 1991-2006, P. Wessel & W. H. F. Smith
 #
@@ -421,7 +421,8 @@ Currently, the supplemental archive include the directories:
 	mex	  - Matlab mex files for grdfile i/o.
 	mgg	  - Programs for MGD-77 data in .gmt format.
 	mgd77	  - Programs for handling of native MGD77 files.
-	misc	  - psmegaplot, ps2raster, makepattern, and nc2xy
+	misc	  - psmegaplot, ps2raster, makepattern, gmtdigitize,
+		    gmtstitch, and nc2xy
 	segyprogs - Plotting SEGY seismic data sets.
 	spotter	  - Plate tectonic & kinematics applications.
 	x2sys	  - Track intersection (crossover) tools.
@@ -505,13 +506,13 @@ You may post messages to gmt-help while gmt-group is more of a one-way street
 for us to inform users of bug fixes and upgrades.  The online registration
 also lets you subscribe to the two mailinglists.
 
-15. Ordering the GMT package on CD-Rs
+15. Ordering the GMT package on CD/DVD-Rs
 -------------------------------------
 
 Should you or someone you know without net-access need to obtain GMT:
-Geoware makes and distributes CD-Rs with the GMT package and many
+Geoware makes and distributes CD/DVD-Rs with the GMT package and many
 useful data sets.  For more details and a full description of the data
-sets (all 4 Gb of data!) visit www.geoware-online.com
+sets (up to 60 Gb of data!) visit www.geoware-online.com
 
 
 Good luck!
