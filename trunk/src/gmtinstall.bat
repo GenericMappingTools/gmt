@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.22 2006-05-08 00:04:18 pwessel Exp $
+REM	$Id: gmtinstall.bat,v 1.23 2006-05-08 09:50:39 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
@@ -95,10 +95,6 @@ IF %CHOICE%=="static" lib /out:psl.lib pslib.obj
 REM ----------------------------------------------------
 ECHO STEP 2: Make GMT library
 REM ----------------------------------------------------
-CL %COPT% gmt_nan_init.c netcdf.lib
-gmt_nan_init
-del gmt_nan_init.obj
-del gmt_nan_init.exe
 CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_DEFAULT_PATH=%GMT_PATH% gmt_cdf.c gmt_nc.c gmt_customio.c gmt_grdio.c gmt_init.c
 CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_DEFAULT_PATH=%GMT_PATH% gmt_io.c gmt_map.c gmt_plot.c gmt_proj.c gmt_shore.c
 CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_DEFAULT_PATH=%GMT_PATH% gmt_stat.c gmt_calclock.c gmt_support.c gmt_vector.c
