@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.8 2006-05-01 07:02:13 pwessel Exp $
+ *	$Id: polygon_consistency.c,v 1.9 2006-05-10 04:34:49 pwessel Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -13,7 +13,7 @@ double lon[N_LONGEST], lat[N_LONGEST];
 int main (int argc, char **argv)
 {
 	FILE	*fp;
-	int	i, n_id, this_n, nd, nx, n_x_problems, n_c_problems, n_r_problems, n_d_problems, ix0, iy0;
+	int	i, n_id, this_n, nd, nx, n_x_problems, n_c_problems, n_r_problems, n_d_problems, ix0, iy0, report_mismatch;
 	int w, e, s, n, ixmin, ixmax, iymin, iymax, ANTARCTICA, last_x, last_y, ant_trouble = 0, found, A, B, end;
 	struct GMT_XSEGMENT *ylist;
 	struct GMT_XOVER XC;
@@ -29,6 +29,7 @@ int main (int argc, char **argv)
 	
 	n_id = n_c_problems = n_x_problems = n_r_problems = n_d_problems = 0;
 	while (pol_readheader (&h, fp) == 1) {
+		if (n_id == 0 && h.n > 1000000) report_mismatch = 1;
 		ANTARCTICA = (fabs (h.east - h.west) == 360.0);
 		if (ANTARCTICA) {
 			if (h.south > -90.0) ant_trouble = TRUE;
@@ -70,7 +71,7 @@ int main (int argc, char **argv)
 			n_c_problems++;
 		}
 		else
-		if (! (ixmin == w && ixmax == e && iymin == s && iymax == n)) {
+		if (report_mismatch && !(ixmin == w && ixmax == e && iymin == s && iymax == n)) {
 			printf ("%d\twesn mismatch\n", h.id);
 			n_r_problems++;
 		}

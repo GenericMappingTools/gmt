@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.250 2006-05-05 00:21:59 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.251 2006-05-10 04:34:49 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6417,40 +6417,54 @@ int GMT_crossover (double xa[], double ya[], int *sa0, struct GMT_XSEGMENT A[], 
 				del_yb = yb[xb_stop] - yb[xb_start];
 
 				if (del_xa == 0.0) {	/* Vertical A segment: Special case */
-
-					i_del_xb = 1.0 / del_xb;
-					yc = yb[xb_start] + (xa[xa_start] - xb[xb_start]) * del_yb * i_del_xb;
-					if (!(yc < ya[A[this_a].start] || yc > ya[A[this_a].stop])) {	/* Did cross within the segment extents */
-						/* Only accept xover if occurring before segment end (in time) */
-
-						if (xb_start < xb_stop) {
-							tb_start = xb_start;	/* B Node first in time */
-							tb_stop = xb_stop;	/* B Node last in time */
+					if (del_xb == 0.0) {	/* Two vertical segments with some overlap */
+						double y4[4];
+						/* Assign as crossover the middle of the overlapping segments */
+						X->x[nx] = xa[xa_start];
+						y4[0] = ya[xa_start];	y4[1] = ya[xa_stop];	y4[2] = yb[xb_start];	y4[3] = yb[xb_stop];
+						qsort ((void *)y4, (size_t)4, sizeof (double), GMT_comp_double_asc);
+						if (y4[1] != y4[2]) {
+							X->y[nx] = 0.5 * (y4[1] + y4[2]);
+							X->xnode[0][nx] = 0.5 * (xa_start + xa_stop);
+							X->xnode[1][nx] = 0.5 * (xb_start + xb_stop);
+							nx++;
 						}
-						else {
-							tb_start = xb_stop;	/* B Node first in time */
-							tb_stop = xb_start;	/* B Node last in time */
-						}
-						if (new_a_time) {
-							if (xa_start < xa_stop) {
-								ta_start = xa_start;	/* A Node first in time */
-								ta_stop = xa_stop;	/* A Node last in time */
+					}
+					else {
+						i_del_xb = 1.0 / del_xb;
+						yc = yb[xb_start] + (xa[xa_start] - xb[xb_start]) * del_yb * i_del_xb;
+						if (!(yc < ya[A[this_a].start] || yc > ya[A[this_a].stop])) {	/* Did cross within the segment extents */
+							/* Only accept xover if occurring before segment end (in time) */
+	
+							if (xb_start < xb_stop) {
+								tb_start = xb_start;	/* B Node first in time */
+								tb_stop = xb_stop;	/* B Node last in time */
 							}
 							else {
-								ta_start = xa_stop;	/* A Node first in time */
-								ta_stop = xa_start;	/* A Node last in time */
+								tb_start = xb_stop;	/* B Node first in time */
+								tb_stop = xb_start;	/* B Node last in time */
 							}
-							new_a_time = FALSE;
-						}
-
-						tx_a = ta_start + fabs ((yc - ya[ta_start]) / del_ya);
-						tx_b = tb_start + fabs (xa[xa_start] - xb[tb_start]) * i_del_xb;
-						if (tx_a < ta_stop && tx_b < tb_stop) {
-							X->x[nx] = xa[xa_start];
-							X->y[nx] = yc;
-							X->xnode[0][nx] = tx_a;
-							X->xnode[1][nx] = tx_b;
-							nx++;
+							if (new_a_time) {
+								if (xa_start < xa_stop) {
+									ta_start = xa_start;	/* A Node first in time */
+									ta_stop = xa_stop;	/* A Node last in time */
+								}
+								else {
+									ta_start = xa_stop;	/* A Node first in time */
+									ta_stop = xa_start;	/* A Node last in time */
+								}
+								new_a_time = FALSE;
+							}
+	
+							tx_a = ta_start + fabs ((yc - ya[ta_start]) / del_ya);
+							tx_b = tb_start + fabs (xa[xa_start] - xb[tb_start]) * i_del_xb;
+							if (tx_a < ta_stop && tx_b < tb_stop) {
+								X->x[nx] = xa[xa_start];
+								X->y[nx] = yc;
+								X->xnode[0][nx] = tx_a;
+								X->xnode[1][nx] = tx_b;
+								nx++;
+							}
 						}
 					}
 				}
@@ -6494,40 +6508,55 @@ int GMT_crossover (double xa[], double ya[], int *sa0, struct GMT_XSEGMENT A[], 
 				}
 				else if (del_ya == 0.0) {	/* Horizontal A segment: Special case */
 
-					i_del_yb = 1.0 / del_yb;
-					xc = xb[xb_start] + (ya[xa_start] - yb[xb_start]) * del_xb * i_del_yb;
-					if (!(xc < xa[xa_start] || xc > xa[xa_stop])) {	/* Did cross within the segment extents */
-
-						/* Only accept xover if occurring before segment end (in time) */
-
-						if (xb_start < xb_stop) {
-							tb_start = xb_start;	/* B Node first in time */
-							tb_stop = xb_stop;	/* B Node last in time */
+					if (del_yb == 0.0) {	/* Two horizontal segments with some overlap */
+						double x4[4];
+						/* Assign as crossover the middle of the overlapping segments */
+						X->y[nx] = ya[xa_start];
+						x4[0] = xa[xa_start];	x4[1] = xa[xa_stop];	x4[2] = xb[xb_start];	x4[3] = xb[xb_stop];
+						qsort ((void *)x4, (size_t)4, sizeof (double), GMT_comp_double_asc);
+						if (x4[1] != x4[2]) {
+							X->x[nx] = 0.5 * (x4[1] + x4[2]);
+							X->xnode[0][nx] = 0.5 * (xa_start + xa_stop);
+							X->xnode[1][nx] = 0.5 * (xb_start + xb_stop);
+							nx++;
 						}
-						else {
-							tb_start = xb_stop;	/* B Node first in time */
-							tb_stop = xb_start;	/* B Node last in time */
-						}
-						if (new_a_time) {
-							if (xa_start < xa_stop) {
-								ta_start = xa_start;	/* A Node first in time */
-								ta_stop = xa_stop;	/* A Node last in time */
+					}
+					else {
+						i_del_yb = 1.0 / del_yb;
+						xc = xb[xb_start] + (ya[xa_start] - yb[xb_start]) * del_xb * i_del_yb;
+						if (!(xc < xa[xa_start] || xc > xa[xa_stop])) {	/* Did cross within the segment extents */
+	
+							/* Only accept xover if occurring before segment end (in time) */
+	
+							if (xb_start < xb_stop) {
+								tb_start = xb_start;	/* B Node first in time */
+								tb_stop = xb_stop;	/* B Node last in time */
 							}
 							else {
-								ta_start = xa_stop;	/* A Node first in time */
-								ta_stop = xa_start;	/* A Node last in time */
+								tb_start = xb_stop;	/* B Node first in time */
+								tb_stop = xb_start;	/* B Node last in time */
 							}
-							new_a_time = FALSE;
-						}
-
-						tx_a = ta_start + fabs (xc - xa[ta_start]) / del_xa;
-						tx_b = tb_start + fabs ((ya[xa_start] - yb[tb_start]) * i_del_yb);
-						if (tx_a < ta_stop && tx_b < tb_stop) {
-							X->y[nx] = ya[xa_start];
-							X->x[nx] = xc;
-							X->xnode[0][nx] = tx_a;
-							X->xnode[1][nx] = tx_b;
-							nx++;
+							if (new_a_time) {
+								if (xa_start < xa_stop) {
+									ta_start = xa_start;	/* A Node first in time */
+									ta_stop = xa_stop;	/* A Node last in time */
+								}
+								else {
+									ta_start = xa_stop;	/* A Node first in time */
+									ta_stop = xa_start;	/* A Node last in time */
+								}
+								new_a_time = FALSE;
+							}
+	
+							tx_a = ta_start + fabs (xc - xa[ta_start]) / del_xa;
+							tx_b = tb_start + fabs ((ya[xa_start] - yb[tb_start]) * i_del_yb);
+							if (tx_a < ta_stop && tx_b < tb_stop) {
+								X->y[nx] = ya[xa_start];
+								X->x[nx] = xc;
+								X->xnode[0][nx] = tx_a;
+								X->xnode[1][nx] = tx_b;
+								nx++;
+							}
 						}
 					}
 				}
@@ -6576,7 +6605,24 @@ int GMT_crossover (double xa[], double ya[], int *sa0, struct GMT_XSEGMENT A[], 
 					i_del_xb = 1.0 / del_xb;
 					slp_a = del_ya * i_del_xa;
 					slp_b = del_yb * i_del_xb;
-					if (slp_a != slp_b) {	/* Segments are not parallel */
+					if (slp_a == slp_b) {	/* Segments are parallel */
+						double x4[4];
+						/* Assign as possible crossover the middle of the overlapping segments */
+						x4[0] = xa[xa_start];	x4[1] = xa[xa_stop];	x4[2] = xb[xb_start];	x4[3] = xb[xb_stop];
+						qsort ((void *)x4, (size_t)4, sizeof (double), GMT_comp_double_asc);
+						if (x4[1] != x4[2]) {
+							xc = 0.5 * (x4[1] + x4[2]);
+							yc = slp_a * (xc - xa[xa_start]) + ya[xa_start];
+							if ((slp_b * (xc - xb[xb_start]) + yb[xb_start]) == yc) {
+								X->y[nx] = yc;
+								X->x[nx] = xc;
+								X->xnode[0][nx] = 0.5 * (xa_start + xa_stop);
+								X->xnode[1][nx] = 0.5 * (xb_start + xb_stop);
+								nx++;
+							}
+						}
+					}
+					else {	/* Segments are not parallel */
 						xc = (yb[xb_start] - ya[xa_start] + slp_a * xa[xa_start] - slp_b * xb[xb_start]) / (slp_a - slp_b);
 						if (!(xc < xa[xa_start] || xc > xa[xa_stop] || xc < xb[xb_start] || xc > xb[xb_stop])) {	/* Did cross within the segment extents */
 
