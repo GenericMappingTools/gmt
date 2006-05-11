@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.6 2006-05-11 04:40:08 pwessel Exp $
+ *	$Id: polygon_findlevel.c,v 1.7 2006-05-11 06:26:35 pwessel Exp $
  */
 #include "wvs.h"
 
@@ -124,6 +124,41 @@ int main (int argc, char **argv) {
 	
 	lon = (int *) GMT_memory (CNULL, N_LONGEST, sizeof(int), "polygon_findlevel");
 	lat = (int *) GMT_memory (CNULL, N_LONGEST, sizeof(int), "polygon_findlevel");
+	
+	/* Scale crude polygons by 1e6 to match the data scale */
+	
+	for (i = 0; i < N_EUR_O; i++) {
+		ieur_o[0][i] *= MILL;
+		ieur_o[1][i] *= MILL;
+	}
+	for (i = 0; i < N_EUR_I; i++) {
+		ieur_i[0][i] *= MILL;
+		ieur_i[1][i] *= MILL;
+	}
+	for (i = 0; i < N_AFR_I; i++) {
+		iafr_i[0][i] *= MILL;
+		iafr_i[1][i] *= MILL;
+	}
+	for (i = 0; i < N_AM_O; i++) {
+		iam_o[0][i] *= MILL;
+		iam_o[1][i] *= MILL;
+	}
+	for (i = 0; i < N_SAM_I; i++) {
+		isam_i[0][i] *= MILL;
+		isam_i[1][i] *= MILL;
+	}
+	for (i = 0; i < N_NAM_I; i++) {
+		inam_i[0][i] *= MILL;
+		inam_i[1][i] *= MILL;
+	}
+	for (i = 0; i < N_AUS_O; i++) {
+		iaus_o[0][i] *= MILL;
+		iaus_o[1][i] *= MILL;
+	}
+	for (i = 0; i < N_AUS_I; i++) {
+		iaus_i[0][i] *= MILL;
+		iaus_i[1][i] *= MILL;
+	}
 	
 	/* Test everything except Antarctica which has no lakes */
 	
