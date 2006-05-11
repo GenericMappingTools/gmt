@@ -1,6 +1,6 @@
 function fixcoast (id)
 % FIXCOAST
-%	$Id: fixcoast.m,v 1.2 2006-05-03 03:53:49 pwessel Exp $
+%	$Id: fixcoast.m,v 1.3 2006-05-11 04:40:08 pwessel Exp $
 %
 % Give the id of the polygon to be fixed.  The polygon.id
 % file will be overwritten with the changed polygon
@@ -21,8 +21,9 @@ clf
 pl = plot (x, y, 'g-');
 hold on
 pp = plot (x, y, '.');
+title ('Zoom in if you need to - then hit return to continue')
+pause
 title ('Click to start editing - hit any key to quit')
-
 hit = waitforbuttonpress;
 while (hit == 0)   % Until a key is pressed
     title ('Click L to delete, M to move, and R to insert')

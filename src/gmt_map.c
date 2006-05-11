@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.123 2006-05-05 05:24:59 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.124 2006-05-11 04:40:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -473,7 +473,7 @@ void GMT_map_setup (double west, double east, double south, double north)
 	GMT_lat_swap_init ();
 	
 	/* Use old radial clip function for pscoast and gmtselect; grdlandmask sets -Jx1d so not included */
-	GMT_radial_clip = (strstr (GMT_program, "pscoast") || strstr (GMT_program, "gmtselect")) ? GMT_radial_clip_pscoast : GMT_radial_clip_new;
+	GMT_radial_clip = (GMT_program && (strstr (GMT_program, "pscoast") || strstr (GMT_program, "gmtselect"))) ? GMT_radial_clip_pscoast : GMT_radial_clip_new;
 
 	switch (project_info.projection) {
 
