@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.5 2006-04-10 04:53:48 pwessel Exp $
+ *	$Id: polygon_findlevel.c,v 1.6 2006-05-11 04:40:08 pwessel Exp $
  */
 #include "wvs.h"
 
@@ -30,7 +30,8 @@ int main (int argc, char **argv) {
 	
 	if (argc == 1) {
 		fprintf (stderr, "usage: polygon_findlevel final_x_polygons.b final_dbase.b [-s]\n");
-		fprintf (stderr, "Note: assumes poly # 0,1,2 are Eurasia, Americas,Australia (unless -s)\n");
+		fprintf (stderr, "Note 1: assumes poly # 0,1,2 are Eurasia, Americas,Australia (unless -s)\n");
+		fprintf (stderr, "Note 2: Will recalculate areas unless areas.lis already exists\n");
 		exit (-1);
 	}
 
@@ -88,6 +89,7 @@ int main (int argc, char **argv) {
 		project_info.pars[2] = 39.3700787401574814;
 		project_info.region = 1;
 		gmtdefs.line_step = 1.0e7;	/* To avoid nlon/nlat being huge */
+		project_info.degree[0] = project_info.degree[1] = TRUE;
 
 		flon = (double *) GMT_memory (CNULL, blob[0].h.n, sizeof(double), "polygon_findlevel");
 		flat = (double *) GMT_memory (CNULL, blob[0].h.n, sizeof(double), "polygon_findlevel");
@@ -115,8 +117,8 @@ int main (int argc, char **argv) {
 		}
 
 	
-		free ((char *)flon);
-		free ((char *)flat);
+		free ((void *)flon);
+		free ((void *)flat);
 	}
 	fclose (fp2);
 	
@@ -134,8 +136,8 @@ int main (int argc, char **argv) {
 		if (fabs (blob[id1].h.east - blob[id1].h.west) == 360.0) continue;	/* But skip Antarctica */
 		
 		if (id1 == 2) {	/* deallocate some space */
-			lon = (int *) GMT_memory ((char *)lon, blob[id1].h.n+5, sizeof(int), "polygon_findlevel");
-			lat = (int *) GMT_memory ((char *)lat, blob[id1].h.n+5, sizeof(int), "polygon_findlevel");
+			lon = (int *) GMT_memory ((void *)lon, blob[id1].h.n+5, sizeof(int), "polygon_findlevel");
+			lat = (int *) GMT_memory ((void *)lat, blob[id1].h.n+5, sizeof(int), "polygon_findlevel");
 		}
 		
 		if (id1%10 == 0) fprintf (stderr, "Polygon %d\r", id1);
@@ -312,8 +314,8 @@ int main (int argc, char **argv) {
 			}
 			
 			if (id1 < 5) {
-				fwrite ((char *)&id1, sizeof (int), 1, fps);
-				fwrite ((char *)&id2, sizeof (int), 1, fps);
+				fwrite ((void *)&id1, sizeof (int), 1, fps);
+				fwrite ((void *)&id2, sizeof (int), 1, fps);
 				fflush (fps);
 			}
 			blob[id2].inside[blob[id2].n_inside] = id1;
@@ -327,8 +329,8 @@ int main (int argc, char **argv) {
 	
 	fclose (fps);
 	
-	free ((char *)lon);
-	free ((char *)lat);
+	free ((void *)lon);
+	free ((void *)lat);
 
 	fprintf (stderr, "\nFound %d bad cases\n", bad);
 	
@@ -394,7 +396,7 @@ int main (int argc, char **argv) {
 	fclose (fp);
 	fclose (fp2);
 	
-	free ((char *)pp);
+	free ((void *)pp);
 	
 	exit (0);
 }	
