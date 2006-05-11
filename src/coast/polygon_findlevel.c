@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.7 2006-05-11 06:26:35 pwessel Exp $
+ *	$Id: polygon_findlevel.c,v 1.8 2006-05-11 23:31:49 pwessel Exp $
  */
 #include "wvs.h"
 
@@ -421,6 +421,7 @@ int main (int argc, char **argv) {
 			exit(-1);
 		}
 		if (blob[id].reverse) {	/* Reverse polygon */
+			fprintf (fpx, "Reversed polygon %d\n", id);
 			for (j = blob[id].h.n - 1; j >= 0; j--) pol_fwrite (&pp[j], 1, fp2);
 		}
 		else
