@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.73 2006-05-12 06:37:31 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.74 2006-05-12 06:42:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -498,6 +498,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	int cdf_mode[3] = { NC_NOWRITE, NC_WRITE, NC_WRITE};
 	char *bin_mode[3] = { "rb", "rb+", "wb"};
 	BOOLEAN header = TRUE;
+	EXTERN_MSC int GMT_nc_grd_info (struct GRD_HEADER *header, char job);
 	 
 	if (mode == 'r' || mode == 'R') {	/* Open file for reading */
 		if (mode == 'R') header = FALSE;
