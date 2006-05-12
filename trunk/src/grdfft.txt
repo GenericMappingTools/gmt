@@ -1,7 +1,7 @@
 .TH GRDFFT GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-grdfft \- Perform mathematical operations on grdfiles in the frequency domain 
+grdfft \- Perform mathematical operations on grdfiles in the wavenumber (or frequency) domain 
 .SH SYNOPSIS
 \fBgrdfft\fP \fIin_grdfile\fP OPT(G)\fIout_grdfile\fP [ OPT(A)\fIazimuth\fP ] 
 [ OPT(C)\fIzlevel\fP ] [ OPT(D)[\fIscale\fP\fB|g\fP] ] [ OPT(E)[\fBx|y\fP][\fBw\fP] ] 
