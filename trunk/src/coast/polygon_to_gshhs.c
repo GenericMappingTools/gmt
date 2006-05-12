@@ -1,8 +1,9 @@
 /*
- *	$Id: polygon_to_gshhs.c,v 1.9 2006-05-03 04:42:16 pwessel Exp $
+ *	$Id: polygon_to_gshhs.c,v 1.10 2006-05-12 04:41:53 pwessel Exp $
  * 
  *	read polygon.b format and write a GSHHS file to stdout
  *	For version 1.4 we standardize GSHHS header to only use 4-byte ints.
+ *	We also enforce writing of positive longitudes (0-360) * 1e6
  */
 
 #include "wvs.h"
@@ -49,6 +50,7 @@ int main (int argc, char **argv)
 				fprintf (stderr,"polygon_to_gshhs:  ERROR  reading file %s.\n", argv[1]);
 				exit (EXIT_FAILURE);
 			}
+			if (p.x < 0) p.x += M360;
 			if (pol_fwrite (&p, 1, stdout) != 1) {
 				fprintf (stderr,"polygon_to_gshhs:  ERROR  writing to stdout.\n");
 				exit (EXIT_FAILURE);
