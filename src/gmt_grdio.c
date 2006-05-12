@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.71 2006-04-22 12:41:00 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.72 2006-05-12 06:04:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -495,7 +495,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	 */
 	
 	int r_w;
-	int cdf_mode[2] = { NC_NOWRITE, NC_WRITE};
+	int cdf_mode[3] = { NC_NOWRITE, NC_WRITE, NC_WRITE};
 	char *bin_mode[3] = { "rb", "rb+", "wb"};
 	BOOLEAN header = TRUE;
 	 
@@ -509,7 +509,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	}
 	else
 		r_w = 1;
-
+ 	G->header.type = GMT_grd_get_format (file, &G->header);
 	G->scale = G->header.z_scale_factor, G->offset = G->header.z_add_offset;
 	if (GMT_grdformats[G->header.type][0] == 'c') {		/* Open netCDF file, old format */
 		check_nc_status (nc_open (G->header.name, cdf_mode[r_w], &G->fid));
