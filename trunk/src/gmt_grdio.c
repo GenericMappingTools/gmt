@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.72 2006-05-12 06:04:31 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.73 2006-05-12 06:37:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -510,16 +510,21 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	else
 		r_w = 1;
  	G->header.type = GMT_grd_get_format (file, &G->header);
-	G->scale = G->header.z_scale_factor, G->offset = G->header.z_add_offset;
+	if (GMT_is_dnan(G->header.z_scale_factor))
+		G->header.z_scale_factor = 1.0;
+	else if (G->header.z_scale_factor == 0.0) {
+		G->header.z_scale_factor = 1.0;
+		fprintf (stderr, "GMT Warning: scale_factor should not be 0. Reset to 1.\n");
+	}
 	if (GMT_grdformats[G->header.type][0] == 'c') {		/* Open netCDF file, old format */
 		check_nc_status (nc_open (G->header.name, cdf_mode[r_w], &G->fid));
-		check_nc_status (nc_inq_varid (G->fid, "z", &G->header.z_id));	/* Get variable id */
+		if (header) GMT_nc_grd_info (&G->header, mode);
 		G->edge[0] = G->header.nx;
 		G->start[0] = G->start[1] = G->edge[1] = 0;
 	}
 	else if (GMT_grdformats[G->header.type][0] == 'n') {		/* Open netCDF file, COARDS-compliant format */
 		check_nc_status (nc_open (G->header.name, cdf_mode[r_w], &G->fid));
-		check_nc_status (nc_inq_varid (G->fid, "z", &G->header.z_id));	/* Get variable id */
+		if (header) GMT_nc_grd_info (&G->header, mode);
 		G->edge[0] = 1;
 		G->edge[1] = G->header.nx;
 		G->start[0] = G->header.ny-1;
@@ -535,6 +540,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 
 	G->size = GMT_grd_data_size (G->header.type, &G->header.nan_value);
 	G->check = !GMT_is_dnan (G->header.nan_value);
+	G->scale = G->header.z_scale_factor, G->offset = G->header.z_add_offset;
 
 	if (GMT_grdformats[G->header.type][1] == 'm')	/* Bit mask */
 		G->n_byte = irint (ceil (G->header.nx / 32.0)) * G->size;
