@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_extract.c,v 1.4 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_extract.c,v 1.5 2006-05-12 04:15:12 pwessel Exp $
  */
 /* 
  *
@@ -87,7 +87,7 @@ int main (int argc, char **argv)
 				pol_fwrite (&p, 1, fp);
 			else {
 				if (poly[j].h.greenwich && p.x > poly[j].h.datelon) p.x -= M360;
-				fprintf (fp, "%.10g\t%.10g\n", 1.0e-6*p.x, 1.0e-6*p.y);
+				fprintf (fp, "%.11g\t%.10g\n", 1.0e-6*p.x, 1.0e-6*p.y);
 			}
 		}
 		if (individual) fclose (fp);

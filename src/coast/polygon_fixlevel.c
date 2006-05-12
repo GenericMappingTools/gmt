@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_fixlevel.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_fixlevel.c,v 1.3 2006-05-12 04:15:12 pwessel Exp $
  */
 /* 
  */
@@ -27,7 +27,7 @@ int main (int argc, char **argv)
 		exit (-1);
 	}
 		
-	while (pol_readheader (&h, fp_in) == 1) {
+	while (pol_readheader (&h, fp_in) == 1 && h.id != id) {
 		fseek (fp_in, (long) (h.n * sizeof (struct LONGPAIR)), SEEK_CUR);
 		fflush (fp_in);
 	}
@@ -54,6 +54,7 @@ int main (int argc, char **argv)
 	}
 	fflush (fp_in);
 
+#ifdef REVERSE
 	if (abs (new_level - old_level) % 2 == 1) {	/* Must reverse polygon */
 		p = (struct LONGPAIR *) GMT_memory (CNULL, h.n, sizeof (struct LONGPAIR), "polygon_fixlevel");
 		if (pol_fread (p, h.n, fp_in) != h.n) {
@@ -74,7 +75,7 @@ int main (int argc, char **argv)
 		}
 		fflush (fp_in);
 	}
-
+#endif
 	fclose(fp_in);
 	fprintf(stderr,"polygon_fixlevel:  Polygon %d successfully fixed\n", id);
 

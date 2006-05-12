@@ -1,7 +1,7 @@
 .TH GRDFILTER GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-grdfilter \- Filter a \fI.grd\fP file in the Time domain
+grdfilter \- Filter a 2-D gridded file in the space (or time) domain
 .SH SYNOPSIS
 \fBgrdfilter\fP \fIinput_file.grd\fP OPT(D)\fIdistance_flag\fP \fB\-F\fP\fI<filtertype><width>\fP[\fImode\fP] 
 OPT(G)\fIoutput_file.grd\fP [ GMT_I_OPT ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
