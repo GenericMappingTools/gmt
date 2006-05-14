@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.36 2006-05-08 03:24:05 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.37 2006-05-14 23:31:46 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -36,7 +36,7 @@ history of the development milestones in the 4.x series.
 
 \subsection{Overview of \gmt\ 4.1.2}
 
-On the surface, changes in \GMT\ 4.1.1 are relatively minor.  Most of the work has involved
+On the surface, changes in \GMT\ 4.1.2 are relatively minor.  Most of the work has involved
 realignment of code and parsing of arguments to simplify the upcoming port to \GMT\ 5;
 a brief listing of more visible changes include
 
@@ -44,16 +44,17 @@ a brief listing of more visible changes include
 \item Coastline files have been updated to use GSHHS version 1.4 which fixes minor inconsistencies
 in the coastline database.
 \item All coastline files are now stored in a new subdirectory \filename{coast} under the
-\filename{share} directory.
+\filename{share} directory, and the tar archives for coastlines now have their own version numbers
+as they do not change as frequently as the source code.
 \item The archives have been reorganized so that \filename{GMT\_share.*} contains all files needed
 at runtime whereas the standard coastline files are in the new \filename{GMT\_coast.*} archive.
 The \filename{GMT\_progs.*} archive has been renamed \filename{GMT\_src.*}.
 \item CPT files can now have {\it z}-values that are date-time strings.
-\item Optionally append {\bf z} to the \Opt{Jp} projection to annotate depths (north-y) rather than radius.
-\item Two new tools added to the {\bf misc} supplement for digitizing lines (\GMTprog{gmtdigitize.c} and
+\item Optionally append {\bf z} to the \Opt{Jp} projection to annotate depths (i.e., ``north-y'') rather than radius.
+\item Two new tools added to the {\bf misc} supplement for digitizing lines (\GMTprog{gmtdigitize.c}) and
 to stitch digitized lines into continuous lines or polygons (\GMTprog{gmtstitch.c}).
 \item Extended \Opt{M} option to take optional modifiers {\bf i} or {\bf o} for input or output.
-\item Added support for custom grd format AGC from Atlantic Geoscience Center.  Given the code {\bf af} [21].
+\item Added support for custom grd format AGC from Atlantic Geoscience Center, assigned the code {\bf af} [21].
 \end{enumerate}
 
 A few programs or options have received minor updates and new features, such as
@@ -64,7 +65,7 @@ A few programs or options have received minor updates and new features, such as
 Also added \Opt{T} to specify a particular quartile [Default {\it q} = 0.5 = median].
 \item [\GMTprog{blockmode.c}]: Added \Opt{E} for reporting LMS scale, min, and max values per block.
 \item [\GMTprog{configure}]: Added explicit options to bypass the installation of supplements
-that require Matlab (--disable-mex) and X11 (--disable-xgridX).
+that require Matlab (--disable-mex) and X11 (--disable-xgrid).
 \item [\GMTprog{gmtconvert.c}]: Added \Opt{D} option to write segments to individual output files.
 \item [\GMTprog{gmtdefaults.c}]: Support for new default {\bf PS\_VERBOSE} which controls the
 writing of comments to \PS\ files.  {\bf COLOR\_MODEL} can now accept a prefix ``+'' which
@@ -104,8 +105,8 @@ failed to get correct unit when ddd:mm:ss syntax was used for the position.
 Removed 0--360 restriction on azimuth.  \Opt{G} was susceptible to round-off and thus
 sometimes reissued the final point.
 \item [\GMTprog{psxy.c}]: \Opt{SV} and \Opt{SE} for \Opt{JX} did not convert azimuths to directions.
-Would get confused when distances between successive labels were smaller than the line's point spacing.
-\item [\GMTprog{mgd77/mgd77manage.c}]: Did no properly close the file after ingesting E77 information.
+The \Opt{Sq} option would get confused when distances between successive labels were smaller than the line's point spacing.
+\item [\GMTprog{mgd77/mgd77manage.c}]: Did not properly close the file after ingesting E77 information.
 \item [\GMTprog{pslib.c}]: \GMTfunc{ps\_load\_raster} did not use open mode {\bf rb} and hence failed under Windows.
 \item [\GMTprog{xyz2grd.c}]: The \Opt{E} option had the {\it y}-direction reversed.
 \item [\GMTprog{x2sys/x2sys\_get.c}]: \Opt{N} did not work properly (now fixed and tested).
