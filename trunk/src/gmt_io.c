@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.115 2006-04-18 04:39:29 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.116 2006-05-14 03:00:21 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2699,6 +2699,11 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 
 		GMT_alloc_segment (T->segment[seg], T->segment[seg]->n_rows, T->segment[seg]->n_columns, FALSE);
 
+		if (T->segment[seg]->n_rows == 0) {	/* Empty segment; we delete to avoid problems downstream in applications */
+			GMT_free ((void *)T->segment[seg]);
+			seg--;	/* Go back to where we were */
+		}
+		
 		if ((size_t)seg == (n_seg_alloc-1)) {
 			n_seg_alloc += GMT_CHUNK;
 			T->segment = (struct GMT_LINE_SEGMENT **) GMT_memory ((void *)T->segment, n_seg_alloc, sizeof (struct GMT_LINE_SEGMENT *), GMT_program);
@@ -2708,7 +2713,10 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 	if (!use_GMT_io) GMT_input = psave;	/* Restore former pointer */
 	GMT_io.multi_segments[GMT_IN] = save;
 
-	seg++;
+	if (T->segment[seg]->n_rows == 0)	/* Last segment was empty; we delete to avoid problems downstream in applications */
+		GMT_free ((void *)T->segment[seg]);
+	else
+		seg++;
 	T->segment = (struct GMT_LINE_SEGMENT **) GMT_memory ((void *)T->segment, (size_t)seg, sizeof (struct GMT_LINE_SEGMENT *), GMT_program);
 	T->n_segments = seg;
 	T->n_columns = T->segment[0]->n_columns;
