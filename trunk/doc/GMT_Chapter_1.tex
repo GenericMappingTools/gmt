@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.37 2006-05-14 23:31:46 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.38 2006-05-15 02:40:38 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -98,7 +98,7 @@ failed to get correct unit when ddd:mm:ss syntax was used for the position.
 \item [\GMTprog{grd2xyz.c}]: The \Opt{E} option had the {\it y}-direction reversed.
 \item [\GMTprog{grdfilter.c}]: Needed the \Opt{f} option to process \Opt{R}ddd:mm syntax.
 \item [\GMTprog{grdimage.c}]: Would hang in {\it stdin} if \Opt{C} not given when one grid is plotted.
-\item [\GMTprog{grdmask.c}]: Did not explicitly close polygons before using them.
+\item [\GMTprog{grdmask.c}]: Did not explicitly close polygons before using them.  Test for polar caps applied to the opposite pole.
 \item [\GMTprog{grdmath.c}]: Command {\bf INSIDE} for Cartesian data had bug (passed {\it y} where {\it x} was expected).
 \item [\GMTprog{grdsample.c}]: Failed when \Opt{I} was specified.
 \item [\GMTprog{project.c}]: Cartesian projections gave incorrect results for {\it p,w,r,s}.
