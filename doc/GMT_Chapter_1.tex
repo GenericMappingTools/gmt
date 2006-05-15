@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.38 2006-05-15 02:40:38 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.39 2006-05-15 23:48:19 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -92,7 +92,8 @@ that we have identified and corrected in the current release:
 \begin{description}
 \item [\GMTprog{gmt\_plot.c}]: The 3-D perspective plotting of text was not scaled correctly.
 \item [\GMTprog{gmt\_support.c}]: Parsing of \Opt{L} option used in \GMTprogi{psbasemap} and \GMTprogi{pscoast}
-failed to get correct unit when ddd:mm:ss syntax was used for the position.
+failed to get correct unit when ddd:mm:ss syntax was used for the position. Corner boundary conditions (needed
+by \GMTprog{grdtrack}, \GMTprog{grdsample}, \GMTprog{grdview}, and \GMTprog{grdgradient}) had wrong sign.
 \item [\GMTprog{gmt2rgb.c}]: Did not check name template properly, and did not initialize region.
 \item [\GMTprog{gmtselect.c}]: Option \Opt{F} insisted on using spherical testing for Cartesian {\it x,y} data.
 \item [\GMTprog{grd2xyz.c}]: The \Opt{E} option had the {\it y}-direction reversed.
@@ -101,6 +102,7 @@ failed to get correct unit when ddd:mm:ss syntax was used for the position.
 \item [\GMTprog{grdmask.c}]: Did not explicitly close polygons before using them.  Test for polar caps applied to the opposite pole.
 \item [\GMTprog{grdmath.c}]: Command {\bf INSIDE} for Cartesian data had bug (passed {\it y} where {\it x} was expected).
 \item [\GMTprog{grdsample.c}]: Failed when \Opt{I} was specified.
+\item [\GMTprog{grdview.c}]: Bug in plotting north facade (\Opt{N}).  Also tried to free unallocated memory if \Opt(G) was used.
 \item [\GMTprog{project.c}]: Cartesian projections gave incorrect results for {\it p,w,r,s}.
 Removed 0--360 restriction on azimuth.  \Opt{G} was susceptible to round-off and thus
 sometimes reissued the final point.
