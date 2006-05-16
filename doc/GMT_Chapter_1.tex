@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.39 2006-05-15 23:48:19 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.40 2006-05-16 00:16:27 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -34,7 +34,7 @@ will be distinguished by being completely restructured so as to allow developers
 high-level \GMT\ processes from a variety of programming environments.  Below is a brief
 history of the development milestones in the 4.x series.
 
-\subsection{Overview of \gmt\ 4.1.2}
+\subsection{Overview of \gmt\ 4.1.2 [May-15, 2006]}
 
 On the surface, changes in \GMT\ 4.1.2 are relatively minor.  Most of the work has involved
 realignment of code and parsing of arguments to simplify the upcoming port to \GMT\ 5;
@@ -45,7 +45,7 @@ a brief listing of more visible changes include
 in the coastline database.
 \item All coastline files are now stored in a new subdirectory \filename{coast} under the
 \filename{share} directory, and the tar archives for coastlines now have their own version numbers
-as they do not change as frequently as the source code.
+as they do not change as frequently as the source code.  Current coastline version number is 4.1.
 \item The archives have been reorganized so that \filename{GMT\_share.*} contains all files needed
 at runtime whereas the standard coastline files are in the new \filename{GMT\_coast.*} archive.
 The \filename{GMT\_progs.*} archive has been renamed \filename{GMT\_src.*}.
@@ -82,7 +82,7 @@ Added {\bf CPOISS} for cumulative Poisson distribution.
 backwards compatibility).
 \item [\GMTprog{psscale.c}]: Enhanced \Opt{I} option for asymmetrical intensity ranges from {\it low} to {\it high}.
 \item [\GMTprog{psxy.c}]: Added \Opt{SW} for wedges defined by azimuths rather than directions.  Polygons of large
-lontigudional extent now clip correctly.
+longitudinal extent now clip correctly.
 \item [\GMTprog{splitxyz.c}]: New option \Opt{Q} to specify the output columns and their order.
 \end{description}
 
@@ -92,8 +92,8 @@ that we have identified and corrected in the current release:
 \begin{description}
 \item [\GMTprog{gmt\_plot.c}]: The 3-D perspective plotting of text was not scaled correctly.
 \item [\GMTprog{gmt\_support.c}]: Parsing of \Opt{L} option used in \GMTprogi{psbasemap} and \GMTprogi{pscoast}
-failed to get correct unit when ddd:mm:ss syntax was used for the position. Corner boundary conditions (needed
-by \GMTprog{grdtrack}, \GMTprog{grdsample}, \GMTprog{grdview}, and \GMTprog{grdgradient}) had wrong sign.
+failed to get correct unit when ddd:mm:ss syntax was used for the position. Corner boundary conditions for grids (needed
+by \GMTprog{grdtrack}, \GMTprog{grdsample}, \GMTprog{grdview}, and \GMTprog{grdgradient}) had the wrong sign.
 \item [\GMTprog{gmt2rgb.c}]: Did not check name template properly, and did not initialize region.
 \item [\GMTprog{gmtselect.c}]: Option \Opt{F} insisted on using spherical testing for Cartesian {\it x,y} data.
 \item [\GMTprog{grd2xyz.c}]: The \Opt{E} option had the {\it y}-direction reversed.
@@ -102,9 +102,9 @@ by \GMTprog{grdtrack}, \GMTprog{grdsample}, \GMTprog{grdview}, and \GMTprog{grdg
 \item [\GMTprog{grdmask.c}]: Did not explicitly close polygons before using them.  Test for polar caps applied to the opposite pole.
 \item [\GMTprog{grdmath.c}]: Command {\bf INSIDE} for Cartesian data had bug (passed {\it y} where {\it x} was expected).
 \item [\GMTprog{grdsample.c}]: Failed when \Opt{I} was specified.
-\item [\GMTprog{grdview.c}]: Bug in plotting north facade (\Opt{N}).  Also tried to free unallocated memory if \Opt(G) was used.
+\item [\GMTprog{grdview.c}]: Bug in plotting north facade (\Opt{N}).  Also tried to free unallocated memory if \Opt{G} was used.
 \item [\GMTprog{project.c}]: Cartesian projections gave incorrect results for {\it p,w,r,s}.
-Removed 0--360 restriction on azimuth.  \Opt{G} was susceptible to round-off and thus
+Removed 0--360 restriction on azimuth.  Option \Opt{G} was susceptible to round-off and thus
 sometimes reissued the final point.
 \item [\GMTprog{psxy.c}]: \Opt{SV} and \Opt{SE} for \Opt{JX} did not convert azimuths to directions.
 The \Opt{Sq} option would get confused when distances between successive labels were smaller than the line's point spacing.
@@ -116,7 +116,7 @@ The \Opt{Sq} option would get confused when distances between successive labels 
 
 %-----------------------------------------
 
-\subsection{Overview of \gmt\ 4.1.1}
+\subsection{Overview of \gmt\ 4.1.1 [Mar-1, 2006]}
 
 Changes in \GMT\ 4.1.1 are mostly minor; a brief listing include
 
@@ -184,7 +184,7 @@ Now considers data inside the first and last tiles which might stick outside w/e
 \item [\GMTprog{x2sys/x2sys\_cross.c}]: Several problems fixed.
 \end{description}
 
-\subsection{Overview of \gmt\ 4.1}
+\subsection{Overview of \gmt\ 4.1 [Jan-7, 2006]}
 
 Most changes in \GMT\ 4.1 are improvements ``under the hood''.  The most significant of these are
 
@@ -334,7 +334,7 @@ we would not scale symbols correctly if upper case symbols were given
 development.
 \end{description}
 
-\subsection{Overview of \gmt\ 4.0}
+\subsection{Overview of \gmt\ 4.0 [Oct-10, 2004]}
 
 \GMT\ 4 represents a major overhaul of the package, hence the major version number increment.  There are four
 categories of changes that have been implemented:
