@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.252 2006-05-15 23:48:19 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.253 2006-05-17 05:47:19 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5337,21 +5337,23 @@ void GMT_setcontjump (float *z, int nz)
 
 void GMT_set_xy_domain (double wesn_extended[], struct GRD_HEADER *h)
 {
+	double off;
 	/* Sets the domain boundaries to be used to determine if x,y coordinates
 	 * are outside the domain of a grid.  If gridline-registered then the
 	 * domain is extended by 0.5 the grid interval.  Note that points with
 	 * x == x_max and y = y_max are considered inside.
 	 */
 	 
+	off = 0.5 - h->xy_off;
 	if (GMT_io.in_col_type[0] == GMT_IS_LON && fabs ((h->x_max - h->x_min) - 360.0) < GMT_CONV_LIMIT) {	/* Global longitude range */
 		wesn_extended[0] = h->x_min;	wesn_extended[1] = h->x_max;
 	}
 	else {
-		wesn_extended[0] = h->x_min - h->xy_off * h->x_inc;	wesn_extended[1] = h->x_max + h->xy_off * h->x_inc;
+		wesn_extended[0] = h->x_min - off * h->x_inc;	wesn_extended[1] = h->x_max + off * h->x_inc;
 	}
 	/* Latitudes can be extended provided we are not at the poles */
-	wesn_extended[2] = h->y_min - h->xy_off * h->y_inc;
-	wesn_extended[3] = h->y_max + h->xy_off * h->y_inc;
+	wesn_extended[2] = h->y_min - off * h->y_inc;
+	wesn_extended[3] = h->y_max + off * h->y_inc;
 	if (GMT_io.in_col_type[1] == GMT_IS_LAT) {
 		if (wesn_extended[2] < -90.0) wesn_extended[2] = -90.0;
 		if (wesn_extended[3] > +90.0) wesn_extended[3] = +90.0;
