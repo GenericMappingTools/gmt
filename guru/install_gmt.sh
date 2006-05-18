@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.76 2006-05-15 23:48:19 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.77 2006-05-18 22:55:29 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1291,6 +1291,16 @@ if [ $GMT_triangle = "y" ]; then
 else
 	enable_triangle=
 fi
+if [ $GMT_suppl_mex = "y" ]; then
+	disable_mex=
+else
+	disable_mex=--disable-mex
+fi
+if [ $GMT_suppl_xgrid = "y" ]; then
+	disable_xgrid=
+else
+	disable_xgrid=--disable-xgrid
+fi
 
 if [ $GMT_sharedlib = "y" ]; then
 	enable_shared=--enable-shared
@@ -1329,7 +1339,8 @@ fi
 	
 ./configure --prefix=$GMT_def --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle \
-  --mandir=$GMT_man --enable-mansect=$GMT_mansect --enable-www=$GMT_web --datadir=$GMT_share --enable-update=$ftp_ip
+  --mandir=$GMT_man --enable-mansect=$GMT_mansect --enable-www=$GMT_web --datadir=$GMT_share --enable-update=$ftp_ip \
+  $disable_mex $disable_xgrid 
 
 if [ -f .gmtconfigure ]; then
 	cat .gmtconfigure
