@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.74 2006-05-12 06:42:06 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.75 2006-05-18 23:36:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -702,19 +702,21 @@ void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift)
 {
 	/* This function will shift a grid by shift degrees */
 
-	int i, j, k, ij, nc, n_shift, width;
+	int i, j, k, ij, nc, nx1, n_shift, width, n_warn = 0;
 	float *tmp;
 
 	tmp = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_grd_shift");
 
 	n_shift = irint (shift / header->x_inc);
-	width = (header->node_offset) ? header->nx : header->nx - 1;
+	nx1 = header->nx - 1;
+	width = (header->node_offset) ? header->nx : nx1;
 	nc = header->nx * sizeof (float);
 
 	for (j = ij = 0; j < header->ny; j++, ij += header->nx) {
+		if (!header->node_offset && grd[ij] != grd[ij+nx1]) n_warn++;
 		for (i = 0; i < header->nx; i++) {
 			k = (i - n_shift) % width;
-			if (k < 0) k += header->nx;
+			if (k < 0) k += width;
 			tmp[k] = grd[ij+i];
 		}
 		if (!header->node_offset) tmp[width] = tmp[0];
@@ -733,6 +735,8 @@ void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift)
 		header->x_min -= 360.0;
 		header->x_max -= 360.0;
 	}
+
+	if (n_warn) fprintf (stderr, "%s: Gridline-registered global grid has inconsistant values at repeated node for %d rows\n", GMT_program, n_warn);
 
 	GMT_free ((void *) tmp);
 }
