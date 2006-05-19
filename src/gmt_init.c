@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.232 2006-05-04 02:37:26 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.233 2006-05-19 06:07:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -507,7 +507,7 @@ void GMT_explain_option (char option)
 				gmtdefs.x_origin, gmtdefs.y_origin);
 			fprintf (stderr, "\t   Prepend a for absolute [Default r is relative]\n");
 			fprintf (stderr, "\t   (Note that for overlays (-O), the default is [r0,r0].)\n");
-			fprintf (stderr, "\t   Give c to center plot on page in x and/or y.)\n");
+			fprintf (stderr, "\t   Give c to center plot on page in x and/or y.\n");
 			break;
 
 		case 'Z':	/* Vertical scaling for 3-D plots */
