@@ -91,6 +91,7 @@ with the \fB\-Vl\fP option.  [Default = 1.4 converges quickly and is almost alwa
 #include "explain_-n.txt"
 [Default is 3 input columns].
 #include "explain_-f.txt"
+#include "explain_float.txt"
 .SH EXAMPLES
 .sp
 To grid 5 by 5 minute gravity block means from the ASCII data in hawaii_5x5.xyg, using a \fItension_factor\fP = 0.25,

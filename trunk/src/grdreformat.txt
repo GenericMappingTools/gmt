@@ -131,6 +131,7 @@ using ceil (\fInx\fP / 32) * 4 instead of \fInx\fP.
 Note that these files are platform-dependent. Files written on Little Endian machines (e.g. PCs) can not be
 read on Big Endian machines (e.g. most workstations).
 For header and grid details, see Appendix B.
+#include "explain_float.txt"
 .SH EXAMPLES
 To extract the second layer from a 3-dimensional grid named temp from a COARDS-compliant netCDF file
 climate.grd:

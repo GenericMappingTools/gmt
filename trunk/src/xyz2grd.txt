@@ -94,6 +94,7 @@ Note that \fB\-Z\fP only applies to 1-column input.
 #include "explain_-n.txt"
 [Default is 3 input columns].  This option only applies to xyz input files; see \fB\-Z\fP for z tables.
 #include "explain_-f.txt"
+#include "explain_float.txt"
 .SH EXAMPLES
 To create a grdfile from the ASCII data in hawaii_grv.xyz, use
 .br
