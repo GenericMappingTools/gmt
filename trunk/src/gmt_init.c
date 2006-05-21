@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.233 2006-05-19 06:07:08 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.234 2006-05-21 22:39:03 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2922,7 +2922,8 @@ int GMT_begin (int argc, char **argv)
 	frame_info.check_side = frame_info.horizontal = FALSE;
 	project_info.f_horizon = 90.0;
 	GMT_distance_func = (PFD) GMT_great_circle_dist_km;
-
+	GMT_PS_init ();		/* Init the PostScript-related parameters */
+	
 	/* Set the gmtdefault parameters from the $HOME/.gmtdefaults4 (if any) */
 
         /* See if user specified +optional_defaults_file.  If so, assign filename to this and remove option from argv */
@@ -3012,8 +3013,6 @@ int GMT_begin (int argc, char **argv)
 		argv[n] = p;
 	}
 
-	GMT_PS_init ();		/* Init the PostScript-related parameters */
-	
 	GMT = (struct GMT_COMMON *)New_GMT_Ctrl ();	/* Allocate and initialize a new common control structure */
 
 	return (argc);
@@ -3337,7 +3336,8 @@ void GMT_get_history (int argc, char ** argv)
 
 void GMT_PS_init (void) {		/* Init the PostScript-related parameters */
 
-	/* Some of these might be modified later by -K, -O, -P, -U, -V, -X, -Y, -c */
+	/* Some of these might be modified later by -K, -O, -P, -U, -V, -X, -Y, -c or various --PAR=value statements.
+	 * Must be called before processing of -- and common arguments. */
 	
 	GMT_ps.portrait = gmtdefs.portrait;		/* TRUE for portrait, FALSE for landscape */
 	GMT_ps.verbose = gmtdefs.verbose;		/* TRUE to give verbose feedback from pslib routines [FALSE] */
