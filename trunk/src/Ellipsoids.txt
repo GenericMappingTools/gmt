@@ -1,4 +1,4 @@
-#	$Id: Ellipsoids.txt,v 1.3 2003-12-23 21:38:24 pwessel Exp $
+#	$Id: Ellipsoids.txt,v 1.4 2006-05-21 01:23:43 pwessel Exp $
 #
 # This is the core listing of supported ellipsoids in GMT map projections.
 # To add more ellipsoids, add record sorted by year, run make_ellipsoids.sh
@@ -13,6 +13,7 @@ Engelis			1985 6378136.05		298.2566	: Goodard Earth Models
 SGS-85			1985 6378136.0		298.257		: Soviet Geodetic System
 MERIT-83		1983 6378137.0		298.257		: United States Naval Observatory
 GRS-80			1980 6378137.0		298.257222101	: International Geodetic Reference System
+Hughes-1980		1980 6378273.0		298.2794	: Hughes Aircraft Company for DMSP SSM/I grid products
 Lerch			1979 6378139.0		298.257		: For geoid modelling
 ATS77			1977 6378135.0		298.257		: Average Terrestrial System, Canada Maritime provinces
 IAG-75			1975 6378140.0		298.257222	: International Association of Geodesy
