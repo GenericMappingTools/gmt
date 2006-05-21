@@ -69,6 +69,7 @@ which must satisfy -1 <= x <= +1. Unlike \fBYLM\fP, \fBPLM\fP is not normalized.
 .br
 (4) All the derivatives are based on central finite differences, with natural
 boundary conditions.
+#include "explain_float.txt"
 .SH EXAMPLES
 To take log10 of the average of 2 files, use
 .br
