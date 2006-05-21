@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.253 2006-05-17 05:47:19 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.254 2006-05-21 04:37:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5650,6 +5650,7 @@ void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct G
 	/* used to ensure that sloppy w,e,s,n values are rounded to proper multiples */
 	
 	int i;
+	BOOLEAN global;
 	double half_or_zero, val, start, dx, small, i_d;
 	
 	half_or_zero = (header->node_offset) ? 0.5 : 0.0;
@@ -5667,13 +5668,13 @@ void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct G
 			/* Everything is seemingly OK */
 			break;
 	}
-	
+	global = (GMT_io.in_col_type[0] == GMT_IS_LON && fabs (fabs (header->x_max - header->x_min) - 360.0) < GMT_CONV_LIMIT);
 	if (GMT_io.in_col_type[0] != GMT_IS_LON || fabs (fabs (*e - *w) - 360.0) > GMT_CONV_LIMIT) {	/* Do this unless a 360 longitude wrap */
 		small = GMT_SMALL * header->x_inc;
 		start = (GMT_io.in_col_type[0] == GMT_IS_LON && fabs (fabs (header->x_min - *w) - 360.0) < GMT_CONV_LIMIT) ? *w : header->x_min;
 
 		i_d = (*w - header->x_min) / header->x_inc;
-		if (i_d < 0) i_d = 0;
+		if (i_d < 0 && !global) i_d = 0;
 		i = irint(i_d);
 		val = header->x_min + i * header->x_inc;
 

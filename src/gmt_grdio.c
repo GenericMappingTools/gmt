@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.75 2006-05-18 23:36:13 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.76 2006-05-21 04:37:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -752,6 +752,7 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 
 	if (!project_info.region && !GMT_IS_RECT_GRATICULE) {	/* Used -R... with oblique boundaries - return entire grid */
 		BOOLEAN N_outside, S_outside;
+		global = (fabs (h->x_max - h->x_min - 360.0) < GMT_SMALL);	/* A global grid */
 		N_outside = GMT_outside (0.0, +90.0);	/* North pole outside map boundary? */
 		S_outside = GMT_outside (0.0, -90.0);	/* South pole outside map boundary? */
 		/* Note: while h->xy_off might be 0.5 (pixel) or 0 (gridline), the w/e boundaries are always "gridline" hence we pass 0 as xy_off */
@@ -765,8 +766,8 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 			*ymin = GMT_j_to_y (GMT_y_to_j (project_info.s, h->y_min, h->y_inc, 0.0, h->ny), h->y_min, h->y_max, h->y_inc, 0.0, h->ny);
 			*ymax = GMT_j_to_y (GMT_y_to_j (project_info.n, h->y_min, h->y_inc, 0.0, h->ny), h->y_min, h->y_max, h->y_inc, 0.0, h->ny);
 			/* Make sure we dont exceed grid domain (which can happen if project_info.w|e exceeds the grid limits) */
-			if ((*xmin) < h->x_min) *xmin = h->x_min;
-			if ((*xmax) > h->x_max) *xmax = h->x_max;
+			if ((*xmin) < h->x_min && !global) *xmin = h->x_min;
+			if ((*xmax) > h->x_max && !global) *xmax = h->x_max;
 			if ((*ymin) < h->y_min) *ymin = h->y_min;
 			if ((*ymax) > h->y_max) *ymax = h->y_max;
 		}
