@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.234 2006-05-21 22:39:03 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.235 2006-05-22 05:30:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2631,6 +2631,7 @@ int GMT_get_ellipsoid (char *name)
 	if (i == GMT_N_ELLIPSOIDS) {	/* Try to open as file first in (1) current dir, then in (2) $GMTHOME/share */
 		FILE *fp;
 		char line[BUFSIZ], path[BUFSIZ];
+		double slop;
 
 		sprintf (path, "%s%cshare%c%s", GMTHOME, DIR_DELIM, DIR_DELIM, name);
 
@@ -2669,7 +2670,7 @@ int GMT_get_ellipsoid (char *name)
 					gmtdefs.ref_ellipsoid[i].flattening != 0.0 ? "1/" : "", gmtdefs.ref_ellipsoid[i].flattening != 0.0 ? 1./gmtdefs.ref_ellipsoid[i].flattening : 0.0);
 			}
 			/* else check consistency: */
-			else if (gmtdefs.ref_ellipsoid[i].pol_radius > 0.0 && fabs(gmtdefs.ref_ellipsoid[i].flattening - 1.0 + (gmtdefs.ref_ellipsoid[i].pol_radius/gmtdefs.ref_ellipsoid[i].eq_radius)) > 1.0e-11) {
+			else if (gmtdefs.ref_ellipsoid[i].pol_radius > 0.0 && (slop = fabs(gmtdefs.ref_ellipsoid[i].flattening - 1.0 + (gmtdefs.ref_ellipsoid[i].pol_radius/gmtdefs.ref_ellipsoid[i].eq_radius))) > 1.0e-8) {
 				fprintf (stderr, "GMT Warning: Possible inconsistency in user ellipsoid parameters (%s)\n", line);
 				/* exit (EXIT_FAILURE); */
 			}
