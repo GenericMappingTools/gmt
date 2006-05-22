@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.176 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.177 2006-05-22 04:24:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2793,8 +2793,10 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 				jj = 10;
 				break;
 		}
-		GMT_xyz_to_xy (x_label, y_label, project_info.z_level, &tx, &ty);
-		GMT_text3D (tx, ty, project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, this_label, 0.0, jj, 0);
+		if (ms->justify != 'u') {
+			GMT_xyz_to_xy (x_label, y_label, project_info.z_level, &tx, &ty);
+			GMT_text3D (tx, ty, project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, this_label, 0.0, jj, 0);
+		}
 	}
 	else {	/* Simple scale */
 
