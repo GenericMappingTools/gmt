@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.254 2006-05-21 04:37:14 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.255 2006-05-22 04:24:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5401,9 +5401,12 @@ int GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 
 	for (n_slash = 0, i = j; text[i] && text[i] != '+'; i++) if (text[i] == '/') n_slash++;
 
-	/* Determine if we have the optional label/justify component specified */
+	/* Determine if we have the optional label/justify component specified.  We search from
+	 * the end of the text until we reach the last slash, and update the colon position when
+	 * we find a colon.  When the loop exits the colon variable should point to the start of
+	 * the label string */
 
-	for (colon = -1, i = strlen (text), ok = TRUE; i && text[i] && colon < 0; i--) {
+	for (colon = -1, i = strlen (text) - 1, ok = TRUE; i && text[i] && ok; i--) {
 		if (text[i] == ':') colon = i+1;
 		if (text[i] == '/') ok = FALSE;	/* Do not search further than to the last slash */
 	}
@@ -5421,7 +5424,7 @@ int GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 		k = 0;
 		error++;
 	}
-	if (colon > 0) {	/* Get label and justification */
+	if (colon > 0) {	/* Get label and justification which are in :label:<just> format */
 		sscanf (&text[colon], "%[^:]:%c", ms->label, &ms->justify);
 		ms->measure = text[colon-2];
 	}
