@@ -57,8 +57,8 @@ a highpass or lowpass filter, give hyphens (-) for \fIhp\fP/\fIhc\fP or \fIlc\fP
 will lowpass \fIx\fP, passing wavelengths > 50 and rejecting wavelengths < 10.  \fB\-Fy\fP1000/250/-/- will highpass \fIy\fP, 
 passing wavelengths < 250 and rejecting wavelengths > 1000.  Gaussian band-pass: Append two wavelengths in correct units
 (see \fB\-M\fP) to design a bandpass filter.  At the given wavelenghts the Gaussian filter weights will be 0.5. To make
-a highpass or lowpass filter, give a hyphen (-) for the \fIhi\fP or \fIlo\fP wavelength, respectively.  E.g., E.g., \fB\-F\fP-/30
-will lowpass the data using a Gaussian filter with half-weight at 30, while \fB\F\fP400/- will highpass the data.
+a highpass or lowpass filter, give a hyphen (-) for the \fIhi\fP or \fIlo\fP wavelength, respectively.  E.g., \fB\-F\fP-/30
+will lowpass the data using a Gaussian filter with half-weight at 30, while \fB\-F\fP400/- will highpass the data.
 .TP
 .B \-I
 Integrate the field, i.e., compute integral_over_z (field * dz).  This is equivalent to divide by kr
