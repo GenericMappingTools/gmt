@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.235 2006-05-22 05:30:47 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.236 2006-05-23 02:06:26 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2923,7 +2923,6 @@ int GMT_begin (int argc, char **argv)
 	frame_info.check_side = frame_info.horizontal = FALSE;
 	project_info.f_horizon = 90.0;
 	GMT_distance_func = (PFD) GMT_great_circle_dist_km;
-	GMT_PS_init ();		/* Init the PostScript-related parameters */
 	
 	/* Set the gmtdefault parameters from the $HOME/.gmtdefaults4 (if any) */
 
@@ -2959,6 +2958,8 @@ int GMT_begin (int argc, char **argv)
 	}
 	argc = j;
 	if (n) fprintf (stderr, "%s:  %d conversion errors from command-line default override settings!\n", GMT_program, n);
+
+	GMT_PS_init ();		/* Init the PostScript-related parameters */
 
 	GMT_init_ellipsoid ();	/* Set parameters depending on the ellipsoid */
 
