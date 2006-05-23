@@ -7,7 +7,7 @@ mgd77list \- A data-extractor for MGD77[+] files
 [ OPT(Ac)|\fBd\fP|\fBf\fP|\fBm\fP\fIcode\fP ] [ OPT(C)\fBf\fP|\fBg\fP|\fBe\fP ] 
 [ OPT(Da)\fIstartdate\fP ] [ OPT(Db)\fIstopdate\fP ] [ OPT(E) ] 
 [ GMT_H_OPT ] [ OPT(I)\fIignore\fP ] [ OPT(X)[\fIcorrtable\fP] ] [ GMT_Mo_OPT ] 
-[ OPT(Nd)|\fBs\fP\fIunit\fP ] [ GMT_Rgeo_OPT ] [ OPT(Sa)\fIstartdist\fP[unit] ] 
+[ OPT(Nd)|\fBs\fP\fIunit\fP ] [ OPT(Q)\fBa\fP|\fBv\fP\fImin\fP/\fImax\fP ] [ GMT_Rgeo_OPT ] [ OPT(Sa)\fIstartdist\fP[unit] ] 
 [ OPT(Sb)\fIstopdist\fP[unit] ] [ OPT(T)[\fBm\fP|\fBe\fP] ]  [ GMT_V_OPT ] 
 [ OPT(W)\fIweight\fP ] [ OPT(Z)\fI+\fP|\fB-\fP ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
@@ -172,7 +172,7 @@ By appending \fB+\fP to either of these set we will also append \fBdist\fP, \fBa
 \fBweight\fP as listed above.
 .br
 .sp
-As an option, logical tests may be added for any of the parameters by appending ,\fIlogic\fP,
+As an option, logical tests may be added for any of the observations by appending ,\fIlogic\fP,
 which is itself composed of one or more comma-separated instructions
 of the form \fIpar\fP\fBOP\fP\fIvalue\fP, where \fIpar\fP is one of the parameters listed above, \fBOP\fP is
 a logical operator (<, <=, =, !=, >=, >, |), and \fIvalue\fP is a constant used in the comparison.  Floating point
@@ -317,6 +317,14 @@ Issue a multi-segment header record with cruise ID for each cruise.
 Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
 \fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles or miles/hr), or
 \fBn\fP (nautical miles or knots).  [Default is \fB\-Ndk \-Nse\fP (km and m/s)].
+.TP
+.B \-Qa
+Specify an accepted range (\fImin\fP/\fImax\fP) of azimuths.  Records whose track azimuth falls
+outside this range are ignored [0-360].
+.TP
+.B \-Qv
+Specify an accepted range (\fImin\fP/\fImax\fP; or just \fImin\fP if there is no upper limit)
+of velocities.  Records whose track speed falls outside this range are ignored [0-infinity].
 #include "explain_-Rgeo.txt"
 .TP
 .B \-Sa
