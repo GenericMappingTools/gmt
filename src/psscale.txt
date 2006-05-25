@@ -11,7 +11,7 @@ psscale \- Create grayscale or colorscale for maps
 \fBpsscale\fP OPT(D)\fIxpos\fP/\fIypos\fP/\fIlength\fP/\fIwidth\fP[\fBh\fP] [ OPT(A) ] [ GMT_B_OPT ] 
 [ OPT(C)\fIcpt_file\fP ] [ OPT(E)[\fBb\fP|\fBf\fP][\fIlength\fP] ] [ OPT(I)[\fImax_intens\fP[\fIlow_i\fP/\fIhigh_i\fP]] ] 
 [ GMT_K_OPT ] [ OPT(L)[\fBi\fP][\fIgap\fP] ] [ OPT(M) ] 
-[ OPT(N)\fIdpi\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ OPT(N)\fIdpi\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] 
 [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] 
 [ GMT_Y_OPT ] [ OPT(Z)\fIzfile\fP ] [ GMT_c_OPT ]
 .SH DESCRIPTION
@@ -78,6 +78,11 @@ Force a monochrome graybar using the (television) YIQ transformation.
 Effective dots-per-inch for the rectangular image making up the color scale [300].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
+.TP
+.B \-Q
+Select logarithmic scale and power of ten annotations.  All z-values in the cpt file
+will be converted to p = log10(z) and only integer p values will be annotated using
+the 10^p format [Default is linear scale].
 .TP
 .B \-S
 Do not separate different colour intervals with black lines.
