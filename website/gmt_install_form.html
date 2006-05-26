@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.31 2006-05-16 22:54:24 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.32 2006-05-26 00:42:30 pwessel Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.31 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.32 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -61,7 +61,7 @@ new Appendix P for details.</I><BR>
 
 <INPUT TYPE="radio" VALUE="gzip" NAME="radio_format"> gzip format<BR>
 <INPUT TYPE="radio" VALUE="bzip2" NAME="radio_format"> bzip2 format<BR>
-<INPUT TYPE="radio" VALUE="default" NAME="radio_format" CHECKED="true"> Either one, I don't care<BR>
+<INPUT TYPE="radio" VALUE="default" NAME="radio_format" CHECKED> Either one, I don't care<BR>
 <P>
 <I>Note: The *.bz2 files made by bzip2 are generally much smaller than the corresponding *.gz files.
 Type bzip2 -h to determine if you have bzip2 installed.  Source code and executables for bzip2 are
@@ -73,7 +73,7 @@ determine if you have bzip2 or gzip and pick bzip2 if possible.</I><BR>
 
 <B>3. Select default units in GMT:</B><BR>
 
-<INPUT TYPE="radio" VALUE="SI" NAME="radio_unit" CHECKED="true"> SI units (cm)<BR>
+<INPUT TYPE="radio" VALUE="SI" NAME="radio_unit" CHECKED> SI units (cm)<BR>
 <INPUT TYPE="radio" VALUE="US" NAME="radio_unit"> US units (inch)<BR>
 <P>
 <I>Note: This used to be a choice that affected the compilation of GMT.  However, since version 3.3.2
@@ -87,7 +87,7 @@ with gmtset MEASURE_UNIT cm|inch</I><BR>
 
 <B>4. Select default PostScript output format for GMT:</B><BR>
 
-<INPUT TYPE="radio" VALUE="PS"  NAME="radio_eps" CHECKED="true"> Freeform PostScript (PS)<BR>
+<INPUT TYPE="radio" VALUE="PS"  NAME="radio_eps" CHECKED> Freeform PostScript (PS)<BR>
 <INPUT TYPE="radio" VALUE="EPS" NAME="radio_eps"> Encapsulated PostScript (EPS)<BR>
 <P>
 <I>Note: GMT-produced PostScript files will by default
@@ -106,7 +106,7 @@ for more details.</I><BR>
 
 <B>5. Select POSIX Advisory File Locking:<BR></B>
 
-<INPUT TYPE="radio" VALUE="Lock" NAME="radio_flock" CHECKED="true"> YES. Use file locking<BR>
+<INPUT TYPE="radio" VALUE="Lock" NAME="radio_flock" CHECKED> YES. Use file locking<BR>
 <INPUT TYPE="radio" VALUE="Nolock" NAME="radio_flock"> NO. Do not use file locking<BR>
 
 <P>
@@ -124,7 +124,7 @@ avoid using the GMT shorthands in commands that are piped together.</I><BR>
 <CENTER><H3>B. NetCDF Setup</H3></CENTER>
 <B>1. Select the appropriate netCDF library option:</B><BR>
 
-<INPUT TYPE="radio" VALUE="have" NAME="radio_netcdf" CHECKED="true"> netCDF 3.6.x is already installed<BR>
+<INPUT TYPE="radio" VALUE="have" NAME="radio_netcdf" CHECKED> netCDF 3.6.x is already installed<BR>
 <INPUT TYPE="radio" VALUE="get" NAME="radio_netcdf"> Please get and install the latest netCDF 3.6.x<BR>
 <INPUT TYPE="radio" VALUE="install" NAME="radio_netcdf"> I already have the netcdf.tar.Z archive, just install it for me<BR>
 
@@ -143,7 +143,7 @@ parameters.</I>
 <CENTER><H3>C. GMT Setup</H3></CENTER>
 <B>1. Select the FTP site nearest you:</B><BR>
 
-<INPUT TYPE="radio" VALUE="1" NAME="radio_site" CHECKED="true"> Pacific (SOEST, University of Hawaii [GMT Home], Honolulu, Hawaii, USA)<BR>
+<INPUT TYPE="radio" VALUE="1" NAME="radio_site" CHECKED> Pacific (SOEST, University of Hawaii [GMT Home], Honolulu, Hawaii, USA)<BR>
 <INPUT TYPE="radio" VALUE="2" NAME="radio_site"> North America (NOAA, Lab for Satellite Altimetry, Silver Springs, Maryland, USA<BR>
 <INPUT TYPE="radio" VALUE="3" NAME="radio_site"> North America (Incorporated Research Institutions for Seismology, Seattle, Washington, USA)<BR>
 <INPUT TYPE="radio" VALUE="4" NAME="radio_site"> South America (IAG-USP, Dept of Geophysics, University of Sao Paulo, Brazil)<BR>
@@ -161,7 +161,7 @@ have downloaded the files and simply wants to use the script to reinstall, selec
 
 <HR><B>2. Select normal [Default] or passive ftp transmission:</B><BR>
 
-<INPUT TYPE="radio" VALUE="active" NAME="radio_ftpmode" CHECKED="true"> Normal ftp<BR>
+<INPUT TYPE="radio" VALUE="active" NAME="radio_ftpmode" CHECKED> Normal ftp<BR>
 <INPUT TYPE="radio" VALUE="passive" NAME="radio_ftpmode"> passive ftp<BR>
 
 <P>
@@ -172,16 +172,16 @@ are behind a firewall.  In that case you may want to select passive ftp mode.</I
 
 <HR><B>3. Select the components you want (gzip/bzip2 sizes indicated):</B><BR>
 
-<INPUT TYPE="checkbox" NAME="checkbox_src" CHECKED="true"> GMT source code (0.7/0.6 Mb, the main GMT programs, REQUIRED)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_share" CHECKED="true"> GMT shared data (0.05/0.05 Mb, shared run-time files, REQUIRED)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_coast" CHECKED="true"> GMT support data  (4.0/3.5 Mb, Basic-resolution (CLI) coastlines, REQUIRED)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_ps" CHECKED="true"> GMT Documentation 1 (6.1/9.0 Mb, PS versions of Cookbook, Tutorial, and Man pages)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_pdf" CHECKED="false"> GMT Documentation 2 (8.1/8.1 Mb, PDF versions of Cookbook, Tutorial and Man pages)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_man" CHECKED="true"> GMT Documentation 3 (0.12/0.09 Mb, UNIX man pages)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_web" CHECKED="true"> GMT Web Docs (1.6/1.6 Mb, HTML versions oCookbook, Tutorial and Man pages)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_tut" CHECKED="true"> GMT Tutorial (1.4/1.0 Mb, Tutorial data sets)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_scripts" CHECKED= "true"> GMT Example Scripts &amp; Data (4.2/3.1 Mb, required to run test examples)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_suppl" CHECKED="true"> GMT Supplemental Archive (0.6/0.5 Mb, see section C.10 below for details)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_src" CHECKED> GMT source code (0.7/0.6 Mb, the main GMT programs, REQUIRED)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_share" CHECKED> GMT shared data (0.05/0.05 Mb, shared run-time files, REQUIRED)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_coast" CHECKED> GMT support data  (4.0/3.5 Mb, Basic-resolution (CLI) coastlines, REQUIRED)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_ps" CHECKED> GMT Documentation 1 (6.1/9.0 Mb, PS versions of Cookbook, Tutorial, and Man pages)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_pdf" CHECKED> GMT Documentation 2 (8.1/8.1 Mb, PDF versions of Cookbook, Tutorial and Man pages)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_man" CHECKED> GMT Documentation 3 (0.12/0.09 Mb, UNIX man pages)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_web" CHECKED> GMT Web Docs (1.6/1.6 Mb, HTML versions oCookbook, Tutorial and Man pages)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_tut" CHECKED> GMT Tutorial (1.4/1.0 Mb, Tutorial data sets)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_scripts" CHECKED> GMT Example Scripts &amp; Data (4.2/3.1 Mb, required to run test examples)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_suppl" CHECKED> GMT Supplemental Archive (0.6/0.5 Mb, see section C.10 below for details)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_high"> GMT High-resolution coastlines (10.7/8.6 Mb)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_full"> GMT full-resolution coastlines (47.1/28.8 Mb)<BR>
 
@@ -196,7 +196,7 @@ run the script; otherwise the script may decide that it does not need to ftp new
 
 <HR><B>3. Select which triangulation algorithm to use:</B><BR>
 
-<INPUT TYPE="radio" VALUE="Watson" NAME="radio_triangle" CHECKED="true"> Watson's algorithm<BR>
+<INPUT TYPE="radio" VALUE="Watson" NAME="radio_triangle" CHECKED> Watson's algorithm<BR>
 <INPUT TYPE="radio" VALUE="Shewchuk" NAME="radio_triangle"> Shewchuk's algorithm<BR>
 
 <P>
@@ -210,7 +210,7 @@ makegmt.macros file.</I>
 
 <HR><B>4. Select library build type:<BR></B>
 
-<INPUT TYPE="radio" VALUE="Static" NAME="radio_link" CHECKED="true"> Static Libraries<BR>
+<INPUT TYPE="radio" VALUE="Static" NAME="radio_link" CHECKED> Static Libraries<BR>
 <INPUT TYPE="radio" VALUE="Shared" NAME="radio_link"> Shared (dynamic) Libraries<BR>
 
 <P>
@@ -308,7 +308,7 @@ of the data resources directory given in C.7 [Default].</I><BR>
 
 <HR><B>9. Alternative coastline directories</B><BR>
 
-<INPUT TYPE="radio" VALUE="all" NAME="radio_coast" CHECKED="true"> Install all selected coastline files in $GMTHOME/share/coast<BR>
+<INPUT TYPE="radio" VALUE="all" NAME="radio_coast" CHECKED> Install all selected coastline files in $GMTHOME/share/coast<BR>
 <INPUT TYPE="radio" VALUE="dir" NAME="radio_coast"> Place coastline files in several directories<BR>
 
 <P>
@@ -327,24 +327,24 @@ separate from where the smaller files reside.  The selections below are only use
 
 <HR><B>10. Select supplemental packages to install:</B><BR>
 
-<INPUT TYPE="checkbox" NAME="checkbox_dbase"  CHECKED="true"> DBASE: Extracting data from NGDC DEM and other grids<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_gshhs"  CHECKED="true"> GSHHS: Global Self-consistent Hierarchical High-resolution Shoreline extractor<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_imgsrc"  CHECKED="true"> IMGSRC: Extracting grids from global altimeter files (Sandwell/Smith)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_meca"  CHECKED="true"> MECA: Plotting special symbols in seismology and geodesy<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_mex"  CHECKED="false"> MEX: Matlab interface for reading/writing GMT grdfiles (REQUIRES MATLAB*)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_mgd77"  CHECKED="true"> MGD77: Programs for managing and plotting MGD77 data<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_mgg"  CHECKED="true"> MGG: Programs for making, managing, and plotting *.gmt data<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_misc"  CHECKED="true"> MISC: Manipulate PostScript, create bit-patterns, extract netCDF columns<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_segyprogs"  CHECKED="true"> SEGYPROGS: Plot SEGY seismic data files<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_spotter"  CHECKED="true"> SPOTTER: Plate tectonic backtracking and hotspotting<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_x2sys"  CHECKED="true"> X2SYS: Track intersection (crossover) tools (REQUIRES MGG and MGD77)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_x_system"  CHECKED="true"> X_SYSTEM: MGG-specific Track intersection (crossover) tools (REQUIRES MGG)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_xgrid"  CHECKED="false"> XGRID: X11 graphical editor for netCDF-based .grd files (REQUIRES Xlibs)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_dbase"  CHECKED> DBASE: Extracting data from NGDC DEM and other grids<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_gshhs"  CHECKED> GSHHS: Global Self-consistent Hierarchical High-resolution Shoreline extractor<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_imgsrc"  CHECKED> IMGSRC: Extracting grids from global altimeter files (Sandwell/Smith)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_meca"  CHECKED> MECA: Plotting special symbols in seismology and geodesy<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_mex"> MEX: Matlab interface for reading/writing GMT grdfiles (REQUIRES MATLAB*)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_mgd77"  CHECKED> MGD77: Programs for managing and plotting MGD77 data<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_mgg"  CHECKED> MGG: Programs for making, managing, and plotting *.gmt data<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_misc"  CHECKED> MISC: Manipulate PostScript, create bit-patterns, extract netCDF columns<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_segyprogs"  CHECKED> SEGYPROGS: Plot SEGY seismic data files<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_spotter"  CHECKED> SPOTTER: Plate tectonic backtracking and hotspotting<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_x2sys"  CHECKED> X2SYS: Track intersection (crossover) tools (REQUIRES MGG and MGD77)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_x_system"  CHECKED> X_SYSTEM: MGG-specific Track intersection (crossover) tools (REQUIRES MGG)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_xgrid"  CHECKED> XGRID: X11 graphical editor for netCDF-based .grd files (REQUIRES Xlibs)<BR>
 
 <P>
 <I>Note: The selected packages will only be installed if you also selected the supplemental tar archive
 above.  The x2sys and x_system packages require the mgg package, the mex package requires Matlab (octave users
-may want to modify it), and xgrid requires various Openwin/X11 libraries.</I>
+may want to modify it), and xgrid requires various X11 libraries.</I>
 <BR>
 *Enter Matlab system directory if you selected mex above: <INPUT NAME="matlab_dir" TYPE="text" SIZE="30" VALUE="/usr/local/matlab"><BR>
 <I>Note: You can leave the Matlab path blank if $MATLAB is defined in your environment and points to the correct
@@ -355,7 +355,7 @@ directory</I>.
 <HR><B>11. Complete the operation:<BR>
 
 </B><INPUT TYPE="checkbox" NAME="checkbox_delete" > Delete all archives upon sucessful installation<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_run"  CHECKED="true"> Run all example scripts (assumes scripts tar archive was chosen above)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_run"  CHECKED> Run all example scripts (assumes scripts tar archive was chosen above)<BR>
 
 <P>
 <I>Note: Examples will only be run if you also ftp'ed the example scripts archive.</I>
