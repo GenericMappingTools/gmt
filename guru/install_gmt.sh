@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.77 2006-05-18 22:55:29 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.78 2006-05-26 01:33:28 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -776,17 +776,7 @@ make_ftp_list()
 	get_this=$1
 	file=$2
 	if [ $get_this = "y" ]; then
-#		User has checked this one - first see if we already have it
-		if [ -f GMT${VERSION}_${file}.tar.$suffix ]; then
-			get=0
-		elif [ -f GMT_${file}.tar.$suffix ]; then
-			get=0
-		else
-			get=1
-		fi
-		if [ $get -eq 1 ]; then
-			echo "get GMT_${file}.tar.$suffix" >> gmt_install.ftp_list
-		fi
+		echo "get GMT_${file}.tar.$suffix" >> gmt_install.ftp_list
 	fi
 }
 make_ftp_list2()
@@ -795,15 +785,7 @@ make_ftp_list2()
 	get_this=$1
 	file=$2
 	if [ $get_this = "y" ]; then
-#		User has checked this one - first see if we already have it
-		if [ -f ${file}.tar.$suffix ]; then
-			get=0
-		else
-			get=1
-		fi
-		if [ $get -eq 1 ]; then
-			echo "get ${file}.tar.$suffix" >> gmt_install.ftp_list
-		fi
+		echo "get ${file}.tar.$suffix" >> gmt_install.ftp_list
 	fi
 }
 #============================================================
@@ -1110,7 +1092,7 @@ if [ $GMT_ftp = "y" ]; then
 		GMT_ftpsite=1
 		echo " Error in assigning site, use default site $GMT_ftpsite" >&2
 	fi
-	if [ $GMT_ftpsite -eq 1 ]; then	# SOEST's server stars at / and there is no pub
+	if [ $GMT_ftpsite -eq 1 ]; then	# SOEST's server starts at / and there is no pub
 		DIR=gmt
 	fi
 	ftp_ip=`sed -n ${GMT_ftpsite}p gmt_install.ftp_ip`
