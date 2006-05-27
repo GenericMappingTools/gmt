@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.131 2006-05-21 01:23:43 pwessel Exp $
+ *	$Id: gmt.h,v 1.132 2006-05-27 06:13:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -200,6 +200,21 @@
 #define GMT_swab4(data) \
 	(((data) << 24) | (((data) << 8) & 0x00ff0000) | \
 	(((data) >> 8) & 0x0000ff00) | ((unsigned int)(data) >> 24))
+
+/* Macro for printing the value of size_t */
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+/*
+ * This is a C99 compiler, so it supports %zu; no need to cast.
+ */
+#define PRINT_SIZE_T(fp,u) fprintf(fp, "%zu", u)
+#else
+/*
+ * This is not a C99 compiler; assume size_t is no bigger than
+ * unsigned long.
+ */
+#define PRINT_SIZE_T(fp,u) fprintf(fp, "%lu", (unsigned long)u)
+#endif
 
 /*--------------------------------------------------------------------
  *			GMT TYPEDEF DEFINITIONS
