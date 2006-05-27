@@ -17,6 +17,16 @@ distributed in area on the plot.  Let z be the data values in the grdfile.
 Define CDF(Z) = (# of z < Z) / (# of z in grdfile).  (NaNs are ignored).
 These z-values are then normalized to the master cptfile and colors are
 sampled at the desired intervals.
+.br
+The color palette includes three additional colors beyond the range of z-values. These are
+the background color (B) assigned to values lower than the lowest \fIz\fP-value,
+the foreground color (F) assigned to values higher than the highest \fIz\fP-value,
+and the NaN color (N) painted whereever values are undefined.
+.br
+If the master cpt file includes B, F, and N entries, these will be copied into the new master file.
+If not, the parameters \fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\fP from
+the .gmtdefaults4 file or the command line will be used. This default behavior can be overruled
+using the options OPT(D), OPT(M) and OPT(N).
 .TP
 \fIgrdfile\fP
 The 2-D binary grdfile used to derive the color palette table.
@@ -28,23 +38,31 @@ the built-in tables (type \fBgrd2cpt\fP to see the list) or give the
 name of an existing cptfile [Default gives a rainbow cpt file].
 .TP
 .B \-D
-Select the color values for lowest and highest \fIz\fP-values in the output cpt file
-as the back- and foreground values that will be written to the cpt file [Default uses
-the \fBGMT\fP default values, normally black and white].
+Select the colors for lowest and highest \fIz\fP-values in the output cpt file
+as the back- and foreground colors that will be written to the cpt file [Default uses
+the colors specified in the master file, or those defined by 
+the parameters \fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\fP].
 .TP
 .B \-E
 Create a linear color table by dividing the grid z-range into \fInlevels\fP equidistant slices.
 .TP
 .B \-I
 Reverses the sense of color progression in the master cptfile.
+Also exchanges the foreground and background colors, including those specified by
+the parameters \fBCOLOR_BACKGROUND\fP and \fBCOLOR_FOREGROUND\fP.
 .TP
 .B \-L
 Limit range of cptfile to \fIminlimit/maxlimit\fP, and don't count data\"'
 outside range when estimating CDF(Z).  [Default uses min and max of data.] 
 .TP
+.B \-M
+Overrule background, foreground, and NaN colors specified in the master cpt file with the values of
+the parameters \fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\fP specified in
+the .gmtdefaults4 file or on the command line.
+When combined with OPT(D), only \fBCOLOR_NAN\fP is considered.
+.TP
 .B \-N
-Do Not write out the background, foreground, and NaN-color fields [Default will write the parameters
-\fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\fP in your .gmtdefaults4 file.
+Do not write out the background, foreground, and NaN-color fields [Default will write them].
 .TP
 .B \-Q
 Selects a logarithmic interpolation scheme [Default is linear].  \fB\-Qi\fP expects input z-values to be log10(z), assigns colors, and writes out z [Default].

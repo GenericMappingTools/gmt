@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.255 2006-05-22 04:24:17 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.256 2006-05-27 01:31:16 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1164,6 +1164,7 @@ void GMT_read_cpt (char *cpt_file)
 		}
 
 		if (id < 3) {	/* Foreground, background, or nan color */
+			if (GMT_cpt_flags & 4) continue; /* Suppress parsing B, F, N lines when bit 2 of GMT_cpt_flags is set */
 			if ((nread = sscanf (&line[2], "%s %s %s %s", T1, T2, T3, T4)) < 1) error = TRUE;
 			if (T1[0] == 'p' || T1[0] == 'P') {	/* Gave a pattern */
 				GMT_bfn[id].fill = (struct GMT_FILL *) GMT_memory (VNULL, 1, sizeof (struct GMT_FILL), GMT_program);
@@ -1350,13 +1351,12 @@ void GMT_read_cpt (char *cpt_file)
 	if (!(gmtdefs.color_model & (GMT_USE_RGB | GMT_USE_HSV | GMT_USE_CMYK))) gmtdefs.color_model = color_model;	/* Reset to what it was before */
 }
 
-void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, int log_mode, int cpt_flag)
+void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, int log_mode)
 {
 	/* Resamples the current cpt table based on new z-array.
 	 * Old cpt is normalized to 0-1 range and scaled to fit new z range.
 	 * New cpt may be continuous and/or reversed.
-	 * We write the new cpt table to stdout.
-	 * cpt_flag: bitflags, with 1 meaning do not write out BFN, and 2 meaning use low/high rgb/hsv as BF */
+	 * We write the new cpt table to stdout. */
 
 	int i, j, k, upper, lower, rgb_low[3], rgb_high[3], rgb_fore[3], rgb_back[3];
 	BOOLEAN even = FALSE;	/* TRUE when nz is passed as negative */
@@ -1530,9 +1530,9 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 
 	/* Background, foreground, and nan colors */
 
-	if (cpt_flag & 1) return;	/* Do not want to write BFN to the cpt file */
+	if (GMT_cpt_flags & 1) return;	/* Do not want to write BFN to the cpt file */
 
-	if (cpt_flag & 2) {	/* Use low and high colors as back and foreground */
+	if (GMT_cpt_flags & 2) {	/* Use low and high colors as back and foreground */
 		memcpy ((void *)GMT_bfn[GMT_BGD].rgb, (void *)rgb_back, (size_t)(3 * sizeof (int)));
 		memcpy ((void *)GMT_bfn[GMT_FGD].rgb, (void *)rgb_fore, (size_t)(3 * sizeof (int)));
 		memcpy ((void *)GMT_bfn[GMT_BGD].hsv, (void *)hsv_back, (size_t)(3 * sizeof (double)));
