@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: pdfman.sh,v 1.10 2006-03-22 05:20:11 pwessel Exp $
+#	 $Id: pdfman.sh,v 1.11 2006-05-27 02:27:42 pwessel Exp $
 #
 #	pdfman.sh - Automatic generation of the GMT pdf manual pages
 #
@@ -93,7 +93,7 @@ for package in $MY_SUPPL; do
 		fi
 	done < $$.lis
 done
-rm -f $$.lis
+rm -f $$.*lis
 cd ..
 
 # Convert to PDF

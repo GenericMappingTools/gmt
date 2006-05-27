@@ -1,8 +1,8 @@
-	$Id: README.GMT,v 1.13 2006-05-08 00:04:18 pwessel Exp $
+	$Id: README.GMT,v 1.14 2006-05-27 02:27:42 pwessel Exp $
 
 Dear potential GMT users-
 
-Version 4.1.2 of GMT has recently been released.
+Version 4.1.3 of GMT has recently been released.
 GMT can be installed under Unix or Windows.
 
 For new installers of GMT under a Unix-like OS:
@@ -33,7 +33,6 @@ install_gmt		Bourne shell install script
 
 In addition, you may want
 
-GMT_ps.tar.bz2		PS version of documentation
 GMT_pdf.tar.bz2		PDF documentation and Unix man pages
 GMT_man.tar.bz2		Unix man pages for GMT
 GMT_web.tar.bz2		HTML versions of all documentation
@@ -53,7 +52,7 @@ You need to ftp several zip files; some are optional:
 GMT_exe.zip	All executables
 GMT_share.zip	Support run-time files (patterns, cpt) 
 GMT_coast.zip	Basic GSHHS coastlines
-netcdf-3.6.1-beta1-win32dll.zip	netcdf library if you don't have it.
+netcdf-3.6.1-win32.zip	netcdf library if you don't have it.
 
 In addition, you may want
 
