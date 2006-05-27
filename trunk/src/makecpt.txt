@@ -3,8 +3,8 @@
 .SH NAME
 makecpt \- Make GMT color palette tables
 .SH SYNOPSIS
-\fBmakecpt\fP [ OPT(C)\fItable\fP ] [ OPT(D) ]  [ OPT(I) ] [ OPT(N) ] [ OPT(Q)[\fBi|o\fP] ] 
-[ OPT(T)\fIz0/z1/dz\fP | OPT(T)\fIztable\fP] [ GMT_V_OPT ] [ OPT(Z) ]
+\fBmakecpt\fP [ OPT(C)\fItable\fP ] [ OPT(D) ]  [ OPT(I) ] [ OPT(M) ] [ OPT(N) ]
+[ OPT(Q)[\fBi|o\fP] ] [ OPT(T)\fIz0/z1/dz\fP | OPT(T)\fIztable\fP] [ GMT_V_OPT ] [ OPT(Z) ]
 .SH DESCRIPTION
 \fBmakecpt\fP is a utility that will help you make color palette tables (cpt files).  You define
 an equidistant set of contour intervals or pass your own z-table, and create a new cpt file based on
@@ -19,7 +19,7 @@ and the NaN color (N) painted whereever values are undefined.
 If the master cpt file includes B, F, and N entries, these will be copied into the new master file.
 If not, the parameters \fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\fP from
 the .gmtdefaults4 file or the command line will be used. This default behavior can be overruled
-using the options OPT(D), OPT(M) and OPT(N).
+using the options OPT(D), OPT(M) or OPT(N).
 .SH OPTIONS
 .TP
 .B \-C

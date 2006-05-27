@@ -4,7 +4,7 @@
 grd2cpt \- Read a grdfile and make a color palette file
 .SH SYNOPSIS
 \fBgrd2cpt\fP \fIgrdfile\fP [ OPT(C)\fIcptmaster\fP ] [ OPT(D) ] [ OPT(E)\fInlevels\fP ] [ OPT(I) ] 
-[ OPT(L)\fIminlimit/maxlimit\fP ] [ OPT(N) ] [ OPT(Q)[\fBi|o\fP] ] 
+[ OPT(L)\fIminlimit/maxlimit\fP ] [ OPT(M) ] [ OPT(N) ] [ OPT(Q)[\fBi|o\fP] ] 
 [ GMT_Rgeo_OPT ] [ OPT(S)\fIzstart/zstop/zinc\fP ] [ GMT_V_OPT ] [ OPT(Z) ]
 .SH DESCRIPTION
 \fBgrd2cpt\fP reads a grdfile and writes a color palette (cpt) file to
@@ -26,7 +26,7 @@ and the NaN color (N) painted whereever values are undefined.
 If the master cpt file includes B, F, and N entries, these will be copied into the new master file.
 If not, the parameters \fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\fP from
 the .gmtdefaults4 file or the command line will be used. This default behavior can be overruled
-using the options OPT(D), OPT(M) and OPT(N).
+using the options OPT(D), OPT(M) or OPT(N).
 .TP
 \fIgrdfile\fP
 The 2-D binary grdfile used to derive the color palette table.
