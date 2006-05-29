@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.40 2006-05-16 00:16:27 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.41 2006-05-29 01:50:02 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -33,6 +33,49 @@ reach a stable point from which we can initiate the \GMT\ 5 development branch. 
 will be distinguished by being completely restructured so as to allow developers to call
 high-level \GMT\ processes from a variety of programming environments.  Below is a brief
 history of the development milestones in the 4.x series.
+
+\subsection{Overview of \gmt\ 4.1.3 [June-1, 2006]}
+
+Changes in \GMT\ 4.1.3 are relatively minor and predominantly bug fixes.  However, a few enhancements
+have been made to overcome limitations in the previous versions:
+
+\begin{enumerate}
+\item Added the Hughes 1980 ellipsoid for projection support for DMSP SSM/I grid products.
+\item \GMTprog{grdfft} has an extended \Opt{F} option to allow for either Gaussian- or
+cosine-tapered filtering.
+\item \GMTprog{psscale} now has a \Opt{Q} option so that logarithmic color scales and annotations
+can be handled properly.
+\item \GMTprog{makecpt} and \GMTprog{grd2cpt} have a new \Opt{M} option to allow the background, foreground, and
+NaN-colors to be assigned using the \GMT\ defaults instead of the settings in the master CPT file. 
+\item \GMTprog{mgd77list} in the {\bf mgd77} supplement has new option \Opt{Q} to specify limits on
+speed and azimuths for output records.
+\end{enumerate}
+
+Below is a list of previous problems (some accidentily introduced in \gmt\ 4.1.2)
+that we have identified and corrected in the current release:
+
+\begin{description}
+\item [\GMTprog{gmt\_grdio.c}]: Bug in \GMTfunc{GMT\_grd\_shift} for gridline-registered grids; this function is used in
+\GMTprog{grdedit} to rotate grids of 360-degree longitudinal extent. Also added better testing for subsets of global (0-360) grids.
+\item [\GMTprog{gmt\_init.c}]: \GMTfunc{GMT\_PS\_init} was called after --PAR=val had been decoded, resetting
+the \PS-related parameters to their default settings.
+\item [\GMTprog{gmt\_support.c}]: \GMTfunc{GMT\_set\_xy\_domain} padded region for pixel instead of grid registration,
+which could cause SEGV in \GMTprog{xyz2grd} if ({\it x,y}) was less than half the grid-spacing outside region.
+\item [\GMTprog{blockmean.c}]: The \Opt{C} option got reversed in 4.1.2 - now fixed.
+\item [\GMTprog{blockmedian.c}]: The \Opt{C} option got reversed in 4.1.2 - now fixed.
+\item [\GMTprog{grdcontour.c}]: The \Opt{C} option with a non-cpt file failed to read due to lack of proper if-test.
+\item [\GMTprog{grdedit.c}]: The \Opt{S} option was backwards and tested {\it w-e}=360; should be {\it e-w}=360.
+\item [\GMTprog{grdimage.c}]: Fixed bug introduced by \GMTfunc{GMT\_get\_inc} in 4.1.2. Internal projected
+grid never took node_offset from input grid.
+\item [\GMTprog{grdmask.c}]: Polygons with zig-zag shape would sometimes cause a node exactly
+on a polygon vertex to be considered inside. Radius was reset to 0 after \Opt{S}{\it radius} was assigned.
+\item [\GMTprog{grdvector.c}]: The \Opt{A} option was not properly initiated.
+\item [\GMTprog{psbasemap.c}]: The \Opt{L} option did not properly parse the optional :label:<just> part.
+\item [\GMTprog{pslegend.c}]: If the {\bf M} (for map scale) was used, the \Opt{R} and \Opt{J} options would be reset.
+Also prevented the undoing of \Opt{X} and \Opt{Y} at the end of the program.
+\end{description}
+
+%-----------------------------------------
 
 \subsection{Overview of \gmt\ 4.1.2 [May-15, 2006]}
 

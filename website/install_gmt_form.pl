@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.20 2006-03-08 01:01:54 pwessel Exp $
+#       $Id: install_gmt_form.pl,v 1.21 2006-05-29 01:50:03 pwessel Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -44,7 +44,6 @@ $site		= $gmt_form{'radio_site'};
 $get_src	= $gmt_form{'checkbox_src'};
 $get_share	= $gmt_form{'checkbox_share'};
 $get_coast	= $gmt_form{'checkbox_coast'};
-$get_ps		= $gmt_form{'checkbox_ps'};
 $get_pdf	= $gmt_form{'checkbox_pdf'};
 $get_man	= $gmt_form{'checkbox_man'};
 $get_tut	= $gmt_form{'checkbox_tut'};
@@ -104,7 +103,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.20 $, on
+# Processed by install_gmt_form.pl $Revision: 1.21 $, on
 #
 #	$now
 #
@@ -207,13 +206,6 @@ else {
 }
 print FILE "GMT_get_scripts=";
 if ($get_scripts eq "on") {
-	print FILE "y\n";
-}
-else {
-	print FILE "n\n";
-}
-print FILE "GMT_get_ps=";
-if ($get_ps eq "on") {
 	print FILE "y\n";
 }
 else {
