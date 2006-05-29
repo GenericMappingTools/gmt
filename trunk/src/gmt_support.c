@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.256 2006-05-27 01:31:16 remko Exp $
+ *	$Id: gmt_support.c,v 1.257 2006-05-29 01:50:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4061,8 +4061,8 @@ int GMT_inonout_sphpol (double plon, double plat, const struct GMT_LINE_SEGMENT 
 
 int GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SEGMENT *P, int count[])
 {	/* Case of a polar cap */
-	int i, in;
-	double W, E, S, N, lon, lon1, lon2, dlon, x_lat;
+	int i, in, cut, n_node_hit = 0;
+	double W, E, S, N, lon, lon1, lon2, dlon, x_lat, this_lon, last_lon;
 	
 	/* Draw meridian through P and count all the crossings with S */
 	
@@ -4102,12 +4102,35 @@ int GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SE
 		/* Calculate latitude at intersection */
 		x_lat = P->coord[GMT_Y][i] + ((P->coord[GMT_Y][in] - P->coord[GMT_Y][i]) / (lon2 - lon1)) * (lon - lon1);
 		if (fabs (x_lat - plat) < GMT_CONV_LIMIT) return (1);	/* P is on S boundary */
-		if (lon == lon1) continue;	/* Only allow cutting a vertex at end of a segment to avoid duplicates */
-		if (x_lat > plat)	/* Cut is north of P */
-			count[0]++;
-		else			/* Cut is south of P */
-			count[1]++;
+		
+		if (lon == lon1 || lon == lon2) {	/* Special checking for cutting through a node */
+			double dlon_a, dlon_b;
+			n_node_hit++;
+			if (n_node_hit == 2) {	/* Now processed two neighboring segments whose connecting node has lon = our lon */
+				this_lon = (lon == lon1) ? lon2 : lon1;
+				dlon_a = last_lon - lon;
+				if (fabs (dlon_a) > 180.0) dlon_a = copysign ((360.0 - fabs (dlon_a)), -dlon_a);
+				dlon_b = this_lon - lon;
+				if (fabs (dlon_b) > 180.0) dlon_b = copysign ((360.0 - fabs (dlon_b)), -dlon_b);
+				if ((dlon_a * dlon_b) < 0.0) {
+					cut = (x_lat > plat) ? 0 : 1;	/* Cut is north (0) or south (1) of P */
+					count[cut]++;
+				}
+				n_node_hit = 0;
+			}
+			else {	/* Keep track of the longitude of the point away from the node */
+				last_lon = (lon == lon1) ? lon2 : lon1;
+			}
+		}
+		else {
+			cut = (x_lat > plat) ? 0 : 1;	/* Cut is north (0) or south (1) of P */
+			count[cut]++;
+		}
 	}
+	if (n_node_hit == 1) {	/* Fist and last segment connects through a node that equals our lon */
+		fprintf (stderr, "%s: GMT_inonout_sphpol ends with n_node_hit == 1 which should not happen?\n", GMT_program);
+	}
+	
 	return (0);	/* This means no special cases were detected that warranted an immediate return */
 }
 
