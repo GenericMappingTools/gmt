@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.80 2006-05-31 02:36:30 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.81 2006-05-31 02:47:14 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1140,9 +1140,8 @@ fi
 #--------------------------------------------------------------------------------
 
 install_this_gmt $GMT_get_src ${source}
-install_this_gmt $GMT_get_share share
 if [ $source = "src" ]; then
-	install_this_gmt $GMT_get_coast coast
+	install_this_gmt $GMT_get_share share
 fi
 install_this_gmt $GMT_get_suppl suppl
 install_this_gmt $GMT_get_scripts scripts
@@ -1170,7 +1169,11 @@ if [ $GMT_dir_cli != $dir ]; then
 	echo $GMT_dir_cli >> $$.coast
 fi
 
-install_coast $GMT_get_coast coast $GMT_dir_cli
+if [ $source = "src" ]; then
+	install_coast $GMT_get_coast coast $GMT_dir_cli
+else
+	install_coast $GMT_get_share share $GMT_dir_cli
+fi
 install_coast $GMT_get_high  high  $GMT_dir_high
 install_coast $GMT_get_full  full  $GMT_dir_full
 
