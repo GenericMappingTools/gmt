@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.79 2006-05-29 01:50:02 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.80 2006-05-31 02:36:30 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -82,7 +82,7 @@ cat << EOF > gmt_install.ftp_site
 7. Tokai U, Shimizu, JAPAN
 8. Charles Sturt U, Albury, AUSTRALIA
 EOF
-# Order (1-11) is 1:src, 2:share, 3:coast, 4:high, 5:full, 6:suppl, 7:scripts
+# Order (1-11) is 1:src[progs for v3], 2:share, 3:coast, 4:high, 5:full, 6:suppl, 7:scripts
 #		  8:pdf, 9:man, 10:web, 11:tut
 cat << EOF > gmt_install.ftp_bzsizes
 0.55
@@ -922,8 +922,10 @@ export CONFIG_SHELL
 
 if [ `echo $VERSION | awk '{print substr($1,1,1)}'` = "3" ]; then
 	GSHHS=3
+	source=progs
 else
 	GSHHS=4.1
+	source=src
 fi
 
 #--------------------------------------------------------------------------------
@@ -1105,9 +1107,11 @@ if [ $GMT_ftp = "y" ]; then
 	fi
 	echo "cd $DIR/$sub" >> gmt_install.ftp_list
 	echo "binary" >> gmt_install.ftp_list
-	make_ftp_list $GMT_get_src src
+	make_ftp_list $GMT_get_src ${source}
 	make_ftp_list $GMT_get_share share
-	make_ftp_list $GMT_get_share coast
+	if [ $source = "src" ]; then
+		make_ftp_list $GMT_get_coast coast
+	fi
 	make_ftp_list $GMT_get_high high
 	make_ftp_list $GMT_get_full full
 	make_ftp_list $GMT_get_suppl suppl
@@ -1135,9 +1139,11 @@ fi
 # First install source code and documentation
 #--------------------------------------------------------------------------------
 
-install_this_gmt $GMT_get_src src
+install_this_gmt $GMT_get_src ${source}
 install_this_gmt $GMT_get_share share
-install_this_gmt $GMT_get_coast coast
+if [ $source = "src" ]; then
+	install_this_gmt $GMT_get_coast coast
+fi
 install_this_gmt $GMT_get_suppl suppl
 install_this_gmt $GMT_get_scripts scripts
 install_this_gmt $GMT_get_pdf pdf
