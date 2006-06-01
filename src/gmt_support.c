@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.257 2006-05-29 01:50:02 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.258 2006-06-01 02:44:21 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -983,7 +983,12 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 				s = 1852.0;
 				break;
 		}
-		f = cosd (0.5 * (h->y_max + h->y_min));	/* Latitude scaling of E-W distances */
+		if (GMT_inc_code[0] & GMT_INC_IS_EXACT && !(GMT_inc_code[0] & GMT_INC_UNITS)) {
+			f = m_pr_degree = 1.0;
+		}
+		else
+			f = cosd (0.5 * (h->y_max + h->y_min));	/* Latitude scaling of E-W distances */
+
 		h->x_inc = h->x_inc * s / (m_pr_degree * f);
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion implies x_inc = %g\n", GMT_program, h->x_inc);
 		h->nx = GMT_get_n (h->x_min, h->x_max, h->x_inc, h->node_offset);
@@ -1007,6 +1012,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 	}
 
 	/* YINC AND YMIN/YMAX CHECK SECOND */
+	s = 1.0;	/* s was used above with a different purpose */
 	
 	if (GMT_inc_code[1] == 0) {	/* Standard -R -I given, just set ny */
 		h->ny = GMT_get_n (h->y_min, h->y_max, h->y_inc, h->node_offset);
@@ -1032,6 +1038,12 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 				s = 1852.0;
 				break;
 		}
+		if (GMT_inc_code[1] & GMT_INC_IS_EXACT && !(GMT_inc_code[1] & GMT_INC_UNITS))
+			m_pr_degree = 1.0;
+
+		else	/* m_pr_degree might have been reset to 1 in the XINC ... case */
+			m_pr_degree = 2.0 * M_PI * gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius / 360.0;
+
 		h->y_inc = (h->y_inc == 0.0) ? h->x_inc : h->y_inc * s / m_pr_degree;
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion implies y_inc = %g\n", GMT_program, h->y_inc);
 		h->ny = GMT_get_n (h->y_min, h->y_max, h->y_inc, h->node_offset);
