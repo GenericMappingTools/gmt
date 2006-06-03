@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.258 2006-06-01 02:44:21 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.259 2006-06-03 18:59:44 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4074,7 +4074,7 @@ int GMT_inonout_sphpol (double plon, double plat, const struct GMT_LINE_SEGMENT 
 int GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SEGMENT *P, int count[])
 {	/* Case of a polar cap */
 	int i, in, cut, n_node_hit = 0;
-	double W, E, S, N, lon, lon1, lon2, dlon, x_lat, this_lon, last_lon;
+	double W, E, S, N, lon, lon1, lon2, dlon, x_lat, this_lon, last_lon = 0.0;
 	
 	/* Draw meridian through P and count all the crossings with S */
 	
