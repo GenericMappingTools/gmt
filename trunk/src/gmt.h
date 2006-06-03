@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.132 2006-05-27 06:13:17 pwessel Exp $
+ *	$Id: gmt.h,v 1.133 2006-06-03 18:58:38 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -369,8 +369,8 @@ struct GMT_PS {	/* Holds the current settings that affect PS generation */
 	BOOLEAN verbose;			/* TRUE to give verbose feedback from pslib routines [FALSE] */
 	BOOLEAN heximage;			/* TRUE to write images in HEX, FALSE in BIN [TRUE] */
 	BOOLEAN absolute;			/* TRUE if -X, -Y was absolute [FALSE] */
-	BOOLEAN last_page;			/* Result of -K [was gmtdefs.last_page] */
-	BOOLEAN overlay;			/* Result of -O [was gmtdefs.overlay] */
+	BOOLEAN last_page;			/* Result of not -K [TRUE] */
+	BOOLEAN overlay;			/* Result of -O [FALSE] */
 	BOOLEAN unix_time;			/* Result of -U [gmtdefs.unix_time] */
 	BOOLEAN comments;			/* TRUE to write comments to PS file [FALSE] */
 	BOOLEAN clip_on;			/* TRUE if clipping will extend beyond current process */
