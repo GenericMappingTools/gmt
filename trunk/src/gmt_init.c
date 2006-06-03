@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.236 2006-05-23 02:06:26 remko Exp $
+ *	$Id: gmt_init.c,v 1.237 2006-06-03 18:57:53 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1816,9 +1816,9 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case GMTCASE_PAGE_ORIENTATION:
 			if (!strcmp (lower_value, "landscape"))
-				GMT_ps.portrait = FALSE;
+				gmtdefs.portrait = FALSE;
 			else if (!strcmp (lower_value, "portrait"))
-				GMT_ps.portrait = TRUE;
+				gmtdefs.portrait = TRUE;
 			else
 				error = TRUE;
 			break;
@@ -3344,8 +3344,9 @@ void GMT_PS_init (void) {		/* Init the PostScript-related parameters */
 	GMT_ps.portrait = gmtdefs.portrait;		/* TRUE for portrait, FALSE for landscape */
 	GMT_ps.verbose = gmtdefs.verbose;		/* TRUE to give verbose feedback from pslib routines [FALSE] */
 	GMT_ps.heximage = gmtdefs.ps_heximage;		/* TRUE to write images in HEX, FALSE in BIN [TRUE] */
-	GMT_ps.overlay = FALSE;				/* Result of -O [was gmtdefs.overlay] */
-	GMT_ps.last_page = TRUE;			/* Result of -O [was gmtdefs.overlay] */
+	GMT_ps.absolute = FALSE;			/* TRUE if -X, -Y was absolute [FALSE] */
+	GMT_ps.last_page = TRUE;			/* Result of not -K [TRUE] */
+	GMT_ps.overlay = FALSE;				/* Result of -O [FALSE] */
 	GMT_ps.unix_time = gmtdefs.unix_time;		/* Result of -U [gmtdefs.unix_time] */
 	GMT_ps.comments = gmtdefs.ps_verbose;		/* TRUE to write comments to PS file [FALSE] */
 	GMT_ps.clip_on = GMT_ps.clip_off = FALSE;	/* Used to manage multi-process clipping operations */
