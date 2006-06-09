@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.237 2006-06-03 18:57:53 remko Exp $
+ *	$Id: gmt_init.c,v 1.238 2006-06-09 16:23:18 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2223,7 +2223,7 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "#\n#	GMT-SYSTEM %s Defaults file\n#\n", GMT_VERSION);
 	fprintf (fp, "#-------- Plot Media Parameters -------------\n");
 	fprintf (fp, "PAGE_COLOR		= %d/%d/%d\n", gmtdefs.page_rgb[0], gmtdefs.page_rgb[1], gmtdefs.page_rgb[2]);
-	(GMT_ps.portrait) ? fprintf (fp, "PAGE_ORIENTATION	= portrait\n") : fprintf (fp, "PAGE_ORIENTATION	= landscape\n");
+	(gmtdefs.portrait) ? fprintf (fp, "PAGE_ORIENTATION	= portrait\n") : fprintf (fp, "PAGE_ORIENTATION	= landscape\n");
 	if (gmtdefs.media == -USER_MEDIA_OFFSET)
 		fprintf (fp, "PAPER_MEDIA		= Custom_%dx%d", abs(gmtdefs.paper_width[0]), abs(gmtdefs.paper_width[1]));
 	else if (gmtdefs.media >= USER_MEDIA_OFFSET)
@@ -3338,12 +3338,13 @@ void GMT_get_history (int argc, char ** argv)
 
 void GMT_PS_init (void) {		/* Init the PostScript-related parameters */
 
-	/* Some of these might be modified later by -K, -O, -P, -U, -V, -X, -Y, -c or various --PAR=value statements.
-	 * Must be called before processing of -- and common arguments. */
+	/* Some of these might be modified later by -K, -O, -P, -U, -V, -X, -Y, -c.
+	 * Must be called BEFORE processing common arguments, since they modify the  GMT_ps struct.
+	 * But must be called AFTER processing --OPT=var, since they modify the gmtdefs struct. */
 	
 	GMT_ps.portrait = gmtdefs.portrait;		/* TRUE for portrait, FALSE for landscape */
 	GMT_ps.verbose = gmtdefs.verbose;		/* TRUE to give verbose feedback from pslib routines [FALSE] */
-	GMT_ps.heximage = gmtdefs.ps_heximage;		/* TRUE to write images in HEX, FALSE in BIN [TRUE] */
+	GMT_ps.heximage = gmtdefs.ps_heximage;		/* TRUE to write images in ASCII, FALSE in BIN [TRUE] */
 	GMT_ps.absolute = FALSE;			/* TRUE if -X, -Y was absolute [FALSE] */
 	GMT_ps.last_page = TRUE;			/* Result of not -K [TRUE] */
 	GMT_ps.overlay = FALSE;				/* Result of -O [FALSE] */
