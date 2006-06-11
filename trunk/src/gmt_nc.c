@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.47 2006-05-08 07:49:08 pwessel Exp $
+ *	$Id: gmt_nc.c,v 1.48 2006-06-11 20:26:08 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -581,8 +581,8 @@ void nc_nopipe (char *file)
 
 int GMT_nc_get_att_text (int ncid, int varid, char *name, char *text, size_t textlen)
 {	/* This function is a replacement for nc_get_att_text that avoids overflow of text
-	 * ncid, varid, name, text	as in nc_get_att_text
-	 * textlen			maximum number of characters to copy to string text
+	 * ncid, varid, name, text	: as in nc_get_att_text
+	 * textleni			: maximum number of characters to copy to string text
 	 */
 	int err;
 	size_t attlen;
@@ -592,6 +592,7 @@ int GMT_nc_get_att_text (int ncid, int varid, char *name, char *text, size_t tex
 	tmp = (char *) GMT_memory (VNULL, attlen, sizeof (char), "GMT_nc_get_att_text");
 	nc_get_att_text (ncid, varid, name, tmp);
 	strncpy (text, tmp, textlen);
+	if (attlen < textlen) text[attlen] = 0;
 	GMT_free (tmp);
 	return (0);
 }
@@ -599,8 +600,8 @@ int GMT_nc_get_att_text (int ncid, int varid, char *name, char *text, size_t tex
 void GMT_nc_get_units (int ncid, int varid, char *name_units)
 {	/* Get attributes long_name and units for given variable ID
 	 * and assign variable name if attributes are not available.
-	 * ncid, varid		as in nc_get_att_text
-	 * nameunit		long_name and units in form "long_name [units]"
+	 * ncid, varid		: as in nc_get_att_text
+	 * nameunit		: long_name and units in form "long_name [units]"
 	 */
 	char units[GRD_UNIT_LEN];
 	if (GMT_nc_get_att_text (ncid, varid, "long_name", name_units, GRD_UNIT_LEN)) nc_inq_varname (ncid, varid, name_units);
@@ -610,8 +611,8 @@ void GMT_nc_get_units (int ncid, int varid, char *name_units)
 void GMT_nc_put_units (int ncid, int varid, char *name_units)
 {	/* Put attributes long_name and units for given variable ID based on
 	 * string name_unit in the form "long_name [units]".
-	 * ncid, varid		as is nc_put_att_text
-	 * name_units		string in form "long_name [units]"
+	 * ncid, varid		: as is nc_put_att_text
+	 * name_units		: string in form "long_name [units]"
 	 */
 	int i = 0;
 	char name[GRD_UNIT_LEN], units[GRD_UNIT_LEN];
