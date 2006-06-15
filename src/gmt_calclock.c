@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.47 2006-04-12 13:11:26 remko Exp $
+ *	$Id: gmt_calclock.c,v 1.48 2006-06-15 00:30:45 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -59,15 +59,20 @@ GMT_dtime GMT_rdc2dt (GMT_cal_rd rd, double secs) {
 
 int	splitinteger(double value, int epsilon, double *doublepart) {
 	/* Split value into integer and and floating part for date usage.
-	   While the integer can be negative, doublpart is always >= 0
+	   While the integer can be negative, doublepart is always >= 0
+	   When doublepart is close to 0 or close to epsilon, doublepart is set
+	   to zero and in the latter case, splitinteger is raised by one.
+	   This makes value "snap" to multiples of epsilon.
 	*/
 	int i;
 
-	i = (int) (value/(double)epsilon);
-	*doublepart = value - ((double) i)*((double)epsilon);
-	if ((*doublepart) < 0.0) {	/* For negative relative time we must shift i by -1 */
-		i--;
-		(*doublepart) += (double)epsilon;
+	i = (int) floor(value/(double)epsilon);
+	*doublepart = value - ((double)i)*((double)epsilon);
+	if ((*doublepart) < GMT_SMALL)
+		*doublepart = 0.0;	/* Snap to the lower integer */
+	else if ((double)epsilon - (*doublepart) < GMT_SMALL) {
+		i++;			/* Snap to the higher integer */
+		*doublepart = 0.0;
 	}
 	return i;
 }
@@ -86,8 +91,7 @@ void	GMT_dt2rdc (GMT_dtime t, GMT_cal_rd *rd, double *s) {
 	*rd = (GMT_cal_rd)(i);
 #else
 /*	Given GMT_dtime value t, load calendar data of that day
-	in rd and the seconds since the start of that day in
-	s.  */
+	in rd and the seconds since the start of that day in s.  */
 	i = splitinteger(t, 86400, s);
 	*rd = (GMT_cal_rd)(i+GMT_GCAL_EPOCH);
 #endif
@@ -1071,7 +1075,7 @@ void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_P
 			GMT_format_calendar (CNULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'c':	/* 2-digit seconds */
-			(P->date.compact) ? sprintf (string, "%d", (int)calendar.sec) : sprintf (string, "%2.2d", (int)calendar.sec);
+			(P->date.compact) ? sprintf (string, "%d", irint(calendar.sec)) : sprintf (string, "%2.2d", irint(calendar.sec));
 			break;
 		default:
 			fprintf (stderr, "ERROR: wrong unit passed to GMT_get_time_label\n");
