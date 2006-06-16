@@ -24,8 +24,9 @@ scale, all be equal size, or by providing a file with individual tile widths.
 .TP
 .B \-D
 Defines the position of the center/top (for horizontal scale) or center/left (for
-vertical scale) and the dimensions of the scale.  Append \fIh\fP to get a horizontal
-scale [Default is vertical].
+vertical scale) and the dimensions of the scale.
+Give a negative length to reverse the scalebar.
+Append \fIh\fP to get a horizontal scale [Default is vertical].
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
