@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.39 2006-05-08 07:49:08 pwessel Exp $
+ *	$Id: gmt_cdf.c,v 1.40 2006-06-20 13:45:26 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -58,7 +58,7 @@ int GMT_cdf_update_grd_info (struct GRD_HEADER *header)
 {
 	int ncid;
 	nc_nopipe (header->name);
-	check_nc_status (nc_open (header->name, NC_WRITE, &ncid));
+	check_nc_status (nc_open (header->name, NC_WRITE + NC_NOFILL, &ncid));
 	GMT_cdf_grd_info (ncid, header, 'u');
 	check_nc_status (nc_close (ncid));
 	return (0);
@@ -68,7 +68,7 @@ int GMT_cdf_write_grd_info (struct GRD_HEADER *header)
 {
 	int ncid;
 	nc_nopipe (header->name);
-	check_nc_status (nc_create (header->name, NC_CLOBBER, &ncid));
+	check_nc_status (nc_create (header->name, NC_CLOBBER + NC_NOFILL, &ncid));
 	GMT_cdf_grd_info (ncid, header, 'w');
 	check_nc_status (nc_close (ncid));
 	return (0);
@@ -346,7 +346,7 @@ int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	/* Write grid header */
 
 	nc_nopipe (header->name);
-	check_nc_status (nc_create (header->name, NC_CLOBBER, &ncid));
+	check_nc_status (nc_create (header->name, NC_CLOBBER + NC_NOFILL, &ncid));
 	GMT_cdf_grd_info (ncid, header, 'w');
 
 	/* Set start position for writing grid */

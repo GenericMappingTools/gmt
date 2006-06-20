@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.48 2006-06-11 20:26:08 remko Exp $
+ *	$Id: gmt_nc.c,v 1.49 2006-06-20 13:45:26 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -117,9 +117,9 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		case 'r':
 			check_nc_status (nc_open (header->name, NC_NOWRITE, &ncid)); break;
 		case 'u':
-			check_nc_status (nc_open (header->name, NC_WRITE, &ncid)); break;
+			check_nc_status (nc_open (header->name, NC_WRITE + NC_NOFILL, &ncid)); break;
 		default:
-			check_nc_status (nc_create (header->name, NC_CLOBBER, &ncid)); break;
+			check_nc_status (nc_create (header->name, NC_CLOBBER + NC_NOFILL, &ncid)); break;
 	}
 
 	/* Retrieve or define dimensions and variables */
