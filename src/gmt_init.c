@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.238 2006-06-09 16:23:18 remko Exp $
+ *	$Id: gmt_init.c,v 1.239 2006-08-07 07:42:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1308,7 +1308,10 @@ void GMT_setdefaults (int argc, char **argv)
 	j = 1;
 	while (j < argc) {	/* j points to parameter, k to value */
 		k = j + 1;
-		if (strchr (argv[j], '=')) {	/* User forgot and gave parameter=value (1 word) */
+		if (k >= argc) {	/* Ran out of arguments */
+			error++;
+		}
+		else if (strchr (argv[j], '=')) {	/* User forgot and gave parameter=value (1 word) */
 			p = 0;
 			while (argv[j][p] && argv[j][p] != '=') p++;
 			if (argv[j][p] == '=') {
