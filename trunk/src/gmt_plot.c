@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.177 2006-05-22 04:24:17 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.178 2006-08-11 05:35:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -605,7 +605,12 @@ void GMT_lineary_grid (double w, double e, double s, double n, double dval)
 	double *y;
 	int i, ny;
 
-	ny = GMT_linear_array (s, n, dval, frame_info.axis[1].phase, &y);
+	if (project_info.z_down) {
+		ny = GMT_linear_array (0.0, n-s, dval, frame_info.axis[1].phase, &y);
+		for (i = 0; i < ny; i++) y[i] = project_info.n - y[i];	/* These are the radial values needed for positioning */
+	}
+	else
+		ny = GMT_linear_array (s, n, dval, frame_info.axis[1].phase, &y);
 	for (i = 0; i < ny; i++) GMT_map_latline (y[i], w, e);
 	if (ny) GMT_free ((void *)y);
 	
@@ -1713,7 +1718,12 @@ void GMT_map_tickitem (double w, double e, double s, double n, int item)
 	}
 
 	if (do_y) {	/* Draw grid lines that go S to N */
-		ny = GMT_linear_array (s, n, dy, frame_info.axis[1].phase, &val);
+		if (project_info.z_down) {
+			ny = GMT_linear_array (0.0, n-s, dy, frame_info.axis[1].phase, &val);
+			for (i = 0; i < ny; i++) val[i] = project_info.n - val[i];	/* These are the radial values needed for positioning */
+		}
+		else
+			ny = GMT_linear_array (s, n, dy, frame_info.axis[1].phase, &val);
 		for (i = 0; i < ny; i++) GMT_map_lattick (val[i], w, e, len);
 		if (ny) GMT_free ((void *)val);
 	}
@@ -1865,7 +1875,6 @@ void GMT_map_annotate (double w, double e, double s, double n)
 			else {	/* Also, we know that gmtdefs.degree_format = -1 in this case */
 				do_minutes = do_seconds = 0;
 				lonlat = 2;
-				if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Temporary swap to trick justify machinery */
 			}
 			if (project_info.z_down) {	/* Want to annotate depth rather than radius */
 				ny = GMT_linear_array (0.0, n-s, dy[k], frame_info.axis[1].phase, &tval);
@@ -1891,7 +1900,6 @@ void GMT_map_annotate (double w, double e, double s, double n)
 			}
 			if (ny) GMT_free ((void *)val);
 			if (project_info.z_down) GMT_free ((void *)tval);
-			if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Undo the temporary swap */
 		}
 	}
 
@@ -1995,12 +2003,16 @@ void GMT_map_basemap (void) {
 	ps_comment ("Start of basemap");
 	ps_setdash (CNULL, 0);	/* To ensure no dashed pens are set prior */
 
+	if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Temporary swap to trick justify machinery */
+
 	GMT_map_gridlines (w, e, s, n);
 	GMT_map_gridcross (w, e, s, n);
 
 	GMT_map_tickmarks (w, e, s, n);
 
 	GMT_map_annotate (w, e, s, n);
+
+	if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Undo swap */
 
 	GMT_map_boundary (w, e, s, n);
 
