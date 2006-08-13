@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.178 2006-08-11 05:35:35 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.179 2006-08-13 03:16:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2336,6 +2336,11 @@ void GMT_geoplot (double lon, double lat, int pen)
 	double x, y;
 
 	GMT_geo_to_xy (lon, lat, &x, &y);
+	if (project_info.three_D) {	/* Must project first */
+		double xp, yp;
+		GMT_xy_do_z_to_xy (x, y, project_info.z_level, &xp, &yp);
+		x = xp;	y = yp;
+	}
 	ps_plot (x, y, pen);
 }
 
