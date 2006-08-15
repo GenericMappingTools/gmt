@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.123 2006-05-04 01:08:11 pwessel Exp $
+ *	$Id: pslib.c,v 1.124 2006-08-15 02:37:29 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1388,30 +1388,32 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		if (!ps.eps_format) fprintf (ps.fp, "%%%%Pages: 1\n");
 		fprintf (ps.fp, "%%%%EndComments\n\n");
 
+	 	fprintf (ps.fp, "%%%%BeginProlog\n");
 		bulkcopy ("PSL_prologue");
 		bulkcopy (ps.encoding);
 
 		def_font_encoding ();		/* Place code for reencoding of fonts and initialize book-keeping */
 
-		/* XXX This should be done by code in the prologue */
-		/* XXX This may also be wishful thinking. */
 		/* Define font macros (see pslib.h for details on how to add fonts) */
-
 
 		for (i = 0; i < PSL_N_FONTS; i++) fprintf (ps.fp, "/F%d {/%s Y} bind def\n", i, ps.font[i].name);
 
-		if (!ps.eps_format) fprintf (ps.fp, "/#copies %d def\n\n", ncopies);
 		bulkcopy ("PSL_label");		/* Place code for label line annotations and clipping */
 	 	fprintf (ps.fp, "%%%%EndProlog\n\n");
 
-		fprintf (ps.fp, "%%%%BeginSetup\n\n");
+		fprintf (ps.fp, "%%%%BeginSetup\n");
 		fprintf (ps.fp, "/PSLevel /languagelevel where {pop languagelevel} {1} ifelse def\n");
 		if (manual)	/* Manual media feed requested */
-			fprintf (ps.fp, "PSLevel 1 gt { << /ManualFeed true >> setpagedevice } if\n\n");
+			fprintf (ps.fp, "PSLevel 1 gt { << /ManualFeed true >> setpagedevice } if\n");
 		else if (!ps.eps_format && ps.p_width > 0 && ps.p_height > 0)	/* Specific media selected */
-			fprintf (ps.fp, "PSLevel 1 gt { << /PageSize [%d %d] /ImagingBBox null >> setpagedevice } if\n\n", ps.p_width, ps.p_height);
+			fprintf (ps.fp, "PSLevel 1 gt { << /PageSize [%d %d] /ImagingBBox null >> setpagedevice } if\n", ps.p_width, ps.p_height);
+		if (!ps.eps_format && ncopies > 1) fprintf (ps.fp, "/#copies %d def\n", ncopies);
+		fprintf (ps.fp, "%%%%EndSetup\n\n");
 
-		fprintf (ps.fp, "%% Init coordinate system and scales\n");
+		if (!ps.eps_format) fprintf (ps.fp, "%%%%Page: 1 1\n\n");
+
+		fprintf (ps.fp, "%%%%BeginPageSetup\n");
+		if (ps.comments) fprintf (ps.fp, "%% Init coordinate system and scales\n");
 		scl = ps.points_pr_unit / ps.scale;
 		if (ps.comments) fprintf (ps.fp, "%% Scale is originally set to %g, which means that\n", scl);
 		if (unit == 0) {	/* CM used as unit */
@@ -1432,16 +1434,14 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		yscl *= scl;
 		if (ps.landscape) fprintf (ps.fp, "%d 0 T 90 R\n", ps.p_width);
 		fprintf (ps.fp, "%g %g scale\n", xscl, yscl);
-	}
-	if (!overlay) {
-		if (ps.comments) fprintf (ps.fp, "%% End of pslib header\n");
-		fprintf (ps.fp, "%%%%EndSetup\n\n");
-		if (!ps.eps_format) fprintf (ps.fp, "%%%%Page: 1 1\n\n");
+		fprintf (ps.fp, "%%%%EndPageSetup\n\n");
+
 		if (!(rgb[0] == rgb[1] && rgb[1] == rgb[2] && rgb[0] == 255)) {	/* Change background color */
 			fprintf (ps.fp, "clippath ");
 			pmode = ps_place_color (rgb);
 			fprintf (ps.fp, "%c F N\n", psl_paint_code[pmode]);
 		}
+		if (ps.comments) fprintf (ps.fp, "%% End of pslib header\n\n");
 	}
 	init_font_encoding (eps);	/* Reencode fonts if necessary */
 
