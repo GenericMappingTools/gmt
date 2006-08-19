@@ -1,4 +1,4 @@
-#
+# $Id: GMT.spec,v 1.21 2006-08-19 01:21:31 pwessel Exp $
 # spec file for package GMT (Version 4)
 #
 # Copyright (c) 2004-2006 Dirk Stoecker <gmt@dstoecker.de>.
@@ -22,21 +22,23 @@ Group:        Productivity/Graphics/Visualization/Graph
 Provides:     GMT 
 Autoreqprov:  on
 Requires:     netcdf >= 3.4
-Version:      4.1.1
+Version:      4.1.3
 Release:      1
 Summary:      Generic Mapping Tools
 Summary(de):  Generic Mapping Tools - Karten- und Grafikerzeugung
-Source0:      %{sourcepath}GMT4.1.1_progs.tar.bz2
-Source1:      %{sourcepath}GMT4.1.1_man.tar.bz2
-Source2:      %{sourcepath}GMT4.1.1_web.tar.bz2
-Source3:      %{sourcepath}GMT4.1.1_suppl.tar.bz2
-Source4:      %{sourcepath}GMT4_full.tar.bz2
-Source5:      %{sourcepath}GMT4_share.tar.bz2
-Source6:      %{sourcepath}GMT4_high.tar.bz2
-Source7:      %{sourcepath}GMT4.1.1_scripts.tar.bz2
-#Source8:      %{sourcepath}GMT4.1.1_tut.tar.bz2
-#Source9:      %{sourcepath}GMT4.1.1_pdf.tar.bz2
-#Source10:     %{sourcepath}GMT4.1.1_ps.tar.bz2
+Source0:      %{sourcepath}GMT%{version}_man.tar.bz2
+Source1:      %{sourcepath}GMT%{version}_scripts.tar.bz2
+Source2:      %{sourcepath}GMT%{version}_share.tar.bz2
+Source3:      %{sourcepath}GMT%{version}_src.tar.bz2
+Source4:      %{sourcepath}GMT%{version}_suppl.tar.bz2
+Source5:      %{sourcepath}GMT%{version}_web.tar.bz2
+Source6:      %{sourcepath}GMT4.1_coast.tar.bz2
+Source7:      %{sourcepath}GMT4.1_full.tar.bz2
+Source8:      %{sourcepath}GMT4.1_high.tar.bz2
+#Source9:      %{sourcepath}GMT%{version}_tut.tar.bz2
+#Source10:     %{sourcepath}GMT%{version}_pdf.tar.bz2
+#Patch0:       config.patch
+#Patch1:       make.patch
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build/
 
 %description
@@ -138,7 +140,9 @@ welche in 5 Aufloeungen vorliegt. Die Aufloesungen "crude", "low",
 "intermediate", "full" and "high" sind in diesem Paket enthalten.
 
 %prep
-%setup -q -b1 -b2 -b3 -b4 -b5 -b6 -b7 -n %{name}%{version}
+%setup -q -b1 -b2 -b3 -b4 -b5 -b6 -b7 -b8 -n %{name}%{version}
+#%patch
+#%patch1
 CFLAGS="-O3 -s" ./configure --prefix=%{prefix} \
 	    --libdir=%{prefix}/%_lib \
             --includedir=%{incdir} \
@@ -151,7 +155,7 @@ make suppl
 rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT install install-all
 #make install-wrapper
-cp ../share/*.cdf $RPM_BUILD_ROOT/%{prefix}/share
+cp -r ../share/coast/*.cdf $RPM_BUILD_ROOT/%{prefix}/share
 cp -r examples $RPM_BUILD_ROOT/%{prefix}
 #cp -r www/gmt $RPM_BUILD_ROOT/%{prefix}/share/doc
 gzip -9 $RPM_BUILD_ROOT/%{prefix}/man/manl/*
@@ -210,9 +214,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %files coastlines
 %defattr(-,root,root)
-%{prefix}/share/*_*.cdf
+%{prefix}/share/coast/*_*.cdf
 
 %changelog -n GMT
+* Wed Jun 28 2006 - gmt@dstoecker.de
+- modified for final GMT 4.1.3 release
+
 * Wed Mar 1 2006 - gmt@dstoecker.de
 - modified for final GMT 4.1.1 release
 

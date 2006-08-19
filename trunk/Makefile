@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.27 2006-03-04 00:18:18 pwessel Exp $
+#	$Id: Makefile,v 1.28 2006-08-19 01:24:22 pwessel Exp $
 #
 #	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -109,7 +109,7 @@ install-suppl:	suppl
 		done
 
 mex_config:	
-		if [ -d src/mex ]; then \
+		if [ -d src/mex ] && [ ! -f src/mex/.skip ]; then \
 			if [ ! -f src/mex/makefile ]; then \
 				cd src/mex; \
 				\rm -f config.{cache,log,status}; \
@@ -118,7 +118,7 @@ mex_config:
 		fi
 		
 xgrid_config:	
-		if [ -d src/xgrid ]; then \
+		if [ -d src/xgrid ] && [ ! -f src/xgrid/.skip ]; then \
 			if [ ! -f src/xgrid/makefile ]; then \
 				cd src/xgrid; \
 				\rm -f config.{cache,log,status}; \
