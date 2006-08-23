@@ -1,0 +1,41 @@
+
+xyz2grd -R0/2/0/2 ; grdvolume -Sk:
+49556.8	34067.7	0.687448
+xyz2grd -R0/2/0/2 ; grdvolume :
+4	2.75	0.6875
+xyz2grd -R0/2/0/2 ; grdvolume -L-1:
+4	6.75	1.6875
+
+xyz2grd -R0/3/0/3 -F ; grdvolume -Sk:
+111449	74284.2	0.666531
+xyz2grd -R0/3/0/3 -F ; grdvolume :
+9	6	0.666667
+xyz2grd -R0/3/0/3 -F ; grdvolume -L-1:
+9	15	1.66667
+
+xyz2grd -R0/2/0/2 -N0 ; grdvolume -Sk:
+34067.7	34067.7	1
+xyz2grd -R0/2/0/2 -N0 ; grdvolume :
+2.75	2.75	1
+xyz2grd -R0/2/0/2 -N0 ; grdvolume -L-1:
+2.75	5.5	2
+
+xyz2grd -R0/3/0/3 -F -N0 ; grdvolume -Sk:
+74284.2	74284.2	1
+xyz2grd -R0/3/0/3 -F -N0 ; grdvolume :
+6	6	1
+xyz2grd -R0/3/0/3 -F -N0 ; grdvolume -L-1:
+6	12	2
+
+xyz2grd -R0/2/0/2 ; grdvolume -C0/0.8/0.4 -Vl -Sk:
+0	12391.6	12391.6	1
+0.4	37422.5	16912.8	0.451943
+0.8	29491.9	3794.3	0.128656
+xyz2grd -R0/2/0/2 ; grdvolume -C0/0.8/0.4 -Vl:
+0	1	1	1
+0.4	3.02	1.36487	0.451943
+0.8	2.38	0.3062	0.128656
+xyz2grd -R0/2/0/2 ; grdvolume -C0/0.8/0.4 -Vl -L-1:
+0	1	2	2
+0.4	3.02	5.59287	1.85194
+0.8	2.38	4.5902	1.92866
