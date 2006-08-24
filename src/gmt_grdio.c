@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.76 2006-05-21 04:37:14 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.77 2006-08-24 03:07:44 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1028,11 +1028,7 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 	struct STAT buf;
 	FILE *fp;
 	
-	if (!access (imgfile, R_OK))	/* File is in local directory */
-		strcpy (file, imgfile);
-	else if (GMT_IMGDIR)	/* Try GMT_IMGDIR */
-		sprintf (file, "%s%c%s", GMT_IMGDIR, DIR_DELIM, imgfile);
-	else {
+	if (!GMT_getdatapath (imgfile, file)) {
 		fprintf (stderr, "%s: Unable to find file %s\n", GMT_program, imgfile);
 		exit (EXIT_FAILURE);
 	}

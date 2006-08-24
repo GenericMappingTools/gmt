@@ -26,9 +26,9 @@ gmtdefaults \- To list current \fBGMT\fP defaults
 .SH DESCRIPTION
 \fBgmtdefaults\fP lists the 
 \fBGMT\fP parameter defaults if the option OPT(D) is used.  There are three ways to change some of the settings:
-(1) Use the command \fBgmtset\fP, (2) use any texteditor to edit the file \.gmtdefaults4 in your home
+(1) Use the command \fBgmtset\fP, (2) use any texteditor to edit the file \.gmtdefaults4 in your home, ~/.gmt
 or current directory (if you do not have this file, run 
-\fBgmtdefaults\fP -D > ~/.gmtdefaults4 to get one with the system default settings), or (3) overrid any parameter
+\fBgmtdefaults\fP -D > ~/.gmtdefaults4 to get one with the system default settings), or (3) override any parameter
 by specifying one or more \fB\-\-PARAMETER=VALUE\fP statements on the commandline of any \fBGMT\fP command
 (\fBPARAMETER\fP and \fBVALUE\fP are any combination listed below).  The
 first two options are permanent changes until explicitly changed back, while the last option is emphemeral
@@ -46,8 +46,8 @@ Print the user's currently active defaults to standard output.\"'
 .sp
 Your currently active defaults come from the \.gmtdefaults4 file in the 
 current working directory, if present; else from the \.gmtdefaults4 file 
-in your home directory, if present; else from the
-system defaults set at the time \fBGMT\fP was compiled.
+in your home directory, if present; else from the file ~/.gmt/.gmtdefaults4, if present;
+else from the system defaults set at the time \fBGMT\fP was compiled.
 .SH \fBGMT\fP PARAMETERS
 The following is a list of the parameters that are user-definable in \fBGMT\fP.  The
 parameter names are always given in UPPER CASE.  The parameter values are
@@ -439,7 +439,7 @@ Give a red/green/blue triplet, with each element in the 0\-255 range. [255/255/2
 Sets the physical format of the current plot paper [MY_PAPER].  The following
 formats (and their widths and heights in points) are recognized (Additional
 site-specific formats may be specified in
-the gmtmedia.d file in \fB$GMTHOME\fP/share; see that file for details):
+the gmtmedia.d file in \fB$GMTHOME\fP/share or ~/.gmt; see that file for details):
 .br
 .sp
 Media	width	height
@@ -671,6 +671,7 @@ US	US English
 .sp
 If your language is not supported, please examine the \fB$GMTHOME\fP/share/time/us.d file and
 make a similar file.  Please submit it to the \fBGMT\fP Developers for official inclusion. 
+Custom language files can be placed in directories \fB$GMTHOME\fP/share/time or ~/.gmt.
 .TP
 .B TIME_SYSTEM
 Determines which time epoch the relative time refers to and what the units are.  Choose from one of the preset systems below

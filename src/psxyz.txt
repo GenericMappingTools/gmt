@@ -131,7 +131,7 @@ octa\fBg\fPon.  \fIsize\fP is diameter of circumscribing circle.
 .TP
 .B \-Sk
 \fBk\fPustom symbol.  Append <name>/\fIsize\fP, and we will look for a definition file called
-<name>.def in (1) the current directory or (2) in \fB$GMTHOME\fP/share/custom.  The symbol as defined
+<name>.def in (1) the current directory or (2) in ~/.gmt or (3) in \fB$GMTHOME\fP/share/custom.  The symbol as defined
 in that file is of size 1.0 by default; the appended \fIsize\fP will scale symbol accordingly.
 The symbols are plotted in the \fIx-y\fP plane.
 Users may add their own custom *.def files; see CUSTOM SYMBOLS in the \fBpsxy\fP man page.

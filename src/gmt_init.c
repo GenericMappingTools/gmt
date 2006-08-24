@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.239 2006-08-07 07:42:34 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.240 2006-08-24 03:07:44 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -166,7 +166,6 @@ struct GMT_BACKWARD {	/* Used to ensure backwards compatibility */
 BOOLEAN GMT_force_resize = FALSE, GMT_annot_special = FALSE;
 double save_annot_size[2], save_label_size, save_header_size;
 double save_annot_offset[2], save_label_offset, save_header_offset, save_tick_length, save_frame_width;
-BOOLEAN GMT_getuserpath (char *stem, char *path);
 BOOLEAN GMT_primary;
 char month_names[12][16], *months[12];
 
@@ -2458,37 +2457,6 @@ void GMT_getdefaults (char *this_file)	/* Read user's .gmtdefaults4 file and ini
 
 }
 
-BOOLEAN GMT_getuserpath (char *stem, char *path)
-{
-	/* Stem is the name of the file, e.g., .gmtdefaults4 or .gmtdefaults */
-	/* path is the full path to the file in question */
-	/* Returns TRUE if a workable path was found (sets path as well) */
-
-	char *homedir;
-        static char home [] = "HOME";
-
-	/* First look in the current working directory */
-
-	if (!access (stem, R_OK)) {	/* Yes, found it */
-		strcpy (path, stem);
-		return (TRUE);
-	}
-
-	/* Not found, see if there is a file in the user's home directory */
-
-	if ((homedir = getenv (home)) == NULL) {	/* Oh well, probably a CGI script... */
-		fprintf (stderr, "GMT Warning: Could not determine home directory!\n");
-		return (FALSE);
-	}
-
-	/* See if the file is present in the home dir */
-
-	sprintf (path, "%s%c%s", homedir, DIR_DELIM, stem);
-	if (!access (path, R_OK)) return (TRUE);	/* Yes, use the file in HOME */
-
-	return (FALSE);	/* No file found, give up */
-}
-
 char *GMT_getdefpath (int get)
 {
 	/* Return the full path to the chosen .gmtdefaults4 system file
@@ -2501,11 +2469,9 @@ char *GMT_getdefpath (int get)
 	char line[BUFSIZ], *path, *suffix[2] = {"SI", "US"};
 	FILE *fp;
 
-	GMT_set_home ();
-
 	if (get == 0) {	/* Must use GMT system defaults via gmt.conf */
 
-		sprintf (line, "%s%cshare%cgmt.conf", GMTHOME, DIR_DELIM, DIR_DELIM);
+		GMT_getsharepath (CNULL, "gmt", ".conf", line);
 		if ((fp = fopen (line, "r")) == NULL) {
 			fprintf (stderr, "GMT Fatal Error: Cannot open/find GMT configuration file %s\n", line);
 			exit (EXIT_FAILURE);
@@ -2518,7 +2484,7 @@ char *GMT_getdefpath (int get)
 		else if (!strncmp (line, "SI", 2))
 			id = 1;
 		else {
-			fprintf (stderr, "GMT Fatal Error: No SI/US keyword in GMT configuration file ($GMTHOME/share/gmt.conf)\n");
+			fprintf (stderr, "GMT Fatal Error: No SI/US keyword in GMT configuration file (%s)\n", line);
 			exit (EXIT_FAILURE);
 		}
 	}
@@ -2526,7 +2492,7 @@ char *GMT_getdefpath (int get)
 		id = get;
 
 	id--;	/* Get 0 or 1 */
-	sprintf (line, "%s%cshare%c.gmtdefaults_%s", GMTHOME, DIR_DELIM, DIR_DELIM, suffix[id]);
+	GMT_getsharepath (CNULL, ".gmtdefaults_", suffix[id], line);
 
 	path = (char *) GMT_memory (VNULL, (size_t)(strlen (line) + 1), (size_t)1, GMT_program);
 
@@ -2636,7 +2602,7 @@ int GMT_get_ellipsoid (char *name)
 		char line[BUFSIZ], path[BUFSIZ];
 		double slop;
 
-		sprintf (path, "%s%cshare%c%s", GMTHOME, DIR_DELIM, DIR_DELIM, name);
+		GMT_getsharepath (CNULL, name, CNULL, path);
 
 		if (!strcmp ("Sphere", name)) {
 			/* Special case where previous setting in .gmtdefaults4 is a custom ellipse which
@@ -2713,9 +2679,7 @@ int GMT_load_user_media (void) {	/* Load any user-specified media formats */
 	char line[BUFSIZ], media[80];
 	FILE *fp;
 
-	GMT_set_home ();
-
-	sprintf (line, "%s%cshare%cgmtmedia.d", GMTHOME, DIR_DELIM, DIR_DELIM);
+	GMT_getsharepath (CNULL, "gmtmedia", ".d", line);
 	if ((fp = fopen (line, "r")) == NULL) return (0);
 
 	n_alloc = GMT_TINY_CHUNK;
@@ -2773,10 +2737,10 @@ void GMT_get_time_language (char *name)
 	char file[BUFSIZ], line[BUFSIZ], full[16], abbrev[16], c[16], dwu;
 	int i, nm = 0, nw = 0, nu = 0;
 
-	sprintf (file, "%s%cshare%ctime%c%s.d", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, name);
+	GMT_getsharepath ("time", name, ".d", file);
 	if ((fp = fopen (file, "r")) == NULL) {
-		fprintf (stderr, "GMT Warning: Could not load %s - revert to us (English)!\n", name);
-		sprintf (file, "%s%cshare%ctime%cus.d", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+		fprintf (stderr, "GMT Warning: Could not load time language %s - revert to us (English)!\n", name);
+		GMT_getsharepath ("time", "us", ".d", file);
 		if ((fp = fopen (file, "r")) == NULL) {
 			fprintf (stderr, "GMT Error: Could not find %s!\n", file);
 			exit (EXIT_FAILURE);
@@ -2822,15 +2786,10 @@ void GMT_get_time_language (char *name)
 
 void GMT_setshorthand (void) {/* Read user's .gmt_io file and initialize shorthand notation */
 	int n = 0, n_alloc;
-	char file[BUFSIZ], line[BUFSIZ], *homedir, a[10], b[20], c[20], d[20], e[20];
-        static char home [] = "HOME";
+	char file[BUFSIZ], line[BUFSIZ], a[10], b[20], c[20], d[20], e[20];
 	FILE *fp;
 
-	if ((homedir = getenv (home)) == NULL) {
-		fprintf (stderr, "GMT Warning: Could not determine home directory!\n");
-		return;
-	}
-	sprintf (file, "%s%c.gmt_io", homedir, DIR_DELIM);
+	if (!GMT_getuserpath (".gmt_io", file)) return;
 	if ((fp = fopen (file, "r")) == NULL) return;
 
 	n_alloc = GMT_SMALL_CHUNK;
@@ -3078,31 +3037,51 @@ void GMT_set_home (void)
 {
 	char *this;
 
-	if (GMTHOME) return;	/* Already set elsewhere */
-
-	if ((this = getenv ("GMTHOME")) == CNULL) {	/* Use default GMT path */
-		GMTHOME = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_DEFAULT_PATH) + 1), (size_t)1, "GMT");
- 		strcpy (GMTHOME, GMT_DEFAULT_PATH);
+	if (GMTHOME) {
+		/* GMTHOME was already set elsewhere */
 	}
-	else {	/* Use user's default path */
+	else if ((this = getenv ("GMTHOME")) != CNULL) {	/* GMTHOME was set */
 		GMTHOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
 		strcpy (GMTHOME, this);
 	}
+	else {	/* Use default path for GMT installation */
+		GMTHOME = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_DEFAULT_PATH) + 1), (size_t)1, "GMT");
+ 		strcpy (GMTHOME, GMT_DEFAULT_PATH);
+	}
+	if ((this = getenv ("HOME")) != CNULL) {	/* HOME was set */
+		GMT_HOMEDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
+ 		strcpy (GMT_HOMEDIR, this);
+	}
+	else
+		fprintf (stderr, "GMT Warning: Could not determine home directory!\n");
+	if ((this = getenv ("GMT_USERDIR")) != CNULL) {	/* GMT_USERDIR was set */
+		GMT_USERDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
+		strcpy (GMT_USERDIR, this);
+	}
+	else if (GMT_HOMEDIR) {	/* Use default path for GMT_USERDIR (~/.gmt) */
+		GMT_USERDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_HOMEDIR) + 6), (size_t)1, "GMT");
+		sprintf (GMT_USERDIR, "%s%c%s", GMT_HOMEDIR, DIR_DELIM, ".gmt");
+	}
+	if (access(GMT_USERDIR,R_OK)) GMT_USERDIR = CNULL;
 	if ((this = getenv ("GMT_CPTDIR")) != CNULL) {	/* GMT_CPTDIR was set */
 		GMT_CPTDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
 		strcpy (GMT_CPTDIR, this);
+		if (access(GMT_CPTDIR,R_OK)) GMT_CPTDIR = CNULL;
 	}
 	if ((this = getenv ("GMT_DATADIR")) != CNULL) {	/* GMT_DATADIR was set */
 		GMT_DATADIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
 		strcpy (GMT_DATADIR, this);
+		if (access(GMT_DATADIR,R_OK)) GMT_DATADIR = CNULL;
 	}
 	if ((this = getenv ("GMT_GRIDDIR")) != CNULL) {	/* GMT_GRIDDIR was set */
 		GMT_GRIDDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
 		strcpy (GMT_GRIDDIR, this);
+		if (access(GMT_GRIDDIR,R_OK)) GMT_GRIDDIR = CNULL;
 	}
 	if ((this = getenv ("GMT_IMGDIR")) != CNULL) {	/* GMT_IMGDIR was set */
 		GMT_IMGDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
 		strcpy (GMT_IMGDIR, this);
+		if (access(GMT_IMGDIR,R_OK)) GMT_IMGDIR = CNULL;
 	}
 }
 
@@ -3194,8 +3173,7 @@ void GMT_get_history (int argc, char ** argv)
 {
 	int i, j;
 	BOOLEAN nothing_to_do = FALSE, need_xy = FALSE, overlay = FALSE, found, done;
-	char line[BUFSIZ], hfile[BUFSIZ], cwd[BUFSIZ], *homedir;
-        static char home [] = "HOME";
+	char line[BUFSIZ], hfile[BUFSIZ], cwd[BUFSIZ];
 #ifndef NO_LOCK
 	struct flock lock;
 #endif
@@ -3216,16 +3194,10 @@ void GMT_get_history (int argc, char ** argv)
 	/* If current directory is writable, use it; else use the home directory */
 
 	(void) getcwd (cwd, BUFSIZ);
-	if (!access (cwd, W_OK)) {	/* Current directory is writable */
+	if (!access (cwd, W_OK)) 	/* Current directory is writable */
 		sprintf (hfile, ".gmtcommands4");
-	}
-	else {	/* Try home directory instead */
-		if ((homedir = getenv (home)) == NULL) {
-			fprintf (stderr, "GMT Warning: Could not determine home directory nor write in current directory!\n");
-			return;
-		}
-		sprintf (hfile, "%s%c.gmtcommands4", homedir, DIR_DELIM);
-	}
+	else 	/* Try home directory instead */
+		sprintf (hfile, "%s%c.gmtcommands4", GMT_HOMEDIR, DIR_DELIM);
 
 	if (access (hfile, R_OK)) {    /* No .gmtcommands4 file in chosen directory, try to make one */
 		if ((GMT_fp_history = fopen (hfile, "w")) == NULL) {
@@ -5485,11 +5457,8 @@ static void load_encoding (struct gmt_encoding *enc)
 	int code = 0, pos;
 	FILE *in;
 
-	sprintf (line, "%s%cshare%cpslib%c%s.ps", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, enc->name);
-	in = GMT_fopen (line, "r");
-
-	if (!in)
-	{
+	GMT_getsharepath ("pslib", enc->name, ".ps", line);
+	if ((in = fopen (line, "r")) == NULL) {
 		perror (line);
 		exit (EXIT_FAILURE);
 	}
@@ -5562,10 +5531,8 @@ void GMT_init_fonts (int *n_fonts)
 
 	/* First the standard 35 PostScript fonts from Adobe */
 
-	sprintf (fullname, "%s%cshare%cpslib%cPS_font_info.d", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
-
-	if ((in = fopen (fullname, "r")) == NULL)
-	{
+	GMT_getsharepath ("pslib", "PS_font_info", ".d", fullname);
+	if ((in = fopen (fullname, "r")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: ");
 		perror (fullname);
 		exit (EXIT_FAILURE);
@@ -5592,12 +5559,8 @@ void GMT_init_fonts (int *n_fonts)
 
  	/* Then any custom fonts */
 
-	sprintf (fullname, "%s%cshare%cpslib%cCUSTOM_font_info.d", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
-
-	if (!access (fullname, R_OK)) {	/* Decode Custom font file */
-
-		if ((in = fopen (fullname, "r")) == NULL)
-		{
+	if (GMT_getsharepath ("pslib", "CUSTOM_font_info", ".d", fullname)) {	/* Decode Custom font file */
+		if ((in = fopen (fullname, "r")) == NULL) {
 			fprintf (stderr, "GMT Fatal Error: ");
 			perror (fullname);
 			exit (EXIT_FAILURE);
