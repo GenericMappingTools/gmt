@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.124 2006-08-15 02:37:29 remko Exp $
+ *	$Id: pslib.c,v 1.125 2006-08-24 03:07:45 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -195,7 +195,7 @@ void ps_a85_encode (unsigned char quad[], int nbytes);
 void *ps_memory (void *prev_addr, size_t nelem, size_t size);
 int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy);
 int ps_comp_int_asc (const void *p1, const void *p2);
-static void bulkcopy (const char *);
+static void ps_bulkcopy (const char *);
 static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts);
 int ps_imagefill_init(int image_no, char *imagefile);
 void ps_rgb_to_cmyk_char (unsigned char rgb[], unsigned char cmyk[]);
@@ -217,7 +217,8 @@ void ps_colorimage_rgb (double x, double y, double xsize, double ysize, unsigned
 void ps_colorimage_cmap (double x, double y, double xsize, double ysize, indexed_image_t image, int nx, int ny, int nbits);
 unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header);
 unsigned char *ps_load_eps (FILE *fp, struct imageinfo *header);
-int ps_get_boundingbox(FILE *fp, int *llx, int *lly, int *trx, int *try);
+int ps_get_boundingbox (FILE *fp, int *llx, int *lly, int *trx, int *try);
+BOOLEAN ps_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path);
 
 
 /*------------------- PUBLIC PSLIB FUNCTIONS--------------------- */
@@ -899,15 +900,17 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 int ps_imagefill_init (int image_no, char *imagefile)
 {
 	int i;
-	char file[BUFSIZ];
+	char name[BUFSIZ], file[BUFSIZ];
 	unsigned char *picture;
 	struct imageinfo h;
 	BOOLEAN found;
 
 	if ((image_no >= 0 && image_no < PSL_N_PATTERNS) && psl_pattern[image_no].status) return (image_no);	/* Already done this */
 
-	if ((image_no >= 0 && image_no < PSL_N_PATTERNS))	/* Premade pattern yet not used */
-		sprintf (file, "%s%cshare%cpattern%cps_pattern_%2.2d.ras", PSL_HOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, image_no);
+	if ((image_no >= 0 && image_no < PSL_N_PATTERNS)) {	/* Premade pattern yet not used */
+		sprintf (name, "ps_pattern_%2.2d", image_no);
+		ps_getsharepath ("pattern", name, ".ras", file);
+	}
 	else {	/* User image, check to see if already used */
 
 		for (i = 0, found = FALSE; !found && i < psl_n_userimages; i++) found = !strcmp (psl_user_image[i], imagefile);
@@ -923,7 +926,7 @@ int ps_imagefill_init (int image_no, char *imagefile)
 			if (!access (imagefile, R_OK))
 				strcpy (file, imagefile);
 			else
-				sprintf (file, "%s%cshare%c%s", PSL_HOME, DIR_DELIM, DIR_DELIM, imagefile);
+				ps_getsharepath (CNULL, imagefile, CNULL, file);
 		}
 		psl_user_image[psl_n_userimages] = (char *) ps_memory (VNULL, (size_t)(strlen (imagefile)+1), sizeof (char));
 		strcpy (psl_user_image[psl_n_userimages], imagefile);
@@ -1252,14 +1255,23 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	char openmode[2], *this;
 	double scl;
 
-	if ((this = getenv ("GMTHOME")) == NULL) {	/* Use default GMT path */
-		PSL_HOME = (char *) ps_memory (VNULL, (size_t)(strlen (GMT_DEFAULT_PATH) + 1), sizeof (char));
-		strcpy (PSL_HOME, GMT_DEFAULT_PATH);
-	}
-	else {	/* Set user's default path */
+	if ((this = getenv ("GMTHOME")) != NULL) {	/* GMTHOME was set */
 		PSL_HOME = (char *) ps_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char));
 		strcpy (PSL_HOME, this);
 	}
+	else {	/* Use default path for GMT installation */
+		PSL_HOME = (char *) ps_memory (VNULL, (size_t)(strlen (GMT_DEFAULT_PATH) + 1), sizeof (char));
+		strcpy (PSL_HOME, GMT_DEFAULT_PATH);
+	}
+	if ((this = getenv ("GMT_USERDIR")) != NULL) {	/* GMT_USERDIR was set */
+		PSL_USERDIR = (char *) ps_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char));
+		strcpy (PSL_USERDIR, this);
+	}
+	else if ((this = getenv ("HOME")) != NULL) {	/* HOME was set: use default path for GMT_USERDIR (~/.gmt) */
+		PSL_USERDIR = (char *) ps_memory (VNULL, (size_t)(strlen (this) + 6), sizeof (char));
+		sprintf (PSL_USERDIR, "%s%c%s", this, DIR_DELIM, ".gmt");
+	}
+	if (access(PSL_USERDIR,R_OK)) PSL_USERDIR = CNULL;
 
 	ps_init_fonts (&PSL_N_FONTS, &n_GMT_fonts);	/* Load the available font information */
 
@@ -1389,8 +1401,8 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		fprintf (ps.fp, "%%%%EndComments\n\n");
 
 	 	fprintf (ps.fp, "%%%%BeginProlog\n");
-		bulkcopy ("PSL_prologue");
-		bulkcopy (ps.encoding);
+		ps_bulkcopy ("PSL_prologue");
+		ps_bulkcopy (ps.encoding);
 
 		def_font_encoding ();		/* Place code for reencoding of fonts and initialize book-keeping */
 
@@ -1398,7 +1410,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 
 		for (i = 0; i < PSL_N_FONTS; i++) fprintf (ps.fp, "/F%d {/%s Y} bind def\n", i, ps.font[i].name);
 
-		bulkcopy ("PSL_label");		/* Place code for label line annotations and clipping */
+		ps_bulkcopy ("PSL_label");		/* Place code for label line annotations and clipping */
 	 	fprintf (ps.fp, "%%%%EndProlog\n\n");
 
 		fprintf (ps.fp, "%%%%BeginSetup\n");
@@ -2756,7 +2768,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	/* Load PSL_text procedures from file for now */
 
 	if (PSL_text_first) {
-		bulkcopy ("PSL_text");
+		ps_bulkcopy ("PSL_text");
 		PSL_text_first = FALSE;
 	}
 
@@ -4215,25 +4227,23 @@ int ps_comp_int_asc (const void *p1, const void *p2)
 		return (0);
 }
 
-/* This function copies a file called $GMTHOME/share/pslib/???.ps
+/* This function copies a file called $GMTHOME/share/pslib/<fname>.ps
  * to the postscript output verbatim.
  */
-static void bulkcopy (const char *fname)
+static void ps_bulkcopy (const char *fname)
 {
 	FILE *in;
 	char buf[BUFSIZ];
 	char fullname[BUFSIZ];
 	int i, j;
 
-	sprintf (fullname, "%s%cshare%cpslib%c%s.ps", PSL_HOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, fname);
-
-	in = fopen (fullname, "r");
-	if (in == NULL)
-	{
+	ps_getsharepath ("pslib", fname, ".ps", fullname);
+	if ((in = fopen (fullname, "r")) == NULL) {
 		fprintf (stderr, "PSL Fatal Error: ");
 		perror (fullname);
 		exit (EXIT_FAILURE);
 	}
+
 	while (fgets (buf, BUFSIZ, in)) {
 		if (ps.comments) {	/* We copy every line, including the comments */
 			fprintf (ps.fp, "%s", buf);
@@ -4267,10 +4277,8 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 
 	/* First the standard 35 PostScript fonts from Adobe */
 
-	sprintf (fullname, "%s%cshare%cpslib%cPS_font_info.d", PSL_HOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
-
-	if ((in = fopen (fullname, "r")) == NULL)
-	{
+	ps_getsharepath ("pslib", "PS_font_info", ".d", fullname);
+	if ((in = fopen (fullname, "r")) == NULL) {
 		fprintf (stderr, "PSL Fatal Error: ");
 		perror (fullname);
 		exit (EXIT_FAILURE);
@@ -4297,8 +4305,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 
 	/* Then any custom fonts */
 
-	sprintf (fullname, "%s%cshare%cpslib%cCUSTOM_font_info.d", PSL_HOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
-
+	ps_getsharepath ("pslib", "CUSTOM_font_info", ".d", fullname);
 	if (!access (fullname, R_OK)) {	/* Decode Custom font file */
 
 		if ((in = fopen (fullname, "r")) == NULL)
@@ -4522,4 +4529,40 @@ int ps_get_boundingbox(FILE *fp, int *llx, int *lly, int *trx, int *try)
 	}
 
 	return 0;
+}
+
+BOOLEAN ps_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path)
+{
+	/* stem is the name of the file, e.g., CUSTOM_font_info.d
+	 * subdir is an optional subdirectory name in the $GMTHOME/share directory.
+	 * suffix is an optional suffix to append to name
+	 * path is the full path to the file in question
+	 * Returns TRUE if a workable path was found (sets path as well)
+	 * Looks for file stem in current directory, ~/.gmt and $GMTHOME/share/subdir
+	 */
+
+	/* First look in the current working directory */
+
+	sprintf (path, "%s%s", stem, suffix);
+	if (!access (stem, R_OK)) return (TRUE);	/* Yes, found it in current directory */
+
+	/* Not found, see if there is a file in the user's .gmt directory */
+
+	if (PSL_USERDIR) {
+		sprintf (path, "%s%c%s%s", PSL_USERDIR, DIR_DELIM, stem, suffix);
+		if (!access (path, R_OK)) return (TRUE);	/* Yes, use the file in $PSL_USERDIR */
+	}
+
+	/* Finally try to get file from $GMTHOME/share[/subdirname] */
+
+	if (subdir) {
+		sprintf (path, "%s%cshare%c%s%c%s%s", PSL_HOME, DIR_DELIM, DIR_DELIM, subdir, DIR_DELIM, stem, suffix);
+
+	}
+	else {
+		sprintf (path, "%s%cshare%c%s%s", PSL_HOME, DIR_DELIM, DIR_DELIM, stem, suffix);
+	}
+	if (!access (path, R_OK)) return (TRUE);	/* Yes, use the file in $GMTHOME/share/subdir */
+
+	return (FALSE);	/* No file found, give up */
 }

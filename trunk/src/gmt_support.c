@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.259 2006-06-03 18:59:44 remko Exp $
+ *	$Id: gmt_support.c,v 1.260 2006-08-24 03:07:45 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1084,7 +1084,17 @@ int GMT_set_cpt_path (char *CPT_file, char *table)
 		if (ok && gmtdefs.verbose) fprintf (stderr, "%s: Reading %s in current directory\n", GMT_program, CPT_file);
 	}
 
-	if (!ok && GMT_CPTDIR) {	/* No table in current dir, try $GMT_CPTDIR if set */
+	if (!ok && GMT_USERDIR) {	/* Now try $GMT_USERDIR if set */
+		if (strstr (table, ".cpt"))
+			sprintf (CPT_file, "%s%cGMT_%s", GMT_USERDIR, DIR_DELIM, table);
+		else
+			sprintf (CPT_file, "%s%cGMT_%s.cpt", GMT_USERDIR, DIR_DELIM, table);
+
+		ok = !access (CPT_file, R_OK);
+		if (ok && gmtdefs.verbose) fprintf (stderr, "%s: Reading %s in %s\n", GMT_program, CPT_file, GMT_USERDIR);
+	}
+
+	if (!ok && GMT_CPTDIR) {	/* Now try $GMT_CPTDIR if set */
 		if (strstr (table, ".cpt"))
 			sprintf (CPT_file, "%s%cGMT_%s", GMT_CPTDIR, DIR_DELIM, table);
 		else
@@ -1094,7 +1104,7 @@ int GMT_set_cpt_path (char *CPT_file, char *table)
 		if (ok && gmtdefs.verbose) fprintf (stderr, "%s: Reading %s in %s\n", GMT_program, CPT_file, GMT_CPTDIR);
 	}
 
-	if (!ok) {	/* No table in current dir, try /share */
+	if (!ok) {	/* Finally try $GMTHOME/share/cpt */
 		if (table)
 			sprintf (CPT_file, "%s%cshare%ccpt%cGMT_%s.cpt", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, table);
 		else	/* Default to rainbow colors */
@@ -6008,8 +6018,7 @@ void GMT_list_custom_symbols (void)
 
 	/* Open the list in $GMTHOME/share */
 
-	sprintf (list, "%s%cshare%cGMT_CustomSymbols.lis", GMTHOME, DIR_DELIM, DIR_DELIM);
-
+	GMT_getsharepath (CNULL, "GMT_CustomSymbols", ".lis", list);
 	if ((fp = fopen (list, "r")) == NULL) {
 		fprintf (stderr, "%s: ERROR: Cannot open file %s\n", GMT_program, list);
 		exit (EXIT_FAILURE);
@@ -7853,18 +7862,9 @@ struct GMT_CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 	struct GMT_CUSTOM_SYMBOL *head;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
 
-	sprintf (file, "%s.def", name);
-
-	if (access (file, R_OK)) {	/* Not in current dir, try GMTHOME */
-		sprintf (file, "%s%cshare%ccustom%c%s.def", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, name);
-		if (access (file, R_OK)) {	/* Not there either - give up */
-			fprintf (stderr, "GMT ERROR: %s : Could not find custom symbol %s\n", GMT_program, name);
-			exit (EXIT_FAILURE);
-		}
-	}
-
+	GMT_getsharepath ("custom", name, ".def", file);
 	if ((fp = fopen (file, "r")) == NULL) {
-		fprintf (stderr, "GMT ERROR: %s : Could not open file %s\n", GMT_program, file);
+		fprintf (stderr, "GMT ERROR: %s : Could not find custom symbol %s\n", GMT_program, name);
 		exit (EXIT_FAILURE);
 	}
 

@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.79 2006-04-10 02:43:52 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.80 2006-08-24 03:07:44 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -1468,7 +1468,8 @@ character as part of their name (presumably, a small sacrifice).
 One can also define special file suffixes to imply a specific file
 format; this approach represents a more intuitive and user-friendly
 way to specify the various file formats.  The user may create a file
-called \filename{.gmt\_io} in the home directory and define any
+called \filename{.gmt\_io} in the current directory, home directory
+or in the directory \filename{\~/.gmt} and define any
 number of custom formats.  The following is an example of a
 \filename{.gmt\_io} file:
 \index{.gmt\_io}

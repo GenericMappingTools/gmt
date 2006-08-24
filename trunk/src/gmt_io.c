@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.116 2006-05-14 03:00:21 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.117 2006-08-24 03:07:45 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -26,7 +26,10 @@
  *
  * The following functions are here:
  *
- *	GMT_fopen:		Open a file
+ *	GMT_getuserpath		Get pathname of file in "user directories" (CWD, HOME, GMT_USERDIR)
+ *	GMT_getdatapath		Get pathname of file in "data directories" (CWD, GMT_{USER,DATA,GRID,IMG}DIR)
+ *	GMT_getsharepath	Get pathname of file in "share directries" (CWD, GMT_USERDIR, GMTHOME/share tree)
+ *	GMT_fopen:		Open a file using GMT_getdatapath
  *	GMT_fclose:		Close a file
  *	GMT_io_init:		Init GMT_IO structure
  *	GMT_parse_b_option:	Decode the -b switch
@@ -127,24 +130,124 @@ int GMT_n_segment_points (struct GMT_LINE_SEGMENT *S, int n_segments);
 
 /* Table I/O routines for ascii and binary io */
 
-FILE *GMT_fopen (const char* filename, const char *mode)
+BOOLEAN GMT_getuserpath (const char *stem, char *path)
 {
+	/* stem is the name of the file, e.g., .gmtdefaults4 or .gmtdefaults
+	 * path is the full path to the file in question
+	 * Returns TRUE if a workable path was found (sets path as well)
+	 * Looks for file stem in current directory, home directory and $GMT_USERDIR (default ~/.gmt)
+	 */
+
+	/* First look in the current working directory */
+
+	if (!access (stem, R_OK)) {	/* Yes, found it */
+		strcpy (path, stem);
+		return (TRUE);
+	}
+
+	/* Not found, see if there is a file in the user's home directory */
+
+	if (GMT_HOMEDIR) {
+		sprintf (path, "%s%c%s", GMT_HOMEDIR, DIR_DELIM, stem);
+		if (!access (path, R_OK)) return (TRUE);	/* Yes, use the file in $HOME */
+	}
+
+	/* Not found, see if there is a file in the user's .gmt directory */
+
+	if (GMT_USERDIR) {
+		sprintf (path, "%s%c%s", GMT_USERDIR, DIR_DELIM, stem);
+		if (!access (path, R_OK)) return (TRUE);	/* Yes, use the file in $GMT_USERDIR */
+	}
+
+	return (FALSE);	/* No file found, give up */
+}
+
+BOOLEAN GMT_getdatapath (const char *stem, char *path)
+{
+	/* stem is the name of the file, e.g., grid.img
+	 * path is the full path to the file in question
+	 * Returns TRUE if a workable path was found (sets path as well)
+	 * Looks for file stem in current directory and $GMT_{USER,DATA,GRID,IMG}DIR
+	 */
+
+	/* First look in the current working directory */
+
+	if (!access (stem, R_OK)) {	/* Yes, found it */
+		strcpy (path, stem);
+		return (TRUE);
+	}
+
+	/* Not found, see if there is a file in the GMT_*DIR directories */
+
+	if (GMT_USERDIR) {
+		sprintf (path, "%s%c%s", GMT_USERDIR, DIR_DELIM, stem);
+		if (!access (path, R_OK)) return (TRUE);
+	}
+	if (GMT_DATADIR) {
+		sprintf (path, "%s%c%s", GMT_DATADIR, DIR_DELIM, stem);
+		if (!access (path, R_OK)) return (TRUE);
+	}
+	if (GMT_GRIDDIR) {
+		sprintf (path, "%s%c%s", GMT_GRIDDIR, DIR_DELIM, stem);
+		if (!access (path, R_OK)) return (TRUE);
+	}
+	if (GMT_IMGDIR) {
+		sprintf (path, "%s%c%s", GMT_IMGDIR, DIR_DELIM, stem);
+		if (!access (path, R_OK)) return (TRUE);
+	}
+
+	return (FALSE);	/* No file found, give up */
+}
+
+BOOLEAN GMT_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path)
+{
+	/* stem is the name of the file, e.g., GMT_CPT.lis
+	 * subdir is an optional subdirectory name in the $GMTHOME/share directory.
+	 * suffix is an optional suffix to append to name
+	 * path is the full path to the file in question
+	 * Returns TRUE if a workable path was found (sets path as well)
+	 * Looks for file stem in current directory, $GMT_USERDIR (default ~/.gmt) and $GMTHOME/share/subdir
+	 */
+
+	/* First look in the current working directory */
+
+	sprintf (path, "%s%s", stem, suffix);
+	if (!access (stem, R_OK)) return (TRUE);	/* Yes, found it in current directory */
+
+	/* Not found, see if there is a file in the user's .gmt directory */
+
+	if (GMT_USERDIR) {
+		sprintf (path, "%s%c%s%s", GMT_USERDIR, DIR_DELIM, stem, suffix);
+		if (!access (path, R_OK)) return (TRUE);	/* Yes, use the file in $GMT_USERDIR */
+	}
+
+	/* Finally try to get file from $GMTHOME/share[/subdirname] */
+
+	if (subdir) {
+		sprintf (path, "%s%cshare%c%s%c%s%s", GMTHOME, DIR_DELIM, DIR_DELIM, subdir, DIR_DELIM, stem, suffix);
+
+	}
+	else {
+		sprintf (path, "%s%cshare%c%s%s", GMTHOME, DIR_DELIM, DIR_DELIM, stem, suffix);
+	}
+	if (!access (path, R_OK)) return (TRUE);	/* Yes, use the file in $GMTHOME/share/subdir */
+
+	return (FALSE);	/* No file found, give up */
+}
+
+FILE *GMT_fopen (const char* filename, const char *mode)
+{	/* Like fopen, but checks GMT_*DIR places */
 	FILE *fp;
 	char path[BUFSIZ];
 
-	if ((fp = fopen (filename, mode))) return (fp);
-	if (mode[0] != 'r') return (NULL);	/* Only look in special diretories when reading, not writing */
-	if (GMT_DATADIR) {
-		 sprintf (path, "%s%c%s", GMT_DATADIR, DIR_DELIM, filename);
-		 if ((fp = fopen (path, mode))) return (fp);
-	}
-	if (GMT_GRIDDIR) {
-		sprintf (path, "%s%c%s", GMT_GRIDDIR, DIR_DELIM, filename);
+	if (mode[0] == 'r') {
+		/* Look in special directories when reading */
+		if (!GMT_getdatapath (filename, path)) return (NULL);
 		if ((fp = fopen (path, mode))) return (fp);
 	}
-	if (GMT_IMGDIR) {
-		sprintf (path, "%s%c%s", GMT_IMGDIR, DIR_DELIM, filename);
-		if ((fp = fopen (path, mode))) return (fp);
+	else {
+		/* When writing, only look in current directory */
+		if ((fp = fopen (filename, mode))) return (fp);
 	}
 	return (NULL);
 }
@@ -153,19 +256,13 @@ int GMT_access (const char* filename, int mode)
 {	/* Like access but also checks the GMT_*DIR places */
 	char path[BUFSIZ];
 
-	if (!(access (filename, mode))) return (0);
-	if (mode == W_OK) return (-1);	/* Only look in special diretories when reading, not writing */
-	if (GMT_DATADIR) {
-		 sprintf (path, "%s%c%s", GMT_DATADIR, DIR_DELIM, filename);
-		 if (!(access (path, mode))) return (0);
+	if (mode == R_OK) {
+		/* Look in special directories when reading */
+		if (GMT_getdatapath (filename, path)) return (0);
 	}
-	if (GMT_GRIDDIR) {
-		sprintf (path, "%s%c%s", GMT_GRIDDIR, DIR_DELIM, filename);
-		 if (!(access (path, mode))) return (0);
-	}
-	if (GMT_IMGDIR) {
-		sprintf (path, "%s%c%s", GMT_IMGDIR, DIR_DELIM, filename);
-		 if (!(access (path, mode))) return (0);
+	else {
+		/* When writing, only look in current directory */
+		if (!(access (filename, mode))) return (0);
 	}
 	return (-1);
 }

@@ -19,7 +19,7 @@ complete listing of available parameters and their meaning, see the \fBgmtdefaul
 .TP
 .B \-G
 Name of specific \.gmtdefaults4 file to modify [Default looks first in current directory, then in your
-home directory, and finally in the system defaults].
+home directory, then in ~/.gmt and finally in the system defaults].
 .SH EXAMPLES
 To change the dpi to 600, set annotation font to Helvetica, and select grid-crosses of size 0.1 inch,
 and set annotation offset to 0.2 cm:
