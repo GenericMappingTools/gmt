@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.125 2006-08-24 03:07:45 remko Exp $
+ *	$Id: pslib.c,v 1.126 2006-08-24 17:48:27 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4544,7 +4544,7 @@ BOOLEAN ps_getsharepath (const char *subdir, const char *stem, const char *suffi
 	/* First look in the current working directory */
 
 	sprintf (path, "%s%s", stem, suffix);
-	if (!access (stem, R_OK)) return (TRUE);	/* Yes, found it in current directory */
+	if (!access (path, R_OK)) return (TRUE);	/* Yes, found it in current directory */
 
 	/* Not found, see if there is a file in the user's .gmt directory */
 
