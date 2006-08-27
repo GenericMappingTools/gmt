@@ -7,9 +7,10 @@ grdraster \- extract subregion from a binary raster and write a grd file
 [ OPT(G)\fIgrdfilename\fP ] [ GMT_Id_OPT ] [ GMT_J_OPT ] [ GMT_V_OPT ] 
 [ GMT_bo_OPT ] 
 .SH DESCRIPTION
-\fBgrdraster\fP reads a file called \fIgrdraster.info\fP from the directory  
-pointed to by the environment parameter \fB$GMT_GRIDDIR\fP (if this parameter is
-not set it defaults to \fB$GMTHOME\fP/share/dbase).  The info file defines binary
+\fBgrdraster\fP reads a file called \fIgrdraster.info\fP from the current
+working directory, the directories pointed to by the environment variables
+\fB$GMT_USERDIR\fP and \fB$GMT_GRIDDIR\fP, or in \fB$GMTHOME\fP/share/dbase
+(in that order).  The file \fIgrdraster.info\fP defines binary
 arrays of data stored in scan-line format in data files.  Each file is given
 a \fIfilenumber\fP in the info file.  \fBgrdraster\fP figures out how to
 load the raster data into a grd file spanning a region defined by \fB\-R\fP.
