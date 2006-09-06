@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.240 2006-08-24 03:07:44 remko Exp $
+ *	$Id: gmt_init.c,v 1.241 2006-09-06 21:02:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4690,7 +4690,7 @@ int GMT_decode_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEA
 	int decode_error = 0, bset = 0, j, n, k, len, slash = 0, one, colon;
 	BOOLEAN check, old_style;
 	char symbol_type, txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], text_cp[GMT_LONG_TEXT], *c;
-	static char *allowed_symbols[2] = {"-aAbCcDdeEfGgHhIiNnpqrSsTtVvwWxy", "-aAbCcDdeEfGgHhIiNnoOpqrSsTtuUVvwWxy"};
+	static char *allowed_symbols[2] = {"-aAbCcDdeEfGgHhIijNnpqrSsTtVvwWxy", "-aAbCcDdeEfGgHhIiNnoOpqrSsTtuUVvwWxy"};
 	static char *bar_symbols[2] = {"b", "-boOuU"};
 
 	p->n_required = p->convert_angles = 0;
@@ -4948,6 +4948,11 @@ int GMT_decode_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEA
 			p->equal_area = TRUE;	/* To equal area of circle with same size */
 		case 'i':
 			p->symbol = GMT_SYMBOL_ITRIANGLE;
+			break;
+		case 'j':
+			p->symbol = GMT_SYMBOL_ROTATERECT;
+			p->n_required = 3;
+                        check = FALSE;
 			break;
 		case 'l':
 			p->symbol = GMT_SYMBOL_TEXT;

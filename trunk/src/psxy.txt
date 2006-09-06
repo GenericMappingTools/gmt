@@ -145,6 +145,9 @@ the first symbol from the beginning of the front by that amount [Default is 0].
 .B \-Si
 \fBi\fPnverted triangle.  \fIsize\fP is diameter of circumscribing circle.
 .TP
+.B \-Sj
+Rotated rectangle.  Direction (in degrees counter-clockwise from horizontal), x-dimension, and y-dimension must be found in columns 3, 4, and 5.
+.TP
 .B \-Sk
 \fBk\fPustom symbol.  Append <name>/\fIsize\fP, and we will look for a definition file called
 <name>.def in (1) the current directory or (2) in ~/.gmt or (3) in \fB$GMTHOME\fP/share/custom.  The symbol as defined
