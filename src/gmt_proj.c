@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.4 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: gmt_proj.c,v 1.5 2006-09-06 21:02:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -26,8 +26,8 @@
  * A few of the core coordinate transformation functions are based on similar
  * FORTRAN routines written by Pat Manley, Doug Shearer, and Bill Haxby, and
  * have been rewritten in C and subsequently streamlined.  The Lambert conformal
- * was originally coded up by Bernie Coakley.  The rest is coded by Wessel based
- * on P. Snyder, "Map Projections - a working manual", USGS Prof paper 1395.
+ * was originally coded up by Bernie Coakley.  The rest is coded by Wessel/Smith
+ * based on P. Snyder, "Map Projections - a working manual", USGS Prof paper 1395.
  *
  * Transformations supported (both forward and inverse):
  *

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.126 2006-08-24 17:48:27 remko Exp $
+ *	$Id: pslib.c,v 1.127 2006-09-06 21:02:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1644,6 +1644,25 @@ void ps_rect (double x1, double y1, double x2, double y2, int rgb[], int outline
 void ps_rect_ (double *x1, double *y1, double *x2, double *y2, int *rgb, int *outline)
 {
 	ps_rect (*x1, *y1, *x2, *y2, rgb, *outline);
+}
+
+void ps_rotaterect (double x, double y, double angle, double x_len, double y_len, int rgb[], int outline)
+{
+	int ix, iy, idx, idy, pmode;
+	ix = irint (x * ps.scale);
+	iy = irint (y * ps.scale);
+	idx = irint (x_len * ps.scale);
+	idy = irint (y_len * ps.scale);
+	fprintf (ps.fp, "V %d %d T %g R\n", ix, iy, angle);
+	pmode = ps_place_color (rgb);
+	fprintf (ps.fp, "%d %d 0 0 R%d U\n", idy, idx, outline + psl_outline_offset[pmode]);
+	ps.npath = 0;
+}
+
+/* fortran interface */
+void ps_rotaterect_ (double *x1, double *y1, double *angle, double *x2, double *y2, int *rgb, int *outline)
+{
+	ps_rotaterect (*x1, *y1, *angle, *x2, *y2, rgb, *outline);
 }
 
 void ps_rotatetrans (double x, double y, double angle)

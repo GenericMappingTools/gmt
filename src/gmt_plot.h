@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.h,v 1.4 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: gmt_plot.h,v 1.5 2006-09-06 21:02:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -49,6 +49,7 @@
 #define GMT_SYMBOL_PENTAGON	22
 #define GMT_SYMBOL_OCTAGON	23
 #define GMT_SYMBOL_CUSTOM	24
+#define GMT_SYMBOL_ROTATERECT	25
 
 #define GMT_SYMBOL_FRONT	-100
 #define GMT_SYMBOL_QUOTED_LINE	-200
