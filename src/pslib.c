@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.127 2006-09-06 21:02:39 pwessel Exp $
+ *	$Id: pslib.c,v 1.128 2006-09-13 11:15:03 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3965,6 +3965,7 @@ unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input)
 	short int table = 4095;	/* Initial value forces clearing of table on first byte */
 	short int bmax = 0, pre, oldpre, ext, *code;
 	byte_stream_t output;
+	unsigned char *buffer;
 
 	i = MAX (512, *nbytes) + 8;	/* Maximum output length */
 	output = (byte_stream_t)ps_memory (VNULL, (size_t)1, sizeof (*output));
@@ -4010,6 +4011,7 @@ unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input)
 	if (output->nbytes > in) {
 		if (ps.verbose) fprintf (stderr, "pslib: LZW inflated %d to %d bytes (aborted)\n", in, output->nbytes);
 		ps_free (code);
+		ps_free (output->buffer);
 		ps_free (output);
 		return (NULL);
 	}
@@ -4017,9 +4019,10 @@ unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input)
 	/* Return number of output bytes and output buffer; release code table */
 	if (ps.verbose) fprintf (stderr, "pslib: LZW compressed %d to %d bytes\n", in, output->nbytes);
 	*nbytes = output->nbytes;
+	buffer = output->buffer;
 	ps_free (code);
 	ps_free (output);
-	return (output->buffer);
+	return (buffer);
 }
 
 byte_stream_t ps_lzw_putcode (byte_stream_t stream, short int incode)
