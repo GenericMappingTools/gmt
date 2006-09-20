@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.55 2006-04-10 05:47:30 pwessel Exp $
+ *	$Id: x2sys.c,v 1.56 2006-09-20 18:39:34 pwessel Exp $
  *
  *      Copyright (c) 1999-2006 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -180,7 +180,7 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 				}
 				GMT_chop (line);	/* Remove trailing CR or LF */
 				pos = 0;
-				while ((GMT_strtok (line, " ,\t\n", &pos, p))) {
+				while ((GMT_strtok (line, " ,\t\n", &pos, p)) && k < s->n_fields) {
 					GMT_scanf (p, G->in_col_type[k], &data[k]);
 					k++;;
 				}
@@ -321,7 +321,7 @@ struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G)
 	X->ascii_in = TRUE;
 	X->x_col = X->y_col = X->t_col = -1;
 	X->ms_flag = '>';	/* Default multisegment header flag */
-	sprintf (line, "%s%c%s.def", X2SYS_HOME, DIR_DELIM, fname);
+	sprintf (line, "%s.def", fname);
 
 	if ((fp = x2sys_fopen (line, "r")) == NULL) {
   		fprintf (stderr, "x2sys_initialize : Cannot find format definition file %s in either current or X2SYS_HOME directories\n", line);
