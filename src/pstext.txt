@@ -62,7 +62,7 @@ Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
 (Not implemented for paragraph mode).
 .TP
 .B \-G
-Sets the gray-shade (0-255) or color (r/g/b, each 0-255) used for drawing the text.  [Default is black]
+Sets the gray-shade (0-255) or color (r/g/b, each 0-255) used for drawing the text.  [Default is BASEMAP_FRAME_RGB, the current frame color (by default black)]
 #include "explain_-H.txt"
 #include "explain_-K.txt"
 .TP
