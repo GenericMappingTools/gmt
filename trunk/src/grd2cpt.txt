@@ -3,7 +3,7 @@
 .SH NAME
 grd2cpt \- Read a grdfile and make a color palette file
 .SH SYNOPSIS
-\fBgrd2cpt\fP \fIgrdfile\fP [ OPT(C)\fIcptmaster\fP ] [ OPT(D) ] [ OPT(E)\fInlevels\fP ] [ OPT(I) ] 
+\fBgrd2cpt\fP \fIgrdfile\fP [ OPT(C)\fIcptmaster\fP ] [ OPT(D) ] [ OPT(E)\fInlevels\fP[\fB-\fP|\fB+\fP|\fB=\fP] ] [ OPT(I) ] 
 [ OPT(L)\fIminlimit/maxlimit\fP ] [ OPT(M) ] [ OPT(N) ] [ OPT(Q)[\fBi|o\fP] ] 
 [ GMT_Rgeo_OPT ] [ OPT(S)\fIzstart/zstop/zinc\fP ] [ GMT_V_OPT ] [ OPT(Z) ]
 .SH DESCRIPTION
@@ -45,6 +45,8 @@ the parameters \fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\
 .TP
 .B \-E
 Create a linear color table by dividing the grid z-range into \fInlevels\fP equidistant slices.
+Optionally, append \fB-\fP, \fB+\fP, or \fB=\fP to produce color tables symmetric about z = 0
+and extending to +/-|zmin|, |zmax|, or max(|zmin|, |zmax|), respectively.
 .TP
 .B \-I
 Reverses the sense of color progression in the master cptfile.
