@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.4 2006-04-13 06:20:34 pwessel Exp $
+/*      $Id: gmt_agc_io.c,v 1.5 2006-09-26 19:53:41 pwessel Exp $
  *
  * Based on original code from Robert Helie.  That code was hard-wired
  * in two applications (gmt2agcgrd.c and agc2gmtgrd.c) based on GMT 3.4.
@@ -6,6 +6,7 @@
  * and argument passing.  Note that AGC files are assumed to be gridline-
  * oriented.  If a pixel grid is requested to be written in AGC format
  * we will shrink the region by 0.5 dx|dy to obtain gridline registration.
+ * Finally, AGC uses 0.0 to represent NaNs.
  */
 /*-----------------------------------------------------------
  * Format # :	21
@@ -174,9 +175,7 @@ int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 			for (j = 0, col = colstart; col < colend; j++, col++) {
 				if (col < first_col || col > last_col) continue;
 				ij = ((j_gmt - first_row) + pad[3]) * width_out + (col - first_col) + i_0_out;
-				grid[ij] = z[j][i];
-				if ((double)grid[ij] < header->z_min) header->z_min = (double)grid[ij];
-				if ((double)grid[ij] > header->z_max) header->z_max = (double)grid[ij];
+				grid[ij] = (z[j][i] == 0.0) ? GMT_f_NaN : z[j][i];	/* AGC uses exact zero as NaN flag */
 			}
 		}
 
@@ -274,7 +273,7 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 		for (i = first_col, i2 = pad[0]; i <= last_col; i++, i2++) {
 			ij = (j2 * width_in + i2) * inc;
 			if (GMT_is_fnan (grid[ij])) {
-				if (check) grid[ij] = (float)header->nan_value;
+				grid[ij] = 0.0;	/* in AGC, NaN <--> 0.0 */
 			}
 			else {
 				header->z_min = MIN (header->z_min, (double)grid[ij]);
