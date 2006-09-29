@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.41 2006-05-29 01:50:02 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.42 2006-09-29 09:31:12 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -66,7 +66,7 @@ which could cause SEGV in \GMTprog{xyz2grd} if ({\it x,y}) was less than half th
 \item [\GMTprog{grdcontour.c}]: The \Opt{C} option with a non-cpt file failed to read due to lack of proper if-test.
 \item [\GMTprog{grdedit.c}]: The \Opt{S} option was backwards and tested {\it w-e}=360; should be {\it e-w}=360.
 \item [\GMTprog{grdimage.c}]: Fixed bug introduced by \GMTfunc{GMT\_get\_inc} in 4.1.2. Internal projected
-grid never took node_offset from input grid.
+grid never took node\_offset from input grid.
 \item [\GMTprog{grdmask.c}]: Polygons with zig-zag shape would sometimes cause a node exactly
 on a polygon vertex to be considered inside. Radius was reset to 0 after \Opt{S}{\it radius} was assigned.
 \item [\GMTprog{grdvector.c}]: The \Opt{A} option was not properly initiated.
