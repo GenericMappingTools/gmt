@@ -260,13 +260,13 @@ third column.
 \fROverlay zero trace moment tensor.
 .br
 .TP
-\fB\-a\fP[\fIsize\fP/[\fIP_axis_symbol\fP/[\fIT_axis_symbol\fP]]]
+\fB\-a\fP[\fIsize\fP/[\fIP_axis_symbol\fP[\fIT_axis_symbol\fP]]]
 Computes and plots P and T axes with symbols. Optionally specify \fIsize\fP
 and (separate) P and T axis symbols from the following:
 (\fBc\fP) circle, (\fBd\fP) diamond, (\fBh\fP) hexagon,
 (\fBi\fP) inverse triangle,
 (\fBp\fP)point, (\fBs\fP) square, (\fBt\fP) triangle,
-(\fBx\fP) cross. [Defaults: 0.2\fBc\fP/\fBc\fP/\fBc\fP or 0.08\fBi\fP/\fBc\fP/\fBc\fP.]
+(\fBx\fP) cross. [Defaults: 0.2\fBc\fP/\fBcc\fP or 0.08\fBi\fP/\fBcc\fP.]
 .br
 .TP
 \fB\-e\fP\fIfill\fP
