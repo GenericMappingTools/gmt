@@ -3,9 +3,9 @@
 .SH NAME
 grd2cpt \- Read a grdfile and make a color palette file
 .SH SYNOPSIS
-\fBgrd2cpt\fP \fIgrdfile\fP [ OPT(C)\fIcptmaster\fP ] [ OPT(D) ] [ OPT(E)\fInlevels\fP[\fB-\fP|\fB+\fP|\fB=\fP] ] [ OPT(I) ] 
-[ OPT(L)\fIminlimit/maxlimit\fP ] [ OPT(M) ] [ OPT(N) ] [ OPT(Q)[\fBi|o\fP] ] 
-[ GMT_Rgeo_OPT ] [ OPT(S)\fIzstart/zstop/zinc\fP ] [ GMT_V_OPT ] [ OPT(Z) ]
+\fBgrd2cpt\fP \fIgrdfile\fP [ OPT(C)\fIcptmaster\fP ] [ OPT(D) ] [ OPT(E)\fInlevels\fP ] [ OPT(I) ] 
+[ OPT(L)\fIminlimit/maxlimit\fP ] [ OPT(M) ] [ OPT(N) ] [ OPT(Q)[\fBi|o\fP] ] [ GMT_Rgeo_OPT ] 
+[ OPT(S)\fIzstart/zstop/zinc\fP ] [ OPT(T)\fB-\fP|\fB+\fP|\fB_\fP|\fB=\fP ] [ GMT_V_OPT ] [ OPT(Z) ]
 .SH DESCRIPTION
 \fBgrd2cpt\fP reads a grdfile and writes a color palette (cpt) file to
 standard output.  The cpt file is based on an existing master cptfile of
@@ -45,8 +45,6 @@ the parameters \fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\
 .TP
 .B \-E
 Create a linear color table by dividing the grid z-range into \fInlevels\fP equidistant slices.
-Optionally, append \fB-\fP, \fB+\fP, or \fB=\fP to produce color tables symmetric about z = 0
-and extending to +/-|zmin|, |zmax|, or max(|zmin|, |zmax|), respectively.
 .TP
 .B \-I
 Reverses the sense of color progression in the master cptfile.
@@ -74,6 +72,11 @@ Selects a logarithmic interpolation scheme [Default is linear].  \fB\-Qi\fP expe
 .B \-S
 Set steps in cpt file.  Calculate entries in cptfile from \fIzstart\fP to \fIzstop\fP
 in steps of (\fIzinc\fP).  [Default chooses arbitrary values by a crazy scheme.]
+.TP
+.B \-T
+Force the color table to be symmetric about zero (from -R to +R). Append flag to set the range R:
+\fB-\fP for R =|zmin|, \fB+\fP for R = |zmax|, \fB=\fP for R = min(|zmin|, |zmax|), or
+\fB=\fP for R = max(|zmin|, |zmax|).
 .TP
 .B \-V
 Verbose operation.  This will write CDF(Z) estimates to stderr.  [Default is silent.] 
