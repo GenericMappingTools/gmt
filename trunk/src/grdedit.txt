@@ -1,9 +1,9 @@
 .TH GRDEDIT GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-grdedit \- Modifying the header in a 2-D grdfile
+grdedit \- Modifying the header or content of a 2-D grdfile
 .SH SYNOPSIS
-\fBgrdedit\fP \fIgrdfile\fP [ OPT(A) ] [ GMT_GRDEDIT ] 
+\fBgrdedit\fP \fIgrdfile\fP [ OPT(A) ] [ GMT_GRDEDIT ] [ OPT(E) ] 
 [ OPT(N)\fIxyzfile\fP ] [ GMT_Rgeo_OPT ] [ OPT(S) ] [ OPT(T) ] [ GMT_V_OPT ] 
 [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
@@ -30,6 +30,9 @@ prior to \fBGMT\fP 3.1) often had excessive slop in
 .B \-D
 Give new values for \fIxname, yname, zname, scale, offset, title,\fP and \fIremark\fP.
 To leave some of the values untouched, specify = as the new value.
+.TP
+.B \-E
+Transpose the grid and exchange the \fIx\fP and \fIy\fP information.  Incompatible with the other options.
 #include "explain_-H.txt"
 .TP
 .B \-N
