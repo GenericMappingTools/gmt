@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.134 2006-04-11 04:21:27 pwessel Exp $
+ *	$Id: mgd77.c,v 1.135 2006-10-03 19:29:17 mtchandl Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -4258,6 +4258,7 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
 	l = 1;
 	m = 1;
 	n = 0;
+	ratio = 1.0;
 	if (itype == 1) { /* conversion from geodetic to geocentric coordinates (using the WGS84 spheroid) */
 		a2 = 40680631.6;
 		b2 = 40408296.0;
@@ -4271,9 +4272,8 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
 		one = ct;
 		ct = ct * cd - st * sd;
 		st = st * cd + one * sd;
+		ratio = 6371.2 / r;
 	}
-
-	ratio = 6371.2 / r;
 	rr = ratio * ratio;
 
 	/* computation of Schmidt quasi-normal coefficients p and x(=q) */
