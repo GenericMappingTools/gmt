@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.260 2006-08-24 03:07:45 remko Exp $
+ *	$Id: gmt_support.c,v 1.261 2006-10-06 17:19:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2039,11 +2039,6 @@ void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname)
 	int k;
 
 	if (nelem == 0) return(VNULL); /* Take care of n = 0 */
-
-	if (nelem < 0) { /* This is illegal and caused by upstream bugs in GMT */
-		fprintf (stderr, "GMT Fatal Error: %s requesting memory for a negative number of items [n_items = %d]\n", progname, (int)nelem);
-		exit (EXIT_FAILURE);
-	}
 
 	if (prev_addr) {
 		if ((tmp = realloc ((void *) prev_addr, (nelem * size))) == VNULL) {

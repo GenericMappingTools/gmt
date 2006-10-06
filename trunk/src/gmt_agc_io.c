@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.5 2006-09-26 19:53:41 pwessel Exp $
+/*      $Id: gmt_agc_io.c,v 1.6 2006-10-06 17:19:36 pwessel Exp $
  *
  * Based on original code from Robert Helie.  That code was hard-wired
  * in two applications (gmt2agcgrd.c and agc2gmtgrd.c) based on GMT 3.4.
@@ -117,7 +117,6 @@ int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	int inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
 	int i, j, ij, j_gmt, i_0_out;	/* Misc. counters */
 	int *k;				/* Array with indices */
-	int type;			/* Data type */
 	int size;			/* Length of data type */
 	int datablockcol, datablockrow, n_read = 0, rowstart, rowend, colstart, colend, row, col;
 	FILE *fp;			/* File pointer to data or pipe */
@@ -136,7 +135,6 @@ int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 		exit (EXIT_FAILURE);
 	}
 
-	type = GMT_grdformats[header->type][1];
 	size = GMT_grd_data_size (header->type, &header->nan_value);
 	check = !GMT_is_dnan (header->nan_value);
 
@@ -228,7 +226,6 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	int inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
 	int i, j, i2, j2, ij;		/* Misc. counters */
 	int *k;				/* Array with indices */
-	int type;			/* Data type */
 	int size;			/* Length of data type */
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
@@ -250,7 +247,6 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 		exit (EXIT_FAILURE);
 	}
 	
-	type = GMT_grdformats[header->type][1];
 	size = GMT_grd_data_size (header->type, &header->nan_value);
 	check = !GMT_is_dnan (header->nan_value);
 
