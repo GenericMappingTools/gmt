@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.135 2006-10-03 19:29:17 mtchandl Exp $
+ *	$Id: mgd77.c,v 1.136 2006-10-06 21:15:45 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -3754,7 +3754,7 @@ double MGD77_carter_correction (double lon, double lat, double twt_in_msec, stru
   * Computes the magnetic field components from the IGRF 1900-2010 model
   * Author:	Joaquim Luis
   * Date: 	18 Aug  2004
-  * Revised: 	1  Mars 2005
+  * Revised: 	5  Oct 2006
   * Extracted & Modified for MGD77 by P. Wessel.
   *
 *--------------------------------------------------------------------*/
@@ -3798,6 +3798,9 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
   *
   *	Joaquim Luis 1-MARS-2005
   *	Converted to C (with help of f2c, which explains the ugliness)
+  *     1995.0 coefficients as published in igrf9coeffs.xls and igrf10coeffs.xls */
+  *     used - (Kimmo Korhonen spotted 1 nT difference in 11 coefficients) */
+  *     Susan Macmillan July 2005 (PW update Oct 2006) */
   */
 
      struct IGRF {
@@ -4090,17 +4093,17 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
            -7.,   -6.,    2.,   -3.,   -4.,    2.,    2.,    1.,
            -5.,    3.,   -2.,    6.,    4.,   -4.,    3.,    0.,
             1.,   -2.,    3.,    3.,    3.,   -1.,    0.,   -6.,
-       -29692.,-1784., 5306.,-2200., 3070.,-2366., 1681., -412., /* gk (1995) */
-         1335.,-2266., -262., 1248.,  302.,  758., -427.,  940.,
+       -29692.,-1784., 5306.,-2200., 3070.,-2366., 1681., -413., /* gk (1995) */
+         1335.,-2267., -262., 1249.,  302.,  759., -427.,  940.,
           780.,  262.,  290., -236., -418.,   97.,  122., -306.,
-         -214.,  352.,   46.,  235.,  165., -118., -142., -166.,
+         -214.,  352.,   46.,  235.,  165., -118., -143., -166.,
           -55.,  -17.,  107.,   68.,   67.,  -17.,   68.,   72.,
-         -170.,   67.,    0.,  -58.,   18.,    1.,  -93.,   36.,
-           77.,  -72.,  -69.,    0.,  -25.,   28.,    4.,    5.,
+         -170.,   67.,   -1.,  -58.,   19.,    1.,  -93.,   36.,
+           77.,  -72.,  -69.,    1.,  -25.,   28.,    4.,    5.,
            24.,    4.,   17.,    8.,  -24.,   -2.,   -6.,   25.,
             6.,   11.,   -6.,  -21.,   -9.,    8.,  -14.,  -23.,
-            9.,   14.,    6.,   11.,   -4.,  -16.,   -7.,   -4.,
-            4.,    9.,  -20.,    2.,   15.,  -10.,   12.,    8.,
+            9.,   15.,    6.,   11.,   -5.,  -16.,   -7.,   -4.,
+            4.,    9.,  -20.,    3.,   15.,  -10.,   12.,    8.,
            -6.,   -8.,   -8.,   -1.,    8.,   10.,    5.,   -2.,
            -8.,   -8.,    3.,   -3.,   -6.,    1.,    2.,    0.,
            -4.,    4.,   -1.,    5.,    4.,   -5.,    2.,   -1.,
@@ -4205,8 +4208,8 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
 	double p[105], q[105], r, t, a2, b2, colat;
 	double H, F, X = 0, Y = 0, Z = 0, dec, dip;
 	
-	if (date < 1900.0 || date > 2010.0) {
-		fprintf (stderr, "%s: Your date (%g) is outside valid range for IGRF (1900-2010)\n", GMT_program, date);
+	if (date < 1900.0 || date > 2015.0) {
+		fprintf (stderr, "%s: Your date (%g) is outside valid extrapolated range for IGRF (1900-2015)\n", GMT_program, date);
 		return (MGD77_BAD_IGRFDATE);
 	}
 	
@@ -4258,7 +4261,6 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
 	l = 1;
 	m = 1;
 	n = 0;
-	ratio = 1.0;
 	if (itype == 1) { /* conversion from geodetic to geocentric coordinates (using the WGS84 spheroid) */
 		a2 = 40680631.6;
 		b2 = 40408296.0;
@@ -4274,6 +4276,8 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
 		st = st * cd + one * sd;
 		ratio = 6371.2 / r;
 	}
+	else
+		ratio = 1.0;
 	rr = ratio * ratio;
 
 	/* computation of Schmidt quasi-normal coefficients p and x(=q) */
