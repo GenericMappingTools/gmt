@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.48 2006-06-15 00:30:45 remko Exp $
+ *	$Id: gmt_calclock.c,v 1.49 2006-10-06 17:19:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -232,7 +232,7 @@ int	GMT_gyear_from_rd (GMT_cal_rd date) {
 	n4 = (int)floor (d2 / 1461.0);
 	d3 = GMT_cal_imod (d2, 1461);
 	n1 = (int)floor (d3 / 365.0);
-	d4 = GMT_cal_imod (d3, 365) + 1;
+	/* d4 = GMT_cal_imod (d3, 365) + 1; NOT USED */
 	year = 400*n400 + 100*n100 + 4*n4 + n1;
 	
 	if (n100 != 4 && n1 != 4) year++;

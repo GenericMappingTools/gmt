@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.15 2005-10-20 06:01:44 pwessel Exp $
+#	$Id: Makefile,v 1.16 2006-10-06 17:19:36 pwessel Exp $
 #
 # makefile for x2sys directory
 #
@@ -6,7 +6,7 @@ include ../makegmt.macros
 
 #------------------------- stop here --------------------------
 
-CFLAGS	= $(CC_OPT) -Wall $(WIN32) -I$(srcdir) -I../mgg -I../mgd77 -I$(NETCDF)/include
+CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I../mgg -I../mgd77 -I$(NETCDF)/include
 ALLLIB	= -L../mgd77 -lmgd77 -L../mgg -lgmt_mgg -L.. -L$(libdir) -lgmt -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)
 
 XSYSTEM_H	= x2sys.h

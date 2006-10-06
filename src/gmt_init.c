@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.241 2006-09-06 21:02:39 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.242 2006-10-06 17:19:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2640,7 +2640,7 @@ int GMT_get_ellipsoid (char *name)
 			}
 			/* else check consistency: */
 			else if (gmtdefs.ref_ellipsoid[i].pol_radius > 0.0 && (slop = fabs(gmtdefs.ref_ellipsoid[i].flattening - 1.0 + (gmtdefs.ref_ellipsoid[i].pol_radius/gmtdefs.ref_ellipsoid[i].eq_radius))) > 1.0e-8) {
-				fprintf (stderr, "GMT Warning: Possible inconsistency in user ellipsoid parameters (%s)\n", line);
+				fprintf (stderr, "GMT Warning: Possible inconsistency in user ellipsoid parameters (%s) [off by %g]\n", line, slop);
 				/* exit (EXIT_FAILURE); */
 			}
 		}
@@ -3052,8 +3052,16 @@ void GMT_set_home (void)
 		GMT_HOMEDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
  		strcpy (GMT_HOMEDIR, this);
 	}
-	else
+	else {
+#ifdef WIN32
+		/* Set HOME to C:\ under Windows */
+		GMT_HOMEDIR = (char *) GMT_memory (VNULL, 4, (size_t)1, "GMT");
+		strcpy (GMT_HOMEDIR, "C:\");
+#else
+
 		fprintf (stderr, "GMT Warning: Could not determine home directory!\n");
+#endif
+	}
 	if ((this = getenv ("GMT_USERDIR")) != CNULL) {	/* GMT_USERDIR was set */
 		GMT_USERDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
 		strcpy (GMT_USERDIR, this);
