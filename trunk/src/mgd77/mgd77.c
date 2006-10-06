@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.136 2006-10-06 21:15:45 pwessel Exp $
+ *	$Id: mgd77.c,v 1.137 2006-10-06 21:21:22 mtchandl Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -3798,9 +3798,9 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
   *
   *	Joaquim Luis 1-MARS-2005
   *	Converted to C (with help of f2c, which explains the ugliness)
-  *     1995.0 coefficients as published in igrf9coeffs.xls and igrf10coeffs.xls */
-  *     used - (Kimmo Korhonen spotted 1 nT difference in 11 coefficients) */
-  *     Susan Macmillan July 2005 (PW update Oct 2006) */
+  *     1995.0 coefficients as published in igrf9coeffs.xls and igrf10coeffs.xls 
+  *     used - (Kimmo Korhonen spotted 1 nT difference in 11 coefficients) 
+  *     Susan Macmillan July 2005 (PW update Oct 2006) 
   */
 
      struct IGRF {
