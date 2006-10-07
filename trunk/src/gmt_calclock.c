@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.49 2006-10-06 17:19:36 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.50 2006-10-07 13:19:45 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -218,7 +218,7 @@ GMT_cal_rd GMT_rd_from_gymd (int gy, int gm, int gd) {
 int	GMT_gyear_from_rd (GMT_cal_rd date) {
 /*	Given rata die integer day number, return proleptic Gregorian year  */
 
-	int d0, d1, d2, d3, d4, n400, n100, n4, n1, year;
+	int d0, d1, d2, d3, n400, n100, n4, n1, year;
 	
 #ifndef OLDCAL
 	d0 = date - 1;
