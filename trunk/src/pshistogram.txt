@@ -7,7 +7,7 @@ pshistogram \- Bin data and plot histograms
 .SH SYNOPSIS
 \fBpshistogram\fB \fIfile\fP GMT_Jx_OPT OPT(W)\fIbin_width\fP [ OPT(A) ] [ GMT_B_OPT ] 
 [ OPT(C) ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] 
-[ OPT(I)[\fBo\fP] ] [ GMT_K_OPT ] [ OPT(L)\fIpen\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ \fB\-Q\fP ] 
+[ OPT(I)[\fBo\fP|\fBO\fP] ] [ GMT_K_OPT ] [ OPT(L)\fIpen\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ \fB\-Q\fP ] 
 [ GMT_Rx_OPT ] [ OPT(S) ] [ OPT(T)\fIcol\fP ] [ GMT_U_OPT ] [ GMT_V_OPT ]  
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fItype\fP ] [ GMT_c_OPT ] 
 [ GMT_bi_OPT ] [ GMT_f_OPT ]
@@ -45,7 +45,8 @@ Select filling of bars.  [Default is no fill].
 .TP
 .B \-I
 Inquire about min/max x and y after binning.  No plotting is done.  Append \fBo\fP
-to output an ASCII table of the resulting x,y data to stdout.
+to output an ASCII table of the resulting x,y data to stdout.  Alternatively, append
+\fBO\fP to output all x,y bin data even when y == 0.
 #include "explain_-K.txt"
 .TP
 .B \-L
