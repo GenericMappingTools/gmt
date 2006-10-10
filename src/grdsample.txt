@@ -4,14 +4,20 @@
 grdsample \- Resample a grd file onto a new grid
 .SH SYNOPSIS
 \fBgrdsample\fP \fIin_grdfile\fP OPT(G)\fIout_grdfile\fP [ OPT(F) ] [ GMT_I_OPT ] 
-[ OPT(L)\fIflag\fP ] [ OPT(N)\fInx/ny\fP ] [ OPT(Q)[\fIvalue\fP] ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ]
+[ OPT(L)\fIflag\fP ] [ OPT(Q)[\fIvalue\fP] ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
 \fBgrdsample\fP reads a grdfile and interpolates it to create a new grdfile with either:  a different registration 
-(OPT(T)); or, a new grid-spacing (OPT(I)) or number of nodes (OPT(N)), and perhaps also a new sub-region 
+(OPT(F) or OPT(T)); or, a new grid-spacing or number of nodes (OPT(I)), and perhaps also a new sub-region 
 (OPT(R)).  Interpolation is bicubic [Default] or bilinear (OPT(Q)) and uses boundary conditions (OPT(L)).  
 Note that using OPT(R) only is equivalent to \fBgrdcut\fP or \fBgrdedit \-S\fP.  \fBgrdsample\fP safely 
 creates a fine mesh from a coarse one; the converse may suffer aliasing unless the data are filtered using
 \fBgrdfft\fP or \fBgrdfilter\fP.
+.br
+.sp
+When OPT(R) is omitted, the output grid will cover the same region as the input grid.
+When OPT(I) is omitted, the grid spacing of the output grid will be the same as the input grid.
+Either OPT(F) or OPT(T) can be used to change the grid registration. When omitted, the output grid will
+have the same registration as the input grid.
 .TP
 \fIin_grdfile\fP
 The name of the input 2-D binary grd file.
@@ -19,28 +25,28 @@ The name of the input 2-D binary grd file.
 .B \-G
 The name of the output grd file.
 .SH OPTIONS
-No space between the option flag and the associated arguments.
 .TP
 .B \-F
-Force pixel registration.  [Default is grid registration].
+Force pixel registration on output grid.  [Default is same registration as input grid].
 #include "explain_-I.txt"
 .TP
 .B \-L
 Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of 
-x or y or both set by \fB\-R\fP, or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
+x or y or both set by OPT(R), or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
 lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero).]  
 #include "explain_-Q.txt"
 #include "explain_-R.txt"
 .TP
 .B \-T
-Translate between grid and pixel registration while keeping \fB\-R\fP and \fB\-I\fP the same; if input is 
-grid-registered, output will be pixel-registered and vice-versa.  The input file determines \fB\-R\fP, 
-and \fB\-I\fP so no other options are necessary (except possibly \fB\-L\fP or \fB\-Q\fP).
+Translate between grid and pixel registration;  if the input is 
+grid-registered, the output will be pixel-registered and vice-versa.
 #include "explain_-V.txt"
+#include "explain_-f.txt"
+#include "explain_float.txt"
 .SH HINTS
 If an interpolation point is not on a node of the input grid, then a NaN at any node in the neighborhood 
 surrounding the point will yield an interpolated NaN.  Bicubic interpolation [default] yields continuous 
-first derivatives but requires a neighborhood of 4 nodes by 4 nodes.  Bilinear interpolation [\fB\-Q\fP] 
+first derivatives but requires a neighborhood of 4 nodes by 4 nodes.  Bilinear interpolation [OPT(Q)]
 uses only a 2 by 2 neighborhood, but yields only zeroth-order continuity.  Use bicubic when smoothness is 
 important.  Use bilinear to minimize the propagation of NaNs.
 .SH EXAMPLES
@@ -50,7 +56,8 @@ To resample the 5 x 5 minute grid in hawaii_5by5_topo.grd onto a 1 minute grid:
 \fBgrdsample\fP hawaii_5by5_topo.grd \fB\-I\fP1\fBm \-G\fPhawaii_1by1_topo.grd
 .br
 .sp
-To translate the gridline-registered file surface.grd to pixel registration:
+To translate the gridline-registered file surface.grd to pixel registration while
+keeping the same region and grid interval:
 .br
 .sp
 \fBgrdsample\fP surface.grd \fB\-T \-G\fPpixel.grd
