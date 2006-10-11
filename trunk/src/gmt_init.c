@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.243 2006-10-07 13:21:57 remko Exp $
+ *	$Id: gmt_init.c,v 1.244 2006-10-11 02:25:13 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -637,44 +637,49 @@ void GMT_inc_syntax (char option, int error)
 {
 	if (error) fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
 	fprintf (stderr, "\t-%c<xinc>[m|c|e|k|i|n|+][=][/<yinc>[m|c|e|k|i|n|+][=]]\n", option);
-	fprintf (stderr, "\t  Give increment and append unit (m)inute, se(c)ond, m(e)ter, (k)ilometer, m(i)les, (n)autical miles.\n");
-	fprintf (stderr, "\t  Append = to adjust the domain to fit the increment [Default adjusts increment to fit domain].\n");
-	fprintf (stderr, "\t  Alternatively, specify number of nodes by appending +. Then, the increments are calculated\n");
-	fprintf (stderr, "\t  from the given domain and grid-registration settings (see Appendix B for details).\n");
+	fprintf (stderr, "\t   Give increment and append unit (m)inute, se(c)ond, m(e)ter, (k)ilometer, m(i)les, (n)autical miles.\n");
+	fprintf (stderr, "\t   Append = to adjust the domain to fit the increment [Default adjusts increment to fit domain].\n");
+	fprintf (stderr, "\t   Alternatively, specify number of nodes by appending +. Then, the increments are calculated\n");
+	fprintf (stderr, "\t   from the given domain and grid-registration settings (see Appendix B for details).\n");
 }
 
-void GMT_fill_syntax (char option)
+void GMT_fill_syntax (char option, char *string)
 {
-	fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
-	fprintf (stderr, "\t-%cP|p<dpi>/<pattern>[:F<color>B<color>], dpi of pattern, pattern from 1-90 or a filename, optionally add fore/background colors (use - for transparency)\n", option);
-	fprintf (stderr, "\t-%c<color>, <color> = <red>/<green>/<blue> or <gray>, all in the 0-255 range,\n", option);
-	fprintf (stderr, "\t  <c>/<m>/<y>/<k> in 0-100%% range, <hue>-<sat>-<val> in 0-360, 0-1, 0-1 range,\n");
-	fprintf (stderr, "\t  or black, white or [light|dark]{red, orange, yellow, green, cyan, blue, magenta, brown, gray}.\n");
+	if (string[0] == ' ') fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
+	fprintf (stderr, "\t-%c<fill> %s Specify <fill> as one of:\n", option, string);
+	fprintf (stderr, "\t   1) <gray> or <red>/<green>/<blue>, all in the range 0-255;\n");
+	fprintf (stderr, "\t   2) <c>/<m>/<y>/<k> in range 0-100%%;\n");
+	fprintf (stderr, "\t   3) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1;\n");
+	fprintf (stderr, "\t   4) any valid named color;\n");
+	fprintf (stderr, "\t   5) P|p<dpi>/<pattern>[:F<color>B<color>], with <dpi> of pattern, <pattern> from 1-90 or a filename,\n");
+	fprintf (stderr, "\t      optionally add fore/background colors (use - for transparency).\n");
 }
 
-void GMT_pen_syntax (char option)
+void GMT_pen_syntax (char option, char *string)
 {
-	fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
-	fprintf (stderr, "\t-%c[<width>[cipm]][,][<color>][,][<texture>[cipm]]\n", option);
-	fprintf (stderr, "\t  Separate the <width>, <color>, and <texture> arguments with commas\n");
-	fprintf (stderr, "\t  <width> >= 0.0, or a pen name: faint, default, or {thin, thick, fat}[er|est]\n");
-	fprintf (stderr, "\t  <color> = <red>/<green>/<blue> or <gray>, all in the 0-255 range,\n");
-	fprintf (stderr, "\t  <c>/<m>/<y>/<k> in 0-100%% range, <hue>-<sat>-<val> in 0-360, 0-1, 0-1 range,\n");
-	fprintf (stderr, "\t  or black, white or [light|dark]{red, orange, yellow, green, cyan, blue, magenta, brown, gray}.\n");
-	fprintf (stderr, "\t  If no unit is appended, then dots-per-inch is assumed [current dpi = %d].\n", gmtdefs.dpi);
-	fprintf (stderr, "\t  <texture> = (1) pattern of dashes (-) and dots (.) which will be scaled by pen width.\n");
-	fprintf (stderr, "\t              (2) a for d(a)shed or o for d(o)tted lines, caled by pen width.\n");
-	fprintf (stderr, "\t              (3) <pattern>:<offset>; <pattern> holds lengths of lines and gaps separated\n");
-	fprintf (stderr, "\t                  by underscores and <offset> is a phase offset.\n");
-	fprintf (stderr, "\t  The default pen specification gives a solid black line [%gp]\n", GMT_PENWIDTH);
+	if (string[0] == ' ') fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
+	fprintf (stderr, "\t-%c %s\n", option, string);
+	fprintf (stderr, "\t   <pen> is a comma-separated list of optional <width>[cipm], <color> and <texture>[cipm]\n");
+	fprintf (stderr, "\t   <width> >= 0.0, or a pen name: faint, default, or {thin, thick, fat}[er|est].\n");
+	fprintf (stderr, "\t   <color> = (1) <gray> or <red>/<green>/<blue>, all in the range 0-255,\n");
+	fprintf (stderr, "\t             (2) <c>/<m>/<y>/<k> in 0-100%% range,\n");
+	fprintf (stderr, "\t             (3) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1,\n");
+	fprintf (stderr, "\t             (4) any valid named color.\n");
+	fprintf (stderr, "\t   <texture> = (1) pattern of dashes (-) and dots (.) which will be scaled by pen width.\n");
+	fprintf (stderr, "\t               (2) a for d(a)shed or o for d(o)tted lines, caled by pen width.\n");
+	fprintf (stderr, "\t               (3) <pattern>:<offset>; <pattern> holds lengths of lines and gaps separated\n");
+	fprintf (stderr, "\t                   by underscores and <offset> is a phase offset.\n");
+	fprintf (stderr, "\t   If no unit is appended, then dots-per-inch is assumed [current dpi = %d].\n", gmtdefs.dpi);
 }
 
-void GMT_rgb_syntax (char option)
+void GMT_rgb_syntax (char option, char *string)
 {
-	fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
-	fprintf (stderr, "\t-%c<color>, <color> = <red>/<green>/<blue> or <gray>, all in the 0-255 range,\n", option);
-	fprintf (stderr, "\t  <c>/<m>/<y>/<k> in 0-100%% range, or <hue>-<sat>-<val> in 0-360, 0-1, 0-1 range,\n");
-	fprintf (stderr, "\t  or black, white or [light|dark]{red, orange, yellow, green, cyan, blue, magenta, brown, gray}.\n");
+	if (string[0] == ' ') fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
+	fprintf (stderr, "\t-%c<color> %s Specify <color> as one of:\n", option, string);
+	fprintf (stderr, "\t   1) <gray> or <red>/<green>/<blue>, all in the range 0-255;\n");
+	fprintf (stderr, "\t   2) <c>/<m>/<y>/<k> in range 0-100%%;\n");
+	fprintf (stderr, "\t   3) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1;\n");
+	fprintf (stderr, "\t   4) any valid named color.\n");
 }
 
 void GMT_syntax (char option)

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.261 2006-10-06 17:19:36 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.262 2006-10-11 02:25:13 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -820,9 +820,8 @@ int GMT_getinc (char *line, double *dx, double *dy)
 	 *	  i = miles [Convert to degrees]
 	 *	  k = km [Convert to degrees]
 	 *	  n = nautical miles [Convert to degrees]
-	 * Flags: + = Adjust -R to fit exact -I [Default modifies -I to fit -R]
-	 *	  - = incs are actually nx/ny - convert to get xinc/yinc
-	 *	  = = Adjust xmax, ymax to exactly fit given increments
+	 * Flags: = = Adjust -R to fit exact -I [Default modifies -I to fit -R]
+	 *	  + = incs are actually nx/ny - convert to get xinc/yinc
 	 */
 	 
 	n = GMT_getincn (line, inc, 2);
@@ -8017,7 +8016,7 @@ struct GMT_CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 			if (fill_p[0] == '-')	/* Do not want to fill this polygon */
 				s->fill->rgb[0] = -1;
 			else if (GMT_getfill (fill_p, s->fill)) {
-				GMT_fill_syntax ('G');
+				GMT_fill_syntax ('G', " ");
 				exit (EXIT_FAILURE);
 			}
 		}
@@ -8028,7 +8027,7 @@ struct GMT_CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 			if (pen_p[0] == '-')	/* Do not want to draw outline */
 				s->pen->rgb[0] = -1;
 			else if (GMT_getpen (pen_p, s->pen)) {
-				GMT_pen_syntax ('W');
+				GMT_pen_syntax ('W', " ");
 				exit (EXIT_FAILURE);
 			}
 		}
