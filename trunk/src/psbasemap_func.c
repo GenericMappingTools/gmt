@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.5 2006-04-10 05:47:30 pwessel Exp $
+ *	$Id: psbasemap_func.c,v 1.6 2006-10-11 02:52:17 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -176,7 +176,7 @@ int psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL *CTRL, struc
 
 			case 'G':
 				if (GMT_getfill (&opt->arg[2], &CTRL->fill)) {
-					GMT_fill_syntax ('G');
+					GMT_fill_syntax ('G', " ");
 					n_errors++;
 				}
 				CTRL->paint = TRUE;
