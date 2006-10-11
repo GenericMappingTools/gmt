@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.h,v 1.5 2006-09-06 21:02:39 pwessel Exp $
+ *	$Id: gmt_plot.h,v 1.6 2006-10-11 02:25:13 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -131,7 +131,6 @@ EXTERN_MSC void GMT_fill (double x[], double y[], int n, struct GMT_FILL *fill, 
 EXTERN_MSC void GMT_fill_polygon (double *lon, double *lat, double z, int n, struct GMT_FILL *F, BOOLEAN outline);
 EXTERN_MSC void GMT_plot_ellipse (double lon, double lat, double z, double major, double minor, double azimuth, struct GMT_FILL fill, int outline);
 EXTERN_MSC void GMT_draw_fence (double x[], double y[], double z, int n, struct GMT_FRONTLINE *f, struct GMT_FILL *g, BOOLEAN outline);
-EXTERN_MSC void GMT_fill_syntax (char option);
 EXTERN_MSC void GMT_grid_clip_off (void);
 EXTERN_MSC void GMT_grid_clip_on (struct GRD_HEADER *h, int rgb[], int flag);
 EXTERN_MSC void GMT_hexagon3D (double x, double y, double z, double size, int rgb[], int outline);

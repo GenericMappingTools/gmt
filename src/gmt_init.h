@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.60 2006-05-04 02:37:26 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.61 2006-10-11 02:25:13 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -46,16 +46,16 @@ EXTERN_MSC void GMT_cont_syntax (int indent, int kind);
 EXTERN_MSC void GMT_default_error (char option);
 EXTERN_MSC void GMT_end (int argc, char **argv);
 EXTERN_MSC void GMT_explain_option (char option);
-EXTERN_MSC void GMT_fill_syntax (char option);
+EXTERN_MSC void GMT_fill_syntax (char option, char *string);
 EXTERN_MSC void GMT_getdefaults (char *this_file);
 EXTERN_MSC void GMT_hash_init (struct GMT_HASH *hashnode , char **keys, int n_hash, int n_keys);
 EXTERN_MSC void GMT_inc_syntax (char option, int error);
 EXTERN_MSC void GMT_init_fonts (int *n_fonts);
 EXTERN_MSC void GMT_init_scales (int unit, double *fwd_scale, double *inv_scale, double *inch_to_unit, double *unit_to_inch, char *unit_name);
 EXTERN_MSC void GMT_label_syntax (int indent, int kind);
-EXTERN_MSC void GMT_pen_syntax (char option);
+EXTERN_MSC void GMT_pen_syntax (char option, char *string);
 EXTERN_MSC void GMT_put_history (int argc, char **argv);
-EXTERN_MSC void GMT_rgb_syntax (char option);
+EXTERN_MSC void GMT_rgb_syntax (char option, char *string);
 EXTERN_MSC void GMT_set_home (void);
 EXTERN_MSC void GMT_set_measure_unit (char option, char unit);
 EXTERN_MSC void GMT_set_processed_option (int key, BOOLEAN state);
