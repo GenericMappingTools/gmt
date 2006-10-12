@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: mgd77netcdfhelper.sh,v 1.8 2006-01-28 01:41:53 pwessel Exp $
+#	$Id: mgd77netcdfhelper.sh,v 1.9 2006-10-12 01:15:20 pwessel Exp $
 #
 #	Author:	P. Wessel
 #	Date:	2005-OCT-14
@@ -47,6 +47,8 @@ while read type name L M; do		# We need a separate read/write statement for each
 	if [ $n_item -ne 7 ]; then
 		echo "	MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, "\"$name\"", ${cast}${pre}P->$name));" >> mgd77_functions.h
 		echo "	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "\"$name\"", $length, ${cast}${pre}P->$name));" >> $$.2
+		# The next line gives "      Parameter_Name :Value".  This format is deliberate in that we may want to
+		# use awk -F: to separate out the parameter ($1) and the value ($2). Remember Value could be a sentence with spaces!
 		echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s :${fmt}\\n\", F->NGDC_id, \"$name\", P->$name);" >> $$.3
 	else
 		cast=""
