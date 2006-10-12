@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: mgd77netcdfhelper.sh,v 1.9 2006-10-12 01:15:20 pwessel Exp $
+#	$Id: mgd77netcdfhelper.sh,v 1.10 2006-10-12 02:54:41 pwessel Exp $
 #
 #	Author:	P. Wessel
 #	Date:	2005-OCT-14
@@ -36,7 +36,7 @@ while read type name L M; do		# We need a separate read/write statement for each
 	if [ "X$L" = "X" ]; then	# No number means a single character
 		length=1
 		pre="&"			# We need to take address of a single char
-		fmt="%c"
+#		fmt="%c"
 	elif [ "X$M" = "X" ]; then	# Single text length given
 		length="strlen (${pre}P->$name)"
 	else				# 2-D text array, dim and length given, calc total size
@@ -44,7 +44,14 @@ while read type name L M; do		# We need a separate read/write statement for each
 		length=`echo $M $L | awk '{print $1*$2}'`
 		cast="(char *)"
 	fi
-	if [ $n_item -ne 7 ]; then
+	if [ $key -eq 10 ] || [ $key -eq 33 ] || [ $key -eq 54 ] || [ $key -eq 56 ]; then	# Special handling since these are single characters that may be \0 
+		echo "	MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, "\"$name\"", ${cast}${pre}P->$name));" >> mgd77_functions.h
+		echo "	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "\"$name\"", $length, ${cast}${pre}P->$name));" >> $$.2
+		# The next line gives "      Parameter_Name :Value".  This format is deliberate in that we may want to
+		# use awk -F: to separate out the parameter ($1) and the value ($2). Remember Value could be a sentence with spaces!
+		echo "	word[0] = P->$name;" >> $$.3
+		echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s :${fmt}\\n\", F->NGDC_id, \"$name\", word);" >> $$.3
+	elif [ $n_item -ne 7 ]; then
 		echo "	MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, "\"$name\"", ${cast}${pre}P->$name));" >> mgd77_functions.h
 		echo "	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "\"$name\"", $length, ${cast}${pre}P->$name));" >> $$.2
 		# The next line gives "      Parameter_Name :Value".  This format is deliberate in that we may want to
@@ -81,6 +88,8 @@ cat << EOF >> mgd77_functions.h
 
 void MGD77_Dump_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 {
+	char word[2] = { '\0', '\0'};
+
 	/* Write all the individual MGD77 header parameters to stdout */
 
 EOF
