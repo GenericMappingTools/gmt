@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.244 2006-10-11 02:25:13 remko Exp $
+ *	$Id: gmt_init.c,v 1.245 2006-10-17 20:26:46 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -891,6 +891,33 @@ void GMT_default_error (char option)
 	fprintf (stderr, "%s: GMT SYNTAX ERROR:  Unrecognized option -%c\n", GMT_program, option);
 }
 
+int GMT_sort_options (int argc, char **argv, char *order)
+{
+	/* GMT_sort_options reorganizes the arguments on the command line
+	 * according to the order specified in the character string "order"
+	 * Only the options starting with "-" are reorganised.
+	 * For example, when "order" is "Vf:", the all options -V, -f, and
+	 * -: will come first, in that order (if they are used),
+	 * followed by all other arguments in their original order.
+	 */
+
+	int i, j, k, arg1 = 1;
+	char *p;
+
+	for (i = 0; order[i]; i++) {
+	 	for (j = arg1; j < argc; j++) {
+			if (argv[j][0] == '-' && argv[j][1] == order[i]) {
+				p = argv[j];
+				for (k = j; k > arg1; k--) argv[k] = argv[k-1];
+				argv[arg1] = p;
+				arg1++;
+			}
+		}
+	}
+	arg1--;
+	return (arg1);
+}
+
 int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 {
 	return (GMT_parse_common_options (item, w, e, s, n));
@@ -906,26 +933,27 @@ int GMT_parse_common_options (char *item, double *w, double *e, double *s, doubl
 
 	switch (item[1]) {
 		case '\0':
-			if (GMT_processed_option[0]) fprintf (stderr, "%s: Warning: Option - given more than once\n", GMT_program);
-			GMT_processed_option[0] = TRUE;
+			if (GMT->z.processed) fprintf (stderr, "%s: Warning: Option - given more than once\n", GMT_program);
+			GMT->z.processed = GMT->z.active = TRUE;
 			GMT_give_synopsis_and_exit = TRUE;
 			break;
 
 		case 'B':
+			GMT->B.active = TRUE;
 			switch (item[2]) {	/* Check for -B[p] and -Bs */
 				case 's':
-					if (GMT_processed_option[1] & 2) {
+					if (GMT->B.processed & 2) {
 						fprintf (stderr, "%s: Error: Option -Bs given more than once\n", GMT_program);
 						error++;
 					}
-					GMT_processed_option[1] |= 2;
+					GMT->B.processed |= 2;
 					break;
 				default:
-					if (GMT_processed_option[1] & 1) {
+					if (GMT->B.processed & 1) {
 						fprintf (stderr, "%s: Error: Option -B[p] given more than once\n", GMT_program);
 						error++;
 					}
-					GMT_processed_option[1] |= 1;
+					GMT->B.processed |= 1;
 					break;
 			}
 			if (error == 0) {
@@ -935,79 +963,84 @@ int GMT_parse_common_options (char *item, double *w, double *e, double *s, doubl
 			break;
 
 		case 'H':
-			if (GMT_processed_option[2]) {
+			GMT->H.active[0] = TRUE;
+			if (GMT->H.processed) {
 				fprintf (stderr, "%s: Error: Option -H given more than once\n", GMT_program);
 				error++;
 			}
 			else {
-				GMT_processed_option[2] = TRUE;
+				GMT->H.processed = TRUE;
 				error += GMT_parse_H_option (item);
 			}
 			break;
 		case 'J':
-			j_type = (item[2] == 'Z' || item[2] == 'z') ? 4 : 3;
-			if (GMT_processed_option[j_type]) {
+			GMT->J.active = TRUE;
+			j_type = (item[2] == 'Z' || item[2] == 'z') ? 2 : 1;
+			if (GMT->J.processed & j_type) {
 				fprintf (stderr, "%s: Error: Option -J given more than once\n", GMT_program);
 				error++;
 			}
 			else {
-				GMT_processed_option[j_type] = TRUE;
+				GMT->J.processed |= j_type;
 				error += (i = GMT_parse_J_option (&item[2]));
 				if (i) GMT_syntax ('J');
 			}
 			break;
 		case 'K':
-			if (GMT_processed_option[5]) fprintf (stderr, "%s: Warning: Option -K given more than once\n", GMT_program);
-			GMT_processed_option[5] = TRUE;
+			if (GMT->K.processed) fprintf (stderr, "%s: Warning: Option -K given more than once\n", GMT_program);
+			GMT->K.processed = GMT->K.active = TRUE;
 			GMT_ps.last_page = FALSE;
 			break;
 		case 'O':
-			if (GMT_processed_option[6]) fprintf (stderr, "%s: Warning: Option -O given more than once\n", GMT_program);
-			GMT_processed_option[6] = TRUE;
+			if (GMT->O.processed) fprintf (stderr, "%s: Warning: Option -O given more than once\n", GMT_program);
+			GMT->O.processed = GMT->O.active = TRUE;
 			GMT_ps.overlay = TRUE;
 			break;
 		case 'P':
-			if (GMT_processed_option[7]) fprintf (stderr, "%s: Warning: Option -P given more than once\n", GMT_program);
-			GMT_processed_option[7] = TRUE;
+			if (GMT->P.processed) fprintf (stderr, "%s: Warning: Option -P given more than once\n", GMT_program);
+			GMT->P.processed = GMT->P.active = TRUE;
 			GMT_ps.portrait = TRUE;
 			break;
 		case 'R':
-			if (GMT_processed_option[8]) {
+			GMT->R.active = TRUE;
+			if (GMT->R.processed) {
 				fprintf (stderr, "%s: Error: Option -R given more than once\n", GMT_program);
 				error++;
 				break;
 			}
 			else {
-				GMT_processed_option[8] = TRUE;
+				GMT->R.processed = TRUE;
 				error += GMT_parse_R_option (item, w, e, s, n);
 			}
 			break;
 		case 'U':
-			if (GMT_processed_option[9]) {
+			GMT->U.active = TRUE;
+			if (GMT->U.processed) {
 				fprintf (stderr, "%s: Error: Option -U given more than once\n", GMT_program);
 				error++;
 				break;
 			}
 			else {
-				GMT_processed_option[9] = TRUE;
+				GMT->U.processed = TRUE;
 				error += GMT_parse_U_option (item);
 			}
 			break;
 		case 'V':
-			if (GMT_processed_option[10]) fprintf (stderr, "%s: Warning: Option -V given more than once\n", GMT_program);
-			GMT_processed_option[10] = TRUE;
+			if (GMT->V.processed) fprintf (stderr, "%s: Warning: Option -V given more than once\n", GMT_program);
+			GMT->V.processed = GMT->V.active = TRUE;
 			gmtdefs.verbose = (item[2] == 'l') ? 2 : TRUE;	/* -Vl is long verbose */
 			GMT_ps.verbose = TRUE;
 			break;
 		case 'X':
 		case 'x':
-			if (GMT_processed_option[11]) {
+			GMT->X.active = TRUE;
+			if (GMT->X.processed) {
 				fprintf (stderr, "%s: Error: Option -%c given more than once\n", GMT_program, item[1]);
 				error++;
 				break;
 			}
 			else {
-				GMT_processed_option[11] = TRUE;
+				GMT->X.processed = TRUE;
 				i = 2;
 				if (item[2] == 'r') i++;	/* Relative mode is default anyway */
 				if (item[2] == 'a') i++, GMT_x_abs = TRUE;
@@ -1021,13 +1054,14 @@ int GMT_parse_common_options (char *item, double *w, double *e, double *s, doubl
 			break;
 		case 'Y':
 		case 'y':
-			if (GMT_processed_option[12]) {
+			GMT->Y.active = TRUE;
+			if (GMT->Y.processed) {
 				fprintf (stderr, "%s: Error: Option -%c given more than once\n", GMT_program, item[1]);
 				error++;
 				break;
 			}
 			else {
-				GMT_processed_option[12] = TRUE;
+				GMT->Y.processed = TRUE;
 				i = 2;
 				if (item[2] == 'r') i++;	/* Relative mode is default anyway */
 				if (item[2] == 'a') i++, GMT_y_abs = TRUE;
@@ -1040,13 +1074,14 @@ int GMT_parse_common_options (char *item, double *w, double *e, double *s, doubl
 			}
 			break;
 		case 'c':
-			if (GMT_processed_option[13]) {
+			GMT->c.active = TRUE;
+			if (GMT->c.processed) {
 				fprintf (stderr, "%s: Error: Option -c given more than once\n", GMT_program);
 				error++;
 				break;
 			}
 			else {
-				GMT_processed_option[13] = TRUE;
+				GMT->c.processed = TRUE;
 				i = atoi (&item[2]);
 				if (i < 1) {
 					error++;
@@ -1057,23 +1092,26 @@ int GMT_parse_common_options (char *item, double *w, double *e, double *s, doubl
 			}
 			break;
 		case ':':	/* Toggle lon/lat - lat/lon */
-			if (GMT_processed_option[14]) {
+			GMT->t.active = TRUE;
+			if (GMT->t.processed) {
 				fprintf (stderr, "%s: Error: Option -: given more than once\n", GMT_program);
 				error++;
 				break;
 			}
 			else {
-				GMT_processed_option[14] = TRUE;
+				GMT->t.processed = TRUE;
 				error += GMT_parse_t_option (item);
 			}
 			break;
 		case 'b':	/* Binary i/o */
+			GMT->b.processed = GMT->b.active = TRUE;
 			i = GMT_parse_b_option (&item[2]);
 			if (i) GMT_syntax ('b');
 			error += i;
 			break;
 		case 'f':	/* Column type specifications */
-			if (GMT_processed_option[15] > 3) {
+			GMT->f.active = TRUE;
+			if (GMT->f.processed > 3) {
 				fprintf (stderr, "%s: Error: Option -f given more than once\n", GMT_program);
 				error++;
 				break;
@@ -1081,13 +1119,13 @@ int GMT_parse_common_options (char *item, double *w, double *e, double *s, doubl
 			else {
 				switch (item[2]) {
 					case 'i':
-						GMT_processed_option[15]++;
+						GMT->f.processed++;
 						break;
 					case 'o':
-						GMT_processed_option[15] += 2;
+						GMT->f.processed += 2;
 						break;
 					default:
-						GMT_processed_option[15] += 3;
+						GMT->f.processed += 3;
 						break;
 				}
 				i = GMT_parse_f_option (&item[2]);
@@ -2908,7 +2946,7 @@ int GMT_begin (int argc, char **argv)
 
 	GMT_getdefaults (this);
 
-	/* See if user specified -- defaults on the command line [Pr Dave Ball's suggestion].
+	/* See if user specified -- defaults on the command line [Per Dave Ball's suggestion].
 	 * If found, apply option and remove from argv.  These options only apply to current process. */
 
 	for (i = j = 1, n = 0; i < argc; i++) {
@@ -2959,28 +2997,7 @@ int GMT_begin (int argc, char **argv)
 	 * We also run -f through in case -: is given.
 	 * Finally, we look for -V so verbose is set prior to testing arguments */
 
-	for (i = 1, j = k = n = 0; i < argc; i++) {
-		if (!strncmp (argv[i], "-V", 2)) gmtdefs.verbose = TRUE;
-		if (!strncmp (argv[i], "-b", 2)) GMT_parse_b_option (&argv[i][2]);
-		if (!strncmp (argv[i], "-f", 2)) GMT_parse_f_option (&argv[i][2]);
-		if (!strncmp (argv[i], "-J", 2)) j = i;
-		if (!strncmp (argv[i], "-R", 2)) k = i;
-		if (!strncmp (argv[i], "-I", 2)) n = i;
-	}
-	if (j > 1) {	/* rotate arguments to ensure that the -J option is processed before -B -R */
-		char *p;
-		p = argv[j];
-		for (i = j; i > 1; i --) argv[i] = argv[i-1];
-		argv[1] = p;
-		if (k > 0 && k < j) k++;	/* Because this arg was shifted */
-		if (n > 0 && n < j) n++;	/* Because this arg was shifted */
-	}
-	if (k > 0 && n > 0 && (n < k)) {	/* Both -R and -I, but -I came first.  Switch order */
-		char *p;
-		p = argv[k];
-		argv[k] = argv[n];
-		argv[n] = p;
-	}
+	GMT_sort_options (argc, argv, "Vbf:JRI");
 
 	GMT = (struct GMT_COMMON *)New_GMT_Ctrl ();	/* Allocate and initialize a new common control structure */
 
@@ -3129,8 +3146,6 @@ void GMT_put_history (int argc, char **argv)
 	fprintf (GMT_fp_history, "# GMT common arguments shelf\n");
 
 	for (i = 0; i < GMT_N_UNIQUE; i++) {        /* Loop over GMT_unique_option parameters */
-
-		GMT_processed_option[i] = FALSE;	/* Not processed this option yet */
 
 		/* First see if an updated value exist for this common parameter */
 
@@ -5601,11 +5616,6 @@ void GMT_init_fonts (int *n_fonts)
 		*n_fonts = i;
 	}
 	GMT_font = (struct GMT_FONT *) GMT_memory ((void *)GMT_font, (size_t)(*n_fonts), sizeof (struct GMT_FONT), GMT_program);
-}
-
-void GMT_set_processed_option (int key, BOOLEAN state)
-{
-	GMT_processed_option[key] = state;
 }
 
 void *New_GMT_Ctrl () {	/* Allocate and initialize a new common control structure */

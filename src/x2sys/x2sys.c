@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.56 2006-09-20 18:39:34 pwessel Exp $
+ *	$Id: x2sys.c,v 1.57 2006-10-17 20:26:46 remko Exp $
  *
  *      Copyright (c) 1999-2006 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -800,7 +800,7 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 	while (fgets (line, BUFSIZ, fp) && line[0] == '#');	/* Skip comment records */
 	GMT_chop (line);	/* Remove trailing CR or LF */
 
-	GMT_set_processed_option (8, FALSE);	/* In case -R has been processed before */
+	GMT->R.processed = FALSE;	/* In case -R has been processed before */
 	
 	while ((GMT_strtok (line, " \t", &pos, p))) {	/* Process the -D -I -R -G -W arguments from the header */
 		if (p[0] == '-') {
