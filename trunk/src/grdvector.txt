@@ -14,7 +14,7 @@ grdvector \- Plot vector fields from grdfiles
 [ OPT(G)\fIfill\fP] [ GMT_I_OPT ] [ GMT_K_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
 [ OPT(Q)\fIparameters\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)[\fBl\fP]\fIscale\fP ] 
 [ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)\fIcontourpen\fP ] [ GMT_X_OPT ] 
-[ GMT_Y_OPT ] [ OPT(Z) ] [ GMT_c_OPT ]
+[ GMT_Y_OPT ] [ OPT(Z) ] [ GMT_c_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBgrdvector\fP reads two 2-D gridded files which represents the x- and y-components of a vector field and
 produces a vector field plot by 
@@ -81,6 +81,7 @@ Set pen attributes used for vector outlines [Default: width = 1, color = black, 
 .B \-Z
 Means the angles provided are azimuths rather than direction (requires \fB\-A\fP).
 #include "explain_-c.txt"
+#include "explain_-f.txt"
 .SH EXAMPLES
 To draw the vector field given by the files r.grd and theta.grd on a linear plot
 with scale LEN1 cm per data unit,
