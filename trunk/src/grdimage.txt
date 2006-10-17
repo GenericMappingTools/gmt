@@ -11,7 +11,7 @@ grdimage \- Create grayshaded or colored image from a 2-D netCDF grd file
 [ GMT_B_OPT ] [ OPT(Ei)|\fIdpi\fP ] [ OPT(G)[\fBf|b\fP]\fIrgb\fP ] [ OPT(I)\fIintensfile\fP] 
 [ GMT_K_OPT ] [ OPT(M) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ GMT_Rgeo_OPT ] 
 [ OPT(S)\fIsearch_radius\fP ] [ OPT(T)[\fBs\fP][\fBo\fP[\fIpen\fP]] ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
-[ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ]
+[ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBgrdimage\fP reads one 2-D gridded file and produces a gray-shaded (or colored) map by assigning
 each z-value a gray-shade (or color). 
