@@ -78,6 +78,13 @@ we run
 .br
 .sp
 \fBgrdedit\fP junk.grd \fB\-A\fP
+.br
+.sp
+The file junk.grd was created prior to \fBGMT\fP 4.1.3 and does not contain the required
+information to indicate that the grid is geographic.  To add this information, run
+.br
+.sp
+\fBgrdedit\fP junk.grd \fB\-fg\fP
 .SH "SEE ALSO"
 .IR GMT (GMTMANSECTION),
 .IR grd2xyz (GMTMANSECTION),
