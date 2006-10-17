@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.77 2006-08-24 03:07:44 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.78 2006-10-17 20:28:17 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -124,6 +124,7 @@ int GMT_update_grd_info (char *file, struct GRD_HEADER *header)
 	
 	header->z_min = (header->z_min - header->z_add_offset) / header->z_scale_factor;
 	header->z_max = (header->z_max - header->z_add_offset) / header->z_scale_factor;
+	GMT_grd_set_units (header);
 	status = (*GMT_io_updateinfo[header->type]) (header);
 	return (status);
 }
@@ -945,11 +946,11 @@ void GMT_grd_get_units (struct GRD_HEADER *header)
 		/* Skip parsing when input data type is already set */
 		if (GMT_io.in_col_type[i] & GMT_IS_GEO || GMT_io.in_col_type[i] & GMT_IS_RATIME) continue;
 
-		if (strstr (string[i], "degrees_e") || !strncmp (string[i], "Lon", 3) || !strncmp (string[i], "lon", 3))
+		if (!strncmp (string[i], "Lon", 3) || !strncmp (string[i], "lon", 3) || strstr (string[i], "degrees_e") || strstr (string[i], "degrees_E"))
 			/* Input data type is longitude */
 			GMT_io.in_col_type[i] = GMT_IS_LON;
 
-		else if (strstr (string[i], "degrees_n") || !strncmp (string[i], "Lat", 3) || !strncmp (string[i], "lat", 3))
+		else if (!strncmp (string[i], "Lat", 3) || !strncmp (string[i], "lat", 3) || strstr (string[i], "degrees_n") || strstr (string[i], "degrees_N"))
 			/* Input data type is latitude */
 			GMT_io.in_col_type[i] = GMT_IS_LAT;
 
