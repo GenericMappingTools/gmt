@@ -71,6 +71,7 @@ z-range in the cpt-file  (Also see \fB\-Z\fP).  If set, any equal interval annot
 set with \fB\-B\fP will be ignored.  If \fIgap\fP is appended and the cpt table is
 discrete we will center each annotation on each rectangle, using the lower boundary
 z-value for the annotation.  If \fPi\fP is prepended we annotate the interval range instead.
+If OPT(I) is used then each rectangle will have its constant color modified by the specified intensity.
 .TP
 .B \-M
 Force a monochrome graybar using the (television) YIQ transformation.
