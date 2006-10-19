@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.43 2006-10-19 08:08:08 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.44 2006-10-19 08:20:14 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -48,8 +48,8 @@ have been made to overcome limitations in the previous versions:
 \Opt{I} is given when \Opt{L}{\it gap} is in effect we will modify the constant colors accordingly.
 \item \GMTprog{pshistogram}'s option \Opt{I} can now accept a modifier {\bf O} to output all bin data even if $y = 0$.
 \item \GMTprog{misc/ps2raster} Many improvements; added EPS output; high-quality PDF output.
-ALso removed -dDOINTERPOLATE option which caused inversion of colour map and had no benefits.
-Did not look in current dir for *.def files\item New environment variable {\bf GMT\_USERDIR} [by default ~/.gmt] points to a directory
+Also removed -dDOINTERPOLATE option which caused inversion of colour map and had no benefits.
+Did not look in current dir for *.def files\item New environment variable {\bf GMT\_USERDIR} [by default \~/.gmt] points to a directory
 which can contain user initialization files such as default settings.
 \end{enumerate}
 
@@ -62,7 +62,7 @@ that we have identified and corrected in the current release:
 \item [\GMTprog{gmt\_support.c}]: Fixed bug in \Opt{I} when modifier {\bf =} was used.
 \item [\GMTprog{gmt\_init.c}]: Fixed bug not recognizing {\bf PAGE\_ORIENTATION} as well as a bug that
 prevented proper writing of {\bf PAGE\_ORIENTATION} in defaults.  Added a check so \GMTprog{gmtset}
-will not crash if VALUE is not given.  Finally, let {\bf GMT\_HOMEDIR} default to C:\\ under Windows
+will not crash if VALUE is not given.  Finally, let {\bf GMT\_HOMEDIR} default to C: under Windows
 if {\bf HOME} is not set.
 \item [\GMTprog{gmt\_grdio.c}]: Set [xy]\_units also in \GMTfunc{GMT\_update\_grd\_info}.
 \item [\GMTprog{gmt\_nc.c}]: Made sure no garbage remains under Cygwin when using \GMTfunc{strncpy}.
@@ -76,14 +76,14 @@ Log gridlines did not work for 3-D view.
 \item [\GMTprog{grdcut}]: Require geographical instead of global in order to shift by 360 degrees.
 \item [\GMTprog{grdfilter}]: Should not wrap over pole unless grid extends all the way to the pole.
 \item [\GMTprog{grdinfo}]: When \Opt{C} was used there was no linefeed at the end.
-\item [\GMTprog{grdsample}]: \OPt{T} did not ignore \OPt{R} (as per manual), resulting is changed cell size
-\Opt{F} did not use grid registration as default, rather that of input grid
-When using pixel registration, number of cells would be one too large
-\Opt{L} worked only in very limited case: going from x=[-180;180] to x=[0;360]
+\item [\GMTprog{grdsample}]: \Opt{T} did not ignore \Opt{R} (as per manual), resulting is changed cell size.
+\Opt{F} did not use grid registration as default, rather that of input grid.
+When using pixel registration, number of cells would be one too large.
+\Opt{L} worked only in very limited case: going from x=[-180;180] to x=[0;360].
 Now supports any periodicity in X and Y (as per manual). \Opt{F} again forces pixel registration.
 Default is same as input.  More consistency with manual.
 \item [\GMTprog{grdtrack}]: The \Opt{Z} option failed to be set for some input configurations.
-\item [\GMTprog{grdvector}]:Added \Opt{f} option.
+\item [\GMTprog{grdvector}]: Added \Opt{f} option.
 \item [\GMTprog{grdvolume}]: Three bugs squashed: gridcell oriented grids now get proper area and volume,
 including edges; only one cell per NaN is excluded; when \Opt{C} and \Opt{L} are combined,
 the volume is properly corrected for the baseline height.
@@ -98,7 +98,7 @@ Did not consider if absolute coordinates were given in \Opt{X} and \Opt{Y}.
 \item [\GMTprog{xyz2grd}]: Had \Opt{Az} as default rather than no \Opt{A}.
 \item [\GMTprog{dbase/grdraster}]: Only do 360-degree wrapping if working on a geographic grid.
 \item [\GMTprog{mgd77/mgd77list}]: Did not process time when \Opt{Am}2$|$4 was set and time was not requested as output.
-ALso, did not process time when \Opt{Am}2$|$4 was set and time was not requested as output.
+Also, did not process time when \Opt{Am}2$|$4 was set and time was not requested as output.
 \item [\GMTprog{x2sys/x2sys}]: Did not look in current dir for *.def files.
 \GMTfunc{\end{description}
 
