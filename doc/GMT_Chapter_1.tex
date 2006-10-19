@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.42 2006-09-29 09:31:12 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.43 2006-10-19 08:08:08 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -34,6 +34,75 @@ will be distinguished by being completely restructured so as to allow developers
 high-level \GMT\ processes from a variety of programming environments.  Below is a brief
 history of the development milestones in the 4.x series.
 
+\subsection{Overview of \gmt\ 4.1.4 [Nov-1, 2006]}
+
+Changes in \GMT\ 4.1.4 are relatively minor and predominantly bug fixes.  However, a few enhancements
+have been made to overcome limitations in the previous versions:
+
+\begin{enumerate}
+\item \GMTprog{grd2cpt} has a new option \Opt{T} for the creation of tables symmetric about zero.
+\item \GMTprog{grdblend} will accept negative weights which are taken to mean that the sense of tapering should be reversed.
+\item \GMTprog{grdedit} has a new option \Opt{E} to transpose the entire grid.
+\item \GMTprog{nearneighbor} will now optionally accept a {\it min\_sectors} argument appended to the \Opt{N} option.
+\item \GMTprog{psscale} will now invert the color scale if a negative length is provided, and if
+\Opt{I} is given when \Opt{L}{\it gap} is in effect we will modify the constant colors accordingly.
+\item \GMTprog{pshistogram}'s option \Opt{I} can now accept a modifier {\bf O} to output all bin data even if $y = 0$.
+\item \GMTprog{misc/ps2raster} Many improvements; added EPS output; high-quality PDF output.
+ALso removed -dDOINTERPOLATE option which caused inversion of colour map and had no benefits.
+Did not look in current dir for *.def files\item New environment variable {\bf GMT\_USERDIR} [by default ~/.gmt] points to a directory
+which can contain user initialization files such as default settings.
+\end{enumerate}
+
+Below is a list of previous problems (some accidentily introduced in \gmt\ 4.1.3)
+that we have identified and corrected in the current release:
+
+\begin{description}
+\item [\GMTprog{gmt\_agc.c}]: AGC grids use 0 to represent NaNs -- this was not implemented yet.
+\item [\GMTprog{gmt\_calclock.c}]: Proper rounding of time when converting to dates.
+\item [\GMTprog{gmt\_support.c}]: Fixed bug in \Opt{I} when modifier {\bf =} was used.
+\item [\GMTprog{gmt\_init.c}]: Fixed bug not recognizing {\bf PAGE\_ORIENTATION} as well as a bug that
+prevented proper writing of {\bf PAGE\_ORIENTATION} in defaults.  Added a check so \GMTprog{gmtset}
+will not crash if VALUE is not given.  Finally, let {\bf GMT\_HOMEDIR} default to C:\\ under Windows
+if {\bf HOME} is not set.
+\item [\GMTprog{gmt\_grdio.c}]: Set [xy]\_units also in \GMTfunc{GMT\_update\_grd\_info}.
+\item [\GMTprog{gmt\_nc.c}]: Made sure no garbage remains under Cygwin when using \GMTfunc{strncpy}.
+\item [\GMTprog{gmt\_plot.c}]: Bugs related to annotations with \Opt{JPa} and its {\bf z} modifier fixed.
+Log gridlines did not work for 3-D view.
+\item [\GMTprog{pslib.c}]: Fixed memory management in LZW compression (memory leak).  Improved EPS conformance.
+\item [\GMTprog{filter1d}]: Robust option used extreme rather than median to determine the outliers.
+\item [\GMTprog{gmtconvert}]: Did not have \Opt{L} listed in synopsis.
+\item [\GMTprog{grdblend}]: Now skip grids that are entirely outside the region of interest.
+\item [\GMTprog{grdcontour}]: Crashed if \Opt{M} and \Opt{D} were used with no file name specified.
+\item [\GMTprog{grdcut}]: Require geographical instead of global in order to shift by 360 degrees.
+\item [\GMTprog{grdfilter}]: Should not wrap over pole unless grid extends all the way to the pole.
+\item [\GMTprog{grdinfo}]: When \Opt{C} was used there was no linefeed at the end.
+\item [\GMTprog{grdsample}]: \OPt{T} did not ignore \OPt{R} (as per manual), resulting is changed cell size
+\Opt{F} did not use grid registration as default, rather that of input grid
+When using pixel registration, number of cells would be one too large
+\Opt{L} worked only in very limited case: going from x=[-180;180] to x=[0;360]
+Now supports any periodicity in X and Y (as per manual). \Opt{F} again forces pixel registration.
+Default is same as input.  More consistency with manual.
+\item [\GMTprog{grdtrack}]: The \Opt{Z} option failed to be set for some input configurations.
+\item [\GMTprog{grdvector}]:Added \Opt{f} option.
+\item [\GMTprog{grdvolume}]: Three bugs squashed: gridcell oriented grids now get proper area and volume,
+including edges; only one cell per NaN is excluded; when \Opt{C} and \Opt{L} are combined,
+the volume is properly corrected for the baseline height.
+\item [\GMTprog{pscoast}]: \Opt{N} and \Opt{I} reset pens to default settings after initially changing them.
+Did not change output mode to binary (Windows only) if \Opt{M} and \Opt{b} were set.
+\item [\GMTprog{pscontour}]: The \Opt{D} dump option wrote projected instead of original coordinates.
+\item [\GMTprog{pslegend}]: Did not replace octagons with polygon form when pattern was requested.
+Did not consider if absolute coordinates were given in \Opt{X} and \Opt{Y}.
+\item [\GMTprog{pstext}]: Default for \Opt{G} is now {\bf BASEMAP\_FRAME\_RGB} as for other map annotations.
+\item [\GMTprog{psxyz}]: \Opt{C} for symbols did not pick up color fill.
+\item [\GMTprog{trend2d}]: Processing of \Opt{F} happened after checking.
+\item [\GMTprog{xyz2grd}]: Had \Opt{Az} as default rather than no \Opt{A}.
+\item [\GMTprog{dbase/grdraster}]: Only do 360-degree wrapping if working on a geographic grid.
+\item [\GMTprog{mgd77/mgd77list}]: Did not process time when \Opt{Am}2$|$4 was set and time was not requested as output.
+ALso, did not process time when \Opt{Am}2$|$4 was set and time was not requested as output.
+\item [\GMTprog{x2sys/x2sys}]: Did not look in current dir for *.def files.
+\GMTfunc{\end{description}
+
+%-----------------------------------------
 \subsection{Overview of \gmt\ 4.1.3 [June-1, 2006]}
 
 Changes in \GMT\ 4.1.3 are relatively minor and predominantly bug fixes.  However, a few enhancements
