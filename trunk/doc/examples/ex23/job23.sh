@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	GMT Example 23  $Id: job23.sh,v 1.9 2006-01-05 05:36:04 pwessel Exp $
+#	GMT Example 23  $Id: job23.sh,v 1.10 2006-10-22 14:26:49 remko Exp $
 #
 # Purpose:	Plot distances from Rome and draw shortest paths
 # GMT progs:	gmtset, grdmath, grdcontour, psxy, pstext, grdtrack
@@ -34,11 +34,11 @@ grdcontour dist.grd -A1000+v+ukm+kwhite -Glz-/z+ -S8 -C500 -O -K -J -Wathin,whit
 # For each of the cities, plot great circle arc to Rome with psxy
 
 while read clon clat city; do
-	(echo $lon $lat; echo $clon $clat) | psxy -R -J -O -K -W2p/red >> example_23.ps
+	(echo $lon $lat; echo $clon $clat) | psxy -R -J -O -K -Wthickest/red >> example_23.ps
 done < cities.d
 
 # Plot red squares at cities and plot names:
-psxy -R -J -O -K -Ss0.2 -Gred -W0.25p cities.d >> example_23.ps
+psxy -R -J -O -K -Ss0.2 -Gred -Wthinnest cities.d >> example_23.ps
 awk '{print $1, $2, 12, 1, 9, $4, $3}' cities.d | pstext -R -J -O -K -Dj0.15/0 -Gred -N >> example_23.ps
 # Place a yellow star at Rome
 echo "$lon $lat" | psxy -R -J -O -K -Sa0.2i -Gyellow -Wthin >> example_23.ps

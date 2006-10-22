@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 11
 REM
-REM		$Id: job11.bat,v 1.8 2004-10-01 21:58:30 pwessel Exp $
+REM		$Id: job11.bat,v 1.9 2006-10-22 14:26:49 remko Exp $
 REM
 REM Purpose:	Create a 3-D RGB Cube
 REM GMT progs:	gmtset, grdimage, grdmath, pstext, psxy
@@ -44,17 +44,17 @@ echo 0 0 > ex11_1.d
 echo 20 20 >> ex11_1.d
 echo 20 235 >> ex11_1.d
 echo 0 255 >> ex11_1.d
-psxy -W0.25pto -J -R -K -O -X2.5i ex11_1.d >> example_11.ps
+psxy -Wthinnest,. -J -R -K -O -X2.5i ex11_1.d >> example_11.ps
 echo 0 0 > ex11_2.d
 echo 20 20 >> ex11_2.d
 echo 235 20 >> ex11_2.d
 echo 255 0 >> ex11_2.d
-psxy -W0.25pto -J -R -K -O -X-2.5i -Y2.5i ex11_2.d >> example_11.ps
+psxy -Wthinnest,. -J -R -K -O -X-2.5i -Y2.5i ex11_2.d >> example_11.ps
 echo 255 0 > ex11_3.d
 echo 235 20 >> ex11_3.d
 echo 235 235 >> ex11_3.d
 echo 255 255 >> ex11_3.d
-psxy -W0.25pto -J -R -K -O -X-2.5i -Y-2.5i ex11_3.d >> example_11.ps
+psxy -Wthinnest,. -J -R -K -O -X-2.5i -Y-2.5i ex11_3.d >> example_11.ps
 
 gawk -f rgb_cube.awk r=0 g=y b=x < NUL > rgb_cube.cpt
 grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -Y-2.5i -B256wesn >> example_11.ps
@@ -64,14 +64,14 @@ grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X2.5i -Y-2.5i -B256wesn >> exampl
 
 echo 10 10 14 0 Times-BoldItalic 1 GMT 4 | pstext -J -R -G255 -K -O >> example_11.ps
 
-psxy -W0.25pto -J -R -K -O -X2.5i ex11_1.d >> example_11.ps
-psxy -W0.25pto -J -R -K -O -X-5i ex11_3.d >> example_11.ps
+psxy -Wthinnest,. -J -R -K -O -X2.5i ex11_1.d >> example_11.ps
+psxy -Wthinnest,. -J -R -K -O -X-5i ex11_3.d >> example_11.ps
 
 gawk -f rgb_cube.awk r=x g=Y b=0 < NUL > rgb_cube.cpt
 grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X2.5i -Y-2.5i -B256wesn >> example_11.ps
 
-psxy -W0.25pto -J -R -K -O -X2.5i ex11_1.d >> example_11.ps
-psxy -W0.25pto -J -R -O -X-5i ex11_3.d >> example_11.ps
+psxy -Wthinnest,. -J -R -K -O -X2.5i ex11_1.d >> example_11.ps
+psxy -Wthinnest,. -J -R -O -X-5i ex11_3.d >> example_11.ps
 
 del rgb_cube.cpt
 del rgb_cube.grd
