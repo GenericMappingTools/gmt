@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 15
 REM
-REM		$Id: job15.bat,v 1.6 2006-03-06 09:43:48 pwessel Exp $
+REM		$Id: job15.bat,v 1.7 2006-10-22 14:26:49 remko Exp $
 REM
 REM Purpose:	Gridding and clipping when data are missing
 REM GMT progs:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo, minmax,
@@ -28,8 +28,8 @@ psmask -C -O -K >> example_15.ps
 REM
 grdclip ship.grd -Sa-1/NaN -Gship_clipped.grd
 grdcontour ship_clipped.grd -J -B2WSne -C250 -A1000 -L-8000/0 -G2i -O -K -X3.6i >> example_15.ps
-pscoast %region% -J -O -K -Ggray -W0.25p >> example_15.ps
-psxy tmp -R -J -O -K -Sa0.15i -W1p >> example_15.ps
+pscoast %region% -J -O -K -Ggray -Wthinnest >> example_15.ps
+psxy tmp -R -J -O -K -Sa0.15i -Wthick >> example_15.ps
 echo -0.3 3.6 24 0 1 CB Gridding with missing data | pstext -R0/3/0/4 -Jx1i -O -N >> example_15.ps
 del ship*.grd
 del ship*.b

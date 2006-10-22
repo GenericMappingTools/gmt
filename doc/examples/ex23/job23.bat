@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 23
 REM
-REM             $Id: job23.bat,v 1.10 2006-01-05 05:36:04 pwessel Exp $
+REM             $Id: job23.bat,v 1.11 2006-10-22 14:26:49 remko Exp $
 REM
 REM Purpose:    Plot distances from Rome and draw shortest paths
 REM
@@ -39,22 +39,22 @@ REM For each of the cities, plot great circle arc to Rome with psxy
 
 echo 105.87 21.02 > pts.d
 echo %lon% %lat% >> pts.d
-psxy -R -J -O -K -W2p/red pts.d >> example_23.ps
+psxy -R -J -O -K -Wthickest/red pts.d >> example_23.ps
 echo 282.95 -12.1 > pts.d
 echo %lon% %lat% >> pts.d
-psxy -R -J -O -K -W2p/red pts.d >> example_23.ps
+psxy -R -J -O -K -Wthickest/red pts.d >> example_23.ps
 echo 178.42 -18.13 > pts.d
 echo %lon% %lat% >> pts.d
-psxy -R -J -O -K -W2p/red pts.d >> example_23.ps
+psxy -R -J -O -K -Wthickest/red pts.d >> example_23.ps
 echo 237.67 47.58 > pts.d
 echo %lon% 	%lat% >> pts.d
-psxy -R -J -O -K -W2p/red pts.d >> example_23.ps
+psxy -R -J -O -K -Wthickest/red pts.d >> example_23.ps
 echo 28.20 -25.75 > pts.d
 echo %lon% %lat% >> pts.d
-psxy -R -J -O -K -W2p/red pts.d >> example_23.ps
+psxy -R -J -O -K -Wthickest/red pts.d >> example_23.ps
 
 REM Plot red squares at cities and plot names:
-psxy -R -J -O -K -Ss0.2 -Gred -W0.25p cities.d >> example_23.ps
+psxy -R -J -O -K -Ss0.2 -Gred -Wthinnest cities.d >> example_23.ps
 echo {print $1, $2, 12, 1, 9, $4, $3} > awk.1
 gawk -f awk.1 cities.d | pstext -R -J -O -K -Dj0.15/0 -Gred -N >> example_23.ps
 REM Place a yellow star at Rome

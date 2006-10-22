@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 11
 #
-#		$Id: job11.sh,v 1.7 2004-04-10 17:19:14 pwessel Exp $
+#		$Id: job11.sh,v 1.8 2006-10-22 14:26:49 remko Exp $
 #
 # Purpose:	Create a 3-D RGB Cube
 # GMT progs:	gmtset, grdimage, grdmath, pstext, psxy
@@ -39,21 +39,21 @@ grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X2.5i -B256wesn >> example_11.ps
 $AWK -f rgb_cube.awk r=x g=255 b=Y < /dev/null > rgb_cube.cpt
 grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X-2.5i -Y2.5i -B256wesn >> example_11.ps
 
-psxy -W0.25pto -J -R -K -O -X2.5i << END >> example_11.ps
+psxy -Wthinnest,. -J -R -K -O -X2.5i << END >> example_11.ps
 0 0
 20 20
 20 235
 0 255
 END
 
-psxy -W0.25pto -J -R -K -O -X-2.5i -Y2.5i << END >> example_11.ps
+psxy -Wthinnest,. -J -R -K -O -X-2.5i -Y2.5i << END >> example_11.ps
 0 0
 20 20
 235 20
 255 0
 END
 
-psxy -W0.25pto -J -R -K -O -X-2.5i -Y-2.5i << END >> example_11.ps
+psxy -Wthinnest,. -J -R -K -O -X-2.5i -Y-2.5i << END >> example_11.ps
 255 0
 235 20
 235 235
@@ -69,14 +69,14 @@ grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X2.5i -Y-2.5i -B256wesn >> exampl
 
 echo "10 10 14 0 Times-BoldItalic BL GMT 4" | pstext -J -R -Gwhite -K -O >> example_11.ps
 
-psxy -W0.25pto -J -R -K -O -X2.5i << END >> example_11.ps
+psxy -Wthinnest,. -J -R -K -O -X2.5i << END >> example_11.ps
 0 0
 20 20
 20 235
 0 255
 END
 
-psxy -W0.25pto -J -R -K -O -X-5i << END >> example_11.ps
+psxy -Wthinnest,. -J -R -K -O -X-5i << END >> example_11.ps
 255 0
 235 20
 235 235
@@ -86,14 +86,14 @@ END
 $AWK -f rgb_cube.awk r=x g=Y b=0 < /dev/null > rgb_cube.cpt
 grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X2.5i -Y-2.5i -B256wesn >> example_11.ps
 
-psxy -W0.25pto -J -R -K -O -X2.5i << END >> example_11.ps
+psxy -Wthinnest,. -J -R -K -O -X2.5i << END >> example_11.ps
 0 0
 20 20
 20 235
 0 255
 END
 
-psxy -W0.25pto -J -R -O -X-5i << END >> example_11.ps
+psxy -Wthinnest,. -J -R -O -X-5i << END >> example_11.ps
 255 0
 235 20
 235 235

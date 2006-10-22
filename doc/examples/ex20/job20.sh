@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 20
 #
-#		$Id: job20.sh,v 1.6 2004-04-13 21:39:49 pwessel Exp $
+#		$Id: job20.sh,v 1.7 2006-10-22 14:26:49 remko Exp $
 #
 # Purpose:	Extend GMT to plot custom symbols
 # GMT progs:	pscoast, psxy
@@ -26,7 +26,7 @@ EOF
 
 pscoast -Rg -JR180/9i -B60/30:."Hotspot Islands and Cities": -Gdarkgreen -Slightblue -Dc -A5000 -K -U"Example 20 in Cookbook" > example_20.ps
 
-psxy -R -J hotspots.d -Skvolcano -O -K -W0.25p -Gred >> example_20.ps
+psxy -R -J hotspots.d -Skvolcano -O -K -Wthinnest -Gred >> example_20.ps
 
 # Overlay a few bullseyes at NY, Cairo, and Perth
 

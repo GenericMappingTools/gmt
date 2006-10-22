@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 03
 #
-#		$Id: job03.sh,v 1.11 2006-03-06 09:43:48 pwessel Exp $
+#		$Id: job03.sh,v 1.12 2006-10-22 14:26:49 remko Exp $
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
 # GMT progs:	filter1d, fitcircle, gmtset, minmax, project, sample1d
@@ -48,7 +48,7 @@ xmax=`$AWK '{print $2}' $$`
 ymin=`$AWK '{print $3}' $$`
 ymax=`$AWK '{print $4}' $$`
 gmtset MEASURE_UNIT INCH
-psxy -R$xmin/$xmax/$ymin/$ymax -JX8i/5i -Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn -U/-1.75i/-1.25i/"Example 3a in Cookbook" -X2i -Y1.5i -K -W1p sat.pg > example_03a.ps
+psxy -R$xmin/$xmax/$ymin/$ymax -JX8i/5i -Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn -U/-1.75i/-1.25i/"Example 3a in Cookbook" -X2i -Y1.5i -K -Wthick sat.pg > example_03a.ps
 psxy -R -JX -O -Sp0.03i ship.pg >> example_03a.ps
 #
 # From this plot we see that the ship data have some "spikes" and also greatly
@@ -100,7 +100,7 @@ filter1d ship.pg -Fm1 -T$sampr1/$sampr2/1 -E | sample1d -Nsamp.x > samp_ship.pg
 #
 # Now we plot them again to see if we have done the right thing:
 #
-psxy -R$xmin/$xmax/$ymin/$ymax -JX8i/5i -Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn -X2i -Y1.5i -K -W1p samp_sat.pg -U/-1.75i/-1.25i/"Example 3c in Cookbook" > example_03c.ps
+psxy -R$xmin/$xmax/$ymin/$ymax -JX8i/5i -Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn -X2i -Y1.5i -K -Wthick samp_sat.pg -U/-1.75i/-1.25i/"Example 3c in Cookbook" > example_03c.ps
 psxy -R -JX -O -Sp0.03i samp_ship.pg >> example_03c.ps
 #
 # Now to do the cross-spectra, assuming that the ship is the input and the sat is the output 
@@ -120,12 +120,12 @@ cat << END > box.d
 2.375	3.25
 4	3.25
 END
-psxy -R -Jx -O -K -W1.5p box.d >> example_03.ps
+psxy -R -Jx -O -K -Wthicker box.d >> example_03.ps
 psxy -St0.07i -O -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/2 >> example_03.ps
 psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/2 >> example_03.ps
 echo "3.9 3.6 18 0.0 1 TR Input Power" | pstext -R0/4/0/3.75 -Jx -O -K >> example_03.ps
-psxy -R -Jx -O -K -W1.5p box.d >> example_03.ps
-psxy -R -Jx -O -K -Glightgray -L -W1.5p << END >> example_03.ps
+psxy -R -Jx -O -K -Wthicker box.d >> example_03.ps
+psxy -R -Jx -O -K -Glightgray -L -Wthicker << END >> example_03.ps
 0.25	0.25
 1.4	0.25
 1.4	0.9
@@ -160,7 +160,7 @@ xmin=`$AWK '{print $1}' $$`
 xmax=`$AWK '{print $2}' $$`
 ymin=`$AWK '{print $3}' $$`
 ymax=`$AWK '{print $4}' $$`
-psxy -R$xmin/$xmax/$ymin/$ymax -JX8i/5i -Ba500f100:"Distance along great circle":/a50f25:"Gravity anomaly (mGal)":WeSn -U/-1.75i/-1.25i/"Example 3e in Cookbook" -X2i -Y1.5i -K -W1p samp2_sat.pg > example_03e.ps
+psxy -R$xmin/$xmax/$ymin/$ymax -JX8i/5i -Ba500f100:"Distance along great circle":/a50f25:"Gravity anomaly (mGal)":WeSn -U/-1.75i/-1.25i/"Example 3e in Cookbook" -X2i -Y1.5i -K -Wthick samp2_sat.pg > example_03e.ps
 psxy -R -JX -O -Sp0.03i samp2_ship.pg >> example_03e.ps
 #
 # Now we do the cross-spectral analysis again.  Comparing this plot (example_03e.ps) with
@@ -176,12 +176,12 @@ cat << END > box.d
 2.375	3.25
 4	3.25
 END
-psxy -R -Jx -O -K -W1.5p box.d >> example_03f.ps
+psxy -R -Jx -O -K -Wthicker box.d >> example_03f.ps
 psxy -St0.07i -O -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/2 >> example_03f.ps
 psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/2 >> example_03f.ps
 echo "3.9 3.6 18 0.0 1 TR Input Power" | pstext -R0/4/0/3.75 -Jx -O -K >> example_03f.ps
-psxy -R -Jx -O -K -W1.5p box.d >> example_03f.ps
-psxy -R -Jx -O -K -Glightgray -L -W1.5p << END >> example_03f.ps
+psxy -R -Jx -O -K -Wthicker box.d >> example_03f.ps
+psxy -R -Jx -O -K -Glightgray -L -Wthicker << END >> example_03f.ps
 0.25	0.25
 1.4	0.25
 1.4	0.9
