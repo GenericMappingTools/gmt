@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.180 2006-10-23 03:35:57 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.181 2006-10-23 07:35:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2760,28 +2760,28 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 		GMT_setpen (&gmtdefs.tick_pen);
 		yy[2] = yy[3] = ms->y0;
 		yy[0] = yy[1] = ms->y0 - bar_width;
-		GMT_xyz_to_xy (x_left, ms->y0 - f_len, project_info.z_level, &a, &b);
+		GMT_xy_do_z_to_xy (x_left, ms->y0 - f_len, project_info.z_level, &a, &b);
 		ps_plot (a, b, PSL_PEN_MOVE);
-		GMT_xyz_to_xy (x_left, ms->y0, project_info.z_level, &a, &b);
+		GMT_xy_do_z_to_xy (x_left, ms->y0, project_info.z_level, &a, &b);
 		ps_plot (a, b, PSL_PEN_DRAW_AND_STROKE);
 		for (j = 0; j < n_f_ticks[i]; j++) {
 			xx[0] = xx[3] = x_left + j * dx_f;
 			xx[1] = xx[2] = xx[0] + dx_f;
-			for (k = 0; k < 4; k++) GMT_xyz_to_xy (xx[k], yy[k], project_info.z_level, &bx[k], &by[k]);
+			for (k = 0; k < 4; k++) GMT_xy_do_z_to_xy (xx[k], yy[k], project_info.z_level, &bx[k], &by[k]);
 			rgb = (j%2) ? gmtdefs.foreground_rgb : gmtdefs.background_rgb;
 			ps_polygon (bx, by, 4, rgb, TRUE);
-			GMT_xyz_to_xy (xx[1], ms->y0 - f_len, project_info.z_level, &a, &b);
+			GMT_xy_do_z_to_xy (xx[1], ms->y0 - f_len, project_info.z_level, &a, &b);
 			ps_plot (a, b, PSL_PEN_MOVE);
-			GMT_xyz_to_xy (xx[1], ms->y0, project_info.z_level, &a, &b);
+			GMT_xy_do_z_to_xy (xx[1], ms->y0, project_info.z_level, &a, &b);
 			ps_plot (a, b, PSL_PEN_DRAW_AND_STROKE);
 		}
 		this_label = (ms->label[0] && ms->label[0] != '-') ? ms->label : label[unit];
 		ty = ms->y0 - off;
 		for (j = 0; j <= n_a_ticks[i]; j++) {
 			tx = x_left + j * dx_a;
-			GMT_xyz_to_xy (tx, ms->y0 - a_len, project_info.z_level, &a, &b);
+			GMT_xy_do_z_to_xy (tx, ms->y0 - a_len, project_info.z_level, &a, &b);
 			ps_plot (a, b, PSL_PEN_MOVE);
-			GMT_xyz_to_xy (tx, ms->y0, project_info.z_level, &a, &b);
+			GMT_xy_do_z_to_xy (tx, ms->y0, project_info.z_level, &a, &b);
 			ps_plot (a, b, PSL_PEN_DRAW_AND_STROKE);
 			if (ms->justify == 'u')
 				sprintf (txt, "%g %s", j * d_base, this_label);
@@ -2812,7 +2812,7 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 				break;
 		}
 		if (ms->justify != 'u') {
-			GMT_xyz_to_xy (x_label, y_label, project_info.z_level, &tx, &ty);
+			GMT_xy_do_z_to_xy (x_label, y_label, project_info.z_level, &tx, &ty);
 			GMT_text3D (tx, ty, project_info.z_level, gmtdefs.label_font_size, gmtdefs.label_font, this_label, 0.0, jj, 0);
 		}
 	}
@@ -2831,13 +2831,13 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 		}
 		GMT_setpen (&gmtdefs.tick_pen);
 		sprintf (txt, "%g %s", ms->length, label[unit]);
-		GMT_xyz_to_xy (ms->x0 - half, ms->y0 - gmtdefs.map_scale_height, project_info.z_level, &a, &b);
+		GMT_xy_do_z_to_xy (ms->x0 - half, ms->y0 - gmtdefs.map_scale_height, project_info.z_level, &a, &b);
 		ps_plot (a, b, PSL_PEN_MOVE);
-		GMT_xyz_to_xy (ms->x0 - half, ms->y0, project_info.z_level, &a, &b);
+		GMT_xy_do_z_to_xy (ms->x0 - half, ms->y0, project_info.z_level, &a, &b);
 		ps_plot (a, b, PSL_PEN_DRAW);
-		GMT_xyz_to_xy (ms->x0 + half, ms->y0, project_info.z_level, &a, &b);
+		GMT_xy_do_z_to_xy (ms->x0 + half, ms->y0, project_info.z_level, &a, &b);
 		ps_plot (a, b, PSL_PEN_DRAW);
-		GMT_xyz_to_xy (ms->x0 + half, ms->y0 - gmtdefs.map_scale_height, project_info.z_level, &a, &b);
+		GMT_xy_do_z_to_xy (ms->x0 + half, ms->y0 - gmtdefs.map_scale_height, project_info.z_level, &a, &b);
 		ps_plot (a, b, PSL_PEN_DRAW_AND_STROKE);
 		GMT_text3D (ms->x0, ms->y0 - off, project_info.z_level, gmtdefs.annot_font_size[0], gmtdefs.annot_font[0], txt, 0.0, 10, 0);
 	}
