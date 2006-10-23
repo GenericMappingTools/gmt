@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.73 2006-04-11 04:21:27 pwessel Exp $
+ *	$Id: mgd77.h,v 1.74 2006-10-23 03:38:30 pwessel Exp $
  * 
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -20,15 +20,6 @@
 #define _MGD77_H
 
 #include "gmt.h"
-
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#if defined(WIN32) || defined(__EMX__)  /* Some definitions and includes are different under Windows or OS/2 */
-#define STAT _stat
-#else                                   /* Here for Unix, Linux, Cygwin, Interix, etc */
-#define STAT stat
-#endif
 
 #define MGD77_VERSION		"1.3"		/* Current version of MGD77 supplement */
 #define MGD77_CDF_VERSION	"2006.04.15"	/* Current version of MGD77+ files created */

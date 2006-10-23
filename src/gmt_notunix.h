@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.12 2006-01-01 05:48:41 pwessel Exp $
+ *	$Id: gmt_notunix.h,v 1.13 2006-10-23 03:35:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -103,6 +103,7 @@
 #define y1(x) _y1(x)
 #define yn(n,x) _yn(n,x)
 #define strdup(s) _strdup(s)
+#define STAT _stat
 
 /* WIN32 versus _WIN32:
  *
@@ -222,6 +223,7 @@ EXTERN_MSC void GMT_setmode (int i_or_o);
 #define NO_LOCK		/* Do not support file locking */
 #define SET_IO_MODE	/* Need to force binary i/o upon request */
 #define NO_FCNTL	/* fcntl.h does not exist here */
+#define STAT _stat
 
 EXTERN_MSC void GMT_setmode (int i_or_o);
 
@@ -258,6 +260,10 @@ EXTERN_MSC void GMT_setmode (int i_or_o);
 
 #ifndef NO_FCNTL
 #include <fcntl.h>
+#endif
+
+#ifndef STAT
+#define STAT stat
 #endif
 
 #endif /* _GMT_NOTUNIX_H */

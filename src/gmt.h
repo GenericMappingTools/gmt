@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.134 2006-08-24 03:07:44 remko Exp $
+ *	$Id: gmt.h,v 1.135 2006-10-23 03:35:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -59,6 +59,7 @@
 #include <math.h>
 #include <limits.h>
 #include <stddef.h>
+#include <sys/stat.h>
 #ifdef __MACHTEN__
 /* Kludge to fix a Machten POSIX bug */
 #include <sys/types.h>

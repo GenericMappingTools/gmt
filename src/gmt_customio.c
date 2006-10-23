@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.48 2006-04-13 06:20:34 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.49 2006-10-23 03:35:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -303,6 +303,27 @@ void GMT_grdio_init (void) {
  *-----------------------------------------------------------*/
 
 #define	RAS_MAGIC	0x59a66a95
+
+int GMT_is_ras_grid (char *file)
+{	/* Determine if file is a Sun rasterfile */
+	FILE *fp;
+	struct rasterfile h;
+	if (!strcmp(file, "=")) {	/* Cannot check on pipes */
+		fprintf (stderr, "GMT Fatal Error: Cannot guess grid format type if grid is passed via pipe!\n");
+		exit (EXIT_FAILURE);
+	}
+	if ((fp = GMT_fopen (file, "rb")) == NULL) {
+		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", file);
+		exit (EXIT_FAILURE);
+	}
+	if (GMT_read_rasheader (fp, &h)) {
+		fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
+		exit (EXIT_FAILURE);
+	}
+	if (h.magic != RAS_MAGIC) return (-1);
+	if (h.type != 1 || h.depth != 8) return (-1);
+	return (GMT_grd_format_decoder ("rb"));
+}
 
 int GMT_ras_read_grd_info (struct GRD_HEADER *header)
 {
@@ -690,6 +711,57 @@ int GMT_write_rasheader (FILE *fp, struct rasterfile *h)
  *		We use 4-byte integers to store 32 bits at the time
  * Functions :	GMT_bit_read_grd, GMT_bit_write_grd
  *-----------------------------------------------------------*/
+
+int GMT_is_native_grid (char *file)
+{
+	struct STAT buf;
+	int nm, mx, status, size;
+	double item_size;
+	struct GRD_HEADER header;
+	
+	if (!strcmp(file, "=")) {	/* Cannot check on pipes */
+		fprintf (stderr, "GMT Fatal Error: Cannot guess grid format type if grid is passed via pipe!\n");
+		exit (EXIT_FAILURE);
+	}
+	if (STAT (file, &buf)) {	/* Inquiry about file failed somehow */
+		fprintf (stderr, "%s: Unable to stat file %s\n", GMT_program, file);
+		exit (EXIT_FAILURE);
+	}
+	strcpy (header.name, file);
+	if ((status = GMT_native_read_grd_info (&header))) return (-1);	/* Failed to read header */
+	if (header.nx <= 0 || header.ny <= 0) return (-1);		/* Garbage for nx or ny */
+	nm = header.nx * header.ny;
+	if (nm <= 0) return (-1);					/* Overflow for nx * ny */
+	item_size = (buf.st_size - GRD_HEADER_SIZE) / nm;		/* Estimate size of elements */
+	size = irint (item_size);
+	if (fabs(item_size - (double)size) > GMT_CONV_LIMIT) return (-1);	/* Size not an integer */
+	
+	switch (size) {
+		case 0:	/* Possibly bit map; check some more */
+			mx = (int) ceil (header.nx / 32.0);
+			nm = mx * header.ny;
+			if ((buf.st_size - GRD_HEADER_SIZE) == nm)	/* yes it was a bit mask file */
+				return (GMT_grd_format_decoder ("bm"));
+			else	/* No, junk data */
+				return (-1);
+			break;
+		case 1:	/* 1-byte elements */
+			return (GMT_grd_format_decoder ("bb"));
+			break;
+		case 2:	/* 2-byte short int elements */
+			return (GMT_grd_format_decoder ("bs"));
+			break;
+		case 4:	/* 4-byte elements - could be int or float */
+			return (GMT_grd_format_decoder ("bb"));
+			break;
+		case 8:	/* 8-byte elements */
+			return (GMT_grd_format_decoder ("bd"));
+			break;
+		default:	/* Garbage */
+			return (-1);
+			break;
+	}
+}
 
 int GMT_bit_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
 {	/* header:	grid structure header */
@@ -1329,6 +1401,25 @@ struct srf_header7 {	/* Surfer 7 file header structure */
 	char id3[4];		/* Tag ID idicating a data section (DATA) */
 	int len_d;		/* Length in bytes of the DATA section */
 };
+
+int GMT_is_srf_grid (char *file)
+{
+	FILE *fp;
+	char id[5];
+	if (!strcmp(file, "=")) {	/* Cannot check on pipes */
+		fprintf (stderr, "GMT Fatal Error: Cannot guess grid format type if grid is passed via pipe!\n");
+		exit (EXIT_FAILURE);
+	}
+	if ((fp = GMT_fopen (file, "rb")) == NULL) {
+		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", file);
+		exit (EXIT_FAILURE);
+	}
+	fread (id, sizeof (char), (size_t)4, fp);
+	GMT_fclose (fp); 
+	if (!strncmp (id, "DSBB",4)) return (GMT_grd_format_decoder ("sf"));
+	if (!strncmp (id, "DSRB",4)) return (GMT_grd_format_decoder ("sd"));
+	return (-1);	/* Neither */
+}
 
 int GMT_srf_read_grd_info (struct GRD_HEADER *header)
 {
