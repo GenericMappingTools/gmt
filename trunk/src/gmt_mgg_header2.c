@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.12 2006-04-10 04:43:31 pwessel Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.13 2006-10-23 03:35:57 pwessel Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	This is the README file:
@@ -190,6 +190,34 @@ static void swap_header(MGG_GRID_HEADER_2 *header)
    swap_long(&header->unused9);
    swap_long(&header->unused10);
    swap_long(&header->unused11);
+}
+
+int GMT_is_mgg2_grid (char *file)
+{	/* Determine if file is a Sun rasterfile */
+	FILE *fp = NULL;
+	MGG_GRID_HEADER_2 mggHeader;
+
+	if (!strcmp(file, "=")) {	/* Cannot check on pipes */
+		fprintf (stderr, "GMT Fatal Error: Cannot guess grid format type if grid is passed via pipe!\n");
+		exit (EXIT_FAILURE);
+	}
+	if ((fp = GMT_fopen(file, GMT_io.r_mode)) == NULL) {
+		fprintf(stderr, "GMT Fatal Error: Could not open file %s!\n", file);
+		exit (-1);
+	}
+
+	memset(&mggHeader, '\0', sizeof(MGG_GRID_HEADER_2));
+	if (fread(&mggHeader, sizeof(MGG_GRID_HEADER_2), 1, fp) != 1) {
+		fprintf(stderr, "GMT Fatal Error: Error reading file %s!\n", file);
+		exit (-1);
+	}
+
+	/* Swap header bytes if necessary */
+	swap_header(&mggHeader);
+
+	/* Check the magic number and size of header */
+	if (mggHeader.version < MGG_MAGIC_NUM + VERSION) return (-1);	/* Not this kind of file */
+	return (GMT_grd_format_decoder ("rf"));
 }
 
 int mgg2_read_grd_info (struct GRD_HEADER *header)

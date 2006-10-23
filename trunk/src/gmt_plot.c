@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.179 2006-08-13 03:16:10 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.180 2006-10-23 03:35:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2243,7 +2243,8 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct GMT_PLOT_AXIS *A, int annota
 		ps_command (cmd);
 		GMT_project3D (val_xyz[0], val_xyz[1], val_xyz[2], &w[0], &w[1], &w[2]);
 		x0 = w[id];
-		val_xyz[id] = (val_xyz[id] == xyz[id][0]) ? xyz[id][1] : xyz[id][0];
+		/* Next line was: val_xyz[id] = (val_xyz[id] == xyz[id][0]) ? xyz[id][1] : xyz[id][0]; but == is no good for floats */
+		val_xyz[id] = (fabs (val_xyz[id] - xyz[id][1]) > fabs (val_xyz[id] - xyz[id][0])) ? xyz[id][1] : xyz[id][0];
 		GMT_project3D (val_xyz[0], val_xyz[1], val_xyz[2], &w[0], &w[1], &w[2]);
 		x1 = w[id];
 		pp[0] = w[0];

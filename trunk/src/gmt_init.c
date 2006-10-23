@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.245 2006-10-17 20:26:46 remko Exp $
+ *	$Id: gmt_init.c,v 1.246 2006-10-23 03:35:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3883,9 +3883,6 @@ int GMT_parse_J_option (char *args)
 			break;
 	}
 
-	GMT_io.in_col_type[0] = GMT_IS_LON;	GMT_io.in_col_type[1] = GMT_IS_LAT;	/* This may be overridden in -Jx, -Jp */
-	GMT_io.out_col_type[0] = GMT_io.out_col_type[1] = GMT_IS_FLOAT;		/* This may be overridden by mapproject -I */
-	project_info.degree[0] = project_info.degree[1] = TRUE;			/* May be overridden if not geographic projection */
 	if (strchr ("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz", (int)type) == NULL) return (TRUE);	/* NO valid projection specified */
 	args++;
 
@@ -3895,6 +3892,9 @@ int GMT_parse_J_option (char *args)
 		/* Check to see if scale is specified in 1:xxxx */
 		for (j = n = strlen (args), k = -1; j > 0 && k < 0 && args[j] != '/'; j--) if (args[j] == ':') k = j + 1;
 		project_info.units_pr_degree = (k == -1) ? TRUE : FALSE;
+		GMT_io.in_col_type[0] = GMT_IS_LON;	GMT_io.in_col_type[1] = GMT_IS_LAT;	/* This may be overridden in -Jx, -Jp */
+		GMT_io.out_col_type[0] = GMT_io.out_col_type[1] = GMT_IS_FLOAT;		/* This may be overridden by mapproject -I */
+		project_info.degree[0] = project_info.degree[1] = TRUE;			/* May be overridden if not geographic projection */
 	}
 
 	project_info.unit = GMT_units[GMT_INCH];	/* No of meters in an inch */

@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.6 2006-10-06 17:19:36 pwessel Exp $
+/*      $Id: gmt_agc_io.c,v 1.7 2006-10-23 03:35:57 pwessel Exp $
  *
  * Based on original code from Robert Helie.  That code was hard-wired
  * in two applications (gmt2agcgrd.c and agc2gmtgrd.c) based on GMT 3.4.
@@ -30,6 +30,40 @@
 # define AGCHEADINDICATOR	"agchd:"
 # define HEADINDSIZE		6
 # define PARAMSIZE		(int)((GRD_REMARK_LEN - HEADINDSIZE) / BUFFHEADSIZE)
+
+int GMT_is_agc_grid (char *file)
+{	/* Determine if file is a AGC grid file NOT FINISHED YET!!!! */
+	FILE *fp = NULL;
+	int nx, ny, predicted_size;
+	float recdata[RECORDLENGTH], x_min, x_max, y_min, y_max, x_inc, y_inc;
+	struct STAT buf;
+
+	if (!strcmp(file, "=")) {	/* Cannot check on pipes */
+		fprintf (stderr, "GMT Fatal Error: Cannot guess grid format type if grid is passed via pipe!\n");
+		exit (EXIT_FAILURE);
+	}
+	if (STAT (file, &buf)) {	/* Inquiry about file failed somehow */
+		fprintf (stderr, "%s: Unable to stat file %s\n", GMT_program, file);
+		exit (EXIT_FAILURE);
+	}
+	if ((fp = GMT_fopen(file, "rb")) == NULL) {
+		fprintf(stderr, "GMT Fatal Error: Could not open file %s!\n", file);
+		exit (-1);
+	}
+	fread ((void *)recdata, sizeof(float), RECORDLENGTH, fp);
+	
+	y_min = recdata[0];
+	y_max = recdata[1];
+	x_min = recdata[2];
+	x_max = recdata[3];
+	y_inc = recdata[4];
+	x_inc = recdata[5];
+	nx = GMT_get_n (x_min, x_max, x_inc, 0);
+	ny = GMT_get_n (y_min, y_max, y_inc, 0);
+	predicted_size = ceil (ny /ZBLOCKHEIGHT) * ceil (nx / ZBLOCKWIDTH) * ZBLOCKHEIGHT * ZBLOCKWIDTH * sizeof (float);
+	if (predicted_size == buf.st_size) return (GMT_grd_format_decoder ("af"));
+	return (-1);
+}
 
 int GMT_agc_read_grd_info (struct GRD_HEADER *header)
 {	/* All AGC files are assumed to be gridline-registered */
