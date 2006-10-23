@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 17
 REM
-REM		$Id: job17.bat,v 1.5 2006-10-22 14:26:49 remko Exp $
+REM		$Id: job17.bat,v 1.6 2006-10-23 18:14:12 remko Exp $
 REM
 REM Purpose:	Illustrates clipping of images using coastlines
 REM GMT progs:	grd2cpt, grdgradient, grdimage, pscoast, pstext
@@ -10,15 +10,12 @@ echo GMT EXAMPLE 17
 set master=y
 if exist job17.bat set master=n
 if %master%==y cd ex17
-REM Get Geoid and Topography for the region
-REM grdraster 1 -R60/90/-10/25 -Gindia_topo.grd
-REM grdraster 4 -R60/90/-10/25 -Gindia_geoid.grd
 
 REM First generate geoid image w/ shading
 
-grd2cpt india_geoid.grd -Crainbow > geoid.cpt
-grdgradient india_geoid.grd -Nt1 -A45 -Gindia_geoid_i.grd
-grdimage india_geoid.grd -Iindia_geoid_i.grd -JM6.5i -Cgeoid.cpt -P -K -U"Example 17 in Cookbook" > example_17.ps
+grd2cpt india_geoid.nc -Crainbow > geoid.cpt
+grdgradient india_geoid.nc -Nt1 -A45 -Gindia_geoid_i.grd
+grdimage india_geoid.nc -Iindia_geoid_i.grd -JM6.5i -Cgeoid.cpt -P -K -U"Example 17 in Cookbook" > example_17.ps
 
 REM Then use pscoast to initiate clip path for land
 
@@ -27,8 +24,8 @@ pscoast -R60/90/-10/25 -J -O -K -Dl -Gc >> example_17.ps
 REM Now generate topography image w/shading
 
 echo -10000 150 10000 150 > gray.cpt
-grdgradient india_topo.grd -Nt1 -A45 -Gindia_topo_i.grd
-grdimage india_topo.grd -Iindia_topo_i.grd -J -Cgray.cpt -O -K >> example_17.ps
+grdgradient india_topo.nc -Nt1 -A45 -Gindia_topo_i.grd
+grdimage india_topo.nc -Iindia_topo_i.grd -J -Cgray.cpt -O -K >> example_17.ps
 
 REM Finally undo clipping and overlay basemap
 
