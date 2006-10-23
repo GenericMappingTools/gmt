@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.79 2006-10-23 03:35:57 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.80 2006-10-23 05:53:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -234,6 +234,46 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header)
 	return (id);
 }
 
+int GMT_grd_get_format_new (char *file, struct GRD_HEADER *header)
+{
+	int i = 0, j, id = -1;
+
+	GMT_expand_filename (file, header->name);
+
+	/* Set default values */
+	
+	header->z_scale_factor = GMT_d_NaN, header->z_add_offset = 0.0, header->nan_value = GMT_d_NaN;
+
+	while (header->name[i] && header->name[i] != '=') i++;	/* Look for optional =<fileinfo> string */
+
+	if (header->name[i]) {	/* Get format type, scale, offset and missing value directly from suffix */
+		char code[GMT_TEXT_LEN];
+		i++;
+		sscanf (&header->name[i], "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
+		id = GMT_grd_format_decoder (code);
+		j = (i == 1) ? i : i - 1;
+		header->name[j] = 0;
+		return (id);
+	}
+	
+	/* Determine file format automatically based on grid content */
+	
+	/* First check if we have a netCDF grid */
+	if ((id = GMT_is_cdf_grid (header->name)) >= 0) return (id);
+	/* Then check for native GMT grid */
+	if ((id = GMT_is_native_grid (header->name)) >= 0) return (id);
+	/* Next check for Sun raster GMT grid */
+	if ((id = GMT_is_ras_grid (header->name)) >= 0) return (id);
+	/* Then check for Golden Software surfer grid */
+	if ((id = GMT_is_srf_grid (header->name)) >= 0) return (id);
+	/* Then check for NGDC GRD98 GMT grid */
+	if ((id = GMT_is_mgg2_grid (header->name)) >= 0) return (id);
+	/* Then check for AGC GMT grid */
+	if ((id = GMT_is_agc_grid (header->name)) >= 0) return (id);
+
+	return (-1);	/* No recognizable grid format found */
+}
+
 int GMT_grd_data_size (int format, double *nan_value)
 {
 	/* Determine size of data type and set NaN value, if not yet done so (integers only) */
@@ -309,44 +349,6 @@ void GMT_grd_do_scaling (float *grid, int nm, double scale, double offset)
 		for (i = 0; i < nm; i++) grid[i] *= (float)scale;
 	else
 		for (i = 0; i < nm; i++) grid[i] = grid[i] * ((float)scale) + (float)offset;
-}
-
-int GMT_get_grd_format_new (char *file, struct GRD_HEADER *header)
-{
-	int i = 0, j, id = -1;
-
-	GMT_expand_filename (file, header->name);
-
-	/* Set default values */
-	
-	header->z_scale_factor = GMT_d_NaN, header->z_add_offset = 0.0, header->nan_value = GMT_d_NaN;
-
-	while (header->name[i] && header->name[i] != '=') i++;	/* Look for optional =<fileinfo> string */
-
-	if (header->name[i]) {	/* Get format type, scale, offset and missing value directly from suffix */
-		char code[GMT_TEXT_LEN];
-		i++;
-		sscanf (&header->name[i], "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
-		id = GMT_grd_format_decoder (code);
-		j = (i == 1) ? i : i - 1;
-		header->name[j] = 0;
-		return (id);
-	}
-	else {			/* Determine file format automatically based on contents */
-		/* First check if we have a netCDF grid */
-		if ((id = GMT_is_cdf_grid (header->name)) >= 0) return (id);
-		/* Then check for native GMT grid */
-		if ((id = GMT_is_native_grid (header->name)) >= 0) return (id);
-		/* Next check for Sun raster GMT grid */
-		if ((id = GMT_is_ras_grid (header->name)) >= 0) return (id);
-		/* Then check for GOlden Software surfer grid */
-		if ((id = GMT_is_srf_grid (header->name)) >= 0) return (id);
-		/* Then check for NGDC GRD98 GMT grid */
-		if ((id = GMT_is_mgg2_grid (header->name)) >= 0) return (id);
-		/* Then check for AGC GMT grid */
-		if ((id = GMT_is_agc_grid (header->name)) >= 0) return (id);
-	}
-	return (-1);	/* No recognizable grid format found */
 }
 		
 /* gmt_grd_RI_verify -- routine to check grd R and I compatibility
