@@ -1,15 +1,13 @@
 #!/bin/sh
 #		GMT EXAMPLE 18
 #
-#		$Id: job18.sh,v 1.6 2006-10-22 14:26:49 remko Exp $
+#		$Id: job18.sh,v 1.7 2006-10-23 18:14:12 remko Exp $
 #
 # Purpose:	Illustrates volumes of grids inside contours and spatial
 #		selection of data
 # GMT progs:	gmtset, gmtselect, grdclip, grdcontour, grdgradient, grdimage, grdvolume
 # Unix progs:	$AWK, cat, rm
 #
-# Get Sandwell/Smith gravity for the region
-#img2latlongrd world_grav.img.7.2 -R-149/-135/52.5/58 -GAK_gulf_grav.grd -T1
 
 # Use spherical projection since SS data define on sphere
 gmtset ELLIPSOID Sphere
@@ -21,8 +19,8 @@ echo "-142.65	56.25" > pratt.d
 # of radius = 200 km centered on Pratt.
 
 makecpt -Crainbow -T-60/60/10 -Z > grav.cpt
-grdgradient AK_gulf_grav.grd -Nt1 -A45 -GAK_gulf_grav_i.grd
-grdimage AK_gulf_grav.grd -IAK_gulf_grav_i.grd -JM5.5i -Cgrav.cpt -B2f1 -P -K -X1.5i -Y5.85i > example_18.ps
+grdgradient AK_gulf_grav.nc -Nt1 -A45 -GAK_gulf_grav_i.grd
+grdimage AK_gulf_grav.nc -IAK_gulf_grav_i.grd -JM5.5i -Cgrav.cpt -B2f1 -P -K -X1.5i -Y5.85i > example_18.ps
 pscoast -R-149/-135/52.5/58 -J -O -K -Di -Ggray -Wthinnest >> example_18.ps
 psscale -D2.75i/-0.4i/4i/0.15ih -Cgrav.cpt -B20f10/:mGal: -O -K >> example_18.ps
 $AWK '{print $1, $2, 12, 0, 1, "LB", "Pratt"}' pratt.d | pstext -R -J -O -K -D0.1i/0.1i >> example_18.ps
@@ -30,8 +28,8 @@ $AWK '{print $1, $2, 0, 200, 200}' pratt.d | psxy -R -J -O -K -SE -Wthinnest >> 
 
 # Then draw 10 mGal contours and overlay 50 mGal contour in green
 
-grdcontour AK_gulf_grav.grd -J -C20 -B2f1WSEn -O -K -Y-4.85i -U/-1.25i/-0.75i/"Example 18 in Cookbook" >> example_18.ps
-grdcontour AK_gulf_grav.grd -J -C10 -L49/51 -O -K -Dsm -Wcthin,green >> example_18.ps
+grdcontour AK_gulf_grav.nc -J -C20 -B2f1WSEn -O -K -Y-4.85i -U/-1.25i/-0.75i/"Example 18 in Cookbook" >> example_18.ps
+grdcontour AK_gulf_grav.nc -J -C10 -L49/51 -O -K -Dsm -Wcthin,green >> example_18.ps
 pscoast -R -J -O -K -Di -Ggray -Wthinnest >> example_18.ps
 $AWK '{print $1, $2, 0, 200, 200}' pratt.d | psxy -R -J -O -K -SE -Wthinnest >> example_18.ps
 \rm -f sm_*[0-9].xyz	# Only consider closed contours
@@ -69,8 +67,7 @@ done
 
 # Only plot the ones within 200 km
 
-gmtselect -R -J -C200/pratt.d centers.d > $$
-psxy $$ -R -J -O -K -SC0.04i -Gred -Wthinnest >> example_18.ps
+gmtselect -R -J -C200/pratt.d centers.d | psxy -R -J -O -K -SC0.04i -Gred -Wthinnest >> example_18.ps
 psxy -R -J -O -K -ST0.1i -Gyellow -Wthinnest pratt.d >> example_18.ps
 
 # Then report the volume and area of these seamounts only
@@ -79,7 +76,7 @@ psxy -R -J -O -K -ST0.1i -Gyellow -Wthinnest pratt.d >> example_18.ps
 
 grdmath -R -I2m -F -142.65 56.25 GDIST = mask.grd
 grdclip mask.grd -Sa200/NaN -Sb200/1 -Gmask.grd
-grdmath AK_gulf_grav.grd mask.grd MUL = tmp.grd
+grdmath AK_gulf_grav.nc mask.grd MUL = tmp.grd
 area=`grdvolume tmp.grd -C50 -Sk | cut -f2`
 volume=`grdvolume tmp.grd -C50 -Sk | cut -f3`
 
@@ -96,4 +93,4 @@ EOF
 
 # Clean up
 
-rm -f $$ grav.cpt sm_*.xyz *_i.grd tmp.grd mask.grd pratt.d center* .gmt*
+rm -f grav.cpt sm_*.xyz *_i.grd tmp.grd mask.grd pratt.d center* .gmt*
