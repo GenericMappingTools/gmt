@@ -5,7 +5,7 @@ grdreformat \- Converting between different grdfile formats.
 .SH SYNOPSIS
 \fBgrdreformat\fP \fIingrdfile\fP[\fI=id\fP[\fI/scale/offset\fP[\fI/NaNvalue\fP]]] 
 \fIoutgrdfile\fP[\fI=id\fP[\fI/scale/offset\fP[\fI/NaNvalue\fP]]] 
- [ OPT(N) ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ]
+[ OPT(N) ] [ GMT_Rgeo_OPT ] [ GMT_f_OPT ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBgrdreformat\fP reads a grdfile in one format and writes it out using another format.  As an option the
 user may select a subset of the data to be written and to specify scaling, translation, and NaN-value.
@@ -36,6 +36,7 @@ is unnecessary since the IEEE NaN is used; however integers need a value which m
 Suppress the writing of the \fBGMT\fP header structure.  This is useful when you want to write a native grid to
 be used by \fBgrdraster\fP.  It only applies to native grids and is ignored for netCDF output.
 #include "explain_-R.txt"
+#include "explain_-f.txt"
 #include "explain_-V.txt"
 .SH FORMAT IDENTIFIER
 By default, grids will be written as floating point data stored in binary files using the netCDF format and
