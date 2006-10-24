@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.80 2006-10-23 05:53:58 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.81 2006-10-24 20:19:25 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -206,35 +206,8 @@ void GMT_expand_filename (char *file, char *fname)
 	else	/* Simply copy the full name */
 		strcpy (fname, file);
 }
-
+#ifdef NEW
 int GMT_grd_get_format (char *file, struct GRD_HEADER *header)
-{
-	int i = 0, j, id = 0;
-	char code[GMT_TEXT_LEN];
-
-	GMT_expand_filename (file, header->name);
-
-	/* Set default values */
-	header->z_scale_factor = GMT_d_NaN, header->z_add_offset = 0.0, header->nan_value = GMT_d_NaN;
-
-	while (header->name[i] && header->name[i] != '=') i++;
-
-	if (header->name[i]) {	/* Get format type, scale, offset and missing value from suffix */
-		i++;
-		sscanf (&header->name[i], "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
-		id = GMT_grd_format_decoder (code);
-		j = (i == 1) ? i : i - 1;
-		header->name[j] = 0;
-	}
-	else {			/* Get format type, scale, offset and missing value from gmtdefs.grid_format */
-		sscanf (gmtdefs.grid_format, "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
-		id = GMT_grd_format_decoder (code);
-	}
-
-	return (id);
-}
-
-int GMT_grd_get_format_new (char *file, struct GRD_HEADER *header)
 {
 	int i = 0, j, id = -1;
 
@@ -273,7 +246,34 @@ int GMT_grd_get_format_new (char *file, struct GRD_HEADER *header)
 
 	return (-1);	/* No recognizable grid format found */
 }
+#else
+int GMT_grd_get_format (char *file, struct GRD_HEADER *header)
+{
+	int i = 0, j, id = 0;
+	char code[GMT_TEXT_LEN];
 
+	GMT_expand_filename (file, header->name);
+
+	/* Set default values */
+	header->z_scale_factor = GMT_d_NaN, header->z_add_offset = 0.0, header->nan_value = GMT_d_NaN;
+
+	while (header->name[i] && header->name[i] != '=') i++;
+
+	if (header->name[i]) {	/* Get format type, scale, offset and missing value from suffix */
+		i++;
+		sscanf (&header->name[i], "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
+		id = GMT_grd_format_decoder (code);
+		j = (i == 1) ? i : i - 1;
+		header->name[j] = 0;
+	}
+	else {			/* Get format type, scale, offset and missing value from gmtdefs.grid_format */
+		sscanf (gmtdefs.grid_format, "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
+		id = GMT_grd_format_decoder (code);
+	}
+
+	return (id);
+}
+#endif
 int GMT_grd_data_size (int format, double *nan_value)
 {
 	/* Determine size of data type and set NaN value, if not yet done so (integers only) */
