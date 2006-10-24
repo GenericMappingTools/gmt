@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_E.sh,v 1.5 2005-10-25 13:23:35 remko Exp $
+#	$Id: GMT_App_E.sh,v 1.6 2006-10-24 01:53:19 remko Exp $
 #
 #	This script makes the documentation in Appendix E.
 #
@@ -31,11 +31,11 @@ do
 	do
 		p=`echo "$iy * 6 + $ix" | bc`
 		psxy -R0/$xwidth/0/$ywidth -Jx1i -Gp0/$p -O -K $$.App_E.d -X${x}i -Y${y}i >> GMT_App_E.ps
-		psxy -R -Jx -W0.5p -L -O -K $$.App_E.d >> GMT_App_E.ps
-		psxy -R -Jx -GP0/$p -O -K $$.App_E.d -X${xwidth}i >> GMT_App_E.ps
-		psxy -R -Jx -W0.5p -L -O -K $$.App_E.d >> GMT_App_E.ps
-		echo "0 0.225" | psxy -R0/$w/0/$ywidth -Jx -O -K -N -Sc0.17i -W0.25p -Gwhite >> GMT_App_E.ps
-		echo "0 0.225 9 0 1 CM $p" | pstext -R0/$w/0/$ywidth -Jx -O -K -N >> GMT_App_E.ps
+		psxy -R -J -Wthinner -L -O -K $$.App_E.d >> GMT_App_E.ps
+		psxy -R -J -GP0/$p -O -K $$.App_E.d -X${xwidth}i >> GMT_App_E.ps
+		psxy -R -J -Wthinner -L -O -K $$.App_E.d >> GMT_App_E.ps
+		echo "0 0.225" | psxy -R0/$w/0/$ywidth -J -O -K -N -Sc0.17i -Wthinnest -Gwhite >> GMT_App_E.ps
+		echo "0 0.225 9 0 1 CM $p" | pstext -R0/$w/0/$ywidth -J -O -K -N >> GMT_App_E.ps
 		y=0.0
 		x=$dx
 	done

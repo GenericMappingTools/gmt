@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_-R.sh,v 1.6 2004-04-13 21:32:27 pwessel Exp $
+#	$Id: GMT_-R.sh,v 1.7 2006-10-24 01:53:19 remko Exp $
 #
 
 gmtset BASEMAP_TYPE PLAIN ANNOT_FONT_PRIMARY 0 ANNOT_FONT_SIZE_PRIMARY 8 TICK_LENGTH 0.05i \
@@ -8,13 +8,13 @@ pscoast -R-90/-70/18/35.819 -JM2 -P -Dl -Glightgray -W1 -Ba10g5WSEn -K > GMT_-R.
 pstext -R0/2/-0.5/2 -Jx1 -O -K -N -Y-0.5 << EOF >> GMT_-R.ps
 1	-0.375	9	0	2	CT	@%0%a)@%% @%1%\035R@%%xmin/xmax/ymin/ymax
 EOF
-psxy -R -Jx -O -K -N -Sc0.1 -W0.5p << EOF >> GMT_-R.ps
+psxy -R -J -O -K -N -Sc0.1 -Wthinner << EOF >> GMT_-R.ps
 0	1
 1	0
 1	2
 2	1
 EOF
-psxy -R -Jx -O -K -N -M -W0.5p << EOF >> GMT_-R.ps
+psxy -R -J -O -K -N -M -Wthinner << EOF >> GMT_-R.ps
 >
 0	1
 0.675	-0.35
@@ -33,11 +33,11 @@ pscoast -R-90/20/-65.5327/29.4248r -JOc280/20/22/69/2 -O -Dl -Glightgray -W1 -Ba
 pstext -R0/2/-0.5/2 -Jx1 -O -K -N -Y-0.5 << EOF >> GMT_-R.ps
 1	-0.375	9	0	2	CT	@%0%b)@%% @%1%\035R@%%xlleft/ylleft/xuright/yuright @%1%r@%%
 EOF
-psxy -R -Jx -O -K -N -Sc0.1 -W0.5p << EOF >> GMT_-R.ps
+psxy -R -J -O -K -N -Sc0.1 -Wthinner << EOF >> GMT_-R.ps
 0	0
 2	2
 EOF
-psxy -R -Jx -O -N -M -W0.5p << EOF >> GMT_-R.ps
+psxy -R -J -O -N -M -Wthinner << EOF >> GMT_-R.ps
 >
 0	0
 0.56	-0.35

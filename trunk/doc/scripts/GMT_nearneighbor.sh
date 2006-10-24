@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_nearneighbor.sh,v 1.2 2004-04-10 17:19:14 pwessel Exp $
+#	$Id: GMT_nearneighbor.sh,v 1.3 2006-10-24 01:53:19 remko Exp $
 #
 
 psxy -R0/2/0/2 -Jx1 -B0g0.25 -Sc0.025 -Gblack -P -K << EOF > GMT_nearneighbor.ps
@@ -22,10 +22,10 @@ psxy -R0/2/0/2 -Jx1 -B0g0.25 -Sc0.025 -Gblack -P -K << EOF > GMT_nearneighbor.ps
 1.15	1.3
 1	0.88
 EOF
-psxy -R -Jx -O -K -Sc1 -W1p << EOF >> GMT_nearneighbor.ps
+psxy -R -J -O -K -Sc1 -Wthick << EOF >> GMT_nearneighbor.ps
 0.75	1.25
 EOF
-psxy -R -Jx -O -K -M -W0.5p << EOF >> GMT_nearneighbor.ps
+psxy -R -J -O -K -M -Wthinner << EOF >> GMT_nearneighbor.ps
 >
 0.25	1.25
 1.25	1.25
@@ -33,7 +33,7 @@ psxy -R -Jx -O -K -M -W0.5p << EOF >> GMT_nearneighbor.ps
 0.75	0.75
 0.75	1.75
 EOF
-psxy -R -Jx -O -K -M -W0.25p << EOF >> GMT_nearneighbor.ps
+psxy -R -J -O -K -M -Wthinnest << EOF >> GMT_nearneighbor.ps
 >
 0.75	1.25
 0.5	0.9
@@ -50,11 +50,11 @@ psxy -R -Jx -O -K -M -W0.25p << EOF >> GMT_nearneighbor.ps
 0.75	1.25
 1	0.88
 EOF
-psxy -R -Jx -O -K -M -W0.5top << EOF >> GMT_nearneighbor.ps
+psxy -R -J -O -K -M -W0.5top << EOF >> GMT_nearneighbor.ps
 0.75	1.25
 1.10355	1.60355
 EOF
-pstext -R -Jx -O << EOF >> GMT_nearneighbor.ps
+pstext -R -J -O << EOF >> GMT_nearneighbor.ps
 1	1.4	8	0	2	BL	R
 1.0	1	8	0	2	BL	r@-i@-
 EOF

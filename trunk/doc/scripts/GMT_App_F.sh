@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_F.sh,v 1.8 2004-08-18 04:53:48 pwessel Exp $
+#	$Id: GMT_App_F.sh,v 1.9 2006-10-24 01:53:19 remko Exp $
 #
 #	Makes the octal code charts in Appendix F
 
@@ -8,7 +8,7 @@ trap 'rm -f $$.*; exit 1' 1 2 3 15
 # Use the row, col values to generate the octal code needed and
 # plot it with pstext, including the header row and left column
 
-gmtset CHAR_ENCODING Standard FRAME_PEN 1p
+gmtset CHAR_ENCODING Standard FRAME_PEN thick
 
 # First chart for standard font
 
@@ -84,7 +84,7 @@ psxy -R0/9/2/32 -Jx0.345i/-0.21i -P -K -M -Gdarkgray -Y0.0 << EOF > GMT_App_F_st
 1	20
 EOF
 #Then highlight Standard+ enhancements
-psxy -R -Jx -O -K -M -B0g1 -Glightgray << EOF >> GMT_App_F_stand+.ps
+psxy -R -J -O -K -M -B0g1 -Glightgray << EOF >> GMT_App_F_stand+.ps
 >
 2	4
 9	4
@@ -181,8 +181,8 @@ psxy -R -Jx -O -K -M -B0g1 -Glightgray << EOF >> GMT_App_F_stand+.ps
 9	31
 5	31
 EOF
-pstext $$.d -R -Jx -O -K >> GMT_App_F_stand+.ps
-psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_stand+.ps
+pstext $$.d -R -J -O -K >> GMT_App_F_stand+.ps
+psxy -R -J -O -M -Wthick << EOF >> GMT_App_F_stand+.ps
 >
 0	3
 9	3
@@ -208,7 +208,7 @@ psxy -R0/9/2/32 -Jx0.345i/-0.21i -B0g1 -P -K -M -Gdarkgray -Y0.0 << EOF > GMT_Ap
 1	20
 EOF
 #Then highlight ISOLatin1Encoding+ enhancements
-psxy -R -Jx -O -K -M -B0g1 -Glightgray << EOF >> GMT_App_F_iso+.ps
+psxy -R -J -O -K -M -B0g1 -Glightgray << EOF >> GMT_App_F_iso+.ps
 >
 2	4
 9	4
@@ -235,8 +235,8 @@ psxy -R -Jx -O -K -M -B0g1 -Glightgray << EOF >> GMT_App_F_iso+.ps
 6	19
 5	19
 EOF
-pstext $$.d -R -Jx -O -K >> GMT_App_F_iso+.ps
-psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_iso+.ps
+pstext $$.d -R -J -O -K >> GMT_App_F_iso+.ps
+psxy -R -J -O -M -Wthick << EOF >> GMT_App_F_iso+.ps
 >
 0	3
 9	3
@@ -293,8 +293,8 @@ psxy -R0/9/3/16 -Jx0.345i/-0.21i -B0g1 -P -K -M -Glightgray -Y2.58i << EOF > GMT
 9	15
 8	15
 EOF
-pstext $$.d -R -Jx -O -K >> GMT_App_F_symbol.ps
-psxy -R -Jx -O -K -M -W1p << EOF >> GMT_App_F_symbol.ps
+pstext $$.d -R -J -O -K >> GMT_App_F_symbol.ps
+psxy -R -J -O -K -M -Wthick << EOF >> GMT_App_F_symbol.ps
 >
 0	4
 9	4
@@ -329,7 +329,7 @@ cat << EOF > $$.awk
 EOF
 
 $AWK -f $$.awk $$.txt > $$.d
-psxy -R0/9/20/32 -Jx -B0g1 -O -K -M -Glightgray -Y-2.58i << EOF >> GMT_App_F_symbol.ps
+psxy -R0/9/20/32 -J -B0g1 -O -K -M -Glightgray -Y-2.58i << EOF >> GMT_App_F_symbol.ps
 >
 1	21
 2	21
@@ -341,8 +341,8 @@ psxy -R0/9/20/32 -Jx -B0g1 -O -K -M -Glightgray -Y-2.58i << EOF >> GMT_App_F_sym
 9	31
 8	31
 EOF
-pstext $$.d -R -Jx -B0g1 -O -K >> GMT_App_F_symbol.ps
-psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_symbol.ps
+pstext $$.d -R -J -B0g1 -O -K >> GMT_App_F_symbol.ps
+psxy -R -J -O -M -Wthick << EOF >> GMT_App_F_symbol.ps
 >
 0	21
 9	21
@@ -399,8 +399,8 @@ psxy -R0/9/3/16 -Jx0.345i/-0.21i -B0g1 -P -K -M -Glightgray -Y2.58i << EOF > GMT
 9	15
 8	15
 EOF
-pstext $$.d -R -Jx -O -K >> GMT_App_F_dingbats.ps
-psxy -R -Jx -O -K -M -W1p << EOF >> GMT_App_F_dingbats.ps
+pstext $$.d -R -J -O -K >> GMT_App_F_dingbats.ps
+psxy -R -J -O -K -M -Wthick << EOF >> GMT_App_F_dingbats.ps
 >
 0	4
 9	4
@@ -435,7 +435,7 @@ cat << EOF > $$.awk
 EOF
 
 $AWK -f $$.awk $$.txt > $$.d
-psxy -R0/9/20/32 -Jx -B0g1 -O -K -M -Glightgray -Y-2.58i << EOF >> GMT_App_F_dingbats.ps
+psxy -R0/9/20/32 -J -B0g1 -O -K -M -Glightgray -Y-2.58i << EOF >> GMT_App_F_dingbats.ps
 >
 1	21
 2	21
@@ -447,8 +447,8 @@ psxy -R0/9/20/32 -Jx -B0g1 -O -K -M -Glightgray -Y-2.58i << EOF >> GMT_App_F_din
 9	31
 8	31
 EOF
-pstext $$.d -R -Jx -B0g1 -O -K >> GMT_App_F_dingbats.ps
-psxy -R -Jx -O -M -W1p << EOF >> GMT_App_F_dingbats.ps
+pstext $$.d -R -J -B0g1 -O -K >> GMT_App_F_dingbats.ps
+psxy -R -J -O -M -Wthick << EOF >> GMT_App_F_dingbats.ps
 >
 0	21
 9	21
@@ -459,4 +459,4 @@ EOF
 
 rm -f $$.*
 
-gmtset FRAME_PEN 1.25p
+gmtset FRAME_PEN thicker
