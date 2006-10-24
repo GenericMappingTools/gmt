@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.41 2006-10-23 03:35:57 pwessel Exp $
+ *	$Id: gmt_cdf.c,v 1.42 2006-10-24 21:03:28 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -41,12 +41,6 @@
 
 #define GMT_WITH_NO_PS
 #include "gmt.h"
-
-int GMT_is_cdf_grid (char *file)
-{	/* Not implemented; but will determine if file is a netCDF grid and
-	 * if so return the proper format ID; else return -1 */
-	return (-1);
-}
 
 int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job);
 

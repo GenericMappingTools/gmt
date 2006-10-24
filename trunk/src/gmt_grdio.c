@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.81 2006-10-24 20:19:25 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.82 2006-10-24 21:03:28 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -62,7 +62,7 @@ int GMT_grdformats[GMT_N_GRD_FORMATS][2] = {
 void GMT_grd_do_scaling (float *grid, int nm, double scale, double offset);
 void GMT_grd_get_units (struct GRD_HEADER *header);
 void GMT_grd_set_units (struct GRD_HEADER *header);
-int GMT_is_cdf_grid (char *file);
+int GMT_is_nc_grid (char *file);
 int GMT_is_native_grid (char *file);
 int GMT_is_ras_grid (char *file);
 int GMT_is_srf_grid (char *file);
@@ -83,7 +83,7 @@ int GMT_read_grd_info (char *file, struct GRD_HEADER *header)
 	GMT_grd_init (header, 0, (char **)VNULL, FALSE);
 
 	/* Save parameters on file name suffix before issuing GMT_io_readinfo */
-	header->type = GMT_grd_get_format (file, header);
+	GMT_grd_get_format (file, header, TRUE);
 	scale = header->z_scale_factor, offset = header->z_add_offset, nan_value = header->nan_value;
 
 	status = (*GMT_io_readinfo[header->type]) (header);
@@ -107,7 +107,7 @@ int GMT_write_grd_info (char *file, struct GRD_HEADER *header)
 
 	int status;
 	
-	header->type = GMT_grd_get_format (file, header);
+	GMT_grd_get_format (file, header, FALSE);
 	if (GMT_is_dnan(header->z_scale_factor))
 		header->z_scale_factor = 1.0;
 	else if (header->z_scale_factor == 0.0) {
@@ -170,7 +170,7 @@ int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w,
 
 	int status;
 
-	header->type = GMT_grd_get_format (file, header);
+	GMT_grd_get_format (file, header, FALSE);
 	if (GMT_is_dnan(header->z_scale_factor))
 		header->z_scale_factor = 1.0;
 	else if (header->z_scale_factor == 0.0) {
@@ -206,50 +206,10 @@ void GMT_expand_filename (char *file, char *fname)
 	else	/* Simply copy the full name */
 		strcpy (fname, file);
 }
-#ifdef NEW
-int GMT_grd_get_format (char *file, struct GRD_HEADER *header)
+
+void GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 {
-	int i = 0, j, id = -1;
-
-	GMT_expand_filename (file, header->name);
-
-	/* Set default values */
-	
-	header->z_scale_factor = GMT_d_NaN, header->z_add_offset = 0.0, header->nan_value = GMT_d_NaN;
-
-	while (header->name[i] && header->name[i] != '=') i++;	/* Look for optional =<fileinfo> string */
-
-	if (header->name[i]) {	/* Get format type, scale, offset and missing value directly from suffix */
-		char code[GMT_TEXT_LEN];
-		i++;
-		sscanf (&header->name[i], "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
-		id = GMT_grd_format_decoder (code);
-		j = (i == 1) ? i : i - 1;
-		header->name[j] = 0;
-		return (id);
-	}
-	
-	/* Determine file format automatically based on grid content */
-	
-	/* First check if we have a netCDF grid */
-	if ((id = GMT_is_cdf_grid (header->name)) >= 0) return (id);
-	/* Then check for native GMT grid */
-	if ((id = GMT_is_native_grid (header->name)) >= 0) return (id);
-	/* Next check for Sun raster GMT grid */
-	if ((id = GMT_is_ras_grid (header->name)) >= 0) return (id);
-	/* Then check for Golden Software surfer grid */
-	if ((id = GMT_is_srf_grid (header->name)) >= 0) return (id);
-	/* Then check for NGDC GRD98 GMT grid */
-	if ((id = GMT_is_mgg2_grid (header->name)) >= 0) return (id);
-	/* Then check for AGC GMT grid */
-	if ((id = GMT_is_agc_grid (header->name)) >= 0) return (id);
-
-	return (-1);	/* No recognizable grid format found */
-}
-#else
-int GMT_grd_get_format (char *file, struct GRD_HEADER *header)
-{
-	int i = 0, j, id = 0;
+	int i = 0, j;
 	char code[GMT_TEXT_LEN];
 
 	GMT_expand_filename (file, header->name);
@@ -262,18 +222,34 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header)
 	if (header->name[i]) {	/* Get format type, scale, offset and missing value from suffix */
 		i++;
 		sscanf (&header->name[i], "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
-		id = GMT_grd_format_decoder (code);
+		header->type = GMT_grd_format_decoder (code);
 		j = (i == 1) ? i : i - 1;
 		header->name[j] = 0;
 	}
+	else if (magic) {	/* Determine file format automatically based on grid content */
+
+		/* First check if we have a netCDF grid */
+		if ((header->type = GMT_is_nc_grid (header->name)) >= 0) return;
+		/* Then check for native GMT grid */
+		if ((header->type = GMT_is_native_grid (header->name)) >= 0) return;
+		/* Next check for Sun raster GMT grid */
+		if ((header->type = GMT_is_ras_grid (header->name)) >= 0) return;
+		/* Then check for Golden Software surfer grid */
+		if ((header->type = GMT_is_srf_grid (header->name)) >= 0) return;
+		/* Then check for NGDC GRD98 GMT grid */
+		if ((header->type = GMT_is_mgg2_grid (header->name)) >= 0) return;
+		/* Then check for AGC GMT grid */
+		if ((header->type = GMT_is_agc_grid (header->name)) >= 0) return;
+
+		fprintf (stderr, "Could not determine grid type of file %s\n", header->name);
+		exit (EXIT_FAILURE);
+	}
 	else {			/* Get format type, scale, offset and missing value from gmtdefs.grid_format */
 		sscanf (gmtdefs.grid_format, "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
-		id = GMT_grd_format_decoder (code);
+		header->type = GMT_grd_format_decoder (code);
 	}
-
-	return (id);
 }
-#endif
+
 int GMT_grd_data_size (int format, double *nan_value)
 {
 	/* Determine size of data type and set NaN value, if not yet done so (integers only) */
@@ -544,7 +520,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	int r_w;
 	int cdf_mode[3] = { NC_NOWRITE, NC_WRITE, NC_WRITE};
 	char *bin_mode[3] = { "rb", "rb+", "wb"};
-	BOOLEAN header = TRUE;
+	BOOLEAN header = TRUE, magic = TRUE;
 	EXTERN_MSC int GMT_nc_grd_info (struct GRD_HEADER *header, char job);
 	 
 	if (mode == 'r' || mode == 'R') {	/* Open file for reading */
@@ -553,11 +529,11 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	}
 	else if (mode == 'W') {
 		r_w = 2;
-		header = FALSE;
+		header = magic = FALSE;
 	}
 	else
 		r_w = 1;
- 	G->header.type = GMT_grd_get_format (file, &G->header);
+ 	GMT_grd_get_format (file, &G->header, magic);
 	if (GMT_is_dnan(G->header.z_scale_factor))
 		G->header.z_scale_factor = 1.0;
 	else if (G->header.z_scale_factor == 0.0) {
