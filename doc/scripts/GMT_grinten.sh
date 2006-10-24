@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_grinten.sh,v 1.3 2004-04-13 21:32:27 pwessel Exp $
+#	$Id: GMT_grinten.sh,v 1.4 2006-10-24 01:53:19 remko Exp $
 #
 
-pscoast -Rg -JV180/4i -Bg30/g15 -Dc -Glightgray -A10000 -W0.25p -P > GMT_grinten.ps
+pscoast -Rg -JV180/4i -Bg30/g15 -Dc -Glightgray -A10000 -Wthinnest -P > GMT_grinten.ps

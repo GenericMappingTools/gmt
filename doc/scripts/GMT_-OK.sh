@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_-OK.sh,v 1.5 2005-10-25 20:33:03 remko Exp $
+#	$Id: GMT_-OK.sh,v 1.6 2006-10-24 01:53:19 remko Exp $
 #
 
 psxy -R0/2.7/0/2.5 -Jx1i -K -L -M -N -P << EOF > GMT_-OK.ps
@@ -13,20 +13,20 @@ psxy -R0/2.7/0/2.5 -Jx1i -K -L -M -N -P << EOF > GMT_-OK.ps
 1	1.9
 1	2.1
 0	2.1
-> -W1p
+> -Wthick
 0	1.2
 1	1.2
 1	2.1
 0	2.1
 EOF
-pstext -R -Jx -O -K -N << EOF >> GMT_-OK.ps
+pstext -R -J -O -K -N << EOF >> GMT_-OK.ps
 0.5	2.3	9	0	0	CM	1-part PostScript file
 0.5	2.0	10	0	1	CM	HEADER
 0.5	1.65	10	0	1	CM	BODY@-1@-
 0.5	1.3	10	0	1	CM	TRAILER
 EOF
 
-psxy -R -Jx -X1.3i -O -K -L -M -N << EOF >> GMT_-OK.ps
+psxy -R -J -X1.3i -O -K -L -M -N << EOF >> GMT_-OK.ps
 > -G200
 0	0.8
 1	0.8
@@ -37,21 +37,21 @@ psxy -R -Jx -X1.3i -O -K -L -M -N << EOF >> GMT_-OK.ps
 1	1.9
 1	2.1
 0	2.1
-> -W1p
+> -Wthick
 0	0.6
 1	0.6
 1	1.3
 0	1.3
-> -W1p
+> -Wthick
 0	1.4
 1	1.4
 1	2.1
 0	2.1
-> -W1p
+> -Wthick
 0.5	1.3
 0.5	1.4
 EOF
-pstext -R -Jx -O -K -N << EOF >> GMT_-OK.ps
+pstext -R -J -O -K -N << EOF >> GMT_-OK.ps
 0.5	2.3	9	0	0	CM	2-part PostScript file
 0.5	2.0	10	0	1	CM	HEADER
 0.5	1.65	10	0	1	CM	BODY@-1@-
@@ -61,7 +61,7 @@ pstext -R -Jx -O -K -N << EOF >> GMT_-OK.ps
 0.5	0.7	10	0	1	CM	TRAILER
 EOF
 
-psxy -R -Jx -X2.35i -O -K -M -L -N << EOF >> GMT_-OK.ps
+psxy -R -J -X2.35i -O -K -M -L -N << EOF >> GMT_-OK.ps
 > -G200
 0	0.2
 1	0.2
@@ -72,29 +72,29 @@ psxy -R -Jx -X2.35i -O -K -M -L -N << EOF >> GMT_-OK.ps
 1	1.9
 1	2.1
 0	2.1
-> -W1p
+> -Wthick
 0	0.0
 1	0.0
 1	0.7
 0	0.7
-> -W1p
+> -Wthick
 0	0.8
 1	0.8
 1	1.3
 0	1.3
-> -W1p
+> -Wthick
 0	1.4
 1	1.4
 1	2.1
 0	2.1
-> -W1p
+> -Wthick
 0.5	1.3
 0.5	1.4
-> -W1p
+> -Wthick
 0.5	0.7
 0.5	0.8
 EOF
-pstext -R -Jx -O -N << EOF >> GMT_-OK.ps
+pstext -R -J -O -N << EOF >> GMT_-OK.ps
 0.5	2.3	9	0	0	CM	n-part PostScript file
 0.5	2.0	10	0	1	CM	HEADER
 0.5	1.65	10	0	1	CM	BODY@-1@-
