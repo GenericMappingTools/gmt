@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.50 2006-10-23 05:53:58 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.51 2006-10-24 20:26:13 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -754,7 +754,7 @@ int GMT_is_native_grid (char *file)
 		case 4:	/* 4-byte elements - could be int or float */
 			/* See if we can decide it is a float grid */
 			if ((header.z_scale_factor == 1.0 && header.z_add_offset == 0.0) || 
-				fabs(header.z_min - rint(header.z_min)) > GMT_CONV_LIMIT || fabs(header.z_max - rint(header.z_max) > GMT_CONV_LIMIT))
+				fabs((header.z_min/header.z_scale_factor) - rint(header.z_min/header.z_scale_factor)) > GMT_CONV_LIMIT || fabs((header.z_max/header.z_scale_factor) - rint(header.z_max/header.z_scale_factor) > GMT_CONV_LIMIT))
 				return (GMT_grd_format_decoder ("bf"));
 			else
 				return (GMT_grd_format_decoder ("bi"));
