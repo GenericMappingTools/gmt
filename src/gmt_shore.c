@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.22 2006-10-24 16:42:48 pwessel Exp $
+ *	$Id: gmt_shore.c,v 1.23 2006-10-24 17:47:17 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1001,7 +1001,7 @@ BOOLEAN shore_getpathname (char *name, char *path) {
 
 	sprintf (dir, "%s%cshare%ccoastline.conf", GMTHOME, DIR_DELIM, DIR_DELIM);
 	found = shore_conffile (name, dir, path);
-
+	
 	return (found);
 }
 
@@ -1020,8 +1020,7 @@ BOOLEAN shore_conffile (char *name, char *dir, char *path) {
 		}
 	}
 	else {	/* There is no coastline.conf file to use; we're out of luck */
-		fprintf (stderr, "%s: Error: No configuration file %s available!\n", GMT_program, dir);
-		exit (EXIT_FAILURE);
+		return (FALSE);
 	}
 
 	/* We get here if coastline.conf exists - search among its directories for the named file */
