@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.21 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: gmt_shore.c,v 1.22 2006-10-24 16:42:48 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -951,11 +951,27 @@ BOOLEAN shore_getpathname (char *name, char *path) {
 	/* Prepends the appropriate directory to the file name
 	 * and returns TRUE if file is readable. */
 	 
-	BOOLEAN found;
+	BOOLEAN found = FALSE;
+	BOOLEAN shore_conffile (char *name, char *dir, char *path);
 	char dir[BUFSIZ];
-	FILE *fp;
 
-	/* First check the $GMTHOME/share/coast directory */
+	/* This is the order of checking:
+	 * 1. Is there a GMT_USERDIR with a coastline.conf in it? If so use its information
+	 * 2. Look in GMTHOME/share/coast
+	 * 3. Look in GMTHOME/share (backward check)
+	 * 4. Look for GMTHOME/share/coastline.conf and use its information
+	 * 5. Give up
+	 */
+	 
+	/* 1. First check the $GMT_USERDIR directory */
+	
+	if (GMT_USERDIR) {		/* See if we have a GMT_USERDIR with a coastline.conf */
+		sprintf (dir, "%s%ccoastline.conf", GMT_USERDIR, DIR_DELIM);
+		found = shore_conffile (name, dir, path);
+		if (found) return (TRUE);
+	}
+	
+	/* 2. Then check the $GMTHOME/share/coast directory */
 
 	sprintf (path, "%s%cshare%ccoast%c%s", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, name);
 	if (!access (path, R_OK)) return (TRUE);	/* File exists and is readable, return with name */
@@ -966,7 +982,8 @@ BOOLEAN shore_getpathname (char *name, char *path) {
 		fprintf (stderr, "%s: Error: GMT does not have permission to open %s!\n", GMT_program, path);
 		exit (EXIT_FAILURE);
 	}
-	/* Nothing in share/coast; do a backwards-compatible check in the $GMTHOME/share directory */
+	
+	/* 3. Nothing in share/coast; do a backwards-compatible check in the $GMTHOME/share directory */
 
 	sprintf (path, "%s%cshare%c%s", GMTHOME, DIR_DELIM, DIR_DELIM, name);
 	if (!access (path, R_OK)) return (TRUE);	/* File exists and is readable, return with name */
@@ -978,11 +995,24 @@ BOOLEAN shore_getpathname (char *name, char *path) {
 		exit (EXIT_FAILURE);
 	}
 
-	/* File is not there.  Thus, we check if a coastline.conf file exists
+	/* 4. File is not there.  Thus, we check if a coastline.conf file exists
 	 * It is not an error if we cannot find the named file, only if it is found
 	 * but cannot be read due to permission problems */
 
 	sprintf (dir, "%s%cshare%ccoastline.conf", GMTHOME, DIR_DELIM, DIR_DELIM);
+	found = shore_conffile (name, dir, path);
+
+	return (found);
+}
+
+BOOLEAN shore_conffile (char *name, char *dir, char *path) {
+	BOOLEAN found = FALSE;
+	FILE *fp;
+	
+	/* Given the dir of a coastline.conf file, look to see if it can be found/read,
+	 * and if so return the directory given.
+	 */
+	 
 	if (!access (dir, F_OK))  { /* File exists... */
 		if (access (dir, R_OK)) {	/* ...but cannot be read */
 			fprintf (stderr, "%s: Error: GMT does not have permission to open %s!\n", GMT_program, dir);
@@ -1019,7 +1049,6 @@ BOOLEAN shore_getpathname (char *name, char *path) {
 	}
 
 	fclose (fp);
-
+	
 	return (found);
 }
-

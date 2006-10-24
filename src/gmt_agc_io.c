@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.7 2006-10-23 03:35:57 pwessel Exp $
+/*      $Id: gmt_agc_io.c,v 1.8 2006-10-24 16:42:48 pwessel Exp $
  *
  * Based on original code from Robert Helie.  That code was hard-wired
  * in two applications (gmt2agcgrd.c and agc2gmtgrd.c) based on GMT 3.4.
@@ -60,7 +60,7 @@ int GMT_is_agc_grid (char *file)
 	x_inc = recdata[5];
 	nx = GMT_get_n (x_min, x_max, x_inc, 0);
 	ny = GMT_get_n (y_min, y_max, y_inc, 0);
-	predicted_size = ceil (ny /ZBLOCKHEIGHT) * ceil (nx / ZBLOCKWIDTH) * ZBLOCKHEIGHT * ZBLOCKWIDTH * sizeof (float);
+	predicted_size = irint (ceil (ny /ZBLOCKHEIGHT) * ceil (nx / ZBLOCKWIDTH)) * ZBLOCKHEIGHT * ZBLOCKWIDTH * sizeof (float);
 	if (predicted_size == buf.st_size) return (GMT_grd_format_decoder ("af"));
 	return (-1);
 }
