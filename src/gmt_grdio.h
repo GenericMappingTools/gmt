@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.31 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: gmt_grdio.h,v 1.32 2006-10-24 21:03:28 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,7 +43,7 @@ EXTERN_MSC void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *
 EXTERN_MSC int GMT_grd_format_decoder (const char *code);
 EXTERN_MSC void GMT_decode_grd_h_info (char *input, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_grd_RI_verify (struct GRD_HEADER *h, int mode);
-EXTERN_MSC int GMT_grd_get_format (char *file, struct GRD_HEADER *header);
+EXTERN_MSC void GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic);
 
 /* These are pointers to the various functions and are set in GMT_grdio_init() */
 

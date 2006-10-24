@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.49 2006-06-20 13:45:26 remko Exp $
+ *	$Id: gmt_nc.c,v 1.50 2006-10-24 21:03:28 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -55,6 +55,24 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job);
 int GMT_nc_get_att_text (int ncid, int varid, char *name, char *text, size_t textlen);
 void GMT_nc_get_units (int ncid, int varid, char *name_units);
 void GMT_nc_put_units (int ncid, int varid, char *name_units);
+
+int GMT_is_nc_grid (char *file)
+{	/* Returns type 18 (=nf) for new NetCDF grid,
+	   type 10 (=cf) for old NetCDF grids and -1 upon error */
+	int ncid, i = 0;
+	char name[GMT_LONG_TEXT];
+
+	/* Strip off '?' suffix */
+	strcpy (name, file);
+	while (name[i] && name[i] != '?') i++;
+	if (name[i]) name[i] = '\0';
+
+	/* Open the file and check for a sign of old GMT grid */
+	if (nc_open (name, NC_NOWRITE, &ncid)) return (-1);
+	i = (nc_inq_dimid (ncid, "xysize", &i)) ? 18 : 10;
+	nc_close (ncid);
+	return (i);
+}
 
 int GMT_nc_read_grd_info (struct GRD_HEADER *header)
 {
