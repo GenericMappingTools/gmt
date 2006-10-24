@@ -1,5 +1,5 @@
-/*	$Id: submeca.c,v 1.3 2001-04-02 15:51:23 pwessel Exp $	*/
-#include <gmt.h>
+/*	$Id: submeca.c,v 1.4 2006-10-24 20:01:09 pwessel Exp $	*/
+#include "gmt.h"
 #include "meca.h"
 
 #define PIDEG 180

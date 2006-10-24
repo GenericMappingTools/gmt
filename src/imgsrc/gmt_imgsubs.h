@@ -1,4 +1,4 @@
-/* $Id: gmt_imgsubs.h,v 1.2 2006-04-11 22:33:41 pwessel Exp $
+/* $Id: gmt_imgsubs.h,v 1.3 2006-10-24 20:01:09 pwessel Exp $
  *
  * gmt_imgsubs.h -- header file supporting the GMT supplement imgsrc,
  * handling coordinate conversions for the "img" files created by
@@ -19,7 +19,7 @@
  *
  */
 
-#include "../gmt.h"
+#include "gmt.h"
 
 /* The following values are used to initialize the default values
 	controlling the range covered by the img file and the size 
