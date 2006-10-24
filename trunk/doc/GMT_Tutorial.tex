@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Tutorial.tex,v 1.38 2006-10-24 01:53:19 remko Exp $
+%       $Id: GMT_Tutorial.tex,v 1.39 2006-10-24 16:02:29 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2006.
@@ -23,7 +23,7 @@
 \ifpdf
 %  \usepackage[pdftex, linkbordercolor={1 1 0}, bookmarksnumbered=true,
 %  boolmarksopenlevel=3, urlbordercolor={1 0 0}]{hyperref}
-  \usepackage[pdftex]{hyperref}
+  \usepackage[pdftex,linkcolor={0 0 1}]{hyperref}
   \pdfcompresslevel=9
   \DeclareGraphicsExtensions{.pdf}
 
@@ -31,7 +31,7 @@
     pdftitle={The Generic Mapping Tools Version 4---A Map-making Tutorial},
     pdfauthor={Paul Wessel,  Walter H. F. Smith},
     pdfkeywords={GMT, projections, mapping},
-    book,arksopen=true,
+    bookmarksopen=true,
     bookmarksnumbered,
     %pdfstartview={FitH},
     %linkbordercolor={1 1 0},
@@ -1191,13 +1191,23 @@ and DEM for the continental US.  Here, we will use \GMTprog{grdraster}
 to extract a \GMT-ready grid that we will next use for contouring:
 
 \begin{verbatim}
-grdraster 1 -R-66/-60/30/35 -Gbermuda.grd -V
+grdraster 1 -R-66/-60/30/35 -Gbermuda.nc -V
 \end{verbatim} 
+
+Here we use the file extension \filename{.nc} instead of the generic \filename{.grd}
+to indicate that this is a NetCDF file. It is good form, but not essential,
+to use the \filename{.nc} for NetCDF grids. Using that extension will help
+other programs installed on your system to recognize these files and might
+give it an identifiable icon in your file browser.
+Learn about other programs that read NetCDF files at the
+\htmladdnormallinkfoot{NetCDF website}{http://www.unidata.ucar.edu/software/netcdf/software.html}
+You can find \filename{bermuda.nc} also in the \filename{tutorial} directory of you \GMT{}
+installation.  Feel free to open it in any other program and compare results with \GMT.
 
 We first use the \GMT\ program \GMTprog{grdinfo} to see what's in this file:
 
 \begin{verbatim} 
-grdinfo bermuda.grd
+grdinfo bermuda.nc
 \end{verbatim} 
 
 The file contains bathymetry for the Bermuda region and has depth
@@ -1238,7 +1248,7 @@ interval and 250 m as contour interval.  We choose a 7-inch-wide
 Mercator plot and annotate the borders every 2\DS:
 
 \begin{verbatim} 
-grdcontour bermuda.grd -JM7i -C250 -A1000 -P -B2 | ghostview -
+grdcontour bermuda.nc -JM7i -C250 -A1000 -P -B2 | ghostview -
 \end{verbatim}
 
 \subsection{Exercises}
@@ -1335,8 +1345,8 @@ The most important switches are listed in Table~\ref{tbl:nearneighbor}.
 \end{table} 
 
 We will grid the data in the file \filename{ship.xyz} which contains
-ship observations of bathymetry off Baja California.  We desire to
-make a 5' by 5' grid.  Running \GMTprog{minmax} on the file yields
+ship observations of bathymetry off Baja California.
+We desire to make a 5' by 5' grid.  Running \GMTprog{minmax} on the file yields
 
 \begin{verbatim}
 ship.xyz: N = 82970     <245/254.705>   <20/29.99131>   <-7708/-9>
@@ -1345,14 +1355,17 @@ ship.xyz: N = 82970     <245/254.705>   <20/29.99131>   <-7708/-9>
 so we choose the region accordingly:
 
 \begin{verbatim}
-nearneighbor -R245/255/20/30 -I5m -S40k -Gship.grd -V ship.xyz
+nearneighbor -R245/255/20/30 -I5m -S40k -Gship.nc -V ship.xyz
 \end{verbatim} 
 
 We may get a view of the contour map using
 
 \begin{verbatim} 
-grdcontour ship.grd -JM6i -P -B2 -C250 -A1000 | ghostview -
+grdcontour ship.nc -JM6i -P -B2 -C250 -A1000 | ghostview -
 \end{verbatim} 
+
+Since the grid \filename{ship.nc} is stored in NetCDF format that is supported by a host of other programs,
+you can try one of those as well on the same grid.
 
 \subsubsection{Exercises}
 \index{Exercises|(}
@@ -1439,7 +1452,7 @@ blockmedian -R245/255/20/30 -I5m -V ship.xyz >! ship_5m.xyz
 The output data can now be used with surface:
 
 \begin{verbatim}
-surface ship_5m.xyz -R245/255/20/30 -I5m -Gship.grd -V
+surface ship_5m.xyz -R245/255/20/30 -I5m -Gship.nc -V
 \end{verbatim} 
 
 If you rerun \GMTprog{grdcontour} on the new grid file (try it!)
@@ -1473,7 +1486,7 @@ call to \GMTprog{psmask}.  Here's the recipe:
 
 \begin{verbatim}
 psmask -R245/255/20/30 -I5m ship_5m.xyz -JM6i -B2 -P -K -V >! map.ps
-grdcontour ship.grd -J -O -K -C250 -A1000 >> map.ps
+grdcontour ship.nc -J -O -K -C250 -A1000 >> map.ps
 psmask -C -O >> map.ps
 \end{verbatim}
 
@@ -1495,15 +1508,13 @@ psmask -C -O >> map.ps
 
 In our final session we will concentrate on color images and
 perspective views of gridded data sets.  Before we start that
-discussion we need to cover two important aspects of plotting
+discussion we need to cover three important aspects of plotting
 that must be understood.  These are
 
 \begin{enumerate}
-
 \item Color tables and pseudo-colors in \GMT.
-
 \item Artificial illumination and how it affects colors.
-
+\item Multi-dimensional grids.
 \end{enumerate}
 
 \section{Cpt files}
@@ -1654,9 +1665,11 @@ a color image of a gridded data.  Here, we will extract a subset of the
 global 30" DEM (data id 9) from USGS:
 
 \begin{verbatim}
-grdraster 9 -R-108/-103/35/40 -Gus.grd
+grdraster 9 -R-108/-103/35/40 -Gus.nc
 \end{verbatim}
 
+You can find the grid \filename{us.nc} also in the \filename{tutorial} directory
+of your \GMT{} installation.
 Using \GMTprog{grdinfo} we find that the data ranges from $\sim$1000m to
 \noindent
 $\sim$4300m so we make a cpt file accordingly:
@@ -1686,7 +1699,7 @@ We want to make a plain color map with a color bar superimposed above
 the plot.  We try
 
 \begin{verbatim}
-grdimage us.grd -JM6i -P -B2 -Ctopo.cpt -V -K >! topo.ps
+grdimage us.nc -JM6i -P -B2 -Ctopo.cpt -V -K >! topo.ps
 psscale -D3i/8.5i/5i/0.25ih -Ctopo.cpt -I0.4 -B/:m: -O >> topo.ps
 \end{verbatim}
 
@@ -1730,14 +1743,14 @@ we prefer to use the \Opt{Ne} option; the value of
 0.5--5 range.  For our case we choose
 
 \begin{verbatim}
-grdgradient us.grd -Ne0.8 -A100 -M -Gus_i.grd
+grdgradient us.nc -Ne0.8 -A100 -M -Gus_i.nc
 \end{verbatim}
 
 Given the cpt file and the two gridded data sets we can
 create the shaded relief image:
 
 \begin{verbatim}
-grdimage us.grd -Ius_i.grd -JM6i -P -B2 -Ctopo.cpt -K >! topo.ps
+grdimage us.nc -Ius_i.nc -JM6i -P -B2 -Ctopo.cpt -K >! topo.ps
 psscale -D3i/8.5i/5i/0.25ih -Ctopo.cpt -I0.4 -B/:m: -O >> topo.ps
 \end{verbatim}
 
@@ -1749,6 +1762,61 @@ psscale -D3i/8.5i/5i/0.25ih -Ctopo.cpt -I0.4 -B/:m: -O >> topo.ps
 \item Force a gray-shade image.
 
 \item Rerun \GMTprog{grdgradient} with \Opt{N}1.
+
+\end{enumerate}
+\index{Exercises|)}
+
+\section{Multi-dimensional maps}
+\index{Multi-dimensional maps}
+
+Climate data, like ocean temperatures or atmospheric pressure, are often provided as
+multi-dimensional (3-D or 4-D) grids in NetCDF format. This section will demonstrate
+that \GMT{} is able to plot "horizonal"
+slices (spanning latitude and longitude) of such grids without much effort.
+
+As an example we will download the Seasonal Analysed Mean Temperature from the
+\htmladdnormallinkfoot{World Ocean Atlas 1998}{http://www.cdc.noaa.gov/cdc/data.nodc.woa98.html}.
+The file in question is named 
+\htmladdnormallinkfoot{\filename{otemp.anal1deg.nc}}{ftp://ftp.cdc.noaa.gov/Datasets/nodc.woa98/temperat/seasonal/otemp.anal1deg.nc}.
+
+You can look at the information pertained in this file using the program \progname{ncdump} and
+notice that the variable that we want to plot (otemp) is a four-dimensional variable of time,
+level (i.e., depth), latitude and longitude.
+
+\begin{verbatim}
+ncdump -h otemp.anal1deg.nc
+\end{verbatim}
+
+We will need to make an appropriate color scale, running from -2$^\circ$C (freezing temperature of salt
+water) to 30$^\circ$C (highest likely ocean temperature). We do this as follows:
+
+\begin{verbatim}
+makecpt -Cno_green -T-2/30/2 >! otemp.cpt
+\end{verbatim}
+
+Let us focus on the temperatures in Summer (that is the third season, July through
+September) at sea level (that is the first level). To plot these in a Mollweide projection we
+use:
+
+\begin{verbatim}
+grdimage -Rg -JW180/9i "otemp.anal1deg.nc?otemp[2,0]" -Cotemp.cpt -Bg30 >! otemp.ps
+\end{verbatim}
+
+The addition \filename{?otemp[2,0]} indicates which variable to retreive from the NetCDF
+file (otemp) and that we need the third time step and first level. The numbering of the
+time steps and levels starts at zero, therefore \filename{[2,0]}. Make sure to put the
+whole file name within quotes since the characters \verb|?|, \verb|[| and \verb|]| have
+special meaning in Unix.
+
+\subsection{Exercises}
+\index{Exercises|(}
+
+\begin{enumerate}
+
+\item Plot the temperatures for Spring at 5000 m depth. (Hint: use \filename{ncdump -v level} to
+figure out what level number that is).
+
+\item Include a color scale at the bottom of the plot.
 
 \end{enumerate}
 \index{Exercises|)}
@@ -1812,13 +1880,13 @@ subset of the ETOPO5 data over Bermuda and make a quick-and-dirty
 cpt file:
 
 \begin{verbatim}
-grd2cpt bermuda.grd -Cocean >! bermuda.cpt
+grd2cpt bermuda.nc -Cocean >! bermuda.cpt
 \end{verbatim}
 
 A simple mesh plot can therefore be obtained with
 
 \begin{verbatim}
-grdview bermuda.grd -JM5i -P -JZ2i -E135/30 -B2 -Cbermuda.cpt >! map.ps
+grdview bermuda.nc -JM5i -P -JZ2i -E135/30 -B2 -Cbermuda.cpt >! map.ps
 \end{verbatim}
 
 
@@ -1838,7 +1906,7 @@ We will make a perspective, color-coded view of the US Rockies
 from the southeast.  This is done using
 
 \begin{verbatim}
-grdview us.grd -JM6i -E135/35 -Qi50 -Ius_i.grd -Ctopo.cpt -V -B2 \
+grdview us.nc -JM6i -E135/35 -Qi50 -Ius_i.nc -Ctopo.cpt -V -B2 \
     -JZ0.5i >! view.ps
 \end{verbatim}
 
