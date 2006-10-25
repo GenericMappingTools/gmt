@@ -127,7 +127,7 @@ Alternatively, specify the value associated with that layer using parentheses in
 Since question marks, brackets and parentheses have special meanings on the command line, escape these meanings
 by placing the full filename and suffix between quotes.
 .SH NATIVE BINARY FILES
-For binary native \fBGMT\fP files the size of the \fBGMT\fP grdheader block is \fIhsize\fP = 896 bytes, and the total size of the file
+For binary native \fBGMT\fP files the size of the \fBGMT\fP grdheader block is \fIhsize\fP = 892 bytes, and the total size of the file
 is \fIhsize\fP + \fInx\fP * \fIny\fP * \fIitem_size\fP, where \fIitem_size\fP is the size in bytes of each element (1, 2, 4).  Bit grids
 are stored using 4-byte integers, each holding 32 bits, so for these files the size equation is modified by
 using ceil (\fInx\fP / 32) * 4 instead of \fInx\fP.
