@@ -75,7 +75,7 @@ in steps of (\fIzinc\fP).  [Default chooses arbitrary values by a crazy scheme.]
 .TP
 .B \-T
 Force the color table to be symmetric about zero (from -R to +R). Append flag to set the range R:
-\fB-\fP for R =|zmin|, \fB+\fP for R = |zmax|, \fB=\fP for R = min(|zmin|, |zmax|), or
+\fB-\fP for R =|zmin|, \fB+\fP for R = |zmax|, \fB_\fP for R = min(|zmin|, |zmax|), or
 \fB=\fP for R = max(|zmin|, |zmax|).
 .TP
 .B \-V

@@ -27,7 +27,7 @@ by the full filter \fIwidth\fP in same units as time column. Available convoluti
 .br
 (\fBg\fP) Gaussian: Weights are given by the Gaussian function.
 .br
-(\fBf\fP) Custom: Instead of \fIwidth\fP give name of a one-column file of your own weight coefficients.
+(\fBf\fP) Custom: Instead of \fIwidth\fP give name of a one-column file with your own weight coefficients.
 .br
 Non-convolution filters are:
 .br

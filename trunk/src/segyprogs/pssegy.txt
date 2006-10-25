@@ -116,14 +116,14 @@ locations, clipped at +-3 and with wiggle trace and positive variable area
 shading in black, use
 .br
 .sp
-\fBpssegy\fP wa1.segy \fB\-JX\fP5/\-5 \fB\-R\fP0/100/0/10 \fB\-D\fP1 \fB\-C\fP3 \fB\-N\fP \fB\-S\fPo \fB\-W\fP \fB\-F\fP0 > segy.ps
+\fBpssegy\fP wa1.segy \fB\-JX\fP5/\-5 \fB\-R\fP0/100/0/10 \fB\-D\fP1 \fB\-C\fP3 \fB\-N\fP \fB\-S\fPo \fB\-W\fP \fB\-F\fPblack > segy.ps
 .br
 .sp
 To plot the SEGY file wa1.segy with traces plotted at true cdp*0.1, clipped
 at +-3, with bias -1 and negative variable area shaded red, use
 .br
 .sp
-\fBpssegy\fP wa1.segy \fB\-JX\fP5/\-5 \fB\-R\fP0/100/0/10 \fB\-D\fP1 \fB\-C\fP3 \fB\-S\fPc \fB\-X\fP0.1 \fB\-F\fP255/0/0 \fB\-B\fP\-1 \fB\-I\fP > segy.ps
+\fBpssegy\fP wa1.segy \fB\-JX\fP5/\-5 \fB\-R\fP0/100/0/10 \fB\-D\fP1 \fB\-C\fP3 \fB\-S\fPc \fB\-X\fP0.1 \fB\-F\fPred \fB\-B\fP\-1 \fB\-I\fP > segy.ps
 
 .SH "SEE ALSO"
 .IR GMT (GMTMANSECTION),

@@ -141,6 +141,8 @@ characters and other escape sequences may lead to unfortunate word splitting.
 The \fB\-N\fP option does not adjust the BoundingBox information so you may
 have to post-process the PostScript outout with epstool or ps2epsi to obtain
 a correct BoundingBox.
+.br
+The color change operation in paragraph mode can only handle r/g/b triplets.
 .SH "SEE ALSO"
 .IR GMT (GMTMANSECTION),
 .IR psbasemap (GMTMANSECTION)

@@ -93,7 +93,7 @@ and use black bars, run:
 .br
 .sp
 \fBpshistogram\fP errors.xy \fB\-W\fP1 \fB\-R\fP-10/10/0/0 SCALE
-\fB\-B\fP2:Error:/100:Counts: \fB\-G\fP0 \fB\-T\fP1 \fB\-V\fP > plot.ps
+\fB\-B\fP2:Error:/100:Counts: \fB\-G\fPblack \fB\-T\fP1 \fB\-V\fP > plot.ps
 .br
 .sp
 Since no y-range was specified, pshistogram will calculate ymax in even increments of 100.

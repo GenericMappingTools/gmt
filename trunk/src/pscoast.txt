@@ -138,7 +138,8 @@ To plot a green Africa with white outline on blue background, with permanent maj
 on a Mercator map at scale LEN_1 inch/degree, use
 .br
 .sp
-\fBpscoast\fP \fB\-R\fP-30/30/-40/40 SCALE_M1 \fB\-B\fP5 \fB\-I\fP1/1\fBp\fP/0/0/255 \fB\-I\fP2/0.25\fBp\fP/0/0/255 \fB\-N\fP1/0.25\fBtap\fP \fB\-W\fP0.25\fBp\fP/255/255/255 \fB\-G\fP0/255/0 \fB\-S\fP0/0/255 \fB\-P\fP > africa.ps
+\fBpscoast\fP \fB\-R\fP-30/30/-40/40 SCALE_M1 \fB\-B\fP5 \fB\-I\fP1/1p,blue \fB\-I\fP2/0.25p,blue 
+\fB\-N\fP1/0.25p,- \fB\-W\fP0.25p,white \fB\-G\fPgreen \fB\-S\fPblue \fB\-P\fP > africa.ps
 .br
 .sp
 To plot Iceland using the lava pattern (# 28) at 100 dots per inch, on a Mercator map at scale LEN_2 cm/degree, run

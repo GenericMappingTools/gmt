@@ -139,7 +139,8 @@ plot-title, use a thick red pen for annotated contours, and a thin, dashed, blue
 .br
 .sp
 \fBgrdcontour\fP image.grd \fB\-Jx\fP0.1\fBc\fP/50.0\fBc\fP \fB\-C\fPcont.d \fB\-S\fP4 \fB\-B\fP20/0.1:."RMS Misfit":
-\fB\-Wa\fP5/255/0/0 \fB\-Wc\fP1/0/0/255\fBta\fP | lp
+\fB\-Wa\fPthick,red \fB\-Wc\fPthinnest,blue,- | lp
+.sp
 The labeling of local highs and lows may plot outside the innermost contour since only the mean value
 of the contour coordinates is used to position the label.
 .SH "SEE ALSO"

@@ -87,7 +87,7 @@ where there is no control data using clip polygons, use:
 The same example but this time we use white tiling:
 .br
 .sp
-\fBpsmask\fP africa_grav.xyg \fB\-R\fP20/40/20/40 \fB\-I\fP5\fBm \-J\fPM10\fBi\fP \fB\-T \-O \-K \-G\fP255 > mask.ps
+\fBpsmask\fP africa_grav.xyg \fB\-R\fP20/40/20/40 \fB\-I\fP5\fBm \-J\fPM10\fBi\fP \fB\-T \-O \-K \-G\fPwhite > mask.ps
 .SH "SEE ALSO"
 .IR GMT (GMTMANSECTION),
 .IR grdmask (GMTMANSECTION),
