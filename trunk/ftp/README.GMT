@@ -1,8 +1,8 @@
-	$Id: README.GMT,v 1.14 2006-05-27 02:27:42 pwessel Exp $
+	$Id: README.GMT,v 1.15 2006-10-25 21:56:22 pwessel Exp $
 
 Dear potential GMT users-
 
-Version 4.1.3 of GMT has recently been released.
+Version 4.1.4 of GMT has recently been released.
 GMT can be installed under Unix or Windows.
 
 For new installers of GMT under a Unix-like OS:
@@ -12,16 +12,7 @@ is to interact with the GMT web page install form at
 gmt.soest.hawaii.edu.  Filling out the form will
 return to you a parameter file that you may use with
 the install script that you can download from the same
-install page.  Alternatively, send mail to
-
-	listproc@hawaii.edu
-	
-with the single message
-
-information gmt-group
-
-You will then receive instructions for automatic file-retrieval
-and installation.
+install page.
 
 Should you want to ftp the old-fashioned way then the files
 you will need are (both .bz2 and .gz versions are available):
@@ -33,7 +24,7 @@ install_gmt		Bourne shell install script
 
 In addition, you may want
 
-GMT_pdf.tar.bz2		PDF documentation and Unix man pages
+GMT_pdf.tar.bz2		PDF documentation and Unix PDF man pages
 GMT_man.tar.bz2		Unix man pages for GMT
 GMT_web.tar.bz2		HTML versions of all documentation
 GMT_tut.tar.bz2		Tutorial data sets

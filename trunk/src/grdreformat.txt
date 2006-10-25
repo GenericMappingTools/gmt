@@ -132,7 +132,8 @@ is \fIhsize\fP + \fInx\fP * \fIny\fP * \fIitem_size\fP, where \fIitem_size\fP is
 are stored using 4-byte integers, each holding 32 bits, so for these files the size equation is modified by
 using ceil (\fInx\fP / 32) * 4 instead of \fInx\fP.
 Note that these files are platform-dependent. Files written on Little Endian machines (e.g. PCs) can not be
-read on Big Endian machines (e.g. most workstations).
+read on Big Endian machines (e.g. most workstations).  Also note that it is not possible for \fBGMT\fP to determine uniquely
+if a 4-byte grid is float or int; in such cases it is best to use the \fI=ID\fP mechanism to specify the file format.
 For header and grid details, see Appendix B.
 #include "explain_float.txt"
 .SH EXAMPLES
