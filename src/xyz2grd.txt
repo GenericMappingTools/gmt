@@ -80,7 +80,7 @@ one of several data types (all binary except \fBa\fP):
 .br
 	\fBi\fP  4-byte integer
 .br
-	\fBl\fP  long (4- or 8-byte) integer [Architecture-dependent!]
+	\fBl\fP  long (4- or 8-byte) integer [architecture-dependent!]
 .br
 	\fBf\fP  4-byte floating point single precision
 .br
