@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.11 2006-10-25 01:35:07 pwessel Exp $
+#	$Id: Makefile,v 1.12 2006-10-25 02:25:10 pwessel Exp $
 #
 #		Makefile for GMT spotter supplements
 #
@@ -18,7 +18,6 @@
 #-------------------------------------------------------------------------------
 include ../makegmt.macros
 GMTSRCDIR	= ../
-GMTLIBDIR	= ../
 include ../gmtalldeps.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
@@ -76,7 +75,7 @@ libspotter.o:	$(SPOT_H)
 #-------------------------------------------------------------------------------
 
 $(SPOT):	libspotter.a $(SPOT_O) $(GMTLIB)
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lspotter -L.. -L$(libdir) -lgmt -lpsl $(CDF) $(LIBS) -o $@
+		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lspotter -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
 
 .c.o:
 		$(CC) -c $(CFLAGS) $<

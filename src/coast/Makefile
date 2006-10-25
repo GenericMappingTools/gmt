@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.11 2006-05-03 04:42:16 pwessel Exp $
+#	$Id: Makefile,v 1.12 2006-10-25 02:25:10 pwessel Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -23,6 +23,8 @@
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
 include $(GMTHOME)/src/makegmt.macros
+GMTSRCDIR	= ../
+include ../gmtalldeps.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf
@@ -255,8 +257,8 @@ coast.o:	$(COAST_H)
 #	program dependencies
 #-------------------------------------------------------------------------------
 
-$(COAST):	libcoast.a $(COAST_O)
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lcoast -L.. -L$(libdir) -lgmt -lpsl $(CDF) $(LIBS) -o $@
+$(COAST):	libcoast.a $(COAST_O) $(GMTLIB)
+		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lcoast -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
 
 .c.o:
 		$(CC) -c $(CFLAGS) $<

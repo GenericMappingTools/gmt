@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.26 2006-10-25 01:35:07 pwessel Exp $
+#	$Id: Makefile,v 1.27 2006-10-25 02:25:10 pwessel Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -18,7 +18,6 @@
 #-------------------------------------------------------------------------------
 include ../makegmt.macros
 GMTSRCDIR	= ../
-GMTLIBDIR	= ../
 include ../gmtalldeps.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
@@ -26,7 +25,9 @@ CDF	= -L$(NETCDF)/lib -lnetcdf
 
 MGD77_H	= mgd77.h mgd77defaults.h mgd77_IGF_coeffs.h mgd77sniffer.h mgd77snifferdefaults.h mgd77magref.h
 
-MGD77_C	= mgd77convert.c mgd77info.c mgd77list.c mgd77path.c mgd77manage.c mgd77sniffer.c mgd77track.c
+MGD77_C	= mgd77convert.c mgd77info.c mgd77list.c mgd77path.c mgd77manage.c mgd77sniffer.c
+
+MGD77PS_C	= mgd77track.c
 
 LIB_C	= mgd77.c
 LIB_H	= mgd77.h mgd77defaults.h
@@ -36,18 +37,23 @@ LIB_O	= $(LIB_C:.c=.o)
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-MGD77_O	= $(MGD77_C:.c=.o)
+MGD77_O		= $(MGD77_C:.c=.o)
 
-MGD77	= $(MGD77_C:.c=)
+MGD77		= $(MGD77_C:.c=)
+
+MGD77PS_O	= $(MGD77PS_C:.c=.o)
+
+MGD77PS		= $(MGD77PS_C:.c=)
 
 all:		libmgd77.a $(MGD77)
 $(MGD77_O):	$(MGD77_H) $(GMT_H)
+$(MGD77PS_O):	$(MGD77_H) $(GMT_H) $(PS_H)
 $(LIB_O):	$(LIB_H)
 
 #-------------------------------------------------------------------------------
 
 install:	all
-		for i in $(MGD77); do \
+		for i in $(MGD77) $(MGD77PS); do \
 			$(INSTALL) $$i$(EXE) $(bindir); \
 		done
 		if [ ! -d $(includedir) ]; then \
@@ -69,7 +75,7 @@ install:	all
 		fi
 
 uninstall:
-		for i in $(MGD77); do \
+		for i in $(MGD77) $(MGD77PS); do \
 			\rm -f $(bindir)/$$i$(EXE); \
 		done
 		if [ ! $(includedir) = $(srcdir) ]; then \
@@ -86,7 +92,7 @@ uninstall:
 
 clean:
 		rm -f *.o
-		for i in $(MGD77); do \
+		for i in $(MGD77) $(MGD77PS); do \
 			rm -f $$i$(EXE); \
 		done
 
@@ -108,6 +114,9 @@ libmgd77.a:	mgd77.o
 #-------------------------------------------------------------------------------
 
 $(MGD77):	$(MGD77_O) libmgd77.a $(GMTLIB)
+		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lmgd77 -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
+
+$(MGD77PS):	$(MGD77PS_O) libmgd77.a $(GMTLIB)
 		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lmgd77 -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
 
 .c.o:
