@@ -20,12 +20,17 @@ If the master cpt file includes B, F, and N entries, these will be copied into t
 If not, the parameters \fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\fP from
 the .gmtdefaults4 file or the command line will be used. This default behavior can be overruled
 using the options OPT(D), OPT(M) or OPT(N).
+.br
+The color model (RGB, HSV or CMYK) of the palette created by \fBmakecpt\fP will be the same as
+specified in the header of the master cpt file. When there is no \fBCOLOR_MODEL\fP entry in the
+master cpt file, the \fBCOLOR_MODEL\fP specified in the .gmtdefaults4 file or on the command line
+will be used.
 .SH OPTIONS
 .TP
 .B \-C
 Selects the master color table \fItable\fP to use in the interpolation.
 Choose among the built-in tables (type \fBmakecpt\fP to see the list) or
-give the name of an existing cptfile [Default gives a rainbow cpt file].
+give the name of an existing cpt file [Default gives a rainbow cpt file].
 .TP
 .B \-D
 Select the colors for lowest and highest \fIz\fP-values in the output cpt file
@@ -34,7 +39,7 @@ the colors specified in the master file, or those defined by
 the parameters \fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\fP].
 .TP
 .B \-I
-Reverses the sense of color progression in the master cptfile.
+Reverses the sense of color progression in the master cpt file.
 Also exchanges the foreground and background colors, including those specified by
 the parameters \fBCOLOR_BACKGROUND\fP and \fBCOLOR_FOREGROUND\fP.
 .TP
@@ -53,9 +58,9 @@ expects input z-values to be log10(z), assigns colors, and writes out z
 [Default].  \fB\-Qo\fP takes log10(z) first, assigns colors, and writes out z.
 .TP
 .B \-T
-Defines the range of the new cptfile by giving the lowest and highest z-value
+Defines the range of the new cpt file by giving the lowest and highest z-value
 and the interval.  Alternatively, give the name of a ASCII file that has one
-z-value per record.  If not given, the existing range in the master cptfile
+z-value per record.  If not given, the existing range in the master cpt file
 will be used intact.
 #include "explain_-V.txt"
 .TP

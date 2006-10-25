@@ -8,14 +8,14 @@ grd2cpt \- Read a grdfile and make a color palette file
 [ OPT(S)\fIzstart/zstop/zinc\fP ] [ OPT(T)\fB-\fP|\fB+\fP|\fB_\fP|\fB=\fP ] [ GMT_V_OPT ] [ OPT(Z) ]
 .SH DESCRIPTION
 \fBgrd2cpt\fP reads a grdfile and writes a color palette (cpt) file to
-standard output.  The cpt file is based on an existing master cptfile of
+standard output.  The cpt file is based on an existing master cpt file of
 your choice, and the mapping from data value to colors is through the
 data's cumulative distribution function (CDF), so that the colors are\"'
 histogram equalized.  Thus if the resulting cpt file is used with the
 grdfile and grdimage with a linear projection, the colors will be uniformly
 distributed in area on the plot.  Let z be the data values in the grdfile. 
 Define CDF(Z) = (# of z < Z) / (# of z in grdfile).  (NaNs are ignored).
-These z-values are then normalized to the master cptfile and colors are
+These z-values are then normalized to the master cpt file and colors are
 sampled at the desired intervals.
 .br
 The color palette includes three additional colors beyond the range of z-values. These are
@@ -27,6 +27,11 @@ If the master cpt file includes B, F, and N entries, these will be copied into t
 If not, the parameters \fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\fP from
 the .gmtdefaults4 file or the command line will be used. This default behavior can be overruled
 using the options OPT(D), OPT(M) or OPT(N).
+.br
+The color model (RGB, HSV or CMYK) of the palette created by \fBmakecpt\fP will be the same as
+specified in the header of the master cpt file. When there is no \fBCOLOR_MODEL\fP entry in the
+master cpt file, the \fBCOLOR_MODEL\fP specified in the .gmtdefaults4 file or on the command line
+will be used.
 .TP
 \fIgrdfile\fP
 The 2-D binary grdfile used to derive the color palette table.
@@ -35,7 +40,7 @@ The 2-D binary grdfile used to derive the color palette table.
 .B \-C
 Selects the master color table to use in the interpolation.  Choose among
 the built-in tables (type \fBgrd2cpt\fP to see the list) or give the
-name of an existing cptfile [Default gives a rainbow cpt file].
+name of an existing cpt file [Default gives a rainbow cpt file].
 .TP
 .B \-D
 Select the colors for lowest and highest \fIz\fP-values in the output cpt file
@@ -47,12 +52,12 @@ the parameters \fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\
 Create a linear color table by dividing the grid z-range into \fInlevels\fP equidistant slices.
 .TP
 .B \-I
-Reverses the sense of color progression in the master cptfile.
+Reverses the sense of color progression in the master cpt file.
 Also exchanges the foreground and background colors, including those specified by
 the parameters \fBCOLOR_BACKGROUND\fP and \fBCOLOR_FOREGROUND\fP.
 .TP
 .B \-L
-Limit range of cptfile to \fIminlimit/maxlimit\fP, and don't count data\"'
+Limit range of cpt file to \fIminlimit/maxlimit\fP, and don't count data\"'
 outside range when estimating CDF(Z).  [Default uses min and max of data.] 
 .TP
 .B \-M
@@ -70,7 +75,7 @@ Selects a logarithmic interpolation scheme [Default is linear].  \fB\-Qi\fP expe
 #include "explain_-R.txt"
 .TP
 .B \-S
-Set steps in cpt file.  Calculate entries in cptfile from \fIzstart\fP to \fIzstop\fP
+Set steps in cpt file.  Calculate entries in cpt file from \fIzstart\fP to \fIzstop\fP
 in steps of (\fIzinc\fP).  [Default chooses arbitrary values by a crazy scheme.]
 .TP
 .B \-T
@@ -95,7 +100,7 @@ CDF(Z) curve (use \fB\-V\fP option to see more):
 .br
 .sp
 To make a cpt file with entries from 0 to 200 in steps of 20, and ignore
-data below zero in computing CDF(Z), and use the built-in master cptfile
+data below zero in computing CDF(Z), and use the built-in master cpt file
 relief, run
 .br
 .sp
