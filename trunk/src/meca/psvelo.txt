@@ -214,8 +214,8 @@ in red.  Note that the 39% confidence scaling will give an ellipse which
 fits inside a rectangle of dimension Esig by Nsig.
 .br
 .sp
-\fBpsvelo\fP << END \fB\-H\fP2 \fB\-R\fP-10/10/-10/10 \fB\-W\fP0.25p,red \\
-\fB\-G\fPgreen \fB\-L\fP \fB\-Se\fP0.2/0.39/18 \fB\-B\fP1g1 \fB\-Jx\fP0.4/0.4 \\
+\fBpsvelo\fP << END \fB\-H\fP2 \fB\-R\fP-10/10/-10/10 \fB\-W\fP0.25p,red
+\fB\-G\fPgreen \fB\-L\fP \fB\-Se\fP0.2/0.39/18 \fB\-B\fP1g1 \fB\-Jx\fP0.4/0.4
 \fB\-A\fP0.1/0.3/0.3 \fB\-P\fP \fB\-V\fP  >! test.ps
 .br
   Long.   Lat.   Evel   Nvel   Esig   Nsig  CorEN SITE
@@ -242,7 +242,7 @@ dark gray, with light gray wedges to represent the 2-sigma
 uncertainties.
 .br
 .sp
-\fBpsvelo\fP <<END \fB\-Sw\fP0.4/1.e7 \fB\-W\fP0.75p \fB\-G\fPdarkgray \fB\-E\fPlightgray \fB\-H\fP1 \fB\-D\fP2 \\
+\fBpsvelo\fP <<END \fB\-Sw\fP0.4/1.e7 \fB\-W\fP0.75p \fB\-G\fPdarkgray \fB\-E\fPlightgray \fB\-H\fP1 \fB\-D\fP2
 \fB\-Jm\fP2.2 \fB\-R\fP240./243./32.5/34.75 \fB\-B\fPf10ma60m/WeSn \fB\-P\fP >! test.ps
 .br
  lon     lat    spin(rad/yr) spin_sigma (rad/yr)
