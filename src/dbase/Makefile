@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.4 2001-04-11 19:58:09 pwessel Exp $
+#	$Id: Makefile,v 1.5 2006-10-25 01:35:06 pwessel Exp $
 #
 #	makefile for dbase directory
 #
@@ -7,6 +7,9 @@
 #----------------- stop here - nothing to edit ------------------
 
 include ../makegmt.macros
+GMTSRCDIR	= ../
+GMTLIBDIR	= ../
+include ../gmtalldeps.macros
 
 CDF		= -L$(NETCDF)/lib -lnetcdf
 CFLAGS		= $(CC_OPT) $(WIN32) $(SWAP) -I$(srcdir) -I$(NETCDF)/include
@@ -19,7 +22,7 @@ install:	all
 uninstall:
 		\rm -f $(bindir)/grdraster$(EXE)
 
-grdraster:	grdraster.o
+grdraster:	grdraster.o $(GMTLIB)
 		$(CC) $(CFLAGS) $(LDFLAGS) grdraster.o -L.. -L$(libdir) -lgmt -lpsl $(CDF) $(LIBS) -o grdraster
 
 spotless:	clean
@@ -27,5 +30,5 @@ spotless:	clean
 clean:	
 		rm -f *.o grdraster$(EXE)
 
-.c.o:
+.c.o:		$(GMT_H)
 		$(CC) -c $(CFLAGS) $<

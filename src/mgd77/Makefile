@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.25 2006-10-06 17:19:36 pwessel Exp $
+#	$Id: Makefile,v 1.26 2006-10-25 01:35:07 pwessel Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -17,6 +17,9 @@
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
 include ../makegmt.macros
+GMTSRCDIR	= ../
+GMTLIBDIR	= ../
+include ../gmtalldeps.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf
@@ -38,7 +41,7 @@ MGD77_O	= $(MGD77_C:.c=.o)
 MGD77	= $(MGD77_C:.c=)
 
 all:		libmgd77.a $(MGD77)
-$(MGD77_O):	$(MGD77_H)
+$(MGD77_O):	$(MGD77_H) $(GMT_H)
 $(LIB_O):	$(LIB_H)
 
 #-------------------------------------------------------------------------------
@@ -104,7 +107,7 @@ libmgd77.a:	mgd77.o
 #	program dependencies
 #-------------------------------------------------------------------------------
 
-$(MGD77):	$(MGD77_O) libmgd77.a
+$(MGD77):	$(MGD77_O) libmgd77.a $(GMTLIB)
 		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lmgd77 -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
 
 .c.o:

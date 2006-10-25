@@ -1,4 +1,4 @@
-#       $Id: Makefile,v 1.7 2005-02-15 21:15:18 pwessel Exp $
+#       $Id: Makefile,v 1.8 2006-10-25 01:35:07 pwessel Exp $
 #
 #	makefile for meca directory
 #	meca must be installed in the gmt/src directory or
@@ -6,6 +6,9 @@
 #
 #-----------------stop here-------------------------------
 include ../makegmt.macros
+GMTSRCDIR	= ../
+GMTLIBDIR	= ../
+include ../gmtalldeps.macros
 
 NETCDFLIB	= $(NETCDF)/lib
 NETCDFINC	= $(NETCDF)/include
@@ -33,19 +36,19 @@ uninstall:
 
 spotless:	clean
 
-psmeca: 	psmeca.o utilmeca.o nrutil.o
+psmeca: 	psmeca.o utilmeca.o nrutil.o $(GMTLIB)
 		$(CC) $(CFLAGS) psmeca.o utilmeca.o nrutil.o $(ALLLIB) -o ./$@
 
-pscoupe:	pscoupe.o utilmeca.o submeca.o distaz.o nrutil.o
+pscoupe:	pscoupe.o utilmeca.o submeca.o distaz.o nrutil.o $(GMTLIB)
 		$(CC) $(CFLAGS) pscoupe.o utilmeca.o submeca.o distaz.o nrutil.o $(ALLLIB) -o ./$@
 
-pspolar: 	pspolar.o
+pspolar: 	pspolar.o $(GMTLIB)
 		$(CC) $(CFLAGS) pspolar.o $(ALLLIB) -o ./$@
 
-psvelo:		psvelo.o utilvelo.o utilstrain.o 
+psvelo:		psvelo.o utilvelo.o utilstrain.o $(GMTLIB)
 		$(CC) $(CFLAGS) psvelo.o utilvelo.o utilstrain.o $(ALLLIB) -o ./$@
 
-.c.o:
+.c.o:		$(GMT_H) meca.h nrutil.h submeca.h utilmeca.h utilstrain.h utilvelo.h
 		$(CC) -c $(CFLAGS) $<
 
 clean:
