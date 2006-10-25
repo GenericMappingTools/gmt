@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.29 2006-10-25 01:35:06 pwessel Exp $
+#	$Id: Makefile,v 1.30 2006-10-25 15:19:16 remko Exp $
 #
 #	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -30,7 +30,7 @@
 #
 #	or any combination of
 #
-#	make install
+#	make install-gmt
 #	make install-suppl
 #	make install-data
 #	make install-man
@@ -41,7 +41,11 @@
 #
 #	To uninstall the installed files, try
 #
-#	make uninstall
+#	make uninstall-all
+#
+#	or any combination of
+#
+#	make uninstall-gmt
 #	make uninstall-suppl
 #	make uninstall-data
 #	make uninstall-man
@@ -50,7 +54,7 @@
 #	Authors:	Paul Wessel, SOEST, U. of Hawaii
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
 #
-#	Date:		04-MAR-2006
+#	Date:		25-OCT-2006
 #-------------------------------------------------------------------------------
 #	Get Default Macros
 #-------------------------------------------------------------------------------
@@ -68,9 +72,10 @@ SUPPL_M	=	dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
 all:		gmt suppl
 
 install:	install-gmt install-suppl
+uninstall:	uninstall-gmt uninstall-suppl
 
-install-all:	install install-suppl install-data install-man install-www
-uninstall-all:	uninstall uninstall-suppl uninstall-data uninstall-man uninstall-www
+install-all:	install-gmt install-suppl install-data install-man install-www
+uninstall-all:	uninstall-gmt uninstall-suppl uninstall-data uninstall-man uninstall-www
 
 update:
 		bin/gmtpatch.sh 4
@@ -85,7 +90,7 @@ install-gmt:	gmt
 		$(MAKE) install; \
 		cd ..
 
-uninstall:	gmt
+uninstall-gmt:
 		cd src; \
 		$(MAKE) uninstall; \
 		cd ..
