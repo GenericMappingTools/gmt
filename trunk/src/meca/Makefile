@@ -1,4 +1,4 @@
-#       $Id: Makefile,v 1.8 2006-10-25 01:35:07 pwessel Exp $
+#       $Id: Makefile,v 1.9 2006-10-25 02:25:10 pwessel Exp $
 #
 #	makefile for meca directory
 #	meca must be installed in the gmt/src directory or
@@ -7,7 +7,6 @@
 #-----------------stop here-------------------------------
 include ../makegmt.macros
 GMTSRCDIR	= ../
-GMTLIBDIR	= ../
 include ../gmtalldeps.macros
 
 NETCDFLIB	= $(NETCDF)/lib
@@ -48,7 +47,7 @@ pspolar: 	pspolar.o $(GMTLIB)
 psvelo:		psvelo.o utilvelo.o utilstrain.o $(GMTLIB)
 		$(CC) $(CFLAGS) psvelo.o utilvelo.o utilstrain.o $(ALLLIB) -o ./$@
 
-.c.o:		$(GMT_H) meca.h nrutil.h submeca.h utilmeca.h utilstrain.h utilvelo.h
+.c.o:		$(GMT_H) $(PS_H) meca.h nrutil.h submeca.h utilmeca.h utilstrain.h utilvelo.h
 		$(CC) -c $(CFLAGS) $<
 
 clean:

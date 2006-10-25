@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.8 2006-10-25 01:35:07 pwessel Exp $
+#	$Id: Makefile,v 1.9 2006-10-25 02:25:10 pwessel Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -21,7 +21,6 @@
 #-------------------------------------------------------------------------------
 include ../makegmt.macros
 GMTSRCDIR	= ../
-GMTLIBDIR	= ../
 include ../gmtalldeps.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
@@ -30,7 +29,9 @@ CDF	= -L$(NETCDF)/lib -lnetcdf
 MGG_H	= gmt_mgg.h
 
 MGG_C	= binlegs.c gmt2bin.c gmt2dat.c dat2gmt.c gmtinfo.c gmtlegs.c \
-	 	gmtlist.c gmtpath.c gmttrack.c mgd77togmt.c
+	 	gmtlist.c gmtpath.c mgd77togmt.c
+
+MGGPS_C	= gmttrack.c
 
 #-------------------------------------------------------------------------------
 #	object file dependencies
@@ -40,14 +41,20 @@ MGG_O	= ${MGG_C:.c=.o}
 
 MGG	= ${MGG_C:.c=}
 
-all:		libgmt_mgg.a $(MGG)
+MGGPS_O	= ${MGGPS_C:.c=.o}
+
+MGGPS	= ${MGGPS_C:.c=}
+
+all:		libgmt_mgg.a $(MGG) $(MGGPS)
 
 $(MGG_O):	$(GMT_H) $(MGG_H)
+
+$(MGGPS_O):	$(GMT_H) $(PS_H) $(MGG_H)
 
 #-------------------------------------------------------------------------------
 
 install:	all
-		for i in $(MGG); do \
+		for i in $(MGG) $(MGGPS); do \
 			$(INSTALL) $$i$(EXE) $(bindir); \
 		done
 		if [ ! -d $(libdir) ]; then \
@@ -62,7 +69,7 @@ install:	all
 		fi
 
 uninstall:
-		for i in $(MGG); do \
+		for i in $(MGG) $(MGGPS); do \
 			\rm -f $(bindir)/$$i$(EXE); \
 		done
 		if [ ! $(libdir) = $(srcdir) ]; then \
@@ -74,7 +81,7 @@ uninstall:
 
 clean:
 		rm -f *.o
-		for i in $(MGG); do \
+		for i in $(MGG) $(MGGPS); do \
 			rm -f $$i$(EXE); \
 		done
 
@@ -96,6 +103,9 @@ gmt_mgg.o:	$(MGG_H)
 #-------------------------------------------------------------------------------
 
 $(MGG):		libgmt_mgg.a $(MGG_O) $(GMTLIB)
+		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lgmt_mgg -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
+
+$(MGGPS):	libgmt_mgg.a $(MGGPS_O) $(GMTLIB)
 		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lgmt_mgg -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
 
 .c.o:

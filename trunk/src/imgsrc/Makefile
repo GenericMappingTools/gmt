@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.5 2006-10-25 01:35:06 pwessel Exp $
+#	$Id: Makefile,v 1.6 2006-10-25 02:25:10 pwessel Exp $
 #
 #	makefile for imgsrc directory
 #
@@ -6,11 +6,10 @@
 
 include ../makegmt.macros
 GMTSRCDIR	= ../
-GMTLIBDIR	= ../
 include ../gmtalldeps.macros
 
 CDF		= -L$(NETCDF)/lib -lnetcdf
-GMT		= -L.. -L$(libdir) -lgmt -lpsl
+GMT		= -L.. -L$(libdir) -lgmt
 CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 
 all:		img2mercgrd

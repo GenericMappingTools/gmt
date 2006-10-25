@@ -1,11 +1,10 @@
-#	$Id: Makefile,v 1.10 2006-10-25 01:35:07 pwessel Exp $
+#	$Id: Makefile,v 1.11 2006-10-25 02:25:10 pwessel Exp $
 #
 # makefile for segyprogs directory
 #
 #
 include ../makegmt.macros
 GMTSRCDIR	= ../
-GMTLIBDIR	= ../
 include ../gmtalldeps.macros
 
 #------------------------- stop here --------------------------
@@ -49,7 +48,7 @@ segy_io.o:		$(SEGYPLOT_H) segy_io.c
 $(SEGYPLOT):		$(SEGYPLOT_O) segy_io.o $(GMTLIB)
 			$(CC) $(CFLAGS) segy_io.o $@.o -o $@ $(ALLLIB) $(LDFLAGS)
 
-$(SEGYPLOT_O):		$(GMT_H)
+$(SEGYPLOT_O):		$(GMT_H) $(PS_H)
 
 .c.o:
 			$(CC) -c $(CFLAGS) $<

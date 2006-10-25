@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.57 2006-10-25 01:35:06 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.58 2006-10-25 02:25:10 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -40,7 +40,6 @@ GMTPS	= -lgmtps
 
 # Get program dependencies
 GMTSRCDIR	= ./
-GMTLIBDIR	= ./
 include gmtalldeps.macros	# Dependencies
 
 LIB_C	= gmt_calclock.c \
@@ -67,8 +66,7 @@ GMT_I	= gmt_globals.h \
 	  gmt_color_rgb.h \
 	  gmt_pennames.h
 
-PS_H	= pslib.h \
-	  pslib_inc.h
+PS_I	= pslib_inc.h
 
 PROGS_C	= blockmean.c blockmedian.c blockmode.c filter1d.c fitcircle.c grdfilter.c gmtconvert.c \
 	  gmtdefaults.c gmtmath.c gmtselect.c gmtset.c grd2cpt.c grd2xyz.c grdblend.c grdcut.c \
@@ -168,7 +166,7 @@ install:	all
 			for i in $(GMT_H); do \
 				$(INSTALL) -m 444 $$i $(includedir); \
 			done; \
-			for i in $(PS_H); do \
+			for i in $(PS_H) $(PS_I); do \
 				$(INSTALL) -m 444 $$i $(includedir); \
 			done; \
 		fi
@@ -190,7 +188,7 @@ uninstall:
 			for i in $(GMT_H); do \
 				\rm -f $(includedir)/$$i; \
 			done; \
-			for i in $(PS_H); do \
+			for i in $(PS_H) $(PS_I); do \
 				\rm -f $(includedir)/$$i; \
 			done; \
 		fi
@@ -282,7 +280,7 @@ libpsl.a:	pslib.o
 		$(AR) cvur libpsl.a $?
 		$(RANLIB) libpsl.a
 
-pslib.o:	pslib.c $(PS_H) gmt_notunix.h gmt_notposix.h gmt_math.h
+pslib.o:	pslib.c $(PS_H) $(PS_I) gmt_notunix.h gmt_notposix.h gmt_math.h
 		$(CC) $(CFLAGS) -c pslib.c
 
 libgmt.a:	$(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O)
