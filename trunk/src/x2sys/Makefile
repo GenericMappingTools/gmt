@@ -1,8 +1,11 @@
-#	$Id: Makefile,v 1.16 2006-10-06 17:19:36 pwessel Exp $
+#	$Id: Makefile,v 1.17 2006-10-25 01:35:07 pwessel Exp $
 #
 # makefile for x2sys directory
 #
 include ../makegmt.macros
+GMTSRCDIR	= ../
+GMTLIBDIR	= ../
+include ../gmtalldeps.macros
 
 #------------------------- stop here --------------------------
 
@@ -66,8 +69,8 @@ clean:
 spotless:		clean
 			\rm -f *.a
 
-$(XSYSTEM):		$(XSYSTEM_O) libx2sys.a
+$(XSYSTEM):		$(XSYSTEM_O) libx2sys.a $(GMTLIB)
 			$(CC) $(CFLAGS) $@.o -o $@ -L. -lx2sys $(ALLLIB) $(LDFLAGS)
 
-.c.o:
+.c.o:			$(XSYSTEM_H) $(GMT_H)
 			$(CC) -c $(CFLAGS) $<

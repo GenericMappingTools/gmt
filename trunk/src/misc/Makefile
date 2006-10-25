@@ -1,10 +1,13 @@
-#	$Id: Makefile,v 1.12 2006-03-22 07:08:53 pwessel Exp $
+#	$Id: Makefile,v 1.13 2006-10-25 01:35:07 pwessel Exp $
 #	makefile for misc directory
 #
 
 #----------------- stop here - nothing to edit--------------------
 
 include ../makegmt.macros
+GMTSRCDIR	= ../
+GMTLIBDIR	= ../
+include ../gmtalldeps.macros
 
 CDF		= -L$(NETCDF)/lib -lnetcdf
 
@@ -50,7 +53,7 @@ clean:
 #       program dependencies
 #-------------------------------------------------------------------------------
 
-$(MISC):	$(MISC_O)
+$(MISC):	$(MISC_O) $(GMTLIB)
 		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
 
 .c.o:

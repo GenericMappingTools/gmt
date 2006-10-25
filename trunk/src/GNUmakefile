@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.56 2006-05-05 05:17:37 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.57 2006-10-25 01:35:06 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -38,6 +38,11 @@ PS	= -lpsl
 GMT	= -lgmt
 GMTPS	= -lgmtps
 
+# Get program dependencies
+GMTSRCDIR	= ./
+GMTLIBDIR	= ./
+include gmtalldeps.macros	# Dependencies
+
 LIB_C	= gmt_calclock.c \
 	  gmt_cdf.c \
 	  gmt_customio.c \
@@ -53,42 +58,6 @@ LIB_C	= gmt_calclock.c \
 	  gmt_vector.c
 
 LIBPS_C	= gmt_plot.c
-
-GMT_H	= gmt.h \
-	  gmt_common.h \
-	  gmt_calclock.h \
-	  gmt_time_systems.h \
-	  gmt_math.h \
-	  gmt_mgg_header2.h \
-	  gmt_nan.h \
-	  gmt_map.h \
-	  gmt_proj.h \
-	  gmt_init.h \
-	  gmt_boundcond.h \
-	  gmt_shore.h \
-	  gmt_plot.h \
-	  gmt_project.h \
-	  gmt_grd.h \
-	  gmt_colors.h \
-	  gmt_grdio.h \
-	  gmt_customio.h \
-	  gmt_bcr.h \
-	  gmt_symbol.h \
-	  gmt_synopsis.h \
-	  gmt_stat.h \
-	  gmt_support.h \
-	  gmt_vector.h \
-	  gmt_contour.h \
-	  gmt_unique.h \
-	  gmt_keywords.h \
-	  gmt_keycases.h \
-	  gmt_io.h \
-	  gmt_notposix.h \
-	  gmt_notunix.h \
-	  gmt_version.h \
-	  gmt_grdformats.h \
-	  gmt_ellipsoids.h \
-	  gmt_datums.h
 
 GMT_I	= gmt_globals.h \
 	  gmt_defaults.h \
@@ -158,10 +127,6 @@ gmt_customio.o: gmt_customio.c gmt_mgg_header2.c gmt_agc_io.c $(GMT_H)
 
 alpha-sincos.o:	alpha-sincos.s
 		$(AS) -o alpha-sincos.o $<
-
-#-------------------------------------------------------------------------------
-SHARED_LIB	= libpsl.a libgmt.a libgmtps.a libpsl.$(SL) libgmt.$(SL) libgmtps.$(SL)
-STATIC_LIB	= libpsl.a libgmt.a libgmtps.a
 
 #-------------------------------------------------------------------------------
 

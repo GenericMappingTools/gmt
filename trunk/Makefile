@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.28 2006-08-19 01:24:22 pwessel Exp $
+#	$Id: Makefile,v 1.29 2006-10-25 01:35:06 pwessel Exp $
 #
 #	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -67,6 +67,8 @@ SUPPL_M	=	dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
 
 all:		gmt suppl
 
+install:	install-gmt install-suppl
+
 install-all:	install install-suppl install-data install-man install-www
 uninstall-all:	uninstall uninstall-suppl uninstall-data uninstall-man uninstall-www
 
@@ -78,7 +80,7 @@ gmt:		gmtmacros
 		$(MAKE) all; \
 		cd ..
 
-install:	gmt
+install-gmt:	gmt
 		cd src; \
 		$(MAKE) install; \
 		cd ..
