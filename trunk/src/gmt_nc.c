@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.50 2006-10-24 21:03:28 remko Exp $
+ *	$Id: gmt_nc.c,v 1.51 2006-10-25 01:28:34 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -59,19 +59,48 @@ void GMT_nc_put_units (int ncid, int varid, char *name_units);
 int GMT_is_nc_grid (char *file)
 {	/* Returns type 18 (=nf) for new NetCDF grid,
 	   type 10 (=cf) for old NetCDF grids and -1 upon error */
-	int ncid, i = 0;
-	char name[GMT_LONG_TEXT];
+	int ncid, z_id = -1, i = 0, j = 0, id = 13, nvars, ndims;
+	nc_type z_type;
+	char filename[GMT_LONG_TEXT];
 
 	/* Strip off '?' suffix */
-	strcpy (name, file);
-	while (name[i] && name[i] != '?') i++;
-	if (name[i]) name[i] = '\0';
+	strcpy (filename, file);
+	while (filename[i] && filename[i] != '?') i++;
+	if (filename[i])
+		filename[i] = '\0';
+	else
+		i = -1;
+	nc_nopipe (filename);
 
-	/* Open the file and check for a sign of old GMT grid */
-	if (nc_open (name, NC_NOWRITE, &ncid)) return (-1);
-	i = (nc_inq_dimid (ncid, "xysize", &i)) ? 18 : 10;
+	/* Open the file and look for the required variable */
+	if (nc_open (filename, NC_NOWRITE, &ncid)) return (-1);
+	if (!nc_inq_dimid (ncid, "xysize", &z_id)) {
+		id = 5;
+		nc_inq_varid (ncid, "z", &z_id);
+	}
+	else if (i < 0) {
+		nc_inq_nvars (ncid, &nvars);
+		while (j < nvars && z_id < 0) {
+			check_nc_status (nc_inq_varndims (ncid, j, &ndims));
+			if (ndims == 2) z_id = j;
+			j++;
+		}
+	}
+	else
+		nc_inq_varid (ncid, &filename[i+1], &z_id);
+
+	/* When variable can not be found */
+	if (z_id < 0) {
+		if (i < 0)
+			fprintf (stderr, "%s: no 2-D variable in file [%s]\n", GMT_program, filename);
+		else
+			fprintf (stderr, "%s: named variable (%s) does not exist in file [%s]\n", GMT_program, &filename[i+1], filename);
+		exit (EXIT_FAILURE);
+	}
+	check_nc_status (nc_inq_vartype (ncid, z_id, &z_type));
+	id += ((z_type == NC_BYTE) ? 2 : z_type);
 	nc_close (ncid);
-	return (i);
+	return (id);
 }
 
 int GMT_nc_read_grd_info (struct GRD_HEADER *header)
