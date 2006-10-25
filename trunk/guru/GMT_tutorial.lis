@@ -1,7 +1,7 @@
-tutorial/bermuda.grd
+tutorial/bermuda.nc
 tutorial/data
 tutorial/quakes.cpt
 tutorial/quakes.ngdc
 tutorial/ship.xyz
 tutorial/topo.cpt
-tutorial/us.grd
+tutorial/us.nc
