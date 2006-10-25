@@ -85,10 +85,10 @@ and 1 inch up from the current location, and have its width scaled to 3 inches, 
 \fBpsimage\fP tiger.eps \fB\-C\fP2\fBi\fP/1\fBi\fP/TR \fB\-W\fP3\fBi\fP > image.ps
 .br
 .sp
-To replicate the image template 1_bit.ras over a 5 by 5 inch area, colorize it, and setting
-each piece to be 1 by 1 cm, use
+To replicate the image template 1_bit.ras over a 5 by 5 inch area, colorize it (brown background and
+red foreground), and setting each piece to be 1 by 1 cm, use
 .br
 .sp
-\fBpsimage\fP 1_bit.ras \fB\-Gb\fP200/150/100 \fB\-Gf\fP100/50/30 \fB\-N\fP5\fBi\fP/5\fBi\fP \fB\-W\fP1\fBc\fP > image.ps
+\fBpsimage\fP 1_bit.ras \fB\-Gb\fPbrown \fB\-Gf\fPred \fB\-N\fP5\fBi\fP/5\fBi\fP \fB\-W\fP1\fBc\fP > image.ps
 .SH "SEE ALSO"
 .IR GMT (GMTMANSECTION)

@@ -232,7 +232,7 @@ viewing it from the southeast at 30 degree elevation, use:
 .br
 .sp
 \fBpsxyz\fP heights.xyz \fB\-R\fP0/10/0/10/0/100 OPT_1
-\fB\-G\fP0/0/255 \fB\-B\fP2:XLABEL:/2:YLABEL:/10:ZLABEL::."3-D PLOT":15 \fB\-E\fP135/30 \fB\-Uc
+\fB\-G\fPblue \fB\-B\fP2:XLABEL:/2:YLABEL:/10:ZLABEL::."3-D PLOT":15 \fB\-E\fP135/30 \fB\-Uc
 \-W\fP \fB\-P\fP > heights.ps
 .SH BUGS
 No hidden line removal is employed for polygons and lines.  Symbols, however, are first sorted

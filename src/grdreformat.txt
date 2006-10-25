@@ -101,6 +101,8 @@ sf	Golden Software Surfer format 6 (float)
 .br
 sd	Golden Software Surfer format 7 (double, read-only)
 .br
+af	Atlantic Geoscience Center format AGC (float)
+.br
 .SH GMT STANDARD NETCDF FILES
 The standard format used for gdrfiles is based on netCDF and conforms to the COARDS conventions. Files written
 in this format can be read by numerous third-party programs and are platform-independent. Some disk-space
