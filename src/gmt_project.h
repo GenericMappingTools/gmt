@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.42 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.43 2006-10-26 21:37:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -303,6 +303,7 @@ struct GMT_PLOT_AXIS {		/* Information for one time axis */
 struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundaries */
 	struct GMT_PLOT_AXIS axis[3];	/* One each for x, y, and z */
 	char header[GMT_LONG_TEXT];	/* Plot title */
+	BOOLEAN plotted_header;		/* TRUE if header has been plotted */
 	BOOLEAN plot;			/* TRUE if -B was used */
 	BOOLEAN draw_box;		/* TRUE is a 3-D Z-box is desired */
 	BOOLEAN check_side;		/* TRUE if lon and lat annotations should be on x and y axis only */
