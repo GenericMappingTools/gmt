@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.45 2006-10-24 16:42:48 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.46 2006-10-26 18:03:06 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -104,7 +104,7 @@ Did not consider if absolute coordinates were given in \Opt{X} and \Opt{Y}.
 \item [\GMTprog{mgd77/mgd77list}]: Did not process time when \Opt{Am}2$|$4 was set and time was not requested as output.
 Also, did not process time when \Opt{Am}2$|$4 was set and time was not requested as output.
 \item [\GMTprog{x2sys/x2sys}]: Did not look in current dir for *.def files.
-\GMTfunc{\end{description}
+\end{description}
 
 %-----------------------------------------
 \subsection{Overview of \gmt\ 4.1.3 [June-1, 2006]}
@@ -270,7 +270,7 @@ that we have identified and corrected in the current release:.
 does so if prefixed by '+'.
 \item [\GMTprog{gmt\_calclock.c}]: Did not allow \Opt{B}0 for time-axis.
 \item [\GMTprog{gmt\_map.c}]: \Opt{JX}...{\bf d} now plots with WESN or degrees:minutes as per PLOT\_DEGREE\_FORMAT.
-Map clip paths for \Opt{JE}{\it lon}/$\pm 90$ were no good.  Under certain circumstances, \GMTfunc{GMT\_non\_zero\_winding} might be passed
+Map clip paths for \Opt{JE}{\it lon}/\PM 90 were no good.  Under certain circumstances, \GMTfunc{GMT\_non\_zero\_winding} might be passed
 a polygon that was not closed, resulting in an error.  \Opt{JQ} would give garbage if central lon was way outside \Opt{R}.
 \item [\GMTprog{gmt\_plot.c}]: \Opt{JX}...{\bf d} now plots with WESN or degrees:minutes as per PLOT\_DEGREE\_FORMAT.
 \item [\GMTprog{gmt\_grdio.c}]: Changed logic to avoid false ``scale==0'' warning on Windows.
@@ -355,7 +355,7 @@ for evaluating Chebyshev polynomials; new constant {\bf Tn} was added to easily 
 (gives coordinates from -1 to + 1 suitable for evaluating Legendre and Chebyshev polynomials).
 Finally, we added {\bf CORRCOEFF} for calculation of correlation coefficients, and \Opt{I} to reverse
 the output by printing the last row first.
-\item [\GMTprog{grd2cpt.c}]: New option \OPt{D} sets the back- and foreground colors to the colors at the limits of the cpt file.
+\item [\GMTprog{grd2cpt.c}]: New option \Opt{D} sets the back- and foreground colors to the colors at the limits of the cpt file.
 \item [\GMTprog{grd2xyz.c}]: Added \Opt{E} for ESRI interchange ASCII grid dump.
 \item [\GMTprog{grdfilter.c}]: Geographic boundary conditions are now in effect if \Opt{D4} is selected.
 \item [\GMTprog{grdgradient.c}]: Added option \Opt{E} for Lambertian or Peuckeer illumination.
@@ -369,7 +369,7 @@ This makes it easier to specify a certain data set (i.e., ``ETOPO2'') than havin
 ID.  Also, native grids with \GMT\ headers can also be placed in the database by appending {\bf H}{\it nbytes} to the
 corresponding \filename{grdraster.info} entry, where {\it nbytes} is the size of the header that should be skipped
 (use 892 for GMT headers).
-\item [\GMTprog{makecpt.c}]: New option \OPt{D} sets the back- and foreground colors to the colors at the limits of the cpt file.
+\item [\GMTprog{makecpt.c}]: New option \Opt{D} sets the back- and foreground colors to the colors at the limits of the cpt file.
 \item [\GMTprog{mapproject.c}]: \Opt{L} now outputs both the minimum distance and the coordinates
 of the nearest point on the line.
 \item [\GMTprog{pscoast.c}]: Added \Opt{Z} for 3-D map z-level (as in \GMTprog{psbasemap} and others).

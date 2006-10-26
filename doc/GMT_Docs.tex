@@ -1,0 +1,87 @@
+%------------------------------------------
+%       $Id: GMT_Docs.tex,v 1.4 2006-10-26 18:03:07 remko Exp $
+%
+%       The GMT Documentation Project
+%       Copyright 2000-2006.
+%       Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+% This almost empty document includes all the actual
+% files with GMT documentation.  It is the master
+% file that sets up the general layout of the book
+
+
+\documentclass{report}
+
+\usepackage{ifpdf}
+\usepackage{graphicx}
+\usepackage{makeidx}
+\usepackage{a4wide}
+\usepackage{float}
+\usepackage{html}
+\usepackage{GMT}
+\usepackage{times}
+\usepackage{color}
+\usepackage{mathptm}
+\newcommand{\GMTTITLE}{Technical Reference and Cookbook}
+\input{GMT_macros}
+
+%--------------------------------------------------------------------------
+
+\pagecolor{white}
+
+\makeindex
+
+\begin{document}
+\pagenumbering{roman}
+
+\input{GMT_Cover}
+\clearpage
+
+\pagestyle{plain}
+\addcontentsline{toc}{chapter}{Contents}
+\tableofcontents
+
+\clearpage
+\addcontentsline{toc}{chapter}{List of tables}
+\listoftables
+
+\clearpage
+\addcontentsline{toc}{chapter}{List of figures}
+\listoffigures
+
+\include{GMT_Frontmatter}
+
+\pagenumbering{arabic}
+\pagestyle{headings}
+
+\include{GMT_Chapter_1}
+\include{GMT_Chapter_2}
+\include{GMT_Chapter_3}
+\include{GMT_Chapter_4}
+\include{GMT_Chapter_5}
+\include{GMT_Chapter_6}
+\include{GMT_Chapter_7}
+
+\appendix
+
+\include{GMT_Appendix_A}
+\include{GMT_Appendix_B}
+\include{GMT_Appendix_C}
+\include{GMT_Appendix_D}
+\include{GMT_Appendix_E}
+\include{GMT_Appendix_F}
+\include{GMT_Appendix_G}
+\include{GMT_Appendix_H}
+\include{GMT_Appendix_I}
+\include{GMT_Appendix_J}
+\include{GMT_Appendix_K}
+\include{GMT_Appendix_L}
+\include{GMT_Appendix_M}
+\include{GMT_Appendix_N}
+\include{GMT_Appendix_O}
+\include{GMT_Appendix_P}
+
+\printindex
+
+\end{document}

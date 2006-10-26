@@ -1,0 +1,44 @@
+
+\input{GMT_version}
+
+\ifpdf
+%  \usepackage[pdftex, linkbordercolor={1 1 0}, bookmarksnumbered=true,
+%  boolmarksopenlevel=3, urlbordercolor={1 0 0}]{hyperref}
+  \usepackage[pdftex]{hyperref}
+  \pdfcompresslevel=9
+  \DeclareGraphicsExtensions{.pdf}
+
+ \hypersetup{%
+    pdftitle={The Generic Mapping Tools Version \GMTDOCVERSION---\GMTTITLE},
+    pdfauthor={Paul Wessel,  Walter H. F. Smith},
+    pdfkeywords={GMT, projections, mapping},
+    bookmarksopen=true,
+    bookmarksnumbered,
+    %pdfstartview={FitH},
+    %linkbordercolor={1 1 0},
+    %urlbordercolor={1 0 0},
+  }%
+
+\else
+   \DeclareGraphicsExtensions{.eps}
+\fi
+
+\input{GMT_device}
+
+% GMTfig will insert an eps file, add a label, and set a caption
+\newcommand{\GMTfig}[3][tbp]{\begin{figure}[#1] \centering \includegraphics{eps/#2} \caption{#3} \label{fig:#2}  \end{figure}}
+
+\newcommand{\PS}{\textit{PostScript}}
+\newcommand{\UNIX}{\textit{UNIX}}
+
+\ifpdf
+\newcommand{\GMTprog}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../html/#1.html}\index{#1@{\textsf{\textbf{#1}}}}}
+\newcommand{\GMTprogi}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../html/#1.html}}
+\else
+\newcommand{\GMTprog}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../#1.html}\index{#1@{\textsf{\textbf{#1}}}}}
+\newcommand{\GMTprogi}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../#1.html}}
+\fi
+
+\newcommand{\GMTfunc}[1]{{\tt {#1}}}
+\newcommand{\filename}[1]{\underline{#1}}
+\newcommand{\gmt}{\htmladdnormallink{\textbf{GMT}}{http://gmt.soest.hawaii.edu}}

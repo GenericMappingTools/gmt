@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Tutorial.tex,v 1.40 2006-10-25 04:25:29 pwessel Exp $
+%       $Id: GMT_Tutorial.tex,v 1.41 2006-10-26 18:03:07 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2006.
@@ -9,7 +9,6 @@
 \documentclass{report}
 
 \usepackage{ifpdf}
-%\usepackage{epsfig}
 \usepackage{graphicx}
 \usepackage{makeidx}
 \usepackage{a4wide}
@@ -19,83 +18,11 @@
 \usepackage{times}
 \usepackage{color}
 \usepackage{mathptm}
-
-\ifpdf
-%  \usepackage[pdftex, linkbordercolor={1 1 0}, bookmarksnumbered=true,
-%  boolmarksopenlevel=3, urlbordercolor={1 0 0}]{hyperref}
-  \usepackage[pdftex,linkcolor={0 0 1}]{hyperref}
-  \pdfcompresslevel=9
-  \DeclareGraphicsExtensions{.pdf}
-
- \hypersetup{%
-    pdftitle={The Generic Mapping Tools Version 4---A Map-making Tutorial},
-    pdfauthor={Paul Wessel,  Walter H. F. Smith},
-    pdfkeywords={GMT, projections, mapping},
-    bookmarksopen=true,
-    bookmarksnumbered,
-    %pdfstartview={FitH},
-    %linkbordercolor={1 1 0},
-    %urlbordercolor={1 0 0},
-  }%
-
-\else
-   \DeclareGraphicsExtensions{.eps}
-\fi
-
-
-
-% Special commands & environments for GMT documentation
-%
-%       GMTfig will insert an eps file, add a label, and set a caption
-%
-%\newcommand{\GMTfig}[3][tbp]{\begin{figure}[#1] \centering \epsfig{figure=eps/#2.eps} \caption{#3} \label{fig:#2} \end{figure}}
-
-\newcommand{\GMTfig}[3][tbp]{\begin{figure}[#1] \centering \includegraphics{eps/#2} \caption{#3} \label{fig:#2}  \end{figure}}
-
-\newcommand{\PS}{\textit{PostScript}}
-\newcommand{\UNIX}{\textit{UNIX}}
-
-
-\ifpdf
-\newcommand{\GMTprog}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../html/#1.html}\index{#1@{\textsf{\textbf{#1}}}}}
-\newcommand{\GMTprogi}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../html/#1.html}}
-\else
-\newcommand{\GMTprog}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../#1.html}\index{#1@{\textsf{\textbf{#1}}}}}
-\newcommand{\GMTprogi}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../#1.html}}
-\fi
-
-\newcommand{\filename}[1]{\underline{#1}}
-\newcommand{\gmt}{\htmladdnormallink{\textbf{GMT}}{http://gmt.soest.hawaii.edu}}
-%%------------ THESE COMMANDS WILL BE EXCLUDED WHEN HTML VERSION IS MADE--------
-
-\ifpdf%DVIGMT
-\newcommand{\GMT}{\textit{GMT}}%DVIGMT
-\else%DVIGMT
-\newcommand{\GMT}{\htmladdnormallink{\includegraphics{eps/GMT_glyph10.eps}}{http://gmt.soest.hawaii.edu}}%DVIGMT
-\fi%DVIGMT
-
-\newcommand{\DS}{$^{\circ}$}%DVIGMT
-\newcommand{\progname}[1]{{\textsl{\textbf{#1}}}\index{#1@{\textsl{\textbf{#1}}}}}%DVIGMT
-\newcommand{\Opt}[1]{{\bf --#1}}%DVIGMT
-\newcommand{\startscript}{\scriptsize}%DVIGMT
-\newcommand{\stopscript}{\normalsize}%DVIGMT
-%%------------------------------------------------------------------------------
-
-%%------------ THESE COMMANDS WILL BE EXCLUDED WHEN DVI VERSION IS MADE---------
-\newcommand{\GMT}{\htmladdnormallink{\textbf{GMT}}{http://gmt.soest.hawaii.edu}}%HTMLGMT
-\newcommand{\progname}[1]{{\textit{#1}}\index{#1@{\textit{#1}}}}%HTMLGMT
-\newcommand{\Opt}[1]{{\bf -#1}}%HTMLGMT
-\newcommand{\DS}{$^{o}$}%HTMLGMT
-\newcommand{\startscript}{}%HTMLGMT
-\newcommand{\stopscript}{}%HTMLGMT
-\include{GMT_version}
-
+\newcommand{\GMTTITLE}{A Map-making Tutorial}
+\input{GMT_macros}
 
 %--------------------------------------------------------------------------
 
-%\title{The Generic Mapping Tools Version 4---A Map-making Tutorial}
-%\author{Paul Wessel \and Walter H. F. Smith}
-%\date{1 October 2004}
 \pagecolor{white}
 
 \makeindex
@@ -103,60 +30,7 @@
 \begin{document}
 \pagenumbering{roman}
 
-\pagestyle{headings}
-
-\thispagestyle{empty}
-
-\begin{center}
-\huge
-\textbf{The Generic Mapping Tools}\par 
-\vspace{0.5\baselineskip}
-
-%\epsfig{figure=eps/GMT_covertext.eps} 
-\includegraphics{eps/GMT_covertext} 
-
-\Huge
-\textbf{\GMTDOCVERSION}\par 
-\vspace{0.25\baselineskip}
-
-\huge
-\textbf{A Map-Making Tutorial}\par 
-
-\large
-\vspace{0.75\baselineskip}
-\textbf{by}\par 
-\vspace{0.75\baselineskip}
-
-\huge
-\textbf{P\aa l (Paul) Wessel}\par 
-\vspace{0.5\baselineskip}
-
-\Large
-\textbf{School of Ocean and Earth Science and Technology}\par 
-\textbf{University of Hawai'i at M\={a}noa}\par 
-
-\large
-\vspace{0.75\baselineskip}
-\textbf{and}\par 
-\vspace{0.75\baselineskip}
-
-\huge
-\textbf{Walter H. F. Smith}\par 
-\vspace{0.5\baselineskip}
-
-\Large
-\textbf{Laboratory for Satellite Altimetry}\par 
-\textbf{NOAA/NESDIS}\par 
-\vspace{0.5\baselineskip}
-
-\large
-\textbf{\GMTDOCDATE}\par 
-\vspace{\baselineskip}
-
-%\epsfig{figure=eps/GMT_coverlogo.eps}
-\includegraphics{eps/GMT_coverlogo}
-
-\end{center}
+\input{GMT_Cover}
 \clearpage
 
 \thispagestyle{headings}
@@ -889,7 +763,7 @@ contain the {\it z}-values to be used with the cptfile.
 append the size in a separate column.
 
 \item To draw error bars, use the \Opt{E} option and give one or two
-additional data columns with the $\pm dx$ and $\pm dy$ values; the form of
+additional data columns with the \PM dx and \PM dy values; the form of
 \Opt{E} determines if one (\Opt{Ex} or \Opt{Ey}) or two (\Opt{Exy})
 columns are needed.  If upper case flags {\bf X} or {\bf Y} are given then
 we will instead draw a ``box-and-whisker'' symbol and the $\sigma_x$ (or
@@ -1627,7 +1501,7 @@ toward the sun mean if we are plotting a grid of heat flow anomalies?
 While there are many ways to accomplish what we want, \GMT\ offers
 a relatively simple way:  We may calculate the gradient of the surface
 in the direction of the sun and normalize these values to fall in
-the $\pm1$ range; +1 means maximum sun exposure and -1 means complete
+the \PM 1 range; +1 means maximum sun exposure and -1 means complete
 shade. Although we will not show it here, it should be added that
 \GMT\ treats the intensities as a separate data set.  Thus, while
 these values are often derived from the relief surface we want to
@@ -1732,7 +1606,7 @@ far from normally distributed (left).  By using the inverse tangent
 transformation we can ensure a more uniform distribution (right).
 The inverse tangent transform simply takes the raw slope estimate
 (the {\it x} value at the arrow) and returns the corresponding inverse
-tangent value (normalized to fall in the $\pm1$ range; horizontal
+tangent value (normalized to fall in the \PM 1 range; horizontal
 arrow pointing to the {\it y}-value).
 
 \GMTfig[h]{GMT_atan}{How the inverse tangent operation works.}
@@ -1787,8 +1661,8 @@ level (i.e., depth), latitude and longitude.
 ncdump -h otemp.anal1deg.nc
 \end{verbatim}
 
-We will need to make an appropriate color scale, running from -2$^\circ$C (freezing temperature of salt
-water) to 30$^\circ$C (highest likely ocean temperature). We do this as follows:
+We will need to make an appropriate color scale, running from -2\DS C (freezing temperature of salt
+water) to 30\DS C (highest likely ocean temperature). We do this as follows:
 
 \begin{verbatim}
 makecpt -Cno_green -T-2/30/2 >! otemp.cpt
