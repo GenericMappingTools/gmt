@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.82 2006-10-24 01:53:19 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.83 2006-10-26 18:03:06 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -253,7 +253,7 @@ formats:
 \begin{description}
 \item [Geographic coordinates:]  These are longitudes and latitudes and may be given in decimal degrees (e.g., -123.45417)
 or in the
-[$\pm$]\emph{ddd}[:\emph{mm}[:\emph{ss}[\emph{.xxx}]]][\textbf{W}$|$\textbf{E}$|$\textbf{S}$|$\textbf{N}]
+[\PM]\emph{ddd}[:\emph{mm}[:\emph{ss}[\emph{.xxx}]]][\textbf{W}$|$\textbf{E}$|$\textbf{S}$|$\textbf{N}]
 format (e.g., 123:27:15W).  Note that \Opt{Rg} and \Opt{Rd} are shorthands for ``global domain''
 \Opt{R}\emph{0}/\emph{360}/\emph{-90}/\emph{90}
 and  \Opt{R}\emph{-180}/\emph{180}/\emph{-90}/\emph{90}, respectively.
@@ -280,7 +280,7 @@ England finally adopted the new calendar in 1752, with eleven days removed from 
 new calendars disagreed on whether 1700 was a leap year, so the Julian calendar had to be adjusted by one more day.} are extrapolated
 backward.  Note that this is not historical.
 \item [Other coordinates:]  These are simply anything that is neither geographic nor calendar time related and are
-expected to be simple floating point values such as [$\pm$]\emph{xxx.xxx}[E$|$e$|$D$|$d[$\pm$][xx]], i.e., regular or exponential
+expected to be simple floating point values such as [\PM]\emph{xxx.xxx}[E$|$e$|$D$|$d[\PM][xx]], i.e., regular or exponential
 notations, with the enhancement to understand FORTRAN double precision output which may use D instead of E for exponents.
 These values are simply converted as they are to internal representation.  One exception is the concept
 of relative time which is read as a floating point offset from an absolute time reference point (epoch).  The unit and the
@@ -335,7 +335,7 @@ The components \emph{xinfo}, \emph{yinfo} and \emph{zinfo} are of the form \\
 
 \noindent
 where \emph{info} is one or more concatenated substrings of the form
-[\textbf{t}]\emph{stride}[$\pm$\emph{phase}][\textbf{u}].  The \textbf{t} flag sets the axis item of interest; the
+[\textbf{t}]\emph{stride}[\PM\emph{phase}][\textbf{u}].  The \textbf{t} flag sets the axis item of interest; the
 available items are listed in Table~\ref{tbl:inttype}.  By
 default, all 4 map boundaries (or plot axes) are plotted (denoted \textbf{W}, \textbf{E}, \textbf{S},
 \textbf{N}).  To change this selection, append the codes for those you want
@@ -343,7 +343,7 @@ default, all 4 map boundaries (or plot axes) are plotted (denoted \textbf{W}, \t
 draw axis/tick-marks.  The title, if given, will appear centered above the plot\footnote{However,
 it is suppressed when a 3-D view is selected.}.  Unit label or prefix may start with a
 leading -- to suppress the space between it and the annotation.  Normally, equidistant annotations
-occur at multiples of \emph{stride}; you can phase-shift this by appending $\pm$\emph{phase}.
+occur at multiples of \emph{stride}; you can phase-shift this by appending \PM\emph{phase}.
 \begin{table}[H]
 \centering
 \begin{tabular}{|c|l|} \hline
@@ -872,7 +872,7 @@ ways to encode data coordinates (which may be separated by white-space or commas
 of the same form as the arguments to the \Opt{R} option (see Section~\ref{sec:R}), with additional
 flexibility for calendar data.  Geographical coordinates, for example, can be given in decimal degrees
 (e.g., -123.45417) or in the
-[$\pm$]\emph{ddd}[:\emph{mm}[:\emph{ss}[\emph{.xxx}]]][\textbf{W}$|$\textbf{E}$|$\textbf{S}$|$\textbf{N}]
+[\PM]\emph{ddd}[:\emph{mm}[:\emph{ss}[\emph{.xxx}]]][\textbf{W}$|$\textbf{E}$|$\textbf{S}$|$\textbf{N}]
 format (e.g., 123:27:15W).
 
 Because of the widespread use of incompatible and ambiguous formats, the processing of input
@@ -966,7 +966,7 @@ and obese.  Table~\ref{tbl:pennames} shows this list and the corresponding pen w
 \begin{table}[h]
 \centering
 \begin{tabular}{|l|c||l|c} \hline
-\multicolumn{1}{|c|}{\emph{Pen name}}	&	\multicolumn{1}{c|}	&	{\emph{Width}} \multicolumn{1}{|c|}{\emph{Pen name}}	&	\multicolumn{1}{c|}{\emph{Width}} \\ \hline
+\multicolumn{1}{|c|}{\emph{Pen name}}	&	\multicolumn{1}{c|}{\emph{Width}}	&	\multicolumn{1}{|c|}{\emph{Pen name}}	&	\multicolumn{1}{c|}{\emph{Width}} \\ \hline
 faint		&	0	&	thicker		&	1.5p \\ \hline 
 default		&	0.25p	&	thickest	&	2p \\ \hline
 thinnest	&	0.25p	&	fat		&	3p \\ \hline
@@ -1450,7 +1450,7 @@ add 32000, but first let values that equal 32767 be set to NaN,
 use the filename \filename{my\_file.grd=bs/10/32000/32767}. 
 
 \item To read a 8-bit standard Sun rasterfile (with values in the 0--255 range)
-and convert it to a $\pm$1 range, give the name as
+and convert it to a \PM 1 range, give the name as
 \filename{rasterfile=rb/7.84313725e-3/-1} (i.e., 1/127.5).
 
 \item To write a native binary short integer grd file to standard output after subtracting
