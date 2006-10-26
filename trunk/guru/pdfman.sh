@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: pdfman.sh,v 1.11 2006-05-27 02:27:42 pwessel Exp $
+#	 $Id: pdfman.sh,v 1.12 2006-10-26 16:28:00 remko Exp $
 #
 #	pdfman.sh - Automatic generation of the GMT pdf manual pages
 #
@@ -18,7 +18,7 @@
 
 trap 'rm -f $$.*; exit 1' 1 2 3 15
 
-if [ $#argv = 1 ]; then	# If -s is given we run silently with defaults
+if [ $# = 1 ]; then	# If -s is given we run silently with defaults
 	gush=0
 else			# else we make alot of noise
 	gush=1
@@ -36,42 +36,32 @@ grep -v '^#' guru/GMT_programs.lis > $$.programs.lis
 echo GMT >> $$.programs.lis
 echo pslib >> $$.programs.lis
 
-# Ok, make pdf files
-if [ $gush = 1 ]; then
-	echo "Assembling GMT_Manpages.ps"
-fi
+# Ok, make PS files
+[ $gush = 1 ] && echo "Assembling GMT_Manpages.ps"
 add=0
 for prog in `cat $$.programs.lis`; do
-	if [ $gush = 1 ]; then
-		echo "Appending ${prog}.pdf"
-	fi
-	if [ $add -eq 1 ]; then
-		echo "false 0 startjob pop" >> www/gmt/doc/ps/GMT_Manpages.ps
-	fi
+	[ $gush = 1 ] && echo "Appending ${prog}.ps"
+	[ $add = 1 ] && echo "false 0 startjob pop" >> www/gmt/doc/ps/GMT_Manpages.ps
 	add=1
 	groff -man man/manl/${prog}.l >> www/gmt/doc/ps/GMT_Manpages.ps
 done
 
 # Ok, then do the supplemental packages
 
-if [ $gush = 1 ]; then
-	echo "Assembling GMT_Manpages_suppl.ps"
-fi
+[ $gush = 1 ] && echo "Assembling GMT_Manpages_suppl.ps"
 cd src
 add=0
 for package in dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system; do
-	ls $package/*.man > $$.lis
+	ls $package/*.man > ../$$.lis
 	while read f; do
 		prog=`basename $f .man`
-		if [ $gush = 1 ] && [ -f ../man/manl/$prog.l ]; then
-			echo "Appending ${prog}.pdf"
-			if [ $add -eq 1 ]; then
-				echo "false 0 startjob pop" >> ../www/gmt/doc/ps/GMT_Manpages_suppl.ps
-			fi
+		if [ -f ../man/manl/$prog.l ]; then
+			[ $gush = 1 ] && echo "Appending ${prog}.ps"
+			[ $add = 1 ] && echo "false 0 startjob pop" >> ../www/gmt/doc/ps/GMT_Manpages_suppl.ps
 			add=1
 			groff -man ../man/manl/$prog.l >> ../www/gmt/doc/ps/GMT_Manpages_suppl.ps
 		fi
-	done < $$.lis
+	done < ../$$.lis
 done
 
 # Gurus who have their own supplemental packages can have them processed too by
@@ -80,20 +70,17 @@ done
 
 MY_SUPPL=${MY_GMT_SUPPL:-""}
 for package in $MY_SUPPL; do
-	ls $package/*.man > $$.lis
+	ls $package/*.man > ../$$.lis
 	while read f; do
 		prog=`basename $f .man`
-		if [ $gush = 1 ] && [ -f ../man/manl/$prog.l ]; then
-			echo "Appending ${prog}.pdf"
-			if [ $add -eq 1 ]; then
-				echo "false 0 startjob pop" >> ../www/gmt/doc/ps/GMT_My_Manpages_suppl.ps
-			fi
+		if [ -f ../man/manl/$prog.l ]; then
+			[ $gush = 1 ] && echo "Appending ${prog}.ps"
+			[ $add = 1 ] && echo "false 0 startjob pop" >> ../www/gmt/doc/ps/GMT_My_Manpages_suppl.ps
 			add=1
 			groff -man ../man/manl/$prog.l >> ../www/gmt/doc/ps/GMT_My_Manpages_suppl.ps
 		fi
-	done < $$.lis
+	done < ../$$.lis
 done
-rm -f $$.*lis
 cd ..
 
 # Convert to PDF
@@ -106,3 +93,4 @@ if [ -f www/gmt/doc/ps/GMT_My_Manpages_suppl.ps ]; then
 	echo "Converting GMT_My_Manpages_suppl.ps to GMT_My_Manpages_suppl.pdf"
 	ps2pdf www/gmt/doc/ps/GMT_My_Manpages_suppl.ps www/gmt/doc/pdf/GMT_My_Manpages_suppl.pdf
 fi
+rm -f $$.*
