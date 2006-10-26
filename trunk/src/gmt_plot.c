@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.182 2006-10-23 08:02:24 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.183 2006-10-26 21:37:04 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -329,7 +329,7 @@ void GMT_linear_map_boundary (double w, double e, double s, double n)
 	if (frame_info.side[0]) GMT_xy_axis (x1, y1, x_length, w, e, &frame_info.axis[0], TRUE,  frame_info.side[0] == 2);	/* South or lower x-axis */
 	if (frame_info.side[2]) GMT_xy_axis (x1, y2, x_length, w, e, &frame_info.axis[0], FALSE, frame_info.side[2] == 2);	/* North or upper x-axis */
 
-	if (!frame_info.header[0]) return;	/* No header today */
+	if (!frame_info.header[0] || frame_info.plotted_header) return;	/* No header today */
 
 	ps_comment ("Placing plot title");
 	
@@ -350,6 +350,7 @@ void GMT_linear_map_boundary (double w, double e, double s, double n)
 	ps_command ("PSL_x PSL_dimx 2 div sub PSL_y PSL_H_y add M");
 	ps_setfont (gmtdefs.header_font);
 	ps_text (0.0, 0.0, -gmtdefs.header_font_size, frame_info.header, 0.0, 0, 0);
+	frame_info.plotted_header = TRUE;
 }
 
 void GMT_xy_axis (double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, int below, int annotate)
@@ -1745,7 +1746,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	ps_setpaint (gmtdefs.basemap_frame_rgb);
 	GMT_world_map_save = GMT_world_map;
 
-	if (frame_info.header[0]) {	/* Make plot header for geographic maps*/
+	if (frame_info.header[0] && !frame_info.plotted_header) {	/* Make plot header for geographic maps*/
 		if (project_info.three_D && fabs (project_info.z_scale) < GMT_CONV_LIMIT) {	/* Only do this if flat 2-D plot */
 
 			move_up = (GMT_IS_MAPPING || frame_info.side[2] == 2);
@@ -1786,6 +1787,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 			ps_setfont (gmtdefs.header_font);
 			ps_text (0.0, 0.0, -gmtdefs.header_font_size, frame_info.header, 0.0, 0, 0);
 		}
+		frame_info.plotted_header = TRUE;
 	}
 
 	if (project_info.edge[0] || project_info.edge[2]) {
@@ -2095,6 +2097,7 @@ void GMT_vertical_axis (int mode)
 		xp[0] = 0.5 * (z_project.xmin + z_project.xmax);
 		yp[0] = z_project.ymax + 0.5;
 		ps_text (xp[0], yp[0], gmtdefs.header_font_size, frame_info.header, 0.0, -2, 0);
+		frame_info.plotted_header = TRUE;
 	}
 }
 
