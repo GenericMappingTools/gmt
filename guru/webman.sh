@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.40 2006-03-22 07:08:53 pwessel Exp $
+#	 $Id: webman.sh,v 1.41 2006-10-26 16:28:00 remko Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -18,7 +18,7 @@
 
 trap 'rm -f $$.*; exit 1' 1 2 3 15
 
-if [ $#argv = 1 ]; then	# If -s is given we run silently with defaults
+if [ $# = 1 ]; then	# If -s is given we run silently with defaults
 	gush=0
 else			# else we make alot of noise
 	gush=1
@@ -50,9 +50,7 @@ grep -v '^#' src/gmt_keywords.d | awk '{printf "s%%<p><b>%s</b></p></td>%%<A NAM
 
 # Ok, go to source directory and make html files
 for prog in `cat $$.programs.lis`; do
-	if [ $gush = 1 ]; then
-		echo "Making ${prog}.html"
-	fi
+	[ $gush = 1 ] && echo "Making ${prog}.html"
 	# Remove reference to current programs since no program needs active links to itself
 	grep -v "${prog}<" $$.w0.sed > $$.t0.sed
 	groff -man -T html man/manl/${prog}.l | sed -f $$.t0.sed > $$.tmp
@@ -73,20 +71,18 @@ done
 MY_SUPPL=${MY_GMT_SUPPL:-""}
 cd src
 for package in dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system $MY_SUPPL; do
-	ls $package/*.man > $$.lis
+	ls $package/*.man > ../$$.lis
 	while read f; do
 		prog=`basename $f .man`
 		if [ -f ../man/manl/$prog.l ]; then
-			if [ $gush = 1 ]; then
-				echo "Making ${prog}.html"
-			fi
+			[ $gush = 1 ] && echo "Making ${prog}.html"
 			# Remove reference to current programs since no program needs active links to itself
 			grep -v "${prog}<" ../$$.w0.sed > ../$$.t0.sed
 			groff -man -T html ../man/manl/$prog.l | sed -f ../$$.t0.sed | sed -f ../$$.all.sed > $package/${prog}.html
 			echo '<BODY bgcolor="#ffffff">' >> $package/${prog}.html
 			cp -f $package/${prog}.html ../www/gmt/doc/html
 		fi
-	done < $$.lis
+	done < ../$$.lis
 done
 cd ..
 
