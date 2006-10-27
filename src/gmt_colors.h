@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_colors.h,v 1.21 2006-05-27 01:31:16 remko Exp $
+ *	$Id: gmt_colors.h,v 1.22 2006-10-27 23:45:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -23,7 +23,7 @@
  * Date:	10-AUG-1995
  * Revised:	10-MAY-1998
  *		29-APR-2000 PW: Sped-up calculations of colors
- * Version:	3.4
+ * Version:	4.1.x
  */
 
 #ifndef _GMT_COLORS_H

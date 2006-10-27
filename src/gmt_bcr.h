@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.h,v 1.9 2005-12-17 05:59:21 pwessel Exp $
+ *	$Id: gmt_bcr.h,v 1.10 2006-10-27 23:45:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -27,7 +27,7 @@
 
    Author:	Walter H F Smith
    Date:	23 September, 1993
-   Version:	3.4
+   Version:	4.1.x
 
    This include file defines structures and functions used.
 */

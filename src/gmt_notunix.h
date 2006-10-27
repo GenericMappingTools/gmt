@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.13 2006-10-23 03:35:57 pwessel Exp $
+ *	$Id: gmt_notunix.h,v 1.14 2006-10-27 23:45:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -34,7 +34,7 @@
  *
  * Author:	Paul Wessel
  * Date:	09-NOV-1999
- * Version:	3.4
+ * Version:	4.1.x
  *
  */
 

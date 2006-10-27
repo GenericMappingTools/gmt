@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.41 2006-03-25 03:56:52 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.42 2006-10-27 23:45:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -20,7 +20,7 @@
  *
  * Author:	Walter H. F. Smith
  * Date:	12-JUN-1995
- * Version:	3.4
+ * Version:	4.1.x
  * Revised:	12-AUG-1998
  *		06-JAN-1999 P Wessel: Added GMT_ber, GMT_bei, GMT_ker, GMT_kei
  *		12-JAN-1999 P Wessel: Added GMT_plm

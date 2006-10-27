@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.23 2006-10-24 17:47:17 pwessel Exp $
+ *	$Id: gmt_shore.c,v 1.24 2006-10-27 23:45:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -38,7 +38,7 @@
  *
  * Author:	Paul Wessel
  * Date:	13-JUN-2000
- * Version:	3.4
+ * Version:	4.1.x
  *
  */
 

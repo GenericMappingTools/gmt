@@ -7,7 +7,7 @@
  * of latitudes used in GMT
  *
  * W H F Smith, 10--13 May 1999.
- * Version:	3.4
+ * Version:	4.1.x
  */
 
 #define GMT_LATSWAP_G2A 0	/* input = geodetic;   output = authalic   */

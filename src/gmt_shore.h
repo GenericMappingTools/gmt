@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.h,v 1.12 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: gmt_shore.h,v 1.13 2006-10-27 23:45:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -25,7 +25,7 @@
  * Author:	Paul Wessel
  * Date:	12-AUG-1995
  * Revised:	15-AUG-1998
- * Version:	3.4
+ * Version:	4.1.x
  */
 
 #include "netcdf.h"

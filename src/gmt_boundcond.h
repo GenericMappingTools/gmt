@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_boundcond.h,v 1.7 2005-12-17 05:59:21 pwessel Exp $
+ *	$Id: gmt_boundcond.h,v 1.8 2006-10-27 23:45:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -21,7 +21,7 @@
  *
  * Author:	W H F Smith
  * Date:	17 April 1998
- * Version:	3.4
+ * Version:	4.1.x
  *
  */
 
