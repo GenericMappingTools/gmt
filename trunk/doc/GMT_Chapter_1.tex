@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.46 2006-10-26 18:03:06 remko Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.47 2006-10-27 01:08:58 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -36,7 +36,10 @@ history of the development milestones in the 4.x series.
 
 \subsection{Overview of \gmt\ 4.1.4 [Nov-1, 2006]}
 
-Changes in \GMT\ 4.1.4 are gain relatively minor and predominantly bug fixes.  We have added
+Changes in \GMT\ 4.1.4 are again relatively minor and predominantly bug fixes.  One imporant
+new feature is that \GMT\ can now automatically recognize the format of the grd file given
+to a program.  The use of the ``=id'' mechanism is now only needed when writing an output file in
+a grid format other than the netCDF default.  We have also added
 a new user directory pointed to by {\bf GMT\_USERDIR} (default directory is \filename{\~/.gmt})
 where items such as \filename{.gmtdefaults4} will be looked for.  Additionally, a few enhancements
 have been made to overcome limitations in the previous versions:
@@ -50,10 +53,9 @@ have been made to overcome limitations in the previous versions:
 \item \GMTprog{psscale} will now invert the color scale if a negative length is provided, and if
 \Opt{I} is given when \Opt{L}{\it gap} is in effect we will modify the constant colors accordingly.
 \item \GMTprog{pshistogram}'s option \Opt{I} can now accept a modifier {\bf O} to output all bin data even if $y = 0$.
-\item \GMTprog{misc/ps2raster} Many improvements; added EPS output; high-quality PDF output.
+\item \GMTprog{misc/ps2raster} has many improvements; added EPS output; high-quality PDF output.
 Also removed -dDOINTERPOLATE option which caused inversion of colour map and had no benefits.
-Did not look in current dir for *.def files\item New environment variable {\bf GMT\_USERDIR} [by default \~/.gmt] points to a directory
-which can contain user initialization files such as default settings.
+Did not look in current dir for *.def files.
 \end{enumerate}
 
 Below is a list of previous problems (some accidentily introduced in \gmt\ 4.1.3)
@@ -71,7 +73,7 @@ if {\bf HOME} is not set.
 \item [\GMTprog{gmt\_nc.c}]: Made sure no garbage remains under Cygwin when using \GMTfunc{strncpy}.
 \item [\GMTprog{gmt\_plot.c}]: Bugs related to annotations with \Opt{JPa} and its {\bf z} modifier fixed.
 Log gridlines did not work for 3-D view.  3-D axis label would sometimes get misplaced due to round-off.
-3-D map scale did not project correctly.
+3-D map scale did not project correctly.  Duplicate title could appear if \Opt{JX} was used and one axis was geographic (d)
 \item [\GMTprog{pslib.c}]: Fixed memory management in LZW compression (memory leak).  Improved EPS conformance.
 \item [\GMTprog{filter1d}]: Robust option used extreme rather than median to determine the outliers.
 \item [\GMTprog{gmtconvert}]: Did not have \Opt{L} listed in synopsis.
