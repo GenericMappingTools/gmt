@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.247 2006-10-27 18:47:02 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.248 2006-10-27 18:51:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4712,7 +4712,7 @@ void GMT_prepare_3D (void) {	/* Initialize 3-D parameters */
 	project_info.z_bottom = project_info.z_top = 0.0;
 }
 
-int GMT_decode_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN cmd)
+int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN cmd)
 {
 	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz) */
 	int decode_error = 0, bset = 0, j, n, k, len, slash = 0, one, colon;
