@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.246 2006-10-23 03:35:57 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.247 2006-10-27 18:47:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4722,7 +4722,7 @@ int GMT_decode_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEA
 	static char *bar_symbols[2] = {"b", "-boOuU"};
 
 	p->n_required = p->convert_angles = 0;
-	p->user_unit = p->shrink = p->read_vector = FALSE;
+	p->user_unit = p->shrink = p->read_vector = p->base_set = FALSE;
 
 	if (!text[0]) {	/* No symbol or size given */
 		p->size_x = p->size_y = 0.0;
@@ -4862,7 +4862,10 @@ int GMT_decode_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEA
 		case 'b':
 			p->symbol = GMT_SYMBOL_BAR;
 			p->size_x *= 0.5;		/* We will use +- to get full width */
-			if (bset) p->base = atof (&text[bset+1]);
+			if (bset) {
+				p->base = atof (&text[bset+1]);
+				p->base_set = TRUE;
+			}
 			break;
 		case 'C':
 		case 'c':
