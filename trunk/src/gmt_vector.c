@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.9 2006-03-22 05:20:11 pwessel Exp $
+ *	$Id: gmt_vector.c,v 1.10 2006-10-27 23:45:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -19,7 +19,7 @@
 /*
  * Author:	Walter H.F. Smith
  * Date:	12-JUL-2000
- * Version:	3.4
+ * Version:	4.1.x
  */
  
 #define GMT_WITH_NO_PS

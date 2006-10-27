@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.50 2006-08-24 03:07:45 remko Exp $
+ *	$Id: gmt_io.h,v 1.51 2006-10-27 23:45:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -24,7 +24,7 @@
  *
  * Author:	Paul Wessel
  * Date:	24-JAN-2000
- * Version:	3.4
+ * Version:	4.1.x
  *
  */
 

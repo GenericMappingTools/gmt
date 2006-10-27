@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.43 2006-10-26 21:37:04 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.44 2006-10-27 23:45:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -22,7 +22,7 @@
  * Author:	Paul Wessel
  * Date:	26-FEB-1990
  * Revised:	24-MAR-2000
- * Version:	3.4
+ * Version:	4.1.x
  *
  */
 #ifndef _GMT_PROJECT_H

@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.58 2006-10-25 02:25:10 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.59 2006-10-27 23:45:22 pwessel Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -11,7 +11,7 @@
 #	Authors:	Paul Wessel, SOEST, University of Hawaii
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
 #
-#	Date:		04-MAR-2006
+#	Date:		27-OCT-2006
 #-------------------------------------------------------------------------------
 #	Default setup
 #-------------------------------------------------------------------------------
