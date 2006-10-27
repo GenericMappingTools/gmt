@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.h,v 1.6 2006-10-11 02:25:13 remko Exp $
+ *	$Id: gmt_plot.h,v 1.7 2006-10-27 18:47:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -95,6 +95,7 @@ struct GMT_SYMBOL {
 
 	double base;		/* From what level to draw the bar */
 	BOOLEAN user_unit;	/* if TRUE */
+	BOOLEAN base_set;	/* TRUE if user provided a custom base [otherwise default to bottom axis */
 
 	/* These apply to vectors */
 

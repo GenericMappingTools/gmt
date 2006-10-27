@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.62 2006-10-17 20:26:46 remko Exp $
+ *	$Id: gmt_init.h,v 1.63 2006-10-27 18:51:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -62,7 +62,7 @@ EXTERN_MSC void GMT_set_measure_unit (char option, char unit);
 EXTERN_MSC void GMT_setdefaults (int argc, char **argv);
 EXTERN_MSC void GMT_syntax (char option);
 EXTERN_MSC char *GMT_getdefpath (int get);
-EXTERN_MSC int GMT_decode_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN cmd);
+EXTERN_MSC int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN cmd);
 EXTERN_MSC void GMT_extract_label (char *line, char *label);
 EXTERN_MSC int GMT_setparameter(char *keyword, char *value);
 
