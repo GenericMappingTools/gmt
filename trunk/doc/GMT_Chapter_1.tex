@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.49 2006-10-28 03:12:50 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.50 2006-10-28 05:11:50 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -72,7 +72,8 @@ if {\bf HOME} is not set.
 \item [\GMTprog{gmt\_nc.c}]: Made sure no garbage remains under Cygwin when using \GMTfunc{strncpy}.
 \item [\GMTprog{gmt\_plot.c}]: Bugs related to annotations with \Opt{JPa} and its {\bf z} modifier fixed.
 Log gridlines did not work for 3-D view.  3-D axis label would sometimes get misplaced due to round-off.
-3-D map scale did not project correctly.  Duplicate title could appear if \Opt{JX} was used and one axis was geographic (d)
+3-D map scale did not project correctly.  Duplicate title could appear if \Opt{JX} was used and one axis was geographic (d).
+Needed to add secondary font to list to be encoded.
 \item [\GMTprog{pslib.c}]: Fixed memory management in LZW compression (memory leak).  Improved EPS conformance.
 \item [\GMTprog{filter1d}]: Robust option used extreme rather than median to determine the outliers.
 \item [\GMTprog{gmtconvert}]: Did not have \Opt{L} listed in synopsis.
@@ -98,6 +99,7 @@ Did not change output mode to binary (Windows only) if \Opt{M} and \Opt{b} were 
 \item [\GMTprog{pslegend}]: Did not replace octagons with polygon form when pattern was requested.
 Did not consider if absolute coordinates were given in \Opt{X} and \Opt{Y}. Passed the wrong character code
 when {\bf M} was chosen with a plain scale modifier.
+\item [\GMTprog{psscale}]: A vertical bar with a label placed along it was mis-justified.
 \item [\GMTprog{pstext}]: Default for \Opt{G} is now {\bf BASEMAP\_FRAME\_RGB} as for other map annotations.
 \item [\GMTprog{psxyz}]: \Opt{C} for symbols did not pick up color fill.
 \item [\GMTprog{trend2d}]: Processing of \Opt{F} happened after checking.
