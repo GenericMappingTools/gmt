@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.184 2006-10-28 05:11:50 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.185 2006-10-28 23:51:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3392,6 +3392,23 @@ void GMT_rect3D (double x, double y, double z, double xsize, double ysize, int r
 	ps_patch (plot_x, plot_y, 4, rgb, outline);
 }
 
+void GMT_rotrect3D (double x, double y, double z, double direction, double xsize, double ysize, int rgb[], int outline)
+{
+	int i;
+	double xx[4], yy[4], plot_x[4], plot_y[4], x_prime, y_prime, sin_azimuth, cos_azimuth;
+
+	xsize *= 0.5;	ysize *= 0.5;
+	sincos (direction * D2R, &sin_azimuth, &cos_azimuth);
+	xx[0] = xx[3] = -xsize;	xx[1] = xx[2] = xsize;
+	yy[0] = yy[1] = -ysize;	yy[2] = yy[3] = ysize;
+	for (i = 0; i < 4; i++) {
+		x_prime = x + xx[i] * cos_azimuth - yy[i] * sin_azimuth;
+		y_prime = y + xx[i] * sin_azimuth + yy[i] * cos_azimuth;
+		GMT_xyz_to_xy (x_prime, y_prime, z, &plot_x[i], &plot_y[i]);
+	}
+	ps_patch (plot_x, plot_y, 4, rgb, outline);
+}
+
 void GMT_circle3D (double x, double y, double z, double size, int rgb[], int outline)
 {
 	/* Must plot a squashed circle */
@@ -4226,6 +4243,78 @@ void GMT_plot_ellipse (double lon, double lat, double z, double major, double mi
 
 	GMT_free ((void *)px);
 	GMT_free ((void *)py);
+}
+
+void GMT_plot_rectangle (double lon, double lat, double z, double width, double height, double azimuth, struct GMT_FILL fill, int outline)
+{
+	/* GMT_plot_rectangle takes the location, axes (in km), and azimuth of a rectangle
+	   and draws the rectangle using the chosen map projection */
+
+	double sin_azimuth, cos_azimuth, sinp, cosp, x, y, x_prime, y_prime, rho, c, A, W, H;
+	double sin_c, cos_c, center, lon_w, lat_w, lon_h, lat_h, xp, yp, xw, yw, xh, yh, tmp;
+
+	GMT_azim_to_angle (lon, lat, 0.1, azimuth, &tmp);
+	azimuth = tmp;
+	GMT_geo_to_xy (lon, lat, &xp, &yp);		/* Center of rectangle */
+
+	width *= 0.5;		height *= 0.5;		/* Get half-dimensions */
+	width *= 1000.0;	height *= 1000.0;	/* Convert to meters */
+	/* azimuth = 90.0 - azimuth; */			/* Because the code below originally used directions instead */
+	A = azimuth;
+	azimuth *= D2R;
+	sincos (azimuth, &sin_azimuth, &cos_azimuth);
+	sincos (lat * D2R, &sinp, &cosp);		/* Set up azimuthal equidistant projection */
+
+	center = (project_info.central_meridian < project_info.w || project_info.central_meridian > project_info.e) ? 0.5 * (project_info.w + project_info.e) :  project_info.central_meridian;
+
+	/* Get first point width away from center */
+	sincos (0.0, &y, &x);
+	x *= width;
+	y *= height;
+	/* Get rotated coordinates in m */
+	x_prime = x * cos_azimuth - y * sin_azimuth;
+	y_prime = x * sin_azimuth + y * cos_azimuth;
+	/* Convert m back to lon lat */
+	rho = hypot (x_prime, y_prime);
+	c = rho / project_info.EQ_RAD;
+	sincos (c, &sin_c, &cos_c);
+	lat_w = d_asin (cos_c * sinp + (y_prime * sin_c * cosp / rho)) * R2D;
+	if ((lat - 90.0) > -GMT_CONV_LIMIT)	/* origin in Northern hemisphere */
+		lon_w = lon + R2D * d_atan2 (x_prime, -y_prime);
+	else if ((lat + 90.0) < GMT_CONV_LIMIT)	/* origin in SOuthern hemisphere */
+		lon_w = lon + R2D * d_atan2 (x_prime, y_prime);
+	else
+		lon_w = lon + R2D * d_atan2 (x_prime * sin_c, (rho * cosp * cos_c - y_prime * sinp * sin_c));
+	while ((lon_w - center) < -180.0) lon_w += 360.0;
+	while ((lon_w - center) > +180.0) lon_w -= 360.0;
+	GMT_geo_to_xy (lon_w, lat_w, &xw, &yw);	/* Get projected x,y coordinates */
+	W = 2.0 * hypot (xp - xw, yp - yw);	/* Estimate of rectangle width in plot units (inch) */
+	/* Get 2nd point height away from center */
+	sincos (M_PI_2, &y, &x);
+	x *= width;
+	y *= height;
+	/* Get rotated coordinates in m */
+	x_prime = x * cos_azimuth - y * sin_azimuth;
+	y_prime = x * sin_azimuth + y * cos_azimuth;
+	/* Convert m back to lon lat */
+	rho = hypot (x_prime, y_prime);
+	c = rho / project_info.EQ_RAD;
+	sincos (c, &sin_c, &cos_c);
+	lat_h = d_asin (cos_c * sinp + (y_prime * sin_c * cosp / rho)) * R2D;
+	if ((lat - 90.0) > -GMT_CONV_LIMIT)	/* origin in Northern hemisphere */
+		lon_h = lon + R2D * d_atan2 (x_prime, -y_prime);
+	else if ((lat + 90.0) < GMT_CONV_LIMIT)	/* origin in SOuthern hemisphere */
+		lon_h = lon + R2D * d_atan2 (x_prime, y_prime);
+	else
+		lon_h = lon + R2D * d_atan2 (x_prime * sin_c, (rho * cosp * cos_c - y_prime * sinp * sin_c));
+	while ((lon_h - center) < -180.0) lon_h += 360.0;
+	while ((lon_h - center) > +180.0) lon_h -= 360.0;
+	GMT_geo_to_xy (lon_h, lat_h, &xh, &yh);
+	H = 2.0 * hypot (xp - xh, yp - yh);	/* Estimate of rectangle width in plot units (inch) */
+	if (project_info.three_D)
+		GMT_rotrect3D (xp, yp, z, A, W, H, fill.rgb, outline);
+	else
+		ps_rotaterect (xp, yp, A, W, H, fill.rgb, outline);
 }
 
 void GMT_draw_fence (double x[], double y[], double z, int n, struct GMT_FRONTLINE *f, struct GMT_FILL *g, BOOLEAN outline)

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_symbol.h,v 1.17 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: gmt_symbol.h,v 1.18 2006-10-28 23:51:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -21,7 +21,7 @@
  *
  * Author: Paul Wessel
  * Date:	13-SEP-2001
- * Version:	4
+ * Version:	4.1.x
  */
 
 #ifndef _GMT_SYMBOLS_H

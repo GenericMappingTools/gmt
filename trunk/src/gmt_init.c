@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.248 2006-10-27 18:51:06 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.249 2006-10-28 23:51:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4718,7 +4718,7 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 	int decode_error = 0, bset = 0, j, n, k, len, slash = 0, one, colon;
 	BOOLEAN check, old_style;
 	char symbol_type, txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], text_cp[GMT_LONG_TEXT], *c;
-	static char *allowed_symbols[2] = {"-aAbCcDdeEfGgHhIijNnpqrSsTtVvwWxy", "-aAbCcDdeEfGgHhIiNnoOpqrSsTtuUVvwWxy"};
+	static char *allowed_symbols[2] = {"-aAbCcDdeEfGgHhIijJNnpqrSsTtVvwWxy", "-aAbCcDdeEfGgHhIijJNnoOpqrSsTtuUVvwWxy"};
 	static char *bar_symbols[2] = {"b", "-boOuU"};
 
 	p->n_required = p->convert_angles = 0;
@@ -4980,6 +4980,8 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 		case 'i':
 			p->symbol = GMT_SYMBOL_ITRIANGLE;
 			break;
+		case 'J':	/* Expect dimensions in km to be scaled based on -J */
+			p->convert_angles = 1;
 		case 'j':
 			p->symbol = GMT_SYMBOL_ROTATERECT;
 			p->n_required = 3;

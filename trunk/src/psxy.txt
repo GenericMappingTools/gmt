@@ -129,7 +129,7 @@ if \fIsize\fP is in x-units [Default is plot-distance units]. By default,
 Same as \fB\-Se\fP, except azimuth (in degrees east of north) should be given instead of direction.  The azimuth will
 be mapped into an angle based on the chosen map projection (\fB\-Se\fP leaves the directions
 unchanged.)  Furthermore, the axes lengths must be given in km instead of plot-distance units.  An exception occurs for
-a linear projection if which we assume the ellipse axes are given in the same units as \fB\-R\fP.
+a linear projection in which we assume the ellipse axes are given in the same units as \fB\-R\fP.
 .TP
 .B \-Sf
 \fBf\fPront.  \fB\-Sf\fP\fIgap/size\fP[\fIdir\fP][\fItype\fP][:\fIoffset\fP].  Supply distance gap between symbols and symbol size.
@@ -147,6 +147,12 @@ the first symbol from the beginning of the front by that amount [Default is 0].
 .TP
 .B \-Sj
 Rotated rectangle.  Direction (in degrees counter-clockwise from horizontal), x-dimension, and y-dimension must be found in columns 3, 4, and 5.
+.TP
+.B \-SJ
+Same as \fB\-Sj\fP, except azimuth (in degrees east of north) should be given instead of direction.  The azimuth will
+be mapped into an angle based on the chosen map projection (\fB\-Sj\fP leaves the directions
+unchanged.)  Furthermore, the dimensions must be given in km instead of plot-distance units.  An exception occurs for
+a linear projection in which we assume the dimensions are given in the same units as \fB\-R\fP.
 .TP
 .B \-Sk
 \fBk\fPustom symbol.  Append <name>/\fIsize\fP, and we will look for a definition file called

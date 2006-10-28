@@ -455,9 +455,20 @@ void \fBps_rect\fR (\fIx1, y1, x2, y2, rgb, outline\fP)
 .br
 \fBdouble\fR \fIx1, y1, x2, y2\fP;
 .br
-int r\fIed, green, blue, outline;\fP
+int \fIrgb[3], outline;\fP
 .RS 10
 Plots a colored rectangle. (\fIx1,y1)\fP and (\fIx2,y2\fP) are any two corners on a diagonal.
+If \fIoutline\fP == 1, the outline will be drawn using current pen-width and -pattern.
+.RE
+.IP
+void \fBps_rotaterect\fR (\fIx, y, angle, xsize, ysize, rgb, outline\fP)
+.br
+\fBdouble\fR \fIx, y, angle, xsize, ysize\fP;
+.br
+int \fIrgb[3], outline;\fP
+.RS 10
+Plots a colored rectangle rotated \fIangle\fP degrees from baseline. (\fIx,y)\fP is the center
+and (\fIxsize,ysize\fP) are the dimensions.
 If \fIoutline\fP == 1, the outline will be drawn using current pen-width and -pattern.
 .RE
 .IP

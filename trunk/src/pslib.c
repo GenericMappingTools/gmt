@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.128 2006-09-13 11:15:03 remko Exp $
+ *	$Id: pslib.c,v 1.129 2006-10-28 23:51:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1651,11 +1651,13 @@ void ps_rotaterect (double x, double y, double angle, double x_len, double y_len
 	int ix, iy, idx, idy, pmode;
 	ix = irint (x * ps.scale);
 	iy = irint (y * ps.scale);
+	fprintf (ps.fp, "V %d %d T %g R\n", ix, iy, angle);
+	ix = irint (-0.5 * x_len * ps.scale);
+	iy = irint (-0.5 * y_len * ps.scale);
 	idx = irint (x_len * ps.scale);
 	idy = irint (y_len * ps.scale);
-	fprintf (ps.fp, "V %d %d T %g R\n", ix, iy, angle);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d 0 0 R%d U\n", idy, idx, outline + psl_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d %d R%d U\n", idy, idx, ix, iy, outline + psl_outline_offset[pmode]);
 	ps.npath = 0;
 }
 
