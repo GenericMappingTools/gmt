@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.263 2006-10-18 19:01:10 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.264 2006-10-28 05:11:50 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3445,6 +3445,8 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 				else	/* Go to next point in line */
 					i++;
 			}
+			if (G->n_label == 0 && gmtdefs.verbose) fprintf (stderr, "%s: Warning: Your -Gd|D option produced no contour labels\n", GMT_program);
+
 		}
 		if (G->number) {	/* Place prescribed number of labels evenly along contours */
 			int nc;
@@ -3501,6 +3503,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 				else	/* All in vain... */
 					GMT_free ((void *)new_label);
 			}
+			if (G->n_label == 0 && gmtdefs.verbose) fprintf (stderr, "%s: Warning: Your -Gn|N option produced no contour labels\n", GMT_program);
 		}
 		if (G->crossing) {	/* Determine label positions based on crossing lines */
 			int left, right, line_no;
@@ -3546,6 +3549,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 				GMT_x_free (&G->XC);
 			}
 			GMT_free ((void *)G->ylist);
+			if (G->n_label == 0 && gmtdefs.verbose) fprintf (stderr, "%s: Warning: Your -Gx|X|l|L option produced no contour labels\n", GMT_program);
 		}
 		if (G->fixed) {	/* Prescribed point locations for labels that match points in input records */
 			double dist, min_dist;
@@ -3578,6 +3582,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 				}
 			}
 
+			if (G->n_label == 0 && gmtdefs.verbose) fprintf (stderr, "%s: Warning: Your -Gf option produced no contour labels\n", GMT_program);
 		}
 		GMT_contlabel_fixpath (&xx, &yy, map_dist, &nn, G);	/* Inserts the label x,y into path */
 		GMT_contlabel_addpath (xx, yy, nn, zval, label, TRUE, G);		/* Appends this path and the labels to list */
