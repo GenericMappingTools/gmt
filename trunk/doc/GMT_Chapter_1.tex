@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.50 2006-10-28 05:11:50 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.51 2006-10-28 19:21:52 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -103,7 +103,7 @@ when {\bf M} was chosen with a plain scale modifier.
 \item [\GMTprog{pstext}]: Default for \Opt{G} is now {\bf BASEMAP\_FRAME\_RGB} as for other map annotations.
 \item [\GMTprog{psxyz}]: \Opt{C} for symbols did not pick up color fill.
 \item [\GMTprog{trend2d}]: Processing of \Opt{F} happened after checking.
-\item [\GMTprog{xyz2grd}]: Had \Opt{Az} as default rather than no \Opt{A}.
+\item [\GMTprog{xyz2grd}]: Had \Opt{Az} as default rather than no \Opt{A}.  Fixed bad header parsing when \Opt{E} was selected.
 \item [\GMTprog{dbase/grdraster}]: Only do 360-degree wrapping if working on a geographic grid.
 \item [\GMTprog{mgd77/mgd77list}]: Did not process time when \Opt{Am}2$|$4 was set and time was not requested as output.
 Also, did not process time when \Opt{Am}2$|$4 was set and time was not requested as output.
