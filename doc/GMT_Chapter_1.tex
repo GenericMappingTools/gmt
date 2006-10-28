@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.48 2006-10-27 08:34:05 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.49 2006-10-28 03:12:50 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -96,7 +96,8 @@ the volume is properly corrected for the baseline height.
 Did not change output mode to binary (Windows only) if \Opt{M} and \Opt{b} were set.
 \item [\GMTprog{pscontour}]: The \Opt{D} dump option wrote projected instead of original coordinates.
 \item [\GMTprog{pslegend}]: Did not replace octagons with polygon form when pattern was requested.
-Did not consider if absolute coordinates were given in \Opt{X} and \Opt{Y}.
+Did not consider if absolute coordinates were given in \Opt{X} and \Opt{Y}. Passed the wrong character code
+when {\bf M} was chosen with a plain scale modifier.
 \item [\GMTprog{pstext}]: Default for \Opt{G} is now {\bf BASEMAP\_FRAME\_RGB} as for other map annotations.
 \item [\GMTprog{psxyz}]: \Opt{C} for symbols did not pick up color fill.
 \item [\GMTprog{trend2d}]: Processing of \Opt{F} happened after checking.
