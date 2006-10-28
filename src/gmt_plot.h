@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.h,v 1.7 2006-10-27 18:47:02 pwessel Exp $
+ *	$Id: gmt_plot.h,v 1.8 2006-10-28 23:51:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -131,6 +131,7 @@ EXTERN_MSC void GMT_ellipse3D (double x, double y, double z, double direction, d
 EXTERN_MSC void GMT_fill (double x[], double y[], int n, struct GMT_FILL *fill, BOOLEAN outline);
 EXTERN_MSC void GMT_fill_polygon (double *lon, double *lat, double z, int n, struct GMT_FILL *F, BOOLEAN outline);
 EXTERN_MSC void GMT_plot_ellipse (double lon, double lat, double z, double major, double minor, double azimuth, struct GMT_FILL fill, int outline);
+EXTERN_MSC void GMT_plot_rectangle (double lon, double lat, double z, double width, double height, double azimuth, struct GMT_FILL fill, int outline);
 EXTERN_MSC void GMT_draw_fence (double x[], double y[], double z, int n, struct GMT_FRONTLINE *f, struct GMT_FILL *g, BOOLEAN outline);
 EXTERN_MSC void GMT_grid_clip_off (void);
 EXTERN_MSC void GMT_grid_clip_on (struct GRD_HEADER *h, int rgb[], int flag);
@@ -145,6 +146,7 @@ EXTERN_MSC void GMT_pentagon3D (double x, double y, double z, double size, int r
 EXTERN_MSC void GMT_pie3D (double x, double y, double z, double size, double dir1, double dir2, int rgb[], int outline);
 EXTERN_MSC void GMT_plot_line (double *x, double *y, int *pen, int n);
 EXTERN_MSC void GMT_rect3D (double x, double y, double z, double xsize, double ysize, int rgb[], int outline);
+EXTERN_MSC void GMT_rotrect3D (double x, double y, double z, double direction, double xsize, double ysize, int rgb[], int outline);
 EXTERN_MSC void GMT_setpen (struct GMT_PEN *pen);
 EXTERN_MSC void GMT_square3D (double x, double y, double z, double size, int rgb[], int outline);
 EXTERN_MSC void GMT_star3D (double x, double y, double z, double size, int rgb[], int outline);

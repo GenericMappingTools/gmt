@@ -129,6 +129,15 @@ octa\fBg\fPon.  \fIsize\fP is diameter of circumscribing circle.
 .B \-Si
 \fBi\fPnverted triangle.  \fIsize\fP is diameter of circumscribing circle.
 .TP
+.B \-Sj
+Rotated rectangle.  Direction (in degrees counter-clockwise from horizontal), x-dimension, and y-dimension must be found in columns 4, 5, and 6.
+.TP
+.B \-SJ
+Same as \fB\-Sj\fP, except azimuth (in degrees east of north) should be given instead of direction.  The azimuth will
+be mapped into an angle based on the chosen map projection (\fB\-Sj\fP leaves the directions
+unchanged.)  Furthermore, the dimensions must be given in km instead of plot-distance units.  An exception occurs for
+a linear projection in which we assume the dimensions are given in the same units as \fB\-R\fP.
+.TP
 .B \-Sk
 \fBk\fPustom symbol.  Append <name>/\fIsize\fP, and we will look for a definition file called
 <name>.def in (1) the current directory or (2) in ~/.gmt or (3) in \fB$GMTHOME\fP/share/custom.  The symbol as defined

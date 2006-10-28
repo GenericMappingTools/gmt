@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.51 2006-10-28 19:21:52 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.52 2006-10-28 23:51:45 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -50,9 +50,11 @@ have been made to overcome limitations in the previous versions:
 \item \GMTprog{grdedit} has a new option \Opt{E} to transpose the entire grid.
 \item \GMTprog{grdreformat} now supports the \Opt{f} option.
 \item \GMTprog{nearneighbor} will now optionally accept a {\it min\_sectors} argument appended to the \Opt{N} option.
+\item \GMTprog{pshistogram}'s option \Opt{I} can now accept a modifier {\bf O} to output all bin data even if $y = 0$.
 \item \GMTprog{psscale} will now invert the color scale if a negative length is provided, and if
 \Opt{I} is given when \Opt{L}{\it gap} is in effect we will modify the constant colors accordingly.
-\item \GMTprog{pshistogram}'s option \Opt{I} can now accept a modifier {\bf O} to output all bin data even if $y = 0$.
+\item \GMTprog{psxy} and \item \GMTprog{psxyz} have a new option \Opt{Sj}$|${\bf J} that plots a rotatable
+rectangle but otherwise behaves similarly to \Opt{Se}$|${\bf E}.
 \item \GMTprog{misc/ps2raster} has many improvements; added EPS output; high-quality PDF output.
 Also removed -dDOINTERPOLATE option which caused inversion of colour map and had no benefits.
 \end{enumerate}
