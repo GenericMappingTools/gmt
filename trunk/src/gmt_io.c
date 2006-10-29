@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.120 2006-10-29 02:29:19 remko Exp $
+ *	$Id: gmt_io.c,v 1.121 2006-10-29 22:19:55 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2382,21 +2382,23 @@ int	GMT_scanf (char *s, int expectation, double *val)
 		return (GMT_scanf_geo (s, val));
 	}
 
-	if (expectation == GMT_IS_FLOAT) {
+	else if (expectation == GMT_IS_FLOAT) {
 		/* True if no special format is expected or allowed  */
 		return (GMT_scanf_float (s, val));
 	}
 
-	if (expectation == GMT_IS_RELTIME) {
+	else if (expectation == GMT_IS_RELTIME) {
 		/* True if we expect to read a float with no special
-		formatting, and then convert that float to our time
-		based on user's epoch and units.  */
+		formatting (except for an optional trailing 't'), and then
+		convert that float to our time based on user's epoch and units.  */
+		callen = strlen (s) - 1;
+		if (s[callen] == 't') s[callen] = '\0';
 		if ( ( GMT_scanf_float (s, &x) ) == GMT_IS_NAN) return (GMT_IS_NAN);
 		*val = GMT_dt_from_usert (x);
 		return (GMT_IS_ABSTIME);
 	}
 
-	if (expectation == GMT_IS_ABSTIME) {
+	else if (expectation == GMT_IS_ABSTIME) {
 		/* True when we expect to read calendar and/or
 		clock strings in user-specified formats.  If both
 		are present, they must be in the form
@@ -2443,17 +2445,19 @@ int	GMT_scanf (char *s, int expectation, double *val)
 		return (GMT_IS_ABSTIME);
 	}
 
-	if (expectation == GMT_IS_ARGTIME) {
+	else if (expectation == GMT_IS_ARGTIME) {
 		return (GMT_scanf_argtime (s, val));
 	}
 
-	if (expectation & GMT_IS_UNKNOWN) {
+	else if (expectation & GMT_IS_UNKNOWN) {
 		/* True if we dont know but must try both geographic or float formats  */
 		return (GMT_scanf_geo (s, val));
 	}
 
-	fprintf (stderr, "GMT_LOGIC_BUG:  GMT_scanf() called with invalid expectation.\n");
-	return (GMT_IS_NAN);
+	else {
+		fprintf (stderr, "GMT_LOGIC_BUG:  GMT_scanf() called with invalid expectation.\n");
+		return (GMT_IS_NAN);
+	}
 }
 
 int	GMT_scanf_argtime (char *s, GMT_dtime *t)
@@ -2477,6 +2481,8 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t)
 		string here, and we hard-wire something here.
 
 		The relative format must be decodable by GMT_scanf_float().
+		It may optionally end in 't' (which will be stripped off by
+		this routine).
 
 		The absolute format must have a T.  If it has a clock
 		string then it must be of the form
@@ -2511,9 +2517,10 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t)
 	int	hh, mm, j, k, i, dash, ival[3];
 	BOOLEAN negate_year = FALSE, got_yd = FALSE;
 
+	i = strlen(s)-1;
+	if (s[i] == 't') s[i] = '\0';
 	if ( (pt = strchr (s, (int)'T') ) == CNULL) {
-		/* There is no T.  This must decode with GMT_scanf_float()
-			or we die.  */
+		/* There is no T.  This must decode with GMT_scanf_float() or we die.  */
 		if ( ( GMT_scanf_float (s, &x) ) == GMT_IS_NAN) return (GMT_IS_NAN);
 		*t = GMT_dt_from_usert (x);
 		return (GMT_IS_ABSTIME);
@@ -2600,11 +2607,11 @@ int	GMT_scanf_arg (char *s, int expectation, double *val)
 
 	char c;
 
-	if (expectation == GMT_IS_UNKNOWN) {	/* Expectation for this column not set - must be determined if possible */
+	if (expectation == GMT_IS_UNKNOWN) {		/* Expectation for this column not set - must be determined if possible */
 		c = s[strlen(s)-1];
-		if (strchr (s, (int)'T'))			/* Found a T in the argument - assume Absolute time */
+		if (strchr (s, (int)'T'))		/* Found a T in the argument - assume Absolute time */
 			expectation = GMT_IS_ABSTIME;
-		else if (c == 't')				/* Found trailing t - assume Relative time */
+		else if (c == 't')			/* Found trailing t - assume Relative time */
 			expectation = GMT_IS_RELTIME;
 		else if (strchr ("WwEe", (int)c))	/* Found trailing W or E - assume Geographic longitudes */
 			expectation = GMT_IS_LON;
@@ -2612,9 +2619,9 @@ int	GMT_scanf_arg (char *s, int expectation, double *val)
 			expectation = GMT_IS_LAT;
 		else if (strchr ("DdGg", (int)c))	/* Found trailing G or D - assume Geographic coordinate */
 			expectation = GMT_IS_GEO;
-		else if (strchr (s, (int)':'))			/* Found a : in the argument - assume Geographic coordinates */
+		else if (strchr (s, (int)':'))		/* Found a : in the argument - assume Geographic coordinates */
 			expectation = GMT_IS_GEO;
-		else 						/* Found nothing - assume floating point */
+		else 					/* Found nothing - assume floating point */
 			expectation = GMT_IS_FLOAT;
 	}
 
