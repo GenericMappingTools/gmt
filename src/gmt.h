@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.135 2006-10-23 03:35:57 pwessel Exp $
+ *	$Id: gmt.h,v 1.136 2006-10-29 07:18:54 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -265,7 +265,7 @@ struct GMT_DEFAULTS {
 	int nan_rgb[3];			/* Color of NaNs [0/0/0] */
 	int color_image;		/* 0 = Adobe's colorimage, 1 = Tiles, 2 = RGB-separation */
 	int color_model;		/* 1 = read RGB, 2 = use RGB, 4 = read HSV, 8 = use HSV, 16 = read CMYK, 32 = use CMYK [1+2] */
-	char d_format[GMT_TEXT_LEN];	/* Default double output format [%lg] */
+	char d_format[GMT_TEXT_LEN];	/* Default double output format [%g] */
 	int degree_format;		/* 0 = <0/360/-90/90>, 1 = <-180/180/-90/90>, 2 = <0/180/0/90>
 					   3 = 0E/180E/180W/0W/90S/90N> */
 	int dpi;			/* Dots pr. inch plotter resolution [300] */

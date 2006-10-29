@@ -11,7 +11,7 @@
 	{128, 128, 128},	/* COLOR_NAN */
 	0,			/* COLOR_IMAGE */
 	3,			/* COLOR_MODEL */
-	"%lg",			/* D_FORMAT */
+	"%g",			/* D_FORMAT */
 	0,			/* DEGREE_FORMAT */
 	300,			/* DOTS_PR_INCH */
 	0,			/* ELLIPSOID */
