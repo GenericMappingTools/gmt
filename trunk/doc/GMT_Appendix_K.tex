@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_K.tex,v 1.13 2006-09-08 16:13:36 remko Exp $
+%	$Id: GMT_Appendix_K.tex,v 1.14 2006-10-29 09:41:17 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -210,7 +210,7 @@ and \mbox{-1500} km to +1500 km in the latitudinal direction.
 However, \GMT\ programs expects degrees in the \Opt{R} option that
 specifies the desired region.  Given the chosen map projection we
 can automate this process by using a simple cshell script that we
-call \progname{getbox}:
+call \progname{getbox.sh}:
 
 \input{scripts/getbox} 
 
@@ -218,7 +218,7 @@ Also, as we zoom in on the projection center we want to draw the
 outline of the next map region on the plot.  To do that we need
 the geographical coordinates of the four corners of the region
 rectangle.  Again, we automate this task by adding the simple
-script \progname{getrect}:
+script \progname{getrect.sh}:
 
 \input{scripts/getrect} 
 

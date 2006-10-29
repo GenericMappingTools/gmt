@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 21
 REM
-REM             $Id: job21.bat,v 1.9 2005-03-04 03:45:01 remko Exp $
+REM             $Id: job21.bat,v 1.10 2006-10-29 09:41:17 pwessel Exp $
 REM
 REM Purpose:    Plot a time-series
 REM
@@ -21,7 +21,7 @@ gmtset TIME_FORMAT_PRIMARY abbreviated CHAR_ENCODING ISOLatin1+
 
 REM Create a suitable -R string
 
-set R=-R1999-08-11T00:00:00/2004-03-12T00:00:00/0/300
+set R=-R1999-08-11T00:00:00/2006-11-01T00:00:00/0/300
 
 REM Lay down the basemap:
 
@@ -42,20 +42,20 @@ echo 05-May-00 0 > RHAT.pw
 echo 05-May-00 300 >> RHAT.pw
 psxy -R -J RHAT.pw -Wthinner,- -O -K >> example_21.ps
 echo 01-Jan-99 25 > RHAT.pw
-echo 01-Jan-05 25 >> RHAT.pw
+echo 01-Jan-07 25 >> RHAT.pw
 psxy -R -J RHAT.pw -Wthick,- -O -K >> example_21.ps
 gmtset INPUT_DATE_FORMAT yyyy-mm-dd
-echo 2004-03-12T00:00:00 25 12 0 17 RB Wessel purchase price | pstext -R -J -O -K -D-0.1i/0.05i -N >> example_21.ps
+echo 1999-08-11T00:00:00 25 12 0 17 LB Wessel purchase price | pstext -R -J -O -K -D2i/0.05i -N >> example_21.ps
 gmtset INPUT_DATE_FORMAT dd-o-yy
 
-REM Set smaller region for insert for trend since 2003
+REM Set smaller region for insert for trend since 2004
 
-set R=-R2003T/2004-03-12T00:00:00/0/30
+set R=-R2004T/2006-11-01T00:00:00/0/30
 
 REM Lay down the basemap, using Finnish annotations and place the insert in the upper right:
 
 gmtset TIME_LANGUAGE fi
-psbasemap %R% -JX6iT/3i -Bpa1Of3o/10:=$:ESw -Bs1Y/ -Glightblue -O -K -X3i -Y3i >> example_21.ps
+psbasemap %R% -JX6iT/3i -Bpa3Of3o/10:=$:ESw -Bs1Y/ -Glightblue -O -K -X3i -Y3i >> example_21.ps
 gmtset TIME_LANGUAGE us
 
 REM Again, plot close price as red line over yellow envelope of low/highs

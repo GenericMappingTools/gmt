@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	GMT Example 21  $Id: job21.sh,v 1.8 2005-03-04 03:45:01 remko Exp $
+#	GMT Example 21  $Id: job21.sh,v 1.9 2006-10-29 09:41:17 pwessel Exp $
 #
 # Purpose:	Plot a time-series
 # GMT progs:	gmtset, gmtconvert, minmax, psbasemap, psxy 
@@ -41,20 +41,20 @@ echo "05-May-00	0" > RHAT.pw
 echo "05-May-00	300" >> RHAT.pw
 psxy -R -J RHAT.pw -Wthinner,- -O -K >> example_21.ps
 echo "01-Jan-99	25" > RHAT.pw
-echo "01-Jan-05	25" >> RHAT.pw
+echo "01-Jan-07	25" >> RHAT.pw
 psxy -R -J RHAT.pw -Wthick,- -O -K >> example_21.ps
 gmtset INPUT_DATE_FORMAT yyyy-mm-dd
-echo "$e 25 12 0 17 RB Wessel purchase price" | pstext -R -J -O -K -D-0.1i/0.05i -N >> example_21.ps
+echo "$w 25 12 0 17 LB Wessel purchase price" | pstext -R -J -O -K -D2i/0.05i -N >> example_21.ps
 gmtset INPUT_DATE_FORMAT dd-o-yy
 
-# Get smaller region for insert for trend since 2003
+# Get smaller region for insert for trend since 2004
 
-R="-R2003T/$e/$s/30"
+R="-R2004T/$e/$s/30"
 
 # Lay down the basemap, using Finnish annotations and place the insert in the upper right:
 
 gmtset TIME_LANGUAGE fi
-psbasemap $R -JX6iT/3i -Bpa1Of3o/10:=\$:ESw -Bs1Y/ -Glightblue -O -K -X3i -Y3i >> example_21.ps
+psbasemap $R -JX6iT/3i -Bpa3Of3o/10:=\$:ESw -Bs1Y/ -Glightblue -O -K -X3i -Y3i >> example_21.ps
 gmtset TIME_LANGUAGE us
 
 # Again, plot close price as red line over yellow envelope of low/highs

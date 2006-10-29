@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.28 2006-10-26 18:03:06 remko Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.29 2006-10-29 09:41:17 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -760,7 +760,7 @@ As discussed in Section~\ref{sec:timeaxis}, the annotation of time-series
 is generally more complicated due to the extra degrees of freedom afforded
 by the dual annotation system.  In this example we will display the trend
 of the stock price of RedHat (RHAT) from their initial public offering until
-early 2004.  The datafile is a comma-separated table and the first few records
+late 2006.  The datafile is a comma-separated table and the records
 look like this:
 \begin{verbatim}
 Date,Open,High,Low,Close,Volume,Adj.Close*
@@ -771,7 +771,7 @@ Hence, we have a single header record and various prices in USD for each
 day of business.  We will plot the trend of the opening price as a red line superimposed on
 a yellow envelope representing the low-to-high fluctuation during each day.  We
 also indicate when and at what cost Paul Wessel bought a few shares, and zoom in
-on the developments since 2003; in the inset we label the time-axis in Finnish in honor
+on the developments since 2004; in the inset we label the time-axis in Finnish in honor
 of Linus Thorvalds.  Because the time coordinates are Y2K-challenged and the
 order is backwards (big units of years come \emph{after} smaller units like
 days) we must change the default input/output formats used by \GMT. Finally,
@@ -781,7 +781,7 @@ how it all comes out:
 \input{scripts/GMT_example_21} 
 
 which produces the plot in Figure~\ref{fig:GMT_example_21}, suggesting Wessel
-better hold on to those stocks for a while longer...
+has missed a few trains if he had hoped to cash in on the Internet bubble...
 
 \GMTfig[ht]{GMT_example_21}{Time-series of RedHat stock price since IPO.}
 
