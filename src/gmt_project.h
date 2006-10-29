@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.44 2006-10-27 23:45:23 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.45 2006-10-29 02:06:21 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -136,7 +136,7 @@ struct GMT_MAP_PROJECTIONS {
 	int xyz_projection[3];		/* For linear projection, 0 = linear, 1 = log10, 2 = pow */
 	BOOLEAN xyz_pos[3];		/* TRUE if x,y,z-axis increases in normal positive direction */
 	BOOLEAN compute_scale[3];	/* TRUE if axes lengths were set rather than scales */
-	BOOLEAN degree[2];		/* TRUE if we have linear projection with geographical data */
+	BOOLEAN degree[3];		/* TRUE if we have linear projection with geographical data */
 	double xyz_pow[3];		/* For GMT_POW projection */
 	double xyz_ipow[3];
 	
