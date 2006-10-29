@@ -97,6 +97,10 @@ and use black bars, run:
 .br
 .sp
 Since no y-range was specified, pshistogram will calculate ymax in even increments of 100.
+.SH BUGS
+The \fB\-W\fP option does not yet work properly with time series data (e.g., \fB\-f\fP0T).  Thus, such
+variable intervals as months and years are not calculated.  Instead, specify your interval in the
+same units as the current setting of \fBTIME_UNIT\fP.
 .SH "SEE ALSO"
 .IR GMT (GMTMANSECTION),
 .IR psbasemap (GMTMANSECTION),
