@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.83 2006-10-26 18:03:06 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.84 2006-10-29 04:43:32 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -29,7 +29,7 @@ which unit you intend to use.
 \begin{enumerate}
 \item Append the desired unit to the dimension you supply.  This
 way is explicit and clearly communicates what you intend, e.g.,
-\Opt{X}4\textbf{c} means 4 cm.
+\Opt{X}4\textbf{c} means the length being passed to the \Opt{X} switch is 4 cm.
 
 \item Set the parameter \textbf{MEASURE\_UNIT} to the desired unit.  Then, all
 dimensions without explicit unit will be interpreted accordingly.
@@ -121,7 +121,7 @@ the alternate \filename{.gmtdefaults4} file with the plus sign as a prefix.
 Because any changes only apply to that one command you would have to
 append the alternate file to every command in your script.  This is
 tedious but may be an option for situations when you cannot write in
-the current directory.
+the current directory (e.g., some CGI scripts).
 \item A perhaps less tedious method is to start each script by making a
 copy of the current \filename{.gmtdefaults4}, then copy the desired
 \filename{.gmtdefaults4} file to the current directory, and finally
@@ -394,7 +394,7 @@ There may be two levels of annotations.  Here, ``primary'' refers to the annotat
 that is closest to the axis (this is the primary annotation), while ``secondary'' refers to the secondary
 annotation that is plotted further from the axis.  The examples below
 will clarify what is meant.  Note that the terms ``primary'' and ``secondary'' do not reflect any hierarchical
-order of units: The ``primary'' annotation interval is smaller (e.g., days) while the
+order of units: The ``primary'' annotation interval is usually smaller (e.g., days) while the
 ``secondary'' annotation interval typically is larger (e.g., months).
 
 \subsubsection{Geographic basemaps}
@@ -1286,7 +1286,8 @@ The escape sequences recognized in \GMT\ are listed in Table~\ref{tbl:escape}.
 @!	&	Creates one composite character of the next two characters \\ \hline 
 @@	&	Prints the @ sign itself \\ \hline 
 \end{tabular}
-\caption{\gmt\ text escape sequences.}
+\caption{\gmt\ text escape sequences.  Note that under Windows the percent symbol indicates a variable,
+hence you must use two percent-signs for each one required in the escape sequence for font switching.}
 \label{tbl:escape}
 \end{table}
 
