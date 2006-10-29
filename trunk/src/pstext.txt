@@ -134,6 +134,12 @@ be avoided.
 .br
 EOF
 .br
+.SH WINDOWS REMARKS
+Note that under Windows, the percent sign (%) is a variable indicator (like $ under Unix).
+To indicate a plain percentage sign in a batch script you need to repeat it (%%);
+hence the font switching mechanism (@%\fIfont\fP% and @%%) may require twice the
+number of percent signs.  This only applies to text inside a script or that otherwise
+is processed by DOS.  Data files that are opened and read by \fBpstext\fP do not need such duplication.
 .SH BUGS
 In paragraph mode, the presence of composite
 characters and other escape sequences may lead to unfortunate word splitting. 

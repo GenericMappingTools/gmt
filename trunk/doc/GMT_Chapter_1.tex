@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.53 2006-10-29 01:38:25 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.54 2006-10-29 04:43:32 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -40,7 +40,7 @@ Changes in \GMT\ 4.1.4 are again relatively minor and predominantly bug fixes.  
 new feature is that \GMT\ can now automatically recognize the format of the grd file given
 to a program.  The use of the ``=id'' mechanism is now only needed when writing an output file in
 a grid format other than the netCDF default.  We have also added
-a new user directory pointed to by {\bf GMT\_USERDIR} (default directory is \filename{\~/.gmt})
+a new user directory pointed to by {\bf GMT\_USERDIR} (default directory is \filename{$\sim$/.gmt})
 where items such as \filename{.gmtdefaults4} will be looked for.  Additionally, a few enhancements
 have been made to overcome limitations in the previous versions:
 
@@ -53,7 +53,7 @@ have been made to overcome limitations in the previous versions:
 \item \GMTprog{pshistogram}'s option \Opt{I} can now accept a modifier {\bf O} to output all bin data even if $y = 0$.
 \item \GMTprog{psscale} will now invert the color scale if a negative length is provided, and if
 \Opt{I} is given when \Opt{L}{\it gap} is in effect we will modify the constant colors accordingly.
-\item \GMTprog{psxy} and \item \GMTprog{psxyz} have a new option \Opt{Sj}$|${\bf J} that plots a rotatable
+\item \GMTprog{psxy} and \GMTprog{psxyz} have a new option \Opt{Sj}$|${\bf J} that plots a rotatable
 rectangle but otherwise behaves similarly to \Opt{Se}$|${\bf E}.
 \item \GMTprog{misc/ps2raster} has many improvements; added EPS output; high-quality PDF output.
 Also removed -dDOINTERPOLATE option which caused inversion of colour map and had no benefits.
