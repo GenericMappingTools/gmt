@@ -97,7 +97,7 @@ Used to resample the contour lines at roughly every (gridbox_size/\fIsmoothfacto
 Will draw tickmarks pointing in the downward direction every \fIgap\fP along the innermost closed contours.
 Append \fIgap\fP and tickmark length or use defaults [0.5\fBc\fP/0.1c or 0.2\fBi\fP/0.04i].
 User may choose to tick only local highs or local lows by specifying \fB\-T+\fP or \fB\-T-\fP, respectively.
-Appending :LH will plot the characters L and H at the center of closed
+Appending \fB:LH\fP will plot the characters L and H at the center of closed
 innermost contours (local lows and highs).  L and H can be any single character (e.g., LH, -+, etc.)
 If a file is given by \fB\-C\fP and \fB\-T\fP is set, 
 then only contours marked with upper case C or A will have tickmarks [and annotation].
@@ -105,10 +105,12 @@ then only contours marked with upper case C or A will have tickmarks [and annota
 #include "explain_-V.txt"
 .TP
 .B \-W
-\fItype\fP, if present, can be 'a' for annotated contours or 'c' for regular contours [Default].
+\fItype\fP, if present, can be \fBa\fP for annotated contours or \fBc\fP for regular contours [Default].
 \fIpen\fP sets the attributes for the particular line.  Default values for annotated contours:
 width = 3, color = black, texture = solid.  Regular contours have default width = 1.
 #include "explain_pen.txt"
+Note that color names starting with \fBa\fP or \fBc\fP need to be capitalized to avoid confusion
+with the \fItype\fP option.
 If the
 \fB+\fP flag is specified then the color of the contour lines are taken from the cpt file (see \fB\-C\fP).
 #include "explain_-XY.txt"

@@ -1,4 +1,4 @@
-#	$Id: todo.txt,v 1.1 2006-10-29 09:50:08 pwessel Exp $
+#	$Id: todo.txt,v 1.2 2006-10-29 13:12:58 remko Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
@@ -28,6 +28,13 @@ ENHANCEMENTS:
 
 pslegend: 	Add support for typesetting a table?
 
+pscoast:	-G<pen>: When the pen starts with 'c' (like the color 'cyan') this
+		will be seen as the option -Gc with a pen 'yan'. Misinterpretation
+		can be avoided by starting the color with a capital: -GCyan.
+		Fixing or mentioning the work-around in the manpages and manual?
+
+pscontour:	-W<pen>: Same issue as with pscoast's -G<pen>.
+
 gmt_plot.c:	Different phase shifts for a, f, g?
 		gridlines for x/z, y-z in 3-D (ie. for the vertical walls in the background)
 		X_AXIS_TYPE: introduce new parameter to rotate x labels?
@@ -56,4 +63,3 @@ geotiff:	Kurt Feigl has contributed a grd2geotiff.c program but it is mostly
 		feature as an option to grdimage.  There is also some shapefile
 		support that Lloyd wrote that needs to be finalized; perhaps these
 		two things could go into a "gis" supplement.
-
