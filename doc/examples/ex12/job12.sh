@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 12
 #
-#		$Id: job12.sh,v 1.8 2006-10-22 14:26:49 remko Exp $
+#		$Id: job12.sh,v 1.9 2006-10-30 19:09:11 remko Exp $
 #
 # Purpose:	Illustrates Delaunay triangulation of points, and contouring
 # GMT progs:	makecpt, minmax, pscontour, pstext, psxy, triangulate
@@ -18,7 +18,7 @@ $AWK '{print $1, $2, 6, 0, 0, "CM", NR-1}' table_5.11 | pstext -R -J -O -K >> ex
 #
 psxy -R -J -B2f1eSNw -M net.xy -Wthinner -O -K -X3.25i >> example_12.ps
 psxy -R -J -O -K table_5.11 -Sc0.03i -Gblack >> example_12.ps
-$AWK '{printf "%g %s 6 0 0 LM %g\n", $1, $2, $3}' table_5.11 | pstext -R -J -O -K -Wwhiteo -C0.01i/0.01i -D0.08i/0i -N >> example_12.ps
+$AWK '{printf "%g %s 6 0 0 LM %g\n", $1, $2, $3}' table_5.11 | pstext -R -J -O -K -Wwhite,o -C0.01i/0.01i -D0.08i/0i -N >> example_12.ps
 #
 # Then contour the data and draw triangles using dashed pen; use "minmax" and "makecpt" to make a color palette (.cpt) file
 #

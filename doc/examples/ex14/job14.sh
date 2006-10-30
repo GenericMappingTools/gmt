@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 14
 #
-#		$Id: job14.sh,v 1.11 2006-10-22 14:26:49 remko Exp $
+#		$Id: job14.sh,v 1.12 2006-10-30 19:09:11 remko Exp $
 #
 # Purpose:	Showing simple gridding, contouring, and resampling along tracks
 # GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, minmax, project,
@@ -16,7 +16,7 @@ blockmean table_5.11 -R0/7/0/7 -I1 > mean.xyz
 # Then draw blockmean cells
 psbasemap -R0.5/7.5/0.5/7.5 -J -O -K -B0g1 -X3.25i >> example_14.ps
 psxy -R -J -B2f1eSNw mean.xyz -Ss0.05i -Gblack -O -K >> example_14.ps
-$AWK '{printf "%g %s 6 0 0 LM %g\n", $1+0.1, $2, $3}' mean.xyz | pstext -R -J -O -K -Wwhiteo -C0.01i/0.01i -N >> example_14.ps
+$AWK '{printf "%g %s 6 0 0 LM %g\n", $1+0.1, $2, $3}' mean.xyz | pstext -R -J -O -K -Wwhite,o -C0.01i/0.01i -N >> example_14.ps
 # Then surface and contour the data
 surface mean.xyz -R -I1 -Gdata.grd
 grdcontour data.grd -J -B2f1WSne -C25 -A50 -G3i/10 -S4 -O -K -X-3.25i -Y-3.55i >> example_14.ps

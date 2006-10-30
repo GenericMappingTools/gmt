@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 12
 REM
-REM		$Id: job12.bat,v 1.8 2006-10-22 14:26:49 remko Exp $
+REM		$Id: job12.bat,v 1.9 2006-10-30 19:09:11 remko Exp $
 REM
 REM Purpose:	Illustrates Delaunay triangulation of points, and contouring
 REM GMT progs:	makecpt, minmax, pscontour, pstext, psxy, triangulate
@@ -22,7 +22,7 @@ REM Then draw network and print the node values
 REM
 psxy -R -J -B2f1eSNw -M net.xy -Wthinner -O -K -X3.25i >> example_12.ps
 psxy -R -J -O -K table_5.11 -Sc0.03i -Gblack >> example_12.ps
-gawk "{print $1, $2, 6, 0, 0, 5, $3}" table_5.11 | pstext -R -J -O -K -Wwhiteo -C0.01i/0.01i -D0.08i/0i -N >> example_12.ps
+gawk "{print $1, $2, 6, 0, 0, 5, $3}" table_5.11 | pstext -R -J -O -K -Wwhite,o -C0.01i/0.01i -D0.08i/0i -N >> example_12.ps
 REM
 REM Then contour the data and draw triangles using dashed pen; use "minmax" and "makecpt" to make a color palette (.cpt) file
 REM
