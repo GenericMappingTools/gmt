@@ -1,5 +1,5 @@
 /*
- *	$Id: lines_to_bins.c,v 1.6 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: lines_to_bins.c,v 1.7 2006-10-30 04:19:03 pwessel Exp $
  */
 /* lines_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -330,7 +330,7 @@ int main (int argc, char **argv)
 
 		n_final += nn;
 			
-		/* if (h.id == 252) for (k = 0; k < nn; k++) printf ("%lg\t%lg\n", 1.0e-6*xx[k], 1.0e-6*yy[k]); */
+		/* if (h.id == 252) for (k = 0; k < nn; k++) printf ("%g\t%g\n", 1.0e-6*xx[k], 1.0e-6*yy[k]); */
 			
 		/* Bin array was allocated at top; nbins was defined; all prs in bin[] were initially NULL.  */
 

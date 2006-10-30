@@ -1,5 +1,5 @@
 /*
- *	$Id: read_wvs.c,v 1.4 2006-05-03 04:42:16 pwessel Exp $
+ *	$Id: read_wvs.c,v 1.5 2006-10-30 04:19:03 pwessel Exp $
  */
 /***************************************************************************/
 /*WDBPLTC.C-reads and plots compressed coastlines                          */
@@ -700,7 +700,7 @@ void writeout(short rank)
 		lonlat[0] = irint (1.0e6 * xxx[i]);
 		lonlat[1] = irint (1.0e6 * yyy[i]);
 #ifdef DUMP
-		printf ("%lg\t%lg\n", xxx[i], yyy[i]);
+		printf ("%g\t%g\n", xxx[i], yyy[i]);
 #else
 		fwrite ((char *)lonlat, sizeof (int), 2, stdout);
 #endif
