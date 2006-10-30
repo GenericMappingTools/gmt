@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.54 2006-10-29 04:43:32 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.55 2006-10-30 19:09:15 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -39,7 +39,8 @@ history of the development milestones in the 4.x series.
 Changes in \GMT\ 4.1.4 are again relatively minor and predominantly bug fixes.  One imporant
 new feature is that \GMT\ can now automatically recognize the format of the grd file given
 to a program.  The use of the ``=id'' mechanism is now only needed when writing an output file in
-a grid format other than the netCDF default.  We have also added
+a grid format other than the netCDF default or when reading using custom scaline and translation
+is required.  We have also added
 a new user directory pointed to by {\bf GMT\_USERDIR} (default directory is \filename{$\sim$/.gmt})
 where items such as \filename{.gmtdefaults4} will be looked for.  Additionally, a few enhancements
 have been made to overcome limitations in the previous versions:
@@ -70,8 +71,11 @@ that we have identified and corrected in the current release:
 prevented proper writing of {\bf PAGE\_ORIENTATION} in defaults.  Added a check so \GMTprog{gmtset}
 will not crash if VALUE is not given.  Finally, let {\bf GMT\_HOMEDIR} default to C: under Windows
 if {\bf HOME} is not set.
+\item [\GMTprog{gmt\_io.c}]: \GMTfunc{GMT\_scanf\_argtime} now returns RELTIME (not ABSTIME) when relative time is found.
 \item [\GMTprog{gmt\_grdio.c}]: Set [xy]\_units also in \GMTfunc{GMT\_update\_grd\_info}.
+Fixed time-scaling bug on input (was always seconds).  Make units check case-insensitive. Check for toggled lat/lon coordinates.
 \item [\GMTprog{gmt\_nc.c}]: Made sure no garbage remains under Cygwin when using \GMTfunc{strncpy}.
+Check if x- and y-coordinates have constant step sizes; issue warning if not.
 \item [\GMTprog{gmt\_plot.c}]: Bugs related to annotations with \Opt{JPa} and its {\bf z} modifier fixed.
 Log gridlines did not work for 3-D view.  3-D axis label would sometimes get misplaced due to round-off.
 3-D map scale did not project correctly.  Duplicate title could appear if \Opt{JX} was used and one axis was geographic (d).
@@ -81,6 +85,7 @@ Needed to add secondary font to list to be encoded.
 \item [\GMTprog{gmtconvert}]: Did not have \Opt{L} listed in synopsis.
 \item [\GMTprog{grdblend}]: Now skip grids that are entirely outside the region of interest.
 \item [\GMTprog{grdcontour}]: Crashed if \Opt{M} and \Opt{D} were used with no file name specified.
+The \Opt{W}[+][c$|$a] option was susceptible to misinterpreting things like \Opt{W}cyan as contour pen with color yan.
 \item [\GMTprog{grdcut}]: Require geographical instead of global in order to shift by 360 degrees.
 \item [\GMTprog{grdfilter}]: Should not wrap over pole unless grid extends all the way to the pole.
 \item [\GMTprog{grdinfo}]: When \Opt{C} was used there was no linefeed at the end.
@@ -92,17 +97,22 @@ Now supports any periodicity in X and Y (as per manual). \Opt{F} again forces pi
 Default is same as input.  More consistency with manual.
 \item [\GMTprog{grdtrack}]: The \Opt{Z} option failed to be set for some input configurations.
 \item [\GMTprog{grdvector}]: Added \Opt{f} option.
+\item [\GMTprog{grdview}]: The \Opt{W}[c$|$m] option was susceptible to misinterpreting things like \Opt{W}cyan as contour pen with color yan.
 \item [\GMTprog{grdvolume}]: Three bugs squashed: gridcell oriented grids now get proper area and volume,
 including edges; only one cell per NaN is excluded; when \Opt{C} and \Opt{L} are combined,
 the volume is properly corrected for the baseline height.
 \item [\GMTprog{pscoast}]: \Opt{N} and \Opt{I} reset pens to default settings after initially changing them.
 Did not change output mode to binary (Windows only) if \Opt{M} and \Opt{b} were set.
+Both \Opt{Gc} and \Opt{Sc} needed to check that no letter is following the {\bf c} modifier.
 \item [\GMTprog{pscontour}]: The \Opt{D} dump option wrote projected instead of original coordinates.
+\item [\GMTprog{psimage}]: \Opt{G}{\it colorname} (e.g., \Opt{G}black) will now be interpreted as foreground color, e.g. \Opt{Gf}black.
 \item [\GMTprog{pslegend}]: Did not replace octagons with polygon form when pattern was requested.
 Did not consider if absolute coordinates were given in \Opt{X} and \Opt{Y}. Passed the wrong character code
 when {\bf M} was chosen with a plain scale modifier.
 \item [\GMTprog{psscale}]: A vertical bar with a label placed along it was mis-justified.
 \item [\GMTprog{pstext}]: Default for \Opt{G} is now {\bf BASEMAP\_FRAME\_RGB} as for other map annotations.
+The box option \Opt{W}[{\it fill}][o$|$O$|$c$|$C][{\it pen}]] is now \Opt{W}[{\it fill},][o$|$O$|$c$|$C][{\it pen}]], i.e., we now use
+a comma to separate the fill and pen (done since fill may be a name containing o$|$c); parsing is backwards compatible.
 \item [\GMTprog{psxyz}]: \Opt{C} for symbols did not pick up color fill.
 \item [\GMTprog{trend2d}]: Processing of \Opt{F} happened after checking.
 \item [\GMTprog{xyz2grd}]: Had \Opt{Az} as default rather than no \Opt{A}.  Fixed bad header parsing when \Opt{E} was selected.
