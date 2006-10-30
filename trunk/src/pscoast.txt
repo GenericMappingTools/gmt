@@ -49,8 +49,6 @@ Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
 .B \-G
 Select painting or clipping of "dry" areas.  Append a shade, color, pattern, or \fBc\fP for clipping.
 #include "explain_-G.txt"
-Note that the color name may need to be capitalized in order to avoid confusion with the \fBc\fP
-option.
 .TP
 .B \-I
 Draw rivers.  Specify the type of rivers and [optionally] append pen attributes  [Default pen:
