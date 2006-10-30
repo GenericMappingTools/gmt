@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_-OK.sh,v 1.6 2006-10-24 01:53:19 remko Exp $
+#	$Id: GMT_-OK.sh,v 1.7 2006-10-30 02:59:36 remko Exp $
 #
 
 psxy -R0/2.7/0/2.5 -Jx1i -K -L -M -N -P << EOF > GMT_-OK.ps
@@ -55,8 +55,8 @@ pstext -R -J -O -K -N << EOF >> GMT_-OK.ps
 0.5	2.3	9	0	0	CM	2-part PostScript file
 0.5	2.0	10	0	1	CM	HEADER
 0.5	1.65	10	0	1	CM	BODY@-1@-
-1.1	1.5	9	0	0	LM	@%1%\035K@%% ommits trailer
-1.1	1.2	9	0	0	LM	@%1%\035O@%% ommits header
+1.1	1.5	9	0	0	LM	@%1%\035K@%% omits trailer
+1.1	1.2	9	0	0	LM	@%1%\035O@%% omits header
 0.5	1.05	10	0	1	CM	BODY@-2@-
 0.5	0.7	10	0	1	CM	TRAILER
 EOF
@@ -98,12 +98,12 @@ pstext -R -J -O -N << EOF >> GMT_-OK.ps
 0.5	2.3	9	0	0	CM	n-part PostScript file
 0.5	2.0	10	0	1	CM	HEADER
 0.5	1.65	10	0	1	CM	BODY@-1@-
-1.1	1.5	9	0	0	LM	@%1%\035K@%% ommits trailer
+1.1	1.5	9	0	0	LM	@%1%\035K@%% omits trailer
 0.5	1.05	10	0	1	CM	BODY@-i@-
 1.1	1.25	9	0	0	LM	2nd through n-1'th
 1.1	1.1	9	0	0	LM	overlays require
 1.1	0.95	9	0	0	LM	both @%1%\035O@%% and @%1%\035K@%%
-1.1	0.6	9	0	0	LM	@%1%\035O@%% ommits header
+1.1	0.6	9	0	0	LM	@%1%\035O@%% omits header
 0.5	0.45	10	0	1	CM	BODY@-n@-
 0.5	0.1	10	0	1	CM	TRAILER
 EOF

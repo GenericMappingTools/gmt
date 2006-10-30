@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.86 2006-10-29 09:41:17 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.87 2006-10-30 02:59:36 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -22,7 +22,7 @@ the cook-book section where we present actual examples of their use.
 
 \GMT\ programs can accept dimensional quantities in \textbf{c}m, \textbf{i}nch,
 \textbf{m}eter, or \textbf{p}oint (1/72 of an inch)\footnote{\PS\ definition.
-In the typesetting industry a slighly different definition of point
+In the typesetting industry a slightly different definition of point
 (1/72.27 inch) is used.}.  There are two ways to ensure that \GMT\ understands
 which unit you intend to use.
 
@@ -182,7 +182,7 @@ sometimes a number or character string immediately after the letter.
 Most of the programs take many of the same arguments like those
 related to setting the data region, the map projection, etc.
 The 15 switches in Table~\ref{tbl:switches} have the same meaning
-in all the programs (allthough some programs may not use all of them).
+in all the programs (although some programs may not use all of them).
 These options will be described here as well as in the manual pages,
 as is vital that you understand how to use these options.  We will present
 these options in order of importance (some are use a lot more than others).
@@ -257,6 +257,17 @@ or in the
 format (e.g., 123:27:15W).  Note that \Opt{Rg} and \Opt{Rd} are shorthands for ``global domain''
 \Opt{R}\emph{0}/\emph{360}/\emph{-90}/\emph{90}
 and  \Opt{R}\emph{-180}/\emph{180}/\emph{-90}/\emph{90}, respectively.
+
+When used in conjunction with the Cartesian Linear Transformation (\Opt{Jx} or \Opt{JX}) ---which can be used
+to map floating point data, geographical coordinates, as well as time coordinates--- it is prudent to indicate
+that you are using geographical coordinates in one of the following ways:
+\begin{itemize}
+\item Use \Opt{Rg} or \Opt{Rd} to indicate the global domain.
+\item Use \Opt{Rg}\emph{xmin}/\emph{xmax}/\emph{ymin}/\emph{ymax} to indicate a limited geographic domain.
+\item Add \textbf{W}, \textbf{E}, \textbf{S}, or \textbf{N} to the coordinate limits or add the generic \textbf{D} or
+\textbf{G}. Example: \Opt{R}\emph{0}/\emph{360G}/\emph{-90}/\emph{90N}.
+\end{itemize}
+
 \item [Calendar time coordinates:]  These are absolute time coordinates referring to a Gregorian or ISO calendar.
 The general format is [\emph{date}]\textbf{T}[\emph{clock}], where \emph{date} must be in the
 \emph{yyyy}[\emph{-mm}[\emph{-dd}]] (year, month, day-of-month)
@@ -264,6 +275,7 @@ or \emph{yyyy}[\emph{-jjj}] (year and day-of-year) for Gregorian calendars and \
 W}\emph{ww}[\emph{-d}]] (year, week, and
 day-of-week) for the ISO calendar.  If no \emph{date} is given we assume the present day.  Following the
 [optional] \emph{date} string we require the \textbf{T} flag.
+
 The optional \emph{clock} string is a 24-hour clock in \emph{hh}[\emph{:mm}[\emph{:ss}[\emph{.xxx}]]] format.
 If no \emph{clock} is given
 it implies 00:00:00, i.e., the start of the specified day.
@@ -271,7 +283,7 @@ Note that not all of the specified enteties need be present in the data.  All ca
 proleptic Gregorian date Mon Jan 1 00:00:00 0001.  Proleptic means we assume that the modern calendar
 can be extrapolated forward and backward; a year zero is used, and Gregory's reforms\footnote{The Gregorian Calendar
 is a revision of the Julian Calendar which was instituted in a papal bull by Pope Gregory XIII in 1582. The reason for the calendar
-change was to correct for drift in the dates of signifigant religious observations (primarily Easter) and to prevent further drift
+change was to correct for drift in the dates of significant religious observations (primarily Easter) and to prevent further drift
 in the dates. The important effects of the change were (a) Drop 10 days from October 1582 to realign the Vernal Equinox with 21 March,
 (b) change leap year selection so that not all years ending in "00" are leap years, and (c) change the beginning of the year to
 1 January from 25 March.  Adoption of the new calendar was essentially immediate within Catholic countries. In the Protestant countries,
@@ -279,13 +291,18 @@ where papal authority was neither recognized not appreciated, adoption came more
 England finally adopted the new calendar in 1752, with eleven days removed from September. The additional day came because the old and
 new calendars disagreed on whether 1700 was a leap year, so the Julian calendar had to be adjusted by one more day.} are extrapolated
 backward.  Note that this is not historical.
-\item [Other coordinates:]  These are simply anything that is neither geographic nor calendar time related and are
-expected to be simple floating point values such as [\PM]\emph{xxx.xxx}[E$|$e$|$D$|$d[\PM][xx]], i.e., regular or exponential
+
+\item [Relative time coordinates:]  These are coordinates which count seconds, hours, days or years relative to a
+given epoch. The parameter \textbf{TIME\_SYSTEM}, or a combination of the parameters \textbf{TIME\_EPOCH} and
+\textbf{TIME\_UNIT} define the epoch and time unit. Denote relative time coordinates by appending the optional lower case
+\textbf{t} after the value.  When it is otherwise apparent that the coordinate is relative time (for example by using
+the \Opt{f} switch), the \textbf{t} can be omitted.
+
+\item [Other coordinates:]  These are simply any coordinates that are not related to geographic or calendar time or relative
+time and are
+expected to be simple floating point values such as [\PM]\emph{xxx.xxx}[E$|$e$|$D$|$d[\PM]xx], i.e., regular or exponential
 notations, with the enhancement to understand FORTRAN double precision output which may use D instead of E for exponents.
-These values are simply converted as they are to internal representation.  One exception is the concept
-of relative time which is read as a floating point offset from an absolute time reference point (epoch).  The unit and the
-epoch are specified with the \textbf{TIME\_SYSTEM} parameter.  Relative time coordinates are expected when a coordinate transformation
-involving relative time has been selected or when the \Opt{f} switch has been used to indicate relative time coordinates.\footnote{While
+These values are simply converted as they are to internal representation.\footnote{While
 UTM coordinates clearly refer to points on the Earth, in this context they are considered ``other''.  Thus, when we
 refer to ``geographical'' coordinates herein we imply longitude, latitude.}
 \end{description}
@@ -483,7 +500,7 @@ then equidistant annotations labeled 1, 4, 9, ... will appear.
 \GMTfig[h]{GMT_-B_pow}{Exponential or power projection axis.  (top) Using an exponent of 0.5
 yields a $\sqrt{x}$ axis.  Here, intervals refer to actual data values, in
 \Opt{R}0/100/0/1 \Opt{JX}3\textbf{p}0.5/0.4\ \Opt{Ba}20\textbf{f}10\textbf{g}5.
-(bottom) Here, intervals refer to projected values, allthough the annotation
+(bottom) Here, intervals refer to projected values, although the annotation
 uses the corresponding unprojected values, as in \Opt{Ba}3\textbf{f}2\textbf{g}1\textbf{p}.}
 
 \index{Time axis}
@@ -526,7 +543,9 @@ name only and \textbf{PLOT\_FORMAT\_PRIMARY} selects the 1-character, upper case
 the current language (selected by \textbf{TIME\_LANGUAGE}).
 \GMTfig[h!]{GMT_-B_time3}{Cartesian time axis, example 3.}
 
-The fourth example (Figure~\ref{fig:GMT_-B_time4}) only shows a few hours of a day.  We select both primary and
+The fourth example (Figure~\ref{fig:GMT_-B_time4}) only shows a few hours of a day, using relative time by
+specifying \textbf{t} in the \Opt{R} option while the \textbf{TIME\_UNIT} is \textbf{d} (for days).
+We select both primary and
 secondary annotations, ask for a 12-hour clock, and let time go from right to left:
 
 \input{scripts/GMT_-B_time4}
@@ -610,11 +629,11 @@ overlay plots.  All \PS\ files must have a header (for initializations),
 a body (drawing the figure), and a trailer (printing it out) (see
 Figure~\ref{fig:GMT_-OK}).  Thus,
 when overlaying several \GMT\ plots we must make sure that the first plot
-call ommits the trailer, that all intermediate calls omit both header and
+call omits the trailer, that all intermediate calls omit both header and
 trailer, and that the final overlay omits the header.
 \Opt{K} omits the trailer which implies that more \PS\ code will be appended
 later [Default terminates the plot system].  \Opt{O} selects Overlay plot
-mode and ommits the header information [Default initializes a new plot system].
+mode and omits the header information [Default initializes a new plot system].
 Most unexpected results for multiple overlay plots can be traced to the
 incorrect use of these options.  If you run only one plot
 program, ignore both the \Opt{O} and \Opt{K} options; they are
@@ -722,7 +741,8 @@ and the second to contain latitudes.  To reverse this expectation you must
 apply the \Opt{:} option.  Optionally, append \textbf{i} or \textbf{o} to restrict
 the effect to input or output only.  Note that command line arguments that may take
 geographic coordinates (e.g., \Opt{R}) \emph{always} expect longitude before
-latitude.
+latitude. Also, geographical grids are expected to have the longitude as
+first (minor) dimension.
 
 \index{Command line!standardized options|)}%
 
@@ -825,7 +845,7 @@ hold gridded data sets accessible via the supplemental program \GMTprog{grdraste
 whereas the second will hold the binary Mercator data images accessible via
 the supplemental program \GMTprog{img2grd}; see Appendix~\ref{app:A} for information
 about these supplemental programs.  The third directory may hold miscellaneous
-data sets such as lines, points, and text plottable directly with \GMTprog{psxy}
+data sets such as lines, points, and text plotable directly with \GMTprog{psxy}
 or \GMTprog{pstext}.  Data sets that the user finds are often needed
 may be placed in these directories, thus eliminating the need to specify
 a full path to the file.  Program output is always written to the
@@ -879,7 +899,7 @@ Because of the widespread use of incompatible and ambiguous formats, the process
 date components is guided by the template \textbf{INPUT\_DATE\_FORMAT} in your
 \filename{.gmtdefaults4} file; it is by default set to \emph{yyyy-mm-dd}.  Y2K-challenged input data such as
 29/05/89 can be processed by setting \textbf{INPUT\_DATE\_FORMAT}
-to dd/mm/yy.  A complete discription of possible formats is given in the \GMTprog{gmtdefaults}
+to dd/mm/yy.  A complete description of possible formats is given in the \GMTprog{gmtdefaults}
 man page.  The \emph{clock} string is more standardized but issues like 12- or 24-hour clocks complicate matters
 as well as the presence or absence of delimiters between fields.  Thus, the processing of input
 clock coordinates is guided by the template \textbf{INPUT\_CLOCK\_FORMAT} which defaults to \emph{hh:mm:ss.xxx}.
@@ -922,7 +942,7 @@ themselves should they need to edit the file (e.g., \% Start
 of x-axis).  All \GMT\ programs create \PS\ code by
 calling the \textbf{pslib} plot library (The user may call these
 functions from his/her own C or FORTRAN plot programs. See the
-manual pages for \textbf{pslib} syntax).  Allthough \GMT\ programs
+manual pages for \textbf{pslib} syntax).  Although \GMT\ programs
 can create very individualized plot code, there will always be
 cases not covered by these programs.  Some knowledge of
 \PS\ will enable the user to add such features
@@ -997,6 +1017,11 @@ you can find the file \filename{rgb.txt} in /usr/X11R6/lib/X11 or thereabouts, o
 A very small yet versatile subset consists of the 29 choices \emph{white}, \emph{black}, and
 [light$|$dark]\{\emph{red,
 orange, yellow, green, cyan, blue, magenta, gray$|$grey, brown}\}.
+
+The color names are case-insensitive, so mixed upper and lower case can be used (like
+\emph{DarkGreen}). Capitalizing the color name may be required when the option that takes the pen attribute allows an
+additional lower case specifier. For example, use \GMTprog{pscoast} \Opt{G}Cyan, instead of \Opt{G}cyan, to avoid
+accidentally switching on the clip option \Opt{Gc}.
 \end{enumerate}
 
 \index{Pen!texture}
@@ -1087,7 +1112,7 @@ fore- or background colors to -- yields a \emph{transparent} image where only th
 back- \emph{or} foreground pixels will be painted.
 \end{description}
 
-Due to \PS\ implementation limitations the rasterimages used with
+Due to \PS\ implementation limitations the raster images used with
 \Opt{G} must be less than 146 x 146 pixels in size; for larger images see
 \GMTprog{psimage}.  The format of Sun raster files is outlined in Appendix~\ref{app:B}.
 Note that under \PS\ Level 1 the patterns are filled by using
@@ -1393,11 +1418,12 @@ to any of the other recognized values (or by appending \emph{=ID}).
 
 \GMT\ can also read netCDF gridfiles produced by other software packages, provided the grid files
 satisfy the COARDS and Hadley Centre conventions for NetCDF grids. Thus, products created under
-those conventions (provided the grid is 2- or 3-dimensional) can be read directly by \GMT\ and the netCDF grids
+those conventions (provided the grid is 2- or 3-, or 4-dimensional) can be read directly by \GMT\ and the netCDF grids
 written by \GMT\ can be read by other programs that conform to those conventions. Two such programs are
 \htmladdnormallink{\progname{ncview}}{http://meteora.ucsd.edu/~pierce/ncview_home_page.html}
 and
-\htmladdnormallink{\progname{ncBrowse}}{http://www.epic.noaa.gov/java/ncBrowse/}.
+\htmladdnormallink{\progname{ncBrowse}}{http://www.epic.noaa.gov/java/ncBrowse/}; others can be found
+on the \htmladdnormallink{NetCDF website}{http://www.unidata.ucar.edu/software/netcdf/software.html}.
 
 In addition, users with some C-programming experience may add
 their own read/write functions and link them with the \GMT\ library
@@ -1549,6 +1575,44 @@ or (only in case the coordinates increase linearly):
 \begin{verbatim}
 	grdinfo "file.nc?pressure(24,10)"
 \end{verbatim}
+
+The COARDS conventions set restrictions on the names that can be used for the units of the variables
+and coordinates. For example, the units of longitude and latitude are "degrees\_east" and "degrees\_north",
+respectively. Here is an example of the header of a COARDS compliant netCDF file (to be obtained using
+\prog{ncdump}:
+\begin{verbatim}
+netcdf M2_fes2004 {
+dimensions:
+        lon = 2881 ;
+        lat = 1441 ;
+variables:
+        float lon(lon) ;
+                lon:long_name = "longitude" ;
+                lon:units = "degrees_east" ;
+                lon:actual_range = 0., 360. ;
+        float lat(lat) ;
+                lat:long_name = "latitude" ;
+                lat:units = "degrees_north" ;
+                lat:actual_range = -90., 90. ;
+        short amp(lat, lon) ;
+                amp:long_name = "amplitude" ;
+                amp:unit = "m" ;
+                amp:scale_factor = 0.0001 ;
+                amp:add_offset = 3. ;
+                amp:_FillValue = -32768s ;
+        short pha(lat, lon) ;
+                pha:long_name = "phase" ;
+                pha:unit = "degrees" ;
+                pha:scale_factor = 0.01 ;
+                pha:_FillValue = -32768s ;
+\end{verbatim}
+This file contains two grids, which can be plotted separately using the names \filename{M2\_fes2004.nc?amp}
+and \filename{M2\_fes2004.nc?pha}. The attributes \verb|long_name| and \verb|unit| for each variable are
+combined in \GMT\ to a single unit string. For example, after reading the grid \verb|y_unit| equals
+\verb|latitude [degrees_north]|. The same method can be used in reverse to set the proper variable names
+and units when writing a grid. However, when the coordinates are set properly as geographical or time axes,
+\GMT\ will take case of this. The user is, however, still responsible for setting the variable name and
+unit of the z-coordinate. The default is simply "z".
 
 \index{grdfile!formats!netCDF|)}
 
