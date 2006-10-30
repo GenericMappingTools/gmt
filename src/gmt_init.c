@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.250 2006-10-29 02:39:26 remko Exp $
+ *	$Id: gmt_init.c,v 1.251 2006-10-30 18:25:00 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3922,7 +3922,7 @@ int GMT_parse_J_option (char *args)
 	 			if (strchr ("Ll"  , (int)args[j])) l_pos[id] = j;
 	 			if (strchr ("Pp"  , (int)args[j])) p_pos[id] = j;
 	 			if (strchr ("Tt"  , (int)args[j])) t_pos[id] = j;
-	 			if (strchr ("DdGd", (int)args[j])) d_pos[id] = j;
+	 			if (strchr ("DdGg", (int)args[j])) d_pos[id] = j;
 	 		}
 
 			if (n_slashes && k >= 0) error = TRUE;	/* Cannot have 1:xxx separately for x/y */
