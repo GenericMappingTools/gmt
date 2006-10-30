@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.8 2006-04-13 06:20:35 pwessel Exp $
+ *	$Id: gmt_support.h,v 1.9 2006-10-30 16:44:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -74,6 +74,7 @@ EXTERN_MSC void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shi
 EXTERN_MSC void GMT_illuminate (double intensity, int *rgb);
 EXTERN_MSC void GMT_init_fill (struct GMT_FILL *fill, int r, int g, int b);
 EXTERN_MSC void GMT_init_pen (struct GMT_PEN *pen, double width);
+EXTERN_MSC int GMT_name2rgb (char *name);
 EXTERN_MSC void GMT_list_custom_symbols (void);
 EXTERN_MSC void GMT_read_cpt (char *cpt_file);
 EXTERN_MSC void GMT_rotate2D (double x[], double y[], int n, double x0, double y0, double angle, double xp[], double yp[]);
