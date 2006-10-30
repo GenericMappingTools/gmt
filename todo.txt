@@ -1,4 +1,4 @@
-#	$Id: todo.txt,v 1.2 2006-10-29 13:12:58 remko Exp $
+#	$Id: todo.txt,v 1.3 2006-10-30 03:16:39 pwessel Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
@@ -27,11 +27,6 @@ psxy[z]:	-Sb -So etc with time data; what is size; how to specify months etc.
 ENHANCEMENTS:
 
 pslegend: 	Add support for typesetting a table?
-
-pscoast:	-G<pen>: When the pen starts with 'c' (like the color 'cyan') this
-		will be seen as the option -Gc with a pen 'yan'. Misinterpretation
-		can be avoided by starting the color with a capital: -GCyan.
-		Fixing or mentioning the work-around in the manpages and manual?
 
 pscontour:	-W<pen>: Same issue as with pscoast's -G<pen>.
 
