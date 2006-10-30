@@ -109,8 +109,6 @@ then only contours marked with upper case C or A will have tickmarks [and annota
 \fIpen\fP sets the attributes for the particular line.  Default values for annotated contours:
 width = 3, color = black, texture = solid.  Regular contours have default width = 1.
 #include "explain_pen.txt"
-Note that color names starting with \fBa\fP or \fBc\fP need to be capitalized to avoid confusion
-with the \fItype\fP option.
 If the
 \fB+\fP flag is specified then the color of the contour lines are taken from the cpt file (see \fB\-C\fP).
 #include "explain_-XY.txt"
