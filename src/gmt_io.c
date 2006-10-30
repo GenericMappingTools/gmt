@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.121 2006-10-29 22:19:55 remko Exp $
+ *	$Id: gmt_io.c,v 1.122 2006-10-30 02:47:50 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2504,12 +2504,13 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t)
 
 	Upon failure, returns GMT_IS_NAN.  Upon success, sets
 	t and returns GMT_IS_ABSTIME.
-	We could have it return either ABSTIME or RELTIME to indicate
-	which one it thinks it decoded; however, this is inconsistent
-	with the use of GMT_scanf when RELTIME is expected and ABSTIME
-	conversion is done internal to the routine, as it is here.
-	That is, we always return an absolute time if we haven't failed,
-	so that is the returned value.
+	We have it return either ABSTIME or RELTIME to indicate which one
+	it thinks it decoded. This is inconsistent with the use of
+	GMT_scanf which always returns ABSTIME, even when RELTIME is
+	expected and ABSTIME conversion is done internal to the routine,
+	as it is here.
+	The reason for returning RELTIME instead is that the -R option needs
+	to know which was decoded and hence which is expected as column input.
 	*/
 
 	double	ss, x;
@@ -2523,7 +2524,7 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t)
 		/* There is no T.  This must decode with GMT_scanf_float() or we die.  */
 		if ( ( GMT_scanf_float (s, &x) ) == GMT_IS_NAN) return (GMT_IS_NAN);
 		*t = GMT_dt_from_usert (x);
-		return (GMT_IS_ABSTIME);
+		return (GMT_IS_RELTIME);
 	}
 	x = 0.0;	/* x will be the seconds since start of today.  */
 	if (pt[1]) {	/* There is a string following the T:  Decode a clock:  */
@@ -2610,9 +2611,9 @@ int	GMT_scanf_arg (char *s, int expectation, double *val)
 	if (expectation == GMT_IS_UNKNOWN) {		/* Expectation for this column not set - must be determined if possible */
 		c = s[strlen(s)-1];
 		if (strchr (s, (int)'T'))		/* Found a T in the argument - assume Absolute time */
-			expectation = GMT_IS_ABSTIME;
+			expectation = GMT_IS_ARGTIME;
 		else if (c == 't')			/* Found trailing t - assume Relative time */
-			expectation = GMT_IS_RELTIME;
+			expectation = GMT_IS_ARGTIME;
 		else if (strchr ("WwEe", (int)c))	/* Found trailing W or E - assume Geographic longitudes */
 			expectation = GMT_IS_LON;
 		else if (strchr ("SsNn", (int)c))	/* Found trailing S or N - assume Geographic latitudes */
