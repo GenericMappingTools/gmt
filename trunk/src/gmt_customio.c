@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.51 2006-10-24 20:26:13 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.52 2006-10-30 16:17:50 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1619,11 +1619,6 @@ int GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 		width_out *= 2;
 		i_0_out *= 2;
 		inc = 2;
-	}
-
-	if (header->type == 20) {
-		size *= 2;	/* Format uses doubles, so we must duplicate "size" */
-		type = 'd';
 	}
 
 	/* Allocate memory for one row of data (for reading purposes) */
