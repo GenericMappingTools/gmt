@@ -1,4 +1,4 @@
-#	$Id: todo.txt,v 1.3 2006-10-30 03:16:39 pwessel Exp $
+#	$Id: todo.txt,v 1.4 2006-10-30 15:41:43 remko Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
@@ -28,7 +28,14 @@ ENHANCEMENTS:
 
 pslegend: 	Add support for typesetting a table?
 
-pscontour:	-W<pen>: Same issue as with pscoast's -G<pen>.
+grdcontour.c:	-W<type><pen>: When <pen> starts with a color starting with an 'a' or
+		'c', it will be confused with the <type> option 'a' or 'c', and the
+		rest of the colorname will not be recognised. This can be circumvented
+		by starting the colorname with a capital.
+		Similar problems will occur with:
+grdview.c:	-T option
+psimage.c:	-G option
+pstext.c:	-W option (and here the workaround would not work)
 
 gmt_plot.c:	Different phase shifts for a, f, g?
 		gridlines for x/z, y-z in 3-D (ie. for the vertical walls in the background)
