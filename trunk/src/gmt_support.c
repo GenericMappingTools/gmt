@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.265 2006-10-29 07:18:54 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.266 2006-10-30 18:09:29 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -119,7 +119,7 @@ void GMT_get_bcr_nodal_values(float *z, int ii, int jj, struct GMT_BCR *bcr);
 int GMT_check_hsv (double h, double s, double v);
 int GMT_check_cmyk (double cmyk[]);
 int GMT_char_count (char *txt, char c);
-int GMT_name2rgb (char *name);
+int GMT_colorname2index (char *name);
 int GMT_name2pen (char *name);
 void GMT_gettexture (char *line, int unit, double scale, struct GMT_PEN *P);
 void GMT_getpenwidth (char *line, int *pen_unit, double *pen_scale, struct GMT_PEN *P);
@@ -295,7 +295,7 @@ int GMT_getrgb (char *line, int rgb[])
 			if (n != 1 || GMT_check_rgb (rgb)) return (TRUE);
 		}
 		else {
-			if ((n = GMT_name2rgb (line)) < 0) {
+			if ((n = GMT_colorname2index (line)) < 0) {
 				fprintf (stderr, "%s: Colorname %s not recognized!\n", GMT_program, line);
 				exit (EXIT_FAILURE);
 			}
@@ -353,7 +353,7 @@ int GMT_gethsv (char *line, double hsv[])
 			GMT_rgb_to_hsv (rgb, &hsv[0], &hsv[1], &hsv[2]);
 		}
 		else {
-			if ((n = GMT_name2rgb (line)) < 0) {
+			if ((n = GMT_colorname2index (line)) < 0) {
 				fprintf (stderr, "%s: Colorname %s not recognized!\n", GMT_program, line);
 				exit (EXIT_FAILURE);
 			}
@@ -368,7 +368,7 @@ int GMT_gethsv (char *line, double hsv[])
 	return (TRUE);
 }
 
-int GMT_name2rgb (char *name)
+int GMT_colorname2index (char *name)
 {
 	/* Return index into structure with colornames and r/g/b */
 
@@ -712,7 +712,7 @@ BOOLEAN GMT_is_color (char *word, int max_slashes)
 	n = strlen (word);
 	if (n == 0) return (FALSE);
 
-	if (GMT_name2rgb (word) >= 0) return (TRUE);	/* Valid color name */
+	if (GMT_colorname2index (word) >= 0) return (TRUE);	/* Valid color name */
 	if (strchr(word,'t')) return (FALSE);		/* Got a t somewhere */
 	if (strchr(word,':')) return (FALSE);		/* Got a : somewhere */
 	if (strchr(word,'c')) return (FALSE);		/* Got a c somewhere */

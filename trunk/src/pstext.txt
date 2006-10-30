@@ -9,7 +9,7 @@ pstext \- To plot text on maps
 [ GMT_B_OPT ] [ OPT(C)\fIdx/dy\fP ]  
 [ OPT(D)[\fBj\fP]\fIdx\fP/\fIdy\fP[\fBv\fP[\fIcolor\fP] ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] 
 [ OPT(G)\fIcolor\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L) ] [ GMT_Mo_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
-[ OPT(S)\fIpen\fP ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)[\fIcolor\fP][\fBo\fP|\fBO\fP|\fBc\fP|\fBC\fP[\fIpen\fP]] ] 
+[ OPT(S)\fIpen\fP ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)[\fIcolor\fP,][\fBo\fP|\fBO\fP|\fBc\fP|\fBC\fP[\fIpen\fP]] ] 
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT ] [ GMT_t_OPT ]
 .SH DESCRIPTION
 \fBpstext\fP plots textstrings of variable size, font type, and orientation.
@@ -97,7 +97,7 @@ Draw text outline. Append pen attributes.
 .B \-W
 Paint a rectangle beneath the text string.  Set color [Default is no fill].
 Append \fBo\fP to draw rectangle outline, add a \fIpen\fP to specify pen attributes [width = 1, color = black,
-texture = solid].
+texture = solid].  use a comma to separate the fill information from the outline information if both are present.
 Choose upper case \fBO\fP to get a rounded rectangle.
 Choose lower case \fBc\fP to get a concave rectangle (only in paragraph mode).
 Choose upper case \fBC\fP to get a convex rectangle (only in paragraph mode).
