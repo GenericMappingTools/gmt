@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_O_9.sh,v 1.4 2006-10-24 01:53:19 remko Exp $
+#	$Id: GMT_App_O_9.sh,v 1.5 2006-10-30 19:17:12 remko Exp $
 #
 #	Makes Fig 9 for Appendix O (labeled lines)
 #
@@ -26,7 +26,7 @@ psxy -R -J -Wthick great_NY_Canaries.d -O -K -Wthick \
 	-Sqn1:+f6+s8+l"Distance Canaries to New York = $km km"+ap+v >> GMT_App_O_9.ps
 psxy -R -J great_NY_Paris.d -O -K -Sc0.08c -Gblack >> GMT_App_O_9.ps
 psxy -R -J -Wthinner great_NY_Paris.d -O -K -SqD1000k:+an+o+gblue+kwhite+LDk+s7+f1 >> GMT_App_O_9.ps
-cat << EOF | pstext -R -J -O -K -WwhiteOthin -Dj0.1i/0.1i >> GMT_App_O_9.ps
+cat << EOF | pstext -R -J -O -K -Wwhite,Othin -Dj0.1i/0.1i >> GMT_App_O_9.ps
 74W	41N	8	0	17	RT	New York
 2.33E	48.87N	8	0	17	CT	Paris
 17W	28N	8	0	17	CT	Canaries
