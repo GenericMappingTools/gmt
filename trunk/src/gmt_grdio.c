@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.83 2006-10-29 02:23:04 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.84 2006-10-30 21:18:19 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -912,6 +912,10 @@ void GMT_grd_set_units (struct GRD_HEADER *header)
 	string[1] = header->y_units;
 	string[2] = header->z_units;
 
+	/* Use input data type as backup fr output data type */
+	for (i = 0; i < 3; i++) 
+		if (GMT_io.out_col_type[i] == GMT_IS_UNKNOWN) GMT_io.out_col_type[i] = GMT_io.in_col_type[i];
+
 	/* Catch some anomalies */
 	if (GMT_io.out_col_type[0] == GMT_IS_LAT) {
 		fprintf (stderr, "%s: Output type for X-coordinate of grid %s is LAT. Replaced by LON.\n", GMT_program, header->name);
@@ -922,7 +926,7 @@ void GMT_grd_set_units (struct GRD_HEADER *header)
 		GMT_io.out_col_type[1] = GMT_IS_LAT;
 	}
 
-	/* Set unit strings one by one */
+	/* Set unit strings one by one based on output type */
 	for (i = 0; i < 3; i++) {
 		switch (GMT_io.out_col_type[i]) {
 		case GMT_IS_LON:
