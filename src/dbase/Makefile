@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.6 2006-10-25 02:25:10 pwessel Exp $
+#	$Id: Makefile,v 1.7 2006-10-31 20:57:19 remko Exp $
 #
 #	makefile for dbase directory
 #
@@ -7,7 +7,7 @@
 #----------------- stop here - nothing to edit ------------------
 
 include ../makegmt.macros
-GMTSRCDIR	= ../
+GMTSRCDIR	= ..
 include ../gmtalldeps.macros
 
 CDF		= -L$(NETCDF)/lib -lnetcdf
