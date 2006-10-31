@@ -1,9 +1,9 @@
-#	$Id: Makefile,v 1.18 2006-10-25 02:25:10 pwessel Exp $
+#	$Id: Makefile,v 1.19 2006-10-31 20:57:19 remko Exp $
 #
 # makefile for x2sys directory
 #
 include ../makegmt.macros
-GMTSRCDIR	= ../
+GMTSRCDIR	= ..
 include ../gmtalldeps.macros
 
 #------------------------- stop here --------------------------

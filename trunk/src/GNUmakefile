@@ -1,4 +1,4 @@
-#-------	$Id: GNUmakefile,v 1.59 2006-10-27 23:45:22 pwessel Exp $	--------------------
+#-------	$Id: GNUmakefile,v 1.60 2006-10-31 20:57:19 remko Exp $	--------------------
 #
 #		Makefile for GMT Version 4
 #			GNU make compatible
@@ -39,7 +39,7 @@ GMT	= -lgmt
 GMTPS	= -lgmtps
 
 # Get program dependencies
-GMTSRCDIR	= ./
+GMTSRCDIR	= .
 include gmtalldeps.macros	# Dependencies
 
 LIB_C	= gmt_calclock.c \
@@ -276,28 +276,28 @@ distclean:	spotless
 
 libs:		$(GMTLIB)
 
-libpsl.a:	pslib.o
-		$(AR) cvur libpsl.a $?
-		$(RANLIB) libpsl.a
-
 pslib.o:	pslib.c $(PS_H) $(PS_I) gmt_notunix.h gmt_notposix.h gmt_math.h
 		$(CC) $(CFLAGS) -c pslib.c
 
-libgmt.a:	$(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O)
+./libpsl.a:	pslib.o
+		$(AR) cvur libpsl.a $?
+		$(RANLIB) libpsl.a
+
+./libgmt.a:	$(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
-libgmtps.a:	$(LIBPS_O) 
+./libgmtps.a:	$(LIBPS_O) 
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
-libpsl.$(SL):	pslib.o
+./libpsl.$(SL):	pslib.o
 		$(LD) $(LD_OPT) $? -o $@
 
-libgmt.$(SL):	$(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O)
+./libgmt.$(SL):	$(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O)
 		$(LD) $(LD_OPT) $(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O) -o $@
 
-libgmtps.$(SL):	$(LIBPS_O)
+./libgmtps.$(SL):	$(LIBPS_O)
 		$(LD) $(LD_OPT) $(LIBPS_O) -o $@
 
 #-------------------------------------------------------------------------------
