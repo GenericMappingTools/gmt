@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.251 2006-10-30 18:25:00 remko Exp $
+ *	$Id: gmt_init.c,v 1.252 2006-10-31 07:53:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -628,7 +628,7 @@ void GMT_cont_syntax (int indent, int kind)
 	fprintf (stderr, "%sn|N<n_label> specifies the number of equidistant labels per %s.\n", pad, type[kind]);
 	fprintf (stderr, "%s   N: Starts labeling exactly at the start of %s [Default centers the labels].\n", pad, type[kind]);
 	fprintf (stderr, "%s   N-1 places one label at start, while N+1 places one label at the end of the %s.\n", pad, type[kind]);
-	fprintf (stderr, "%s   Append /<min_dist> to enfore a minimum distance between succesive labels [0]\n", pad);
+	fprintf (stderr, "%s   Append /<min_dist> to enfore a minimum distance between successive labels [0]\n", pad);
 	fprintf (stderr, "%sx|X<xfile.d> reads the multi-segment file <xfile.d> and places labels at the intersections\n", pad);
 	fprintf (stderr, "%s   between the %ss and the lines in <xfile.d>.  X: Resample the lines first.\n", pad, type[kind]);
 }
@@ -650,7 +650,7 @@ void GMT_fill_syntax (char option, char *string)
 	fprintf (stderr, "\t   1) <gray> or <red>/<green>/<blue>, all in the range 0-255;\n");
 	fprintf (stderr, "\t   2) <c>/<m>/<y>/<k> in range 0-100%%;\n");
 	fprintf (stderr, "\t   3) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1;\n");
-	fprintf (stderr, "\t   4) any valid named color;\n");
+	fprintf (stderr, "\t   4) any valid color name;\n");
 	fprintf (stderr, "\t   5) P|p<dpi>/<pattern>[:F<color>B<color>], with <dpi> of pattern, <pattern> from 1-90 or a filename,\n");
 	fprintf (stderr, "\t      optionally add fore/background colors (use - for transparency).\n");
 }
@@ -659,14 +659,14 @@ void GMT_pen_syntax (char option, char *string)
 {
 	if (string[0] == ' ') fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
 	fprintf (stderr, "\t-%c %s\n", option, string);
-	fprintf (stderr, "\t   <pen> is a comma-separated list of optional <width>[cipm], <color> and <texture>[cipm]\n");
-	fprintf (stderr, "\t   <width> >= 0.0, or a pen name: faint, default, or {thin, thick, fat}[er|est].\n");
+	fprintf (stderr, "\t   <pen> is a comma-separated list of optional <width>[cipm], <color>, and <texture>[cipm]\n");
+	fprintf (stderr, "\t   <width> >= 0.0, or a pen name: faint, default, or {thin, thick, fat}[er|est], obese.\n");
 	fprintf (stderr, "\t   <color> = (1) <gray> or <red>/<green>/<blue>, all in the range 0-255,\n");
 	fprintf (stderr, "\t             (2) <c>/<m>/<y>/<k> in 0-100%% range,\n");
 	fprintf (stderr, "\t             (3) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1,\n");
-	fprintf (stderr, "\t             (4) any valid named color.\n");
+	fprintf (stderr, "\t             (4) any valid color name.\n");
 	fprintf (stderr, "\t   <texture> = (1) pattern of dashes (-) and dots (.) which will be scaled by pen width.\n");
-	fprintf (stderr, "\t               (2) a for d(a)shed or o for d(o)tted lines, caled by pen width.\n");
+	fprintf (stderr, "\t               (2) a for d(a)shed or o for d(o)tted lines, scaled by pen width.\n");
 	fprintf (stderr, "\t               (3) <pattern>:<offset>; <pattern> holds lengths of lines and gaps separated\n");
 	fprintf (stderr, "\t                   by underscores and <offset> is a phase offset.\n");
 	fprintf (stderr, "\t   If no unit is appended, then dots-per-inch is assumed [current dpi = %d].\n", gmtdefs.dpi);
@@ -679,7 +679,7 @@ void GMT_rgb_syntax (char option, char *string)
 	fprintf (stderr, "\t   1) <gray> or <red>/<green>/<blue>, all in the range 0-255;\n");
 	fprintf (stderr, "\t   2) <c>/<m>/<y>/<k> in range 0-100%%;\n");
 	fprintf (stderr, "\t   3) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1;\n");
-	fprintf (stderr, "\t   4) any valid named color.\n");
+	fprintf (stderr, "\t   4) any valid color name.\n");
 }
 
 void GMT_syntax (char option)
