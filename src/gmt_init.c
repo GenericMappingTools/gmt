@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.252 2006-10-31 07:53:32 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.253 2006-10-31 20:27:26 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1432,9 +1432,9 @@ void GMT_backwards_compatibility () {
 	else if (GMT_backward.got_old_degree_symbol && !GMT_backward.got_new_degree_symbol) {	/* Must decode old DEGREE_FORMAT */
 		fprintf (stderr, "%s: WARNING: DEGREE_FORMAT decoded but is obsolete.  Please use DEGREE_SYMBOL\n", GMT_program);
 		if (gmtdefs.degree_format >= 1000)	/* No degree symbol */
-			gmtdefs.degree_symbol = 3;
+			gmtdefs.degree_symbol = gmt_squote;
 		else if (gmtdefs.degree_format >= 100)	/* Large degree symbol */
-			gmtdefs.degree_symbol = 1;
+			gmtdefs.degree_symbol = gmt_degree;
 	}
 	if (GMT_backward.got_old_want_euro && GMT_backward.got_new_char_encoding) {	/* Got both old and new */
 		fprintf (stderr, "%s: WARNING: Both old-style WANT_EURO_FONT and CHAR_ENCODING present in .gmtdefaults\n", GMT_program);
@@ -5523,13 +5523,13 @@ void GMT_verify_encodings () {
 	if (gmtdefs.encoding.code[gmt_ring] == 32 && gmtdefs.encoding.code[gmt_degree] == 32) {	/* Neither /ring or /degree encoded */
 		fprintf (stderr, "GMT Warning: Selected character encoding does not have suitable degree symbol - will use space instead\n");
 	}
-	else if (gmtdefs.degree_symbol == 0 && gmtdefs.encoding.code[gmt_ring] == 32) {		/* want /ring but only /degree is encoded */
+	else if (gmtdefs.degree_symbol == gmt_ring && gmtdefs.encoding.code[gmt_ring] == 32) {		/* want /ring but only /degree is encoded */
 		fprintf (stderr, "GMT Warning: Selected character encoding does not have ring symbol - will use degree symbol instead\n");
-		gmtdefs.degree_symbol = 1;
+		gmtdefs.degree_symbol = gmt_degree;
 	}
-	else if (gmtdefs.degree_symbol == 1 && gmtdefs.encoding.code[gmt_degree] == 32) {	/* want /degree but only /ring is encoded */
+	else if (gmtdefs.degree_symbol == gmt_degree && gmtdefs.encoding.code[gmt_degree] == 32) {	/* want /degree but only /ring is encoded */
 		fprintf (stderr, "GMT Warning: Selected character encoding does not have degree symbol - will use ring symbol instead\n");
-		gmtdefs.degree_symbol = 0;
+		gmtdefs.degree_symbol = gmt_ring;
 	}
 
 	/* Then single quote for minute symbol... */
