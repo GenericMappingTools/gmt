@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: mgd77netcdfhelper.sh,v 1.10 2006-10-12 02:54:41 pwessel Exp $
+#	$Id: mgd77netcdfhelper.sh,v 1.11 2006-10-31 20:24:44 remko Exp $
 #
 #	Author:	P. Wessel
 #	Date:	2005-OCT-14
@@ -50,13 +50,13 @@ while read type name L M; do		# We need a separate read/write statement for each
 		# The next line gives "      Parameter_Name :Value".  This format is deliberate in that we may want to
 		# use awk -F: to separate out the parameter ($1) and the value ($2). Remember Value could be a sentence with spaces!
 		echo "	word[0] = P->$name;" >> $$.3
-		echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s :${fmt}\\n\", F->NGDC_id, \"$name\", word);" >> $$.3
+		echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s :${fmt}\", F->NGDC_id, \"$name\", word);" >> $$.3
 	elif [ $n_item -ne 7 ]; then
 		echo "	MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, "\"$name\"", ${cast}${pre}P->$name));" >> mgd77_functions.h
 		echo "	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "\"$name\"", $length, ${cast}${pre}P->$name));" >> $$.2
 		# The next line gives "      Parameter_Name :Value".  This format is deliberate in that we may want to
 		# use awk -F: to separate out the parameter ($1) and the value ($2). Remember Value could be a sentence with spaces!
-		echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s :${fmt}\\n\", F->NGDC_id, \"$name\", P->$name);" >> $$.3
+		echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s :${fmt}\", F->NGDC_id, \"$name\", P->$name);" >> $$.3
 	else
 		cast=""
 		length=`echo $M | awk '{print $1-1}'`
@@ -67,7 +67,7 @@ while read type name L M; do		# We need a separate read/write statement for each
 			length="strlen (${pre}P->${name}[$k])"
 			echo "	MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, "\"${name}_$j\"", ${cast}${pre}P->$name[$k]));" >> mgd77_functions.h
 			echo "	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "\"${name}_$j\"", $length, ${cast}${pre}P->$name[$k]));" >> $$.2
-			echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s :${fmt}\\n\", F->NGDC_id, \"$name\", P->$name[$k]);" >> $$.3
+			echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s :${fmt}\", F->NGDC_id, \"$name\", P->$name[$k]);" >> $$.3
 		done
 	fi
 	echo "	\"$name\"," >> $$.4
