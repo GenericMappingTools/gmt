@@ -9,7 +9,7 @@
 psscale \- Create grayscale or colorscale for maps
 .SH SYNOPSIS
 \fBpsscale\fP OPT(D)\fIxpos\fP/\fIypos\fP/\fIlength\fP/\fIwidth\fP[\fBh\fP] [ OPT(A) ] [ GMT_B_OPT ] 
-[ OPT(C)\fIcpt_file\fP ] [ OPT(E)[\fBb\fP|\fBf\fP][\fIlength\fP] ] [ OPT(I)[\fImax_intens\fP[\fIlow_i\fP/\fIhigh_i\fP]] ] 
+[ OPT(C)\fIcpt_file\fP ] [ OPT(E)[\fBb\fP|\fBf\fP][\fIlength\fP] ] [ OPT(I)[\fImax_intens\fP|\fIlow_i\fP/\fIhigh_i\fP] ] 
 [ GMT_K_OPT ] [ OPT(L)[\fBi\fP][\fIgap\fP] ] [ OPT(M) ] 
 [ OPT(N)\fIdpi\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] 
 [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] 
