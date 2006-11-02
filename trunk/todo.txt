@@ -1,4 +1,4 @@
-#	$Id: todo.txt,v 1.6 2006-11-02 02:35:29 pwessel Exp $
+#	$Id: todo.txt,v 1.7 2006-11-02 20:27:57 pwessel Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
@@ -8,6 +8,12 @@ BUGS or "FEATURES":
 
 Makefile:	Do we need both GNUmakefile and Makefile?
 
+gmt_init.c	The whole .gmtcommands4 history thing. Under Pauls OSX there
+		were issues in job08.csh where the order misfired. Long term:
+		(1) GMT5 will need to deactivate this mechanism when used as API
+		(2) Order of access to .gmtcommands4 cannot be guaranteed. How
+		    do we work around that?
+		    
 gmt_plot.c: 	- Treatment of tick lengths and offsets not consistent.
 		- time or geo not supported for z-axis
 		- 3D time axis not properly annotated.
