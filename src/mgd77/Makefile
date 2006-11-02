@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.28 2006-10-31 20:25:59 remko Exp $
+#	$Id: Makefile,v 1.29 2006-11-02 05:21:32 pwessel Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -121,9 +121,3 @@ $(MGD77PS):	$(MGD77PS_O) libmgd77.a $(GMTLIB)
 
 .c.o:
 		$(CC) -c $(CFLAGS) $<
-
-mgd77_functions.h:	mgd77netcdfhelper.sh mgd77.h
-		$(SHELL) mgd77netcdfhelper.sh
-
-mgd77_codes.h mgd77_codes.txt:		mgd77_codes.sh
-		$(SHELL) mgd77_codes.sh
