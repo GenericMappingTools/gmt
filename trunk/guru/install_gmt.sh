@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.81 2006-05-31 02:47:14 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.82 2006-11-02 03:39:22 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -67,7 +67,7 @@ echo $use
 prep_gmt()
 {
 #--------------------------------------------------------------------------------
-LATESTGMT4=4.1.3
+LATESTGMT4=4.1.4
 LATESTGMT3=3.4.6
 LATESTGSHHS4=4.1
 LATESTGSHHS3=3
@@ -85,30 +85,30 @@ EOF
 # Order (1-11) is 1:src[progs for v3], 2:share, 3:coast, 4:high, 5:full, 6:suppl, 7:scripts
 #		  8:pdf, 9:man, 10:web, 11:tut
 cat << EOF > gmt_install.ftp_bzsizes
-0.55
+0.9
 0.05
-3.5
+3.7
 8.6
 28.8
-0.53
+0.76
 3.1
-8.1
-0.09
-1.6
+10.2
+0.12
+2.5
 1.0
 EOF
 cat << EOF > gmt_install.ftp_gzsizes
-0.66
+1.1
 0.05
 4.0
 10.7
 47.1
-0.60
-4.2
-8.1
-0.12
-1.6
-1.4
+0.9
+3.7
+10.2
+0.16
+2.6
+1.3
 EOF
 cat << EOF >&2
 ====>>>> Interactive installation of GMT <<<<====
