@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.253 2006-10-31 20:27:26 remko Exp $
+ *	$Id: gmt_init.c,v 1.254 2006-11-02 19:42:41 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3154,7 +3154,7 @@ void GMT_put_history (int argc, char **argv)
 
 		if (found_new) { /* Need to store this updated value */
 			fprintf (GMT_fp_history, "%s\n", argv[j-1]);
-			if (GMT_unique_option[i][0] == 'J') {	/* Make this the last -J? of any kind, identified by lower-case -j */
+			if (GMT_unique_option[i][0] == 'J' && toupper((int)GMT_unique_option[i][1]) != 'Z') {	/* Make this the last -J? of any kind (except -JZ), identified by lower-case -j */
 				fprintf (GMT_fp_history, "-j%s\n", &argv[j-1][2]);
 				no_new_j = FALSE;
 			}
