@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.32 2006-05-31 22:04:00 pwessel Exp $ 
+#		$Id: README,v 1.33 2006-11-02 01:37:06 pwessel Exp $ 
 #
 #	Copyright (c) 1991-2006, P. Wessel & W. H. F. Smith
 #
@@ -193,6 +193,11 @@ Finally, if you plan to install the Matlab extensions you
 need to
 setenv MATLAB <path to Matlab dir>
 unless it is /usr/local/matlab [the default].
+You can disable Matlab mex compilation by using the
+--disable-mex option
+One supplement (xgrid) requires X11.  You can disable the
+compilation of this supplement by using the option
+--disable-xgrid
 
 For a summary of configure options, type configure --help.
 
