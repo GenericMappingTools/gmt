@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.89 2006-10-30 18:50:53 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.90 2006-11-02 02:35:29 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -1376,6 +1376,25 @@ format (see Table \ref{tbl:grdformats} for supported format and their IDs).  For
 reading, \GMT\ will automatically determine the format of grid files, while for writing
 you will normally have to append \emph{=ID} to the filename if you want \GMT\ to use a different format
 than the default.
+
+By default, \GMT\ will create new gridfiles using the \textbf{nf} format; however,
+this behavior can be overridden by setting the \textbf{GRID\_FORMAT} defaults parameter
+to any of the other recognized values (or by appending \emph{=ID}).
+
+\GMT\ can also read netCDF gridfiles produced by other software packages, provided the grid files
+satisfy the COARDS and Hadley Centre conventions for NetCDF grids. Thus, products created under
+those conventions (provided the grid is 2- or 3-, or 4-dimensional) can be read directly by \GMT\ and the netCDF grids
+written by \GMT\ can be read by other programs that conform to those conventions. Two such programs are
+\htmladdnormallink{\progname{ncview}}{http://meteora.ucsd.edu/~pierce/ncview_home_page.html}
+and
+\htmladdnormallink{\progname{ncBrowse}}{http://www.epic.noaa.gov/java/ncBrowse/}; others can be found
+on the \htmladdnormallink{NetCDF website}{http://www.unidata.ucar.edu/software/netcdf/software.html}.
+
+In addition, users with some C-programming experience may add
+their own read/write functions and link them with the \GMT\ library
+to extend the number of predefined formats.  Technical information
+on this topic can be found in the source file \filename{gmt\_customio.c}. 
+
 \begin{table}[H]
 \centering
 \begin{tabular}{|l|l|} \hline
@@ -1408,24 +1427,6 @@ af & Atlantic Geoscience Center AGC (float)	\\ \hline
 \caption{\gmt\ grid file formats.}
 \label{tbl:grdformats}
 \end{table}
-
-By default, \GMT\ will create new gridfiles using the \textbf{nf} format; however,
-this behavior can be overridden by setting the \textbf{GRID\_FORMAT} defaults parameter
-to any of the other recognized values (or by appending \emph{=ID}).
-
-\GMT\ can also read netCDF gridfiles produced by other software packages, provided the grid files
-satisfy the COARDS and Hadley Centre conventions for NetCDF grids. Thus, products created under
-those conventions (provided the grid is 2- or 3-, or 4-dimensional) can be read directly by \GMT\ and the netCDF grids
-written by \GMT\ can be read by other programs that conform to those conventions. Two such programs are
-\htmladdnormallink{\progname{ncview}}{http://meteora.ucsd.edu/~pierce/ncview_home_page.html}
-and
-\htmladdnormallink{\progname{ncBrowse}}{http://www.epic.noaa.gov/java/ncBrowse/}; others can be found
-on the \htmladdnormallink{NetCDF website}{http://www.unidata.ucar.edu/software/netcdf/software.html}.
-
-In addition, users with some C-programming experience may add
-their own read/write functions and link them with the \GMT\ library
-to extend the number of predefined formats.  Technical information
-on this topic can be found in the source file \filename{gmt\_customio.c}. 
 
 Because some formats have limitations on the range of values they can store
 it is sometimes necessary to provide more
