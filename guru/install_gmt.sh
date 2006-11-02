@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.82 2006-11-02 03:39:22 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.83 2006-11-02 04:59:12 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	28-MAY-2006
+#	01-NOV-2006
 #--------------------------------------------------------------------------------
 #	FUNCTIONS
 #--------------------------------------------------------------------------------
