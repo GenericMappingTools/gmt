@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.7 2006-10-31 20:57:19 remko Exp $
+#	$Id: Makefile,v 1.8 2006-11-05 03:26:52 pwessel Exp $
 #
 #	makefile for dbase directory
 #
@@ -23,6 +23,7 @@ uninstall:
 
 grdraster:	grdraster.o $(GMTLIB)
 		$(CC) $(CFLAGS) $(LDFLAGS) grdraster.o -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o grdraster
+		$(COMPRESS) grdraster$(EXE)
 
 spotless:	clean
 
