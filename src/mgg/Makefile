@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.11 2006-11-06 04:29:36 pwessel Exp $
+#	$Id: Makefile,v 1.12 2006-11-06 04:32:23 pwessel Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -26,7 +26,7 @@ include ../gmtalldeps.macros
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I../x_system -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf
 
-MGG_H	= gmt_mgg.h ../x_system.h
+MGG_H	= gmt_mgg.h ../x_system/x_system.h
 
 MGG_C	= binlegs.c gmt2bin.c gmt2dat.c dat2gmt.c gmtinfo.c gmtlegs.c \
 	 	gmtlist.c gmtpath.c mgd77togmt.c
