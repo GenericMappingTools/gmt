@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.10 2006-10-31 20:57:19 remko Exp $
+#	$Id: Makefile,v 1.11 2006-11-06 04:29:36 pwessel Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -13,7 +13,7 @@
 #	Authors:	Paul Wessel, SOEST, U. of Hawaii
 #			Walter H. F. Smith, NOAA
 #
-#	Date:	07-FEB-2000
+#	Date:	05-NOV-2006
 #
 
 #-------------------------------------------------------------------------------
@@ -23,10 +23,10 @@ include ../makegmt.macros
 GMTSRCDIR	= ..
 include ../gmtalldeps.macros
 
-CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
+CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I../x_system -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf
 
-MGG_H	= gmt_mgg.h
+MGG_H	= gmt_mgg.h ../x_system.h
 
 MGG_C	= binlegs.c gmt2bin.c gmt2dat.c dat2gmt.c gmtinfo.c gmtlegs.c \
 	 	gmtlist.c gmtpath.c mgd77togmt.c
