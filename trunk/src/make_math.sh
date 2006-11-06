@@ -1,7 +1,7 @@
 #!/bin/sh
-#	$Id: make_math.sh,v 1.1 2006-11-04 23:24:34 pwessel Exp $
+#	$Id: make_math.sh,v 1.2 2006-11-06 20:22:05 remko Exp $
 
-# This script puts together Xmath.c from Xmath_main.c and Xmath.func
+# This script puts together Xmath.h from Xmath.c and Xmath.func
 # To be run from the main GMT directory.  X is either grd or gmt.
 #
 # Usage: make_math.sh grd|gmt [-s]
@@ -13,7 +13,7 @@ if [ $# = 2 ]; then	# Passed optional second argument (-s) to be silent
 	gush=0
 fi
 PRE=`echo $prefix | awk '{print toupper($1)}'`
-n_op=`grep "#define ${PRE}MATH_N_OPERATORS" ${prefix}math_main.c | awk '{print $3}'`
+n_op=`grep "#define ${PRE}MATH_N_OPERATORS" ${prefix}math.c | awk '{print $3}'`
 
 if [ $gush = 1 ]; then
 	echo "Making ${prefix}math_def.h"
@@ -26,7 +26,7 @@ grep -v "^#" ${prefix}math.func > $$.txt
 n_actual=`cat $$.txt | wc -l`
 
 if [ $n_actual -ne $n_op ]; then
-	echo "You must first set ${PRE}MATH_N_OPERATORS to $n_actual in ${prefix}math_main.c"
+	echo "You must first set ${PRE}MATH_N_OPERATORS to $n_actual in ${prefix}math.c"
 	exit
 fi
 
@@ -123,9 +123,9 @@ awk '{ \
 # Make ${prefix}math_init function
 
 if [ $gush = 1 ]; then
-	echo "Making ${prefix}math_init.c"
+	echo "Making ${prefix}math.h"
 fi
-cat << EOF > ${prefix}math_init.c
+cat << EOF > ${prefix}math.h
 
 void ${prefix}math_init (PFV ops[], int n_args[], int n_out[])
 {
@@ -134,11 +134,11 @@ void ${prefix}math_init (PFV ops[], int n_args[], int n_out[])
 
 EOF
 if [ $1 = "gmt" ]; then
-	awk '{ printf "\tops[%d] = table_%s;\t\tn_args[%d] = %d;\t\tn_out[%d] = %d;\n", NR-1, $1, NR-1, $3, NR-1, $4}' $$.txt >> ${prefix}math_init.c
+	awk '{ printf "\tops[%d] = table_%s;\t\tn_args[%d] = %d;\t\tn_out[%d] = %d;\n", NR-1, $1, NR-1, $3, NR-1, $4}' $$.txt >> ${prefix}math.h
 else
-	awk '{ printf "\tops[%d]=grd_%s;\t\tn_args[%d]=%d;\t\tn_out[%d]=%d;\n", NR-1, $1, NR-1, $3, NR-1, $4}' $$.txt >> grdmath_init.c
+	awk '{ printf "\tops[%d]=grd_%s;\t\tn_args[%d]=%d;\t\tn_out[%d]=%d;\n", NR-1, $1, NR-1, $3, NR-1, $4}' $$.txt >> grdmath.h
 fi
-echo "}" >> ${prefix}math_init.c
+echo "}" >> ${prefix}math.h
 
 # Make man page explanation include file
 # Make sed script file used to produce even columns in grdmath or gmtmath.
@@ -196,8 +196,4 @@ awk '{ \
 	printf "\n.br\n" \
 }' $$.txt | sed -f $$.sed  > ${prefix}math_man.i
 
-if [ $gush = 1 ]; then
-	echo "Making ${prefix}math.c"
-fi
-cat ${prefix}math_main.c ${prefix}math_init.c > ${prefix}math.c
-rm -f $$.txt $$.sed ${prefix}math_init.c
+rm -f $$.txt $$.sed
