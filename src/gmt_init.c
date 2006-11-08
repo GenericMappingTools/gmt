@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.254 2006-11-02 19:42:41 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.255 2006-11-08 20:03:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3073,7 +3073,7 @@ void GMT_set_home (void)
 #ifdef WIN32
 		/* Set HOME to C:\ under Windows */
 		GMT_HOMEDIR = (char *) GMT_memory (VNULL, 4, (size_t)1, "GMT");
-		sprintf (GMT_HOMEDIR, "C:%s", DIR_DELIM);
+		sprintf (GMT_HOMEDIR, "C:%c", DIR_DELIM);
 #else
 
 		fprintf (stderr, "GMT Warning: Could not determine home directory!\n");
