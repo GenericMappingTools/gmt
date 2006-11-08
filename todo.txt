@@ -1,4 +1,4 @@
-#	$Id: todo.txt,v 1.8 2006-11-03 21:27:36 pwessel Exp $
+#	$Id: todo.txt,v 1.9 2006-11-08 06:14:27 pwessel Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
@@ -37,6 +37,10 @@ ENHANCEMENTS:
 
 *.c:		Use Chunk = GMT_CHUNK; n_alloc += Chunk, Chunk *= 2; to rachet up
 		allocation for large data sets.
+
+grd|gmtmath.c	1) Add macro support; macros defined in .gmtmath or passed via -D
+		2) Add variable support:  _var will assign stack content to variable
+		var which can be used later in the expression.
 		
 pslegend: 	Add support for typesetting a table?
 
