@@ -166,9 +166,10 @@ or \fBz\fP if you want to annotate depth rather than radius [Default].
 Give scale in UNIT/r-unit.
 .TP
 \fB\-Jx\fP\fIx-scale\fP[\fI/y-scale\fP] or \fB\-JX\fP\fIwidth\fP[\fI/height\fP] (Linear, log, and power scaling)
-Give \fIx-scale\fP in UNIT/x-unit and/or \fIy-scale\fP in UNIT/y-unit; or
-specify \fIwidth\fP and/or \fIheight\fP in UNIT
-(\fIy-scale\fP=\fIx-scale\fP if not specified separately).
+Give \fIx-scale\fP (1:xxxx or UNIT/x-unit) and/or \fIy-scale\fP (1:xxxx or UNIT/y-unit); or
+specify \fIwidth\fP and/or \fIheight\fP in UNIT.
+\fIy-scale\fP=\fIx-scale\fP if not specified separately and using 1:xxxx implies that x-unit and y-unit are in
+meters.
 Use negative scale(s) to reverse the direction of an axis (e.g., to have y be positive down).
 Optionally, append to \fIx-scale\fP, \fIy-scale\fP, \fIwidth\fP or \fIheight\fP one of the following:
 .RS
